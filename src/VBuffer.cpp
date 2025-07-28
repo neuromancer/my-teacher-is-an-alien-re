@@ -1,5 +1,7 @@
 #include "VBuffer.h"
+extern "C" {
 #include "string.h"
+}
 
 extern "C" long __ftol();
 extern "C" unsigned int FUN_00423703(int* p1, unsigned int p2, unsigned int p3);

@@ -1,4 +1,6 @@
+extern "C" {
 #include "string.h"
+}
 #include "VBuffer.h"
 
 typedef unsigned int size_t;

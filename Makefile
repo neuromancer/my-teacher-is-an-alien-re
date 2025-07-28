@@ -13,6 +13,9 @@ OBJS = $(patsubst src/%.cpp,$(OUT_DIR)/%.obj,$(SRCS))
 # Default target
 all: $(OBJS)
 
+TEACHER.EXE: $(OBJS)
+	wine cmd /c "compilers\\msvc420\\bin\\VCVARS32.BAT x86 && link $(OBJS) /OUT:$@" 2>/dev/null
+
 # Rule to compile .cpp files to .obj files
 $(OUT_DIR)/%.obj: src/%.cpp
 	@mkdir -p $(OUT_DIR)

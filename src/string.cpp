@@ -225,13 +225,15 @@ void FUN_004260f0(void** param_1, void** param_2)
     }
 }
 
-void ShowError(char* format, ...)
-{
-    char buffer[256];
-    _vsprintf(buffer, format, (char*)(&format + 1));
-    SetCursorVisible(1);
-    HWND hWnd = (HWND)FUN_004224d0();
-    MessageBoxA(hWnd, buffer, "Error", 0x10);
-    ShutdownGameSystems();
-    exitWithError_(-1);
+extern "C" {
+    void ShowError(const char* format, ...)
+    {
+        char buffer[256];
+        _vsprintf(buffer, format, (char*)(&format + 1));
+        SetCursorVisible(1);
+        HWND hWnd = (HWND)FUN_004224d0();
+        MessageBoxA(hWnd, buffer, "Error", 0x10);
+        ShutdownGameSystems();
+        exitWithError_(-1);
+    }
 }
