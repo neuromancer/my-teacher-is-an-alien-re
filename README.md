@@ -29,7 +29,8 @@ Prerequisites:
 * `wine`
 * relatively recent (3.8-ish) Python installed
 
-If you want to see the LLM workflow in action:
+Clone the project and run `make` inside. If you want to see the LLM workflow in action:
 
 * [cline](https://cline.bot/)
 * Some LLM API (Gemini 2.5 recommended)
+

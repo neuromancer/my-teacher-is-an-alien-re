@@ -11,7 +11,7 @@ SRCS = $(wildcard src/*.cpp)
 OBJS = $(patsubst src/%.cpp,$(OUT_DIR)/%.obj,$(SRCS))
 
 # Default target
-all: $(OBJS)
+all: $(OBJS) $(patsubst src/%.cpp,$(OUT_DIR)/%.asm,$(SRCS))
 
 TEACHER.EXE: $(OBJS)
 	wine cmd /c "compilers\\msvc420\\bin\\VCVARS32.BAT x86 && link $(OBJS) /OUT:$@" 2>/dev/null
@@ -20,6 +20,11 @@ TEACHER.EXE: $(OBJS)
 $(OUT_DIR)/%.obj: src/%.cpp
 	@mkdir -p $(OUT_DIR)
 	wine cmd /c "compilers\\msvc420\\bin\\VCVARS32.BAT x86 && $(CC) $(CFLAGS) $< /Fo$@" 2>/dev/null
+
+# Rule to compile .cpp files to .asm files
+$(OUT_DIR)/%.asm: src/%.cpp
+	@mkdir -p $(OUT_DIR)
+	wine cmd /c "compilers\\msvc420\\bin\\VCVARS32.BAT x86 && $(CC) $(CFLAGS) $< /Fa$@" 2>/dev/null
 
 # Clean rule
 clean:

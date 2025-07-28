@@ -8,7 +8,7 @@ Let me give you an example: If I need you add the implementation of the GetKey f
 
 Once you add some code to src/Parser.cpp, to compile the code and obtain the assembly code diff, execute:
 ```
-python3 bin/compileAndCompare.py Parser::GetKey src/Parser.cpp code/GetKey.dissasembled.txt
+python3 bin/compileAndCompare.py Parser::GetKey code/GetKey.dissasembled.txt
 ```
 
 It will show you the assembly code produced (or any compiler errors).

@@ -1,5 +1,6 @@
 import re
 import Levenshtein
+import os
 
 from os import system
 from time import sleep
@@ -147,14 +148,29 @@ def main():
     # Parse arguments using argparse
     parser = ArgumentParser(description="Recover high-level code from assembly code")
     parser.add_argument("function_name", help="Function name to compare")
-    parser.add_argument("file_name", help="Path to reconstructed source code")
     parser.add_argument("disassembled_code", help="Path to the disassembled code from Ghidra")
     parser.add_argument("--mangled_name", help="Mangled name of the function to compare")
 
     args = parser.parse_args()
 
-    system(f"wine bin/compile.bat {args.file_name} 2> /dev/null")
-    produced_code = read_assembly(args.mangled_name if args.mangled_name else args.function_name, "out/code.asm.txt")
+    system("make")
+
+    # Find the correct .asm file
+    asm_file_path = None
+    for filename in os.listdir("out"):
+        if filename.endswith(".asm"):
+            filepath = os.path.join("out", filename)
+            with open(filepath, 'r') as f:
+                content = f.read()
+                if args.function_name in content:
+                    asm_file_path = filepath
+                    break
+
+    if asm_file_path is None:
+        print(f"Function '{args.function_name}' not found in any .asm file.")
+        return
+
+    produced_code = read_assembly(args.mangled_name if args.mangled_name else args.function_name, asm_file_path)
 
     with open(args.disassembled_code, 'rb') as file:
         target_code = file.read()
