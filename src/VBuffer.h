@@ -11,6 +11,7 @@ public:
     int SetVideoMode(void* param_1, void* param_2);
     void InvalidateVideoMode();
     void ClearScreen(unsigned char param_1);
+    void Draw(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8);
     void Free();
     void Release();
     void Initialize();

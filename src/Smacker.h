@@ -11,6 +11,16 @@ struct SmackStruct {
     int current_frame; // 0x374
 };
 
+class Smacker {
+public:
+    void NextFrame();
+private:
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    SmackStruct* smk; // 0xc
+};
+
 extern "C" {
     void __stdcall SmackClose(SmackStruct* smk);
     void __stdcall SmackBufferClose(int handle);
@@ -20,6 +30,7 @@ extern "C" {
     void __stdcall SmackGoto(SmackStruct* smk, int frame);
     void __stdcall SmackSoundUseDirectSound(int param_1, int param_2);
     SmackStruct* __stdcall SmackBufferOpen(int uVar1, int param_2, int param_3, int param_4, int param_5, int param_6);
+    void __stdcall SmackDoFrame(SmackStruct* smk);
 }
 
 #endif // SMACKER_H

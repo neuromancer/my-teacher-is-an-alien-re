@@ -8,6 +8,7 @@ extern "C" void FUN_004234f9(void* p1, void* p2, unsigned int p3, unsigned int p
 extern "C" int FUN_0041b590(void* p1, void* p2, void* p3, void* p4);
 extern "C" void FUN_004233e8(int p1, int p2, int p3, int p4, int p5, int p6, unsigned int p7, void* p8);
 extern "C" void FUN_004234d5(unsigned int p1);
+extern "C" void FUN_0042333a(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8);
 extern "C" void FUN_0041b29a();
 extern "C" void FUN_0041b2ac();
 extern "C" int DAT_00436964[];
@@ -338,6 +339,45 @@ void VBuffer::ClearScreen(unsigned char param_1)
     SetCurrentVideoMode((int)this->field_0x1c);
     SetGraphicsMode(param_1);
     ::GlobalClearScreen();
+    InvalidateVideoMode();
+}
+
+/*
+Function: FUN_0041acf0
+Address: 0x41ACF0
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x1c]
+MOV ESI,ECX
+PUSH EAX
+CALL 0x0041ac50
+MOV EAX,dword ptr [ESP + 0x24]
+MOV ECX,dword ptr [ESP + 0x20]
+MOV EDX,dword ptr [ESP + 0x1c]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x1c]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x1c]
+PUSH EDX
+MOV EDX,dword ptr [ESP + 0x1c]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x1c]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x1c]
+PUSH EDX
+PUSH EAX
+PUSH ECX
+CALL 0x0042333a
+ADD ESP,0x20
+MOV ECX,ESI
+CALL 0x0041ac80
+POP ESI
+RET 0x20
+*/
+void VBuffer::Draw(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8)
+{
+    SetCurrentVideoMode((int)this->field_0x1c);
+    FUN_0042333a(p1, p2, p3, p4, p5, p6, p7, p8);
     InvalidateVideoMode();
 }
 

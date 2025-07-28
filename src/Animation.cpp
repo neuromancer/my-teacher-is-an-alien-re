@@ -30,6 +30,8 @@ public:
     void CleanArray10();
     void VBInit();
     void Free();
+    void DoFrame();
+    void MainLoop();
 private:
     char pad_0x0[0x8];
     VBuffer* virtualBuffer; // 0x8
@@ -62,7 +64,17 @@ extern "C" int* AllocateMemory_Wrapper(int size);
 extern "C" void FUN_00424b00(int* param_1, int param_2, int param_3, void* param_4, void* param_5);
 extern "C" int FUN_004224d0();
 extern "C" char DAT_00436970[];
+extern "C" void* DAT_00436968;
+extern "C" int DAT_004373bc;
 extern "C" void* FUN_004249c0(int size);
+extern "C" void FUN_0041fc20(Animation* anim, int, int);
+extern "C" int FUN_00421d10(void*);
+extern "C" int FUN_00421af0();
+extern "C" int _SmackWait_4(SmackStruct*);
+extern "C" int* FUN_004224f0();
+extern "C" int* FUN_004224e0();
+extern "C" void FUN_0041acf0(void*, int, int, int, int, int, int, int, int);
+extern "C" void FUN_0041fcb0(int);
 
 void Animation::SetRange(int param_1, int param_2, int param_3)
 {
@@ -364,4 +376,184 @@ void Animation::Free() {
         this->virtualBuffer = 0;
         this->field0_0x0 = 0;
     }
+}
+
+/*
+Function: DoFrame
+Address: 0x41FCA0
+
+MOV EAX,dword ptr [ECX + 0xc]
+TEST EAX,EAX
+JZ 0xE
+PUSH EAX
+CALL dword ptr [0x00440518]
+RET
+*/
+void Animation::DoFrame()
+{
+  if (this->smkStruct != 0) {
+    SmackDoFrame(this->smkStruct);
+  }
+}
+
+/*
+Function: MainLoop
+Address: 0x420020
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+PUSH EBP
+CMP dword ptr [ESI + 0xc],0x0
+JZ 0x117
+MOV ECX,dword ptr [ESI + 0x18]
+MOV EDI,0x1
+MOV EAX,dword ptr [ECX + 0x1c]
+PUSH EAX
+CALL 0x0041ac50
+MOV ECX,dword ptr [ESI + 0xc]
+CMP dword ptr [ECX + 0xc],EDI
+JL 0x10F
+XOR EBX,EBX
+MOV EAX,dword ptr [ESI + 0xc]
+CMP dword ptr [EAX + 0x68],EBX
+JZ 0x44
+PUSH 0x100
+MOV ECX,ESI
+PUSH EBX
+CALL 0x0041fc20
+MOV ECX,ESI
+MOV EBP,0x4
+CALL 0x0041fca0
+PUSH 0x1
+MOV ECX,dword ptr [0x00436968]
+CALL 0x00421d10
+TEST EAX,EAX
+JNZ 0x10F
+TEST dword ptr [ESI + 0x1c],EBP
+JNZ 0xAE
+MOV EAX,[0x00436968]
+MOV ECX,0x0
+MOV EAX,dword ptr [EAX + 0x1a0]
+TEST EAX,EAX
+JZ 0x84
+MOV ECX,dword ptr [EAX + 0x8]
+AND ECX,0x2
+TEST ECX,ECX
+JNZ 0x8E
+TEST byte ptr [EAX + 0xc],0x2
+JNZ 0x10B
+MOV EAX,0x0
+CMP dword ptr [0x004373bc],EBX
+JZ 0xAA
+CALL 0x00421af0
+SUB EAX,0x1b
+CMP EAX,0x1
+SBB EAX,EAX
+NEG EAX
+TEST EAX,EAX
+JNZ 0x10B
+MOV EAX,dword ptr [ESI + 0xc]
+PUSH EAX
+CALL dword ptr [0x00440530]
+TEST EAX,EAX
+JNZ 0x50
+MOV EBP,dword ptr [ESI + 0x18]
+CALL 0x004224f0
+MOV EAX,dword ptr [EAX]
+DEC EAX
+PUSH EAX
+PUSH EBX
+CALL 0x004224e0
+MOV EAX,dword ptr [EAX]
+MOV ECX,dword ptr [EBP + 0x24]
+DEC EAX
+MOV EDX,dword ptr [EBP + 0x20]
+PUSH EAX
+PUSH EBX
+PUSH ECX
+MOV EAX,dword ptr [EBP + 0x2c]
+PUSH EDX
+MOV ECX,dword ptr [EBP + 0x28]
+PUSH EAX
+PUSH ECX
+MOV ECX,EBP
+CALL 0x0041acf0
+MOV ECX,dword ptr [ESI + 0xc]
+MOV EAX,dword ptr [ECX + 0xc]
+DEC EAX
+CMP EAX,EDI
+JLE 0x10F
+MOV ECX,ESI
+INC EDI
+CALL 0x0041fcb0
+MOV EAX,dword ptr [ESI + 0xc]
+CMP dword ptr [EAX + 0xc],EDI
+JGE 0x2F
+JMP 0x10F
+OR dword ptr [ESI + 0x20],0x1
+MOV ECX,dword ptr [ESI + 0x18]
+CALL 0x0041ac80
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET
+*/
+void Animation::MainLoop()
+{
+    if (this->smkStruct == 0) {
+        return;
+    }
+
+    VBuffer* vb = (VBuffer*)this->field0_0x0;
+    vb->SetCurrentVideoMode(*(int*)((char*)vb + 0x1c));
+
+    if (this->smkStruct->total_frames > 0) {
+        for (int i = 1; i <= this->smkStruct->total_frames; i++) {
+            if (*(int*)((char*)this->smkStruct + 0x68) != 0) {
+                FUN_0041fc20(this, 0, 0x100);
+            }
+            this->DoFrame();
+
+            do {
+                if (FUN_00421d10(DAT_00436968) != 0) {
+                    goto LAB_0042012f;
+                }
+                if ((this->flags & 4) == 0) {
+                    unsigned int uVar3 = 0;
+                    int iVar1 = *(int*)((char*)DAT_00436968 + 0x1a0);
+                    if (iVar1 != 0) {
+                        uVar3 = *(unsigned int*)(iVar1 + 8) & 2;
+                    }
+                    if (uVar3 == 0 && (*(char*)(iVar1 + 0xc) & 2) == 0) {
+                        char bVar5 = 0;
+                        if (DAT_004373bc != 0) {
+                            bVar5 = FUN_00421af0() == 0x1b;
+                        }
+                        if (bVar5) {
+                            *(int*)&this->virtualBuffer |= 1;
+                            goto LAB_0042012f;
+                        }
+                    }
+                }
+            } while (_SmackWait_4(this->smkStruct) != 0);
+
+            void* this_00 = this->field0_0x0;
+            int* piVar2 = FUN_004224f0();
+            int iVar1 = *piVar2 - 1;
+            int iVar6 = 0;
+            piVar2 = FUN_004224e0();
+            FUN_0041acf0(this_00, *(int*)((char*)this_00 + 0x28), *(int*)((char*)this_00 + 0x2c), *(int*)((char*)this_00 + 0x20), *(int*)((char*)this_00 + 0x24), 0, *piVar2 - 1, iVar6, iVar1);
+
+            if (this->smkStruct->total_frames - 1 <= i) {
+                break;
+            }
+            FUN_0041fcb0((int)this);
+        }
+    }
+
+LAB_0042012f:
+    vb->InvalidateVideoMode();
 }
