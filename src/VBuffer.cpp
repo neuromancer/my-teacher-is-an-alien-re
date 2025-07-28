@@ -1,4 +1,5 @@
 #include "VBuffer.h"
+#include "string.h"
 
 extern "C" long __ftol();
 extern "C" unsigned int FUN_00423703(int* p1, unsigned int p2, unsigned int p3);
@@ -8,7 +9,6 @@ extern "C" void FUN_004233e8(int p1, int p2, int p3, int p4, int p5, int p6, uns
 extern "C" void FUN_004234d5(unsigned int p1);
 extern "C" void FUN_0041b29a();
 extern "C" void FUN_0041b2ac();
-extern "C" void ShowError(const char* message);
 extern "C" int DAT_00436964[];
 extern "C" void* memset(void* dest, int ch, unsigned int count);
 extern "C" void FUN_0041a9a0();
@@ -19,7 +19,6 @@ extern "C" int GlobalClearScreen();
 extern "C" int InvalidateVideoMode();
 extern "C" int _SetVideoMode(int mode);
 extern "C" int GetCurrentVideoMode();
-extern "C" void FUN_00419110(const char* message, ...);
 extern "C" void* FUN_00422f00(int width, int height);
 extern "C" void FUN_0041ac50(void* pThis);
 extern "C" void FUN_00422e8f();
@@ -59,10 +58,110 @@ VBuffer::~VBuffer()
     Free();
 }
 
+/*
+Function: VBuffer
+Address: 0x41AAA0
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+MOV EDI,dword ptr [ESP + 0x10]
+MOV EBX,dword ptr [ESP + 0x14]
+TEST EDI,EDI
+JZ 0x15
+TEST EBX,EBX
+JNZ 0x28
+MOV EAX,EBX
+IMUL EAX,EDI
+PUSH EAX
+PUSH 0x436b20
+CALL 0x00419110
+XOR ECX,ECX
+LEA EAX,[EDI + -0x1]
+MOV dword ptr [ESI + 0x14],EDI
+MOV dword ptr [ESI + 0x18],EBX
+LEA EDX,[EBX + -0x1]
+MOV dword ptr [ESI + 0x28],ECX
+MOV dword ptr [ESI + 0x2c],EAX
+MOV dword ptr [ESI + 0x20],ECX
+MOV dword ptr [ESI + 0x24],EDX
+CMP dword ptr [ESI + 0x10],ECX
+JZ 0x54
+PUSH 0x436af8
+CALL 0x00419110
+MOV EAX,EDI
+CDQ
+XOR EAX,EDX
+SUB EAX,EDX
+AND EAX,0x3
+XOR EAX,EDX
+SUB EAX,EDX
+JZ 0x75
+INC EDI
+MOV EAX,EDI
+CDQ
+XOR EAX,EDX
+SUB EAX,EDX
+AND EAX,0x3
+XOR EAX,EDX
+SUB EAX,EDX
+JNZ 0x64
+MOV EAX,EBX
+CDQ
+XOR EAX,EDX
+SUB EAX,EDX
+AND EAX,0x3
+XOR EAX,EDX
+SUB EAX,EDX
+JZ 0x96
+INC EBX
+MOV EAX,EBX
+CDQ
+XOR EAX,EDX
+SUB EAX,EDX
+AND EAX,0x3
+XOR EAX,EDX
+SUB EAX,EDX
+JNZ 0x85
+PUSH EBX
+PUSH EDI
+CALL 0x00422f00
+ADD ESP,0x8
+MOV dword ptr [ESI + 0x1c],EAX
+CMP EAX,-0x1
+JNZ 0xBE
+PUSH 0x436ac8
+CALL 0x00419110
+CMP EAX,-0x2
+JNZ 0xD9
+PUSH 0x436a98
+CALL 0x00419110
+PUSH EAX
+MOV ECX,ESI
+CALL 0x0041ac50
+CALL 0x00422e8f
+MOV ECX,ESI
+CALL 0x0041ac80
+MOV EAX,dword ptr [ESI + 0x1c]
+PUSH EAX
+CALL 0x00422e71
+ADD ESP,0x4
+MOV dword ptr [ESI + 0x10],EAX
+MOV EAX,dword ptr [ESI + 0x1c]
+PUSH EAX
+CALL 0x0041a9d0
+ADD ESP,0x4
+MOV EAX,dword ptr [ESI + 0x10]
+POP EDI
+POP ESI
+POP EBX
+RET 0x8
+*/
 VBuffer::VBuffer(int width, int height)
 {
     if (width == 0 || height == 0) {
-        FUN_00419110("s_VBuffer__VBuffer___bad_dimensi_00436b20", width * height);
+        ShowError("s_Error__Invalid_buffer_size_speci_00436b20", width * height);
     }
 
     this->width = width;
@@ -73,34 +172,28 @@ VBuffer::VBuffer(int width, int height)
     this->field_0x24 = height - 1;
 
     if (this->data != 0) {
-        FUN_00419110("s_VBuffer__VBuffer___vbuffer_alre_00436af8");
+        ShowError("s_Error__Virtual_buffer_already_al_00436af8");
     }
 
-    if ((width % 4) != 0) {
+    while (width % 4 != 0) {
         width++;
-        if ((width % 4) != 0) {
-            // This seems to be a manual alignment to 4 bytes.
-        }
     }
-    if ((height % 4) != 0) {
+    while (height % 4 != 0) {
         height++;
-        if ((height % 4) != 0) {
-            // This seems to be a manual alignment to 4 bytes.
-        }
     }
 
     this->field_0x1c = FUN_00422f00(width, height);
 
     if (this->field_0x1c == (void*)-1) {
-        FUN_00419110("s_VBuffer__VBuffer___unable_to_cr_00436ac8");
+        ShowError("s_VBuffer__Init___Unable_To_create_00436ac8");
     }
     if (this->field_0x1c == (void*)-2) {
-        FUN_00419110("s_VBuffer__VBuffer___unable_to_lo_00436a98");
+        ShowError("s_VBuffer__Init___Unable_To_create_00436a98");
     }
 
-    FUN_0041ac50(this);
+    SetCurrentVideoMode((int)this->field_0x1c);
     FUN_00422e8f();
-    FUN_0041ac80(this);
+    InvalidateVideoMode();
     this->data = FUN_00422e71(this->field_0x1c);
     FUN_0041a9d0(this->field_0x1c);
 }
@@ -108,7 +201,7 @@ VBuffer::VBuffer(int width, int height)
 VBuffer* VBuffer::VirtualBufferCreateAndClean(int width, int height)
 {
     if (width == 0 || height == 0) {
-        FUN_00419110("s_VBuffer__VBuffer___bad_dimensi_00436b20", width * height);
+        ShowError("s_VBuffer__VBuffer___bad_dimensi_00436b20", width * height);
     }
 
     this->width = width;
@@ -119,7 +212,7 @@ VBuffer* VBuffer::VirtualBufferCreateAndClean(int width, int height)
     this->field_0x24 = height - 1;
 
     if (this->data != 0) {
-        FUN_00419110("s_VBuffer__VBuffer___vbuffer_alre_00436af8");
+        ShowError("s_VBuffer__VBuffer___vbuffer_alre_00436af8");
     }
 
     if ((width % 4) != 0) {
@@ -138,10 +231,10 @@ VBuffer* VBuffer::VirtualBufferCreateAndClean(int width, int height)
     this->field_0x1c = FUN_00422f00(width, height);
 
     if (this->field_0x1c == (void*)-1) {
-        FUN_00419110("s_VBuffer__VBuffer___unable_to_cr_00436ac8");
+        ShowError("s_VBuffer__VBuffer___unable_to_cr_00436ac8");
     }
     if (this->field_0x1c == (void*)-2) {
-        FUN_00419110("s_VBuffer__VBuffer___unable_to_lo_00436a98");
+        ShowError("s_VBuffer__VBuffer___unable_to_lo_00436a98");
     }
 
     FUN_0041ac50(this);
@@ -268,16 +361,6 @@ CALL 0x0041ac80
 POP ESI
 RET 0x4
 
-Decompiled:
-void __thiscall VBuffer::ClearScreen(VBuffer *this,byte param_1)
-
-{
-  SetCurrentVideoMode(this,this->field19_0x1c);
-  SetGraphicsMode(param_1);
-  ::ClearScreen();
-  InvalidateVideoMode(this);
-  return;
-}
 */
 void VBuffer::ClearScreen(unsigned char param_1)
 {
@@ -760,34 +843,6 @@ RET
 Decompiled:
 // This is a guess based on the assembly. The actual implementation might be different.
 // The function at 0x0043020a is unknown.
-
-
-/*
-Function: VBuffer::Clear
-Address: 0x41AAA0
-
-PUSH ESI
-MOV ESI,ECX
-MOV EAX,dword ptr [ESI + 0x10]
-TEST EAX,EAX
-JZ 0x18
-MOV EDX,dword ptr [ESI + 0x18]
-IMUL EDX,dword ptr [ESI + 0x14]
-PUSH EDX
-PUSH 0x0
-PUSH EAX
-CALL _memset
-ADD ESP,0xc
-POP ESI
-RET
-*/
-void VBuffer::Clear()
-{
-    if (this->data)
-    {
-        memset(this->data, 0, this->width * this->height);
-    }
-}
 
 int _SetVideoMode(int mode) {
     if (mode > 0x1f) {

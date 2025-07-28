@@ -1,6 +1,6 @@
 #  My Teacher is an Alien (1997) reconstruction  source code reconstruction using LLMs
 
-This is a work in progress project to reconstruct the source code for the MS-DOS version of the Microprose game ["My Teacher is an Alien"](https://adventuregamers.com/games/my-teacher-is-an-alien). The original game was written in C++ and compiled with the Microsoft Visual C++ 4.x.
+This is a work in progress project to reconstruct the source code for the Windows version of the 7th Level/Byron Preiss Multimedia  game ["My Teacher is an Alien"](https://adventuregamers.com/games/my-teacher-is-an-alien). The original game was written in C++ and compiled with the Microsoft Visual C++ 4.x.
 
 The reconstruction aims to be bug-for-bug faithful, and the C++ routines yield code that's identical to the original at the CPU instruction level (when compiled with the same compiler with appropriate flags), while allowing for layout differences in the executables.
 
@@ -20,7 +20,7 @@ The game executables has the following sha256 signatures:
 
 # Status
 
-As of the time of writing this, the reconstruction has not started yet. We are just testing the technology to see if it works and setting up the initial scripts to automatically compile the complete binary and compare it with the original one. It is unclear if the technology is good enough, but some results are promising. Check the [src/recovered folder](./src) to see examples of reconstructed functions. All the reconstructored source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/).
+As of the time of writing this, the reconstruction has not started yet. We are just testing the technology to see if it works and setting up the initial scripts to automatically compile the complete binary and compare it with the original one. It is unclear if the technology is good enough, but some results are promising. Check the [src/folder](./src) to see examples of reconstructed functions. All the reconstructored source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/).
 
 # Building
 
