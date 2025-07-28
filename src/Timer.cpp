@@ -15,6 +15,10 @@ extern "C" {
     void FreeFromGlobalHeap(void *ptr);
     void FUN_00419fd0(void *param_1);
     void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
+    void Timer_impl_dtor(void *timer);
+    void SC__Timer__Timer1_dtor();
+    void SC__Timer__Timer2_dtor();
+    void SC__Timer__Base_dtor();
 
     // These are the vtable pointers
     extern void *PTR_LBLParse_MustBeDefined_00431000;
@@ -33,8 +37,10 @@ class Timer {
 };
 
 class SCTimer : public BaseObject {
+    friend void Timer_impl_dtor(void* timer);
 public:
     void Init();
+    virtual ~SCTimer();
     int Input(void *message);
 
 private:
@@ -485,5 +491,150 @@ int SCTimer::Input(void *message) {
         return 1;
     } catch (...) {
         return 0;
+    }
+}
+
+/*
+Function: ~Timer
+Address: 0x401C80
+
+PUSH ESI
+MOV ESI,ECX
+CALL 0x00401ca0
+TEST byte ptr [ESP + 0x8],0x1
+JZ 0x18
+PUSH ESI
+CALL 0x00424940
+ADD ESP,0x4
+MOV EAX,ESI
+POP ESI
+RET 0x4
+*/
+
+SCTimer::~SCTimer() {
+    Timer_impl_dtor(this);
+}
+
+/*
+Function: ~Timer_impl
+Address: 0x401CA0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x401dd9
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+MOV dword ptr [ECX],0x431060
+SUB ESP,0x4
+MOV dword ptr [EBP + -0x10],ECX
+PUSH EBX
+PUSH ESI
+PUSH EDI
+XOR ESI,ESI
+MOV dword ptr [EBP + -0x4],ESI
+MOV byte ptr [EBP + -0x4],0x2
+MOV EDI,dword ptr [ECX + 0xc8]
+CMP EDI,ESI
+JZ 0xEF
+MOV EAX,dword ptr [EDI]
+TEST EAX,EAX
+JZ 0xD9
+MOV dword ptr [EDI + 0x8],EAX
+CMP dword ptr [EDI],ESI
+JZ 0xD9
+MOV EAX,dword ptr [EDI + 0x8]
+TEST EAX,EAX
+JNZ 0x5E
+XOR EBX,EBX
+JMP 0xBD
+CMP dword ptr [EDI],EAX
+JNZ 0x67
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [EDI],EAX
+MOV EAX,dword ptr [EDI + 0x8]
+CMP dword ptr [EDI + 0x4],EAX
+JNZ 0x74
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [EDI + 0x4],EAX
+MOV EAX,dword ptr [EDI + 0x8]
+MOV ECX,dword ptr [EAX]
+TEST ECX,ECX
+JZ 0x83
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x4],EAX
+MOV EAX,dword ptr [EDI + 0x8]
+MOV ECX,dword ptr [EAX + 0x4]
+TEST ECX,ECX
+JZ 0x91
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [ECX],EAX
+MOV EAX,dword ptr [EDI + 0x8]
+MOV EBX,0x0
+TEST EAX,EAX
+JZ 0xA0
+MOV EBX,dword ptr [EAX + 0x8]
+TEST EAX,EAX
+JZ 0xB8
+PUSH EAX
+MOV dword ptr [EAX + 0x8],ESI
+MOV dword ptr [EAX],ESI
+MOV dword ptr [EAX + 0x4],ESI
+CALL 0x00424940
+ADD ESP,0x4
+MOV dword ptr [EDI + 0x8],ESI
+MOV EAX,dword ptr [EDI]
+MOV dword ptr [EDI + 0x8],EAX
+TEST EBX,EBX
+JZ 0xD1
+MOV ECX,EBX
+CALL 0x00401910
+PUSH EBX
+CALL 0x00424940
+ADD ESP,0x4
+CMP dword ptr [EDI],ESI
+JNZ 0x53
+PUSH EDI
+CALL 0x00424940
+ADD ESP,0x4
+MOV EAX,dword ptr [EBP + -0x10]
+MOV dword ptr [EAX + 0xc8],0x0
+MOV byte ptr [EBP + -0x4],0x1
+CALL 0x00401dbd
+MOV byte ptr [EBP + -0x4],0x0
+CALL 0x00401dcb
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL 0x00401de3
+MOV EAX,dword ptr [EBP + -0xc]
+POP EDI
+MOV FS:[0x0],EAX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET
+*/
+
+void Timer_impl_dtor(void* timer) {
+    try {
+        SCTimer* self = (SCTimer*)timer;
+        *(void**)self = &PTR_LBLParse_MustBeDefined_00431060;
+        Queue* queue = (Queue*)self->field_0xc8;
+        if (queue) {
+            while (queue->head) {
+                void* event = Queue__Pop(queue);
+                if (event) {
+                    TimedEvent__delete((int)event);
+                    FreeFromGlobalHeap(event);
+                }
+            }
+            FreeFromGlobalHeap(queue);
+            self->field_0xc8 = 0;
+        }
+        SC__Timer__Timer1_dtor();
+        SC__Timer__Timer2_dtor();
+        SC__Timer__Base_dtor();
+    } catch (...) {
     }
 }
