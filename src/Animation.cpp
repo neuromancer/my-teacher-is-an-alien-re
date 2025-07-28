@@ -1,18 +1,9 @@
 #include <string.h>
 #include "VBuffer.h"
 #include "string.h"
+#include "Smacker.h"
 
 typedef unsigned int size_t;
-
-struct SmackStruct {
-    int version; // 0x0
-    int width; // 0x4
-    int height; // 0x8
-    int total_frames; // 0xc
-    int mspf; // 0x10
-    char unknown[884-20]; // 0x14
-    int current_frame; // 0x374
-};
 
 class Animation;
 
@@ -69,11 +60,7 @@ extern "C" void Array_Cleanup(int param_1, int param_2, int param_3, void* param
 extern "C" void FreeFromGlobalHeap(int* param_1);
 extern "C" int* AllocateMemory_Wrapper(int size);
 extern "C" void FUN_00424b00(int* param_1, int param_2, int param_3, void* param_4, void* param_5);
-extern "C" void SmackSoundUseDirectSound(int param_1, int param_2);
-extern "C" void SmackGoto(SmackStruct *Smack, unsigned int FrameNumber);
 extern "C" int FUN_004224d0();
-extern "C" SmackStruct* SmackBufferOpen(int uVar1, int param_2, int param_3, int param_4, int param_5, int param_6);
-extern "C" void SmackToBuffer(SmackStruct *Smack, int Unknown1, int Unknown2, int Stride, int FrameHeightInPixels, void *OutBuffer, unsigned int Flags);
 extern "C" char DAT_00436970[];
 extern "C" void* FUN_004249c0(int size);
 

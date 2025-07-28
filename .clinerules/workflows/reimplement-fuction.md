@@ -45,3 +45,5 @@ Address: 0x123456
 Then most likely, there is a try/catch somewhere in the function.
 
 Start with <function>. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
+
+If similarity is >= 90%, you can stop.
