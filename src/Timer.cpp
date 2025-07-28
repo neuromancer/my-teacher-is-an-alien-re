@@ -1,11 +1,11 @@
 #include "string.h"
+#include "Timer.h"
 
 // Forward declarations for external functions and classes
 extern "C" {
     void *AllocateMemory_Wrapper(unsigned int size);
     void Timer_Init(void *timer);
     void Timer_Reset(void *timer);
-    void *TimedEvent__Init(void *event);
     void TimedEvent__SetData(void *event, void *data);
     void TimedEvent__delete(int event);
     void Queue__Insert(void *queue, int event);
@@ -30,11 +30,69 @@ public:
     void Init();
 };
 
-class Timer {
-    // Assuming Timer has some members, but we don't need to know the details for this file.
-    // The size seems to be 20 bytes (0xb4 - 0xa0)
-    char unknown[20];
+class TimedEvent {
+public:
+    void Init();
+    void SetData(void* data);
+
+    int field_0;
+    int field_4;
+    int field_8;
+    int field_c;
+    int field_10;
+    Timer timer;
 };
+
+/*
+Function: TimedEvent::Init
+Address: 0x401890
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x4018f0
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+LEA EBX,[ECX + 0x14]
+MOV dword ptr [EBP + -0x10],ECX
+PUSH EDI
+MOV ESI,ECX
+MOV ECX,EBX
+MOV EDI,ESI
+CALL 0x00418eb0
+XOR EAX,EAX
+MOV ECX,0xa
+MOV dword ptr [EBP + -0x4],0x0
+STOSD.REP ES:EDI
+MOV ECX,EBX
+CALL 0x00418ef0
+MOV EAX,ESI
+POP EDI
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+POP ESI
+MOV dword ptr FS:[0x0],ECX
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET
+*/
+
+void TimedEvent::Init() {
+    try {
+        Timer_Init(&this->timer);
+        for (int i = 0; i < 10; i++) {
+            ((int*)this)[i] = 0;
+        }
+        Timer_Reset(&this->timer);
+    } catch(...) {
+        // Matching SEH
+    }
+}
 
 class SCTimer : public BaseObject {
     friend void Timer_impl_dtor(void* timer);
@@ -367,13 +425,11 @@ struct Message {
     int field_0xbc;
 };
 
-struct TimedEvent {
-    void* vtable;
-    void* field_0x4;
-    int field_0x8;
-    int field_0xc;
-    int field_0x10;
-};
+void TimedEvent::SetData(void* data) {
+    // This is a guess based on other parts of the code.
+    // The original implementation is likely different.
+    // this->field_4 = data;
+}
 
 struct Queue {
     void* head;
@@ -414,12 +470,12 @@ int SCTimer::Input(void *message) {
                 }
                 TimedEvent* event = (TimedEvent*)AllocateMemory_Wrapper(0x28);
                 if (event) {
-                    TimedEvent__Init(event);
-                    event->field_0xc = msg->field_0xb8;
-                    event->field_0x8 = msg->field_0x8c;
-                    event->field_0x10 = msg->field_0xbc;
+                    event->Init();
+                    event->field_c = msg->field_0xb8;
+                    event->field_8 = msg->field_0x8c;
+                    event->field_10 = msg->field_0xbc;
                     msg->field_0xbc = 0;
-                    TimedEvent__SetData(event, msg->field_0x9c);
+                    event->SetData(msg->field_0x9c);
                     Queue* queue = (Queue*)field_0xc8;
                     if (!event) {
                         ShowError("queue fault 0101");
@@ -432,7 +488,7 @@ int SCTimer::Input(void *message) {
                             queue->current = queue->head;
                             do {
                                 TimedEvent* current_event = (TimedEvent*)queue->current;
-                                if (current_event->field_0xc < event->field_0xc) {
+                                if (current_event->field_c < event->field_c) {
                                     Queue__Insert(queue, (int)event);
                                     break;
                                 }
@@ -452,8 +508,8 @@ int SCTimer::Input(void *message) {
             case 0x14: {
                 TimedEvent* event = (TimedEvent*)AllocateMemory_Wrapper(0x28);
                 if (event) {
-                    TimedEvent__Init(event);
-                    event->field_0x8 = msg->field_0x8c;
+                    event->Init();
+                    event->field_8 = msg->field_0x8c;
                     Queue* queue = (Queue*)field_0xc8;
                     if (!event) {
                         ShowError("queue fault 0103");
@@ -462,7 +518,7 @@ int SCTimer::Input(void *message) {
                     queue->current = queue->head;
                     while(queue->current) {
                         TimedEvent* current_event = *(TimedEvent**)((char*)queue->current + 8);
-                        if (current_event->field_0xc == event->field_0xc) {
+                        if (current_event->field_c == event->field_c) {
                             void* popped = Queue__Pop(queue);
                             if (popped) {
                                 TimedEvent__delete((int)popped);

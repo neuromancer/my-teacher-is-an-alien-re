@@ -190,7 +190,9 @@ extern "C" void FUN_0041eb70(void *p, int v, int size);
 extern "C" void ShowError(const char *msg, int val);
 extern "C" void FUN_0041c72c();
 extern "C" void VBuffer_VBuffer_Owner___VBuffer_Owner(void *p);
-extern "C" unsigned int Timer_Update(int *p);
+#include "Timer.h"
+
+extern "C" unsigned int Timer_Update(Timer *p);
 extern "C" void FUN_0041c94c();
 
 
@@ -219,7 +221,7 @@ private:
     int field_3c;
     char field_40[64];
     int field_80;
-    int timer;
+    Timer timer;
     int field_88;
     int field_8c;
     int field_90;
