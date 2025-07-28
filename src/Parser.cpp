@@ -18,17 +18,9 @@ POP ESI
 RET
 
 */
-// Forward declaration for FILE from stdio.h
-struct FILE;
-
-// Define size_t to avoid pulling in a whole header file.
-typedef unsigned int size_t;
-
-// The function at 0x00425e70 is likely _fclose.
-// We declare it as extern "C" to prevent name mangling.
-extern "C" int _fclose(FILE* stream);
-extern "C" char* strcpy(char* _Dest, const char* _Source);
-extern "C" void *memset(void *dest, int c, size_t n);
+#include <stdio.h>
+#include <string.h>
+#include "string.h"
 
 // Based on the assembly, the Parser class has members at offsets 0x8 and 0x80.
 // The function at 0x00419110
@@ -61,19 +53,6 @@ extern "C" char* FUN_00424c00(const char* s1, const char* s2);
 // The function at 0x00425fd0 is implemented in src/string.cpp
 extern "C" char* FUN_00425fd0(char* dest, const char* src, size_t n);
 
-// In MSVC4, fpos_t is a struct.
-typedef struct {
-    long off;
-    long loff;
-} fpos_t;
-
-// Functions for file positioning
-extern "C" int _fgetpos(FILE* stream, fpos_t* pos);
-extern "C" int _fsetpos(FILE* stream, const fpos_t* pos);
-extern "C" int fseek(FILE* stream, long offset, int origin);
-extern "C" char* fgets(char* str, int n, FILE* stream);
-extern "C" int sscanf(const char* s, const char* format, ...);
-extern "C" int strcmp(const char* s1, const char* s2);
 
 extern "C" void* AllocateMemory(int size, int flags);
 extern "C" void* FUN_004249c0(int size);
@@ -102,7 +81,7 @@ private:
 
 void Parser::CloseFile() {
     if (field8_0x8 != 0 && pFile != 0) {
-        _fclose(pFile);
+        fclose(pFile);
         pFile = 0;
         field8_0x8 = 0;
     }
@@ -200,13 +179,13 @@ RET
 
 */
 void Parser::SaveFilePosition() {
-    if (_fgetpos(this->pFile, &this->FILE_pos) != 0) {
+    if (fgetpos(this->pFile, &this->FILE_pos) != 0) {
         FUN_00419110(s_Parser__SaveFilePosition_____una_00436538, this->filename);
     }
 }
 
 void Parser::RestoreFilePosition() {
-    if (_fsetpos(this->pFile, &this->FILE_pos) != 0) {
+    if (fsetpos(this->pFile, &this->FILE_pos) != 0) {
         FUN_00419110(s_Parser__RestoreFilePosition_____u_00436578, this->filename);
     }
 }

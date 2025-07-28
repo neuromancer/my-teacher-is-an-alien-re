@@ -1,10 +1,8 @@
 #include "VBuffer.h"
 
-extern "C" {
+#include <string.h>
 #include "string.h"
-}
 
-extern "C" long __ftol();
 extern "C" unsigned int FUN_00423703(int* p1, unsigned int p2, unsigned int p3);
 extern "C" void FUN_004234f9(void* p1, void* p2, unsigned int p3, unsigned int p4, unsigned int p5, unsigned int p6);
 extern "C" int FUN_0041b590(void* p1, void* p2, void* p3, void* p4);
@@ -13,7 +11,6 @@ extern "C" void FUN_004234d5(unsigned int p1);
 extern "C" void FUN_0041b29a();
 extern "C" void FUN_0041b2ac();
 extern "C" int DAT_00436964[];
-extern "C" void* memset(void* dest, int ch, unsigned int count);
 extern "C" void FUN_0041a9a0();
 extern "C" void FUN_00422e1a(void* p);
 extern "C" void FUN_0041a9e0(void* p);
@@ -28,7 +25,6 @@ extern "C" void FUN_00422e8f();
 extern "C" void FUN_0041ac80(void* pThis);
 extern "C" void* FUN_00422e71(void* p);
 extern "C" void FUN_0041a9d0(void* p);
-extern "C" void FUN_0041aa30(void* pThis);
 extern "C" void FUN_0041a9a0();
 
 // Global variables
@@ -247,7 +243,7 @@ VBuffer* VBuffer::VirtualBufferCreateAndClean(int width, int height)
     this->data = FUN_00422e71(this->field_0x1c);
     FUN_0041a9d0(this->field_0x1c);
 
-    FUN_0041aa30(this);
+    this->Initialize();
     this->Clear();
     return this;
 }

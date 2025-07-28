@@ -1,12 +1,8 @@
-extern "C" {
-#include "string.h"
-}
+#include <string.h>
 #include "VBuffer.h"
+#include "string.h"
 
 typedef unsigned int size_t;
-extern "C" {
-    void* memset(void* dest, int ch, size_t count);
-}
 
 struct SmackStruct {
     int version; // 0x0

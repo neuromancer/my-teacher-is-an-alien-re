@@ -1,8 +1,5 @@
-// Define size_t as it's used in the function signature.
-typedef unsigned int size_t;
-
-// Define NULL as it's used in the function.
-#define NULL 0
+#include <stdio.h>
+#include "string.h"
 
 // Based on the assembly, this function is a custom implementation of strncpy.
 // It copies up to 'n' characters from src to dest, padding with nulls if src is shorter.
@@ -32,7 +29,6 @@ char* FUN_00425fd0(char* dest, const char* src, size_t n) {
 // It uses 'goto' to precisely replicate the unconventional control flow of the 1997 compiler's
 // output, which is necessary to produce a matching assembly file.
 
-extern "C" int _vsprintf(char* buffer, const char* format, ...);
 extern "C" void SetCursorVisible(int visible);
 extern "C" int FUN_004224d0();
 extern "C" void ShutdownGameSystems();
@@ -229,7 +225,7 @@ extern "C" {
     void ShowError(const char* format, ...)
     {
         char buffer[256];
-        _vsprintf(buffer, format, (char*)(&format + 1));
+        vsprintf(buffer, format, (char*)(&format + 1));
         SetCursorVisible(1);
         HWND hWnd = (HWND)FUN_004224d0();
         MessageBoxA(hWnd, buffer, "Error", 0x10);
