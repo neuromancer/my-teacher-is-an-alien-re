@@ -199,6 +199,7 @@ extern "C" void* g_WorkBuffer;
 
 class BaseObject {
 public:
+    BaseObject* BaseObject_Init();
     virtual ~BaseObject();
     void Destroy();
     void Copy(BaseObject* source);
@@ -390,6 +391,30 @@ void BaseObject::Copy_2(BaseObject* source) {
     this->field_3c = source->field_3c;
     memcpy(this->field_40, source->field_40, 64);
     this->field_80 = source->field_80;
+}
+
+/*
+Function: BaseObject_Init
+Address: 0x4189F0
+
+MOV dword ptr [ECX],0x4314f8
+PUSH EDI
+LEA EDI,[ECX + 0x4]
+MOV EDX,ECX
+XOR EAX,EAX
+MOV ECX,0x21
+STOSD.REP ES:EDI
+MOV EAX,EDX
+POP EDI
+RET
+*/
+BaseObject* BaseObject::BaseObject_Init() {
+    *(void**)this = (void*)0x4314f8;
+    int* p = (int*)&this->pad_4;
+    for (int i = 0; i < 0x21; i++) {
+        p[i] = 0;
+    }
+    return this;
 }
 
 /*
