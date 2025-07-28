@@ -1,0 +1,117 @@
+Some games that use [[RAD Game Tools]] [[Smacker]] files for their multimedia
+files distribute a handy Win32 DLL called smackw32.dll.
+
+== Data Structure ==
+
+According to the [[Media Player Classic]] (MPC) application, the various Smacker functions pass around a structure with the following layout (all multi-byte numbers are native endian):
+
+  bytes 0-3      version
+  bytes 4-7      video width
+  bytes 8-11     video height
+  bytes 12-15    frame count
+  bytes 16-19    mspf (?)
+  bytes 20-883   unknown (probably includes a palette)
+  bytes 884-887  current frame number
+
+This page will refer to this structure as the SmackStruct.
+
+== Interesting DLL Functions ==
+
+MPC is interested in the following functions exported by the Smacker DLL:
+
+* SmackSoundUseDirectSound
+* SmackOpen
+* SmackGoto
+* SmackDoFrame
+* SmackToBuffer
+* SmackNextFrame
+* SmackClose
+
+  int SmackSoundUseDirectSound(IDirectSound *pDS);
+
+Description: SmackSoundUseDirectSound initializes the audio playback system to allow the Smacker DLL to output decoded audio data straight out through DirectSound.
+
+Parameters:
+* pDS: A pointer to an IDirectSound structure.
+
+Returns: 0 if the function failed, non-zero on success.
+
+  SmackStruct *SmackOpen(HANDLE *SmackFile, UINT32 flags, INT32 unknown);
+
+Description: SmackOpen opens and initializes a Smacker file for playback.
+
+Parameters:
+* SmackFile: A Windows file HANDLE that refers to the Smacker file to be read.
+* Flags: The meaning of all the flags is unclear, but MPC calls SmackOpen with 0xff400 in this parameter.
+* unknown: The meaning of this parameter is unclear, but MPC calls SmackOpen with -1 in this parameter.
+
+Returns: A pointer to a SmackStruct that will be used for playing the Smacker file.
+
+  void SmackGoto(SmackStruct *Smack, UINT32 FrameNumber);
+
+Description: SmackGoto signals the playback engine to reposition the Smacker file to a requested frame.
+
+Parameters:
+* Smack: A pointer to the SmackStruct returned by SmackOpen.
+* FrameNumber: The frame number where the stream should be positioned to.
+
+Returns: No known return value as MPC does not check for one.
+
+  int SmackDoFrame(SmackStruct *Smack);
+
+Description: SmackDoFrame processes the next frame in the Smack file.
+
+Parameters:
+* Smack: A pointer to the SmackStruct returned by SmackOpen.
+
+Returns: MPC's code comments indicate that this function does return a value, but the meaning is not specified.
+
+  void SmackToBuffer(SmackStruct *Smack, uint32 Unknown1, uint32 Unknown2,
+    uint32 Stride, uint32 FrameHeightInPixels, BYTE *OutBuffer,
+    uint32 Flags);
+
+Description: SmackToBuffer decodes a frame of video into the specified memory buffer.
+
+Parameters:
+* Smack: A pointer to the SmackStruct returned by SmackOpen.
+* Unknown1, Unknown2: Unknown, but MPC sets these both to 0.
+* Stride: The width of a single line in the output buffer, in bytes. If the output colorspace is 16-bit RGB, this field is pixel width * 2.
+* Height: The pixel height of the frame in the output buffer.
+* OutBuffer: The memory buffer where the decoded frame is to be output. This buffer needs to be at least Stride * Height bytes large.
+* Flags: A series of 32 bits specifying the mode of operation. MPC sets the top 2 bits to 1 (0xc0000000) which apparently outputs 16-bit RGB data.
+
+Returns: No known return value as MPC does not check for one.
+
+  void SmackNextFrame(SmackStruct *Smack);
+
+Description: SmackNextFrame signals the playback engine to advance the Smacker file to the next frame.
+
+Parameters:
+* Smack: A pointer to the SmackStruct returned by SmackOpen.
+
+Returns: No known return value as MPC does not check for one.
+
+  void SmackClose(SmackStruct *Smack);
+
+Description: SmackClose gracefully closes a Smacker file and releases any allocated resources.
+
+Parameters:
+* Smack: A pointer to the SmackStruct returned by SmackOpen.
+
+Returns: No known return value as MPC does not check for one.
+
+== Using The Smacker DLL ==
+
+Using the Smacker DLL to decode a Smacker file operates using the
+following steps:
+
+# Set up the sound system using SmackSoundUseDirectSound.
+# Call SmackOpen with a handle to the file. The function will allocate and return a SmackStruct data structure which will be used through the reset of the Smacker functions to manipulate and decode the file. This structure contains parameters regarding the file's video properties, such as width and height.
+# Call SmackDoFrame to decode the next frame of video.
+# Call SmackToBuffer to fetch the decoded frame into your own application's buffer.
+# Call SmackNextFrame to advance to the next frame in the file.
+# Repeat from step 3 while there are frames remaining in the file (the number of frames is specified in the SmackStruct).
+# Call SmackClose to deallocate the resources used for decoding the Smacker file.
+# Also, SmackGoto can be called to reposition the file during playback.
+
+[[Category:Multimedia APIs]]
