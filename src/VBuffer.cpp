@@ -1,4 +1,5 @@
 #include "VBuffer.h"
+
 extern "C" {
 #include "string.h"
 }
@@ -28,6 +29,7 @@ extern "C" void FUN_0041ac80(void* pThis);
 extern "C" void* FUN_00422e71(void* p);
 extern "C" void FUN_0041a9d0(void* p);
 extern "C" void FUN_0041aa30(void* pThis);
+extern "C" void FUN_0041a9a0();
 
 // Global variables
 extern "C" int DAT_0043826c[];
@@ -269,18 +271,6 @@ MOV dword ptr [ESI],0xffffffff
 MOV dword ptr [ESI + 0x4],0x1
 POP ESI
 RET
-
-Decompiled:
-int __thiscall VBuffer::SetVideoMode(VBuffer *this,undefined4 *param_1,undefined4 param_2)
-
-{
-  int iVar1;
-
-  iVar1 = _SetVideoMode(this->field19_0x1c);
-  this->videoMode = 0xffffffff;
-  this->field1_0x4 = 1;
-  return iVar1;
-}
 */
 int VBuffer::SetVideoMode(void* param_1, void* param_2)
 {
@@ -312,23 +302,6 @@ ADD ESP,0x4
 MOV dword ptr [ESI],0xffffffff
 POP ESI
 RET
-
-Decompiled:
-void __thiscall VBuffer::InvalidateVideoMode(VBuffer *this)
-
-{
-  int iVar1;
-
-  if ((this->field1_0x4 != 0) &&
-     (iVar1 = this->field1_0x4 + -1, this->field1_0x4 = iVar1, iVar1 == 0)) {
-    ::InvalidateVideoMode();
-    if (this->videoMode != 0xffffffff) {
-      _SetVideoMode(this->videoMode);
-      this->videoMode = 0xffffffff;
-    }
-  }
-  return;
-}
 */
 void VBuffer::InvalidateVideoMode()
 {
@@ -392,19 +365,6 @@ MOV dword ptr [ESI + 0x10],0x0
 ADD ESP,0x4
 POP ESI
 RET
-
-Decompiled:
-void __thiscall VBuffer::Free(VBuffer *this)
-
-{
-  if (this->data != 0) {
-    FUN_00422e1a(this->field19_0x1c);
-    FUN_0041a9e0(this->field19_0x1c);
-    this->field19_0x1c = 0xffffffff;
-    this->data = 0;
-  }
-  return;
-}
 */
 void VBuffer::Free()
 {
@@ -430,18 +390,6 @@ CALL 0x004231bc
 POP ESI
 RET
 
-Decompiled:
-void __thiscall VBuffer::Release(VBuffer *this)
-
-{
-  uint uVar1;
-
-  uVar1 = GetCurrentVideoMode();
-  if (uVar1 == this->field19_0x1c) {
-    ::InvalidateVideoMode();
-  }
-  return;
-}
 */
 void VBuffer::Release()
 {
@@ -469,30 +417,11 @@ MOV dword ptr [EDX],0xffffffff
 CALL 0x0041a9a0
 POP EDI
 RET
-
-Decompiled:
-void __thiscall VBuffer::Initialize(void *this)
-
-{
-  int iVar1;
-  undefined4 *puVar2;
-
-  puVar2 = (undefined4 *)this;
-  for (iVar1 = 0xc; iVar1 != 0; iVar1 = iVar1 + -1) {
-    *puVar2 = 0;
-    puVar2 = puVar2 + 1;
-  }
-  *(undefined4 *)((int)this + 0x1c) = 0xffffffff;
-  *(undefined4 *)this = 0xffffffff;
-  FUN_0041a9a0();
-  return;
-}
 */
-void VBuffer::Initialize()
-{
+void VBuffer::Initialize() {
     memset(this, 0, sizeof(VBuffer));
-    this->field_0x1c = (void*)0xffffffff;
-    this->videoMode = 0xffffffff;
+    field_0x1c = (void*)0xffffffff;
+    videoMode = 0xffffffff;
     FUN_0041a9a0();
 }
 
@@ -627,68 +556,6 @@ CALL 0x004234d5
 ADD ESP,0x4
 JMP 0x12D
 
-Decompiled:
-void __thiscall VBuffer::ScaleTCCopy(VBuffer *this,int param_1,int param_2,int param_3)
-
-{
-  uint uVar1;
-  uint uVar2;
-  undefined4 *puVar3;
-  int iVar4;
-  undefined4 *unaff_FS_OFFSET;
-  longlong lVar5;
-  int local_34;
-  UINT32 local_30;
-  undefined4 local_2c;
-  undefined4 local_28;
-  int local_24;
-  int local_20;
-  int local_1c;
-  int local_18;
-  uint local_14;
-  undefined4 local_10;
-  undefined1 *puStack_c;
-  uint local_8;
-
-  local_10 = *unaff_FS_OFFSET;
-  local_8 = 0xffffffff;
-  puStack_c = &LAB_0041b2a2;
-  *unaff_FS_OFFSET = &local_10;
-  lVar5 = __ftol();
-  uVar1 = (uint)lVar5;
-  lVar5 = __ftol();
-  uVar2 = (uint)lVar5;
-  if ((0 < (int)uVar1) && (0 < (int)uVar2)) {
-    local_14 = FUN_00423703(DAT_00436964,uVar1,uVar2);
-    if ((int)local_14 < 0) {
-// WARNING: Subroutine does not return
-      ShowError(s_VBuffer__ScaleTCCopy_00436b70);
-    }
-    puVar3 = (undefined4 *)FUN_00422e71(local_14);
-    FUN_004234f9(*(undefined1 **)(param_3 + 0x10),puVar3,*(uint *)(param_3 + 0x14),
-                 *(uint *)(param_3 + 0x18),uVar1,uVar2);
-    local_8 = 1;
-    local_30 = this[1].videoMode;
-    local_2c = *(undefined4 *)&this[1].field_0xc;
-    local_34 = *(int *)&this[1].field_0x8;
-    local_1c = uVar1 - 1;
-    local_18 = uVar2 - 1;
-    local_28 = this[1].field1_0x4;
-    local_24 = 0;
-    local_20 = 0;
-    iVar4 = FUN_0041b590(&local_34,&local_24,&param_1,&param_2);
-    if (iVar4 != 0) {
-      FUN_004233e8(local_24,local_1c,local_20,local_18,param_1,param_2,local_14,this->field19_0x1c);
-      FUN_004234d5(local_14);
-    }
-    local_8 = local_8 & 0xffffff00;
-    FUN_0041b29a();
-    local_8 = 0xffffffff;
-    FUN_0041b2ac();
-  }
-  *unaff_FS_OFFSET = local_10;
-  return;
-}
 */
 void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
 {
@@ -753,16 +620,6 @@ CALL 0x004230d9
 ADD ESP,0x4
 POP ESI
 RET 0x4
-
-Decompiled:
-void VBuffer::SetCurrentVideoMode(int mode) {
-    this->field1_0x4++;
-    int current_mode = GetCurrentVideoMode();
-    if (mode != current_mode) {
-        this->videoMode = current_mode;
-        _SetVideoMode(mode);
-    }
-}
 */
 void VBuffer::SetCurrentVideoMode(int mode) {
     this->field1_0x4++;
@@ -841,10 +698,7 @@ POP EDI
 MOV ESP,EBP
 POP EBP
 RET
-
-Decompiled:
-// This is a guess based on the assembly. The actual implementation might be different.
-// The function at 0x0043020a is unknown.
+*/
 
 int _SetVideoMode(int mode) {
     if (mode > 0x1f) {
@@ -868,20 +722,6 @@ int _SetVideoMode(int mode) {
     DAT_00437f66 = DAT_0043826c[mode];
     DAT_00437f6a = 0; // This is a guess, DS is likely 0
     DAT_00437f62 = DAT_004374c6 * DAT_004374d2;
-    return 0;
-}
-
-/*
-Function: InvalidateVideoMode
-Address: 0x4231BC
-
-MOV byte ptr [0x00437f54],0xff
-XOR EAX,EAX
-RET
-
-Decompiled:
-int InvalidateVideoMode() {
-    DAT_00437f54 = -1;
     return 0;
 }
 
@@ -914,17 +754,6 @@ POP ES
 POP EDI
 RET
 
-Decompiled:
-// This is a guess based on the assembly. The actual implementation might be different.
-extern "C" char DAT_00437491;
-
-void GlobalClearScreen() {
-    if (DAT_00437f54 >= 0) {
-        // This is a memset of the video memory.
-        // The assembly is complex, so I will use a simple memset for now.
-        memset((void*)DAT_00437f66, DAT_00437491, DAT_00437f62);
-    }
-}
 */
 extern "C" char DAT_00437491;
 
