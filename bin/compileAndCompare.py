@@ -1,7 +1,5 @@
 import re
-
-from google import genai
-from google.genai import types
+import Levenshtein
 
 from os import system
 from time import sleep
@@ -65,6 +63,27 @@ def read_assembly(function_name, file_path):
 
     #print(assembly)
     return assembly
+def parse_mnemonics(assembly_code):
+    normalization_map = {
+        'je': 'jz',
+        'jne': 'jnz',
+        'jb': 'jc',
+        'jae': 'jnc',
+        'jg': 'jnle',
+        'jge': 'jnl',
+        'jl': 'jnge',
+        'jle': 'jng',
+    }
+    mnemonics = []
+    for line in assembly_code.split('\n'):
+        line = line.strip()
+        if line and not line.endswith(':') and not line.startswith('?'):
+            parts = line.split(None, 1)
+            mnemonic = parts[0]
+            if mnemonic in normalization_map:
+                mnemonic = normalization_map[mnemonic]
+            mnemonics.append(mnemonic)
+    return mnemonics
 
 def side_by_side(str1, str2, tab_size=4):
     """
@@ -144,6 +163,18 @@ def main():
 
     #print(target_code)
     print(side_by_side(produced_code, target_code))
+
+    produced_mnemonics = parse_mnemonics(produced_code)
+    target_mnemonics = parse_mnemonics(target_code)
+
+    distance = Levenshtein.distance(produced_mnemonics, target_mnemonics)
+    max_len = max(len(produced_mnemonics), len(target_mnemonics))
+    if max_len == 0:
+        similarity = 100.0
+    else:
+        similarity = (1 - distance / max_len) * 100
+
+    print(f"\nSimilarity: {similarity:.2f}%")
 
 if __name__ == "__main__":
     main()
