@@ -1,5 +1,5 @@
-#include "string.h"
 #include "Timer.h"
+#include "string.h"
 
 // Forward declarations for external functions and classes
 extern "C" {
@@ -8,6 +8,13 @@ extern "C" {
     void Timer_Reset(void *timer);
     void TimedEvent__SetData(void *event, void *data);
     void TimedEvent__delete(int event);
+    int Timer_Update(void *timer);
+    void *TimedEvent__Create(void *param_1, void *param_2, int param_3);
+    void TimedEvent__CopyConstructor(void *dest, void *src);
+    void TimedEvent_dtor(void *event);
+    void ShowError(const char *msg, ...);
+    int _sprintf(char *buffer, const char *format, ...);
+    void FUN_0041c000(void *soundManager, char *str, int, int, int);
     void Queue__Insert(void *queue, int event);
     void Queue__Push(void *queue, int event);
     void *Queue__Pop(void *queue);
@@ -15,7 +22,6 @@ extern "C" {
     void FreeFromGlobalHeap(void *ptr);
     void FUN_00419fd0(void *param_1);
     void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
-    void Timer_impl_dtor(void *timer);
     void SC__Timer__Timer1_dtor();
     void SC__Timer__Timer2_dtor();
     void SC__Timer__Base_dtor();
@@ -24,24 +30,6 @@ extern "C" {
     extern void *PTR_LBLParse_MustBeDefined_00431000;
     extern void *PTR_LBLParse_MustBeDefined_00431060;
 }
-
-class BaseObject {
-public:
-    void Init();
-};
-
-class TimedEvent {
-public:
-    void Init();
-    void SetData(void* data);
-
-    int field_0;
-    int field_4;
-    int field_8;
-    int field_c;
-    int field_10;
-    Timer timer;
-};
 
 /*
 Function: TimedEvent::Init
@@ -84,30 +72,263 @@ RET
 
 void TimedEvent::Init() {
     try {
-        Timer_Init(&this->timer);
+        this->timer = (Timer*)AllocateMemory_Wrapper(sizeof(Timer));
+        Timer_Init(this->timer);
         for (int i = 0; i < 10; i++) {
             ((int*)this)[i] = 0;
         }
-        Timer_Reset(&this->timer);
+        Timer_Reset(this->timer);
     } catch(...) {
         // Matching SEH
     }
 }
 
-class SCTimer : public BaseObject {
-    friend void Timer_impl_dtor(void* timer);
-public:
-    void Init();
-    virtual ~SCTimer();
-    int Input(void *message);
+/*
+Function: TimedEvent::Update
+Address: 0x4019A0
 
-private:
-    char unknown_data[0x84];
-    int field_0x88[6];
-    Timer timer1;
-    Timer timer2;
-    void* field_0xc8;
-};
+PUSH EBX
+PUSH ESI
+LEA EBX,[ECX + 0x14]
+PUSH EDI
+MOV EDI,dword ptr [ECX + 0xc]
+PUSH EBP
+MOV ESI,ECX
+MOV ECX,EBX
+CALL 0x00418f10
+SUB EDI,EAX
+MOV EAX,dword ptr [ESI + 0x4]
+TEST EAX,EAX
+JZ 0x46
+CMP EAX,0x1
+JZ 0xAE
+CMP EAX,0x2
+JZ 0xFC
+PUSH EAX
+PUSH 0x4350ac
+CALL 0x00419110
+TEST EDI,EDI
+JLE 0x51
+XOR EAX,EAX
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET
+MOV EBP,dword ptr [ESI + 0x10]
+TEST EBP,EBP
+JZ 0x86
+MOV EBX,dword ptr [0x00436988]
+PUSH 0x0
+MOV ECX,EBX
+MOV EAX,dword ptr [EBX + 0x4]
+PUSH EAX
+CALL 0x00402420
+LEA ECX,[EAX + 0x8]
+MOV EDI,EAX
+PUSH EBP
+CALL 0x00402310
+MOV EAX,dword ptr [EBX + 0x4]
+TEST EAX,EAX
+JZ 0x81
+MOV dword ptr [EAX],EDI
+JMP 0x83
+MOV dword ptr [EBX],EDI
+MOV dword ptr [EBX + 0x4],EDI
+MOV EDI,dword ptr [ESI + 0x10]
+TEST EDI,EDI
+JZ 0xA4
+MOV ECX,EDI
+CALL 0x004199a0
+PUSH EDI
+CALL 0x00424940
+MOV dword ptr [ESI + 0x10],0x0
+ADD ESP,0x4
+MOV EAX,0x1
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET
+TEST EDI,EDI
+JLE 0xB9
+XOR EAX,EAX
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET
+MOV EBP,dword ptr [ESI + 0x10]
+TEST EBP,EBP
+JZ 0xEE
+MOV EDI,dword ptr [0x00436988]
+PUSH 0x0
+MOV ECX,EDI
+MOV EAX,dword ptr [EDI + 0x4]
+PUSH EAX
+CALL 0x00402420
+LEA ECX,[EAX + 0x8]
+MOV ESI,EAX
+PUSH EBP
+CALL 0x00402310
+MOV EAX,dword ptr [EDI + 0x4]
+TEST EAX,EAX
+JZ 0xE9
+MOV dword ptr [EAX],ESI
+JMP 0xEB
+MOV dword ptr [EDI],ESI
+MOV dword ptr [EDI + 0x4],ESI
+MOV ECX,EBX
+CALL 0x00418ef0
+XOR EAX,EAX
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET
+MOV ECX,0x3e8
+MOV EAX,EDI
+MOV EBX,0x3c
+MOV EBP,0xea60
+CDQ
+IDIV ECX
+CDQ
+IDIV EBX
+PUSH EDX
+MOV EAX,EDI
+CDQ
+IDIV EBP
+PUSH EAX
+PUSH 0x4350d0
+MOV EAX,[0x00436960]
+PUSH EAX
+CALL 0x00424950
+ADD ESP,0x10
+MOV EAX,[0x00436960]
+MOV ECX,dword ptr [0x0043698c]
+PUSH 0x8
+PUSH 0x2710
+PUSH 0x1c2
+PUSH 0x208
+PUSH EAX
+CALL 0x0041c000
+TEST EDI,EDI
+JLE 0x15A
+XOR EAX,EAX
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET
+MOV EBP,dword ptr [ESI + 0x10]
+TEST EBP,EBP
+JZ 0x18F
+MOV EBX,dword ptr [0x00436988]
+PUSH 0x0
+MOV ECX,EBX
+MOV EAX,dword ptr [EBX + 0x4]
+PUSH EAX
+CALL 0x00402420
+LEA ECX,[EAX + 0x8]
+MOV EDI,EAX
+PUSH EBP
+CALL 0x00402310
+MOV EAX,dword ptr [EBX + 0x4]
+TEST EAX,EAX
+JZ 0x18A
+MOV dword ptr [EAX],EDI
+JMP 0x18C
+MOV dword ptr [EBX],EDI
+MOV dword ptr [EBX + 0x4],EDI
+MOV EDI,dword ptr [ESI + 0x10]
+TEST EDI,EDI
+JZ 0x1AD
+MOV ECX,EDI
+CALL 0x004199a0
+PUSH EDI
+CALL 0x00424940
+MOV dword ptr [ESI + 0x10],0x0
+ADD ESP,0x4
+MOV EAX,0x1
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET
+*/
+
+extern void *g_GameStruct2[];
+extern char DAT_00436960[];
+extern void *g_SoundManager;
+
+int TimedEvent::Update() {
+    int time_remaining = this->field_c - Timer_Update(this->timer);
+
+    switch (this->field_4) {
+        case 0:
+            if (time_remaining > 0) {
+                return 0;
+            }
+            if (this->field_10) {
+                void* new_event = TimedEvent__Create(g_GameStruct2, g_GameStruct2[1], 0);
+                TimedEvent__CopyConstructor((void*)((char*)new_event + 8), (void*)this->field_10);
+                if (g_GameStruct2[1] == 0) {
+                    *g_GameStruct2 = new_event;
+                } else {
+                    *(void**)g_GameStruct2[1] = new_event;
+                }
+                g_GameStruct2[1] = new_event;
+            }
+            if (this->field_10) {
+                TimedEvent_dtor((void*)this->field_10);
+                FreeFromGlobalHeap((void*)this->field_10);
+                this->field_10 = 0;
+            }
+            return 1;
+        case 1:
+            if (time_remaining > 0) {
+                return 0;
+            }
+            if (this->field_10) {
+                void* new_event = TimedEvent__Create(g_GameStruct2, g_GameStruct2[1], 0);
+                TimedEvent__CopyConstructor((void*)((char*)new_event + 8), (void*)this->field_10);
+                if (g_GameStruct2[1] == 0) {
+                    *g_GameStruct2 = new_event;
+                } else {
+                    *(void**)g_GameStruct2[1] = new_event;
+                }
+                g_GameStruct2[1] = new_event;
+            }
+            Timer_Reset(this->timer);
+            return 0;
+        case 2:
+            _sprintf(DAT_00436960, "%3.3d:%2.2d", time_remaining / 60000, (time_remaining / 1000) % 60);
+            FUN_0041c000(g_SoundManager, DAT_00436960, 0x208, 0x1c2, 10000);
+            if (time_remaining > 0) {
+                return 0;
+            }
+            if (this->field_10) {
+                void* new_event = TimedEvent__Create(g_GameStruct2, g_GameStruct2[1], 0);
+                TimedEvent__CopyConstructor((void*)((char*)new_event + 8), (void*)this->field_10);
+                if (g_GameStruct2[1] == 0) {
+                    *g_GameStruct2 = new_event;
+                } else {
+                    *(void**)g_GameStruct2[1] = new_event;
+                }
+                g_GameStruct2[1] = new_event;
+            }
+            if (this->field_10) {
+                TimedEvent_dtor((void*)this->field_10);
+                FreeFromGlobalHeap((void*)this->field_10);
+                this->field_10 = 0;
+            }
+            return 1;
+        default:
+            ShowError("illegal type %d in TimedEvent::Update\n", this->field_4);
+            return 0; // Should not be reached
+    }
+}
+
 
 /*
 Function: SC::Timer::Init
@@ -413,30 +634,11 @@ ADD ESP,0x4
 JMP 0x315
 */
 
-struct Message {
-    char unknown[0x88];
-    int field_0x88;
-    int field_0x8c;
-    char unknown2[0xc];
-    int field_0x98;
-    void* field_0x9c;
-    char unknown3[0x1c];
-    int field_0xb8;
-    int field_0xbc;
-};
-
 void TimedEvent::SetData(void* data) {
     // This is a guess based on other parts of the code.
     // The original implementation is likely different.
     // this->field_4 = data;
 }
-
-struct Queue {
-    void* head;
-    void* tail;
-    void* current;
-    int mode;
-};
 
 int SCTimer::Input(void *message) {
     try {
