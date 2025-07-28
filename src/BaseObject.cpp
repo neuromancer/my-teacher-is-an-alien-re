@@ -219,16 +219,16 @@ private:
     int field_3c;
     char field_40[64];
     int field_80;
-    int field_84;
+    int timer;
     int field_88;
     int field_8c;
     int field_90;
     int field_94;
     int field_98;
-    int field_9c;
-    int field_a0;
-    int field_a4;
-    int field_a8;
+    int object_type;
+    int queue1;
+    int queue2;
+    int buffer;
     int field_ac;
     int field_b0;
     int field_b4;
@@ -629,18 +629,18 @@ JMP 0x38C
 void BaseObject::BaseObject_CreateFromQueue() {
     this->field_4 = 0;
 
-    if (this->field_9c == 2) {
-        if (this->field_a8 != 0) {
-            if (FUN_0041ebb0((void*)this->field_a8) == 0) {
+    if (this->object_type == 2) {
+        if (this->buffer != 0) {
+            if (FUN_0041ebb0((void*)this->buffer) == 0) {
                 FUN_00419390();
-                FUN_0041eb70((void*)this->field_a8, 0, 0x100);
+                FUN_0041eb70((void*)this->buffer, 0, 0x100);
             }
-            this->field_a8 = 0;
+            this->buffer = 0;
         }
 
         int local_24 = 0;
 
-        int* queue = (int*)this->field_a0;
+        int* queue = (int*)this->queue1;
         while (*queue != 0) {
             void* node = 0;
             int type = queue[3];
@@ -664,7 +664,7 @@ void BaseObject::BaseObject_CreateFromQueue() {
             }
         }
         FUN_0041c72c();
-        int* queue2 = (int*)this->field_a4;
+        int* queue2 = (int*)this->queue2;
         if (*queue2 != 0) {
             queue2[2] = *queue2;
             while (*queue2 != 0) {
@@ -675,15 +675,15 @@ void BaseObject::BaseObject_CreateFromQueue() {
                 }
             }
         }
-    } else if (this->field_9c == 3) {
-        if (this->field_a8 != 0) {
-            if (FUN_0041ebb0((void*)this->field_a8) == 0) {
+    } else if (this->object_type == 3) {
+        if (this->buffer != 0) {
+            if (FUN_0041ebb0((void*)this->buffer) == 0) {
                 FUN_00419390();
-                FUN_0041eb70((void*)this->field_a8, 0, 0x100);
+                FUN_0041eb70((void*)this->buffer, 0, 0x100);
             }
-            this->field_a8 = 0;
+            this->buffer = 0;
         }
-        int* queue = (int*)this->field_9c;
+        int* queue = (int*)this->object_type;
         while (*queue != 0) {
             void* node = 0;
             int type = queue[3];
@@ -716,7 +716,7 @@ void BaseObject::BaseObject_CreateFromQueue() {
                 }
                 queue[2] = *queue;
             }
-            int* queue2 = (int*)this->field_a0;
+            int* queue2 = (int*)this->queue1;
             if (queue2 != 0 && *queue2 != 0) {
                 queue2[2] = *queue2;
                 if (*queue2 != 0) {
@@ -741,7 +741,7 @@ void BaseObject::BaseObject_CreateFromQueue() {
                 FreeFromGlobalHeap(node);
             }
         }
-        int* queue3 = (int*)this->field_a4;
+        int* queue3 = (int*)this->queue2;
         if (*queue3 != 0) {
             queue3[2] = *queue3;
             while (*queue3 != 0) {
@@ -755,7 +755,7 @@ void BaseObject::BaseObject_CreateFromQueue() {
     }
 
     if ((*(int*)this & 2) != 0) {
-        if (Timer_Update(&this->field_84) > 2000) {
+        if (Timer_Update(&this->timer) > 2000) {
             *(int*)this &= ~2;
         }
     }
