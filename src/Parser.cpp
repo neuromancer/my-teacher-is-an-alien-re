@@ -345,20 +345,54 @@ void* AllocateMemory(int size, int flags) {
     }
     return mem;
 }
-*/
-extern "C" void* FUN_004284a0(int size);
-extern "C" void* FUN_0042c5c0(int size);
 
-void* AllocateMemory(int size, int flags) {
-    if (size <= -32) {
-        return 0;
+/*
+Function: FreeVBuffer
+Address: 0x41FE20
+
+PUSH ESI
+PUSH EDI
+MOV ESI,dword ptr [ECX + 0x8]
+MOV EDI,ECX
+TEST ESI,ESI
+JZ 0x22
+MOV ECX,ESI
+CALL 0x0041aa10
+PUSH ESI
+CALL 0x00424940
+MOV dword ptr [EDI + 0x8],0x0
+ADD ESP,0x4
+MOV dword ptr [EDI + 0x18],0x0
+POP EDI
+POP ESI
+RET
+*/
+
+class VBuffer;
+
+extern "C" void VBuffer_dtor(VBuffer*);
+extern "C" void FreeFromGlobalHeap(void*);
+
+class Sprite {
+public:
+    void FreeVBuffer();
+private:
+    char pad[8];
+    VBuffer* pVBuffer; // at offset 0x8
+    char pad2[12];
+    int field_18; // at offset 0x18
+};
+
+void Sprite::FreeVBuffer()
+{
+    VBuffer* pVBuff;
+    Sprite* self = this;
+
+    pVBuff = self->pVBuffer;
+    if (pVBuff) {
+        VBuffer_dtor(pVBuff);
+        FreeFromGlobalHeap(pVBuff);
+        self->pVBuffer = 0;
     }
-    if (size == 0) {
-        size = 1;
-    }
-    void* mem = FUN_004284a0(size);
-    if (mem == 0 && flags != 0) {
-        mem = FUN_0042c5c0(size);
-    }
-    return mem;
+    self->field_18 = 0;
 }
