@@ -8,7 +8,7 @@ extern "C" void FUN_004234f9(void* p1, void* p2, unsigned int p3, unsigned int p
 extern "C" int FUN_0041b590(void* p1, void* p2, void* p3, void* p4);
 extern "C" void FUN_004233e8(int p1, int p2, int p3, int p4, int p5, int p6, unsigned int p7, void* p8);
 extern "C" void FUN_004234d5(unsigned int p1);
-extern "C" void FUN_00422a01(int p1);
+extern "C" void Game_SetGraphicsMode(int p1);
 extern "C" void FUN_0042333a(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8);
 extern "C" void FUN_01001b30();
 extern "C" void FUN_0041b29a();
@@ -17,7 +17,7 @@ extern "C" int DAT_00436964[];
 extern "C" void FUN_0041a9a0();
 extern "C" void FUN_00422e1a(void* p);
 extern "C" void FUN_0041a9e0(void* p);
-extern "C" int GlobalClearScreen();
+extern "C" int ClearScreen();
 extern "C" int InvalidateVideoMode();
 extern "C" int _SetVideoMode(int mode);
 extern "C" int GetCurrentVideoMode();
@@ -338,8 +338,8 @@ RET 0x4
 void VBuffer::ClearScreen(unsigned char param_1)
 {
     SetCurrentVideoMode((int)this->field_0x1c);
-    FUN_00422a01(param_1);
-    ::GlobalClearScreen();
+    Game_SetGraphicsMode(param_1);
+    ::ClearScreen();
     InvalidateVideoMode();
 }
 
