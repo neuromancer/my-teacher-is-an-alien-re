@@ -21,6 +21,7 @@ public:
     void Insert(int data);
     void Push(int data);
     void* Pop();
+    void* GetByIndex(int index);
 
     void* head;
     void* tail;

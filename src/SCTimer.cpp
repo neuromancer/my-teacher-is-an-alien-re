@@ -124,6 +124,78 @@ void QueueNode::Insert(int data)
 }
 
 /*
+Function: Queue_GetByIndex
+Address: 0x409F40
+
+PUSH ESI
+XOR EDX,EDX
+PUSH EDI
+MOV EAX,dword ptr [ECX + 0x98]
+TEST EAX,EAX
+JZ 0x49
+MOV ESI,dword ptr [EAX]
+MOV dword ptr [EAX + 0x8],ESI
+MOV EDI,dword ptr [ECX + 0x98]
+CMP dword ptr [EDI],EDX
+JZ 0x49
+MOV EDI,dword ptr [ESP + 0xc]
+CMP EDX,EDI
+JZ 0x50
+MOV ESI,dword ptr [ECX + 0x98]
+MOV EAX,dword ptr [ESI + 0x8]
+CMP dword ptr [ESI + 0x4],EAX
+JZ 0x49
+TEST EAX,EAX
+JZ 0x3D
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ESI + 0x8],EAX
+INC EDX
+MOV EAX,dword ptr [ECX + 0x98]
+CMP dword ptr [EAX],0x0
+JNZ 0x21
+XOR EAX,EAX
+POP EDI
+POP ESI
+RET 0x4
+MOV EAX,dword ptr [ECX + 0x98]
+MOV EAX,dword ptr [EAX + 0x8]
+TEST EAX,EAX
+JZ 0x65
+MOV EAX,dword ptr [EAX + 0x8]
+POP EDI
+POP ESI
+RET 0x4
+XOR EAX,EAX
+POP EDI
+POP ESI
+RET 0x4
+*/
+void* QueueNode::GetByIndex(int index)
+{
+    int i = 0;
+    if (this->head == 0) {
+        return 0;
+    }
+    this->current = this->head;
+    while (this->head != 0) {
+        if (i == index) {
+            if (this->current == 0) {
+                return 0;
+            }
+            return ((ListNode*)this->current)->data;
+        }
+        if (this->tail == this->current) {
+            return 0;
+        }
+        if (this->current) {
+            this->current = ((ListNode*)this->current)->next;
+        }
+        i++;
+    }
+    return 0;
+}
+
+/*
 Function: Queue::Pop
 Address: 0x402680
 
