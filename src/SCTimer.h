@@ -32,11 +32,4 @@ struct Message {
     int field_0xbc;
 };
 
-struct Queue {
-    void* head;
-    void* tail;
-    void* current;
-    int mode;
-};
-
 #endif // SCTIMER_H

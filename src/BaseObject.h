@@ -16,7 +16,14 @@ struct ListNode {
     void* data;
 };
 
-struct QueueNode {
+class QueueNode {
+public:
+    void Insert(int data);
+
+    void* head;
+    void* tail;
+    void* current;
+    int mode;
     int field_0;
     int field_4;
     int field_8;

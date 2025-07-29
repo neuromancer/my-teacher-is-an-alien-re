@@ -22,6 +22,108 @@ extern "C" {
 }
 
 /*
+Function: Queue::Insert
+Address: 0x4024D0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x402585
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+MOV EBX,dword ptr [EBP + 0x8]
+TEST EBX,EBX
+JNZ 0x34
+PUSH 0x435144
+CALL 0x00419110
+PUSH 0xc
+CALL 0x004249c0
+MOV dword ptr [EBP + -0x10],EAX
+ADD ESP,0x4
+MOV EDI,EAX
+MOV ECX,0x0
+XOR EAX,EAX
+TEST EDI,EDI
+MOV dword ptr [EBP + -0x4],EAX
+JZ 0x5B
+MOV ECX,EDI
+MOV dword ptr [EDI + 0x8],EBX
+MOV dword ptr [EDI],EAX
+MOV dword ptr [EDI + 0x4],EAX
+MOV dword ptr [EBP + -0x4],0xffffffff
+CMP dword ptr [ESI + 0x8],0x0
+JNZ 0x6D
+MOV EAX,dword ptr [ESI]
+MOV dword ptr [ESI + 0x8],EAX
+CMP dword ptr [ESI],0x0
+JNZ 0x8C
+MOV dword ptr [ESI],ECX
+MOV dword ptr [ESI + 0x4],ECX
+MOV dword ptr [ESI + 0x8],ECX
+MOV EAX,dword ptr [EBP + -0xc]
+POP EDI
+MOV FS:[0x0],EAX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET 0x4
+MOV EAX,dword ptr [ESI + 0x8]
+MOV dword ptr [ECX + 0x4],EAX
+MOV EAX,dword ptr [ESI + 0x8]
+MOV EDX,dword ptr [EAX]
+MOV dword ptr [ECX],EDX
+MOV EAX,dword ptr [ESI + 0x8]
+MOV EAX,dword ptr [EAX]
+TEST EAX,EAX
+JZ 0xAC
+MOV dword ptr [EAX + 0x4],ECX
+MOV EAX,dword ptr [ESI + 0x8]
+MOV dword ptr [EAX],ECX
+JMP 0x7A
+MOV EAX,dword ptr [ESI + 0x8]
+MOV dword ptr [ESI],ECX
+MOV dword ptr [EAX],ECX
+JMP 0x7A
+*/
+void QueueNode::Insert(int data)
+{
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+    ListNode* node = (ListNode*)AllocateMemory_Wrapper(0xc);
+    if (node) {
+        node->data = (void*)data;
+        node->next = 0;
+        node->prev = 0;
+    }
+    if (this->current == 0) {
+        this->current = this->head;
+    }
+    if (this->head == 0) {
+        this->head = node;
+        this->tail = node;
+        this->current = node;
+    } else {
+        ListNode* current = (ListNode*)this->current;
+        node->prev = current;
+        node->next = current->next;
+        if (current->next == 0) {
+            this->tail = node;
+        } else {
+            current->next->prev = node;
+        }
+        current->next = node;
+    }
+}
+
+/*
 Function: Update
 Address: 0x401E30
 
@@ -144,12 +246,12 @@ RET 0x8
 */
 
 void SCTimer::Update(int param_1, int param_2) {
-    if (this->timer1.Update() > 10000 && ((Queue*)this->field_0xc8)->head == 0) {
+    if (this->timer1.Update() > 10000 && ((QueueNode*)this->field_0xc8)->head == 0) {
         SC_Message_Send(3, this->field_0x88[0], this->field_0x88[0], this->field_0x88[1], 0x14, 0, 0, 0, 0, 0);
     }
     this->timer1.Reset();
 
-    Queue* queue = (Queue*)this->field_0xc8;
+    QueueNode* queue = (QueueNode*)this->field_0xc8;
     queue->current = queue->head;
 
     while(queue->head) {
@@ -495,7 +597,7 @@ int SCTimer::Input(void *message) {
             case 0xe:
                 break;
             case 0xf: {
-                Queue* queue = (Queue*)field_0xc8;
+                QueueNode* queue = (QueueNode*)field_0xc8;
                 if (queue->head) {
                     do {
                         void* event = Queue__Pop(queue);
@@ -520,20 +622,20 @@ int SCTimer::Input(void *message) {
                     event->field_34 = msg->field_0xbc;
                     msg->field_0xbc = 0;
                     event->SetData(msg->field_0x9c);
-                    Queue* queue = (Queue*)field_0xc8;
+                    QueueNode* queue = (QueueNode*)field_0xc8;
                     if (!event) {
                         ShowError("queue fault 0101");
                     }
 
                     if (queue->mode == 1 || queue->mode == 2) {
                         if (queue->head == 0) {
-                            Queue__Insert(queue, (int)event);
+                            queue->Insert((int)event);
                         } else {
                             queue->current = queue->head;
                             do {
                                 TimedEvent* current_event = (TimedEvent*)((ListNode*)queue->current)->data;
                                 if (current_event->field_c < event->field_c) {
-                                    Queue__Insert(queue, (int)event);
+                                    queue->Insert((int)event);
                                     break;
                                 }
                                 if (queue->tail == queue->current) {
@@ -544,7 +646,7 @@ int SCTimer::Input(void *message) {
                             } while (queue->current);
                         }
                     } else {
-                        Queue__Insert(queue, (int)event);
+                        queue->Insert((int)event);
                     }
                 }
                 break;
@@ -554,7 +656,7 @@ int SCTimer::Input(void *message) {
                 if (event) {
                     event->Init();
                     event->field_8 = msg->field_0x8c;
-                    Queue* queue = (Queue*)field_0xc8;
+                    QueueNode* queue = (QueueNode*)field_0xc8;
                     if (!event) {
                         ShowError("queue fault 0103");
                     }
@@ -579,7 +681,7 @@ int SCTimer::Input(void *message) {
                 break;
             }
             case 0x1b: {
-                if (((Queue*)field_0xc8)->head == 0) {
+                if (((QueueNode*)field_0xc8)->head == 0) {
                     SC_Message_Send(3, field_0x88[0], field_0x88[0], field_0x88[1], 0x14, 0, 0, 0, 0, 0);
                 }
                 break;
@@ -720,7 +822,7 @@ void Timer_impl_dtor(void* timer) {
     try {
         SCTimer* self = (SCTimer*)timer;
         *(void**)self = &PTR_LBLParse_MustBeDefined_00431060;
-        Queue* queue = (Queue*)self->field_0xc8;
+        QueueNode* queue = (QueueNode*)self->field_0xc8;
         if (queue) {
             while (queue->head) {
                 void* event = Queue__Pop(queue);
