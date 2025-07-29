@@ -7,6 +7,7 @@ class Timer {
 public:
     Timer* Init();
     void Reset();
+    void Update();
     int field_0;
     int field_4;
     int field_8;

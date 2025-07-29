@@ -5,10 +5,11 @@
 // Forward declarations for external functions and classes
 extern "C" {
     void *AllocateMemory_Wrapper(unsigned int size);
-    void Timer_Init(void *timer);
-    void Timer_Reset(void *timer);
     void TimedEvent__SetData(void *event, void *data);
     void TimedEvent__delete(int event);
+    int TimedEvent__Update(int event);
+    void Timer_Reset(void *timer);
+    int Timer_Update(void *timer);
     void Queue__Insert(void *queue, int event);
     void Queue__Push(void *queue, int event);
     void *Queue__Pop(void *queue);
@@ -23,6 +24,163 @@ extern "C" {
     // These are the vtable pointers
     extern void *PTR_LBLParse_MustBeDefined_00431000;
     extern void *PTR_LBLParse_MustBeDefined_00431060;
+}
+
+/*
+Function: Update
+Address: 0x401E30
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+PUSH EBP
+LEA EDI,[ESI + 0xa0]
+MOV ECX,EDI
+CALL 0x00418f10
+CMP EAX,0x2710
+JBE 0x4A
+MOV EAX,dword ptr [ESI + 0xc8]
+CMP dword ptr [EAX],0x0
+JNZ 0x4A
+PUSH 0x0
+MOV EAX,dword ptr [ESI + 0x8c]
+PUSH 0x0
+MOV ECX,dword ptr [ESI + 0x88]
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x14
+PUSH EAX
+PUSH ECX
+PUSH ECX
+PUSH 0x3
+CALL 0x0041a150
+ADD ESP,0x28
+MOV ECX,EDI
+CALL 0x00418ef0
+MOV EAX,dword ptr [ESI + 0xc8]
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [EAX + 0x8],ECX
+MOV EAX,dword ptr [ESI + 0xc8]
+CMP dword ptr [EAX],0x0
+JZ 0x139
+XOR EDI,EDI
+MOV EAX,dword ptr [ESI + 0xc8]
+MOV ECX,0x0
+MOV EAX,dword ptr [EAX + 0x8]
+TEST EAX,EAX
+JZ 0x82
+MOV ECX,dword ptr [EAX + 0x8]
+CALL 0x004019a0
+TEST EAX,EAX
+JZ 0x113
+MOV EBX,dword ptr [ESI + 0xc8]
+MOV EAX,dword ptr [EBX + 0x8]
+TEST EAX,EAX
+JNZ 0xA0
+XOR EBP,EBP
+JMP 0xFF
+CMP dword ptr [EBX],EAX
+JNZ 0xA9
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [EBX],EAX
+MOV EAX,dword ptr [EBX + 0x8]
+CMP dword ptr [EBX + 0x4],EAX
+JNZ 0xB6
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [EBX + 0x4],EAX
+MOV EAX,dword ptr [EBX + 0x8]
+MOV ECX,dword ptr [EAX]
+TEST ECX,ECX
+JZ 0xC5
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x4],EAX
+MOV EAX,dword ptr [EBX + 0x8]
+MOV ECX,dword ptr [EAX + 0x4]
+TEST ECX,ECX
+JZ 0xD3
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [ECX],EAX
+MOV EAX,dword ptr [EBX + 0x8]
+MOV EBP,0x0
+TEST EAX,EAX
+JZ 0xE2
+MOV EBP,dword ptr [EAX + 0x8]
+TEST EAX,EAX
+JZ 0xFA
+PUSH EAX
+MOV dword ptr [EAX + 0x8],EDI
+MOV dword ptr [EAX],EDI
+MOV dword ptr [EAX + 0x4],EDI
+CALL 0x00424940
+ADD ESP,0x4
+MOV dword ptr [EBX + 0x8],EDI
+MOV EAX,dword ptr [EBX]
+MOV dword ptr [EBX + 0x8],EAX
+TEST EBP,EBP
+JZ 0x113
+MOV ECX,EBP
+CALL 0x00401910
+PUSH EBP
+CALL 0x00424940
+ADD ESP,0x4
+MOV ECX,dword ptr [ESI + 0xc8]
+MOV EAX,dword ptr [ECX + 0x8]
+CMP dword ptr [ECX + 0x4],EAX
+JZ 0x139
+TEST EAX,EAX
+JZ 0x12B
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x8],EAX
+MOV EAX,dword ptr [ESI + 0xc8]
+CMP dword ptr [EAX],EDI
+JNZ 0x6D
+MOV EAX,dword ptr [ESP + 0x18]
+CMP dword ptr [ESI + 0x88],EAX
+JNZ 0x152
+PUSH 0x4350e0
+CALL 0x00419110
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET 0x8
+*/
+
+void SCTimer::Update(int param_1, int param_2) {
+    if (Timer_Update(&this->timer1) > 10000 && *(int*)this->field_0xc8 == 0) {
+        SC_Message_Send(3, this->field_0x88[0], this->field_0x88[0], this->field_0x88[1], 0x14, 0, 0, 0, 0, 0);
+    }
+    Timer_Reset(&this->timer1);
+
+    Queue* queue = (Queue*)this->field_0xc8;
+    queue->current = queue->head;
+
+    while(queue->head) {
+        int event_ptr = 0;
+        if (queue->current) {
+            event_ptr = *(int*)((char*)queue->current + 8);
+        }
+
+        if (TimedEvent__Update(event_ptr)) {
+            void* popped = Queue__Pop(queue);
+            TimedEvent__delete((int)popped);
+            FreeFromGlobalHeap(popped);
+        }
+
+        if (queue->tail == queue->current) {
+            break;
+        }
+
+        if (queue->current) {
+            queue->current = *(void**)((char*)queue->current + 4);
+        }
+    }
+
+    if (this->field_0x88[0] == param_2) {
+        ShowError("SC_Timer::Update");
+    }
 }
 
 /*
@@ -95,11 +253,11 @@ void SCTimer::Init() {
         for (int i = 6; i > 0; i--) {
             field_0x88[i-1] = 0;
         }
-        Timer_Init(&timer1);
-        Timer_Init(&timer2);
+        timer1.Init();
+        timer2.Init();
         *(void**)this = &PTR_LBLParse_MustBeDefined_00431060;
         field_0x88[0] = 0xd;
-        Timer_Reset(&timer1);
+        timer1.Reset();
 
         void** memory = (void**)AllocateMemory_Wrapper(0x10);
         if (memory) {
@@ -336,7 +494,7 @@ int SCTimer::Input(void *message) {
             return 0;
         }
 
-        Timer_Reset(&timer1);
+        timer1.Reset();
 
         switch (msg->field_0x98) {
             case 0xe:

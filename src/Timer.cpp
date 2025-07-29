@@ -3,7 +3,6 @@
 
 // Forward declarations for external functions and classes
 extern "C" {
-    int Timer_Update(void *timer);
     void *TimedEvent__Create(void *param_1, void *param_2, int param_3);
     void TimedEvent__CopyConstructor(void *dest, void *src);
     void TimedEvent_dtor(void *event);
@@ -42,6 +41,26 @@ Timer* Timer::Init() {
     DAT_00436684++;
     this->Reset();
     return this;
+}
+
+/*
+Function: Timer::Update
+Address: 0x418F10
+
+PUSH ESI
+MOV ESI,ECX
+CALL dword ptr [0x004404ac]
+MOV dword ptr [ESI + 0xc],EAX
+SUB EAX,dword ptr [ESI + 0x8]
+SUB EAX,dword ptr [ESI]
+MOV dword ptr [ESI + 0x10],EAX
+POP ESI
+RET
+*/
+void Timer::Update()
+{
+  this->field_c = timeGetTime();
+  this->field_10 = (this->field_c - this->field_8) - this->field_0;
 }
 
 /*
@@ -274,7 +293,8 @@ extern char DAT_00436960[];
 extern void *g_SoundManager;
 
 int TimedEvent::Update() {
-    int time_remaining = this->field_c - Timer_Update(&this->timer);
+    this->timer.Update();
+    int time_remaining = this->field_c - this->timer.field_10;
 
     switch (this->field_4) {
         case 0:

@@ -9,10 +9,11 @@ class SCTimer : public BaseObject {
 public:
     void Init();
     virtual ~SCTimer();
+    void Update(int, int);
     int Input(void *message);
 
 private:
-    char unknown_data[0x84];
+    char unknown_data[0x88];
     int field_0x88[6];
     Timer timer1;
     Timer timer2;
