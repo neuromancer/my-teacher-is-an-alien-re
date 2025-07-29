@@ -3,7 +3,6 @@
 
 // Forward declarations for external functions and classes
 extern "C" {
-    void Timer_Init(void *timer);
     int Timer_Update(void *timer);
     void *TimedEvent__Create(void *param_1, void *param_2, int param_3);
     void TimedEvent__CopyConstructor(void *dest, void *src);
@@ -12,6 +11,37 @@ extern "C" {
     int _sprintf(char *buffer, const char *format, ...);
     void FUN_0041c000(void *soundManager, char *str, int, int, int);
     void FreeFromGlobalHeap(void *ptr);
+}
+
+int DAT_00436684 = 0;
+
+/*
+Function: Timer::Init
+Address: 0x418EB0
+
+PUSH ESI
+XOR EAX,EAX
+MOV dword ptr [ECX],EAX
+MOV ESI,ECX
+MOV dword ptr [ECX + 0x4],EAX
+MOV dword ptr [ESI + 0x8],EAX
+MOV dword ptr [ESI + 0xc],EAX
+MOV dword ptr [ESI + 0x10],EAX
+INC dword ptr [0x00436684]
+CALL 0x00418ef0
+MOV EAX,ESI
+POP ESI
+RET
+*/
+Timer* Timer::Init() {
+    this->field_0 = 0;
+    this->field_4 = 0;
+    this->field_8 = 0;
+    this->field_c = 0;
+    this->field_10 = 0;
+    DAT_00436684++;
+    this->Reset();
+    return this;
 }
 
 /*
@@ -55,7 +85,7 @@ RET
 
 void TimedEvent::Init() {
     try {
-        Timer_Init(&this->timer);
+        this->timer.Init();
         for (int i = 0; i < 10; i++) {
             ((int*)this)[i] = 0;
         }
