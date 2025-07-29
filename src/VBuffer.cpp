@@ -3,7 +3,7 @@
 #include <string.h>
 #include "string.h"
 
-extern "C" unsigned int FUN_00423703(int* p1, unsigned int p2, unsigned int p3);
+extern "C" unsigned int AllocateVBuffer(int* p1, unsigned int p2, unsigned int p3);
 extern "C" void FUN_004234f9(void* p1, void* p2, unsigned int p3, unsigned int p4, unsigned int p5, unsigned int p6);
 extern "C" int FUN_0041b590(void* p1, void* p2, void* p3, void* p4);
 extern "C" void FUN_004233e8(int p1, int p2, int p3, int p4, int p5, int p6, unsigned int p7, void* p8);
@@ -22,11 +22,9 @@ extern "C" int InvalidateVideoMode();
 extern "C" int _SetVideoMode(int mode);
 extern "C" int GetCurrentVideoMode();
 extern "C" void* FUN_00422f00(int width, int height);
-extern "C" void FUN_0041ac50(void* pThis);
-extern "C" void FUN_00422e8f();
-extern "C" void FUN_0041ac80(void* pThis);
-extern "C" void* FUN_00422e71(void* p);
-extern "C" void FUN_0041a9d0(void* p);
+extern "C" void UpdatePalette();
+extern "C" void* GetVBufferPointer(void* p);
+extern "C" void RegisterVBuffer(int buffer_id);
 extern "C" void FUN_0041a9a0();
 
 // Global variables
@@ -194,10 +192,10 @@ VBuffer::VBuffer(int width, int height)
     }
 
     SetCurrentVideoMode((int)this->field_0x1c);
-    FUN_00422e8f();
+    UpdatePalette();
     InvalidateVideoMode();
-    this->data = FUN_00422e71(this->field_0x1c);
-    FUN_0041a9d0(this->field_0x1c);
+    this->data = GetVBufferPointer(this->field_0x1c);
+    RegisterVBuffer((int)this->field_0x1c);
 }
 
 VBuffer* VBuffer::VirtualBufferCreateAndClean(int width, int height)
@@ -239,11 +237,11 @@ VBuffer* VBuffer::VirtualBufferCreateAndClean(int width, int height)
         ShowError("s_VBuffer__VBuffer___unable_to_lo_00436a98");
     }
 
-    FUN_0041ac50(this);
-    FUN_00422e8f();
-    FUN_0041ac80(this);
-    this->data = FUN_00422e71(this->field_0x1c);
-    FUN_0041a9d0(this->field_0x1c);
+    this->SetCurrentVideoMode((int)this->field_0x1c);
+    UpdatePalette();
+    this->InvalidateVideoMode();
+    this->data = GetVBufferPointer(this->field_0x1c);
+    RegisterVBuffer((int)this->field_0x1c);
 
     this->Initialize();
     this->Clear();
@@ -613,12 +611,12 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
 
         if ((0 < (int)uVar1) && (0 < (int)uVar2))
         {
-            local_14 = FUN_00423703(DAT_00436964, uVar1, uVar2);
+            local_14 = AllocateVBuffer(DAT_00436964, uVar1, uVar2);
             if ((int)local_14 < 0)
             {
                 ShowError("VBuffer::ScaleTCCopy");
             }
-            puVar3 = FUN_00422e71((void*)local_14);
+            puVar3 = GetVBufferPointer((void*)local_14);
             FUN_004234f9(*(void**)(param_3 + 0x10), puVar3, *(unsigned int*)(param_3 + 0x14), *(unsigned int*)(param_3 + 0x18), uVar1, uVar2);
 
             local_34 = this->field_0x20;
