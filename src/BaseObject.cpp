@@ -654,7 +654,7 @@ void BaseObject::BaseObject_CreateFromQueue() {
     }
 
     if ((this->field_4 & 2) != 0) {
-        if (this->timer.Update() > 2000) {
+        if (this->timer->Update() > 2000) {
             this->field_4 &= ~2;
         }
     }

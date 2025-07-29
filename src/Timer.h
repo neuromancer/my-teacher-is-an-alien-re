@@ -2,8 +2,9 @@
 #define TIMER_H
 
 #include <windows.h>
+#include "BaseObject.h"
 
-class Timer {
+class Timer  : public BaseObject {
 public:
     Timer* Init();
     void Reset();

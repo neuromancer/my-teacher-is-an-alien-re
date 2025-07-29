@@ -1,7 +1,7 @@
 #ifndef BASEOBJECT_H
 #define BASEOBJECT_H
 
-#include "Timer.h"
+class Timer;
 
 struct SoundManager {
     char pad[0x9c];
@@ -56,7 +56,7 @@ private:
     int field_3c;
     char field_40[64];
     int field_80;
-    Timer timer;
+    Timer* timer;
     int field_88;
     int field_8c;
     int field_90;
