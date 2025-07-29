@@ -20,6 +20,7 @@ class QueueNode {
 public:
     void Insert(int data);
     void Push(int data);
+    void* Pop();
 
     void* head;
     void* tail;

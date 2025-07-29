@@ -124,6 +124,87 @@ void QueueNode::Insert(int data)
 }
 
 /*
+Function: Queue::Pop
+Address: 0x402680
+
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+MOV ECX,dword ptr [ECX + 0x8]
+TEST ECX,ECX
+JNZ 0x10
+XOR EAX,EAX
+POP EDI
+POP ESI
+RET
+CMP dword ptr [ESI],ECX
+JNZ 0x19
+MOV EAX,dword ptr [ECX + 0x4]
+MOV dword ptr [ESI],EAX
+CMP dword ptr [ESI + 0x4],ECX
+JNZ 0x23
+MOV EAX,dword ptr [ECX]
+MOV dword ptr [ESI + 0x4],EAX
+MOV EAX,dword ptr [ECX]
+TEST EAX,EAX
+JZ 0x2F
+MOV ECX,dword ptr [ECX + 0x4]
+MOV dword ptr [EAX + 0x4],ECX
+MOV EAX,dword ptr [ESI + 0x8]
+MOV ECX,dword ptr [EAX + 0x4]
+TEST ECX,ECX
+JZ 0x3D
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [ECX],EAX
+MOV EAX,dword ptr [ESI + 0x8]
+MOV EDI,0x0
+TEST EAX,EAX
+JZ 0x4C
+MOV EDI,dword ptr [EAX + 0x8]
+XOR ECX,ECX
+TEST EAX,EAX
+JZ 0x6A
+PUSH EAX
+MOV dword ptr [EAX + 0x8],ECX
+MOV dword ptr [EAX],ECX
+MOV dword ptr [EAX + 0x4],ECX
+CALL 0x00424940
+MOV dword ptr [ESI + 0x8],0x0
+ADD ESP,0x4
+MOV EAX,dword ptr [ESI]
+MOV dword ptr [ESI + 0x8],EAX
+MOV EAX,EDI
+POP EDI
+POP ESI
+RET
+*/
+void* QueueNode::Pop()
+{
+    ListNode* node = (ListNode*)this->current;
+    if (node == 0) {
+        return 0;
+    }
+
+    if (this->head == node) {
+        this->head = node->next;
+    }
+    if (this->tail == node) {
+        this->tail = node->prev;
+    }
+    if (node->prev) {
+        node->prev->next = node->next;
+    }
+    if (node->next) {
+        node->next->prev = node->prev;
+    }
+
+    void* data = node->data;
+    FreeFromGlobalHeap(node);
+    this->current = this->head;
+    return data;
+}
+
+/*
 Function: Queue::Push
 Address: 0x4025A0
 
@@ -359,7 +440,7 @@ void SCTimer::Update(int param_1, int param_2) {
         }
 
         if (event->Update()) {
-            void* popped = Queue__Pop(queue);
+            void* popped = queue->Pop();
             ((TimedEvent*)popped)->~TimedEvent();
             FreeFromGlobalHeap(popped);
         }
@@ -698,7 +779,7 @@ int SCTimer::Input(void *message) {
                 QueueNode* queue = (QueueNode*)field_0xc8;
                 if (queue->head) {
                     do {
-                        void* event = Queue__Pop(queue);
+                        void* event = queue->Pop();
                         if (event) {
                             ((TimedEvent*)event)->~TimedEvent();
                             FreeFromGlobalHeap(event);
@@ -763,7 +844,7 @@ int SCTimer::Input(void *message) {
                     while(queue->current) {
                         TimedEvent* current_event = (TimedEvent*)((ListNode*)queue->current)->data;
                         if (current_event->field_c == event->field_c) {
-                            void* popped = Queue__Pop(queue);
+                            void* popped = queue->Pop();
                             if (popped) {
                                 ((TimedEvent*)popped)->~TimedEvent();
                                 FreeFromGlobalHeap(popped);
@@ -923,7 +1004,7 @@ void Timer_impl_dtor(void* timer) {
         QueueNode* queue = (QueueNode*)self->field_0xc8;
         if (queue) {
             while (queue->head) {
-                void* event = Queue__Pop(queue);
+                void* event = queue->Pop();
                 if (event) {
                     ((TimedEvent*)event)->~TimedEvent();
                     FreeFromGlobalHeap(event);
