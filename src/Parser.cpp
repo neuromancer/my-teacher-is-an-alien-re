@@ -57,14 +57,13 @@ extern "C" char* FUN_00425fd0(char* dest, const char* src, size_t n);
 extern "C" void* AllocateMemory(int size, int flags);
 extern "C" void* FUN_004249c0(int size);
 
-
 class Parser {
 public:
     void CloseFile();
     void Copy(Parser* dst);
     void Open(const char* filename);
     void SaveFilePosition();
-    void RestoreFilePosition();
+    int RestoreFilePosition();
     void FindKey(const char* key);
     int GetKey(const char* line);
 
@@ -184,10 +183,11 @@ void Parser::SaveFilePosition() {
     }
 }
 
-void Parser::RestoreFilePosition() {
+int Parser::RestoreFilePosition() {
     if (fsetpos(this->pFile, &this->FILE_pos) != 0) {
         FUN_00419110(s_Parser__RestoreFilePosition_____u_00436578, this->filename);
     }
+    return 0;
 }
 
 void Parser::FindKey(const char* key) {

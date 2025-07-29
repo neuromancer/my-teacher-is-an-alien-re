@@ -517,7 +517,7 @@ int SCTimer::Input(void *message) {
                     event->Init();
                     event->field_c = msg->field_0xb8;
                     event->field_8 = msg->field_0x8c;
-                    event->field_10 = msg->field_0xbc;
+                    event->field_34 = msg->field_0xbc;
                     msg->field_0xbc = 0;
                     event->SetData(msg->field_0x9c);
                     Queue* queue = (Queue*)field_0xc8;

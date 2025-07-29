@@ -15,17 +15,12 @@ public:
     int field_10;
 };
 
-void Timer::Reset() {
-    this->field_8 = timeGetTime();
-    this->field_0 = 0;
-}
-
 class TimedEvent {
 public:
+    TimedEvent(const TimedEvent& other);
     void Init();
     int Update();
     void SetData(void* data);
-    void Copy(TimedEvent* src);
     ~TimedEvent();
 
     TimedEvent* Create(void* callback, void* data);
@@ -35,7 +30,29 @@ public:
     int field_8;
     int field_c;
     int field_10;
-    Timer timer;
+    Timer timer; // at offset 0x14
+    char data_10[0x20];
+    int field_30;
+    int field_34;
+    int field_38;
+    int field_3c;
+    char data_40[0x40];
+    int field_80;
+    int field_84;
+    int field_88;
+    int field_8c;
+    int field_90;
+    int field_94;
+    int field_98;
+    int field_9c;
+    int field_a0;
+    int field_a4;
+    int field_a8;
+    int field_ac;
+    int field_b0;
+    int field_b4;
+    int field_b8;
+    int field_bc;
 };
 
 #endif // TIMER_H
