@@ -1,5 +1,21 @@
 #include "Smacker.h"
 #include "Animation.h"
+#include "VBuffer.h"
+
+// Forward declaration
+class Sprite;
+
+#include <string.h>
+
+extern "C" {
+    void _sscanf(const char* buffer, const char* format, ...);
+    void SetRange(Sprite* sprite, int, int, int);
+    void Array_Cleanup(int, int, int, void*);
+    void FreeFromGlobalHeap(int*);
+    int* AllocateMemory_Wrapper(int);
+    void FUN_00424b00(int*, int, int, void*, void*);
+    void FUN_0041fbd3();
+}
 
 typedef char bool;
 #define false 0
@@ -15,10 +31,9 @@ extern "C" {
     void FUN_0041be20(void*, int, int, int, int, int, int, int);
 }
 
-class Sprite {
+class Sprite : public VBuffer {
 public:
     // placeholder fields based on offsets
-    char pad_0x0[0xc];
     SmackStruct* smack_struct; // 0xc
     char pad_0x10[0x24 - 0x10];
     void* smacker_buffer; // 0x24
@@ -27,7 +42,9 @@ public:
     int flags; // 0x8c
     int field138_0x90; // 0x90
     int field139_0x94; // 0x94
-    char pad_0x98[0xac-0x98];
+    char pad_0x98[0xa4-0x98];
+    int field_0xa4; // 0xa4
+    int field_0xa8; // 0xa8
     int field_0xac; // 0xac
     char pad_0xb0[0xb4 - 0xb0];
     const char* filename; // 0xb4
@@ -40,10 +57,279 @@ public:
     void CloseSmackerFile();
     unsigned char Do(int x, int y, int param_3, int param_4);
     void SetState(int state);
+    void SetRanges(int);
+    Sprite(char* filename);
+    ~Sprite();
 };
 
+/*
+Function: Sprite
+Address: 0x41CD50
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x41ce19
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH ESI
+PUSH EDI
+MOV dword ptr [EBP + -0x10],ECX
+MOV ESI,ECX
+CALL 0x004189f0
+LEA EDX,[ESI + 0xa4]
+LEA EDI,[ESI + 0x88]
+XOR EAX,EAX
+MOV ECX,0x14
+MOV dword ptr [EBP + -0x4],0x0
+MOV byte ptr [EBP + -0x4],0x1
+MOV dword ptr [EDX],0x0
+MOV dword ptr [EDX + 0x4],0x0
+MOV dword ptr [ESI],0x431530
+STOSD.REP ES:EDI
+MOV ECX,dword ptr [EBP + 0x8]
+OR dword ptr [ESI + 0x8c],0x20
+CMP ECX,EAX
+JZ 0x7D
+LEA EAX,[ESI + 0xb4]
+PUSH EAX
+PUSH 0x435594
+PUSH ECX
+CALL 0x00424c40
+ADD ESP,0xc
+PUSH 0x1
+MOV ECX,ESI
+CALL 0x0041d740
+PUSH 0x1388
+MOV ECX,ESI
+MOV dword ptr [ESI + 0x94],0x0
+PUSH 0x1
+PUSH 0x0
+CALL 0x0041d6d0
+MOV EAX,ESI
+POP EDI
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+POP ESI
+MOV dword ptr FS:[0x0],ECX
+MOV ESP,EBP
+POP EBP
+RET 0x4
+*/
+Sprite::Sprite(char* filename) : VBuffer(0, 0)
+{
+    this->field_0xa4 = 0;
+    this->field_0xa8 = 0;
+    *(void**)this = (void*)0x431530;
+
+    int* p = (int*)&this->field136_0x88;
+    for (int i = 0; i < 0x14; i++) {
+        *p++ = 0;
+    }
+
+    this->flags |= 0x20;
+
+    if (filename != (char *)0x0) {
+        _sscanf(filename, "%s", &this->filename);
+    }
+
+    SetRanges(1);
+    this->field139_0x94 = 0;
+    SetRange(this, 0, 1, 5000);
+}
+
+/*
+Function: SetRanges
+Address: 0x41D740
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x41d831
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+MOV EAX,dword ptr [EBP + 0x8]
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+MOV dword ptr [ECX + 0xac],EAX
+PUSH EDI
+MOV EAX,dword ptr [ECX + 0x88]
+MOV ESI,ECX
+TEST EAX,EAX
+JZ 0x59
+LEA EDI,[EAX + -0x4]
+PUSH 0x405770
+MOV ECX,dword ptr [EDI]
+PUSH ECX
+PUSH 0x8
+PUSH EAX
+CALL 0x004249d0
+PUSH EDI
+CALL 0x00424940
+MOV dword ptr [ESI + 0x88],0x0
+ADD ESP,0x4
+MOV EDI,dword ptr [ESI + 0xac]
+LEA EAX,[EDI*0x8 + 0x0]
+ADD EAX,0x4
+MOV EBX,0x0
+PUSH EAX
+CALL 0x004249c0
+ADD ESP,0x4
+MOV dword ptr [EBP + -0x10],EAX
+MOV dword ptr [EBP + -0x4],0x0
+TEST EAX,EAX
+JZ 0x9D
+LEA EBX,[EAX + 0x4]
+PUSH 0x405770
+PUSH 0x41d850
+MOV dword ptr [EAX],EDI
+PUSH EDI
+PUSH 0x8
+PUSH EBX
+CALL 0x00424b00
+XOR ECX,ECX
+XOR EDX,EDX
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV dword ptr [ESI + 0x88],EBX
+CMP dword ptr [ESI + 0xac],ECX
+JLE 0xD8
+MOV EDI,0x1388
+MOV EAX,dword ptr [ESI + 0x88]
+INC EDX
+ADD EAX,ECX
+ADD ECX,0x8
+MOV dword ptr [EAX],0x1
+MOV dword ptr [EAX + 0x4],EDI
+CMP dword ptr [ESI + 0xac],EDX
+JG 0xBB
+MOV EAX,dword ptr [EBP + -0xc]
+POP EDI
+OR dword ptr [ESI + 0x8c],0x20
+MOV FS:[0x0],EAX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET 0x4
+*/
+/*
+Function: ~Sprite
+Address: 0x41FB70
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x41fbc9
+MOV dword ptr [ECX],0x431570
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+MOV dword ptr [EBP + -0x4],0x0
+MOV dword ptr [EBP + -0x10],ECX
+CALL 0x0041fe20
+MOV ECX,dword ptr [EBP + -0x10]
+CALL 0x0041fc00
+MOV ECX,dword ptr [EBP + -0x10]
+CALL 0x0041fbe0
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL 0x0041fbd3
+MOV EAX,dword ptr [EBP + -0xc]
+MOV ESP,EBP
+MOV FS:[0x0],EAX
+POP EBP
+RET
+*/
+Sprite::~Sprite()
+{
+    *(void**)this = (void*)0x431570;
+    this->Free();
+    CloseSmackerBuffer();
+    CloseSmackerFile();
+    FUN_0041fbd3();
+}
+
+void Sprite::SetRanges(int numRanges)
+{
+    this->field_0xac = numRanges;
+    if (this->field136_0x88 != 0) {
+        Array_Cleanup((int)this->field136_0x88, 8, *(int*)((int)this->field136_0x88 - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)((int)this->field136_0x88 - 4));
+        this->field136_0x88 = 0;
+    }
+
+    int* piVar5 = (int*)0x0;
+    int* piVar1 = AllocateMemory_Wrapper(numRanges * 8 + 4);
+    if (piVar1 != (int *)0x0) {
+        piVar5 = piVar1 + 1;
+        *piVar1 = numRanges;
+        FUN_00424b00(piVar5, 8, numRanges, (void*)0x41d850, (void*)0x405770);
+    }
+
+    this->field136_0x88 = piVar5;
+    for (int i = 0; i < numRanges; i++) {
+        int* p = (int*)((char*)this->field136_0x88 + i * 8);
+        p[0] = 1;
+        p[1] = 5000;
+    }
+
+    this->flags |= 0x20;
+}
+
 void Sprite::SetState(int state) {
-    // TODO: implement
+    if (state == -1) {
+        this->field138_0x90 = -1;
+        return;
+    }
+
+    if (this->animation_data == 0 || this->animation_data->field0_0x0 == 0) {
+        Init(this);
+    }
+
+    if (state > -1 && state <= this->field_0xac - 1) {
+        if (this->animation_data != 0) {
+            int iVar1 = this->animation_data->smkStruct->current_frame;
+            if (this->field136_0x88 != 0) {
+                int* piVar5 = (int*)((char*)this->field136_0x88 + state * 8);
+                bool bVar4 = (iVar1 >= *piVar5) && (iVar1 <= piVar5[1]);
+
+                if (!bVar4) {
+                    this->flags |= 0x20;
+                }
+
+                if ((this->flags & 0x20) != 0 || this->field138_0x90 != state) {
+                    int iVar6 = 0;
+                    if ((this->flags & 0x10) != 0) {
+                        int iVar2 = (int)this->field136_0x88;
+                        iVar6 = this->animation_data->smkStruct->current_frame - *(int*)((char*)iVar2 + this->field138_0x90 * 8);
+                        int iVar3 = *(int*)((char*)iVar2 + state * 8);
+                        int iVar1_ = iVar3 + 1 + iVar6;
+                        iVar6++;
+                        if (this->animation_data == 0 || iVar2 == 0) {
+                            ShowError("range error");
+                        }
+                        if (iVar1_ < iVar3 || iVar1_ > *(int*)((char*)iVar2 + 4 + state * 8)) {
+                            iVar6 = 0;
+                        }
+                    }
+                    this->field138_0x90 = state;
+                    FUN_0041fcc0(this->animation_data, *(int*)((char*)this->field136_0x88 + state * 8) + iVar6);
+                    int* piVar5_ = (int*)((char*)this->field136_0x88 + this->field138_0x90 * 8);
+                    if (piVar5_[1] == *piVar5_) {
+                        this->flags |= 4;
+                    }
+                    this->flags &= ~0x20;
+                }
+                return;
+            }
+        }
+        ShowError("range error");
+    }
+    ShowError("Sprite::SetState(%d) %s", state, &this->filename);
 }
 
 /*
