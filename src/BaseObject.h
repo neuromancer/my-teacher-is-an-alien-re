@@ -19,6 +19,7 @@ struct ListNode {
 class QueueNode {
 public:
     void Insert(int data);
+    void Push(int data);
 
     void* head;
     void* tail;

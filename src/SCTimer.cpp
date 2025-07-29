@@ -124,6 +124,104 @@ void QueueNode::Insert(int data)
 }
 
 /*
+Function: Queue::Push
+Address: 0x4025A0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x40265d
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+MOV EBX,dword ptr [EBP + 0x8]
+TEST EBX,EBX
+JNZ 0x34
+PUSH 0x43516c
+CALL 0x00419110
+PUSH 0xc
+CALL 0x004249c0
+MOV dword ptr [EBP + -0x10],EAX
+ADD ESP,0x4
+MOV EDI,EAX
+XOR EAX,EAX
+MOV dword ptr [EBP + -0x4],EAX
+TEST EDI,EDI
+JZ 0x58
+MOV dword ptr [EDI + 0x8],EBX
+MOV EBX,EDI
+MOV dword ptr [EDI],EAX
+MOV dword ptr [EDI + 0x4],EAX
+JMP 0x5A
+XOR EBX,EBX
+MOV dword ptr [EBP + -0x4],0xffffffff
+CMP dword ptr [ESI + 0x8],0x0
+JNZ 0x6D
+MOV EAX,dword ptr [ESI + 0x4]
+MOV dword ptr [ESI + 0x8],EAX
+CMP dword ptr [ESI],0x0
+JNZ 0x8C
+MOV dword ptr [ESI],EBX
+MOV dword ptr [ESI + 0x4],EBX
+MOV dword ptr [ESI + 0x8],EBX
+MOV EAX,dword ptr [EBP + -0xc]
+POP EDI
+MOV FS:[0x0],EAX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET 0x4
+MOV EAX,dword ptr [ESI + 0x4]
+TEST EAX,EAX
+JZ 0x99
+CMP dword ptr [EAX + 0x4],0x0
+JZ 0xA6
+PUSH 0x435158
+CALL 0x00419110
+MOV dword ptr [EBX + 0x4],0x0
+MOV EAX,dword ptr [ESI + 0x4]
+MOV dword ptr [EBX],EAX
+MOV EAX,dword ptr [ESI + 0x4]
+MOV dword ptr [EAX + 0x4],EBX
+MOV dword ptr [ESI + 0x4],EBX
+JMP 0x7A
+*/
+void QueueNode::Push(int data)
+{
+    if (data == 0) {
+        ShowError("queue fault 0112");
+    }
+    ListNode* node = (ListNode*)AllocateMemory_Wrapper(0xc);
+    if (node) {
+        node->data = (void*)data;
+        node->next = 0;
+        node->prev = 0;
+    }
+    if (this->current == 0) {
+        this->current = this->tail;
+    }
+    if (this->head == 0) {
+        this->head = node;
+        this->tail = node;
+        this->current = node;
+    } else {
+        if (this->tail == 0 || ((ListNode*)this->tail)->next != 0) {
+            ShowError("queue fault 0113");
+        }
+        node->prev = (ListNode*)this->tail;
+        node->next = 0;
+        ((ListNode*)this->tail)->next = node;
+        this->tail = node;
+    }
+}
+
+/*
 Function: Update
 Address: 0x401E30
 
@@ -639,7 +737,7 @@ int SCTimer::Input(void *message) {
                                     break;
                                 }
                                 if (queue->tail == queue->current) {
-                                    Queue__Push(queue, (int)event);
+                                    queue->Push((int)event);
                                     break;
                                 }
                                 queue->current = ((ListNode*)queue->current)->next;
