@@ -39,7 +39,12 @@ public:
     void CloseSmackerBuffer();
     void CloseSmackerFile();
     unsigned char Do(int x, int y, int param_3, int param_4);
+    void SetState(int state);
 };
+
+void Sprite::SetState(int state) {
+    // TODO: implement
+}
 
 /*
 Function: CheckRanges1

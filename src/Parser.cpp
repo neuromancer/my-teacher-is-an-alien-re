@@ -21,6 +21,7 @@ RET
 #include <stdio.h>
 #include <string.h>
 #include "string.h"
+#include "BaseObject.h"
 
 // Based on the assembly, the Parser class has members at offsets 0x8 and 0x80.
 // The function at 0x00419110
@@ -395,4 +396,310 @@ void Sprite::FreeVBuffer()
         self->pVBuffer = 0;
     }
     self->field_18 = 0;
+}
+
+// --- BaseObject Queue Implementation ---
+
+extern "C" void* AllocateMemory_Wrapper(int size);
+extern "C" void Queue_InsertNode_2(void* queue, void* node);
+extern "C" void* FUN_0041cd10(void* dest, void* src);
+extern "C" void FUN_0041c58c();
+extern "C" void FreeFromGlobalHeap(void* p);
+
+
+extern "C" const char * s_queue_fault_0101_00435120;
+extern "C" const char * s_queue_fault_0112_0043516c;
+extern "C" const char * s_queue_fault_0113_00435158;
+
+
+/*
+Function: Queue_InsertNodeByType
+Address: 0x41C2C0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x41c582
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+MOV EAX,[0x00436974]
+SUB ESP,0x14
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,dword ptr [EAX + 0x18]
+DEC ESI
+MOV EAX,dword ptr [EAX + 0x14]
+DEC EAX
+XOR EDX,EDX
+MOV dword ptr [EBP + -0x20],EDX
+MOV dword ptr [EBP + -0x1c],EDX
+MOV dword ptr [EBP + -0x18],EAX
+MOV dword ptr [EBP + -0x14],ESI
+MOV dword ptr [EBP + -0x4],EDX
+MOV EAX,dword ptr [ECX + 0x98]
+CMP EAX,0x1
+JZ 0x73
+CMP EAX,0x2
+JZ 0x95
+CMP EAX,0x3
+JZ 0x1AA
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL 0x0041c58c
+MOV EAX,dword ptr [EBP + -0xc]
+POP EDI
+MOV FS:[0x0],EAX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET 0x4
+LEA EAX,[EBP + -0x20]
+MOV ESI,dword ptr [EBP + 0x8]
+MOV EBX,dword ptr [ESI]
+PUSH EAX
+MOV ECX,ESI
+CALL dword ptr [EBX]
+TEST ESI,ESI
+JZ 0x55
+PUSH ESI
+MOV dword ptr [ESI],0x431050
+CALL 0x00424940
+ADD ESP,0x4
+JMP 0x55
+MOV EBX,dword ptr [ECX + 0xa0]
+MOV ESI,dword ptr [EBP + 0x8]
+TEST ESI,ESI
+JNZ 0xAF
+PUSH 0x435120
+CALL 0x00419110
+MOV ECX,dword ptr [EBX]
+MOV dword ptr [EBX + 0x8],ECX
+MOV EAX,dword ptr [EBX + 0xc]
+CMP EAX,0x1
+JZ 0xCB
+CMP EAX,0x2
+JZ 0xCB
+PUSH ESI
+MOV ECX,EBX
+CALL 0x0041cb40
+JMP 0x55
+TEST ECX,ECX
+JNZ 0xDC
+PUSH ESI
+MOV ECX,EBX
+CALL 0x0041cb40
+JMP 0x55
+MOV EAX,dword ptr [EBX + 0x8]
+MOV EDX,dword ptr [ESI + 0x4]
+MOV ECX,dword ptr [EAX + 0x8]
+CMP dword ptr [ECX + 0x4],EDX
+JC 0x0041c3c4
+CMP dword ptr [EBX + 0x4],EAX
+JZ 0x111
+TEST EAX,EAX
+JZ 0xF9
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [EBX + 0x8],EAX
+CMP dword ptr [EBX + 0x8],0x0
+JNZ 0xDC
+JMP 0x55
+PUSH ESI
+MOV ECX,EBX
+CALL 0x0041cb40
+JMP 0x55
+TEST ESI,ESI
+JNZ 0x122
+PUSH 0x43516c
+CALL 0x00419110
+PUSH 0xc
+CALL 0x004249c0
+MOV dword ptr [EBP + -0x10],EAX
+ADD ESP,0x4
+MOV byte ptr [EBP + -0x4],0x1
+MOV EDI,EAX
+TEST EDI,EDI
+JZ 0x145
+PUSH ESI
+MOV ECX,EDI
+CALL 0x0041cd10
+MOV ESI,EAX
+JMP 0x147
+XOR ESI,ESI
+MOV byte ptr [EBP + -0x4],0x0
+CMP dword ptr [EBX + 0x8],0x0
+JNZ 0x157
+MOV EAX,dword ptr [EBX + 0x4]
+MOV dword ptr [EBX + 0x8],EAX
+CMP dword ptr [EBX],0x0
+JNZ 0x169
+MOV dword ptr [EBX],ESI
+MOV dword ptr [EBX + 0x4],ESI
+MOV dword ptr [EBX + 0x8],ESI
+JMP 0x55
+MOV EAX,dword ptr [EBX + 0x4]
+TEST EAX,EAX
+JZ 0x176
+CMP dword ptr [EAX + 0x4],0x0
+JZ 0x183
+PUSH 0x435158
+CALL 0x00419110
+MOV dword ptr [ESI + 0x4],0x0
+MOV EAX,dword ptr [EBX + 0x4]
+MOV dword ptr [ESI],EAX
+MOV EAX,dword ptr [EBX + 0x4]
+MOV dword ptr [EAX + 0x4],ESI
+MOV dword ptr [EBX + 0x4],ESI
+JMP 0x55
+MOV EBX,dword ptr [ECX + 0xa0]
+MOV ESI,dword ptr [EBP + 0x8]
+TEST ESI,ESI
+JNZ 0x1C4
+PUSH 0x435120
+CALL 0x00419110
+MOV EAX,dword ptr [EBX]
+MOV dword ptr [EBX + 0x8],EAX
+MOV ECX,dword ptr [EBX + 0xc]
+CMP ECX,0x1
+JZ 0x1E3
+CMP ECX,0x2
+JZ 0x1E3
+PUSH ESI
+MOV ECX,EBX
+CALL 0x0041cb40
+JMP 0x55
+TEST EAX,EAX
+JNZ 0x1F4
+PUSH ESI
+MOV ECX,EBX
+CALL 0x0041cb40
+JMP 0x55
+MOV EAX,dword ptr [EBX + 0x8]
+MOV ECX,dword ptr [ESI + 0x4]
+MOV EDX,dword ptr [EAX + 0x8]
+CMP dword ptr [EDX + 0x4],ECX
+JC 0x0041c4dc
+CMP dword ptr [EBX + 0x4],EAX
+JZ 0x229
+TEST EAX,EAX
+JZ 0x211
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [EBX + 0x8],EAX
+CMP dword ptr [EBX + 0x8],0x0
+JNZ 0x1F4
+JMP 0x55
+PUSH ESI
+MOV ECX,EBX
+CALL 0x0041cb40
+JMP 0x55
+TEST ESI,ESI
+JNZ 0x23A
+PUSH 0x43516c
+CALL 0x00419110
+PUSH 0xc
+CALL 0x004249c0
+MOV dword ptr [EBP + -0x10],EAX
+ADD ESP,0x4
+MOV byte ptr [EBP + -0x4],0x2
+MOV EDI,EAX
+TEST EDI,EDI
+JZ 0x25D
+PUSH ESI
+MOV ECX,EDI
+CALL 0x0041cd10
+MOV ESI,EAX
+JMP 0x25F
+XOR ESI,ESI
+MOV byte ptr [EBP + -0x4],0x0
+CMP dword ptr [EBX + 0x8],0x0
+JNZ 0x26F
+MOV EAX,dword ptr [EBX + 0x4]
+MOV dword ptr [EBX + 0x8],EAX
+CMP dword ptr [EBX],0x0
+JNZ 0x281
+MOV dword ptr [EBX],ESI
+MOV dword ptr [EBX + 0x4],ESI
+MOV dword ptr [EBX + 0x8],ESI
+JMP 0x55
+MOV EAX,dword ptr [EBX + 0x4]
+TEST EAX,EAX
+JZ 0x28E
+CMP dword ptr [EAX + 0x4],0x0
+JZ 0x29B
+PUSH 0x435158
+CALL 0x00419110
+MOV dword ptr [ESI + 0x4],0x0
+MOV EAX,dword ptr [EBX + 0x4]
+MOV dword ptr [ESI],EAX
+MOV EAX,dword ptr [EBX + 0x4]
+MOV dword ptr [EAX + 0x4],ESI
+MOV dword ptr [EBX + 0x4],ESI
+JMP 0x55
+*/
+void BaseObject::Queue_InsertNodeByType(void* pNode) {
+    // This is a rough translation, it will need refinement.
+    // The try/catch structure is inferred from the FS:[0] manipulation.
+    try {
+        if (this->object_type == 1) {
+            // This part is tricky. It seems to be calling a virtual function.
+            // and then freeing the object.
+            //(*(code **)*param_1)(&local_24);
+            if (pNode != 0) {
+                //*(undefined4 **)pNode = &PTR_FUN_00431050;
+                FreeFromGlobalHeap(pNode);
+            }
+        } else if (this->object_type == 2 || this->object_type == 3) {
+            QueueNode* queue = (QueueNode*)this->queue1;
+            if (pNode == 0) {
+                ShowError(s_queue_fault_0101_00435120);
+            }
+            queue->current = queue->head;
+            if (queue->type == 1 || queue->type == 2) {
+                if (queue->head == 0) {
+                    Queue_InsertNode_2(queue, pNode);
+                } else {
+                    do {
+                        ListNode* current_node = (ListNode*)queue->current;
+                        // This is a guess based on *(uint *)(*(int *)(iVar1 + 8) + 4) < (uint)param_1[1]
+                        if (*(unsigned int*)((char*)current_node->data + 4) < *(unsigned int*)((char*)pNode + 4)) {
+                            Queue_InsertNode_2(queue, pNode);
+                            break;
+                        }
+                        if (queue->tail == current_node) {
+                            if (pNode == 0) {
+                                ShowError(s_queue_fault_0112_0043516c);
+                            }
+                            void* mem = AllocateMemory_Wrapper(0xc);
+                            ListNode* new_node = (ListNode*)FUN_0041cd10(mem, pNode);
+                            if (queue->current == 0) {
+                                queue->current = queue->tail;
+                            }
+                            if (queue->head == 0) {
+                                queue->head = new_node;
+                                queue->tail = new_node;
+                                queue->current = new_node;
+                            } else {
+                                if (queue->tail == 0 || ((ListNode*)queue->tail)->next != 0) {
+                                    ShowError(s_queue_fault_0113_00435158);
+                                }
+                                new_node->next = 0;
+                                new_node->prev = (ListNode*)queue->tail;
+                                ((ListNode*)queue->tail)->next = new_node;
+                                queue->tail = new_node;
+                            }
+                            break;
+                        }
+                        if (current_node != 0) {
+                            queue->current = current_node->next;
+                        }
+                    } while (queue->current != 0);
+                }
+            } else {
+                Queue_InsertNode_2(queue, pNode);
+            }
+        }
+    } catch(...) {
+        FUN_0041c58c();
+    }
 }

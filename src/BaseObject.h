@@ -43,6 +43,7 @@ public:
     void PureVirtualCall();
     virtual int VFunc5(BaseObject* other);
     void BaseObject_CreateFromQueue();
+    void Queue_InsertNodeByType(void* pNode);
 private:
     char pad_4[4];
     int field_4;
