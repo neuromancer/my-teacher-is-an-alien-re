@@ -3,6 +3,26 @@
 
 #include "Timer.h"
 
+struct SoundManager {
+    char pad[0x9c];
+    void* list3; // 0x9c
+    void* list1; // 0xa0
+    void* list2; // 0xa4
+};
+
+struct ListNode {
+    ListNode* next;
+    ListNode* prev;
+    void* data;
+};
+
+struct QueueNode {
+    int field_0;
+    int field_4;
+    int field_8;
+    int type;
+};
+
 class BaseObject {
 public:
     BaseObject* BaseObject_Init();

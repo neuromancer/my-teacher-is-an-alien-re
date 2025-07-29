@@ -144,7 +144,7 @@ RET 0x8
 */
 
 void SCTimer::Update(int param_1, int param_2) {
-    if (this->timer1.Update() > 10000 && *(int*)this->field_0xc8 == 0) {
+    if (this->timer1.Update() > 10000 && ((Queue*)this->field_0xc8)->head == 0) {
         SC_Message_Send(3, this->field_0x88[0], this->field_0x88[0], this->field_0x88[1], 0x14, 0, 0, 0, 0, 0);
     }
     this->timer1.Reset();
@@ -155,7 +155,7 @@ void SCTimer::Update(int param_1, int param_2) {
     while(queue->head) {
         TimedEvent* event = 0;
         if (queue->current) {
-            event = *(TimedEvent**)((char*)queue->current + 8);
+            event = (TimedEvent*)((ListNode*)queue->current)->data;
         }
 
         if (event->Update()) {
@@ -169,7 +169,7 @@ void SCTimer::Update(int param_1, int param_2) {
         }
 
         if (queue->current) {
-            queue->current = *(void**)((char*)queue->current + 4);
+            queue->current = ((ListNode*)queue->current)->next;
         }
     }
 
@@ -531,7 +531,7 @@ int SCTimer::Input(void *message) {
                         } else {
                             queue->current = queue->head;
                             do {
-                                TimedEvent* current_event = (TimedEvent*)queue->current;
+                                TimedEvent* current_event = (TimedEvent*)((ListNode*)queue->current)->data;
                                 if (current_event->field_c < event->field_c) {
                                     Queue__Insert(queue, (int)event);
                                     break;
@@ -540,7 +540,7 @@ int SCTimer::Input(void *message) {
                                     Queue__Push(queue, (int)event);
                                     break;
                                 }
-                                queue->current = *(void**)((char*)queue->current + 4);
+                                queue->current = ((ListNode*)queue->current)->next;
                             } while (queue->current);
                         }
                     } else {
@@ -561,7 +561,7 @@ int SCTimer::Input(void *message) {
 
                     queue->current = queue->head;
                     while(queue->current) {
-                        TimedEvent* current_event = *(TimedEvent**)((char*)queue->current + 8);
+                        TimedEvent* current_event = (TimedEvent*)((ListNode*)queue->current)->data;
                         if (current_event->field_c == event->field_c) {
                             void* popped = Queue__Pop(queue);
                             if (popped) {
@@ -573,13 +573,13 @@ int SCTimer::Input(void *message) {
                         if (queue->tail == queue->current) {
                             break;
                         }
-                        queue->current = *(void**)((char*)queue->current + 4);
+                        queue->current = ((ListNode*)queue->current)->next;
                     }
                 }
                 break;
             }
             case 0x1b: {
-                if (*(void**)field_0xc8 == 0) {
+                if (((Queue*)field_0xc8)->head == 0) {
                     SC_Message_Send(3, field_0x88[0], field_0x88[0], field_0x88[1], 0x14, 0, 0, 0, 0, 0);
                 }
                 break;

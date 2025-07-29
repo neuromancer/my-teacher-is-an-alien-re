@@ -17,7 +17,7 @@ public:
     void Initialize();
     void ScaleTCCopy(int param_1, int param_2, int param_3);
     void Clear();
-private:
+public:
     int videoMode; // 0x0
     int field1_0x4; // 0x4
     int field_0x8;

@@ -101,7 +101,7 @@ void Sprite::CheckRanges1() {
         int j = 0;
         do {
             int* piVar2 = (int *)((char*)this->field136_0x88 + 4 + j);
-            int iVar1 = *(int *)(*(int *)((int)this->animation_data + 0xc) + 0xc);
+            int iVar1 = this->animation_data->smkStruct->total_frames;
             if (iVar1 < *piVar2) {
                 *piVar2 = iVar1;
             }
@@ -345,7 +345,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     if ((this->flags & 0x80) != 0) {
         return 1;
     }
-    if ((this->animation_data == (void *)0x0) || (*(int *)((int)this->animation_data + 0x18) == 0)) {
+    if ((this->animation_data == (void *)0x0) || (this->animation_data->field0_0x0 == 0)) {
         Init(this);
     }
     int* piVar4 = (int *)(this->field138_0x90 * 8 + (int)this->field136_0x88);
@@ -358,27 +358,27 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     }
     if (!bVar6) {
         this->animation_data->DoFrame();
-        void* pvVar1 = this->animation_data;
+        Animation* anim = this->animation_data;
         int iVar3;
-        if (pvVar1 == (void *)0x0) {
+        if (anim == 0) {
             iVar3 = *(int *)((char*)this->field136_0x88 + 4 + this->field138_0x90 * 8);
         }
         else {
-            iVar3 = *(int *)((char*)this->field136_0x88 + 4 + this->field138_0x90 * 8) - *(int *)(*(int *)((int)pvVar1 + 0xc) + 0x374);
+            iVar3 = *(int *)((char*)this->field136_0x88 + 4 + this->field138_0x90 * 8) - anim->smkStruct->current_frame;
         }
         if (iVar3 == 1) {
             if ((this->flags & 0x200) == 0) {
-                FUN_0041fcc0(pvVar1,*(int *)((char*)this->field136_0x88 + this->field138_0x90 * 8));
+                FUN_0041fcc0(anim,*(int *)((char*)this->field136_0x88 + this->field138_0x90 * 8));
             }
             else {
-                FUN_0041fcb0((int)pvVar1);
+                FUN_0041fcb0((int)anim);
             }
             if ((this->flags & 1) == 0) {
                 bVar5 = 1;
             }
         }
         else {
-            FUN_0041fcb0((int)pvVar1);
+            FUN_0041fcb0((int)anim);
         }
     }
     unsigned int uVar2 = this->flags;
@@ -386,16 +386,16 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
         return bVar5;
     }
     if ((uVar2 & 2) == 0) {
-        void* pvVar1 = this->animation_data;
+        Animation* anim = this->animation_data;
         if ((uVar2 & 8) == 0) {
-            if (pvVar1 == (void *)0x0) {
+            if (anim == 0) {
                 y = y + -1;
             }
             else {
-                y = y + *(int *)(*(int *)((int)pvVar1 + 0x18) + 0x18) + -1;
+                y = y + anim->virtualBuffer->height + -1;
             }
         }
-        else if (pvVar1 == (void *)0x0) {
+        else if (anim == 0) {
             __int64 lVar7 = __ftol();
             y = y + (int)lVar7;
         }
@@ -413,7 +413,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     else {
         iVar3 = 3 - (unsigned int)((uVar2 & 0x40) == 0);
     }
-    FUN_0041be20(0, *(int *)((int)this->animation_data + 0x18), this->field139_0x94, x, y, iVar3, param_3, param_4);
+    FUN_0041be20(0, (int)this->animation_data->field0_0x0, this->field139_0x94, x, y, iVar3, param_3, param_4);
     if ((this->flags & 1) == 0) {
         return bVar5;
     }

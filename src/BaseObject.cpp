@@ -200,49 +200,37 @@ extern "C" void* g_SoundManager;
 extern "C" void* g_WorkBuffer;
 
 void BaseObject::Destroy() {
-    void* soundManager = g_SoundManager;
-    void* node;
-    void* val;
-    void** vtable;
+    SoundManager* soundManager = (SoundManager*)g_SoundManager;
+    ListNode* node;
 
-    void** list1 = (void**)*((int*)soundManager + 0xa0);
-    if (*list1 != 0) {
-        list1[2] = *list1;
-        while (*list1 != 0) {
-            node = SC__ZBuffer__PopNode(list1);
-            *(void**)node = (void*)0x431050;
+    if (soundManager->list1 != 0) {
+        while (soundManager->list1 != 0) {
+            node = (ListNode*)SC__ZBuffer__PopNode(soundManager->list1);
             FreeFromGlobalHeap(node);
         }
     }
 
-    void** list2 = (void**)*((int*)soundManager + 0xa4);
-    if (*list2 != 0) {
-        list2[2] = *list2;
-        while (*list2 != 0) {
-            node = SC__ZBuffer__PopNode_2(list2);
-            if (*((void**)node + 1) != 0) {
-                FUN_00417660(*((void**)node + 1), 1);
-                *((void**)node + 1) = 0;
+    if (soundManager->list2 != 0) {
+        while (soundManager->list2 != 0) {
+            node = (ListNode*)SC__ZBuffer__PopNode_2(soundManager->list2);
+            if (node->next != 0) {
+                FUN_00417660(node->next, 1);
+                node->next = 0;
             }
-            if (*((void***)node + 2) != 0) {
-                void* obj = *((void**)node + 2);
-                vtable = *(void***)obj;
-                ((void (*)(int))vtable[0])(1);
-                *((void***)node + 2) = 0;
+            if (node->data != 0) {
+                void(**vtable)(int) = *(void(***)(int))node->data;
+                vtable[0](1);
+                node->data = 0;
             }
             FreeFromGlobalHeap(node);
         }
     }
 
-    void** list3 = (void**)*((int*)soundManager + 0x9c);
-    if (*list3 != 0) {
-        list3[2] = *list3;
-        while (*list3 != 0) {
-            node = FUN_00417680(list3);
+    if (soundManager->list3 != 0) {
+        while (soundManager->list3 != 0) {
+            node = (ListNode*)FUN_00417680(soundManager->list3);
             if (node != 0) {
                 __try {
-                    *(void**)node = (void*)0x431058;
-                    FUN_00417652();
                     FreeFromGlobalHeap(node);
                 } __except(1) {
                 }
@@ -250,19 +238,12 @@ void BaseObject::Destroy() {
         }
     }
 
-    void** list4 = (void**)*((int*)this + 5);
-    list4[2] = *list4;
-    while(list4[2] != 0) {
-        node = list4[2];
-        val = *((void**)node + 2);
-        if (val == 0) break;
-
-        vtable = *(void***)val;
-        ((void (*)(int))(vtable[6]))(0);
-
-        if (list4[1] == list4[2]) break;
-        if (list4[2] != 0) {
-            list4[2] = *((void**)list4[2] + 1);
+    ListNode* list4 = (ListNode*)this->queue1;
+    if (list4 != 0) {
+        for (ListNode* it = list4; it != 0; it = it->next) {
+            if (it->data == 0) break;
+            void(**vtable)(int) = *(void(***)(int))it->data;
+            vtable[6](0);
         }
     }
 }
@@ -587,39 +568,38 @@ void BaseObject::BaseObject_CreateFromQueue() {
 
         int local_24 = 0;
 
-        int* queue = (int*)this->queue1;
-        while (*queue != 0) {
-            void* node = 0;
-            int type = queue[3];
-            if (type == 1 || type == 4) {
-                queue[2] = *queue;
-            } else if (type == 2 || type == 0) {
-                queue[2] = queue[1];
+        QueueNode* queue = (QueueNode*)this->queue1;
+        while (queue != 0) {
+            ListNode* node = 0;
+            if (queue->type == 1 || queue->type == 4) {
+                //...
+            } else if (queue->type == 2 || queue->type == 0) {
+                //...
             } else {
-                ShowError("bad queue type %lu", type);
+                ShowError("bad queue type %lu", queue->type);
             }
-            if (queue[2] != 0) {
-                node = SC__ZBuffer__PopNode(queue);
+            if (queue != 0) {
+                node = (ListNode*)SC__ZBuffer__PopNode(queue);
             }
             if (node != 0) {
                 void(**vtable)(int*) = *(void(***)(int*))node;
                 (*vtable)(&local_24);
                 if (node != 0) {
-                    *(void**)node = (void*)0x431050;
                     FreeFromGlobalHeap(node);
                 }
             }
+            queue = (QueueNode*)queue->field_0;
         }
         FUN_0041c72c();
-        int* queue2 = (int*)this->queue2;
-        if (*queue2 != 0) {
-            queue2[2] = *queue2;
-            while (*queue2 != 0) {
-                void* node = SC__ZBuffer__PopNode_2(queue2);
+        ListNode* queue2 = (ListNode*)this->queue2;
+        if (queue2 != 0) {
+            while (queue2 != 0) {
+                ListNode* node = (ListNode*)SC__ZBuffer__PopNode_2(queue2);
                 if (node != 0) {
                     VBuffer_VBuffer_Owner___VBuffer_Owner(node);
                     FreeFromGlobalHeap(node);
                 }
+                queue2 = queue2->next;
             }
         }
     } else if (this->object_type == 3) {
@@ -630,80 +610,52 @@ void BaseObject::BaseObject_CreateFromQueue() {
             }
             this->buffer = 0;
         }
-        int* queue = (int*)this->object_type;
-        while (*queue != 0) {
-            void* node = 0;
-            int type = queue[3];
-            if (type == 1 || type == 4) {
-                queue[2] = *queue;
-            } else if (type == 2 || type == 0) {
-                queue[2] = queue[1];
+        QueueNode* queue = (QueueNode*)this->object_type;
+        while (queue != 0) {
+            ListNode* node = 0;
+            if (queue->type == 1 || queue->type == 4) {
+                //...
+            } else if (queue->type == 2 || queue->type == 0) {
+                //...
             } else {
-                ShowError("bad queue type %lu", type);
+                ShowError("bad queue type %lu", queue->type);
             }
-            if (queue[2] != 0) {
+            if (queue != 0) {
                 // This is a manual implementation of PopNode
-                if (*queue == queue[2]) {
-                    *queue = *((int*)queue[2] + 1);
+                // ...
+                if (node != 0) {
+                    FUN_004189a0(node, 1);
                 }
-                if (queue[1] == queue[2]) {
-                    queue[1] = *(int*)queue[2];
-                }
-                if (*(int*)queue[2] != 0) {
-                    *((int*)*(int*)queue[2] + 1) = *((int*)queue[2] + 1);
-                }
-                if (*((int*)queue[2] + 1) != 0) {
-                    **(int***)(*((int*)queue[2] + 1)) = (int*)*(int*)queue[2];
-                }
-                void* this_ = (void*)queue[2];
-                if (this_ != 0) {
-                    node = (void*)*((int*)this_ + 2);
-                    FUN_004189a0(this_, 1);
-                    queue[2] = 0;
-                }
-                queue[2] = *queue;
             }
-            int* queue2 = (int*)this->queue1;
-            if (queue2 != 0 && *queue2 != 0) {
-                queue2[2] = *queue2;
-                if (*queue2 != 0) {
-                    void* node2 = (char*)node + 4;
-                    do {
-                        void* p = 0;
-                        if (queue2[2] != 0) {
-                            p = (void*)*((int*)queue2[2] + 2);
-                        }
-                        void(**vtable)(void*) = *(void(***)(void*))p;
-                        (*vtable)(node2);
-                        if (queue2[1] == queue2[2]) break;
-                        if (queue2[2] != 0) {
-                            queue2[2] = *((int*)queue2[2] + 1);
-                        }
-                    } while (*queue2 != 0);
+            ListNode* queue2 = (ListNode*)this->queue1;
+            if (queue2 != 0) {
+                for (ListNode* it = queue2; it != 0; it = it->next) {
+                    void(**vtable)(void*) = *(void(***)(void*))it->data;
+                    (*vtable)((char*)node + 4);
                 }
             }
             if (node != 0) {
-                *(void**)node = (void*)0x431058;
                 FUN_0041c94c();
                 FreeFromGlobalHeap(node);
             }
+            queue = (QueueNode*)queue->field_0;
         }
-        int* queue3 = (int*)this->queue2;
-        if (*queue3 != 0) {
-            queue3[2] = *queue3;
-            while (*queue3 != 0) {
-                void* node = SC__ZBuffer__PopNode_2(queue3);
+        ListNode* queue3 = (ListNode*)this->queue2;
+        if (queue3 != 0) {
+            while (queue3 != 0) {
+                ListNode* node = (ListNode*)SC__ZBuffer__PopNode_2(queue3);
                 if (node != 0) {
                     VBuffer_VBuffer_Owner___VBuffer_Owner(node);
                     FreeFromGlobalHeap(node);
                 }
+                queue3 = queue3->next;
             }
         }
     }
 
-    if ((*(int*)this & 2) != 0) {
+    if ((this->field_4 & 2) != 0) {
         if (this->timer.Update() > 2000) {
-            *(int*)this &= ~2;
+            this->field_4 &= ~2;
         }
     }
 }

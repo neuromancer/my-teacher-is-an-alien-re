@@ -4,7 +4,10 @@
 #include "VBuffer.h"
 #include "Smacker.h"
 
+class Sprite;
+
 class Animation {
+    friend class Sprite;
 public:
     void SetRange(int param_1, int param_2, int param_3);
     void SetState(int param_1);
