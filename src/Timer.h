@@ -28,7 +28,7 @@ public:
     void Copy(TimedEvent* src);
     ~TimedEvent();
 
-    static TimedEvent* Create(void* p1, void* p2, int p3);
+    TimedEvent* Create(void* callback, void* data);
 
     int field_0;
     int field_4;

@@ -3,10 +3,21 @@
 
 // Forward declarations for external functions and classes
 extern "C" {
+    void *AllocateMemory_Wrapper(unsigned int size);
     void ShowError(const char *msg, ...);
     int _sprintf(char *buffer, const char *format, ...);
     void FUN_0041c000(void *soundManager, char *str, int, int, int);
     void FreeFromGlobalHeap(void *ptr);
+    void Message_Constructor(void* this_ptr, int, int, int, int, int, int, int, int, int, int);
+}
+
+void TimedEvent::Copy(TimedEvent* src) {
+    // Dummy implementation
+    memcpy(this, src, sizeof(TimedEvent));
+}
+
+TimedEvent::~TimedEvent() {
+    // Dummy implementation
 }
 
 int DAT_00436684 = 0;
@@ -110,6 +121,18 @@ void TimedEvent::Init() {
     } catch(...) {
         // Matching SEH
     }
+}
+
+/*
+Function: TimedEvent::SetData
+Address: 0x401990
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV dword ptr [ECX + 0x4],EAX
+RET 0x4
+*/
+void TimedEvent::SetData(void* data) {
+    this->field_4 = (int)data;
 }
 
 /*
@@ -290,6 +313,112 @@ extern void *g_GameStruct2[];
 extern char DAT_00436960[];
 extern void *g_SoundManager;
 
+/*
+Function: TimedEvent::Create
+Address: 0x402420
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV EDI,ECX
+CMP dword ptr [ECX + 0xc],0x0
+JNZ 0x50
+MOV EAX,dword ptr [EDI + 0x14]
+LEA ECX,[EAX + EAX*0x4]
+LEA EAX,[ECX + ECX*0x4]
+SHL EAX,0x3
+ADD EAX,0x4
+PUSH EAX
+CALL 0x004249c0
+ADD ESP,0x4
+MOV ECX,dword ptr [EDI + 0x10]
+MOV dword ptr [EAX],ECX
+MOV EDX,dword ptr [EDI + 0x14]
+MOV dword ptr [EDI + 0x10],EAX
+LEA EBX,[EDX + EDX*0x4]
+DEC EDX
+LEA ECX,[EBX + EBX*0x4]
+LEA EAX,[EAX + ECX*0x8 + 0xffffff3c]
+JS 0x50
+MOV ECX,dword ptr [EDI + 0xc]
+DEC EDX
+MOV dword ptr [EAX],ECX
+MOV dword ptr [EDI + 0xc],EAX
+SUB EAX,0xc8
+TEST EDX,EDX
+JGE 0x3E
+MOV ESI,dword ptr [EDI + 0xc]
+MOV ECX,dword ptr [ESP + 0x10]
+MOV EDX,dword ptr [ESP + 0x14]
+MOV EAX,dword ptr [ESI]
+LEA EBX,[ESI + 0x8]
+MOV dword ptr [EDI + 0xc],EAX
+XOR EAX,EAX
+MOV dword ptr [ESI + 0x4],ECX
+MOV ECX,0x30
+MOV dword ptr [ESI],EDX
+INC dword ptr [EDI + 0x8]
+MOV EDI,EBX
+STOSD.REP ES:EDI
+XOR EDI,EDI
+TEST EBX,EBX
+JZ 0x97
+PUSH 0x0
+MOV ECX,EBX
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+CALL 0x004198c0
+ADD EBX,0xc0
+MOV EAX,EDI
+DEC EDI
+TEST EAX,EAX
+JNZ 0x78
+MOV EAX,ESI
+POP EDI
+POP ESI
+POP EBX
+RET 0x8
+*/
+TimedEvent* TimedEvent::Create(void* callback, void* data) {
+    if (this->field_c == 0) {
+        int* pool = (int*)AllocateMemory_Wrapper(this->field_10 * 200 + 4);
+        *pool = this->field_10;
+        this->field_10 = (int)pool;
+        for (int i = this->field_10 - 1; i >= 0; i--) {
+            pool = (int*)((char*)pool + 200);
+            *pool = this->field_c;
+            this->field_c = (int)pool;
+        }
+    }
+
+    TimedEvent* new_event = (TimedEvent*)this->field_c;
+    this->field_c = *(int*)new_event;
+    new_event->field_4 = (int)callback;
+    new_event->field_0 = (int)data;
+    this->field_8++;
+
+    int* current = (int*)(new_event + 2);
+    for (int i = 0; i < 0x30; i++) {
+        current[i] = 0;
+    }
+
+    for (int j = 0; j < 1; j++) { // This loop seems to run only once
+        if (current) {
+            Message_Constructor(current, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        current = (int*)((char*)current + 0xc0);
+    }
+
+    return new_event;
+}
+
 int TimedEvent::Update() {
     int time_remaining = this->field_c - this->timer.Update();
 
@@ -299,7 +428,7 @@ int TimedEvent::Update() {
                 return 0;
             }
             if (this->field_10) {
-                TimedEvent* new_event = TimedEvent::Create(g_GameStruct2, g_GameStruct2[1], 0);
+                TimedEvent* new_event = ((TimedEvent*)g_GameStruct2)->Create(g_GameStruct2[1], 0);
                 new_event->Copy((TimedEvent*)this->field_10);
                 if (g_GameStruct2[1] == 0) {
                     *g_GameStruct2 = new_event;
@@ -319,7 +448,7 @@ int TimedEvent::Update() {
                 return 0;
             }
             if (this->field_10) {
-                TimedEvent* new_event = TimedEvent::Create(g_GameStruct2, g_GameStruct2[1], 0);
+                TimedEvent* new_event = ((TimedEvent*)g_GameStruct2)->Create(g_GameStruct2[1], 0);
                 new_event->Copy((TimedEvent*)this->field_10);
                 if (g_GameStruct2[1] == 0) {
                     *g_GameStruct2 = new_event;
@@ -337,7 +466,7 @@ int TimedEvent::Update() {
                 return 0;
             }
             if (this->field_10) {
-                TimedEvent* new_event = TimedEvent::Create(g_GameStruct2, g_GameStruct2[1], 0);
+                TimedEvent* new_event = ((TimedEvent*)g_GameStruct2)->Create(g_GameStruct2[1], 0);
                 new_event->Copy((TimedEvent*)this->field_10);
                 if (g_GameStruct2[1] == 0) {
                     *g_GameStruct2 = new_event;
