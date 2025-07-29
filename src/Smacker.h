@@ -1,6 +1,7 @@
 #ifndef SMACKER_H
 #define SMACKER_H
 
+
 struct SmackStruct {
     int version; // 0x0
     int width; // 0x4
@@ -11,15 +12,22 @@ struct SmackStruct {
     int current_frame; // 0x374
 };
 
+class Animation;
+
 class Smacker {
+    friend class Animation;
 public:
     void NextFrame();
     void Goto(int frame);
+    void Update(int param_1);
+
 private:
     int field_0x0;
     int field_0x4;
     int field_0x8;
     SmackStruct* smk; // 0xc
+    char pad_0x10[0x18 - 0x10];
+    int field_0x18; // 0x18
 };
 
 extern "C" {

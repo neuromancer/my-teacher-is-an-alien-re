@@ -59,7 +59,7 @@ void Animation::SetState(int param_1)
         ShowError("s_range_error_00436bbc");
     }
 
-    int current_frame = this->animation_data->smacker_data->current_frame;
+    int current_frame = this->animation_data->smk->current_frame;
     if (this->field136_0x88 == 0) {
         ShowError("s_range_error_00436bbc");
     }
@@ -73,7 +73,7 @@ void Animation::SetState(int param_1)
     if ((this->flags & 0x20) || (this->field138_0x90 != param_1)) {
         if (this->flags & 0x10) {
             int iVar2 = (int)this->field136_0x88;
-            iVar6 = this->animation_data->smacker_data->current_frame - *(int*)(iVar2 + this->field138_0x90 * 8);
+            iVar6 = this->animation_data->smk->current_frame - *(int*)(iVar2 + this->field138_0x90 * 8);
             int iVar3 = *(int*)(iVar2 + param_1 * 8);
             int iVar1_2 = iVar3 + 1 + iVar6;
             iVar6 = iVar6 + 1;
@@ -89,7 +89,7 @@ void Animation::SetState(int param_1)
         }
 
         this->field138_0x90 = param_1;
-        this->animation_data->UpdateSmacker(*(int*)((char*)this->field136_0x88 + param_1 * 8) + iVar6);
+        this->animation_data->Update(*(int*)((char*)this->field136_0x88 + param_1 * 8) + iVar6);
         piVar5 = (int*)((char*)this->field136_0x88 + this->field138_0x90 * 8);
         if (piVar5[1] == *piVar5) {
             this->flags |= 4;
@@ -98,18 +98,6 @@ void Animation::SetState(int param_1)
     }
 }
 
-void Smack::UpdateSmacker(int param_1)
-{
-    if (this->smacker_data != 0) {
-        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
-            SmackSoundUseDirectSound((int)this->smacker_data, 0);
-        }
-        SmackGoto(this->smacker_data, param_1);
-        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
-            SmackSoundUseDirectSound((int)this->smacker_data, 1);
-        }
-    }
-}
 
 void Animation::SetLogic(int param_1, int param_2)
 {
@@ -179,7 +167,7 @@ void Animation::CheckRanges1()
         int iVar3 = 0;
         do {
             int* piVar2 = (int*)((char*)this->field136_0x88 + 4 + iVar3);
-            int total_frames = this->animation_data->smacker_data->total_frames;
+            int total_frames = this->animation_data->smk->total_frames;
             if (total_frames < *piVar2) {
                 *piVar2 = total_frames;
             }

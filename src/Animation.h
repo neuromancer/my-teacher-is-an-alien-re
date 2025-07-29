@@ -4,19 +4,6 @@
 #include "VBuffer.h"
 #include "Smacker.h"
 
-class Animation;
-
-class Smack {
-    friend class Animation;
-public:
-    void UpdateSmacker(int param_1);
-private:
-    char pad_0x0[0xc];
-    SmackStruct* smacker_data; // 0xc
-    char pad_0x10[0x18 - 0x10];
-    int field_0x18; // 0x18
-};
-
 class Animation {
 public:
     void SetRange(int param_1, int param_2, int param_3);
@@ -53,7 +40,7 @@ private:
     char pad_0xb0[0xb4 - 0xb0];
     char* filename;
     char pad_0xb8[0xd0 - 0xb8];
-    Smack* animation_data;
+    Smacker* animation_data;
 };
 
 #endif // ANIMATION_H

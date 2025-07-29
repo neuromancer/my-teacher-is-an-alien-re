@@ -67,3 +67,16 @@ void Smacker::Goto(int frame)
         }
     }
 }
+
+void Smacker::Update(int param_1)
+{
+    if (this->smk != 0) {
+        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
+            SmackSoundUseDirectSound((int)this->smk, 0);
+        }
+        SmackGoto(this->smk, param_1);
+        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
+            SmackSoundUseDirectSound((int)this->smk, 1);
+        }
+    }
+}
