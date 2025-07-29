@@ -153,7 +153,7 @@ def main():
 
     args = parser.parse_args()
 
-    system("make")
+    system("make clean all")
 
     # Find the correct .asm file
     asm_file_path = None
