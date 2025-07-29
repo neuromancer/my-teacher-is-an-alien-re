@@ -24,7 +24,7 @@ def read_assembly(function_name, file_path):
                 assembly = assembly.split(match.group(0))[1]
                 assembly = assembly.split(f"ENDP")[0]
             else:
-                raise IndexError(f"Function '{function_name}' not found in assembly with non-COMDAT format.")
+                return None #raise IndexError(f"Function '{function_name}' not found in assembly with non-COMDAT format.")
     else:
         if function_name.startswith("?"):
             match = re.search(f"{re.escape(function_name)} PROC NEAR", assembly)
@@ -164,13 +164,15 @@ def main():
                 content = f.read()
                 if args.function_name in content:
                     asm_file_path = filepath
-                    break
+                    produced_code = read_assembly(args.mangled_name if args.mangled_name else args.function_name, filepath)
+
+                    if produced_code is not None:
+                        break
 
     if asm_file_path is None:
         print(f"Function '{args.function_name}' not found in any .asm file.")
         return
 
-    produced_code = read_assembly(args.mangled_name if args.mangled_name else args.function_name, asm_file_path)
 
     with open(args.disassembled_code, 'rb') as file:
         target_code = file.read()

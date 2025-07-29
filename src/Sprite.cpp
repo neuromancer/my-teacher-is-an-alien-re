@@ -1,4 +1,5 @@
 #include "Smacker.h"
+#include "Animation.h"
 
 typedef char bool;
 #define false 0
@@ -8,7 +9,6 @@ extern "C" {
     void ShowError(const char* fmt, ...);
     int GameState_Error_Handler_3(int);
     void Init(void*);
-    void Animation_DoFrame(void*);
     void FUN_0041fcc0(void*, int);
     void FUN_0041fcb0(int);
     __int64 __cdecl __ftol();
@@ -32,7 +32,7 @@ public:
     char pad_0xb0[0xb4 - 0xb0];
     const char* filename; // 0xb4
     char pad_0xb8[0xd0 - 0xb8];
-    void* animation_data; // 0xd0
+    Animation* animation_data; // 0xd0
     char pad_0xd4[4];
 
     void CheckRanges1();
@@ -357,7 +357,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
         bVar5 = 1;
     }
     if (!bVar6) {
-        Animation_DoFrame(this->animation_data);
+        this->animation_data->DoFrame();
         void* pvVar1 = this->animation_data;
         int iVar3;
         if (pvVar1 == (void *)0x0) {
