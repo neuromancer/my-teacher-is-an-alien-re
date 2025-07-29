@@ -1,30 +1,31 @@
 #include "BaseObject.h"
+#include "SoundList.h"
+#include "Sprite.h"
 #include <string.h>
+#include <new>
 
 typedef int bool;
 #define true 1
 #define false 0
 
+struct UnkStruct {
+    char data[0xe0];
+};
+
 // Ghidra was unable to determine the class name, so we'll call it Screen
 class Screen : public BaseObject {
 public:
-    // offset 0x8-c might be a pointer to a vtable
-    // offset 0xc8-0x180 seems to be an array of 6 structs, 0xe0 bytes each
-    // offset 0x190-0x1c0 seems to be an array of 6 pointers to something
-    char unknown_data[0x1c0];
+    char unknown_data[0x600]; // Just a large buffer for now
 
-    Screen(int hotspot_data);
+    Screen(BaseObject* hotspot_data);
     int CheckAndResolveCollision(BaseObject *colliding_object);
     void PlaySoundEffect(int sound_index);
 };
 
 extern "C" {
-    void FUN_0041e870(int sound_list);
+    void FUN_0041e870(SoundList* sound_list);
     void FUN_0041e6d0(void* sound_data, int volume, int flags);
     void* AllocateMemory_Wrapper(int size);
-    void* SoundList_SoundList(void* this_ptr, int size);
-    void* SoundList_Register(void* this_ptr, const char* sound_name);
-    void Sprite_SetState(void* this_ptr, int state);
 }
 
 extern "C" int* DAT_00435a80;
@@ -237,8 +238,8 @@ RET 0x4
 */
 void Screen::PlaySoundEffect(int sound_index)
 {
-    int sound_list = *(int*)((char*)this + 0x5f8);
-    FUN_0041e870(sound_list);
+    SoundList* soundList = *(SoundList**)((char*)this + 0x5f8);
+    FUN_0041e870(soundList);
     if (sound_index != -1) {
         void* sound_data = *(void**)((char*)this + 0x194 + sound_index * 0xe0);
         if (sound_data != 0) {
@@ -313,24 +314,26 @@ MOV ESP,EBP
 POP EBP
 RET 0x4
 */
-Screen::Screen(int hotspot_data)
+Screen::Screen(BaseObject* hotspot_data)
 {
-    ((void (*)(void*, int))0x00417180)(this, hotspot_data);
+    Copy(hotspot_data);
 
     if (DAT_00435a80 != 0) {
-        Sprite_SetState((void*)this->field_b0, *DAT_00435a80 + 1);
+        Sprite* sprite = *(Sprite**)((char*)this + 0xb0);
+        sprite->SetState(*DAT_00435a80 + 1);
     }
 
     for (int i = 0; i < 6; i++) {
         *(int*)((char*)this + 0x190 + i * 0xe0) = 1;
     }
 
-    void* sound_list = AllocateMemory_Wrapper(0x10);
-    if (sound_list != 0) {
-        sound_list = SoundList_SoundList(sound_list, 0x32);
+    SoundList* soundList = (SoundList*)AllocateMemory_Wrapper(0x10);
+    if (soundList) {
+        new (soundList) SoundList(50);
     }
-    *(void**)((char*)this + 0x5f8) = sound_list;
-    *(void**)((char*)this + 0x274) = SoundList_Register(sound_list, s_audio_Snd0023_wav_00435248);
-    *(void**)((char*)this + 0x354) = SoundList_Register(sound_list, s_audio_Snd0024_wav_00435234);
-    *(void**)((char*)this + 0x434) = SoundList_Register(sound_list, s_audio_Snd0025_wav_00435220);
+    *(SoundList**)((char*)this + 0x5f8) = soundList;
+
+    *(void**)((char*)this + 0x274) = soundList->Register(s_audio_Snd0023_wav_00435248);
+    *(void**)((char*)this + 0x354) = soundList->Register(s_audio_Snd0024_wav_00435234);
+    *(void**)((char*)this + 0x434) = soundList->Register(s_audio_Snd0025_wav_00435220);
 }
