@@ -24,6 +24,11 @@ class TimedEvent {
 public:
     void Init();
     int Update();
+    void SetData(void* data);
+    void Copy(TimedEvent* src);
+    ~TimedEvent();
+
+    static TimedEvent* Create(void* p1, void* p2, int p3);
 
     int field_0;
     int field_4;

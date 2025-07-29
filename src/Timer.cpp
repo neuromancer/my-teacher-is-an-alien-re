@@ -3,9 +3,6 @@
 
 // Forward declarations for external functions and classes
 extern "C" {
-    void *TimedEvent__Create(void *param_1, void *param_2, int param_3);
-    void TimedEvent__CopyConstructor(void *dest, void *src);
-    void TimedEvent_dtor(void *event);
     void ShowError(const char *msg, ...);
     int _sprintf(char *buffer, const char *format, ...);
     void FUN_0041c000(void *soundManager, char *str, int, int, int);
@@ -302,8 +299,8 @@ int TimedEvent::Update() {
                 return 0;
             }
             if (this->field_10) {
-                void* new_event = TimedEvent__Create(g_GameStruct2, g_GameStruct2[1], 0);
-                TimedEvent__CopyConstructor((void*)((char*)new_event + 8), (void*)this->field_10);
+                TimedEvent* new_event = TimedEvent::Create(g_GameStruct2, g_GameStruct2[1], 0);
+                new_event->Copy((TimedEvent*)this->field_10);
                 if (g_GameStruct2[1] == 0) {
                     *g_GameStruct2 = new_event;
                 } else {
@@ -312,7 +309,7 @@ int TimedEvent::Update() {
                 g_GameStruct2[1] = new_event;
             }
             if (this->field_10) {
-                TimedEvent_dtor((void*)this->field_10);
+                ((TimedEvent*)this->field_10)->~TimedEvent();
                 FreeFromGlobalHeap((void*)this->field_10);
                 this->field_10 = 0;
             }
@@ -322,8 +319,8 @@ int TimedEvent::Update() {
                 return 0;
             }
             if (this->field_10) {
-                void* new_event = TimedEvent__Create(g_GameStruct2, g_GameStruct2[1], 0);
-                TimedEvent__CopyConstructor((void*)((char*)new_event + 8), (void*)this->field_10);
+                TimedEvent* new_event = TimedEvent::Create(g_GameStruct2, g_GameStruct2[1], 0);
+                new_event->Copy((TimedEvent*)this->field_10);
                 if (g_GameStruct2[1] == 0) {
                     *g_GameStruct2 = new_event;
                 } else {
@@ -340,8 +337,8 @@ int TimedEvent::Update() {
                 return 0;
             }
             if (this->field_10) {
-                void* new_event = TimedEvent__Create(g_GameStruct2, g_GameStruct2[1], 0);
-                TimedEvent__CopyConstructor((void*)((char*)new_event + 8), (void*)this->field_10);
+                TimedEvent* new_event = TimedEvent::Create(g_GameStruct2, g_GameStruct2[1], 0);
+                new_event->Copy((TimedEvent*)this->field_10);
                 if (g_GameStruct2[1] == 0) {
                     *g_GameStruct2 = new_event;
                 } else {
@@ -350,7 +347,7 @@ int TimedEvent::Update() {
                 g_GameStruct2[1] = new_event;
             }
             if (this->field_10) {
-                TimedEvent_dtor((void*)this->field_10);
+                ((TimedEvent*)this->field_10)->~TimedEvent();
                 FreeFromGlobalHeap((void*)this->field_10);
                 this->field_10 = 0;
             }

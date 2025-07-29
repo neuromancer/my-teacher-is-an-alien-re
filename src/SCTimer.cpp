@@ -5,9 +5,6 @@
 // Forward declarations for external functions and classes
 extern "C" {
     void *AllocateMemory_Wrapper(unsigned int size);
-    void TimedEvent__SetData(void *event, void *data);
-    void TimedEvent__delete(int event);
-    int TimedEvent__Update(int event);
     void Queue__Insert(void *queue, int event);
     void Queue__Push(void *queue, int event);
     void *Queue__Pop(void *queue);
@@ -156,14 +153,14 @@ void SCTimer::Update(int param_1, int param_2) {
     queue->current = queue->head;
 
     while(queue->head) {
-        int event_ptr = 0;
+        TimedEvent* event = 0;
         if (queue->current) {
-            event_ptr = *(int*)((char*)queue->current + 8);
+            event = *(TimedEvent**)((char*)queue->current + 8);
         }
 
-        if (TimedEvent__Update(event_ptr)) {
+        if (event->Update()) {
             void* popped = Queue__Pop(queue);
-            TimedEvent__delete((int)popped);
+            ((TimedEvent*)popped)->~TimedEvent();
             FreeFromGlobalHeap(popped);
         }
 
@@ -503,7 +500,7 @@ int SCTimer::Input(void *message) {
                     do {
                         void* event = Queue__Pop(queue);
                         if (event) {
-                            TimedEvent__delete((int)event);
+                            ((TimedEvent*)event)->~TimedEvent();
                             FreeFromGlobalHeap(event);
                         }
                     } while (queue->head);
@@ -522,7 +519,7 @@ int SCTimer::Input(void *message) {
                     event->field_8 = msg->field_0x8c;
                     event->field_10 = msg->field_0xbc;
                     msg->field_0xbc = 0;
-                    TimedEvent__SetData(event, msg->field_0x9c);
+                    event->SetData(msg->field_0x9c);
                     Queue* queue = (Queue*)field_0xc8;
                     if (!event) {
                         ShowError("queue fault 0101");
@@ -568,7 +565,7 @@ int SCTimer::Input(void *message) {
                         if (current_event->field_c == event->field_c) {
                             void* popped = Queue__Pop(queue);
                             if (popped) {
-                                TimedEvent__delete((int)popped);
+                                ((TimedEvent*)popped)->~TimedEvent();
                                 FreeFromGlobalHeap(popped);
                             }
                             break;
@@ -728,7 +725,7 @@ void Timer_impl_dtor(void* timer) {
             while (queue->head) {
                 void* event = Queue__Pop(queue);
                 if (event) {
-                    TimedEvent__delete((int)event);
+                    ((TimedEvent*)event)->~TimedEvent();
                     FreeFromGlobalHeap(event);
                 }
             }
