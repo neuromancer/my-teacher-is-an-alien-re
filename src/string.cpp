@@ -3,7 +3,7 @@
 
 // Based on the assembly, this function is a custom implementation of strncpy.
 // It copies up to 'n' characters from src to dest, padding with nulls if src is shorter.
-char* FUN_00425fd0(char* dest, const char* src, size_t n) {
+char* strncpy_custom(char* dest, const char* src, size_t n) {
     char* original_dest = dest;
 
     if (n == 0) {
@@ -25,26 +25,27 @@ char* FUN_00425fd0(char* dest, const char* src, size_t n) {
     return original_dest;
 }
 
-// This is a highly literal C++ translation of the original assembly for FUN_00424c00 (strstr).
+// This is a highly literal C++ translation of the original assembly for strstr_custom (strstr).
 // It uses 'goto' to precisely replicate the unconventional control flow of the 1997 compiler's
 // output, which is necessary to produce a matching assembly file.
 
-extern "C" void SetCursorVisible(int visible);
-extern "C" int FUN_004224d0();
-extern "C" void ShutdownGameSystems();
-extern "C" void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
-extern "C" int FUN_004260f0(void* param_1, void* param_2);
 #include <windows.h>
-extern "C" int DAT_0043be34;
-extern "C" char DAT_0043be30;
-extern "C" void* DAT_0043f104;
-extern "C" void* DAT_0043f100;
-extern "C" int DAT_00435030;
-extern "C" int DAT_00435038;
-extern "C" int DAT_0043503c;
-extern "C" int DAT_00435040;
 
-char* FUN_00424c00(const char* haystack, const char* needle) {
+extern void SetCursorVisible(int visible);
+extern int GetWindowHandle_();
+extern void ShutdownGameSystems();
+extern void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
+extern int ExecuteFunctionArray(void* param_1, void* param_2);
+extern int DAT_0043be34;
+extern char DAT_0043be30;
+extern void* DAT_0043f104;
+extern void* DAT_0043f100;
+extern int DAT_00435030;
+extern int DAT_00435038;
+extern int DAT_0043503c;
+extern int DAT_00435040;
+
+char* strstr_custom(const char* haystack, const char* needle) {
     const char* haystack_base = haystack;
     const char* needle_base = needle;
 
@@ -118,7 +119,7 @@ PUSH 0x0
 PUSH EAX
 CALL 0x00426070
 */
-extern "C" void exitWithError_(unsigned int param_1)
+void exitWithError_(unsigned int param_1)
 {
     exitWithErrorInternal(param_1, 0, 0);
 }
@@ -179,16 +180,16 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
                 puVar1 = puVar1 - 1;
             } while ((unsigned int)puVar1 >= (unsigned int)DAT_0043f104);
         }
-        FUN_004260f0(&DAT_00435030, &DAT_00435038);
+        ExecuteFunctionArray(&DAT_00435030, &DAT_00435038);
     }
-    FUN_004260f0(&DAT_0043503c, &DAT_00435040);
+    ExecuteFunctionArray(&DAT_0043503c, &DAT_00435040);
     if (param_3 == 0) {
         ExitProcess(param_1);
     }
 }
 
 /*
-Function: FUN_004260f0
+Function: ExecuteFunctionArray
 Address: 0x4260F0
 
 Disassembled:
@@ -209,7 +210,7 @@ POP EDI
 POP ESI
 RET
 */
-void FUN_004260f0(void** param_1, void** param_2)
+void ExecuteFunctionArray(void** param_1, void** param_2)
 {
     if (param_1 < param_2) {
         do {
@@ -221,15 +222,13 @@ void FUN_004260f0(void** param_1, void** param_2)
     }
 }
 
-extern "C" {
-    void ShowError(const char* format, ...)
-    {
-        char buffer[256];
-        vsprintf(buffer, format, (char*)(&format + 1));
-        SetCursorVisible(1);
-        HWND hWnd = (HWND)FUN_004224d0();
-        MessageBoxA(hWnd, buffer, "Error", 0x10);
-        ShutdownGameSystems();
-        exitWithError_(-1);
-    }
+void ShowError(const char* format, ...)
+{
+    char buffer[256];
+    vsprintf(buffer, format, (char*)(&format + 1));
+    SetCursorVisible(1);
+    HWND hWnd = (HWND)GetWindowHandle_();
+    MessageBoxA(hWnd, buffer, "Error", 0x10);
+    ShutdownGameSystems();
+    exitWithError_(-1);
 }
