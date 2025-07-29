@@ -8,8 +8,6 @@ extern "C" {
     void TimedEvent__SetData(void *event, void *data);
     void TimedEvent__delete(int event);
     int TimedEvent__Update(int event);
-    void Timer_Reset(void *timer);
-    int Timer_Update(void *timer);
     void Queue__Insert(void *queue, int event);
     void Queue__Push(void *queue, int event);
     void *Queue__Pop(void *queue);
@@ -149,10 +147,10 @@ RET 0x8
 */
 
 void SCTimer::Update(int param_1, int param_2) {
-    if (Timer_Update(&this->timer1) > 10000 && *(int*)this->field_0xc8 == 0) {
+    if (this->timer1.Update() > 10000 && *(int*)this->field_0xc8 == 0) {
         SC_Message_Send(3, this->field_0x88[0], this->field_0x88[0], this->field_0x88[1], 0x14, 0, 0, 0, 0, 0);
     }
-    Timer_Reset(&this->timer1);
+    this->timer1.Reset();
 
     Queue* queue = (Queue*)this->field_0xc8;
     queue->current = queue->head;

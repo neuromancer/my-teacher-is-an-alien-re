@@ -191,8 +191,8 @@ extern "C" void ShowError(const char *msg, int val);
 extern "C" void FUN_0041c72c();
 extern "C" void VBuffer_VBuffer_Owner___VBuffer_Owner(void *p);
 #include "BaseObject.h"
+#include "Timer.h"
 
-extern "C" unsigned int Timer_Update(Timer *p);
 extern "C" void FUN_0041c94c();
 
 
@@ -702,7 +702,7 @@ void BaseObject::BaseObject_CreateFromQueue() {
     }
 
     if ((*(int*)this & 2) != 0) {
-        if (Timer_Update(&this->timer) > 2000) {
+        if (this->timer.Update() > 2000) {
             *(int*)this &= ~2;
         }
     }

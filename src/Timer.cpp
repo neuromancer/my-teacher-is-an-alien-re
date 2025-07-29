@@ -57,10 +57,11 @@ MOV dword ptr [ESI + 0x10],EAX
 POP ESI
 RET
 */
-void Timer::Update()
+int Timer::Update()
 {
   this->field_c = timeGetTime();
   this->field_10 = (this->field_c - this->field_8) - this->field_0;
+  return this->field_10;
 }
 
 /*
@@ -293,8 +294,7 @@ extern char DAT_00436960[];
 extern void *g_SoundManager;
 
 int TimedEvent::Update() {
-    this->timer.Update();
-    int time_remaining = this->field_c - this->timer.field_10;
+    int time_remaining = this->field_c - this->timer.Update();
 
     switch (this->field_4) {
         case 0:
