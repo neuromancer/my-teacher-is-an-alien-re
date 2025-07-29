@@ -9,7 +9,6 @@ void Timer::Reset() {
 // Forward declarations for external functions and classes
 extern "C" {
     void *AllocateMemory_Wrapper(unsigned int size);
-    void ShowError(const char *msg, ...);
     int _sprintf(char *buffer, const char *format, ...);
     void FUN_0041c000(void *soundManager, char *str, int, int, int);
     void FreeFromGlobalHeap(void *ptr);
@@ -585,4 +584,36 @@ int TimedEvent::Update() {
             ShowError("illegal type %d in TimedEvent::Update\n", this->field_4);
             return 0; // Should not be reached
     }
+}
+
+/*
+Function: TimeOut_Start
+Address: 0x419020
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH ESI
+MOV ESI,ECX
+TEST EAX,EAX
+JZ 0xE
+MOV dword ptr [ESI + 0x4],EAX
+CMP dword ptr [ESI + 0x4],0x0
+JNZ 0x21
+PUSH 0x436688
+CALL 0x00419110
+MOV ECX,dword ptr [ESI + 0x8]
+MOV dword ptr [ESI],0x1
+CALL 0x00418ef0
+POP ESI
+RET 0x4
+*/
+void TimeOut::Start(int timeout_val)
+{
+    if (timeout_val != 0) {
+        this->timeout = timeout_val;
+    }
+    if (this->timeout == 0) {
+        ShowError("TimeOut::Start() - Must Set a time value greater than 0");
+    }
+    this->active = 1;
+    this->timer->Reset();
 }

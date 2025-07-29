@@ -55,4 +55,13 @@ public:
     int field_bc;
 };
 
+class TimeOut {
+public:
+    void Start(int timeout);
+private:
+    int active;
+    int timeout;
+    Timer* timer;
+};
+
 #endif // TIMER_H
