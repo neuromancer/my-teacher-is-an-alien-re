@@ -44,7 +44,7 @@ public:
     virtual int VFunc5(BaseObject* other);
     void BaseObject_CreateFromQueue();
     void Queue_InsertNodeByType(void* pNode);
-private:
+
     char pad_4[4];
     int field_4;
     int field_8;
@@ -63,10 +63,10 @@ private:
     int field_94;
     int field_98;
     int object_type;
-    int queue1;
-    int queue2;
-    int buffer;
-    int field_ac;
+    int bounding_box_x1;
+    int bounding_box_x2;
+    int bounding_box_y1;
+    int bounding_box_y2;
     int field_b0;
     int field_b4;
     int field_b8;

@@ -238,7 +238,7 @@ void BaseObject::Destroy() {
         }
     }
 
-    ListNode* list4 = (ListNode*)this->queue1;
+    ListNode* list4 = (ListNode*)this->bounding_box_x1;
     if (list4 != 0) {
         for (ListNode* it = list4; it != 0; it = it->next) {
             if (it->data == 0) break;
@@ -558,17 +558,17 @@ void BaseObject::BaseObject_CreateFromQueue() {
     this->field_4 = 0;
 
     if (this->object_type == 2) {
-        if (this->buffer != 0) {
-            if (FUN_0041ebb0((void*)this->buffer) == 0) {
+        if (this->bounding_box_y1 != 0) {
+            if (FUN_0041ebb0((void*)this->bounding_box_y1) == 0) {
                 FUN_00419390();
-                FUN_0041eb70((void*)this->buffer, 0, 0x100);
+                FUN_0041eb70((void*)this->bounding_box_y1, 0, 0x100);
             }
-            this->buffer = 0;
+            this->bounding_box_y1 = 0;
         }
 
         int local_24 = 0;
 
-        QueueNode* queue = (QueueNode*)this->queue1;
+        QueueNode* queue = (QueueNode*)this->bounding_box_x1;
         while (queue != 0) {
             ListNode* node = 0;
             if (queue->type == 1 || queue->type == 4) {
@@ -591,7 +591,7 @@ void BaseObject::BaseObject_CreateFromQueue() {
             queue = (QueueNode*)queue->field_0;
         }
         FUN_0041c72c();
-        ListNode* queue2 = (ListNode*)this->queue2;
+        ListNode* queue2 = (ListNode*)this->bounding_box_x2;
         if (queue2 != 0) {
             while (queue2 != 0) {
                 ListNode* node = (ListNode*)SC__ZBuffer__PopNode_2(queue2);
@@ -603,12 +603,12 @@ void BaseObject::BaseObject_CreateFromQueue() {
             }
         }
     } else if (this->object_type == 3) {
-        if (this->buffer != 0) {
-            if (FUN_0041ebb0((void*)this->buffer) == 0) {
+        if (this->bounding_box_y1 != 0) {
+            if (FUN_0041ebb0((void*)this->bounding_box_y1) == 0) {
                 FUN_00419390();
-                FUN_0041eb70((void*)this->buffer, 0, 0x100);
+                FUN_0041eb70((void*)this->bounding_box_y1, 0, 0x100);
             }
-            this->buffer = 0;
+            this->bounding_box_y1 = 0;
         }
         QueueNode* queue = (QueueNode*)this->object_type;
         while (queue != 0) {
@@ -623,14 +623,14 @@ void BaseObject::BaseObject_CreateFromQueue() {
             if (queue != 0) {
                 // This is a manual implementation of PopNode
                 // ...
-                if (node != 0) {
-                    FUN_004189a0(node, 1);
-                }
+            if (node != 0) {
+                FUN_004189a0(node, 1);
             }
-            ListNode* queue2 = (ListNode*)this->queue1;
-            if (queue2 != 0) {
-                for (ListNode* it = queue2; it != 0; it = it->next) {
-                    void(**vtable)(void*) = *(void(***)(void*))it->data;
+        }
+        ListNode* queue2 = (ListNode*)this->bounding_box_x1;
+        if (queue2 != 0) {
+            for (ListNode* it = queue2; it != 0; it = it->next) {
+                void(**vtable)(void*) = *(void(***)(void*))it->data;
                     (*vtable)((char*)node + 4);
                 }
             }
@@ -640,7 +640,7 @@ void BaseObject::BaseObject_CreateFromQueue() {
             }
             queue = (QueueNode*)queue->field_0;
         }
-        ListNode* queue3 = (ListNode*)this->queue2;
+        ListNode* queue3 = (ListNode*)this->bounding_box_x2;
         if (queue3 != 0) {
             while (queue3 != 0) {
                 ListNode* node = (ListNode*)SC__ZBuffer__PopNode_2(queue3);

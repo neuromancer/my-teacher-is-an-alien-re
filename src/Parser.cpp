@@ -650,7 +650,7 @@ void BaseObject::Queue_InsertNodeByType(void* pNode) {
                 FreeFromGlobalHeap(pNode);
             }
         } else if (this->object_type == 2 || this->object_type == 3) {
-            QueueNode* queue = (QueueNode*)this->queue1;
+            QueueNode* queue = (QueueNode*)this->bounding_box_x1;
             if (pNode == 0) {
                 ShowError(s_queue_fault_0101_00435120);
             }
