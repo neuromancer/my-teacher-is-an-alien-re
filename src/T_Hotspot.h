@@ -19,9 +19,18 @@ public:
     void Do();
     int Set_State(int state);
     int Get_State();
+    int Update(int, int, int);
 private:
     char pad[0x88];
     Sprite* sprite;
+    int field_0x8c;
+    int field_0x90;
+    int field_0x94;
+    char pad2[0x11c - 0x98];
+    int field_0x11c;
+    int field_0x120;
+    int field_0x124;
+    int field_0x128;
 };
 
 #endif // T_HOTSPOT_H

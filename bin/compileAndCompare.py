@@ -13,43 +13,14 @@ def read_assembly(function_name, file_path):
         assembly = file.read()
 
     # Parse assembly code
-    if "::" in function_name:
-        if f"; {function_name}, COMDAT" in assembly:
-            assembly = assembly.split(f"; {function_name}, COMDAT")[1]
-            assembly = assembly.split(f"; {function_name}")[0]
-        else:
-            # Use regex to handle variable whitespace
-            match = re.search(fr"PROC NEAR\s*;\s*{re.escape(function_name)}", assembly)
-            if match:
-                assembly = assembly.split(match.group(0))[1]
-                assembly = assembly.split(f"ENDP")[0]
-            else:
-                return None #raise IndexError(f"Function '{function_name}' not found in assembly with non-COMDAT format.")
+    if f"; {function_name}, COMDAT" in assembly:
+        assembly = assembly.split(f"; {function_name}, COMDAT")[1]
+        assembly = assembly.split(f"; {function_name}")[0]
+    elif f"_{function_name} PROC NEAR" in assembly:
+        assembly = assembly.split(f"_{function_name} PROC NEAR")[1]
+        assembly = assembly.split(f"_{function_name} ENDP")[0]
     else:
-        if function_name.startswith("?"):
-            match = re.search(f"{re.escape(function_name)} PROC NEAR", assembly)
-            if match:
-                assembly = assembly.split(f"{function_name} PROC NEAR")[1]
-                assembly = assembly.split(f"ENDP")[0]
-        elif function_name == "ShowError":
-            assembly = assembly.split(f"?ShowError@@YAXPADZZ PROC NEAR")[1]
-            assembly = assembly.split(f"?ShowError@@YAXPADZZ ENDP")[0]
-        elif function_name == "_SetVideoMode":
-            assembly = assembly.split(f"?_SetVideoMode@@YAHH@Z PROC NEAR")[1]
-            assembly = assembly.split(f"?_SetVideoMode@@YAHH@Z ENDP")[0]
-        elif function_name == "InvalidateVideoMode":
-            assembly = assembly.split(f"?InvalidateVideoMode@@YAHXZ PROC NEAR")[1]
-            assembly = assembly.split(f"?InvalidateVideoMode@@YAHXZ ENDP")[0]
-        elif function_name == "ClearScreen":
-            assembly = assembly.split(f"?ClearScreen@@YAXXZ PROC NEAR")[1]
-            assembly = assembly.split(f"?ClearScreen@@YAXXZ ENDP")[0]
-        else:
-            if function_name == "FUN_004260f0":
-                assembly = assembly.split(f"?FUN_004260f0@@YAXPAPAX0@Z PROC NEAR")[1]
-                assembly = assembly.split(f"?FUN_004260f0@@YAXPAPAX0@Z ENDP")[0]
-            else:
-                assembly = assembly.split(f"_{function_name} PROC")[1]
-                assembly = assembly.split(f"_{function_name} ENDP")[0]
+        return None #raise IndexError(f"Function '{function_name}' not found in assembly with non-COMDAT format.")
 
     # Discard the lines that start with ";"
     assembly = "\n".join([line for line in assembly.split("\n") if not line.strip().startswith(";")])
@@ -62,7 +33,6 @@ def read_assembly(function_name, file_path):
         assembly = assembly.split("PROC NEAR")[1]
         assembly = assembly.split("ENDP")[0]
 
-    #print(assembly)
     return assembly
 def parse_mnemonics(assembly_code):
     normalization_map = {
