@@ -4,7 +4,6 @@
 // Forward declarations for external functions and classes
 extern "C" {
     void Timer_Init(void *timer);
-    void Timer_Reset(void *timer);
     int Timer_Update(void *timer);
     void *TimedEvent__Create(void *param_1, void *param_2, int param_3);
     void TimedEvent__CopyConstructor(void *dest, void *src);
@@ -60,7 +59,7 @@ void TimedEvent::Init() {
         for (int i = 0; i < 10; i++) {
             ((int*)this)[i] = 0;
         }
-        Timer_Reset(&this->timer);
+        this->timer.Reset();
     } catch(...) {
         // Matching SEH
     }
@@ -282,7 +281,7 @@ int TimedEvent::Update() {
                 }
                 g_GameStruct2[1] = new_event;
             }
-            Timer_Reset(&this->timer);
+            this->timer.Reset();
             return 0;
         case 2:
             _sprintf(DAT_00436960, "%3.3d:%2.2d", time_remaining / 60000, (time_remaining / 1000) % 60);

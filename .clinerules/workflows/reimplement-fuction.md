@@ -33,6 +33,7 @@ Address: 0x123456
 * Only review and modify src/Parser.cpp
 * There is no need to review how compilation works.
 * If the decompiled code shows a function called like `_strcpy` or `ShowError`, use  the same one. If it contains any other call (e.g. `FUN_00123456`) then use an extern definition. Do NOT guess functions.
+* Do NOT inline class methods
 * You can include calls to function like memcpy or strcpy, but only if the compiler will inline them and produce a better match for the target assembly.
 * Do NOT use unions or substructures in the classes , it is very unlikely that these are used in the original code!
 * Provide reasonable names to fields, once you understand what they do.

@@ -1,14 +1,22 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include <windows.h>
+
 class Timer {
 public:
+    void Reset();
     int field_0;
     int field_4;
     int field_8;
     int field_c;
     int field_10;
 };
+
+void Timer::Reset() {
+    this->field_8 = timeGetTime();
+    this->field_0 = 0;
+}
 
 class TimedEvent {
 public:
