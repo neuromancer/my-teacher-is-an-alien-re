@@ -1,7 +1,9 @@
 #ifndef VBUFFER_H
 #define VBUFFER_H
 
-class VBuffer {
+#include "BaseObject.h"
+
+class VBuffer : public BaseObject {
 public:
     VBuffer(int width, int height);
     ~VBuffer();
