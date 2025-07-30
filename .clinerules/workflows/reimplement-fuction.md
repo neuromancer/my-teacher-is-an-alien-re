@@ -13,6 +13,8 @@ python3 bin/compileAndCompare.py Parser::GetKey code/GetKey.dissasembled.txt
 
 It will show you the assembly code produced (or any compiler errors).
 
+IMPORTANT: remember that the assembly code is the only source of truth, the decompiled code could be wrong or mislabeled.
+
 # Requirements:
 
 * Define the class on the top of the file.

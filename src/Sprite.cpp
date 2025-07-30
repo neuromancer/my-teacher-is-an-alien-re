@@ -1,15 +1,12 @@
+#include "Sprite.h"
 #include "Smacker.h"
 #include "Animation.h"
 #include "VBuffer.h"
-
-// Forward declaration
-class Sprite;
 
 #include <string.h>
 
 extern "C" {
     void _sscanf(const char* buffer, const char* format, ...);
-    void SetRange(Sprite* sprite, int, int, int);
     void Array_Cleanup(int, int, int, void*);
     void FreeFromGlobalHeap(int*);
     int* AllocateMemory_Wrapper(int);
@@ -29,38 +26,18 @@ extern "C" {
     void FUN_0041fcb0(int);
     __int64 __cdecl __ftol();
     void FUN_0041be20(void*, int, int, int, int, int, int, int);
+    void FUN_0041fc20(Sprite*, int, int);
+    int FUN_00421d10(void*);
+    void* DAT_00436968;
+    int DAT_004373bc;
+    int _SmackWait_4(SmackStruct*);
+    int* FUN_004224f0();
+    int* FUN_004224e0();
+    void FUN_0041acf0(void*, int, int, int, int, int, int, int, int);
+    void* FUN_004249c0(int size);
+    int FUN_004224d0();
+    int FUN_00421af0();
 }
-
-class Sprite : public VBuffer {
-public:
-    // placeholder fields based on offsets
-    SmackStruct* smack_struct; // 0xc
-    char pad_0x10[0x24 - 0x10];
-    void* smacker_buffer; // 0x24
-    char pad_0x28[0x88 - 0x28];
-    int* field136_0x88; // 0x88
-    int flags; // 0x8c
-    int field138_0x90; // 0x90
-    int field139_0x94; // 0x94
-    char pad_0x98[0xa4-0x98];
-    int field_0xa4; // 0xa4
-    int field_0xa8; // 0xa8
-    int field_0xac; // 0xac
-    char pad_0xb0[0xb4 - 0xb0];
-    const char* filename; // 0xb4
-    char pad_0xb8[0xd0 - 0xb8];
-    Animation* animation_data; // 0xd0
-    char pad_0xd4[4];
-
-    void CheckRanges1();
-    void CloseSmackerBuffer();
-    void CloseSmackerFile();
-    unsigned char Do(int x, int y, int param_3, int param_4);
-    void SetState(int state);
-    void SetRanges(int);
-    Sprite(char* filename);
-    ~Sprite();
-};
 
 /*
 Function: Sprite
@@ -118,8 +95,9 @@ MOV ESP,EBP
 POP EBP
 RET 0x4
 */
-Sprite::Sprite(char* filename) : VBuffer(0, 0)
+Sprite::Sprite(char* filename) : BaseObject()
 {
+    this->vbuffer = new VBuffer(0, 0);
     this->field_0xa4 = 0;
     this->field_0xa8 = 0;
     *(void**)this = (void*)0x431530;
@@ -137,7 +115,7 @@ Sprite::Sprite(char* filename) : VBuffer(0, 0)
 
     SetRanges(1);
     this->field139_0x94 = 0;
-    SetRange(this, 0, 1, 5000);
+    this->SetRange(0, 1, 5000);
 }
 
 /*
@@ -247,7 +225,7 @@ RET
 Sprite::~Sprite()
 {
     *(void**)this = (void*)0x431570;
-    this->Free();
+    this->vbuffer->Free();
     CloseSmackerBuffer();
     CloseSmackerFile();
     FUN_0041fbd3();
@@ -286,13 +264,13 @@ void Sprite::SetState(int state) {
         return;
     }
 
-    if (this->animation_data == 0 || this->animation_data->field0_0x0 == 0) {
+    if (this->animation_data == 0) {
         Init(this);
     }
 
     if (state > -1 && state <= this->field_0xac - 1) {
         if (this->animation_data != 0) {
-            int iVar1 = this->animation_data->smkStruct->current_frame;
+            int iVar1 = this->animation_data->smack_struct->current_frame;
             if (this->field136_0x88 != 0) {
                 int* piVar5 = (int*)((char*)this->field136_0x88 + state * 8);
                 bool bVar4 = (iVar1 >= *piVar5) && (iVar1 <= piVar5[1]);
@@ -305,7 +283,7 @@ void Sprite::SetState(int state) {
                     int iVar6 = 0;
                     if ((this->flags & 0x10) != 0) {
                         int iVar2 = (int)this->field136_0x88;
-                        iVar6 = this->animation_data->smkStruct->current_frame - *(int*)((char*)iVar2 + this->field138_0x90 * 8);
+                        iVar6 = this->animation_data->smack_struct->current_frame - *(int*)((char*)iVar2 + this->field138_0x90 * 8);
                         int iVar3 = *(int*)((char*)iVar2 + state * 8);
                         int iVar1_ = iVar3 + 1 + iVar6;
                         iVar6++;
@@ -392,7 +370,7 @@ void Sprite::CheckRanges1() {
         int j = 0;
         do {
             int* piVar2 = (int *)((char*)this->field136_0x88 + 4 + j);
-            int iVar1 = this->animation_data->smkStruct->total_frames;
+            int iVar1 = this->animation_data->smack_struct->total_frames;
             if (iVar1 < *piVar2) {
                 *piVar2 = iVar1;
             }
@@ -636,7 +614,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     if ((this->flags & 0x80) != 0) {
         return 1;
     }
-    if ((this->animation_data == (void *)0x0) || (this->animation_data->field0_0x0 == 0)) {
+    if (this->animation_data == (void *)0x0) {
         Init(this);
     }
     int* piVar4 = (int *)(this->field138_0x90 * 8 + (int)this->field136_0x88);
@@ -655,7 +633,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
             iVar3 = *(int *)((char*)this->field136_0x88 + 4 + this->field138_0x90 * 8);
         }
         else {
-            iVar3 = *(int *)((char*)this->field136_0x88 + 4 + this->field138_0x90 * 8) - anim->smkStruct->current_frame;
+            iVar3 = *(int *)((char*)this->field136_0x88 + 4 + this->field138_0x90 * 8) - anim->smack_struct->current_frame;
         }
         if (iVar3 == 1) {
             if ((this->flags & 0x200) == 0) {
@@ -683,7 +661,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
                 y = y + -1;
             }
             else {
-                y = y + anim->virtualBuffer->height + -1;
+                y = y + anim->vbuffer->height + -1;
             }
         }
         else if (anim == 0) {
@@ -704,9 +682,200 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     else {
         iVar3 = 3 - (unsigned int)((uVar2 & 0x40) == 0);
     }
-    FUN_0041be20(0, (int)this->animation_data->field0_0x0, this->field139_0x94, x, y, iVar3, param_3, param_4);
+    FUN_0041be20(0, (int)this->animation_data, this->field139_0x94, x, y, iVar3, param_3, param_4);
     if ((this->flags & 1) == 0) {
         return bVar5;
     }
     return 0;
+}
+
+void Sprite::ToBuffer()
+{
+    if (this->smack_struct == 0) {
+        ShowError("s_Animation__ToBuffer_____No_smk_d_004370e4");
+    }
+    this->VBInit();
+    this->ToBuffer2(this);
+}
+
+void Sprite::MainLoop()
+{
+    if (this->smack_struct == 0) {
+        return;
+    }
+
+    this->vbuffer->SetCurrentVideoMode(*(int*)((char*)this->vbuffer + 0x1c));
+
+    if (this->smack_struct->total_frames > 0) {
+        for (int i = 1; i <= this->smack_struct->total_frames; i++) {
+            if (*(int*)((char*)this->smack_struct + 0x68) != 0) {
+                FUN_0041fc20(this, 0, 0x100);
+            }
+            this->DoFrame();
+
+            do {
+                if (FUN_00421d10(DAT_00436968) != 0) {
+                    goto LAB_0042012f;
+                }
+                if ((this->flags & 4) == 0) {
+                    unsigned int uVar3 = 0;
+                    int iVar1 = *(int*)((char*)DAT_00436968 + 0x1a0);
+                    if (iVar1 != 0) {
+                        uVar3 = *(unsigned int*)(iVar1 + 8) & 2;
+                    }
+                    if (uVar3 == 0 && (*(char*)(iVar1 + 0xc) & 2) == 0) {
+                        char bVar5 = 0;
+                        if (DAT_004373bc != 0) {
+                            bVar5 = FUN_00421af0() == 0x1b;
+                        }
+                        if (bVar5) {
+                            *(int*)&this->vbuffer->videoMode |= 1;
+                            goto LAB_0042012f;
+                        }
+                    }
+                }
+            } while (_SmackWait_4(this->smack_struct) != 0);
+
+            void* this_00 = this;
+            int* piVar2 = FUN_004224f0();
+            int iVar1 = *piVar2 - 1;
+            int iVar6 = 0;
+            piVar2 = FUN_004224e0();
+            FUN_0041acf0(this_00, *(int*)((char*)this_00 + 0x28), *(int*)((char*)this_00 + 0x2c), *(int*)((char*)this_00 + 0x20), *(int*)((char*)this_00 + 0x24), 0, *piVar2 - 1, iVar6, iVar1);
+
+            if (this->smack_struct->total_frames - 1 <= i) {
+                break;
+            }
+            FUN_0041fcb0((int)this);
+        }
+    }
+
+LAB_0042012f:
+    this->vbuffer->InvalidateVideoMode();
+}
+
+void Sprite::VBInit()
+{
+    try {
+        if (this->vbuffer->data != 0) {
+            ShowError("s_VBuffer_already_created_004370ac");
+        }
+        VBuffer* new_buffer = (VBuffer*)FUN_004249c0(0x30);
+        if (new_buffer != 0) {
+            new_buffer->VirtualBufferCreateAndClean(this->smack_struct->width, this->smack_struct->height);
+        }
+    } catch (...) {
+        // Catch all exceptions
+    }
+}
+
+void Sprite::ToBuffer2(void* param_1)
+{
+    if (this->smack_struct == 0) {
+        ShowError("s_Animation__ToBuffer_____No_smk_d_004370e4");
+    }
+    int uVar1 = FUN_004224d0();
+    this->vbuffer->field_0x28 = uVar1;
+    SmackStruct* piVar2 = SmackBufferOpen(uVar1, 4, 4, 4, 0, 0);
+    this->smacker_buffer = piVar2;
+    if (piVar2 == 0) {
+        ShowError("s_Animation__ToBuffer_____Buffer_c_00437144");
+    }
+    if (this->vbuffer->data != 0) {
+        ShowError("s_Animation__ToBuffer_____Virtual_B_0043710c");
+    }
+    this->vbuffer->data = (VBuffer*)param_1;
+    unsigned int uVar3 = (unsigned int)*(char*)this->smacker_buffer;
+    int uVar1_2 = this->vbuffer->GetSomething();
+    SmackToBuffer(this->smack_struct, 0, 0, this->smack_struct->width * 2, this->smack_struct->height, (void*)uVar1_2, uVar3);
+}
+
+void Sprite::DoFrame()
+{
+  if (this->smack_struct != 0) {
+    SmackDoFrame(this->smack_struct);
+  }
+}
+
+void Sprite::SetRange(int param_1, int param_2, int param_3)
+{
+    if (this->field_0xac <= param_1) {
+        ShowError("s_Sprite__SetRange_1__s__d_00436c48", &this->filename, param_1);
+    }
+    if ((param_2 > 0) && (param_3 > 0)) {
+        int* piVar1 = (int*)((char*)this->field136_0x88 + param_1 * 8);
+        *piVar1 = param_2;
+        piVar1[1] = param_3;
+        this->flags = this->flags | 0x20;
+        return;
+    }
+    ShowError("s_Sprite__SetRange_2__s__d_range___00436c20", &this->filename, param_1, param_2, param_3);
+}
+
+void Sprite::SetLogic(int param_1, int param_2)
+{
+    if (this->field140_0x98 == 0) {
+        this->AllocateLogic(1);
+    }
+
+    int iVar2 = 0;
+    if (0 < this->field142_0xa0) {
+        int* piVar1 = (int*)(this->field140_0x98 + 4);
+        do {
+            if (*piVar1 == 0) {
+                *(int*)(this->field140_0x98 + iVar2 * 8) = param_1;
+                *(int*)(this->field140_0x98 + 4 + iVar2 * 8) = param_2;
+                return;
+            }
+            piVar1 = piVar1 + 2;
+            iVar2 = iVar2 + 1;
+        } while (iVar2 < this->field142_0xa0);
+    }
+
+    ShowError("s_Sprite__SetLogic__s_00436c64", &this->filename);
+}
+
+void Sprite::AllocateLogic(int param_1)
+{
+    if (this->field140_0x98 != 0) {
+        Array_Cleanup(this->field140_0x98, 8, *(int*)(this->field140_0x98 - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)(this->field140_0x98 - 4));
+        this->field140_0x98 = 0;
+    }
+
+    this->field142_0xa0 = param_1;
+    int* piVar4 = 0;
+    int* piVar1 = AllocateMemory_Wrapper(param_1 * 8 + 4);
+
+    if (piVar1 != 0) {
+        piVar4 = piVar1 + 1;
+        *piVar1 = param_1;
+        FUN_00424b00(piVar4, 8, param_1, (void*)0x41d850, (void*)0x405770);
+    }
+
+    this->field140_0x98 = (int)piVar4;
+    if (0 < this->field142_0xa0) {
+        int iVar3 = 0;
+        int iVar2 = 0;
+        do {
+            iVar3 = iVar3 + 8;
+            iVar2 = iVar2 + 1;
+            *(int*)(this->field140_0x98 - 8 + iVar3) = 0;
+            *(int*)(this->field140_0x98 - 4 + iVar3) = 0;
+        } while (iVar2 < this->field142_0xa0);
+    }
+}
+
+void Sprite::CleanArray10()
+{
+    memset((char*)this + 4, 0, 40);
+}
+
+void Sprite::Free() {
+    if (this->vbuffer != 0) {
+        this->vbuffer->Free();
+        //FUN_00424940(this->vbuffer);
+        this->vbuffer = 0;
+        //this->field0_0x0 = 0;
+    }
 }
