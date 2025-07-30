@@ -32,4 +32,7 @@ clean:
 	rm -f $(OUT_DIR)/*.asm
 	rm -f $(OUT_DIR)/*.map
 
+report:
+	python3 bin/compileAndReport.py
+
 .PHONY: all clean
