@@ -38,6 +38,7 @@ There is a very important file located in `code/strings.txt`. This contains the 
 * The code will be compiled, but not linked: do NOT add a main function. Use extern to define any unknown functions.
 * There is no need to review how compilation works.
 * If the decompiled code shows a standard function called like `_strcpy`, then use `strcpy` imported from the corresponding header.
+* Every time you found a standard function such as `fsetpos`, carefully review each parameter and try to rename/retype the fields of the class using that information.
 * If the decompiled code shows a function such as `ShowError`, use the one already implemented (check all the source files). If it contains any other call that are not yet implemented (e.g. `FUN_00123456`) then use an extern definition. Do NOT guess functions.
 * Do NOT inline class methods
 * You can include calls to function like `memcpy` or `strcpy`, but only if the compiler will inline them and produce a better match for the target assembly.
@@ -55,6 +56,6 @@ Start with <function>.
 
 Before starting, review all the current files and determine if there is any class where the function could be added as a method. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
 
-If similarity is >= 90%, you can stop.
+If similarity is >= 90%, you can stop. If you give up, make sure you still provide the code with the best similarity.
 
 Note: `ShowError` is a function that should be marked by the compiler as "no return" as it calls some internal functions that eventualy ends the process, so it will not produce instructions after the call. However, right now, the implementation is not complete and the compiler will not optimize that.
