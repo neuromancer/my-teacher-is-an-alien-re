@@ -9,8 +9,10 @@ public:
     ~Parser();
     void Init();
     void CloseFile();
+    void LBLParse(char*);
     void Open(char *param_1);
     void Copy(Parser* other);
+    void SaveFilePosition();
 private:
     int vtable;
     int field_0x4;

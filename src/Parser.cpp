@@ -1,8 +1,8 @@
 #include "Parser.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-extern "C" int _fclose(FILE*);
 extern "C" FILE* FUN_00425e50(const char*, const char*);
 extern "C" void ShowError(const char*, ...);
 
@@ -47,8 +47,22 @@ void Parser::Copy(Parser* other)
 void Parser::CloseFile()
 {
     if (this->field_0x8 != 0 && this->pFile != NULL) {
-        _fclose(this->pFile);
+        fclose(this->pFile);
         this->pFile = NULL;
         this->field_0x8 = 0;
+    }
+}
+
+/* Function start: 0x418B30 */
+void Parser::LBLParse(char* param_1)
+{
+    ShowError((char*)0x436504, param_1, this->field_0x30, this->filename);
+}
+
+/* Function start: 0x418B50 */
+void Parser::SaveFilePosition()
+{
+    if (fgetpos(this->pFile, (fpos_t*)&this->field_0x38) != 0) {
+        ShowError((char*)0x436538, this->filename);
     }
 }
