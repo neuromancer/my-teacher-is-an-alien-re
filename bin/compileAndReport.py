@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import re
 from compileAndCompare import get_similarity
@@ -24,7 +26,7 @@ def run_comparison(function_name, address):
     if not os.path.exists(disassembled_file):
         return "N/A"
 
-    similarity, _ = get_similarity(function_name, disassembled_file)
+    similarity, _ = get_similarity(function_name, disassembled_file, clean_build=False)
     if similarity is not None:
         return f"{similarity:.2f}%"
     else:
@@ -33,6 +35,9 @@ def run_comparison(function_name, address):
 def main():
     report = []
     src_dir = "src"
+
+    # Clean and build once
+    os.system("make clean all > /dev/null 2>&1")
 
     for root, _, files in os.walk(src_dir):
         if "src/map" in root:
