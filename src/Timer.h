@@ -3,8 +3,12 @@
 
 class Timer {
 public:
+    Timer();
+    ~Timer();
     Timer* Init();
     void Reset();
+    unsigned int Update();
+    void Wait(unsigned int);
 
 private:
     unsigned int m_field0;
@@ -13,5 +17,7 @@ private:
     unsigned int m_fieldC;
     unsigned int m_field10;
 };
+
+void Timer_DecrementCounter();
 
 #endif // TIMER_H
