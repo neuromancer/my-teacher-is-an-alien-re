@@ -32,6 +32,9 @@ clean:
 	rm -f $(OUT_DIR)/*.asm
 	rm -f $(OUT_DIR)/*.map
 
+sort:
+	python3 bin/sortByAddress.py
+
 report:
 	python3 bin/compileAndReport.py
 

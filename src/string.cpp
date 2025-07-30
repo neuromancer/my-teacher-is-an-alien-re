@@ -109,31 +109,6 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
     }
 }
 
-/* Function start: 0x4260F0 */
-void ExecuteFunctionArray(void** param_1, void** param_2)
-{
-    if (param_1 < param_2) {
-        do {
-            if (*param_1 != 0) {
-                ((void (*)(void)) *param_1)();
-            }
-            param_1 = param_1 + 1;
-        } while (param_1 < param_2);
-    }
-}
-
-/* Function start: 0x419110 */
-void ShowError(const char* format, ...)
-{
-    char buffer[256];
-    vsprintf(buffer, format, (char*)(&format + 1));
-    SetCursorVisible(1);
-    HWND hWnd = (HWND)GetWindowHandle_();
-    MessageBoxA(hWnd, buffer, "Error", 0x10);
-    ShutdownGameSystems();
-    exitWithError_(-1);
-}
-
 /* Function start: 0x419080 */
 void ExtractQuotedString(char *param_1,char *param_2,int param_3)
 {
@@ -162,3 +137,29 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
     param_2[iVar3] = '\0';
     return;
 }
+
+/* Function start: 0x419110 */
+void ShowError(const char* format, ...)
+{
+    char buffer[256];
+    vsprintf(buffer, format, (char*)(&format + 1));
+    SetCursorVisible(1);
+    HWND hWnd = (HWND)GetWindowHandle_();
+    MessageBoxA(hWnd, buffer, "Error", 0x10);
+    ShutdownGameSystems();
+    exitWithError_(-1);
+}
+
+/* Function start: 0x4260F0 */
+void ExecuteFunctionArray(void** param_1, void** param_2)
+{
+    if (param_1 < param_2) {
+        do {
+            if (*param_1 != 0) {
+                ((void (*)(void)) *param_1)();
+            }
+            param_1 = param_1 + 1;
+        } while (param_1 < param_2);
+    }
+}
+

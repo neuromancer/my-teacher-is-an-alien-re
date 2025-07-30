@@ -8,25 +8,6 @@ extern "C" {
 // Global variable
 #define g_timer_count (*(unsigned int*)0x00436684)
 
-/* Function start: 0x418F50 */
-Timer::Timer()
-{
-    Init();
-}
-
-/* Function start: 0x418F60 */
-Timer::~Timer()
-{
-    Timer* pThis = this;
-    void* pField8 = (void*)pThis->m_startTime;
-    if (pField8)
-    {
-        Timer_DecrementCounter();
-        FreeFromGlobalHeap(pField8);
-        pThis->m_startTime = 0;
-    }
-}
-
 /* Function start: 0x418EB0 */
 Timer* Timer::Init()
 {
@@ -46,14 +27,11 @@ void Timer_DecrementCounter()
     g_timer_count--;
 }
 
-
-/* Function start: 0x418F30 */
-void Timer::Wait(unsigned int delay)
+/* Function start: 0x418EF0 */
+void Timer::Reset()
 {
-    Reset();
-    do {
-        Update();
-    } while (m_elapsedTime < delay);
+    m_startTime = timeGetTime();
+    m_pauseDuration = 0;
 }
 
 /* Function start: 0x418F10 */
@@ -64,9 +42,18 @@ unsigned int Timer::Update()
     return m_elapsedTime;
 }
 
-/* Function start: 0x418EF0 */
-void Timer::Reset()
+/* Function start: 0x418F30 */
+void Timer::Wait(unsigned int delay)
 {
-    m_startTime = timeGetTime();
-    m_pauseDuration = 0;
+    Reset();
+    do {
+        Update();
+    } while (m_elapsedTime < delay);
 }
+
+/* Function start: 0x418F50 */
+Timer::Timer()
+{
+    Init();
+}
+
