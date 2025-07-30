@@ -79,93 +79,13 @@ loop_start:
     }
 }
 
-/*
-Function: ShowError
-Address: 0x419110
-
-Disassembled:
-LEA EAX,[ESP + 0x8]
-MOV ECX,dword ptr [ESP + 0x4]
-SUB ESP,0x100
-LEA EDX,[ESP]
-PUSH EAX
-PUSH ECX
-PUSH EDX
-CALL 0x00424cb0
-ADD ESP,0xc
-PUSH 0x1
-CALL 0x00422d98
-LEA ECX,[ESP + 0x4]
-ADD ESP,0x4
-PUSH 0x10
-PUSH 0x4366fc
-PUSH ECX
-CALL 0x004224d0
-PUSH EAX
-CALL dword ptr [0x0044044c]
-CALL 0x0041a550
-PUSH -0x1
-CALL 0x00426030
-*/
-
-/*
-Function: exitWithError_
-Address: 0x426030
-
-Disassembled:
-MOV EAX,dword ptr [ESP + 0x4]
-PUSH 0x0
-PUSH 0x0
-PUSH EAX
-CALL 0x00426070
-*/
+/* Function start 0x426030 */
 void exitWithError_(unsigned int param_1)
 {
     exitWithErrorInternal(param_1, 0, 0);
 }
 
-/*
-Function: exitWithErrorInternal
-Address: 0x426070
-
-Disassembled:
-MOV dword ptr [0x0043be34],0x1
-CMP dword ptr [ESP + 0x8],0x0
-PUSH EBX
-PUSH ESI
-MOV EBX,dword ptr [ESP + 0x14]
-MOV byte ptr [0x0043be30],BL
-JNZ 0x5C
-CMP dword ptr [0x0043f104],0x0
-JZ 0x4A
-MOV ESI,dword ptr [0x0043f100]
-SUB ESI,0x4
-CMP ESI,dword ptr [0x0043f104]
-JC 0x004260ba
-MOV EAX,dword ptr [ESI]
-TEST EAX,EAX
-JZ 0x3F
-CALL EAX
-SUB ESI,0x4
-CMP ESI,dword ptr [0x0043f104]
-JNC 0x004260a7
-PUSH 0x435038
-PUSH 0x435030
-CALL 0x004260f0
-ADD ESP,0x8
-PUSH 0x435040
-PUSH 0x43503c
-CALL 0x004260f0
-ADD ESP,0x8
-TEST EBX,EBX
-JNZ 0x7D
-MOV EAX,dword ptr [ESP + 0xc]
-PUSH EAX
-CALL dword ptr [0x00440384]
-POP ESI
-POP EBX
-RET
-*/
+/* 0x426070 */
 void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
 {
     DAT_0043be34 = 1;
@@ -188,28 +108,7 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
     }
 }
 
-/*
-Function: ExecuteFunctionArray
-Address: 0x4260F0
-
-Disassembled:
-PUSH ESI
-PUSH EDI
-MOV ESI,dword ptr [ESP + 0x10]
-MOV EDI,dword ptr [ESP + 0xc]
-CMP ESI,EDI
-JBE 0x1D
-MOV EAX,dword ptr [EDI]
-TEST EAX,EAX
-JZ 0x16
-CALL EAX
-ADD EDI,0x4
-CMP ESI,EDI
-JA 0xE
-POP EDI
-POP ESI
-RET
-*/
+/* Function start: 0x4260F0 */
 void ExecuteFunctionArray(void** param_1, void** param_2)
 {
     if (param_1 < param_2) {
@@ -222,6 +121,7 @@ void ExecuteFunctionArray(void** param_1, void** param_2)
     }
 }
 
+/* Function start: 0x419110 */
 void ShowError(const char* format, ...)
 {
     char buffer[256];

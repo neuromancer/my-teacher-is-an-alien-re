@@ -1,0 +1,65 @@
+import os
+import re
+from compileAndCompare import get_similarity
+
+def get_function_name(line):
+    # Regular expression to find function names, including destructors (like ~Parser)
+    match = re.search(r'\b([a-zA-Z0-9_:]+::[~a-zA-Z0-9_]+)\s*\(', line)
+    if match:
+        return match.group(1)
+
+    # Fallback for non-class functions
+    match = re.search(r'void\s+([a-zA-Z0-9_]+)\(', line)
+    if match:
+        return match.group(1)
+
+    match = re.search(r'int\s+([a-zA-Z0-9_]+)\(', line)
+    if match:
+        return match.group(1)
+
+    return None
+
+def run_comparison(function_name, address):
+    disassembled_file = f"code/FUN_{address}.disassembled.txt"
+    if not os.path.exists(disassembled_file):
+        return "N/A"
+
+    similarity, _ = get_similarity(function_name, disassembled_file)
+    if similarity is not None:
+        return f"{similarity:.2f}%"
+    else:
+        return "Error"
+
+def main():
+    report = []
+    src_dir = "src"
+
+    for root, _, files in os.walk(src_dir):
+        if "src/map" in root:
+            continue
+
+        for file in files:
+            if file.endswith(".cpp"):
+                filepath = os.path.join(root, file)
+                with open(filepath, "r") as f:
+                    lines = f.readlines()
+
+                for i, line in enumerate(lines):
+                    match = re.search(r"/\* Function start: 0x([0-9a-fA-F]+) \*/", line)
+                    if match:
+                        address = match.group(1).upper()
+                        # Look for function definition in the next lines
+                        for j in range(i + 1, len(lines)):
+                            function_name = get_function_name(lines[j])
+                            if function_name:
+                                similarity = run_comparison(function_name, address)
+                                report.append((filepath, function_name, f"0x{address}", similarity))
+                                break
+
+    print("--- Compilation and Similarity Report ---")
+    for filepath, function_name, address, similarity in report:
+        print(f"File: {filepath}, Function: {function_name}, Address: {address}, Similarity: {similarity}")
+    print("-----------------------------------------")
+
+if __name__ == "__main__":
+    main()

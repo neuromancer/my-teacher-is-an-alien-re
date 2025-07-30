@@ -24,7 +24,7 @@ $(OUT_DIR)/%.obj: src/%.cpp
 # Rule to compile .cpp files to .asm files
 $(OUT_DIR)/%.asm: src/%.cpp
 	@mkdir -p $(OUT_DIR)
-	wine cmd /c "compilers\\msvc420\\bin\\VCVARS32.BAT x86 && $(CC) $(CFLAGS) $< /Fa$@" 2>/dev/null
+	wine cmd /c "compilers\\msvc420\\bin\\VCVARS32.BAT x86 && $(CC) $(CFLAGS) $< /Fa$@ /Foout\\out.obj"   2>/dev/null
 
 # Clean rule
 clean:
