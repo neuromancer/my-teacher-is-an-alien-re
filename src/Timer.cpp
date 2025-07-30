@@ -18,23 +18,23 @@ Timer::Timer()
 Timer::~Timer()
 {
     Timer* pThis = this;
-    void* pField8 = (void*)pThis->m_field8;
+    void* pField8 = (void*)pThis->m_startTime;
     if (pField8)
     {
         Timer_DecrementCounter();
         FreeFromGlobalHeap(pField8);
-        pThis->m_field8 = 0;
+        pThis->m_startTime = 0;
     }
 }
 
 /* Function start: 0x418EB0 */
 Timer* Timer::Init()
 {
-    m_field0 = 0;
-    m_field4 = 0;
-    m_field8 = 0;
-    m_fieldC = 0;
-    m_field10 = 0;
+    m_pauseDuration = 0;
+    m_unknown4 = 0;
+    m_startTime = 0;
+    m_currentTime = 0;
+    m_elapsedTime = 0;
     g_timer_count++;
     Reset();
     return this;
@@ -46,11 +46,6 @@ void Timer_DecrementCounter()
     g_timer_count--;
 }
 
-/* Function start: 0x419010 */
-void __fastcall Timer::FUN_00419010(void** param_1)
-{
-    *param_1 = 0;
-}
 
 /* Function start: 0x418F30 */
 void Timer::Wait(unsigned int delay)
@@ -58,20 +53,20 @@ void Timer::Wait(unsigned int delay)
     Reset();
     do {
         Update();
-    } while (m_field10 < delay);
+    } while (m_elapsedTime < delay);
 }
 
 /* Function start: 0x418F10 */
 unsigned int Timer::Update()
 {
-    m_fieldC = timeGetTime();
-    m_field10 = (m_fieldC - m_field8) - m_field0;
-    return m_field10;
+    m_currentTime = timeGetTime();
+    m_elapsedTime = (m_currentTime - m_startTime) - m_pauseDuration;
+    return m_elapsedTime;
 }
 
 /* Function start: 0x418EF0 */
 void Timer::Reset()
 {
-    m_field8 = timeGetTime();
-    m_field0 = 0;
+    m_startTime = timeGetTime();
+    m_pauseDuration = 0;
 }

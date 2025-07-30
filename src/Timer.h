@@ -9,14 +9,13 @@ public:
     void Reset();
     unsigned int Update();
     void Wait(unsigned int);
-    static void __fastcall FUN_00419010(void**);
 
 private:
-    unsigned int m_field0;
-    unsigned int m_field4;
-    unsigned int m_field8;
-    unsigned int m_fieldC;
-    unsigned int m_field10;
+    unsigned int m_pauseDuration;
+    unsigned int m_unknown4;
+    unsigned int m_startTime;
+    unsigned int m_currentTime;
+    unsigned int m_elapsedTime;
 };
 
 void Timer_DecrementCounter();
