@@ -39,11 +39,6 @@ public:
     void SetRanges(int);
     Sprite(char* filename);
     ~Sprite();
-    void ToBuffer();
-    void MainLoop();
-    void VBInit();
-    void ToBuffer2(void*);
-    void DoFrame();
     void SetRange(int, int, int);
     void SetLogic(int, int);
     void AllocateLogic(int);
