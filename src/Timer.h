@@ -9,6 +9,7 @@ public:
     void Reset();
     unsigned int Update();
     void Wait(unsigned int);
+    static void __fastcall FUN_00419010(void**);
 
 private:
     unsigned int m_field0;

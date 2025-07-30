@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "string.h"
 
 // Based on the assembly, this function is a custom implementation of strncpy.
@@ -131,4 +132,33 @@ void ShowError(const char* format, ...)
     MessageBoxA(hWnd, buffer, "Error", 0x10);
     ShutdownGameSystems();
     exitWithError_(-1);
+}
+
+/* Function start: 0x419080 */
+void ExtractQuotedString(char *param_1,char *param_2,int param_3)
+{
+    char *pcVar1;
+    char *pcVar2;
+    int iVar3;
+
+    if ((param_1 == (char *)0x0) || (param_2 == (char *)0x0)) {
+        ShowError("missing string");
+    }
+    pcVar1 = strchr(param_1,'\"');
+    if (pcVar1 == (char *)0x0) {
+        *param_2 = '\0';
+        return;
+    }
+    pcVar1 = pcVar1 + 1;
+    pcVar2 = strchr(pcVar1,'\"');
+    if (pcVar2 == (char *)0x0) {
+        ShowError("open quote found in '%s'",param_1);
+    }
+    iVar3 = (int)pcVar2 - (int)pcVar1;
+    if (param_3 < iVar3 + 1) {
+        ShowError("dest string too small");
+    }
+    memcpy(param_2,pcVar1,iVar3);
+    param_2[iVar3] = '\0';
+    return;
 }

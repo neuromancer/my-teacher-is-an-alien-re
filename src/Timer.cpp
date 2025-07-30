@@ -46,6 +46,12 @@ void Timer_DecrementCounter()
     g_timer_count--;
 }
 
+/* Function start: 0x419010 */
+void __fastcall Timer::FUN_00419010(void** param_1)
+{
+    *param_1 = 0;
+}
+
 /* Function start: 0x418F30 */
 void Timer::Wait(unsigned int delay)
 {
