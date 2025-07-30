@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
+#include <share.h>
 #include "string.h"
 
 // Based on the assembly, this function is a custom implementation of strncpy.
@@ -138,6 +140,61 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
     return;
 }
 
+/* Function start: 0x419170 */
+void ShowMessage(char *param_1, ...)
+{
+    char buffer[256];
+    vsprintf(buffer, param_1, (char*)(&param_1 + 1));
+    SetCursorVisible(1);
+    HWND hWnd = (HWND)((int (*)())0x4224d0)();
+    MessageBoxA(hWnd, buffer, (char*)0x436704, 0);
+    SetCursorVisible(0);
+}
+
+/* Function start: 0x4191C0 */
+void ClearMessageLog()
+{
+    ((void (*)(const char*))0x426110)((char*)0x43670c);
+}
+
+/* Function start: 0x4191D0 */
+void WriteToMessageLog(wchar_t *msg,...)
+{
+    FILE *_File;
+    va_list argptr;
+
+    _File = _fsopen("message.log", "a+", _SH_DENYNO);
+    if (_File != NULL) {
+        va_start(argptr, msg);
+        vfwprintf(_File, msg, argptr);
+        va_end(argptr);
+        fwprintf(_File, L"\n");
+        fclose(_File);
+    }
+}
+
+/* Function start: 0x419220 */
+void AddToStringTable(char *param_1)
+{
+    char local_20[32];
+    int iVar2;
+    unsigned int uVar3;
+    char *pcVar5;
+    char *pcVar6;
+
+    local_20[0] = '\0';
+    iVar2 = sscanf(param_1, "%s", local_20);
+    if (iVar2 == 1) {
+        uVar3 = strlen(local_20);
+        if (uVar3 > 0) {
+            pcVar5 = local_20;
+            pcVar6 = &((char*)0x43d158)[*(int*)0x4366b4 * 0x20];
+            memcpy(pcVar6, pcVar5, uVar3);
+            (*(int*)0x4366b4)++;
+        }
+    }
+}
+
 /* Function start: 0x419110 */
 void ShowError(const char* format, ...)
 {
@@ -162,4 +219,3 @@ void ExecuteFunctionArray(void** param_1, void** param_2)
         } while (param_1 < param_2);
     }
 }
-
