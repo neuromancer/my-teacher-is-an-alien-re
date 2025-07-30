@@ -82,7 +82,9 @@ def side_by_side(str1, str2, tab_size=4):
 
 def get_similarity(function_name, disassembled_code_path, mangled_name=None, clean_build=True):
     if clean_build:
-        system("make clean all > /dev/null 2>&1")
+        if system("make clean all") != 0:
+            print("Make failed")
+            exit(1)
 
     asm_file_path = None
     produced_code = None

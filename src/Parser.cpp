@@ -5,6 +5,8 @@
 
 extern "C" FILE* FUN_00425e50(const char*, const char*);
 extern "C" void ShowError(const char*, ...);
+extern "C" int FUN_00425f30(FILE*, int, int);
+extern "C" char *internal_ReadLine(char *s, int n, FILE *stream);
 
 /* Function start: 0x4189f0 */
 void Parser::Init()
@@ -65,4 +67,35 @@ void Parser::SaveFilePosition()
     if (fgetpos(this->pFile, (fpos_t*)&this->field_0x38) != 0) {
         ShowError((char*)0x436538, this->filename);
     }
+}
+
+/* Function start: 0x418B80 */
+void Parser::RestoreFilePosition()
+{
+    if (fsetpos(this->pFile, (fpos_t*)&this->field_0x38) != 0) {
+        ShowError("Parser::RestoreFilePosition() - unable to restore file pos in file %s", this->filename);
+    }
+}
+
+/* Function start: 0x418BB0 */
+void Parser::FindKey(unsigned char* param_1)
+{
+    char local_100[256];
+    char temp_buffer[256];
+
+    if (param_1 == NULL) {
+        return;
+    }
+
+    FUN_00425f30(this->pFile, 0, 0);
+
+    do {
+        if (internal_ReadLine(local_100, 255, this->pFile) == NULL) {
+            ShowError("Parser::FindKey - Unable to find key '%s' in file '%s'", param_1, this->filename);
+        }
+        sscanf(local_100, "%s", temp_buffer);
+        if (strcmp(temp_buffer, (char*)param_1) == 0) {
+            return;
+        }
+    } while (1);
 }

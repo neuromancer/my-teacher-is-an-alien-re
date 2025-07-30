@@ -13,6 +13,8 @@ public:
     void Open(char *param_1);
     void Copy(Parser* other);
     void SaveFilePosition();
+    void RestoreFilePosition();
+    void FindKey(unsigned char*);
 private:
     int vtable;
     int field_0x4;

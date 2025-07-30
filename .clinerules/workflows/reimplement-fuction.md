@@ -24,7 +24,9 @@ IMPORTANT: remember that the assembly code is the only source of truth, the deco
 
 * Sort the functions by its address. This is also very important since the compiler will put together all the functions from the same file, in the same order they are defined, so use the ordering to detect when a function, most likely, does not belong to certain class or type.
 
-In order to know which functions are next to each other, check the files inside the `src/map` directory. These files will NOT be compiled
+In order to know which functions are next to each other, check the files inside the `src/map` directory. These files will NOT be compiled.
+
+There is a very important file located in `code/strings.txt`. This contains the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information. Include the full strings in the reimplemented code as constants.
 
 * Preserve memory usage: make sure that the local variables are in the same order. Also, make sure the offset accessing fields is exactly the same.
 * Preserve jump types: make sure the jumps are the same (e.g. jmp, jmpf, jne, jnef) and its order is preserved.
