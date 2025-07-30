@@ -16,6 +16,7 @@ extern "C" {
     void ClearMessageLog();
     void WriteToMessageLog(wchar_t *msg,...);
     void AddToStringTable(char *param_1);
+    void WriteToMessageLogIfEnabled(wchar_t *param_1, ...);
 }
 
 #endif // STRING_H

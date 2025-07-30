@@ -195,6 +195,24 @@ void AddToStringTable(char *param_1)
     }
 }
 
+/* Function start: 0x4192A0 */
+void WriteToMessageLogIfEnabled(wchar_t *param_1, ...)
+{
+    if ((*(char*)0x43d5a8 & 1) != 0) {
+        FILE *_File;
+        va_list argptr;
+
+        _File = _fsopen("message.log", "a+", _SH_DENYNO);
+        if (_File != NULL) {
+            va_start(argptr, param_1);
+            vfwprintf(_File, param_1, argptr);
+            va_end(argptr);
+            fwprintf(_File, L"\n");
+            fclose(_File);
+        }
+    }
+}
+
 /* Function start: 0x419110 */
 void ShowError(const char* format, ...)
 {
