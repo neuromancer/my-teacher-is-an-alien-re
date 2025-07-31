@@ -2,7 +2,10 @@
 #define ANIMATION_H
 
 struct SmkObject {
-    char pad[0x374];
+    char pad[4];
+    int width;
+    int height;
+    char pad2[0x374 - 12];
     int current_frame;
 };
 
@@ -19,10 +22,13 @@ public:
     SmkObject* smk; // 0xc
     char pad2[0x18 - 0xc - 4];
     AnimationData* data; // 0x18
-    char pad3[0x2c - 0x18 - 4];
+    char pad3[0x24 - 0x18 - 4];
+    int* smack_buffer; // 0x24
+    void* smack_handle; // 0x28
 
     void AnimationInit();
     void Open(char*, int, int);
+    void ToBuffer2(AnimationData* buffer);
     static void DoFrame(Animation*);
 };
 
