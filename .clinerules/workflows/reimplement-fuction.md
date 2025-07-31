@@ -26,7 +26,7 @@ IMPORTANT: remember that the assembly code is the only source of truth, the deco
 
 In order to know which functions are next to each other, check the files inside the `src/map` directory. These files will NOT be compiled.
 
-There is a very important file located in `code/strings.txt`. This contains the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information. Include the full strings in the reimplemented code as constants.
+There is a very important file located in `code/strings.txt`. This contains the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information. Include the full strings in the reimplemented code as constants, do NOT use explicit pointers to strings that are constants.
 
 * Preserve memory usage: make sure that the local variables are in the same order. Also, make sure the offset accessing fields is exactly the same.
 * Preserve jump types: make sure the jumps are the same (e.g. jmp, jmpf, jne, jnef) and its order is preserved.
@@ -58,4 +58,4 @@ Before starting, review all the current files and determine if there is any clas
 
 If similarity is >= 90%, you can stop. If you give up, make sure you still provide the code with the best similarity.
 
-Note: `ShowError` is a function that should be marked by the compiler as "no return" as it calls some internal functions that eventualy ends the process, so it will not produce instructions after the call. However, right now, the implementation is not complete and the compiler will not optimize that.
+Note: `ShowError` is a function that should be marked by the compiler as "no return" as it calls some internal functions that eventualy ends the process, so it will not produce instructions after the call. However, right now, the implementation is not complete and the compiler will not optimize that. Do NOT try to workaround this (e.g. using attributes or other code), this will be fixed later.
