@@ -3,7 +3,7 @@
 #include <windows.h>
 
 extern "C" {
-    void __cdecl ShowError(const char*);
+    void __cdecl ShowError(const char*, ...);
     void* __stdcall SmackBufferOpen(void* smack, int, int, int, int, int);
     void __stdcall SmackToBuffer(void* smack, int, int, int, int, void*, int);
     void* FUN_004224d0();
@@ -16,7 +16,9 @@ extern "C" {
     void __fastcall Animation_ToBuffer_ext(Animation* this_ptr);
     void __fastcall Animation_VBInit(Animation* this_ptr);
     void __fastcall VBuffer_destructor(VBuffer* this_ptr);
+    VBuffer* __fastcall VBuffer_VirtualBufferCreateAndClean(VBuffer* this_ptr, int width, int height);
     void __fastcall Sprite_CloseSmackerFile(void* this_ptr);
+    void* __stdcall SmackOpen(char* filename, int flags, int extra);
     void FUN_0041eb70(void*, int, int);
     void FUN_0041ea80(void*);
     void __cdecl FreeFromGlobalHeap(void*);
@@ -33,6 +35,7 @@ extern "C" {
 
     extern void* DAT_00436968;
     extern int DAT_004373bc;
+    extern char DAT_00436970[];
 }
 
 
@@ -45,6 +48,37 @@ void Animation::AnimationInit()
 {
     this->smk = 0;
     this->data = 0;
+}
+
+/* Function start: 0x41FD20 */
+int Animation::Open(char* filename, int param_2, int param_3)
+{
+    if (this->smk != 0) {
+        return 1;
+    }
+
+    if (*(char*)(DAT_00436970 + 0x46) != '\x02') {
+        param_2 = param_2 & 0xfff01fff;
+    }
+
+    this->smk = (SmkObject*)SmackOpen(filename, param_2, param_3);
+    if (this->smk == 0) {
+        ShowError("Animation::Open - Cannot open file %s", filename);
+    }
+    return 1;
+}
+
+/* Function start: 0x41FD80 */
+void Animation::VBInit()
+{
+    if (this->vbuffer != 0) {
+        ShowError("Animation::VBInit() - Virtual Buffer already defined");
+    }
+
+    VBuffer* vbuffer = (VBuffer*)AllocateMemory_Wrapper(0x30);
+    if (vbuffer != 0) {
+        this->vbuffer = VBuffer_VirtualBufferCreateAndClean(vbuffer, this->smk->width, this->smk->height);
+    }
 }
 
 /* Function start: 0x41FE20 */

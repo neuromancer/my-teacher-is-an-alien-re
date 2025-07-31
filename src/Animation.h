@@ -29,13 +29,14 @@ public:
     void* smack_handle; // 0x28
 
     void AnimationInit();
-    void Open(char*, int, int);
+    int Open(char*, int, int);
     void ToBuffer();
     void ToBuffer(VBuffer* buffer);
     void OpenAndConvertToBuffer(char* filename);
     void Play(char* filename, unsigned int flags);
     void MainLoop();
     void FreeVBuffer();
+    void VBInit();
     static void DoFrame(Animation*);
 };
 
