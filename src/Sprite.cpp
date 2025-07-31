@@ -45,3 +45,57 @@ void Sprite::CheckRanges1()
         } while (iVar4 < this->field_0xac);
     }
 }
+
+/* Function start: 0x41d590 */
+// TODO: Move to a proper header
+// NOTE: Once the GameState class is reversed, this should be an instance of it
+extern void* g_GameState;
+
+int Sprite::CheckConditions()
+{
+    int iVar1;
+    int* piVar2;
+    int iVar3;
+    int local_4;
+
+    iVar3 = 0;
+    if ((this->field_0xa0 == 0) || (this->field_0x98 == 0)) {
+        return 1;
+    }
+    local_4 = 0;
+    if (0 < this->field_0xa0) {
+        do {
+            piVar2 = (int*)((char*)this->field_0x98 + iVar3);
+            if (piVar2[1] == 1) {
+                iVar1 = *piVar2;
+                if ((0 < iVar1) && (*(int*)((char*)g_GameState + 0x90) <= iVar1)) {
+                    ShowError("GameState Error  #%d", 1);
+                }
+                if (*(int*)(*(int*)((char*)g_GameState + 0x88) + iVar1 * 4) == 0) {
+                    return 0;
+                }
+            }
+            if (piVar2[1] == 2) {
+                iVar1 = *piVar2;
+                if ((0 < iVar1) && (*(int*)((char*)g_GameState + 0x90) <= iVar1)) {
+                    ShowError("GameState Error  #%d", 1);
+                }
+                if (*(int*)(*(int*)((char*)g_GameState + 0x88) + iVar1 * 4) != 0) {
+                    return 0;
+                }
+            }
+            if (piVar2[1] == 3) {
+                iVar1 = *piVar2;
+                if ((0 < iVar1) && (*(int*)((char*)g_GameState + 0x90) <= iVar1)) {
+                    ShowError("GameState Error  #%d", 1);
+                }
+                if (*(int*)(*(int*)((char*)g_GameState + 0x88) + iVar1 * 4) != this->field_0x9c) {
+                    return 0;
+                }
+            }
+            iVar3 = iVar3 + 8;
+            local_4 = local_4 + 1;
+        } while (local_4 < this->field_0xa0);
+    }
+    return 1;
+}

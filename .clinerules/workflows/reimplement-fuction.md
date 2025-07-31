@@ -45,6 +45,7 @@ There is a very important file located in `code/strings.txt`. This contains the 
 * Do NOT use unions or substructures in the classes , it is very unlikely that these are used in the original code!
 * Provide reasonable names to fields, once you understand what they do.
 * Do NOT change the flags in `bin/compile.bat`, these were carefully brute forced from other parts of the code.
+* Do NOT create .c files
 * If you see a pattern like this in the decompiled code:
 ```
     local_X = unaff_FS_OFFSET;

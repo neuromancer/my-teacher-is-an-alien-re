@@ -1,5 +1,6 @@
 #include <windows.h>
 
+void* g_GameState = (void*)0x00436998;
 extern int DAT_004373bc;
 extern int FUN_00422510();
 
@@ -31,4 +32,3 @@ int ProcessMessages()
         }
     } while (1);
 }
-
