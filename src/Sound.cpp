@@ -46,15 +46,15 @@ void* Sound::Init(int param_1, unsigned short param_2, short param_3)
     if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
         _AIL_set_preference_8(0xf, 0);
         int iVar3 = FUN_0041e3d0(param_1, param_2, param_3 + 1);
-        this->field_0x38 = iVar3;
+        this->digital_driver = (HDIGDRIVER)iVar3;
         if (iVar3 == 0) {
             _AIL_set_preference_8(0xf, 1);
         }
-        if (this->field_0x38 == 0) {
+        if (this->digital_driver == 0) {
             iVar3 = FUN_0041e3d0(param_1, param_2, param_3 + 1);
-            this->field_0x38 = iVar3;
+            this->digital_driver = (HDIGDRIVER)iVar3;
         }
-        if (this->field_0x38 == 0) {
+        if (this->digital_driver == 0) {
             const char* puVar2 = "Miles 32-bit";
             if (_param_3 == 0) {
                 puVar2 = "Miles 16-bit";
@@ -63,11 +63,11 @@ void* Sound::Init(int param_1, unsigned short param_2, short param_3)
                 puVar2);
         }
         else {
-            _SmackSoundUseMSS_4(this->field_0x38);
+            _SmackSoundUseMSS_4((int)this->digital_driver);
             FUN_0041e320((short*)this);
             char auStack_80[128];
             auStack_80[0] = 0;
-            _AIL_digital_configuration_16(this->field_0x38, 0, 0, auStack_80);
+            _AIL_digital_configuration_16((int)this->digital_driver, 0, 0, auStack_80);
             const char* puVar2 = "Miles 32-bit";
             if (_param_3 == 0) {
                 puVar2 = "Miles 16-bit";
@@ -87,29 +87,21 @@ void Sound::AllocateSampleHandles()
 {
     short sVar2 = 0;
     do {
-        int iVar1 = _AIL_allocate_sample_handle_4(this->field_0x38);
-        this->handles[sVar2] = iVar1;
+        int iVar1 = _AIL_allocate_sample_handle_4((int)this->digital_driver);
+        this->samples[sVar2] = (HSAMPLE)iVar1;
         if (iVar1 == 0) break;
         sVar2 = sVar2 + 1;
     } while (sVar2 < 13);
-    this->num_handles = sVar2;
+    this->num_samples = sVar2;
 }
 
 /* Function start: 0x41E360 */
-int Sound::FindFreeSampleHandle()
+HSAMPLE Sound::FindFreeSampleHandle()
 {
-    short sVar2 = 0;
-    int bVar3 = this->num_handles == 0;
-    if (0 < this->num_handles) {
-        do {
-            int iVar1 = _AIL_sample_status_4(this->handles[sVar2]);
-            if (iVar1 == 2) break;
-            sVar2 = sVar2 + 1;
-        } while (sVar2 < this->num_handles);
-        bVar3 = this->num_handles == sVar2;
-    }
-    if (!bVar3) {
-        return this->handles[sVar2];
+    for (short i = 0; i < this->num_samples; i++) {
+        if (_AIL_sample_status_4((int)this->samples[i]) == 2) {
+            return this->samples[i];
+        }
     }
     return 0;
 }
@@ -117,12 +109,8 @@ int Sound::FindFreeSampleHandle()
 /* Function start: 0x41E3A0 */
 void Sound::StopAllSamples()
 {
-    short sVar2 = 0;
-    if (0 < this->num_handles) {
-        do {
-            _AIL_end_sample_4(this->handles[sVar2]);
-            sVar2 = sVar2 + 1;
-        } while (sVar2 < this->num_handles);
+    for (short i = 0; i < this->num_samples; i++) {
+        _AIL_end_sample_4((int)this->samples[i]);
     }
 }
 
