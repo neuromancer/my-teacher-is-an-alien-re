@@ -12,6 +12,8 @@ extern "C" {
     void FUN_00424b00(int*, int, int, void*, void*);
     int FUN_00420940(GameState*, char*);
     char* strstr_wrapper(char*, const char*);
+    void WriteToMessageLog(const char*, ...);
+    int GameState_Error_Handler_2(GameState*, int);
 }
 
 // TODO: Move to a proper header
@@ -285,4 +287,68 @@ void Sprite::SetLogic(int param_1, int param_2)
     }
 
     ShowError("Sprite::SetLogic %s", &this->sprite_filename);
+}
+
+/* Function start: 0x41E010 */
+void Sprite::Dump()
+{
+    int iVar4;
+    int iVar5;
+
+    WriteToMessageLog("FNAME: %s", this->sprite_filename);
+    WriteToMessageLog("HANDLE: %d", this->handle);
+    WriteToMessageLog("LOC: %d %d", this->loc_x, this->loc_y);
+    WriteToMessageLog("PRIORITY: %d", this->priority);
+    if (this->logic_conditions != 0) {
+        if (1 < this->num_logic_conditions) {
+            WriteToMessageLog("MAXLOGIC: %d", this->num_logic_conditions);
+        }
+        iVar4 = 0;
+        iVar5 = 0;
+        if (0 < this->num_logic_conditions) {
+            do {
+                int* piVar1 = (int*)((char*)this->logic_conditions + iVar4);
+                if (piVar1[1] == 1) {
+                    int uVar2 = GameState_Error_Handler_2(g_GameState, *piVar1);
+                    WriteToMessageLog("LOGIC: %s TRUE", uVar2);
+                }
+                piVar1 = (int*)((char*)this->logic_conditions + iVar4);
+                if (piVar1[1] == 2) {
+                    int uVar2 = GameState_Error_Handler_2(g_GameState, *piVar1);
+                    WriteToMessageLog("LOGIC: %s FALSE", uVar2);
+                }
+                iVar4 = iVar4 + 8;
+                iVar5 = iVar5 + 1;
+            } while (iVar5 < this->num_logic_conditions);
+        }
+    }
+    if ((this->flags & 0x40) != 0) {
+        WriteToMessageLog("TRANSPARENT");
+    }
+    if ((this->flags & 2) != 0) {
+        WriteToMessageLog("BOTTOMLEFT");
+    }
+    if ((this->flags & 0x10) != 0) {
+        WriteToMessageLog("KEEPOFFSET");
+    }
+    if ((this->flags & 8) != 0) {
+        WriteToMessageLog("SCALE");
+    }
+    if ((this->flags & 1) != 0) {
+        WriteToMessageLog("LOOP");
+    }
+    if ((this->flags & 0x80) != 0) {
+        WriteToMessageLog("NOGRAPHIC");
+    }
+    WriteToMessageLog("STATES: %d", this->num_states);
+    iVar4 = 0;
+    if (0 < this->num_states) {
+        do {
+            int* puVar3 = (int*)(iVar4 * 8 + (int)this->ranges);
+            iVar5 = iVar4 + 1;
+            WriteToMessageLog("RANGE: %d %d %d", iVar4, *puVar3, puVar3[1]);
+            iVar4 = iVar5;
+        } while (iVar5 < this->num_states);
+    }
+    WriteToMessageLog("END");
 }
