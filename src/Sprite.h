@@ -33,6 +33,7 @@ public:
     void Dump();
     unsigned char Do(int, int, int, int);
     void FreeAnimation();
+    void StopAnimationSound();
 };
 
 #endif // SPRITE_H

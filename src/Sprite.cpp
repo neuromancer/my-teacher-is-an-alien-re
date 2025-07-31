@@ -7,6 +7,7 @@
 #include "Animation.h"
 
 extern "C" {
+    void Queue_InsertNodeByType_2(void*, void*);
     __int64 __ftol();
     void FUN_0041fcc0(void*, int);
     void FUN_0041fcb0(int);
@@ -38,6 +39,34 @@ extern "C" {
 }
 
 char DAT_0043d630[0x4000];
+
+/* Function start: 0x41D040 */
+void Sprite::StopAnimationSound()
+{
+    int sound_idx = -1;
+    Animation* anim = this->animation_data;
+
+    if (anim != 0 && anim->data != 0) {
+        sound_idx = anim->data->field_0x1c;
+    }
+
+    if (g_SoundManager != 0 && anim != 0) {
+        if (*(int*)((int)g_SoundManager + 0x98) != 0) {
+            Queue_InsertNodeByType_2(g_SoundManager, anim);
+        } else {
+            ((void (*)(Animation*, int))anim->vtable[0])(anim, 1);
+        }
+    } else if (anim != 0) {
+        ((void (*)(Animation*, int))anim->vtable[0])(anim, 1);
+    }
+
+    this->animation_data = 0;
+
+    if (sound_idx != -1) {
+        DAT_0043d630[sound_idx * 0x40] = 0;
+    }
+    this->flags |= 0x20;
+}
 
 /* Function start: 0x41D0C0 */
 void Sprite::InitAnimation()

@@ -14,7 +14,8 @@ struct AnimationData {
 
 class Animation {
 public:
-    char pad[0xc];
+    void** vtable;
+    char pad[0x8];
     SmkObject* smk; // 0xc
     char pad2[0x18 - 0xc - 4];
     AnimationData* data; // 0x18
