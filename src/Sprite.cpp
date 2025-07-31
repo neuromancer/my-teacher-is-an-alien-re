@@ -144,9 +144,8 @@ int Sprite::LBLParse(char* param_1)
         sscanf(param_1, "%s %d", local_a0, &this->handle);
     } else if (strcmp(local_a0, "LOC") == 0) {
         sscanf(param_1, "%s %d %d", local_a0, &local_ac, &local_a4);
-        // TODO: These fields are not in the class
-        // *(int *)((int)this + 0xa4) = local_ac;
-        // *(int *)((int)this + 0xa8) = local_a4;
+        this->loc_x = local_ac;
+        this->loc_y = local_a4;
     } else if (strcmp(local_a0, "MAXLOGIC") == 0) {
         sscanf(param_1, "%s %d", local_a0, &local_ac);
         this->InitLogic(local_ac);
@@ -174,8 +173,7 @@ int Sprite::LBLParse(char* param_1)
         this->SetRange(local_a8, local_ac, local_a4);
     } else if (strcmp(local_a0, "PRIORITY") == 0) {
         sscanf(param_1, "%s %d", local_a0, &local_a8);
-        // TODO: This field is not in the class
-        // *(int *)((int)this + 0x94) = local_a8;
+        this->priority = local_a8;
     } else if (strcmp(local_a0, "TRANSPARENT") == 0) {
         this->flags |= 0x40;
     } else if (strcmp(local_a0, "BOTTOMLEFT") == 0) {

@@ -7,11 +7,13 @@ class Sprite : public Parser {
 public:
     void* ranges; // 0x88
     int flags; // 0x8c
-    char pad1[0x98 - 0x88 - 8];
+    int field_0x90; // 0x90
+    int priority; // 0x94
     void* logic_conditions; // 0x98
     int handle;   // 0x9c
     int num_logic_conditions;   // 0xa0
-    char pad2[0xac - 0xa0 - 4];
+    int loc_x; // 0xa4
+    int loc_y; // 0xa8
     int num_states; // 0xac
     char pad3[0xb4 - 0xac - 4];
     char* sprite_filename; // 0xb4
