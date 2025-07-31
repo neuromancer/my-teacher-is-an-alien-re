@@ -1,6 +1,14 @@
 #include "Sprite.h"
 #include "GameState.h"
 
+extern "C" {
+    void Array_Cleanup(int, int, int, void*);
+    void FreeFromGlobalHeap(int*);
+    int* AllocateMemory_Wrapper(int);
+    void FUN_00424b00(int*, int, int, void*, void*);
+    void FUN_0041d8d0(Sprite*, int);
+}
+
 // TODO: Move to a proper header
 void (*ShowError)(const char* message, ...) = (void (*)(const char*, ...))0x00419110;
 
@@ -114,15 +122,31 @@ void Sprite::SetRange(int param_1, int param_2, int param_3)
     this->flags |= 0x20;
 }
 
-/* Function start: 0x41D740 */
-// TODO: Move to a proper header
-extern "C" {
-    void Array_Cleanup(int, int, int, void*);
-    void FreeFromGlobalHeap(int*);
-    int* AllocateMemory_Wrapper(int);
-    void FUN_00424b00(int*, int, int, void*, void*);
+/* Function start: 0x41D860 */
+void Sprite::SetLogic(int param_1, int param_2)
+{
+    if (this->field_0x98 == 0) {
+        FUN_0041d8d0(this, 1);
+    }
+
+    int iVar2 = 0;
+    if (0 < this->field_0xa0) {
+        int* piVar1 = (int*)((char*)this->field_0x98 + 4);
+        do {
+            if (*piVar1 == 0) {
+                *(int*)((char*)this->field_0x98 + iVar2 * 8) = param_1;
+                *(int*)((char*)this->field_0x98 + 4 + iVar2 * 8) = param_2;
+                return;
+            }
+            piVar1 = piVar1 + 2;
+            iVar2 = iVar2 + 1;
+        } while (iVar2 < this->field_0xa0);
+    }
+
+    ShowError("Sprite::SetLogic %s", &this->filename);
 }
 
+/* Function start: 0x41D740 */
 void Sprite::SetState(int param_1)
 {
     this->field_0xac = param_1;
