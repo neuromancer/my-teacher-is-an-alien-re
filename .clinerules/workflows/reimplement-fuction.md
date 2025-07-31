@@ -32,6 +32,7 @@ There is a very important file located in `code/strings.txt`. This contains the 
 * Preserve jump types: make sure the jumps are the same (e.g. jmp, jmpf, jne, jnef) and its order is preserved.
 * Make sure the assembly code produced matches the stack ordering as close as possible.
 * Keep the code as high-level as possible.
+* Do NOT show me the code once you finish.
 * Very important: do NOT use inline assembly, gotos nor dummy variables.
 * Do NOT change the calling convention for the class method: it should be `__thiscall`.
 * Do NOT add `__thiscall` as it is redundant and will most likely fail

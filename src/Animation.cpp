@@ -14,6 +14,8 @@ extern "C" {
     void FUN_00419390();
     void __fastcall Animation_Open(Animation* this_ptr, char* filename, int, int);
     void __fastcall Animation_ToBuffer_ext(Animation* this_ptr);
+    void __fastcall Animation_VBInit(Animation* this_ptr);
+    void __fastcall VBuffer_destructor(VBuffer* this_ptr);
     void __fastcall Sprite_CloseSmackerFile(void* this_ptr);
     void FUN_0041eb70(void*, int, int);
     void FUN_0041ea80(void*);
@@ -43,6 +45,35 @@ void Animation::AnimationInit()
 {
     this->smk = 0;
     this->data = 0;
+}
+
+/* Function start: 0x41FE20 */
+void Animation::FreeVBuffer()
+{
+    if (this->vbuffer != 0) {
+        VBuffer *vbuffer = this->vbuffer;
+        VBuffer_destructor(vbuffer);
+        FreeFromGlobalHeap(vbuffer);
+        this->vbuffer = 0;
+    }
+    this->data = 0;
+}
+
+/* Function start: 0x41FE50 */
+void Animation::OpenAndConvertToBuffer(char* filename)
+{
+    Animation_Open(this, filename, 0xfe000, -1);
+    this->ToBuffer();
+}
+
+/* Function start: 0x41FE70 */
+void Animation::ToBuffer()
+{
+    if (this->smk == 0) {
+        ShowError(s_Animation_ToBuffer_No_smk_defined);
+    }
+    Animation_VBInit(this);
+    this->ToBuffer((AnimationData*)this->vbuffer);
 }
 
 /* Function start: 0x41FEA0 */
