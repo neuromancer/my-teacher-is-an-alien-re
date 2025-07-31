@@ -22,6 +22,8 @@ public:
     void SetRange(int param_1, int param_2, int param_3);
     void SetState(int param_1);
     void SetLogic(int param_1, int param_2);
+    void InitLogic(int param_1);
+    int LBLParse(char* param_1);
 };
 
 #endif // SPRITE_H
