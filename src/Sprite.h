@@ -28,6 +28,7 @@ public:
     void InitLogic(int param_1);
     virtual int LBLParse(char* param_1);
     void Dump();
+    unsigned char Do(int, int, int, int);
 };
 
 #endif // SPRITE_H
