@@ -5,7 +5,8 @@ class Sprite {
 public:
     char pad0[0x88];
     void* field136_0x88; // 0x88
-    char pad1[0x98 - 0x88 - 4];
+    int flags; // 0x8c
+    char pad1[0x98 - 0x88 - 8];
     void* field_0x98; // 0x98
     int field_0x9c;   // 0x9c
     int field_0xa0;   // 0xa0
@@ -18,6 +19,8 @@ public:
 
     void CheckRanges1();
     int CheckConditions();
+    void SetRange(int param_1, int param_2, int param_3);
+    void SetState(int param_1);
 };
 
 #endif // SPRITE_H

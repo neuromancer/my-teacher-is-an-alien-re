@@ -98,3 +98,60 @@ int Sprite::CheckConditions()
     }
     return 1;
 }
+
+/* Function start: 0x41D6D0 */
+void Sprite::SetRange(int param_1, int param_2, int param_3)
+{
+    if (this->field_0xac <= param_1) {
+        ShowError("Sprite::SetRange#1 %s %d", &this->filename, param_1);
+    }
+    if ((param_2 < 1) || (param_3 < 1)) {
+        ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", &this->filename, param_1, param_2, param_3);
+    }
+    int* piVar1 = (int*)((char*)this->field136_0x88 + param_1 * 8);
+    *piVar1 = param_2;
+    piVar1[1] = param_3;
+    this->flags |= 0x20;
+}
+
+/* Function start: 0x41D740 */
+// TODO: Move to a proper header
+extern "C" {
+    void Array_Cleanup(int, int, int, void*);
+    void FreeFromGlobalHeap(int*);
+    int* AllocateMemory_Wrapper(int);
+    void FUN_00424b00(int*, int, int, void*, void*);
+}
+
+void Sprite::SetState(int param_1)
+{
+    this->field_0xac = param_1;
+    if (this->field136_0x88 != 0) {
+        Array_Cleanup((int)this->field136_0x88, 8, *(int*)((char*)this->field136_0x88 - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)((char*)this->field136_0x88 - 4));
+        this->field136_0x88 = 0;
+    }
+
+    int* piVar5 = 0;
+    int* piVar1 = AllocateMemory_Wrapper(this->field_0xac * 8 + 4);
+    if (piVar1 != 0) {
+        piVar5 = piVar1 + 1;
+        *piVar1 = this->field_0xac;
+        FUN_00424b00(piVar5, 8, this->field_0xac, (void*)0x41d850, (void*)0x405770);
+    }
+    this->field136_0x88 = piVar5;
+
+    if (0 < this->field_0xac) {
+        int iVar3 = 0;
+        int iVar4 = 0;
+        do {
+            iVar4 = iVar4 + 1;
+            int* puVar2 = (int*)((char*)this->field136_0x88 + iVar3);
+            iVar3 = iVar3 + 8;
+            *puVar2 = 1;
+            puVar2[1] = 5000;
+        } while (iVar4 < this->field_0xac);
+    }
+
+    this->flags |= 0x20;
+}
