@@ -122,30 +122,6 @@ void Sprite::SetRange(int param_1, int param_2, int param_3)
     this->flags |= 0x20;
 }
 
-/* Function start: 0x41D860 */
-void Sprite::SetLogic(int param_1, int param_2)
-{
-    if (this->field_0x98 == 0) {
-        FUN_0041d8d0(this, 1);
-    }
-
-    int iVar2 = 0;
-    if (0 < this->field_0xa0) {
-        int* piVar1 = (int*)((char*)this->field_0x98 + 4);
-        do {
-            if (*piVar1 == 0) {
-                *(int*)((char*)this->field_0x98 + iVar2 * 8) = param_1;
-                *(int*)((char*)this->field_0x98 + 4 + iVar2 * 8) = param_2;
-                return;
-            }
-            piVar1 = piVar1 + 2;
-            iVar2 = iVar2 + 1;
-        } while (iVar2 < this->field_0xa0);
-    }
-
-    ShowError("Sprite::SetLogic %s", &this->filename);
-}
-
 /* Function start: 0x41D740 */
 void Sprite::SetState(int param_1)
 {
@@ -178,4 +154,28 @@ void Sprite::SetState(int param_1)
     }
 
     this->flags |= 0x20;
+}
+
+/* Function start: 0x41D860 */
+void Sprite::SetLogic(int param_1, int param_2)
+{
+    if (this->field_0x98 == 0) {
+        FUN_0041d8d0(this, 1);
+    }
+
+    int iVar2 = 0;
+    if (0 < this->field_0xa0) {
+        int* piVar1 = (int*)((char*)this->field_0x98 + 4);
+        do {
+            if (*piVar1 == 0) {
+                *(int*)((char*)this->field_0x98 + iVar2 * 8) = param_1;
+                *(int*)((char*)this->field_0x98 + 4 + iVar2 * 8) = param_2;
+                return;
+            }
+            piVar1 = piVar1 + 2;
+            iVar2 = iVar2 + 1;
+        } while (iVar2 < this->field_0xa0);
+    }
+
+    ShowError("Sprite::SetLogic %s", &this->filename);
 }
