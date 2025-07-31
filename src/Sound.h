@@ -3,9 +3,11 @@
 
 class Sound {
 public:
+    Sound();
     void* Init(int param_1, unsigned short param_2, short param_3);
     void AllocateSampleHandles();
     int FindFreeSampleHandle();
+    void StopAllSamples();
 
 private:
     short num_handles;
