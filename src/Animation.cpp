@@ -4,6 +4,7 @@
 
 extern "C" {
     void __cdecl ShowError(const char*, ...);
+    void FUN_0041fbd3();
     void* __stdcall SmackBufferOpen(void* smack, int, int, int, int, int);
     void __stdcall SmackToBuffer(void* smack, int, int, int, int, void*, int);
     void* FUN_004224d0();
@@ -19,6 +20,15 @@ extern "C" {
     VBuffer* __fastcall VBuffer_VirtualBufferCreateAndClean(VBuffer* this_ptr, int width, int height);
     void __fastcall Sprite_CloseSmackerFile(void* this_ptr);
     void* __stdcall SmackOpen(char* filename, int flags, int extra);
+    void __stdcall SmackSoundOnOff(void* smack, int onoff);
+    void __stdcall SmackGoto(void* smack, int frame);
+    void __stdcall SmackNextFrame(void* smack);
+    int __stdcall SmackDoFrame(void* smack);
+    void __stdcall SmackBufferClose(void* smack);
+    void __stdcall SmackClose(void* smack);
+    void __stdcall SmackBufferNewPalette(void* smack, void* palette, int);
+    void __stdcall SmackColorRemap(void* smack, void* remap_table, int num_entries, int);
+    void FUN_0041eb90(void*, int, int);
     void FUN_0041eb70(void*, int, int);
     void FUN_0041ea80(void*);
     void __cdecl FreeFromGlobalHeap(void*);
@@ -48,6 +58,32 @@ void Animation::AnimationInit()
 {
     this->smk = 0;
     this->data = 0;
+}
+
+/* Function start: 0x41FA50 */
+Animation::Animation()
+{
+    this->vtable = (void**)0x431570;
+    this->CleanArray10();
+}
+
+/* Function start: 0x41FB60 */
+void Animation::CleanArray10()
+{
+    int* p = (int*)((char*)this + 4);
+    for (int i = 0; i < 10; i++) {
+        *p++ = 0;
+    }
+}
+
+/* Function start: 0x41FB70 */
+Animation::~Animation()
+{
+    this->vtable = (void**)0x431570;
+    this->FreeVBuffer();
+    this->CloseSmackerBuffer();
+    this->CloseSmackerFile();
+    FUN_0041fbd3();
 }
 
 /* Function start: 0x41FD20 */
@@ -224,4 +260,66 @@ void Animation::MainLoop()
     }
 end_loop:
     VBuffer_InvalidateVideoMode(vbuffer);
+}
+
+/* Function start: 0x41FBE0 */
+void Animation::CloseSmackerFile()
+{
+    if (this->smk != 0) {
+        SmackClose(this->smk);
+        this->smk = 0;
+    }
+}
+
+/* Function start: 0x41FC00 */
+void Animation::CloseSmackerBuffer()
+{
+    if (this->smack_buffer != 0) {
+        SmackBufferClose(this->smack_buffer);
+        this->smack_buffer = 0;
+    }
+}
+
+/* Function start: 0x41FC20 */
+void Animation::SetPalette(unsigned int param_1, unsigned int param_2)
+{
+    if (this->smk != 0 && this->smack_buffer != 0) {
+        VBuffer_SetCurrentVideoMode(this->data, this->data->field_0x1c);
+        if (this->smk->field_0x68 != 0) {
+            SmackBufferNewPalette(this->smack_buffer, (char*)this->smk + 0x6c, 0);
+            SmackColorRemap(this->smk, (char*)this->smack_buffer + 0x3c, *(int*)((char*)this->smack_buffer + 0x2c), *(int*)((char*)this->smack_buffer + 0x43c));
+        }
+        FUN_0041eb90((char*)this->smk + 0x6c, param_1, param_2);
+        VBuffer_InvalidateVideoMode(this->data);
+    }
+}
+
+/* Function start: 0x41FCA0 */
+void Animation::DoFrame(Animation* anim)
+{
+    if (anim->smk != 0) {
+        SmackDoFrame(anim->smk);
+    }
+}
+
+/* Function start: 0x41FCB0 */
+void Animation::NextFrame()
+{
+    if (this->smk != 0) {
+        SmackNextFrame(this->smk);
+    }
+}
+
+/* Function start: 0x41FCC0 */
+void Animation::GotoFrame(int frame)
+{
+    if (this->smk != 0) {
+        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
+            SmackSoundOnOff(this->smk, 0);
+        }
+        SmackGoto(this->smk, frame);
+        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
+            SmackSoundOnOff(this->smk, 1);
+        }
+    }
 }
