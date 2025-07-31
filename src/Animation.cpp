@@ -73,11 +73,11 @@ void Animation::ToBuffer()
         ShowError(s_Animation_ToBuffer_No_smk_defined);
     }
     Animation_VBInit(this);
-    this->ToBuffer((AnimationData*)this->vbuffer);
+    this->ToBuffer(this->vbuffer);
 }
 
 /* Function start: 0x41FEA0 */
-void Animation::ToBuffer(AnimationData* buffer)
+void Animation::ToBuffer(VBuffer* buffer)
 {
     if (this->smk == 0) {
         ShowError(s_Animation_ToBuffer_No_smk_defined);
@@ -141,7 +141,7 @@ void Animation::MainLoop()
     }
 
     VBuffer* vbuffer = (VBuffer*)this->data;
-    VBuffer_SetCurrentVideoMode(vbuffer, vbuffer->field19_0x1c);
+    VBuffer_SetCurrentVideoMode(vbuffer, vbuffer->field_0x1c);
 
     int frame = 1;
     if (smk->frame_count > 0) {

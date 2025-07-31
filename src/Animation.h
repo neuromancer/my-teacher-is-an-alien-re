@@ -15,12 +15,6 @@ struct SmkObject {
     int current_frame;
 };
 
-struct AnimationData {
-    char pad[0x18];
-    int y_offset;
-    int field_0x1c;
-};
-
 class Animation {
 public:
     void** vtable;
@@ -28,7 +22,7 @@ public:
     VBuffer* vbuffer; // 0x8
     SmkObject* smk; // 0xc
     char pad2[0x18 - 0xc - 4];
-    AnimationData* data; // 0x18
+    VBuffer* data; // 0x18
     unsigned int flags; // 0x1c
     void* palette; // 0x20
     int* smack_buffer; // 0x24
@@ -37,7 +31,7 @@ public:
     void AnimationInit();
     void Open(char*, int, int);
     void ToBuffer();
-    void ToBuffer(AnimationData* buffer);
+    void ToBuffer(VBuffer* buffer);
     void OpenAndConvertToBuffer(char* filename);
     void Play(char* filename, unsigned int flags);
     void MainLoop();
