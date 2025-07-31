@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "Sprite.h"
+#include "Parser.h"
 #include "GameState.h"
 
 extern "C" {
@@ -36,26 +37,26 @@ void Sprite::CheckRanges1()
     if (this->animation_data == 0) {
         ShowError(s_error_Sprite_CheckRanges0_00436c04);
     }
-    if (this->field136_0x88 == 0) {
+    if (this->ranges == 0) {
         ShowError(s_error_Sprite_CheckRanges1_00436be8);
     }
     int iVar4 = 0;
-    if (0 < this->field_0xac) {
+    if (0 < this->num_states) {
         int iVar3 = 0;
         do {
-            int* piVar2 = (int*)((char*)this->field136_0x88 + 4 + iVar3);
+            int* piVar2 = (int*)((char*)this->ranges + 4 + iVar3);
             int iVar1 = ((AnimationData2*)(((AnimationData*)this->animation_data)->p))->value;
             if (iVar1 < *piVar2) {
                 *piVar2 = iVar1;
             }
-            piVar2 = (int*)((char*)this->field136_0x88 + iVar3);
+            piVar2 = (int*)((char*)this->ranges + iVar3);
             iVar1 = *piVar2;
             if (piVar2[1] < iVar1) {
-                ShowError(s_bad_range_d_start_d_in_s_00436bc8, iVar4, iVar1, (char*)&this->filename);
+                ShowError(s_bad_range_d_start_d_in_s_00436bc8, iVar4, iVar1, (char*)&this->sprite_filename);
             }
             iVar3 += 8;
             iVar4++;
-        } while (iVar4 < this->field_0xac);
+        } while (iVar4 < this->num_states);
     }
 }
 
@@ -70,13 +71,13 @@ int Sprite::CheckConditions()
     int local_4;
 
     iVar3 = 0;
-    if ((this->field_0xa0 == 0) || (this->field_0x98 == 0)) {
+    if ((this->num_logic_conditions == 0) || (this->logic_conditions == 0)) {
         return 1;
     }
     local_4 = 0;
-    if (0 < this->field_0xa0) {
+    if (0 < this->num_logic_conditions) {
         do {
-            piVar2 = (int*)((char*)this->field_0x98 + iVar3);
+            piVar2 = (int*)((char*)this->logic_conditions + iVar3);
             if (piVar2[1] == 1) {
                 iVar1 = *piVar2;
                 if ((0 < iVar1) && (g_GameState->field_0x90 <= iVar1)) {
@@ -100,13 +101,13 @@ int Sprite::CheckConditions()
                 if ((0 < iVar1) && (g_GameState->field_0x90 <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState->field_0x88[iVar1] != this->field_0x9c) {
+                if (g_GameState->field_0x88[iVar1] != this->handle) {
                     return 0;
                 }
             }
             iVar3 = iVar3 + 8;
             local_4 = local_4 + 1;
-        } while (local_4 < this->field_0xa0);
+        } while (local_4 < this->num_logic_conditions);
     }
     return 1;
 }
@@ -114,20 +115,19 @@ int Sprite::CheckConditions()
 /* Function start: 0x41D6D0 */
 void Sprite::SetRange(int param_1, int param_2, int param_3)
 {
-    if (this->field_0xac <= param_1) {
-        ShowError("Sprite::SetRange#1 %s %d", &this->filename, param_1);
+    if (this->num_states <= param_1) {
+        ShowError("Sprite::SetRange#1 %s %d", &this->sprite_filename, param_1);
     }
     if ((param_2 < 1) || (param_3 < 1)) {
-        ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", &this->filename, param_1, param_2, param_3);
+        ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", &this->sprite_filename, param_1, param_2, param_3);
     }
-    int* piVar1 = (int*)((char*)this->field136_0x88 + param_1 * 8);
+    int* piVar1 = (int*)((char*)this->ranges + param_1 * 8);
     *piVar1 = param_2;
     piVar1[1] = param_3;
     this->flags |= 0x20;
 }
 
 /* Function start: 0x41D9D0 */
-extern void (*Parser_LBLParse)();
 int Sprite::LBLParse(char* param_1)
 {
     char local_a0[32];
@@ -139,9 +139,9 @@ int Sprite::LBLParse(char* param_1)
     sscanf(param_1, "%s", local_a0);
 
     if (strcmp(local_a0, "FNAME") == 0) {
-        sscanf(param_1, "%s %s", local_80, this->filename);
+        sscanf(param_1, "%s %s", local_80, this->sprite_filename);
     } else if (strcmp(local_a0, "HANDLE") == 0) {
-        sscanf(param_1, "%s %d", local_a0, &this->field_0x9c);
+        sscanf(param_1, "%s %d", local_a0, &this->handle);
     } else if (strcmp(local_a0, "LOC") == 0) {
         sscanf(param_1, "%s %d %d", local_a0, &local_ac, &local_a4);
         // TODO: These fields are not in the class
@@ -162,7 +162,7 @@ int Sprite::LBLParse(char* param_1)
             this->SetLogic(local_ac, 1);
         } else if (strstr_wrapper(param_1, "EQUAL") != 0) {
             this->SetLogic(local_ac, 3);
-            sscanf(param_1, "%s %s %d", local_a0, local_80, &this->field_0x9c);
+            sscanf(param_1, "%s %s %d", local_a0, local_80, &this->handle);
         } else {
             ShowError("illegal %s", param_1);
         }
@@ -195,7 +195,7 @@ int Sprite::LBLParse(char* param_1)
     } else if (strcmp(local_a0, "END") == 0) {
         return 1;
     } else {
-        Parser_LBLParse();
+        Parser::LBLParse(param_1);
     }
     return 0;
 }
@@ -203,13 +203,13 @@ int Sprite::LBLParse(char* param_1)
 /* Function start: 0x41D8D0 */
 void Sprite::InitLogic(int param_1)
 {
-    if (this->field_0x98 != 0) {
-        Array_Cleanup((int)this->field_0x98, 8, *(int*)((char*)this->field_0x98 - 4), (void*)0x405770);
-        FreeFromGlobalHeap((int*)((char*)this->field_0x98 - 4));
-        this->field_0x98 = 0;
+    if (this->logic_conditions != 0) {
+        Array_Cleanup((int)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)((char*)this->logic_conditions - 4));
+        this->logic_conditions = 0;
     }
 
-    this->field_0xa0 = param_1;
+    this->num_logic_conditions = param_1;
     int* piVar4 = 0;
     int* piVar1 = AllocateMemory_Wrapper(param_1 * 8 + 4);
     if (piVar1 != 0) {
@@ -217,49 +217,49 @@ void Sprite::InitLogic(int param_1)
         *piVar1 = param_1;
         FUN_00424b00(piVar4, 8, param_1, (void*)0x41d850, (void*)0x405770);
     }
-    this->field_0x98 = piVar4;
+    this->logic_conditions = piVar4;
 
-    if (0 < this->field_0xa0) {
+    if (0 < this->num_logic_conditions) {
         int iVar2 = 0;
         int iVar3 = 0;
         do {
             iVar3 = iVar3 + 8;
             iVar2 = iVar2 + 1;
-            *(int*)((char*)this->field_0x98 + -8 + iVar3) = 0;
-            *(int*)((char*)this->field_0x98 + -4 + iVar3) = 0;
-        } while (iVar2 < this->field_0xa0);
+            *(int*)((char*)this->logic_conditions + -8 + iVar3) = 0;
+            *(int*)((char*)this->logic_conditions + -4 + iVar3) = 0;
+        } while (iVar2 < this->num_logic_conditions);
     }
 }
 
 /* Function start: 0x41D740 */
 void Sprite::SetState(int param_1)
 {
-    this->field_0xac = param_1;
-    if (this->field136_0x88 != 0) {
-        Array_Cleanup((int)this->field136_0x88, 8, *(int*)((char*)this->field136_0x88 - 4), (void*)0x405770);
-        FreeFromGlobalHeap((int*)((char*)this->field136_0x88 - 4));
-        this->field136_0x88 = 0;
+    this->num_states = param_1;
+    if (this->ranges != 0) {
+        Array_Cleanup((int)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)((char*)this->ranges - 4));
+        this->ranges = 0;
     }
 
     int* piVar5 = 0;
-    int* piVar1 = AllocateMemory_Wrapper(this->field_0xac * 8 + 4);
+    int* piVar1 = AllocateMemory_Wrapper(this->num_states * 8 + 4);
     if (piVar1 != 0) {
         piVar5 = piVar1 + 1;
-        *piVar1 = this->field_0xac;
-        FUN_00424b00(piVar5, 8, this->field_0xac, (void*)0x41d850, (void*)0x405770);
+        *piVar1 = this->num_states;
+        FUN_00424b00(piVar5, 8, this->num_states, (void*)0x41d850, (void*)0x405770);
     }
-    this->field136_0x88 = piVar5;
+    this->ranges = piVar5;
 
-    if (0 < this->field_0xac) {
+    if (0 < this->num_states) {
         int iVar3 = 0;
         int iVar4 = 0;
         do {
             iVar4 = iVar4 + 1;
-            int* puVar2 = (int*)((char*)this->field136_0x88 + iVar3);
+            int* puVar2 = (int*)((char*)this->ranges + iVar3);
             iVar3 = iVar3 + 8;
             *puVar2 = 1;
             puVar2[1] = 5000;
-        } while (iVar4 < this->field_0xac);
+        } while (iVar4 < this->num_states);
     }
 
     this->flags |= 0x20;
@@ -268,23 +268,23 @@ void Sprite::SetState(int param_1)
 /* Function start: 0x41D860 */
 void Sprite::SetLogic(int param_1, int param_2)
 {
-    if (this->field_0x98 == 0) {
+    if (this->logic_conditions == 0) {
         this->InitLogic(1);
     }
 
     int iVar2 = 0;
-    if (0 < this->field_0xa0) {
-        int* piVar1 = (int*)((char*)this->field_0x98 + 4);
+    if (0 < this->num_logic_conditions) {
+        int* piVar1 = (int*)((char*)this->logic_conditions + 4);
         do {
             if (*piVar1 == 0) {
-                *(int*)((char*)this->field_0x98 + iVar2 * 8) = param_1;
-                *(int*)((char*)this->field_0x98 + 4 + iVar2 * 8) = param_2;
+                *(int*)((char*)this->logic_conditions + iVar2 * 8) = param_1;
+                *(int*)((char*)this->logic_conditions + 4 + iVar2 * 8) = param_2;
                 return;
             }
             piVar1 = piVar1 + 2;
             iVar2 = iVar2 + 1;
-        } while (iVar2 < this->field_0xa0);
+        } while (iVar2 < this->num_logic_conditions);
     }
 
-    ShowError("Sprite::SetLogic %s", &this->filename);
+    ShowError("Sprite::SetLogic %s", &this->sprite_filename);
 }

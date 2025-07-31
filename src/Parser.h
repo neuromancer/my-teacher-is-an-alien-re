@@ -6,10 +6,10 @@
 class Parser
 {
 public:
-    ~Parser();
+    virtual ~Parser();
     void Init();
     void CloseFile();
-    void LBLParse(char*);
+    virtual int LBLParse(char*);
     void Open(char *param_1);
     void Copy(Parser* other);
     void SaveFilePosition();

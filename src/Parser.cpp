@@ -59,9 +59,10 @@ void Parser::CloseFile()
 }
 
 /* Function start: 0x418B30 */
-void Parser::LBLParse(char* param_1)
+int Parser::LBLParse(char* param_1)
 {
     ShowError((char*)0x436504, param_1, this->lineNumber, this->filename);
+    return 0;
 }
 
 /* Function start: 0x418B50 */
@@ -173,4 +174,3 @@ void Parser::ProcessFile(Parser* dst, char* key)
     }
     ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer", this->filename);
 }
-

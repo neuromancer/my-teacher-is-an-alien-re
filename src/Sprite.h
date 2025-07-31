@@ -1,19 +1,20 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-class Sprite {
+#include "Parser.h"
+
+class Sprite : public Parser {
 public:
-    char pad0[0x88];
-    void* field136_0x88; // 0x88
+    void* ranges; // 0x88
     int flags; // 0x8c
     char pad1[0x98 - 0x88 - 8];
-    void* field_0x98; // 0x98
-    int field_0x9c;   // 0x9c
-    int field_0xa0;   // 0xa0
+    void* logic_conditions; // 0x98
+    int handle;   // 0x9c
+    int num_logic_conditions;   // 0xa0
     char pad2[0xac - 0xa0 - 4];
-    int field_0xac; // 0xac
+    int num_states; // 0xac
     char pad3[0xb4 - 0xac - 4];
-    char* filename; // 0xb4
+    char* sprite_filename; // 0xb4
     char pad4[0xd0 - 0xb4 - 4];
     void* animation_data; // 0xd0
 
@@ -23,7 +24,7 @@ public:
     void SetState(int param_1);
     void SetLogic(int param_1, int param_2);
     void InitLogic(int param_1);
-    int LBLParse(char* param_1);
+    virtual int LBLParse(char* param_1);
 };
 
 #endif // SPRITE_H
