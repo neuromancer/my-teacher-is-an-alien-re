@@ -17,8 +17,9 @@ public:
     void FindKey(unsigned char*);
     int GetKey(char* line);
     void ProcessFile(Parser* dst, char* key);
+public:
+    void** vtable;
 private:
-    int vtable;
     int field_0x4;
     int isFileOpen;
     int isProcessingKey;

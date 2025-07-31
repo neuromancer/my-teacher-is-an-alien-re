@@ -39,6 +39,76 @@ extern "C" {
 }
 
 char DAT_0043d630[0x4000];
+int DAT_00436b9c = 0;
+
+/* Function start: 0x41CD50 */
+Sprite::Sprite(char* filename)
+{
+    // BaseObject::BaseObject_Init((undefined4 *)this);
+    this->loc_x = 0;
+    this->loc_y = 0;
+    this->vtable = (void**)0x431530;
+    memset(&this->ranges, 0, 0x14 * 4);
+    this->flags |= 0x20;
+    if (filename != 0) {
+        sscanf(filename, "%s", &this->sprite_filename);
+    }
+    this->SetState(1);
+    this->priority = 0;
+    this->SetRange(0, 1, 5000);
+}
+
+/* Function start: 0x41CE30 */
+Sprite::~Sprite()
+{
+    this->vtable = (void**)0x431530;
+    this->StopAnimationSound();
+
+    if (this->ranges != 0) {
+        Array_Cleanup((int)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)((char*)this->ranges - 4));
+        this->ranges = 0;
+    }
+
+    if (this->logic_conditions != 0) {
+        Array_Cleanup((int)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)((char*)this->logic_conditions - 4));
+        this->logic_conditions = 0;
+    }
+}
+
+/* Function start: 0x41CF10 */
+void Sprite::Init()
+{
+    try {
+        if (this->animation_data == 0) {
+            this->animation_data = (Animation*)AllocateMemory_Wrapper(0x2c);
+            if (this->animation_data != 0) {
+                this->animation_data->AnimationInit();
+                this->animation_data->Open(this->sprite_filename, 0xfe000, 0xffffffff);
+            }
+        }
+
+        if (this->animation_data != 0 && this->animation_data->data == 0) {
+            // Animation::ToBuffer((Animation *)this->animation_data);
+        }
+
+        if (this->animation_data != 0 && this->animation_data->data != 0) {
+            if (DAT_00436b9c == 0) {
+                memset(DAT_0043d630, 0, 0x4000);
+                DAT_00436b9c = 1;
+            }
+            memcpy(&DAT_0043d630[this->animation_data->data->field_0x1c * 0x40], this->sprite_filename, strlen(this->sprite_filename));
+        }
+
+        this->CheckRanges1();
+        this->flags |= 0x20;
+        this->SetState2(this->field_0x90);
+    }
+    catch (...) {
+        // TODO: Figure out what the exception handler does
+    }
+}
 
 /* Function start: 0x41D040 */
 void Sprite::StopAnimationSound()

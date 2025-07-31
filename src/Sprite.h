@@ -21,6 +21,8 @@ public:
     char pad4[0xd0 - 0xb4 - 4];
     Animation* animation_data; // 0xd0
 
+    Sprite(char* filename);
+    ~Sprite();
     void CheckRanges1();
     int CheckConditions();
     void SetRange(int param_1, int param_2, int param_3);
@@ -28,6 +30,7 @@ public:
     void SetState2(int param_1);
     void SetLogic(int param_1, int param_2);
     void InitLogic(int param_1);
+    void Init();
     void InitAnimation();
     virtual int LBLParse(char* param_1);
     void Dump();
