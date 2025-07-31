@@ -17,7 +17,7 @@ extern "C" {
 
 extern Sound* g_sound;
 
-/* Function start: 0x000000 */
+/* Function start: 0x41E460 */
 Sample::Sample()
 {
     m_data = 0;

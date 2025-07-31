@@ -22,15 +22,6 @@ extern "C" {
 extern char DAT_00436970;
 extern short _param_3;
 
-/* Function start: 0x41E460 */
-Sound::Sound()
-{
-    *(int*)this = 0;
-    *(int*)((char*)this + 4) = 0;
-    *(int*)((char*)this + 8) = 0;
-    *(int*)((char*)this + 12) = 0;
-}
-
 int DAT_0043de30;
 short DAT_0043de32;
 int DAT_0043de34;

@@ -6,8 +6,6 @@ extern "C" {
     void _AIL_mem_free_lock_4(void*);
     void* _AIL_mem_alloc_lock_4(unsigned int);
     FILE* OpenFileAndFindKey(char*, char*, const char*, unsigned int*);
-    size_t __fread_lk(void*, size_t, size_t, FILE*);
-    int _fclose(FILE*);
 }
 
 extern int* DAT_0043696c;
@@ -45,8 +43,8 @@ int AILData::Load(char* filename)
         if (this->data == 0) {
             return 1;
         }
-        __fread_lk(this->data, this->size, 1, _File);
-        _fclose(_File);
+        fread(this->data, this->size, 1, _File);
+        fclose(_File);
         return 0;
     }
     return 1;
