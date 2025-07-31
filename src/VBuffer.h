@@ -11,8 +11,8 @@ public:
 };
 
 extern "C" {
-    void __cdecl VBuffer_SetCurrentVideoMode(VBuffer* this_ptr, int);
-    void __cdecl VBuffer_InvalidateVideoMode(VBuffer* this_ptr);
+    void __fastcall VBuffer_SetCurrentVideoMode(VBuffer* this_ptr, int);
+    void __fastcall VBuffer_InvalidateVideoMode(VBuffer* this_ptr);
 }
 
 #endif // VBUFFER_H

@@ -2,10 +2,14 @@
 #define ANIMATION_H
 
 struct SmkObject {
-    char pad[4];
+    int version;
     int width;
     int height;
-    char pad2[0x374 - 12];
+    int frame_count;
+    int mspf;
+    char unknown1[84];
+    int field_0x68;
+    char unknown2[884 - 20 - 84 - 4];
     int current_frame;
 };
 

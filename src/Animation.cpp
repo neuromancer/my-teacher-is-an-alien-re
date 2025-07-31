@@ -113,9 +113,9 @@ void Animation::MainLoop()
     VBuffer_SetCurrentVideoMode(vbuffer, vbuffer->field19_0x1c);
 
     int frame = 1;
-    if (smk->height > 0) {
+    if (smk->frame_count > 0) {
         do {
-            if (*(int*)((char*)smk + 0x68) != 0) {
+            if (smk->field_0x68 != 0) {
                 FUN_0041fc20(this, 0, 0x100);
             }
             DoFrame(this);
@@ -150,12 +150,12 @@ void Animation::MainLoop()
             piVar2 = FUN_004224e0();
             FUN_0041acf0(vbuffer, *(int*)((char*)vbuffer + 0x28), *(int*)((char*)vbuffer + 0x2c), *(int*)((char*)vbuffer + 0x20), *(int*)((char*)vbuffer + 0x24), 0, *(int*)piVar2 - 1, iVar6, iVar1);
 
-            if (smk->height - 1 <= frame) {
+            if (smk->frame_count - 1 <= frame) {
                 break;
             }
             frame++;
             FUN_0041fcb0((int)this);
-        } while (frame <= smk->height);
+        } while (frame <= smk->frame_count);
     }
 end_loop:
     VBuffer_InvalidateVideoMode(vbuffer);
