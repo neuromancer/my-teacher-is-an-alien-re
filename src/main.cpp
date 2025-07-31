@@ -1,6 +1,7 @@
 #include <windows.h>
+#include "GameState.h"
 
-void* g_GameState = (void*)0x00436998;
+GameState* g_GameState = (GameState*)0x00436998;
 extern int DAT_004373bc;
 extern int FUN_00422510();
 

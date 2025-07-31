@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include "GameState.h"
 
 // TODO: Move to a proper header
 void (*ShowError)(const char* message, ...) = (void (*)(const char*, ...))0x00419110;
@@ -47,9 +48,7 @@ void Sprite::CheckRanges1()
 }
 
 /* Function start: 0x41d590 */
-// TODO: Move to a proper header
-// NOTE: Once the GameState class is reversed, this should be an instance of it
-extern void* g_GameState;
+extern GameState* g_GameState;
 
 int Sprite::CheckConditions()
 {
@@ -68,28 +67,28 @@ int Sprite::CheckConditions()
             piVar2 = (int*)((char*)this->field_0x98 + iVar3);
             if (piVar2[1] == 1) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (*(int*)((char*)g_GameState + 0x90) <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState->field_0x90 <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (*(int*)(*(int*)((char*)g_GameState + 0x88) + iVar1 * 4) == 0) {
+                if (g_GameState->field_0x88[iVar1] == 0) {
                     return 0;
                 }
             }
             if (piVar2[1] == 2) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (*(int*)((char*)g_GameState + 0x90) <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState->field_0x90 <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (*(int*)(*(int*)((char*)g_GameState + 0x88) + iVar1 * 4) != 0) {
+                if (g_GameState->field_0x88[iVar1] != 0) {
                     return 0;
                 }
             }
             if (piVar2[1] == 3) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (*(int*)((char*)g_GameState + 0x90) <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState->field_0x90 <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (*(int*)(*(int*)((char*)g_GameState + 0x88) + iVar1 * 4) != this->field_0x9c) {
+                if (g_GameState->field_0x88[iVar1] != this->field_0x9c) {
                     return 0;
                 }
             }
