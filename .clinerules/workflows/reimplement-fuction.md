@@ -39,6 +39,7 @@ There is a very important file located in `code/strings.txt`. This contains the 
 * There is no need to review how compilation works.
 * If the decompiled code shows a standard function called like `_strcpy`, then use `strcpy` imported from the corresponding header.
 * Every time you found a standard function such as `fsetpos`, carefully review each parameter and try to rename/retype the fields of the class using that information.
+* Do NOT use `new` as it looks like it was not used in this codebase.
 * If the decompiled code shows a function such as `ShowError`, use the one already implemented (check all the source files). If it contains any other call that are not yet implemented (e.g. `FUN_00123456`) then use an extern definition. Do NOT guess functions.
 * Do NOT inline class methods
 * You can include calls to function like `memcpy` or `strcpy`, but only if the compiler will inline them and produce a better match for the target assembly.

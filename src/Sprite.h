@@ -2,6 +2,7 @@
 #define SPRITE_H
 
 #include "Parser.h"
+#include "Animation.h"
 
 class Sprite : public Parser {
 public:
@@ -18,17 +19,20 @@ public:
     char pad3[0xb4 - 0xac - 4];
     char* sprite_filename; // 0xb4
     char pad4[0xd0 - 0xb4 - 4];
-    void* animation_data; // 0xd0
+    Animation* animation_data; // 0xd0
 
     void CheckRanges1();
     int CheckConditions();
     void SetRange(int param_1, int param_2, int param_3);
     void SetState(int param_1);
+    void SetState2(int param_1);
     void SetLogic(int param_1, int param_2);
     void InitLogic(int param_1);
+    void InitAnimation();
     virtual int LBLParse(char* param_1);
     void Dump();
     unsigned char Do(int, int, int, int);
+    void FreeAnimation();
 };
 
 #endif // SPRITE_H

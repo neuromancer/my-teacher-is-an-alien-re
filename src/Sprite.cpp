@@ -4,12 +4,13 @@
 #include "Sprite.h"
 #include "Parser.h"
 #include "GameState.h"
+#include "Animation.h"
 
 extern "C" {
     __int64 __ftol();
     void FUN_0041fcc0(void*, int);
     void FUN_0041fcb0(int);
-    void FUN_0041be20(void*, int, int, int, int, int, int, int);
+    void FUN_0041be20(void*, void*, int, int, int, int, int, int);
     int GameState_Error_Handler_3(int);
     void Array_Cleanup(int, int, int, void*);
     void FreeFromGlobalHeap(int*);
@@ -29,22 +30,113 @@ void (*ShowError)(const char* message, ...) = (void (*)(const char*, ...))0x0041
 const char* s_error_Sprite_CheckRanges0_00436c04 = "error Sprite::CheckRanges0";
 const char* s_error_Sprite_CheckRanges1_00436be8 = "error Sprite::CheckRanges1";
 const char* s_bad_range_d_start_d_in_s_00436bc8 = "bad range[%d].start = %d in %s";
+const char* s_range_error_00436bbc = "range error";
+const char* s_Sprite__SetState_0__d__s_00436ba0 = "Sprite::SetState 0 %d %s";
 
-class Animation {
-public:
-    static void DoFrame(Animation*);
-};
+extern "C" {
+    void Sprite__FreeVBuffer(Sprite*);
+}
 
-struct AnimationData {
-    char pad[0xc];
-    void* p;
-};
+char DAT_0043d630[0x4000];
 
-struct AnimationData2 {
-    char pad[0xc];
-    int value;
-};
+/* Function start: 0x41D0C0 */
+void Sprite::InitAnimation()
+{
+    if (this->animation_data == 0) {
+        Animation* anim = (Animation*)AllocateMemory_Wrapper(0x2c);
+        if (anim != 0) {
+            anim->AnimationInit();
+        }
+        this->animation_data = anim;
+        this->animation_data->Open(this->sprite_filename, 0xfe000, 0xffffffff);
+    }
+}
 
+/* Function start: 0x41D160 */
+void Sprite::FreeAnimation()
+{
+    if (this->animation_data != 0) {
+        if (this->animation_data->data != 0) {
+            if (this->animation_data->data->field_0x1c != -1) {
+                DAT_0043d630[this->animation_data->data->field_0x1c * 0x40] = 0;
+            }
+            Sprite__FreeVBuffer(this);
+        }
+        // TODO: This is not quite right, there should be a call to the destructor
+        FreeFromGlobalHeap((int*)this->animation_data);
+        this->animation_data = 0;
+    }
+}
+
+/* Function start: 0x41D190 */
+void Sprite::SetState2(int param_1)
+{
+    int iVar1;
+    int iVar2;
+    int iVar3;
+    int bVar4;
+    int* piVar5;
+    int iVar6;
+
+    if (param_1 == -1) {
+        this->field_0x90 = -1;
+        return;
+    }
+    iVar6 = 0;
+    if ((this->animation_data == 0) || (this->animation_data->data == 0)) {
+        this->Init();
+    }
+    if ((-1 < param_1) && (param_1 <= this->num_states + -1)) {
+        if (this->animation_data != 0) {
+            iVar1 = this->animation_data->smk->current_frame;
+            if (this->ranges != 0) {
+                piVar5 = (int*)((int)this->ranges + param_1 * 8);
+                if ((iVar1 < *piVar5) || (piVar5[1] < iVar1)) {
+                    bVar4 = 0;
+                }
+                else {
+                    bVar4 = 1;
+                }
+                if (bVar4 == 0) {
+                    this->flags = this->flags | 0x20;
+                }
+                if (((this->flags & 0x20) != 0) || (this->field_0x90 != param_1)) {
+                    if ((this->flags & 0x10) != 0) {
+                        iVar2 = (int)this->ranges;
+                        iVar6 = this->animation_data->smk->current_frame - *(int*)(iVar2 + this->field_0x90 * 8);
+                        iVar3 = *(int*)(iVar2 + param_1 * 8);
+                        iVar1 = iVar3 + 1 + iVar6;
+                        iVar6 = iVar6 + 1;
+                        if ((this->animation_data == 0) || (iVar2 == 0)) {
+                            ShowError(s_range_error_00436bbc);
+                            return;
+                        }
+                        if ((iVar1 < iVar3) || (*(int*)(iVar2 + 4 + param_1 * 8) < iVar1)) {
+                            bVar4 = 0;
+                        }
+                        else {
+                            bVar4 = 1;
+                        }
+                        if (bVar4 == 0) {
+                            iVar6 = 0;
+                        }
+                    }
+                    this->field_0x90 = param_1;
+                    FUN_0041fcc0(this->animation_data, *(int*)((int)this->ranges + param_1 * 8) + iVar6);
+                    piVar5 = (int*)(this->field_0x90 * 8 + (int)this->ranges);
+                    if (piVar5[1] == *piVar5) {
+                        this->flags = this->flags | 4;
+                    }
+                    this->flags = this->flags & 0xffffffdf;
+                }
+                return;
+            }
+        }
+        ShowError(s_range_error_00436bbc);
+        return;
+    }
+    ShowError(s_Sprite__SetState_0__d__s_00436ba0, param_1, &this->sprite_filename);
+}
 
 /* Function start: 0x41d300 */
 unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
@@ -69,7 +161,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     if ((this->flags & 0x80) != 0) {
         return 1;
     }
-    if ((this->animation_data == (void*)0x0) || (*(int*)((int)this->animation_data + 0x18) == 0)) {
+    if ((this->animation_data == 0) || (this->animation_data->data == 0)) {
         this->Init();
     }
     piVar4 = (int*)(this->field_0x90 * 8 + (int)this->ranges);
@@ -81,13 +173,13 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
         bVar5 = 1;
     }
     if (bVar6 == 0) {
-        Animation::DoFrame((Animation*)this->animation_data);
+        Animation::DoFrame(this->animation_data);
         pvVar1 = this->animation_data;
         if (pvVar1 == (void*)0x0) {
             iVar3 = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8);
         }
         else {
-            iVar3 = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8) - *(int*)(*(int*)((int)pvVar1 + 0xc) + 0x374);
+            iVar3 = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8) - this->animation_data->smk->current_frame;
         }
         if (iVar3 == 1) {
             if ((this->flags & 0x200) == 0) {
@@ -115,7 +207,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
                 y = y + -1;
             }
             else {
-                y = y + *(int*)(*(int*)((int)pvVar1 + 0x18) + 0x18) + -1;
+                y = y + this->animation_data->data->y_offset + -1;
             }
         }
         else if (pvVar1 == (void*)0x0) {
@@ -134,7 +226,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     else {
         iVar3 = 3 - (unsigned int)((uVar2 & 0x40) == 0);
     }
-    FUN_0041be20(g_SoundManager, *(int*)((int)this->animation_data + 0x18), this->priority, x, y, iVar3, param_3, param_4);
+    FUN_0041be20(g_SoundManager, this->animation_data->data, this->priority, x, y, iVar3, param_3, param_4);
     return -((this->flags & 1) == 0) & bVar5;
 }
 
@@ -152,7 +244,7 @@ void Sprite::CheckRanges1()
         int iVar3 = 0;
         do {
             int* piVar2 = (int*)((char*)this->ranges + 4 + iVar3);
-            int iVar1 = ((AnimationData2*)(((AnimationData*)this->animation_data)->p))->value;
+            int iVar1 = this->animation_data->smk->current_frame;
             if (iVar1 < *piVar2) {
                 *piVar2 = iVar1;
             }
