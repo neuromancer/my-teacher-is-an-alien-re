@@ -28,6 +28,8 @@ public:
     int* smack_buffer; // 0x24
     void* smack_handle; // 0x28
 
+    Animation();
+    Animation(char* filename);
     ~Animation();
     void AnimationInit();
     int Open(char*, int, int);

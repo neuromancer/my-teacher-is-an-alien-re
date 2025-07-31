@@ -33,9 +33,9 @@ clean:
 	rm -f $(OUT_DIR)/*.map
 
 sort:
-	python3 bin/sortByAddress.py
+	@python3 bin/sortByAddress.py
 
 report:
-	python3 bin/compileAndReport.py
+	@python3 bin/compileAndReport.py
 
 .PHONY: all clean

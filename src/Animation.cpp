@@ -60,6 +60,17 @@ void Animation::AnimationInit()
     this->data = 0;
 }
 
+/* Function start: 0x41FAE0 */
+Animation::Animation(char* filename)
+{
+    try {
+        this->CleanArray10();
+        this->OpenAndConvertToBuffer(filename);
+    } catch (...) {
+        // TODO: Figure out what the exception handler does
+    }
+}
+
 /* Function start: 0x41FA50 */
 Animation::Animation()
 {
