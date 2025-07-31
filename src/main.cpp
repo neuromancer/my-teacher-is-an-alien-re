@@ -1,5 +1,8 @@
 #include <windows.h>
 #include "GameState.h"
+#include "Sound.h"
+
+Sound* g_sound;
 
 GameState* g_GameState = (GameState*)0x00436998;
 extern int DAT_004373bc;
@@ -33,4 +36,3 @@ int ProcessMessages()
         }
     } while (1);
 }
-

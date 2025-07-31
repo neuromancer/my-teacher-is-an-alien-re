@@ -2,7 +2,11 @@
 #include <string.h>
 
 extern "C" {
-    void _AIL_startup_0();
+    void __cdecl ShowError(const char*);
+    void __cdecl _AIL_init_sample_4(int);
+    void __cdecl _AIL_set_sample_file_12(int, void*, int);
+    void __cdecl _AIL_set_sample_volume_8(int, int);
+    void __cdecl _AIL_startup_0();
     void _AIL_set_preference_8(int, int);
     int FUN_0041e3d0(int, unsigned short, short);
     void WriteToMessageLog(const char*, ...);
