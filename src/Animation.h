@@ -22,13 +22,16 @@ public:
     SmkObject* smk; // 0xc
     char pad2[0x18 - 0xc - 4];
     AnimationData* data; // 0x18
-    char pad3[0x24 - 0x18 - 4];
+    unsigned int flags; // 0x1c
+    void* palette; // 0x20
     int* smack_buffer; // 0x24
     void* smack_handle; // 0x28
 
     void AnimationInit();
     void Open(char*, int, int);
-    void ToBuffer2(AnimationData* buffer);
+    void ToBuffer(AnimationData* buffer);
+    void Play(char* filename, unsigned int flags);
+    void MainLoop();
     static void DoFrame(Animation*);
 };
 
