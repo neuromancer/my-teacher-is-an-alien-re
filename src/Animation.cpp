@@ -75,6 +75,8 @@ Animation::Animation(char* filename)
 Animation::Animation()
 {
     this->vtable = (void**)0x431570;
+    *(int*)((char*)this + 0x10) = 0;
+    *(int*)((char*)this + 0x14) = 0;
     this->CleanArray10();
 }
 
@@ -271,6 +273,15 @@ void Animation::MainLoop()
     }
 end_loop:
     VBuffer_InvalidateVideoMode(vbuffer);
+}
+
+/* Function start: 0x41FAC0 */
+void Animation::Delete(unsigned char param_1)
+{
+    this->~Animation();
+    if ((param_1 & 1) != 0) {
+        FreeFromGlobalHeap(this);
+    }
 }
 
 /* Function start: 0x41FBE0 */

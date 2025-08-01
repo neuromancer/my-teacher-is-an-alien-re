@@ -46,6 +46,7 @@ public:
     void CloseSmackerBuffer();
     void CloseSmackerFile();
     void CleanArray10();
+    void Delete(unsigned char);
     static void DoFrame(Animation*);
 };
 
