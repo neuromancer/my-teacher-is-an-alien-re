@@ -38,4 +38,7 @@ sort:
 report:
 	@python3 bin/compileAndReport.py
 
+progress:
+	@python3 bin/showProgress.py
+
 .PHONY: all clean

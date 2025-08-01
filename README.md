@@ -20,7 +20,43 @@ The game executables has the following sha256 signatures:
 
 # Status
 
-As of the time of writing this, the reconstruction has not started yet. We are just testing the technology to see if it works and setting up the initial scripts to automatically compile the complete binary and compare it with the original one. It is unclear if the technology is good enough, but some results are promising. Check the [src/folder](./src) to see examples of reconstructed functions. All the reconstructored source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/).
+As of the time of writing this, the reconstruction of the demo executable already started. The progress is reported using ranges of functions (not all of them are implemented with 100%, but still provides a sense of progress):
+
+```
+  ❌ 0x401000 - 0x4093ec (182 functions)
+  ✅ 0x409400 (1 function)
+  ❌ 0x409440 - 0x4189d0 (333 functions)
+  ✅ 0x4189f0 - 0x418f50 (18 functions)
+  ❌ 0x418f60 - 0x418f90 (2 functions)
+  ✅ 0x419010 - 0x4192f0 (11 functions)
+  ❌ 0x419390 - 0x419fd0 (16 functions)
+  ✅ 0x41a150 (1 function)
+  ❌ 0x41a3b9 - 0x41a9e0 (9 functions)
+  ✅ 0x41a9f0 - 0x41ad50 (16 functions)
+  ❌ 0x41ae0c (1 function)
+  ✅ 0x41ae20 - 0x41aee0 (4 functions)
+  ❌ 0x41af9f - 0x41b0a0 (6 functions)
+  ✅ 0x41b110 (1 function)
+  ❌ 0x41b29a - 0x41cd30 (32 functions)
+  ✅ 0x41cd50 - 0x41ce30 (2 functions)
+  ❌ 0x41cef0 - 0x41cf08 (2 functions)
+  ✅ 0x41cf10 - 0x41e580 (24 functions)
+  ❌ 0x41e666 (1 function)
+  ✅ 0x41e670 - 0x41e870 (6 functions)
+  ❌ 0x41e8c0 - 0x41f9d0 (24 functions)
+  ✅ 0x41fa50 - 0x41fb70 (5 functions)
+  ❌ 0x41fbd3 (1 function)
+  ✅ 0x41fbe0 - 0x41fd80 (8 functions)
+  ❌ 0x41fdfc (1 function)
+  ✅ 0x41fe20 - 0x420140 (7 functions)
+  ❌ 0x420250 - 0x426070 (192 functions)
+  ✅ 0x4260f0 (1 function)
+  ❌ 0x426110 - 0x42ffd0 (188 functions)
+
+Progress: 106 / 1095 (9.68%)
+```
+
+Check the [src/folder](./src) to see examples of reconstructed functions. All the reconstructored source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/).
 
 # Building
 
@@ -29,7 +65,8 @@ Prerequisites:
 * `wine`
 * relatively recent (3.8-ish) Python installed
 
-Clone the project and run `make` inside. If you want to see the LLM workflow in action:
+Clone the project and run `make` inside. Only
+If you want to see the LLM workflow in action, you need:
 
 * [cline](https://cline.bot/)
 * Some LLM API (Gemini 2.5 recommended)
