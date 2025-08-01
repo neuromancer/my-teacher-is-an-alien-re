@@ -29,6 +29,8 @@ public:
     void* GetData();
     int SetCurrentVideoMode(int param_1);
     void InvalidateVideoMode();
+    void CallBlitter4(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6);
+    void CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8);
 };
 
 #endif // VBUFFER_H

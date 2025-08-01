@@ -216,6 +216,26 @@ void EmptyFunction()
 {
 }
 
+extern "C" void FUN_00423296(int, int, int, int, int, int);
+
+/* Function start: 0x41acb0 */
+void VBuffer::CallBlitter4(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
+{
+    this->SetCurrentVideoMode(this->field_0x1c);
+    FUN_00423296(param_1, param_2, param_3, param_4, param_5, param_6);
+    this->InvalidateVideoMode();
+}
+
+extern "C" void FUN_0042333a(int, int, int, int, int, int, int, int);
+
+/* Function start: 0x41acf0 */
+void VBuffer::CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8)
+{
+    this->SetCurrentVideoMode(this->field_0x1c);
+    FUN_0042333a(param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8);
+    this->InvalidateVideoMode();
+}
+
 /* Function start: 0x41ac80 */
 void VBuffer::InvalidateVideoMode()
 {
