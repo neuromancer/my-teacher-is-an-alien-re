@@ -28,6 +28,8 @@ In order to know which functions are next to each other, check the files inside 
 
 There is a very important file located in `code/strings.txt`. This contains the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information. Include the full strings in the reimplemented code as constants, do NOT use explicit pointers to strings that are constants.
 
+Another very important set of of files is located in `data/demo/mis`. These are "game scripts" in .txt format. Please take a look to them so you can understand what kind of data is parsed and use them to understand which class will need which code to be parsed.
+
 * Preserve memory usage: make sure that the local variables are in the same order. Also, make sure the offset accessing fields is exactly the same.
 * Preserve jump types: make sure the jumps are the same (e.g. jmp, jmpf, jne, jnef) and its order is preserved.
 * Make sure the assembly code produced matches the stack ordering as close as possible.

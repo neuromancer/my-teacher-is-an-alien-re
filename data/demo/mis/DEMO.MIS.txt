@@ -1,0 +1,97 @@
+;[DEMO]	
+	PALE	mainmenu\menubak1.col
+	BACK 
+		SPRITE
+			FNAME	mainmenu\menubak1.smk 
+			TOPLEFT
+			PRIORITY	0
+		END
+		SPRITE
+			FNAME	mainmenu\after.smk
+			TOPLEFT
+			LOC		166 28
+			PRIORITY	5
+		END
+		SPRITE
+			FNAME	demo\demomenu.smk
+			TOPLEFT
+			LOC		488 60
+			PRIORITY	5
+		END
+	END
+
+	CHAR
+		RECT 42 21 113 143
+		SPRITE
+			FNAME	mainmenu\char1.smk
+			TOPLEFT
+			LOC		31 21
+			PRIORITY	10
+			STATES 4
+			RANGE 0  1  1
+			RANGE 1  2  2
+			RANGE 2  3  12
+			RANGE 3  13 13
+		END
+	END
+	CHAR
+		RECT 44 152 113 272
+		SPRITE
+			FNAME	mainmenu\char2.smk
+			TOPLEFT
+			LOC		18 152
+			PRIORITY	11
+			TRANSPARENT
+			STATES 4
+			RANGE 0  1  1
+			RANGE 1  2  2
+			RANGE 2  3  12
+			RANGE 3  13 13
+		END
+	END
+	CHAR
+		RECT 44 281 113 405
+		SPRITE
+			FNAME	mainmenu\char3.smk
+			TOPLEFT
+			LOC		22 281
+			PRIORITY	12
+			TRANSPARENT
+			STATES 4
+			RANGE 0  1  1
+			RANGE 1  2  2
+			RANGE 2  3  12
+			RANGE 3  13 13
+		END
+	END
+	OKAY
+		RECT 551 326 613 353
+		SPRITE
+			FNAME	mainmenu\ok.smk
+			TOPLEFT
+			LOC		541 325
+			PRIORITY	10
+			STATES 4
+			RANGE 0  1 1
+			RANGE 1  2 2
+			RANGE 2  3 3
+			RANGE 3  4 4
+		END
+	END
+	CANCEL
+		RECT 491 439 521 467
+		SPRITE
+			FNAME	mainmenu\cancel.smk
+			TOPLEFT
+			LOC		541 364
+			PRIORITY	10
+			STATES 4
+			RANGE 0  1 1
+			RANGE 1  2 2
+			RANGE 2  3 3
+			RANGE 3  4 4
+		END
+	END
+	OPTION_MENU
+	END
+END

@@ -1,0 +1,102 @@
+	PALE teachdat\menubak1.col
+	BACK 
+		FNAME   teachdat\menubak1.smk 
+		TOPLEFT
+	END
+
+	CHAR
+		RECT 42 21 113 143
+		SPRITE
+			FNAME   teachdat\char1.smk
+			TOPLEFT
+			LOC		31 21
+			STATES 4
+			RANGE 0  1  1
+			RANGE 1  2  2
+			RANGE 2  3  12
+			RANGE 3  13 13
+		END
+	END
+	CHAR
+		RECT 44 152 113 272
+		SPRITE
+			FNAME   teachdat\char2.smk
+			TOPLEFT
+			LOC		18 152
+			TRANSPARENT
+			STATES 4
+			RANGE 0  1  1
+			RANGE 1  2  2
+			RANGE 2  3  12
+			RANGE 3  13 13
+		END
+	END
+	CHAR
+		RECT 44 281 113 405
+		SPRITE
+			FNAME   teachdat\char3.smk
+			TOPLEFT
+			LOC		22 281
+			TRANSPARENT
+			STATES 4
+			RANGE 0  1  1
+			RANGE 1  2  2
+			RANGE 2  3  12
+			RANGE 3  13 13
+		END
+	END
+	OKAY
+		RECT 551 326 613 353
+		SPRITE
+			FNAME   teachdat\ok.smk
+			TOPLEFT
+			LOC		541 327
+			STATES 2
+			RANGE 0  1 1
+			RANGE 1  2 2
+		END
+	END
+	CANCEL
+		RECT 551 364 613 391
+		SPRITE
+			FNAME   teachdat\cancel.smk
+			TOPLEFT
+			LOC		541 364
+			STATES 3
+			RANGE 0  1 1
+			RANGE 1  2 2
+			RANGE 2  3 3
+		END
+	END
+	ROOM_DISPLAY
+		FNAME   teachdat\after.smk
+		TOPLEFT
+		LOC		166 28
+		STATES 1
+		RANGE 0  1 1
+	END	
+	AFTER_SCHOOL_LABEL
+		FNAME   teachdat\aftskool.smk
+		TOPLEFT
+		LOC		488 60
+		STATES 1
+		RANGE 0  1 1
+	END	
+	OPTION_GRAPHICS
+		BUTTON
+			FNAME teachdat\option.smk
+			TOPLEFT
+			STATES	4
+			RANGE 0  1  1
+			RANGE 1  2  2
+			RANGE 2  3  12
+			RANGE 3  13 13
+		END
+		GLOWBUTT
+			FNAME teachdat\glowoptn.smk
+			TOPLEFT
+			STATES	1
+			RANGE 0  1  10
+		END
+	END
+END

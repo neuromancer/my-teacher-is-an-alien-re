@@ -1,0 +1,682 @@
+;-----------------------------------------------------------
+; Mission file  - Shoot RATS
+;-----------------------------------------------------------
+;[MODULE_TYPE]
+MODULE A                                ;code module type
+;;;;;;;;;;;;;;;;;;;;;; BASE INFO (Engine) ;;;;;;;;;;;;;;;;;;;;;;
+	WEAPON ROCKTHROWER
+		MAXROCKS			3					;max rocks on screen at once
+		SPRITE									;rock sprite
+			FNAME			rat1\rock.smk
+			TRANSPARENT
+			STATES			2
+			RANGE			0  1	9			;traveling rock
+			RANGE			1  10	13			;exploding rock
+		END
+	END
+	CONSOLE									;foreground element
+		FNAME			rat1\slngshot.smk
+		TRANSPARENT
+		BOTTOMLEFT
+		LOC				82 199
+		STATES			10
+		RANGE			0	7	7
+		RANGE			1	2	2	
+		RANGE			2	16	16
+		RANGE			3	4	4
+		RANGE			4	25	25
+		RANGE			5	7	14
+		RANGE			6	16	23
+		RANGE			7	25	32
+		RANGE			8	34	39
+		RANGE			9	41	47
+	END
+[ENGINE_INFO]
+C  1                                    ;Chapter number
+D  84                                   ;frame delay (ms)
+P  0 255                                ;palette info (total, starting slot)
+A  0 199                                ;ancor of screen area (x y)
+V  320 200                              ;dimensions of screen area (w h)
+R  rat1\duct.col                        ;palette file
+S0 audio\rattheme.wav                   ;sound file name - background
+S1 audio\sling.wav                      ;sound file name - shoots fired
+S3 audio\slinghit.wav					;sound of target wounded
+S4 audio\slinghit.wav					;sound of target killed
+END
+;-----------------------------------------------------------
+;-------------------- SPRITES ------------------------------
+;-----------------------------------------------------------
+[TARGETS]
+F0 rat1\rat01.smk                       ;name of sprite animation
+I  R1                                   ;ID
+A0 110 113                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   13                               ;body
+B  14  20                               ;body
+B  21  24                               ;body
+B  25  32                               ;body
+B  33  35                               ;body
+B  36  38                               ;body
+B  39  44                               ;body
+B  45  47                               ;body
+B  48  51                               ;body
+B  52  57                               ;body
+K0 59  64                               ;kill
+K  66  71                               ;kill
+K  73  78                               ;kill
+K  80  85                               ;kill
+K  87  92                               ;kill
+K  94  99                               ;kill
+K  101 106                              ;kill
+K  108 113                              ;kill
+K  115 120                              ;kill
+K  122 127                              ;kill
+S0 audio\squeak1.wav                    ;intro sound
+Z
+F0 rat1\rat02.smk                       ;name of sprite animation
+I  R2                                   ;ID
+A0 78  115                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   13                               ;body
+B  14  21                               ;body
+B  22  24                               ;body
+B  25  30                               ;body
+B  31  37                               ;body
+B  38  44                               ;body
+B  45  48                               ;body
+B  49  54                               ;body
+B  55  60                               ;body
+K0 62  67                               ;kill
+K  69  74                               ;kill
+K  76  81                               ;kill
+K  83  88                               ;kill
+K  90  95                               ;kill
+K  97  102                              ;kill
+K  104 109                              ;kill
+K  111 116                              ;kill
+K  118 123                              ;kill
+S0 audio\squeak3.wav                    ;intro sound
+Z
+F0 rat1\rat03.smk                       ;name of sprite animation
+I  R3                                   ;ID
+A0 57  113                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   25                               ;body
+B  26  30                               ;body
+B  31  33                               ;body
+B  34  36                               ;body
+B  37  42                               ;body
+B  43  48                               ;body
+B  49  54                               ;body
+B  55  60                               ;body
+B  61  62                               ;body
+B  63  67                               ;body
+B  68  72                               ;body
+B  73  77                               ;body
+B  78  79                               ;body
+B  80  84                               ;body
+K0 86  91                               ;kill
+K  93  98                               ;kill
+K  100 105                              ;kill
+K  107 112                              ;kill
+K  114 119                              ;kill
+K  121 126                              ;kill
+K  128 133                              ;kill
+K  135 140                              ;kill
+K  142 147                              ;kill
+K  149 154                              ;kill
+K  156 161                              ;kill
+K  163 168                              ;kill
+K  170 175                              ;kill
+K  177 182                              ;kill
+S0 audio\squeak2.wav                    ;intro sound
+Z
+F0 rat1\rat04.smk                       ;name of sprite animation
+I  R4                                   ;ID
+A0 79  113                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   12                               ;body
+B  13  20                               ;body
+B  21  27                               ;body
+B  28  34                               ;body
+B  35  40                               ;body
+B  41  44                               ;body
+B  45  48                               ;body
+B  49  56                               ;body
+B  57  62                               ;body
+B  63  66                               ;body
+B  67  72                               ;body
+K0 74  79                               ;kill
+K  81  86                               ;kill
+K  88  93                               ;kill
+K  95  100                              ;kill
+K  102 107                              ;kill
+K  109 114                              ;kill
+K  116 121                              ;kill
+K  123 128                              ;kill
+K  130 135                              ;kill
+K  137 142                              ;kill
+K  144 149                              ;kill
+S0 audio\squeak5.wav                    ;intro sound
+Z
+F0 rat1\rat05.smk                       ;name of sprite animation
+I  R5                                   ;ID
+A0 70  113                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   11                               ;body
+B  12  18                               ;body
+B  19  25                               ;body
+B  26  32                               ;body
+B  33  40                               ;body
+B  41  45                               ;body
+B  46  51                               ;body
+B  52  54                               ;body
+B  55  59                               ;body
+B  60  65                               ;body
+B  66  77                               ;body
+B  78  83                               ;body
+B  84  89                               ;body
+B  90  92                               ;body
+B  93  97                               ;body
+K0 99  104                              ;kill
+K  106 111                              ;kill
+K  113 118                              ;kill
+K  120 125                              ;kill
+K  127 132                              ;kill
+K  134 139                              ;kill
+K  141 146                              ;kill
+K  148 153                              ;kill
+K  155 160                              ;kill
+K  162 167                              ;kill
+K  169 174                              ;kill
+K  176 181                              ;kill
+K  183 188                              ;kill
+K  190 195                              ;kill
+K  197 202                              ;kill
+S0 audio\squeak2.wav                    ;intro sound
+Z
+F0 rat1\rat06.smk                       ;name of sprite animation
+I  R6                                   ;ID
+A0 82  113                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   10                               ;body
+B  11  15                               ;body
+B  16  19                               ;body
+B  20  23                               ;body
+B  24  29                               ;body
+B  30  37                               ;body
+B  38  43                               ;body
+B  44  49                               ;body
+B  50  56                               ;body
+B  57  62                               ;body
+B  63  67                               ;body
+B  68  73                               ;body
+B  74  79                               ;body
+B  79  84                               ;body
+K0 86  91                               ;kill
+K  93  98                               ;kill
+K  100 105                              ;kill
+K  107 112                              ;kill
+K  114 119                              ;kill
+K  121 126                              ;kill
+K  128 133                              ;kill
+K  135 140                              ;kill
+K  142 147                              ;kill
+K  149 154                              ;kill
+K  156 161                              ;kill
+K  163 168                              ;kill
+K  170 175                              ;kill
+K  177 182                              ;kill
+S0 audio\squeak5.wav                    ;intro sound
+Z
+F0 rat1\rat07.smk                       ;name of sprite animation
+I  R7                                   ;ID
+A0 81  113                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   8                                ;body
+B  9   15                               ;body
+B  16  32                               ;body
+B  33  47                               ;body
+B  48  55                               ;body
+B  56  60                               ;body
+B  61  66                               ;body
+B  67  69                               ;body
+B  70  75                               ;body
+K0 77  82                               ;kill
+K  84  89                               ;kill
+K  91  96                               ;kill
+K  98  103                              ;kill
+K  105 110                              ;kill
+K  112 117                              ;kill
+K  119 124                              ;kill
+K  126 131                              ;kill
+K  133 138                              ;kill
+S0 audio\squeak1.wav                    ;intro sound
+Z
+F0 rat1\rat08.smk                       ;name of sprite animation
+I  R8                                   ;ID
+A0 107 113                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   15                               ;body
+B  16  19                               ;body
+B  20  23                               ;body
+B  24  29                               ;body
+B  30  35                               ;body
+B  36  42                               ;body
+B  43  52                               ;body
+B  53  55                               ;body
+B  56  59                               ;body
+B  60  64                               ;body
+B  65  69                               ;body
+B  70  75                               ;body
+B  76  79                               ;body
+B  80  83                               ;body
+B  84  88                               ;body
+B  89  93                               ;body
+B  94  95                               ;body
+B  96  100                              ;body
+K0 102 107                              ;kill
+K  109 114                              ;kill
+K  116 121                              ;kill
+K  123 128                              ;kill
+K  130 135                              ;kill
+K  137 142                              ;kill
+K  144 149                              ;kill
+K  151 156                              ;kill
+K  158 163                              ;kill
+K  165 170                              ;kill
+K  172 177                              ;kill
+K  179 184                              ;kill
+K  186 191                              ;kill
+K  193 198                              ;kill
+K  200 205                              ;kill
+K  207 212                              ;kill
+K  214 219                              ;kill
+K  221 226                              ;kill
+S0 audio\squeak2.wav                    ;intro sound
+Z
+F0 rat1\rat09.smk                       ;name of sprite animation
+I  R9                                   ;ID
+A0 105 113                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   8                                ;body
+B  9   25                               ;body
+B  26  30                               ;body
+B  31  33                               ;body
+B  34  36                               ;body
+B  37  40                               ;body
+B  41  46                               ;body
+B  47  52                               ;body
+B  53  57                               ;body
+B  58  62                               ;body
+B  63  68                               ;body
+B  69  72                               ;body
+B  73  80                               ;body
+B  81  84                               ;body
+B  85  87                               ;body
+B  88  91                               ;body
+B  92  96                               ;body
+B  97  102                              ;body
+K0 104 109                              ;kill
+K  111 116                              ;kill
+K  118 123                              ;kill
+K  125 130                              ;kill
+K  132 137                              ;kill
+K  139 144                              ;kill
+K  146 151                              ;kill
+K  153 158                              ;kill
+K  160 165                              ;kill
+K  167 172                              ;kill
+K  174 179                              ;kill
+K  181 186                              ;kill
+K  188 193                              ;kill
+K  195 200                              ;kill
+K  202 207                              ;kill
+K  209 214                              ;kill
+K  216 221                              ;kill
+K  223 228                              ;kill
+S0 audio\squeak3.wav                    ;intro sound
+Z
+F0 rat1\rat10.smk                       ;name of sprite animation
+I  R10                                  ;ID
+A0 76  113                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+B0 1   7                                ;body
+B  8   11                               ;body
+B  12  14                               ;body
+B  15  19                               ;body
+B  20  23                               ;body
+B  24  26                               ;body
+B  27  30                               ;body
+B  31  49                               ;body
+B  50  53                               ;body
+B  54  58                               ;body
+B  59  67                               ;body
+B  68  82                               ;body
+B  83  88                               ;body
+K0 90  95                               ;kill
+K  104 109                              ;kill
+K  111 116                              ;kill
+K  118 123                              ;kill
+K  125 130                              ;kill
+K  132 137                              ;kill
+K  139 144                              ;kill
+K  146 151                              ;kill
+K  153 158                              ;kill
+K  160 165                              ;kill
+K  167 172                              ;kill
+K  174 179                              ;kill
+S0 audio\squeak5.wav                    ;intro sound
+Z
+F0 rat1\decoy01.smk                     ;name of sprite animation
+I  D1                                   ;ID
+A0 57  122                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   11                               ;body
+B  12  18                               ;body
+B  19  25                               ;body
+B  26  37                               ;body
+K0 39  44                               ;kill
+K  46  51                               ;kill
+K  53  58                               ;kill
+K  60  65                               ;kill
+S0 audio\squeak3.wav                    ;intro sound
+Z
+F0 rat1\decoy02.smk                     ;name of sprite animation
+I  D2                                   ;ID
+A0 166 113                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   14                               ;body
+B  15  17                               ;body
+B  18  31                               ;body
+K0 33  38                               ;kill
+K  40  45                               ;kill
+K  47  52                               ;kill
+S0 audio\squeak2.wav                    ;intro sound
+Z
+F0 rat1\decoy03.smk                     ;name of sprite animation
+I  D3                                   ;ID
+A0 81  116                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   9                                ;body
+K0 11  16                               ;kill
+S0 audio\squeak1.wav                    ;intro sound
+Z
+F0 rat1\decoy04.smk                     ;name of sprite animation
+I  D4                                   ;ID
+A0 57  113                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   13                               ;body
+B  14  17                               ;body
+B  18  20                               ;body
+B  21  29                               ;body
+K0 31  36                               ;kill
+K  38  43                               ;kill
+K  45  50                               ;kill
+K  52  57                               ;kill
+S0 audio\squeak5.wav                    ;intro sound
+Z
+F0 rat1\decoy05.smk                     ;name of sprite animation
+I  D5                                   ;ID
+A0 206 122                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   9                                ;body
+K0 11  16                               ;kill
+S0 audio\squeak1.wav                    ;intro sound
+Z
+F0 rat1\decoy06.smk                     ;name of sprite animation
+I  D6                                   ;ID
+A0 107 112                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   12                               ;body
+B  13  20                               ;body
+B  21  29                               ;body
+B  30  37                               ;body
+K0 45  50                               ;kill
+K  52  57                               ;kill
+K  59  64                               ;kill
+K  66  71                               ;kill
+S0 audio\squeak2.wav                    ;intro sound
+Z
+F0 rat1\decoy07.smk                     ;name of sprite animation
+I  D7                                   ;ID
+A0 201 116                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   9                                ;body
+K0 11  16                               ;kill
+S0 audio\squeak3.wav                    ;intro sound
+Z
+F0 rat1\decoy08.smk                     ;name of sprite animation
+I  D8                                   ;ID
+A0 57  122                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   11                               ;body
+B  12  18                               ;body
+B  19  25                               ;body
+B  26  37                               ;body
+K0 39  44                               ;kill
+K  46  51                               ;kill
+K  53  58                               ;kill
+K  60  65                               ;kill
+S0 audio\squeak5.wav                    ;intro sound
+Z
+F0 rat1\decoy09.smk                     ;name of sprite animation
+I  D9                                   ;ID
+A0 169 113                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   13                               ;body
+B  14  17                               ;body
+B  18  20                               ;body
+B  21  29                               ;body
+K0 31  36                               ;kill
+K  38  43                               ;kill
+K  45  50                               ;kill
+K  52  57                               ;kill
+S0 audio\squeak5.wav                    ;intro sound
+Z
+F0 rat1\decoy10.smk                     ;name of sprite animation
+I  D10                                  ;ID
+A0 98  117                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   9                                ;body
+K0 11  16                               ;kill
+S0 audio\squeak2.wav                    ;intro sound
+Z
+F0 rat1\decoy11.smk                     ;name of sprite animation
+I  D11                                  ;ID
+A0 81  116                              ;x,y ancor points
+P0 192 200                             ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   10                               ;body
+B  11  16                               ;body
+B  17  22                               ;body
+B  23  35                               ;body
+K0 37  42                               ;kill
+K  44  49                               ;kill
+K  51  56                               ;kill
+K  58  63                               ;kill
+S0 audio\squeak1.wav                    ;intro sound
+Z
+F0 rat1\decoy12.smk                     ;name of sprite animation
+I  D12                                  ;ID
+A0 108 112                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   12                               ;body
+B  13  20                               ;body
+B  21  29                               ;body
+B  30  37                               ;body
+K0 45  50                               ;kill
+K  52  57                               ;kill
+K  59  64                               ;kill
+K  66  71                               ;kill
+S0 audio\squeak3.wav                    ;intro sound
+Z
+F0 rat1\decoy13.smk                     ;name of sprite animation
+I  D13                                  ;ID
+A0 98  116                              ;x,y ancor points
+P0 160 171                              ;palette for detection
+W  5                                    ;attack weight
+D  100                                  ;points for shooting sprite
+H  0                                    ;attack frame (0=doesn't attack)
+B0 1   10                               ;body
+B  11  16                               ;body
+B  17  23                               ;body
+B  24  29                               ;body
+B  30  37                               ;body
+K0 45  50                               ;kill
+K  52  57                               ;kill
+K  59  64                               ;kill
+K  66  71                               ;kill
+K  73  78                               ;kill
+S0 audio\squeak2.wav                    ;intro sound
+Z
+END
+;-----------------------------------------------------------
+;-------------------- SPRITE LIST --------------------------
+;-----------------------------------------------------------
+[SPRITELIST]
+S 1  19,R1
+     27,D1
+     69,D12
+     77,R2
+    120,D2
+    137,R3
+    168,D13
+    222,R4
+    247,D3
+    282,D4
+    295,R5
+    344,D5
+    372,D6
+    393,R6
+    478,R7
+    511,D7 
+	554,R8
+    615,D8
+    655,R9
+    680,D9
+    758,R10
+    778,D10
+    823,D11
+    869,D12
+    877,R2
+    920,D2
+    937,R3
+    968,D13
+    1022,R4
+    1047,D3
+    1082,D4
+    1095,R5
+    1144,D5
+    1172,D6
+    1193,R6
+    1278,R7
+    1311,D7
+    1354,R8
+    1415,D8
+    1455,R9
+    1480,D9
+    1558,R10
+    1578,D10
+    1623,D11
+Z
+S 2     10,R1   100,R1
+END
+;-----------------------------------------------------------
+;-------------------- NAVIGATION ---------------------------
+;-----------------------------------------------------------
+[NAVIGATION]
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	STARTING_NODE  3						;starting node
+	BEARING        N						;starting direction
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	SPRITE 
+		FNAME       rat1\bkgnd.smk			;filename
+		;INVERT								;reverse horz blit
+		STATES      1						;max states
+		TOPLEFT								;
+		RANGE       0   1   1				;Straight
+	END
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	BASENODE								;base node info
+		IAM            3					;ID (Grid location)
+		NAME           DELAYLOOP			;description of this node
+		BG             0					;Straight Seg
+		LOOP           70  					;number of times to loop segment
+		NEXTNODE       N 1  				;Nav Node Link (direction, node id)
+	END
+	BASENODE								;base node info
+		IAM            1					;ID (Grid location)
+		NAME           MAINLOOP				;description of this node
+		BG             0					;Straight Seg
+		LOOP           1700					;number of times to loop segment
+		SPRITE         S 1					;send out this sprite list
+		NEXTNODE       N 2					;Nav Node Link (direction, node id)
+	END
+	BASENODE								;base node info
+		IAM            2					;ID (Grid location)
+		NAME           EXITNODE				;description of this node
+		EXIT_CODE      2					;exit game with this code
+	END
+END ;[NAVIGATION]
+;;;;;;;;;;;;;;;;;;;;;; END BASE INFO (Engine) ;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;; DERIVED INFO (EngineA) ;;;;;;;;;;;;;;;;;;;;;;
+;[ENGINEA_INFO]
+END_ENGINEA_INFO
+END ;[MODULE_TYPE] 
+

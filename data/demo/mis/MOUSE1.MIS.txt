@@ -1,0 +1,15 @@
+[MICE]
+	;AUDIO		audio\mouse.wav
+	HOTPIXEL	0	4	0
+	HOTPIXEL	1	10	10
+	
+	SPRITE
+		FNAME	elements\cursor.smk
+		TRANSPARENT
+		PRIORITY	30000
+		STATES	2
+		RANGE	0	1	1	//ptr
+		RANGE	1	2	7	//magn
+	END
+
+END

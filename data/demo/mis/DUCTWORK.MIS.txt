@@ -1,0 +1,70 @@
+;-----------------------------------------------------------
+; Mission file  - Navigating Ductwork
+;-----------------------------------------------------------
+;[MODULE_TYPE]
+MODULE B                                ;code module type
+;;;;;;;;;;;;;;;;;;;;;; BASE INFO (Engine) ;;;;;;;;;;;;;;;;;;;;;;
+[ENGINE_INFO]
+C  1                                    ;Chapter number
+D  84                                   ;frame delay (ms)
+P  0 255                                ;palette info (total, starting slot)
+A  0 199                                ;ancor of screen area (x y)
+V  320 200                              ;dimensions of screen area (w h)
+R  rat1\duct.col                        ;palette file
+S0 audio\rattheme.wav                   ;sound file name - background
+S1 audio\sling.wav                      ;sound file name - shoots fired
+S3 audio\slinghit.wav					;sound of target wounded
+S4 audio\slinghit.wav					;sound of target killed
+END
+;-----------------------------------------------------------
+;-------------------- SPRITES ------------------------------
+;-----------------------------------------------------------
+[TARGETS]
+END
+;-----------------------------------------------------------
+;-------------------- SPRITE LIST --------------------------
+;-----------------------------------------------------------
+[SPRITELIST]
+END
+;-----------------------------------------------------------
+;-------------------- NAVIGATION ---------------------------
+;-----------------------------------------------------------
+[NAVIGATION]
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	STARTING_NODE  1						;starting node
+	BEARING        N						;starting direction
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	SPRITE 
+		FNAME       ductwork\ductwork.smk	;filename
+		;INVERT								;reverse horz blit
+		STATES      1						;max states
+		TOPLEFT								;
+		RANGE       0   270   329			;Straight
+	END
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	BASENODE								;base node info
+		IAM            1					;ID (Grid location)
+		NAME           DELAYLOOP			;description of this node
+		BG             0					;Straight Seg
+		LOOP           1  					;number of times to loop segment
+		NEXTNODE       N 2  				;Nav Node Link (direction, node id)
+	END
+	BASENODE								;base node info
+		IAM            2					;ID (Grid location)
+		NAME           MAINLOOP				;description of this node
+		BG             0					;Straight Seg
+		LOOP           1  					;number of times to loop segment
+		NEXTNODE       N 3					;Nav Node Link (direction, node id)
+	END
+	BASENODE								;base node info
+		IAM            3					;ID (Grid location)
+		NAME           EXITNODE				;description of this node
+		EXIT_CODE      2					;exit game with this code
+	END
+END ;[NAVIGATION]
+;;;;;;;;;;;;;;;;;;;;;; END BASE INFO (Engine) ;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;; DERIVED INFO (EngineB) ;;;;;;;;;;;;;;;;;;;;;;
+;[ENGINEB_INFO]
+END_ENGINEB_INFO
+END ;[MODULE_TYPE] 
+
