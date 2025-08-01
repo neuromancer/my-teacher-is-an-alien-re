@@ -12,3 +12,4 @@ unsigned char Hotspot::Do()
     ShowError("Missing sprite in Hotspot Do()");
     return 0;
 }
+

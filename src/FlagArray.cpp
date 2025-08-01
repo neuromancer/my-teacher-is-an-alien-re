@@ -45,3 +45,4 @@ void FlagArray::Create(char* filename, int max_states)
     fclose(this->fp);
     this->fp = 0;
 }
+

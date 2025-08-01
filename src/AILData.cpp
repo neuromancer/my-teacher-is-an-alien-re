@@ -49,3 +49,4 @@ int AILData::Load(char* filename)
     }
     return 1;
 }
+

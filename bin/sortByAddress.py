@@ -11,18 +11,17 @@ def sort_cpp_files_by_address(directory):
             with open(filepath, 'r') as f:
                 content = f.read()
 
-            functions = re.findall(r'/\* Function start: (0x[0-9a-fA-F]+) \*/\n(.*?)\n}\n', content, re.DOTALL)
+            functions = re.findall(r'(/\* Function start: (0x[0-9a-fA-F]+) \*/\n(.*?)\n}\n)', content, re.DOTALL)
 
-            sorted_functions = sorted(functions, key=lambda x: int(x[0], 16))
+            sorted_functions = sorted(functions, key=lambda x: int(x[1], 16))
 
-            new_content = ""
-            # Add back any file content that is not part of a function
-            # This is a simplification and might not preserve all non-function content
-            non_function_content = re.split(r'/\* Function start: 0x[0-9a-fA-F]+ \*/\n.*?\n}\n', content, flags=re.DOTALL)
-            new_content += non_function_content[0]
+            # Get content that is not a function
+            non_function_content = re.sub(r'/\* Function start: 0x[0-9a-fA-F]+ \*/\n.*?\n}\n', '', content, flags=re.DOTALL).strip()
 
-            for addr, func_body in sorted_functions:
-                new_content += f"/* Function start: {addr} */\n{func_body.strip()}\n}}\n\n"
+            new_content = non_function_content + "\n\n"
+
+            for full_match, addr, func_body in sorted_functions:
+                new_content += f"{full_match.strip()}\n\n"
 
             with open(filepath, 'w') as f:
                 f.write(new_content)

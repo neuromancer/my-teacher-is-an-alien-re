@@ -422,6 +422,95 @@ void Sprite::SetRange(int param_1, int param_2, int param_3)
     this->flags |= 0x20;
 }
 
+/* Function start: 0x41D740 */
+void Sprite::SetState(int param_1)
+{
+    this->num_states = param_1;
+    if (this->ranges != 0) {
+        Array_Cleanup((int)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)((char*)this->ranges - 4));
+        this->ranges = 0;
+    }
+
+    int* piVar5 = 0;
+    int* piVar1 = AllocateMemory_Wrapper(this->num_states * 8 + 4);
+    if (piVar1 != 0) {
+        piVar5 = piVar1 + 1;
+        *piVar1 = this->num_states;
+        FUN_00424b00(piVar5, 8, this->num_states, (void*)0x41d850, (void*)0x405770);
+    }
+    this->ranges = piVar5;
+
+    if (0 < this->num_states) {
+        int iVar3 = 0;
+        int iVar4 = 0;
+        do {
+            iVar4 = iVar4 + 1;
+            int* puVar2 = (int*)((char*)this->ranges + iVar3);
+            iVar3 = iVar3 + 8;
+            *puVar2 = 1;
+            puVar2[1] = 5000;
+        } while (iVar4 < this->num_states);
+    }
+
+    this->flags |= 0x20;
+}
+
+/* Function start: 0x41D860 */
+void Sprite::SetLogic(int param_1, int param_2)
+{
+    if (this->logic_conditions == 0) {
+        this->InitLogic(1);
+    }
+
+    int iVar2 = 0;
+    if (0 < this->num_logic_conditions) {
+        int* piVar1 = (int*)((char*)this->logic_conditions + 4);
+        do {
+            if (*piVar1 == 0) {
+                *(int*)((char*)this->logic_conditions + iVar2 * 8) = param_1;
+                *(int*)((char*)this->logic_conditions + 4 + iVar2 * 8) = param_2;
+                return;
+            }
+            piVar1 = piVar1 + 2;
+            iVar2 = iVar2 + 1;
+        } while (iVar2 < this->num_logic_conditions);
+    }
+
+    ShowError("Sprite::SetLogic %s", &this->sprite_filename);
+}
+
+/* Function start: 0x41D8D0 */
+void Sprite::InitLogic(int param_1)
+{
+    if (this->logic_conditions != 0) {
+        Array_Cleanup((int)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void*)0x405770);
+        FreeFromGlobalHeap((int*)((char*)this->logic_conditions - 4));
+        this->logic_conditions = 0;
+    }
+
+    this->num_logic_conditions = param_1;
+    int* piVar4 = 0;
+    int* piVar1 = AllocateMemory_Wrapper(param_1 * 8 + 4);
+    if (piVar1 != 0) {
+        piVar4 = piVar1 + 1;
+        *piVar1 = param_1;
+        FUN_00424b00(piVar4, 8, param_1, (void*)0x41d850, (void*)0x405770);
+    }
+    this->logic_conditions = piVar4;
+
+    if (0 < this->num_logic_conditions) {
+        int iVar2 = 0;
+        int iVar3 = 0;
+        do {
+            iVar3 = iVar3 + 8;
+            iVar2 = iVar2 + 1;
+            *(int*)((char*)this->logic_conditions + -8 + iVar3) = 0;
+            *(int*)((char*)this->logic_conditions + -4 + iVar3) = 0;
+        } while (iVar2 < this->num_logic_conditions);
+    }
+}
+
 /* Function start: 0x41D9D0 */
 int Sprite::LBLParse(char* param_1)
 {
@@ -493,95 +582,6 @@ int Sprite::LBLParse(char* param_1)
     return 0;
 }
 
-/* Function start: 0x41D8D0 */
-void Sprite::InitLogic(int param_1)
-{
-    if (this->logic_conditions != 0) {
-        Array_Cleanup((int)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void*)0x405770);
-        FreeFromGlobalHeap((int*)((char*)this->logic_conditions - 4));
-        this->logic_conditions = 0;
-    }
-
-    this->num_logic_conditions = param_1;
-    int* piVar4 = 0;
-    int* piVar1 = AllocateMemory_Wrapper(param_1 * 8 + 4);
-    if (piVar1 != 0) {
-        piVar4 = piVar1 + 1;
-        *piVar1 = param_1;
-        FUN_00424b00(piVar4, 8, param_1, (void*)0x41d850, (void*)0x405770);
-    }
-    this->logic_conditions = piVar4;
-
-    if (0 < this->num_logic_conditions) {
-        int iVar2 = 0;
-        int iVar3 = 0;
-        do {
-            iVar3 = iVar3 + 8;
-            iVar2 = iVar2 + 1;
-            *(int*)((char*)this->logic_conditions + -8 + iVar3) = 0;
-            *(int*)((char*)this->logic_conditions + -4 + iVar3) = 0;
-        } while (iVar2 < this->num_logic_conditions);
-    }
-}
-
-/* Function start: 0x41D740 */
-void Sprite::SetState(int param_1)
-{
-    this->num_states = param_1;
-    if (this->ranges != 0) {
-        Array_Cleanup((int)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void*)0x405770);
-        FreeFromGlobalHeap((int*)((char*)this->ranges - 4));
-        this->ranges = 0;
-    }
-
-    int* piVar5 = 0;
-    int* piVar1 = AllocateMemory_Wrapper(this->num_states * 8 + 4);
-    if (piVar1 != 0) {
-        piVar5 = piVar1 + 1;
-        *piVar1 = this->num_states;
-        FUN_00424b00(piVar5, 8, this->num_states, (void*)0x41d850, (void*)0x405770);
-    }
-    this->ranges = piVar5;
-
-    if (0 < this->num_states) {
-        int iVar3 = 0;
-        int iVar4 = 0;
-        do {
-            iVar4 = iVar4 + 1;
-            int* puVar2 = (int*)((char*)this->ranges + iVar3);
-            iVar3 = iVar3 + 8;
-            *puVar2 = 1;
-            puVar2[1] = 5000;
-        } while (iVar4 < this->num_states);
-    }
-
-    this->flags |= 0x20;
-}
-
-/* Function start: 0x41D860 */
-void Sprite::SetLogic(int param_1, int param_2)
-{
-    if (this->logic_conditions == 0) {
-        this->InitLogic(1);
-    }
-
-    int iVar2 = 0;
-    if (0 < this->num_logic_conditions) {
-        int* piVar1 = (int*)((char*)this->logic_conditions + 4);
-        do {
-            if (*piVar1 == 0) {
-                *(int*)((char*)this->logic_conditions + iVar2 * 8) = param_1;
-                *(int*)((char*)this->logic_conditions + 4 + iVar2 * 8) = param_2;
-                return;
-            }
-            piVar1 = piVar1 + 2;
-            iVar2 = iVar2 + 1;
-        } while (iVar2 < this->num_logic_conditions);
-    }
-
-    ShowError("Sprite::SetLogic %s", &this->sprite_filename);
-}
-
 /* Function start: 0x41E010 */
 void Sprite::Dump()
 {
@@ -645,3 +645,4 @@ void Sprite::Dump()
     }
     WriteToMessageLog("END");
 }
+

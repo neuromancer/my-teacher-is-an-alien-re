@@ -39,6 +39,24 @@ void Animation::AnimationInit()
     this->data = 0;
 }
 
+/* Function start: 0x41FA50 */
+Animation::Animation()
+{
+    this->vtable = (void**)0x431570;
+    *(int*)((char*)this + 0x10) = 0;
+    *(int*)((char*)this + 0x14) = 0;
+    this->CleanArray10();
+}
+
+/* Function start: 0x41FAC0 */
+void Animation::Delete(unsigned char param_1)
+{
+    this->~Animation();
+    if ((param_1 & 1) != 0) {
+        FreeFromGlobalHeap(this);
+    }
+}
+
 /* Function start: 0x41FAE0 */
 Animation::Animation(char* filename)
 {
@@ -48,15 +66,6 @@ Animation::Animation(char* filename)
     } catch (...) {
         // TODO: Figure out what the exception handler does
     }
-}
-
-/* Function start: 0x41FA50 */
-Animation::Animation()
-{
-    this->vtable = (void**)0x431570;
-    *(int*)((char*)this + 0x10) = 0;
-    *(int*)((char*)this + 0x14) = 0;
-    this->CleanArray10();
 }
 
 /* Function start: 0x41FB60 */
@@ -76,6 +85,68 @@ Animation::~Animation()
     this->CloseSmackerBuffer();
     this->CloseSmackerFile();
     FUN_0041fbd3();
+}
+
+/* Function start: 0x41FBE0 */
+void Animation::CloseSmackerFile()
+{
+    if (this->smk != 0) {
+        SmackClose(this->smk);
+        this->smk = 0;
+    }
+}
+
+/* Function start: 0x41FC00 */
+void Animation::CloseSmackerBuffer()
+{
+    if (this->smack_buffer != 0) {
+        SmackBufferClose(this->smack_buffer);
+        this->smack_buffer = 0;
+    }
+}
+
+/* Function start: 0x41FC20 */
+void Animation::SetPalette(unsigned int param_1, unsigned int param_2)
+{
+    if (this->smk != 0 && this->smack_buffer != 0) {
+        this->data->SetCurrentVideoMode(this->data->handle);
+        if (this->smk->field_0x68 != 0) {
+            SmackBufferNewPalette(this->smack_buffer, (char*)this->smk + 0x6c, 0);
+            SmackColorRemap(this->smk, (char*)this->smack_buffer + 0x3c, *(int*)((char*)this->smack_buffer + 0x2c), *(int*)((char*)this->smack_buffer + 0x43c));
+        }
+        FUN_0041eb90((char*)this->smk + 0x6c, param_1, param_2);
+        this->data->InvalidateVideoMode();
+    }
+}
+
+/* Function start: 0x41FCA0 */
+void Animation::DoFrame(Animation* anim)
+{
+    if (anim->smk != 0) {
+        SmackDoFrame(anim->smk);
+    }
+}
+
+/* Function start: 0x41FCB0 */
+void Animation::NextFrame()
+{
+    if (this->smk != 0) {
+        SmackNextFrame(this->smk);
+    }
+}
+
+/* Function start: 0x41FCC0 */
+void Animation::GotoFrame(int frame)
+{
+    if (this->smk != 0) {
+        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
+            SmackSoundOnOff(this->smk, 0);
+        }
+        SmackGoto(this->smk, frame);
+        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
+            SmackSoundOnOff(this->smk, 1);
+        }
+    }
 }
 
 /* Function start: 0x41FD20 */
@@ -254,73 +325,3 @@ end_loop:
     vbuffer->InvalidateVideoMode();
 }
 
-/* Function start: 0x41FAC0 */
-void Animation::Delete(unsigned char param_1)
-{
-    this->~Animation();
-    if ((param_1 & 1) != 0) {
-        FreeFromGlobalHeap(this);
-    }
-}
-
-/* Function start: 0x41FBE0 */
-void Animation::CloseSmackerFile()
-{
-    if (this->smk != 0) {
-        SmackClose(this->smk);
-        this->smk = 0;
-    }
-}
-
-/* Function start: 0x41FC00 */
-void Animation::CloseSmackerBuffer()
-{
-    if (this->smack_buffer != 0) {
-        SmackBufferClose(this->smack_buffer);
-        this->smack_buffer = 0;
-    }
-}
-
-/* Function start: 0x41FC20 */
-void Animation::SetPalette(unsigned int param_1, unsigned int param_2)
-{
-    if (this->smk != 0 && this->smack_buffer != 0) {
-        this->data->SetCurrentVideoMode(this->data->handle);
-        if (this->smk->field_0x68 != 0) {
-            SmackBufferNewPalette(this->smack_buffer, (char*)this->smk + 0x6c, 0);
-            SmackColorRemap(this->smk, (char*)this->smack_buffer + 0x3c, *(int*)((char*)this->smack_buffer + 0x2c), *(int*)((char*)this->smack_buffer + 0x43c));
-        }
-        FUN_0041eb90((char*)this->smk + 0x6c, param_1, param_2);
-        this->data->InvalidateVideoMode();
-    }
-}
-
-/* Function start: 0x41FCA0 */
-void Animation::DoFrame(Animation* anim)
-{
-    if (anim->smk != 0) {
-        SmackDoFrame(anim->smk);
-    }
-}
-
-/* Function start: 0x41FCB0 */
-void Animation::NextFrame()
-{
-    if (this->smk != 0) {
-        SmackNextFrame(this->smk);
-    }
-}
-
-/* Function start: 0x41FCC0 */
-void Animation::GotoFrame(int frame)
-{
-    if (this->smk != 0) {
-        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
-            SmackSoundOnOff(this->smk, 0);
-        }
-        SmackGoto(this->smk, frame);
-        if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
-            SmackSoundOnOff(this->smk, 1);
-        }
-    }
-}

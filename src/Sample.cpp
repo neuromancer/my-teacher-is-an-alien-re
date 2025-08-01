@@ -26,14 +26,6 @@ Sample::Sample()
     m_sample = 0;
 }
 
-/* Function start: 0x41E670 */
-Sample::~Sample()
-{
-    if (m_sample != 0 && m_field4 == *(int*)((char*)m_sample + 0xc)) {
-        _AIL_end_sample_4((int)m_sample);
-    }
-}
-
 /* Function start: 0x41E530 */
 void Sample::Init(int volume)
 {
@@ -77,6 +69,14 @@ void Sample::Fade(int volume, unsigned int duration)
     }
 }
 
+/* Function start: 0x41E670 */
+Sample::~Sample()
+{
+    if (m_sample != 0 && m_field4 == *(int*)((char*)m_sample + 0xc)) {
+        _AIL_end_sample_4((int)m_sample);
+    }
+}
+
 /* Function start: 0x41E690 */
 void Sample::Stop()
 {
@@ -86,7 +86,6 @@ void Sample::Stop()
         _AIL_stop_sample_4((int)m_sample);
     }
 }
-
 
 /* Function start: 0x41E6D0 */
 int Sample::Play(int volume, int loop_count)
@@ -107,3 +106,4 @@ int Sample::Play(int volume, int loop_count)
     }
     return 1;
 }
+

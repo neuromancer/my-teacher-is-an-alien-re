@@ -174,3 +174,4 @@ void Parser::ProcessFile(Parser* dst, char* key)
     }
     ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer", this->filename);
 }
+
