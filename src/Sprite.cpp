@@ -98,7 +98,7 @@ void Sprite::Init()
                 memset(DAT_0043d630, 0, 0x4000);
                 DAT_00436b9c = 1;
             }
-            memcpy(&DAT_0043d630[this->animation_data->data->field_0x1c * 0x40], this->sprite_filename, strlen(this->sprite_filename));
+            memcpy(&DAT_0043d630[this->animation_data->data->handle * 0x40], this->sprite_filename, strlen(this->sprite_filename));
         }
 
         this->CheckRanges1();
@@ -117,7 +117,7 @@ void Sprite::StopAnimationSound()
     Animation* anim = this->animation_data;
 
     if (anim != 0 && anim->data != 0) {
-        sound_idx = anim->data->field_0x1c;
+        sound_idx = anim->data->handle;
     }
 
     if (g_SoundManager != 0 && anim != 0) {
@@ -156,8 +156,8 @@ void Sprite::FreeAnimation()
 {
     if (this->animation_data != 0) {
         if (this->animation_data->data != 0) {
-            if (this->animation_data->data->field_0x1c != -1) {
-                DAT_0043d630[this->animation_data->data->field_0x1c * 0x40] = 0;
+            if (this->animation_data->data->handle != -1) {
+                DAT_0043d630[this->animation_data->data->handle * 0x40] = 0;
             }
             Sprite__FreeVBuffer(this);
         }

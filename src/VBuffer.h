@@ -7,17 +7,17 @@ public:
     void* data; // 0x10
     int width; // 0x14
     int height; // 0x18
-    int field_0x1c;
-    int field_0x20;
-    int field_0x24;
-    void* field_0x28;
-    void* field_0x2c;
+    int handle; // 0x1c
+    int saved_video_mode; // 0x20
+    int video_mode_lock_count; // 0x24
+    int clip_x1; // 0x28
+    int clip_x2; // 0x2c
 
     VBuffer(unsigned int param_1, unsigned int param_2);
     ~VBuffer();
     void Release();
     void Free();
-    void VirtualBufferCreateAndClean(int width, int height);
+    void VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height);
     void ClearScreen(int color);
     void TPaste(void);
     void BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8);

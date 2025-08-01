@@ -13,9 +13,6 @@ extern "C" {
     void* __cdecl CreatePaletteBuffer(void*);
     void FUN_0041eb50(void*, int, int);
     void FUN_00419390();
-    void __fastcall Animation_Open(Animation* this_ptr, char* filename, int, int);
-    void __fastcall Animation_ToBuffer_ext(Animation* this_ptr);
-    void __fastcall Animation_VBInit(Animation* this_ptr);
     void __fastcall VBuffer_destructor(VBuffer* this_ptr);
     VBuffer* __fastcall VBuffer_VirtualBufferCreateAndClean(VBuffer* this_ptr, int width, int height);
     void __fastcall Sprite_CloseSmackerFile(void* this_ptr);
@@ -145,7 +142,7 @@ void Animation::FreeVBuffer()
 /* Function start: 0x41FE50 */
 void Animation::OpenAndConvertToBuffer(char* filename)
 {
-    Animation_Open(this, filename, 0xfe000, -1);
+    Open(filename, 0xfe000, -1);
     this->ToBuffer();
 }
 
@@ -155,7 +152,7 @@ void Animation::ToBuffer()
     if (this->smk == 0) {
         ShowError(s_Animation_ToBuffer_No_smk_defined);
     }
-    Animation_VBInit(this);
+    VBInit();
     this->ToBuffer(this->vbuffer);
 }
 
@@ -201,10 +198,10 @@ void Animation::Play(char* filename, unsigned int flags)
         FUN_00419390();
     }
 
-    Animation_Open(this, filename, 0xfe000, -1);
-    Animation_ToBuffer_ext(this);
-    this->MainLoop();
-    Sprite_CloseSmackerFile(this);
+    Open(filename, 0xfe000, -1);
+    ToBuffer();
+    MainLoop();
+    CloseSmackerFile();
 
     if (this->palette != 0) {
         FUN_00419390();
@@ -224,7 +221,7 @@ void Animation::MainLoop()
     }
 
     VBuffer* vbuffer = (VBuffer*)this->data;
-    vbuffer->SetCurrentVideoMode(vbuffer->field_0x1c);
+    vbuffer->SetCurrentVideoMode(vbuffer->handle);
 
     int frame = 1;
     if (smk->frame_count > 0) {
@@ -306,7 +303,7 @@ void Animation::CloseSmackerBuffer()
 void Animation::SetPalette(unsigned int param_1, unsigned int param_2)
 {
     if (this->smk != 0 && this->smack_buffer != 0) {
-        this->data->SetCurrentVideoMode(this->data->field_0x1c);
+        this->data->SetCurrentVideoMode(this->data->handle);
         if (this->smk->field_0x68 != 0) {
             SmackBufferNewPalette(this->smack_buffer, (char*)this->smk + 0x6c, 0);
             SmackColorRemap(this->smk, (char*)this->smack_buffer + 0x3c, *(int*)((char*)this->smack_buffer + 0x2c), *(int*)((char*)this->smack_buffer + 0x43c));

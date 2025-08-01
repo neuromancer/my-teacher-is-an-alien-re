@@ -1,4 +1,5 @@
 #include "VBuffer.h"
+#include <stdlib.h>
 
 extern "C" {
     void ShowError(const char*, ...);
@@ -32,10 +33,10 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
     }
     this->width = param_1;
     this->height = param_2;
-    this->field_0x28 = 0;
-    this->field_0x2c = (void*)(param_1 - 1);
-    this->field_0x20 = 0;
-    this->field_0x24 = param_2 - 1;
+    this->clip_x1 = 0;
+    this->clip_x2 = param_1 - 1;
+    this->saved_video_mode = 0;
+    this->video_mode_lock_count = param_2 - 1;
     if (this->data != 0) {
         ShowError("Error! Virtual buffer already allocated");
     }
@@ -55,7 +56,7 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
         } while (((param_2 ^ uVar2) - uVar2 & 3 ^ uVar2) != uVar2);
     }
     uVar2 = CreateTable(param_1, param_2);
-    this->field_0x1c = uVar2;
+    this->handle = uVar2;
     if (uVar2 == 0xffffffff) {
         ShowError("VBuffer::Init - Unable To create vb. Table Full");
     }
@@ -65,8 +66,8 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
     this->SetCurrentVideoMode(uVar2);
     FUN_00422e8f();
     this->InvalidateVideoMode();
-    this->data = (void*)FUN_00422e71(this->field_0x1c);
-    FUN_0041a9d0(this->field_0x1c);
+    this->data = (void*)FUN_00422e71(this->handle);
+    FUN_0041a9d0(this->handle);
 }
 
 /* Function start: 0x41aa10 */
@@ -81,7 +82,7 @@ VBuffer::~VBuffer()
 void VBuffer::Release()
 {
     unsigned int uVar1 = GetCurrentVideoMode();
-    if (uVar1 == this->field_0x1c) {
+    if (uVar1 == this->handle) {
         this->InvalidateVideoMode();
     }
 }
@@ -95,24 +96,24 @@ extern "C" {
 void VBuffer::Free()
 {
     if (this->data != 0) {
-        FUN_00422e1a(this->field_0x1c);
-        FUN_0041a9e0(this->field_0x1c);
-        this->field_0x1c = 0xffffffff;
+        FUN_00422e1a(this->handle);
+        FUN_0041a9e0(this->handle);
+        this->handle = 0xffffffff;
         this->data = 0;
     }
 }
 
 /* Function start: 0x41a9f0 */
-void VBuffer::VirtualBufferCreateAndClean(int width, int height)
+void VBuffer::VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height)
 {
-    InitFields(); //FUN_0041aa30(this);
-    VBuffer(width, height);
+    vbuffer->InitFields();
+    vbuffer->VBuffer::VBuffer(width, height);
 }
 
 /* Function start: 0x41abc0 */
 void VBuffer::ClearScreen(int color)
 {
-    this->SetCurrentVideoMode(this->field_0x1c);
+    this->SetCurrentVideoMode(this->handle);
     SetGraphicsMode(color);
     ::ClearScreen();
     this->InvalidateVideoMode();
@@ -126,7 +127,7 @@ void VBuffer::InitFields()
     for (int i = 0; i < 0xc; i++) {
         ((int*)this)[i] = 0;
     }
-    this->field_0x1c = 0xffffffff;
+    this->handle = 0xffffffff;
     *(int*)this = 0xffffffff;
     FUN_0041a9a0();
 }
@@ -141,12 +142,16 @@ void VBuffer::TPaste(void)
 /* Function start: 0x41ad50 */
 void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8)
 {
-    VBuffer local_40(0,0);
+    VBuffer* local_40 = (VBuffer*)malloc(sizeof(VBuffer));
 
-    local_40.VirtualBufferCreateAndClean((param_2 - param_1) + 1, (param_4 - param_3) + 1);
-    local_40.ClearScreen(0);
-    FUN_0041b310(param_1, param_2, param_3, param_4, param_5, param_6, this, &local_40, param_7, param_8);
-    local_40.TPaste();
+    if (local_40) {
+        VirtualBufferCreateAndClean(local_40, (param_2 - param_1) + 1, (param_4 - param_3) + 1);
+        local_40->ClearScreen(0);
+        FUN_0041b310(param_1, param_2, param_3, param_4, param_5, param_6, this, local_40, param_7, param_8);
+        local_40->TPaste();
+        local_40->~VBuffer();
+        free(local_40);
+    }
 
     try {
         FUN_0041ae0c();
@@ -159,14 +164,14 @@ void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4
 /* Function start: 0x41ae20 */
 void VBuffer::CallBlitter(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    FUN_004231ce(param_1, param_2, param_3, param_4, param_5, param_6, *(unsigned int*)(param_7 + 0x1c), this->field_0x1c);
+    FUN_004231ce(param_1, param_2, param_3, param_4, param_5, param_6, ((VBuffer*)param_7)->handle, this->handle);
 }
 
 
 /* Function start: 0x41ae60 */
 void VBuffer::CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    FUN_004233e8(param_1, param_2, param_3, param_4, param_5, param_6, *(unsigned int*)(param_7 + 0x1c), this->field_0x1c);
+    FUN_004233e8(param_1, param_2, param_3, param_4, param_5, param_6, ((VBuffer*)param_7)->handle, this->handle);
 }
 
 /* Function start: 0x41aea0 */
@@ -179,10 +184,10 @@ void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41aee0 */
 void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    int local_30 = (int)this->field_0x28;
-    int local_28 = (int)this->field_0x2c;
-    int local_2c = 0; // this->field_0x20
-    int local_24 = 0; // this->field_0x24
+    int local_30 = this->clip_x1;
+    int local_28 = this->clip_x2;
+    int local_2c = this->saved_video_mode;
+    int local_24 = this->video_mode_lock_count;
     int local_20 = param_1;
     int local_1c = param_3;
     int local_18 = param_2;
@@ -206,9 +211,9 @@ void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, in
 /* Function start: 0x41abf0 */
 int VBuffer::SetVideoMode()
 {
-    int iVar1 = FUN_004230d9(this->field_0x1c);
-    this->field_0x20 = 0xffffffff;
-    this->field_0x24 = 1;
+    int iVar1 = FUN_004230d9(this->handle);
+    this->saved_video_mode = 0xffffffff;
+    this->video_mode_lock_count = 1;
     return iVar1;
 }
 
@@ -221,10 +226,10 @@ void* VBuffer::GetData()
 /* Function start: 0x41ac50 */
 int VBuffer::SetCurrentVideoMode(int param_1)
 {
-    this->field_0x24 = this->field_0x24 + 1;
+    this->video_mode_lock_count = this->video_mode_lock_count + 1;
     unsigned int uVar1 = GetCurrentVideoMode();
     if (param_1 != uVar1) {
-        this->field_0x20 = uVar1;
+        this->saved_video_mode = uVar1;
         uVar1 = FUN_004230d9(param_1);
     }
     return uVar1;
@@ -239,7 +244,7 @@ void EmptyFunction()
 /* Function start: 0x41acb0 */
 void VBuffer::CallBlitter4(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
 {
-    this->SetCurrentVideoMode(this->field_0x1c);
+    this->SetCurrentVideoMode(this->handle);
     FUN_00423296(param_1, param_2, param_3, param_4, param_5, param_6);
     this->InvalidateVideoMode();
 }
@@ -248,7 +253,7 @@ void VBuffer::CallBlitter4(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41acf0 */
 void VBuffer::CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8)
 {
-    this->SetCurrentVideoMode(this->field_0x1c);
+    this->SetCurrentVideoMode(this->handle);
     FUN_0042333a(param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8);
     this->InvalidateVideoMode();
 }
@@ -256,11 +261,11 @@ void VBuffer::CallBlitter5(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41ac80 */
 void VBuffer::InvalidateVideoMode()
 {
-    if ((this->field_0x24 != 0) && (this->field_0x24 = this->field_0x24 - 1, this->field_0x24 == 0)) {
+    if ((this->video_mode_lock_count != 0) && (this->video_mode_lock_count = this->video_mode_lock_count - 1, this->video_mode_lock_count == 0)) {
         ::InvalidateVideoMode();
-        if (this->field_0x20 != 0xffffffff) {
-            FUN_004230d9(this->field_0x20);
-            this->field_0x20 = 0xffffffff;
+        if (this->saved_video_mode != 0xffffffff) {
+            FUN_004230d9(this->saved_video_mode);
+            this->saved_video_mode = 0xffffffff;
         }
     }
 }

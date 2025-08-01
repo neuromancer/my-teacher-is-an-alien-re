@@ -80,7 +80,7 @@ def side_by_side(str1, str2, tab_size=4):
         result.append(combined)
     return '\n'.join(result)
 
-def get_similarity(function_name, disassembled_code_path, mangled_name=None, clean_build=True):
+def get_similarity(function_name, disassembled_code_path, clean_build=True):
     if clean_build:
         if system("make clean all") != 0:
             print("Make failed")
@@ -95,7 +95,7 @@ def get_similarity(function_name, disassembled_code_path, mangled_name=None, cle
                 content = f.read()
                 if function_name in content:
                     asm_file_path = filepath
-                    produced_code = read_assembly(mangled_name if mangled_name else function_name, filepath)
+                    produced_code = read_assembly(function_name, filepath)
                     if produced_code is not None:
                         break
 
@@ -123,10 +123,9 @@ def main():
     parser = ArgumentParser(description="Recover high-level code from assembly code")
     parser.add_argument("function_name", help="Function name to compare")
     parser.add_argument("disassembled_code", help="Path to the disassembled code from Ghidra")
-    parser.add_argument("--mangled_name", help="Mangled name of the function to compare")
     args = parser.parse_args()
 
-    similarity, comparison_text = get_similarity(args.function_name, args.disassembled_code, args.mangled_name)
+    similarity, comparison_text = get_similarity(args.function_name, args.disassembled_code)
 
     if similarity is None:
         print(comparison_text)
