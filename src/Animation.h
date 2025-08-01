@@ -2,25 +2,14 @@
 #define ANIMATION_H
 
 #include "VBuffer.h"
-
-struct SmkObject {
-    int version;
-    int width;
-    int height;
-    int frame_count;
-    int mspf;
-    char unknown1[84];
-    int field_0x68;
-    char unknown2[884 - 20 - 84 - 4];
-    int current_frame;
-};
+#include "smack.h"
 
 class Animation {
 public:
     void** vtable;
     int* field_0x4;
     VBuffer* vbuffer; // 0x8
-    SmkObject* smk; // 0xc
+    Smack* smk; // 0xc
     char pad2[0x18 - 0xc - 4];
     VBuffer* data; // 0x18
     unsigned int flags; // 0x1c

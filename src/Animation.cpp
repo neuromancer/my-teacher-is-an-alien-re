@@ -1,31 +1,20 @@
 #include "Animation.h"
 #include "VBuffer.h"
+#include "smack.h"
 #include <windows.h>
 
 extern "C" {
     void __cdecl ShowError(const char*, ...);
     void FUN_0041fbd3();
-    void* __stdcall SmackBufferOpen(void* smack, int, int, int, int, int);
-    void __stdcall SmackToBuffer(void* smack, int, int, int, int, void*, int);
     void* FUN_004224d0();
     void* __cdecl AllocateMemory_Wrapper(int size);
     void* __cdecl CreatePaletteBuffer(void*);
     void FUN_0041eb50(void*, int, int);
     void FUN_00419390();
-    void* __stdcall SmackOpen(char* filename, int flags, int extra);
-    void __stdcall SmackSoundOnOff(void* smack, int onoff);
-    void __stdcall SmackGoto(void* smack, int frame);
-    void __stdcall SmackNextFrame(void* smack);
-    int __stdcall SmackDoFrame(void* smack);
-    void __stdcall SmackBufferClose(void* smack);
-    void __stdcall SmackClose(void* smack);
-    void __stdcall SmackBufferNewPalette(void* smack, void* palette, int);
-    void __stdcall SmackColorRemap(void* smack, void* remap_table, int num_entries, int);
     void FUN_0041eb90(void*, int, int);
     void FUN_0041eb70(void*, int, int);
     void FUN_0041ea80(void*);
     void __cdecl FreeFromGlobalHeap(void*);
-    int __stdcall SmackWait(void*);
     int FUN_00421d10(void*);
     int FUN_00421af0();
     void* FUN_004224f0();
@@ -100,7 +89,7 @@ int Animation::Open(char* filename, int param_2, int param_3)
         param_2 = param_2 & 0xfff01fff;
     }
 
-    this->smk = (SmkObject*)SmackOpen(filename, param_2, param_3);
+    this->smk = SmackOpen(filename, param_2, param_3);
     if (this->smk == 0) {
         ShowError("Animation::Open - Cannot open file %s", filename);
     }
