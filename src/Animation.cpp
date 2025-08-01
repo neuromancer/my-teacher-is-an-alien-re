@@ -224,7 +224,7 @@ void Animation::MainLoop()
     }
 
     VBuffer* vbuffer = (VBuffer*)this->data;
-    VBuffer_SetCurrentVideoMode(vbuffer, vbuffer->field_0x1c);
+    vbuffer->SetCurrentVideoMode(vbuffer->field_0x1c);
 
     int frame = 1;
     if (smk->frame_count > 0) {
@@ -272,7 +272,7 @@ void Animation::MainLoop()
         } while (frame <= smk->frame_count);
     }
 end_loop:
-    VBuffer_InvalidateVideoMode(vbuffer);
+    vbuffer->InvalidateVideoMode();
 }
 
 /* Function start: 0x41FAC0 */
@@ -306,13 +306,13 @@ void Animation::CloseSmackerBuffer()
 void Animation::SetPalette(unsigned int param_1, unsigned int param_2)
 {
     if (this->smk != 0 && this->smack_buffer != 0) {
-        VBuffer_SetCurrentVideoMode(this->data, this->data->field_0x1c);
+        this->data->SetCurrentVideoMode(this->data->field_0x1c);
         if (this->smk->field_0x68 != 0) {
             SmackBufferNewPalette(this->smack_buffer, (char*)this->smk + 0x6c, 0);
             SmackColorRemap(this->smk, (char*)this->smack_buffer + 0x3c, *(int*)((char*)this->smack_buffer + 0x2c), *(int*)((char*)this->smack_buffer + 0x43c));
         }
         FUN_0041eb90((char*)this->smk + 0x6c, param_1, param_2);
-        VBuffer_InvalidateVideoMode(this->data);
+        this->data->InvalidateVideoMode();
     }
 }
 

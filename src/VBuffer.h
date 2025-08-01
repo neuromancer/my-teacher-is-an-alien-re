@@ -25,11 +25,10 @@ public:
     void CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7);
     void CallBlitter3(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, char param_8, char param_9);
     void ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7);
+    int SetVideoMode();
+    void* GetData();
+    int SetCurrentVideoMode(int param_1);
+    void InvalidateVideoMode();
 };
-
-extern "C" {
-    void __fastcall VBuffer_SetCurrentVideoMode(VBuffer* this_ptr, int);
-    void __fastcall VBuffer_InvalidateVideoMode(VBuffer* this_ptr);
-}
 
 #endif // VBUFFER_H

@@ -17,7 +17,7 @@ extern "C" {
 VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
 {
     if ((param_1 == 0) || (param_2 == 0)) {
-        ShowError((char*)0x436b20, param_2 * param_1);
+        ShowError("Error! Invalid buffer size specified =>%lu", param_2 * param_1);
     }
     this->width = param_1;
     this->height = param_2;
@@ -26,7 +26,7 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
     this->field_0x20 = 0;
     this->field_0x24 = param_2 - 1;
     if (this->data != 0) {
-        ShowError((char*)0x436af8);
+        ShowError("Error! Virtual buffer already allocated");
     }
 
     unsigned int uVar2 = (int)param_1 >> 0x1f;
@@ -46,14 +46,14 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
     uVar2 = CreateTable(param_1, param_2);
     this->field_0x1c = uVar2;
     if (uVar2 == 0xffffffff) {
-        ShowError((char*)0x436ac8);
+        ShowError("VBuffer::Init - Unable To create vb. Table Full");
     }
     if (uVar2 == 0xfffffffe) {
-        ShowError((char*)0x436a98);
+        ShowError("VBuffer::Init - Unable To create vb. No memory");
     }
-    VBuffer_SetCurrentVideoMode(this, uVar2);
+    this->SetCurrentVideoMode(uVar2);
     FUN_00422e8f();
-    VBuffer_InvalidateVideoMode(this);
+    this->InvalidateVideoMode();
     this->data = (void*)FUN_00422e71(this->field_0x1c);
     FUN_0041a9d0(this->field_0x1c);
 }
@@ -65,8 +65,18 @@ VBuffer::~VBuffer()
     Free();
 }
 
+extern "C" {
+    unsigned int GetCurrentVideoMode();
+    void InvalidateVideoMode();
+}
+
+/* Function start: 0x41ac10 */
 void VBuffer::Release()
 {
+    unsigned int uVar1 = GetCurrentVideoMode();
+    if (uVar1 == this->field_0x1c) {
+        ::InvalidateVideoMode();
+    }
 }
 
 void VBuffer::Free()
@@ -83,10 +93,10 @@ void VBuffer::VirtualBufferCreateAndClean(int width, int height)
 /* Function start: 0x41abc0 */
 void VBuffer::ClearScreen(int color)
 {
-    VBuffer_SetCurrentVideoMode(this, this->field_0x1c);
+    this->SetCurrentVideoMode(this->field_0x1c);
     SetGraphicsMode(color);
     ::ClearScreen();
-    VBuffer_InvalidateVideoMode(this);
+    this->InvalidateVideoMode();
 }
 
 /* Function start: 0x41ad40 */
@@ -143,6 +153,7 @@ extern "C" {
     int FUN_0041b590(int*, int*, int*, int*);
     void FUN_0041af9f(void);
     void FUN_0041afb1(void);
+    void FUN_00401680(void);
 }
 
 /* Function start: 0x41aee0 */
@@ -168,5 +179,51 @@ void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, in
     {
         FUN_0041af9f();
         FUN_0041afb1();
+    }
+}
+
+extern "C" int FUN_004230d9(int);
+
+/* Function start: 0x41abf0 */
+int VBuffer::SetVideoMode()
+{
+    int iVar1 = FUN_004230d9(this->field_0x1c);
+    this->field_0x20 = 0xffffffff;
+    this->field_0x24 = 1;
+    return iVar1;
+}
+
+/* Function start: 0x41ac30 */
+void* VBuffer::GetData()
+{
+    return this->data;
+}
+
+/* Function start: 0x41ac50 */
+int VBuffer::SetCurrentVideoMode(int param_1)
+{
+    this->field_0x24 = this->field_0x24 + 1;
+    unsigned int uVar1 = GetCurrentVideoMode();
+    if (param_1 != uVar1) {
+        this->field_0x20 = uVar1;
+        uVar1 = FUN_004230d9(param_1);
+    }
+    return uVar1;
+}
+
+/* Function start: 0x41ac40 */
+void EmptyFunction()
+{
+}
+
+/* Function start: 0x41ac80 */
+void VBuffer::InvalidateVideoMode()
+{
+    if ((this->field_0x24 != 0) && (this->field_0x24 = this->field_0x24 - 1, this->field_0x24 == 0)) {
+        ::InvalidateVideoMode();
+        if (this->field_0x20 != 0xffffffff) {
+            FUN_004230d9(this->field_0x20);
+            this->field_0x20 = 0xffffffff;
+        }
     }
 }
