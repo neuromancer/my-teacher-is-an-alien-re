@@ -1,4 +1,6 @@
 #include "Hotspot.h"
+#include <stdio.h>
+#include <string.h>
 
 extern "C" {
     void ShowError(const char* message, ...);
@@ -35,11 +37,11 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
     case 2:
         if (this->list2 == 0) {
             this->state = 3;
-            if (this->field_0x128 != 0) {
+            if (this->dialog != 0) {
                 puVar2 = AllocateMemory_Wrapper(8);
                 *(int*)puVar2 = param_1;
                 *((int*)puVar2 + 1) = param_2;
-                SC_Message_Send(9, this->field_0x124, 0xb, param_3, 5, this->field_0x120, 0, puVar2, 0, 0);
+                SC_Message_Send(9, this->parseFileIndex, 0xb, param_3, 5, this->dialogParseFileNumber, 0, puVar2, 0, 0);
             }
         }
         else {
@@ -66,6 +68,43 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
         return 1;
     default:
         ShowError("Error in Thotspot.cpp - Update()");
+    }
+    return 0;
+}
+
+/* Function start: 0x409620 */
+int Hotspot::ParseLine(char* line)
+{
+    try {
+        char command[32];
+        sscanf(line, "%s", command);
+
+        if (strcmp(command, "HOTSPOT") == 0) {
+            sscanf(line, "%*s %d %d %d %d", &this->rect_x, &this->rect_y, &this->rect_w, &this->rect_h);
+        } else if (strcmp(command, "DIALOG") == 0) {
+            this->dialog = 1;
+        } else if (strcmp(command, "DIALOGPARSEFILENUMBER") == 0) {
+            sscanf(line, "%*s %d", &this->dialogParseFileNumber);
+        } else if (strcmp(command, "PARSEFILEINDEX") == 0) {
+            sscanf(line, "%*s %d", &this->parseFileIndex);
+        } else if (strcmp(command, "SPRITE") == 0) {
+            Sprite* newSprite = (Sprite*)AllocateMemory_Wrapper(sizeof(Sprite));
+            if (newSprite) {
+                newSprite->Sprite::Sprite(NULL);
+                this->sprite = newSprite;
+                this->sprite->Copy(this);
+            }
+        } else if (strcmp(command, "LABEL") == 0) {
+            sscanf(line, "%*s %s", this->label);
+        } else if (strcmp(command, "MOUSE") == 0) {
+            sscanf(line, "%*s %s", this->mouse);
+        } else if (strcmp(command, "END") == 0) {
+            return 1;
+        } else {
+            this->LBLParse(line);
+        }
+    } catch (...) {
+        return 0;
     }
     return 0;
 }

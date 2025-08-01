@@ -1,21 +1,28 @@
 #ifndef HOTSPOT_H
 #define HOTSPOT_H
 
+#include "Parser.h"
 #include "Sprite.h"
 
-class Hotspot {
+class Hotspot : public Parser {
 public:
-    char pad[0x88];
     Sprite* sprite; // 0x88
     void* list1; // 0x8c
     void* list2; // 0x90
     void* list3; // 0x94
-    char pad2[0x11c - 0x94 - 4];
+    char label[32]; // 0x98
+    char mouse[32]; // 0xb8
+    char pad2[0x11c - 0xb8 - 32];
     int state; // 0x11c
-    int field_0x120;
-    int field_0x124;
-    int field_0x128;
+    int dialogParseFileNumber; // 0x120
+    int parseFileIndex; // 0x124
+    int dialog; // 0x128
+    int rect_x; // 0x12c
+    int rect_y; // 0x130
+    int rect_w; // 0x134
+    int rect_h; // 0x138
 
+    int ParseLine(char* line);
     unsigned char Do();
     int SetState(int state);
     int GetState();
