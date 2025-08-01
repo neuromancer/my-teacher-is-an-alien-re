@@ -86,14 +86,26 @@ void VBuffer::Release()
     }
 }
 
+extern "C" {
+    void FUN_00422e1a(int);
+    void FUN_0041a9e0(int);
+}
+
+/* Function start: 0x41aa60 */
 void VBuffer::Free()
 {
+    if (this->data != 0) {
+        FUN_00422e1a(this->field_0x1c);
+        FUN_0041a9e0(this->field_0x1c);
+        this->field_0x1c = 0xffffffff;
+        this->data = 0;
+    }
 }
 
 /* Function start: 0x41a9f0 */
 void VBuffer::VirtualBufferCreateAndClean(int width, int height)
 {
-    FUN_0041aa30(this);
+    InitFields(); //FUN_0041aa30(this);
     VBuffer(width, height);
 }
 
@@ -104,6 +116,19 @@ void VBuffer::ClearScreen(int color)
     SetGraphicsMode(color);
     ::ClearScreen();
     this->InvalidateVideoMode();
+}
+
+extern "C" void FUN_0041a9a0(void);
+
+/* Function start: 0x41aa30 */
+void VBuffer::InitFields()
+{
+    for (int i = 0; i < 0xc; i++) {
+        ((int*)this)[i] = 0;
+    }
+    this->field_0x1c = 0xffffffff;
+    *(int*)this = 0xffffffff;
+    FUN_0041a9a0();
 }
 
 /* Function start: 0x41ad40 */
