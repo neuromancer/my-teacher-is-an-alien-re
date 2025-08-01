@@ -306,7 +306,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
                 y = y + -1;
             }
             else {
-                y = y + this->animation_data->data->y_offset + -1;
+                y = y + this->animation_data->data->height + -1;
             }
         }
         else if (pvVar1 == (void*)0x0) {
