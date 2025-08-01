@@ -8,14 +8,10 @@ extern "C" {
     void* __stdcall SmackBufferOpen(void* smack, int, int, int, int, int);
     void __stdcall SmackToBuffer(void* smack, int, int, int, int, void*, int);
     void* FUN_004224d0();
-    void* FUN_0041ac30(int);
     void* __cdecl AllocateMemory_Wrapper(int size);
     void* __cdecl CreatePaletteBuffer(void*);
     void FUN_0041eb50(void*, int, int);
     void FUN_00419390();
-    void __fastcall VBuffer_destructor(VBuffer* this_ptr);
-    VBuffer* __fastcall VBuffer_VirtualBufferCreateAndClean(VBuffer* this_ptr, int width, int height);
-    void __fastcall Sprite_CloseSmackerFile(void* this_ptr);
     void* __stdcall SmackOpen(char* filename, int flags, int extra);
     void __stdcall SmackSoundOnOff(void* smack, int onoff);
     void __stdcall SmackGoto(void* smack, int frame);
@@ -30,13 +26,10 @@ extern "C" {
     void FUN_0041ea80(void*);
     void __cdecl FreeFromGlobalHeap(void*);
     int __stdcall SmackWait(void*);
-    void FUN_0041fc20(Animation*, int, int);
     int FUN_00421d10(void*);
     int FUN_00421af0();
     void* FUN_004224f0();
     void* FUN_004224e0();
-    void FUN_0041acf0(void*, int, int, int, int, int, int, int, int);
-    void FUN_0041fcb0(int);
     void FUN_0041ac50(int);
     void FUN_0041ac80();
 
@@ -123,7 +116,7 @@ void Animation::VBInit()
 
     VBuffer* vbuffer = (VBuffer*)AllocateMemory_Wrapper(0x30);
     if (vbuffer != 0) {
-        this->vbuffer = VBuffer_VirtualBufferCreateAndClean(vbuffer, this->smk->width, this->smk->height);
+        this->vbuffer = VirtualBufferCreateAndClean(vbuffer, this->smk->width, this->smk->height);
     }
 }
 
@@ -132,7 +125,7 @@ void Animation::FreeVBuffer()
 {
     if (this->vbuffer != 0) {
         VBuffer *vbuffer = this->vbuffer;
-        VBuffer_destructor(vbuffer);
+        vbuffer->~VBuffer();
         FreeFromGlobalHeap(vbuffer);
         this->vbuffer = 0;
     }
@@ -176,7 +169,7 @@ void Animation::ToBuffer(VBuffer* buffer)
 
     this->data = buffer;
     unsigned int uVar3 = *(unsigned char*)this->smack_buffer;
-    void* uVar1 = FUN_0041ac30((int)buffer);
+    void* uVar1 = buffer->GetData();
     SmackToBuffer(this->smk, 0, 0, this->smk->width, this->smk->height, uVar1, uVar3);
 }
 
@@ -227,7 +220,7 @@ void Animation::MainLoop()
     if (smk->frame_count > 0) {
         do {
             if (smk->field_0x68 != 0) {
-                FUN_0041fc20(this, 0, 0x100);
+                SetPalette(0, 0x100);
             }
             DoFrame(this);
             do {
@@ -259,13 +252,13 @@ void Animation::MainLoop()
             int iVar1 = *(int*)piVar2 - 1;
             int iVar6 = 0;
             piVar2 = FUN_004224e0();
-            FUN_0041acf0(vbuffer, *(int*)((char*)vbuffer + 0x28), *(int*)((char*)vbuffer + 0x2c), *(int*)((char*)vbuffer + 0x20), *(int*)((char*)vbuffer + 0x24), 0, *(int*)piVar2 - 1, iVar6, iVar1);
+            vbuffer->CallBlitter5(vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->saved_video_mode, vbuffer->video_mode_lock_count, 0, *(int*)piVar2 - 1, iVar6, iVar1);
 
             if (smk->frame_count - 1 <= frame) {
                 break;
             }
             frame++;
-            FUN_0041fcb0((int)this);
+            NextFrame();
         } while (frame <= smk->frame_count);
     }
 end_loop:

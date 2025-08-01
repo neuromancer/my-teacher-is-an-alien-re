@@ -17,7 +17,6 @@ public:
     ~VBuffer();
     void Release();
     void Free();
-    void VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height);
     void ClearScreen(int color);
     void TPaste(void);
     void BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8);
@@ -33,5 +32,7 @@ public:
     void CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8);
     void InitFields();
 };
+
+VBuffer* VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height);
 
 #endif // VBUFFER_H

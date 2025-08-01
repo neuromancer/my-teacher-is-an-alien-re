@@ -104,10 +104,11 @@ void VBuffer::Free()
 }
 
 /* Function start: 0x41a9f0 */
-void VBuffer::VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height)
+VBuffer* VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height)
 {
     vbuffer->InitFields();
     vbuffer->VBuffer::VBuffer(width, height);
+    return vbuffer;
 }
 
 /* Function start: 0x41abc0 */
