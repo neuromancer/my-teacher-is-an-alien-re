@@ -10,7 +10,6 @@ extern "C" {
     void Queue_InsertNodeByType_2(void*, void*);
     __int64 __ftol();
     void FUN_0041be20(void*, void*, int, int, int, int, int, int);
-    int GameState_Error_Handler_3(int);
     void Array_Cleanup(int, int, int, void*);
     void FreeFromGlobalHeap(int*);
     int* AllocateMemory_Wrapper(int);
@@ -251,7 +250,7 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     }
     bVar6 = 0;
     bVar5 = 0;
-    iVar3 = GameState_Error_Handler_3((int)this);
+    iVar3 = CheckConditions();
     if (iVar3 == 0) {
         return 1;
     }
