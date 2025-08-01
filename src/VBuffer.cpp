@@ -23,6 +23,14 @@ extern "C" {
     int FUN_004230d9(int);
     void FUN_00423296(int, int, int, int, int, int);
     void FUN_0042333a(int, int, int, int, int, int, int, int);
+    __int64 __ftol();
+    unsigned int FUN_00423703(int, unsigned int, unsigned int);
+    void FUN_004234f9(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
+    void FUN_004234d5(unsigned int);
+    void FUN_0041b29a();
+    void FUN_0041b2ac();
+    extern int DAT_00436b70;
+    extern int DAT_00436964;
 }
 
 /* Function start: 0x41aaa0 */
@@ -267,6 +275,58 @@ void VBuffer::InvalidateVideoMode()
         if (this->saved_video_mode != 0xffffffff) {
             FUN_004230d9(this->saved_video_mode);
             this->saved_video_mode = 0xffffffff;
+        }
+    }
+}
+
+/* Function start: 0x41B110 */
+void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
+{
+    unsigned int uVar1;
+    unsigned int uVar2;
+    void* puVar3;
+    int iVar4;
+
+    __int64 lVar5;
+    int local_34;
+    unsigned int local_30;
+    int local_2c;
+    int local_28;
+    int local_24;
+    int local_20;
+    int local_1c;
+    int local_18;
+    unsigned int local_14;
+
+    lVar5 = __ftol();
+    uVar1 = (unsigned int)lVar5;
+    lVar5 = __ftol();
+    uVar2 = (unsigned int)lVar5;
+    if ((0 < (int)uVar1) && (0 < (int)uVar2)) {
+        local_14 = FUN_00423703(DAT_00436964, uVar1, uVar2);
+        if ((int)local_14 < 0) {
+            ShowError((const char*)DAT_00436b70);
+        }
+        puVar3 = (void*)FUN_00422e71(local_14);
+        FUN_004234f9(*(void**)(param_3 + 0x10), puVar3, *(unsigned int*)(param_3 + 0x14), *(unsigned int*)(param_3 + 0x18), uVar1, uVar2);
+
+        __try {
+            local_30 = this->saved_video_mode;
+            local_2c = this->video_mode_lock_count;
+            local_34 = this->clip_x1;
+            local_1c = uVar1 - 1;
+            local_18 = uVar2 - 1;
+            local_28 = this->clip_x2;
+            local_24 = 0;
+            local_20 = 0;
+
+            iVar4 = FUN_0041b590(&local_34, &local_24, &param_1, &param_2);
+            if (iVar4 != 0) {
+                FUN_004233e8(local_24, local_1c, local_20, local_18, param_1, param_2, local_14, this->handle);
+                FUN_004234d5(local_14);
+            }
+        } __finally {
+            // Empty
         }
     }
 }
