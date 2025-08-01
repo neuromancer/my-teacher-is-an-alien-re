@@ -9,8 +9,6 @@
 extern "C" {
     void Queue_InsertNodeByType_2(void*, void*);
     __int64 __ftol();
-    void FUN_0041fcc0(void*, int);
-    void FUN_0041fcb0(int);
     void FUN_0041be20(void*, void*, int, int, int, int, int, int);
     int GameState_Error_Handler_3(int);
     void Array_Cleanup(int, int, int, void*);
@@ -221,7 +219,7 @@ void Sprite::SetState2(int param_1)
                         }
                     }
                     this->field_0x90 = param_1;
-                    FUN_0041fcc0(this->animation_data, *(int*)((int)this->ranges + param_1 * 8) + iVar6);
+                    this->animation_data->GotoFrame(*(int*)((int)this->ranges + param_1 * 8) + iVar6);
                     piVar5 = (int*)(this->field_0x90 * 8 + (int)this->ranges);
                     if (piVar5[1] == *piVar5) {
                         this->flags = this->flags | 4;
@@ -282,17 +280,17 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
         }
         if (iVar3 == 1) {
             if ((this->flags & 0x200) == 0) {
-                FUN_0041fcc0(pvVar1, *(int*)((int)this->ranges + this->field_0x90 * 8));
+                this->animation_data->GotoFrame(*(int*)((int)this->ranges + this->field_0x90 * 8));
             }
             else {
-                FUN_0041fcb0((int)pvVar1);
+                this->animation_data->NextFrame();
             }
             if ((this->flags & 1) == 0) {
                 bVar5 = 1;
             }
         }
         else {
-            FUN_0041fcb0((int)pvVar1);
+            this->animation_data->NextFrame();
         }
     }
     uVar2 = this->flags;
