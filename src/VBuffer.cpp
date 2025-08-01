@@ -1,16 +1,27 @@
 #include "VBuffer.h"
 
-extern "C" void ShowError(const char*, ...);
-extern "C" void FUN_0041aa30(VBuffer*);
-extern "C" void SetGraphicsMode(int);
-extern "C" void ClearScreen();
-
-
 extern "C" {
+    void ShowError(const char*, ...);
+    void FUN_0041aa30(VBuffer*);
+    void SetGraphicsMode(int);
+    void ClearScreen();
     unsigned int CreateTable(unsigned int, unsigned int);
     void FUN_00422e8f();
     int FUN_00422e71(unsigned int);
     void FUN_0041a9d0(unsigned int);
+    unsigned int GetCurrentVideoMode();
+    void InvalidateVideoMode();
+    void FUN_0041b310(int, int, int, int, int, int, VBuffer*, VBuffer*, char, char);
+    void FUN_0041ae0c(void);
+    void FUN_004231ce(int, int, int, int, int, int, unsigned int, unsigned int);
+    void FUN_004233e8(int, int, int, int, int, int, unsigned int, unsigned int);
+    int FUN_0041b590(int*, int*, int*, int*);
+    void FUN_0041af9f(void);
+    void FUN_0041afb1(void);
+    void FUN_00401680(void);
+    int FUN_004230d9(int);
+    void FUN_00423296(int, int, int, int, int, int);
+    void FUN_0042333a(int, int, int, int, int, int, int, int);
 }
 
 /* Function start: 0x41aaa0 */
@@ -65,17 +76,13 @@ VBuffer::~VBuffer()
     Free();
 }
 
-extern "C" {
-    unsigned int GetCurrentVideoMode();
-    void InvalidateVideoMode();
-}
 
 /* Function start: 0x41ac10 */
 void VBuffer::Release()
 {
     unsigned int uVar1 = GetCurrentVideoMode();
     if (uVar1 == this->field_0x1c) {
-        ::InvalidateVideoMode();
+        this->InvalidateVideoMode();
     }
 }
 
@@ -105,10 +112,6 @@ void VBuffer::TPaste(void)
     ShowError("VBuffer::TPaste - Not implemented");
 }
 
-extern "C" {
-    void FUN_0041b310(int, int, int, int, int, int, VBuffer*, VBuffer*, char, char);
-    void FUN_0041ae0c(void);
-}
 
 /* Function start: 0x41ad50 */
 void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8)
@@ -127,7 +130,6 @@ void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4
     }
 }
 
-extern "C" void FUN_004231ce(int, int, int, int, int, int, unsigned int, unsigned int);
 
 /* Function start: 0x41ae20 */
 void VBuffer::CallBlitter(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
@@ -135,7 +137,6 @@ void VBuffer::CallBlitter(int param_1, int param_2, int param_3, int param_4, in
     FUN_004231ce(param_1, param_2, param_3, param_4, param_5, param_6, *(unsigned int*)(param_7 + 0x1c), this->field_0x1c);
 }
 
-extern "C" void FUN_004233e8(int, int, int, int, int, int, unsigned int, unsigned int);
 
 /* Function start: 0x41ae60 */
 void VBuffer::CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
@@ -149,12 +150,6 @@ void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, i
     FUN_0041b310(param_1, param_2, param_3, param_4, param_5, param_6, (VBuffer*)param_7, this, param_8, param_9);
 }
 
-extern "C" {
-    int FUN_0041b590(int*, int*, int*, int*);
-    void FUN_0041af9f(void);
-    void FUN_0041afb1(void);
-    void FUN_00401680(void);
-}
 
 /* Function start: 0x41aee0 */
 void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
@@ -182,7 +177,6 @@ void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, in
     }
 }
 
-extern "C" int FUN_004230d9(int);
 
 /* Function start: 0x41abf0 */
 int VBuffer::SetVideoMode()
@@ -216,7 +210,6 @@ void EmptyFunction()
 {
 }
 
-extern "C" void FUN_00423296(int, int, int, int, int, int);
 
 /* Function start: 0x41acb0 */
 void VBuffer::CallBlitter4(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
@@ -226,7 +219,6 @@ void VBuffer::CallBlitter4(int param_1, int param_2, int param_3, int param_4, i
     this->InvalidateVideoMode();
 }
 
-extern "C" void FUN_0042333a(int, int, int, int, int, int, int, int);
 
 /* Function start: 0x41acf0 */
 void VBuffer::CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8)
