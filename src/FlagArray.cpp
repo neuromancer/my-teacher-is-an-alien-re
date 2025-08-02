@@ -1,14 +1,11 @@
 #include "FlagArray.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 extern "C" {
     void __cdecl ShowError(const char*, ...);
     void __cdecl WriteToMessageLog(const char*, ...);
-    FILE* __cdecl fsopen(const char*, const char*);
-    int __cdecl fclose(FILE*);
-    size_t __cdecl fread(void*, size_t, size_t, FILE*);
-    size_t __cdecl fwrite(const void*, size_t, size_t, FILE*);
-    int __cdecl fseek(FILE*, long, int);
     void FUN_004269e0(void*, int, int, FILE*);
 }
 
@@ -22,6 +19,11 @@ const char* s_FlagArray_Close_attempt_to_close_a_file_that_is_not_open = "FlagAr
 const char* s_FlagArray__Seek = "FlagArray::Seek";
 const char* s_Error_in_flagaray_cpp_Seek_Attempt_to_seek_past_end_of_file = "Error in flagaray.cpp - Seek: Attempt to seek past end of file";
 const char* s_Error_in_flagaray_cpp_Seek_Index_out_of_range = "Error in flagaray.cpp - Seek: Index out of range %d";
+
+/* Function start: 0x425e50 */
+FILE *fsopen(const char* filename, const char* mode) {
+    return _fsopen(filename, mode, 0x40);
+}
 
 /* Function start: 0x420140 */
 void FlagArray::Create(char* filename, int max_states)

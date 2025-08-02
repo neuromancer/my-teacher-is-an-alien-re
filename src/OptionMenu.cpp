@@ -94,7 +94,7 @@ OptionMenu::~OptionMenu()
 }
 
 /* Function start: 0x409CD0 */
-int OptionMenu::ParseCommand(char* command)
+int OptionMenu::LBLParse(char* command)
 {
     char command_copy[32];
     sscanf(command, "%s", command_copy);
@@ -103,7 +103,7 @@ int OptionMenu::ParseCommand(char* command)
         return 1;
     }
 
-    Parser_LBLParse(this, command);
+    Parser::LBLParse("DemoOption_Menu");
     return 0;
 }
 

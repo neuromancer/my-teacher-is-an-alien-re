@@ -3,16 +3,15 @@
 
 #include "Sprite.h"
 
-class OptionMenu {
+class OptionMenu : Parser {
 public:
     void** vtable; // 0x0
-    char pad[0x88];
     Sprite* options[6]; // 0x88
     int selected_option; // 0xa0
 
     void Init();
     ~OptionMenu();
-    virtual int ParseCommand(char* command);
+    int LBLParse(char* command);
     void UpdateSpriteStates(int sprite_count, int sprite_index);
 };
 
