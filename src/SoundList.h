@@ -6,6 +6,7 @@ public:
     SoundList(int count);
     ~SoundList();
     void StopAll();
+    void* Register(char* filename);
 
 private:
     void** m_sounds;
