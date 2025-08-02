@@ -15,16 +15,20 @@ jobs:
       with:
         submodules: true
 
-    - name: Install Wine
+    - name: Install Wine and Xvfb
       run: |
-        sudo apt-get update
-        sudo apt-get install -y wine64
+        sudo dpkg --add-architecture i386
+        sudo apt update
+        sudo apt install -y wine64 wine32 xvfb
+
+    - name: Start Xvfb
+      run: |
+        Xvfb :99 &
+        export DISPLAY=:99
 
     - name: make
-      run: make
-
-    - name: make report
-      run: make report
-
-    - name: make progress
-      run: make progress
+      run: |
+        export DISPLAY=:99
+        make
+        make report
+        make progress
