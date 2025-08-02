@@ -1,0 +1,125 @@
+#include "OptionMenu.h"
+#include <stdio.h>
+#include <string.h>
+
+extern "C" {
+    void* AllocateMemory_Wrapper(int);
+    void BaseObject_BaseObject_Init(void*);
+    void SpriteArray_Cleanup(void*);
+    void FreeFromGlobalHeap(void*);
+    void BaseObject_BaseObject_destructor(void*);
+    void Parser_LBLParse(void*, char*);
+}
+
+/* Function start: 0x409940 */
+void OptionMenu::Init()
+{
+    BaseObject_BaseObject_Init(this);
+    this->vtable = (void**)0x4311d0;
+
+    for (int i = 0; i < 6; i++) {
+        this->options[i] = 0;
+    }
+    this->selected_option = 5;
+
+    Sprite* option1;
+    this->options[0] = option1 = (Sprite*)AllocateMemory_Wrapper(sizeof(Sprite));
+    if (option1) {
+        option1->Sprite::Sprite("demo/option1.smk");
+        option1->flags &= ~2;
+        option1->loc_x = 216;
+        option1->loc_y = 202;
+        option1->priority = 10;
+        option1->SetState(4);
+        option1->SetRange(0, 1, 1);
+        option1->SetRange(1, 2, 2);
+        option1->SetRange(2, 3, 12);
+        option1->SetRange(3, 13, 13);
+    }
+
+    Sprite* option2;
+    this->options[1] = option2 = (Sprite*)AllocateMemory_Wrapper(sizeof(Sprite));
+    if (option2) {
+        option2->Sprite::Sprite("demo/option2.smk");
+        option2->flags &= ~2;
+        option2->loc_x = 216;
+        option2->loc_y = 202;
+        option2->priority = 10;
+        option2->SetState(4);
+        option2->SetRange(0, 1, 1);
+        option2->SetRange(1, 2, 2);
+        option2->SetRange(2, 3, 12);
+        option2->SetRange(3, 13, 13);
+    }
+
+    Sprite* option3;
+    this->options[2] = option3 = (Sprite*)AllocateMemory_Wrapper(sizeof(Sprite));
+    if (option3) {
+        option3->Sprite::Sprite("demo/option3.smk");
+        option3->flags &= ~2;
+        option3->loc_x = 216;
+        option3->loc_y = 202;
+        option3->priority = 10;
+        option3->SetState(4);
+        option3->SetRange(0, 1, 1);
+        option3->SetRange(1, 2, 2);
+        option3->SetRange(2, 3, 12);
+        option3->SetRange(3, 13, 13);
+    }
+}
+
+/* Function start: 0x409BF0 */
+OptionMenu::~OptionMenu()
+{
+    try {
+        this->vtable = (void**)0x4311d0;
+        if (this->options[0]) {
+            SpriteArray_Cleanup(this->options[0]);
+            FreeFromGlobalHeap(this->options[0]);
+            this->options[0] = 0;
+        }
+        if (this->options[1]) {
+            SpriteArray_Cleanup(this->options[1]);
+            FreeFromGlobalHeap(this->options[1]);
+            this->options[1] = 0;
+        }
+        if (this->options[2]) {
+            SpriteArray_Cleanup(this->options[2]);
+            FreeFromGlobalHeap(this->options[2]);
+            this->options[2] = 0;
+        }
+    } catch (...) {
+    }
+    BaseObject_BaseObject_destructor(this);
+}
+
+/* Function start: 0x409CD0 */
+int OptionMenu::ParseCommand(char* command)
+{
+    char command_copy[32];
+    sscanf(command, "%s", command_copy);
+
+    if (strcmp(command_copy, "END") == 0) {
+        return 1;
+    }
+
+    Parser_LBLParse(this, command);
+    return 0;
+}
+
+/* Function start: 0x409D50 */
+void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
+{
+    if (this->selected_option < sprite_count) {
+        sprite_count = this->selected_option;
+    }
+
+    for (int i = 0; i < sprite_count; i++) {
+        if (this->options[sprite_index]) {
+            // This is a simplification of the original code, which is very complex
+            // and seems to be traversing a linked list.
+            this->options[sprite_index]->SetState(i);
+            this->options[sprite_index]->Do(this->options[sprite_index]->loc_x, this->options[sprite_index]->loc_y, 0, 0x3ff00000);
+        }
+    }
+}

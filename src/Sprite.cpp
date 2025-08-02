@@ -204,7 +204,7 @@ void Sprite::SetState2(int param_1)
                         iVar1 = iVar3 + 1 + iVar6;
                         iVar6 = iVar6 + 1;
                         if ((this->animation_data == 0) || (iVar2 == 0)) {
-                            ShowError(s_range_error_00436bbc);
+                            ShowError("range error");
                             return;
                         }
                         if ((iVar1 < iVar3) || (*(int*)(iVar2 + 4 + param_1 * 8) < iVar1)) {
@@ -228,10 +228,10 @@ void Sprite::SetState2(int param_1)
                 return;
             }
         }
-        ShowError(s_range_error_00436bbc);
+        ShowError("range error");
         return;
     }
-    ShowError(s_Sprite__SetState_0__d__s_00436ba0, param_1, &this->sprite_filename);
+    ShowError("Sprite::SetState 0 %d %s", param_1, &this->sprite_filename);
 }
 
 /* Function start: 0x41d300 */
@@ -330,10 +330,10 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
 void Sprite::CheckRanges1()
 {
     if (this->animation_data == 0) {
-        ShowError(s_error_Sprite_CheckRanges0_00436c04);
+        ShowError("error Sprite::CheckRanges0");
     }
     if (this->ranges == 0) {
-        ShowError(s_error_Sprite_CheckRanges1_00436be8);
+        ShowError("error Sprite::CheckRanges1");
     }
     int iVar4 = 0;
     if (0 < this->num_states) {
@@ -347,7 +347,7 @@ void Sprite::CheckRanges1()
             piVar2 = (int*)((char*)this->ranges + iVar3);
             iVar1 = *piVar2;
             if (piVar2[1] < iVar1) {
-                ShowError(s_bad_range_d_start_d_in_s_00436bc8, iVar4, iVar1, (char*)&this->sprite_filename);
+                ShowError("bad range[%d].start = %d in %s", iVar4, iVar1, (char*)&this->sprite_filename);
             }
             iVar3 += 8;
             iVar4++;
@@ -645,4 +645,3 @@ void Sprite::Dump()
     }
     WriteToMessageLog("END");
 }
-

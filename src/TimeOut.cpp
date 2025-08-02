@@ -20,7 +20,7 @@ void TimeOut::Start(int timeout)
 
     if (m_timeout == 0)
     {
-        ShowError((const char*)0x436688);
+        ShowError("TimeOut::Start() - Must Set a timeout value");
     }
 
     m_isActive = 1;
@@ -39,4 +39,3 @@ int TimeOut::IsTimeOut()
     }
     return 0;
 }
-

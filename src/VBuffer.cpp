@@ -293,7 +293,7 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
     if ((0 < (int)uVar1) && (0 < (int)uVar2)) {
         local_14 = FUN_00423703(DAT_00436964, uVar1, uVar2);
         if ((int)local_14 < 0) {
-            ShowError((const char*)DAT_00436b70);
+            ShowError("VBuffer::ScaleTCCopy");
         }
         puVar3 = (void*)FUN_00422e71(local_14);
         FUN_004234f9(*(void**)(param_3 + 0x10), puVar3, *(unsigned int*)(param_3 + 0x14), *(unsigned int*)(param_3 + 0x18), uVar1, uVar2);
@@ -318,4 +318,3 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
         }
     }
 }
-

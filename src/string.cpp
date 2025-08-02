@@ -159,14 +159,14 @@ void ShowMessage(char *param_1, ...)
     vsprintf(buffer, param_1, (char*)(&param_1 + 1));
     SetCursorVisible(1);
     HWND hWnd = (HWND)((int (*)())0x4224d0)();
-    MessageBoxA(hWnd, buffer, (char*)0x436704, 0);
+    MessageBoxA(hWnd, buffer, "Message", 0);
     SetCursorVisible(0);
 }
 
 /* Function start: 0x4191C0 */
 void ClearMessageLog()
 {
-    ((void (*)(const char*))0x426110)((char*)0x43670c);
+    ((void (*)(const char*))0x426110)("message.log");
 }
 
 /* Function start: 0x4191D0 */
@@ -237,4 +237,3 @@ void ExecuteFunctionArray(void** param_1, void** param_2)
         } while (param_1 < param_2);
     }
 }
-

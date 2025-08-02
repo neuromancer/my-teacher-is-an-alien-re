@@ -28,10 +28,10 @@ void Parser::Open(char *param_1)
 {
     CloseFile();
     strcpy(this->filename, param_1);
-    this->pFile = FUN_00425e50(this->filename, (char*)0x4364dc);
+    this->pFile = FUN_00425e50(this->filename, "r");
     this->isFileOpen = 1;
     if (this->pFile == NULL) {
-        ShowError((char*)0x4364b0, this->filename);
+        ShowError("Parser::Open - Unable to open file '%s' ", this->filename);
     }
 }
 
@@ -44,7 +44,7 @@ void Parser::Copy(Parser* other)
     strcpy(this->filename, other->filename);
     this->pFile = other->pFile;
     if (this->pFile == NULL) {
-        ShowError((char*)0x4364e0, this->filename);
+        ShowError("Parser::Open - File '%s' not open", this->filename);
     }
 }
 
@@ -61,7 +61,7 @@ void Parser::CloseFile()
 /* Function start: 0x418B30 */
 int Parser::LBLParse(char* param_1)
 {
-    ShowError((char*)0x436504, param_1, this->lineNumber, this->filename);
+    ShowError("%s::LBLParse - Uknown Label\\n'%s'\\nfound in file %s", param_1, this->lineNumber, this->filename);
     return 0;
 }
 
@@ -69,7 +69,7 @@ int Parser::LBLParse(char* param_1)
 void Parser::SaveFilePosition()
 {
     if (fgetpos(this->pFile, &this->savedFilePos) != 0) {
-        ShowError((char*)0x436538, this->filename);
+        ShowError("Parser::SaveFilePosition() - unable to save file pos in file %s", this->filename);
     }
 }
 
@@ -174,4 +174,3 @@ void Parser::ProcessFile(Parser* dst, char* key)
     }
     ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer", this->filename);
 }
-

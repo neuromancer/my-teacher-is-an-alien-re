@@ -22,7 +22,7 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
             local_30.cbSize = 0x30;
             local_30.style = 0xb;
             local_30.lpfnWndProc = (WNDPROC)FUN_00422590;
-            local_30.hIcon = LoadIconA(param_1, (LPCSTR)0x4373d0);
+            local_30.hIcon = LoadIconA(param_1, "IDI_ICON1");
             local_30.hCursor = LoadCursorA((HINSTANCE)0x0, (LPCSTR)0x7f00);
             local_30.hbrBackground = (HBRUSH)0x0;
             local_30.lpszMenuName = (LPCSTR)0x0;
@@ -45,7 +45,7 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
             local_30.cbSize = 0x30;
             local_30.style = 0xb;
             local_30.lpfnWndProc = (WNDPROC)FUN_00422590;
-            local_30.hIcon = LoadIconA(param_1, (LPCSTR)0x4373d0);
+            local_30.hIcon = LoadIconA(param_1, "IDI_ICON1");
             local_30.hCursor = LoadCursorA((HINSTANCE)0x0, (LPCSTR)0x7f00);
             local_30.hbrBackground = (HBRUSH)0x0;
             local_30.lpszMenuName = (LPCSTR)0x0;

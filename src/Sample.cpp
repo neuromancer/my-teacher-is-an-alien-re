@@ -30,7 +30,7 @@ Sample::Sample()
 void Sample::Init(int volume)
 {
     if (m_sample == 0) {
-        ShowError("Sample::Init Error Sample C");
+        ShowError("Sample::Init() - Error! Sample Channel has not been set");
     }
     _AIL_init_sample_4((int)m_sample);
     _AIL_set_sample_file_12((int)m_sample, m_data, 0);
@@ -106,4 +106,3 @@ int Sample::Play(int volume, int loop_count)
     }
     return 1;
 }
-
