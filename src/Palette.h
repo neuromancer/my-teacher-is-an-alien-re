@@ -10,6 +10,7 @@ public:
     void Load(char* filename);
     UINT SetEntries(HPALETTE hpal, UINT iStart, UINT cEntries, PALETTEENTRY* pPalEntries);
     void SetPalette(UINT start, UINT count);
+    int Compare(void* data, int size);
 
 private:
     void OpenAndReadPaletteFile(char* filename);

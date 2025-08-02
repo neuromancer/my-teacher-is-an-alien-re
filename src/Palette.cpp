@@ -72,3 +72,17 @@ void Palette::SetPalette(UINT start, UINT count)
 {
     FUN_00423905(start, count, (unsigned char*)m_data + start * 3);
 }
+
+/* Function start: 0x41EC60 */
+int Palette::Compare(void* data, int size)
+{
+    if (data != 0 && m_data != 0) {
+        for (int i = 0; i < size; i++) {
+            if (((char*)data)[i] != ((char*)m_data)[i]) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
