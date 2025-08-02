@@ -49,6 +49,7 @@ def print_ranges(all_funcs, implemented_funcs):
 
     end_range = all_funcs[-1]
     ranges.append((start_range, end_range, is_implemented))
+    print("--- Progress Report ---")
 
     for start, end, implemented in ranges:
         start_index = all_funcs.index(start)
@@ -59,6 +60,9 @@ def print_ranges(all_funcs, implemented_funcs):
             print(f"  {status} 0x{start:x} ({count} function)")
         else:
             print(f"  {status} 0x{start:x} - 0x{end:x} ({count} functions)")
+
+    print("-----------------------------------------")
+
 
 if __name__ == "__main__":
     map_directory = "src/map"

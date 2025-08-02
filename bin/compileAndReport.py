@@ -61,7 +61,7 @@ def main():
                                 report.append((filepath, function_name, f"0x{address}", similarity))
                                 break
 
-    print("--- Compilation and Similarity Report ---")
+    print("--- Similarity Report ---")
     for filepath, function_name, address, similarity in report:
         print(f"File: {filepath}, Function: {function_name}, Address: {address}, Similarity: {similarity}")
     print("-----------------------------------------")
