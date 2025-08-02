@@ -26,6 +26,9 @@ jobs:
         Xvfb :99 &
         export DISPLAY=:99
 
+    - name: Install requirements
+      run: pip3 install -r requirements.txt
+
     - name: make
       run: |
         export DISPLAY=:99

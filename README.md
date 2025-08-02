@@ -55,13 +55,19 @@ As of the time of writing this, the reconstruction of the demo executable alread
   ✅ 0x41cf10 - 0x41e580 (24 functions)
   ❌ 0x41e666 (1 function)
   ✅ 0x41e670 - 0x41eb70 (13 functions)
-  ❌ 0x41eb90 - 0x41f9d0 (17 functions)
+  ❌ 0x41eb90 - 0x41ebb0 (2 functions)
+  ✅ 0x41ec60 - 0x41ef25 (4 functions)
+  ❌ 0x41ef47 (1 function)
+  ✅ 0x41ef50 - 0x41f360 (4 functions)
+  ❌ 0x41f471 - 0x41f9d0 (6 functions)
   ✅ 0x41fa50 - 0x41fb70 (5 functions)
   ❌ 0x41fbd3 (1 function)
   ✅ 0x41fbe0 - 0x41fd80 (8 functions)
   ❌ 0x41fdfc (1 function)
-  ✅ 0x41fe20 - 0x420140 (7 functions)
-  ❌ 0x420250 - 0x422090 (62 functions)
+  ✅ 0x41fe20 - 0x420480 (15 functions)
+  ❌ 0x42055c (1 function)
+  ✅ 0x420570 - 0x420940 (5 functions)
+  ❌ 0x4209c0 - 0x422090 (48 functions)
   ✅ 0x4220a0 (1 function)
   ❌ 0x422250 (1 function)
   ✅ 0x4223f0 (1 function)
@@ -71,6 +77,8 @@ As of the time of writing this, the reconstruction of the demo executable alread
   ✅ 0x4260f0 (1 function)
   ❌ 0x426110 - 0x4304e0 (235 functions)
 -----------------------------------------
+
+Progress: 157 / 1142 (13.75%)
 ```
 
 Check the [src folder](./src) to see examples of reconstructed functions. All the reconstructed source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/).
@@ -80,10 +88,13 @@ Check the [src folder](./src) to see examples of reconstructed functions. All th
 Prerequisites:
 
 * `wine`
-* relatively recent (3.8-ish) Python installed
 
-Clone the project and run `make` inside. Only
-If you want to see the LLM workflow in action, you need:
+Optionally, if you want to compute the similarity/progress reports:
+
+* relatively recent (3.8-ish) Python installed
+* [Levenshtein](https://pypi.org/project/Levenshtein/)
+
+Clone the project and run `make` inside. If you want to see the LLM workflow in action, you need:
 
 * [cline](https://cline.bot/)
 * Some LLM API (Gemini 2.5 recommended)
