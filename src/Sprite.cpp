@@ -5,9 +5,9 @@
 #include "Parser.h"
 #include "GameState.h"
 #include "Animation.h"
+#include "Queue.h"
 
 extern "C" {
-    void Queue_InsertNodeByType_2(void*, void*);
     __int64 __ftol();
     void FUN_0041be20(void*, void*, int, int, int, int, int, int);
     void Array_Cleanup(int, int, int, void*);
@@ -119,7 +119,7 @@ void Sprite::StopAnimationSound()
 
     if (g_SoundManager != 0 && anim != 0) {
         if (*(int*)((int)g_SoundManager + 0x98) != 0) {
-            Queue_InsertNodeByType_2(g_SoundManager, anim);
+            ((Queue*)g_SoundManager)->Insert(anim);
         } else {
             ((void (*)(Animation*, int))anim->vtable[0])(anim, 1);
         }

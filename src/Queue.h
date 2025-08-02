@@ -4,7 +4,7 @@
 class Queue {
 public:
     Queue();
-    ~Queue();
+    void Destroy(int free_memory);
 
     void Insert(void* data);
     void* Pop();

@@ -1,4 +1,5 @@
 #include "SC_Timer.h"
+#include "Queue.h"
 
 // Forward declarations
 class TimedEvent {
@@ -14,9 +15,6 @@ extern "C" {
     void* AllocateMemory_Wrapper(int);
     void* TimedEvent__Init(void*);
     void TimedEvent__SetData(void*, int);
-    void Queue__Insert(void*, int);
-    void Queue__Push(void*, int);
-    void* Queue__Pop(void*);
 }
 
 SC_Timer::SC_Timer()
@@ -148,33 +146,12 @@ int SC_Timer::Input(void* param_1)
         *(int*)((char*)param_1 + 0xbc) = 0;
         TimedEvent__SetData((void*)new_event, *(int*)((char*)param_1 + 0x9c));
 
-        int** eventList = (int**)m_eventList;
-        if (new_event == 0) {
-            ShowError("queue fault 0101");
-        }
+            Queue* eventList = (Queue*)m_eventList;
+            if (new_event == 0) {
+                ShowError("queue fault 0101");
+            }
 
-        eventList[2] = *eventList;
-        if (eventList[3] == (int*)1 || eventList[3] == (int*)2) {
-            if (*eventList == 0) {
-                Queue__Insert(eventList, (int)new_event);
-            }
-            else {
-                while (eventList[2] != 0) {
-                    if (*(int*)(*(int*)(eventList[2] + 8) + 0xc) < *(int*)((char*)new_event + 0xc)) {
-                        Queue__Insert(eventList, (int)new_event);
-                        break;
-                    }
-                    if (eventList[1] == eventList[2]) {
-                        Queue__Push(eventList, (int)new_event);
-                        break;
-                    }
-                    eventList[2] = (int*)((int*)eventList[2])[1];
-                }
-            }
-        }
-        else {
-            Queue__Insert(eventList, (int)new_event);
-        }
+            eventList->Insert(new_event);
     }
     else if (message == 0x14) {
         TimedEvent* new_event = (TimedEvent*)AllocateMemory_Wrapper(0x28);
@@ -183,26 +160,16 @@ int SC_Timer::Input(void* param_1)
         }
         *(int*)((char*)new_event + 0x8) = *(int*)((char*)param_1 + 0x8c);
 
-        int** eventList = (int**)m_eventList;
-        if (new_event == 0) {
-            ShowError("queue fault 0103");
-        }
+            Queue* eventList = (Queue*)m_eventList;
+            if (new_event == 0) {
+                ShowError("queue fault 0103");
+            }
 
-        eventList[2] = *eventList;
-        while (eventList[2] != 0) {
-            if (*(int*)(*(int*)(eventList[2] + 8) + 0xc) == *(int*)((char*)new_event + 0xc)) {
-                void* data = Queue__Pop(eventList);
-                if (data) {
-                    TimedEvent::Delete((TimedEvent*)data);
-                    FreeFromGlobalHeap(data);
-                }
-                break;
+            void* data = eventList->Pop();
+            if (data) {
+                TimedEvent::Delete((TimedEvent*)data);
+                FreeFromGlobalHeap(data);
             }
-            if (eventList[1] == eventList[2]) {
-                break;
-            }
-            eventList[2] = (int*)((int*)eventList[2])[1];
-        }
     }
     else if (message == 0x1b) {
         if (**(int***)m_eventList == 0) {
