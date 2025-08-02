@@ -1,10 +1,16 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
-class GameState {
+#include "Parser.h"
+
+class GameState : public Parser {
 public:
-    char pad[0x88];
+    int GetState(int);
+    int LBLParse(char*);
+    void Serialize(int);
+    void SetMaxStates2(int);
     int* field_0x88;
+    int* field_0x8c;
     int field_0x90;
 };
 
