@@ -58,6 +58,7 @@ Another very important set of of files is located in `data/demo/mis`. These are 
     local_u = 0xffffffff;
 ```
 Then most likely, there is a try/catch somewhere in the function.
+* Do NOT add extra methods or helper functions that are not in the original implementation.
 
 Start with <function>.
 

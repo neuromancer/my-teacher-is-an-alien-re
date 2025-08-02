@@ -15,11 +15,6 @@ extern "C" {
     void FreeFromGlobalHeap(void*);
 }
 
-struct QueueNode {
-    QueueNode* next;
-    QueueNode* prev;
-    void* data;
-};
 
 /* Function start: 0x4024D0 */
 void Queue::Insert(void* data)

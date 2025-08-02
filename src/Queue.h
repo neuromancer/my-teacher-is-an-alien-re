@@ -1,6 +1,12 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+struct QueueNode {
+    QueueNode* next;
+    QueueNode* prev;
+    void* data;
+};
+
 class Queue {
 public:
     Queue();
@@ -10,7 +16,7 @@ public:
     void* Pop();
     void Push(void* data);
 
-private:
+public:
     void* m_head;
     void* m_tail;
     void* m_current;
