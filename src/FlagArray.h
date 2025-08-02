@@ -15,6 +15,13 @@ public:
     char pad2[204 - 0x44 - 4];
 
     void Create(char* filename, int max_states);
+    void SafeClose();
+    void Open();
+    void Close();
+    void Seek(int index);
+    unsigned int GetFlag(int index, unsigned int mask);
+    void SetFlag(int index, unsigned int mask);
+    void ClearAllFlags();
 };
 
 #endif // FLAGARRAY_H

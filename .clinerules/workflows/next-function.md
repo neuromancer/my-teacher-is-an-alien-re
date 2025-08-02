@@ -47,3 +47,4 @@ Another very important set of of files is located in `data/demo/mis`. These are 
 ```
 Then most likely, there is a try/catch somewhere in the function.
 * Do not try to emulate vtables with C++ code manually. If the function is related with vtables, skip it.
+* Do NOT add "vtable" fields, these are going to be handled automatically by the compiler

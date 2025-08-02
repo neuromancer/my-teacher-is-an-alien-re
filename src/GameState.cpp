@@ -3,6 +3,7 @@
 #include <string.h>
 
 extern "C" {
+    void __cdecl FreeFromGlobalHeap(void*);
     int _sscanf(const char* s, const char* format, ...);
     void ShowError(const char* message, ...);
     int AllocateMemory_Wrapper(int size);
@@ -11,6 +12,28 @@ extern "C" {
     size_t __fread_lk(void* ptr, size_t size, size_t count, FILE* stream);
     size_t __fwrite_lk(const void* ptr, size_t size, size_t count, FILE* stream);
     int _fclose(FILE* stream);
+}
+
+/* Function start: 0x420480 */
+GameState::~GameState()
+{
+    //this->vtable = (void**)0x431268;
+
+    if (this->field_0x88 != 0) {
+        FreeFromGlobalHeap(this->field_0x88);
+        this->field_0x88 = 0;
+    }
+
+    if (this->field_0x8c != 0) {
+        for (int i = 0; i < this->field_0x90; i++) {
+            if (this->field_0x8c[i] != 0) {
+                FreeFromGlobalHeap((void*)this->field_0x8c[i]);
+                this->field_0x8c[i] = 0;
+            }
+        }
+        FreeFromGlobalHeap(this->field_0x8c);
+        this->field_0x8c = 0;
+    }
 }
 
 /* Function start: 0x420570 */
