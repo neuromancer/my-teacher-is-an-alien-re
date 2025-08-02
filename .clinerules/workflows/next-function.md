@@ -1,24 +1,14 @@
 # Instructions
 
-I have dissasembled the Windows 95 release of "My Teacher is an Alien", a point and click game developed by 7th Level in 1997. The codebase used C++, and some classes and methods were already detected and renamed with possible names, but there are many functions we are still unsure which class belong, or even the total number of classes.
+Continue implementing the next function. Before starting, review all the current files and determine if there is any class where the function could be added as a method. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
 
-The compiler used for this game is Microsoft Visual C++ 4, which is already setup for you.  After you reimplement the code, you must compile to see if the assembly matches.
+If similarity is >= 90%, you can stop. If you give up, make sure you still provide the code with the best similarity. If the function is complex, even obtaining a 60% can be good enough, there will another pass later to improve it.
 
-Let me give you an example: If I need you add the implementation of the 0x418C70 function, you need to look for the dissasemblied and decompiled code inside `code`. Use `grep -r -i 418C70 code` and review ther results.
-
-Once you add some code to some file (e.g. Class::Name), to compile the code and obtain the assembly code diff, execute:
-```
-python3 bin/compileAndCompare.py Class::Name code/FUN_418C70.dissasembled.txt
-```
-
-It will show you the assembly code produced (or any compiler errors).
-
-IMPORTANT: remember that the assembly code is the only source of truth, the decompiled code could be wrong or mislabeled.
-
-To review what kind of gameplay, read the `docs/game.txt` file. It will help to understand the different puzzles implemented.
+Important mote: `ShowError` is a function that should be marked by the compiler as "no return" as it calls some internal functions that eventualy ends the process, so it will not produce instructions after the call (e.g. stack clean up). However, right now, the implementation is not complete and the compiler will not optimize that. Do NOT try to workaround this (e.g. using attributes or other code), this will be fixed later.
 
 # Requirements:
 
+* Remember that the assembly code and the strings are the only source of truth, the decompiled code could be wrong or mislabeled.
 * Define the class on the top of the file.
 * It is very important to include the following header before each reimplemented function with the address of the function:
 
@@ -28,7 +18,7 @@ To review what kind of gameplay, read the `docs/game.txt` file. It will help to 
 
 In order to know which functions are next to each other, check the files inside the `src/map` directory. These files will NOT be compiled.
 
-There is a very important file located in `code/strings.txt`. This contains the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information. Include the full strings in the reimplemented code as constants, avoid pointers to strings.
+There is a very important file located in `code/strings.txt`. This contains the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information. Include the full strings in the reimplemented code as constants, do NOT use explicit pointers to strings that are constants.
 
 Another very important set of of files is located in `data/demo/mis`. These are "game scripts" in .txt format. Please take a look to them so you can understand what kind of data is parsed and use them to understand which class will need which code to be parsed.
 
@@ -38,10 +28,9 @@ Another very important set of of files is located in `data/demo/mis`. These are 
 * Keep the code as high-level as possible.
 * Do NOT show me the code once you finish.
 * Very important: do NOT use inline assembly, gotos nor dummy variables.
-* Do NOT change the calling convention for the class method: it should be `__thiscall`.
-* Do NOT add `__thiscall` as it is redundant and will most likely fail
+* Do NOT change the calling convention for the class method: it should be `__thiscall`. Also do NOT add `__thiscall` as it is redundant and will most likely fail
 * The code will be compiled, but not linked: do NOT add a main function. Use extern to define any unknown functions.
-* There is no need to review how compilation works.
+* There is no need to review how compilation works. Also do NOT change the flags in `bin/compile.bat`, these were carefully brute forced from other parts of the code.
 * If the decompiled code shows a standard function called like `_strcpy`, then use `strcpy` imported from the corresponding header.
 * Every time you found a standard function such as `fsetpos`, carefully review each parameter and try to rename/retype the fields of the class using that information.
 * Do NOT use `new` as it looks like it was not used in this codebase.
@@ -50,7 +39,6 @@ Another very important set of of files is located in `data/demo/mis`. These are 
 * You can include calls to function like `memcpy` or `strcpy`, but only if the compiler will inline them and produce a better match for the target assembly.
 * Do NOT use unions or substructures in the classes , it is very unlikely that these are used in the original code!
 * Provide reasonable names to fields, once you understand what they do.
-* Do NOT change the flags in `bin/compile.bat`, these were carefully brute forced from other parts of the code.
 * Do NOT create .c files
 * If you see a pattern like this in the decompiled code:
 ```
@@ -58,11 +46,4 @@ Another very important set of of files is located in `data/demo/mis`. These are 
     local_u = 0xffffffff;
 ```
 Then most likely, there is a try/catch somewhere in the function.
-
-Start with <function>.
-
-Before starting, review all the current files and determine if there is any class where the function could be added as a method. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
-
-If similarity is >= 90%, you can stop. If you give up, make sure you still provide the code with the best similarity.
-
-Note: `ShowError` is a function that should be marked by the compiler as "no return" as it calls some internal functions that eventualy ends the process, so it will not produce instructions after the call. However, right now, the implementation is not complete and the compiler will not optimize that. Do NOT try to workaround this (e.g. using attributes or other code), this will be fixed later.
+* Do not try to emulate vtables with C++ code manually. If the function is related with vtables, skip it.

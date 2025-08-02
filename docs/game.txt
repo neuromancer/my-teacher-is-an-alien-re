@@ -1,0 +1,322 @@
+My Teacher is an Alien
+Hints & Tips
+
+To read this file on-screen, use the Page Down and Page Up keys.
+You can also print the file by choosing the Print command from
+the File menu in any Windows word processing program.
+
+WARNING:  THIS FILE REVEALS ASPECTS OF THE GAME YOU MAY NOT
+WANT TO DISCOVER BEFORE PLAYING.  IT IS RECOMMENDED THAT YOU
+PLAY THE GAME FIRST AND ONLY CONSULT THIS FILE IF YOU FEEL
+YOU ARE STUCK OR CONFUSED.
+
+Hints & Tips includes the following information:
+
+I.   General Strategy Hints
+II.  Tips for Action Sequences
+III. Answers to Puzzles
+IV.  Cool Stuff You May Have Missed
+
+
+****************************************************************
+I. General Strategy Hints
+****************************************************************
+
+CHOICE SCREEN
+
+At the beginning of every period you can always choose any
+available character, even though the game defaults to the character
+you had played in the previous period.  Listen to what the
+characters say when you click the heads - they will not only help
+you decide which character to choose, but also help you figure
+out what needs to be done during that period.
+
+
+CONVERSATIONS
+
+When speaking to characters in the game, it is not necessary to ask
+every question available.  In fact, in some cases asking the wrong
+question can get you in trouble.  For example, if you tell too many
+adults about the alien you can be sent to boarding school for
+spreading rumors.  Hit ESC or right click whenever you want to end a
+conversation, and the remaining dialogue options will disappear.
+
+
+CLASS SCHEDULE
+
+Your class schedule, which is available on the icon bar, can be useful
+to you in many ways:
+
+1) You can check what your assigned class is so you can avoid getting
+	a cut.
+2) You can see how many tardies, absences, and detentions you have so
+	you can avoid getting too many.
+3) You can cross-reference with the teachers' schedule in the office to
+	help you decide which room to go to.
+4) You can see how far into the week you are and therefore how close to
+	finishing the game.
+
+
+ALIEN DEVICE
+
+The alien device, which is available on the icon bar, is a very important
+tool, and using it throughout the game can greatly improve gameplay.  The
+device is separated into three sections which can each be activated by the
+following buttons.
+
+Messages (Top Button)
+The icon will blink whenever you receive a new message.  Listening to these
+messages help explain various plot points of the game.  In order to hear
+them in English, you must have the universal translator in your inventory.
+The translator is found in the first room on the spaceship.  Once you have
+it, you do not need to select in from your backpack - it will just work.
+
+Maps (Bottom Left Button)
+By clicking the arrows you can view maps of each of the levels of the
+spaceship.  If you are on the spaceship a red light will blink at your
+location.  Also a body icon will blink wherever a kidnapped kid is located
+on the spaceship.  The colored circles on the map represent the colors of
+the turbolifts that get you to that level (see SPACESHIP NAVIGATION below).
+
+Portal (Bottom Right Button)
+The map which appears resembles the map of the school on the Choice Screen.
+A blinking red light appears in the room where the portal is presently
+located.  The portal allows you to transport to the alien spaceship.  Clicking
+the portal button will open the portal no matter where you are and it will
+stay open for one minute.  Ideally, you would open the portal when you are in
+view of the portal anchor on the wall.
+
+
+ALIEN HUNTER WEB PAGE
+
+This in-game web site is where you find out about all the tests to prove
+which teacher is an alien.  New tests appear in the Tests section throughout
+the game so visit the web more than once to discover all the tests.  Once
+you read about a test, you must go to the Chat area and ask the webmaster
+what items you need to perform the test.
+
+
+DUCTWORK NAVIGATION
+
+A map of the ductwork is located on the Maintenance Room wall in a box
+attached to the duct switch.  When the duct switch is in the up position, you
+have access to the majority of the ductwork except for the areas over the
+locker rooms and the library.  When the duct switch is in the down position,
+you have access to the locker rooms.
+
+You can enter the ducts in a variety of ways.  You must first enter via the
+Maintenance Room when the janitor is not there.  If you exit into another
+room like a locker room or the kitchen, you can always re-enter from there
+through the rest of the game, provided that room is empty.
+
+
+SPACESHIP NAVIGATION
+
+Although the spaceship corridors all look the same, the locations never
+move.  See ALIEN DEVICE for information on maps of the spaceship.  Doors on
+the right lead to rooms and doors on the left lead to either turbolifts or
+garbage rooms.  The areas of the spaceship include the main level and three
+other levels accessible via turbolifts.  The three different turbolifts are
+each surrounded by uniquely colored columns.  The blue turbolift cannot be
+used until the end of the game when the control room level is accessible.
+
+If you enter a room filled with androids you can escape before they get you.
+You have about three seconds to click the edge of the screen to turn around
+and then click the door to leave.
+
+
+****************************************************************
+II. Tips for Action Sequences
+****************************************************************
+
+Action Sequences are all easiest as Duncan and hardest as Peter.  If you
+haven't tried them as Duncan yet, you may want to before reading
+ahead.  You can also practice these sequences in the Practice Room once
+you've played them in the game.  (Except for FALSE ALARM and ANDROID
+GAUNTLET which are Duncan sequences only.)
+
+FALSE ALARM
+
+The object is to hit the alarm box four times to set off the alarm before
+getting three checkmarks from Ms. Marsh.  Try to keep your cursor over the
+alarm box and shoot whenever you get a clear view.  You can shoot down the
+airplane, but you do not have to in order to win.
+
+
+STINK BOMBS
+
+It helps to try to move back to the center position after avoiding a stink
+bomb.  Try to notice whose turn it is to throw.  The earlier you can pick
+who is throwing, the faster you can move out of the way.  The bombs are
+almost never thrown across each other.
+
+
+DUCT RATS
+
+Don't shoot too much since this sequence is based on how much noise you
+make.  Be patient and wait until the rats are close - some rats are just
+decoys.  Aiming a little high also makes it easier.
+
+
+FAN GRATE
+
+Don't shoot too much since this sequence is based on how much noise you
+make.  When you hit the switch to stop the fan, try to line up over the
+bolts as fast as you can before shooting.
+
+EXTEND BRIDGE
+
+The object is to line up the symbols of the same color.  All three wheels
+are revolving at the same speed, so once you figure out the timing for
+one wheel, match that timing for the other two.
+
+
+STUN PODS
+
+The stun pods slow down as they change directions, so this is the best time
+to shoot.  The pods have to zap a kid three times before he/she is
+abducted, so don't panic if there is more than one pod at a time - you don't
+have to shoot them all.
+
+
+SLIME CREATURE
+
+You must shoot the green light pads four times each in order to drain the
+Slime Creature.  You can win as Duncan without ever shooting the Creature
+itself, but as Susan or Peter you need to protect yourself by shooting at
+the creature's "arms" when it attacks.  Try aiming for the bottom of the
+"arm."
+
+
+ANDROID GAUNTLET
+
+You must shoot each android or stun pod twice in order to blow it up so
+stay on them.  When you get to the engines, you must shoot them so the
+engine meter goes down before yours does.  If you have enough energy when
+you reach the engines, don't worry about being hit by the androids, just
+blast away at the engines.
+
+
+****************************************************************
+III. Answers to Puzzles
+****************************************************************
+
+Puzzles are all easiest as Peter and hardest as Duncan.  If you
+haven't tried as Peter yet in the game, you may want to before reading
+ahead.  Especially the WAHOO SEARCH where Peter has the least words to
+choose from.
+
+
+ROACHES
+
+One solution is as follows:
+
+Piece #1: 2nd column, 5th row
+Piece #2: 4th column, 5th row
+Piece #3: 6th column, 2nd row
+Piece #4: 6th column, 4th row
+
+
+FORCEFIELD MAZE
+
+Solution for left door:
+Top row - 1st button
+Middle row - 2nd button
+Bottom row - 3rd button
+
+Solution for middle door:
+Top row - 3rd button
+Middle row - 3rd button
+Bottom row - 1st button
+
+Solution for right door:
+Top row - 2nd button
+Middle row - 2nd button
+Bottom row - 1st button
+
+
+WAHOO SEARCH
+
+The solution is:  Eye Wand Two Believe
+
+
+CRYSTALS
+
+Below is a rough version of the solution.
+
+	   /\   \-------\
+	  /  \   \       \
+	 /    \	  \       \
+	/      \   \       \
+1-----\ \      / /\ \      / /-----1
+1      \ \    / /  \ \    / /      1
+1	\ \  / /    \ \  / /       1
+1	 \ \/ /      \ \/ /        1
+ \	  \  /        \  /        /
+  \	  1  1        1  1       /
+   \	  1  1        1  1      /
+    \     1  1        1  1     /
+     \----1  1--------1  1----/
+      -----------------------
+       \                    /
+         \                /
+           \            /
+	  1  \	      /  1
+          1 \  \   /    /1
+	  1  \   \/   /  1
+          1    \    /    1
+          1      /       1
+          1   /          1
+          1 /            1
+          1--------------1
+
+****************************************************************
+IV. Cool Stuff You May Have Missed
+****************************************************************
+
+ALIEN REVEALS
+
+Once you know the alien's identity, if you spy on his/her room from the
+ducts when he/she is alone you will witness the alien pulling its mask off.
+
+
+ABDUCTIONS
+
+If you enter the boys' locker room after a boy is called to the gym, or the
+girls' locker room after a girl is called you will witness an abduction.
+If you had found the ray gun and alien lenses aboard the spaceship you will
+be able to attempt to save the kid.
+
+
+TEACHER'S LOUNGE
+
+If you win the FAN GRATE, you will gain access to the teachers' lounge from
+the ductwork.  However, you will only be able to enter the lounge once you
+know the identity of the alien.  Once inside you will be able to find the
+alien's kidnap list and find out who is next to be abducted.
+
+
+ALIEN HUNTER WEB PAGE
+
+In addition to finding out the tests to use, there is also a lot of fun
+stuff on the in-game web site which is updated the first five times you
+visit.  If you had only been to the web once or twice, go back and take
+a look at all the sightings and artifacts.
+
+
+REASONS FOR REPLAYING ONCE YOU'VE WON
+
+1) Each lead character has a unique win ending.  Try all three.
+
+2) The alien can be any of the three teachers.  Try a new game and see
+ 	who it is this time.
+
+3) There are five different tests you can perform.  Try out each one and
+	see what happens.
+
+4) Each lead character has unique questions throughout the game.  Try
+	choosing different characters at different periods.
+
+5) If you enjoyed any of the action sequences, you can play them all you
+	want in the Practice Room.
+
