@@ -5,6 +5,7 @@
 
 class GameState : public Parser {
 public:
+    int FindState(char*);
     int GetState(int);
     int LBLParse(char*);
     void Serialize(int);

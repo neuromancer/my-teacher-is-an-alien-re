@@ -75,6 +75,22 @@ int GameState::LBLParse(char* param_1)
     return 0;
 }
 
+/* Function start: 0x420940 */
+int GameState::FindState(char* param_1)
+{
+    for (int i = 0; i < this->field_0x90; i++) {
+        char* state = (char*)this->field_0x8c[i];
+        if (state) {
+            if (strstr(state, param_1)) {
+                if (strlen(state) == strlen(param_1)) {
+                    return i;
+                }
+            }
+        }
+    }
+    return -1;
+}
+
 /* Function start: 0x420900 */
 int GameState::GetState(int param_1)
 {
