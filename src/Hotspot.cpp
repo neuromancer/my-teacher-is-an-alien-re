@@ -73,7 +73,7 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
 }
 
 /* Function start: 0x409620 */
-int Hotspot::ParseLine(char* line)
+int Hotspot::LBLParse(char* line)
 {
     try {
         char command[32];
@@ -101,7 +101,7 @@ int Hotspot::ParseLine(char* line)
         } else if (strcmp(command, "END") == 0) {
             return 1;
         } else {
-            this->LBLParse(line);
+            this->LBLParse("Hotspot");
         }
     } catch (...) {
         return 0;

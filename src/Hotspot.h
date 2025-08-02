@@ -22,7 +22,7 @@ public:
     int rect_w; // 0x134
     int rect_h; // 0x138
 
-    int ParseLine(char* line);
+    int LBLParse(char* line);
     unsigned char Do();
     int SetState(int state);
     int GetState();
