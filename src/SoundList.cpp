@@ -6,7 +6,6 @@
 extern "C" {
     void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
     void ShowError(const char*, ...);
-    void FreeFromGlobalHeap(void*);
     void FUN_0041e470(void*);
     int _AIL_sample_status_4(int);
     void* FUN_0041e460(void*);
@@ -42,21 +41,21 @@ SoundList::~SoundList()
         void* sound = m_field8[m_fieldc];
         if (sound != 0) {
             FUN_0041e470(sound);
-            FreeFromGlobalHeap(sound);
+            FreeMemory(sound);
             m_field8[m_fieldc] = 0;
         }
         void* sound2 = m_sounds[m_fieldc];
         if (sound2 != 0) {
-            FreeFromGlobalHeap(sound2);
+            FreeMemory(sound2);
             m_sounds[m_fieldc] = 0;
         }
     }
     if (m_field8 != 0) {
-        FreeFromGlobalHeap(m_field8);
+        FreeMemory(m_field8);
         m_field8 = 0;
     }
     if (m_sounds != 0) {
-        FreeFromGlobalHeap(m_sounds);
+        FreeMemory(m_sounds);
         m_sounds = 0;
     }
 }

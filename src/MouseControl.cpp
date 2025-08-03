@@ -2,7 +2,6 @@
 #include "Memory.h"
 
 extern "C" {
-    void FreeFromGlobalHeap(void*);
     void SpriteArray_Cleanup(void*);
     void FUN_0041f471();
 }
@@ -33,7 +32,7 @@ MouseControl::~MouseControl()
     vtable = (void**)0x431558;
     if (m_queue != 0) {
         m_queue->Destroy(1);
-        FreeFromGlobalHeap(m_queue);
+        FreeMemory(m_queue);
         m_queue = 0;
     }
     FUN_0041f471();

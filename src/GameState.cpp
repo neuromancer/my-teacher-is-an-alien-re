@@ -4,7 +4,6 @@
 #include "Memory.h"
 
 extern "C" {
-    void __cdecl FreeFromGlobalHeap(void*);
     int _sscanf(const char* s, const char* format, ...);
     void ShowError(const char* message, ...);
     void FUN_004209c0(int);
@@ -20,18 +19,18 @@ GameState::~GameState()
     //this->vtable = (void**)0x431268;
 
     if (this->field_0x88 != 0) {
-        FreeFromGlobalHeap(this->field_0x88);
+        FreeMemory(this->field_0x88);
         this->field_0x88 = 0;
     }
 
     if (this->field_0x8c != 0) {
         for (int i = 0; i < this->field_0x90; i++) {
             if (this->field_0x8c[i] != 0) {
-                FreeFromGlobalHeap((void*)this->field_0x8c[i]);
+                FreeMemory((void*)this->field_0x8c[i]);
                 this->field_0x8c[i] = 0;
             }
         }
-        FreeFromGlobalHeap(this->field_0x8c);
+        FreeMemory(this->field_0x8c);
         this->field_0x8c = 0;
     }
 }

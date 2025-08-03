@@ -12,7 +12,6 @@ extern "C" {
     __int64 __ftol();
     void FUN_0041be20(void*, void*, int, int, int, int, int, int);
     void Array_Cleanup(int, int, int, void*);
-    void FreeFromGlobalHeap(int*);
     void FUN_00424b00(int*, int, int, void*, void*);
     int FUN_00420940(GameState*, char*);
     char* strstr_wrapper(char*, const char*);
@@ -63,13 +62,13 @@ Sprite::~Sprite()
 
     if (this->ranges != 0) {
         Array_Cleanup((int)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void*)0x405770);
-        FreeFromGlobalHeap((int*)((char*)this->ranges - 4));
+        FreeMemory((int*)((char*)this->ranges - 4));
         this->ranges = 0;
     }
 
     if (this->logic_conditions != 0) {
         Array_Cleanup((int)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void*)0x405770);
-        FreeFromGlobalHeap((int*)((char*)this->logic_conditions - 4));
+        FreeMemory((int*)((char*)this->logic_conditions - 4));
         this->logic_conditions = 0;
     }
 }
@@ -159,7 +158,7 @@ void Sprite::FreeAnimation()
             Sprite__FreeVBuffer(this);
         }
         // TODO: This is not quite right, there should be a call to the destructor
-        FreeFromGlobalHeap((int*)this->animation_data);
+        FreeMemory((int*)this->animation_data);
         this->animation_data = 0;
     }
 }
@@ -428,7 +427,7 @@ void Sprite::SetState(int param_1)
     this->num_states = param_1;
     if (this->ranges != 0) {
         Array_Cleanup((int)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void*)0x405770);
-        FreeFromGlobalHeap((int*)((char*)this->ranges - 4));
+        FreeMemory((int*)((char*)this->ranges - 4));
         this->ranges = 0;
     }
 
@@ -485,7 +484,7 @@ void Sprite::InitLogic(int param_1)
 {
     if (this->logic_conditions != 0) {
         Array_Cleanup((int)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void*)0x405770);
-        FreeFromGlobalHeap((int*)((char*)this->logic_conditions - 4));
+        FreeMemory((int*)((char*)this->logic_conditions - 4));
         this->logic_conditions = 0;
     }
 

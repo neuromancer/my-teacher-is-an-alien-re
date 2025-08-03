@@ -1,10 +1,10 @@
 #include "SC_OnScreenMessage.h"
 #include "string.h"
+#include "Memory.h"
 
 extern "C" {
     extern int OnScreenMessage_Update(void*, int);
     extern void SC_OnScreenMessage_AddMessage();
-    extern void FreeFromGlobalHeap(void*);
     extern void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
     //extern void Timer_DecrementCounter();
 }
@@ -90,14 +90,14 @@ void SC_OnScreenMessage::Update(int param_1, int param_2)
                         puVar3->data = 0;
                         puVar3->next = 0;
                         puVar3->prev = 0;
-                        FreeFromGlobalHeap(puVar3);
+                        FreeMemory(puVar3);
                         piVar2->m_current = 0;
                     }
                     piVar2->m_current = piVar2->m_head;
                 }
                 if (local_18 != (void*)0x0) {
                     SC_OnScreenMessage_AddMessage();
-                    FreeFromGlobalHeap(local_18);
+                    FreeMemory(local_18);
                 }
             }
             local_1c = local_1c + 1;

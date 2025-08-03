@@ -11,7 +11,6 @@ public:
 
 extern "C" {
     void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
-    void FreeFromGlobalHeap(void*);
     void ShowError(const char*);
     void* TimedEvent__Init(void*);
     void TimedEvent__SetData(void*, int);
@@ -57,11 +56,11 @@ void SC_Timer::Update(int param_1, int param_2)
             to_delete[2] = 0;
             *to_delete = 0;
             to_delete[1] = 0;
-            FreeFromGlobalHeap(to_delete);
+            FreeMemory(to_delete);
 
             if (data) {
                 TimedEvent::Delete((TimedEvent*)data);
-                FreeFromGlobalHeap(data);
+                FreeMemory(data);
             }
             eventList[2] = *eventList;
         } else {
@@ -111,7 +110,7 @@ int SC_Timer::Input(void* param_1)
                 void* data = (void*)((int*)eventList[2])[2];
                 if (data) {
                     TimedEvent::Delete((TimedEvent*)data);
-                    FreeFromGlobalHeap(data);
+                    FreeMemory(data);
                 }
                 int* to_delete = eventList[2];
                 if (*eventList == to_delete) {
@@ -126,7 +125,7 @@ int SC_Timer::Input(void* param_1)
                 if (to_delete[1]) {
                     *(int**)(to_delete[1]) = (int*)*to_delete;
                 }
-                FreeFromGlobalHeap(to_delete);
+                FreeMemory(to_delete);
                 eventList[2] = *eventList;
             }
         }
@@ -168,7 +167,7 @@ int SC_Timer::Input(void* param_1)
             void* data = eventList->Pop();
             if (data) {
                 TimedEvent::Delete((TimedEvent*)data);
-                FreeFromGlobalHeap(data);
+                FreeMemory(data);
             }
     }
     else if (message == 0x1b) {

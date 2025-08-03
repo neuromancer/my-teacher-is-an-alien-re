@@ -6,7 +6,6 @@
 #include "Memory.h"
 
 extern "C" {
-    void FreeFromGlobalHeap(void*);
     void FUN_00424b00(void*, int, int, void*, void*);
     void FUN_0041e470(void*);
     void SpriteArray_Cleanup(void*);
@@ -40,25 +39,25 @@ Mouse::~Mouse()
 {
     if (m_fields[70] != 0) {
         FUN_0041e470(m_fields[70]);
-        FreeFromGlobalHeap(m_fields[70]);
+        FreeMemory(m_fields[70]);
         m_fields[70] = 0;
     }
 
     if (m_fields[30] != 0) {
         SpriteArray_Cleanup(m_fields[30]);
-        FreeFromGlobalHeap(m_fields[30]);
+        FreeMemory(m_fields[30]);
         m_fields[30] = 0;
     }
 
     if (m_fields[31] != 0) {
         SpriteArray_Cleanup(m_fields[31]);
-        FreeFromGlobalHeap(m_fields[31]);
+        FreeMemory(m_fields[31]);
         m_fields[31] = 0;
     }
 
     for (int i = 0; i < 0x19; i++) {
         if (m_fields[i + 34] != 0) {
-            FreeFromGlobalHeap(m_fields[i + 34]);
+            FreeMemory(m_fields[i + 34]);
             m_fields[i + 34] = 0;
         }
     }

@@ -14,7 +14,6 @@ extern "C" {
     void FUN_0041eb90(void*, int, int);
     void FUN_0041eb70(void*, int, int);
     void FUN_0041ea80(void*);
-    void __cdecl FreeFromGlobalHeap(void*);
     int FUN_00421d10(void*);
     int FUN_00421af0();
     void* FUN_004224f0();
@@ -53,7 +52,7 @@ void Animation::Delete(unsigned char param_1)
 {
     this->~Animation();
     if ((param_1 & 1) != 0) {
-        FreeFromGlobalHeap(this);
+        FreeMemory(this);
     }
 }
 
@@ -186,7 +185,7 @@ void Animation::FreeVBuffer()
     if (this->vbuffer != 0) {
         VBuffer *vbuffer = this->vbuffer;
         vbuffer->~VBuffer();
-        FreeFromGlobalHeap(vbuffer);
+        FreeMemory(vbuffer);
         this->vbuffer = 0;
     }
     this->data = 0;
@@ -261,7 +260,7 @@ void Animation::Play(char* filename, unsigned int flags)
         FUN_0041eb70(this->palette, 0, 0x100);
         if (this->palette != 0) {
             FUN_0041ea80(this->palette);
-            FreeFromGlobalHeap(this->palette);
+            FreeMemory(this->palette);
         }
     }
 }

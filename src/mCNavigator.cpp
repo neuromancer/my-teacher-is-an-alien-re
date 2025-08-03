@@ -20,7 +20,6 @@ extern int mCNavNode_GetNextNode(void*);
 extern int FindCharIndex(char*);
 extern void CleanupObjectArray(void*, int);
 extern void SpriteArray_Cleanup(void*);
-extern void FreeFromGlobalHeap(void*);
 
 extern Sprite* DAT_004360a0;
 
@@ -71,25 +70,25 @@ mCNavigator::~mCNavigator()
         }
 
         if (this->navNodePool->memory) {
-            FreeFromGlobalHeap(this->navNodePool->memory);
+            FreeMemory(this->navNodePool->memory);
             this->navNodePool->memory = 0;
         }
 
         NavNode* block = (NavNode*)this->navNodePool->memoryBlock;
         while (block) {
             NavNode* next = block->next;
-            FreeFromGlobalHeap(block);
+            FreeMemory(block);
             block = next;
         }
         this->navNodePool->memoryBlock = 0;
 
-        FreeFromGlobalHeap(this->navNodePool);
+        FreeMemory(this->navNodePool);
         this->navNodePool = 0;
     }
 
     if (this->sprite) {
         SpriteArray_Cleanup(this->sprite);
-        FreeFromGlobalHeap(this->sprite);
+        FreeMemory(this->sprite);
         this->sprite = 0;
     }
 }

@@ -1,9 +1,6 @@
 #include <windows.h>
 #include "Timer.h"
-
-extern "C" {
-    void FreeFromGlobalHeap(void*);
-}
+#include "Memory.h"
 
 // Global variable
 #define g_timer_count (*(unsigned int*)0x00436684)
@@ -56,4 +53,3 @@ Timer::Timer()
 {
     Init();
 }
-

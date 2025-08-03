@@ -12,7 +12,6 @@ Queue::Queue()
 
 extern "C" {
     void ShowError(const char*);
-    void FreeFromGlobalHeap(void*);
 }
 
 
@@ -101,7 +100,7 @@ void* Queue::Pop()
     }
 
     void* data = node->data;
-    FreeFromGlobalHeap(node);
+    FreeMemory(node);
 
     m_current = m_head;
 
@@ -115,6 +114,6 @@ void Queue::Destroy(int free_memory)
     m_tail = 0;
     m_current = 0;
     if (free_memory) {
-        FreeFromGlobalHeap(this);
+        FreeMemory(this);
     }
 }

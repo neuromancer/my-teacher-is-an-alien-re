@@ -4,7 +4,6 @@
 #include "Memory.h"
 
 extern "C" {
-    void FreeFromGlobalHeap(void*);
     FILE* _fsopen(const char* filename, const char* mode, int shflag);
     void ShowError(const char*, ...);
     int _strnicmp(const char*, const char*, size_t);
@@ -28,7 +27,7 @@ Palette::Palette()
 Palette::~Palette()
 {
     if (m_data != 0) {
-        FreeFromGlobalHeap(m_data);
+        FreeMemory(m_data);
         m_data = 0;
     }
     m_size = 0;
