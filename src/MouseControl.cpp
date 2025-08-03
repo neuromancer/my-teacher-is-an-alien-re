@@ -1,7 +1,7 @@
 #include "MouseControl.h"
+#include "Memory.h"
 
 extern "C" {
-    void* AllocateMemory_Wrapper(int size);
     void FreeFromGlobalHeap(void*);
     void SpriteArray_Cleanup(void*);
     void FUN_0041f471();

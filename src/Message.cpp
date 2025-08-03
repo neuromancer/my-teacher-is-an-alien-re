@@ -1,12 +1,12 @@
 #include "Message.h"
 #include <string.h>
+#include "Memory.h"
 
 // TODO: Define g_GameStruct2
 extern int* g_GameStruct2;
 
 extern "C" {
     void* Message_Constructor(void* mem, int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8, int param_9, int param_10);
-    int* AllocateMemory_Wrapper(int size);
     void FUN_0041a3b9();
 }
 
@@ -31,7 +31,7 @@ void SC_Message_Send(int param_1, int param_2, int param_3, int param_4,
 
         if (*piVar7 == 0) {
             int* piVar6_2 = &g_GameStruct2[5];
-            int* puVar2 = AllocateMemory_Wrapper(g_GameStruct2[5] * 200 + 4);
+            int* puVar2 = (int*)AllocateMemory_Wrapper(g_GameStruct2[5] * 200 + 4);
             *puVar2 = local_18[4];
             local_18[4] = (int)puVar2;
             int iVar5 = *piVar6_2;
@@ -90,4 +90,3 @@ void SC_Message_Send(int param_1, int param_2, int param_3, int param_4,
         FUN_0041a3b9();
     }
 }
-

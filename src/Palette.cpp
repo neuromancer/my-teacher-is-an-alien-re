@@ -1,9 +1,9 @@
 #include "Palette.h"
 #include <stdio.h>
 #include <string.h>
+#include "Memory.h"
 
 extern "C" {
-    void* AllocateMemory_Wrapper(int size);
     void FreeFromGlobalHeap(void*);
     FILE* _fsopen(const char* filename, const char* mode, int shflag);
     void ShowError(const char*, ...);

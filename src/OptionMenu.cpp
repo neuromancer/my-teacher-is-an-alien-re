@@ -1,22 +1,17 @@
 #include "OptionMenu.h"
+#include "Memory.h"
+
 #include <stdio.h>
 #include <string.h>
 
 extern "C" {
-    void* AllocateMemory_Wrapper(int);
-    void BaseObject_BaseObject_Init(void*);
     void SpriteArray_Cleanup(void*);
     void FreeFromGlobalHeap(void*);
-    void BaseObject_BaseObject_destructor(void*);
-    void Parser_LBLParse(void*, char*);
 }
 
 /* Function start: 0x409940 */
-void OptionMenu::Init()
+OptionMenu::OptionMenu()
 {
-    BaseObject_BaseObject_Init(this);
-    this->vtable = (void**)0x4311d0;
-
     for (int i = 0; i < 6; i++) {
         this->options[i] = 0;
     }
@@ -72,7 +67,6 @@ void OptionMenu::Init()
 OptionMenu::~OptionMenu()
 {
     try {
-        this->vtable = (void**)0x4311d0;
         if (this->options[0]) {
             SpriteArray_Cleanup(this->options[0]);
             FreeFromGlobalHeap(this->options[0]);
@@ -90,7 +84,6 @@ OptionMenu::~OptionMenu()
         }
     } catch (...) {
     }
-    BaseObject_BaseObject_destructor(this);
 }
 
 /* Function start: 0x409CD0 */

@@ -1,4 +1,5 @@
 #include "Queue.h"
+#include "Memory.h"
 
 /* Function start: 0x000000 */
 Queue::Queue()
@@ -11,7 +12,6 @@ Queue::Queue()
 
 extern "C" {
     void ShowError(const char*);
-    void* AllocateMemory_Wrapper(int);
     void FreeFromGlobalHeap(void*);
 }
 

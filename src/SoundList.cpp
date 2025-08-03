@@ -1,9 +1,9 @@
 #include "SoundList.h"
 #include "Sample.h"
 #include <string.h>
+#include "Memory.h"
 
 extern "C" {
-    void* AllocateMemory_Wrapper(int size);
     void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
     void ShowError(const char*, ...);
     void FreeFromGlobalHeap(void*);

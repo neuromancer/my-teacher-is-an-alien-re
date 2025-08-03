@@ -6,13 +6,13 @@
 #include "GameState.h"
 #include "Animation.h"
 #include "Queue.h"
+#include "Memory.h"
 
 extern "C" {
     __int64 __ftol();
     void FUN_0041be20(void*, void*, int, int, int, int, int, int);
     void Array_Cleanup(int, int, int, void*);
     void FreeFromGlobalHeap(int*);
-    int* AllocateMemory_Wrapper(int);
     void FUN_00424b00(int*, int, int, void*, void*);
     int FUN_00420940(GameState*, char*);
     char* strstr_wrapper(char*, const char*);
@@ -433,7 +433,7 @@ void Sprite::SetState(int param_1)
     }
 
     int* piVar5 = 0;
-    int* piVar1 = AllocateMemory_Wrapper(this->num_states * 8 + 4);
+    int* piVar1 = (int*)AllocateMemory_Wrapper(this->num_states * 8 + 4);
     if (piVar1 != 0) {
         piVar5 = piVar1 + 1;
         *piVar1 = this->num_states;
@@ -491,7 +491,7 @@ void Sprite::InitLogic(int param_1)
 
     this->num_logic_conditions = param_1;
     int* piVar4 = 0;
-    int* piVar1 = AllocateMemory_Wrapper(param_1 * 8 + 4);
+    int* piVar1 = (int*)AllocateMemory_Wrapper(param_1 * 8 + 4);
     if (piVar1 != 0) {
         piVar4 = piVar1 + 1;
         *piVar1 = param_1;

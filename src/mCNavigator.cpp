@@ -2,13 +2,13 @@
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "Memory.h"
 
 extern "C" {
 #include "mss.h"
 }
 
 extern void ShowError(const char* message, ...);
-extern void* AllocateMemory_Wrapper(int size);
 extern void* NavNode_Constructor(void*);
 extern void* MemoryPool_Allocate(void*, int, int);
 extern void* ObjectPool_Allocate_2(int);

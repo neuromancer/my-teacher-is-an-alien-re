@@ -2,12 +2,12 @@
 #include "VBuffer.h"
 #include "smack.h"
 #include <windows.h>
+#include "Memory.h"
 
 extern "C" {
     void __cdecl ShowError(const char*, ...);
     void FUN_0041fbd3();
     void* FUN_004224d0();
-    void* __cdecl AllocateMemory_Wrapper(int size);
     void* __cdecl CreatePaletteBuffer(void*);
     void FUN_0041eb50(void*, int, int);
     void FUN_00419390();
@@ -324,4 +324,3 @@ void Animation::MainLoop()
 end_loop:
     vbuffer->InvalidateVideoMode();
 }
-

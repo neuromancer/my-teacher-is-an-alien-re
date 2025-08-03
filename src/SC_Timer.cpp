@@ -1,5 +1,6 @@
 #include "SC_Timer.h"
 #include "Queue.h"
+#include "Memory.h"
 
 // Forward declarations
 class TimedEvent {
@@ -12,7 +13,6 @@ extern "C" {
     void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
     void FreeFromGlobalHeap(void*);
     void ShowError(const char*);
-    void* AllocateMemory_Wrapper(int);
     void* TimedEvent__Init(void*);
     void TimedEvent__SetData(void*, int);
 }

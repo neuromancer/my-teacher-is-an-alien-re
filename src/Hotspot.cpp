@@ -1,11 +1,11 @@
 #include "Hotspot.h"
 #include <stdio.h>
 #include <string.h>
+#include "Memory.h"
 
 extern "C" {
     void ShowError(const char* message, ...);
     int __fastcall FUN_0041f800(void*);
-    void* AllocateMemory_Wrapper(int);
     void __cdecl SC_Message_Send(int, int, int, int, int, int, int, void*, int, int);
 }
 

@@ -3,9 +3,9 @@
 #include "Parser.h"
 #include <string.h>
 #include <stdio.h>
+#include "Memory.h"
 
 extern "C" {
-    void* AllocateMemory_Wrapper(int size);
     void FreeFromGlobalHeap(void*);
     void FUN_00424b00(void*, int, int, void*, void*);
     void FUN_0041e470(void*);

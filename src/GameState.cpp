@@ -1,12 +1,12 @@
 #include "GameState.h"
 #include <stdio.h>
 #include <string.h>
+#include "Memory.h"
 
 extern "C" {
     void __cdecl FreeFromGlobalHeap(void*);
     int _sscanf(const char* s, const char* format, ...);
     void ShowError(const char* message, ...);
-    int AllocateMemory_Wrapper(int size);
     void FUN_004209c0(int);
     FILE* fsopen(const char* filename, const char* mode);
     size_t __fread_lk(void* ptr, size_t size, size_t count, FILE* stream);

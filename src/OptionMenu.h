@@ -5,7 +5,6 @@
 
 class OptionMenu : Parser {
 public:
-    void** vtable; // 0x0
     Sprite* options[6]; // 0x88
     int selected_option; // 0xa0
 
