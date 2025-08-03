@@ -8,6 +8,7 @@ class Parser
 public:
     void** vtable;
 public:
+    Parser();
     virtual ~Parser();
     void Init();
     void CloseFile();
@@ -36,7 +37,7 @@ private:
     int field_0x34;
     fpos_t savedFilePos;
     int field_0x3c;
-    char filename[64];
+    char filename[20];
     FILE* pFile;
     int field_0x84;
 public:

@@ -18,6 +18,9 @@ extern Parser* Parser_Parser(Parser* parser, Parser* dst, char* key_format);
 extern int mCNavNode_Update(void*);
 extern int mCNavNode_GetNextNode(void*);
 extern int FindCharIndex(char*);
+extern void CleanupObjectArray(void*, int);
+extern void SpriteArray_Cleanup(void*);
+extern void FreeFromGlobalHeap(void*);
 
 extern Sprite* DAT_004360a0;
 
@@ -45,12 +48,50 @@ void* ObjectPool::Allocate_2()
     return p;
 }
 
-mCNavigator::mCNavigator() {
-    // Dummy
+/* Function start: 0x413670 */
+mCNavigator::mCNavigator()
+{
+    memset(&this->sprite, 0, 32);
+    this->startingNode = 1;
+    this->field_98 = 0;
 }
 
-mCNavigator::~mCNavigator() {
-    // Dummy
+/* Function start: 0x4136F0 */
+mCNavigator::~mCNavigator()
+{
+    if (this->navNodePool) {
+        if (this->navNodePool->memory && this->navNodePool->size) {
+            unsigned int i = 0;
+            do {
+                for (NavNode* node = *(NavNode**)((int)this->navNodePool->memory + i * 4); node; node = node->next) {
+                    CleanupObjectArray(node->field_C, 1);
+                }
+                i++;
+            } while (i < this->navNodePool->size);
+        }
+
+        if (this->navNodePool->memory) {
+            FreeFromGlobalHeap(this->navNodePool->memory);
+            this->navNodePool->memory = 0;
+        }
+
+        NavNode* block = (NavNode*)this->navNodePool->memoryBlock;
+        while (block) {
+            NavNode* next = block->next;
+            FreeFromGlobalHeap(block);
+            block = next;
+        }
+        this->navNodePool->memoryBlock = 0;
+
+        FreeFromGlobalHeap(this->navNodePool);
+        this->navNodePool = 0;
+    }
+
+    if (this->sprite) {
+        SpriteArray_Cleanup(this->sprite);
+        FreeFromGlobalHeap(this->sprite);
+        this->sprite = 0;
+    }
 }
 
 /* Function start: 0x413810 */

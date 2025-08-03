@@ -12,7 +12,7 @@ extern "C" char *strstr_wrapper(const char*, const char*);
 extern "C" void FUN_00425fd0(char*, char*, int);
 
 /* Function start: 0x4189f0 */
-void Parser::Init()
+Parser::Parser()
 {
     memset(&this->field_0x4, 0, sizeof(Parser) - 4);
 }
