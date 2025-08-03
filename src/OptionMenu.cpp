@@ -18,7 +18,7 @@ OptionMenu::OptionMenu()
     this->selected_option = 5;
 
     Sprite* option1;
-    this->options[0] = option1 = (Sprite*)AllocateMemory_Wrapper(sizeof(Sprite));
+    this->options[0] = option1 = (Sprite*)AllocateMemory(sizeof(Sprite));
     if (option1) {
         option1->Sprite::Sprite("demo/option1.smk");
         option1->flags &= ~2;
@@ -33,7 +33,7 @@ OptionMenu::OptionMenu()
     }
 
     Sprite* option2;
-    this->options[1] = option2 = (Sprite*)AllocateMemory_Wrapper(sizeof(Sprite));
+    this->options[1] = option2 = (Sprite*)AllocateMemory(sizeof(Sprite));
     if (option2) {
         option2->Sprite::Sprite("demo/option2.smk");
         option2->flags &= ~2;
@@ -48,7 +48,7 @@ OptionMenu::OptionMenu()
     }
 
     Sprite* option3;
-    this->options[2] = option3 = (Sprite*)AllocateMemory_Wrapper(sizeof(Sprite));
+    this->options[2] = option3 = (Sprite*)AllocateMemory(sizeof(Sprite));
     if (option3) {
         option3->Sprite::Sprite("demo/option3.smk");
         option3->flags &= ~2;

@@ -38,7 +38,7 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
         if (this->list2 == 0) {
             this->state = 3;
             if (this->dialog != 0) {
-                puVar2 = AllocateMemory_Wrapper(8);
+                puVar2 = AllocateMemory(8);
                 *(int*)puVar2 = param_1;
                 *((int*)puVar2 + 1) = param_2;
                 SC_Message_Send(9, this->parseFileIndex, 0xb, param_3, 5, this->dialogParseFileNumber, 0, puVar2, 0, 0);
@@ -88,7 +88,7 @@ int Hotspot::LBLParse(char* line)
         } else if (strcmp(command, "PARSEFILEINDEX") == 0) {
             sscanf(line, "%*s %d", &this->parseFileIndex);
         } else if (strcmp(command, "SPRITE") == 0) {
-            Sprite* newSprite = (Sprite*)AllocateMemory_Wrapper(sizeof(Sprite));
+            Sprite* newSprite = (Sprite*)AllocateMemory(sizeof(Sprite));
             if (newSprite) {
                 newSprite->Sprite::Sprite(NULL);
                 this->sprite = newSprite;

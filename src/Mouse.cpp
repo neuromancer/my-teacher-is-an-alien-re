@@ -24,10 +24,10 @@ Mouse::Mouse()
 {
     memset(m_fields, 0, sizeof(m_fields));
 
-    m_pointer_str = (char*)AllocateMemory_Wrapper(16);
-    m_examine_str = (char*)AllocateMemory_Wrapper(16);
-    m_pickup_str = (char*)AllocateMemory_Wrapper(16);
-    m_unknown_str = (char*)AllocateMemory_Wrapper(16);
+    m_pointer_str = (char*)AllocateMemory(16);
+    m_examine_str = (char*)AllocateMemory(16);
+    m_pickup_str = (char*)AllocateMemory(16);
+    m_unknown_str = (char*)AllocateMemory(16);
 
     strcpy(m_pointer_str, "POINTER");
     strcpy(m_examine_str, "EXAMINE");
@@ -88,7 +88,7 @@ int Mouse::LBLParse(char* line)
 
         if (_stricmp(local_40, "SPRITE") == 0) {
             sscanf(line, "%s %s", local_40, local_60);
-            local_18 = (Sprite*)AllocateMemory_Wrapper(0x10);
+            local_18 = (Sprite*)AllocateMemory(0x10);
             void* this_00 = 0;
             if (local_18 != 0) {
                 this_00 = FUN_0041e460((void*)local_18);
@@ -98,7 +98,7 @@ int Mouse::LBLParse(char* line)
                 FUN_0041e490(this_00, local_60);
             }
         } else if (_stricmp(local_40, "SPRITE") == 0) {
-            local_18 = (Sprite*)AllocateMemory_Wrapper(0xd8);
+            local_18 = (Sprite*)AllocateMemory(0xd8);
             Sprite* pSVar4 = 0;
             if (local_18 != 0) {
                 local_18->Sprite::Sprite((char*)0);

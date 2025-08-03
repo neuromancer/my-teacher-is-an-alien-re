@@ -79,7 +79,7 @@ void Sprite::Init()
 {
     try {
         if (this->animation_data == 0) {
-            this->animation_data = (Animation*)AllocateMemory_Wrapper(0x2c);
+            this->animation_data = (Animation*)AllocateMemory(0x2c);
             if (this->animation_data != 0) {
                 this->animation_data->AnimationInit();
                 this->animation_data->Open(this->sprite_filename, 0xfe000, 0xffffffff);
@@ -139,7 +139,7 @@ void Sprite::StopAnimationSound()
 void Sprite::InitAnimation()
 {
     if (this->animation_data == 0) {
-        Animation* anim = (Animation*)AllocateMemory_Wrapper(0x2c);
+        Animation* anim = (Animation*)AllocateMemory(0x2c);
         if (anim != 0) {
             anim->AnimationInit();
         }
@@ -433,7 +433,7 @@ void Sprite::SetState(int param_1)
     }
 
     int* piVar5 = 0;
-    int* piVar1 = (int*)AllocateMemory_Wrapper(this->num_states * 8 + 4);
+    int* piVar1 = (int*)AllocateMemory(this->num_states * 8 + 4);
     if (piVar1 != 0) {
         piVar5 = piVar1 + 1;
         *piVar1 = this->num_states;
@@ -491,7 +491,7 @@ void Sprite::InitLogic(int param_1)
 
     this->num_logic_conditions = param_1;
     int* piVar4 = 0;
-    int* piVar1 = (int*)AllocateMemory_Wrapper(param_1 * 8 + 4);
+    int* piVar1 = (int*)AllocateMemory(param_1 * 8 + 4);
     if (piVar1 != 0) {
         piVar4 = piVar1 + 1;
         *piVar1 = param_1;

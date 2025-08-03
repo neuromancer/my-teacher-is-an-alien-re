@@ -21,7 +21,7 @@ Palette::Palette()
     m_size = 0;
     m_data = 0;
     m_size = 0x300;
-    m_data = AllocateMemory_Wrapper(0x300);
+    m_data = AllocateMemory(0x300);
 }
 
 /* Function start: 0x41EA80 */

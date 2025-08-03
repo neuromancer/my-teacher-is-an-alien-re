@@ -16,7 +16,7 @@ MouseControl::MouseControl()
     field_0x4[32] = 0;
     field_0x4[33] = 0;
     field_0x4[32] = 1;
-    Queue* queue = (Queue*)AllocateMemory_Wrapper(0x10);
+    Queue* queue = (Queue*)AllocateMemory(0x10);
     if (queue != 0) {
         queue->m_head = 0;
         queue->m_tail = 0;

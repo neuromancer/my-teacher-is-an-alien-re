@@ -39,7 +39,7 @@ GameState::~GameState()
 /* Function start: 0x420570 */
 void GameState::Serialize(int param_1)
 {
-    unsigned int* puVar2 = (unsigned int*)AllocateMemory_Wrapper(0x110);
+    unsigned int* puVar2 = (unsigned int*)AllocateMemory(0x110);
     char local_1c[28];
 
     strcpy(local_1c, "gamestat.sav");
@@ -86,7 +86,7 @@ int GameState::LBLParse(char* param_1)
         this->SetMaxStates2(local_44);
     } else if (strcmp(local_40, "LABEL") == 0) {
         _sscanf(param_1, "%s %d %s", local_40, &local_44, local_20);
-        int* mem = (int*)AllocateMemory_Wrapper(0x20);
+        int* mem = (int*)AllocateMemory(0x20);
         this->field_0x8c[local_44] = (int)mem;
         strcpy((char*)mem, local_20);
     } else if (strcmp(local_40, "END") == 0) {
@@ -133,9 +133,9 @@ void GameState::SetMaxStates2(int param_1)
         ShowError("GameState::SetMaxStates2");
     }
     this->field_0x90 = param_1;
-    this->field_0x88 = (int*)AllocateMemory_Wrapper(param_1 * 4);
+    this->field_0x88 = (int*)AllocateMemory(param_1 * 4);
     FUN_004209c0((int)this);
-    this->field_0x8c = (int*)AllocateMemory_Wrapper(this->field_0x90 * 4);
+    this->field_0x8c = (int*)AllocateMemory(this->field_0x90 * 4);
     int* arr = this->field_0x8c;
     for (int i = 0; i < this->field_0x90; i++) {
         arr[i] = 0;

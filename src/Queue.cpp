@@ -23,7 +23,7 @@ void Queue::Insert(void* data)
         ShowError("queue fault 0102");
     }
 
-    QueueNode* newNode = (QueueNode*)AllocateMemory_Wrapper(sizeof(QueueNode));
+    QueueNode* newNode = (QueueNode*)AllocateMemory(sizeof(QueueNode));
     if (newNode) {
         newNode->data = data;
         newNode->next = 0;
@@ -56,7 +56,7 @@ void Queue::Push(void* data)
         ShowError("queue fault 0112");
     }
 
-    QueueNode* newNode = (QueueNode*)AllocateMemory_Wrapper(sizeof(QueueNode));
+    QueueNode* newNode = (QueueNode*)AllocateMemory(sizeof(QueueNode));
     if (newNode) {
         newNode->data = data;
         newNode->next = 0;

@@ -27,7 +27,7 @@ extern Sprite* DAT_004360a0;
 void* ObjectPool::Allocate_2()
 {
     if (this->freeList == 0) {
-        int* p = (int*)AllocateMemory_Wrapper(this->objectSize * 0x10 + 4);
+        int* p = (int*)AllocateMemory(this->objectSize * 0x10 + 4);
         *p = (int)this->memoryBlock;
         this->memoryBlock = p;
 
@@ -185,7 +185,7 @@ void mCNavigator::MemoryPool_Allocate(unsigned int param_1, int param_2)
     }
 
     if (param_2 != 0) {
-        this->navNodePool->memory = AllocateMemory_Wrapper(param_1 * 4);
+        this->navNodePool->memory = AllocateMemory(param_1 * 4);
         memset(this->navNodePool->memory, 0, param_1 * 4);
         this->navNodePool->size = param_1;
     }
@@ -214,7 +214,7 @@ int mCNavigator::LBLParse(char* param_1)
     }
     else if (_strcmpi(local_34, "BASENODE") == 0) {
         if (this->navNodePool == 0) {
-            this->navNodePool = (ObjectPool*)AllocateMemory_Wrapper(sizeof(ObjectPool));
+            this->navNodePool = (ObjectPool*)AllocateMemory(sizeof(ObjectPool));
             if (this->navNodePool) {
                 this->navNodePool->memory = 0;
                 this->navNodePool->size = 0x11;
@@ -225,7 +225,7 @@ int mCNavigator::LBLParse(char* param_1)
             }
         }
 
-        Parser* parser = (Parser*)AllocateMemory_Wrapper(0x100);
+        Parser* parser = (Parser*)AllocateMemory(0x100);
         NavNode_Constructor(parser);
         Parser_Parser(parser, this, 0);
 
@@ -252,7 +252,7 @@ int mCNavigator::LBLParse(char* param_1)
         node->field_C = parser;
     }
     else if (_strcmpi(local_34, "SPRITE") == 0) {
-        this->sprite = (Sprite*)AllocateMemory_Wrapper(0xd8);
+        this->sprite = (Sprite*)AllocateMemory(0xd8);
         if (this->sprite) {
             this->sprite->Sprite::Sprite((char*)0);
         }

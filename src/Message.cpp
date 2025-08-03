@@ -31,7 +31,7 @@ void SC_Message_Send(int param_1, int param_2, int param_3, int param_4,
 
         if (*piVar7 == 0) {
             int* piVar6_2 = &g_GameStruct2[5];
-            int* puVar2 = (int*)AllocateMemory_Wrapper(g_GameStruct2[5] * 200 + 4);
+            int* puVar2 = (int*)AllocateMemory(g_GameStruct2[5] * 200 + 4);
             *puVar2 = local_18[4];
             local_18[4] = (int)puVar2;
             int iVar5 = *piVar6_2;

@@ -135,7 +135,7 @@ int SC_Timer::Input(void* param_1)
         if (*(int*)((char*)param_1 + 0xbc) == 0) {
             ShowError("SC_Timer::Input");
         }
-        TimedEvent* new_event = (TimedEvent*)AllocateMemory_Wrapper(0x28);
+        TimedEvent* new_event = (TimedEvent*)AllocateMemory(0x28);
         if (new_event) {
             TimedEvent__Init((void*)new_event);
         }
@@ -154,7 +154,7 @@ int SC_Timer::Input(void* param_1)
             eventList->Insert(new_event);
     }
     else if (message == 0x14) {
-        TimedEvent* new_event = (TimedEvent*)AllocateMemory_Wrapper(0x28);
+        TimedEvent* new_event = (TimedEvent*)AllocateMemory(0x28);
         if (new_event) {
             TimedEvent__Init((void*)new_event);
         }

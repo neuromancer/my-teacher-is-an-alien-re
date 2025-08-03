@@ -21,8 +21,8 @@ SoundList::SoundList(int count)
     m_field8 = 0;
     m_fieldc = 0;
     m_count = count;
-    m_sounds = (void**)AllocateMemory_Wrapper(count * 4);
-    m_field8 = (void**)AllocateMemory_Wrapper(m_count * 4);
+    m_sounds = (void**)AllocateMemory(count * 4);
+    m_field8 = (void**)AllocateMemory(m_count * 4);
     if (m_field8 != 0 && m_sounds != 0) {
         for (int i = 0; i < m_count; i++) {
             m_sounds[i] = 0;
@@ -96,10 +96,10 @@ void* SoundList::Register(char* filename)
                 }
 
                 int len = strlen(local_54);
-                m_sounds[m_fieldc] = (void*)AllocateMemory_Wrapper(len + 1);
+                m_sounds[m_fieldc] = (void*)AllocateMemory(len + 1);
                 strcpy((char*)m_sounds[m_fieldc], local_54);
 
-                void* sound = AllocateMemory_Wrapper(0x10);
+                void* sound = AllocateMemory(0x10);
                 if (sound != NULL) {
                     sound = FUN_0041e460(sound);
                 }

@@ -174,7 +174,7 @@ void Animation::VBInit()
         ShowError("Animation::VBInit() - Virtual Buffer already defined");
     }
 
-    VBuffer* vbuffer = (VBuffer*)AllocateMemory_Wrapper(0x30);
+    VBuffer* vbuffer = (VBuffer*)AllocateMemory(0x30);
     if (vbuffer != 0) {
         this->vbuffer = VirtualBufferCreateAndClean(vbuffer, this->smk->width, this->smk->height);
     }
@@ -240,7 +240,7 @@ void Animation::Play(char* filename, unsigned int flags)
     this->palette = 0;
 
     if ((flags & 1) == 0) {
-        void* mem = AllocateMemory_Wrapper(8);
+        void* mem = AllocateMemory(8);
         if (mem != 0) {
             this->palette = CreatePaletteBuffer(mem);
         }
