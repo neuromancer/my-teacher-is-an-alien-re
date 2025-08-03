@@ -6,6 +6,8 @@
 class Parser
 {
 public:
+    void** vtable;
+public:
     virtual ~Parser();
     void Init();
     void CloseFile();
@@ -18,7 +20,6 @@ public:
     int GetKey(char* line);
     void ProcessFile(Parser* dst, char* key);
 public:
-    void** vtable;
 private:
     int field_0x4;
     int isFileOpen;
