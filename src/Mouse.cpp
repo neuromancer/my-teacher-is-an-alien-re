@@ -22,21 +22,17 @@ extern "C" {
 /* Function start: 0x41ECA0 */
 Mouse::Mouse()
 {
-    FUN_00424b00(this + 1, 8, 0x19, (void*)0x41d850, (void*)0x405770);
+    memset(m_fields, 0, sizeof(m_fields));
 
-    for (int i = 0; i < 78; i++) {
-        m_fields[i] = 0;
-    }
+    m_pointer_str = (char*)AllocateMemory_Wrapper(16);
+    m_examine_str = (char*)AllocateMemory_Wrapper(16);
+    m_pickup_str = (char*)AllocateMemory_Wrapper(16);
+    m_unknown_str = (char*)AllocateMemory_Wrapper(16);
 
-    m_pointer_str = (char*)AllocateMemory_Wrapper(0x10);
-    m_examine_str = (char*)AllocateMemory_Wrapper(0x10);
-    m_pickup_str = (char*)AllocateMemory_Wrapper(0x10);
-    m_unknown_str = (char*)AllocateMemory_Wrapper(0x10);
-
-    memcpy(m_pointer_str, "POINTER", 8);
-    memcpy(m_examine_str, "EXAMINE", 8);
-    memcpy(m_pickup_str, "PICKUP", 7);
-    memcpy(m_unknown_str, "USER", 5);
+    strcpy(m_pointer_str, "POINTER");
+    strcpy(m_examine_str, "EXAMINE");
+    strcpy(m_pickup_str, "PICKUP");
+    strcpy(m_unknown_str, "");
 }
 
 /* Function start: 0x41EE30 */

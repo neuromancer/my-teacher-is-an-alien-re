@@ -69,5 +69,8 @@ Then most likely, there is a try/catch somewhere in the function.
 * Do NOT add extra methods or helper functions that are not in the original implementation.
 * Do not try to emulate vtables with C++ code manually. If the function is related with vtables, skip it.
 * Do NOT add "vtable" fields, these are going to be handled automatically by the compiler
+* Do NOT call the constructor of the base class, the compiler will do it automatically
+
+IMPORTANT: if you are out of ideas, just stop. Do NOT break any of these rules.
 
 Note: `ShowError` is a function that should be marked by the compiler as "no return" as it calls some internal functions that eventualy ends the process, so it will not produce instructions after the call. However, right now, the implementation is not complete and the compiler will not optimize that. Do NOT try to workaround this (e.g. using attributes or other code), this will be fixed later.
