@@ -2,6 +2,8 @@
 
 Continue implementing the next function. Before starting, review all the current files and determine if there is any class where the function could be added as a method. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
 
+** VERY IMPORTANT**: keep in mind that that the most likely class is the same as the previous function, so consider this option like a safe default and then revert back if you have evidence to believe this is wrong.
+
 If similarity is >= 90%, you can stop. If you give up, make sure you still provide the code with the best similarity. If the function is complex, even obtaining a 60% can be good enough, there will another pass later to improve it.
 
 Important mote: `ShowError` is a function that should be marked by the compiler as "no return" as it calls some internal functions that eventualy ends the process, so it will not produce instructions after the call (e.g. stack clean up). However, right now, the implementation is not complete and the compiler will not optimize that. Do NOT try to workaround this (e.g. using attributes or other code), this will be fixed later.
@@ -46,5 +48,6 @@ Another very important set of of files is located in `data/demo/mis`. These are 
     local_u = 0xffffffff;
 ```
 Then most likely, there is a try/catch somewhere in the function.
+* Do NOT add extra methods or helper functions that are not in the original implementation.
 * Do not try to emulate vtables with C++ code manually. If the function is related with vtables, skip it.
 * Do NOT add "vtable" fields, these are going to be handled automatically by the compiler

@@ -15,22 +15,32 @@ It will show you the assembly code produced (or any compiler errors).
 
 IMPORTANT: remember that the assembly code is the only source of truth, the decompiled code could be wrong or mislabeled.
 
-To review what kind of gameplay, read the `docs/game.txt` file. It will help to understand the different puzzles implemented.
+Start with <function>.
+
+Before starting, review all the current files and determine if there is any class where the function could be added as a method. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
+
+If similarity is >= 90%, you can stop. If you give up, make sure you still provide the code with the best similarity.
+
+# Other important files
+
+* `src/map` is a directory containing sorted lists of address to know which functions are next to each other in the executable.
+
+* `code/strings.txt` is a file containing the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information.
+
+* `docs/game.txt` is a file containing a description of the gameplay. It will help to understand the different puzzles implemented.
+
+* `data/demo/mis` is a directory containing "game scripts" in .txt format. Please take a look to them so you can understand what kind of data is parsed and use them to understand which class will need which code to be parsed.
 
 # Requirements:
 
+* Remember that the assembly code and the strings are the only source of truth, the decompiled code could be wrong or mislabeled.
 * Define the class on the top of the file.
+* Include the full strings in the reimplemented code as constants, do NOT use explicit pointers to strings that are constants.
 * It is very important to include the following header before each reimplemented function with the address of the function:
 
 /* Function start: 0x1234.. */
 
 * Sort the functions by its address. This is also very important since the compiler will put together all the functions from the same file, in the same order they are defined, so use the ordering to detect when a function, most likely, does not belong to certain class or type.
-
-In order to know which functions are next to each other, check the files inside the `src/map` directory. These files will NOT be compiled.
-
-There is a very important file located in `code/strings.txt`. This contains the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information. Include the full strings in the reimplemented code as constants, avoid pointers to strings.
-
-Another very important set of of files is located in `data/demo/mis`. These are "game scripts" in .txt format. Please take a look to them so you can understand what kind of data is parsed and use them to understand which class will need which code to be parsed.
 
 * Preserve memory usage: make sure that the local variables are in the same order. Also, make sure the offset accessing fields is exactly the same.
 * Preserve jump types: make sure the jumps are the same (e.g. jmp, jmpf, jne, jnef) and its order is preserved.
@@ -38,10 +48,9 @@ Another very important set of of files is located in `data/demo/mis`. These are 
 * Keep the code as high-level as possible.
 * Do NOT show me the code once you finish.
 * Very important: do NOT use inline assembly, gotos nor dummy variables.
-* Do NOT change the calling convention for the class method: it should be `__thiscall`.
-* Do NOT add `__thiscall` as it is redundant and will most likely fail
+* Do NOT change the calling convention for the class method: it should be `__thiscall`. Also do NOT add `__thiscall` as it is redundant and will most likely fail
 * The code will be compiled, but not linked: do NOT add a main function. Use extern to define any unknown functions.
-* There is no need to review how compilation works.
+* There is no need to review how compilation works. Also do NOT change the flags in `bin/compile.bat`, these were carefully brute forced from other parts of the code.
 * If the decompiled code shows a standard function called like `_strcpy`, then use `strcpy` imported from the corresponding header.
 * Every time you found a standard function such as `fsetpos`, carefully review each parameter and try to rename/retype the fields of the class using that information.
 * Do NOT use `new` as it looks like it was not used in this codebase.
@@ -50,7 +59,6 @@ Another very important set of of files is located in `data/demo/mis`. These are 
 * You can include calls to function like `memcpy` or `strcpy`, but only if the compiler will inline them and produce a better match for the target assembly.
 * Do NOT use unions or substructures in the classes , it is very unlikely that these are used in the original code!
 * Provide reasonable names to fields, once you understand what they do.
-* Do NOT change the flags in `bin/compile.bat`, these were carefully brute forced from other parts of the code.
 * Do NOT create .c files
 * If you see a pattern like this in the decompiled code:
 ```
@@ -61,11 +69,5 @@ Then most likely, there is a try/catch somewhere in the function.
 * Do NOT add extra methods or helper functions that are not in the original implementation.
 * Do not try to emulate vtables with C++ code manually. If the function is related with vtables, skip it.
 * Do NOT add "vtable" fields, these are going to be handled automatically by the compiler
-
-Start with <function>.
-
-Before starting, review all the current files and determine if there is any class where the function could be added as a method. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
-
-If similarity is >= 90%, you can stop. If you give up, make sure you still provide the code with the best similarity.
 
 Note: `ShowError` is a function that should be marked by the compiler as "no return" as it calls some internal functions that eventualy ends the process, so it will not produce instructions after the call. However, right now, the implementation is not complete and the compiler will not optimize that. Do NOT try to workaround this (e.g. using attributes or other code), this will be fixed later.
