@@ -3,14 +3,14 @@
 
 #include "Queue.h"
 #include "Timer.h"
+#include "Parser.h"
 
-class SC_OnScreenMessage {
+class SC_OnScreenMessage : Parser {
 public:
     void Update(int, int);
     void AddMessage();
 
 private:
-    char pad[0x88];
     int field_0x88;
     int field_0x8c;
     char pad2[0xa0 - 0x8c - 4];

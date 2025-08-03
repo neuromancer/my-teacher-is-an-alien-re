@@ -9,6 +9,32 @@ extern "C" {
     //extern void Timer_DecrementCounter();
 }
 
+extern "C" void FUN_00418eb0(void*);
+extern "C" void FUN_00418ef0(void*);
+extern "C" void* FUN_004249c0(int);
+
+/* Function start: 0x40A2E0 */
+SC_OnScreenMessage::SC_OnScreenMessage()
+{
+    int* p = &this->field_0x88;
+    for (int i = 0; i < 6; i++) {
+        *p++ = 0;
+    }
+
+    timer.Init();
+    this->field_0x88 = 0xf;
+
+    timer.Reset();
+
+    this->messageQueue.m_head = FUN_004249c0(16);
+    if (this->messageQueue.m_head) {
+        QueueNode* node = (QueueNode*)this->messageQueue.m_head;
+        node->next = 0;
+        node->prev = 0;
+        node->data = 0;
+    }
+}
+
 /* Function start: 0x40A5E0 */
 void SC_OnScreenMessage::Update(int param_1, int param_2)
 {
