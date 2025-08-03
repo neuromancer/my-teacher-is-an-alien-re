@@ -3,6 +3,7 @@
 #include "Sound.h"
 #include "VBuffer.h"
 #include "GameWindow.h"
+#include "Memory.h"
 
 Sound* g_sound;
 
@@ -21,7 +22,6 @@ void *DAT_00436960 = (void*)0x00436960;
 
 extern "C" {
 	void FUN_00421010(void*);
-	void FUN_00424940(void*);
 	void _AIL_shutdown_0();
 	void FUN_0041aa10(VBuffer*);
 	void FUN_0041e310();
@@ -112,47 +112,47 @@ void ShutdownGameSystems(void)
   temp = g_TextManager;
   if (temp != 0) {
     FUN_00421010((void*)temp);
-    FUN_00424940((void*)temp);
+    FreeMemory((void*)temp);
     g_TextManager = 0;
   }
   temp = g_WorkBuffer;
   if (temp != 0) {
     FUN_0041aa10((VBuffer*)temp);
-    FUN_00424940((void*)temp);
+    FreeMemory((void*)temp);
     g_WorkBuffer = 0;
   }
   temp = DAT_0043696c;
   if (temp != 0) {
     FUN_0041e310();
-    FUN_00424940((void*)temp);
+    FreeMemory((void*)temp);
     DAT_0043696c = 0;
   }
   temp = DAT_00436968;
   if (temp != 0) {
     FUN_00421840();
-    FUN_00424940((void*)temp);
+    FreeMemory((void*)temp);
     DAT_00436968 = 0;
   }
   temp = DAT_00436970;
   if (temp != 0) {
     FUN_004227a0((void*)temp);
-    FUN_00424940((void*)temp);
+    FreeMemory((void*)temp);
     DAT_00436970 = 0;
   }
   temp = DAT_0043697c;
   if (temp != 0) {
     FUN_00421ea0((void*)temp);
-    FUN_00424940((void*)temp);
+    FreeMemory((void*)temp);
     DAT_0043697c = 0;
   }
   temp = DAT_00436964;
   if (temp != 0) {
-    FUN_00424940((void*)temp);
+    FreeMemory((void*)temp);
     DAT_00436964 = 0;
   }
   temp = DAT_00436960;
   if (temp != 0) {
-    FUN_00424940((void*)temp);
+    FreeMemory((void*)temp);
     DAT_00436960 = 0;
   }
 }

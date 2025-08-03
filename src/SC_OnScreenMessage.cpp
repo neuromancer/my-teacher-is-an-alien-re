@@ -11,7 +11,6 @@ extern "C" {
 
 extern "C" void FUN_00418eb0(void*);
 extern "C" void FUN_00418ef0(void*);
-extern "C" void* FUN_004249c0(int);
 
 /* Function start: 0x40A2E0 */
 SC_OnScreenMessage::SC_OnScreenMessage()
@@ -26,7 +25,7 @@ SC_OnScreenMessage::SC_OnScreenMessage()
 
     timer.Reset();
 
-    this->messageQueue.m_head = FUN_004249c0(16);
+    this->messageQueue.m_head = AllocateMemory(16);
     if (this->messageQueue.m_head) {
         QueueNode* node = (QueueNode*)this->messageQueue.m_head;
         node->next = 0;
