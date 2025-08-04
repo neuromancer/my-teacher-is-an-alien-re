@@ -26,6 +26,8 @@ public:
 
     AnimatedAsset();
     void LoadAnimatedAsset(char* param_1);
+    void RenderText(char* text, int param_2);
+    int DrawChar(int, int, int);
     ~AnimatedAsset();
 };
 
