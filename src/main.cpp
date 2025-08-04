@@ -4,6 +4,7 @@
 #include "VBuffer.h"
 #include "GameWindow.h"
 #include "Memory.h"
+#include "AnimatedAsset.h"
 
 Sound* g_sound;
 
@@ -22,16 +23,25 @@ void *DAT_00436960 = (void*)0x00436960;
 
 extern "C" {
 	void FUN_00421010(void*);
-	void _AIL_shutdown_0();
-	void FUN_0041aa10(VBuffer*);
-	void FUN_0041e310();
-	void FUN_00421840();
 	void FUN_004227a0(void*);
 	void FUN_00421ea0(void*);
 	void FUN_0040d230();
 	void FUN_0040c5d0();
 	void FUN_00422430(void*);
+    int CalculateBufferSize(int, int);
+    void CheckDebug();
+    void ClearMessageLog();
+    void CreateGameObject_1();
+    void InitWorkBuffer(int, int);
+    void* JoystickManager_Constructor(void*, int);
+    void* Sound_Init(void*, int, int, int);
+    void SetStateFlag(int, int);
+    void SetCursorVisible(int);
 }
+
+void _AIL_shutdown_0();
+void FUN_0041e310();
+void FUN_00421840();
 
 extern HWND DAT_0043de7c;
 extern int DAT_0043d55c;
@@ -86,6 +96,29 @@ int InitGraphics(void)
     return 1;
 }
 
+/* Function start: 0x41A3D0 */
+void InitGameSystems(void)
+{
+    DAT_00436960 = AllocateMemory(0x100);
+    DAT_00436964 = AllocateMemory(CalculateBufferSize(0x280,0x1e0));
+    CheckDebug();
+    ClearMessageLog();
+    CreateGameObject_1();
+    InitWorkBuffer(0x280,0x1e0);
+    void* pJoystickManager = AllocateMemory(0x1b8);
+    if (pJoystickManager != (void *)0x0) {
+        DAT_00436968 = JoystickManager_Constructor(pJoystickManager, *(char*)((int)DAT_00436970 + 0x44));
+    }
+    void* pSound = AllocateMemory(0x3c);
+    if (pSound != (void *)0x0) {
+        DAT_0043696c = Sound_Init(pSound,0x5622,8,1);
+    }
+    g_TextManager = new AnimatedAsset();
+    ((AnimatedAsset*)g_TextManager)->LoadAnimatedAsset("elements\\barrel06.smk");
+    SetStateFlag(0,1);
+    SetCursorVisible(0);
+}
+
 /* Function start: 0x422520 */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -108,51 +141,42 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdShow
 /* Function start: 0x41A550 */
 void ShutdownGameSystems(void)
 {
-  void* temp;
-  temp = g_TextManager;
-  if (temp != 0) {
-    FUN_00421010((void*)temp);
-    FreeMemory((void*)temp);
+  if (g_TextManager != 0) {
+    FUN_00421010(g_TextManager);
+    FreeMemory(g_TextManager);
     g_TextManager = 0;
   }
-  temp = g_WorkBuffer;
-  if (temp != 0) {
-    FUN_0041aa10((VBuffer*)temp);
-    FreeMemory((void*)temp);
+  if (g_WorkBuffer != 0) {
+    g_WorkBuffer->~VBuffer();
+    FreeMemory(g_WorkBuffer);
     g_WorkBuffer = 0;
   }
-  temp = DAT_0043696c;
-  if (temp != 0) {
-    FUN_0041e310();
-    FreeMemory((void*)temp);
+  if (DAT_0043696c != 0) {
+    _AIL_shutdown_0();
+    FreeMemory(DAT_0043696c);
     DAT_0043696c = 0;
   }
-  temp = DAT_00436968;
-  if (temp != 0) {
+  if (DAT_00436968 != 0) {
     FUN_00421840();
-    FreeMemory((void*)temp);
+    FreeMemory(DAT_00436968);
     DAT_00436968 = 0;
   }
-  temp = DAT_00436970;
-  if (temp != 0) {
-    FUN_004227a0((void*)temp);
-    FreeMemory((void*)temp);
+  if (DAT_00436970 != 0) {
+    FUN_004227a0(DAT_00436970);
+    FreeMemory(DAT_00436970);
     DAT_00436970 = 0;
   }
-  temp = DAT_0043697c;
-  if (temp != 0) {
-    FUN_00421ea0((void*)temp);
-    FreeMemory((void*)temp);
+  if (DAT_0043697c != 0) {
+    FUN_00421ea0(DAT_0043697c);
+    FreeMemory(DAT_0043697c);
     DAT_0043697c = 0;
   }
-  temp = DAT_00436964;
-  if (temp != 0) {
-    FreeMemory((void*)temp);
+  if (DAT_00436964 != 0) {
+    FreeMemory(DAT_00436964);
     DAT_00436964 = 0;
   }
-  temp = DAT_00436960;
-  if (temp != 0) {
-    FreeMemory((void*)temp);
+  if (DAT_00436960 != 0) {
+    FreeMemory(DAT_00436960);
     DAT_00436960 = 0;
   }
 }

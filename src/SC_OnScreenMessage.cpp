@@ -16,7 +16,6 @@ extern "C" {
     extern void Timer_DecrementCounter_wrapper();
     extern void Timer_DecrementCounter_wrapper_2();
     extern void GameState_dtor_wrapper_4();
-    extern void FreeFromGlobalHeap(void*);
 }
 
 /* Function start: 0x40A2E0 */
