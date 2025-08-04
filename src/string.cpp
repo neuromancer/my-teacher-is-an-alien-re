@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <share.h>
 #include "string.h"
+#include <mbstring.h>
 
 // Based on the assembly, this function is a custom implementation of strncpy.
 // It copies up to 'n' characters from src to dest, padding with nulls if src is shorter.
@@ -169,7 +170,7 @@ void DeleteFile_Wrapper(const char* filename)
     if (DeleteFileA(filename) == 0) {
         int error = GetLastError();
         if (error != 0) {
-            FUN_0042b300(error);
+            SetErrorCode(error);
         }
     }
 }

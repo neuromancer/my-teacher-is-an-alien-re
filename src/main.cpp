@@ -6,6 +6,7 @@
 #include "Memory.h"
 #include "AnimatedAsset.h"
 #include "string.h"
+#include <mbstring.h>
 
 Sound* g_sound;
 
@@ -51,7 +52,7 @@ extern "C" {
     int ChangeToDriveDirectory(void*, int);
     int ChangeDirectory(void*, unsigned char*);
     void ShowError(const char*, ...);
-    void FUN_0042b300(unsigned int);
+    void SetErrorCode(unsigned int);
     void ParsePath(const unsigned char*, unsigned char*, unsigned char*, unsigned char*, unsigned char*);
     int _chdir(const char*);
 }
@@ -121,7 +122,7 @@ int GetFileAttributes_Wrapper(const char* param_1, char param_2)
     DVar1 = GetFileAttributesA(param_1);
     if (DVar1 == -1) {
         DVar1 = GetLastError();
-        FUN_0042b300(DVar1);
+        SetErrorCode(DVar1);
         return -1;
     }
     if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
@@ -133,27 +134,27 @@ int GetFileAttributes_Wrapper(const char* param_1, char param_2)
 }
 
 /* Function start: 0x42B300 */
-void FUN_0042b300(unsigned int param_1)
+void SetErrorCode(unsigned int errorCode)
 {
     int iVar1;
     unsigned int* puVar2;
 
     iVar1 = 0;
     puVar2 = &DAT_0043c760;
-    DAT_0043bdf4 = param_1;
+    DAT_0043bdf4 = errorCode;
     do {
-        if (*puVar2 == param_1) {
+        if (*puVar2 == errorCode) {
             _DAT_0043bdf0 = *(int*)(iVar1 * 8 + 0x43c764);
             return;
         }
         puVar2 = puVar2 + 2;
         iVar1 = iVar1 + 1;
     } while (puVar2 < &DAT_0043c8c8);
-    if ((0x12 < param_1) && (param_1 < 0x25)) {
+    if ((0x12 < errorCode) && (errorCode < 0x25)) {
         _DAT_0043bdf0 = 0xd;
         return;
     }
-    if ((0xbb < param_1) && (param_1 < 0xcb)) {
+    if ((0xbb < errorCode) && (errorCode < 0xcb)) {
         _DAT_0043bdf0 = 8;
         return;
     }
@@ -196,6 +197,66 @@ int ChangeDirectory(void* this_ptr, unsigned char* path)
         ParsePath(path, (unsigned char*)((int)this_ptr + 0xc0), 0, 0, 0);
     }
     return 0;
+}
+
+/* Function start: 0x4261C0 */
+void ParsePath(const unsigned char* path, unsigned char* drive, unsigned char* dir, unsigned char* fname, unsigned char* ext)
+{
+    const unsigned char* p;
+    const unsigned char* last_slash = 0;
+    const unsigned char* last_dot = 0;
+    unsigned int len;
+
+    if (path[1] == ':') {
+        if (drive) {
+            _mbsnbcpy(drive, path, 2);
+            drive[2] = '\0';
+        }
+        path += 2;
+    }
+    else if (drive) {
+        *drive = '\0';
+    }
+
+    for (p = path; *p; p++) {
+        if (*p == '\\' || *p == '/') {
+            last_slash = p;
+        }
+        else if (*p == '.') {
+            last_dot = p;
+        }
+    }
+
+    if (last_slash) {
+        if (dir) {
+            len = last_slash - path + 1;
+            _mbsnbcpy(dir, path, len);
+            dir[len] = '\0';
+        }
+        path = last_slash + 1;
+    }
+    else if (dir) {
+        *dir = '\0';
+    }
+
+    if (last_dot && last_dot > path) {
+        if (fname) {
+            len = last_dot - path;
+            _mbsnbcpy(fname, path, len);
+            fname[len] = '\0';
+        }
+        if (ext) {
+            strcpy((char*)ext, (char*)last_dot);
+        }
+    }
+    else {
+        if (fname) {
+            strcpy((char*)fname, (char*)path);
+        }
+        if (ext) {
+            *ext = '\0';
+        }
+    }
 }
 
 /* Function start: 0x41A670 */
