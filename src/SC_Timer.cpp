@@ -1,6 +1,13 @@
 #include "SC_Timer.h"
 #include "Queue.h"
 #include "Memory.h"
+#include "Timer.h"
+#include "string.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 
 // Forward declarations
 class TimedEvent {
@@ -11,13 +18,30 @@ public:
 
 extern "C" {
     void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
-    void ShowError(const char*);
     void* TimedEvent__Init(void*);
     void TimedEvent__SetData(void*, int);
 }
 
+/* Function start: 0x401B60 */
 SC_Timer::SC_Timer()
 {
+    field_0x88 = 0;
+field_0x8c = 0;
+field_0x90 = 0;
+field_0x94 = 0;
+field_0x98 = 0;
+field_0x9c = 0;
+
+    timer1.Init();
+    timer2.Init();
+
+    field_0x88 = 0xd;
+    timer1.Reset();
+
+    m_eventList = (Queue*)AllocateMemory(0x10);
+    if (m_eventList) {
+        m_eventList->Init();
+    }
 }
 
 SC_Timer::~SC_Timer()
@@ -27,11 +51,11 @@ SC_Timer::~SC_Timer()
 /* Function start: 0x401E30 */
 void SC_Timer::Update(int param_1, int param_2)
 {
-    if ((timer.Update() > 10000) && (*(int**)m_eventList == 0)) {
+    if ((timer1.Update() > 10000) && (*(int**)m_eventList == 0)) {
         SC_Message_Send(3, field_0x88, field_0x88, field_0x8c, 0x14, 0, 0, 0, 0, 0);
     }
 
-    timer.Reset();
+    timer1.Reset();
 
     int** eventList = (int**)m_eventList;
     eventList[2] = *eventList;
@@ -96,7 +120,7 @@ int SC_Timer::Input(void* param_1)
         return 0;
     }
 
-    timer.Reset();
+    timer1.Reset();
 
     int message = *(int*)((char*)param_1 + 0x98);
 

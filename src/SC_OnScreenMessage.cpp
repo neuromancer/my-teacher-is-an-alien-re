@@ -12,6 +12,13 @@ extern "C" {
 extern "C" void FUN_00418eb0(void*);
 extern "C" void FUN_00418ef0(void*);
 
+extern "C" {
+    extern void Timer_DecrementCounter_wrapper();
+    extern void Timer_DecrementCounter_wrapper_2();
+    extern void GameState_dtor_wrapper_4();
+    extern void FreeFromGlobalHeap(void*);
+}
+
 /* Function start: 0x40A2E0 */
 SC_OnScreenMessage::SC_OnScreenMessage()
 {
@@ -32,6 +39,62 @@ SC_OnScreenMessage::SC_OnScreenMessage()
         node->prev = 0;
         node->data = 0;
     }
+}
+
+/* Function start: 0x40A3F0 */
+void SC_OnScreenMessage::Destroy(int free)
+{
+    this->Free();
+    if (free) {
+        FreeMemory(this);
+    }
+}
+
+/* Function start: 0x40A410 */
+void SC_OnScreenMessage::Free()
+{
+    Queue* queue = &this->messageQueue;
+
+    try {
+        queue->m_current = queue->m_head;
+        while (queue->m_current) {
+            void* data = ((QueueNode*)queue->m_current)->data;
+
+            if (queue->m_head == queue->m_current) {
+                queue->m_head = ((QueueNode*)queue->m_current)->next;
+            }
+
+            if (queue->m_tail == queue->m_current) {
+                queue->m_tail = ((QueueNode*)queue->m_current)->prev;
+            }
+
+            if (((QueueNode*)queue->m_current)->prev) {
+                ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = ((QueueNode*)queue->m_current)->next;
+            }
+
+            if (((QueueNode*)queue->m_current)->next) {
+                ((QueueNode*)((QueueNode*)queue->m_current)->next)->prev = ((QueueNode*)queue->m_current)->prev;
+            }
+
+            if (data) {
+                Timer_DecrementCounter_wrapper();
+                FreeFromGlobalHeap(data);
+            }
+
+            FreeFromGlobalHeap(queue->m_current);
+            queue->m_current = queue->m_head;
+        }
+    } catch (...) {
+        // The original code has an empty catch block
+    }
+
+    if (queue->m_head) {
+        FreeFromGlobalHeap(queue->m_head);
+        queue->m_head = 0;
+    }
+
+    Timer_DecrementCounter_wrapper_2();
+    GameState_dtor_wrapper_4();
 }
 
 /* Function start: 0x40A5E0 */

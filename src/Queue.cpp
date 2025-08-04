@@ -1,19 +1,6 @@
 #include "Queue.h"
 #include "Memory.h"
-
-/* Function start: 0x000000 */
-Queue::Queue()
-{
-    m_head = 0;
-    m_tail = 0;
-    m_current = 0;
-    m_field_0xc = 0;
-}
-
-extern "C" {
-    void ShowError(const char*);
-}
-
+#include "string.h"
 
 /* Function start: 0x4024D0 */
 void Queue::Insert(void* data)

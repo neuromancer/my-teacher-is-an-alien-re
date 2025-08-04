@@ -1,9 +1,11 @@
 #ifndef SC_TIMER_H
 #define SC_TIMER_H
 
-#include "ZBuffer.h"
+#include "Parser.h"
+#include "Timer.h"
+#include "Queue.h"
 
-class SC_Timer : public ZBuffer {
+class SC_Timer : public Parser {
 public:
     SC_Timer();
     ~SC_Timer();
@@ -13,8 +15,15 @@ public:
     int Input(void*);
 
 private:
-    char pad3[0xc8 - 0xa0 - sizeof(Timer)];
-    void* m_eventList;
+    int field_0x88;
+    int field_0x8c;
+    int field_0x90;
+    int field_0x94;
+    int field_0x98;
+    int field_0x9c;
+    Timer timer1; // 0xa0
+    Timer timer2; // 0xb4
+    Queue* m_eventList; // 0xc8
 };
 
 #endif // SC_TIMER_H

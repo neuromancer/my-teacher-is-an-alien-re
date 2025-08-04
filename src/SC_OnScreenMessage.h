@@ -7,8 +7,13 @@
 
 class SC_OnScreenMessage : Parser {
 public:
+    SC_OnScreenMessage();
+    void Destroy(int free);
+    void Free();
     void Update(int, int);
     void AddMessage();
+    void Timer_DecrementCounter_wrapper();
+    void Timer_DecrementCounter_wrapper_2();
 
 private:
     int field_0x88;

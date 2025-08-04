@@ -24,6 +24,7 @@ void Timer_DecrementCounter()
     g_timer_count--;
 }
 
+
 /* Function start: 0x418EF0 */
 void Timer::Reset()
 {
