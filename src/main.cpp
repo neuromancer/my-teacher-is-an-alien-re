@@ -5,11 +5,19 @@
 #include "GameWindow.h"
 #include "Memory.h"
 #include "AnimatedAsset.h"
+#include "string.h"
 
 Sound* g_sound;
 
 GameState* g_GameState = (GameState*)0x00436998;
 extern int DAT_004373bc;
+extern int DAT_00437f4c;
+extern char DAT_0043d568;
+extern int _DAT_0043d564;
+extern int _DAT_0043bdf0;
+extern int DAT_0043bdf4;
+extern unsigned int DAT_0043c760;
+extern unsigned int DAT_0043c8c8;
 extern int FUN_00422510();
 
 void *g_TextManager = (void*)0x00436990;
@@ -17,7 +25,7 @@ VBuffer *g_WorkBuffer = (VBuffer*)0x00436974;
 void *DAT_0043696c = (void*)0x0043696c;
 void *DAT_00436968 = (void*)0x00436968;
 void *DAT_00436970 = (void*)0x00436970;
-void *DAT_0043697c = (void*)0x0043697c;
+char *DAT_0043697c = (char*)0x0043697c;
 void *DAT_00436964 = (void*)0x00436964;
 void *DAT_00436960 = (void*)0x00436960;
 
@@ -28,7 +36,7 @@ extern "C" {
 	void FUN_0040d230();
 	void FUN_0040c5d0();
 	void FUN_00422430(void*);
-    int CalculateBufferSize(int, int);
+    unsigned int CalculateBufferSize(unsigned char width, unsigned int height);
     void CheckDebug();
     void ClearMessageLog();
     void CreateGameObject_1();
@@ -37,6 +45,15 @@ extern "C" {
     void* Sound_Init(void*, int, int, int);
     void SetStateFlag(int, int);
     void SetCursorVisible(int);
+    void* FUN_00421e40(void*, char*, void*);
+    int FileExists(const char*);
+    int CheckFileOnDrive(void*, int);
+    int ChangeToDriveDirectory(void*, int);
+    int ChangeDirectory(void*, unsigned char*);
+    void ShowError(const char*, ...);
+    void FUN_0042b300(unsigned int);
+    void ParsePath(const unsigned char*, unsigned char*, unsigned char*, unsigned char*, unsigned char*);
+    int _chdir(const char*);
 }
 
 void _AIL_shutdown_0();
@@ -94,6 +111,147 @@ int InitGraphics(void)
     FUN_00423a54();
     FUN_00422d98(0);
     return 1;
+}
+
+/* Function start: 0x430310 */
+int GetFileAttributes_Wrapper(const char* param_1, char param_2)
+{
+    int DVar1;
+
+    DVar1 = GetFileAttributesA(param_1);
+    if (DVar1 == -1) {
+        DVar1 = GetLastError();
+        FUN_0042b300(DVar1);
+        return -1;
+    }
+    if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
+        _DAT_0043bdf0 = 0xd;
+        DAT_0043bdf4 = 5;
+        return -1;
+    }
+    return 0;
+}
+
+/* Function start: 0x42B300 */
+void FUN_0042b300(unsigned int param_1)
+{
+    int iVar1;
+    unsigned int* puVar2;
+
+    iVar1 = 0;
+    puVar2 = &DAT_0043c760;
+    DAT_0043bdf4 = param_1;
+    do {
+        if (*puVar2 == param_1) {
+            _DAT_0043bdf0 = *(int*)(iVar1 * 8 + 0x43c764);
+            return;
+        }
+        puVar2 = puVar2 + 2;
+        iVar1 = iVar1 + 1;
+    } while (puVar2 < &DAT_0043c8c8);
+    if ((0x12 < param_1) && (param_1 < 0x25)) {
+        _DAT_0043bdf0 = 0xd;
+        return;
+    }
+    if ((0xbb < param_1) && (param_1 < 0xcb)) {
+        _DAT_0043bdf0 = 8;
+        return;
+    }
+    _DAT_0043bdf0 = 0x16;
+    return;
+}
+
+
+/* Function start: 0x4195A0 */
+int FileExists(const char* filename)
+{
+    return GetFileAttributesA(filename) != -1;
+}
+
+/* Function start: 0x421EB0 */
+int CheckFileOnDrive(void* this_ptr, int drive_letter)
+{
+    char local_40[64];
+
+    sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40, (char*)((int)this_ptr + 0x80), (char*)((int)this_ptr + 0x1c5));
+    return FileExists(local_40);
+}
+
+/* Function start: 0x421F40 */
+int ChangeToDriveDirectory(void* this_ptr, int drive_letter)
+{
+    char local_40[64];
+
+    sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40, (char*)((int)this_ptr + 0x80), (char*)((int)this_ptr + 0x1c5));
+    return 1 - (ChangeDirectory(this_ptr, (unsigned char*)local_40) == 0);
+}
+
+/* Function start: 0x421EF0 */
+int ChangeDirectory(void* this_ptr, unsigned char* path)
+{
+    if (path != 0 && *path != 0) {
+        if (_chdir((char*)path) != 0) {
+            return 1;
+        }
+        ParsePath(path, (unsigned char*)((int)this_ptr + 0xc0), 0, 0, 0);
+    }
+    return 0;
+}
+
+/* Function start: 0x41A670 */
+void CheckDebug(void)
+{
+    char local_94[128];
+    void* pvVar2;
+
+    __try {
+        pvVar2 = DAT_0043697c;
+        if (DAT_0043697c == (char *)0x0) {
+            void* local_14 = AllocateMemory(0x1e5);
+            if (local_14 != (void *)0x0) {
+                pvVar2 = FUN_00421e40(local_14, "cddata", &DAT_0043d568);
+            }
+        }
+        DAT_0043697c = (char*)pvVar2;
+        if (DAT_0043d568 == '\0') {
+            if (!FileExists((char*)((int)pvVar2 + 0x1c5)) && !FileExists("Develop")) {
+                int i = 3;
+                for (; i < 0x1a; i++) {
+                    if (CheckFileOnDrive(DAT_0043697c, i)) {
+                        if (ChangeToDriveDirectory(DAT_0043697c, i)) {
+                            ShowError("Invalid CD directory");
+                        }
+                        break;
+                    }
+                }
+                if (0x18 < i) {
+                    ShowError("Missing the Teacher CD-ROM");
+                }
+            }
+            else {
+                _DAT_0043d564 = 1;
+                if (ChangeDirectory(DAT_0043697c, (unsigned char*)((int)DAT_0043697c + 0x1c5))) {
+                    ShowError("Invalid Development directory");
+                }
+            }
+        }
+        else {
+            sprintf(local_94, "%s\\%s", &DAT_0043d568, (char*)((int)pvVar2 + 0x1c5));
+            if (!FileExists(local_94)) {
+                ShowError("Invalid CD path specified on command line");
+            }
+            ChangeDirectory(DAT_0043697c, (unsigned char*)local_94);
+        }
+    } __except (EXCEPTION_EXECUTE_HANDLER) {
+    }
+}
+
+/* Function start: 0x422E02 */
+unsigned int CalculateBufferSize(unsigned char width, unsigned int height)
+{
+    // Using unsigned char might influence the and operation
+    unsigned int w = (width + 3) & 0xfc;
+    return w * height + DAT_00437f4c;
 }
 
 /* Function start: 0x41A3D0 */

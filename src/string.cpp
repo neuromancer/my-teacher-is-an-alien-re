@@ -163,10 +163,21 @@ void ShowMessage(char *param_1, ...)
     SetCursorVisible(0);
 }
 
+/* Function start: 0x426110 */
+void DeleteFile_Wrapper(const char* filename)
+{
+    if (DeleteFileA(filename) == 0) {
+        int error = GetLastError();
+        if (error != 0) {
+            FUN_0042b300(error);
+        }
+    }
+}
+
 /* Function start: 0x4191C0 */
 void ClearMessageLog()
 {
-    ((void (*)(const char*))0x426110)("message.log");
+    DeleteFile_Wrapper("message.log");
 }
 
 /* Function start: 0x4191D0 */
