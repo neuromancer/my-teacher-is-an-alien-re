@@ -2,6 +2,9 @@
 #define PALETTE_H
 
 #include <windows.h>
+#include "PaletteBuffer.h"
+
+PaletteBuffer* __fastcall CreatePaletteBuffer(PaletteBuffer* buffer);
 
 class Palette {
 public:

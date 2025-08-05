@@ -1,4 +1,5 @@
 #include <windows.h>
+#include "Animation.h"
 #include "GameState.h"
 #include "Sound.h"
 #include "VBuffer.h"
@@ -34,7 +35,7 @@ extern "C" {
 	void FUN_00421010(void*);
 	void FUN_004227a0(void*);
 	void FUN_00421ea0(void*);
-	void FUN_0040d230();
+	void PlayIntroCinematic();
 	void FUN_0040c5d0();
 	void FUN_00422430(void*);
     unsigned int CalculateBufferSize(unsigned char width, unsigned int height);
@@ -348,7 +349,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdShow
   }
   UpdateWindow(DAT_0043de7c);
   if (DAT_0043d55c == 0) {
-    FUN_0040d230();
+    PlayIntroCinematic();
   }
   else {
     FUN_0040c5d0();
@@ -394,8 +395,22 @@ void ShutdownGameSystems(void)
     FreeMemory(DAT_00436964);
     DAT_00436964 = 0;
   }
-  if (DAT_00436960 != 0) {
+    if (DAT_00436960 != 0) {
     FreeMemory(DAT_00436960);
     DAT_00436960 = 0;
   }
+}
+
+/* Function start: 0x40d28c */
+void CleanupCinematic(void)
+{
+}
+
+/* Function start: 0x40d230 */
+void PlayIntroCinematic(void)
+{
+    InitGameSystems();
+    Animation anim;
+    anim.Play("cine\\cine0001.smk", 0x20);
+    ShutdownGameSystems();
 }

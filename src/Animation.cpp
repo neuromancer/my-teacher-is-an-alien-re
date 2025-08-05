@@ -1,14 +1,16 @@
 #include "Animation.h"
 #include "VBuffer.h"
+#include "Palette.h"
 #include "smack.h"
+#include "string.h"
+#include "Palette.h"
+
 #include <windows.h>
 #include "Memory.h"
 
 extern "C" {
-    void __cdecl ShowError(const char*, ...);
     void FUN_0041fbd3();
     void* FUN_004224d0();
-    void* __cdecl CreatePaletteBuffer(void*);
     void FUN_0041eb50(void*, int, int);
     void FUN_00419390();
     void FUN_0041eb90(void*, int, int);
@@ -241,7 +243,7 @@ void Animation::Play(char* filename, unsigned int flags)
     if ((flags & 1) == 0) {
         void* mem = AllocateMemory(8);
         if (mem != 0) {
-            this->palette = CreatePaletteBuffer(mem);
+            this->palette = CreatePaletteBuffer((PaletteBuffer*)mem);
         }
         FUN_0041eb50(this->palette, 0, 0x100);
     }
