@@ -164,71 +164,55 @@ void Sprite::FreeAnimation()
 /* Function start: 0x41D190 */
 void Sprite::SetState2(int param_1)
 {
-    int iVar1;
-    int iVar2;
-    int iVar3;
-    int bVar4;
-    int* piVar5;
-    int iVar6;
-
     if (param_1 == -1) {
         this->field_0x90 = -1;
         return;
     }
-    iVar6 = 0;
+
     if ((this->animation_data == 0) || (this->animation_data->data == 0)) {
         this->Init();
     }
-    if ((-1 < param_1) && (param_1 <= this->num_states + -1)) {
-        if (this->animation_data != 0) {
-            iVar1 = this->animation_data->smk->current_frame;
-            if (this->ranges != 0) {
-                piVar5 = (int*)((int)this->ranges + param_1 * 8);
-                if ((iVar1 < *piVar5) || (piVar5[1] < iVar1)) {
-                    bVar4 = 0;
-                }
-                else {
-                    bVar4 = 1;
-                }
-                if (bVar4 == 0) {
-                    this->flags = this->flags | 0x20;
-                }
-                if (((this->flags & 0x20) != 0) || (this->field_0x90 != param_1)) {
-                    if ((this->flags & 0x10) != 0) {
-                        iVar2 = (int)this->ranges;
-                        iVar6 = this->animation_data->smk->current_frame - *(int*)(iVar2 + this->field_0x90 * 8);
-                        iVar3 = *(int*)(iVar2 + param_1 * 8);
-                        iVar1 = iVar3 + 1 + iVar6;
-                        iVar6 = iVar6 + 1;
-                        if ((this->animation_data == 0) || (iVar2 == 0)) {
-                            ShowError("range error");
-                            return;
-                        }
-                        if ((iVar1 < iVar3) || (*(int*)(iVar2 + 4 + param_1 * 8) < iVar1)) {
-                            bVar4 = 0;
-                        }
-                        else {
-                            bVar4 = 1;
-                        }
-                        if (bVar4 == 0) {
-                            iVar6 = 0;
-                        }
-                    }
-                    this->field_0x90 = param_1;
-                    this->animation_data->GotoFrame(*(int*)((int)this->ranges + param_1 * 8) + iVar6);
-                    piVar5 = (int*)(this->field_0x90 * 8 + (int)this->ranges);
-                    if (piVar5[1] == *piVar5) {
-                        this->flags = this->flags | 4;
-                    }
-                    this->flags = this->flags & 0xffffffdf;
-                }
-                return;
-            }
-        }
-        ShowError("range error");
+
+    if (param_1 < 0 || param_1 >= this->num_states) {
+        ShowError(s_Sprite__SetState_0__d__s_00436ba0, param_1, &this->sprite_filename);
+    }
+
+    if (this->animation_data == 0 || this->ranges == 0) {
+        ShowError(s_range_error_00436bbc);
+    }
+
+    int current_frame = this->animation_data->smk->current_frame;
+    int* range = (int*)((char*)this->ranges + param_1 * 8);
+
+    if (current_frame < range[0] || current_frame > range[1]) {
+        this->flags |= 0x20;
+    }
+
+    if ((this->flags & 0x20) == 0 && this->field_0x90 == param_1) {
         return;
     }
-    ShowError("Sprite::SetState 0 %d %s", param_1, &this->sprite_filename);
+
+    int offset = 0;
+    if ((this->flags & 0x10) != 0) {
+        int* old_range = (int*)((char*)this->ranges + this->field_0x90 * 8);
+        offset = this->animation_data->smk->current_frame - old_range[0];
+
+        int new_start_frame = range[0] + 1 + offset;
+        offset++;
+
+        if (new_start_frame < range[0] || new_start_frame > range[1]) {
+            offset = 0;
+        }
+    }
+
+    this->field_0x90 = param_1;
+    this->animation_data->GotoFrame(range[0] + offset);
+
+    range = (int*)((char*)this->ranges + this->field_0x90 * 8);
+    if (range[1] == range[0]) {
+        this->flags |= 4;
+    }
+    this->flags &= ~0x20;
 }
 
 /* Function start: 0x41d300 */
