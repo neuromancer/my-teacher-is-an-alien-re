@@ -13,6 +13,8 @@ public:
 
     void Update(int, int);
     void AddMessage(int);
+    int ProcessMessage(void*);
+    void CleanUpVBuffer();
 };
 
 #endif // ZBUFFER_H

@@ -14,13 +14,18 @@ def read_assembly(function_name, file_path):
     with open(file_path, 'r') as file:
         assembly = file.read()
 
-    if f";	COMDAT ?{function_name}@" in assembly:
-        print("Symbols detected in assembly code:")
+    mangled_name = function_name
+    if '::' in function_name:
+        name, clss = function_name.split('::')
+        mangled_name = f"{clss}@{name}"
+
+    if f";	COMDAT ?{mangled_name}@" in assembly:
+        print("Stack positions in assembly code:", end="")
         # If the function is a COMDAT, we need to handle it differently
-        symbols = assembly.split(f";	COMDAT ?{function_name}@")[2]
+        symbols = assembly.split(f";	COMDAT ?{mangled_name}@")[2]
         symbols = symbols.split(f"_TEXT	SEGMENT")[1]
-        symbols = symbols.split(f"?{function_name}@")[0]
-        print(symbols)
+        symbols = symbols.split(f"?{mangled_name}@")[0]
+        print(symbols, end="")
 
     # Parse assembly code
     if f"; {function_name}, COMDAT" in assembly:
