@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <new>
 
 #include "Sprite.h"
 #include "Parser.h"
@@ -7,11 +8,11 @@
 #include "Animation.h"
 #include "Queue.h"
 #include "Memory.h"
+#include "Array.h"
 
 extern "C" {
     __int64 __ftol();
     void FUN_0041be20(void*, void*, int, int, int, int, int, int);
-    void Array_Cleanup(int, int, int, void*);
     void FUN_00424b00(int*, int, int, void*, void*);
     int FUN_00420940(GameState*, char*);
     char* strstr_wrapper(char*, const char*);
@@ -61,13 +62,13 @@ Sprite::~Sprite()
     this->StopAnimationSound();
 
     if (this->ranges != 0) {
-        Array_Cleanup((int)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void*)0x405770);
+        Array_Cleanup((void*)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void(__cdecl*)(void*))0x405770);
         FreeMemory((int*)((char*)this->ranges - 4));
         this->ranges = 0;
     }
 
     if (this->logic_conditions != 0) {
-        Array_Cleanup((int)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void*)0x405770);
+        Array_Cleanup((void*)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void(__cdecl*)(void*))0x405770);
         FreeMemory((int*)((char*)this->logic_conditions - 4));
         this->logic_conditions = 0;
     }
@@ -78,31 +79,28 @@ void Sprite::Init()
 {
     try {
         if (this->animation_data == 0) {
-            this->animation_data = (Animation*)AllocateMemory(0x2c);
-            if (this->animation_data != 0) {
-                this->animation_data->AnimationInit();
-                this->animation_data->Open(this->sprite_filename, 0xfe000, 0xffffffff);
+            Animation* anim = (Animation*)AllocateMemory(0x2c);
+            if (anim) {
+                this->animation_data = new (anim) Animation(this->sprite_filename);
+            } else {
+                this->animation_data = 0;
             }
+        } else if (this->animation_data->data == 0) {
+            this->animation_data->ToBuffer();
         }
 
-        if (this->animation_data != 0 && this->animation_data->data == 0) {
-            // Animation::ToBuffer((Animation *)this->animation_data);
-        }
-
-        if (this->animation_data != 0 && this->animation_data->data != 0) {
+        if (this->animation_data && this->animation_data->data) {
             if (DAT_00436b9c == 0) {
-                memset(DAT_0043d630, 0, 0x4000);
+                memset(DAT_0043d630, 0, sizeof(DAT_0043d630));
                 DAT_00436b9c = 1;
             }
-            memcpy(&DAT_0043d630[this->animation_data->data->handle * 0x40], this->sprite_filename, strlen(this->sprite_filename));
+            memcpy(&DAT_0043d630[this->animation_data->data->handle * 0x40], this->sprite_filename, strlen(this->sprite_filename) + 1);
         }
 
         this->CheckRanges1();
         this->flags |= 0x20;
         this->SetState2(this->field_0x90);
-    }
-    catch (...) {
-        // TODO: Figure out what the exception handler does
+    } catch (...) {
     }
 }
 
@@ -426,7 +424,7 @@ void Sprite::SetState(int param_1)
 {
     this->num_states = param_1;
     if (this->ranges != 0) {
-        Array_Cleanup((int)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void*)0x405770);
+        Array_Cleanup((void*)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void(__cdecl*)(void*))0x405770);
         FreeMemory((int*)((char*)this->ranges - 4));
         this->ranges = 0;
     }
@@ -436,7 +434,7 @@ void Sprite::SetState(int param_1)
     if (piVar1 != 0) {
         piVar5 = piVar1 + 1;
         *piVar1 = this->num_states;
-        FUN_00424b00(piVar5, 8, this->num_states, (void*)0x41d850, (void*)0x405770);
+        FUN_00424b00(piVar5, 8, this->num_states, (void*)0x41d850, (void(__cdecl*)(void*))0x405770);
     }
     this->ranges = piVar5;
 
@@ -483,7 +481,7 @@ void Sprite::SetLogic(int param_1, int param_2)
 void Sprite::InitLogic(int param_1)
 {
     if (this->logic_conditions != 0) {
-        Array_Cleanup((int)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void*)0x405770);
+        Array_Cleanup((void*)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void(__cdecl*)(void*))0x405770);
         FreeMemory((int*)((char*)this->logic_conditions - 4));
         this->logic_conditions = 0;
     }
@@ -494,7 +492,7 @@ void Sprite::InitLogic(int param_1)
     if (piVar1 != 0) {
         piVar4 = piVar1 + 1;
         *piVar1 = param_1;
-        FUN_00424b00(piVar4, 8, param_1, (void*)0x41d850, (void*)0x405770);
+        FUN_00424b00(piVar4, 8, param_1, (void*)0x41d850, (void(__cdecl*)(void*))0x405770);
     }
     this->logic_conditions = piVar4;
 

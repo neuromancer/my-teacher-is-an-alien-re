@@ -33,7 +33,9 @@
 #define S32 signed long
 #endif
 
+#ifndef FAR
 #define FAR
+#endif
 
 //
 // Handle to sample and driver being managed by pipeline filter
