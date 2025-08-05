@@ -129,33 +129,32 @@ int Mouse::LBLParse(char* line)
 /* Function start: 0x41F200 */
 void Mouse::DrawCursor()
 {
-    if (m_fields[59] == 0) {
-        ShowError("missing mouse");
+    Sprite* sprite = *(Sprite**)((char*)this + 0xec);
+    if (sprite == 0) {
+        ShowError("missing mouse ");
     }
 
-    int mouse_x = 0;
     int* mouse_coords = *(int**)(DAT_00436968 + 0x1a0);
-    if (mouse_coords != 0) {
-        mouse_x = *mouse_coords;
+
+    int final_x = 0;
+    if (mouse_coords) {
+        final_x = mouse_coords[0];
     }
 
-    Sprite* sprite = (Sprite*)m_fields[59];
-    int hotspot_x = 0;
-    if (sprite != 0) {
-        hotspot_x = *(int*)&m_fields[sprite->handle * 2 + 61];
+    if (sprite) {
+        final_x -= *(int*)((char*)this + sprite->field_0x90 * 8 + 0xf4);
     }
 
-    int mouse_y = 0;
-    if (mouse_coords != 0) {
-        mouse_y = mouse_coords[1];
+    int final_y = 0;
+    if (mouse_coords) {
+        final_y = mouse_coords[1];
     }
 
-    int hotspot_y = 0;
-    if (sprite != 0) {
-        hotspot_y = *(int*)&m_fields[sprite->handle * 2 + 62];
+    if (sprite) {
+        final_y -= *(int*)((char*)this + sprite->field_0x90 * 8 + 0xf8);
     } else {
-        hotspot_y = *(int*)m_fields[60];
+        final_y -= *(int*)((char*)this + 0xf0);
     }
 
-    sprite->Do(mouse_x - hotspot_x, mouse_y - hotspot_y, 0, 0x3ff00000);
+    sprite->Do(final_x, final_y, 0, 0x3ff00000);
 }

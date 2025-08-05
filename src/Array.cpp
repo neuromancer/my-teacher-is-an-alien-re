@@ -33,3 +33,28 @@ void Array_Cleanup(void* array, unsigned int element_size, int num_elements, voi
         // Exception handler
     }
 }
+
+/* Function start: 0x424b00 */
+void Array_Iterate(void* array, unsigned int element_size, int num_elements, void (*callback)(void*), void (*cleanup_function)(void*))
+{
+    volatile int i = 0;
+    //volatile int normal_completion = 0;
+
+    __try {
+        if (0 < num_elements) {
+            do {
+                callback(array);
+                //cleanup_function(array);
+
+                array = (char*)array + element_size;
+                i++;
+            } while (num_elements > i);
+        }
+        //normal_completion = 1;
+    }
+    __except(EXCEPTION_EXECUTE_HANDLER) {
+        /*if (normal_completion == 0) {
+            // The compiler will automatically generate the call to the unwind function.
+        }*/
+    }
+}

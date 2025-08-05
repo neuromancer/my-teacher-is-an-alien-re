@@ -14,6 +14,14 @@ def read_assembly(function_name, file_path):
     with open(file_path, 'r') as file:
         assembly = file.read()
 
+    if f";	COMDAT ?{function_name}@" in assembly:
+        print("Symbols detected in assembly code:")
+        # If the function is a COMDAT, we need to handle it differently
+        symbols = assembly.split(f";	COMDAT ?{function_name}@")[2]
+        symbols = symbols.split(f"_TEXT	SEGMENT")[1]
+        symbols = symbols.split(f"?{function_name}@")[0]
+        print(symbols)
+
     # Parse assembly code
     if f"; {function_name}, COMDAT" in assembly:
         assembly = assembly.split(f"; {function_name}, COMDAT")[1]
@@ -127,6 +135,7 @@ def main():
 
     similarity, comparison_text = get_similarity(args.function_name, args.disassembled_code)
 
+    print (f"Comparison for function '{args.function_name}':")
     if similarity is None:
         print(comparison_text)
         sys.exit(1)

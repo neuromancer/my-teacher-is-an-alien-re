@@ -2,5 +2,6 @@
 #define ARRAY_H
 
 void Array_Cleanup(void* array, unsigned int element_size, int num_elements, void (*cleanup_function)(void*));
+void Array_Iterate(void* array, unsigned int element_size, int num_elements, void (*callback)(void*), void (*cleanup_function)(void*));
 
 #endif // ARRAY_H
