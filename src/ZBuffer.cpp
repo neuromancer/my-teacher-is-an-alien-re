@@ -14,6 +14,8 @@ extern "C" {
     void SC__ZBuffer___ZBuffer(void*, int);
     void SC__ZBuffer__ClearList(void*);
     void ShowError(const char*, ...);
+    void SC__ZBuffer__Node_dtor(void);
+    void SC_ZBuffer_vftable_placeholder(void);
 }
 
 // This is a guess based on usage.
@@ -140,5 +142,91 @@ void ZBuffer::CleanUpVBuffer()
         void (**vtable)(int) = *(void (***)(int))((char*)this + 0x8);
         (*vtable)(1);
         *(void**)((char*)this + 0x8) = 0;
+    }
+}
+
+/* Function start: 0x4016A0 */
+ZBuffer::~ZBuffer()
+{
+    *(void**)this = (void*)0x431058;
+    SC_ZBuffer_vftable_placeholder();
+}
+
+/* Function start: 0x401710 */
+void* ZBuffer::PopNode(int* param_1)
+{
+    int* piVar1 = (int*)param_1[2];
+    if (piVar1 != 0) {
+        if ((int*)*param_1 == piVar1) {
+            *param_1 = piVar1[1];
+        }
+        if ((int*)param_1[1] == piVar1) {
+            param_1[1] = *piVar1;
+        }
+        if (*piVar1 != 0) {
+            *(int*)(*piVar1 + 4) = piVar1[1];
+        }
+        void** puVar2 = (void**)((void**)param_1[2])[1];
+        if (puVar2 != 0) {
+            *puVar2 = *(void**)param_1[2];
+        }
+        void* uVar3 = 0;
+        void** puVar2_2 = (void**)param_1[2];
+        if (puVar2_2 != 0) {
+            uVar3 = (void*)puVar2_2[2];
+            puVar2_2[2] = 0;
+            *puVar2_2 = 0;
+            puVar2_2[1] = 0;
+            FreeFromGlobalHeap(puVar2_2);
+            param_1[2] = 0;
+        }
+        param_1[2] = *param_1;
+        return uVar3;
+    }
+    return 0;
+}
+
+/* Function start: 0x401560 */
+void ZBuffer::ClearList(int* param_1)
+{
+    if (*param_1 != 0) {
+        param_1[2] = *param_1;
+        do {
+            int* piVar1 = (int*)param_1[2];
+            void* local_18;
+            if (piVar1 == 0) {
+                local_18 = 0;
+            } else {
+                if ((int*)*param_1 == piVar1) {
+                    *param_1 = piVar1[1];
+                }
+                if ((int*)param_1[1] == piVar1) {
+                    param_1[1] = *piVar1;
+                }
+                if (*piVar1 != 0) {
+                    *(int*)(*piVar1 + 4) = piVar1[1];
+                }
+                void** puVar2 = (void**)((void**)param_1[2])[1];
+                if (puVar2 != 0) {
+                    *puVar2 = *(void**)param_1[2];
+                }
+                local_18 = 0;
+                void** puVar2_2 = (void**)param_1[2];
+                if (puVar2_2 != 0) {
+                    local_18 = (void*)puVar2_2[2];
+                    puVar2_2[2] = 0;
+                    *puVar2_2 = 0;
+                    puVar2_2[1] = 0;
+                    FreeFromGlobalHeap(puVar2_2);
+                    param_1[2] = 0;
+                }
+                param_1[2] = *param_1;
+            }
+            if (local_18 != 0) {
+                *(void**)local_18 = (void*)0x431058;
+                SC__ZBuffer__Node_dtor();
+                FreeFromGlobalHeap(local_18);
+            }
+        } while (*param_1 != 0);
     }
 }
