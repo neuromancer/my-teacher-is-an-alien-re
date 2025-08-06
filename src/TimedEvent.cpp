@@ -9,7 +9,6 @@ extern "C" {
     void TimedEvent__CopyConstructor(void*, void*);
     void* TimedEvent__Create(void*, void*, int);
     void FUN_0041c000(void*, char*, int, int, int);
-    void BaseObject_Init(void*);
     void Timer_Init(void*);
     void Timer_Reset(void*);
 }
@@ -22,34 +21,29 @@ const char* s_illegal_type__d__TimedEvent__Upd_004350ac = "illegal type %d, Time
 const char* s__3_3d____2_2d_004350d0 = "%3.3d : %2.2d";
 
 /* Function start: 0x401B60 */
-void TimedEvent::Init()
+TimedEvent::TimedEvent() : Parser(), m_timer_at_a0(), m_timer_at_b4(), m_timer()
 {
-    BaseObject_Init(this);
-    // The vtable is set by the compiler, so we don't need to do anything for field_0x0
+    memset(this->m_fields_at_88, 0, sizeof(this->m_fields_at_88));
 
-    memset(this->field_0x88, 0, sizeof(this->field_0x88));
+    this->m_fields_at_88[0] = 0xd;
+    Timer_Reset(&this->m_timer_at_a0);
 
-    Timer_Init(&this->m_timer2);
-    Timer_Init(&this->m_timer3);
-
-    this->field_0x88[0] = 0xd;
-    Timer_Reset(&this->m_timer2);
-
-    this->m_allocated_memory = AllocateMemory(0x10);
-    if (this->m_allocated_memory)
+    this->m_allocated_memory_at_c8 = AllocateMemory(0x10);
+    if (this->m_allocated_memory_at_c8)
     {
-        ((int*)this->m_allocated_memory)[3] = 0;
-        ((int*)this->m_allocated_memory)[0] = 0;
-        ((int*)this->m_allocated_memory)[1] = 0;
-        ((int*)this->m_allocated_memory)[2] = ((int*)this->m_allocated_memory)[0];
+        int* p = (int*)this->m_allocated_memory_at_c8;
+        p[3] = 0;
+        p[0] = 0;
+        p[1] = 0;
+        p[2] = p[0];
     }
 }
 
 /* Function start: 0x402310 */
-TimedEvent::TimedEvent(const TimedEvent& other)
+TimedEvent::TimedEvent(const TimedEvent& other) : Parser()
 {
     // This is a copy of the data, not a real copy constructor
-    memcpy(&this->m_type, &other.m_type, sizeof(TimedEvent) - 4);
+    memcpy(&this->vtable, &other.vtable, sizeof(TimedEvent));
 }
 
 /* Function start: 0x402420 */
@@ -88,7 +82,7 @@ TimedEvent* TimedEvent::Create(TimedEventPool* pool, void* callback, void* data)
 int TimedEvent::Update()
 {
     int remaining_time = m_duration - m_timer.Update();
-    if (m_type == 0) {
+    if (m_fields_at_88[0] == 0) {
         if (remaining_time > 0) {
             return 0;
         }
@@ -109,7 +103,7 @@ int TimedEvent::Update()
         }
         return 1;
     }
-    if (m_type == 1) {
+    if (m_fields_at_88[0] == 1) {
         if (remaining_time > 0) {
             return 0;
         }
@@ -126,8 +120,8 @@ int TimedEvent::Update()
         m_timer.Reset();
         return 0;
     }
-    if (m_type != 2) {
-        ShowError(s_illegal_type__d__TimedEvent__Upd_004350ac, m_type);
+    if (m_fields_at_88[0] != 2) {
+        ShowError(s_illegal_type__d__TimedEvent__Upd_004350ac, m_fields_at_88[0]);
     }
     sprintf(DAT_00436960, s__3_3d____2_2d_004350d0, remaining_time / 60000, (remaining_time / 1000) % 60);
     FUN_0041c000(g_SoundManager, DAT_00436960, 0x208, 0x1c2, 10000);
