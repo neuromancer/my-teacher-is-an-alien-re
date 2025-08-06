@@ -9,8 +9,6 @@ extern "C" {
     void TimedEvent__CopyConstructor(void*, void*);
     void* TimedEvent__Create(void*, void*, int);
     void FUN_0041c000(void*, char*, int, int, int);
-    void Timer_Init(void*);
-    void Timer_Reset(void*);
 }
 
 extern void* g_GameStruct2;
@@ -26,7 +24,7 @@ TimedEvent::TimedEvent() : Parser(), m_timer_at_a0(), m_timer_at_b4(), m_timer()
     memset(this->m_fields_at_88, 0, sizeof(this->m_fields_at_88));
 
     this->m_fields_at_88[0] = 0xd;
-    Timer_Reset(&this->m_timer_at_a0);
+    this->m_timer_at_a0.Reset();
 
     this->m_allocated_memory_at_c8 = AllocateMemory(0x10);
     if (this->m_allocated_memory_at_c8)
