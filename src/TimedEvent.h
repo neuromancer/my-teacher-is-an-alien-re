@@ -5,10 +5,14 @@
 
 class TimedEvent;
 
+struct TimedEventList {
+    TimedEvent* head;
+    TimedEvent* tail;
+};
+
 class TimedEventPool {
 public:
-    int field_0x0;
-    int field_0x4;
+    TimedEventList list;
     int m_count;
     TimedEvent* m_free_list;
     TimedEvent* m_pool;

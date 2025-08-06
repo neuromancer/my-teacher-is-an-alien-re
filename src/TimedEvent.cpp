@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "Memory.h"
+#include "SC_OnScreenMessage.h"
 
 extern "C" {
     void ShowError(const char*, ...);
@@ -83,66 +84,78 @@ TimedEvent::~TimedEvent()
 int TimedEvent::Update()
 {
     int remaining_time = m_duration - m_timer.Update();
+    TimedEventList* list = (TimedEventList*)g_GameStruct2;
+
     if (m_type == 0) {
         if (remaining_time > 0) {
             return 0;
         }
-        if (m_next_event_data != 0) {
-            void* new_event = TimedEvent__Create(g_GameStruct2, *(void**)((char*)g_GameStruct2 + 4), 0);
-            TimedEvent__CopyConstructor((char*)new_event + 8, m_next_event_data);
-            if (*(void**)((char*)g_GameStruct2 + 4) == 0) {
-                *(void**)g_GameStruct2 = new_event;
+
+        if (m_next_event_data) {
+            TimedEvent *new_event = (TimedEvent*)TimedEvent__Create((TimedEventPool*)g_GameStruct2, list->tail, 0);
+            TimedEvent__CopyConstructor(new_event, m_next_event_data);
+
+            if (list->tail == NULL) {
+                list->head = new_event;
             } else {
-                **(void***)((char*)g_GameStruct2 + 4) = new_event;
+                *(TimedEvent**)(list->tail) = new_event;
             }
-            *(void**)((char*)g_GameStruct2 + 4) = new_event;
+            list->tail = new_event;
         }
-        if (m_next_event_data != 0) {
+
+        if (m_next_event_data) {
             TimedEvent_dtor(m_next_event_data);
             FreeFromGlobalHeap(m_next_event_data);
             m_next_event_data = 0;
         }
         return 1;
-    }
-    if (m_type == 1) {
+    } else if (m_type == 1) {
         if (remaining_time > 0) {
             return 0;
         }
-        if (m_next_event_data != 0) {
-            void* new_event = TimedEvent__Create(g_GameStruct2, *(void**)((char*)g_GameStruct2 + 4), 0);
-            TimedEvent__CopyConstructor((char*)new_event + 8, m_next_event_data);
-            if (*(void**)((char*)g_GameStruct2 + 4) == 0) {
-                *(void**)g_GameStruct2 = new_event;
+
+        if (m_next_event_data) {
+            TimedEvent *new_event = (TimedEvent*)TimedEvent__Create((TimedEventPool*)g_GameStruct2, list->tail, 0);
+            TimedEvent__CopyConstructor(new_event, m_next_event_data);
+
+            if (list->tail == NULL) {
+                list->head = new_event;
             } else {
-                **(void***)((char*)g_GameStruct2 + 4) = new_event;
+                *(TimedEvent**)(list->tail) = new_event;
             }
-            *(void**)((char*)g_GameStruct2 + 4) = new_event;
+            list->tail = new_event;
         }
+
         m_timer.Reset();
         return 0;
-    }
-    if (m_type != 2) {
+    } else if (m_type == 2) {
+        sprintf(DAT_00436960, s__3_3d____2_2d_004350d0, remaining_time / 60000, (remaining_time / 1000) % 60);
+        FUN_0041c000(g_SoundManager, DAT_00436960, 0x208, 0x1c2, 10000);
+
+        if (remaining_time > 0) {
+            return 0;
+        }
+
+        if (m_next_event_data) {
+            TimedEvent *new_event = (TimedEvent*)TimedEvent__Create((TimedEventPool*)g_GameStruct2, list->tail, 0);
+            TimedEvent__CopyConstructor(new_event, m_next_event_data);
+
+            if (list->tail == NULL) {
+                list->head = new_event;
+            } else {
+                *(TimedEvent**)(list->tail) = new_event;
+            }
+            list->tail = new_event;
+        }
+
+        if (m_next_event_data) {
+            TimedEvent_dtor(m_next_event_data);
+            FreeFromGlobalHeap(m_next_event_data);
+            m_next_event_data = 0;
+        }
+        return 1;
+    } else {
         ShowError(s_illegal_type__d__TimedEvent__Upd_004350ac, m_type);
     }
-    sprintf(DAT_00436960, s__3_3d____2_2d_004350d0, remaining_time / 60000, (remaining_time / 1000) % 60);
-    FUN_0041c000(g_SoundManager, DAT_00436960, 0x208, 0x1c2, 10000);
-    if (remaining_time > 0) {
-        return 0;
-    }
-    if (m_next_event_data != 0) {
-        void* new_event = TimedEvent__Create(g_GameStruct2, *(void**)((char*)g_GameStruct2 + 4), 0);
-        TimedEvent__CopyConstructor((char*)new_event + 8, m_next_event_data);
-        if (*(void**)((char*)g_GameStruct2 + 4) == 0) {
-            *(void**)g_GameStruct2 = new_event;
-        } else {
-            **(void***)((char*)g_GameStruct2 + 4) = new_event;
-        }
-        *(void**)((char*)g_GameStruct2 + 4) = new_event;
-    }
-    if (m_next_event_data != 0) {
-        TimedEvent_dtor(m_next_event_data);
-        FreeFromGlobalHeap(m_next_event_data);
-        m_next_event_data = 0;
-    }
-    return 1;
+    return 0;
 }
