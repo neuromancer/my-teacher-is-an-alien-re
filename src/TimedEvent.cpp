@@ -9,6 +9,9 @@ extern "C" {
     void TimedEvent__CopyConstructor(void*, void*);
     void* TimedEvent__Create(void*, void*, int);
     void FUN_0041c000(void*, char*, int, int, int);
+    void BaseObject_Init(void*);
+    void Timer_Init(void*);
+    void Timer_Reset(void*);
 }
 
 extern void* g_GameStruct2;
@@ -17,6 +20,30 @@ extern char DAT_00436960[256];
 
 const char* s_illegal_type__d__TimedEvent__Upd_004350ac = "illegal type %d, TimedEvent::Update";
 const char* s__3_3d____2_2d_004350d0 = "%3.3d : %2.2d";
+
+/* Function start: 0x401B60 */
+void TimedEvent::Init()
+{
+    BaseObject_Init(this);
+    // The vtable is set by the compiler, so we don't need to do anything for field_0x0
+
+    memset(this->field_0x88, 0, sizeof(this->field_0x88));
+
+    Timer_Init(&this->m_timer2);
+    Timer_Init(&this->m_timer3);
+
+    this->field_0x88[0] = 0xd;
+    Timer_Reset(&this->m_timer2);
+
+    this->m_allocated_memory = AllocateMemory(0x10);
+    if (this->m_allocated_memory)
+    {
+        ((int*)this->m_allocated_memory)[3] = 0;
+        ((int*)this->m_allocated_memory)[0] = 0;
+        ((int*)this->m_allocated_memory)[1] = 0;
+        ((int*)this->m_allocated_memory)[2] = ((int*)this->m_allocated_memory)[0];
+    }
+}
 
 /* Function start: 0x402310 */
 TimedEvent::TimedEvent(const TimedEvent& other)

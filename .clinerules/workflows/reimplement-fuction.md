@@ -27,9 +27,13 @@ If similarity is >= 90%, you can stop. If you give up, make sure you still provi
 
 * `code/strings.txt` is a file containing the addresses and strings extracted from the binary. It is very important to review it when you see a string, as it have valuable information.
 
-* `docs/game.txt` is a file containing a description of the gameplay. It will help to understand the different puzzles implemented.
+* `docs/game.txt` is a document containing a description of the gameplay. It will help to understand the different puzzles implemented.
+
+* `docs/exceptions.md` is a document containing a high level description on how Visual Studio C++ compiles exceptions into low-level data structures. If you suspect there is some exception in the code, you must read it.
 
 * `data/demo/mis` is a directory containing "game scripts" in .txt format. Please take a look to them so you can understand what kind of data is parsed and use them to understand which class will need which code to be parsed.
+
+
 
 # Requirements:
 

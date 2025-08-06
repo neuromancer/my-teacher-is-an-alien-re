@@ -21,7 +21,7 @@ public:
     TimedEvent(const TimedEvent& other);
     ~TimedEvent();
 
-    void* Init();
+    void Init();
     void SetData(int);
     int Update();
     void Delete();
@@ -33,8 +33,12 @@ private:
     int field_0x8;
     int m_duration;
     void* m_next_event_data;
-    Timer m_timer;
-    char field_0x30[0x90]; // Placeholder for the rest
+    Timer m_timer; // at 0x14
+    char unknown_fields[0x88 - 0x14 - 20];
+    int field_0x88[6];
+    Timer m_timer2; // at 0xa0
+    Timer m_timer3; // at 0xb4
+    void* m_allocated_memory; // at 0xc8
 };
 
 #endif // TIMEDEVENT_H
