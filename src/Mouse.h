@@ -2,6 +2,7 @@
 #define MOUSE_H
 
 #include "Parser.h"
+#include "Sprite.h"
 
 class Mouse : public Parser {
 public:
@@ -17,6 +18,7 @@ private:
     char* m_examine_str;
     char* m_pickup_str;
     char* m_unknown_str;
+
     char* m_fields[78];
 };
 

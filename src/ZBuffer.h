@@ -6,8 +6,8 @@
 
 class ZBuffer : public Parser {
 public:
-    int field_0x88;
-    int field_0x8c;
+    int m_address;
+    int m_from;
     char pad2[0xa0 - 0x8c - 4];
     Timer timer; // 0xa0
 

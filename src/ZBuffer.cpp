@@ -3,19 +3,17 @@
 #include "string.h"
 #include <stdlib.h>
 #include "VBuffer.h"
-
+#include "Memory.h"
 #include "Timer.h"
 
 extern "C" {
     void* SC__ZBuffer__PopNode(void*);
-    void FreeFromGlobalHeap(void*);
     void* SC__ZBuffer__PopNode_2(void*);
     void VBuffer_VBuffer_Owner___VBuffer_Owner(void*);
     void* SC__ZBuffer__PopNode_3(void*);
     void SC__ZBuffer___ZBuffer(void*, int);
     void SC__ZBuffer__ClearList(void*);
     void ShowError(const char*, ...);
-    void VBuffer___VBuffer(void*);
 }
 
 // This is a guess based on usage.
@@ -34,9 +32,9 @@ extern SoundManager* g_SoundManager;
 void ZBuffer::Update(int param_1, int param_2)
 {
     if (timer.Update() > 10000) {
-        SC_Message_Send(3, field_0x88, field_0x88, field_0x8c, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, m_address, m_address, m_from, 0x14, 0, 0, 0, 0, 0);
     }
-    if (field_0x88 == param_2) {
+    if (m_address == param_2) {
         ShowError("SC_ZBuffer::Update");
     }
 }
@@ -51,7 +49,7 @@ void ZBuffer::AddMessage(int param_1)
 /* Function start: 0x401350 */
 int ZBuffer::ProcessMessage(void* param_1)
 {
-    if (*(int*)((char*)param_1 + 0x88) != this->field_0x88) {
+    if (*(int*)((char*)param_1 + 0x88) != this->m_address) {
         return 0;
     }
     this->timer.Reset();
@@ -132,9 +130,9 @@ int ZBuffer::ProcessMessage(void* param_1)
 /* Function start: 0x401500 */
 void ZBuffer::CleanUpVBuffer()
 {
-    void* this_00 = *(void**)((char*)this + 0x4);
+    VBuffer* this_00 = *(VBuffer**)((char*)this + 0x4);
     if (this_00 != 0) {
-        VBuffer___VBuffer(this_00);
+        this_00->~VBuffer();
         FreeFromGlobalHeap(this_00);
         *(void**)((char*)this + 0x4) = 0;
     }
