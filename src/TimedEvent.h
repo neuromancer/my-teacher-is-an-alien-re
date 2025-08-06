@@ -1,7 +1,6 @@
 #ifndef TIMEDEVENT_H
 #define TIMEDEVENT_H
 
-#include "Parser.h"
 #include "Timer.h"
 
 class TimedEvent;
@@ -16,7 +15,7 @@ public:
     int m_pool_size;
 };
 
-class TimedEvent : public Parser {
+class TimedEvent {
 public:
     TimedEvent();
     TimedEvent(const TimedEvent& other);
@@ -24,16 +23,12 @@ public:
 
     void SetData(int);
     int Update();
-    void Delete();
     static TimedEvent* Create(TimedEventPool*, void*, void*);
 
 private:
-    int m_fields_at_88[6];
-    Timer m_timer_at_a0;
-    Timer m_timer_at_b4;
-    void* m_allocated_memory_at_c8;
-
-    // For the update function
+    void* vtable;
+    int m_type;
+    int field_0x8;
     int m_duration;
     void* m_next_event_data;
     Timer m_timer;

@@ -9,6 +9,7 @@ extern "C" {
     void TimedEvent__CopyConstructor(void*, void*);
     void* TimedEvent__Create(void*, void*, int);
     void FUN_0041c000(void*, char*, int, int, int);
+    void TimedEvent__Cleanup(void*);
 }
 
 extern void* g_GameStruct2;
@@ -18,30 +19,21 @@ extern char DAT_00436960[256];
 const char* s_illegal_type__d__TimedEvent__Upd_004350ac = "illegal type %d, TimedEvent::Update";
 const char* s__3_3d____2_2d_004350d0 = "%3.3d : %2.2d";
 
-/* Function start: 0x401B60 */
-TimedEvent::TimedEvent() : Parser(), m_timer_at_a0(), m_timer_at_b4(), m_timer()
+/* Function start: 0x401890 */
+TimedEvent::TimedEvent() : m_timer()
 {
-    memset(this->m_fields_at_88, 0, sizeof(this->m_fields_at_88));
-
-    this->m_fields_at_88[0] = 0xd;
-    this->m_timer_at_a0.Reset();
-
-    this->m_allocated_memory_at_c8 = AllocateMemory(0x10);
-    if (this->m_allocated_memory_at_c8)
-    {
-        int* p = (int*)this->m_allocated_memory_at_c8;
-        p[3] = 0;
-        p[0] = 0;
-        p[1] = 0;
-        p[2] = p[0];
+    for (int i = 0; i < 10; i++) {
+        ((int*)this)[i] = 0;
     }
+    m_timer.Reset();
 }
 
+
 /* Function start: 0x402310 */
-TimedEvent::TimedEvent(const TimedEvent& other) : Parser()
+TimedEvent::TimedEvent(const TimedEvent& other)
 {
     // This is a copy of the data, not a real copy constructor
-    memcpy(&this->vtable, &other.vtable, sizeof(TimedEvent));
+    memcpy(&this->m_type, &other.m_type, sizeof(TimedEvent) - 4);
 }
 
 /* Function start: 0x402420 */
@@ -76,11 +68,22 @@ TimedEvent* TimedEvent::Create(TimedEventPool* pool, void* callback, void* data)
     return new_event;
 }
 
+/* Function start: 0x401910 */
+TimedEvent::~TimedEvent()
+{
+    if (m_next_event_data) {
+        TimedEvent_dtor(m_next_event_data);
+        FreeFromGlobalHeap(m_next_event_data);
+        m_next_event_data = 0;
+    }
+    // The base class destructor will be called automatically
+}
+
 /* Function start: 0x4019A0 */
 int TimedEvent::Update()
 {
     int remaining_time = m_duration - m_timer.Update();
-    if (m_fields_at_88[0] == 0) {
+    if (m_type == 0) {
         if (remaining_time > 0) {
             return 0;
         }
@@ -101,7 +104,7 @@ int TimedEvent::Update()
         }
         return 1;
     }
-    if (m_fields_at_88[0] == 1) {
+    if (m_type == 1) {
         if (remaining_time > 0) {
             return 0;
         }
@@ -118,8 +121,8 @@ int TimedEvent::Update()
         m_timer.Reset();
         return 0;
     }
-    if (m_fields_at_88[0] != 2) {
-        ShowError(s_illegal_type__d__TimedEvent__Upd_004350ac, m_fields_at_88[0]);
+    if (m_type != 2) {
+        ShowError(s_illegal_type__d__TimedEvent__Upd_004350ac, m_type);
     }
     sprintf(DAT_00436960, s__3_3d____2_2d_004350d0, remaining_time / 60000, (remaining_time / 1000) % 60);
     FUN_0041c000(g_SoundManager, DAT_00436960, 0x208, 0x1c2, 10000);
