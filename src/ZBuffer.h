@@ -17,6 +17,7 @@ public:
     void CleanUpVBuffer();
     static void ClearList(int*);
     static void* PopNode(int*);
+    static void* PopNode_2(int*);
 };
 
 #endif // ZBUFFER_H

@@ -1,36 +1,126 @@
 #include "TimedEvent.h"
 #include <string.h>
+#include <stdio.h>
+#include "Memory.h"
+
+extern "C" {
+    void ShowError(const char*, ...);
+    void TimedEvent_dtor(void*);
+    void TimedEvent__CopyConstructor(void*, void*);
+    void* TimedEvent__Create(void*, void*, int);
+    void FUN_0041c000(void*, char*, int, int, int);
+}
+
+extern void* g_GameStruct2;
+extern void* g_SoundManager;
+extern char DAT_00436960[256];
+
+const char* s_illegal_type__d__TimedEvent__Upd_004350ac = "illegal type %d, TimedEvent::Update";
+const char* s__3_3d____2_2d_004350d0 = "%3.3d : %2.2d";
 
 /* Function start: 0x402310 */
 TimedEvent::TimedEvent(const TimedEvent& other)
 {
-    field_0x8 = other.field_0x8;
-    field_0xc = other.field_0xc;
-    memcpy(field_0x10, other.field_0x10, sizeof(field_0x10));
-    field_0x30 = other.field_0x30;
-    field_0x38 = other.field_0x38;
-    field_0x3c = other.field_0x3c;
-    memcpy(field_0x40, other.field_0x40, sizeof(field_0x40));
-    field_0x80 = other.field_0x80;
-    field_0x88 = other.field_0x88;
-    field_0x8c = other.field_0x8c;
-    field_0x90 = other.field_0x90;
-    field_0x94 = other.field_0x94;
-    field_0x98 = other.field_0x98;
-    field_0x9c = other.field_0x9c;
-    field_0xa0 = other.field_0xa0;
-    field_0xa4 = other.field_0xa4;
-    field_0xa8 = other.field_0xa8;
-    field_0xac = other.field_0xac;
-    field_0xb0 = other.field_0xb0;
-    field_0xb4 = other.field_0xb4;
-    field_0xb8 = other.field_0xb8;
-    field_0xbc = other.field_0xbc;
+    // This is a copy of the data, not a real copy constructor
+    memcpy(&this->m_type, &other.m_type, sizeof(TimedEvent) - 4);
 }
 
 /* Function start: 0x402420 */
-void* TimedEvent::Create(void* callback, void* data)
+TimedEvent* TimedEvent::Create(TimedEventPool* pool, void* callback, void* data)
 {
-    // This function is complex and I will skip it for now.
-    return 0;
+    if (pool->m_free_list == 0) {
+        TimedEvent* new_pool = (TimedEvent*)AllocateMemory(pool->m_pool_size * 200 + 4);
+        *(TimedEvent**)new_pool = pool->m_pool;
+        pool->m_pool = new_pool;
+
+        TimedEvent* current = (TimedEvent*)((char*)new_pool + pool->m_pool_size * 200);
+        for (int i = 0; i < pool->m_pool_size; i++) {
+            *(TimedEvent**)current = pool->m_free_list;
+            pool->m_free_list = current;
+            current = (TimedEvent*)((char*)current - 200);
+        }
+    }
+
+    TimedEvent* new_event = pool->m_free_list;
+    pool->m_free_list = *(TimedEvent**)new_event;
+
+    *(void**)((char*)new_event + 4) = callback;
+    *(void**)new_event = data;
+    pool->m_count++;
+
+    memset((char*)new_event + 8, 0, 0x30 * 4);
+
+    for (int i = 0; i < 1; i++) {
+        //Message_Constructor((char*)new_event + 8 + i * 0xc0, 0,0,0,0,0,0,0,0,0,0);
+    }
+
+    return new_event;
+}
+
+/* Function start: 0x4019A0 */
+int TimedEvent::Update()
+{
+    int remaining_time = m_duration - m_timer.Update();
+    if (m_type == 0) {
+        if (remaining_time > 0) {
+            return 0;
+        }
+        if (m_next_event_data != 0) {
+            void* new_event = TimedEvent__Create(g_GameStruct2, *(void**)((char*)g_GameStruct2 + 4), 0);
+            TimedEvent__CopyConstructor((char*)new_event + 8, m_next_event_data);
+            if (*(void**)((char*)g_GameStruct2 + 4) == 0) {
+                *(void**)g_GameStruct2 = new_event;
+            } else {
+                **(void***)((char*)g_GameStruct2 + 4) = new_event;
+            }
+            *(void**)((char*)g_GameStruct2 + 4) = new_event;
+        }
+        if (m_next_event_data != 0) {
+            TimedEvent_dtor(m_next_event_data);
+            FreeFromGlobalHeap(m_next_event_data);
+            m_next_event_data = 0;
+        }
+        return 1;
+    }
+    if (m_type == 1) {
+        if (remaining_time > 0) {
+            return 0;
+        }
+        if (m_next_event_data != 0) {
+            void* new_event = TimedEvent__Create(g_GameStruct2, *(void**)((char*)g_GameStruct2 + 4), 0);
+            TimedEvent__CopyConstructor((char*)new_event + 8, m_next_event_data);
+            if (*(void**)((char*)g_GameStruct2 + 4) == 0) {
+                *(void**)g_GameStruct2 = new_event;
+            } else {
+                **(void***)((char*)g_GameStruct2 + 4) = new_event;
+            }
+            *(void**)((char*)g_GameStruct2 + 4) = new_event;
+        }
+        m_timer.Reset();
+        return 0;
+    }
+    if (m_type != 2) {
+        ShowError(s_illegal_type__d__TimedEvent__Upd_004350ac, m_type);
+    }
+    sprintf(DAT_00436960, s__3_3d____2_2d_004350d0, remaining_time / 60000, (remaining_time / 1000) % 60);
+    FUN_0041c000(g_SoundManager, DAT_00436960, 0x208, 0x1c2, 10000);
+    if (remaining_time > 0) {
+        return 0;
+    }
+    if (m_next_event_data != 0) {
+        void* new_event = TimedEvent__Create(g_GameStruct2, *(void**)((char*)g_GameStruct2 + 4), 0);
+        TimedEvent__CopyConstructor((char*)new_event + 8, m_next_event_data);
+        if (*(void**)((char*)g_GameStruct2 + 4) == 0) {
+            *(void**)g_GameStruct2 = new_event;
+        } else {
+            **(void***)((char*)g_GameStruct2 + 4) = new_event;
+        }
+        *(void**)((char*)g_GameStruct2 + 4) = new_event;
+    }
+    if (m_next_event_data != 0) {
+        TimedEvent_dtor(m_next_event_data);
+        FreeFromGlobalHeap(m_next_event_data);
+        m_next_event_data = 0;
+    }
+    return 1;
 }

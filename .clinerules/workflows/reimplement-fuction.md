@@ -35,6 +35,8 @@ If similarity is >= 90%, you can stop. If you give up, make sure you still provi
 
 * Remember that the assembly code and the strings are the only source of truth, the decompiled code could be wrong or mislabeled.
 * Define the class on the top of the file.
+* DO NOT SKIP FUNCTIONS IF THEY ARE VERY COMPLEX, use the best similarity code, even if it is not very good.
+* DO NOT REMOVE CODE THAT IS ALREADY THERE
 * Include the full strings in the reimplemented code as constants, do NOT use explicit pointers to strings that are constants.
 * It is very important to include the following header before each reimplemented function with the address of the function:
 
