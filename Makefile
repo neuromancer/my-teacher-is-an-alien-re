@@ -22,4 +22,13 @@ $(OUT_DIR)/%.obj $(OUT_DIR)/%.asm: src/%.cpp
 clean:
 	rm -f $(OUT_DIR)/*.obj $(OUT_DIR)/*.asm $(OUT_DIR)/*.map $(OUT_DIR)/*.stdout TEACHER.EXE
 
+sort:
+	@python3 bin/sortByAddress.py
+
+report:
+	@python3 bin/compileAndReport.py
+
+progress:
+	@python3 bin/showProgress.py
+
 .PHONY: all clean
