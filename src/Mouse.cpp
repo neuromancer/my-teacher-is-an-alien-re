@@ -1,3 +1,4 @@
+#include <windows.h>
 #include "Mouse.h"
 #include "Sprite.h"
 #include "Parser.h"
@@ -16,6 +17,8 @@ extern "C" {
     void FUN_00425fd0(char*, char*, int);
     void ShowError(const char*, ...);
     extern int DAT_00436968;
+    extern char DAT_00437506;
+    extern char DAT_00437507;
 }
 
 /* Function start: 0x41ECA0 */
@@ -157,4 +160,17 @@ void Mouse::DrawCursor()
     }
 
     sprite->Do(final_x, final_y, 0, 0x3ff00000);
+}
+
+/* Function start: 0x422D98 */
+int Mouse::SetCursorVisible(unsigned int param_1)
+{
+    if (DAT_00437506 != '\0') {
+        char cVar1 = (char)(param_1 & 1);
+        if (cVar1 != DAT_00437507) {
+            DAT_00437507 = cVar1;
+            ShowCursor(param_1 & 1);
+        }
+    }
+    return 0;
 }

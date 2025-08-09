@@ -10,6 +10,7 @@ public:
     ~Mouse();
     int LBLParse(char* line);
     void DrawCursor();
+    int SetCursorVisible(unsigned int);
 
 private:
     void CleanupFields();

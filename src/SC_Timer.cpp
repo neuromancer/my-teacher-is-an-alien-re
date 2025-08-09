@@ -3,39 +3,35 @@
 #include "Memory.h"
 #include "Timer.h"
 #include "string.h"
+#include "TimedEvent.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 // Forward declarations
-class TimedEvent {
-public:
-    static int Update(TimedEvent* pThis);
-    static void Delete(TimedEvent* pThis);
-};
-
 extern "C" {
     void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
     void* TimedEvent__Init(void*);
     void TimedEvent__SetData(void*, int);
+    void TimedEvent__delete(int);
+    void ShowError(const char*, ...);
 }
 
 /* Function start: 0x401B60 */
 SC_Timer::SC_Timer()
 {
-    field_0x88 = 0;
-field_0x8c = 0;
-field_0x90 = 0;
-field_0x94 = 0;
-field_0x98 = 0;
-field_0x9c = 0;
+    m_messageId = 0;
+    m_messageData = 0;
+    field_0x90 = 0;
+    field_0x94 = 0;
+    field_0x98 = 0;
+    field_0x9c = 0;
 
     timer1.Init();
     timer2.Init();
 
-    field_0x88 = 0xd;
+    m_messageId = 0xd;
     timer1.Reset();
 
     m_eventList = (Queue*)AllocateMemory(0x10);
@@ -51,53 +47,33 @@ SC_Timer::~SC_Timer()
 /* Function start: 0x401E30 */
 void SC_Timer::Update(int param_1, int param_2)
 {
-    if ((timer1.Update() > 10000) && (*(int**)m_eventList == 0)) {
-        SC_Message_Send(3, field_0x88, field_0x88, field_0x8c, 0x14, 0, 0, 0, 0, 0);
+    if ((timer1.Update() > 10000) && (m_eventList->m_head == 0)) {
+        SC_Message_Send(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0, 0, 0);
     }
 
     timer1.Reset();
 
-    int** eventList = (int**)m_eventList;
-    eventList[2] = *eventList;
+    m_eventList->m_current = m_eventList->m_head;
 
-    while (eventList[2] != 0) {
-        if (TimedEvent::Update((TimedEvent*)eventList[2])) {
-            int* to_delete = eventList[2];
-            if (*eventList == to_delete) {
-                *eventList = (int*)to_delete[1];
-            }
-            if (eventList[1] == to_delete) {
-                eventList[1] = (int*)*to_delete;
-            }
-            if (*to_delete) {
-                ((int*)*to_delete)[1] = to_delete[1];
-            }
-            if (to_delete[1]) {
-                *(int**)(to_delete[1]) = (int*)*to_delete;
-            }
-
-            void* data = (void*)to_delete[2];
-            to_delete[2] = 0;
-            *to_delete = 0;
-            to_delete[1] = 0;
-            FreeMemory(to_delete);
-
+    while (m_eventList->m_current != 0) {
+        if (((TimedEvent*)((QueueNode*)m_eventList->m_current)->data)->Update()) {
+            void* data = m_eventList->Pop();
             if (data) {
-                TimedEvent::Delete((TimedEvent*)data);
+                TimedEvent__delete((int)data);
                 FreeMemory(data);
             }
-            eventList[2] = *eventList;
+            m_eventList->m_current = m_eventList->m_head;
         } else {
-            if (eventList[1] == eventList[2]) {
+            if (m_eventList->m_tail == m_eventList->m_current) {
                 break;
             }
-            if (eventList[2]) {
-                eventList[2] = (int*)((int*)eventList[2])[1];
+            if (m_eventList->m_current) {
+                m_eventList->m_current = ((QueueNode*)m_eventList->m_current)->next;
             }
         }
     }
 
-    if (field_0x88 != param_2) {
+    if (m_messageId != param_2) {
         return;
     }
 
@@ -116,91 +92,74 @@ void SC_Timer::AddMessage(int param_1)
 /* Function start: 0x401FB0 */
 int SC_Timer::Input(void* param_1)
 {
-    if (*(int*)((char*)param_1 + 0x88) != field_0x88) {
+    if (*(int*)((char*)param_1 + 0x88) != m_messageId) {
         return 0;
     }
 
     timer1.Reset();
 
-    int message = *(int*)((char*)param_1 + 0x98);
+    void* data;
+    TimedEvent* new_event;
 
-    if (message == 0xe) {
-    }
-    else if (message == 0xf) {
-        int** eventList = (int**)m_eventList;
-        if (*eventList != 0) {
-            eventList[2] = *eventList;
-            while (eventList[2] != 0) {
-                void* data = (void*)((int*)eventList[2])[2];
-                if (data) {
-                    TimedEvent::Delete((TimedEvent*)data);
+    switch (*(int*)((char*)param_1 + 0x98)) {
+        case 0xe:
+            break;
+        case 0xf:
+            m_eventList->m_current = m_eventList->m_head;
+            while (m_eventList->m_current != 0) {
+                data = m_eventList->Pop();
+                if (data != 0) {
+                    TimedEvent__delete((int)data);
                     FreeMemory(data);
                 }
-                int* to_delete = eventList[2];
-                if (*eventList == to_delete) {
-                    *eventList = (int*)to_delete[1];
-                }
-                if (eventList[1] == to_delete) {
-                    eventList[1] = (int*)*to_delete;
-                }
-                if (*to_delete) {
-                    ((int*)*to_delete)[1] = to_delete[1];
-                }
-                if (to_delete[1]) {
-                    *(int**)(to_delete[1]) = (int*)*to_delete;
-                }
-                FreeMemory(to_delete);
-                eventList[2] = *eventList;
+                m_eventList->m_current = m_eventList->m_head;
             }
-        }
-    }
-    else if (message == 0x13) {
-        if (*(int*)((char*)param_1 + 0xbc) == 0) {
-            ShowError("SC_Timer::Input");
-        }
-        TimedEvent* new_event = (TimedEvent*)AllocateMemory(0x28);
-        if (new_event) {
-            TimedEvent__Init((void*)new_event);
-        }
-        // TimedEvent has a size of 0x28
-        *(int*)((char*)new_event + 0xc) = *(int*)((char*)param_1 + 0xb8);
-        *(int*)((char*)new_event + 0x8) = *(int*)((char*)param_1 + 0x8c);
-        *(int*)((char*)new_event + 0x10) = *(int*)((char*)param_1 + 0xbc);
-        *(int*)((char*)param_1 + 0xbc) = 0;
-        TimedEvent__SetData((void*)new_event, *(int*)((char*)param_1 + 0x9c));
+            break;
+        case 0x13:
+            if (*(int*)((char*)param_1 + 0xbc) == 0) {
+                ShowError("SC_Timer::Input");
+            }
+            new_event = (TimedEvent*)AllocateMemory(0x28);
+            if (new_event) {
+                TimedEvent__Init((void*)new_event);
+            }
+            *(int*)((char*)new_event + 0xc) = *(int*)((char*)param_1 + 0xb8);
+            *(int*)((char*)new_event + 0x8) = *(int*)((char*)param_1 + 0x8c);
+            *(int*)((char*)new_event + 0x10) = *(int*)((char*)param_1 + 0xbc);
+            *(int*)((char*)param_1 + 0xbc) = 0;
+            TimedEvent__SetData((void*)new_event, *(int*)((char*)param_1 + 0x9c));
 
-            Queue* eventList = (Queue*)m_eventList;
             if (new_event == 0) {
                 ShowError("queue fault 0101");
             }
 
-            eventList->Insert(new_event);
-    }
-    else if (message == 0x14) {
-        TimedEvent* new_event = (TimedEvent*)AllocateMemory(0x28);
-        if (new_event) {
-            TimedEvent__Init((void*)new_event);
-        }
-        *(int*)((char*)new_event + 0x8) = *(int*)((char*)param_1 + 0x8c);
+            m_eventList->Insert(new_event);
+            break;
+        case 0x14:
+            TimedEvent* timed_event;
+            timed_event = (TimedEvent*)AllocateMemory(0x28);
+            if (timed_event) {
+                TimedEvent__Init((void*)timed_event);
+            }
+            *(int*)((char*)timed_event + 0x8) = *(int*)((char*)param_1 + 0x8c);
 
-            Queue* eventList = (Queue*)m_eventList;
-            if (new_event == 0) {
+            if (timed_event == 0) {
                 ShowError("queue fault 0103");
             }
 
-            void* data = eventList->Pop();
+            data = m_eventList->Pop();
             if (data) {
-                TimedEvent::Delete((TimedEvent*)data);
+                TimedEvent__delete((int)data);
                 FreeMemory(data);
             }
-    }
-    else if (message == 0x1b) {
-        if (**(int***)m_eventList == 0) {
-            SC_Message_Send(3, field_0x88, field_0x88, field_0x8c, 0x14, 0, 0, 0, 0, 0);
-        }
-    }
-    else {
-        return 0;
+            break;
+        case 0x1b:
+            if (m_eventList->m_head == 0) {
+                //SC_Message_Send(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0, 0, 0);
+            }
+            break;
+        default:
+            return 0;
     }
 
     return 1;

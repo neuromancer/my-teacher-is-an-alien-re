@@ -15,8 +15,8 @@ public:
     int Input(void*);
 
 private:
-    int field_0x88;
-    int field_0x8c;
+    int m_messageId; // 0x88
+    int m_messageData; // 0x8c
     int field_0x90;
     int field_0x94;
     int field_0x98;
