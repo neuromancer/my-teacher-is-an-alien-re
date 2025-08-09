@@ -1,7 +1,8 @@
 # Instructions
 
-Refine the fields in the classes recently modified. After you finish, compile to make sure it works. Fix any issues.
+DO NOT, UNDER ANY CIRCUNSTANCE, REMOVE FUNCTIONS ALREADY IMPLEMENTED (identified by the comment header with the address) NOR ANY OF THE CLASSES ALREADY CREATED.
 
+Refine the fields in the classes recently modified. After you finish, compile to make sure it works. Fix any issues.
 
 # Requirements:
 

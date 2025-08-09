@@ -35,5 +35,7 @@ public:
 };
 
 VBuffer* VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height);
+int __cdecl CalculateBufferSize(int param_1,unsigned int param_2);
+unsigned int CreateTable(unsigned int, unsigned int);
 
 #endif // VBUFFER_H

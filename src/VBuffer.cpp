@@ -1,12 +1,28 @@
 #include "VBuffer.h"
 #include <stdlib.h>
+#include <windows.h>
+
+extern "C" {
+    extern int DAT_0043826c;
+    extern HDC h_0043841c;
+    extern int DAT_00437f4c;
+    extern int DAT_00438428;
+    extern HGDIOBJ DAT_00438424;
+    extern int DAT_00437fec;
+    extern int DAT_00437f6c;
+    extern int DAT_0043836c;
+    extern int DAT_004382ec;
+    extern int DAT_0043806c;
+    extern int DAT_004380ec;
+    extern int DAT_0043816c;
+    extern int DAT_004381ec;
+    void FUN_00423076();
+}
 
 extern "C" {
     void ShowError(const char*, ...);
     void FUN_0041aa30(VBuffer*);
-    void SetGraphicsMode(int);
     void ClearScreen();
-    unsigned int CreateTable(unsigned int, unsigned int);
     void FUN_00422e8f();
     int FUN_00422e71(unsigned int);
     void FUN_0041a9d0(unsigned int);
@@ -122,7 +138,7 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
 void VBuffer::ClearScreen(int color)
 {
     this->SetCurrentVideoMode(this->handle);
-    SetGraphicsMode(color);
+    //::SetGraphicsMode(color);
     ::ClearScreen();
     this->InvalidateVideoMode();
 }
@@ -317,4 +333,71 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
             // Empty
         }
     }
+}
+
+/* Function start: 0x422F00 */
+unsigned int CreateTable(unsigned int param_1, unsigned int param_2)
+{
+    int i = 0;
+    for (i = 0; i < 0x20; i++) {
+        if (((int*)&DAT_0043826c)[i] == 0) {
+            break;
+        }
+    }
+
+    if (i == 0x20) {
+        return -1;
+    }
+
+    UINT uVar1 = (param_1 + 3) & ~3;
+    int size;
+    if (h_0043841c == NULL) {
+        size = uVar1 * param_2;
+    } else {
+        size = 0x428 - DAT_00437f4c;
+    }
+
+    HGLOBAL hGlobal = GlobalAlloc(GHND, size + DAT_00437f4c);
+    if (hGlobal == NULL) {
+        return -2;
+    }
+
+    void* lockedMem = GlobalLock(hGlobal);
+    *(DWORD*)lockedMem = sizeof(BITMAPINFOHEADER);
+    *((DWORD*)lockedMem + 1) = uVar1;
+    *((DWORD*)lockedMem + 2) = param_2;
+    *((WORD*)lockedMem + 6) = 1;
+    *((WORD*)lockedMem + 7) = 8;
+
+    HGLOBAL hGdiObj = hGlobal;
+    int offset = DAT_00437f4c;
+
+    if (h_0043841c != NULL) {
+        hGdiObj = (HGLOBAL)((int (*)(HDC, void*, void**))DAT_00438428)(h_0043841c, lockedMem, &lockedMem);
+        if (hGdiObj == NULL) {
+            GlobalFree(hGlobal);
+            return -2;
+        }
+
+        HGDIOBJ oldObj = SelectObject(h_0043841c, hGdiObj);
+        if (DAT_00438424 == NULL) {
+            DAT_00438424 = oldObj;
+        }
+        FUN_00423076();
+        SelectObject(h_0043841c, oldObj);
+        offset = 0;
+    }
+
+    int iVar4 = i * 4;
+    *(HGLOBAL*)(&DAT_00437fec + iVar4) = hGdiObj;
+    *(HGLOBAL*)(&DAT_00437f6c + iVar4) = hGlobal;
+    (&DAT_0043826c)[i] = (int)lockedMem + offset;
+    *(UINT*)(&DAT_0043836c + iVar4) = uVar1;
+    *(int*)(&DAT_004382ec + iVar4) = param_2;
+    *(UINT*)(&DAT_0043806c + iVar4) = uVar1 - 1;
+    *(int*)(&DAT_004380ec + iVar4) = param_2 - 1;
+    *(DWORD*)(&DAT_0043816c + iVar4) = 0;
+    *(DWORD*)(&DAT_004381ec + iVar4) = 0;
+
+    return i;
 }

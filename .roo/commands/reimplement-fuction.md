@@ -1,5 +1,7 @@
 # Instructions
 
+DO NOT, UNDER ANY CIRCUNSTANCE, REMOVE FUNCTIONS ALREADY IMPLEMENTED (identified by the comment header with the address) NOR ANY OF THE CLASSES ALREADY CREATED.
+
 I have dissasembled the Windows 95 release of "My Teacher is an Alien", a point and click game developed by 7th Level in 1997. The codebase used C++, and some classes and methods were already detected and renamed with possible names, but there are many functions we are still unsure which class belong, or even the total number of classes.
 
 The compiler used for this game is Microsoft Visual C++ 4, which is already setup for you.  After you reimplement the code, you must compile to see if the assembly matches.

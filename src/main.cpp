@@ -38,7 +38,7 @@ extern "C" {
 	void PlayIntroCinematic();
 	void FUN_0040c5d0();
 	void FUN_00422430(void*);
-    unsigned int CalculateBufferSize(unsigned char width, unsigned int height);
+    unsigned int CalculateBufferSize(unsigned int width, unsigned int height);
     void CheckDebug();
     void ClearMessageLog();
     void CreateGameObject_1();
@@ -309,11 +309,9 @@ void CheckDebug(void)
 }
 
 /* Function start: 0x422E02 */
-unsigned int CalculateBufferSize(unsigned char width, unsigned int height)
+unsigned int CalculateBufferSize(unsigned int width, unsigned int height)
 {
-    // Using unsigned char might influence the and operation
-    unsigned int w = (width + 3) & 0xfc;
-    return w * height + DAT_00437f4c;
+    return (((width + 3) & ~3U) * height) + DAT_00437f4c;
 }
 
 /* Function start: 0x41A3D0 */

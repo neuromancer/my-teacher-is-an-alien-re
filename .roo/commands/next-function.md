@@ -1,6 +1,8 @@
 # Instructions
 
-Continue implementing the next function. Before starting, review all the current files and determine if there is any class where the function could be added as a method. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
+DO NOT, UNDER ANY CIRCUNSTANCE, REMOVE FUNCTIONS ALREADY IMPLEMENTED (identified by the comment header with the address) NOR ANY OF THE CLASSES ALREADY CREATED.
+
+Continue implementing the next function.  Before starting, review all the current files and determine if there is any class where the function could be added as a method. If the function is already implemented, make sure it is properly used by the other files (not declared as extern). Make sure the name is good.
 
 ** VERY IMPORTANT**: keep in mind that that the most likely class is the same as the previous function, so consider this option like a safe default and then revert back if you have evidence to believe this is wrong.
 
@@ -12,7 +14,7 @@ Important mote: `ShowError` is a function that should be marked by the compiler 
 
 * Remember that the assembly code and the strings are the only source of truth, the decompiled code could be wrong or mislabeled.
 * DO NOT SKIP FUNCTIONS IF THEY ARE VERY COMPLEX, use the best similarity code, even if it is not very good.
-* DO NOT REMOVE CODE THAT IS ALREADY THERE
+* Check if a function is already implemented or used grepping by its address in the `src` directory.
 * Define the class on the top of the file.
 * It is very important to include the following header before each reimplemented function with the address of the function:
 
