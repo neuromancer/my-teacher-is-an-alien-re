@@ -35,3 +35,47 @@ jobs:
         make
         make report
         make progress
+
+ compare-similarity:
+   runs-on: ubuntu-latest
+   if: github.event_name == 'pull_request'
+   steps:
+     - name: Install Wine and Xvfb
+       run: |
+         sudo dpkg --add-architecture i386
+         sudo apt update
+         sudo apt install -y wine64 wine32 xvfb
+
+     - name: Start Xvfb
+       run: |
+         Xvfb :99 &
+         export DISPLAY=:99
+
+     - name: Install requirements
+       run: pip3 install -r requirements.txt
+
+     - name: Checkout base branch
+       uses: actions/checkout@v3
+       with:
+         ref: ${{ github.base_ref }}
+         submodules: true
+
+     - name: Generate report on base
+       run: |
+         export DISPLAY=:99
+         make report > report-before.txt
+
+     - name: Checkout PR branch
+       uses: actions/checkout@v3
+       with:
+         submodules: true
+
+     - name: Generate report on PR
+       run: |
+         export DISPLAY=:99
+         make report > report-after.txt
+
+     - name: Compare reports
+       run: |
+         echo "Similarity report diff:"
+         diff -u report-before.txt report-after.txt || true
