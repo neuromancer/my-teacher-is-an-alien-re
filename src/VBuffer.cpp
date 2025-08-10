@@ -336,73 +336,65 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
 }
 
 /* Function start: 0x422F00 */
-int __cdecl CreateTable(int param_1,int param_2)
-{
-  UINT uVar1;
-  int iVar2;
-  HGDIOBJ h;
-  int iVar3;
-  int iVar4;
-  int *piVar5;
-  HDC hdc;
-  BITMAPINFO *local_12;
-  HGLOBAL local_c;
-  HGLOBAL local_8;
-
-  iVar3 = 0x20;
-  piVar5 = &DAT_0043826c;
-  do {
-    iVar2 = *piVar5;
-    iVar3 = iVar3 + -1;
-    piVar5 = piVar5 + 1;
-  } while (iVar3 != 0 && iVar2 != 0);
-  if (iVar2 != 0) {
-    return -1;
-  }
-  iVar3 = 0x1f - iVar3;
-  uVar1 = param_1 + 3U & 0xfffffffc;
-  if (h_0043841c == (HDC)0x0) {
-    iVar2 = uVar1 * param_2;
-  }
-  else {
-    iVar2 = 0x428 - DAT_00437f4c;
-  }
-  local_c = GlobalAlloc(0x42,iVar2 + DAT_00437f4c);
-  if (local_c == (HGLOBAL)0x0) {
-LAB_00422f21:
-    iVar3 = -2;
-  }
-  else {
-    local_12 = (BITMAPINFO *)GlobalLock(local_c);
-    local_12->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    local_12->bmiHeader.biWidth = uVar1;
-    local_12->bmiHeader.biHeight = param_2;
-    local_12->bmiHeader.biPlanes = 1;
-    local_12->bmiHeader.biBitCount = 8;
-    local_8 = local_c;
-    iVar2 = DAT_00437f4c;
-    if (h_0043841c != (HDC)0x0) {
-      local_8 = (HGLOBAL)(*(int (*)(HDC, BITMAPINFO*, BITMAPINFO**))DAT_00438428)(h_0043841c,local_12,&local_12);
-      if (local_8 == (HGDIOBJ)0x0) goto LAB_00422f21;
-      h = SelectObject(h_0043841c,local_8);
-      if (DAT_00438424 == (HGDIOBJ)0x0) {
-        DAT_00438424 = h;
-      }
-      hdc = h_0043841c;
-      FUN_00423076();
-      SelectObject(hdc,h);
-      iVar2 = 0;
+int __cdecl CreateTable(int width, int height) {
+    int i = 0;
+    while (i < 32 && ((int*)&DAT_0043826c)[i] != 0) {
+        i++;
     }
-    iVar4 = iVar3 * 4;
-    *(HGLOBAL *)(&DAT_00437fec + iVar4) = local_8;
-    *(HGLOBAL *)(&DAT_00437f6c + iVar4) = local_c;
-    (&DAT_0043826c)[iVar3] = (int)local_12 + iVar2;
-    *(UINT *)(&DAT_0043836c + iVar4) = uVar1;
-    *(int *)(&DAT_004382ec + iVar4) = param_2;
-    *(UINT *)(&DAT_0043806c + iVar4) = uVar1 - 1;
-    *(int *)(&DAT_004380ec + iVar4) = param_2 + -1;
-    *(DWORD *)(&DAT_0043816c + iVar4) = 0;
-    *(DWORD *)(&DAT_004381ec + iVar4) = 0;
-  }
-  return iVar3;
+
+    if (i == 32) {
+        return -1;
+    }
+
+    unsigned int aligned_width = (width + 3) & 0xFFFFFFFC;
+    int image_size;
+
+    if (h_0043841c == 0) {
+        image_size = aligned_width * height;
+    } else {
+        image_size = 1064 - DAT_00437f4c;
+    }
+
+    HGLOBAL hMem = GlobalAlloc(0x42, image_size + DAT_00437f4c);
+    if (hMem == 0) {
+        return -2;
+    }
+
+    BITMAPINFO* bmi = (BITMAPINFO*)GlobalLock(hMem);
+    bmi->bmiHeader.biSize = 40;
+    bmi->bmiHeader.biWidth = aligned_width;
+    bmi->bmiHeader.biHeight = height;
+    bmi->bmiHeader.biPlanes = 1;
+    bmi->bmiHeader.biBitCount = 8;
+
+    HGLOBAL hDib = hMem;
+    int data_offset = DAT_00437f4c;
+
+    if (h_0043841c != 0) {
+        hDib = ((HGLOBAL(*)(HDC, BITMAPINFO*, void**))DAT_00438428)(h_0043841c, bmi, (void**)&bmi);
+        if (hDib == 0) {
+            GlobalUnlock(hMem);
+            GlobalFree(hMem);
+            return -2;
+        }
+        HGDIOBJ oldObj = SelectObject(h_0043841c, hDib);
+        if (DAT_00438424 == 0) {
+            DAT_00438424 = oldObj;
+        }
+        FUN_00423076();
+        SelectObject(h_0043841c, oldObj);
+        data_offset = 0;
+    }
+
+    ((HGLOBAL*)&DAT_00437fec)[i] = hDib;
+    ((HGLOBAL*)&DAT_00437f6c)[i] = hMem;
+    ((void**)&DAT_0043826c)[i] = (void*)((char*)bmi + data_offset);
+    ((unsigned int*)&DAT_0043836c)[i] = aligned_width;
+    ((int*)&DAT_004382ec)[i] = height;
+    ((unsigned int*)&DAT_0043806c)[i] = aligned_width - 1;
+    ((int*)&DAT_004380ec)[i] = height - 1;
+    ((int*)&DAT_0043816c)[i] = 0;
+    ((int*)&DAT_004381ec)[i] = 0;
+
+    return i;
 }
