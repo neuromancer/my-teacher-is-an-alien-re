@@ -17,6 +17,11 @@ extern "C" {
     extern int DAT_0043816c;
     extern int DAT_004381ec;
     void FUN_00423076();
+    extern int DAT_00437f54;
+    extern int DAT_00437f6a;
+    extern int DAT_00437f66;
+    extern int DAT_00437f62;
+    extern int DAT_00437491;
 }
 
 extern "C" {
@@ -24,6 +29,7 @@ extern "C" {
     void FUN_0041aa30(VBuffer*);
     void ClearScreen();
     void FUN_00422e8f();
+    int FUN_00422a01(unsigned int);
     int FUN_00422e71(unsigned int);
     void FUN_0041a9d0(unsigned int);
     unsigned int GetCurrentVideoMode();
@@ -138,8 +144,8 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
 void VBuffer::ClearScreen(int color)
 {
     this->SetCurrentVideoMode(this->handle);
-    //::SetGraphicsMode(color);
-    ::ClearScreen();
+    FUN_00422a01(color);
+    FUN_00423099();
     this->InvalidateVideoMode();
 }
 
@@ -335,6 +341,15 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
     }
 }
 
+#include <string.h>
+
+/* Function start: 0x423099 */
+int FUN_00423099(void) {
+    if (*(char*)&DAT_00437f54) {
+        memset((char*)DAT_00437f66, DAT_00437491, DAT_00437f62);
+    }
+    return 0;
+}
 /* Function start: 0x422F00 */
 int __cdecl CreateTable(int width, int height) {
     int i = 0;

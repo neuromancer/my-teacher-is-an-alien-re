@@ -19,7 +19,7 @@ public:
     void RestoreFilePosition();
     void FindKey(unsigned char*);
     int GetKey(char* line);
-    void ProcessFile(Parser* dst, char* key);
+    static void ProcessFile(Parser* self, Parser* dst, char* key);
 public:
 private:
     int field_0x4;

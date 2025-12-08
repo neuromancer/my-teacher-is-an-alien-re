@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <new>
 #include "Mouse.h"
 #include "Sprite.h"
 #include "Parser.h"
@@ -78,46 +79,52 @@ void Mouse::CleanupFields()
 /* Function start: 0x41EF50 */
 int Mouse::LBLParse(char* line)
 {
-    try {
-        char local_60[32];
-        char local_40[32];
-        int local_20;
-        int local_1c;
-        Sprite* local_18;
-        int local_14;
+    char local_60[32];
+    char local_40[32];
+    int local_20;
+    int local_1c;
+    Sprite* local_18;
+    int local_14;
 
+    try {
         sscanf(line, "%s", local_40);
 
-        if (_stricmp(local_40, "SPRITE") == 0) {
-            sscanf(line, "%s %s", local_40, local_60);
+        if (strcmp(local_40, "AUDIO") == 0) {
+            sscanf(line, " %s %s", local_40, local_60);
             local_18 = (Sprite*)AllocateMemory(0x10);
             void* this_00 = 0;
             if (local_18 != 0) {
                 this_00 = FUN_0041e460((void*)local_18);
             }
-            m_fields[71] = (char*)this_00;
+            m_fields[73] = (char*)this_00;
             if (this_00 != 0) {
                 FUN_0041e490(this_00, local_60);
             }
-        } else if (_stricmp(local_40, "SPRITE") == 0) {
+        } else if (strcmp(local_40, "SPRITE") == 0) {
             local_18 = (Sprite*)AllocateMemory(0xd8);
             Sprite* pSVar4 = 0;
             if (local_18 != 0) {
-                local_18->Sprite::Sprite((char*)0);
+                new (local_18) Sprite((char*)0);
                 pSVar4 = local_18;
             }
-            m_fields[59] = (char*)pSVar4;
+            m_fields[21] = (char*)pSVar4;
             pSVar4->flags &= ~2;
-            pSVar4->Init();
-        } else if (_stricmp(local_40, "HOTPIXEL") == 0) {
-            sscanf(line, "%s %d %d %d", local_40, &local_14, &local_20, &local_1c);
-            *(int*)&m_fields[local_14 * 2 + 61] = local_20;
-            *(int*)&m_fields[local_14 * 2 + 62] = local_1c;
-        } else if (_stricmp(local_40, "LABLE") == 0) {
-            sscanf(line, "%s %d %s", local_40, &local_14, local_60);
-            FUN_00425fd0(m_fields[local_14 + 34], local_60, 0x10);
-        } else if (_stricmp(local_40, "END") == 0) {
-            m_fields[60] = 0;
+            Parser::ProcessFile(pSVar4, this, 0);
+        } else if (strcmp(local_40, "HOTPIXEL") == 0) {
+            sscanf(line, " %s %d %d %d", local_40, &local_14, &local_20, &local_1c);
+            *(int*)&m_fields[23 + local_14 * 2] = local_20;
+            *(int*)&m_fields[24 + local_14 * 2] = local_1c;
+        } else if (strcmp(local_40, "LABLE") == 0) {
+            sscanf(line, " %s %d %s", local_40, &local_14, local_60);
+            char* dest = 0;
+            if (local_14 == 0) dest = m_pointer_str;
+            else if (local_14 == 1) dest = m_examine_str;
+            else if (local_14 == 2) dest = m_pickup_str;
+            else if (local_14 == 3) dest = m_unknown_str;
+
+            if (dest) FUN_00425fd0(dest, local_60, 0x10);
+        } else if (strcmp(local_40, "END") == 0) {
+            m_fields[22] = 0;
             return 1;
         } else {
             Parser::LBLParse(line);

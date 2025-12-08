@@ -146,31 +146,31 @@ Parser* ParseFile(Parser* parser, char* filename, char* key_format, ...)
     }
 
     parser->Open(filename);
-    parser->ProcessFile(parser, key_buffer);
+    Parser::ProcessFile(parser, parser, key_buffer);
     parser->CloseFile();
     return parser;
 }
 
 /* Function start: 0x418DC0 */
-void Parser::ProcessFile(Parser* dst, char* key)
+void Parser::ProcessFile(Parser* self, Parser* dst, char* key)
 {
     char line_buffer[256];
 
-    this->Copy(dst);
+    self->Copy(dst);
 
     if (key != NULL && *key != 0) {
-        this->FindKey((unsigned char*)key);
+        self->FindKey((unsigned char*)key);
     }
 
-    while (this->pFile != NULL && (this->pFile->_flag != 0)) {
-        char* line = internal_ReadLine(line_buffer, 255, this->pFile);
+    while (self->pFile != NULL && (self->pFile->_flag != 0)) {
+        char* line = internal_ReadLine(line_buffer, 255, self->pFile);
         if (line == NULL) {
-            ShowError("Parser::Parser - premature EOF in '%s'- probably missing END label", this->filename);
+            ShowError("Parser::Parser - premature EOF in '%s'- probably missing END label", self->filename);
         }
 
-        if (this->GetKey(line) == 0) {
-            this->lineNumber = (int)line;
+        if (self->GetKey(line) == 0) {
+            self->lineNumber = (int)line;
         }
     }
-    ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer", this->filename);
+    ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer", self->filename);
 }
