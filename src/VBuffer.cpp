@@ -69,6 +69,8 @@ extern "C" {
     int FUN_0041b590(int*, int*, int*, int*);
     void FUN_0041af9f(void);
     void FUN_0041afb1(void);
+    void FUN_0041b29a(void);
+    void FUN_0041b2ac(void);
     int FUN_004230d9(int);
     void FUN_00423296(int, int, int, int, int, int);
     void FUN_0042333a(int, int, int, int, int, int, int, int);
@@ -318,53 +320,54 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
 }
 
 /* Function start: 0x41B110 */
-void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
+void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale)
 {
-    unsigned int uVar1;
-    unsigned int uVar2;
+    int scaledWidth;
+    int scaledHeight;
     void* puVar3;
     int iVar4;
 
-    __int64 lVar5;
-    int local_34;
-    unsigned int local_30;
-    int local_2c;
-    int local_28;
-    int local_24;
-    int local_20;
-    int local_1c;
-    int local_18;
-    unsigned int local_14;
+    int local_30[4];  // clip_x1, video_mode_lock_count, clip_x2, saved_video_mode
+    int local_20[4];  // x1, y1, scaledWidth-1, scaledHeight-1
+    int local_10;
 
-    lVar5 = __ftol();
-    uVar1 = (unsigned int)lVar5;
-    lVar5 = __ftol();
-    uVar2 = (unsigned int)lVar5;
-    if ((0 < (int)uVar1) && (0 < (int)uVar2)) {
-        local_14 = FUN_00423703(DAT_00436964, uVar1, uVar2);
-        if ((int)local_14 < 0) {
+    scaledWidth = (int)(srcBuffer->width * scale);
+    scaledHeight = (int)(srcBuffer->height * scale);
+
+    if ((scaledWidth >= 1) && (scaledHeight >= 1)) {
+        local_10 = FUN_00423703(DAT_00436964, scaledWidth, scaledHeight);
+        if (local_10 < 0) {
             ShowError("VBuffer::ScaleTCCopy");
         }
-        puVar3 = (void*)FUN_00422e71(local_14);
-        FUN_004234f9(*(void**)(param_3 + 0x10), puVar3, *(unsigned int*)(param_3 + 0x14), *(unsigned int*)(param_3 + 0x18), uVar1, uVar2);
+        puVar3 = (void*)FUN_00422e71(local_10);
+        FUN_004234f9(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
 
         __try {
-            local_30 = this->saved_video_mode;
-            local_2c = this->video_mode_lock_count;
-            local_34 = this->clip_x1;
-            local_1c = uVar1 - 1;
-            local_18 = uVar2 - 1;
-            local_28 = this->clip_x2;
-            local_24 = 0;
-            local_20 = 0;
+            local_30[0] = 0;
+            local_30[1] = 0;
+            local_30[2] = 0;
+            local_30[3] = 0;
+            local_30[3] = this->saved_video_mode;
+            local_30[2] = this->clip_x2;
+            local_20[0] = 0;
+            local_20[1] = 0;
+            local_20[2] = 0;
+            local_20[3] = 0;
+            local_30[0] = this->clip_x1;
+            local_30[1] = this->video_mode_lock_count;
+            local_20[2] = scaledWidth - 1;
+            local_20[3] = scaledHeight - 1;
+            local_20[0] = 0;
+            local_20[1] = 0;
 
-            iVar4 = FUN_0041b590(&local_34, &local_24, &param_1, &param_2);
+            iVar4 = FUN_0041b590(local_30, local_20, &param_1, &param_2);
             if (iVar4 != 0) {
-                FUN_004233e8(local_24, local_1c, local_20, local_18, param_1, param_2, local_14, this->handle);
-                FUN_004234d5(local_14);
+                FUN_004233e8(local_20[0], local_20[2], local_20[1], local_20[3], param_1, param_2, local_10, this->handle);
+                FUN_004234d5(local_10);
             }
         } __finally {
-            // Empty
+            FUN_0041b29a();
+            FUN_0041b2ac();
         }
     }
 }
