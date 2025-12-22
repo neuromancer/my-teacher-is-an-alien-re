@@ -1,6 +1,35 @@
 #include "VBuffer.h"
 #include <stdlib.h>
 #include <windows.h>
+#include "string.h"
+
+static int g_VBufferHandleTableInitialized = 0;
+static int g_VBufferHandleTable[0x20];
+
+/* Function start: 0x41A9A0 */
+void InitVBufferHandleTable(void)
+{
+    if (g_VBufferHandleTableInitialized == 0) {
+        int* ptr = g_VBufferHandleTable;
+        for (int i = 0x20; i != 0; i--) {
+            *ptr = 0xffffffff;
+            ptr++;
+        }
+        g_VBufferHandleTableInitialized = 1;
+    }
+}
+
+/* Function start: 0x41A9D0 */
+void RegisterVBufferHandle(int handle)
+{
+    g_VBufferHandleTable[handle] = handle;
+}
+
+/* Function start: 0x41A9E0 */
+void ReleaseVBufferHandle(int handle)
+{
+    g_VBufferHandleTable[handle] = 0xffffffff;
+}
 
 extern "C" {
     extern int DAT_0043826c;
@@ -18,30 +47,28 @@ extern "C" {
     extern int DAT_004381ec;
     void FUN_00423076();
     extern int DAT_00437f54;
-    extern int DAT_00437f6a;
     extern int DAT_00437f66;
     extern int DAT_00437f62;
     extern int DAT_00437491;
 }
 
+// Forward declarations
+void CopyRowTransparent(char* dest, char* src, int count, char transparentColor, char fillColor);
+void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor);
+
 extern "C" {
-    void ShowError(const char*, ...);
-    void FUN_0041aa30(VBuffer*);
     void ClearScreen();
     void FUN_00422e8f();
     int FUN_00422a01(unsigned int);
     int FUN_00422e71(unsigned int);
-    void FUN_0041a9d0(unsigned int);
     unsigned int GetCurrentVideoMode();
     void InvalidateVideoMode();
-    void FUN_0041b310(int, int, int, int, int, int, VBuffer*, VBuffer*, char, char);
     void FUN_0041ae0c(void);
     void FUN_004231ce(int, int, int, int, int, int, unsigned int, unsigned int);
     void FUN_004233e8(int, int, int, int, int, int, unsigned int, unsigned int);
     int FUN_0041b590(int*, int*, int*, int*);
     void FUN_0041af9f(void);
     void FUN_0041afb1(void);
-    void FUN_00401680(void);
     int FUN_004230d9(int);
     void FUN_00423296(int, int, int, int, int, int);
     void FUN_0042333a(int, int, int, int, int, int, int, int);
@@ -49,13 +76,8 @@ extern "C" {
     unsigned int FUN_00423703(int, unsigned int, unsigned int);
     void FUN_004234f9(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
     void FUN_004234d5(unsigned int);
-    void FUN_0041b29a();
-    void FUN_0041b2ac();
-    extern int DAT_00436b70;
     extern int DAT_00436964;
     void FUN_00422e1a(int);
-    void FUN_0041a9e0(int);
-    void FUN_0041a9a0(void);
 }
 
 /* Function start: 0x41a9f0 */
@@ -81,7 +103,7 @@ void VBuffer::InitFields()
     }
     this->handle = 0xffffffff;
     *(int*)this = 0xffffffff;
-    FUN_0041a9a0();
+    InitVBufferHandleTable();
 }
 
 /* Function start: 0x41aa60 */
@@ -89,7 +111,7 @@ void VBuffer::Free()
 {
     if (this->data != 0) {
         FUN_00422e1a(this->handle);
-        FUN_0041a9e0(this->handle);
+        ReleaseVBufferHandle(this->handle);
         this->handle = 0xffffffff;
         this->data = 0;
     }
@@ -137,7 +159,7 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
     FUN_00422e8f();
     this->InvalidateVideoMode();
     this->data = (void*)FUN_00422e71(this->handle);
-    FUN_0041a9d0(this->handle);
+    RegisterVBufferHandle(this->handle);
 }
 
 /* Function start: 0x41abc0 */
@@ -174,7 +196,7 @@ void* VBuffer::GetData()
 }
 
 /* Function start: 0x41ac40 */
-void EmptyFunction()
+void VBuffer::Lock()
 {
 }
 
@@ -232,7 +254,7 @@ void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4
     if (local_40) {
         VirtualBufferCreateAndClean(local_40, (param_2 - param_1) + 1, (param_4 - param_3) + 1);
         local_40->ClearScreen(0);
-        FUN_0041b310(param_1, param_2, param_3, param_4, param_5, param_6, this, local_40, param_7, param_8);
+        BlitTransparentRows(param_1, param_2, param_3, param_4, param_5, param_6, this, local_40, param_7, param_8);
         local_40->TPaste();
         local_40->~VBuffer();
         free(local_40);
@@ -260,7 +282,7 @@ void VBuffer::CallBlitter2(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41aea0 */
 void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, char param_8, char param_9)
 {
-    FUN_0041b310(param_1, param_2, param_3, param_4, param_5, param_6, (VBuffer*)param_7, this, param_8, param_9);
+    BlitTransparentRows(param_1, param_2, param_3, param_4, param_5, param_6, (VBuffer*)param_7, this, param_8, param_9);
 }
 
 /* Function start: 0x41aee0 */
@@ -287,6 +309,12 @@ void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, in
         FUN_0041af9f();
         FUN_0041afb1();
     }
+}
+
+/* Function start: 0x41AFC0 */
+void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
+{
+    // TODO: Implement - similar to ClipAndBlit
 }
 
 /* Function start: 0x41B110 */
@@ -339,6 +367,60 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, int param_3)
             // Empty
         }
     }
+}
+
+/* Function start: 0x41B2C0 */
+void CopyRowTransparent(char* dest, char* src, int count, char transparentColor, char fillColor)
+{
+    if (count != 0) {
+        do {
+            while (*src == 0) {
+                dest++;
+                src++;
+                count--;
+                if (count == 0) {
+                    return;
+                }
+            }
+            do {
+                if (count == 0) {
+                    return;
+                }
+                char pixel = *src;
+                *dest = fillColor;
+                if (pixel != transparentColor) {
+                    *dest = pixel;
+                }
+                dest++;
+                src++;
+                count--;
+            } while (*src != 0);
+        } while (count != 0);
+    }
+}
+
+/* Function start: 0x41B310 */
+void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor)
+{
+    int rowCount = (y2 - y1) + 1;
+    int srcPitch = srcBuffer->width;
+    char* srcData = (char*)srcBuffer->GetData();
+    char* srcRow = srcData + (srcBuffer->video_mode_lock_count - y2) * srcPitch + x1;
+
+    int destPitch = destBuffer->width;
+    char* destData = (char*)destBuffer->GetData();
+    char* destRow = destData + (destBuffer->video_mode_lock_count - destY) * destPitch + destX;
+
+    if (rowCount > 0) {
+        do {
+            CopyRowTransparent(destRow, srcRow, (x2 - x1) + 1, transparentColor, fillColor);
+            destRow += destPitch;
+            srcRow += srcPitch;
+            rowCount--;
+        } while (rowCount != 0);
+    }
+    destBuffer->Lock();
+    srcBuffer->Lock();
 }
 
 #include <string.h>
