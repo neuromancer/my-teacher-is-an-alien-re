@@ -1,12 +1,9 @@
 #include "OptionMenu.h"
 #include "Memory.h"
+#include "Sprite.h"
 
 #include <stdio.h>
 #include <string.h>
-
-extern "C" {
-    void SpriteArray_Cleanup(void*);
-}
 
 /* Function start: 0x409940 */
 OptionMenu::OptionMenu()
@@ -67,17 +64,17 @@ OptionMenu::~OptionMenu()
 {
     try {
         if (this->options[0]) {
-            SpriteArray_Cleanup(this->options[0]);
+            this->options[0]->~Sprite();
             FreeMemory(this->options[0]);
             this->options[0] = 0;
         }
         if (this->options[1]) {
-            SpriteArray_Cleanup(this->options[1]);
+            this->options[1]->~Sprite();
             FreeMemory(this->options[1]);
             this->options[1] = 0;
         }
         if (this->options[2]) {
-            SpriteArray_Cleanup(this->options[2]);
+            this->options[2]->~Sprite();
             FreeMemory(this->options[2]);
             this->options[2] = 0;
         }

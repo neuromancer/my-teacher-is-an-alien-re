@@ -21,6 +21,7 @@ extern "C" {
     void SetErrorCode(unsigned int);
     FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, unsigned int* out_size);
     FILE* fsopen(const char* filename, const char* mode);
+    char* internal_ReadLine(char* buffer, int size, FILE* stream);
 }
 
 #endif // STRING_H

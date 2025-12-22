@@ -20,7 +20,6 @@ extern int mCNavNode_Update(void*);
 extern int mCNavNode_GetNextNode(void*);
 extern int FindCharIndex(char*);
 extern void CleanupObjectArray(void*, int);
-extern void SpriteArray_Cleanup(void*);
 
 extern Sprite* DAT_004360a0;
 
@@ -88,7 +87,7 @@ mCNavigator::~mCNavigator()
     }
 
     if (this->sprite) {
-        SpriteArray_Cleanup(this->sprite);
+        this->sprite->~Sprite();
         FreeMemory(this->sprite);
         this->sprite = 0;
     }

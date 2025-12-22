@@ -6,7 +6,6 @@
 
 class Animation {
 public:
-    void** vtable;
     int* field_0x4;
     VBuffer* vbuffer; // 0x8
     Smack* smk; // 0xc

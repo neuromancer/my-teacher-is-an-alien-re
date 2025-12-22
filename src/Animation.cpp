@@ -43,7 +43,6 @@ void Animation::AnimationInit()
 /* Function start: 0x41FA50 */
 Animation::Animation()
 {
-    this->vtable = (void**)0x431570;
     *(int*)((char*)this + 0x10) = 0;
     *(int*)((char*)this + 0x14) = 0;
     this->CleanArray10();
@@ -81,7 +80,6 @@ void Animation::CleanArray10()
 /* Function start: 0x41FB70 */
 Animation::~Animation()
 {
-    this->vtable = (void**)0x431570;
     this->FreeVBuffer();
     this->CloseSmackerBuffer();
     this->CloseSmackerFile();

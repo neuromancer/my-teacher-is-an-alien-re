@@ -21,7 +21,6 @@ extern int AudioData_Load(AudioData*, const char*);
 extern "C" {
     void FUN_00424b00(void*, int, int, void*, void*);
     void FUN_0041e470(void*);
-    void SpriteArray_Cleanup(void*);
     void Array_Cleanup(void*, int, int, void*);
     void FUN_0041ef47();
     void FUN_00425fd0(char*, char*, int);
@@ -57,13 +56,13 @@ Mouse::~Mouse()
     }
 
     if (m_fields[30] != 0) {
-        SpriteArray_Cleanup(m_fields[30]);
+        ((Sprite*)m_fields[30])->~Sprite();
         FreeMemory(m_fields[30]);
         m_fields[30] = 0;
     }
 
     if (m_fields[31] != 0) {
-        SpriteArray_Cleanup(m_fields[31]);
+        ((Sprite*)m_fields[31])->~Sprite();
         FreeMemory(m_fields[31]);
         m_fields[31] = 0;
     }

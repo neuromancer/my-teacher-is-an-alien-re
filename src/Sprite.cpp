@@ -44,7 +44,6 @@ Sprite::Sprite(char* filename)
     // BaseObject::BaseObject_Init((undefined4 *)this);
     this->loc_x = 0;
     this->loc_y = 0;
-    this->vtable = (void**)0x431530;
     memset(&this->ranges, 0, 0x14 * 4);
     this->flags |= 0x20;
     if (filename != 0) {
@@ -58,7 +57,6 @@ Sprite::Sprite(char* filename)
 /* Function start: 0x41CE30 */
 Sprite::~Sprite()
 {
-    this->vtable = (void**)0x431530;
     this->StopAnimationSound();
 
     if (this->ranges != 0) {
@@ -118,10 +116,10 @@ void Sprite::StopAnimationSound()
         if (*(int*)((int)g_SoundManager + 0x98) != 0) {
             ((Queue*)g_SoundManager)->Insert(anim);
         } else {
-            ((void (*)(Animation*, int))anim->vtable[0])(anim, 1);
+            delete anim;
         }
     } else if (anim != 0) {
-        ((void (*)(Animation*, int))anim->vtable[0])(anim, 1);
+        delete anim;
     }
 
     this->animation_data = 0;

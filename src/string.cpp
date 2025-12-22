@@ -326,6 +326,31 @@ not_found:
     return fp;
 }
 
+/* Function start: 0x419770 */
+void internal_ReadLine_placeholder(void)
+{
+    return;
+}
+
+/* Function start: 0x419780 */
+char* internal_ReadLine(char* buffer, int size, FILE* stream)
+{
+    char local_buf[128];
+    int result;
+    char* line;
+
+    do {
+        line = fgets(buffer, size, stream);
+        if (line == NULL) {
+            return NULL;
+        }
+        internal_ReadLine_placeholder();
+        result = sscanf(buffer, "%s", local_buf);
+    } while (result < 1 || local_buf[0] == ';' || local_buf[0] == '\r');
+
+    return buffer;
+}
+
 /* Function start: 0x4260F0 */
 void ExecuteFunctionArray(void** param_1, void** param_2)
 {

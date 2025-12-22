@@ -1,20 +1,11 @@
 #include "Palette.h"
 #include "PaletteBuffer.h"
+#include "PaletteUtils.h"
+#include "string.h"
 
 #include <stdio.h>
 #include <string.h>
 #include "Memory.h"
-
-extern "C" {
-    FILE* _fsopen(const char* filename, const char* mode, int shflag);
-    void ShowError(const char*, ...);
-    int _strnicmp(const char*, const char*, size_t);
-    int FUN_00425f30(FILE* stream, long offset, int origin);
-    size_t __fread_lk(void* ptr, size_t size, size_t count, FILE* stream);
-    int _fclose(FILE* stream);
-    UINT CopyPaletteData(int, int, void*);
-    void FUN_00423905(UINT, UINT, void*);
-}
 
 /* Function start: 0x41EA50 */
 Palette::Palette()
@@ -44,7 +35,7 @@ void Palette::Load(char* filename)
 /* Function start: 0x41EAC0 */
 void Palette::OpenAndReadPaletteFile(char* filename)
 {
-    FILE* file = _fsopen(filename, "rb", 0x40);
+    FILE* file = fsopen(filename, "rb");
     if (file == 0) {
         ShowError("Error! Could not open palette file '%s'", filename);
     }
@@ -52,14 +43,14 @@ void Palette::OpenAndReadPaletteFile(char* filename)
     long offset = 0xd;
     int len = strlen(filename);
     if (len > 4) {
-        if (_strnicmp(filename + len - 4, ".col", 4) == 0) {
+        if (strnicmp(filename + len - 4, ".col", 4) == 0) {
             offset = 8;
         }
     }
 
-    FUN_00425f30(file, offset, 0);
-    __fread_lk(m_data, m_size, 1, file);
-    _fclose(file);
+    fseek(file, offset, 0);
+    fread(m_data, m_size, 1, file);
+    fclose(file);
 }
 
 /* Function start: 0x41EB50 */
@@ -71,7 +62,7 @@ UINT Palette::SetEntries(HPALETTE hpal, UINT iStart, UINT cEntries, PALETTEENTRY
 /* Function start: 0x41EB70 */
 void Palette::SetPalette(UINT start, UINT count)
 {
-    FUN_00423905(start, count, (unsigned char*)m_data + start * 3);
+    SetPaletteEntries_(start, count, (unsigned char*)m_data + start * 3);
 }
 
 /* Function start: 0x41EC60 */

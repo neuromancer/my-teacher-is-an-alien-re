@@ -1,15 +1,9 @@
 #include "Parser.h"
+#include "string.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-
-extern "C" FILE* FUN_00425e50(const char*, const char*);
-extern "C" void ShowError(const char*, ...);
-extern "C" int FUN_00425f30(FILE*, int, int);
-extern "C" char *internal_ReadLine(char *s, int n, FILE *stream);
-extern "C" char *strstr_wrapper(const char*, const char*);
-extern "C" void FUN_00425fd0(char*, char*, int);
 
 /* Function start: 0x4189f0 */
 Parser::Parser()
@@ -28,7 +22,7 @@ void Parser::Open(char *param_1)
 {
     CloseFile();
     strcpy(this->filename, param_1);
-    this->pFile = FUN_00425e50(this->filename, "r");
+    this->pFile = fsopen(this->filename, "r");
     this->isFileOpen = 1;
     if (this->pFile == NULL) {
         ShowError("Parser::Open - Unable to open file '%s' ", this->filename);
@@ -65,10 +59,18 @@ int Parser::LBLParse(char* param_1)
     return 0;
 }
 
+void Parser::OnProcessEnd()
+{
+}
+
+void Parser::OnProcessStart()
+{
+}
+
 /* Function start: 0x418B50 */
 void Parser::SaveFilePosition()
 {
-    if (fgetpos(this->pFile, &this->savedFilePos) != 0) {
+    if (fgetpos(this->pFile, (fpos_t*)&this->savedFilePos) != 0) {
         ShowError("Parser::SaveFilePosition() - unable to save file pos in file %s", this->filename);
     }
 }
@@ -76,7 +78,7 @@ void Parser::SaveFilePosition()
 /* Function start: 0x418B80 */
 void Parser::RestoreFilePosition()
 {
-    if (fsetpos(this->pFile, &this->savedFilePos) != 0) {
+    if (fsetpos(this->pFile, (fpos_t*)&this->savedFilePos) != 0) {
         ShowError("Parser::RestoreFilePosition() - unable to restore file pos in file %s", this->filename);
     }
 }
@@ -91,7 +93,7 @@ void Parser::FindKey(unsigned char* param_1)
         return;
     }
 
-    FUN_00425f30(this->pFile, 0, 0);
+    fseek(this->pFile, 0, 0);
 
     do {
         if (internal_ReadLine(local_100, 255, this->pFile) == NULL) {
@@ -108,13 +110,13 @@ void Parser::FindKey(unsigned char* param_1)
 int Parser::GetKey(char* line)
 {
     char key_buffer[64];
-    char* start_key = strstr_wrapper(line, "<<");
+    char* start_key = strstr(line, "<<");
     if (start_key) {
-        char* end_key = strstr_wrapper(line, ">>");
+        char* end_key = strstr(line, ">>");
         if (end_key) {
             int key_len = end_key - (start_key + 2);
             if (key_len > 0) {
-                FUN_00425fd0(key_buffer, start_key + 2, key_len);
+                strncpy(key_buffer, start_key + 2, key_len);
                 key_buffer[key_len] = 0;
 
                 if (this->isProcessingKey == 0) {
@@ -152,15 +154,22 @@ Parser* ParseFile(Parser* parser, char* filename, char* key_format, ...)
 }
 
 /* Function start: 0x418DC0 */
-void Parser::ProcessFile(Parser* self, Parser* dst, char* key)
+Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...)
 {
+    char key_buffer[64];
     char line_buffer[256];
+    Parser* result;
 
     self->Copy(dst);
 
-    if (key != NULL && *key != 0) {
-        self->FindKey((unsigned char*)key);
+    if (key_format != NULL && *key_format != 0) {
+        va_list args;
+        va_start(args, key_format);
+        vsprintf(key_buffer, key_format, args);
+        self->FindKey((unsigned char*)key_buffer);
     }
+
+    self->OnProcessStart();
 
     while (self->pFile != NULL && (self->pFile->_flag != 0)) {
         char* line = internal_ReadLine(line_buffer, 255, self->pFile);
@@ -168,9 +177,15 @@ void Parser::ProcessFile(Parser* self, Parser* dst, char* key)
             ShowError("Parser::Parser - premature EOF in '%s'- probably missing END label", self->filename);
         }
 
-        if (self->GetKey(line) == 0) {
-            self->lineNumber = (int)line;
+        if (self->GetKey(line_buffer) == 0) {
+            self->lineNumber = (int)line_buffer;
+            result = (Parser*)self->LBLParse(line_buffer);
+            if (result != NULL) {
+                self->OnProcessEnd();
+                return result;
+            }
         }
     }
     ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer", self->filename);
+    return NULL;
 }
