@@ -1,6 +1,7 @@
 #include "OptionMenu.h"
 #include "Memory.h"
 #include "Sprite.h"
+#include "SpriteList.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -99,16 +100,86 @@ int OptionMenu::LBLParse(char* command)
 /* Function start: 0x409D50 */
 void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
 {
-    if (this->selected_option < sprite_count) {
+    int i = 0;
+    int iVar1;
+    int iVar2;
+    Sprite* sprite;
+
+    if (sprite_count > this->selected_option) {
         sprite_count = this->selected_option;
     }
 
-    for (int i = 0; i < sprite_count; i++) {
-        if (this->options[sprite_index]) {
-            // This is a simplification of the original code, which is very complex
-            // and seems to be traversing a linked list.
-            this->options[sprite_index]->SetState(i);
-            this->options[sprite_index]->Do(this->options[sprite_index]->loc_x, this->options[sprite_index]->loc_y, 1.0);
-        }
+    this->spriteList->current = this->spriteList->head;
+
+    if (*(int*)this->spriteList == 0) {
+        return;
     }
+
+    do {
+        if (i >= sprite_count) {
+            return;
+        }
+
+        if (sprite_index == 0) {
+            iVar1 = (int)this->spriteList->current;
+            if (iVar1 != 0) {
+                iVar1 = *(int*)(iVar1 + 8);
+            }
+            this->options[0]->SetState2(*(int*)(iVar1 + 0x48));
+            sprite = this->options[0];
+            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        }
+        if (sprite_index == 1) {
+            iVar1 = (int)this->spriteList->current;
+            if (iVar1 != 0) {
+                iVar1 = *(int*)(iVar1 + 8);
+            }
+            this->options[1]->SetState2(*(int*)(iVar1 + 0x48));
+            sprite = this->options[1];
+            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        }
+        if (sprite_index == 2) {
+            iVar1 = (int)this->spriteList->current;
+            if (iVar1 != 0) {
+                iVar1 = *(int*)(iVar1 + 8);
+            }
+            this->options[2]->SetState2(*(int*)(iVar1 + 0x48));
+            sprite = this->options[2];
+            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        }
+
+        // Set bounding box values on the current list item
+        iVar1 = (int)this->spriteList->current;
+        if (iVar1 != 0) {
+            iVar1 = *(int*)(iVar1 + 8);
+        }
+        *(int*)(iVar1 + 0x4c) = 0xda;
+
+        iVar1 = (int)this->spriteList->current;
+        if (iVar1 != 0) {
+            iVar1 = *(int*)(iVar1 + 8);
+        }
+        *(int*)(iVar1 + 0x50) = 0xcc;
+
+        iVar1 = (int)this->spriteList->current;
+        if (iVar1 != 0) {
+            iVar1 = *(int*)(iVar1 + 8);
+        }
+        *(int*)(iVar1 + 0x54) = 0x1b3;
+
+        iVar1 = (int)this->spriteList->current;
+        if (iVar1 != 0) {
+            iVar1 = *(int*)(iVar1 + 8);
+        }
+        *(int*)(iVar1 + 0x58) = 0xee;
+
+        // Advance iterator
+        iVar1 = (int)this->spriteList;
+        iVar2 = *(int*)(iVar1 + 8);
+        if (*(int*)(iVar1 + 4) == iVar2) break;
+        if (iVar2 != 0) {
+            *(int*)(iVar1 + 8) = *(int*)(iVar2 + 4);
+        }
+        i++;
+    } while (*(int*)this->spriteList != 0);
 }

@@ -2,9 +2,9 @@
 #define QUEUE_H
 
 struct QueueNode {
-    QueueNode* next;
-    QueueNode* prev;
-    void* data;
+    QueueNode* prev;  // 0x0
+    QueueNode* next;  // 0x4
+    void* data;       // 0x8
 };
 
 class Queue {
@@ -17,7 +17,7 @@ public:
         m_current = 0;
         m_current = m_head;
     }
-    void Destroy(int free_memory);
+    void* Destroy(int free_memory);
 
     void Insert(void* data);
     void* Pop();

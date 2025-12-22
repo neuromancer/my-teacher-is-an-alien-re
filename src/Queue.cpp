@@ -10,28 +10,36 @@ void Queue::Insert(void* data)
     }
 
     QueueNode* newNode = (QueueNode*)AllocateMemory(sizeof(QueueNode));
-    if (newNode) {
-        newNode->data = data;
-        newNode->next = 0;
-        newNode->prev = 0;
+    QueueNode* node = 0;
+    try {
+        if (newNode != 0) {
+            newNode->data = data;
+            newNode->prev = 0;
+            newNode->next = 0;
+            node = newNode;
+        }
+    } catch (...) {
+    }
+
+    if (m_current == 0) {
+        m_current = m_head;
     }
 
     if (m_head == 0) {
-        m_head = newNode;
-        m_tail = newNode;
-        m_current = newNode;
+        m_head = node;
+        m_tail = node;
+        m_current = node;
     }
     else {
-        newNode->prev = (QueueNode*)m_current;
-        newNode->next = ((QueueNode*)m_current)->next;
-        if (((QueueNode*)m_current)->next == 0) {
-            m_tail = newNode;
+        node->next = (QueueNode*)m_current;
+        node->prev = ((QueueNode*)m_current)->prev;
+        if (((QueueNode*)m_current)->prev == 0) {
+            m_head = node;
         }
         else {
-            ((QueueNode*)((QueueNode*)m_current)->next)->prev = newNode;
+            ((QueueNode*)((QueueNode*)m_current)->prev)->next = node;
         }
-        ((QueueNode*)m_current)->next = newNode;
-        m_current = newNode;
+        ((QueueNode*)m_current)->prev = node;
     }
 }
 
@@ -43,24 +51,37 @@ void Queue::Push(void* data)
     }
 
     QueueNode* newNode = (QueueNode*)AllocateMemory(sizeof(QueueNode));
-    if (newNode) {
-        newNode->data = data;
-        newNode->next = 0;
-        newNode->prev = 0;
+    QueueNode* node;
+    try {
+        if (newNode == 0) {
+            node = 0;
+        }
+        else {
+            newNode->data = data;
+            newNode->prev = 0;
+            newNode->next = 0;
+            node = newNode;
+        }
+    } catch (...) {
+    }
+
+    if (m_current == 0) {
+        m_current = m_tail;
     }
 
     if (m_head == 0) {
-        m_head = newNode;
-        m_tail = newNode;
-        m_current = newNode;
+        m_head = node;
+        m_tail = node;
+        m_current = node;
     }
     else {
         if (m_tail == 0 || ((QueueNode*)m_tail)->next != 0) {
             ShowError("queue fault 0113");
         }
-        newNode->prev = (QueueNode*)m_tail;
-        ((QueueNode*)m_tail)->next = newNode;
-        m_tail = newNode;
+        node->next = 0;
+        node->prev = (QueueNode*)m_tail;
+        ((QueueNode*)m_tail)->next = node;
+        m_tail = node;
     }
 }
 
@@ -79,28 +100,38 @@ void* Queue::Pop()
         m_tail = node->prev;
     }
 
-    if (node->prev) {
+    if (node->prev != 0) {
         node->prev->next = node->next;
     }
-    if (node->next) {
-        node->next->prev = node->prev;
+
+    QueueNode* nextNode = ((QueueNode*)m_current)->next;
+    if (nextNode != 0) {
+        nextNode->prev = ((QueueNode*)m_current)->prev;
     }
 
-    void* data = node->data;
-    FreeMemory(node);
+    QueueNode* curr = (QueueNode*)m_current;
+    void* data = 0;
+    if (curr != 0) {
+        data = curr->data;
+        curr->data = 0;
+        curr->prev = 0;
+        curr->next = 0;
+        FreeMemory(curr);
+        m_current = 0;
+    }
 
     m_current = m_head;
-
     return data;
 }
 
 /* Function start: 0x402700 */
-void Queue::Destroy(int free_memory)
+void* Queue::Destroy(int free_memory)
 {
+    m_current = 0;
     m_head = 0;
     m_tail = 0;
-    m_current = 0;
-    if (free_memory) {
+    if (free_memory & 1) {
         FreeMemory(this);
     }
+    return this;
 }
