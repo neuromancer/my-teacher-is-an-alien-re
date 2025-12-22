@@ -4,19 +4,16 @@
 #include "Memory.h"
 #include "SC_OnScreenMessage.h"
 #include "Message.h"
+#include "string.h"
 
 extern "C" {
-    void ShowError(const char*, ...);
-    void TimedEvent_dtor(void*);
+    void __fastcall TimedEvent_dtor(void*);
     void FUN_0041c000(void*, char*, int, int, int);
 }
 
 extern void* g_GameStruct2;
 extern void* g_SoundManager;
-extern char DAT_00436960[256];
-
-const char* s_illegal_type__d__TimedEvent__Upd_004350ac = "illegal type %d, TimedEvent::Update";
-const char* s__3_3d____2_2d_004350d0 = "%3.3d : %2.2d";
+extern char* DAT_00436960;
 
 /* Function start: 0x401890 */
 TimedEvent::TimedEvent() : m_timer()
@@ -137,9 +134,10 @@ done:
 /* Function start: 0x401910 */
 TimedEvent::~TimedEvent()
 {
-    if (m_next_event_data) {
-        TimedEvent_dtor(m_next_event_data);
-        FreeFromGlobalHeap(m_next_event_data);
+    void* next = m_next_event_data;
+    if (next) {
+        TimedEvent_dtor(next);
+        FreeFromGlobalHeap(next);
         m_next_event_data = 0;
     }
     // The base class destructor will be called automatically
@@ -194,7 +192,7 @@ int TimedEvent::Update()
         m_timer.Reset();
         return 0;
     } else if (m_type == 2) {
-        sprintf(DAT_00436960, s__3_3d____2_2d_004350d0, remaining_time / 60000, (remaining_time / 1000) % 60);
+        sprintf(DAT_00436960, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
         FUN_0041c000(g_SoundManager, DAT_00436960, 0x208, 0x1c2, 10000);
 
         if (remaining_time > 0) {
@@ -220,7 +218,7 @@ int TimedEvent::Update()
         }
         return 1;
     } else {
-        ShowError(s_illegal_type__d__TimedEvent__Upd_004350ac, m_type);
+        ShowError("illegal type %d, TimedEvent::Update", m_type);
     }
     return 0;
 }

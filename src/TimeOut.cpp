@@ -1,8 +1,5 @@
 #include "TimeOut.h"
-
-extern "C" {
-    void ShowError(const char*);
-}
+#include "string.h"
 
 /* Function start: 0x419010 */
 void TimeOut::Stop()

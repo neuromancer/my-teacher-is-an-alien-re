@@ -34,7 +34,7 @@ void *DAT_00436968 = (void*)0x00436968;
 void *DAT_00436970 = (void*)0x00436970;
 char *DAT_0043697c = (char*)0x0043697c;
 void *DAT_00436964 = (void*)0x00436964;
-void *DAT_00436960 = (void*)0x00436960;
+char *DAT_00436960 = (char*)0x00436960;
 
 extern "C" {
 	void FUN_00421010(void*);
@@ -336,7 +336,7 @@ unsigned int CalculateBufferSize(unsigned int width, unsigned int height)
 /* Function start: 0x41A3D0 */
 void InitGameSystems(void)
 {
-    DAT_00436960 = AllocateMemory(0x100);
+    DAT_00436960 = (char*)AllocateMemory(0x100);
     DAT_00436964 = AllocateMemory(CalculateBufferSize(0x280,0x1e0));
     CheckDebug();
     ClearMessageLog();
