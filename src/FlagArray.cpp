@@ -1,13 +1,8 @@
 #include "FlagArray.h"
+#include "string.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-extern "C" {
-    void __cdecl ShowError(const char*, ...);
-    void __cdecl WriteToMessageLog(const char*, ...);
-    void FUN_004269e0(void*, int, int, FILE*);
-}
 
 /* Function start: 0x425e50 */
 FILE *fsopen(const char* filename, const char* mode) {
@@ -36,10 +31,10 @@ void FlagArray::Create(char* filename, int max_states)
         this->field_0x3c = 0x94;
         this->field_0x44 = 4;
 
-        FUN_004269e0(&this->field_0x38, 0x94, 1, this->fp);
+        fwrite(&this->field_0x38, 0x94, 1, this->fp);
         for (int i = 0; i < this->max_states; i++) {
             int local_4 = 0;
-            FUN_004269e0(&local_4, 4, 1, this->fp);
+            fwrite(&local_4, 4, 1, this->fp);
         }
     }
 

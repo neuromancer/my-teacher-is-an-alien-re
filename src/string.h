@@ -14,7 +14,7 @@ extern "C" {
     void ExtractQuotedString(char *param_1,char *param_2,int param_3);
     void ShowMessage(char *param_1, ...);
     void ClearMessageLog();
-    void WriteToMessageLog(wchar_t *msg,...);
+    void WriteToMessageLog(const char *msg,...);
     void AddToStringTable(char *param_1);
     void WriteToMessageLogIfEnabled(wchar_t *param_1, ...);
     void SetErrorCode(unsigned int);

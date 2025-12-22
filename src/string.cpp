@@ -183,7 +183,7 @@ void ClearMessageLog()
 }
 
 /* Function start: 0x4191D0 */
-void WriteToMessageLog(wchar_t *msg,...)
+void WriteToMessageLog(const char *msg,...)
 {
     FILE *_File;
     va_list argptr;
@@ -191,9 +191,9 @@ void WriteToMessageLog(wchar_t *msg,...)
     _File = _fsopen("message.log", "a+", _SH_DENYNO);
     if (_File != NULL) {
         va_start(argptr, msg);
-        vfwprintf(_File, msg, argptr);
+        vfprintf(_File, msg, argptr);
         va_end(argptr);
-        fwprintf(_File, L"\n");
+        fprintf(_File, "\n");
         fclose(_File);
     }
 }

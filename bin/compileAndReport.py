@@ -10,12 +10,9 @@ def get_function_name(line):
     if match:
         return match.group(1)
 
-    # Fallback for non-class functions
-    match = re.search(r'void\s+([a-zA-Z0-9_]+)\(', line)
-    if match:
-        return match.group(1)
-
-    match = re.search(r'int\s+([a-zA-Z0-9_]+)\(', line)
+    # Fallback for non-class functions with various return types
+    # Match: returntype functionname( - handles pointers like FILE*, void*, etc.
+    match = re.search(r'^\s*(?:[\w\s\*]+)\s+\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', line)
     if match:
         return match.group(1)
 
@@ -26,11 +23,14 @@ def run_comparison(function_name, address):
     if not os.path.exists(disassembled_file):
         return "N/A"
 
-    similarity, _ = get_similarity(function_name, disassembled_file, clean_build=False)
-    if similarity is not None:
-        return f"{similarity:.2f}%"
-    else:
-        return "Error"
+    try:
+        similarity, _ = get_similarity(function_name, disassembled_file, clean_build=False)
+        if similarity is not None:
+            return f"{similarity:.2f}%"
+        else:
+            return "Error"
+    except Exception as e:
+        return f"Error: {e}"
 
 def main():
     report = []

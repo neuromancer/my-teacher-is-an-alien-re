@@ -116,6 +116,9 @@ def get_similarity(function_name, disassembled_code_path, clean_build=True):
     if asm_file_path is None:
         return None, "Function not found in any .asm file."
 
+    if produced_code is None:
+        return None, "Function found but could not extract assembly."
+
     with open(disassembled_code_path, 'rb') as file:
         target_code = file.read()
         target_code = target_code.decode('utf-8', errors='ignore').lower()
