@@ -1,17 +1,8 @@
 #include "GameState.h"
+#include "string.h"
+#include "Memory.h"
 #include <stdio.h>
 #include <string.h>
-#include "Memory.h"
-
-extern "C" {
-    int _sscanf(const char* s, const char* format, ...);
-    void ShowError(const char* message, ...);
-    void FUN_004209c0(int);
-    FILE* fsopen(const char* filename, const char* mode);
-    size_t __fread_lk(void* ptr, size_t size, size_t count, FILE* stream);
-    size_t __fwrite_lk(const void* ptr, size_t size, size_t count, FILE* stream);
-    int _fclose(FILE* stream);
-}
 
 /* Function start: 0x420480 */
 GameState::~GameState()
@@ -52,20 +43,20 @@ void GameState::Serialize(int param_1)
         puVar2[1] = 0x110;
         puVar2[2] = 1;
         puVar2[3] = this->field_0x90 * 4 + 0x110;
-        __fwrite_lk(puVar2, 0x110, 1, _File);
-        __fwrite_lk(this->field_0x88, 4, puVar2[0], _File);
-        _fclose(_File);
+        fwrite(puVar2, 0x110, 1, _File);
+        fwrite(this->field_0x88, 4, puVar2[0], _File);
+        fclose(_File);
     } else if (param_1 == 2) {
         FILE* _File = fsopen(local_1c, "rb");
         if (_File == NULL) {
             ShowError("GameState::Serialize unable to open %s ", local_1c);
         }
-        __fread_lk(puVar2, 0x110, 1, _File);
+        fread(puVar2, 0x110, 1, _File);
         if (puVar2[0] != this->field_0x90 || puVar2[2] != 1) {
             ShowError("GameState::Serialize incompatible file");
         }
-        __fread_lk(this->field_0x88, 0x110, this->field_0x90, _File);
-        _fclose(_File);
+        fread(this->field_0x88, 0x110, this->field_0x90, _File);
+        fclose(_File);
     } else {
         ShowError("illegal in GameState::Serialize(%d)", param_1);
     }
@@ -78,13 +69,13 @@ int GameState::LBLParse(char* param_1)
     char local_20[32];
     int local_44;
 
-    _sscanf(param_1, "%s", local_40);
+    sscanf(param_1, "%s", local_40);
 
     if (strcmp(local_40, "MAXSTATES") == 0) {
-        _sscanf(param_1, "%s %d %s", local_40, &local_44, local_20);
+        sscanf(param_1, "%s %d %s", local_40, &local_44, local_20);
         this->SetMaxStates2(local_44);
     } else if (strcmp(local_40, "LABEL") == 0) {
-        _sscanf(param_1, "%s %d %s", local_40, &local_44, local_20);
+        sscanf(param_1, "%s %d %s", local_40, &local_44, local_20);
         int* mem = (int*)AllocateMemory(0x20);
         this->field_0x8c[local_44] = (int)mem;
         strcpy((char*)mem, local_20);
@@ -122,6 +113,16 @@ int GameState::GetState(int param_1)
     return this->field_0x8c[param_1];
 }
 
+/* Function start: 0x4209C0 */
+void GameState::ClearStates()
+{
+    int* ptr = this->field_0x88;
+    for (unsigned int i = this->field_0x90; i != 0; i--) {
+        *ptr = 0;
+        ptr++;
+    }
+}
+
 /* Function start: 0x4206e0 */
 void GameState::SetMaxStates2(int param_1)
 {
@@ -133,7 +134,7 @@ void GameState::SetMaxStates2(int param_1)
     }
     this->field_0x90 = param_1;
     this->field_0x88 = (int*)AllocateMemory(param_1 * 4);
-    FUN_004209c0((int)this);
+    this->ClearStates();
     this->field_0x8c = (int*)AllocateMemory(this->field_0x90 * 4);
     int* arr = this->field_0x8c;
     for (int i = 0; i < this->field_0x90; i++) {

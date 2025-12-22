@@ -2,6 +2,7 @@
 #define STRING_H
 
 #include <stddef.h>
+#include <stdio.h>
 
 extern "C" {
     char* strncpy_custom(char* dest, const char* src, size_t n);
@@ -18,6 +19,8 @@ extern "C" {
     void AddToStringTable(char *param_1);
     void WriteToMessageLogIfEnabled(wchar_t *param_1, ...);
     void SetErrorCode(unsigned int);
+    FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, unsigned int* out_size);
+    FILE* fsopen(const char* filename, const char* mode);
 }
 
 #endif // STRING_H

@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <share.h>
 #include "string.h"
+#include "Memory.h"
 #include <mbstring.h>
 
 // Based on the assembly, this function is a custom implementation of strncpy.
@@ -236,6 +237,93 @@ void WriteToMessageLogIfEnabled(wchar_t *param_1, ...)
             fclose(_File);
         }
     }
+}
+
+FILE *fsopen(const char* filename, const char* mode);
+void ParsePath(const unsigned char* path, unsigned char* drive, unsigned char* dir, unsigned char* fname, unsigned char* ext);
+void FUN_00426550(const char* filename, int* stat_buf);
+void FUN_00425f30(FILE* fp, long offset, int origin);
+char* FormatFilePath(char* path);
+void* AllocateMemory_Wrapper(int size);
+
+/* Function start: 0x419420 */
+FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, unsigned int* out_size)
+{
+    FILE* fp;
+    char* entry_buf;
+    int found;
+    long offset;
+    char fname[12];
+    char ext[8];
+    char key[16];
+    int stat_buf[5];
+
+    if (out_size != NULL) {
+        *out_size = 0;
+    }
+
+    if (archive_path == NULL) {
+        fp = fsopen(filename, mode);
+        if (fp != NULL && out_size != NULL) {
+            FUN_00426550(filename, stat_buf);
+            *out_size = stat_buf[4];
+        }
+        return fp;
+    }
+
+    stat_buf[0] = 0;
+    offset = 0;
+    ParsePath((unsigned char*)filename, NULL, NULL, (unsigned char*)fname, (unsigned char*)ext);
+    sprintf(key, "%s%s", fname, ext);
+
+    fp = fsopen(archive_path, mode);
+    if (fp == NULL) {
+        char* formatted = FormatFilePath(archive_path);
+        fp = fsopen(formatted, mode);
+        if (fp == NULL) {
+            goto not_found;
+        }
+    }
+
+    found = 1;
+    entry_buf = (char*)AllocateMemory_Wrapper(0x18);
+
+    do {
+        while (found) {
+            fread(entry_buf, 0x18, 1, fp);
+            if (*entry_buf != (char)0xff) {
+                break;
+            }
+            if (*(int*)(entry_buf + 0xc) == 0) {
+                found = 0;
+            } else {
+                FUN_00425f30(fp, *(long*)(entry_buf + 0xc), 0);
+            }
+        }
+        if (!found) break;
+    } while (_strnicmp(entry_buf, key, 0xc) != 0);
+
+    if (found) {
+        offset = *(long*)(entry_buf + 0xc);
+        stat_buf[0] = 1;
+        if (out_size != NULL) {
+            *out_size = *(unsigned int*)(entry_buf + 0x10);
+        }
+    }
+
+    FreeFromGlobalHeap(entry_buf);
+
+not_found:
+    if (stat_buf[0] != 0) {
+        FUN_00425f30(fp, offset, 0);
+        return fp;
+    }
+
+    if (fp != NULL) {
+        fclose(fp);
+        fp = NULL;
+    }
+    return fp;
 }
 
 /* Function start: 0x4260F0 */

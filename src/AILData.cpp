@@ -1,14 +1,14 @@
 #include "AILData.h"
+#include "string.h"
 #include <stdio.h>
 
 extern "C" {
     void FUN_0041e670(int);
     void _AIL_mem_free_lock_4(void*);
     void* _AIL_mem_alloc_lock_4(unsigned int);
-    FILE* OpenFileAndFindKey(char*, char*, const char*, unsigned int*);
 }
 
-extern int* DAT_0043696c;
+extern void* DAT_0043696c;
 
 /* Function start: 0x41E460 */
 AILData::AILData()

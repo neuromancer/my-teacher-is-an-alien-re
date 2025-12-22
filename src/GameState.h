@@ -6,6 +6,7 @@
 class GameState : public Parser {
 public:
     ~GameState();
+    void ClearStates();
     int FindState(char*);
     int GetState(int);
     int LBLParse(char*);
