@@ -4,6 +4,7 @@
 #include "Timer.h"
 #include "string.h"
 #include "TimedEvent.h"
+#include "Message.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,30 +12,24 @@
 
 // Forward declarations
 extern "C" {
-    void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
-    void* TimedEvent__Init(void*);
-    void TimedEvent__SetData(void*, int);
-    void TimedEvent__delete(int);
-    void ShowError(const char*, ...);
     void FUN_004171b0(int);
+    void FUN_00419fd0(void*);
+    TimedEvent* TimedEvent_Init(TimedEvent*);
 }
 
 /* Function start: 0x401B60 */
 SC_Timer::SC_Timer() : Parser(), timer1(), timer2()
 {
-    int* edi = &m_messageId;
-    __asm {
-        mov edi, edi
-        xor eax, eax
-        mov ecx, 6
-        rep stosd
+    int* ptr = &m_messageId;
+    for (int i = 6; i != 0; i--) {
+        *ptr++ = 0;
     }
 
     m_messageId = 0xd;
     timer1.Reset();
 
     m_eventList = (Queue*)AllocateMemory(0x10);
-    if (m_eventList) {
+    if (m_eventList != 0) {
         m_eventList->Init();
     }
 }
@@ -143,7 +138,7 @@ int SC_Timer::Input(void* param_1)
                         piVar1[2] = *piVar1;
                     }
                     if (pvVar6 != 0) {
-                        TimedEvent__delete((int)pvVar6);
+                        ((TimedEvent*)pvVar6)->~TimedEvent();
                         FreeMemory(pvVar6);
                     }
                     iVar2 = *piVar1;
@@ -152,19 +147,19 @@ int SC_Timer::Input(void* param_1)
             break;
         case 0x13:
             if (*(int*)((char*)param_1 + 0xbc) == 0) {
-                ((void(*)(void*, int))0x419fd0)(param_1, 0);
+                FUN_00419fd0(param_1);
                 ShowError("SC_Timer::Input");
             }
             puVar7 = 0;
             puVar4 = (TimedEvent*)AllocateMemory(0x28);
             if (puVar4 != 0) {
-                puVar7 = (TimedEvent*)TimedEvent__Init((void*)puVar4);
+                puVar7 = TimedEvent_Init(puVar4);
             }
-            *(int*)((char*)puVar7 + 0xc) = *(int*)((char*)param_1 + 0xb8);
-            *(int*)((char*)puVar7 + 0x8) = *(int*)((char*)param_1 + 0x8c);
-            *(int*)((char*)puVar7 + 0x10) = *(int*)((char*)param_1 + 0xbc);
+            puVar7->m_duration = *(int*)((char*)param_1 + 0xb8);
+            puVar7->field_0x8 = *(int*)((char*)param_1 + 0x8c);
+            puVar7->m_next_event_data = (void*)*(int*)((char*)param_1 + 0xbc);
             *(int*)((char*)param_1 + 0xbc) = 0;
-            TimedEvent__SetData((void*)puVar7, *(int*)((char*)param_1 + 0x9c));
+            puVar7->SetData(*(int*)((char*)param_1 + 0x9c));
 
             piVar1 = (int*)m_eventList;
             if (puVar7 == 0) {
@@ -201,9 +196,9 @@ int SC_Timer::Input(void* param_1)
             puVar7 = 0;
             puVar4 = (TimedEvent*)AllocateMemory(0x28);
             if (puVar4 != 0) {
-                puVar7 = (TimedEvent*)TimedEvent__Init((void*)puVar4);
+                puVar7 = TimedEvent_Init(puVar4);
             }
-            *(int*)((char*)puVar7 + 0x8) = *(int*)((char*)param_1 + 0x8c);
+            puVar7->field_0x8 = *(int*)((char*)param_1 + 0x8c);
             piVar1 = (int*)m_eventList;
             if (puVar7 == 0) {
                 ShowError("queue fault 0103");
@@ -216,10 +211,10 @@ int SC_Timer::Input(void* param_1)
                 if (iVar2 != 0) {
                     iVar5 = *(int*)(iVar2 + 8);
                 }
-                if (*(int*)(iVar5 + 0xc) == *(int*)((char*)puVar7 + 0xc)) {
+                if (*(int*)(iVar5 + 0xc) == puVar7->m_duration) {
                     pvVar6 = m_eventList->Pop();
                     if (pvVar6 != 0) {
-                        TimedEvent__delete((int)pvVar6);
+                        ((TimedEvent*)pvVar6)->~TimedEvent();
                         FreeMemory(pvVar6);
                     }
                     break;
