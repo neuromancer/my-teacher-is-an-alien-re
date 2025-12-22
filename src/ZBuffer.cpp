@@ -7,10 +7,6 @@
 #include "Timer.h"
 #include "string.h"
 
-extern "C" {
-    void VBuffer_VBuffer_Owner___VBuffer_Owner(void*);
-}
-
 // This is a guess based on usage.
 struct SoundManager {
     char pad[0x84];
@@ -71,9 +67,9 @@ int ZBuffer::ProcessMessage(void* param_1)
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
-                void* pVVar5 = ZBuffer::PopNode_2(piVar2);
+                ZBuffer* pVVar5 = (ZBuffer*)ZBuffer::PopNode_2(piVar2);
                 if (pVVar5 != 0) {
-                    VBuffer_VBuffer_Owner___VBuffer_Owner(pVVar5);
+                    pVVar5->CleanUpVBuffer();
                     FreeFromGlobalHeap(pVVar5);
                 }
             }
@@ -81,14 +77,13 @@ int ZBuffer::ProcessMessage(void* param_1)
         piVar2 = (int*)g_SoundManager->field_9c;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
-            if (*piVar2 != 0) {
-                do {
-                    void* this_00 = ZBuffer::PopNode_2(piVar2);
-                    if (this_00 != 0) {
-                        /* Initialize node as ZBuffer (replaced SC__ZBuffer___ZBuffer) */
-                        *(void**)this_00 = (void*)0x431058;
-                    }
-                } while (*piVar2 != 0);
+            while (*piVar2 != 0) {
+                void* this_00 = ZBuffer::PopNode_2(piVar2);
+                if (this_00 != 0) {
+                    /* Call scalar deleting destructor via vtable with flag 1 */
+                    void (**vtable)(int) = *(void (***)(int))this_00;
+                    (*vtable)(1);
+                }
             }
         }
     } else {
@@ -111,9 +106,9 @@ int ZBuffer::ProcessMessage(void* param_1)
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
-                void* pVVar5 = ZBuffer::PopNode_2(piVar2);
+                ZBuffer* pVVar5 = (ZBuffer*)ZBuffer::PopNode_2(piVar2);
                 if (pVVar5 != 0) {
-                    VBuffer_VBuffer_Owner___VBuffer_Owner(pVVar5);
+                    pVVar5->CleanUpVBuffer();
                     FreeFromGlobalHeap(pVVar5);
                 }
             }
