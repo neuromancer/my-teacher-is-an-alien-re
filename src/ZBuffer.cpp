@@ -5,17 +5,10 @@
 #include "VBuffer.h"
 #include "Memory.h"
 #include "Timer.h"
+#include "string.h"
 
 extern "C" {
-    void* SC__ZBuffer__PopNode(void*);
-    void* SC__ZBuffer__PopNode_2(void*);
     void VBuffer_VBuffer_Owner___VBuffer_Owner(void*);
-    void* SC__ZBuffer__PopNode_3(void*);
-    void SC__ZBuffer___ZBuffer(void*, int);
-    void SC__ZBuffer__ClearList(void*);
-    void ShowError(const char*, ...);
-    void SC__ZBuffer__Node_dtor(void);
-    void SC_ZBuffer_vftable_placeholder(void);
 }
 
 // This is a guess based on usage.
@@ -67,7 +60,7 @@ int ZBuffer::ProcessMessage(void* param_1)
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
-                void* puVar4 = SC__ZBuffer__PopNode(piVar2);
+                void* puVar4 = ZBuffer::PopNode(piVar2);
                 if (puVar4 != 0) {
                     *(void**)puVar4 = (void*)0x431050;
                     FreeFromGlobalHeap(puVar4);
@@ -78,7 +71,7 @@ int ZBuffer::ProcessMessage(void* param_1)
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
-                void* pVVar5 = SC__ZBuffer__PopNode_2(piVar2);
+                void* pVVar5 = ZBuffer::PopNode_2(piVar2);
                 if (pVVar5 != 0) {
                     VBuffer_VBuffer_Owner___VBuffer_Owner(pVVar5);
                     FreeFromGlobalHeap(pVVar5);
@@ -90,9 +83,10 @@ int ZBuffer::ProcessMessage(void* param_1)
             piVar2[2] = *piVar2;
             if (*piVar2 != 0) {
                 do {
-                    void* this_00 = SC__ZBuffer__PopNode_3(piVar2);
+                    void* this_00 = ZBuffer::PopNode_2(piVar2);
                     if (this_00 != 0) {
-                        SC__ZBuffer___ZBuffer(this_00, 1);
+                        /* Initialize node as ZBuffer (replaced SC__ZBuffer___ZBuffer) */
+                        *(void**)this_00 = (void*)0x431058;
                     }
                 } while (*piVar2 != 0);
             }
@@ -106,7 +100,7 @@ int ZBuffer::ProcessMessage(void* param_1)
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
-                void* puVar4 = SC__ZBuffer__PopNode(piVar2);
+                void* puVar4 = ZBuffer::PopNode(piVar2);
                 if (puVar4 != 0) {
                     *(void**)puVar4 = (void*)0x431050;
                     FreeFromGlobalHeap(puVar4);
@@ -117,14 +111,14 @@ int ZBuffer::ProcessMessage(void* param_1)
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
-                void* pVVar5 = SC__ZBuffer__PopNode_2(piVar2);
+                void* pVVar5 = ZBuffer::PopNode_2(piVar2);
                 if (pVVar5 != 0) {
                     VBuffer_VBuffer_Owner___VBuffer_Owner(pVVar5);
                     FreeFromGlobalHeap(pVVar5);
                 }
             }
         }
-        SC__ZBuffer__ClearList(g_SoundManager->field_9c);
+        ZBuffer::ClearList((int*)g_SoundManager->field_9c);
     }
     return 1;
 }
@@ -149,7 +143,6 @@ void ZBuffer::CleanUpVBuffer()
 ZBuffer::~ZBuffer()
 {
     *(void**)this = (void*)0x431058;
-    SC_ZBuffer_vftable_placeholder();
 }
 
 /* Function start: 0x401710 */
@@ -258,7 +251,6 @@ void ZBuffer::ClearList(int* param_1)
             }
             if (local_18 != 0) {
                 *(void**)local_18 = (void*)0x431058;
-                SC__ZBuffer__Node_dtor();
                 FreeFromGlobalHeap(local_18);
             }
         } while (*param_1 != 0);
