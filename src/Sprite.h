@@ -34,7 +34,7 @@ public:
     void InitAnimation();
     virtual int LBLParse(char* param_1);
     void Dump();
-    unsigned char Do(int, int, int, int);
+    int Do(int, int, double);
     void FreeAnimation();
     void StopAnimationSound();
 };

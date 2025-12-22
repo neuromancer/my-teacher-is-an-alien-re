@@ -216,23 +216,17 @@ void Sprite::SetState2(int param_1)
 }
 
 /* Function start: 0x41d300 */
-unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
+int Sprite::Do(int x, int y, double scale)
 {
-    void* pvVar1;
-    unsigned int uVar2;
-    int iVar3;
-    int* piVar4;
-    unsigned char bVar5;
-    int bVar6;
-    __int64 lVar7;
+    int skipAnimLoop;
+    int done;
 
     if (this->field_0x90 == -1) {
         return 1;
     }
-    bVar6 = 0;
-    bVar5 = 0;
-    iVar3 = CheckConditions();
-    if (iVar3 == 0) {
+    skipAnimLoop = 0;
+    done = 0;
+    if (CheckConditions() == 0) {
         return 1;
     }
     if ((this->flags & 0x80) != 0) {
@@ -241,24 +235,27 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
     if ((this->animation_data == 0) || (this->animation_data->data == 0)) {
         this->Init();
     }
-    piVar4 = (int*)(this->field_0x90 * 8 + (int)this->ranges);
-    if (piVar4[1] == *piVar4) {
-        bVar6 = (this->flags & 4) == 0;
-        if (bVar6 == 0) {
-            this->flags = this->flags & 0xfffffffb;
+    int* range = (int*)(this->field_0x90 * 8 + (int)this->ranges);
+    if (range[1] == range[0]) {
+        int f = this->flags;
+        skipAnimLoop = 1;
+        if ((f & 4) != 0) {
+            skipAnimLoop = 0;
+            this->flags = f & ~4;
         }
-        bVar5 = 1;
+        done = 1;
     }
-    if (bVar6 == 0) {
+    if (skipAnimLoop == 0) {
         Animation::DoFrame(this->animation_data);
-        pvVar1 = this->animation_data;
-        if (pvVar1 == (void*)0x0) {
-            iVar3 = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8);
+        Animation* anim = this->animation_data;
+        int remaining;
+        if (anim == 0) {
+            remaining = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8);
         }
         else {
-            iVar3 = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8) - this->animation_data->smk->current_frame;
+            remaining = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8) - this->animation_data->smk->current_frame;
         }
-        if (iVar3 == 1) {
+        if (remaining == 1) {
             if ((this->flags & 0x200) == 0) {
                 this->animation_data->GotoFrame(*(int*)((int)this->ranges + this->field_0x90 * 8));
             }
@@ -266,45 +263,45 @@ unsigned char Sprite::Do(int x, int y, int param_3, int param_4)
                 this->animation_data->NextFrame();
             }
             if ((this->flags & 1) == 0) {
-                bVar5 = 1;
+                done = 1;
             }
         }
         else {
             this->animation_data->NextFrame();
         }
     }
-    uVar2 = this->flags;
-    if ((uVar2 & 0x100) != 0) {
-        return bVar5;
+    int flags = this->flags;
+    if ((flags & 0x100) != 0) {
+        return done;
     }
-    if ((uVar2 & 2) == 0) {
-        pvVar1 = this->animation_data;
-        if ((uVar2 & 8) == 0) {
-            if (pvVar1 == (void*)0x0) {
-                y = y + -1;
+    if ((flags & 2) == 0) {
+        Animation* anim = this->animation_data;
+        if ((flags & 8) == 0) {
+            if (anim == 0) {
+                y = y - 1;
             }
             else {
-                y = y + this->animation_data->data->height + -1;
+                y = y + this->animation_data->data->height - 1;
             }
         }
-        else if (pvVar1 == (void*)0x0) {
-            y = y + (int)__ftol();
+        else if (anim == 0) {
+            y = y + (int)(-scale);
         }
         else {
-            y = y + (int)__ftol();
+            y = y + (int)((this->animation_data->data->height - 1) * scale);
         }
     }
-    iVar3 = 0;
-    if ((uVar2 & 8) == 0) {
-        if ((uVar2 & 0x40) != 0) {
-            iVar3 = 1;
+    int mode = 0;
+    if ((flags & 8) == 0) {
+        if ((flags & 0x40) != 0) {
+            mode = 1;
         }
     }
     else {
-        iVar3 = 3 - (unsigned int)((uVar2 & 0x40) == 0);
+        mode = 3 - (unsigned int)((flags & 0x40) == 0);
     }
-    FUN_0041be20(g_SoundManager, this->animation_data->data, this->priority, x, y, iVar3, param_3, param_4);
-    return -((this->flags & 1) == 0) & bVar5;
+    FUN_0041be20(g_SoundManager, this->animation_data->data, this->priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
+    return -((this->flags & 1) == 0) & done;
 }
 
 /* Function start: 0x41D500 */

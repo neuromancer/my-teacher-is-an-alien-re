@@ -9,17 +9,6 @@ extern "C" {
     void FUN_004269e0(void*, int, int, FILE*);
 }
 
-const char* s_Error_in_flagaray_cpp_Create_Cannot_create = "Error in flagaray.cpp - Create:  Cannot create %s";
-const char* s_Error_in_flagaray_cpp_SetFileName_File_name_too_long = "Error in flagaray.cpp - SetFileName: File name too long";
-const char* s_rb = "rb";
-const char* s_wb = "wb";
-const char* s_double_FlagArray__Open = "double FlagArray::Open()";
-const char* s_Error_opening_file_in_flagarray_Open = "Error opening file in flagarray::Open";
-const char* s_FlagArray_Close_attempt_to_close_a_file_that_is_not_open = "FlagArray::Close() - attempt to close a file that is not open";
-const char* s_FlagArray__Seek = "FlagArray::Seek";
-const char* s_Error_in_flagaray_cpp_Seek_Attempt_to_seek_past_end_of_file = "Error in flagaray.cpp - Seek: Attempt to seek past end of file";
-const char* s_Error_in_flagaray_cpp_Seek_Index_out_of_range = "Error in flagaray.cpp - Seek: Index out of range %d";
-
 /* Function start: 0x425e50 */
 FILE *fsopen(const char* filename, const char* mode) {
     return _fsopen(filename, mode, 0x40);
@@ -31,15 +20,15 @@ void FlagArray::Create(char* filename, int max_states)
     memset(this, 0, sizeof(FlagArray));
 
     if (strlen(filename) > 50) {
-        ShowError(s_Error_in_flagaray_cpp_SetFileName_File_name_too_long);
+        ShowError("Error in flagaray.cpp - SetFileName: File name too long");
     }
     strcpy(this->filename, filename);
 
-    this->fp = fsopen(this->filename, s_rb);
+    this->fp = fsopen(this->filename, "rb");
     if (this->fp == 0) {
-        this->fp = fsopen(this->filename, s_wb);
+        this->fp = fsopen(this->filename, "wb");
         if (this->fp == 0) {
-            ShowError(s_Error_in_flagaray_cpp_Create_Cannot_create, filename);
+            ShowError("Error in flagaray.cpp - Create:  Cannot create %s", filename);
         }
 
         this->max_states = max_states;
@@ -71,11 +60,11 @@ void FlagArray::SafeClose()
 void FlagArray::Open()
 {
     if (this->fp != 0) {
-        ShowError(s_double_FlagArray__Open);
+        ShowError("double FlagArray::Open()");
     }
-    this->fp = fsopen(this->filename, s_rb);
+    this->fp = fsopen(this->filename, "rb");
     if (this->fp == 0) {
-        ShowError(s_Error_opening_file_in_flagarray_Open);
+        ShowError("Error opening file in flagarray::Open");
     }
     fread(&this->field_0x38, 0x94, 1, this->fp);
 }
@@ -84,7 +73,7 @@ void FlagArray::Open()
 void FlagArray::Close()
 {
     if (this->fp == 0) {
-        ShowError(s_FlagArray_Close_attempt_to_close_a_file_that_is_not_open);
+        ShowError("FlagArray::Close() - attempt to close a file that is not open");
     }
     fclose(this->fp);
     this->fp = 0;
@@ -94,16 +83,17 @@ void FlagArray::Close()
 void FlagArray::Seek(int index)
 {
     if (this->fp == 0) {
-        ShowError(s_FlagArray__Seek);
-    }
-
-    if (index < 0 || index >= this->max_states) {
-        ShowError(s_Error_in_flagaray_cpp_Seek_Index_out_of_range, index);
+        ShowError("FlagArray::Seek");
     }
 
     int offset = this->field_0x44 * index + this->field_0x3c;
+
+    if (index < 0 || index >= this->max_states) {
+        ShowError("Error in flagaray.cpp - Seek: Index out of range %d", index);
+    }
+
     if (offset > (this->field_0x38 - this->field_0x44 + 1)) {
-        WriteToMessageLog(s_Error_in_flagaray_cpp_Seek_Attempt_to_seek_past_end_of_file);
+        WriteToMessageLog("Error in flagaray.cpp - Seek: Attempt to seek past end of file");
     }
 
     fseek(this->fp, offset, SEEK_SET);

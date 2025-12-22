@@ -13,7 +13,7 @@ extern "C" {
 unsigned char Hotspot::Do()
 {
     if (this->sprite != (Sprite *)0x0) {
-        return this->sprite->Do(this->sprite->loc_x, this->sprite->loc_y, 0, 0x3ff00000);
+        return this->sprite->Do(this->sprite->loc_x, this->sprite->loc_y, 1.0);
     }
     // WARNING: Subroutine does not return
     ShowError("Missing sprite in Hotspot Do()");

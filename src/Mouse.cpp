@@ -7,14 +7,23 @@
 #include <stdio.h>
 #include "Memory.h"
 
+class AudioData {
+public:
+    int field_0;
+    int field_4;
+    int field_8;
+    int field_C;
+};
+
+extern AudioData* AudioData_Create(void*);
+extern int AudioData_Load(AudioData*, const char*);
+
 extern "C" {
     void FUN_00424b00(void*, int, int, void*, void*);
     void FUN_0041e470(void*);
     void SpriteArray_Cleanup(void*);
     void Array_Cleanup(void*, int, int, void*);
     void FUN_0041ef47();
-    void* FUN_0041e460(void*);
-    int FUN_0041e490(void*, const char*);
     void FUN_00425fd0(char*, char*, int);
     void ShowError(const char*, ...);
     extern int DAT_00436968;
@@ -83,57 +92,52 @@ int Mouse::LBLParse(char* line)
     char local_40[32];
     int local_20;
     int local_1c;
-    Sprite* local_18;
+    void* local_18;
     int local_14;
 
-    try {
-        sscanf(line, "%s", local_40);
+    local_40[0] = 0;
+    local_60[0] = 0;
 
+    sscanf(line, " %s ", local_40);
+
+    try {
         if (strcmp(local_40, "AUDIO") == 0) {
             sscanf(line, " %s %s", local_40, local_60);
-            local_18 = (Sprite*)AllocateMemory(0x10);
-            void* this_00 = 0;
+            local_18 = AllocateMemory(0x10);
+            AudioData* this_00 = 0;
             if (local_18 != 0) {
-                this_00 = FUN_0041e460((void*)local_18);
+                this_00 = AudioData_Create(local_18);
             }
-            m_fields[73] = (char*)this_00;
+            *(AudioData**)((char*)this + 0x1BC) = this_00;
             if (this_00 != 0) {
-                FUN_0041e490(this_00, local_60);
+                AudioData_Load(this_00, local_60);
             }
         } else if (strcmp(local_40, "SPRITE") == 0) {
-            local_18 = (Sprite*)AllocateMemory(0xd8);
+            local_18 = AllocateMemory(0xd8);
             Sprite* pSVar4 = 0;
             if (local_18 != 0) {
-                new (local_18) Sprite((char*)0);
-                pSVar4 = local_18;
+                pSVar4 = new (local_18) Sprite((char*)0);
             }
-            m_fields[21] = (char*)pSVar4;
+            *(Sprite**)((char*)this + 0xEC) = pSVar4;
             pSVar4->flags &= ~2;
             Parser::ProcessFile(pSVar4, this, 0);
         } else if (strcmp(local_40, "HOTPIXEL") == 0) {
             sscanf(line, " %s %d %d %d", local_40, &local_14, &local_20, &local_1c);
-            *(int*)&m_fields[23 + local_14 * 2] = local_20;
-            *(int*)&m_fields[24 + local_14 * 2] = local_1c;
+            *(int*)((char*)this + local_14 * 8 + 0xF4) = local_20;
+            *(int*)((char*)this + local_14 * 8 + 0xF8) = local_1c;
         } else if (strcmp(local_40, "LABLE") == 0) {
             sscanf(line, " %s %d %s", local_40, &local_14, local_60);
-            char* dest = 0;
-            if (local_14 == 0) dest = m_pointer_str;
-            else if (local_14 == 1) dest = m_examine_str;
-            else if (local_14 == 2) dest = m_pickup_str;
-            else if (local_14 == 3) dest = m_unknown_str;
-
-            if (dest) FUN_00425fd0(dest, local_60, 0x10);
+            FUN_00425fd0(*(char**)((char*)this + local_14 * 4 + 0x88), local_60, 0x10);
         } else if (strcmp(local_40, "END") == 0) {
-            m_fields[22] = 0;
+            *(int*)((char*)this + 0xF0) = 0;
             return 1;
         } else {
             Parser::LBLParse(line);
         }
-
-        return 0;
     } catch (...) {
-        return 0;
     }
+
+    return 0;
 }
 
 /* Function start: 0x41F200 */
@@ -166,7 +170,7 @@ void Mouse::DrawCursor()
         final_y -= *(int*)((char*)this + 0xf0);
     }
 
-    sprite->Do(final_x, final_y, 0, 0x3ff00000);
+    sprite->Do(final_x, final_y, 1.0);
 }
 
 /* Function start: 0x422D98 */

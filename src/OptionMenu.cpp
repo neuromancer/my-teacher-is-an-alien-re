@@ -111,7 +111,7 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
             // This is a simplification of the original code, which is very complex
             // and seems to be traversing a linked list.
             this->options[sprite_index]->SetState(i);
-            this->options[sprite_index]->Do(this->options[sprite_index]->loc_x, this->options[sprite_index]->loc_y, 0, 0x3ff00000);
+            this->options[sprite_index]->Do(this->options[sprite_index]->loc_x, this->options[sprite_index]->loc_y, 1.0);
         }
     }
 }

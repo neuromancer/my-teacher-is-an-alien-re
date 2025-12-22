@@ -147,8 +147,9 @@ void ShowError(const char* format, ...)
     char buffer[256];
     vsprintf(buffer, format, (char*)(&format + 1));
     SetCursorVisible(1);
+    char* lpText = buffer;
     HWND hWnd = (HWND)GetWindowHandle_();
-    MessageBoxA(hWnd, buffer, "Error", 0x10);
+    MessageBoxA(hWnd, lpText, "Error", 0x10);
     ShutdownGameSystems();
     exitWithError_(-1);
 }

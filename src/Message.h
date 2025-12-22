@@ -28,6 +28,8 @@ struct Message {
     int field_0xb4;
     int field_0xb8;
     int field_0xbc;
+
+    Message(int, int, int, int, int, int, int, int, int, int);
 };
 
 void SC_Message_Send(int param_1, int param_2, int param_3, int param_4,

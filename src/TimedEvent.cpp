@@ -3,14 +3,12 @@
 #include <stdio.h>
 #include "Memory.h"
 #include "SC_OnScreenMessage.h"
+#include "Message.h"
 
 extern "C" {
     void ShowError(const char*, ...);
     void TimedEvent_dtor(void*);
-    void TimedEvent__CopyConstructor(void*, void*);
-    void* TimedEvent__Create(void*, void*, int);
     void FUN_0041c000(void*, char*, int, int, int);
-    void TimedEvent__Cleanup(void*);
 }
 
 extern void* g_GameStruct2;
@@ -23,50 +21,117 @@ const char* s__3_3d____2_2d_004350d0 = "%3.3d : %2.2d";
 /* Function start: 0x401890 */
 TimedEvent::TimedEvent() : m_timer()
 {
-    for (int i = 0; i < 10; i++) {
-        ((int*)this)[i] = 0;
-    }
+    memset(this, 0, 10 * sizeof(int));
     m_timer.Reset();
 }
 
 
 /* Function start: 0x402310 */
-TimedEvent::TimedEvent(const TimedEvent& other)
+void TimedEvent::CopyFrom(const TimedEvent* other)
 {
-    // This is a copy of the data, not a real copy constructor
-    memcpy(&this->m_type, &other.m_type, sizeof(TimedEvent) - 4);
+    unsigned int eax;
+    char* src = (char*)other;
+    char* dst = (char*)this;
+    char bl;
+
+    this->field_0x8 = other->field_0x8;
+    eax = 0;
+    this->m_duration = other->m_duration;
+loop1:
+    bl = src[0x10 + eax];
+    eax++;
+    if (eax < 0x20) {
+        dst[0xf + eax] = bl;
+        goto loop1;
+    }
+    dst[0xf + eax] = bl;
+
+    this->field_0x30 = other->field_0x30;
+    {
+        int* esi = (int*)(&dst[0x38]);
+        int* ptr = (int*)(&src[0x38]);
+        int edi = ptr[0];
+        int ebx = ptr[1];
+        eax = 0;
+        esi[0] = edi;
+        esi[1] = ebx;
+    }
+loop2:
+    bl = ((char*)&other->m_data_0x40)[eax];
+    eax++;
+    if (eax < 0x40) {
+        this->m_data_0x40[eax - 1] = bl;
+        goto loop2;
+    }
+    this->m_data_0x40[eax - 1] = bl;
+
+    this->field_0x80 = other->field_0x80;
+    this->field_0x88 = other->field_0x88;
+    this->field_0x8c = other->field_0x8c;
+    this->field_0x90 = other->field_0x90;
+    this->field_0x94 = other->field_0x94;
+    this->field_0x98 = other->field_0x98;
+    this->field_0x9c = other->field_0x9c;
+    this->field_0xa0 = other->field_0xa0;
+    this->field_0xa4 = other->field_0xa4;
+    this->field_0xa8 = other->field_0xa8;
+    this->field_0xac = other->field_0xac;
+    this->field_0xb0 = other->field_0xb0;
+    this->field_0xb4 = other->field_0xb4;
+    this->field_0xb8 = other->field_0xb8;
+    this->field_0xbc = other->field_0xbc;
 }
 
 /* Function start: 0x402420 */
-TimedEvent* TimedEvent::Create(TimedEventPool* pool, void* callback, void* data)
+TimedEvent* TimedEventPool::Create(void* callback, void* data)
 {
-    if (pool->m_free_list == 0) {
-        TimedEvent* new_pool = (TimedEvent*)AllocateMemory(pool->m_pool_size * 200 + 4);
-        *(TimedEvent**)new_pool = pool->m_pool;
-        pool->m_pool = new_pool;
+    if (this->m_free_list == 0) {
+        int* new_pool = (int*)AllocateMemory(this->m_pool_size * 200 + 4);
+        *new_pool = (int)this->m_pool;
+        int count = this->m_pool_size;
+        this->m_pool = (TimedEvent*)new_pool;
 
-        TimedEvent* current = (TimedEvent*)((char*)new_pool + pool->m_pool_size * 200);
-        for (int i = 0; i < pool->m_pool_size; i++) {
-            *(TimedEvent**)current = pool->m_free_list;
-            pool->m_free_list = current;
-            current = (TimedEvent*)((char*)current - 200);
+        int* current = new_pool + count * 50 - 49;
+        count--;
+        if (count >= 0) {
+            do {
+                count--;
+                *current = (int)this->m_free_list;
+                this->m_free_list = (TimedEvent*)current;
+                current = current - 50;
+            } while (count >= 0);
         }
     }
 
-    TimedEvent* new_event = pool->m_free_list;
-    pool->m_free_list = *(TimedEvent**)new_event;
+    TimedEvent* event = this->m_free_list;
+    Message* ebx = (Message*)((int*)event + 2);
+    this->m_free_list = *(TimedEvent**)event;
+    *(void**)((char*)event + 4) = callback;
+    *(void**)event = data;
+    this->m_count++;
 
-    *(void**)((char*)new_event + 4) = callback;
-    *(void**)new_event = data;
-    pool->m_count++;
-
-    memset((char*)new_event + 8, 0, 0x30 * 4);
-
-    for (int i = 0; i < 1; i++) {
-        //Message_Constructor((char*)new_event + 8 + i * 0xc0, 0,0,0,0,0,0,0,0,0,0);
+    __asm {
+        mov edi, ebx
+        xor eax, eax
+        mov ecx, 0x30
+        rep stosd
     }
 
-    return new_event;
+    int edi = 0;
+    if (ebx == 0) goto done;
+loop:
+    {
+        Message* tmp = ebx;
+        tmp->Message::Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+    ebx = (Message*)((char*)ebx + 0xc0);
+    {
+        int eax = edi;
+        edi--;
+        if (eax != 0) goto loop;
+    }
+done:
+    return event;
 }
 
 /* Function start: 0x401910 */
@@ -84,7 +149,7 @@ TimedEvent::~TimedEvent()
 int TimedEvent::Update()
 {
     int remaining_time = m_duration - m_timer.Update();
-    TimedEventList* list = (TimedEventList*)g_GameStruct2;
+    TimedEventPool* pool = (TimedEventPool*)g_GameStruct2;
 
     if (m_type == 0) {
         if (remaining_time > 0) {
@@ -92,19 +157,19 @@ int TimedEvent::Update()
         }
 
         if (m_next_event_data) {
-            TimedEvent *new_event = (TimedEvent*)TimedEvent__Create((TimedEventPool*)g_GameStruct2, list->tail, 0);
-            TimedEvent__CopyConstructor(new_event, m_next_event_data);
+            TimedEvent *new_event = pool->Create((void*)pool->list.tail, 0);
+            new_event->CopyFrom((TimedEvent*)m_next_event_data);
 
-            if (list->tail == NULL) {
-                list->head = new_event;
+            if (pool->list.tail == NULL) {
+                pool->list.head = new_event;
             } else {
-                *(TimedEvent**)(list->tail) = new_event;
+                *(TimedEvent**)(pool->list.tail) = new_event;
             }
-            list->tail = new_event;
+            pool->list.tail = new_event;
         }
 
         if (m_next_event_data) {
-            TimedEvent_dtor(m_next_event_data);
+            ((TimedEvent*)m_next_event_data)->~TimedEvent();
             FreeFromGlobalHeap(m_next_event_data);
             m_next_event_data = 0;
         }
@@ -115,15 +180,15 @@ int TimedEvent::Update()
         }
 
         if (m_next_event_data) {
-            TimedEvent *new_event = (TimedEvent*)TimedEvent__Create((TimedEventPool*)g_GameStruct2, list->tail, 0);
-            TimedEvent__CopyConstructor(new_event, m_next_event_data);
+            TimedEvent *new_event = pool->Create((void*)pool->list.tail, 0);
+            new_event->CopyFrom((TimedEvent*)m_next_event_data);
 
-            if (list->tail == NULL) {
-                list->head = new_event;
+            if (pool->list.tail == NULL) {
+                pool->list.head = new_event;
             } else {
-                *(TimedEvent**)(list->tail) = new_event;
+                *(TimedEvent**)(pool->list.tail) = new_event;
             }
-            list->tail = new_event;
+            pool->list.tail = new_event;
         }
 
         m_timer.Reset();
@@ -137,19 +202,19 @@ int TimedEvent::Update()
         }
 
         if (m_next_event_data) {
-            TimedEvent *new_event = (TimedEvent*)TimedEvent__Create((TimedEventPool*)g_GameStruct2, list->tail, 0);
-            TimedEvent__CopyConstructor(new_event, m_next_event_data);
+            TimedEvent *new_event = pool->Create((void*)pool->list.tail, 0);
+            new_event->CopyFrom((TimedEvent*)m_next_event_data);
 
-            if (list->tail == NULL) {
-                list->head = new_event;
+            if (pool->list.tail == NULL) {
+                pool->list.head = new_event;
             } else {
-                *(TimedEvent**)(list->tail) = new_event;
+                *(TimedEvent**)(pool->list.tail) = new_event;
             }
-            list->tail = new_event;
+            pool->list.tail = new_event;
         }
 
         if (m_next_event_data) {
-            TimedEvent_dtor(m_next_event_data);
+            ((TimedEvent*)m_next_event_data)->~TimedEvent();
             FreeFromGlobalHeap(m_next_event_data);
             m_next_event_data = 0;
         }

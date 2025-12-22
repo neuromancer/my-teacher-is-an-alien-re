@@ -16,20 +16,19 @@ extern "C" {
     void TimedEvent__SetData(void*, int);
     void TimedEvent__delete(int);
     void ShowError(const char*, ...);
+    void FUN_004171b0(int);
 }
 
 /* Function start: 0x401B60 */
-SC_Timer::SC_Timer()
+SC_Timer::SC_Timer() : Parser(), timer1(), timer2()
 {
-    m_messageId = 0;
-    m_messageData = 0;
-    field_0x90 = 0;
-    field_0x94 = 0;
-    field_0x98 = 0;
-    field_0x9c = 0;
-
-    timer1.Init();
-    timer2.Init();
+    int* edi = &m_messageId;
+    __asm {
+        mov edi, edi
+        xor eax, eax
+        mov ecx, 6
+        rep stosd
+    }
 
     m_messageId = 0xd;
     timer1.Reset();
@@ -55,107 +54,186 @@ void SC_Timer::Update(int param_1, int param_2)
 
     m_eventList->m_current = m_eventList->m_head;
 
-    while (m_eventList->m_current != 0) {
-        if (((TimedEvent*)((QueueNode*)m_eventList->m_current)->data)->Update()) {
-            void* data = m_eventList->Pop();
+    if (m_eventList->m_head == 0) goto end_loop;
+
+loop:
+    {
+        TimedEvent* event = (TimedEvent*)((QueueNode*)m_eventList->m_current)->data;
+        if (event->Update()) {
+            TimedEvent* data = (TimedEvent*)m_eventList->Pop();
             if (data) {
-                TimedEvent__delete((int)data);
-                FreeMemory(data);
+                data->~TimedEvent();
+                FreeFromGlobalHeap(data);
             }
             m_eventList->m_current = m_eventList->m_head;
         } else {
             if (m_eventList->m_tail == m_eventList->m_current) {
-                break;
+                goto end_loop;
             }
             if (m_eventList->m_current) {
                 m_eventList->m_current = ((QueueNode*)m_eventList->m_current)->next;
             }
         }
     }
+    if (m_eventList->m_current != 0) goto loop;
 
-    if (m_messageId != param_2) {
-        return;
+end_loop:
+    if (m_messageId == param_2) {
+        ShowError("SC_Timer::Update - Timeout waiting for event");
     }
-
-    ShowError("SC_Timer::Update - Timeout waiting for event");
 }
 
 /* Function start: 0x401F90 */
 void SC_Timer::AddMessage(int param_1)
 {
-    // This is a virtual function call, but we don't have the vtable yet.
-    // We'll just call the function directly.
-    ((void (*)(void*, int))0x4171b0)(this, param_1);
+    FUN_004171b0(param_1);
     ShowError("SC_Timer::AddMessage");
 }
 
 /* Function start: 0x401FB0 */
 int SC_Timer::Input(void* param_1)
 {
+    int* piVar1;
+    int iVar2;
+    void* pvVar6;
+    TimedEvent* puVar7;
+    TimedEvent* puVar4;
+
     if (*(int*)((char*)param_1 + 0x88) != m_messageId) {
         return 0;
     }
 
     timer1.Reset();
 
-    void* data;
-    TimedEvent* new_event;
-
     switch (*(int*)((char*)param_1 + 0x98)) {
         case 0xe:
             break;
         case 0xf:
-            m_eventList->m_current = m_eventList->m_head;
-            while (m_eventList->m_current != 0) {
-                data = m_eventList->Pop();
-                if (data != 0) {
-                    TimedEvent__delete((int)data);
-                    FreeMemory(data);
+            piVar1 = (int*)m_eventList;
+            if (*piVar1 != 0) {
+                piVar1[2] = *piVar1;
+                iVar2 = *piVar1;
+                while (iVar2 != 0) {
+                    iVar2 = piVar1[2];
+                    if (iVar2 == 0) {
+                        pvVar6 = 0;
+                    }
+                    else {
+                        if (*piVar1 == iVar2) {
+                            *piVar1 = *(int*)(iVar2 + 4);
+                        }
+                        if (piVar1[1] == piVar1[2]) {
+                            piVar1[1] = *(int*)piVar1[2];
+                        }
+                        iVar2 = *(int*)piVar1[2];
+                        if (iVar2 != 0) {
+                            *(int*)(iVar2 + 4) = ((int*)piVar1[2])[1];
+                        }
+                        int* puVar4_temp = (int*)((int*)piVar1[2])[1];
+                        if (puVar4_temp != 0) {
+                            *puVar4_temp = *(int*)piVar1[2];
+                        }
+                        void* this_00 = (void*)piVar1[2];
+                        pvVar6 = 0;
+                        if (this_00 != 0) {
+                            pvVar6 = *(void**)((int)this_00 + 8);
+                            ((Queue*)this_00)->Destroy(1);
+                            piVar1[2] = 0;
+                        }
+                        piVar1[2] = *piVar1;
+                    }
+                    if (pvVar6 != 0) {
+                        TimedEvent__delete((int)pvVar6);
+                        FreeMemory(pvVar6);
+                    }
+                    iVar2 = *piVar1;
                 }
-                m_eventList->m_current = m_eventList->m_head;
             }
             break;
         case 0x13:
             if (*(int*)((char*)param_1 + 0xbc) == 0) {
+                ((void(*)(void*, int))0x419fd0)(param_1, 0);
                 ShowError("SC_Timer::Input");
             }
-            new_event = (TimedEvent*)AllocateMemory(0x28);
-            if (new_event) {
-                TimedEvent__Init((void*)new_event);
+            puVar7 = 0;
+            puVar4 = (TimedEvent*)AllocateMemory(0x28);
+            if (puVar4 != 0) {
+                puVar7 = (TimedEvent*)TimedEvent__Init((void*)puVar4);
             }
-            *(int*)((char*)new_event + 0xc) = *(int*)((char*)param_1 + 0xb8);
-            *(int*)((char*)new_event + 0x8) = *(int*)((char*)param_1 + 0x8c);
-            *(int*)((char*)new_event + 0x10) = *(int*)((char*)param_1 + 0xbc);
+            *(int*)((char*)puVar7 + 0xc) = *(int*)((char*)param_1 + 0xb8);
+            *(int*)((char*)puVar7 + 0x8) = *(int*)((char*)param_1 + 0x8c);
+            *(int*)((char*)puVar7 + 0x10) = *(int*)((char*)param_1 + 0xbc);
             *(int*)((char*)param_1 + 0xbc) = 0;
-            TimedEvent__SetData((void*)new_event, *(int*)((char*)param_1 + 0x9c));
+            TimedEvent__SetData((void*)puVar7, *(int*)((char*)param_1 + 0x9c));
 
-            if (new_event == 0) {
+            piVar1 = (int*)m_eventList;
+            if (puVar7 == 0) {
                 ShowError("queue fault 0101");
             }
-
-            m_eventList->Insert(new_event);
+            piVar1[2] = *piVar1;
+            if ((piVar1[3] == 1) || (piVar1[3] == 2)) {
+                if (*piVar1 == 0) {
+                    m_eventList->Insert(puVar7);
+                }
+                else {
+                    do {
+                        iVar2 = piVar1[2];
+                        if (*(unsigned int*)(*(int*)(iVar2 + 8) + 0xc) < (unsigned int)*(int*)((char*)puVar7 + 0xc)) {
+                            m_eventList->Insert(puVar7);
+                            goto done_0x13;
+                        }
+                        if (piVar1[1] == iVar2) {
+                            m_eventList->Push(puVar7);
+                            goto done_0x13;
+                        }
+                        if (iVar2 != 0) {
+                            piVar1[2] = *(int*)(iVar2 + 4);
+                        }
+                    } while (piVar1[2] != 0);
+                }
+            }
+            else {
+                m_eventList->Insert(puVar7);
+            }
+            done_0x13:
             break;
         case 0x14:
-            TimedEvent* timed_event;
-            timed_event = (TimedEvent*)AllocateMemory(0x28);
-            if (timed_event) {
-                TimedEvent__Init((void*)timed_event);
+            puVar7 = 0;
+            puVar4 = (TimedEvent*)AllocateMemory(0x28);
+            if (puVar4 != 0) {
+                puVar7 = (TimedEvent*)TimedEvent__Init((void*)puVar4);
             }
-            *(int*)((char*)timed_event + 0x8) = *(int*)((char*)param_1 + 0x8c);
-
-            if (timed_event == 0) {
+            *(int*)((char*)puVar7 + 0x8) = *(int*)((char*)param_1 + 0x8c);
+            piVar1 = (int*)m_eventList;
+            if (puVar7 == 0) {
                 ShowError("queue fault 0103");
             }
-
-            data = m_eventList->Pop();
-            if (data) {
-                TimedEvent__delete((int)data);
-                FreeMemory(data);
+            iVar2 = *piVar1;
+            piVar1[2] = iVar2;
+            while (iVar2 != 0) {
+                iVar2 = piVar1[2];
+                int iVar5 = 0;
+                if (iVar2 != 0) {
+                    iVar5 = *(int*)(iVar2 + 8);
+                }
+                if (*(int*)(iVar5 + 0xc) == *(int*)((char*)puVar7 + 0xc)) {
+                    pvVar6 = m_eventList->Pop();
+                    if (pvVar6 != 0) {
+                        TimedEvent__delete((int)pvVar6);
+                        FreeMemory(pvVar6);
+                    }
+                    break;
+                }
+                if (piVar1[1] == iVar2) break;
+                if (iVar2 != 0) {
+                    piVar1[2] = *(int*)(iVar2 + 4);
+                }
+                iVar2 = piVar1[2];
             }
             break;
         case 0x1b:
-            if (m_eventList->m_head == 0) {
-                //SC_Message_Send(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0, 0, 0);
+            if (*(int*)m_eventList == 0) {
+                SC_Message_Send(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0, 0, 0);
             }
             break;
         default:
