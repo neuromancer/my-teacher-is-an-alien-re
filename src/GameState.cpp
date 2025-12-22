@@ -31,11 +31,12 @@ void GameState::Serialize(int param_1)
 {
     unsigned int* puVar2 = (unsigned int*)AllocateMemory(0x110);
     char local_1c[28];
+    FILE* _File;
 
     strcpy(local_1c, "gamestat.sav");
 
     if (param_1 == 1) {
-        FILE* _File = fsopen(local_1c, "wb");
+        _File = fsopen(local_1c, "wb");
         if (_File == NULL) {
             ShowError("GameState::Serialize unable to open %s ", local_1c);
         }
@@ -45,9 +46,11 @@ void GameState::Serialize(int param_1)
         puVar2[3] = this->field_0x90 * 4 + 0x110;
         fwrite(puVar2, 0x110, 1, _File);
         fwrite(this->field_0x88, 4, puVar2[0], _File);
-        fclose(_File);
-    } else if (param_1 == 2) {
-        FILE* _File = fsopen(local_1c, "rb");
+    } else {
+        if (param_1 != 2) {
+            ShowError("illegal in GameState::Serialize(%d)", param_1);
+        }
+        _File = fsopen(local_1c, "rb");
         if (_File == NULL) {
             ShowError("GameState::Serialize unable to open %s ", local_1c);
         }
@@ -56,10 +59,8 @@ void GameState::Serialize(int param_1)
             ShowError("GameState::Serialize incompatible file");
         }
         fread(this->field_0x88, 0x110, this->field_0x90, _File);
-        fclose(_File);
-    } else {
-        ShowError("illegal in GameState::Serialize(%d)", param_1);
     }
+    fclose(_File);
 }
 
 /* Function start: 0x420780 */

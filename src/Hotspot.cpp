@@ -1,13 +1,10 @@
 #include "Hotspot.h"
+#include "string.h"
+#include "Message.h"
+#include "Memory.h"
+#include "SpriteList.h"
 #include <stdio.h>
 #include <string.h>
-#include "Memory.h"
-
-extern "C" {
-    void ShowError(const char* message, ...);
-    int __fastcall FUN_0041f800(void*);
-    void __cdecl SC_Message_Send(int, int, int, int, int, int, int, void*, int, int);
-}
 
 /* Function start: 0x409400 */
 unsigned char Hotspot::Do()
@@ -24,11 +21,11 @@ unsigned char Hotspot::Do()
 int Hotspot::Update(int param_1, int param_2, int param_3)
 {
     int iVar1;
-    void* puVar2;
+    int* puVar2;
 
     switch (this->state) {
     case 1:
-        if ((this->list1 == 0) || (iVar1 = FUN_0041f800(this->list1), iVar1 != 0)) {
+        if ((this->list1 == 0) || (iVar1 = this->list1->DoAll(), iVar1 != 0)) {
             this->state = 2;
         }
         if (this->state != 2) {
@@ -38,14 +35,14 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
         if (this->list2 == 0) {
             this->state = 3;
             if (this->dialog != 0) {
-                puVar2 = AllocateMemory(8);
-                *(int*)puVar2 = param_1;
-                *((int*)puVar2 + 1) = param_2;
-                SC_Message_Send(9, this->parseFileIndex, 0xb, param_3, 5, this->dialogParseFileNumber, 0, puVar2, 0, 0);
+                puVar2 = (int*)AllocateMemory(8);
+                *puVar2 = param_1;
+                puVar2[1] = param_2;
+                SC_Message_Send(9, this->parseFileIndex, 0xb, param_3, 5, this->dialogParseFileNumber, 0, (int)puVar2, 0, 0);
             }
         }
         else {
-            iVar1 = FUN_0041f800(this->list2);
+            iVar1 = this->list2->DoAll();
             if (iVar1 != 0) {
                 this->state = 3;
                 return 0;
@@ -57,7 +54,7 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
             this->state = 1;
         }
         else {
-            iVar1 = FUN_0041f800(this->list3);
+            iVar1 = this->list3->DoAll();
             if (iVar1 != 0) {
                 this->state = 1;
                 return 1;
@@ -66,9 +63,8 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
         return 1;
     case 4:
         return 1;
-    default:
-        ShowError("Error in Thotspot.cpp - Update()");
     }
+    ShowError("Error in Thotspot.cpp - Update()");
     return 0;
 }
 
