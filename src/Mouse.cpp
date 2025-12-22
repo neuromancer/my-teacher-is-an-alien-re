@@ -6,27 +6,16 @@
 #include <stdio.h>
 #include "Memory.h"
 #include "AILData.h"
+#include "Array.h"
+#include "string.h"
 
 extern Sprite* Sprite_Ctor(Sprite*, char*);
-
-class AudioData {
-public:
-    int field_0;
-    int field_4;
-    int field_8;
-    int field_C;
-};
-
-extern AudioData* AudioData_Create(void*);
-extern int AudioData_Load(AudioData*, const char*);
+extern AILData* AILData_Ctor(AILData*);
 
 extern "C" {
-    void FUN_00424b00(void*, int, int, void*, void*);
-    void Array_Cleanup(void*, int, int, void*);
     void FUN_0041ef47();
     void FUN_00425fd0(char*, char*, int);
-    void ShowError(const char*, ...);
-    extern int DAT_00436968;
+    extern void* DAT_00436968;
     extern char DAT_00437506;
     extern char DAT_00437507;
 }
@@ -82,7 +71,7 @@ Mouse::~Mouse()
 /* Function start: 0x41EF25 */
 void Mouse::CleanupFields()
 {
-    Array_Cleanup(&m_fields[61], 8, 0x19, (void*)0x405770);
+    Array_Cleanup(&m_fields[61], 8, 0x19, (void(__cdecl*)(void*))0x405770);
 }
 
 /* Function start: 0x41EF50 */
@@ -104,13 +93,13 @@ int Mouse::LBLParse(char* line)
         if (strcmp(local_40, "AUDIO") == 0) {
             sscanf(line, " %s %s", local_40, local_60);
             local_18 = AllocateMemory(0x10);
-            AudioData* this_00 = 0;
+            AILData* this_00 = 0;
             if (local_18 != 0) {
-                this_00 = AudioData_Create(local_18);
+                this_00 = AILData_Ctor((AILData*)local_18);
             }
-            *(AudioData**)((char*)this + 0x1BC) = this_00;
+            *(AILData**)((char*)this + 0x1BC) = this_00;
             if (this_00 != 0) {
-                AudioData_Load(this_00, local_60);
+                this_00->Load(local_60);
             }
         } else if (strcmp(local_40, "SPRITE") == 0) {
             local_18 = AllocateMemory(0xd8);
@@ -148,7 +137,7 @@ void Mouse::DrawCursor()
         ShowError("missing mouse ");
     }
 
-    int* mouse_coords = *(int**)(DAT_00436968 + 0x1a0);
+    int* mouse_coords = *(int**)((char*)DAT_00436968 + 0x1a0);
 
     int final_x = 0;
     if (mouse_coords) {

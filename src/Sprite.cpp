@@ -10,6 +10,8 @@
 #include "Array.h"
 #include "string.h"
 
+class VBuffer;
+
 extern Animation* Animation_Ctor_Filename(Animation*, char*);
 
 extern "C" {
@@ -21,10 +23,6 @@ extern "C" {
 void Array_Iterate(void* array, unsigned int element_size, int num_elements, void (*callback)(void*), void (*cleanup_function)(void*));
 
 extern void* g_SoundManager;
-
-extern "C" {
-    void Sprite__FreeVBuffer(Sprite*);
-}
 
 char DAT_0043d630[0x4000];
 int DAT_00436b9c = 0;
@@ -145,17 +143,11 @@ void Sprite::InitAnimation()
 /* Function start: 0x41D160 */
 void Sprite::FreeAnimation()
 {
-    if (this->animation_data != 0) {
-        if (this->animation_data->data != 0) {
-            if (this->animation_data->data->handle != -1) {
-                DAT_0043d630[this->animation_data->data->handle * 0x40] = 0;
-            }
-            Sprite__FreeVBuffer(this);
+    if (this->animation_data != 0 && this->animation_data->data != 0) {
+        if (this->animation_data->data->handle != -1) {
+            DAT_0043d630[this->animation_data->data->handle * 0x40] = 0;
         }
-        // Call destructor then free memory (AllocateMemory was used on allocation)
-        this->animation_data->~Animation();
-        FreeMemory((int*)this->animation_data);
-        this->animation_data = 0;
+        this->animation_data->FreeVBuffer();
     }
 }
 
