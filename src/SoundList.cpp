@@ -4,11 +4,11 @@
 #include <string.h>
 #include "string.h"
 #include "Memory.h"
+#include "main.h"
 
 extern Sample* Sample_Ctor(Sample*);
 
 extern "C" {
-    void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
     int _AIL_sample_status_4(int);
 }
 

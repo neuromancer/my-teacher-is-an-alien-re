@@ -8,6 +8,9 @@
 #include "AnimatedAsset.h"
 #include "string.h"
 #include <mbstring.h>
+#include <mbctype.h>
+
+extern unsigned char __mbctype[];
 
 extern AnimatedAsset* AnimatedAsset_Ctor(AnimatedAsset*);
 
@@ -56,7 +59,7 @@ extern "C" {
     int ChangeDirectory(void*, unsigned char*);
     void ShowError(const char*, ...);
     void SetErrorCode(unsigned int);
-    void ParsePath(const unsigned char*, unsigned char*, unsigned char*, unsigned char*, unsigned char*);
+    void ParsePath(const char*, char*, char*, char*, char*);
     int _chdir(const char*);
 }
 
@@ -197,22 +200,22 @@ int ChangeDirectory(void* this_ptr, unsigned char* path)
         if (_chdir((char*)path) != 0) {
             return 1;
         }
-        ParsePath(path, (unsigned char*)((int)this_ptr + 0xc0), 0, 0, 0);
+        ParsePath((char*)path, (char*)((int)this_ptr + 0xc0), 0, 0, 0);
     }
     return 0;
 }
 
 /* Function start: 0x4261C0 */
-void ParsePath(const unsigned char* path, unsigned char* drive, unsigned char* dir, unsigned char* fname, unsigned char* ext)
+void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext)
 {
-    const unsigned char* p;
-    const unsigned char* last_slash = 0;
-    const unsigned char* last_dot = 0;
-    unsigned int len;
+    const char* pbVar3;
+    const char* _Source = 0;
+    const char* local_4 = 0;
+    size_t sVar2;
 
     if (path[1] == ':') {
         if (drive) {
-            _mbsnbcpy(drive, path, 2);
+            _mbsnbcpy((unsigned char*)drive, (unsigned char*)path, 2);
             drive[2] = '\0';
         }
         path += 2;
@@ -221,40 +224,54 @@ void ParsePath(const unsigned char* path, unsigned char* drive, unsigned char* d
         *drive = '\0';
     }
 
-    for (p = path; *p; p++) {
-        if (*p == '\\' || *p == '/') {
-            last_slash = p;
+    pbVar3 = path;
+    while (*pbVar3 != 0) {
+        char bVar1 = *pbVar3;
+        if ((__mbctype[(unsigned char)bVar1 + 1] & 4) == 0) {
+            if (bVar1 == '\\' || bVar1 == '/') {
+                _Source = pbVar3 + 1;
+            }
+            else if (bVar1 == '.') {
+                local_4 = pbVar3;
+            }
         }
-        else if (*p == '.') {
-            last_dot = p;
+        else {
+            pbVar3++;
         }
+        pbVar3++;
     }
 
-    if (last_slash) {
+    if (_Source) {
         if (dir) {
-            len = last_slash - path + 1;
-            _mbsnbcpy(dir, path, len);
-            dir[len] = '\0';
+            sVar2 = _Source - path;
+            if (sVar2 > 255) {
+                sVar2 = 255;
+            }
+            _mbsnbcpy((unsigned char*)dir, (unsigned char*)path, sVar2);
+            dir[sVar2] = '\0';
         }
-        path = last_slash + 1;
+        path = _Source;
     }
     else if (dir) {
         *dir = '\0';
     }
 
-    if (last_dot && last_dot > path) {
+    if (local_4 && local_4 > path) {
         if (fname) {
-            len = last_dot - path;
-            _mbsnbcpy(fname, path, len);
-            fname[len] = '\0';
+            sVar2 = local_4 - path;
+            if (sVar2 > 255) {
+                sVar2 = 255;
+            }
+            _mbsnbcpy((unsigned char*)fname, (unsigned char*)path, sVar2);
+            fname[sVar2] = '\0';
         }
         if (ext) {
-            strcpy((char*)ext, (char*)last_dot);
+            strcpy(ext, local_4);
         }
     }
     else {
         if (fname) {
-            strcpy((char*)fname, (char*)path);
+            strcpy(fname, path);
         }
         if (ext) {
             *ext = '\0';

@@ -240,7 +240,7 @@ void WriteToMessageLogIfEnabled(wchar_t *param_1, ...)
 }
 
 FILE *fsopen(const char* filename, const char* mode);
-void ParsePath(const unsigned char* path, unsigned char* drive, unsigned char* dir, unsigned char* fname, unsigned char* ext);
+void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
 void FUN_00426550(const char* filename, int* stat_buf);
 void FUN_00425f30(FILE* fp, long offset, int origin);
 char* FormatFilePath(char* path);
@@ -273,7 +273,7 @@ FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, u
 
     stat_buf[0] = 0;
     offset = 0;
-    ParsePath((unsigned char*)filename, NULL, NULL, (unsigned char*)fname, (unsigned char*)ext);
+    ParsePath(filename, NULL, NULL, fname, ext);
     sprintf(key, "%s%s", fname, ext);
 
     fp = fsopen(archive_path, mode);

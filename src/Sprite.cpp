@@ -22,12 +22,6 @@ void Array_Iterate(void* array, unsigned int element_size, int num_elements, voi
 
 extern void* g_SoundManager;
 
-const char* s_error_Sprite_CheckRanges0_00436c04 = "error Sprite::CheckRanges0";
-const char* s_error_Sprite_CheckRanges1_00436be8 = "error Sprite::CheckRanges1";
-const char* s_bad_range_d_start_d_in_s_00436bc8 = "bad range[%d].start = %d in %s";
-const char* s_range_error_00436bbc = "range error";
-const char* s_Sprite__SetState_0__d__s_00436ba0 = "Sprite::SetState 0 %d %s";
-
 extern "C" {
     void Sprite__FreeVBuffer(Sprite*);
 }
@@ -178,11 +172,11 @@ void Sprite::SetState2(int param_1)
     }
 
     if (param_1 < 0 || param_1 >= this->num_states) {
-        ShowError(s_Sprite__SetState_0__d__s_00436ba0, param_1, &this->sprite_filename);
+        ShowError("Sprite::SetState 0 %d %s", param_1, &this->sprite_filename);
     }
 
     if (this->animation_data == 0 || this->ranges == 0) {
-        ShowError(s_range_error_00436bbc);
+        ShowError("range error");
     }
 
     int current_frame = this->animation_data->smk->current_frame;
