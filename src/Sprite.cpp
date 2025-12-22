@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <new>
 
 #include "Sprite.h"
 #include "Parser.h"
@@ -9,21 +8,19 @@
 #include "Queue.h"
 #include "Memory.h"
 #include "Array.h"
+#include "string.h"
+
+extern Animation* Animation_Ctor_Filename(Animation*, char*);
 
 extern "C" {
-    __int64 __ftol();
+    //__int64 __ftol();
     void FUN_0041be20(void*, void*, int, int, int, int, int, int);
-    void FUN_00424b00(int*, int, int, void*, void*);
-    int FUN_00420940(GameState*, char*);
-    char* strstr_wrapper(char*, const char*);
-    void WriteToMessageLog(const char*, ...);
-    int GameState_Error_Handler_2(GameState*, int);
 }
 
-extern void* g_SoundManager;
+// C++ helper defined in Array.cpp
+void Array_Iterate(void* array, unsigned int element_size, int num_elements, void (*callback)(void*), void (*cleanup_function)(void*));
 
-// TODO: Move to a proper header
-void (*ShowError)(const char* message, ...) = (void (*)(const char*, ...))0x00419110;
+extern void* g_SoundManager;
 
 const char* s_error_Sprite_CheckRanges0_00436c04 = "error Sprite::CheckRanges0";
 const char* s_error_Sprite_CheckRanges1_00436be8 = "error Sprite::CheckRanges1";
@@ -37,6 +34,12 @@ extern "C" {
 
 char DAT_0043d630[0x4000];
 int DAT_00436b9c = 0;
+
+// Constructor wrapper for external callers
+Sprite* Sprite_Ctor(Sprite* p, char* filename) {
+    p->Sprite::Sprite(filename);
+    return p;
+}
 
 /* Function start: 0x41CD50 */
 Sprite::Sprite(char* filename)
@@ -79,7 +82,7 @@ void Sprite::Init()
         if (this->animation_data == 0) {
             Animation* anim = (Animation*)AllocateMemory(0x2c);
             if (anim) {
-                this->animation_data = new (anim) Animation(this->sprite_filename);
+                this->animation_data = Animation_Ctor_Filename(anim, this->sprite_filename);
             } else {
                 this->animation_data = 0;
             }
@@ -116,10 +119,12 @@ void Sprite::StopAnimationSound()
         if (*(int*)((int)g_SoundManager + 0x98) != 0) {
             ((Queue*)g_SoundManager)->Insert(anim);
         } else {
-            delete anim;
+            anim->~Animation();
+            FreeMemory((int*)anim);
         }
     } else if (anim != 0) {
-        delete anim;
+        anim->~Animation();
+        FreeMemory((int*)anim);
     }
 
     this->animation_data = 0;
@@ -153,7 +158,8 @@ void Sprite::FreeAnimation()
             }
             Sprite__FreeVBuffer(this);
         }
-        // TODO: This is not quite right, there should be a call to the destructor
+        // Call destructor then free memory (AllocateMemory was used on allocation)
+        this->animation_data->~Animation();
         FreeMemory((int*)this->animation_data);
         this->animation_data = 0;
     }
@@ -413,7 +419,7 @@ void Sprite::SetState(int param_1)
     if (piVar1 != 0) {
         piVar5 = piVar1 + 1;
         *piVar1 = this->num_states;
-        FUN_00424b00(piVar5, 8, this->num_states, (void*)0x41d850, (void(__cdecl*)(void*))0x405770);
+        Array_Iterate(piVar5, 8, this->num_states, (void(*)(void*))0x41d850, (void(*)(void*))0x405770);
     }
     this->ranges = piVar5;
 
@@ -471,7 +477,7 @@ void Sprite::InitLogic(int param_1)
     if (piVar1 != 0) {
         piVar4 = piVar1 + 1;
         *piVar1 = param_1;
-        FUN_00424b00(piVar4, 8, param_1, (void*)0x41d850, (void(__cdecl*)(void*))0x405770);
+        Array_Iterate(piVar4, 8, param_1, (void(*)(void*))0x41d850, (void(*)(void*))0x405770);
     }
     this->logic_conditions = piVar4;
 
@@ -511,15 +517,15 @@ int Sprite::LBLParse(char* param_1)
         this->InitLogic(local_ac);
     } else if (strcmp(local_a0, "LOGIC") == 0) {
         sscanf(param_1, "%s %s", local_a0, local_80);
-        local_ac = FUN_00420940(g_GameState, local_80);
+        local_ac = g_GameState->FindState(local_80);
         if ((0 < local_ac) && (g_GameState->field_0x90 <= local_ac)) {
             ShowError("GameState Error  #%d", 1);
         }
-        if (strstr_wrapper(param_1, "FALSE") != 0) {
+        if (strstr(param_1, "FALSE") != 0) {
             this->SetLogic(local_ac, 2);
-        } else if (strstr_wrapper(param_1, "TRUE") != 0) {
+        } else if (strstr(param_1, "TRUE") != 0) {
             this->SetLogic(local_ac, 1);
-        } else if (strstr_wrapper(param_1, "EQUAL") != 0) {
+        } else if (strstr(param_1, "EQUAL") != 0) {
             this->SetLogic(local_ac, 3);
             sscanf(param_1, "%s %s %d", local_a0, local_80, &this->handle);
         } else {
@@ -578,13 +584,13 @@ void Sprite::Dump()
             do {
                 int* piVar1 = (int*)((char*)this->logic_conditions + iVar4);
                 if (piVar1[1] == 1) {
-                    int uVar2 = GameState_Error_Handler_2(g_GameState, *piVar1);
-                    WriteToMessageLog("LOGIC: %s TRUE", uVar2);
+                    int uVar2 = g_GameState->GetState(*piVar1);
+                    WriteToMessageLog("LOGIC: %s TRUE", (char*)uVar2);
                 }
                 piVar1 = (int*)((char*)this->logic_conditions + iVar4);
                 if (piVar1[1] == 2) {
-                    int uVar2 = GameState_Error_Handler_2(g_GameState, *piVar1);
-                    WriteToMessageLog("LOGIC: %s FALSE", uVar2);
+                    int uVar2 = g_GameState->GetState(*piVar1);
+                    WriteToMessageLog("LOGIC: %s FALSE", (char*)uVar2);
                 }
                 iVar4 = iVar4 + 8;
                 iVar5 = iVar5 + 1;

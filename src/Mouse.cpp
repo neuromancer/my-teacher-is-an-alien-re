@@ -1,11 +1,13 @@
 #include <windows.h>
-#include <new>
 #include "Mouse.h"
 #include "Sprite.h"
 #include "Parser.h"
 #include <string.h>
 #include <stdio.h>
 #include "Memory.h"
+#include "AILData.h"
+
+extern Sprite* Sprite_Ctor(Sprite*, char*);
 
 class AudioData {
 public:
@@ -20,7 +22,6 @@ extern int AudioData_Load(AudioData*, const char*);
 
 extern "C" {
     void FUN_00424b00(void*, int, int, void*, void*);
-    void FUN_0041e470(void*);
     void Array_Cleanup(void*, int, int, void*);
     void FUN_0041ef47();
     void FUN_00425fd0(char*, char*, int);
@@ -50,7 +51,7 @@ Mouse::Mouse()
 Mouse::~Mouse()
 {
     if (m_fields[70] != 0) {
-        FUN_0041e470(m_fields[70]);
+        ((AILData*)m_fields[70])->~AILData();
         FreeMemory(m_fields[70]);
         m_fields[70] = 0;
     }
@@ -115,7 +116,7 @@ int Mouse::LBLParse(char* line)
             local_18 = AllocateMemory(0xd8);
             Sprite* pSVar4 = 0;
             if (local_18 != 0) {
-                pSVar4 = new (local_18) Sprite((char*)0);
+                pSVar4 = Sprite_Ctor((Sprite*)local_18, (char*)0);
             }
             *(Sprite**)((char*)this + 0xEC) = pSVar4;
             pSVar4->flags &= ~2;

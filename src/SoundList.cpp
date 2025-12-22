@@ -1,15 +1,15 @@
 #include "SoundList.h"
 #include "Sample.h"
+#include "AILData.h"
 #include <string.h>
+#include "string.h"
 #include "Memory.h"
+
+extern Sample* Sample_Ctor(Sample*);
 
 extern "C" {
     void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
-    void ShowError(const char*, ...);
-    void FUN_0041e470(void*);
     int _AIL_sample_status_4(int);
-    void* FUN_0041e460(void*);
-    int FUN_0041e490(void*, const char*);
 }
 
 /* Function start: 0x41E740 */
@@ -40,7 +40,8 @@ SoundList::~SoundList()
         m_fieldc--;
         void* sound = m_field8[m_fieldc];
         if (sound != 0) {
-            FUN_0041e470(sound);
+            // Free any internal AIL data (data pointer inside the object)
+            ((AILData*)sound)->~AILData();
             FreeMemory(sound);
             m_field8[m_fieldc] = 0;
         }
@@ -66,7 +67,8 @@ void SoundList::StopAll()
     for (int i = 0; i < m_fieldc; i++) {
         Sample* sample = (Sample*)m_field8[i];
         if (_AIL_sample_status_4((int)sample->m_sample) == 4) {
-            FUN_0041e470(sample);
+            // free embedded AIL data to stop/cleanup the sample
+            ((AILData*)sample)->~AILData();
         }
     }
 }
@@ -98,13 +100,14 @@ void* SoundList::Register(char* filename)
                 m_sounds[m_fieldc] = (void*)AllocateMemory(len + 1);
                 strcpy((char*)m_sounds[m_fieldc], local_54);
 
-                void* sound = AllocateMemory(0x10);
+                Sample* sound = (Sample*)AllocateMemory(0x10);
                 if (sound != NULL) {
-                    sound = FUN_0041e460(sound);
+                    Sample_Ctor(sound);
                 }
 
                 m_field8[m_fieldc] = sound;
-                if (FUN_0041e490(m_field8[m_fieldc], filename) == 0) {
+                // Use AILData::Load to populate the embedded data/size fields
+                if (((AILData*)m_field8[m_fieldc])->Load(filename) == 0) {
                     sVar9 = m_fieldc;
                     m_fieldc++;
                 }

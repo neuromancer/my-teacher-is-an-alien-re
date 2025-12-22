@@ -17,6 +17,12 @@ extern "C" {
 
 extern Sound* g_sound;
 
+// Constructor wrapper for external callers
+Sample* Sample_Ctor(Sample* p) {
+    p->Sample::Sample();
+    return p;
+}
+
 /* Function start: 0x41E460 */
 Sample::Sample()
 {

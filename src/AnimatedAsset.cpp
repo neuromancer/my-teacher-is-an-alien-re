@@ -5,6 +5,8 @@
 #include <string.h>
 #include <windows.h>
 
+extern Animation* Animation_Ctor(Animation*);
+
 extern VBuffer* g_WorkBuffer;
 
 extern "C" {
@@ -18,7 +20,11 @@ extern "C" {
     extern void* DAT_00435ef4;
 }
 
-#include <new.h>
+// Constructor wrapper for external callers
+AnimatedAsset* AnimatedAsset_Ctor(AnimatedAsset* p) {
+    p->AnimatedAsset::AnimatedAsset();
+    return p;
+}
 
 /* Function start: 0x420F80 */
 AnimatedAsset::AnimatedAsset()
@@ -64,7 +70,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     local_1c = (Animation *)AllocateMemory(sizeof(Animation));
     this_00 = (Animation *)0x0;
     if (local_1c != (Animation *)0x0) {
-      this_00 = new (local_1c) Animation();
+      this_00 = Animation_Ctor(local_1c);
     }
     this_00->Open(local_9c,0xfe000,0xffffffff);
     local_14 = (VBuffer *)AllocateMemory(sizeof(VBuffer));

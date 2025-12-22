@@ -9,6 +9,8 @@
 #include "string.h"
 #include <mbstring.h>
 
+extern AnimatedAsset* AnimatedAsset_Ctor(AnimatedAsset*);
+
 Sound* g_sound;
 
 GameState* g_GameState = (GameState*)0x00436998;
@@ -331,7 +333,12 @@ void InitGameSystems(void)
     if (pSound != (void *)0x0) {
         DAT_0043696c = Sound_Init(pSound,0x5622,8,1);
     }
-    g_TextManager = new AnimatedAsset();
+    AnimatedAsset* pTextManager = (AnimatedAsset*)AllocateMemory(0x38);
+    AnimatedAsset* pTextManagerInit = (AnimatedAsset*)0x0;
+    if (pTextManager != (AnimatedAsset *)0x0) {
+        pTextManagerInit = AnimatedAsset_Ctor(pTextManager);
+    }
+    g_TextManager = pTextManagerInit;
     ((AnimatedAsset*)g_TextManager)->LoadAnimatedAsset("elements\\barrel06.smk");
     SetStateFlag(0,1);
     SetCursorVisible(0);

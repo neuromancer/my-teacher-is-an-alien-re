@@ -28,6 +28,16 @@ extern "C" {
     extern char DAT_00436970[];
 }
 
+// Constructor wrappers for external callers
+Animation* Animation_Ctor(Animation* p) {
+    p->Animation::Animation();
+    return p;
+}
+
+Animation* Animation_Ctor_Filename(Animation* p, char* filename) {
+    p->Animation::Animation(filename);
+    return p;
+}
 
 const char* s_Animation_ToBuffer_No_smk_defined = "Animation::ToBuffer() - No smk defined";
 const char* s_Animation_ToBuffer_Virtual_Buffer_already_defined = "Animation::ToBuffer() - Virtual Buffer already defined";
