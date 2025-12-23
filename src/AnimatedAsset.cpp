@@ -10,8 +10,7 @@ extern Animation* Animation_Ctor(Animation*);
 extern VBuffer* g_WorkBuffer;
 
 extern "C" {
-    void FUN_0041ae60(VBuffer*, int, int, int, int, int, int, void*);
-    void FUN_0041aea0(VBuffer*, int, int, int, int, int, int, void*, char, char);
+    // CallBlitter2/3 are VBuffer members: use VBuffer::CallBlitter2/CallBlitter3
     void FUN_0041ad50(void*, int, int, int, int, int, int, char, char);
     // ...existing code...
     void FUN_00405770(void*);
@@ -35,13 +34,13 @@ AnimatedAsset* AnimatedAsset_Ctor(AnimatedAsset* p) {
 AnimatedAsset::AnimatedAsset()
 {
     __try {
-        this->field_0x8 = 0;
-        this->field_0xc = 0;
-        this->field_0x30 = 0;
-        this->field_0x34 = 0;
+        this->text_x = 0;
+        this->text_y = 0;
+        this->charAdvance = 0;
+        this->reserved_34 = 0;
         memset(this, 0, 56);
-        this->field_0x10 = 2;
-        this->field_0x12 = 1;
+        this->color = 2;
+        this->glyphValue = 1;
     } __except (EXCEPTION_EXECUTE_HANDLER) {
     }
 }
@@ -49,7 +48,7 @@ AnimatedAsset::AnimatedAsset()
 /* Function start: 0x421260 */
 void AnimatedAsset::BuildGlyphTable()
 {
-    int glyphCount = this->field_0x20;
+    int glyphCount = this->glyphCount;
     int *alloc = (int*)AllocateMemory(glyphCount * 0x10 + 4);
     int *table = (int*)0x0;
 
@@ -60,7 +59,7 @@ void AnimatedAsset::BuildGlyphTable()
         //FUN_00424b00(table, 0x10, glyphCount, (void*)0x4213e0, (void*)AnimatedAsset_CleanupGlyphEntry);
     }
 
-    this->field_0x14 = table;
+    this->glyphTable = table;
 
     if (table != (int*)0x0) {
         // zero all ints in the table (glyphCount * 4 ints per glyph)
@@ -75,17 +74,17 @@ void AnimatedAsset::BuildGlyphTable()
     int baseColMinus1 = *(int*)((char*)srcPtr + 0x18) - 1;
     int baseIndex = FUN_0041ac30(srcPtr);
 
-    this->field_0x2c = 1;
+    this->glyphHeight = 1;
 
     if (1 < *(int*)((char*)srcPtr + 0x18)) {
-        while (this->field_0x2c < *(int*)((char*)srcPtr + 0x18)) {
-            int idx = (baseColMinus1 - this->field_0x2c) * *(int*)((char*)srcPtr + 0x14) + baseIndex;
-            if (*(char*)(idx) == this->field_0x12) break;
-            this->field_0x2c++;
+        while (this->glyphHeight < *(int*)((char*)srcPtr + 0x18)) {
+            int idx = (baseColMinus1 - this->glyphHeight) * *(int*)((char*)srcPtr + 0x14) + baseIndex;
+            if (*(char*)(idx) == this->glyphValue) break;
+            this->glyphHeight++;
         }
     }
 
-    int *entryPtr = (int*)this->field_0x14;
+    int *entryPtr = (int*)this->glyphTable;
     int col = 0;
     int offset = 0;
 
@@ -98,21 +97,21 @@ void AnimatedAsset::BuildGlyphTable()
                 int tableOffset = col << 4;
                 do {
                     int chIdx = x + (baseColMinus1 - offset) * width + baseIndex;
-                    if (*(char*)(chIdx) == this->field_0x12) {
+                    if (*(char*)(chIdx) == this->glyphValue) {
                         entryPtr[0] = startX;
                         entryPtr[2] = x - 1;
                         entryPtr[1] = offset;
-                        entryPtr[3] = this->field_0x2c + offset - 1;
-                        if (this->field_0x20 - col == 1) goto BUILT;
+                        entryPtr[3] = this->glyphHeight + offset - 1;
+                        if (this->glyphCount - col == 1) goto BUILT;
                         startX = x + 1;
                         col = col + 1;
                         tableOffset = tableOffset + 0x10;
-                        entryPtr = (int*)((char*)this->field_0x14 + tableOffset);
+                        entryPtr = (int*)((char*)this->glyphTable + tableOffset);
                     }
                     x++;
                 } while (x < width);
             }
-            offset = offset + this->field_0x2c + 1;
+            offset = offset + this->glyphHeight + 1;
         }
     }
 BUILT:
@@ -132,19 +131,19 @@ int AnimatedAsset::ComputeTextMetrics(void* text)
     while (*pch != '\0') {
         unsigned char c = *pch;
         if (c == 0x20) {
-            total += this->field_0x24;
+            total += this->spaceWidth;
         } else if (c == 9) {
-            total += this->field_0x28;
+            total += this->tabWidth;
         } else {
-            int idx = c - this->field_0x4;
-            if (idx >= 0 && idx < this->field_0x20 && this->field_0x14 != NULL) {
-                int *entry = (int*)((char*)this->field_0x14 + idx * 0x10);
+            int idx = c - this->firstChar;
+            if (idx >= 0 && idx < this->glyphCount && this->glyphTable != NULL) {
+                int *entry = (int*)((char*)this->glyphTable + idx * 0x10);
                 int startX = entry[0];
                 int endX = entry[2];
                 int width = endX - startX;
                 if (width < 0) width = 0;
                 total += width;
-                total += this->field_0x30; // inter-character advance
+                total += this->charAdvance; // inter-character advance
             }
         }
         pch++;
@@ -157,28 +156,28 @@ int AnimatedAsset::ComputeTextMetrics(void* text)
 void AnimatedAsset::PrepareText(char* text)
 {
     // Initialize base positions from helpers
-    this->field_0x8 = this->FUN_004239de();
-    this->field_0xc = this->FUN_004239d8();
+    this->text_x = this->FUN_004239de();
+    this->text_y = this->FUN_004239d8();
 
     int mode = this->FUN_004239d0();
 
     if (mode == 0) {
         int w = this->ComputeTextMetrics(text);
         // center horizontally
-        this->field_0x8 += (w / 2);
+        this->text_x += (w / 2);
         return;
     }
 
     if (mode == 1) {
         int w = this->ComputeTextMetrics(text);
         // right align
-        this->field_0x8 -= w;
+        this->text_x -= w;
         int vert = this->FUN_004239c8();
         if (vert == 0) {
-            this->field_0xc += this->field_0x2c / 2;
+            this->text_y += this->glyphHeight / 2;
         }
         else if (vert == 1) {
-            this->field_0xc += this->field_0x2c;
+            this->text_y += this->glyphHeight;
         }
         return;
     }
@@ -186,10 +185,10 @@ void AnimatedAsset::PrepareText(char* text)
     // default vertical alignment adjustments when mode not 0 or 1
     int vert = this->FUN_004239c8();
     if (vert == 0) {
-        this->field_0xc += this->field_0x2c / 2;
+        this->text_y += this->glyphHeight / 2;
     }
     else if (vert == 1) {
-        this->field_0xc += this->field_0x2c;
+        this->text_y += this->glyphHeight;
     }
 }
 
@@ -198,9 +197,9 @@ int AnimatedAsset::IsCharSupported(int ch)
 {
     if (ch == 0x20) return 1;
     if (ch == 9) return 1;
-    int delta = ch - this->field_0x4;
+    int delta = ch - this->firstChar;
     if (delta < 0) return 0;
-    if (delta > this->field_0x20 - 1) return 0;
+    if (delta > this->glyphCount - 1) return 0;
     return 1;
 }
 
@@ -217,15 +216,15 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
   VBuffer *local_14;
 
   if (param_1 != (char *)0x0) {
-    iVar2 = sscanf(param_1, "%s %d %d", local_9c, &this->field_0x4, &local_18);
+    iVar2 = sscanf(param_1, "%s %d %d", local_9c, &this->firstChar, &local_18);
     if (iVar2 < 3) {
       local_18 = 0x7e;
     }
     if (iVar2 < 2) {
-      this->field_0x4 = 0x21;
+      this->firstChar = 0x21;
     }
     pVVar3 = this->buffer;
-    this->field_0x20 = (local_18 - this->field_0x4) + 1;
+    this->glyphCount = (local_18 - this->firstChar) + 1;
     if (pVVar3 != (VBuffer *)0x0) {
       pVVar3->~VBuffer();
       FreeMemory(pVVar3);
@@ -254,8 +253,8 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     if (iVar2 != 0) {
       iVar2 = this->ComputeTextMetrics(&DAT_00435ef4);
       iVar2 = (iVar2 * 2) / 3;
-      this->field_0x24 = iVar2;
-      this->field_0x28 = iVar2 << 2;
+      this->spaceWidth = iVar2;
+      this->tabWidth = iVar2 << 2;
     }
   }
 }
@@ -273,10 +272,10 @@ AnimatedAsset::~AnimatedAsset()
         this->buffer = 0;
     }
     {
-        int* glyphPtr = this->field_0x14;
+        int* glyphPtr = this->glyphTable;
         if (glyphPtr != (int *)0x0) {
             FreeMemory((int *)((char*)glyphPtr - 4));
-            this->field_0x14 = 0;
+            this->glyphTable = 0;
         }
     }
     this->FUN_004210a8();
@@ -288,14 +287,14 @@ AnimatedAsset::~AnimatedAsset()
 void AnimatedAsset::FUN_004210a8()
 {
     /* tail-jump wrapper in binary: MOV ECX,[EBP-0x10]; ADD ECX,0x30; JMP 0x00405770 */
-    FUN_00405770((void*)((char*)this + 0x30));
+    FUN_00405770((void*)&this->charAdvance);
 }
 
 /* Function start: 0x4210BD */
 void AnimatedAsset::FUN_004210bd()
 {
     /* tail-jump wrapper in binary: MOV ECX,[EBP-0x10]; ADD ECX,0x8; JMP 0x00405770 */
-    FUN_00405770((void*)((char*)this + 0x8));
+    FUN_00405770((void*)&this->text_x);
 }
 
 /* Function start: 0x4239DE */
@@ -337,30 +336,30 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
 
     __try {
         if (param_3 == 0x20) {
-            iVar4 = this->field_0x24;
+            iVar4 = this->spaceWidth;
         }
         else if (param_3 == 9) {
-            iVar4 = this->field_0x28;
+            iVar4 = this->tabWidth;
         }
         else {
-            piVar5 = (int*)((param_3 - this->field_0x4) * 0x10 + this->field_0x14);
+            piVar5 = (int*)((param_3 - this->firstChar) * 0x10 + this->glyphTable);
             iVar1 = piVar5[3];
             iVar4 = piVar5[2];
             iVar2 = piVar5[1];
             iVar3 = *piVar5;
-            if (this->field_0x18 == 0) {
-                if (this->field_0x1c == 0) {
-                    FUN_0041ae60(g_WorkBuffer, iVar3, iVar4, iVar2, iVar1, param_1, param_2, this);
+            if (this->useBuffer == 0) {
+                if (this->useAttr == 0) {
+                    g_WorkBuffer->CallBlitter2(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->buffer);
                 }
                 else {
-                    FUN_0041aea0(g_WorkBuffer, iVar3, iVar4, iVar2, iVar1, param_1, param_2, this, this->field_0x10, this->field_0x11);
+                    g_WorkBuffer->CallBlitter3(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->buffer, this->color, this->attr);
                 }
             }
-            else if (this->field_0x1c == 0) {
+            else if (this->useAttr == 0) {
                 this->buffer->ClipAndBlit((int)g_WorkBuffer, iVar3, iVar4, iVar2, iVar1, param_1, param_2);
             }
             else {
-                FUN_0041ad50(this, iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->field_0x10, this->field_0x11);
+                FUN_0041ad50(this, iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->color, this->attr);
             }
             iVar4 = iVar4 - iVar3;
         }
@@ -374,17 +373,17 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
 void AnimatedAsset::RenderText(char* text, int param_2)
 {
     if (text != (char *)0x0) {
-        this->field_0x18 = 0;
-        this->field_0x11 = (char)param_2;
-        this->field_0x1c = (param_2 != -1);
+        this->useBuffer = 0;
+        this->attr = (char)param_2;
+        this->useAttr = (param_2 != -1);
         PrepareText(text);
         if (*text != '\0') {
-            int* piVar1 = &this->field_0x8;
+            int* piVar1 = &this->text_x;
             do {
                 char cVar2 = *text;
                 text = text + 1;
-                int iVar3 = this->DrawChar(*piVar1, this->field_0xc, (int)cVar2);
-                *piVar1 = *piVar1 + this->field_0x30 + iVar3;
+                int iVar3 = this->DrawChar(*piVar1, this->text_y, (int)cVar2);
+                *piVar1 = *piVar1 + this->charAdvance + iVar3;
             } while (*text != '\0');
         }
     }

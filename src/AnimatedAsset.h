@@ -6,23 +6,23 @@
 class AnimatedAsset {
 public:
     VBuffer* buffer; // 0x0
-    int field_0x4;
-    int field_0x8;
-    int field_0xc;
-    char field_0x10;
-    char field_0x11;
-    char field_0x12;
+    int firstChar; // 0x4 - starting character code
+    int text_x; // 0x8 - current x position for rendering text
+    int text_y; // 0xC - current y position for rendering text
+    char color; // 0x10 - blit color / mode
+    char attr; // 0x11 - additional attribute (e.g., tint / flag)
+    char glyphValue; // 0x12 - value used to detect glyph pixels
     char pad_13;
-    int* field_0x14; // glyph table pointer
-    int field_0x18;
-    int field_0x1c;
-    int field_0x20;
-    int field_0x24;
-    int field_0x28;
-    int field_0x2c;
-    int field_0x30;
-    int field_0x34;
-    int field_0x38;
+    int* glyphTable; // 0x14 - pointer to glyph table
+    int useBuffer; // 0x18 - render target selector / flag
+    int useAttr; // 0x1C - whether attr/color is active
+    int glyphCount; // 0x20 - number of glyphs
+    int spaceWidth; // 0x24 - width of space
+    int tabWidth; // 0x28 - width of tab
+    int glyphHeight; // 0x2C - height (rows) per glyph
+    int charAdvance; // 0x30 - inter-character advance
+    int reserved_34; // 0x34 - unknown / reserved
+    int reserved_38; // 0x38 - unknown / reserved
 
     AnimatedAsset();
     void LoadAnimatedAsset(char* param_1);

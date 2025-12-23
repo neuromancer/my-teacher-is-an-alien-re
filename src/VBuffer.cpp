@@ -276,15 +276,15 @@ void VBuffer::CallBlitter(int param_1, int param_2, int param_3, int param_4, in
 }
 
 /* Function start: 0x41ae60 */
-void VBuffer::CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
+void VBuffer::CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, VBuffer* srcBuffer)
 {
-    FUN_004233e8(param_1, param_2, param_3, param_4, param_5, param_6, ((VBuffer*)param_7)->handle, this->handle);
+    FUN_004233e8(param_1, param_2, param_3, param_4, param_5, param_6, srcBuffer->handle, this->handle);
 }
 
 /* Function start: 0x41aea0 */
-void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, char param_8, char param_9)
+void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, VBuffer* srcBuffer, char param_8, char param_9)
 {
-    BlitTransparentRows(param_1, param_2, param_3, param_4, param_5, param_6, (VBuffer*)param_7, this, param_8, param_9);
+    BlitTransparentRows(param_1, param_2, param_3, param_4, param_5, param_6, srcBuffer, this, param_8, param_9);
 }
 
 /* Function start: 0x41aee0 */

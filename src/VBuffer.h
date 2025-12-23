@@ -21,8 +21,8 @@ public:
     void TPaste(void);
     void BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8);
     void CallBlitter(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7);
-    void CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7);
-    void CallBlitter3(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, char param_8, char param_9);
+    void CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, VBuffer* srcBuffer);
+    void CallBlitter3(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, VBuffer* srcBuffer, char param_8, char param_9);
     void ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7);
     void ClipAndPaste(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7);
     int SetVideoMode();
