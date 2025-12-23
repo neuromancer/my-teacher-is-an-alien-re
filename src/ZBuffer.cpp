@@ -58,7 +58,7 @@ int ZBuffer::ProcessMessage(void* param_1)
             while (*piVar2 != 0) {
                 void* puVar4 = ZBuffer::PopNode(piVar2);
                 if (puVar4 != 0) {
-                    *(void**)puVar4 = (void*)0x431050;
+                    *(void**)puVar4 = 0;
                     FreeFromGlobalHeap(puVar4);
                 }
             }
@@ -80,9 +80,7 @@ int ZBuffer::ProcessMessage(void* param_1)
             while (*piVar2 != 0) {
                 void* this_00 = ZBuffer::PopNode_2(piVar2);
                 if (this_00 != 0) {
-                    /* Call scalar deleting destructor via vtable with flag 1 */
-                    void (**vtable)(int) = *(void (***)(int))this_00;
-                    (*vtable)(1);
+                    FreeFromGlobalHeap(this_00);
                 }
             }
         }
@@ -97,7 +95,7 @@ int ZBuffer::ProcessMessage(void* param_1)
             while (*piVar2 != 0) {
                 void* puVar4 = ZBuffer::PopNode(piVar2);
                 if (puVar4 != 0) {
-                    *(void**)puVar4 = (void*)0x431050;
+                    *(void**)puVar4 = 0;
                     FreeFromGlobalHeap(puVar4);
                 }
             }
@@ -128,8 +126,8 @@ void ZBuffer::CleanUpVBuffer()
         *(void**)((char*)this + 0x4) = 0;
     }
     if (*(void**)((char*)this + 0x8) != 0) {
-        void (**vtable)(int) = *(void (***)(int))((char*)this + 0x8);
-        (*vtable)(1);
+        void* ptr = *(void**)((char*)this + 0x8);
+        FreeFromGlobalHeap(ptr);
         *(void**)((char*)this + 0x8) = 0;
     }
 }
@@ -137,7 +135,7 @@ void ZBuffer::CleanUpVBuffer()
 /* Function start: 0x4016A0 */
 ZBuffer::~ZBuffer()
 {
-    *(void**)this = (void*)0x431058;
+    CleanUpVBuffer();
 }
 
 /* Function start: 0x401710 */
@@ -245,7 +243,7 @@ void ZBuffer::ClearList(int* param_1)
                 param_1[2] = *param_1;
             }
             if (local_18 != 0) {
-                *(void**)local_18 = (void*)0x431058;
+                *(void**)local_18 = 0;
                 FreeFromGlobalHeap(local_18);
             }
         } while (*param_1 != 0);
