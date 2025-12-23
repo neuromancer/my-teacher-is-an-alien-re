@@ -11,71 +11,67 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
 
-    - name: Install Wine and Xvfb
-      run: |
-        sudo dpkg --add-architecture i386
-        sudo apt update
-        sudo apt install -y wine64 wine32 xvfb
+      - name: Install Wine and Xvfb
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install -y wine64 wine32 xvfb
 
-    - name: Start Xvfb
-      run: |
-        Xvfb :99 &
-        export DISPLAY=:99
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
 
-    - name: Install requirements
-      run: pip3 install -r requirements.txt
+      - name: Install requirements
+        run: pip3 install -r requirements.txt
 
-    - name: make
-      run: |
-        export DISPLAY=:99
-        make
-        make report
-        make progress
+      - name: make
+        run: |
+          make
+          make report
+          make progress
 
- compare-similarity:
-   runs-on: ubuntu-latest
-   if: github.event_name == 'pull_request'
-   steps:
-     - name: Install Wine and Xvfb
-       run: |
-         sudo dpkg --add-architecture i386
-         sudo apt update
-         sudo apt install -y wine64 wine32 xvfb
+  compare-similarity:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
 
-     - name: Start Xvfb
-       run: |
-         Xvfb :99 &
-         export DISPLAY=:99
+    steps:
+      - name: Install Wine and Xvfb
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install -y wine64 wine32 xvfb
 
-     - name: Install requirements
-       run: pip3 install -r requirements.txt
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
 
-     - name: Checkout base branch
-       uses: actions/checkout@v3
-       with:
-         ref: ${{ github.base_ref }}
-         submodules: true
+      - name: Install requirements
+        run: pip3 install -r requirements.txt
 
-     - name: Generate report on base
-       run: |
-         export DISPLAY=:99
-         make report > report-before.txt
+      - name: Checkout base branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.base_ref }}
+          submodules: true
 
-     - name: Checkout PR branch
-       uses: actions/checkout@v3
-       with:
-         submodules: true
+      - name: Generate report on base
+        run: make report > report-before.txt
 
-     - name: Generate report on PR
-       run: |
-         export DISPLAY=:99
-         make report > report-after.txt
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          submodules: true
 
-     - name: Compare reports
-       run: |
-         echo "Similarity report diff:"
-         diff -u report-before.txt report-after.txt || true
+      - name: Generate report on PR
+        run: make report > report-after.txt
+
+      - name: Compare reports
+        run: |
+          echo "Similarity report diff:"
+          diff -u report-before.txt report-after.txt || true
