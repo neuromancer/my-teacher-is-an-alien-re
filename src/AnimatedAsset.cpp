@@ -11,7 +11,6 @@ extern VBuffer* g_WorkBuffer;
 
 extern "C" {
     // CallBlitter2/3 are VBuffer members: use VBuffer::CallBlitter2/CallBlitter3
-    void FUN_0041ad50(void*, int, int, int, int, int, int, char, char);
     // ...existing code...
     void FUN_00405770(void*);
     void FUN_00424b00(void*, int, int, void*, void*);
@@ -21,6 +20,8 @@ extern "C" {
     extern int DAT_004374ce;
     extern signed char DAT_004374c0;
     extern signed char DAT_004374c1;
+    void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor);
+    void FUN_0041ae0c(void);
     extern void* DAT_00435ef4;
 }
 
@@ -28,6 +29,34 @@ extern "C" {
 AnimatedAsset* AnimatedAsset_Ctor(AnimatedAsset* p) {
     p->AnimatedAsset::AnimatedAsset();
     return p;
+}
+
+/* Function start: 0x41AD50 */
+void AnimatedAsset::BlitGlyphWithColors(int x1, int x2, int y1, int y2, int destX, int destY, char fillColor, char transparentColor)
+{
+    /* Corresponds to FUN_0041ad50 in the binary - copy a rect from this->buffer to a temporary buffer with transparent/fill handling, then blit to the work buffer */
+    int width = x2 - x1 + 1;
+    int height = y2 - y1 + 1;
+
+    VBuffer* tmpBufMem = (VBuffer*)AllocateMemory(sizeof(VBuffer));
+    VBuffer* tmpBuf = (VBuffer*)0;
+
+    if (tmpBufMem != (VBuffer*)0) {
+        tmpBuf = VirtualBufferCreateAndClean(tmpBufMem, width, height);
+    }
+
+    if (tmpBuf != (VBuffer*)0) {
+        tmpBuf->ClearScreen(0);
+        BlitTransparentRows(x1, x2, y1, y2, 0, 0, this->buffer, tmpBuf, transparentColor, fillColor);
+        g_WorkBuffer->CallBlitter2(0, width - 1, 0, height - 1, destX, destY, tmpBuf);
+        tmpBuf->~VBuffer();
+        FreeMemory(tmpBufMem);
+    }
+
+    try {
+        FUN_0041ae0c();
+    } catch (...) {
+    }
 }
 
 /* Function start: 0x420F80 */
@@ -359,7 +388,7 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
                 this->buffer->ClipAndBlit((int)g_WorkBuffer, iVar3, iVar4, iVar2, iVar1, param_1, param_2);
             }
             else {
-                FUN_0041ad50(this, iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->color, this->attr);
+                this->BlitGlyphWithColors(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->color, this->attr);
             }
             iVar4 = iVar4 - iVar3;
         }
