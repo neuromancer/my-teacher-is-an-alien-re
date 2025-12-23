@@ -34,6 +34,9 @@ public:
     void CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8);
     void InitFields();
     void ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale);
+
+    // Copy rectangle rows from srcBuffer into this buffer with transparent handling
+    void BlitTransparentRowsFrom(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, char transparentColor, char fillColor);
 };
 
 VBuffer* VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height);

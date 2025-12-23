@@ -14,13 +14,10 @@ extern "C" {
     // ...existing code...
     void FUN_00405770(void*);
     void FUN_00424b00(void*, int, int, void*, void*);
-    int FUN_0041ac30(void*);
-    void FUN_0041ac40(void);
     extern int DAT_004374c2;
     extern int DAT_004374ce;
     extern signed char DAT_004374c0;
     extern signed char DAT_004374c1;
-    void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor);
     void FUN_0041ae0c(void);
     extern void* DAT_00435ef4;
 }
@@ -29,6 +26,22 @@ extern "C" {
 AnimatedAsset* AnimatedAsset_Ctor(AnimatedAsset* p) {
     p->AnimatedAsset::AnimatedAsset();
     return p;
+}
+
+/* Function start: 0x41AC30 */
+int AnimatedAsset::FUN_0041ac30()
+{
+    /* original: MOV EAX,[ECX + 0x10] ; RET
+       Here the source pointer is stored in the object's first dword. */
+    void* src = *(void**)this;
+    return *(int*)((char*)src + 0x10);
+}
+
+/* Function start: 0x41AC40 */
+void AnimatedAsset::FUN_0041ac40()
+{
+    /* No-op in original binary (RET). Kept as a member for clarity. */
+    return;
 }
 
 /* Function start: 0x41AD50 */
@@ -47,7 +60,7 @@ void AnimatedAsset::BlitGlyphWithColors(int x1, int x2, int y1, int y2, int dest
 
     if (tmpBuf != (VBuffer*)0) {
         tmpBuf->ClearScreen(0);
-        BlitTransparentRows(x1, x2, y1, y2, 0, 0, this->buffer, tmpBuf, transparentColor, fillColor);
+        tmpBuf->BlitTransparentRowsFrom(x1, x2, y1, y2, 0, 0, this->buffer, transparentColor, fillColor);
         g_WorkBuffer->CallBlitter2(0, width - 1, 0, height - 1, destX, destY, tmpBuf);
         tmpBuf->~VBuffer();
         FreeMemory(tmpBufMem);
@@ -101,7 +114,7 @@ void AnimatedAsset::BuildGlyphTable()
     // Prepare indices and find start column
     void* srcPtr = *(void**)this; /* treat the object's first dword as a pointer used by the original code */
     int baseColMinus1 = *(int*)((char*)srcPtr + 0x18) - 1;
-    int baseIndex = FUN_0041ac30(srcPtr);
+    int baseIndex = this->FUN_0041ac30();
 
     this->glyphHeight = 1;
 
@@ -144,7 +157,7 @@ void AnimatedAsset::BuildGlyphTable()
         }
     }
 BUILT:
-    FUN_0041ac40();
+    this->FUN_0041ac40();
 }
 
 /* Function start: 0x4215A0 */

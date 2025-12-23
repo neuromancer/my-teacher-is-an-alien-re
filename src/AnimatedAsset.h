@@ -39,6 +39,8 @@ public:
     int FUN_004239d0();
     int FUN_004239c8();
     void BlitGlyphWithColors(int x1, int x2, int y1, int y2, int destX, int destY, char fillColor, char transparentColor);
+    int FUN_0041ac30();
+    void FUN_0041ac40();
     ~AnimatedAsset();
 };
 
