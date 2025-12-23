@@ -27,7 +27,8 @@ extern unsigned int DAT_0043c760;
 extern unsigned int DAT_0043c8c8;
 extern int FUN_00422510();
 
-void *g_TextManager = (void*)0x00436990;
+#include "globals.h"
+
 VBuffer *g_WorkBuffer = (VBuffer*)0x00436974;
 void *DAT_0043696c = (void*)0x0043696c;
 void *DAT_00436968 = (void*)0x00436968;
@@ -355,8 +356,8 @@ void InitGameSystems(void)
     if (pTextManager != (AnimatedAsset *)0x0) {
         pTextManagerInit = AnimatedAsset_Ctor(pTextManager);
     }
-    g_TextManager = pTextManagerInit;
-    ((AnimatedAsset*)g_TextManager)->LoadAnimatedAsset("elements\\barrel06.smk");
+    g_TextManager_00436990 = pTextManagerInit;
+    g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
     SetStateFlag(0,1);
     SetCursorVisible(0);
 }
@@ -383,10 +384,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdShow
 /* Function start: 0x41A550 */
 void ShutdownGameSystems(void)
 {
-  if (g_TextManager != 0) {
-    FUN_00421010(g_TextManager);
-    FreeMemory(g_TextManager);
-    g_TextManager = 0;
+  if (g_TextManager_00436990 != 0) {
+    FUN_00421010(g_TextManager_00436990);
+    FreeMemory(g_TextManager_00436990);
+    g_TextManager_00436990 = 0;
   }
   if (g_WorkBuffer != 0) {
     g_WorkBuffer->~VBuffer();
