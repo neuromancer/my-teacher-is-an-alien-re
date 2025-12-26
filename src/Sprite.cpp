@@ -160,8 +160,10 @@ void Sprite::FreeAnimation()
 /* Function start: 0x41D190 */
 void Sprite::SetState2(int param_1)
 {
+    int offset = 0;
+
     if (param_1 == -1) {
-        this->field_0x90 = -1;
+        this->field_0x90 = param_1;
         return;
     }
 
@@ -169,42 +171,69 @@ void Sprite::SetState2(int param_1)
         this->Init();
     }
 
-    if (param_1 < 0 || param_1 >= this->num_states) {
+    if (param_1 < 0 || param_1 > this->num_states - 1) {
         ShowError("Sprite::SetState 0 %d %s", param_1, &this->sprite_filename);
     }
 
-    if (this->animation_data == 0 || this->ranges == 0) {
-        ShowError("range error");
+    int current_frame = 0;
+    if (this->animation_data != 0) {
+        current_frame = this->animation_data->smk->FrameNum;
     }
 
-    int current_frame = this->animation_data->smk->FrameNum;
-    int* range = (int*)((char*)this->ranges + param_1 * 8);
+    int in_range;
+    if (this->animation_data == 0) {
+        ShowError("range error");
+        in_range = 0;
+    } else if (this->ranges == 0) {
+        ShowError("range error");
+        in_range = 0;
+    } else {
+        int* range = (int*)((char*)this->ranges + param_1 * 8);
+        if (current_frame < range[0] || range[1] < current_frame) {
+            in_range = 0;
+        } else {
+            in_range = 1;
+        }
+    }
 
-    if (current_frame < range[0] || current_frame > range[1]) {
+    if (in_range == 0) {
         this->flags |= 0x20;
     }
 
-    if ((this->flags & 0x20) == 0 && this->field_0x90 == param_1) {
+    int fl = this->flags;
+    if ((fl & 0x20) == 0 && this->field_0x90 == param_1) {
         return;
     }
 
-    int offset = 0;
-    if ((this->flags & 0x10) != 0) {
+    if ((fl & 0x10) != 0) {
         int* old_range = (int*)((char*)this->ranges + this->field_0x90 * 8);
         offset = this->animation_data->smk->FrameNum - old_range[0];
 
-        int new_start_frame = range[0] + 1 + offset;
+        int new_start = *(int*)((char*)this->ranges + param_1 * 8);
+        int new_end_frame = new_start + offset + 1;
         offset++;
 
-        if (new_start_frame < range[0] || new_start_frame > range[1]) {
+        int valid;
+        if (this->animation_data == 0 || this->ranges == 0) {
+            ShowError("range error");
+            valid = 0;
+        } else {
+            if (new_end_frame < new_start || *(int*)((char*)this->ranges + param_1 * 8 + 4) < new_end_frame) {
+                valid = 0;
+            } else {
+                valid = 1;
+            }
+        }
+
+        if (valid == 0) {
             offset = 0;
         }
     }
 
     this->field_0x90 = param_1;
-    this->animation_data->GotoFrame(range[0] + offset);
+    this->animation_data->GotoFrame(*(int*)((char*)this->ranges + param_1 * 8) + offset);
 
-    range = (int*)((char*)this->ranges + this->field_0x90 * 8);
+    int* range = (int*)(this->field_0x90 * 8 + (int)this->ranges);
     if (range[1] == range[0]) {
         this->flags |= 4;
     }
@@ -399,35 +428,40 @@ void Sprite::SetRange(int param_1, int param_2, int param_3)
 /* Function start: 0x41D740 */
 void Sprite::SetState(int param_1)
 {
-    this->num_states = param_1;
-    if (this->ranges != 0) {
-        Array_Cleanup((void*)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void(__cdecl*)(void*))0x405770);
-        FreeMemory((int*)((char*)this->ranges - 4));
-        this->ranges = 0;
-    }
+    try {
+        this->num_states = param_1;
+        if (this->ranges != 0) {
+            Array_Cleanup((void*)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void(__cdecl*)(void*))0x405770);
+            FreeMemory((int*)((char*)this->ranges - 4));
+            this->ranges = 0;
+        }
 
-    int* piVar5 = 0;
-    int* piVar1 = (int*)AllocateMemory(this->num_states * 8 + 4);
-    if (piVar1 != 0) {
-        piVar5 = piVar1 + 1;
-        *piVar1 = this->num_states;
-        Array_Iterate(piVar5, 8, this->num_states, (void(*)(void*))0x41d850, (void(*)(void*))0x405770);
-    }
-    this->ranges = piVar5;
+        int num = this->num_states;
+        int* piVar5 = 0;
+        int* piVar1 = (int*)AllocateMemory(num * 8 + 4);
+        if (piVar1 != 0) {
+            piVar5 = piVar1 + 1;
+            *piVar1 = num;
+            Array_Iterate(piVar5, 8, num, (void(*)(void*))0x41d850, (void(*)(void*))0x405770);
+        }
 
-    if (0 < this->num_states) {
         int iVar3 = 0;
         int iVar4 = 0;
-        do {
-            iVar4 = iVar4 + 1;
-            int* puVar2 = (int*)((char*)this->ranges + iVar3);
-            iVar3 = iVar3 + 8;
-            *puVar2 = 1;
-            puVar2[1] = 5000;
-        } while (iVar4 < this->num_states);
-    }
+        this->ranges = piVar5;
 
-    this->flags |= 0x20;
+        if (0 < this->num_states) {
+            do {
+                iVar4 = iVar4 + 1;
+                int* puVar2 = (int*)((char*)this->ranges + iVar3);
+                iVar3 = iVar3 + 8;
+                *puVar2 = 1;
+                puVar2[1] = 5000;
+            } while (iVar4 < this->num_states);
+        }
+
+        this->flags |= 0x20;
+    } catch (...) {
+    }
 }
 
 /* Function start: 0x41D860 */
@@ -457,31 +491,36 @@ void Sprite::SetLogic(int param_1, int param_2)
 /* Function start: 0x41D8D0 */
 void Sprite::InitLogic(int param_1)
 {
-    if (this->logic_conditions != 0) {
-        Array_Cleanup((void*)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void(__cdecl*)(void*))0x405770);
-        FreeMemory((int*)((char*)this->logic_conditions - 4));
-        this->logic_conditions = 0;
-    }
+    try {
+        if (this->logic_conditions != 0) {
+            Array_Cleanup((void*)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void(__cdecl*)(void*))0x405770);
+            FreeMemory((int*)((char*)this->logic_conditions - 4));
+            this->logic_conditions = 0;
+        }
 
-    this->num_logic_conditions = param_1;
-    int* piVar4 = 0;
-    int* piVar1 = (int*)AllocateMemory(param_1 * 8 + 4);
-    if (piVar1 != 0) {
-        piVar4 = piVar1 + 1;
-        *piVar1 = param_1;
-        Array_Iterate(piVar4, 8, param_1, (void(*)(void*))0x41d850, (void(*)(void*))0x405770);
-    }
-    this->logic_conditions = piVar4;
+        this->num_logic_conditions = param_1;
+        int* piVar4 = 0;
+        int* piVar1 = (int*)AllocateMemory(param_1 * 8 + 4);
+        if (piVar1 != 0) {
+            piVar4 = piVar1 + 1;
+            *piVar1 = param_1;
+            Array_Iterate(piVar4, 8, param_1, (void(*)(void*))0x41d850, (void(*)(void*))0x405770);
+        }
 
-    if (0 < this->num_logic_conditions) {
         int iVar2 = 0;
         int iVar3 = 0;
-        do {
-            iVar3 = iVar3 + 8;
-            iVar2 = iVar2 + 1;
-            *(int*)((char*)this->logic_conditions + -8 + iVar3) = 0;
-            *(int*)((char*)this->logic_conditions + -4 + iVar3) = 0;
-        } while (iVar2 < this->num_logic_conditions);
+        this->logic_conditions = piVar4;
+
+        if (this->num_logic_conditions > 0) {
+            int edx = 0;
+            do {
+                edx = edx + 8;
+                iVar3 = iVar3 + 1;
+                *(int*)((char*)this->logic_conditions + edx - 8) = iVar2;
+                *(int*)((char*)this->logic_conditions + edx - 4) = iVar2;
+            } while (iVar3 < this->num_logic_conditions);
+        }
+    } catch (...) {
     }
 }
 
