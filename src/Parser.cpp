@@ -83,16 +83,17 @@ void Parser::FindKey(unsigned char *param_1) {
 
   fseek(this->pFile, 0, 0);
 
-  do {
+  while (1) {
     if (internal_ReadLine(local_100, 255, this->pFile) == NULL) {
-      ShowError("Parser::FindKey - Unable to find key '%s' in file '%s'",
-                param_1, this->filename);
+      break;
     }
     sscanf(local_100, "%s", DAT_00436960);
     if (strcmp(DAT_00436960, (char *)param_1) == 0) {
       return;
     }
-  } while (1);
+  }
+  ShowError("Parser::FindKey - Unable to find key '%s' in file '%s'", param_1,
+            this->filename);
 }
 
 /* Function start: 0x418C70 */
