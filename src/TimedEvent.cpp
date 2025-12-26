@@ -14,121 +14,12 @@ extern "C" {
 extern void* g_GameStruct2;
 extern void* g_SoundManager;
 extern char* DAT_00436960;
-
+ 
 /* Function start: 0x401890 */
 TimedEvent::TimedEvent() : m_timer()
 {
     memset(this, 0, 10 * sizeof(int));
     m_timer.Reset();
-}
-
-
-/* Function start: 0x402310 */
-void TimedEvent::CopyFrom(const TimedEvent* other)
-{
-    unsigned int eax;
-    char* src = (char*)other;
-    char* dst = (char*)this;
-    char bl;
-
-    this->field_0x8 = other->field_0x8;
-    eax = 0;
-    this->m_duration = other->m_duration;
-loop1:
-    bl = src[0x10 + eax];
-    eax++;
-    if (eax < 0x20) {
-        dst[0xf + eax] = bl;
-        goto loop1;
-    }
-    dst[0xf + eax] = bl;
-
-    this->field_0x30 = other->field_0x30;
-    {
-        int* esi = (int*)(&dst[0x38]);
-        int* ptr = (int*)(&src[0x38]);
-        int edi = ptr[0];
-        int ebx = ptr[1];
-        eax = 0;
-        esi[0] = edi;
-        esi[1] = ebx;
-    }
-loop2:
-    bl = ((char*)&other->m_data_0x40)[eax];
-    eax++;
-    if (eax < 0x40) {
-        this->m_data_0x40[eax - 1] = bl;
-        goto loop2;
-    }
-    this->m_data_0x40[eax - 1] = bl;
-
-    this->field_0x80 = other->field_0x80;
-    this->field_0x88 = other->field_0x88;
-    this->field_0x8c = other->field_0x8c;
-    this->field_0x90 = other->field_0x90;
-    this->field_0x94 = other->field_0x94;
-    this->field_0x98 = other->field_0x98;
-    this->field_0x9c = other->field_0x9c;
-    this->field_0xa0 = other->field_0xa0;
-    this->field_0xa4 = other->field_0xa4;
-    this->field_0xa8 = other->field_0xa8;
-    this->field_0xac = other->field_0xac;
-    this->field_0xb0 = other->field_0xb0;
-    this->field_0xb4 = other->field_0xb4;
-    this->field_0xb8 = other->field_0xb8;
-    this->field_0xbc = other->field_0xbc;
-}
-
-/* Function start: 0x402420 */
-TimedEvent* TimedEventPool::Create(void* callback, void* data)
-{
-    if (this->m_free_list == 0) {
-        int* new_pool = (int*)AllocateMemory(this->m_pool_size * 200 + 4);
-        *new_pool = (int)this->m_pool;
-        int count = this->m_pool_size;
-        this->m_pool = (TimedEvent*)new_pool;
-
-        int* current = new_pool + count * 50 - 49;
-        count--;
-        if (count >= 0) {
-            do {
-                count--;
-                *current = (int)this->m_free_list;
-                this->m_free_list = (TimedEvent*)current;
-                current = current - 50;
-            } while (count >= 0);
-        }
-    }
-
-    TimedEvent* event = this->m_free_list;
-    Message* ebx = (Message*)((int*)event + 2);
-    this->m_free_list = *(TimedEvent**)event;
-    *(void**)((char*)event + 4) = callback;
-    *(void**)event = data;
-    this->m_count++;
-
-    __asm {
-        mov edi, ebx
-        xor eax, eax
-        mov ecx, 0x30
-        rep stosd
-    }
-
-    int edi = 0;
-    if (ebx == 0) goto done;
-loop:
-    {
-        Message* tmp = ebx;
-        tmp->Message::Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    }
-    ebx = (Message*)((char*)ebx + 0xc0);
-    {
-        int eax = edi;
-        edi--;
-        if (eax != 0) goto loop;
-    }
-done:
-    return event;
 }
 
 /* Function start: 0x401910 */
