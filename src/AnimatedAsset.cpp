@@ -281,7 +281,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     local_14 = (VBuffer *)AllocateMemory(sizeof(VBuffer));
     pVVar3 = (VBuffer *)0x0;
     if (local_14 != (VBuffer *)0x0) {
-      pVVar3 = VirtualBufferCreateAndClean(local_14, this_00->smk->height, this_00->smk->width);
+      pVVar3 = VirtualBufferCreateAndClean(local_14, this_00->smk->Width, this_00->smk->Height);
     }
     this->buffer = pVVar3;
     this_00->ToBuffer(pVVar3);

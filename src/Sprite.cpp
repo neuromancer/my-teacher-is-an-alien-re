@@ -171,7 +171,7 @@ void Sprite::SetState2(int param_1)
         ShowError("range error");
     }
 
-    int current_frame = this->animation_data->smk->current_frame;
+    int current_frame = this->animation_data->smk->FrameNum;
     int* range = (int*)((char*)this->ranges + param_1 * 8);
 
     if (current_frame < range[0] || current_frame > range[1]) {
@@ -185,7 +185,7 @@ void Sprite::SetState2(int param_1)
     int offset = 0;
     if ((this->flags & 0x10) != 0) {
         int* old_range = (int*)((char*)this->ranges + this->field_0x90 * 8);
-        offset = this->animation_data->smk->current_frame - old_range[0];
+        offset = this->animation_data->smk->FrameNum - old_range[0];
 
         int new_start_frame = range[0] + 1 + offset;
         offset++;
@@ -243,7 +243,7 @@ int Sprite::Do(int x, int y, double scale)
             remaining = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8);
         }
         else {
-            remaining = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8) - this->animation_data->smk->current_frame;
+            remaining = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8) - this->animation_data->smk->FrameNum;
         }
         if (remaining == 1) {
             if ((this->flags & 0x200) == 0) {
@@ -308,7 +308,7 @@ void Sprite::CheckRanges1()
         int iVar3 = 0;
         do {
             int* piVar2 = (int*)((char*)this->ranges + 4 + iVar3);
-            int iVar1 = this->animation_data->smk->current_frame;
+            int iVar1 = this->animation_data->smk->FrameNum;
             if (iVar1 < *piVar2) {
                 *piVar2 = iVar1;
             }

@@ -1,26 +1,15 @@
 #include "Sound.h"
-#include <string.h>
 #include "string.h"
-
-extern "C" {
-    void _AIL_init_sample_4(int);
-    void _AIL_set_sample_file_12(int, void*, int);
-    void _AIL_set_sample_volume_8(int, int);
-    void _AIL_startup_0();
-    void _AIL_set_preference_8(int, int);
-    void _SmackSoundUseMSS_4(int);
-    void _AIL_digital_configuration_16(int, int, int, char*);
-    int _AIL_allocate_sample_handle_4(int);
-    int _AIL_sample_status_4(int);
-    void _AIL_end_sample_4(int);
-    int _AIL_waveOutOpen_16(int*, int, int, void*);
-}
+#include <mss.h>
+#include <smack.h>
+#include <string.h>
 
 extern char DAT_00436970;
 extern short _param_3;
 
 // Forward declaration for 0x41E3D0
-int OpenDigitalDriver(int param_1, unsigned short param_2, unsigned short param_3);
+int OpenDigitalDriver(int param_1, unsigned short param_2,
+                      unsigned short param_3);
 
 int DAT_0043de30;
 short DAT_0043de32;
@@ -30,106 +19,100 @@ int DAT_0043de3c;
 short DAT_0043de3e;
 
 /* Function start: 0x41E1F0 */
-void* Sound::Init(int param_1, unsigned short param_2, short param_3)
-{
-    int* puVar4 = (int*)this;
-    for (int i = 0; i < 15; i++) {
-        *puVar4++ = 0;
-    }
+void *Sound::Init(int param_1, unsigned short param_2, short param_3) {
+  int *puVar4 = (int *)this;
+  for (int i = 0; i < 15; i++) {
+    *puVar4++ = 0;
+  }
 
-    _AIL_startup_0();
-    if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
-        _AIL_set_preference_8(0xf, 0);
-        int iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
-        this->digital_driver = (HDIGDRIVER)iVar3;
-        if (iVar3 == 0) {
-            _AIL_set_preference_8(0xf, 1);
-        }
-        if (this->digital_driver == 0) {
-            iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
-            this->digital_driver = (HDIGDRIVER)iVar3;
-        }
-        if (this->digital_driver == 0) {
-            const char* puVar2 = "Miles 32-bit";
-            if (_param_3 == 0) {
-                puVar2 = "Miles 16-bit";
-            }
-            WriteToMessageLog("Sound :: Cannot initialize sound %d bit %d hz %s", (int)param_2, param_1,
-                puVar2);
-        }
-        else {
-            _SmackSoundUseMSS_4((int)this->digital_driver);
-            this->AllocateSampleHandles();
-            char auStack_80[128];
-            auStack_80[0] = 0;
-            _AIL_digital_configuration_16((int)this->digital_driver, 0, 0, auStack_80);
-            const char* puVar2 = "Miles 32-bit";
-            if (_param_3 == 0) {
-                puVar2 = "Miles 16-bit";
-            }
-            WriteToMessageLog("Sound :: Initialized at %d bits, %d hz %s - %s", (int)param_2, param_1,
-                puVar2, auStack_80);
-        }
+  AIL_startup();
+  if (*(char *)(DAT_00436970 + 0x46) == '\x02') {
+    AIL_set_preference(0xf, 0);
+    int iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
+    this->digital_driver = (HDIGDRIVER)iVar3;
+    if (iVar3 == 0) {
+      AIL_set_preference(0xf, 1);
     }
-    else {
-        WriteToMessageLog("Sound :: Not Initialized (No Sound Card)");
+    if (this->digital_driver == 0) {
+      iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
+      this->digital_driver = (HDIGDRIVER)iVar3;
     }
-    return this;
+    if (this->digital_driver == 0) {
+      const char *puVar2 = "Miles 32-bit";
+      if (_param_3 == 0) {
+        puVar2 = "Miles 16-bit";
+      }
+      WriteToMessageLog("Sound :: Cannot initialize sound %d bit %d hz %s",
+                        (int)param_2, param_1, puVar2);
+    } else {
+      SmackSoundUseMSS(this->digital_driver);
+      this->AllocateSampleHandles();
+      char auStack_80[128];
+      auStack_80[0] = 0;
+      AIL_digital_configuration(this->digital_driver, 0, 0, auStack_80);
+      const char *puVar2 = "Miles 32-bit";
+      if (_param_3 == 0) {
+        puVar2 = "Miles 16-bit";
+      }
+      WriteToMessageLog("Sound :: Initialized at %d bits, %d hz %s - %s",
+                        (int)param_2, param_1, puVar2, auStack_80);
+    }
+  } else {
+    WriteToMessageLog("Sound :: Not Initialized (No Sound Card)");
+  }
+  return this;
 }
 
 /* Function start: 0x41E320 */
-void Sound::AllocateSampleHandles()
-{
-    short sVar2 = 0;
-    // Call via a local function pointer to better match the original import thunk style
-    int (*allocFunc)(int) = _AIL_allocate_sample_handle_4;
-    while (sVar2 < 13) {
-        int index = sVar2;
-        int *slot = (int*)((char*)this + 4 + index * 4);
-        int handle = allocFunc((int)this->digital_driver);
-        *slot = handle;
-        if (handle == 0) break;
-        sVar2++;
-    }
-    this->num_samples = sVar2;
+void Sound::AllocateSampleHandles() {
+  short sVar2 = 0;
+  while (sVar2 < 13) {
+    int index = sVar2;
+    HSAMPLE *slot = (HSAMPLE *)((char *)this + 4 + index * 4);
+    HSAMPLE handle = AIL_allocate_sample_handle(this->digital_driver);
+    *slot = handle;
+    if (handle == 0)
+      break;
+    sVar2++;
+  }
+  this->num_samples = sVar2;
 }
 
 /* Function start: 0x41E360 */
-HSAMPLE Sound::FindFreeSampleHandle()
-{
-    for (short i = 0; i < this->num_samples; i++) {
-        if (_AIL_sample_status_4((int)this->samples[i]) == 2) {
-            return this->samples[i];
-        }
+HSAMPLE Sound::FindFreeSampleHandle() {
+  for (short i = 0; i < this->num_samples; i++) {
+    if (AIL_sample_status(this->samples[i]) == 2) {
+      return this->samples[i];
     }
-    return 0;
+  }
+  return 0;
 }
 
 /* Function start: 0x41E3A0 */
-void Sound::StopAllSamples()
-{
-    for (short i = 0; i < this->num_samples; i++) {
-        _AIL_end_sample_4((int)this->samples[i]);
-    }
+void Sound::StopAllSamples() {
+  for (short i = 0; i < this->num_samples; i++) {
+    AIL_end_sample(this->samples[i]);
+  }
 }
 
 /* Function start: 0x41E3D0 */
-int OpenDigitalDriver(int param_1, unsigned short param_2, unsigned short param_3)
-{
-    int local_4;
+int OpenDigitalDriver(int param_1, unsigned short param_2,
+                      unsigned short param_3) {
+  int local_4;
 
-    // Preserve register/stack order and exact assignments to match original assembly
-    DAT_0043de32 = param_3;
-    DAT_0043de30 = 1;
-    DAT_0043de3c = param_3 * (param_2 >> 3);
-    DAT_0043de38 = (unsigned int)param_3 * (unsigned int)(param_2 >> 3) * param_1;
-    DAT_0043de3e = param_2;
-    DAT_0043de34 = param_1;
+  // Preserve register/stack order and exact assignments to match original
+  // assembly
+  DAT_0043de32 = param_3;
+  DAT_0043de30 = 1;
+  DAT_0043de3c = param_3 * (param_2 >> 3);
+  DAT_0043de38 = (unsigned int)param_3 * (unsigned int)(param_2 >> 3) * param_1;
+  DAT_0043de3e = param_2;
+  DAT_0043de34 = param_1;
 
-    int result = _AIL_waveOutOpen_16(&local_4, 0, 0xffffffff, &DAT_0043de30);
-    if (result != 0) {
-        return 0;
-    }
-    return local_4;
+  int result = AIL_waveOutOpen((HDIGDRIVER *)&local_4, 0, 0xffffffff,
+                               (PCMWAVEFORMAT *)&DAT_0043de30);
+  if (result != 0) {
+    return 0;
+  }
+  return local_4;
 }
-

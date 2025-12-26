@@ -3,7 +3,7 @@
 # Compiler and flags
 WINEPREFIX=$(PWD)/.wine
 CC = cl
-CFLAGS = /c /O2 /GX /I msvc420\\include
+CFLAGS = /c /O2 /GX /I msvc420\\include /I 3rdparty\\miles\\include /I 3rdparty\\smack\\include
 OUT_DIR = out
 
 SRCS = $(wildcard src/*.cpp)

@@ -4,13 +4,10 @@
 #include "Sample.h"
 #include "main.h"
 #include "string.h"
+#include <mss.h>
 #include <string.h>
 
 extern Sample *Sample_Ctor(Sample *);
-
-extern "C" {
-int _AIL_sample_status_4(int);
-}
 
 /* Function start: 0x41E740 */
 SoundList::SoundList(int count) {
@@ -64,7 +61,7 @@ void SoundList::StopAll() {
 
   for (short i = 0; i < m_fieldc; i++) {
     Sample *sample = (Sample *)field8_ptr[i];
-    if (_AIL_sample_status_4((int)sample->m_sample) == 4) {
+    if (AIL_sample_status(sample->m_sample) == SMP_PLAYING) {
       ((AILData *)sample)->~AILData();
     }
   }
