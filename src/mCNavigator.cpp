@@ -264,7 +264,7 @@ int mCNavigator::LBLParse(char* param_1)
         return 1;
     }
     else {
-        return Parser::LBLParse(param_1);
+        return Parser::LBLParse("mCNavigator");
     }
 
     return 0;

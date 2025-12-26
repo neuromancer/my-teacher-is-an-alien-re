@@ -12,6 +12,7 @@
 
 class VBuffer;
 
+extern Animation* Animation_Ctor(Animation*);
 extern Animation* Animation_Ctor_Filename(Animation*, char*);
 
 extern "C" {
@@ -73,18 +74,22 @@ void Sprite::Init()
     try {
         if (this->animation_data == 0) {
             Animation* anim = (Animation*)AllocateMemory(0x2c);
-            if (anim) {
-                this->animation_data = Animation_Ctor_Filename(anim, this->sprite_filename);
-            } else {
-                this->animation_data = 0;
+            Animation* result = 0;
+            if (anim != 0) {
+                result = Animation_Ctor_Filename(anim, this->sprite_filename);
             }
+            this->animation_data = result;
         } else if (this->animation_data->data == 0) {
             this->animation_data->ToBuffer();
         }
 
         if (this->animation_data && this->animation_data->data) {
             if (DAT_00436b9c == 0) {
-                memset(DAT_0043d630, 0, sizeof(DAT_0043d630));
+                char* p = DAT_0043d630;
+                do {
+                    *p = 0;
+                    p = p + 0x40;
+                } while (p < &DAT_0043d630[0x800]);
                 DAT_00436b9c = 1;
             }
             memcpy(&DAT_0043d630[this->animation_data->data->handle * 0x40], this->sprite_filename, strlen(this->sprite_filename) + 1);
@@ -100,23 +105,21 @@ void Sprite::Init()
 /* Function start: 0x41D040 */
 void Sprite::StopAnimationSound()
 {
-    int sound_idx = -1;
     Animation* anim = this->animation_data;
+    int sound_idx;
 
-    if (anim != 0 && anim->data != 0) {
+    if (anim == 0 || anim->data == 0) {
+        sound_idx = -1;
+    } else {
         sound_idx = anim->data->handle;
     }
 
-    if (g_SoundManager != 0 && anim != 0) {
-        if (*(int*)((int)g_SoundManager + 0x98) != 0) {
-            ((Queue*)g_SoundManager)->Insert(anim);
-        } else {
-            anim->~Animation();
-            FreeMemory((int*)anim);
+    if (g_SoundManager == 0 || *(int*)((int)g_SoundManager + 0x98) == 0) {
+        if (anim != 0) {
+            anim->Delete(1);
         }
     } else if (anim != 0) {
-        anim->~Animation();
-        FreeMemory((int*)anim);
+        ((Queue*)g_SoundManager)->Insert(anim);
     }
 
     this->animation_data = 0;
@@ -130,13 +133,16 @@ void Sprite::StopAnimationSound()
 /* Function start: 0x41D0C0 */
 void Sprite::InitAnimation()
 {
-    if (this->animation_data == 0) {
-        Animation* anim = (Animation*)AllocateMemory(0x2c);
-        if (anim != 0) {
-            anim->AnimationInit();
+    try {
+        if (this->animation_data == 0) {
+            Animation* anim = (Animation*)AllocateMemory(0x2c);
+            if (anim != 0) {
+                anim = Animation_Ctor(anim);
+            }
+            this->animation_data = anim;
+            anim->Open(this->sprite_filename, 0xfe000, -1);
         }
-        this->animation_data = anim;
-        this->animation_data->Open(this->sprite_filename, 0xfe000, 0xffffffff);
+    } catch (...) {
     }
 }
 

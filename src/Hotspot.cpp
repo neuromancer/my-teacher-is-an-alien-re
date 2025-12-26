@@ -97,7 +97,7 @@ int Hotspot::LBLParse(char* line)
         } else if (strcmp(command, "END") == 0) {
             return 1;
         } else {
-            this->LBLParse("Hotspot");
+            Parser::LBLParse("T_Hotspot");
         }
     } catch (...) {
         return 0;
