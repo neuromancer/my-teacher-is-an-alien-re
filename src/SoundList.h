@@ -13,6 +13,7 @@ private:
   int m_count;
   void **m_field8;
   short m_fieldc;
+  short m_pad;
 };
 
 #endif // SOUNDLIST_H

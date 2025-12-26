@@ -15,16 +15,16 @@ SoundList::SoundList(int count) {
   m_count = 0;
   m_field8 = 0;
   m_fieldc = 0;
+  m_pad = 0;
   m_count = count;
   m_sounds = (void **)AllocateMemory(count * 4);
   m_field8 = (void **)AllocateMemory(m_count * 4);
-  if (m_field8 != 0 && m_sounds != 0) {
-    for (int i = 0; i < m_count; i++) {
-      m_sounds[i] = 0;
-      m_field8[i] = 0;
-    }
-  } else {
+  if (m_field8 == 0 || m_sounds == 0) {
     ShowError("SoundList::SoundList() - Memory allocation error");
+  }
+  for (short i = 0; i < m_count; i++) {
+    m_sounds[i] = 0;
+    m_field8[i] = 0;
   }
 }
 
