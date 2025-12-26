@@ -19,8 +19,15 @@ ASMS = $(patsubst src/%.cpp,$(OUT_DIR)/%.asm,$(SRCS))
 
 all: $(WIBO) $(OBJS) $(ASMS)
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+    WIBO_PRESET = release
+else
+    WIBO_PRESET = release-macos
+endif
+
 $(WIBO):
-	cd wibo-src && cmake --preset release-macos && cmake --build --preset release-macos
+	cd wibo-src && cmake --preset $(WIBO_PRESET) && cmake --build --preset $(WIBO_PRESET)
 	ln -sf wibo-src/build/release/wibo $@
 
 TEACHER.EXE: $(OBJS)
