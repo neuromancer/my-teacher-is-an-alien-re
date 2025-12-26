@@ -95,7 +95,7 @@ def side_by_side(str1, str2, tab_size=4):
 
 def get_similarity(function_name, disassembled_code_path, clean_build=True):
     if clean_build:
-        system("make clean")
+        #system("make clean")
         if system("make all -j12") != 0:
             print("Make failed")
             exit(1)

@@ -3,16 +3,16 @@
 
 class SoundList {
 public:
-    SoundList(int count);
-    ~SoundList();
-    void StopAll();
-    void* Register(char* filename);
+  SoundList(int count);
+  ~SoundList();
+  void StopAll();
+  void *Register(char *filename);
 
 private:
-    void** m_sounds;
-    int m_count;
-    void** m_field8;
-    int m_fieldc;
+  void **m_sounds;
+  int m_count;
+  void **m_field8;
+  short m_fieldc;
 };
 
 #endif // SOUNDLIST_H
