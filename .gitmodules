@@ -1,3 +1,6 @@
 [submodule "compilers/msvc420"]
 	path = compilers/msvc420
 	url = https://github.com/itsmattkc/MSVC420
+[submodule "wibo-src"]
+	path = wibo-src
+	url = https://github.com/decompals/wibo

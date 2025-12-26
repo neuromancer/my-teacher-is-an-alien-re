@@ -8,7 +8,7 @@ class Sprite : public Parser {
 public:
     void* ranges; // 0x88
     int flags; // 0x8c
-    int field_0x90; // 0x90
+    int current_state; // 0x90
     int priority; // 0x94
     void* logic_conditions; // 0x98
     int handle;   // 0x9c

@@ -145,7 +145,7 @@ void Mouse::DrawCursor()
     }
 
     if (sprite) {
-        final_x -= *(int*)((char*)this + sprite->field_0x90 * 8 + 0xf4);
+        final_x -= *(int*)((char*)this + sprite->current_state * 8 + 0xf4);
     }
 
     int final_y = 0;
@@ -154,7 +154,7 @@ void Mouse::DrawCursor()
     }
 
     if (sprite) {
-        final_y -= *(int*)((char*)this + sprite->field_0x90 * 8 + 0xf8);
+        final_y -= *(int*)((char*)this + sprite->current_state * 8 + 0xf8);
     } else {
         final_y -= *(int*)((char*)this + 0xf0);
     }

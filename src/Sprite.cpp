@@ -97,7 +97,7 @@ void Sprite::Init()
 
         this->CheckRanges1();
         this->flags |= 0x20;
-        this->SetState2(this->field_0x90);
+        this->SetState2(this->current_state);
     } catch (...) {
     }
 }
@@ -163,7 +163,7 @@ void Sprite::SetState2(int param_1)
     int offset = 0;
 
     if (param_1 == -1) {
-        this->field_0x90 = param_1;
+        this->current_state = param_1;
         return;
     }
 
@@ -201,12 +201,12 @@ void Sprite::SetState2(int param_1)
     }
 
     int fl = this->flags;
-    if ((fl & 0x20) == 0 && this->field_0x90 == param_1) {
+    if ((fl & 0x20) == 0 && this->current_state == param_1) {
         return;
     }
 
     if ((fl & 0x10) != 0) {
-        int* old_range = (int*)((char*)this->ranges + this->field_0x90 * 8);
+        int* old_range = (int*)((char*)this->ranges + this->current_state * 8);
         offset = this->animation_data->smk->FrameNum - old_range[0];
 
         int new_start = *(int*)((char*)this->ranges + param_1 * 8);
@@ -230,10 +230,10 @@ void Sprite::SetState2(int param_1)
         }
     }
 
-    this->field_0x90 = param_1;
+    this->current_state = param_1;
     this->animation_data->GotoFrame(*(int*)((char*)this->ranges + param_1 * 8) + offset);
 
-    int* range = (int*)(this->field_0x90 * 8 + (int)this->ranges);
+    int* range = (int*)(this->current_state * 8 + (int)this->ranges);
     if (range[1] == range[0]) {
         this->flags |= 4;
     }
@@ -246,7 +246,7 @@ int Sprite::Do(int x, int y, double scale)
     int skipAnimLoop;
     int done;
 
-    if (this->field_0x90 == -1) {
+    if (this->current_state == -1) {
         return 1;
     }
     skipAnimLoop = 0;
@@ -260,7 +260,7 @@ int Sprite::Do(int x, int y, double scale)
     if ((this->animation_data == 0) || (this->animation_data->data == 0)) {
         this->Init();
     }
-    int* range = (int*)(this->field_0x90 * 8 + (int)this->ranges);
+    int* range = (int*)(this->current_state * 8 + (int)this->ranges);
     if (range[1] == range[0]) {
         int f = this->flags;
         skipAnimLoop = 1;
@@ -275,14 +275,14 @@ int Sprite::Do(int x, int y, double scale)
         Animation* anim = this->animation_data;
         int remaining;
         if (anim == 0) {
-            remaining = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8);
+            remaining = *(int*)((int)this->ranges + 4 + this->current_state * 8);
         }
         else {
-            remaining = *(int*)((int)this->ranges + 4 + this->field_0x90 * 8) - this->animation_data->smk->FrameNum;
+            remaining = *(int*)((int)this->ranges + 4 + this->current_state * 8) - this->animation_data->smk->FrameNum;
         }
         if (remaining == 1) {
             if ((this->flags & 0x200) == 0) {
-                this->animation_data->GotoFrame(*(int*)((int)this->ranges + this->field_0x90 * 8));
+                this->animation_data->GotoFrame(*(int*)((int)this->ranges + this->current_state * 8));
             }
             else {
                 this->animation_data->NextFrame();
