@@ -1,5 +1,6 @@
 #include "mCNavigator.h"
 #include "globals.h"
+#include "Parser.h"
 #include "string.h"
 #include <string.h>
 #include "stdio.h"
@@ -15,7 +16,7 @@ extern void* NavNode_Constructor(void*);
 extern void* MemoryPool_Allocate(void*, int, int);
 extern void* ObjectPool_Allocate_2(int);
 
-extern Parser* Parser_Parser(Parser* parser, Parser* dst, char* key_format);
+// extern Parser* Parser_Parser(Parser* parser, Parser* dst, char* key_format);
 
 extern int mCNavNode_Update(void*);
 extern int mCNavNode_GetNextNode(void*);
@@ -226,8 +227,10 @@ int mCNavigator::LBLParse(char* param_1)
         }
 
         Parser* parser = (Parser*)AllocateMemory(0x100);
-        NavNode_Constructor(parser);
-        //Parser_Parser(parser, this, 0);
+        if (parser) {
+            NavNode_Constructor(parser);
+            Parser::ProcessFile(parser, this, 0);
+        }
 
         if (*(int*)((int)parser + 0xdc) == 0) {
             ShowError("mCNavigator::LoadNodes() - Invalid Node Handle (%d)", 0);
@@ -256,7 +259,7 @@ int mCNavigator::LBLParse(char* param_1)
         if (this->sprite) {
             this->sprite->Sprite::Sprite((char*)0);
         }
-        Parser_Parser((Parser*)this->sprite, (Parser*)this, (char*)0);
+        Parser::ProcessFile((Parser*)this->sprite, (Parser*)this, (char*)0);
     }
     else if (_strcmpi(local_34, "STARTING_NODE") == 0) {
         sscanf(param_1, "%s %d", local_34, &this->startingNode);

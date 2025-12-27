@@ -1,11 +1,12 @@
 #include "SC_OnScreenMessage.h"
 #include "string.h"
 #include "Memory.h"
+#include "Message.h"
 
 extern "C" {
     extern int OnScreenMessage_Update(void*, int);
     extern void SC_OnScreenMessage_AddMessage();
-    extern void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
+    // SC_Message_Send is C++ from Message.h
     //extern void Timer_DecrementCounter();
 }
 

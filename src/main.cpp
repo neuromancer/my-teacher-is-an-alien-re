@@ -29,7 +29,7 @@ void FUN_00421ea0(void *);
 void PlayIntroCinematic();
 void FUN_0040c5d0();
 void FUN_00422430(void *);
-unsigned int CalculateBufferSize(unsigned int width, unsigned int height);
+
 void CheckDebug();
 void ClearMessageLog();
 void CreateGameObject_1();
@@ -298,7 +298,7 @@ void CheckDebug(void) {
 }
 
 /* Function start: 0x422E02 */
-unsigned int CalculateBufferSize(unsigned int width, unsigned int height) {
+int CalculateBufferSize(int width, unsigned int height) {
   return (((width + 3) & ~3U) * height) + DAT_00437f4c;
 }
 

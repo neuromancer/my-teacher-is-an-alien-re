@@ -36,8 +36,11 @@ char* strncpy_custom(char* dest, const char* src, size_t n) {
 
 #include <windows.h>
 
+extern "C" {
 extern void SetCursorVisible(int visible);
 extern int GetWindowHandle_();
+}
+
 extern void ShutdownGameSystems();
 extern void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
 extern int ExecuteFunctionArray(void* param_1, void* param_2);
@@ -49,6 +52,7 @@ extern int DAT_00435030;
 extern int DAT_00435038;
 extern int DAT_0043503c;
 extern int DAT_00435040;
+
 
 char* strstr_custom(const char* haystack, const char* needle) {
     const char* haystack_base = haystack;
@@ -239,12 +243,14 @@ void WriteToMessageLogIfEnabled(wchar_t *param_1, ...)
     }
 }
 
+extern "C" {
 FILE *fsopen(const char* filename, const char* mode);
 void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
 void FUN_00426550(const char* filename, int* stat_buf);
 void FUN_00425f30(FILE* fp, long offset, int origin);
 char* FormatFilePath(char* path);
 void* AllocateMemory_Wrapper(int size);
+}
 
 /* Function start: 0x419420 */
 FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, unsigned int* out_size)
@@ -352,14 +358,17 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
 }
 
 /* Function start: 0x4260F0 */
-void ExecuteFunctionArray(void** param_1, void** param_2)
+int ExecuteFunctionArray(void* param_1, void* param_2)
 {
-    if (param_1 < param_2) {
+    void** p1 = (void**)param_1;
+    void** p2 = (void**)param_2;
+    if (p1 < p2) {
         do {
-            if (*param_1 != 0) {
-                ((void (*)(void)) *param_1)();
+            if (*p1 != 0) {
+                ((void (*)(void)) *p1)();
             }
-            param_1 = param_1 + 1;
-        } while (param_1 < param_2);
+            p1 = p1 + 1;
+        } while (p1 < p2);
     }
+    return 0;
 }
