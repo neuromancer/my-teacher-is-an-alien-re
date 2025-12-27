@@ -16,7 +16,7 @@ public:
     int ProcessMessage(void*);
     void CleanUpVBuffer();
     static void ClearList(int*);
-    static void* PopNode(int*);
+    static void* __fastcall PopNode(int*);
     static void* PopNode_2(int*);
 };
 

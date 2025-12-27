@@ -12,6 +12,9 @@
 #include "Mouse.h"
 #include "Timer.h"
 #include "Parser.h"
+#include "ZBufferManager.h"
+#include "GameLoop.h"
+#include "AssetList.h"
 #include "string.h"
 #include <mbctype.h>
 #include <mbstring.h>
@@ -68,14 +71,8 @@ void __fastcall FUN_00420a50(void*);
 void __fastcall FUN_00420480(void*);
 void __fastcall FUN_00418ee0(void*);
 void __fastcall FUN_0041ee30(void*);
-void __fastcall FUN_00404230(void*);
 void __fastcall FUN_00420250(void*);
-void __fastcall FUN_0041b760(void*);
-void __fastcall FUN_0041b8e0(void*);
-void __fastcall FUN_00417200(void*);
 void __fastcall FUN_0041f200(void*);
-void __fastcall FUN_00417690(void*);
-void __fastcall FUN_00417320(void*);
 void __fastcall FUN_00418ef0(void*);
 void __fastcall FUN_004210d0(void*, const char*);
 void __fastcall FUN_0041abf0(void*, int);
@@ -87,17 +84,6 @@ extern "C" {
   void FUN_0040cd15(); 
   void FUN_0040cd1d(); 
 }
-
-// Dummy class for Unknown objects to enforce __thiscall
-class GenericUnknown {
-public:
-    void FUN_00404230() { ::FUN_00404230(this); }
-    void FUN_0041b760() { ::FUN_0041b760(this); }
-    void FUN_0041b8e0() { ::FUN_0041b8e0(this); }
-    void FUN_00417200() { ::FUN_00417200(this); }
-    void FUN_00417690() { ::FUN_00417690(this); }
-    void FUN_00417320() { ::FUN_00417320(this); }
-};
 
 /* Function start: 0x40C5D0 */
 void RunGame() {
@@ -223,18 +209,16 @@ void RunGame() {
     DAT_00436988 = (int*)puVar2;
 
     puVar2 = AllocateMemory(0xAC);
-    pInit = 0;
+    ZBufferManager* pZBuffer = 0;
     if (puVar2 != 0) {
-        ((GenericUnknown*)puVar2)->FUN_0041b760();
-        pInit = puVar2;
+        pZBuffer = ((ZBufferManager*)puVar2)->Init();
     }
-    DAT_0043698c = (int*)pInit;
+    DAT_0043698c = (int*)pZBuffer;
 
     puVar2 = AllocateMemory(0x1C);
-    unsigned int* puVar7 = 0;
+    GameLoop* pGameLoop = 0;
     if (puVar2 != 0) {
-        ((GenericUnknown*)puVar2)->FUN_00417200();
-        puVar7 = (unsigned int*)puVar2;
+        pGameLoop = ((GameLoop*)puVar2)->Init();
     }
 
     g_Mouse_00436978->FUN_0041f200();
@@ -245,15 +229,15 @@ void RunGame() {
     void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
     FUN_0041a150(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
 
-    ((GenericUnknown*)puVar7)->FUN_00417690();
-    if (puVar7 != 0) {
-        ((GenericUnknown*)puVar7)->FUN_00417320();
-        FreeMemory(puVar7);
+    pGameLoop->Run();
+    if (pGameLoop != 0) {
+        pGameLoop->Cleanup();
+        FreeMemory(pGameLoop);
     }
 
     puVar2 = (void*)DAT_0043698c;
     if (DAT_0043698c != 0) {
-        ((GenericUnknown*)DAT_0043698c)->FUN_0041b8e0();
+        ((ZBufferManager*)DAT_0043698c)->Cleanup();
         FreeMemory(puVar2);
         DAT_0043698c = 0;
     }
@@ -328,19 +312,19 @@ void RunGame() {
 
     puVar2 = DAT_00435a74;
     if (DAT_00435a74 != 0) {
-        ((GenericUnknown*)DAT_00435a74)->FUN_00404230();
+        ((AssetList*)DAT_00435a74)->Cleanup();
         FreeMemory(puVar2);
         DAT_00435a74 = 0;
     }
     puVar2 = DAT_00435a78;
     if (DAT_00435a78 != 0) {
-        ((GenericUnknown*)DAT_00435a78)->FUN_00404230();
+        ((AssetList*)DAT_00435a78)->Cleanup();
         FreeMemory(puVar2);
         DAT_00435a78 = 0;
     }
     puVar2 = DAT_00435a7c;
     if (DAT_00435a7c != 0) {
-        ((GenericUnknown*)DAT_00435a7c)->FUN_00404230();
+        ((AssetList*)DAT_00435a7c)->Cleanup();
         FreeMemory(puVar2);
         DAT_00435a7c = 0;
     }
@@ -696,18 +680,20 @@ void __fastcall FUN_00420a50(void* thisptr) {}
 void __fastcall FUN_00420480(void* thisptr) {}
 void __fastcall FUN_00418ee0(void* thisptr) {}
 void __fastcall FUN_0041ee30(void* thisptr) {}
-void __fastcall FUN_00404230(void* thisptr) {}
 void __fastcall FUN_00420250(void* thisptr) {}
-void __fastcall FUN_0041b760(void* thisptr) {}
-void __fastcall FUN_0041b8e0(void* thisptr) {}
-void __fastcall FUN_00417200(void* thisptr) {}
 void __fastcall FUN_0041f200(void* thisptr) {}
-void __fastcall FUN_00417690(void* thisptr) {}
-void __fastcall FUN_00417320(void* thisptr) {}
 void __fastcall FUN_00418ef0(void* thisptr) {}
 void __fastcall FUN_004210d0(void* thisptr, const char* a) {}
 void __fastcall FUN_0041abf0(void* thisptr, int a) {}
 void __fastcall FUN_0041abc0(void* thisptr, int a) {}
+
+// Stubs for new class external implementations
+void* __fastcall FUN_0041b760_impl(void* thisptr) { return thisptr; }
+void __fastcall FUN_0041b8e0_impl(void* thisptr) {}
+void* __fastcall FUN_00417200_impl(void* thisptr) { return thisptr; }
+void __fastcall FUN_00417690_impl(void* thisptr) {}
+void __fastcall FUN_00417320_impl(void* thisptr) {}
+void __fastcall FUN_00404230_impl(void* thisptr) {}
 }
 
 // Class Wrappers
