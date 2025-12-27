@@ -68,7 +68,7 @@ void* __fastcall FUN_00420140(void*, const char*, int);
 void __fastcall FUN_00420430(void*);
 void* __fastcall FUN_004209e0(void*, const char*, int);
 void __fastcall FUN_00420a50(void*);
-void __fastcall FUN_00420480(void*);
+
 void __fastcall FUN_00418ee0(void*);
 void __fastcall FUN_0041ee30(void*);
 void __fastcall FUN_00420250(void*);
@@ -99,12 +99,12 @@ void RunGame() {
     if (g_WorkBuffer_00436974 == 0) {
       ShowError("missing workbuff");
     }
-    g_WorkBuffer_00436974->FUN_0041abf0(0); 
-    g_WorkBuffer_00436974->FUN_0041abc0(0);
+    g_WorkBuffer_00436974->SetVideoMode(); 
+    g_WorkBuffer_00436974->ClearScreen(0);
 
     void* puVar2 = g_Mouse_00436978;
     if (g_Mouse_00436978 != 0) {
-        g_Mouse_00436978->FUN_0041ee30();
+        g_Mouse_00436978->~Mouse();
         FreeMemory(puVar2);
         g_Mouse_00436978 = 0;
     }
@@ -130,10 +130,10 @@ void RunGame() {
     puVar2 = AllocateMemory(0xCC);
     pInit = 0;
     if (puVar2 != 0) {
-        pInit = ((Manager*)puVar2)->FUN_00420140("question.sav", 1000); 
+        pInit = ((Manager*)puVar2)->Init("question.sav", 1000); 
     }
     g_Manager_00435a84 = (Manager*)pInit;
-    ((Manager*)pInit)->FUN_00420430();
+    ((Manager*)pInit)->LoadQuestions();
 
     GameState* pGS = (GameState*)AllocateMemory(0x98);
     if (pGS != 0) {
@@ -182,7 +182,7 @@ void RunGame() {
     puVar2 = AllocateMemory(0xC);
     pInit = 0;
     if (puVar2 != 0) {
-        pInit = ((Parser*)puVar2)->FUN_004209e0("mis\\strings.mis", 1);
+        pInit = ((Parser*)puVar2)->Init("mis\\strings.mis", 1);
     }
     g_Strings_00435a70 = (Parser*)pInit;
     
@@ -221,10 +221,10 @@ void RunGame() {
         pGameLoop = ((GameLoop*)puVar2)->Init();
     }
 
-    g_Mouse_00436978->FUN_0041f200();
-    g_TextManager_00436990->FUN_004210d0("elements\\text1.smk");
+    g_Mouse_00436978->DrawCursor();
+    g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
     *(int*)((char*)g_TextManager_00436990 + 0x30) = 2;
-    g_Timer_00436980->FUN_00418ef0();
+    g_Timer_00436980->Reset();
 
     void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
     FUN_0041a150(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
@@ -258,42 +258,42 @@ void RunGame() {
 
     puVar2 = g_Strings_00435a70;
     if (g_Strings_00435a70 != 0) {
-        g_Strings_00435a70->FUN_00420a50();
+        g_Strings_00435a70->Cleanup();
         FreeMemory(puVar2);
         g_Strings_00435a70 = 0;
     }
 
     puVar2 = g_GameState4_004369a0;
     if (g_GameState4_004369a0 != 0) {
-        g_GameState4_004369a0->FUN_00420480();
+        g_GameState4_004369a0->~GameState();
         FreeMemory(puVar2);
         g_GameState4_004369a0 = 0;
     }
     
     puVar2 = g_GameState3_0043699c;
     if (g_GameState3_0043699c != 0) {
-        g_GameState3_0043699c->FUN_00420480();
+        g_GameState3_0043699c->~GameState();
         FreeMemory(puVar2);
         g_GameState3_0043699c = 0;
     }
 
     puVar2 = g_GameState2_004369a4;
     if (g_GameState2_004369a4 != 0) {
-        g_GameState2_004369a4->FUN_00420480();
+        g_GameState2_004369a4->~GameState();
         FreeMemory(puVar2);
         g_GameState2_004369a4 = 0;
     }
 
     puVar2 = g_GameState_00436998;
     if (g_GameState_00436998 != 0) {
-        g_GameState_00436998->FUN_00420480();
+        g_GameState_00436998->~GameState();
         FreeMemory(puVar2);
         g_GameState_00436998 = 0;
     }
 
     puVar2 = g_Timer_00436980;
     if (g_Timer_00436980 != 0) {
-        g_Timer_00436980->FUN_00418ee0();
+        Timer_DecrementCounter();
         FreeMemory(puVar2);
         g_Timer_00436980 = 0;
     }
@@ -305,7 +305,7 @@ void RunGame() {
 
     puVar2 = g_Mouse_00436978;
     if (g_Mouse_00436978 != 0) {
-        g_Mouse_00436978->FUN_0041ee30();
+        g_Mouse_00436978->~Mouse();
         FreeMemory(puVar2);
         g_Mouse_00436978 = 0;
     }
@@ -331,7 +331,7 @@ void RunGame() {
 
     puVar2 = g_Manager_00435a84;
     if (g_Manager_00435a84 != 0) {
-        g_Manager_00435a84->FUN_00420250();
+        g_Manager_00435a84->Cleanup();
         FreeMemory(puVar2);
         g_Manager_00435a84 = 0;
     }
@@ -677,12 +677,12 @@ void* __fastcall FUN_00420140(void* thisptr, const char* a, int b) { return this
 void __fastcall FUN_00420430(void* thisptr) {}
 void* __fastcall FUN_004209e0(void* thisptr, const char* a, int b) { return thisptr; }
 void __fastcall FUN_00420a50(void* thisptr) {}
-void __fastcall FUN_00420480(void* thisptr) {}
-void __fastcall FUN_00418ee0(void* thisptr) {}
-void __fastcall FUN_0041ee30(void* thisptr) {}
+
+
+
 void __fastcall FUN_00420250(void* thisptr) {}
-void __fastcall FUN_0041f200(void* thisptr) {}
-void __fastcall FUN_00418ef0(void* thisptr) {}
+
+
 void __fastcall FUN_004210d0(void* thisptr, const char* a) {}
 void __fastcall FUN_0041abf0(void* thisptr, int a) {}
 void __fastcall FUN_0041abc0(void* thisptr, int a) {}
@@ -697,22 +697,15 @@ void __fastcall FUN_00404230_impl(void* thisptr) {}
 }
 
 // Class Wrappers
-void* Manager::FUN_00420140(const char* a, int b) { return ::FUN_00420140(this, a, b); }
-void Manager::FUN_00420250() { ::FUN_00420250(this); }
-void Manager::FUN_00420430() { ::FUN_00420430(this); }
+void* Manager::Init(const char* a, int b) { return ::FUN_00420140(this, a, b); }
+void Manager::Cleanup() { ::FUN_00420250(this); }
+void Manager::LoadQuestions() { ::FUN_00420430(this); }
 
-void* Parser::FUN_004209e0(const char* a, int b) { return ::FUN_004209e0(this, a, b); }
-void Parser::FUN_00420a50() { ::FUN_00420a50(this); }
+void* Parser::Init(const char* a, int b) { return ::FUN_004209e0(this, a, b); }
+void Parser::Cleanup() { ::FUN_00420a50(this); }
 
-void GameState::FUN_00420480() { ::FUN_00420480(this); }
 
-void Timer::FUN_00418ee0() { ::FUN_00418ee0(this); }
-void Timer::FUN_00418ef0() { ::FUN_00418ef0(this); }
 
-void Mouse::FUN_0041ee30() { ::FUN_0041ee30(this); }
-void Mouse::FUN_0041f200() { ::FUN_0041f200(this); }
 
-void AnimatedAsset::FUN_004210d0(const char* a) { ::FUN_004210d0(this, a); }
 
-void VBuffer::FUN_0041abf0(int a) { ::FUN_0041abf0(this, a); }
-void VBuffer::FUN_0041abc0(int a) { ::FUN_0041abc0(this, a); }
+

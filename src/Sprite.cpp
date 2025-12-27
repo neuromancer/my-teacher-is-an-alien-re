@@ -376,28 +376,28 @@ int Sprite::CheckConditions()
             piVar2 = (int*)((char*)this->logic_conditions + iVar3);
             if (piVar2[1] == 1) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (g_GameState_00436998->field_0x90 <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState_00436998->field_0x88[iVar1] == 0) {
+                if (g_GameState_00436998->stateValues[iVar1] == 0) {
                     return 0;
                 }
             }
             if (piVar2[1] == 2) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (g_GameState_00436998->field_0x90 <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState_00436998->field_0x88[iVar1] != 0) {
+                if (g_GameState_00436998->stateValues[iVar1] != 0) {
                     return 0;
                 }
             }
             if (piVar2[1] == 3) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (g_GameState_00436998->field_0x90 <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState_00436998->field_0x88[iVar1] != this->handle) {
+                if (g_GameState_00436998->stateValues[iVar1] != this->handle) {
                     return 0;
                 }
             }
@@ -547,7 +547,7 @@ int Sprite::LBLParse(char* param_1)
     } else if (strcmp(local_a0, "LOGIC") == 0) {
         sscanf(param_1, "%s %s", local_a0, local_80);
         local_ac = g_GameState_00436998->FindState(local_80);
-        if ((0 < local_ac) && (g_GameState_00436998->field_0x90 <= local_ac)) {
+        if ((0 < local_ac) && (g_GameState_00436998->maxStates <= local_ac)) {
             ShowError("GameState Error  #%d", 1);
         }
         if (strstr(param_1, "FALSE") != 0) {

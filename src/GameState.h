@@ -12,7 +12,7 @@ public:
     int LBLParse(char* line);
     void Serialize(int mode);
     void SetMaxStates(int count);
-    void FUN_00420480();
+
 
     int* stateValues;      // 0x88 - array of state values (saved/loaded in Serialize)
     char** stateLabels;    // 0x8c - array of pointers to label strings

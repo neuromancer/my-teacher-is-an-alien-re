@@ -3,9 +3,9 @@
 
 class Manager {
 public:
-    void* FUN_00420140(const char*, int);
-    void FUN_00420250();
-    void FUN_00420430();
+    void* Init(const char* filename, int mode);
+    void Cleanup();
+    void LoadQuestions();
 };
 
 #endif // MANAGER_H

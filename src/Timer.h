@@ -3,14 +3,11 @@
 
 class Timer {
 public:
-    Timer();
-    ~Timer();
     Timer* Init();
     void Reset();
     unsigned int Update();
     void Wait(unsigned int);
-    void FUN_00418ef0();
-    void FUN_00418ee0();
+
 
 private:
     unsigned int m_pauseDuration;

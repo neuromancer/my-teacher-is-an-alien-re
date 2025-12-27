@@ -11,8 +11,7 @@ public:
     int LBLParse(char* line);
     void DrawCursor();
     int SetCursorVisible(unsigned int);
-    void FUN_0041ee30();
-    void FUN_0041f200();
+
 
 private:
     void CleanupFields();
