@@ -753,7 +753,7 @@ extern HWND DAT_0043de7c; // DAT_0043de7c  { /* 4 bytes */ }
 // extern char DAT_0043dfb2; // { /* 1 bytes */ }
 // extern int DAT_0043dfe0; // { /* 4 bytes */ }
 // extern int DAT_0043dfe4; // { /* 4 bytes */ }
-// extern int DAT_0043eff0; // { /* 4 bytes */ }
+extern void* DAT_0043eff0; // DAT_0043eff0  { /* 4 bytes */ }
 // extern int DAT_0043eff4; // { /* 4 bytes */ }
 // extern int DAT_0043f000; // { /* 4 bytes */ }
 // extern int DAT_0043f004; // { /* 4 bytes */ }

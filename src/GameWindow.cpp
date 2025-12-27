@@ -3,6 +3,11 @@
 extern "C" {
 void FUN_00422250(char *);
 LRESULT WINAPI FUN_00422590(HWND, UINT, WPARAM, LPARAM);
+int FUN_00423cd9();
+void FUN_00419170(const char *);
+void FUN_00423aac();
+void FUN_00423a54();
+void FUN_00422d98(int);
 // void _SmackSetSystemRes_4(int);
 }
 
@@ -60,4 +65,20 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
                                  param_1, (LPVOID)0x0);
   }
   ShowWindow(this->hWnd, param_4);
+}
+
+/* Function start: 0x4223F0 */
+int GameWindow::InitGraphics(void) {
+  if (FUN_00423cd9() != 8) {
+    FUN_00419170(
+        "For Optimum performance, please set your display to 256 colors.");
+  }
+  FUN_00423aac();
+  FUN_00423a54();
+  FUN_00422d98(0);
+  return 1;
+}
+
+/* Function start: 0x422430 */
+void GameWindow::FUN_00422430() {
 }

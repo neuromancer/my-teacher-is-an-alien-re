@@ -35,7 +35,18 @@ def read_assembly(function_name, file_path):
         assembly = assembly.split(f"_{function_name} PROC NEAR")[1]
         assembly = assembly.split(f"_{function_name} ENDP")[0]
     else:
-        return None
+        # Try to find stdcall decoration _Name@N
+        match = re.search(f"_{function_name}@[0-9]+ PROC NEAR", assembly)
+        if match:
+            start_marker = match.group(0)
+            end_marker = start_marker.replace("PROC NEAR", "ENDP")
+            if start_marker in assembly and end_marker in assembly:
+                assembly = assembly.split(start_marker)[1]
+                assembly = assembly.split(end_marker)[0]
+            else:
+                return None
+        else:
+            return None
 
     # Discard the lines that start with ";"
     assembly = "\n".join([line for line in assembly.split("\n") if not line.strip().startswith(";")])

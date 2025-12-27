@@ -6,6 +6,8 @@ class GameWindow
 {
 public:
     void CreateGameWindow(HINSTANCE, int, char*, int);
+    int InitGraphics();
+    void FUN_00422430();
 
 private:
     int field_0;

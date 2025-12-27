@@ -11,7 +11,10 @@
 #include <mss.h>
 #include <windows.h>
 
-extern unsigned char __mbctype[];
+#include <mbctype.h>
+#include <mbstring.h>
+#include <mss.h>
+#include <windows.h>
 
 extern AnimatedAsset *AnimatedAsset_Ctor(AnimatedAsset *);
 
@@ -21,6 +24,8 @@ extern int FUN_00422510();
 
 #include "globals.h"
 
+GameWindow g_GameWindow;
+
 
 extern "C" {
 void FUN_00421010(void *);
@@ -28,7 +33,7 @@ void FUN_004227a0(void *);
 void FUN_00421ea0(void *);
 void PlayIntroCinematic();
 void FUN_0040c5d0();
-void FUN_00422430(void *);
+
 
 void CheckDebug();
 void ClearMessageLog();
@@ -89,17 +94,7 @@ void FUN_00423a54();
 void FUN_00422d98(int);
 }
 
-/* Function start: 0x4223F0 */
-int InitGraphics(void) {
-  if (FUN_00423cd9() != 8) {
-    FUN_00419170(
-        "For Optimum performance, please set your display to 256 colors.");
-  }
-  FUN_00423aac();
-  FUN_00423a54();
-  FUN_00422d98(0);
-  return 1;
-}
+
 
 /* Function start: 0x430310 */
 int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
@@ -202,7 +197,7 @@ void ParsePath(const char *path, char *drive, char *dir, char *fname,
   pbVar3 = path;
   while (*pbVar3 != 0) {
     char bVar1 = *pbVar3;
-    if ((__mbctype[(unsigned char)bVar1 + 1] & 4) == 0) {
+    if ((_mbctype[(unsigned char)bVar1 + 1] & 4) == 0) {
       if (bVar1 == '\\' || bVar1 == '/') {
         _Source = pbVar3 + 1;
       } else if (bVar1 == '.') {
@@ -331,11 +326,11 @@ void InitGameSystems(void) {
 }
 
 /* Function start: 0x422520 */
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine,
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
                    int nCmdShow) {
-  GameWindow gameWindow;
-  gameWindow.CreateGameWindow(hInstance, nCmdShow, lpCmdLine, 0);
-  if (InitGraphics() == 0) {
+  volatile MSG msg;
+  g_GameWindow.CreateGameWindow(hInstance, (int)hPrevInstance, lpCmdLine, nCmdShow);
+  if (g_GameWindow.InitGraphics() == 0) {
     return 0;
   }
   UpdateWindow(DAT_0043de7c);
@@ -344,7 +339,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine,
   } else {
     FUN_0040c5d0();
   }
-  FUN_00422430(&gameWindow);
+  g_GameWindow.FUN_00422430();
   return 1;
 }
 

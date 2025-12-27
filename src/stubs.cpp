@@ -4,8 +4,9 @@
 #include <string.h>
 
 // Globals
+// Globals
 class SoundManager* g_SoundManager = NULL;
-unsigned char* __mbctype = (unsigned char*)malloc(512); // Buffer for mbctype
+
 
 extern "C" {
 
@@ -45,7 +46,7 @@ void FUN_00423aac() {}
 void FUN_00419170() {}
 void FUN_00423cd9() {}
 void FUN_00421e40() {}
-void FUN_00422430() {}
+
 void FUN_0040c5d0() {}
 void FUN_00421ea0() {}
 void FUN_004227a0() {}
