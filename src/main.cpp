@@ -329,6 +329,7 @@ void InitGameSystems(void) {
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
                    int nCmdShow) {
   volatile MSG msg;
+  DAT_0043eff0 = HeapCreate(1, 0x1000, 0);
   g_GameWindow.CreateGameWindow(hInstance, (int)hPrevInstance, lpCmdLine, nCmdShow);
   if (g_GameWindow.InitGraphics() == 0) {
     return 0;
