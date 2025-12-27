@@ -15,6 +15,8 @@ public:
     int* field_0x88;
     int* field_0x8c;
     int field_0x90;
+    int field_0x94;
+    GameState();
 };
 
 #endif // GAMESTATE_H

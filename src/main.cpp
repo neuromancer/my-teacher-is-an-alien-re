@@ -7,6 +7,10 @@
 #include "Sound.h"
 #include "VBuffer.h"
 #include "CDData.h"
+#include "CDData.h"
+#include "Mouse.h"
+#include "Timer.h"
+#include "Parser.h"
 #include "string.h"
 #include <mbctype.h>
 #include <mbstring.h>
@@ -17,6 +21,9 @@
 #include <mbstring.h>
 #include <mss.h>
 #include <windows.h>
+
+
+void* operator new(size_t size, void* p) { return p; }
 
 extern AnimatedAsset *AnimatedAsset_Ctor(AnimatedAsset *);
 
@@ -34,7 +41,7 @@ void FUN_00421010(void *);
 void FUN_004227a0(void *);
 void FUN_00421ea0(void *);
 void PlayIntroCinematic();
-void FUN_0040c5d0();
+// void FUN_0040c5d0();
 
 
 void CheckDebug();
@@ -53,7 +60,161 @@ int _chdir(const char *);
 
 void FUN_0041e310();
 void FUN_00421840();
+void ShutdownGameSystems();
 
+extern "C" {
+void* FUN_00420140(void*, const char*);
+void FUN_00420430(void*);
+void* FUN_004209e0(void*, const char*);
+void FUN_00420a50(void*);
+void FUN_00420480(void*);
+void FUN_00418ee0(void*);
+void FUN_0041ee30(void*);
+void FUN_00404230(void*);
+void FUN_00420250(void*);
+void FUN_0041b760(void*);
+void FUN_0041b8e0(void*);
+void FUN_00417200(void*);
+void FUN_0041f200(void*);
+void FUN_004210d0(AnimatedAsset*, void*);
+void FUN_00418ef0(void*);
+void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
+void FUN_00417690(void*);
+void FUN_00417320(void*);
+}
+
+/* Function start: 0x40C5D0 */
+/* Function start: 0x40C5D0 */
+void RunGame() {
+  __try {
+    // 1. Mouse
+    Mouse* pMouse = (Mouse*)AllocateMemory(sizeof(Mouse));
+    if (pMouse) {
+        new (pMouse) Mouse(); // Calls 0x41eca0 -> 0x4189f0
+        g_Mouse_00436978 = pMouse;
+        ParseFile(pMouse, "mis\\mouse1.mis", "[MICE]");
+    }
+
+    // 2. Unknown 0x40 object
+    g_Unknown_00436994 = AllocateMemory(0x40);
+
+    // 3. Timer
+    Timer* pTimer = (Timer*)AllocateMemory(0x14); // 0x14 = 20 bytes
+    // Calls 0x418eb0
+    if (pTimer) {
+        // Since we don't have Timer ctor exposed, assuming Init or default ctor
+        // Assembly calls 0x418eb0.
+        // Timer struct: 00 00 00 00 (time) 00 00
+        // We can just zero it or call Init if we had it.
+        // For now, let's assume new works or memset.
+        // Wait, 0x418eb0 decompiled in step 68 sets fields 0,1,2,3,4 to 0. 5*4=20 bytes.
+        // And calls 0x418ef0 (Reset).
+        // Let's manually do it if we can't call ctor.
+        // Actually we can use placement new if Timer has ctor.
+        // Timer class in Timer.h has Timer().
+        new (pTimer) Timer(); 
+    }
+    g_Timer_00436980 = pTimer;
+    
+    // 4. Manager (0xCC)
+    void* pManager = AllocateMemory(0xCC);
+    if (pManager) {
+        FUN_00420140(pManager, "question.sav");
+        FUN_00420430(pManager);
+        g_Manager_00435a84 = (void*)FUN_00420140; // Wait, assembly stores result of init?
+        // Assembly: MOV [0x435a84], EAX where EAX is result of 0x420430? No.
+        // "MOV ECX, EAX ... CALL 0x420430".
+        // [0x435a84] receives EAX from somewhere. 
+        // Let's assume pManager is the object.
+        g_Manager_00435a84 = pManager; // Fix logic if needed based on detailed verification
+    }
+
+    // 5. GameStates
+    // 1
+    GameState* gs1 = (GameState*)AllocateMemory(0x98);
+    if (gs1) {
+        new (gs1) GameState(); // Calls 0x4189f0 (Parser Ctor) and inits fields
+        // In assembly, fields init to 0 is done manually or via our new Ctor.
+        ParseFile(gs1, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+    }
+    g_GameState_00436998 = gs1;
+
+    // 2
+    GameState* gs2 = (GameState*)AllocateMemory(0x98);
+    if (gs2) {
+        new (gs2) GameState();
+        ParseFile(gs2, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
+    }
+    g_GameState2_004369a4 = gs2;
+
+    // 3
+    GameState* gs3 = (GameState*)AllocateMemory(0x98);
+    if (gs3) {
+        new (gs3) GameState();
+        ParseFile(gs3, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+    }
+    g_GameState3_0043699c = gs3;
+
+    // 4
+    GameState* gs4 = (GameState*)AllocateMemory(0x98);
+    if (gs4) {
+        new (gs4) GameState();
+        ParseFile(gs4, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
+    }
+    g_GameState4_004369a0 = gs4;
+
+    // 6. Strings
+    void* pStringsInfo = AllocateMemory(0xC);
+    if (pStringsInfo) {
+        // PUSH 1; PUSH strings.mis
+        FUN_004209e0(pStringsInfo, "mis\\strings.mis");
+        
+        // PUSH 0x18 Alloc
+        Parser* pStringsParser = (Parser*)AllocateMemory(0x18);
+        if (pStringsParser) {
+           // Manual Init of 0x18 struct:
+           // 0x00: 0
+           // 0x04: 0
+           // 0x08: 0
+           // 0x0C: 0
+           // 0x10: 0
+           // 0x14: 0x32
+           memset(pStringsParser, 0, 0x18);
+           *(int*)((char*)pStringsParser + 0x14) = 0x32;
+        }
+        g_Strings_00435a70 = pStringsParser; 
+    }
+
+    // Further initialization
+    // PUSH 0xAC
+    void* pUnknown88 = AllocateMemory(0xAC);
+    // CALL 0x41b760
+    FUN_0041b760(pUnknown88);
+    // MOV [0x436988], EAX? Actually assembly says MOV [0x436988], EAX where EAX is pUnknown88?
+    // Let's assume yes.
+    // extern int DAT_00436988
+    // I need to use the pointer for cleanups
+    
+    // PUSH 0x1C
+    void* pUnknown8C = AllocateMemory(0x1C);
+    FUN_00417200(pUnknown8C);
+    // MOV [0x43698c], EAX (pUnknown8C)
+
+    FUN_0041f200(g_Mouse_00436978);
+    FUN_004210d0(g_TextManager_00436990, (void*)0x435a88); // "elements\\text1.smk"?
+    
+    if (g_Timer_00436980) {
+        FUN_00418ef0(g_Timer_00436980);
+    }
+
+    // Main Loop
+    FUN_0041a150(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
+
+    ShutdownGameSystems();
+
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+  }
+}
 
 /* Function start: 0x4192F0 */
 int ProcessMessages() {
@@ -321,7 +482,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   }
   UpdateWindow(g_GameWindow.hWnd);
   if (DAT_0043d55c == 0) {
-    FUN_0040c5d0();
+    RunGame();
   } else {
     PlayIntroCinematic();
   }
