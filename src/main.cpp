@@ -2,9 +2,11 @@
 #include "Animation.h"
 #include "GameState.h"
 #include "GameWindow.h"
+#include "JoystickManager.h"
 #include "Memory.h"
 #include "Sound.h"
 #include "VBuffer.h"
+#include "CDData.h"
 #include "string.h"
 #include <mbctype.h>
 #include <mbstring.h>
@@ -39,20 +41,15 @@ void CheckDebug();
 void ClearMessageLog();
 void CreateGameObject_1();
 void InitWorkBuffer(int, int);
-void *JoystickManager_Constructor(void *, int);
-void *Sound_Init(void *, int, int, int);
 void SetStateFlag(int, int);
 void SetCursorVisible(int);
-void *FUN_00421e40(void *, char *, void *);
 int FileExists(const char *);
-int CheckFileOnDrive(void *, int);
-int ChangeToDriveDirectory(void *, int);
-int ChangeDirectory(void *, unsigned char *);
 void ShowError(const char *, ...);
 void SetErrorCode(unsigned int);
 void ParsePath(const char *, char *, char *, char *, char *);
 int _chdir(const char *);
 }
+
 
 void FUN_0041e310();
 void FUN_00421840();
@@ -147,35 +144,6 @@ int FileExists(const char *filename) {
   return GetFileAttributesA(filename) != -1;
 }
 
-/* Function start: 0x421EB0 */
-int CheckFileOnDrive(void *this_ptr, int drive_letter) {
-  char local_40[64];
-
-  sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
-          (char *)((int)this_ptr + 0x80), (char *)((int)this_ptr + 0x1c5));
-  return FileExists(local_40);
-}
-
-/* Function start: 0x421F40 */
-int ChangeToDriveDirectory(void *this_ptr, int drive_letter) {
-  char local_40[64];
-
-  sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
-          (char *)((int)this_ptr + 0x80), (char *)((int)this_ptr + 0x1c5));
-  return 1 - (ChangeDirectory(this_ptr, (unsigned char *)local_40) == 0);
-}
-
-/* Function start: 0x421EF0 */
-int ChangeDirectory(void *this_ptr, unsigned char *path) {
-  if (path != 0 && *path != 0) {
-    if (_chdir((char *)path) != 0) {
-      return 1;
-    }
-    ParsePath((char *)path, (char *)((int)this_ptr + 0xc0), 0, 0, 0);
-  }
-  return 0;
-}
-
 /* Function start: 0x4261C0 */
 void ParsePath(const char *path, char *drive, char *dir, char *fname,
                char *ext) {
@@ -248,24 +216,38 @@ void ParsePath(const char *path, char *drive, char *dir, char *fname,
 /* Function start: 0x41A670 */
 void CheckDebug(void) {
   char local_94[128];
-  void *pvVar2;
+  CDData *pvVar2;
 
   __try {
     pvVar2 = g_CDData_0043697c;
-    if (g_CDData_0043697c == (char *)0x0) {
-      void *local_14 = AllocateMemory(0x1e5);
-      if (local_14 != (void *)0x0) {
-        pvVar2 = FUN_00421e40(local_14, "cddata", DAT_0043d568);
+    if (g_CDData_0043697c == (CDData *)0x0) {
+      CDData *local_14 = (CDData *)AllocateMemory(0x1e5);
+      pvVar2 = (CDData *)0x0;
+      if (local_14 != (CDData *)0x0) {
+        pvVar2 = local_14->Init("cddata", DAT_0043d568);
       }
     }
-    g_CDData_0043697c = (char *)pvVar2;
-    if (DAT_0043d568[0] == '\0') {
-      if (!FileExists((char *)((int)pvVar2 + 0x1c5)) &&
-          !FileExists("Develop")) {
+    g_CDData_0043697c = pvVar2;
+    if (DAT_0043d568[0] != '\0') {
+      sprintf(local_94, "%s\\%s", DAT_0043d568, pvVar2->field_0x1c5);
+      if (FileExists(local_94)) {
+        g_CDData_0043697c->ChangeDirectory((unsigned char *)local_94);
+      } else {
+        ShowError("Invalid CD path specified on command line '%s'", local_94);
+      }
+    } else {
+      if (FileExists(pvVar2->field_0x1c5) ||
+          FileExists("Develop.___")) {
+        DAT_0043d564 = 1;
+        if (g_CDData_0043697c->ChangeDirectory(
+                (unsigned char *)g_CDData_0043697c->field_0x1c5)) {
+          ShowError("Invalid Development directory '%s'", g_CDData_0043697c->field_0x1c5);
+        }
+      } else {
         int i = 3;
         for (; i < 0x1a; i++) {
-          if (CheckFileOnDrive(g_CDData_0043697c, i)) {
-            if (ChangeToDriveDirectory(g_CDData_0043697c, i)) {
+          if (g_CDData_0043697c->CheckFileOnDrive(i)) {
+            if (g_CDData_0043697c->ChangeToDriveDirectory(i)) {
               ShowError("Invalid CD directory");
             }
             break;
@@ -274,23 +256,13 @@ void CheckDebug(void) {
         if (0x18 < i) {
           ShowError("Missing the Teacher CD-ROM");
         }
-      } else {
-        DAT_0043d564 = 1;
-        if (ChangeDirectory(g_CDData_0043697c,
-                            (unsigned char *)((int)g_CDData_0043697c + 0x1c5))) {
-          ShowError("Invalid Development directory");
-        }
       }
-    } else {
-      sprintf(local_94, "%s\\%s", DAT_0043d568, (char *)((int)pvVar2 + 0x1c5));
-      if (!FileExists(local_94)) {
-        ShowError("Invalid CD path specified on command line");
-      }
-      ChangeDirectory(g_CDData_0043697c, (unsigned char *)local_94);
     }
   } __except (EXCEPTION_EXECUTE_HANDLER) {
   }
 }
+
+
 
 /* Function start: 0x422E02 */
 int CalculateBufferSize(int width, unsigned int height) {
@@ -299,49 +271,62 @@ int CalculateBufferSize(int width, unsigned int height) {
 
 /* Function start: 0x41A3D0 */
 void InitGameSystems(void) {
-  g_Buffer_00436960 = (char *)AllocateMemory(0x100);
-  g_Buffer_00436964 = AllocateMemory(CalculateBufferSize(0x280, 0x1e0));
-  CheckDebug();
-  ClearMessageLog();
-  CreateGameObject_1();
-  InitWorkBuffer(0x280, 0x1e0);
-  void *pJoystickManager = AllocateMemory(0x1b8);
-  if (pJoystickManager != (void *)0x0) {
-    g_JoystickManager_00436968 = JoystickManager_Constructor(
-        pJoystickManager, *(char *)((int)g_Unknown_00436970 + 0x44));
+  JoystickManager *pJoystick;
+  JoystickManager *pJoystickInit;
+  Sound *pSound;
+  Sound *pSoundInit;
+  AnimatedAsset *pTextManager;
+  AnimatedAsset *pTextManagerInit;
+
+  __try {
+    g_Buffer_00436960 = (char *)AllocateMemory(0x100);
+    g_Buffer_00436964 = AllocateMemory(CalculateBufferSize(0x280, 0x1e0));
+    CheckDebug();
+    ClearMessageLog();
+    CreateGameObject_1();
+    InitWorkBuffer(0x280, 0x1e0);
+    pJoystick = (JoystickManager *)AllocateMemory(0x1b8);
+    pJoystickInit = (JoystickManager *)0x0;
+    if (pJoystick != (JoystickManager *)0x0) {
+      pJoystickInit = pJoystick->Init(
+          (unsigned int)*(unsigned char *)((int)g_Unknown_00436970 + 0x44));
+    }
+    g_JoystickManager_00436968 = pJoystickInit;
+    pSound = (Sound *)AllocateMemory(0x3c);
+    pSoundInit = (Sound *)0x0;
+    if (pSound != (Sound *)0x0) {
+      pSoundInit = (Sound *)pSound->Init(0x5622, 8, 1);
+    }
+    g_Sound_0043696c = pSoundInit;
+    pTextManager = (AnimatedAsset *)AllocateMemory(0x38);
+    pTextManagerInit = (AnimatedAsset *)0x0;
+    if (pTextManager != (AnimatedAsset *)0x0) {
+      pTextManagerInit = AnimatedAsset_Ctor(pTextManager);
+    }
+    g_TextManager_00436990 = pTextManagerInit;
+    g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
+    SetStateFlag(0, 1);
+    SetCursorVisible(0);
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
   }
-  void *pSound = AllocateMemory(0x3c);
-  if (pSound != (void *)0x0) {
-    g_Sound_0043696c = (Sound*)Sound_Init(pSound, 0x5622, 8, 1);
-  }
-  AnimatedAsset *pTextManager = (AnimatedAsset *)AllocateMemory(0x38);
-  AnimatedAsset *pTextManagerInit = (AnimatedAsset *)0x0;
-  if (pTextManager != (AnimatedAsset *)0x0) {
-    pTextManagerInit = AnimatedAsset_Ctor(pTextManager);
-  }
-  g_TextManager_00436990 = pTextManagerInit;
-  g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
-  SetStateFlag(0, 1);
-  SetCursorVisible(0);
 }
 
 /* Function start: 0x422520 */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
                    int nCmdShow) {
-  volatile MSG msg;
-  DAT_0043eff0 = HeapCreate(1, 0x1000, 0);
+  int uStack_14;
   g_GameWindow.CreateGameWindow(hInstance, (int)hPrevInstance, lpCmdLine, nCmdShow);
   if (g_GameWindow.InitGraphics() == 0) {
     return 0;
   }
-  UpdateWindow(DAT_0043de7c);
+  UpdateWindow(g_GameWindow.hWnd);
   if (DAT_0043d55c == 0) {
-    PlayIntroCinematic();
-  } else {
     FUN_0040c5d0();
+  } else {
+    PlayIntroCinematic();
   }
   g_GameWindow.FUN_00422430();
-  return 1;
+  return uStack_14;
 }
 
 /* Function start: 0x41A550 */

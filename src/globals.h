@@ -9,6 +9,8 @@ class GameState;
 class AnimatedAsset;
 class Sound;
 class Sprite;
+class JoystickManager;
+class CDData;
 
 // extern IMAGE_DOS_HEADER IMAGE_DOS_HEADER_00400000; // { /* 128 bytes */ }
 // extern IMAGE_NT_HEADERS32 DAT_00400080; // { /* 248 bytes */ }
@@ -418,12 +420,12 @@ extern int DAT_00436b9c; // { /* 4 bytes */ }
 // extern char DAT_0043684f; // { /* 1 bytes */ }
 extern char* g_Buffer_00436960; // DAT_00436960  { /* 4 bytes */ }
 extern void* g_Buffer_00436964; // DAT_00436964  { /* 4 bytes */ }
-extern void* g_JoystickManager_00436968; // DAT_00436968  { /* 4 bytes */ }
+extern JoystickManager* g_JoystickManager_00436968; // DAT_00436968  { /* 4 bytes */ }
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern void* g_Unknown_00436970; // DAT_00436970  { /* 4 bytes */ }
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
 // extern int DAT_00436978; // { /* 4 bytes */ }
-extern char* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
+extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
 // extern int DAT_00436980; // { /* 4 bytes */ }
 // extern int DAT_00436984; // { /* 4 bytes */ }
 // extern int DAT_00436988; // { /* 4 bytes */ }

@@ -12,6 +12,7 @@ extern "C" {
 
 // Generic Stubs for Missing Functions
 void FUN_0041ef47() {}
+void FUN_0042ddd0(void*, int) {}
 void FUN_00425fd0() {}
 void FUN_0041eab0() {}
 void FUN_004171b0() {}
@@ -46,6 +47,7 @@ void FUN_00423aac() {}
 void FUN_00419170() {}
 void FUN_00423cd9() {}
 void FUN_00421e40() {}
+void FUN_00421890(void*, int) {}
 
 void FUN_0040c5d0() {}
 void FUN_00421ea0() {}
@@ -92,8 +94,6 @@ void SetCursorVisible(int show) {
     ShowCursor(show); 
 }
 
-void Sound_Init() {}
-void JoystickManager_Constructor() {}
 void InitWorkBuffer() {}
 void CreateGameObject_1() {}
 

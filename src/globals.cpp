@@ -1,19 +1,21 @@
 #include "globals.h"
 #include "GameState.h"
+#include "JoystickManager.h"
 #include "VBuffer.h"
 #include "AnimatedAsset.h"
 #include "Sound.h"
 #include "GameWindow.h"
 #include "Sprite.h"
+#include "CDData.h"
 
 // Pointers initialized to their specific values as requested by patterns in main.cpp
 char* g_Buffer_00436960 = (char*)0x00436960;
 void* g_Buffer_00436964 = (void*)0x00436964;
-void* g_JoystickManager_00436968 = (void*)0x00436968;
+JoystickManager* g_JoystickManager_00436968 = (JoystickManager*)0x00436968;
 Sound* g_Sound_0043696c = (Sound*)0x0043696c;
 void* g_Unknown_00436970 = (void*)0x00436970;
 VBuffer* g_WorkBuffer_00436974 = (VBuffer*)0x00436974;
-char* g_CDData_0043697c = (char*)0x0043697c;
+CDData* g_CDData_0043697c = (CDData*)0x0043697c;
 AnimatedAsset* g_TextManager_00436990 = (AnimatedAsset*)0x00436990;
 
 GameState* g_GameState_00436998 = (GameState*)0x00436998;
