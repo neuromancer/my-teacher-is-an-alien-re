@@ -12,7 +12,9 @@ class Sprite;
 class JoystickManager;
 class CDData;
 class Mouse;
+class Mouse;
 class Parser;
+#include "Manager.h"
 
 // extern IMAGE_DOS_HEADER IMAGE_DOS_HEADER_00400000; // { /* 128 bytes */ }
 // extern IMAGE_NT_HEADERS32 DAT_00400080; // { /* 248 bytes */ }
@@ -357,11 +359,11 @@ class Parser;
 // extern char DAT_00435932; // { /* 1 bytes */ }
 // extern char DAT_00435933; // { /* 1 bytes */ }
 extern Parser* g_Strings_00435a70; // 00435a70
-extern int DAT_00435a74; // { /* 4 bytes */ }
-extern int DAT_00435a78; // { /* 4 bytes */ }
-extern int DAT_00435a7c; // { /* 4 bytes */ }
+extern void* DAT_00435a74; // { /* 4 bytes */ }
+extern void* DAT_00435a78; // { /* 4 bytes */ }
+extern void* DAT_00435a7c; // { /* 4 bytes */ }
 extern int DAT_00435a80; // { /* 4 bytes */ }
-extern void* g_Manager_00435a84; // 00435a84
+extern Manager* g_Manager_00435a84; // 00435a84
 // extern int DAT_00435b88; // { /* 4 bytes */ }
 // extern int DAT_00435b8c; // { /* 4 bytes */ }
 // extern int DAT_00435b94; // { /* 4 bytes */ }
@@ -429,8 +431,9 @@ extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
 extern Mouse* g_Mouse_00436978; // DAT_00436978
 extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
 extern Timer* g_Timer_00436980; // DAT_00436980
-// extern int DAT_00436988; // { /* 4 bytes */ }
-// extern int DAT_0043698c; // { /* 4 bytes */ }
+extern int* DAT_00436984; // { /* 4 bytes */ }
+extern int* DAT_00436988; // { /* 4 bytes */ }
+extern int* DAT_0043698c; // { /* 4 bytes */ }
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
 extern void* g_Unknown_00436994; // DAT_00436994
 extern GameState* g_GameState_00436998; // DAT_00436998  { /* 4 bytes */ }

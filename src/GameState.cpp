@@ -142,10 +142,4 @@ void GameState::SetMaxStates2(int param_1)
         arr[i] = 0;
     }
 }
-/* Function start: 0x4189f0 */
-GameState::GameState() {
-    this->field_0x88 = 0;
-    this->field_0x8c = 0;
-    this->field_0x90 = 0;
-    this->field_0x94 = 0;
-} 
+

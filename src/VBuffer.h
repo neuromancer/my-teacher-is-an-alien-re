@@ -37,6 +37,8 @@ public:
 
     // Copy rectangle rows from srcBuffer into this buffer with transparent handling
     void BlitTransparentRowsFrom(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, char transparentColor, char fillColor);
+    void FUN_0041abf0(int);
+    void FUN_0041abc0(int);
 };
 
 VBuffer* VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height);

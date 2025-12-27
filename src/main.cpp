@@ -1,4 +1,5 @@
 #include "AnimatedAsset.h"
+#include "Manager.h"
 #include "Animation.h"
 #include "GameState.h"
 #include "GameWindow.h"
@@ -22,8 +23,6 @@
 #include <mss.h>
 #include <windows.h>
 
-
-void* operator new(size_t size, void* p) { return p; }
 
 extern AnimatedAsset *AnimatedAsset_Ctor(AnimatedAsset *);
 
@@ -51,7 +50,6 @@ void InitWorkBuffer(int, int);
 void SetStateFlag(int, int);
 void SetCursorVisible(int);
 int FileExists(const char *);
-void ShowError(const char *, ...);
 void SetErrorCode(unsigned int);
 void ParsePath(const char *, char *, char *, char *, char *);
 int _chdir(const char *);
@@ -63,158 +61,303 @@ void FUN_00421840();
 void ShutdownGameSystems();
 
 extern "C" {
-void* FUN_00420140(void*, const char*);
-void FUN_00420430(void*);
-void* FUN_004209e0(void*, const char*);
-void FUN_00420a50(void*);
-void FUN_00420480(void*);
-void FUN_00418ee0(void*);
-void FUN_0041ee30(void*);
-void FUN_00404230(void*);
-void FUN_00420250(void*);
-void FUN_0041b760(void*);
-void FUN_0041b8e0(void*);
-void FUN_00417200(void*);
-void FUN_0041f200(void*);
-void FUN_004210d0(AnimatedAsset*, void*);
-void FUN_00418ef0(void*);
-void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
-void FUN_00417690(void*);
-void FUN_00417320(void*);
+void* __fastcall FUN_00420140(void*, const char*, int);
+void __fastcall FUN_00420430(void*);
+void* __fastcall FUN_004209e0(void*, const char*, int);
+void __fastcall FUN_00420a50(void*);
+void __fastcall FUN_00420480(void*);
+void __fastcall FUN_00418ee0(void*);
+void __fastcall FUN_0041ee30(void*);
+void __fastcall FUN_00404230(void*);
+void __fastcall FUN_00420250(void*);
+void __fastcall FUN_0041b760(void*);
+void __fastcall FUN_0041b8e0(void*);
+void __fastcall FUN_00417200(void*);
+void __fastcall FUN_0041f200(void*);
+void __fastcall FUN_00417690(void*);
+void __fastcall FUN_00417320(void*);
+void __fastcall FUN_00418ef0(void*);
+void __fastcall FUN_004210d0(void*, const char*);
+void __fastcall FUN_0041abf0(void*, int);
+void __fastcall FUN_0041abc0(void*, int);
+}
+// Function Declarations
+void InitGameSystems(void);
+extern "C" {
+  void FUN_0040cd15(); 
+  void FUN_0040cd1d(); 
 }
 
-/* Function start: 0x40C5D0 */
+// Dummy class for Unknown objects to enforce __thiscall
+class GenericUnknown {
+public:
+    void FUN_00404230() { ::FUN_00404230(this); }
+    void FUN_0041b760() { ::FUN_0041b760(this); }
+    void FUN_0041b8e0() { ::FUN_0041b8e0(this); }
+    void FUN_00417200() { ::FUN_00417200(this); }
+    void FUN_00417690() { ::FUN_00417690(this); }
+    void FUN_00417320() { ::FUN_00417320(this); }
+};
+
 /* Function start: 0x40C5D0 */
 void RunGame() {
-  __try {
-    // 1. Mouse
-    Mouse* pMouse = (Mouse*)AllocateMemory(sizeof(Mouse));
-    if (pMouse) {
-        new (pMouse) Mouse(); // Calls 0x41eca0 -> 0x4189f0
-        g_Mouse_00436978 = pMouse;
-        ParseFile(pMouse, "mis\\mouse1.mis", "[MICE]");
-    }
+  extern int* DAT_00436984;
+  extern int* DAT_00436988;
+  extern int* DAT_0043698c;
+  extern void* DAT_00435a74;
+  extern void* DAT_00435a78;
+  extern void* DAT_00435a7c;
 
-    // 2. Unknown 0x40 object
+  __try {
+    InitGameSystems();
+    if (g_WorkBuffer_00436974 == 0) {
+      ShowError("missing workbuff");
+    }
+    g_WorkBuffer_00436974->FUN_0041abf0(0); 
+    g_WorkBuffer_00436974->FUN_0041abc0(0);
+
+    void* puVar2 = g_Mouse_00436978;
+    if (g_Mouse_00436978 != 0) {
+        g_Mouse_00436978->FUN_0041ee30();
+        FreeMemory(puVar2);
+        g_Mouse_00436978 = 0;
+    }
+    
+    puVar2 = AllocateMemory(0x1c0);
+    Mouse* pMouse = 0;
+    if (puVar2 != 0) {
+        pMouse = ((Mouse*)puVar2);
+        pMouse->Mouse::Mouse();
+    }
+    g_Mouse_00436978 = pMouse;
+    ParseFile((Parser*)pMouse, "mis\\mouse1.mis", "[MICE]");
+
     g_Unknown_00436994 = AllocateMemory(0x40);
 
-    // 3. Timer
-    Timer* pTimer = (Timer*)AllocateMemory(0x14); // 0x14 = 20 bytes
-    // Calls 0x418eb0
-    if (pTimer) {
-        // Since we don't have Timer ctor exposed, assuming Init or default ctor
-        // Assembly calls 0x418eb0.
-        // Timer struct: 00 00 00 00 (time) 00 00
-        // We can just zero it or call Init if we had it.
-        // For now, let's assume new works or memset.
-        // Wait, 0x418eb0 decompiled in step 68 sets fields 0,1,2,3,4 to 0. 5*4=20 bytes.
-        // And calls 0x418ef0 (Reset).
-        // Let's manually do it if we can't call ctor.
-        // Actually we can use placement new if Timer has ctor.
-        // Timer class in Timer.h has Timer().
-        new (pTimer) Timer(); 
+    puVar2 = AllocateMemory(0x14);
+    void* pInit = 0;
+    if (puVar2 != 0) {
+        pInit = ((Timer*)puVar2)->Init();
     }
-    g_Timer_00436980 = pTimer;
+    g_Timer_00436980 = (Timer*)pInit;
+
+    puVar2 = AllocateMemory(0xCC);
+    pInit = 0;
+    if (puVar2 != 0) {
+        pInit = ((Manager*)puVar2)->FUN_00420140("question.sav", 1000); 
+    }
+    g_Manager_00435a84 = (Manager*)pInit;
+    ((Manager*)pInit)->FUN_00420430();
+
+    GameState* pGS = (GameState*)AllocateMemory(0x98);
+    if (pGS != 0) {
+        ((Parser*)pGS)->Parser::Parser();
+        pGS->field_0x88 = 0;
+        pGS->field_0x8c = 0;
+        pGS->field_0x90 = 0;
+        pGS->field_0x94 = 0;
+        ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+    }
+    g_GameState_00436998 = pGS;
+
+    pGS = (GameState*)AllocateMemory(0x98);
+    if (pGS != 0) {
+        ((Parser*)pGS)->Parser::Parser();
+        pGS->field_0x88 = 0;
+        pGS->field_0x8c = 0;
+        pGS->field_0x90 = 0;
+        pGS->field_0x94 = 0;
+        ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
+    }
+    g_GameState2_004369a4 = pGS;
+
+    pGS = (GameState*)AllocateMemory(0x98);
+    if (pGS != 0) {
+        ((Parser*)pGS)->Parser::Parser();
+        pGS->field_0x88 = 0;
+        pGS->field_0x8c = 0;
+        pGS->field_0x90 = 0;
+        pGS->field_0x94 = 0;
+        ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+    }
+    g_GameState3_0043699c = pGS;
+
+    pGS = (GameState*)AllocateMemory(0x98);
+    if (pGS != 0) {
+        ((Parser*)pGS)->Parser::Parser();
+        pGS->field_0x88 = 0;
+        pGS->field_0x8c = 0;
+        pGS->field_0x90 = 0;
+        pGS->field_0x94 = 0;
+        ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
+    }
+    g_GameState4_004369a0 = pGS;
+
+    puVar2 = AllocateMemory(0xC);
+    pInit = 0;
+    if (puVar2 != 0) {
+        pInit = ((Parser*)puVar2)->FUN_004209e0("mis\\strings.mis", 1);
+    }
+    g_Strings_00435a70 = (Parser*)pInit;
     
-    // 4. Manager (0xCC)
-    void* pManager = AllocateMemory(0xCC);
-    if (pManager) {
-        FUN_00420140(pManager, "question.sav");
-        FUN_00420430(pManager);
-        g_Manager_00435a84 = (void*)FUN_00420140; // Wait, assembly stores result of init?
-        // Assembly: MOV [0x435a84], EAX where EAX is result of 0x420430? No.
-        // "MOV ECX, EAX ... CALL 0x420430".
-        // [0x435a84] receives EAX from somewhere. 
-        // Let's assume pManager is the object.
-        g_Manager_00435a84 = pManager; // Fix logic if needed based on detailed verification
+    puVar2 = AllocateMemory(0x18);
+    if (puVar2 != 0) {
+        ((int*)puVar2)[2] = 0;
+        ((int*)puVar2)[3] = 0;
+        ((int*)puVar2)[1] = 0;
+        ((int*)puVar2)[0] = 0;
+        ((int*)puVar2)[4] = 0;
+        ((int*)puVar2)[5] = 0x32;
+    }
+    DAT_00436984 = (int*)puVar2;
+
+    puVar2 = AllocateMemory(0x18);
+    if (puVar2 != 0) {
+        ((int*)puVar2)[2] = 0;
+        ((int*)puVar2)[3] = 0;
+        ((int*)puVar2)[1] = 0;
+        ((int*)puVar2)[0] = 0;
+        ((int*)puVar2)[4] = 0;
+        ((int*)puVar2)[5] = 0x32;
+    }
+    DAT_00436988 = (int*)puVar2;
+
+    puVar2 = AllocateMemory(0xAC);
+    pInit = 0;
+    if (puVar2 != 0) {
+        ((GenericUnknown*)puVar2)->FUN_0041b760();
+        pInit = puVar2;
+    }
+    DAT_0043698c = (int*)pInit;
+
+    puVar2 = AllocateMemory(0x1C);
+    unsigned int* puVar7 = 0;
+    if (puVar2 != 0) {
+        ((GenericUnknown*)puVar2)->FUN_00417200();
+        puVar7 = (unsigned int*)puVar2;
     }
 
-    // 5. GameStates
-    // 1
-    GameState* gs1 = (GameState*)AllocateMemory(0x98);
-    if (gs1) {
-        new (gs1) GameState(); // Calls 0x4189f0 (Parser Ctor) and inits fields
-        // In assembly, fields init to 0 is done manually or via our new Ctor.
-        ParseFile(gs1, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
-    }
-    g_GameState_00436998 = gs1;
+    g_Mouse_00436978->FUN_0041f200();
+    g_TextManager_00436990->FUN_004210d0("elements\\text1.smk");
+    *(int*)((char*)g_TextManager_00436990 + 0x30) = 2;
+    g_Timer_00436980->FUN_00418ef0();
 
-    // 2
-    GameState* gs2 = (GameState*)AllocateMemory(0x98);
-    if (gs2) {
-        new (gs2) GameState();
-        ParseFile(gs2, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
-    }
-    g_GameState2_004369a4 = gs2;
-
-    // 3
-    GameState* gs3 = (GameState*)AllocateMemory(0x98);
-    if (gs3) {
-        new (gs3) GameState();
-        ParseFile(gs3, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
-    }
-    g_GameState3_0043699c = gs3;
-
-    // 4
-    GameState* gs4 = (GameState*)AllocateMemory(0x98);
-    if (gs4) {
-        new (gs4) GameState();
-        ParseFile(gs4, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
-    }
-    g_GameState4_004369a0 = gs4;
-
-    // 6. Strings
-    void* pStringsInfo = AllocateMemory(0xC);
-    if (pStringsInfo) {
-        // PUSH 1; PUSH strings.mis
-        FUN_004209e0(pStringsInfo, "mis\\strings.mis");
-        
-        // PUSH 0x18 Alloc
-        Parser* pStringsParser = (Parser*)AllocateMemory(0x18);
-        if (pStringsParser) {
-           // Manual Init of 0x18 struct:
-           // 0x00: 0
-           // 0x04: 0
-           // 0x08: 0
-           // 0x0C: 0
-           // 0x10: 0
-           // 0x14: 0x32
-           memset(pStringsParser, 0, 0x18);
-           *(int*)((char*)pStringsParser + 0x14) = 0x32;
-        }
-        g_Strings_00435a70 = pStringsParser; 
-    }
-
-    // Further initialization
-    // PUSH 0xAC
-    void* pUnknown88 = AllocateMemory(0xAC);
-    // CALL 0x41b760
-    FUN_0041b760(pUnknown88);
-    // MOV [0x436988], EAX? Actually assembly says MOV [0x436988], EAX where EAX is pUnknown88?
-    // Let's assume yes.
-    // extern int DAT_00436988
-    // I need to use the pointer for cleanups
-    
-    // PUSH 0x1C
-    void* pUnknown8C = AllocateMemory(0x1C);
-    FUN_00417200(pUnknown8C);
-    // MOV [0x43698c], EAX (pUnknown8C)
-
-    FUN_0041f200(g_Mouse_00436978);
-    FUN_004210d0(g_TextManager_00436990, (void*)0x435a88); // "elements\\text1.smk"?
-    
-    if (g_Timer_00436980) {
-        FUN_00418ef0(g_Timer_00436980);
-    }
-
-    // Main Loop
+    void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
     FUN_0041a150(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
+
+    ((GenericUnknown*)puVar7)->FUN_00417690();
+    if (puVar7 != 0) {
+        ((GenericUnknown*)puVar7)->FUN_00417320();
+        FreeMemory(puVar7);
+    }
+
+    puVar2 = (void*)DAT_0043698c;
+    if (DAT_0043698c != 0) {
+        ((GenericUnknown*)DAT_0043698c)->FUN_0041b8e0();
+        FreeMemory(puVar2);
+        DAT_0043698c = 0;
+    }
+
+    puVar2 = (void*)DAT_00436988;
+    if (DAT_00436988 != 0) {
+        FUN_0040cd15(); 
+        FreeMemory(puVar2);
+        DAT_00436988 = 0;
+    }
+
+    puVar2 = (void*)DAT_00436984;
+    if (DAT_00436984 != 0) {
+        FUN_0040cd1d(); 
+        FreeMemory(puVar2);
+        DAT_00436984 = 0;
+    }
+
+    puVar2 = g_Strings_00435a70;
+    if (g_Strings_00435a70 != 0) {
+        g_Strings_00435a70->FUN_00420a50();
+        FreeMemory(puVar2);
+        g_Strings_00435a70 = 0;
+    }
+
+    puVar2 = g_GameState4_004369a0;
+    if (g_GameState4_004369a0 != 0) {
+        g_GameState4_004369a0->FUN_00420480();
+        FreeMemory(puVar2);
+        g_GameState4_004369a0 = 0;
+    }
+    
+    puVar2 = g_GameState3_0043699c;
+    if (g_GameState3_0043699c != 0) {
+        g_GameState3_0043699c->FUN_00420480();
+        FreeMemory(puVar2);
+        g_GameState3_0043699c = 0;
+    }
+
+    puVar2 = g_GameState2_004369a4;
+    if (g_GameState2_004369a4 != 0) {
+        g_GameState2_004369a4->FUN_00420480();
+        FreeMemory(puVar2);
+        g_GameState2_004369a4 = 0;
+    }
+
+    puVar2 = g_GameState_00436998;
+    if (g_GameState_00436998 != 0) {
+        g_GameState_00436998->FUN_00420480();
+        FreeMemory(puVar2);
+        g_GameState_00436998 = 0;
+    }
+
+    puVar2 = g_Timer_00436980;
+    if (g_Timer_00436980 != 0) {
+        g_Timer_00436980->FUN_00418ee0();
+        FreeMemory(puVar2);
+        g_Timer_00436980 = 0;
+    }
+
+    if (g_Unknown_00436994 != 0) {
+        FreeMemory(g_Unknown_00436994);
+        g_Unknown_00436994 = 0;
+    }
+
+    puVar2 = g_Mouse_00436978;
+    if (g_Mouse_00436978 != 0) {
+        g_Mouse_00436978->FUN_0041ee30();
+        FreeMemory(puVar2);
+        g_Mouse_00436978 = 0;
+    }
+
+    puVar2 = DAT_00435a74;
+    if (DAT_00435a74 != 0) {
+        ((GenericUnknown*)DAT_00435a74)->FUN_00404230();
+        FreeMemory(puVar2);
+        DAT_00435a74 = 0;
+    }
+    puVar2 = DAT_00435a78;
+    if (DAT_00435a78 != 0) {
+        ((GenericUnknown*)DAT_00435a78)->FUN_00404230();
+        FreeMemory(puVar2);
+        DAT_00435a78 = 0;
+    }
+    puVar2 = DAT_00435a7c;
+    if (DAT_00435a7c != 0) {
+        ((GenericUnknown*)DAT_00435a7c)->FUN_00404230();
+        FreeMemory(puVar2);
+        DAT_00435a7c = 0;
+    }
+
+    puVar2 = g_Manager_00435a84;
+    if (g_Manager_00435a84 != 0) {
+        g_Manager_00435a84->FUN_00420250();
+        FreeMemory(puVar2);
+        g_Manager_00435a84 = 0;
+    }
 
     ShutdownGameSystems();
 
   } __except (EXCEPTION_EXECUTE_HANDLER) {
   }
 }
+
 
 /* Function start: 0x4192F0 */
 int ProcessMessages() {
@@ -426,7 +569,8 @@ void CheckDebug(void) {
 
 
 /* Function start: 0x422E02 */
-int CalculateBufferSize(int width, unsigned int height) {
+/* Function start: 0x422E02 */
+int __cdecl CalculateBufferSize(int width, unsigned int height) {
   return (((width + 3) & ~3U) * height) + DAT_00437f4c;
 }
 
@@ -542,3 +686,47 @@ void PlayIntroCinematic(void) {
   anim.Play("cine\\cine0001.smk", 0x20);
   ShutdownGameSystems();
 }
+
+// Stubs and Wrappers for Linker
+extern "C" {
+void* __fastcall FUN_00420140(void* thisptr, const char* a, int b) { return thisptr; }
+void __fastcall FUN_00420430(void* thisptr) {}
+void* __fastcall FUN_004209e0(void* thisptr, const char* a, int b) { return thisptr; }
+void __fastcall FUN_00420a50(void* thisptr) {}
+void __fastcall FUN_00420480(void* thisptr) {}
+void __fastcall FUN_00418ee0(void* thisptr) {}
+void __fastcall FUN_0041ee30(void* thisptr) {}
+void __fastcall FUN_00404230(void* thisptr) {}
+void __fastcall FUN_00420250(void* thisptr) {}
+void __fastcall FUN_0041b760(void* thisptr) {}
+void __fastcall FUN_0041b8e0(void* thisptr) {}
+void __fastcall FUN_00417200(void* thisptr) {}
+void __fastcall FUN_0041f200(void* thisptr) {}
+void __fastcall FUN_00417690(void* thisptr) {}
+void __fastcall FUN_00417320(void* thisptr) {}
+void __fastcall FUN_00418ef0(void* thisptr) {}
+void __fastcall FUN_004210d0(void* thisptr, const char* a) {}
+void __fastcall FUN_0041abf0(void* thisptr, int a) {}
+void __fastcall FUN_0041abc0(void* thisptr, int a) {}
+}
+
+// Class Wrappers
+void* Manager::FUN_00420140(const char* a, int b) { return ::FUN_00420140(this, a, b); }
+void Manager::FUN_00420250() { ::FUN_00420250(this); }
+void Manager::FUN_00420430() { ::FUN_00420430(this); }
+
+void* Parser::FUN_004209e0(const char* a, int b) { return ::FUN_004209e0(this, a, b); }
+void Parser::FUN_00420a50() { ::FUN_00420a50(this); }
+
+void GameState::FUN_00420480() { ::FUN_00420480(this); }
+
+void Timer::FUN_00418ee0() { ::FUN_00418ee0(this); }
+void Timer::FUN_00418ef0() { ::FUN_00418ef0(this); }
+
+void Mouse::FUN_0041ee30() { ::FUN_0041ee30(this); }
+void Mouse::FUN_0041f200() { ::FUN_0041f200(this); }
+
+void AnimatedAsset::FUN_004210d0(const char* a) { ::FUN_004210d0(this, a); }
+
+void VBuffer::FUN_0041abf0(int a) { ::FUN_0041abf0(this, a); }
+void VBuffer::FUN_0041abc0(int a) { ::FUN_0041abc0(this, a); }

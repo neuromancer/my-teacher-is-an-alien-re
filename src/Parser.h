@@ -20,6 +20,8 @@ public:
     void FindKey(unsigned char*);
     int GetKey(char* line);
     static Parser* ProcessFile(Parser* self, Parser* dst, char* key_format, ...);
+    void* FUN_004209e0(const char*, int);
+    void FUN_00420a50();
 
     // 0x00: vtable (implicit)
     int field_0x4;          // 0x04

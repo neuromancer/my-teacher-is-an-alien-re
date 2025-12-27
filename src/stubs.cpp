@@ -144,6 +144,11 @@ void __stdcall FUN_00422590(int a, int b, int c, int d) {}
 // _FUN_00422250 (likely cdecl or stdcall without args?)
 void __cdecl FUN_00422250() {}
 
+void FUN_0040cd15() {}
+void FUN_0040cd1d() {}
+void* FUN_00420140(void* a, const char* b, int c) { return a; }
+void* FUN_004209e0(void* a, const char* b, int c) { return a; }
+
 } // extern "C"
 
 // C++ Stubs
@@ -156,7 +161,9 @@ int mCNavNode_Update(void* a) { return 0; }
 void* NavNode_Constructor(void* a) { return a; }
 
 // Missing variables (C++ linkage to match mangled names)
-void* DAT_0043eff0 = NULL;
+// void* DAT_0043eff0 = NULL; // Moved to globals.cpp
+
+void __cdecl FUN_0041a150(int, int, int, int, int, int, int, int, int, int) {}
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
 int* g_GameStruct2 = NULL;
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
