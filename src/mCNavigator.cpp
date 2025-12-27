@@ -1,4 +1,5 @@
 #include "mCNavigator.h"
+#include "globals.h"
 #include "string.h"
 #include <string.h>
 #include "stdio.h"
@@ -21,7 +22,7 @@ extern int mCNavNode_GetNextNode(void*);
 extern int FindCharIndex(char*);
 extern void CleanupObjectArray(void*, int);
 
-extern Sprite* DAT_004360a0;
+
 
 void* ObjectPool::Allocate_2()
 {
@@ -124,7 +125,7 @@ void mCNavigator::SetCurrentNode()
 
         this->field_A0 = this->startingNode;
         if (this->currentNode) {
-            DAT_004360a0 = this->sprite;
+            g_Sprite_004360a0 = this->sprite;
         }
     }
 }
@@ -226,7 +227,7 @@ int mCNavigator::LBLParse(char* param_1)
 
         Parser* parser = (Parser*)AllocateMemory(0x100);
         NavNode_Constructor(parser);
-        Parser_Parser(parser, this, 0);
+        //Parser_Parser(parser, this, 0);
 
         if (*(int*)((int)parser + 0xdc) == 0) {
             ShowError("mCNavigator::LoadNodes() - Invalid Node Handle (%d)", 0);

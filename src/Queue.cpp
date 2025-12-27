@@ -105,7 +105,11 @@ done:
     return event;
 }
 
-/* Function start: 0x4024D0 */
+/* Function start: 0x4024B0 */
+Queue::Queue()
+{
+    Init();
+}
 void Queue::Insert(void* data)
 {
     if (data == 0) {

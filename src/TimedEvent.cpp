@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "TimedEvent.h"
 #include <string.h>
 #include <stdio.h>
@@ -12,8 +13,7 @@ extern "C" {
 }
 
 extern void* g_GameStruct2;
-extern void* g_SoundManager;
-extern char* DAT_00436960;
+//extern void* g_SoundManager;
  
 /* Function start: 0x401890 */
 TimedEvent::TimedEvent() : m_timer()
@@ -83,8 +83,8 @@ int TimedEvent::Update()
         m_timer.Reset();
         return 0;
     } else if (m_type == 2) {
-        sprintf(DAT_00436960, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
-        FUN_0041c000(g_SoundManager, DAT_00436960, 0x208, 0x1c2, 10000);
+        sprintf(g_Buffer_00436960, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
+        FUN_0041c000(g_SoundManager, g_Buffer_00436960, 0x208, 0x1c2, 10000);
 
         if (remaining_time > 0) {
             return 0;

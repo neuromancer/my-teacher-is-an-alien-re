@@ -1,4 +1,5 @@
 #include "Sample.h"
+#include "globals.h"
 #include "Sound.h"
 #include <mss.h>
 
@@ -7,7 +8,7 @@ void ShowError(const char *);
 void FUN_0041e666();
 }
 
-extern Sound *g_sound;
+
 
 // Constructor wrapper for external callers
 Sample *Sample_Ctor(Sample *p) {
@@ -85,7 +86,7 @@ int Sample::Play(int volume, int loop_count) {
   if (m_data == 0) {
     return 1;
   }
-  m_sample = g_sound->FindFreeSampleHandle();
+  m_sample = g_Sound_0043696c->FindFreeSampleHandle();
   if (m_sample != 0) {
     Init(volume);
     if (m_sample != 0) {

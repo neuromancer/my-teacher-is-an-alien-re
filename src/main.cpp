@@ -15,28 +15,12 @@ extern unsigned char __mbctype[];
 
 extern AnimatedAsset *AnimatedAsset_Ctor(AnimatedAsset *);
 
-Sound *g_sound;
 
-GameState *g_GameState = (GameState *)0x00436998;
-extern int DAT_004373bc;
-extern int DAT_00437f4c;
-extern char DAT_0043d568;
-extern int _DAT_0043d564;
-extern int _DAT_0043bdf0;
-extern int DAT_0043bdf4;
-extern unsigned int DAT_0043c760;
-extern unsigned int DAT_0043c8c8;
+
 extern int FUN_00422510();
 
 #include "globals.h"
 
-VBuffer *g_WorkBuffer = (VBuffer *)0x00436974;
-void *DAT_0043696c = (void *)0x0043696c;
-void *DAT_00436968 = (void *)0x00436968;
-void *DAT_00436970 = (void *)0x00436970;
-char *DAT_0043697c = (char *)0x0043697c;
-void *DAT_00436964 = (void *)0x00436964;
-char *DAT_00436960 = (char *)0x00436960;
 
 extern "C" {
 void FUN_00421010(void *);
@@ -68,8 +52,6 @@ int _chdir(const char *);
 void FUN_0041e310();
 void FUN_00421840();
 
-extern HWND DAT_0043de7c;
-extern int DAT_0043d55c;
 
 /* Function start: 0x4192F0 */
 int ProcessMessages() {
@@ -130,7 +112,7 @@ int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
     return -1;
   }
   if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
-    _DAT_0043bdf0 = 0xd;
+    DAT_0043bdf0 = 0xd;
     DAT_0043bdf4 = 5;
     return -1;
   }
@@ -143,25 +125,25 @@ void SetErrorCode(unsigned int errorCode) {
   unsigned int *puVar2;
 
   iVar1 = 0;
-  puVar2 = &DAT_0043c760;
+  puVar2 = DAT_0043c760;
   DAT_0043bdf4 = errorCode;
   do {
     if (*puVar2 == errorCode) {
-      _DAT_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
+      DAT_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
       return;
     }
     puVar2 = puVar2 + 2;
     iVar1 = iVar1 + 1;
-  } while (puVar2 < &DAT_0043c8c8);
+  } while (puVar2 < (DAT_0043c760 + 90));
   if ((0x12 < errorCode) && (errorCode < 0x25)) {
-    _DAT_0043bdf0 = 0xd;
+    DAT_0043bdf0 = 0xd;
     return;
   }
   if ((0xbb < errorCode) && (errorCode < 0xcb)) {
-    _DAT_0043bdf0 = 8;
+    DAT_0043bdf0 = 8;
     return;
   }
-  _DAT_0043bdf0 = 0x16;
+  DAT_0043bdf0 = 0x16;
   return;
 }
 
@@ -274,21 +256,21 @@ void CheckDebug(void) {
   void *pvVar2;
 
   __try {
-    pvVar2 = DAT_0043697c;
-    if (DAT_0043697c == (char *)0x0) {
+    pvVar2 = g_CDData_0043697c;
+    if (g_CDData_0043697c == (char *)0x0) {
       void *local_14 = AllocateMemory(0x1e5);
       if (local_14 != (void *)0x0) {
-        pvVar2 = FUN_00421e40(local_14, "cddata", &DAT_0043d568);
+        pvVar2 = FUN_00421e40(local_14, "cddata", DAT_0043d568);
       }
     }
-    DAT_0043697c = (char *)pvVar2;
-    if (DAT_0043d568 == '\0') {
+    g_CDData_0043697c = (char *)pvVar2;
+    if (DAT_0043d568[0] == '\0') {
       if (!FileExists((char *)((int)pvVar2 + 0x1c5)) &&
           !FileExists("Develop")) {
         int i = 3;
         for (; i < 0x1a; i++) {
-          if (CheckFileOnDrive(DAT_0043697c, i)) {
-            if (ChangeToDriveDirectory(DAT_0043697c, i)) {
+          if (CheckFileOnDrive(g_CDData_0043697c, i)) {
+            if (ChangeToDriveDirectory(g_CDData_0043697c, i)) {
               ShowError("Invalid CD directory");
             }
             break;
@@ -298,18 +280,18 @@ void CheckDebug(void) {
           ShowError("Missing the Teacher CD-ROM");
         }
       } else {
-        _DAT_0043d564 = 1;
-        if (ChangeDirectory(DAT_0043697c,
-                            (unsigned char *)((int)DAT_0043697c + 0x1c5))) {
+        DAT_0043d564 = 1;
+        if (ChangeDirectory(g_CDData_0043697c,
+                            (unsigned char *)((int)g_CDData_0043697c + 0x1c5))) {
           ShowError("Invalid Development directory");
         }
       }
     } else {
-      sprintf(local_94, "%s\\%s", &DAT_0043d568, (char *)((int)pvVar2 + 0x1c5));
+      sprintf(local_94, "%s\\%s", DAT_0043d568, (char *)((int)pvVar2 + 0x1c5));
       if (!FileExists(local_94)) {
         ShowError("Invalid CD path specified on command line");
       }
-      ChangeDirectory(DAT_0043697c, (unsigned char *)local_94);
+      ChangeDirectory(g_CDData_0043697c, (unsigned char *)local_94);
     }
   } __except (EXCEPTION_EXECUTE_HANDLER) {
   }
@@ -322,20 +304,20 @@ unsigned int CalculateBufferSize(unsigned int width, unsigned int height) {
 
 /* Function start: 0x41A3D0 */
 void InitGameSystems(void) {
-  DAT_00436960 = (char *)AllocateMemory(0x100);
-  DAT_00436964 = AllocateMemory(CalculateBufferSize(0x280, 0x1e0));
+  g_Buffer_00436960 = (char *)AllocateMemory(0x100);
+  g_Buffer_00436964 = AllocateMemory(CalculateBufferSize(0x280, 0x1e0));
   CheckDebug();
   ClearMessageLog();
   CreateGameObject_1();
   InitWorkBuffer(0x280, 0x1e0);
   void *pJoystickManager = AllocateMemory(0x1b8);
   if (pJoystickManager != (void *)0x0) {
-    DAT_00436968 = JoystickManager_Constructor(
-        pJoystickManager, *(char *)((int)DAT_00436970 + 0x44));
+    g_JoystickManager_00436968 = JoystickManager_Constructor(
+        pJoystickManager, *(char *)((int)g_Unknown_00436970 + 0x44));
   }
   void *pSound = AllocateMemory(0x3c);
   if (pSound != (void *)0x0) {
-    DAT_0043696c = Sound_Init(pSound, 0x5622, 8, 1);
+    g_Sound_0043696c = (Sound*)Sound_Init(pSound, 0x5622, 8, 1);
   }
   AnimatedAsset *pTextManager = (AnimatedAsset *)AllocateMemory(0x38);
   AnimatedAsset *pTextManagerInit = (AnimatedAsset *)0x0;
@@ -373,38 +355,38 @@ void ShutdownGameSystems(void) {
     FreeMemory(g_TextManager_00436990);
     g_TextManager_00436990 = 0;
   }
-  if (g_WorkBuffer != 0) {
-    g_WorkBuffer->~VBuffer();
-    FreeMemory(g_WorkBuffer);
-    g_WorkBuffer = 0;
+  if (g_WorkBuffer_00436974 != 0) {
+    g_WorkBuffer_00436974->~VBuffer();
+    FreeMemory(g_WorkBuffer_00436974);
+    g_WorkBuffer_00436974 = 0;
   }
-  if (DAT_0043696c != 0) {
+  if (g_Sound_0043696c != 0) {
     AIL_shutdown();
-    FreeMemory(DAT_0043696c);
-    DAT_0043696c = 0;
+    FreeMemory(g_Sound_0043696c);
+    g_Sound_0043696c = 0;
   }
-  if (DAT_00436968 != 0) {
+  if (g_JoystickManager_00436968 != 0) {
     FUN_00421840();
-    FreeMemory(DAT_00436968);
-    DAT_00436968 = 0;
+    FreeMemory(g_JoystickManager_00436968);
+    g_JoystickManager_00436968 = 0;
   }
-  if (DAT_00436970 != 0) {
-    FUN_004227a0(DAT_00436970);
-    FreeMemory(DAT_00436970);
-    DAT_00436970 = 0;
+  if (g_Unknown_00436970 != 0) {
+    FUN_004227a0(g_Unknown_00436970);
+    FreeMemory(g_Unknown_00436970);
+    g_Unknown_00436970 = 0;
   }
-  if (DAT_0043697c != 0) {
-    FUN_00421ea0(DAT_0043697c);
-    FreeMemory(DAT_0043697c);
-    DAT_0043697c = 0;
+  if (g_CDData_0043697c != 0) {
+    FUN_00421ea0(g_CDData_0043697c);
+    FreeMemory(g_CDData_0043697c);
+    g_CDData_0043697c = 0;
   }
-  if (DAT_00436964 != 0) {
-    FreeMemory(DAT_00436964);
-    DAT_00436964 = 0;
+  if (g_Buffer_00436964 != 0) {
+    FreeMemory(g_Buffer_00436964);
+    g_Buffer_00436964 = 0;
   }
-  if (DAT_00436960 != 0) {
-    FreeMemory(DAT_00436960);
-    DAT_00436960 = 0;
+  if (g_Buffer_00436960 != 0) {
+    FreeMemory(g_Buffer_00436960);
+    g_Buffer_00436960 = 0;
   }
 }
 

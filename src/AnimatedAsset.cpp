@@ -1,5 +1,7 @@
 #include "AnimatedAsset.h"
+#include "globals.h"
 #include "Animation.h"
+#include "VBuffer.h"
 #include "Memory.h"
 #include <stdio.h>
 #include <string.h>
@@ -7,19 +9,12 @@
 
 extern Animation* Animation_Ctor(Animation*);
 
-extern VBuffer* g_WorkBuffer;
-
 extern "C" {
     // CallBlitter2/3 are VBuffer members: use VBuffer::CallBlitter2/CallBlitter3
     // ...existing code...
     void FUN_00405770(void*);
     void FUN_00424b00(void*, int, int, void*, void*);
-    extern int DAT_004374c2;
-    extern int DAT_004374ce;
-    extern signed char DAT_004374c0;
-    extern signed char DAT_004374c1;
     void FUN_0041ae0c(void);
-    extern void* DAT_00435ef4;
 }
 
 // Constructor wrapper for external callers
@@ -61,7 +56,7 @@ void AnimatedAsset::BlitGlyphWithColors(int x1, int x2, int y1, int y2, int dest
     if (tmpBuf != (VBuffer*)0) {
         tmpBuf->ClearScreen(0);
         tmpBuf->BlitTransparentRowsFrom(x1, x2, y1, y2, 0, 0, this->buffer, transparentColor, fillColor);
-        g_WorkBuffer->CallBlitter2(0, width - 1, 0, height - 1, destX, destY, tmpBuf);
+        g_WorkBuffer_00436974->CallBlitter2(0, width - 1, 0, height - 1, destX, destY, tmpBuf);
         tmpBuf->~VBuffer();
         FreeMemory(tmpBufMem);
     }
@@ -391,14 +386,14 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
             iVar3 = *piVar5;
             if (this->useBuffer == 0) {
                 if (this->useAttr == 0) {
-                    g_WorkBuffer->CallBlitter2(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->buffer);
+                    g_WorkBuffer_00436974->CallBlitter2(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->buffer);
                 }
                 else {
-                    g_WorkBuffer->CallBlitter3(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->buffer, this->color, this->attr);
+                    g_WorkBuffer_00436974->CallBlitter3(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->buffer, this->color, this->attr);
                 }
             }
             else if (this->useAttr == 0) {
-                this->buffer->ClipAndBlit((int)g_WorkBuffer, iVar3, iVar4, iVar2, iVar1, param_1, param_2);
+                this->buffer->ClipAndBlit((int)g_WorkBuffer_00436974, iVar3, iVar4, iVar2, iVar1, param_1, param_2);
             }
             else {
                 this->BlitGlyphWithColors(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->color, this->attr);

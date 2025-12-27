@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "Animation.h"
 #include "Palette.h"
 #include "VBuffer.h"
@@ -22,9 +23,7 @@ void *FUN_004224e0();
 void FUN_0041ac50(int);
 void FUN_0041ac80();
 
-extern void *DAT_00436968;
-extern int DAT_004373bc;
-extern char DAT_00436970[];
+
 }
 
 // Constructor wrappers for external callers
@@ -139,11 +138,11 @@ void Animation::GotoFrame(int frame) {
   if (this->smk != 0) {
     /* SmackGoto and SmackSoundOnOff missing */
     /*
-    if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
+    if (*(char*)(g_Unknown_00436970 + 0x46) == '\x02') {
         SmackSoundOnOff(this->smk, 0);
     }
     SmackGoto(this->smk, frame);
-    if (*(char*)(DAT_00436970 + 0x46) == '\x02') {
+    if (*(char*)(g_Unknown_00436970 + 0x46) == '\x02') {
         SmackSoundOnOff(this->smk, 1);
     }
     */
@@ -156,7 +155,7 @@ int Animation::Open(char *filename, int param_2, int param_3) {
     return 1;
   }
 
-  if (*(char *)(DAT_00436970 + 0x46) != '\x02') {
+  if (*(char *)(((char*)g_Unknown_00436970) + 0x46) != '\x02') {
     param_2 = param_2 & 0xfff01fff;
   }
 
@@ -284,12 +283,12 @@ void Animation::MainLoop() {
       }
       DoFrame(this);
       do {
-        if (FUN_00421d10(DAT_00436968) != 0) {
+        if (FUN_00421d10(g_JoystickManager_00436968) != 0) {
           goto end_loop;
         }
         if ((flags & 4) == 0) {
           unsigned int uVar3 = 0;
-          int iVar1 = *(int *)((char *)DAT_00436968 + 0x1a0);
+          int iVar1 = *(int *)((char *)g_JoystickManager_00436968 + 0x1a0);
           if (iVar1 != 0) {
             uVar3 = *(unsigned int *)(iVar1 + 8) & 2;
           }

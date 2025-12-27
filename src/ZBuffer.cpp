@@ -1,4 +1,5 @@
 #include "ZBuffer.h"
+#include "globals.h"
 #include "Message.h"
 #include "string.h"
 #include <stdlib.h>
@@ -8,16 +9,17 @@
 #include "string.h"
 
 // This is a guess based on usage.
-struct SoundManager {
-    char pad[0x84];
-    Timer timer;
-    int field_98;
-    void* field_9c;
-    void* field_a0;
-    void* field_a4;
-};
+// This is a guess based on usage.
+// struct SoundManager {
+//     char pad[0x84];
+//     Timer timer;
+//     int field_98;
+//     void* field_9c;
+//     void* field_a0;
+//     void* field_a4;
+// };
 
-extern SoundManager* g_SoundManager;
+// extern SoundManager* g_SoundManager;
 
 /* Function start: 0x4012D0 */
 void ZBuffer::Update(int param_1, int param_2)

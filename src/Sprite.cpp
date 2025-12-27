@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <string.h>
+
+#include "globals.h"
 #include "Sprite.h"
 #include "Parser.h"
 #include "GameState.h"
@@ -22,11 +25,6 @@ extern "C" {
 
 // C++ helper defined in Array.cpp
 void Array_Iterate(void* array, unsigned int element_size, int num_elements, void (*callback)(void*), void (*cleanup_function)(void*));
-
-extern void* g_SoundManager;
-
-char DAT_0043d630[0x4000];
-int DAT_00436b9c = 0;
 
 // Constructor wrapper for external callers
 Sprite* Sprite_Ctor(Sprite* p, char* filename) {
@@ -358,9 +356,8 @@ void Sprite::CheckRanges1()
     }
 }
 
-/* Function start: 0x41d590 */
-extern GameState* g_GameState;
 
+/* Function start: 0x41d590 */
 int Sprite::CheckConditions()
 {
     int iVar1;
@@ -378,28 +375,28 @@ int Sprite::CheckConditions()
             piVar2 = (int*)((char*)this->logic_conditions + iVar3);
             if (piVar2[1] == 1) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (g_GameState->field_0x90 <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState_00436998->field_0x90 <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState->field_0x88[iVar1] == 0) {
+                if (g_GameState_00436998->field_0x88[iVar1] == 0) {
                     return 0;
                 }
             }
             if (piVar2[1] == 2) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (g_GameState->field_0x90 <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState_00436998->field_0x90 <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState->field_0x88[iVar1] != 0) {
+                if (g_GameState_00436998->field_0x88[iVar1] != 0) {
                     return 0;
                 }
             }
             if (piVar2[1] == 3) {
                 iVar1 = *piVar2;
-                if ((0 < iVar1) && (g_GameState->field_0x90 <= iVar1)) {
+                if ((0 < iVar1) && (g_GameState_00436998->field_0x90 <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState->field_0x88[iVar1] != this->handle) {
+                if (g_GameState_00436998->field_0x88[iVar1] != this->handle) {
                     return 0;
                 }
             }
@@ -548,8 +545,8 @@ int Sprite::LBLParse(char* param_1)
         this->InitLogic(local_ac);
     } else if (strcmp(local_a0, "LOGIC") == 0) {
         sscanf(param_1, "%s %s", local_a0, local_80);
-        local_ac = g_GameState->FindState(local_80);
-        if ((0 < local_ac) && (g_GameState->field_0x90 <= local_ac)) {
+        local_ac = g_GameState_00436998->FindState(local_80);
+        if ((0 < local_ac) && (g_GameState_00436998->field_0x90 <= local_ac)) {
             ShowError("GameState Error  #%d", 1);
         }
         if (strstr(param_1, "FALSE") != 0) {
@@ -615,12 +612,12 @@ void Sprite::Dump()
             do {
                 int* piVar1 = (int*)((char*)this->logic_conditions + iVar4);
                 if (piVar1[1] == 1) {
-                    int uVar2 = g_GameState->GetState(*piVar1);
+                    int uVar2 = g_GameState_00436998->GetState(*piVar1);
                     WriteToMessageLog("LOGIC: %s TRUE", (char*)uVar2);
                 }
                 piVar1 = (int*)((char*)this->logic_conditions + iVar4);
                 if (piVar1[1] == 2) {
-                    int uVar2 = g_GameState->GetState(*piVar1);
+                    int uVar2 = g_GameState_00436998->GetState(*piVar1);
                     WriteToMessageLog("LOGIC: %s FALSE", (char*)uVar2);
                 }
                 iVar4 = iVar4 + 8;

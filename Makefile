@@ -31,7 +31,7 @@ $(WIBO):
 	ln -sf wibo-src/build/release/wibo $@
 
 TEACHER.EXE: $(OBJS)
-	env LIB='$(MSVC_LIB)' $(LINK) /nologo $^ /OUT:$@
+	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
 
 $(OUT_DIR)/%.obj $(OUT_DIR)/%.asm: src/%.cpp | $(WIBO)
 	@mkdir -p $(OUT_DIR)

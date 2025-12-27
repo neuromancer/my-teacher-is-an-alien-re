@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "AILData.h"
 #include "string.h"
 #include <mss.h>
@@ -7,7 +8,6 @@ extern "C" {
 void FUN_0041e670(int);
 }
 
-extern void *DAT_0043696c;
 
 // Constructor wrapper for external callers
 AILData *AILData_Ctor(AILData *p) {
@@ -34,7 +34,7 @@ AILData::~AILData() {
 
 /* Function start: 0x41E490 */
 int AILData::Load(char *filename) {
-  if (*(int *)((char *)DAT_0043696c + 0x38) == 0) {
+  if (*(int *)((char *)g_Sound_0043696c + 0x38) == 0) {
     return 1;
   }
   if (this->data != 0) {

@@ -1,15 +1,7 @@
 #include <windows.h>
+#include "globals.h"
 
 extern "C" {
-    extern char DAT_00437720[0x400];    // Palette entries array
-    extern char DAT_00437b48[0x400];    // Palette RGBQUAD array
-    extern int DAT_00437f54;            // Palette initialized flag
-    extern int DAT_00437f50;            // ColorUse flag
-    extern int DAT_00437f66;            // Video buffer offset
-    extern short DAT_00437f6a;          // Video buffer segment
-    extern HDC h_0043841c;              // Device context
-    extern void* DAT_0043842c;          // SetDIBColorTable function pointer
-    extern HPALETTE hPal_0043748c;      // Palette handle
 }
 
 extern "C" {

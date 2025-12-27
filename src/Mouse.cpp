@@ -1,3 +1,4 @@
+#include "globals.h"
 #include <windows.h>
 #include "Mouse.h"
 #include "Sprite.h"
@@ -15,9 +16,7 @@ extern AILData* AILData_Ctor(AILData*);
 extern "C" {
     void FUN_0041ef47();
     void FUN_00425fd0(char*, char*, int);
-    extern void* DAT_00436968;
-    extern char DAT_00437506;
-    extern char DAT_00437507;
+
 }
 
 /* Function start: 0x41ECA0 */
@@ -137,7 +136,7 @@ void Mouse::DrawCursor()
         ShowError("missing mouse ");
     }
 
-    int* mouse_coords = *(int**)((char*)DAT_00436968 + 0x1a0);
+    int* mouse_coords = *(int**)((char*)g_JoystickManager_00436968 + 0x1a0);
 
     int final_x = 0;
     if (mouse_coords) {

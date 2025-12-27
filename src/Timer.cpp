@@ -54,3 +54,8 @@ Timer::Timer()
 {
     Init();
 }
+/* Function start: 0x418F70 */
+Timer::~Timer()
+{
+    Timer_DecrementCounter();
+}

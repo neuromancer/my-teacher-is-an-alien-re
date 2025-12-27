@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "VBuffer.h"
 #include <stdlib.h>
 #include <windows.h>
@@ -32,24 +33,7 @@ void ReleaseVBufferHandle(int handle)
 }
 
 extern "C" {
-    extern int DAT_0043826c;
-    extern HDC h_0043841c;
-    extern int DAT_00437f4c;
-    extern int DAT_00438428;
-    extern HGDIOBJ DAT_00438424;
-    extern int DAT_00437fec;
-    extern int DAT_00437f6c;
-    extern int DAT_0043836c;
-    extern int DAT_004382ec;
-    extern int DAT_0043806c;
-    extern int DAT_004380ec;
-    extern int DAT_0043816c;
-    extern int DAT_004381ec;
     void FUN_00423076();
-    extern int DAT_00437f54;
-    extern int DAT_00437f66;
-    extern int DAT_00437f62;
-    extern int DAT_00437491;
 }
 
 // Forward declarations
@@ -78,7 +62,6 @@ extern "C" {
     unsigned int FUN_00423703(int, unsigned int, unsigned int);
     void FUN_004234f9(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
     void FUN_004234d5(unsigned int);
-    extern int DAT_00436964;
     void FUN_00422e1a(int);
 }
 
@@ -335,7 +318,7 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
     scaledHeight = (int)(srcBuffer->height * scale);
 
     if ((scaledWidth >= 1) && (scaledHeight >= 1)) {
-        local_10 = FUN_00423703(DAT_00436964, scaledWidth, scaledHeight);
+        local_10 = FUN_00423703((int)g_Buffer_00436964, scaledWidth, scaledHeight);
         if (local_10 < 0) {
             ShowError("VBuffer::ScaleTCCopy");
         }

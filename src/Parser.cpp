@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "Parser.h"
 #include "string.h"
 #include <stdarg.h>
@@ -5,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern char *DAT_00436960;
 
 /* Function start: 0x4189f0 */
 Parser::Parser() { memset(&this->field_0x4, 0, sizeof(Parser) - 4); }
@@ -87,8 +87,8 @@ void Parser::FindKey(unsigned char *param_1) {
     if (internal_ReadLine(local_100, 255, this->pFile) == NULL) {
       break;
     }
-    sscanf(local_100, "%s", DAT_00436960);
-    if (strcmp(DAT_00436960, (char *)param_1) == 0) {
+    sscanf(local_100, "%s", g_Buffer_00436960);
+    if (strcmp(g_Buffer_00436960, (char *)param_1) == 0) {
       return;
     }
   }
