@@ -15,9 +15,9 @@ public:
     void AddMessage(int);
     int ProcessMessage(void*);
     void CleanUpVBuffer();
-    static void ClearList(int*);
+    static void __fastcall ClearList(int*);
     static void* __fastcall PopNode(int*);
-    static void* PopNode_2(int*);
+    static void* __fastcall PopNode_2(int*);
 };
 
 #endif // ZBUFFER_H

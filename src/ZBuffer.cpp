@@ -175,41 +175,41 @@ void* __fastcall ZBuffer::PopNode(int* param_1)
 }
 
 /* Function start: 0x401790 */
-void* ZBuffer::PopNode_2(int* param_1)
+void* __fastcall ZBuffer::PopNode_2(int* param_1)
 {
     int* piVar1 = (int*)param_1[2];
-    if (piVar1 != 0) {
-        if ((int*)*param_1 == piVar1) {
-            *param_1 = piVar1[1];
-        }
-        if ((int*)param_1[1] == piVar1) {
-            param_1[1] = *piVar1;
-        }
-        if (*piVar1 != 0) {
-            *(int*)(*piVar1 + 4) = piVar1[1];
-        }
-        void** puVar2 = (void**)((void**)param_1[2])[1];
-        if (puVar2 != 0) {
-            *puVar2 = *(void**)param_1[2];
-        }
-        void* uVar3 = 0;
-        void** puVar2_2 = (void**)param_1[2];
-        if (puVar2_2 != 0) {
-            uVar3 = (void*)puVar2_2[2];
-            puVar2_2[2] = 0;
-            *puVar2_2 = 0;
-            puVar2_2[1] = 0;
-            FreeFromGlobalHeap(puVar2_2);
-            param_1[2] = 0;
-        }
-        param_1[2] = *param_1;
-        return uVar3;
+    if (piVar1 == 0) {
+        return 0;
     }
-    return 0;
+    if ((int*)*param_1 == piVar1) {
+        *param_1 = piVar1[1];
+    }
+    if ((int*)param_1[1] == piVar1) {
+        param_1[1] = *piVar1;
+    }
+    if (*piVar1 != 0) {
+        *(int*)(*piVar1 + 4) = piVar1[1];
+    }
+    void** puVar2 = (void**)((void**)param_1[2])[1];
+    if (puVar2 != 0) {
+        *puVar2 = *(void**)param_1[2];
+    }
+    void** puVar2_2 = (void**)param_1[2];
+    void* uVar3 = 0;
+    if (puVar2_2 != 0) {
+        uVar3 = (void*)puVar2_2[2];
+        puVar2_2[2] = 0;
+        *puVar2_2 = 0;
+        puVar2_2[1] = 0;
+        FreeFromGlobalHeap(puVar2_2);
+        param_1[2] = 0;
+    }
+    param_1[2] = *param_1;
+    return uVar3;
 }
 
 /* Function start: 0x401560 */
-void ZBuffer::ClearList(int* param_1)
+void __fastcall ZBuffer::ClearList(int* param_1)
 {
     if (*param_1 != 0) {
         param_1[2] = *param_1;
