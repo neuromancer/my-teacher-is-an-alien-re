@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "VBuffer.h"
+#include "VideoTable.h"
 #include <stdlib.h>
 #include <windows.h>
 #include "string.h"
@@ -41,7 +42,6 @@ void CopyRowTransparent(char* dest, char* src, int count, char transparentColor,
 void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor);
 
 extern "C" {
-    void ClearScreen();
     void FUN_00422e8f();
     int FUN_00422a01(unsigned int);
     int FUN_00422e71(unsigned int);
@@ -58,7 +58,6 @@ extern "C" {
     int FUN_004230d9(int);
     void FUN_00423296(int, int, int, int, int, int);
     void FUN_0042333a(int, int, int, int, int, int, int, int);
-    __int64 __ftol();
     unsigned int FUN_00423703(int, unsigned int, unsigned int);
     void FUN_004234f9(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
     void FUN_004234d5(unsigned int);
@@ -132,15 +131,17 @@ VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
             uVar2 = (int)param_2 >> 0x1f;
         } while (((param_2 ^ uVar2) - uVar2 & 3 ^ uVar2) != uVar2);
     }
-    uVar2 = CreateTable(param_1, param_2);
-    this->handle = uVar2;
-    if (uVar2 == 0xffffffff) {
+    int iVar1 = CreateTable(param_1, param_2);
+    this->handle = iVar1;
+    if (iVar1 == -1) {
         ShowError("VBuffer::Init - Unable To create vb. Table Full");
+        return;
     }
-    if (uVar2 == 0xfffffffe) {
+    if (iVar1 == -2) {
         ShowError("VBuffer::Init - Unable To create vb. No memory");
+        return;
     }
-    this->SetCurrentVideoMode(uVar2);
+    this->SetCurrentVideoMode(iVar1);
     FUN_00422e8f();
     this->InvalidateVideoMode();
     this->data = (void*)FUN_00422e71(this->handle);
@@ -152,7 +153,7 @@ void VBuffer::ClearScreen(int color)
 {
     this->SetCurrentVideoMode(this->handle);
     FUN_00422a01(color);
-    FUN_00423099();
+    ClearVideoBuffer();
     this->InvalidateVideoMode();
 }
 
@@ -226,7 +227,7 @@ void VBuffer::CallBlitter5(int param_1, int param_2, int param_3, int param_4, i
 }
 
 /* Function start: 0x41ad40 */
-void VBuffer::TPaste(void)
+void VBuffer::TPaste(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
 {
     ShowError("VBuffer::TPaste - Not implemented");
 }
@@ -234,21 +235,15 @@ void VBuffer::TPaste(void)
 /* Function start: 0x41ad50 */
 void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8)
 {
-    VBuffer* local_40 = (VBuffer*)malloc(sizeof(VBuffer));
-
-    if (local_40) {
-        VirtualBufferCreateAndClean(local_40, (param_2 - param_1) + 1, (param_4 - param_3) + 1);
+    int local_40_storage[sizeof(VBuffer) / sizeof(int)];
+    VBuffer* local_40 = (VBuffer*)local_40_storage;
+    VirtualBufferCreateAndClean(local_40, (param_2 - param_1) + 1, (param_4 - param_3) + 1);
+    __try {
         local_40->ClearScreen(0);
-        local_40->BlitTransparentRowsFrom(param_1, param_2, param_3, param_4, param_5, param_6, this, param_7, param_8);
-        local_40->TPaste();
-        local_40->~VBuffer();
-        free(local_40);
-    }
-
-    try {
+        BlitTransparentRows(param_1, param_2, param_3, param_4, local_40->saved_video_mode, local_40->video_mode_lock_count, this, local_40, param_7, param_8);
+        local_40->TPaste(local_40->clip_x1, local_40->clip_x2, local_40->saved_video_mode, local_40->video_mode_lock_count, param_5, param_6);
+    } __finally {
         FUN_0041ae0c();
-    } catch (...) {
-
     }
 }
 
@@ -273,20 +268,23 @@ void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41aee0 */
 void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    int local_30 = this->clip_x1;
-    int local_28 = this->clip_x2;
-    int local_2c = this->saved_video_mode;
-    int local_24 = this->video_mode_lock_count;
-    int local_20 = param_1;
-    int local_1c = param_3;
-    int local_18 = param_2;
-    int local_14 = param_4;
+    int local_2c[4];
+    int local_1c[4];
+
+    local_2c[0] = this->clip_x1;
+    local_2c[2] = this->clip_x2;
+    local_2c[1] = this->saved_video_mode;
+    local_2c[3] = this->video_mode_lock_count;
+    local_1c[0] = param_1;
+    local_1c[2] = param_3;
+    local_1c[1] = param_2;
+    local_1c[3] = param_4;
 
     __try
     {
-        if (FUN_0041b590(&local_30, &local_20, &param_5, &param_6))
+        if (FUN_0041b590(local_2c, local_1c, &param_5, &param_6))
         {
-            this->CallBlitter(local_20, local_18, local_1c, local_14, param_5, param_6, param_7);
+            this->CallBlitter(local_1c[0], local_1c[1], local_1c[2], local_1c[3], param_5, param_6, param_7);
         }
     }
     __finally
@@ -296,33 +294,56 @@ void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, in
     }
 }
 
+extern "C" {
+    void FUN_0041b07f(void);
+    void FUN_0041b091(void);
+}
+
 /* Function start: 0x41AFC0 */
 void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    // TODO: Implement - similar to ClipAndBlit
+    int local_2c[4];
+    int local_1c[4];
+
+    local_2c[0] = this->clip_x1;
+    local_2c[2] = this->clip_x2;
+    local_2c[1] = this->saved_video_mode;
+    local_2c[3] = this->video_mode_lock_count;
+    local_1c[0] = param_1;
+    local_1c[1] = param_3;
+    local_1c[2] = param_2;
+    local_1c[3] = param_4;
+
+    __try
+    {
+        if (FUN_0041b590(local_2c, local_1c, &param_5, &param_6))
+        {
+            this->CallBlitter2(local_1c[0], local_1c[2], local_1c[1], local_1c[3], param_5, param_6, (VBuffer*)param_7);
+        }
+    }
+    __finally
+    {
+        FUN_0041b07f();
+        FUN_0041b091();
+    }
 }
 
 /* Function start: 0x41B110 */
 void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale)
 {
-    int scaledWidth;
-    int scaledHeight;
-    void* puVar3;
-    int iVar4;
-
-    int local_30[4];  // clip_x1, video_mode_lock_count, clip_x2, saved_video_mode
-    int local_20[4];  // x1, y1, scaledWidth-1, scaledHeight-1
+    int local_30[4];
+    int local_20[4];
     int local_10;
 
-    scaledWidth = (int)(srcBuffer->width * scale);
-    scaledHeight = (int)(srcBuffer->height * scale);
+    int scaledWidth = (int)(srcBuffer->width * scale);
+    int scaledHeight = (int)(srcBuffer->height * scale);
 
     if ((scaledWidth >= 1) && (scaledHeight >= 1)) {
         local_10 = FUN_00423703((int)g_Buffer_00436964, scaledWidth, scaledHeight);
         if (local_10 < 0) {
             ShowError("VBuffer::ScaleTCCopy");
         }
-        puVar3 = (void*)FUN_00422e71(local_10);
+        void* puVar3 = (void*)FUN_00422e71(local_10);
         FUN_004234f9(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
 
         __try {
@@ -330,20 +351,22 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
             local_30[1] = 0;
             local_30[2] = 0;
             local_30[3] = 0;
-            local_30[3] = this->saved_video_mode;
+            local_30[1] = this->saved_video_mode;
             local_30[2] = this->clip_x2;
             local_20[0] = 0;
             local_20[1] = 0;
             local_20[2] = 0;
             local_20[3] = 0;
             local_30[0] = this->clip_x1;
-            local_30[1] = this->video_mode_lock_count;
-            local_20[2] = scaledWidth - 1;
-            local_20[3] = scaledHeight - 1;
+            scaledWidth = scaledWidth - 1;
+            scaledHeight = scaledHeight - 1;
+            local_30[3] = this->video_mode_lock_count;
+            local_20[2] = scaledWidth;
+            local_20[3] = scaledHeight;
             local_20[0] = 0;
             local_20[1] = 0;
 
-            iVar4 = FUN_0041b590(local_30, local_20, &param_1, &param_2);
+            int iVar4 = FUN_0041b590(local_30, local_20, &param_1, &param_2);
             if (iVar4 != 0) {
                 FUN_004233e8(local_20[0], local_20[2], local_20[1], local_20[3], param_1, param_2, local_10, this->handle);
                 FUN_004234d5(local_10);
@@ -416,77 +439,4 @@ void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, V
     if (destBuffer != NULL) {
         destBuffer->BlitTransparentRowsFrom(x1, x2, y1, y2, destX, destY, srcBuffer, transparentColor, fillColor);
     }
-}
-
-#include <string.h>
-
-/* Function start: 0x423099 */
-int FUN_00423099(void) {
-    if (*(char*)&DAT_00437f54) {
-        memset((char*)DAT_00437f66, DAT_00437491, DAT_00437f62);
-    }
-    return 0;
-}
-/* Function start: 0x422F00 */
-int __cdecl CreateTable(int width, int height) {
-    int i = 0;
-    while (i < 32 && ((int*)&DAT_0043826c)[i] != 0) {
-        i++;
-    }
-
-    if (i == 32) {
-        return -1;
-    }
-
-    unsigned int aligned_width = (width + 3) & 0xFFFFFFFC;
-    int image_size;
-
-    if (h_0043841c == 0) {
-        image_size = aligned_width * height;
-    } else {
-        image_size = 1064 - DAT_00437f4c;
-    }
-
-    HGLOBAL hMem = GlobalAlloc(0x42, image_size + DAT_00437f4c);
-    if (hMem == 0) {
-        return -2;
-    }
-
-    BITMAPINFO* bmi = (BITMAPINFO*)GlobalLock(hMem);
-    bmi->bmiHeader.biSize = 40;
-    bmi->bmiHeader.biWidth = aligned_width;
-    bmi->bmiHeader.biHeight = height;
-    bmi->bmiHeader.biPlanes = 1;
-    bmi->bmiHeader.biBitCount = 8;
-
-    HGLOBAL hDib = hMem;
-    int data_offset = DAT_00437f4c;
-
-    if (h_0043841c != 0) {
-        hDib = ((HGLOBAL(*)(HDC, BITMAPINFO*, void**))DAT_00438428)(h_0043841c, bmi, (void**)&bmi);
-        if (hDib == 0) {
-            GlobalUnlock(hMem);
-            GlobalFree(hMem);
-            return -2;
-        }
-        HGDIOBJ oldObj = SelectObject(h_0043841c, hDib);
-        if (DAT_00438424 == 0) {
-            DAT_00438424 = oldObj;
-        }
-        FUN_00423076();
-        SelectObject(h_0043841c, oldObj);
-        data_offset = 0;
-    }
-
-    ((HGLOBAL*)&DAT_00437fec)[i] = hDib;
-    ((HGLOBAL*)&DAT_00437f6c)[i] = hMem;
-    ((void**)&DAT_0043826c)[i] = (void*)((char*)bmi + data_offset);
-    ((unsigned int*)&DAT_0043836c)[i] = aligned_width;
-    ((int*)&DAT_004382ec)[i] = height;
-    ((unsigned int*)&DAT_0043806c)[i] = aligned_width - 1;
-    ((int*)&DAT_004380ec)[i] = height - 1;
-    ((int*)&DAT_0043816c)[i] = 0;
-    ((int*)&DAT_004381ec)[i] = 0;
-
-    return i;
 }

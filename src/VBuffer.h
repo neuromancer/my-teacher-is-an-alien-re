@@ -18,7 +18,7 @@ public:
     void Release();
     void Free();
     void ClearScreen(int color);
-    void TPaste(void);
+    void TPaste(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6);
     void BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8);
     void CallBlitter(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7);
     void CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, VBuffer* srcBuffer);
@@ -41,7 +41,5 @@ public:
 
 VBuffer* VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height);
 int __cdecl CalculateBufferSize(int param_1,unsigned int param_2);
-int FUN_00423099(void);
-unsigned int CreateTable(unsigned int, unsigned int);
 
 #endif // VBUFFER_H
