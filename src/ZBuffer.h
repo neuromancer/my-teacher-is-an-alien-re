@@ -14,6 +14,7 @@ public:
     void Update(int, int);
     void AddMessage(int);
     int ProcessMessage(void*);
+    ~ZBuffer();
     void CleanUpVBuffer();
     static void __fastcall ClearList(int*);
     static void* __fastcall PopNode(int*);

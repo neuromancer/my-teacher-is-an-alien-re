@@ -127,9 +127,9 @@ void ZBuffer::CleanUpVBuffer()
         FreeFromGlobalHeap(this_00);
         *(void**)((char*)this + 0x4) = 0;
     }
-    if (*(void**)((char*)this + 0x8) != 0) {
-        void* ptr = *(void**)((char*)this + 0x8);
-        FreeFromGlobalHeap(ptr);
+    Parser* ptr = *(Parser**)((char*)this + 0x8);
+    if (ptr != 0) {
+        delete ptr;
         *(void**)((char*)this + 0x8) = 0;
     }
 }
