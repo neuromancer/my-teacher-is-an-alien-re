@@ -53,8 +53,8 @@ int ZBuffer::ProcessMessage(void* param_1)
         return 1;
     }
     if (iVar1 == 0xe) {
-        g_SoundManager->field_98 = 2;
-        int* piVar2 = (int*)g_SoundManager->field_a0;
+        g_SoundManager->m_mode = 2;
+        int* piVar2 = (int*)g_SoundManager->m_commandQueue;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -65,7 +65,7 @@ int ZBuffer::ProcessMessage(void* param_1)
                 }
             }
         }
-        piVar2 = (int*)g_SoundManager->field_a4;
+        piVar2 = (int*)g_SoundManager->m_list3;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -76,7 +76,7 @@ int ZBuffer::ProcessMessage(void* param_1)
                 }
             }
         }
-        piVar2 = (int*)g_SoundManager->field_9c;
+        piVar2 = (int*)g_SoundManager->m_list1;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -90,8 +90,8 @@ int ZBuffer::ProcessMessage(void* param_1)
         if (iVar1 != 0xf) {
             return 0;
         }
-        g_SoundManager->field_98 = 1;
-        int* piVar2 = (int*)g_SoundManager->field_a0;
+        g_SoundManager->m_mode = 1;
+        int* piVar2 = (int*)g_SoundManager->m_commandQueue;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -102,7 +102,7 @@ int ZBuffer::ProcessMessage(void* param_1)
                 }
             }
         }
-        piVar2 = (int*)g_SoundManager->field_a4;
+        piVar2 = (int*)g_SoundManager->m_list3;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -113,7 +113,7 @@ int ZBuffer::ProcessMessage(void* param_1)
                 }
             }
         }
-        ZBuffer::ClearList((int*)g_SoundManager->field_9c);
+        ZBuffer::ClearList((int*)g_SoundManager->m_list1);
     }
     return 1;
 }

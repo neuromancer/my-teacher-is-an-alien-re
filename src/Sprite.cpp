@@ -11,6 +11,7 @@
 #include "Queue.h"
 #include "Memory.h"
 #include "Array.h"
+#include "SoundManager.h"
 #include "string.h"
 
 class VBuffer;
@@ -20,7 +21,7 @@ extern Animation* Animation_Ctor_Filename(Animation*, char*);
 
 extern "C" {
     //__int64 __ftol();
-    void FUN_0041be20(void*, void*, int, int, int, int, int, int);
+
 }
 
 // C++ helper defined in Array.cpp
@@ -323,7 +324,7 @@ int Sprite::Do(int x, int y, double scale)
     else {
         mode = 3 - (unsigned int)((flags & 0x40) == 0);
     }
-    FUN_0041be20(g_SoundManager, this->animation_data->data, this->priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
+    g_SoundManager->PlayAnimationSound(this->animation_data->data, this->priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
     return -((this->flags & 1) == 0) & done;
 }
 

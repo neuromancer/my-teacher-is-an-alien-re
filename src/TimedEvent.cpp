@@ -9,7 +9,7 @@
 
 extern "C" {
     void __fastcall TimedEvent_dtor(void*);
-    void FUN_0041c000(void*, char*, int, int, int);
+
 }
 
 extern void* g_GameStruct2;
@@ -84,7 +84,7 @@ int TimedEvent::Update()
         return 0;
     } else if (m_type == 2) {
         sprintf(g_Buffer_00436960, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
-        FUN_0041c000(g_SoundManager, g_Buffer_00436960, 0x208, 0x1c2, 10000);
+        g_SoundManager->ShowSubtitle(g_Buffer_00436960, 0x208, 0x1c2, 10000);
 
         if (remaining_time > 0) {
             return 0;

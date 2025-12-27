@@ -2,19 +2,10 @@
 #define GLOBAL_DEFS_H
 #include <windows.h>
 #include "Timer.h"
+#include "SoundManager.h"
 
 class VBuffer;
 class GameState;
-class SoundManager {
-public:
-    char pad[0x84];
-    Timer timer;
-    int field_98;
-    void* field_9c;
-    void* field_a0;
-    void* field_a4;
-};
-extern SoundManager* g_SoundManager;
 class AnimatedAsset;
 class Sound;
 class Sprite;
