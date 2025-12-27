@@ -138,10 +138,10 @@ void RunGame() {
     GameState* pGS = (GameState*)AllocateMemory(0x98);
     if (pGS != 0) {
         ((Parser*)pGS)->Parser::Parser();
-        pGS->field_0x88 = 0;
-        pGS->field_0x8c = 0;
-        pGS->field_0x90 = 0;
-        pGS->field_0x94 = 0;
+        pGS->stateValues = 0;
+        pGS->stateLabels = 0;
+        pGS->maxStates = 0;
+        pGS->reserved = 0;
         ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
     }
     g_GameState_00436998 = pGS;
@@ -149,10 +149,10 @@ void RunGame() {
     pGS = (GameState*)AllocateMemory(0x98);
     if (pGS != 0) {
         ((Parser*)pGS)->Parser::Parser();
-        pGS->field_0x88 = 0;
-        pGS->field_0x8c = 0;
-        pGS->field_0x90 = 0;
-        pGS->field_0x94 = 0;
+        pGS->stateValues = 0;
+        pGS->stateLabels = 0;
+        pGS->maxStates = 0;
+        pGS->reserved = 0;
         ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
     }
     g_GameState2_004369a4 = pGS;
@@ -160,10 +160,10 @@ void RunGame() {
     pGS = (GameState*)AllocateMemory(0x98);
     if (pGS != 0) {
         ((Parser*)pGS)->Parser::Parser();
-        pGS->field_0x88 = 0;
-        pGS->field_0x8c = 0;
-        pGS->field_0x90 = 0;
-        pGS->field_0x94 = 0;
+        pGS->stateValues = 0;
+        pGS->stateLabels = 0;
+        pGS->maxStates = 0;
+        pGS->reserved = 0;
         ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
     }
     g_GameState3_0043699c = pGS;
@@ -171,10 +171,10 @@ void RunGame() {
     pGS = (GameState*)AllocateMemory(0x98);
     if (pGS != 0) {
         ((Parser*)pGS)->Parser::Parser();
-        pGS->field_0x88 = 0;
-        pGS->field_0x8c = 0;
-        pGS->field_0x90 = 0;
-        pGS->field_0x94 = 0;
+        pGS->stateValues = 0;
+        pGS->stateLabels = 0;
+        pGS->maxStates = 0;
+        pGS->reserved = 0;
         ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
     }
     g_GameState4_004369a0 = pGS;

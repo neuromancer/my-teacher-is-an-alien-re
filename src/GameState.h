@@ -7,21 +7,23 @@ class GameState : public Parser {
 public:
     ~GameState();
     void ClearStates();
-    int FindState(char*);
-    int GetState(int);
-    int LBLParse(char*);
-    void Serialize(int);
-    void SetMaxStates2(int);
+    int FindState(char* stateName);
+    int GetState(int stateIndex);
+    int LBLParse(char* line);
+    void Serialize(int mode);
+    void SetMaxStates(int count);
     void FUN_00420480();
-    int* field_0x88;
-    int* field_0x8c;
-    int field_0x90;
-    int field_0x94;
+
+    int* stateValues;      // 0x88 - array of state values (saved/loaded in Serialize)
+    char** stateLabels;    // 0x8c - array of pointers to label strings
+    int maxStates;         // 0x90 - maximum number of states
+    int reserved;          // 0x94 - unused, initialized to 0
+
     GameState() {
-        this->field_0x88 = 0;
-        this->field_0x8c = 0;
-        this->field_0x90 = 0;
-        this->field_0x94 = 0;
+        this->stateValues = 0;
+        this->stateLabels = 0;
+        this->maxStates = 0;
+        this->reserved = 0;
     }
 };
 
