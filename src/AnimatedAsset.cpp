@@ -23,22 +23,6 @@ AnimatedAsset* AnimatedAsset_Ctor(AnimatedAsset* p) {
     return p;
 }
 
-/* Function start: 0x41AC30 */
-int AnimatedAsset::FUN_0041ac30()
-{
-    /* original: MOV EAX,[ECX + 0x10] ; RET
-       Here the source pointer is stored in the object's first dword. */
-    void* src = *(void**)this;
-    return *(int*)((char*)src + 0x10);
-}
-
-/* Function start: 0x41AC40 */
-void AnimatedAsset::FUN_0041ac40()
-{
-    /* No-op in original binary (RET). Kept as a member for clarity. */
-    return;
-}
-
 /* Function start: 0x41AD50 */
 void AnimatedAsset::BlitGlyphWithColors(int x1, int x2, int y1, int y2, int destX, int destY, char fillColor, char transparentColor)
 {
@@ -82,108 +66,132 @@ AnimatedAsset::AnimatedAsset()
     }
 }
 
+extern "C" {
+    void FUN_00424b00(void*, int, int, void*, void*);
+}
+
 /* Function start: 0x421260 */
 void AnimatedAsset::BuildGlyphTable()
 {
     int glyphCount = this->glyphCount;
-    int *alloc = (int*)AllocateMemory(glyphCount * 0x10 + 4);
     int *table = (int*)0x0;
+    int *alloc = (int*)AllocateMemory(glyphCount * 0x10 + 4);
 
-    if (alloc != (int*)0x0) {
-        table = alloc + 1; // skip length word
-        *alloc = glyphCount;
-        // initialize memory for each glyph entry (size 0x10)
-        //FUN_00424b00(table, 0x10, glyphCount, (void*)0x4213e0, (void*)AnimatedAsset_CleanupGlyphEntry);
+    __try {
+        if (alloc != (int*)0x0) {
+            table = alloc + 1;
+            *alloc = glyphCount;
+            FUN_00424b00(table, 0x10, glyphCount, (void*)0x4213e0, (void*)0x401680);
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
     }
 
     this->glyphTable = table;
 
-    if (table != (int*)0x0) {
-        // zero all ints in the table (glyphCount * 4 ints per glyph)
-        int totalInts = glyphCount * 4;
-        for (int i = 0; i < totalInts; i++) {
-            table[i] = 0;
-        }
+    int count = this->glyphCount * 4;
+    int *p = table;
+    while (count != 0) {
+        *p = 0;
+        p++;
+        count--;
     }
 
-    // Prepare indices and find start column
-    void* srcPtr = *(void**)this; /* treat the object's first dword as a pointer used by the original code */
-    int baseColMinus1 = *(int*)((char*)srcPtr + 0x18) - 1;
-    int baseIndex = this->FUN_0041ac30();
+    VBuffer* buf = this->buffer;
+    int baseColMinus1 = buf->height - 1;
+    int baseIndex = (int)buf->GetData();
+    buf = this->buffer;
 
     this->glyphHeight = 1;
 
-    if (1 < *(int*)((char*)srcPtr + 0x18)) {
-        while (this->glyphHeight < *(int*)((char*)srcPtr + 0x18)) {
-            int idx = (baseColMinus1 - this->glyphHeight) * *(int*)((char*)srcPtr + 0x14) + baseIndex;
-            if (*(char*)(idx) == this->glyphValue) break;
-            this->glyphHeight++;
-        }
+    if (buf->height > 1) {
+        char glyphVal = this->glyphValue;
+        do {
+            int idx = (baseColMinus1 - this->glyphHeight) * buf->width + baseIndex;
+            if (*(char*)(idx) == glyphVal) break;
+            this->glyphHeight = this->glyphHeight + 1;
+        } while (this->glyphHeight < buf->height);
     }
 
-    int *entryPtr = (int*)this->glyphTable;
     int col = 0;
+    int *entryPtr = this->glyphTable;
     int offset = 0;
 
-    if (0 < *(int *)(*(int*)this + 0x18)) {
-        while (offset < *(int *)(*(int*)this + 0x18)) {
+    if (buf->height > 0) {
+        do {
             int x = 0;
             int startX = 0;
-            int width = *(int *)(*(int*)this + 0x14);
-            if (0 < width) {
+            int width = this->buffer->width;
+            int chBase = (baseColMinus1 - offset) * width + baseIndex;
+
+            if (width > 0) {
                 int tableOffset = col << 4;
+                char glyphVal = this->glyphValue;
+                int chIdx = chBase;
+
                 do {
-                    int chIdx = x + (baseColMinus1 - offset) * width + baseIndex;
-                    if (*(char*)(chIdx) == this->glyphValue) {
+                    if (*(char*)(x + chIdx) == glyphVal) {
                         entryPtr[0] = startX;
                         entryPtr[2] = x - 1;
                         entryPtr[1] = offset;
                         entryPtr[3] = this->glyphHeight + offset - 1;
                         if (this->glyphCount - col == 1) goto BUILT;
+                        entryPtr = this->glyphTable;
                         startX = x + 1;
-                        col = col + 1;
-                        tableOffset = tableOffset + 0x10;
-                        entryPtr = (int*)((char*)this->glyphTable + tableOffset);
+                        col++;
+                        tableOffset += 0x10;
+                        entryPtr = (int*)((char*)entryPtr + tableOffset);
                     }
                     x++;
-                } while (x < width);
+                } while (x < this->buffer->width);
             }
+
             offset = offset + this->glyphHeight + 1;
-        }
+        } while (offset < this->buffer->height);
     }
 BUILT:
-    this->FUN_0041ac40();
+    this->buffer->Lock();
+}
+
+extern "C" {
+    void FUN_00421671(void);
 }
 
 /* Function start: 0x4215A0 */
 int AnimatedAsset::ComputeTextMetrics(void* text)
 {
-    if (text == (void*)0x0) {
-        return 0;
-    }
-
-    char *pch = (char*)text;
     int total = 0;
+    char* param_1 = (char*)text;
 
-    while (*pch != '\0') {
-        unsigned char c = *pch;
-        if (c == 0x20) {
-            total += this->spaceWidth;
-        } else if (c == 9) {
-            total += this->tabWidth;
-        } else {
-            int idx = c - this->firstChar;
-            if (idx >= 0 && idx < this->glyphCount && this->glyphTable != NULL) {
-                int *entry = (int*)((char*)this->glyphTable + idx * 0x10);
-                int startX = entry[0];
-                int endX = entry[2];
-                int width = endX - startX;
-                if (width < 0) width = 0;
-                total += width;
-                total += this->charAdvance; // inter-character advance
+    if (param_1 == (char*)0x0) {
+        total = 0;
+    }
+    else {
+        char cVar1 = *param_1;
+        while (cVar1 != '\0') {
+            int iVar2 = (int)*param_1;
+            if (iVar2 == 0x20) {
+                total = total + this->spaceWidth;
             }
+            else if (iVar2 == 9) {
+                total = total + this->tabWidth;
+            }
+            else {
+                int* piVar3 = (int*)((char*)this->glyphTable + iVar2 * 0x10);
+                int local[4];
+                __try {
+                    local[0] = piVar3[0];
+                    local[1] = piVar3[1];
+                    local[2] = piVar3[2];
+                    local[3] = piVar3[3];
+                } __finally {
+                    FUN_00421671();
+                }
+                total = (total - local[0]) + local[2];
+            }
+            param_1 = param_1 + 1;
+            total = total + this->charAdvance;
+            cVar1 = *param_1;
         }
-        pch++;
     }
     return total;
 }
