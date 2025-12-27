@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+class VBuffer;
+
 class Parser
 {
 public:
@@ -24,8 +26,8 @@ public:
     void FUN_00420a50();
 
     // 0x00: vtable (implicit)
-    int field_0x4;          // 0x04
-    int isFileOpen;         // 0x08
+    VBuffer* m_vbuffer;     // 0x04 - used in ZBuffer::CleanUpVBuffer
+    void* m_subObject;      // 0x08 - object with virtual destructor, or int flag
     int isProcessingKey;    // 0x0c
     char currentKey[32];    // 0x10 - 0x2f
     int lineNumber;         // 0x30

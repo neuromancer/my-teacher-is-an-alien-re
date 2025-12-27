@@ -8,7 +8,7 @@
 
 
 /* Function start: 0x4189f0 */
-Parser::Parser() { memset(&this->field_0x4, 0, sizeof(Parser) - 4); }
+Parser::Parser() { memset(&this->m_vbuffer, 0, sizeof(Parser) - 4); }
 
 /* Function start: 0x418A10 */
 Parser::~Parser() { CloseFile(); }
@@ -18,7 +18,7 @@ void Parser::Open(char *param_1) {
   CloseFile();
   strcpy(this->filename, param_1);
   this->pFile = fsopen(this->filename, "r");
-  this->isFileOpen = 1;
+  this->m_subObject = (void*)1;
   if (this->pFile == NULL) {
     ShowError("Parser::Open - Unable to open file '%s' ", this->filename);
   }
@@ -38,10 +38,10 @@ void Parser::Copy(Parser *other) {
 
 /* Function start: 0x418B00 */
 void Parser::CloseFile() {
-  if (this->isFileOpen != 0 && this->pFile != NULL) {
+  if (this->m_subObject != 0 && this->pFile != NULL) {
     fclose(this->pFile);
     this->pFile = NULL;
-    this->isFileOpen = 0;
+    this->m_subObject = 0;
   }
 }
 

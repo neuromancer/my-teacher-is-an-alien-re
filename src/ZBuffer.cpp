@@ -121,16 +121,16 @@ int ZBuffer::ProcessMessage(void* param_1)
 /* Function start: 0x401500 */
 void ZBuffer::CleanUpVBuffer()
 {
-    VBuffer* this_00 = *(VBuffer**)((char*)this + 0x4);
-    if (this_00 != 0) {
-        this_00->~VBuffer();
-        FreeFromGlobalHeap(this_00);
-        *(void**)((char*)this + 0x4) = 0;
+    VBuffer* vb = this->m_vbuffer;
+    if (vb != 0) {
+        vb->~VBuffer();
+        FreeFromGlobalHeap(vb);
+        this->m_vbuffer = 0;
     }
-    Parser* ptr = *(Parser**)((char*)this + 0x8);
+    Parser* ptr = (Parser*)this->m_subObject;
     if (ptr != 0) {
         delete ptr;
-        *(void**)((char*)this + 0x8) = 0;
+        this->m_subObject = 0;
     }
 }
 
