@@ -37,6 +37,7 @@ def main():
     src_dir = "src"
 
     # Clean and build once
+    os.system("make clean")
     os.system("make all > /dev/null 2>&1")
 
     for root, _, files in os.walk(src_dir):
