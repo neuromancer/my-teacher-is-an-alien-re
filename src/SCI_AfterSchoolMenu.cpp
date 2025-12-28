@@ -58,7 +58,7 @@ int SCI_AfterSchoolMenu::LBLParse(char* param_1)
     } else if (strcmp(local_34, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse(param_1);
+        Parser::LBLParse("SCI_AfterSchoolMenu");
     }
 
     return 0;

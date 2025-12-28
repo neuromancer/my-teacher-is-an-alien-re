@@ -16,7 +16,7 @@ public:
     int loc_x; // 0xa4
     int loc_y; // 0xa8
     int num_states; // 0xac
-    char pad3[0xb4 - 0xac - 4];
+    int field_0xb0;
     char* sprite_filename; // 0xb4
     char pad4[0xd0 - 0xb4 - 4];
     Animation* animation_data; // 0xd0

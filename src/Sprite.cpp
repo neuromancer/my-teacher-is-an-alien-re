@@ -588,7 +588,7 @@ int Sprite::LBLParse(char* param_1)
     } else if (strcmp(local_a0, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse(param_1);
+        Parser::LBLParse("Sprite");
     }
     return 0;
 }

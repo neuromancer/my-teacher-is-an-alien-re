@@ -97,3 +97,6 @@ void* DAT_00435a78 = 0;
 void* DAT_00435a7c = 0;
 int DAT_00435a80 = 0;
 void* DAT_0043eff0 = 0;
+
+typedef void (__cdecl *SmackSoundCheckFn)();
+SmackSoundCheckFn g_SmackSoundCheck = *(SmackSoundCheckFn*)0x0044053c;

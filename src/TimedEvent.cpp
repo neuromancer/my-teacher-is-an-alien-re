@@ -21,7 +21,7 @@ TimedEvent::TimedEvent()
         m_timer.Init();
         memset(this, 0, 10 * sizeof(int));
         m_timer.Reset();
-    } catch (...) {        
+    } catch (...) {
     }
 }
 
