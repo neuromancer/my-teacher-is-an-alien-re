@@ -14,7 +14,9 @@ class CDData;
 class Mouse;
 class Mouse;
 class Parser;
-#include "Manager.h"
+class StringTable;
+class FlagArray;
+
 
 // extern IMAGE_DOS_HEADER IMAGE_DOS_HEADER_00400000; // { /* 128 bytes */ }
 // extern IMAGE_NT_HEADERS32 DAT_00400080; // { /* 248 bytes */ }
@@ -358,12 +360,12 @@ class Parser;
 // extern char DAT_00435931; // { /* 1 bytes */ }
 // extern char DAT_00435932; // { /* 1 bytes */ }
 // extern char DAT_00435933; // { /* 1 bytes */ }
-extern Parser* g_Strings_00435a70; // 00435a70
+extern StringTable* g_Strings_00435a70; // 00435a70
 extern void* DAT_00435a74; // { /* 4 bytes */ }
 extern void* DAT_00435a78; // { /* 4 bytes */ }
 extern void* DAT_00435a7c; // { /* 4 bytes */ }
 extern int DAT_00435a80; // { /* 4 bytes */ }
-extern Manager* g_Manager_00435a84; // 00435a84
+extern FlagArray* g_Manager_00435a84; // 00435a84
 // extern int DAT_00435b88; // { /* 4 bytes */ }
 // extern int DAT_00435b8c; // { /* 4 bytes */ }
 // extern int DAT_00435b94; // { /* 4 bytes */ }

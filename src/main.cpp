@@ -1,5 +1,5 @@
 #include "AnimatedAsset.h"
-#include "Manager.h"
+
 #include "Animation.h"
 #include "GameState.h"
 #include "GameWindow.h"
@@ -12,6 +12,8 @@
 #include "Mouse.h"
 #include "Timer.h"
 #include "Parser.h"
+#include "FlagArray.h"
+#include "StringTable.h"
 #include "ZBufferManager.h"
 #include "GameLoop.h"
 #include "AssetList.h"
@@ -64,14 +66,11 @@ void FUN_00421840();
 void ShutdownGameSystems();
 
 extern "C" {
-void* __fastcall FUN_00420140(void*, const char*, int);
-void __fastcall FUN_00420430(void*);
-void* __fastcall FUN_004209e0(void*, const char*, int);
-void __fastcall FUN_00420a50(void*);
+
 
 void __fastcall FUN_00418ee0(void*);
 void __fastcall FUN_0041ee30(void*);
-void __fastcall FUN_00420250(void*);
+
 void __fastcall FUN_0041f200(void*);
 void __fastcall FUN_00418ef0(void*);
 void __fastcall FUN_004210d0(void*, const char*);
@@ -128,12 +127,13 @@ void RunGame() {
     g_Timer_00436980 = (Timer*)pInit;
 
     puVar2 = AllocateMemory(0xCC);
-    pInit = 0;
+    FlagArray* pFlagArray = 0;
     if (puVar2 != 0) {
-        pInit = ((Manager*)puVar2)->Init("question.sav", 1000); 
+        ((FlagArray*)puVar2)->Create("question.sav", 1000); 
+        pFlagArray = (FlagArray*)puVar2;
     }
-    g_Manager_00435a84 = (Manager*)pInit;
-    ((Manager*)pInit)->LoadQuestions();
+    g_Manager_00435a84 = pFlagArray;
+    pFlagArray->ClearAllFlags();
 
     GameState* pGS = (GameState*)AllocateMemory(0x98);
     if (pGS != 0) {
@@ -180,11 +180,11 @@ void RunGame() {
     g_GameState4_004369a0 = pGS;
 
     puVar2 = AllocateMemory(0xC);
-    pInit = 0;
+    StringTable* pStrings = 0;
     if (puVar2 != 0) {
-        pInit = ((Parser*)puVar2)->Init("mis\\strings.mis", 1);
+        pStrings = (StringTable*)((StringTable*)puVar2)->Init("mis\\strings.mis", 1);
     }
-    g_Strings_00435a70 = (Parser*)pInit;
+    g_Strings_00435a70 = pStrings;
     
     puVar2 = AllocateMemory(0x18);
     if (puVar2 != 0) {
@@ -331,7 +331,7 @@ void RunGame() {
 
     puVar2 = g_Manager_00435a84;
     if (g_Manager_00435a84 != 0) {
-        g_Manager_00435a84->Cleanup();
+        g_Manager_00435a84->SafeClose();
         FreeMemory(puVar2);
         g_Manager_00435a84 = 0;
     }
@@ -673,14 +673,11 @@ void PlayIntroCinematic(void) {
 
 // Stubs and Wrappers for Linker
 extern "C" {
-void* __fastcall FUN_00420140(void* thisptr, const char* a, int b) { return thisptr; }
-void __fastcall FUN_00420430(void* thisptr) {}
-void* __fastcall FUN_004209e0(void* thisptr, const char* a, int b) { return thisptr; }
-void __fastcall FUN_00420a50(void* thisptr) {}
 
 
 
-void __fastcall FUN_00420250(void* thisptr) {}
+
+
 
 
 void __fastcall FUN_004210d0(void* thisptr, const char* a) {}
@@ -696,13 +693,7 @@ void __fastcall FUN_00417320_impl(void* thisptr) {}
 void __fastcall FUN_00404230_impl(void* thisptr) {}
 }
 
-// Class Wrappers
-void* Manager::Init(const char* a, int b) { return ::FUN_00420140(this, a, b); }
-void Manager::Cleanup() { ::FUN_00420250(this); }
-void Manager::LoadQuestions() { ::FUN_00420430(this); }
 
-void* Parser::Init(const char* a, int b) { return ::FUN_004209e0(this, a, b); }
-void Parser::Cleanup() { ::FUN_00420a50(this); }
 
 
 

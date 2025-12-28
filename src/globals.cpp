@@ -11,7 +11,9 @@
 #include "Parser.h"
 #include "Parser.h"
 #include "Timer.h"
-#include "Manager.h"
+//#include "Manager.h"
+#include "FlagArray.h"
+#include "StringTable.h"
 
 // Pointers initialized to their specific values as requested by patterns in main.cpp
 char* g_Buffer_00436960 = (char*)0x00436960;
@@ -23,8 +25,8 @@ VBuffer* g_WorkBuffer_00436974 = (VBuffer*)0x00436974;
 CDData* g_CDData_0043697c = (CDData*)0x0043697c;
 Mouse* g_Mouse_00436978 = (Mouse*)0x00436978;
 Timer* g_Timer_00436980 = (Timer*)0x00436980;
-Manager* g_Manager_00435a84 = (Manager*)0x00435a84;
-Parser* g_Strings_00435a70 = (Parser*)0x00435a70;
+FlagArray* g_Manager_00435a84 = (FlagArray*)0x00435a84;
+StringTable* g_Strings_00435a70 = (StringTable*)0x00435a70;
 void* g_Unknown_00436994 = (void*)0x00436994;
 AnimatedAsset* g_TextManager_00436990 = (AnimatedAsset*)0x00436990;
 
