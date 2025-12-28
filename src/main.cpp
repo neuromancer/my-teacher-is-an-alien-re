@@ -16,6 +16,7 @@
 #include "ZBufferManager.h"
 #include "GameLoop.h"
 #include "AssetList.h"
+#include "Message.h"
 #include "string.h"
 #include <mbctype.h>
 #include <mbstring.h>
@@ -61,7 +62,7 @@ void ShutdownGameSystems();
 void InitGameSystems(void);
 extern "C" {
   void FUN_0040cd15(); 
-  void FUN_0040cd1d(); 
+  void FUN_0040cd1d();
 }
 
 /* Function start: 0x40C5D0 */
@@ -206,8 +207,7 @@ void RunGame() {
     *(int*)((char*)g_TextManager_00436990 + 0x30) = 2;
     g_Timer_00436980->Reset();
 
-    void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
-    FUN_0041a150(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
+    SC_Message_Send(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
 
     pGameLoop->Run();
     if (pGameLoop != 0) {
@@ -388,12 +388,12 @@ void SetErrorCode(unsigned int errorCode) {
     }
     puVar2 = puVar2 + 2;
     iVar1 = iVar1 + 1;
-  } while (puVar2 < (DAT_0043c760 + 90));
-  if ((0x12 < errorCode) && (errorCode < 0x25)) {
+  } while ((unsigned int)puVar2 < 0x43c8c8);
+  if (errorCode >= 0x13 && errorCode <= 0x24) {
     DAT_0043bdf0 = 0xd;
     return;
   }
-  if ((0xbb < errorCode) && (errorCode < 0xcb)) {
+  if (errorCode >= 0xbc && errorCode <= 0xca) {
     DAT_0043bdf0 = 8;
     return;
   }
@@ -403,74 +403,93 @@ void SetErrorCode(unsigned int errorCode) {
 
 /* Function start: 0x4195A0 */
 int FileExists(const char *filename) {
-  return GetFileAttributesA(filename) != -1;
+  int iVar1;
+  iVar1 = GetFileAttributes_Wrapper(filename, 0);
+  return iVar1 == 0;
 }
 
 /* Function start: 0x4261C0 */
-void ParsePath(const char *path, char *drive, char *dir, char *fname,
-               char *ext) {
-  const char *pbVar3;
-  const char *_Source = 0;
-  const char *local_4 = 0;
+void ParsePath(const char *param_1, char *param_2, char *param_3, char *param_4,
+               char *param_5) {
+  unsigned char bVar1;
+  unsigned char *_Source;
   size_t sVar2;
+  unsigned char *pbVar3;
+  unsigned char *local_4;
 
-  if (path[1] == ':') {
-    if (drive) {
-      _mbsnbcpy((unsigned char *)drive, (unsigned char *)path, 2);
-      drive[2] = '\0';
+  local_4 = (unsigned char *)0;
+  if (((unsigned char *)param_1)[1] == 0x3a) {
+    if (param_2 != (char *)0) {
+      _mbsnbcpy((unsigned char *)param_2, (unsigned char *)param_1, 2);
+      param_2[2] = '\0';
     }
-    path += 2;
-  } else if (drive) {
-    *drive = '\0';
+    param_1 = param_1 + 2;
   }
-
-  pbVar3 = path;
-  while (*pbVar3 != 0) {
-    char bVar1 = *pbVar3;
-    if ((_mbctype[(unsigned char)bVar1 + 1] & 4) == 0) {
-      if (bVar1 == '\\' || bVar1 == '/') {
-        _Source = pbVar3 + 1;
-      } else if (bVar1 == '.') {
-        local_4 = pbVar3;
-      }
-    } else {
-      pbVar3++;
-    }
-    pbVar3++;
+  else if (param_2 != (char *)0) {
+    *param_2 = '\0';
   }
-
-  if (_Source) {
-    if (dir) {
-      sVar2 = _Source - path;
-      if (sVar2 > 255) {
-        sVar2 = 255;
+  _Source = (unsigned char *)0;
+  pbVar3 = (unsigned char *)param_1;
+  if (*(unsigned char *)param_1 != 0) {
+    do {
+      bVar1 = *pbVar3;
+      if ((_mbctype[bVar1 + 1] & 4) == 0) {
+        if ((bVar1 == 0x2f) || (bVar1 == 0x5c)) {
+          _Source = pbVar3 + 1;
+        }
+        else if (bVar1 == 0x2e) {
+          local_4 = pbVar3;
+        }
       }
-      _mbsnbcpy((unsigned char *)dir, (unsigned char *)path, sVar2);
-      dir[sVar2] = '\0';
-    }
-    path = _Source;
-  } else if (dir) {
-    *dir = '\0';
+      else {
+        pbVar3 = pbVar3 + 1;
+      }
+      pbVar3 = pbVar3 + 1;
+    } while (*pbVar3 != 0);
   }
-
-  if (local_4 && local_4 > path) {
-    if (fname) {
-      sVar2 = local_4 - path;
-      if (sVar2 > 255) {
-        sVar2 = 255;
+  if (_Source == (unsigned char *)0) {
+    _Source = (unsigned char *)param_1;
+    if (param_3 != (char *)0) {
+      *param_3 = '\0';
+    }
+  }
+  else if (param_3 != (char *)0) {
+    sVar2 = (int)_Source - (int)param_1;
+    if (sVar2 >= 0xff) {
+      sVar2 = 0xff;
+    }
+    _mbsnbcpy((unsigned char *)param_3, (unsigned char *)param_1, sVar2);
+    param_3[sVar2] = '\0';
+  }
+  if ((local_4 == (unsigned char *)0) || (local_4 < _Source)) {
+    if (param_4 != (char *)0) {
+      sVar2 = (int)pbVar3 - (int)_Source;
+      if (sVar2 >= 0xff) {
+        sVar2 = 0xff;
       }
-      _mbsnbcpy((unsigned char *)fname, (unsigned char *)path, sVar2);
-      fname[sVar2] = '\0';
+      _mbsnbcpy((unsigned char *)param_4, _Source, sVar2);
+      param_4[sVar2] = '\0';
     }
-    if (ext) {
-      strcpy(ext, local_4);
+    if (param_5 != (char *)0) {
+      *param_5 = '\0';
     }
-  } else {
-    if (fname) {
-      strcpy(fname, path);
+  }
+  else {
+    if (param_4 != (char *)0) {
+      sVar2 = (int)local_4 - (int)_Source;
+      if (sVar2 >= 0xff) {
+        sVar2 = 0xff;
+      }
+      _mbsnbcpy((unsigned char *)param_4, _Source, sVar2);
+      param_4[sVar2] = '\0';
     }
-    if (ext) {
-      *ext = '\0';
+    if (param_5 != (char *)0) {
+      sVar2 = (int)pbVar3 - (int)local_4;
+      if (sVar2 >= 0xff) {
+        sVar2 = 0xff;
+      }
+      _mbsnbcpy((unsigned char *)param_5, local_4, sVar2);
+      param_5[sVar2] = '\0';
     }
   }
 }
@@ -524,9 +543,6 @@ void CheckDebug(void) {
   }
 }
 
-
-
-/* Function start: 0x422E02 */
 /* Function start: 0x422E02 */
 int __cdecl CalculateBufferSize(int width, unsigned int height) {
   return (((width + 3) & ~3U) * height) + DAT_00437f4c;

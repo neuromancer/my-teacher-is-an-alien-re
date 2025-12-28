@@ -163,7 +163,6 @@ void* NavNode_Constructor(void* a) { return a; }
 // Missing variables (C++ linkage to match mangled names)
 // void* DAT_0043eff0 = NULL; // Moved to globals.cpp
 
-void __cdecl FUN_0041a150(int, int, int, int, int, int, int, int, int, int) {}
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
 int* g_GameStruct2 = NULL;
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
