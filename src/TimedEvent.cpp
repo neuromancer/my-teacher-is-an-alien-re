@@ -113,3 +113,8 @@ int TimedEvent::Update()
     }
     return 0;
 }
+
+/* Function start: 0x41EF47 */
+void TimedEvent::SetData(int type) {
+    this->m_type = type;
+}

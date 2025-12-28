@@ -174,7 +174,7 @@ short _param_3 = 0; // Sound.obj ?_param_3@@3FA
 
 void SC_OnScreenMessage::Timer_DecrementCounter_wrapper_2() {}
 void SC_OnScreenMessage::Timer_DecrementCounter_wrapper() {}
-void TimedEvent::SetData(int a) {}
+
 Message::Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10) {
     this->field_0x0 = p1;
 }

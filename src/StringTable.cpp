@@ -5,8 +5,29 @@
 #include <windows.h>
 
 // Helper externs if needed, or implement locally
-extern "C" char* __cdecl FUN_00419780(char* buffer, int length, FILE* file);
-// Note: FUN_00419780 is likely internal_ReadLine or similar.
+// Helper externs if needed, or implement locally
+extern "C" char* __cdecl FUN_00419780(char* buffer, int length, FILE* file) {
+    return fgets(buffer, length, file);
+}
+
+void FUN_00420eb0(int* ht, int numBuckets, int flag) {
+    if (numBuckets > 0) {
+        int* buckets = (int*)AllocateMemory(numBuckets * sizeof(int));
+        if (buckets) {
+            memset(buckets, 0, numBuckets * sizeof(int));
+            *ht = (int)buckets;
+        }
+    }
+}
+
+int* FUN_00420f10(int* ht) {
+    int* node = (int*)AllocateMemory(24); // 6 ints
+    if (node) {
+        memset(node, 0, 24);
+        // Note: linking to ht[4] omitted due to potential conflict with Load logic overwriting offset 0
+    }
+    return node;
+}
 
 /* Function start: 0x4209e0 */
 void* StringTable::Init(char* filename, int loadNow) {
