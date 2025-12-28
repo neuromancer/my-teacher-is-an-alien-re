@@ -34,36 +34,35 @@ struct ListNode {
 
 /* Function start: 0x417200 */
 GameLoop* GameLoop::Init() {
-    Timer* pTimer1;
-    Timer* pTimer2;
+    Timer* pAlloc;
+    Timer* pResult;
     ListNode* pList;
     
     memset(this, 0, 7 * sizeof(int));
     
-    pTimer1 = (Timer*)AllocateMemory(0x14);
-    if (pTimer1 != 0) {
-        pTimer1 = pTimer1->Init();
-    } else {
-        pTimer1 = 0;
-    }
-    this->timer1 = pTimer1;
-    
-    pTimer2 = (Timer*)AllocateMemory(0x14);
-    if (pTimer2 != 0) {
-        pTimer2 = pTimer2->Init();
-    } else {
-        pTimer2 = 0;
-    }
-    this->timer2 = pTimer2;
-    
-    pList = (ListNode*)AllocateMemory(0x10);
-    if (pList != 0) {
-        pList->field_0x0C = 0;
-        pList->field_0x00 = 0;
-        pList->field_0x04 = 0;
-        pList->field_0x08 = pList->field_0x00;
-    } else {
-        pList = 0;
+    try {
+        pAlloc = (Timer*)AllocateMemory(0x14);
+        pResult = 0;
+        if (pAlloc != 0) {
+            pResult = pAlloc->Init();
+        }
+        this->timer1 = pResult;
+        
+        pAlloc = (Timer*)AllocateMemory(0x14);
+        pResult = 0;
+        if (pAlloc != 0) {
+            pResult = pAlloc->Init();
+        }
+        this->timer2 = pResult;
+        
+        pList = (ListNode*)AllocateMemory(0x10);
+        if (pList != 0) {
+            pList->field_0x0C = 0;
+            pList->field_0x00 = 0;
+            pList->field_0x04 = 0;
+            pList->field_0x08 = pList->field_0x00;
+        }
+    } catch (...) {
     }
     
     this->field_0x18 = 0;
