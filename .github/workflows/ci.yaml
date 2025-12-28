@@ -28,9 +28,7 @@ jobs:
 
       - name: make
         run: |
-          make
-          make report
-          make progress
+          make TEACHER.EXE
 
   compare-similarity:
     runs-on: ubuntu-latest
