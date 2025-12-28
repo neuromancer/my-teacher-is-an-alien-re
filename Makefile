@@ -21,7 +21,7 @@ all: $(WIBO) $(OBJS) $(ASMS)
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-    WIBO_PRESET = release64
+    WIBO_PRESET = release64-clang
 else
     WIBO_PRESET = release-macos
 endif
