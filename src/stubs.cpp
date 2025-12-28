@@ -149,6 +149,28 @@ void FUN_0040cd1d() {}
 void* FUN_00420140(void* a, const char* b, int c) { return a; }
 void* FUN_004209e0(void* a, const char* b, int c) { return a; }
 
+// Missing Function Stubs from Step 71
+void __fastcall FUN_00417450(void*) {}
+void __fastcall FUN_0041c960(void*) {}
+void __fastcall FUN_0041c5a0(void*) {}
+void __fastcall FUN_00417ed0(void*) {}
+void __fastcall FUN_004177b0(void*) {}
+void __fastcall FUN_00417420(void*) {}
+void FUN_004179a0() {}
+
+void* FUN_0041cd50(void* a, char* b) { return a; }
+void FUN_00409160(void* a, void* b) {}
+void* FUN_004066d0(void* a, int b) { return a; }
+
+void FUN_00419080(char* a, char* b, int c) { if (b) *b = 0; }
+void FUN_004086c0(void* a, int b) {}
+
+void FUN_004191d0(char* a) {}
+void* FUN_0041ea50(void* a) { return a; }
+char* FUN_004195c0(char* a) { return a; }
+void* FUN_0041f280(void* a) { return a; }
+void* FUN_0040d300(void* a) { return a; }
+
 } // extern "C"
 
 // C++ Stubs
