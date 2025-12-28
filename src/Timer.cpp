@@ -49,12 +49,6 @@ void Timer::Wait(unsigned int delay)
     } while (m_elapsedTime < delay);
 }
 
-/* Function start: 0x418F50 */
-Timer::Timer()
-{
-    Init();
-}
-
 /* Function start: 0x418F70 */
 Timer::~Timer()
 {

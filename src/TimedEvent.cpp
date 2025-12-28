@@ -15,10 +15,14 @@ extern "C" {
 extern int* DAT_00436988;
  
 /* Function start: 0x401890 */
-TimedEvent::TimedEvent() : m_timer()
+TimedEvent::TimedEvent()
 {
-    memset(this, 0, 10 * sizeof(int));
-    m_timer.Reset();
+    try {
+        m_timer.Init();
+        memset(this, 0, 10 * sizeof(int));
+        m_timer.Reset();
+    } catch (...) {        
+    }
 }
 
 /* Function start: 0x401910 */

@@ -18,11 +18,11 @@ TimedEvent *TimedEvent_Init(TimedEvent *);
 }
 
 /* Function start: 0x401B60 */
-SC_Timer::SC_Timer() : Parser(), timer1(), timer2() {
-  int *ptr = &m_messageId;
-  for (int i = 6; i != 0; i--) {
-    *ptr++ = 0;
-  }
+SC_Timer::SC_Timer() : Parser() {
+  memset(&m_messageId, 0, 24);
+
+  timer1.Init();
+  timer2.Init();
 
   m_messageId = 0xd;
   timer1.Reset();
