@@ -156,7 +156,7 @@ int SC_Timer::Input(void *param_1) {
     puVar7->field_0x8 = *(int *)((char *)param_1 + 0x8c);
     puVar7->m_next_event_data = (void *)*(int *)((char *)param_1 + 0xbc);
     *(int *)((char *)param_1 + 0xbc) = 0;
-    puVar7->SetData(*(int *)((char *)param_1 + 0x9c));
+    puVar7->m_type = *(int *)((char *)param_1 + 0x9c);
 
     piVar1 = (int *)m_eventList;
     if (puVar7 == 0) {

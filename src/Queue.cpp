@@ -13,16 +13,13 @@ void TimedEvent::CopyFrom(const TimedEvent* other)
     char bl;
 
     this->field_0x8 = other->field_0x8;
-    eax = 0;
     this->m_duration = other->m_duration;
-loop1:
-    bl = src[0x10 + eax];
-    eax++;
-    if (eax < 0x20) {
+    eax = 0;
+    do {
+        bl = src[0x10 + eax];
+        eax++;
         dst[0xf + eax] = bl;
-        goto loop1;
-    }
-    dst[0xf + eax] = bl;
+    } while (eax < 0x20);
 
     this->field_0x30 = other->field_0x30;
     {
@@ -30,18 +27,15 @@ loop1:
         int* ptr = (int*)(&src[0x38]);
         int edi = ptr[0];
         int ebx = ptr[1];
-        eax = 0;
         esi[0] = edi;
         esi[1] = ebx;
     }
-loop2:
-    bl = ((char*)&other->m_data_0x40)[eax];
-    eax++;
-    if (eax < 0x40) {
-        this->m_data_0x40[eax - 1] = bl;
-        goto loop2;
-    }
-    this->m_data_0x40[eax - 1] = bl;
+    eax = 0;
+    do {
+        bl = src[0x40 + eax];
+        eax++;
+        dst[0x3f + eax] = bl;
+    } while (eax < 0x40);
 
     this->field_0x80 = other->field_0x80;
     this->field_0x88 = other->field_0x88;

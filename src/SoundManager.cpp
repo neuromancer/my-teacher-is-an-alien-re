@@ -117,7 +117,7 @@ void SoundManager::PlayAnimationSound(void* data, int priority, int x, int y, in
 }
 
 /* Function start: 0x41C000 */
-void SoundManager::ShowSubtitle(char* text, int x, int y, int duration)
+void SoundManager::ShowSubtitle(char* text, int x, int y, int duration, int flag)
 {
     if (m_mode == 0) return;
 

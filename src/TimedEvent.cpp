@@ -12,8 +12,7 @@ extern "C" {
 
 }
 
-extern void* g_GameStruct2;
-//extern void* g_SoundManager;
+extern int* DAT_00436988;
  
 /* Function start: 0x401890 */
 TimedEvent::TimedEvent() : m_timer()
@@ -31,35 +30,37 @@ TimedEvent::~TimedEvent()
         FreeFromGlobalHeap(next);
         m_next_event_data = 0;
     }
-    // The base class destructor will be called automatically
 }
 
 /* Function start: 0x4019A0 */
 int TimedEvent::Update()
 {
     int remaining_time = m_duration - m_timer.Update();
-    TimedEventPool* pool = (TimedEventPool*)g_GameStruct2;
+    int* pool;
 
     if (m_type == 0) {
         if (remaining_time > 0) {
             return 0;
         }
 
-        if (m_next_event_data) {
-            TimedEvent *new_event = pool->Create((void*)pool->list.tail, 0);
-            new_event->CopyFrom((TimedEvent*)m_next_event_data);
+        void* next_data = m_next_event_data;
+        if (next_data) {
+            pool = DAT_00436988;
+            int* node = (int*)((TimedEventPool*)pool)->Create((void*)pool[1], 0);
+            ((TimedEvent*)(node + 2))->CopyFrom((TimedEvent*)next_data);
 
-            if (pool->list.tail == NULL) {
-                pool->list.head = new_event;
+            if (pool[1] == 0) {
+                pool[0] = (int)node;
             } else {
-                *(TimedEvent**)(pool->list.tail) = new_event;
+                *(int*)pool[1] = (int)node;
             }
-            pool->list.tail = new_event;
+            pool[1] = (int)node;
         }
 
-        if (m_next_event_data) {
-            ((TimedEvent*)m_next_event_data)->~TimedEvent();
-            FreeFromGlobalHeap(m_next_event_data);
+        next_data = m_next_event_data;
+        if (next_data) {
+            TimedEvent_dtor(next_data);
+            FreeFromGlobalHeap(next_data);
             m_next_event_data = 0;
         }
         return 1;
@@ -68,53 +69,54 @@ int TimedEvent::Update()
             return 0;
         }
 
-        if (m_next_event_data) {
-            TimedEvent *new_event = pool->Create((void*)pool->list.tail, 0);
-            new_event->CopyFrom((TimedEvent*)m_next_event_data);
+        void* next_data = m_next_event_data;
+        if (next_data) {
+            pool = DAT_00436988;
+            int* node = (int*)((TimedEventPool*)pool)->Create((void*)pool[1], 0);
+            ((TimedEvent*)(node + 2))->CopyFrom((TimedEvent*)next_data);
 
-            if (pool->list.tail == NULL) {
-                pool->list.head = new_event;
+            if (pool[1] == 0) {
+                pool[0] = (int)node;
             } else {
-                *(TimedEvent**)(pool->list.tail) = new_event;
+                *(int*)pool[1] = (int)node;
             }
-            pool->list.tail = new_event;
+            pool[1] = (int)node;
         }
 
         m_timer.Reset();
         return 0;
     } else if (m_type == 2) {
         sprintf(g_Buffer_00436960, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
-        g_SoundManager->ShowSubtitle(g_Buffer_00436960, 0x208, 0x1c2, 10000);
+        g_SoundManager->ShowSubtitle(g_Buffer_00436960, 0x208, 0x1c2, 10000, 8);
 
         if (remaining_time > 0) {
             return 0;
         }
 
-        if (m_next_event_data) {
-            TimedEvent *new_event = pool->Create((void*)pool->list.tail, 0);
-            new_event->CopyFrom((TimedEvent*)m_next_event_data);
+        void* next_data = m_next_event_data;
+        if (next_data) {
+            pool = DAT_00436988;
+            int* node = (int*)((TimedEventPool*)pool)->Create((void*)pool[1], 0);
+            ((TimedEvent*)(node + 2))->CopyFrom((TimedEvent*)next_data);
 
-            if (pool->list.tail == NULL) {
-                pool->list.head = new_event;
+            if (pool[1] == 0) {
+                pool[0] = (int)node;
             } else {
-                *(TimedEvent**)(pool->list.tail) = new_event;
+                *(int*)pool[1] = (int)node;
             }
-            pool->list.tail = new_event;
+            pool[1] = (int)node;
         }
 
-        if (m_next_event_data) {
-            ((TimedEvent*)m_next_event_data)->~TimedEvent();
-            FreeFromGlobalHeap(m_next_event_data);
+        next_data = m_next_event_data;
+        if (next_data) {
+            TimedEvent_dtor(next_data);
+            FreeFromGlobalHeap(next_data);
             m_next_event_data = 0;
         }
         return 1;
     } else {
         ShowError("illegal type %d, TimedEvent::Update", m_type);
     }
-    return 0;
+    return 1;
 }
 
-/* Function start: 0x41EF47 */
-void TimedEvent::SetData(int type) {
-    this->m_type = type;
-}

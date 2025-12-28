@@ -27,7 +27,7 @@ public:
     void CopyFrom(const TimedEvent* other);
     ~TimedEvent();
 
-    void SetData(int);
+
     int Update();
 
     void* vtable;         // 0x00

@@ -16,7 +16,7 @@ public:
     void* m_list3;
 
     void PlayAnimationSound(void* data, int priority, int x, int y, int mode, int scale1, int scale2);
-    void ShowSubtitle(char* text, int x, int y, int duration);
+    void ShowSubtitle(char* text, int x, int y, int duration, int flag);
     void QueueCommand(SoundCommand* cmd);
 };
 

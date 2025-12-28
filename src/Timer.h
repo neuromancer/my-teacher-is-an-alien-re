@@ -3,6 +3,8 @@
 
 class Timer {
 public:
+    Timer();
+    ~Timer();
     Timer* Init();
     void Reset();
     unsigned int Update();
