@@ -22,13 +22,15 @@ all: $(WIBO) $(OBJS) $(ASMS)
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
     WIBO_PRESET = release64-clang
+    WIBO_BIN = wibo-src/build/release64-clang/wibo
 else
     WIBO_PRESET = release-macos
+    WIBO_BIN = wibo-src/build/release/wibo
 endif
 
 $(WIBO):
 	cd wibo-src && cmake --preset $(WIBO_PRESET) && cmake --build --preset $(WIBO_PRESET)
-	ln -sf wibo-src/build/release/wibo $@
+	ln -sf $(WIBO_BIN) $@
 
 TEACHER.EXE: $(OBJS)
 	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
