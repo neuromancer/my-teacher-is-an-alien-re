@@ -27,7 +27,7 @@ Mouse* g_Mouse_00436978 = (Mouse*)0x00436978;
 Timer* g_Timer_00436980 = (Timer*)0x00436980;
 FlagArray* g_Manager_00435a84 = (FlagArray*)0x00435a84;
 StringTable* g_Strings_00435a70 = (StringTable*)0x00435a70;
-void* g_Unknown_00436994 = (void*)0x00436994;
+char* g_Unknown_00436994 = (char*)0x00436994;
 AnimatedAsset* g_TextManager_00436990 = (AnimatedAsset*)0x00436990;
 
 GameState* g_GameState_00436998 = (GameState*)0x00436998;

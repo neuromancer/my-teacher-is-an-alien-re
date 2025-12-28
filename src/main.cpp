@@ -8,7 +8,6 @@
 #include "Sound.h"
 #include "VBuffer.h"
 #include "CDData.h"
-#include "CDData.h"
 #include "Mouse.h"
 #include "Timer.h"
 #include "Parser.h"
@@ -18,11 +17,6 @@
 #include "GameLoop.h"
 #include "AssetList.h"
 #include "string.h"
-#include <mbctype.h>
-#include <mbstring.h>
-#include <mss.h>
-#include <windows.h>
-
 #include <mbctype.h>
 #include <mbstring.h>
 #include <mss.h>
@@ -61,22 +55,8 @@ int _chdir(const char *);
 }
 
 
-void FUN_0041e310();
 void FUN_00421840();
 void ShutdownGameSystems();
-
-extern "C" {
-
-
-void __fastcall FUN_00418ee0(void*);
-void __fastcall FUN_0041ee30(void*);
-
-void __fastcall FUN_0041f200(void*);
-void __fastcall FUN_00418ef0(void*);
-void __fastcall FUN_004210d0(void*, const char*);
-void __fastcall FUN_0041abf0(void*, int);
-void __fastcall FUN_0041abc0(void*, int);
-}
 // Function Declarations
 void InitGameSystems(void);
 extern "C" {
@@ -117,7 +97,7 @@ void RunGame() {
     g_Mouse_00436978 = pMouse;
     ParseFile((Parser*)pMouse, "mis\\mouse1.mis", "[MICE]");
 
-    g_Unknown_00436994 = AllocateMemory(0x40);
+    g_Unknown_00436994 = (char*)AllocateMemory(0x40);
 
     puVar2 = AllocateMemory(0x14);
     void* pInit = 0;
@@ -371,13 +351,7 @@ int ProcessMessages() {
   } while (1);
 }
 
-extern "C" {
-int FUN_00423cd9();
-void FUN_00419170(char *);
-void FUN_00423aac();
-void FUN_00423a54();
-void FUN_00422d98(int);
-}
+
 
 
 
@@ -674,16 +648,6 @@ void PlayIntroCinematic(void) {
 // Stubs and Wrappers for Linker
 extern "C" {
 
-
-
-
-
-
-
-void __fastcall FUN_004210d0(void* thisptr, const char* a) {}
-void __fastcall FUN_0041abf0(void* thisptr, int a) {}
-void __fastcall FUN_0041abc0(void* thisptr, int a) {}
-
 // Stubs for new class external implementations
 void* __fastcall FUN_0041b760_impl(void* thisptr) { return thisptr; }
 void __fastcall FUN_0041b8e0_impl(void* thisptr) {}
@@ -691,12 +655,5 @@ void* __fastcall FUN_00417200_impl(void* thisptr) { return thisptr; }
 void __fastcall FUN_00417690_impl(void* thisptr) {}
 void __fastcall FUN_00417320_impl(void* thisptr) {}
 void __fastcall FUN_00404230_impl(void* thisptr) {}
+
 }
-
-
-
-
-
-
-
-

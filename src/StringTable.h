@@ -15,7 +15,7 @@ public:
     // Internal helpers
     void Load(); 
     void Unload(); 
-    int Open();
+    FILE* Open();
 };
 
 #endif
