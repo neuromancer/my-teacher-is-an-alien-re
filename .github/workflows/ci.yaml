@@ -48,7 +48,7 @@ jobs:
           ref: ${{ github.base_ref }}
           submodules: true
 
-      - name: Generate report on base
+      - name: Generate report on Base
         run: make report > report-before.txt
 
       - name: Checkout PR branch
