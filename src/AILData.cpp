@@ -9,18 +9,13 @@ void FUN_0041e670(int);
 }
 
 
-// Constructor wrapper for external callers
-AILData *AILData_Ctor(AILData *p) {
-  p->AILData::AILData();
-  return p;
-}
-
 /* Function start: 0x41E460 */
-AILData::AILData() {
+AILData *AILData::ClearFields() {
   this->data = 0;
   this->size = 0;
   this->field_8 = 0;
   this->field_C = 0;
+  return this;
 }
 
 /* Function start: 0x41E470 */

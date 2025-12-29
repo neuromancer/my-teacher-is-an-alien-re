@@ -9,15 +9,18 @@
 #include "AILData.h"
 #include "Array.h"
 #include "string.h"
+#include "new.h"
 
-extern Sprite* Sprite_Ctor(Sprite*, char*);
+//extern Sprite* Sprite_Ctor(Sprite*, char*);
 extern AILData* AILData_Ctor(AILData*);
 
 extern "C" {
     void FUN_0041ef47();
     void FUN_00425fd0(char*, char*, int);
-
 }
+
+//inline void* operator new(size_t, void* ptr) { return ptr; }
+// inline void operator delete(void*, void*) {}
 
 /* Function start: 0x41ECA0 */
 Mouse::Mouse()
@@ -81,61 +84,59 @@ Mouse::~Mouse()
     FUN_0041ef47();
 }
 
-
 /* Function start: 0x41EF50 */
 int Mouse::LBLParse(char* line)
 {
-    char local_60[32];
-    char local_40[32];
-    int local_20;
-    int local_1c;
-    void* local_18;
-    int local_14;
+    int index;
+    void* ptr;
+    int y;
+    int x;
+    char cmd[32];
+    char args[32];
 
-    local_40[0] = 0;
-    local_60[0] = 0;
+    cmd[0] = 0;
+    args[0] = 0;
 
-    sscanf(line, " %s ", local_40);
+    sscanf(line, " %s ", cmd);
 
-    try {
-        if (strcmp(local_40, "AUDIO") == 0) {
-            sscanf(line, " %s %s", local_40, local_60);
-            local_18 = AllocateMemory(0x10);
-            AILData* this_00 = 0;
-            if (local_18 != 0) {
-                this_00 = AILData_Ctor((AILData*)local_18);
+    if (strcmp(cmd, "AUDIO") == 0) {
+        sscanf(line, " %s %s", cmd, args);
+        try {
+            ptr = AllocateMemory(sizeof(AILData));
+            AILData* audio = 0;
+            if (ptr != 0) {
+                audio = ((AILData *)ptr)->ClearFields();
             }
-            m_audio = this_00;
-            if (this_00 != 0) {
-                this_00->Load(local_60);
+            m_audio = audio;
+            if (audio != 0) {
+                audio->Load(args);
             }
-        } else if (strcmp(local_40, "SPRITE") == 0) {
-            local_18 = AllocateMemory(0xd8);
-            Sprite* pSVar4 = 0;
-            if (local_18 != 0) {
-                pSVar4 = Sprite_Ctor((Sprite*)local_18, (char*)0);
-            }
-            m_sprite = pSVar4;
-            pSVar4->flags &= ~2;
-            Parser::ProcessFile(pSVar4, this, 0);
-        } else if (strcmp(local_40, "HOTPIXEL") == 0) {
-            sscanf(line, " %s %d %d %d", local_40, &local_14, &local_20, &local_1c);
-            if (local_14 >= 0 && local_14 < 25) {
-                m_hotspots[local_14].x = local_20;
-                m_hotspots[local_14].y = local_1c;
-            }
-        } else if (strcmp(local_40, "LABLE") == 0) {
-            sscanf(line, " %s %d %s", local_40, &local_14, local_60);
-            if (local_14 >= 0 && local_14 < 25) {
-                FUN_00425fd0(m_labels[local_14], local_60, 0x10);
-            }
-        } else if (strcmp(local_40, "END") == 0) {
-            m_sprite2 = 0;
-            return 1;
-        } else {
-            Parser::LBLParse(line);
+        } catch (...) {
         }
-    } catch (...) {
+    } else if (strcmp(cmd, "SPRITE") == 0) {
+        try {
+            ptr = AllocateMemory(0xd8);
+            Sprite* sprite = 0;
+            if (ptr != 0) {
+                sprite = new (ptr) Sprite(0);
+            }
+            m_sprite = sprite;
+            sprite->flags &= ~2;
+            Parser::ProcessFile(m_sprite, this, 0);
+        } catch (...) {
+        }
+    } else if (strcmp(cmd, "HOTPIXEL") == 0) {
+        sscanf(line, " %s %d %d %d", cmd, &index, &x, &y);
+        m_hotspots[index].x = x;
+        m_hotspots[index].y = y;
+    } else if (strcmp(cmd, "LABLE") == 0) {
+        sscanf(line, " %s %d %s", cmd, &index, args);
+        FUN_00425fd0(m_labels[index], args, 0x10);
+    } else if (strcmp(cmd, "END") == 0) {
+        m_sprite2 = 0;
+        return 1;
+    } else {
+        Parser::LBLParse("MouseControl");
     }
 
     return 0;

@@ -3,7 +3,7 @@
 
 class AILData {
 public:
-    AILData();
+    AILData *ClearFields();
     ~AILData();
     int Load(char* filename);
 
