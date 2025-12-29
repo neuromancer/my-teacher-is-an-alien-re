@@ -45,9 +45,13 @@ void Animation::AnimationInit() {
 
 /* Function start: 0x41FA50 */
 Animation::Animation() {
-  *(int *)((char *)this + 0x10) = 0;
-  *(int *)((char *)this + 0x14) = 0;
-  this->CleanArray10();
+  int *p = (int *)((char *)this + 0x10);
+  *p = 0;
+  *(p + 1) = 0;
+  try {
+    this->CleanArray10();
+  } catch (...) {
+  }
 }
 
 /* Function start: 0x41FAC0 */

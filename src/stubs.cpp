@@ -94,7 +94,7 @@ void SetCursorVisible(int show) {
     ShowCursor(show); 
 }
 
-void InitWorkBuffer() {}
+
 void CreateGameObject_1() {}
 
 void* AllocateMemory_Wrapper(int size) { 
@@ -141,8 +141,8 @@ int _rand() { return rand(); }
 // Mangled names with @16 imply stdcall. We might need logic or strict prototype.
 // _FUN_00422590@16
 void __stdcall FUN_00422590(int a, int b, int c, int d) {}
-// _FUN_00422250 (likely cdecl or stdcall without args?)
-void __cdecl FUN_00422250() {}
+// _FUN_00422250 - takes char* argument, uses RET 0x4 (stdcall with 1 arg)
+void __stdcall FUN_00422250(char* param_1) {}
 
 void FUN_0040cd15() {}
 void FUN_0040cd1d() {}

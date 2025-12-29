@@ -3,6 +3,7 @@
 #include "VideoTable.h"
 #include <stdlib.h>
 #include <windows.h>
+#include "Memory.h"
 #include "string.h"
 
 static int g_VBufferHandleTableInitialized = 0;
@@ -64,7 +65,35 @@ extern "C" {
     void FUN_00422e1a(int);
 }
 
+extern "C" void FUN_00424940(void*); // FreeMemory alias
+
+/* Function start: 0x41A8C0 */
+extern "C" void InitWorkBuffer(int width, int height)
+{
+    __try {
+        VBuffer* pvVar1 = g_WorkBuffer_00436974;
+        if (g_WorkBuffer_00436974 != 0) {
+            g_WorkBuffer_00436974->~VBuffer();
+            FUN_00424940(pvVar1);
+            g_WorkBuffer_00436974 = 0;
+        }
+        void* puVar2 = AllocateMemory(0x30);
+        VBuffer* pVBuffer = 0;
+        if (puVar2 != 0) {
+            pVBuffer = VirtualBufferCreateAndClean((VBuffer*)puVar2, width, height);
+        }
+        g_WorkBuffer_00436974 = pVBuffer;
+        if (pVBuffer->handle != 0) {
+            ShowError("workbuff must be first vb created '%d'", pVBuffer->handle);
+        }
+        g_WorkBuffer_00436974->SetVideoMode();
+        g_WorkBuffer_00436974->ClearScreen(0);
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+    }
+}
+
 /* Function start: 0x41a9f0 */
+
 VBuffer* VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height)
 {
     vbuffer->InitFields();

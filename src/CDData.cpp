@@ -47,7 +47,8 @@ int CDData::ChangeToDriveDirectory(int drive_letter) {
 
   sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
           this->field_0x80, this->field_0x1c5);
-  return 1 - (this->ChangeDirectory((unsigned char *)local_40) == 0);
+  int result = this->ChangeDirectory((unsigned char *)local_40);
+  return result == 0;
 }
 
 /* Function start: 0x421EF0 */

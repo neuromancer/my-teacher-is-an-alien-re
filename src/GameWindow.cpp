@@ -1,7 +1,7 @@
 #include "GameWindow.h"
 
 extern "C" {
-void FUN_00422250(char *);
+void __stdcall FUN_00422250(char *);
 LRESULT WINAPI FUN_00422590(HWND, UINT, WPARAM, LPARAM);
 int FUN_00423cd9();
 void FUN_00419170(const char *);
