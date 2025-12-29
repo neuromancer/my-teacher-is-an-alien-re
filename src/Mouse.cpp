@@ -24,7 +24,7 @@ Mouse::Mouse()
 {
     memset(m_labels, 0, sizeof(m_labels));
     m_sprite = 0;
-    m_offsetY = 0;
+    m_sprite2 = 0;
     memset(m_hotspots, 0, sizeof(m_hotspots));
     m_audio = 0;
 
@@ -48,35 +48,35 @@ void Mouse::CleanupFields()
 /* Function start: 0x41EE30 */
 Mouse::~Mouse()
 {
-    if (m_audio != 0) {
-        m_audio->~AILData();
-        FreeMemory(m_audio);
+    AILData* audio = m_audio;
+    if (audio != 0) {
+        audio->~AILData();
+        FreeMemory(audio);
         m_audio = 0;
     }
 
-    if (m_sprite != 0) {
-        m_sprite->~Sprite();
-        FreeMemory(m_sprite);
+    Sprite* sprite = m_sprite;
+    if (sprite != 0) {
+        sprite->~Sprite();
+        FreeMemory(sprite);
         m_sprite = 0;
     }
 
-    // Original code had check checks for fields[30] and [31] as Sprites.
-    // Based on memory layout (0x88 + 30*4 = 0x100), this overlaps with m_hotspots[1].y and m_hotspots[2].x.
-    // It is possible specific array entries are used as Sprites in some configurations,
-    // but the LBLParse "HOTPIXEL" logic treats them as ints.
-    // For now we only clean up what we allocated.
+    Sprite* sprite2 = m_sprite2;
+    if (sprite2 != 0) {
+        sprite2->~Sprite();
+        FreeMemory(sprite2);
+        m_sprite2 = 0;
+    }
 
     for (int i = 0; i < 25; i++) {
-        if (m_labels[i] != 0) {
-            FreeMemory(m_labels[i]);
+        char* label = m_labels[i];
+        if (label != 0) {
+            FreeMemory(label);
             m_labels[i] = 0;
         }
     }
 
-    // offset 0x17C is inside m_hotspots (index 17).
-    // This part of the logic remains unclear and is potentially legacy or incorrect decompliation.
-    // We removed CleanupFields() call as we don't have m_fields.
-    
     CleanupFields();
     FUN_0041ef47();
 }
@@ -130,7 +130,7 @@ int Mouse::LBLParse(char* line)
                 FUN_00425fd0(m_labels[local_14], local_60, 0x10);
             }
         } else if (strcmp(local_40, "END") == 0) {
-            m_offsetY = 0;
+            m_sprite2 = 0;
             return 1;
         } else {
             Parser::LBLParse(line);
@@ -172,7 +172,7 @@ void Mouse::DrawCursor()
             final_y -= m_hotspots[sprite->current_state].y;
          }
     } else {
-        final_y -= m_offsetY;
+        // final_y -= m_offsetY;
     }
 
     sprite->Do(final_x, final_y, 1.0);

@@ -18,7 +18,7 @@ private:
 
     char* m_labels[25];        // 0x88
     Sprite* m_sprite;          // 0xEC
-    int m_offsetY;             // 0xF0
+    Sprite* m_sprite2;         // 0xF0
     struct Point {
         int x;
         int y;
