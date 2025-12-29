@@ -36,7 +36,7 @@ public:
     void ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale);
 
     // Copy rectangle rows from srcBuffer into this buffer with transparent handling
-    void BlitTransparentRowsFrom(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, char transparentColor, char fillColor);
+
 
     // Member function version to match __thiscall calling convention (0x41A9F0)
     VBuffer* CreateAndClean(int width, int height);

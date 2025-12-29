@@ -259,31 +259,28 @@ void VBuffer::TPaste(int param_1, int param_2, int param_3, int param_4, int par
     ShowError("VBuffer::TPaste - Not implemented");
 }
 
-extern "C" void __cdecl FUN_0041b310(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8, char param_9, char param_10);
 
 /* Function start: 0x41B310 */
-void __cdecl FUN_0041b310(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8, char param_9, char param_10)
+void __cdecl BlitTransparentRows(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor)
 {
-    VBuffer* srcBuffer = (VBuffer*)param_7;
-    VBuffer* destBuffer = (VBuffer*)param_8;
+    int width = (srcX2 - srcX1) + 1;
+    int height = (srcY2 - srcY1) + 1;
     
-    int rowCount = (param_4 - param_3) + 1;
-    int srcPitch = srcBuffer->width;
-    char* srcData = (char*)srcBuffer->GetData();
-    char* srcRow = srcData + (srcBuffer->video_mode_lock_count - param_4) * srcPitch + param_1;
+    int srcOffset = (srcBuffer->video_mode_lock_count - srcY2) * srcBuffer->width + srcX1;
+    char* srcRow = (char*)srcBuffer->GetData() + srcOffset;
 
-    int destPitch = destBuffer->width;
-    char* destData = (char*)destBuffer->GetData();
-    char* destRow = destData + (destBuffer->video_mode_lock_count - param_6) * destPitch + param_5;
+    int destOffset = (destBuffer->video_mode_lock_count - destY) * destBuffer->width + destX;
+    char* destRow = (char*)destBuffer->GetData() + destOffset;
 
-    if (rowCount > 0) {
+    if (height > 0) {
         do {
-            CopyRowTransparent(destRow, srcRow, (param_2 - param_1) + 1, param_9, param_10);
-            destRow += destPitch;
-            srcRow += srcPitch;
-            rowCount--;
-        } while (rowCount != 0);
+            CopyRowTransparent(destRow, srcRow, width, transparentColor, fillColor);
+            destRow += destBuffer->width;
+            srcRow += srcBuffer->width;
+            height--;
+        } while (height != 0);
     }
+    
     destBuffer->Lock();
     srcBuffer->Lock();
 }
@@ -296,7 +293,7 @@ void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4
     local_40->CreateAndClean((param_2 - param_1) + 1, (param_4 - param_3) + 1);
     __try {
         local_40->ClearScreen(0);
-        FUN_0041b310(param_1, param_2, param_3, param_4, local_40->clip_x1, local_40->video_mode_lock_count, (int)this, (int)local_40, param_7, param_8);
+        BlitTransparentRows(param_1, param_2, param_3, param_4, local_40->clip_x1, local_40->video_mode_lock_count, this, local_40, param_7, param_8);
         local_40->TPaste(local_40->clip_x1, local_40->clip_x2, local_40->saved_video_mode, local_40->video_mode_lock_count, param_5, param_6);
     } __finally {
         FUN_0041ae0c();
@@ -318,7 +315,7 @@ void VBuffer::CallBlitter2(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41aea0 */
 void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, VBuffer* srcBuffer, char param_8, char param_9)
 {
-    this->BlitTransparentRowsFrom(param_1, param_2, param_3, param_4, param_5, param_6, srcBuffer, param_8, param_9);
+    BlitTransparentRows(param_1, param_2, param_3, param_4, param_5, param_6, srcBuffer, this, param_8, param_9);
 }
 
 /* Function start: 0x41aee0 */
@@ -461,38 +458,5 @@ void CopyRowTransparent(char* dest, char* src, int count, char transparentColor,
                 count--;
             } while (*src != 0);
         } while (count != 0);
-    }
-}
-
-/* Function start: 0x41B310 */
-// Member implementation: copy rows from srcBuffer into this VBuffer
-void VBuffer::BlitTransparentRowsFrom(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, char transparentColor, char fillColor)
-{
-    int rowCount = (y2 - y1) + 1;
-    int srcPitch = srcBuffer->width;
-    char* srcData = (char*)srcBuffer->GetData();
-    char* srcRow = srcData + (srcBuffer->video_mode_lock_count - y2) * srcPitch + x1;
-
-    int destPitch = this->width;
-    char* destData = (char*)this->GetData();
-    char* destRow = destData + (this->video_mode_lock_count - destY) * destPitch + destX;
-
-    if (rowCount > 0) {
-        do {
-            CopyRowTransparent(destRow, srcRow, (x2 - x1) + 1, transparentColor, fillColor);
-            destRow += destPitch;
-            srcRow += srcPitch;
-            rowCount--;
-        } while (rowCount != 0);
-    }
-    this->Lock();
-    srcBuffer->Lock();
-}
-
-// Preserve original free function symbol as a thin wrapper that delegates to the member
-void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor)
-{
-    if (destBuffer != NULL) {
-        destBuffer->BlitTransparentRowsFrom(x1, x2, y1, y2, destX, destY, srcBuffer, transparentColor, fillColor);
     }
 }
