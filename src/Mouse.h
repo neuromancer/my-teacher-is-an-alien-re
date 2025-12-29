@@ -3,7 +3,7 @@
 
 #include "Parser.h"
 #include "Sprite.h"
-
+class AILData;
 class Mouse : public Parser {
 public:
     Mouse();
@@ -16,12 +16,14 @@ public:
 private:
     void CleanupFields();
 
-    char* m_pointer_str;
-    char* m_examine_str;
-    char* m_pickup_str;
-    char* m_unknown_str;
-
-    char* m_fields[78];
+    char* m_labels[25];        // 0x88
+    Sprite* m_sprite;          // 0xEC
+    int m_offsetY;             // 0xF0
+    struct Point {
+        int x;
+        int y;
+    };
+    Point m_hotspots[25];      // 0xF4
+    AILData* m_audio;          // 0x1BC
 };
-
 #endif // MOUSE_H

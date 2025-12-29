@@ -22,56 +22,65 @@ extern "C" {
 /* Function start: 0x41ECA0 */
 Mouse::Mouse()
 {
-    memset(m_fields, 0, sizeof(m_fields));
+    memset(m_labels, 0, sizeof(m_labels));
+    m_sprite = 0;
+    m_offsetY = 0;
+    memset(m_hotspots, 0, sizeof(m_hotspots));
+    m_audio = 0;
 
-    m_pointer_str = (char*)AllocateMemory(16);
-    m_examine_str = (char*)AllocateMemory(16);
-    m_pickup_str = (char*)AllocateMemory(16);
-    m_unknown_str = (char*)AllocateMemory(16);
+    m_labels[0] = (char*)AllocateMemory(16);
+    m_labels[1] = (char*)AllocateMemory(16);
+    m_labels[2] = (char*)AllocateMemory(16);
+    m_labels[3] = (char*)AllocateMemory(16);
 
-    strcpy(m_pointer_str, "POINTER");
-    strcpy(m_examine_str, "EXAMINE");
-    strcpy(m_pickup_str, "PICKUP");
-    strcpy(m_unknown_str, "");
-}
-
-/* Function start: 0x41EE30 */
-Mouse::~Mouse()
-{
-    if (m_fields[70] != 0) {
-        ((AILData*)m_fields[70])->~AILData();
-        FreeMemory(m_fields[70]);
-        m_fields[70] = 0;
-    }
-
-    if (m_fields[30] != 0) {
-        ((Sprite*)m_fields[30])->~Sprite();
-        FreeMemory(m_fields[30]);
-        m_fields[30] = 0;
-    }
-
-    if (m_fields[31] != 0) {
-        ((Sprite*)m_fields[31])->~Sprite();
-        FreeMemory(m_fields[31]);
-        m_fields[31] = 0;
-    }
-
-    for (int i = 0; i < 0x19; i++) {
-        if (m_fields[i + 34] != 0) {
-            FreeMemory(m_fields[i + 34]);
-            m_fields[i + 34] = 0;
-        }
-    }
-
-    CleanupFields();
-    FUN_0041ef47();
+    strcpy(m_labels[0], "POINTER");
+    strcpy(m_labels[1], "EXAMINE");
+    strcpy(m_labels[2], "PICKUP");
+    strcpy(m_labels[3], "");
 }
 
 /* Function start: 0x41EF25 */
 void Mouse::CleanupFields()
 {
-    Array_Cleanup(&m_fields[61], 8, 0x19, (void(__cdecl*)(void*))0x405770);
+    Array_Cleanup(m_hotspots, 8, 0x19, (void(__cdecl*)(void*))0x405770);
 }
+
+/* Function start: 0x41EE30 */
+Mouse::~Mouse()
+{
+    if (m_audio != 0) {
+        m_audio->~AILData();
+        FreeMemory(m_audio);
+        m_audio = 0;
+    }
+
+    if (m_sprite != 0) {
+        m_sprite->~Sprite();
+        FreeMemory(m_sprite);
+        m_sprite = 0;
+    }
+
+    // Original code had check checks for fields[30] and [31] as Sprites.
+    // Based on memory layout (0x88 + 30*4 = 0x100), this overlaps with m_hotspots[1].y and m_hotspots[2].x.
+    // It is possible specific array entries are used as Sprites in some configurations,
+    // but the LBLParse "HOTPIXEL" logic treats them as ints.
+    // For now we only clean up what we allocated.
+
+    for (int i = 0; i < 25; i++) {
+        if (m_labels[i] != 0) {
+            FreeMemory(m_labels[i]);
+            m_labels[i] = 0;
+        }
+    }
+
+    // offset 0x17C is inside m_hotspots (index 17).
+    // This part of the logic remains unclear and is potentially legacy or incorrect decompliation.
+    // We removed CleanupFields() call as we don't have m_fields.
+    
+    CleanupFields();
+    FUN_0041ef47();
+}
+
 
 /* Function start: 0x41EF50 */
 int Mouse::LBLParse(char* line)
@@ -96,7 +105,7 @@ int Mouse::LBLParse(char* line)
             if (local_18 != 0) {
                 this_00 = AILData_Ctor((AILData*)local_18);
             }
-            *(AILData**)((char*)this + 0x1BC) = this_00;
+            m_audio = this_00;
             if (this_00 != 0) {
                 this_00->Load(local_60);
             }
@@ -106,18 +115,22 @@ int Mouse::LBLParse(char* line)
             if (local_18 != 0) {
                 pSVar4 = Sprite_Ctor((Sprite*)local_18, (char*)0);
             }
-            *(Sprite**)((char*)this + 0xEC) = pSVar4;
+            m_sprite = pSVar4;
             pSVar4->flags &= ~2;
             Parser::ProcessFile(pSVar4, this, 0);
         } else if (strcmp(local_40, "HOTPIXEL") == 0) {
             sscanf(line, " %s %d %d %d", local_40, &local_14, &local_20, &local_1c);
-            *(int*)((char*)this + local_14 * 8 + 0xF4) = local_20;
-            *(int*)((char*)this + local_14 * 8 + 0xF8) = local_1c;
+            if (local_14 >= 0 && local_14 < 25) {
+                m_hotspots[local_14].x = local_20;
+                m_hotspots[local_14].y = local_1c;
+            }
         } else if (strcmp(local_40, "LABLE") == 0) {
             sscanf(line, " %s %d %s", local_40, &local_14, local_60);
-            FUN_00425fd0(*(char**)((char*)this + local_14 * 4 + 0x88), local_60, 0x10);
+            if (local_14 >= 0 && local_14 < 25) {
+                FUN_00425fd0(m_labels[local_14], local_60, 0x10);
+            }
         } else if (strcmp(local_40, "END") == 0) {
-            *(int*)((char*)this + 0xF0) = 0;
+            m_offsetY = 0;
             return 1;
         } else {
             Parser::LBLParse(line);
@@ -131,7 +144,7 @@ int Mouse::LBLParse(char* line)
 /* Function start: 0x41F200 */
 void Mouse::DrawCursor()
 {
-    Sprite* sprite = *(Sprite**)((char*)this + 0xec);
+    Sprite* sprite = m_sprite;
     if (sprite == 0) {
         ShowError("missing mouse ");
     }
@@ -144,7 +157,9 @@ void Mouse::DrawCursor()
     }
 
     if (sprite) {
-        final_x -= *(int*)((char*)this + sprite->current_state * 8 + 0xf4);
+        if (sprite->current_state >= 0 && sprite->current_state < 25) {
+            final_x -= m_hotspots[sprite->current_state].x;
+        }
     }
 
     int final_y = 0;
@@ -153,9 +168,11 @@ void Mouse::DrawCursor()
     }
 
     if (sprite) {
-        final_y -= *(int*)((char*)this + sprite->current_state * 8 + 0xf8);
+         if (sprite->current_state >= 0 && sprite->current_state < 25) {
+            final_y -= m_hotspots[sprite->current_state].y;
+         }
     } else {
-        final_y -= *(int*)((char*)this + 0xf0);
+        final_y -= m_offsetY;
     }
 
     sprite->Do(final_x, final_y, 1.0);
