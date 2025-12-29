@@ -669,7 +669,6 @@ void* __fastcall FUN_0041b760_impl(void* thisptr) { return thisptr; }
 void __fastcall FUN_0041b8e0_impl(void* thisptr) {}
 void* __fastcall FUN_00417200_impl(void* thisptr) { return thisptr; }
 void __fastcall FUN_00417690_impl(void* thisptr) {}
-void __fastcall FUN_00417320_impl(void* thisptr) {}
 void __fastcall FUN_00404230_impl(void* thisptr) {}
 
 }

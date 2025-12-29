@@ -15,26 +15,27 @@
 #include "FlagArray.h"
 #include "StringTable.h"
 
-// Pointers initialized to their specific values as requested by patterns in main.cpp
-char* g_Buffer_00436960 = (char*)0x00436960;
-void* g_Buffer_00436964 = (void*)0x00436964;
-JoystickManager* g_JoystickManager_00436968 = (JoystickManager*)0x00436968;
-Sound* g_Sound_0043696c = (Sound*)0x0043696c;
-void* g_Unknown_00436970 = (void*)0x00436970;
-VBuffer* g_WorkBuffer_00436974 = (VBuffer*)0x00436974;
-CDData* g_CDData_0043697c = (CDData*)0x0043697c;
-Mouse* g_Mouse_00436978 = (Mouse*)0x00436978;
-Timer* g_Timer_00436980 = (Timer*)0x00436980;
-FlagArray* g_Manager_00435a84 = (FlagArray*)0x00435a84;
-StringTable* g_Strings_00435a70 = (StringTable*)0x00435a70;
-char* g_Unknown_00436994 = (char*)0x00436994;
-AnimatedAsset* g_TextManager_00436990 = (AnimatedAsset*)0x00436990;
+// Pointers initialized to 0 to avoid crash in static CRT initialization or early access to invalid memory.
+// Original code had hardcoded addresses here which are invalid in the new build.
+char* g_Buffer_00436960 = 0;
+void* g_Buffer_00436964 = 0;
+JoystickManager* g_JoystickManager_00436968 = 0;
+Sound* g_Sound_0043696c = 0;
+void* g_Unknown_00436970 = 0;
+VBuffer* g_WorkBuffer_00436974 = 0;
+CDData* g_CDData_0043697c = 0;
+Mouse* g_Mouse_00436978 = 0;
+Timer* g_Timer_00436980 = 0;
+FlagArray* g_Manager_00435a84 = 0;
+StringTable* g_Strings_00435a70 = 0;
+char* g_Unknown_00436994 = 0;
+AnimatedAsset* g_TextManager_00436990 = 0;
 
-GameState* g_GameState_00436998 = (GameState*)0x00436998;
-GameState* g_GameState2_004369a4 = (GameState*)0x004369a4;
-GameState* g_GameState3_0043699c = (GameState*)0x0043699c;
-GameState* g_GameState4_004369a0 = (GameState*)0x004369a0;
-Sprite* g_Sprite_004360a0 = (Sprite*)0;
+GameState* g_GameState_00436998 = 0;
+GameState* g_GameState2_004369a4 = 0;
+GameState* g_GameState3_0043699c = 0;
+GameState* g_GameState4_004369a0 = 0;
+Sprite* g_Sprite_004360a0 = 0;
 
 // Regular variables initialized to 0
 int DAT_004373bc = 0;
@@ -99,4 +100,5 @@ int DAT_00435a80 = 0;
 void* DAT_0043eff0 = 0;
 
 typedef void (__cdecl *SmackSoundCheckFn)();
-SmackSoundCheckFn g_SmackSoundCheck = *(SmackSoundCheckFn*)0x0044053c;
+// Initialize to 0 instead of reading from hardcoded address
+SmackSoundCheckFn g_SmackSoundCheck = 0;

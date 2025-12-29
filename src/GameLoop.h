@@ -8,7 +8,10 @@ class GameLoop {
 public:
     GameLoop* Init();    // 0x417200
     void Run();          // 0x417690
+    void ResetLoop();    // 0x417420
+    void ProcessInput(); // 0x4177B0
     void Cleanup();      // 0x417320
+    void DrawFrame();    // 0x417ED0
     
     int field_0x00;
     int field_0x04;

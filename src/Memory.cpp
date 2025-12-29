@@ -46,6 +46,10 @@ void FreeMemory(void* ptr)
 /* Function start: 0x4284A0 */
 void* HeapAllocWrapper(unsigned int size)
 {
+    if (DAT_0043eff0 == 0) {
+        DAT_0043eff0 = GetProcessHeap();
+        // Alternatively: DAT_0043eff0 = HeapCreate(0, 4096, 0);
+    }
     return HeapAlloc(DAT_0043eff0, 0, size);
 }
 

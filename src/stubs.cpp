@@ -74,8 +74,8 @@ void FUN_00419390() {}
 void FUN_0041eb50() {}
 void FUN_004224e0() {}
 void FUN_004224f0() {}
-void FUN_00421af0() {}
-void FUN_00421d10() {}
+int FUN_00421af0() { return 0; }
+int FUN_00421d10(void*, int) { return 0; } // cdecl version
 void FUN_00411550() {}
 void FUN_00424fc0() {}
 void FUN_00425000() {}
@@ -153,10 +153,8 @@ void* FUN_004209e0(void* a, const char* b, int c) { return a; }
 void __fastcall FUN_00417450(void*) {}
 void __fastcall FUN_0041c960(void*) {}
 void __fastcall FUN_0041c5a0(void*) {}
-void __fastcall FUN_00417ed0(void*) {}
-void __fastcall FUN_004177b0(void*) {}
-void __fastcall FUN_00417420(void*) {}
 void FUN_004179a0() {}
+void __fastcall FUN_004199a0(void*) {} // SC_Message destructor
 
 void* FUN_0041cd50(void* a, char* b) { return a; }
 void FUN_00409160(void* a, void* b) {}
