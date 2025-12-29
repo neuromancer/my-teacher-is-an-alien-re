@@ -17,42 +17,10 @@ extern "C" {
     void FUN_0041ae0c(void);
 }
 
-// Constructor wrapper for external callers
-AnimatedAsset* AnimatedAsset_Ctor(AnimatedAsset* p) {
-    p->AnimatedAsset::AnimatedAsset();
-    return p;
-}
 
-/* Function start: 0x41AD50 */
-void AnimatedAsset::BlitGlyphWithColors(int x1, int x2, int y1, int y2, int destX, int destY, char fillColor, char transparentColor)
-{
-    /* Corresponds to FUN_0041ad50 in the binary - copy a rect from this->buffer to a temporary buffer with transparent/fill handling, then blit to the work buffer */
-    int width = x2 - x1 + 1;
-    int height = y2 - y1 + 1;
-
-    VBuffer* tmpBufMem = (VBuffer*)AllocateMemory(sizeof(VBuffer));
-    VBuffer* tmpBuf = (VBuffer*)0;
-
-    if (tmpBufMem != (VBuffer*)0) {
-        tmpBuf = VirtualBufferCreateAndClean(tmpBufMem, width, height);
-    }
-
-    if (tmpBuf != (VBuffer*)0) {
-        tmpBuf->ClearScreen(0);
-        tmpBuf->BlitTransparentRowsFrom(x1, x2, y1, y2, 0, 0, this->buffer, transparentColor, fillColor);
-        g_WorkBuffer_00436974->CallBlitter2(0, width - 1, 0, height - 1, destX, destY, tmpBuf);
-        tmpBuf->~VBuffer();
-        FreeMemory(tmpBufMem);
-    }
-
-    try {
-        FUN_0041ae0c();
-    } catch (...) {
-    }
-}
 
 /* Function start: 0x420F80 */
-AnimatedAsset::AnimatedAsset()
+AnimatedAsset* AnimatedAsset::Init()
 {
     __try {
         this->text_x = 0;
@@ -64,6 +32,7 @@ AnimatedAsset::AnimatedAsset()
         this->glyphValue = 1;
     } __except (EXCEPTION_EXECUTE_HANDLER) {
     }
+    return this;
 }
 
 extern "C" {
@@ -284,7 +253,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     local_14 = (VBuffer *)AllocateMemory(sizeof(VBuffer));
     pVVar3 = (VBuffer *)0x0;
     if (local_14 != (VBuffer *)0x0) {
-      pVVar3 = VirtualBufferCreateAndClean(local_14, this_00->smk->Width, this_00->smk->Height);
+      pVVar3 = local_14->CreateAndClean(this_00->smk->Width, this_00->smk->Height);
     }
     this->buffer = pVVar3;
     this_00->ToBuffer(pVVar3);
@@ -404,7 +373,7 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
                 this->buffer->ClipAndBlit((int)g_WorkBuffer_00436974, iVar3, iVar4, iVar2, iVar1, param_1, param_2);
             }
             else {
-                this->BlitGlyphWithColors(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->color, this->attr);
+                this->buffer->BlitTransparent(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->color, this->attr);
             }
             iVar4 = iVar4 - iVar3;
         }

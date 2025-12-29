@@ -24,7 +24,7 @@ public:
     int reserved_34; // 0x34 - unknown / reserved
     int reserved_38; // 0x38 - unknown / reserved
 
-    AnimatedAsset();
+    AnimatedAsset* Init();
     void LoadAnimatedAsset(char* param_1);
     void BuildGlyphTable();
     int IsCharSupported(int ch);
@@ -38,7 +38,7 @@ public:
     int FUN_004239d8();
     int FUN_004239d0();
     int FUN_004239c8();
-    void BlitGlyphWithColors(int x1, int x2, int y1, int y2, int destX, int destY, char fillColor, char transparentColor);
+
 
     ~AnimatedAsset();
 };

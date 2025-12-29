@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <share.h>
 
 // Globals
 // Globals
@@ -58,6 +59,15 @@ void FUN_00426550(const char* filename, int* stat_buf) {
     if (stat_buf) stat_buf[4] = 0; 
 }
 void FUN_0041a3b9() {} // Referenced in Message.cpp
+
+// CRT wrapper functions used by GameConfig
+FILE* __cdecl FUN_00425e50(const char* filename, const char* mode) {
+    return _fsopen(filename, mode, 0x40); // SH_DENYNO
+}
+
+unsigned int __cdecl FUN_004269e0(void* buffer, unsigned int size, unsigned int count, FILE* stream) {
+    return fread(buffer, size, count, stream);
+}
 
 // New stubs for Step 66 errors
 void FUN_0041e670() {}
@@ -208,5 +218,4 @@ extern "C" void __fastcall TimedEvent_dtor(void* thisptr) {}
 
 extern "C" {
 void* __fastcall FUN_00422690(void* ptr) { return ptr; }
-void __fastcall FUN_00422870(void* ptr) {}
 } 

@@ -65,22 +65,22 @@ extern "C" {
     void FUN_00422e1a(int);
 }
 
-extern "C" void FUN_00424940(void*); // FreeMemory alias
+extern "C" void InitWorkBuffer(int width, int height);
 
 /* Function start: 0x41A8C0 */
-extern "C" void InitWorkBuffer(int width, int height)
+void InitWorkBuffer(int width, int height)
 {
+    VBuffer* pvVar1 = g_WorkBuffer_00436974;
+    if (g_WorkBuffer_00436974 != 0) {
+        g_WorkBuffer_00436974->~VBuffer();
+        FreeMemory(pvVar1);
+        g_WorkBuffer_00436974 = 0;
+    }
+    void* puVar2 = AllocateMemory(0x30);
     __try {
-        VBuffer* pvVar1 = g_WorkBuffer_00436974;
-        if (g_WorkBuffer_00436974 != 0) {
-            g_WorkBuffer_00436974->~VBuffer();
-            FUN_00424940(pvVar1);
-            g_WorkBuffer_00436974 = 0;
-        }
-        void* puVar2 = AllocateMemory(0x30);
         VBuffer* pVBuffer = 0;
         if (puVar2 != 0) {
-            pVBuffer = VirtualBufferCreateAndClean((VBuffer*)puVar2, width, height);
+            pVBuffer = ((VBuffer*)puVar2)->CreateAndClean(width, height);
         }
         g_WorkBuffer_00436974 = pVBuffer;
         if (pVBuffer->handle != 0) {
@@ -88,17 +88,15 @@ extern "C" void InitWorkBuffer(int width, int height)
         }
         g_WorkBuffer_00436974->SetVideoMode();
         g_WorkBuffer_00436974->ClearScreen(0);
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-    }
+    } __finally {}
 }
 
 /* Function start: 0x41a9f0 */
-
-VBuffer* VirtualBufferCreateAndClean(VBuffer* vbuffer, int width, int height)
+VBuffer* VBuffer::CreateAndClean(int width, int height)
 {
-    vbuffer->InitFields();
-    vbuffer->VBuffer::VBuffer(width, height);
-    return vbuffer;
+    this->InitFields();
+    this->VBuffer::VBuffer(width, height);
+    return this;
 }
 
 /* Function start: 0x41aa10 */
@@ -261,15 +259,44 @@ void VBuffer::TPaste(int param_1, int param_2, int param_3, int param_4, int par
     ShowError("VBuffer::TPaste - Not implemented");
 }
 
+extern "C" void __cdecl FUN_0041b310(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8, char param_9, char param_10);
+
+/* Function start: 0x41B310 */
+void __cdecl FUN_0041b310(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8, char param_9, char param_10)
+{
+    VBuffer* srcBuffer = (VBuffer*)param_7;
+    VBuffer* destBuffer = (VBuffer*)param_8;
+    
+    int rowCount = (param_4 - param_3) + 1;
+    int srcPitch = srcBuffer->width;
+    char* srcData = (char*)srcBuffer->GetData();
+    char* srcRow = srcData + (srcBuffer->video_mode_lock_count - param_4) * srcPitch + param_1;
+
+    int destPitch = destBuffer->width;
+    char* destData = (char*)destBuffer->GetData();
+    char* destRow = destData + (destBuffer->video_mode_lock_count - param_6) * destPitch + param_5;
+
+    if (rowCount > 0) {
+        do {
+            CopyRowTransparent(destRow, srcRow, (param_2 - param_1) + 1, param_9, param_10);
+            destRow += destPitch;
+            srcRow += srcPitch;
+            rowCount--;
+        } while (rowCount != 0);
+    }
+    destBuffer->Lock();
+    srcBuffer->Lock();
+}
+
 /* Function start: 0x41ad50 */
 void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8)
 {
-    int local_40_storage[sizeof(VBuffer) / sizeof(int)];
+    char local_40_storage[48];
     VBuffer* local_40 = (VBuffer*)local_40_storage;
-    VirtualBufferCreateAndClean(local_40, (param_2 - param_1) + 1, (param_4 - param_3) + 1);
+    local_40->CreateAndClean((param_2 - param_1) + 1, (param_4 - param_3) + 1);
     __try {
         local_40->ClearScreen(0);
-        BlitTransparentRows(param_1, param_2, param_3, param_4, local_40->saved_video_mode, local_40->video_mode_lock_count, this, local_40, param_7, param_8);
+        FUN_0041b310(param_1, param_2, param_3, param_4, local_40->clip_x1, local_40->video_mode_lock_count, (int)this, (int)local_40, param_7, param_8);
         local_40->TPaste(local_40->clip_x1, local_40->clip_x2, local_40->saved_video_mode, local_40->video_mode_lock_count, param_5, param_6);
     } __finally {
         FUN_0041ae0c();

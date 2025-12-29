@@ -21,6 +21,8 @@ public:
     void LoadConfig(); // 0x422870
     FILE* Open(char* mode); // 0x422800
     void Close(); // 0x422820
+    void CreateDefaultConfig(); // 0x422840
+    unsigned char CheckWindir(); // 0x4228E0
 };
 
 #endif // GAMECONFIG_H

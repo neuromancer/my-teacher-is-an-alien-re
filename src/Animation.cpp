@@ -179,7 +179,7 @@ void Animation::VBInit() {
 
   VBuffer *vbuffer = (VBuffer *)AllocateMemory(0x30);
   if (vbuffer != 0) {
-    this->vbuffer = VirtualBufferCreateAndClean(vbuffer, this->smk->Width,
+    this->vbuffer = vbuffer->CreateAndClean(this->smk->Width,
                                                 this->smk->Height);
   }
 }

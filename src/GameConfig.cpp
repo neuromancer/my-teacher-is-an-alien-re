@@ -1,6 +1,7 @@
 #include "GameConfig.h"
 #include "Memory.h"
 #include <string.h>
+#include <stdlib.h>
 
 extern "C" {
     void* __fastcall FUN_00422690(void* ptr);
@@ -55,7 +56,7 @@ done:
 
 /* Function start: 0x422800 */
 FILE* GameConfig::Open(char* mode) {
-    this->fp = FUN_00425e50("Setup.cfg", mode);
+    this->fp = FUN_00425e50(PTR_s_Setup_cfg_00437454, mode);
     return this->fp;
 }
 
@@ -74,3 +75,24 @@ void GameConfig::LoadConfig() {
         Close();
     }
 }
+
+/* Function start: 0x422840 */
+void GameConfig::CreateDefaultConfig() {
+    // Zero out data (20 dwords = 80 bytes at offset 0x44)
+    memset(this->data, 0, 80);
+    // Set default values
+    this->data[0] = 2;  // offset 0x44
+    this->data[2] = 2;  // offset 0x46
+    this->data[1] = 0;  // offset 0x45
+    
+    CheckWindir();
+    LoadConfig();
+}
+
+/* Function start: 0x4228E0 */
+unsigned char GameConfig::CheckWindir() {
+    char* result = getenv("windir");
+    this->data[6] = (result != 0) ? 1 : 0;
+    return this->data[6];
+}
+

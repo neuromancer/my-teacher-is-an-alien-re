@@ -32,6 +32,11 @@ StringTable* g_Strings_00435a70 = 0;
 char* g_Unknown_00436994 = 0;
 AnimatedAsset* g_TextManager_00436990 = 0;
 
+// String pointers for config files
+char s_Setup_cfg[] = "Setup.cfg";
+extern "C" char* PTR_s_Setup_cfg_00437454 = s_Setup_cfg;
+extern "C" char DAT_004371a8[] = "rb";
+
 GameState* g_GameState_00436998 = 0;
 GameState* g_GameState2_004369a4 = 0;
 GameState* g_GameState3_0043699c = 0;

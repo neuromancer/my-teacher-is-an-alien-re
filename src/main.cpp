@@ -25,7 +25,6 @@
 #include "GameConfig.h"
 
 
-extern AnimatedAsset *AnimatedAsset_Ctor(AnimatedAsset *);
 
 
 
@@ -41,12 +40,10 @@ void FUN_00421010(void *);
 void FUN_004227a0(void *);
 void FUN_00421ea0(void *);
 void PlayIntroCinematic();
-// void FUN_0040c5d0();
 
 
 void CheckDebug();
 void ClearMessageLog();
-// void CreateGameObject_1();
 void InitWorkBuffer(int, int);
 void SetStateFlag(int, int);
 void SetCursorVisible(int);
@@ -575,12 +572,8 @@ int __cdecl CalculateBufferSize(int width, unsigned int height) {
 
 /* Function start: 0x41A3D0 */
 void InitGameSystems(void) {
-  JoystickManager *pJoystick;
-  JoystickManager *pJoystickInit;
-  Sound *pSound;
-  Sound *pSoundInit;
-  AnimatedAsset *pTextManager;
-  AnimatedAsset *pTextManagerInit;
+  void *pAlloc;
+  void *pInit;
 
   __try {
     g_Buffer_00436960 = (char *)AllocateMemory(0x100);
@@ -589,26 +582,25 @@ void InitGameSystems(void) {
     ClearMessageLog();
     CreateGameObject_1();
     InitWorkBuffer(0x280, 0x1e0);
-    pJoystick = (JoystickManager *)AllocateMemory(0x1b8);
-    pJoystickInit = (JoystickManager *)0x0;
-    if (pJoystick != (JoystickManager *)0x0) {
-      pJoystickInit = pJoystick->Init(
+    pAlloc = AllocateMemory(0x1b8);
+    pInit = 0;
+    if (pAlloc != 0) {
+      pInit = ((JoystickManager *)pAlloc)->Init(
           (unsigned int)g_GameConfig_00436970->data[0]);
     }
-    g_JoystickManager_00436968 = pJoystickInit;
-    pSound = (Sound *)AllocateMemory(0x3c);
-    pSoundInit = (Sound *)0x0;
-    if (pSound != (Sound *)0x0) {
-      pSoundInit = (Sound *)pSound->Init(0x5622, 8, 1);
+    g_JoystickManager_00436968 = (JoystickManager *)pInit;
+    pAlloc = AllocateMemory(0x3c);
+    pInit = 0;
+    if (pAlloc != 0) {
+      pInit = ((Sound *)pAlloc)->Init(0x5622, 8, 1);
     }
-    g_Sound_0043696c = pSoundInit;
-    pTextManager = (AnimatedAsset *)AllocateMemory(0x38);
-    pTextManagerInit = (AnimatedAsset *)0x0;
-    if (pTextManager != (AnimatedAsset *)0x0) {
-      pTextManagerInit = AnimatedAsset_Ctor(pTextManager);
+    g_Sound_0043696c = (Sound *)pInit;
+    pAlloc = AllocateMemory(0x38);
+    pInit = 0;
+    if (pAlloc != 0) {
+      pInit = ((AnimatedAsset *)pAlloc)->Init();
     }
-    g_TextManager_00436990 = pTextManagerInit;
-    g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
+    (g_TextManager_00436990 = (AnimatedAsset *)pInit)->LoadAnimatedAsset("elements\\barrel06.smk");
     SetStateFlag(0, 1);
     SetCursorVisible(0);
   } __except (EXCEPTION_EXECUTE_HANDLER) {
