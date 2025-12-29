@@ -19,6 +19,8 @@ public:
     int Init(char* cmdLine);
     void Constructor(); // 0x422690
     void LoadConfig(); // 0x422870
+    FILE* Open(char* mode); // 0x422800
+    void Close(); // 0x422820
 };
 
 #endif // GAMECONFIG_H

@@ -4,7 +4,10 @@
 
 extern "C" {
     void* __fastcall FUN_00422690(void* ptr);
-    void __fastcall FUN_00422870(void* ptr);
+    FILE* __cdecl FUN_00425e50(const char* filename, const char* mode);
+    unsigned int __cdecl FUN_004269e0(void* buffer, unsigned int size, unsigned int count, FILE* stream);
+    extern char DAT_004371a8[];
+    extern char* PTR_s_Setup_cfg_00437454;
 }
 
 void GameConfig::Constructor() {
@@ -50,7 +53,24 @@ done:
     return original_state;
 }
 
+/* Function start: 0x422800 */
+FILE* GameConfig::Open(char* mode) {
+    this->fp = FUN_00425e50("Setup.cfg", mode);
+    return this->fp;
+}
+
+/* Function start: 0x422820 */
+void GameConfig::Close() {
+    if (this->fp) {
+        fclose(this->fp);
+        this->fp = 0;
+    }
+}
+
 /* Function start: 0x422870 */
 void GameConfig::LoadConfig() {
-    FUN_00422870(this);
+    if (Open(DAT_004371a8)) {
+        FUN_004269e0(this->data, 80, 1, this->fp);
+        Close();
+    }
 }
