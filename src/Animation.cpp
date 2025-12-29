@@ -4,6 +4,7 @@
 #include "VBuffer.h"
 #include "string.h"
 #include <smack.h>
+#include "GameConfig.h"
 
 #include "Memory.h"
 #include <windows.h>
@@ -142,11 +143,11 @@ void Animation::GotoFrame(int frame) {
   if (this->smk != 0) {
     /* SmackGoto and SmackSoundOnOff missing */
     /*
-    if (*(char*)(g_Unknown_00436970 + 0x46) == '\x02') {
+    if (g_GameConfig_00436970->data[2] == '\x02') {
         SmackSoundOnOff(this->smk, 0);
     }
     SmackGoto(this->smk, frame);
-    if (*(char*)(g_Unknown_00436970 + 0x46) == '\x02') {
+    if (g_GameConfig_00436970->data[2] == '\x02') {
         SmackSoundOnOff(this->smk, 1);
     }
     */
@@ -159,7 +160,7 @@ int Animation::Open(char *filename, int param_2, int param_3) {
     return 1;
   }
 
-  if (*(char *)(((char*)g_Unknown_00436970) + 0x46) != '\x02') {
+  if (g_GameConfig_00436970->data[2] != '\x02') {
     param_2 = param_2 & 0xfff01fff;
   }
 

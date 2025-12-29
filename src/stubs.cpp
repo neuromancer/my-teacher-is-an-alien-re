@@ -95,7 +95,7 @@ void SetCursorVisible(int show) {
 }
 
 
-void CreateGameObject_1() {}
+// void CreateGameObject_1() {} // Implemented in main.cpp
 
 void* AllocateMemory_Wrapper(int size) { 
     return malloc(size); 
@@ -205,3 +205,8 @@ Message::Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8,
 // The error was: unresolved external symbol @TimedEvent_dtor@4
 // We can define it as extern "C" __fastcall?
 extern "C" void __fastcall TimedEvent_dtor(void* thisptr) {} 
+
+extern "C" {
+void* __fastcall FUN_00422690(void* ptr) { return ptr; }
+void __fastcall FUN_00422870(void* ptr) {}
+} 

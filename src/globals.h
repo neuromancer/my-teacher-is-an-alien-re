@@ -428,7 +428,7 @@ extern char* g_Buffer_00436960; // DAT_00436960  { /* 4 bytes */ }
 extern void* g_Buffer_00436964; // DAT_00436964  { /* 4 bytes */ }
 extern JoystickManager* g_JoystickManager_00436968; // DAT_00436968  { /* 4 bytes */ }
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
-extern void* g_Unknown_00436970; // DAT_00436970  { /* 4 bytes */ }
+extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
 extern Mouse* g_Mouse_00436978; // DAT_00436978
 extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
@@ -6067,3 +6067,5 @@ extern void* DAT_0043eff0; // DAT_0043eff0  { /* 4 bytes */ }
 #endif
 extern int DAT_0043bdf0; // Added manually
 extern int DAT_0043d564; // Added manually
+extern int DAT_0043d558;
+extern char DAT_0043d560;

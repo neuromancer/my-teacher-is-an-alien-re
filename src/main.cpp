@@ -22,6 +22,7 @@
 #include <mbstring.h>
 #include <mss.h>
 #include <windows.h>
+#include "GameConfig.h"
 
 
 extern AnimatedAsset *AnimatedAsset_Ctor(AnimatedAsset *);
@@ -45,7 +46,7 @@ void PlayIntroCinematic();
 
 void CheckDebug();
 void ClearMessageLog();
-void CreateGameObject_1();
+// void CreateGameObject_1();
 void InitWorkBuffer(int, int);
 void SetStateFlag(int, int);
 void SetCursorVisible(int);
@@ -63,6 +64,7 @@ void InitGameSystems(void);
 extern "C" {
   void FUN_0040cd15(); 
   void FUN_0040cd1d();
+  void FUN_004227a0(void*); // Config Cleanup
 }
 
 /* Function start: 0x40C5D0 */
@@ -543,6 +545,29 @@ void CheckDebug(void) {
   }
 }
 
+/* Function start: 0x41A810 */
+void CreateGameObject_1() {
+  GameConfig* ptr = (GameConfig*)AllocateMemory(sizeof(GameConfig)); // 0x94
+  
+  __try {
+      if (ptr != 0) {
+        ptr->Constructor();
+      }
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+  }
+  g_GameConfig_00436970 = ptr;
+
+  if (DAT_0043d558 != 0) {
+      g_GameConfig_00436970->data[2] = (unsigned char)DAT_0043d558;
+  }
+
+  if (DAT_0043d560 != 0) {
+      g_GameConfig_00436970->data[0] = (unsigned char)DAT_0043d560;
+  }
+
+  g_GameConfig_00436970->LoadConfig();
+}
+
 /* Function start: 0x422E02 */
 int __cdecl CalculateBufferSize(int width, unsigned int height) {
   return (((width + 3) & ~3U) * height) + DAT_00437f4c;
@@ -567,8 +592,8 @@ void InitGameSystems(void) {
     pJoystick = (JoystickManager *)AllocateMemory(0x1b8);
     pJoystickInit = (JoystickManager *)0x0;
     if (pJoystick != (JoystickManager *)0x0) {
-      //pJoystickInit = pJoystick->Init(
-      //    (unsigned int)*(unsigned char *)((int)g_Unknown_00436970 + 0x44));
+      pJoystickInit = pJoystick->Init(
+          (unsigned int)g_GameConfig_00436970->data[0]);
     }
     g_JoystickManager_00436968 = pJoystickInit;
     pSound = (Sound *)AllocateMemory(0x3c);
@@ -630,15 +655,16 @@ void ShutdownGameSystems(void) {
     FreeMemory(g_JoystickManager_00436968);
     g_JoystickManager_00436968 = 0;
   }
-  if (g_Unknown_00436970 != 0) {
-    FUN_004227a0(g_Unknown_00436970);
-    FreeMemory(g_Unknown_00436970);
-    g_Unknown_00436970 = 0;
-  }
+
   if (g_CDData_0043697c != 0) {
     FUN_00421ea0(g_CDData_0043697c);
     FreeMemory(g_CDData_0043697c);
     g_CDData_0043697c = 0;
+  }
+  if (g_GameConfig_00436970 != 0) {
+     FUN_004227a0(g_GameConfig_00436970);
+     FreeMemory(g_GameConfig_00436970);
+     g_GameConfig_00436970 = 0;
   }
   if (g_Buffer_00436964 != 0) {
     FreeMemory(g_Buffer_00436964);

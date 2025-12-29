@@ -3,7 +3,9 @@
 #include "string.h"
 #include <mss.h>
 #include <smack.h>
+#include <sys/types.h>
 #include <string.h>
+#include "GameConfig.h"
 
 extern short _param_3;
 
@@ -26,7 +28,7 @@ void *Sound::Init(int param_1, unsigned short param_2, short param_3) {
   }
 
   AIL_startup();
-  if (*(char *)(((char*)g_Unknown_00436970) + 0x46) == '\x02') {
+  if (g_GameConfig_00436970->data[2] == '\x02') {
     AIL_set_preference(0xf, 0);
     int iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
     this->digital_driver = (HDIGDRIVER)iVar3;
