@@ -97,7 +97,7 @@ void RunGame() {
     }
     g_Mouse_00436978 = pMouse;
     ParseFile((Parser*)pMouse, "mis\\mouse1.mis", "[MICE]");
-
+    
     g_Unknown_00436994 = (char*)AllocateMemory(0x40);
 
     puVar2 = AllocateMemory(0x14);
@@ -567,8 +567,8 @@ void InitGameSystems(void) {
     pJoystick = (JoystickManager *)AllocateMemory(0x1b8);
     pJoystickInit = (JoystickManager *)0x0;
     if (pJoystick != (JoystickManager *)0x0) {
-      pJoystickInit = pJoystick->Init(
-          (unsigned int)*(unsigned char *)((int)g_Unknown_00436970 + 0x44));
+      //pJoystickInit = pJoystick->Init(
+      //    (unsigned int)*(unsigned char *)((int)g_Unknown_00436970 + 0x44));
     }
     g_JoystickManager_00436968 = pJoystickInit;
     pSound = (Sound *)AllocateMemory(0x3c);

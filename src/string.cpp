@@ -213,7 +213,7 @@ void AddToStringTable(char *param_1)
     char *pcVar6;
 
     local_20[0] = '\0';
-    iVar2 = sscanf(param_1, "%s", local_20);
+    iVar2 = sscanf(param_1, " %s ", local_20);
     if (iVar2 == 1) {
         uVar3 = strlen(local_20);
         if (uVar3 > 0) {
@@ -351,7 +351,7 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
             return NULL;
         }
         internal_ReadLine_placeholder();
-        result = sscanf(buffer, "%s", local_buf);
+        result = sscanf(buffer, " %s ", local_buf);
     } while (result < 1 || local_buf[0] == ';' || local_buf[0] == '\r');
 
     return buffer;

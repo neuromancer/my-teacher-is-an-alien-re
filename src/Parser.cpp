@@ -87,7 +87,7 @@ void Parser::FindKey(unsigned char *param_1) {
     if (internal_ReadLine(local_100, 255, this->pFile) == NULL) {
       break;
     }
-    sscanf(local_100, "%s", g_Buffer_00436960);
+    sscanf(local_100, " %s ", g_Buffer_00436960);
     if (strcmp(g_Buffer_00436960, (char *)param_1) == 0) {
       return;
     }
@@ -148,7 +148,7 @@ Parser *ParseFile(Parser *parser, char *filename, char *key_format, ...) {
 Parser *Parser::ProcessFile(Parser *self, Parser *dst, char *key_format, ...) {
   char key_buffer[64];
   char line_buffer[256];
-  Parser *result;
+  int result;
 
   self->Copy(dst);
 
@@ -161,24 +161,25 @@ Parser *Parser::ProcessFile(Parser *self, Parser *dst, char *key_format, ...) {
 
   self->OnProcessStart();
 
-  while (self->pFile != NULL && (self->pFile->_flag != 0)) {
-    char *line = internal_ReadLine(line_buffer, 255, self->pFile);
-    if (line == NULL) {
-      ShowError(
-          "Parser::Parser - premature EOF in '%s'- probably missing END label",
-          self->filename);
-    }
-
-    if (self->GetKey(line_buffer) == 0) {
-      self->lineNumber = (int)line_buffer;
-      result = (Parser *)self->LBLParse(line_buffer);
-      if (result != NULL) {
-        self->OnProcessEnd();
-        return result;
+  do {
+    do {
+      if (self->pFile == NULL || self->pFile->_flag == 0) {
+        ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer",
+                  self->filename);
       }
-    }
-  }
-  ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer",
+
+      char *line = internal_ReadLine(line_buffer, 255, self->pFile);
+      if (line == NULL) {
+        ShowError(
+            "Parser::Parser - premature EOF in '%s'- probably missing END label",
             self->filename);
-  return NULL;
+      }
+    } while (self->GetKey(line_buffer) != 0);
+
+    self->lineNumber = (int)line_buffer;
+    result = self->LBLParse(line_buffer);
+  } while (result == 0);
+
+  self->OnProcessEnd();
+  return (Parser *)result;
 }

@@ -531,7 +531,7 @@ int Sprite::LBLParse(char* param_1)
     int local_a8;
     int local_a4;
 
-    sscanf(param_1, "%s", local_a0);
+    sscanf(param_1, " %s ", local_a0);
 
     if (strcmp(local_a0, "FNAME") == 0) {
         sscanf(param_1, "%s %s", local_80, this->sprite_filename);

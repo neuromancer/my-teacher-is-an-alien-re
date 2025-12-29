@@ -73,7 +73,7 @@ int Hotspot::LBLParse(char* line)
 {
     try {
         char command[32];
-        sscanf(line, "%s", command);
+        sscanf(line, " %s ", command);
 
         if (strcmp(command, "HOTSPOT") == 0) {
             sscanf(line, "%*s %d %d %d %d", &this->rect_x, &this->rect_y, &this->rect_w, &this->rect_h);

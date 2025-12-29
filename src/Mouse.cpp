@@ -114,14 +114,14 @@ int Mouse::LBLParse(char* line)
         } catch (...) {
         }
     } else if (strcmp(cmd, "SPRITE") == 0) {
+        ptr = AllocateMemory(0xd8);
         try {
-            ptr = AllocateMemory(0xd8);
             Sprite* sprite = 0;
             if (ptr != 0) {
                 sprite = new (ptr) Sprite(0);
             }
             m_sprite = sprite;
-            sprite->flags &= ~2;
+            m_sprite->flags &= ~2;
             Parser::ProcessFile(m_sprite, this, 0);
         } catch (...) {
         }

@@ -207,7 +207,7 @@ int mCNavigator::LBLParse(char* param_1)
 
     local_b4[0] = '\0';
     local_34[0] = '\0';
-    sscanf(param_1, "%s", local_34);
+    sscanf(param_1, " %s ", local_34);
     if (_strcmpi(local_34, "BEARING") == 0) {
         sscanf(param_1, "%s %s", local_34, local_b4);
         SetBearing(local_b4);

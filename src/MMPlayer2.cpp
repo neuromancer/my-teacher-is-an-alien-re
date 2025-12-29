@@ -17,7 +17,7 @@ int MMPlayer2::LBLParse(char* param_1)
 {
     char local_34[32];
     
-    sscanf(param_1, "%s", local_34);
+    sscanf(param_1, " %s ", local_34);
     
     if (_strcmpi(local_34, "SPRITE") == 0) {
         void* mem = AllocateMemory(0xd8);
