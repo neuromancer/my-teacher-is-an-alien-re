@@ -1,13 +1,14 @@
+
 #include "CDData.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "FileSystem.h"
 
 extern "C" {
 int FileExists(const char *);
 void ParsePath(const char *, char *, char *, char *, char *);
 int _chdir(const char *);
-void FUN_0042ddd0(void *, int);
 }
 
 /* Function start: 0x421E40 */
@@ -21,7 +22,7 @@ CDData *CDData::Init(char *param_1, char *param_2) {
     puVar2 = puVar2 + 1;
   }
   *(char *)puVar2 = 0;
-  FUN_0042ddd0(this, 0x80);
+  FUN_0042ddd0((char*)this, 0x80);
   if (param_1 != (char *)0x0) {
     strncpy(this->field_0x80, param_1, 0x40);
   }

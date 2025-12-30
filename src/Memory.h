@@ -8,4 +8,8 @@ extern "C" void* AllocateMemoryInternal(unsigned int size, int flag);
 void* HeapAllocWrapper(unsigned int size);
 int OutOfMemoryHandler(unsigned int size);
 
+
+extern "C" void* FUN_00428440(unsigned int size);
+
 #endif // MEMORY_H
+

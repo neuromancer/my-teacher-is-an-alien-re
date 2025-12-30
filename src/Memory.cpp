@@ -64,10 +64,17 @@ int OutOfMemoryHandler(unsigned int size)
     return 0;
 }
 
+
 /* Function start: 0x4277E0 */
 void FreeFromGlobalHeap(void* ptr)
 {
     if (ptr != 0) {
         HeapFree(DAT_0043eff0, 0, ptr);
     }
+}
+
+/* Function start: 0x428440 */
+void* FUN_00428440(unsigned int size)
+{
+    return AllocateMemoryInternal(size, 1);
 }

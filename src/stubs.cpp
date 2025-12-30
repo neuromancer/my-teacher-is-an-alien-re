@@ -11,9 +11,10 @@ class SoundManager* g_SoundManager = NULL;
 
 extern "C" {
 
+
 // Generic Stubs for Missing Functions
 void FUN_0041ef47() {}
-void FUN_0042ddd0(void*, int) {}
+// FUN_0042ddd0 implemented in FileSystem.cpp
 // FUN_00425fd0 is strncpy from MSVC CRT
 void FUN_0041eab0() {}
 void FUN_004171b0() {}
