@@ -77,7 +77,9 @@ void FUN_00421671() {}
 void FUN_00405770() {}
 void FUN_0041fbd3() {}
 
-void GetGameWindowHandle() {}
+// GetGameWindowHandle removed (defined in GameWindow.cpp)
+void FUN_004239e4(int* a, int* b) { if(a)*a=0; if(b)*b=0; }
+void FUN_00421c24() {}
 void FUN_0041ea80() {}
 void FUN_0041eb70() {}
 
@@ -189,7 +191,7 @@ int mCNavNode_Update(void* a) { return 0; }
 void* NavNode_Constructor(void* a) { return a; }
 
 #include "InputManager.h"
-int InputManager::PollEvents(int) { return 0; }
+// InputManager::PollEvents removed (defined in InputManager.cpp)
 
 // Missing variables (C++ linkage to match mangled names)
 // void* DAT_0043eff0 = NULL; // Moved to globals.cpp
