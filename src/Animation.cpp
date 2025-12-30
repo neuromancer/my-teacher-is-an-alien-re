@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "Animation.h"
 #include "Palette.h"
+#include "PaletteUtils.h"
 #include "VBuffer.h"
 #include "string.h"
 #include <smack.h>
@@ -14,7 +15,7 @@ extern "C" {
 void FUN_0041fbd3();
 void *FUN_004224d0();
 
-void FUN_0041eb90(void *, int, int);
+
 int FUN_00421af0();
 void *FUN_004224f0();
 void *FUN_004224e0();
@@ -32,6 +33,14 @@ void BlankScreen() {
         vbuffer->video_mode_lock_count, 0, *(int *)FUN_004224e0() - 1, 0,
         *(int *)FUN_004224f0() - 1);
   }
+}
+
+extern "C" {
+
+/* Function start: 0x41EB90 */
+void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count) {
+  SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
+}
 }
 
 /* Function start: 0x41FA50 */
@@ -112,7 +121,7 @@ int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
       *(int*)((char*)this->smack_buffer + 0x2c),
       *(int*)((char*)this->smack_buffer + 0x43c));
     }
-    FUN_0041eb90((char *)this->smk->Palette, param_1, param_2);
+    SetPaletteEntriesAnimation((char *)this->smk->Palette, param_1, param_2);
     this->data->InvalidateVideoMode();
     return 0;
   }
