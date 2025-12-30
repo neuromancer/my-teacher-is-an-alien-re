@@ -16,8 +16,7 @@
 
 class VBuffer;
 
-extern Animation* Animation_Ctor(Animation*);
-extern Animation* Animation_Ctor_Filename(Animation*, char*);
+
 
 extern "C" {
     //__int64 __ftol();
@@ -75,7 +74,7 @@ void Sprite::Init()
             Animation* anim = (Animation*)AllocateMemory(0x2c);
             Animation* result = 0;
             if (anim != 0) {
-                result = Animation_Ctor_Filename(anim, this->sprite_filename);
+                result = anim->InitWithFilename(this->sprite_filename);
             }
             this->animation_data = result;
         } else if (this->animation_data->data == 0) {
@@ -136,7 +135,7 @@ void Sprite::InitAnimation()
         if (this->animation_data == 0) {
             Animation* anim = (Animation*)AllocateMemory(0x2c);
             if (anim != 0) {
-                anim = Animation_Ctor(anim);
+                anim = anim->Init();
             }
             this->animation_data = anim;
             anim->Open(this->sprite_filename, 0xfe000, -1);
@@ -270,7 +269,7 @@ int Sprite::Do(int x, int y, double scale)
         done = 1;
     }
     if (skipAnimLoop == 0) {
-        Animation::DoFrame(this->animation_data);
+        this->animation_data->DoFrame();
         Animation* anim = this->animation_data;
         int remaining;
         if (anim == 0) {

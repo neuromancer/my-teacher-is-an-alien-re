@@ -7,7 +7,7 @@
 #include <string.h>
 #include <windows.h>
 
-extern Animation* Animation_Ctor(Animation*);
+
 
 extern "C" {
     // CallBlitter2/3 are VBuffer members: use VBuffer::CallBlitter2/CallBlitter3
@@ -247,7 +247,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     local_1c = (Animation *)AllocateMemory(sizeof(Animation));
     this_00 = (Animation *)0x0;
     if (local_1c != (Animation *)0x0) {
-      this_00 = Animation_Ctor(local_1c);
+      this_00 = local_1c->Init();
     }
     this_00->Open(local_9c,0xfe000,0xffffffff);
     local_14 = (VBuffer *)AllocateMemory(sizeof(VBuffer));
@@ -256,8 +256,8 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
       pVVar3 = local_14->CreateAndClean(this_00->smk->Width, this_00->smk->Height);
     }
     this->buffer = pVVar3;
-    this_00->ToBuffer(pVVar3);
-    Animation::DoFrame(this_00);
+    this_00->ToBufferVB(pVVar3);
+    this_00->DoFrame();
     if (this_00 != (Animation *)0x0) {
         this_00->~Animation();
         FreeMemory(this_00);

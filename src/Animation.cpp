@@ -5,6 +5,7 @@
 #include "string.h"
 #include <smack.h>
 #include "GameConfig.h"
+#include "JoystickManager.h"
 
 #include "Memory.h"
 #include <windows.h>
@@ -12,47 +13,25 @@
 extern "C" {
 void FUN_0041fbd3();
 void *FUN_004224d0();
-void FUN_0041eb50(void *, int, int);
 void FUN_00419390();
 void FUN_0041eb90(void *, int, int);
-void FUN_0041eb70(void *, int, int);
-void FUN_0041ea80(void *);
-int FUN_00421d10(void *);
 int FUN_00421af0();
 void *FUN_004224f0();
 void *FUN_004224e0();
 void FUN_0041ac50(int);
 void FUN_0041ac80();
-
-
-}
-
-// Constructor wrappers for external callers
-Animation *Animation_Ctor(Animation *p) {
-  p->Animation::Animation();
-  return p;
-}
-
-Animation *Animation_Ctor_Filename(Animation *p, char *filename) {
-  p->Animation::Animation(filename);
-  return p;
-}
-
-/* Function start: 0x41D0F5 */
-void Animation::AnimationInit() {
-  this->smk = 0;
-  this->data = 0;
 }
 
 /* Function start: 0x41FA50 */
-Animation::Animation() {
-  int *p = (int *)((char *)this + 0x10);
+Animation *Animation::Init() {
+  int *p = &field_0x10;
   *p = 0;
   *(p + 1) = 0;
   try {
-    this->CleanArray10();
+    CleanArray10();
   } catch (...) {
   }
+  return this;
 }
 
 /* Function start: 0x41FAC0 */
@@ -64,13 +43,16 @@ void Animation::Delete(unsigned char param_1) {
 }
 
 /* Function start: 0x41FAE0 */
-Animation::Animation(char *filename) {
+Animation *Animation::InitWithFilename(char *filename) {
+  int *p = &field_0x10;
+  *p = 0;
+  *(p + 1) = 0;
   try {
-    this->CleanArray10();
-    this->OpenAndConvertToBuffer(filename);
+    CleanArray10();
+    OpenAndConvertToBuffer(filename);
   } catch (...) {
-    // TODO: Figure out what the exception handler does
   }
+  return this;
 }
 
 /* Function start: 0x41FB60 */
@@ -83,10 +65,13 @@ void Animation::CleanArray10() {
 
 /* Function start: 0x41FB70 */
 Animation::~Animation() {
-  this->FreeVBuffer();
-  this->CloseSmackerBuffer();
-  this->CloseSmackerFile();
-  FUN_0041fbd3();
+  try {
+    this->FreeVBuffer();
+    this->CloseSmackerBuffer();
+    this->CloseSmackerFile();
+  } catch (...) {
+  }
+  //FUN_0041fbd3();
 }
 
 /* Function start: 0x41FBE0 */
@@ -125,9 +110,9 @@ void Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
 }
 
 /* Function start: 0x41FCA0 */
-void Animation::DoFrame(Animation *anim) {
-  if (anim->smk != 0) {
-    SmackDoFrame(anim->smk);
+void Animation::DoFrame() {
+  if (this->smk != 0) {
+    SmackDoFrame(this->smk);
   }
 }
 
@@ -141,16 +126,13 @@ void Animation::NextFrame() {
 /* Function start: 0x41FCC0 */
 void Animation::GotoFrame(int frame) {
   if (this->smk != 0) {
-    /* SmackGoto and SmackSoundOnOff missing */
-    /*
     if (g_GameConfig_00436970->data[2] == '\x02') {
-        SmackSoundOnOff(this->smk, 0);
+      SmackSoundOnOff(this->smk, 0);
     }
     SmackGoto(this->smk, frame);
     if (g_GameConfig_00436970->data[2] == '\x02') {
-        SmackSoundOnOff(this->smk, 1);
+      SmackSoundOnOff(this->smk, 1);
     }
-    */
   }
 }
 
@@ -206,34 +188,29 @@ void Animation::ToBuffer() {
   if (this->smk == 0) {
     ShowError("Animation::ToBuffer() - No smk defined");
   }
-  VBInit();
-  this->ToBuffer(this->vbuffer);
+  this->VBInit();
+  this->ToBufferVB(this->vbuffer);
 }
 
 /* Function start: 0x41FEA0 */
-void Animation::ToBuffer(VBuffer *buffer) {
+void Animation::ToBufferVB(VBuffer *buffer) {
   if (this->smk == 0) {
     ShowError("Animation::ToBuffer() - No smk defined");
   }
 
   this->smack_handle = FUN_004224d0();
+  this->smack_buffer = SmackBufferOpen(this->smack_handle, 4, 4, 4, 0, 0);
 
-  /* SmackBufferOpen missing */
-  // this->smack_buffer = (int*)SmackBufferOpen(this->smack_handle, 4, 4, 4, 0,
-  // 0);
-
-  /*
   if (this->smack_buffer == 0) {
-      ShowError("Animation::ToBuffer() - Buffer creation failed");
+    ShowError("Animation::ToBuffer() - Buffer creation failed");
   }
-  */
 
   if (this->data != 0) {
     ShowError("Animation::ToBuffer() - Virtual Buffer already defined");
   }
 
   this->data = buffer;
-  unsigned int uVar3 = 0; //*(unsigned char*)this->smack_buffer;
+  unsigned int uVar3 = *(unsigned char *)this->smack_buffer;
   void *uVar1 = buffer->GetData();
   SmackToBuffer(this->smk, 0, 0, this->smk->Width, this->smk->Height, uVar1,
                 uVar3);
@@ -241,15 +218,21 @@ void Animation::ToBuffer(VBuffer *buffer) {
 
 /* Function start: 0x41FF30 */
 void Animation::Play(char *filename, unsigned int flags) {
+  PaletteBuffer *palette;
+
   this->flags = flags;
   this->palette = 0;
 
   if ((flags & 1) == 0) {
     void *mem = AllocateMemory(8);
-    if (mem != 0) {
-      this->palette = CreatePaletteBuffer((PaletteBuffer *)mem);
+    try {
+      palette = 0;
+      if (mem != 0) {
+        palette = CreatePaletteBuffer((PaletteBuffer *)mem);
+      }
+    } catch (...) {
     }
-    FUN_0041eb50(this->palette, 0, 0x100);
+    palette->CopyEntries(0, 0x100);
   }
 
   if ((this->flags & 2) == 0) {
@@ -261,12 +244,12 @@ void Animation::Play(char *filename, unsigned int flags) {
   MainLoop();
   CloseSmackerFile();
 
-  if (this->palette != 0) {
+  if (palette != 0) {
     FUN_00419390();
-    FUN_0041eb70(this->palette, 0, 0x100);
-    if (this->palette != 0) {
-      FUN_0041ea80(this->palette);
-      FreeMemory(this->palette);
+    palette->SetEntries(0, 0x100);
+    if (palette != 0) {
+      palette->Cleanup();
+      FreeMemory(palette);
     }
   }
 }
@@ -277,23 +260,22 @@ void Animation::MainLoop() {
     return;
   }
 
-  VBuffer *vbuffer = (VBuffer *)this->data;
-  vbuffer->SetCurrentVideoMode(vbuffer->handle);
-
   int frame = 1;
-  if (smk->Frames > 0) {
+  this->data->SetCurrentVideoMode(this->data->handle);
+
+  if (smk->Frames >= frame) {
     do {
       if (smk->NewPalette != 0) {
         SetPalette(0, 0x100);
       }
-      DoFrame(this);
+      this->DoFrame();
       do {
-        if (FUN_00421d10(g_JoystickManager_00436968) != 0) {
+        if (g_JoystickManager_00436968->CheckInput(1) != 0) {
           goto end_loop;
         }
         if ((flags & 4) == 0) {
-          unsigned int uVar3 = 0;
           int iVar1 = *(int *)((char *)g_JoystickManager_00436968 + 0x1a0);
+          unsigned int uVar3 = 0;
           if (iVar1 != 0) {
             uVar3 = *(unsigned int *)(iVar1 + 8) & 2;
           }
@@ -312,13 +294,13 @@ void Animation::MainLoop() {
       wait:;
       } while (SmackWait(smk) != 0);
 
+      VBuffer *vbuffer = this->data;
       void *piVar2 = FUN_004224f0();
       int iVar1 = *(int *)piVar2 - 1;
-      int iVar6 = 0;
       piVar2 = FUN_004224e0();
       vbuffer->CallBlitter5(
           vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->saved_video_mode,
-          vbuffer->video_mode_lock_count, 0, *(int *)piVar2 - 1, iVar6, iVar1);
+          vbuffer->video_mode_lock_count, 0, *(int *)piVar2 - 1, 0, iVar1);
 
       if (smk->Frames - 1 <= frame) {
         break;
@@ -328,5 +310,5 @@ void Animation::MainLoop() {
     } while (frame <= smk->Frames);
   }
 end_loop:
-  vbuffer->InvalidateVideoMode();
+  this->data->InvalidateVideoMode();
 }

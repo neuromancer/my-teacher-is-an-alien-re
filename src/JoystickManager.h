@@ -4,6 +4,7 @@
 class JoystickManager {
 public:
     JoystickManager* Init(int param_1);
+    int CheckInput(int);  // FUN_00421d10
 
 private:
     char padding[0x1a4];  // Padding to offset 0x1a4

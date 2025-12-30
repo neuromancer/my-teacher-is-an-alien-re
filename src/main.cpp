@@ -675,6 +675,7 @@ void CleanupCinematic(void) {}
 void PlayIntroCinematic(void) {
   InitGameSystems();
   Animation anim;
+  anim.Init();
   anim.Play("cine\\cine0001.smk", 0x20);
   ShutdownGameSystems();
 }

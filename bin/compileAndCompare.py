@@ -76,8 +76,23 @@ def parse_mnemonics(assembly_code):
     for line in assembly_code.split('\n'):
         line = line.strip()
         if line and not line.endswith(':') and not line.startswith('?'):
-            parts = line.split(None, 1)
+            parts = line.split()
+            if not parts:
+                continue
+            
             mnemonic = parts[0]
+
+            # Handle Ghidra style .rep suffix
+            if mnemonic.endswith('.rep'):
+                 mnemonic = 'rep ' + mnemonic[:-4]
+            
+            # Handle MSVC style rep prefix
+            # If the mnemonic is a prefix, we include the next token as part of the mnemonic
+            if mnemonic in ['rep', 'repe', 'repne', 'lock'] and len(parts) > 1:
+                # Ensure the next part is not a comment
+                if not parts[1].startswith(';'):
+                    mnemonic = f"{mnemonic} {parts[1]}"
+
             if mnemonic in normalization_map:
                 mnemonic = normalization_map[mnemonic]
             mnemonics.append(mnemonic)

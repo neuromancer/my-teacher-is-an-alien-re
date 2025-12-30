@@ -190,6 +190,9 @@ int mCNavNode_GetNextNode(void* a) { return 0; }
 int mCNavNode_Update(void* a) { return 0; }
 void* NavNode_Constructor(void* a) { return a; }
 
+#include "JoystickManager.h"
+int JoystickManager::CheckInput(int) { return 0; }
+
 // Missing variables (C++ linkage to match mangled names)
 // void* DAT_0043eff0 = NULL; // Moved to globals.cpp
 
