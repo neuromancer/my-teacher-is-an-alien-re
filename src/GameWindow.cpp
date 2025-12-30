@@ -1,4 +1,5 @@
 #include "GameWindow.h"
+#include "globals.h"
 
 extern "C" {
 void __stdcall FUN_00422250(char *);
@@ -81,4 +82,9 @@ int GameWindow::InitGraphics(void) {
 
 /* Function start: 0x422430 */
 void GameWindow::FUN_00422430() {
+}
+
+/* Function start: 0x4224D0 */
+extern "C" void* GetGameWindowHandle() {
+  return DAT_0043de7c;
 }

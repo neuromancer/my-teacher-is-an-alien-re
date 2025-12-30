@@ -13,7 +13,7 @@
 
 extern "C" {
 void FUN_0041fbd3();
-void *FUN_004224d0();
+void *GetGameWindowHandle();
 
 
 int FUN_00421af0();
@@ -221,7 +221,7 @@ void Animation::ToBufferVB(VBuffer *buffer) {
     ShowError("Animation::ToBuffer() - No smk defined");
   }
 
-  this->smack_handle = FUN_004224d0();
+  this->smack_handle = GetGameWindowHandle();
   this->smack_buffer = SmackBufferOpen(this->smack_handle, 4, 4, 4, 0, 0);
 
   if (this->smack_buffer == 0) {

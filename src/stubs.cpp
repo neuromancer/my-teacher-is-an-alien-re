@@ -77,7 +77,7 @@ void FUN_00421671() {}
 void FUN_00405770() {}
 void FUN_0041fbd3() {}
 
-void FUN_004224d0() {}
+void GetGameWindowHandle() {}
 void FUN_0041ea80() {}
 void FUN_0041eb70() {}
 

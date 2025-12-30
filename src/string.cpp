@@ -165,7 +165,8 @@ void ShowMessage(char *param_1, ...)
     char buffer[256];
     vsprintf(buffer, param_1, (char*)(&param_1 + 1));
     SetCursorVisible(1);
-    HWND hWnd = (HWND)((int (*)())0x4224d0)();
+    extern void* GetGameWindowHandle();
+    HWND hWnd = (HWND)GetGameWindowHandle();
     MessageBoxA(hWnd, buffer, "Message", 0);
     SetCursorVisible(0);
 }
