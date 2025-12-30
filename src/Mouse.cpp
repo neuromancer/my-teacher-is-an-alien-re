@@ -10,6 +10,7 @@
 #include "Array.h"
 #include "string.h"
 #include "new.h"
+#include "InputManager.h"
 
 //extern Sprite* Sprite_Ctor(Sprite*, char*);
 extern AILData* AILData_Ctor(AILData*);
@@ -150,11 +151,11 @@ void Mouse::DrawCursor()
         ShowError("missing mouse ");
     }
 
-    int* mouse_coords = *(int**)((char*)g_JoystickManager_00436968 + 0x1a0);
+    InputState* pMouse = g_InputManager_00436968->pMouse;
 
     int final_x = 0;
-    if (mouse_coords) {
-        final_x = mouse_coords[0];
+    if (pMouse) {
+        final_x = pMouse->x;
     }
 
     if (sprite) {
@@ -164,8 +165,8 @@ void Mouse::DrawCursor()
     }
 
     int final_y = 0;
-    if (mouse_coords) {
-        final_y = mouse_coords[1];
+    if (pMouse) {
+        final_y = pMouse->y;
     }
 
     if (sprite) {

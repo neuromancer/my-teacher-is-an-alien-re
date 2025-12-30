@@ -1,6 +1,6 @@
 #include "globals.h"
 #include "GameState.h"
-#include "JoystickManager.h"
+#include "InputManager.h"
 #include "VBuffer.h"
 #include "AnimatedAsset.h"
 #include "Sound.h"
@@ -19,7 +19,7 @@
 // Original code had hardcoded addresses here which are invalid in the new build.
 char* g_Buffer_00436960 = 0;
 void* g_Buffer_00436964 = 0;
-JoystickManager* g_JoystickManager_00436968 = 0;
+InputManager* g_InputManager_00436968 = 0;
 Sound* g_Sound_0043696c = 0;
 #include "GameConfig.h"
 GameConfig* g_GameConfig_00436970 = 0;

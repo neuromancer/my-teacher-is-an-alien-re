@@ -9,7 +9,7 @@ class GameState;
 class AnimatedAsset;
 class Sound;
 class Sprite;
-class JoystickManager;
+class InputManager;
 class CDData;
 class Mouse;
 class Mouse;
@@ -426,7 +426,7 @@ extern int DAT_00436b9c; // { /* 4 bytes */ }
 // extern char DAT_0043684f; // { /* 1 bytes */ }
 extern char* g_Buffer_00436960; // DAT_00436960  { /* 4 bytes */ }
 extern void* g_Buffer_00436964; // DAT_00436964  { /* 4 bytes */ }
-extern JoystickManager* g_JoystickManager_00436968; // DAT_00436968  { /* 4 bytes */ }
+extern InputManager* g_InputManager_00436968; // DAT_00436968  { /* 4 bytes */ }
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }

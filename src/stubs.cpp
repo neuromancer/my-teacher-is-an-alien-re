@@ -85,7 +85,7 @@ void FUN_0041eb50() {}
 void FUN_004224e0() {}
 void FUN_004224f0() {}
 // int FUN_00421af0() { return 0; } // Implemented in main.cpp as WaitForInput
-int FUN_00421d10(void*, int) { return 0; } // cdecl version
+// extern "C" int FUN_00421d10(void*, int); // Declared in InputManager.h now implies it's a member function { return 0; } // Now InputManager::PollEvents
 void FUN_00411550() {}
 void FUN_00424fc0() {}
 void FUN_00425000() {}
@@ -190,8 +190,8 @@ int mCNavNode_GetNextNode(void* a) { return 0; }
 int mCNavNode_Update(void* a) { return 0; }
 void* NavNode_Constructor(void* a) { return a; }
 
-#include "JoystickManager.h"
-int JoystickManager::CheckInput(int) { return 0; }
+#include "InputManager.h"
+int InputManager::PollEvents(int) { return 0; }
 
 // Missing variables (C++ linkage to match mangled names)
 // void* DAT_0043eff0 = NULL; // Moved to globals.cpp

@@ -3,7 +3,7 @@
 #include "Animation.h"
 #include "GameState.h"
 #include "GameWindow.h"
-#include "JoystickManager.h"
+#include "InputManager.h"
 #include "Memory.h"
 #include "Sound.h"
 #include "VBuffer.h"
@@ -591,10 +591,10 @@ void InitGameSystems(void) {
     pAlloc = AllocateMemory(0x1b8);
     pInit = 0;
     if (pAlloc != 0) {
-      pInit = ((JoystickManager *)pAlloc)->Init(
+      pInit = ((InputManager *)pAlloc)->Init(
           (unsigned int)g_GameConfig_00436970->data[0]);
     }
-    g_JoystickManager_00436968 = (JoystickManager *)pInit;
+    g_InputManager_00436968 = (InputManager *)pInit;
     pAlloc = AllocateMemory(0x3c);
     pInit = 0;
     if (pAlloc != 0) {
@@ -648,10 +648,10 @@ void ShutdownGameSystems(void) {
     FreeMemory(g_Sound_0043696c);
     g_Sound_0043696c = 0;
   }
-  if (g_JoystickManager_00436968 != 0) {
+  if (g_InputManager_00436968 != 0) {
     FUN_00421840();
-    FreeMemory(g_JoystickManager_00436968);
-    g_JoystickManager_00436968 = 0;
+    FreeMemory(g_InputManager_00436968);
+    g_InputManager_00436968 = 0;
   }
 
   if (g_CDData_0043697c != 0) {

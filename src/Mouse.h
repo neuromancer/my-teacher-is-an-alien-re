@@ -4,6 +4,24 @@
 #include "Parser.h"
 #include "Sprite.h"
 class AILData;
+
+/**
+ * Mouse - Cursor Rendering and Appearance
+ * 
+ * This class manages the visual cursor (pointer) display:
+ * - Cursor sprite graphics (m_sprite, m_sprite2)
+ * - Per-state hotspot offsets (m_hotspots) - where the "click point" is for each cursor state
+ * - Cursor state labels (m_labels) - e.g., "POINTER", "EXAMINE", "PICKUP"
+ * - Associated audio (m_audio)
+ * 
+ * Size: 0x1C0 (448 bytes)
+ * Functions: 0x41ECA0-0x41F200, 0x422D98
+ * 
+ * NOTE: This is DIFFERENT from MouseControl (0x98 bytes), which manages
+ * clickable interaction areas via a Queue of Sprite objects. Do not merge.
+ * The similarity in names is due to the string "MouseControl" being used
+ * in Mouse::LBLParse for unknown command delegation.
+ */
 class Mouse : public Parser {
 public:
     Mouse();

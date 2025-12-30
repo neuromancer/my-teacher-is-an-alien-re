@@ -6,7 +6,7 @@
 #include "string.h"
 #include <smack.h>
 #include "GameConfig.h"
-#include "JoystickManager.h"
+#include "InputManager.h"
 
 #include "Memory.h"
 #include <windows.h>
@@ -292,16 +292,16 @@ void Animation::MainLoop() {
       }
       this->DoFrame();
       do {
-        if (g_JoystickManager_00436968->CheckInput(1) != 0) {
+        if (g_InputManager_00436968->PollEvents(1) != 0) {
           goto end_loop;
         }
         if ((flags & 4) == 0) {
-          int iVar1 = *(int *)((char *)g_JoystickManager_00436968 + 0x1a0);
+          InputState* pMouse = g_InputManager_00436968->pMouse;
           unsigned int uVar3 = 0;
-          if (iVar1 != 0) {
-            uVar3 = *(unsigned int *)(iVar1 + 8) & 2;
+          if (pMouse != 0) {
+            uVar3 = pMouse->buttons & 2; // offset 8
           }
-          if (uVar3 != 0 || (*(char *)(iVar1 + 0xc) & 2) == 0) {
+          if (uVar3 != 0 || (pMouse->prevButtons & 2) == 0) { // offset 0xc equals prevButtons
             int bVar5 = 0;
             if (DAT_004373bc != 0) {
               bVar5 = WaitForInput() == 0x1b;

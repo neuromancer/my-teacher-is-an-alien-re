@@ -1,7 +1,7 @@
 #include "GameLoop.h"
 #include "Timer.h"
 #include "GameState.h"
-#include "JoystickManager.h"
+#include "InputManager.h"
 #include "Memory.h"
 #include "SC_Question.h"
 #include "Sample.h"
@@ -152,12 +152,12 @@ loop_start:
         }
         if (*(int*)((char*)pGameState->stateValues + 0x10) != 0) {
             mouseY = 0;
-            pMouseCoords = *(int**)((char*)g_JoystickManager_00436968 + 0x1a0);
-            if (pMouseCoords != 0) {
-                mouseY = pMouseCoords[1];
+            InputState* pMouse = g_InputManager_00436968->pMouse;
+            if (pMouse != 0) {
+                mouseY = pMouse->y;
             }
-            if (pMouseCoords != 0) {
-                mouseX = pMouseCoords[0];
+            if (pMouse != 0) {
+                mouseX = pMouse->x;
             } else {
                 mouseX = 0;
             }
@@ -194,18 +194,18 @@ void GameLoop::ProcessInput() {
     char buffer[0xC0]; // Raw buffer for SC_Message
     SC_Message* pLocalMessage;
     
-    inputResult = FUN_00421d10(g_JoystickManager_00436968, 1);
+    inputResult = g_InputManager_00436968->PollEvents(1);
     this->field_0x00 = this->field_0x00 | inputResult;
     if (this->field_0x00 != 0) {
         return;
     }
     
-    pMouseCoords = *(int**)((char*)g_JoystickManager_00436968 + 0x1a0);
-    if (pMouseCoords == 0) {
+    InputState* pMouse = g_InputManager_00436968->pMouse;
+    if (pMouse == 0) {
         return;
     }
     
-    if (pMouseCoords[4] < 2 && pMouseCoords[5] < 2) {
+    if (pMouse->ext1 < 2 && pMouse->ext2 < 2) { // field_10 and field_14
         if (DAT_004373bc == 0) {
             return;
         }
@@ -223,34 +223,34 @@ void GameLoop::ProcessInput() {
         keyCode = WaitForInput();
     }
     
-    pMouseCoords = *(int**)((char*)g_JoystickManager_00436968 + 0x1a0);
-    if (pMouseCoords == 0) {
+    // pMouse was already read
+    if (pMouse == 0) {
         mouseX = 0;
     } else {
-        mouseX = pMouseCoords[4];
+        mouseX = pMouse->ext1; // field_10
     }
     pLocalMessage->field_ac = mouseX;
     
-    if (pMouseCoords == 0) {
+    if (pMouse == 0) {
         mouseY = 0;
     } else {
-        mouseY = pMouseCoords[5];
+        mouseY = pMouse->ext2; // field_14
     }
     pLocalMessage->field_b0 = mouseY;
     
     clickY = 0;
-    if (pMouseCoords != 0) {
-        clickY = pMouseCoords[1];
+    if (pMouse != 0) {
+        clickY = pMouse->y; // field_4
     }
     clickX = 0;
-    if (pMouseCoords != 0) {
-        clickX = pMouseCoords[0];
+    if (pMouse != 0) {
+        clickX = pMouse->x; // field_0
     }
     pLocalMessage->field_a4 = clickX;
     pLocalMessage->field_a8 = clickY;
     
-    if (pMouseCoords != 0) {
-        if (pMouseCoords[4] >= 2 || pMouseCoords[5] >= 2) {
+    if (pMouse != 0) {
+        if (pMouse->ext1 >= 2 || pMouse->ext2 >= 2) {
             mouseButton = 1;
         } else {
             mouseButton = 0;
