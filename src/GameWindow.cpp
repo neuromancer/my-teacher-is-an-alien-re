@@ -8,7 +8,7 @@ int FUN_00423cd9();
 void FUN_00419170(const char *);
 void FUN_00423aac();
 void FUN_00423a54();
-void FUN_00422d98(int);
+int SetCursorVisible(unsigned int);
 // void _SmackSetSystemRes_4(int);
 }
 
@@ -76,7 +76,7 @@ int GameWindow::InitGraphics(void) {
   }
   FUN_00423aac();
   FUN_00423a54();
-  FUN_00422d98(0);
+  SetCursorVisible(0);
   return 1;
 }
 

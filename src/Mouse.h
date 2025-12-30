@@ -22,17 +22,18 @@ class AILData;
  * The similarity in names is due to the string "MouseControl" being used
  * in Mouse::LBLParse for unknown command delegation.
  */
+extern "C" int SetCursorVisible(unsigned int);
+
 class Mouse : public Parser {
 public:
     Mouse();
     ~Mouse();
     int LBLParse(char* line);
     void DrawCursor();
-    int SetCursorVisible(unsigned int);
 
+    void CleanupFields();
 
 private:
-    void CleanupFields();
 
     char* m_labels[25];        // 0x88
     Sprite* m_sprite;          // 0xEC

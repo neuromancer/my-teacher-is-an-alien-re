@@ -6,29 +6,10 @@
 #include "Memory.h"
 #include <mbstring.h>
 
-// Based on the assembly, this function is a custom implementation of strncpy.
-// It copies up to 'n' characters from src to dest, padding with nulls if src is shorter.
-char* strncpy_custom(char* dest, const char* src, size_t n) {
-    char* original_dest = dest;
+/* Function start: 0x425FD0 */
+/* This is strncpy from MSVC CRT - the assembly uses LODSB/STOSB/LOOP string instructions */
+/* which are characteristic of the statically linked CRT implementation */
 
-    if (n == 0) {
-        return original_dest;
-    }
-
-    // Copy characters from src to dest
-    while (n > 0 && *src != '\0') {
-        *dest++ = *src++;
-        n--;
-    }
-
-    // Pad the rest of the buffer with nulls
-    while (n > 0) {
-        *dest++ = '\0';
-        n--;
-    }
-
-    return original_dest;
-}
 
 // This is a highly literal C++ translation of the original assembly for strstr_custom (strstr).
 // It uses 'goto' to precisely replicate the unconventional control flow of the 1997 compiler's

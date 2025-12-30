@@ -46,7 +46,7 @@ void CheckDebug();
 void ClearMessageLog();
 void InitWorkBuffer(int, int);
 void SetStateFlag(int, int);
-void SetCursorVisible(int);
+int SetCursorVisible(unsigned int);
 int FileExists(const char *);
 void SetErrorCode(unsigned int);
 void ParsePath(const char *, char *, char *, char *, char *);

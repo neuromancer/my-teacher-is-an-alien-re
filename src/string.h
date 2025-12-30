@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 extern "C" {
-    char* strncpy_custom(char* dest, const char* src, size_t n);
+    /* 0x425FD0 is strncpy from MSVC CRT - use strncpy directly */
     char* strstr_custom(const char* haystack, const char* needle);
     void ExecuteFunctionArray(void** param_1, void** param_2);
     void ShowError(const char* format, ...);

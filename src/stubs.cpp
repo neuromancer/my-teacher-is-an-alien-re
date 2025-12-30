@@ -14,7 +14,7 @@ extern "C" {
 // Generic Stubs for Missing Functions
 void FUN_0041ef47() {}
 void FUN_0042ddd0(void*, int) {}
-void FUN_00425fd0() {}
+// FUN_00425fd0 is strncpy from MSVC CRT
 void FUN_0041eab0() {}
 void FUN_004171b0() {}
 void FUN_0041e666() {}
@@ -42,7 +42,7 @@ void FUN_004234f9() {}
 void FUN_00423703() {}
 void FUN_00423076() {}
 
-void FUN_00422d98() {}
+// FUN_00422d98 now implemented in Mouse.cpp as SetCursorVisible
 void FUN_00423a54() {}
 void FUN_00423aac() {}
 void FUN_00419170() {}
@@ -100,9 +100,7 @@ HWND GetWindowHandle_() {
     return GetActiveWindow(); 
 }
 
-void SetCursorVisible(int show) { 
-    ShowCursor(show); 
-}
+// SetCursorVisible now implemented in Mouse.cpp
 
 
 // void CreateGameObject_1() {} // Implemented in main.cpp

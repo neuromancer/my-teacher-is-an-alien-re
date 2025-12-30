@@ -12,12 +12,8 @@
 #include "new.h"
 #include "InputManager.h"
 
-//extern Sprite* Sprite_Ctor(Sprite*, char*);
-extern AILData* AILData_Ctor(AILData*);
-
 extern "C" {
     void FUN_0041ef47();
-    void FUN_00425fd0(char*, char*, int);
 }
 
 //inline void* operator new(size_t, void* ptr) { return ptr; }
@@ -132,7 +128,7 @@ int Mouse::LBLParse(char* line)
         m_hotspots[index].y = y;
     } else if (strcmp(cmd, "LABLE") == 0) {
         sscanf(line, " %s %d %s", cmd, &index, args);
-        FUN_00425fd0(m_labels[index], args, 0x10);
+        strncpy(m_labels[index], args, 0x10);
     } else if (strcmp(cmd, "END") == 0) {
         m_sprite2 = 0;
         return 1;
@@ -146,48 +142,48 @@ int Mouse::LBLParse(char* line)
 /* Function start: 0x41F200 */
 void Mouse::DrawCursor()
 {
-    Sprite* sprite = m_sprite;
-    if (sprite == 0) {
+    if (m_sprite == 0) {
         ShowError("missing mouse ");
     }
 
-    InputState* pMouse = g_InputManager_00436968->pMouse;
-
+    InputManager* mgr = g_InputManager_00436968;
     int final_x = 0;
-    if (pMouse) {
+    InputState* pMouse = mgr->pMouse;
+    if (pMouse != 0) {
         final_x = pMouse->x;
     }
 
-    if (sprite) {
-        if (sprite->current_state >= 0 && sprite->current_state < 25) {
-            final_x -= m_hotspots[sprite->current_state].x;
-        }
+    Sprite* sprite = m_sprite;
+    if (sprite != 0) {
+        final_x -= m_hotspots[sprite->current_state].x;
+    } else {
+        final_x -= (int)sprite;
     }
 
     int final_y = 0;
-    if (pMouse) {
+    if (pMouse != 0) {
         final_y = pMouse->y;
     }
 
-    if (sprite) {
-         if (sprite->current_state >= 0 && sprite->current_state < 25) {
-            final_y -= m_hotspots[sprite->current_state].y;
-         }
+    if (sprite == 0) {
+        final_y -= (int)m_sprite2;
     } else {
-        // final_y -= m_offsetY;
+        final_y -= m_hotspots[sprite->current_state].y;
     }
 
     sprite->Do(final_x, final_y, 1.0);
 }
 
+extern "C" int SetCursorVisible(unsigned int param_1);
+
 /* Function start: 0x422D98 */
-int Mouse::SetCursorVisible(unsigned int param_1)
+int SetCursorVisible(unsigned int param_1)
 {
     if (DAT_00437506 != '\0') {
-        char cVar1 = (char)(param_1 & 1);
-        if (cVar1 != DAT_00437507) {
-            DAT_00437507 = cVar1;
-            ShowCursor(param_1 & 1);
+        unsigned int masked = param_1 & 1;
+        if ((char)masked != DAT_00437507) {
+            DAT_00437507 = (char)masked;
+            ShowCursor(masked);
         }
     }
     return 0;
