@@ -24,7 +24,7 @@ def run_comparison(function_name, address):
         return "N/A"
 
     try:
-        similarity, _ = get_similarity(function_name, disassembled_file, clean_build=False)
+        similarity, _, _ = get_similarity(function_name, disassembled_file, clean_build=False)
         if similarity is not None:
             return f"{similarity:.2f}%"
         else:

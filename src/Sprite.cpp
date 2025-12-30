@@ -425,9 +425,11 @@ void Sprite::SetState(int param_1)
 {
     try {
         this->num_states = param_1;
-        if (this->ranges != 0) {
-            Array_Cleanup((void*)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void(__cdecl*)(void*))0x405770);
-            FreeMemory((int*)((char*)this->ranges - 4));
+        int* rangePtr = (int*)this->ranges;
+        if (rangePtr != 0) {
+            int* header = rangePtr - 1;
+            Array_Cleanup(rangePtr, 8, *header, (void(__cdecl*)(void*))0x405770);
+            FreeMemory(header);
             this->ranges = 0;
         }
 

@@ -105,7 +105,17 @@ def read_assembly(function_name, file_path):
             elif line.startswith('ret') or line == 'ret 0':
                 i += 1
                 continue
-            elif 'jmp' in line.lower() and 'CxxFrameHandler' in line:
+            elif 'jmp' in line.lower():
+                # SEH handlers jump to CxxFrameHandler or to cleanup funclets (mangled names)
+                # Mangled names start with ? or ?? and contain @@
+                if 'CxxFrameHandler' in line or '??' in line or ('?' in line and '@@' in line):
+                    i += 1
+                    continue
+                else:
+                    is_seh_only = False
+                    break
+            elif line.startswith('mov') or line.startswith('call'):
+                # After SEH label, mov/call instructions are part of the cleanup funclet
                 i += 1
                 continue
             else:
@@ -118,8 +128,9 @@ def read_assembly(function_name, file_path):
             break
     
     assembly = "\n".join(lines[:cutoff_idx])
+    seh_code = "\n".join(lines[cutoff_idx:])
 
-    return assembly
+    return assembly, seh_code
 
 def parse_mnemonics(assembly_code):
     normalization_map = {
@@ -195,15 +206,16 @@ def get_similarity(function_name, disassembled_code_path, clean_build=True):
                 content = f.read()
                 if function_name in content:
                     asm_file_path = filepath
-                    produced_code = read_assembly(function_name, filepath)
-                    if produced_code is not None:
+                    result = read_assembly(function_name, filepath)
+                    if result is not None:
+                        produced_code, seh_code = result
                         break
 
     if asm_file_path is None:
-        return None, "Function not found in any .asm file."
+        return None, "Function not found in any .asm file.", None
 
     if produced_code is None:
-        return None, "Function found but could not extract assembly."
+        return None, "Function found but could not extract assembly.", None
 
     with open(disassembled_code_path, 'rb') as file:
         target_code = file.read()
@@ -220,7 +232,7 @@ def get_similarity(function_name, disassembled_code_path, clean_build=True):
     else:
         similarity = (1 - distance / max_len) * 100
 
-    return similarity, side_by_side(produced_code, target_code)
+    return similarity, side_by_side(produced_code, target_code), seh_code
 
 def main():
     parser = ArgumentParser(description="Recover high-level code from assembly code")
@@ -228,7 +240,7 @@ def main():
     parser.add_argument("disassembled_code", help="Path to the disassembled code from Ghidra")
     args = parser.parse_args()
 
-    similarity, comparison_text = get_similarity(args.function_name, args.disassembled_code)
+    similarity, comparison_text, seh_code = get_similarity(args.function_name, args.disassembled_code)
 
     print (f"Comparison for function '{args.function_name}':")
     if similarity is None:
@@ -237,6 +249,10 @@ def main():
 
     print(comparison_text)
     print(f"\nSimilarity: {similarity:.2f}%")
+
+    if seh_code and seh_code.strip():
+        print(f"\nDetected SEH code (excluded from comparison):")
+        print(seh_code)
 
 if __name__ == "__main__":
     main()
