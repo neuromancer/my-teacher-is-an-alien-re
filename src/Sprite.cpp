@@ -16,21 +16,8 @@
 
 class VBuffer;
 
-
-
-extern "C" {
-    //__int64 __ftol();
-
-}
-
 // C++ helper defined in Array.cpp
 void Array_Iterate(void* array, unsigned int element_size, int num_elements, void (*callback)(void*), void (*cleanup_function)(void*));
-
-// Constructor wrapper for external callers
-Sprite* Sprite_Ctor(Sprite* p, char* filename) {
-    p->Sprite::Sprite(filename);
-    return p;
-}
 
 /* Function start: 0x41CD50 */
 Sprite::Sprite(char* filename)
@@ -51,18 +38,20 @@ Sprite::Sprite(char* filename)
 /* Function start: 0x41CE30 */
 Sprite::~Sprite()
 {
-    this->StopAnimationSound();
+    StopAnimationSound();
 
-    if (this->ranges != 0) {
-        Array_Cleanup((void*)this->ranges, 8, *(int*)((char*)this->ranges - 4), (void(__cdecl*)(void*))0x405770);
-        FreeMemory((int*)((char*)this->ranges - 4));
-        this->ranges = 0;
+    if (ranges != 0) {
+        int* ptr = (int*)((char*)ranges - 4);
+        Array_Cleanup((void*)ranges, 8, *ptr, (void(__cdecl*)(void*))0x405770);
+        FreeMemory(ptr);
+        ranges = 0;
     }
 
-    if (this->logic_conditions != 0) {
-        Array_Cleanup((void*)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void(__cdecl*)(void*))0x405770);
-        FreeMemory((int*)((char*)this->logic_conditions - 4));
-        this->logic_conditions = 0;
+    if (logic_conditions != 0) {
+        int* ptr = (int*)((char*)logic_conditions - 4);
+        Array_Cleanup((void*)logic_conditions, 8, *ptr, (void(__cdecl*)(void*))0x405770);
+        FreeMemory(ptr);
+        logic_conditions = 0;
     }
 }
 
