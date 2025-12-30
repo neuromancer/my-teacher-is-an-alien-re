@@ -350,9 +350,15 @@ int ProcessMessages() {
   } while (1);
 }
 
-
-
-
+/* Function start: 0x421AF0 */
+int WaitForInput() {
+  while (DAT_004373bc == 0) {
+    ProcessMessages();
+  }
+  int iVar1 = DAT_004373bc;
+  DAT_004373bc = 0;
+  return iVar1;
+}
 
 /* Function start: 0x430310 */
 int GetFileAttributes_Wrapper(const char *param_1, char param_2) {

@@ -84,7 +84,7 @@ void FUN_0041eb70() {}
 void FUN_0041eb50() {}
 void FUN_004224e0() {}
 void FUN_004224f0() {}
-int FUN_00421af0() { return 0; }
+// int FUN_00421af0() { return 0; } // Implemented in main.cpp as WaitForInput
 int FUN_00421d10(void*, int) { return 0; } // cdecl version
 void FUN_00411550() {}
 void FUN_00424fc0() {}

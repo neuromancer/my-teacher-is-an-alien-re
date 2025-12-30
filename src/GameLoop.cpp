@@ -23,7 +23,7 @@ extern "C" void __fastcall FUN_004199a0(void*);
 // JoystickManager::CheckInput - takes this pointer and int param
 extern "C" int FUN_00421d10(void*, int);
 // Wait for key
-extern "C" int FUN_00421af0();
+int WaitForInput();
 extern "C" void FUN_004179a0();              // UpdateGame (global)
 extern "C" void __fastcall FUN_0041c5a0(void*);         // ZBufferManager method
 extern "C" void __fastcall FUN_0041c960(void*);         // ZBufferManager method
@@ -220,7 +220,7 @@ void GameLoop::ProcessInput() {
     pLocalMessage->field_90 = 3; // type = 3
     
     if (DAT_004373bc != 0) {
-        keyCode = FUN_00421af0();
+        keyCode = WaitForInput();
     }
     
     pMouseCoords = *(int**)((char*)g_JoystickManager_00436968 + 0x1a0);

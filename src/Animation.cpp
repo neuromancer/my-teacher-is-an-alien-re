@@ -14,14 +14,13 @@
 extern "C" {
 void FUN_0041fbd3();
 void *GetGameWindowHandle();
-
-
-int FUN_00421af0();
 void *FUN_004224f0();
 void *FUN_004224e0();
 void FUN_0041ac50(int);
 void FUN_0041ac80();
 }
+
+int WaitForInput();
 
 /* Function start: 0x419390 */
 void BlankScreen() {
@@ -305,7 +304,7 @@ void Animation::MainLoop() {
           if (uVar3 != 0 || (*(char *)(iVar1 + 0xc) & 2) == 0) {
             int bVar5 = 0;
             if (DAT_004373bc != 0) {
-              bVar5 = FUN_00421af0() == 0x1b;
+              bVar5 = WaitForInput() == 0x1b;
             }
             if (!bVar5) {
               goto wait;
