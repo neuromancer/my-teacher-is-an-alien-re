@@ -32,7 +32,7 @@ public:
   void VBInit();
   void GotoFrame(int frame);
   void NextFrame();
-  void SetPalette(unsigned int, unsigned int);
+  int SetPalette(unsigned int, unsigned int);
   void CloseSmackerBuffer();
   void CloseSmackerFile();
   

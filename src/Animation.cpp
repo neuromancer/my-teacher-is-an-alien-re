@@ -84,29 +84,27 @@ void Animation::CloseSmackerFile() {
 
 /* Function start: 0x41FC00 */
 void Animation::CloseSmackerBuffer() {
-  /* Missing from Smack 3rdparty lib */
-  /*
   if (this->smack_buffer != 0) {
       SmackBufferClose(this->smack_buffer);
       this->smack_buffer = 0;
   }
-  */
 }
 
 /* Function start: 0x41FC20 */
-void Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
-  if (this->smk != 0) { // && this->smack_buffer != 0) {
+int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
+  if (this->smk != 0 && this->smack_buffer != 0) {
     this->data->SetCurrentVideoMode(this->data->handle);
     if (this->smk->NewPalette != 0) {
-      /* SmackBufferNewPalette and SmackColorRemap missing */
-      // SmackBufferNewPalette(this->smack_buffer, this->smk->Palette, 0);
-      // SmackColorRemap(this->smk, (char*)this->smack_buffer + 0x3c,
-      // *(int*)((char*)this->smack_buffer + 0x2c),
-      // *(int*)((char*)this->smack_buffer + 0x43c));
+      SmackBufferNewPalette(this->smack_buffer, this->smk->Palette, 0);
+      SmackColorRemap(this->smk, (char*)this->smack_buffer + 0x3c,
+      *(int*)((char*)this->smack_buffer + 0x2c),
+      *(int*)((char*)this->smack_buffer + 0x43c));
     }
     FUN_0041eb90((char *)this->smk->Palette, param_1, param_2);
     this->data->InvalidateVideoMode();
+    return 0;
   }
+  return 0;
 }
 
 /* Function start: 0x41FCA0 */

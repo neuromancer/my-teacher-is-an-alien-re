@@ -83,6 +83,13 @@ extern unsigned int SMACK_DECL _SmackSoundOnOff(HSMACK smack, unsigned int flag)
 extern void SMACK_DECL _SmackToBuffer(HSMACK smack, unsigned int uX, unsigned int uY, unsigned int uPitch, unsigned int uHeight, void *pBuffer, unsigned int uFlags);
 extern unsigned int SMACK_DECL _SmackToBufferRect(HSMACK smack, unsigned int uSmackSurface);
 extern unsigned int SMACK_DECL _SmackWait(HSMACK smack);
+extern void SMACK_DECL _SmackBufferNewPalette(void * pBuffer, void * pPalette, unsigned int uFlags);
+extern void SMACK_DECL _SmackColorRemap(HSMACK smack, void * pPalette, unsigned int uNumColors, unsigned int uUnk);
+extern void SMACK_DECL _SmackBufferClose(void * pBuffer);
+
+#define SmackBufferNewPalette _SmackBufferNewPalette
+#define SmackColorRemap _SmackColorRemap
+#define SmackBufferClose _SmackBufferClose
 
 #ifdef __cplusplus
 }

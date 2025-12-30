@@ -11,3 +11,6 @@ EXPORTS
     _SmackToBuffer@28
     _SmackToBufferRect@8
     _SmackWait@4
+    _SmackBufferClose@4
+    _SmackColorRemap@16
+    _SmackBufferNewPalette@12
