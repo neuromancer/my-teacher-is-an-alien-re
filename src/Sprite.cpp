@@ -28,7 +28,7 @@ Sprite::Sprite(char* filename)
     memset(&this->ranges, 0, 0x14 * 4);
     this->flags |= 0x20;
     if (filename != 0) {
-        sscanf(filename, "%s", &this->sprite_filename);
+        sscanf(filename, "%s", this->sprite_filename);
     }
     this->SetState(1);
     this->priority = 0;
@@ -58,35 +58,43 @@ Sprite::~Sprite()
 /* Function start: 0x41CF10 */
 void Sprite::Init()
 {
+    Animation* anim;
+
     try {
-        if (this->animation_data == 0) {
-            Animation* anim = (Animation*)AllocateMemory(0x2c);
-            Animation* result = 0;
+        anim = this->animation_data;
+        if (anim != 0) {
+            if (anim->data != 0) {
+                return;
+            }
+        }
+        if (anim == 0) {
+            anim = (Animation*)AllocateMemory(0x2c);
             if (anim != 0) {
-                result = anim->InitWithFilename(this->sprite_filename);
+                this->animation_data = anim->InitWithFilename(this->sprite_filename);
             }
-            this->animation_data = result;
-        } else if (this->animation_data->data == 0) {
-            this->animation_data->ToBuffer();
         }
-
-        if (this->animation_data && this->animation_data->data) {
-            if (DAT_00436b9c == 0) {
-                char* p = DAT_0043d630;
-                do {
-                    *p = 0;
-                    p = p + 0x40;
-                } while (p < &DAT_0043d630[0x800]);
-                DAT_00436b9c = 1;
-            }
-            memcpy(&DAT_0043d630[this->animation_data->data->handle * 0x40], this->sprite_filename, strlen(this->sprite_filename) + 1);
-        }
-
-        this->CheckRanges1();
-        this->flags |= 0x20;
-        this->SetState2(this->current_state);
     } catch (...) {
     }
+
+    if (this->animation_data->data == 0) {
+        this->animation_data->ToBuffer();
+    }
+
+    if (this->animation_data->data != 0) {
+        if (DAT_00436b9c == 0) {
+            char* ptr = DAT_0043d630;
+            do {
+                *ptr = 0;
+                ptr += 0x40;
+            } while (ptr < &DAT_0043d630[0x800]);
+            DAT_00436b9c = 1;
+        }
+        strcpy(&DAT_0043d630[this->animation_data->data->handle * 0x40], this->sprite_filename);
+    }
+
+    this->CheckRanges1();
+    this->flags |= 0x20;
+    this->SetState2(this->current_state);
 }
 
 /* Function start: 0x41D040 */
@@ -120,17 +128,18 @@ void Sprite::StopAnimationSound()
 /* Function start: 0x41D0C0 */
 void Sprite::InitAnimation()
 {
+    if (this->animation_data != 0) {
+        return;
+    }
+    Animation* anim = (Animation*)AllocateMemory(0x2c);
     try {
-        if (this->animation_data == 0) {
-            Animation* anim = (Animation*)AllocateMemory(0x2c);
-            if (anim != 0) {
-                anim = anim->Init();
-            }
-            this->animation_data = anim;
-            anim->Open(this->sprite_filename, 0xfe000, -1);
+        if (anim != 0) {
+            anim = anim->Init();
         }
     } catch (...) {
     }
+    this->animation_data = anim;
+    anim->Open(this->sprite_filename, 0xfe000, -1);
 }
 
 /* Function start: 0x41D160 */
@@ -159,7 +168,7 @@ void Sprite::SetState2(int param_1)
     }
 
     if (param_1 < 0 || param_1 > this->num_states - 1) {
-        ShowError("Sprite::SetState 0 %d %s", param_1, &this->sprite_filename);
+        ShowError("Sprite::SetState 0 %d %s", param_1, this->sprite_filename);
     }
 
     int current_frame = 0;
@@ -310,7 +319,7 @@ int Sprite::Do(int x, int y, double scale)
         }
     }
     else {
-        mode = 3 - (unsigned int)((flags & 0x40) == 0);
+        mode = ((flags & 0x40) < 1 ? -1 : 0) + 3;
     }
     g_SoundManager->PlayAnimationSound(this->animation_data->data, this->priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
     return -((this->flags & 1) == 0) & done;
@@ -337,7 +346,7 @@ void Sprite::CheckRanges1()
             piVar2 = (int*)((char*)this->ranges + iVar3);
             iVar1 = *piVar2;
             if (piVar2[1] < iVar1) {
-                ShowError("bad range[%d].start = %d in %s", iVar4, iVar1, (char*)&this->sprite_filename);
+                ShowError("bad range[%d].start = %d in %s", iVar4, iVar1, this->sprite_filename);
             }
             iVar3 += 8;
             iVar4++;
@@ -400,10 +409,10 @@ int Sprite::CheckConditions()
 void Sprite::SetRange(int param_1, int param_2, int param_3)
 {
     if (this->num_states <= param_1) {
-        ShowError("Sprite::SetRange#1 %s %d", &this->sprite_filename, param_1);
+        ShowError("Sprite::SetRange#1 %s %d", this->sprite_filename, param_1);
     }
     if ((param_2 < 1) || (param_3 < 1)) {
-        ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", &this->sprite_filename, param_1, param_2, param_3);
+        ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", this->sprite_filename, param_1, param_2, param_3);
     }
     int* piVar1 = (int*)((char*)this->ranges + param_1 * 8);
     *piVar1 = param_2;
@@ -471,7 +480,7 @@ void Sprite::SetLogic(int param_1, int param_2)
         } while (iVar2 < this->num_logic_conditions);
     }
 
-    ShowError("Sprite::SetLogic %s", &this->sprite_filename);
+    ShowError("Sprite::SetLogic %s", this->sprite_filename);
 }
 
 /* Function start: 0x41D8D0 */

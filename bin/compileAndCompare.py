@@ -31,6 +31,9 @@ def read_assembly(function_name, file_path):
     if f"; {function_name}, COMDAT" in assembly:
         assembly = assembly.split(f"; {function_name}, COMDAT")[1]
         assembly = assembly.split(f"; {function_name}")[0]
+        # Also remove lines containing ENDP (since PROC NEAR was before the split point)
+        lines = assembly.split("\n")
+        assembly = "\n".join([line for line in lines if "ENDP" not in line])
     elif f"_{function_name} PROC NEAR" in assembly:
         assembly = assembly.split(f"_{function_name} PROC NEAR")[1]
         assembly = assembly.split(f"_{function_name} ENDP")[0]
@@ -58,6 +61,63 @@ def read_assembly(function_name, file_path):
     if "PROC NEAR" in assembly:
         assembly = assembly.split("PROC NEAR")[1]
         assembly = assembly.split("ENDP")[0]
+
+    # Remove SEH handler code that appears after the main function body
+    # SEH handlers come after the final ret and have patterns like:
+    #   $L30694:  mov eax, OFFSET FLAT:$Lxxxxx  ret 0
+    #   $L30695:  mov eax, OFFSET FLAT:$Txxxxx  jmp ___CxxFrameHandler
+    # We find the last "ret" that's followed only by SEH handlers and remove everything after
+    lines = assembly.split("\n")
+    stripped_lines = [line.strip() for line in lines]
+    
+    # Find all ret instruction indices
+    ret_indices = []
+    for i, line in enumerate(stripped_lines):
+        if line.startswith('ret') or line == 'ret 0':
+            ret_indices.append(i)
+    
+    # For each ret from the beginning, check if everything after is just SEH handlers
+    # We want the first ret after which only SEH code follows
+    cutoff_idx = len(lines)
+    for ret_idx in ret_indices:
+        # Check what's after this ret
+        remaining = stripped_lines[ret_idx+1:]
+        is_seh_only = True
+        i = 0
+        while i < len(remaining):
+            line = remaining[i]
+            if not line:  # Empty line
+                i += 1
+                continue
+            # Check for SEH label pattern
+            if re.match(r'\$L\d+:', line):
+                # Look at next two instructions for SEH handler pattern
+                if i + 1 < len(remaining):
+                    next_line = remaining[i + 1]
+                    if 'OFFSET FLAT:$' in next_line or 'jmp' in next_line.lower():
+                        i += 1
+                        continue
+                i += 1
+                continue
+            elif 'OFFSET FLAT:$' in line:
+                i += 1
+                continue
+            elif line.startswith('ret') or line == 'ret 0':
+                i += 1
+                continue
+            elif 'jmp' in line.lower() and 'CxxFrameHandler' in line:
+                i += 1
+                continue
+            else:
+                # Non-SEH code found after ret
+                is_seh_only = False
+                break
+        
+        if is_seh_only and len(remaining) > 0:
+            cutoff_idx = ret_idx + 1
+            break
+    
+    assembly = "\n".join(lines[:cutoff_idx])
 
     return assembly
 
