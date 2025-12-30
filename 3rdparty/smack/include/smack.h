@@ -6,6 +6,21 @@
 #else
 #define SMACK_DECL
 #endif
+
+// Define wrappers to map to DLL exports which have underscore
+#define SmackBufferOpen _SmackBufferOpen
+#define SmackClose _SmackClose
+#define SmackDoFrame _SmackDoFrame
+#define SmackNextFrame _SmackNextFrame
+#define SmackOpen _SmackOpen
+#define SmackSoundUseMSS _SmackSoundUseMSS
+#define SmackGoto _SmackGoto
+#define SmackSoundOnOff _SmackSoundOnOff
+#define SmackToBuffer _SmackToBuffer
+#define SmackToBufferRect _SmackToBufferRect
+#define SmackWait _SmackWait
+
+
 #define SMACKTRACK1 0x02000
 #define SMACKTRACK2 0x04000
 #define SMACKTRACK3 0x08000
@@ -57,17 +72,17 @@ struct _SMACK {
 typedef struct _SMACK *HSMACK;
 typedef void *SMACK_HDIGDRIVER;
 
-extern void* SMACK_DECL SmackBufferOpen(void* hwnd, unsigned int blitType, unsigned int width, unsigned int height, unsigned int zoom, unsigned int unuse);
-extern void SMACK_DECL SmackClose(HSMACK smack);
-extern unsigned int SMACK_DECL SmackDoFrame(HSMACK smack);
-extern void SMACK_DECL SmackNextFrame(HSMACK smack);
-extern HSMACK SMACK_DECL SmackOpen(const char*, unsigned int uFlags, unsigned int uExtraBuffers);
-extern int SMACK_DECL SmackSoundUseMSS(SMACK_HDIGDRIVER hDrv);
-extern unsigned int SMACK_DECL SmackGoto(HSMACK smack, unsigned int frame);
-extern unsigned int SMACK_DECL SmackSoundOnOff(HSMACK smack, unsigned int flag);
-extern void SMACK_DECL SmackToBuffer(HSMACK smack, unsigned int uX, unsigned int uY, unsigned int uPitch, unsigned int uHeight, void *pBuffer, unsigned int uFlags);
-extern unsigned int SMACK_DECL SmackToBufferRect(HSMACK smack, unsigned int uSmackSurface);
-extern unsigned int SMACK_DECL SmackWait(HSMACK smack);
+extern void* SMACK_DECL _SmackBufferOpen(void* hwnd, unsigned int blitType, unsigned int width, unsigned int height, unsigned int zoom, unsigned int unuse);
+extern void SMACK_DECL _SmackClose(HSMACK smack);
+extern unsigned int SMACK_DECL _SmackDoFrame(HSMACK smack);
+extern void SMACK_DECL _SmackNextFrame(HSMACK smack);
+extern HSMACK SMACK_DECL _SmackOpen(const char*, unsigned int uFlags, unsigned int uExtraBuffers);
+extern int SMACK_DECL _SmackSoundUseMSS(SMACK_HDIGDRIVER hDrv);
+extern unsigned int SMACK_DECL _SmackGoto(HSMACK smack, unsigned int frame);
+extern unsigned int SMACK_DECL _SmackSoundOnOff(HSMACK smack, unsigned int flag);
+extern void SMACK_DECL _SmackToBuffer(HSMACK smack, unsigned int uX, unsigned int uY, unsigned int uPitch, unsigned int uHeight, void *pBuffer, unsigned int uFlags);
+extern unsigned int SMACK_DECL _SmackToBufferRect(HSMACK smack, unsigned int uSmackSurface);
+extern unsigned int SMACK_DECL _SmackWait(HSMACK smack);
 
 #ifdef __cplusplus
 }
