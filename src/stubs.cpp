@@ -9,10 +9,13 @@
 class SoundManager* g_SoundManager = NULL;
 
 
+#include <smack.h>
+
 extern "C" {
-
-
 // Generic Stubs for Missing Functions
+void _SmackSetSystemRes_4(int param_1) {
+    SmackSetSystemRes(param_1);
+}
 void FUN_0041ef47() {}
 // FUN_0042ddd0 implemented in FileSystem.cpp
 // FUN_00425fd0 is strncpy from MSVC CRT
@@ -152,8 +155,6 @@ int _rand() { return rand(); }
 // Mangled names with @16 imply stdcall. We might need logic or strict prototype.
 // _FUN_00422590@16
 void __stdcall FUN_00422590(int a, int b, int c, int d) {}
-// _FUN_00422250 - takes char* argument, uses RET 0x4 (stdcall with 1 arg)
-void __stdcall FUN_00422250(char* param_1) {}
 
 void FUN_0040cd15() {}
 void FUN_0040cd1d() {}

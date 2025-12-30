@@ -107,9 +107,12 @@ extern void SMACK_DECL _SmackBufferNewPalette(void * pBuffer, void * pPalette, u
 extern void SMACK_DECL _SmackColorRemap(HSMACK smack, void * pPalette, unsigned int uNumColors, unsigned int uUnk);
 extern void SMACK_DECL _SmackBufferClose(void * pBuffer);
 
+extern void SMACK_DECL _SmackSetSystemRes(unsigned int mode);
+
 #define SmackBufferNewPalette _SmackBufferNewPalette
 #define SmackColorRemap _SmackColorRemap
 #define SmackBufferClose _SmackBufferClose
+#define SmackSetSystemRes _SmackSetSystemRes
 
 #ifdef __cplusplus
 }

@@ -14,3 +14,4 @@ EXPORTS
     _SmackBufferClose@4
     _SmackColorRemap@16
     _SmackBufferNewPalette@12
+    _SmackSetSystemRes@4
