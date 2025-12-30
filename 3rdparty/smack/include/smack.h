@@ -72,7 +72,27 @@ struct _SMACK {
 typedef struct _SMACK *HSMACK;
 typedef void *SMACK_HDIGDRIVER;
 
-extern void* SMACK_DECL _SmackBufferOpen(void* hwnd, unsigned int blitType, unsigned int width, unsigned int height, unsigned int zoom, unsigned int unuse);
+typedef struct SmackBufTag {
+    unsigned int Reversed;             // 0x00
+    unsigned int SurfaceType;          // 0x04
+    unsigned int BlitType;             // 0x08
+    unsigned int FullScreen;           // 0x0C
+    unsigned int Width;                // 0x10
+    unsigned int Height;               // 0x14
+    unsigned int Zoomed;               // 0x18
+    unsigned int ZWidth;               // 0x1C
+    unsigned int ZHeight;              // 0x20
+    unsigned int DispColors;           // 0x24
+    unsigned int MaxPalColors;         // 0x28
+    unsigned int PalColorsInUse;       // 0x2C
+    unsigned int StartPalColor;        // 0x30
+    unsigned int EndPalColor;          // 0x34
+    void* Buffer;                      // 0x38
+    unsigned char Palette[1024];       // 0x3C - Palette (1024 bytes)
+    unsigned int Unk43C;               // 0x43C - 4th arg to SmackColorRemap
+} SmackBuf;
+
+extern SmackBuf* SMACK_DECL _SmackBufferOpen(void* hwnd, unsigned int blitType, unsigned int width, unsigned int height, unsigned int zoom, unsigned int unuse);
 extern void SMACK_DECL _SmackClose(HSMACK smack);
 extern unsigned int SMACK_DECL _SmackDoFrame(HSMACK smack);
 extern void SMACK_DECL _SmackNextFrame(HSMACK smack);

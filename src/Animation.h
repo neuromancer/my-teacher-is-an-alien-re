@@ -14,7 +14,7 @@ public:
   VBuffer *data;      // 0x18
   unsigned int flags; // 0x1c
   void *palette;      // 0x20
-  void *smack_buffer; // 0x24
+  SmackBuf *smack_buffer; // 0x24
   void *smack_handle; // 0x28
 
   Animation() {}

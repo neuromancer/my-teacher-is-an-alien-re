@@ -117,9 +117,9 @@ int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
     this->data->SetCurrentVideoMode(this->data->handle);
     if (this->smk->NewPalette != 0) {
       SmackBufferNewPalette(this->smack_buffer, this->smk->Palette, 0);
-      SmackColorRemap(this->smk, (char*)this->smack_buffer + 0x3c,
-      *(int*)((char*)this->smack_buffer + 0x2c),
-      *(int*)((char*)this->smack_buffer + 0x43c));
+      SmackColorRemap(this->smk, this->smack_buffer->Palette,
+                      this->smack_buffer->PalColorsInUse,
+                      this->smack_buffer->Unk43C);
     }
     SetPaletteEntriesAnimation((char *)this->smk->Palette, param_1, param_2);
     this->data->InvalidateVideoMode();
@@ -233,7 +233,7 @@ void Animation::ToBufferVB(VBuffer *buffer) {
   }
 
   this->data = buffer;
-  unsigned int uVar3 = *(unsigned char *)this->smack_buffer;
+  unsigned int uVar3 = this->smack_buffer->Reversed;
   void *uVar1 = buffer->GetData();
   SmackToBuffer(this->smk, 0, 0, this->smk->Width, this->smk->Height, uVar1,
                 uVar3);
