@@ -13,13 +13,25 @@
 extern "C" {
 void FUN_0041fbd3();
 void *FUN_004224d0();
-void FUN_00419390();
+
 void FUN_0041eb90(void *, int, int);
 int FUN_00421af0();
 void *FUN_004224f0();
 void *FUN_004224e0();
 void FUN_0041ac50(int);
 void FUN_0041ac80();
+}
+
+/* Function start: 0x419390 */
+void BlankScreen() {
+  if (g_WorkBuffer_00436974 != 0) {
+    g_WorkBuffer_00436974->ClearScreen(0);
+    VBuffer *vbuffer = g_WorkBuffer_00436974;
+    vbuffer->CallBlitter5(
+        vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->saved_video_mode,
+        vbuffer->video_mode_lock_count, 0, *(int *)FUN_004224e0() - 1, 0,
+        *(int *)FUN_004224f0() - 1);
+  }
 }
 
 /* Function start: 0x41FA50 */
@@ -158,10 +170,14 @@ void Animation::VBInit() {
   }
 
   VBuffer *vbuffer = (VBuffer *)AllocateMemory(0x30);
-  if (vbuffer != 0) {
-    this->vbuffer = vbuffer->CreateAndClean(this->smk->Width,
-                                                this->smk->Height);
+  try {
+    if (vbuffer != 0) {
+      HSMACK smk = this->smk;
+      vbuffer = vbuffer->CreateAndClean(smk->Width, smk->Height);
+    }
+  } catch (...) {
   }
+  this->vbuffer = vbuffer;
 }
 
 /* Function start: 0x41FE20 */
@@ -234,7 +250,7 @@ void Animation::Play(char *filename, unsigned int flags) {
   }
 
   if ((this->flags & 2) == 0) {
-    FUN_00419390();
+    BlankScreen();
   }
 
   Open(filename, 0xfe000, -1);
@@ -243,7 +259,7 @@ void Animation::Play(char *filename, unsigned int flags) {
   CloseSmackerFile();
 
   if (palette != 0) {
-    FUN_00419390();
+    BlankScreen();
     palette->SetEntries(0, 0x100);
     if (palette != 0) {
       palette->Cleanup();
