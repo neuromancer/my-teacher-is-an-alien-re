@@ -86,8 +86,8 @@ void FUN_0041ea80() {}
 void FUN_0041eb70() {}
 
 void FUN_0041eb50() {}
-void FUN_004224e0() {}
-void FUN_004224f0() {}
+// FUN_004224e0 implemented in GameWindow.cpp as GetWindowWidth
+// FUN_004224f0 implemented in GameWindow.cpp as GetWindowHeight
 // int FUN_00421af0() { return 0; } // Implemented in main.cpp as WaitForInput
 // extern "C" int FUN_00421d10(void*, int); // Declared in InputManager.h now implies it's a member function { return 0; } // Now InputManager::PollEvents
 void FUN_00411550() {}
@@ -151,8 +151,7 @@ int _rand() { return rand(); }
 
 // GameWindow missing stubs from Step 28/46/66
 // Mangled names with @16 imply stdcall. We might need logic or strict prototype.
-// _FUN_00422590@16
-void __stdcall FUN_00422590(int a, int b, int c, int d) {}
+// _FUN_00422590@16 - implemented in GameWindow.cpp as GameWindowProc
 
 void FUN_0040cd15() {}
 void FUN_0040cd1d() {}
@@ -181,7 +180,8 @@ void* FUN_0040d300(void* a) { return a; }
 
 // Missing stubs for GameWindow
 void FUN_00419220(char* a) {}
-int FUN_00419800(char* a, char** b, int c) { if (b && c>0) *b=0; return 0; }
+// FUN_00419800 implemented in string.cpp as ParseCommandLineArgs
+int ParseCommandLineArgs(char*, char**, int);
 int* FUN_00422500() { static int x = 0; return &x; }
 
 } // extern "C"

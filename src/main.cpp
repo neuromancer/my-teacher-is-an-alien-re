@@ -73,7 +73,7 @@ void RunGame() {
   extern void* DAT_00435a78;
   extern void* DAT_00435a7c;
 
-  __try {
+  //__try {
     InitGameSystems();
     if (g_WorkBuffer_00436974 == 0) {
       ShowError("missing workbuff");
@@ -81,30 +81,26 @@ void RunGame() {
     g_WorkBuffer_00436974->SetVideoMode(); 
     g_WorkBuffer_00436974->ClearScreen(0);
 
-    void* puVar2 = g_Mouse_00436978;
+    void* puVar2; //= g_Mouse_00436978;
     if (g_Mouse_00436978 != 0) {
-        g_Mouse_00436978->~Mouse();
-        FreeMemory(puVar2);
+        delete g_Mouse_00436978;
         g_Mouse_00436978 = 0;
     }
     
-    puVar2 = AllocateMemory(0x1c0);
-    Mouse* pMouse = 0;
-    if (puVar2 != 0) {
-        pMouse = ((Mouse*)puVar2);
-        pMouse->Mouse::Mouse();
-    }
-    g_Mouse_00436978 = pMouse;
-    ParseFile((Parser*)pMouse, "mis\\mouse1.mis", "[MICE]");
+    g_Mouse_00436978 = new Mouse(); //pMouse;
+    ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
     
-    g_Unknown_00436994 = (char*)AllocateMemory(0x40);
+    g_Unknown_00436994 = new char[0x40];
 
-    puVar2 = AllocateMemory(0x14);
-    void* pInit = 0;
-    if (puVar2 != 0) {
-        pInit = ((Timer*)puVar2)->Init();
+    g_Timer_00436980 = new Timer();
+    //puVar2 = AllocateMemory(0x14);
+    //void* pInit = 0;
+    if (g_Timer_00436980 != 0) {
+        g_Timer_00436980->Init();
     }
-    g_Timer_00436980 = (Timer*)pInit;
+    //g_Timer_00436980 = (Timer*)pInit;
+    //g_Timer_00436980 = new Timer();
+    //g_Timer_00436980->Init();
 
     puVar2 = AllocateMemory(0xCC);
     FlagArray* pFlagArray = 0;
@@ -122,7 +118,7 @@ void RunGame() {
         pGS->stateLabels = 0;
         pGS->maxStates = 0;
         pGS->reserved = 0;
-        ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+        ParseFile(pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
     }
     g_GameState_00436998 = pGS;
 
@@ -133,7 +129,7 @@ void RunGame() {
         pGS->stateLabels = 0;
         pGS->maxStates = 0;
         pGS->reserved = 0;
-        ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
+        ParseFile(pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
     }
     g_GameState2_004369a4 = pGS;
 
@@ -144,7 +140,7 @@ void RunGame() {
         pGS->stateLabels = 0;
         pGS->maxStates = 0;
         pGS->reserved = 0;
-        ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+        ParseFile(pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
     }
     g_GameState3_0043699c = pGS;
 
@@ -155,7 +151,7 @@ void RunGame() {
         pGS->stateLabels = 0;
         pGS->maxStates = 0;
         pGS->reserved = 0;
-        ParseFile((Parser*)pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
+        ParseFile(pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
     }
     g_GameState4_004369a0 = pGS;
 
@@ -317,8 +313,8 @@ void RunGame() {
 
     ShutdownGameSystems();
 
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-  }
+  //} __except (EXCEPTION_EXECUTE_HANDLER) {
+  //}
 }
 
 

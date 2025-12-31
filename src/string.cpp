@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <share.h>
+#include <ctype.h>
 #include "string.h"
 #include "Memory.h"
 #include <mbstring.h>
@@ -338,6 +339,42 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
     } while (result < 1 || local_buf[0] == ';' || local_buf[0] == '\r');
 
     return buffer;
+}
+
+/* Function start: 0x419800 */
+int ParseCommandLineArgs(char *param_1, char **param_2, int param_3)
+{
+    int iVar1;
+    
+    iVar1 = 0;
+    if (param_3 > 0) {
+        if (*param_1 != '\0') {
+            do {
+                do {
+                    if (_isctype(*param_1, 0x8) == 0) {
+                        break;
+                    }
+                    param_1 = param_1 + 1;
+                } while (*param_1 != '\0');
+                *param_2 = param_1;
+                if (*param_1 != '\0') {
+                    do {
+                        if (_isctype(*param_1, 0x8) != 0) {
+                            break;
+                        }
+                        param_1 = param_1 + 1;
+                    } while (*param_1 != '\0');
+                    if (*param_1 != '\0') {
+                        *param_1 = '\0';
+                        param_1 = param_1 + 1;
+                    }
+                }
+                param_2 = param_2 + 1;
+                iVar1 = iVar1 + 1;
+            } while (iVar1 < param_3);
+        }
+    }
+    return iVar1;
 }
 
 /* Function start: 0x4260F0 */

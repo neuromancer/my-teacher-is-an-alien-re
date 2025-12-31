@@ -69,6 +69,7 @@ short DAT_00437f6a = 0;
 HDC h_0043841c = 0;
 void* DAT_0043842c = 0;
 HPALETTE hPal_0043748c = 0;
+HPALETTE DAT_004374ae = 0;  // Previously selected palette
 HGDIOBJ DAT_00438424 = 0;
 int DAT_0043826c[32];
 int DAT_00437fec[32];
@@ -154,3 +155,10 @@ HMODULE DAT_00438420 = 0;
 void* DAT_00438430 = 0;
 void* DAT_00438434 = 0;
 void* DAT_00438438 = 0;
+
+// Window procedure globals
+HDC DAT_0043de80 = 0;       // Main window DC
+HPALETTE DAT_0043de84 = 0;  // Main window palette
+int DAT_0043de88 = 0;       // Window width
+int DAT_0043de8c = 0;       // Window height
+int DAT_0043de94 = 0;       // Activate app state

@@ -234,3 +234,29 @@ int InitStockFont(int param_1)
     DAT_004374a2 = pTextMetric->tmAveCharWidth;
     return 0;
 }
+
+// Additional globals for palette functions
+extern HPALETTE hPal_0043748c;
+extern HPALETTE DAT_004374ae;
+
+/* Function start: 0x424162 */
+int SetDeviceContext(HDC param_1)
+{
+    DAT_00437488 = param_1;
+    DAT_004374b4 = param_1;
+    return 0;
+}
+
+/* Function start: 0x423D5B */
+int SelectAndRealizePalette(HPALETTE param_1)
+{
+    HPALETTE pHVar1;
+    
+    hPal_0043748c = param_1;
+    pHVar1 = SelectPalette(DAT_00437488, param_1, 0);
+    RealizePalette(DAT_00437488);
+    if (DAT_004374ae == (HPALETTE)0x0) {
+        DAT_004374ae = pHVar1;
+    }
+    return 0;
+}

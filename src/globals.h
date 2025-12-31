@@ -471,7 +471,7 @@ extern HPALETTE hPal_0043748c; // DAT_0043748c  { /* 4 bytes */ }
 // extern char DAT_00437490; // { /* 1 bytes */ }
 extern int DAT_00437491; // { /* 4 bytes */ }
 // extern int DAT_0043749a; // { /* 4 bytes */ }
-// extern int DAT_004374ae; // { /* 4 bytes */ }
+extern HPALETTE DAT_004374ae; // Previously selected palette
 // extern int DAT_004374b4; // { /* 4 bytes */ }
 // extern char DAT_004374c0; // { /* 1 bytes */ }
 // extern char DAT_004374c1; // { /* 1 bytes */ }
@@ -752,8 +752,11 @@ extern char DAT_0043d568[]; // DAT_0043d568  { /* 1 bytes */ }
 // extern char DAT_0043d630; // { /* 1 bytes */ }
 // extern char DAT_0043d670; // { /* 1 bytes */ }
 extern HWND DAT_0043de7c; // DAT_0043de7c  { /* 4 bytes */ }
-// extern int DAT_0043de84; // { /* 4 bytes */ }
-// extern int DAT_0043de94; // { /* 4 bytes */ }
+extern HDC DAT_0043de80; // Window DC
+extern HPALETTE DAT_0043de84; // Window palette
+extern int DAT_0043de88; // Window width
+extern int DAT_0043de8c; // Window height
+extern int DAT_0043de94; // Activate app state
 // extern int DAT_0043de9c; // { /* 4 bytes */ }
 // extern int DAT_0043dfa4; // { /* 4 bytes */ }
 // extern int DAT_0043dfa8; // { /* 4 bytes */ }

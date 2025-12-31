@@ -14,8 +14,8 @@
 extern "C" {
 void FUN_0041fbd3();
 void *GetGameWindowHandle();
-void *FUN_004224f0();
-void *FUN_004224e0();
+int *GetWindowHeight();
+int *GetWindowWidth();
 void FUN_0041ac50(int);
 void FUN_0041ac80();
 }
@@ -29,8 +29,8 @@ void BlankScreen() {
     VBuffer *vbuffer = g_WorkBuffer_00436974;
     vbuffer->CallBlitter5(
         vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->saved_video_mode,
-        vbuffer->video_mode_lock_count, 0, *(int *)FUN_004224e0() - 1, 0,
-        *(int *)FUN_004224f0() - 1);
+        vbuffer->video_mode_lock_count, 0, *GetWindowWidth() - 1, 0,
+        *GetWindowHeight() - 1);
   }
 }
 
@@ -317,12 +317,11 @@ void Animation::MainLoop() {
       } while (SmackWait(smk) != 0);
 
       VBuffer *vbuffer = this->data;
-      void *piVar2 = FUN_004224f0();
-      int iVar1 = *(int *)piVar2 - 1;
-      piVar2 = FUN_004224e0();
+      int iVar1 = *GetWindowHeight() - 1;
+      int iVar2 = *GetWindowWidth() - 1;
       vbuffer->CallBlitter5(
           vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->saved_video_mode,
-          vbuffer->video_mode_lock_count, 0, *(int *)piVar2 - 1, 0, iVar1);
+          vbuffer->video_mode_lock_count, 0, iVar2, 0, iVar1);
 
       if (smk->Frames - 1 <= frame) {
         break;

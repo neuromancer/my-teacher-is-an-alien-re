@@ -7,8 +7,6 @@
 /* Function start: 0x420480 */
 GameState::~GameState()
 {
-    //this->vtable = (void**)0x431268;
-
     if (this->stateValues != 0) {
         FreeMemory(this->stateValues);
         this->stateValues = 0;
@@ -73,7 +71,7 @@ int GameState::LBLParse(char* line)
 
     labelName[0] = '\0';
     keyword[0] = '\0';
-    sscanf(line, "%s", keyword);
+    sscanf(line, " %s ", keyword);
 
     if (strcmp(keyword, "MAXSTATES") == 0) {
         sscanf(line, "%s %d %s", keyword, &index, labelName);
