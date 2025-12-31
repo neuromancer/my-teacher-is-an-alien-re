@@ -331,6 +331,19 @@ void Sprite::CheckRanges1()
     if (this->ranges == 0) {
         ShowError("error Sprite::CheckRanges1");
     }
+    /*if (this->num_states > 0) {
+        for (int i = 0; i < this->num_states; i++) {
+            Range *range = &this->ranges[i];
+            int iVar1 = this->animation_data->smk->FrameNum;
+            if (iVar1 < range->end) {
+                range->end = iVar1;
+            }
+            if (range->end < range->start) {
+                ShowError("bad range[%d].start = %d in %s", i, range->start, this->sprite_filename);
+            }   
+        }
+    }*/
+
     int iVar4 = 0;
     if (0 < this->num_states) {
         int iVar3 = 0;
@@ -357,15 +370,13 @@ int Sprite::CheckConditions()
 {
     int iVar1;
     LogicCondition* piVar2;
-    int local_4;
 
     if ((this->num_logic_conditions == 0) || (this->logic_conditions == 0)) {
         return 1;
     }
-    local_4 = 0;
-    if (0 < this->num_logic_conditions) {
-        do {
-            piVar2 = &this->logic_conditions[local_4];
+    if (this->num_logic_conditions > 0) {
+        for (int i = 0; i < this->num_logic_conditions; i++) {
+            piVar2 = &this->logic_conditions[i];
             if (piVar2->type == 1) {
                 iVar1 = piVar2->state_index;
                 if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
@@ -393,8 +404,7 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-            local_4 = local_4 + 1;
-        } while (local_4 < this->num_logic_conditions);
+        }
     }
     return 1;
 }
@@ -408,16 +418,14 @@ void Sprite::SetRange(int param_1, int param_2, int param_3)
     if ((param_2 < 1) || (param_3 < 1)) {
         ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", this->sprite_filename, param_1, param_2, param_3);
     }
-    int* piVar1 = (int*)((char*)this->ranges + param_1 * 8);
-    *piVar1 = param_2;
-    piVar1[1] = param_3;
+    this->ranges[param_1].start = param_2;
+    this->ranges[param_1].end = param_3;
     this->flags |= 0x20;
 }
 
 /* Function start: 0x41D740 */
 void Sprite::SetState(int param_1)
 {
-    //try {
     this->num_states = param_1;
     delete[] this->ranges;
     this->ranges = new Range[this->num_states];
@@ -437,52 +445,31 @@ void Sprite::SetLogic(int param_1, int param_2)
         this->InitLogic(1);
     }
 
-    int iVar2 = 0;
-    if (0 < this->num_logic_conditions) {
-        do {
-            if (this->logic_conditions[iVar2].type == 0) {
-                this->logic_conditions[iVar2].state_index = param_1;
-                this->logic_conditions[iVar2].type = param_2;
-                return;
-            }
-            iVar2 = iVar2 + 1;
-        } while (iVar2 < this->num_logic_conditions);
+    for (int i = 0; i < this->num_logic_conditions; i++) {
+        if (this->logic_conditions[i].type == 0) {
+            this->logic_conditions[i].state_index = param_1;
+            this->logic_conditions[i].type = param_2;
+            return;
+        }
     }
-
     ShowError("Sprite::SetLogic %s", this->sprite_filename);
 }
 
 /* Function start: 0x41D8D0 */
 void Sprite::InitLogic(int param_1)
 {
-    try {
-        if (this->logic_conditions != 0) {
-            Array_Cleanup((void*)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), Cleanup_00405770);
-            FreeMemory((int*)((char*)this->logic_conditions - 4));
-            this->logic_conditions = 0;
-        }
+    if (this->logic_conditions != 0) {
+        delete[] this->logic_conditions;
+        this->logic_conditions = 0;
+    }
 
-        this->num_logic_conditions = param_1;
-        int* piVar4 = 0;
-        int* piVar1 = (int*)AllocateMemory(param_1 * 8 + 4);
-        if (piVar1 != 0) {
-            piVar4 = piVar1 + 1;
-            *piVar1 = param_1;
-            Array_Iterate(piVar4, 8, param_1, (void(*)(void*))0x41d850, Cleanup_00405770);
-        }
+    this->num_logic_conditions = param_1;
+    this->logic_conditions = new LogicCondition[this->num_logic_conditions];
 
-        int iVar2 = 0;
-        int iVar3 = 0;
-        this->logic_conditions = (LogicCondition*)piVar4;
-
-        if (this->num_logic_conditions > 0) {
-            do {
-                iVar3 = iVar3 + 1;
-                this->logic_conditions[iVar3 - 1].state_index = iVar2;
-                this->logic_conditions[iVar3 - 1].type = iVar2;
-            } while (iVar3 < this->num_logic_conditions);
-        }
-    } catch (...) {
+    int zero = 0;
+    for (int i = 0; i < this->num_logic_conditions; i++) {
+        this->logic_conditions[i].state_index = zero;
+        this->logic_conditions[i].type = zero;
     }
 }
 
@@ -560,37 +547,22 @@ int Sprite::LBLParse(char* param_1)
 /* Function start: 0x41E010 */
 void Sprite::Dump()
 {
-    int iVar4;
-    int iVar5;
-
+    int i;
     WriteToMessageLog("FNAME: %s", this->sprite_filename);
     WriteToMessageLog("HANDLE: %d", this->handle);
     WriteToMessageLog("LOC: %d %d", this->loc_x, this->loc_y);
     WriteToMessageLog("PRIORITY: %d", this->priority);
-    if (this->logic_conditions != 0) {
-        if (1 < this->num_logic_conditions) {
+    if (logic_conditions != 0) {
+        if (this->num_logic_conditions > 1) {
             WriteToMessageLog("MAXLOGIC: %d", this->num_logic_conditions);
         }
-        iVar4 = 0;
-        iVar5 = 0;
-        if (0 < this->num_logic_conditions) {
-            do {
-                LogicCondition* piVar1 = &this->logic_conditions[iVar4];
-                if (piVar1->type == 1) {
-                    int uVar2 = g_GameState_00436998->GetState(piVar1->state_index);
-                    WriteToMessageLog("LOGIC: %s TRUE", (char*)uVar2);
-                }
-                // piVar1 = (int*)((char*)this->logic_conditions + iVar4); // Not needed
-                if (piVar1->type == 2) {
-                    int uVar2 = g_GameState_00436998->GetState(piVar1->state_index);
-                    WriteToMessageLog("LOGIC: %s FALSE", (char*)uVar2);
-                }
-                // iVar4 = iVar4 + 8; // iVar4 used as byte offset in original? No, it was used as counter AND offset.
-                // In Dump(), iVar4 was initialized to 0. 
-                // Let's change loop to use index.
-                iVar5 = iVar5 + 1;
-                iVar4++;
-            } while (iVar5 < this->num_logic_conditions);
+        
+        for (i = 0; i < num_logic_conditions; i++) {
+            if (logic_conditions[i].type == 1) {
+                WriteToMessageLog("LOGIC: %s TRUE", g_GameState_00436998->GetState(logic_conditions[i].state_index));
+            } else if (logic_conditions[i].type == 2) {
+                WriteToMessageLog("LOGIC: %s FALSE", g_GameState_00436998->GetState(logic_conditions[i].state_index));
+            }
         }
     }
     if ((this->flags & 0x40) != 0) {
@@ -612,14 +584,8 @@ void Sprite::Dump()
         WriteToMessageLog("NOGRAPHIC");
     }
     WriteToMessageLog("STATES: %d", this->num_states);
-    iVar4 = 0;
-    if (0 < this->num_states) {
-        do {
-            int* puVar3 = (int*)(iVar4 * 8 + (int)this->ranges);
-            iVar5 = iVar4 + 1;
-            WriteToMessageLog("RANGE: %d %d %d", iVar4, *puVar3, puVar3[1]);
-            iVar4 = iVar5;
-        } while (iVar5 < this->num_states);
+    for (i = 0; i < this->num_states; i++) {
+        WriteToMessageLog("RANGE: %d %d %d", i, this->ranges[i].start, this->ranges[i].end);
     }
     WriteToMessageLog("END");
 }
