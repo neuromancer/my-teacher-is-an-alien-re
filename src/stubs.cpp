@@ -76,7 +76,7 @@ void FUN_0041e670() {}
 void FUN_0041ae0c() {}
 // FUN_00424b00 implemented in Array.cpp as Array_Iterate
 void FUN_00421671() {}
-void FUN_00405770() {}
+// void FUN_00405770() {} // Implemented in Cleanup.cpp
 void FUN_0041fbd3() {}
 
 // GetGameWindowHandle removed (defined in GameWindow.cpp)

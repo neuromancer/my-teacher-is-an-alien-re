@@ -13,6 +13,7 @@
 #include "Array.h"
 #include "SoundManager.h"
 #include "string.h"
+#include "Cleanup.h"
 
 class VBuffer;
 
@@ -42,14 +43,14 @@ Sprite::~Sprite()
 
     if (ranges != 0) {
         int* ptr = (int*)((char*)ranges - 4);
-        Array_Cleanup((void*)ranges, 8, *ptr, (void(__cdecl*)(void*))0x405770);
+        Array_Cleanup((void*)ranges, 8, *ptr, Cleanup_00405770);
         FreeMemory(ptr);
         ranges = 0;
     }
 
     if (logic_conditions != 0) {
         int* ptr = (int*)((char*)logic_conditions - 4);
-        Array_Cleanup((void*)logic_conditions, 8, *ptr, (void(__cdecl*)(void*))0x405770);
+        Array_Cleanup((void*)logic_conditions, 8, *ptr, Cleanup_00405770);
         FreeMemory(ptr);
         logic_conditions = 0;
     }
@@ -428,7 +429,7 @@ void Sprite::SetState(int param_1)
         int* rangePtr = (int*)this->ranges;
         if (rangePtr != 0) {
             int* header = rangePtr - 1;
-            Array_Cleanup(rangePtr, 8, *header, (void(__cdecl*)(void*))0x405770);
+            Array_Cleanup(rangePtr, 8, *header, Cleanup_00405770);
             FreeMemory(header);
             this->ranges = 0;
         }
@@ -439,7 +440,7 @@ void Sprite::SetState(int param_1)
         if (piVar1 != 0) {
             piVar5 = piVar1 + 1;
             *piVar1 = num;
-            Array_Iterate(piVar5, 8, num, (void(*)(void*))0x41d850, (void(*)(void*))0x405770);
+            Array_Iterate(piVar5, 8, num, (void(*)(void*))0x41d850, Cleanup_00405770);
         }
 
         int iVar3 = 0;
@@ -490,7 +491,7 @@ void Sprite::InitLogic(int param_1)
 {
     try {
         if (this->logic_conditions != 0) {
-            Array_Cleanup((void*)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), (void(__cdecl*)(void*))0x405770);
+            Array_Cleanup((void*)this->logic_conditions, 8, *(int*)((char*)this->logic_conditions - 4), Cleanup_00405770);
             FreeMemory((int*)((char*)this->logic_conditions - 4));
             this->logic_conditions = 0;
         }
@@ -501,7 +502,7 @@ void Sprite::InitLogic(int param_1)
         if (piVar1 != 0) {
             piVar4 = piVar1 + 1;
             *piVar1 = param_1;
-            Array_Iterate(piVar4, 8, param_1, (void(*)(void*))0x41d850, (void(*)(void*))0x405770);
+            Array_Iterate(piVar4, 8, param_1, (void(*)(void*))0x41d850, Cleanup_00405770);
         }
 
         int iVar2 = 0;

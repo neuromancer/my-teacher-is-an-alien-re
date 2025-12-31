@@ -11,6 +11,7 @@
 #include "string.h"
 #include "new.h"
 #include "InputManager.h"
+#include "Cleanup.h"
 
 extern "C" {
     void FUN_0041ef47();
@@ -42,7 +43,7 @@ Mouse::Mouse()
 /* Function start: 0x41EF25 */
 void Mouse::CleanupFields()
 {
-    Array_Cleanup(m_hotspots, 8, 0x19, (void(__cdecl*)(void*))0x405770);
+    Array_Cleanup(m_hotspots, 8, 0x19, Cleanup_00405770);
 }
 
 /* Function start: 0x41EE30 */

@@ -2,6 +2,7 @@
 #define ANIMATEDASSET_H
 
 #include "VBuffer.h"
+#include "GlyphRect.h"
 
 class AnimatedAsset {
 public:
@@ -13,7 +14,7 @@ public:
     char attr; // 0x11 - additional attribute (e.g., tint / flag)
     char glyphValue; // 0x12 - value used to detect glyph pixels
     char pad_13;
-    int* glyphTable; // 0x14 - pointer to glyph table
+    GlyphRect* glyphTable; // 0x14 - pointer to glyph rectangle table
     int useBuffer; // 0x18 - render target selector / flag
     int useAttr; // 0x1C - whether attr/color is active
     int glyphCount; // 0x20 - number of glyphs
@@ -32,12 +33,13 @@ public:
     void PrepareText(char* text);
     void RenderText(char* text, int param_2);
     int DrawChar(int, int, int);
-    void FUN_004210a8();
-    void FUN_004210bd();
-    int FUN_004239de();
-    int FUN_004239d8();
-    int FUN_004239d0();
-    int FUN_004239c8();
+
+    //void CleanupCharAdvance();
+    //void CleanupTextX();
+    int GetGlobalTextX();
+    int GetGlobalTextY();
+    int GetGlobalTextAlign();
+    int GetGlobalVertAlign();
 
 
     ~AnimatedAsset();

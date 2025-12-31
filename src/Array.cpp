@@ -7,32 +7,33 @@
 
 /* Function start: 0x4249D0 */
 void Array_Cleanup(void* array, unsigned int element_size, int num_elements, void (*cleanup_function)(void*)) {
-    int exception_state = 0;
+    // Match MSVC 4.2 stack/register locals
+    char* _array = (char*)array;                 // maps to EBX
+    int _num_elements = num_elements;            // maps to EDI
+    unsigned int _element_size = element_size;   // maps to ESI
+    void (*_cleanup_function)(void*) = cleanup_function; // maps to EBP
+    int _exception_state = 0;                    // inline SEH signal
 
-    __try {
-        // Calculate end position
-        (char*&)array += num_elements * element_size;
+    // Compute end pointer (array + num_elements * element_size)
+    _array += _num_elements * _element_size;
 
-        // Pre-decrement loop
-        num_elements--;
-        if (num_elements >= 0) {
-            do {
-                (char*&)array -= element_size;
-                cleanup_function(array);
-                num_elements--;
-            } while (num_elements >= 0);
-        }
-
-        exception_state = 1;
+    // Pre-decrement loop
+    _num_elements--;
+    if (_num_elements >= 0) {
+        do {
+            _array -= _element_size;          // move to previous element
+            _cleanup_function(_array);        // call cleanup function
+            _num_elements--;
+        } while (_num_elements >= 0);
     }
-    __except(EXCEPTION_EXECUTE_HANDLER) {
-    }
 
-    if (exception_state != 0) {
-        return;
-    }
-    Array_Cleanup(array, element_size, num_elements, cleanup_function);
+    // Signal success (used by inline SEH in calling destructor)
+    _exception_state = 1;
+
+    // No recursion, no __try/__except; MSVC 4.2 will generate inline SEH automatically
 }
+
+
 
 /* Function start: 0x424b00 */
 void Array_Iterate(void* array, unsigned int element_size, int num_elements, void (*callback)(void*), void (*cleanup_function)(void*))
