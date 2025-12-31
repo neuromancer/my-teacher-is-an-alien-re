@@ -3,14 +3,23 @@
 
 #include "Parser.h"
 #include "Animation.h"
+#include "Range.h"
+
+struct LogicCondition {
+    int state_index;
+    int type;
+
+    LogicCondition() {}
+    ~LogicCondition() {}
+};
 
 class Sprite : public Parser {
 public:
-    void* ranges; // 0x88
+    Range* ranges; // 0x88
     int flags; // 0x8c
     int current_state; // 0x90
     int priority; // 0x94
-    void* logic_conditions; // 0x98
+    LogicCondition* logic_conditions; // 0x98
     int handle;   // 0x9c
     int num_logic_conditions;   // 0xa0
     int loc_x; // 0xa4

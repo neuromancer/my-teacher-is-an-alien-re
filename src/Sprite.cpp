@@ -42,16 +42,12 @@ Sprite::~Sprite()
     StopAnimationSound();
 
     if (ranges != 0) {
-        int* ptr = (int*)((char*)ranges - 4);
-        Array_Cleanup((void*)ranges, 8, *ptr, Cleanup_00405770);
-        FreeMemory(ptr);
+        delete[] ranges;
         ranges = 0;
     }
 
     if (logic_conditions != 0) {
-        int* ptr = (int*)((char*)logic_conditions - 4);
-        Array_Cleanup((void*)logic_conditions, 8, *ptr, Cleanup_00405770);
-        FreeMemory(ptr);
+        delete[] logic_conditions;
         logic_conditions = 0;
     }
 }
@@ -360,20 +356,18 @@ void Sprite::CheckRanges1()
 int Sprite::CheckConditions()
 {
     int iVar1;
-    int* piVar2;
-    int iVar3;
+    LogicCondition* piVar2;
     int local_4;
 
-    iVar3 = 0;
     if ((this->num_logic_conditions == 0) || (this->logic_conditions == 0)) {
         return 1;
     }
     local_4 = 0;
     if (0 < this->num_logic_conditions) {
         do {
-            piVar2 = (int*)((char*)this->logic_conditions + iVar3);
-            if (piVar2[1] == 1) {
-                iVar1 = *piVar2;
+            piVar2 = &this->logic_conditions[local_4];
+            if (piVar2->type == 1) {
+                iVar1 = piVar2->state_index;
                 if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
@@ -381,8 +375,8 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-            if (piVar2[1] == 2) {
-                iVar1 = *piVar2;
+            if (piVar2->type == 2) {
+                iVar1 = piVar2->state_index;
                 if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
@@ -390,8 +384,8 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-            if (piVar2[1] == 3) {
-                iVar1 = *piVar2;
+            if (piVar2->type == 3) {
+                iVar1 = piVar2->state_index;
                 if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
                     ShowError("GameState Error  #%d", 1);
                 }
@@ -399,7 +393,6 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-            iVar3 = iVar3 + 8;
             local_4 = local_4 + 1;
         } while (local_4 < this->num_logic_conditions);
     }
@@ -424,42 +417,17 @@ void Sprite::SetRange(int param_1, int param_2, int param_3)
 /* Function start: 0x41D740 */
 void Sprite::SetState(int param_1)
 {
-    try {
-        this->num_states = param_1;
-        int* rangePtr = (int*)this->ranges;
-        if (rangePtr != 0) {
-            int* header = rangePtr - 1;
-            Array_Cleanup(rangePtr, 8, *header, Cleanup_00405770);
-            FreeMemory(header);
-            this->ranges = 0;
-        }
+    //try {
+    this->num_states = param_1;
+    delete[] this->ranges;
+    this->ranges = new Range[this->num_states];
 
-        int num = this->num_states;
-        int* piVar5 = 0;
-        int* piVar1 = (int*)AllocateMemory(num * 8 + 4);
-        if (piVar1 != 0) {
-            piVar5 = piVar1 + 1;
-            *piVar1 = num;
-            Array_Iterate(piVar5, 8, num, (void(*)(void*))0x41d850, Cleanup_00405770);
-        }
-
-        int iVar3 = 0;
-        int iVar4 = 0;
-        this->ranges = piVar5;
-
-        if (0 < this->num_states) {
-            do {
-                iVar4 = iVar4 + 1;
-                int* puVar2 = (int*)((char*)this->ranges + iVar3);
-                iVar3 = iVar3 + 8;
-                *puVar2 = 1;
-                puVar2[1] = 5000;
-            } while (iVar4 < this->num_states);
-        }
-
-        this->flags |= 0x20;
-    } catch (...) {
+    int edi = 5000;
+    for (int i = 0; i < this->num_states; i++) {
+        this->ranges[i].start = 1;
+        this->ranges[i].end = edi;
     }
+    this->flags |= 0x20;
 }
 
 /* Function start: 0x41D860 */
@@ -471,14 +439,12 @@ void Sprite::SetLogic(int param_1, int param_2)
 
     int iVar2 = 0;
     if (0 < this->num_logic_conditions) {
-        int* piVar1 = (int*)((char*)this->logic_conditions + 4);
         do {
-            if (*piVar1 == 0) {
-                *(int*)((char*)this->logic_conditions + iVar2 * 8) = param_1;
-                *(int*)((char*)this->logic_conditions + 4 + iVar2 * 8) = param_2;
+            if (this->logic_conditions[iVar2].type == 0) {
+                this->logic_conditions[iVar2].state_index = param_1;
+                this->logic_conditions[iVar2].type = param_2;
                 return;
             }
-            piVar1 = piVar1 + 2;
             iVar2 = iVar2 + 1;
         } while (iVar2 < this->num_logic_conditions);
     }
@@ -507,15 +473,13 @@ void Sprite::InitLogic(int param_1)
 
         int iVar2 = 0;
         int iVar3 = 0;
-        this->logic_conditions = piVar4;
+        this->logic_conditions = (LogicCondition*)piVar4;
 
         if (this->num_logic_conditions > 0) {
-            int edx = 0;
             do {
-                edx = edx + 8;
                 iVar3 = iVar3 + 1;
-                *(int*)((char*)this->logic_conditions + edx - 8) = iVar2;
-                *(int*)((char*)this->logic_conditions + edx - 4) = iVar2;
+                this->logic_conditions[iVar3 - 1].state_index = iVar2;
+                this->logic_conditions[iVar3 - 1].type = iVar2;
             } while (iVar3 < this->num_logic_conditions);
         }
     } catch (...) {
@@ -611,18 +575,21 @@ void Sprite::Dump()
         iVar5 = 0;
         if (0 < this->num_logic_conditions) {
             do {
-                int* piVar1 = (int*)((char*)this->logic_conditions + iVar4);
-                if (piVar1[1] == 1) {
-                    int uVar2 = g_GameState_00436998->GetState(*piVar1);
+                LogicCondition* piVar1 = &this->logic_conditions[iVar4];
+                if (piVar1->type == 1) {
+                    int uVar2 = g_GameState_00436998->GetState(piVar1->state_index);
                     WriteToMessageLog("LOGIC: %s TRUE", (char*)uVar2);
                 }
-                piVar1 = (int*)((char*)this->logic_conditions + iVar4);
-                if (piVar1[1] == 2) {
-                    int uVar2 = g_GameState_00436998->GetState(*piVar1);
+                // piVar1 = (int*)((char*)this->logic_conditions + iVar4); // Not needed
+                if (piVar1->type == 2) {
+                    int uVar2 = g_GameState_00436998->GetState(piVar1->state_index);
                     WriteToMessageLog("LOGIC: %s FALSE", (char*)uVar2);
                 }
-                iVar4 = iVar4 + 8;
+                // iVar4 = iVar4 + 8; // iVar4 used as byte offset in original? No, it was used as counter AND offset.
+                // In Dump(), iVar4 was initialized to 0. 
+                // Let's change loop to use index.
                 iVar5 = iVar5 + 1;
+                iVar4++;
             } while (iVar5 < this->num_logic_conditions);
         }
     }
