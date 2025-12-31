@@ -110,3 +110,47 @@ void* DAT_0043eff0 = 0;
 typedef void (__cdecl *SmackSoundCheckFn)();
 // Initialize to 0 instead of reading from hardcoded address
 SmackSoundCheckFn g_SmackSoundCheck = 0;
+
+// Graphics system globals (for Graphics.cpp)
+HDC DAT_00437488 = 0;      // Main device context
+HDC DAT_004374b4 = 0;      // Secondary device context
+int DAT_00437508 = 0;      // SM_CXDOUBLECLK
+int DAT_0043750c = 0;      // SM_CYDOUBLECLK
+int DAT_00437510 = 0;      // Window word
+
+HGDIOBJ DAT_00437496 = 0;  // Stock font object
+int DAT_0043749a = 0;      // Text height + external leading
+int DAT_0043749e = 0;      // External leading
+int DAT_004374a2 = 0;      // Average char width
+char DAT_00439446[256] = {0}; // TEXTMETRIC struct buffer
+
+char DAT_00437490 = 0;
+short DAT_004374b2 = 0;
+int DAT_00437518 = 0;
+int DAT_0043751c = 0;
+int DAT_004383ec = 0;
+int DAT_004383f4 = 0;
+int DAT_00438404 = 0;
+int DAT_0043840c = 0;
+int DAT_004374d6 = 0;
+int DAT_004374da = 0;
+int DAT_00437514 = 0;
+int DAT_00437f56 = 0;
+int DAT_00437f5a = 0;
+int DAT_0043841c = 0;  // WinG DC or similar
+
+char DAT_00437520[256] = {0};  // Palette identity map
+int DAT_00437620[64] = {0};    // Palette data
+
+// Far pointer storage for WinG
+char* PTR_DAT_0043843c = 0;
+char DAT_00438446[256] = {0};
+int DAT_00438442 = 0;
+short DAT_00438440 = 0;
+HANDLE DAT_004374ee = 0;
+HMODULE DAT_00438420 = 0;
+
+// WinG function pointers
+void* DAT_00438430 = 0;
+void* DAT_00438434 = 0;
+void* DAT_00438438 = 0;

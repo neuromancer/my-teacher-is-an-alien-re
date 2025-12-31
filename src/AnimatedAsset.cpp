@@ -14,6 +14,7 @@ extern "C" {
     // ...existing code...
     void FUN_00405770(void*);
     void FUN_00424b00(void*, int, int, void*, void*);
+    void FUN_004249d0(void*, int, int, void*);
     void FUN_0041ae0c(void);
 }
 
@@ -169,6 +170,9 @@ int AnimatedAsset::ComputeTextMetrics(void* text)
 /* Function start: 0x421680 */
 void AnimatedAsset::PrepareText(char* text)
 {
+    int w;
+    int vert;
+
     // Initialize base positions from helpers
     this->text_x = this->FUN_004239de();
     this->text_y = this->FUN_004239d8();
@@ -176,32 +180,22 @@ void AnimatedAsset::PrepareText(char* text)
     int mode = this->FUN_004239d0();
 
     if (mode == 0) {
-        int w = this->ComputeTextMetrics(text);
-        // center horizontally
-        this->text_x += (w / 2);
-        return;
-    }
-
-    if (mode == 1) {
-        int w = this->ComputeTextMetrics(text);
-        // right align
+        w = this->ComputeTextMetrics(text);
+        w = w / 2;
         this->text_x -= w;
-        int vert = this->FUN_004239c8();
-        if (vert == 0) {
-            this->text_y += this->glyphHeight / 2;
-        }
-        else if (vert == 1) {
-            this->text_y += this->glyphHeight;
-        }
-        return;
     }
-
-    // default vertical alignment adjustments when mode not 0 or 1
-    int vert = this->FUN_004239c8();
+    else if (mode == 1) {
+        w = this->ComputeTextMetrics(text);
+        this->text_x -= w;
+    }
+    
+    // vertical alignment for all modes
+    vert = this->FUN_004239c8();
     if (vert == 0) {
         this->text_y += this->glyphHeight / 2;
+        return;
     }
-    else if (vert == 1) {
+    if (vert == 1) {
         this->text_y += this->glyphHeight;
     }
 }
@@ -209,11 +203,13 @@ void AnimatedAsset::PrepareText(char* text)
 /* Function start: 0x4213F0 */
 int AnimatedAsset::IsCharSupported(int ch)
 {
-    if (ch == 0x20) return 1;
-    if (ch == 9) return 1;
-    int delta = ch - this->firstChar;
-    if (delta < 0) return 0;
-    if (delta > this->glyphCount - 1) return 0;
+    if (ch != 0x20 && ch != 9) {
+        int delta = ch - this->firstChar;
+        if (delta < 0 || this->glyphCount - 1 < delta) {
+            return 0;
+        }
+        return 1;
+    }
     return 1;
 }
 
@@ -231,10 +227,10 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 
   if (param_1 != (char *)0x0) {
     iVar2 = sscanf(param_1, "%s %d %d", local_9c, &this->firstChar, &local_18);
-    if (iVar2 < 3) {
+    if (iVar2 <= 2) {
       local_18 = 0x7e;
     }
-    if (iVar2 < 2) {
+    if (iVar2 <= 1) {
       this->firstChar = 0x21;
     }
     pVVar3 = this->buffer;
@@ -259,8 +255,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     this_00->ToBufferVB(pVVar3);
     this_00->DoFrame();
     if (this_00 != (Animation *)0x0) {
-        this_00->~Animation();
-        FreeMemory(this_00);
+        this_00->Delete(1);
     }
     this->BuildGlyphTable();
     iVar2 = this->IsCharSupported(0x41);
@@ -288,7 +283,9 @@ AnimatedAsset::~AnimatedAsset()
     {
         int* glyphPtr = this->glyphTable;
         if (glyphPtr != (int *)0x0) {
-            FreeMemory((int *)((char*)glyphPtr - 4));
+            int* countPtr = (int*)((char*)glyphPtr - 4);
+            FUN_004249d0(glyphPtr, 0x10, *countPtr, (void*)0x401680);
+            FreeMemory(countPtr);
             this->glyphTable = 0;
         }
     }

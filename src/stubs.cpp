@@ -47,10 +47,8 @@ void FUN_00423703() {}
 void FUN_00423076() {}
 
 // FUN_00422d98 now implemented in Mouse.cpp as SetCursorVisible
-void FUN_00423a54() {}
-void FUN_00423aac() {}
-void FUN_00419170() {}
-void FUN_00423cd9() {}
+// FUN_00423a54, FUN_00423aac, FUN_00423cd9 now implemented in Graphics.cpp
+// FUN_00419170 now implemented in MessageBox.cpp
 void FUN_00421e40() {}
 void FUN_00421890(void*, int) {}
 
