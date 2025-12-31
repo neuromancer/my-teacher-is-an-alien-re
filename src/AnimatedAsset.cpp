@@ -15,7 +15,6 @@ extern "C" {
     // ...existing code...
     void FUN_00405770(void*);
     // FUN_00424b00 is Array_Iterate in Array.h
-    void FUN_004249d0(void*, int, int, void*);
     void FUN_0041ae0c(void);
 }
 
@@ -280,7 +279,7 @@ AnimatedAsset::~AnimatedAsset()
         int* glyphPtr = this->glyphTable;
         if (glyphPtr != (int *)0x0) {
             int* countPtr = (int*)((char*)glyphPtr - 4);
-            FUN_004249d0(glyphPtr, 0x10, *countPtr, (void*)0x401680);
+            Array_Cleanup(glyphPtr, 0x10, *countPtr, (void(*)(void*))0x401680);
             FreeMemory(countPtr);
             this->glyphTable = 0;
         }

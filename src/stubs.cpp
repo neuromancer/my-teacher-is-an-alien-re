@@ -179,6 +179,11 @@ char* FUN_004195c0(char* a) { return a; }
 void* FUN_0041f280(void* a) { return a; }
 void* FUN_0040d300(void* a) { return a; }
 
+// Missing stubs for GameWindow
+void FUN_00419220(char* a) {}
+int FUN_00419800(char* a, char** b, int c) { if (b && c>0) *b=0; return 0; }
+int* FUN_00422500() { static int x = 0; return &x; }
+
 } // extern "C"
 
 // C++ Stubs

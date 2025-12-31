@@ -512,7 +512,7 @@ extern int DAT_00437f4c; // DAT_00437f4c  { /* 4 bytes */ }
 extern int DAT_00437f50; // DAT_00437f50  { /* 4 bytes */ }
 extern int DAT_00437f54; // DAT_00437f54  { /* 4 bytes */ } // changed from char to int
 extern int DAT_0043826c[]; // { /* 4 bytes */ }
-extern int DAT_00438428; // { /* 4 bytes */ }
+extern void* DAT_00438428; // { /* 4 bytes */ }
 extern int DAT_00437fec[]; // { /* 4 bytes */ }
 extern int DAT_00437f6c[]; // { /* 4 bytes */ }
 extern int DAT_0043836c[]; // { /* 4 bytes */ }

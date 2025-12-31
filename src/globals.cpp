@@ -80,7 +80,7 @@ int DAT_004380ec[32];
 int DAT_0043816c[32];
 int DAT_004381ec[32];
 
-int DAT_00438428 = 0;
+void* DAT_00438428 = 0;
 int DAT_00437f62 = 0;
 int DAT_00437491 = 0;
 char DAT_0043d630[0x4000] = {0};
