@@ -17,9 +17,6 @@
 
 class VBuffer;
 
-// C++ helper defined in Array.cpp
-void Array_Iterate(void* array, unsigned int element_size, int num_elements, void (*callback)(void*), void (*cleanup_function)(void*));
-
 /* Function start: 0x41CD50 */
 Sprite::Sprite(char* filename)
 {
