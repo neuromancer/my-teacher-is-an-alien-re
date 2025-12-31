@@ -3,6 +3,7 @@
 #include "Animation.h"
 #include "VBuffer.h"
 #include "Memory.h"
+#include "Array.h"
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
@@ -13,7 +14,7 @@ extern "C" {
     // CallBlitter2/3 are VBuffer members: use VBuffer::CallBlitter2/CallBlitter3
     // ...existing code...
     void FUN_00405770(void*);
-    void FUN_00424b00(void*, int, int, void*, void*);
+    // FUN_00424b00 is Array_Iterate in Array.h
     void FUN_004249d0(void*, int, int, void*);
     void FUN_0041ae0c(void);
 }
@@ -36,10 +37,6 @@ AnimatedAsset* AnimatedAsset::Init()
     return this;
 }
 
-extern "C" {
-    void FUN_00424b00(void*, int, int, void*, void*);
-}
-
 /* Function start: 0x421260 */
 void AnimatedAsset::BuildGlyphTable()
 {
@@ -51,7 +48,7 @@ void AnimatedAsset::BuildGlyphTable()
         if (alloc != (int*)0x0) {
             table = alloc + 1;
             *alloc = glyphCount;
-            FUN_00424b00(table, 0x10, glyphCount, (void*)0x4213e0, (void*)0x401680);
+            Array_Iterate(table, 0x10, glyphCount, (void(*)(void*))0x4213e0, (void(*)(void*))0x401680);
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {
     }
@@ -105,11 +102,10 @@ void AnimatedAsset::BuildGlyphTable()
                         entryPtr[1] = offset;
                         entryPtr[3] = this->glyphHeight + offset - 1;
                         if (this->glyphCount - col == 1) goto BUILT;
-                        entryPtr = this->glyphTable;
                         startX = x + 1;
                         col++;
                         tableOffset += 0x10;
-                        entryPtr = (int*)((char*)entryPtr + tableOffset);
+                        entryPtr = (int*)((char*)this->glyphTable + tableOffset);
                     }
                     x++;
                 } while (x < this->buffer->width);

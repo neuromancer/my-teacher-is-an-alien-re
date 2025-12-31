@@ -74,7 +74,7 @@ unsigned int __cdecl FUN_004269e0(void* buffer, unsigned int size, unsigned int 
 // New stubs for Step 66 errors
 void FUN_0041e670() {}
 void FUN_0041ae0c() {}
-void FUN_00424b00() {}
+// FUN_00424b00 implemented in Array.cpp as Array_Iterate
 void FUN_00421671() {}
 void FUN_00405770() {}
 void FUN_0041fbd3() {}

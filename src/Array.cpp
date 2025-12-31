@@ -7,31 +7,31 @@
 
 /* Function start: 0x4249D0 */
 void Array_Cleanup(void* array, unsigned int element_size, int num_elements, void (*cleanup_function)(void*)) {
-    volatile int exception_state = 0;
+    int exception_state = 0;
 
     __try {
-        exception_state = 1;
+        // Calculate end position
+        (char*&)array += num_elements * element_size;
 
-        // Calculate end position and modify array parameter directly
-        // This should match: add dword ptr [ebp + 0x8],ecx from original
-        array = (char*)array + (num_elements * element_size);
-
-        // Main loop with direct parameter manipulation
-        while (num_elements > 0) {
-            // Modify array parameter directly: sub dword ptr [ebp + 0x8],eax
-            array = (char*)array - element_size;
-
-            cleanup_function(array);
-
-            // Decrement parameter directly: dec dword ptr [ebp + 0x10]
-            num_elements--;
+        // Pre-decrement loop
+        num_elements--;
+        if (num_elements >= 0) {
+            do {
+                (char*&)array -= element_size;
+                cleanup_function(array);
+                num_elements--;
+            } while (num_elements >= 0);
         }
 
-        exception_state = 0;
+        exception_state = 1;
     }
     __except(EXCEPTION_EXECUTE_HANDLER) {
-        // Exception handler
     }
+
+    if (exception_state != 0) {
+        return;
+    }
+    Array_Cleanup(array, element_size, num_elements, cleanup_function);
 }
 
 /* Function start: 0x424b00 */
