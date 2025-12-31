@@ -102,58 +102,20 @@ void RunGame() {
     //g_Timer_00436980 = new Timer();
     //g_Timer_00436980->Init();
 
-    puVar2 = AllocateMemory(0xCC);
-    FlagArray* pFlagArray = 0;
-    if (puVar2 != 0) {
-        ((FlagArray*)puVar2)->Create("question.sav", 1000); 
-        pFlagArray = (FlagArray*)puVar2;
-    }
-    g_Manager_00435a84 = pFlagArray;
-    pFlagArray->ClearAllFlags();
+    g_Manager_00435a84 = new FlagArray("question.sav", 1000);
+    g_Manager_00435a84->ClearAllFlags();
 
-    GameState* pGS = (GameState*)AllocateMemory(0x98);
-    if (pGS != 0) {
-        ((Parser*)pGS)->Parser::Parser();
-        pGS->stateValues = 0;
-        pGS->stateLabels = 0;
-        pGS->maxStates = 0;
-        pGS->reserved = 0;
-        ParseFile(pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
-    }
-    g_GameState_00436998 = pGS;
+    g_GameState_00436998 = new GameState();
+    ParseFile(g_GameState_00436998, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
 
-    pGS = (GameState*)AllocateMemory(0x98);
-    if (pGS != 0) {
-        ((Parser*)pGS)->Parser::Parser();
-        pGS->stateValues = 0;
-        pGS->stateLabels = 0;
-        pGS->maxStates = 0;
-        pGS->reserved = 0;
-        ParseFile(pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
-    }
-    g_GameState2_004369a4 = pGS;
+    g_GameState2_004369a4 = new GameState();
+    ParseFile(g_GameState2_004369a4, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
 
-    pGS = (GameState*)AllocateMemory(0x98);
-    if (pGS != 0) {
-        ((Parser*)pGS)->Parser::Parser();
-        pGS->stateValues = 0;
-        pGS->stateLabels = 0;
-        pGS->maxStates = 0;
-        pGS->reserved = 0;
-        ParseFile(pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
-    }
-    g_GameState3_0043699c = pGS;
+    g_GameState3_0043699c = new GameState();
+    ParseFile(g_GameState3_0043699c, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
 
-    pGS = (GameState*)AllocateMemory(0x98);
-    if (pGS != 0) {
-        ((Parser*)pGS)->Parser::Parser();
-        pGS->stateValues = 0;
-        pGS->stateLabels = 0;
-        pGS->maxStates = 0;
-        pGS->reserved = 0;
-        ParseFile(pGS, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
-    }
-    g_GameState4_004369a0 = pGS;
+    g_GameState4_004369a0 = new GameState();
+    ParseFile(g_GameState4_004369a0, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
 
     puVar2 = AllocateMemory(0xC);
     StringTable* pStrings = 0;

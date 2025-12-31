@@ -14,7 +14,7 @@ public:
     int field_0x44;
     char pad2[204 - 0x44 - 4];
 
-    void Create(char* filename, int max_states);
+    FlagArray(char* filename, int max_states);
     void SafeClose();
     void Open();
     void Close();

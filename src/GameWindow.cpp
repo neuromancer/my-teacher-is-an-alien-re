@@ -13,10 +13,11 @@ void InitVideoSystem();
 void InitMouseSettings();
 int SetCursorVisible(unsigned int);
 
-int ParseCommandLineArgs(char *, char **, int);
 void FUN_00419220(char *);
 int* FUN_00422500();
 }
+
+int ParseCommandLineArgs(char *, char **, int);
 
 /* Function start: 0x4220A0 */
 void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
@@ -153,17 +154,17 @@ void* GetGameWindowHandle() {
 }
 
 /* Function start: 0x4224E0 */
-int* GetWindowWidth() {
+extern "C" int* GetWindowWidth() {
   return &DAT_0043de88;
 }
 
 /* Function start: 0x4224F0 */
-int* GetWindowHeight() {
+extern "C" int* GetWindowHeight() {
   return &DAT_0043de8c;
 }
 
 int SetDeviceContext(HDC);
-HPALETTE FUN_00423d96(void);
+HPALETTE CreateSystemPalette(void);
 int SelectAndRealizePalette(HPALETTE);
 
 /* Function start: 0x422590 */
@@ -174,7 +175,7 @@ LRESULT CALLBACK GameWindowProc(HWND param_1, UINT param_2, WPARAM param_3, LPAR
   case 1: // WM_CREATE
     DAT_0043de80 = GetDC(param_1);
     SetDeviceContext(DAT_0043de80);
-    DAT_0043de84 = FUN_00423d96();
+    DAT_0043de84 = CreateSystemPalette();
     SelectAndRealizePalette(DAT_0043de84);
     return 0;
   case 2: // WM_DESTROY

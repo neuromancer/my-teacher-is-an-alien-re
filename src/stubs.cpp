@@ -63,12 +63,15 @@ void FUN_00426550(const char* filename, int* stat_buf) {
 void FUN_0041a3b9() {} // Referenced in Message.cpp
 
 // CRT wrapper functions used by GameConfig
-FILE* __cdecl FUN_00425e50(const char* filename, const char* mode) {
-    return _fsopen(filename, mode, 0x40); // SH_DENYNO
-}
+// FUN_00425e50 implemented in FlagArray.cpp
+// FUN_004269e0 implemented in FlagArray.cpp
 
-unsigned int __cdecl FUN_004269e0(void* buffer, unsigned int size, unsigned int count, FILE* stream) {
-    return fread(buffer, size, count, stream);
+// Stub for _fsopen to satisfy linker (using fopen, ignoring sharing)
+// Stub for _fsopen removed (provided by libc.lib)
+
+// Stub for fsopen (maps to _fsopen)
+extern "C" FILE* __cdecl fsopen(const char* filename, const char* mode) {
+    return fopen(filename, mode);
 }
 
 // New stubs for Step 66 errors

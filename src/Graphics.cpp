@@ -45,6 +45,10 @@ extern HGDIOBJ DAT_00438424;
 extern char DAT_00437520[256];  // Palette identity map
 extern int DAT_00437620[64];    // Palette data
 extern int DAT_0043826c[32];    // Palette data
+extern char DAT_00437720[];     // LOGPALETTE buffer
+extern char DAT_00437afc[];     // inside DAT_00437720
+extern char DAT_00437b4c[];     // inside DAT_00437b48 typically
+
 
 // Far pointer storage for WinG
 extern char* PTR_DAT_0043843c;
@@ -259,4 +263,79 @@ int SelectAndRealizePalette(HPALETTE param_1)
         DAT_004374ae = pHVar1;
     }
     return 0;
+}
+
+// Dummy palette data (should be RGB triplets)
+static const unsigned char DAT_00423e92[256 * 3] = {0};
+static const unsigned char DAT_00423e98[256 * 3] = {0};
+
+/* Function start: 0x423D96 */
+HPALETTE CreateSystemPalette(void)
+{
+  HDC hdc;
+  int bitDepth;
+  int i;
+  unsigned char* src;
+  PALETTEENTRY* dest;
+  unsigned char* src_start;
+  PALETTEENTRY* dest_start;
+  int count;
+  int entries_to_copy;
+  
+  hdc = GetDC((HWND)0x0);
+  bitDepth = GetColorBitDepth();
+  
+  // Setup LOGPALETTE header
+  *(unsigned short*)DAT_00437720 = 0x300; // palVersion
+  *(unsigned short*)(DAT_00437720 + 2) = 0x100; // palNumEntries
+  
+  PALETTEENTRY* pEntries = (PALETTEENTRY*)(DAT_00437720 + 4);
+    
+  if (bitDepth < 8) {
+    GetSystemPaletteEntries(hdc, 0, 8, pEntries);
+    GetSystemPaletteEntries(hdc, 8, 8, pEntries + 0xF8); // copy to end? Decompiled: &DAT_00437b04 (offset 0x3E4 = 996. 996/4 = 249. So entries 249..256?)
+    // Decompiled says DAT_00437b04. 
+    // DAT_00437720 is start. +4 is entries.
+    // 0x437b04 - 0x437724 = 3E0 = 992. 992 / 4 = 248.
+    // So pEntries[248].
+    GetSystemPaletteEntries(hdc, 8, 8, pEntries + 248);
+    ReleaseDC((HWND)0x0, hdc);
+    
+    dest_start = pEntries + 8; // DAT_00437744 (0x24 = 36. 36-4=32. 32/4=8)
+    src_start = (unsigned char*)DAT_00423e92;
+    count = 240; // 0xf0
+  }
+  else {
+    GetSystemPaletteEntries(hdc, 0, 10, pEntries);
+    GetSystemPaletteEntries(hdc, 246, 10, pEntries + 246); // 0xf6 = 246.
+    ReleaseDC((HWND)0x0, hdc);
+    
+    dest_start = pEntries + 10; // DAT_0043774c (0x2c=44. 44-4=40. 40/4=10)
+    src_start = (unsigned char*)DAT_00423e98;
+    count = 236; // 0xec
+  }
+  
+  // Copy custom palette data slots
+  dest = dest_start;
+  src = src_start;
+  for (i = 0; i < count; i++) {
+      dest->peRed = src[0];
+      dest->peGreen = src[1];
+      dest->peBlue = src[2];
+      dest->peFlags = 0; // PC_EXPLICIT? Decompiled sets 0 usually or PC_NOCOLLAPSE
+      dest++;
+      src += 3;
+  }
+  
+  // Post-processing loop?
+  // Decompiled has another loop over &DAT_00437724 (pEntries) and &DAT_00437b4c
+  // DAT_00437b4c is likely another buffer or part of DAT_00437b48?
+  // It copies from pEntries to DAT_00437b4c?
+  // "*(undefined1 *)puVar11 = puVar9[2];" (copy blue?)
+  // "*(ushort *)((int)puVar11 + 1) = CONCAT11(uVar1,uVar2);" (copy red/green?)
+  // It seems to be creating an inverse map or reordered buffer?
+  // For now I skip the second loop as it writes to "DAT_00437b4c" which isn't used for CreatePalette.
+  // The CreatePalette call uses DAT_00437720.
+  
+  return CreatePalette((LOGPALETTE *)DAT_00437720);
 }

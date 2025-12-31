@@ -86,7 +86,7 @@ void Sprite::Init()
         strcpy(&DAT_0043d630[this->animation_data->data->handle * 0x40], this->sprite_filename);
     }
 
-    this->CheckRanges1();
+    //this->CheckRanges1();
     this->flags |= 0x20;
     this->SetState2(this->current_state);
 }

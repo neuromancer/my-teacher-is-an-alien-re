@@ -1,50 +1,106 @@
 #include "FlagArray.h"
-#include "string.h"
+#include "globals.h"
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-/* Function start: 0x425e50 */
-FILE *fsopen(const char* filename, const char* mode) {
-    return _fsopen(filename, mode, 0x40);
+extern "C" {
+    void FUN_00419110(char *format, ...); // ShowError
+    int FUN_00421d10(void*);
+    int _SmackWait_4(int);
+    void FUN_0041ac50(void*, int);
+    void FUN_0041fc20(void*, int, int);
+    void FUN_0041fca0(int);
+    void FUN_0041acf0(void*, int, int, int, int, int, int, int, int);
+    void FUN_0041fcb0(int);
+    void FUN_0041ac80(void*);
+    void* FUN_004224f0();
+    void* FUN_004224e0();
+    int FUN_00421af0();
+    void FUN_00425f30(FILE* fp, long offset, int origin);
+    
+    // Using standard library wrapper names to match link expectations or implementations
+    FILE* fsopen(const char* filename, const char* mode);
+    // Stub for fopen wrapper
+    FILE* FUN_00425e50(const char* filename, const char* mode) {
+        return fopen(filename, mode);
+    }
+    // Stub for fwrite wrapper
+    void FUN_004269e0(const void* ptr, size_t size, size_t n, FILE* stream) {
+        fwrite(ptr, size, n, stream);
+    }
+    // Stub for fread wrapper
+    void __fread_lk(void* ptr, size_t size, size_t n, FILE* stream) {
+        fread(ptr, size, n, stream);
+    }
 }
 
-/* Function start: 0x420140 */
-void FlagArray::Create(char* filename, int max_states)
-{
-    memset(this, 0, sizeof(FlagArray));
+// These strings need to be defined somewhere. Defining them here or referencing globals.
+// "rb+"
+char DAT_004371ac[] = "rb+"; 
+// "wb+" (overrides globals.cpp if duplicate, but better check globals first)
+// extern char DAT_004371a8[]; // in globals.cpp it is "rb", needs fixing
 
-    if (strlen(filename) > 50) {
-        ShowError("Error in flagaray.cpp - SetFileName: File name too long");
+char s_Error_in_flagaray_cpp___SetFileN_004371b0[] = "Error in flagaray.cpp (SetFilename, filename too long)";
+char s_Error_in_flagaray_cpp___Create__C_00437174[] = "Error in flagaray.cpp (Create, Could not create file)";
+char s_double_FlagArray__Open___0043720c[] = "double FlagArray::Open()";
+char s_Error_opening_file_in_flagarray__004371e8[] = "Error opening file in flagarray.cpp";
+char s_FlagArray__Close_____attempt_to_c_00437228[] = "FlagArray::Close() - attempt to close NULL fp";
+char s_FlagArray__Seek_004372d0[] = "FlagArray::Seek";
+char s_Error_in_flagaray_cpp___Seek__In_00437298[] = "Error in flagaray.cpp (Seek, Index out of Range)";
+char s_Error_in_flagaray_cpp___Seek__At_00437258[] = "Error in flagaray.cpp (Seek, Attempt to seek past end of file)";
+
+/* Function start: 0x420140 */
+FlagArray::FlagArray(char* filename, int max_states) {
+    FILE* fp_temp;
+    char buffer[4] = {0, 0, 0, 0};
+    int i;
+    
+    // Clear the object memory (0x33 dwords = 204 bytes)
+    memset(this, 0, 204);
+    
+    // Copy filename (max 50 chars)
+    if (strlen(filename) > 0x32) { // 50
+         FUN_00419110(s_Error_in_flagaray_cpp___SetFileN_004371b0);
     }
     strcpy(this->filename, filename);
-
-    this->fp = fsopen(this->filename, "rb");
-    if (this->fp == 0) {
-        this->fp = fsopen(this->filename, "wb");
-        if (this->fp == 0) {
-            ShowError("Error in flagaray.cpp - Create:  Cannot create %s", filename);
-        }
-
-        this->max_states = max_states;
-        this->field_0x38 = max_states * 4 + 0x94;
-        this->field_0x3c = 0x94;
-        this->field_0x44 = 4;
-
-        fwrite(&this->field_0x38, 0x94, 1, this->fp);
-        for (int i = 0; i < this->max_states; i++) {
-            int local_4 = 0;
-            fwrite(&local_4, 4, 1, this->fp);
+    
+    // Try open rb+
+    int result = (int)FUN_00425e50(this->filename, DAT_004371ac);
+    this->fp = (FILE*)result;
+    
+    if (result == 0) {
+        // Failed, create new wb+
+        // Need to reference DAT_004371a8 (wb+) properly.
+        // Assuming "wb+"
+        fp_temp = FUN_00425e50(this->filename, "wb+");
+        this->fp = fp_temp;
+        
+        if (fp_temp == NULL) {
+             FUN_00419110(s_Error_in_flagaray_cpp___Create__C_00437174, filename);
+        } else {
+             this->max_states = max_states;
+             this->field_0x38 = max_states * 4 + 0x94;
+             this->field_0x3c = 0x94;
+             this->field_0x44 = 4;
+             
+             // Write header (from field_0x38 onwards, size 0x94)
+             FUN_004269e0(&this->field_0x38, 0x94, 1, this->fp);
+             
+             // Write flags (0)
+             for (i = 0; i < this->max_states; i++) {
+                 FUN_004269e0(buffer, 4, 1, this->fp);
+             }
         }
     }
-
-    fclose(this->fp);
-    this->fp = 0;
+    
+    if (this->fp != NULL) {
+        fclose(this->fp);
+    }
+    this->fp = NULL;
 }
 
 /* Function start: 0x420250 */
-void FlagArray::SafeClose()
-{
+void FlagArray::SafeClose() {
     if (this->fp != NULL) {
         fclose(this->fp);
     }
@@ -52,80 +108,88 @@ void FlagArray::SafeClose()
 }
 
 /* Function start: 0x420270 */
-void FlagArray::Open()
-{
+void FlagArray::Open() {
     if (this->fp != 0) {
-        ShowError("double FlagArray::Open()");
+        FUN_00419110(s_double_FlagArray__Open___0043720c);
     }
-    this->fp = fsopen(this->filename, "rb");
-    if (this->fp == 0) {
-        ShowError("Error opening file in flagarray::Open");
+    
+    FILE* fp_temp = FUN_00425e50(this->filename, DAT_004371ac);
+    this->fp = fp_temp;
+    
+    if (fp_temp == NULL) {
+        FUN_00419110(s_Error_opening_file_in_flagarray__004371e8);
     }
-    fread(&this->field_0x38, 0x94, 1, this->fp);
+    
+    // Read header back
+    __fread_lk(&this->field_0x38, 0x94, 1, this->fp);
 }
 
 /* Function start: 0x4202D0 */
-void FlagArray::Close()
-{
+void FlagArray::Close() {
     if (this->fp == 0) {
-        ShowError("FlagArray::Close() - attempt to close a file that is not open");
+         FUN_00419110(s_FlagArray__Close_____attempt_to_c_00437228);
     }
     fclose(this->fp);
     this->fp = 0;
 }
 
 /* Function start: 0x420300 */
-void FlagArray::Seek(int index)
-{
+void FlagArray::Seek(int index) {
     if (this->fp == 0) {
-        ShowError("FlagArray::Seek");
+         FUN_00419110(s_FlagArray__Seek_004372d0);
     }
-
+    
     int offset = this->field_0x44 * index + this->field_0x3c;
-
+    
     if (index < 0 || index >= this->max_states) {
-        ShowError("Error in flagaray.cpp - Seek: Index out of range %d", index);
+         FUN_00419110(s_Error_in_flagaray_cpp___Seek__In_00437298, index);
     }
-
-    if (offset > (this->field_0x38 - this->field_0x44 + 1)) {
-        WriteToMessageLog("Error in flagaray.cpp - Seek: Attempt to seek past end of file");
+    
+    // Check if offset is within file bounds logic
+    // Decompiled: if ((*(int *)((int)this + 0x38) - *(int *)((int)this + 0x44)) + 1 < iVar1) 
+    // offset > field_0x38 - field_0x44 + 1 ??
+    // iVar1 is offset.
+    if ((this->field_0x38 - this->field_0x44) + 1 < offset) {
+         FUN_00419110(s_Error_in_flagaray_cpp___Seek__At_00437258);
     }
-
-    fseek(this->fp, offset, SEEK_SET);
+    
+    FUN_00425f30(this->fp, offset, 0); // SEEK_SET
 }
 
 /* Function start: 0x420370 */
-unsigned int FlagArray::GetFlag(int index, unsigned int mask)
-{
-    unsigned int flag;
+unsigned int FlagArray::GetFlag(int index, unsigned int mask) {
+    unsigned int val = 0;
     Open();
     Seek(index);
-    fread(&flag, this->field_0x44, 1, this->fp);
+    __fread_lk(&val, this->field_0x44, 1, this->fp);
     Close();
-    return flag & mask;
+    return val & mask;
 }
 
 /* Function start: 0x4203C0 */
-void FlagArray::SetFlag(int index, unsigned int mask)
-{
-    unsigned int flag;
+void FlagArray::SetFlag(int index, unsigned int mask) {
+    unsigned int val = 0;
     Open();
     Seek(index);
-    fread(&flag, this->field_0x44, 1, this->fp);
-    flag |= mask;
-    Seek(index);
-    fwrite(&flag, this->field_0x44, 1, this->fp);
+    __fread_lk(&val, this->field_0x44, 1, this->fp);
+    val |= mask;
+    Seek(index); // Go back
+    FUN_004269e0(&val, this->field_0x44, 1, this->fp);
     Close();
 }
 
 /* Function start: 0x420430 */
-void FlagArray::ClearAllFlags()
-{
-    int zero = 0;
+void FlagArray::ClearAllFlags() {
+    int i = 0;
+    char buffer[4] = {0, 0, 0, 0};
+    
     Open();
     Seek(0);
-    for (int i = 0; i < this->max_states; i++) {
-        fwrite(&zero, 4, 1, this->fp);
+    if (this->max_states > 0) {
+        do {
+            FUN_004269e0(buffer, 4, 1, this->fp);
+            i++;
+        } while (i < this->max_states);
     }
     Close();
 }
