@@ -1,10 +1,10 @@
 #include "FlagArray.h"
 #include "globals.h"
+#include "string.h"
 #include <string.h>
 #include <stdio.h>
 
 extern "C" {
-    void FUN_00419110(char *format, ...); // ShowError
     int FUN_00421d10(void*);
     int _SmackWait_4(int);
     void FUN_0041ac50(void*, int);
@@ -40,14 +40,7 @@ char DAT_004371ac[] = "rb+";
 // "wb+" (overrides globals.cpp if duplicate, but better check globals first)
 // extern char DAT_004371a8[]; // in globals.cpp it is "rb", needs fixing
 
-char s_Error_in_flagaray_cpp___SetFileN_004371b0[] = "Error in flagaray.cpp (SetFilename, filename too long)";
-char s_Error_in_flagaray_cpp___Create__C_00437174[] = "Error in flagaray.cpp (Create, Could not create file)";
-char s_double_FlagArray__Open___0043720c[] = "double FlagArray::Open()";
-char s_Error_opening_file_in_flagarray__004371e8[] = "Error opening file in flagarray.cpp";
-char s_FlagArray__Close_____attempt_to_c_00437228[] = "FlagArray::Close() - attempt to close NULL fp";
-char s_FlagArray__Seek_004372d0[] = "FlagArray::Seek";
-char s_Error_in_flagaray_cpp___Seek__In_00437298[] = "Error in flagaray.cpp (Seek, Index out of Range)";
-char s_Error_in_flagaray_cpp___Seek__At_00437258[] = "Error in flagaray.cpp (Seek, Attempt to seek past end of file)";
+
 
 /* Function start: 0x420140 */
 FlagArray::FlagArray(char* filename, int max_states) {
@@ -60,7 +53,7 @@ FlagArray::FlagArray(char* filename, int max_states) {
     
     // Copy filename (max 50 chars)
     if (strlen(filename) > 0x32) { // 50
-         FUN_00419110(s_Error_in_flagaray_cpp___SetFileN_004371b0);
+         ShowError("Error in flagaray.cpp (SetFilename, filename too long)");
     }
     strcpy(this->filename, filename);
     
@@ -76,7 +69,7 @@ FlagArray::FlagArray(char* filename, int max_states) {
         this->fp = fp_temp;
         
         if (fp_temp == NULL) {
-             FUN_00419110(s_Error_in_flagaray_cpp___Create__C_00437174, filename);
+             ShowError("Error in flagaray.cpp (Create, Could not create file)", filename);
         } else {
              this->max_states = max_states;
              this->field_0x38 = max_states * 4 + 0x94;
@@ -110,14 +103,14 @@ void FlagArray::SafeClose() {
 /* Function start: 0x420270 */
 void FlagArray::Open() {
     if (this->fp != 0) {
-        FUN_00419110(s_double_FlagArray__Open___0043720c);
+        ShowError("double FlagArray::Open()");
     }
     
     FILE* fp_temp = FUN_00425e50(this->filename, DAT_004371ac);
     this->fp = fp_temp;
     
     if (fp_temp == NULL) {
-        FUN_00419110(s_Error_opening_file_in_flagarray__004371e8);
+        ShowError("Error opening file in flagarray.cpp");
     }
     
     // Read header back
@@ -127,7 +120,7 @@ void FlagArray::Open() {
 /* Function start: 0x4202D0 */
 void FlagArray::Close() {
     if (this->fp == 0) {
-         FUN_00419110(s_FlagArray__Close_____attempt_to_c_00437228);
+        ShowError("FlagArray::Close() - attempt to close NULL fp");
     }
     fclose(this->fp);
     this->fp = 0;
@@ -136,13 +129,13 @@ void FlagArray::Close() {
 /* Function start: 0x420300 */
 void FlagArray::Seek(int index) {
     if (this->fp == 0) {
-         FUN_00419110(s_FlagArray__Seek_004372d0);
+        ShowError("FlagArray::Seek");
     }
     
     int offset = this->field_0x44 * index + this->field_0x3c;
     
     if (index < 0 || index >= this->max_states) {
-         FUN_00419110(s_Error_in_flagaray_cpp___Seek__In_00437298, index);
+        ShowError("Error in flagaray.cpp (Seek, Index out of Range)", index);
     }
     
     // Check if offset is within file bounds logic
@@ -150,7 +143,7 @@ void FlagArray::Seek(int index) {
     // offset > field_0x38 - field_0x44 + 1 ??
     // iVar1 is offset.
     if ((this->field_0x38 - this->field_0x44) + 1 < offset) {
-         FUN_00419110(s_Error_in_flagaray_cpp___Seek__At_00437258);
+        ShowError("Error in flagaray.cpp (Seek, Attempt to seek past end of file)");
     }
     
     FUN_00425f30(this->fp, offset, 0); // SEEK_SET

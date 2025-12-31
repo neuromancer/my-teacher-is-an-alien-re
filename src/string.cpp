@@ -18,9 +18,6 @@
 
 #include <windows.h>
 
-extern "C" void FUN_00419110(const char* format, ...);
-
-
 extern "C" {
 extern void SetCursorVisible(int visible);
 extern int GetWindowHandle_();
@@ -111,7 +108,7 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
     int iVar3;
 
     if ((param_1 == (char *)0x0) || (param_2 == (char *)0x0)) {
-        FUN_00419110("missing string");
+        ShowError("missing string");
     }
     pcVar1 = strchr(param_1,'\"');
     if (pcVar1 == (char *)0x0) {
@@ -121,11 +118,11 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
     pcVar1 = pcVar1 + 1;
     pcVar2 = strchr(pcVar1,'\"');
     if (pcVar2 == (char *)0x0) {
-        FUN_00419110("open quote found in '%s'",param_1);
+        ShowError("open quote found in '%s'",param_1);
     }
     iVar3 = (int)pcVar2 - (int)pcVar1;
     if (param_3 < iVar3 + 1) {
-        FUN_00419110("dest string too small");
+        ShowError("dest string too small");
     }
     memcpy(param_2,pcVar1,iVar3);
     param_2[iVar3] = '\0';
@@ -133,11 +130,10 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
 }
 
 /* Function start: 0x419110 */
-/* Function start: 0x419110 */
-void ShowErrorV(const char* format, va_list args)
+void ShowError(const char* format, ...)
 {
     char buffer[256];
-    vsprintf(buffer, format, args);
+    vsprintf(buffer, format, (char*)(&format + 1));
     SetCursorVisible(1);
     char* lpText = buffer;
     HWND hWnd = (HWND)GetWindowHandle_();
@@ -145,23 +141,6 @@ void ShowErrorV(const char* format, va_list args)
     ShutdownGameSystems();
     exitWithError_(-1);
 }
-
-extern "C" void FUN_00419110(const char* format, ...)
-{
-    va_list argptr;
-    va_start(argptr, format);
-    ShowErrorV(format, argptr);
-    va_end(argptr);
-}
-
-extern "C" void ShowError(const char* format, ...)
-{
-    va_list argptr;
-    va_start(argptr, format);
-    ShowErrorV(format, argptr);
-    va_end(argptr);
-}
-
 
 /* Function start: 0x419170 */
 void ShowMessage(char *param_1, ...)
