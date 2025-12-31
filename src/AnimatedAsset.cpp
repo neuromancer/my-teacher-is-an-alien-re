@@ -9,17 +9,6 @@
 #include <windows.h>
 #include "Cleanup.h"
 
-
-
-extern "C" {
-    // CallBlitter2/3 are VBuffer members: use VBuffer::CallBlitter2/CallBlitter3
-    // ...existing code...
-    // FUN_00424b00 is Array_Iterate in Array.h
-    void FUN_0041ae0c(void);
-}
-
-
-
 /* Function start: 0x420F80 */
 AnimatedAsset* AnimatedAsset::Init()
 {
@@ -257,20 +246,17 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 /* Function start: 0x421010 */
 AnimatedAsset::~AnimatedAsset()
 {
-    // Save original object pointer for thunks
-    AnimatedAsset* self = this;
+    __try {
+        if (this->buffer != 0) {
+            delete this->buffer;
+            this->buffer = 0;
+        }
 
-    // Handle buffer
-    if (self->buffer != 0) {
-        self->buffer->~VBuffer();
-        FreeMemory(self->buffer);
-        self->buffer = 0;
-    }
-
-    // Handle glyph table
-    if (self->glyphTable != 0) {
-        delete[] self->glyphTable;
-        self->glyphTable = 0;
+        if (this->glyphTable != 0) {
+            delete[] this->glyphTable;
+            this->glyphTable = 0;
+        }
+    } __finally {
     }
 }
 
