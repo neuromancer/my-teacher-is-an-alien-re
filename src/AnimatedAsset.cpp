@@ -237,18 +237,15 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 /* Function start: 0x421010 */
 AnimatedAsset::~AnimatedAsset()
 {
-    //__try {
-        if (this->buffer != 0) {
-            delete this->buffer;
-            this->buffer = 0;
-        }
+    if (buffer) {
+        delete buffer;
+        buffer = 0;
+    }
 
-        if (this->glyphTable != 0) {
-            delete[] this->glyphTable;
-            this->glyphTable = 0;
-        }
-    //} __finally {
-    //}
+    if (glyphTable) {
+        delete[] glyphTable;
+        glyphTable = 0;
+    }
 }
 
 
@@ -280,16 +277,15 @@ int AnimatedAsset::GetGlobalVertAlign()
     return (int)(signed char)DAT_004374c1;
 }
 
+extern "C" void FUN_0042157a(void);
+extern "C" void FUN_0042158c(void);
+
 /* Function start: 0x421420 */
 int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
 {
-    int iVar1;
-    int iVar2;
-    int iVar3;
     int iVar4;
-    GlyphRect* piVar5;
 
-    __try {
+    //__try {
         if (param_3 == 0x20) {
             iVar4 = this->spaceWidth;
         }
@@ -297,30 +293,45 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
             iVar4 = this->tabWidth;
         }
         else {
-            piVar5 = (GlyphRect*)((param_3 - this->firstChar) * 0x10 + (int)this->glyphTable);
-            iVar1 = piVar5->bottom;
-            iVar4 = piVar5->right;
-            iVar2 = piVar5->top;
-            iVar3 = piVar5->left;
+            GlyphRect local;
+            int* p = &local.left;
+            int index = param_3 - this->firstChar;
+            p[0] = 0;
+            index = index << 4;
+            p[1] = 0;
+            index = index + (int)this->glyphTable;
+            p[2] = 0;
+            p[3] = 0;
+            GlyphRect* piVar5 = (GlyphRect*)index;
+            int iVar1 = piVar5->bottom;
+            int iVar2 = piVar5->right;
+            int iVar3 = piVar5->top;
+            int iVar0 = piVar5->left;
+            local.left = iVar0;
+            local.top = iVar3;
+            local.right = iVar2;
+            local.bottom = iVar1;
             if (this->useBuffer == 0) {
-                if (this->useAttr == 0) {
-                    g_WorkBuffer_00436974->CallBlitter2(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->buffer);
+                if (this->useAttr != 0) {
+                    g_WorkBuffer_00436974->CallBlitter3(iVar0, iVar2, iVar3, iVar1, param_1, param_2, this->buffer, this->color, this->attr);
                 }
                 else {
-                    g_WorkBuffer_00436974->CallBlitter3(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->buffer, this->color, this->attr);
+                    g_WorkBuffer_00436974->CallBlitter2(iVar0, iVar2, iVar3, iVar1, param_1, param_2, this->buffer);
                 }
             }
-            else if (this->useAttr == 0) {
-                this->buffer->ClipAndBlit((int)g_WorkBuffer_00436974, iVar3, iVar4, iVar2, iVar1, param_1, param_2);
-            }
             else {
-                this->buffer->BlitTransparent(iVar3, iVar4, iVar2, iVar1, param_1, param_2, this->color, this->attr);
+                if (this->useAttr != 0) {
+                    this->buffer->BlitTransparent(iVar0, iVar2, iVar3, iVar1, param_1, param_2, this->color, this->attr);
+                }
+                else {
+                    this->buffer->ClipAndBlit((int)g_WorkBuffer_00436974, iVar0, iVar2, iVar3, iVar1, param_1, param_2);
+                }
             }
-            iVar4 = iVar4 - iVar3;
+            iVar4 = local.right - local.left;
         }
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-        iVar4 = 0;
-    }
+    //} __finally {
+    //    FUN_0042158c();
+    //}
     return iVar4;
 }
 

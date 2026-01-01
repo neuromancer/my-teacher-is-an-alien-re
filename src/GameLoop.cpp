@@ -24,7 +24,7 @@ extern "C" void __fastcall FUN_004199a0(void*);
 extern "C" int FUN_00421d10(void*, int);
 // Wait for key
 int WaitForInput();
-extern "C" void FUN_004179a0();              // UpdateGame (global)
+// UpdateGame is now a member function of GameLoop
 extern "C" void __fastcall FUN_0041c5a0(void*);         // ZBufferManager method
 extern "C" void __fastcall FUN_0041c960(void*);         // ZBufferManager method
 extern "C" void __fastcall FUN_00417450(GameLoop*);     // CleanupLoop
@@ -141,7 +141,7 @@ loop_start:
         goto exit_loop;
     }
     
-    FUN_004179a0();
+    this->UpdateGame();
     if (this->field_0x00 != 0) {
         goto exit_loop;
     }
@@ -427,4 +427,112 @@ void GameLoop::DrawFrame() {
         }
         pList = (EventList*)this->eventList;
     } while (pList->current != 0);
+}
+
+// External functions for UpdateGame
+// Note: These are thiscall but we use shim stubs
+extern "C" {
+    void* FUN_00417c50(void* pool, void* buffer);
+    void FUN_00417cb0(GameLoop* self, void* event);
+}
+
+/* Function start: 0x4179A0 */
+int GameLoop::UpdateGame()
+{
+    int* puVar2;
+    int* puVar3;
+    int* puVar4;
+    unsigned int uVar5;
+    unsigned int uVar6;
+    char local_258[192];  // [EBP - 0x254] buffer for inner iterator result
+    char local_198[192];  // [EBP - 0x194] buffer for outer iterator result
+    SC_Message local_d8(0, 0, 0, 0, 0, 0, 0, 0, 0, 0); // [EBP - 0xD4]
+    void* local_18;       // [EBP - 0x18] - pointer storage
+    int local_14;         // [EBP - 0x10] - counter
+
+    local_14 = 0;
+    
+    // First loop: pop items from DAT_00436988, copy to local_d8, create in DAT_00436984
+    while (*(int*)((char*)DAT_00436988 + 8) != 0) {
+        puVar2 = (int*)FUN_00417c50(DAT_00436988, local_198);
+        
+        // Copy fields from popped item to local_d8
+        ((int*)&local_d8)[2] = puVar2[2];   // offset 0x8 -> field_8c
+        ((int*)&local_d8)[3] = puVar2[3];   // offset 0xc -> field_90
+        
+        uVar6 = 0;
+        do {
+            uVar5 = uVar6 + 1;
+            ((char*)&local_d8)[0x10 + uVar6] = *((char*)puVar2 + 0x10 + uVar6);
+            uVar6 = uVar5;
+        } while (uVar5 < 0x20);
+        
+        ((int*)&local_d8)[0xc] = puVar2[0xc];   // offset 0x30
+        ((int*)&local_d8)[0xe] = puVar2[0xe];   // offset 0x38
+        ((int*)&local_d8)[0xf] = puVar2[0xf];   // offset 0x3c
+        
+        uVar6 = 0;
+        do {
+            uVar5 = uVar6 + 1;
+            ((char*)&local_d8)[0x40 + uVar6] = *((char*)puVar2 + 0x40 + uVar6);
+            uVar6 = uVar5;
+        } while (uVar5 < 0x40);
+        
+        ((int*)&local_d8)[0x20] = puVar2[0x20]; // offset 0x80
+        ((int*)&local_d8)[0x22] = puVar2[0x22]; // offset 0x88
+        ((int*)&local_d8)[0x23] = puVar2[0x23]; // offset 0x8c
+        ((int*)&local_d8)[0x24] = puVar2[0x24]; // offset 0x90
+        ((int*)&local_d8)[0x25] = puVar2[0x25]; // offset 0x94
+        ((int*)&local_d8)[0x26] = puVar2[0x26]; // offset 0x98
+        ((int*)&local_d8)[0x27] = puVar2[0x27]; // offset 0x9c
+        ((int*)&local_d8)[0x28] = puVar2[0x28]; // offset 0xa0
+        ((int*)&local_d8)[0x29] = puVar2[0x29]; // offset 0xa4
+        ((int*)&local_d8)[0x2a] = puVar2[0x2a]; // offset 0xa8
+        ((int*)&local_d8)[0x2b] = puVar2[0x2b]; // offset 0xac
+        ((int*)&local_d8)[0x2c] = puVar2[0x2c]; // offset 0xb0
+        ((int*)&local_d8)[0x2d] = puVar2[0x2d]; // offset 0xb4
+        ((int*)&local_d8)[0x2e] = puVar2[0x2e]; // offset 0xb8
+        local_18 = (void*)puVar2[0x2f]; // offset 0xbc
+        
+        // Create entry in DAT_00436984
+        puVar3 = DAT_00436984;
+        puVar4 = (int*)((TimedEventPool*)DAT_00436984)->Create(
+            (void*)DAT_00436984[1], 0);
+        ((TimedEvent*)(puVar4 + 2))->CopyFrom((TimedEvent*)&local_d8);
+        
+        if ((int*)puVar3[1] == 0) {
+            *puVar3 = (int)puVar4;
+        } else {
+            *(int*)puVar3[1] = (int)puVar4;
+        }
+        puVar3[1] = (int)puVar4;
+    }
+    
+    // Second loop: pop items from DAT_00436984
+    while (*(int*)((char*)DAT_00436984 + 8) != 0) {
+        puVar2 = (int*)FUN_00417c50(DAT_00436984, local_198);
+        
+        FUN_00417cb0(this, puVar2);
+        
+        // Inner loop: pop items from DAT_00436988 and add to DAT_00436984
+        while (*(int*)((char*)DAT_00436988 + 8) != 0) {
+            puVar3 = (int*)FUN_00417c50(DAT_00436988, local_258);
+            puVar2 = DAT_00436984;
+            puVar4 = (int*)((TimedEventPool*)DAT_00436984)->Create(
+                (void*)DAT_00436984[1], 0);
+            ((TimedEvent*)(puVar4 + 2))->CopyFrom((TimedEvent*)puVar3);
+            
+            if ((int*)puVar2[1] == 0) {
+                *puVar2 = (int)puVar4;
+            } else {
+                *(int*)puVar2[1] = (int)puVar4;
+            }
+            puVar2[1] = (int)puVar4;
+        }
+        
+        local_14++;
+    }
+    
+    FUN_004199a0(&local_d8);
+    return local_14;
 }

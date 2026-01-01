@@ -14,6 +14,7 @@ public:
     void ProcessInput(); // 0x4177B0
     void Cleanup();      // 0x417320
     void DrawFrame();    // 0x417ED0
+    int UpdateGame();    // 0x4179A0
     
     int field_0x00;
     int field_0x04;

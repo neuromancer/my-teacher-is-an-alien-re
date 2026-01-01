@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 ## Project Context
 
 You are working with a disassembled Windows 95 release of "My Teacher is an Alien" (1997), a point-and-click game developed by 7th Level.
@@ -20,23 +24,19 @@ IMPORTANT: The assembly output is the only source of truth.
 - DO NOT add:
   - main()
   - inline assembly
-  - goto
   - dummy variables
   - new helper functions or extra methods
   - constructors for base classes
   - vtable fields or manual vtable handling
   - unions or substructures
   - .c files
-- DO NOT use new (it appears unused in the original codebase).
 - DO NOT inline class methods.
 - DO NOT show the final code once you finish.
-- If you are out of ideas, stop — do not break any rules.
+- If you are out of ideas, stop. do not break any rules.
 
 ---
 
 ## Your Task
-
-YOUR TASK: <FILL ME>
 
 Before starting:
 1. Review all existing files.
@@ -58,6 +58,8 @@ To implement a function at a specific address (e.g. 0x418C70):
 grep -r -i 418C70 code
 
 Always use -i to ensure case-insensitive matches.
+
+IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use the python scripts to compare them.
 
 ### Compiling & Comparing Assembly
 

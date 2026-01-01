@@ -205,7 +205,7 @@ void* FUN_004209e0(void* a, const char* b, int c) { return a; }
 void __fastcall FUN_00417450(void*) {}
 void __fastcall FUN_0041c960(void*) {}
 void __fastcall FUN_0041c5a0(void*) {}
-void FUN_004179a0() {}
+// FUN_004179a0 implemented in GameLoop.cpp as GameLoop::UpdateGame
 void __fastcall FUN_004199a0(void*) {} // SC_Message destructor
 
 void* FUN_0041cd50(void* a, char* b) { return a; }
@@ -226,6 +226,10 @@ void FUN_00419220(char* a) {}
 // FUN_00419800 implemented in string.cpp as ParseCommandLineArgs
 int ParseCommandLineArgs(char*, char**, int);
 int* FUN_00422500() { static int x = 0; return &x; }
+
+// Stubs for UpdateGame iterator functions (thiscall)
+void* FUN_00417c50(void* pool, void* buffer) { return buffer; }
+void FUN_00417cb0(void* self, void* event) {}
 
 } // extern "C"
 
