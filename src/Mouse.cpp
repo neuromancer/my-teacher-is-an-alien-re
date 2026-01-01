@@ -39,22 +39,19 @@ Mouse::~Mouse()
 {
     AILData* audio = m_audio;
     if (audio != 0) {
-        audio->~AILData();
-        FreeMemory(audio);
+        delete audio;
         m_audio = 0;
     }
 
     Sprite* sprite = m_sprite;
     if (sprite != 0) {
-        sprite->~Sprite();
-        FreeMemory(sprite);
+        delete sprite;
         m_sprite = 0;
     }
 
     Sprite* sprite2 = m_sprite2;
     if (sprite2 != 0) {
-        sprite2->~Sprite();
-        FreeMemory(sprite2);
+        delete sprite2;
         m_sprite2 = 0;
     }
 

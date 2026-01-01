@@ -40,7 +40,6 @@ private:
     struct Point {
         int x;
         int y;
-        ~Point() { Cleanup_00405770(this); }
     };
     Point m_hotspots[25];      // 0xF4
     AILData* m_audio;          // 0x1BC
