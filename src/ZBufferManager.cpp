@@ -9,16 +9,17 @@
 #include "string.h"
 #include <string.h>
 
-// External functions - still need proper identification
-extern "C" {
-    int __fastcall FUN_0041ebb0(void*);           // Check/validate pointer
-    void __fastcall FUN_004189a0(void*, int);     // Node cleanup/destructor
-    void FUN_0041c94c();                          // SEH unwinding thunk
-}
+// Stubs for unresolved functions
+int __fastcall FUN_0041ebb0(void*) { return 0; }
+void __fastcall FUN_004189a0(void*, int) {}
+extern "C" void FUN_0041c94c() {}
+void* __fastcall FUN_0041bb10(int* param) { return 0; }
+void __fastcall FUN_0041cce0(void* node, int flag) {}
+void* __fastcall FUN_00401810(int* param) { return 0; }
 
-extern void* __fastcall FUN_0041bb10(int* param);
-extern void __fastcall FUN_0041cce0(void* node, int flag);
-extern void* __fastcall FUN_00401810(int* param);
+void ZBufferManager::FUN_0041c960() {
+    // Stub implementation
+}
 
 extern VBuffer* g_WorkBuffer_00436974;
 

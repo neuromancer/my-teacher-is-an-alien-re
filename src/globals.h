@@ -433,9 +433,11 @@ extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
 extern Mouse* g_Mouse_00436978; // DAT_00436978
 extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
 extern Timer* g_Timer_00436980; // DAT_00436980
-extern int* DAT_00436984; // { /* 4 bytes */ }
-extern int* DAT_00436988; // { /* 4 bytes */ }
-extern int* DAT_0043698c; // { /* 4 bytes */ }
+extern "C" {
+    extern int* DAT_00436984; // { /* 4 bytes */ }
+    extern int* DAT_00436988; // { /* 4 bytes */ }
+    extern int* DAT_0043698c; // { /* 4 bytes */ }
+}
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
 extern char* g_Unknown_00436994; // DAT_00436994 - string buffer used for game state strings
 extern GameState* g_GameState_00436998; // DAT_00436998  { /* 4 bytes */ }

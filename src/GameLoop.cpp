@@ -1,4 +1,5 @@
 #include "GameLoop.h"
+#include "ZBufferManager.h"
 #include "Timer.h"
 #include "GameState.h"
 #include "InputManager.h"
@@ -25,8 +26,6 @@ extern "C" int FUN_00421d10(void*, int);
 // Wait for key
 int WaitForInput();
 // UpdateGame is now a member function of GameLoop
-extern "C" void __fastcall FUN_0041c5a0(void*);         // ZBufferManager method
-extern "C" void __fastcall FUN_0041c960(void*);         // ZBufferManager method
 extern "C" void __fastcall FUN_00417450(GameLoop*);     // CleanupLoop
 extern "C" void ShowError(const char* format, ...);
 
@@ -138,7 +137,9 @@ loop_start:
     }
     
     this->DrawFrame();
-    FUN_0041c5a0(DAT_0043698c);
+    if (DAT_0043698c != 0) {
+        ((ZBufferManager*)DAT_0043698c)->ProcessRenderQueues();
+    }
     
     elapsedTime = ((Timer*)this->timer1)->Update();
     while (elapsedTime < (unsigned int)this->field_0x08) {
@@ -169,7 +170,9 @@ loop_start:
     }
     
     ((Timer*)this->timer1)->Reset();
-    FUN_0041c960(DAT_0043698c);
+    if (DAT_0043698c != 0) {
+        ((ZBufferManager*)DAT_0043698c)->FUN_0041c960();
+    }
     
     if (this->field_0x00 == 0) {
         goto loop_start;

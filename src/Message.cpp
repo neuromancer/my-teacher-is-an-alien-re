@@ -4,7 +4,9 @@
 
 inline void* operator new(unsigned int, void* p) { return p; }
 
-extern int* DAT_00436988;
+extern "C" {
+    extern int* DAT_00436988;
+}
 
 extern "C" {
     void FUN_0041a3b9();

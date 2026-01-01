@@ -6,9 +6,7 @@
 extern "C" {
     FILE* __cdecl FUN_00425e50(const char* filename, const char* mode);
     unsigned int __cdecl FUN_004269e0(void* buffer, unsigned int size, unsigned int count, FILE* stream);
-    unsigned int __cdecl FUN_00426320(void* buffer, unsigned int size, unsigned int count, FILE* stream);
     extern char DAT_004371a8[];
-    extern char DAT_004364dc[];
     extern char* PTR_s_Setup_cfg_00437454;
     int FileExists(const char* filename);
 }
@@ -69,8 +67,8 @@ void GameConfig::LoadConfig() {
 
 /* Function start: 0x4228A0 */
 void GameConfig::SaveConfig() {
-    if (Open(DAT_004364dc)) {
-        FUN_00426320(this->data, 0x50, 1, this->fp);
+    if (Open("wb")) {
+        fwrite(this->data, 0x50, 1, this->fp);
         Close();
     }
     CheckWindir();
