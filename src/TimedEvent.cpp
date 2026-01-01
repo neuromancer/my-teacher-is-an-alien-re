@@ -17,12 +17,8 @@ extern int* DAT_00436988;
 /* Function start: 0x401890 */
 TimedEvent::TimedEvent()
 {
-    try {
-        m_timer.Init();
-        memset(this, 0, 10 * sizeof(int));
-        m_timer.Reset();
-    } catch (...) {
-    }
+    memset(this, 0, 10 * sizeof(int));
+    m_timer.Reset();
 }
 
 /* Function start: 0x401910 */

@@ -4,54 +4,32 @@
 #include <stdlib.h>
 
 extern "C" {
-    void* __fastcall FUN_00422690(void* ptr);
     FILE* __cdecl FUN_00425e50(const char* filename, const char* mode);
     unsigned int __cdecl FUN_004269e0(void* buffer, unsigned int size, unsigned int count, FILE* stream);
+    unsigned int __cdecl FUN_00426320(void* buffer, unsigned int size, unsigned int count, FILE* stream);
     extern char DAT_004371a8[];
+    extern char DAT_004364dc[];
     extern char* PTR_s_Setup_cfg_00437454;
+    int FileExists(const char* filename);
 }
 
-void GameConfig::Constructor() {
-    FUN_00422690(this);
-}
-
-/* Function start: 0x418C70 */
-int GameConfig::Init(char* cmdLine) {
-    char local_40[64];
-    // ESI corresponds to original_state
-    int original_state = this->isSet;
+/* Function start: 0x422690 */
+GameConfig::GameConfig() {
+    // Zero entire object (0x25 dwords = 148 bytes = 0x94)
+    memset(this, 0, sizeof(GameConfig));
+    // Zero data section again (0x14 dwords = 80 bytes at offset 0x44)
+    memset(this->data, 0, 80);
     
-    char* start = strstr(cmdLine, "-[");
-    if (start) {
-        start += 2;
-        char* end = strstr(cmdLine, "]");
-        
-        int len = (int)end - (int)start;
-        
-        if (end && len > 0) {
-            strncpy(local_40, start, len);
-            local_40[len] = 0;
-            
-            if (this->isSet == 0) {
-                strcpy(this->value, local_40);
-                this->isSet = 1;
-                original_state = 1;
-                goto done;
-            } else {
-                if (strcmp(this->value, local_40) == 0) {
-                    memset(this->value, 0, 32);
-                    this->isSet = 0;
-                     // original_state is 1 (implied by else), and we return it.
-                     // But in assembly, it sets field_C to 0 (EAX=0).
-                     // And returns ESI (which is 1).
-                }
-                // Return original_state.
-                goto done;
-            }
-        }
+    if (FileExists(PTR_s_Setup_cfg_00437454) == 0) {
+        CreateDefaultConfig();
     }
-done:
-    return original_state;
+    SaveConfig();
+    CheckWindir();
+}
+
+/* Function start: 0x4227A0 */
+GameConfig::~GameConfig() {
+    Close();
 }
 
 /* Function start: 0x422800 */
@@ -68,14 +46,6 @@ void GameConfig::Close() {
     }
 }
 
-/* Function start: 0x422870 */
-void GameConfig::LoadConfig() {
-    if (Open(DAT_004371a8)) {
-        FUN_004269e0(this->data, 80, 1, this->fp);
-        Close();
-    }
-}
-
 /* Function start: 0x422840 */
 void GameConfig::CreateDefaultConfig() {
     // Zero out data (20 dwords = 80 bytes at offset 0x44)
@@ -89,6 +59,22 @@ void GameConfig::CreateDefaultConfig() {
     LoadConfig();
 }
 
+/* Function start: 0x422870 */
+void GameConfig::LoadConfig() {
+    if (Open(DAT_004371a8)) {
+        FUN_004269e0(this->data, 80, 1, this->fp);
+        Close();
+    }
+}
+
+/* Function start: 0x4228A0 */
+void GameConfig::SaveConfig() {
+    if (Open(DAT_004364dc)) {
+        FUN_00426320(this->data, 0x50, 1, this->fp);
+        Close();
+    }
+    CheckWindir();
+}
 /* Function start: 0x4228E0 */
 unsigned char GameConfig::CheckWindir() {
     char* result = getenv("windir");

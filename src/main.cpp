@@ -462,15 +462,7 @@ void CheckDebug(void) {
 
 /* Function start: 0x41A810 */
 void CreateGameObject_1() {
-  GameConfig* ptr = (GameConfig*)AllocateMemory(sizeof(GameConfig)); // 0x94
-  
-  __try {
-      if (ptr != 0) {
-        ptr->Constructor();
-      }
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-  }
-  g_GameConfig_00436970 = ptr;
+  g_GameConfig_00436970 = new GameConfig();
 
   if (DAT_0043d558 != 0) {
       g_GameConfig_00436970->data[2] = (unsigned char)DAT_0043d558;
@@ -568,8 +560,7 @@ void ShutdownGameSystems(void) {
     g_CDData_0043697c = 0;
   }
   if (g_GameConfig_00436970 != 0) {
-     FUN_004227a0(g_GameConfig_00436970);
-     FreeMemory(g_GameConfig_00436970);
+     delete g_GameConfig_00436970;
      g_GameConfig_00436970 = 0;
   }
   if (g_Buffer_00436964 != 0) {
@@ -597,7 +588,6 @@ void PlayIntroCinematic(void) {
 extern "C" {
 
 // Stubs for new class external implementations
-void* __fastcall FUN_0041b760_impl(void* thisptr) { return thisptr; }
 void __fastcall FUN_0041b8e0_impl(void* thisptr) {}
 void* __fastcall FUN_00417200_impl(void* thisptr) { return thisptr; }
 void __fastcall FUN_00417690_impl(void* thisptr) {}

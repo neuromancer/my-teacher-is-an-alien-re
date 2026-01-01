@@ -27,7 +27,6 @@ SC_OnScreenMessage::SC_OnScreenMessage()
         *p++ = 0;
     }
 
-    timer.Init();
     this->field_0x88 = 0xf;
 
     timer.Reset();

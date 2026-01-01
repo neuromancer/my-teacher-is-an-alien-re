@@ -2,17 +2,16 @@
 #define STRINGTABLE_H
 
 #include <stdio.h>
+#include "HashTable.h"
 
 class StringTable {
 public:
     FILE* fp;               // 0x0
     char* filename;         // 0x4
-    void* internalData;     // 0x8
+    HashTable* hashTable;   // 0x8
 
     StringTable(char* filename, int loadNow);
     ~StringTable();
-    void* Init(char* filename, int loadNow);
-    void Cleanup();
     
     // Internal helpers
     void Load(); 

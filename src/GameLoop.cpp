@@ -64,25 +64,16 @@ GameLoop::~GameLoop()
 
 /* Function start: 0x417200 */
 GameLoop* GameLoop::Init() {
-    Timer* pAlloc;
     Timer* pResult;
     EventList* pList;
     
     memset(this, 0, 7 * sizeof(int));
     
     try {
-        pAlloc = (Timer*)AllocateMemory(0x14);
-        pResult = 0;
-        if (pAlloc != 0) {
-            pResult = pAlloc->Init();
-        }
+        pResult = new Timer();
         this->timer1 = pResult;
         
-        pAlloc = (Timer*)AllocateMemory(0x14);
-        pResult = 0;
-        if (pAlloc != 0) {
-            pResult = pAlloc->Init();
-        }
+        pResult = new Timer();
         this->timer2 = pResult;
         
         pList = (EventList*)AllocateMemory(0x10);

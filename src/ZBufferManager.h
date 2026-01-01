@@ -1,6 +1,16 @@
 #ifndef ZBUFFERMANAGER_H
 #define ZBUFFERMANAGER_H
 
+#include "Timer.h"
+
+// Queue structure - 16 bytes
+struct ZBQueue {
+    void* head;     // 0x00
+    void* tail;     // 0x04
+    void* current;  // 0x08
+    int type;       // 0x0C
+};
+
 // ZBufferManager class 
 // Size: 0xAC (172 bytes)
 // Global: DAT_0043698c
@@ -8,12 +18,18 @@
 // Contains Timer at offset 0x84
 class ZBufferManager {
 public:
-    ZBufferManager();
+    ZBufferManager();             // 0x41B760
     ~ZBufferManager();
-    ZBufferManager* Init();  // 0x41B760
-    void Cleanup();          // 0x41B8E0
+    void Cleanup();               // 0x41B8E0
+    void ProcessRenderQueues();   // 0x41C5A0
     
-    char data[0xAC];         // placeholder for actual fields
+    unsigned int data[0x21];     // 0x00 - 0x80 (33 dwords)
+    Timer m_timer;               // 0x84 - Timer (20 bytes, 5 dwords)
+    int m_state;                 // 0x98
+    ZBQueue* m_queue9c;          // 0x9C
+    ZBQueue* m_queueA0;          // 0xA0
+    ZBQueue* m_queueA4;          // 0xA4
+    void* m_fieldA8;             // 0xA8
 };
 
 #endif // ZBUFFERMANAGER_H

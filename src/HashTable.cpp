@@ -1,0 +1,54 @@
+#include "HashTable.h"
+#include "Memory.h"
+#include <string.h>
+
+/* Function start: 0x420eb0 */
+void HashTable::AllocateBuckets(int numBuckets, int allocateNow) {
+    if (this->buckets != 0) {
+        FreeMemory(this->buckets);
+        this->buckets = 0;
+    }
+    if (allocateNow != 0) {
+        int* newBuckets = (int*)AllocateMemory(numBuckets * 4);
+        this->buckets = newBuckets;
+        memset(newBuckets, 0, numBuckets * 4);
+    }
+    this->numBuckets = numBuckets;
+}
+
+/* Function start: 0x420f10 */
+HashNode* HashTable::AllocateNode() {
+    if (this->freeList == 0) {
+        int* block = (int*)AllocateMemory(this->capacity * 24 + 4);
+        *block = (int)this->nodePool;
+        this->nodePool = block;
+        int count = this->capacity;
+        HashNode* node = (HashNode*)((char*)block + this->capacity * 24 - 20);
+        count = count - 1;
+        while (count >= 0) {
+            node->next = this->freeList;
+            this->freeList = node;
+            node = (HashNode*)((char*)node - 24);
+            count = count - 1;
+        }
+    }
+    HashNode* result = this->freeList;
+    this->freeList = result->next;
+    this->count = this->count + 1;
+    result->key = 0;
+    int i = 0;
+    do {
+        int prev = i;
+        i = i - 1;
+        if (prev == 0) break;
+    } while (1);
+    result->filePosLow = 0;
+    result->filePosHigh = 0;
+    i = 0;
+    do {
+        int prev = i;
+        i = i - 1;
+        if (prev == 0) break;
+    } while (1);
+    return result;
+}

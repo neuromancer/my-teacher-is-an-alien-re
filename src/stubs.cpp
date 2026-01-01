@@ -204,7 +204,7 @@ void* FUN_004209e0(void* a, const char* b, int c) { return a; }
 // Missing Function Stubs from Step 71
 void __fastcall FUN_00417450(void*) {}
 void __fastcall FUN_0041c960(void*) {}
-void __fastcall FUN_0041c5a0(void*) {}
+// FUN_0041c5a0 implemented in ZBufferManager.cpp
 // FUN_004179a0 implemented in GameLoop.cpp as GameLoop::UpdateGame
 void __fastcall FUN_004199a0(void*) {} // SC_Message destructor
 

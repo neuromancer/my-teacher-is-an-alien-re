@@ -42,4 +42,6 @@ private:
   void CleanArray10();
 };
 
+void BlankScreen();
+
 #endif // ANIMATION_H

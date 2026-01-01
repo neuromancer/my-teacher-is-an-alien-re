@@ -21,9 +21,6 @@ TimedEvent *TimedEvent_Init(TimedEvent *);
 SC_Timer::SC_Timer() : Parser() {
   memset(&m_messageId, 0, 24);
 
-  timer1.Init();
-  timer2.Init();
-
   m_messageId = 0xd;
   timer1.Reset();
 

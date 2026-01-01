@@ -10,7 +10,6 @@ struct Timer {
 
     Timer();
     ~Timer();
-    Timer* Init();
     void Reset();
     unsigned int Update();
     void Wait(unsigned int);

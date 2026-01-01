@@ -5,45 +5,15 @@
 #include <windows.h>
 
 // Helper externs if needed, or implement locally
-// Helper externs if needed, or implement locally
 extern "C" char* __cdecl FUN_00419780(char* buffer, int length, FILE* file) {
     return fgets(buffer, length, file);
 }
 
-void FUN_00420eb0(int* ht, int numBuckets, int flag) {
-    if (numBuckets > 0) {
-        int* buckets = (int*)AllocateMemory(numBuckets * sizeof(int));
-        if (buckets) {
-            memset(buckets, 0, numBuckets * sizeof(int));
-            *ht = (int)buckets;
-        }
-    }
-}
-
-int* FUN_00420f10(int* ht) {
-    int* node = (int*)AllocateMemory(24); // 6 ints
-    if (node) {
-        memset(node, 0, 24);
-        // Note: linking to ht[4] omitted due to potential conflict with Load logic overwriting offset 0
-    }
-    return node;
-}
-
-StringTable::StringTable(char* filename, int loadNow)
-{
-    Init(filename, loadNow);
-}
-
-StringTable::~StringTable()
-{
-    Cleanup();
-}
-
 /* Function start: 0x4209e0 */
-void* StringTable::Init(char* filename, int loadNow) {
+StringTable::StringTable(char* filename, int loadNow) {
     this->fp = 0;
     this->filename = 0;
-    this->internalData = 0;
+    this->hashTable = 0;
     
     // strlen to compute allocation size  
     int len = strlen(filename) + 1;
@@ -56,7 +26,6 @@ void* StringTable::Init(char* filename, int loadNow) {
     if (loadNow != 0) {
         Load();
     }
-    return this;
 }
 
 /* Function start: 0x420b20 */
@@ -68,7 +37,7 @@ void StringTable::Unload() {
 }
 
 /* Function start: 0x420a50 */
-void StringTable::Cleanup() {
+StringTable::~StringTable() {
     Unload();
     
     if (this->filename != 0) {
@@ -76,17 +45,17 @@ void StringTable::Cleanup() {
         this->filename = 0;
     }
     
-    int* hashTable = (int*)this->internalData;
-    if (hashTable != 0) {
+    HashTable* ht = this->hashTable;
+    if (ht != 0) {
         // Check if buckets array exists and has entries
-        if (*(int*)hashTable != 0 && hashTable[1] != 0) {
-            int numBuckets = hashTable[1];
-            int* buckets = (int*)*(int*)hashTable;
+        if (ht->buckets != 0 && ht->numBuckets != 0) {
+            int numBuckets = ht->numBuckets;
+            int* buckets = ht->buckets;
             
             // Iterate through each bucket
             do {
                 // Walk the chain in this bucket
-                int* node = (int*)*buckets;
+                HashNode* node = (HashNode*)*buckets;
                 while (node != 0) {
                     // These loops appear to be counting/checking something
                     // but effectively do nothing (original has two empty counting loops)
@@ -104,7 +73,7 @@ void StringTable::Cleanup() {
                         if (prev == 0) break;
                     } while (1);
                     
-                    node = (int*)*node;
+                    node = node->next;
                 }
                 buckets = buckets + 1;
                 numBuckets = numBuckets - 1;
@@ -112,23 +81,23 @@ void StringTable::Cleanup() {
         }
         
         // Free the buckets array
-        FreeMemory((void*)*(int*)hashTable);
-        *(int*)hashTable = 0;
-        hashTable[2] = 0;
-        hashTable[3] = 0;
+        FreeMemory(ht->buckets);
+        ht->buckets = 0;
+        ht->count = 0;
+        ht->freeList = 0;
         
-        // Free the string nodes linked list at offset 0x10
-        int* stringNode = (int*)hashTable[4];
-        while (stringNode != 0) {
-            int* next = (int*)*stringNode;
-            FreeMemory(stringNode);
-            stringNode = next;
+        // Free the node pool blocks
+        int* poolBlock = (int*)ht->nodePool;
+        while (poolBlock != 0) {
+            int* next = (int*)*poolBlock;
+            FreeMemory(poolBlock);
+            poolBlock = next;
         }
-        hashTable[4] = 0;
+        ht->nodePool = 0;
         
         // Free the hash table itself
-        FreeMemory(hashTable);
-        this->internalData = 0;
+        FreeMemory(ht);
+        this->hashTable = 0;
     }
 }
 
@@ -163,14 +132,14 @@ void StringTable::Load() {
             
             if (lineCount != 0) {
                 // Clean up existing hash table (same logic as in Cleanup)
-                int* hashTable = (int*)this->internalData;
-                if (hashTable != 0) {
-                    if (*(int*)hashTable != 0 && hashTable[1] != 0) {
-                        int numBuckets = hashTable[1];
-                        int* buckets = (int*)*(int*)hashTable;
+                HashTable* ht = this->hashTable;
+                if (ht != 0) {
+                    if (ht->buckets != 0 && ht->numBuckets != 0) {
+                        int numBuckets = ht->numBuckets;
+                        int* buckets = ht->buckets;
                         
                         do {
-                            int* node = (int*)*buckets;
+                            HashNode* node = (HashNode*)*buckets;
                             while (node != 0) {
                                 int i = 0;
                                 do {
@@ -186,45 +155,45 @@ void StringTable::Load() {
                                     if (prev == 0) break;
                                 } while (1);
                                 
-                                node = (int*)*node;
+                                node = node->next;
                             }
                             buckets = buckets + 1;
                             numBuckets = numBuckets - 1;
                         } while (numBuckets != 0);
                     }
                     
-                    FreeMemory((void*)*(int*)hashTable);
-                    *(int*)hashTable = 0;
-                    hashTable[2] = 0;
-                    hashTable[3] = 0;
+                    FreeMemory(ht->buckets);
+                    ht->buckets = 0;
+                    ht->count = 0;
+                    ht->freeList = 0;
                     
-                    int* stringNode = (int*)hashTable[4];
-                    while (stringNode != 0) {
-                        int* next = (int*)*stringNode;
-                        FreeMemory(stringNode);
-                        stringNode = next;
+                    int* poolBlock = (int*)ht->nodePool;
+                    while (poolBlock != 0) {
+                        int* next = (int*)*poolBlock;
+                        FreeMemory(poolBlock);
+                        poolBlock = next;
                     }
-                    hashTable[4] = 0;
+                    ht->nodePool = 0;
                     
-                    FreeMemory(hashTable);
-                    this->internalData = 0;
+                    FreeMemory(ht);
+                    this->hashTable = 0;
                 }
                 
                 // Allocate new hash table
-                int* newHashTable = (int*)AllocateMemory(0x18);
-                int* finalTable;
+                HashTable* newHashTable = (HashTable*)AllocateMemory(0x18);
+                HashTable* finalTable;
                 if (newHashTable == 0) {
                     finalTable = 0;
                 } else {
-                    newHashTable[0] = 0;
-                    newHashTable[1] = 0x11;  // 17 buckets
-                    newHashTable[2] = 0;
-                    newHashTable[3] = 0;
-                    newHashTable[4] = 0;
-                    newHashTable[5] = lineCount;
+                    newHashTable->buckets = 0;
+                    newHashTable->numBuckets = 0x11;  // 17 buckets
+                    newHashTable->count = 0;
+                    newHashTable->freeList = 0;
+                    newHashTable->nodePool = 0;
+                    newHashTable->capacity = lineCount;
                     finalTable = newHashTable;
                 }
-                this->internalData = finalTable;
+                this->hashTable = finalTable;
                 
                 // Reset to beginning of file
                 fsetpos(this->fp, &filePos);
@@ -238,38 +207,34 @@ void StringTable::Load() {
                     int scanResult = sscanf(buffer, "%u", &stringId);
                     unsigned int id = stringId;
                     if (scanResult == 1) {
-                        int* ht = (int*)this->internalData;
-                        int bucketsPtr = *ht;
-                        unsigned int bucketIdx = (stringId >> 4) % (unsigned int)ht[1];
+                        HashTable* ht = this->hashTable;
+                        int* bucketsPtr = ht->buckets;
+                        unsigned int bucketIdx = (stringId >> 4) % (unsigned int)ht->numBuckets;
                         
-                        int* foundNode = 0;
+                        HashNode* foundNode = 0;
                         if (bucketsPtr != 0) {
-                            int* node = *(int**)(bucketsPtr + bucketIdx * 4);
+                            HashNode* node = *(HashNode**)(bucketsPtr + bucketIdx);
                             while (node != 0) {
-                                if ((unsigned int)node[2] == stringId) {
+                                if (node->key == stringId) {
                                     foundNode = node;
                                     break;
                                 }
-                                node = (int*)*node;
+                                node = node->next;
                             }
                         }
                         
                         if (foundNode == 0) {
                             if (bucketsPtr == 0) {
-                                // FUN_00420eb0 - allocate buckets
-                                void FUN_00420eb0(int*, int, int);
-                                FUN_00420eb0(ht, ht[1], 1);
+                                ht->AllocateBuckets(ht->numBuckets, 1);
                             }
-                            // FUN_00420f10 - allocate new node
-                            int* FUN_00420f10(int*);
-                            foundNode = FUN_00420f10(ht);
-                            foundNode[1] = bucketIdx;
-                            foundNode[2] = id;
-                            *foundNode = *(int*)(*ht + bucketIdx * 4);
-                            *(int*)(*ht + bucketIdx * 4) = (int)foundNode;
+                            foundNode = ht->AllocateNode();
+                            foundNode->bucketIndex = bucketIdx;
+                            foundNode->key = id;
+                            foundNode->next = *(HashNode**)(ht->buckets + bucketIdx);
+                            *(HashNode**)(ht->buckets + bucketIdx) = foundNode;
                         }
-                        foundNode[4] = (int)filePos;
-                        foundNode[5] = (int)filePos2;
+                        foundNode->filePosLow = (int)filePos;
+                        foundNode->filePosHigh = (int)filePos2;
                     }
                 }
             }
