@@ -5,6 +5,16 @@ extern "C" {
     void __fastcall FUN_0041b8e0_impl(void*);
 }
 
+ZBufferManager::ZBufferManager()
+{
+    Init();
+}
+
+ZBufferManager::~ZBufferManager()
+{
+    Cleanup();
+}
+
 /* Function start: 0x41B760 */
 ZBufferManager* ZBufferManager::Init() {
     FUN_0041b760_impl(this);

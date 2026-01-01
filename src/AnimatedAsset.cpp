@@ -18,10 +18,10 @@ AnimatedAsset* AnimatedAsset::Init()
         this->charAdvance = 0;
         this->reserved_34 = 0;
         memset(this, 0, 56);
-        this->color = 2;
-        this->glyphValue = 1;
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
+    } __finally {
     }
+    this->color = 2;
+    this->glyphValue = 1;
     return this;
 }
 
@@ -194,9 +194,8 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 {
   int iVar2;
   VBuffer *pVVar3;
-  Animation *this_00;
+  Animation *anim;
   char local_9c [128];
-  Animation *local_1c;
   int local_18;
   VBuffer *local_14;
 
@@ -208,29 +207,22 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     if (iVar2 <= 1) {
       this->firstChar = 0x21;
     }
-    pVVar3 = this->buffer;
     this->glyphCount = (local_18 - this->firstChar) + 1;
-    if (pVVar3 != (VBuffer *)0x0) {
-      pVVar3->~VBuffer();
-      FreeMemory(pVVar3);
-      this->buffer = 0;
-    }
-    local_1c = (Animation *)AllocateMemory(sizeof(Animation));
-    this_00 = (Animation *)0x0;
-    if (local_1c != (Animation *)0x0) {
-      this_00 = local_1c->Init();
-    }
-    this_00->Open(local_9c,0xfe000,0xffffffff);
+    delete buffer;
+    buffer = 0;
+
+    anim = new Animation();
+    anim->Open(local_9c,0xfe000,0xffffffff);
     local_14 = (VBuffer *)AllocateMemory(sizeof(VBuffer));
     pVVar3 = (VBuffer *)0x0;
     if (local_14 != (VBuffer *)0x0) {
-      pVVar3 = local_14->CreateAndClean(this_00->smk->Width, this_00->smk->Height);
+      pVVar3 = local_14->CreateAndClean(anim->smk->Width, anim->smk->Height);
     }
     this->buffer = pVVar3;
-    this_00->ToBufferVB(pVVar3);
-    this_00->DoFrame();
-    if (this_00 != (Animation *)0x0) {
-        this_00->Delete(1);
+    anim->ToBufferVB(pVVar3);
+    anim->DoFrame();
+    if (anim != (Animation *)0x0) {
+        anim->Delete(1);
     }
     this->BuildGlyphTable();
     iVar2 = this->IsCharSupported(0x41);

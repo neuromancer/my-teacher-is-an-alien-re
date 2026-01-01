@@ -4,6 +4,14 @@
 #include <stdio.h>
 #include <string.h>
 
+GameState::GameState()
+{
+    this->stateValues = 0;
+    this->stateLabels = 0;
+    this->maxStates = 0;
+    this->reserved = 0;
+}
+
 /* Function start: 0x420480 */
 GameState::~GameState()
 {

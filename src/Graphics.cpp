@@ -48,6 +48,7 @@ extern int DAT_0043826c[32];    // Palette data
 extern char DAT_00437720[];     // LOGPALETTE buffer
 extern char DAT_00437afc[];     // inside DAT_00437720
 extern char DAT_00437b4c[];     // inside DAT_00437b48 typically
+extern char DAT_00437b48[];     // BGR palette buffer
 
 
 // Far pointer storage for WinG
@@ -273,69 +274,59 @@ static const unsigned char DAT_00423e98[256 * 3] = {0};
 HPALETTE CreateSystemPalette(void)
 {
   HDC hdc;
-  int bitDepth;
-  int i;
+  unsigned char* pEntries;
   unsigned char* src;
-  PALETTEENTRY* dest;
-  unsigned char* src_start;
-  PALETTEENTRY* dest_start;
+  unsigned char* dest;
+  unsigned char* pBgrDest;
   int count;
-  int entries_to_copy;
+  unsigned char r, g;
   
   hdc = GetDC((HWND)0x0);
-  bitDepth = GetColorBitDepth();
-  
-  // Setup LOGPALETTE header
-  *(unsigned short*)DAT_00437720 = 0x300; // palVersion
-  *(unsigned short*)(DAT_00437720 + 2) = 0x100; // palNumEntries
-  
-  PALETTEENTRY* pEntries = (PALETTEENTRY*)(DAT_00437720 + 4);
-    
-  if (bitDepth < 8) {
-    GetSystemPaletteEntries(hdc, 0, 8, pEntries);
-    GetSystemPaletteEntries(hdc, 8, 8, pEntries + 0xF8); // copy to end? Decompiled: &DAT_00437b04 (offset 0x3E4 = 996. 996/4 = 249. So entries 249..256?)
-    // Decompiled says DAT_00437b04. 
-    // DAT_00437720 is start. +4 is entries.
-    // 0x437b04 - 0x437724 = 3E0 = 992. 992 / 4 = 248.
-    // So pEntries[248].
-    GetSystemPaletteEntries(hdc, 8, 8, pEntries + 248);
+  pEntries = (unsigned char*)DAT_00437720 + 4;
+  if (GetColorBitDepth() < 8) {
+    GetSystemPaletteEntries(hdc, 0, 8, (PALETTEENTRY*)pEntries);
+    GetSystemPaletteEntries(hdc, 8, 8, (PALETTEENTRY*)(pEntries + 0x3e0));
     ReleaseDC((HWND)0x0, hdc);
-    
-    dest_start = pEntries + 8; // DAT_00437744 (0x24 = 36. 36-4=32. 32/4=8)
-    src_start = (unsigned char*)DAT_00423e92;
-    count = 240; // 0xf0
+    dest = (unsigned char*)DAT_00437720 + 0x24;
+    src = (unsigned char*)DAT_00423e92;
+    count = 0xf0;
   }
   else {
-    GetSystemPaletteEntries(hdc, 0, 10, pEntries);
-    GetSystemPaletteEntries(hdc, 246, 10, pEntries + 246); // 0xf6 = 246.
+    GetSystemPaletteEntries(hdc, 0, 10, (PALETTEENTRY*)pEntries);
+    GetSystemPaletteEntries(hdc, 246, 10, (PALETTEENTRY*)(pEntries + 0x3d8));
     ReleaseDC((HWND)0x0, hdc);
-    
-    dest_start = pEntries + 10; // DAT_0043774c (0x2c=44. 44-4=40. 40/4=10)
-    src_start = (unsigned char*)DAT_00423e98;
-    count = 236; // 0xec
+    dest = (unsigned char*)DAT_00437720 + 0x2c;
+    src = (unsigned char*)DAT_00423e98;
+    count = 0xec;
   }
   
-  // Copy custom palette data slots
-  dest = dest_start;
-  src = src_start;
-  for (i = 0; i < count; i++) {
-      dest->peRed = src[0];
-      dest->peGreen = src[1];
-      dest->peBlue = src[2];
-      dest->peFlags = 0; // PC_EXPLICIT? Decompiled sets 0 usually or PC_NOCOLLAPSE
-      dest++;
-      src += 3;
-  }
+  // First copy loop: RGB triplet -> RGBX quad with flags=1
+  do {
+    dest[0] = src[0];  // Red
+    dest[1] = src[1];  // Green
+    dest[2] = src[2];  // Blue
+    dest[3] = 1;       // Flags = PC_NOCOLLAPSE
+    src = src + 3;
+    dest = dest + 4;
+    count = count - 1;
+  } while (count != 0);
   
-  // Post-processing loop?
-  // Decompiled has another loop over &DAT_00437724 (pEntries) and &DAT_00437b4c
-  // DAT_00437b4c is likely another buffer or part of DAT_00437b48?
-  // It copies from pEntries to DAT_00437b4c?
-  // "*(undefined1 *)puVar11 = puVar9[2];" (copy blue?)
-  // "*(ushort *)((int)puVar11 + 1) = CONCAT11(uVar1,uVar2);" (copy red/green?)
-  // It seems to be creating an inverse map or reordered buffer?
-  // For now I skip the second loop as it writes to "DAT_00437b4c" which isn't used for CreatePalette.
-  // The CreatePalette call uses DAT_00437720.
+  // Second loop: Create BGR reordered copy at DAT_00437b4c
+  pEntries = (unsigned char*)DAT_00437720 + 4;
+  pBgrDest = (unsigned char*)DAT_00437b48 + 4;
+  count = 0x100;
+  do {
+    r = pEntries[0];
+    g = pEntries[1];
+    pBgrDest[0] = pEntries[2];  // Blue
+    pBgrDest[1] = g;            // Green
+    pBgrDest[2] = r;            // Red
+    pBgrDest[3] = 0;            // Reserved
+    pEntries = pEntries + 4;
+    pBgrDest = pBgrDest + 4;
+    count = count - 1;
+  } while (count != 0);
   
   return CreatePalette((LOGPALETTE *)DAT_00437720);
 }
+

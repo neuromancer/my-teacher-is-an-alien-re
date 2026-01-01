@@ -125,15 +125,16 @@ void Sprite::InitAnimation()
     if (this->animation_data != 0) {
         return;
     }
-    Animation* anim = (Animation*)AllocateMemory(0x2c);
+
+    /*Animation* anim = (Animation*)AllocateMemory(0x2c);
     try {
         if (anim != 0) {
             anim = anim->Init();
         }
     } catch (...) {
-    }
-    this->animation_data = anim;
-    anim->Open(this->sprite_filename, 0xfe000, -1);
+    }*/
+    this->animation_data = new Animation();
+    this->animation_data->Open(this->sprite_filename, 0xfe000, -1);
 }
 
 /* Function start: 0x41D160 */

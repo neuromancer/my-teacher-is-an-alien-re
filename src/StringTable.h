@@ -9,6 +9,8 @@ public:
     char* filename;         // 0x4
     void* internalData;     // 0x8
 
+    StringTable(char* filename, int loadNow);
+    ~StringTable();
     void* Init(char* filename, int loadNow);
     void Cleanup();
     

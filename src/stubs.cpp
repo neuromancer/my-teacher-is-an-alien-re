@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <share.h>
+#include "Memory.h"
 
 // Globals
 // Globals
@@ -156,8 +157,47 @@ int _rand() { return rand(); }
 // Mangled names with @16 imply stdcall. We might need logic or strict prototype.
 // _FUN_00422590@16 - implemented in GameWindow.cpp as GameWindowProc
 
-void FUN_0040cd15() {}
-void FUN_0040cd1d() {}
+void FUN_0040cd15() {
+    // Cleanup pool at DAT_00436988
+    // This calls the pool cleanup function FUN_0040d2a0
+    extern int* DAT_00436988;
+    if (DAT_00436988 != 0) {
+        int* pool = DAT_00436988;
+        // Clear linked list at [0x10]
+        int* node = (int*)pool[4]; // offset 0x10
+        while (node != 0) {
+            int* next = (int*)*node;
+            FreeMemory(node);
+            node = next;
+        }
+        pool[4] = 0;
+        // Clear fields
+        pool[0] = 0;
+        pool[1] = 0;
+        pool[2] = 0;
+        pool[3] = 0;
+    }
+}
+void FUN_0040cd1d() {
+    // Cleanup pool at DAT_00436984
+    extern int* DAT_00436984;
+    if (DAT_00436984 != 0) {
+        int* pool = DAT_00436984;
+        // Clear linked list at [0x10]
+        int* node = (int*)pool[4]; // offset 0x10
+        while (node != 0) {
+            int* next = (int*)*node;
+            FreeMemory(node);
+            node = next;
+        }
+        pool[4] = 0;
+        // Clear fields
+        pool[0] = 0;
+        pool[1] = 0;
+        pool[2] = 0;
+        pool[3] = 0;
+    }
+}
 void* FUN_00420140(void* a, const char* b, int c) { return a; }
 void* FUN_004209e0(void* a, const char* b, int c) { return a; }
 

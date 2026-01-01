@@ -92,6 +92,11 @@ FlagArray::FlagArray(char* filename, int max_states) {
     this->fp = NULL;
 }
 
+FlagArray::~FlagArray()
+{
+    SafeClose();
+}
+
 /* Function start: 0x420250 */
 void FlagArray::SafeClose() {
     if (this->fp != NULL) {

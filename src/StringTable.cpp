@@ -29,6 +29,16 @@ int* FUN_00420f10(int* ht) {
     return node;
 }
 
+StringTable::StringTable(char* filename, int loadNow)
+{
+    Init(filename, loadNow);
+}
+
+StringTable::~StringTable()
+{
+    Cleanup();
+}
+
 /* Function start: 0x4209e0 */
 void* StringTable::Init(char* filename, int loadNow) {
     this->fp = 0;

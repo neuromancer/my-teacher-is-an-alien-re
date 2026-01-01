@@ -8,6 +8,8 @@
 // Contains Timer at offset 0x84
 class ZBufferManager {
 public:
+    ZBufferManager();
+    ~ZBufferManager();
     ZBufferManager* Init();  // 0x41B760
     void Cleanup();          // 0x41B8E0
     

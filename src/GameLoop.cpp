@@ -52,6 +52,16 @@ struct EventList {
     int field_0x0C;     // 0x0C
 };
 
+GameLoop::GameLoop()
+{
+    Init();
+}
+
+GameLoop::~GameLoop()
+{
+    Cleanup();
+}
+
 /* Function start: 0x417200 */
 GameLoop* GameLoop::Init() {
     Timer* pAlloc;

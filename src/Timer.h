@@ -8,7 +8,8 @@ struct Timer {
     unsigned int m_currentTime;
     unsigned int m_elapsedTime;
 
-    //~Timer();
+    Timer();
+    ~Timer();
     Timer* Init();
     void Reset();
     unsigned int Update();

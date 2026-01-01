@@ -5,6 +5,7 @@
 
 class GameState : public Parser {
 public:
+    GameState();
     ~GameState();
     void ClearStates();
     int FindState(char* stateName);
@@ -18,13 +19,6 @@ public:
     char** stateLabels;    // 0x8c - array of pointers to label strings
     int maxStates;         // 0x90 - maximum number of states
     int reserved;          // 0x94 - unused, initialized to 0
-
-    GameState() {
-        this->stateValues = 0;
-        this->stateLabels = 0;
-        this->maxStates = 0;
-        this->reserved = 0;
-    }
 };
 
 #endif // GAMESTATE_H

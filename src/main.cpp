@@ -93,14 +93,6 @@ void RunGame() {
     g_Unknown_00436994 = new char[0x40];
 
     g_Timer_00436980 = new Timer();
-    //puVar2 = AllocateMemory(0x14);
-    //void* pInit = 0;
-    if (g_Timer_00436980 != 0) {
-        g_Timer_00436980->Init();
-    }
-    //g_Timer_00436980 = (Timer*)pInit;
-    //g_Timer_00436980 = new Timer();
-    //g_Timer_00436980->Init();
 
     g_Manager_00435a84 = new FlagArray("question.sav", 1000);
     g_Manager_00435a84->ClearAllFlags();
@@ -117,12 +109,7 @@ void RunGame() {
     g_GameState4_004369a0 = new GameState();
     ParseFile(g_GameState4_004369a0, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
 
-    puVar2 = AllocateMemory(0xC);
-    StringTable* pStrings = 0;
-    if (puVar2 != 0) {
-        pStrings = (StringTable*)((StringTable*)puVar2)->Init("mis\\strings.mis", 1);
-    }
-    g_Strings_00435a70 = pStrings;
+    g_Strings_00435a70 = new StringTable("mis\\strings.mis", 1);
     
     puVar2 = AllocateMemory(0x18);
     if (puVar2 != 0) {
@@ -146,36 +133,25 @@ void RunGame() {
     }
     DAT_00436988 = (int*)puVar2;
 
-    puVar2 = AllocateMemory(0xAC);
-    ZBufferManager* pZBuffer = 0;
-    if (puVar2 != 0) {
-        pZBuffer = ((ZBufferManager*)puVar2)->Init();
-    }
+    ZBufferManager* pZBuffer = new ZBufferManager();
     DAT_0043698c = (int*)pZBuffer;
 
-    puVar2 = AllocateMemory(0x1C);
-    GameLoop* pGameLoop = 0;
-    if (puVar2 != 0) {
-        pGameLoop = ((GameLoop*)puVar2)->Init();
-    }
+    GameLoop* pGameLoop = new GameLoop();
 
     g_Mouse_00436978->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
-    *(int*)((char*)g_TextManager_00436990 + 0x30) = 2;
+    g_TextManager_00436990->charAdvance = 2;
     g_Timer_00436980->Reset();
 
     SC_Message_Send(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
 
     pGameLoop->Run();
     if (pGameLoop != 0) {
-        pGameLoop->Cleanup();
-        FreeMemory(pGameLoop);
+        delete pGameLoop;
     }
 
-    puVar2 = (void*)DAT_0043698c;
     if (DAT_0043698c != 0) {
-        ((ZBufferManager*)DAT_0043698c)->Cleanup();
-        FreeMemory(puVar2);
+        delete ((ZBufferManager*)DAT_0043698c);
         DAT_0043698c = 0;
     }
 
@@ -193,45 +169,33 @@ void RunGame() {
         DAT_00436984 = 0;
     }
 
-    puVar2 = g_Strings_00435a70;
     if (g_Strings_00435a70 != 0) {
-        g_Strings_00435a70->Cleanup();
-        FreeMemory(puVar2);
+        delete g_Strings_00435a70;
         g_Strings_00435a70 = 0;
     }
 
-    puVar2 = g_GameState4_004369a0;
     if (g_GameState4_004369a0 != 0) {
-        g_GameState4_004369a0->~GameState();
-        FreeMemory(puVar2);
+        delete g_GameState4_004369a0;
         g_GameState4_004369a0 = 0;
     }
     
-    puVar2 = g_GameState3_0043699c;
     if (g_GameState3_0043699c != 0) {
-        g_GameState3_0043699c->~GameState();
-        FreeMemory(puVar2);
+        delete g_GameState3_0043699c;
         g_GameState3_0043699c = 0;
     }
 
-    puVar2 = g_GameState2_004369a4;
     if (g_GameState2_004369a4 != 0) {
-        g_GameState2_004369a4->~GameState();
-        FreeMemory(puVar2);
+        delete g_GameState2_004369a4;
         g_GameState2_004369a4 = 0;
     }
 
-    puVar2 = g_GameState_00436998;
     if (g_GameState_00436998 != 0) {
-        g_GameState_00436998->~GameState();
-        FreeMemory(puVar2);
+        delete g_GameState_00436998;
         g_GameState_00436998 = 0;
     }
 
-    puVar2 = g_Timer_00436980;
     if (g_Timer_00436980 != 0) {
-        Timer_DecrementCounter();
-        FreeMemory(puVar2);
+        delete g_Timer_00436980;
         g_Timer_00436980 = 0;
     }
 
@@ -240,36 +204,26 @@ void RunGame() {
         g_Unknown_00436994 = 0;
     }
 
-    puVar2 = g_Mouse_00436978;
     if (g_Mouse_00436978 != 0) {
-        g_Mouse_00436978->~Mouse();
-        FreeMemory(puVar2);
+        delete g_Mouse_00436978;
         g_Mouse_00436978 = 0;
     }
 
-    puVar2 = DAT_00435a74;
     if (DAT_00435a74 != 0) {
-        ((AssetList*)DAT_00435a74)->Cleanup();
-        FreeMemory(puVar2);
+        delete ((AssetList*)DAT_00435a74);
         DAT_00435a74 = 0;
     }
-    puVar2 = DAT_00435a78;
     if (DAT_00435a78 != 0) {
-        ((AssetList*)DAT_00435a78)->Cleanup();
-        FreeMemory(puVar2);
+        delete ((AssetList*)DAT_00435a78);
         DAT_00435a78 = 0;
     }
-    puVar2 = DAT_00435a7c;
     if (DAT_00435a7c != 0) {
-        ((AssetList*)DAT_00435a7c)->Cleanup();
-        FreeMemory(puVar2);
+        delete ((AssetList*)DAT_00435a7c);
         DAT_00435a7c = 0;
     }
 
-    puVar2 = g_Manager_00435a84;
     if (g_Manager_00435a84 != 0) {
-        g_Manager_00435a84->SafeClose();
-        FreeMemory(puVar2);
+        delete g_Manager_00435a84;
         g_Manager_00435a84 = 0;
     }
 
@@ -639,7 +593,6 @@ void CleanupCinematic(void) {}
 void PlayIntroCinematic(void) {
   InitGameSystems();
   Animation anim;
-  anim.Init();
   anim.Play("cine\\cine0001.smk", 0x20);
   ShutdownGameSystems();
 }

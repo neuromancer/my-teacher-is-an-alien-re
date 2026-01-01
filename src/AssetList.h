@@ -6,6 +6,7 @@
 // Contains linked list of assets
 class AssetList {
 public:
+    ~AssetList();
     void Cleanup();  // 0x404230
     
     void* field_0x00;

@@ -17,8 +17,7 @@ public:
   SmackBuf *smack_buffer; // 0x24
   void *smack_handle; // 0x28
 
-  Animation() {}
-  Animation *Init();
+  Animation();
   Animation *InitWithFilename(char *filename);
   ~Animation();
   void AnimationInit();

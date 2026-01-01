@@ -7,6 +7,15 @@ extern "C" {
 extern HANDLE DAT_0043eff0;
 extern int (*g_OutOfMemoryCallback)(unsigned int);
 
+// Global operator new/delete that forward to game's memory allocator
+void* operator new(unsigned int size) {
+    return AllocateMemory(size);
+}
+
+void operator delete(void* ptr) {
+    FreeMemory(ptr);
+}
+
 /* Function start: 0x4249C0 */
 void* AllocateMemory(unsigned int size)
 {

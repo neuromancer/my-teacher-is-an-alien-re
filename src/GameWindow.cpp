@@ -6,7 +6,7 @@
 
 extern "C" {
 void __stdcall ParseCommandLine(char *);
-LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 int GetColorBitDepth();
 void ShowMessage(const char *);
 void InitVideoSystem();
@@ -168,9 +168,7 @@ HPALETTE CreateSystemPalette(void);
 int SelectAndRealizePalette(HPALETTE);
 
 /* Function start: 0x422590 */
-LRESULT CALLBACK GameWindowProc(HWND param_1, UINT param_2, WPARAM param_3, LPARAM param_4) {
-  unsigned int *puVar2;
-
+LRESULT CALLBACK GameWindowProc(HWND param_1, UINT param_2, WPARAM param_3, unsigned int param_4) {
   switch (param_2) {
   case 1: // WM_CREATE
     DAT_0043de80 = GetDC(param_1);
@@ -181,14 +179,10 @@ LRESULT CALLBACK GameWindowProc(HWND param_1, UINT param_2, WPARAM param_3, LPAR
   case 2: // WM_DESTROY
     PostQuitMessage(0);
     return 0;
-  case 5: { // WM_SIZE
-    unsigned int uParam4 = (unsigned int)param_4;
-    puVar2 = (unsigned int *)GetWindowWidth();
-    *puVar2 = (unsigned short)uParam4;
-    puVar2 = (unsigned int *)GetWindowHeight();
-    *puVar2 = (unsigned short)(uParam4 >> 0x10);
+  case 5: // WM_SIZE
+    *(unsigned int *)GetWindowWidth() = (unsigned short)param_4;
+    *(unsigned int *)GetWindowHeight() = (unsigned short)((unsigned int)param_4 >> 0x10);
     return 0;
-  }
   case 7: // WM_SETFOCUS
     SelectAndRealizePalette(DAT_0043de84);
     InvalidateRect(param_1, (RECT *)0x0, 1);

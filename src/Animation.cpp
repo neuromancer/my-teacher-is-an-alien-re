@@ -43,7 +43,7 @@ void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsig
 }
 
 /* Function start: 0x41FA50 */
-Animation *Animation::Init() {
+Animation::Animation() {
   int *p = &field_0x10;
   *p = 0;
   *(p + 1) = 0;
@@ -51,7 +51,7 @@ Animation *Animation::Init() {
     CleanArray10();
   } catch (...) {
   }
-  return this;
+  //return this;
 }
 
 /* Function start: 0x41FAC0 */

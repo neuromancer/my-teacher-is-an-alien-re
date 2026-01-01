@@ -76,13 +76,13 @@ def read_assembly(function_name, file_path):
         if line.startswith('ret') or line == 'ret 0':
             ret_indices.append(i)
     
-    # For each ret from the beginning, check if everything after is just SEH handlers
-    # We want the first ret after which only SEH code follows
+    # For each ret from the beginning, check if everything after is just SEH handlers or data
+    # We want the first ret after which only SEH code or data follows
     cutoff_idx = len(lines)
     for ret_idx in ret_indices:
         # Check what's after this ret
         remaining = stripped_lines[ret_idx+1:]
-        is_seh_only = True
+        is_seh_or_data_only = True
         i = 0
         while i < len(remaining):
             line = remaining[i]
@@ -112,18 +112,25 @@ def read_assembly(function_name, file_path):
                     i += 1
                     continue
                 else:
-                    is_seh_only = False
+                    is_seh_or_data_only = False
                     break
             elif line.startswith('mov') or line.startswith('call'):
                 # After SEH label, mov/call instructions are part of the cleanup funclet
                 i += 1
                 continue
+            # Check for jump table data directives (DD, DB, npad, etc.)
+            elif line.startswith('DD') or line.startswith('DB') or line.startswith('DW'):
+                i += 1
+                continue
+            elif line.startswith('npad'):
+                i += 1
+                continue
             else:
-                # Non-SEH code found after ret
-                is_seh_only = False
+                # Non-SEH/non-data code found after ret
+                is_seh_or_data_only = False
                 break
         
-        if is_seh_only and len(remaining) > 0:
+        if is_seh_or_data_only and len(remaining) > 0:
             cutoff_idx = ret_idx + 1
             break
     

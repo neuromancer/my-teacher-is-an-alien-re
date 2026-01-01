@@ -15,6 +15,7 @@ public:
     char pad2[204 - 0x44 - 4];
 
     FlagArray(char* filename, int max_states);
+    ~FlagArray();
     void SafeClose();
     void Open();
     void Close();
