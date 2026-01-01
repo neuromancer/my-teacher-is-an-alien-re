@@ -7,18 +7,10 @@
 #include <stdio.h>
 #include "Memory.h"
 #include "AILData.h"
-#include "Array.h"
 #include "string.h"
 #include "new.h"
 #include "InputManager.h"
 #include "Cleanup.h"
-
-extern "C" {
-    void FUN_0041ef47();
-}
-
-//inline void* operator new(size_t, void* ptr) { return ptr; }
-// inline void operator delete(void*, void*) {}
 
 /* Function start: 0x41ECA0 */
 Mouse::Mouse()
@@ -40,11 +32,7 @@ Mouse::Mouse()
     strcpy(m_labels[3], "");
 }
 
-/* Function start: 0x41EF25 */
-void Mouse::CleanupFields()
-{
-    Array_Cleanup(m_hotspots, 8, 0x19, Cleanup_00405770);
-}
+
 
 /* Function start: 0x41EE30 */
 Mouse::~Mouse()
@@ -77,9 +65,6 @@ Mouse::~Mouse()
             m_labels[i] = 0;
         }
     }
-
-    CleanupFields();
-    FUN_0041ef47();
 }
 
 /* Function start: 0x41EF50 */

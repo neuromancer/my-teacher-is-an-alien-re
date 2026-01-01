@@ -3,6 +3,7 @@
 
 #include "Parser.h"
 #include "Sprite.h"
+#include "Cleanup.h"
 class AILData;
 
 /**
@@ -31,8 +32,6 @@ public:
     int LBLParse(char* line);
     void DrawCursor();
 
-    void CleanupFields();
-
 private:
 
     char* m_labels[25];        // 0x88
@@ -41,6 +40,7 @@ private:
     struct Point {
         int x;
         int y;
+        ~Point() { Cleanup_00405770(this); }
     };
     Point m_hotspots[25];      // 0xF4
     AILData* m_audio;          // 0x1BC
