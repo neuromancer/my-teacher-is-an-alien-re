@@ -177,15 +177,15 @@ void Animation::VBInit() {
     ShowError("Animation::VBInit() - Virtual Buffer already defined");
   }
 
-  VBuffer *vbuffer = (VBuffer *)AllocateMemory(0x30);
+  /*VBuffer *vbuffer = (VBuffer *)AllocateMemory(0x30);
   try {
     if (vbuffer != 0) {
       HSMACK smk = this->smk;
       vbuffer = vbuffer->CreateAndClean(smk->Width, smk->Height);
     }
   } catch (...) {
-  }
-  this->vbuffer = vbuffer;
+  }*/
+  this->vbuffer = new VBuffer(this->smk->Width, this->smk->Height);
 }
 
 /* Function start: 0x41FE20 */

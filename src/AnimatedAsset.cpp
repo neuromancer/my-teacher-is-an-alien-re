@@ -10,19 +10,24 @@
 #include "Cleanup.h"
 
 /* Function start: 0x420F80 */
-AnimatedAsset* AnimatedAsset::Init()
+AnimatedAsset::AnimatedAsset()
 {
-    __try {
-        this->text_x = 0;
-        this->text_y = 0;
-        this->charAdvance = 0;
-        this->reserved_34 = 0;
-        memset(this, 0, 56);
-    } __finally {
+    char glyphVal = 1;
+    int* text_xy = &this->text_pos.x;
+    int* charAdv = &this->char_adv.advance;
+    text_xy[0] = 0;
+    text_xy[1] = 0;
+    charAdv[0] = 0;
+    charAdv[1] = 0;
+    int count = 14;
+    int* p = (int*)this;
+    while (count != 0) {
+        *p = 0;
+        p++;
+        count--;
     }
     this->color = 2;
-    this->glyphValue = 1;
-    return this;
+    this->glyphValue = glyphVal;
 }
 
 /* Function start: 0x421260 */
@@ -134,7 +139,7 @@ int AnimatedAsset::ComputeTextMetrics(void* text)
                 total = (total - local_left) + local_right;
             }
             param_1 = param_1 + 1;
-            total = total + this->charAdvance;
+            total = total + this->char_adv.advance;
             cVar1 = *param_1;
         }
     }
@@ -149,29 +154,29 @@ void AnimatedAsset::PrepareText(char* text)
     int vert;
 
     // Initialize base positions from helpers
-    this->text_x = this->GetGlobalTextX();
-    this->text_y = this->GetGlobalTextY();
+    this->text_pos.x = this->GetGlobalTextX();
+    this->text_pos.y = this->GetGlobalTextY();
 
     int mode = this->GetGlobalTextAlign();
 
     if (mode == 0) {
         w = this->ComputeTextMetrics(text);
         w = w / 2;
-        this->text_x -= w;
+        this->text_pos.x -= w;
     }
     else if (mode == 1) {
         w = this->ComputeTextMetrics(text);
-        this->text_x -= w;
+        this->text_pos.x -= w;
     }
     
     // vertical alignment for all modes
     vert = this->GetGlobalVertAlign();
     if (vert == 0) {
-        this->text_y += this->glyphHeight / 2;
+        this->text_pos.y += this->glyphHeight / 2;
         return;
     }
     if (vert == 1) {
-        this->text_y += this->glyphHeight;
+        this->text_pos.y += this->glyphHeight;
     }
 }
 
@@ -193,11 +198,9 @@ int AnimatedAsset::IsCharSupported(int ch)
 void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 {
   int iVar2;
-  VBuffer *pVVar3;
   Animation *anim;
   char local_9c [128];
   int local_18;
-  VBuffer *local_14;
 
   if (param_1 != (char *)0x0) {
     iVar2 = sscanf(param_1, "%s %d %d", local_9c, &this->firstChar, &local_18);
@@ -213,13 +216,9 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 
     anim = new Animation();
     anim->Open(local_9c,0xfe000,0xffffffff);
-    local_14 = (VBuffer *)AllocateMemory(sizeof(VBuffer));
-    pVVar3 = (VBuffer *)0x0;
-    if (local_14 != (VBuffer *)0x0) {
-      pVVar3 = local_14->CreateAndClean(anim->smk->Width, anim->smk->Height);
-    }
-    this->buffer = pVVar3;
-    anim->ToBufferVB(pVVar3);
+    
+    this->buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
+    anim->ToBufferVB(this->buffer);
     anim->DoFrame();
     if (anim != (Animation *)0x0) {
         anim->Delete(1);
@@ -238,7 +237,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 /* Function start: 0x421010 */
 AnimatedAsset::~AnimatedAsset()
 {
-    __try {
+    //__try {
         if (this->buffer != 0) {
             delete this->buffer;
             this->buffer = 0;
@@ -248,8 +247,8 @@ AnimatedAsset::~AnimatedAsset()
             delete[] this->glyphTable;
             this->glyphTable = 0;
         }
-    } __finally {
-    }
+    //} __finally {
+    //}
 }
 
 
@@ -334,12 +333,12 @@ void AnimatedAsset::RenderText(char* text, int param_2)
         this->useAttr = (param_2 != -1);
         PrepareText(text);
         if (*text != '\0') {
-            int* piVar1 = &this->text_x;
+            int* piVar1 = &this->text_pos.x;
             do {
                 char cVar2 = *text;
                 text = text + 1;
-                int iVar3 = this->DrawChar(*piVar1, this->text_y, (int)cVar2);
-                *piVar1 = *piVar1 + this->charAdvance + iVar3;
+                int iVar3 = this->DrawChar(*piVar1, this->text_pos.y, (int)cVar2);
+                *piVar1 = *piVar1 + this->char_adv.advance + iVar3;
             } while (*text != '\0');
         }
     }

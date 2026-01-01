@@ -70,33 +70,24 @@ extern "C" void InitWorkBuffer(int width, int height);
 /* Function start: 0x41A8C0 */
 void InitWorkBuffer(int width, int height)
 {
-    VBuffer* pvVar1 = g_WorkBuffer_00436974;
     if (g_WorkBuffer_00436974 != 0) {
-        g_WorkBuffer_00436974->~VBuffer();
-        FreeMemory(pvVar1);
+        delete g_WorkBuffer_00436974;
         g_WorkBuffer_00436974 = 0;
     }
-    void* puVar2 = AllocateMemory(0x30);
-    __try {
-        VBuffer* pVBuffer = 0;
-        if (puVar2 != 0) {
-            pVBuffer = ((VBuffer*)puVar2)->CreateAndClean(width, height);
-        }
-        g_WorkBuffer_00436974 = pVBuffer;
-        if (pVBuffer->handle != 0) {
-            ShowError("workbuff must be first vb created '%d'", pVBuffer->handle);
-        }
-        g_WorkBuffer_00436974->SetVideoMode();
-        g_WorkBuffer_00436974->ClearScreen(0);
-    } __finally {}
+
+    g_WorkBuffer_00436974 = new VBuffer(width, height);
+    if (g_WorkBuffer_00436974->handle != 0) {
+        ShowError("workbuff must be first vb created '%d'", g_WorkBuffer_00436974->handle);
+    }
+    g_WorkBuffer_00436974->SetVideoMode();
+    g_WorkBuffer_00436974->ClearScreen(0);
 }
 
 /* Function start: 0x41a9f0 */
-VBuffer* VBuffer::CreateAndClean(int width, int height)
+VBuffer::VBuffer(unsigned int width, unsigned int height)
 {
     this->InitFields();
-    this->VBuffer::VBuffer(width, height);
-    return this;
+    this->InitWithSize(width, height);
 }
 
 /* Function start: 0x41aa10 */
@@ -129,7 +120,7 @@ void VBuffer::Free()
 }
 
 /* Function start: 0x41aaa0 */
-VBuffer::VBuffer(unsigned int param_1, unsigned int param_2)
+void VBuffer::InitWithSize(unsigned int param_1, unsigned int param_2)
 {
     if ((param_1 == 0) || (param_2 == 0)) {
         ShowError("Error! Invalid buffer size specified =>%lu", param_2 * param_1);
@@ -290,7 +281,7 @@ void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4
 {
     char local_40_storage[48];
     VBuffer* local_40 = (VBuffer*)local_40_storage;
-    local_40->CreateAndClean((param_2 - param_1) + 1, (param_4 - param_3) + 1);
+    //local_40->CreateAndClean((param_2 - param_1) + 1, (param_4 - param_3) + 1);
     __try {
         local_40->ClearScreen(0);
         BlitTransparentRows(param_1, param_2, param_3, param_4, local_40->clip_x1, local_40->video_mode_lock_count, this, local_40, param_7, param_8);

@@ -140,7 +140,7 @@ void RunGame() {
 
     g_Mouse_00436978->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
-    g_TextManager_00436990->charAdvance = 2;
+    //g_TextManager_00436990->charAdvance = 2;
     g_Timer_00436980->Reset();
 
     SC_Message_Send(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
@@ -493,7 +493,7 @@ void InitGameSystems(void) {
   void *pAlloc;
   void *pInit;
 
-  __try {
+  //__try {
     g_Buffer_00436960 = (char *)AllocateMemory(0x100);
     g_Buffer_00436964 = AllocateMemory(CalculateBufferSize(0x280, 0x1e0));
     CheckDebug();
@@ -513,16 +513,12 @@ void InitGameSystems(void) {
       pInit = ((Sound *)pAlloc)->Init(0x5622, 8, 1);
     }
     g_Sound_0043696c = (Sound *)pInit;
-    pAlloc = AllocateMemory(0x38);
-    pInit = 0;
-    if (pAlloc != 0) {
-      pInit = ((AnimatedAsset *)pAlloc)->Init();
-    }
-    (g_TextManager_00436990 = (AnimatedAsset *)pInit)->LoadAnimatedAsset("elements\\barrel06.smk");
+    g_TextManager_00436990 = new AnimatedAsset();
+    g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
     SetStateFlag(0, 1);
     SetCursorVisible(0);
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-  }
+  //} __except (EXCEPTION_EXECUTE_HANDLER) {
+  //}
 }
 
 /* Function start: 0x422520 */

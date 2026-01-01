@@ -3,13 +3,27 @@
 
 #include "VBuffer.h"
 #include "GlyphRect.h"
+#include "Cleanup.h"
+
+// Embedded subobject at offset 0x8 with destructor for SEH
+struct TextPos {
+    int x;
+    int y;
+    ~TextPos() { Cleanup_00405770(this); }
+};
+
+// Embedded subobject at offset 0x30 with destructor for SEH  
+struct CharAdv {
+    int advance;
+    int reserved;
+    ~CharAdv() { Cleanup_00405770(this); }
+};
 
 class AnimatedAsset {
 public:
     VBuffer* buffer; // 0x0
     int firstChar; // 0x4 - starting character code
-    int text_x; // 0x8 - current x position for rendering text
-    int text_y; // 0xC - current y position for rendering text
+    TextPos text_pos; // 0x8 - current position for rendering text (x, y)
     char color; // 0x10 - blit color / mode
     char attr; // 0x11 - additional attribute (e.g., tint / flag)
     char glyphValue; // 0x12 - value used to detect glyph pixels
@@ -21,10 +35,10 @@ public:
     int spaceWidth; // 0x24 - width of space
     int tabWidth; // 0x28 - width of tab
     int glyphHeight; // 0x2C - height (rows) per glyph
-    int charAdvance; // 0x30 - inter-character advance
-    int reserved_34; // 0x34 - unknown / reserved
+    CharAdv char_adv; // 0x30 - inter-character advance and reserved
     int reserved_38; // 0x38 - unknown / reserved
 
+    AnimatedAsset();
     AnimatedAsset* Init();
     void LoadAnimatedAsset(char* param_1);
     void BuildGlyphTable();

@@ -14,6 +14,7 @@ public:
     int clip_x2; // 0x2c
 
     VBuffer(unsigned int param_1, unsigned int param_2);
+    void InitWithSize(unsigned int param_1, unsigned int param_2);
     ~VBuffer();
     void Release();
     void Free();
@@ -39,7 +40,7 @@ public:
 
 
     // Member function version to match __thiscall calling convention (0x41A9F0)
-    VBuffer* CreateAndClean(int width, int height);
+    //VBuffer* CreateAndClean(int width, int height);
 };
 int __cdecl CalculateBufferSize(int param_1,unsigned int param_2);
 
