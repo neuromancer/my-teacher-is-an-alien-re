@@ -139,6 +139,7 @@ int DAT_00437514 = 0;
 int DAT_00437f56 = 0;
 int DAT_00437f5a = 0;
 int DAT_0043841c = 0;  // WinG DC or similar
+int DAT_004374ca = 0;  // Current buffer height - 1
 
 char DAT_00437520[256] = {0};  // Palette identity map
 int DAT_00437620[64] = {0};    // Palette data

@@ -33,7 +33,7 @@ void FUN_00422e8f() {}
 void FUN_00422a01() {}
 void FUN_004230d9() {}
 void FUN_00423296() {}
-void FUN_0042333a() {}
+// FUN_0042333a now implemented in VideoTable.cpp as StretchBlitBuffer
 void FUN_004231ce() {}
 void FUN_004233e8() {}
 void FUN_0041afb1() {}
@@ -44,7 +44,7 @@ void FUN_0041b07f() {}
 void FUN_0041b2ac() {}
 void FUN_0041b29a() {}
 void FUN_004234d5() {}
-void FUN_004234f9() {}
+// FUN_004234f9 now implemented in ScaleBuffer.cpp as ScaleBuffer
 void FUN_00423703() {}
 void FUN_00423076() {}
 

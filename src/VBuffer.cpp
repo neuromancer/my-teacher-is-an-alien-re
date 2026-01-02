@@ -37,6 +37,9 @@ void ReleaseVBufferHandle(int handle)
 // Forward declarations
 void CopyRowTransparent(char* dest, char* src, int count, char transparentColor, char fillColor);
 void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor);
+int __cdecl IntersectClipRect(int* clipRect, int* srcRect, int* destRect);
+void __cdecl OffsetRect(int* rect, int offsetX, int offsetY);
+int __cdecl FUN_0041b590(int* param_1, int* param_2, int* param_3, int* param_4);
 
 extern "C" {
     void FUN_00422e8f();
@@ -47,16 +50,15 @@ extern "C" {
     void FUN_0041ae0c(void);
     void FUN_004231ce(int, int, int, int, int, int, unsigned int, unsigned int);
     void FUN_004233e8(int, int, int, int, int, int, unsigned int, unsigned int);
-    int FUN_0041b590(int*, int*, int*, int*);
     void FUN_0041af9f(void);
     void FUN_0041afb1(void);
     void FUN_0041b29a(void);
     void FUN_0041b2ac(void);
     int FUN_004230d9(int);
     void FUN_00423296(int, int, int, int, int, int);
-    void FUN_0042333a(int, int, int, int, int, int, int, int);
-    unsigned int FUN_00423703(int, unsigned int, unsigned int);
-    void FUN_004234f9(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
+    int StretchBlitBuffer(int, int, int, int, int, int, int, int);
+    int CreateTableFromBuffer(int, int, int);
+    void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
     void FUN_004234d5(unsigned int);
     void FUN_00422e1a(int);
 }
@@ -236,7 +238,7 @@ void VBuffer::CallBlitter4(int param_1, int param_2, int param_3, int param_4, i
 void VBuffer::CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8)
 {
     this->SetCurrentVideoMode(this->handle);
-    FUN_0042333a(param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8);
+    StretchBlitBuffer(param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8);
     this->InvalidateVideoMode();
 }
 
@@ -379,12 +381,12 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
     int scaledHeight = (int)(srcBuffer->height * scale);
 
     if ((scaledWidth >= 1) && (scaledHeight >= 1)) {
-        local_10 = FUN_00423703((int)g_Buffer_00436964, scaledWidth, scaledHeight);
+        local_10 = CreateTableFromBuffer((int)g_Buffer_00436964, scaledWidth, scaledHeight);
         if (local_10 < 0) {
             ShowError("VBuffer::ScaleTCCopy");
         }
         void* puVar3 = (void*)GetVideoBufferData(local_10);
-        FUN_004234f9(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
+        ScaleBuffer(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
 
         __try {
             local_30[0] = 0;
@@ -416,6 +418,132 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
             FUN_0041b2ac();
         }
     }
+}
+
+/* Function start: 0x41B3B0 */
+int __cdecl IntersectClipRect(int* clipRect, int* srcRect, int* destRect)
+{
+    int x1 = srcRect[0];
+    if (srcRect[0] <= clipRect[0]) {
+        x1 = clipRect[0];
+    }
+    destRect[0] = x1;
+    
+    int x2 = srcRect[2];
+    if (clipRect[2] <= srcRect[2]) {
+        x2 = clipRect[2];
+    }
+    destRect[2] = x2;
+    
+    int y1 = srcRect[1];
+    if (srcRect[1] <= clipRect[1]) {
+        y1 = clipRect[1];
+    }
+    destRect[1] = y1;
+    
+    int y2 = srcRect[3];
+    if (clipRect[3] <= srcRect[3]) {
+        y2 = clipRect[3];
+    }
+    destRect[3] = y2;
+    
+    if ((x1 < x2) && (y1 < y2)) {
+        return 1;
+    }
+    destRect[0] = 0;
+    destRect[1] = 0;
+    destRect[2] = 0;
+    destRect[3] = 0;
+    return 0;
+}
+
+/* Function start: 0x41B430 */
+void __cdecl OffsetRect(int* rect, int offsetX, int offsetY)
+{
+    rect[0] = rect[0] + offsetX;
+    rect[2] = rect[2] + offsetX;
+    rect[1] = rect[1] + offsetY;
+    rect[3] = rect[3] + offsetY;
+}
+
+extern "C" {
+    void FUN_0041b55d(void);
+    void FUN_0041b56f(void);
+}
+
+class ScopedRect {
+public:
+    int rect[4];
+    ScopedRect() {
+        rect[0] = 0;
+        rect[1] = 0;
+        rect[2] = 0;
+        rect[3] = 0;
+    }
+    ~ScopedRect();
+};
+
+/* Function start: 0x41B55D */
+ScopedRect::~ScopedRect()
+{
+    FUN_0041b56f();
+}
+
+/* Function start: 0x41B450 */
+int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* destY)
+{
+    if ((clipRect[2] < *destX) || (clipRect[3] < *destY)) {
+        srcRect[0] = 0;
+        srcRect[1] = 0;
+        srcRect[2] = 0;
+        srcRect[3] = 0;
+        *destX = 0;
+        *destY = 0;
+        return 0;
+    }
+    
+    ScopedRect guard;
+    OffsetRect(srcRect, *destX, *destY);
+    IntersectClipRect(clipRect, srcRect, guard.rect);
+    OffsetRect(guard.rect, -(*destX), -(*destY));
+    
+    int iVar1 = *destX;
+    if (*destX <= *clipRect) {
+        iVar1 = *clipRect;
+    }
+    *destX = iVar1;
+    
+    iVar1 = clipRect[1];
+    if (clipRect[1] <= *destY) {
+        iVar1 = *destY;
+    }
+    *destY = iVar1;
+    
+    if ((guard.rect[2] == guard.rect[0]) || (guard.rect[3] == guard.rect[1])) {
+        srcRect[0] = 0;
+        srcRect[1] = 0;
+        srcRect[2] = 0;
+        srcRect[3] = 0;
+        *destX = 0;
+        *destY = 0;
+        return 0;
+    }
+    
+    srcRect[0] = guard.rect[0];
+    srcRect[1] = guard.rect[1];
+    srcRect[2] = guard.rect[2];
+    srcRect[3] = guard.rect[3];
+    return 1;
+}
+
+/* Function start: 0x41B590 */
+int __cdecl FUN_0041b590(int* param_1, int* param_2, int* param_3, int* param_4)
+{
+    int result;
+    *param_4 = *param_4 + (param_2[1] - param_2[3]);
+    result = ClipRectAndAdjust(param_1, param_2, param_3, param_4);
+    *param_4 = *param_4 + (param_2[3] - param_2[1]);
+    return result;
 }
 
 /* Function start: 0x41B2C0 */

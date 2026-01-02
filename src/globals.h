@@ -479,7 +479,7 @@ extern HPALETTE DAT_004374ae; // Previously selected palette
 // extern char DAT_004374c1; // { /* 1 bytes */ }
 // extern int DAT_004374c2; // { /* 4 bytes */ }
 // extern int DAT_004374c6; // { /* 4 bytes */ }
-// extern int DAT_004374ca; // { /* 4 bytes */ }
+extern int DAT_004374ca; // Current buffer height - 1
 // extern int DAT_004374ce; // { /* 4 bytes */ }
 // extern int DAT_004374d2; // { /* 4 bytes */ }
 // extern int DAT_004374d6; // { /* 4 bytes */ }
