@@ -5,6 +5,13 @@
 #include <mmsystem.h>
 #include "GlyphRect.h"
 
+// Local struct used in PollMouse - has destructor for SEH frame
+struct MousePoint {
+    int x;
+    int y;
+    ~MousePoint();
+};
+
 struct InputState {
     int x;          // 0x0
     int y;          // 0x4
@@ -28,10 +35,8 @@ public:
     int PollMouse(InputState* state); // FUN_00421b20
     int PollJoystick(InputState* state); // FUN_00421c30
 
-    union {
-        JOYCAPSA joyCaps;
-        char joyCapsBuffer[0x198];
-    };
+    JOYCAPSA joyCaps;           // 0x0 - 0x193 (0x194 bytes)
+    int padding_194;            // 0x194 - padding to align pointers
 
     InputState* pJoystick;      // 0x198
     InputState* pMouseLocal;    // 0x19C
