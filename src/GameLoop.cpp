@@ -18,13 +18,20 @@ extern "C" {
 typedef void (__cdecl *SmackSoundCheckFn)();
 extern SmackSoundCheckFn g_SmackSoundCheck;
 
-// JoystickManager::CheckInput - takes this pointer and int param
-extern "C" int FUN_00421d10(void*, int);
 // Wait for key
 int WaitForInput();
-// UpdateGame is now a member function of GameLoop
-extern "C" void __fastcall FUN_00417450(GameLoop*);     // CleanupLoop
 extern "C" void ShowError(const char* format, ...);
+
+// Helper functions for CleanupLoop
+extern "C" {
+    void* __fastcall FUN_00401710(void* queue);  // Queue::Pop (returns data, frees node)
+    void* __fastcall FUN_00401790(void* queue);  // Queue::Pop (identical to above)
+    void* __fastcall FUN_00417680(void* queue);  // Queue::GetCurrentData
+    void __fastcall FUN_00417660(void* obj, int freeFlag);  // Object destructor/cleanup
+    void __fastcall FUN_004189a0(void* node, int freeFlag); // Node cleanup
+    void __fastcall FUN_00417652();               // SEH unwind thunk (empty stub)
+    void __cdecl FUN_00424940(void* ptr);         // FreeMemory wrapper
+}
 
 // Doubly linked list node structure for eventList
 // field_0x00: next pointer
@@ -176,7 +183,7 @@ loop_start:
     }
 
 exit_loop:
-    FUN_00417450(this);
+    this->CleanupLoop();
 }
 
 /* Function start: 0x4177B0 */
@@ -420,6 +427,118 @@ void GameLoop::DrawFrame() {
     } while (pList->current != 0);
 }
 
+/* Function start: 0x417450 */
+void GameLoop::CleanupLoop() {
+    int iVar2;
+    int iVar3;
+    unsigned int uVar4;
+    int* puVar5;
+    void* pvVar6;
+    int* local_1c;
+    ZBufferManager* pZBuf;
+    Queue* pQueue;
+    
+    pZBuf = (ZBufferManager*)DAT_0043698c;
+    
+    // Process queue at offset 0xa0
+    pQueue = (Queue*)pZBuf->m_queueA0;
+    if (pQueue->m_head != 0) {
+        pQueue->m_current = pQueue->m_head;
+        iVar2 = (int)pQueue->m_head;
+        while (iVar2 != 0) {
+            puVar5 = (int*)FUN_00401710(pQueue);
+            if (puVar5 != 0) {
+                *puVar5 = 0x431050;  // vtable
+                FUN_00424940(puVar5);
+            }
+            iVar2 = (int)pQueue->m_head;
+        }
+    }
+    
+    // Process queue at offset 0xa4
+    pQueue = (Queue*)pZBuf->m_queueA4;
+    if (pQueue->m_head != 0) {
+        pQueue->m_current = pQueue->m_head;
+        iVar2 = (int)pQueue->m_head;
+        while (iVar2 != 0) {
+            pvVar6 = FUN_00401790(pQueue);
+            if (pvVar6 != 0) {
+                if (*(void**)((char*)pvVar6 + 4) != 0) {
+                    FUN_00417660(*(void**)((char*)pvVar6 + 4), 1);
+                    *(int*)((char*)pvVar6 + 4) = 0;
+                }
+                if (*(int**)((char*)pvVar6 + 8) != 0) {
+                    // Call virtual destructor through vtable
+                    (**(void (**)(int))(**(int**)((char*)pvVar6 + 8)))(1);
+                    *(int*)((char*)pvVar6 + 8) = 0;
+                }
+                FUN_00424940(pvVar6);
+            }
+            iVar2 = (int)pQueue->m_head;
+        }
+    }
+    
+    // Process queue at offset 0x9c
+    pQueue = (Queue*)pZBuf->m_queue9c;
+    if (pQueue->m_head != 0) {
+        pQueue->m_current = pQueue->m_head;
+        iVar3 = (int)pQueue->m_head;
+        while (iVar3 != 0) {
+            iVar3 = (int)pQueue->m_current;
+            if (iVar3 == 0) {
+                local_1c = 0;
+            } else {
+                if (pQueue->m_head == pQueue->m_current) {
+                    pQueue->m_head = (void*)*(int*)(iVar3 + 4);
+                }
+                if (pQueue->m_tail == pQueue->m_current) {
+                    pQueue->m_tail = (void*)*(int*)pQueue->m_current;
+                }
+                iVar3 = *(int*)pQueue->m_current;
+                if (iVar3 != 0) {
+                    *(int*)(iVar3 + 4) = ((int*)pQueue->m_current)[1];
+                }
+                puVar5 = (int*)((int*)pQueue->m_current)[1];
+                if (puVar5 != 0) {
+                    *puVar5 = *(int*)pQueue->m_current;
+                }
+                local_1c = (int*)FUN_00417680(pQueue);
+                if (pQueue->m_current != 0) {
+                    FUN_004189a0(pQueue->m_current, 1);
+                    pQueue->m_current = 0;
+                }
+                pQueue->m_current = pQueue->m_head;
+            }
+            if (local_1c != 0) {
+                *local_1c = 0x431058;  // vtable
+                FUN_00417652();
+                FUN_00424940(local_1c);
+            }
+            iVar3 = (int)pQueue->m_head;
+        }
+    }
+    
+    // Process GameLoop's eventList at offset 0x14
+    EventList* pEventList = (EventList*)this->eventList;
+    pEventList->current = pEventList->head;
+    iVar3 = (int)pEventList->current;
+    while (iVar3 != 0) {
+        iVar3 = (int)pEventList->current;
+        uVar4 = (unsigned int)((EventNode*)iVar3)->data;
+        if (uVar4 == 0) break;
+        // Call method at vtable offset 0x18 with param 0
+        int masked = ((iVar3 == 0) - 1) & uVar4;
+        (*(void (**)(int))(*(int*)masked + 0x18))(0);
+        iVar3 = (int)pEventList;
+        iVar2 = (int)pEventList->current;
+        if ((int)pEventList->tail == iVar2) break;
+        if (iVar2 != 0) {
+            pEventList->current = ((EventNode*)iVar2)->prev;
+        }
+        iVar3 = (int)pEventList->current;
+    }
+}
+
 // External functions for UpdateGame
 // Note: These are thiscall but we use shim stubs
 extern "C" {
@@ -430,9 +549,9 @@ extern "C" {
 /* Function start: 0x4179A0 */
 int GameLoop::UpdateGame()
 {
-    int* puVar2;
-    int* puVar3;
-    int* puVar4;
+    SC_Message* pSourceMsg;
+    TimedEventPool* pPool;
+    TimedEvent* pNewEvent;
     unsigned int uVar5;
     unsigned int uVar6;
     char local_258[192];  // [EBP - 0x254] buffer for inner iterator result
@@ -444,81 +563,81 @@ int GameLoop::UpdateGame()
     local_14 = 0;
     
     // First loop: pop items from DAT_00436988, copy to local_d8, create in DAT_00436984
-    while (*(int*)((char*)DAT_00436988 + 8) != 0) {
-        puVar2 = (int*)FUN_00417c50(DAT_00436988, local_198);
+    while (((TimedEventPool*)DAT_00436988)->m_count != 0) {
+        pSourceMsg = (SC_Message*)FUN_00417c50(DAT_00436988, local_198);
         
-        // Copy fields from popped item to local_d8
-        ((int*)&local_d8)[2] = puVar2[2];   // offset 0x8 -> field_8c
-        ((int*)&local_d8)[3] = puVar2[3];   // offset 0xc -> field_90
-        
-        uVar6 = 0;
-        do {
-            uVar5 = uVar6 + 1;
-            ((char*)&local_d8)[0x10 + uVar6] = *((char*)puVar2 + 0x10 + uVar6);
-            uVar6 = uVar5;
-        } while (uVar5 < 0x20);
-        
-        ((int*)&local_d8)[0xc] = puVar2[0xc];   // offset 0x30
-        ((int*)&local_d8)[0xe] = puVar2[0xe];   // offset 0x38
-        ((int*)&local_d8)[0xf] = puVar2[0xf];   // offset 0x3c
+        // Copy Parser base class fields
+        local_d8.m_subObject = pSourceMsg->m_subObject;
+        local_d8.isProcessingKey = pSourceMsg->isProcessingKey;
         
         uVar6 = 0;
         do {
             uVar5 = uVar6 + 1;
-            ((char*)&local_d8)[0x40 + uVar6] = *((char*)puVar2 + 0x40 + uVar6);
+            local_d8.currentKey[uVar6] = pSourceMsg->currentKey[uVar6];
             uVar6 = uVar5;
-        } while (uVar5 < 0x40);
+        } while (uVar5 < 0x20);  // currentKey[32]
         
-        ((int*)&local_d8)[0x20] = puVar2[0x20]; // offset 0x80
-        ((int*)&local_d8)[0x22] = puVar2[0x22]; // offset 0x88
-        ((int*)&local_d8)[0x23] = puVar2[0x23]; // offset 0x8c
-        ((int*)&local_d8)[0x24] = puVar2[0x24]; // offset 0x90
-        ((int*)&local_d8)[0x25] = puVar2[0x25]; // offset 0x94
-        ((int*)&local_d8)[0x26] = puVar2[0x26]; // offset 0x98
-        ((int*)&local_d8)[0x27] = puVar2[0x27]; // offset 0x9c
-        ((int*)&local_d8)[0x28] = puVar2[0x28]; // offset 0xa0
-        ((int*)&local_d8)[0x29] = puVar2[0x29]; // offset 0xa4
-        ((int*)&local_d8)[0x2a] = puVar2[0x2a]; // offset 0xa8
-        ((int*)&local_d8)[0x2b] = puVar2[0x2b]; // offset 0xac
-        ((int*)&local_d8)[0x2c] = puVar2[0x2c]; // offset 0xb0
-        ((int*)&local_d8)[0x2d] = puVar2[0x2d]; // offset 0xb4
-        ((int*)&local_d8)[0x2e] = puVar2[0x2e]; // offset 0xb8
-        local_18 = (void*)puVar2[0x2f]; // offset 0xbc
+        local_d8.lineNumber = pSourceMsg->lineNumber;
+        local_d8.savedFilePos = pSourceMsg->savedFilePos;
+        local_d8.field_0x3c = pSourceMsg->field_0x3c;
+        
+        uVar6 = 0;
+        do {
+            uVar5 = uVar6 + 1;
+            local_d8.filename[uVar6] = pSourceMsg->filename[uVar6];
+            uVar6 = uVar5;
+        } while (uVar5 < 0x40);  // filename[64]
+        
+        local_d8.pFile = pSourceMsg->pFile;
+        
+        // Copy SC_Message specific fields using named access
+        local_d8.targetAddress = pSourceMsg->targetAddress;
+        local_d8.sourceAddress = pSourceMsg->sourceAddress;
+        local_d8.command = pSourceMsg->command;
+        local_d8.data = pSourceMsg->data;
+        local_d8.priority = pSourceMsg->priority;
+        local_d8.param1 = pSourceMsg->param1;
+        local_d8.param2 = pSourceMsg->param2;
+        local_d8.clickX = pSourceMsg->clickX;
+        local_d8.clickY = pSourceMsg->clickY;
+        local_d8.mouseX = pSourceMsg->mouseX;
+        local_d8.mouseY = pSourceMsg->mouseY;
+        local_d8.field_b4 = pSourceMsg->field_b4;
+        local_d8.field_b8 = pSourceMsg->field_b8;
+        local_18 = (void*)pSourceMsg->userPtr;
         
         // Create entry in DAT_00436984
-        puVar3 = DAT_00436984;
-        puVar4 = (int*)((TimedEventPool*)DAT_00436984)->Create(
-            (void*)DAT_00436984[1], 0);
-        ((TimedEvent*)(puVar4 + 2))->CopyFrom((TimedEvent*)&local_d8);
+        pPool = (TimedEventPool*)DAT_00436984;
+        pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
+        ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)&local_d8);
         
-        if ((int*)puVar3[1] == 0) {
-            *puVar3 = (int)puVar4;
+        if (pPool->list.tail == 0) {
+            pPool->list.head = pNewEvent;
         } else {
-            *(int*)puVar3[1] = (int)puVar4;
+            *(TimedEvent**)pPool->list.tail = pNewEvent;
         }
-        puVar3[1] = (int)puVar4;
+        pPool->list.tail = pNewEvent;
     }
     
     // Second loop: pop items from DAT_00436984
-    while (*(int*)((char*)DAT_00436984 + 8) != 0) {
-        puVar2 = (int*)FUN_00417c50(DAT_00436984, local_198);
+    while (((TimedEventPool*)DAT_00436984)->m_count != 0) {
+        pSourceMsg = (SC_Message*)FUN_00417c50(DAT_00436984, local_198);
         
-        FUN_00417cb0(this, puVar2);
+        FUN_00417cb0(this, pSourceMsg);
         
         // Inner loop: pop items from DAT_00436988 and add to DAT_00436984
-        while (*(int*)((char*)DAT_00436988 + 8) != 0) {
-            puVar3 = (int*)FUN_00417c50(DAT_00436988, local_258);
-            puVar2 = DAT_00436984;
-            puVar4 = (int*)((TimedEventPool*)DAT_00436984)->Create(
-                (void*)DAT_00436984[1], 0);
-            ((TimedEvent*)(puVar4 + 2))->CopyFrom((TimedEvent*)puVar3);
+        while (((TimedEventPool*)DAT_00436988)->m_count != 0) {
+            SC_Message* pInnerMsg = (SC_Message*)FUN_00417c50(DAT_00436988, local_258);
+            pPool = (TimedEventPool*)DAT_00436984;
+            pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
+            ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)pInnerMsg);
             
-            if ((int*)puVar2[1] == 0) {
-                *puVar2 = (int)puVar4;
+            if (pPool->list.tail == 0) {
+                pPool->list.head = pNewEvent;
             } else {
-                *(int*)puVar2[1] = (int)puVar4;
+                *(TimedEvent**)pPool->list.tail = pNewEvent;
             }
-            puVar2[1] = (int)puVar4;
+            pPool->list.tail = pNewEvent;
         }
         
         local_14++;

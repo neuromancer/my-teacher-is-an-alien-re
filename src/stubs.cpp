@@ -101,8 +101,17 @@ void FUN_00425000() {}
 void FUN_004229ea() {}
 void FUN_00422a2f() {}
 void FUN_004110d0() {}
-void FUN_00424940() {}
+void __cdecl FUN_00424940(void*) {}  // FreeMemory wrapper
 void FUN_0041e7d0() {}
+
+// Helper functions for CleanupLoop
+void* __fastcall FUN_00401710(void* queue) { return 0; }  // Queue::Pop
+void* __fastcall FUN_00401790(void* queue) { return 0; }  // Queue::Pop
+void* __fastcall FUN_00417680(void* queue) { return 0; }  // Queue::GetCurrentData
+void __fastcall FUN_00417660(void* obj, int freeFlag) {}  // Object destructor
+void __fastcall FUN_004189a0(void* node, int freeFlag) {} // Node cleanup
+void __fastcall FUN_00417652() {}  // SEH unwind thunk
+
 
 // Named Stubs
 HWND GetWindowHandle_() { 
@@ -205,7 +214,7 @@ void* FUN_00420140(void* a, const char* b, int c) { return a; }
 void* FUN_004209e0(void* a, const char* b, int c) { return a; }
 
 // Missing Function Stubs from Step 71
-void __fastcall FUN_00417450(void*) {}
+// FUN_00417450 implemented in GameLoop.cpp as GameLoop::CleanupLoop
 void __fastcall FUN_0041c960(void*) {}
 // FUN_0041c5a0 implemented in ZBufferManager.cpp
 // FUN_004179a0 implemented in GameLoop.cpp as GameLoop::UpdateGame
