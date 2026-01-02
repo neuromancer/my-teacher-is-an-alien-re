@@ -1,6 +1,10 @@
 #include "ScriptHandler.h"
 #include "Message.h"
 
+/* Function start: 0x401100 */
+ScriptHandler::~ScriptHandler() {
+}
+
 /* Function start: 0x417180 */
 void ScriptHandler::CopyCommandData(ScriptHandler* other)
 {

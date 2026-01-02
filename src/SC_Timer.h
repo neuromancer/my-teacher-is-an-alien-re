@@ -29,3 +29,4 @@ private:
 #define m_messageData sourceAddress
 
 #endif // SC_TIMER_H
+

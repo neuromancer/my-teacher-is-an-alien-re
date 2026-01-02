@@ -10,6 +10,7 @@ struct Message;
 // Size: 0x98 bytes (includes Parser)
 class ScriptHandler : public Parser {
 public:
+    ~ScriptHandler();
     void CopyCommandData(ScriptHandler* other);
     int WriteMessageAddress(Message* msg);
 

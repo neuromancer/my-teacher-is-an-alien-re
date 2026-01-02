@@ -18,18 +18,40 @@ TimedEvent *TimedEvent_Init(TimedEvent *);
 
 /* Function start: 0x401B60 */
 SC_Timer::SC_Timer() {
-  memset(&m_messageId, 0, 24);
+  // Zero 6 dwords (24 bytes) at offset 0x88
+  memset(&targetAddress, 0, 24);
 
   m_messageId = 0xd;
   timer1.Reset();
 
-  m_eventList = (Queue *)AllocateMemory(0x10);
-  if (m_eventList != 0) {
-    m_eventList->Init();
+  Queue *pQueue = (Queue *)AllocateMemory(0x10);
+  if (pQueue != 0) {
+    pQueue->m_field_0xc = 0;
+    pQueue->m_head = 0;
+    pQueue->m_tail = 0;
+    pQueue->m_current = pQueue->m_head;
   }
+  m_eventList = pQueue;
 }
 
-SC_Timer::~SC_Timer() {}
+/* Function start: 0x401CA0 */
+SC_Timer::~SC_Timer() {
+  Queue *pQueue = m_eventList;
+  if (pQueue != 0) {
+    if (pQueue->m_head != 0) {
+      pQueue->m_current = pQueue->m_head;
+      while (pQueue->m_head != 0) {
+        void *data = pQueue->Pop();
+        if (data != 0) {
+          ((TimedEvent *)data)->~TimedEvent();
+          FreeMemory(data);
+        }
+      }
+    }
+    FreeFromGlobalHeap(pQueue);
+    m_eventList = 0;
+  }
+}
 
 /* Function start: 0x401E30 */
 void SC_Timer::Update(int param_1, int param_2) {
