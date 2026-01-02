@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "Memory.h"
-#include "AILData.h"
+#include "Sample.h"
 #include "string.h"
 #include "new.h"
 #include "InputManager.h"
@@ -37,7 +37,7 @@ Mouse::Mouse()
 /* Function start: 0x41EE30 */
 Mouse::~Mouse()
 {
-    AILData* audio = m_audio;
+    Sample* audio = m_audio;
     if (audio != 0) {
         delete audio;
         m_audio = 0;
@@ -82,11 +82,7 @@ int Mouse::LBLParse(char* line)
     if (strcmp(cmd, "AUDIO") == 0) {
         sscanf(line, " %s %s", cmd, args);
         try {
-            ptr = AllocateMemory(sizeof(AILData));
-            AILData* audio = 0;
-            if (ptr != 0) {
-                audio = ((AILData *)ptr)->ClearFields();
-            }
+            Sample* audio = new Sample();
             m_audio = audio;
             if (audio != 0) {
                 audio->Load(args);

@@ -20,7 +20,7 @@
 
 /* Function start: 0x41E580 */
 
-/* Function start: 0x41E666 */
+/* Function start: 0x41E666 - Compiler-generated SEH unwind funclet for Sample::Fade */
 
 /* Function start: 0x41E670 */
 

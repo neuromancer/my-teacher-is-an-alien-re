@@ -4,7 +4,7 @@
 #include "Parser.h"
 #include "Sprite.h"
 #include "Cleanup.h"
-class AILData;
+class Sample;
 
 /**
  * Mouse - Cursor Rendering and Appearance
@@ -42,6 +42,6 @@ private:
         int y;
     };
     Point m_hotspots[25];      // 0xF4
-    AILData* m_audio;          // 0x1BC
+    Sample* m_audio;          // 0x1BC
 };
 #endif // MOUSE_H

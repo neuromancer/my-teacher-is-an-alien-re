@@ -1,25 +1,14 @@
 #include "Sample.h"
 #include "globals.h"
 #include "Sound.h"
+#include "string.h"
 #include <mss.h>
-
-extern "C" {
-void ShowError(const char *);
-void FUN_0041e666();
-}
-
-
-
-// Constructor wrapper for external callers
-Sample *Sample_Ctor(Sample *p) {
-  p->Sample::Sample();
-  return p;
-}
+#include <stdio.h>
 
 /* Function start: 0x41E460 */
 Sample::Sample() {
   m_data = 0;
-  m_field4 = 0;
+  m_size = 0;
   m_field8 = 0;
   m_sample = 0;
 }
@@ -31,14 +20,14 @@ void Sample::Init(int volume) {
   }
   AIL_init_sample(m_sample);
   AIL_set_sample_file(m_sample, m_data, 0);
-  m_field4 = *(int *)((char *)m_sample + 0xc);
+  m_size = *(int *)((char *)m_sample + 0xc);
   AIL_set_sample_volume(m_sample, volume);
 }
 
 /* Function start: 0x41E580 */
 void Sample::Fade(int volume, unsigned int duration) {
   int current_volume = AIL_sample_volume(m_sample);
-  if (m_sample != 0 && m_field4 == *(int *)((char *)m_sample + 0xc)) {
+  if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
     int diff = current_volume - volume;
     int step = -1;
     if (diff < 0) {
@@ -61,20 +50,19 @@ void Sample::Fade(int volume, unsigned int duration) {
       } while (diff != 0);
     }
     AIL_set_sample_volume(m_sample, volume);
-    FUN_0041e666();
   }
 }
 
 /* Function start: 0x41E670 */
 Sample::~Sample() {
-  if (m_sample != 0 && m_field4 == *(int *)((char *)m_sample + 0xc)) {
+  if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
     AIL_end_sample(m_sample);
   }
 }
 
 /* Function start: 0x41E690 */
 void Sample::Stop() {
-  if (m_sample != 0 && m_field4 == *(int *)((char *)m_sample + 0xc)) {
+  if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
     while (AIL_sample_status(m_sample) == SMP_PLAYING) {
     }
     AIL_stop_sample(m_sample);
@@ -92,9 +80,41 @@ int Sample::Play(int volume, int loop_count) {
     if (m_sample != 0) {
       AIL_set_sample_loop_count(m_sample, loop_count);
     }
-    if (m_sample != 0 && m_field4 == *(int *)((char *)m_sample + 0xc)) {
+    if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
       AIL_start_sample(m_sample);
     }
+    return 0;
+  }
+  return 1;
+}
+
+/* Function start: 0x41E470 */
+void Sample::Unload() {
+  if (m_data != 0) {
+    this->~Sample();
+    AIL_mem_free_lock(m_data);
+    m_data = 0;
+  }
+}
+
+/* Function start: 0x41E490 */
+int Sample::Load(char *filename) {
+  if (*(int *)((char *)g_Sound_0043696c + 0x38) == 0) {
+    return 1;
+  }
+  if (m_data != 0) {
+    Unload();
+  }
+  m_size = 0;
+  FILE *_File = OpenFileAndFindKey((char *)0x0, filename, "rb",
+                                   (unsigned int *)&m_size);
+  if ((_File != 0) && (m_size != 0)) {
+    m_data = (char *)AIL_mem_alloc_lock(m_size);
+    if (m_data == 0) {
+      return 1;
+    }
+    fread(m_data, m_size, 1, _File);
+    fclose(_File);
     return 0;
   }
   return 1;

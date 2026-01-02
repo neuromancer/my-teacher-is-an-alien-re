@@ -23,7 +23,7 @@ void FUN_0041ef47() {}
 // FUN_00425fd0 is strncpy from MSVC CRT
 void FUN_0041eab0() {}
 // FUN_004171b0 implemented in ScriptHandler.cpp as WriteMessageAddress
-void FUN_0041e666() {}
+// FUN_0041e666 is compiler-generated exception funclet, not a real function
 void FUN_0041b110() {}
 void FUN_0041b0a0() {}
 void FUN_00421700() {}

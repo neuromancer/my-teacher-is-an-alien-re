@@ -1,13 +1,10 @@
 #include "SoundList.h"
-#include "AILData.h"
 #include "Memory.h"
 #include "Sample.h"
 #include "main.h"
 #include "string.h"
 #include <mss.h>
 #include <string.h>
-
-extern Sample *Sample_Ctor(Sample *);
 
 /* Function start: 0x41E740 */
 SoundList::SoundList(int count) {
@@ -34,8 +31,7 @@ SoundList::~SoundList() {
     m_fieldc--;
     void *sound = m_field8[m_fieldc];
     if (sound != 0) {
-      // Free any internal AIL data (data pointer inside the object)
-      ((AILData *)sound)->~AILData();
+      ((Sample *)sound)->Unload();
       FreeMemory(sound);
       m_field8[m_fieldc] = 0;
     }
@@ -62,7 +58,7 @@ void SoundList::StopAll() {
   for (short i = 0; i < m_fieldc; i++) {
     Sample *sample = (Sample *)field8_ptr[i];
     if (AIL_sample_status(sample->m_sample) == SMP_PLAYING) {
-      ((AILData *)sample)->~AILData();
+      ((Sample *)sample)->Unload();
     }
   }
 }
@@ -97,14 +93,11 @@ void *SoundList::Register(char *filename) {
         m_sounds[m_fieldc] = (void *)AllocateMemory(len + 1);
         strcpy((char *)m_sounds[m_fieldc], local_54);
 
-        Sample *sound = (Sample *)AllocateMemory(0x10);
-        if (sound != NULL) {
-          Sample_Ctor(sound);
-        }
+        Sample *sound = new Sample();
 
         m_field8[m_fieldc] = sound;
 
-        if (((AILData *)m_field8[m_fieldc])->Load(filename) == 0) {
+        if (((Sample *)m_field8[m_fieldc])->Load(filename) == 0) {
           sVar9 = m_fieldc;
           m_fieldc++;
         }
