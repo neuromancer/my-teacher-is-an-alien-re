@@ -10,11 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Forward declarations
-extern "C" {
-void FUN_00419fd0(void *);
-}
-
 /* Function start: 0x401B60 */
 SC_Timer::SC_Timer() {
   // Zero 6 dwords (24 bytes) at offset 0x88
