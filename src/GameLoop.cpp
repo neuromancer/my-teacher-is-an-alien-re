@@ -18,9 +18,6 @@ extern "C" {
 typedef void (__cdecl *SmackSoundCheckFn)();
 extern SmackSoundCheckFn g_SmackSoundCheck;
 
-
-// Forward declaration for the SC_Message destructor
-extern "C" void __fastcall FUN_004199a0(void*);
 // JoystickManager::CheckInput - takes this pointer and int param
 extern "C" int FUN_00421d10(void*, int);
 // Wait for key
@@ -302,7 +299,7 @@ void GameLoop::ProcessInput() {
         pPool->list.tail = (TimedEvent*)pEvent;
     }
     
-    FUN_004199a0(pLocalMessage);
+    pLocalMessage->SC_Message::~SC_Message();
 }
 
 /* Function start: 0x417320 */
@@ -527,6 +524,6 @@ int GameLoop::UpdateGame()
         local_14++;
     }
     
-    FUN_004199a0(&local_d8);
+    local_d8.SC_Message::~SC_Message();
     return local_14;
 }

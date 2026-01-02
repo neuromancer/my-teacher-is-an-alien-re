@@ -15,6 +15,11 @@ extern "C" {
 
 void* operator new(unsigned int, void* p) { return p; }
 
+/* Function start: 0x4199A0 */
+SC_Message::~SC_Message()
+{
+}
+
 /* Function start: 0x4198C0 */
 SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY)
 {

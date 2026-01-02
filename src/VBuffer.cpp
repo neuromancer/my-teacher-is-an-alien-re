@@ -5,6 +5,7 @@
 #include <windows.h>
 #include "Memory.h"
 #include "string.h"
+#include "GlyphRect.h"
 
 static int g_VBufferHandleTableInitialized = 0;
 static int g_VBufferHandleTable[0x20];
@@ -466,29 +467,6 @@ void __cdecl OffsetRect(int* rect, int offsetX, int offsetY)
     rect[3] = rect[3] + offsetY;
 }
 
-extern "C" {
-    void FUN_0041b55d(void);
-    void FUN_0041b56f(void);
-}
-
-class ScopedRect {
-public:
-    int rect[4];
-    ScopedRect() {
-        rect[0] = 0;
-        rect[1] = 0;
-        rect[2] = 0;
-        rect[3] = 0;
-    }
-    ~ScopedRect();
-};
-
-/* Function start: 0x41B55D */
-ScopedRect::~ScopedRect()
-{
-    FUN_0041b56f();
-}
-
 /* Function start: 0x41B450 */
 int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* destY)
 {
@@ -502,10 +480,14 @@ int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* dest
         return 0;
     }
     
-    ScopedRect guard;
+    GlyphRect guard;
+    guard.left = 0;
+    guard.top = 0;
+    guard.right = 0;
+    guard.bottom = 0;
     OffsetRect(srcRect, *destX, *destY);
-    IntersectClipRect(clipRect, srcRect, guard.rect);
-    OffsetRect(guard.rect, -(*destX), -(*destY));
+    IntersectClipRect(clipRect, srcRect, &guard.left);
+    OffsetRect(&guard.left, -(*destX), -(*destY));
     
     int iVar1 = *destX;
     if (*destX <= *clipRect) {
@@ -519,7 +501,7 @@ int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* dest
     }
     *destY = iVar1;
     
-    if ((guard.rect[2] == guard.rect[0]) || (guard.rect[3] == guard.rect[1])) {
+    if ((guard.right == guard.left) || (guard.bottom == guard.top)) {
         srcRect[0] = 0;
         srcRect[1] = 0;
         srcRect[2] = 0;
@@ -529,10 +511,10 @@ int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* dest
         return 0;
     }
     
-    srcRect[0] = guard.rect[0];
-    srcRect[1] = guard.rect[1];
-    srcRect[2] = guard.rect[2];
-    srcRect[3] = guard.rect[3];
+    srcRect[0] = guard.left;
+    srcRect[1] = guard.top;
+    srcRect[2] = guard.right;
+    srcRect[3] = guard.bottom;
     return 1;
 }
 

@@ -209,7 +209,6 @@ void __fastcall FUN_00417450(void*) {}
 void __fastcall FUN_0041c960(void*) {}
 // FUN_0041c5a0 implemented in ZBufferManager.cpp
 // FUN_004179a0 implemented in GameLoop.cpp as GameLoop::UpdateGame
-void __fastcall FUN_004199a0(void*) {} // SC_Message destructor
 
 void* FUN_0041cd50(void* a, char* b) { return a; }
 void FUN_00409160(void* a, void* b) {}
@@ -266,13 +265,6 @@ void SC_OnScreenMessage::Timer_DecrementCounter_wrapper() {}
 Message::Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10) {
     this->field_0x0 = p1;
 }
-
-// TimedEvent destructor wrapper
-// @TimedEvent_dtor@4 is likely a fastcall or similar? 
-// No, @Name@Bytes is fastcall.
-// The error was: unresolved external symbol @TimedEvent_dtor@4
-// We can define it as extern "C" __fastcall?
-extern "C" void __fastcall TimedEvent_dtor(void* thisptr) {} 
 
 extern "C" {
 void* __fastcall FUN_00422690(void* ptr) { return ptr; }

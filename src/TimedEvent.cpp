@@ -6,11 +6,7 @@
 #include "SC_OnScreenMessage.h"
 #include "Message.h"
 #include "string.h"
-
-extern "C" {
-    void __fastcall TimedEvent_dtor(void*);
-
-}
+#include "SC_Question.h"
 
 extern int* DAT_00436988;
  
@@ -24,10 +20,10 @@ TimedEvent::TimedEvent()
 /* Function start: 0x401910 */
 TimedEvent::~TimedEvent()
 {
-    void* next = m_next_event_data;
+    SC_Message* next = (SC_Message*)m_next_event_data;
     if (next) {
-        TimedEvent_dtor(next);
-        FreeFromGlobalHeap(next);
+        next->SC_Message::~SC_Message();
+        FreeMemory(next);
         m_next_event_data = 0;
     }
 }
@@ -59,8 +55,8 @@ int TimedEvent::Update()
 
         next_data = m_next_event_data;
         if (next_data) {
-            TimedEvent_dtor(next_data);
-            FreeFromGlobalHeap(next_data);
+            ((SC_Message*)next_data)->SC_Message::~SC_Message();
+            FreeMemory(next_data);
             m_next_event_data = 0;
         }
         return 1;
@@ -109,8 +105,8 @@ int TimedEvent::Update()
 
         next_data = m_next_event_data;
         if (next_data) {
-            TimedEvent_dtor(next_data);
-            FreeFromGlobalHeap(next_data);
+            ((SC_Message*)next_data)->SC_Message::~SC_Message();
+            FreeMemory(next_data);
             m_next_event_data = 0;
         }
         return 1;
