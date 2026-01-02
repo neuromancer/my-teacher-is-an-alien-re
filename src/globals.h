@@ -465,7 +465,7 @@ extern GameState* g_GameState3_0043699c; // DAT_0043699c
 // extern char DAT_0043704d; // { /* 1 bytes */ }
 // extern char DAT_0043704e; // { /* 1 bytes */ }
 // extern char DAT_0043704f; // { /* 1 bytes */ }
-// extern int DAT_004373b8; // { /* 4 bytes */ }
+extern int DAT_004373b8; // DoubleClickTime
 extern int DAT_004373bc; // DAT_004373bc  { /* 4 bytes */ }
 // pointer PTR_s_Setup.cfg_00437454 = (void*)0x00437448;
 // extern int DAT_00437488; // { /* 4 bytes */ }

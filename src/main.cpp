@@ -474,13 +474,7 @@ void InitGameSystems(void) {
     ClearMessageLog();
     CreateGameObject_1();
     InitWorkBuffer(0x280, 0x1e0);
-    pAlloc = AllocateMemory(0x1b8);
-    pInit = 0;
-    if (pAlloc != 0) {
-      pInit = ((InputManager *)pAlloc)->Init(
-          (unsigned int)g_GameConfig_00436970->data[0]);
-    }
-    g_InputManager_00436968 = (InputManager *)pInit;
+    g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data[0]);
     pAlloc = AllocateMemory(0x3c);
     pInit = 0;
     if (pAlloc != 0) {
