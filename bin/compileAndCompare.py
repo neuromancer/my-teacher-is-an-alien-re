@@ -115,8 +115,8 @@ def read_assembly(function_name, file_path):
                 else:
                     is_seh_or_data_only = False
                     break
-            elif line.startswith('mov') or line.startswith('call') or line.startswith('add'):
-                # After SEH label, mov/call/add instructions are part of the cleanup funclet
+            elif line.startswith('mov') or line.startswith('push') or line.startswith('call') or line.startswith('add'):
+                # After SEH label, mov/push/call/add instructions are part of the cleanup funclet
                 i += 1
                 continue
             # Check for jump table data directives (DD, DB, npad, etc.)

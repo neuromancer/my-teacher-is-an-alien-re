@@ -17,6 +17,7 @@
 #include "GameLoop.h"
 #include "AssetList.h"
 #include "Message.h"
+#include "TimedEvent.h"
 #include "string.h"
 #include <mbctype.h>
 #include <mbstring.h>
@@ -111,27 +112,8 @@ void RunGame() {
 
     g_Strings_00435a70 = new StringTable("mis\\strings.mis", 1);
     
-    puVar2 = AllocateMemory(0x18);
-    if (puVar2 != 0) {
-        ((int*)puVar2)[2] = 0;
-        ((int*)puVar2)[3] = 0;
-        ((int*)puVar2)[1] = 0;
-        ((int*)puVar2)[0] = 0;
-        ((int*)puVar2)[4] = 0;
-        ((int*)puVar2)[5] = 0x32;
-    }
-    DAT_00436984 = (int*)puVar2;
-
-    puVar2 = AllocateMemory(0x18);
-    if (puVar2 != 0) {
-        ((int*)puVar2)[2] = 0;
-        ((int*)puVar2)[3] = 0;
-        ((int*)puVar2)[1] = 0;
-        ((int*)puVar2)[0] = 0;
-        ((int*)puVar2)[4] = 0;
-        ((int*)puVar2)[5] = 0x32;
-    }
-    DAT_00436988 = (int*)puVar2;
+    DAT_00436984 = (int *)new TimedEventPool();
+    DAT_00436988 = (int *)new TimedEventPool();
 
     ZBufferManager* pZBuffer = new ZBufferManager();
     DAT_0043698c = (int*)pZBuffer;

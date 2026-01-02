@@ -4,6 +4,13 @@
 #include "TimedEvent.h"
 #include "Message.h"
 
+extern "C" void __fastcall FUN_0040d2a0(void* thisptr);
+
+TimedEventPool::~TimedEventPool()
+{
+    FUN_0040d2a0(this);
+}
+
 /* Function start: 0x402310 */
 void TimedEvent::CopyFrom(const TimedEvent* other)
 {

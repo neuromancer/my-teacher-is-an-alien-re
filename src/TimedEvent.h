@@ -18,6 +18,15 @@ public:
     TimedEvent* m_pool;
     int m_pool_size;
 
+    TimedEventPool() {
+        m_count = 0;
+        m_free_list = 0;
+        list.tail = 0;
+        list.head = 0;
+        m_pool = 0;
+        m_pool_size = 0x32;
+    }
+    ~TimedEventPool();
     TimedEvent* Create(void* callback, void* data);
 };
 
