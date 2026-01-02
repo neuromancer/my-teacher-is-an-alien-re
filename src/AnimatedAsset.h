@@ -3,20 +3,21 @@
 
 #include "VBuffer.h"
 #include "GlyphRect.h"
-#include "Cleanup.h"
 
-// Embedded subobject at offset 0x8 with destructor for SEH
+// Embedded subobject at offset 0x8 with constructor/destructor for SEH
 struct TextPos {
     int x;
     int y;
-    ~TextPos() { Cleanup_00405770(this); }
+    TextPos() { x = 0; y = 0; }
+    ~TextPos() { }
 };
 
-// Embedded subobject at offset 0x30 with destructor for SEH  
+// Embedded subobject at offset 0x30 with constructor/destructor for SEH  
 struct CharAdv {
     int advance;
     int reserved;
-    ~CharAdv() { Cleanup_00405770(this); }
+    CharAdv() { advance = 0; reserved = 0; }
+    ~CharAdv() { }
 };
 
 class AnimatedAsset {

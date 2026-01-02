@@ -12,13 +12,7 @@
 /* Function start: 0x420F80 */
 AnimatedAsset::AnimatedAsset()
 {
-    int* pTextPos = &this->text_pos.x;
-    int* pCharAdv = &this->char_adv.advance;
     char glyphVal = 1;
-    pTextPos[0] = 0;
-    pTextPos[1] = 0;
-    pCharAdv[0] = 0;
-    pCharAdv[1] = 0;
     memset(this, 0, 14 * sizeof(int));
     this->color = 2;
     this->glyphValue = glyphVal;
