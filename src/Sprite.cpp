@@ -62,10 +62,7 @@ void Sprite::Init()
             }
         }
         if (anim == 0) {
-            anim = (Animation*)AllocateMemory(0x2c);
-            if (anim != 0) {
-                this->animation_data = anim->InitWithFilename(this->sprite_filename);
-            }
+            anim = new Animation(this->sprite_filename);
         }
     } catch (...) {
     }

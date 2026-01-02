@@ -73,7 +73,8 @@ def read_assembly(function_name, file_path):
     # Find all ret instruction indices
     ret_indices = []
     for i, line in enumerate(stripped_lines):
-        if line.startswith('ret') or line == 'ret 0':
+        # Match ret with optional whitespace and optional number (ret, ret 0, ret 4, etc.)
+        if re.match(r'^ret(\s+\d+)?$', line):
             ret_indices.append(i)
     
     # For each ret from the beginning, check if everything after is just SEH handlers or data
@@ -114,8 +115,8 @@ def read_assembly(function_name, file_path):
                 else:
                     is_seh_or_data_only = False
                     break
-            elif line.startswith('mov') or line.startswith('call'):
-                # After SEH label, mov/call instructions are part of the cleanup funclet
+            elif line.startswith('mov') or line.startswith('call') or line.startswith('add'):
+                # After SEH label, mov/call/add instructions are part of the cleanup funclet
                 i += 1
                 continue
             # Check for jump table data directives (DD, DB, npad, etc.)

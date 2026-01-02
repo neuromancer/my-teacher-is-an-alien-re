@@ -12,12 +12,9 @@
 #include <windows.h>
 
 extern "C" {
-void FUN_0041fbd3();
 void *GetGameWindowHandle();
 int *GetWindowHeight();
 int *GetWindowWidth();
-void FUN_0041ac50(int);
-void FUN_0041ac80();
 }
 
 int WaitForInput();
@@ -44,14 +41,7 @@ void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsig
 
 /* Function start: 0x41FA50 */
 Animation::Animation() {
-  int *p = &field_0x10;
-  *p = 0;
-  *(p + 1) = 0;
-  try {
-    CleanArray10();
-  } catch (...) {
-  }
-  //return this;
+  CleanArray10();
 }
 
 /* Function start: 0x41FAC0 */
@@ -63,16 +53,16 @@ void Animation::Delete(unsigned char param_1) {
 }
 
 /* Function start: 0x41FAE0 */
-Animation *Animation::InitWithFilename(char *filename) {
-  int *p = &field_0x10;
-  *p = 0;
-  *(p + 1) = 0;
-  try {
+Animation::Animation(char *filename) {
+  //int *p = &unknown.field_0;
+  //*p = 0;
+  //p[1] = 0;
+  //try {
     CleanArray10();
     OpenAndConvertToBuffer(filename);
-  } catch (...) {
-  }
-  return this;
+  //} catch (...) {
+  //}
+  //return this;
 }
 
 /* Function start: 0x41FB60 */
@@ -85,13 +75,9 @@ void Animation::CleanArray10() {
 
 /* Function start: 0x41FB70 */
 Animation::~Animation() {
-  try {
-    this->FreeVBuffer();
-    this->CloseSmackerBuffer();
-    this->CloseSmackerFile();
-  } catch (...) {
-  }
-  //FUN_0041fbd3();
+  this->FreeVBuffer();
+  this->CloseSmackerBuffer();
+  this->CloseSmackerFile();
 }
 
 /* Function start: 0x41FBE0 */
