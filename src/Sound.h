@@ -5,8 +5,7 @@
 
 class Sound {
 public:
-    Sound();
-    void* Init(int param_1, unsigned short param_2, short param_3);
+    Sound(int param_1, unsigned short param_2, short param_3);
     void AllocateSampleHandles();
     HSAMPLE FindFreeSampleHandle();
     void StopAllSamples();

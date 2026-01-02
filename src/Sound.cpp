@@ -21,7 +21,7 @@ int DAT_0043de3c;
 short DAT_0043de3e;
 
 /* Function start: 0x41E1F0 */
-void *Sound::Init(int param_1, unsigned short param_2, short param_3) {
+Sound::Sound(int param_1, unsigned short param_2, short param_3) {
   int *puVar4 = (int *)this;
   for (int i = 0; i < 15; i++) {
     *puVar4++ = 0;
@@ -62,7 +62,6 @@ void *Sound::Init(int param_1, unsigned short param_2, short param_3) {
   } else {
     WriteToMessageLog("Sound :: Not Initialized (No Sound Card)");
   }
-  return this;
 }
 
 /* Function start: 0x41E320 */

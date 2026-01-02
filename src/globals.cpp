@@ -27,6 +27,9 @@ VBuffer* g_WorkBuffer_00436974 = 0;
 CDData* g_CDData_0043697c = 0;
 Mouse* g_Mouse_00436978 = 0;
 Timer* g_Timer_00436980 = 0;
+Timer g_leftClickTimer;  // 0x43de40
+Timer g_rightClickTimer; // 0x43de58
+int DAT_004373b8 = 0; // DoubleClickTime
 FlagArray* g_Manager_00435a84 = 0;
 StringTable* g_Strings_00435a70 = 0;
 char* g_Unknown_00436994 = 0;

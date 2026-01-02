@@ -23,10 +23,7 @@ MousePoint::~MousePoint() {
 InputState::InputState() {
     this->x = 0;
     this->y = 0;
-    this->buttons = 0;
-    this->prevButtons = 0;
-    this->ext1 = 0;
-    this->ext2 = 0;
+    memset(this, 0, sizeof(InputState));
 }
 
 InputState::~InputState() {
@@ -40,10 +37,12 @@ InputManager::InputManager(int param_1) {
 InputManager::~InputManager() {
 }
 
+extern "C" int FUN_00421ae0(); // joyGetNumDevs wrapper
+
 /* Function start: 0x421890 */
 void InputManager::InitDevices(int param_1) {
-    int screenHeight;
     int screenWidth;
+    int screenHeight;
     InputState* pState;
     JOYINFO joyInfo;
 
@@ -51,16 +50,21 @@ void InputManager::InitDevices(int param_1) {
 
     screenHeight = *GetWindowHeight();
     screenWidth = *GetWindowWidth();
+    screenHeight = screenHeight - 1;
+    screenWidth = screenWidth - 1;
 
     this->bounds.left = 0;
     this->bounds.top = 0;
-    this->bounds.right = screenWidth - 1;
-    this->bounds.bottom = screenHeight - 1;
+    this->bounds.right = screenWidth;
+    this->bounds.bottom = screenHeight;
 
     DAT_004373b8 = GetDoubleClickTime();
 
-    if (this->pMouseLocal != 0) {
-        delete this->pMouseLocal;
+    pState = this->pMouseLocal;
+    if (pState != 0) {
+        if (pState != 0) {
+            delete pState;
+        }
         this->pMouseLocal = 0;
     }
 
@@ -68,12 +72,13 @@ void InputManager::InitDevices(int param_1) {
     this->pMouseLocal = pState;
     this->pMouse = pState;
 
-    if (this->pJoystick != 0) {
-        delete this->pJoystick;
+    pState = this->pJoystick;
+    if (pState != 0) {
+        delete pState;
         this->pJoystick = 0;
     }
 
-    if (joyGetNumDevs() >= 1 && joyGetPos(0, &joyInfo) == 0) {
+    if (FUN_00421ae0() >= 1 && joyGetPos(0, &joyInfo) == 0) {
         pState = new InputState();
         this->pJoystick = pState;
         if (param_1 == 1) {

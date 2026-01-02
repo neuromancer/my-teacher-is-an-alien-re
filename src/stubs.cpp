@@ -19,9 +19,15 @@ void _SmackSetSystemRes_4(int param_1) {
     SmackSetSystemRes(param_1);
 }
 void FUN_0041ef47() {}
-// FUN_0042ddd0 implemented in FileSystem.cpp
+// GetCurrentDir (0x42DDD0) implemented in FileSystem.cpp
 // FUN_00425fd0 is strncpy from MSVC CRT
 void FUN_0041eab0() {}
+
+// Joystick/Input stubs
+void FUN_00421ac0() {}    // InitKeyboardState
+int FUN_00421ae0() { return 0; } // joyGetNumDevs wrapper
+int FUN_00421ce0(int a, int b, int c, int d) { return 0; } // Joystick helper
+void __fastcall FUN_0040d2a0(void* param_1) {} // Pool cleanup function
 // FUN_004171b0 implemented in ScriptHandler.cpp as WriteMessageAddress
 // FUN_0041e666 is compiler-generated exception funclet, not a real function
 void FUN_0041b110() {}

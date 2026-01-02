@@ -27,17 +27,15 @@ int __cdecl __validdrive(unsigned int drive)
 }
 
 /* Function start: 0x42DDF0 */
-char * __cdecl FUN_0042ddf0(unsigned int drive, char *buffer, size_t size)
+char * __cdecl GetDriveDir(unsigned int drive, char *buffer, size_t size)
 {
     DWORD len;
     size_t uVar4;
-    char local_path[260];
     char drive_str[4];
     LPSTR file_part;
+    char local_path[260];
 
-    if (drive == 0) {
-        len = GetCurrentDirectoryA(260, local_path);
-    } else {
+    if (drive != 0) {
         if (__validdrive(drive) == 0) {
              DAT_0043bdf4 = 0xf;
              DAT_0043bdf0 = 0xd;
@@ -48,6 +46,8 @@ char * __cdecl FUN_0042ddf0(unsigned int drive, char *buffer, size_t size)
         drive_str[2] = '.';
         drive_str[3] = 0;
         len = GetFullPathNameA(drive_str, 260, local_path, &file_part);
+    } else {
+        len = GetCurrentDirectoryA(260, local_path);
     }
     
     if (len == 0 || (uVar4 = len + 1, 260 < uVar4)) {
@@ -55,7 +55,7 @@ char * __cdecl FUN_0042ddf0(unsigned int drive, char *buffer, size_t size)
     }
 
     if (buffer == 0) {
-        if (uVar4 <= size) {
+        if ((int)uVar4 <= (int)size) {
             uVar4 = size;
         }
         buffer = (char*)FUN_00428440(uVar4);
@@ -63,7 +63,7 @@ char * __cdecl FUN_0042ddf0(unsigned int drive, char *buffer, size_t size)
             DAT_0043bdf0 = 0xc;
             return 0;
         }
-    } else if (size < uVar4) {
+    } else if ((int)size < (int)uVar4) {
         DAT_0043bdf0 = 0x22;
         return 0;
     }
@@ -74,9 +74,9 @@ char * __cdecl FUN_0042ddf0(unsigned int drive, char *buffer, size_t size)
 }
 
 /* Function start: 0x42DDD0 */
-void __cdecl FUN_0042ddd0(char *buffer, int size)
+void __cdecl GetCurrentDir(char *buffer, int size)
 {
-    FUN_0042ddf0(0, buffer, size);
+    GetDriveDir(0, buffer, size);
 }
 
 }

@@ -217,7 +217,7 @@ void RunGame() {
 
 
 /* Function start: 0x4192F0 */
-int ProcessMessages() {
+extern "C" int ProcessMessages() {
   MSG local_1c;
   int iVar1;
 
@@ -398,14 +398,10 @@ void CheckDebug(void) {
   char local_94[128];
   CDData *pvVar2;
 
-  __try {
+  //__try {
     pvVar2 = g_CDData_0043697c;
     if (g_CDData_0043697c == (CDData *)0x0) {
-      CDData *local_14 = (CDData *)AllocateMemory(0x1e5);
-      pvVar2 = (CDData *)0x0;
-      if (local_14 != (CDData *)0x0) {
-        pvVar2 = local_14->Init("cddata", DAT_0043d568);
-      }
+      pvVar2 = new CDData("cddata", DAT_0043d568);
     }
     g_CDData_0043697c = pvVar2;
     if (DAT_0043d568[0] != '\0') {
@@ -438,8 +434,8 @@ void CheckDebug(void) {
         }
       }
     }
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-  }
+  //} __except (EXCEPTION_EXECUTE_HANDLER) {
+  //}
 }
 
 /* Function start: 0x41A810 */
@@ -464,29 +460,18 @@ int __cdecl CalculateBufferSize(int width, unsigned int height) {
 
 /* Function start: 0x41A3D0 */
 void InitGameSystems(void) {
-  void *pAlloc;
-  void *pInit;
-
-  //__try {
-    g_Buffer_00436960 = (char *)AllocateMemory(0x100);
-    g_Buffer_00436964 = AllocateMemory(CalculateBufferSize(0x280, 0x1e0));
+    g_Buffer_00436960 = new char[0x100];
+    g_Buffer_00436964 = new char[CalculateBufferSize(0x280, 0x1e0)];
     CheckDebug();
     ClearMessageLog();
     CreateGameObject_1();
     InitWorkBuffer(0x280, 0x1e0);
     g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data[0]);
-    pAlloc = AllocateMemory(0x3c);
-    pInit = 0;
-    if (pAlloc != 0) {
-      pInit = ((Sound *)pAlloc)->Init(0x5622, 8, 1);
-    }
-    g_Sound_0043696c = (Sound *)pInit;
+    g_Sound_0043696c = new Sound(0x5622, 8, 1);
     g_TextManager_00436990 = new AnimatedAsset();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
     SetStateFlag(0, 1);
     SetCursorVisible(0);
-  //} __except (EXCEPTION_EXECUTE_HANDLER) {
-  //}
 }
 
 /* Function start: 0x422520 */
@@ -540,11 +525,11 @@ void ShutdownGameSystems(void) {
      g_GameConfig_00436970 = 0;
   }
   if (g_Buffer_00436964 != 0) {
-    FreeMemory(g_Buffer_00436964);
+    delete[] (char*)g_Buffer_00436964;
     g_Buffer_00436964 = 0;
   }
   if (g_Buffer_00436960 != 0) {
-    FreeMemory(g_Buffer_00436960);
+    delete[] g_Buffer_00436960;
     g_Buffer_00436960 = 0;
   }
 }
