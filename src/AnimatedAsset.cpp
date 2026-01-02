@@ -12,20 +12,14 @@
 /* Function start: 0x420F80 */
 AnimatedAsset::AnimatedAsset()
 {
+    int* pTextPos = &this->text_pos.x;
+    int* pCharAdv = &this->char_adv.advance;
     char glyphVal = 1;
-    int* text_xy = &this->text_pos.x;
-    int* charAdv = &this->char_adv.advance;
-    text_xy[0] = 0;
-    text_xy[1] = 0;
-    charAdv[0] = 0;
-    charAdv[1] = 0;
-    int count = 14;
-    int* p = (int*)this;
-    while (count != 0) {
-        *p = 0;
-        p++;
-        count--;
-    }
+    pTextPos[0] = 0;
+    pTextPos[1] = 0;
+    pCharAdv[0] = 0;
+    pCharAdv[1] = 0;
+    memset(this, 0, 14 * sizeof(int));
     this->color = 2;
     this->glyphValue = glyphVal;
 }
@@ -99,49 +93,30 @@ BUILT:
     this->buffer->Lock();
 }
 
-extern "C" {
-    void FUN_00421671(void);
-}
-
 /* Function start: 0x4215A0 */
-int AnimatedAsset::ComputeTextMetrics(void* text)
+int AnimatedAsset::ComputeTextMetrics(char* text)
 {
     int total = 0;
-    char* param_1 = (char*)text;
 
-    if (param_1 == (char*)0x0) {
-        total = 0;
+    if (text == (char*)0x0) {
+        return 0;
     }
-    else {
-        char cVar1 = *param_1;
-        while (cVar1 != '\0') {
-            int iVar2 = (int)*param_1;
-            if (iVar2 == 0x20) {
-                total = total + this->spaceWidth;
-            }
-            else if (iVar2 == 9) {
-                total = total + this->tabWidth;
-            }
-            else {
-                GlyphRect* piVar3 = (GlyphRect*)((char*)this->glyphTable + iVar2 * 0x10);
-                int local_left;
-                int local_top;
-                int local_right;
-                int local_bottom;
-                __try {
-                    local_left = piVar3->left;
-                    local_top = piVar3->top;
-                    local_right = piVar3->right;
-                    local_bottom = piVar3->bottom;
-                } __finally {
-                    FUN_00421671();
-                }
-                total = (total - local_left) + local_right;
-            }
-            param_1 = param_1 + 1;
-            total = total + this->char_adv.advance;
-            cVar1 = *param_1;
+    
+    while (*text != '\0') {
+        int iVar2 = (int)*text;
+        if (iVar2 == 0x20) {
+            total = total + this->spaceWidth;
         }
+        else if (iVar2 == 9) {
+            total = total + this->tabWidth;
+        }
+        else {
+            GlyphRect* piVar3 = (GlyphRect*)((char*)this->glyphTable + iVar2 * 0x10);
+            GlyphRect local = *piVar3;
+            total = (total - local.left) + local.right;
+        }
+        text = text + 1;
+        total = total + this->char_adv.advance;
     }
     return total;
 }
@@ -277,9 +252,6 @@ int AnimatedAsset::GetGlobalVertAlign()
     return (int)(signed char)DAT_004374c1;
 }
 
-extern "C" void FUN_0042157a(void);
-extern "C" void FUN_0042158c(void);
-
 /* Function start: 0x421420 */
 int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
 {
@@ -329,9 +301,6 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
             }
             iVar4 = local.right - local.left;
         }
-    //} __finally {
-    //    FUN_0042158c();
-    //}
     return iVar4;
 }
 

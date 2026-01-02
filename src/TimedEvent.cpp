@@ -22,8 +22,7 @@ TimedEvent::~TimedEvent()
 {
     SC_Message* next = (SC_Message*)m_next_event_data;
     if (next) {
-        next->SC_Message::~SC_Message();
-        FreeMemory(next);
+        delete next;
         m_next_event_data = 0;
     }
 }
@@ -55,8 +54,7 @@ int TimedEvent::Update()
 
         next_data = m_next_event_data;
         if (next_data) {
-            ((SC_Message*)next_data)->SC_Message::~SC_Message();
-            FreeMemory(next_data);
+            delete (SC_Message*)next_data;
             m_next_event_data = 0;
         }
         return 1;
@@ -105,8 +103,7 @@ int TimedEvent::Update()
 
         next_data = m_next_event_data;
         if (next_data) {
-            ((SC_Message*)next_data)->SC_Message::~SC_Message();
-            FreeMemory(next_data);
+            delete (SC_Message*)next_data;
             m_next_event_data = 0;
         }
         return 1;

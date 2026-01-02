@@ -43,7 +43,7 @@ public:
     void LoadAnimatedAsset(char* param_1);
     void BuildGlyphTable();
     int IsCharSupported(int ch);
-    int ComputeTextMetrics(void* text);
+    int ComputeTextMetrics(char* text);
     void PrepareText(char* text);
     void RenderText(char* text, int param_2);
     int DrawChar(int, int, int);
