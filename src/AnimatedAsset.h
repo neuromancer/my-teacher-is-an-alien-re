@@ -49,15 +49,12 @@ public:
     void RenderText(char* text, int param_2);
     int DrawChar(int, int, int);
 
-    //void CleanupCharAdvance();
-    //void CleanupTextX();
-    int GetGlobalTextX();
-    int GetGlobalTextY();
-    int GetGlobalTextAlign();
-    int GetGlobalVertAlign();
-
-
     ~AnimatedAsset();
 };
+
+int GetGlobalTextX();
+int GetGlobalTextY();
+int GetGlobalTextAlign();
+int GetGlobalVertAlign();
 
 #endif // ANIMATEDASSET_H

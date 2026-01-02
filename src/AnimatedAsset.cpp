@@ -120,32 +120,29 @@ int AnimatedAsset::ComputeTextMetrics(char* text)
 void AnimatedAsset::PrepareText(char* text)
 {
     int w;
-    int vert;
 
-    // Initialize base positions from helpers
-    this->text_pos.x = this->GetGlobalTextX();
-    this->text_pos.y = this->GetGlobalTextY();
+    this->text_pos.x = GetGlobalTextX();
+    this->text_pos.y = GetGlobalTextY();
 
-    int mode = this->GetGlobalTextAlign();
-
-    if (mode == 0) {
+    switch (GetGlobalTextAlign()) {
+    case 0:
         w = this->ComputeTextMetrics(text);
         w = w / 2;
         this->text_pos.x -= w;
-    }
-    else if (mode == 1) {
+        break;
+    case 1:
         w = this->ComputeTextMetrics(text);
         this->text_pos.x -= w;
+        break;
     }
     
-    // vertical alignment for all modes
-    vert = this->GetGlobalVertAlign();
-    if (vert == 0) {
+    switch (GetGlobalVertAlign()) {
+    case 0:
         this->text_pos.y += this->glyphHeight / 2;
         return;
-    }
-    if (vert == 1) {
+    case 1:
         this->text_pos.y += this->glyphHeight;
+        return;
     }
 }
 
@@ -219,30 +216,26 @@ AnimatedAsset::~AnimatedAsset()
 
 
 /* Function start: 0x4239DE */
-int AnimatedAsset::GetGlobalTextX()
+int GetGlobalTextX()
 {
-    /* MOV EAX,[0x004374c2] ; RET */
     return DAT_004374c2;
 }
 
 /* Function start: 0x4239D8 */
-int AnimatedAsset::GetGlobalTextY()
+int GetGlobalTextY()
 {
-    /* MOV EAX,[0x004374ce] ; RET */
     return DAT_004374ce;
 }
 
 /* Function start: 0x4239D0 */
-int AnimatedAsset::GetGlobalTextAlign()
+int GetGlobalTextAlign()
 {
-    /* MOVSX EAX,byte ptr [0x004374c0] ; RET */
     return (int)(signed char)DAT_004374c0;
 }
 
 /* Function start: 0x4239C8 */
-int AnimatedAsset::GetGlobalVertAlign()
+int GetGlobalVertAlign()
 {
-    /* MOVSX EAX,byte ptr [0x004374c1] ; RET */
     return (int)(signed char)DAT_004374c1;
 }
 
