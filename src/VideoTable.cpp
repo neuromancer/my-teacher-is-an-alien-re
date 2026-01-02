@@ -12,7 +12,7 @@ extern int DAT_004374ca;
 extern void* DAT_00438438;
 
 /* Function start: 0x422E71 */
-int __cdecl GetVideoBufferData(unsigned int handle)
+extern "C" int __cdecl GetVideoBufferData(unsigned int handle)
 {
     if (handle > 0x1f) {
         return 0;
@@ -21,7 +21,7 @@ int __cdecl GetVideoBufferData(unsigned int handle)
 }
 
 /* Function start: 0x422F00 */
-int __cdecl CreateTable(int width, int height) {
+extern "C" int __cdecl CreateTable(int width, int height) {
     int i = 0;
     while (i < 32 && ((int*)&DAT_0043826c)[i] != 0) {
         i++;
@@ -85,14 +85,14 @@ int __cdecl CreateTable(int width, int height) {
 }
 
 /* Function start: 0x423099 */
-int ClearVideoBuffer(void) {
+extern "C" int ClearVideoBuffer(void) {
     if (*(char*)&DAT_00437f54 >= 0) {
         memset((char*)DAT_00437f66, DAT_00437491, DAT_00437f62);
     }
     return 0;
 }
 /* Function start: 0x423703 */
-int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
+extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 {
     int* ptr;
     int counter;
@@ -135,7 +135,7 @@ int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 typedef int (__stdcall *WinGStretchBltFunc)(HDC, int, int, int, int, HDC, int, int, int, int);
 
 /* Function start: 0x42333A */
-int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int srcY2, int destX1, int destX2, int destY1, int destY2)
+extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int srcY2, int destX1, int destX2, int destY1, int destY2)
 {
     int srcWidth;
     int srcHeight;
