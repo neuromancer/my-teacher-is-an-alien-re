@@ -38,20 +38,20 @@ void TimedEvent::CopyFrom(const TimedEvent* other)
     } while (eax < 0x40);
 
     this->field_0x80 = other->field_0x80;
-    this->field_0x88 = other->field_0x88;
-    this->field_0x8c = other->field_0x8c;
-    this->field_0x90 = other->field_0x90;
-    this->field_0x94 = other->field_0x94;
-    this->field_0x98 = other->field_0x98;
-    this->field_0x9c = other->field_0x9c;
-    this->field_0xa0 = other->field_0xa0;
-    this->field_0xa4 = other->field_0xa4;
-    this->field_0xa8 = other->field_0xa8;
-    this->field_0xac = other->field_0xac;
-    this->field_0xb0 = other->field_0xb0;
+    this->targetAddress = other->targetAddress;
+    this->sourceAddress = other->sourceAddress;
+    this->command = other->command;
+    this->data = other->data;
+    this->priority = other->priority;
+    this->param1 = other->param1;
+    this->param2 = other->param2;
+    this->clickX = other->clickX;
+    this->clickY = other->clickY;
+    this->mouseX = other->mouseX;
+    this->mouseY = other->mouseY;
     this->field_0xb4 = other->field_0xb4;
     this->field_0xb8 = other->field_0xb8;
-    this->field_0xbc = other->field_0xbc;
+    this->userPtr = other->userPtr;
 }
 
 /* Function start: 0x402420 */

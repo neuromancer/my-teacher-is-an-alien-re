@@ -46,20 +46,20 @@ public:
     char m_data_0x40[64]; // 0x40 - 0x80 (0x40 bytes)
     int field_0x80;       // 0x80
     int field_0x84;       // 0x84
-    int field_0x88;       // 0x88
-    int field_0x8c;       // 0x8c
-    int field_0x90;       // 0x90
-    int field_0x94;       // 0x94
-    int field_0x98;       // 0x98
-    int field_0x9c;       // 0x9c
-    int field_0xa0;       // 0xa0
-    int field_0xa4;       // 0xa4
-    int field_0xa8;       // 0xa8
-    int field_0xac;       // 0xac
-    int field_0xb0;       // 0xb0
+    int targetAddress;    // 0x88 - destination handler address
+    int sourceAddress;    // 0x8c - source/from address
+    int command;          // 0x90 - message type/command code
+    int data;             // 0x94 - associated data
+    int priority;         // 0x98 - queue priority
+    int param1;           // 0x9c
+    int param2;           // 0xa0
+    int clickX;           // 0xa4 - mouse click X
+    int clickY;           // 0xa8 - mouse click Y
+    int mouseX;           // 0xac - current mouse X
+    int mouseY;           // 0xb0 - current mouse Y
     int field_0xb4;       // 0xb4
     int field_0xb8;       // 0xb8
-    int field_0xbc;       // 0xbc
+    int userPtr;          // 0xbc - user pointer
 };
 
 #endif // TIMEDEVENT_H

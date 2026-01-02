@@ -3,12 +3,24 @@
 
 #include "Timer.h"
 
+// Queue node structure - 12 bytes
+struct ZBQueueNode {
+    void* next;     // 0x00
+    void* prev;     // 0x04
+    void* data;     // 0x08
+    
+    void* CleanupNode(int flag);  // 0x41CCE0
+};
+
 // Queue structure - 16 bytes
 struct ZBQueue {
     void* head;     // 0x00
     void* tail;     // 0x04
     void* current;  // 0x08
     int type;       // 0x0C
+    
+    void* GetCurrentData();  // 0x41BB10
+    void* PopNode();         // 0x401810
 };
 
 // ZBufferManager class 

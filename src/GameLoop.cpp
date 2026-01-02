@@ -221,7 +221,7 @@ void GameLoop::ProcessInput() {
     } catch (...) {
     }
     
-    pLocalMessage->field_90 = 3; // type = 3
+    pLocalMessage->command = 3; // command = 3
     
     if (DAT_004373bc != 0) {
         keyCode = WaitForInput();
@@ -233,14 +233,14 @@ void GameLoop::ProcessInput() {
     } else {
         mouseX = pMouse->ext1; // field_10
     }
-    pLocalMessage->field_ac = mouseX;
+    pLocalMessage->mouseX = mouseX;
     
     if (pMouse == 0) {
         mouseY = 0;
     } else {
         mouseY = pMouse->ext2; // field_14
     }
-    pLocalMessage->field_b0 = mouseY;
+    pLocalMessage->mouseY = mouseY;
     
     clickY = 0;
     if (pMouse != 0) {
@@ -250,8 +250,8 @@ void GameLoop::ProcessInput() {
     if (pMouse != 0) {
         clickX = pMouse->x; // field_0
     }
-    pLocalMessage->field_a4 = clickX;
-    pLocalMessage->field_a8 = clickY;
+    pLocalMessage->clickX = clickX;
+    pLocalMessage->clickY = clickY;
     
     if (pMouse != 0) {
         if (pMouse->ext1 >= 2 || pMouse->ext2 >= 2) {
@@ -290,7 +290,7 @@ void GameLoop::ProcessInput() {
         }
     }
     
-    if (pLocalMessage->field_88 != 0 && pLocalMessage->field_98 != 0) {
+    if (pLocalMessage->targetAddress != 0 && pLocalMessage->priority != 0) {
         pPool = (TimedEventPool*)DAT_00436988;
         pEvent = pPool->Create((void*)pPool->list.tail, 0);
         ((TimedEvent*)((char*)pEvent + 8))->CopyFrom((TimedEvent*)pLocalMessage);

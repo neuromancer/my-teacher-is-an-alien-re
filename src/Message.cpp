@@ -13,9 +13,9 @@ extern "C" {
 }
 
 /* Function start: 0x41A150 */
-void SC_Message_Send(int param_1, int param_2, int param_3, int param_4,
-    int param_5, int param_6, int param_7, int param_8,
-    int param_9, int param_10)
+void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data,
+    int priority, int param1, int param2, int userPtr,
+    int param9, int param10)
 {
     char local_dc[0xC0];
     int* local_1c;
@@ -35,7 +35,7 @@ void SC_Message_Send(int param_1, int param_2, int param_3, int param_4,
 
     if (DAT_00436988 != 0) {
         __try {
-            pvVar1 = new (local_dc) SC_Message(param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, param_9, param_10);
+            pvVar1 = new (local_dc) SC_Message(targetAddress, sourceAddress, command, data, priority, param1, param2, userPtr, param9, param10);
 
             local_18 = DAT_00436988;
             local_14 = (int*)DAT_00436988[1];

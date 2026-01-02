@@ -6,6 +6,15 @@ extern "C" {
     void FUN_00423076();
 }
 
+/* Function start: 0x422E71 */
+int __cdecl GetVideoBufferData(unsigned int handle)
+{
+    if (handle > 0x1f) {
+        return 0;
+    }
+    return ((int*)&DAT_0043826c)[handle];
+}
+
 /* Function start: 0x422F00 */
 int __cdecl CreateTable(int width, int height) {
     int i = 0;

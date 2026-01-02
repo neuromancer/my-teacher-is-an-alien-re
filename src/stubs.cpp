@@ -4,6 +4,7 @@
 #include <string.h>
 #include <share.h>
 #include "Memory.h"
+#include "OnScreenMessage.h"
 
 // Globals
 // Globals
@@ -27,7 +28,7 @@ void FUN_0041b110() {}
 void FUN_0041b0a0() {}
 void FUN_00421700() {}
 void FUN_00422e1a() {}
-void FUN_00422e71() {}
+// FUN_00422e71 implemented in VideoTable.cpp as GetVideoBufferData
 void FUN_00422e8f() {}
 void FUN_00422a01() {}
 void FUN_004230d9() {}
@@ -129,7 +130,9 @@ void OptionMenu__Init() {}
 void HotspotManager_Init() {}
 
 void SC_OnScreenMessage_AddMessage() {}
-int OnScreenMessage_Update(void* param_1, int param_2) { return 0; }
+int OnScreenMessage_Update(void* param_1, int param_2) { 
+    return ((OnScreenMessage*)param_1)->Update(param_2); 
+}
 
 void TimedEvent_Init() {}
 void GameState_dtor_wrapper_4() {}

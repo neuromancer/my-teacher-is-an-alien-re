@@ -16,8 +16,8 @@ public:
     void Timer_DecrementCounter_wrapper_2();
 
 private:
-    int field_0x88;
-    int field_0x8c;
+    int m_address;     // 0x88 - handler address identifier
+    int m_fromAddress; // 0x8c - source address
     char pad2[0xa0 - 0x8c - 4];
     Queue messageQueue; // 0xa0
     Timer timer; // 0xa4

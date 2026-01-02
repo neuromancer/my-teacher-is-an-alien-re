@@ -16,45 +16,52 @@ extern "C" {
 void* operator new(unsigned int, void* p) { return p; }
 
 /* Function start: 0x4198C0 */
-SC_Message::SC_Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10)
+SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY)
 {
-    this->field_88 = p1;
-    this->field_8c = p2;
-    this->field_90 = p3;
-    this->field_94 = p4;
-    this->field_98 = p5;
-    this->field_9c = p6;
-    this->field_a0 = p7;
+    this->targetAddress = targetAddress;
+    this->sourceAddress = sourceAddress;
+    this->command = command;
+    this->data = data;
+    this->priority = priority;
+    this->param1 = param1;
+    this->param2 = param2;
     
-    this->field_bc = p8;
-    this->field_a4 = p9;
-    this->field_a8 = p10;
+    this->userPtr = userPtr;
+    this->clickX = clickX;
+    this->clickY = clickY;
 }
 
 /* Function start: 0x406AF0 */
 int SC_Question::LBLParse(char* param_1)
 {
+    void* mem;
     char local_34[32];
     
     sscanf(param_1, "%s", local_34);
     
-    if (_strcmpi(local_34, "OVERLAYS") == 0) {
-        void* mem = AllocateMemory(0x98);
+    if (strcmp(local_34, "OVERLAYS") == 0) {
+        mem = AllocateMemory(0x98);
         MouseControl* mc = 0;
-        if (mem) {
-            mc = (MouseControl*)FUN_0041f280(mem);
+        try {
+            if (mem != 0) {
+                mc = (MouseControl*)FUN_0041f280(mem);
+            }
+        } catch (...) {
         }
         this->mouseControl = mc;
         Parser::ProcessFile(mc, this, 0);
     }
-    else if (_strcmpi(local_34, "LABEL") == 0) {
+    else if (strcmp(local_34, "LABEL") == 0) {
         FUN_00419080(param_1, this->label, 0x80);
     }
-    else if (_strcmpi(local_34, "MESSAGE") == 0) {
-        void* mem = AllocateMemory(0xc0);
+    else if (strcmp(local_34, "MESSAGE") == 0) {
+        mem = AllocateMemory(0xc0);
         SC_Message* msg = 0;
-        if (mem) {
-            msg = new (mem) SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        try {
+            if (mem != 0) {
+                msg = new (mem) SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            }
+        } catch (...) {
         }
         Parser::ProcessFile(msg, this, 0);
         
@@ -66,28 +73,113 @@ int SC_Question::LBLParse(char* param_1)
         queue->m_current = queue->m_head;
         
         if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2) {
-            if (queue->m_head == 0) {
-                // Empty queue logic similar to Insert/Push
+            if (queue->m_head != 0) {
+                do {
+                    void* currentPtr = queue->m_current;
+                    if (((SC_Message*)((QueueNode*)currentPtr)->data)->targetAddress < msg->targetAddress) {
+                        if (msg == 0) {
+                            ShowError("queue fault 0102");
+                        }
+                        
+                        mem = AllocateMemory(0xc);
+                        QueueNode* node = 0;
+                        try {
+                            if (mem != 0) {
+                                node = (QueueNode*)mem;
+                                node->data = msg;
+                                node->prev = 0;
+                                node->next = 0;
+                            }
+                        } catch (...) {
+                        }
+                        
+                        if (queue->m_current == 0) {
+                            queue->m_current = queue->m_head;
+                        }
+                        
+                        if (queue->m_head == 0) {
+                            queue->m_head = node;
+                            queue->m_tail = node;
+                            queue->m_current = node;
+                        }
+                        else {
+                            node->next = (QueueNode*)queue->m_current;
+                            node->prev = ((QueueNode*)queue->m_current)->prev;
+                            if (((QueueNode*)queue->m_current)->prev == 0) {
+                                queue->m_head = node;
+                                ((QueueNode*)queue->m_current)->prev = node;
+                            } else {
+                                ((QueueNode*)queue->m_current)->prev->next = node;
+                                ((QueueNode*)queue->m_current)->prev = node;
+                            }
+                        }
+                        break;
+                    }
+                    
+                    if (queue->m_tail == currentPtr) {
+                        if (msg == 0) {
+                            ShowError("queue fault 0112");
+                        }
+                        
+                        mem = AllocateMemory(0xc);
+                        QueueNode* node;
+                        try {
+                            if (mem != 0) {
+                                ((QueueNode*)mem)->data = msg;
+                                node = (QueueNode*)mem;
+                                ((QueueNode*)mem)->prev = 0;
+                                ((QueueNode*)mem)->next = 0;
+                            } else {
+                                node = 0;
+                            }
+                        } catch (...) {
+                        }
+                        
+                        if (queue->m_current == 0) {
+                            queue->m_current = queue->m_tail;
+                        }
+                        
+                        if (queue->m_head == 0) {
+                            queue->m_head = node;
+                            queue->m_tail = node;
+                            queue->m_current = node;
+                        }
+                        else {
+                            if (queue->m_tail == 0 || ((QueueNode*)queue->m_tail)->next != 0) {
+                                ShowError("queue fault 0113");
+                            }
+                            node->next = 0;
+                            node->prev = (QueueNode*)queue->m_tail;
+                            ((QueueNode*)queue->m_tail)->next = node;
+                            queue->m_tail = node;
+                        }
+                        break;
+                    }
+                    
+                    if (currentPtr != 0) {
+                        queue->m_current = ((QueueNode*)currentPtr)->next;
+                    }
+                } while (queue->m_current != 0);
+            }
+            else {
                 if (msg == 0) {
                     ShowError("queue fault 0102");
                 }
-                // ... Implementation detailing requires Queue internals access
-                // Since this replicates Queue logic, we might need a friend class or similar access
-                // For now, simplify or assume standard usage if possible?
-                // The decompiled logic is manual insertion sort.
-                // NOTE: Using a simplified queue insert if exact logic is too complex to replicate without more context
-                // But instructions say "replicate ... jump types ... etc". 
-                // Let's try to match logic. QueueNode allocation is manual here too.
                 
-                QueueNode* node = (QueueNode*)AllocateMemory(0xc); // 12 bytes
-                if (node) {
-                    node->data = msg;
-                    node->prev = 0;
-                    node->next = 0;
+                mem = AllocateMemory(0xc);
+                QueueNode* node = 0;
+                try {
+                    if (mem != 0) {
+                        node = (QueueNode*)mem;
+                        node->data = msg;
+                        node->prev = 0;
+                        node->next = 0;
+                    }
+                } catch (...) {
                 }
                 
                 if (queue->m_current == 0) {
-                    queue->m_current = queue->m_head; // ?? Check 406e23: this_00[2] = *this_00
+                    queue->m_current = queue->m_head;
                 }
                 
                 if (queue->m_head == 0) {
@@ -100,55 +192,23 @@ int SC_Question::LBLParse(char* param_1)
                     node->prev = ((QueueNode*)queue->m_current)->prev;
                     if (((QueueNode*)queue->m_current)->prev == 0) {
                         queue->m_head = node;
-                        ((QueueNode*)queue->m_current)->prev = node; // Wait, original code casts access
+                        ((QueueNode*)queue->m_current)->prev = node;
                     } else {
                         ((QueueNode*)queue->m_current)->prev->next = node;
                         ((QueueNode*)queue->m_current)->prev = node;
                     }
                 }
             }
-            else {
-                // Loop to find position
-                do {
-                    QueueNode* curr = (QueueNode*)queue->m_current;
-                    SC_Message* currMsg = (SC_Message*)curr->data;
-                    
-                    if (currMsg->field_88 < msg->field_88) {
-                        // Insert here
-                         QueueNode* node = (QueueNode*)AllocateMemory(0xc); // 12 bytes
-                        if (node) {
-                            node->data = msg;
-                            node->prev = 0;
-                            node->next = 0;
-                        }
-                        
-                        // Link logic... reuse block if possible?
-                        // ...
-                        
-                        break;
-                    }
-                    
-                    if (queue->m_tail == curr) {
-                        // Append logic
-                        // ...
-                        break;
-                    }
-                    
-                    if (curr != 0) {
-                        queue->m_current = curr->next;
-                    }
-                } while (queue->m_current != 0);
-            }
         }
         else {
-            FUN_004086c0(queue, (int)msg);
+            queue->Insert(msg);
         }
     }
-    else if (_strcmpi(local_34, "END") == 0) {
+    else if (strcmp(local_34, "END") == 0) {
         return 1;
     }
     else {
-        return Parser::LBLParse("SC_Question");
+        Parser::LBLParse("SC_Question");
     }
     
     return 0;

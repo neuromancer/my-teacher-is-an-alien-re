@@ -89,13 +89,13 @@ int SC_Timer::Input(void *param_1) {
 
   Message *param = (Message *)param_1;
 
-  if (param->field_0x88 != m_messageId) {
+  if (param->targetAddress != m_messageId) {
     return 0;
   }
 
   timer1.Reset();
 
-  switch (param->field_0x98) {
+  switch (param->priority) {
   case 0xe:
     break;
   case 0xf:
@@ -140,7 +140,7 @@ int SC_Timer::Input(void *param_1) {
     }
     break;
   case 0x13:
-    if (param->field_0xbc == 0) {
+    if (param->userPtr == 0) {
       // Write(param); // FIXME: Undefined function
       ShowError("SC_Timer::Input");
     }
@@ -149,11 +149,11 @@ int SC_Timer::Input(void *param_1) {
     if (puVar4 != 0) {
       puVar7 = TimedEvent_Init(puVar4);
     }
-    puVar7->m_duration = *(int *)((char *)param_1 + 0xb8);
-    puVar7->field_0x8 = *(int *)((char *)param_1 + 0x8c);
-    puVar7->m_next_event_data = (void *)*(int *)((char *)param_1 + 0xbc);
-    *(int *)((char *)param_1 + 0xbc) = 0;
-    puVar7->m_type = *(int *)((char *)param_1 + 0x9c);
+    puVar7->m_duration = param->field_0xb8;
+    puVar7->field_0x8 = param->sourceAddress;
+    puVar7->m_next_event_data = (void *)param->userPtr;
+    param->userPtr = 0;
+    puVar7->m_type = param->param1;
 
     piVar1 = (int *)m_eventList;
     if (puVar7 == 0) {

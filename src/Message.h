@@ -14,26 +14,26 @@ struct Message {
     char data2[0x40];
     int field_0x80;
     int field_0x84;
-    int field_0x88;
-    int field_0x8c;
-    int field_0x90;
-    int field_0x94;
-    int field_0x98;
-    int field_0x9c;
-    int field_0xa0;
-    int field_0xa4;
-    int field_0xa8;
-    int field_0xac;
-    int field_0xb0;
+    int targetAddress;  // 0x88 - destination handler address
+    int sourceAddress;  // 0x8c - source/from address
+    int command;        // 0x90 - message type/command code
+    int data;           // 0x94 - associated data
+    int priority;       // 0x98 - queue priority
+    int param1;         // 0x9c
+    int param2;         // 0xa0
+    int clickX;         // 0xa4 - mouse click X (param9)
+    int clickY;         // 0xa8 - mouse click Y (param10)
+    int mouseX;         // 0xac - current mouse X
+    int mouseY;         // 0xb0 - current mouse Y
     int field_0xb4;
     int field_0xb8;
-    int field_0xbc;
+    int userPtr;        // 0xbc - user pointer (param8)
 
     Message(int, int, int, int, int, int, int, int, int, int);
 };
 
-void SC_Message_Send(int param_1, int param_2, int param_3, int param_4,
-    int param_5, int param_6, int param_7, int param_8,
-    int param_9, int param_10);
+void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data,
+    int priority, int param1, int param2, int userPtr,
+    int param9, int param10);
 
 #endif // MESSAGE_H

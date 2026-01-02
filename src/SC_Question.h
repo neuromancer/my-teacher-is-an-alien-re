@@ -8,22 +8,22 @@ class MouseControl;
 
 class SC_Message : public Parser {
 public:
-    int field_88;
-    int field_8c;
-    int field_90;
-    int field_94;
-    int field_98;
-    int field_9c;
-    int field_a0;
-    int field_a4;
-    int field_a8;
-    int field_ac;
-    int field_b0;
+    int targetAddress;  // 0x88 - destination handler address
+    int sourceAddress;  // 0x8c - source/from address
+    int command;        // 0x90 - message type/command code
+    int data;           // 0x94 - associated data
+    int priority;       // 0x98 - queue priority
+    int param1;         // 0x9c
+    int param2;         // 0xa0
+    int clickX;         // 0xa4 - mouse click X (param9)
+    int clickY;         // 0xa8 - mouse click Y (param10)
+    int mouseX;         // 0xac - current mouse X
+    int mouseY;         // 0xb0 - current mouse Y
     int field_b4;
     int field_b8;
-    int field_bc;
+    int userPtr;        // 0xbc - user pointer (param8)
 
-    SC_Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10);
+    SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY);
 };
 
 class SC_Question : public Parser

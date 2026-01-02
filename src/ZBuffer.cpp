@@ -42,11 +42,12 @@ void ZBuffer::AddMessage(int param_1)
 /* Function start: 0x401350 */
 int ZBuffer::ProcessMessage(void* param_1)
 {
-    if (*(int*)((char*)param_1 + 0x88) != this->m_address) {
+    Message* msg = (Message*)param_1;
+    if (msg->targetAddress != this->m_address) {
         return 0;
     }
     this->timer.Reset();
-    int iVar1 = *(int*)((char*)param_1 + 0x98);
+    int iVar1 = msg->priority;
     if (iVar1 == 3) {
         *(int*)g_SoundManager |= 2;
         g_SoundManager->timer.Reset();

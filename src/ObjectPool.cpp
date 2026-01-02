@@ -10,18 +10,30 @@ void* ObjectPool::Allocate()
         this->memoryBlock = p;
 
         int i = this->blockSize;
-        p = p + i * 4 - 3;
-        for (i--; i >= 0; i--) {
-            *p = (int)this->freeList;
-            this->freeList = p;
-            p = p - 4;
+        int offset = i * 0x10;
+        i--;
+        p = (int*)((char*)p + offset - 0xc);
+        if (i >= 0) {
+            do {
+                int prev = (int)this->freeList;
+                i--;
+                *p = prev;
+                this->freeList = p;
+                p = p - 4;
+            } while (i >= 0);
         }
     }
 
     int* p = (int*)this->freeList;
     this->freeList = (void*)*p;
     this->allocatedCount++;
-    p[2] = 0;
-    p[3] = 0;
+    int n = 0;
+    p[2] = n;
+    while (n--)
+        ;
+    n = 0;
+    p[3] = n;
+    while (n--)
+        ;
     return p;
 }

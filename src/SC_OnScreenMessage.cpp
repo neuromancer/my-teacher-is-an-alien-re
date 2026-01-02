@@ -10,8 +10,6 @@ extern "C" {
     //extern void Timer_DecrementCounter();
 }
 
-extern "C" void FUN_00418eb0(void*);
-extern "C" void FUN_00418ef0(void*);
 
 extern "C" {
     extern void Timer_DecrementCounter_wrapper();
@@ -22,12 +20,12 @@ extern "C" {
 /* Function start: 0x40A2E0 */
 SC_OnScreenMessage::SC_OnScreenMessage()
 {
-    int* p = &this->field_0x88;
+    int* p = &this->m_address;
     for (int i = 0; i < 6; i++) {
         *p++ = 0;
     }
 
-    this->field_0x88 = 0xf;
+    this->m_address = 0xf;
 
     timer.Reset();
 
@@ -175,9 +173,9 @@ void SC_OnScreenMessage::Update(int param_1, int param_2)
     }
     uVar6 = timer.Update();
     if (60000 < uVar6) {
-        SC_Message_Send(3, field_0x88, field_0x88, field_0x8c, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, m_address, m_address, m_fromAddress, 0x14, 0, 0, 0, 0, 0);
     }
-    if (field_0x88 == param_2) {
-        ShowError("SC_OnScreenMessage::Update: field_0x88 == param_2");
+    if (m_address == param_2) {
+        ShowError("SC_OnScreenMessage::Update: m_address == param_2");
     }
 }

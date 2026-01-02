@@ -34,10 +34,6 @@ void ReleaseVBufferHandle(int handle)
     g_VBufferHandleTable[handle] = 0xffffffff;
 }
 
-extern "C" {
-    void FUN_00423076();
-}
-
 // Forward declarations
 void CopyRowTransparent(char* dest, char* src, int count, char transparentColor, char fillColor);
 void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor);
@@ -45,7 +41,7 @@ void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, V
 extern "C" {
     void FUN_00422e8f();
     int FUN_00422a01(unsigned int);
-    int FUN_00422e71(unsigned int);
+    int GetVideoBufferData(unsigned int);
     unsigned int GetCurrentVideoMode();
     void InvalidateVideoMode();
     void FUN_0041ae0c(void);
@@ -162,7 +158,7 @@ void VBuffer::InitWithSize(unsigned int param_1, unsigned int param_2)
     this->SetCurrentVideoMode(iVar1);
     FUN_00422e8f();
     this->InvalidateVideoMode();
-    this->data = (void*)FUN_00422e71(this->handle);
+    this->data = (void*)GetVideoBufferData(this->handle);
     RegisterVBufferHandle(this->handle);
 }
 
@@ -387,7 +383,7 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
         if (local_10 < 0) {
             ShowError("VBuffer::ScaleTCCopy");
         }
-        void* puVar3 = (void*)FUN_00422e71(local_10);
+        void* puVar3 = (void*)GetVideoBufferData(local_10);
         FUN_004234f9(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
 
         __try {
