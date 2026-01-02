@@ -1,15 +1,10 @@
 #include "SC_Question.h"
 #include <string.h>
 #include "Memory.h"
-
-inline void* operator new(unsigned int, void* p) { return p; }
-
-extern "C" {
-    extern int* DAT_00436988;
-}
+#include "TimedEvent.h"
 
 extern "C" {
-    void FUN_0041a3b9();
+    extern TimedEventPool* DAT_00436988;
 }
 
 /* Function start: 0x41A150 */
@@ -17,109 +12,104 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
     int priority, int param1, int param2, int userPtr,
     int param9, int param10)
 {
-    char local_dc[0xC0];
-    int* local_1c;
-    int* local_18;
-    int* local_14;
-    SC_Message* local_10;
-    int* piVar7;
-    int* piVar6_2;
-    int* puVar2;
-    int iVar5;
-    int* pEntry;
-    int* piVar6;
-    unsigned int aVar;
-    int iVar;
+    SC_Message local_dc(targetAddress, sourceAddress, command, data, priority, param1, param2, userPtr, param9, param10);
+    TimedEvent** pTail;
+    TimedEventPool* pPool;
+    TimedEvent* pOldTail;
+    TimedEvent* pMsg;
+    int count;
     int tmp;
-    SC_Message* pvVar1;
+    SC_Message* pSource;
+    TimedEvent* pNode;
+    TimedEvent** pFreeList;
+    int* pPoolSize;
+    int* pNewPool;
+    TimedEvent* pEntry;
+    unsigned int i;
 
     if (DAT_00436988 != 0) {
-        __try {
-            pvVar1 = new (local_dc) SC_Message(targetAddress, sourceAddress, command, data, priority, param1, param2, userPtr, param9, param10);
+        pSource = &local_dc;
 
-            local_18 = DAT_00436988;
-            local_14 = (int*)DAT_00436988[1];
-            local_1c = DAT_00436988 + 1;
-            piVar7 = DAT_00436988 + 3;
+        pPool = DAT_00436988;
+        pOldTail = DAT_00436988->list.tail;
+        pTail = &DAT_00436988->list.tail;
+        pFreeList = &DAT_00436988->m_free_list;
 
-            if (*piVar7 == 0) {
-                piVar6_2 = DAT_00436988 + 5;
-                puVar2 = (int*)AllocateMemory(DAT_00436988[5] * 200 + 4);
-                *puVar2 = local_18[4];
-                local_18[4] = (int)puVar2;
-                iVar5 = *piVar6_2;
-                pEntry = puVar2 + iVar5 * 0x32 + -0x31;
-                iVar5--;
-                for (; -1 < iVar5; iVar5--) {
-                    *pEntry = *piVar7;
-                    *piVar7 = (int)pEntry;
-                    pEntry = pEntry + -0x32;
-                }
+        if (*pFreeList == 0) {
+            pPoolSize = &DAT_00436988->m_pool_size;
+            pNewPool = (int*)AllocateMemory(DAT_00436988->m_pool_size * 200 + 4);
+            *pNewPool = (int)pPool->m_pool;
+            pPool->m_pool = (TimedEvent*)pNewPool;
+            count = *pPoolSize;
+            pEntry = (TimedEvent*)((char*)pNewPool + count * 200 - 196);
+            count--;
+            for (; -1 < count; count--) {
+                *(TimedEvent**)pEntry = *pFreeList;
+                *pFreeList = pEntry;
+                pEntry = (TimedEvent*)((char*)pEntry - 200);
             }
-            piVar6 = (int*)*piVar7;
-            *piVar7 = *piVar6;
-            piVar6[1] = (int)local_14;
-            *piVar6 = 0;
-            local_18[2] = local_18[2] + 1;
-
-            local_10 = (SC_Message*)(piVar6 + 2);
-            memset(local_10, 0, 0x30 * sizeof(int));
-
-            iVar5 = 0;
-            do {
-                if (local_10 != 0) {
-                    local_10->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                }
-                local_10 = (SC_Message*)((int*)local_10 + 0x30);
-                tmp = iVar5;
-                iVar5--;
-            } while (tmp != 0);
-
-            piVar6[4] = ((int*)pvVar1)[2];
-            piVar6[5] = ((int*)pvVar1)[3];
-
-            aVar = 0;
-            do {
-                ((char*)piVar6)[aVar + 0x18] = ((char*)pvVar1)[aVar + 0x10];
-                aVar++;
-            } while (aVar < 0x20);
-
-            piVar6[0xe] = *(int*)((char*)pvVar1 + 0x30);
-            iVar = *(int*)((char*)pvVar1 + 0x3c);
-            piVar6[0x10] = *(int*)((char*)pvVar1 + 0x38);
-            piVar6[0x11] = iVar;
-
-            aVar = 0;
-            do {
-                ((char*)piVar6)[aVar + 0x48] = ((char*)pvVar1)[aVar + 0x40];
-                aVar++;
-            } while (aVar < 0x40);
-
-            piVar6[0x22] = *(int*)((char*)pvVar1 + 0x80);
-            piVar6[0x24] = *(int*)((char*)pvVar1 + 0x88);
-            piVar6[0x25] = *(int*)((char*)pvVar1 + 0x8c);
-            piVar6[0x26] = *(int*)((char*)pvVar1 + 0x90);
-            piVar6[0x27] = *(int*)((char*)pvVar1 + 0x94);
-            piVar6[0x28] = *(int*)((char*)pvVar1 + 0x98);
-            piVar6[0x29] = *(int*)((char*)pvVar1 + 0x9c);
-            piVar6[0x2a] = *(int*)((char*)pvVar1 + 0xa0);
-            piVar6[0x2b] = *(int*)((char*)pvVar1 + 0xa4);
-            piVar6[0x2c] = *(int*)((char*)pvVar1 + 0xa8);
-            piVar6[0x2d] = *(int*)((char*)pvVar1 + 0xac);
-            piVar6[0x2e] = *(int*)((char*)pvVar1 + 0xb0);
-            piVar6[0x2f] = *(int*)((char*)pvVar1 + 0xb4);
-            piVar6[0x30] = *(int*)((char*)pvVar1 + 0xb8);
-            piVar6[0x31] = *(int*)((char*)pvVar1 + 0xbc);
-
-            if (*(int**)local_1c == 0) {
-                *local_18 = (int)piVar6;
-            }
-            else {
-                **(int**)local_1c = (int)piVar6;
-            }
-            *local_1c = (int)piVar6;
-            FUN_0041a3b9();
-        } __except(1) {
         }
+        pNode = *pFreeList;
+        *pFreeList = *(TimedEvent**)pNode;
+        ((TimedEvent**)pNode)[1] = pOldTail;
+        *(TimedEvent**)pNode = 0;
+        pPool->m_count = pPool->m_count + 1;
+
+        pMsg = (TimedEvent*)((int*)pNode + 2);
+        memset(pMsg, 0, 0x30 * sizeof(int));
+
+        count = 0;
+        do {
+            if (pMsg != 0) {
+                ((SC_Message*)pMsg)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            }
+            pMsg = (TimedEvent*)((int*)pMsg + 0x30);
+            tmp = count;
+            count--;
+        } while (tmp != 0);
+
+        pNode->m_next_event_data = pSource->m_subObject;
+        *(int*)&pNode->m_timer = pSource->isProcessingKey;
+
+        i = 0;
+        do {
+            ((char*)pNode)[i + 0x18] = pSource->currentKey[i];
+            i++;
+        } while (i < 0x20);
+
+        pNode->field_0x38 = pSource->lineNumber;
+        tmp = pSource->field_0x3c;
+        *(int*)pNode->m_data_0x40 = pSource->savedFilePos;
+        *(int*)(pNode->m_data_0x40 + 4) = tmp;
+
+        i = 0;
+        do {
+            ((char*)pNode)[i + 0x48] = pSource->filename[i];
+            i++;
+        } while (i < 0x40);
+
+        pNode->targetAddress = (int)pSource->pFile;
+        pNode->command = pSource->targetAddress;
+        pNode->data = pSource->sourceAddress;
+        pNode->priority = pSource->command;
+        pNode->param1 = pSource->data;
+        pNode->param2 = pSource->priority;
+        pNode->clickX = pSource->param1;
+        pNode->clickY = pSource->param2;
+        pNode->mouseX = pSource->clickX;
+        pNode->mouseY = pSource->clickY;
+        pNode->field_0xb4 = pSource->mouseX;
+        pNode->field_0xb8 = pSource->mouseY;
+        pNode->userPtr = pSource->field_b4;
+        pNode->field_0xc0 = pSource->field_b8;
+        pNode->field_0xc4 = pSource->userPtr;
+
+        if (*pTail == 0) {
+            pPool->list.head = pNode;
+        }
+        else {
+            *(TimedEvent**)(*pTail) = pNode;
+        }
+        *pTail = pNode;
     }
 }

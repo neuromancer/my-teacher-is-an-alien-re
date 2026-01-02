@@ -69,6 +69,8 @@ public:
     int field_0xb4;       // 0xb4
     int field_0xb8;       // 0xb8
     int userPtr;          // 0xbc - user pointer
+    int field_0xc0;       // 0xc0
+    int field_0xc4;       // 0xc4
 };
 
 #endif // TIMEDEVENT_H
