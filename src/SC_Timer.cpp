@@ -12,13 +12,12 @@
 
 // Forward declarations
 extern "C" {
-void FUN_004171b0(int);
 void FUN_00419fd0(void *);
 TimedEvent *TimedEvent_Init(TimedEvent *);
 }
 
 /* Function start: 0x401B60 */
-SC_Timer::SC_Timer() : Parser() {
+SC_Timer::SC_Timer() {
   memset(&m_messageId, 0, 24);
 
   m_messageId = 0xd;
@@ -75,7 +74,7 @@ end_loop:
 
 /* Function start: 0x401F90 */
 void SC_Timer::AddMessage(int param_1) {
-  FUN_004171b0(param_1);
+  WriteMessageAddress((Message *)param_1);
   ShowError("SC_Timer::AddMessage");
 }
 

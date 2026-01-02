@@ -22,7 +22,7 @@ void FUN_0041ef47() {}
 // FUN_0042ddd0 implemented in FileSystem.cpp
 // FUN_00425fd0 is strncpy from MSVC CRT
 void FUN_0041eab0() {}
-void FUN_004171b0() {}
+// FUN_004171b0 implemented in ScriptHandler.cpp as WriteMessageAddress
 void FUN_0041e666() {}
 void FUN_0041b110() {}
 void FUN_0041b0a0() {}

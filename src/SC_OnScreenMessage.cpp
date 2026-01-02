@@ -17,15 +17,24 @@ extern "C" {
     extern void GameState_dtor_wrapper_4();
 }
 
+/* Function start: 0x40A5A0 */
+void SC_OnScreenMessage::Copy(SC_OnScreenMessage* other)
+{
+    this->CopyCommandData(other);
+    if (other) {
+        this->sourceAddress = other->sourceAddress;
+    }
+}
+
 /* Function start: 0x40A2E0 */
 SC_OnScreenMessage::SC_OnScreenMessage()
 {
-    int* p = &this->m_address;
+    int* p = &this->targetAddress;
     for (int i = 0; i < 6; i++) {
         *p++ = 0;
     }
 
-    this->m_address = 0xf;
+    this->targetAddress = 0xf;
 
     timer.Reset();
 
@@ -173,9 +182,9 @@ void SC_OnScreenMessage::Update(int param_1, int param_2)
     }
     uVar6 = timer.Update();
     if (60000 < uVar6) {
-        SC_Message_Send(3, m_address, m_address, m_fromAddress, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
     }
-    if (m_address == param_2) {
+    if (targetAddress == param_2) {
         ShowError("SC_OnScreenMessage::Update: m_address == param_2");
     }
 }
