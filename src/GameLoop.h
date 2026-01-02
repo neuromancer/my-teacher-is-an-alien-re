@@ -6,9 +6,8 @@
 // Used locally in RunGame for main game loop
 class GameLoop {
 public:
-    GameLoop();
+    GameLoop();          // 0x417200
     ~GameLoop();
-    GameLoop* Init();    // 0x417200
     void Run();          // 0x417690
     void ResetLoop();    // 0x417420
     void ProcessInput(); // 0x4177B0

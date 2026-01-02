@@ -53,46 +53,38 @@ struct EventList {
     EventNode* tail;    // 0x04
     EventNode* current; // 0x08
     int field_0x0C;     // 0x0C
+    
+    EventList() {
+        field_0x0C = 0;
+        head = 0;
+        tail = 0;
+        current = head;
+    }
 };
 
-GameLoop::GameLoop()
-{
-    Init();
-}
-
-GameLoop::~GameLoop()
-{
-    Cleanup();
-}
-
 /* Function start: 0x417200 */
-GameLoop* GameLoop::Init() {
+GameLoop::GameLoop() {
     Timer* pResult;
     EventList* pList;
     
     memset(this, 0, 7 * sizeof(int));
     
-    try {
-        pResult = new Timer();
-        this->timer1 = pResult;
-        
-        pResult = new Timer();
-        this->timer2 = pResult;
-        
-        pList = (EventList*)AllocateMemory(0x10);
-        if (pList != 0) {
-            pList->field_0x0C = 0;
-            pList->head = 0;
-            pList->tail = 0;
-            pList->current = pList->head;
-        }
-    } catch (...) {
-    }
+    pResult = new Timer();
+    this->timer1 = pResult;
+    
+    pResult = new Timer();
+    this->timer2 = pResult;
+    
+    pList = new EventList();
     
     this->field_0x18 = 0;
     this->field_0x08 = 0x54;
     this->eventList = pList;
-    return this;
+}
+
+GameLoop::~GameLoop()
+{
+    Cleanup();
 }
 
 /* Function start: 0x417420 */
