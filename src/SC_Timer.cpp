@@ -13,7 +13,6 @@
 // Forward declarations
 extern "C" {
 void FUN_00419fd0(void *);
-TimedEvent *TimedEvent_Init(TimedEvent *);
 }
 
 /* Function start: 0x401B60 */
@@ -24,14 +23,7 @@ SC_Timer::SC_Timer() {
   m_messageId = 0xd;
   timer1.Reset();
 
-  Queue *pQueue = (Queue *)AllocateMemory(0x10);
-  if (pQueue != 0) {
-    pQueue->m_field_0xc = 0;
-    pQueue->m_head = 0;
-    pQueue->m_tail = 0;
-    pQueue->m_current = pQueue->m_head;
-  }
-  m_eventList = pQueue;
+  m_eventList = new Queue();
 }
 
 /* Function start: 0x401CA0 */
@@ -43,12 +35,11 @@ SC_Timer::~SC_Timer() {
       while (pQueue->m_head != 0) {
         void *data = pQueue->Pop();
         if (data != 0) {
-          ((TimedEvent *)data)->~TimedEvent();
-          FreeMemory(data);
+          delete (TimedEvent *)data;
         }
       }
     }
-    FreeFromGlobalHeap(pQueue);
+    delete pQueue;
     m_eventList = 0;
   }
 }
@@ -72,8 +63,7 @@ loop: {
   if (event->Update()) {
     TimedEvent *data = (TimedEvent *)m_eventList->Pop();
     if (data) {
-      data->~TimedEvent();
-      FreeFromGlobalHeap(data);
+      delete data;
     }
     m_eventList->m_current = m_eventList->m_head;
   } else {
@@ -106,7 +96,6 @@ int SC_Timer::Input(void *param_1) {
   int iVar2;
   void *pvVar6;
   TimedEvent *puVar7;
-  TimedEvent *puVar4;
 
   Message *param = (Message *)param_1;
 
@@ -153,8 +142,7 @@ int SC_Timer::Input(void *param_1) {
           piVar1[2] = *piVar1;
         }
         if (pvVar6 != 0) {
-          ((TimedEvent *)pvVar6)->~TimedEvent();
-          FreeMemory(pvVar6);
+          delete (TimedEvent *)pvVar6;
         }
         iVar2 = *piVar1;
       }
@@ -165,11 +153,7 @@ int SC_Timer::Input(void *param_1) {
       // Write(param); // FIXME: Undefined function
       ShowError("SC_Timer::Input");
     }
-    puVar7 = 0;
-    puVar4 = (TimedEvent *)AllocateMemory(0x28);
-    if (puVar4 != 0) {
-      puVar7 = TimedEvent_Init(puVar4);
-    }
+    puVar7 = new TimedEvent();
     puVar7->m_duration = param->field_0xb8;
     puVar7->field_0x8 = param->sourceAddress;
     puVar7->m_next_event_data = (void *)param->userPtr;
@@ -207,11 +191,7 @@ int SC_Timer::Input(void *param_1) {
   done_0x13:
     break;
   case 0x14:
-    puVar7 = 0;
-    puVar4 = (TimedEvent *)AllocateMemory(0x28);
-    if (puVar4 != 0) {
-      puVar7 = TimedEvent_Init(puVar4);
-    }
+    puVar7 = new TimedEvent();
     puVar7->field_0x8 = *(int *)((char *)param_1 + 0x8c);
     piVar1 = (int *)m_eventList;
     if (puVar7 == 0) {
@@ -228,8 +208,7 @@ int SC_Timer::Input(void *param_1) {
       if (*(int *)(iVar5 + 0xc) == puVar7->m_duration) {
         pvVar6 = m_eventList->Pop();
         if (pvVar6 != 0) {
-          ((TimedEvent *)pvVar6)->~TimedEvent();
-          FreeMemory(pvVar6);
+          delete (TimedEvent *)pvVar6;
         }
         break;
       }

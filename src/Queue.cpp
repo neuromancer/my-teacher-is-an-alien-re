@@ -100,10 +100,6 @@ done:
 }
 
 /* Function start: 0x4024B0 */
-Queue::Queue()
-{
-    Init();
-}
 void Queue::Insert(void* data)
 {
     if (data == 0) {
