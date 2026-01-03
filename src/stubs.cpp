@@ -30,8 +30,8 @@ int FUN_00421ce0(int a, int b, int c, int d) { return 0; } // Joystick helper
 void __fastcall FUN_0040d2a0(void* param_1) {} // Pool cleanup function
 // FUN_004171b0 implemented in ScriptHandler.cpp as WriteMessageAddress
 // FUN_0041e666 is compiler-generated exception funclet, not a real function
-void FUN_0041b110() {}
-void FUN_0041b0a0() {}
+// FUN_0041b110 implemented in VBuffer
+// FUN_0041b0a0 declared as __stdcall
 void FUN_00421700() {}
 void FUN_00422e1a() {}
 // FUN_00422e71 implemented in VideoTable.cpp as GetVideoBufferData
@@ -49,6 +49,10 @@ void FUN_0041b091() {}
 void FUN_0041b07f() {}
 void FUN_0041b2ac() {}
 void FUN_0041b29a() {}
+
+// Stub for FUN_0041b0a0 (stdcall with 5 params)
+void __stdcall FUN_0041b0a0(int x, int y, void* data, int scale1, int scale2) {}
+
 void FUN_004234d5() {}
 // FUN_004234f9 now implemented in ScaleBuffer.cpp as ScaleBuffer
 void FUN_00423703() {}

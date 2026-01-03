@@ -557,3 +557,9 @@ void CopyRowTransparent(char* dest, char* src, int count, char transparentColor,
         } while (count != 0);
     }
 }
+
+/* Function start: 0x41B110 - stub */
+void VBuffer::FUN_0041b110(int param_1, int param_2, void* param_3, int param_4, int param_5)
+{
+    // TODO: implement
+}

@@ -6,12 +6,13 @@
 #include <stdlib.h>
 
 extern "C" {
-    void FUN_0041b0a0(int, int, void*);
-    void FUN_0041b110(void*, int, int, void*);
+    void __stdcall FUN_0041b0a0(int, int, void*, int, int);
     void FUN_004229ea(int, int);
     void FUN_00421700(void*, char*, int);
     int _rand();
 }
+
+void __stdcall FUN_0041b110(int, int, void*, int, int);
 
 // Base SoundCommand
 struct SoundCommand {
@@ -34,20 +35,22 @@ struct CommandType1 : public SoundCommand {
     int scale_low;
     int scale_high;
 
+    CommandType1() : parameter1(0), data(0), x(0), y(0), mode(0), scale_low(0), scale_high(0) {}
+
     virtual void Execute(SoundManager* mgr) {
         switch(mode) {
             case 0:
-                 g_WorkBuffer_00436974->ClipAndBlit(x, y, *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), *(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), (int)data);
+                 g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
                  break;
             case 1:
-                 g_WorkBuffer_00436974->ClipAndPaste(x, y, *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), *(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), (int)data);
+                 g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
                  break;
 
             case 2:
-                 FUN_0041b0a0(x, y, data);
+                 FUN_0041b0a0(x, y, data, scale_low, scale_high);
                  break;
             case 3:
-                 FUN_0041b110(g_WorkBuffer_00436974, x, y, data);
+                 g_WorkBuffer_00436974->FUN_0041b110(x, y, data, scale_low, scale_high);
                  break;
         }
     }
@@ -68,52 +71,46 @@ struct CommandType2 : public SoundCommand {
 /* Function start: 0x41BE20 */
 void SoundManager::PlayAnimationSound(void* data, int priority, int x, int y, int mode, int scale1, int scale2)
 {
-    if (m_mode == 0) return;
-    
-    if (m_mode == 1) {
-        // Immediate execution logic (copy of Execute logic)
-        // ... (This duplication is ugly but present in decompilation?)
-        // Decompilation shows it calls functions directly.
-        switch(mode) {
-            case 0:
-                 g_WorkBuffer_00436974->ClipAndBlit(x, y, *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), *(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), (int)data);
-                 break;
-            case 1:
-                 g_WorkBuffer_00436974->ClipAndPaste(x, y, *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), *(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), (int)data);
-                 break;
+    if (m_mode != 0) {
+        if (m_mode != 1) {
+            // Queue logic
+            CommandType1* cmd = new CommandType1();
+            if (!cmd) return;
 
-            case 2:
-                 FUN_0041b0a0(x, y, data);
-                 break;
-            case 3:
-                 FUN_0041b110(g_WorkBuffer_00436974, x, y, data);
-                 break;
+            cmd->data = data;
+            cmd->parameter1 = priority;
+            
+            // Apply jitter if flags & 2
+            if ((*(char*)this & 2) != 0) {
+                 x = _rand() % 5 - 2 + x;
+                 y = _rand() % 5 - 2 + y;
+            }
+            
+            cmd->x = x;
+            cmd->y = y;
+            cmd->mode = mode;
+            cmd->scale_high = scale2;
+            cmd->scale_low = scale1;
+            
+            QueueCommand(cmd);
         }
-        return;
+        else {
+            switch(mode) {
+                case 0:
+                     g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
+                     break;
+                case 1:
+                     g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
+                     break;
+                case 2:
+                     FUN_0041b0a0(x, y, data, scale1, scale2);
+                     break;
+                case 3:
+                     g_WorkBuffer_00436974->FUN_0041b110(x, y, data, scale1, scale2);
+                     break;
+            }
+        }
     }
-
-    // Queue logic
-    CommandType1* cmd = new CommandType1();
-    if (!cmd) return;
-
-    cmd->data = data;
-    cmd->parameter1 = priority; // Should be in base SoundCommand for sorting? No, struct layout is fixed. parameter1 IS priority.
-    
-    // Apply jitter if flags & 2
-    if (((int)this->m_head & 2) != 0) { // Assuming queue head used as flags in this context
-         int r = _rand();
-         x = (r % 5) - 2 + x;
-         r = _rand();
-         y = (r % 5) - 2 + y;
-    }
-    
-    cmd->x = x;
-    cmd->y = y;
-    cmd->mode = mode;
-    cmd->scale_low = scale1;
-    cmd->scale_high = scale2;
-    
-    QueueCommand(cmd);
 }
 
 /* Function start: 0x41C000 */

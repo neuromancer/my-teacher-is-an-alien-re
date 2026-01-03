@@ -63,6 +63,7 @@ void Sprite::Init()
         }
         if (anim == 0) {
             anim = new Animation(this->sprite_filename);
+            this->animation_data = anim;
         }
     } catch (...) {
     }
