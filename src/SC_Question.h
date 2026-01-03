@@ -38,6 +38,7 @@ public:
     char label[128];            // 0x9c
 
     SC_Question(int id);
+    ~SC_Question();
     
     /* Function start: 0x406AF0 */
     virtual int LBLParse(char* line);

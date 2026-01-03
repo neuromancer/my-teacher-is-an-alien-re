@@ -3,12 +3,52 @@
 #include "string.h"
 #include "TimedEvent.h"
 #include "Message.h"
+#include "SC_Question.h"
 
-extern "C" void __fastcall FUN_0040d2a0(void* thisptr);
-
+/* Function start: 0x40D2A0 */
 TimedEventPool::~TimedEventPool()
 {
-    FUN_0040d2a0(this);
+    TimedEvent* node;
+    SC_Message* msg;
+    int counter;
+    int tmp;
+    TimedEvent* poolBlock;
+    TimedEvent* nextBlock;
+    
+    // Iterate through active events list (linked at offset 0)
+    node = this->list.head;
+    if (node != 0) {
+        do {
+            // Get embedded SC_Message at offset +8
+            msg = (SC_Message*)((int*)node + 2);
+            counter = 0;
+            do {
+                // Call SC_Message destructor
+                msg->~SC_Message();
+                msg = (SC_Message*)((char*)msg + 0xc0);
+                tmp = counter;
+                counter--;
+            } while (tmp != 0);
+            node = *(TimedEvent**)node;
+        } while (node != 0);
+    }
+    
+    // Clear pool state fields
+    this->m_count = 0;
+    this->m_free_list = 0;
+    this->list.tail = 0;
+    this->list.head = 0;
+    
+    // Free pool memory blocks (linked at offset 0x10)
+    poolBlock = this->m_pool;
+    if (poolBlock != 0) {
+        do {
+            nextBlock = *(TimedEvent**)poolBlock;
+            FreeMemory(poolBlock);
+            poolBlock = nextBlock;
+        } while (poolBlock != 0);
+    }
+    this->m_pool = 0;
 }
 
 /* Function start: 0x402310 */
