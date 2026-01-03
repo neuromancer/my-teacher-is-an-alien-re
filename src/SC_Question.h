@@ -40,6 +40,9 @@ public:
     SC_Question(int id);
     ~SC_Question();
     
+    /* Function start: 0x406930 */
+    void Update(int x, int y);
+    
     /* Function start: 0x406AF0 */
     virtual int LBLParse(char* line);
 };

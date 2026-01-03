@@ -1,6 +1,7 @@
 #include "SC_Question.h"
 #include "Memory.h"
 #include "MouseControl.h"
+#include "SpriteList.h"
 #include "FlagArray.h"
 #include "globals.h"
 #include <stdio.h>
@@ -10,7 +11,11 @@ extern "C" {
     void FUN_00419080(char* src, char* dst, int maxlen);
     void ShowError(const char*, ...);
     void* FUN_0041f280(void*); // MouseControl ctor
+    void FUN_004069b0(SC_Question*);  // SC_Question::Finalize
+    void FUN_0041c000(void*, char*, int, int, int);  // SoundManager::ShowSubtitle
 }
+
+extern int* DAT_0043698c;
 
 /* Function start: 0x4066D0 */
 SC_Question::SC_Question(int id)
@@ -82,6 +87,28 @@ SC_Question::~SC_Question()
         delete queue;
     }
     // Parser destructor is called automatically
+}
+
+/* Function start: 0x406930 */
+void SC_Question::Update(int x, int y)
+{
+    switch (this->state) {
+    case 0:
+        FUN_0041c000(DAT_0043698c, this->label, x + 10, y + 23, 10000);
+        break;
+    case 1:
+        if (this->mouseControl != 0) {
+            if (((SpriteList*)this->mouseControl)->DoAll() == 0) {
+                FUN_004069b0(this);
+            }
+        }
+        break;
+    case 2:
+        break;
+    default:
+        ShowError("illegal state");
+        break;
+    }
 }
 
 /* Function start: 0x4199A0 */
