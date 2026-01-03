@@ -231,7 +231,7 @@ extern "C" {
 FILE *fsopen(const char* filename, const char* mode);
 void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
 void FUN_00426550(const char* filename, int* stat_buf);
-void FUN_00425f30(FILE* fp, long offset, int origin);
+int FileSeek(FILE* fp, long offset, int origin);
 char* FormatFilePath(char* path);
 void* AllocateMemory_Wrapper(int size);
 }
@@ -287,7 +287,7 @@ FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, u
             if (*(int*)(entry_buf + 0xc) == 0) {
                 found = 0;
             } else {
-                FUN_00425f30(fp, *(long*)(entry_buf + 0xc), 0);
+                FileSeek(fp, *(long*)(entry_buf + 0xc), 0);
             }
         }
         if (!found) break;
@@ -305,7 +305,7 @@ FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, u
 
 not_found:
     if (stat_buf[0] != 0) {
-        FUN_00425f30(fp, offset, 0);
+        FileSeek(fp, offset, 0);
         return fp;
     }
 

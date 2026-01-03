@@ -22,7 +22,7 @@ public:
     // data inherited from ScriptHandler at 0x94
     char pad2[0xa0 - 0x98];
     Queue messageQueue; // 0xa0
-    Timer timer;
+    Timer timer;  // 0xb0
 };
 
 #endif // SC_ONSCREENMESSAGE_H

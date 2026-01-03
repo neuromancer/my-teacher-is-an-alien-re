@@ -9,10 +9,11 @@
 extern "C" {
     void ShowError(const char*, ...);
     void* FUN_0041cd50(void*, char*); // Sprite ctor?
-    void* FUN_004066d0(void*, int); // SC_Question ctor
     void FUN_004067e0(void*); // Destroy/Cleanup SC_Question?
     void FUN_00424940(void*); // Free
 }
+
+void* operator new(unsigned int, void* p);
 
 /* Function start: 0x407EC6 */
 int SCI_Dialog::LBLParse(char* param_1)
@@ -94,9 +95,9 @@ int SCI_Dialog::LBLParse(char* param_1)
         sscanf(param_1, "%*s %d", &id);
         
         void* mem = AllocateMemory(0x120);
-        SC_Question* q = 0; // Assuming SC_Question
+        SC_Question* q = 0;
         if (mem) {
-            q = (SC_Question*)FUN_004066d0(mem, id);
+            q = new (mem) SC_Question(id);
         }
         
         // Logic checking if q is valid...

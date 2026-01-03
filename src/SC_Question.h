@@ -32,12 +32,12 @@ class SC_Question : public Parser
 public:
     MouseControl* mouseControl; // 0x88
     Queue* messageQueue;        // 0x8c
-    int field_90;
+    int questionId;             // 0x90 - question ID passed to constructor
     int field_94;
-    int field_98;
+    int state;                  // 0x98 - 0=new, 2=already answered
     char label[128];            // 0x9c
 
-    SC_Question();
+    SC_Question(int id);
     
     /* Function start: 0x406AF0 */
     virtual int LBLParse(char* line);

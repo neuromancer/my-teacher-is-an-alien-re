@@ -443,11 +443,11 @@ void CreateGameObject_1() {
   g_GameConfig_00436970 = new GameConfig();
 
   if (DAT_0043d558 != 0) {
-      g_GameConfig_00436970->data[2] = (unsigned char)DAT_0043d558;
+      g_GameConfig_00436970->data.rawData[2] = (unsigned char)DAT_0043d558;
   }
 
   if (DAT_0043d560 != 0) {
-      g_GameConfig_00436970->data[0] = (unsigned char)DAT_0043d560;
+      g_GameConfig_00436970->data.rawData[0] = (unsigned char)DAT_0043d560;
   }
 
   g_GameConfig_00436970->LoadConfig();
@@ -466,7 +466,7 @@ void InitGameSystems(void) {
     ClearMessageLog();
     CreateGameObject_1();
     InitWorkBuffer(0x280, 0x1e0);
-    g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data[0]);
+    g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
     g_Sound_0043696c = new Sound(0x5622, 8, 1);
     g_TextManager_00436990 = new AnimatedAsset();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");

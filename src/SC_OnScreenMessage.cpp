@@ -1,11 +1,12 @@
 #include "SC_OnScreenMessage.h"
-#include "string.h"
+#include <string.h>
 #include "Memory.h"
 #include "Message.h"
 
 extern "C" {
     extern int OnScreenMessage_Update(void*, int);
     extern void SC_OnScreenMessage_AddMessage();
+    void ShowError(const char*, ...);
     // SC_Message_Send is C++ from Message.h
     //extern void Timer_DecrementCounter();
 }
@@ -29,21 +30,18 @@ void SC_OnScreenMessage::Copy(SC_OnScreenMessage* other)
 /* Function start: 0x40A2E0 */
 SC_OnScreenMessage::SC_OnScreenMessage()
 {
-    int* p = &this->targetAddress;
-    for (int i = 0; i < 6; i++) {
-        *p++ = 0;
-    }
-
+    memset(&this->targetAddress, 0, 24);  // Zero 6 DWORDs (0x18 bytes)
     this->targetAddress = 0xf;
 
     timer.Reset();
 
     this->messageQueue.m_head = AllocateMemory(16);
     if (this->messageQueue.m_head) {
-        QueueNode* node = (QueueNode*)this->messageQueue.m_head;
-        node->next = 0;
-        node->prev = 0;
-        node->data = 0;
+        int* node = (int*)this->messageQueue.m_head;
+        node[3] = 1;      // flags at 0xc = 1
+        node[0] = 0;      // prev at 0x0 = 0
+        node[1] = 0;      // next at 0x4 = 0
+        node[2] = node[0]; // data at 0x8 = prev value
     }
 }
 
@@ -51,7 +49,7 @@ SC_OnScreenMessage::SC_OnScreenMessage()
 void SC_OnScreenMessage::Destroy(int free)
 {
     this->Free();
-    if (free) {
+    if (free & 1) {
         FreeMemory(this);
     }
 }

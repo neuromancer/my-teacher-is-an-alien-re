@@ -1,6 +1,8 @@
 #include "SC_Question.h"
 #include "Memory.h"
 #include "MouseControl.h"
+#include "FlagArray.h"
+#include "globals.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -14,6 +16,27 @@ extern "C" {
 }
 
 void* operator new(unsigned int, void* p) { return p; }
+
+/* Function start: 0x4066D0 */
+SC_Question::SC_Question(int id)
+{
+    // Zero the SC_Question-specific fields (0x26 dwords = 152 bytes starting at offset 0x88)
+    memset(&this->mouseControl, 0, 0x98);
+    
+    // Set question ID
+    this->questionId = id;
+    
+    this->state = 0;
+    this->messageQueue = new Queue();
+    
+    // Parse the question file
+    ParseFile(this, "mis\\quest001.mis", "[QUESTION%5.5d]", this->questionId);
+    
+    // Check if question was already answered
+    if (g_Manager_00435a84->GetFlag(this->questionId, 1) != 0) {
+        this->state = 2;
+    }
+}
 
 /* Function start: 0x4199A0 */
 SC_Message::~SC_Message()

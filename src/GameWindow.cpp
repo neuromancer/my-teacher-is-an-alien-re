@@ -19,6 +19,20 @@ int* FUN_00422500();
 
 int ParseCommandLineArgs(char *, char **, int);
 
+/* Function start: 0x422060 */
+GameWindow::GameWindow() {
+    // Zero entire object (0xb dwords = 44 bytes = 0x2c)
+    int* p = (int*)this;
+    for (int i = 0xb; i != 0; i--) {
+        *p = 0;
+        p++;
+    }
+    this->field_24 = 0;
+    this->field_28 = 1;
+    this->field_20 = 1;
+    this->savedActiveWindow = GetActiveWindow();
+}
+
 /* Function start: 0x4220A0 */
 void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
                                   int param_4) {

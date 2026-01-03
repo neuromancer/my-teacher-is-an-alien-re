@@ -2,6 +2,18 @@
 #define GAMECONFIG_H
 
 #include <stdio.h>
+#include "Animation.h"
+
+// Embedded object at offset 0x44 of GameConfig (80 bytes = 0x50)
+// Has UnknownClassAnimation at offset 0x34
+class ConfigData {
+public:
+    unsigned char rawData[0x34];  // 0x00-0x33 (52 bytes)
+    UnknownClassAnimation anim;   // 0x34 (8 bytes)
+    unsigned char padding[0x50 - 0x34 - sizeof(UnknownClassAnimation)]; // remaining bytes
+    
+    ~ConfigData();
+};
 
 class GameConfig {
 public:
@@ -11,9 +23,7 @@ public:
     int isSet; // 0x0c
     char value[32]; // 0x10
     char unused_30[20]; // 0x30
-    unsigned char data[80]; // 0x44 -- This overlaps? 
-    // Wait, 0x30 + 20 = 0x44. Correct.
-    // data at 0x44.
+    ConfigData data; // 0x44 (80 bytes = 0x50)
 
     // Methods
     GameConfig(); // 0x422690

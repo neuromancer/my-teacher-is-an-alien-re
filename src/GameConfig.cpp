@@ -1,5 +1,6 @@
 #include "GameConfig.h"
 #include "Memory.h"
+#include "Animation.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -11,12 +12,17 @@ extern "C" {
     int FileExists(const char* filename);
 }
 
+/* Function start: 0x422750 */
+ConfigData::~ConfigData() {
+    // Destructor - UnknownClassAnimation destructor will be called automatically
+}
+
 /* Function start: 0x422690 */
 GameConfig::GameConfig() {
     // Zero entire object (0x25 dwords = 148 bytes = 0x94)
     memset(this, 0, sizeof(GameConfig));
     // Zero data section again (0x14 dwords = 80 bytes at offset 0x44)
-    memset(this->data, 0, 80);
+    memset(&this->data, 0, 80);
     
     if (FileExists(PTR_s_Setup_cfg_00437454) == 0) {
         CreateDefaultConfig();
@@ -47,11 +53,11 @@ void GameConfig::Close() {
 /* Function start: 0x422840 */
 void GameConfig::CreateDefaultConfig() {
     // Zero out data (20 dwords = 80 bytes at offset 0x44)
-    memset(this->data, 0, 80);
+    memset(&this->data, 0, 80);
     // Set default values
-    this->data[0] = 2;  // offset 0x44
-    this->data[2] = 2;  // offset 0x46
-    this->data[1] = 0;  // offset 0x45
+    this->data.rawData[0] = 2;  // offset 0x44
+    this->data.rawData[2] = 2;  // offset 0x46
+    this->data.rawData[1] = 0;  // offset 0x45
     
     CheckWindir();
     LoadConfig();
@@ -60,7 +66,7 @@ void GameConfig::CreateDefaultConfig() {
 /* Function start: 0x422870 */
 void GameConfig::LoadConfig() {
     if (Open(DAT_004371a8)) {
-        FUN_004269e0(this->data, 80, 1, this->fp);
+        FUN_004269e0(&this->data, 80, 1, this->fp);
         Close();
     }
 }
@@ -68,7 +74,7 @@ void GameConfig::LoadConfig() {
 /* Function start: 0x4228A0 */
 void GameConfig::SaveConfig() {
     if (Open("wb")) {
-        fwrite(this->data, 0x50, 1, this->fp);
+        fwrite(&this->data, 0x50, 1, this->fp);
         Close();
     }
     CheckWindir();
@@ -76,7 +82,7 @@ void GameConfig::SaveConfig() {
 /* Function start: 0x4228E0 */
 unsigned char GameConfig::CheckWindir() {
     char* result = getenv("windir");
-    this->data[6] = (result != 0) ? 1 : 0;
-    return this->data[6];
+    this->data.rawData[6] = (result != 0) ? 1 : 0;
+    return this->data.rawData[6];
 }
 

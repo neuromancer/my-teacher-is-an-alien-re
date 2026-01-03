@@ -130,11 +130,11 @@ void Animation::NextFrame() {
 /* Function start: 0x41FCC0 */
 void Animation::GotoFrame(int frame) {
   if (this->smk != 0) {
-    if (g_GameConfig_00436970->data[2] == '\x02') {
+    if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
       SmackSoundOnOff(this->smk, 0);
     }
     SmackGoto(this->smk, frame);
-    if (g_GameConfig_00436970->data[2] == '\x02') {
+    if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
       SmackSoundOnOff(this->smk, 1);
     }
   }
@@ -146,7 +146,7 @@ int Animation::Open(char *filename, int param_2, int param_3) {
     return 1;
   }
 
-  if (g_GameConfig_00436970->data[2] != '\x02') {
+  if (g_GameConfig_00436970->data.rawData[2] != '\x02') {
     param_2 = param_2 & 0xfff01fff;
   }
 

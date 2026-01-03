@@ -5,18 +5,7 @@
 #include <stdio.h>
 
 extern "C" {
-    int FUN_00421d10(void*);
-    int _SmackWait_4(int);
-    void FUN_0041ac50(void*, int);
-    void FUN_0041fc20(void*, int, int);
-    void FUN_0041fca0(int);
-    void FUN_0041acf0(void*, int, int, int, int, int, int, int, int);
-    void FUN_0041fcb0(int);
-    void FUN_0041ac80(void*);
-    void* FUN_004224f0();
-    void* FUN_004224e0();
-    int FUN_00421af0();
-    void FUN_00425f30(FILE* fp, long offset, int origin);
+    int FileSeek(FILE* fp, long offset, int origin);
     
     // Using standard library wrapper names to match link expectations or implementations
     FILE* fsopen(const char* filename, const char* mode);
@@ -151,7 +140,7 @@ void FlagArray::Seek(int index) {
         ShowError("Error in flagaray.cpp (Seek, Attempt to seek past end of file)");
     }
     
-    FUN_00425f30(this->fp, offset, 0); // SEEK_SET
+    FileSeek(this->fp, offset, 0); // SEEK_SET
 }
 
 /* Function start: 0x420370 */

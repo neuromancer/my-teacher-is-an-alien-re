@@ -64,7 +64,11 @@ void FUN_0040c5d0() {}
 void FUN_00421ea0() {}
 void FUN_004227a0() {}
 void FUN_00421010() {}
-void FUN_00425f30(FILE* fp, long offset, int origin) {}
+/* Function start: 0x425f30 */
+// FileSeek - wrapper around fseek, originally MSVC CRT's fseek implementation
+int FileSeek(FILE* fp, long offset, int origin) {
+    return fseek(fp, offset, origin);
+}
 void FUN_00426550(const char* filename, int* stat_buf) {
     if (stat_buf) stat_buf[4] = 0; 
 }
@@ -227,7 +231,6 @@ void __fastcall FUN_0041c960(void*) {}
 
 void* FUN_0041cd50(void* a, char* b) { return a; }
 void FUN_00409160(void* a, void* b) {}
-void* FUN_004066d0(void* a, int b) { return a; }
 
 void FUN_00419080(char* a, char* b, int c) { if (b) *b = 0; }
 void FUN_004086c0(void* a, int b) {}
