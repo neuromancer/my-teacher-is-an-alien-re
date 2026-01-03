@@ -218,7 +218,7 @@ void Animation::ToBufferVB(VBuffer *buffer) {
   }
 
   this->data = buffer;
-  unsigned int uVar3 = this->smack_buffer->Reversed;
+  unsigned int uVar3 = *(unsigned char*)this->smack_buffer;
   void *uVar1 = buffer->GetData();
   SmackToBuffer(this->smk, 0, 0, this->smk->Width, this->smk->Height, uVar1,
                 uVar3);

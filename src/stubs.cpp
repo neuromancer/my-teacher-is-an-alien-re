@@ -113,6 +113,7 @@ void FUN_00422a2f() {}
 void FUN_004110d0() {}
 void __cdecl FUN_00424940(void*) {}  // FreeMemory wrapper
 void FUN_0041e7d0() {}
+void FUN_0041c000(void*, char*, int, int, int) {} // SoundManager::ShowSubtitle stub
 
 // Helper functions for CleanupLoop
 void* __fastcall FUN_00401710(void* queue) { return 0; }  // Queue::Pop

@@ -51,7 +51,6 @@ int SetCursorVisible(unsigned int);
 int FileExists(const char *);
 void SetErrorCode(unsigned int);
 void ParsePath(const char *, char *, char *, char *, char *);
-int _chdir(const char *);
 }
 
 
@@ -401,7 +400,7 @@ void CheckDebug(void) {
   //__try {
     pvVar2 = g_CDData_0043697c;
     if (g_CDData_0043697c == (CDData *)0x0) {
-      pvVar2 = new CDData("cddata", DAT_0043d568);
+      pvVar2 = new CDData("cddata", "DATA");
     }
     g_CDData_0043697c = pvVar2;
     if (DAT_0043d568[0] != '\0') {

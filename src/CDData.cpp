@@ -3,12 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <direct.h>
+#include "string.h"
 #include "FileSystem.h"
 
 extern "C" {
 int FileExists(const char *);
 void ParsePath(const char *, char *, char *, char *, char *);
-int _chdir(const char *);
 }
 
 /* Function start: 0x421E40 */
@@ -34,7 +35,6 @@ CDData::CDData(char *param_1, char *param_2) {
 /* Function start: 0x421EB0 */
 int CDData::CheckFileOnDrive(int drive_letter) {
   char local_40[64];
-
   sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
           this->field_0x80, this->field_0x1c5);
   return FileExists(local_40);
@@ -47,13 +47,14 @@ int CDData::ChangeToDriveDirectory(int drive_letter) {
   sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
           this->field_0x80, this->field_0x1c5);
   int result = this->ChangeDirectory((unsigned char *)local_40);
-  return result == 0;
+  return result != 0;
 }
 
 /* Function start: 0x421EF0 */
 int CDData::ChangeDirectory(unsigned char *path) {
+  //ShowMessage((char *)path);
   if (path != 0 && *path != 0) {
-    if (_chdir((char *)path) != 0) {
+    if (chdir((char *)path) != 0) {
       return 1;
     }
     ParsePath((char *)path, this->field_0xc0, 0, 0, 0);
