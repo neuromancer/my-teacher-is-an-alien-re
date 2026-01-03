@@ -5,15 +5,7 @@
 #include "SC_Question.h"
 #include <stdio.h>
 #include <string.h>
-
-extern "C" {
-    void ShowError(const char*, ...);
-    void* FUN_0041cd50(void*, char*); // Sprite ctor?
-    void FUN_004067e0(void*); // Destroy/Cleanup SC_Question?
-    void FUN_00424940(void*); // Free
-}
-
-void* operator new(unsigned int, void* p);
+#include "string.h"
 
 /* Function start: 0x407EC6 */
 int SCI_Dialog::LBLParse(char* param_1)
@@ -31,11 +23,7 @@ int SCI_Dialog::LBLParse(char* param_1)
         sscanf(param_1, "%*s %s", local_34); // Parse filename but ignore?
     }
     else if (_strcmpi(key, "BUTTON") == 0) {
-        void* mem = AllocateMemory(0xd8);
-        Sprite* s = 0;
-        if (mem) {
-            s = (Sprite*)FUN_0041cd50(mem, 0); // Sprite ctor?
-        }
+        Sprite* s = new Sprite(NULL);
         this->SetButton(s);
         Parser::ProcessFile(s, this, 0);
     }
@@ -43,11 +31,7 @@ int SCI_Dialog::LBLParse(char* param_1)
         ShowError("SCI_Dialog::LBLParse %s: ambient sprites have already been loaded", key);
     }
     else if (_strcmpi(key, "HILITE") == 0) {
-        void* mem = AllocateMemory(0xd8);
-        Sprite* s = 0;
-        if (mem) {
-            s = (Sprite*)FUN_0041cd50(mem, 0);
-        }
+        Sprite* s = new Sprite(NULL);
         this->SetHilite(s);
         Parser::ProcessFile(s, this, 0);
     }
@@ -94,12 +78,7 @@ int SCI_Dialog::LBLParse(char* param_1)
         int id;
         sscanf(param_1, "%*s %d", &id);
         
-        void* mem = AllocateMemory(0x120);
-        SC_Question* q = 0;
-        if (mem) {
-            q = new (mem) SC_Question(id);
-        }
-        
+        SC_Question* q = new SC_Question(id);
         // Logic checking if q is valid...
         // ...
         
