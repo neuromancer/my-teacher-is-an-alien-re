@@ -155,8 +155,26 @@ int GameWindow::InitGraphics(void) {
   return 1;
 }
 
+extern "C" {
+    void ResetVideoFlag();        // 0x4231bc - sets byte at 0x437f54 to 0xff
+    void CleanupVideoSystem();    // 0x423cfe - cleanup video/palette  
+}
+
 /* Function start: 0x422430 */
-void GameWindow::FUN_00422430() {
+void GameWindow::Shutdown() {
+    if (this->field_28 == 0) {
+        return;
+    }
+    this->field_28 = 0;
+    if (this->field_20 != 0) {
+        SmackSetSystemRes(0);
+    }
+    SetCursorVisible(1);
+    ResetVideoFlag();
+    CleanupVideoSystem();
+    DeleteObject(this->hPalette);
+    ReleaseDC(this->hWnd, this->hDC);
+    SetActiveWindow(this->savedActiveWindow);
 }
 
 extern GameWindow g_GameWindow;

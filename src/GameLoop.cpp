@@ -111,6 +111,7 @@ void GameLoop::Run() {
     GameState* pGameState;
     int mouseX;
     int mouseY;
+    InputState* pMouse;
 
     this->ResetLoop();
     
@@ -135,35 +136,38 @@ loop_start:
     ((ZBufferManager*)DAT_0043698c)->ProcessRenderQueues();
     
     elapsedTime = ((Timer*)this->timer1)->Update();
-    if (elapsedTime < (unsigned int)this->field_0x08) {
+    if ((unsigned int)this->field_0x08 > elapsedTime) {
         do {
             pSmackSoundCheck();
             elapsedTime = ((Timer*)this->timer1)->Update();
-        } while (elapsedTime < (unsigned int)this->field_0x08);
+        } while ((unsigned int)this->field_0x08 > elapsedTime);
     }
     
+    if (g_GameState_00436998 == 0) {
+        goto skip_debug;
+    }
     pGameState = g_GameState_00436998;
-    if (pGameState != 0) {
-        if (pGameState->maxStates < 5) {
-            ShowError("\"GameState Error  #%d\"", 1);
-        }
-        if (*(int*)((char*)pGameState->stateValues + 0x10) != 0) {
-            mouseY = 0;
-            InputState* pMouse = g_InputManager_00436968->pMouse;
-            if (pMouse != 0) {
-                mouseY = pMouse->y;
-            }
-            if (pMouse != 0) {
-                mouseX = pMouse->x;
-            } else {
-                mouseX = 0;
-            }
-            elapsedTime = ((Timer*)this->timer1)->Update();
-            sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
-            ((SoundManager*)DAT_0043698c)->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
-        }
+    if (pGameState->maxStates < 5) {
+        ShowError("\"GameState Error  #%d\"", 1);
     }
+    if (*(int*)((char*)pGameState->stateValues + 0x10) == 0) {
+        goto skip_debug;
+    }
+    mouseY = 0;
+    pMouse = g_InputManager_00436968->pMouse;
+    if (pMouse != 0) {
+        mouseY = pMouse->y;
+    }
+    if (pMouse != 0) {
+        mouseX = pMouse->x;
+    } else {
+        mouseX = 0;
+    }
+    elapsedTime = ((Timer*)this->timer1)->Update();
+    sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
+    ((SoundManager*)DAT_0043698c)->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
     
+skip_debug:
     ((Timer*)this->timer1)->Reset();
     ((ZBufferManager*)DAT_0043698c)->UpdateScreen();
     

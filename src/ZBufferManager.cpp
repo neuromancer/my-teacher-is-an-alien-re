@@ -9,10 +9,12 @@
 #include "string.h"
 #include <string.h>
 
-// Stubs for unresolved functions
-int __fastcall FUN_0041ebb0(void*) { return 0; }
+// Stub - checks if palette has changed from the stored one
+// Returns 0 if palette changed, non-zero if unchanged
+int __fastcall IsPaletteUnchanged(void* storedPalette) { return 0; }
 
-extern "C" void FUN_0041c94c() {}
+// SEH cleanup thunk
+extern "C" void SEH_Cleanup_0041c94c() {}
 /* Function start: 0x41BB10 */
 void* ZBQueue::GetCurrentData()
 {
@@ -69,8 +71,6 @@ void* ZBQueue::PopNode()
 }
 
 extern "C" void FlipScreen();
-extern "C" void SEH_Destructor_0041cb15();
-extern "C" void SEH_TryEnd_0041cb2a();
 
 extern VBuffer* g_WorkBuffer_00436974;
 
@@ -80,84 +80,93 @@ void ZBufferManager::UpdateScreen() {
     int* puVar3;
     int iVar4;
     int* local_14;
-    int local_24[4]; // Rectangle data
+    int local_24[4];
     
     int mode = this->m_state;
     if (mode == 1) {
         FlipScreen();
+        return;
     }
-    else if (mode == 2) {
+    if (mode == 2) {
         FlipScreen();
+        return;
     }
-    else if (mode == 3) {
-        iVar4 = *(int*)this->m_queue9c;
-        while (iVar4 != 0) {
-            local_14 = 0;
-            piVar1 = (int*)this->m_queue9c;
-            int queueType = piVar1[3];
-            if (queueType == 1 || queueType == 4) {
-                iVar4 = *piVar1;
-                piVar1[2] = iVar4;
-            } else if (queueType == 2 || queueType == 0) {
-                iVar4 = piVar1[1];
-                piVar1[2] = iVar4;
-            } else {
-                ShowError("\"bad queue type %lu\"", queueType);
-            }
-            
-            iVar4 = piVar1[2];
-            if (iVar4 != 0) {
-                // Unlink from queue
-                if (*piVar1 == iVar4) {
-                    *piVar1 = *(int*)(iVar4 + 4);
-                }
-                if (piVar1[1] == piVar1[2]) {
-                    piVar1[1] = *(int*)piVar1[2];
-                }
-                int next = *(int*)piVar1[2];
-                if (next != 0) {
-                    *(int*)(next + 4) = ((int*)piVar1[2])[1];
-                }
-                puVar3 = (int*)((int*)piVar1[2])[1];
-                if (puVar3 != 0) {
-                    *puVar3 = *(int*)piVar1[2];
-                }
-                puVar3 = (int*)piVar1[2];
-                if (puVar3 != 0) {
-                    local_14 = (int*)puVar3[2];
-                    puVar3[2] = 0;
-                    *puVar3 = 0;
-                    puVar3[1] = 0;
-                    FreeMemory(puVar3);
-                    piVar1[2] = 0;
-                }
-                piVar1[2] = *piVar1;
-            }
-            
-            __try {
-                if (g_WorkBuffer_00436974 != 0) {
-                    // Copy rectangle data from local_14
-                    int* src = local_14 + 1;
-                    local_24[0] = src[0];
-                    local_24[1] = src[1];
-                    local_24[2] = src[2];
-                    local_24[3] = src[3];
-                    
-                    g_WorkBuffer_00436974->CallBlitter4(local_24[0], local_24[1], local_24[2], local_24[3], local_24[0], local_24[1]);
-                }
-                
-                if (local_14 != 0) {
-                    *local_14 = 0x431058; // vtable
-                    SEH_Destructor_0041cb15();
-                    FreeMemory(local_14);
-                }
-            } __finally {
-                SEH_TryEnd_0041cb2a();
-            }
-            
-            iVar4 = *(int*)this->m_queue9c;
+    if (mode != 3) {
+        return;
+    }
+    
+    piVar1 = (int*)this->m_queue9c;
+    if (*piVar1 == 0) {
+        return;
+    }
+    
+    do {
+        local_14 = 0;
+        piVar1 = (int*)this->m_queue9c;
+        int queueType = piVar1[3];
+        if (queueType == 1 || queueType == 4) {
+            iVar4 = *piVar1;
+        } else if (queueType == 2 || queueType == 0) {
+            iVar4 = piVar1[1];
+        } else {
+            ShowError("\"bad queue type %lu\"", queueType);
+            goto process_entry;
         }
-    }
+        piVar1[2] = iVar4;
+        
+process_entry:
+        iVar4 = piVar1[2];
+        if (iVar4 == 0) {
+            goto do_blit;
+        }
+        if (*piVar1 == iVar4) {
+            *piVar1 = *(int*)(iVar4 + 4);
+        }
+        iVar4 = piVar1[2];
+        if (piVar1[1] == iVar4) {
+            piVar1[1] = *(int*)iVar4;
+        }
+        iVar4 = *(int*)piVar1[2];
+        if (iVar4 != 0) {
+            *(int*)(iVar4 + 4) = ((int*)piVar1[2])[1];
+        }
+        puVar3 = (int*)((int*)piVar1[2])[1];
+        if (puVar3 != 0) {
+            *puVar3 = *(int*)piVar1[2];
+        }
+        iVar4 = piVar1[2];
+        if (iVar4 == 0) {
+            local_14 = 0;
+        } else {
+            local_14 = (int*)((int*)iVar4)[2];
+            ((int*)iVar4)[2] = 0;
+            *(int*)iVar4 = 0;
+            ((int*)iVar4)[1] = 0;
+            FreeMemory((void*)iVar4);
+            piVar1[2] = 0;
+        }
+        piVar1[2] = *piVar1;
+        
+do_blit:
+        {
+            int* pSrc = local_14 + 1;
+            local_24[0] = pSrc[0];
+            local_24[1] = pSrc[1];
+            local_24[2] = pSrc[2];
+            local_24[3] = pSrc[3];
+            
+            if (g_WorkBuffer_00436974 != 0) {
+                g_WorkBuffer_00436974->CallBlitter4(local_24[0], local_24[1], local_24[2], local_24[3], local_24[0], local_24[1]);
+            }
+            
+            if (local_14 != 0) {
+                *local_14 = 0x431058;
+                FreeMemory(local_14);
+            }
+        }
+        
+        piVar1 = (int*)this->m_queue9c;
+    } while (*piVar1 != 0);
 }
 
 ZBufferManager::~ZBufferManager()
@@ -341,7 +350,7 @@ void ZBufferManager::ProcessRenderQueues()
     if (pThis[0x26] == 2) {
         // State type 2 processing
         if ((void*)pThis[0x2a] != 0) {
-            iVar3 = FUN_0041ebb0((void*)pThis[0x2a]);
+            iVar3 = IsPaletteUnchanged((void*)pThis[0x2a]);
             if (iVar3 == 0) {
                 BlankScreen();
                 ((Palette*)local_14[0x2a])->SetPalette(0, 0x100);
@@ -412,7 +421,7 @@ void ZBufferManager::ProcessRenderQueues()
     else if (pThis[0x26] == 3) {
         // State type 3 processing
         if ((void*)pThis[0x2a] != 0) {
-            iVar3 = FUN_0041ebb0((void*)pThis[0x2a]);
+            iVar3 = IsPaletteUnchanged((void*)pThis[0x2a]);
             if (iVar3 == 0) {
                 BlankScreen();
                 ((Palette*)local_14[0x2a])->SetPalette(0, 0x100);
@@ -495,7 +504,7 @@ void ZBufferManager::ProcessRenderQueues()
             
             if (puVar7 != 0) {
                 *puVar7 = 0x431058;  // vtable for destructor
-                FUN_0041c94c();
+                SEH_Cleanup_0041c94c();
                 FreeMemory(puVar7);
             }
             

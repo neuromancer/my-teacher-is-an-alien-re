@@ -487,7 +487,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   } else {
     PlayIntroCinematic();
   }
-  g_GameWindow.FUN_00422430();
+  g_GameWindow.Shutdown();
   return uStack_14;
 }
 

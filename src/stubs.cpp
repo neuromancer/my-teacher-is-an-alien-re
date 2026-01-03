@@ -293,4 +293,21 @@ Message::Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8,
 
 extern "C" {
 void* __fastcall FUN_00422690(void* ptr) { return ptr; }
-} 
+}
+
+extern int DAT_00437f54;
+
+extern "C" {
+/* Function start: 0x4231BC */
+int ResetVideoFlag() {
+    DAT_00437f54 = 0xff;
+    return 0;
+}
+
+/* Function start: 0x423CFE */
+int CleanupVideoSystem() {
+    // Stub - sets video flag and frees video resources
+    DAT_00437f54 = 0xff;
+    return 0;
+}
+}
