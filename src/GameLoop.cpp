@@ -109,7 +109,6 @@ void GameLoop::Run() {
     SmackSoundCheckFn pSmackSoundCheck;
     unsigned int elapsedTime;
     GameState* pGameState;
-    int* pMouseCoords;
     int mouseX;
     int mouseY;
 
@@ -133,14 +132,14 @@ loop_start:
     }
     
     this->DrawFrame();
-    if (DAT_0043698c != 0) {
-        ((ZBufferManager*)DAT_0043698c)->ProcessRenderQueues();
-    }
+    ((ZBufferManager*)DAT_0043698c)->ProcessRenderQueues();
     
     elapsedTime = ((Timer*)this->timer1)->Update();
-    while (elapsedTime < (unsigned int)this->field_0x08) {
-        pSmackSoundCheck();
-        elapsedTime = ((Timer*)this->timer1)->Update();
+    if (elapsedTime < (unsigned int)this->field_0x08) {
+        do {
+            pSmackSoundCheck();
+            elapsedTime = ((Timer*)this->timer1)->Update();
+        } while (elapsedTime < (unsigned int)this->field_0x08);
     }
     
     pGameState = g_GameState_00436998;
@@ -166,9 +165,7 @@ loop_start:
     }
     
     ((Timer*)this->timer1)->Reset();
-    if (DAT_0043698c != 0) {
-        ((ZBufferManager*)DAT_0043698c)->FUN_0041c960();
-    }
+    ((ZBufferManager*)DAT_0043698c)->UpdateScreen();
     
     if (this->field_0x00 == 0) {
         goto loop_start;

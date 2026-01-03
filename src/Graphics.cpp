@@ -330,3 +330,30 @@ HPALETTE CreateSystemPalette(void)
   return CreatePalette((LOGPALETTE *)DAT_00437720);
 }
 
+#include "VBuffer.h"
+extern VBuffer* g_WorkBuffer_00436974;
+extern "C" int* GetWindowWidth();
+extern "C" int* GetWindowHeight();
+
+/* Function start: 0x4193E0 */
+extern "C" void FlipScreen() {
+    if (g_WorkBuffer_00436974 != 0) {
+        int* pHeight = GetWindowHeight();
+        int screenHeight = *pHeight - 1;
+        
+        int* pWidth = GetWindowWidth();
+        int screenWidth = *pWidth - 1;
+        
+        g_WorkBuffer_00436974->CallBlitter5(
+            g_WorkBuffer_00436974->clip_x1,
+            g_WorkBuffer_00436974->clip_x2,
+            g_WorkBuffer_00436974->saved_video_mode,
+            g_WorkBuffer_00436974->video_mode_lock_count,
+            0,
+            screenWidth,
+            0,
+            screenHeight
+        );
+    }
+}
+

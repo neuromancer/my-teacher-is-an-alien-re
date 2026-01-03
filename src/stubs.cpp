@@ -49,6 +49,8 @@ void FUN_0041b091() {}
 void FUN_0041b07f() {}
 void FUN_0041b2ac() {}
 void FUN_0041b29a() {}
+void SEH_Destructor_0041cb15() {}
+void SEH_TryEnd_0041cb2a() {}
 
 // Stub for FUN_0041b0a0 (stdcall with 5 params)
 void __stdcall FUN_0041b0a0(int x, int y, void* data, int scale1, int scale2) {}

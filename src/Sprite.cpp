@@ -314,7 +314,7 @@ int Sprite::Do(int x, int y, double scale)
     else {
         mode = ((flags & 0x40) < 1 ? -1 : 0) + 3;
     }
-    g_SoundManager->PlayAnimationSound(this->animation_data->data, this->priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
+    //g_SoundManager->PlayAnimationSound(this->animation_data->data, this->priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
     return -((this->flags & 1) == 0) & done;
 }
 

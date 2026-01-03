@@ -68,11 +68,97 @@ void* ZBQueue::PopNode()
     return 0;
 }
 
-void ZBufferManager::FUN_0041c960() {
-    // Stub implementation
-}
+extern "C" void FlipScreen();
+extern "C" void SEH_Destructor_0041cb15();
+extern "C" void SEH_TryEnd_0041cb2a();
 
 extern VBuffer* g_WorkBuffer_00436974;
+
+/* Function start: 0x41C960 */
+void ZBufferManager::UpdateScreen() {
+    int* piVar1;
+    int* puVar3;
+    int iVar4;
+    int* local_14;
+    int local_24[4]; // Rectangle data
+    
+    int mode = this->m_state;
+    if (mode == 1) {
+        FlipScreen();
+    }
+    else if (mode == 2) {
+        FlipScreen();
+    }
+    else if (mode == 3) {
+        iVar4 = *(int*)this->m_queue9c;
+        while (iVar4 != 0) {
+            local_14 = 0;
+            piVar1 = (int*)this->m_queue9c;
+            int queueType = piVar1[3];
+            if (queueType == 1 || queueType == 4) {
+                iVar4 = *piVar1;
+                piVar1[2] = iVar4;
+            } else if (queueType == 2 || queueType == 0) {
+                iVar4 = piVar1[1];
+                piVar1[2] = iVar4;
+            } else {
+                ShowError("\"bad queue type %lu\"", queueType);
+            }
+            
+            iVar4 = piVar1[2];
+            if (iVar4 != 0) {
+                // Unlink from queue
+                if (*piVar1 == iVar4) {
+                    *piVar1 = *(int*)(iVar4 + 4);
+                }
+                if (piVar1[1] == piVar1[2]) {
+                    piVar1[1] = *(int*)piVar1[2];
+                }
+                int next = *(int*)piVar1[2];
+                if (next != 0) {
+                    *(int*)(next + 4) = ((int*)piVar1[2])[1];
+                }
+                puVar3 = (int*)((int*)piVar1[2])[1];
+                if (puVar3 != 0) {
+                    *puVar3 = *(int*)piVar1[2];
+                }
+                puVar3 = (int*)piVar1[2];
+                if (puVar3 != 0) {
+                    local_14 = (int*)puVar3[2];
+                    puVar3[2] = 0;
+                    *puVar3 = 0;
+                    puVar3[1] = 0;
+                    FreeMemory(puVar3);
+                    piVar1[2] = 0;
+                }
+                piVar1[2] = *piVar1;
+            }
+            
+            __try {
+                if (g_WorkBuffer_00436974 != 0) {
+                    // Copy rectangle data from local_14
+                    int* src = local_14 + 1;
+                    local_24[0] = src[0];
+                    local_24[1] = src[1];
+                    local_24[2] = src[2];
+                    local_24[3] = src[3];
+                    
+                    g_WorkBuffer_00436974->CallBlitter4(local_24[0], local_24[1], local_24[2], local_24[3], local_24[0], local_24[1]);
+                }
+                
+                if (local_14 != 0) {
+                    *local_14 = 0x431058; // vtable
+                    SEH_Destructor_0041cb15();
+                    FreeMemory(local_14);
+                }
+            } __finally {
+                SEH_TryEnd_0041cb2a();
+            }
+            
+            iVar4 = *(int*)this->m_queue9c;
+        }
+    }
+}
 
 ZBufferManager::~ZBufferManager()
 {

@@ -34,7 +34,7 @@ public:
     ~ZBufferManager();
     void Cleanup();               // 0x41B8E0
     void ProcessRenderQueues();   // 0x41C5A0
-    void FUN_0041c960();          // 0x41C960
+    void UpdateScreen();          // 0x41C960
     
     unsigned int data[0x21];     // 0x00 - 0x80 (33 dwords)
     Timer m_timer;               // 0x84 - Timer (20 bytes, 5 dwords)
