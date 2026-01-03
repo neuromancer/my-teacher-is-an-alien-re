@@ -27,7 +27,7 @@ void FUN_0041eab0() {}
 void FUN_00421ac0() {}    // InitKeyboardState
 int FUN_00421ae0() { return 0; } // joyGetNumDevs wrapper
 int FUN_00421ce0(int a, int b, int c, int d) { return 0; } // Joystick helper
-// FUN_0040d2a0 implemented in Queue.cpp as TimedEventPool::ClearAndDestroy
+void __fastcall FUN_0040d2a0(void* param_1) {} // Pool cleanup function
 // FUN_004171b0 implemented in ScriptHandler.cpp as WriteMessageAddress
 // FUN_0041e666 is compiler-generated exception funclet, not a real function
 void FUN_0041b110() {}

@@ -3,16 +3,17 @@
 #include "MouseControl.h"
 #include "SpriteList.h"
 #include "FlagArray.h"
+#include "TimedEvent.h"
 #include "globals.h"
 #include <stdio.h>
 #include <string.h>
 
 extern "C" {
-    void FUN_00419080(char* src, char* dst, int maxlen);
+    void ExtractQuotedString(char* src, char* dst, int maxlen);
     void ShowError(const char*, ...);
-    void* FUN_0041f280(void*); // MouseControl ctor
-    void FUN_004069b0(SC_Question*);  // SC_Question::Finalize
     void FUN_0041c000(void*, char*, int, int, int);  // SoundManager::ShowSubtitle
+    void FUN_004086c0(void* queue, void* msg);  // Queue insert function
+    void WriteToMessageLog(const char* msg, ...);
 }
 
 extern int* DAT_0043698c;
@@ -99,7 +100,7 @@ void SC_Question::Update(int x, int y)
     case 1:
         if (this->mouseControl != 0) {
             if (((SpriteList*)this->mouseControl)->DoAll() == 0) {
-                FUN_004069b0(this);
+                this->Finalize();
             }
         }
         break;
@@ -109,6 +110,94 @@ void SC_Question::Update(int x, int y)
         ShowError("illegal state");
         break;
     }
+}
+
+/* Function start: 0x4069B0 */
+void SC_Question::Finalize()
+{
+    Queue* queue;
+    void* msgData;
+    int queueType;
+    TimedEvent* event;
+    TimedEventPool* pool;
+    QueueNode* current;
+    
+    // Mark question as answered in flag array
+    g_Manager_00435a84->SetFlag(this->questionId, 1);
+    
+    this->state = 2;
+    if (this->messageQueue->m_head == 0) {
+        return;
+    }
+    
+    do {
+        queue = this->messageQueue;
+        msgData = 0;
+        queueType = queue->m_field_0xc;
+        
+        if (queueType == 1 || queueType == 4) {
+            queue->m_current = queue->m_head;
+        }
+        else if (queueType == 2 || queueType == 0) {
+            queue->m_current = queue->m_tail;
+        }
+        else {
+            ShowError("bad queue type %lu", queueType);
+        }
+        
+        // Pop the current item from queue
+        current = (QueueNode*)queue->m_current;
+        if (current != 0) {
+            if (queue->m_head == current) {
+                queue->m_head = current->next;
+            }
+            if (queue->m_tail == current) {
+                queue->m_tail = current->prev;
+            }
+            if (current->next != 0) {
+                current->next->prev = current->prev;
+            }
+            if (current->prev != 0) {
+                current->prev->next = current->next;
+            }
+            
+            if (current != 0) {
+                msgData = current->data;
+            }
+            else {
+                msgData = 0;
+            }
+            
+            if (current != 0) {
+                current->data = 0;
+                current->prev = 0;
+                current->next = 0;
+                FreeMemory(current);
+                queue->m_current = 0;
+            }
+            queue->m_current = queue->m_head;
+        }
+        
+        // Create timed event in pool and add message to it
+        pool = (TimedEventPool*)DAT_00436988;
+        event = pool->Create((void*)pool->list.tail, 0);
+        ((TimedEvent*)((int*)event + 2))->CopyFrom((TimedEvent*)msgData);
+        
+        // Link event to pool tail
+        if (pool->list.tail == 0) {
+            pool->list.head = event;
+        }
+        else {
+            *(TimedEvent**)pool->list.tail = event;
+        }
+        pool->list.tail = event;
+        
+        // Destroy the original message if not null
+        if (msgData != 0) {
+            ((SC_Message*)msgData)->~SC_Message();
+            FreeMemory(msgData);
+        }
+    } while (this->messageQueue->m_head != 0);
 }
 
 /* Function start: 0x4199A0 */
@@ -132,6 +221,12 @@ SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int da
     this->clickY = clickY;
 }
 
+/* Function start: 0x419FD0 - stub */
+void SC_Message::Dump(int unused)
+{
+    // TODO: implement
+}
+
 /* Function start: 0x406AF0 */
 int SC_Question::LBLParse(char* param_1)
 {
@@ -141,19 +236,12 @@ int SC_Question::LBLParse(char* param_1)
     sscanf(param_1, "%s", local_34);
     
     if (strcmp(local_34, "OVERLAYS") == 0) {
-        mem = AllocateMemory(0x98);
-        MouseControl* mc = 0;
-        try {
-            if (mem != 0) {
-                mc = (MouseControl*)FUN_0041f280(mem);
-            }
-        } catch (...) {
-        }
+        MouseControl* mc = new MouseControl();
         this->mouseControl = mc;
         Parser::ProcessFile(mc, this, 0);
     }
     else if (strcmp(local_34, "LABEL") == 0) {
-        FUN_00419080(param_1, this->label, 0x80);
+        ExtractQuotedString(param_1, this->label, 0x80);
     }
     else if (strcmp(local_34, "MESSAGE") == 0) {
         SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -295,7 +383,7 @@ int SC_Question::LBLParse(char* param_1)
             }
         }
         else {
-            queue->Insert(msg);
+            FUN_004086c0(queue, msg);
         }
     }
     else if (strcmp(local_34, "END") == 0) {
@@ -306,4 +394,42 @@ int SC_Question::LBLParse(char* param_1)
     }
     
     return 0;
+}
+
+/* Function start: 0x406F50 */
+void SC_Question::DumpMessageQueue(int unused)
+{
+    Queue* queue;
+    SC_Message* msgData;
+    
+    queue = this->messageQueue;
+    if (queue == 0) {
+        return;
+    }
+    if (queue->m_head == 0) {
+        return;
+    }
+    
+    WriteToMessageLog("\"\tmsgQ\"");
+    queue = this->messageQueue;
+    queue->m_current = queue->m_head;
+    
+    while (queue->m_current != 0) {
+        if (queue->m_current == 0) {
+            msgData = 0;
+        } else {
+            msgData = (SC_Message*)((QueueNode*)queue->m_current)->data;
+        }
+        msgData->Dump(0);
+        
+        if (queue->m_tail == queue->m_current) {
+            break;
+        }
+        
+        if (queue->m_current != 0) {
+            queue->m_current = ((QueueNode*)queue->m_current)->next;
+        }
+    }
+    
+    WriteToMessageLog("\"end queue dump\"");
 }

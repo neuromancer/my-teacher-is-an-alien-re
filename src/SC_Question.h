@@ -25,6 +25,9 @@ public:
 
     SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY);
     ~SC_Message();
+    
+    /* Function start: 0x419FD0 */
+    void Dump(int unused);
 };
 
 class SC_Question : public Parser
@@ -43,8 +46,14 @@ public:
     /* Function start: 0x406930 */
     void Update(int x, int y);
     
+    /* Function start: 0x4069B0 */
+    void Finalize();
+    
     /* Function start: 0x406AF0 */
     virtual int LBLParse(char* line);
+    
+    /* Function start: 0x406F50 */
+    void DumpMessageQueue(int unused);
 };
 
 #endif
