@@ -114,12 +114,12 @@ int GameState::FindState(char* stateName)
 }
 
 /* Function start: 0x420900 */
-int GameState::GetState(int stateIndex)
+char *GameState::GetState(int stateIndex)
 {
     if ((stateIndex > 0) && (this->maxStates <= stateIndex)) {
         ShowError("GameState Error #%d", 1);
     }
-    return (int)this->stateLabels[stateIndex];
+    return this->stateLabels[stateIndex];
 }
 
 /* Function start: 0x4209C0 */

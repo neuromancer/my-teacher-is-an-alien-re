@@ -4,6 +4,7 @@
 #include "SpriteList.h"
 #include "FlagArray.h"
 #include "TimedEvent.h"
+#include "GameState.h"
 #include "globals.h"
 #include <stdio.h>
 #include <string.h>
@@ -221,10 +222,60 @@ SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int da
     this->clickY = clickY;
 }
 
-/* Function start: 0x419FD0 - stub */
+/* Function start: 0x419FD0 */
 void SC_Message::Dump(int unused)
 {
-    // TODO: implement
+    const char* addressStr;
+    const char* fromStr;
+    
+    // Log ADDRESS field
+    if (this->targetAddress == 5) {
+        g_GameState_00436998->GetState(this->sourceAddress);
+        addressStr = g_GameState3_0043699c->GetState(5);
+        WriteToMessageLog("\"\t\t\tADDRESS\t\t%s  %s\"", addressStr, this->sourceAddress);
+    } else {
+        addressStr = g_GameState3_0043699c->GetState(this->targetAddress);
+        WriteToMessageLog("\"\t\t\tADDRESS\t\t%s  %d\"", addressStr, this->sourceAddress);
+    }
+    
+    // Log FROM field
+    if (this->command == 5) {
+        g_GameState_00436998->GetState(this->data);
+        fromStr = g_GameState3_0043699c->GetState(5);
+        WriteToMessageLog("\"\t\t\tFROM\t\t%s  %s\"", fromStr, this->data);
+    } else {
+        fromStr = g_GameState3_0043699c->GetState(this->command);
+        WriteToMessageLog("\"\t\t\tFROM\t\t%s  %d\"", fromStr, this->data);
+    }
+    
+    // Log INSTRUCTION field
+    const char* instrStr = g_GameState4_004369a0->GetState(this->priority);
+    WriteToMessageLog("\"\t\t\tINSTRUCTION\t%s\"", instrStr);
+    
+    // Log MOUSE field
+    WriteToMessageLog("\"\t\t\tMOUSE\t\t%d\t%d\"", this->clickX, this->clickY);
+    
+    // Log optional fields
+    if (this->mouseX != 0) {
+        WriteToMessageLog("\"\t\t\tBUTTON1\t\t%d\"", this->mouseX);
+    }
+    if (this->mouseY != 0) {
+        WriteToMessageLog("\"\t\t\tBUTTON2\t\t%d\"", this->mouseY);
+    }
+    if (this->field_b4 != 0) {
+        WriteToMessageLog("\"\t\t\tLASTKEY\t\t%d\"", this->field_b4);
+    }
+    if (this->field_b8 != 0) {
+        WriteToMessageLog("\"\t\t\tTIME\t\t%lu\"", this->field_b8);
+    }
+    if (this->param1 != 0) {
+        WriteToMessageLog("\"\t\t\tEXTRA1\t\t%lu\"", this->param1);
+    }
+    if (this->param2 != 0) {
+        WriteToMessageLog("\"\t\t\tEXTRA2\t\t%lu\"", this->param2);
+    }
+    
+    WriteToMessageLog("\"\t\tEND\t\t//message\"");
 }
 
 /* Function start: 0x406AF0 */

@@ -9,7 +9,7 @@ public:
     ~GameState();
     void ClearStates();
     int FindState(char* stateName);
-    int GetState(int stateIndex);
+    char *GetState(int stateIndex);
     int LBLParse(char* line);
     void Serialize(int mode);
     void SetMaxStates(int count);
