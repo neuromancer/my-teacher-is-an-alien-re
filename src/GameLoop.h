@@ -19,6 +19,7 @@ public:
     void CleanupLoop();  // 0x417450
     void ProcessMessage(SC_Message* msg); // 0x417CB0
     void HandleSystemMessage(SC_Message* msg); // 0x417F40
+    int AddHandler(void* handler); // 0x418200
     
     int field_0x00;
     int field_0x04;

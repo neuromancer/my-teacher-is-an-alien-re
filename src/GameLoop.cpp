@@ -29,22 +29,14 @@ extern "C" {
     void __fastcall FUN_00417660(void* obj, int freeFlag);  // Object destructor/cleanup
     void __fastcall FUN_004189a0(void* node, int freeFlag); // Node cleanup
     //void __fastcall FUN_00417652();               // SEH unwind thunk (empty stub)
-    
-    // Functions for GameLoop_HandleSystemMessage
-    void* __fastcall FUN_00401710(void* queue);  // Queue::PopNode
-    void* __fastcall FUN_00401790(void* queue);  // Queue::PopNode variant
-    void __cdecl FUN_00424940(void* ptr);        // FreeMemory wrapper
-    void __fastcall FUN_00401560(int* queue);    // Queue clear/cleanup
-    void __cdecl FUN_00419110(const char* format, ...);  // ShowError variant
-    void* __cdecl FUN_004249c0(int size);  // AllocateMemory
-}
+    }
+
 
 // Thiscall functions - declared outside extern "C"
 void FUN_00411080(void* obj, int flag);  // Object destructor with cleanup
 int FUN_00418540(GameLoop* self, int command);  // FindHandlerInEventList
 int* FUN_00418510(GameLoop* self, int command); // GetOrCreateHandler
 void* FUN_004188a0(void* node, int flag);  // Node destructor
-void FUN_004188d0(int* queue, int data);  // Queue::InsertNode
 int* FUN_004189d0(void* node, void* data);  // Node::Init
 
 // Doubly linked list node structure for eventList
@@ -74,6 +66,8 @@ struct EventList {
         tail = 0;
         current = head;
     }
+    
+    void InsertNode(void* data);  // 0x4188d0
 };
 
 /* Function start: 0x417200 */
@@ -788,10 +782,10 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         if (*(int*)pQueue != 0) {
             ((int*)pQueue)[2] = *(int*)pQueue;
             while (*(int*)pQueue != 0) {
-                puVar2 = (void*)FUN_00401710((void*)pQueue);
+                puVar2 = (void*)ZBuffer::PopNode((int*)pQueue);
                 if (puVar2 != 0) {
                     *(int*)puVar2 = 0x431050;  // PTR_LAB_00431050 vtable
-                    FUN_00424940(puVar2);
+                    FreeMemory(puVar2);
                 }
             }
         }
@@ -801,7 +795,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         if (*(int*)pQueue != 0) {
             ((int*)pQueue)[2] = *(int*)pQueue;
             while (*(int*)pQueue != 0) {
-                pvVar3 = (void*)FUN_00401790((void*)pQueue);
+                pvVar3 = (void*)ZBuffer::PopNode_2((int*)pQueue);
                 if (pvVar3 != 0) {
                     FUN_00411080(pvVar3, 1);
                 }
@@ -809,7 +803,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         }
         
         // Process queue at offset 0x9c
-        FUN_00401560((int*)pZBuf->m_queue9c);
+        ZBuffer::ClearList((int*)pZBuf->m_queue9c);
     }
     
     // Try to find existing handler for this command
@@ -854,27 +848,27 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         handler = (void*)this->field_0x18;
         EventList* pList2 = (EventList*)this->eventList;
         if (handler == 0) {
-            FUN_00419110("\"queue fault 0101\"");
+            ShowError("\"queue fault 0101\"");
         }
         pList2->current = pList2->head;
         if (pList2->field_0x0C == 1 || pList2->field_0x0C == 2) {
             if ((int)pList2->head == 0) {
-                FUN_004188d0((int*)pList2, (int)handler);
+                pList2->InsertNode(handler);
             } else {
                 // Priority-based insertion loop
                 while ((int)pList2->current != 0) {
                     int iCur = (int)pList2->current;
                     int curData = *(int*)(iCur + 8);
                     if (curData != 0 && *(int*)(curData + 0x88) < *(int*)((int)handler + 0x88)) {
-                        FUN_004188d0((int*)pList2, (int)handler);
+                        pList2->InsertNode(handler);
                         break;
                     }
                     if ((int)pList2->tail == iCur) {
                         // Append at end
                         if (handler == 0) {
-                            FUN_00419110("\"queue fault 0112\"");
+                            ShowError("\"queue fault 0112\"");
                         }
-                        void* pvNode = (void*)FUN_004249c0(0xc);
+                        void* pvNode = (void*)AllocateMemory(0xc);
                         int* piNode = 0;
                         if (pvNode != 0) {
                             piNode = FUN_004189d0(pvNode, handler);
@@ -888,7 +882,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                             pList2->current = (EventNode*)piNode;
                         } else {
                             if ((int)pList2->tail == 0 || *(int*)((int)pList2->tail + 4) != 0) {
-                                FUN_00419110("\"queue fault 0113\"");
+                                ShowError("\"queue fault 0113\"");
                             }
                             piNode[1] = 0;
                             *piNode = (int)pList2->tail;
@@ -903,14 +897,14 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                 }
             }
         } else {
-            FUN_004188d0((int*)pList2, (int)handler);
+            pList2->InsertNode(handler);
         }
     }
     
     // Call handler's vtable method at +0x10 (Init method) with the message
     handler = (void*)this->field_0x18;
     if (handler == 0) {
-        FUN_00419110("\"missing modual %d\"", *(int*)((char*)msg + 0x88));
+        ShowError("\"missing modual %d\"", *(int*)((char*)msg + 0x88));
     } else {
         (*(void (**)(SC_Message*))(*(int*)handler + 0x10))(msg);
     }
@@ -918,14 +912,309 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
 
 extern "C" {
 
+
     int GameLoop_ProcessControlMessage(GameLoop* self, SC_Message* msg) {
         ShowError("STUB: GameLoop_ProcessControlMessage called");
         return 0; // Not handled? Or handled?
     }
 
     void* GameLoop_GetHandlerForCommand(GameLoop* self, int command) {
-        ShowError("STUB: GameLoop_GetHandlerForCommand called cmd=%d", command);
-        return &g_StubObject; // Return pointer to object (which is pointer to vtable)
+        // ShowError("STUB: GameLoop_GetHandlerForCommand called cmd=%d", command);
+        return FUN_00418510(self, command);
     }
 }
+
+// -------------------------------------------------------------------------
+// Implementations of missing functions
+// -------------------------------------------------------------------------
+
+void FUN_0041aa10(int param_1) {
+    // Stub for recursive cleanup
+}
+
+int* FUN_0040cdd0(int command) {
+    // Factory stub
+    // This should create a handler based on the command.
+    return 0; 
+}
+
+void* FUN_004188a0(void* node, int flag) {
+    *(int*)((char*)node + 8) = 0;
+    *(int*)node = 0;
+    *(int*)((char*)node + 4) = 0;
+    if ((flag & 1) != 0) {
+        FreeMemory(node);
+    }
+    return node;
+}
+
+int* FUN_004189d0(void* node, void* data) {
+    *(int*)node = 0;
+    *(int*)((char*)node + 4) = 0;
+    *(int*)((char*)node + 8) = (int)data;
+    return (int*)node;
+}
+
+/* Function start: 0x4188D0 */
+void EventList::InsertNode(void* data) {
+    if (data == 0) {
+        ShowError("\"queue fault 0102\"");
+    }
+    EventNode* node = (EventNode*)AllocateMemory(0xc);
+    EventNode* newNode = 0;
+    if (node != 0) {
+        newNode = node;
+        node->data = data;
+        node->next = 0;
+        node->prev = 0;
+    }
+    
+    if (this->current == 0) {
+        this->current = this->head;
+    }
+    if (this->head == 0) {
+        this->head = newNode;
+        this->tail = newNode;
+        this->current = newNode;
+    } else {
+        newNode->prev = this->current;
+        newNode->next = this->current->next;
+        if (this->current->next == 0) {
+            this->head = newNode;
+            this->current->next = newNode;
+        } else {
+            this->current->next->prev = newNode;
+            this->current->next = newNode;
+        }
+    }
+}
+
+int FUN_00418540(GameLoop* self, int command) {
+    if (self->eventList == 0) {
+        return 0;
+    }
+    EventList* list = (EventList*)self->eventList;
+    list->current = list->head;
+    EventNode* node = list->head;
+    
+    while (1) {
+        if (node == 0) return 0;
+        
+        // iVar2 = *(int *)((int)this + 0x14); -> list
+        // iVar3 = *(int *)(iVar2 + 8); -> current (which is node now)
+        // iVar4 = *(int *)(*(int *)(iVar3 + 8) + 0x88); -> current->data->priority (at 0x88)
+        
+        void* data = node->data;
+        if (data != 0) {
+             // Check command at offset 0x88 (implied by usage in HandleSystemMessage msg->command is not 0x88, but msg structure has command. 
+             // Here we are comparing against 'param_1' which is 'command'.
+             // In HandleSystemMessage: FUN_00418540(this, *(int*)((char*)msg + 0x88)) 
+             // msg+0x88 is likely command? No, msg has 0x88 size?
+             // Let's assume passed param is the command ID.
+             
+             int handlerCmd = *(int*)((char*)data + 0x88); // 0x88 is distinct field
+             if (command == handlerCmd) break;
+        }
+        
+        // if (*(int *)(iVar2 + 4) == iVar3) return 0; -> if list->tail == node return 0
+        if (list->tail == node) return 0;
+        
+        // if (iVar3 != 0) { *(undefined4 *)(iVar2 + 8) = *(undefined4 *)(iVar3 + 4); } -> current = current->prev
+        // Original loop iterates backwards?
+        // Decomp: *(undefined4 *)(iVar2 + 8) = *(undefined4 *)(iVar3 + 4);
+        // iVar3 is current (node). +4 is prev.
+        // So list->current = node->prev.
+        
+        if (node != 0) {
+             list->current = node->prev;
+             // Update local node variable
+             node = node->prev;
+        }
+    }
+    
+    // Found it
+    // iVar2 = *(int *)(*(int *)((int)this + 0x14) + 8); -> list->current
+    // return *(undefined4 *)(iVar2 + 8); -> current->data
+    if (list->current != 0) {
+        return (int)list->current->data;
+    }
+    return 0;
+}
+
+/* Function start: 0x418200 */
+int GameLoop::AddHandler(void* handler) {
+    EventList* list;
+    EventNode* current;
+    void* data;
+    void* newNode;
+    void* nodePtr;
+    
+    // Check handler not null
+    if (handler == 0) {
+        ShowError("\"illegal modual insertion\"");
+    }
+    
+    // Get eventList
+    list = (EventList*)this->eventList;
+    
+    // Check list not null (uses handler as check, matches disasm)
+    if (handler == 0) {
+        ShowError("\"queue fault 0103\"");
+    }
+    
+    // Set current to head for duplicate check
+    list->current = list->head;
+    
+    // First loop: check for duplicates
+    while ((int)list->current != 0) {
+        current = list->current;
+        data = 0;
+        if (current != 0) {
+            data = current->data;
+        }
+        // Compare handler IDs at offset 0x88
+        if (*(int*)((char*)data + 0x88) == *(int*)((char*)handler + 0x88)) {
+            ShowError("\"illegal modual insertion double\"");
+            return 0;
+        }
+        // Check if at tail
+        if (list->tail == current) {
+            break;
+        }
+        // Move to next (via offset 4)
+        if (current != 0) {
+            list->current = current->prev;
+        }
+    }
+    
+    // Reset for insertion
+    list = (EventList*)this->eventList;
+    if (handler == 0) {
+        ShowError("\"queue fault 0101\"");
+    }
+    list->current = list->head;
+    
+    // Check list type
+    if (list->field_0x0C == 1 || list->field_0x0C == 2) {
+        // Priority-based insertion for type 1 or 2
+        if ((int)list->head == 0) {
+            list->InsertNode(handler);
+        } else {
+            // Priority insertion loop
+            while ((int)list->current != 0) {
+                current = list->current;
+                data = current->data;
+                // Compare priority at offset 0x88
+                if (*(int*)((char*)data + 0x88) < *(int*)((char*)handler + 0x88)) {
+                    // Insert before current
+                    if (handler == 0) {
+                        ShowError("\"queue fault 0102\"");
+                    }
+                    newNode = (void*)AllocateMemory(0xc);
+                    nodePtr = 0;
+                    if (newNode != 0) {
+                        nodePtr = newNode;
+                        *(void**)((char*)newNode + 8) = handler;
+                        *(int*)newNode = 0;
+                        *(int*)((char*)newNode + 4) = 0;
+                    }
+                    // Insert node
+                    if ((int)list->current == 0) {
+                        list->current = list->head;
+                    }
+                    if ((int)list->head == 0) {
+                        list->head = (EventNode*)nodePtr;
+                        list->tail = (EventNode*)nodePtr;
+                        list->current = (EventNode*)nodePtr;
+                    } else {
+                        *(EventNode**)((char*)nodePtr + 4) = list->current;
+                        *(int*)nodePtr = *(int*)list->current;
+                        if (*(int*)list->current == 0) {
+                            list->head = (EventNode*)nodePtr;
+                            *(void**)list->current = nodePtr;
+                        } else {
+                            *(void**)((char*)*(int*)list->current + 4) = nodePtr;
+                            *(void**)list->current = nodePtr;
+                        }
+                    }
+                    break;
+                }
+                // Check if at tail
+                if (list->tail == current) {
+                    // Append at end
+                    if (handler == 0) {
+                        ShowError("\"queue fault 0112\"");
+                    }
+                    newNode = (void*)AllocateMemory(0xc);
+                    if (newNode != 0) {
+                        *(void**)((char*)newNode + 8) = handler;
+                        handler = newNode;
+                        *(int*)newNode = 0;
+                        *(int*)((char*)newNode + 4) = 0;
+                    } else {
+                        handler = 0;
+                    }
+                    // Insert at tail
+                    if ((int)list->current == 0) {
+                        list->current = list->tail;
+                    }
+                    if ((int)list->head == 0) {
+                        list->head = (EventNode*)handler;
+                        list->tail = (EventNode*)handler;
+                        list->current = (EventNode*)handler;
+                    } else {
+                        if ((int)list->tail == 0 || *(int*)((char*)list->tail + 4) != 0) {
+                            ShowError("\"queue fault 0113\"");
+                        }
+                        *(int*)((char*)handler + 4) = 0;
+                        *(int*)handler = (int)list->tail;
+                        *(int*)((char*)list->tail + 4) = (int)handler;
+                        list->tail = (EventNode*)handler;
+                    }
+                    break;
+                }
+                // Move to next
+                if (current != 0) {
+                    list->current = current->prev;
+                }
+            }
+        }
+    } else {
+        list->InsertNode(handler);
+    }
+    
+    return 1;
+}
+
+
+int* FUN_00418510(GameLoop* self, int command) {
+    int* handler = FUN_0040cdd0(command);
+    if (handler != 0) {
+        self->AddHandler(handler);
+    }
+    return handler;
+}
+
+void FUN_00411080(void* obj, int flag) {
+    void* v1 = *(void**)((char*)obj + 4);
+    if (v1 != 0) {
+        FUN_0041aa10((int)v1);
+        FreeMemory(v1);
+        *(int*)((char*)obj + 4) = 0;
+    }
+    void* vtable = *(void**)((char*)obj + 8);
+    if (vtable != 0) {
+         (*(void (__cdecl **)(int))((int*)vtable)[0])(1); // Get destructor? 
+         // Code: (**(code **)**(undefined4 **)((int)this + 8))(1);
+         // `*(this+8)` is a pointer to object? Or vtable?
+         // `**(this+8)` is vtable?
+         // `(** ...)(1)` calls index 0 with 1.
+         // Yes, virtual destructor.
+         *(int*)((char*)obj + 8) = 0;
+    }
+    if ((flag & 1) != 0) {
+        FreeMemory(obj);
+    }
+}
+
 
