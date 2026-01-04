@@ -26,12 +26,6 @@ void __stdcall FUN_0041b110(int, int, void*, int, int);
 struct SoundCommand {
     virtual void Execute(GlyphRect* rect) = 0;
     
-    void* operator new(size_t size) {
-        return AllocateMemory(size);
-    }
-    void operator delete(void* ptr) {
-        FreeFromGlobalHeap(ptr);
-    }
 };
 
 struct CommandType1 : public SoundCommand {
@@ -80,8 +74,6 @@ struct CommandType2 : public SoundCommand {
 // Returns 0 if palette changed, non-zero if unchanged
 int __fastcall IsPaletteUnchanged(void* storedPalette) { return 0; }
 
-// SEH cleanup thunk
-extern "C" void SEH_Cleanup_0041c94c() {}
 /* Function start: 0x41BB10 */
 void* ZBQueue::GetCurrentData()
 {
@@ -278,18 +270,39 @@ do_blit:
 /* Function start: 0x41C000 */
 void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int flag)
 {
-    if (m_state == 0) return;
-
-    if (m_state == 1) {
+    int iVar1 = m_state;
+    if (iVar1 == 0) {
+        return;
+    }
+    if (iVar1 == 1) {
         FUN_004229ea(x, y);
         FUN_00421700(g_TextManager_00436990, text, -1);
         return;
     }
+    
+    // Allocate 0x14 bytes (CommandType2)
+    CommandType2* cmd = new CommandType2();
+    if (cmd != 0) {
+        // Zero init fields (assembly does this)
+        cmd->duration = 0;
+        cmd->text = 0;
+        cmd->x = 0;
+        cmd->y = 0;
 
-    // Mode 2 or 3: queue the subtitle command
-    // For now, implement basic version
-    FUN_004229ea(x, y);
-    FUN_00421700(g_TextManager_00436990, text, -1);
+        int len = strlen(text) + 1;
+        char* newText = (char*)AllocateMemory(len);
+        cmd->text = newText;
+        
+        if (newText != 0) {
+            memcpy(newText, text, len);
+        }
+        
+        cmd->duration = duration;
+        cmd->x = x;
+        cmd->y = y;
+        
+        QueueCommand(cmd);
+    }
 }
 
 /* Function start: 0x41C2C0 */
@@ -843,10 +856,10 @@ void ZBufferManager::ProcessRenderQueues()
                     }
                 } while (*(int*)local_14[0x28] != 0);
             }
-            
+            // TODO: convert to delete
             if (puVar7 != 0) {
                 *puVar7 = 0x431058;  // vtable for destructor
-                SEH_Cleanup_0041c94c();
+                //SEH_Cleanup_0041c94c();
                 FreeMemory(puVar7);
             }
             
