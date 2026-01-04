@@ -146,12 +146,135 @@ done:
     return event;
 }
 
-// Stub for Pop - to be properly implemented later
-void* TimedEventPool::Pop(void* buffer)
+/* Function start: 0x4185C0 */
+SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 {
-    // TODO: Implement properly
-    return 0;
+    // Local variables matching the assembly stack layout
+    TimedEventPool* local_14;     // [EBP-0x10] - this pointer
+    TimedEvent* local_18;         // [EBP-0x14] - head node pointer
+    int local_1c;                 // [EBP-0x18] - success flag
+    
+    // Local SC_Message on stack for intermediate copy
+    // This will generate SEH due to stack object with destructor
+    SC_Message local_d8(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    
+    local_14 = this;
+    local_18 = this->list.head;           // ECX = *this
+    local_1c = 0;                          // EDX = 0
+    
+    // EBX = &head->field_0x8 = SC_Message* in the node (at offset 8 from head)
+    SC_Message* srcMsg = (SC_Message*)((char*)local_18 + 8);
+    
+    // Copy from srcMsg to local_d8 using field access
+    local_d8.m_subObject = srcMsg->m_subObject;
+    local_d8.isProcessingKey = srcMsg->isProcessingKey;
+    
+    // Copy currentKey[32]
+    unsigned int idx = 0;
+    do {
+        local_d8.currentKey[idx] = srcMsg->currentKey[idx];
+        idx++;
+    } while (idx < 0x20);
+    
+    local_d8.lineNumber = srcMsg->lineNumber;
+    local_d8.savedFilePos = srcMsg->savedFilePos;
+    local_d8.field_0x3c = srcMsg->field_0x3c;
+    
+    // Copy filename[64]
+    idx = 0;
+    do {
+        local_d8.filename[idx] = srcMsg->filename[idx];
+        idx++;
+    } while (idx < 0x40);
+    
+    local_d8.pFile = srcMsg->pFile;
+    
+    local_d8.targetAddress = srcMsg->targetAddress;
+    local_d8.sourceAddress = srcMsg->sourceAddress;
+    local_d8.command = srcMsg->command;
+    local_d8.data = srcMsg->data;
+    local_d8.priority = srcMsg->priority;
+    local_d8.param1 = srcMsg->param1;
+    local_d8.param2 = srcMsg->param2;
+    local_d8.clickX = srcMsg->clickX;
+    local_d8.clickY = srcMsg->clickY;
+    local_d8.mouseX = srcMsg->mouseX;
+    local_d8.mouseY = srcMsg->mouseY;
+    local_d8.field_b4 = srcMsg->field_b4;
+    local_d8.field_b8 = srcMsg->field_b8;
+    local_d8.userPtr = srcMsg->userPtr;
+
+    // Update list head: this->list.head = head->next
+    TimedEvent* nextNode = *(TimedEvent**)local_18;
+    local_14->list.head = nextNode;
+    
+    if (nextNode != 0) {
+        // Clear prev pointer of new head
+        *(int*)((char*)nextNode + 4) = 0;
+    } else {
+        // List is now empty, clear tail
+        local_14->list.tail = 0;
+    }
+    
+    // Call destructor on source SC_Message
+    int counter = 0;
+    do {
+        srcMsg->~SC_Message();
+        srcMsg = (SC_Message*)((char*)srcMsg + 0xc0);
+        int tmp = counter;
+        counter--;
+        if (tmp == 0) break;
+    } while (1);
+    
+    // Add node to free list
+    *(TimedEvent**)local_18 = local_14->m_free_list;
+    local_14->m_free_list = local_18;
+    
+    // Decrement count
+    local_14->m_count--;
+    
+    // Copy from local_d8 to output buffer using field access
+    buffer->m_subObject = local_d8.m_subObject;
+    buffer->isProcessingKey = local_d8.isProcessingKey;
+    
+    idx = 0;
+    do {
+        buffer->currentKey[idx] = local_d8.currentKey[idx];
+        idx++;
+    } while (idx < 0x20);
+    
+    buffer->lineNumber = local_d8.lineNumber;
+    buffer->savedFilePos = local_d8.savedFilePos;
+    buffer->field_0x3c = local_d8.field_0x3c;
+    
+    idx = 0;
+    do {
+        buffer->filename[idx] = local_d8.filename[idx];
+        idx++;
+    } while (idx < 0x40);
+    
+    buffer->pFile = local_d8.pFile;
+    
+    buffer->targetAddress = local_d8.targetAddress;
+    buffer->sourceAddress = local_d8.sourceAddress;
+    buffer->command = local_d8.command;
+    buffer->data = local_d8.data;
+    buffer->priority = local_d8.priority;
+    buffer->param1 = local_d8.param1;
+    buffer->param2 = local_d8.param2;
+    buffer->clickX = local_d8.clickX;
+    buffer->clickY = local_d8.clickY;
+    buffer->mouseX = local_d8.mouseX;
+    buffer->mouseY = local_d8.mouseY;
+    buffer->field_b4 = local_d8.field_b4;
+    buffer->field_b8 = local_d8.field_b8;
+    buffer->userPtr = local_d8.userPtr;
+    
+    local_1c |= 1;
+    
+    return buffer;
 }
+
 
 /* Function start: 0x4024B0 */
 void Queue::Insert(void* data)

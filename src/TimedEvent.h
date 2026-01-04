@@ -4,6 +4,7 @@
 #include "Timer.h"
 
 class TimedEvent;
+class SC_Message;
 
 struct TimedEventList {
     TimedEvent* head;
@@ -28,7 +29,7 @@ public:
     }
     ~TimedEventPool();
     TimedEvent* Create(void* callback, void* data);
-    void* Pop(void* buffer);
+    SC_Message* Pop(SC_Message* buffer);
 };
 
 class TimedEvent {

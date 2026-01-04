@@ -18,6 +18,7 @@ public:
     int UpdateGame();    // 0x4179A0
     void CleanupLoop();  // 0x417450
     void ProcessMessage(SC_Message* msg); // 0x417CB0
+    void HandleSystemMessage(SC_Message* msg); // 0x417F40
     
     int field_0x00;
     int field_0x04;

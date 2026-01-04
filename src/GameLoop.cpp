@@ -29,7 +29,23 @@ extern "C" {
     void __fastcall FUN_00417660(void* obj, int freeFlag);  // Object destructor/cleanup
     void __fastcall FUN_004189a0(void* node, int freeFlag); // Node cleanup
     //void __fastcall FUN_00417652();               // SEH unwind thunk (empty stub)
+    
+    // Functions for GameLoop_HandleSystemMessage
+    void* __fastcall FUN_00401710(void* queue);  // Queue::PopNode
+    void* __fastcall FUN_00401790(void* queue);  // Queue::PopNode variant
+    void __cdecl FUN_00424940(void* ptr);        // FreeMemory wrapper
+    void __fastcall FUN_00401560(int* queue);    // Queue clear/cleanup
+    void __cdecl FUN_00419110(const char* format, ...);  // ShowError variant
+    void* __cdecl FUN_004249c0(int size);  // AllocateMemory
 }
+
+// Thiscall functions - declared outside extern "C"
+void FUN_00411080(void* obj, int flag);  // Object destructor with cleanup
+int FUN_00418540(GameLoop* self, int command);  // FindHandlerInEventList
+int* FUN_00418510(GameLoop* self, int command); // GetOrCreateHandler
+void* FUN_004188a0(void* node, int flag);  // Node destructor
+void FUN_004188d0(int* queue, int data);  // Queue::InsertNode
+int* FUN_004189d0(void* node, void* data);  // Node::Init
 
 // Doubly linked list node structure for eventList
 // field_0x00: next pointer
@@ -533,7 +549,6 @@ extern "C" {
 }
 
 // Forward declarations for message handling
-extern "C" void GameLoop_HandleSystemMessage(GameLoop* self, SC_Message* msg);
 extern "C" int GameLoop_ProcessControlMessage(GameLoop* self, SC_Message* msg);
 extern "C" void* GameLoop_GetHandlerForCommand(GameLoop* self, int command);
 
@@ -553,7 +568,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
             char* srcStr = (char*)g_GameState2_004369a4->stateValues[msg->data];
             strcpy(g_Unknown_00436994, srcStr);
         } else {
-            GameLoop_HandleSystemMessage(this, msg);
+            this->HandleSystemMessage(msg);
         }
     }
     else if (msg->command == 0) {
@@ -623,8 +638,8 @@ int GameLoop::UpdateGame()
     TimedEvent* pNewEvent;
     unsigned int uVar5;
     unsigned int uVar6;
-    char local_258[192];  // [EBP - 0x254] buffer for inner iterator result
-    char local_198[192];  // [EBP - 0x194] buffer for outer iterator result
+    SC_Message local_258(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);  // [EBP - 0x254] buffer for inner iterator result
+    SC_Message local_198(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);  // [EBP - 0x194] buffer for outer iterator result
     SC_Message local_d8(0, 0, 0, 0, 0, 0, 0, 0, 0, 0); // [EBP - 0xD4]
     int local_14;         // [EBP - 0x10] - counter
     void* local_18;       // [EBP - 0x18] - pointer storage
@@ -633,7 +648,7 @@ int GameLoop::UpdateGame()
     
     // First loop: pop items from DAT_00436988, copy to local_d8, create in DAT_00436984
     while (DAT_00436988->m_count != 0) {
-        pSourceMsg = (SC_Message*)DAT_00436988->Pop(local_198);
+        pSourceMsg = DAT_00436988->Pop(&local_198);
         
         // Copy Parser base class fields
         local_d8.m_subObject = pSourceMsg->m_subObject;
@@ -676,7 +691,7 @@ int GameLoop::UpdateGame()
         local_18 = (void*)pSourceMsg->userPtr;
         
         // Destruct buffer contents after copy (matches original SEH thunk)
-        ((SC_Message*)local_198)->SC_Message::~SC_Message();
+        local_198.SC_Message::~SC_Message();
         
         // Create entry in DAT_00436984
         pPool = DAT_00436984;
@@ -693,16 +708,16 @@ int GameLoop::UpdateGame()
     
     // Second loop: pop items from DAT_00436984
     while (DAT_00436984->m_count != 0) {
-        pSourceMsg = (SC_Message*)DAT_00436984->Pop(local_198);
+        pSourceMsg = DAT_00436984->Pop(&local_198);
         
         this->ProcessMessage(pSourceMsg);
         
         // Destruct buffer contents after ProcessMessage (matches original SEH thunk 0x417c22)
-        ((SC_Message*)local_198)->SC_Message::~SC_Message();
+        local_198.SC_Message::~SC_Message();
         
         // Inner loop: pop items from DAT_00436988 and add to DAT_00436984
         while (DAT_00436988->m_count != 0) {
-            SC_Message* pInnerMsg = (SC_Message*)DAT_00436988->Pop(local_258);
+            SC_Message* pInnerMsg = DAT_00436988->Pop(&local_258);
             pPool = DAT_00436984;
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
             ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)pInnerMsg);
@@ -715,7 +730,7 @@ int GameLoop::UpdateGame()
             pPool->list.tail = pNewEvent;
             
             // Destruct inner buffer contents (matches original SEH thunk 0x417c17)
-            ((SC_Message*)local_258)->SC_Message::~SC_Message();
+            local_258.SC_Message::~SC_Message();
         }
         
         local_14++;
@@ -744,12 +759,164 @@ extern "C" {
     void FUN_0041a150(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10) {
         ShowError("STUB: FUN_0041a150 called");
     }
+}
 
-
-
-    void GameLoop_HandleSystemMessage(GameLoop* self, SC_Message* msg) {
-        ShowError("STUB: GameLoop_HandleSystemMessage called command=%d", msg->command);
+/* Function start: 0x417F40 */
+void GameLoop::HandleSystemMessage(SC_Message* msg) {
+    int* piVar5;
+    void* puVar2;
+    void* pvVar3;
+    void* handler;
+    ZBQueue* pQueue;
+    
+    if (msg == 0) {
+        return;
     }
+    
+    // Call current handler's vtable method at +0x18 (Update method) with the message
+    handler = (void*)this->field_0x18;
+    if (handler != 0) {
+        (*(void (**)(SC_Message*))(*(int*)handler + 0x18))(msg);
+    }
+    
+    // Clear ZBufferManager queues if DAT_0043698c exists
+    if (DAT_0043698c != 0) {
+        ZBufferManager* pZBuf = DAT_0043698c;
+        
+        // Process queue at offset 0xa0
+        pQueue = pZBuf->m_queueA0;
+        if (*(int*)pQueue != 0) {
+            ((int*)pQueue)[2] = *(int*)pQueue;
+            while (*(int*)pQueue != 0) {
+                puVar2 = (void*)FUN_00401710((void*)pQueue);
+                if (puVar2 != 0) {
+                    *(int*)puVar2 = 0x431050;  // PTR_LAB_00431050 vtable
+                    FUN_00424940(puVar2);
+                }
+            }
+        }
+        
+        // Process queue at offset 0xa4
+        pQueue = pZBuf->m_queueA4;
+        if (*(int*)pQueue != 0) {
+            ((int*)pQueue)[2] = *(int*)pQueue;
+            while (*(int*)pQueue != 0) {
+                pvVar3 = (void*)FUN_00401790((void*)pQueue);
+                if (pvVar3 != 0) {
+                    FUN_00411080(pvVar3, 1);
+                }
+            }
+        }
+        
+        // Process queue at offset 0x9c
+        FUN_00401560((int*)pZBuf->m_queue9c);
+    }
+    
+    // Try to find existing handler for this command
+    int found = FUN_00418540(this, *(int*)((char*)msg + 0x88));
+    if (found == 0) {
+        // Not found - create/insert new handler
+        piVar5 = FUN_00418510(this, *(int*)((char*)msg + 0x88));
+        this->field_0x18 = (int)piVar5;
+    } else {
+        // Found - pop handler from eventList at field_0x14
+        EventList* pList = (EventList*)this->eventList;
+        int iVar4 = (int)pList->current;
+        if (iVar4 == 0) {
+            this->field_0x18 = 0;
+        } else {
+            // Unlink node from list
+            if ((int)pList->head == iVar4) {
+                pList->head = (EventNode*)*(int*)(iVar4 + 4);
+            }
+            if ((int)pList->tail == iVar4) {
+                pList->tail = (EventNode*)*(int*)iVar4;
+            }
+            int iNext = *(int*)iVar4;
+            if (iNext != 0) {
+                *(int*)(iNext + 4) = *(int*)(iVar4 + 4);
+            }
+            void* pPrev = (void*)*(int*)(iVar4 + 4);
+            if (pPrev != 0) {
+                *(int*)pPrev = *(int*)iVar4;
+            }
+            void* pData = 0;
+            if ((void*)iVar4 != 0) {
+                pData = (void*)*(int*)(iVar4 + 8);
+                FUN_004188a0((void*)iVar4, 1);
+                pList->current = 0;
+            }
+            pList->current = pList->head;
+            this->field_0x18 = (int)pData;
+        }
+        
+        // Reinsert handler with priority-based insertion
+        handler = (void*)this->field_0x18;
+        EventList* pList2 = (EventList*)this->eventList;
+        if (handler == 0) {
+            FUN_00419110("\"queue fault 0101\"");
+        }
+        pList2->current = pList2->head;
+        if (pList2->field_0x0C == 1 || pList2->field_0x0C == 2) {
+            if ((int)pList2->head == 0) {
+                FUN_004188d0((int*)pList2, (int)handler);
+            } else {
+                // Priority-based insertion loop
+                while ((int)pList2->current != 0) {
+                    int iCur = (int)pList2->current;
+                    int curData = *(int*)(iCur + 8);
+                    if (curData != 0 && *(int*)(curData + 0x88) < *(int*)((int)handler + 0x88)) {
+                        FUN_004188d0((int*)pList2, (int)handler);
+                        break;
+                    }
+                    if ((int)pList2->tail == iCur) {
+                        // Append at end
+                        if (handler == 0) {
+                            FUN_00419110("\"queue fault 0112\"");
+                        }
+                        void* pvNode = (void*)FUN_004249c0(0xc);
+                        int* piNode = 0;
+                        if (pvNode != 0) {
+                            piNode = FUN_004189d0(pvNode, handler);
+                        }
+                        if ((int)pList2->current == 0) {
+                            pList2->current = pList2->tail;
+                        }
+                        if ((int)pList2->head == 0) {
+                            pList2->head = (EventNode*)piNode;
+                            pList2->tail = (EventNode*)piNode;
+                            pList2->current = (EventNode*)piNode;
+                        } else {
+                            if ((int)pList2->tail == 0 || *(int*)((int)pList2->tail + 4) != 0) {
+                                FUN_00419110("\"queue fault 0113\"");
+                            }
+                            piNode[1] = 0;
+                            *piNode = (int)pList2->tail;
+                            *(int*)((int)pList2->tail + 4) = (int)piNode;
+                            pList2->tail = (EventNode*)piNode;
+                        }
+                        break;
+                    }
+                    if (iCur != 0) {
+                        pList2->current = (EventNode*)*(int*)(iCur + 4);
+                    }
+                }
+            }
+        } else {
+            FUN_004188d0((int*)pList2, (int)handler);
+        }
+    }
+    
+    // Call handler's vtable method at +0x10 (Init method) with the message
+    handler = (void*)this->field_0x18;
+    if (handler == 0) {
+        FUN_00419110("\"missing modual %d\"", *(int*)((char*)msg + 0x88));
+    } else {
+        (*(void (**)(SC_Message*))(*(int*)handler + 0x10))(msg);
+    }
+}
+
+extern "C" {
 
     int GameLoop_ProcessControlMessage(GameLoop* self, SC_Message* msg) {
         ShowError("STUB: GameLoop_ProcessControlMessage called");
