@@ -9,8 +9,8 @@ ScriptHandler::~ScriptHandler() {
 void ScriptHandler::CopyCommandData(ScriptHandler* other)
 {
     if (other != 0) {
-        this->command = other->command;
-        this->data = other->data;
+        command = other->command;
+        data = other->data;
     }
 }
 
@@ -20,10 +20,10 @@ int ScriptHandler::WriteMessageAddress(Message* msg)
     if (msg == 0) {
         return -1;
     }
-    msg->targetAddress = this->targetAddress;
-    msg->sourceAddress = this->sourceAddress;
-    msg->command = this->targetAddress;
-    msg->data = this->sourceAddress;
+    msg->targetAddress = targetAddress;
+    msg->sourceAddress = sourceAddress;
+    msg->command = targetAddress;
+    msg->data = sourceAddress;
     msg->priority = 0;
     return 0;
 }

@@ -24,7 +24,7 @@ int SCI_Dialog::LBLParse(char* param_1)
     }
     else if (_strcmpi(key, "BUTTON") == 0) {
         Sprite* s = new Sprite(NULL);
-        this->SetButton(s);
+        SetButton(s);
         Parser::ProcessFile(s, this, 0);
     }
     else if (_strcmpi(key, "AMBIENT_SPRS") == 0) {
@@ -32,7 +32,7 @@ int SCI_Dialog::LBLParse(char* param_1)
     }
     else if (_strcmpi(key, "HILITE") == 0) {
         Sprite* s = new Sprite(NULL);
-        this->SetHilite(s);
+        SetHilite(s);
         Parser::ProcessFile(s, this, 0);
     }
     else if (_strcmpi(key, "HANDLE") == 0) {
@@ -68,7 +68,7 @@ int SCI_Dialog::LBLParse(char* param_1)
         if (digits > 0) {
             do {
                 int digit = copy % 10;
-                this->field_608[4 + digit] = 0; // 0x618 + digit*4
+                field_608[4 + digit] = 0; // 0x618 + digit*4
                 copy /= 10;
                 digits--;
             } while (digits != 0);
@@ -83,7 +83,7 @@ int SCI_Dialog::LBLParse(char* param_1)
         // ...
         
         // Insert into queue at 0x610
-        Queue* queue = this->GetQuestionQueue();
+        Queue* queue = GetQuestionQueue();
         // ... Queue insertion logic ...
         // Using generic insert if valid
     }

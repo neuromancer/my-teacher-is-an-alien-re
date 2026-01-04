@@ -10,18 +10,18 @@ extern "C" char* __cdecl FUN_00419780(char* buffer, int length, FILE* file) {
 }
 
 /* Function start: 0x4209e0 */
-StringTable::StringTable(char* filename, int loadNow) {
-    this->fp = 0;
-    this->filename = 0;
-    this->hashTable = 0;
+StringTable::StringTable(char* f, int loadNow) {
+    fp = 0;
+    filename = 0;
+    hashTable = 0;
     
     // strlen to compute allocation size  
-    int len = strlen(filename) + 1;
+    int len = strlen(f) + 1;
     
-    this->filename = (char*)AllocateMemory(len);
+    filename = (char*)AllocateMemory(len);
     
     // Copy using strcpy - compiler should inline as REP MOVS pattern
-    strcpy(this->filename, filename);
+    strcpy(filename, f);
     
     if (loadNow != 0) {
         Load();
@@ -30,9 +30,9 @@ StringTable::StringTable(char* filename, int loadNow) {
 
 /* Function start: 0x420b20 */
 void StringTable::Unload() {
-    if (this->fp) {
-        fclose(this->fp);
-        this->fp = 0;
+    if (fp) {
+        fclose(fp);
+        fp = 0;
     }
 }
 
@@ -40,12 +40,12 @@ void StringTable::Unload() {
 StringTable::~StringTable() {
     Unload();
     
-    if (this->filename != 0) {
-        FreeMemory(this->filename);
-        this->filename = 0;
+    if (filename != 0) {
+        FreeMemory(filename);
+        filename = 0;
     }
     
-    HashTable* ht = this->hashTable;
+    HashTable* ht = hashTable;
     if (ht != 0) {
         // Check if buckets array exists and has entries
         if (ht->buckets != 0 && ht->numBuckets != 0) {
@@ -97,15 +97,15 @@ StringTable::~StringTable() {
         
         // Free the hash table itself
         FreeMemory(ht);
-        this->hashTable = 0;
+        hashTable = 0;
     }
 }
 
 /* Function start: 0x420b00 */
 FILE* StringTable::Open() {
     Unload();
-    this->fp = fopen(this->filename, "r");
-    return this->fp;
+    fp = fopen(filename, "r");
+    return fp;
 }
 
 /* Function start: 0x420b40 */
@@ -124,15 +124,15 @@ void StringTable::Load() {
             lineCount = 0;
             
             // First pass: count lines
-            char* result = FUN_00419780(buffer, 0xff, this->fp);
+            char* result = FUN_00419780(buffer, 0xff, fp);
             while (result != 0) {
                 lineCount = lineCount + 1;
-                result = FUN_00419780(buffer, 0xff, this->fp);
+                result = FUN_00419780(buffer, 0xff, fp);
             }
             
             if (lineCount != 0) {
                 // Clean up existing hash table (same logic as in Cleanup)
-                HashTable* ht = this->hashTable;
+                HashTable* ht = hashTable;
                 if (ht != 0) {
                     if (ht->buckets != 0 && ht->numBuckets != 0) {
                         int numBuckets = ht->numBuckets;
@@ -176,7 +176,7 @@ void StringTable::Load() {
                     ht->nodePool = 0;
                     
                     FreeMemory(ht);
-                    this->hashTable = 0;
+                    hashTable = 0;
                 }
                 
                 // Allocate new hash table
@@ -193,21 +193,21 @@ void StringTable::Load() {
                     newHashTable->capacity = lineCount;
                     finalTable = newHashTable;
                 }
-                this->hashTable = finalTable;
+                hashTable = finalTable;
                 
                 // Reset to beginning of file
-                fsetpos(this->fp, &filePos);
+                fsetpos(fp, &filePos);
                 
                 // Second pass: parse lines
                 while (1) {
-                    fgetpos(this->fp, &filePos);
-                    result = FUN_00419780(buffer, 0xff, this->fp);
+                    fgetpos(fp, &filePos);
+                    result = FUN_00419780(buffer, 0xff, fp);
                     if (result == 0) break;
                     
                     int scanResult = sscanf(buffer, "%u", &stringId);
                     unsigned int id = stringId;
                     if (scanResult == 1) {
-                        HashTable* ht = this->hashTable;
+                        HashTable* ht = hashTable;
                         int* bucketsPtr = ht->buckets;
                         unsigned int bucketIdx = (stringId >> 4) % (unsigned int)ht->numBuckets;
                         

@@ -26,7 +26,7 @@ int MMPlayer2::LBLParse(char* param_1)
             s = (Sprite*)FUN_0041cd50(mem, 0);
         }
         Parser::ProcessFile(s, this, 0);
-        this->AddSprite(s);
+        AddSprite(s);
     }
     else if (_strcmpi(local_34, "END") == 0) {
         return 1;
@@ -44,7 +44,7 @@ void MMPlayer2::AddSprite(Sprite* s)
     if (s != 0) {
         // FUN_0041d040((int)s); // Some Sprite init
         
-        Queue* list = this->spriteList;
+        Queue* list = spriteList;
         if (s == 0) {
              ShowError("queue fault 0101");
         }

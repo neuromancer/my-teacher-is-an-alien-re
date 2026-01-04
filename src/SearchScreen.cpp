@@ -23,27 +23,27 @@ int SearchScreen::LBLParse(char* line)
 
     if (_strcmpi(key, "PALETTE") == 0) {
         sscanf(line, "%*s %s", value);
-        if (this->field_600 == 0) {
+        if (field_600 == 0) {
             void* mem = AllocateMemory(8);
             void* palette = 0;
             if (mem) {
                 palette = FUN_0041ea50(mem);
             }
-            this->field_600 = palette;
+            field_600 = palette;
             char* path = FUN_004195c0(value);
             FUN_0041eab0(palette, path);
         }
     }
     else if (_strcmpi(key, "AMBIENT") == 0) {
-        if (this->field_604 == 0) {
+        if (field_604 == 0) {
             void* mem = AllocateMemory(0x98);
             void* obj = 0;
             if (mem) {
                 obj = FUN_0041f280(mem);
             }
-            this->field_604 = obj;
+            field_604 = obj;
         }
-        Parser::ProcessFile((Parser*)this->field_604, this, 0);
+        Parser::ProcessFile((Parser*)field_604, this, 0);
     }
     else if (_strcmpi(key, "HOTSPOT") == 0) {
         void* mem = AllocateMemory(0xf0);
@@ -51,9 +51,9 @@ int SearchScreen::LBLParse(char* line)
         if (mem) {
             obj = FUN_0040d300(mem); // T_Hotspot constructor?
         }
-        this->field_608[this->field_634] = obj;
+        field_608[field_634] = obj;
         Parser::ProcessFile((Parser*)obj, this, 0);
-        this->field_634++;
+        field_634++;
     }
     else if (_strcmpi(key, "END") == 0) {
         return 1;

@@ -27,10 +27,10 @@ GameWindow::GameWindow() {
         *p = 0;
         p++;
     }
-    this->field_24 = 0;
-    this->field_28 = 1;
-    this->field_20 = 1;
-    this->savedActiveWindow = GetActiveWindow();
+    field_24 = 0;
+    field_28 = 1;
+    field_20 = 1;
+    savedActiveWindow = GetActiveWindow();
 }
 
 /* Function start: 0x4220A0 */
@@ -41,14 +41,14 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
   WNDCLASSEXA local_30;
   DWORD dwExStyle;
 
-  this->hInstance = param_1;
-  this->field_8 = param_2;
+  hInstance = param_1;
+  field_8 = param_2;
   ParseCommandLine(param_3);
-  if (this->field_20 != 0) {
-    if (this->field_8 == 0) {
+  if (field_20 != 0) {
+    if (field_8 == 0) {
       local_30.cbClsExtra = 0;
       local_30.cbWndExtra = 0;
-      local_30.hInstance = this->hInstance;
+      local_30.hInstance = hInstance;
       local_30.cbSize = 0x30;
       local_30.style = 0xb;
       local_30.lpfnWndProc = (WNDPROC)GameWindowProc;
@@ -86,10 +86,10 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
     iVar3 = (iVar3 + -0x1e0) / 2;
     dwExStyle = 0;
   }
-  this->hWnd = CreateWindowExA(dwExStyle, "Teacher Demo", "Teacher Demo",
+  hWnd = CreateWindowExA(dwExStyle, "Teacher Demo", "Teacher Demo",
                                0x80000000, iVar2, iVar3, 0x280, 0x1e0,
                                (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
-  ShowWindow(this->hWnd, param_4);
+  ShowWindow(hWnd, param_4);
 }
 
 extern "C" void __stdcall ParseCommandLine(char *param_1);
@@ -162,19 +162,19 @@ extern "C" {
 
 /* Function start: 0x422430 */
 void GameWindow::Shutdown() {
-    if (this->field_28 == 0) {
+    if (field_28 == 0) {
         return;
     }
-    this->field_28 = 0;
-    if (this->field_20 != 0) {
+    field_28 = 0;
+    if (field_20 != 0) {
         SmackSetSystemRes(0);
     }
     SetCursorVisible(1);
     ResetVideoFlag();
     CleanupVideoSystem();
-    DeleteObject(this->hPalette);
-    ReleaseDC(this->hWnd, this->hDC);
-    SetActiveWindow(this->savedActiveWindow);
+    DeleteObject(hPalette);
+    ReleaseDC(hWnd, hDC);
+    SetActiveWindow(savedActiveWindow);
 }
 
 extern GameWindow g_GameWindow;

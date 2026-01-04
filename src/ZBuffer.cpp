@@ -43,10 +43,10 @@ void ZBuffer::AddMessage(int param_1)
 int ZBuffer::ProcessMessage(void* param_1)
 {
     Message* msg = (Message*)param_1;
-    if (msg->targetAddress != this->m_address) {
+    if (msg->targetAddress != m_address) {
         return 0;
     }
-    this->timer.Reset();
+    timer.Reset();
     int iVar1 = msg->priority;
     if (iVar1 == 3) {
         *(int*)g_SoundManager |= 2;
@@ -122,16 +122,16 @@ int ZBuffer::ProcessMessage(void* param_1)
 /* Function start: 0x401500 */
 void ZBuffer::CleanUpVBuffer()
 {
-    VBuffer* vb = this->m_vbuffer;
+    VBuffer* vb = m_vbuffer;
     if (vb != 0) {
         vb->~VBuffer();
         FreeFromGlobalHeap(vb);
-        this->m_vbuffer = 0;
+        m_vbuffer = 0;
     }
-    Parser* ptr = (Parser*)this->m_subObject;
+    Parser* ptr = (Parser*)m_subObject;
     if (ptr != 0) {
         delete ptr;
-        this->m_subObject = 0;
+        m_subObject = 0;
     }
 }
 

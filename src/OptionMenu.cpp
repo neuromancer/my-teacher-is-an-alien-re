@@ -10,12 +10,12 @@
 OptionMenu::OptionMenu()
 {
     for (int i = 0; i < 6; i++) {
-        this->options[i] = 0;
+        options[i] = 0;
     }
-    this->selected_option = 5;
+    selected_option = 5;
 
     Sprite* option1;
-    this->options[0] = option1 = (Sprite*)AllocateMemory(sizeof(Sprite));
+    options[0] = option1 = (Sprite*)AllocateMemory(sizeof(Sprite));
     if (option1) {
         option1->Sprite::Sprite("demo/option1.smk");
         option1->flags &= ~2;
@@ -30,7 +30,7 @@ OptionMenu::OptionMenu()
     }
 
     Sprite* option2;
-    this->options[1] = option2 = (Sprite*)AllocateMemory(sizeof(Sprite));
+    options[1] = option2 = (Sprite*)AllocateMemory(sizeof(Sprite));
     if (option2) {
         option2->Sprite::Sprite("demo/option2.smk");
         option2->flags &= ~2;
@@ -45,7 +45,7 @@ OptionMenu::OptionMenu()
     }
 
     Sprite* option3;
-    this->options[2] = option3 = (Sprite*)AllocateMemory(sizeof(Sprite));
+    options[2] = option3 = (Sprite*)AllocateMemory(sizeof(Sprite));
     if (option3) {
         option3->Sprite::Sprite("demo/option3.smk");
         option3->flags &= ~2;
@@ -64,20 +64,20 @@ OptionMenu::OptionMenu()
 OptionMenu::~OptionMenu()
 {
     try {
-        if (this->options[0]) {
-            this->options[0]->~Sprite();
-            FreeMemory(this->options[0]);
-            this->options[0] = 0;
+        if (options[0]) {
+            options[0]->~Sprite();
+            FreeMemory(options[0]);
+            options[0] = 0;
         }
-        if (this->options[1]) {
-            this->options[1]->~Sprite();
-            FreeMemory(this->options[1]);
-            this->options[1] = 0;
+        if (options[1]) {
+            options[1]->~Sprite();
+            FreeMemory(options[1]);
+            options[1] = 0;
         }
-        if (this->options[2]) {
-            this->options[2]->~Sprite();
-            FreeMemory(this->options[2]);
-            this->options[2] = 0;
+        if (options[2]) {
+            options[2]->~Sprite();
+            FreeMemory(options[2]);
+            options[2] = 0;
         }
     } catch (...) {
     }
@@ -105,13 +105,13 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
     int iVar2;
     Sprite* sprite;
 
-    if (sprite_count > this->selected_option) {
-        sprite_count = this->selected_option;
+    if (sprite_count > selected_option) {
+        sprite_count = selected_option;
     }
 
-    this->spriteList->current = this->spriteList->head;
+    spriteList->current = spriteList->head;
 
-    if (*(int*)this->spriteList == 0) {
+    if (*(int*)spriteList == 0) {
         return;
     }
 
@@ -121,65 +121,65 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
         }
 
         if (sprite_index == 0) {
-            iVar1 = (int)this->spriteList->current;
+            iVar1 = (int)spriteList->current;
             if (iVar1 != 0) {
                 iVar1 = *(int*)(iVar1 + 8);
             }
-            this->options[0]->SetState2(*(int*)(iVar1 + 0x48));
-            sprite = this->options[0];
+            options[0]->SetState2(*(int*)(iVar1 + 0x48));
+            sprite = options[0];
             sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         }
         if (sprite_index == 1) {
-            iVar1 = (int)this->spriteList->current;
+            iVar1 = (int)spriteList->current;
             if (iVar1 != 0) {
                 iVar1 = *(int*)(iVar1 + 8);
             }
-            this->options[1]->SetState2(*(int*)(iVar1 + 0x48));
-            sprite = this->options[1];
+            options[1]->SetState2(*(int*)(iVar1 + 0x48));
+            sprite = options[1];
             sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         }
         if (sprite_index == 2) {
-            iVar1 = (int)this->spriteList->current;
+            iVar1 = (int)spriteList->current;
             if (iVar1 != 0) {
                 iVar1 = *(int*)(iVar1 + 8);
             }
-            this->options[2]->SetState2(*(int*)(iVar1 + 0x48));
-            sprite = this->options[2];
+            options[2]->SetState2(*(int*)(iVar1 + 0x48));
+            sprite = options[2];
             sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         }
 
         // Set bounding box values on the current list item
-        iVar1 = (int)this->spriteList->current;
+        iVar1 = (int)spriteList->current;
         if (iVar1 != 0) {
             iVar1 = *(int*)(iVar1 + 8);
         }
         *(int*)(iVar1 + 0x4c) = 0xda;
 
-        iVar1 = (int)this->spriteList->current;
+        iVar1 = (int)spriteList->current;
         if (iVar1 != 0) {
             iVar1 = *(int*)(iVar1 + 8);
         }
         *(int*)(iVar1 + 0x50) = 0xcc;
 
-        iVar1 = (int)this->spriteList->current;
+        iVar1 = (int)spriteList->current;
         if (iVar1 != 0) {
             iVar1 = *(int*)(iVar1 + 8);
         }
         *(int*)(iVar1 + 0x54) = 0x1b3;
 
-        iVar1 = (int)this->spriteList->current;
+        iVar1 = (int)spriteList->current;
         if (iVar1 != 0) {
             iVar1 = *(int*)(iVar1 + 8);
         }
         *(int*)(iVar1 + 0x58) = 0xee;
 
         // Advance iterator
-        iVar1 = (int)this->spriteList;
+        iVar1 = (int)spriteList;
         iVar2 = *(int*)(iVar1 + 8);
         if (*(int*)(iVar1 + 4) == iVar2) break;
         if (iVar2 != 0) {
             *(int*)(iVar1 + 8) = *(int*)(iVar2 + 4);
         }
         i++;
-    } while (*(int*)this->spriteList != 0);
+    } while (*(int*)spriteList != 0);
 }

@@ -12,7 +12,7 @@ You are working with a disassembled Windows 95 release of "My Teacher is an Alie
 - Several functions still have unknown ownership (class/function mapping is incomplete).
 - Decompiled code exists, but it may be incorrect or mislabeled.
 
-IMPORTANT: The assembly output is the only source of truth.
+IMPORTANT: The assembly output and the extracted strings are the *only* source of truth. Decompiled code can be a good hint, but is NOT authoritative.
 
 ---
 
@@ -25,14 +25,18 @@ IMPORTANT: The assembly output is the only source of truth.
   - main()
   - inline assembly
   - dummy variables
-  - new helper functions or extra methods
-  - constructors for base classes
+  - new helper functions
   - vtable fields or manual vtable handling
   - unions or substructures
   - .c files
-- DO NOT inline class methods.
 - DO NOT show the final code once you finish.
 - If you are out of ideas, stop. do not break any rules.
+- Do not use this-> in the code. Use the class name instead.
+
+### Other important rules
+- Do NOT add explit try/catch/finally. The compiler added SEH in a number of functions, when some conditions are met. Check the exceptions.md file for more details.
+- If possible, use high level fields to access the members of the class. If you do not know the name, use generic names like field_0, field_4, etc (until we have a better name).
+- In some cases, some you can try to inline small functions if you have evidence in the assembly (add the code directly in the .h and the compiler will inline it if possible).
 
 ---
 
@@ -59,7 +63,7 @@ grep -r -i 418C70 code
 
 Always use -i to ensure case-insensitive matches.
 
-IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use the python scripts to compare them.
+IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use the python scripts to compare them. Same with the TEACHER.map file, this is *only* for the reimplemented code, not the original assembly.
 
 ### Compiling & Comparing Assembly
 
@@ -68,17 +72,6 @@ After implementing code in a file (e.g. Class::Name):
 python3 bin/compileAndCompare.py Class::Name code/FUN_418C70.dissasembled.txt
 
 This shows compiler errors or the generated assembly diff.
-
----
-
-## Sources of Truth
-
-- Assembly code
-- Extracted strings
-
-Decompiled code is NOT authoritative.
-
----
 
 ## Required Files & Documentation
 
@@ -144,7 +137,7 @@ Decompiled code is NOT authoritative.
 local_X = unaff_FS_OFFSET;
 local_u = 0xffffffff;
 
-This usually indicates a try/catch.
+This usually indicates a SEH.
 
 - If a function involves vtables, skip it.
 - The code will be compiled but not linked.

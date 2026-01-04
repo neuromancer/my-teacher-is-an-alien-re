@@ -14,18 +14,17 @@ AnimatedAsset::AnimatedAsset()
 {
     char glyphVal = 1;
     memset(this, 0, 14 * sizeof(int));
-    this->color = 2;
-    this->glyphValue = glyphVal;
+    color = 2;
+    glyphValue = glyphVal;
 }
 
 /* Function start: 0x421260 */
 void AnimatedAsset::BuildGlyphTable()
 {
-    int glyphCount = this->glyphCount;
     GlyphRect* table = new GlyphRect[glyphCount];
 
-    int count = this->glyphCount << 4 >> 2;
-    this->glyphTable = table;
+    int count = glyphCount << 4 >> 2;
+    glyphTable = table;
     int* p = (int*)table;
     while (count != 0) {
         *p = 0;
@@ -33,58 +32,58 @@ void AnimatedAsset::BuildGlyphTable()
         count--;
     }
 
-    int baseColMinus1 = this->buffer->height - 1;
-    int baseIndex = (int)this->buffer->GetData();
-    VBuffer* buf = this->buffer;
+    int baseColMinus1 = buffer->height - 1;
+    int baseIndex = (int)buffer->GetData();
+    VBuffer* buf = buffer;
     
-    this->glyphHeight = 1;
+    glyphHeight = 1;
 
     if (buf->height > 1) {
-        char glyphVal = this->glyphValue;
-        int glyphH = this->glyphHeight;
+        char glyphVal = glyphValue;
+        int glyphH = glyphHeight;
         do {
             if (*(char*)((baseColMinus1 - glyphH) * buf->width + baseIndex) == glyphVal) break;
             glyphH++;
-            this->glyphHeight = glyphH;
+            glyphHeight = glyphH;
         } while (buf->height > glyphH);
     }
 
     int col = 0;
-    GlyphRect* entryPtr = this->glyphTable;
+    GlyphRect* entryPtr = glyphTable;
     int offset = 0;
 
     if (buf->height > 0) {
         do {
             int x = 0;
             int startX = 0;
-            int width = this->buffer->width;
+            int width = buffer->width;
             int chBase = (baseColMinus1 - offset) * width + baseIndex;
 
             if (width > 0) {
                 int tableOffset = col << 4;
-                char glyphVal = this->glyphValue;
+                char glyphVal = glyphValue;
 
                 do {
                     if (*(char*)(x + chBase) == glyphVal) {
                         entryPtr->left = startX;
                         entryPtr->right = x - 1;
                         entryPtr->top = offset;
-                        entryPtr->bottom = this->glyphHeight + offset - 1;
-                        if (this->glyphCount - col == 1) goto BUILT;
+                        entryPtr->bottom = glyphHeight + offset - 1;
+                        if (glyphCount - col == 1) goto BUILT;
                         startX = x + 1;
                         col++;
                         tableOffset += 0x10;
-                        entryPtr = (GlyphRect*)((char*)this->glyphTable + tableOffset);
+                        entryPtr = (GlyphRect*)((char*)glyphTable + tableOffset);
                     }
                     x++;
-                } while (this->buffer->width > x);
+                } while (buffer->width > x);
             }
 
-            offset = offset + this->glyphHeight + 1;
-        } while (this->buffer->height > offset);
+            offset = offset + glyphHeight + 1;
+        } while (buffer->height > offset);
     }
 BUILT:
-    this->buffer->Lock();
+    buffer->Lock();
 }
 
 /* Function start: 0x4215A0 */
@@ -99,18 +98,18 @@ int AnimatedAsset::ComputeTextMetrics(char* text)
     while (*text != '\0') {
         int iVar2 = (int)*text;
         if (iVar2 == 0x20) {
-            total = total + this->spaceWidth;
+            total = total + spaceWidth;
         }
         else if (iVar2 == 9) {
-            total = total + this->tabWidth;
+            total = total + tabWidth;
         }
         else {
-            GlyphRect* piVar3 = (GlyphRect*)((char*)this->glyphTable + iVar2 * 0x10);
+            GlyphRect* piVar3 = (GlyphRect*)((char*)glyphTable + iVar2 * 0x10);
             GlyphRect local = *piVar3;
             total = (total - local.left) + local.right;
         }
         text = text + 1;
-        total = total + this->char_adv.advance;
+        total = total + char_adv.advance;
     }
     return total;
 }
@@ -121,27 +120,27 @@ void AnimatedAsset::PrepareText(char* text)
 {
     int w;
 
-    this->text_pos.x = GetGlobalTextX();
-    this->text_pos.y = GetGlobalTextY();
+    text_pos.x = GetGlobalTextX();
+    text_pos.y = GetGlobalTextY();
 
     switch (GetGlobalTextAlign()) {
     case 0:
-        w = this->ComputeTextMetrics(text);
+        w = ComputeTextMetrics(text);
         w = w / 2;
-        this->text_pos.x -= w;
+        text_pos.x -= w;
         break;
     case 1:
-        w = this->ComputeTextMetrics(text);
-        this->text_pos.x -= w;
+        w = ComputeTextMetrics(text);
+        text_pos.x -= w;
         break;
     }
     
     switch (GetGlobalVertAlign()) {
     case 0:
-        this->text_pos.y += this->glyphHeight / 2;
+        text_pos.y += glyphHeight / 2;
         return;
     case 1:
-        this->text_pos.y += this->glyphHeight;
+        text_pos.y += glyphHeight;
         return;
     }
 }
@@ -150,8 +149,8 @@ void AnimatedAsset::PrepareText(char* text)
 int AnimatedAsset::IsCharSupported(int ch)
 {
     if (ch != 0x20 && ch != 9) {
-        int delta = ch - this->firstChar;
-        if (delta < 0 || this->glyphCount - 1 < delta) {
+        int delta = ch - firstChar;
+        if (delta < 0 || glyphCount - 1 < delta) {
             return 0;
         }
         return 1;
@@ -169,33 +168,33 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
   int local_18;
 
   if (param_1 != (char *)0x0) {
-    iVar2 = sscanf(param_1, "%s %d %d", local_9c, &this->firstChar, &local_18);
+    iVar2 = sscanf(param_1, "%s %d %d", local_9c, &firstChar, &local_18);
     if (iVar2 <= 2) {
       local_18 = 0x7e;
     }
     if (iVar2 <= 1) {
-      this->firstChar = 0x21;
+      firstChar = 0x21;
     }
-    this->glyphCount = (local_18 - this->firstChar) + 1;
+    glyphCount = (local_18 - firstChar) + 1;
     delete buffer;
     buffer = 0;
 
     anim = new Animation();
     anim->Open(local_9c,0xfe000,0xffffffff);
     
-    this->buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
-    anim->ToBufferVB(this->buffer);
+    buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
+    anim->ToBufferVB(buffer);
     anim->DoFrame();
     if (anim != (Animation *)0x0) {
         anim->Delete(1);
     }
-    this->BuildGlyphTable();
-    iVar2 = this->IsCharSupported(0x41);
+    BuildGlyphTable();
+    iVar2 = IsCharSupported(0x41);
     if (iVar2 != 0) {
-      iVar2 = this->ComputeTextMetrics(&DAT_00435ef4);
+      iVar2 = ComputeTextMetrics(&DAT_00435ef4);
       iVar2 = (iVar2 * 2) / 3;
-      this->spaceWidth = iVar2;
-      this->tabWidth = iVar2 << 2;
+      spaceWidth = iVar2;
+      tabWidth = iVar2 << 2;
     }
   }
 }
@@ -246,19 +245,19 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
 
     //__try {
         if (param_3 == 0x20) {
-            iVar4 = this->spaceWidth;
+            iVar4 = spaceWidth;
         }
         else if (param_3 == 9) {
-            iVar4 = this->tabWidth;
+            iVar4 = tabWidth;
         }
         else {
             GlyphRect local;
             int* p = &local.left;
-            int index = param_3 - this->firstChar;
+            int index = param_3 - firstChar;
             p[0] = 0;
             index = index << 4;
             p[1] = 0;
-            index = index + (int)this->glyphTable;
+            index = index + (int)glyphTable;
             p[2] = 0;
             p[3] = 0;
             GlyphRect* piVar5 = (GlyphRect*)index;
@@ -270,20 +269,20 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
             local.top = iVar3;
             local.right = iVar2;
             local.bottom = iVar1;
-            if (this->useBuffer == 0) {
-                if (this->useAttr != 0) {
-                    g_WorkBuffer_00436974->CallBlitter3(iVar0, iVar2, iVar3, iVar1, param_1, param_2, this->buffer, this->color, this->attr);
+            if (useBuffer == 0) {
+                if (useAttr != 0) {
+                    g_WorkBuffer_00436974->CallBlitter3(iVar0, iVar2, iVar3, iVar1, param_1, param_2, buffer, color, attr);
                 }
                 else {
-                    g_WorkBuffer_00436974->CallBlitter2(iVar0, iVar2, iVar3, iVar1, param_1, param_2, this->buffer);
+                    g_WorkBuffer_00436974->CallBlitter2(iVar0, iVar2, iVar3, iVar1, param_1, param_2, buffer);
                 }
             }
             else {
-                if (this->useAttr != 0) {
-                    this->buffer->BlitTransparent(iVar0, iVar2, iVar3, iVar1, param_1, param_2, this->color, this->attr);
+                if (useAttr != 0) {
+                    buffer->BlitTransparent(iVar0, iVar2, iVar3, iVar1, param_1, param_2, color, attr);
                 }
                 else {
-                    this->buffer->ClipAndBlit((int)g_WorkBuffer_00436974, iVar0, iVar2, iVar3, iVar1, param_1, param_2);
+                    buffer->ClipAndBlit((int)g_WorkBuffer_00436974, iVar0, iVar2, iVar3, iVar1, param_1, param_2);
                 }
             }
             iVar4 = local.right - local.left;
@@ -295,17 +294,17 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
 void AnimatedAsset::RenderText(char* text, int param_2)
 {
     if (text != (char *)0x0) {
-        this->useBuffer = 0;
-        this->attr = (char)param_2;
-        this->useAttr = (param_2 != -1);
+        useBuffer = 0;
+        attr = (char)param_2;
+        useAttr = (param_2 != -1);
         PrepareText(text);
         if (*text != '\0') {
-            int* piVar1 = &this->text_pos.x;
+            int* piVar1 = &text_pos.x;
             do {
                 char cVar2 = *text;
                 text = text + 1;
-                int iVar3 = this->DrawChar(*piVar1, this->text_pos.y, (int)cVar2);
-                *piVar1 = *piVar1 + this->char_adv.advance + iVar3;
+                int iVar3 = DrawChar(*piVar1, text_pos.y, (int)cVar2);
+                *piVar1 = *piVar1 + char_adv.advance + iVar3;
             } while (*text != '\0');
         }
     }

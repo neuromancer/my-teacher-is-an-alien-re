@@ -19,8 +19,8 @@ extern "C" {
 /* Function start: 0x405C80 */
 void SCI_AfterSchoolMenu::FillOptionQueue()
 {
-    if (this->field_0x66c >= 0 && this->field_0x66c <= 2) {
-        OpMenu__GetOptionQ(this, this->field_0x66c);
+    if (field_0x66c >= 0 && field_0x66c <= 2) {
+        OpMenu__GetOptionQ(this, field_0x66c);
         OpMenu__SetOptionState(this, -5, 0);
     } else {
         ShowError("Error in DMChoScr.cpp - FillOptionQueue");
@@ -36,25 +36,25 @@ int SCI_AfterSchoolMenu::LBLParse(char* param_1)
     sscanf(param_1, "%s", local_34);
 
     if (strcmp(local_34, "MOUSE") == 0) {
-        this->mouseControl = MouseControl_Constructor(AllocateMemory_Wrapper(0x98));
-        ((Parser*)this->mouseControl)->Copy(this);
+        mouseControl = MouseControl_Constructor(AllocateMemory_Wrapper(0x98));
+        ((Parser*)mouseControl)->Copy(this);
     } else if (strcmp(local_34, "PALETTE") == 0) {
         sscanf(param_1, "%s %s", local_34, local_74);
-        if (this->paletteBuffer == 0) {
-            this->paletteBuffer = CreatePaletteBuffer(AllocateMemory_Wrapper(8));
+        if (paletteBuffer == 0) {
+            paletteBuffer = CreatePaletteBuffer(AllocateMemory_Wrapper(8));
             char* path = FormatFilePath(local_74);
-            FUN_0041eab0(this->paletteBuffer, path);
+            FUN_0041eab0(paletteBuffer, path);
         }
     } else if (strcmp(local_34, "HOTSPOT") == 0) {
-        this->hotspotManagers[this->field_0x69c] = HotspotManager_Init(AllocateMemory_Wrapper(0x140));
-        ((Parser*)this->hotspotManagers[this->field_0x69c])->Copy(this);
-        this->field_0x69c++;
+        hotspotManagers[field_0x69c] = HotspotManager_Init(AllocateMemory_Wrapper(0x140));
+        ((Parser*)hotspotManagers[field_0x69c])->Copy(this);
+        field_0x69c++;
     } else if (strcmp(local_34, "CANCEL") == 0) {
-        this->hotspotManager2 = HotspotManager_Init(AllocateMemory_Wrapper(0x140));
-        ((Parser*)this->hotspotManager2)->Copy(this);
+        hotspotManager2 = HotspotManager_Init(AllocateMemory_Wrapper(0x140));
+        ((Parser*)hotspotManager2)->Copy(this);
     } else if (strcmp(local_34, "OPTION_MENU") == 0) {
-        this->optionMenu = (OptionMenu*)OptionMenu__Init(AllocateMemory_Wrapper(0xa0));
-        ((Parser*)this->optionMenu)->Copy(this);
+        optionMenu = (OptionMenu*)OptionMenu__Init(AllocateMemory_Wrapper(0xa0));
+        ((Parser*)optionMenu)->Copy(this);
     } else if (strcmp(local_34, "END") == 0) {
         return 1;
     } else {

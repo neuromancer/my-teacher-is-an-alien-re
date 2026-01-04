@@ -78,16 +78,16 @@ GameLoop::GameLoop() {
     memset(this, 0, 7 * sizeof(int));
     
     pResult = new Timer();
-    this->timer1 = pResult;
+    timer1 = pResult;
     
     pResult = new Timer();
-    this->timer2 = pResult;
+    timer2 = pResult;
     
     pList = new EventList();
     
-    this->field_0x18 = 0;
-    this->field_0x08 = 0x54;
-    this->eventList = pList;
+    field_0x18 = 0;
+    field_0x08 = 0x54;
+    eventList = pList;
 }
 
 GameLoop::~GameLoop()
@@ -99,14 +99,14 @@ GameLoop::~GameLoop()
 void GameLoop::ResetLoop() {
     Timer* pTimer;
     
-    this->field_0x00 = 0;
+    field_0x00 = 0;
     
-    pTimer = (Timer*)this->timer2;
+    pTimer = (Timer*)timer2;
     if (pTimer != 0) {
         pTimer->Reset();
     }
     
-    pTimer = (Timer*)this->timer1;
+    pTimer = (Timer*)timer1;
     if (pTimer != 0) {
         pTimer->Reset();
     }
@@ -122,9 +122,9 @@ void GameLoop::Run() {
     GameState* pGameState;
     int zero;
 
-    this->ResetLoop();
+    ResetLoop();
     
-    if (this->field_0x00 != 0) {
+    if (field_0x00 != 0) {
         goto exit_loop;
     }
 
@@ -132,25 +132,25 @@ void GameLoop::Run() {
     zero = 0;
     
 loop_start:
-    this->ProcessInput();
-    if (this->field_0x00 != zero) {
+    ProcessInput();
+    if (field_0x00 != zero) {
         goto exit_loop;
     }
     
-    this->UpdateGame();
-    if (this->field_0x00 != zero) {
+    UpdateGame();
+    if (field_0x00 != zero) {
         goto exit_loop;
     }
     
-    this->DrawFrame();
+    DrawFrame();
     DAT_0043698c->ProcessRenderQueues();
     
-    elapsedTime = ((Timer*)this->timer1)->Update();
-    if (elapsedTime < (unsigned int)this->field_0x08) {
+    elapsedTime = ((Timer*)timer1)->Update();
+    if (elapsedTime < (unsigned int)field_0x08) {
         do {
             pSmackSoundCheck();
-            elapsedTime = ((Timer*)this->timer1)->Update();
-        } while (elapsedTime < (unsigned int)this->field_0x08);
+            elapsedTime = ((Timer*)timer1)->Update();
+        } while (elapsedTime < (unsigned int)field_0x08);
     }
     
     if (g_GameState_00436998 == (GameState*)zero) {
@@ -173,20 +173,20 @@ loop_start:
     } else {
         mouseX = 0;
     }
-    elapsedTime = ((Timer*)this->timer1)->Update();
+    elapsedTime = ((Timer*)timer1)->Update();
     sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
     DAT_0043698c->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
     
 skip_debug:
-    ((Timer*)this->timer1)->Reset();
+    ((Timer*)timer1)->Reset();
     DAT_0043698c->UpdateScreen();
     
-    if (this->field_0x00 == zero) {
+    if (field_0x00 == zero) {
         goto loop_start;
     }
 
 exit_loop:
-    this->CleanupLoop();
+    CleanupLoop();
 }
 
 /* Function start: 0x4177B0 */
@@ -206,8 +206,8 @@ void GameLoop::ProcessInput() {
     SC_Message* pLocalMessage;
     
     inputResult = g_InputManager_00436968->PollEvents(1);
-    this->field_0x00 = this->field_0x00 | inputResult;
-    if (this->field_0x00 != 0) {
+    field_0x00 = field_0x00 | inputResult;
+    if (field_0x00 != 0) {
         return;
     }
     
@@ -279,19 +279,19 @@ void GameLoop::ProcessInput() {
     
     if (keyCode == 0x5a) {
         // Z key - increase frame time
-        this->field_0x08 = this->field_0x08 + 10;
+        field_0x08 = field_0x08 + 10;
     }
     else if (keyCode == 0x41) {
         // A key - decrease frame time (min 10)
-        int newVal = this->field_0x08 - 10;
+        int newVal = field_0x08 - 10;
         if ((unsigned int)newVal <= 10) {
             newVal = 10;
         }
-        this->field_0x08 = newVal;
+        field_0x08 = newVal;
     }
     else {
         // Pass to handler
-        pHandler = (void*)this->field_0x18;
+        pHandler = (void*)field_0x18;
         if (pHandler != 0) {
             (*(void (**)(void*, SC_Message*))(*(int*)pHandler + 0x14))(pHandler, pLocalMessage);
         }
@@ -322,23 +322,23 @@ void GameLoop::Cleanup() {
     void* pData;
     
     // Cleanup timer1
-    pTimer = this->timer1;
+    pTimer = timer1;
     if (pTimer != 0) {
         Timer_DecrementCounter();
         FreeMemory(pTimer);
-        this->timer1 = 0;
+        timer1 = 0;
     }
     
     // Cleanup timer2
-    pTimer = this->timer2;
+    pTimer = timer2;
     if (pTimer != 0) {
         Timer_DecrementCounter();
         FreeMemory(pTimer);
-        this->timer2 = 0;
+        timer2 = 0;
     }
     
     // Cleanup eventList
-    pEventList = (EventList*)this->eventList;
+    pEventList = (EventList*)eventList;
     if (pEventList != 0) {
         if (pEventList->head != 0) {
             pEventList->current = pEventList->head;
@@ -390,10 +390,10 @@ void GameLoop::Cleanup() {
             }
         }
         FreeMemory(pEventList);
-        this->eventList = 0;
+        eventList = 0;
     }
     
-    this->field_0x18 = 0;
+    field_0x18 = 0;
 }
 
 /* Function start: 0x417ED0 */
@@ -402,23 +402,23 @@ void GameLoop::DrawFrame() {
     EventNode* pNode;
     void* pData;
     
-    pList = (EventList*)this->eventList;
+    pList = (EventList*)eventList;
     pList->current = pList->head;
-    pList = (EventList*)this->eventList;
+    pList = (EventList*)eventList;
     if (pList->current == 0) {
         return;
     }
     
     do {
-        pList = (EventList*)this->eventList;
+        pList = (EventList*)eventList;
         pNode = pList->current;
         pData = pNode->data;
         if (pData == 0) {
             return;
         }
         pData = (void*)((((int)pNode < 1) - 1) & (int)pData);
-        (*(void (__stdcall **)(int, int))(*(int*)pData + 0x1c))(0, *(int*)((char*)this->field_0x18 + 0x88));
-        pList = (EventList*)this->eventList;
+        (*(void (__stdcall **)(int, int))(*(int*)pData + 0x1c))(0, *(int*)((char*)field_0x18 + 0x88));
+        pList = (EventList*)eventList;
         pNode = pList->current;
         if (pList->tail == pNode) {
             return;
@@ -426,7 +426,7 @@ void GameLoop::DrawFrame() {
         if (pNode != 0) {
             pList->current = pNode->prev;
         }
-        pList = (EventList*)this->eventList;
+        pList = (EventList*)eventList;
     } while (pList->current != 0);
 }
 
@@ -516,7 +516,7 @@ void GameLoop::CleanupLoop() {
     }
     
     // Process GameLoop's eventList at offset 0x14
-    EventList* pEventList = (EventList*)this->eventList;
+    EventList* pEventList = (EventList*)eventList;
     pEventList->current = pEventList->head;
     iVar3 = (int)pEventList->current;
     while (iVar3 != 0) {
@@ -562,7 +562,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
             char* srcStr = (char*)g_GameState2_004369a4->stateValues[msg->data];
             strcpy(g_Unknown_00436994, srcStr);
         } else {
-            this->HandleSystemMessage(msg);
+            HandleSystemMessage(msg);
         }
     }
     else if (msg->command == 0) {
@@ -575,12 +575,12 @@ void GameLoop::ProcessMessage(SC_Message* msg)
     }
     else {
         // Route to handler at field_0x18
-        void* handler = (void*)this->field_0x18;
+        void* handler = (void*)field_0x18;
         result = (*(int (**)(SC_Message*))(*(int*)handler + 0x20))(msg);
         
         if (result == 0) {
             // Handler didn't process it, try event list
-            EventList* pList = (EventList*)this->eventList;
+            EventList* pList = (EventList*)eventList;
             pList->current = pList->head;
             
             while (pList->current != 0) {
@@ -598,7 +598,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
                     break;
                 }
                 
-                pList = (EventList*)this->eventList;
+                pList = (EventList*)eventList;
                 pNode = pList->current;
                 if (pList->tail == pNode) {
                     break;
@@ -704,7 +704,7 @@ int GameLoop::UpdateGame()
     while (DAT_00436984->m_count != 0) {
         pSourceMsg = DAT_00436984->Pop(&local_198);
         
-        this->ProcessMessage(pSourceMsg);
+        ProcessMessage(pSourceMsg);
         
         // Destruct buffer contents after ProcessMessage (matches original SEH thunk 0x417c22)
         local_198.SC_Message::~SC_Message();
@@ -768,7 +768,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     }
     
     // Call current handler's vtable method at +0x18 (Update method) with the message
-    handler = (void*)this->field_0x18;
+    handler = (void*)field_0x18;
     if (handler != 0) {
         (*(void (**)(SC_Message*))(*(int*)handler + 0x18))(msg);
     }
@@ -811,13 +811,13 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     if (found == 0) {
         // Not found - create/insert new handler
         piVar5 = FUN_00418510(this, *(int*)((char*)msg + 0x88));
-        this->field_0x18 = (int)piVar5;
+        field_0x18 = (int)piVar5;
     } else {
         // Found - pop handler from eventList at field_0x14
-        EventList* pList = (EventList*)this->eventList;
+        EventList* pList = (EventList*)eventList;
         int iVar4 = (int)pList->current;
         if (iVar4 == 0) {
-            this->field_0x18 = 0;
+            field_0x18 = 0;
         } else {
             // Unlink node from list
             if ((int)pList->head == iVar4) {
@@ -841,12 +841,12 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                 pList->current = 0;
             }
             pList->current = pList->head;
-            this->field_0x18 = (int)pData;
+            field_0x18 = (int)pData;
         }
         
         // Reinsert handler with priority-based insertion
-        handler = (void*)this->field_0x18;
-        EventList* pList2 = (EventList*)this->eventList;
+        handler = (void*)field_0x18;
+        EventList* pList2 = (EventList*)eventList;
         if (handler == 0) {
             ShowError("\"queue fault 0101\"");
         }
@@ -902,7 +902,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     }
     
     // Call handler's vtable method at +0x10 (Init method) with the message
-    handler = (void*)this->field_0x18;
+    handler = (void*)field_0x18;
     if (handler == 0) {
         ShowError("\"missing modual %d\"", *(int*)((char*)msg + 0x88));
     } else {
@@ -969,22 +969,22 @@ void EventList::InsertNode(void* data) {
         node->prev = 0;
     }
     
-    if (this->current == 0) {
-        this->current = this->head;
+    if (current == 0) {
+        current = head;
     }
-    if (this->head == 0) {
-        this->head = newNode;
-        this->tail = newNode;
-        this->current = newNode;
+    if (head == 0) {
+        head = newNode;
+        tail = newNode;
+        current = newNode;
     } else {
-        newNode->prev = this->current;
-        newNode->next = this->current->next;
-        if (this->current->next == 0) {
-            this->head = newNode;
-            this->current->next = newNode;
+        newNode->prev = current;
+        newNode->next = current->next;
+        if (current->next == 0) {
+            head = newNode;
+            current->next = newNode;
         } else {
-            this->current->next->prev = newNode;
-            this->current->next = newNode;
+            current->next->prev = newNode;
+            current->next = newNode;
         }
     }
 }
@@ -1055,7 +1055,7 @@ int GameLoop::AddHandler(void* handler) {
     }
     
     // Get eventList
-    list = (EventList*)this->eventList;
+    list = (EventList*)eventList;
     
     // Check list not null (uses handler as check, matches disasm)
     if (handler == 0) {
@@ -1088,7 +1088,7 @@ int GameLoop::AddHandler(void* handler) {
     }
     
     // Reset for insertion
-    list = (EventList*)this->eventList;
+    list = (EventList*)eventList;
     if (handler == 0) {
         ShowError("\"queue fault 0101\"");
     }

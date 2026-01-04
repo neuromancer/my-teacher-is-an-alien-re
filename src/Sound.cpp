@@ -31,15 +31,15 @@ Sound::Sound(int param_1, unsigned short param_2, short param_3) {
   if (g_GameConfig_00436970->data.rawData[2] != '\x02') {
     AIL_set_preference(0xf, 0);
     int iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
-    this->digital_driver = (HDIGDRIVER)iVar3;
+    digital_driver = (HDIGDRIVER)iVar3;
     if (iVar3 == 0) {
       AIL_set_preference(0xf, 1);
     }
-    if (this->digital_driver == 0) {
+    if (digital_driver == 0) {
       iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
-      this->digital_driver = (HDIGDRIVER)iVar3;
+      digital_driver = (HDIGDRIVER)iVar3;
     }
-    if (this->digital_driver == 0) {
+    if (digital_driver == 0) {
       const char *puVar2 = "Miles 32-bit";
       if (_param_3 == 0) {
         puVar2 = "Miles 16-bit";
@@ -47,11 +47,11 @@ Sound::Sound(int param_1, unsigned short param_2, short param_3) {
       WriteToMessageLog("Sound :: Cannot initialize sound %d bit %d hz %s",
                         (int)param_2, param_1, puVar2);
     } else {
-      SmackSoundUseMSS(this->digital_driver);
-      this->AllocateSampleHandles();
+      SmackSoundUseMSS(digital_driver);
+      AllocateSampleHandles();
       char auStack_80[128];
       auStack_80[0] = 0;
-      AIL_digital_configuration(this->digital_driver, 0, 0, auStack_80);
+      AIL_digital_configuration(digital_driver, 0, 0, auStack_80);
       const char *puVar2 = "Miles 32-bit";
       if (_param_3 == 0) {
         puVar2 = "Miles 16-bit";
@@ -70,20 +70,20 @@ void Sound::AllocateSampleHandles() {
   while (sVar2 < 13) {
     int index = sVar2;
     HSAMPLE *slot = (HSAMPLE *)((char *)this + 4 + index * 4);
-    HSAMPLE handle = AIL_allocate_sample_handle(this->digital_driver);
+    HSAMPLE handle = AIL_allocate_sample_handle(digital_driver);
     *slot = handle;
     if (handle == 0)
       break;
     sVar2++;
   }
-  this->num_samples = sVar2;
+  num_samples = sVar2;
 }
 
 /* Function start: 0x41E360 */
 HSAMPLE Sound::FindFreeSampleHandle() {
-  for (short i = 0; i < this->num_samples; i++) {
-    if (AIL_sample_status(this->samples[i]) == 2) {
-      return this->samples[i];
+  for (short i = 0; i < num_samples; i++) {
+    if (AIL_sample_status(samples[i]) == 2) {
+      return samples[i];
     }
   }
   return 0;
@@ -91,8 +91,8 @@ HSAMPLE Sound::FindFreeSampleHandle() {
 
 /* Function start: 0x41E3A0 */
 void Sound::StopAllSamples() {
-  for (short i = 0; i < this->num_samples; i++) {
-    AIL_end_sample(this->samples[i]);
+  for (short i = 0; i < num_samples; i++) {
+    AIL_end_sample(samples[i]);
   }
 }
 

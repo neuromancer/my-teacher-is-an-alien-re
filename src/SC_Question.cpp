@@ -17,20 +17,20 @@
 SC_Question::SC_Question(int id)
 {
     // Zero the SC_Question-specific fields (0x26 dwords = 152 bytes starting at offset 0x88)
-    memset(&this->mouseControl, 0, 0x98);
+    memset(&mouseControl, 0, 0x98);
     
     // Set question ID
-    this->questionId = id;
+    questionId = id;
     
-    this->state = 0;
-    this->messageQueue = new Queue();
+    state = 0;
+    messageQueue = new Queue();
     
     // Parse the question file
-    ParseFile(this, "mis\\quest001.mis", "[QUESTION%5.5d]", this->questionId);
+    ParseFile(this, "mis\\quest001.mis", "[QUESTION%5.5d]", questionId);
     
     // Check if question was already answered
-    if (g_Manager_00435a84->GetFlag(this->questionId, 1) != 0) {
-        this->state = 2;
+    if (g_Manager_00435a84->GetFlag(questionId, 1) != 0) {
+        state = 2;
     }
 }
 
@@ -42,10 +42,10 @@ SC_Question::~SC_Question()
     Queue* queue;
     
     // Clean up mouseControl at offset 0x88
-    delete this->mouseControl;
+    delete mouseControl;
     
     // Clean up messageQueue at offset 0x8c
-    queue = this->messageQueue;
+    queue = messageQueue;
     if (queue != 0) {
         if (queue->m_head != 0) {
             queue->m_current = queue->m_head;
@@ -88,14 +88,14 @@ SC_Question::~SC_Question()
 /* Function start: 0x406930 */
 void SC_Question::Update(int x, int y)
 {
-    switch (this->state) {
+    switch (state) {
     case 0:
-        DAT_0043698c->ShowSubtitle(this->label, x + 10, y + 23, 10000, 8);
+        DAT_0043698c->ShowSubtitle(label, x + 10, y + 23, 10000, 8);
         break;
     case 1:
-        if (this->mouseControl != 0) {
-            if (((SpriteList*)this->mouseControl)->DoAll() == 0) {
-                this->Finalize();
+        if (mouseControl != 0) {
+            if (((SpriteList*)mouseControl)->DoAll() == 0) {
+                Finalize();
             }
         }
         break;
@@ -118,15 +118,15 @@ void SC_Question::Finalize()
     QueueNode* current;
     
     // Mark question as answered in flag array
-    g_Manager_00435a84->SetFlag(this->questionId, 1);
+    g_Manager_00435a84->SetFlag(questionId, 1);
     
-    this->state = 2;
-    if (this->messageQueue->m_head == 0) {
+    state = 2;
+    if (messageQueue->m_head == 0) {
         return;
     }
     
     do {
-        queue = this->messageQueue;
+        queue = messageQueue;
         msgData = 0;
         queueType = queue->m_field_0xc;
         
@@ -192,7 +192,7 @@ void SC_Question::Finalize()
             ((SC_Message*)msgData)->~SC_Message();
             FreeMemory(msgData);
         }
-    } while (this->messageQueue->m_head != 0);
+    } while (messageQueue->m_head != 0);
 }
 
 /* Function start: 0x4199A0 */
@@ -203,17 +203,17 @@ SC_Message::~SC_Message()
 /* Function start: 0x4198C0 */
 SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY)
 {
-    this->targetAddress = targetAddress;
-    this->sourceAddress = sourceAddress;
-    this->command = command;
-    this->data = data;
-    this->priority = priority;
-    this->param1 = param1;
-    this->param2 = param2;
+    targetAddress = targetAddress;
+    sourceAddress = sourceAddress;
+    command = command;
+    data = data;
+    priority = priority;
+    param1 = param1;
+    param2 = param2;
     
-    this->userPtr = userPtr;
-    this->clickX = clickX;
-    this->clickY = clickY;
+    userPtr = userPtr;
+    clickX = clickX;
+    clickY = clickY;
 }
 
 /* Function start: 0x419FD0 */
@@ -226,8 +226,8 @@ void SC_Message::Dump(int unused)
     
     // Log ADDRESS field
     // EDI = targetAddress, EAX = sourceAddress
-    targetAddr = this->targetAddress;
-    srcAddr = this->sourceAddress;
+    targetAddr = targetAddress;
+    srcAddr = sourceAddress;
     if (targetAddr == 5) {
         str1 = g_GameState_00436998->GetState(srcAddr);
         str2 = g_GameState3_0043699c->GetState(targetAddr);
@@ -239,8 +239,8 @@ void SC_Message::Dump(int unused)
     
     // Log FROM field
     // EDI = command, EAX = data
-    targetAddr = this->command;
-    srcAddr = this->data;
+    targetAddr = command;
+    srcAddr = data;
     if (targetAddr == 5) {
         str1 = g_GameState_00436998->GetState(srcAddr);
         str2 = g_GameState3_0043699c->GetState(targetAddr);
@@ -251,30 +251,30 @@ void SC_Message::Dump(int unused)
     }
     
     // Log INSTRUCTION field
-    str1 = g_GameState4_004369a0->GetState(this->priority);
+    str1 = g_GameState4_004369a0->GetState(priority);
     WriteToMessageLog("\"\t\t\tINSTRUCTION\t%s\"", str1);
     
     // Log MOUSE field (clickX=0xa4, clickY=0xa8)
-    WriteToMessageLog("\"\t\t\tMOUSE\t\t%d\t%d\"", this->clickX, this->clickY);
+    WriteToMessageLog("\"\t\t\tMOUSE\t\t%d\t%d\"", clickX, clickY);
     
     // Log optional fields
-    if (this->mouseX != 0) {
-        WriteToMessageLog("\"\t\t\tBUTTON1\t\t%d\"", this->mouseX);
+    if (mouseX != 0) {
+        WriteToMessageLog("\"\t\t\tBUTTON1\t\t%d\"", mouseX);
     }
-    if (this->mouseY != 0) {
-        WriteToMessageLog("\"\t\t\tBUTTON2\t\t%d\"", this->mouseY);
+    if (mouseY != 0) {
+        WriteToMessageLog("\"\t\t\tBUTTON2\t\t%d\"", mouseY);
     }
-    if (this->field_b4 != 0) {
-        WriteToMessageLog("\"\t\t\tLASTKEY\t\t%d\"", this->field_b4);
+    if (field_b4 != 0) {
+        WriteToMessageLog("\"\t\t\tLASTKEY\t\t%d\"", field_b4);
     }
-    if (this->field_b8 != 0) {
-        WriteToMessageLog("\"\t\t\tTIME\t\t%lu\"", this->field_b8);
+    if (field_b8 != 0) {
+        WriteToMessageLog("\"\t\t\tTIME\t\t%lu\"", field_b8);
     }
-    if (this->param1 != 0) {
-        WriteToMessageLog("\"\t\t\tEXTRA1\t\t%lu\"", this->param1);
+    if (param1 != 0) {
+        WriteToMessageLog("\"\t\t\tEXTRA1\t\t%lu\"", param1);
     }
-    if (this->param2 != 0) {
-        WriteToMessageLog("\"\t\t\tEXTRA2\t\t%lu\"", this->param2);
+    if (param2 != 0) {
+        WriteToMessageLog("\"\t\t\tEXTRA2\t\t%lu\"", param2);
     }
     
     WriteToMessageLog("\"\t\tEND\t\t//message\"");
@@ -290,17 +290,17 @@ int SC_Question::LBLParse(char* param_1)
     
     if (strcmp(local_34, "OVERLAYS") == 0) {
         MouseControl* mc = new MouseControl();
-        this->mouseControl = mc;
+        mouseControl = mc;
         Parser::ProcessFile(mc, this, 0);
     }
     else if (strcmp(local_34, "LABEL") == 0) {
-        ExtractQuotedString(param_1, this->label, 0x80);
+        ExtractQuotedString(param_1, label, 0x80);
     }
     else if (strcmp(local_34, "MESSAGE") == 0) {
         SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         Parser::ProcessFile(msg, this, 0);
         
-        Queue* queue = this->messageQueue;
+        Queue* queue = messageQueue;
         if (msg == 0) {
             ShowError("queue fault 0101");
         }
@@ -455,7 +455,7 @@ void SC_Question::DumpMessageQueue(int unused)
     Queue* queue;
     SC_Message* msgData;
     
-    queue = this->messageQueue;
+    queue = messageQueue;
     if (queue == 0) {
         return;
     }
@@ -464,7 +464,7 @@ void SC_Question::DumpMessageQueue(int unused)
     }
     
     WriteToMessageLog("\"\tmsgQ\"");
-    queue = this->messageQueue;
+    queue = messageQueue;
     queue->m_current = queue->m_head;
     
     while (queue->m_current != 0) {

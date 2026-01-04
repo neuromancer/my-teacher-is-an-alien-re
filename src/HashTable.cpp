@@ -4,37 +4,37 @@
 
 /* Function start: 0x420eb0 */
 void HashTable::AllocateBuckets(int numBuckets, int allocateNow) {
-    if (this->buckets != 0) {
-        FreeMemory(this->buckets);
-        this->buckets = 0;
+    if (buckets != 0) {
+        FreeMemory(buckets);
+        buckets = 0;
     }
     if (allocateNow != 0) {
         int* newBuckets = (int*)AllocateMemory(numBuckets * 4);
-        this->buckets = newBuckets;
+        buckets = newBuckets;
         memset(newBuckets, 0, numBuckets * 4);
     }
-    this->numBuckets = numBuckets;
+    numBuckets = numBuckets;
 }
 
 /* Function start: 0x420f10 */
 HashNode* HashTable::AllocateNode() {
-    if (this->freeList == 0) {
-        int* block = (int*)AllocateMemory(this->capacity * 24 + 4);
-        *block = (int)this->nodePool;
-        this->nodePool = block;
-        int count = this->capacity;
-        HashNode* node = (HashNode*)((char*)block + this->capacity * 24 - 20);
+    if (freeList == 0) {
+        int* block = (int*)AllocateMemory(capacity * 24 + 4);
+        *block = (int)nodePool;
+        nodePool = block;
+        int count = capacity;
+        HashNode* node = (HashNode*)((char*)block + capacity * 24 - 20);
         count = count - 1;
         while (count >= 0) {
-            node->next = this->freeList;
-            this->freeList = node;
+            node->next = freeList;
+            freeList = node;
             node = (HashNode*)((char*)node - 24);
             count = count - 1;
         }
     }
-    HashNode* result = this->freeList;
-    this->freeList = result->next;
-    this->count = this->count + 1;
+    HashNode* result = freeList;
+    freeList = result->next;
+    count = count + 1;
     result->key = 0;
     int i = 0;
     do {

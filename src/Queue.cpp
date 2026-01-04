@@ -16,7 +16,7 @@ TimedEventPool::~TimedEventPool()
     TimedEvent* nextBlock;
     
     // Iterate through active events list (linked at offset 0)
-    node = this->list.head;
+    node = list.head;
     if (node != 0) {
         do {
             // Get embedded SC_Message at offset +8
@@ -34,13 +34,13 @@ TimedEventPool::~TimedEventPool()
     }
     
     // Clear pool state fields
-    this->m_count = 0;
-    this->m_free_list = 0;
-    this->list.tail = 0;
-    this->list.head = 0;
+    m_count = 0;
+    m_free_list = 0;
+    list.tail = 0;
+    list.head = 0;
     
     // Free pool memory blocks (linked at offset 0x10)
-    poolBlock = this->m_pool;
+    poolBlock = m_pool;
     if (poolBlock != 0) {
         do {
             nextBlock = *(TimedEvent**)poolBlock;
@@ -48,7 +48,7 @@ TimedEventPool::~TimedEventPool()
             poolBlock = nextBlock;
         } while (poolBlock != 0);
     }
-    this->m_pool = 0;
+    m_pool = 0;
 }
 
 /* Function start: 0x402310 */
@@ -59,8 +59,8 @@ void TimedEvent::CopyFrom(const TimedEvent* other)
     char* dst = (char*)this;
     char bl;
 
-    this->field_0x8 = other->field_0x8;
-    this->m_duration = other->m_duration;
+    field_0x8 = other->field_0x8;
+    m_duration = other->m_duration;
     eax = 0;
     do {
         bl = src[0x10 + eax];
@@ -68,7 +68,7 @@ void TimedEvent::CopyFrom(const TimedEvent* other)
         dst[0xf + eax] = bl;
     } while (eax < 0x20);
 
-    this->field_0x30 = other->field_0x30;
+    field_0x30 = other->field_0x30;
     {
         int* esi = (int*)(&dst[0x38]);
         int* ptr = (int*)(&src[0x38]);
@@ -84,50 +84,50 @@ void TimedEvent::CopyFrom(const TimedEvent* other)
         dst[0x3f + eax] = bl;
     } while (eax < 0x40);
 
-    this->field_0x80 = other->field_0x80;
-    this->targetAddress = other->targetAddress;
-    this->sourceAddress = other->sourceAddress;
-    this->command = other->command;
-    this->data = other->data;
-    this->priority = other->priority;
-    this->param1 = other->param1;
-    this->param2 = other->param2;
-    this->clickX = other->clickX;
-    this->clickY = other->clickY;
-    this->mouseX = other->mouseX;
-    this->mouseY = other->mouseY;
-    this->field_0xb4 = other->field_0xb4;
-    this->field_0xb8 = other->field_0xb8;
-    this->userPtr = other->userPtr;
+    field_0x80 = other->field_0x80;
+    targetAddress = other->targetAddress;
+    sourceAddress = other->sourceAddress;
+    command = other->command;
+    data = other->data;
+    priority = other->priority;
+    param1 = other->param1;
+    param2 = other->param2;
+    clickX = other->clickX;
+    clickY = other->clickY;
+    mouseX = other->mouseX;
+    mouseY = other->mouseY;
+    field_0xb4 = other->field_0xb4;
+    field_0xb8 = other->field_0xb8;
+    userPtr = other->userPtr;
 }
 
 /* Function start: 0x402420 */
 TimedEvent* TimedEventPool::Create(void* callback, void* data)
 {
-    if (this->m_free_list == 0) {
-        int* new_pool = (int*)AllocateMemory(this->m_pool_size * 200 + 4);
-        *new_pool = (int)this->m_pool;
-        int count = this->m_pool_size;
-        this->m_pool = (TimedEvent*)new_pool;
+    if (m_free_list == 0) {
+        int* new_pool = (int*)AllocateMemory(m_pool_size * 200 + 4);
+        *new_pool = (int)m_pool;
+        int count = m_pool_size;
+        m_pool = (TimedEvent*)new_pool;
 
         int* current = new_pool + count * 50 - 49;
         count--;
         if (count >= 0) {
             do {
                 count--;
-                *current = (int)this->m_free_list;
-                this->m_free_list = (TimedEvent*)current;
+                *current = (int)m_free_list;
+                m_free_list = (TimedEvent*)current;
                 current = current - 50;
             } while (count >= 0);
         }
     }
 
-    TimedEvent* event = this->m_free_list;
+    TimedEvent* event = m_free_list;
     Message* ebx = (Message*)((int*)event + 2);
-    this->m_free_list = *(TimedEvent**)event;
+    m_free_list = *(TimedEvent**)event;
     *(void**)((char*)event + 4) = callback;
     *(void**)event = data;
-    this->m_count++;
+    m_count++;
 
     int edi = 0;
     if (ebx == 0) goto done;
@@ -159,7 +159,7 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     SC_Message local_d8(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     
     local_14 = this;
-    local_18 = this->list.head;           // ECX = *this
+    local_18 = list.head;           // ECX = *this
     local_1c = 0;                          // EDX = 0
     
     // EBX = &head->field_0x8 = SC_Message* in the node (at offset 8 from head)
@@ -204,7 +204,7 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     local_d8.field_b8 = srcMsg->field_b8;
     local_d8.userPtr = srcMsg->userPtr;
 
-    // Update list head: this->list.head = head->next
+    // Update list head: list.head = head->next
     TimedEvent* nextNode = *(TimedEvent**)local_18;
     local_14->list.head = nextNode;
     

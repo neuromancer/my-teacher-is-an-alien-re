@@ -337,7 +337,7 @@ extern "C" int* GetWindowHeight();
 
 /* Function start: 0x4193E0 */
 extern "C" void FlipScreen() {
-    VBuffer* pThis;
+    VBuffer* vb;
     int* piVar1;
     int iVar2;
     int iVar3;
@@ -345,11 +345,11 @@ extern "C" void FlipScreen() {
     if (g_WorkBuffer_00436974 == 0) {
         return;
     }
-    pThis = g_WorkBuffer_00436974;
+    vb = g_WorkBuffer_00436974;
     piVar1 = GetWindowHeight();
     iVar2 = *piVar1 - 1;
     iVar3 = 0;
     piVar1 = GetWindowWidth();
-    pThis->CallBlitter5(pThis->clip_x1, pThis->clip_x2, pThis->saved_video_mode, pThis->video_mode_lock_count, 0, *piVar1 - 1, iVar3, iVar2);
+    vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->saved_video_mode, vb->video_mode_lock_count, 0, *piVar1 - 1, iVar3, iVar2);
 }
 

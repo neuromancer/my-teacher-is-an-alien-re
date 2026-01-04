@@ -77,7 +77,7 @@ int __fastcall IsPaletteUnchanged(void* storedPalette) { return 0; }
 /* Function start: 0x41BB10 */
 void* ZBQueue::GetCurrentData()
 {
-    ZBQueueNode* node = (ZBQueueNode*)this->current;
+    ZBQueueNode* node = (ZBQueueNode*)current;
     if (node != 0) {
         return node->data;
     }
@@ -131,9 +131,9 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
 /* Function start: 0x41CCE0 */
 void* ZBQueueNode::CleanupNode(int flag)
 {
-    this->data = 0;
-    this->next = 0;
-    this->prev = 0;
+    data = 0;
+    next = 0;
+    prev = 0;
     if ((flag & 1) != 0) {
         FreeMemory(this);
     }
@@ -142,22 +142,22 @@ void* ZBQueueNode::CleanupNode(int flag)
 /* Function start: 0x401810 */
 void* ZBQueue::PopNode()
 {
-    ZBQueueNode* piVar1 = (ZBQueueNode*)this->current;
+    ZBQueueNode* piVar1 = (ZBQueueNode*)current;
     if (piVar1 != 0) {
-        if (this->head == piVar1) {
-            this->head = piVar1->prev;
+        if (head == piVar1) {
+            head = piVar1->prev;
         }
-        if (this->tail == piVar1) {
-            this->tail = piVar1->next;
+        if (tail == piVar1) {
+            tail = piVar1->next;
         }
         if (piVar1->next != 0) {
             ((ZBQueueNode*)piVar1->next)->prev = piVar1->prev;
         }
-        ZBQueueNode* puVar2 = (ZBQueueNode*)((ZBQueueNode*)this->current)->prev;
+        ZBQueueNode* puVar2 = (ZBQueueNode*)((ZBQueueNode*)current)->prev;
         if (puVar2 != 0) {
-            puVar2->next = ((ZBQueueNode*)this->current)->next;
+            puVar2->next = ((ZBQueueNode*)current)->next;
         }
-        ZBQueueNode* puVar2_2 = (ZBQueueNode*)this->current;
+        ZBQueueNode* puVar2_2 = (ZBQueueNode*)current;
         void* uVar3;
         uVar3 = 0;
         if (puVar2_2 != 0) {
@@ -166,9 +166,9 @@ void* ZBQueue::PopNode()
             puVar2_2->next = 0;
             puVar2_2->prev = 0;
             FreeMemory(puVar2_2);
-            this->current = 0;
+            current = 0;
         }
-        this->current = this->head;
+        current = head;
         return uVar3;
     }
     return 0;
@@ -186,7 +186,7 @@ void ZBufferManager::UpdateScreen() {
     RenderEntry* local_14;
     GlyphRect local_rect;
     
-    int mode = this->m_state;
+    int mode = m_state;
     if (mode == 1) {
         FlipScreen();
         return;
@@ -199,14 +199,14 @@ void ZBufferManager::UpdateScreen() {
         return;
     }
     
-    piVar1 = (int*)this->m_queue9c;
+    piVar1 = (int*)m_queue9c;
     if (*piVar1 == 0) {
         return;
     }
     
     do {
         local_14 = (RenderEntry*)0;
-        piVar1 = (int*)this->m_queue9c;
+        piVar1 = (int*)m_queue9c;
         int queueType = piVar1[3];
         if (queueType == 1 || queueType == 4) {
             iVar4 = *piVar1;
@@ -262,7 +262,7 @@ do_blit:
             delete local_14;
         }
         
-        piVar1 = (int*)this->m_queue9c;
+        piVar1 = (int*)m_queue9c;
     } while (*piVar1 != 0);
 }
 
@@ -584,10 +584,10 @@ void ZBufferManager::Cleanup() {
     unsigned int* local_1c;
     
     // First: drain queue at 0xA0 with special handling
-    piVar1 = (int*)this->m_queueA0;
+    piVar1 = (int*)m_queueA0;
     iVar3 = *piVar1;
     while (iVar3 != 0) {
-        piVar1 = (int*)this->m_queueA0;
+        piVar1 = (int*)m_queueA0;
         int queueType = piVar1[3];
         if (queueType == 1 || queueType == 4) {
             iVar3 = *piVar1;
@@ -622,12 +622,12 @@ void ZBufferManager::Cleanup() {
             }
             piVar1[2] = *piVar1;
         }
-        piVar1 = (int*)this->m_queueA0;
+        piVar1 = (int*)m_queueA0;
         iVar3 = *piVar1;
     }
     
     // Second: drain queue at 0xA0 (again), freeing remaining items
-    piVar1 = (int*)this->m_queueA0;
+    piVar1 = (int*)m_queueA0;
     if (piVar1 != 0) {
         if (*piVar1 != 0) {
             piVar1[2] = *piVar1;
@@ -640,11 +640,11 @@ void ZBufferManager::Cleanup() {
             }
         }
         FreeMemory(piVar1);
-        this->m_queueA0 = 0;
+        m_queueA0 = 0;
     }
     
     // Third: drain queue at 0xA4
-    piVar1 = (int*)this->m_queueA4;
+    piVar1 = (int*)m_queueA4;
     if (piVar1 != 0) {
         if (*piVar1 != 0) {
             piVar1[2] = *piVar1;
@@ -657,11 +657,11 @@ void ZBufferManager::Cleanup() {
             }
         }
         FreeMemory(piVar1);
-        this->m_queueA4 = 0;
+        m_queueA4 = 0;
     }
     
     // Fourth: drain queue at 0x9C
-    local_14 = (int*)this->m_queue9c;
+    local_14 = (int*)m_queue9c;
     if (local_14 != 0) {
         if (*local_14 != 0) {
             local_14[2] = *local_14;
@@ -679,7 +679,7 @@ void ZBufferManager::Cleanup() {
             }
         }
         FreeMemory(local_14);
-        this->m_queue9c = 0;
+        m_queue9c = 0;
     }
 }
 

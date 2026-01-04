@@ -46,7 +46,7 @@ Animation::Animation() {
 
 /* Function start: 0x41FAC0 */
 void Animation::Delete(unsigned char param_1) {
-  this->~Animation();
+  delete this;
   if ((param_1 & 1) != 0) {
     FreeMemory(this);
   }
@@ -75,39 +75,39 @@ void Animation::CleanArray10() {
 
 /* Function start: 0x41FB70 */
 Animation::~Animation() {
-  this->FreeVBuffer();
-  this->CloseSmackerBuffer();
-  this->CloseSmackerFile();
+  FreeVBuffer();
+  CloseSmackerBuffer();
+  CloseSmackerFile();
 }
 
 /* Function start: 0x41FBE0 */
 void Animation::CloseSmackerFile() {
-  if (this->smk != 0) {
-    SmackClose(this->smk);
-    this->smk = 0;
+  if (smk != 0) {
+    SmackClose(smk);
+    smk = 0;
   }
 }
 
 /* Function start: 0x41FC00 */
 void Animation::CloseSmackerBuffer() {
-  if (this->smack_buffer != 0) {
-      SmackBufferClose(this->smack_buffer);
-      this->smack_buffer = 0;
+  if (smack_buffer != 0) {
+      SmackBufferClose(smack_buffer);
+      smack_buffer = 0;
   }
 }
 
 /* Function start: 0x41FC20 */
 int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
-  if (this->smk != 0 && this->smack_buffer != 0) {
-    this->data->SetCurrentVideoMode(this->data->handle);
-    if (this->smk->NewPalette != 0) {
-      SmackBufferNewPalette(this->smack_buffer, this->smk->Palette, 0);
-      SmackColorRemap(this->smk, this->smack_buffer->Palette,
-                      this->smack_buffer->PalColorsInUse,
-                      this->smack_buffer->Unk43C);
+  if (smk != 0 && smack_buffer != 0) {
+    data->SetCurrentVideoMode(data->handle);
+    if (smk->NewPalette != 0) {
+      SmackBufferNewPalette(smack_buffer, smk->Palette, 0);
+      SmackColorRemap(smk, smack_buffer->Palette,
+                      smack_buffer->PalColorsInUse,
+                      smack_buffer->Unk43C);
     }
-    SetPaletteEntriesAnimation((char *)this->smk->Palette, param_1, param_2);
-    this->data->InvalidateVideoMode();
+    SetPaletteEntriesAnimation((char *)smk->Palette, param_1, param_2);
+    data->InvalidateVideoMode();
     return 0;
   }
   return 0;
@@ -115,34 +115,34 @@ int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
 
 /* Function start: 0x41FCA0 */
 void Animation::DoFrame() {
-  if (this->smk != 0) {
-    SmackDoFrame(this->smk);
+  if (smk != 0) {
+    SmackDoFrame(smk);
   }
 }
 
 /* Function start: 0x41FCB0 */
 void Animation::NextFrame() {
-  if (this->smk != 0) {
-    SmackNextFrame(this->smk);
+  if (smk != 0) {
+    SmackNextFrame(smk);
   }
 }
 
 /* Function start: 0x41FCC0 */
 void Animation::GotoFrame(int frame) {
-  if (this->smk != 0) {
+  if (smk != 0) {
     if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
-      SmackSoundOnOff(this->smk, 0);
+      SmackSoundOnOff(smk, 0);
     }
-    SmackGoto(this->smk, frame);
+    SmackGoto(smk, frame);
     if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
-      SmackSoundOnOff(this->smk, 1);
+      SmackSoundOnOff(smk, 1);
     }
   }
 }
 
 /* Function start: 0x41FD20 */
 int Animation::Open(char *filename, int param_2, int param_3) {
-  if (this->smk != 0) {
+  if (smk != 0) {
     return 1;
   }
 
@@ -150,8 +150,8 @@ int Animation::Open(char *filename, int param_2, int param_3) {
     param_2 = param_2 & 0xfff01fff;
   }
 
-  this->smk = SmackOpen(filename, param_2, param_3);
-  if (this->smk == 0) {
+  smk = SmackOpen(filename, param_2, param_3);
+  if (smk == 0) {
     ShowError("Animation::Open - Cannot open file %s", filename);
   }
   return 1;
@@ -159,68 +159,64 @@ int Animation::Open(char *filename, int param_2, int param_3) {
 
 /* Function start: 0x41FD80 */
 void Animation::VBInit() {
-  if (this->vbuffer != 0) {
+  if (vbuffer != 0) {
     ShowError("Animation::VBInit() - Virtual Buffer already defined");
   }
 
   /*VBuffer *vbuffer = (VBuffer *)AllocateMemory(0x30);
   try {
     if (vbuffer != 0) {
-      HSMACK smk = this->smk;
+      HSMACK smk = smk;
       vbuffer = vbuffer->CreateAndClean(smk->Width, smk->Height);
     }
   } catch (...) {
   }*/
-  this->vbuffer = new VBuffer(this->smk->Width, this->smk->Height);
+  vbuffer = new VBuffer(smk->Width, smk->Height);
 }
 
 /* Function start: 0x41FE20 */
 void Animation::FreeVBuffer() {
-  if (this->vbuffer != 0) {
-    VBuffer *vbuffer = this->vbuffer;
-    vbuffer->~VBuffer();
-    FreeMemory(vbuffer);
-    this->vbuffer = 0;
-  }
-  this->data = 0;
+  delete vbuffer;
+  vbuffer = 0;
+  data = 0;
 }
 
 /* Function start: 0x41FE50 */
 void Animation::OpenAndConvertToBuffer(char *filename) {
   Open(filename, 0xfe000, -1);
-  this->ToBuffer();
+  ToBuffer();
 }
 
 /* Function start: 0x41FE70 */
 void Animation::ToBuffer() {
-  if (this->smk == 0) {
+  if (smk == 0) {
     ShowError("Animation::ToBuffer() - No smk defined");
   }
-  this->VBInit();
-  this->ToBufferVB(this->vbuffer);
+  VBInit();
+  ToBufferVB(vbuffer);
 }
 
 /* Function start: 0x41FEA0 */
 void Animation::ToBufferVB(VBuffer *buffer) {
-  if (this->smk == 0) {
+  if (smk == 0) {
     ShowError("Animation::ToBuffer() - No smk defined");
   }
 
-  this->smack_handle = GetGameWindowHandle();
-  this->smack_buffer = SmackBufferOpen(this->smack_handle, 4, 4, 4, 0, 0);
+  smack_handle = GetGameWindowHandle();
+  smack_buffer = SmackBufferOpen(smack_handle, 4, 4, 4, 0, 0);
 
-  if (this->smack_buffer == 0) {
+  if (smack_buffer == 0) {
     ShowError("Animation::ToBuffer() - Buffer creation failed");
   }
 
-  if (this->data != 0) {
+  if (data != 0) {
     ShowError("Animation::ToBuffer() - Virtual Buffer already defined");
   }
 
-  this->data = buffer;
-  unsigned int uVar3 = *(unsigned char*)this->smack_buffer;
+  data = buffer;
+  unsigned int uVar3 = *(unsigned char*)smack_buffer;
   void *uVar1 = buffer->GetData();
-  SmackToBuffer(this->smk, 0, 0, this->smk->Width, this->smk->Height, uVar1,
+  SmackToBuffer(smk, 0, 0, smk->Width, smk->Height, uVar1,
                 uVar3);
 }
 
@@ -228,8 +224,8 @@ void Animation::ToBufferVB(VBuffer *buffer) {
 void Animation::Play(char *filename, unsigned int flags) {
   PaletteBuffer *palette;
 
-  this->flags = flags;
-  this->palette = 0;
+  flags = flags;
+  palette = 0;
 
   if ((flags & 1) == 0) {
     void *mem = AllocateMemory(8);
@@ -243,7 +239,7 @@ void Animation::Play(char *filename, unsigned int flags) {
     palette->CopyEntries(0, 0x100);
   }
 
-  if ((this->flags & 2) == 0) {
+  if ((flags & 2) == 0) {
     BlankScreen();
   }
 
@@ -269,14 +265,14 @@ void Animation::MainLoop() {
   }
 
   int frame = 1;
-  this->data->SetCurrentVideoMode(this->data->handle);
+  data->SetCurrentVideoMode(data->handle);
 
   if (smk->Frames >= frame) {
     do {
       if (smk->NewPalette != 0) {
         SetPalette(0, 0x100);
       }
-      this->DoFrame();
+      DoFrame();
       do {
         if (g_InputManager_00436968->PollEvents(1) != 0) {
           goto end_loop;
@@ -296,13 +292,13 @@ void Animation::MainLoop() {
               goto wait;
             }
           }
-          *(unsigned int *)&this->palette |= 1;
+          *(unsigned int *)&palette |= 1;
           goto end_loop;
         }
       wait:;
       } while (SmackWait(smk) != 0);
 
-      VBuffer *vbuffer = this->data;
+      VBuffer *vbuffer = data;
       int iVar1 = *GetWindowHeight() - 1;
       int iVar2 = *GetWindowWidth() - 1;
       vbuffer->CallBlitter5(
@@ -317,5 +313,5 @@ void Animation::MainLoop() {
     } while (frame <= smk->Frames);
   }
 end_loop:
-  this->data->InvalidateVideoMode();
+  data->InvalidateVideoMode();
 }

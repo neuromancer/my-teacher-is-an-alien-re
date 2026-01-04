@@ -44,7 +44,7 @@ void Engine::DisplayFrameRate() {
 
   FUN_00422a2f(0xff, 0xff);
   FUN_004229ea(0, 199);
-  sprintf(local_80, "frames: a=%d l=%d", this->field_0xd4, this->field_0xdc);
+  sprintf(local_80, "frames: a=%d l=%d", field_0xd4, field_0xdc);
   if (g_TextManager_00436990 != 0) {
     g_TextManager_00436990->RenderText(local_80, -1);
   }

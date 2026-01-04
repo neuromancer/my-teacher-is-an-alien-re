@@ -17,16 +17,16 @@ public:
     // For now, I'll rely on the fact they are pointers.
     
     // 0x608
-    Sprite* GetButton() { return (Sprite*)this->field_608[0]; }
-    void SetButton(Sprite* s) { this->field_608[0] = (void*)s; }
+    Sprite* GetButton() { return (Sprite*)field_608[0]; }
+    void SetButton(Sprite* s) { field_608[0] = (void*)s; }
     
     // 0x60c
-    Sprite* GetHilite() { return (Sprite*)this->field_608[1]; }
-    void SetHilite(Sprite* s) { this->field_608[1] = (void*)s; }
+    Sprite* GetHilite() { return (Sprite*)field_608[1]; }
+    void SetHilite(Sprite* s) { field_608[1] = (void*)s; }
     
     // 0x610
-    Queue* GetQuestionQueue() { return (Queue*)this->field_608[2]; }
-    void SetQuestionQueue(Queue* q) { this->field_608[2] = (void*)q; }
+    Queue* GetQuestionQueue() { return (Queue*)field_608[2]; }
+    void SetQuestionQueue(Queue* q) { field_608[2] = (void*)q; }
     
     // 0x618 is field_608[4]? (0x608 + 4*4 = 0x618)
     // AmbientsController array?

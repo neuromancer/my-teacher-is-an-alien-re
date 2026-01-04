@@ -21,8 +21,8 @@ MousePoint::~MousePoint() {
 }
 
 InputState::InputState() {
-    this->x = 0;
-    this->y = 0;
+    x = 0;
+    y = 0;
     memset(this, 0, sizeof(InputState));
 }
 
@@ -31,7 +31,7 @@ InputState::~InputState() {
 
 /* Function start: 0x4217C0 */
 InputManager::InputManager(int param_1) {
-    this->InitDevices(param_1);
+    InitDevices(param_1);
 }
 
 InputManager::~InputManager() {
@@ -53,40 +53,40 @@ void InputManager::InitDevices(int param_1) {
     screenHeight = screenHeight - 1;
     screenWidth = screenWidth - 1;
 
-    this->bounds.left = 0;
-    this->bounds.top = 0;
-    this->bounds.right = screenWidth;
-    this->bounds.bottom = screenHeight;
+    bounds.left = 0;
+    bounds.top = 0;
+    bounds.right = screenWidth;
+    bounds.bottom = screenHeight;
 
     DAT_004373b8 = GetDoubleClickTime();
 
-    pState = this->pMouseLocal;
+    pState = pMouseLocal;
     if (pState != 0) {
         if (pState != 0) {
             delete pState;
         }
-        this->pMouseLocal = 0;
+        pMouseLocal = 0;
     }
 
     pState = new InputState();
-    this->pMouseLocal = pState;
-    this->pMouse = pState;
+    pMouseLocal = pState;
+    pMouse = pState;
 
-    pState = this->pJoystick;
+    pState = pJoystick;
     if (pState != 0) {
         delete pState;
-        this->pJoystick = 0;
+        pJoystick = 0;
     }
 
     if (FUN_00421ae0() >= 1 && joyGetPos(0, &joyInfo) == 0) {
         pState = new InputState();
-        this->pJoystick = pState;
+        pJoystick = pState;
         if (param_1 == 1) {
-            this->pMouse = pState;
+            pMouse = pState;
         }
-        joyGetDevCapsA(0, &this->joyCaps, 0x194);
-        this->joyCaps.wXmax = joyInfo.wXpos * 2;
-        this->joyCaps.wYmax = joyInfo.wYpos * 2;
+        joyGetDevCapsA(0, &joyCaps, 0x194);
+        joyCaps.wXmax = joyInfo.wXpos * 2;
+        joyCaps.wYmax = joyInfo.wYpos * 2;
     }
 
     FUN_00421ac0();
@@ -107,24 +107,24 @@ int InputManager::PollMouse(InputState* state) {
     FUN_004239e4(&localPos.x, &localPos.y);
 
     if ((localPos.x == -1) || (localPos.y == -1)) {
-        this->mouseValid = 0;
+        mouseValid = 0;
     }
     else {
-        iVar1 = this->bounds.left;
-        if ((this->bounds.left <= localPos.x) && (iVar1 = this->bounds.right, localPos.x <= this->bounds.right)) {
+        iVar1 = bounds.left;
+        if ((bounds.left <= localPos.x) && (iVar1 = bounds.right, localPos.x <= bounds.right)) {
             iVar1 = localPos.x;
         }
         localPos.x = iVar1;
         state->x = localPos.x;
 
-        iVar1 = this->bounds.top;
-        if ((this->bounds.top <= localPos.y) && (iVar1 = this->bounds.bottom, localPos.y <= this->bounds.bottom)) {
+        iVar1 = bounds.top;
+        if ((bounds.top <= localPos.y) && (iVar1 = bounds.bottom, localPos.y <= bounds.bottom)) {
             iVar1 = localPos.y;
         }
         localPos.y = iVar1;
         state->y = localPos.y;
 
-        this->mouseValid = 1;
+        mouseValid = 1;
     }
 
     state->buttons = 0;
@@ -150,21 +150,21 @@ int InputManager::PollJoystick(InputState* state) {
     state->prevButtons = state->buttons;
     joyGetPos(0, &joyInfo);
 
-    iVar1 = FUN_00421ce0(joyInfo.wXpos, this->joyCaps.wXmin, this->joyCaps.wXmax, this->bounds.right);
+    iVar1 = FUN_00421ce0(joyInfo.wXpos, joyCaps.wXmin, joyCaps.wXmax, bounds.right);
     state->x = iVar1;
 
-    iVar1 = FUN_00421ce0(joyInfo.wYpos, this->joyCaps.wYmin, this->joyCaps.wYmax, this->bounds.bottom);
+    iVar1 = FUN_00421ce0(joyInfo.wYpos, joyCaps.wYmin, joyCaps.wYmax, bounds.bottom);
     state->y = iVar1;
 
     state->buttons = joyInfo.wButtons;
 
-    iVar1 = this->bounds.left;
-    if ((state->x < iVar1) || (iVar1 = this->bounds.right, iVar1 < state->x)) {
+    iVar1 = bounds.left;
+    if ((state->x < iVar1) || (iVar1 = bounds.right, iVar1 < state->x)) {
         state->x = iVar1;
     }
 
-    iVar1 = this->bounds.top;
-    if ((state->y < iVar1) || (iVar1 = this->bounds.bottom, iVar1 < state->y)) {
+    iVar1 = bounds.top;
+    if ((state->y < iVar1) || (iVar1 = bounds.bottom, iVar1 < state->y)) {
         state->y = iVar1;
     }
 
@@ -182,13 +182,13 @@ int InputManager::PollEvents(int param) {
         return 1;
     }
 
-    this->PollMouse(this->pMouseLocal);
-    this->PollJoystick(this->pJoystick);
+    PollMouse(pMouseLocal);
+    PollJoystick(pJoystick);
 
-    this->pMouse->ext2 = 0;
-    this->pMouse->ext1 = this->pMouse->ext2;
+    pMouse->ext2 = 0;
+    pMouse->ext1 = pMouse->ext2;
 
-    pState = this->pMouse;
+    pState = pMouse;
     uVar2 = 0;
     if (pState != 0) {
         uVar2 = pState->buttons & 1;
@@ -204,16 +204,16 @@ int InputManager::PollEvents(int param) {
         if ((uVar2 == 0) && ((pState->prevButtons & 1) != 0)) {
             uVar2 = g_leftClickTimer.Update();
             if (uVar2 < (unsigned int)DAT_004373b8) {
-                this->pMouse->ext1 = 3;
+                pMouse->ext1 = 3;
             }
             else {
-                this->pMouse->ext1 = 2;
+                pMouse->ext1 = 2;
             }
             g_leftClickTimer.Reset();
         }
     }
 
-    pState = this->pMouse;
+    pState = pMouse;
     uVar2 = 0;
     if (pState != 0) {
         uVar2 = pState->buttons & 2;
@@ -229,10 +229,10 @@ int InputManager::PollEvents(int param) {
     if ((uVar2 == 0) && ((pState->prevButtons & 2) != 0)) {
         uVar2 = g_rightClickTimer.Update();
         if (uVar2 < (unsigned int)DAT_004373b8) {
-            this->pMouse->ext2 = 3;
+            pMouse->ext2 = 3;
         }
         else {
-            this->pMouse->ext2 = 2;
+            pMouse->ext2 = 2;
         }
         g_rightClickTimer.Reset();
     }

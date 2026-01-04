@@ -6,30 +6,30 @@
 
 GameState::GameState()
 {
-    this->stateValues = 0;
-    this->stateLabels = 0;
-    this->maxStates = 0;
-    this->reserved = 0;
+    stateValues = 0;
+    stateLabels = 0;
+    maxStates = 0;
+    reserved = 0;
 }
 
 /* Function start: 0x420480 */
 GameState::~GameState()
 {
-    if (this->stateValues != 0) {
-        FreeMemory(this->stateValues);
-        this->stateValues = 0;
+    if (stateValues != 0) {
+        FreeMemory(stateValues);
+        stateValues = 0;
     }
 
-    for (int i = 0; i < this->maxStates; i++) {
-        if (this->stateLabels[i] != 0) {
-            FreeMemory((void*)this->stateLabels[i]);
-            this->stateLabels[i] = 0;
+    for (int i = 0; i < maxStates; i++) {
+        if (stateLabels[i] != 0) {
+            FreeMemory((void*)stateLabels[i]);
+            stateLabels[i] = 0;
         }
     }
 
-    if (this->stateLabels != 0) {
-        FreeMemory(this->stateLabels);
-        this->stateLabels = 0;
+    if (stateLabels != 0) {
+        FreeMemory(stateLabels);
+        stateLabels = 0;
     }
 }
 
@@ -47,12 +47,12 @@ void GameState::Serialize(int mode)
         if (file == NULL) {
             ShowError("GameState::Serialize unable to open %s ", filename);
         }
-        header[0] = this->maxStates;
+        header[0] = maxStates;
         header[1] = 0x110;
         header[2] = 1;
-        header[3] = this->maxStates * 4 + 0x110;
+        header[3] = maxStates * 4 + 0x110;
         fwrite(header, 0x110, 1, file);
-        fwrite(this->stateValues, 4, header[0], file);
+        fwrite(stateValues, 4, header[0], file);
     } else {
         if (mode != 2) {
             ShowError("illegal in GameState::Serialize(%d)", mode);
@@ -62,10 +62,10 @@ void GameState::Serialize(int mode)
             ShowError("GameState::Serialize unable to open %s ", filename);
         }
         fread(header, 0x110, 1, file);
-        if (header[0] != this->maxStates || header[2] != 1) {
+        if (header[0] != maxStates || header[2] != 1) {
             ShowError("GameState::Serialize incompatible file");
         }
-        fread(this->stateValues, 0x110, this->maxStates, file);
+        fread(stateValues, 0x110, maxStates, file);
     }
     fclose(file);
 }
@@ -83,11 +83,11 @@ int GameState::LBLParse(char* line)
 
     if (strcmp(keyword, "MAXSTATES") == 0) {
         sscanf(line, "%s %d %s", keyword, &index, labelName);
-        this->SetMaxStates(index);
+        SetMaxStates(index);
     } else if (strcmp(keyword, "LABEL") == 0) {
         sscanf(line, "%s %d %s", keyword, &index, labelName);
-        this->stateLabels[index] = (char*)AllocateMemory(0x20);
-        strcpy(this->stateLabels[index], labelName);
+        stateLabels[index] = (char*)AllocateMemory(0x20);
+        strcpy(stateLabels[index], labelName);
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
     } else {
@@ -100,8 +100,8 @@ int GameState::LBLParse(char* line)
 /* Function start: 0x420940 */
 int GameState::FindState(char* stateName)
 {
-    for (int i = 0; i < this->maxStates; i++) {
-        char* label = this->stateLabels[i];
+    for (int i = 0; i < maxStates; i++) {
+        char* label = stateLabels[i];
         if (label) {
             if (strstr(label, stateName)) {
                 if (strlen(label) == strlen(stateName)) {
@@ -116,17 +116,17 @@ int GameState::FindState(char* stateName)
 /* Function start: 0x420900 */
 char *GameState::GetState(int stateIndex)
 {
-    if ((stateIndex > 0) && (this->maxStates <= stateIndex)) {
+    if ((stateIndex > 0) && (maxStates <= stateIndex)) {
         ShowError("GameState Error #%d", 1);
     }
-    return this->stateLabels[stateIndex];
+    return stateLabels[stateIndex];
 }
 
 /* Function start: 0x4209C0 */
 void GameState::ClearStates()
 {
-    int* ptr = this->stateValues;
-    for (unsigned int i = this->maxStates; i != 0; i--) {
+    int* ptr = stateValues;
+    for (unsigned int i = maxStates; i != 0; i--) {
         *ptr = 0;
         ptr++;
     }
@@ -135,18 +135,18 @@ void GameState::ClearStates()
 /* Function start: 0x4206e0 */
 void GameState::SetMaxStates(int count)
 {
-    if (this->stateValues != 0) {
+    if (stateValues != 0) {
         ShowError("GameState::SetMaxStates1");
     }
-    if (this->stateLabels != 0) {
+    if (stateLabels != 0) {
         ShowError("GameState::SetMaxStates2");
     }
-    this->maxStates = count;
-    this->stateValues = (int*)AllocateMemory(count * 4);
-    this->ClearStates();
-    this->stateLabels = (char**)AllocateMemory(this->maxStates * 4);
-    char** arr = this->stateLabels;
-    for (int i = 0; i < this->maxStates; i++) {
+    maxStates = count;
+    stateValues = (int*)AllocateMemory(count * 4);
+    ClearStates();
+    stateLabels = (char**)AllocateMemory(maxStates * 4);
+    char** arr = stateLabels;
+    for (int i = 0; i < maxStates; i++) {
         arr[i] = 0;
     }
 }

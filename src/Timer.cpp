@@ -8,11 +8,11 @@
 /* Function start: 0x418EB0 */
 Timer::Timer()
 {
-    this->m_pauseDuration = 0;
-    this->m_unknown4 = 0;
-    this->m_startTime = 0;
-    this->m_currentTime = 0;
-    this->m_elapsedTime = 0;
+    m_pauseDuration = 0;
+    m_unknown4 = 0;
+    m_startTime = 0;
+    m_currentTime = 0;
+    m_elapsedTime = 0;
     g_timer_count++;
     Reset();
 }

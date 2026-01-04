@@ -21,23 +21,23 @@ extern "C" {
 /* Function start: 0x40A5A0 */
 void SC_OnScreenMessage::Copy(SC_OnScreenMessage* other)
 {
-    this->CopyCommandData(other);
+    CopyCommandData(other);
     if (other) {
-        this->sourceAddress = other->sourceAddress;
+        sourceAddress = other->sourceAddress;
     }
 }
 
 /* Function start: 0x40A2E0 */
 SC_OnScreenMessage::SC_OnScreenMessage()
 {
-    memset(&this->targetAddress, 0, 24);  // Zero 6 DWORDs (0x18 bytes)
-    this->targetAddress = 0xf;
+    memset(&targetAddress, 0, 24);  // Zero 6 DWORDs (0x18 bytes)
+    targetAddress = 0xf;
 
     timer.Reset();
 
-    this->messageQueue.m_head = AllocateMemory(16);
-    if (this->messageQueue.m_head) {
-        int* node = (int*)this->messageQueue.m_head;
+    messageQueue.m_head = AllocateMemory(16);
+    if (messageQueue.m_head) {
+        int* node = (int*)messageQueue.m_head;
         node[3] = 1;      // flags at 0xc = 1
         node[0] = 0;      // prev at 0x0 = 0
         node[1] = 0;      // next at 0x4 = 0
@@ -48,7 +48,7 @@ SC_OnScreenMessage::SC_OnScreenMessage()
 /* Function start: 0x40A3F0 */
 void SC_OnScreenMessage::Destroy(int free)
 {
-    this->Free();
+    Free();
     if (free & 1) {
         FreeMemory(this);
     }
@@ -57,7 +57,7 @@ void SC_OnScreenMessage::Destroy(int free)
 /* Function start: 0x40A410 */
 void SC_OnScreenMessage::Free()
 {
-    Queue* queue = &this->messageQueue;
+    Queue* queue = &messageQueue;
 
     try {
         queue->m_current = queue->m_head;
@@ -115,7 +115,7 @@ void SC_OnScreenMessage::Update(int param_1, int param_2)
     void* local_18;
 
     try {
-        piVar2 = &this->messageQueue;
+        piVar2 = &messageQueue;
         piVar2->m_current = piVar2->m_head;
         local_1c = 0;
         iVar1 = (int)piVar2->m_head;
@@ -127,7 +127,7 @@ void SC_OnScreenMessage::Update(int param_1, int param_2)
             }
             bVar5 = OnScreenMessage_Update(this_00, local_1c);
             if (bVar5) {
-                piVar2 = &this->messageQueue;
+                piVar2 = &messageQueue;
                 iVar1 = (int)piVar2->m_current;
                 if (iVar1 == 0) {
                     local_18 = (void*)0x0;

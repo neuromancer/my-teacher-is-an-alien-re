@@ -91,7 +91,7 @@ int Sample::Play(int volume, int loop_count) {
 /* Function start: 0x41E470 */
 void Sample::Unload() {
   if (m_data != 0) {
-    this->~Sample();
+    //~Sample();
     AIL_mem_free_lock(m_data);
     m_data = 0;
   }
