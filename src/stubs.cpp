@@ -9,7 +9,7 @@
 
 // Globals
 // Globals
-class SoundManager* g_SoundManager = NULL;
+class ZBufferManager* g_SoundManager = NULL;
 
 
 #include <smack.h>

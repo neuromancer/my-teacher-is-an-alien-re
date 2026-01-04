@@ -3,6 +3,8 @@
 
 #include "Timer.h"
 
+#include "Queue.h"
+
 // Queue node structure - 12 bytes
 struct ZBQueueNode {
     void* next;     // 0x00
@@ -35,7 +37,7 @@ struct SoundCommand;
 // Note: This was previously split into SoundManager and ZBufferManager,
 // but assembly analysis shows they are the same class.
 // The constructor logs "declaring ZBuffer", confirming this is the original name.
-class ZBufferManager {
+class ZBufferManager : public Queue {
 public:
     ZBufferManager();             // 0x41B760
     ~ZBufferManager();
@@ -49,20 +51,14 @@ public:
     void QueueCommand(SoundCommand* cmd); // 0x41C2C0
     
     // Layout: 0xAC bytes total
-    unsigned int data[0x21];     // 0x00 - 0x80 (33 dwords)
+    // Queue fields at 0x00 - 0x10 (inherited)
+    unsigned int m_pad10[0x1D];  // 0x10 - 0x84 (29 dwords = 116 bytes)
     Timer timer;                 // 0x84 - Timer (20 bytes, 5 dwords) - also known as m_timer
     int m_state;                 // 0x98 - also known as m_mode
     ZBQueue* m_queue9c;          // 0x9C - also known as m_list1
     ZBQueue* m_queueA0;          // 0xA0 - also known as m_commandQueue
     ZBQueue* m_queueA4;          // 0xA4 - also known as m_list3
     void* m_fieldA8;             // 0xA8
-    
-    // Compatibility aliases for code that uses old SoundManager member names
-    // These are not actual members, they reference the same offsets above:
-    // m_mode        -> m_state     (offset 0x98)
-    // m_commandQueue -> m_queueA0  (offset 0xA0)
-    // m_list1       -> m_queue9c   (offset 0x9C)
-    // m_list3       -> m_queueA4   (offset 0xA4)
 };
 
 // Global pointer - this is the single global instance

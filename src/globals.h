@@ -2,7 +2,7 @@
 #define GLOBAL_DEFS_H
 #include <windows.h>
 #include "Timer.h"
-#include "SoundManager.h"
+#include "ZBufferManager.h"
 
 class VBuffer;
 class GameState;

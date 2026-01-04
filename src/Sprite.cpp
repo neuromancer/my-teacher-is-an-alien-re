@@ -11,7 +11,7 @@
 #include "Queue.h"
 #include "Memory.h"
 #include "Array.h"
-#include "SoundManager.h"
+#include "ZBufferManager.h"
 #include "string.h"
 #include "Cleanup.h"
 
