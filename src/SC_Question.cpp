@@ -6,16 +6,10 @@
 #include "TimedEvent.h"
 #include "GameState.h"
 #include "globals.h"
+#include "string.h"
+#include "ZBufferManager.h"
 #include <stdio.h>
 #include <string.h>
-
-extern "C" {
-    void ExtractQuotedString(char* src, char* dst, int maxlen);
-    void ShowError(const char*, ...);
-    void FUN_0041c000(void*, char*, int, int, int);  // SoundManager::ShowSubtitle
-    void FUN_004086c0(void* queue, void* msg);  // Queue insert function
-    void WriteToMessageLog(const char* msg, ...);
-}
 
 
 
@@ -96,7 +90,7 @@ void SC_Question::Update(int x, int y)
 {
     switch (this->state) {
     case 0:
-        FUN_0041c000(DAT_0043698c, this->label, x + 10, y + 23, 10000);
+        DAT_0043698c->ShowSubtitle(this->label, x + 10, y + 23, 10000, 8);
         break;
     case 1:
         if (this->mouseControl != 0) {
@@ -442,7 +436,7 @@ int SC_Question::LBLParse(char* param_1)
             }
         }
         else {
-            FUN_004086c0(queue, msg);
+            queue->Insert(msg);
         }
     }
     else if (strcmp(local_34, "END") == 0) {

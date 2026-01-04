@@ -9,7 +9,7 @@ int OnScreenMessage::Update(int index)
 
     if (this->text[0] != '\0') {
         int y = (index * 4 + 0x14) * 5;
-        ((SoundManager*)DAT_0043698c)->ShowSubtitle(this->text, 0x32, y, 10000, 8);
+        DAT_0043698c->ShowSubtitle(this->text, 0x32, y, 10000, 8);
     }
 
     dur = this->duration;

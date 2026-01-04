@@ -71,11 +71,10 @@ struct CommandType2 : public SoundCommand {
     }
 };
 
-/* Function start: 0x41BE20 */
 void SoundManager::PlayAnimationSound(void* data, int priority, int x, int y, int mode, int scale1, int scale2)
 {
-    if (m_mode != 0) {
-        if (m_mode != 1) {
+    if (m_state != 0) {
+        if (m_state != 1) {
             // Queue logic
             CommandType1* cmd = new CommandType1();
             if (!cmd) return;
@@ -116,32 +115,8 @@ void SoundManager::PlayAnimationSound(void* data, int priority, int x, int y, in
     }
 }
 
-/* Function start: 0x41C000 */
-void SoundManager::ShowSubtitle(char* text, int x, int y, int duration, int flag)
-{
-    if (m_mode == 0) return;
+// ShowSubtitle is now inherited from ZBufferManager (same address 0x41C000)
 
-    if (m_mode == 1) {
-        FUN_004229ea(x, y);
-        FUN_00421700(g_TextManager_00436990, text, -1);
-        return;
-    }
-
-    CommandType2* cmd = new CommandType2();
-    if (!cmd) return;
-
-    // Copy text
-    int len = strlen(text);
-    char* buf = (char*)AllocateMemory(len + 1);
-    if (buf) strcpy(buf, text);
-    cmd->text = buf;
-    
-    cmd->duration = duration;
-    cmd->x = x;
-    cmd->y = y;
-
-    QueueCommand(cmd);
-}
 
 /* Function start: 0x41C2C0 */
 void SoundManager::QueueCommand(SoundCommand* cmd)
@@ -154,7 +129,7 @@ void SoundManager::QueueCommand(SoundCommand* cmd)
     rect.right = w;
     rect.bottom = h;
     
-    int mode = m_mode;
+    int mode = m_state;
     if (mode == 1) {
         cmd->Execute(&rect);
         delete cmd;
@@ -162,33 +137,54 @@ void SoundManager::QueueCommand(SoundCommand* cmd)
     }
     
     if (mode == 2) {
-        Queue* queue = m_commandQueue;
+        ZBQueue* queue = m_queueA0;
         if (!cmd) {
             ShowError("queue fault 0101");
         }
-        queue->m_current = queue->m_head;
+        queue->current = queue->head;
         
-        int qtype = queue->m_field_0xc;
+        int qtype = queue->type;
         if (qtype == 1 || qtype == 2) {
-            if (queue->m_head == 0) {
-                queue->Insert(cmd);
+            if (queue->head == 0) {
+                // Simple insert using ZBQueue
+                ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                if (newNode) {
+                    newNode->prev = 0;
+                    newNode->next = 0;
+                    newNode->data = cmd;
+                    queue->head = newNode;
+                    queue->tail = newNode;
+                    queue->current = newNode;
+                }
                 return;
             }
             
-            while (queue->m_current) {
-                QueueNode* node = (QueueNode*)queue->m_current;
+            while (queue->current) {
+                ZBQueueNode* node = (ZBQueueNode*)queue->current;
                 SoundCommand* nodeCmd = (SoundCommand*)node->data;
                 
                 if ((unsigned int)((CommandType1*)nodeCmd)->parameter1 < (unsigned int)((CommandType1*)cmd)->parameter1) {
-                    queue->Insert(cmd);
+                    // Insert before current
+                    ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                    if (newNode) {
+                        newNode->data = cmd;
+                        newNode->next = node;
+                        newNode->prev = node->prev;
+                        if (node->prev == 0) {
+                            queue->head = newNode;
+                        } else {
+                            ((ZBQueueNode*)node->prev)->next = newNode;
+                        }
+                        node->prev = newNode;
+                    }
                     return;
                 }
                 
-                if (queue->m_tail == queue->m_current) {
+                if (queue->tail == queue->current) {
                     if (!cmd) {
                         ShowError("queue fault 0112");
                     }
-                    QueueNode* newNode = (QueueNode*)AllocateMemory(12);
+                    ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
                     if (newNode) {
                         newNode->prev = 0;
                         newNode->next = 0;
@@ -197,64 +193,97 @@ void SoundManager::QueueCommand(SoundCommand* cmd)
                         newNode = 0;
                     }
                     
-                    if (queue->m_current == 0) {
-                        queue->m_current = queue->m_tail;
+                    if (queue->current == 0) {
+                        queue->current = queue->tail;
                     }
-                    if (queue->m_head == 0) {
-                        queue->m_head = newNode;
-                        queue->m_tail = newNode;
-                        queue->m_current = newNode;
+                    if (queue->head == 0) {
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
                     } else {
-                        QueueNode* tail = (QueueNode*)queue->m_tail;
+                        ZBQueueNode* tail = (ZBQueueNode*)queue->tail;
                         if (tail == 0 || tail->next != 0) {
                             ShowError("queue fault 0113");
                         }
                         newNode->next = 0;
                         newNode->prev = tail;
                         tail->next = newNode;
-                        queue->m_tail = newNode;
+                        queue->tail = newNode;
                     }
                     return;
                 }
                 
                 if (node != 0) {
-                    queue->m_current = node->next;
+                    queue->current = node->next;
                 }
             }
             return;
         }
-        queue->Insert(cmd);
+        // Simple insert
+        ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+        if (newNode) {
+            newNode->prev = 0;
+            newNode->next = 0;
+            newNode->data = cmd;
+            if (queue->head == 0) {
+                queue->head = newNode;
+                queue->tail = newNode;
+            } else {
+                ((ZBQueueNode*)queue->tail)->next = newNode;
+                newNode->prev = queue->tail;
+                queue->tail = newNode;
+            }
+        }
         return;
     }
     
     if (mode == 3) {
-        Queue* queue = m_commandQueue;
+        ZBQueue* queue = m_queueA0;
         if (!cmd) {
             ShowError("queue fault 0101");
         }
-        queue->m_current = queue->m_head;
+        queue->current = queue->head;
         
-        int qtype = queue->m_field_0xc;
+        int qtype = queue->type;
         if (qtype == 1 || qtype == 2) {
-            if (queue->m_head == 0) {
-                queue->Insert(cmd);
+            if (queue->head == 0) {
+                ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                if (newNode) {
+                    newNode->prev = 0;
+                    newNode->next = 0;
+                    newNode->data = cmd;
+                    queue->head = newNode;
+                    queue->tail = newNode;
+                    queue->current = newNode;
+                }
                 return;
             }
             
-            while (queue->m_current) {
-                QueueNode* node = (QueueNode*)queue->m_current;
+            while (queue->current) {
+                ZBQueueNode* node = (ZBQueueNode*)queue->current;
                 SoundCommand* nodeCmd = (SoundCommand*)node->data;
                 
                 if ((unsigned int)((CommandType1*)nodeCmd)->parameter1 < (unsigned int)((CommandType1*)cmd)->parameter1) {
-                    queue->Insert(cmd);
+                    ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                    if (newNode) {
+                        newNode->data = cmd;
+                        newNode->next = node;
+                        newNode->prev = node->prev;
+                        if (node->prev == 0) {
+                            queue->head = newNode;
+                        } else {
+                            ((ZBQueueNode*)node->prev)->next = newNode;
+                        }
+                        node->prev = newNode;
+                    }
                     return;
                 }
                 
-                if (queue->m_tail == queue->m_current) {
+                if (queue->tail == queue->current) {
                     if (!cmd) {
                         ShowError("queue fault 0112");
                     }
-                    QueueNode* newNode = (QueueNode*)AllocateMemory(12);
+                    ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
                     if (newNode) {
                         newNode->prev = 0;
                         newNode->next = 0;
@@ -263,33 +292,46 @@ void SoundManager::QueueCommand(SoundCommand* cmd)
                         newNode = 0;
                     }
                     
-                    if (queue->m_current == 0) {
-                        queue->m_current = queue->m_tail;
+                    if (queue->current == 0) {
+                        queue->current = queue->tail;
                     }
-                    if (queue->m_head == 0) {
-                        queue->m_head = newNode;
-                        queue->m_tail = newNode;
-                        queue->m_current = newNode;
+                    if (queue->head == 0) {
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
                     } else {
-                        QueueNode* tail = (QueueNode*)queue->m_tail;
+                        ZBQueueNode* tail = (ZBQueueNode*)queue->tail;
                         if (tail == 0 || tail->next != 0) {
                             ShowError("queue fault 0113");
                         }
                         newNode->next = 0;
                         newNode->prev = tail;
                         tail->next = newNode;
-                        queue->m_tail = newNode;
+                        queue->tail = newNode;
                     }
                     return;
                 }
                 
                 if (node != 0) {
-                    queue->m_current = node->next;
+                    queue->current = node->next;
                 }
             }
             return;
         }
-        queue->Insert(cmd);
+        ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+        if (newNode) {
+            newNode->prev = 0;
+            newNode->next = 0;
+            newNode->data = cmd;
+            if (queue->head == 0) {
+                queue->head = newNode;
+                queue->tail = newNode;
+            } else {
+                ((ZBQueueNode*)queue->tail)->next = newNode;
+                newNode->prev = queue->tail;
+                queue->tail = newNode;
+            }
+        }
         return;
     }
 }

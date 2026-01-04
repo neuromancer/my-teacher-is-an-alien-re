@@ -146,6 +146,13 @@ done:
     return event;
 }
 
+// Stub for Pop - to be properly implemented later
+void* TimedEventPool::Pop(void* buffer)
+{
+    // TODO: Implement properly
+    return 0;
+}
+
 /* Function start: 0x4024B0 */
 void Queue::Insert(void* data)
 {

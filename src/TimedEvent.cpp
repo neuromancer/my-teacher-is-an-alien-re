@@ -113,7 +113,7 @@ int TimedEvent::Update()
         return 0;
     } else if (m_type == 2) {
         sprintf(g_Buffer_00436960, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
-        g_SoundManager->ShowSubtitle(g_Buffer_00436960, 0x208, 0x1c2, 10000, 8);
+        DAT_0043698c->ShowSubtitle(g_Buffer_00436960, 0x208, 0x1c2, 10000, 8);
 
         if (remaining_time > 0) {
             return 0;

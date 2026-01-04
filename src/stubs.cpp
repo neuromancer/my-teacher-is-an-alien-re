@@ -119,7 +119,6 @@ void FUN_00422a2f() {}
 void FUN_004110d0() {}
 void __cdecl FUN_00424940(void*) {}  // FreeMemory wrapper
 void FUN_0041e7d0() {}
-void FUN_0041c000(void*, char*, int, int, int) {} // SoundManager::ShowSubtitle stub
 
 // Helper functions for CleanupLoop
 void* __fastcall FUN_00401710(void* queue) { return 0; }  // Queue::Pop
@@ -243,7 +242,6 @@ void* FUN_0041cd50(void* a, char* b) { return a; }
 void FUN_00409160(void* a, void* b) {}
 
 void FUN_00419080(char* a, char* b, int c) { if (b) *b = 0; }
-void FUN_004086c0(void* a, int b) {}
 
 void FUN_004191d0(char* a) {}
 void* FUN_0041ea50(void* a) { return a; }

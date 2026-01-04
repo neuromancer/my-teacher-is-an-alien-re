@@ -8,7 +8,70 @@
 #include "GlyphRect.h"
 #include "RenderEntry.h"
 #include "string.h"
+#include "globals.h"
 #include <string.h>
+#include <stdlib.h>
+
+extern "C" {
+    void FUN_0041b0a0(int, int, void*, int, int);
+    int _rand();
+}
+
+void __stdcall FUN_0041b110(int, int, void*, int, int);
+
+// Base SoundCommand
+struct SoundCommand {
+    virtual void Execute(GlyphRect* rect) = 0;
+    
+    void* operator new(size_t size) {
+        return AllocateMemory(size);
+    }
+    void operator delete(void* ptr) {
+        FreeFromGlobalHeap(ptr);
+    }
+};
+
+struct CommandType1 : public SoundCommand {
+    unsigned int parameter1; // Priority
+    void* data;
+    int x;
+    int y;
+    int mode;
+    int scale_low;
+    int scale_high;
+
+    CommandType1() : parameter1(0), data(0), x(0), y(0), mode(0), scale_low(0), scale_high(0) {}
+
+    virtual void Execute(GlyphRect* rect) {
+        switch(mode) {
+            case 0:
+                 g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
+                 break;
+            case 1:
+                 g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
+                 break;
+
+            case 2:
+                 //FUN_0041b0a0(x, y, data, scale_low, scale_high);
+                 break;
+            case 3:
+                 g_WorkBuffer_00436974->FUN_0041b110(x, y, data, scale_low, scale_high);
+                 break;
+        }
+    }
+};
+
+struct CommandType2 : public SoundCommand {
+    int duration;
+    char* text; 
+    int x;
+    int y;
+
+    virtual void Execute(GlyphRect* rect) {
+        FUN_004229ea(x, y);
+        FUN_00421700(g_TextManager_00436990, text, -1);
+    }
+};
 
 // Stub - checks if palette has changed from the stored one
 // Returns 0 if palette changed, non-zero if unchanged
@@ -163,10 +226,33 @@ do_blit:
     } while (*piVar1 != 0);
 }
 
+extern "C" {
+    void FUN_004229ea(int, int);
+    void FUN_00421700(void*, char*, int);
+}
+
+/* Function start: 0x41C000 */
+void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int flag)
+{
+    if (m_state == 0) return;
+
+    if (m_state == 1) {
+        FUN_004229ea(x, y);
+        FUN_00421700(g_TextManager_00436990, text, -1);
+        return;
+    }
+
+    // Mode 2 or 3: queue the subtitle command
+    // For now, implement basic version
+    FUN_004229ea(x, y);
+    FUN_00421700(g_TextManager_00436990, text, -1);
+}
+
 ZBufferManager::~ZBufferManager()
 {
     Cleanup();
 }
+
 
 /* Function start: 0x41B760 */
 ZBufferManager::ZBufferManager() {
