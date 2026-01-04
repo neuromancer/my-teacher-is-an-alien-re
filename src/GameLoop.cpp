@@ -34,8 +34,9 @@ extern "C" {
 
 // Thiscall functions - declared outside extern "C"
 void FUN_00411080(void* obj, int flag);  // Object destructor with cleanup
-int FUN_00418540(GameLoop* self, int command);  // FindHandlerInEventList
-int* FUN_00418510(GameLoop* self, int command); // GetOrCreateHandler
+
+int FUN_00418460(GameLoop* self, int command); // RemoveHandler
+int* CreateHandler(int command); // 0x40CDD0 - Handler factory
 void* FUN_004188a0(void* node, int flag);  // Node destructor
 int* FUN_004189d0(void* node, void* data);  // Node::Init
 
@@ -542,10 +543,6 @@ extern "C" {
     void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
 }
 
-// Forward declarations for message handling
-extern "C" int GameLoop_ProcessControlMessage(GameLoop* self, SC_Message* msg);
-extern "C" void* GameLoop_GetHandlerForCommand(GameLoop* self, int command);
-
 // extern void* DAT_004369a4;  // GameState for string lookup (replaced with g_GameState2_004369a4 from globals.h)
 extern char* g_Unknown_00436994; // String buffer for game state strings
 
@@ -571,7 +568,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
     }
     else if (msg->command == 3) {
         // Control message
-        result = GameLoop_ProcessControlMessage(this, msg);
+        result = ProcessControlMessage(msg);
     }
     else {
         // Route to handler at field_0x18
@@ -612,7 +609,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
     
     if (result == 0) {
         // Message not handled - look up by command and try default handler
-        void* defaultHandler = GameLoop_GetHandlerForCommand(this, msg->command);
+        int* defaultHandler = GetOrCreateHandler(msg->targetAddress);
         int handled = (*(int (**)(SC_Message*))(*(int*)defaultHandler + 0x20))(msg);
         
         if (handled == 0) {
@@ -807,10 +804,10 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     }
     
     // Try to find existing handler for this command
-    int found = FUN_00418540(this, *(int*)((char*)msg + 0x88));
+    int found = FindHandlerInEventList(*(int*)((char*)msg + 0x88));
     if (found == 0) {
         // Not found - create/insert new handler
-        piVar5 = FUN_00418510(this, *(int*)((char*)msg + 0x88));
+        piVar5 = GetOrCreateHandler(*(int*)((char*)msg + 0x88));
         field_0x18 = (int)piVar5;
     } else {
         // Found - pop handler from eventList at field_0x14
@@ -910,17 +907,26 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     }
 }
 
-extern "C" {
-
-
-    int GameLoop_ProcessControlMessage(GameLoop* self, SC_Message* msg) {
-        ShowError("STUB: GameLoop_ProcessControlMessage called");
-        return 0; // Not handled? Or handled?
+/* Function start: 0x417E20 */
+int GameLoop::ProcessControlMessage(SC_Message* msg) {
+    if (msg->targetAddress != 3) {
+        return 0;
     }
-
-    void* GameLoop_GetHandlerForCommand(GameLoop* self, int command) {
-        // ShowError("STUB: GameLoop_GetHandlerForCommand called cmd=%d", command);
-        return FUN_00418510(self, command);
+    switch(msg->priority) {
+    case 6:
+        field_0x00 = 1;
+        return 1;
+    case 0x12:
+        field_0x08 = msg->sourceAddress;
+        return 1;
+    case 0x13:
+        GetOrCreateHandler(msg->sourceAddress);
+        return 1;
+    case 0x14:
+        FUN_00418460(this, msg->sourceAddress);
+        return 1;
+    default:
+        return 0;
     }
 }
 
@@ -932,10 +938,120 @@ void FUN_0041aa10(int param_1) {
     // Stub for recursive cleanup
 }
 
-int* FUN_0040cdd0(int command) {
-    // Factory stub
-    // This should create a handler based on the command.
-    return 0; 
+// Handler constructor forward declarations (all __thiscall, returns this)
+extern "C" {
+    int* __cdecl FUN_00403340(void* mem);   // Handler1 constructor (command 1)
+    int* __cdecl FUN_0040f710(void* mem);   // Handler2 constructor (command 2)
+    int* __cdecl FUN_0040e220(void* mem);   // Handler4 constructor (command 4)
+    int* __cdecl FUN_0040fb80(void* mem);   // Handler5 constructor (command 5)
+    int* __cdecl FUN_004044c0(void* mem);   // Handler6 constructor (command 6)
+    int* __cdecl FUN_00406120(void* mem);   // Handler8 constructor (command 8)
+    int* __cdecl FUN_00406fc0(void* mem);   // Handler9 constructor (command 9)
+    int* __cdecl FUN_00404ca0(void* mem);   // Handler10 constructor (command 10)
+    int* __cdecl FUN_0040acc0(void* mem);   // Handler11 constructor (command 11)
+    int* __cdecl FUN_00401000(void* mem);   // Handler12 constructor (command 12)
+    int* __cdecl FUN_00401b60(void* mem);   // Handler13 constructor (command 13)
+    int* __cdecl FUN_0040b7e0(void* mem);   // Handler14 constructor (command 14)
+    int* __cdecl FUN_0040a2e0(void* mem);   // Handler15 constructor (command 15)
+    int* __cdecl FUN_00410650(void* mem);   // Handler16 constructor (command 16)
+}
+
+/* Function start: 0x40CDD0 */
+int* CreateHandler(int command) {
+    void* mem;
+    int* handler = 0;
+    
+    switch(command) {
+    case 1:
+        mem = (void*)AllocateMemory(0xa8);
+        if (mem != 0) {
+            handler = FUN_00403340(mem);
+        }
+        break;
+    case 2:
+        mem = (void*)AllocateMemory(0xb0);
+        if (mem != 0) {
+            handler = FUN_0040f710(mem);
+        }
+        break;
+    case 4:
+        mem = (void*)AllocateMemory(0x6f0);
+        if (mem != 0) {
+            handler = FUN_0040e220(mem);
+        }
+        break;
+    case 5:
+        mem = (void*)AllocateMemory(0xf0);
+        if (mem != 0) {
+            handler = FUN_0040fb80(mem);
+        }
+        break;
+    case 6:
+        mem = (void*)AllocateMemory(0x640);
+        if (mem != 0) {
+            handler = FUN_004044c0(mem);
+        }
+        break;
+    case 8:
+        mem = (void*)AllocateMemory(0xa8);
+        if (mem != 0) {
+            handler = FUN_00406120(mem);
+        }
+        break;
+    case 9:
+        mem = (void*)AllocateMemory(0x650);
+        if (mem != 0) {
+            handler = FUN_00406fc0(mem);
+        }
+        break;
+    case 10:
+        mem = (void*)AllocateMemory(0x6a8);
+        if (mem != 0) {
+            handler = FUN_00404ca0(mem);
+        }
+        break;
+    case 11:
+        mem = (void*)AllocateMemory(0x648);
+        if (mem != 0) {
+            handler = FUN_0040acc0(mem);
+        }
+        break;
+    case 12:
+        mem = (void*)AllocateMemory(0xb8);
+        if (mem != 0) {
+            handler = FUN_00401000(mem);
+        }
+        break;
+    case 13:
+        mem = (void*)AllocateMemory(0xd0);
+        if (mem != 0) {
+            handler = FUN_00401b60(mem);
+        }
+        break;
+    case 14:
+        mem = (void*)AllocateMemory(0xb8);
+        if (mem != 0) {
+            handler = FUN_0040b7e0(mem);
+        }
+        break;
+    case 15:
+        mem = (void*)AllocateMemory(0xb8);
+        if (mem != 0) {
+            handler = FUN_0040a2e0(mem);
+        }
+        break;
+    case 16:
+        mem = (void*)AllocateMemory(0xf8);
+        if (mem != 0) {
+            handler = FUN_00410650(mem);
+        }
+        break;
+    default:
+        ShowError("\"Unknown modual %d\"", command);
+        handler = 0;
+        break;
+    }
+    return handler;
 }
 
 void* FUN_004188a0(void* node, int flag) {
@@ -989,56 +1105,47 @@ void EventList::InsertNode(void* data) {
     }
 }
 
-int FUN_00418540(GameLoop* self, int command) {
-    if (self->eventList == 0) {
+/* Function start: 0x418540 */
+int GameLoop::FindHandlerInEventList(int command) {
+    EventList* list;
+    EventNode* node;
+    void* data;
+    
+    list = (EventList*)GameLoop::eventList;
+    if (list == 0) {
         return 0;
     }
-    EventList* list = (EventList*)self->eventList;
     list->current = list->head;
-    EventNode* node = list->head;
-    
-    while (1) {
-        if (node == 0) return 0;
-        
-        // iVar2 = *(int *)((int)this + 0x14); -> list
-        // iVar3 = *(int *)(iVar2 + 8); -> current (which is node now)
-        // iVar4 = *(int *)(*(int *)(iVar3 + 8) + 0x88); -> current->data->priority (at 0x88)
-        
-        void* data = node->data;
-        if (data != 0) {
-             // Check command at offset 0x88 (implied by usage in HandleSystemMessage msg->command is not 0x88, but msg structure has command. 
-             // Here we are comparing against 'param_1' which is 'command'.
-             // In HandleSystemMessage: FUN_00418540(this, *(int*)((char*)msg + 0x88)) 
-             // msg+0x88 is likely command? No, msg has 0x88 size?
-             // Let's assume passed param is the command ID.
-             
-             int handlerCmd = *(int*)((char*)data + 0x88); // 0x88 is distinct field
-             if (command == handlerCmd) break;
-        }
-        
-        // if (*(int *)(iVar2 + 4) == iVar3) return 0; -> if list->tail == node return 0
-        if (list->tail == node) return 0;
-        
-        // if (iVar3 != 0) { *(undefined4 *)(iVar2 + 8) = *(undefined4 *)(iVar3 + 4); } -> current = current->prev
-        // Original loop iterates backwards?
-        // Decomp: *(undefined4 *)(iVar2 + 8) = *(undefined4 *)(iVar3 + 4);
-        // iVar3 is current (node). +4 is prev.
-        // So list->current = node->prev.
-        
+    if (list->head == 0) {
+        return 0;
+    }
+    do {
+        list = (EventList*)GameLoop::eventList;
+        node = list->current;
         if (node != 0) {
-             list->current = node->prev;
-             // Update local node variable
-             node = node->prev;
+            data = node->data;
+            if (command == *(int*)((char*)data + 0x88)) {
+                break;
+            }
+        } else {
+            if (command == *(int*)0x88) {
+                break;
+            }
         }
-    }
+        if (list->tail == node) {
+            return 0;
+        }
+        if (node != 0) {
+            list->current = node->prev;
+        }
+        list = (EventList*)GameLoop::eventList;
+    } while (list->head != 0);
     
-    // Found it
-    // iVar2 = *(int *)(*(int *)((int)this + 0x14) + 8); -> list->current
-    // return *(undefined4 *)(iVar2 + 8); -> current->data
-    if (list->current != 0) {
-        return (int)list->current->data;
+    node = ((EventList*)GameLoop::eventList)->current;
+    if (node == 0) {
+        return 0;
     }
-    return 0;
+    return (int)node->data;
 }
 
 /* Function start: 0x418200 */
@@ -1187,10 +1294,11 @@ int GameLoop::AddHandler(void* handler) {
 }
 
 
-int* FUN_00418510(GameLoop* self, int command) {
-    int* handler = FUN_0040cdd0(command);
+/* Function start: 0x418510 */
+int* GameLoop::GetOrCreateHandler(int command) {
+    int* handler = CreateHandler(command);
     if (handler != 0) {
-        self->AddHandler(handler);
+        AddHandler(handler);
     }
     return handler;
 }

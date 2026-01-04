@@ -19,7 +19,10 @@ public:
     void CleanupLoop();  // 0x417450
     void ProcessMessage(SC_Message* msg); // 0x417CB0
     void HandleSystemMessage(SC_Message* msg); // 0x417F40
+    int ProcessControlMessage(SC_Message* msg); // 0x417E20
     int AddHandler(void* handler); // 0x418200
+    int FindHandlerInEventList(int command); // 0x418540
+    int* GetOrCreateHandler(int command); // 0x418510
     
     int field_0x00;
     int field_0x04;

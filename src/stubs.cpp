@@ -9,7 +9,7 @@
 
 // Globals
 // Globals
-class ZBufferManager* g_SoundManager = NULL;
+class ZBufferManager* DAT_0043698c = NULL;
 
 
 #include <smack.h>
