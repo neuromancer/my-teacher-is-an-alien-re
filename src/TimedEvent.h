@@ -28,6 +28,7 @@ public:
     }
     ~TimedEventPool();
     TimedEvent* Create(void* callback, void* data);
+    void* Pop(void* buffer);
 };
 
 class TimedEvent {

@@ -528,7 +528,6 @@ void GameLoop::CleanupLoop() {
 
 // External functions for UpdateGame
 extern "C" {
-    void* FUN_00417c50(void* pool, void* buffer);
     void FUN_00419fd0(SC_Message* msg, int unused);
     void FUN_004191d0(const char* msg);
     void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
@@ -628,14 +627,14 @@ int GameLoop::UpdateGame()
     char local_258[192];  // [EBP - 0x254] buffer for inner iterator result
     char local_198[192];  // [EBP - 0x194] buffer for outer iterator result
     SC_Message local_d8(0, 0, 0, 0, 0, 0, 0, 0, 0, 0); // [EBP - 0xD4]
-    void* local_18;       // [EBP - 0x18] - pointer storage
     int local_14;         // [EBP - 0x10] - counter
+    void* local_18;       // [EBP - 0x18] - pointer storage
 
     local_14 = 0;
     
     // First loop: pop items from DAT_00436988, copy to local_d8, create in DAT_00436984
     while (DAT_00436988->m_count != 0) {
-        pSourceMsg = (SC_Message*)FUN_00417c50(DAT_00436988, local_198);
+        pSourceMsg = (SC_Message*)DAT_00436988->Pop(local_198);
         
         // Copy Parser base class fields
         local_d8.m_subObject = pSourceMsg->m_subObject;
@@ -677,6 +676,9 @@ int GameLoop::UpdateGame()
         local_d8.field_b8 = pSourceMsg->field_b8;
         local_18 = (void*)pSourceMsg->userPtr;
         
+        // Destruct buffer contents after copy (matches original SEH thunk)
+        ((SC_Message*)local_198)->SC_Message::~SC_Message();
+        
         // Create entry in DAT_00436984
         pPool = DAT_00436984;
         pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
@@ -692,13 +694,16 @@ int GameLoop::UpdateGame()
     
     // Second loop: pop items from DAT_00436984
     while (DAT_00436984->m_count != 0) {
-        pSourceMsg = (SC_Message*)FUN_00417c50(DAT_00436984, local_198);
+        pSourceMsg = (SC_Message*)DAT_00436984->Pop(local_198);
         
         this->ProcessMessage(pSourceMsg);
         
+        // Destruct buffer contents after ProcessMessage (matches original SEH thunk 0x417c22)
+        ((SC_Message*)local_198)->SC_Message::~SC_Message();
+        
         // Inner loop: pop items from DAT_00436988 and add to DAT_00436984
         while (DAT_00436988->m_count != 0) {
-            SC_Message* pInnerMsg = (SC_Message*)FUN_00417c50(DAT_00436988, local_258);
+            SC_Message* pInnerMsg = (SC_Message*)DAT_00436988->Pop(local_258);
             pPool = DAT_00436984;
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
             ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)pInnerMsg);
@@ -709,6 +714,9 @@ int GameLoop::UpdateGame()
                 *(TimedEvent**)pPool->list.tail = pNewEvent;
             }
             pPool->list.tail = pNewEvent;
+            
+            // Destruct inner buffer contents (matches original SEH thunk 0x417c17)
+            ((SC_Message*)local_258)->SC_Message::~SC_Message();
         }
         
         local_14++;
