@@ -1,5 +1,6 @@
 #include "GameLoop.h"
 #include "ZBufferManager.h"
+#include "ZBuffer.h"
 #include "Timer.h"
 #include "GameState.h"
 #include "InputManager.h"
@@ -24,13 +25,10 @@ extern "C" void ShowError(const char* format, ...);
 
 // Helper functions for CleanupLoop
 extern "C" {
-    void* __fastcall FUN_00401710(void* queue);  // Queue::Pop (returns data, frees node)
-    void* __fastcall FUN_00401790(void* queue);  // Queue::Pop (identical to above)
     void* __fastcall FUN_00417680(void* queue);  // Queue::GetCurrentData
     void __fastcall FUN_00417660(void* obj, int freeFlag);  // Object destructor/cleanup
     void __fastcall FUN_004189a0(void* node, int freeFlag); // Node cleanup
-    void __fastcall FUN_00417652();               // SEH unwind thunk (empty stub)
-    void __cdecl FUN_00424940(void* ptr);         // FreeMemory wrapper
+    //void __fastcall FUN_00417652();               // SEH unwind thunk (empty stub)
 }
 
 // Doubly linked list node structure for eventList
@@ -121,15 +119,16 @@ void GameLoop::Run() {
     }
 
     pSmackSoundCheck = g_SmackSoundCheck;
+    zero = 0;
     
 loop_start:
     this->ProcessInput();
-    if (this->field_0x00 != 0) {
+    if (this->field_0x00 != zero) {
         goto exit_loop;
     }
     
     this->UpdateGame();
-    if (this->field_0x00 != 0) {
+    if (this->field_0x00 != zero) {
         goto exit_loop;
     }
     
@@ -137,21 +136,21 @@ loop_start:
     ((ZBufferManager*)DAT_0043698c)->ProcessRenderQueues();
     
     elapsedTime = ((Timer*)this->timer1)->Update();
-    if ((unsigned int)this->field_0x08 > elapsedTime) {
+    if (elapsedTime < (unsigned int)this->field_0x08) {
         do {
             pSmackSoundCheck();
             elapsedTime = ((Timer*)this->timer1)->Update();
-        } while ((unsigned int)this->field_0x08 > elapsedTime);
+        } while (elapsedTime < (unsigned int)this->field_0x08);
     }
     
-    if (g_GameState_00436998 == 0) {
+    if (g_GameState_00436998 == (GameState*)zero) {
         goto skip_debug;
     }
     pGameState = g_GameState_00436998;
     if (pGameState->maxStates < 5) {
         ShowError("\"GameState Error  #%d\"", 1);
     }
-    if (*(int*)((char*)pGameState->stateValues + 0x10) == 0) {
+    if (*(int*)((char*)pGameState->stateValues + 0x10) == zero) {
         goto skip_debug;
     }
     mouseY = 0;
@@ -172,7 +171,7 @@ skip_debug:
     ((Timer*)this->timer1)->Reset();
     ((ZBufferManager*)DAT_0043698c)->UpdateScreen();
     
-    if (this->field_0x00 == 0) {
+    if (this->field_0x00 == zero) {
         goto loop_start;
     }
 
@@ -440,11 +439,8 @@ void GameLoop::CleanupLoop() {
         pQueue->m_current = pQueue->m_head;
         iVar2 = (int)pQueue->m_head;
         while (iVar2 != 0) {
-            puVar5 = (int*)FUN_00401710(pQueue);
-            if (puVar5 != 0) {
-                *puVar5 = 0x431050;  // vtable
-                FUN_00424940(puVar5);
-            }
+            puVar5 = (int*)ZBuffer::PopNode((int*)pQueue);
+            delete puVar5;
             iVar2 = (int)pQueue->m_head;
         }
     }
@@ -455,7 +451,7 @@ void GameLoop::CleanupLoop() {
         pQueue->m_current = pQueue->m_head;
         iVar2 = (int)pQueue->m_head;
         while (iVar2 != 0) {
-            pvVar6 = FUN_00401790(pQueue);
+            pvVar6 = ZBuffer::PopNode_2((int*)pQueue);
             if (pvVar6 != 0) {
                 if (*(void**)((char*)pvVar6 + 4) != 0) {
                     FUN_00417660(*(void**)((char*)pvVar6 + 4), 1);
@@ -466,7 +462,7 @@ void GameLoop::CleanupLoop() {
                     (**(void (**)(int))(**(int**)((char*)pvVar6 + 8)))(1);
                     *(int*)((char*)pvVar6 + 8) = 0;
                 }
-                FUN_00424940(pvVar6);
+                delete pvVar6;
             }
             iVar2 = (int)pQueue->m_head;
         }
@@ -503,11 +499,8 @@ void GameLoop::CleanupLoop() {
                 }
                 pQueue->m_current = pQueue->m_head;
             }
-            if (local_1c != 0) {
-                *local_1c = 0x431058;  // vtable
-                FUN_00417652();
-                FUN_00424940(local_1c);
-            }
+            //FUN_00417652();
+            delete local_1c;
             iVar3 = (int)pQueue->m_head;
         }
     }
@@ -534,10 +527,94 @@ void GameLoop::CleanupLoop() {
 }
 
 // External functions for UpdateGame
-// Note: These are thiscall but we use shim stubs
 extern "C" {
     void* FUN_00417c50(void* pool, void* buffer);
-    void FUN_00417cb0(GameLoop* self, void* event);
+    void FUN_00419fd0(SC_Message* msg, int unused);
+    void FUN_004191d0(const char* msg);
+    void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
+}
+
+// Forward declarations for message handling
+extern "C" void GameLoop_HandleSystemMessage(GameLoop* self, SC_Message* msg);
+extern "C" int GameLoop_ProcessControlMessage(GameLoop* self, SC_Message* msg);
+extern "C" void* GameLoop_GetHandlerForCommand(GameLoop* self, int command);
+
+extern void* DAT_004369a4;  // GameState for string lookup
+extern char* g_Unknown_00436994; // String buffer for game state strings
+
+/* Function start: 0x417CB0 */
+void GameLoop::ProcessMessage(SC_Message* msg)
+{
+    int result;
+    
+    if (msg->priority == 5) {
+        // System message with priority 5
+        result = 1;
+        if (msg->command == 3) {
+            // Copy string from GameState to global buffer
+            char* srcStr = (char*)((GameState*)DAT_004369a4)->stateValues[msg->data];
+            strcpy(g_Unknown_00436994, srcStr);
+        } else {
+            GameLoop_HandleSystemMessage(this, msg);
+        }
+    }
+    else if (msg->command == 0) {
+        // Null command - mark as handled
+        result = 1;
+    }
+    else if (msg->command == 3) {
+        // Control message
+        result = GameLoop_ProcessControlMessage(this, msg);
+    }
+    else {
+        // Route to handler at field_0x18
+        void* handler = (void*)this->field_0x18;
+        result = (*(int (**)(SC_Message*))(*(int*)handler + 0x20))(msg);
+        
+        if (result == 0) {
+            // Handler didn't process it, try event list
+            EventList* pList = (EventList*)this->eventList;
+            pList->current = pList->head;
+            
+            while (pList->current != 0) {
+                EventNode* pNode = pList->current;
+                void* pData = pNode->data;
+                
+                if (pData == 0) {
+                    break;
+                }
+                
+                pData = (void*)((((int)pNode < 1) - 1) & (int)pData);
+                result = (*(int (**)(SC_Message*))(*(int*)pData + 0x20))(msg);
+                
+                if (result != 0) {
+                    break;
+                }
+                
+                pList = (EventList*)this->eventList;
+                pNode = pList->current;
+                if (pList->tail == pNode) {
+                    break;
+                }
+                if (pNode != 0) {
+                    pList->current = pNode->prev;
+                }
+            }
+        }
+    }
+    
+    if (result == 0) {
+        // Message not handled - look up by command and try default handler
+        void* defaultHandler = GameLoop_GetHandlerForCommand(this, msg->command);
+        int handled = (*(int (**)(SC_Message*))(*(int*)defaultHandler + 0x20))(msg);
+        
+        if (handled == 0) {
+            // Still not handled - dump message and show error
+            FUN_00419fd0(msg, 0);
+            FUN_004191d0("\"lost message\"");
+            FUN_0041a150(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
+        }
+    }
 }
 
 /* Function start: 0x4179A0 */
@@ -617,7 +694,7 @@ int GameLoop::UpdateGame()
     while (((TimedEventPool*)DAT_00436984)->m_count != 0) {
         pSourceMsg = (SC_Message*)FUN_00417c50(DAT_00436984, local_198);
         
-        FUN_00417cb0(this, pSourceMsg);
+        this->ProcessMessage(pSourceMsg);
         
         // Inner loop: pop items from DAT_00436988 and add to DAT_00436984
         while (((TimedEventPool*)DAT_00436988)->m_count != 0) {

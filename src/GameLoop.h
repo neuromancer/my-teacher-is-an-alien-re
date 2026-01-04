@@ -1,6 +1,8 @@
 #ifndef GAMELOOP_H
 #define GAMELOOP_H
 
+class SC_Message;
+
 // GameLoop class
 // Size: 0x1C (28 bytes)
 // Used locally in RunGame for main game loop
@@ -15,6 +17,7 @@ public:
     void DrawFrame();    // 0x417ED0
     int UpdateGame();    // 0x4179A0
     void CleanupLoop();  // 0x417450
+    void ProcessMessage(SC_Message* msg); // 0x417CB0
     
     int field_0x00;
     int field_0x04;
