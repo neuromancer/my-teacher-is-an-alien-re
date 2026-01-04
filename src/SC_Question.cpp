@@ -225,34 +225,42 @@ SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int da
 /* Function start: 0x419FD0 */
 void SC_Message::Dump(int unused)
 {
-    const char* addressStr;
-    const char* fromStr;
+    int targetAddr;
+    int srcAddr;
+    const char* str1;
+    const char* str2;
     
     // Log ADDRESS field
-    if (this->targetAddress == 5) {
-        g_GameState_00436998->GetState(this->sourceAddress);
-        addressStr = g_GameState3_0043699c->GetState(5);
-        WriteToMessageLog("\"\t\t\tADDRESS\t\t%s  %s\"", addressStr, this->sourceAddress);
+    // EDI = targetAddress, EAX = sourceAddress
+    targetAddr = this->targetAddress;
+    srcAddr = this->sourceAddress;
+    if (targetAddr == 5) {
+        str1 = g_GameState_00436998->GetState(srcAddr);
+        str2 = g_GameState3_0043699c->GetState(targetAddr);
+        WriteToMessageLog("\"\t\t\tADDRESS\t\t%s  %s\"", str2, str1);
     } else {
-        addressStr = g_GameState3_0043699c->GetState(this->targetAddress);
-        WriteToMessageLog("\"\t\t\tADDRESS\t\t%s  %d\"", addressStr, this->sourceAddress);
+        str1 = g_GameState3_0043699c->GetState(targetAddr);
+        WriteToMessageLog("\"\t\t\tADDRESS\t\t%s  %d\"", str1, srcAddr);
     }
     
     // Log FROM field
-    if (this->command == 5) {
-        g_GameState_00436998->GetState(this->data);
-        fromStr = g_GameState3_0043699c->GetState(5);
-        WriteToMessageLog("\"\t\t\tFROM\t\t%s  %s\"", fromStr, this->data);
+    // EDI = command, EAX = data
+    targetAddr = this->command;
+    srcAddr = this->data;
+    if (targetAddr == 5) {
+        str1 = g_GameState_00436998->GetState(srcAddr);
+        str2 = g_GameState3_0043699c->GetState(targetAddr);
+        WriteToMessageLog("\"\t\t\tFROM\t\t%s  %s\"", str2, str1);
     } else {
-        fromStr = g_GameState3_0043699c->GetState(this->command);
-        WriteToMessageLog("\"\t\t\tFROM\t\t%s  %d\"", fromStr, this->data);
+        str1 = g_GameState3_0043699c->GetState(targetAddr);
+        WriteToMessageLog("\"\t\t\tFROM\t\t%s  %d\"", str1, srcAddr);
     }
     
     // Log INSTRUCTION field
-    const char* instrStr = g_GameState4_004369a0->GetState(this->priority);
-    WriteToMessageLog("\"\t\t\tINSTRUCTION\t%s\"", instrStr);
+    str1 = g_GameState4_004369a0->GetState(this->priority);
+    WriteToMessageLog("\"\t\t\tINSTRUCTION\t%s\"", str1);
     
-    // Log MOUSE field
+    // Log MOUSE field (clickX=0xa4, clickY=0xa8)
     WriteToMessageLog("\"\t\t\tMOUSE\t\t%d\t%d\"", this->clickX, this->clickY);
     
     // Log optional fields

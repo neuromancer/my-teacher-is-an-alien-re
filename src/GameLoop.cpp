@@ -528,7 +528,6 @@ void GameLoop::CleanupLoop() {
 
 // External functions for UpdateGame
 extern "C" {
-    void FUN_00419fd0(SC_Message* msg, int unused);
     void FUN_004191d0(const char* msg);
     void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
 }
@@ -609,7 +608,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
         
         if (handled == 0) {
             // Still not handled - dump message and show error
-            FUN_00419fd0(msg, 0);
+            msg->Dump(0);
             FUN_004191d0("\"lost message\"");
             FUN_0041a150(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
         }
@@ -746,13 +745,7 @@ extern "C" {
         ShowError("STUB: FUN_0041a150 called");
     }
 
-    void FUN_00419fd0(SC_Message* msg, int unused) {
-         // This appears to be a message dump function
-         // We can ignore it or print something
-         // char buffer[256];
-         // sprintf(buffer, "Msg Dump: cmd=%d", msg->command);
-         // FUN_004191d0(buffer); // Log it
-    }
+
 
     void GameLoop_HandleSystemMessage(GameLoop* self, SC_Message* msg) {
         ShowError("STUB: GameLoop_HandleSystemMessage called command=%d", msg->command);
