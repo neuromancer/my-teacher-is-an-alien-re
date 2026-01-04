@@ -108,10 +108,11 @@ void GameLoop::ResetLoop() {
 void GameLoop::Run() {
     SmackSoundCheckFn pSmackSoundCheck;
     unsigned int elapsedTime;
-    GameState* pGameState;
     int mouseX;
     int mouseY;
     InputState* pMouse;
+    GameState* pGameState;
+    int zero;
 
     this->ResetLoop();
     

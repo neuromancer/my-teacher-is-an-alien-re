@@ -337,23 +337,19 @@ extern "C" int* GetWindowHeight();
 
 /* Function start: 0x4193E0 */
 extern "C" void FlipScreen() {
-    if (g_WorkBuffer_00436974 != 0) {
-        int* pHeight = GetWindowHeight();
-        int screenHeight = *pHeight - 1;
-        
-        int* pWidth = GetWindowWidth();
-        int screenWidth = *pWidth - 1;
-        
-        g_WorkBuffer_00436974->CallBlitter5(
-            g_WorkBuffer_00436974->clip_x1,
-            g_WorkBuffer_00436974->clip_x2,
-            g_WorkBuffer_00436974->saved_video_mode,
-            g_WorkBuffer_00436974->video_mode_lock_count,
-            0,
-            screenWidth,
-            0,
-            screenHeight
-        );
+    VBuffer* pThis;
+    int* piVar1;
+    int iVar2;
+    int iVar3;
+    
+    if (g_WorkBuffer_00436974 == 0) {
+        return;
     }
+    pThis = g_WorkBuffer_00436974;
+    piVar1 = GetWindowHeight();
+    iVar2 = *piVar1 - 1;
+    iVar3 = 0;
+    piVar1 = GetWindowWidth();
+    pThis->CallBlitter5(pThis->clip_x1, pThis->clip_x2, pThis->saved_video_mode, pThis->video_mode_lock_count, 0, *piVar1 - 1, iVar3, iVar2);
 }
 

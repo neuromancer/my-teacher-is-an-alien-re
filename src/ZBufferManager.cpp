@@ -6,6 +6,7 @@
 #include "Memory.h"
 #include "Animation.h"
 #include "GlyphRect.h"
+#include "RenderEntry.h"
 #include "string.h"
 #include <string.h>
 
@@ -79,8 +80,8 @@ void ZBufferManager::UpdateScreen() {
     int* piVar1;
     int* puVar3;
     int iVar4;
-    int* local_14;
-    int local_24[4];
+    RenderEntry* local_14;
+    GlyphRect local_rect;
     
     int mode = this->m_state;
     if (mode == 1) {
@@ -101,7 +102,7 @@ void ZBufferManager::UpdateScreen() {
     }
     
     do {
-        local_14 = 0;
+        local_14 = (RenderEntry*)0;
         piVar1 = (int*)this->m_queue9c;
         int queueType = piVar1[3];
         if (queueType == 1 || queueType == 4) {
@@ -136,9 +137,9 @@ process_entry:
         }
         iVar4 = piVar1[2];
         if (iVar4 == 0) {
-            local_14 = 0;
+            local_14 = (RenderEntry*)0;
         } else {
-            local_14 = (int*)((int*)iVar4)[2];
+            local_14 = (RenderEntry*)((int*)iVar4)[2];
             ((int*)iVar4)[2] = 0;
             *(int*)iVar4 = 0;
             ((int*)iVar4)[1] = 0;
@@ -149,20 +150,13 @@ process_entry:
         
 do_blit:
         {
-            int* pSrc = local_14 + 1;
-            local_24[0] = pSrc[0];
-            local_24[1] = pSrc[1];
-            local_24[2] = pSrc[2];
-            local_24[3] = pSrc[3];
+            local_rect = local_14->rect;
             
             if (g_WorkBuffer_00436974 != 0) {
-                g_WorkBuffer_00436974->CallBlitter4(local_24[0], local_24[1], local_24[2], local_24[3], local_24[0], local_24[1]);
+                g_WorkBuffer_00436974->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);
             }
             
-            if (local_14 != 0) {
-                *local_14 = 0x431058;
-                FreeMemory(local_14);
-            }
+            delete local_14;
         }
         
         piVar1 = (int*)this->m_queue9c;

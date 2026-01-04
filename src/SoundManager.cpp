@@ -2,11 +2,14 @@
 #include "globals.h"
 #include "Memory.h"
 #include "VBuffer.h"
+#include "GlyphRect.h"
+#include "string.h"
 #include <string.h>
 #include <stdlib.h>
 
+
 extern "C" {
-    void __stdcall FUN_0041b0a0(int, int, void*, int, int);
+    void FUN_0041b0a0(int, int, void*, int, int);
     void FUN_004229ea(int, int);
     void FUN_00421700(void*, char*, int);
     int _rand();
@@ -16,7 +19,7 @@ void __stdcall FUN_0041b110(int, int, void*, int, int);
 
 // Base SoundCommand
 struct SoundCommand {
-    virtual void Execute(SoundManager* mgr) = 0;
+    virtual void Execute(GlyphRect* rect) = 0;
     
     void* operator new(size_t size) {
         return AllocateMemory(size);
@@ -27,7 +30,7 @@ struct SoundCommand {
 };
 
 struct CommandType1 : public SoundCommand {
-    int parameter1; // Priority
+    unsigned int parameter1; // Priority
     void* data;
     int x;
     int y;
@@ -37,7 +40,7 @@ struct CommandType1 : public SoundCommand {
 
     CommandType1() : parameter1(0), data(0), x(0), y(0), mode(0), scale_low(0), scale_high(0) {}
 
-    virtual void Execute(SoundManager* mgr) {
+    virtual void Execute(GlyphRect* rect) {
         switch(mode) {
             case 0:
                  g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
@@ -47,7 +50,7 @@ struct CommandType1 : public SoundCommand {
                  break;
 
             case 2:
-                 FUN_0041b0a0(x, y, data, scale_low, scale_high);
+                 //FUN_0041b0a0(x, y, data, scale_low, scale_high);
                  break;
             case 3:
                  g_WorkBuffer_00436974->FUN_0041b110(x, y, data, scale_low, scale_high);
@@ -62,7 +65,7 @@ struct CommandType2 : public SoundCommand {
     int x;
     int y;
 
-    virtual void Execute(SoundManager* mgr) {
+    virtual void Execute(GlyphRect* rect) {
         FUN_004229ea(x, y);
         FUN_00421700(g_TextManager_00436990, text, -1);
     }
@@ -103,7 +106,7 @@ void SoundManager::PlayAnimationSound(void* data, int priority, int x, int y, in
                      g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
                      break;
                 case 2:
-                     FUN_0041b0a0(x, y, data, scale1, scale2);
+                     //FUN_0041b0a0(x, y, data, scale1, scale2);
                      break;
                 case 3:
                      g_WorkBuffer_00436974->FUN_0041b110(x, y, data, scale1, scale2);
@@ -143,59 +146,150 @@ void SoundManager::ShowSubtitle(char* text, int x, int y, int duration, int flag
 /* Function start: 0x41C2C0 */
 void SoundManager::QueueCommand(SoundCommand* cmd)
 {
-    if (m_mode == 1) {
-        cmd->Execute(this);
-        // cmd is explicitly deleted or handled?
-        // Decompiled code at 41C2C0 for mode 1: calls func, then resets vtable and deletes.
-        // But m_mode==1 case in 41BE20/41C000 handles exec directly without allocating.
-        // So this function is only called if we decided to queue, but mode CHANGED to 1?
-        // Or if we call QueueCommand directly?
-        // Assuming we are deleting it.
+    int h = g_WorkBuffer_00436974->height - 1;
+    int w = g_WorkBuffer_00436974->width - 1;
+    GlyphRect rect;
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = w;
+    rect.bottom = h;
+    
+    int mode = m_mode;
+    if (mode == 1) {
+        cmd->Execute(&rect);
         delete cmd;
         return;
     }
     
-
-    if (m_mode == 2 || m_mode == 3) {
-        if (!m_commandQueue) {
-            // ShowError("queue fault 0101");
+    if (mode == 2) {
+        Queue* queue = m_commandQueue;
+        if (!cmd) {
+            ShowError("queue fault 0101");
+        }
+        queue->m_current = queue->m_head;
+        
+        int qtype = queue->m_field_0xc;
+        if (qtype == 1 || qtype == 2) {
+            if (queue->m_head == 0) {
+                queue->Insert(cmd);
+                return;
+            }
+            
+            while (queue->m_current) {
+                QueueNode* node = (QueueNode*)queue->m_current;
+                SoundCommand* nodeCmd = (SoundCommand*)node->data;
+                
+                if ((unsigned int)((CommandType1*)nodeCmd)->parameter1 < (unsigned int)((CommandType1*)cmd)->parameter1) {
+                    queue->Insert(cmd);
+                    return;
+                }
+                
+                if (queue->m_tail == queue->m_current) {
+                    if (!cmd) {
+                        ShowError("queue fault 0112");
+                    }
+                    QueueNode* newNode = (QueueNode*)AllocateMemory(12);
+                    if (newNode) {
+                        newNode->prev = 0;
+                        newNode->next = 0;
+                        newNode->data = cmd;
+                    } else {
+                        newNode = 0;
+                    }
+                    
+                    if (queue->m_current == 0) {
+                        queue->m_current = queue->m_tail;
+                    }
+                    if (queue->m_head == 0) {
+                        queue->m_head = newNode;
+                        queue->m_tail = newNode;
+                        queue->m_current = newNode;
+                    } else {
+                        QueueNode* tail = (QueueNode*)queue->m_tail;
+                        if (tail == 0 || tail->next != 0) {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->next = 0;
+                        newNode->prev = tail;
+                        tail->next = newNode;
+                        queue->m_tail = newNode;
+                    }
+                    return;
+                }
+                
+                if (node != 0) {
+                    queue->m_current = node->next;
+                }
+            }
             return;
         }
-
-        m_commandQueue->m_current = m_commandQueue->m_head;
-        
-        // Check sort mode
-        if (m_commandQueue->m_field_0xc == 1 || m_commandQueue->m_field_0xc == 2) {
-             if (m_commandQueue->m_head == 0) {
-                 m_commandQueue->Push(cmd);
-                 return;
-             }
-             
-             while(m_commandQueue->m_current) {
-                 SoundCommand* currCmd = (SoundCommand*)((QueueNode*)m_commandQueue->m_current)->data;
-                 // parameter1 is at offset 4 for both types
-                 int currPriority = ((CommandType1*)currCmd)->parameter1;
-                 int newPriority = ((CommandType1*)cmd)->parameter1;
-                 
-                 if (currPriority < newPriority) {
-                     m_commandQueue->Insert(cmd);
-                     // Logic in 41c2c0 seems to break after insert?
-                     // Yes, "FUN_0041cb40(piVar2,(int)param_1); break;"
-                     return;
-                 }
-                 
-                 m_commandQueue->m_current = ((QueueNode*)m_commandQueue->m_current)->next;
-             }
-             // If accessed end, push
-             m_commandQueue->Push(cmd);
-        } else {
-             // Just insert (at current? or push?)
-             // 41c2c0 calls FUN_0041cb40(piVar2, param_1).
-             // FUN_0041cb40 is at 41C.map.
-             // FUN_0041c2c0 uses it.
-             // It's presumably Queue::Insert.
-             m_commandQueue->Insert(cmd);
-        }
+        queue->Insert(cmd);
+        return;
     }
-
+    
+    if (mode == 3) {
+        Queue* queue = m_commandQueue;
+        if (!cmd) {
+            ShowError("queue fault 0101");
+        }
+        queue->m_current = queue->m_head;
+        
+        int qtype = queue->m_field_0xc;
+        if (qtype == 1 || qtype == 2) {
+            if (queue->m_head == 0) {
+                queue->Insert(cmd);
+                return;
+            }
+            
+            while (queue->m_current) {
+                QueueNode* node = (QueueNode*)queue->m_current;
+                SoundCommand* nodeCmd = (SoundCommand*)node->data;
+                
+                if ((unsigned int)((CommandType1*)nodeCmd)->parameter1 < (unsigned int)((CommandType1*)cmd)->parameter1) {
+                    queue->Insert(cmd);
+                    return;
+                }
+                
+                if (queue->m_tail == queue->m_current) {
+                    if (!cmd) {
+                        ShowError("queue fault 0112");
+                    }
+                    QueueNode* newNode = (QueueNode*)AllocateMemory(12);
+                    if (newNode) {
+                        newNode->prev = 0;
+                        newNode->next = 0;
+                        newNode->data = cmd;
+                    } else {
+                        newNode = 0;
+                    }
+                    
+                    if (queue->m_current == 0) {
+                        queue->m_current = queue->m_tail;
+                    }
+                    if (queue->m_head == 0) {
+                        queue->m_head = newNode;
+                        queue->m_tail = newNode;
+                        queue->m_current = newNode;
+                    } else {
+                        QueueNode* tail = (QueueNode*)queue->m_tail;
+                        if (tail == 0 || tail->next != 0) {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->next = 0;
+                        newNode->prev = tail;
+                        tail->next = newNode;
+                        queue->m_tail = newNode;
+                    }
+                    return;
+                }
+                
+                if (node != 0) {
+                    queue->m_current = node->next;
+                }
+            }
+            return;
+        }
+        queue->Insert(cmd);
+        return;
+    }
 }
