@@ -17,7 +17,7 @@ extern "C" {
     void WriteToMessageLog(const char* msg, ...);
 }
 
-extern int* DAT_0043698c;
+
 
 /* Function start: 0x4066D0 */
 SC_Question::SC_Question(int id)
@@ -180,7 +180,7 @@ void SC_Question::Finalize()
         }
         
         // Create timed event in pool and add message to it
-        pool = (TimedEventPool*)DAT_00436988;
+        pool = DAT_00436988;
         event = pool->Create((void*)pool->list.tail, 0);
         ((TimedEvent*)((int*)event + 2))->CopyFrom((TimedEvent*)msgData);
         

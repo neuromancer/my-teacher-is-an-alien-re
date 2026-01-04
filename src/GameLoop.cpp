@@ -133,7 +133,7 @@ loop_start:
     }
     
     this->DrawFrame();
-    ((ZBufferManager*)DAT_0043698c)->ProcessRenderQueues();
+    DAT_0043698c->ProcessRenderQueues();
     
     elapsedTime = ((Timer*)this->timer1)->Update();
     if (elapsedTime < (unsigned int)this->field_0x08) {
@@ -165,11 +165,11 @@ loop_start:
     }
     elapsedTime = ((Timer*)this->timer1)->Update();
     sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
-    ((SoundManager*)DAT_0043698c)->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
+    DAT_0043698c->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
     
 skip_debug:
     ((Timer*)this->timer1)->Reset();
-    ((ZBufferManager*)DAT_0043698c)->UpdateScreen();
+    DAT_0043698c->UpdateScreen();
     
     if (this->field_0x00 == zero) {
         goto loop_start;
@@ -288,7 +288,7 @@ void GameLoop::ProcessInput() {
     }
     
     if (pLocalMessage->targetAddress != 0 && pLocalMessage->priority != 0) {
-        pPool = (TimedEventPool*)DAT_00436988;
+        pPool = DAT_00436988;
         pEvent = pPool->Create((void*)pPool->list.tail, 0);
         ((TimedEvent*)((char*)pEvent + 8))->CopyFrom((TimedEvent*)pLocalMessage);
         if (pPool->list.tail == 0) {
@@ -431,7 +431,7 @@ void GameLoop::CleanupLoop() {
     ZBufferManager* pZBuf;
     Queue* pQueue;
     
-    pZBuf = (ZBufferManager*)DAT_0043698c;
+    pZBuf = DAT_0043698c;
     
     // Process queue at offset 0xa0
     pQueue = (Queue*)pZBuf->m_queueA0;
@@ -539,7 +539,7 @@ extern "C" void GameLoop_HandleSystemMessage(GameLoop* self, SC_Message* msg);
 extern "C" int GameLoop_ProcessControlMessage(GameLoop* self, SC_Message* msg);
 extern "C" void* GameLoop_GetHandlerForCommand(GameLoop* self, int command);
 
-extern void* DAT_004369a4;  // GameState for string lookup
+// extern void* DAT_004369a4;  // GameState for string lookup (replaced with g_GameState2_004369a4 from globals.h)
 extern char* g_Unknown_00436994; // String buffer for game state strings
 
 /* Function start: 0x417CB0 */
@@ -552,7 +552,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
         result = 1;
         if (msg->command == 3) {
             // Copy string from GameState to global buffer
-            char* srcStr = (char*)((GameState*)DAT_004369a4)->stateValues[msg->data];
+            char* srcStr = (char*)g_GameState2_004369a4->stateValues[msg->data];
             strcpy(g_Unknown_00436994, srcStr);
         } else {
             GameLoop_HandleSystemMessage(this, msg);
@@ -634,7 +634,7 @@ int GameLoop::UpdateGame()
     local_14 = 0;
     
     // First loop: pop items from DAT_00436988, copy to local_d8, create in DAT_00436984
-    while (((TimedEventPool*)DAT_00436988)->m_count != 0) {
+    while (DAT_00436988->m_count != 0) {
         pSourceMsg = (SC_Message*)FUN_00417c50(DAT_00436988, local_198);
         
         // Copy Parser base class fields
@@ -678,7 +678,7 @@ int GameLoop::UpdateGame()
         local_18 = (void*)pSourceMsg->userPtr;
         
         // Create entry in DAT_00436984
-        pPool = (TimedEventPool*)DAT_00436984;
+        pPool = DAT_00436984;
         pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
         ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)&local_d8);
         
@@ -691,15 +691,15 @@ int GameLoop::UpdateGame()
     }
     
     // Second loop: pop items from DAT_00436984
-    while (((TimedEventPool*)DAT_00436984)->m_count != 0) {
+    while (DAT_00436984->m_count != 0) {
         pSourceMsg = (SC_Message*)FUN_00417c50(DAT_00436984, local_198);
         
         this->ProcessMessage(pSourceMsg);
         
         // Inner loop: pop items from DAT_00436988 and add to DAT_00436984
-        while (((TimedEventPool*)DAT_00436988)->m_count != 0) {
+        while (DAT_00436988->m_count != 0) {
             SC_Message* pInnerMsg = (SC_Message*)FUN_00417c50(DAT_00436988, local_258);
-            pPool = (TimedEventPool*)DAT_00436984;
+            pPool = DAT_00436984;
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
             ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)pInnerMsg);
             
@@ -717,3 +717,47 @@ int GameLoop::UpdateGame()
     local_d8.SC_Message::~SC_Message();
     return local_14;
 }
+
+// -------------------------------------------------------------------------
+// Stubs for missing functions
+// -------------------------------------------------------------------------
+
+static int StubHandleMessage(SC_Message* msg) {
+    ShowError("STUB: StubHandleMessage called (cmd=%d)", msg->command);
+    return 1; // Mark handled
+}
+
+static void* g_StubVTable[] = { 
+    0, 0, 0, 0, 0, 0, 0, 0, 
+    (void*)StubHandleMessage // Offset 0x20
+};
+static void* g_StubObject = g_StubVTable;
+
+extern "C" {
+    void FUN_0041a150(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10) {
+        ShowError("STUB: FUN_0041a150 called");
+    }
+
+    void FUN_00419fd0(SC_Message* msg, int unused) {
+         // This appears to be a message dump function
+         // We can ignore it or print something
+         // char buffer[256];
+         // sprintf(buffer, "Msg Dump: cmd=%d", msg->command);
+         // FUN_004191d0(buffer); // Log it
+    }
+
+    void GameLoop_HandleSystemMessage(GameLoop* self, SC_Message* msg) {
+        ShowError("STUB: GameLoop_HandleSystemMessage called command=%d", msg->command);
+    }
+
+    int GameLoop_ProcessControlMessage(GameLoop* self, SC_Message* msg) {
+        ShowError("STUB: GameLoop_ProcessControlMessage called");
+        return 0; // Not handled? Or handled?
+    }
+
+    void* GameLoop_GetHandlerForCommand(GameLoop* self, int command) {
+        ShowError("STUB: GameLoop_GetHandlerForCommand called cmd=%d", command);
+        return &g_StubObject; // Return pointer to object (which is pointer to vtable)
+    }
+}
+

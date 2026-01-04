@@ -10,7 +10,7 @@ extern "C" int* GetWindowHeight(); // FUN_004224f0
 extern "C" void FUN_00421ac0();    // InitKeyboardState
 extern "C" int FUN_00421ce0(int, int, int, int); // Helper for joystick
 extern "C" void FUN_004239e4(int*, int*); // Helper for mouse pos
-extern "C" int FUN_00422510(); // Unknown helper
+
 extern "C" int ProcessMessages(); // 0x4192F0 - Message pump loop
 
 extern Timer g_leftClickTimer;  // 0x43de40

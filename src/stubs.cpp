@@ -5,6 +5,7 @@
 #include <share.h>
 #include "Memory.h"
 #include "OnScreenMessage.h"
+#include "TimedEvent.h"
 
 // Globals
 // Globals
@@ -188,42 +189,45 @@ int _rand() { return rand(); }
 void FUN_0040cd15() {
     // Cleanup pool at DAT_00436988
     // This calls the pool cleanup function FUN_0040d2a0
-    extern int* DAT_00436988;
+    extern TimedEventPool* DAT_00436988;
     if (DAT_00436988 != 0) {
-        int* pool = DAT_00436988;
-        // Clear linked list at [0x10]
-        int* node = (int*)pool[4]; // offset 0x10
+        TimedEventPool* pool = DAT_00436988;
+        // m_pool corresponds to index 4 in previous int* logic
+        TimedEvent* node = pool->m_pool; 
         while (node != 0) {
-            int* next = (int*)*node;
+            TimedEvent* next = (TimedEvent*)node->vtable; // vtable is at offset 0, which was abused as 'next' in the pool logic probably?
+            // Wait, the previous logic was: int* next = (int*)*node; 
+            // node is int*. *node is offset 0.
+            // TimedEvent: field 0 is vtable.
+            // When free, it might be used as next pointer.
             FreeMemory(node);
             node = next;
         }
-        pool[4] = 0;
+        pool->m_pool = 0;
         // Clear fields
-        pool[0] = 0;
-        pool[1] = 0;
-        pool[2] = 0;
-        pool[3] = 0;
+        pool->list.head = 0;
+        pool->list.tail = 0;
+        pool->m_count = 0;
+        pool->m_free_list = 0;
     }
 }
 void FUN_0040cd1d() {
     // Cleanup pool at DAT_00436984
-    extern int* DAT_00436984;
+    extern TimedEventPool* DAT_00436984;
     if (DAT_00436984 != 0) {
-        int* pool = DAT_00436984;
-        // Clear linked list at [0x10]
-        int* node = (int*)pool[4]; // offset 0x10
+        TimedEventPool* pool = DAT_00436984;
+        TimedEvent* node = pool->m_pool;
         while (node != 0) {
-            int* next = (int*)*node;
+            TimedEvent* next = (TimedEvent*)node->vtable;
             FreeMemory(node);
             node = next;
         }
-        pool[4] = 0;
+        pool->m_pool = 0;
         // Clear fields
-        pool[0] = 0;
-        pool[1] = 0;
-        pool[2] = 0;
-        pool[3] = 0;
+        pool->list.head = 0;
+        pool->list.tail = 0;
+        pool->m_count = 0;
+        pool->m_free_list = 0;
     }
 }
 void* FUN_00420140(void* a, const char* b, int c) { return a; }
@@ -261,7 +265,7 @@ void FUN_00417cb0(void* self, void* event) {}
 
 // C++ Stubs
 void FUN_00421840() {}
-int FUN_00422510() { return 0; }
+
 void CleanupObjectArray(void* a, int b) {}
 int FindCharIndex(char* c) { return 0; }
 int mCNavNode_GetNextNode(void* a) { return 0; }
@@ -280,7 +284,7 @@ short _param_3 = 0; // Sound.obj ?_param_3@@3FA
 
 // C++ Mangled Stubs
 #include "SC_OnScreenMessage.h"
-#include "TimedEvent.h"
+
 #include "Message.h"
 
 void SC_OnScreenMessage::Timer_DecrementCounter_wrapper_2() {}

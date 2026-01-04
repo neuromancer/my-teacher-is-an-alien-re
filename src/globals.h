@@ -15,7 +15,9 @@ class Mouse;
 class Mouse;
 class Parser;
 class StringTable;
+class ZBufferManager;
 class FlagArray;
+class TimedEventPool;
 
 
 // extern IMAGE_DOS_HEADER IMAGE_DOS_HEADER_00400000; // { /* 128 bytes */ }
@@ -434,9 +436,9 @@ extern Mouse* g_Mouse_00436978; // DAT_00436978
 extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
 extern Timer* g_Timer_00436980; // DAT_00436980
 extern "C" {
-    extern int* DAT_00436984; // { /* 4 bytes */ }
-    extern int* DAT_00436988; // { /* 4 bytes */ }
-    extern int* DAT_0043698c; // { /* 4 bytes */ }
+    extern TimedEventPool* DAT_00436984; // { /* 4 bytes */ }
+    extern TimedEventPool* DAT_00436988; // { /* 4 bytes */ }
+    extern ZBufferManager* DAT_0043698c; // { /* 4 bytes */ }
 }
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
 extern char* g_Unknown_00436994; // DAT_00436994 - string buffer used for game state strings

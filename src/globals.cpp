@@ -102,9 +102,9 @@ void* DAT_0043f100 = 0;
 char DAT_0043be30 = 0;
 int DAT_0043be34 = 0;
 
-int* DAT_00436984 = 0;
-int* DAT_00436988 = 0;
-int* DAT_0043698c = 0;
+TimedEventPool* DAT_00436984 = 0;
+TimedEventPool* DAT_00436988 = 0;
+ZBufferManager* DAT_0043698c = 0;
 void* DAT_00435a74 = 0;
 void* DAT_00435a78 = 0;
 void* DAT_00435a7c = 0;

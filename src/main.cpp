@@ -66,14 +66,6 @@ extern "C" {
 
 /* Function start: 0x40C5D0 */
 void RunGame() {
-  extern int* DAT_00436984;
-  extern int* DAT_00436988;
-  extern int* DAT_0043698c;
-  extern void* DAT_00435a74;
-  extern void* DAT_00435a78;
-  extern void* DAT_00435a7c;
-
-  //__try {
     InitGameSystems();
     if (g_WorkBuffer_00436974 == 0) {
       ShowError("missing workbuff");
@@ -81,11 +73,9 @@ void RunGame() {
     g_WorkBuffer_00436974->SetVideoMode(); 
     g_WorkBuffer_00436974->ClearScreen(0);
 
-    void* puVar2; //= g_Mouse_00436978;
-    if (g_Mouse_00436978 != 0) {
-        delete g_Mouse_00436978;
-        g_Mouse_00436978 = 0;
-    }
+
+    delete g_Mouse_00436978;
+    g_Mouse_00436978 = 0;
     
     g_Mouse_00436978 = new Mouse(); //pMouse;
     ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
@@ -111,11 +101,11 @@ void RunGame() {
 
     g_Strings_00435a70 = new StringTable("mis\\strings.mis", 1);
     
-    DAT_00436984 = (int *)new TimedEventPool();
-    DAT_00436988 = (int *)new TimedEventPool();
+    DAT_00436984 = new TimedEventPool();
+    DAT_00436988 = new TimedEventPool();
 
     ZBufferManager* pZBuffer = new ZBufferManager();
-    DAT_0043698c = (int*)pZBuffer;
+    DAT_0043698c = pZBuffer;
 
     GameLoop* pGameLoop = new GameLoop();
 
@@ -127,28 +117,17 @@ void RunGame() {
     SC_Message_Send(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
 
     pGameLoop->Run();
-    if (pGameLoop != 0) {
-        delete pGameLoop;
-    }
+    delete pGameLoop;
+    pGameLoop = 0;
 
-    if (DAT_0043698c != 0) {
-        delete ((ZBufferManager*)DAT_0043698c);
-        DAT_0043698c = 0;
-    }
+    delete DAT_0043698c;
+    DAT_0043698c = 0;
 
-    puVar2 = (void*)DAT_00436988;
-    if (DAT_00436988 != 0) {
-        FUN_0040cd15(); 
-        FreeMemory(puVar2);
-        DAT_00436988 = 0;
-    }
+    delete DAT_00436988;
+    DAT_00436988 = 0;
 
-    puVar2 = (void*)DAT_00436984;
-    if (DAT_00436984 != 0) {
-        FUN_0040cd1d(); 
-        FreeMemory(puVar2);
-        DAT_00436984 = 0;
-    }
+    delete DAT_00436984;
+    DAT_00436984 = 0;
 
     if (g_Strings_00435a70 != 0) {
         delete g_Strings_00435a70;
@@ -215,8 +194,10 @@ void RunGame() {
 }
 
 
+extern "C" int ProcessMessages();
+
 /* Function start: 0x4192F0 */
-extern "C" int ProcessMessages() {
+int ProcessMessages() {
   MSG local_1c;
   int iVar1;
 
@@ -471,6 +452,11 @@ void InitGameSystems(void) {
     g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
     SetStateFlag(0, 1);
     SetCursorVisible(0);
+}
+
+/* Function start: 0x422510 */
+int FUN_00422510() {
+  return DAT_0043de94;
 }
 
 /* Function start: 0x422520 */
