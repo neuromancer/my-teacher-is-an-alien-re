@@ -104,7 +104,7 @@ void FlagArray::Open() {
     fp = fp_temp;
     
     if (fp_temp == NULL) {
-        ShowError("Error opening file in flagarray::Open");
+        ShowError("Error opening file in flagarray.cpp");
     }
     
     // Read header back
@@ -114,7 +114,7 @@ void FlagArray::Open() {
 /* Function start: 0x4202D0 */
 void FlagArray::Close() {
     if (fp == 0) {
-        ShowError("FlagArray::Close() - attempt to close a file that is not open");
+        ShowError("FlagArray::Close() - attempt to close NULL fp");
     }
     fclose(fp);
     fp = 0;
@@ -129,7 +129,7 @@ void FlagArray::Seek(int index) {
     int offset = field_0x44 * index + field_0x3c;
     
     if (index < 0 || index >= max_states) {
-        ShowError("Error in flagaray.cpp - Seek: Index out of range %d", index);
+        ShowError("Error in flagaray.cpp - Seek: Invalid index number! %d", index);
     }
     
     // Check if offset is within file bounds logic
@@ -137,7 +137,7 @@ void FlagArray::Seek(int index) {
     // offset > field_0x38 - field_0x44 + 1 ??
     // iVar1 is offset.
     if ((field_0x38 - field_0x44) + 1 < offset) {
-        ShowError("Error in flagaray.cpp - Seek: Attempt to seek past end of file");
+        ShowError("Error in flagaray.cpp - Seek: Attempt to read past end of file");
     }
     
     FileSeek(fp, offset, 0); // SEEK_SET

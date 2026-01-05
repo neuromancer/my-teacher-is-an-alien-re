@@ -177,13 +177,13 @@ def main():
     
     # Show first few mismatched strings
     if comparison['missing']:
-        print(f"\n--- First 10 Missing Strings ---")
-        for s in sorted(comparison['missing'])[:10]:
+        print(f"\n--- First 50 Missing Strings ---")
+        for s in sorted(comparison['missing'])[:50]:
             print(f"  {repr(s[:60])}")
     
     if comparison['extra']:
-        print(f"\n--- First 10 Extra Strings ---")
-        for s in sorted(comparison['extra'])[:10]:
+        print(f"\n--- First 50 Extra Strings ---")
+        for s in sorted(comparison['extra'])[:50]:
             print(f"  {repr(s[:60])}")
     
     # Show both string orders for matching strings (first 30)

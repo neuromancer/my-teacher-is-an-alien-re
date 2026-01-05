@@ -47,7 +47,7 @@ void Parser::CloseFile() {
 
 /* Function start: 0x418B30 */
 int Parser::LBLParse(char *param_1) {
-  ShowError("%s::LBLParse - Uknown Label\\n'%s'\\nfound in file %s", param_1,
+  ShowError("%s::LBLParse - Uknown Label\n'%s'\nfound in file %s", param_1,
             lineNumber, filename);
   return 0;
 }

@@ -3,11 +3,12 @@
 #include "Hotspot.h"
 #include "Palette.h"
 #include "MouseControl.h"
+#include "string.h"
+
 #include <stdio.h>
 #include <string.h>
 
 extern "C" {
-    void FUN_004191d0(char*);
     char* FUN_004195c0(char*);
 }
 
@@ -18,7 +19,7 @@ int SearchScreen::LBLParse(char* line)
     char key[32];
 
     sscanf(line, "%s", key);
-    FUN_004191d0(line);
+    WriteToMessageLog(line);
 
     if (strcmp(key, "PALETTE") == 0) {
         sscanf(line, "%*s %s", value);

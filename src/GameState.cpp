@@ -126,7 +126,7 @@ int GameState::FindState(char* stateName)
 char *GameState::GetState(int stateIndex)
 {
     if ((stateIndex > 0) && (maxStates <= stateIndex)) {
-        ShowError("GameState Error #%d", 1);
+        ShowError("GameState Error  #%d", 1);
     }
     return stateLabels[stateIndex];
 }

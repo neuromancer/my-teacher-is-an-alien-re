@@ -420,7 +420,7 @@ void CheckDebug(void) {
           }
         }
         if (0x18 < i) {
-          ShowError("Missing the Teacher CD-ROM");
+          ShowError("Missing the Teacher CD ROM");
         }
       }
     }

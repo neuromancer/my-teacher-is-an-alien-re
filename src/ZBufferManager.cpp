@@ -209,7 +209,7 @@ void ZBufferManager::UpdateScreen() {
         } else if (queueType == 2 || queueType == 0) {
             iVar4 = piVar1[1];
         } else {
-            ShowError("\"bad queue type %lu\"", queueType);
+            ShowError("bad queue type %lu", queueType);
             goto process_entry;
         }
         piVar1[2] = iVar4;
@@ -530,7 +530,7 @@ ZBufferManager::ZBufferManager() {
     ZBQueue* puVar1;
     ZBQueue* puVar2;
     
-    WriteToMessageLogIfEnabled(L"\"declaring ZBuffer\"");
+    WriteToMessageLogIfEnabled(L"declaring ZBuffer");
     memset(this, 0, 0x2b * 4);
     
     puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
@@ -590,7 +590,7 @@ void ZBufferManager::Cleanup() {
         } else if (queueType == 2 || queueType == 0) {
             iVar3 = piVar1[1];
         } else {
-            ShowError("\"bad queue type %lu\"", queueType);
+            ShowError("bad queue type %lu", queueType);
         }
         piVar1[2] = iVar3;
         
@@ -727,7 +727,7 @@ void ZBufferManager::ProcessRenderQueues()
                     iVar3 = piVar1[1];
                     piVar1[2] = iVar3;
                 } else {
-                    ShowError("\"bad queue type %lu\"", queueType);
+                    ShowError("bad queue type %lu", queueType);
                 }
                 
                 if (piVar1[2] != 0) {
@@ -792,7 +792,7 @@ void ZBufferManager::ProcessRenderQueues()
                 iVar3 = piVar1[1];
                 piVar1[2] = iVar3;
             } else {
-                ShowError("\"bad queue type %lu\"", queueType);
+                ShowError("bad queue type %lu", queueType);
             }
             
             iVar3 = piVar1[2];

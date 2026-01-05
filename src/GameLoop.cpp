@@ -161,7 +161,7 @@ loop_start:
     }
     pGameState = g_GameState_00436998;
     if (pGameState->maxStates < 5) {
-        ShowError("\"GameState Error  #%d\"", 1);
+        ShowError("GameState Error  #%d", 1);
     }
     if (*(int*)((char*)pGameState->stateValues + 0x10) == zero) {
         goto skip_debug;
@@ -608,7 +608,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
         if (handled == 0) {
             // Still not handled - dump message and show error
             msg->Dump(0);
-            WriteToMessageLog("\"lost message\"");
+            WriteToMessageLog("lost message");
             SC_Message_Send(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
         }
     }
@@ -734,7 +734,6 @@ static void __stdcall StubDraw(int, int) {}
 static void __fastcall StubHandlerMethod(void* _this, SC_Message* msg) {}
 
 static int StubHandleMessage(SC_Message* msg) {
-    ShowError("STUB: StubHandleMessage called (cmd=%d)", msg->command);
     return 1; // Mark handled
 }
 
@@ -846,7 +845,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         handler = (void*)field_0x18;
         EventList* pList2 = (EventList*)eventList;
         if (handler == 0) {
-            ShowError("\"queue fault 0101\"");
+            ShowError("queue fault 0101");
         }
         pList2->current = pList2->head;
         if (pList2->field_0x0C == 1 || pList2->field_0x0C == 2) {
@@ -864,7 +863,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                     if ((int)pList2->tail == iCur) {
                         // Append at end
                         if (handler == 0) {
-                            ShowError("\"queue fault 0112\"");
+                            ShowError("queue fault 0112");
                         }
                         void* pvNode = (void*)AllocateMemory(0xc);
                         int* piNode = 0;
@@ -880,7 +879,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                             pList2->current = (EventNode*)piNode;
                         } else {
                             if ((int)pList2->tail == 0 || *(int*)((int)pList2->tail + 4) != 0) {
-                                ShowError("\"queue fault 0113\"");
+                                ShowError("queue fault 0113");
                             }
                             piNode[1] = 0;
                             *piNode = (int)pList2->tail;
@@ -902,7 +901,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     // Call handler's vtable method at +0x10 (Init method) with the message
     handler = (void*)field_0x18;
     if (handler == 0) {
-        ShowError("\"missing modual %d\"", *(int*)((char*)msg + 0x88));
+        ShowError("missing modual %d", *(int*)((char*)msg + 0x88));
     } else {
         (*(void (**)(SC_Message*))(*(int*)handler + 0x10))(msg);
     }
@@ -1039,7 +1038,7 @@ int* CreateHandler(int command) {
         handler = (int*)new Handler16();
         break;
     default:
-        ShowError("\"Unknown modual %d\"", command);
+        ShowError("Unknown modual %d", command);
         handler = 0;
         break;
     }
@@ -1137,7 +1136,7 @@ int* FUN_004189d0(void* node, void* data) {
 /* Function start: 0x4188D0 */
 void EventList::InsertNode(void* data) {
     if (data == 0) {
-        ShowError("\"queue fault 0102\"");
+        ShowError("queue fault 0102");
     }
     EventNode* node = (EventNode*)AllocateMemory(0xc);
     EventNode* newNode = 0;
@@ -1221,7 +1220,7 @@ int GameLoop::AddHandler(void* handler) {
     
     // Check handler not null
     if (handler == 0) {
-        ShowError("\"illegal modual insertion\"");
+        ShowError("illegal modual insertion");
     }
     
     // Get eventList
@@ -1229,7 +1228,7 @@ int GameLoop::AddHandler(void* handler) {
     
     // Check list not null (uses handler as check, matches disasm)
     if (handler == 0) {
-        ShowError("\"queue fault 0103\"");
+        ShowError("queue fault 0103");
     }
     
     // Set current to head for duplicate check
@@ -1244,7 +1243,7 @@ int GameLoop::AddHandler(void* handler) {
         }
         // Compare handler IDs at offset 0x88
         if (*(int*)((char*)data + 0x88) == *(int*)((char*)handler + 0x88)) {
-            ShowError("\"illegal modual insertion double\"");
+            ShowError("illegal modual insertion double");
             return 0;
         }
         // Check if at tail
@@ -1260,7 +1259,7 @@ int GameLoop::AddHandler(void* handler) {
     // Reset for insertion
     list = (EventList*)eventList;
     if (handler == 0) {
-        ShowError("\"queue fault 0101\"");
+        ShowError("queue fault 0101");
     }
     list->current = list->head;
     
@@ -1278,7 +1277,7 @@ int GameLoop::AddHandler(void* handler) {
                 if (*(int*)((char*)data + 0x88) < *(int*)((char*)handler + 0x88)) {
                     // Insert before current
                     if (handler == 0) {
-                        ShowError("\"queue fault 0102\"");
+                        ShowError("queue fault 0102");
                     }
                     newNode = (void*)AllocateMemory(0xc);
                     nodePtr = 0;
@@ -1313,7 +1312,7 @@ int GameLoop::AddHandler(void* handler) {
                 if (list->tail == current) {
                     // Append at end
                     if (handler == 0) {
-                        ShowError("\"queue fault 0112\"");
+                        ShowError("queue fault 0112");
                     }
                     newNode = (void*)AllocateMemory(0xc);
                     if (newNode != 0) {
@@ -1334,7 +1333,7 @@ int GameLoop::AddHandler(void* handler) {
                         list->current = (EventNode*)handler;
                     } else {
                         if ((int)list->tail == 0 || *(int*)((char*)list->tail + 4) != 0) {
-                            ShowError("\"queue fault 0113\"");
+                            ShowError("queue fault 0113");
                         }
                         *(int*)((char*)handler + 4) = 0;
                         *(int*)handler = (int)list->tail;

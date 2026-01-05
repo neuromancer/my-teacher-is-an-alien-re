@@ -14,10 +14,8 @@ OptionMenu::OptionMenu()
     }
     selected_option = 5;
 
-    Sprite* option1;
-    options[0] = option1 = (Sprite*)AllocateMemory(sizeof(Sprite));
+    Sprite* option1 = new Sprite("demo/option1.smk");
     if (option1) {
-        option1->Sprite::Sprite("demo/option1.smk");
         option1->flags &= ~2;
         option1->loc_x = 216;
         option1->loc_y = 202;
@@ -29,10 +27,8 @@ OptionMenu::OptionMenu()
         option1->SetRange(3, 13, 13);
     }
 
-    Sprite* option2;
-    options[1] = option2 = (Sprite*)AllocateMemory(sizeof(Sprite));
+    Sprite* option2 = new Sprite("demo/option2.smk");
     if (option2) {
-        option2->Sprite::Sprite("demo/option2.smk");
         option2->flags &= ~2;
         option2->loc_x = 216;
         option2->loc_y = 202;
@@ -44,10 +40,8 @@ OptionMenu::OptionMenu()
         option2->SetRange(3, 13, 13);
     }
 
-    Sprite* option3;
-    options[2] = option3 = (Sprite*)AllocateMemory(sizeof(Sprite));
+    Sprite* option3 = new Sprite("demo/option3.smk");
     if (option3) {
-        option3->Sprite::Sprite("demo/option3.smk");
         option3->flags &= ~2;
         option3->loc_x = 216;
         option3->loc_y = 202;
@@ -63,24 +57,12 @@ OptionMenu::OptionMenu()
 /* Function start: 0x409BF0 */
 OptionMenu::~OptionMenu()
 {
-    try {
-        if (options[0]) {
-            options[0]->~Sprite();
-            FreeMemory(options[0]);
-            options[0] = 0;
-        }
-        if (options[1]) {
-            options[1]->~Sprite();
-            FreeMemory(options[1]);
-            options[1] = 0;
-        }
-        if (options[2]) {
-            options[2]->~Sprite();
-            FreeMemory(options[2]);
-            options[2] = 0;
-        }
-    } catch (...) {
-    }
+    delete options[0];
+    options[0] = 0;
+    delete options[1];
+    options[1] = 0;
+    delete options[2];
+    options[2] = 0;
 }
 
 /* Function start: 0x409CD0 */

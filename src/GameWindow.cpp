@@ -147,7 +147,7 @@ void __stdcall ParseCommandLine(char *param_1) {
 int GameWindow::InitGraphics(void) {
   if (GetColorBitDepth() != 8) {
     ShowMessage(
-        "For Optimum performance, please set your display to 256 colors.");
+        "For Optimum performance, please set your display to 256 Colors");
   }
   InitVideoSystem();
   InitMouseSettings();
