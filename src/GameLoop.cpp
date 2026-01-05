@@ -12,6 +12,7 @@
 #include "Message.h"
 #include "string.h"
 #include "DrawEntry.h"
+#include "Handler12.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -984,7 +985,7 @@ class Handler8 { public: Handler8() { *(void**)data = g_HandlerVTable; } char da
 class Handler9 { public: Handler9() { *(void**)data = g_HandlerVTable; } char data[0x650]; };  // 0x406fc0
 class Handler10 { public: Handler10() { *(void**)data = g_HandlerVTable; } char data[0x6a8]; }; // 0x404ca0
 class Handler11 { public: Handler11() { *(void**)data = g_HandlerVTable; } char data[0x648]; }; // 0x40acc0
-class Handler12 { public: Handler12() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x401000
+// Handler12 is defined in Handler12.h
 class Handler13 { public: Handler13() { *(void**)data = g_HandlerVTable; } char data[0xd0]; };  // 0x401b60
 class Handler14 { public: Handler14() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x40b7e0
 class Handler15 { public: Handler15() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x40a2e0
