@@ -1,58 +1,48 @@
 #include "SearchScreen.h"
 #include "Memory.h"
 #include "Hotspot.h"
+#include "Palette.h"
+#include "MouseControl.h"
 #include <stdio.h>
 #include <string.h>
-#include <new>
 
 extern "C" {
     void FUN_004191d0(char*);
-    void* FUN_0041ea50(void*);
     char* FUN_004195c0(char*);
-    void FUN_0041eab0(void*, char*);
-    void* FUN_0041f280(void*);
 }
 
 /* Function start: 0x404A20 */
 int SearchScreen::LBLParse(char* line)
 {
-    char key[32];
     char value[64];
+    char key[32];
 
     sscanf(line, "%s", key);
     FUN_004191d0(line);
 
-    if (_strcmpi(key, "PALETTE") == 0) {
+    if (strcmp(key, "PALETTE") == 0) {
         sscanf(line, "%*s %s", value);
         if (field_600 == 0) {
-            void* mem = AllocateMemory(8);
-            void* palette = 0;
-            if (mem) {
-                palette = FUN_0041ea50(mem);
-            }
+            Palette* palette = new Palette();
             field_600 = palette;
             char* path = FUN_004195c0(value);
-            FUN_0041eab0(palette, path);
+            palette->Load(path);
         }
     }
-    else if (_strcmpi(key, "AMBIENT") == 0) {
+    else if (strcmp(key, "AMBIENT") == 0) {
         if (field_604 == 0) {
-            void* mem = AllocateMemory(0x98);
-            void* obj = 0;
-            if (mem) {
-                obj = FUN_0041f280(mem);
-            }
-            field_604 = obj;
+            MouseControl* mouseControl = new MouseControl();
+            field_604 = mouseControl;
         }
         Parser::ProcessFile((Parser*)field_604, this, 0);
     }
-    else if (_strcmpi(key, "HOTSPOT") == 0) {
+    else if (strcmp(key, "HOTSPOT") == 0) {
         Hotspot* obj = new Hotspot();
         field_608[field_634] = obj;
         Parser::ProcessFile((Parser*)obj, this, 0);
         field_634++;
     }
-    else if (_strcmpi(key, "END") == 0) {
+    else if (strcmp(key, "END") == 0) {
         return 1;
     }
     else {
