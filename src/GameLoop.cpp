@@ -11,6 +11,7 @@
 #include "globals.h"
 #include "Message.h"
 #include "string.h"
+#include "DrawEntry.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -35,7 +36,7 @@ extern "C" {
 
 
 // Thiscall functions - declared outside extern "C"
-void FUN_00411080(void* obj, int flag);  // Object destructor with cleanup
+// FUN_00411080 is DrawEntry::Cleanup, defined in DrawEntry.cpp
 
 int* CreateHandler(int command); // 0x40CDD0 - Handler factory
 void* FUN_004188a0(void* node, int flag);  // Node destructor
@@ -782,7 +783,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
             while (*(int*)pQueue != 0) {
                 pvVar3 = (void*)ZBuffer::PopNode_2((int*)pQueue);
                 if (pvVar3 != 0) {
-                    FUN_00411080(pvVar3, 1);
+                    ((DrawEntry*)pvVar3)->Cleanup(1);
                 }
             }
         }
@@ -1353,26 +1354,7 @@ int* GameLoop::GetOrCreateHandler(int command) {
     return handler;
 }
 
-void FUN_00411080(void* obj, int flag) {
-    void* v1 = *(void**)((char*)obj + 4);
-    if (v1 != 0) {
-        ReleaseVideoBuffer((VideoBufferData*)v1);
-        FreeMemory(v1);
-        *(int*)((char*)obj + 4) = 0;
-    }
-    void* vtable = *(void**)((char*)obj + 8);
-    if (vtable != 0) {
-         (*(void (__cdecl **)(int))((int*)vtable)[0])(1); // Get destructor? 
-         // Code: (**(code **)**(undefined4 **)((int)this + 8))(1);
-         // `*(this+8)` is a pointer to object? Or vtable?
-         // `**(this+8)` is vtable?
-         // `(** ...)(1)` calls index 0 with 1.
-         // Yes, virtual destructor.
-         *(int*)((char*)obj + 8) = 0;
-    }
-    if ((flag & 1) != 0) {
-        FreeMemory(obj);
-    }
-}
+// FUN_00411080 is DrawEntry::Cleanup, implemented in DrawEntry.cpp
+
 
 

@@ -7,6 +7,7 @@
 #include "Animation.h"
 #include "GlyphRect.h"
 #include "RenderEntry.h"
+#include "SoundCommand.h"
 #include "string.h"
 #include "globals.h"
 #include <string.h>
@@ -22,11 +23,6 @@ extern "C" {
 void __stdcall FUN_0041b110(int, int, void*, int, int);
 
 
-// Base SoundCommand
-struct SoundCommand {
-    virtual void Execute(GlyphRect* rect) = 0;
-    
-};
 
 struct CommandType1 : public SoundCommand {
     unsigned int parameter1; // Priority
