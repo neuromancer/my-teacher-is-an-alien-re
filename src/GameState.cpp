@@ -4,6 +4,15 @@
 #include <stdio.h>
 #include <string.h>
 
+char s_COMBATS[] = "COMBATS";
+char s_duncan[] = "duncan";
+char s_DIALOG[] = "DIALOG";
+char s_COMBAT[] = "COMBAT";
+char s_susan[] = "susan";
+char s_MEET_MY[] = "MEET MY";
+char s_TESTPUZZLE[] = "TESTPUZZLE";
+
+
 GameState::GameState()
 {
     stateValues = 0;

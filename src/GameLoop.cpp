@@ -728,16 +728,28 @@ int GameLoop::UpdateGame()
 // Stubs for missing functions
 // -------------------------------------------------------------------------
 
+static void __cdecl StubDestructor(int) {}
+static void __cdecl StubMethods() {}
+static void __stdcall StubDraw(int, int) {}
+static void __fastcall StubHandlerMethod(void* _this, SC_Message* msg) {}
+
 static int StubHandleMessage(SC_Message* msg) {
     ShowError("STUB: StubHandleMessage called (cmd=%d)", msg->command);
     return 1; // Mark handled
 }
 
-static void* g_StubVTable[] = { 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    (void*)StubHandleMessage // Offset 0x20
+static void* g_HandlerVTable[] = { 
+    (void*)StubDestructor,    // 0x00
+    (void*)StubMethods,       // 0x04
+    (void*)StubMethods,       // 0x08
+    (void*)StubDestructor,    // 0x0c
+    (void*)StubMethods,       // 0x10
+    (void*)StubHandlerMethod, // 0x14
+    (void*)StubDestructor,    // 0x18
+    (void*)StubDraw,          // 0x1c
+    (void*)StubHandleMessage  // 0x20
 };
-static void* g_StubObject = g_StubVTable;
+static void* g_StubObject = g_HandlerVTable;
 
 // FUN_0041a150 is SC_Message_Send, implemented in Message.cpp
 
@@ -963,21 +975,21 @@ void __fastcall ReleaseVideoBuffer(VideoBufferData* data) {
     CleanupVideoBuffer(data);
 }
 // Handler classes with correct sizes for new operator
-// Constructors are extern - defined elsewhere
-class Handler1 { public: Handler1(); char data[0xa8]; };   // 0x403340
-class Handler2 { public: Handler2(); char data[0xb0]; };   // 0x40f710
-class Handler4 { public: Handler4(); char data[0x6f0]; };  // 0x40e220
-class Handler5 { public: Handler5(); char data[0xf0]; };   // 0x40fb80
-class Handler6 { public: Handler6(); char data[0x640]; };  // 0x4044c0
-class Handler8 { public: Handler8(); char data[0xa8]; };   // 0x406120
-class Handler9 { public: Handler9(); char data[0x650]; };  // 0x406fc0
-class Handler10 { public: Handler10(); char data[0x6a8]; }; // 0x404ca0
-class Handler11 { public: Handler11(); char data[0x648]; }; // 0x40acc0
-class Handler12 { public: Handler12(); char data[0xb8]; };  // 0x401000
-class Handler13 { public: Handler13(); char data[0xd0]; };  // 0x401b60
-class Handler14 { public: Handler14(); char data[0xb8]; };  // 0x40b7e0
-class Handler15 { public: Handler15(); char data[0xb8]; };  // 0x40a2e0
-class Handler16 { public: Handler16(); char data[0xf8]; };  // 0x410650
+// Handler classes with inline constructors using stub vtable
+class Handler1 { public: Handler1() { *(void**)data = g_HandlerVTable; } char data[0xa8]; };   // 0x403340
+class Handler2 { public: Handler2() { *(void**)data = g_HandlerVTable; } char data[0xb0]; };   // 0x40f710
+class Handler4 { public: Handler4() { *(void**)data = g_HandlerVTable; } char data[0x6f0]; };  // 0x40e220
+class Handler5 { public: Handler5() { *(void**)data = g_HandlerVTable; } char data[0xf0]; };   // 0x40fb80
+class Handler6 { public: Handler6() { *(void**)data = g_HandlerVTable; } char data[0x640]; };  // 0x4044c0
+class Handler8 { public: Handler8() { *(void**)data = g_HandlerVTable; } char data[0xa8]; };   // 0x406120
+class Handler9 { public: Handler9() { *(void**)data = g_HandlerVTable; } char data[0x650]; };  // 0x406fc0
+class Handler10 { public: Handler10() { *(void**)data = g_HandlerVTable; } char data[0x6a8]; }; // 0x404ca0
+class Handler11 { public: Handler11() { *(void**)data = g_HandlerVTable; } char data[0x648]; }; // 0x40acc0
+class Handler12 { public: Handler12() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x401000
+class Handler13 { public: Handler13() { *(void**)data = g_HandlerVTable; } char data[0xd0]; };  // 0x401b60
+class Handler14 { public: Handler14() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x40b7e0
+class Handler15 { public: Handler15() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x40a2e0
+class Handler16 { public: Handler16() { *(void**)data = g_HandlerVTable; } char data[0xf8]; };  // 0x410650
 
 /* Function start: 0x40CDD0 */
 int* CreateHandler(int command) {

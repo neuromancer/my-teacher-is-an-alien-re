@@ -1,6 +1,10 @@
 #include "ZBuffer.h"
 #include "globals.h"
 #include "Message.h"
+
+char s_MustDefine[] = "Parser:: Must define an LBLParse func";
+char s_hIam[] = "hIam %d";
+
 #include "string.h"
 #include <stdlib.h>
 #include "VBuffer.h"

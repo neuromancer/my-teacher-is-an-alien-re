@@ -15,8 +15,9 @@
 #include "FlagArray.h"
 #include "StringTable.h"
 
-// Pointers initialized to 0 to avoid crash in static CRT initialization or early access to invalid memory.
-// Original code had hardcoded addresses here which are invalid in the new build.
+// Pointers initialized to 0 to avoid crash
+// Sorted by address 0x00436960 - 0x004369A4
+
 char* g_Buffer_00436960 = 0;
 void* g_Buffer_00436964 = 0;
 InputManager* g_InputManager_00436968 = 0;
@@ -24,35 +25,40 @@ Sound* g_Sound_0043696c = 0;
 #include "GameConfig.h"
 GameConfig* g_GameConfig_00436970 = 0;
 VBuffer* g_WorkBuffer_00436974 = 0;
-CDData* g_CDData_0043697c = 0;
 Mouse* g_Mouse_00436978 = 0;
+CDData* g_CDData_0043697c = 0;
 Timer* g_Timer_00436980 = 0;
+TimedEventPool* DAT_00436984 = 0;
+TimedEventPool* DAT_00436988 = 0;
+ZBufferManager* DAT_0043698c = 0;
+AnimatedAsset* g_TextManager_00436990 = 0;
+char* g_Unknown_00436994 = 0;
+GameState* g_GameState_00436998 = 0;
+GameState* g_GameState3_0043699c = 0;
+GameState* g_GameState4_004369a0 = 0;
+GameState* g_GameState2_004369a4 = 0;
+
+// Sprite* g_Sprite_004360a0 = 0; // Moved/Removed to match address 0x4360A0 (EngineB/mCNavigator)
+
+// Other globals
 Timer g_leftClickTimer;  // 0x43de40
 Timer g_rightClickTimer; // 0x43de58
 int DAT_004373b8 = 0; // DoubleClickTime
-FlagArray* g_Manager_00435a84 = 0;
-StringTable* g_Strings_00435a70 = 0;
-char* g_Unknown_00436994 = 0;
-AnimatedAsset* g_TextManager_00436990 = 0;
+
+int DAT_004373bc = 0; // WaitForInput var
 
 // String pointers for config files
 char s_Setup_cfg[] = "Setup.cfg";
 extern "C" char* PTR_s_Setup_cfg_00437454 = s_Setup_cfg;
 extern "C" char DAT_004371a8[] = "rb";
 
-GameState* g_GameState_00436998 = 0;
-GameState* g_GameState2_004369a4 = 0;
-GameState* g_GameState3_0043699c = 0;
-GameState* g_GameState4_004369a0 = 0;
-Sprite* g_Sprite_004360a0 = 0;
+// ...
 
-// Regular variables initialized to 0
-int DAT_004373bc = 0;
 int DAT_00437f4c = 0;
 int DAT_0043bdf4 = 0;
-unsigned int DAT_0043c760[90] = {0}; // Array of size 0x168 (360 bytes) / 4 = 90
+unsigned int DAT_0043c760[90] = {0}; 
 int DAT_0043d55c = 0;
-char DAT_0043d568[260] = {0}; // Buffer
+char DAT_0043d568[260] = {0}; 
 HWND DAT_0043de7c = 0;
 int DAT_0043bdf0 = 0; 
 char DAT_00435ef4 = 0;
@@ -72,7 +78,7 @@ short DAT_00437f6a = 0;
 HDC h_0043841c = 0;
 void* DAT_0043842c = 0;
 HPALETTE hPal_0043748c = 0;
-HPALETTE DAT_004374ae = 0;  // Previously selected palette
+HPALETTE DAT_004374ae = 0;  
 HGDIOBJ DAT_00438424 = 0;
 int DAT_0043826c[32];
 int DAT_00437fec[32];
@@ -102,13 +108,6 @@ void* DAT_0043f100 = 0;
 char DAT_0043be30 = 0;
 int DAT_0043be34 = 0;
 
-TimedEventPool* DAT_00436984 = 0;
-TimedEventPool* DAT_00436988 = 0;
-ZBufferManager* DAT_0043698c = 0;
-void* DAT_00435a74 = 0;
-void* DAT_00435a78 = 0;
-void* DAT_00435a7c = 0;
-int DAT_00435a80 = 0;
 void* DAT_0043eff0 = 0;
 
 typedef void (__cdecl *SmackSoundCheckFn)();

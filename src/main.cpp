@@ -33,6 +33,16 @@ extern int FUN_00422510();
 
 #include "globals.h"
 
+// Globals moved from globals.cpp to match layout
+StringTable* g_Strings_00435a70 = 0;
+void* DAT_00435a74 = 0;
+void* DAT_00435a78 = 0;
+void* DAT_00435a7c = 0;
+int DAT_00435a80 = 0;
+FlagArray* g_Manager_00435a84 = 0;
+
+static char s_TeacherDemo[] = "Teacher Demo"; 
+
 GameWindow g_GameWindow;
 
 

@@ -23,6 +23,8 @@ extern int mCNavNode_GetNextNode(void*);
 extern int FindCharIndex(char*);
 extern void CleanupObjectArray(void*, int);
 
+Sprite* g_Sprite_004360a0 = 0;
+
 
 
 void* ObjectPool::Allocate_2()
