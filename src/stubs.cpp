@@ -34,7 +34,7 @@ void __fastcall FUN_0040d2a0(void* param_1) {} // Pool cleanup function
 // FUN_0041b110 implemented in VBuffer
 // FUN_0041b0a0 declared as __stdcall
 void FUN_00421700() {}
-void FUN_00422e1a() {}
+void FUN_00422e1a(unsigned int) {}
 // FUN_00422e71 implemented in VideoTable.cpp as GetVideoBufferData
 void FUN_00422e8f() {}
 void FUN_00422a01() {}
@@ -79,6 +79,7 @@ void FUN_00426550(const char* filename, int* stat_buf) {
     if (stat_buf) stat_buf[4] = 0; 
 }
 void FUN_0041a3b9() {} // Referenced in Message.cpp
+void FUN_0041a9e0(int) {} // Video cleanup function
 
 // CRT wrapper functions used by GameConfig
 // FUN_00425e50 implemented in FlagArray.cpp
@@ -299,6 +300,11 @@ void* __fastcall FUN_00422690(void* ptr) { return ptr; }
 extern int DAT_00437f54;
 
 extern "C" {
+/* Function start: 0x4231C6 */
+int GetCurrentVideoHandle() {
+    return (signed char)DAT_00437f54;
+}
+
 /* Function start: 0x4231BC */
 int ResetVideoFlag() {
     DAT_00437f54 = 0xff;
@@ -307,7 +313,6 @@ int ResetVideoFlag() {
 
 /* Function start: 0x423CFE */
 int CleanupVideoSystem() {
-    // Stub - sets video flag and frees video resources
     DAT_00437f54 = 0xff;
     return 0;
 }

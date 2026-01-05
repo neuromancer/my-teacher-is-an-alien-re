@@ -9,6 +9,8 @@
 #include "Sample.h"
 #include "TimedEvent.h"
 #include "globals.h"
+#include "Message.h"
+#include "string.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -35,7 +37,6 @@ extern "C" {
 // Thiscall functions - declared outside extern "C"
 void FUN_00411080(void* obj, int flag);  // Object destructor with cleanup
 
-int FUN_00418460(GameLoop* self, int command); // RemoveHandler
 int* CreateHandler(int command); // 0x40CDD0 - Handler factory
 void* FUN_004188a0(void* node, int flag);  // Node destructor
 int* FUN_004189d0(void* node, void* data);  // Node::Init
@@ -193,18 +194,16 @@ exit_loop:
 /* Function start: 0x4177B0 */
 void GameLoop::ProcessInput() {
     int inputResult;
-    int* pMouseCoords;
+    InputState** ppMouse;
+    InputState* pMouse;
     int keyCode;
     int mouseX;
     int mouseY;
     int clickX;
     int clickY;
     int mouseButton;
-    void* pHandler;
     TimedEvent* pEvent;
     TimedEventPool* pPool;
-    char buffer[0xC0]; // Raw buffer for SC_Message
-    SC_Message* pLocalMessage;
     
     inputResult = g_InputManager_00436968->PollEvents(1);
     field_0x00 = field_0x00 | inputResult;
@@ -212,105 +211,100 @@ void GameLoop::ProcessInput() {
         return;
     }
     
-    InputState* pMouse = g_InputManager_00436968->pMouse;
+    pMouse = g_InputManager_00436968->pMouse;
     if (pMouse == 0) {
         return;
     }
     
-    if (pMouse->ext1 < 2 && pMouse->ext2 < 2) { // field_10 and field_14
-        if (DAT_004373bc == 0) {
-            return;
+    if (pMouse->ext1 >= 2 || pMouse->ext2 >= 2 || DAT_004373bc != 0) {
+        // SC_Message on stack - triggers SEH
+        SC_Message localMessage(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        
+        localMessage.command = 3;
+        
+        if (DAT_004373bc != 0) {
+            keyCode = WaitForInput();
         }
-    }
-    
-    try {
-        pLocalMessage = (SC_Message*)buffer;
-        pLocalMessage->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    } catch (...) {
-    }
-    
-    pLocalMessage->command = 3; // command = 3
-    
-    if (DAT_004373bc != 0) {
-        keyCode = WaitForInput();
-    }
-    
-    // pMouse was already read
-    if (pMouse == 0) {
-        mouseX = 0;
-    } else {
-        mouseX = pMouse->ext1; // field_10
-    }
-    pLocalMessage->mouseX = mouseX;
-    
-    if (pMouse == 0) {
-        mouseY = 0;
-    } else {
-        mouseY = pMouse->ext2; // field_14
-    }
-    pLocalMessage->mouseY = mouseY;
-    
-    clickY = 0;
-    if (pMouse != 0) {
-        clickY = pMouse->y; // field_4
-    }
-    clickX = 0;
-    if (pMouse != 0) {
-        clickX = pMouse->x; // field_0
-    }
-    pLocalMessage->clickX = clickX;
-    pLocalMessage->clickY = clickY;
-    
-    if (pMouse != 0) {
-        if (pMouse->ext1 >= 2 || pMouse->ext2 >= 2) {
-            mouseButton = 1;
+        
+        // Get pointer to pMouse slot - matches ADD ECX, 0x1a0 pattern
+        ppMouse = &g_InputManager_00436968->pMouse;
+        
+        pMouse = *ppMouse;
+        if (pMouse == 0) {
+            mouseX = 0;
         } else {
+            mouseX = pMouse->ext1;
+        }
+        localMessage.mouseX = mouseX;
+        
+        pMouse = *ppMouse;
+        if (pMouse == 0) {
+            mouseY = 0;
+        } else {
+            mouseY = pMouse->ext2;
+        }
+        localMessage.mouseY = mouseY;
+        
+        pMouse = *ppMouse;
+        clickY = 0;
+        if (pMouse != 0) {
+            clickY = pMouse->y;
+        }
+        if (pMouse != 0) {
+            clickX = pMouse->x;
+        } else {
+            clickX = 0;
+        }
+        localMessage.clickX = clickX;
+        localMessage.clickY = clickY;
+        
+        pMouse = *ppMouse;
+        if (pMouse == 0) {
             mouseButton = 0;
-        }
-    } else {
-        mouseButton = 0;
-    }
-    
-    if (mouseButton != 0) {
-        Sample* pSample = *(Sample**)((char*)g_Mouse_00436978 + 0x1bc);
-        if (pSample != 0) {
-            pSample->Play(100, 1);
-        }
-    }
-    
-    if (keyCode == 0x5a) {
-        // Z key - increase frame time
-        field_0x08 = field_0x08 + 10;
-    }
-    else if (keyCode == 0x41) {
-        // A key - decrease frame time (min 10)
-        int newVal = field_0x08 - 10;
-        if ((unsigned int)newVal <= 10) {
-            newVal = 10;
-        }
-        field_0x08 = newVal;
-    }
-    else {
-        // Pass to handler
-        pHandler = (void*)field_0x18;
-        if (pHandler != 0) {
-            (*(void (**)(void*, SC_Message*))(*(int*)pHandler + 0x14))(pHandler, pLocalMessage);
-        }
-    }
-    
-    if (pLocalMessage->targetAddress != 0 && pLocalMessage->priority != 0) {
-        pPool = DAT_00436988;
-        pEvent = pPool->Create((void*)pPool->list.tail, 0);
-        ((TimedEvent*)((char*)pEvent + 8))->CopyFrom((TimedEvent*)pLocalMessage);
-        if (pPool->list.tail == 0) {
-            pPool->list.head = (TimedEvent*)pEvent;
         } else {
-            *(TimedEvent**)pPool->list.tail = (TimedEvent*)pEvent;
+            if (pMouse->ext1 >= 2 || pMouse->ext2 >= 2) {
+                mouseButton = 1;
+            } else {
+                mouseButton = 0;
+            }
         }
-        pPool->list.tail = (TimedEvent*)pEvent;
+        
+        if (mouseButton != 0) {
+            Sample* pSample = *(Sample**)((char*)g_Mouse_00436978 + 0x1bc);
+            if (pSample != 0) {
+                pSample->Play(100, 1);
+            }
+        }
+        
+        if (keyCode == 0x5a) {
+            field_0x08 = field_0x08 + 10;
+        }
+        else if (keyCode == 0x41) {
+            unsigned int newVal = field_0x08 - 10;
+            if (newVal <= 10) {
+                newVal = 10;
+            }
+            field_0x08 = newVal;
+        }
+        else {
+            void* pHandler = (void*)field_0x18;
+            if (pHandler != 0) {
+                (*(void (**)(void*, SC_Message*))(*(int*)pHandler + 0x14))(pHandler, &localMessage);
+            }
+        }
+        
+        if (localMessage.targetAddress != 0 && localMessage.priority != 0) {
+            pPool = DAT_00436988;
+            pEvent = pPool->Create((void*)pPool->list.tail, 0);
+            ((TimedEvent*)((char*)pEvent + 8))->CopyFrom((TimedEvent*)&localMessage);
+            if (pPool->list.tail == 0) {
+                pPool->list.head = (TimedEvent*)pEvent;
+            } else {
+                *(TimedEvent**)pPool->list.tail = (TimedEvent*)pEvent;
+            }
+            pPool->list.tail = (TimedEvent*)pEvent;
+        }
     }
-    
-    pLocalMessage->SC_Message::~SC_Message();
 }
 
 /* Function start: 0x417320 */
@@ -538,10 +532,8 @@ void GameLoop::CleanupLoop() {
 }
 
 // External functions for UpdateGame
-extern "C" {
-    void FUN_004191d0(const char* msg);
-    void FUN_0041a150(int, int, int, int, int, int, int, int, int, int);
-}
+// FUN_004191d0 is WriteToMessageLog from string.h
+// FUN_0041a150 is SC_Message_Send from Message.h
 
 // extern void* DAT_004369a4;  // GameState for string lookup (replaced with g_GameState2_004369a4 from globals.h)
 extern char* g_Unknown_00436994; // String buffer for game state strings
@@ -615,8 +607,8 @@ void GameLoop::ProcessMessage(SC_Message* msg)
         if (handled == 0) {
             // Still not handled - dump message and show error
             msg->Dump(0);
-            FUN_004191d0("\"lost message\"");
-            FUN_0041a150(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
+            WriteToMessageLog("\"lost message\"");
+            SC_Message_Send(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
         }
     }
 }
@@ -746,11 +738,7 @@ static void* g_StubVTable[] = {
 };
 static void* g_StubObject = g_StubVTable;
 
-extern "C" {
-    void FUN_0041a150(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10) {
-        ShowError("STUB: FUN_0041a150 called");
-    }
-}
+// FUN_0041a150 is SC_Message_Send, implemented in Message.cpp
 
 /* Function start: 0x417F40 */
 void GameLoop::HandleSystemMessage(SC_Message* msg) {
@@ -923,7 +911,7 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
         GetOrCreateHandler(msg->sourceAddress);
         return 1;
     case 0x14:
-        FUN_00418460(this, msg->sourceAddress);
+        RemoveHandler(msg->sourceAddress);
         return 1;
     default:
         return 0;
@@ -934,117 +922,108 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 // Implementations of missing functions
 // -------------------------------------------------------------------------
 
-void FUN_0041aa10(int param_1) {
-    // Stub for recursive cleanup
+// Forward declarations for ReleaseVideoBuffer helper functions
+extern "C" {
+    int __cdecl GetCurrentVideoHandle();        // 0x4231C6
+    void __cdecl ResetVideoFlag();              // 0x4231BC  
+    void __cdecl FUN_00422e1a(unsigned int);    // Video release function
+    void __cdecl FUN_0041a9e0(int);             // Video cleanup function
 }
 
-// Handler constructor forward declarations (all __thiscall, returns this)
-extern "C" {
-    int* __cdecl FUN_00403340(void* mem);   // Handler1 constructor (command 1)
-    int* __cdecl FUN_0040f710(void* mem);   // Handler2 constructor (command 2)
-    int* __cdecl FUN_0040e220(void* mem);   // Handler4 constructor (command 4)
-    int* __cdecl FUN_0040fb80(void* mem);   // Handler5 constructor (command 5)
-    int* __cdecl FUN_004044c0(void* mem);   // Handler6 constructor (command 6)
-    int* __cdecl FUN_00406120(void* mem);   // Handler8 constructor (command 8)
-    int* __cdecl FUN_00406fc0(void* mem);   // Handler9 constructor (command 9)
-    int* __cdecl FUN_00404ca0(void* mem);   // Handler10 constructor (command 10)
-    int* __cdecl FUN_0040acc0(void* mem);   // Handler11 constructor (command 11)
-    int* __cdecl FUN_00401000(void* mem);   // Handler12 constructor (command 12)
-    int* __cdecl FUN_00401b60(void* mem);   // Handler13 constructor (command 13)
-    int* __cdecl FUN_0040b7e0(void* mem);   // Handler14 constructor (command 14)
-    int* __cdecl FUN_0040a2e0(void* mem);   // Handler15 constructor (command 15)
-    int* __cdecl FUN_00410650(void* mem);   // Handler16 constructor (command 16)
+// Structure for video buffer object (used at offset of VBuffer/similar)
+struct VideoBufferData {
+    char padding[0x10];    // 0x00-0x0F
+    int isActive;          // 0x10 - flag indicating if buffer is active
+    char padding2[0x8];    // 0x14-0x1B
+    int videoHandle;       // 0x1C - video system handle
+};
+
+/* Function start: 0x41AC10 */
+void __fastcall CheckAndResetVideoFlag(VideoBufferData* data) {
+    int currentHandle = GetCurrentVideoHandle();
+    if (currentHandle == data->videoHandle) {
+        ResetVideoFlag();
+    }
 }
+
+/* Function start: 0x41AA60 */
+void __fastcall CleanupVideoBuffer(VideoBufferData* data) {
+    if (data->isActive != 0) {
+        FUN_00422e1a((unsigned int)data->videoHandle);
+        FUN_0041a9e0(data->videoHandle);
+        data->videoHandle = 0xFFFFFFFF;
+        data->isActive = 0;
+    }
+}
+
+/* Function start: 0x41AA10 */
+void __fastcall ReleaseVideoBuffer(VideoBufferData* data) {
+    CheckAndResetVideoFlag(data);
+    CleanupVideoBuffer(data);
+}
+// Handler classes with correct sizes for new operator
+// Constructors are extern - defined elsewhere
+class Handler1 { public: Handler1(); char data[0xa8]; };   // 0x403340
+class Handler2 { public: Handler2(); char data[0xb0]; };   // 0x40f710
+class Handler4 { public: Handler4(); char data[0x6f0]; };  // 0x40e220
+class Handler5 { public: Handler5(); char data[0xf0]; };   // 0x40fb80
+class Handler6 { public: Handler6(); char data[0x640]; };  // 0x4044c0
+class Handler8 { public: Handler8(); char data[0xa8]; };   // 0x406120
+class Handler9 { public: Handler9(); char data[0x650]; };  // 0x406fc0
+class Handler10 { public: Handler10(); char data[0x6a8]; }; // 0x404ca0
+class Handler11 { public: Handler11(); char data[0x648]; }; // 0x40acc0
+class Handler12 { public: Handler12(); char data[0xb8]; };  // 0x401000
+class Handler13 { public: Handler13(); char data[0xd0]; };  // 0x401b60
+class Handler14 { public: Handler14(); char data[0xb8]; };  // 0x40b7e0
+class Handler15 { public: Handler15(); char data[0xb8]; };  // 0x40a2e0
+class Handler16 { public: Handler16(); char data[0xf8]; };  // 0x410650
 
 /* Function start: 0x40CDD0 */
 int* CreateHandler(int command) {
-    void* mem;
     int* handler = 0;
     
     switch(command) {
     case 1:
-        mem = (void*)AllocateMemory(0xa8);
-        if (mem != 0) {
-            handler = FUN_00403340(mem);
-        }
+        handler = (int*)new Handler1();
         break;
     case 2:
-        mem = (void*)AllocateMemory(0xb0);
-        if (mem != 0) {
-            handler = FUN_0040f710(mem);
-        }
+        handler = (int*)new Handler2();
         break;
     case 4:
-        mem = (void*)AllocateMemory(0x6f0);
-        if (mem != 0) {
-            handler = FUN_0040e220(mem);
-        }
+        handler = (int*)new Handler4();
         break;
     case 5:
-        mem = (void*)AllocateMemory(0xf0);
-        if (mem != 0) {
-            handler = FUN_0040fb80(mem);
-        }
+        handler = (int*)new Handler5();
         break;
     case 6:
-        mem = (void*)AllocateMemory(0x640);
-        if (mem != 0) {
-            handler = FUN_004044c0(mem);
-        }
+        handler = (int*)new Handler6();
         break;
     case 8:
-        mem = (void*)AllocateMemory(0xa8);
-        if (mem != 0) {
-            handler = FUN_00406120(mem);
-        }
+        handler = (int*)new Handler8();
         break;
     case 9:
-        mem = (void*)AllocateMemory(0x650);
-        if (mem != 0) {
-            handler = FUN_00406fc0(mem);
-        }
+        handler = (int*)new Handler9();
         break;
     case 10:
-        mem = (void*)AllocateMemory(0x6a8);
-        if (mem != 0) {
-            handler = FUN_00404ca0(mem);
-        }
+        handler = (int*)new Handler10();
         break;
     case 11:
-        mem = (void*)AllocateMemory(0x648);
-        if (mem != 0) {
-            handler = FUN_0040acc0(mem);
-        }
+        handler = (int*)new Handler11();
         break;
     case 12:
-        mem = (void*)AllocateMemory(0xb8);
-        if (mem != 0) {
-            handler = FUN_00401000(mem);
-        }
+        handler = (int*)new Handler12();
         break;
     case 13:
-        mem = (void*)AllocateMemory(0xd0);
-        if (mem != 0) {
-            handler = FUN_00401b60(mem);
-        }
+        handler = (int*)new Handler13();
         break;
     case 14:
-        mem = (void*)AllocateMemory(0xb8);
-        if (mem != 0) {
-            handler = FUN_0040b7e0(mem);
-        }
+        handler = (int*)new Handler14();
         break;
     case 15:
-        mem = (void*)AllocateMemory(0xb8);
-        if (mem != 0) {
-            handler = FUN_0040a2e0(mem);
-        }
+        handler = (int*)new Handler15();
         break;
     case 16:
-        mem = (void*)AllocateMemory(0xf8);
-        if (mem != 0) {
-            handler = FUN_00410650(mem);
-        }
+        handler = (int*)new Handler16();
         break;
     default:
         ShowError("\"Unknown modual %d\"", command);
@@ -1054,6 +1033,77 @@ int* CreateHandler(int command) {
     return handler;
 }
 
+// Base handler class for vtable calls
+class BaseHandler {
+public:
+    virtual void Destructor(int flag);      // +0x00
+    virtual void Method04();                // +0x04
+    virtual void Method08();                // +0x08
+    virtual void Delete(int flag);          // +0x0c
+    virtual void Method10();                // +0x10
+    virtual void Method14();                // +0x14
+    virtual void Cleanup(int flag);         // +0x18
+};
+
+/* Function start: 0x418460 */
+int GameLoop::RemoveHandler(int command) {
+    EventList* pList;
+    EventNode* pNode;
+    BaseHandler* pHandler;
+    int iNext;
+    void* pPrev;
+    
+    // Find the handler in eventList
+    if (FindHandlerInEventList(command) == 0) {
+        return 0;
+    }
+    
+    // Get eventList and current node
+    pList = (EventList*)eventList;
+    pNode = pList->current;
+    
+    if (pNode == 0) {
+        pHandler = 0;
+    } else {
+        // Unlink node from doubly-linked list
+        if (pList->head == pNode) {
+            pList->head = pNode->prev;
+        }
+        if (pList->tail == pNode) {
+            pList->tail = pNode->next;
+        }
+        iNext = (int)pNode->next;
+        if (iNext != 0) {
+            *(int*)(iNext + 4) = (int)pNode->prev;
+        }
+        pPrev = (void*)pNode->prev;
+        if (pPrev != 0) {
+            *(int*)pPrev = (int)pNode->next;
+        }
+        
+        // Get data and free node
+        pHandler = 0;
+        if (pNode != 0) {
+            pHandler = (BaseHandler*)pNode->data;
+            pNode->data = 0;
+            pNode->next = 0;
+            pNode->prev = 0;
+            FreeMemory(pNode);
+            pList->current = 0;
+        }
+        pList->current = pList->head;
+    }
+    
+    // Call handler's Cleanup method with param 0
+    pHandler->Cleanup(0);
+    
+    // Call handler's Delete method with param 1 (destructor)
+    if (pHandler != 0) {
+        pHandler->Delete(1);
+    }
+    
+    return 1;
+}
 void* FUN_004188a0(void* node, int flag) {
     *(int*)((char*)node + 8) = 0;
     *(int*)node = 0;
@@ -1306,7 +1356,7 @@ int* GameLoop::GetOrCreateHandler(int command) {
 void FUN_00411080(void* obj, int flag) {
     void* v1 = *(void**)((char*)obj + 4);
     if (v1 != 0) {
-        FUN_0041aa10((int)v1);
+        ReleaseVideoBuffer((VideoBufferData*)v1);
         FreeMemory(v1);
         *(int*)((char*)obj + 4) = 0;
     }

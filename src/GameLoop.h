@@ -23,6 +23,7 @@ public:
     int AddHandler(void* handler); // 0x418200
     int FindHandlerInEventList(int command); // 0x418540
     int* GetOrCreateHandler(int command); // 0x418510
+    int RemoveHandler(int command); // 0x418460
     
     int field_0x00;
     int field_0x04;
