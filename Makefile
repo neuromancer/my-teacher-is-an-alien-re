@@ -13,10 +13,29 @@ MSVC_LIB = compilers\msvc420\lib;compilers\msvc420\mfc\lib
 CFLAGS = /nologo /c /O2 /GX /I msvc420\\include /I 3rdparty\\miles\\include /I 3rdparty\\smack\\include
 OUT_DIR = out
 
-# SRCS ordered to match Original Binary Globals layout
+# SRCS ordered to match Original Binary (Demo) Globals layout
+# Order determined by analyzing string positions in the demo .data section
 SRCS_ORDERED = \
-	src/ZBuffer.cpp \
+	src/Animation.cpp \
+	src/FlagArray.cpp \
 	src/GameState.cpp \
+	src/GameWindow.cpp \
+	src/Mouse.cpp \
+	src/MouseControl.cpp \
+	src/Parser.cpp \
+	src/Sample.cpp \
+	src/Sound.cpp \
+	src/Sprite.cpp \
+	src/VBuffer.cpp \
+	src/main.cpp \
+	src/Queue.cpp \
+	src/CDData.cpp \
+	src/Timer.cpp \
+	src/SoundList.cpp \
+	src/ZBuffer.cpp \
+	src/ZBufferManager.cpp \
+	src/GameLoop.cpp \
+	src/globals.cpp \
 	src/Hotspot.cpp \
 	src/SCI_AfterSchoolMenu.cpp \
 	src/SCI_Dialog.cpp \
@@ -24,24 +43,10 @@ SRCS_ORDERED = \
 	src/OptionMenu.cpp \
 	src/SC_OnScreenMessage.cpp \
 	src/SearchScreen.cpp \
-	src/Sound.cpp \
-	src/main.cpp \
 	src/Engine.cpp \
 	src/EngineB.cpp \
 	src/mCNavigator.cpp \
-	src/Parser.cpp \
-	src/globals.cpp \
-	src/GameLoop.cpp \
-	src/VBuffer.cpp \
-	src/ZBufferManager.cpp \
-	src/Sprite.cpp \
-	src/SoundList.cpp \
-	src/GameWindow.cpp \
-	src/string.cpp \
-	src/Mouse.cpp \
-	src/MouseControl.cpp \
-	src/Animation.cpp \
-	src/FlagArray.cpp
+	src/string.cpp
 
 SRCS = $(SRCS_ORDERED) $(filter-out $(SRCS_ORDERED), $(wildcard src/*.cpp))
 OBJS = $(patsubst src/%.cpp,$(OUT_DIR)/%.obj,$(SRCS))

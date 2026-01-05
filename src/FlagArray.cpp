@@ -42,7 +42,7 @@ FlagArray::FlagArray(char* f, int max_states) {
     
     // Copy filename (max 50 chars)
     if (strlen(f) > 0x32) { // 50
-         ShowError("Error in flagaray.cpp (SetFilename, filename too long)");
+         ShowError("Error in flagaray.cpp - SetFileName: File name too long");
     }
     strcpy(filename, f);
     
@@ -58,7 +58,7 @@ FlagArray::FlagArray(char* f, int max_states) {
         fp = fp_temp;
         
         if (fp_temp == NULL) {
-             ShowError("Error in flagaray.cpp (Create, Could not create file)", filename);
+             ShowError("Error in flagaray.cpp - Create:  Cannot create %s", filename);
         } else {
              max_states = max_states;
              field_0x38 = max_states * 4 + 0x94;
@@ -104,7 +104,7 @@ void FlagArray::Open() {
     fp = fp_temp;
     
     if (fp_temp == NULL) {
-        ShowError("Error opening file in flagarray.cpp");
+        ShowError("Error opening file in flagarray::Open");
     }
     
     // Read header back
@@ -114,7 +114,7 @@ void FlagArray::Open() {
 /* Function start: 0x4202D0 */
 void FlagArray::Close() {
     if (fp == 0) {
-        ShowError("FlagArray::Close() - attempt to close NULL fp");
+        ShowError("FlagArray::Close() - attempt to close a file that is not open");
     }
     fclose(fp);
     fp = 0;
@@ -129,7 +129,7 @@ void FlagArray::Seek(int index) {
     int offset = field_0x44 * index + field_0x3c;
     
     if (index < 0 || index >= max_states) {
-        ShowError("Error in flagaray.cpp (Seek, Index out of Range)", index);
+        ShowError("Error in flagaray.cpp - Seek: Index out of range %d", index);
     }
     
     // Check if offset is within file bounds logic
@@ -137,7 +137,7 @@ void FlagArray::Seek(int index) {
     // offset > field_0x38 - field_0x44 + 1 ??
     // iVar1 is offset.
     if ((field_0x38 - field_0x44) + 1 < offset) {
-        ShowError("Error in flagaray.cpp (Seek, Attempt to seek past end of file)");
+        ShowError("Error in flagaray.cpp - Seek: Attempt to seek past end of file");
     }
     
     FileSeek(fp, offset, 0); // SEEK_SET
