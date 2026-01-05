@@ -104,3 +104,13 @@ int Hotspot::LBLParse(char* line)
     }
     return 0;
 }
+
+/* Function start: 0x40d300 */
+Hotspot::Hotspot() : field_E0(0), field_E4(0), field_E8(0), field_EC(0) {
+    // Clear 26 dwords starting at sprite (0x88)
+    // This covers range 0x88 to 0xF0 (exclusive)
+    memset(&sprite, 0, 104);
+
+    field_D0 = 1;
+    field_D8 = 1;
+}

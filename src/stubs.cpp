@@ -248,7 +248,7 @@ void FUN_004191d0(char* a) {}
 void* FUN_0041ea50(void* a) { return a; }
 char* FUN_004195c0(char* a) { return a; }
 void* FUN_0041f280(void* a) { return a; }
-void* FUN_0040d300(void* a) { return a; }
+
 
 // Missing stubs for GameWindow
 void FUN_00419220(char* a) {}

@@ -1,7 +1,9 @@
 #include "SearchScreen.h"
 #include "Memory.h"
+#include "Hotspot.h"
 #include <stdio.h>
 #include <string.h>
+#include <new>
 
 extern "C" {
     void FUN_004191d0(char*);
@@ -9,7 +11,6 @@ extern "C" {
     char* FUN_004195c0(char*);
     void FUN_0041eab0(void*, char*);
     void* FUN_0041f280(void*);
-    void* FUN_0040d300(void*);
 }
 
 /* Function start: 0x404A20 */
@@ -46,11 +47,7 @@ int SearchScreen::LBLParse(char* line)
         Parser::ProcessFile((Parser*)field_604, this, 0);
     }
     else if (_strcmpi(key, "HOTSPOT") == 0) {
-        void* mem = AllocateMemory(0xf0);
-        void* obj = 0;
-        if (mem) {
-            obj = FUN_0040d300(mem); // T_Hotspot constructor?
-        }
+        Hotspot* obj = new Hotspot();
         field_608[field_634] = obj;
         Parser::ProcessFile((Parser*)obj, this, 0);
         field_634++;
