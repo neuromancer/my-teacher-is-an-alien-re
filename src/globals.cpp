@@ -110,10 +110,6 @@ int DAT_0043be34 = 0;
 
 void* DAT_0043eff0 = 0;
 
-typedef void (__cdecl *SmackSoundCheckFn)();
-// Initialize to 0 instead of reading from hardcoded address
-SmackSoundCheckFn g_SmackSoundCheck = 0;
-
 // Graphics system globals (for Graphics.cpp)
 HDC DAT_00437488 = 0;      // Main device context
 HDC DAT_004374b4 = 0;      // Secondary device context
