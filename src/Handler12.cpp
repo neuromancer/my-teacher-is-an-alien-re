@@ -2,17 +2,36 @@
 #include <string.h>
 
 /* Function start: 0x401000 */
-Handler12::Handler12()
-    : handlerId(0)
-    , field_0x8C(0)
-    , field_0x90(0)
-    , field_0x94(0)
-    , field_0x98(0)
-    , field_0x9C(0)
-{
+Handler12::Handler12() {
+    // Handler base class initializes handlerId through field_9C to 0
+    
     // Set handler ID to 12
     handlerId = 12;
     
     // Call Timer::Reset() explicitly
     timer.Reset();
 }
+
+/* Function start: 0x401220 */
+Handler12::~Handler12() {
+    // Timer::~Timer() and Handler::~Handler() are called automatically by C++
+}
+
+// Stub virtual method implementations
+void Handler12::Init(SC_Message* msg) {
+    Handler::Init(msg);
+}
+
+int Handler12::HandleMessage(SC_Message* msg) {
+    return 1;
+}
+
+void Handler12::Update(SC_Message* msg) {
+}
+
+void Handler12::Draw() {
+}
+
+void Handler12::Exit() {
+}
+

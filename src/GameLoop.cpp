@@ -13,6 +13,10 @@
 #include "string.h"
 #include "DrawEntry.h"
 #include "Handler12.h"
+#include "Handler1.h"
+#include "Handler2.h"
+#include "Handler5.h"
+#include "Handler6.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -976,11 +980,11 @@ void __fastcall ReleaseVideoBuffer(VideoBufferData* data) {
 }
 // Handler classes with correct sizes for new operator
 // Handler classes with inline constructors using stub vtable
-class Handler1 { public: Handler1() { *(void**)data = g_HandlerVTable; } char data[0xa8]; };   // 0x403340
-class Handler2 { public: Handler2() { *(void**)data = g_HandlerVTable; } char data[0xb0]; };   // 0x40f710
+// Handler1 is defined in Handler1.h
+// Handler2 is defined in Handler2.h
 class Handler4 { public: Handler4() { *(void**)data = g_HandlerVTable; } char data[0x6f0]; };  // 0x40e220
-class Handler5 { public: Handler5() { *(void**)data = g_HandlerVTable; } char data[0xf0]; };   // 0x40fb80
-class Handler6 { public: Handler6() { *(void**)data = g_HandlerVTable; } char data[0x640]; };  // 0x4044c0
+// Handler5 is defined in Handler5.h
+// Handler6 is defined in Handler6.h
 class Handler8 { public: Handler8() { *(void**)data = g_HandlerVTable; } char data[0xa8]; };   // 0x406120
 class Handler9 { public: Handler9() { *(void**)data = g_HandlerVTable; } char data[0x650]; };  // 0x406fc0
 class Handler10 { public: Handler10() { *(void**)data = g_HandlerVTable; } char data[0x6a8]; }; // 0x404ca0
