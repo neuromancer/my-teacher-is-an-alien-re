@@ -91,6 +91,57 @@ extern "C" int ClearVideoBuffer(void) {
     }
     return 0;
 }
+
+// Missing global definitions for VideoTable
+int DAT_004374c6 = 0;
+int DAT_00437f5e = 0;
+int DAT_004374d2 = 0;
+int DAT_004374de = 0;
+int DAT_004374e2 = 0;
+int DAT_004374e6 = 0;
+int DAT_004374ea = 0;
+
+/* Function start: 0x4230D9 */
+extern "C" int __cdecl SelectVideoBuffer(int param_1) {
+    if (param_1 < 0x20) {
+        if (DAT_0043826c[param_1] == 0) {
+            // Buffer invalid/empty
+            return 0xfffffffe; 
+        } else {
+            // Set current video mode
+            if (h_0043841c != 0) {
+                // WinG or similar context selection
+                SelectObject(h_0043841c, (HGDIOBJ)DAT_00437fec[param_1]);
+            }
+            
+            *(char*)&DAT_00437f54 = (char)param_1;
+            int width = DAT_0043836c[param_1];
+            DAT_004374c6 = width;
+            DAT_00437f5e = width;
+            
+            int height = DAT_004382ec[param_1];
+            DAT_004374d2 = height;
+            DAT_004374ca = height - 1;
+            
+            DAT_004374de = DAT_0043816c[param_1];
+            DAT_004374e2 = DAT_0043806c[param_1];
+            DAT_004374e6 = DAT_004381ec[param_1];
+            DAT_004374ea = DAT_004380ec[param_1];
+            
+            DAT_00437f66 = DAT_0043826c[param_1];
+            
+            // Replicating DS capture from assembly if possible, otherwise ignore
+            // _asm { mov word ptr [DAT_00437f6a], ds }
+             
+            // Calculate size
+            unsigned int size = (unsigned int)DAT_004374c6 * (unsigned int)DAT_004374d2;
+            DAT_00437f62 = (int)size; // Low 32 bits
+            
+            return 0;
+        }
+    }
+    return 0xffffffff;
+}
 /* Function start: 0x423703 */
 extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 {

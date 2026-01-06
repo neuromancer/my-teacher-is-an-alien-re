@@ -54,7 +54,7 @@ extern "C" char DAT_004371a8[] = "rb";
 
 // ...
 
-int DAT_00437f4c = 0;
+int DAT_00437f4c = 1064;
 int DAT_0043bdf4 = 0;
 unsigned int DAT_0043c760[90] = {0}; 
 int DAT_0043d55c = 0;

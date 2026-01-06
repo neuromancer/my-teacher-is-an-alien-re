@@ -55,7 +55,7 @@ extern "C" {
     void FUN_0041afb1(void);
     void FUN_0041b29a(void);
     void FUN_0041b2ac(void);
-    int FUN_004230d9(int);
+    int SelectVideoBuffer(int);
     void FUN_00423296(int, int, int, int, int, int);
     int StretchBlitBuffer(int, int, int, int, int, int, int, int);
     int CreateTableFromBuffer(int, int, int);
@@ -177,7 +177,7 @@ void VBuffer::ClearScreen(int color)
 /* Function start: 0x41abf0 */
 int VBuffer::SetVideoMode()
 {
-    int iVar1 = FUN_004230d9(handle);
+    int iVar1 = SelectVideoBuffer(handle);
     saved_video_mode = 0xffffffff;
     video_mode_lock_count = 1;
     return iVar1;
@@ -210,7 +210,7 @@ int VBuffer::SetCurrentVideoMode(int param_1)
     unsigned int uVar1 = GetCurrentVideoMode();
     if (param_1 != uVar1) {
         saved_video_mode = uVar1;
-        uVar1 = FUN_004230d9(param_1);
+        uVar1 = SelectVideoBuffer(param_1);
     }
     return uVar1;
 }
@@ -221,7 +221,7 @@ void VBuffer::InvalidateVideoMode()
     if ((video_mode_lock_count != 0) && (video_mode_lock_count = video_mode_lock_count - 1, video_mode_lock_count == 0)) {
         ::InvalidateVideoMode();
         if (saved_video_mode != 0xffffffff) {
-            FUN_004230d9(saved_video_mode);
+            SelectVideoBuffer(saved_video_mode);
             saved_video_mode = 0xffffffff;
         }
     }

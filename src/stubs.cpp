@@ -38,7 +38,7 @@ void FUN_00422e1a(unsigned int) {}
 // FUN_00422e71 implemented in VideoTable.cpp as GetVideoBufferData
 void FUN_00422e8f() {}
 void FUN_00422a01() {}
-void FUN_004230d9() {}
+// void FUN_004230d9() {} // Implemented in VideoTable.cpp as SelectVideoBuffer
 void FUN_00423296() {}
 // FUN_0042333a now implemented in VideoTable.cpp as StretchBlitBuffer
 void FUN_004231ce() {}
