@@ -6,10 +6,10 @@
 #include "Memory.h"
 #include "OnScreenMessage.h"
 #include "TimedEvent.h"
+#include "globals.h"
 
-// Globals
-// Globals
-class ZBufferManager* DAT_0043698c = NULL;
+// Globals defined in globals.cpp
+// ZBufferManager* DAT_0043698c = NULL; - moved to globals.cpp
 
 
 #include <smack.h>
@@ -162,23 +162,24 @@ int OnScreenMessage_Update(void* param_1, int param_2) {
 
 void TimedEvent_Init() {}
 void GameState_dtor_wrapper_4() {}
-int GetCurrentVideoMode() { return 1; }
-void InvalidateVideoMode() {}
+/* Function start: 0x4231C6 */
+int GetCurrentVideoMode() { 
+    return (signed char)DAT_00437f54; 
+}
+
+/* Function start: 0x4231BC */
+void InvalidateVideoMode() {
+    *(char*)&DAT_00437f54 = 0xff;
+}
 
 void* Message_Constructor(void* mem, int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8, int param_9, int param_10) {
     return mem;
 }
 
 
-// Variables required by string.cpp in extern "C"
-int DAT_0043be34 = 0;
-char DAT_0043be30 = 0;
-void* DAT_0043f104 = 0;
-void* DAT_0043f100 = 0;
-int DAT_00435030 = 0;
-int DAT_00435038 = 0;
-int DAT_0043503c = 0;
-int DAT_00435040 = 0;
+// Variables required by string.cpp - now defined in globals.cpp
+// DAT_0043be34, DAT_0043be30, DAT_0043f104, DAT_0043f100
+// DAT_00435030, DAT_00435038, DAT_0043503c, DAT_00435040
 
 int _rand() { return rand(); }
 
@@ -291,7 +292,7 @@ void* NavNode_Constructor(void* a) { return a; }
 // void* DAT_0043eff0 = NULL; // Moved to globals.cpp
 
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
-int* g_GameStruct2 = NULL;
+// g_GameStruct2 is defined in globals.cpp
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
 
 // C++ Mangled Stubs
@@ -310,7 +311,7 @@ extern "C" {
 void* __fastcall FUN_00422690(void* ptr) { return ptr; }
 }
 
-extern int DAT_00437f54;
+// DAT_00437f54 is declared in globals.h
 
 extern "C" {
 /* Function start: 0x4231C6 */

@@ -39,7 +39,7 @@ extern char DAT_004374c1;
 extern int DAT_00437f54;
 extern int DAT_00437f56;
 extern int DAT_00437f5a;
-extern int DAT_0043841c;
+extern HDC h_0043841c;
 extern HGDIOBJ DAT_00438424;
 
 extern char DAT_00437520[256];  // Palette identity map
@@ -169,7 +169,7 @@ int InitVideoSystem(void)
     DAT_00437f54 = (char)0xff;
     DAT_00437f56 = -1;
     DAT_00437f5a = -1;
-    DAT_0043841c = 0;
+    h_0043841c = 0;
     DAT_00438424 = 0;
     
     DVar2 = GetVersion();
@@ -208,7 +208,7 @@ int InitVideoSystem(void)
             if (DAT_00438438 == 0) return 0;
             // Call WinGRecommendDIBFormat (ordinal 3)
             typedef int (__stdcall *WinGRecommendDIBFormat_t)();
-            DAT_0043841c = ((WinGRecommendDIBFormat_t)DAT_00438430)();
+            h_0043841c = (HDC)((WinGRecommendDIBFormat_t)DAT_00438430)();
         }
     }
     return 0;
@@ -350,6 +350,6 @@ extern "C" void FlipScreen() {
     iVar2 = *piVar1 - 1;
     iVar3 = 0;
     piVar1 = GetWindowWidth();
-    vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->saved_video_mode, vb->video_mode_lock_count, 0, *piVar1 - 1, iVar3, iVar2);
+    vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0, *piVar1 - 1, iVar3, iVar2);
 }
 

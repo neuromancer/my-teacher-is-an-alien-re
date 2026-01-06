@@ -3,13 +3,15 @@
 
 class VBuffer {
 public:
-    char pad[0x10];
+    int saved_video_mode; // 0x00
+    int video_mode_lock_count; // 0x04
+    char pad[0x08]; // 0x08-0x0f
     void* data; // 0x10
     int width; // 0x14
     int height; // 0x18
     int handle; // 0x1c
-    int saved_video_mode; // 0x20
-    int video_mode_lock_count; // 0x24
+    int clip_y1; // 0x20
+    int clip_y2; // 0x24
     int clip_x1; // 0x28
     int clip_x2; // 0x2c
 

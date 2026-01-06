@@ -128,8 +128,8 @@ void VBuffer::InitWithSize(unsigned int param_1, unsigned int param_2)
     height = param_2;
     clip_x1 = 0;
     clip_x2 = param_1 - 1;
-    saved_video_mode = 0;
-    video_mode_lock_count = param_2 - 1;
+    clip_y1 = 0;
+    clip_y2 = param_2 - 1;
     if (data != 0) {
         ShowError("Error! Virtual buffer already allocated");
     }
@@ -256,10 +256,10 @@ void __cdecl BlitTransparentRows(int srcX1, int srcX2, int srcY1, int srcY2, int
     int width = (srcX2 - srcX1) + 1;
     int height = (srcY2 - srcY1) + 1;
     
-    int srcOffset = (srcBuffer->video_mode_lock_count - srcY2) * srcBuffer->width + srcX1;
+    int srcOffset = (srcBuffer->clip_y2 - srcY2) * srcBuffer->width + srcX1;
     char* srcRow = (char*)srcBuffer->GetData() + srcOffset;
 
-    int destOffset = (destBuffer->video_mode_lock_count - destY) * destBuffer->width + destX;
+    int destOffset = (destBuffer->clip_y2 - destY) * destBuffer->width + destX;
     char* destRow = (char*)destBuffer->GetData() + destOffset;
 
     if (height > 0) {
@@ -283,8 +283,8 @@ void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4
     //local_40->CreateAndClean((param_2 - param_1) + 1, (param_4 - param_3) + 1);
     __try {
         local_40->ClearScreen(0);
-        BlitTransparentRows(param_1, param_2, param_3, param_4, local_40->clip_x1, local_40->video_mode_lock_count, this, local_40, param_7, param_8);
-        local_40->TPaste(local_40->clip_x1, local_40->clip_x2, local_40->saved_video_mode, local_40->video_mode_lock_count, param_5, param_6);
+        BlitTransparentRows(param_1, param_2, param_3, param_4, local_40->clip_x1, local_40->clip_y2, this, local_40, param_7, param_8);
+        local_40->TPaste(local_40->clip_x1, local_40->clip_x2, local_40->clip_y1, local_40->clip_y2, param_5, param_6);
     } __finally {
         FUN_0041ae0c();
     }
@@ -316,8 +316,8 @@ void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, in
 
     local_2c[0] = clip_x1;
     local_2c[2] = clip_x2;
-    local_2c[1] = saved_video_mode;
-    local_2c[3] = video_mode_lock_count;
+    local_2c[1] = clip_y1;
+    local_2c[3] = clip_y2;
     local_1c[0] = param_1;
     local_1c[2] = param_3;
     local_1c[1] = param_2;
@@ -350,8 +350,8 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
 
     local_2c[0] = clip_x1;
     local_2c[2] = clip_x2;
-    local_2c[1] = saved_video_mode;
-    local_2c[3] = video_mode_lock_count;
+    local_2c[1] = clip_y1;
+    local_2c[3] = clip_y2;
     local_1c[0] = param_1;
     local_1c[1] = param_3;
     local_1c[2] = param_2;
@@ -394,7 +394,7 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
             local_30[1] = 0;
             local_30[2] = 0;
             local_30[3] = 0;
-            local_30[1] = saved_video_mode;
+            local_30[1] = clip_y1;
             local_30[2] = clip_x2;
             local_20[0] = 0;
             local_20[1] = 0;
@@ -403,7 +403,7 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
             local_30[0] = clip_x1;
             scaledWidth = scaledWidth - 1;
             scaledHeight = scaledHeight - 1;
-            local_30[3] = video_mode_lock_count;
+            local_30[3] = clip_y2;
             local_20[2] = scaledWidth;
             local_20[3] = scaledHeight;
             local_20[0] = 0;

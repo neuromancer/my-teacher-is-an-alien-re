@@ -1,10 +1,9 @@
 #include "DrawEntry.h"
 #include "SoundCommand.h"
+#include "VBuffer.h"
 #include "Memory.h"
 
-// Forward declaration for video buffer cleanup
-struct VideoBufferData;
-void __fastcall ReleaseVideoBuffer(VideoBufferData* data);
+
 
 DrawEntry::~DrawEntry() {
     // Destructor called via vtable[0]
@@ -12,14 +11,13 @@ DrawEntry::~DrawEntry() {
 
 /* Function start: 0x411080 */
 void* DrawEntry::Cleanup(int freeFlag) {
-    VideoBufferData* videoBuffer;
+    VBuffer* videoBuffer;
     SoundCommand* childObject;
     
     // Release video buffer at offset 0x04
     videoBuffer = DrawEntry::m_videoBuffer;
     if (videoBuffer != 0) {
-        ReleaseVideoBuffer(videoBuffer);
-        FreeMemory(videoBuffer);
+        delete videoBuffer;
         DrawEntry::m_videoBuffer = 0;
     }
     

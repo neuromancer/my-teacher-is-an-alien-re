@@ -72,7 +72,7 @@ char DAT_00437720[1024];
 char DAT_00437b48[1024];
 
 int DAT_00437f50 = 0;
-int DAT_00437f54 = 0;
+int DAT_00437f54 = 0xff;  // Current video buffer index, 0xff = no selection
 int DAT_00437f66 = 0; 
 short DAT_00437f6a = 0;
 HDC h_0043841c = 0;
@@ -136,7 +136,7 @@ int DAT_004374da = 0;
 int DAT_00437514 = 0;
 int DAT_00437f56 = 0;
 int DAT_00437f5a = 0;
-int DAT_0043841c = 0;  // WinG DC or similar
+// DAT_0043841c is defined above as HDC h_0043841c
 int DAT_004374ca = 0;  // Current buffer height - 1
 
 char DAT_00437520[256] = {0};  // Palette identity map

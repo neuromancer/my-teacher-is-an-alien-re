@@ -2,7 +2,7 @@
 #define DRAWENTRY_H
 
 // Forward declarations
-struct VideoBufferData;
+class VBuffer;
 struct SoundCommand;
 
 // DrawEntry - represents an entry in the draw/render queue (m_queueA4)
@@ -18,7 +18,7 @@ public:
     // 0x411080 - releases video buffer, destroys child object, optionally frees self
     void* Cleanup(int freeFlag);
     
-    VideoBufferData* m_videoBuffer;  // 0x04 - pointer to video buffer data
+    VBuffer* m_videoBuffer;  // 0x04 - pointer to video buffer data
     SoundCommand* m_childObject;     // 0x08 - pointer to child render/sound command
 };
 

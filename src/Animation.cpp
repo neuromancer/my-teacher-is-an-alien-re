@@ -25,8 +25,8 @@ void BlankScreen() {
     g_WorkBuffer_00436974->ClearScreen(0);
     VBuffer *vbuffer = g_WorkBuffer_00436974;
     vbuffer->CallBlitter5(
-        vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->saved_video_mode,
-        vbuffer->video_mode_lock_count, 0, *GetWindowWidth() - 1, 0,
+        vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->clip_y1,
+        vbuffer->clip_y2, 0, *GetWindowWidth() - 1, 0,
         *GetWindowHeight() - 1);
   }
 }
@@ -224,8 +224,8 @@ void Animation::ToBufferVB(VBuffer *buffer) {
 void Animation::Play(char *filename, unsigned int flags) {
   PaletteBuffer *palette;
 
-  flags = flags;
-  palette = 0;
+  Animation::flags = flags;
+  Animation::palette = 0;
 
   if ((flags & 1) == 0) {
     void *mem = AllocateMemory(8);
@@ -292,7 +292,7 @@ void Animation::MainLoop() {
               goto wait;
             }
           }
-          *(unsigned int *)&palette |= 1;
+          *(unsigned int *)((char*)this + 0x20) |= 1;
           goto end_loop;
         }
       wait:;
@@ -302,8 +302,8 @@ void Animation::MainLoop() {
       int iVar1 = *GetWindowHeight() - 1;
       int iVar2 = *GetWindowWidth() - 1;
       vbuffer->CallBlitter5(
-          vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->saved_video_mode,
-          vbuffer->video_mode_lock_count, 0, iVar2, 0, iVar1);
+          vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->clip_y1,
+          vbuffer->clip_y2, 0, iVar2, 0, iVar1);
 
       if (smk->Frames - 1 <= frame) {
         break;

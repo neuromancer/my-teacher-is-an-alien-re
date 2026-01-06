@@ -6,7 +6,7 @@ extern "C" {
     void FUN_00423076();
 }
 
-extern int DAT_0043841c;
+// h_0043841c is already declared in globals.h
 extern HDC DAT_00437488;
 extern int DAT_004374ca;
 extern void* DAT_00438438;
@@ -151,7 +151,7 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 
     counter = 0x20;
     ptr = DAT_0043826c;
-    if (DAT_0043841c == 0) {
+    if (h_0043841c == 0) {
         do {
             val = *ptr;
             ptr++;
@@ -196,7 +196,7 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
     int newY2;
 
     if (*(char*)&DAT_00437f54 >= 0) {
-        wingDC = DAT_0043841c;
+        wingDC = (int)h_0043841c;
         if (wingDC != 0) {
             newY2 = srcY2;
         }

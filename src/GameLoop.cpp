@@ -931,45 +931,6 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 // Implementations of missing functions
 // -------------------------------------------------------------------------
 
-// Forward declarations for ReleaseVideoBuffer helper functions
-extern "C" {
-    int __cdecl GetCurrentVideoHandle();        // 0x4231C6
-    void __cdecl ResetVideoFlag();              // 0x4231BC  
-    void __cdecl FUN_00422e1a(unsigned int);    // Video release function
-    void __cdecl FUN_0041a9e0(int);             // Video cleanup function
-}
-
-// Structure for video buffer object (used at offset of VBuffer/similar)
-struct VideoBufferData {
-    char padding[0x10];    // 0x00-0x0F
-    int isActive;          // 0x10 - flag indicating if buffer is active
-    char padding2[0x8];    // 0x14-0x1B
-    int videoHandle;       // 0x1C - video system handle
-};
-
-/* Function start: 0x41AC10 */
-void __fastcall CheckAndResetVideoFlag(VideoBufferData* data) {
-    int currentHandle = GetCurrentVideoHandle();
-    if (currentHandle == data->videoHandle) {
-        ResetVideoFlag();
-    }
-}
-
-/* Function start: 0x41AA60 */
-void __fastcall CleanupVideoBuffer(VideoBufferData* data) {
-    if (data->isActive != 0) {
-        FUN_00422e1a((unsigned int)data->videoHandle);
-        FUN_0041a9e0(data->videoHandle);
-        data->videoHandle = 0xFFFFFFFF;
-        data->isActive = 0;
-    }
-}
-
-/* Function start: 0x41AA10 */
-void __fastcall ReleaseVideoBuffer(VideoBufferData* data) {
-    CheckAndResetVideoFlag(data);
-    CleanupVideoBuffer(data);
-}
 // Handler classes with correct sizes for new operator
 // Handler classes with inline constructors using stub vtable
 // Handler1 is defined in Handler1.h
