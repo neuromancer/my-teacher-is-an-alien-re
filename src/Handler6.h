@@ -2,6 +2,9 @@
 #define HANDLER6_H
 
 #include "Handler.h"
+#include "Hotspot.h"
+#include "Palette.h"
+#include "SpriteList.h"
 
 struct SC_Message;
 
@@ -13,9 +16,9 @@ struct SC_Message;
 //   0x00-0x9F: Handler base class (Parser + Handler fields)
 //   0xA0-0x5FF: Parent class data (from FUN_402730)
 //   0x600: Palette* pointer
-//   0x604: Ambient* pointer
+//   0x604: SpriteList* ambient; // Inferred to be SpriteList* (FUN_0041f800 is SpriteList::DoAll)
 //   0x608-0x62F: Hotspot* array[10]
-//   0x630: void* current hotspot
+//   0x630: Hotspot* current hotspot
 //   0x634: int hotspot count
 //   0x638: int active hotspots
 //   0x63C: int counter
@@ -39,10 +42,10 @@ public:
     char parentData[0x560];  // 0xA0 to 0x5FF
 
     // Handler6-specific fields starting at 0x600
-    void* palette;          // 0x600
-    void* ambient;          // 0x604
-    void* hotspots[10];     // 0x608-0x62F
-    void* currentHotspot;   // 0x630
+    Palette* palette;          // 0x600
+    SpriteList* ambient;          // 0x604
+    Hotspot* hotspots[10];     // 0x608-0x62F
+    Hotspot* currentHotspot;   // 0x630
     int hotspotCount;       // 0x634
     int activeHotspots;     // 0x638
     int counter;            // 0x63C

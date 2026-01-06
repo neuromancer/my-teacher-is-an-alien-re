@@ -16,6 +16,7 @@
 #define SmackSoundUseMSS _SmackSoundUseMSS
 #define SmackGoto _SmackGoto
 #define SmackSoundOnOff _SmackSoundOnOff
+#define SmackSoundCheck _SmackSoundCheck
 #define SmackToBuffer _SmackToBuffer
 #define SmackToBufferRect _SmackToBufferRect
 #define SmackWait _SmackWait
@@ -100,6 +101,7 @@ extern HSMACK SMACK_DECL _SmackOpen(const char*, unsigned int uFlags, unsigned i
 extern int SMACK_DECL _SmackSoundUseMSS(SMACK_HDIGDRIVER hDrv);
 extern unsigned int SMACK_DECL _SmackGoto(HSMACK smack, unsigned int frame);
 extern unsigned int SMACK_DECL _SmackSoundOnOff(HSMACK smack, unsigned int flag);
+extern void SMACK_DECL _SmackSoundCheck(void);
 extern void SMACK_DECL _SmackToBuffer(HSMACK smack, unsigned int uX, unsigned int uY, unsigned int uPitch, unsigned int uHeight, void *pBuffer, unsigned int uFlags);
 extern unsigned int SMACK_DECL _SmackToBufferRect(HSMACK smack, unsigned int uSmackSurface);
 extern unsigned int SMACK_DECL _SmackWait(HSMACK smack);

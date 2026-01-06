@@ -62,3 +62,8 @@ int SpriteList::DoAll()
     }
     return field_0x90;
 }
+
+/* Function start: 0x41f360 */
+SpriteList::~SpriteList() {
+    // Stub
+}

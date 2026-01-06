@@ -45,6 +45,7 @@ public:
     void ProcessRenderQueues();   // 0x41C5A0
     void UpdateScreen();          // 0x41C960
     void ShowSubtitle(char* text, int x, int y, int duration, int font); // 0x41C000
+    void DrawRect(int, int, int, int, int, int, int); // 0x41C130
 
     // Methods previously attributed to "SoundManager"
     void PlayAnimationSound(void* data, int priority, int x, int y, int mode, int scale1, int scale2); // 0x41BE20

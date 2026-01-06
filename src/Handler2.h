@@ -24,8 +24,8 @@ public:
     virtual void Init(SC_Message* msg);
     virtual int HandleMessage(SC_Message* msg);
     virtual void Update(SC_Message* msg);
-    virtual void Draw();
-    virtual void Exit();
+    virtual void Draw(int param1, int param2);
+    virtual int Exit(SC_Message* msg);
 
     // Handler2-specific fields (handlerId through field_9C are in Handler base)
     Palette* palette;   // 0xA0

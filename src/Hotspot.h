@@ -35,12 +35,14 @@ public:
     int rect_w; // 0x134
     int rect_h; // 0x138
 
+    virtual ~Hotspot();
     int LBLParse(char* line);
     unsigned char Do();
     int SetState(int state);
     int GetState();
     void CleanupSprites();
     int Update(int, int, int);
+    int Draw_40d610();
 };
 
 #endif // HOTSPOT_H

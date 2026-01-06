@@ -114,3 +114,13 @@ Hotspot::Hotspot() : field_E0(0), field_E4(0), field_E8(0), field_EC(0) {
     field_D0 = 1;
     field_D8 = 1;
 }
+
+/* Function start: 0x40d3a0 */
+Hotspot::~Hotspot() {
+    // Stub destructor
+}
+
+/* Function start: 0x40d610 */
+int Hotspot::Draw_40d610() {
+    return 0; // Stub
+}

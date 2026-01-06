@@ -104,7 +104,7 @@ void FUN_0041fbd3() {}
 // GetGameWindowHandle removed (defined in GameWindow.cpp)
 void FUN_004239e4(int* a, int* b) { if(a)*a=0; if(b)*b=0; }
 void FUN_00421c24() {}
-void FUN_0041ea80() {}
+void __fastcall FUN_0041ea80(void*) {}
 void FUN_0041eb70() {}
 
 void FUN_0041eb50() {}
@@ -259,6 +259,19 @@ int* FUN_00422500() { static int x = 0; return &x; }
 // Stubs for UpdateGame iterator functions (thiscall)
 void* FUN_00417c50(void* pool, void* buffer) { return buffer; }
 void FUN_00417cb0(void* self, void* event) {}
+
+// Stubs for Handler6
+void __fastcall FUN_00402730(void*) {}
+void __fastcall FUN_00418d60(void*, char*, char*) {}
+void __fastcall FUN_00402ed0(void*, void*) {}
+int __fastcall FUN_00403040(void*, void*) { return 0; }
+void __fastcall FUN_00402fd0(void*, void*) {}
+// FUN_0041f360 implemented in SpriteList.cpp as ~SpriteList
+// FUN_0041ea80 already stubbed
+void __fastcall FUN_0041f200(void*) {}
+void __fastcall FUN_0041d190(void*, int) {}
+void __fastcall FUN_0041f800(void*) {}
+void __fastcall FUN_00403230(void*, int, int) {}
 
 } // extern "C"
 

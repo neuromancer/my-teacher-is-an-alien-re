@@ -300,6 +300,11 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
         QueueCommand(cmd);
     }
 }
+// Stub for 0x41C130
+void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, int p7)
+{
+    // Stub
+}
 
 /* Function start: 0x41C2C0 */
 void ZBufferManager::QueueCommand(SoundCommand* cmd)

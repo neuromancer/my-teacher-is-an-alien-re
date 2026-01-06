@@ -22,8 +22,8 @@ public:
     virtual void Init(SC_Message* msg);
     virtual int HandleMessage(SC_Message* msg);
     virtual void Update(SC_Message* msg);
-    virtual void Draw();
-    virtual void Exit();
+    virtual void Draw(int param1, int param2);
+    virtual int Exit(SC_Message* msg);
 
     // Handler5-specific fields (handlerId through field_9C are in Handler base)
     Timer timer;        // 0xA0 - 0xB3 (size 0x14)

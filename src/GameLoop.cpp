@@ -17,15 +17,9 @@
 #include "Handler2.h"
 #include "Handler5.h"
 #include "Handler6.h"
+#include <smack.h>
 #include <stdio.h>
 #include <string.h>
-
-extern "C" {
-    void __cdecl SmackSoundCheck();
-}
-
-typedef void (__cdecl *SmackSoundCheckFn)();
-extern SmackSoundCheckFn g_SmackSoundCheck;
 
 // Wait for key
 int WaitForInput();
@@ -122,7 +116,6 @@ void GameLoop::ResetLoop() {
 
 /* Function start: 0x417690 */
 void GameLoop::Run() {
-    SmackSoundCheckFn pSmackSoundCheck;
     unsigned int elapsedTime;
     int mouseX;
     int mouseY;
@@ -136,7 +129,6 @@ void GameLoop::Run() {
         goto exit_loop;
     }
 
-    pSmackSoundCheck = g_SmackSoundCheck;
     zero = 0;
     
 loop_start:
@@ -156,7 +148,7 @@ loop_start:
     elapsedTime = ((Timer*)timer1)->Update();
     if (elapsedTime < (unsigned int)field_0x08) {
         do {
-            pSmackSoundCheck();
+            SmackSoundCheck();
             elapsedTime = ((Timer*)timer1)->Update();
         } while (elapsedTime < (unsigned int)field_0x08);
     }

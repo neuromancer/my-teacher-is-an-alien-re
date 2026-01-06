@@ -1,4 +1,10 @@
 #include "Handler1.h"
+#include "SC_Question.h"
+#include "string.h"
+#include "globals.h"
+#include "Message.h"
+
+extern "C" void __fastcall FUN_0041f200(void*);
 
 /* Function start: 0x403340 */
 Handler1::Handler1() {
@@ -35,23 +41,63 @@ Handler1::~Handler1() {
     }
 }
 
-// Stub virtual method implementations
 /* Function start: 0x403570 */
 void Handler1::Init(SC_Message* msg) {
-    Handler::Init(msg);
+    Palette* pal;
+    int* palettePtr;
+    WriteToMessageLogIfEnabled(L"\"\\nENTER INTRO GAME TEXT\"");
+    Handler1::CopyCommandData(msg);
+    pal = palette;
+    if (pal != 0) {
+        palettePtr = (int*)((char*)DAT_0043698c + 0xa8);
+        if (*palettePtr != 0) {
+            WriteToMessageLogIfEnabled(L"ddouble palette");
+        }
+        *palettePtr = (int)pal;
+    }
 }
 
 /* Function start: 0x403650 */
 int Handler1::HandleMessage(SC_Message* msg) {
+    Handler1::WriteMessageAddress(msg);
+    if (msg->mouseX >= 2) {
+        msg->targetAddress = 10;
+        msg->priority = 5;
+        msg->sourceAddress = 1;
+        msg->command = 1;
+        msg->data = 1;
+    }
     return 1;
 }
 
+/* Function start: 0x4035C0 */
 void Handler1::Update(SC_Message* msg) {
+    Sprite* spr;
+    Palette* pal;
+    spr = sprite;
+    if (spr != 0) {
+        delete spr;
+        sprite = 0;
+    }
+    pal = palette;
+    if (pal != 0) {
+        delete pal;
+        palette = 0;
+    }
+    SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+    WriteToMessageLogIfEnabled(L"\"EXIT INTRO GAME TEXT\"");
 }
 
-void Handler1::Draw() {
+/* Function start: 0x4036C0 */
+void Handler1::Draw(int param1, int param2) {
+    if (handlerId == param2) {
+        sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        FUN_0041f200(g_Mouse_00436978);
+    }
 }
 
-void Handler1::Exit() {
+/* Function start: 0x4036A0 */
+int Handler1::Exit(SC_Message* msg) {
+    return handlerId == msg->targetAddress;
 }
 

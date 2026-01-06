@@ -1,30 +1,31 @@
 #include "Handler6.h"
 #include <string.h>
 #include <stdio.h>
-
-// External parent constructor - this is the parent class constructor at 0x402730
-extern "C" void __fastcall FUN_00402730(void*);
+#include "SpriteList.h"
+#include "Sprite.h"
+#include "Memory.h"
+#include "Parser.h"
+#include "globals.h"
+#include "Message.h"
 
 // External functions used by Handler6
-extern "C" void __fastcall FUN_0041ea80(void*);  // Palette cleanup
-extern "C" void __cdecl FUN_00424940(void*);     // FreeMemory
-extern "C" void __fastcall FUN_0041f360(void*);  // Ambient cleanup
-extern "C" void __fastcall FUN_0040d3a0(void*);  // Hotspot cleanup
+// FreeMemory replaced by delete/Memory.h
+// Ambient cleanup replaced by SpriteList::~SpriteList
+extern "C" void __fastcall FUN_00402730(void*);
 extern "C" void __fastcall FUN_00402fd0(void*, void*);  // Parent Update
 extern "C" void __cdecl WriteToMessageLog(const char*);
 extern "C" void __fastcall FUN_00403230(void*, int, int);  // Parent Draw
-extern "C" void __fastcall FUN_0041f800(void*);             // Ambient::Draw
-extern "C" int __fastcall FUN_0040d610(void*);              // Hotspot::Draw
+// Ambient::Draw replaced by SpriteList::DoAll
 extern "C" void __fastcall FUN_0041f200(void*);             // Draw update
-extern "C" void __fastcall FUN_0041d190(void*, int);        // Sprite::SetState
-extern "C" void __cdecl SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
+// Sprite::SetState replaced by SetState2
+// SC_Message_Send is in Message.h
 extern "C" int __fastcall FUN_00403040(void*, void*);  // Parent HandleMessage
 extern "C" void __fastcall FUN_00402ed0(void*, void*);  // Parent Init
-extern "C" void __fastcall FUN_00418d60(void*, char*, char*);  // Parse script section
+// ParseFile replaces FUN_00418d60
 
-// Global variables
-extern void* g_GameLoop_00436978;
-extern void* g_Renderer_0043698c;
+// Global variable aliases to match globals.h
+#define g_GameLoop_00436978 g_Mouse_00436978
+#define g_Renderer_0043698c DAT_0043698c
 
 /* Function start: 0x4044C0 */
 Handler6::Handler6() {
@@ -46,24 +47,22 @@ Handler6::~Handler6() {
     // This is done automatically by C++
 
     // Cleanup palette at 0x600
+    // Cleanup palette at 0x600
     if (palette != 0) {
-        // FUN_0041ea80 - destructor for palette-like object
-        // FUN_00424940 - FreeMemory
+        delete palette;
         palette = 0;
     }
 
     // Cleanup ambient at 0x604
     if (ambient != 0) {
-        // FUN_0041f360 - destructor for ambient-like object
-        // FUN_00424940 - FreeMemory
+        delete ambient;
         ambient = 0;
     }
 
     // Cleanup hotspots array at 0x608
     for (int i = 0; i < 10; i++) {
         if (hotspots[i] != 0) {
-            // FUN_0040d3a0 - destructor for hotspot-like object
-            // FUN_00424940 - FreeMemory
+            delete hotspots[i];
             hotspots[i] = 0;
         }
     }
@@ -96,11 +95,11 @@ void Handler6::Init(SC_Message* msg) {
     WriteToMessageLog(periodLabel);
     
     // Parse static section
-    FUN_00418d60(this, filePath, staticLabel);
+    ParseFile(this, filePath, staticLabel);
     
     // Log and parse period section
     WriteToMessageLog("Finished getting static, now get specific");
-    FUN_00418d60(this, filePath, periodLabel);
+    ParseFile(this, filePath, periodLabel);
     
     // Count active hotspots
     activeHotspots = CountActiveHotspots();
@@ -137,26 +136,23 @@ int Handler6::HandleMessage(SC_Message* msg) {
 void Handler6::Update(SC_Message* msg) {
     // Cleanup palette at 0x600
     if (palette != 0) {
-        FUN_0041ea80(palette);
-        FUN_00424940(palette);
+        delete palette;
         palette = 0;
     }
     
     // Cleanup ambient at 0x604
     if (ambient != 0) {
-        FUN_0041f360(ambient);
-        FUN_00424940(ambient);
+        delete ambient;
         ambient = 0;
     }
     
     // Cleanup hotspots array at 0x608
-    void** ptr = hotspots;
+    Hotspot** ptr = hotspots;
     int remaining = 10;
     do {
-        void* hs = *ptr;
+        Hotspot* hs = *ptr;
         if (hs != 0) {
-            FUN_0040d3a0(hs);
-            FUN_00424940(hs);
+            delete hs;
             *ptr = 0;
         }
         ptr++;
@@ -186,11 +182,11 @@ void Handler6::Draw(int param1, int param2) {
     FUN_00403230(this, param1, param2);
     
     // Draw ambient  
-    FUN_0041f800(ambient);
+    if (ambient) ambient->DoAll();
     
     // Handle hotspot animation
     if (currentHotspot != 0) {
-        int result = FUN_0040d610(currentHotspot);
+        int result = currentHotspot->Draw_40d610();
         if (result == 0) {
             return;
         }
@@ -207,11 +203,11 @@ void Handler6::Draw(int param1, int param2) {
         
         if (clickedIndex == -1) {
             if (sprite != 0) {
-                FUN_0041d190(sprite, 0);
+                ((Sprite*)sprite)->SetState2(0);
             }
         } else {
             if (sprite != 0) {
-                FUN_0041d190(sprite, 1);
+                ((Sprite*)sprite)->SetState2(1);
             }
         }
         FUN_0041f200(g_GameLoop_00436978);
@@ -238,12 +234,12 @@ int Handler6::Exit(SC_Message* msg) {
 /* Function start: 0x4049F0 */
 int Handler6::CountActiveHotspots() {
     int count = 0;
-    void** ptr = hotspots;
+    Hotspot** ptr = hotspots;
     int remaining = 10;
 
     do {
-        void* hotspot = *ptr;
-        if (hotspot != 0 && *((int*)((char*)hotspot + 0xd0)) != 0) {
+        Hotspot* hotspot = *ptr;
+        if (hotspot != 0 && hotspot->field_D0 != 0) {
             count++;
         }
         ptr++;
@@ -255,14 +251,15 @@ int Handler6::CountActiveHotspots() {
 
 /* Function start: 0x404970 */
 int Handler6::FindClickedHotspot() {
-    extern void* g_InputManager_00436968;
+    // extern void* g_InputManager_00436968; // Used from globals.h
+
     
     int index = 0;
-    void** ptr = hotspots;
+    Hotspot** ptr = hotspots;
     int zero = 0;
     
     do {
-        void* hotspot = *ptr;
+        Hotspot* hotspot = *ptr;
         if (hotspot != 0) {
             int mouseY = 0;
             int* mouseData = *(int**)((char*)g_InputManager_00436968 + 0x1a0);
@@ -280,11 +277,11 @@ int Handler6::FindClickedHotspot() {
             }
             
             // Direct comparisons matching original
-            if (*((int*)((char*)hotspot + 0xd0)) == zero) goto notInBounds;
-            if (*((int*)((char*)hotspot + 0xe0)) > mouseX) goto notInBounds;
-            if (*((int*)((char*)hotspot + 0xe8)) < mouseX) goto notInBounds;
-            if (*((int*)((char*)hotspot + 0xe4)) > mouseY) goto notInBounds;
-            if (*((int*)((char*)hotspot + 0xec)) < mouseY) goto notInBounds;
+            if (hotspot->field_D0 == zero) goto notInBounds;
+            if (hotspot->field_E0 > mouseX) goto notInBounds;
+            if (hotspot->field_E8 < mouseX) goto notInBounds;
+            if (hotspot->field_E4 > mouseY) goto notInBounds;
+            if (hotspot->field_EC < mouseY) goto notInBounds;
             
             return index;
             

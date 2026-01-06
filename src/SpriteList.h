@@ -21,6 +21,7 @@ public:
 
     void Init();
     int DoAll();
+    virtual ~SpriteList();
 };
 
 #endif // SPRITELIST_H
