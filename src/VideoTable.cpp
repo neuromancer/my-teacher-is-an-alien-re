@@ -6,7 +6,7 @@ extern "C" {
     void FUN_00423076();
 }
 
-// h_0043841c is already declared in globals.h
+// g_WinGDC_0043841c is already declared in globals.h
 extern HDC DAT_00437488;
 extern int DAT_004374ca;
 extern void* DAT_00438438;
@@ -34,7 +34,7 @@ extern "C" int __cdecl CreateTable(int width, int height) {
     unsigned int aligned_width = (width + 3) & 0xFFFFFFFC;
     int image_size;
 
-    if (h_0043841c == 0) {
+    if (g_WinGDC_0043841c == 0) {
         image_size = aligned_width * height;
     } else {
         image_size = 1064 - DAT_00437f4c;
@@ -55,19 +55,19 @@ extern "C" int __cdecl CreateTable(int width, int height) {
     HGLOBAL hDib = hMem;
     int data_offset = DAT_00437f4c;
 
-    if (h_0043841c != 0) {
-        hDib = ((HGLOBAL(*)(HDC, BITMAPINFO*, void**))DAT_00438428)(h_0043841c, bmi, (void**)&bmi);
+    if (g_WinGDC_0043841c != 0) {
+        hDib = ((HGLOBAL(*)(HDC, BITMAPINFO*, void**))DAT_00438428)(g_WinGDC_0043841c, bmi, (void**)&bmi);
         if (hDib == 0) {
             GlobalUnlock(hMem);
             GlobalFree(hMem);
             return -2;
         }
-        HGDIOBJ oldObj = SelectObject(h_0043841c, hDib);
+        HGDIOBJ oldObj = SelectObject(g_WinGDC_0043841c, hDib);
         if (DAT_00438424 == 0) {
             DAT_00438424 = oldObj;
         }
         FUN_00423076();
-        SelectObject(h_0043841c, oldObj);
+        SelectObject(g_WinGDC_0043841c, oldObj);
         data_offset = 0;
     }
 
@@ -92,14 +92,14 @@ extern "C" int ClearVideoBuffer(void) {
     return 0;
 }
 
-// Missing global definitions for VideoTable
-int DAT_004374c6 = 0;
-int DAT_00437f5e = 0;
-int DAT_004374d2 = 0;
-int DAT_004374de = 0;
-int DAT_004374e2 = 0;
-int DAT_004374e6 = 0;
-int DAT_004374ea = 0;
+// Video table globals (defined in globals.cpp)
+extern int DAT_004374c6;
+extern int DAT_00437f5e;
+extern int DAT_004374d2;
+extern int DAT_004374de;
+extern int DAT_004374e2;
+extern int DAT_004374e6;
+extern int DAT_004374ea;
 
 /* Function start: 0x4230D9 */
 extern "C" int __cdecl SelectVideoBuffer(int param_1) {
@@ -109,9 +109,9 @@ extern "C" int __cdecl SelectVideoBuffer(int param_1) {
             return 0xfffffffe; 
         } else {
             // Set current video mode
-            if (h_0043841c != 0) {
+            if (g_WinGDC_0043841c != 0) {
                 // WinG or similar context selection
-                SelectObject(h_0043841c, (HGDIOBJ)DAT_00437fec[param_1]);
+                SelectObject(g_WinGDC_0043841c, (HGDIOBJ)DAT_00437fec[param_1]);
             }
             
             *(char*)&DAT_00437f54 = (char)param_1;
@@ -151,7 +151,7 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 
     counter = 0x20;
     ptr = DAT_0043826c;
-    if (h_0043841c == 0) {
+    if (g_WinGDC_0043841c == 0) {
         do {
             val = *ptr;
             ptr++;
@@ -196,7 +196,7 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
     int newY2;
 
     if (*(char*)&DAT_00437f54 >= 0) {
-        wingDC = (int)h_0043841c;
+        wingDC = (int)g_WinGDC_0043841c;
         if (wingDC != 0) {
             newY2 = srcY2;
         }

@@ -49,7 +49,7 @@ void Handler1::Init(SC_Message* msg) {
     Handler1::CopyCommandData(msg);
     pal = palette;
     if (pal != 0) {
-        palettePtr = (int*)((char*)DAT_0043698c + 0xa8);
+        palettePtr = (int*)((char*)g_ZBufferManager_0043698c + 0xa8);
         if (*palettePtr != 0) {
             WriteToMessageLogIfEnabled(L"ddouble palette");
         }

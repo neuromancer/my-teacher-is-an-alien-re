@@ -21,7 +21,7 @@ extern int DAT_004374a2;
 extern char DAT_00439446[256]; // TEXTMETRIC struct buffer
 
 extern char DAT_00437490;
-extern short DAT_004374b2;
+extern "C" unsigned short DAT_004374b2;  // C linkage (defined in globals.cpp)
 extern int DAT_00437491;
 extern int DAT_00437518;
 extern int DAT_0043751c;
@@ -39,11 +39,11 @@ extern char DAT_004374c1;
 extern int DAT_00437f54;
 extern int DAT_00437f56;
 extern int DAT_00437f5a;
-extern HDC h_0043841c;
+extern HDC g_WinGDC_0043841c;
 extern HGDIOBJ DAT_00438424;
 
 extern char DAT_00437520[256];  // Palette identity map
-extern int DAT_00437620[64];    // Palette data
+extern "C" unsigned char DAT_00437620[256];  // Palette data / State flags (C linkage)
 extern int DAT_0043826c[32];    // Palette data
 extern char DAT_00437720[];     // LOGPALETTE buffer
 extern char DAT_00437afc[];     // inside DAT_00437720
@@ -127,7 +127,7 @@ int InitVideoSystem(void)
         *puVar7 = 0;
         puVar7 = puVar7 + 1;
     }
-    puVar7 = DAT_00437620;
+    puVar7 = (int*)DAT_00437620;
     for (iVar5 = 0x40; iVar5 != 0; iVar5 = iVar5 - 1) {
         *puVar7 = 0;
         puVar7 = puVar7 + 1;
@@ -169,7 +169,7 @@ int InitVideoSystem(void)
     DAT_00437f54 = (char)0xff;
     DAT_00437f56 = -1;
     DAT_00437f5a = -1;
-    h_0043841c = 0;
+    g_WinGDC_0043841c = 0;
     DAT_00438424 = 0;
     
     DVar2 = GetVersion();
@@ -208,7 +208,7 @@ int InitVideoSystem(void)
             if (DAT_00438438 == 0) return 0;
             // Call WinGRecommendDIBFormat (ordinal 3)
             typedef int (__stdcall *WinGRecommendDIBFormat_t)();
-            h_0043841c = (HDC)((WinGRecommendDIBFormat_t)DAT_00438430)();
+            g_WinGDC_0043841c = (HDC)((WinGRecommendDIBFormat_t)DAT_00438430)();
         }
     }
     return 0;
@@ -241,7 +241,7 @@ int InitStockFont(int param_1)
 }
 
 // Additional globals for palette functions
-extern HPALETTE hPal_0043748c;
+extern HPALETTE g_Palette_0043748c;
 extern HPALETTE DAT_004374ae;
 
 /* Function start: 0x424162 */
@@ -257,7 +257,7 @@ int SelectAndRealizePalette(HPALETTE param_1)
 {
     HPALETTE pHVar1;
     
-    hPal_0043748c = param_1;
+    g_Palette_0043748c = param_1;
     pHVar1 = SelectPalette(DAT_00437488, param_1, 0);
     RealizePalette(DAT_00437488);
     if (DAT_004374ae == (HPALETTE)0x0) {

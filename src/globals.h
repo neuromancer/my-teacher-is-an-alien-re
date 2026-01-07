@@ -436,9 +436,9 @@ extern Mouse* g_Mouse_00436978; // DAT_00436978
 extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
 extern Timer* g_Timer_00436980; // DAT_00436980
 extern "C" {
-    extern TimedEventPool* DAT_00436984; // { /* 4 bytes */ }
-    extern TimedEventPool* DAT_00436988; // { /* 4 bytes */ }
-    extern ZBufferManager* DAT_0043698c; // { /* 4 bytes */ }
+    extern TimedEventPool* g_TimedEventPool1_00436984; // { /* 4 bytes */ }
+    extern TimedEventPool* g_TimedEventPool2_00436988; // { /* 4 bytes */ }
+    extern ZBufferManager* g_ZBufferManager_0043698c; // { /* 4 bytes */ }
 }
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
 extern char* g_Unknown_00436994; // DAT_00436994 - string buffer used for game state strings
@@ -471,7 +471,7 @@ extern int DAT_004373b8; // DoubleClickTime
 extern int DAT_004373bc; // DAT_004373bc  { /* 4 bytes */ }
 // pointer PTR_s_Setup.cfg_00437454 = (void*)0x00437448;
 // extern int DAT_00437488; // { /* 4 bytes */ }
-extern HPALETTE hPal_0043748c; // DAT_0043748c  { /* 4 bytes */ }
+extern HPALETTE g_Palette_0043748c; // DAT_0043748c  { /* 4 bytes */ }
 // extern char DAT_00437490; // { /* 1 bytes */ }
 extern int DAT_00437491; // { /* 4 bytes */ }
 // extern int DAT_0043749a; // { /* 4 bytes */ }
@@ -480,22 +480,25 @@ extern HPALETTE DAT_004374ae; // Previously selected palette
 // extern char DAT_004374c0; // { /* 1 bytes */ }
 // extern char DAT_004374c1; // { /* 1 bytes */ }
 // extern int DAT_004374c2; // { /* 4 bytes */ }
-// extern int DAT_004374c6; // { /* 4 bytes */ }
+extern int DAT_004374c6; // Video buffer width
 extern int DAT_004374ca; // Current buffer height - 1
 // extern int DAT_004374ce; // { /* 4 bytes */ }
-// extern int DAT_004374d2; // { /* 4 bytes */ }
+extern int DAT_004374d2; // Video buffer height
 // extern int DAT_004374d6; // { /* 4 bytes */ }
 // extern int DAT_004374da; // { /* 4 bytes */ }
-// extern int DAT_004374de; // { /* 4 bytes */ }
-// extern int DAT_004374e2; // { /* 4 bytes */ }
-// extern int DAT_004374e6; // { /* 4 bytes */ }
-// extern int DAT_004374ea; // { /* 4 bytes */ }
+extern int DAT_004374de; // Clip left
+extern int DAT_004374e2; // Clip right
+extern int DAT_004374e6; // Clip top
+extern int DAT_004374ea; // Clip bottom
 // extern int DAT_004374ee; // { /* 4 bytes */ }
 extern char DAT_00437506; // { /* 1 bytes */ }
 extern char DAT_00437507; // { /* 1 bytes */ }
 // extern char DAT_00437520; // { /* 1 bytes */ }
 // extern char DAT_00437521; // { /* 1 bytes */ }
-// extern int DAT_00437620; // { /* 4 bytes */ }
+extern "C" {
+    extern unsigned char DAT_00437620[256]; // State flags / Palette data
+    extern unsigned short DAT_004374b2; // State flags bitfield
+}
 extern char DAT_00437720[1024]; // Palette entries array
 extern char DAT_00437b48[1024]; // Palette RGBQUAD array
 // extern char DAT_00437724; // { /* 1 bytes */ }
@@ -515,6 +518,7 @@ extern char DAT_00437b48[1024]; // Palette RGBQUAD array
 extern int DAT_00437f4c; // DAT_00437f4c  { /* 4 bytes */ }
 extern int DAT_00437f50; // DAT_00437f50  { /* 4 bytes */ }
 extern int DAT_00437f54; // DAT_00437f54  { /* 4 bytes */ } // changed from char to int
+extern int DAT_00437f5e; // Video buffer width copy
 extern int DAT_0043826c[]; // { /* 4 bytes */ }
 extern void* DAT_00438428; // { /* 4 bytes */ }
 extern int DAT_00437fec[]; // { /* 4 bytes */ }
@@ -530,7 +534,7 @@ extern int DAT_00437f66; // DAT_00437f66  { /* 4 bytes */ }
 extern short DAT_00437f6a; // DAT_00437f6a  { /* 2 bytes */ }
 // extern int DAT_0043826c; // { /* 4 bytes */ }
 // extern int DAT_00438270; // { /* 4 bytes */ }
-extern HDC h_0043841c; // DAT_0043841c  { /* 4 bytes */ }
+extern HDC g_WinGDC_0043841c; // DAT_0043841c  { /* 4 bytes */ }
 // extern int DAT_00438420; // { /* 4 bytes */ }
 extern HGDIOBJ DAT_00438424; // DAT_00438424  { /* 4 bytes */ }
 // extern int DAT_00438428; // { /* 4 bytes */ }
@@ -6071,8 +6075,8 @@ extern void* DAT_0043eff0; // DAT_0043eff0  { /* 4 bytes */ }
 // extern word DAT_004446a0; // 0x3D00
 // extern word DAT_004446a2; // 0x0
 
+extern int DAT_0043bdf0; // File error code
+extern int DAT_0043d558; // Command line audio mode
+extern char DAT_0043d560; // Command line input mode
+
 #endif
-extern int DAT_0043bdf0; // Added manually
-extern int DAT_0043d564; // Added manually
-extern int DAT_0043d558;
-extern char DAT_0043d560;

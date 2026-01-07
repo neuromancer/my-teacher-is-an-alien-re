@@ -101,12 +101,12 @@ void Sprite::StopAnimationSound()
         sound_idx = anim->data->handle;
     }
 
-    if (DAT_0043698c == 0 || *(int*)((int)DAT_0043698c + 0x98) == 0) {
+    if (g_ZBufferManager_0043698c == 0 || *(int*)((int)g_ZBufferManager_0043698c + 0x98) == 0) {
         if (anim != 0) {
             anim->Delete(1);
         }
     } else if (anim != 0) {
-        ((Queue*)DAT_0043698c)->Insert(anim);
+        ((Queue*)g_ZBufferManager_0043698c)->Insert(anim);
     }
 
     animation_data = 0;
@@ -313,7 +313,7 @@ int Sprite::Do(int x, int y, double scale)
     else {
         mode = ((flags & 0x40) < 1 ? -1 : 0) + 3;
     }
-    //DAT_0043698c->PlayAnimationSound(animation_data->data, priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
+    //g_ZBufferManager_0043698c->PlayAnimationSound(animation_data->data, priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
     return -((flags & 1) == 0) & done;
 }
 

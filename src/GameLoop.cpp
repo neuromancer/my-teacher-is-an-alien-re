@@ -143,7 +143,7 @@ loop_start:
     }
     
     DrawFrame();
-    DAT_0043698c->ProcessRenderQueues();
+    g_ZBufferManager_0043698c->ProcessRenderQueues();
     
     elapsedTime = ((Timer*)timer1)->Update();
     if (elapsedTime < (unsigned int)field_0x08) {
@@ -175,11 +175,11 @@ loop_start:
     }
     elapsedTime = ((Timer*)timer1)->Update();
     sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
-    DAT_0043698c->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
+    g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
     
 skip_debug:
     ((Timer*)timer1)->Reset();
-    DAT_0043698c->UpdateScreen();
+    g_ZBufferManager_0043698c->UpdateScreen();
     
     if (field_0x00 == zero) {
         goto loop_start;
@@ -292,7 +292,7 @@ void GameLoop::ProcessInput() {
         }
         
         if (localMessage.targetAddress != 0 && localMessage.priority != 0) {
-            pPool = DAT_00436988;
+            pPool = g_TimedEventPool2_00436988;
             pEvent = pPool->Create((void*)pPool->list.tail, 0);
             ((TimedEvent*)((char*)pEvent + 8))->CopyFrom((TimedEvent*)&localMessage);
             if (pPool->list.tail == 0) {
@@ -434,7 +434,7 @@ void GameLoop::CleanupLoop() {
     ZBufferManager* pZBuf;
     Queue* pQueue;
     
-    pZBuf = DAT_0043698c;
+    pZBuf = g_ZBufferManager_0043698c;
     
     // Process queue at offset 0xa0
     pQueue = (Queue*)pZBuf->m_queueA0;
@@ -627,9 +627,9 @@ int GameLoop::UpdateGame()
 
     local_14 = 0;
     
-    // First loop: pop items from DAT_00436988, copy to local_d8, create in DAT_00436984
-    while (DAT_00436988->m_count != 0) {
-        pSourceMsg = DAT_00436988->Pop(&local_198);
+    // First loop: pop items from g_TimedEventPool2_00436988, copy to local_d8, create in g_TimedEventPool1_00436984
+    while (g_TimedEventPool2_00436988->m_count != 0) {
+        pSourceMsg = g_TimedEventPool2_00436988->Pop(&local_198);
         
         // Copy Parser base class fields
         local_d8.m_subObject = pSourceMsg->m_subObject;
@@ -674,8 +674,8 @@ int GameLoop::UpdateGame()
         // Destruct buffer contents after copy (matches original SEH thunk)
         local_198.SC_Message::~SC_Message();
         
-        // Create entry in DAT_00436984
-        pPool = DAT_00436984;
+        // Create entry in g_TimedEventPool1_00436984
+        pPool = g_TimedEventPool1_00436984;
         pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
         ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)&local_d8);
         
@@ -687,19 +687,19 @@ int GameLoop::UpdateGame()
         pPool->list.tail = pNewEvent;
     }
     
-    // Second loop: pop items from DAT_00436984
-    while (DAT_00436984->m_count != 0) {
-        pSourceMsg = DAT_00436984->Pop(&local_198);
+    // Second loop: pop items from g_TimedEventPool1_00436984
+    while (g_TimedEventPool1_00436984->m_count != 0) {
+        pSourceMsg = g_TimedEventPool1_00436984->Pop(&local_198);
         
         ProcessMessage(pSourceMsg);
         
         // Destruct buffer contents after ProcessMessage (matches original SEH thunk 0x417c22)
         local_198.SC_Message::~SC_Message();
         
-        // Inner loop: pop items from DAT_00436988 and add to DAT_00436984
-        while (DAT_00436988->m_count != 0) {
-            SC_Message* pInnerMsg = DAT_00436988->Pop(&local_258);
-            pPool = DAT_00436984;
+        // Inner loop: pop items from g_TimedEventPool2_00436988 and add to g_TimedEventPool1_00436984
+        while (g_TimedEventPool2_00436988->m_count != 0) {
+            SC_Message* pInnerMsg = g_TimedEventPool2_00436988->Pop(&local_258);
+            pPool = g_TimedEventPool1_00436984;
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
             ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)pInnerMsg);
             
@@ -767,9 +767,9 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         (*(void (**)(SC_Message*))(*(int*)handler + 0x18))(msg);
     }
     
-    // Clear ZBufferManager queues if DAT_0043698c exists
-    if (DAT_0043698c != 0) {
-        ZBufferManager* pZBuf = DAT_0043698c;
+    // Clear ZBufferManager queues if g_ZBufferManager_0043698c exists
+    if (g_ZBufferManager_0043698c != 0) {
+        ZBufferManager* pZBuf = g_ZBufferManager_0043698c;
         
         // Process queue at offset 0xa0
         pQueue = pZBuf->m_queueA0;

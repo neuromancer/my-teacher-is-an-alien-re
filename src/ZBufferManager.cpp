@@ -14,14 +14,12 @@
 #include <stdlib.h>
 
 extern "C" {
-    void FUN_0041b0a0(int, int, void*, int, int);
-    int _rand();
     void FUN_004229ea(int, int);
     void FUN_00421700(void*, char*, int);
 }
 
 void __stdcall FUN_0041b110(int, int, void*, int, int);
-
+void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
 
 struct CommandType1 : public SoundCommand {
@@ -45,7 +43,7 @@ struct CommandType1 : public SoundCommand {
                  break;
 
             case 2:
-                 //FUN_0041b0a0(x, y, data, scale_low, scale_high);
+                 DrawScaledSprite(x, y, data, scale_low);
                  break;
             case 3:
                  g_WorkBuffer_00436974->FUN_0041b110(x, y, data, scale_low, scale_high);
@@ -94,8 +92,8 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
             
             // Apply jitter if flags & 2
             if ((*(char*)this & 2) != 0) {
-                 x = _rand() % 5 - 2 + x;
-                 y = _rand() % 5 - 2 + y;
+                 x = rand() % 5 - 2 + x;
+                 y = rand() % 5 - 2 + y;
             }
             
             cmd->x = x;

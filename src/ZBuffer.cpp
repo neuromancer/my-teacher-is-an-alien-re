@@ -23,7 +23,7 @@ char s_hIam[] = "hIam %d";
 //     void* field_a4;
 // };
 
-// extern SoundManager* DAT_0043698c;
+// extern SoundManager* g_ZBufferManager_0043698c;
 
 /* Function start: 0x4012D0 */
 void ZBuffer::Update(int param_1, int param_2)
@@ -53,13 +53,13 @@ int ZBuffer::ProcessMessage(void* param_1)
     timer.Reset();
     int iVar1 = msg->priority;
     if (iVar1 == 3) {
-        *(int*)DAT_0043698c |= 2;
-        DAT_0043698c->timer.Reset();
+        *(int*)g_ZBufferManager_0043698c |= 2;
+        g_ZBufferManager_0043698c->timer.Reset();
         return 1;
     }
     if (iVar1 == 0xe) {
-        DAT_0043698c->m_state = 2;
-        int* piVar2 = (int*)DAT_0043698c->m_queueA0;
+        g_ZBufferManager_0043698c->m_state = 2;
+        int* piVar2 = (int*)g_ZBufferManager_0043698c->m_queueA0;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -70,7 +70,7 @@ int ZBuffer::ProcessMessage(void* param_1)
                 }
             }
         }
-        piVar2 = (int*)DAT_0043698c->m_queueA4;
+        piVar2 = (int*)g_ZBufferManager_0043698c->m_queueA4;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -81,7 +81,7 @@ int ZBuffer::ProcessMessage(void* param_1)
                 }
             }
         }
-        piVar2 = (int*)DAT_0043698c->m_queue9c;
+        piVar2 = (int*)g_ZBufferManager_0043698c->m_queue9c;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -95,8 +95,8 @@ int ZBuffer::ProcessMessage(void* param_1)
         if (iVar1 != 0xf) {
             return 0;
         }
-        DAT_0043698c->m_state = 1;
-        int* piVar2 = (int*)DAT_0043698c->m_queueA0;
+        g_ZBufferManager_0043698c->m_state = 1;
+        int* piVar2 = (int*)g_ZBufferManager_0043698c->m_queueA0;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -107,7 +107,7 @@ int ZBuffer::ProcessMessage(void* param_1)
                 }
             }
         }
-        piVar2 = (int*)DAT_0043698c->m_queueA4;
+        piVar2 = (int*)g_ZBufferManager_0043698c->m_queueA4;
         if (*piVar2 != 0) {
             piVar2[2] = *piVar2;
             while (*piVar2 != 0) {
@@ -118,7 +118,7 @@ int ZBuffer::ProcessMessage(void* param_1)
                 }
             }
         }
-        ZBuffer::ClearList((int*)DAT_0043698c->m_queue9c);
+        ZBuffer::ClearList((int*)g_ZBufferManager_0043698c->m_queue9c);
     }
     return 1;
 }

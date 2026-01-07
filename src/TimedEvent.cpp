@@ -40,7 +40,7 @@ int TimedEvent::Update()
 
         void* next_data = m_next_event_data;
         if (next_data) {
-            pool = DAT_00436988;
+            pool = g_TimedEventPool2_00436988;
             TimedEvent* node = pool->Create((void*)pool->list.tail, 0);
             ((TimedEvent*)((int*)node + 2))->CopyFrom((TimedEvent*)next_data);
 
@@ -97,7 +97,7 @@ int TimedEvent::Update()
 
         void* next_data = m_next_event_data;
         if (next_data) {
-            pool = DAT_00436988;
+            pool = g_TimedEventPool2_00436988;
             TimedEvent* node = pool->Create((void*)pool->list.tail, 0);
             ((TimedEvent*)((int*)node + 2))->CopyFrom((TimedEvent*)next_data);
 
@@ -113,7 +113,7 @@ int TimedEvent::Update()
         return 0;
     } else if (m_type == 2) {
         sprintf(g_Buffer_00436960, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
-        DAT_0043698c->ShowSubtitle(g_Buffer_00436960, 0x208, 0x1c2, 10000, 8);
+        g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, 0x208, 0x1c2, 10000, 8);
 
         if (remaining_time > 0) {
             return 0;
@@ -121,7 +121,7 @@ int TimedEvent::Update()
 
         void* next_data = m_next_event_data;
         if (next_data) {
-            pool = DAT_00436988;
+            pool = g_TimedEventPool2_00436988;
             TimedEvent* node = pool->Create((void*)pool->list.tail, 0);
             ((TimedEvent*)((int*)node + 2))->CopyFrom((TimedEvent*)next_data);
 

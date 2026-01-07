@@ -4,7 +4,7 @@
 #include "TimedEvent.h"
 
 extern "C" {
-    extern TimedEventPool* DAT_00436988;
+    extern TimedEventPool* g_TimedEventPool2_00436988;
 }
 
 /* Function start: 0x41A150 */
@@ -27,17 +27,17 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
     TimedEvent* pEntry;
     unsigned int i;
 
-    if (DAT_00436988 != 0) {
+    if (g_TimedEventPool2_00436988 != 0) {
         pSource = &local_dc;
 
-        pPool = DAT_00436988;
-        pOldTail = DAT_00436988->list.tail;
-        pTail = &DAT_00436988->list.tail;
-        pFreeList = &DAT_00436988->m_free_list;
+        pPool = g_TimedEventPool2_00436988;
+        pOldTail = g_TimedEventPool2_00436988->list.tail;
+        pTail = &g_TimedEventPool2_00436988->list.tail;
+        pFreeList = &g_TimedEventPool2_00436988->m_free_list;
 
         if (*pFreeList == 0) {
-            pPoolSize = &DAT_00436988->m_pool_size;
-            pNewPool = (int*)AllocateMemory(DAT_00436988->m_pool_size * 200 + 4);
+            pPoolSize = &g_TimedEventPool2_00436988->m_pool_size;
+            pNewPool = (int*)AllocateMemory(g_TimedEventPool2_00436988->m_pool_size * 200 + 4);
             *pNewPool = (int)pPool->m_pool;
             pPool->m_pool = (TimedEvent*)pNewPool;
             count = *pPoolSize;

@@ -26,11 +26,11 @@ int __cdecl SetFillColor(unsigned char param_1)
 int __cdecl ApplyVideoPalette(void)
 {
     if ((signed char)DAT_00437f54 >= 0) {
-        if (h_0043841c != (HDC)0) {
+        if (g_WinGDC_0043841c != (HDC)0) {
             // Use SetDIBColorTable via function pointer
             typedef void (__cdecl *SetDIBColorTableFunc)(HDC, unsigned int, unsigned int, void*);
             // DAT_00437b4c is at offset 4 into DAT_00437b48
-            ((SetDIBColorTableFunc)DAT_0043842c)(h_0043841c, 0, 0x100, &DAT_00437b48[4]);
+            ((SetDIBColorTableFunc)DAT_0043842c)(g_WinGDC_0043841c, 0, 0x100, &DAT_00437b48[4]);
         } else {
             if (DAT_00437f50 != 0) {
                 // Fill 256 shorts with sequential values 0-255
@@ -102,7 +102,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
             quad[i].rgbReserved = 0;
         }
 
-        if (h_0043841c == (HDC)0) {
+        if (g_WinGDC_0043841c == (HDC)0) {
             if (DAT_00437f50 == 0) {
                 // Copy to video buffer
                 unsigned int* dst = (unsigned int*)(DAT_00437f66 - 0x400);
@@ -114,10 +114,10 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
         } else {
             // Use SetDIBColorTable via function pointer
             typedef void (__cdecl *SetDIBColorTableFunc)(HDC, unsigned int, unsigned int, RGBQUAD*);
-            ((SetDIBColorTableFunc)DAT_0043842c)(h_0043841c, start, count, (RGBQUAD*)&DAT_00437b48[offset]);
+            ((SetDIBColorTableFunc)DAT_0043842c)(g_WinGDC_0043841c, start, count, (RGBQUAD*)&DAT_00437b48[offset]);
         }
 
-        AnimatePalette(hPal_0043748c, start, count, pe);
+        AnimatePalette(g_Palette_0043748c, start, count, pe);
     }
     return 0;
 }

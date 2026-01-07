@@ -111,11 +111,11 @@ void RunGame() {
 
     g_Strings_00435a70 = new StringTable("mis\\strings.mis", 1);
     
-    DAT_00436984 = new TimedEventPool();
-    DAT_00436988 = new TimedEventPool();
+    g_TimedEventPool1_00436984 = new TimedEventPool();
+    g_TimedEventPool2_00436988 = new TimedEventPool();
 
     ZBufferManager* pZBuffer = new ZBufferManager();
-    DAT_0043698c = pZBuffer;
+    g_ZBufferManager_0043698c = pZBuffer;
 
     GameLoop* pGameLoop = new GameLoop();
 
@@ -130,14 +130,14 @@ void RunGame() {
     delete pGameLoop;
     pGameLoop = 0;
 
-    delete DAT_0043698c;
-    DAT_0043698c = 0;
+    delete g_ZBufferManager_0043698c;
+    g_ZBufferManager_0043698c = 0;
 
-    delete DAT_00436988;
-    DAT_00436988 = 0;
+    delete g_TimedEventPool2_00436988;
+    g_TimedEventPool2_00436988 = 0;
 
-    delete DAT_00436984;
-    DAT_00436984 = 0;
+    delete g_TimedEventPool1_00436984;
+    g_TimedEventPool1_00436984 = 0;
 
     if (g_Strings_00435a70 != 0) {
         delete g_Strings_00435a70;

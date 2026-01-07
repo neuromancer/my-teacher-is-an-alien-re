@@ -90,7 +90,7 @@ void SC_Question::Update(int x, int y)
 {
     switch (state) {
     case 0:
-        DAT_0043698c->ShowSubtitle(label, x + 10, y + 23, 10000, 8);
+        g_ZBufferManager_0043698c->ShowSubtitle(label, x + 10, y + 23, 10000, 8);
         break;
     case 1:
         if (mouseControl != 0) {
@@ -174,7 +174,7 @@ void SC_Question::Finalize()
         }
         
         // Create timed event in pool and add message to it
-        pool = DAT_00436988;
+        pool = g_TimedEventPool2_00436988;
         event = pool->Create((void*)pool->list.tail, 0);
         ((TimedEvent*)((int*)event + 2))->CopyFrom((TimedEvent*)msgData);
         

@@ -1,9 +1,9 @@
 #include "StateFlag.h"
 
 #include <windows.h>
+#include "globals.h"
 
-BYTE DAT_00437620[256];
-USHORT DAT_004374b2;
+// DAT_00437620 and DAT_004374b2 are declared in globals.h and defined in globals.cpp
 
 /* Function start: 0x422DC1 */
 int __cdecl SetStateFlag(BYTE param_1, int param_2)

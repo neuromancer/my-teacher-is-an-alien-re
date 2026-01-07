@@ -9,7 +9,7 @@ int OnScreenMessage::Update(int index)
 
     if (text[0] != '\0') {
         int y = (index * 4 + 0x14) * 5;
-        DAT_0043698c->ShowSubtitle(text, 0x32, y, 10000, 8);
+        g_ZBufferManager_0043698c->ShowSubtitle(text, 0x32, y, 10000, 8);
     }
 
     dur = duration;

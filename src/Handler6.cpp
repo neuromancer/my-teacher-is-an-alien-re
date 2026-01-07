@@ -25,7 +25,7 @@ extern "C" void __fastcall FUN_00402ed0(void*, void*);  // Parent Init
 
 // Global variable aliases to match globals.h
 #define g_GameLoop_00436978 g_Mouse_00436978
-#define g_Renderer_0043698c DAT_0043698c
+#define g_Renderer_0043698c g_ZBufferManager_0043698c
 
 /* Function start: 0x4044C0 */
 Handler6::Handler6() {

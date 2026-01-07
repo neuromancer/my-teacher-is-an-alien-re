@@ -28,9 +28,9 @@ VBuffer* g_WorkBuffer_00436974 = 0;
 Mouse* g_Mouse_00436978 = 0;
 CDData* g_CDData_0043697c = 0;
 Timer* g_Timer_00436980 = 0;
-TimedEventPool* DAT_00436984 = 0;
-TimedEventPool* DAT_00436988 = 0;
-ZBufferManager* DAT_0043698c = 0;
+TimedEventPool* g_TimedEventPool1_00436984 = 0;
+TimedEventPool* g_TimedEventPool2_00436988 = 0;
+ZBufferManager* g_ZBufferManager_0043698c = 0;
 AnimatedAsset* g_TextManager_00436990 = 0;
 char* g_Unknown_00436994 = 0;
 GameState* g_GameState_00436998 = 0;
@@ -75,9 +75,9 @@ int DAT_00437f50 = 0;
 int DAT_00437f54 = 0xff;  // Current video buffer index, 0xff = no selection
 int DAT_00437f66 = 0; 
 short DAT_00437f6a = 0;
-HDC h_0043841c = 0;
+HDC g_WinGDC_0043841c = 0;
 void* DAT_0043842c = 0;
-HPALETTE hPal_0043748c = 0;
+HPALETTE g_Palette_0043748c = 0;
 HPALETTE DAT_004374ae = 0;  
 HGDIOBJ DAT_00438424 = 0;
 int DAT_0043826c[32];
@@ -124,7 +124,7 @@ int DAT_004374a2 = 0;      // Average char width
 char DAT_00439446[256] = {0}; // TEXTMETRIC struct buffer
 
 char DAT_00437490 = 0;
-short DAT_004374b2 = 0;
+extern "C" unsigned short DAT_004374b2 = 0;  // State flags bitfield (C linkage for StateFlag.cpp)
 int DAT_00437518 = 0;
 int DAT_0043751c = 0;
 int DAT_004383ec = 0;
@@ -136,11 +136,13 @@ int DAT_004374da = 0;
 int DAT_00437514 = 0;
 int DAT_00437f56 = 0;
 int DAT_00437f5a = 0;
-// DAT_0043841c is defined above as HDC h_0043841c
+// DAT_0043841c is defined above as HDC g_WinGDC_0043841c
 int DAT_004374ca = 0;  // Current buffer height - 1
 
 char DAT_00437520[256] = {0};  // Palette identity map
-int DAT_00437620[64] = {0};    // Palette data
+// This memory is used both as palette data (int[64]) and state flags (BYTE[256])
+// Both representations are 256 bytes
+extern "C" unsigned char DAT_00437620[256] = {0};  // (C linkage for StateFlag.cpp)
 
 // Far pointer storage for WinG
 char* PTR_DAT_0043843c = 0;
@@ -161,3 +163,12 @@ HPALETTE DAT_0043de84 = 0;  // Main window palette
 int DAT_0043de88 = 0;       // Window width
 int DAT_0043de8c = 0;       // Window height
 int DAT_0043de94 = 0;       // Activate app state
+
+// Video table globals (from VideoTable.cpp)
+int DAT_004374c6 = 0;  // Current video buffer width
+int DAT_00437f5e = 0;  // Video buffer width copy
+int DAT_004374d2 = 0;  // Current video buffer height
+int DAT_004374de = 0;  // Clip left
+int DAT_004374e2 = 0;  // Clip right
+int DAT_004374e6 = 0;  // Clip top
+int DAT_004374ea = 0;  // Clip bottom

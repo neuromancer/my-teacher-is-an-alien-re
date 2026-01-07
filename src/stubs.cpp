@@ -9,7 +9,7 @@
 #include "globals.h"
 
 // Globals defined in globals.cpp
-// ZBufferManager* DAT_0043698c = NULL; - moved to globals.cpp
+// ZBufferManager* g_ZBufferManager_0043698c = NULL; - moved to globals.cpp
 
 
 #include <smack.h>
@@ -187,11 +187,11 @@ int _rand() { return rand(); }
 // _FUN_00422590@16 - implemented in GameWindow.cpp as GameWindowProc
 
 void FUN_0040cd15() {
-    // Cleanup pool at DAT_00436988
+    // Cleanup pool at g_TimedEventPool2_00436988
     // This calls the pool cleanup function FUN_0040d2a0
-    extern TimedEventPool* DAT_00436988;
-    if (DAT_00436988 != 0) {
-        TimedEventPool* pool = DAT_00436988;
+    extern TimedEventPool* g_TimedEventPool2_00436988;
+    if (g_TimedEventPool2_00436988 != 0) {
+        TimedEventPool* pool = g_TimedEventPool2_00436988;
         // m_pool corresponds to index 4 in previous int* logic
         TimedEvent* node = pool->m_pool; 
         while (node != 0) {
@@ -212,10 +212,10 @@ void FUN_0040cd15() {
     }
 }
 void FUN_0040cd1d() {
-    // Cleanup pool at DAT_00436984
-    extern TimedEventPool* DAT_00436984;
-    if (DAT_00436984 != 0) {
-        TimedEventPool* pool = DAT_00436984;
+    // Cleanup pool at g_TimedEventPool1_00436984
+    extern TimedEventPool* g_TimedEventPool1_00436984;
+    if (g_TimedEventPool1_00436984 != 0) {
+        TimedEventPool* pool = g_TimedEventPool1_00436984;
         TimedEvent* node = pool->m_pool;
         while (node != 0) {
             TimedEvent* next = (TimedEvent*)node->vtable;
