@@ -36,8 +36,8 @@ void __fastcall FUN_0040d2a0(void* param_1) {} // Pool cleanup function
 void FUN_00421700() {}
 void FUN_00422e1a(unsigned int) {}
 // FUN_00422e71 implemented in VideoTable.cpp as GetVideoBufferData
-void FUN_00422e8f() {}
-void FUN_00422a01() {}
+// FUN_00422e8f implemented in PaletteUtils.cpp as ApplyVideoPalette
+// FUN_00422a01 implemented in PaletteUtils.cpp as SetFillColor
 // void FUN_004230d9() {} // Implemented in VideoTable.cpp as SelectVideoBuffer
 void FUN_00423296() {}
 // FUN_0042333a now implemented in VideoTable.cpp as StretchBlitBuffer
@@ -148,7 +148,6 @@ char* FormatFilePath(char* path) {
     return path; 
 }
 
-void CreatePaletteBuffer() {}
 void MouseControl_Constructor() {}
 void OpMenu__SetOptionState() {}
 void OpMenu__GetOptionQ() {}

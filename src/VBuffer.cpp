@@ -43,8 +43,8 @@ void __cdecl OffsetRect(int* rect, int offsetX, int offsetY);
 int __cdecl FUN_0041b590(int* param_1, int* param_2, int* param_3, int* param_4);
 
 extern "C" {
-    void FUN_00422e8f();
-    int FUN_00422a01(unsigned int);
+    void ApplyVideoPalette();
+    int SetFillColor(unsigned char);
     int GetVideoBufferData(unsigned int);
     unsigned int GetCurrentVideoMode();
     void InvalidateVideoMode();
@@ -159,7 +159,7 @@ void VBuffer::InitWithSize(unsigned int param_1, unsigned int param_2)
         return;
     }
     SetCurrentVideoMode(iVar1);
-    FUN_00422e8f();
+    ApplyVideoPalette();
     InvalidateVideoMode();
     data = (void*)GetVideoBufferData(handle);
     RegisterVBufferHandle(handle);
@@ -169,7 +169,7 @@ void VBuffer::InitWithSize(unsigned int param_1, unsigned int param_2)
 void VBuffer::ClearScreen(int color)
 {
     SetCurrentVideoMode(handle);
-    FUN_00422a01(color);
+    SetFillColor(color);
     ClearVideoBuffer();
     InvalidateVideoMode();
 }

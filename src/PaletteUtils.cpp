@@ -1,7 +1,58 @@
 #include <windows.h>
 #include "globals.h"
 
+// Color setup globals
+extern char DAT_00437490;      // Color value after lookup
+extern char DAT_00437520[];    // Palette identity map (256 bytes)
+extern char DAT_00437b48[];    // BGR palette buffer
+static char DAT_00437495 = 0;  // Current color index
+
 extern "C" {
+
+/* Function start: 0x422A01 */
+int __cdecl SetFillColor(unsigned char param_1)
+{
+    DAT_00437495 = param_1;
+    unsigned char mappedColor = DAT_00437520[param_1];
+    DAT_00437490 = mappedColor;
+    // Match original: MOV AH,AL; MOVZX EAX,AX; MOV EDX,EAX; SHL EDX,0x10; OR EAX,EDX
+    unsigned short word = mappedColor | (mappedColor << 8);
+    unsigned int dword = word | (word << 16);
+    DAT_00437491 = dword;
+    return 0;
+}
+
+/* Function start: 0x422E8F */
+int __cdecl ApplyVideoPalette(void)
+{
+    if ((signed char)DAT_00437f54 >= 0) {
+        if (h_0043841c != (HDC)0) {
+            // Use SetDIBColorTable via function pointer
+            typedef void (__cdecl *SetDIBColorTableFunc)(HDC, unsigned int, unsigned int, void*);
+            // DAT_00437b4c is at offset 4 into DAT_00437b48
+            ((SetDIBColorTableFunc)DAT_0043842c)(h_0043841c, 0, 0x100, &DAT_00437b48[4]);
+        } else {
+            if (DAT_00437f50 != 0) {
+                // Fill 256 shorts with sequential values 0-255
+                short* dst = (short*)(DAT_00437f66 - 0x200);
+                short value = 0;
+                int count = 0x100;
+                do {
+                    *dst = value;
+                    value++;
+                    count--;
+                    dst++;
+                } while (count != 0);
+            } else {
+                // Copy 256 DWORDs from DAT_00437b4c to video buffer
+                // Original used REP MOVSD with ES segment
+                memcpy((void*)(DAT_00437f66 - 0x400), &DAT_00437b48[4], 0x400);
+            }
+        }
+    }
+    return 0;
+}
+
 }
 
 extern "C" {

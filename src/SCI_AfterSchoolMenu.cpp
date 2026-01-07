@@ -1,5 +1,6 @@
 #include "SCI_AfterSchoolMenu.h"
 #include "Parser.h"
+#include "Palette.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -9,7 +10,6 @@ extern "C" {
     void ShowError(const char*);
     void* AllocateMemory_Wrapper(int);
     void* MouseControl_Constructor(void*);
-    void* CreatePaletteBuffer(void*);
     char* FormatFilePath(char*);
     void FUN_0041eab0(void*, char*);
     void* HotspotManager_Init(void*);
