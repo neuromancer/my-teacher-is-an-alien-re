@@ -79,7 +79,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
 {
     unsigned int i;
 
-    if (DAT_00437f54 >= 0 && count != 0) {
+    if ((signed char)DAT_00437f54 >= 0 && count != 0) {
         int offset = (start + 1) * 4;
         PALETTEENTRY* pe = (PALETTEENTRY*)&DAT_00437720[offset];
         unsigned char* src = data;

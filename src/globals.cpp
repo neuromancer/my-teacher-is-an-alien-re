@@ -68,8 +68,8 @@ int DAT_004374c2 = 0;
 int DAT_004374ce = 0;
 char DAT_00437506 = 0;
 char DAT_00437507 = 0;
-char DAT_00437720[1024];
-char DAT_00437b48[1024];
+char DAT_00437720[1028];
+char DAT_00437b48[1028];
 
 int DAT_00437f50 = 0;
 int DAT_00437f54 = 0xff;  // Current video buffer index, 0xff = no selection

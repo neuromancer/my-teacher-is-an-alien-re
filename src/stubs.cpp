@@ -41,15 +41,9 @@ void FUN_00422e1a(unsigned int) {}
 // void FUN_004230d9() {} // Implemented in VideoTable.cpp as SelectVideoBuffer
 void FUN_00423296() {}
 // FUN_0042333a now implemented in VideoTable.cpp as StretchBlitBuffer
-void FUN_004231ce() {}
-void FUN_004233e8() {}
-void FUN_0041afb1() {}
-void FUN_0041af9f() {}
-void FUN_0041b590() {}
-void FUN_0041b091() {}
-void FUN_0041b07f() {}
-void FUN_0041b2ac() {}
-void FUN_0041b29a() {}
+// FUN_004231ce, FUN_004233e8 now implemented in Blit.cpp
+// Clipping functions implemented in ClipRect.cpp: OffsetRect, IntersectRect, ClipRectToDest, ClipRectBottomUp, etc.
+
 void SEH_Destructor_0041cb15() {}
 void SEH_TryEnd_0041cb2a() {}
 
@@ -58,7 +52,7 @@ void SEH_TryEnd_0041cb2a() {}
 void FUN_004234d5() {}
 // FUN_004234f9 now implemented in ScaleBuffer.cpp as ScaleBuffer
 void FUN_00423703() {}
-void FUN_00423076() {}
+// FUN_00423076 - now inlined in CreateTable (VideoTable.cpp) - clears DIB buffer
 
 // FUN_00422d98 now implemented in Mouse.cpp as SetCursorVisible
 // FUN_00423a54, FUN_00423aac, FUN_00423cd9 now implemented in Graphics.cpp

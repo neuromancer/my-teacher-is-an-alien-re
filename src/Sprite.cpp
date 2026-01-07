@@ -313,7 +313,7 @@ int Sprite::Do(int x, int y, double scale)
     else {
         mode = ((flags & 0x40) < 1 ? -1 : 0) + 3;
     }
-    //g_ZBufferManager_0043698c->PlayAnimationSound(animation_data->data, priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
+    g_ZBufferManager_0043698c->PlayAnimationSound(animation_data->data, priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
     return -((flags & 1) == 0) & done;
 }
 

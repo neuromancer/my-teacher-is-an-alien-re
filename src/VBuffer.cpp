@@ -40,7 +40,7 @@ void CopyRowTransparent(char* dest, char* src, int count, char transparentColor,
 void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor);
 int __cdecl IntersectClipRect(int* clipRect, int* srcRect, int* destRect);
 void __cdecl OffsetRect(int* rect, int offsetX, int offsetY);
-int __cdecl FUN_0041b590(int* param_1, int* param_2, int* param_3, int* param_4);
+int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4);
 
 extern "C" {
     void ApplyVideoPalette();
@@ -49,12 +49,8 @@ extern "C" {
     unsigned int GetCurrentVideoMode();
     void InvalidateVideoMode();
     void FUN_0041ae0c(void);
-    void FUN_004231ce(int, int, int, int, int, int, unsigned int, unsigned int);
-    void FUN_004233e8(int, int, int, int, int, int, unsigned int, unsigned int);
-    void FUN_0041af9f(void);
-    void FUN_0041afb1(void);
-    void FUN_0041b29a(void);
-    void FUN_0041b2ac(void);
+    void BlitBufferOpaque(int, int, int, int, int, int, unsigned int, unsigned int);
+    void BlitBufferTransparent(int, int, int, int, int, int, unsigned int, unsigned int);
     int SelectVideoBuffer(int);
     void FUN_00423296(int, int, int, int, int, int);
     int StretchBlitBuffer(int, int, int, int, int, int, int, int);
@@ -293,13 +289,13 @@ void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4
 /* Function start: 0x41ae20 */
 void VBuffer::CallBlitter(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    FUN_004231ce(param_1, param_2, param_3, param_4, param_5, param_6, ((VBuffer*)param_7)->handle, handle);
+    BlitBufferOpaque(param_1, param_2, param_3, param_4, param_5, param_6, ((VBuffer*)param_7)->handle, handle);
 }
 
 /* Function start: 0x41ae60 */
 void VBuffer::CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, VBuffer* srcBuffer)
 {
-    FUN_004233e8(param_1, param_2, param_3, param_4, param_5, param_6, srcBuffer->handle, handle);
+    BlitBufferTransparent(param_1, param_2, param_3, param_4, param_5, param_6, srcBuffer->handle, handle);
 }
 
 /* Function start: 0x41aea0 */
@@ -311,63 +307,42 @@ void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41aee0 */
 void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    int local_2c[4];
-    int local_1c[4];
+    GlyphRect local_2c;
+    GlyphRect local_1c;
 
-    local_2c[0] = clip_x1;
-    local_2c[2] = clip_x2;
-    local_2c[1] = clip_y1;
-    local_2c[3] = clip_y2;
-    local_1c[0] = param_1;
-    local_1c[2] = param_3;
-    local_1c[1] = param_2;
-    local_1c[3] = param_4;
+    local_2c.left = clip_x1;
+    local_2c.right = clip_x2;
+    local_2c.top = clip_y1;
+    local_2c.bottom = clip_y2;
+    local_1c.left = param_1;
+    local_1c.right = param_3;
+    local_1c.top = param_2;
+    local_1c.bottom = param_4;
 
-    __try
+    if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6))
     {
-        if (FUN_0041b590(local_2c, local_1c, &param_5, &param_6))
-        {
-            CallBlitter(local_1c[0], local_1c[1], local_1c[2], local_1c[3], param_5, param_6, param_7);
-        }
+        CallBlitter(local_1c.left, local_1c.top, local_1c.right, local_1c.bottom, param_5, param_6, param_7);
     }
-    __finally
-    {
-        FUN_0041af9f();
-        FUN_0041afb1();
-    }
-}
-
-extern "C" {
-    void FUN_0041b07f(void);
-    void FUN_0041b091(void);
 }
 
 /* Function start: 0x41AFC0 */
 void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    int local_2c[4];
-    int local_1c[4];
+    GlyphRect local_2c;
+    GlyphRect local_1c;
 
-    local_2c[0] = clip_x1;
-    local_2c[2] = clip_x2;
-    local_2c[1] = clip_y1;
-    local_2c[3] = clip_y2;
-    local_1c[0] = param_1;
-    local_1c[1] = param_3;
-    local_1c[2] = param_2;
-    local_1c[3] = param_4;
+    local_2c.left = clip_x1;
+    local_2c.right = clip_x2;
+    local_2c.top = clip_y1;
+    local_2c.bottom = clip_y2;
+    local_1c.left = param_1;
+    local_1c.top = param_3;
+    local_1c.right = param_2;
+    local_1c.bottom = param_4;
 
-    __try
+    if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6))
     {
-        if (FUN_0041b590(local_2c, local_1c, &param_5, &param_6))
-        {
-            CallBlitter2(local_1c[0], local_1c[2], local_1c[1], local_1c[3], param_5, param_6, (VBuffer*)param_7);
-        }
-    }
-    __finally
-    {
-        FUN_0041b07f();
-        FUN_0041b091();
+        CallBlitter2(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, (VBuffer*)param_7);
     }
 }
 
@@ -389,34 +364,19 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
         void* puVar3 = (void*)GetVideoBufferData(local_10);
         ScaleBuffer(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
 
-        __try {
-            local_30[0] = 0;
-            local_30[1] = 0;
-            local_30[2] = 0;
-            local_30[3] = 0;
-            local_30[1] = clip_y1;
-            local_30[2] = clip_x2;
-            local_20[0] = 0;
-            local_20[1] = 0;
-            local_20[2] = 0;
-            local_20[3] = 0;
-            local_30[0] = clip_x1;
-            scaledWidth = scaledWidth - 1;
-            scaledHeight = scaledHeight - 1;
-            local_30[3] = clip_y2;
-            local_20[2] = scaledWidth;
-            local_20[3] = scaledHeight;
-            local_20[0] = 0;
-            local_20[1] = 0;
+        local_30[0] = clip_x1;
+        local_30[1] = clip_y1;
+        local_30[2] = clip_x2;
+        local_30[3] = clip_y2;
+        local_20[0] = 0;
+        local_20[1] = 0;
+        local_20[2] = scaledWidth - 1;
+        local_20[3] = scaledHeight - 1;
 
-            int iVar4 = FUN_0041b590(local_30, local_20, &param_1, &param_2);
-            if (iVar4 != 0) {
-                FUN_004233e8(local_20[0], local_20[2], local_20[1], local_20[3], param_1, param_2, local_10, handle);
-                FUN_004234d5(local_10);
-            }
-        } __finally {
-            FUN_0041b29a();
-            FUN_0041b2ac();
+        int iVar4 = ClipRectBottomUp(local_30, local_20, &param_1, &param_2);
+        if (iVar4 != 0) {
+            BlitBufferTransparent(local_20[0], local_20[2], local_20[1], local_20[3], param_1, param_2, local_10, handle);
+            FUN_004234d5(local_10);
         }
     }
 }
@@ -519,7 +479,7 @@ int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* dest
 }
 
 /* Function start: 0x41B590 */
-int __cdecl FUN_0041b590(int* param_1, int* param_2, int* param_3, int* param_4)
+int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4)
 {
     int result;
     *param_4 = *param_4 + (param_2[1] - param_2[3]);

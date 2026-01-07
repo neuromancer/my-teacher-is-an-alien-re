@@ -146,12 +146,12 @@ loop_start:
     g_ZBufferManager_0043698c->ProcessRenderQueues();
     
     elapsedTime = ((Timer*)timer1)->Update();
-    if (elapsedTime < (unsigned int)field_0x08) {
+    /*if (elapsedTime < (unsigned int)field_0x08) {
         do {
             SmackSoundCheck();
             elapsedTime = ((Timer*)timer1)->Update();
         } while (elapsedTime < (unsigned int)field_0x08);
-    }
+    }*/
     
     if (g_GameState_00436998 == (GameState*)zero) {
         goto skip_debug;

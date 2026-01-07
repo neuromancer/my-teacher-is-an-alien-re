@@ -2,9 +2,7 @@
 #include <windows.h>
 #include <string.h>
 
-extern "C" {
-    void FUN_00423076();
-}
+// FUN_00423076 is now inlined in CreateTable below
 
 // g_WinGDC_0043841c is already declared in globals.h
 extern HDC DAT_00437488;
@@ -66,7 +64,9 @@ extern "C" int __cdecl CreateTable(int width, int height) {
         if (DAT_00438424 == 0) {
             DAT_00438424 = oldObj;
         }
-        FUN_00423076();
+        // FUN_00423076 - Clear the newly created DIB buffer
+        // This function reads from caller's EBP frame, so we inline it here
+        memset(bmi, 0, aligned_width * height);
         SelectObject(g_WinGDC_0043841c, oldObj);
         data_offset = 0;
     }

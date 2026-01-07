@@ -499,8 +499,8 @@ extern "C" {
     extern unsigned char DAT_00437620[256]; // State flags / Palette data
     extern unsigned short DAT_004374b2; // State flags bitfield
 }
-extern char DAT_00437720[1024]; // Palette entries array
-extern char DAT_00437b48[1024]; // Palette RGBQUAD array
+extern char DAT_00437720[1028]; // Palette entries array (needed 1028 bytes for 4 byte header + 256*4 entries)
+extern char DAT_00437b48[1028]; // Palette RGBQUAD array
 // extern char DAT_00437724; // { /* 1 bytes */ }
 // extern char DAT_00437725; // { /* 1 bytes */ }
 // extern char DAT_00437726; // { /* 1 bytes */ }
