@@ -93,12 +93,12 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
             src += 3;
         }
 
-        // Convert to RGBQUAD format
+        // Convert to RGBQUAD format (BGR order)
         RGBQUAD* quad = (RGBQUAD*)&DAT_00437b48[offset];
         for (i = 0; i < count; i++) {
-            quad[i].rgbBlue = pe[i].peRed;
+            quad[i].rgbBlue = pe[i].peBlue;
             quad[i].rgbGreen = pe[i].peGreen;
-            quad[i].rgbRed = pe[i].peBlue;
+            quad[i].rgbRed = pe[i].peRed;
             quad[i].rgbReserved = 0;
         }
 

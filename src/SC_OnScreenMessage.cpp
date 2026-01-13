@@ -1,5 +1,4 @@
 #include "SC_OnScreenMessage.h"
-#include <string.h>
 #include "Memory.h"
 #include "Message.h"
 
@@ -7,15 +6,87 @@ extern "C" {
     extern int OnScreenMessage_Update(void*, int);
     extern void SC_OnScreenMessage_AddMessage();
     void ShowError(const char*, ...);
-    // SC_Message_Send is C++ from Message.h
-    //extern void Timer_DecrementCounter();
 }
 
 
-extern "C" {
-    extern void Timer_DecrementCounter_wrapper();
-    extern void Timer_DecrementCounter_wrapper_2();
-    extern void GameState_dtor_wrapper_4();
+/* Function start: 0x40A2E0 */
+SC_OnScreenMessage::SC_OnScreenMessage()
+{
+    MessageList* list;
+
+    targetAddress = 0xf;
+
+    timer.Reset();
+
+    list = (MessageList*)AllocateMemory(16);
+    m_messageList = 0;
+    if (list != 0) {
+        list->flags = 1;
+        list->head = 0;
+        list->tail = 0;
+        list->current = list->head;
+        m_messageList = list;
+    }
+}
+
+/* Function start: 0x40A3F0 */
+void SC_OnScreenMessage::Destroy(int free)
+{
+    SC_OnScreenMessage::~SC_OnScreenMessage();
+    if (free & 1) {
+        FreeMemory(this);
+    }
+}
+
+/* Function start: 0x40A410 */
+SC_OnScreenMessage::~SC_OnScreenMessage()
+{
+    MessageList* list;
+    MessageNode* node;
+    void* data;
+
+    list = m_messageList;
+    if (list != 0) {
+        if (list->head != 0) {
+            list->current = list->head;
+            while (list->head != 0) {
+                node = (MessageNode*)list->current;
+                if (node == 0) {
+                    data = 0;
+                }
+                else {
+                    if (list->head == node) {
+                        list->head = node->next;
+                    }
+                    if (list->tail == list->current) {
+                        list->tail = node->prev;
+                    }
+                    if (node->prev != 0) {
+                        node->prev->next = node->next;
+                    }
+                    if (node->next != 0) {
+                        node->next->prev = node->prev;
+                    }
+                    data = 0;
+                    if (node != 0) {
+                        data = node->data;
+                        node->data = 0;
+                        node->prev = 0;
+                        node->next = 0;
+                        FreeMemory(node);
+                        list->current = 0;
+                    }
+                    list->current = list->head;
+                }
+                if (data != 0) {
+                    Timer_DecrementCounter();
+                    FreeMemory(data);
+                }
+            }
+        }
+        FreeMemory(list);
+        m_messageList = 0;
+    }
 }
 
 /* Function start: 0x40A5A0 */
@@ -27,156 +98,73 @@ void SC_OnScreenMessage::Copy(SC_OnScreenMessage* other)
     }
 }
 
-/* Function start: 0x40A2E0 */
-SC_OnScreenMessage::SC_OnScreenMessage()
-{
-    memset(&targetAddress, 0, 24);  // Zero 6 DWORDs (0x18 bytes)
-    targetAddress = 0xf;
-
-    timer.Reset();
-
-    messageQueue.m_head = AllocateMemory(16);
-    if (messageQueue.m_head) {
-        int* node = (int*)messageQueue.m_head;
-        node[3] = 1;      // flags at 0xc = 1
-        node[0] = 0;      // prev at 0x0 = 0
-        node[1] = 0;      // next at 0x4 = 0
-        node[2] = node[0]; // data at 0x8 = prev value
-    }
-}
-
-/* Function start: 0x40A3F0 */
-void SC_OnScreenMessage::Destroy(int free)
-{
-    Free();
-    if (free & 1) {
-        FreeMemory(this);
-    }
-}
-
-/* Function start: 0x40A410 */
-void SC_OnScreenMessage::Free()
-{
-    Queue* queue = &messageQueue;
-
-    try {
-        queue->m_current = queue->m_head;
-        while (queue->m_current) {
-            void* data = ((QueueNode*)queue->m_current)->data;
-
-            if (queue->m_head == queue->m_current) {
-                queue->m_head = ((QueueNode*)queue->m_current)->next;
-            }
-
-            if (queue->m_tail == queue->m_current) {
-                queue->m_tail = ((QueueNode*)queue->m_current)->prev;
-            }
-
-            if (((QueueNode*)queue->m_current)->prev) {
-                ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = ((QueueNode*)queue->m_current)->next;
-            }
-
-            if (((QueueNode*)queue->m_current)->next) {
-                ((QueueNode*)((QueueNode*)queue->m_current)->next)->prev = ((QueueNode*)queue->m_current)->prev;
-            }
-
-            if (data) {
-                Timer_DecrementCounter_wrapper();
-                FreeFromGlobalHeap(data);
-            }
-
-            FreeFromGlobalHeap(queue->m_current);
-            queue->m_current = queue->m_head;
-        }
-    } catch (...) {
-        // The original code has an empty catch block
-    }
-
-    if (queue->m_head) {
-        FreeFromGlobalHeap(queue->m_head);
-        queue->m_head = 0;
-    }
-
-    Timer_DecrementCounter_wrapper_2();
-    GameState_dtor_wrapper_4();
-}
-
 /* Function start: 0x40A5E0 */
 void SC_OnScreenMessage::Update(int param_1, int param_2)
 {
+    MessageList* list;
+    MessageNode* node;
     int iVar1;
-    Queue* piVar2;
-    QueueNode* puVar3;
-    int iVar4;
-    int bVar5;
-    unsigned int uVar6;
     void* this_00;
     int local_1c;
     void* local_18;
+    unsigned int uVar6;
 
-    try {
-        piVar2 = &messageQueue;
-        piVar2->m_current = piVar2->m_head;
-        local_1c = 0;
-        iVar1 = (int)piVar2->m_head;
-        while (iVar1 != 0) {
-            this_00 = (void*)0x0;
-            iVar1 = (int)piVar2->m_current;
-            if (iVar1 != 0) {
-                this_00 = ((QueueNode*)iVar1)->data;
+    list = m_messageList;
+    list->current = list->head;
+    local_1c = 0;
+    iVar1 = (int)list->head;
+    while (iVar1 != 0) {
+        this_00 = 0;
+        iVar1 = (int)list->current;
+        if (iVar1 != 0) {
+            this_00 = ((MessageNode*)iVar1)->data;
+        }
+        if (OnScreenMessage_Update(this_00, local_1c)) {
+            list = m_messageList;
+            iVar1 = (int)list->current;
+            if (iVar1 == 0) {
+                local_18 = 0;
             }
-            bVar5 = OnScreenMessage_Update(this_00, local_1c);
-            if (bVar5) {
-                piVar2 = &messageQueue;
-                iVar1 = (int)piVar2->m_current;
-                if (iVar1 == 0) {
-                    local_18 = (void*)0x0;
+            else {
+                if (list->head == (void*)iVar1) {
+                    list->head = ((MessageNode*)iVar1)->next;
+                }
+                if (list->tail == list->current) {
+                    list->tail = ((MessageNode*)iVar1)->prev;
+                }
+                if (((MessageNode*)iVar1)->prev != 0) {
+                    ((MessageNode*)iVar1)->prev->next = ((MessageNode*)iVar1)->next;
+                }
+                node = ((MessageNode*)iVar1)->next;
+                if (node != 0) {
+                    node->prev = ((MessageNode*)iVar1)->prev;
+                }
+                node = (MessageNode*)iVar1;
+                if (node == 0) {
+                    local_18 = 0;
                 }
                 else {
-                    if (piVar2->m_head == (void*)iVar1) {
-                        piVar2->m_head = ((QueueNode*)iVar1)->next;
-                    }
-                    if (piVar2->m_tail == piVar2->m_current) {
-                        piVar2->m_tail = ((QueueNode*)iVar1)->prev;
-                    }
-                    iVar4 = (int)((QueueNode*)iVar1)->prev;
-                    if (iVar4 != 0) {
-                        ((QueueNode*)iVar4)->next = ((QueueNode*)iVar1)->next;
-                    }
-                    puVar3 = ((QueueNode*)iVar1)->next;
-                    if (puVar3 != (QueueNode*)0x0) {
-                        puVar3->prev = ((QueueNode*)iVar1)->prev;
-                    }
-                    puVar3 = (QueueNode*)iVar1;
-                    if (puVar3 == (QueueNode*)0x0) {
-                        local_18 = (void*)0x0;
-                    }
-                    else {
-                        local_18 = puVar3->data;
-                        puVar3->data = 0;
-                        puVar3->next = 0;
-                        puVar3->prev = 0;
-                        FreeMemory(puVar3);
-                        piVar2->m_current = 0;
-                    }
-                    piVar2->m_current = piVar2->m_head;
+                    local_18 = node->data;
+                    node->data = 0;
+                    node->prev = 0;
+                    node->next = 0;
+                    FreeMemory(node);
+                    list->current = 0;
                 }
-                if (local_18 != (void*)0x0) {
-                    SC_OnScreenMessage_AddMessage();
-                    FreeMemory(local_18);
-                }
+                list->current = list->head;
             }
-            local_1c = local_1c + 1;
-            iVar1 = (int)piVar2->m_head;
-            iVar4 = (int)piVar2->m_current;
-            if ((piVar2->m_tail == (void*)iVar4) || (10 < local_1c)) break;
-            if (iVar4 != 0) {
-                piVar2->m_current = ((QueueNode*)iVar4)->next;
+            if (local_18 != 0) {
+                SC_OnScreenMessage_AddMessage();
+                FreeMemory(local_18);
             }
-            iVar1 = (int)piVar2->m_head;
         }
-    }
-    catch (...) {
+        local_1c = local_1c + 1;
+        iVar1 = (int)list->head;
+        if ((list->tail == list->current) || (10 < local_1c)) break;
+        if (list->current != 0) {
+            list->current = ((MessageNode*)list->current)->next;
+        }
+        iVar1 = (int)list->head;
     }
     uVar6 = timer.Update();
     if (60000 < uVar6) {

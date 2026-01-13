@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "Memory.h"
 #include "SC_Question.h"
+#include "ScriptHandler.h"
 #include "Sample.h"
 #include "TimedEvent.h"
 #include "globals.h"
@@ -17,21 +18,16 @@
 #include "Handler2.h"
 #include "Handler5.h"
 #include "Handler6.h"
+#include "Handler.h"
 #include <smack.h>
 #include <stdio.h>
 #include <string.h>
 
-// Wait for key
-int WaitForInput();
-extern "C" void ShowError(const char* format, ...);
-
 // Helper functions for CleanupLoop
 extern "C" {
-    void* __fastcall FUN_00417680(void* queue);  // Queue::GetCurrentData
     void __fastcall FUN_00417660(void* obj, int freeFlag);  // Object destructor/cleanup
     void __fastcall FUN_004189a0(void* node, int freeFlag); // Node cleanup
-    //void __fastcall FUN_00417652();               // SEH unwind thunk (empty stub)
-    }
+}
 
 
 // Thiscall functions - declared outside extern "C"
@@ -49,6 +45,18 @@ struct EventNode {
     EventNode* next;    // 0x00
     EventNode* prev;    // 0x04
     void* data;         // 0x08 - pointer to object with vtable
+    
+    EventNode(void* d) {
+        next = 0;
+        prev = 0;
+        data = d;
+    }
+    
+    ~EventNode() {
+        data = 0;
+        next = 0;
+        prev = 0;
+    }
 };
 
 // List header structure for eventList
@@ -495,14 +503,13 @@ void GameLoop::CleanupLoop() {
                 if (puVar5 != 0) {
                     *puVar5 = *(int*)pQueue->m_current;
                 }
-                local_1c = (int*)FUN_00417680(pQueue);
+                local_1c = (int*)pQueue->GetCurrentData();
                 if (pQueue->m_current != 0) {
                     FUN_004189a0(pQueue->m_current, 1);
                     pQueue->m_current = 0;
                 }
                 pQueue->m_current = pQueue->m_head;
             }
-            //FUN_00417652();
             delete local_1c;
             iVar3 = (int)pQueue->m_head;
         }
@@ -540,70 +547,56 @@ extern char* g_Unknown_00436994; // String buffer for game state strings
 void GameLoop::ProcessMessage(SC_Message* msg)
 {
     int result;
+    EventList* pList;
+    EventNode* pNode;
+    unsigned int pData;
+    int zero;
     
     if (msg->priority == 5) {
-        // System message with priority 5
         result = 1;
         if (msg->command == 3) {
-            // Copy string from GameState to global buffer
             char* srcStr = (char*)g_GameState2_004369a4->stateValues[msg->data];
             strcpy(g_Unknown_00436994, srcStr);
-        } else {
+        }
+        else {
             HandleSystemMessage(msg);
         }
     }
     else if (msg->command == 0) {
-        // Null command - mark as handled
         result = 1;
     }
     else if (msg->command == 3) {
-        // Control message
         result = ProcessControlMessage(msg);
     }
     else {
-        // Route to handler at field_0x18
-        void* handler = (void*)field_0x18;
-        result = (*(int (**)(SC_Message*))(*(int*)handler + 0x20))(msg);
-        
+        result = (*(int (**)(SC_Message*))(*(int*)field_0x18 + 0x20))(msg);
         if (result == 0) {
-            // Handler didn't process it, try event list
-            EventList* pList = (EventList*)eventList;
+            pList = (EventList*)eventList;
             pList->current = pList->head;
-            
-            while (pList->current != 0) {
-                EventNode* pNode = pList->current;
-                void* pData = pNode->data;
-                
-                if (pData == 0) {
-                    break;
-                }
-                
-                pData = (void*)((((int)pNode < 1) - 1) & (int)pData);
-                result = (*(int (**)(SC_Message*))(*(int*)pData + 0x20))(msg);
-                
-                if (result != 0) {
-                    break;
-                }
-                
-                pList = (EventList*)eventList;
-                pNode = pList->current;
-                if (pList->tail == pNode) {
-                    break;
-                }
-                if (pNode != 0) {
-                    pList->current = pNode->prev;
-                }
+            pNode = ((EventList*)eventList)->current;
+            if (pNode != 0) {
+                zero = 0;
+                do {
+                    pNode = ((EventList*)eventList)->current;
+                    pData = (unsigned int)pNode->data;
+                    if (pData == 0) break;
+                    result = (*(int (**)(SC_Message*))(*(int*)((((int)pNode < 1) - 1) & pData) + 0x20))(msg);
+                    if (result != zero) break;
+                    pList = (EventList*)eventList;
+                    pNode = pList->current;
+                    if (pList->tail == pNode) break;
+                    if (pNode != 0) {
+                        pList->current = pNode->prev;
+                    }
+                    pNode = ((EventList*)eventList)->current;
+                } while (pNode != (EventNode*)zero);
             }
         }
     }
     
     if (result == 0) {
-        // Message not handled - look up by command and try default handler
-        int* defaultHandler = GetOrCreateHandler(msg->targetAddress);
-        int handled = (*(int (**)(SC_Message*))(*(int*)defaultHandler + 0x20))(msg);
-        
-        if (handled == 0) {
-            // Still not handled - dump message and show error
+        Handler* pDefaultHandler = (Handler*)GetOrCreateHandler(msg->command);
+        if (pDefaultHandler->HandleMessage(msg) == 0) {
             msg->Dump(0);
             WriteToMessageLog("lost message");
             SC_Message_Send(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
@@ -751,18 +744,19 @@ static void* g_StubObject = g_HandlerVTable;
 
 /* Function start: 0x417F40 */
 void GameLoop::HandleSystemMessage(SC_Message* msg) {
-    int* piVar5;
-    void* puVar2;
-    void* pvVar3;
-    void* handler;
+    ScriptHandler* handler;
+    ScriptHandler* pData;
+    EventList* pList;
+    EventNode* pNode;
     ZBQueue* pQueue;
+    void* pPopResult;
     
     if (msg == 0) {
         return;
     }
     
     // Call current handler's vtable method at +0x18 (Update method) with the message
-    handler = (void*)field_0x18;
+    handler = (ScriptHandler*)field_0x18;
     if (handler != 0) {
         (*(void (**)(SC_Message*))(*(int*)handler + 0x18))(msg);
     }
@@ -776,10 +770,10 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         if (*(int*)pQueue != 0) {
             ((int*)pQueue)[2] = *(int*)pQueue;
             while (*(int*)pQueue != 0) {
-                puVar2 = (void*)ZBuffer::PopNode((int*)pQueue);
-                if (puVar2 != 0) {
-                    *(int*)puVar2 = 0x431050;  // PTR_LAB_00431050 vtable
-                    FreeMemory(puVar2);
+                pPopResult = (void*)ZBuffer::PopNode((int*)pQueue);
+                if (pPopResult != 0) {
+                    *(int*)pPopResult = 0x431050;  // PTR_LAB_00431050 vtable
+                    FreeMemory(pPopResult);
                 }
             }
         }
@@ -789,9 +783,9 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         if (*(int*)pQueue != 0) {
             ((int*)pQueue)[2] = *(int*)pQueue;
             while (*(int*)pQueue != 0) {
-                pvVar3 = (void*)ZBuffer::PopNode_2((int*)pQueue);
-                if (pvVar3 != 0) {
-                    ((DrawEntry*)pvVar3)->Cleanup(1);
+                pPopResult = (void*)ZBuffer::PopNode_2((int*)pQueue);
+                if (pPopResult != 0) {
+                    ((DrawEntry*)pPopResult)->Cleanup(1);
                 }
             }
         }
@@ -800,38 +794,36 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         ZBuffer::ClearList((int*)pZBuf->m_queue9c);
     }
     
-    // Try to find existing handler for this command
-    int found = FindHandlerInEventList(*(int*)((char*)msg + 0x88));
+    // Try to find existing handler for this command using msg->targetAddress
+    int found = FindHandlerInEventList(msg->targetAddress);
     if (found == 0) {
         // Not found - create/insert new handler
-        piVar5 = GetOrCreateHandler(*(int*)((char*)msg + 0x88));
-        field_0x18 = (int)piVar5;
+        handler = (ScriptHandler*)GetOrCreateHandler(msg->targetAddress);
+        field_0x18 = (int)handler;
     } else {
         // Found - pop handler from eventList at field_0x14
-        EventList* pList = (EventList*)eventList;
-        int iVar4 = (int)pList->current;
-        if (iVar4 == 0) {
+        pList = (EventList*)eventList;
+        pNode = pList->current;
+        if (pNode == 0) {
             field_0x18 = 0;
         } else {
             // Unlink node from list
-            if ((int)pList->head == iVar4) {
-                pList->head = (EventNode*)*(int*)(iVar4 + 4);
+            if (pList->head == pNode) {
+                pList->head = pNode->prev;
             }
-            if ((int)pList->tail == iVar4) {
-                pList->tail = (EventNode*)*(int*)iVar4;
+            if (pList->tail == pNode) {
+                pList->tail = pNode->next;
             }
-            int iNext = *(int*)iVar4;
-            if (iNext != 0) {
-                *(int*)(iNext + 4) = *(int*)(iVar4 + 4);
+            if (pNode->next != 0) {
+                pNode->next->prev = pNode->prev;
             }
-            void* pPrev = (void*)*(int*)(iVar4 + 4);
-            if (pPrev != 0) {
-                *(int*)pPrev = *(int*)iVar4;
+            if (pNode->prev != 0) {
+                pNode->prev->next = pNode->next;
             }
-            void* pData = 0;
-            if ((void*)iVar4 != 0) {
-                pData = (void*)*(int*)(iVar4 + 8);
-                FUN_004188a0((void*)iVar4, 1);
+            pData = 0;
+            if (pNode != 0) {
+                pData = (ScriptHandler*)pNode->data;
+                delete pNode;
                 pList->current = 0;
             }
             pList->current = pList->head;
@@ -839,66 +831,62 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         }
         
         // Reinsert handler with priority-based insertion
-        handler = (void*)field_0x18;
-        EventList* pList2 = (EventList*)eventList;
+        handler = (ScriptHandler*)field_0x18;
+        pList = (EventList*)eventList;
         if (handler == 0) {
             ShowError("queue fault 0101");
         }
-        pList2->current = pList2->head;
-        if (pList2->field_0x0C == 1 || pList2->field_0x0C == 2) {
-            if ((int)pList2->head == 0) {
-                pList2->InsertNode(handler);
+        pList->current = pList->head;
+        if (pList->field_0x0C == 1 || pList->field_0x0C == 2) {
+            if (pList->head == 0) {
+                pList->InsertNode(handler);
             } else {
                 // Priority-based insertion loop
-                while ((int)pList2->current != 0) {
-                    int iCur = (int)pList2->current;
-                    int curData = *(int*)(iCur + 8);
-                    if (curData != 0 && *(int*)(curData + 0x88) < *(int*)((int)handler + 0x88)) {
-                        pList2->InsertNode(handler);
+                while (pList->current != 0) {
+                    pNode = pList->current;
+                    pData = (ScriptHandler*)pNode->data;
+                    if (pData->targetAddress < handler->targetAddress) {
+                        pList->InsertNode(handler);
                         break;
                     }
-                    if ((int)pList2->tail == iCur) {
+                    if (pList->tail == pNode) {
                         // Append at end
                         if (handler == 0) {
                             ShowError("queue fault 0112");
                         }
-                        void* pvNode = (void*)AllocateMemory(0xc);
-                        int* piNode = 0;
-                        if (pvNode != 0) {
-                            piNode = FUN_004189d0(pvNode, handler);
+                        EventNode* newNode = new EventNode(handler);
+                        if (pList->current == 0) {
+                            pList->current = pList->tail;
                         }
-                        if ((int)pList2->current == 0) {
-                            pList2->current = pList2->tail;
-                        }
-                        if ((int)pList2->head == 0) {
-                            pList2->head = (EventNode*)piNode;
-                            pList2->tail = (EventNode*)piNode;
-                            pList2->current = (EventNode*)piNode;
+                        if (pList->head == 0) {
+                            pList->head = newNode;
+                            pList->tail = newNode;
+                            pList->current = newNode;
                         } else {
-                            if ((int)pList2->tail == 0 || *(int*)((int)pList2->tail + 4) != 0) {
+                            if (pList->tail == 0 || pList->tail->prev != 0) {
                                 ShowError("queue fault 0113");
                             }
-                            piNode[1] = 0;
-                            *piNode = (int)pList2->tail;
-                            *(int*)((int)pList2->tail + 4) = (int)piNode;
-                            pList2->tail = (EventNode*)piNode;
+                            newNode->prev = 0;
+                            newNode->next = pList->tail;
+                            pList->tail->prev = newNode;
+                            pList->tail = newNode;
                         }
                         break;
                     }
-                    if (iCur != 0) {
-                        pList2->current = (EventNode*)*(int*)(iCur + 4);
+                    if (pNode != 0) {
+                        pList->current = pNode->prev;
                     }
                 }
             }
         } else {
-            pList2->InsertNode(handler);
+            pList->InsertNode(handler);
         }
     }
     
     // Call handler's vtable method at +0x10 (Init method) with the message
-    handler = (void*)field_0x18;
+    handler = (ScriptHandler*)field_0x18;
     if (handler == 0) {
-        ShowError("missing modual %d", *(int*)((char*)msg + 0x88));
+        ShowError("missing modual %d", msg->targetAddress);
     } else {
         (*(void (**)(SC_Message*))(*(int*)handler + 0x10))(msg);
     }

@@ -349,8 +349,8 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41B110 */
 void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale)
 {
-    int local_30[4];
-    int local_20[4];
+    GlyphRect local_30;
+    GlyphRect local_20;
     int local_10;
 
     int scaledWidth = (int)(srcBuffer->width * scale);
@@ -364,18 +364,18 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
         void* puVar3 = (void*)GetVideoBufferData(local_10);
         ScaleBuffer(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
 
-        local_30[0] = clip_x1;
-        local_30[1] = clip_y1;
-        local_30[2] = clip_x2;
-        local_30[3] = clip_y2;
-        local_20[0] = 0;
-        local_20[1] = 0;
-        local_20[2] = scaledWidth - 1;
-        local_20[3] = scaledHeight - 1;
+        local_30.left = clip_x1;
+        local_30.top = clip_y1;
+        local_30.right = clip_x2;
+        local_30.bottom = clip_y2;
+        local_20.left = 0;
+        local_20.top = 0;
+        local_20.right = scaledWidth - 1;
+        local_20.bottom = scaledHeight - 1;
 
-        int iVar4 = ClipRectBottomUp(local_30, local_20, &param_1, &param_2);
+        int iVar4 = ClipRectBottomUp(&local_30.left, &local_20.left, &param_1, &param_2);
         if (iVar4 != 0) {
-            BlitBufferTransparent(local_20[0], local_20[2], local_20[1], local_20[3], param_1, param_2, local_10, handle);
+            BlitBufferTransparent(local_20.left, local_20.right, local_20.top, local_20.bottom, param_1, param_2, local_10, handle);
             FUN_004234d5(local_10);
         }
     }

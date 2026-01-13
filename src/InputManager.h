@@ -46,4 +46,7 @@ public:
     int mouseValid;             // 0x1B4 - flag indicating if mouse position is valid
 };
 
+// Global input functions
+int WaitForInput();
+
 #endif // INPUTMANAGER_H

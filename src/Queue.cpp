@@ -398,6 +398,16 @@ void* Queue::Pop()
     return data;
 }
 
+/* Function start: 0x417680 */
+void* Queue::GetCurrentData()
+{
+    QueueNode* node = (QueueNode*)m_current;
+    if (node != 0) {
+        return node->data;
+    }
+    return 0;
+}
+
 /* Function start: 0x402700 */
 void* Queue::Destroy(int free_memory)
 {

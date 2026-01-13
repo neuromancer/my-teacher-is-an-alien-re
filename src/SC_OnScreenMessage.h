@@ -1,28 +1,42 @@
 #ifndef SC_ONSCREENMESSAGE_H
 #define SC_ONSCREENMESSAGE_H
 
-#include "Queue.h"
 #include "Timer.h"
 #include "ScriptHandler.h"
+
+// MessageList control structure for SC_OnScreenMessage
+// Layout: head(0), tail(4), current(8), flags(0xc)
+struct MessageList {
+    void* head;     // 0x0
+    void* tail;     // 0x4
+    void* current;  // 0x8
+    int flags;      // 0xc
+};
+
+// MessageNode for linked list items
+// Layout: prev(0), next(4), data(8)
+struct MessageNode {
+    MessageNode* prev;  // 0x0
+    MessageNode* next;  // 0x4
+    void* data;         // 0x8
+};
 
 class SC_OnScreenMessage : ScriptHandler {
 public:
     SC_OnScreenMessage();
+    ~SC_OnScreenMessage();
     void Destroy(int free);
-    void Free();
     void Update(int, int);
     void AddMessage();
     void Copy(SC_OnScreenMessage* other);
-    void Timer_DecrementCounter_wrapper();
-    void Timer_DecrementCounter_wrapper_2();
 
     // targetAddress inherited from ScriptHandler at 0x88
     // sourceAddress inherited from ScriptHandler at 0x8c
     // command inherited from ScriptHandler at 0x90
     // data inherited from ScriptHandler at 0x94
     char pad2[0xa0 - 0x98];
-    Queue messageQueue; // 0xa0
-    Timer timer;  // 0xb0
+    MessageList* m_messageList; // 0xa0 - pointer to message list control structure
+    Timer timer;  // 0xa4
 };
 
 #endif // SC_ONSCREENMESSAGE_H

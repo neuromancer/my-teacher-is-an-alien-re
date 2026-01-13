@@ -17,8 +17,6 @@ int *GetWindowHeight();
 int *GetWindowWidth();
 }
 
-int WaitForInput();
-
 /* Function start: 0x419390 */
 void BlankScreen() {
   if (g_WorkBuffer_00436974 != 0) {

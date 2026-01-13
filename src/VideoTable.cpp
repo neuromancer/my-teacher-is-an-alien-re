@@ -8,6 +8,45 @@
 extern HDC DAT_00437488;
 extern int DAT_004374ca;
 extern void* DAT_00438438;
+extern void* DAT_00438434;
+
+/* Function start: 0x4229EA */
+extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
+{
+    DAT_004374c2 = param_1;
+    DAT_004374ce = param_2;
+    return 0;
+}
+
+/* Function start: 0x422A2F */
+extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_2)
+{
+    DAT_004374c0 = param_1;
+    DAT_004374c1 = param_2;
+    return 0;
+}
+
+/* Function start: 0x422E1A */
+extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
+{
+    HGLOBAL hMem;
+    int* puVar2;
+    int iVar1;
+    
+    if (param_1 < 0x20 && (char)param_1 != *(char*)&DAT_00437f54) {
+        iVar1 = param_1 * 4;
+        DAT_0043826c[param_1] = 0;
+        puVar2 = DAT_00437fec;
+        if (g_WinGDC_0043841c != 0) {
+            DeleteObject((HGDIOBJ)DAT_00437fec[param_1]);
+            puVar2 = DAT_00437f6c;
+        }
+        hMem = (HGLOBAL)puVar2[param_1];
+        GlobalUnlock(hMem);
+        GlobalFree(hMem);
+    }
+    return 0;
+}
 
 /* Function start: 0x422E71 */
 extern "C" int __cdecl GetVideoBufferData(unsigned int handle)
@@ -142,6 +181,100 @@ extern "C" int __cdecl SelectVideoBuffer(int param_1) {
     }
     return 0xffffffff;
 }
+
+typedef int (__stdcall *WinGBitBltFunc)(HDC, int, int, int, int, HDC, int, int);
+typedef int (__stdcall *WinGStretchBltFunc)(HDC, int, int, int, int, HDC, int, int, int, int);
+
+/* Function start: 0x423296 */
+extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
+{
+    int iVar1;
+    int w;
+    int h;
+
+    if (*(char*)&DAT_00437f54 >= 0) {
+        if (g_WinGDC_0043841c == 0) {
+            // Non-WinG path: flip Y coordinates
+            iVar1 = DAT_004374ca - param_3;
+            param_3 = DAT_004374ca - param_4;
+            param_4 = iVar1;
+        }
+        
+        iVar1 = (param_6 + param_3) - param_4;
+        w = (param_2 - param_1) + 1;
+        h = (param_4 - param_3) + 1;
+        
+        if (g_WinGDC_0043841c == 0) {
+            // Use SetDIBitsToDevice
+            int bitmapInfo = DAT_00437f66 - DAT_00437f4c;
+            SetDIBitsToDevice(DAT_00437488, param_5, iVar1, w, h, param_1, param_3, 0, DAT_004374d2,
+                              (void*)(bitmapInfo + DAT_00437f4c),
+                              (BITMAPINFO*)bitmapInfo,
+                              DAT_00437f50);
+        } else {
+            // Use WinG BitBlt via function pointer
+            ((WinGBitBltFunc)DAT_00438434)(DAT_00437488, param_5, iVar1, w, h, g_WinGDC_0043841c, param_1, param_3);
+        }
+    }
+    return 0;
+}
+
+/* Function start: 0x42333A */
+extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int srcY2, int destX1, int destX2, int destY1, int destY2)
+{
+    int srcWidth;
+    int srcHeight;
+    int destWidth;
+    int destHeight;
+    int wingDC;
+    int newY2;
+
+    if (*(char*)&DAT_00437f54 >= 0) {
+        wingDC = (int)g_WinGDC_0043841c;
+        if (wingDC != 0) {
+            newY2 = srcY2;
+        }
+        else {
+            newY2 = DAT_004374ca - srcY1;
+            srcY1 = DAT_004374ca - srcY2;
+        }
+
+        srcWidth = (srcX2 - srcX1) + 1;
+        destWidth = (destX2 - destX1) + 1;
+        destHeight = (destY2 - destY1) + 1;
+        srcHeight = (newY2 - srcY1) + 1;
+
+        if (wingDC != 0) {
+            ((WinGStretchBltFunc)DAT_00438438)(DAT_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
+        }
+        else {
+            int bitmapInfo = DAT_00437f66 - DAT_00437f4c;
+            StretchDIBits(DAT_00437488, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
+                          (void*)(bitmapInfo + DAT_00437f4c),
+                          (BITMAPINFO*)bitmapInfo,
+                          DAT_00437f50, 0xcc0020);
+        }
+    }
+    return 0;
+}
+
+/* Function start: 0x4234D5 */
+extern "C" void __cdecl ReleaseBufferEntry(unsigned int param_1)
+{
+    int* arr;
+    unsigned int idx;
+    
+    idx = param_1;
+    if (idx > 0x1f) {
+        return;
+    }
+    if ((char)idx == *(char*)&DAT_00437f54) {
+        return;
+    }
+    arr = DAT_0043826c;
+    arr[idx] = 0;
+}
+
 /* Function start: 0x423703 */
 extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 {
@@ -181,45 +314,4 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
         }
     }
     return -1;
-}
-
-typedef int (__stdcall *WinGStretchBltFunc)(HDC, int, int, int, int, HDC, int, int, int, int);
-
-/* Function start: 0x42333A */
-extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int srcY2, int destX1, int destX2, int destY1, int destY2)
-{
-    int srcWidth;
-    int srcHeight;
-    int destWidth;
-    int destHeight;
-    int wingDC;
-    int newY2;
-
-    if (*(char*)&DAT_00437f54 >= 0) {
-        wingDC = (int)g_WinGDC_0043841c;
-        if (wingDC != 0) {
-            newY2 = srcY2;
-        }
-        else {
-            newY2 = DAT_004374ca - srcY1;
-            srcY1 = DAT_004374ca - srcY2;
-        }
-
-        srcWidth = (srcX2 - srcX1) + 1;
-        destWidth = (destX2 - destX1) + 1;
-        destHeight = (destY2 - destY1) + 1;
-        srcHeight = (newY2 - srcY1) + 1;
-
-        if (wingDC != 0) {
-            ((WinGStretchBltFunc)DAT_00438438)(DAT_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
-        }
-        else {
-            int bitmapInfo = DAT_00437f66 - DAT_00437f4c;
-            StretchDIBits(DAT_00437488, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
-                          (void*)(bitmapInfo + DAT_00437f4c),
-                          (BITMAPINFO*)bitmapInfo,
-                          DAT_00437f50, 0xcc0020);
-        }
-    }
-    return 0;
 }

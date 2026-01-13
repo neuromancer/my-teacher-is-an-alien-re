@@ -19,6 +19,7 @@ public:
 
     void Insert(void* data);
     void* Pop();
+    void* GetCurrentData();
     void Push(void* data);
 
 public:

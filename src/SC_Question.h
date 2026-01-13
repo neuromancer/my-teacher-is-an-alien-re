@@ -8,10 +8,10 @@ class MouseControl;
 
 class SC_Message : public Parser {
 public:
-    int targetAddress;  // 0x88 - destination handler address
-    int sourceAddress;  // 0x8c - source/from address
-    int command;        // 0x90 - message type/command code
-    int data;           // 0x94 - associated data
+    int command;        // 0x88 - message type/command code
+    int data;           // 0x8c - associated data
+    int targetAddress;  // 0x90 - destination handler address
+    int sourceAddress;  // 0x94 - source/from address
     int priority;       // 0x98 - queue priority
     int param1;         // 0x9c
     int param2;         // 0xa0
