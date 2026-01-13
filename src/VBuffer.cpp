@@ -45,19 +45,12 @@ int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* para
 extern "C" {
     void ApplyVideoPalette();
     int SetFillColor(unsigned char);
-    int GetVideoBufferData(unsigned int);
     unsigned int GetCurrentVideoMode();
     void InvalidateVideoMode();
     void FUN_0041ae0c(void);
     void BlitBufferOpaque(int, int, int, int, int, int, unsigned int, unsigned int);
     void BlitBufferTransparent(int, int, int, int, int, int, unsigned int, unsigned int);
-    int SelectVideoBuffer(int);
-    void FUN_00423296(int, int, int, int, int, int);
-    int StretchBlitBuffer(int, int, int, int, int, int, int, int);
-    int CreateTableFromBuffer(int, int, int);
     void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
-    void FUN_004234d5(unsigned int);
-    void FUN_00422e1a(int);
 }
 
 extern "C" void InitWorkBuffer(int width, int height);
@@ -107,7 +100,7 @@ void VBuffer::InitFields()
 void VBuffer::Free()
 {
     if (data != 0) {
-        FUN_00422e1a(handle);
+        ReleaseVideoBuffer(handle);
         ReleaseVBufferHandle(handle);
         handle = 0xffffffff;
         data = 0;
@@ -227,7 +220,7 @@ void VBuffer::InvalidateVideoMode()
 void VBuffer::CallBlitter4(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
 {
     SetCurrentVideoMode(handle);
-    FUN_00423296(param_1, param_2, param_3, param_4, param_5, param_6);
+    BlitToDevice(param_1, param_2, param_3, param_4, param_5, param_6);
     InvalidateVideoMode();
 }
 
@@ -376,7 +369,7 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
         int iVar4 = ClipRectBottomUp(&local_30.left, &local_20.left, &param_1, &param_2);
         if (iVar4 != 0) {
             BlitBufferTransparent(local_20.left, local_20.right, local_20.top, local_20.bottom, param_1, param_2, local_10, handle);
-            FUN_004234d5(local_10);
+            ReleaseBufferEntry(local_10);
         }
     }
 }

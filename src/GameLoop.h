@@ -2,6 +2,9 @@
 #define GAMELOOP_H
 
 class SC_Message;
+class Timer;
+class Handler;
+struct EventList;
 
 // GameLoop class
 // Size: 0x1C (28 bytes)
@@ -28,10 +31,10 @@ public:
     int field_0x00;
     int field_0x04;
     int field_0x08;
-    void* timer1;        // 0x0c - Timer pointer
-    void* timer2;        // 0x10 - Timer pointer  
-    void* eventList;     // 0x14 - List pointer
-    int field_0x18;
+    Timer* timer1;           // 0x0c
+    Timer* timer2;           // 0x10
+    EventList* eventList;    // 0x14
+    Handler* currentHandler; // 0x18 - current active handler
 };
 
 #endif // GAMELOOP_H

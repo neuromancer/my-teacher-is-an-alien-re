@@ -4,9 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "VideoTable.h"
+
 extern "C" {
-void FUN_00422a2f(int, int);
-void FUN_004229ea(int, int);
+int FUN_00425000(int);
+
 int FUN_00425000(int);
 void FUN_00424fc0(int);
 void FUN_00411550(void *);
@@ -42,8 +44,8 @@ Engine::Engine() {
 void Engine::DisplayFrameRate() {
   char local_80[128];
 
-  FUN_00422a2f(0xff, 0xff);
-  FUN_004229ea(0, 199);
+  SetDrawColors(0xff, 0xff);
+  SetDrawPosition(0, 199);
   sprintf(local_80, "frames: a=%d l=%d", field_0xd4, field_0xdc);
   if (g_TextManager_00436990 != 0) {
     g_TextManager_00436990->RenderText(local_80, -1);

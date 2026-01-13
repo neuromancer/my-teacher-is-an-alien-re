@@ -13,8 +13,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "VideoTable.h"
+
 extern "C" {
-    void FUN_004229ea(int, int);
     void FUN_00421700(void*, char*, int);
 }
 
@@ -59,7 +60,7 @@ struct CommandType2 : public SoundCommand {
     int y;
 
     virtual void Execute(GlyphRect* rect) {
-        FUN_004229ea(x, y);
+        SetDrawPosition(x, y);
         FUN_00421700(g_TextManager_00436990, text, -1);
     }
 };
@@ -269,7 +270,7 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
         return;
     }
     if (iVar1 == 1) {
-        FUN_004229ea(x, y);
+        SetDrawPosition(x, y);
         FUN_00421700(g_TextManager_00436990, text, -1);
         return;
     }
@@ -633,7 +634,6 @@ void ZBufferManager::Cleanup() {
             while (*piVar1 != 0) {
                 puVar4 = (unsigned int*)ZBuffer::PopNode(piVar1);
                 if (puVar4 != 0) {
-                    *puVar4 = 0x431050;
                     FreeMemory(puVar4);
                 }
             }
@@ -667,12 +667,6 @@ void ZBufferManager::Cleanup() {
             while (*local_14 != 0) {
                 local_18 = (unsigned int*)((ZBQueue*)local_14)->PopNode();
                 if (local_18 != 0) {
-                    local_1c = local_18;
-                    *local_18 = 0x431058;
-                    try {
-                        ((GlyphRect*)(local_1c + 1))->~GlyphRect();
-                    } catch (...) {
-                    }
                     FreeMemory(local_18);
                 }
             }
@@ -685,31 +679,28 @@ void ZBufferManager::Cleanup() {
 /* Function start: 0x41C5A0 */
 void ZBufferManager::ProcessRenderQueues()
 {
-    unsigned int* pThis = (unsigned int*)this;
     int* piVar1;
     int iVar3;
     void* pvVar4;
     unsigned int uVar5;
     unsigned int* puVar6;
     unsigned int* puVar7;
-    unsigned int* local_14;  // saved this pointer / [EBP-0x10]
-    int local_height;        // [EBP-0x14] 
-    int local_width;         // [EBP-0x18]
-    int local_1c;            // [EBP-0x1c]
-    int local_20;            // [EBP-0x20]
+    int local_height;
+    int local_width;
+    int local_1c;
+    int local_20;
     
-    pThis[1] = 0;
-    local_14 = pThis;
+    m_head = 0;
     
-    if (pThis[0x26] == 2) {
+    if (m_state == 2) {
         // State type 2 processing
-        if ((void*)pThis[0x2a] != 0) {
-            iVar3 = IsPaletteUnchanged((void*)pThis[0x2a]);
+        if (m_fieldA8 != 0) {
+            iVar3 = IsPaletteUnchanged(m_fieldA8);
             if (iVar3 == 0) {
                 BlankScreen();
-                ((Palette*)local_14[0x2a])->SetPalette(0, 0x100);
+                ((Palette*)m_fieldA8)->SetPalette(0, 0x100);
             }
-            local_14[0x2a] = 0;
+            m_fieldA8 = 0;
         }
         
         local_height = g_WorkBuffer_00436974->height - 1;
@@ -718,10 +709,10 @@ void ZBufferManager::ProcessRenderQueues()
         local_1c = 0;
         
         try {
-            iVar3 = *(int*)local_14[0x28];
+            iVar3 = *(int*)m_queueA0;
             while (iVar3 != 0) {
                 puVar7 = 0;
-                piVar1 = (int*)local_14[0x28];
+                piVar1 = (int*)m_queueA0;
                 int queueType = piVar1[3];
                 if (queueType == 1 || queueType == 4) {
                     iVar3 = *piVar1;
@@ -742,18 +733,17 @@ void ZBufferManager::ProcessRenderQueues()
                     (*(void (**)(unsigned int*, int*))*puVar7)(puVar7, &local_20);
                     
                     if (puVar7 != 0) {
-                        *puVar7 = 0x431050;  // vtable for destructor
                         FreeMemory(puVar7);
                     }
                 }
                 
-                iVar3 = *(int*)local_14[0x28];
+                iVar3 = *(int*)m_queueA0;
             }
         } catch (...) {
         }
         
         // Process queue at 0xa4
-        piVar1 = (int*)local_14[0x29];
+        piVar1 = (int*)m_queueA4;
         if (*piVar1 != 0) {
             piVar1[2] = *piVar1;
             while (*piVar1 != 0) {
@@ -765,28 +755,28 @@ void ZBufferManager::ProcessRenderQueues()
             }
         }
         
-        if ((*local_14 & 2) != 0) {
-            uVar5 = ((Timer*)(local_14 + 0x21))->Update();
+        if ((*(unsigned int*)this & 2) != 0) {
+            uVar5 = timer.Update();
             if (uVar5 > 2000) {
-                *local_14 = *local_14 & 0xfffffffd;
+                *(unsigned int*)this = *(unsigned int*)this & 0xfffffffd;
             }
         }
     }
-    else if (pThis[0x26] == 3) {
+    else if (m_state == 3) {
         // State type 3 processing
-        if ((void*)pThis[0x2a] != 0) {
-            iVar3 = IsPaletteUnchanged((void*)pThis[0x2a]);
+        if (m_fieldA8 != 0) {
+            iVar3 = IsPaletteUnchanged(m_fieldA8);
             if (iVar3 == 0) {
                 BlankScreen();
-                ((Palette*)local_14[0x2a])->SetPalette(0, 0x100);
+                ((Palette*)m_fieldA8)->SetPalette(0, 0x100);
             }
-            local_14[0x2a] = 0;
+            m_fieldA8 = 0;
         }
         
-        iVar3 = *(int*)local_14[0x27];
+        iVar3 = *(int*)m_queue9c;
         while (iVar3 != 0) {
             puVar7 = 0;
-            piVar1 = (int*)local_14[0x27];
+            piVar1 = (int*)m_queue9c;
             int queueType = piVar1[3];
             if (queueType == 1 || queueType == 4) {
                 iVar3 = *piVar1;
@@ -829,23 +819,23 @@ void ZBufferManager::ProcessRenderQueues()
             }
             
             // Check queue at 0xa0
-            piVar1 = (int*)local_14[0x28];
+            piVar1 = (int*)m_queueA0;
             if (piVar1 == 0 || *piVar1 == 0) {
                 break;
             }
             piVar1[2] = *piVar1;
             
-            if (*(int*)local_14[0x28] != 0) {
+            if (*(int*)m_queueA0 != 0) {
                 unsigned int* iterPtr = puVar7 + 1;
                 do {
                     puVar6 = 0;
-                    if (*(int*)(local_14[0x28] + 8) != 0) {
-                        puVar6 = *(unsigned int**)(*(int*)(local_14[0x28] + 8) + 8);
+                    if (*(int*)((int)m_queueA0 + 8) != 0) {
+                        puVar6 = *(unsigned int**)(*(int*)((int)m_queueA0 + 8) + 8);
                     }
                     // Virtual call
                     (*(void (**)(unsigned int*, unsigned int*))*puVar6)(puVar6, iterPtr);
                     
-                    unsigned int queuePtr = local_14[0x28];
+                    unsigned int queuePtr = (unsigned int)m_queueA0;
                     iVar3 = *(int*)(queuePtr + 8);
                     if (*(int*)(queuePtr + 4) == iVar3) {
                         break;
@@ -853,20 +843,18 @@ void ZBufferManager::ProcessRenderQueues()
                     if (iVar3 != 0) {
                         *(unsigned int*)(queuePtr + 8) = *(unsigned int*)(iVar3 + 4);
                     }
-                } while (*(int*)local_14[0x28] != 0);
+                } while (*(int*)m_queueA0 != 0);
             }
             // TODO: convert to delete
             if (puVar7 != 0) {
-                *puVar7 = 0x431058;  // vtable for destructor
-                //SEH_Cleanup_0041c94c();
                 FreeMemory(puVar7);
             }
             
-            iVar3 = *(int*)local_14[0x27];
+            iVar3 = *(int*)m_queue9c;
         }
         
         // Process queue at 0xa4
-        piVar1 = (int*)local_14[0x29];
+        piVar1 = (int*)m_queueA4;
         if (*piVar1 != 0) {
             piVar1[2] = *piVar1;
             while (*piVar1 != 0) {
@@ -878,10 +866,10 @@ void ZBufferManager::ProcessRenderQueues()
             }
         }
         
-        if ((*local_14 & 2) != 0) {
-            uVar5 = ((Timer*)(local_14 + 0x21))->Update();
+        if ((*(unsigned int*)this & 2) != 0) {
+            uVar5 = timer.Update();
             if (uVar5 > 2000) {
-                *local_14 = *local_14 & 0xfffffffd;
+                *(unsigned int*)this = *(unsigned int*)this & 0xfffffffd;
             }
         }
     }

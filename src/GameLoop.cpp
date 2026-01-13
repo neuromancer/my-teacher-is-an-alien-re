@@ -33,9 +33,19 @@ extern "C" {
 // Thiscall functions - declared outside extern "C"
 // FUN_00411080 is DrawEntry::Cleanup, defined in DrawEntry.cpp
 
+// Base handler class for vtable calls
+class BaseHandler {
+public:
+    virtual void Destructor(int flag);      // +0x00
+    virtual void Method04();                // +0x04
+    virtual void Method08();                // +0x08
+    virtual void Delete(int flag);          // +0x0c
+    virtual void Method10();                // +0x10
+    virtual void Method14();                // +0x14
+    virtual void Cleanup(int flag);         // +0x18
+};
+
 int* CreateHandler(int command); // 0x40CDD0 - Handler factory
-void* FUN_004188a0(void* node, int flag);  // Node destructor
-int* FUN_004189d0(void* node, void* data);  // Node::Init
 
 // Doubly linked list node structure for eventList
 // field_0x00: next pointer
@@ -95,7 +105,7 @@ GameLoop::GameLoop() {
     
     pList = new EventList();
     
-    field_0x18 = 0;
+    currentHandler = 0;
     field_0x08 = 0x54;
     eventList = pList;
 }
@@ -293,7 +303,7 @@ void GameLoop::ProcessInput() {
             field_0x08 = newVal;
         }
         else {
-            void* pHandler = (void*)field_0x18;
+            Handler* pHandler = currentHandler;
             if (pHandler != 0) {
                 (*(void (**)(void*, SC_Message*))(*(int*)pHandler + 0x14))(pHandler, &localMessage);
             }
@@ -383,9 +393,9 @@ void GameLoop::Cleanup() {
                         }
                         pEventList->current = pEventList->head;
                     }
-                    // Call destructor through vtable if data exists
+                    // Call virtual Delete(1) at vtable offset 0xC
                     if (pData != 0) {
-                        (*(void (__cdecl **)(int))(*((int*)pData) + 0xc))(1);
+                        ((BaseHandler*)pData)->Delete(1);
                     }
                 } while (pEventList->head != 0);
             }
@@ -394,32 +404,31 @@ void GameLoop::Cleanup() {
         eventList = 0;
     }
     
-    field_0x18 = 0;
+    currentHandler = 0;
 }
 
 /* Function start: 0x417ED0 */
 void GameLoop::DrawFrame() {
     EventList* pList;
     EventNode* pNode;
-    void* pData;
+    Handler* pHandler;
     
-    pList = (EventList*)eventList;
+    pList = eventList;
     pList->current = pList->head;
-    pList = (EventList*)eventList;
+    pList = eventList;
     if (pList->current == 0) {
         return;
     }
     
     do {
-        pList = (EventList*)eventList;
+        pList = eventList;
         pNode = pList->current;
-        pData = pNode->data;
-        if (pData == 0) {
+        pHandler = (Handler*)pNode->data;
+        if (pHandler == 0) {
             return;
         }
-        pData = (void*)((((int)pNode < 1) - 1) & (int)pData);
-        (*(void (__stdcall **)(int, int))(*(int*)pData + 0x1c))(0, *(int*)((char*)field_0x18 + 0x88));
-        pList = (EventList*)eventList;
+        pHandler->Draw(0, currentHandler->handlerId);
+        pList = eventList;
         pNode = pList->current;
         if (pList->tail == pNode) {
             return;
@@ -427,7 +436,7 @@ void GameLoop::DrawFrame() {
         if (pNode != 0) {
             pList->current = pNode->prev;
         }
-        pList = (EventList*)eventList;
+        pList = eventList;
     } while (pList->current != 0);
 }
 
@@ -569,7 +578,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
         result = ProcessControlMessage(msg);
     }
     else {
-        result = (*(int (**)(SC_Message*))(*(int*)field_0x18 + 0x20))(msg);
+        result = currentHandler->HandleMessage(msg);
         if (result == 0) {
             pList = (EventList*)eventList;
             pList->current = pList->head;
@@ -756,7 +765,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     }
     
     // Call current handler's vtable method at +0x18 (Update method) with the message
-    handler = (ScriptHandler*)field_0x18;
+    handler = (ScriptHandler*)currentHandler;
     if (handler != 0) {
         (*(void (**)(SC_Message*))(*(int*)handler + 0x18))(msg);
     }
@@ -772,7 +781,6 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
             while (*(int*)pQueue != 0) {
                 pPopResult = (void*)ZBuffer::PopNode((int*)pQueue);
                 if (pPopResult != 0) {
-                    *(int*)pPopResult = 0x431050;  // PTR_LAB_00431050 vtable
                     FreeMemory(pPopResult);
                 }
             }
@@ -799,13 +807,13 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     if (found == 0) {
         // Not found - create/insert new handler
         handler = (ScriptHandler*)GetOrCreateHandler(msg->targetAddress);
-        field_0x18 = (int)handler;
+        currentHandler = (Handler*)handler;
     } else {
         // Found - pop handler from eventList at field_0x14
         pList = (EventList*)eventList;
         pNode = pList->current;
         if (pNode == 0) {
-            field_0x18 = 0;
+            currentHandler = 0;
         } else {
             // Unlink node from list
             if (pList->head == pNode) {
@@ -827,11 +835,11 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                 pList->current = 0;
             }
             pList->current = pList->head;
-            field_0x18 = (int)pData;
+            currentHandler = (Handler*)pData;
         }
         
         // Reinsert handler with priority-based insertion
-        handler = (ScriptHandler*)field_0x18;
+        handler = (ScriptHandler*)currentHandler;
         pList = (EventList*)eventList;
         if (handler == 0) {
             ShowError("queue fault 0101");
@@ -884,7 +892,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     }
     
     // Call handler's vtable method at +0x10 (Init method) with the message
-    handler = (ScriptHandler*)field_0x18;
+    handler = (ScriptHandler*)currentHandler;
     if (handler == 0) {
         ShowError("missing modual %d", msg->targetAddress);
     } else {
@@ -991,17 +999,8 @@ int* CreateHandler(int command) {
     return handler;
 }
 
-// Base handler class for vtable calls
-class BaseHandler {
-public:
-    virtual void Destructor(int flag);      // +0x00
-    virtual void Method04();                // +0x04
-    virtual void Method08();                // +0x08
-    virtual void Delete(int flag);          // +0x0c
-    virtual void Method10();                // +0x10
-    virtual void Method14();                // +0x14
-    virtual void Cleanup(int flag);         // +0x18
-};
+// Base handler class for vtable calls - moved to top
+
 
 /* Function start: 0x418460 */
 int GameLoop::RemoveHandler(int command) {
@@ -1061,22 +1060,6 @@ int GameLoop::RemoveHandler(int command) {
     }
     
     return 1;
-}
-void* FUN_004188a0(void* node, int flag) {
-    *(int*)((char*)node + 8) = 0;
-    *(int*)node = 0;
-    *(int*)((char*)node + 4) = 0;
-    if ((flag & 1) != 0) {
-        FreeMemory(node);
-    }
-    return node;
-}
-
-int* FUN_004189d0(void* node, void* data) {
-    *(int*)node = 0;
-    *(int*)((char*)node + 4) = 0;
-    *(int*)((char*)node + 8) = (int)data;
-    return (int*)node;
 }
 
 /* Function start: 0x4188D0 */

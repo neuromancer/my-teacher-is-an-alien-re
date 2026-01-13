@@ -52,7 +52,7 @@ int Handler::HandleMessage(SC_Message* msg) {
 void Handler::Update(SC_Message* msg) {
 }
 
-void Handler::Draw() {
+void Handler::Draw(int param1, int param2) {
 }
 
 void Handler::Exit() {
