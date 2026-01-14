@@ -18,6 +18,60 @@ AnimatedAsset::AnimatedAsset()
     glyphValue = glyphVal;
 }
 
+/* Function start: 0x421010 */
+AnimatedAsset::~AnimatedAsset()
+{
+    if (buffer) {
+        delete buffer;
+        buffer = 0;
+    }
+
+    if (glyphTable) {
+        delete[] glyphTable;
+        glyphTable = 0;
+    }
+}
+
+/* Function start: 0x4210D0 */
+void AnimatedAsset::LoadAnimatedAsset(char *param_1)
+{
+  int iVar2;
+  Animation *anim;
+  char local_9c [128];
+  int local_18;
+
+  if (param_1 != (char *)0x0) {
+    iVar2 = sscanf(param_1, "%s %d %d", local_9c, &firstChar, &local_18);
+    if (iVar2 <= 2) {
+      local_18 = 0x7e;
+    }
+    if (iVar2 <= 1) {
+      firstChar = 0x21;
+    }
+    glyphCount = (local_18 - firstChar) + 1;
+    delete buffer;
+    buffer = 0;
+
+    anim = new Animation();
+    anim->Open(local_9c,0xfe000,0xffffffff);
+
+    buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
+    anim->ToBufferVB(buffer);
+    anim->DoFrame();
+    if (anim != (Animation *)0x0) {
+        anim->Delete(1);
+    }
+    BuildGlyphTable();
+    iVar2 = IsCharSupported(0x41);
+    if (iVar2 != 0) {
+      iVar2 = ComputeTextMetrics(&DAT_00435ef4);
+      iVar2 = (iVar2 * 2) / 3;
+      spaceWidth = iVar2;
+      tabWidth = iVar2 << 2;
+    }
+  }
+}
+
 /* Function start: 0x421260 */
 void AnimatedAsset::BuildGlyphTable()
 {
@@ -35,7 +89,7 @@ void AnimatedAsset::BuildGlyphTable()
     int baseColMinus1 = buffer->height - 1;
     int baseIndex = (int)buffer->GetData();
     VBuffer* buf = buffer;
-    
+
     glyphHeight = 1;
 
     if (buf->height > 1) {
@@ -86,65 +140,6 @@ BUILT:
     buffer->Lock();
 }
 
-/* Function start: 0x4215A0 */
-int AnimatedAsset::ComputeTextMetrics(char* text)
-{
-    int total = 0;
-
-    if (text == (char*)0x0) {
-        return 0;
-    }
-    
-    while (*text != '\0') {
-        int iVar2 = (int)*text;
-        if (iVar2 == 0x20) {
-            total = total + spaceWidth;
-        }
-        else if (iVar2 == 9) {
-            total = total + tabWidth;
-        }
-        else {
-            GlyphRect* piVar3 = (GlyphRect*)((char*)glyphTable + iVar2 * 0x10);
-            GlyphRect local = *piVar3;
-            total = (total - local.left) + local.right;
-        }
-        text = text + 1;
-        total = total + char_adv.advance;
-    }
-    return total;
-}
-
-
-/* Function start: 0x421680 */
-void AnimatedAsset::PrepareText(char* text)
-{
-    int w;
-
-    text_pos.x = GetGlobalTextX();
-    text_pos.y = GetGlobalTextY();
-
-    switch (GetGlobalTextAlign()) {
-    case 0:
-        w = ComputeTextMetrics(text);
-        w = w / 2;
-        text_pos.x -= w;
-        break;
-    case 1:
-        w = ComputeTextMetrics(text);
-        text_pos.x -= w;
-        break;
-    }
-    
-    switch (GetGlobalVertAlign()) {
-    case 0:
-        text_pos.y += glyphHeight / 2;
-        return;
-    case 1:
-        text_pos.y += glyphHeight;
-        return;
-    }
-}
-
 /* Function start: 0x4213F0 */
 int AnimatedAsset::IsCharSupported(int ch)
 {
@@ -156,86 +151,6 @@ int AnimatedAsset::IsCharSupported(int ch)
         return 1;
     }
     return 1;
-}
-
-
-/* Function start: 0x4210D0 */
-void AnimatedAsset::LoadAnimatedAsset(char *param_1)
-{
-  int iVar2;
-  Animation *anim;
-  char local_9c [128];
-  int local_18;
-
-  if (param_1 != (char *)0x0) {
-    iVar2 = sscanf(param_1, "%s %d %d", local_9c, &firstChar, &local_18);
-    if (iVar2 <= 2) {
-      local_18 = 0x7e;
-    }
-    if (iVar2 <= 1) {
-      firstChar = 0x21;
-    }
-    glyphCount = (local_18 - firstChar) + 1;
-    delete buffer;
-    buffer = 0;
-
-    anim = new Animation();
-    anim->Open(local_9c,0xfe000,0xffffffff);
-    
-    buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
-    anim->ToBufferVB(buffer);
-    anim->DoFrame();
-    if (anim != (Animation *)0x0) {
-        anim->Delete(1);
-    }
-    BuildGlyphTable();
-    iVar2 = IsCharSupported(0x41);
-    if (iVar2 != 0) {
-      iVar2 = ComputeTextMetrics(&DAT_00435ef4);
-      iVar2 = (iVar2 * 2) / 3;
-      spaceWidth = iVar2;
-      tabWidth = iVar2 << 2;
-    }
-  }
-}
-
-/* Function start: 0x421010 */
-AnimatedAsset::~AnimatedAsset()
-{
-    if (buffer) {
-        delete buffer;
-        buffer = 0;
-    }
-
-    if (glyphTable) {
-        delete[] glyphTable;
-        glyphTable = 0;
-    }
-}
-
-
-/* Function start: 0x4239DE */
-int GetGlobalTextX()
-{
-    return DAT_004374c2;
-}
-
-/* Function start: 0x4239D8 */
-int GetGlobalTextY()
-{
-    return DAT_004374ce;
-}
-
-/* Function start: 0x4239D0 */
-int GetGlobalTextAlign()
-{
-    return (int)(signed char)DAT_004374c0;
-}
-
-/* Function start: 0x4239C8 */
-int GetGlobalVertAlign()
-{
-    return (int)(signed char)DAT_004374c1;
 }
 
 /* Function start: 0x421420 */
@@ -288,6 +203,64 @@ int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
             iVar4 = local.right - local.left;
         }
     return iVar4;
+}
+
+/* Function start: 0x4215A0 */
+int AnimatedAsset::ComputeTextMetrics(char* text)
+{
+    int total = 0;
+
+    if (text == (char*)0x0) {
+        return 0;
+    }
+
+    while (*text != '\0') {
+        int iVar2 = (int)*text;
+        if (iVar2 == 0x20) {
+            total = total + spaceWidth;
+        }
+        else if (iVar2 == 9) {
+            total = total + tabWidth;
+        }
+        else {
+            GlyphRect* piVar3 = (GlyphRect*)((char*)glyphTable + iVar2 * 0x10);
+            GlyphRect local = *piVar3;
+            total = (total - local.left) + local.right;
+        }
+        text = text + 1;
+        total = total + char_adv.advance;
+    }
+    return total;
+}
+
+/* Function start: 0x421680 */
+void AnimatedAsset::PrepareText(char* text)
+{
+    int w;
+
+    text_pos.x = GetGlobalTextX();
+    text_pos.y = GetGlobalTextY();
+
+    switch (GetGlobalTextAlign()) {
+    case 0:
+        w = ComputeTextMetrics(text);
+        w = w / 2;
+        text_pos.x -= w;
+        break;
+    case 1:
+        w = ComputeTextMetrics(text);
+        text_pos.x -= w;
+        break;
+    }
+
+    switch (GetGlobalVertAlign()) {
+    case 0:
+        text_pos.y += glyphHeight / 2;
+        return;
+    case 1:
+        text_pos.y += glyphHeight;
+        return;
+    }
 }
 
 /* Function start: 0x421700 */

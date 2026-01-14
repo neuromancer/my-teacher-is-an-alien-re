@@ -1,5 +1,4 @@
 #include "Palette.h"
-#include "PaletteBuffer.h"
 #include "PaletteUtils.h"
 #include "string.h"
 
@@ -54,9 +53,9 @@ void Palette::OpenAndReadPaletteFile(char* filename)
 }
 
 /* Function start: 0x41EB50 */
-UINT Palette::SetEntries(HPALETTE hpal, UINT iStart, UINT cEntries, PALETTEENTRY* pPalEntries)
+void Palette::CopyEntries(int start, int count)
 {
-    return CopyPaletteData((int)hpal, iStart, (unsigned char*)m_data + (int)hpal * 3);
+    CopyPaletteData(start, count, (unsigned char*)m_data + start * 3);
 }
 
 /* Function start: 0x41EB70 */
@@ -79,5 +78,15 @@ int Palette::Compare(void* data, int size)
     return 0;
 }
 
-// NOTE: CreatePaletteBuffer at 0x41EA50 is the same function as Palette::Palette above
-// PaletteBuffer and Palette are the same class/struct
+// NOTE: CreatePaletteBuffer at 0x41EA50 is effectively a placement new for Palette
+
+// Cleanup is equivalent to explicit destructor call ~Palette()
+// Original Animation::Play calls destructor explicitly before FreeMemory
+void Palette::Cleanup()
+{
+    if (m_data != 0) {
+        FreeMemory(m_data);
+        m_data = 0;
+    }
+    m_size = 0;
+}

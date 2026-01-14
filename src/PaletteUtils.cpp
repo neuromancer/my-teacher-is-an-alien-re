@@ -122,4 +122,28 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
     return 0;
 }
 
+/* Function start: 0x4239C8 */
+int __cdecl GetGlobalVertAlign()
+{
+    return (int)(signed char)DAT_004374c1;
+}
+
+/* Function start: 0x4239D0 */
+int __cdecl GetGlobalTextAlign()
+{
+    return (int)(signed char)DAT_004374c0;
+}
+
+/* Function start: 0x4239D8 */
+int __cdecl GetGlobalTextY()
+{
+    return DAT_004374ce;
+}
+
+/* Function start: 0x4239DE */
+int __cdecl GetGlobalTextX()
+{
+    return DAT_004374c2;
+}
+
 } // extern "C"

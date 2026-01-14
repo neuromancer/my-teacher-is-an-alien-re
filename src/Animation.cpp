@@ -220,7 +220,7 @@ void Animation::ToBufferVB(VBuffer *buffer) {
 
 /* Function start: 0x41FF30 */
 void Animation::Play(char *filename, unsigned int flags) {
-  PaletteBuffer *palette;
+  Palette *palette;
 
   Animation::flags = flags;
   Animation::palette = 0;
@@ -229,7 +229,7 @@ void Animation::Play(char *filename, unsigned int flags) {
     void *mem = AllocateMemory(8);
     palette = 0;
     if (mem != 0) {
-      palette = CreatePaletteBuffer((PaletteBuffer *)mem);
+      palette = CreatePaletteBuffer((Palette *)mem);
     }
     palette->CopyEntries(0, 0x100);
   }
@@ -245,7 +245,7 @@ void Animation::Play(char *filename, unsigned int flags) {
 
   if (palette != 0) {
     BlankScreen();
-    palette->SetEntries(0, 0x100);
+    palette->SetPalette(0, 0x100);
     if (palette != 0) {
       palette->Cleanup();
       FreeMemory(palette);

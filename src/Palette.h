@@ -2,24 +2,25 @@
 #define PALETTE_H
 
 #include <windows.h>
-#include "PaletteBuffer.h"
-
-PaletteBuffer* __fastcall CreatePaletteBuffer(PaletteBuffer* buffer);
 
 class Palette {
 public:
+    int m_size;
+    void* m_data;
+
     Palette();
     ~Palette();
     void Load(char* filename);
-    UINT SetEntries(HPALETTE hpal, UINT iStart, UINT cEntries, PALETTEENTRY* pPalEntries);
+    void CopyEntries(int start, int count);
     void SetPalette(UINT start, UINT count);
     int Compare(void* data, int size);
+    void Cleanup();
 
 private:
     void OpenAndReadPaletteFile(char* filename);
-
-    int m_size;
-    void* m_data;
 };
+
+// CreatePaletteBuffer at 0x41EA50 is a placement new for Palette
+Palette* __fastcall CreatePaletteBuffer(Palette* buffer);
 
 #endif // PALETTE_H

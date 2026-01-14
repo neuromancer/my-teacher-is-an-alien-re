@@ -52,9 +52,9 @@ public:
     ~AnimatedAsset();
 };
 
-int GetGlobalTextX();
-int GetGlobalTextY();
-int GetGlobalTextAlign();
-int GetGlobalVertAlign();
+extern "C" int GetGlobalTextX();
+extern "C" int GetGlobalTextY();
+extern "C" int GetGlobalTextAlign();
+extern "C" int GetGlobalVertAlign();
 
 #endif // ANIMATEDASSET_H

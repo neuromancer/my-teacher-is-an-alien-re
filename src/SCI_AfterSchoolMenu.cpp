@@ -41,7 +41,7 @@ int SCI_AfterSchoolMenu::LBLParse(char* param_1)
     } else if (strcmp(local_34, "PALETTE") == 0) {
         sscanf(param_1, "%s %s", local_34, local_74);
         if (paletteBuffer == 0) {
-            paletteBuffer = CreatePaletteBuffer((PaletteBuffer*)AllocateMemory_Wrapper(8));
+            paletteBuffer = CreatePaletteBuffer((Palette*)AllocateMemory_Wrapper(8));
             char* path = FormatFilePath(local_74);
             FUN_0041eab0(paletteBuffer, path);
         }
