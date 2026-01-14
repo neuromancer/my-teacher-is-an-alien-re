@@ -213,6 +213,46 @@ void* __fastcall ZBuffer::PopNode_2(int* param_1)
     return uVar3;
 }
 
+// ZBQueue is defined in ZBufferManager.h but this method is adjacent to ZBuffer functions
+#include "ZBufferManager.h"
+
+/* Function start: 0x401810 */
+void* ZBQueue::PopNode()
+{
+    ZBQueueNode* piVar1;
+    ZBQueueNode* puVar2;
+    void* uVar3;
+
+    piVar1 = (ZBQueueNode*)current;
+    if (piVar1 == 0) {
+        return 0;
+    }
+    if (head == piVar1) {
+        head = piVar1->prev;
+    }
+    if (tail == piVar1) {
+        tail = piVar1->next;
+    }
+    if (piVar1->next != 0) {
+        ((ZBQueueNode*)piVar1->next)->prev = piVar1->prev;
+    }
+    puVar2 = (ZBQueueNode*)((ZBQueueNode*)current)->prev;
+    if (puVar2 != 0) {
+        puVar2->next = ((ZBQueueNode*)current)->next;
+    }
+    puVar2 = (ZBQueueNode*)current;
+    uVar3 = 0;
+    if (puVar2 != 0) {
+        uVar3 = puVar2->data;
+    }
+    if (puVar2 != 0) {
+        delete puVar2;
+        current = 0;
+    }
+    current = head;
+    return uVar3;
+}
+
 /* Function start: 0x401560 */
 void __fastcall ZBuffer::ClearList(int* param_1)
 {

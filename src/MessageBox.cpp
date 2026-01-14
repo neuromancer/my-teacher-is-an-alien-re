@@ -1,23 +1,2 @@
-#include <windows.h>
-#include <stdio.h>
-#include <stdarg.h>
-
-extern "C" {
-void* GetGameWindowHandle();
-int SetCursorVisible(unsigned int);
-}
-
-/* Function start: 0x419170 */
-void ShowMessage(const char *param_1, ...)
-{
-    char local_100[256];
-    va_list args;
-    
-    va_start(args, param_1);
-    vsprintf(local_100, param_1, args);
-    va_end(args);
-    
-    SetCursorVisible(1);
-    MessageBoxA((HWND)GetGameWindowHandle(), local_100, "Message", 0);
-    SetCursorVisible(0);
-}
+// NOTE: ShowMessage (0x419170) is implemented in string.cpp
+// It belongs there based on address grouping (surrounded by string functions 0x419110-0x4191C0)

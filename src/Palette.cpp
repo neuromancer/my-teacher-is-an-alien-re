@@ -79,12 +79,5 @@ int Palette::Compare(void* data, int size)
     return 0;
 }
 
-/* Function start: 0x41EA50 */
-PaletteBuffer* __fastcall CreatePaletteBuffer(PaletteBuffer* buffer)
-{
-    buffer->size = 0;
-    buffer->data = 0;
-    buffer->size = 0x300;
-    buffer->data = (void*)AllocateMemory(0x300);
-    return buffer;
-}
+// NOTE: CreatePaletteBuffer at 0x41EA50 is the same function as Palette::Palette above
+// PaletteBuffer and Palette are the same class/struct

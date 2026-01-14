@@ -305,16 +305,8 @@ void* __fastcall FUN_00422690(void* ptr) { return ptr; }
 // DAT_00437f54 is declared in globals.h
 
 extern "C" {
-/* Function start: 0x4231C6 */
-int GetCurrentVideoHandle() {
-    return (signed char)DAT_00437f54;
-}
-
-/* Function start: 0x4231BC */
-int ResetVideoFlag() {
-    DAT_00437f54 = 0xff;
-    return 0;
-}
+// NOTE: GetCurrentVideoHandle (0x4231C6) is the same as GetCurrentVideoMode above
+// NOTE: ResetVideoFlag (0x4231BC) is the same as InvalidateVideoMode above
 
 /* Function start: 0x423CFE */
 int CleanupVideoSystem() {
