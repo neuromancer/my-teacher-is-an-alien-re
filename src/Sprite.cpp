@@ -13,7 +13,6 @@
 #include "Array.h"
 #include "ZBufferManager.h"
 #include "string.h"
-#include "Cleanup.h"
 
 class VBuffer;
 

@@ -4,25 +4,13 @@
 #include "VBuffer.h"
 #include <smack.h>
 
-// Small class with destructor to trigger SEH generation
-// Destructor maps to Cleanup_00405770 (empty function)
-class UnknownClassAnimation {
-public:
-  int field_0;
-  int field_4;
-  UnknownClassAnimation() {
-    field_0 = 0;
-    field_4 = 0;
-  }
-  ~UnknownClassAnimation();
-};
-
 class Animation {
 public:
   int *field_0x4;     // 0x4
   VBuffer *vbuffer;   // 0x8
   HSMACK smk;         // 0xc
-  UnknownClassAnimation unknown; // 0x10-0x17 (8 bytes)
+  int field_10;       // 0x10 - unused/reserved
+  int field_14;       // 0x14 - unused/reserved
   VBuffer *data;      // 0x18
   unsigned int flags; // 0x1c
   void *palette;      // 0x20

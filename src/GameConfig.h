@@ -2,16 +2,14 @@
 #define GAMECONFIG_H
 
 #include <stdio.h>
-#include "Animation.h"
-
 // Embedded object at offset 0x44 of GameConfig (80 bytes = 0x50)
-// Has UnknownClassAnimation at offset 0x34
 class ConfigData {
 public:
     unsigned char rawData[0x34];  // 0x00-0x33 (52 bytes)
-    UnknownClassAnimation anim;   // 0x34 (8 bytes)
-    unsigned char padding[0x50 - 0x34 - sizeof(UnknownClassAnimation)]; // remaining bytes
-    
+    int field_34;                 // 0x34 - unused/reserved
+    int field_38;                 // 0x38 - unused/reserved
+    unsigned char padding[0x14];  // 0x3C-0x4F (20 bytes)
+
     ~ConfigData();
 };
 

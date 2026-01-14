@@ -10,7 +10,6 @@
 #include "string.h"
 #include "new.h"
 #include "InputManager.h"
-#include "Cleanup.h"
 
 /* Function start: 0x41ECA0 */
 Mouse::Mouse()

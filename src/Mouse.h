@@ -3,7 +3,6 @@
 
 #include "Parser.h"
 #include "Sprite.h"
-#include "Cleanup.h"
 class Sample;
 
 /**

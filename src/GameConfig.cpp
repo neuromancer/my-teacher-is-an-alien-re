@@ -1,6 +1,5 @@
 #include "GameConfig.h"
 #include "Memory.h"
-#include "Animation.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -14,7 +13,7 @@ extern "C" {
 
 /* Function start: 0x422750 */
 ConfigData::~ConfigData() {
-    // Destructor - UnknownClassAnimation destructor will be called automatically
+    // Empty destructor
 }
 
 /* Function start: 0x422690 */

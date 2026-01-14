@@ -38,15 +38,13 @@ void Animation::Delete(unsigned char param_1) {
 
 /* Function start: 0x41FAE0 */
 Animation::Animation(char *filename) {
-  //int *p = &unknown.field_0;
-  //*p = 0;
-  //p[1] = 0;
+  //field_10 = 0;
+  //field_14 = 0;
   //try {
     CleanArray10();
     OpenAndConvertToBuffer(filename);
   //} catch (...) {
   //}
-  //return this;
 }
 
 /* Function start: 0x41FB60 */

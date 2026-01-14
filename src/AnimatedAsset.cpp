@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
-#include "Cleanup.h"
 
 /* Function start: 0x420F80 */
 AnimatedAsset::AnimatedAsset()
