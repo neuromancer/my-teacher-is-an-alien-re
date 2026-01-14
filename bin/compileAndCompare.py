@@ -69,14 +69,28 @@ def read_assembly(function_name, file_path):
     # We find the last "ret" that's followed only by SEH handlers and remove everything after
     lines = assembly.split("\n")
     stripped_lines = [line.strip() for line in lines]
-    
+
+    # First, identify labels that are referenced by jump tables (switch statements)
+    # These should NOT be treated as SEH handlers
+    jump_table_targets = set()
+    for line in stripped_lines:
+        # Match DD OFFSET FLAT:$Lxxxx patterns (jump table entries)
+        match = re.search(r'DD\s+OFFSET\s+FLAT:(\$L\d+)', line)
+        if match:
+            jump_table_targets.add(match.group(1))
+        # Also check for indirect jump patterns like jmp DWORD PTR $Lxxxx[eax*4]
+        match = re.search(r'jmp\s+DWORD\s+PTR\s+(\$L\d+)\[', line, re.IGNORECASE)
+        if match:
+            # This is a jump table reference - the table itself will have DD entries
+            pass
+
     # Find all ret instruction indices
     ret_indices = []
     for i, line in enumerate(stripped_lines):
         # Match ret with optional whitespace and optional number (ret, ret 0, ret 4, etc.)
         if re.match(r'^ret(\s+\d+)?$', line):
             ret_indices.append(i)
-    
+
     # For each ret from the beginning, check if everything after is just SEH handlers or data
     # We want the first ret after which only SEH code or data follows
     cutoff_idx = len(lines)
@@ -90,8 +104,14 @@ def read_assembly(function_name, file_path):
             if not line:  # Empty line
                 i += 1
                 continue
-            # Check for SEH label pattern
-            if re.match(r'\$L\d+:', line):
+            # Check for label pattern
+            label_match = re.match(r'(\$L\d+):', line)
+            if label_match:
+                label_name = label_match.group(1)
+                # If this label is a jump table target, it's switch case code, not SEH
+                if label_name in jump_table_targets:
+                    is_seh_or_data_only = False
+                    break
                 # Look at next two instructions for SEH handler pattern
                 if i + 1 < len(remaining):
                     next_line = remaining[i + 1]
@@ -130,11 +150,11 @@ def read_assembly(function_name, file_path):
                 # Non-SEH/non-data code found after ret
                 is_seh_or_data_only = False
                 break
-        
+
         if is_seh_or_data_only and len(remaining) > 0:
             cutoff_idx = ret_idx + 1
             break
-    
+
     assembly = "\n".join(lines[:cutoff_idx])
     seh_code = "\n".join(lines[cutoff_idx:])
 

@@ -16,6 +16,9 @@ void __cdecl ReleaseBufferEntry(unsigned int param_1);
 int __cdecl CreateTableFromBuffer(int buffer, int width, int height);
 int __cdecl SetDrawPosition(int param_1, int param_2);
 int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_2);
+int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4);
+int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, int param_4);
+int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4);
 
 #ifdef __cplusplus
 }

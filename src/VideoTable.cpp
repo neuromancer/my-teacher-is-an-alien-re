@@ -135,6 +135,8 @@ extern "C" int ClearVideoBuffer(void) {
 extern int DAT_004374c6;
 extern int DAT_00437f5e;
 extern int DAT_004374d2;
+extern int DAT_004374d6;  // Line width horizontal
+extern int DAT_004374da;  // Line width vertical
 extern int DAT_004374de;
 extern int DAT_004374e2;
 extern int DAT_004374e6;
@@ -263,7 +265,7 @@ extern "C" void __cdecl ReleaseBufferEntry(unsigned int param_1)
 {
     int* arr;
     unsigned int idx;
-    
+
     idx = param_1;
     if (idx > 0x1f) {
         return;
@@ -274,6 +276,9 @@ extern "C" void __cdecl ReleaseBufferEntry(unsigned int param_1)
     arr = DAT_0043826c;
     arr[idx] = 0;
 }
+
+// Forward declaration
+extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4);
 
 /* Function start: 0x423703 */
 extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
@@ -314,4 +319,115 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
         }
     }
     return -1;
+}
+
+/* Function start: 0x4237C6 */
+extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4)
+{
+    int iVar1;
+    int iVar2;
+    int count;
+    unsigned char* puVar1;
+
+    if ((signed char)DAT_00437f54 >= 0) {
+        iVar1 = DAT_004374ca - param_4;
+        iVar2 = DAT_004374ca - param_3;
+        count = (1 - iVar1) + iVar2;
+        int rowWidth = (param_2 + 1) - param_1;
+        int stride = DAT_00437f5e - rowWidth;
+        puVar1 = (unsigned char*)(param_1 + iVar1 * DAT_00437f5e + DAT_00437f66);
+
+        do {
+            int remaining = rowWidth;
+            // Fill by dwords first
+            while (remaining >= 4) {
+                *(unsigned int*)puVar1 = DAT_00437491;
+                puVar1 += 4;
+                remaining -= 4;
+            }
+            // Fill remaining word
+            if (remaining >= 2) {
+                *(unsigned short*)puVar1 = (unsigned short)DAT_00437491;
+                puVar1 += 2;
+                remaining -= 2;
+            }
+            // Fill remaining byte
+            if (remaining >= 1) {
+                *puVar1 = (unsigned char)DAT_00437491;
+                puVar1 += 1;
+            }
+            puVar1 += stride;
+            count--;
+        } while (count != 0);
+    }
+    return 0;
+}
+
+// Forward declaration for ClipAndVideoFillRect
+extern "C" int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4);
+
+/* Function start: 0x423843 */
+extern "C" int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, int param_4)
+{
+    int iVar1;
+    int iVar2;
+
+    // Top edge
+    iVar2 = DAT_004374da;
+    iVar1 = param_3 + DAT_004374da + -1;
+    if (param_4 < iVar1) {
+        iVar1 = param_4;
+    }
+    ClipAndVideoFillRect(param_1, param_2, param_3, iVar1);
+
+    // Bottom edge
+    iVar2 = (param_4 - iVar2) + 1;
+    if (iVar2 < param_3) {
+        iVar2 = param_3;
+    }
+    ClipAndVideoFillRect(param_1, param_2, iVar2, param_4);
+
+    // Left edge
+    iVar2 = DAT_004374d6;
+    iVar1 = param_1 + DAT_004374d6 + -1;
+    if (param_2 < iVar1) {
+        iVar1 = param_2;
+    }
+    ClipAndVideoFillRect(param_1, iVar1, param_3, param_4);
+
+    // Right edge
+    iVar2 = (param_2 - iVar2) + 1;
+    if (iVar2 < param_1) {
+        iVar2 = param_1;
+    }
+    ClipAndVideoFillRect(iVar2, param_2, param_3, param_4);
+
+    return 0;
+}
+
+/* Function start: 0x424423 */
+extern "C" int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4)
+{
+    if (param_1 <= DAT_004374e2) {
+        if (param_1 < DAT_004374de) {
+            param_1 = DAT_004374de;
+        }
+        if (DAT_004374de <= param_2) {
+            if (DAT_004374e2 < param_2) {
+                param_2 = DAT_004374e2;
+            }
+            if (param_3 <= DAT_004374ea) {
+                if (param_3 < DAT_004374e6) {
+                    param_3 = DAT_004374e6;
+                }
+                if (DAT_004374e6 <= param_4) {
+                    if (DAT_004374ea < param_4) {
+                        param_4 = DAT_004374ea;
+                    }
+                    VideoFillRect(param_1, param_2, param_3, param_4);
+                }
+            }
+        }
+    }
+    return 0;
 }

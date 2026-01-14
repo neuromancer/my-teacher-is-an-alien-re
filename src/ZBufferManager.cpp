@@ -20,45 +20,26 @@ void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
 
 struct CommandType1 : public SoundCommand {
-    unsigned int parameter1; // Priority
-    void* data;
-    int x;
-    int y;
-    int mode;
-    int scale_low;
-    int scale_high;
+    unsigned int parameter1; // 0x04 - Priority
+    void* data;              // 0x08
+    int x;                   // 0x0c
+    int y;                   // 0x10
+    int mode;                // 0x14
+    int scale_low;           // 0x18
+    int scale_high;          // 0x1c
 
     CommandType1() : parameter1(0), data(0), x(0), y(0), mode(0), scale_low(0), scale_high(0) {}
 
-    virtual void Execute(GlyphRect* rect) {
-        switch(mode) {
-            case 0:
-                 g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
-                 break;
-            case 1:
-                 g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
-                 break;
-
-            case 2:
-                 DrawScaledSprite(x, y, data, *(double*)&scale_low);
-                 break;
-            case 3:
-                 g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, *(double*)&scale_low);
-                 break;
-        }
-    }
+    virtual void Execute(GlyphRect* rect);
 };
 
 struct CommandType2 : public SoundCommand {
-    int duration;
-    char* text; 
-    int x;
-    int y;
+    unsigned int parameter1; // 0x04 - priority field
+    char* text;              // 0x08
+    int x;                   // 0x0c
+    int y;                   // 0x10
 
-    virtual void Execute(GlyphRect* rect) {
-        SetDrawPosition(x, y);
-        g_TextManager_00436990->RenderText(text, -1);
-    }
+    virtual void Execute(GlyphRect* rect);
 };
 
 // Stub - checks if palette has changed from the stored one
@@ -277,7 +258,7 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
     CommandType2* cmd = new CommandType2();
     if (cmd != 0) {
         // Zero init fields (assembly does this)
-        cmd->duration = 0;
+        cmd->parameter1 = 0;
         cmd->text = 0;
         cmd->x = 0;
         cmd->y = 0;
@@ -285,22 +266,92 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
         int len = strlen(text) + 1;
         char* newText = (char*)AllocateMemory(len);
         cmd->text = newText;
-        
+
         if (newText != 0) {
             memcpy(newText, text, len);
         }
-        
-        cmd->duration = duration;
+
+        cmd->parameter1 = duration;
         cmd->x = x;
         cmd->y = y;
         
         QueueCommand(cmd);
     }
 }
-// Stub for 0x41C130
+// Functions for rectangle drawing
+extern "C" int __cdecl SetFillColor(unsigned char color);
+extern "C" int __cdecl DrawRectOutline(int left, int right, int top, int bottom);
+extern "C" int __cdecl VideoFillRect(int left, int right, int top, int bottom);
+
+struct CommandType3 : public SoundCommand {
+    unsigned int priority;  // 0x04
+    int left;               // 0x08
+    int top;                // 0x0c
+    int right;              // 0x10
+    int bottom;             // 0x14
+    int field_18;           // 0x18
+    int field_1c;           // 0x1c - color
+
+    CommandType3() : priority(0), left(0), top(0), right(0), bottom(0), field_18(0), field_1c(0) {}
+
+    virtual void Execute(GlyphRect* rect);
+};
+
+/* Function start: 0x41C130 */
 void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, int p7)
 {
-    // Stub
+    if (m_state != 0) {
+        if (m_state != 1) {
+            // Queued rendering path
+            CommandType3* cmd = new CommandType3();
+            if (cmd == 0) {
+                cmd = 0;
+            }
+            cmd->priority = p5;
+            cmd->field_1c = p6;
+            cmd->field_18 = p7;
+            cmd->left = p1;
+            cmd->top = p2;
+            cmd->right = p3;
+            cmd->bottom = p4;
+
+            int temp;
+            if (cmd->left > cmd->right) {
+                temp = cmd->left;
+                cmd->left = cmd->right;
+                cmd->right = temp;
+            }
+            if (cmd->bottom < cmd->top) {
+                temp = cmd->top;
+                cmd->top = cmd->bottom;
+                cmd->bottom = temp;
+            }
+
+            QueueCommand(cmd);
+        }
+        else {
+            // Direct rendering path (m_state == 1)
+            SetFillColor(p6);
+            g_WorkBuffer_00436974->SetVideoMode();
+            if (p1 < 0) {
+                p1 = 0;
+            }
+            if (p2 < 0) {
+                p2 = 0;
+            }
+            if (p3 > 0x27f) {
+                p3 = 0x27f;
+            }
+            if (p4 > 0x1df) {
+                p4 = 0x1df;
+            }
+            if (m_state == 1) {
+                DrawRectOutline(p1, p3, p2, p4);
+            } else {
+                VideoFillRect(p1, p3, p2, p4);
+            }
+        }
+    }
 }
 
 /* Function start: 0x41C2C0 */
@@ -508,6 +559,63 @@ ZBufferManager::~ZBufferManager()
     Cleanup();
 }
 
+/* Function start: 0x41B5D0 */
+void CommandType1::Execute(GlyphRect* rect)
+{
+    void* iVar1;
+
+    switch(mode) {
+    case 0:
+        iVar1 = data;
+        g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)iVar1 + 0x28), *(int*)((char*)iVar1 + 0x2c), *(int*)((char*)iVar1 + 0x20), *(int*)((char*)iVar1 + 0x24), x, y, (int)iVar1);
+        return;
+    case 1:
+        iVar1 = data;
+        g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)iVar1 + 0x28), *(int*)((char*)iVar1 + 0x2c), *(int*)((char*)iVar1 + 0x20), *(int*)((char*)iVar1 + 0x24), x, y, (int)iVar1);
+        return;
+    case 2:
+        DrawScaledSprite(x, y, data, *(double*)&scale_low);
+        return;
+    case 3:
+        g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, *(double*)&scale_low);
+    }
+    return;
+}
+
+/* Function start: 0x41B690 */
+void CommandType2::Execute(GlyphRect* rect)
+{
+    SetDrawPosition(x, y);
+    if (g_TextManager_00436990 != 0) {
+        g_TextManager_00436990->RenderText(text, -1);
+    }
+    return;
+}
+
+/* Function start: 0x41B6D0 */
+void CommandType3::Execute(GlyphRect* rect)
+{
+    SetFillColor((unsigned char)field_1c);
+    g_WorkBuffer_00436974->SetVideoMode();
+    if (left < 0) {
+        left = 0;
+    }
+    if (top < 0) {
+        top = 0;
+    }
+    if (0x27f < right) {
+        right = 0x27f;
+    }
+    if (0x1df < bottom) {
+        bottom = 0x1df;
+    }
+    if (field_18 == 1) {
+        DrawRectOutline(left, right, top, bottom);
+        return;
+    }
+    VideoFillRect(left, right, top, bottom);
+    return;
+}
 
 /* Function start: 0x41B760 */
 ZBufferManager::ZBufferManager() {
