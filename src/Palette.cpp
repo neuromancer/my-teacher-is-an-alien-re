@@ -6,6 +6,28 @@
 #include <string.h>
 #include "Memory.h"
 
+// NOTE: CreatePaletteBuffer at 0x41EA50 is effectively a placement new for Palette
+
+// Cleanup is equivalent to explicit destructor call ~Palette()
+// Original Animation::Play calls destructor explicitly before FreeMemory
+void Palette::Cleanup()
+{
+    if (m_data != 0) {
+        FreeMemory(m_data);
+        m_data = 0;
+    }
+    m_size = 0;
+}
+
+
+
+
+
+
+
+extern "C" {
+}
+
 /* Function start: 0x41EA50 */
 Palette::Palette()
 {
@@ -64,6 +86,11 @@ void Palette::SetPalette(UINT start, UINT count)
     SetPaletteEntries_(start, count, (unsigned char*)m_data + start * 3);
 }
 
+/* Function start: 0x41EB90 */
+void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count) {
+  SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
+}
+
 /* Function start: 0x41EC60 */
 int Palette::Compare(void* data, int size)
 {
@@ -78,15 +105,3 @@ int Palette::Compare(void* data, int size)
     return 0;
 }
 
-// NOTE: CreatePaletteBuffer at 0x41EA50 is effectively a placement new for Palette
-
-// Cleanup is equivalent to explicit destructor call ~Palette()
-// Original Animation::Play calls destructor explicitly before FreeMemory
-void Palette::Cleanup()
-{
-    if (m_data != 0) {
-        FreeMemory(m_data);
-        m_data = 0;
-    }
-    m_size = 0;
-}

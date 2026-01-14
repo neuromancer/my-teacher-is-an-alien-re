@@ -17,25 +17,11 @@ int *GetWindowHeight();
 int *GetWindowWidth();
 }
 
-/* Function start: 0x419390 */
-void BlankScreen() {
-  if (g_WorkBuffer_00436974 != 0) {
-    g_WorkBuffer_00436974->ClearScreen(0);
-    VBuffer *vbuffer = g_WorkBuffer_00436974;
-    vbuffer->CallBlitter5(
-        vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->clip_y1,
-        vbuffer->clip_y2, 0, *GetWindowWidth() - 1, 0,
-        *GetWindowHeight() - 1);
-  }
-}
+// BlankScreen moved to Graphics.cpp (0x419390)
+void BlankScreen();
 
-extern "C" {
-
-/* Function start: 0x41EB90 */
-void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count) {
-  SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
-}
-}
+// SetPaletteEntriesAnimation moved to Palette.cpp (0x41EB90)
+extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count);
 
 /* Function start: 0x41FA50 */
 Animation::Animation() {
@@ -310,3 +296,4 @@ void Animation::MainLoop() {
 end_loop:
   data->InvalidateVideoMode();
 }
+

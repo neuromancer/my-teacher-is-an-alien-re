@@ -79,6 +79,56 @@ extern "C" int InitMouseSettings(void);
 extern "C" int InitVideoSystem(void);
 
 
+
+
+
+
+// Additional globals for palette functions
+extern HPALETTE g_Palette_0043748c;
+extern HPALETTE DAT_004374ae;
+
+
+
+// Dummy palette data (should be RGB triplets)
+static const unsigned char DAT_00423e92[256 * 3] = {0};
+static const unsigned char DAT_00423e98[256 * 3] = {0};
+
+
+#include "VBuffer.h"
+extern VBuffer* g_WorkBuffer_00436974;
+extern "C" int* GetWindowWidth();
+extern "C" int* GetWindowHeight();
+
+/* Function start: 0x419390 */
+void BlankScreen() {
+  if (g_WorkBuffer_00436974 != 0) {
+    g_WorkBuffer_00436974->ClearScreen(0);
+    VBuffer *vbuffer = g_WorkBuffer_00436974;
+    vbuffer->CallBlitter5(
+        vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->clip_y1,
+        vbuffer->clip_y2, 0, *GetWindowWidth() - 1, 0,
+        *GetWindowHeight() - 1);
+  }
+}
+
+/* Function start: 0x4193E0 */
+extern "C" void FlipScreen() {
+    VBuffer* vb;
+    int* piVar1;
+    int iVar2;
+    int iVar3;
+    
+    if (g_WorkBuffer_00436974 == 0) {
+        return;
+    }
+    vb = g_WorkBuffer_00436974;
+    piVar1 = GetWindowHeight();
+    iVar2 = *piVar1 - 1;
+    iVar3 = 0;
+    piVar1 = GetWindowWidth();
+    vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0, *piVar1 - 1, iVar3, iVar2);
+}
+
 /* Function start: 0x423A54 */
 int InitMouseSettings(void)
 {
@@ -225,33 +275,6 @@ int GetColorBitDepth(void)
     return uVar2 * uVar1;
 }
 
-/* Function start: 0x4244E9 */
-int InitStockFont(int param_1)
-{
-    TEXTMETRICA *pTextMetric;
-    
-    DAT_00437496 = GetStockObject(param_1);
-    SelectObject(DAT_004374b4, DAT_00437496);
-    pTextMetric = (TEXTMETRICA *)DAT_00439446;
-    GetTextMetricsA(DAT_004374b4, pTextMetric);
-    DAT_0043749a = pTextMetric->tmHeight + pTextMetric->tmExternalLeading;
-    DAT_0043749e = pTextMetric->tmExternalLeading;
-    DAT_004374a2 = pTextMetric->tmAveCharWidth;
-    return 0;
-}
-
-// Additional globals for palette functions
-extern HPALETTE g_Palette_0043748c;
-extern HPALETTE DAT_004374ae;
-
-/* Function start: 0x424162 */
-int SetDeviceContext(HDC param_1)
-{
-    DAT_00437488 = param_1;
-    DAT_004374b4 = param_1;
-    return 0;
-}
-
 /* Function start: 0x423D5B */
 int SelectAndRealizePalette(HPALETTE param_1)
 {
@@ -265,10 +288,6 @@ int SelectAndRealizePalette(HPALETTE param_1)
     }
     return 0;
 }
-
-// Dummy palette data (should be RGB triplets)
-static const unsigned char DAT_00423e92[256 * 3] = {0};
-static const unsigned char DAT_00423e98[256 * 3] = {0};
 
 /* Function start: 0x423D96 */
 HPALETTE CreateSystemPalette(void)
@@ -330,26 +349,26 @@ HPALETTE CreateSystemPalette(void)
   return CreatePalette((LOGPALETTE *)DAT_00437720);
 }
 
-#include "VBuffer.h"
-extern VBuffer* g_WorkBuffer_00436974;
-extern "C" int* GetWindowWidth();
-extern "C" int* GetWindowHeight();
+/* Function start: 0x424162 */
+int SetDeviceContext(HDC param_1)
+{
+    DAT_00437488 = param_1;
+    DAT_004374b4 = param_1;
+    return 0;
+}
 
-/* Function start: 0x4193E0 */
-extern "C" void FlipScreen() {
-    VBuffer* vb;
-    int* piVar1;
-    int iVar2;
-    int iVar3;
+/* Function start: 0x4244E9 */
+int InitStockFont(int param_1)
+{
+    TEXTMETRICA *pTextMetric;
     
-    if (g_WorkBuffer_00436974 == 0) {
-        return;
-    }
-    vb = g_WorkBuffer_00436974;
-    piVar1 = GetWindowHeight();
-    iVar2 = *piVar1 - 1;
-    iVar3 = 0;
-    piVar1 = GetWindowWidth();
-    vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0, *piVar1 - 1, iVar3, iVar2);
+    DAT_00437496 = GetStockObject(param_1);
+    SelectObject(DAT_004374b4, DAT_00437496);
+    pTextMetric = (TEXTMETRICA *)DAT_00439446;
+    GetTextMetricsA(DAT_004374b4, pTextMetric);
+    DAT_0043749a = pTextMetric->tmHeight + pTextMetric->tmExternalLeading;
+    DAT_0043749e = pTextMetric->tmExternalLeading;
+    DAT_004374a2 = pTextMetric->tmAveCharWidth;
+    return 0;
 }
 

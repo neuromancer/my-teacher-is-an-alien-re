@@ -68,10 +68,41 @@ void FUN_00421840();
 void ShutdownGameSystems();
 // Function Declarations
 void InitGameSystems(void);
+void CreateGameObject_1();
+int GetFileAttributes_Wrapper(const char *param_1, char param_2);
 extern "C" {
   void FUN_0040cd15(); 
   void FUN_0040cd1d();
   void FUN_004227a0(void*); // Config Cleanup
+}
+
+
+
+extern "C" int ProcessMessages();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Stubs and Wrappers for Linker
+extern "C" {
+
+// Stubs for new class external implementations
+void __fastcall FUN_0041b8e0_impl(void* thisptr) {}
+void* __fastcall FUN_00417200_impl(void* thisptr) { return thisptr; }
+void __fastcall FUN_00417690_impl(void* thisptr) {}
+void __fastcall FUN_00404230_impl(void* thisptr) {}
+
 }
 
 /* Function start: 0x40C5D0 */
@@ -203,8 +234,16 @@ void RunGame() {
   //}
 }
 
+/* Function start: 0x40d28c */
+void CleanupCinematic(void) {}
 
-extern "C" int ProcessMessages();
+/* Function start: 0x40d230 */
+void PlayIntroCinematic(void) {
+  InitGameSystems();
+  Animation anim;
+  anim.Play("cine\\cine0001.smk", 0x20);
+  ShutdownGameSystems();
+}
 
 /* Function start: 0x4192F0 */
 int ProcessMessages() {
@@ -234,6 +273,131 @@ int ProcessMessages() {
   } while (1);
 }
 
+/* Function start: 0x4195A0 */
+int FileExists(const char *filename) {
+  int iVar1;
+  iVar1 = GetFileAttributes_Wrapper(filename, 0);
+  return iVar1 == 0;
+}
+
+/* Function start: 0x41A3D0 */
+void InitGameSystems(void) {
+    g_Buffer_00436960 = new char[0x100];
+    g_Buffer_00436964 = new char[CalculateBufferSize(0x280, 0x1e0)];
+    CheckDebug();
+    ClearMessageLog();
+    CreateGameObject_1();
+    InitWorkBuffer(0x280, 0x1e0);
+    g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
+    g_Sound_0043696c = new Sound(0x5622, 8, 1);
+    g_TextManager_00436990 = new AnimatedAsset();
+    g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
+    SetStateFlag(0, 1);
+    SetCursorVisible(0);
+}
+
+/* Function start: 0x41A550 */
+void ShutdownGameSystems(void) {
+  if (g_TextManager_00436990 != 0) {
+    FUN_00421010(g_TextManager_00436990);
+    FreeMemory(g_TextManager_00436990);
+    g_TextManager_00436990 = 0;
+  }
+  if (g_WorkBuffer_00436974 != 0) {
+    g_WorkBuffer_00436974->~VBuffer();
+    FreeMemory(g_WorkBuffer_00436974);
+    g_WorkBuffer_00436974 = 0;
+  }
+  if (g_Sound_0043696c != 0) {
+    AIL_shutdown();
+    FreeMemory(g_Sound_0043696c);
+    g_Sound_0043696c = 0;
+  }
+  if (g_InputManager_00436968 != 0) {
+    FUN_00421840();
+    FreeMemory(g_InputManager_00436968);
+    g_InputManager_00436968 = 0;
+  }
+
+  if (g_CDData_0043697c != 0) {
+    FUN_00421ea0(g_CDData_0043697c);
+    FreeMemory(g_CDData_0043697c);
+    g_CDData_0043697c = 0;
+  }
+  if (g_GameConfig_00436970 != 0) {
+     delete g_GameConfig_00436970;
+     g_GameConfig_00436970 = 0;
+  }
+  if (g_Buffer_00436964 != 0) {
+    delete[] (char*)g_Buffer_00436964;
+    g_Buffer_00436964 = 0;
+  }
+  if (g_Buffer_00436960 != 0) {
+    delete[] g_Buffer_00436960;
+    g_Buffer_00436960 = 0;
+  }
+}
+
+/* Function start: 0x41A670 */
+void CheckDebug(void) {
+  char local_94[128];
+  CDData *pvVar2;
+
+  //__try {
+    pvVar2 = g_CDData_0043697c;
+    if (g_CDData_0043697c == (CDData *)0x0) {
+      pvVar2 = new CDData("cddata", "DATA");
+    }
+    g_CDData_0043697c = pvVar2;
+    if (DAT_0043d568[0] != '\0') {
+      sprintf(local_94, "%s\\%s", DAT_0043d568, pvVar2->field_0x1c5);
+      if (FileExists(local_94)) {
+        g_CDData_0043697c->ChangeDirectory((unsigned char *)local_94);
+      } else {
+        ShowError("Invalid CD path specified on command line '%s'", local_94);
+      }
+    } else {
+      if (FileExists(pvVar2->field_0x1c5) ||
+          FileExists("Develop.___")) {
+        DAT_0043d564 = 1;
+        if (g_CDData_0043697c->ChangeDirectory(
+                (unsigned char *)g_CDData_0043697c->field_0x1c5)) {
+          ShowError("Invalid Development directory '%s'", g_CDData_0043697c->field_0x1c5);
+        }
+      } else {
+        int i = 3;
+        for (; i < 0x1a; i++) {
+          if (g_CDData_0043697c->CheckFileOnDrive(i)) {
+            if (g_CDData_0043697c->ChangeToDriveDirectory(i)) {
+              ShowError("Invalid CD directory");
+            }
+            break;
+          }
+        }
+        if (0x18 < i) {
+          ShowError("Missing the Teacher CD ROM");
+        }
+      }
+    }
+  //} __except (EXCEPTION_EXECUTE_HANDLER) {
+  //}
+}
+
+/* Function start: 0x41A810 */
+void CreateGameObject_1() {
+  g_GameConfig_00436970 = new GameConfig();
+
+  if (DAT_0043d558 != 0) {
+      g_GameConfig_00436970->data.rawData[2] = (unsigned char)DAT_0043d558;
+  }
+
+  if (DAT_0043d560 != 0) {
+      g_GameConfig_00436970->data.rawData[0] = (unsigned char)DAT_0043d560;
+  }
+
+  g_GameConfig_00436970->LoadConfig();
+}
+
 /* Function start: 0x421AF0 */
 int WaitForInput() {
   while (DAT_004373bc == 0) {
@@ -244,57 +408,32 @@ int WaitForInput() {
   return iVar1;
 }
 
-/* Function start: 0x430310 */
-int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
-  int DVar1;
-
-  DVar1 = GetFileAttributesA(param_1);
-  if (DVar1 == -1) {
-    DVar1 = GetLastError();
-    SetErrorCode(DVar1);
-    return -1;
-  }
-  if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
-    DAT_0043bdf0 = 0xd;
-    DAT_0043bdf4 = 5;
-    return -1;
-  }
-  return 0;
+/* Function start: 0x422510 */
+int FUN_00422510() {
+  return DAT_0043de94;
 }
 
-/* Function start: 0x42B300 */
-void SetErrorCode(unsigned int errorCode) {
-  int iVar1;
-  unsigned int *puVar2;
-
-  iVar1 = 0;
-  puVar2 = DAT_0043c760;
-  DAT_0043bdf4 = errorCode;
-  do {
-    if (*puVar2 == errorCode) {
-      DAT_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
-      return;
-    }
-    puVar2 = puVar2 + 2;
-    iVar1 = iVar1 + 1;
-  } while ((unsigned int)puVar2 < 0x43c8c8);
-  if (errorCode >= 0x13 && errorCode <= 0x24) {
-    DAT_0043bdf0 = 0xd;
-    return;
+/* Function start: 0x422520 */
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
+                   int nCmdShow) {
+  int uStack_14;
+  g_GameWindow.CreateGameWindow(hInstance, (int)hPrevInstance, lpCmdLine, nCmdShow);
+  if (g_GameWindow.InitGraphics() == 0) {
+    return 0;
   }
-  if (errorCode >= 0xbc && errorCode <= 0xca) {
-    DAT_0043bdf0 = 8;
-    return;
+  UpdateWindow(g_GameWindow.hWnd);
+  if (DAT_0043d55c == 0) {
+    RunGame();
+  } else {
+    PlayIntroCinematic();
   }
-  DAT_0043bdf0 = 0x16;
-  return;
+  g_GameWindow.Shutdown();
+  return uStack_14;
 }
 
-/* Function start: 0x4195A0 */
-int FileExists(const char *filename) {
-  int iVar1;
-  iVar1 = GetFileAttributes_Wrapper(filename, 0);
-  return iVar1 == 0;
+/* Function start: 0x422E02 */
+int __cdecl CalculateBufferSize(int width, unsigned int height) {
+  return (((width + 3) & ~3U) * height) + DAT_00437f4c;
 }
 
 /* Function start: 0x4261C0 */
@@ -383,170 +522,49 @@ void ParsePath(const char *param_1, char *param_2, char *param_3, char *param_4,
   }
 }
 
-/* Function start: 0x41A670 */
-void CheckDebug(void) {
-  char local_94[128];
-  CDData *pvVar2;
+/* Function start: 0x42B300 */
+void SetErrorCode(unsigned int errorCode) {
+  int iVar1;
+  unsigned int *puVar2;
 
-  //__try {
-    pvVar2 = g_CDData_0043697c;
-    if (g_CDData_0043697c == (CDData *)0x0) {
-      pvVar2 = new CDData("cddata", "DATA");
+  iVar1 = 0;
+  puVar2 = DAT_0043c760;
+  DAT_0043bdf4 = errorCode;
+  do {
+    if (*puVar2 == errorCode) {
+      DAT_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
+      return;
     }
-    g_CDData_0043697c = pvVar2;
-    if (DAT_0043d568[0] != '\0') {
-      sprintf(local_94, "%s\\%s", DAT_0043d568, pvVar2->field_0x1c5);
-      if (FileExists(local_94)) {
-        g_CDData_0043697c->ChangeDirectory((unsigned char *)local_94);
-      } else {
-        ShowError("Invalid CD path specified on command line '%s'", local_94);
-      }
-    } else {
-      if (FileExists(pvVar2->field_0x1c5) ||
-          FileExists("Develop.___")) {
-        DAT_0043d564 = 1;
-        if (g_CDData_0043697c->ChangeDirectory(
-                (unsigned char *)g_CDData_0043697c->field_0x1c5)) {
-          ShowError("Invalid Development directory '%s'", g_CDData_0043697c->field_0x1c5);
-        }
-      } else {
-        int i = 3;
-        for (; i < 0x1a; i++) {
-          if (g_CDData_0043697c->CheckFileOnDrive(i)) {
-            if (g_CDData_0043697c->ChangeToDriveDirectory(i)) {
-              ShowError("Invalid CD directory");
-            }
-            break;
-          }
-        }
-        if (0x18 < i) {
-          ShowError("Missing the Teacher CD ROM");
-        }
-      }
-    }
-  //} __except (EXCEPTION_EXECUTE_HANDLER) {
-  //}
+    puVar2 = puVar2 + 2;
+    iVar1 = iVar1 + 1;
+  } while ((unsigned int)puVar2 < 0x43c8c8);
+  if (errorCode >= 0x13 && errorCode <= 0x24) {
+    DAT_0043bdf0 = 0xd;
+    return;
+  }
+  if (errorCode >= 0xbc && errorCode <= 0xca) {
+    DAT_0043bdf0 = 8;
+    return;
+  }
+  DAT_0043bdf0 = 0x16;
+  return;
 }
 
-/* Function start: 0x41A810 */
-void CreateGameObject_1() {
-  g_GameConfig_00436970 = new GameConfig();
+/* Function start: 0x430310 */
+int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
+  int DVar1;
 
-  if (DAT_0043d558 != 0) {
-      g_GameConfig_00436970->data.rawData[2] = (unsigned char)DAT_0043d558;
+  DVar1 = GetFileAttributesA(param_1);
+  if (DVar1 == -1) {
+    DVar1 = GetLastError();
+    SetErrorCode(DVar1);
+    return -1;
   }
-
-  if (DAT_0043d560 != 0) {
-      g_GameConfig_00436970->data.rawData[0] = (unsigned char)DAT_0043d560;
+  if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
+    DAT_0043bdf0 = 0xd;
+    DAT_0043bdf4 = 5;
+    return -1;
   }
-
-  g_GameConfig_00436970->LoadConfig();
+  return 0;
 }
 
-/* Function start: 0x422E02 */
-int __cdecl CalculateBufferSize(int width, unsigned int height) {
-  return (((width + 3) & ~3U) * height) + DAT_00437f4c;
-}
-
-/* Function start: 0x41A3D0 */
-void InitGameSystems(void) {
-    g_Buffer_00436960 = new char[0x100];
-    g_Buffer_00436964 = new char[CalculateBufferSize(0x280, 0x1e0)];
-    CheckDebug();
-    ClearMessageLog();
-    CreateGameObject_1();
-    InitWorkBuffer(0x280, 0x1e0);
-    g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
-    g_Sound_0043696c = new Sound(0x5622, 8, 1);
-    g_TextManager_00436990 = new AnimatedAsset();
-    g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
-    SetStateFlag(0, 1);
-    SetCursorVisible(0);
-}
-
-/* Function start: 0x422510 */
-int FUN_00422510() {
-  return DAT_0043de94;
-}
-
-/* Function start: 0x422520 */
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
-                   int nCmdShow) {
-  int uStack_14;
-  g_GameWindow.CreateGameWindow(hInstance, (int)hPrevInstance, lpCmdLine, nCmdShow);
-  if (g_GameWindow.InitGraphics() == 0) {
-    return 0;
-  }
-  UpdateWindow(g_GameWindow.hWnd);
-  if (DAT_0043d55c == 0) {
-    RunGame();
-  } else {
-    PlayIntroCinematic();
-  }
-  g_GameWindow.Shutdown();
-  return uStack_14;
-}
-
-/* Function start: 0x41A550 */
-void ShutdownGameSystems(void) {
-  if (g_TextManager_00436990 != 0) {
-    FUN_00421010(g_TextManager_00436990);
-    FreeMemory(g_TextManager_00436990);
-    g_TextManager_00436990 = 0;
-  }
-  if (g_WorkBuffer_00436974 != 0) {
-    g_WorkBuffer_00436974->~VBuffer();
-    FreeMemory(g_WorkBuffer_00436974);
-    g_WorkBuffer_00436974 = 0;
-  }
-  if (g_Sound_0043696c != 0) {
-    AIL_shutdown();
-    FreeMemory(g_Sound_0043696c);
-    g_Sound_0043696c = 0;
-  }
-  if (g_InputManager_00436968 != 0) {
-    FUN_00421840();
-    FreeMemory(g_InputManager_00436968);
-    g_InputManager_00436968 = 0;
-  }
-
-  if (g_CDData_0043697c != 0) {
-    FUN_00421ea0(g_CDData_0043697c);
-    FreeMemory(g_CDData_0043697c);
-    g_CDData_0043697c = 0;
-  }
-  if (g_GameConfig_00436970 != 0) {
-     delete g_GameConfig_00436970;
-     g_GameConfig_00436970 = 0;
-  }
-  if (g_Buffer_00436964 != 0) {
-    delete[] (char*)g_Buffer_00436964;
-    g_Buffer_00436964 = 0;
-  }
-  if (g_Buffer_00436960 != 0) {
-    delete[] g_Buffer_00436960;
-    g_Buffer_00436960 = 0;
-  }
-}
-
-/* Function start: 0x40d28c */
-void CleanupCinematic(void) {}
-
-/* Function start: 0x40d230 */
-void PlayIntroCinematic(void) {
-  InitGameSystems();
-  Animation anim;
-  anim.Play("cine\\cine0001.smk", 0x20);
-  ShutdownGameSystems();
-}
-
-// Stubs and Wrappers for Linker
-extern "C" {
-
-// Stubs for new class external implementations
-void __fastcall FUN_0041b8e0_impl(void* thisptr) {}
-void* __fastcall FUN_00417200_impl(void* thisptr) { return thisptr; }
-void __fastcall FUN_00417690_impl(void* thisptr) {}
-void __fastcall FUN_00404230_impl(void* thisptr) {}
-
-}
