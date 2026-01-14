@@ -37,6 +37,18 @@ Palette::Palette()
     m_data = AllocateMemory(0x300);
 }
 
+/* Function start: 0x41EA50 - CreatePaletteBuffer is effectively a placement new for Palette */
+Palette* __fastcall CreatePaletteBuffer(Palette* buffer)
+{
+    if (buffer != 0) {
+        buffer->m_size = 0;
+        buffer->m_data = 0;
+        buffer->m_size = 0x300;
+        buffer->m_data = AllocateMemory(0x300);
+    }
+    return buffer;
+}
+
 /* Function start: 0x41EA80 */
 Palette::~Palette()
 {
@@ -87,7 +99,7 @@ void Palette::SetPalette(UINT start, UINT count)
 }
 
 /* Function start: 0x41EB90 */
-void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count) {
+extern "C" void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count) {
   SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
 }
 

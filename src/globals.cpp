@@ -62,6 +62,15 @@ char DAT_0043d568[260] = {0};
 HWND DAT_0043de7c = 0;
 int DAT_0043bdf0 = 0; 
 char DAT_00435ef4 = 0;
+
+// Engine parser subsystem globals (0x435f00 - 0x435f28)
+Parser* DAT_00435f00 = 0;  // ENGINE_INFO parser
+Parser* DAT_00435f04 = 0;  // Console parser
+Parser* DAT_00435f0c = 0;  // TARGETS parser
+Parser* DAT_00435f10 = 0;  // SPRITELIST parser
+Parser* DAT_00435f14 = 0;  // Weapon parser (RockThrower)
+Parser* DAT_00435f24 = 0;  // NAVIGATION parser
+
 char DAT_004374c0 = 0;
 char DAT_004374c1 = 0;
 int DAT_004374c2 = 0;
@@ -99,6 +108,10 @@ void* g_GameStruct2 = 0;
 int DAT_0043d564 = 0;
 int DAT_0043d558 = 0;
 char DAT_0043d560 = 0;
+int DAT_0043d130 = 0;  // Game state save area
+int DAT_0043d134 = 0;  // Game state save area
+int DAT_0043d138 = 0;  // Game state save area
+int DAT_0043d13c = 0;  // Game state save area
 int DAT_0043503c = 0;
 int DAT_00435040 = 0;
 int DAT_00435030 = 0;

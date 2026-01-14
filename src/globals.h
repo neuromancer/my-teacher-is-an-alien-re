@@ -384,16 +384,17 @@ extern int DAT_004374ce; // { /* 4 bytes */ }
 // extern char DAT_00435ef5; // { /* 1 bytes */ }
 // extern char DAT_00435ef6; // { /* 1 bytes */ }
 // extern char DAT_00435ef7; // { /* 1 bytes */ }
-// extern int DAT_00435f00; // { /* 4 bytes */ }
-// extern int DAT_00435f04; // { /* 4 bytes */ }
+// Engine parser subsystem globals
+extern Parser* DAT_00435f00;  // ENGINE_INFO parser
+extern Parser* DAT_00435f04;  // Console parser
 // extern int DAT_00435f08; // { /* 4 bytes */ }
-// extern int DAT_00435f0c; // { /* 4 bytes */ }
-// extern int DAT_00435f10; // { /* 4 bytes */ }
-// extern int DAT_00435f14; // { /* 4 bytes */ }
+extern Parser* DAT_00435f0c;  // TARGETS parser
+extern Parser* DAT_00435f10;  // SPRITELIST parser
+extern Parser* DAT_00435f14;  // Weapon parser (RockThrower)
 // extern int DAT_00435f18; // { /* 4 bytes */ }
 // extern int DAT_00435f1c; // { /* 4 bytes */ }
 // extern int DAT_00435f20; // { /* 4 bytes */ }
-// extern int DAT_00435f24; // { /* 4 bytes */ }
+extern Parser* DAT_00435f24;  // NAVIGATION parser
 // extern int DAT_00435f28; // { /* 4 bytes */ }
 // extern char DAT_00436094; // { /* 1 bytes */ }
 // extern char DAT_00436095; // { /* 1 bytes */ }
@@ -744,10 +745,10 @@ extern int DAT_0043c8c8; // DAT_0043c8c8  { /* 4 bytes */ }
 // extern int DAT_0043d114; // { /* 4 bytes */ }
 // extern int DAT_0043d118; // { /* 4 bytes */ }
 // extern int DAT_0043d11c; // { /* 4 bytes */ }
-// extern int DAT_0043d130; // { /* 4 bytes */ }
-// extern int DAT_0043d134; // { /* 4 bytes */ }
-// extern int DAT_0043d138; // { /* 4 bytes */ }
-// extern int DAT_0043d13c; // { /* 4 bytes */ }
+extern int DAT_0043d130; // Game state save area
+extern int DAT_0043d134; // Game state save area
+extern int DAT_0043d138; // Game state save area
+extern int DAT_0043d13c; // Game state save area
 // extern int DAT_0043d140; // { /* 4 bytes */ }
 // extern int DAT_0043d148; // { /* 4 bytes */ }
 // extern int DAT_0043d150; // { /* 4 bytes */ }

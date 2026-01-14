@@ -43,6 +43,9 @@ public:
 
     // Member function version to match __thiscall calling convention (0x41A9F0)
     //VBuffer* CreateAndClean(int width, int height);
+
+    // Scalar deleting destructor - calls destructor then optionally frees (0x417660)
+    void* Destroy(int flag);
 };
 int __cdecl CalculateBufferSize(int param_1,unsigned int param_2);
 

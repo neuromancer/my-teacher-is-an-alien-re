@@ -913,6 +913,18 @@ do_blit:
     } while (queue->head != 0);
 }
 
+/* Function start: 0x4189A0 */
+void* ZBQueueNode::Cleanup(int flag)
+{
+    ZBQueueNode::data = 0;
+    ZBQueueNode::next = 0;
+    ZBQueueNode::prev = 0;
+    if ((flag & 1) != 0) {
+        delete this;
+    }
+    return this;
+}
+
 /* Function start: 0x41CCE0 */
 void* ZBQueueNode::CleanupNode(int flag)
 {

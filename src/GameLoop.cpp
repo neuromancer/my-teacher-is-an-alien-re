@@ -1,6 +1,7 @@
 #include "GameLoop.h"
 #include "ZBufferManager.h"
 #include "ZBuffer.h"
+#include "VBuffer.h"
 #include "Timer.h"
 #include "GameState.h"
 #include "InputManager.h"
@@ -24,10 +25,8 @@
 #include <string.h>
 
 // Helper functions for CleanupLoop
-extern "C" {
-    void __fastcall FUN_00417660(void* obj, int freeFlag);  // Object destructor/cleanup
-    void __fastcall FUN_004189a0(void* node, int freeFlag); // Node cleanup
-}
+// FUN_00417660 is now VBuffer::Destroy (C++ member function)
+// FUN_004189a0 is now ZBQueueNode::Cleanup (C++ member function)
 
 
 // Thiscall functions - declared outside extern "C"
@@ -442,107 +441,109 @@ void GameLoop::DrawFrame() {
 
 /* Function start: 0x417450 */
 void GameLoop::CleanupLoop() {
-    int iVar2;
-    int iVar3;
-    unsigned int uVar4;
-    int* puVar5;
-    void* pvVar6;
-    int* local_1c;
     ZBufferManager* pZBuf;
-    Queue* pQueue;
-    
+    ZBQueue* pQueue;
+    ZBQueueNode* pNode;
+    ZBQueueNode* pNextNode;
+    void* pResult;
+    void* pData;
+    EventList* pEventList;
+    EventNode* pCurrent;
+    Handler* pHandler;
+
     pZBuf = g_ZBufferManager_0043698c;
-    
-    // Process queue at offset 0xa0
-    pQueue = (Queue*)pZBuf->m_queueA0;
-    if (pQueue->m_head != 0) {
-        pQueue->m_current = pQueue->m_head;
-        iVar2 = (int)pQueue->m_head;
-        while (iVar2 != 0) {
-            puVar5 = (int*)ZBuffer::PopNode((int*)pQueue);
-            delete puVar5;
-            iVar2 = (int)pQueue->m_head;
+
+    // Process queue at offset 0xa0 - simple delete
+    pQueue = pZBuf->m_queueA0;
+    if (pQueue->head != 0) {
+        pQueue->current = pQueue->head;
+        while (pQueue->head != 0) {
+            pResult = ZBuffer::PopNode((int*)pQueue);
+            delete pResult;
         }
     }
-    
-    // Process queue at offset 0xa4
-    pQueue = (Queue*)pZBuf->m_queueA4;
-    if (pQueue->m_head != 0) {
-        pQueue->m_current = pQueue->m_head;
-        iVar2 = (int)pQueue->m_head;
-        while (iVar2 != 0) {
-            pvVar6 = ZBuffer::PopNode_2((int*)pQueue);
-            if (pvVar6 != 0) {
-                if (*(void**)((char*)pvVar6 + 4) != 0) {
-                    FUN_00417660(*(void**)((char*)pvVar6 + 4), 1);
-                    *(int*)((char*)pvVar6 + 4) = 0;
+
+    // Process queue at offset 0xa4 - cleanup with destructors
+    pQueue = pZBuf->m_queueA4;
+    if (pQueue->head != 0) {
+        pQueue->current = pQueue->head;
+        while (pQueue->head != 0) {
+            pResult = ZBuffer::PopNode_2((int*)pQueue);
+            if (pResult != 0) {
+                pNode = (ZBQueueNode*)pResult;
+                if (pNode->prev != 0) {
+                    ((VBuffer*)pNode->prev)->Destroy(1);
+                    pNode->prev = 0;
                 }
-                if (*(int**)((char*)pvVar6 + 8) != 0) {
-                    // Call virtual destructor through vtable
-                    (**(void (**)(int))(**(int**)((char*)pvVar6 + 8)))(1);
-                    *(int*)((char*)pvVar6 + 8) = 0;
+                if (pNode->data != 0) {
+                    (*(void (**)(int))(*(int*)pNode->data))(1);
+                    pNode->data = 0;
                 }
-                delete pvVar6;
+                delete pResult;
             }
-            iVar2 = (int)pQueue->m_head;
         }
     }
-    
-    // Process queue at offset 0x9c
-    pQueue = (Queue*)pZBuf->m_queue9c;
-    if (pQueue->m_head != 0) {
-        pQueue->m_current = pQueue->m_head;
-        iVar3 = (int)pQueue->m_head;
-        while (iVar3 != 0) {
-            iVar3 = (int)pQueue->m_current;
-            if (iVar3 == 0) {
-                local_1c = 0;
+
+    // Process queue at offset 0x9c - unlink and delete nodes
+    pQueue = pZBuf->m_queue9c;
+    if (pQueue->head != 0) {
+        pQueue->current = pQueue->head;
+        while (pQueue->head != 0) {
+            pNode = pQueue->current;
+            if (pNode == 0) {
+                pData = 0;
             } else {
-                if (pQueue->m_head == pQueue->m_current) {
-                    pQueue->m_head = (void*)*(int*)(iVar3 + 4);
+                // Unlink from head
+                if (pQueue->head == pNode) {
+                    pQueue->head = pNode->prev;
                 }
-                if (pQueue->m_tail == pQueue->m_current) {
-                    pQueue->m_tail = (void*)*(int*)pQueue->m_current;
+                // Unlink from tail
+                if (pQueue->tail == pNode) {
+                    pQueue->tail = pNode->next;
                 }
-                iVar3 = *(int*)pQueue->m_current;
-                if (iVar3 != 0) {
-                    *(int*)(iVar3 + 4) = ((int*)pQueue->m_current)[1];
+                // Update next->prev
+                pNextNode = pNode->next;
+                if (pNextNode != 0) {
+                    pNextNode->prev = pNode->prev;
                 }
-                puVar5 = (int*)((int*)pQueue->m_current)[1];
-                if (puVar5 != 0) {
-                    *puVar5 = *(int*)pQueue->m_current;
+                // Update prev->next
+                if (pNode->prev != 0) {
+                    pNode->prev->next = pNode->next;
                 }
-                local_1c = (int*)pQueue->GetCurrentData();
-                if (pQueue->m_current != 0) {
-                    FUN_004189a0(pQueue->m_current, 1);
-                    pQueue->m_current = 0;
+                // Get data and cleanup node
+                pData = pQueue->GetCurrentData();
+                if (pQueue->current != 0) {
+                    pQueue->current->Cleanup(1);
+                    pQueue->current = 0;
                 }
-                pQueue->m_current = pQueue->m_head;
+                pQueue->current = pQueue->head;
             }
-            delete local_1c;
-            iVar3 = (int)pQueue->m_head;
+            delete pData;
         }
     }
-    
-    // Process GameLoop's eventList at offset 0x14
-    EventList* pEventList = (EventList*)eventList;
+
+    // Process eventList - call Update(0) on each handler
+    pEventList = (EventList*)eventList;
     pEventList->current = pEventList->head;
-    iVar3 = (int)pEventList->current;
-    while (iVar3 != 0) {
-        iVar3 = (int)pEventList->current;
-        uVar4 = (unsigned int)((EventNode*)iVar3)->data;
-        if (uVar4 == 0) break;
-        // Call method at vtable offset 0x18 with param 0
-        int masked = ((iVar3 == 0) - 1) & uVar4;
-        (*(void (**)(int))(*(int*)masked + 0x18))(0);
-        iVar3 = (int)pEventList;
-        iVar2 = (int)pEventList->current;
-        if ((int)pEventList->tail == iVar2) break;
-        if (iVar2 != 0) {
-            pEventList->current = ((EventNode*)iVar2)->prev;
-        }
-        iVar3 = (int)pEventList->current;
+    if (pEventList->current == 0) {
+        return;
     }
+
+    do {
+        pCurrent = pEventList->current;
+        pHandler = (Handler*)pCurrent->data;
+        if (pHandler == 0) {
+            break;
+        }
+        pHandler->Update(0);
+        pCurrent = pEventList->current;
+        if (pEventList->tail == pCurrent) {
+            break;
+        }
+        if (pCurrent != 0) {
+            pEventList->current = pCurrent->prev;
+        }
+    } while (pEventList->current != 0);
 }
 
 // External functions for UpdateGame
@@ -550,7 +551,7 @@ void GameLoop::CleanupLoop() {
 // FUN_0041a150 is SC_Message_Send from Message.h
 
 // extern void* DAT_004369a4;  // GameState for string lookup (replaced with g_GameState2_004369a4 from globals.h)
-extern char* g_Unknown_00436994; // String buffer for game state strings
+// g_Unknown_00436994 is declared in globals.h
 
 /* Function start: 0x417CB0 */
 void GameLoop::ProcessMessage(SC_Message* msg)

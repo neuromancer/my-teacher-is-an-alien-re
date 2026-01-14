@@ -33,8 +33,8 @@ CDData::CDData(char *param_1, char *param_2) {
 }
 
 /* Function start: 0x421EA0 */
-void __fastcall CDData_ChangeToBaseDir(char *cdData) {
-  chdir(cdData);
+extern "C" void __fastcall CDData_ChangeToBaseDir(void *cdData) {
+  chdir((char*)cdData);
 }
 
 /* Function start: 0x421EB0 */
