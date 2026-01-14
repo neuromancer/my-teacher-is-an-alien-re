@@ -49,7 +49,7 @@ GameWindow g_GameWindow;
 extern "C" {
 void FUN_00421010(void *);
 void FUN_004227a0(void *);
-void FUN_00421ea0(void *);
+void __fastcall CDData_ChangeToBaseDir(void *);
 void PlayIntroCinematic();
 
 
@@ -320,7 +320,7 @@ void ShutdownGameSystems(void) {
   }
 
   if (g_CDData_0043697c != 0) {
-    FUN_00421ea0(g_CDData_0043697c);
+    CDData_ChangeToBaseDir(g_CDData_0043697c);
     FreeMemory(g_CDData_0043697c);
     g_CDData_0043697c = 0;
   }

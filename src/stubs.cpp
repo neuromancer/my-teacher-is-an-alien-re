@@ -61,7 +61,7 @@ void FUN_00421e40() {}
 void FUN_00421890(void*, int) {}
 
 void FUN_0040c5d0() {}
-void FUN_00421ea0() {}
+// CDData_ChangeToBaseDir (0x421ea0) implemented in CDData.cpp
 void FUN_004227a0() {}
 void FUN_00421010() {}
 /* Function start: 0x425f30 */

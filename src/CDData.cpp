@@ -32,12 +32,28 @@ CDData::CDData(char *param_1, char *param_2) {
   }
 }
 
+/* Function start: 0x421EA0 */
+void __fastcall CDData_ChangeToBaseDir(char *cdData) {
+  chdir(cdData);
+}
+
 /* Function start: 0x421EB0 */
 int CDData::CheckFileOnDrive(int drive_letter) {
   char local_40[64];
   sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
           field_0x80, field_0x1c5);
   return FileExists(local_40);
+}
+
+/* Function start: 0x421EF0 */
+int CDData::ChangeDirectory(unsigned char *path) {
+  if (path != 0 && *path != 0) {
+    if (chdir((char *)path) != 0) {
+      return 1;
+    }
+    ParsePath((char *)path, field_0xc0, 0, 0, 0);
+  }
+  return 0;
 }
 
 /* Function start: 0x421F40 */
@@ -48,16 +64,4 @@ int CDData::ChangeToDriveDirectory(int drive_letter) {
           field_0x80, field_0x1c5);
   int result = ChangeDirectory((unsigned char *)local_40);
   return result != 0;
-}
-
-/* Function start: 0x421EF0 */
-int CDData::ChangeDirectory(unsigned char *path) {
-  //ShowMessage((char *)path);
-  if (path != 0 && *path != 0) {
-    if (chdir((char *)path) != 0) {
-      return 1;
-    }
-    ParsePath((char *)path, field_0xc0, 0, 0, 0);
-  }
-  return 0;
 }
