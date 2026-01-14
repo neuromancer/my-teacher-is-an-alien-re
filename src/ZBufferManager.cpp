@@ -46,6 +46,246 @@ struct CommandType2 : public SoundCommand {
 // Returns 0 if palette changed, non-zero if unchanged
 int __fastcall IsPaletteUnchanged(void* storedPalette) { return 0; }
 
+
+
+extern "C" void FlipScreen();
+
+extern VBuffer* g_WorkBuffer_00436974;
+
+
+
+// Functions for rectangle drawing
+extern "C" int __cdecl SetFillColor(unsigned char color);
+extern "C" int __cdecl DrawRectOutline(int left, int right, int top, int bottom);
+extern "C" int __cdecl VideoFillRect(int left, int right, int top, int bottom);
+
+struct CommandType3 : public SoundCommand {
+    unsigned int priority;  // 0x04
+    int left;               // 0x08
+    int top;                // 0x0c
+    int right;              // 0x10
+    int bottom;             // 0x14
+    int field_18;           // 0x18
+    int field_1c;           // 0x1c - color
+
+    CommandType3() : priority(0), left(0), top(0), right(0), bottom(0), field_18(0), field_1c(0) {}
+
+    virtual void Execute(GlyphRect* rect);
+};
+
+
+
+ZBufferManager::~ZBufferManager()
+{
+    Cleanup();
+}
+
+/* Function start: 0x41B5D0 */
+void CommandType1::Execute(GlyphRect* rect)
+{
+    void* iVar1;
+
+    switch(mode) {
+    case 0:
+        iVar1 = data;
+        g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)iVar1 + 0x28), *(int*)((char*)iVar1 + 0x2c), *(int*)((char*)iVar1 + 0x20), *(int*)((char*)iVar1 + 0x24), x, y, (int)iVar1);
+        return;
+    case 1:
+        iVar1 = data;
+        g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)iVar1 + 0x28), *(int*)((char*)iVar1 + 0x2c), *(int*)((char*)iVar1 + 0x20), *(int*)((char*)iVar1 + 0x24), x, y, (int)iVar1);
+        return;
+    case 2:
+        DrawScaledSprite(x, y, data, *(double*)&scale_low);
+        return;
+    case 3:
+        g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, *(double*)&scale_low);
+    }
+    return;
+}
+
+/* Function start: 0x41B690 */
+void CommandType2::Execute(GlyphRect* rect)
+{
+    SetDrawPosition(x, y);
+    if (g_TextManager_00436990 != 0) {
+        g_TextManager_00436990->RenderText(text, -1);
+    }
+    return;
+}
+
+/* Function start: 0x41B6D0 */
+void CommandType3::Execute(GlyphRect* rect)
+{
+    SetFillColor((unsigned char)field_1c);
+    g_WorkBuffer_00436974->SetVideoMode();
+    if (left < 0) {
+        left = 0;
+    }
+    if (top < 0) {
+        top = 0;
+    }
+    if (0x27f < right) {
+        right = 0x27f;
+    }
+    if (0x1df < bottom) {
+        bottom = 0x1df;
+    }
+    if (field_18 == 1) {
+        DrawRectOutline(left, right, top, bottom);
+        return;
+    }
+    VideoFillRect(left, right, top, bottom);
+    return;
+}
+
+/* Function start: 0x41B760 */
+ZBufferManager::ZBufferManager() {
+    ZBQueue* puVar1;
+    ZBQueue* puVar2;
+    
+    WriteToMessageLogIfEnabled(L"declaring ZBuffer");
+    memset(this, 0, 0x2b * 4);
+    
+    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
+    puVar2 = 0;
+    if (puVar1 != 0) {
+        puVar1->type = 2;
+        puVar1->head = 0;
+        puVar1->tail = 0;
+        puVar1->current = puVar1->head;
+        puVar2 = puVar1;
+    }
+    m_queueA0 = puVar2;
+    
+    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
+    puVar2 = 0;
+    if (puVar1 != 0) {
+        puVar1->type = 0;
+        puVar1->head = 0;
+        puVar1->tail = 0;
+        puVar1->current = puVar1->head;
+        puVar2 = puVar1;
+    }
+    m_queueA4 = puVar2;
+    
+    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
+    puVar2 = 0;
+    if (puVar1 != 0) {
+        puVar1->type = 1;
+        puVar1->head = 0;
+        puVar1->tail = 0;
+        puVar1->current = puVar1->head;
+        puVar2 = puVar1;
+    }
+    m_queue9c = puVar2;
+    
+    m_state = 2;
+}
+
+/* Function start: 0x41B8E0 */
+void ZBufferManager::Cleanup() {
+    ZBQueue* queue;
+    ZBQueueNode* node;
+    ZBQueueNode* nextNode;
+    ZBQueueNode* prevNode;
+    void* data;
+    int queueType;
+    ZBQueue* local_14;
+    void* local_18;
+
+    // First: drain queue at 0xA0 with special handling
+    queue = m_queueA0;
+    while ((int)queue->head != 0) {
+        queue = m_queueA0;
+        queueType = queue->type;
+        if (queueType == 1 || queueType == 4) {
+            queue->current = queue->head;
+        } else if (queueType == 2 || queueType == 0) {
+            queue->current = queue->tail;
+        } else {
+            ShowError("bad queue type %lu", queueType);
+        }
+
+        node = (ZBQueueNode*)queue->current;
+        if (node != 0) {
+            if (queue->head == node) {
+                queue->head = node->prev;
+            }
+            node = (ZBQueueNode*)queue->current;
+            if (queue->tail == node) {
+                queue->tail = node->next;
+            }
+            node = (ZBQueueNode*)queue->current;
+            nextNode = (ZBQueueNode*)node->next;
+            if (nextNode != 0) {
+                nextNode->prev = node->prev;
+            }
+            node = (ZBQueueNode*)queue->current;
+            prevNode = (ZBQueueNode*)node->prev;
+            if (prevNode != 0) {
+                prevNode->next = node->next;
+            }
+            queue->GetCurrentData();
+            node = (ZBQueueNode*)queue->current;
+            if (node != 0) {
+                delete node;
+                queue->current = 0;
+            }
+            queue->current = queue->head;
+        }
+        queue = m_queueA0;
+    }
+
+    // Second: drain queue at 0xA0 (again), freeing remaining items
+    queue = m_queueA0;
+    if (queue != 0) {
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                data = ZBuffer::PopNode((int*)queue);
+                if (data != 0) {
+                    delete data;
+                }
+            }
+        }
+        delete queue;
+        m_queueA0 = 0;
+    }
+
+    // Third: drain queue at 0xA4
+    queue = m_queueA4;
+    if (queue != 0) {
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                data = ZBuffer::PopNode_2((int*)queue);
+                if (data != 0) {
+                    ((ZBuffer*)data)->CleanUpVBuffer();
+                    delete data;
+                }
+            }
+        }
+        delete queue;
+        m_queueA4 = 0;
+    }
+
+    // Fourth: drain queue at 0x9C
+    local_14 = m_queue9c;
+    if (local_14 != 0) {
+        if (local_14->head != 0) {
+            local_14->current = local_14->head;
+            while (local_14->head != 0) {
+                local_18 = local_14->PopNode();
+                if (local_18 != 0) {
+                    delete local_18;
+                }
+            }
+        }
+        delete local_14;
+        m_queue9c = 0;
+    }
+}
+
 /* Function start: 0x41BB10 */
 void* ZBQueue::GetCurrentData()
 {
@@ -100,110 +340,6 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
         }
     }
 }
-/* Function start: 0x41CCE0 */
-void* ZBQueueNode::CleanupNode(int flag)
-{
-    data = 0;
-    next = 0;
-    prev = 0;
-    if ((flag & 1) != 0) {
-        FreeMemory(this);
-    }
-    return this;
-}
-
-extern "C" void FlipScreen();
-
-extern VBuffer* g_WorkBuffer_00436974;
-
-/* Function start: 0x41C960 */
-void ZBufferManager::UpdateScreen() {
-    ZBQueue* queue;
-    ZBQueueNode* node;
-    ZBQueueNode* nextNode;
-    ZBQueueNode* prevNode;
-    RenderEntry* local_10;
-    GlyphRect local_rect;
-    int queueType;
-
-    int mode = m_state;
-    if (mode == 1) {
-        FlipScreen();
-        return;
-    }
-    if (mode == 2) {
-        FlipScreen();
-        return;
-    }
-    if (mode != 3) {
-        return;
-    }
-
-    queue = m_queue9c;
-    if (queue->head == 0) {
-        return;
-    }
-
-    do {
-        local_10 = 0;
-        queue = m_queue9c;
-        queueType = queue->type;
-        if (queueType == 1 || queueType == 4) {
-            queue->current = queue->head;
-        } else if (queueType == 2 || queueType == 0) {
-            queue->current = queue->tail;
-        } else {
-            ShowError("bad queue type %lu", queueType);
-            goto process_entry;
-        }
-
-process_entry:
-        node = (ZBQueueNode*)queue->current;
-        if (node == 0) {
-            goto do_blit;
-        }
-        if (queue->head == node) {
-            queue->head = node->prev;
-        }
-        node = (ZBQueueNode*)queue->current;
-        if (queue->tail == node) {
-            queue->tail = node->next;
-        }
-        node = (ZBQueueNode*)queue->current;
-        nextNode = (ZBQueueNode*)node->next;
-        if (nextNode != 0) {
-            nextNode->prev = node->prev;
-        }
-        node = (ZBQueueNode*)queue->current;
-        prevNode = (ZBQueueNode*)node->prev;
-        if (prevNode != 0) {
-            prevNode->next = node->next;
-        }
-        node = (ZBQueueNode*)queue->current;
-        if (node == 0) {
-            local_10 = 0;
-        } else {
-            local_10 = (RenderEntry*)node->data;
-            delete node;
-            queue->current = 0;
-        }
-        queue->current = queue->head;
-
-do_blit:
-        {
-            local_rect = local_10->rect;
-
-            if (g_WorkBuffer_00436974 != 0) {
-                g_WorkBuffer_00436974->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);
-            }
-
-            delete local_10;
-        }
-
-        queue = m_queue9c;
-    } while (queue->head != 0);
-}
-
 
 /* Function start: 0x41C000 */
 void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int flag)
@@ -242,24 +378,6 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
         QueueCommand(cmd);
     }
 }
-// Functions for rectangle drawing
-extern "C" int __cdecl SetFillColor(unsigned char color);
-extern "C" int __cdecl DrawRectOutline(int left, int right, int top, int bottom);
-extern "C" int __cdecl VideoFillRect(int left, int right, int top, int bottom);
-
-struct CommandType3 : public SoundCommand {
-    unsigned int priority;  // 0x04
-    int left;               // 0x08
-    int top;                // 0x0c
-    int right;              // 0x10
-    int bottom;             // 0x14
-    int field_18;           // 0x18
-    int field_1c;           // 0x1c - color
-
-    CommandType3() : priority(0), left(0), top(0), right(0), bottom(0), field_18(0), field_1c(0) {}
-
-    virtual void Execute(GlyphRect* rect);
-};
 
 /* Function start: 0x41C130 */
 void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, int p7)
@@ -518,217 +636,6 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
     }
 }
 
-ZBufferManager::~ZBufferManager()
-{
-    Cleanup();
-}
-
-/* Function start: 0x41B5D0 */
-void CommandType1::Execute(GlyphRect* rect)
-{
-    void* iVar1;
-
-    switch(mode) {
-    case 0:
-        iVar1 = data;
-        g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)iVar1 + 0x28), *(int*)((char*)iVar1 + 0x2c), *(int*)((char*)iVar1 + 0x20), *(int*)((char*)iVar1 + 0x24), x, y, (int)iVar1);
-        return;
-    case 1:
-        iVar1 = data;
-        g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)iVar1 + 0x28), *(int*)((char*)iVar1 + 0x2c), *(int*)((char*)iVar1 + 0x20), *(int*)((char*)iVar1 + 0x24), x, y, (int)iVar1);
-        return;
-    case 2:
-        DrawScaledSprite(x, y, data, *(double*)&scale_low);
-        return;
-    case 3:
-        g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, *(double*)&scale_low);
-    }
-    return;
-}
-
-/* Function start: 0x41B690 */
-void CommandType2::Execute(GlyphRect* rect)
-{
-    SetDrawPosition(x, y);
-    if (g_TextManager_00436990 != 0) {
-        g_TextManager_00436990->RenderText(text, -1);
-    }
-    return;
-}
-
-/* Function start: 0x41B6D0 */
-void CommandType3::Execute(GlyphRect* rect)
-{
-    SetFillColor((unsigned char)field_1c);
-    g_WorkBuffer_00436974->SetVideoMode();
-    if (left < 0) {
-        left = 0;
-    }
-    if (top < 0) {
-        top = 0;
-    }
-    if (0x27f < right) {
-        right = 0x27f;
-    }
-    if (0x1df < bottom) {
-        bottom = 0x1df;
-    }
-    if (field_18 == 1) {
-        DrawRectOutline(left, right, top, bottom);
-        return;
-    }
-    VideoFillRect(left, right, top, bottom);
-    return;
-}
-
-/* Function start: 0x41B760 */
-ZBufferManager::ZBufferManager() {
-    ZBQueue* puVar1;
-    ZBQueue* puVar2;
-    
-    WriteToMessageLogIfEnabled(L"declaring ZBuffer");
-    memset(this, 0, 0x2b * 4);
-    
-    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
-    puVar2 = 0;
-    if (puVar1 != 0) {
-        puVar1->type = 2;
-        puVar1->head = 0;
-        puVar1->tail = 0;
-        puVar1->current = puVar1->head;
-        puVar2 = puVar1;
-    }
-    m_queueA0 = puVar2;
-    
-    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
-    puVar2 = 0;
-    if (puVar1 != 0) {
-        puVar1->type = 0;
-        puVar1->head = 0;
-        puVar1->tail = 0;
-        puVar1->current = puVar1->head;
-        puVar2 = puVar1;
-    }
-    m_queueA4 = puVar2;
-    
-    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
-    puVar2 = 0;
-    if (puVar1 != 0) {
-        puVar1->type = 1;
-        puVar1->head = 0;
-        puVar1->tail = 0;
-        puVar1->current = puVar1->head;
-        puVar2 = puVar1;
-    }
-    m_queue9c = puVar2;
-    
-    m_state = 2;
-}
-
-/* Function start: 0x41B8E0 */
-void ZBufferManager::Cleanup() {
-    ZBQueue* queue;
-    ZBQueueNode* node;
-    ZBQueueNode* nextNode;
-    ZBQueueNode* prevNode;
-    void* data;
-    int queueType;
-    ZBQueue* local_14;
-    void* local_18;
-
-    // First: drain queue at 0xA0 with special handling
-    queue = m_queueA0;
-    while ((int)queue->head != 0) {
-        queue = m_queueA0;
-        queueType = queue->type;
-        if (queueType == 1 || queueType == 4) {
-            queue->current = queue->head;
-        } else if (queueType == 2 || queueType == 0) {
-            queue->current = queue->tail;
-        } else {
-            ShowError("bad queue type %lu", queueType);
-        }
-
-        node = (ZBQueueNode*)queue->current;
-        if (node != 0) {
-            if (queue->head == node) {
-                queue->head = node->prev;
-            }
-            node = (ZBQueueNode*)queue->current;
-            if (queue->tail == node) {
-                queue->tail = node->next;
-            }
-            node = (ZBQueueNode*)queue->current;
-            nextNode = (ZBQueueNode*)node->next;
-            if (nextNode != 0) {
-                nextNode->prev = node->prev;
-            }
-            node = (ZBQueueNode*)queue->current;
-            prevNode = (ZBQueueNode*)node->prev;
-            if (prevNode != 0) {
-                prevNode->next = node->next;
-            }
-            queue->GetCurrentData();
-            node = (ZBQueueNode*)queue->current;
-            if (node != 0) {
-                delete node;
-                queue->current = 0;
-            }
-            queue->current = queue->head;
-        }
-        queue = m_queueA0;
-    }
-
-    // Second: drain queue at 0xA0 (again), freeing remaining items
-    queue = m_queueA0;
-    if (queue != 0) {
-        if (queue->head != 0) {
-            queue->current = queue->head;
-            while (queue->head != 0) {
-                data = ZBuffer::PopNode((int*)queue);
-                if (data != 0) {
-                    delete data;
-                }
-            }
-        }
-        delete queue;
-        m_queueA0 = 0;
-    }
-
-    // Third: drain queue at 0xA4
-    queue = m_queueA4;
-    if (queue != 0) {
-        if (queue->head != 0) {
-            queue->current = queue->head;
-            while (queue->head != 0) {
-                data = ZBuffer::PopNode_2((int*)queue);
-                if (data != 0) {
-                    ((ZBuffer*)data)->CleanUpVBuffer();
-                    delete data;
-                }
-            }
-        }
-        delete queue;
-        m_queueA4 = 0;
-    }
-
-    // Fourth: drain queue at 0x9C
-    local_14 = m_queue9c;
-    if (local_14 != 0) {
-        if (local_14->head != 0) {
-            local_14->current = local_14->head;
-            while (local_14->head != 0) {
-                local_18 = local_14->PopNode();
-                if (local_18 != 0) {
-                    delete local_18;
-                }
-            }
-        }
-        delete local_14;
-        m_queue9c = 0;
-    }
-}
-
 /* Function start: 0x41C5A0 */
 void ZBufferManager::ProcessRenderQueues()
 {
@@ -917,3 +824,104 @@ void ZBufferManager::ProcessRenderQueues()
         }
     }
 }
+
+/* Function start: 0x41C960 */
+void ZBufferManager::UpdateScreen() {
+    ZBQueue* queue;
+    ZBQueueNode* node;
+    ZBQueueNode* nextNode;
+    ZBQueueNode* prevNode;
+    RenderEntry* local_10;
+    GlyphRect local_rect;
+    int queueType;
+
+    int mode = m_state;
+    if (mode == 1) {
+        FlipScreen();
+        return;
+    }
+    if (mode == 2) {
+        FlipScreen();
+        return;
+    }
+    if (mode != 3) {
+        return;
+    }
+
+    queue = m_queue9c;
+    if (queue->head == 0) {
+        return;
+    }
+
+    do {
+        local_10 = 0;
+        queue = m_queue9c;
+        queueType = queue->type;
+        if (queueType == 1 || queueType == 4) {
+            queue->current = queue->head;
+        } else if (queueType == 2 || queueType == 0) {
+            queue->current = queue->tail;
+        } else {
+            ShowError("bad queue type %lu", queueType);
+            goto process_entry;
+        }
+
+process_entry:
+        node = (ZBQueueNode*)queue->current;
+        if (node == 0) {
+            goto do_blit;
+        }
+        if (queue->head == node) {
+            queue->head = node->prev;
+        }
+        node = (ZBQueueNode*)queue->current;
+        if (queue->tail == node) {
+            queue->tail = node->next;
+        }
+        node = (ZBQueueNode*)queue->current;
+        nextNode = (ZBQueueNode*)node->next;
+        if (nextNode != 0) {
+            nextNode->prev = node->prev;
+        }
+        node = (ZBQueueNode*)queue->current;
+        prevNode = (ZBQueueNode*)node->prev;
+        if (prevNode != 0) {
+            prevNode->next = node->next;
+        }
+        node = (ZBQueueNode*)queue->current;
+        if (node == 0) {
+            local_10 = 0;
+        } else {
+            local_10 = (RenderEntry*)node->data;
+            delete node;
+            queue->current = 0;
+        }
+        queue->current = queue->head;
+
+do_blit:
+        {
+            local_rect = local_10->rect;
+
+            if (g_WorkBuffer_00436974 != 0) {
+                g_WorkBuffer_00436974->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);
+            }
+
+            delete local_10;
+        }
+
+        queue = m_queue9c;
+    } while (queue->head != 0);
+}
+
+/* Function start: 0x41CCE0 */
+void* ZBQueueNode::CleanupNode(int flag)
+{
+    data = 0;
+    next = 0;
+    prev = 0;
+    if ((flag & 1) != 0) {
+        FreeMemory(this);
+    }
+    return this;
+}
+
