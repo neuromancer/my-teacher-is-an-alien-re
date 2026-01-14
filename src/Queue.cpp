@@ -285,14 +285,11 @@ void Queue::Insert(void* data)
 
     QueueNode* newNode = (QueueNode*)AllocateMemory(sizeof(QueueNode));
     QueueNode* node = 0;
-    try {
-        if (newNode != 0) {
-            newNode->data = data;
-            newNode->prev = 0;
-            newNode->next = 0;
-            node = newNode;
-        }
-    } catch (...) {
+    if (newNode != 0) {
+        newNode->data = data;
+        newNode->prev = 0;
+        newNode->next = 0;
+        node = newNode;
     }
 
     if (m_current == 0) {
@@ -326,17 +323,14 @@ void Queue::Push(void* data)
 
     QueueNode* newNode = (QueueNode*)AllocateMemory(sizeof(QueueNode));
     QueueNode* node;
-    try {
-        if (newNode == 0) {
-            node = 0;
-        }
-        else {
-            newNode->data = data;
-            newNode->prev = 0;
-            newNode->next = 0;
-            node = newNode;
-        }
-    } catch (...) {
+    if (newNode == 0) {
+        node = 0;
+    }
+    else {
+        newNode->data = data;
+        newNode->prev = 0;
+        newNode->next = 0;
+        node = newNode;
     }
 
     if (m_current == 0) {

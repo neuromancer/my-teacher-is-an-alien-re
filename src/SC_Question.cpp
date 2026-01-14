@@ -317,16 +317,13 @@ int SC_Question::LBLParse(char* param_1)
                         
                         mem = AllocateMemory(0xc);
                         QueueNode* node = 0;
-                        try {
-                            if (mem != 0) {
-                                node = (QueueNode*)mem;
-                                node->data = msg;
-                                node->prev = 0;
-                                node->next = 0;
-                            }
-                        } catch (...) {
+                        if (mem != 0) {
+                            node = (QueueNode*)mem;
+                            node->data = msg;
+                            node->prev = 0;
+                            node->next = 0;
                         }
-                        
+
                         if (queue->m_current == 0) {
                             queue->m_current = queue->m_head;
                         }
@@ -357,18 +354,15 @@ int SC_Question::LBLParse(char* param_1)
                         
                         mem = AllocateMemory(0xc);
                         QueueNode* node;
-                        try {
-                            if (mem != 0) {
-                                ((QueueNode*)mem)->data = msg;
-                                node = (QueueNode*)mem;
-                                ((QueueNode*)mem)->prev = 0;
-                                ((QueueNode*)mem)->next = 0;
-                            } else {
-                                node = 0;
-                            }
-                        } catch (...) {
+                        if (mem != 0) {
+                            ((QueueNode*)mem)->data = msg;
+                            node = (QueueNode*)mem;
+                            ((QueueNode*)mem)->prev = 0;
+                            ((QueueNode*)mem)->next = 0;
+                        } else {
+                            node = 0;
                         }
-                        
+
                         if (queue->m_current == 0) {
                             queue->m_current = queue->m_tail;
                         }
@@ -402,20 +396,17 @@ int SC_Question::LBLParse(char* param_1)
                 
                 mem = AllocateMemory(0xc);
                 QueueNode* node = 0;
-                try {
-                    if (mem != 0) {
-                        node = (QueueNode*)mem;
-                        node->data = msg;
-                        node->prev = 0;
-                        node->next = 0;
-                    }
-                } catch (...) {
+                if (mem != 0) {
+                    node = (QueueNode*)mem;
+                    node->data = msg;
+                    node->prev = 0;
+                    node->next = 0;
                 }
-                
+
                 if (queue->m_current == 0) {
                     queue->m_current = queue->m_head;
                 }
-                
+
                 if (queue->m_head == 0) {
                     queue->m_head = node;
                     queue->m_tail = node;

@@ -10,7 +10,9 @@ struct ZBQueueNode {
     void* next;     // 0x00
     void* prev;     // 0x04
     void* data;     // 0x08
-    
+
+    ZBQueueNode() : next(0), prev(0), data(0) {}
+
     void* CleanupNode(int flag);  // 0x41CCE0
 };
 
@@ -52,8 +54,8 @@ public:
     void QueueCommand(SoundCommand* cmd); // 0x41C2C0
     
     // Layout: 0xAC bytes total
-    // Queue fields at 0x00 - 0x10 (inherited)
-    unsigned int m_pad10[0x1D];  // 0x10 - 0x84 (29 dwords = 116 bytes)
+    // Queue fields at 0x00 - 0x14 (inherited, 20 bytes: m_flags, m_head, m_tail, m_current, m_field_0xc)
+    unsigned int m_pad14[0x1C];  // 0x14 - 0x84 (28 dwords = 112 bytes)
     Timer timer;                 // 0x84 - Timer (20 bytes, 5 dwords) - also known as m_timer
     int m_state;                 // 0x98 - also known as m_mode
     ZBQueue* m_queue9c;          // 0x9C - also known as m_list1

@@ -14,12 +14,8 @@
 #include <stdlib.h>
 
 #include "VideoTable.h"
+#include "AnimatedAsset.h"
 
-extern "C" {
-    void FUN_00421700(void*, char*, int);
-}
-
-void __stdcall FUN_0041b110(int, int, void*, int, int);
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
 
@@ -44,10 +40,10 @@ struct CommandType1 : public SoundCommand {
                  break;
 
             case 2:
-                 DrawScaledSprite(x, y, data, scale_low);
+                 DrawScaledSprite(x, y, data, *(double*)&scale_low);
                  break;
             case 3:
-                 g_WorkBuffer_00436974->FUN_0041b110(x, y, data, scale_low, scale_high);
+                 g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, *(double*)&scale_low);
                  break;
         }
     }
@@ -61,7 +57,7 @@ struct CommandType2 : public SoundCommand {
 
     virtual void Execute(GlyphRect* rect) {
         SetDrawPosition(x, y);
-        FUN_00421700(g_TextManager_00436990, text, -1);
+        g_TextManager_00436990->RenderText(text, -1);
     }
 };
 
@@ -92,7 +88,7 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
             cmd->parameter1 = priority;
             
             // Apply jitter if flags & 2
-            if ((*(char*)this & 2) != 0) {
+            if ((m_flags & 2) != 0) {
                  x = rand() % 5 - 2 + x;
                  y = rand() % 5 - 2 + y;
             }
@@ -114,10 +110,10 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
                      g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
                      break;
                 case 2:
-                     //FUN_0041b0a0(x, y, data, scale1, scale2);
+                     DrawScaledSprite(x, y, data, *(double*)&scale1);
                      break;
                 case 3:
-                     g_WorkBuffer_00436974->FUN_0041b110(x, y, data, scale1, scale2);
+                     g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, *(double*)&scale1);
                      break;
             }
         }
@@ -137,36 +133,38 @@ void* ZBQueueNode::CleanupNode(int flag)
 /* Function start: 0x401810 */
 void* ZBQueue::PopNode()
 {
-    ZBQueueNode* piVar1 = (ZBQueueNode*)current;
-    if (piVar1 != 0) {
-        if (head == piVar1) {
-            head = piVar1->prev;
-        }
-        if (tail == piVar1) {
-            tail = piVar1->next;
-        }
-        if (piVar1->next != 0) {
-            ((ZBQueueNode*)piVar1->next)->prev = piVar1->prev;
-        }
-        ZBQueueNode* puVar2 = (ZBQueueNode*)((ZBQueueNode*)current)->prev;
-        if (puVar2 != 0) {
-            puVar2->next = ((ZBQueueNode*)current)->next;
-        }
-        ZBQueueNode* puVar2_2 = (ZBQueueNode*)current;
-        void* uVar3;
-        uVar3 = 0;
-        if (puVar2_2 != 0) {
-            uVar3 = puVar2_2->data;
-            puVar2_2->data = 0;
-            puVar2_2->next = 0;
-            puVar2_2->prev = 0;
-            FreeMemory(puVar2_2);
-            current = 0;
-        }
-        current = head;
-        return uVar3;
+    ZBQueueNode* piVar1;
+    ZBQueueNode* puVar2;
+    void* uVar3;
+
+    piVar1 = (ZBQueueNode*)current;
+    if (piVar1 == 0) {
+        return 0;
     }
-    return 0;
+    if (head == piVar1) {
+        head = piVar1->prev;
+    }
+    if (tail == piVar1) {
+        tail = piVar1->next;
+    }
+    if (piVar1->next != 0) {
+        ((ZBQueueNode*)piVar1->next)->prev = piVar1->prev;
+    }
+    puVar2 = (ZBQueueNode*)((ZBQueueNode*)current)->prev;
+    if (puVar2 != 0) {
+        puVar2->next = ((ZBQueueNode*)current)->next;
+    }
+    puVar2 = (ZBQueueNode*)current;
+    uVar3 = 0;
+    if (puVar2 != 0) {
+        uVar3 = puVar2->data;
+    }
+    if (puVar2 != 0) {
+        delete puVar2;
+        current = 0;
+    }
+    current = head;
+    return uVar3;
 }
 
 extern "C" void FlipScreen();
@@ -175,12 +173,14 @@ extern VBuffer* g_WorkBuffer_00436974;
 
 /* Function start: 0x41C960 */
 void ZBufferManager::UpdateScreen() {
-    int* piVar1;
-    int* puVar3;
-    int iVar4;
-    RenderEntry* local_14;
+    ZBQueue* queue;
+    ZBQueueNode* node;
+    ZBQueueNode* nextNode;
+    ZBQueueNode* prevNode;
+    RenderEntry* local_10;
     GlyphRect local_rect;
-    
+    int queueType;
+
     int mode = m_state;
     if (mode == 1) {
         FlipScreen();
@@ -193,72 +193,70 @@ void ZBufferManager::UpdateScreen() {
     if (mode != 3) {
         return;
     }
-    
-    piVar1 = (int*)m_queue9c;
-    if (*piVar1 == 0) {
+
+    queue = m_queue9c;
+    if (queue->head == 0) {
         return;
     }
-    
+
     do {
-        local_14 = (RenderEntry*)0;
-        piVar1 = (int*)m_queue9c;
-        int queueType = piVar1[3];
+        local_10 = 0;
+        queue = m_queue9c;
+        queueType = queue->type;
         if (queueType == 1 || queueType == 4) {
-            iVar4 = *piVar1;
+            queue->current = queue->head;
         } else if (queueType == 2 || queueType == 0) {
-            iVar4 = piVar1[1];
+            queue->current = queue->tail;
         } else {
             ShowError("bad queue type %lu", queueType);
             goto process_entry;
         }
-        piVar1[2] = iVar4;
-        
+
 process_entry:
-        iVar4 = piVar1[2];
-        if (iVar4 == 0) {
+        node = (ZBQueueNode*)queue->current;
+        if (node == 0) {
             goto do_blit;
         }
-        if (*piVar1 == iVar4) {
-            *piVar1 = *(int*)(iVar4 + 4);
+        if (queue->head == node) {
+            queue->head = node->prev;
         }
-        iVar4 = piVar1[2];
-        if (piVar1[1] == iVar4) {
-            piVar1[1] = *(int*)iVar4;
+        node = (ZBQueueNode*)queue->current;
+        if (queue->tail == node) {
+            queue->tail = node->next;
         }
-        iVar4 = *(int*)piVar1[2];
-        if (iVar4 != 0) {
-            *(int*)(iVar4 + 4) = ((int*)piVar1[2])[1];
+        node = (ZBQueueNode*)queue->current;
+        nextNode = (ZBQueueNode*)node->next;
+        if (nextNode != 0) {
+            nextNode->prev = node->prev;
         }
-        puVar3 = (int*)((int*)piVar1[2])[1];
-        if (puVar3 != 0) {
-            *puVar3 = *(int*)piVar1[2];
+        node = (ZBQueueNode*)queue->current;
+        prevNode = (ZBQueueNode*)node->prev;
+        if (prevNode != 0) {
+            prevNode->next = node->next;
         }
-        iVar4 = piVar1[2];
-        if (iVar4 == 0) {
-            local_14 = (RenderEntry*)0;
+        node = (ZBQueueNode*)queue->current;
+        if (node == 0) {
+            local_10 = 0;
         } else {
-            local_14 = (RenderEntry*)((int*)iVar4)[2];
-            ((int*)iVar4)[2] = 0;
-            *(int*)iVar4 = 0;
-            ((int*)iVar4)[1] = 0;
-            FreeMemory((void*)iVar4);
-            piVar1[2] = 0;
+            local_10 = (RenderEntry*)node->data;
+            delete node;
+            queue->current = 0;
         }
-        piVar1[2] = *piVar1;
-        
+        queue->current = queue->head;
+
 do_blit:
         {
-            local_rect = local_14->rect;
-            
+            local_rect = local_10->rect;
+
             if (g_WorkBuffer_00436974 != 0) {
                 g_WorkBuffer_00436974->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);
             }
-            
-            delete local_14;
+
+            delete local_10;
         }
-        
-        piVar1 = (int*)m_queue9c;
-    } while (*piVar1 != 0);
+
+        queue = m_queue9c;
+    } while (queue->head != 0);
 }
 
 
@@ -271,7 +269,7 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
     }
     if (iVar1 == 1) {
         SetDrawPosition(x, y);
-        FUN_00421700(g_TextManager_00436990, text, -1);
+        g_TextManager_00436990->RenderText(text, -1);
         return;
     }
     
@@ -334,10 +332,8 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
         if (qtype == 1 || qtype == 2) {
             if (queue->head == 0) {
                 // Simple insert using ZBQueue
-                ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                ZBQueueNode* newNode = new ZBQueueNode();
                 if (newNode) {
-                    newNode->prev = 0;
-                    newNode->next = 0;
                     newNode->data = cmd;
                     queue->head = newNode;
                     queue->tail = newNode;
@@ -352,7 +348,7 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                 
                 if ((unsigned int)((CommandType1*)nodeCmd)->parameter1 < (unsigned int)((CommandType1*)cmd)->parameter1) {
                     // Insert before current
-                    ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                    ZBQueueNode* newNode = new ZBQueueNode();
                     if (newNode) {
                         newNode->data = cmd;
                         newNode->next = node;
@@ -371,15 +367,11 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                     if (!cmd) {
                         ShowError("queue fault 0112");
                     }
-                    ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                    ZBQueueNode* newNode = new ZBQueueNode();
                     if (newNode) {
-                        newNode->prev = 0;
-                        newNode->next = 0;
                         newNode->data = cmd;
-                    } else {
-                        newNode = 0;
                     }
-                    
+
                     if (queue->current == 0) {
                         queue->current = queue->tail;
                     }
@@ -392,14 +384,13 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                         if (tail == 0 || tail->next != 0) {
                             ShowError("queue fault 0113");
                         }
-                        newNode->next = 0;
                         newNode->prev = tail;
                         tail->next = newNode;
                         queue->tail = newNode;
                     }
                     return;
                 }
-                
+
                 if (node != 0) {
                     queue->current = node->next;
                 }
@@ -407,10 +398,8 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
             return;
         }
         // Simple insert
-        ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+        ZBQueueNode* newNode = new ZBQueueNode();
         if (newNode) {
-            newNode->prev = 0;
-            newNode->next = 0;
             newNode->data = cmd;
             if (queue->head == 0) {
                 queue->head = newNode;
@@ -430,14 +419,12 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
             ShowError("queue fault 0101");
         }
         queue->current = queue->head;
-        
+
         int qtype = queue->type;
         if (qtype == 1 || qtype == 2) {
             if (queue->head == 0) {
-                ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                ZBQueueNode* newNode = new ZBQueueNode();
                 if (newNode) {
-                    newNode->prev = 0;
-                    newNode->next = 0;
                     newNode->data = cmd;
                     queue->head = newNode;
                     queue->tail = newNode;
@@ -445,13 +432,13 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                 }
                 return;
             }
-            
+
             while (queue->current) {
                 ZBQueueNode* node = (ZBQueueNode*)queue->current;
                 SoundCommand* nodeCmd = (SoundCommand*)node->data;
-                
+
                 if ((unsigned int)((CommandType1*)nodeCmd)->parameter1 < (unsigned int)((CommandType1*)cmd)->parameter1) {
-                    ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                    ZBQueueNode* newNode = new ZBQueueNode();
                     if (newNode) {
                         newNode->data = cmd;
                         newNode->next = node;
@@ -465,20 +452,16 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                     }
                     return;
                 }
-                
+
                 if (queue->tail == queue->current) {
                     if (!cmd) {
                         ShowError("queue fault 0112");
                     }
-                    ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+                    ZBQueueNode* newNode = new ZBQueueNode();
                     if (newNode) {
-                        newNode->prev = 0;
-                        newNode->next = 0;
                         newNode->data = cmd;
-                    } else {
-                        newNode = 0;
                     }
-                    
+
                     if (queue->current == 0) {
                         queue->current = queue->tail;
                     }
@@ -491,24 +474,21 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                         if (tail == 0 || tail->next != 0) {
                             ShowError("queue fault 0113");
                         }
-                        newNode->next = 0;
                         newNode->prev = tail;
                         tail->next = newNode;
                         queue->tail = newNode;
                     }
                     return;
                 }
-                
+
                 if (node != 0) {
                     queue->current = node->next;
                 }
             }
             return;
         }
-        ZBQueueNode* newNode = (ZBQueueNode*)AllocateMemory(12);
+        ZBQueueNode* newNode = new ZBQueueNode();
         if (newNode) {
-            newNode->prev = 0;
-            newNode->next = 0;
             newNode->data = cmd;
             if (queue->head == 0) {
                 queue->head = newNode;
@@ -575,103 +555,104 @@ ZBufferManager::ZBufferManager() {
 
 /* Function start: 0x41B8E0 */
 void ZBufferManager::Cleanup() {
-    int* piVar1;
-    int iVar3;
-    unsigned int* puVar4;
-    void* pvVar5;
-    int* local_14;
-    unsigned int* local_18;
-    unsigned int* local_1c;
-    
+    ZBQueue* queue;
+    ZBQueueNode* node;
+    ZBQueueNode* nextNode;
+    ZBQueueNode* prevNode;
+    void* data;
+    int queueType;
+    ZBQueue* local_14;
+    void* local_18;
+
     // First: drain queue at 0xA0 with special handling
-    piVar1 = (int*)m_queueA0;
-    iVar3 = *piVar1;
-    while (iVar3 != 0) {
-        piVar1 = (int*)m_queueA0;
-        int queueType = piVar1[3];
+    queue = m_queueA0;
+    while ((int)queue->head != 0) {
+        queue = m_queueA0;
+        queueType = queue->type;
         if (queueType == 1 || queueType == 4) {
-            iVar3 = *piVar1;
+            queue->current = queue->head;
         } else if (queueType == 2 || queueType == 0) {
-            iVar3 = piVar1[1];
+            queue->current = queue->tail;
         } else {
             ShowError("bad queue type %lu", queueType);
         }
-        piVar1[2] = iVar3;
-        
-        iVar3 = piVar1[2];
-        if (iVar3 != 0) {
-            if (*piVar1 == iVar3) {
-                *piVar1 = *(int*)(iVar3 + 4);
+
+        node = (ZBQueueNode*)queue->current;
+        if (node != 0) {
+            if (queue->head == node) {
+                queue->head = node->prev;
             }
-            if (piVar1[1] == piVar1[2]) {
-                piVar1[1] = *(int*)piVar1[2];
+            node = (ZBQueueNode*)queue->current;
+            if (queue->tail == node) {
+                queue->tail = node->next;
             }
-            iVar3 = *(int*)piVar1[2];
-            if (iVar3 != 0) {
-                *(int*)(iVar3 + 4) = ((int*)piVar1[2])[1];
+            node = (ZBQueueNode*)queue->current;
+            nextNode = (ZBQueueNode*)node->next;
+            if (nextNode != 0) {
+                nextNode->prev = node->prev;
             }
-            int* pNode = (int*)((int*)piVar1[2])[1];
-            if (pNode != 0) {
-                *pNode = *(int*)piVar1[2];
+            node = (ZBQueueNode*)queue->current;
+            prevNode = (ZBQueueNode*)node->prev;
+            if (prevNode != 0) {
+                prevNode->next = node->next;
             }
-            ((ZBQueue*)piVar1)->GetCurrentData();
-            ZBQueueNode* nodePtr = (ZBQueueNode*)piVar1[2];
-            if (nodePtr != 0) {
-                nodePtr->CleanupNode(1);
-                piVar1[2] = 0;
+            queue->GetCurrentData();
+            node = (ZBQueueNode*)queue->current;
+            if (node != 0) {
+                delete node;
+                queue->current = 0;
             }
-            piVar1[2] = *piVar1;
+            queue->current = queue->head;
         }
-        piVar1 = (int*)m_queueA0;
-        iVar3 = *piVar1;
+        queue = m_queueA0;
     }
-    
+
     // Second: drain queue at 0xA0 (again), freeing remaining items
-    piVar1 = (int*)m_queueA0;
-    if (piVar1 != 0) {
-        if (*piVar1 != 0) {
-            piVar1[2] = *piVar1;
-            while (*piVar1 != 0) {
-                puVar4 = (unsigned int*)ZBuffer::PopNode(piVar1);
-                if (puVar4 != 0) {
-                    FreeMemory(puVar4);
+    queue = m_queueA0;
+    if (queue != 0) {
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                data = ZBuffer::PopNode((int*)queue);
+                if (data != 0) {
+                    delete data;
                 }
             }
         }
-        FreeMemory(piVar1);
+        delete queue;
         m_queueA0 = 0;
     }
-    
+
     // Third: drain queue at 0xA4
-    piVar1 = (int*)m_queueA4;
-    if (piVar1 != 0) {
-        if (*piVar1 != 0) {
-            piVar1[2] = *piVar1;
-            while (*piVar1 != 0) {
-                pvVar5 = ZBuffer::PopNode_2(piVar1);
-                if (pvVar5 != 0) {
-                    ((ZBuffer*)pvVar5)->CleanUpVBuffer();
-                    FreeMemory(pvVar5);
+    queue = m_queueA4;
+    if (queue != 0) {
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                data = ZBuffer::PopNode_2((int*)queue);
+                if (data != 0) {
+                    ((ZBuffer*)data)->CleanUpVBuffer();
+                    delete data;
                 }
             }
         }
-        FreeMemory(piVar1);
+        delete queue;
         m_queueA4 = 0;
     }
-    
+
     // Fourth: drain queue at 0x9C
-    local_14 = (int*)m_queue9c;
+    local_14 = m_queue9c;
     if (local_14 != 0) {
-        if (*local_14 != 0) {
-            local_14[2] = *local_14;
-            while (*local_14 != 0) {
-                local_18 = (unsigned int*)((ZBQueue*)local_14)->PopNode();
+        if (local_14->head != 0) {
+            local_14->current = local_14->head;
+            while (local_14->head != 0) {
+                local_18 = local_14->PopNode();
                 if (local_18 != 0) {
-                    FreeMemory(local_18);
+                    delete local_18;
                 }
             }
         }
-        FreeMemory(local_14);
+        delete local_14;
         m_queue9c = 0;
     }
 }
@@ -679,197 +660,187 @@ void ZBufferManager::Cleanup() {
 /* Function start: 0x41C5A0 */
 void ZBufferManager::ProcessRenderQueues()
 {
-    int* piVar1;
-    int iVar3;
-    void* pvVar4;
-    unsigned int uVar5;
-    unsigned int* puVar6;
-    unsigned int* puVar7;
+    ZBQueue* queue;
+    ZBQueueNode* node;
+    ZBQueueNode* nextNode;
+    ZBQueueNode* prevNode;
+    void* data;
+    unsigned int elapsed;
+    int queueType;
+    void* local_14;
     int local_height;
     int local_width;
     int local_1c;
     int local_20;
-    
+
     m_head = 0;
-    
+
     if (m_state == 2) {
         // State type 2 processing
         if (m_fieldA8 != 0) {
-            iVar3 = IsPaletteUnchanged(m_fieldA8);
-            if (iVar3 == 0) {
+            if (IsPaletteUnchanged(m_fieldA8) == 0) {
                 BlankScreen();
                 ((Palette*)m_fieldA8)->SetPalette(0, 0x100);
             }
             m_fieldA8 = 0;
         }
-        
+
         local_height = g_WorkBuffer_00436974->height - 1;
         local_width = g_WorkBuffer_00436974->width - 1;
         local_20 = 0;
         local_1c = 0;
-        
-        try {
-            iVar3 = *(int*)m_queueA0;
-            while (iVar3 != 0) {
-                puVar7 = 0;
-                piVar1 = (int*)m_queueA0;
-                int queueType = piVar1[3];
-                if (queueType == 1 || queueType == 4) {
-                    iVar3 = *piVar1;
-                    piVar1[2] = iVar3;
-                } else if (queueType == 2 || queueType == 0) {
-                    iVar3 = piVar1[1];
-                    piVar1[2] = iVar3;
-                } else {
-                    ShowError("bad queue type %lu", queueType);
-                }
-                
-                if (piVar1[2] != 0) {
-                    puVar7 = (unsigned int*)ZBuffer::PopNode(piVar1);
-                }
-                
-                if (puVar7 != 0) {
-                    // Virtual call through vtable [puVar7[0]], passing &local_20
-                    (*(void (**)(unsigned int*, int*))*puVar7)(puVar7, &local_20);
-                    
-                    if (puVar7 != 0) {
-                        FreeMemory(puVar7);
-                    }
-                }
-                
-                iVar3 = *(int*)m_queueA0;
+
+        while (m_queueA0->head != 0) {
+            data = 0;
+            queue = m_queueA0;
+            queueType = queue->type;
+            if (queueType == 1 || queueType == 4) {
+                queue->current = queue->head;
+            } else if (queueType == 2 || queueType == 0) {
+                queue->current = queue->tail;
+            } else {
+                ShowError("bad queue type %lu", queueType);
             }
-        } catch (...) {
+
+            if (queue->current != 0) {
+                data = ZBuffer::PopNode((int*)queue);
+            }
+
+            if (data != 0) {
+                // Virtual call - Execute on SoundCommand
+                ((SoundCommand*)data)->Execute((GlyphRect*)&local_20);
+
+                if (data != 0) {
+                    delete data;
+                }
+            }
         }
-        
+
         // Process queue at 0xa4
-        piVar1 = (int*)m_queueA4;
-        if (*piVar1 != 0) {
-            piVar1[2] = *piVar1;
-            while (*piVar1 != 0) {
-                pvVar4 = ZBuffer::PopNode_2(piVar1);
-                if (pvVar4 != 0) {
-                    ((ZBuffer*)pvVar4)->CleanUpVBuffer();
-                    FreeMemory(pvVar4);
+        queue = m_queueA4;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                data = ZBuffer::PopNode_2((int*)queue);
+                if (data != 0) {
+                    ((ZBuffer*)data)->CleanUpVBuffer();
+                    delete data;
                 }
             }
         }
-        
-        if ((*(unsigned int*)this & 2) != 0) {
-            uVar5 = timer.Update();
-            if (uVar5 > 2000) {
-                *(unsigned int*)this = *(unsigned int*)this & 0xfffffffd;
+
+        if ((m_flags & 2) != 0) {
+            elapsed = timer.Update();
+            if (elapsed > 2000) {
+                m_flags = m_flags & 0xfffffffd;
             }
         }
     }
     else if (m_state == 3) {
         // State type 3 processing
         if (m_fieldA8 != 0) {
-            iVar3 = IsPaletteUnchanged(m_fieldA8);
-            if (iVar3 == 0) {
+            if (IsPaletteUnchanged(m_fieldA8) == 0) {
                 BlankScreen();
                 ((Palette*)m_fieldA8)->SetPalette(0, 0x100);
             }
             m_fieldA8 = 0;
         }
-        
-        iVar3 = *(int*)m_queue9c;
-        while (iVar3 != 0) {
-            puVar7 = 0;
-            piVar1 = (int*)m_queue9c;
-            int queueType = piVar1[3];
+
+        while (m_queue9c->head != 0) {
+            local_14 = 0;
+            queue = m_queue9c;
+            queueType = queue->type;
             if (queueType == 1 || queueType == 4) {
-                iVar3 = *piVar1;
-                piVar1[2] = iVar3;
+                queue->current = queue->head;
             } else if (queueType == 2 || queueType == 0) {
-                iVar3 = piVar1[1];
-                piVar1[2] = iVar3;
+                queue->current = queue->tail;
             } else {
                 ShowError("bad queue type %lu", queueType);
             }
-            
-            iVar3 = piVar1[2];
-            if (iVar3 != 0) {
+
+            node = (ZBQueueNode*)queue->current;
+            if (node != 0) {
                 // Unlink node from double linked list
-                if (*piVar1 == iVar3) {
-                    *piVar1 = *(int*)(iVar3 + 4);
+                if (queue->head == node) {
+                    queue->head = node->prev;
                 }
-                if (piVar1[1] == piVar1[2]) {
-                    piVar1[1] = *(int*)piVar1[2];
+                node = (ZBQueueNode*)queue->current;
+                if (queue->tail == node) {
+                    queue->tail = node->next;
                 }
-                iVar3 = *(int*)piVar1[2];
-                if (iVar3 != 0) {
-                    *(int*)(iVar3 + 4) = ((int*)piVar1[2])[1];
+                node = (ZBQueueNode*)queue->current;
+                nextNode = (ZBQueueNode*)node->next;
+                if (nextNode != 0) {
+                    nextNode->prev = node->prev;
                 }
-                puVar6 = (unsigned int*)((unsigned int*)piVar1[2])[1];
-                if (puVar6 != 0) {
-                    *puVar6 = *(unsigned int*)piVar1[2];
+                node = (ZBQueueNode*)queue->current;
+                prevNode = (ZBQueueNode*)node->prev;
+                if (prevNode != 0) {
+                    prevNode->next = node->next;
                 }
-                
-                ZBQueueNode* nodePtr = (ZBQueueNode*)piVar1[2];
-                if (nodePtr == 0) {
-                    puVar7 = 0;
+
+                node = (ZBQueueNode*)queue->current;
+                if (node == 0) {
+                    data = 0;
                 } else {
-                    puVar7 = (unsigned int*)nodePtr->data;
-                    nodePtr->CleanupNode(1);
-                    piVar1[2] = 0;
+                    data = node->data;
+                    delete node;
+                    queue->current = 0;
                 }
-                piVar1[2] = *piVar1;
-                local_height = (int)puVar7;
+                queue->current = queue->head;
+                local_14 = data;
             }
-            
+
             // Check queue at 0xa0
-            piVar1 = (int*)m_queueA0;
-            if (piVar1 == 0 || *piVar1 == 0) {
+            queue = m_queueA0;
+            if (queue == 0 || queue->head == 0) {
                 break;
             }
-            piVar1[2] = *piVar1;
-            
-            if (*(int*)m_queueA0 != 0) {
-                unsigned int* iterPtr = puVar7 + 1;
+            queue->current = queue->head;
+
+            if (m_queueA0->head != 0) {
+                GlyphRect* iterPtr = (GlyphRect*)((unsigned int*)local_14 + 1);
                 do {
-                    puVar6 = 0;
-                    if (*(int*)((int)m_queueA0 + 8) != 0) {
-                        puVar6 = *(unsigned int**)(*(int*)((int)m_queueA0 + 8) + 8);
+                    SoundCommand* cmd = 0;
+                    node = (ZBQueueNode*)m_queueA0->current;
+                    if (node != 0) {
+                        cmd = (SoundCommand*)node->data;
                     }
-                    // Virtual call
-                    (*(void (**)(unsigned int*, unsigned int*))*puVar6)(puVar6, iterPtr);
-                    
-                    unsigned int queuePtr = (unsigned int)m_queueA0;
-                    iVar3 = *(int*)(queuePtr + 8);
-                    if (*(int*)(queuePtr + 4) == iVar3) {
+                    // Virtual call - Execute on SoundCommand
+                    cmd->Execute(iterPtr);
+
+                    queue = m_queueA0;
+                    node = (ZBQueueNode*)queue->current;
+                    if (queue->tail == node) {
                         break;
                     }
-                    if (iVar3 != 0) {
-                        *(unsigned int*)(queuePtr + 8) = *(unsigned int*)(iVar3 + 4);
+                    if (node != 0) {
+                        queue->current = node->prev;
                     }
-                } while (*(int*)m_queueA0 != 0);
+                } while (m_queueA0->head != 0);
             }
-            // TODO: convert to delete
-            if (puVar7 != 0) {
-                FreeMemory(puVar7);
+            if (local_14 != 0) {
+                delete local_14;
             }
-            
-            iVar3 = *(int*)m_queue9c;
         }
-        
+
         // Process queue at 0xa4
-        piVar1 = (int*)m_queueA4;
-        if (*piVar1 != 0) {
-            piVar1[2] = *piVar1;
-            while (*piVar1 != 0) {
-                pvVar4 = ZBuffer::PopNode_2(piVar1);
-                if (pvVar4 != 0) {
-                    ((ZBuffer*)pvVar4)->CleanUpVBuffer();
-                    FreeMemory(pvVar4);
+        queue = m_queueA4;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                data = ZBuffer::PopNode_2((int*)queue);
+                if (data != 0) {
+                    ((ZBuffer*)data)->CleanUpVBuffer();
+                    delete data;
                 }
             }
         }
-        
-        if ((*(unsigned int*)this & 2) != 0) {
-            uVar5 = timer.Update();
-            if (uVar5 > 2000) {
-                *(unsigned int*)this = *(unsigned int*)this & 0xfffffffd;
+
+        if ((m_flags & 2) != 0) {
+            elapsed = timer.Update();
+            if (elapsed > 2000) {
+                m_flags = m_flags & 0xfffffffd;
             }
         }
     }

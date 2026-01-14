@@ -81,26 +81,20 @@ int Mouse::LBLParse(char* line)
 
     if (strcmp(cmd, "AUDIO") == 0) {
         sscanf(line, " %s %s", cmd, args);
-        try {
-            Sample* audio = new Sample();
-            m_audio = audio;
-            if (audio != 0) {
-                audio->Load(args);
-            }
-        } catch (...) {
+        Sample* audio = new Sample();
+        m_audio = audio;
+        if (audio != 0) {
+            audio->Load(args);
         }
     } else if (strcmp(cmd, "SPRITE") == 0) {
         ptr = AllocateMemory(0xd8);
-        try {
-            Sprite* sprite = 0;
-            if (ptr != 0) {
-                sprite = new (ptr) Sprite(0);
-            }
-            m_sprite = sprite;
-            m_sprite->flags &= ~2;
-            Parser::ProcessFile(m_sprite, this, 0);
-        } catch (...) {
+        Sprite* sprite = 0;
+        if (ptr != 0) {
+            sprite = new (ptr) Sprite(0);
         }
+        m_sprite = sprite;
+        m_sprite->flags &= ~2;
+        Parser::ProcessFile(m_sprite, this, 0);
     } else if (strcmp(cmd, "HOTPIXEL") == 0) {
         sscanf(line, " %s %d %d %d", cmd, &index, &x, &y);
         m_hotspots[index].x = x;

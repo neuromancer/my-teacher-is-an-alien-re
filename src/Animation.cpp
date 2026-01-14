@@ -227,12 +227,9 @@ void Animation::Play(char *filename, unsigned int flags) {
 
   if ((flags & 1) == 0) {
     void *mem = AllocateMemory(8);
-    try {
-      palette = 0;
-      if (mem != 0) {
-        palette = CreatePaletteBuffer((PaletteBuffer *)mem);
-      }
-    } catch (...) {
+    palette = 0;
+    if (mem != 0) {
+      palette = CreatePaletteBuffer((PaletteBuffer *)mem);
     }
     palette->CopyEntries(0, 0x100);
   }

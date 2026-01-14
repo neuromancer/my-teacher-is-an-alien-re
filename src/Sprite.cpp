@@ -54,18 +54,15 @@ void Sprite::Init()
 {
     Animation* anim;
 
-    try {
-        anim = animation_data;
-        if (anim != 0) {
-            if (anim->data != 0) {
-                return;
-            }
+    anim = animation_data;
+    if (anim != 0) {
+        if (anim->data != 0) {
+            return;
         }
-        if (anim == 0) {
-            anim = new Animation(sprite_filename);
-            animation_data = anim;
-        }
-    } catch (...) {
+    }
+    if (anim == 0) {
+        anim = new Animation(sprite_filename);
+        animation_data = anim;
     }
 
     if (animation_data->data == 0) {

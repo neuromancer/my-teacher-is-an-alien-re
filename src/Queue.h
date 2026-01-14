@@ -10,10 +10,11 @@ struct QueueNode {
 class Queue {
 public:
     Queue() {
-        m_field_0xc = 0;
+        m_flags = 0;
         m_head = 0;
         m_tail = 0;
-        m_current = m_head;
+        m_current = 0;
+        m_field_0xc = 0;
     }
     void* Destroy(int free_memory);
 
@@ -23,10 +24,11 @@ public:
     void Push(void* data);
 
 public:
-    void* m_head;
-    void* m_tail;
-    void* m_current;
-    int m_field_0xc;
+    unsigned int m_flags;  // 0x00 - flags (bit 2 = jitter mode)
+    void* m_head;          // 0x04
+    void* m_tail;          // 0x08
+    void* m_current;       // 0x0C
+    int m_field_0xc;       // 0x10 - type/mode field
 };
 
 #endif // QUEUE_H

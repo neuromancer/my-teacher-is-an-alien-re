@@ -219,27 +219,21 @@ int mCNavigator::LBLParse(char* param_1)
         if (navNodePool == 0) {
             local_14 = AllocateMemory(sizeof(ObjectPool));
             pool = (ObjectPool*)local_14;
-            try {
-                if (pool) {
-                    pool->memory = 0;
-                    pool->size = 0x11;
-                    pool->allocatedCount = 0;
-                    pool->freeList = 0;
-                    pool->memoryBlock = 0;
-                    pool->objectSize = 10;
-                }
-            } catch (...) {
+            if (pool) {
+                pool->memory = 0;
+                pool->size = 0x11;
+                pool->allocatedCount = 0;
+                pool->freeList = 0;
+                pool->memoryBlock = 0;
+                pool->objectSize = 10;
             }
             navNodePool = pool;
         }
 
         local_14 = AllocateMemory(0x100);
         parser = 0;
-        try {
-            if (local_14) {
-                parser = (Parser*)NavNode_Constructor(local_14);
-            }
-        } catch (...) {
+        if (local_14) {
+            parser = (Parser*)NavNode_Constructor(local_14);
         }
         Parser::ProcessFile(parser, this, 0);
 
@@ -293,12 +287,9 @@ int mCNavigator::LBLParse(char* param_1)
     else if (_strcmpi(local_34, "SPRITE") == 0) {
         local_14 = AllocateMemory(0xd8);
         spr = 0;
-        try {
-            if (local_14) {
-                spr = (Sprite*)local_14;
-                spr->Sprite::Sprite((char*)0);
-            }
-        } catch (...) {
+        if (local_14) {
+            spr = (Sprite*)local_14;
+            spr->Sprite::Sprite((char*)0);
         }
         sprite = spr;
         Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);

@@ -33,7 +33,7 @@ void __fastcall FUN_0040d2a0(void* param_1) {} // Pool cleanup function
 // FUN_0041e666 is compiler-generated exception funclet, not a real function
 // FUN_0041b110 implemented in VBuffer
 // FUN_0041b0a0 declared as __stdcall
-void FUN_00421700() {}
+// FUN_00421700 implemented in AnimatedAsset.cpp as RenderText
 // FUN_00422e1a now implemented in VideoTable.cpp as ReleaseVideoBuffer
 // FUN_00422e71 implemented in VideoTable.cpp as GetVideoBufferData
 // FUN_00422e8f implemented in PaletteUtils.cpp as ApplyVideoPalette

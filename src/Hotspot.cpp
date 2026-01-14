@@ -71,36 +71,32 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
 /* Function start: 0x409620 */
 int Hotspot::LBLParse(char* line)
 {
-    try {
-        char command[32];
-        sscanf(line, " %s ", command);
+    char command[32];
+    sscanf(line, " %s ", command);
 
-        if (strcmp(command, "HOTSPOT") == 0) {
-            sscanf(line, "%*s %d %d %d %d", &rect_x, &rect_y, &rect_w, &rect_h);
-        } else if (strcmp(command, "DIALOG") == 0) {
-            dialog = 1;
-        } else if (strcmp(command, "DIALOGPARSEFILENUMBER") == 0) {
-            sscanf(line, "%*s %d", &dialogParseFileNumber);
-        } else if (strcmp(command, "PARSEFILEINDEX") == 0) {
-            sscanf(line, "%*s %d", &parseFileIndex);
-        } else if (strcmp(command, "SPRITE") == 0) {
-            Sprite* newSprite = (Sprite*)AllocateMemory(sizeof(Sprite));
-            if (newSprite) {
-                newSprite->Sprite::Sprite(NULL);
-                sprite = newSprite;
-                sprite->Copy(this);
-            }
-        } else if (strcmp(command, "LABEL") == 0) {
-            sscanf(line, "%*s %s", label);
-        } else if (strcmp(command, "MOUSE") == 0) {
-            sscanf(line, "%*s %s", mouse);
-        } else if (strcmp(command, "END") == 0) {
-            return 1;
-        } else {
-            Parser::LBLParse("T_Hotspot");
+    if (strcmp(command, "HOTSPOT") == 0) {
+        sscanf(line, "%*s %d %d %d %d", &rect_x, &rect_y, &rect_w, &rect_h);
+    } else if (strcmp(command, "DIALOG") == 0) {
+        dialog = 1;
+    } else if (strcmp(command, "DIALOGPARSEFILENUMBER") == 0) {
+        sscanf(line, "%*s %d", &dialogParseFileNumber);
+    } else if (strcmp(command, "PARSEFILEINDEX") == 0) {
+        sscanf(line, "%*s %d", &parseFileIndex);
+    } else if (strcmp(command, "SPRITE") == 0) {
+        Sprite* newSprite = (Sprite*)AllocateMemory(sizeof(Sprite));
+        if (newSprite) {
+            newSprite->Sprite::Sprite(NULL);
+            sprite = newSprite;
+            sprite->Copy(this);
         }
-    } catch (...) {
-        return 0;
+    } else if (strcmp(command, "LABEL") == 0) {
+        sscanf(line, "%*s %s", label);
+    } else if (strcmp(command, "MOUSE") == 0) {
+        sscanf(line, "%*s %s", mouse);
+    } else if (strcmp(command, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("T_Hotspot");
     }
     return 0;
 }
