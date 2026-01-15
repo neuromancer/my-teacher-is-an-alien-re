@@ -31,6 +31,7 @@ public:
 
     // Helper method
     void ProcessMessage();
+    Handler8* CopyParserFields(Parser* src);
 
     // Handler8-specific fields (field_98 and field_9C are inherited from Handler)
     SC_Message* message;    // 0xA0

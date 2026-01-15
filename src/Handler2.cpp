@@ -51,14 +51,29 @@ Handler2::~Handler2() {
     }
 }
 
-// Stub virtual method implementations
 /* Function start: 0x40F9E0 */
 void Handler2::Init(SC_Message* msg) {
-    Handler::Init(msg);
+    Palette* pal;
+    void** palettePtr;
+    WriteToMessageLogIfEnabled(L"\nENTER TEACHER SCREEN TO LEAVE");
+    Handler2::CopyCommandData(msg);
+    pal = palette;
+    if (pal != 0) {
+        palettePtr = &g_ZBufferManager_0043698c->m_fieldA8;
+        if (*palettePtr != 0) {
+            WriteToMessageLogIfEnabled(L"ddouble palette");
+        }
+        *palettePtr = pal;
+    }
 }
 
 /* Function start: 0x40FA90 */
 int Handler2::HandleMessage(SC_Message* msg) {
+    Handler2::WriteMessageAddress(msg);
+    if (msg->mouseX >= 2) {
+        msg->command = 3;
+        msg->priority = 6;
+    }
     return 1;
 }
 

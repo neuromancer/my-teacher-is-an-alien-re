@@ -1,7 +1,9 @@
 #include "Handler8.h"
 #include "SC_Question.h"
 #include "Animation.h"
+#include "Parser.h"
 #include "string.h"
+#include "Memory.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -40,9 +42,42 @@ struct MessageQueue {
 };
 
 extern MessageQueue* g_MessageQueue;  // 0x436988
-extern void* FUN_4065e0(void* pool, int capacity, int itemSize);
+/* Function start: 0x4065E0 */
+void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
+{
+    void** block;
+
+    block = (void**)new char[capacity * itemSize + 4];
+    *block = *pool;
+    *pool = block;
+    return block;
+}
+
 extern void FUN_406670(void* data, int param);
-extern void FUN_406610(void* dest, SC_Message* src);
+
+/* Function start: 0x406610 */
+Handler8* Handler8::CopyParserFields(Parser* src)
+{
+    unsigned int i;
+
+    m_subObject = src->m_subObject;
+    isProcessingKey = src->isProcessingKey;
+    i = 0;
+    do {
+        currentKey[i] = src->currentKey[i];
+        i++;
+    } while (i < 0x20);
+    lineNumber = src->lineNumber;
+    savedFilePos = src->savedFilePos;
+    field_0x3c = src->field_0x3c;
+    i = 0;
+    do {
+        filename[i] = src->filename[i];
+        i++;
+    } while (i < 0x40);
+    pFile = src->pFile;
+    return this;
+}
 
 /* Function start: 0x406120 */
 Handler8::Handler8() {
@@ -103,19 +138,15 @@ int Handler8::Exit(SC_Message* msg) {
 
 /* Function start: 0x4063C0 */
 void Handler8::Update(SC_Message* msg) {
-    if (msg == 0) {
-        return;
-    }
-    int cmd = msg->command;
-    if (handlerId != cmd) {
-        return;
-    }
-    int prio = msg->priority;
-    if (prio != 0) {
-        if (prio != 6) {
+    int prio;
+    if (handlerId == msg->command) {
+        prio = msg->priority;
+        if (prio == 0) {
             return;
         }
-        ProcessMessage();
+        if (prio == 6) {
+            ProcessMessage();
+        }
     }
 }
 
@@ -138,7 +169,7 @@ void Handler8::ProcessMessage() {
         tail = (int)queue->tail;
 
         if (*freeListPtr == 0) {
-            poolResult = (char*)FUN_4065e0(&queue->poolBase, queue->poolCapacity, 0xc8);
+            poolResult = (char*)ExpandPool(&queue->poolBase, queue->poolCapacity, 0xc8);
             i = queue->poolCapacity;
             i--;
             item = (MessageQueueItem*)(poolResult + i * 0xc8 - 0xc4);
@@ -157,7 +188,7 @@ void Handler8::ProcessMessage() {
         queue->count++;
 
         FUN_406670(&item->data, 1);
-        FUN_406610(&item->data, msg);
+        ((Handler8*)&item->data)->CopyParserFields(msg);
 
         item->field_90 = msg->command;
         item->field_94 = msg->data;
@@ -183,7 +214,8 @@ void Handler8::ProcessMessage() {
 
         msg = Handler8::message;
         if (msg != 0) {
-            delete msg;
+            msg->~SC_Message();
+            FreeMemory(msg);
             Handler8::message = 0;
         }
         return;

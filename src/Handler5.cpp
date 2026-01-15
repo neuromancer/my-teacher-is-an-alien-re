@@ -59,14 +59,93 @@ Handler5::~Handler5() {
     }
 }
 
-// Stub virtual method implementations
 /* Function start: 0x40FE40 */
 void Handler5::Init(SC_Message* msg) {
-    Handler::Init(msg);
+    Handler5::CopyCommandData(msg);
+    if (msg != 0) {
+        field_8C = msg->data;
+    }
 }
 
 /* Function start: 0x4100E0 */
 int Handler5::HandleMessage(SC_Message* msg) {
+    int stateIdx;
+    GameState* pGameState;
+    int inRect;
+    int clickX;
+    int rowIdx;
+
+    Handler5::WriteMessageAddress(msg);
+
+    if (msg->field_b4 != 0) {
+        if (msg->field_b4 == 0x44) {
+            stateIdx = field_BC;
+            pGameState = g_GameState_00436998;
+            if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
+                ShowError("GameState Error  #%d", 1);
+            }
+            pGameState->stateValues[stateIdx]--;
+            return 1;
+        }
+        if (msg->field_b4 != 0x49) {
+            return 1;
+        }
+        stateIdx = field_BC;
+        pGameState = g_GameState_00436998;
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
+            ShowError("GameState Error  #%d", 1);
+        }
+        pGameState->stateValues[stateIdx]++;
+        return 1;
+    }
+    if (msg->mouseX <= 1) {
+        if (msg->mouseY > 1) {
+            msg->priority = 1;
+        }
+        return 1;
+    }
+    clickX = msg->clickX;
+    if (field_C0 > clickX || field_C8 < clickX ||
+        field_C4 > msg->clickY || field_CC < msg->clickY) {
+        inRect = 0;
+    } else {
+        inRect = 1;
+    }
+    if (inRect != 0) {
+        if (field_B8 > 0) {
+            field_B8 = field_B8 - 1;
+        }
+        if (field_BC > field_B8 + 0xd) {
+            field_BC = field_B8 + 0xd;
+            return 1;
+        }
+        return 1;
+    }
+    if (field_D0 > clickX || field_D8 < clickX ||
+        field_D4 > msg->clickY || field_DC < msg->clickY) {
+        inRect = 0;
+    } else {
+        inRect = 1;
+    }
+    if (inRect == 0) {
+        rowIdx = (msg->clickY - field_E4) / field_E8;
+        field_BC = rowIdx;
+        if (rowIdx > 0xd) {
+            field_BC = 0xd;
+        }
+        if (field_BC < 0) {
+            field_BC = 0;
+        }
+        field_BC = field_BC + field_B8;
+        return 1;
+    }
+    if (field_B8 + 0xe < g_GameState_00436998->maxStates - 1) {
+        field_B8 = field_B8 + 1;
+    }
+    if (field_BC < field_B8) {
+        field_BC = field_B8;
+        return 1;
+    }
     return 1;
 }
 

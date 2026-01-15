@@ -60,9 +60,9 @@ struct MessageQueue;
 
 // Message queue globals and helpers
 MessageQueue* g_MessageQueue = 0;
-void* FUN_4065e0(void* pool, int capacity, int itemSize) { return 0; }
+// FUN_4065e0 (ExpandPool) implemented in Handler8.cpp
 void FUN_406670(void* data, int param) {}
-void FUN_406610(void* dest, SC_Message* src) {}
+// FUN_406610 (CopyParserData) implemented in Handler8.cpp
 
 // ============================================================================
 // Handler11 stubs

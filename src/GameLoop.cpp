@@ -1008,11 +1008,11 @@ int* CreateHandler(int command) {
 
 /* Function start: 0x418460 */
 int GameLoop::RemoveHandler(int command) {
-    EventList* pList;
-    EventNode* pNode;
+    EventList* list;
+    EventNode* current;
     BaseHandler* pHandler;
-    int iNext;
-    void* pPrev;
+    EventNode* pNext;
+    EventNode* pPrev;
     
     // Find the handler in eventList
     if (FindHandlerInEventList(command) == 0) {
@@ -1020,45 +1020,52 @@ int GameLoop::RemoveHandler(int command) {
     }
     
     // Get eventList and current node
-    pList = (EventList*)eventList;
-    pNode = pList->current;
+    list = (EventList*)eventList;
+    current = list->current;
     
-    if (pNode == 0) {
+    if (current == 0) {
         pHandler = 0;
     } else {
         // Unlink node from doubly-linked list
-        if (pList->head == pNode) {
-            pList->head = pNode->prev;
+        if (list->head == current) {
+            list->head = current->prev;
         }
-        if (pList->tail == pNode) {
-            pList->tail = pNode->next;
+        current = list->current;
+        if (list->tail == current) {
+            list->tail = current->next;
         }
-        iNext = (int)pNode->next;
-        if (iNext != 0) {
-            *(int*)(iNext + 4) = (int)pNode->prev;
+        current = list->current;
+        pNext = current->next;
+        if (pNext != 0) {
+            pNext->prev = current->prev;
         }
-        pPrev = (void*)pNode->prev;
+        current = list->current;
+        pPrev = current->prev;
         if (pPrev != 0) {
-            *(int*)pPrev = (int)pNode->next;
+            pPrev->next = current->next;
         }
         
-        // Get data and free node
+        // Get data from node - matches LAB_004184b7
+        current = list->current;
         pHandler = 0;
-        if (pNode != 0) {
-            pHandler = (BaseHandler*)pNode->data;
-            pNode->data = 0;
-            pNode->next = 0;
-            pNode->prev = 0;
-            FreeMemory(pNode);
-            pList->current = 0;
+        if (current != 0) {
+            pHandler = (BaseHandler*)current->data;
         }
-        pList->current = pList->head;
+        // Free node - matches LAB_004184c6
+        if (current != 0) {
+            current->data = 0;
+            current->next = 0;
+            current->prev = 0;
+            FreeMemory(current);
+            list->current = 0;
+        }
+        list->current = list->head;
     }
     
-    // Call handler's Cleanup method with param 0
+    // Call handler's Cleanup method with param 0 (vtable offset 0x18)
     pHandler->Cleanup(0);
     
-    // Call handler's Delete method with param 1 (destructor)
+    // Call handler's Delete method with param 1 (vtable offset 0x0c)
     if (pHandler != 0) {
         pHandler->Delete(1);
     }
@@ -1148,8 +1155,8 @@ int GameLoop::AddHandler(void* handler) {
     EventList* list;
     EventNode* current;
     void* data;
-    void* newNode;
-    void* nodePtr;
+    EventNode* newNode;
+    EventNode* nodePtr;
     
     // Check handler not null
     if (handler == 0) {
@@ -1168,7 +1175,7 @@ int GameLoop::AddHandler(void* handler) {
     list->current = list->head;
     
     // First loop: check for duplicates
-    while ((int)list->current != 0) {
+    while (list->current != 0) {
         current = list->current;
         data = 0;
         if (current != 0) {
@@ -1199,11 +1206,11 @@ int GameLoop::AddHandler(void* handler) {
     // Check list type
     if (list->field_0x0C == 1 || list->field_0x0C == 2) {
         // Priority-based insertion for type 1 or 2
-        if ((int)list->head == 0) {
+        if (list->head == 0) {
             list->InsertNode(handler);
         } else {
             // Priority insertion loop
-            while ((int)list->current != 0) {
+            while (list->current != 0) {
                 current = list->current;
                 data = current->data;
                 // Compare priority at offset 0x88
@@ -1212,31 +1219,25 @@ int GameLoop::AddHandler(void* handler) {
                     if (handler == 0) {
                         ShowError("queue fault 0102");
                     }
-                    newNode = (void*)AllocateMemory(0xc);
-                    nodePtr = 0;
-                    if (newNode != 0) {
-                        nodePtr = newNode;
-                        *(void**)((char*)newNode + 8) = handler;
-                        *(int*)newNode = 0;
-                        *(int*)((char*)newNode + 4) = 0;
-                    }
+                    newNode = new EventNode(handler);
+                    nodePtr = newNode;
                     // Insert node
-                    if ((int)list->current == 0) {
+                    if (list->current == 0) {
                         list->current = list->head;
                     }
-                    if ((int)list->head == 0) {
-                        list->head = (EventNode*)nodePtr;
-                        list->tail = (EventNode*)nodePtr;
-                        list->current = (EventNode*)nodePtr;
+                    if (list->head == 0) {
+                        list->head = nodePtr;
+                        list->tail = nodePtr;
+                        list->current = nodePtr;
                     } else {
-                        *(EventNode**)((char*)nodePtr + 4) = list->current;
-                        *(int*)nodePtr = *(int*)list->current;
-                        if (*(int*)list->current == 0) {
-                            list->head = (EventNode*)nodePtr;
-                            *(void**)list->current = nodePtr;
+                        nodePtr->prev = list->current;
+                        nodePtr->next = list->current->next;
+                        if (list->current->next == 0) {
+                            list->head = nodePtr;
+                            list->current->next = nodePtr;
                         } else {
-                            *(void**)((char*)*(int*)list->current + 4) = nodePtr;
-                            *(void**)list->current = nodePtr;
+                            list->current->next->prev = nodePtr;
+                            list->current->next = nodePtr;
                         }
                     }
                     break;
@@ -1247,30 +1248,23 @@ int GameLoop::AddHandler(void* handler) {
                     if (handler == 0) {
                         ShowError("queue fault 0112");
                     }
-                    newNode = (void*)AllocateMemory(0xc);
-                    if (newNode != 0) {
-                        *(void**)((char*)newNode + 8) = handler;
-                        handler = newNode;
-                        *(int*)newNode = 0;
-                        *(int*)((char*)newNode + 4) = 0;
-                    } else {
-                        handler = 0;
-                    }
+                    newNode = new EventNode(handler);
+                    handler = newNode;
                     // Insert at tail
-                    if ((int)list->current == 0) {
+                    if (list->current == 0) {
                         list->current = list->tail;
                     }
-                    if ((int)list->head == 0) {
+                    if (list->head == 0) {
                         list->head = (EventNode*)handler;
                         list->tail = (EventNode*)handler;
                         list->current = (EventNode*)handler;
                     } else {
-                        if ((int)list->tail == 0 || *(int*)((char*)list->tail + 4) != 0) {
+                        if (list->tail == 0 || list->tail->prev != 0) {
                             ShowError("queue fault 0113");
                         }
-                        *(int*)((char*)handler + 4) = 0;
-                        *(int*)handler = (int)list->tail;
-                        *(int*)((char*)list->tail + 4) = (int)handler;
+                        ((EventNode*)handler)->prev = 0;
+                        ((EventNode*)handler)->next = list->tail;
+                        list->tail->prev = (EventNode*)handler;
                         list->tail = (EventNode*)handler;
                     }
                     break;
