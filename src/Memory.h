@@ -10,6 +10,7 @@ int OutOfMemoryHandler(unsigned int size);
 
 
 extern "C" void* FUN_00428440(unsigned int size);
+extern "C" void* AllocateMemory_Wrapper(int size);
 
 #endif // MEMORY_H
 

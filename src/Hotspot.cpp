@@ -6,6 +6,11 @@
 #include <stdio.h>
 #include <string.h>
 
+// HotspotManager constructor
+HotspotManager::HotspotManager() {
+    // Inherits from Hotspot, adds 4 extra bytes
+}
+
 /* Function start: 0x409400 */
 unsigned char Hotspot::Do()
 {

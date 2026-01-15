@@ -286,12 +286,14 @@ void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4
 /* Function start: 0x41ae20 */
 void VBuffer::CallBlitter(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
+    //ShowMessage("CallBlitter srcHnd=%d dstHnd=%d pos=(%d,%d)", ((VBuffer*)param_7)->handle, handle, param_5, param_6);
     BlitBufferOpaque(param_1, param_2, param_3, param_4, param_5, param_6, ((VBuffer*)param_7)->handle, handle);
 }
 
 /* Function start: 0x41ae60 */
 void VBuffer::CallBlitter2(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, VBuffer* srcBuffer)
 {
+    //ShowMessage("CallBlitter2 srcHnd=%d dstHnd=%d pos=(%d,%d)", srcBuffer->handle, handle, param_5, param_6);
     BlitBufferTransparent(param_1, param_2, param_3, param_4, param_5, param_6, srcBuffer->handle, handle);
 }
 
@@ -308,17 +310,17 @@ void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, in
     GlyphRect local_1c;
 
     local_2c.left = clip_x1;
-    local_2c.right = clip_x2;
     local_2c.top = clip_y1;
+    local_2c.right = clip_x2;
     local_2c.bottom = clip_y2;
     local_1c.left = param_1;
-    local_1c.right = param_3;
-    local_1c.top = param_2;
+    local_1c.top = param_3;
+    local_1c.right = param_2;
     local_1c.bottom = param_4;
 
     if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6))
     {
-        CallBlitter(local_1c.left, local_1c.top, local_1c.right, local_1c.bottom, param_5, param_6, param_7);
+        CallBlitter(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, param_7);
     }
 }
 
@@ -329,8 +331,8 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
     GlyphRect local_1c;
 
     local_2c.left = clip_x1;
-    local_2c.right = clip_x2;
     local_2c.top = clip_y1;
+    local_2c.right = clip_x2;
     local_2c.bottom = clip_y2;
     local_1c.left = param_1;
     local_1c.top = param_3;

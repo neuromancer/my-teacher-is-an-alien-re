@@ -1,26 +1,23 @@
 #include "SCI_AfterSchoolMenu.h"
 #include "Parser.h"
 #include "Palette.h"
+#include "Memory.h"
+#include "Hotspot.h"
 #include <string.h>
 #include <stdio.h>
 
 extern "C" {
-    void OpMenu__GetOptionQ(void*, int);
-    void OpMenu__SetOptionState(void*, int, int);
     void ShowError(const char*);
-    void* AllocateMemory_Wrapper(int);
     void* MouseControl_Constructor(void*);
     char* FormatFilePath(char*);
-    void* HotspotManager_Init(void*);
-    void* OptionMenu__Init(void*);
 }
 
 /* Function start: 0x405C80 */
 void SCI_AfterSchoolMenu::FillOptionQueue()
 {
     if (field_0x66c >= 0 && field_0x66c <= 2) {
-        OpMenu__GetOptionQ(this, field_0x66c);
-        OpMenu__SetOptionState(this, -5, 0);
+        optionMenu->GetOptionQ(field_0x66c);
+        optionMenu->SetOptionState(-5, 0);
     } else {
         ShowError("Error in DMChoScr.cpp - FillOptionQueue");
     }
@@ -45,14 +42,14 @@ int SCI_AfterSchoolMenu::LBLParse(char* param_1)
             ((Palette*)paletteBuffer)->Load(path);
         }
     } else if (strcmp(local_34, "HOTSPOT") == 0) {
-        hotspotManagers[field_0x69c] = HotspotManager_Init(AllocateMemory_Wrapper(0x140));
+        hotspotManagers[field_0x69c] = new HotspotManager();
         ((Parser*)hotspotManagers[field_0x69c])->Copy(this);
         field_0x69c++;
     } else if (strcmp(local_34, "CANCEL") == 0) {
-        hotspotManager2 = HotspotManager_Init(AllocateMemory_Wrapper(0x140));
+        hotspotManager2 = new HotspotManager();
         ((Parser*)hotspotManager2)->Copy(this);
     } else if (strcmp(local_34, "OPTION_MENU") == 0) {
-        optionMenu = (OptionMenu*)OptionMenu__Init(AllocateMemory_Wrapper(0xa0));
+        optionMenu = new OptionMenu();
         ((Parser*)optionMenu)->Copy(this);
     } else if (strcmp(local_34, "END") == 0) {
         return 1;

@@ -203,6 +203,82 @@ def format_value(data):
     val = struct.unpack('<I', data[:4])[0]
     return f"0x{val:08x} ({val})"
 
+def find_missing_globals(orig_file, globals_path):
+    """Scan original binary's .data section for initialized data not in globals.cpp.
+
+    Looks for non-zero 4-byte aligned values that might be globals we're missing.
+    """
+    orig_base, orig_sections = parse_pe(orig_file)
+
+    # Get .data section info
+    data_sec = orig_sections.get('.data')
+    if not data_sec:
+        print("Error: No .data section found in original binary")
+        return
+
+    # Parse globals.cpp to get covered addresses
+    globals_list = parse_globals_cpp(globals_path)
+    covered_ranges = []
+    for addr, size, name, _ in globals_list:
+        covered_ranges.append((addr, addr + size))
+
+    def is_covered(addr):
+        for start, end in covered_ranges:
+            if start <= addr < end:
+                return True
+        return False
+
+    # Read entire .data section
+    data_start = data_sec['va']
+    data_size = data_sec['rawsize']  # Only initialized portion
+
+    print(f"Scanning original .data section: 0x{data_start:08x} - 0x{data_start + data_size:08x}")
+    print(f"Known globals from globals.cpp: {len(globals_list)}")
+    print()
+
+    missing = []
+
+    with open(orig_file, 'rb') as f:
+        f.seek(data_sec['rawptr'])
+        data = f.read(data_size)
+
+    # Scan for non-zero dwords at 4-byte aligned addresses
+    for offset in range(0, len(data) - 3, 4):
+        addr = data_start + offset
+        val = struct.unpack('<I', data[offset:offset+4])[0]
+
+        if val != 0 and not is_covered(addr):
+            # Check if this looks like a string pointer (points into .data or .rdata)
+            is_ptr = (0x400000 <= val <= 0x500000)
+            # Check if this is ASCII text
+            chunk = data[offset:offset+16] if offset + 16 <= len(data) else data[offset:]
+            is_text = all(32 <= b < 127 or b == 0 for b in chunk[:4]) and chunk[0] != 0
+
+            missing.append((addr, val, is_ptr, is_text, chunk[:16]))
+
+    # Group consecutive missing addresses
+    print(f"Found {len(missing)} non-zero untracked dwords")
+    print()
+    print("=" * 100)
+    print(f"{'Address':<12} {'Value':<12} {'Type':<10} {'Data'}")
+    print("=" * 100)
+
+    prev_addr = 0
+    for addr, val, is_ptr, is_text, chunk in missing:
+        # Show separator if gap > 16 bytes
+        if prev_addr and addr - prev_addr > 16:
+            print()
+
+        type_str = "PTR?" if is_ptr else ("TEXT?" if is_text else "DATA")
+        hex_str = ' '.join(f'{b:02x}' for b in chunk)
+        ascii_str = ''.join(chr(b) if 32 <= b < 127 else '.' for b in chunk)
+
+        print(f"0x{addr:08x}   0x{val:08x}   {type_str:<10} {hex_str}  {ascii_str}")
+        prev_addr = addr
+
+    print("=" * 100)
+    print(f"\nTotal: {len(missing)} potential missing globals")
+
 def compare_globals(orig_file, new_file, map_file, globals_path, verbose=False):
     """Compare known globals between two PE files"""
 
@@ -306,16 +382,24 @@ def main():
                         help='Check specific address (hex, e.g., 0x437720)')
     parser.add_argument('-s', '--size', type=int, default=32,
                         help='Size to read when using -a (default: 32)')
+    parser.add_argument('--find-missing', action='store_true',
+                        help='Scan original binary for globals not in globals.cpp')
     args = parser.parse_args()
 
     if not os.path.exists(args.orig_exe):
         print(f"Error: Original file not found: {args.orig_exe}")
         sys.exit(1)
-    if not os.path.exists(args.new_exe):
-        print(f"Error: Recompiled file not found: {args.new_exe}")
-        sys.exit(1)
     if not os.path.exists(args.globals):
         print(f"Error: Globals source file not found: {args.globals}")
+        sys.exit(1)
+
+    # Find missing mode - only needs original binary
+    if args.find_missing:
+        find_missing_globals(args.orig_exe, args.globals)
+        sys.exit(0)
+
+    if not os.path.exists(args.new_exe):
+        print(f"Error: Recompiled file not found: {args.new_exe}")
         sys.exit(1)
 
     # Parse map file for address translation

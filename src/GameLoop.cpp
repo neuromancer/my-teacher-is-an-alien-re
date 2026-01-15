@@ -19,6 +19,8 @@
 #include "Handler2.h"
 #include "Handler5.h"
 #include "Handler6.h"
+#include "Handler8.h"
+#include "Handler11.h"
 #include "Handler.h"
 #include <smack.h>
 #include <stdio.h>
@@ -754,21 +756,21 @@ static void* g_StubObject = g_HandlerVTable;
 
 /* Function start: 0x417F40 */
 void GameLoop::HandleSystemMessage(SC_Message* msg) {
-    ScriptHandler* handler;
-    ScriptHandler* pData;
+    Handler* handler;
+    Handler* pData;
     EventList* pList;
     EventNode* pNode;
     ZBQueue* pQueue;
     void* pPopResult;
-    
+
     if (msg == 0) {
         return;
     }
-    
-    // Call current handler's vtable method at +0x18 (Update method) with the message
-    handler = (ScriptHandler*)currentHandler;
+
+    // Call current handler's Update method
+    handler = currentHandler;
     if (handler != 0) {
-        (*(void (**)(SC_Message*))(*(int*)handler + 0x18))(msg);
+        handler->Update(msg);
     }
     
     // Clear ZBufferManager queues if g_ZBufferManager_0043698c exists
@@ -803,12 +805,12 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         ZBuffer::ClearList((int*)pZBuf->m_queue9c);
     }
     
-    // Try to find existing handler for this command using msg->targetAddress
-    int found = FindHandlerInEventList(msg->targetAddress);
+    // Try to find existing handler for this command using msg->command
+    int found = FindHandlerInEventList(msg->command);
     if (found == 0) {
         // Not found - create/insert new handler
-        handler = (ScriptHandler*)GetOrCreateHandler(msg->targetAddress);
-        currentHandler = (Handler*)handler;
+        handler = (Handler*)GetOrCreateHandler(msg->command);
+        currentHandler = handler;
     } else {
         // Found - pop handler from eventList at field_0x14
         pList = (EventList*)eventList;
@@ -831,16 +833,16 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
             }
             pData = 0;
             if (pNode != 0) {
-                pData = (ScriptHandler*)pNode->data;
+                pData = (Handler*)pNode->data;
                 delete pNode;
                 pList->current = 0;
             }
             pList->current = pList->head;
-            currentHandler = (Handler*)pData;
+            currentHandler = pData;
         }
         
         // Reinsert handler with priority-based insertion
-        handler = (ScriptHandler*)currentHandler;
+        handler = currentHandler;
         pList = (EventList*)eventList;
         if (handler == 0) {
             ShowError("queue fault 0101");
@@ -853,8 +855,8 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                 // Priority-based insertion loop
                 while (pList->current != 0) {
                     pNode = pList->current;
-                    pData = (ScriptHandler*)pNode->data;
-                    if (pData->targetAddress < handler->targetAddress) {
+                    pData = (Handler*)pNode->data;
+                    if (pData->handlerId < handler->handlerId) {
                         pList->InsertNode(handler);
                         break;
                     }
@@ -892,12 +894,12 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         }
     }
     
-    // Call handler's vtable method at +0x10 (Init method) with the message
-    handler = (ScriptHandler*)currentHandler;
+    // Call handler's Init method
+    handler = currentHandler;
     if (handler == 0) {
-        ShowError("missing modual %d", msg->targetAddress);
+        ShowError("missing modual %d", msg->command);
     } else {
-        (*(void (**)(SC_Message*))(*(int*)handler + 0x10))(msg);
+        handler->Init(msg);
     }
 }
 
@@ -935,10 +937,10 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 class Handler4 { public: Handler4() { *(void**)data = g_HandlerVTable; } char data[0x6f0]; };  // 0x40e220
 // Handler5 is defined in Handler5.h
 // Handler6 is defined in Handler6.h
-class Handler8 { public: Handler8() { *(void**)data = g_HandlerVTable; } char data[0xa8]; };   // 0x406120
+// Handler8 is defined in Handler8.h
 class Handler9 { public: Handler9() { *(void**)data = g_HandlerVTable; } char data[0x650]; };  // 0x406fc0
 class Handler10 { public: Handler10() { *(void**)data = g_HandlerVTable; } char data[0x6a8]; }; // 0x404ca0
-class Handler11 { public: Handler11() { *(void**)data = g_HandlerVTable; } char data[0x648]; }; // 0x40acc0
+// Handler11 is defined in Handler11.h
 // Handler12 is defined in Handler12.h
 class Handler13 { public: Handler13() { *(void**)data = g_HandlerVTable; } char data[0xd0]; };  // 0x401b60
 class Handler14 { public: Handler14() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x40b7e0
@@ -948,9 +950,6 @@ class Handler16 { public: Handler16() { *(void**)data = g_HandlerVTable; } char 
 /* Function start: 0x40CDD0 */
 int* CreateHandler(int command) {
     char buffer[128];
-    sprintf(buffer, "Creating handler for modual %d", command);
-    if (command != 1)
-        ShowError(buffer);
     int* handler = 0;
     
     switch(command) {

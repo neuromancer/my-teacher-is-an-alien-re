@@ -3,7 +3,7 @@
 
 #include "Parser.h"
 
-struct SC_Message;
+class SC_Message;
 
 // Handler - Base class for all game handlers (modules)
 // Handlers are scene/screen managers that process messages and render content
@@ -35,7 +35,7 @@ public:
     virtual int HandleMessage(SC_Message* msg);
     virtual void Update(SC_Message* msg);
     virtual void Draw(int param1, int param2);
-    virtual void Exit();
+    virtual int Exit(SC_Message* msg);
     virtual void OnInput();
     
     // Copy command/data from message to handler fields

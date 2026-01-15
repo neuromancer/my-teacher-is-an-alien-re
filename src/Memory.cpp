@@ -87,3 +87,9 @@ void* FUN_00428440(unsigned int size)
 {
     return AllocateMemoryInternal(size, 1);
 }
+
+// Wrapper used by menu/UI code
+extern "C" void* AllocateMemory_Wrapper(int size)
+{
+    return malloc(size);
+}

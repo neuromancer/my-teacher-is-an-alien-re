@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "globals.h"
+#include "string.h"
 
 // Color setup globals
 extern char DAT_00437490;      // Color value after lookup

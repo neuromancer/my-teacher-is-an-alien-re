@@ -45,4 +45,12 @@ public:
     int Draw_40d610();
 };
 
+// HotspotManager - 0x140 bytes, likely a Hotspot with additional fields
+class HotspotManager : public Hotspot {
+public:
+    char pad_13c[4]; // Extra bytes to reach 0x140
+
+    HotspotManager();
+};
+
 #endif // HOTSPOT_H

@@ -8,37 +8,15 @@
 #include "TimedEvent.h"
 #include "globals.h"
 #include "ZBufferManager.h"
+#include "SC_Question.h"
 
 extern "C" {
 
 // SEH cleanup funclets (auto-generated compiler code, not real functions)
-// FUN_00421671 - SEH funclet
-// FUN_0041fbd3 - SEH funclet
-// FUN_00421c24 - SEH funclet
-void FUN_0041ae0c() {}  // SEH funclet in VBuffer.cpp - still called
-
-// Coordinate scaling stubs (used by Graphics.cpp GetMousePosition)
-int FUN_0042449b(int x) { return x; }  // Scale X coordinate
-int FUN_004244c2(int y) { return y; }  // Scale Y coordinate
+// FUN_00421671, FUN_0041fbd3, FUN_00421c24, FUN_0041ae0c - All removed (SEH funclets)
 
 // Game object constructors
 void* __fastcall FUN_004165d0(void* mem) { return mem; }  // RockThrower constructor
-
-
-// Memory wrappers (used by other stubs)
-void* AllocateMemory_Wrapper(int size) {
-    return malloc(size);
-}
-
-char* FormatFilePath(char* path) {
-    return path;
-}
-
-// Menu system stubs
-void OpMenu__SetOptionState() {}
-void OpMenu__GetOptionQ() {}
-void OptionMenu__Init() {}
-void HotspotManager_Init() {}
 
 } // extern "C"
 
@@ -46,16 +24,18 @@ void HotspotManager_Init() {}
 // C++ Stubs (need C++ linkage for name mangling)
 // ============================================================================
 
-// VBuffer::Destroy - VBuffer.cpp
-// ZBQueueNode::Cleanup - ZBufferManager.cpp
-
 void FUN_00421840() {}
 
+// CRT internal function
 void CleanupObjectArray(void* a, int b) {}
-int FindCharIndex(char* c) { return 0; }
-int mCNavNode_GetNextNode(void* a) { return 0; }
-int mCNavNode_Update(void* a) { return 0; }
-void* NavNode_Constructor(void* a) { return a; }
+
+// Functions moved to their class files as proper class members:
+// - AllocateMemory_Wrapper -> Memory.cpp (extern "C" function)
+// - FormatFilePath -> FileSystem.cpp (extern "C" function)
+// - OptionMenu::SetOptionState, OptionMenu::GetOptionQ -> OptionMenu.cpp
+// - HotspotManager::HotspotManager() constructor -> Hotspot.cpp
+// - mCNavNode_Update, mCNavNode_GetNextNode, NavNode_Constructor -> mCNavigator.cpp
+// - FindCharIndex -> mCNavigator.cpp
 
 #include "InputManager.h"
 // InputManager::PollEvents - InputManager.cpp
@@ -68,3 +48,28 @@ int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
 
 #include "SC_OnScreenMessage.h"
+#include "SC_Question.h"
+#include "Handler11.h"
+
+// ============================================================================
+// Handler8 stubs - message queue management
+// ============================================================================
+
+// Forward declaration for MessageQueue (defined in Handler8.cpp)
+struct MessageQueue;
+
+// Message queue globals and helpers
+MessageQueue* g_MessageQueue = 0;
+void* FUN_4065e0(void* pool, int capacity, int itemSize) { return 0; }
+void FUN_406670(void* data, int param) {}
+void FUN_406610(void* dest, SC_Message* src) {}
+
+// ============================================================================
+// Handler11 stubs
+// ============================================================================
+
+void FUN_418d60(void*, const char*, const char*) {}
+
+// Placeholder destructors
+SC_Dialog::~SC_Dialog() {}
+UnknownClass_4092e0::~UnknownClass_4092e0() {}

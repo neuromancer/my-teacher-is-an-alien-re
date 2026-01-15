@@ -1,0 +1,51 @@
+#ifndef HANDLER11_H
+#define HANDLER11_H
+
+#include "IconBar.h"
+#include "Palette.h"
+#include "MouseControl.h"
+
+class SC_Message;
+
+// Placeholder class for destructor at 0x408a40
+class SC_Dialog {
+public:
+    ~SC_Dialog();
+};
+
+// Placeholder class for destructor at 0x4092e0
+class UnknownClass_4092e0 {
+public:
+    ~UnknownClass_4092e0();
+};
+
+// Handler11 - Script/Scene handler
+// Size: 0x648 bytes
+// vtable: 0x431210
+// Inherits from IconBar (0x600 bytes)
+// handlerId: 11 (0xb) at offset 0x88
+//
+// Layout:
+//   0x00-0x5FF: IconBar base class
+//   0x600: Palette* (destructor 0x41ea80)
+//   0x604: MouseControl* (destructor 0x41f360)
+//   0x608: SC_Dialog* (destructor 0x408a40)
+//   0x60C-0x633: UnknownClass_4092e0* array[10] (destructor 0x4092e0)
+//   0x634-0x647: remaining fields (12 bytes)
+class Handler11 : public IconBar {
+public:
+    Handler11();
+    ~Handler11();
+
+    Palette* field_600;              // 0x600
+    MouseControl* field_604;         // 0x604
+    SC_Dialog* field_608;            // 0x608
+    UnknownClass_4092e0* field_60C[10]; // 0x60C-0x633
+    int field_634;      // 0x634
+    int field_638;      // 0x638
+    int field_63C;      // 0x63C
+    int field_640;      // 0x640
+    int field_644;      // 0x644
+};
+
+#endif // HANDLER11_H

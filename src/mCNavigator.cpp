@@ -12,16 +12,37 @@ extern "C" {
 }
 
 extern void ShowError(const char* message, ...);
-extern void* NavNode_Constructor(void*);
 extern void* MemoryPool_Allocate(void*, int, int);
 extern void* ObjectPool_Allocate_2(int);
-
-// extern Parser* Parser_Parser(Parser* parser, Parser* dst, char* key_format);
-
-extern int mCNavNode_Update(void*);
-extern int mCNavNode_GetNextNode(void*);
-extern int FindCharIndex(char*);
 extern void CleanupObjectArray(void*, int);
+
+// mCNavNode functions - stub implementations
+int mCNavNode_Update(void* node) { return 0; }
+int mCNavNode_GetNextNode(void* node) { return 0; }
+
+// NavNode constructor - initializes a 0x100 byte structure
+void* NavNode_Constructor(void* mem) { return mem; }
+
+// Direction characters for navigation (6 directions: N, E, S, W, U, D or similar)
+static char* g_DirectionChars = "NESWUD";
+
+/* Function start: 0x412d60 */
+int FindCharIndex(char* param_1)
+{
+    int index = 0;
+    char* dirChars = g_DirectionChars;
+
+    if (*dirChars != '\0') {
+        do {
+            if (*dirChars == *param_1) {
+                return index;
+            }
+            dirChars++;
+            index++;
+        } while (*dirChars != '\0');
+    }
+    return index;
+}
 
 Sprite* g_Sprite_004360a0 = 0;
 

@@ -6,7 +6,7 @@
 #include "Palette.h"
 #include "SpriteList.h"
 
-struct SC_Message;
+class SC_Message;
 
 // Handler6 - Command 6 Handler (Search Screen Handler)
 // Size: 0x640 bytes

@@ -85,6 +85,7 @@ void CommandType1::Execute(GlyphRect* rect)
 {
     void* iVar1;
 
+    //ShowMessage("CommandType1::Execute mode=%d data=%x", mode, (int)data);
     switch(mode) {
     case 0:
         iVar1 = data;

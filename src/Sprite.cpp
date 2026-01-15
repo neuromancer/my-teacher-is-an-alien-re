@@ -14,7 +14,7 @@
 #include "ZBufferManager.h"
 #include "string.h"
 
-class VBuffer;
+#include "VBuffer.h"
 
 /* Function start: 0x41CD50 */
 Sprite::Sprite(char* filename)
@@ -260,14 +260,17 @@ int Sprite::Do(int x, int y, double scale)
         Animation* anim = animation_data;
         int remaining;
         if (anim == 0) {
-            remaining = *(int*)((int)ranges + 4 + current_state * 8);
+            remaining = ranges[current_state].end;
         }
         else {
-            remaining = *(int*)((int)ranges + 4 + current_state * 8) - animation_data->smk->FrameNum;
+            remaining = ranges[current_state].end - animation_data->smk->FrameNum;
         }
-        if (remaining == 1) {
+        if (remaining != 1) {
+            animation_data->NextFrame();
+        }
+        else {
             if ((flags & 0x200) == 0) {
-                animation_data->GotoFrame(*(int*)((int)ranges + current_state * 8));
+                animation_data->GotoFrame(ranges[current_state].start);
             }
             else {
                 animation_data->NextFrame();
@@ -275,9 +278,6 @@ int Sprite::Do(int x, int y, double scale)
             if ((flags & 1) == 0) {
                 done = 1;
             }
-        }
-        else {
-            animation_data->NextFrame();
         }
     }
     if ((flags & 0x100) != 0) {
@@ -307,9 +307,18 @@ int Sprite::Do(int x, int y, double scale)
         }
     }
     else {
-        mode = ((flags & 0x40) < 1 ? -1 : 0) + 3;
+        int transparent = flags & 0x40;
+        mode = ((transparent < 1) ? -1 : 0) + 3;
     }
-    g_ZBufferManager_0043698c->PlayAnimationSound(animation_data->data, priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
+    VBuffer* vbData = animation_data->data;
+    /*ShowMessage("Sprite::Do data=%x clip=(%d,%d,%d,%d) x=%d y=%d mode=%d", 
+        (int)vbData, 
+        vbData ? vbData->clip_x1 : -1, 
+        vbData ? vbData->clip_x2 : -1, 
+        vbData ? vbData->clip_y1 : -1, 
+        vbData ? vbData->clip_y2 : -1, 
+        x, y, mode);*/
+    g_ZBufferManager_0043698c->PlayAnimationSound(vbData, priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
     return -((flags & 1) == 0) & done;
 }
 

@@ -92,4 +92,7 @@ globals:
 globals-verbose:
 	@python3 bin/compareGlobalData.py -v re/demo/CDDATA/TEACHER.ORI.EXE TEACHER.EXE
 
-.PHONY: all clean globals globals-verbose
+globals-missing:
+	@python3 bin/compareGlobalData.py --find-missing re/demo/CDDATA/TEACHER.ORI.EXE
+
+.PHONY: all clean globals globals-verbose globals-missing

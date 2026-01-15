@@ -215,4 +215,10 @@ void __cdecl GetCurrentDir(char *buffer, int size)
     GetDriveDir(0, buffer, size);
 }
 
+// Path formatting stub - returns path unchanged
+char* FormatFilePath(char* path)
+{
+    return path;
+}
+
 }

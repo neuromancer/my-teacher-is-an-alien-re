@@ -245,7 +245,6 @@ void Animation::MainLoop() {
 
   int frame = 1;
   data->SetCurrentVideoMode(data->handle);
-
   if (smk->Frames >= frame) {
     do {
       if (smk->NewPalette != 0) {

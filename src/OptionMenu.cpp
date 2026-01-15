@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
+// OptionMenu method stubs
+void OptionMenu::SetOptionState(int param_1, int param_2) {}
+void OptionMenu::GetOptionQ(int param_1) {}
+
 /* Function start: 0x409940 */
 OptionMenu::OptionMenu()
 {

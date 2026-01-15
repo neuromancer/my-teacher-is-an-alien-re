@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "string.h"
+
 // Externs for globals
 extern HDC DAT_00437488;
 extern HDC DAT_004374b4;
@@ -207,6 +209,7 @@ void BlankScreen() {
 
 /* Function start: 0x4193E0 */
 extern "C" void FlipScreen() {
+    //ShowMessage("FlipScreen called");
     VBuffer* vb;
     int* piVar1;
     int iVar2;
@@ -236,8 +239,24 @@ extern "C" int GetCurrentVideoMode() {
 // Extern declarations for coordinate scaling
 extern int DAT_004374c6;  // Video buffer width
 extern int DAT_004374d2;  // Video buffer height
-extern "C" int FUN_0042449b(int x);  // Scale X coordinate
-extern "C" int FUN_004244c2(int y);  // Scale Y coordinate
+
+/* Function start: 0x42449b */
+extern "C" int FUN_0042449b(int x)
+{
+    RECT rect;
+    HWND hWnd = GetActiveWindow();
+    GetClientRect(hWnd, &rect);
+    return (x * DAT_004374c6) / rect.right;
+}
+
+/* Function start: 0x4244c2 */
+extern "C" int FUN_004244c2(int y)
+{
+    RECT rect;
+    HWND hWnd = GetActiveWindow();
+    GetClientRect(hWnd, &rect);
+    return (y * DAT_004374d2) / rect.bottom;
+}
 
 /* Function start: 0x4239E4 */
 extern "C" int GetMousePosition(int* out_x, int* out_y)

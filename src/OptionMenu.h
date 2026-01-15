@@ -11,10 +11,12 @@ public:
     SpriteNode* spriteList; // 0x98
     int selected_option; // 0x9c
 
-    void Init();
+    OptionMenu();
     ~OptionMenu();
     int LBLParse(char* command);
     void UpdateSpriteStates(int sprite_count, int sprite_index);
+    void SetOptionState(int param_1, int param_2);
+    void GetOptionQ(int param_1);
 };
 
 #endif // OPTIONMENU_H

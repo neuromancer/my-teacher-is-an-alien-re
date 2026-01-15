@@ -54,7 +54,8 @@ void Handler::Update(SC_Message* msg) {
 void Handler::Draw(int param1, int param2) {
 }
 
-void Handler::Exit() {
+int Handler::Exit(SC_Message* msg) {
+    return 0;
 }
 
 void Handler::OnInput() {
