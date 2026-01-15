@@ -6,23 +6,31 @@
 // Forward declarations for Engine subsystems
 class mCNavigator;
 class SoundList;
+class Palette;
+class EngineInfoParser;
+class SceneManager;
+class SpriteManager;
+class DialogManager;
+class InputHandler;
+class CursorManager;
+class StateManager;
 
 class Engine : public Parser {
 public:
   // Parser fields end at 0x88
   // Engine fields start at 0x88
 
-  void* m_sceneManager;       // 0x88 - scene/level manager (size 0x1c8)
-  void* m_spriteManager;      // 0x8c - sprite manager (size 0xb8)
-  int field_0x90;             // 0x90
-  void* m_dialogManager;      // 0x94 - dialog/text manager (size 0x2c)
-  void* m_inputHandler;       // 0x98 - input handler (size 0x98)
-  Parser* m_subParser;        // 0x9c - sub-parser object (size 0xa8)
-  void* m_timerManager;       // 0xa0 - timer manager (size 0x8)
-  SoundList* m_soundList;     // 0xa4 - sound list (size 0x10)
-  void* m_cursorManager;      // 0xa8 - cursor manager (size 0x24)
-  mCNavigator* m_navigator;   // 0xac - navigation manager
-  void* m_stateManager;       // 0xb0 - state manager (size 0x4)
+  SceneManager* m_sceneManager;     // 0x88 - scene/level manager (size 0x1c8)
+  SpriteManager* m_spriteManager;   // 0x8c - sprite manager (size 0xb8)
+  int field_0x90;                   // 0x90
+  DialogManager* m_dialogManager;   // 0x94 - dialog/text manager (size 0x2c)
+  InputHandler* m_inputHandler;     // 0x98 - input handler (size 0x98)
+  Parser* m_subParser;              // 0x9c - sub-parser object (can be EngineInfoParser, RockThrower, etc)
+  Palette* m_timerManager;          // 0xa0 - timer manager (size 0x8)
+  SoundList* m_soundList;           // 0xa4 - sound list (size 0x10)
+  CursorManager* m_cursorManager;   // 0xa8 - cursor manager (size 0x24)
+  mCNavigator* m_navigator;         // 0xac - navigation manager
+  StateManager* m_stateManager;     // 0xb0 - state manager (size 0x4)
   int field_0xb4;             // 0xb4
   int field_0xb8;             // 0xb8
   int field_0xbc;             // 0xbc

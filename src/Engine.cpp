@@ -6,6 +6,10 @@
 #include "VBuffer.h"
 #include "Memory.h"
 #include "Sprite.h"
+#include "SoundList.h"
+#include "mCNavigator.h"
+#include "Palette.h"
+#include "EngineSubsystems.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -14,18 +18,9 @@
 extern "C" {
 int GetCurrentTimestamp(int*);  // 0x425000 - returns timestamp, optionally stores in *param
 void SetTimeSeed(int);          // 0x424FC0 - sets global time seed (DAT_0043bc88)
-void FUN_00411550(Engine*);     // Engine::Initialize implementation
-
-// Parser subsystem function - processes a sub-parser with the engine context
-int __cdecl FUN_00418dc0(Parser* subParser, int engineThis, char* param);
 
 // Constructor for RockThrower weapon (size 0xb8)
 Parser* __fastcall FUN_004165d0(void* mem);
-
-// Constructor for Console (size 0xd8) - use Sprite::Sprite(char*)
-
-// Reports unknown label during parsing - __thiscall
-void __fastcall FUN_00418b30(void* parser, int dummy, char* className);
 
 // Globals for sub-parsers
 extern Parser* DAT_00435f00;  // ENGINE_INFO parser
@@ -99,7 +94,18 @@ Engine::Engine() {
 
 /* Function start: 0x411550 */
 void Engine::Initialize() {
-  FUN_00411550(this);
+  Engine::m_subParser = new EngineInfoParser();
+  Engine::m_soundList = new SoundList(0x32);
+  Engine::m_spriteManager = new SpriteManager();
+  Engine::m_navigator = new mCNavigator();
+  Engine::m_timerManager = new Palette();
+  Engine::m_inputHandler = new InputHandler();
+  Engine::m_sceneManager = new SceneManager();
+  Engine::m_cursorManager = new CursorManager();
+  Engine::m_dialogManager = new DialogManager();
+  Engine::m_stateManager = new StateManager();
+
+  Engine::OnProcessStart();
 }
 
 /* Function start: 0x411D60 */
@@ -124,16 +130,16 @@ int Engine::LBLParse(char* line) {
   sscanf(line, "%s", local_34);
 
   if (strcmp(local_34, "[ENGINE_INFO]") == 0) {
-    FUN_00418dc0(DAT_00435f00, (int)this, (char*)0);
+    Parser::ProcessFile(DAT_00435f00, this, (char*)0);
   }
   else if (strcmp(local_34, "[TARGETS]") == 0) {
-    FUN_00418dc0(DAT_00435f0c, (int)this, (char*)0);
+    Parser::ProcessFile(DAT_00435f0c, this, (char*)0);
   }
   else if (strcmp(local_34, "[SPRITELIST]") == 0) {
-    FUN_00418dc0(DAT_00435f10, (int)this, (char*)0);
+    Parser::ProcessFile(DAT_00435f10, this, (char*)0);
   }
   else if (strcmp(local_34, "[NAVIGATION]") == 0) {
-    FUN_00418dc0(DAT_00435f24, (int)this, (char*)0);
+    Parser::ProcessFile(DAT_00435f24, this, (char*)0);
   }
   else if (strcmp(local_34, "WEAPON") == 0) {
     int iVar3 = sscanf(line, " %s %s ", local_34, local_54);
@@ -156,13 +162,13 @@ int Engine::LBLParse(char* line) {
   else if (strcmp(local_34, "CONSOLE") == 0) {
     piVar4 = new Sprite((char*)0);
     DAT_00435f04 = piVar4;
-    FUN_00418dc0(piVar4, (int)this, (char*)0);
+    Parser::ProcessFile(piVar4, this, (char*)0);
   }
   else if (strcmp(local_34, "END") == 0) {
     return 1;
   }
   else {
-    FUN_00418b30(this, 0, "Engine");
+    Parser::LBLParse("Engine");
   }
   return 0;
 }

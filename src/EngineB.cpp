@@ -3,13 +3,9 @@
 #include "Memory.h"
 #include <string.h>
 
-extern "C" {
-void FUN_004110d0(void *);  // Engine::Engine() - complex inheritance, keep as stub
-}
-
 /* Function start: 0x412110 */
 EngineB::EngineB() {
-  FUN_004110d0(this);
+  // Engine::Engine() is called automatically via inheritance
 
   int *p130 = (int *)((char *)this + 0x130);
   p130[0] = 0;

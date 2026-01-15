@@ -17,23 +17,13 @@ extern "C" {
 // FUN_00421c24 - SEH funclet
 void FUN_0041ae0c() {}  // SEH funclet in VBuffer.cpp - still called
 
-// Engine initialization stubs (callers still use these names)
-void FUN_00411550(void*) {}  // Engine::Initialize
-void FUN_004110d0(void*) {}  // Engine::Engine constructor
-
 // Coordinate scaling stubs (used by Graphics.cpp GetMousePosition)
 int FUN_0042449b(int x) { return x; }  // Scale X coordinate
 int FUN_004244c2(int y) { return y; }  // Scale Y coordinate
 
-// Parser subsystem stub
-void __fastcall FUN_00418d60(void*, char*, char*) {}  // Parser method (used elsewhere)
-
-// Parser subsystem stubs
-void __fastcall FUN_00418b30(void*, int, char*) {}  // Reports unknown label
-int __cdecl FUN_00418dc0(void*, int, char*) { return 0; }  // Parser function
-
 // Game object constructors
 void* __fastcall FUN_004165d0(void* mem) { return mem; }  // RockThrower constructor
+
 
 // Memory wrappers (used by other stubs)
 void* AllocateMemory_Wrapper(int size) {

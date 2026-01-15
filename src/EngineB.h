@@ -1,7 +1,7 @@
 #ifndef ENGINEB_H
 #define ENGINEB_H
 
-#include "Parser.h"
+#include "Engine.h"
 
 struct SubObj16 {
   int field_0;
@@ -15,14 +15,10 @@ struct SubObj8 {
   int field_4;
 };
 
-// Note: EngineB inherits from Parser only to match vtable structure,
-// but manually calls Engine constructor (FUN_004110d0)
-class EngineB : public Parser {
+// EngineB inherits from Engine
+class EngineB : public Engine {
 public:
-  // Parser fields 0x00-0x87
-  // Engine fields 0x88-0xe7 (inherited by composition, not inheritance)
-  char field_0x88[0x60]; // Engine's fields
-  // EngineB-specific fields
+  // EngineB-specific fields (Engine ends at 0xe8)
   int field_0xe8[0x10]; // 0xe8-0x127 (first part of memset area)
   void *field_0x128;    // 0x128 - pointer to object with vtable
   int field_0x12c;      // 0x12c - rest of memset area
