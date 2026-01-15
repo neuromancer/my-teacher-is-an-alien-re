@@ -54,7 +54,7 @@ extern "C" char DAT_004371a8[] = "rb";
 
 // ...
 
-int DAT_00437f4c = 1064;
+int DAT_00437f4c = 0;  // Set at runtime by InitVideoSystem based on color depth
 int DAT_0043bdf4 = 0;
 unsigned int DAT_0043c760[90] = {0}; 
 int DAT_0043d55c = 0;
@@ -77,7 +77,8 @@ int DAT_004374c2 = 0;
 int DAT_004374ce = 0;
 char DAT_00437506 = 0;
 char DAT_00437507 = 0;
-char DAT_00437720[1028];
+// LOGPALETTE structure: palVersion (WORD) = 0x0300, palNumEntries (WORD) = 0x0100 (256)
+char DAT_00437720[1028] = {0x00, 0x03, 0x00, 0x01};
 char DAT_00437b48[1028];
 
 int DAT_00437f50 = 0;
@@ -174,9 +175,9 @@ void* DAT_00438438 = 0;
 // Window procedure globals
 HDC DAT_0043de80 = 0;       // Main window DC
 HPALETTE DAT_0043de84 = 0;  // Main window palette
-int DAT_0043de88 = 0x280;   // Window width (default 640)
-int DAT_0043de8c = 0x1e0;   // Window height (default 480)
-int DAT_0043de90 = 0;       // Windowed mode flag (0=fullscreen, 1=windowed)
+int DAT_0043de88;   // Window width (set at runtime in WM_SIZE)
+int DAT_0043de8c;   // Window height (set at runtime in WM_SIZE)
+int DAT_0043de90;   // Windowed mode flag (0=fullscreen, 1=windowed)
 int DAT_0043de94 = 0;       // Activate app state
 
 // Video table globals (from VideoTable.cpp)

@@ -86,4 +86,10 @@ report:
 progress:
 	@python3 bin/showProgress.py
 
-.PHONY: all clean
+globals:
+	@python3 bin/compareGlobalData.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER.EXE
+
+globals-verbose:
+	@python3 bin/compareGlobalData.py -v re/demo/CDDATA/TEACHER.ORI.EXE TEACHER.EXE
+
+.PHONY: all clean globals globals-verbose
