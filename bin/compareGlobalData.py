@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """
 Compare initialized global data between original and recompiled executables.
-Focuses on specific known global addresses and their initial values.
-
-Uses the TEACHER.map file to resolve symbol addresses in the recompiled binary.
+Dynamically extracts globals from globals.cpp and uses TEACHER.map for address resolution.
 """
 import sys
 import struct
@@ -11,60 +9,104 @@ import argparse
 import os
 import re
 
-# Known globals with their expected sizes and descriptions
-# Format: (virtual_address, size_bytes, name, description)
-KNOWN_GLOBALS = [
-    # LOGPALETTE structure
-    (0x437720, 4, "DAT_00437720", "LOGPALETTE header (palVersion, palNumEntries)"),
-    (0x437720, 1028, "DAT_00437720_full", "Full LOGPALETTE buffer"),
-    (0x437b48, 1028, "DAT_00437b48", "RGBQUAD palette buffer"),
+# Type sizes for C types
+TYPE_SIZES = {
+    'char': 1, 'unsigned char': 1, 'signed char': 1,
+    'short': 2, 'unsigned short': 2, 'signed short': 2,
+    'int': 4, 'unsigned int': 4, 'signed int': 4, 'long': 4, 'unsigned long': 4,
+    'void*': 4, 'char*': 4, 'int*': 4,  # pointers
+    'HDC': 4, 'HWND': 4, 'HPALETTE': 4, 'HGDIOBJ': 4, 'HANDLE': 4, 'HMODULE': 4,
+}
 
-    # Video/Graphics globals
-    (0x437f4c, 4, "DAT_00437f4c", "DIB header size (runtime set)"),
-    (0x437f50, 4, "DAT_00437f50", "Color depth flag"),
-    (0x437f54, 4, "DAT_00437f54", "Current video buffer index"),
-    (0x437f62, 4, "DAT_00437f62", "Video buffer size"),
-    (0x437f66, 4, "DAT_00437f66", "Video buffer pointer"),
+def parse_globals_cpp(globals_path):
+    """Parse globals.cpp to extract global variables with addresses in their names.
 
-    # Palette identity map
-    (0x437520, 256, "DAT_00437520", "Palette identity map"),
-    (0x437620, 256, "DAT_00437620", "State flags / Palette data"),
+    Returns list of (address, size, name, initializer) tuples.
+    """
+    globals_list = []
+    if not os.path.exists(globals_path):
+        return globals_list
 
-    # Video buffer tables
-    (0x43826c, 128, "DAT_0043826c", "Video buffer table (32 entries)"),
-    (0x437fec, 128, "DAT_00437fec", "DIB handle table"),
-    (0x437f6c, 128, "DAT_00437f6c", "Memory handle table"),
-    (0x4383ec, 16, "DAT_004383ec", "Graphics state"),
+    with open(globals_path, 'r') as f:
+        content = f.read()
 
-    # Global pointers (should be 0 at init)
-    (0x436960, 64, "g_GlobalPointers", "Global pointer area (0x436960-0x4369a0)"),
+    # Pattern to match global variable declarations with address in name
+    # Matches: type name_00XXXXXX = value; or type name_00XXXXXX; or type name_00XXXXXX[size];
+    # Examples:
+    #   int DAT_00437f4c = 0;
+    #   char* g_Buffer_00436960 = 0;
+    #   int DAT_0043826c[32];
+    #   char DAT_00437720[1028] = {0x00, 0x03};
+    pattern = re.compile(
+        r'^(?:extern\s+"C"\s+)?'  # optional extern "C"
+        r'(\w+(?:\s*\*)?)\s+'     # type (with optional pointer)
+        r'(\w+_00([0-9a-fA-F]{6,8}))'  # name with address
+        r'(?:\[(\d+)\])?'        # optional array size
+        r'\s*(?:=\s*([^;]+))?;', # optional initializer
+        re.MULTILINE
+    )
 
-    # Game state
-    (0x4373b8, 4, "DAT_004373b8", "DoubleClickTime"),
-    (0x4373bc, 4, "DAT_004373bc", "WaitForInput var"),
+    for match in pattern.finditer(content):
+        type_name = match.group(1).strip()
+        var_name = match.group(2)
+        addr_str = match.group(3)
+        array_size = match.group(4)
+        initializer = match.group(5)
 
-    # Window globals
-    (0x43de88, 4, "DAT_0043de88", "Window width"),
-    (0x43de8c, 4, "DAT_0043de8c", "Window height"),
-    (0x43de90, 4, "DAT_0043de90", "Windowed mode flag"),
-]
+        # Parse address (add leading zeros if needed)
+        addr_str = addr_str.zfill(8)
+        address = int(addr_str, 16)
+
+        # Calculate size
+        base_type = type_name.replace('*', '').strip()
+        if base_type in TYPE_SIZES:
+            element_size = TYPE_SIZES[base_type]
+        elif '*' in type_name:
+            element_size = 4  # pointer
+        else:
+            element_size = 4  # default to int size
+
+        if array_size:
+            size = element_size * int(array_size)
+        else:
+            size = element_size
+
+        # Determine description from initializer
+        if initializer:
+            init_str = initializer.strip()[:30]
+            if len(initializer.strip()) > 30:
+                init_str += '...'
+            desc = f"init: {init_str}"
+        else:
+            desc = "uninitialized (BSS)"
+
+        globals_list.append((address, size, var_name, desc))
+
+    # Sort by address
+    globals_list.sort(key=lambda x: x[0])
+    return globals_list
 
 def parse_map_file(map_path):
     """Parse TEACHER.map to build original_va -> recompiled_va mapping.
 
     Map file format:
     0003:00000df4       ?DAT_00437f4c@@3HA         0041edf4   globals.obj
+    0003:00000100       ?g_Buffer_00436960@@3PADA  0041e100   globals.obj
 
-    The symbol name contains the original address (DAT_00437f4c -> 0x437f4c)
+    The symbol name contains the original address (e.g., DAT_00437f4c -> 0x437f4c)
     The last hex value is the address in the recompiled binary (0x41edf4)
     """
     mapping = {}
     if not os.path.exists(map_path):
         return mapping
 
-    # Pattern matches lines like: 0003:00000df4  ?DAT_00437f4c@@3HA  0041edf4  globals.obj
-    # or _DAT_004374b2  0042365c  globals.obj
-    pattern = re.compile(r'[\?_]DAT_([0-9a-fA-F]{8})@@?\S*\s+([0-9a-fA-F]{8})')
+    # Pattern matches symbols with 6-8 hex digit address at end of name:
+    # - ?DAT_00437f4c@@3HA -> captures 00437f4c
+    # - _DAT_004374b2 -> captures 004374b2
+    # - ?g_Buffer_00436960@@3PADA -> captures 00436960
+    # - _g_TimedEventPool1_00436984 -> captures 00436984
+    # - _PTR_s_Setup_cfg_00437454 -> captures 00437454
+    pattern = re.compile(r'[\?_]\w+_([0-9a-fA-F]{6,8})(?:@@\S*)?\s+([0-9a-fA-F]{8})')
 
     with open(map_path, 'r') as f:
         for line in f:
@@ -161,7 +203,7 @@ def format_value(data):
     val = struct.unpack('<I', data[:4])[0]
     return f"0x{val:08x} ({val})"
 
-def compare_globals(orig_file, new_file, map_file, verbose=False):
+def compare_globals(orig_file, new_file, map_file, globals_path, verbose=False):
     """Compare known globals between two PE files"""
 
     orig_base, orig_sections = parse_pe(orig_file)
@@ -169,6 +211,9 @@ def compare_globals(orig_file, new_file, map_file, verbose=False):
 
     # Parse map file to get address mapping
     addr_map = parse_map_file(map_file)
+
+    # Parse globals.cpp to get list of globals
+    globals_list = parse_globals_cpp(globals_path)
 
     print(f"Original: {orig_file}")
     print(f"  Image base: 0x{orig_base:08x}")
@@ -181,6 +226,9 @@ def compare_globals(orig_file, new_file, map_file, verbose=False):
     print(f"Map file: {map_file}")
     print(f"  Symbols found: {len(addr_map)}")
     print()
+    print(f"Globals source: {globals_path}")
+    print(f"  Globals found: {len(globals_list)}")
+    print()
 
     matches = 0
     mismatches = 0
@@ -190,7 +238,7 @@ def compare_globals(orig_file, new_file, map_file, verbose=False):
     print(f"{'Orig Addr':<12} {'New Addr':<12} {'Name':<25} {'Status':<10} {'Description'}")
     print("=" * 110)
 
-    for va, size, name, desc in KNOWN_GLOBALS:
+    for va, size, name, desc in globals_list:
         orig_data = read_at_va(orig_file, orig_sections, orig_base, va, size)
 
         # Look up the recompiled address from the map file
@@ -250,6 +298,8 @@ def main():
                         help='Recompiled executable (default: TEACHER.EXE)')
     parser.add_argument('-m', '--map', default='TEACHER.map',
                         help='Map file for symbol resolution (default: TEACHER.map)')
+    parser.add_argument('-g', '--globals', default='src/globals.cpp',
+                        help='Path to globals.cpp (default: src/globals.cpp)')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='Show all data, not just mismatches')
     parser.add_argument('-a', '--address', type=str,
@@ -263,6 +313,9 @@ def main():
         sys.exit(1)
     if not os.path.exists(args.new_exe):
         print(f"Error: Recompiled file not found: {args.new_exe}")
+        sys.exit(1)
+    if not os.path.exists(args.globals):
+        print(f"Error: Globals source file not found: {args.globals}")
         sys.exit(1)
 
     # Parse map file for address translation
@@ -316,7 +369,7 @@ def main():
                 print("\n\033[31mData differs!\033[0m")
     else:
         # Full comparison mode
-        success = compare_globals(args.orig_exe, args.new_exe, args.map, args.verbose)
+        success = compare_globals(args.orig_exe, args.new_exe, args.map, args.globals, args.verbose)
         sys.exit(0 if success else 1)
 
 if __name__ == '__main__':

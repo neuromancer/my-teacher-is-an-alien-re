@@ -61,7 +61,7 @@ int DAT_0043d55c = 0;
 char DAT_0043d568[260] = {0}; 
 HWND DAT_0043de7c = 0;
 int DAT_0043bdf0 = 0; 
-char DAT_00435ef4 = 0;
+char DAT_00435ef4 = 'A';  // Original has 0x41
 
 // Engine parser subsystem globals (0x435f00 - 0x435f28)
 Parser* DAT_00435f00 = 0;  // ENGINE_INFO parser
@@ -109,7 +109,7 @@ void* g_GameStruct2 = 0;
 int DAT_0043d564 = 0;
 int DAT_0043d558 = 0;
 char DAT_0043d560 = 0;
-int DAT_0043bc88 = 0;  // Time seed
+int DAT_0043bc88 = 1;  // Time seed (original has 1)
 int DAT_0043d130 = 0;  // Game state save area
 int DAT_0043d134 = 0;  // Game state save area
 int DAT_0043d138 = 0;  // Game state save area
@@ -160,10 +160,10 @@ char DAT_00437520[256] = {0};  // Palette identity map
 extern "C" unsigned char DAT_00437620[256] = {0};  // (C linkage for StateFlag.cpp)
 
 // Far pointer storage for WinG
-char* PTR_DAT_0043843c = 0;
 char DAT_00438446[256] = {0};
-int DAT_00438442 = 0;
+char* PTR_DAT_0043843c = DAT_00438446;  // Points to DAT_00438446
 short DAT_00438440 = 0;
+int DAT_00438442 = 0x1000;  // Original has 4096
 HANDLE DAT_004374ee = 0;
 HMODULE DAT_00438420 = 0;
 
