@@ -46,7 +46,6 @@ extern void FUN_406610(void* dest, SC_Message* src);
 
 /* Function start: 0x406120 */
 Handler8::Handler8() {
-    ShowMessage("Handler8::Init");
     int* ptr = &handlerId;
 
     // Zero 6 dwords at offset 0x88-0x9C using memset for rep stosd pattern
@@ -71,7 +70,6 @@ Handler8::~Handler8() {
 /* Function start: 0x406260 */
 void Handler8::Init(SC_Message* msg) {
     char filename[32];
-    ShowMessage("Handler8::Init");
 
     CopyCommandData(msg);
     if (msg != 0) {
@@ -105,6 +103,9 @@ int Handler8::Exit(SC_Message* msg) {
 
 /* Function start: 0x4063C0 */
 void Handler8::Update(SC_Message* msg) {
+    if (msg == 0) {
+        return;
+    }
     int cmd = msg->command;
     if (handlerId != cmd) {
         return;
@@ -187,5 +188,5 @@ void Handler8::ProcessMessage() {
         }
         return;
     }
-    SC_Message_Send(handlerId, field_8C, field_90, field_94, 5, 0, 0, 0, 0, 0);
+    SC_Message_Send(field_90, field_94, handlerId, field_8C, 5, 0, 0, 0, 0, 0);
 }
