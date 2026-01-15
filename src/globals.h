@@ -559,7 +559,7 @@ extern void* DAT_0043842c; // DAT_0043842c  { /* 4 bytes */ }
 // extern void* PTR___exit_0043bc7c; // (void*)0x00426050
 // extern int DAT_0043bc80; // { /* 4 bytes */ }
 // extern int DAT_0043bc84; // { /* 4 bytes */ }
-// extern int DAT_0043bc88; // { /* 4 bytes */ }
+extern int DAT_0043bc88; // Time seed
 // extern void* switchdataD_0043bcee; // (void*)0x00425184
 // extern void* DAT_0043bcf2; // (void*)0x0042518A
 // extern void* DAT_0043bcf6; // (void*)0x0042518F
@@ -765,6 +765,7 @@ extern HDC DAT_0043de80; // Window DC
 extern HPALETTE DAT_0043de84; // Window palette
 extern int DAT_0043de88; // Window width
 extern int DAT_0043de8c; // Window height
+extern int DAT_0043de90; // Windowed mode flag
 extern int DAT_0043de94; // Activate app state
 // extern int DAT_0043de9c; // { /* 4 bytes */ }
 // extern int DAT_0043dfa4; // { /* 4 bytes */ }

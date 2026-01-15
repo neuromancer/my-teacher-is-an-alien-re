@@ -9,331 +9,66 @@
 #include "globals.h"
 #include "ZBufferManager.h"
 
-// Globals defined in globals.cpp
-// ZBufferManager* g_ZBufferManager_0043698c = NULL; - moved to globals.cpp
-
-
-#include <smack.h>
-
 extern "C" {
-// Generic Stubs for Missing Functions
-void _SmackSetSystemRes_4(int param_1) {
-    SmackSetSystemRes(param_1);
-}
-void FUN_0041ef47() {}
-// GetCurrentDir (0x42DDD0) implemented in FileSystem.cpp
-// FUN_00425fd0 is strncpy from MSVC CRT
-void FUN_0041eab0() {}
 
-// Joystick/Input stubs
-void FUN_00421ac0() {}    // InitKeyboardState
-int FUN_00421ae0() { return 0; } // joyGetNumDevs wrapper
-int FUN_00421ce0(int a, int b, int c, int d) { return 0; } // Joystick helper
-void __fastcall FUN_0040d2a0(void* param_1) {} // Pool cleanup function
-// FUN_004171b0 implemented in ScriptHandler.cpp as WriteMessageAddress
-// FUN_0041e666 is compiler-generated exception funclet, not a real function
-// FUN_0041b110 implemented in VBuffer
-// FUN_0041b0a0 declared as __stdcall
-// FUN_00421700 implemented in AnimatedAsset.cpp as RenderText
-// FUN_00422e1a now implemented in VideoTable.cpp as ReleaseVideoBuffer
-// FUN_00422e71 implemented in VideoTable.cpp as GetVideoBufferData
-// FUN_00422e8f implemented in PaletteUtils.cpp as ApplyVideoPalette
-// FUN_00422a01 implemented in PaletteUtils.cpp as SetFillColor
-// void FUN_004230d9() {} // Implemented in VideoTable.cpp as SelectVideoBuffer
-// FUN_00423296 now implemented in VideoTable.cpp as BlitToDevice
-// FUN_0042333a now implemented in VideoTable.cpp as StretchBlitBuffer
-// FUN_004231ce, FUN_004233e8 now implemented in Blit.cpp
-// Clipping functions implemented in ClipRect.cpp: OffsetRect, IntersectRect, ClipRectToDest, ClipRectBottomUp, etc.
+// SEH cleanup funclets (auto-generated compiler code, not real functions)
+// FUN_00421671 - SEH funclet
+// FUN_0041fbd3 - SEH funclet
+// FUN_00421c24 - SEH funclet
+void FUN_0041ae0c() {}  // SEH funclet in VBuffer.cpp - still called
 
-void SEH_Destructor_0041cb15() {}
-void SEH_TryEnd_0041cb2a() {}
+// Engine initialization stubs (callers still use these names)
+void FUN_00411550(void*) {}  // Engine::Initialize
+void FUN_004110d0(void*) {}  // Engine::Engine constructor
 
-// FUN_0041b0a0 now implemented in DrawScaledSprite.cpp as DrawScaledSprite
+// Coordinate scaling stubs (used by Graphics.cpp GetMousePosition)
+int FUN_0042449b(int x) { return x; }  // Scale X coordinate
+int FUN_004244c2(int y) { return y; }  // Scale Y coordinate
 
-// FUN_004234d5 now implemented in VideoTable.cpp as ReleaseBufferEntry
-// FUN_004234f9 now implemented in ScaleBuffer.cpp as ScaleBuffer
-// FUN_00423703 now implemented in VideoTable.cpp as CreateTableFromBuffer
-// FUN_00423076 - now inlined in CreateTable (VideoTable.cpp) - clears DIB buffer
+// State machine/event processor
+void __fastcall FUN_0041c960(void*) {}
 
-// FUN_00422d98 now implemented in Mouse.cpp as SetCursorVisible
-// FUN_00423a54, FUN_00423aac, FUN_00423cd9 now implemented in Graphics.cpp
-// FUN_00419170 now implemented in MessageBox.cpp
-void FUN_00421e40() {}
-void FUN_00421890(void*, int) {}
+// Linked list insertion
+void FUN_00409160(void* a, void* b) {}
 
-void FUN_0040c5d0() {}
+// Handler6 class stubs
+void __fastcall FUN_00402730(void*) {}  // Constructor
+void __fastcall FUN_00418d60(void*, char*, char*) {}  // Parser method
+void __fastcall FUN_00402ed0(void*, void*) {}  // Init method
+int __fastcall FUN_00403040(void*, void*) { return 0; }  // Collision check
+void __fastcall FUN_00402fd0(void*, void*) {}  // Cleanup method
+void __fastcall FUN_00403230(void*, int, int) {}  // Update method
 
-// Forward declaration for atexit callback
-void FUN_00410640();
+// Parser subsystem stubs
+void __fastcall FUN_00418b30(void*, int, char*) {}  // Reports unknown label
+int __cdecl FUN_00418dc0(void*, int, char*) { return 0; }  // Parser function
 
-/* Function start: 0x410610 */
-void ClearGameStateSave() {
-    int* p = &DAT_0043d130;
-    p[0] = 0;
-    p[1] = 0;
-    p[2] = 0;
-    p[3] = 0;
+// Game object constructors
+void* __fastcall FUN_004165d0(void* mem) { return mem; }  // RockThrower constructor
+
+// Memory wrappers (used by other stubs)
+void* AllocateMemory_Wrapper(int size) {
+    return malloc(size);
 }
 
-/* Function start: 0x410630 */
-void RegisterAtExitHandler() {
-    atexit(FUN_00410640);
+char* FormatFilePath(char* path) {
+    return path;
 }
 
-/* Function start: 0x410640 */
-void FUN_00410640() {
-}
-
-// CDData_ChangeToBaseDir (0x421ea0) implemented in CDData.cpp
-void FUN_004227a0() {}
-void FUN_00421010() {}
-/* Function start: 0x425f30 */
-// FileSeek - wrapper around fseek, originally MSVC CRT's fseek implementation
-int FileSeek(FILE* fp, long offset, int origin) {
-    return fseek(fp, offset, origin);
-}
-void FUN_00426550(const char* filename, int* stat_buf) {
-    if (stat_buf) stat_buf[4] = 0; 
-}
-void FUN_0041a3b9() {} // Referenced in Message.cpp
-void FUN_0041a9e0(int) {} // Video cleanup function
-
-// CRT wrapper functions used by GameConfig
-// FUN_00425e50 implemented in FlagArray.cpp
-// FUN_004269e0 implemented in FlagArray.cpp
-
-// Stub for _fsopen to satisfy linker (using fopen, ignoring sharing)
-// Stub for _fsopen removed (provided by libc.lib)
-
-// Stub for fsopen (maps to _fsopen)
-extern "C" FILE* __cdecl fsopen(const char* filename, const char* mode) {
-    return fopen(filename, mode);
-}
-
-// New stubs for Step 66 errors
-void FUN_0041e670() {}
-void FUN_0041ae0c() {}
-// FUN_00424b00 implemented in Array.cpp as Array_Iterate
-void FUN_00421671() {}
-// void FUN_00405770() {} // Implemented in Cleanup.cpp
-void FUN_0041fbd3() {}
-
-// GetGameWindowHandle removed (defined in GameWindow.cpp)
-void FUN_004239e4(int* a, int* b) { if(a)*a=0; if(b)*b=0; }
-void FUN_00421c24() {}
-void __fastcall FUN_0041ea80(void*) {}
-void FUN_0041eb70() {}
-
-void FUN_0041eb50() {}
-// FUN_004224e0 implemented in GameWindow.cpp as GetWindowWidth
-// FUN_004224f0 implemented in GameWindow.cpp as GetWindowHeight
-// int FUN_00421af0() { return 0; } // Implemented in main.cpp as WaitForInput
-// extern "C" int FUN_00421d10(void*, int); // Declared in InputManager.h now implies it's a member function { return 0; } // Now InputManager::PollEvents
-// FUN_00411550 implemented in Engine.cpp as Engine::Initialize wrapper
-
-// Time seed global variable
-int g_timeSeed_0043bc88 = 0;
-
-/* Function start: 0x42a840 */
-// Time conversion function - converts date/time to a timestamp
-int FUN_0042a840(int year, int month, int day, int hour, int minute, int second) {
-    // Simple timestamp calculation (not exact - just returns a value for now)
-    return ((year - 1970) * 365 + month * 30 + day) * 86400 + hour * 3600 + minute * 60 + second;
-}
-
-/* Function start: 0x424FC0 */
-void FUN_00424fc0(int param_1) {
-    g_timeSeed_0043bc88 = param_1;
-}
-
-/* Function start: 0x425000 */
-int FUN_00425000(int* param_1) {
-    SYSTEMTIME st;
-    GetLocalTime(&st);
-    int result = FUN_0042a840(st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
-    if (param_1 != 0) {
-        *param_1 = result;
-    }
-    return result;
-}
-// FUN_004229ea now implemented in VideoTable.cpp as SetDrawPosition
-// FUN_00422a2f now implemented in VideoTable.cpp as SetDrawColors
-// FUN_004110d0 implemented in Engine.cpp as Engine::Engine()
-void __cdecl FUN_00424940(void*) {}  // FreeMemory wrapper
-void FUN_0041e7d0() {}
-
-// Helper functions for CleanupLoop
-void* __fastcall FUN_00401710(void* queue) { return 0; }  // Queue::Pop
-void* __fastcall FUN_00401790(void* queue) { return 0; }  // Queue::Pop
-// FUN_00417680 implemented in Queue.cpp as Queue::GetCurrentData
-// FUN_00417660 implemented as VBuffer::Destroy below (C++ linkage)
-// FUN_004189a0 implemented as ZBQueueNode::Cleanup below (C++ linkage)
-// FUN_00417652 is SEH unwind thunk - auto-generated by compiler
-
-
-// Named Stubs
-HWND GetWindowHandle_() { 
-    return GetActiveWindow(); 
-}
-
-// SetCursorVisible now implemented in Mouse.cpp
-
-
-// void CreateGameObject_1() {} // Implemented in main.cpp
-
-void* AllocateMemory_Wrapper(int size) { 
-    return malloc(size); 
-}
-
-char* FormatFilePath(char* path) { 
-    return path; 
-}
-
-void MouseControl_Constructor() {}
+// Menu system stubs
 void OpMenu__SetOptionState() {}
 void OpMenu__GetOptionQ() {}
 void OptionMenu__Init() {}
 void HotspotManager_Init() {}
 
-void SC_OnScreenMessage_AddMessage() {}
-int OnScreenMessage_Update(void* param_1, int param_2) { 
-    return ((OnScreenMessage*)param_1)->Update(param_2); 
-}
-
-void TimedEvent_Init() {}
-void GameState_dtor_wrapper_4() {}
-/* Function start: 0x4231C6 */
-int GetCurrentVideoMode() { 
-    return (signed char)DAT_00437f54; 
-}
-
-/* Function start: 0x4231BC */
-void InvalidateVideoMode() {
-    *(char*)&DAT_00437f54 = 0xff;
-}
-
-void* Message_Constructor(void* mem, int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8, int param_9, int param_10) {
-    return mem;
-}
-
-
-// Variables required by string.cpp - now defined in globals.cpp
-// DAT_0043be34, DAT_0043be30, DAT_0043f104, DAT_0043f100
-// DAT_00435030, DAT_00435038, DAT_0043503c, DAT_00435040
-
-int _rand() { return rand(); }
-
-// GameWindow missing stubs from Step 28/46/66
-// Mangled names with @16 imply stdcall. We might need logic or strict prototype.
-// _FUN_00422590@16 - implemented in GameWindow.cpp as GameWindowProc
-
-void FUN_0040cd15() {
-    // Cleanup pool at g_TimedEventPool2_00436988
-    // This calls the pool cleanup function FUN_0040d2a0
-    extern TimedEventPool* g_TimedEventPool2_00436988;
-    if (g_TimedEventPool2_00436988 != 0) {
-        TimedEventPool* pool = g_TimedEventPool2_00436988;
-        // m_pool corresponds to index 4 in previous int* logic
-        TimedEvent* node = pool->m_pool; 
-        while (node != 0) {
-            TimedEvent* next = (TimedEvent*)node->vtable; // vtable is at offset 0, which was abused as 'next' in the pool logic probably?
-            // Wait, the previous logic was: int* next = (int*)*node; 
-            // node is int*. *node is offset 0.
-            // TimedEvent: field 0 is vtable.
-            // When free, it might be used as next pointer.
-            FreeMemory(node);
-            node = next;
-        }
-        pool->m_pool = 0;
-        // Clear fields
-        pool->list.head = 0;
-        pool->list.tail = 0;
-        pool->m_count = 0;
-        pool->m_free_list = 0;
-    }
-}
-void FUN_0040cd1d() {
-    // Cleanup pool at g_TimedEventPool1_00436984
-    extern TimedEventPool* g_TimedEventPool1_00436984;
-    if (g_TimedEventPool1_00436984 != 0) {
-        TimedEventPool* pool = g_TimedEventPool1_00436984;
-        TimedEvent* node = pool->m_pool;
-        while (node != 0) {
-            TimedEvent* next = (TimedEvent*)node->vtable;
-            FreeMemory(node);
-            node = next;
-        }
-        pool->m_pool = 0;
-        // Clear fields
-        pool->list.head = 0;
-        pool->list.tail = 0;
-        pool->m_count = 0;
-        pool->m_free_list = 0;
-    }
-}
-void* FUN_00420140(void* a, const char* b, int c) { return a; }
-void* FUN_004209e0(void* a, const char* b, int c) { return a; }
-
-// Missing Function Stubs from Step 71
-// FUN_00417450 implemented in GameLoop.cpp as GameLoop::CleanupLoop
-void __fastcall FUN_0041c960(void*) {}
-// FUN_0041c5a0 implemented in ZBufferManager.cpp
-// FUN_004179a0 implemented in GameLoop.cpp as GameLoop::UpdateGame
-
-void* __fastcall FUN_0041cd50(void* a, int dummy, char* b) { return a; }
-void FUN_00409160(void* a, void* b) {}
-
-void FUN_00419080(char* a, char* b, int c) { if (b) *b = 0; }
-
-void FUN_004191d0(char* a) {}
-void* FUN_0041ea50(void* a) { return a; }
-char* FUN_004195c0(char* a) { return a; }
-void* FUN_0041f280(void* a) { return a; }
-
-
-// Missing stubs for GameWindow
-void FUN_00419220(char* a) {}
-// FUN_00419800 implemented in string.cpp as ParseCommandLineArgs
-int ParseCommandLineArgs(char*, char**, int);
-int* FUN_00422500() { static int x = 0; return &x; }
-
-// Stubs for UpdateGame iterator functions (thiscall)
-void* FUN_00417c50(void* pool, void* buffer) { return buffer; }
-void FUN_00417cb0(void* self, void* event) {}
-
-// Stubs for Handler6
-void __fastcall FUN_00402730(void*) {}
-void __fastcall FUN_00418d60(void*, char*, char*) {}
-void __fastcall FUN_00402ed0(void*, void*) {}
-int __fastcall FUN_00403040(void*, void*) { return 0; }
-void __fastcall FUN_00402fd0(void*, void*) {}
-// FUN_0041f360 implemented in SpriteList.cpp as ~SpriteList
-// FUN_0041ea80 already stubbed
-void __fastcall FUN_0041f200(void*) {}
-void __fastcall FUN_0041d190(void*, int) {}
-void __fastcall FUN_0041f800(void*) {}
-void __fastcall FUN_00403230(void*, int, int) {}
-
-// Missing stubs for Engine.cpp
-void FUN_00411550(void*) {}  // Engine::Initialize implementation stub
-void __fastcall FUN_00418b30(void*, int, char*) {}  // Reports unknown label during parsing
-int __cdecl FUN_00418dc0(void*, int, char*) { return 0; }  // Parser subsystem function
-void* __fastcall FUN_004165d0(void* mem) { return mem; }  // Constructor for RockThrower weapon
-void* __fastcall FUN_0041cd50_stub(void* mem, int, char*) { return mem; }  // Constructor for Console
-
-// ResetVideoFlag (0x4231BC) - sets byte at 0x437f54 to 0xff
-void ResetVideoFlag() {
-    DAT_00437f54 = 0xff;
-}
-
-// Missing stub for EngineB
-void FUN_004110d0(void*) {}  // Engine::Engine() stub
-
 } // extern "C"
 
-// C++ Stubs
-// VBuffer::Destroy moved to VBuffer.cpp
-// ZBQueueNode::Cleanup moved to ZBufferManager.cpp
+// ============================================================================
+// C++ Stubs (need C++ linkage for name mangling)
+// ============================================================================
+
+// VBuffer::Destroy - VBuffer.cpp
+// ZBQueueNode::Cleanup - ZBufferManager.cpp
 
 void FUN_00421840() {}
 
@@ -344,38 +79,18 @@ int mCNavNode_Update(void* a) { return 0; }
 void* NavNode_Constructor(void* a) { return a; }
 
 #include "InputManager.h"
-// InputManager::PollEvents removed (defined in InputManager.cpp)
+// InputManager::PollEvents - InputManager.cpp
 
-// Missing variables (C++ linkage to match mangled names)
-// void* DAT_0043eff0 = NULL; // Moved to globals.cpp
+// ============================================================================
+// Global variables needed for linking
+// ============================================================================
 
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
-// g_GameStruct2 is defined in globals.cpp
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
 
-// C++ Mangled Stubs
 #include "SC_OnScreenMessage.h"
 
-#include "Message.h"
-
-
-Message::Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10) {
-    field_0x0 = p1;
-}
-
-extern "C" {
-void* __fastcall FUN_00422690(void* ptr) { return ptr; }
-}
-
 // DAT_00437f54 is declared in globals.h
-
-extern "C" {
-// NOTE: GetCurrentVideoHandle (0x4231C6) is the same as GetCurrentVideoMode above
-// NOTE: ResetVideoFlag (0x4231BC) is the same as InvalidateVideoMode above
-
-/* Function start: 0x423CFE */
-int CleanupVideoSystem() {
-    DAT_00437f54 = 0xff;
-    return 0;
-}
-}
+// CleanupVideoSystem (0x423CFE) - Graphics.cpp
+// GetCurrentVideoMode (0x4231C6) - Graphics.cpp
+// InvalidateVideoMode (0x4231BC) - Graphics.cpp

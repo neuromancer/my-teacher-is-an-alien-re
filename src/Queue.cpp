@@ -133,8 +133,8 @@ TimedEvent* TimedEventPool::Create(void* callback, void* data)
     if (ebx == 0) goto done;
 loop:
     {
-        Message* tmp = ebx;
-        tmp->Message::Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        SC_Message* tmp = (SC_Message*)ebx;
+        tmp->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     ebx = (Message*)((char*)ebx + 0xc0);
     {
@@ -144,6 +144,13 @@ loop:
     }
 done:
     return event;
+}
+
+/* Function start: 0x417C50 */
+SC_Message* TimedEventPool::PopSafe(SC_Message* buffer)
+{
+    Pop(buffer);
+    return buffer;
 }
 
 /* Function start: 0x4185C0 */

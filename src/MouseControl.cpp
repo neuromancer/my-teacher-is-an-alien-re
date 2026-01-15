@@ -1,6 +1,12 @@
 #include "MouseControl.h"
 #include "Memory.h"
 #include "Sprite.h"
+#include <new.h>
+
+// C wrapper for MouseControl constructor (used by SCI_AfterSchoolMenu)
+extern "C" void* MouseControl_Constructor(void* mem) {
+    return new(mem) MouseControl();
+}
 
 /* Function start: 0x41F280 */
 MouseControl::MouseControl()

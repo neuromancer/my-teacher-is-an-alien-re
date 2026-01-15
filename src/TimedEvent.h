@@ -30,6 +30,7 @@ public:
     ~TimedEventPool();
     TimedEvent* Create(void* callback, void* data);
     SC_Message* Pop(SC_Message* buffer);
+    SC_Message* PopSafe(SC_Message* buffer);
 };
 
 class TimedEvent {

@@ -5,8 +5,6 @@
 #include <stdio.h>
 
 extern "C" {
-    int FileSeek(FILE* fp, long offset, int origin);
-    
     // Using standard library wrapper names to match link expectations or implementations
     FILE* fsopen(const char* filename, const char* mode);
     // Stub for fopen wrapper
@@ -140,7 +138,7 @@ void FlagArray::Seek(int index) {
         ShowError("Error in flagaray.cpp - Seek: Attempt to read past end of file");
     }
     
-    FileSeek(fp, offset, 0); // SEEK_SET
+    fseek(fp, offset, 0); // SEEK_SET
 }
 
 /* Function start: 0x420370 */

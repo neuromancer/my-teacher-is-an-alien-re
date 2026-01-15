@@ -7,6 +7,13 @@
 #include "Memory.h"
 #include <mbstring.h>
 
+/* Function start: 0x425E50 */
+// Wrapper for _fsopen with _SH_DENYNO (0x40) share mode
+FILE* fsopen(const char* filename, const char* mode)
+{
+    return _fsopen(filename, mode, _SH_DENYNO);
+}
+
 /* Function start: 0x425FD0 */
 /* This is strncpy from MSVC CRT - the assembly uses LODSB/STOSB/LOOP string instructions */
 /* which are characteristic of the statically linked CRT implementation */
@@ -20,7 +27,6 @@
 
 extern "C" {
 extern void SetCursorVisible(int visible);
-extern int GetWindowHandle_();
 extern void* GetGameWindowHandle();
 }
 
@@ -136,7 +142,7 @@ void ShowError(const char* format, ...)
     vsprintf(buffer, format, (char*)(&format + 1));
     SetCursorVisible(1);
     char* lpText = buffer;
-    HWND hWnd = (HWND)GetWindowHandle_();
+    HWND hWnd = (HWND)GetGameWindowHandle();
     MessageBoxA(hWnd, lpText, "Error", 0x10);
     ShutdownGameSystems();
     exitWithError_(-1);
@@ -230,8 +236,7 @@ void WriteToMessageLogIfEnabled(wchar_t *param_1, ...)
 extern "C" {
 FILE *fsopen(const char* filename, const char* mode);
 void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
-void FUN_00426550(const char* filename, int* stat_buf);
-int FileSeek(FILE* fp, long offset, int origin);
+int FileStat(const unsigned char* filename, int* stat_buf);
 char* FormatFilePath(char* path);
 void* AllocateMemory_Wrapper(int size);
 }
@@ -255,8 +260,8 @@ FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, u
     if (archive_path == NULL) {
         fp = fsopen(filename, mode);
         if (fp != NULL && out_size != NULL) {
-            FUN_00426550(filename, stat_buf);
-            *out_size = stat_buf[4];
+            FileStat((const unsigned char*)filename, stat_buf);
+            *out_size = stat_buf[5];
         }
         return fp;
     }
@@ -287,7 +292,7 @@ FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, u
             if (*(int*)(entry_buf + 0xc) == 0) {
                 found = 0;
             } else {
-                FileSeek(fp, *(long*)(entry_buf + 0xc), 0);
+                fseek(fp, *(long*)(entry_buf + 0xc), 0);
             }
         }
         if (!found) break;
@@ -305,7 +310,7 @@ FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, u
 
 not_found:
     if (stat_buf[0] != 0) {
-        FileSeek(fp, offset, 0);
+        fseek(fp, offset, 0);
         return fp;
     }
 

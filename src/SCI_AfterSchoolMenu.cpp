@@ -11,7 +11,6 @@ extern "C" {
     void* AllocateMemory_Wrapper(int);
     void* MouseControl_Constructor(void*);
     char* FormatFilePath(char*);
-    void FUN_0041eab0(void*, char*);
     void* HotspotManager_Init(void*);
     void* OptionMenu__Init(void*);
 }
@@ -43,7 +42,7 @@ int SCI_AfterSchoolMenu::LBLParse(char* param_1)
         if (paletteBuffer == 0) {
             paletteBuffer = CreatePaletteBuffer((Palette*)AllocateMemory_Wrapper(8));
             char* path = FormatFilePath(local_74);
-            FUN_0041eab0(paletteBuffer, path);
+            ((Palette*)paletteBuffer)->Load(path);
         }
     } else if (strcmp(local_34, "HOTSPOT") == 0) {
         hotspotManagers[field_0x69c] = HotspotManager_Init(AllocateMemory_Wrapper(0x140));

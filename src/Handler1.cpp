@@ -3,8 +3,7 @@
 #include "string.h"
 #include "globals.h"
 #include "Message.h"
-
-extern "C" void __fastcall FUN_0041f200(void*);
+#include "Mouse.h"
 
 /* Function start: 0x403340 */
 Handler1::Handler1() {
@@ -92,7 +91,7 @@ void Handler1::Update(SC_Message* msg) {
 void Handler1::Draw(int param1, int param2) {
     if (handlerId == param2) {
         sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-        FUN_0041f200(g_Mouse_00436978);
+        g_Mouse_00436978->DrawCursor();
     }
 }
 

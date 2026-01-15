@@ -47,7 +47,6 @@ GameWindow g_GameWindow;
 
 
 extern "C" {
-void FUN_00421010(void *);
 void FUN_004227a0(void *);
 void __fastcall CDData_ChangeToBaseDir(void *);
 void PlayIntroCinematic();
@@ -299,7 +298,7 @@ void InitGameSystems(void) {
 /* Function start: 0x41A550 */
 void ShutdownGameSystems(void) {
   if (g_TextManager_00436990 != 0) {
-    FUN_00421010(g_TextManager_00436990);
+    g_TextManager_00436990->~AnimatedAsset();
     FreeMemory(g_TextManager_00436990);
     g_TextManager_00436990 = 0;
   }

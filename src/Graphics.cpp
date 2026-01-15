@@ -129,6 +129,52 @@ extern "C" void FlipScreen() {
     vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0, *piVar1 - 1, iVar3, iVar2);
 }
 
+/* Function start: 0x4231BC */
+extern "C" void InvalidateVideoMode() {
+    DAT_00437f54 = 0xff;
+}
+
+/* Function start: 0x4231C6 */
+extern "C" int GetCurrentVideoMode() {
+    return (signed char)DAT_00437f54;
+}
+
+// Extern declarations for coordinate scaling
+extern int DAT_004374c6;  // Video buffer width
+extern int DAT_004374d2;  // Video buffer height
+extern "C" int FUN_0042449b(int x);  // Scale X coordinate
+extern "C" int FUN_004244c2(int y);  // Scale Y coordinate
+
+/* Function start: 0x4239E4 */
+extern "C" int GetMousePosition(int* out_x, int* out_y)
+{
+    POINT pt;
+    int x;
+    int y;
+
+    if (DAT_00437506 == 0) {
+        goto fail;
+    }
+    GetCursorPos(&pt);
+    {
+        HWND hWnd = GetActiveWindow();
+        ScreenToClient(hWnd, &pt);
+    }
+    x = FUN_0042449b(pt.x);
+    y = FUN_004244c2(pt.y);
+    if (x < 0 || x >= DAT_004374c6 || y < 0 || y >= DAT_004374d2) {
+        goto fail;
+    }
+done:
+    *out_x = x;
+    *out_y = y;
+    return 0;
+fail:
+    y = -1;
+    x = y;
+    goto done;
+}
+
 /* Function start: 0x423A54 */
 int InitMouseSettings(void)
 {
@@ -273,6 +319,12 @@ int GetColorBitDepth(void)
     uVar1 = GetDeviceCaps(DAT_00437488, 0xc);  // BITSPIXEL
     uVar2 = GetDeviceCaps(DAT_00437488, 0xe);  // PLANES
     return uVar2 * uVar1;
+}
+
+/* Function start: 0x423CFE */
+extern "C" int CleanupVideoSystem() {
+    DAT_00437f54 = 0xff;
+    return 0;
 }
 
 /* Function start: 0x423D5B */

@@ -1,10 +1,9 @@
 #include "SC_OnScreenMessage.h"
 #include "Memory.h"
 #include "Message.h"
+#include "OnScreenMessage.h"
 
 extern "C" {
-    extern int OnScreenMessage_Update(void*, int);
-    extern void SC_OnScreenMessage_AddMessage();
     void ShowError(const char*, ...);
 }
 
@@ -119,7 +118,7 @@ void SC_OnScreenMessage::Update(int param_1, int param_2)
         if (iVar1 != 0) {
             this_00 = ((MessageNode*)iVar1)->data;
         }
-        if (OnScreenMessage_Update(this_00, local_1c)) {
+        if (((OnScreenMessage*)this_00)->Update(local_1c)) {
             list = m_messageList;
             iVar1 = (int)list->current;
             if (iVar1 == 0) {
@@ -154,7 +153,7 @@ void SC_OnScreenMessage::Update(int param_1, int param_2)
                 list->current = list->head;
             }
             if (local_18 != 0) {
-                SC_OnScreenMessage_AddMessage();
+                ((OnScreenMessage*)local_18)->timer.~Timer();
                 FreeMemory(local_18);
             }
         }

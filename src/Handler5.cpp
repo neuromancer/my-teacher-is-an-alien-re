@@ -1,6 +1,7 @@
 #include "Handler5.h"
 #include "globals.h"
 #include "string.h"
+#include <stdlib.h>
 #include "SC_Question.h"
 #include "GameState.h"
 #include "Message.h"
@@ -216,4 +217,21 @@ int Handler5::Exit(SC_Message* msg) {
     }
 }
 
+/* Function start: 0x410610 */
+extern "C" void ClearGameStateSave() {
+    int* p = &DAT_0043d130;
+    p[0] = 0;
+    p[1] = 0;
+    p[2] = 0;
+    p[3] = 0;
+}
 
+static void AtExitHandler() {}
+
+/* Function start: 0x410630 */
+extern "C" void RegisterAtExitHandler() {
+    atexit(AtExitHandler);
+}
+
+/* Function start: 0x410640 */
+// AtExitHandler is defined above as static - it's the atexit callback

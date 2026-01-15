@@ -28,8 +28,7 @@ struct Message {
     int field_0xb4;
     int field_0xb8;
     int userPtr;        // 0xbc - user pointer (param8)
-
-    Message(int, int, int, int, int, int, int, int, int, int);
+    // Note: Uses SC_Message::SC_Message at 0x4198C0 for initialization
 };
 
 void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data,

@@ -5,17 +5,19 @@
 #include <smack.h>
 
 extern "C" {
-void __stdcall ParseCommandLine(char *);
-LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 int GetColorBitDepth();
 void ShowMessage(const char *);
 void InitVideoSystem();
 void InitMouseSettings();
 int SetCursorVisible(unsigned int);
-
-void FUN_00419220(char *);
-int* FUN_00422500();
+void AddToStringTable(char *);
+void InvalidateVideoMode();
+int CleanupVideoSystem();
 }
+
+extern "C" void __stdcall ParseCommandLine(char *);
+extern "C" int* GetWindowedModeFlag();
+LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
 int ParseCommandLineArgs(char *, char **, int);
 
@@ -92,8 +94,6 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
   ShowWindow(hWnd, param_4);
 }
 
-extern "C" void __stdcall ParseCommandLine(char *param_1);
-
 /* Function start: 0x422250 */
 void __stdcall ParseCommandLine(char *param_1) {
   int iVar1;
@@ -114,7 +114,7 @@ void __stdcall ParseCommandLine(char *param_1) {
         strcpy(DAT_0043d568, *piVar3 + 4);
       }
       else if (_strcmpi(*piVar3, "-w") == 0) {
-        *FUN_00422500() = 1;
+        *GetWindowedModeFlag() = 1;
       }
       else if (_strcmpi(*piVar3, "-dd") == 0) {
         DAT_0043d560 = 1;
@@ -123,7 +123,7 @@ void __stdcall ParseCommandLine(char *param_1) {
         DAT_0043d560 = 2;
       }
       else if (_strnicmp(*piVar3, "-lq", 3) == 0) {
-        FUN_00419220(*piVar3 + 3);
+        AddToStringTable(*piVar3 + 3);
       }
       else if (_strcmpi(*piVar3, "-db") == 0) {
         *(char *)&DAT_0043d558 = 1;
@@ -135,7 +135,7 @@ void __stdcall ParseCommandLine(char *param_1) {
         DAT_0043d55c = 1;
       }
       else if (_strcmpi(*piVar3, "-f") == 0) {
-        *FUN_00422500() = 0;
+        *GetWindowedModeFlag() = 0;
       }
       piVar3 = piVar3 + 1;
       iVar1 = iVar1 - 1;
@@ -155,11 +155,6 @@ int GameWindow::InitGraphics(void) {
   return 1;
 }
 
-extern "C" {
-    void ResetVideoFlag();        // 0x4231bc - sets byte at 0x437f54 to 0xff
-    void CleanupVideoSystem();    // 0x423cfe - cleanup video/palette  
-}
-
 /* Function start: 0x422430 */
 void GameWindow::Shutdown() {
     if (field_28 == 0) {
@@ -170,7 +165,7 @@ void GameWindow::Shutdown() {
         SmackSetSystemRes(0);
     }
     SetCursorVisible(1);
-    ResetVideoFlag();
+    InvalidateVideoMode();
     CleanupVideoSystem();
     DeleteObject(hPalette);
     ReleaseDC(hWnd, hDC);
@@ -178,10 +173,9 @@ void GameWindow::Shutdown() {
 }
 
 extern GameWindow g_GameWindow;
-extern "C" void* GetGameWindowHandle();
 
 /* Function start: 0x4224D0 */
-void* GetGameWindowHandle() {
+extern "C" void* GetGameWindowHandle() {
   return g_GameWindow.hWnd;
 }
 
@@ -193,6 +187,11 @@ extern "C" int* GetWindowWidth() {
 /* Function start: 0x4224F0 */
 extern "C" int* GetWindowHeight() {
   return &DAT_0043de8c;
+}
+
+/* Function start: 0x422500 */
+extern "C" int* GetWindowedModeFlag() {
+  return &DAT_0043de90;
 }
 
 int SetDeviceContext(HDC);

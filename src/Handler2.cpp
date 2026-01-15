@@ -3,9 +3,8 @@
 #include "string.h"
 #include "mss.h"
 #include "SC_Question.h"
-
-extern "C" void __fastcall FUN_0041f200(void*);
-extern "C" void __cdecl FUN_00424940(void*);
+#include "Mouse.h"
+#include "Memory.h"
 
 /* Function start: 0x40F710 */
 Handler2::Handler2() {
@@ -85,7 +84,7 @@ void Handler2::Draw(int param1, int param2) {
     if (handlerId == param2) {
         spr = sprite;
         spr->Do(spr->loc_x, spr->loc_y, 1.0);
-        FUN_0041f200(g_Mouse_00436978);
+        g_Mouse_00436978->DrawCursor();
         samp = sample;
         if (samp != 0) {
             iVar1 = (int)samp->m_sample;
@@ -99,7 +98,7 @@ void Handler2::Draw(int param1, int param2) {
             samp = sample;
             if (samp != 0) {
                 samp->~Sample();
-                FUN_00424940(samp);
+                FreeMemory(samp);
                 sample = 0;
             }
         }

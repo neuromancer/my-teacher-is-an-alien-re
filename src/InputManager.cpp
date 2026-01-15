@@ -1,15 +1,16 @@
 #include <windows.h>
 #include "InputManager.h"
 #include "Timer.h"
+#include "Memory.h"
 #include "globals.h" // For globals like DAT_004373bc
 
-extern "C" void* FUN_004249c0(int size); // AllocateMemory
-extern "C" void FUN_00424940(void* ptr); // FreeMemory
 extern "C" int* GetWindowWidth();  // FUN_004224e0
 extern "C" int* GetWindowHeight(); // FUN_004224f0
-extern "C" void FUN_00421ac0();    // InitKeyboardState
-extern "C" int FUN_00421ce0(int, int, int, int); // Helper for joystick
-extern "C" void FUN_004239e4(int*, int*); // Helper for mouse pos
+// Forward declarations for functions implemented below
+void InitClickTimers();      // 0x421AC0
+int GetJoystickCount();      // 0x421AE0
+int MapJoystickValue(int value, int min, int max, int range); // 0x421CE0
+extern "C" int GetMousePosition(int*, int*); // 0x4239E4 - in Graphics.cpp
 
 extern "C" int ProcessMessages(); // 0x4192F0 - Message pump loop
 
@@ -36,8 +37,6 @@ InputManager::InputManager(int param_1) {
 
 InputManager::~InputManager() {
 }
-
-extern "C" int FUN_00421ae0(); // joyGetNumDevs wrapper
 
 /* Function start: 0x421890 */
 void InputManager::InitDevices(int param_1) {
@@ -78,7 +77,7 @@ void InputManager::InitDevices(int param_1) {
         pJoystick = 0;
     }
 
-    if (FUN_00421ae0() >= 1 && joyGetPos(0, &joyInfo) == 0) {
+    if (GetJoystickCount() >= 1 && joyGetPos(0, &joyInfo) == 0) {
         pState = new InputState();
         pJoystick = pState;
         if (param_1 == 1) {
@@ -89,7 +88,20 @@ void InputManager::InitDevices(int param_1) {
         joyCaps.wYmax = joyInfo.wYpos * 2;
     }
 
-    FUN_00421ac0();
+    InitClickTimers();
+}
+
+/* Function start: 0x421AC0 */
+void InitClickTimers()
+{
+    g_leftClickTimer.Reset();
+    g_rightClickTimer.Reset();
+}
+
+/* Function start: 0x421AE0 */
+int GetJoystickCount()
+{
+    return joyGetNumDevs();
 }
 
 /* Function start: 0x421b20 */
@@ -104,7 +116,7 @@ int InputManager::PollMouse(InputState* state) {
     state->prevButtons = state->buttons;
     localPos.x = 0;
     localPos.y = 0;
-    FUN_004239e4(&localPos.x, &localPos.y);
+    GetMousePosition(&localPos.x, &localPos.y);
 
     if ((localPos.x == -1) || (localPos.y == -1)) {
         mouseValid = 0;
@@ -150,10 +162,10 @@ int InputManager::PollJoystick(InputState* state) {
     state->prevButtons = state->buttons;
     joyGetPos(0, &joyInfo);
 
-    iVar1 = FUN_00421ce0(joyInfo.wXpos, joyCaps.wXmin, joyCaps.wXmax, bounds.right);
+    iVar1 = MapJoystickValue(joyInfo.wXpos, joyCaps.wXmin, joyCaps.wXmax, bounds.right);
     state->x = iVar1;
 
-    iVar1 = FUN_00421ce0(joyInfo.wYpos, joyCaps.wYmin, joyCaps.wYmax, bounds.bottom);
+    iVar1 = MapJoystickValue(joyInfo.wYpos, joyCaps.wYmin, joyCaps.wYmax, bounds.bottom);
     state->y = iVar1;
 
     state->buttons = joyInfo.wButtons;
@@ -169,6 +181,19 @@ int InputManager::PollJoystick(InputState* state) {
     }
 
     return 1;
+}
+
+/* Function start: 0x421CE0 */
+int MapJoystickValue(int value, int min, int max, int range)
+{
+    int result = (range * (value - min)) / (max - min);
+    if (result < 0) {
+        result = 0;
+    }
+    else if (range < result) {
+        return range;
+    }
+    return result;
 }
 
 /* Function start: 0x421d10 */

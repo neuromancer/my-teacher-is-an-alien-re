@@ -1,10 +1,10 @@
 #include "EngineB.h"
+#include "SoundList.h"
+#include "Memory.h"
 #include <string.h>
 
 extern "C" {
-void FUN_004110d0(void *);
-void FUN_0041e7d0(void *);
-void FUN_00424940(void *);
+void FUN_004110d0(void *);  // Engine::Engine() - complex inheritance, keep as stub
 }
 
 /* Function start: 0x412110 */
@@ -48,8 +48,8 @@ void EngineB::DestructorHelper() {
   }
   void *obj0xe8 = *(void **)((char *)this + 0xe8);
   if (obj0xe8) {
-    FUN_0041e7d0(obj0xe8);
-    FUN_00424940(obj0xe8);
+    ((SoundList*)obj0xe8)->~SoundList();
+    FreeMemory(obj0xe8);
     *(void **)((char *)this + 0xe8) = 0;
   }
 }

@@ -108,6 +108,7 @@ void* g_GameStruct2 = 0;
 int DAT_0043d564 = 0;
 int DAT_0043d558 = 0;
 char DAT_0043d560 = 0;
+int DAT_0043bc88 = 0;  // Time seed
 int DAT_0043d130 = 0;  // Game state save area
 int DAT_0043d134 = 0;  // Game state save area
 int DAT_0043d138 = 0;  // Game state save area
@@ -173,8 +174,9 @@ void* DAT_00438438 = 0;
 // Window procedure globals
 HDC DAT_0043de80 = 0;       // Main window DC
 HPALETTE DAT_0043de84 = 0;  // Main window palette
-int DAT_0043de88 = 0;       // Window width
-int DAT_0043de8c = 0;       // Window height
+int DAT_0043de88 = 0x280;   // Window width (default 640)
+int DAT_0043de8c = 0x1e0;   // Window height (default 480)
+int DAT_0043de90 = 0;       // Windowed mode flag (0=fullscreen, 1=windowed)
 int DAT_0043de94 = 0;       // Activate app state
 
 // Video table globals (from VideoTable.cpp)

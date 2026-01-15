@@ -3,9 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <direct.h>
 #include "string.h"
 #include "FileSystem.h"
+#include "globals.h"
 
 extern "C" {
 int FileExists(const char *);
@@ -64,4 +66,17 @@ int CDData::ChangeToDriveDirectory(int drive_letter) {
           field_0x80, field_0x1c5);
   int result = ChangeDirectory((unsigned char *)local_40);
   return result != 0;
+}
+
+/* Function start: 0x4195C0 */
+extern "C" char* __cdecl CDData_FormatPath(char* param_1, ...)
+{
+  char local_104[260];
+  va_list args;
+
+  va_start(args, param_1);
+  vsprintf(local_104, param_1, args);
+  va_end(args);
+  sprintf(g_CDData_0043697c->field_0xc0 + 5, "%s%s", g_CDData_0043697c->field_0xc0, local_104);
+  return g_CDData_0043697c->field_0xc0 + 5;
 }

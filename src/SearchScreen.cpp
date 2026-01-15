@@ -9,7 +9,7 @@
 #include <string.h>
 
 extern "C" {
-    char* FUN_004195c0(char*);
+    char* CDData_FormatPath(char*, ...);
 }
 
 /* Function start: 0x404A20 */
@@ -26,7 +26,7 @@ int SearchScreen::LBLParse(char* line)
         if (field_600 == 0) {
             Palette* palette = new Palette();
             field_600 = palette;
-            char* path = FUN_004195c0(value);
+            char* path = CDData_FormatPath(value);
             palette->Load(path);
         }
     }

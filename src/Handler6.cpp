@@ -7,6 +7,7 @@
 #include "Parser.h"
 #include "globals.h"
 #include "Message.h"
+#include "Mouse.h"
 
 // External functions used by Handler6
 // FreeMemory replaced by delete/Memory.h
@@ -16,7 +17,6 @@ extern "C" void __fastcall FUN_00402fd0(void*, void*);  // Parent Update
 extern "C" void __cdecl WriteToMessageLog(const char*);
 extern "C" void __fastcall FUN_00403230(void*, int, int);  // Parent Draw
 // Ambient::Draw replaced by SpriteList::DoAll
-extern "C" void __fastcall FUN_0041f200(void*);             // Draw update
 // Sprite::SetState replaced by SetState2
 // SC_Message_Send is in Message.h
 extern "C" int __fastcall FUN_00403040(void*, void*);  // Parent HandleMessage
@@ -210,13 +210,13 @@ void Handler6::Draw(int param1, int param2) {
                 ((Sprite*)sprite)->SetState2(1);
             }
         }
-        FUN_0041f200(g_GameLoop_00436978);
+        g_Mouse_00436978->DrawCursor();
         return;
     }
     
     // No active hotspots - increment counter
     counter++;
-    FUN_0041f200(g_GameLoop_00436978);
+    g_Mouse_00436978->DrawCursor();
     if (counter != 0x3c) {
         return;
     }

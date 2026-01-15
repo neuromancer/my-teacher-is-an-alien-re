@@ -5,7 +5,12 @@
 
 class GameState : public Parser {
 public:
-    GameState();
+    GameState() {
+        stateValues = 0;
+        stateLabels = 0;
+        maxStates = 0;
+        reserved = 0;
+    }
     ~GameState();
     void ClearStates();
     int FindState(char* stateName);

@@ -1,4 +1,5 @@
 #include "SC_Question.h"
+#include "Message.h"
 #include <string.h>
 #include "Memory.h"
 #include "TimedEvent.h"
@@ -113,3 +114,5 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
         *pTail = pNode;
     }
 }
+
+// Message::Message removed - the actual constructor is SC_Message::SC_Message at 0x4198C0

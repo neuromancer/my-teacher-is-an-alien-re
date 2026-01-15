@@ -6,7 +6,6 @@
 #include <string.h>
 
 extern "C" {
-    void* __fastcall FUN_0041cd50(void*, int, char*); // Sprite ctor
     void FUN_0041d040(int); // Sprite::Update/Init?
     void FUN_00409160(void*, void*); // Queue::Add generic?
     void ShowError(const char*, ...);
@@ -20,11 +19,7 @@ int MMPlayer2::LBLParse(char* param_1)
     sscanf(param_1, " %s ", local_34);
     
     if (_strcmpi(local_34, "SPRITE") == 0) {
-        void* mem = AllocateMemory(0xd8);
-        Sprite* s = 0;
-        if (mem) {
-            s = (Sprite*)FUN_0041cd50(mem, 0, 0);
-        }
+        Sprite* s = new Sprite(0);
         Parser::ProcessFile(s, this, 0);
         AddSprite(s);
     }

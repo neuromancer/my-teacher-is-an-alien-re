@@ -13,14 +13,6 @@ char s_MEET_MY[] = "MEET MY";
 char s_TESTPUZZLE[] = "TESTPUZZLE";
 
 
-GameState::GameState()
-{
-    stateValues = 0;
-    stateLabels = 0;
-    maxStates = 0;
-    reserved = 0;
-}
-
 /* Function start: 0x420480 */
 GameState::~GameState()
 {
@@ -79,6 +71,25 @@ void GameState::Serialize(int mode)
     fclose(file);
 }
 
+/* Function start: 0x4206e0 */
+void GameState::SetMaxStates(int count)
+{
+    if (stateValues != 0) {
+        ShowError("GameState::SetMaxStates1");
+    }
+    if (stateLabels != 0) {
+        ShowError("GameState::SetMaxStates2");
+    }
+    maxStates = count;
+    stateValues = (int*)AllocateMemory(count * 4);
+    ClearStates();
+    stateLabels = (char**)AllocateMemory(maxStates * 4);
+    char** arr = stateLabels;
+    for (int i = 0; i < maxStates; i++) {
+        arr[i] = 0;
+    }
+}
+
 /* Function start: 0x420780 */
 int GameState::LBLParse(char* line)
 {
@@ -106,6 +117,15 @@ int GameState::LBLParse(char* line)
     return 0;
 }
 
+/* Function start: 0x420900 */
+char *GameState::GetState(int stateIndex)
+{
+    if ((stateIndex > 0) && (maxStates <= stateIndex)) {
+        ShowError("GameState Error  #%d", 1);
+    }
+    return stateLabels[stateIndex];
+}
+
 /* Function start: 0x420940 */
 int GameState::FindState(char* stateName)
 {
@@ -122,15 +142,6 @@ int GameState::FindState(char* stateName)
     return -1;
 }
 
-/* Function start: 0x420900 */
-char *GameState::GetState(int stateIndex)
-{
-    if ((stateIndex > 0) && (maxStates <= stateIndex)) {
-        ShowError("GameState Error  #%d", 1);
-    }
-    return stateLabels[stateIndex];
-}
-
 /* Function start: 0x4209C0 */
 void GameState::ClearStates()
 {
@@ -140,23 +151,3 @@ void GameState::ClearStates()
         ptr++;
     }
 }
-
-/* Function start: 0x4206e0 */
-void GameState::SetMaxStates(int count)
-{
-    if (stateValues != 0) {
-        ShowError("GameState::SetMaxStates1");
-    }
-    if (stateLabels != 0) {
-        ShowError("GameState::SetMaxStates2");
-    }
-    maxStates = count;
-    stateValues = (int*)AllocateMemory(count * 4);
-    ClearStates();
-    stateLabels = (char**)AllocateMemory(maxStates * 4);
-    char** arr = stateLabels;
-    for (int i = 0; i < maxStates; i++) {
-        arr[i] = 0;
-    }
-}
-

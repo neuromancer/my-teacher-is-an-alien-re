@@ -5,8 +5,23 @@ import re
 from compileAndCompare import get_similarity
 
 def get_function_name(line):
+    # Skip lines that are clearly not function definitions
+    stripped = line.strip()
+    if stripped.startswith('//') or stripped.startswith('/*') or stripped.startswith('*'):
+        return None
+    if stripped.startswith('if') or stripped.startswith('for') or stripped.startswith('while'):
+        return None
+    if stripped.startswith('{') or stripped.startswith('}') or stripped == '':
+        return None
+
     # Regular expression to find function names, including destructors (like ~Parser)
     match = re.search(r'\b([a-zA-Z0-9_:]+::[~a-zA-Z0-9_]+)\s*\(', line)
+    if match:
+        return match.group(1)
+
+    # Handle extern "C" functions with calling conventions
+    # Match: extern "C" returntype __cdecl functionname(
+    match = re.search(r'extern\s+"C"\s+[\w\s\*]+\s+(?:__cdecl|__fastcall|__stdcall)?\s*\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', line)
     if match:
         return match.group(1)
 
@@ -14,7 +29,10 @@ def get_function_name(line):
     # Match: returntype functionname( - handles pointers like FILE*, void*, etc.
     match = re.search(r'^\s*(?:[\w\s\*]+)\s+\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', line)
     if match:
-        return match.group(1)
+        func_name = match.group(1)
+        # Filter out keywords that might be incorrectly matched
+        if func_name not in ('if', 'for', 'while', 'switch', 'return', 'else', 'extern'):
+            return func_name
 
     return None
 
