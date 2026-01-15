@@ -4,6 +4,8 @@
 #include <string.h>
 #include <windows.h>
 
+// THESE TWO ARE FUNCTIONS PRODUCED BY THE COMPILER FOR DELETING ARRAYS OF OBJECTS
+// THESE SHOULD BE REMOVED FROM HERE, DO NOT CHANGE
 
 /* Function start: 0x4249D0 */
 void Array_Cleanup(void* array, unsigned int element_size, int num_elements, void (*cleanup_function)(void*)) {

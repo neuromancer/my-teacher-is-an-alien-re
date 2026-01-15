@@ -12,6 +12,7 @@ struct ZBQueueNode {
     void* data;         // 0x08
 
     ZBQueueNode() : next(0), prev(0), data(0) {}
+    ZBQueueNode* Init(void* d) { next = 0; prev = 0; data = d; return this; }  // 0x41CD10
 
     void* CleanupNode(int flag);  // 0x41CCE0
     void* Cleanup(int flag);      // 0x4189A0
@@ -24,8 +25,10 @@ struct ZBQueue {
     ZBQueueNode* current;  // 0x08
     int type;              // 0x0C
 
-    void* GetCurrentData();  // 0x41BB10
-    void* PopNode();         // 0x401810
+    void* GetCurrentData();       // 0x41BB10
+    void* PopNode();              // 0x401810
+    void Insert(void* data);      // 0x409160
+    void InsertBeforeCurrent(void* data);  // 0x41CB40
 };
 
 // Forward declaration for command type used in queuing

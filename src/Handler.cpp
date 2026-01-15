@@ -5,8 +5,7 @@
 // Handler base class constructor
 // Most handlers override this entirely and don't call it directly
 Handler::Handler() {
-    // Zero the 6 dwords at 0x88-0x9F
-    memset(&handlerId, 0, 6 * sizeof(int));
+    // Base Handler constructor - zeroing of fields 0x88-0x9F is done in derived classes
 }
 
 // Handler base class destructor

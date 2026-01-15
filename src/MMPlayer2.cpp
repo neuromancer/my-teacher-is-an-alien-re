@@ -1,13 +1,12 @@
 #include "MMPlayer2.h"
 #include "Memory.h"
 #include "Sprite.h"
-#include "Queue.h"
+#include "ZBufferManager.h"
 #include <stdio.h>
 #include <string.h>
 
 extern "C" {
     void FUN_0041d040(int); // Sprite::Update/Init?
-    void FUN_00409160(void*, void*); // Queue::Add generic?
     void ShowError(const char*, ...);
 }
 
@@ -38,44 +37,45 @@ void MMPlayer2::AddSprite(Sprite* s)
 {
     if (s != 0) {
         // FUN_0041d040((int)s); // Some Sprite init
-        
-        Queue* list = spriteList;
+
+        ZBQueue* list = spriteList;
         if (s == 0) {
              ShowError("queue fault 0101");
         }
-        
-        list->m_current = list->m_head;
-        if (list->m_field_0xc == 1 || list->m_field_0xc == 2) {
-             if (list->m_head == 0) {
+
+        list->current = list->head;
+        if (list->type == 1 || list->type == 2) {
+             if (list->head == 0) {
                  if (s == 0) {
                       ShowError("queue fault 0102");
                  }
-                 list->Insert(s); // Simplified calling standard insert for empty list
+                 list->Insert(s);
              }
              else {
                  do {
-                     QueueNode* curr = (QueueNode*)list->m_current;
+                     ZBQueueNode* curr = (ZBQueueNode*)list->current;
                      Sprite* currSprite = (Sprite*)curr->data;
-                     
+
                      // Compare field_b0 (Z-order?)
                      if (currSprite->field_0xb0 < s->field_0xb0) {
-                         list->Insert(s); // Insert before current
+                         list->Insert(s);
                          break;
                      }
-                     
-                     if (list->m_tail == curr) {
-                         list->Push(s); // Append
+
+                     if (list->tail == curr) {
+                         // Push to end - simplified
+                         list->Insert(s);
                          break;
                      }
-                     
+
                      if (curr != 0) {
-                         list->m_current = curr->next;
+                         list->current = curr->prev;
                      }
-                 } while (list->m_current != 0);
+                 } while (list->current != 0);
              }
         }
         else {
-            FUN_00409160(list, s);
+            list->Insert(s);
         }
     }
 }

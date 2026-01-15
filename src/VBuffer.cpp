@@ -277,16 +277,10 @@ void __cdecl BlitTransparentRows(int srcX1, int srcX2, int srcY1, int srcY2, int
 /* Function start: 0x41ad50 */
 void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8)
 {
-    char local_40_storage[48];
-    VBuffer* local_40 = (VBuffer*)local_40_storage;
-    //local_40->CreateAndClean((param_2 - param_1) + 1, (param_4 - param_3) + 1);
-    __try {
-        local_40->ClearScreen(0);
-        BlitTransparentRows(param_1, param_2, param_3, param_4, local_40->clip_x1, local_40->clip_y2, this, local_40, param_7, param_8);
-        local_40->TPaste(local_40->clip_x1, local_40->clip_x2, local_40->clip_y1, local_40->clip_y2, param_5, param_6);
-    } __finally {
-        FUN_0041ae0c();
-    }
+    VBuffer local_40((param_2 - param_1) + 1, (param_4 - param_3) + 1);
+    local_40.ClearScreen(0);
+    BlitTransparentRows(param_1, param_2, param_3, param_4, local_40.clip_x1, local_40.clip_y2, this, &local_40, param_7, param_8);
+    local_40.TPaste(local_40.clip_x1, local_40.clip_x2, local_40.clip_y1, local_40.clip_y2, param_5, param_6);
 }
 
 /* Function start: 0x41ae20 */

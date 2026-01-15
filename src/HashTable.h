@@ -19,6 +19,8 @@ public:
     void* nodePool;      // 0x10
     int capacity;        // 0x14
 
+    HashTable(unsigned int cap);
+    ~HashTable();
     void AllocateBuckets(int numBuckets, int allocateNow);
     HashNode* AllocateNode();
 };

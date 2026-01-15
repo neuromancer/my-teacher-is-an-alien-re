@@ -25,19 +25,8 @@ void FUN_004110d0(void*) {}  // Engine::Engine constructor
 int FUN_0042449b(int x) { return x; }  // Scale X coordinate
 int FUN_004244c2(int y) { return y; }  // Scale Y coordinate
 
-// State machine/event processor
-void __fastcall FUN_0041c960(void*) {}
-
-// Linked list insertion
-void FUN_00409160(void* a, void* b) {}
-
-// Handler6 class stubs
-void __fastcall FUN_00402730(void*) {}  // Constructor
-void __fastcall FUN_00418d60(void*, char*, char*) {}  // Parser method
-void __fastcall FUN_00402ed0(void*, void*) {}  // Init method
-int __fastcall FUN_00403040(void*, void*) { return 0; }  // Collision check
-void __fastcall FUN_00402fd0(void*, void*) {}  // Cleanup method
-void __fastcall FUN_00403230(void*, int, int) {}  // Update method
+// Parser subsystem stub
+void __fastcall FUN_00418d60(void*, char*, char*) {}  // Parser method (used elsewhere)
 
 // Parser subsystem stubs
 void __fastcall FUN_00418b30(void*, int, char*) {}  // Reports unknown label
@@ -89,8 +78,3 @@ int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
 
 #include "SC_OnScreenMessage.h"
-
-// DAT_00437f54 is declared in globals.h
-// CleanupVideoSystem (0x423CFE) - Graphics.cpp
-// GetCurrentVideoMode (0x4231C6) - Graphics.cpp
-// InvalidateVideoMode (0x4231BC) - Graphics.cpp

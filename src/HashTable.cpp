@@ -2,6 +2,18 @@
 #include "Memory.h"
 #include <string.h>
 
+HashTable::HashTable(unsigned int cap) {
+    buckets = 0;
+    numBuckets = 0x11;
+    count = 0;
+    freeList = 0;
+    nodePool = 0;
+    capacity = cap;
+}
+
+HashTable::~HashTable() {
+}
+
 /* Function start: 0x420eb0 */
 void HashTable::AllocateBuckets(int numBuckets, int allocateNow) {
     if (buckets != 0) {

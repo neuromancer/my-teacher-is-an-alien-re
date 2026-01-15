@@ -947,6 +947,10 @@ class Handler16 { public: Handler16() { *(void**)data = g_HandlerVTable; } char 
 
 /* Function start: 0x40CDD0 */
 int* CreateHandler(int command) {
+    char buffer[128];
+    sprintf(buffer, "Creating handler for modual %d", command);
+    if (command != 1)
+        ShowError(buffer);
     int* handler = 0;
     
     switch(command) {

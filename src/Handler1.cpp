@@ -4,28 +4,30 @@
 #include "globals.h"
 #include "Message.h"
 #include "Mouse.h"
+#include <string.h>
+
+extern "C" {
+    char* CDData_FormatPath(char*, ...);
+}
 
 /* Function start: 0x403340 */
 Handler1::Handler1() {
-    // Handler base class zeros handlerId through field_9C via memset
+    // Zero 6 dwords at offset 0x88-0x9F (handlerId through field_9C)
+    memset(&handlerId, 0, 6 * sizeof(int));
 
-    handlerId = 1;
-    field_8C = 1;
     palette = 0;
     sprite = 0;
+    handlerId = 1;
+    field_8C = 1;
 
     palette = new Palette();
-    if (palette) {
-        palette->Load("demo\\Demoscrn.col");
-    }
+    palette->Load(CDData_FormatPath("demo\\Demoscrn.col"));
 
     sprite = new Sprite("demo\\Demoscrn.smk");
-    if (sprite) {
-        sprite->flags &= ~2;
-        sprite->priority = 0;
-        sprite->loc_x = 0;
-        sprite->loc_y = 0;
-    }
+    sprite->flags &= ~2;
+    sprite->priority = 0;
+    sprite->loc_x = 0;
+    sprite->loc_y = 0;
 }
 
 /* Function start: 0x4034C0 */

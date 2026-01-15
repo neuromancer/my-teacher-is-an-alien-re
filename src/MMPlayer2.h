@@ -3,7 +3,7 @@
 
 #include "Parser.h"
 
-class Queue;
+struct ZBQueue;
 class Sprite;
 
 class MMPlayer2 : public Parser
@@ -24,8 +24,8 @@ public:
     int field_b0;
     int field_b4;
     int field_b8;
-    
-    Queue* spriteList; // 0xbc
+
+    ZBQueue* spriteList; // 0xbc
 
     /* Function start: 0x409030 */
     virtual int LBLParse(char* line);

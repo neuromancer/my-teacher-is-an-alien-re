@@ -10,18 +10,7 @@
 #include "Mouse.h"
 
 // External functions used by Handler6
-// FreeMemory replaced by delete/Memory.h
-// Ambient cleanup replaced by SpriteList::~SpriteList
-extern "C" void __fastcall FUN_00402730(void*);
-extern "C" void __fastcall FUN_00402fd0(void*, void*);  // Parent Update
 extern "C" void __cdecl WriteToMessageLog(const char*);
-extern "C" void __fastcall FUN_00403230(void*, int, int);  // Parent Draw
-// Ambient::Draw replaced by SpriteList::DoAll
-// Sprite::SetState replaced by SetState2
-// SC_Message_Send is in Message.h
-extern "C" int __fastcall FUN_00403040(void*, void*);  // Parent HandleMessage
-extern "C" void __fastcall FUN_00402ed0(void*, void*);  // Parent Init
-// ParseFile replaces FUN_00418d60
 
 // Global variable aliases to match globals.h
 #define g_GameLoop_00436978 g_Mouse_00436978
@@ -29,9 +18,8 @@ extern "C" void __fastcall FUN_00402ed0(void*, void*);  // Parent Init
 
 /* Function start: 0x4044C0 */
 Handler6::Handler6() {
-    // Call parent constructor at 0x402730
-    // This sets up all the parent class fields  
-    FUN_00402730(this);
+    // Parent constructor IconBar::IconBar() is called automatically
+    // This sets up all the parent class fields (icon bar sprites, buttons, etc.)
 
     // Zero 0x10 (16) dwords at offset 0x600 (0x40 bytes)
     // EDI pointed to this+0x600, then rep stosd with ECX=0x10
@@ -76,34 +64,34 @@ void Handler6::Init(SC_Message* msg) {
     char searchScreenLabel[32];
     char staticLabel[32];
     char periodLabel[32];
-    
+
     // Log entry
     WriteToMessageLog("\nENTER SEARCH SCREEN");
-    
-    // Call parent init
-    FUN_00402ed0(this, msg);
-    
+
+    // Call parent init (IconBar::InitIconBar)
+    InitIconBar(msg);
+
     // Format the script file path and labels
     sprintf(filePath, "mis\\room%3.3d.mis", 5);
     sprintf(searchScreenLabel, "[SEARCH_SCREEN%d]", *((int*)((char*)msg + 0x8c)));
     sprintf(staticLabel, "[STATIC]");
     sprintf(periodLabel, "[PERIOD%2.2d]", 1);
-    
+
     // Log labels
     WriteToMessageLog(searchScreenLabel);
     WriteToMessageLog(staticLabel);
     WriteToMessageLog(periodLabel);
-    
+
     // Parse static section
     ParseFile(this, filePath, staticLabel);
-    
+
     // Log and parse period section
     WriteToMessageLog("Finished getting static, now get specific");
     ParseFile(this, filePath, periodLabel);
-    
+
     // Count active hotspots
     activeHotspots = CountActiveHotspots();
-    
+
     // Set palette if needed
     if (palette != 0) {
         int* palettePtr = (int*)((char*)g_Renderer_0043698c + 0xa8);
@@ -116,12 +104,12 @@ void Handler6::Init(SC_Message* msg) {
 
 /* Function start: 0x404810 */
 int Handler6::HandleMessage(SC_Message* msg) {
-    // Call parent handler
-    int result = FUN_00403040(this, msg);
+    // Call parent handler (IconBar::CheckButtonClick)
+    int result = CheckButtonClick(msg);
     if (result != 0) {
         return 1;
     }
-    
+
     // Check if button 2 was pressed (msg+0xac >= 2) and no hotspot currently selected
     if (*((int*)((char*)msg + 0xac)) >= 2 && currentHotspot == 0) {
         int clickedIndex = FindClickedHotspot();
@@ -139,13 +127,13 @@ void Handler6::Update(SC_Message* msg) {
         delete palette;
         palette = 0;
     }
-    
+
     // Cleanup ambient at 0x604
     if (ambient != 0) {
         delete ambient;
         ambient = 0;
     }
-    
+
     // Cleanup hotspots array at 0x608
     Hotspot** ptr = hotspots;
     int remaining = 10;
@@ -158,15 +146,15 @@ void Handler6::Update(SC_Message* msg) {
         ptr++;
         remaining--;
     } while (remaining != 0);
-    
+
     // Reset counters
     hotspotCount = 0;
     activeHotspots = 0;
     counter = 0;
-    
-    // Call parent Update
-    FUN_00402fd0(this, msg);
-    
+
+    // Call parent cleanup (IconBar::CleanupIconBar)
+    CleanupIconBar();
+
     // Log message
     WriteToMessageLog("EXIT SEARCH SCREEN\n");
 }
@@ -177,11 +165,11 @@ void Handler6::Draw(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
-    
-    // Call parent draw
-    FUN_00403230(this, param1, param2);
-    
-    // Draw ambient  
+
+    // Call parent draw (IconBar::DrawIconBar)
+    DrawIconBar(param1, param2);
+
+    // Draw ambient
     if (ambient) ambient->DoAll();
     
     // Handle hotspot animation
