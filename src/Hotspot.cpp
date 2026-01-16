@@ -22,6 +22,44 @@ unsigned char Hotspot::Do()
     return 0;
 }
 
+/* Function start: 0x409440 */
+int Hotspot::SetState(int newState)
+{
+    if (sprite != (Sprite *)0x0) {
+        sprite->SetState2(newState);
+        return 1;
+    }
+    ShowError("Error in T_Hotspot::Set_State");
+    return 0;
+}
+
+/* Function start: 0x409470 */
+int Hotspot::GetState()
+{
+    if (sprite == (Sprite *)0x0) {
+        ShowError("Error in T_Hotspot::Get_State");
+        return 0;
+    }
+    return sprite->current_state;
+}
+
+/* Function start: 0x4094A0 */
+void Hotspot::Exit()
+{
+    if (sprite != (Sprite *)0x0) {
+        sprite->StopAnimationSound();
+    }
+    if (list1 != (SpriteList *)0x0) {
+        list1->StopAll();
+    }
+    if (list2 != (SpriteList *)0x0) {
+        list2->StopAll();
+    }
+    if (list3 != (SpriteList *)0x0) {
+        list3->StopAll();
+    }
+}
+
 /* Function start: 0x4094F0 */
 int Hotspot::Update(int param_1, int param_2, int param_3)
 {

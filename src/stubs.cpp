@@ -68,8 +68,45 @@ void FUN_406670(void* data, int param) {}
 // Handler11 stubs
 // ============================================================================
 
-void FUN_418d60(void*, const char*, const char*) {}
+void FUN_00418d60(void*, const char*, const char*) {}
+void FUN_418d60(void* obj, const char* a, const char* b) { FUN_00418d60(obj, a, b); }
 
 // Placeholder destructors
 SC_Dialog::~SC_Dialog() {}
 UnknownClass_4092e0::~UnknownClass_4092e0() {}
+
+// ============================================================================
+// Handler10 stubs - Character/OptionMenu/Sprite functions
+// ============================================================================
+
+// Character object constructor now in Character.cpp
+
+// Functions used by Character constructor
+#include "Character.h"
+extern "C" char* FUN_00424c00(char* haystack, char* needle) { return haystack; }  // String search stub
+CharSprite* __fastcall FUN_00408880(CharSprite* mem) { return mem; }  // CharSprite constructor
+void __fastcall FUN_004043a0(PriorityQueue* queue, CharSprite* sprite) {}  // Queue add
+
+// CharSprite/CharButton functions now implemented in Hotspot.cpp as Hotspot methods:
+// - FUN_00409400 -> Hotspot::Do()
+// - FUN_00409440 -> Hotspot::SetState(int)
+// - FUN_00409470 -> Hotspot::GetState()
+// - FUN_004094a0 -> Hotspot::Exit()
+
+// CharSprite destructor with SEH (complex, still a stub)
+void __fastcall FUN_004092e0(void* obj) {}  // T_Hotspot/CharSprite destructor
+
+// OptionMenu functions
+void __fastcall FUN_00409bf0(void* obj) {}  // OptionMenu cleanup
+void __fastcall FUN_00409f00(void* obj, int param) {}  // OptionMenu render
+void __fastcall FUN_00409fb0(void* obj, int param1, int param2) {}  // OptionMenu setOptionState
+void __fastcall FUN_0040a150(void* obj, int param) {}  // OptionMenu getOption
+void __fastcall FUN_0040a1a0(void* obj) {}  // OptionMenu exit
+
+// MouseControl functions now implemented in MouseControl.cpp:
+// - FUN_0041f360 -> MouseControl::~MouseControl()
+// - FUN_0041f480 -> MouseControl::StopAll()
+// - FUN_0041f800 -> MouseControl::DoAll()
+
+// IconBar::PlayButtonSound is now in IconBar.cpp:
+// - FUN_00403300 -> IconBar::PlayButtonSound(int)

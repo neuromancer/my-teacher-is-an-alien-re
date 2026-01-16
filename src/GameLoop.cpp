@@ -17,9 +17,11 @@
 #include "Handler12.h"
 #include "Handler1.h"
 #include "Handler2.h"
+#include "Handler4.h"
 #include "Handler5.h"
 #include "Handler6.h"
 #include "Handler8.h"
+#include "Handler10.h"
 #include "Handler11.h"
 #include "Handler.h"
 #include <smack.h>
@@ -934,12 +936,12 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 // Handler classes with inline constructors using stub vtable
 // Handler1 is defined in Handler1.h
 // Handler2 is defined in Handler2.h
-class Handler4 { public: Handler4() { *(void**)data = g_HandlerVTable; } char data[0x6f0]; };  // 0x40e220
+// Handler4 is defined in Handler4.h
 // Handler5 is defined in Handler5.h
 // Handler6 is defined in Handler6.h
 // Handler8 is defined in Handler8.h
 class Handler9 { public: Handler9() { *(void**)data = g_HandlerVTable; } char data[0x650]; };  // 0x406fc0
-class Handler10 { public: Handler10() { *(void**)data = g_HandlerVTable; } char data[0x6a8]; }; // 0x404ca0
+// Handler10 is defined in Handler10.h
 // Handler11 is defined in Handler11.h
 // Handler12 is defined in Handler12.h
 class Handler13 { public: Handler13() { *(void**)data = g_HandlerVTable; } char data[0xd0]; };  // 0x401b60

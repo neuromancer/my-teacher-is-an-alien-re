@@ -3,8 +3,9 @@
 
 #include "Parser.h"
 #include "Sprite.h"
+#include "MouseControl.h"
 
-class SpriteList;
+// SpriteList is typedef'd to MouseControl in MouseControl.h
 
 class Hotspot : public Parser {
 public:
@@ -24,8 +25,9 @@ public:
     int field_E8; // 0xe8
     int field_EC; // 0xec
     
-    char pad_F0[44]; // 0xf0 -> 0x11c matched
-    
+    char pad_F0[40]; // 0xf0 -> 0x118
+
+    int enabled; // 0x118
     int state; // 0x11c
     int dialogParseFileNumber; // 0x120
     int parseFileIndex; // 0x124
@@ -38,9 +40,9 @@ public:
     virtual ~Hotspot();
     int LBLParse(char* line);
     unsigned char Do();
-    int SetState(int state);
+    int SetState(int newState);
     int GetState();
-    void CleanupSprites();
+    void Exit();
     int Update(int, int, int);
     int Draw_40d610();
 };

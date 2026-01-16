@@ -5,6 +5,7 @@
 
 class Sprite;
 class SoundList;
+class Sample;
 
 // IconBarButton - Individual button on the icon bar
 // Size: 0xE0 bytes
@@ -16,7 +17,7 @@ struct IconBarButton {
     int x2;             // 0xD0 - right bound
     int y2;             // 0xD4 - bottom bound
     int enabled;        // 0xD8 - button is enabled/active
-    char pad_DC[4];     // 0xDC-0xDF padding
+    Sample* clickSound; // 0xDC - click sound sample
 };
 
 // IconBar - Base class for handlers with icon bar UI
@@ -41,6 +42,7 @@ public:
     void CleanupIconBar();
     int CheckButtonClick(SC_Message* msg);
     void DrawIconBar(int param1, int param2);
+    void PlayButtonSound(int buttonIndex);  // 0x403300
 
     // Icon bar rect (0xA0-0xAF)
     int barX1;          // 0xA0

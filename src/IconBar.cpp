@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "Sprite.h"
 #include "SoundList.h"
+#include "Sample.h"
 #include "Memory.h"
 #include "Parser.h"
 #include "globals.h"
@@ -329,6 +330,20 @@ void IconBar::DrawIconBar(int param1, int param2) {
         // Draw button if enabled
         if (buttons[i].enabled != 0) {
             btn->Do(btn->loc_x, btn->loc_y, 1.0);
+        }
+    }
+}
+
+/* Function start: 0x403300 */
+void IconBar::PlayButtonSound(int buttonIndex) {
+    Sample* sound;
+
+    soundList->StopAll();
+
+    if (buttonIndex != -1) {
+        sound = IconBar::buttons[buttonIndex].clickSound;
+        if (sound != 0) {
+            sound->Play(100, 1);
         }
     }
 }

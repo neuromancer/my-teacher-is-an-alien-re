@@ -1,0 +1,65 @@
+#ifndef CHARACTER_H
+#define CHARACTER_H
+
+// Forward declarations
+struct CharSprite;
+struct PriorityQueue;
+struct PriorityQueueNode;
+
+// PriorityQueueNode - Node in the priority queue
+// Size: 0xC bytes (12 bytes)
+struct PriorityQueueNode {
+    PriorityQueueNode* next;    // +0x00
+    PriorityQueueNode* prev;    // +0x04
+    CharSprite* data;           // +0x08
+};
+
+// PriorityQueue - Priority queue for CharSprites
+// Size: 0x10 bytes (16 bytes)
+struct PriorityQueue {
+    PriorityQueueNode* head;    // +0x00
+    PriorityQueueNode* tail;    // +0x04
+    PriorityQueueNode* current; // +0x08
+    int type;                   // +0x0C
+};
+
+// CharSprite - Sprite for character display
+// Size: 0x5C bytes (92 bytes)
+struct CharSprite {
+    char field_0x00[4];         // +0x00
+    char name[64];              // +0x04 - name/label string
+    int priority;               // +0x44
+    char field_0x48[20];        // +0x48-0x5B
+};
+
+// Character - Game character object
+// Size: 0x40 bytes (64 bytes)
+// Used for peter, susan, duncan character data
+//
+// Layout:
+//   0x00: int characterType    (-1 initially, 0=peter, 1=susan, 2=duncan)
+//   0x04-0x20: int abilities[8] (8 ability flags)
+//   0x24-0x34: padding (zeros)
+//   0x38: PriorityQueue* queue
+//   0x3C: unused pointer
+class Character {
+public:
+    // Constructor - Address: 0x403700
+    Character(char* name);
+
+    int characterType;          // +0x00
+    int abilities[8];           // +0x04-0x20 (offsets 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x1c, 0x20)
+    int padding[5];             // +0x24-0x34
+    PriorityQueue* queue;       // +0x38
+    void* field_3c;             // +0x3C
+};
+
+// External functions used by Character
+extern CharSprite* __fastcall FUN_00408880(CharSprite* mem);
+extern void __fastcall FUN_004043a0(PriorityQueue* queue, CharSprite* sprite);
+extern PriorityQueueNode* __fastcall FUN_00404470(PriorityQueueNode* node, CharSprite* sprite);
+
+// String search function (like strstr but case-sensitive)
+extern "C" char* FUN_00424c00(char* haystack, char* needle);
+
+#endif // CHARACTER_H
