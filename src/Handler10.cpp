@@ -13,22 +13,13 @@
 #include "Hotspot.h"
 #include "InputManager.h"
 #include "SC_Question.h"
+#include "OptionMenu.h"
 
 // Include string.h for ShowError and WriteToMessageLog
 #include "string.h"
 
-// MIS file parsing (stub in stubs.cpp)
-extern void FUN_00418d60(void*, const char*, const char*);
-
 // CharSprite/CharButton destructor with SEH (complex, still in stubs)
 extern void __fastcall FUN_004092e0(void*);  // CharSprite cleanup/destructor
-
-// OptionMenu functions (not yet implemented as classes)
-extern void __fastcall FUN_00409bf0(void*);  // OptionMenu cleanup
-extern void __fastcall FUN_00409f00(void*, int);  // OptionMenu render
-extern void __fastcall FUN_00409fb0(void*, int, int);  // OptionMenu setOptionState
-extern void __fastcall FUN_0040a150(void*, int);  // OptionMenu getOption
-extern void __fastcall FUN_0040a1a0(void*);  // OptionMenu exit
 
 // Character object constructor (implemented in Character.cpp)
 #include "Character.h"
@@ -69,7 +60,7 @@ Handler10::Handler10() {
     field_8C = 1;
 
     // Parse demo.mis file
-    FUN_00418d60(this, "mis\\demo.mis", (char*)0);
+    ParseFile(this, "mis\\demo.mis", (char*)0);
 
     // Initialize sound slots - set all enabled flags to 1
     for (i = 0; i < 8; i++) {
@@ -105,7 +96,6 @@ Handler10::~Handler10() {
 
     // Cleanup choice screen (OptionMenu)
     if (choiceScreen != 0) {
-        FUN_00409bf0(choiceScreen);
         delete choiceScreen;
         choiceScreen = 0;
     }
@@ -224,7 +214,7 @@ int Handler10::Exit(SC_Message* msg) {
 
         // Exit choice screen
         if (choiceScreen != 0) {
-            FUN_0040a1a0(choiceScreen);
+            choiceScreen->Deactivate();
         }
 
         // Exit go button
@@ -525,7 +515,7 @@ void Handler10::RenderChoiceScreen(int characterIndex) {
 
     charIdx = currentCharacterIndex;
     if (charIdx >= 0 && charIdx <= 2) {
-        FUN_00409f00(choiceScreen, charIdx);
+        choiceScreen->Render(charIdx);
     }
 }
 
@@ -599,7 +589,7 @@ void Handler10::RenderAll(int mouseX, int mouseY) {
 /* Function start: 0x405CC0 */
 void Handler10::SetCharacterOption(int characterIndex) {
     if (choiceScreen != 0) {
-        FUN_0040a150(choiceScreen, characterIndex);
+        choiceScreen->SelectCharacter(characterIndex);
     } else {
         ShowError("Missing option_menu in GetOptionQ - opmenu.cpp");
     }
@@ -608,7 +598,7 @@ void Handler10::SetCharacterOption(int characterIndex) {
 /* Function start: 0x405CF0 */
 void Handler10::SetSubmenuOption(int submenuIndex, int state) {
     if (choiceScreen != 0) {
-        FUN_00409fb0(choiceScreen, submenuIndex, state);
+        choiceScreen->SetOptionState(submenuIndex, state);
     } else {
         ShowError("Missing option_menu in SetOptionState");
     }

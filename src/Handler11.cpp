@@ -1,14 +1,13 @@
 #include "Handler11.h"
+#include "Parser.h"
 #include <string.h>
-
-extern void FUN_418d60(void*, const char*, const char*);
 
 /* Function start: 0x40ACC0 */
 Handler11::Handler11() {
     Palette** ptr = &field_600;
     memset(ptr, 0, 0x12 * sizeof(int));
     handlerId = 0xb;
-    FUN_418d60(this, "mis\\SrSc0001.mis", 0);
+    ParseFile(this, "mis\\SrSc0001.mis", 0);
 }
 
 /* Function start: 0x40AD70 */

@@ -16,7 +16,7 @@ extern "C" {
 void SCI_AfterSchoolMenu::FillOptionQueue()
 {
     if (field_0x66c >= 0 && field_0x66c <= 2) {
-        optionMenu->GetOptionQ(field_0x66c);
+        optionMenu->SelectCharacter(field_0x66c);
         optionMenu->SetOptionState(-5, 0);
     } else {
         ShowError("Error in DMChoScr.cpp - FillOptionQueue");

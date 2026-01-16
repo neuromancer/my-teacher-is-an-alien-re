@@ -2,13 +2,15 @@
 #include "Memory.h"
 #include "Sprite.h"
 #include "SpriteList.h"
+#include "Character.h"
+#include "string.h"
 
 #include <stdio.h>
 #include <string.h>
 
-// OptionMenu method stubs
-void OptionMenu::SetOptionState(int param_1, int param_2) {}
-void OptionMenu::GetOptionQ(int param_1) {}
+extern void* DAT_00435a74;
+extern void* DAT_00435a78;
+extern void* DAT_00435a7c;
 
 /* Function start: 0x409940 */
 OptionMenu::OptionMenu()
@@ -61,12 +63,19 @@ OptionMenu::OptionMenu()
 /* Function start: 0x409BF0 */
 OptionMenu::~OptionMenu()
 {
-    delete options[0];
-    options[0] = 0;
-    delete options[1];
-    options[1] = 0;
-    delete options[2];
-    options[2] = 0;
+    spriteList = 0;
+    if (options[0] != 0) {
+        delete options[0];
+        options[0] = 0;
+    }
+    if (options[1] != 0) {
+        delete options[1];
+        options[1] = 0;
+    }
+    if (options[2] != 0) {
+        delete options[2];
+        options[2] = 0;
+    }
 }
 
 /* Function start: 0x409CD0 */
@@ -87,8 +96,8 @@ int OptionMenu::LBLParse(char* command)
 void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
 {
     int i = 0;
-    int iVar1;
-    int iVar2;
+    SpriteListNode* node;
+    SpriteData* data;
     Sprite* sprite;
 
     if (sprite_count > selected_option) {
@@ -97,7 +106,7 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
 
     spriteList->current = spriteList->head;
 
-    if (*(int*)spriteList == 0) {
+    if (spriteList->head == 0) {
         return;
     }
 
@@ -107,65 +116,163 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
         }
 
         if (sprite_index == 0) {
-            iVar1 = (int)spriteList->current;
-            if (iVar1 != 0) {
-                iVar1 = *(int*)(iVar1 + 8);
-            }
-            options[0]->SetState2(*(int*)(iVar1 + 0x48));
+            node = spriteList->current;
+            data = (node != 0) ? (SpriteData*)node->data : 0;
+            options[0]->SetState2(data->state);
             sprite = options[0];
             sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         }
         if (sprite_index == 1) {
-            iVar1 = (int)spriteList->current;
-            if (iVar1 != 0) {
-                iVar1 = *(int*)(iVar1 + 8);
-            }
-            options[1]->SetState2(*(int*)(iVar1 + 0x48));
+            node = spriteList->current;
+            data = (node != 0) ? (SpriteData*)node->data : 0;
+            options[1]->SetState2(data->state);
             sprite = options[1];
             sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         }
         if (sprite_index == 2) {
-            iVar1 = (int)spriteList->current;
-            if (iVar1 != 0) {
-                iVar1 = *(int*)(iVar1 + 8);
-            }
-            options[2]->SetState2(*(int*)(iVar1 + 0x48));
+            node = spriteList->current;
+            data = (node != 0) ? (SpriteData*)node->data : 0;
+            options[2]->SetState2(data->state);
             sprite = options[2];
             sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         }
 
         // Set bounding box values on the current list item
-        iVar1 = (int)spriteList->current;
-        if (iVar1 != 0) {
-            iVar1 = *(int*)(iVar1 + 8);
-        }
-        *(int*)(iVar1 + 0x4c) = 0xda;
+        node = spriteList->current;
+        data = (node != 0) ? (SpriteData*)node->data : 0;
+        data->rect_x = 0xda;
 
-        iVar1 = (int)spriteList->current;
-        if (iVar1 != 0) {
-            iVar1 = *(int*)(iVar1 + 8);
-        }
-        *(int*)(iVar1 + 0x50) = 0xcc;
+        node = spriteList->current;
+        data = (node != 0) ? (SpriteData*)node->data : 0;
+        data->rect_y = 0xcc;
 
-        iVar1 = (int)spriteList->current;
-        if (iVar1 != 0) {
-            iVar1 = *(int*)(iVar1 + 8);
-        }
-        *(int*)(iVar1 + 0x54) = 0x1b3;
+        node = spriteList->current;
+        data = (node != 0) ? (SpriteData*)node->data : 0;
+        data->rect_w = 0x1b3;
 
-        iVar1 = (int)spriteList->current;
-        if (iVar1 != 0) {
-            iVar1 = *(int*)(iVar1 + 8);
-        }
-        *(int*)(iVar1 + 0x58) = 0xee;
+        node = spriteList->current;
+        data = (node != 0) ? (SpriteData*)node->data : 0;
+        data->rect_h = 0xee;
 
         // Advance iterator
-        iVar1 = (int)spriteList;
-        iVar2 = *(int*)(iVar1 + 8);
-        if (*(int*)(iVar1 + 4) == iVar2) break;
-        if (iVar2 != 0) {
-            *(int*)(iVar1 + 8) = *(int*)(iVar2 + 4);
+        node = spriteList->current;
+        if (spriteList->tail == node) break;
+        if (node != 0) {
+            spriteList->current = node->prev;
         }
         i++;
-    } while (*(int*)spriteList != 0);
+    } while (spriteList->head != 0);
+}
+
+/* Function start: 0x409F00 */
+void OptionMenu::Render(int characterIndex)
+{
+    SpriteListNode* node;
+    int count;
+
+    if (spriteList != 0) {
+        count = 0;
+        node = spriteList->head;
+        spriteList->current = node;
+        while (node != 0) {
+            count = count + 1;
+            node = spriteList->current;
+            if (spriteList->tail == node) break;
+            if (node != 0) {
+                spriteList->current = node->prev;
+            }
+            node = spriteList->current;
+        }
+        UpdateSpriteStates(count, characterIndex);
+    }
+}
+
+/* Function start: 0x409F40 */
+void* OptionMenu::GetOptionByIndex(int index)
+{
+    SpriteListNode* node;
+    int i;
+
+    i = 0;
+    if (spriteList != 0) {
+        spriteList->current = spriteList->head;
+        while (spriteList->head != 0) {
+            if (i == index) {
+                node = spriteList->current;
+                if (node == 0) {
+                    return 0;
+                }
+                return node->data;
+            }
+            node = spriteList->current;
+            if (spriteList->tail == node) {
+                return 0;
+            }
+            if (node != 0) {
+                spriteList->current = node->prev;
+            }
+            i = i + 1;
+            if (spriteList->head == 0) break;
+        }
+    }
+    return 0;
+}
+
+/* Function start: 0x409FB0 */
+void OptionMenu::SetOptionState(int param_1, int param_2)
+{
+    SpriteListNode* node;
+    SpriteData* data;
+    int i;
+
+    i = 0;
+    if (param_1 == -5) {
+        spriteList->current = spriteList->head;
+        if (spriteList->head != 0) {
+            while (1) {
+                SetOptionState(i, param_2);
+                node = spriteList->current;
+                if (spriteList->tail == node) break;
+                if (node != 0) {
+                    spriteList->current = node->prev;
+                }
+                i = i + 1;
+                if (spriteList->head == 0) {
+                    return;
+                }
+            }
+        }
+    }
+    else {
+        data = (SpriteData*)GetOptionByIndex(param_1);
+        if (data != 0) {
+            data->state = param_2;
+            return;
+        }
+        ShowError("Invalid option number!");
+    }
+}
+
+/* Function start: 0x40A150 */
+void OptionMenu::SelectCharacter(int characterIndex)
+{
+    switch (characterIndex) {
+    case 0:
+        spriteList = (SpriteNode*)((Character*)DAT_00435a74)->queue;
+        break;
+    case 1:
+        spriteList = (SpriteNode*)((Character*)DAT_00435a78)->queue;
+        break;
+    case 2:
+        spriteList = (SpriteNode*)((Character*)DAT_00435a7c)->queue;
+        break;
+    }
+}
+
+/* Function start: 0x40A1A0 */
+void OptionMenu::Deactivate()
+{
+    options[0]->StopAnimationSound();
+    options[1]->StopAnimationSound();
+    options[2]->StopAnimationSound();
 }

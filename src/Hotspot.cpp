@@ -6,6 +6,69 @@
 #include <stdio.h>
 #include <string.h>
 
+// External functions for cleanup
+extern void __fastcall FUN_0041ce30(void*);  // Sprite destructor
+extern void FreeMemory(void*);  // 0x00424940
+
+// T_Hotspot class - base class for CharSprite/CharButton
+// Has vtable 0x4311b8, different from Hotspot (0x431278)
+// Used by Handler10 for goButton, cancelButton, characters[]
+class T_Hotspot : public Parser {
+public:
+    T_Hotspot();
+    virtual ~T_Hotspot();
+
+    Sprite* sprite;      // 0x88
+    SpriteList* list1;   // 0x8c
+    SpriteList* list2;   // 0x90
+    SpriteList* list3;   // 0x94
+};
+
+/* Function start: 0x4092E0 */
+T_Hotspot::~T_Hotspot()
+{
+    Sprite* spr;
+    SpriteList* lst;
+
+    // Clean up sprite at 0x88
+    spr = sprite;
+    if (spr != 0) {
+        FUN_0041ce30(spr);
+        FreeMemory(spr);
+        sprite = 0;
+    }
+
+    // Clean up list1 at 0x8c
+    lst = list1;
+    if (lst != 0) {
+        lst->~MouseControl();
+        FreeMemory(lst);
+        list1 = 0;
+    }
+
+    // Clean up list2 at 0x90
+    lst = list2;
+    if (lst != 0) {
+        lst->~MouseControl();
+        FreeMemory(lst);
+        list2 = 0;
+    }
+
+    // Clean up list3 at 0x94
+    lst = list3;
+    if (lst != 0) {
+        lst->~MouseControl();
+        FreeMemory(lst);
+        list3 = 0;
+    }
+}
+
+// Wrapper for Handler10 compatibility
+void __fastcall FUN_004092e0(void* obj)
+{
+    ((T_Hotspot*)obj)->~T_Hotspot();
+}
+
 // HotspotManager constructor
 HotspotManager::HotspotManager() {
     // Inherits from Hotspot, adds 4 extra bytes

@@ -2,12 +2,6 @@
 #include "SC_Question.h"
 #include <string.h>
 
-// Handler base class constructor
-// Most handlers override this entirely and don't call it directly
-Handler::Handler() {
-    // Base Handler constructor - zeroing of fields 0x88-0x9F is done in derived classes
-}
-
 // Handler base class destructor
 Handler::~Handler() {
 }

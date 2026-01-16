@@ -19,27 +19,7 @@ Handler4::Handler4() {
 
     // Parent constructor IconBar::IconBar() is called automatically
 
-    // Initialize rects to zero (at 0x69c)
-    rect1_x1 = 0;
-    rect1_y1 = 0;
-    rect1_x2 = 0;
-    rect1_y2 = 0;
-    rect2_x1 = 0;
-    rect2_y1 = 0;
-    rect2_x2 = 0;
-    rect2_y2 = 0;
-    rect3_x1 = 0;
-    rect3_y1 = 0;
-    rect3_x2 = 0;
-    rect3_y2 = 0;
-    rect4_x1 = 0;
-    rect4_y1 = 0;
-    rect4_x2 = 0;
-    rect4_y2 = 0;
-    rect5_x1 = 0;
-    rect5_y1 = 0;
-    rect5_x2 = 0;
-    rect5_y2 = 0;
+    // Initialize rects to zero (at 0x69c) - handled by GlyphRect constructor
 
     // Zero 0x3c dwords at offset 0x600 (sprites, sounds, states)
     memset(&palette, 0, 0xf0);
@@ -51,29 +31,29 @@ Handler4::Handler4() {
     needsUpdate = 1;
 
     // Initialize rect coordinates (from original disassembly)
-    // rect1 at 0x69c: x1=0, y1=0, x2=0x197, y2=0x1aa
-    rect1_x2 = 0x197;
-    rect1_y2 = 0x1aa;
-    // rect2 at 0x6ac: x1=0x1d7, y1=0x3b, x2=0x25c, y2=0xbb
-    rect2_x1 = 0x1d7;
-    rect2_y1 = 0x3b;
-    rect2_x2 = 0x25c;
-    rect2_y2 = 0xbb;
-    // rect3 at 0x6bc: x1=0x1de, y1=0xf1, x2=0x25b, y2=0x16d
-    rect3_x1 = 0x1de;
-    rect3_y1 = 0xf1;
-    rect3_x2 = 0x25b;
-    rect3_y2 = 0x16d;
-    // rect4 at 0x6cc: x1=0x73, y1=0x11d, x2=0x12f, y2=0x149
-    rect4_x1 = 0x73;
-    rect4_y1 = 0x11d;
-    rect4_x2 = 0x12f;
-    rect4_y2 = 0x149;
-    // rect5 at 0x6dc: x1=0x32, y1=0x14a, x2=0x172, y2=0x192
-    rect5_x1 = 0x32;
-    rect5_y1 = 0x14a;
-    rect5_x2 = 0x172;
-    rect5_y2 = 0x192;
+    // rect1 at 0x69c: left=0, top=0, right=0x197, bottom=0x1aa
+    rect1.right = 0x197;
+    rect1.bottom = 0x1aa;
+    // rect2 at 0x6ac: left=0x1d7, top=0x3b, right=0x25c, bottom=0xbb
+    rect2.left = 0x1d7;
+    rect2.top = 0x3b;
+    rect2.right = 0x25c;
+    rect2.bottom = 0xbb;
+    // rect3 at 0x6bc: left=0x1de, top=0xf1, right=0x25b, bottom=0x16d
+    rect3.left = 0x1de;
+    rect3.top = 0xf1;
+    rect3.right = 0x25b;
+    rect3.bottom = 0x16d;
+    // rect4 at 0x6cc: left=0x73, top=0x11d, right=0x12f, bottom=0x149
+    rect4.left = 0x73;
+    rect4.top = 0x11d;
+    rect4.right = 0x12f;
+    rect4.bottom = 0x149;
+    // rect5 at 0x6dc: left=0x32, top=0x14a, right=0x172, bottom=0x192
+    rect5.left = 0x32;
+    rect5.top = 0x14a;
+    rect5.right = 0x172;
+    rect5.bottom = 0x192;
 
     // Create Palette
     palette = new Palette();

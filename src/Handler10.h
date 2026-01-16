@@ -9,6 +9,7 @@ class Sprite;
 class Sample;
 class MouseControl;
 class Hotspot;
+class OptionMenu;
 
 // SoundSlot - structure for character voice samples
 // Size: 8 bytes
@@ -85,7 +86,7 @@ public:
     // Handler10-specific fields starting at 0x600
     Palette* palette;           // 0x600
     MouseControl* background;   // 0x604
-    void* choiceScreen;         // 0x608 - OptionMenu* (not yet defined)
+    OptionMenu* choiceScreen;   // 0x608
     Hotspot* goButton;          // 0x60C - CharButton*
     Hotspot* cancelButton;      // 0x610 - CharButton*
     Hotspot* characters[3];     // 0x614 - CharSprite* array (peter, susan, duncan)

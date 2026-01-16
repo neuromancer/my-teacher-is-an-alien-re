@@ -68,8 +68,7 @@ void FUN_406670(void* data, int param) {}
 // Handler11 stubs
 // ============================================================================
 
-void FUN_00418d60(void*, const char*, const char*) {}
-void FUN_418d60(void* obj, const char* a, const char* b) { FUN_00418d60(obj, a, b); }
+// FUN_00418d60 now implemented in Parser.cpp as ParseFile()
 
 // Placeholder destructors
 SC_Dialog::~SC_Dialog() {}
@@ -93,15 +92,17 @@ void __fastcall FUN_004043a0(PriorityQueue* queue, CharSprite* sprite) {}  // Qu
 // - FUN_00409470 -> Hotspot::GetState()
 // - FUN_004094a0 -> Hotspot::Exit()
 
-// CharSprite destructor with SEH (complex, still a stub)
-void __fastcall FUN_004092e0(void* obj) {}  // T_Hotspot/CharSprite destructor
+// FUN_004092e0 now implemented in Hotspot.cpp
 
-// OptionMenu functions
-void __fastcall FUN_00409bf0(void* obj) {}  // OptionMenu cleanup
-void __fastcall FUN_00409f00(void* obj, int param) {}  // OptionMenu render
-void __fastcall FUN_00409fb0(void* obj, int param1, int param2) {}  // OptionMenu setOptionState
-void __fastcall FUN_0040a150(void* obj, int param) {}  // OptionMenu getOption
-void __fastcall FUN_0040a1a0(void* obj) {}  // OptionMenu exit
+// FUN_0041ce30 - Hotspot-related cleanup function
+void __fastcall FUN_0041ce30(void* data) {}
+
+// OptionMenu functions now implemented in OptionMenu.cpp:
+// - FUN_00409bf0 -> OptionMenu::~OptionMenu()
+// - FUN_00409f00 -> OptionMenu::Render()
+// - FUN_00409fb0 -> OptionMenu::SetOptionState()
+// - FUN_0040a150 -> OptionMenu::SelectCharacter()
+// - FUN_0040a1a0 -> OptionMenu::Deactivate()
 
 // MouseControl functions now implemented in MouseControl.cpp:
 // - FUN_0041f360 -> MouseControl::~MouseControl()
@@ -110,3 +111,10 @@ void __fastcall FUN_0040a1a0(void* obj) {}  // OptionMenu exit
 
 // IconBar::PlayButtonSound is now in IconBar.cpp:
 // - FUN_00403300 -> IconBar::PlayButtonSound(int)
+
+// ============================================================================
+// Handler13 stubs - MessageList node data cleanup
+// ============================================================================
+
+// FUN_00401910 - cleanup function for node data in Handler13's MessageList
+void __fastcall FUN_00401910(void* data) {}

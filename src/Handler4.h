@@ -5,6 +5,7 @@
 #include "Palette.h"
 #include "Sprite.h"
 #include "Sample.h"
+#include "GlyphRect.h"
 
 class SC_Message;
 
@@ -68,26 +69,11 @@ public:
     int puzzleSolved;       // 0x690
     int initialized;        // 0x694
     int needsUpdate;        // 0x698
-    int rect1_x1;           // 0x69C
-    int rect1_y1;           // 0x6A0
-    int rect1_x2;           // 0x6A4
-    int rect1_y2;           // 0x6A8
-    int rect2_x1;           // 0x6AC
-    int rect2_y1;           // 0x6B0
-    int rect2_x2;           // 0x6B4
-    int rect2_y2;           // 0x6B8
-    int rect3_x1;           // 0x6BC
-    int rect3_y1;           // 0x6C0
-    int rect3_x2;           // 0x6C4
-    int rect3_y2;           // 0x6C8
-    int rect4_x1;           // 0x6CC
-    int rect4_y1;           // 0x6D0
-    int rect4_x2;           // 0x6D4
-    int rect4_y2;           // 0x6D8
-    int rect5_x1;           // 0x6DC
-    int rect5_y1;           // 0x6E0
-    int rect5_x2;           // 0x6E4
-    int rect5_y2;           // 0x6E8
+    GlyphRect rect1;        // 0x69C
+    GlyphRect rect2;        // 0x6AC
+    GlyphRect rect3;        // 0x6BC
+    GlyphRect rect4;        // 0x6CC
+    GlyphRect rect5;        // 0x6DC
     int field_6EC;          // 0x6EC padding
 };
 

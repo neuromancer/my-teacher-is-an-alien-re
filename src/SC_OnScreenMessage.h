@@ -11,6 +11,13 @@ struct MessageList {
     void* tail;     // 0x4
     void* current;  // 0x8
     int flags;      // 0xc
+
+    MessageList() {
+        flags = 0;
+        head = 0;
+        tail = 0;
+        current = head;
+    }
 };
 
 // MessageNode for linked list items

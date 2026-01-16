@@ -2,12 +2,13 @@
 #define HANDLER_H
 
 #include "Parser.h"
+#include <string.h>
 
 class SC_Message;
 
 // Handler - Base class for all game handlers (modules)
 // Handlers are scene/screen managers that process messages and render content
-// 
+//
 // vtable layout (extends Parser):
 //   +0x00: Parser::~Parser (base destructor)
 //   +0x04: Parser::LBLParse
@@ -26,7 +27,7 @@ class SC_Message;
 //   0x8C+: Handler-specific fields
 class Handler : public Parser {
 public:
-    Handler();
+    Handler() { memset(&handlerId, 0, 24); }
     virtual ~Handler();
     
     // Virtual methods - these form the handler interface
