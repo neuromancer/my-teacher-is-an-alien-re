@@ -2,8 +2,8 @@
 #include "Timer.h"
 #include "Memory.h"
 
-// Global variable
-#define g_timer_count (*(unsigned int*)0x00436684)
+// Global variable - timer instance counter
+unsigned int g_timer_count = 0;
 
 /* Function start: 0x418EB0 */
 Timer::Timer()

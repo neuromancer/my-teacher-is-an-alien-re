@@ -180,7 +180,7 @@ int Hotspot::LBLParse(char* line)
     char command[32];
     sscanf(line, " %s ", command);
 
-    if (strcmp(command, "HOTSPOT") == 0) {
+    if (strcmp(command, "RECT") == 0) {
         sscanf(line, "%*s %d %d %d %d", &rect_x, &rect_y, &rect_w, &rect_h);
     } else if (strcmp(command, "DIALOG") == 0) {
         dialog = 1;
@@ -189,12 +189,12 @@ int Hotspot::LBLParse(char* line)
     } else if (strcmp(command, "PARSEFILEINDEX") == 0) {
         sscanf(line, "%*s %d", &parseFileIndex);
     } else if (strcmp(command, "SPRITE") == 0) {
-        Sprite* newSprite = (Sprite*)AllocateMemory(sizeof(Sprite));
+        Sprite* newSprite = (Sprite*)AllocateMemory(0xd8);
         if (newSprite) {
             newSprite->Sprite::Sprite(NULL);
-            sprite = newSprite;
-            sprite->Copy(this);
         }
+        sprite = newSprite;
+        Parser::ProcessFile(sprite, this, 0);
     } else if (strcmp(command, "LABEL") == 0) {
         sscanf(line, "%*s %s", label);
     } else if (strcmp(command, "MOUSE") == 0) {

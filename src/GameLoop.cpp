@@ -24,6 +24,8 @@
 #include "Handler10.h"
 #include "Handler11.h"
 #include "Handler.h"
+#include "Handler13.h"
+#include "Handler14.h"
 #include <smack.h>
 #include <stdio.h>
 #include <string.h>
@@ -936,18 +938,7 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 
 // Handler classes with correct sizes for new operator
 // Handler classes with inline constructors using stub vtable
-// Handler1 is defined in Handler1.h
-// Handler2 is defined in Handler2.h
-// Handler4 is defined in Handler4.h
-// Handler5 is defined in Handler5.h
-// Handler6 is defined in Handler6.h
-// Handler8 is defined in Handler8.h
 class Handler9 { public: Handler9() { *(void**)data = g_HandlerVTable; } char data[0x650]; };  // 0x406fc0
-// Handler10 is defined in Handler10.h
-// Handler11 is defined in Handler11.h
-// Handler12 is defined in Handler12.h
-class Handler13 { public: Handler13() { *(void**)data = g_HandlerVTable; } char data[0xd0]; };  // 0x401b60
-class Handler14 { public: Handler14() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x40b7e0
 class Handler15 { public: Handler15() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x40a2e0
 class Handler16 { public: Handler16() { *(void**)data = g_HandlerVTable; } char data[0xf8]; };  // 0x410650
 
@@ -955,7 +946,7 @@ class Handler16 { public: Handler16() { *(void**)data = g_HandlerVTable; } char 
 int* CreateHandler(int command) {
     char buffer[128];
     int* handler = 0;
-    
+
     switch(command) {
     case 1:
         handler = (int*)new Handler1();

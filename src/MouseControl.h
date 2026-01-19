@@ -25,9 +25,11 @@ public:
     MouseControl();
     ~MouseControl();
 
+    virtual int LBLParse(char* param_1);  // 0x41F8A0
     void Init();            // 0x41F4F0
     void StopAll();         // 0x41F480
     int DoAll();            // 0x41F800
+    void AddSprite(Sprite* s);  // 0x41F560
 
     int field_0x88;           // 0x88
     int field_0x8c;           // 0x8c - flags (byte at 0x8d is accessed as (field_0x8c >> 8) & 0xff)

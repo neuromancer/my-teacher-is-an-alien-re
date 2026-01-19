@@ -1,7 +1,10 @@
 #include "MouseControl.h"
 #include "Memory.h"
 #include "Sprite.h"
+#include "string.h"
 #include <new.h>
+#include <string.h>
+#include <stdio.h>
 
 // C wrapper for MouseControl constructor (used by SCI_AfterSchoolMenu)
 extern "C" void* MouseControl_Constructor(void* mem) {
@@ -178,4 +181,84 @@ int MouseControl::DoAll()
         } while (queue->m_head != 0);
     }
     return field_0x90;
+}
+
+/* Function start: 0x41F560 */
+void MouseControl::AddSprite(Sprite* s)
+{
+    QueueNode* node;
+    QueueNode* current;
+    Queue* queue;
+
+    if (s == 0) {
+        return;
+    }
+
+    s->Init();
+    queue = m_queue;
+
+    if (s == 0) {
+        ShowError("queue fault 0101");
+    }
+
+    queue->m_current = queue->m_head;
+
+    if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2) {
+        if (queue->m_head == 0) {
+            if (s == 0) {
+                ShowError("queue fault 0102");
+            }
+            queue->Insert(s);
+        } else {
+            while (1) {
+                current = (QueueNode*)queue->m_current;
+                Sprite* currSprite = (Sprite*)current->data;
+
+                if (currSprite->field_0xb0 < s->field_0xb0) {
+                    queue->Insert(s);
+                    break;
+                }
+
+                if (queue->m_tail == current) {
+                    queue->Insert(s);
+                    break;
+                }
+
+                if (current != 0) {
+                    queue->m_current = current->prev;
+                }
+                if (queue->m_current == 0) {
+                    break;
+                }
+            }
+        }
+    } else {
+        queue->Insert(s);
+    }
+}
+
+/* Function start: 0x41F8A0 */
+int MouseControl::LBLParse(char* param_1)
+{
+    char local_34[32];
+    Sprite* sprite;
+    void* mem;
+
+    local_34[0] = 0;
+    sscanf(param_1, " %s ", local_34);
+
+    if (strcmp(local_34, "SPRITE") == 0) {
+        mem = AllocateMemory(0xd8);
+        sprite = 0;
+        if (mem != 0) {
+            sprite = new (mem) Sprite(0);
+        }
+        Parser::ProcessFile(sprite, this, 0);
+        AddSprite(sprite);
+    } else if (strcmp(local_34, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SpriteList");
+    }
+    return 0;
 }

@@ -59,6 +59,7 @@ public:
     ~Handler10();
 
     // Virtual method overrides
+    virtual int LBLParse(char* line);
     virtual void Init(SC_Message* msg);
     virtual int HandleMessage(SC_Message* msg);
     virtual void Update(SC_Message* msg);

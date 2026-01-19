@@ -42,6 +42,9 @@ extern int DAT_00435038;
 extern int DAT_0043503c;
 extern int DAT_00435040;
 
+// Message log enabled flag (was hardcoded at 0x43d5a8)
+char g_messageLogEnabled = 1;
+
 
 char* strstr_custom(const char* haystack, const char* needle) {
     const char* haystack_base = haystack;
@@ -218,7 +221,7 @@ void AddToStringTable(char *param_1)
 /* Function start: 0x4192A0 */
 void WriteToMessageLogIfEnabled(wchar_t *param_1, ...)
 {
-    if ((*(char*)0x43d5a8 & 1) != 0) {
+    if ((g_messageLogEnabled & 1) != 0) {
         FILE *_File;
         va_list argptr;
 

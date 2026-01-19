@@ -31,6 +31,58 @@ extern void __fastcall FUN_004092e0(void*);  // CharSprite cleanup/destructor
 int DAT_00435448 = 0;  // Handler10 initialized flag
 // DAT_00435a80 is declared as int in globals.h, cast as needed
 
+extern "C" {
+    char* CDData_FormatPath(char*, ...);
+}
+
+/* Function start: 0x405D20 */
+int Handler10::LBLParse(char* line) {
+    char label[32];
+    char filepath[64];
+    MouseControl* mc;
+    Palette* pal;
+    Hotspot* hotspot;
+    OptionMenu* optMenu;
+
+    sscanf(line, "%s", label);
+
+    if (strcmp(label, "BACK") == 0) {
+        mc = new MouseControl();
+        background = mc;
+        Parser::ProcessFile(mc, this, (char*)0);
+    } else if (strcmp(label, "PALE") == 0) {
+        sscanf(line, "%s %s", label, filepath);
+        if (palette == 0) {
+            pal = new Palette();
+            palette = pal;
+            pal->Load(CDData_FormatPath(filepath));
+        }
+    } else if (strcmp(label, "CHAR") == 0) {
+        hotspot = new HotspotManager();
+        characters[characterCount] = hotspot;
+        Parser::ProcessFile(hotspot, this, (char*)0);
+        characterCount = characterCount + 1;
+    } else if (strcmp(label, "CANCEL") == 0) {
+        hotspot = new HotspotManager();
+        cancelButton = hotspot;
+        Parser::ProcessFile(hotspot, this, (char*)0);
+    } else if (strcmp(label, "OKAY") == 0) {
+        hotspot = new HotspotManager();
+        goButton = hotspot;
+        Parser::ProcessFile(hotspot, this, (char*)0);
+    } else if (strcmp(label, "OPTION_MENU") == 0) {
+        optMenu = new OptionMenu();
+        choiceScreen = optMenu;
+        Parser::ProcessFile(optMenu, this, (char*)0);
+    } else if (strcmp(label, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SCI_AfterSchoolMenu");
+    }
+
+    return 0;
+}
+
 /* Function start: 0x404CA0 */
 Handler10::Handler10() {
     int i;

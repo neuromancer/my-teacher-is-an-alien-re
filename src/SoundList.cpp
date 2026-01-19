@@ -1,8 +1,10 @@
 #include "SoundList.h"
 #include "Memory.h"
 #include "Sample.h"
+#include "Sound.h"
 #include "main.h"
 #include "string.h"
+#include "globals.h"
 #include <mss.h>
 #include <string.h>
 
@@ -68,7 +70,7 @@ void *SoundList::Register(char *filename) {
   char local_54[64];
   short sVar9;
 
-  if (*(int *)(0x0043696c + 0x38) != 0) {
+  if (g_Sound_0043696c->digital_driver != 0) {
     local_54[0] = '\0';
     ParsePath(filename, 0, 0, local_54, 0);
     if (local_54[0] != '\0') {

@@ -12,9 +12,6 @@ extern "C" {
 
 /* Function start: 0x403340 */
 Handler1::Handler1() {
-    // Zero 6 dwords at offset 0x88-0x9F (handlerId through field_9C)
-    memset(&handlerId, 0, 6 * sizeof(int));
-
     palette = 0;
     sprite = 0;
     handlerId = 1;
@@ -62,11 +59,11 @@ void Handler1::Init(SC_Message* msg) {
 int Handler1::HandleMessage(SC_Message* msg) {
     Handler1::WriteMessageAddress(msg);
     if (msg->mouseX >= 2) {
-        msg->targetAddress = 10;
+        msg->command = 10;
         msg->priority = 5;
-        msg->sourceAddress = 1;
-        msg->command = 1;
         msg->data = 1;
+        msg->targetAddress = 1;
+        msg->sourceAddress = 1;
     }
     return 1;
 }
@@ -99,6 +96,6 @@ void Handler1::Draw(int param1, int param2) {
 
 /* Function start: 0x4036A0 */
 int Handler1::Exit(SC_Message* msg) {
-    return handlerId <= msg->targetAddress;
+    return handlerId == msg->command;
 }
 

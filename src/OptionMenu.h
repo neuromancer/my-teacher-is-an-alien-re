@@ -5,7 +5,7 @@
 
 struct SpriteNode;
 
-class OptionMenu : Parser {
+class OptionMenu : public Parser {
 public:
     Sprite* options[3]; // 0x88, 0x8c, 0x90
     int field_94; // 0x94

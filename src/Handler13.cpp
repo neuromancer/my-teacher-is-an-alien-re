@@ -3,26 +3,15 @@
 #include "Message.h"
 #include "globals.h"
 #include "string.h"
+#include "TimedEvent.h"
 
-// Data cleanup function for list node data
-extern void __fastcall FUN_00401910(void*);
+// Insert data at current position in list
+extern void __fastcall FUN_004024d0(int* list, int data);
 
-// Timer check/process function
-extern int __fastcall FUN_004019a0(void* timerNode);
+// Append data at end of list
+extern void __fastcall FUN_004025a0(int* list, int data);
 
-// TimerNode constructor (returns new TimerNode)
-extern void* __fastcall FUN_00401890(void* mem);
-
-// Set timer duration on TimerNode
-extern void __fastcall FUN_00401990(void* timerNode, int duration);
-
-// Insert node at current position in list
-extern void __fastcall FUN_004024d0(int* list, int node);
-
-// Append node at end of list
-extern void __fastcall FUN_004025a0(int* list, int node);
-
-// Pop and return current node from list
+// Pop and return current node data from list
 extern void* __fastcall FUN_00402680(int* list);
 
 // Node destructor (calls dtor and frees)
@@ -44,7 +33,7 @@ Handler13::Handler13() {
 Handler13::~Handler13() {
     MessageList* pList;
     MessageNode* node;
-    void* data;
+    TimedEvent* data;
 
     pList = list;
     if (pList != 0) {
@@ -60,7 +49,7 @@ Handler13::~Handler13() {
                         pList->head = node->next;
                     }
                     // Unlink node from tail
-                    if (pList->tail == (MessageNode*)pList->current) {
+                    if (pList->tail == pList->current) {
                         pList->tail = ((MessageNode*)pList->current)->prev;
                     }
                     // Update next node's prev pointer
@@ -77,7 +66,7 @@ Handler13::~Handler13() {
                     node = (MessageNode*)pList->current;
                     data = 0;
                     if (node != 0) {
-                        data = node->data;
+                        data = (TimedEvent*)node->data;
                     }
                     if (node != 0) {
                         node->data = 0;
@@ -88,9 +77,9 @@ Handler13::~Handler13() {
                     }
                     pList->current = pList->head;
                 }
-                // Cleanup data object
+                // Cleanup data object (TimedEvent)
                 if (data != 0) {
-                    FUN_00401910(data);
+                    data->~TimedEvent();
                     FreeMemory(data);
                 }
             }
@@ -114,76 +103,74 @@ void Handler13::Update(SC_Message* msg) {
 
 /* Function start: 0x401E30 */
 void Handler13::Draw(int param1, int param2) {
-    int* piVar1;
-    int* puVar2;
+    MessageNode* node;
+    MessageNode* prevNode;
     unsigned int uVar3;
     int iVar4;
-    int iVar5;
+    TimedEvent* timedEvent;
     void* pvVar6;
 
     uVar3 = timer1.Update();
-    if ((uVar3 > 10000) && (*(int*)list == 0)) {
+    if ((uVar3 > 10000) && (list->head == 0)) {
         SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
     }
 
     timer1.Reset();
 
-    ((int*)list)[2] = *(int*)list;
-    iVar4 = *(int*)list;
+    list->current = list->head;
+    iVar4 = (int)list->head;
 
     while (iVar4 != 0) {
-        iVar5 = 0;
-        iVar4 = ((int*)list)[2];
-        if (iVar4 != 0) {
-            iVar5 = *(int*)(iVar4 + 8);
+        timedEvent = 0;
+        node = (MessageNode*)list->current;
+        if (node != 0) {
+            timedEvent = (TimedEvent*)node->data;
         }
-        iVar4 = FUN_004019a0((void*)iVar5);
+        iVar4 = timedEvent->Update();
         if (iVar4 != 0) {
-            piVar1 = (int*)list;
-            iVar4 = piVar1[2];
-            if (iVar4 == 0) {
+            node = (MessageNode*)list->current;
+            if (node == 0) {
                 pvVar6 = 0;
             } else {
-                if (*piVar1 == iVar4) {
-                    *piVar1 = *(int*)(iVar4 + 4);
+                if (list->head == node) {
+                    list->head = node->next;
                 }
-                if (piVar1[1] == piVar1[2]) {
-                    piVar1[1] = *(int*)piVar1[2];
+                if (list->tail == list->current) {
+                    list->tail = ((MessageNode*)list->current)->prev;
                 }
-                iVar4 = *(int*)piVar1[2];
-                if (iVar4 != 0) {
-                    *(int*)(iVar4 + 4) = ((int*)piVar1[2])[1];
+                node = (MessageNode*)list->current;
+                if (node->prev != 0) {
+                    node->prev->next = node->next;
                 }
-                puVar2 = (int*)((int*)piVar1[2])[1];
-                if (puVar2 != 0) {
-                    *puVar2 = *(int*)piVar1[2];
+                prevNode = ((MessageNode*)list->current)->prev;
+                if (prevNode != 0) {
+                    prevNode->next = (MessageNode*)list->current;
                 }
-                puVar2 = (int*)piVar1[2];
+                node = (MessageNode*)list->current;
                 pvVar6 = 0;
-                if (puVar2 != 0) {
-                    pvVar6 = (void*)puVar2[2];
-                    puVar2[2] = 0;
-                    *puVar2 = 0;
-                    puVar2[1] = 0;
-                    FreeMemory(puVar2);
-                    piVar1[2] = 0;
+                if (node != 0) {
+                    pvVar6 = node->data;
+                    node->data = 0;
+                    node->prev = 0;
+                    node->next = 0;
+                    FreeMemory(node);
+                    list->current = 0;
                 }
-                piVar1[2] = *piVar1;
+                list->current = list->head;
             }
             if (pvVar6 != 0) {
-                FUN_00401910(pvVar6);
+                ((TimedEvent*)pvVar6)->~TimedEvent();
                 FreeMemory(pvVar6);
             }
         }
-        iVar4 = (int)list;
-        iVar5 = *(int*)(iVar4 + 8);
-        if (*(int*)(iVar4 + 4) == iVar5) {
+        node = (MessageNode*)list->current;
+        if (list->tail == node) {
             break;
         }
-        if (iVar5 != 0) {
-            *(int*)(iVar4 + 8) = *(int*)(iVar5 + 4);
+        if (node != 0) {
+            list->current = node->next;
         }
-        iVar4 = *(int*)list;
+        iVar4 = (int)list->head;
     }
 
     if (handlerId == param2) {
@@ -200,13 +187,12 @@ int Handler13::HandleMessage(SC_Message* msg) {
 
 /* Function start: 0x401FB0 */
 int Handler13::Exit(SC_Message* msg) {
-    int* piVar1;
-    int* puVar2;
-    int iVar2;
-    int iVar5;
-    void* pvVar6;
-    void* pNode;
-    int* pList;
+    MessageList* pList;
+    MessageNode* node;
+    MessageNode* prevNode;
+    TimedEvent* timedEvent;
+    TimedEvent* eventData;
+    TimedEvent* pTimedEvent;
 
     if (msg->command != handlerId) {
         return 0;
@@ -220,43 +206,41 @@ int Handler13::Exit(SC_Message* msg) {
 
     case 0xf:
         // Clear entire list
-        piVar1 = (int*)list;
-        if (*piVar1 != 0) {
-            piVar1[2] = *piVar1;
-            iVar2 = *piVar1;
-            while (iVar2 != 0) {
-                iVar2 = piVar1[2];
-                if (iVar2 == 0) {
-                    pvVar6 = 0;
+        pList = list;
+        if (pList->head != 0) {
+            pList->current = pList->head;
+            while (pList->head != 0) {
+                node = (MessageNode*)pList->current;
+                if (node == 0) {
+                    eventData = 0;
                 } else {
-                    if (*piVar1 == iVar2) {
-                        *piVar1 = *(int*)(iVar2 + 4);
+                    if (pList->head == node) {
+                        pList->head = node->next;
                     }
-                    if (piVar1[1] == piVar1[2]) {
-                        piVar1[1] = *(int*)piVar1[2];
+                    if (pList->tail == pList->current) {
+                        pList->tail = node->prev;
                     }
-                    iVar2 = *(int*)piVar1[2];
-                    if (iVar2 != 0) {
-                        *(int*)(iVar2 + 4) = ((int*)piVar1[2])[1];
+                    prevNode = node->prev;
+                    if (prevNode != 0) {
+                        prevNode->next = node->next;
                     }
-                    puVar2 = (int*)((int*)piVar1[2])[1];
-                    if (puVar2 != 0) {
-                        *puVar2 = *(int*)piVar1[2];
+                    prevNode = node->prev;
+                    if (prevNode != 0) {
+                        prevNode->next = node;
                     }
-                    pNode = (void*)piVar1[2];
-                    pvVar6 = 0;
-                    if (pNode != 0) {
-                        pvVar6 = (void*)*(int*)((int)pNode + 8);
-                        FUN_00402700(pNode, 1);
-                        piVar1[2] = 0;
+                    node = (MessageNode*)pList->current;
+                    eventData = 0;
+                    if (node != 0) {
+                        eventData = (TimedEvent*)node->data;
+                        FUN_00402700(node, 1);
+                        pList->current = 0;
                     }
-                    piVar1[2] = *piVar1;
+                    pList->current = pList->head;
                 }
-                if (pvVar6 != 0) {
-                    FUN_00401910(pvVar6);
-                    FreeMemory(pvVar6);
+                if (eventData != 0) {
+                    eventData->~TimedEvent();
+                    FreeMemory(eventData);
                 }
-                iVar2 = *piVar1;
             }
         }
         break;
@@ -266,85 +250,76 @@ int Handler13::Exit(SC_Message* msg) {
             msg->Dump(0);
             WriteToMessageLog("SC_Timer::Input");
         } else {
-            pNode = 0;
-            puVar2 = (int*)AllocateMemory(0x28);
-            if (puVar2 != 0) {
-                pNode = FUN_00401890(puVar2);
-            }
-            ((int*)pNode)[3] = msg->field_b8;
-            ((int*)pNode)[2] = msg->data;
-            ((int*)pNode)[4] = msg->userPtr;
+            pTimedEvent = new TimedEvent();
+            pTimedEvent->m_duration = msg->field_b8;
+            pTimedEvent->field_0x8 = msg->sourceAddress;
+            pTimedEvent->m_next_event_data = (void*)msg->userPtr;
             msg->userPtr = 0;
-            FUN_00401990(pNode, msg->param1);
-            piVar1 = (int*)list;
-            if (pNode == 0) {
+            pTimedEvent->m_type = msg->param1;
+            pList = list;
+            if (pTimedEvent == 0) {
                 WriteToMessageLog("queue fault 0101");
             }
-            piVar1[2] = *piVar1;
-            if ((piVar1[3] == 1) || (piVar1[3] == 2)) {
-                if (*piVar1 == 0) {
-                    FUN_004024d0(piVar1, (int)pNode);
+            pList->current = pList->head;
+            if ((pList->flags == 1) || (pList->flags == 2)) {
+                if (pList->head == 0) {
+                    FUN_004024d0((int*)pList, (int)pTimedEvent);
                 } else {
                     do {
-                        iVar2 = piVar1[2];
-                        if ((unsigned int)*(int*)(*(int*)(iVar2 + 8) + 0xc) < (unsigned int)((int*)pNode)[3]) {
-                            FUN_004024d0(piVar1, (int)pNode);
+                        node = (MessageNode*)pList->current;
+                        timedEvent = (TimedEvent*)node->data;
+                        if ((unsigned int)timedEvent->m_duration < (unsigned int)pTimedEvent->m_duration) {
+                            FUN_004024d0((int*)pList, (int)pTimedEvent);
                             break;
                         }
-                        if (piVar1[1] == iVar2) {
-                            FUN_004025a0(piVar1, (int)pNode);
+                        if (pList->tail == node) {
+                            FUN_004025a0((int*)pList, (int)pTimedEvent);
                             break;
                         }
-                        if (iVar2 != 0) {
-                            piVar1[2] = *(int*)(iVar2 + 4);
+                        if (node != 0) {
+                            pList->current = node->next;
                         }
-                    } while (piVar1[2] != 0);
+                    } while (pList->current != 0);
                 }
             } else {
-                FUN_004024d0(piVar1, (int)pNode);
+                FUN_004024d0((int*)pList, (int)pTimedEvent);
             }
         }
         break;
 
     case 0x14:
-        pNode = 0;
-        puVar2 = (int*)AllocateMemory(0x28);
-        if (puVar2 != 0) {
-            pNode = FUN_00401890(puVar2);
-        }
-        ((int*)pNode)[2] = msg->data;
-        piVar1 = (int*)list;
-        if (pNode == 0) {
+        pTimedEvent = new TimedEvent();
+        pTimedEvent->field_0x8 = msg->sourceAddress;
+        pList = list;
+        if (pTimedEvent == 0) {
             WriteToMessageLog("queue fault 0103");
         }
-        iVar2 = *piVar1;
-        piVar1[2] = iVar2;
-        while (iVar2 != 0) {
-            iVar2 = piVar1[2];
-            iVar5 = 0;
-            if (iVar2 != 0) {
-                iVar5 = *(int*)(iVar2 + 8);
+        pList->current = pList->head;
+        while (pList->head != 0) {
+            node = (MessageNode*)pList->current;
+            timedEvent = 0;
+            if (node != 0) {
+                timedEvent = (TimedEvent*)node->data;
             }
-            if (*(int*)(iVar5 + 0xc) == ((int*)pNode)[3]) {
-                pvVar6 = FUN_00402680((int*)list);
-                if (pvVar6 != 0) {
-                    FUN_00401910(pvVar6);
-                    FreeMemory(pvVar6);
+            if (timedEvent->m_duration == pTimedEvent->m_duration) {
+                eventData = (TimedEvent*)FUN_00402680((int*)pList);
+                if (eventData != 0) {
+                    eventData->~TimedEvent();
+                    FreeMemory(eventData);
                 }
                 break;
             }
-            if (piVar1[1] == iVar2) {
+            if (pList->tail == node) {
                 break;
             }
-            if (iVar2 != 0) {
-                piVar1[2] = *(int*)(iVar2 + 4);
+            if (node != 0) {
+                pList->current = node->next;
             }
-            iVar2 = piVar1[2];
         }
         break;
 
     case 0x1b:
-        if (*(int*)list == 0) {
+        if (list->head == 0) {
             SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
         }
         break;

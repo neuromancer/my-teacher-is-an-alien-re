@@ -10,7 +10,6 @@ public:
     HSAMPLE FindFreeSampleHandle();
     void StopAllSamples();
 
-private:
     short num_samples;
     HSAMPLE samples[13];
     char pad[0x38 - 2 - sizeof(HSAMPLE) * 13];

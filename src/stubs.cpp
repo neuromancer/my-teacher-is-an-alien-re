@@ -139,3 +139,36 @@ void* __fastcall FUN_00402680(int* list) { return 0; }
 
 // FUN_00402700 - Node destructor (calls dtor and frees)
 void __fastcall FUN_00402700(void* node, int shouldDelete) {}
+
+// ============================================================================
+// Handler14 stubs - SC_Sound handler functions
+// ============================================================================
+
+// FUN_0040b700 - Check if sound finished playing
+int __fastcall FUN_0040b700(void* item) { return 0; }
+
+// FUN_0040b750 - Resume sound playback
+void __fastcall FUN_0040b750(int item) {}
+
+// FUN_0040b770 - Start/play sound
+void __fastcall FUN_0040b770(int item) {}
+
+// FUN_0040b790 - Adjust volume by delta
+void FUN_0040b790(void* item, int volume) {}
+
+// FUN_0040b7c0 - Set volume to specific value
+void FUN_0040b7c0(void* item, int volume) {}
+
+// FUN_0040c0d0 - Get current node data from list
+void* __fastcall FUN_0040c0d0(int list) { return 0; }
+
+// FUN_0040c0e0 - Find or create sound item in list
+void* FUN_0040c0e0(void* handler, int soundId) { return 0; }
+
+// FUN_0040c500 - Pop from sound list
+void* __fastcall FUN_0040c500(int* list) { return 0; }
+
+// FUN_0040c580 - Sound node destructor
+void FUN_0040c580(void* node, int flag) {}
+
+// FUN_0041e470 is Sample::Unload() - implemented in Sample.cpp
