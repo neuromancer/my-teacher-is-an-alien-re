@@ -27,7 +27,8 @@ int Handler12::HandleMessage(SC_Message* msg) {
     return 1;
 }
 
-void Handler12::Update(SC_Message* msg) {
+int Handler12::Update(SC_Message* msg) {
+    return 0;
 }
 
 void Handler12::Draw(int param1, int param2) {

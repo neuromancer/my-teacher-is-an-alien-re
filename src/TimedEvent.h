@@ -33,22 +33,25 @@ public:
     SC_Message* PopSafe(SC_Message* buffer);
 };
 
+// TimedEvent has two usage patterns in the codebase:
+// 1. Small (40 bytes / 0x28): Used in Handler13 for simple timer events
+// 2. Large (200 bytes / 0xC8): Used in TimedEventPool for full message events
+// The class definition includes all fields for the large variant.
 class TimedEvent {
 public:
     TimedEvent();
     void CopyFrom(const TimedEvent* other);
     ~TimedEvent();
 
-
     int Update();
 
-    void* vtable;         // 0x00
-    int m_type;           // 0x04
-    int field_0x8;        // 0x08
-    int m_duration;       // 0x0c
-    void* m_next_event_data; // 0x10
+    void* vtable;         // 0x00 - (used as next pointer in some lists)
+    int m_type;           // 0x04 - event type (0, 1, or 2)
+    int field_0x8;        // 0x08 - stores sourceAddress from message
+    int m_duration;       // 0x0c - timer duration in ms
+    void* m_next_event_data; // 0x10 - pointer to next event data (SC_Message*)
     Timer m_timer;        // 0x14 (20 bytes = 5 dwords)
-    // After Timer: 0x28
+    // Fields below are only used in the large variant (TimedEventPool)
     int field_0x28;       // 0x28
     int field_0x2c;       // 0x2c
     int field_0x30;       // 0x30

@@ -1,6 +1,8 @@
 #ifndef SOUNDLIST_H
 #define SOUNDLIST_H
 
+class Sample;
+
 class SoundList {
 public:
   SoundList(int count);
@@ -9,9 +11,9 @@ public:
   void *Register(char *filename);
 
 private:
-  void **m_sounds;
+  char **m_sounds;
   int m_count;
-  void **m_field8;
+  Sample **m_field8;
   short m_fieldc;
   short m_pad;
 };

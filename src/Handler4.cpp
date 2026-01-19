@@ -325,9 +325,9 @@ void Handler4::Draw(int param1, int param2) {
 }
 
 /* Function start: 0x40EED0 */
-void Handler4::Update(SC_Message* msg) {
+int Handler4::Update(SC_Message* msg) {
     if (msg == 0 || handlerId != msg->command) {
-        return;
+        return 0;
     }
 
     // Stop and cleanup sound1 if playing
@@ -355,6 +355,7 @@ void Handler4::Update(SC_Message* msg) {
 
     // Update mouse
     g_Mouse_00436978->DrawCursor();
+    return 0;
 }
 
 /* Function start: 0x40F310 */

@@ -54,8 +54,9 @@ int Handler11::HandleMessage(SC_Message* msg) {
     return IconBar::CheckButtonClick(msg);
 }
 
-void Handler11::Update(SC_Message* msg) {
+int Handler11::Update(SC_Message* msg) {
     IconBar::CleanupIconBar();
+    return 0;
 }
 
 void Handler11::Draw(int param1, int param2) {

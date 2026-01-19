@@ -121,7 +121,7 @@ int Handler6::HandleMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x404760 */
-void Handler6::Update(SC_Message* msg) {
+int Handler6::Update(SC_Message* msg) {
     // Cleanup palette at 0x600
     if (palette != 0) {
         delete palette;
@@ -157,6 +157,7 @@ void Handler6::Update(SC_Message* msg) {
 
     // Log message
     WriteToMessageLog("EXIT SEARCH SCREEN\n");
+    return 0;
 }
 
 /* Function start: 0x404890 */

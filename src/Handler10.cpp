@@ -401,10 +401,8 @@ int Handler10::HandleMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x405420 */
-void Handler10::Update(SC_Message* msg) {
-    if (background != 0) {
-        background->StopAll();
-    }
+int Handler10::Update(SC_Message* msg) {
+    return handlerId == msg->command;
 }
 
 /* Function start: 0x405490 */
@@ -572,12 +570,10 @@ void Handler10::RenderChoiceScreen(int characterIndex) {
 
 /* Function start: 0x405900 */
 void Handler10::RenderAll(int mouseX, int mouseY) {
-    int noHover;
-    int i;
     Hotspot** charPtr;
-    Hotspot* charSprite;
-    int isHit;
-    int state;
+    int i;
+    int noHover;
+    char* isHit;
     int prevChar;
 
     noHover = 1;
@@ -585,50 +581,47 @@ void Handler10::RenderAll(int mouseX, int mouseY) {
     charPtr = &characters[0];
 
     do {
-        charSprite = *charPtr;
+        {
+            MousePoint pos;
+            pos.x = mouseX;
+            pos.y = mouseY;
 
-        // Check if character is enabled
-        if (charSprite->enabled == 0) {
-            // Character not enabled, skip
-        } else {
-            // Hit test mouse against character bounds
-            if (mouseX < charSprite->rect_x ||
-                mouseX > charSprite->rect_w ||
-                mouseY < charSprite->rect_y ||
-                mouseY > charSprite->rect_h) {
-                isHit = 0;
+            if ((*charPtr)->enabled == 0) {
             } else {
-                isHit = 1;
-            }
-
-            if (isHit != 0) {
-                hoverCharacterIndex = i;
-
-                // Get current state
-                state = charSprite->GetState();
-                if (state != 2) {
-                    charSprite->SetState(3);
+                if (pos.x < (*charPtr)->rect_x ||
+                    (*charPtr)->rect_w < pos.x ||
+                    pos.y < (*charPtr)->rect_y ||
+                    (*charPtr)->rect_h < pos.y) {
+                    isHit = (char*)0;
+                } else {
+                    isHit = (char*)1;
                 }
-
-                // Update prev hover character
-                prevChar = prevHoverCharacter;
-                if (prevChar == -1) {
-                    prevHoverCharacter = i;
-                    charSprite->SetState(3);
-                } else if (i != prevChar) {
-                    characters[prevChar]->SetState(0);
-                    prevHoverCharacter = i;
-                }
-
-                noHover = 0;
             }
         }
 
-        charPtr++;
-        i++;
+        if (isHit != (char*)0) {
+            hoverCharacterIndex = i;
+
+            if ((*charPtr)->GetState() != 2) {
+                (*charPtr)->SetState(3);
+            }
+
+            prevChar = prevHoverCharacter;
+            if (prevChar == -1) {
+                prevHoverCharacter = i;
+                (*charPtr)->SetState(3);
+            } else if (i != prevChar) {
+                characters[prevChar]->SetState(0);
+                prevHoverCharacter = i;
+            }
+
+            noHover = 0;
+        }
+
+        charPtr = charPtr + 1;
+        i = i + 1;
     } while (i < 3);
 
-    // If nothing was hovered, reset previous character
     if (noHover != 0) {
         if (prevHoverCharacter != -1) {
             characters[prevHoverCharacter]->SetState(0);

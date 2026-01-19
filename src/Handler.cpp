@@ -42,7 +42,8 @@ int Handler::HandleMessage(SC_Message* msg) {
     return 1; // Handled
 }
 
-void Handler::Update(SC_Message* msg) {
+int Handler::Update(SC_Message* msg) {
+    return 0;
 }
 
 void Handler::Draw(int param1, int param2) {

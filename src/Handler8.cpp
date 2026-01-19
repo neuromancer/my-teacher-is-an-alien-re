@@ -144,17 +144,18 @@ int Handler8::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x4063C0 */
-void Handler8::Update(SC_Message* msg) {
+int Handler8::Update(SC_Message* msg) {
     int prio;
     if (msg != 0 && handlerId == msg->command) {
         prio = msg->priority;
         if (prio == 0) {
-            return;
+            return 0;
         }
         if (prio == 6) {
             ProcessMessage();
         }
     }
+    return 0;
 }
 
 /* Function start: 0x406400 */

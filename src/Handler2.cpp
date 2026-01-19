@@ -78,7 +78,7 @@ int Handler2::HandleMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x40FA30 */
-void Handler2::Update(SC_Message* msg) {
+int Handler2::Update(SC_Message* msg) {
     if (sprite != 0) {
         delete sprite;
         sprite = 0;
@@ -88,6 +88,7 @@ void Handler2::Update(SC_Message* msg) {
         palette = 0;
     }
     WriteToMessageLogIfEnabled(L"EXIT TEACHER SCREEN TO LEAVE\n");
+    return 0;
 }
 
 /* Function start: 0x40FAF0 */

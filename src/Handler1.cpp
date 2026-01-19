@@ -69,7 +69,7 @@ int Handler1::HandleMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x4035C0 */
-void Handler1::Update(SC_Message* msg) {
+int Handler1::Update(SC_Message* msg) {
     Sprite* spr;
     Palette* pal;
     spr = sprite;
@@ -84,6 +84,7 @@ void Handler1::Update(SC_Message* msg) {
     }
     SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
     WriteToMessageLogIfEnabled(L"\"EXIT INTRO GAME TEXT\"");
+    return 0;
 }
 
 /* Function start: 0x4036C0 */

@@ -16,8 +16,8 @@ SoundList::SoundList(int count) {
   m_fieldc = 0;
   m_pad = 0;
   m_count = count;
-  m_sounds = (void **)AllocateMemory(count * 4);
-  m_field8 = (void **)AllocateMemory(m_count * 4);
+  m_sounds = new char*[count];
+  m_field8 = new Sample*[m_count];
   if (m_field8 == 0 || m_sounds == 0) {
     ShowError("SoundList::SoundList() - Memory allocation error");
   }
@@ -31,36 +31,36 @@ SoundList::SoundList(int count) {
 SoundList::~SoundList() {
   while (m_fieldc > 0) {
     m_fieldc--;
-    void *sound = m_field8[m_fieldc];
+    Sample *sound = m_field8[m_fieldc];
     if (sound != 0) {
-      ((Sample *)sound)->Unload();
-      FreeMemory(sound);
+      sound->Unload();
+      delete sound;
       m_field8[m_fieldc] = 0;
     }
-    void *sound2 = m_sounds[m_fieldc];
+    char *sound2 = m_sounds[m_fieldc];
     if (sound2 != 0) {
-      FreeMemory(sound2);
+      delete[] sound2;
       m_sounds[m_fieldc] = 0;
     }
   }
   if (m_field8 != 0) {
-    FreeMemory(m_field8);
+    delete[] m_field8;
     m_field8 = 0;
   }
   if (m_sounds != 0) {
-    FreeMemory(m_sounds);
+    delete[] m_sounds;
     m_sounds = 0;
   }
 }
 
 /* Function start: 0x41E870 */
 void SoundList::StopAll() {
-  void **field8_ptr = m_field8;
+  Sample **field8_ptr = m_field8;
 
   for (short i = 0; i < m_fieldc; i++) {
-    Sample *sample = (Sample *)field8_ptr[i];
+    Sample *sample = field8_ptr[i];
     if (AIL_sample_status(sample->m_sample) == SMP_PLAYING) {
-      ((Sample *)sample)->Unload();
+      sample->Unload();
     }
   }
 }
@@ -77,7 +77,7 @@ void *SoundList::Register(char *filename) {
       sVar9 = 0;
       if (m_fieldc > 0) {
         do {
-          if (strcmpi((char *)m_sounds[sVar9], local_54) == 0) {
+          if (strcmpi(m_sounds[sVar9], local_54) == 0) {
             break;
           }
           sVar9++;
@@ -92,14 +92,14 @@ void *SoundList::Register(char *filename) {
         }
 
         int len = strlen(local_54);
-        m_sounds[m_fieldc] = (void *)AllocateMemory(len + 1);
-        strcpy((char *)m_sounds[m_fieldc], local_54);
+        m_sounds[m_fieldc] = new char[len + 1];
+        strcpy(m_sounds[m_fieldc], local_54);
 
         Sample *sound = new Sample();
 
         m_field8[m_fieldc] = sound;
 
-        if (((Sample *)m_field8[m_fieldc])->Load(filename) == 0) {
+        if (m_field8[m_fieldc]->Load(filename) == 0) {
           sVar9 = m_fieldc;
           m_fieldc++;
         }

@@ -98,8 +98,9 @@ void Handler13::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x401E20 */
-void Handler13::Update(SC_Message* msg) {
-}
+int Handler13::Update(SC_Message* msg) {
+    return 0;
+ }
 
 /* Function start: 0x401E30 */
 void Handler13::Draw(int param1, int param2) {

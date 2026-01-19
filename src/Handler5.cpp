@@ -150,10 +150,11 @@ int Handler5::HandleMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x40FE70 */
-void Handler5::Update(SC_Message* msg) {
+int Handler5::Update(SC_Message* msg) {
     if (sprite != 0) {
         sprite->StopAnimationSound();
     }
+    return 0;
 }
 
 /* Function start: 0x40FE90 */
