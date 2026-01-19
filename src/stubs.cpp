@@ -113,8 +113,29 @@ void __fastcall FUN_0041ce30(void* data) {}
 // - FUN_00403300 -> IconBar::PlayButtonSound(int)
 
 // ============================================================================
-// Handler13 stubs - MessageList node data cleanup
+// Handler13 stubs - MessageList and TimerNode functions
 // ============================================================================
+
+// FUN_00401890 - TimerNode constructor (returns new TimerNode)
+void* __fastcall FUN_00401890(void* mem) { return mem; }
 
 // FUN_00401910 - cleanup function for node data in Handler13's MessageList
 void __fastcall FUN_00401910(void* data) {}
+
+// FUN_00401990 - Set timer duration on TimerNode
+void __fastcall FUN_00401990(void* timerNode, int duration) {}
+
+// FUN_004019a0 - Timer check/process function
+int __fastcall FUN_004019a0(void* timerNode) { return 0; }
+
+// FUN_004024d0 - Insert node at current position in list
+void __fastcall FUN_004024d0(int* list, int node) {}
+
+// FUN_004025a0 - Append node at end of list
+void __fastcall FUN_004025a0(int* list, int node) {}
+
+// FUN_00402680 - Pop and return current node from list
+void* __fastcall FUN_00402680(int* list) { return 0; }
+
+// FUN_00402700 - Node destructor (calls dtor and frees)
+void __fastcall FUN_00402700(void* node, int shouldDelete) {}

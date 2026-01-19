@@ -25,9 +25,11 @@ public:
     ~Handler8();
 
     // Virtual method overrides
-    void Init(SC_Message* msg);
-    int Exit(SC_Message* msg);
-    void Update(SC_Message* msg);
+    virtual void Init(SC_Message* msg);
+    virtual int HandleMessage(SC_Message* msg);
+    virtual void Update(SC_Message* msg);
+    virtual void Draw(int param1, int param2);
+    virtual int Exit(SC_Message* msg);
 
     // Helper method
     void ProcessMessage();

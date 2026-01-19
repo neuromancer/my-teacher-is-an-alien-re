@@ -318,17 +318,15 @@ int Handler4::HandleMessage(SC_Message* msg) {
 
 /* Function start: 0x40EEB0 */
 void Handler4::Draw(int param1, int param2) {
-    int* msgPtr;
-    int diff;
-
-    msgPtr = (int*)param2;
-    diff = handlerId - msgPtr[0x22];
-    // Return (diff >= 2) ? 0 : 1 - handled by vtable
+    if (handlerId != param2) {
+        return;
+    }
+    // Rendering is handled in Update for this handler
 }
 
 /* Function start: 0x40EED0 */
 void Handler4::Update(SC_Message* msg) {
-    if (handlerId != msg->command) {
+    if (msg == 0 || handlerId != msg->command) {
         return;
     }
 

@@ -214,9 +214,9 @@ void Handler6::Draw(int param1, int param2) {
 
 /* Function start: 0x404870 */
 int Handler6::Exit(SC_Message* msg) {
-    // Simple comparison - return 1 if handlerIds match, 0 otherwise
+    // Compare handlerId <= msg->targetAddress
     int msgHandlerId = *((int*)((char*)msg + 0x88));
-    return (handlerId == msgHandlerId) ? 1 : 0;
+    return (handlerId <= msgHandlerId) ? 1 : 0;
 }
 
 /* Function start: 0x4049F0 */

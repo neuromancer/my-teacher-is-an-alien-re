@@ -126,8 +126,8 @@ void Handler8::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x406370 */
-int Handler8::Exit(SC_Message* msg) {
-    WriteMessageAddress(msg);
+int Handler8::HandleMessage(SC_Message* msg) {
+    Handler8::WriteMessageAddress(msg);
     if (msg->field_b4 == 0x1b || msg->mouseY > 1) {
         msg->command = Handler8::field_90;
         msg->priority = 5;
@@ -136,10 +136,17 @@ int Handler8::Exit(SC_Message* msg) {
     return 1;
 }
 
+void Handler8::Draw(int param1, int param2) {
+}
+
+int Handler8::Exit(SC_Message* msg) {
+    return handlerId <= msg->targetAddress;
+}
+
 /* Function start: 0x4063C0 */
 void Handler8::Update(SC_Message* msg) {
     int prio;
-    if (handlerId == msg->command) {
+    if (msg != 0 && handlerId == msg->command) {
         prio = msg->priority;
         if (prio == 0) {
             return;

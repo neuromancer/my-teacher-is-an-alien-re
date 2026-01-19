@@ -1,5 +1,6 @@
 #include "Handler11.h"
 #include "Parser.h"
+#include "SC_Question.h"
 #include <string.h>
 
 /* Function start: 0x40ACC0 */
@@ -43,4 +44,26 @@ Handler11::~Handler11() {
             field_60C[i] = 0;
         }
     }
+}
+
+void Handler11::Init(SC_Message* msg) {
+    IconBar::InitIconBar(msg);
+}
+
+int Handler11::HandleMessage(SC_Message* msg) {
+    return IconBar::CheckButtonClick(msg);
+}
+
+void Handler11::Update(SC_Message* msg) {
+    IconBar::CleanupIconBar();
+}
+
+void Handler11::Draw(int param1, int param2) {
+    if (handlerId == param2) {
+        IconBar::DrawIconBar(param1, param2);
+    }
+}
+
+int Handler11::Exit(SC_Message* msg) {
+    return handlerId <= msg->targetAddress;
 }

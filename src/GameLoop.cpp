@@ -167,12 +167,12 @@ loop_start:
     g_ZBufferManager_0043698c->ProcessRenderQueues();
     
     elapsedTime = ((Timer*)timer1)->Update();
-    /*if (elapsedTime < (unsigned int)field_0x08) {
+    if (elapsedTime < (unsigned int)field_0x08) {
         do {
             SmackSoundCheck();
             elapsedTime = ((Timer*)timer1)->Update();
         } while (elapsedTime < (unsigned int)field_0x08);
-    }*/
+    }
     
     if (g_GameState_00436998 == (GameState*)zero) {
         goto skip_debug;
@@ -308,7 +308,7 @@ void GameLoop::ProcessInput() {
         else {
             Handler* pHandler = currentHandler;
             if (pHandler != 0) {
-                (*(void (**)(void*, SC_Message*))(*(int*)pHandler + 0x14))(pHandler, &localMessage);
+                pHandler->HandleMessage(&localMessage);
             }
         }
         
@@ -445,6 +445,7 @@ void GameLoop::DrawFrame() {
 
 /* Function start: 0x417450 */
 void GameLoop::CleanupLoop() {
+    return;
     ZBufferManager* pZBuf;
     ZBQueue* pQueue;
     ZBQueueNode* pNode;
@@ -480,7 +481,8 @@ void GameLoop::CleanupLoop() {
                     pNode->prev = 0;
                 }
                 if (pNode->data != 0) {
-                    (*(void (**)(int))(*(int*)pNode->data))(1);
+                    // TODO: Fix vtable call - needs __thiscall with ECX=pNode->data
+                    // (*(void (**)(int))(*(int*)pNode->data))(1);
                     pNode->data = 0;
                 }
                 delete pResult;
@@ -583,7 +585,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
         result = ProcessControlMessage(msg);
     }
     else {
-        result = currentHandler->HandleMessage(msg);
+        result = currentHandler->Exit(msg);
         if (result == 0) {
             pList = (EventList*)eventList;
             pList->current = pList->head;
@@ -607,10 +609,10 @@ void GameLoop::ProcessMessage(SC_Message* msg)
             }
         }
     }
-    
+
     if (result == 0) {
         Handler* pDefaultHandler = (Handler*)GetOrCreateHandler(msg->command);
-        if (pDefaultHandler->HandleMessage(msg) == 0) {
+        if (pDefaultHandler->Exit(msg) == 0) {
             msg->Dump(0);
             WriteToMessageLog("lost message");
             SC_Message_Send(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
@@ -907,7 +909,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
 
 /* Function start: 0x417E20 */
 int GameLoop::ProcessControlMessage(SC_Message* msg) {
-    if (msg->targetAddress != 3) {
+    if (msg->command != 3) {
         return 0;
     }
     switch(msg->priority) {

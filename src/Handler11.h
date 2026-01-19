@@ -37,6 +37,13 @@ public:
     Handler11();
     ~Handler11();
 
+    // Virtual method overrides
+    virtual void Init(SC_Message* msg);
+    virtual int HandleMessage(SC_Message* msg);
+    virtual void Update(SC_Message* msg);
+    virtual void Draw(int param1, int param2);
+    virtual int Exit(SC_Message* msg);
+
     Palette* field_600;              // 0x600
     MouseControl* field_604;         // 0x604
     SC_Dialog* field_608;            // 0x608

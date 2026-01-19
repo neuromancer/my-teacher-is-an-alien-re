@@ -188,3 +188,6 @@ int DAT_004374de = 0;  // Clip left
 int DAT_004374e2 = 0;  // Clip right
 int DAT_004374e6 = 0;  // Clip top
 int DAT_004374ea = 0;  // Clip bottom
+
+// Added for GameLoop::Run assembly match
+void* g_SmackSoundCheck_0044053c = 0;

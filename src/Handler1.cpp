@@ -99,6 +99,6 @@ void Handler1::Draw(int param1, int param2) {
 
 /* Function start: 0x4036A0 */
 int Handler1::Exit(SC_Message* msg) {
-    return handlerId == msg->targetAddress;
+    return handlerId <= msg->targetAddress;
 }
 

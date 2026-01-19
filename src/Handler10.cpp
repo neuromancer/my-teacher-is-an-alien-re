@@ -349,15 +349,14 @@ int Handler10::HandleMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x405420 */
-int Handler10::Draw(SC_Message* msg) {
-    int diff;
-
-    diff = handlerId - msg->command;
-    return (diff < 2) ? 1 : 0;
+void Handler10::Update(SC_Message* msg) {
+    if (background != 0) {
+        background->StopAll();
+    }
 }
 
 /* Function start: 0x405490 */
-void Handler10::Update(SC_Message* param1, int param2) {
+void Handler10::Draw(int param1, int param2) {
     int mouseX;
     int mouseY;
     int* mousePtr;
@@ -385,7 +384,7 @@ void Handler10::Update(SC_Message* param1, int param2) {
     RenderAll(mouseX, mouseY);
 
     // Draw iconbar
-    IconBar::DrawIconBar((int)param1, param2);
+    IconBar::DrawIconBar(param1, param2);
 
     // Render background sprite
     if (background != 0) {

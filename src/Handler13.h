@@ -4,6 +4,7 @@
 #include "Handler.h"
 #include "Timer.h"
 #include "SC_OnScreenMessage.h"
+#include "SC_Question.h"
 
 // Handler13 - Handler class with ID 13
 // Size: 0xD0 bytes
@@ -22,6 +23,13 @@ class Handler13 : public Handler {
 public:
     Handler13();
     ~Handler13();
+
+    // Virtual method overrides
+    virtual void Init(SC_Message* msg);
+    virtual int HandleMessage(SC_Message* msg);
+    virtual void Update(SC_Message* msg);
+    virtual void Draw(int param1, int param2);
+    virtual int Exit(SC_Message* msg);
 
     // Handler13-specific fields starting at 0xA0
     Timer timer1;           // 0xA0 - 0xB3 (size 0x14)

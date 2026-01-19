@@ -122,6 +122,6 @@ void Handler2::Draw(int param1, int param2) {
 
 /* Function start: 0x40FAD0 */
 int Handler2::Exit(SC_Message* msg) {
-    return handlerId == msg->targetAddress;
+    return handlerId <= msg->targetAddress;
 }
 
