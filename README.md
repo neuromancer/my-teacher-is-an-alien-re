@@ -20,7 +20,11 @@ The game executables has the following sha256 signatures:
 
 # Status
 
-As of the time of writing this, the reconstruction of the demo executable already started. The progress is reported using ranges of functions (not all of them are implemented with 100%, but still provides a sense of progress):
+The intro video and the first screen from the demo are starting to run:
+
+<img width="640" height="479" alt="image" src="https://github.com/user-attachments/assets/e92594ef-183c-472e-8bd6-101ee6b517a4" />
+
+Additionally, the progress is reported using ranges of functions (not all of them are implemented with 100%, but still provides a sense of progress):
 
 ```--- Progress Report ---
   ❌ 0x401000 - 0x4012c0 (17 functions)
@@ -154,13 +158,13 @@ As of the time of writing this, the reconstruction of the demo executable alread
 Progress: 225 / 1142 (19.70%)
 ```
 
-Check the [src folder](./src) to see examples of reconstructed functions. All the reconstructed source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/).
+Check the [src folder](./src) to see examples of reconstructed functions. All the reconstructed source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/) and Claude Opus.
 
 # Building
 
 Prerequisites:
 
-* `wine`
+* `wibo` (already included as a submodule)
 
 Optionally, if you want to compute the similarity/progress reports:
 
@@ -170,4 +174,4 @@ Optionally, if you want to compute the similarity/progress reports:
 Clone the project and run `make` inside. If you want to see the LLM workflow in action, you need:
 
 * [cline](https://cline.bot/) or Copilot.
-* Some LLM API (Claude recommended)
+* Some LLM API (Claude Opus recommended)
