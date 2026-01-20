@@ -7,45 +7,56 @@
 EngineB::EngineB() {
   // Engine::Engine() is called automatically via inheritance
 
-  int *p130 = (int *)((char *)this + 0x130);
-  p130[0] = 0;
-  p130[1] = 0;
-  p130[2] = 0;
-  p130[3] = 0;
+  // Initialize SubObj16 at 0x130
+  EngineB::field_0x130.field_0 = 0;
+  EngineB::field_0x130.field_4 = 0;
+  EngineB::field_0x130.field_8 = 0;
+  EngineB::field_0x130.field_c = 0;
 
-  int *p140 = (int *)((char *)this + 0x140);
-  p140[0] = 0;
-  p140[1] = 0;
-  p140[2] = 0;
-  p140[3] = 0;
+  // Initialize SubObj16 at 0x140
+  EngineB::field_0x140.field_0 = 0;
+  EngineB::field_0x140.field_4 = 0;
+  EngineB::field_0x140.field_8 = 0;
+  EngineB::field_0x140.field_c = 0;
 
-  int *p150 = (int *)((char *)this + 0x150);
-  p150[0] = 0;
-  p150[1] = 0;
+  // Initialize SubObj8 at 0x150
+  EngineB::field_0x150.field_0 = 0;
+  EngineB::field_0x150.field_4 = 0;
 
-  int *p158 = (int *)((char *)this + 0x158);
-  p158[0] = 0;
-  p158[1] = 0;
+  // Initialize SubObj8 at 0x158
+  EngineB::field_0x158.field_0 = 0;
+  EngineB::field_0x158.field_4 = 0;
 
-  *(void **)this = (void *)0x4313c0;
-  memset((char *)this + 0xe8, 0, 0x80);
+  memset((char*)this + 0xe8, 0, 0x80);
 }
 
 /* Function start: 0x4121f0 */
-EngineB::~EngineB() { DestructorHelper(); }
+EngineB::~EngineB() {
+  EngineB::DestructorHelper();
+}
 
 /* Function start: 0x412210 */
 void EngineB::DestructorHelper() {
-  *(void **)this = (void *)0x4313c0;
-  void *obj128 = *(void **)((char *)this + 0x128);
-  if (obj128) {
-    (*(void (**)(void *, int)) * (void **)obj128)(obj128, 1);
-    *(void **)((char *)this + 0x128) = 0;
+  // Delete field_0x128 object via its virtual destructor
+  void* obj128 = EngineB::field_0x128;
+  if (obj128 != 0) {
+    delete obj128;
+    EngineB::field_0x128 = 0;
   }
-  void *obj0xe8 = *(void **)((char *)this + 0xe8);
-  if (obj0xe8) {
-    ((SoundList*)obj0xe8)->~SoundList();
-    FreeMemory(obj0xe8);
-    *(void **)((char *)this + 0xe8) = 0;
+
+  // Delete field_0xe8 SoundList
+  SoundList* soundList = (SoundList*)EngineB::field_0xe8;
+  if (soundList != 0) {
+    soundList->~SoundList();
+    FreeMemory(soundList);
+    EngineB::field_0xe8 = 0;
   }
 }
+
+// Stub implementations for virtual method overrides (to be implemented later)
+int EngineB::LBLParse(char* line) { return 0; }
+void EngineB::OnProcessEnd() {}
+void EngineB::VirtProcess() {}
+void EngineB::VirtDraw() {}
+void EngineB::Virt13() {}
+void EngineB::Virt17() {}

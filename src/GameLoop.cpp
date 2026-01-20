@@ -26,6 +26,8 @@
 #include "Handler.h"
 #include "Handler13.h"
 #include "Handler14.h"
+#include "Handler15.h"
+#include "Handler16.h"
 #include <smack.h>
 #include <stdio.h>
 #include <string.h>
@@ -223,7 +225,7 @@ void GameLoop::ProcessInput() {
     int clickX;
     int clickY;
     int mouseButton;
-    TimedEvent* pEvent;
+    PooledEvent* pEvent;
     TimedEventPool* pPool;
     
     inputResult = g_InputManager_00436968->PollEvents(1);
@@ -317,13 +319,13 @@ void GameLoop::ProcessInput() {
         if (localMessage.targetAddress != 0 && localMessage.priority != 0) {
             pPool = g_TimedEventPool2_00436988;
             pEvent = pPool->Create((void*)pPool->list.tail, 0);
-            ((TimedEvent*)((char*)pEvent + 8))->CopyFrom((TimedEvent*)&localMessage);
+            ((PooledEvent*)((char*)pEvent + 8))->CopyFrom((PooledEvent*)&localMessage);
             if (pPool->list.tail == 0) {
-                pPool->list.head = (TimedEvent*)pEvent;
+                pPool->list.head = pEvent;
             } else {
-                *(TimedEvent**)pPool->list.tail = (TimedEvent*)pEvent;
+                *(PooledEvent**)pPool->list.tail = pEvent;
             }
-            pPool->list.tail = (TimedEvent*)pEvent;
+            pPool->list.tail = pEvent;
         }
     }
 }
@@ -627,7 +629,7 @@ int GameLoop::UpdateGame()
 {
     SC_Message* pSourceMsg;
     TimedEventPool* pPool;
-    TimedEvent* pNewEvent;
+    PooledEvent* pNewEvent;
     unsigned int uVar5;
     unsigned int uVar6;
     SC_Message local_258(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);  // [EBP - 0x254] buffer for inner iterator result
@@ -688,12 +690,12 @@ int GameLoop::UpdateGame()
         // Create entry in g_TimedEventPool1_00436984
         pPool = g_TimedEventPool1_00436984;
         pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
-        ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)&local_d8);
-        
+        ((PooledEvent*)((int*)pNewEvent + 2))->CopyFrom((PooledEvent*)&local_d8);
+
         if (pPool->list.tail == 0) {
             pPool->list.head = pNewEvent;
         } else {
-            *(TimedEvent**)pPool->list.tail = pNewEvent;
+            *(PooledEvent**)pPool->list.tail = pNewEvent;
         }
         pPool->list.tail = pNewEvent;
     }
@@ -712,12 +714,12 @@ int GameLoop::UpdateGame()
             SC_Message* pInnerMsg = g_TimedEventPool2_00436988->Pop(&local_258);
             pPool = g_TimedEventPool1_00436984;
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
-            ((TimedEvent*)((int*)pNewEvent + 2))->CopyFrom((TimedEvent*)pInnerMsg);
-            
+            ((PooledEvent*)((int*)pNewEvent + 2))->CopyFrom((PooledEvent*)pInnerMsg);
+
             if (pPool->list.tail == 0) {
                 pPool->list.head = pNewEvent;
             } else {
-                *(TimedEvent**)pPool->list.tail = pNewEvent;
+                *(PooledEvent**)pPool->list.tail = pNewEvent;
             }
             pPool->list.tail = pNewEvent;
             
@@ -939,8 +941,6 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 // Handler classes with correct sizes for new operator
 // Handler classes with inline constructors using stub vtable
 class Handler9 { public: Handler9() { *(void**)data = g_HandlerVTable; } char data[0x650]; };  // 0x406fc0
-class Handler15 { public: Handler15() { *(void**)data = g_HandlerVTable; } char data[0xb8]; };  // 0x40a2e0
-class Handler16 { public: Handler16() { *(void**)data = g_HandlerVTable; } char data[0xf8]; };  // 0x410650
 
 /* Function start: 0x40CDD0 */
 int* CreateHandler(int command) {

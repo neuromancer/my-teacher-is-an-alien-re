@@ -15,6 +15,20 @@ class InputHandler;
 class CursorManager;
 class StateManager;
 
+// Engine - Base class for game engine variants (vtable 0x431340, size 0xe8)
+//
+// Class hierarchy:
+//   Parser
+//     └── Engine (base, vtable 0x431340, size 0xe8)
+//           ├── EngineA (exploration, vtable 0x431410, size 0xe8)
+//           └── EngineB (combat, vtable 0x4313c0, size 0x168)
+//
+// vtable layout (18 entries):
+//   [0] LBLParse        [1] OnProcessStart   [2] OnProcessEnd    [3] destructor
+//   [4] Initialize      [5] CleanupSubsystems [6] VirtCleanup    [7] DisplayFrameRate
+//   [8] VirtUpdate      [9] VirtCheck1       [10] VirtCheck2     [11] VirtProcess
+//   [12] VirtDraw       [13] Virt13          [14] UpdateAndCheck [15] Virt15
+//   [16] Virt16         [17] Virt17
 class Engine : public Parser {
 public:
   // Parser fields end at 0x88
@@ -47,13 +61,32 @@ public:
 
   Engine();
 
-  // Virtual function overrides
-  int LBLParse(char* line);
-  void OnProcessStart();
-  void OnProcessEnd();
+  // Virtual function overrides from Parser (vtable[0-2])
+  virtual int LBLParse(char* line);
+  virtual void OnProcessStart();
+  virtual void OnProcessEnd();
 
-  void DisplayFrameRate();
-  void Initialize();
+  // Engine virtual destructor (vtable[3])
+  virtual ~Engine();
+
+  // Engine virtual methods (vtable[4-17])
+  virtual void Initialize();          // vtable[4] 0x411550
+  virtual void CleanupSubsystems();   // vtable[5] 0x411a40
+  virtual void VirtCleanup();         // vtable[6] 0x411540 - called by StopAndCleanup
+  virtual void DisplayFrameRate();    // vtable[7] 0x411d60
+  virtual void VirtUpdate();          // vtable[8] 0x411460
+  virtual int VirtCheck1();           // vtable[9] 0x411dd0
+  virtual int VirtCheck2();           // vtable[10] 0x411440
+  virtual void VirtProcess();         // vtable[11] 0x4113a0
+  virtual void VirtDraw();            // vtable[12] 0x411510
+  virtual void Virt13();              // vtable[13] 0x411190
+  virtual int UpdateAndCheck();       // vtable[14] 0x411340
+  virtual void Virt15();              // vtable[15] 0x411ca0
+  virtual void Virt16();              // vtable[16] 0x411d20
+  virtual void Virt17();              // vtable[17] 0x4111a0
+
+  // Non-virtual methods
+  void StopAndCleanup();  // 0x411320
 };
 
 #endif // ENGINE_H

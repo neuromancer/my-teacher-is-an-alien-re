@@ -18,6 +18,7 @@ class StringTable;
 class ZBufferManager;
 class FlagArray;
 class TimedEventPool;
+class Engine;
 
 
 // extern IMAGE_DOS_HEADER IMAGE_DOS_HEADER_00400000; // { /* 128 bytes */ }
@@ -371,7 +372,7 @@ extern FlagArray* g_Manager_00435a84; // 00435a84
 // extern int DAT_00435b88; // { /* 4 bytes */ }
 // extern int DAT_00435b8c; // { /* 4 bytes */ }
 // extern int DAT_00435b94; // { /* 4 bytes */ }
-// extern int DAT_00435eb0; // { /* 4 bytes */ }
+extern Engine* g_CombatEngine; // 00435eb0 - Combat engine (EngineB subclass)
 // extern char DAT_00435ef0; // { /* 1 bytes */ }
 // extern char DAT_00435ef1; // { /* 1 bytes */ }
 // extern char DAT_00435ef2; // { /* 1 bytes */ }

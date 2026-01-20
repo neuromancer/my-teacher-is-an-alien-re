@@ -9,7 +9,6 @@
 #include "SC_Question.h"
 
 
- 
 /* Function start: 0x401890 */
 TimedEvent::TimedEvent()
 {
@@ -27,6 +26,12 @@ TimedEvent::~TimedEvent()
     }
 }
 
+/* Function start: 0x401990 */
+void TimedEvent::SetType(int type)
+{
+    m_type = type;
+}
+
 /* Function start: 0x4019A0 */
 int TimedEvent::Update()
 {
@@ -41,45 +46,15 @@ int TimedEvent::Update()
         void* next_data = m_next_event_data;
         if (next_data) {
             pool = g_TimedEventPool2_00436988;
-            TimedEvent* node = pool->Create((void*)pool->list.tail, 0);
-            ((TimedEvent*)((int*)node + 2))->CopyFrom((TimedEvent*)next_data);
+            PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
+            // CopyFrom is on the embedded SC_Message at offset 8
+            ((PooledEvent*)((int*)node + 2))->CopyFrom((PooledEvent*)next_data);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;
             } else {
-                ((TimedEventList**)&pool->list.tail)[0]->tail = node; // Wait, original code logic was *(int*)tail = node. Tail is a node pointer. 
-                // Ah, pool list is a linked list. 
-                // Previous code: *(int*)pool[1] = (int)node; 
-                // pool[1] is tail. So it sets tail->next = node? 
-                // Queue/List usage usually: tail->next = new_node.
-                // But TimedEvent doesn't have a 'next' field at offset 0?
-                // TimedEvent: field 0 is vtable.
-                // Does it use vtable pointer as next pointer in the list? 
-                // Or is the list node a wrapper?
-                // Queue::Create returns a node.
-                // TimedEventPool::Create seems to return a TimedEvent* but let's check.
-                // The cast ((TimedEvent*)((int*)node + 2)) suggests 'node' is the container/wrapper, and +8 is the TimedEvent object.
-            }
-            // Let's check TimedEventPool::Create signature.
-            // But first, let's replicate the exact memory operations using the struct.
-            
-            // pool[1] is tail.
-            // *(int*)pool[1] means dereferencing tail pointer and writing to offset 0 of the tail object.
-            // Offset 0 of TimedEvent is vtable... or if it's a wrapper node.
-            
-            // The code seems to assume the returned pointer 'node' is compatible with being stored in list.head/tail.
-            
-            if (pool->list.tail == 0) {
-                pool->list.head = node;
-            } else {
-                // *(int*)pool[1] = (int)node; -> tail->val = node? No, *tail = node.
-                // This implies offset 0 of the object pointed to by tail is a 'next' pointer.
-                // For TimedEvent, offset 0 is vtable. Hacking vtable as 'next'?
-                // Or maybe TimedEventPool uses a different node type for the list?
-                // The list definition has `TimedEvent* head;`.
-                
-                // Let's stick to the pointer hacks but using proper types for 'pool'.
-                 *(TimedEvent**)pool->list.tail = node;
+                // Set tail->next = node (offset 0 is next pointer)
+                *(PooledEvent**)pool->list.tail = node;
             }
             pool->list.tail = node;
         }
@@ -98,13 +73,13 @@ int TimedEvent::Update()
         void* next_data = m_next_event_data;
         if (next_data) {
             pool = g_TimedEventPool2_00436988;
-            TimedEvent* node = pool->Create((void*)pool->list.tail, 0);
-            ((TimedEvent*)((int*)node + 2))->CopyFrom((TimedEvent*)next_data);
+            PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
+            ((PooledEvent*)((int*)node + 2))->CopyFrom((PooledEvent*)next_data);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;
             } else {
-               *(TimedEvent**)pool->list.tail = node;
+               *(PooledEvent**)pool->list.tail = node;
             }
             pool->list.tail = node;
         }
@@ -122,13 +97,13 @@ int TimedEvent::Update()
         void* next_data = m_next_event_data;
         if (next_data) {
             pool = g_TimedEventPool2_00436988;
-            TimedEvent* node = pool->Create((void*)pool->list.tail, 0);
-            ((TimedEvent*)((int*)node + 2))->CopyFrom((TimedEvent*)next_data);
+            PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
+            ((PooledEvent*)((int*)node + 2))->CopyFrom((PooledEvent*)next_data);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;
             } else {
-                *(TimedEvent**)pool->list.tail = node;
+                *(PooledEvent**)pool->list.tail = node;
             }
             pool->list.tail = node;
         }

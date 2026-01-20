@@ -8,13 +8,13 @@
 /* Function start: 0x40D2A0 */
 TimedEventPool::~TimedEventPool()
 {
-    TimedEvent* node;
+    PooledEvent* node;
     SC_Message* msg;
     int counter;
     int tmp;
-    TimedEvent* poolBlock;
-    TimedEvent* nextBlock;
-    
+    PooledEvent* poolBlock;
+    PooledEvent* nextBlock;
+
     // Iterate through active events list (linked at offset 0)
     node = list.head;
     if (node != 0) {
@@ -29,21 +29,21 @@ TimedEventPool::~TimedEventPool()
                 tmp = counter;
                 counter--;
             } while (tmp != 0);
-            node = *(TimedEvent**)node;
+            node = *(PooledEvent**)node;
         } while (node != 0);
     }
-    
+
     // Clear pool state fields
     m_count = 0;
     m_free_list = 0;
     list.tail = 0;
     list.head = 0;
-    
+
     // Free pool memory blocks (linked at offset 0x10)
     poolBlock = m_pool;
     if (poolBlock != 0) {
         do {
-            nextBlock = *(TimedEvent**)poolBlock;
+            nextBlock = *(PooledEvent**)poolBlock;
             FreeMemory(poolBlock);
             poolBlock = nextBlock;
         } while (poolBlock != 0);
@@ -52,7 +52,7 @@ TimedEventPool::~TimedEventPool()
 }
 
 /* Function start: 0x402310 */
-void TimedEvent::CopyFrom(const TimedEvent* other)
+void PooledEvent::CopyFrom(const PooledEvent* other)
 {
     unsigned int eax;
     char* src = (char*)other;
@@ -102,13 +102,13 @@ void TimedEvent::CopyFrom(const TimedEvent* other)
 }
 
 /* Function start: 0x402420 */
-TimedEvent* TimedEventPool::Create(void* callback, void* data)
+PooledEvent* TimedEventPool::Create(void* callback, void* data)
 {
     if (m_free_list == 0) {
         int* new_pool = (int*)AllocateMemory(m_pool_size * 200 + 4);
         *new_pool = (int)m_pool;
         int count = m_pool_size;
-        m_pool = (TimedEvent*)new_pool;
+        m_pool = (PooledEvent*)new_pool;
 
         int* current = new_pool + count * 50 - 49;
         count--;
@@ -116,15 +116,15 @@ TimedEvent* TimedEventPool::Create(void* callback, void* data)
             do {
                 count--;
                 *current = (int)m_free_list;
-                m_free_list = (TimedEvent*)current;
+                m_free_list = (PooledEvent*)current;
                 current = current - 50;
             } while (count >= 0);
         }
     }
 
-    TimedEvent* event = m_free_list;
+    PooledEvent* event = m_free_list;
     Message* ebx = (Message*)((int*)event + 2);
-    m_free_list = *(TimedEvent**)event;
+    m_free_list = *(PooledEvent**)event;
     *(void**)((char*)event + 4) = callback;
     *(void**)event = data;
     m_count++;
@@ -158,7 +158,7 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 {
     // Local variables matching the assembly stack layout
     TimedEventPool* local_14;     // [EBP-0x10] - this pointer
-    TimedEvent* local_18;         // [EBP-0x14] - head node pointer
+    PooledEvent* local_18;        // [EBP-0x14] - head node pointer
     int local_1c;                 // [EBP-0x18] - success flag
     
     // Local SC_Message on stack for intermediate copy
@@ -212,9 +212,9 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     local_d8.userPtr = srcMsg->userPtr;
 
     // Update list head: list.head = head->next
-    TimedEvent* nextNode = *(TimedEvent**)local_18;
+    PooledEvent* nextNode = *(PooledEvent**)local_18;
     local_14->list.head = nextNode;
-    
+
     if (nextNode != 0) {
         // Clear prev pointer of new head
         *(int*)((char*)nextNode + 4) = 0;
@@ -222,7 +222,7 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
         // List is now empty, clear tail
         local_14->list.tail = 0;
     }
-    
+
     // Call destructor on source SC_Message
     int counter = 0;
     do {
@@ -232,9 +232,9 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
         counter--;
         if (tmp == 0) break;
     } while (1);
-    
+
     // Add node to free list
-    *(TimedEvent**)local_18 = local_14->m_free_list;
+    *(PooledEvent**)local_18 = local_14->m_free_list;
     local_14->m_free_list = local_18;
     
     // Decrement count

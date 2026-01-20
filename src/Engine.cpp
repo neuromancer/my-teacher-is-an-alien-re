@@ -10,6 +10,7 @@
 #include "mCNavigator.h"
 #include "Palette.h"
 #include "EngineSubsystems.h"
+#include "Sound.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -145,7 +146,7 @@ int Engine::LBLParse(char* line) {
     int iVar3 = sscanf(line, " %s %s ", local_34, local_54);
     if (iVar3 == 2) {
       if (Engine::m_subParser != (Parser*)0) {
-        (*(void (**)(int))(*((int*)Engine::m_subParser) + 0xc))(1);
+        delete Engine::m_subParser;
         Engine::m_subParser = (Parser*)0;
       }
       if (strcmp(local_54, "ROCKTHROWER") == 0) {
@@ -172,3 +173,55 @@ int Engine::LBLParse(char* line) {
   }
   return 0;
 }
+
+/* Function start: 0x411320 */
+void Engine::StopAndCleanup() {
+  g_Sound_0043696c->StopAllSamples();
+  VirtCleanup();
+}
+
+// External function for navigation check
+extern int __fastcall FUN_00413bc0(Parser* parser);
+
+/* Function start: 0x411340 */
+int Engine::UpdateAndCheck() {
+  int result;
+
+  result = VirtCheck1();
+  if (result != 0) {
+    return 1;
+  }
+
+  VirtUpdate();
+
+  result = FUN_00413bc0(DAT_00435f24);
+  if (result != 0) {
+    return 1;
+  }
+
+  result = VirtCheck2();
+  if (result != 0) {
+    return 1;
+  }
+
+  VirtProcess();
+
+  Engine::m_framesA++;
+  Engine::m_framesL++;
+
+  return 0;
+}
+
+// Stub implementations for virtual methods (to be implemented later)
+Engine::~Engine() {}
+void Engine::CleanupSubsystems() {}
+void Engine::VirtCleanup() {}
+void Engine::VirtUpdate() {}
+int Engine::VirtCheck1() { return 0; }
+int Engine::VirtCheck2() { return 0; }
+void Engine::VirtProcess() {}
+void Engine::VirtDraw() {}
+void Engine::Virt13() {}
+void Engine::Virt15() {}
+void Engine::Virt16() {}
+void Engine::Virt17() {}

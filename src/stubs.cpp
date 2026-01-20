@@ -172,3 +172,45 @@ void* __fastcall FUN_0040c500(int* list) { return 0; }
 void FUN_0040c580(void* node, int flag) {}
 
 // FUN_0041e470 is Sample::Unload() - implemented in Sample.cpp
+
+// ============================================================================
+// Engine-related stubs
+// ============================================================================
+
+#include "Parser.h"
+#include "Engine.h"
+
+// FUN_00413bc0 - Navigation check (used by Engine::UpdateAndCheck)
+int __fastcall FUN_00413bc0(Parser* parser) { return 0; }
+
+// ============================================================================
+// Handler15 stubs
+// ============================================================================
+
+// FUN_0040a290 - Unknown function
+int __fastcall FUN_0040a290(void* param1, int param2) { return 0; }
+
+// FUN_0040a1d0 - Unknown function
+void* __fastcall FUN_0040a1d0(void* param1, char* param2, unsigned int param3) { return 0; }
+
+// FUN_00420d90 - Unknown function
+int FUN_00420d90(void* param1, unsigned int param2, char* param3) { return 0; }
+
+// ============================================================================
+// Handler16 stubs
+// ============================================================================
+
+// FUN_004199a0 - Unknown function
+void __fastcall FUN_004199a0(void* param) {}
+
+// InitWorkBuffer - Initialize work buffer
+void InitWorkBuffer(int width, int height) {}
+
+// PTR_LAB_00431050 - Data pointer
+void* PTR_LAB_00431050 = 0;
+
+// g_CombatEngine - Global combat engine pointer
+Engine* g_CombatEngine = 0;
+
+// FUN_00410ca0 - Unknown function
+void __fastcall FUN_00410ca0(void* param) {}

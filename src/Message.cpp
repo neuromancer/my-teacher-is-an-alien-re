@@ -14,18 +14,18 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
     int param9, int param10)
 {
     SC_Message local_dc(targetAddress, sourceAddress, command, data, priority, param1, param2, userPtr, param9, param10);
-    TimedEvent** pTail;
+    PooledEvent** pTail;
     TimedEventPool* pPool;
-    TimedEvent* pOldTail;
-    TimedEvent* pMsg;
+    PooledEvent* pOldTail;
+    PooledEvent* pMsg;
     int count;
     int tmp;
     SC_Message* pSource;
-    TimedEvent* pNode;
-    TimedEvent** pFreeList;
+    PooledEvent* pNode;
+    PooledEvent** pFreeList;
     int* pPoolSize;
     int* pNewPool;
-    TimedEvent* pEntry;
+    PooledEvent* pEntry;
     unsigned int i;
 
     if (g_TimedEventPool2_00436988 != 0) {
@@ -40,23 +40,23 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
             pPoolSize = &g_TimedEventPool2_00436988->m_pool_size;
             pNewPool = (int*)AllocateMemory(g_TimedEventPool2_00436988->m_pool_size * 200 + 4);
             *pNewPool = (int)pPool->m_pool;
-            pPool->m_pool = (TimedEvent*)pNewPool;
+            pPool->m_pool = (PooledEvent*)pNewPool;
             count = *pPoolSize;
-            pEntry = (TimedEvent*)((char*)pNewPool + count * 200 - 196);
+            pEntry = (PooledEvent*)((char*)pNewPool + count * 200 - 196);
             count--;
             for (; -1 < count; count--) {
-                *(TimedEvent**)pEntry = *pFreeList;
+                *(PooledEvent**)pEntry = *pFreeList;
                 *pFreeList = pEntry;
-                pEntry = (TimedEvent*)((char*)pEntry - 200);
+                pEntry = (PooledEvent*)((char*)pEntry - 200);
             }
         }
         pNode = *pFreeList;
-        *pFreeList = *(TimedEvent**)pNode;
-        ((TimedEvent**)pNode)[1] = pOldTail;
-        *(TimedEvent**)pNode = 0;
+        *pFreeList = *(PooledEvent**)pNode;
+        ((PooledEvent**)pNode)[1] = pOldTail;
+        *(PooledEvent**)pNode = 0;
         pPool->m_count = pPool->m_count + 1;
 
-        pMsg = (TimedEvent*)((int*)pNode + 2);
+        pMsg = (PooledEvent*)((int*)pNode + 2);
         memset(pMsg, 0, 0x30 * sizeof(int));
 
         count = 0;
@@ -64,13 +64,13 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
             if (pMsg != 0) {
                 ((SC_Message*)pMsg)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
-            pMsg = (TimedEvent*)((int*)pMsg + 0x30);
+            pMsg = (PooledEvent*)((int*)pMsg + 0x30);
             tmp = count;
             count--;
         } while (tmp != 0);
 
-        pNode->m_next_event_data = pSource->m_subObject;
-        *(int*)&pNode->m_timer = pSource->isProcessingKey;
+        pNode->field_0x8 = (int)pSource->m_subObject;
+        pNode->m_duration = pSource->isProcessingKey;
 
         i = 0;
         do {
@@ -109,7 +109,7 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
             pPool->list.head = pNode;
         }
         else {
-            *(TimedEvent**)(*pTail) = pNode;
+            *(PooledEvent**)(*pTail) = pNode;
         }
         *pTail = pNode;
     }

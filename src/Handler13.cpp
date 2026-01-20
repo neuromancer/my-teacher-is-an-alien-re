@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "string.h"
 #include "TimedEvent.h"
+#include "Queue.h"
 
 // Insert data at current position in list
 extern void __fastcall FUN_004024d0(int* list, int data);
@@ -14,8 +15,7 @@ extern void __fastcall FUN_004025a0(int* list, int data);
 // Pop and return current node data from list
 extern void* __fastcall FUN_00402680(int* list);
 
-// Node destructor (calls dtor and frees)
-extern void __fastcall FUN_00402700(void* node, int shouldDelete);
+// Node destructor (calls dtor and frees) - use Queue::Destroy at 0x402700
 
 /* Function start: 0x401B60 */
 Handler13::Handler13() {
@@ -233,7 +233,7 @@ int Handler13::Exit(SC_Message* msg) {
                     eventData = 0;
                     if (node != 0) {
                         eventData = (TimedEvent*)node->data;
-                        FUN_00402700(node, 1);
+                        ((Queue*)node)->Destroy(1);
                         pList->current = 0;
                     }
                     pList->current = pList->head;
@@ -256,14 +256,15 @@ int Handler13::Exit(SC_Message* msg) {
             pTimedEvent->field_0x8 = msg->sourceAddress;
             pTimedEvent->m_next_event_data = (void*)msg->userPtr;
             msg->userPtr = 0;
-            pTimedEvent->m_type = msg->param1;
+            pTimedEvent->SetType(msg->param1);
             pList = list;
             if (pTimedEvent == 0) {
                 WriteToMessageLog("queue fault 0101");
             }
-            pList->current = pList->head;
+            node = (MessageNode*)pList->head;
+            pList->current = node;
             if ((pList->flags == 1) || (pList->flags == 2)) {
-                if (pList->head == 0) {
+                if (node == 0) {
                     FUN_004024d0((int*)pList, (int)pTimedEvent);
                 } else {
                     do {

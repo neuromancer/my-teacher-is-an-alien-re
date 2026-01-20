@@ -113,7 +113,7 @@ void SC_Question::Finalize()
     Queue* queue;
     void* msgData;
     int queueType;
-    TimedEvent* event;
+    PooledEvent* event;
     TimedEventPool* pool;
     QueueNode* current;
     
@@ -176,14 +176,14 @@ void SC_Question::Finalize()
         // Create timed event in pool and add message to it
         pool = g_TimedEventPool2_00436988;
         event = pool->Create((void*)pool->list.tail, 0);
-        ((TimedEvent*)((int*)event + 2))->CopyFrom((TimedEvent*)msgData);
-        
+        ((PooledEvent*)((int*)event + 2))->CopyFrom((PooledEvent*)msgData);
+
         // Link event to pool tail
         if (pool->list.tail == 0) {
             pool->list.head = event;
         }
         else {
-            *(TimedEvent**)pool->list.tail = event;
+            *(PooledEvent**)pool->list.tail = event;
         }
         pool->list.tail = event;
         
