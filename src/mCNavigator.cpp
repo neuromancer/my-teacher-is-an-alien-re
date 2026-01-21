@@ -12,13 +12,14 @@ extern "C" {
 }
 
 extern void ShowError(const char* message, ...);
-extern void* MemoryPool_Allocate(void*, int, int);
-extern void* ObjectPool_Allocate_2(int);
 extern void CleanupObjectArray(void*, int);
 
-// mCNavNode functions - stub implementations
-int mCNavNode_Update(void* node) { return 0; }
-int mCNavNode_GetNextNode(void* node) { return 0; }
+// mCNavNode method externs (thiscall)
+extern int __fastcall FUN_00413280(void* node);   // mCNavNode::Update
+extern int __fastcall FUN_004131d0(void* node);   // mCNavNode::GetNextNode
+
+// Global for navigation state
+extern int* DAT_00435f28;
 
 // NavNode constructor - initializes a 0x100 byte structure
 void* NavNode_Constructor(void* mem) { return mem; }
@@ -48,6 +49,7 @@ Sprite* g_Sprite_004360a0 = 0;
 
 
 
+/* Function start: 0x413C80 */
 void* ObjectPool::Allocate_2()
 {
     if (freeList == 0) {
@@ -56,19 +58,31 @@ void* ObjectPool::Allocate_2()
         memoryBlock = p;
 
         int i = objectSize;
-        p = p + i * 4 - 3;
-        for (i--; i >= 0; i--) {
-            *p = (int)freeList;
-            freeList = p;
-            p = p - 4;
+        int offset = i * 0x10;
+        i--;
+        p = (int*)((char*)p + offset - 0xc);
+        if (i >= 0) {
+            do {
+                int prev = (int)freeList;
+                i--;
+                *p = prev;
+                freeList = p;
+                p = p - 4;
+            } while (i >= 0);
         }
     }
 
     int* p = (int*)freeList;
     freeList = (void*)*p;
     allocatedCount++;
-    p[2] = 0;
-    p[3] = 0;
+    int n = 0;
+    p[2] = n;
+    while (n--)
+        ;
+    n = 0;
+    p[3] = n;
+    while (n--)
+        ;
     return p;
 }
 
@@ -80,39 +94,57 @@ mCNavigator::mCNavigator()
     field_98 = 0;
 }
 
+extern void __fastcall FUN_0041ce30(void*);
+
 /* Function start: 0x4136F0 */
 mCNavigator::~mCNavigator()
 {
-    if (navNodePool) {
-        if (navNodePool->memory && navNodePool->size) {
-            unsigned int i = 0;
-            do {
-                for (NavNode* node = *(NavNode**)((int)navNodePool->memory + i * 4); node; node = node->next) {
-                    CleanupObjectArray(node->field_C, 1);
-                }
-                i++;
-            } while (i < navNodePool->size);
-        }
+    unsigned int i;
+    void* block;
+    void* next;
 
-        if (navNodePool->memory) {
-            FreeMemory(navNodePool->memory);
-            navNodePool->memory = 0;
-        }
-
-        NavNode* block = (NavNode*)navNodePool->memoryBlock;
-        while (block) {
-            NavNode* next = block->next;
-            FreeMemory(block);
-            block = next;
-        }
-        navNodePool->memoryBlock = 0;
-
-        FreeMemory(navNodePool);
-        navNodePool = 0;
+    if (navNodePool == 0) {
+        goto check_sprite;
     }
 
+    if (navNodePool->memory == 0) {
+        goto free_memory;
+    }
+
+    if (navNodePool->size == 0) {
+        goto free_memory;
+    }
+
+    i = 0;
+    do {
+        NavNode* node = *(NavNode**)((int)navNodePool->memory + i * 4);
+        while (node) {
+            CleanupObjectArray(node->field_C, 1);
+            node = node->next;
+        }
+        i++;
+    } while (i < navNodePool->size);
+
+free_memory:
+    FreeMemory(navNodePool->memory);
+    navNodePool->memory = 0;
+    navNodePool->allocatedCount = 0;
+    navNodePool->freeList = 0;
+
+    block = navNodePool->memoryBlock;
+    while (block) {
+        next = *(void**)block;
+        FreeMemory(block);
+        block = next;
+    }
+    navNodePool->memoryBlock = 0;
+
+    FreeMemory(navNodePool);
+    navNodePool = 0;
+
+check_sprite:
     if (sprite) {
-        sprite->~Sprite();
+        FUN_0041ce30(sprite);
         FreeMemory(sprite);
         sprite = 0;
     }
@@ -123,101 +155,95 @@ void mCNavigator::SetBearing(char* param_1)
 {
     int iVar1 = FindCharIndex(param_1);
     field_98 = iVar1;
-    if (5 < iVar1) {
+    if (iVar1 >= 6) {
         ShowError("mCNavigator::SetBearing() - Undefined direction '%s' %d", param_1, iVar1);
     }
 }
 
+extern void __fastcall FUN_0041cf10(void*);
+
 /* Function start: 0x413840 */
 void mCNavigator::SetCurrentNode()
 {
+    unsigned int hash;
+
     if (sprite) {
-        // Sprite_Init(sprite);
+        FUN_0041cf10(sprite);
     }
 
-    if (navNodePool) {
-        NavNode* node;
-        for (node = *(NavNode**)((int)navNodePool->memory + ((startingNode >> 4) % navNodePool->size) * 4); node; node = node->next) {
-            if (node->field_8 == startingNode) {
-                break;
-            }
-        }
+    if (navNodePool == 0) {
+        return;
+    }
 
-        if (node) {
-            currentNode = node->field_C;
-        }
+    int nodeId = startingNode;
+    hash = ((unsigned int)nodeId >> 4) % navNodePool->size;
 
-        field_A0 = startingNode;
-        if (currentNode) {
-            g_Sprite_004360a0 = sprite;
+    NavNode* node = 0;
+    if (navNodePool->memory) {
+        node = *(NavNode**)((int)navNodePool->memory + hash * 4);
+    }
+
+    while (node) {
+        if (node->field_8 == nodeId) {
+            break;
         }
+        node = node->next;
+    }
+
+    if (node) {
+        currentNode = node->field_C;
+    }
+
+    field_A0 = nodeId;
+    if (currentNode) {
+        g_Sprite_004360a0 = sprite;
     }
 }
 
 /* Function start: 0x413BC0 */
 int mCNavigator::Update()
 {
+    unsigned int hash;
+
     if (currentNode == 0) {
         return 0;
     }
 
-    int result = mCNavNode_Update(currentNode);
-    if (result != 1) {
-        if (result != 3 && result != 2) {
+    int result = FUN_00413280(currentNode);
+    if (result == 1) {
+        int nextNodeId = FUN_004131d0(currentNode);
+        field_A0 = *(int*)((int)currentNode + 0xdc);
+
+        hash = ((unsigned int)nextNodeId >> 4) % navNodePool->size;
+
+        NavNode* node = 0;
+        if (navNodePool->memory) {
+            node = *(NavNode**)((int)navNodePool->memory + hash * 4);
+        }
+
+        while (node) {
+            if (node->field_8 == nextNodeId) {
+                break;
+            }
+            node = node->next;
+        }
+
+        if (node == 0) {
+            return 2;
+        }
+
+        currentNode = node->field_C;
+        return 0;
+    }
+
+    if (result != 3) {
+        if (result != 2) {
             return 0;
         }
-        // *DAT_00435f28 = 2;
-        return result;
     }
-
-    int nextNodeId = mCNavNode_GetNextNode(currentNode);
-    field_A0 = *(int*)((int)currentNode + 0xdc);
-
-    int hash = (nextNodeId >> 4) / navNodePool->size;
-    NavNode* node = *(NavNode**)((int)navNodePool->memory + hash * 4);
-    while (node) {
-        if (node->field_8 == nextNodeId) {
-            break;
-        }
-        node = node->next;
-    }
-
-    if (node == 0) {
-        return 2;
-    }
-
-    currentNode = node->field_C;
-    return 0;
+    *DAT_00435f28 = 2;
+    return result;
 }
-
-/* Function start: 0x413C80 */
-void mCNavigator::Allocate()
-{
-    if (navNodePool == 0) {
-        return;
-    }
-
-    navNodePool->Allocate_2();
-}
-
-/* Function start: 0x413CF0 */
-void mCNavigator::MemoryPool_Allocate(unsigned int param_1, int param_2)
-{
-    if (navNodePool->memory != 0) {
-        // FreeFromGlobalHeap(navNodePool->memory);
-        navNodePool->memory = 0;
-    }
-
-    if (param_2 != 0) {
-        navNodePool->memory = AllocateMemory(param_1 * 4);
-        memset(navNodePool->memory, 0, param_1 * 4);
-        navNodePool->size = param_1;
-    }
-    else {
-        navNodePool->size = param_1;
-    }
-}
-
 
 /* Function start: 0x4138c0 */
 int mCNavigator::LBLParse(char* param_1)
@@ -295,7 +321,7 @@ int mCNavigator::LBLParse(char* param_1)
 
         if (node == 0) {
             if (navNodePool->memory == 0) {
-                MemoryPool_Allocate(navNodePool->size, 1);
+                navNodePool->MemoryPool_Allocate(navNodePool->size, 1);
             }
             node = (NavNode*)navNodePool->Allocate_2();
             node->field_4 = hash;

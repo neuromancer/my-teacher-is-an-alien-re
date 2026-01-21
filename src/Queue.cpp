@@ -1,6 +1,7 @@
 #include "Queue.h"
 #include "Memory.h"
 #include "string.h"
+#include <memory.h>
 #include "TimedEvent.h"
 #include "Message.h"
 #include "SC_Question.h"
@@ -15,12 +16,12 @@ TimedEventPool::~TimedEventPool()
     PooledEvent* poolBlock;
     PooledEvent* nextBlock;
 
-    // Iterate through active events list (linked at offset 0)
+    // Iterate through active events list (linked via next pointer)
     node = list.head;
     if (node != 0) {
         do {
-            // Get embedded SC_Message at offset +8
-            msg = (SC_Message*)((int*)node + 2);
+            // Get embedded SC_Message at offset +8 (field_0x8)
+            msg = (SC_Message*)&node->field_0x8;
             counter = 0;
             do {
                 // Call SC_Message destructor
@@ -29,7 +30,7 @@ TimedEventPool::~TimedEventPool()
                 tmp = counter;
                 counter--;
             } while (tmp != 0);
-            node = *(PooledEvent**)node;
+            node = (PooledEvent*)node->next;
         } while (node != 0);
     }
 
@@ -43,7 +44,7 @@ TimedEventPool::~TimedEventPool()
     poolBlock = m_pool;
     if (poolBlock != 0) {
         do {
-            nextBlock = *(PooledEvent**)poolBlock;
+            nextBlock = (PooledEvent*)poolBlock->next;
             FreeMemory(poolBlock);
             poolBlock = nextBlock;
         } while (poolBlock != 0);
@@ -52,36 +53,29 @@ TimedEventPool::~TimedEventPool()
 }
 
 /* Function start: 0x402310 */
-void PooledEvent::CopyFrom(const PooledEvent* other)
+PooledEvent* PooledEvent::CopyFrom(const PooledEvent* other)
 {
     unsigned int eax;
-    char* src = (char*)other;
-    char* dst = (char*)this;
-    char bl;
 
     field_0x8 = other->field_0x8;
-    m_duration = other->m_duration;
     eax = 0;
+    m_duration = other->m_duration;
     do {
-        bl = src[0x10 + eax];
+        data_0x10[eax] = other->data_0x10[eax];
         eax++;
-        dst[0xf + eax] = bl;
     } while (eax < 0x20);
 
     field_0x30 = other->field_0x30;
     {
-        int* esi = (int*)(&dst[0x38]);
-        int* ptr = (int*)(&src[0x38]);
-        int edi = ptr[0];
-        int ebx = ptr[1];
-        esi[0] = edi;
-        esi[1] = ebx;
+        int edi = other->field_0x38;
+        int ebx = other->field_0x3c;
+        field_0x38 = edi;
+        field_0x3c = ebx;
     }
     eax = 0;
     do {
-        bl = src[0x40 + eax];
+        m_data_0x40[eax] = other->m_data_0x40[eax];
         eax++;
-        dst[0x3f + eax] = bl;
     } while (eax < 0x40);
 
     field_0x80 = other->field_0x80;
@@ -99,6 +93,7 @@ void PooledEvent::CopyFrom(const PooledEvent* other)
     field_0xb4 = other->field_0xb4;
     field_0xb8 = other->field_0xb8;
     userPtr = other->userPtr;
+    return this;
 }
 
 /* Function start: 0x402420 */
@@ -122,28 +117,29 @@ PooledEvent* TimedEventPool::Create(void* callback, void* data)
         }
     }
 
-    PooledEvent* event = m_free_list;
-    Message* ebx = (Message*)((int*)event + 2);
-    m_free_list = *(PooledEvent**)event;
-    *(void**)((char*)event + 4) = callback;
-    *(void**)event = data;
+    PooledEvent* esi = m_free_list;
+    void* ecx_param = callback;
+    void* edx_param = data;
+    void* eax = esi->next;
+    SC_Message* ebx = (SC_Message*)&esi->field_0x8;
+    m_free_list = (PooledEvent*)eax;
+    esi->prev = ecx_param;
+    esi->next = edx_param;
     m_count++;
+    memset(ebx, 0, 0xC0);
 
     int edi = 0;
-    if (ebx == 0) goto done;
 loop:
-    {
-        SC_Message* tmp = (SC_Message*)ebx;
-        tmp->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    }
-    ebx = (Message*)((char*)ebx + 0xc0);
-    {
-        int eax = edi;
-        edi--;
-        if (eax != 0) goto loop;
-    }
+    if (ebx == 0) goto done;
+    ebx->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 done:
-    return event;
+    ebx = (SC_Message*)((char*)ebx + 0xc0);
+    {
+        int tmp = edi;
+        edi--;
+        if (tmp != 0) goto loop;
+    }
+    return esi;
 }
 
 /* Function start: 0x417C50 */
@@ -170,7 +166,7 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     local_1c = 0;                          // EDX = 0
     
     // EBX = &head->field_0x8 = SC_Message* in the node (at offset 8 from head)
-    SC_Message* srcMsg = (SC_Message*)((char*)local_18 + 8);
+    SC_Message* srcMsg = (SC_Message*)&local_18->field_0x8;
     
     // Copy from srcMsg to local_d8 using field access
     local_d8.m_subObject = srcMsg->m_subObject;
@@ -212,12 +208,12 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     local_d8.userPtr = srcMsg->userPtr;
 
     // Update list head: list.head = head->next
-    PooledEvent* nextNode = *(PooledEvent**)local_18;
+    PooledEvent* nextNode = (PooledEvent*)local_18->next;
     local_14->list.head = nextNode;
 
     if (nextNode != 0) {
         // Clear prev pointer of new head
-        *(int*)((char*)nextNode + 4) = 0;
+        nextNode->prev = 0;
     } else {
         // List is now empty, clear tail
         local_14->list.tail = 0;
@@ -234,7 +230,7 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     } while (1);
 
     // Add node to free list
-    *(PooledEvent**)local_18 = local_14->m_free_list;
+    local_18->next = (void*)local_14->m_free_list;
     local_14->m_free_list = local_18;
     
     // Decrement count
@@ -283,19 +279,16 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 }
 
 
-/* Function start: 0x4024B0 */
+/* Function start: 0x4024D0 */
 void Queue::Insert(void* data)
 {
     if (data == 0) {
         ShowError("queue fault 0102");
     }
 
-    QueueNode* newNode = (QueueNode*)AllocateMemory(sizeof(QueueNode));
+    QueueNode* newNode = new QueueNode(data);
     QueueNode* node = 0;
     if (newNode != 0) {
-        newNode->data = data;
-        newNode->prev = 0;
-        newNode->next = 0;
         node = newNode;
     }
 
@@ -328,15 +321,12 @@ void Queue::Push(void* data)
         ShowError("queue fault 0112");
     }
 
-    QueueNode* newNode = (QueueNode*)AllocateMemory(sizeof(QueueNode));
+    QueueNode* newNode = new QueueNode(data);
     QueueNode* node;
     if (newNode == 0) {
         node = 0;
     }
     else {
-        newNode->data = data;
-        newNode->prev = 0;
-        newNode->next = 0;
         node = newNode;
     }
 

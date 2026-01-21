@@ -5,7 +5,7 @@
 #include <new.h>
 
 /* Function start: 0x40A1D0 */
-void* OnScreenMessage::Init(char* message, unsigned int dur)
+OnScreenMessage::OnScreenMessage(char* message, unsigned int dur)
 {
     Timer* t = new(&timer) Timer();
     memset(this, 0, sizeof(OnScreenMessage));
@@ -13,11 +13,10 @@ void* OnScreenMessage::Init(char* message, unsigned int dur)
         strcpy(text, message);
     }
     t->Reset();
-    duration = dur;
+    OnScreenMessage::duration = dur;
     if (dur < 0xfb) {
-        duration = 0xfa;
+        OnScreenMessage::duration = 0xfa;
     }
-    return this;
 }
 
 /* Function start: 0x40A290 */

@@ -87,14 +87,16 @@ def read_assembly(function_name, file_path):
     # Find all ret instruction indices
     ret_indices = []
     for i, line in enumerate(stripped_lines):
+        # Strip inline comments before checking for ret
+        line_no_comment = line.split(';')[0].strip()
         # Match ret with optional whitespace and optional number (ret, ret 0, ret 4, etc.)
-        if re.match(r'^ret(\s+\d+)?$', line):
+        if re.match(r'^ret(\s+\d+)?$', line_no_comment):
             ret_indices.append(i)
 
-    # For each ret from the beginning, check if everything after is just SEH handlers or data
-    # We want the first ret after which only SEH code or data follows
+    # For each ret from the end, check if everything after is just SEH handlers or data
+    # We want the LAST ret after which only SEH code or data follows
     cutoff_idx = len(lines)
-    for ret_idx in ret_indices:
+    for ret_idx in reversed(ret_indices):
         # Check what's after this ret
         remaining = stripped_lines[ret_idx+1:]
         is_seh_or_data_only = True

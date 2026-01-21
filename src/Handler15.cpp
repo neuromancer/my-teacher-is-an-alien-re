@@ -6,10 +6,10 @@
 #include "SC_Question.h"
 #include "GameState.h"
 #include "StringTable.h"
+#include "OnScreenMessage.h"
 
 // External functions
-extern int __fastcall FUN_0040a290(void* item, int param);  // Check if message should be removed
-extern void* __fastcall FUN_0040a1d0(void* mem, char* str, unsigned int param);  // Create message item
+extern int __fastcall FUN_0040a290(OnScreenMessage* item, int param);  // Check if message should be removed
 extern int FUN_00420d90(void* stringTable, unsigned int index, char* outBuffer);  // Get string from StringTable
 
 /* Function start: 0x40A2E0 */
@@ -29,7 +29,7 @@ Handler15::Handler15() {
 Handler15::~Handler15() {
     MessageList* pList;
     MessageNode* node;
-    void* data;
+    OnScreenMessage* data;
 
     pList = list;
     if (pList != 0) {
@@ -62,22 +62,17 @@ Handler15::~Handler15() {
                     node = (MessageNode*)pList->current;
                     data = 0;
                     if (node != 0) {
-                        data = node->data;
+                        data = (OnScreenMessage*)node->data;
                     }
                     if (node != 0) {
-                        node->data = 0;
-                        node->prev = 0;
-                        node->next = 0;
-                        FreeMemory(node);
+                        delete node;
                         pList->current = 0;
                     }
                     pList->current = pList->head;
                 }
                 // Cleanup data object
                 if (data != 0) {
-                    // Call destructor on Timer at offset 0x100 within data
-                    Timer_DecrementCounter();
-                    FreeMemory(data);
+                    delete data;
                 }
             }
         }
@@ -111,8 +106,8 @@ void Handler15::Draw(int param1, int param2) {
     MessageNode* node;
     unsigned int uVar3;
     int iVar4;
-    void* msgItem;
-    void* pvVar6;
+    OnScreenMessage* msgItem;
+    OnScreenMessage* pvVar6;
     MessageList* pList;
     int counter;
 
@@ -129,7 +124,7 @@ void Handler15::Draw(int param1, int param2) {
         pList = list;
         node = (MessageNode*)pList->current;
         if (node != 0) {
-            msgItem = node->data;
+            msgItem = (OnScreenMessage*)node->data;
         }
 
         iVar4 = FUN_0040a290(msgItem, counter);
@@ -161,19 +156,15 @@ void Handler15::Draw(int param1, int param2) {
                 node = (MessageNode*)pList->current;
                 pvVar6 = 0;
                 if (node != 0) {
-                    pvVar6 = node->data;
-                    node->data = 0;
-                    node->prev = 0;
-                    node->next = 0;
-                    FreeMemory(node);
+                    pvVar6 = (OnScreenMessage*)node->data;
+                    delete node;
                     pList->current = 0;
                 }
                 pList->current = pList->head;
             }
             // Cleanup data object
             if (pvVar6 != 0) {
-                Timer_DecrementCounter();
-                FreeMemory(pvVar6);
+                delete pvVar6;
             }
         }
 
@@ -207,8 +198,8 @@ check_timer:
 int Handler15::Exit(SC_Message* msg) {
     MessageList* pList;
     MessageNode* node;
-    void* newItem;
-    void* pvVar6;
+    OnScreenMessage* newItem;
+    OnScreenMessage* pvVar6;
     int count;
 
     if (msg->command != handlerId) {
@@ -220,31 +211,27 @@ int Handler15::Exit(SC_Message* msg) {
     if (msg->priority == 0xf) {
         goto send_remove_message;
     }
+    if (msg->priority == 0x13) {
+        goto process_message;
+    }
     if (msg->priority == 0x1b) {
         goto send_remove_message;
     }
-    if (msg->priority != 0x13) {
-        return 0;
-    }
+    return 0;
 
+process_message:
     // Priority 0x13 - add message
     newItem = 0;
     if (msg->data == 0) {
         if (msg->userPtr != 0) {
-            pvVar6 = AllocateMemory(0x118);
-            if (pvVar6 != 0) {
-                newItem = FUN_0040a1d0(pvVar6, (char*)msg->userPtr, msg->param1);
-            }
+            newItem = new OnScreenMessage((char*)msg->userPtr, msg->param1);
             msg->userPtr = 0;
         }
     } else {
         if (g_Strings_00435a70 != 0) {
             int result = FUN_00420d90(g_Strings_00435a70, msg->data, g_Buffer_00436960);
             if (result != 0) {
-                pvVar6 = AllocateMemory(0x118);
-                if (pvVar6 != 0) {
-                    newItem = FUN_0040a1d0(pvVar6, g_Buffer_00436960, msg->param1);
-                }
+                newItem = new OnScreenMessage(g_Buffer_00436960, msg->param1);
             }
         }
     }
@@ -257,9 +244,9 @@ int Handler15::Exit(SC_Message* msg) {
             // Priority-based insertion
             while (pList->current != 0) {
                 node = (MessageNode*)pList->current;
-                // Compare timer values at offset 0x100
-                unsigned int existingTime = ((Timer*)((char*)node->data + 0x100))->Update();
-                unsigned int newTime = ((Timer*)((char*)newItem + 0x100))->Update();
+                // Compare timer values
+                unsigned int existingTime = ((OnScreenMessage*)node->data)->timer.Update();
+                unsigned int newTime = newItem->timer.Update();
                 if (existingTime < newTime) {
                     // Insert before current
                     goto insert_node;
@@ -376,18 +363,14 @@ count_and_trim:
             }
             pvVar6 = 0;
             if (node != 0) {
-                pvVar6 = node->data;
-                node->data = 0;
-                node->prev = 0;
-                node->next = 0;
-                FreeMemory(node);
+                pvVar6 = (OnScreenMessage*)node->data;
+                delete node;
                 pList->current = 0;
             }
             pList->current = pList->head;
 
             if (pvVar6 != 0) {
-                Timer_DecrementCounter();
-                FreeMemory(pvVar6);
+                delete pvVar6;
             }
         }
 

@@ -26,31 +26,39 @@ void Sample::Init(int volume) {
 
 /* Function start: 0x41E580 */
 void Sample::Fade(int volume, unsigned int duration) {
-  int current_volume = AIL_sample_volume(m_sample);
-  if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
-    int diff = current_volume - volume;
-    int step = -1;
-    if (diff < 0) {
-      diff = -diff;
-      step = 1;
-    }
-
-    unsigned int delay = 0;
-    if (diff != 0) {
-      delay = duration / diff;
-    }
-
-    Timer timer;
-    if (duration != 0 && diff > 0) {
-      do {
-        current_volume += step;
-        AIL_set_sample_volume(m_sample, current_volume);
-        timer.Wait(delay);
-        diff--;
-      } while (diff != 0);
-    }
-    AIL_set_sample_volume(m_sample, volume);
+  HSAMPLE sample = m_sample;
+  if (sample == 0 || m_size != *(int *)((char *)sample + 0xc)) {
+    return;
   }
+  int current_volume = AIL_sample_volume(sample);
+  int diff = current_volume - volume;
+  int sign = diff >> 31;
+  diff = (diff ^ sign) - sign;
+  int step;
+  if (volume < current_volume) {
+    step = -1;
+  } else {
+    step = 1;
+  }
+
+  unsigned int delay;
+  if (diff != 0) {
+    delay = duration / diff;
+  } else {
+    delay = 0;
+  }
+
+  Timer timer;
+  if (duration != 0 && diff > 0) {
+    delay = (short)delay;
+    do {
+      current_volume += step;
+      AIL_set_sample_volume(m_sample, current_volume);
+      timer.Wait(delay);
+      diff--;
+    } while (diff != 0);
+  }
+  AIL_set_sample_volume(m_sample, volume);
 }
 
 /* Function start: 0x41E670 */
@@ -91,7 +99,7 @@ int Sample::Play(int volume, int loop_count) {
 /* Function start: 0x41E470 */
 void Sample::Unload() {
   if (m_data != 0) {
-    //~Sample();
+    Sample::~Sample();
     AIL_mem_free_lock(m_data);
     m_data = 0;
   }
@@ -99,7 +107,7 @@ void Sample::Unload() {
 
 /* Function start: 0x41E490 */
 int Sample::Load(char *filename) {
-  if (*(int *)((char *)g_Sound_0043696c + 0x38) == 0) {
+  if (g_Sound_0043696c->digital_driver == 0) {
     return 1;
   }
   if (m_data != 0) {

@@ -43,7 +43,7 @@ struct SoundCommand;
 // Note: This was previously split into SoundManager and ZBufferManager,
 // but assembly analysis shows they are the same class.
 // The constructor logs "declaring ZBuffer", confirming this is the original name.
-class ZBufferManager : public Queue {
+class ZBufferManager {
 public:
     ZBufferManager();             // 0x41B760
     ~ZBufferManager();
@@ -56,9 +56,14 @@ public:
     // Methods previously attributed to "SoundManager"
     void PlayAnimationSound(void* data, int priority, int x, int y, int mode, int scale1, int scale2); // 0x41BE20
     void QueueCommand(SoundCommand* cmd); // 0x41C2C0
-    
+
     // Layout: 0xAC bytes total
-    // Queue fields at 0x00 - 0x14 (inherited, 20 bytes: m_flags, m_head, m_tail, m_current, m_field_0xc)
+    // Fields at 0x00 - 0x14 (20 bytes)
+    unsigned int m_flags;        // 0x00 - flags (bit 2 = jitter mode)
+    void* m_head;                // 0x04
+    void* m_tail;                // 0x08
+    void* m_current;             // 0x0C
+    int m_field_0x10;            // 0x10
     unsigned int m_pad14[0x1C];  // 0x14 - 0x84 (28 dwords = 112 bytes)
     Timer timer;                 // 0x84 - Timer (20 bytes, 5 dwords) - also known as m_timer
     int m_state;                 // 0x98 - also known as m_mode

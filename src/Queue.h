@@ -5,12 +5,17 @@ struct QueueNode {
     QueueNode* prev;  // 0x0
     QueueNode* next;  // 0x4
     void* data;       // 0x8
+
+    QueueNode(void* d) {
+        data = d;
+        prev = 0;
+        next = 0;
+    }
 };
 
 class Queue {
 public:
     Queue() {
-        m_flags = 0;
         m_head = 0;
         m_tail = 0;
         m_current = 0;
@@ -24,11 +29,10 @@ public:
     void Push(void* data);
 
 public:
-    unsigned int m_flags;  // 0x00 - flags (bit 2 = jitter mode)
-    void* m_head;          // 0x04
-    void* m_tail;          // 0x08
-    void* m_current;       // 0x0C
-    int m_field_0xc;       // 0x10 - type/mode field
+    void* m_head;          // 0x00
+    void* m_tail;          // 0x04
+    void* m_current;       // 0x08
+    int m_field_0xc;       // 0x0c - type/mode field
 };
 
 #endif // QUEUE_H

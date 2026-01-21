@@ -9,6 +9,7 @@
 #include "SC_Question.h"
 #include "ScriptHandler.h"
 #include "Sample.h"
+#include "Mouse.h"
 #include "TimedEvent.h"
 #include "globals.h"
 #include "Message.h"
@@ -28,6 +29,7 @@
 #include "Handler14.h"
 #include "Handler15.h"
 #include "Handler16.h"
+#include "Handler9.h"
 #include <smack.h>
 #include <stdio.h>
 #include <string.h>
@@ -185,7 +187,7 @@ loop_start:
     if (pGameState->maxStates < 5) {
         ShowError("GameState Error  #%d", 1);
     }
-    if (*(int*)((char*)pGameState->stateValues + 0x10) == zero) {
+    if (pGameState->stateValues[4] == zero) {
         goto skip_debug;
     }
     mouseY = 0;
@@ -293,7 +295,7 @@ void GameLoop::ProcessInput() {
         }
         
         if (mouseButton != 0) {
-            Sample* pSample = *(Sample**)((char*)g_Mouse_00436978 + 0x1bc);
+            Sample* pSample = g_Mouse_00436978->m_audio;
             if (pSample != 0) {
                 pSample->Play(100, 1);
             }
@@ -938,10 +940,6 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 // Implementations of missing functions
 // -------------------------------------------------------------------------
 
-// Handler classes with correct sizes for new operator
-// Handler classes with inline constructors using stub vtable
-class Handler9 { public: Handler9() { *(void**)data = g_HandlerVTable; } char data[0x650]; };  // 0x406fc0
-
 /* Function start: 0x40CDD0 */
 int* CreateHandler(int command) {
     char buffer[128];
@@ -1121,7 +1119,7 @@ int GameLoop::FindHandlerInEventList(int command) {
         node = list->current;
         if (node != 0) {
             data = node->data;
-            if (command == *(int*)((char*)data + 0x88)) {
+            if (command == ((Handler*)data)->handlerId) {
                 break;
             }
         } else {
@@ -1177,7 +1175,7 @@ int GameLoop::AddHandler(void* handler) {
             data = current->data;
         }
         // Compare handler IDs at offset 0x88
-        if (*(int*)((char*)data + 0x88) == *(int*)((char*)handler + 0x88)) {
+        if (((Handler*)data)->handlerId == ((Handler*)handler)->handlerId) {
             ShowError("illegal modual insertion double");
             return 0;
         }
@@ -1209,7 +1207,7 @@ int GameLoop::AddHandler(void* handler) {
                 current = list->current;
                 data = current->data;
                 // Compare priority at offset 0x88
-                if (*(int*)((char*)data + 0x88) < *(int*)((char*)handler + 0x88)) {
+                if (((Handler*)data)->handlerId < ((Handler*)handler)->handlerId) {
                     // Insert before current
                     if (handler == 0) {
                         ShowError("queue fault 0102");

@@ -70,6 +70,8 @@ Parser* DAT_00435f0c = 0;  // TARGETS parser
 Parser* DAT_00435f10 = 0;  // SPRITELIST parser
 Parser* DAT_00435f14 = 0;  // Weapon parser (RockThrower)
 Parser* DAT_00435f24 = 0;  // NAVIGATION parser
+static int _navState = 0;  // Navigation state value
+int* DAT_00435f28 = &_navState;  // Pointer to navigation state
 
 char DAT_004374c0 = 0;
 char DAT_004374c1 = 0;

@@ -31,8 +31,6 @@ public:
     int LBLParse(char* line);
     void DrawCursor();
 
-private:
-
     char* m_labels[25];        // 0x88
     Sprite* m_sprite;          // 0xEC
     Sprite* m_sprite2;         // 0xF0

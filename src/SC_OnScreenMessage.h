@@ -26,6 +26,12 @@ struct MessageNode {
     MessageNode* prev;  // 0x0
     MessageNode* next;  // 0x4
     void* data;         // 0x8
+
+    ~MessageNode() {
+        data = 0;
+        prev = 0;
+        next = 0;
+    }
 };
 
 class SC_OnScreenMessage : ScriptHandler {

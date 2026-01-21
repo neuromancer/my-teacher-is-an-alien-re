@@ -186,12 +186,10 @@ int __fastcall FUN_00413bc0(Parser* parser) { return 0; }
 // ============================================================================
 // Handler15 stubs
 // ============================================================================
+#include "OnScreenMessage.h"
 
-// FUN_0040a290 - Unknown function
-int __fastcall FUN_0040a290(void* param1, int param2) { return 0; }
-
-// FUN_0040a1d0 - Unknown function
-void* __fastcall FUN_0040a1d0(void* param1, char* param2, unsigned int param3) { return 0; }
+// FUN_0040a290 - OnScreenMessage::Update
+int __fastcall FUN_0040a290(OnScreenMessage* param1, int param2) { return 0; }
 
 // FUN_00420d90 - Unknown function
 int FUN_00420d90(void* param1, unsigned int param2, char* param3) { return 0; }
@@ -214,3 +212,24 @@ Engine* g_CombatEngine = 0;
 
 // FUN_00410ca0 - Unknown function
 void __fastcall FUN_00410ca0(void* param) {}
+
+// ============================================================================
+// mCNavigator stubs
+// ============================================================================
+
+void __fastcall FUN_0041cf10(void* param) {}
+int __fastcall FUN_004131d0(void* param) { return 0; }
+int __fastcall FUN_00413280(void* param) { return 0; }
+
+// ============================================================================
+// Handler9 stubs
+// ============================================================================
+#include "Handler9.h"
+#include "Queue.h"
+
+void __fastcall DialogQuestion_Destructor(DialogQuestion* param) {}
+void __fastcall SC_Question_Finalize(DialogQuestion* param) {}
+DialogQuestion* __fastcall FindDialogById(Handler9* handler, int id) { return 0; }
+DialogQuestion* __fastcall GetDialogByIndex(Handler9* handler, int index) { return 0; }
+void __fastcall Queue_InsertAtCurrent(Queue* queue, void* item) {}
+SC_Dialog_H9::~SC_Dialog_H9() {}

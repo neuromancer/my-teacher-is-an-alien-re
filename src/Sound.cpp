@@ -28,7 +28,7 @@ Sound::Sound(int param_1, unsigned short param_2, short param_3) {
   }
 
   AIL_startup();
-  if (g_GameConfig_00436970->data.rawData[2] != '\x02') {
+  if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
     AIL_set_preference(0xf, 0);
     int iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
     digital_driver = (HDIGDRIVER)iVar3;

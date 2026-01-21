@@ -10,10 +10,10 @@ public:
     HSAMPLE FindFreeSampleHandle();
     void StopAllSamples();
 
-    short num_samples;
-    HSAMPLE samples[13];
-    char pad[0x38 - 2 - sizeof(HSAMPLE) * 13];
-    HDIGDRIVER digital_driver;
+    short num_samples;        // 0x00
+    short pad_02;             // 0x02 - explicit padding to align samples to 0x04
+    HSAMPLE samples[13];      // 0x04-0x37 (52 bytes)
+    HDIGDRIVER digital_driver; // 0x38
 };
 
 #endif // SOUND_H

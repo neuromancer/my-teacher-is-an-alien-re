@@ -3,20 +3,7 @@
 
 #include "Sprite.h"
 #include "Parser.h"
-
-class ObjectPool
-{
-public:
-    void* memory;
-    int size;
-    int allocatedCount;
-    void* freeList;
-    void* memoryBlock;
-    int objectSize;
-
-public:
-    void* Allocate_2();
-};
+#include "ObjectPool.h"
 
 struct NavNode {
     NavNode* next;
@@ -44,8 +31,6 @@ public:
     void SetBearing(char*);
     void SetCurrentNode();
     int Update();
-    void Allocate();
-    void MemoryPool_Allocate(unsigned int size, int param_2);
 };
 
 #endif // MCNAVIGATOR_H

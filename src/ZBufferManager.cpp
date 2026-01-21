@@ -83,17 +83,17 @@ ZBufferManager::~ZBufferManager()
 /* Function start: 0x41B5D0 */
 void CommandType1::Execute(GlyphRect* rect)
 {
-    void* iVar1;
+    VBuffer* vbuf;
 
     //ShowMessage("CommandType1::Execute mode=%d data=%x", mode, (int)data);
     switch(mode) {
     case 0:
-        iVar1 = data;
-        g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)iVar1 + 0x28), *(int*)((char*)iVar1 + 0x2c), *(int*)((char*)iVar1 + 0x20), *(int*)((char*)iVar1 + 0x24), x, y, (int)iVar1);
+        vbuf = (VBuffer*)data;
+        g_WorkBuffer_00436974->ClipAndBlit(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
         return;
     case 1:
-        iVar1 = data;
-        g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)iVar1 + 0x28), *(int*)((char*)iVar1 + 0x2c), *(int*)((char*)iVar1 + 0x20), *(int*)((char*)iVar1 + 0x24), x, y, (int)iVar1);
+        vbuf = (VBuffer*)data;
+        g_WorkBuffer_00436974->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
         return;
     case 2:
         DrawScaledSprite(x, y, data, *(double*)&scale_low);
@@ -324,18 +324,19 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
             QueueCommand(cmd);
         }
         else {
+            VBuffer* vbuf = (VBuffer*)data;
             switch(mode) {
                 case 0:
-                     g_WorkBuffer_00436974->ClipAndBlit(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
+                     g_WorkBuffer_00436974->ClipAndBlit(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
                      break;
                 case 1:
-                     g_WorkBuffer_00436974->ClipAndPaste(*(int*)((char*)data + 0x28), *(int*)((char*)data + 0x2c), *(int*)((char*)data + 0x20), *(int*)((char*)data + 0x24), x, y, (int)data);
+                     g_WorkBuffer_00436974->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
                      break;
                 case 2:
                      DrawScaledSprite(x, y, data, *(double*)&scale1);
                      break;
                 case 3:
-                     g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, *(double*)&scale1);
+                     g_WorkBuffer_00436974->ScaleTCCopy(x, y, vbuf, *(double*)&scale1);
                      break;
             }
         }

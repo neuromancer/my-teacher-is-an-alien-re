@@ -51,12 +51,12 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
             }
         }
         pNode = *pFreeList;
-        *pFreeList = *(PooledEvent**)pNode;
-        ((PooledEvent**)pNode)[1] = pOldTail;
-        *(PooledEvent**)pNode = 0;
+        *pFreeList = (PooledEvent*)pNode->next;
+        pNode->prev = pOldTail;
+        pNode->next = 0;
         pPool->m_count = pPool->m_count + 1;
 
-        pMsg = (PooledEvent*)((int*)pNode + 2);
+        pMsg = (PooledEvent*)&pNode->field_0x8;
         memset(pMsg, 0, 0x30 * sizeof(int));
 
         count = 0;

@@ -64,36 +64,36 @@ public:
 //   0x08: embedded SC_Message data (192 bytes)
 class PooledEvent {
 public:
-    void CopyFrom(const PooledEvent* other);
+    PooledEvent* CopyFrom(const PooledEvent* other);
 
     void* next;              // 0x00 - next pointer for free list
     void* prev;              // 0x04 - prev/callback pointer
     // Embedded SC_Message fields starting at 0x08
-    int field_0x8;           // 0x08
-    int m_duration;          // 0x0c (maps to SC_Message field)
-    char data_0x10[0x20];    // 0x10-0x2F
+    int field_0x8;           // 0x08 (m_subObject)
+    int m_duration;          // 0x0c (isProcessingKey)
+    char data_0x10[0x20];    // 0x10-0x2F (includes currentKey at 0x18)
     int field_0x30;          // 0x30
     int field_0x34;          // 0x34
-    int field_0x38;          // 0x38
+    int field_0x38;          // 0x38 (lineNumber)
     int field_0x3c;          // 0x3c
-    char m_data_0x40[64];    // 0x40 - 0x80 (0x40 bytes)
+    char m_data_0x40[64];    // 0x40-0x7F (includes savedFilePos, filename)
     int field_0x80;          // 0x80
     int field_0x84;          // 0x84
-    int targetAddress;       // 0x88
-    int sourceAddress;       // 0x8c
-    int command;             // 0x90
-    int data;                // 0x94
-    int priority;            // 0x98
-    int param1;              // 0x9c
-    int param2;              // 0xa0
-    int clickX;              // 0xa4
-    int clickY;              // 0xa8
-    int mouseX;              // 0xac
-    int mouseY;              // 0xb0
-    int field_0xb4;          // 0xb4
-    int field_0xb8;          // 0xb8
-    int userPtr;             // 0xbc
-    int field_0xc0;          // 0xc0
+    int targetAddress;       // 0x88 (stores pFile from Parser)
+    int sourceAddress;       // 0x8c (stores targetAddress from SC_Message)
+    int command;             // 0x90 (stores sourceAddress from SC_Message)
+    int data;                // 0x94 (stores command from SC_Message)
+    int priority;            // 0x98 (stores data from SC_Message)
+    int param1;              // 0x9c (stores priority from SC_Message)
+    int param2;              // 0xa0 (stores param1 from SC_Message)
+    int clickX;              // 0xa4 (stores param2 from SC_Message)
+    int clickY;              // 0xa8 (stores clickX from SC_Message)
+    int mouseX;              // 0xac (stores clickY from SC_Message)
+    int mouseY;              // 0xb0 (stores mouseX from SC_Message)
+    int field_0xb4;          // 0xb4 (stores mouseY from SC_Message)
+    int field_0xb8;          // 0xb8 (stores field_b4 from SC_Message)
+    int userPtr;             // 0xbc (stores field_b8 from SC_Message)
+    int field_0xc0;          // 0xc0 (stores userPtr from SC_Message)
     int field_0xc4;          // 0xc4
 };
 

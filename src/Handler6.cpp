@@ -6,15 +6,13 @@
 #include "Memory.h"
 #include "Parser.h"
 #include "globals.h"
+#include "SC_Question.h"
 #include "Message.h"
 #include "Mouse.h"
+#include "InputManager.h"
 
 // External functions used by Handler6
 extern "C" void __cdecl WriteToMessageLog(const char*);
-
-// Global variable aliases to match globals.h
-#define g_GameLoop_00436978 g_Mouse_00436978
-#define g_Renderer_0043698c g_ZBufferManager_0043698c
 
 /* Function start: 0x4044C0 */
 Handler6::Handler6() {
@@ -73,7 +71,7 @@ void Handler6::Init(SC_Message* msg) {
 
     // Format the script file path and labels
     sprintf(filePath, "mis\\room%3.3d.mis", 5);
-    sprintf(searchScreenLabel, "[SEARCH_SCREEN%d]", *((int*)((char*)msg + 0x8c)));
+    sprintf(searchScreenLabel, "[SEARCH_SCREEN%d]", msg->sourceAddress);
     sprintf(staticLabel, "[STATIC]");
     sprintf(periodLabel, "[PERIOD%2.2d]", 1);
 
@@ -94,7 +92,7 @@ void Handler6::Init(SC_Message* msg) {
 
     // Set palette if needed
     if (palette != 0) {
-        int* palettePtr = (int*)((char*)g_Renderer_0043698c + 0xa8);
+        int* palettePtr = (int*)((char*)g_ZBufferManager_0043698c + 0xa8);
         if (*palettePtr != 0) {
             WriteToMessageLog("ddouble palette");
         }
@@ -110,8 +108,8 @@ int Handler6::HandleMessage(SC_Message* msg) {
         return 1;
     }
 
-    // Check if button 2 was pressed (msg+0xac >= 2) and no hotspot currently selected
-    if (*((int*)((char*)msg + 0xac)) >= 2 && currentHotspot == 0) {
+    // Check if button 2 was pressed (mouseX >= 2) and no hotspot currently selected
+    if (msg->mouseX >= 2 && currentHotspot == 0) {
         int clickedIndex = FindClickedHotspot();
         if (clickedIndex > -1) {
             currentHotspot = hotspots[clickedIndex];
@@ -188,15 +186,15 @@ void Handler6::Draw(int param1, int param2) {
     if (activeHotspots != 0) {
         // Has active hotspots - check for clicked hotspot
         int clickedIndex = FindClickedHotspot();
-        void* sprite = *(void**)((char*)g_GameLoop_00436978 + 0xec);
-        
+        Sprite* sprite = g_Mouse_00436978->m_sprite;
+
         if (clickedIndex == -1) {
             if (sprite != 0) {
-                ((Sprite*)sprite)->SetState2(0);
+                sprite->SetState2(0);
             }
         } else {
             if (sprite != 0) {
-                ((Sprite*)sprite)->SetState2(1);
+                sprite->SetState2(1);
             }
         }
         g_Mouse_00436978->DrawCursor();
@@ -215,9 +213,8 @@ void Handler6::Draw(int param1, int param2) {
 
 /* Function start: 0x404870 */
 int Handler6::Exit(SC_Message* msg) {
-    // Compare handlerId <= msg->targetAddress
-    int msgHandlerId = *((int*)((char*)msg + 0x88));
-    return (handlerId <= msgHandlerId) ? 1 : 0;
+    // Compare handlerId == msg->command
+    return handlerId == msg->command;
 }
 
 /* Function start: 0x4049F0 */
@@ -240,46 +237,44 @@ int Handler6::CountActiveHotspots() {
 
 /* Function start: 0x404970 */
 int Handler6::FindClickedHotspot() {
-    // extern void* g_InputManager_00436968; // Used from globals.h
-
-    
     int index = 0;
     Hotspot** ptr = hotspots;
-    int zero = 0;
-    
+
     do {
         Hotspot* hotspot = *ptr;
         if (hotspot != 0) {
             int mouseY = 0;
-            int* mouseData = *(int**)((char*)g_InputManager_00436968 + 0x1a0);
-            int mouseX;
-            
-            if (mouseData == 0) {
-                mouseX = 0;
-            } else {
-                mouseY = mouseData[1];
-                if (mouseData == 0) {
-                    mouseX = 0;
-                } else {
-                    mouseX = *mouseData;
-                }
+            InputState* pMouse = g_InputManager_00436968->pMouse;
+
+            if (pMouse != 0) {
+                mouseY = pMouse->y;
             }
-            
-            // Direct comparisons matching original
-            if (hotspot->field_D0 == zero) goto notInBounds;
-            if (hotspot->field_E0 > mouseX) goto notInBounds;
-            if (hotspot->field_E8 < mouseX) goto notInBounds;
-            if (hotspot->field_E4 > mouseY) goto notInBounds;
-            if (hotspot->field_EC < mouseY) goto notInBounds;
-            
-            return index;
-            
-        notInBounds:
-            ;
+
+            int mouseX;
+            if (pMouse != 0) {
+                mouseX = pMouse->x;
+            } else {
+                mouseX = 0;
+            }
+
+            int inBounds;
+            if (hotspot->field_D0 == 0 ||
+                hotspot->field_E0 > mouseX ||
+                hotspot->field_E8 < mouseX ||
+                hotspot->field_E4 > mouseY ||
+                hotspot->field_EC < mouseY) {
+                inBounds = 0;
+            } else {
+                inBounds = 1;
+            }
+
+            if (inBounds != 0) {
+                return index;
+            }
         }
         ptr++;
         index++;
     } while (index < 10);
-    
+
     return -1;
 }

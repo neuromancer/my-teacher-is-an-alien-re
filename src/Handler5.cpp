@@ -190,18 +190,18 @@ void Handler5::Draw(int param1, int param2) {
                     sprintf(g_Buffer_00436960, "%s", stateStr);
                 }
                 y = ((idx - field_B8) + 1) * field_E8 + field_E4;
-                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0, y, 10000, 0);
-                
+                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0, y, 10000, 8);
+
                 if (idx > 0 && g_GameState_00436998->maxStates <= idx) {
                     ShowError("GameState Error  #%d", 1);
                 }
                 sprintf(g_Buffer_00436960, "%d", g_GameState_00436998->stateValues[idx]);
-                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0 + 0x15e, y, 10000, 0);
-                
+                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0 + 0x15e, y, 10000, 8);
+
                 int rowIdx = idx - field_B8;
                 int top = rowIdx * field_E8 + field_E4;
                 int bottom = (rowIdx + 1) * field_E8 + field_E4;
-                
+
                 if (field_BC == idx) {
                     g_ZBufferManager_0043698c->DrawRect(0, top, 0x27f, bottom, 0x28, 8, 1);
                 }
