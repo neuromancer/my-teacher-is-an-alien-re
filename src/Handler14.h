@@ -5,6 +5,8 @@
 #include "Timer.h"
 #include "SC_OnScreenMessage.h"
 
+class SoundItem;
+
 // Handler14 - SC_Sound handler class with ID 14
 // Size: 0xB8 bytes
 // vtable: 0x431240
@@ -27,6 +29,9 @@ public:
     virtual int Update(SC_Message* msg);
     virtual void Draw(int param1, int param2);
     virtual int Exit(SC_Message* msg);
+
+    // Find or create SoundItem in the list
+    SoundItem* FindOrCreateSound(int soundId);
 
     // Handler14-specific fields starting at 0xA0
     Timer timer;            // 0xA0 - 0xB3 (size 0x14)

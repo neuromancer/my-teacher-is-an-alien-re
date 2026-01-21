@@ -48,7 +48,6 @@ void Timer::Wait(unsigned int delay)
     } while (m_elapsedTime < delay);
 }
 
-/* Function start: 0x418F70 */
 Timer::~Timer()
 {
     Timer_DecrementCounter();

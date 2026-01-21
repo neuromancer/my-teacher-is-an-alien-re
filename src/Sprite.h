@@ -28,6 +28,7 @@ public:
     int field_0xb0;
     char sprite_filename[28]; // 0xb4
     Animation* animation_data; // 0xd0
+    int field_0xd4; // 0xd4 - total Sprite size = 0xD8
 
     Sprite(char* filename);
     ~Sprite();

@@ -18,7 +18,7 @@ extern void __fastcall FUN_00410ca0(void* handler);  // Handler16 internal draw 
 
 // Already implemented elsewhere:
 // - DrawEntry::Cleanup(int) at 0x411080 in Engine.cpp
-extern void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.cpp
+extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.cpp
 
 // Global combat engine object (EngineB or Engine subclass)
 extern Engine* g_CombatEngine;
@@ -254,7 +254,6 @@ int Handler16::Update(SC_Message* msg) {
     return 0;
 }
 
-/* Function start: 0x40A7D0 */
 int Handler16::HandleMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     WriteToMessageLog("SC_Combat1");

@@ -24,6 +24,7 @@ public:
     void* Destroy(int free_memory);
 
     void Insert(void* data);
+    void InsertAtCurrent(void* data);
     void* Pop();
     void* GetCurrentData();
     void Push(void* data);

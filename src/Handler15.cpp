@@ -89,12 +89,11 @@ void Handler15::Init(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x40A7C0 */
 int Handler15::Update(SC_Message* msg) {
     return 0;
 }
 
-/* Function start: 0x40A7D0 */
+/* Function start: 0x40A7C0 */
 int Handler15::HandleMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     WriteToMessageLog("SC_OnScreenMessage::AddMessage");

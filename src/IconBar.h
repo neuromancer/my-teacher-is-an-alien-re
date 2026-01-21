@@ -2,6 +2,7 @@
 #define ICONBAR_H
 
 #include "Handler.h"
+#include "SC_Question.h"
 
 class Sprite;
 class SoundList;
@@ -9,15 +10,21 @@ class Sample;
 
 // IconBarButton - Individual button on the icon bar
 // Size: 0xE0 bytes
-struct IconBarButton {
-    Sprite* sprite;     // 0x00 - SMK animation sprite
-    char pad_04[0xC4];  // 0x04-0xC7 padding/unused
-    int x1;             // 0xC8 - left bound
-    int y1;             // 0xCC - top bound
-    int x2;             // 0xD0 - right bound
-    int y2;             // 0xD4 - bottom bound
-    int enabled;        // 0xD8 - button is enabled/active
-    Sample* clickSound; // 0xDC - click sound sample
+// Contains embedded SC_Message at offset 0x08 for message template
+class IconBarButton {
+public:
+    IconBarButton();   // 0x402CD0
+    ~IconBarButton();  // 0x402D60
+
+    Sprite* sprite;         // 0x00 - SMK animation sprite
+    int field_04;           // 0x04
+    SC_Message message;     // 0x08 - embedded SC_Message (0xC0 bytes)
+    int x1;                 // 0xC8 - left bound
+    int y1;                 // 0xCC - top bound
+    int x2;                 // 0xD0 - right bound
+    int y2;                 // 0xD4 - bottom bound
+    int enabled;            // 0xD8 - button is enabled/active
+    Sample* clickSound;     // 0xDC - click sound sample
 };
 
 // IconBar - Base class for handlers with icon bar UI

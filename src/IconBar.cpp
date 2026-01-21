@@ -13,25 +13,18 @@
 // External functions
 extern "C" void __cdecl WriteToMessageLog(const char*);
 
-// Button constructor/destructor for Array_Iterate
-static void IconBarButton_Constructor(void* ptr) {
-    memset(ptr, 0, 0xE0);
-}
-
-static void IconBarButton_Destructor(void* ptr) {
-    // Empty - buttons don't own their sprites
-}
-
 /* Function start: 0x402CD0 */
-// Referenced as constructor callback in Array_Iterate
-void __cdecl IconBar_ButtonInit(void* ptr) {
-    memset(ptr, 0, 0xE0);
+IconBarButton::IconBarButton()
+    : message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+{
+    x1 = 0;
+    y1 = 0;
+    x2 = 0;
+    y2 = 0;
 }
 
 /* Function start: 0x402D60 */
-// Referenced as destructor callback in Array_Iterate
-void __cdecl IconBar_ButtonCleanup(void* ptr) {
-    // Empty destructor - sprites cleaned up separately
+IconBarButton::~IconBarButton() {
 }
 
 /* Function start: 0x402730 */
@@ -43,8 +36,7 @@ IconBar::IconBar() {
     // Zero handler fields at 0x88-0x9F
     memset(&handlerId, 0, 6 * sizeof(int));
 
-    // Initialize button array (6 elements of 0xE0 bytes each)
-    Array_Iterate(buttons, 0xE0, 6, IconBar_ButtonInit, IconBar_ButtonCleanup);
+    // buttons[] array is automatically constructed via IconBarButton constructor
 
     // Zero more fields
     memset(&barX1, 0, 0x560);
@@ -234,50 +226,107 @@ void IconBar::CleanupIconBar() {
 int IconBar::CheckButtonClick(SC_Message* msg) {
     int i;
     int msgX;
-    int msgY;
-    int msgLevel;
-    int inBarBounds;
+    int inBounds;
+    int* enabledPtr;
+    int buttonOffset;
+    char* buttonBase;
+    unsigned int j;
+    int* msgField38Ptr;
 
-    // Call parent message handler
     WriteMessageAddress(msg);
 
-    // Get message coordinates (clickX is at 0xa4, clickY is at 0xa8, mouseX is at 0xac)
     msgX = msg->clickX;
-    msgY = msg->clickY;
-    msgLevel = msg->mouseX;
 
-    // Check if click is within icon bar bounds
-    if (msgX < barX1 || msgX > barX2 || msgY < barY1 || msgY > barY2) {
-        inBarBounds = 0;
+    // Check bar bounds
+    if (barX1 > msgX || barX2 < msgX ||
+        barY1 > msg->clickY || barY2 < msg->clickY) {
+        inBounds = 0;
     } else {
-        inBarBounds = 1;
+        inBounds = 1;
     }
 
-    if (inBarBounds == 0) {
+    if (inBounds == 0) {
         return 0;
     }
 
-    // Check if this is a click event (level >= 2)
-    if (msgLevel < 2) {
+    if (msg->mouseX < 2) {
         return 1;
     }
 
-    // Check each button
-    for (i = 0; i < 6; i++) {
-        if (buttons[i].enabled == 0) {
-            continue;
+    // Loop through buttons - use pointer to enabled field
+    i = 0;
+    enabledPtr = &buttons[0].enabled;
+
+    do {
+        if (*enabledPtr == 0) {
+            goto nextButton;
         }
 
-        // Check button bounds
-        if (msgX < buttons[i].x1 || msgX > buttons[i].x2 ||
-            msgY < buttons[i].y1 || msgY > buttons[i].y2) {
-            continue;
+        // Check button bounds using offsets from enabled pointer
+        if (enabledPtr[-4] > msgX || enabledPtr[-2] < msgX ||
+            enabledPtr[-3] > msg->clickY || enabledPtr[-1] < msg->clickY) {
+            inBounds = 0;
+        } else {
+            inBounds = 1;
         }
 
-        // Button clicked - copy button data to message
-        // This is simplified - full implementation would copy more data
-        return 1;
-    }
+        if (inBounds != 0) {
+            // Button found - play sound and copy button data to message
+            PlayButtonSound(i);
+
+            buttonOffset = i * 0xE0;
+            buttonBase = (char*)this + buttonOffset;
+
+            // Copy button's embedded SC_Message data to msg
+            // Parser fields (inherited by SC_Message)
+            msg->m_subObject = buttons[i].message.m_subObject;
+            msg->isProcessingKey = buttons[i].message.isProcessingKey;
+
+            // Copy 32 bytes for currentKey
+            j = 0;
+            do {
+                j++;
+                msg->currentKey[j - 1] = buttonBase[0xCF + j];
+            } while (j < 0x20);
+
+            // Copy lineNumber and savedFilePos/field_0x3c
+            msg->lineNumber = buttons[i].message.lineNumber;
+            msgField38Ptr = &msg->savedFilePos;
+            msgField38Ptr[0] = buttons[i].message.savedFilePos;
+            msgField38Ptr[1] = buttons[i].message.field_0x3c;
+
+            // Copy 64 bytes for filename
+            j = 0;
+            do {
+                char* thisJ = (char*)this + j;
+                j++;
+                msg->filename[j - 1] = thisJ[buttonOffset + 0x100];
+            } while (j < 0x40);
+
+            // Copy remaining fields from embedded SC_Message
+            msg->pFile = buttons[i].message.pFile;
+            msg->command = buttons[i].message.command;
+            msg->sourceAddress = buttons[i].message.sourceAddress;
+            msg->targetAddress = buttons[i].message.targetAddress;
+            msg->data = buttons[i].message.data;
+            msg->priority = buttons[i].message.priority;
+            msg->param1 = buttons[i].message.param1;
+            msg->param2 = buttons[i].message.param2;
+            msg->clickX = buttons[i].message.clickX;
+            msg->clickY = buttons[i].message.clickY;
+            msg->mouseX = buttons[i].message.mouseX;
+            msg->mouseY = buttons[i].message.mouseY;
+            msg->field_b4 = buttons[i].message.field_b4;
+            msg->field_b8 = buttons[i].message.field_b8;
+            msg->userPtr = buttons[i].message.userPtr;
+
+            return 1;
+        }
+
+nextButton:
+        enabledPtr = (int*)((char*)enabledPtr + 0xE0);
+        i++;
+    } while (i < 6);
 
     return 1;
 }

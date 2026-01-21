@@ -97,12 +97,10 @@ void Sprite::StopAnimationSound()
         sound_idx = anim->data->handle;
     }
 
-    if (g_ZBufferManager_0043698c == 0 || *(int*)((int)g_ZBufferManager_0043698c + 0x98) == 0) {
-        if (anim != 0) {
-            anim->Delete(1);
-        }
-    } else if (anim != 0) {
+    if (g_ZBufferManager_0043698c != 0 && anim != 0 && *(int*)((int)g_ZBufferManager_0043698c + 0x98) != 0) {
         ((Queue*)g_ZBufferManager_0043698c)->Insert(anim);
+    } else if (anim != 0) {
+        anim->Delete(1);
     }
 
     animation_data = 0;
@@ -145,36 +143,42 @@ void Sprite::FreeAnimation()
 /* Function start: 0x41D190 */
 void Sprite::SetState2(int param_1)
 {
-    int offset = 0;
+    int offset;
+    int current_frame;
+    int in_range;
+    int* range_ptr;
+    int new_start;
+    int new_end_frame;
 
     if (param_1 == -1) {
         current_state = param_1;
         return;
     }
 
+    offset = 0;
+
     if ((animation_data == 0) || (animation_data->data == 0)) {
         Init();
     }
 
-    if (param_1 < 0 || param_1 > num_states - 1) {
+    if (param_1 < 0 || num_states - 1 < param_1) {
         ShowError("Sprite::SetState 0 %d %s", param_1, sprite_filename);
     }
 
-    int current_frame = 0;
-    if (animation_data != 0) {
-        current_frame = animation_data->smk->FrameNum;
+    Animation* anim = animation_data;
+    current_frame = 0;
+    if (anim != 0) {
+        current_frame = anim->smk->FrameNum;
     }
 
-    int in_range;
-    if (animation_data == 0) {
-        ShowError("range error");
-        in_range = 0;
-    } else if (ranges == 0) {
+    if (anim == 0 || ranges == 0) {
         ShowError("range error");
         in_range = 0;
     } else {
-        int* range = (int*)((char*)ranges + param_1 * 8);
-        if (current_frame < range[0] || range[1] < current_frame) {
+        range_ptr = (int*)((char*)ranges + param_1 * 8);
+        if (range_ptr[0] > current_frame) {
+            in_range = 0;
+        } else if (range_ptr[1] < current_frame) {
             in_range = 0;
         } else {
             in_range = 1;
@@ -185,41 +189,41 @@ void Sprite::SetState2(int param_1)
         flags |= 0x20;
     }
 
-    int fl = flags;
-    if ((fl & 0x20) == 0 && current_state == param_1) {
+    if ((flags & 0x20) == 0 && current_state == param_1) {
         return;
     }
 
-    if ((fl & 0x10) != 0) {
-        int* old_range = (int*)((char*)ranges + current_state * 8);
-        offset = animation_data->smk->FrameNum - old_range[0];
+    if ((flags & 0x10) != 0) {
+        Animation* anim2 = animation_data;
+        Range* rng = ranges;
+        int old_state = current_state;
+        offset = anim2->smk->FrameNum - ((int*)rng)[old_state * 2];
 
-        int new_start = *(int*)((char*)ranges + param_1 * 8);
-        int new_end_frame = new_start + offset + 1;
+        new_start = ((int*)rng)[param_1 * 2];
+        new_end_frame = new_start + offset + 1;
         offset++;
 
-        int valid;
-        if (animation_data == 0 || ranges == 0) {
+        if (anim2 == 0 || rng == 0) {
             ShowError("range error");
-            valid = 0;
+            in_range = 0;
+        } else if (new_end_frame < new_start) {
+            in_range = 0;
+        } else if (((int*)rng)[param_1 * 2 + 1] < new_end_frame) {
+            in_range = 0;
         } else {
-            if (new_end_frame < new_start || *(int*)((char*)ranges + param_1 * 8 + 4) < new_end_frame) {
-                valid = 0;
-            } else {
-                valid = 1;
-            }
+            in_range = 1;
         }
 
-        if (valid == 0) {
+        if (in_range == 0) {
             offset = 0;
         }
     }
 
     current_state = param_1;
-    animation_data->GotoFrame(*(int*)((char*)ranges + param_1 * 8) + offset);
+    animation_data->GotoFrame(((int*)ranges)[param_1 * 2] + offset);
 
-    int* range = (int*)(current_state * 8 + (int)ranges);
-    if (range[1] == range[0]) {
+    range_ptr = (int*)(current_state * 8 + (int)ranges);
+    if (range_ptr[1] == range_ptr[0]) {
         flags |= 4;
     }
     flags &= ~0x20;
@@ -230,6 +234,8 @@ int Sprite::Do(int x, int y, double scale)
 {
     int skipAnimLoop;
     int done;
+    int remaining;
+    int fl;
 
     if (current_state == -1) {
         return 1;
@@ -245,81 +251,87 @@ int Sprite::Do(int x, int y, double scale)
     if ((animation_data == 0) || (animation_data->data == 0)) {
         Init();
     }
-    int* range = (int*)(current_state * 8 + (int)ranges);
-    if (range[1] == range[0]) {
-        int f = flags;
+    if (ranges[current_state].end == ranges[current_state].start) {
+        fl = flags;
         skipAnimLoop = 1;
-        if ((f & 4) != 0) {
+        if ((fl & 4) != 0) {
             skipAnimLoop = 0;
-            flags = f & ~4;
+            flags = fl & ~4;
         }
         done = 1;
     }
     if (skipAnimLoop == 0) {
+        Animation* anim;
+        int state;
+        int* rng;
+
         animation_data->DoFrame();
-        Animation* anim = animation_data;
-        int remaining;
+        anim = animation_data;
+        state = current_state;
+        rng = (int*)ranges;
         if (anim == 0) {
-            remaining = ranges[current_state].end;
-        }
-        else {
-            remaining = ranges[current_state].end - animation_data->smk->FrameNum;
-        }
-        if (remaining != 1) {
-            animation_data->NextFrame();
-        }
-        else {
-            if ((flags & 0x200) == 0) {
-                animation_data->GotoFrame(ranges[current_state].start);
+            if (rng[state * 2 + 1] != 1) {
+                anim->NextFrame();
+            } else {
+                if ((flags & 0x200) != 0) {
+                    anim->NextFrame();
+                } else {
+                    anim->GotoFrame(rng[state * 2]);
+                }
+                if ((flags & 1) == 0) {
+                    done = 1;
+                }
             }
-            else {
-                animation_data->NextFrame();
-            }
-            if ((flags & 1) == 0) {
-                done = 1;
+        } else {
+            remaining = rng[state * 2 + 1] - anim->smk->FrameNum;
+            if (remaining != 1) {
+                anim->NextFrame();
+            } else {
+                if ((flags & 0x200) != 0) {
+                    anim->NextFrame();
+                } else {
+                    anim->GotoFrame(rng[state * 2]);
+                }
+                if ((flags & 1) == 0) {
+                    done = 1;
+                }
             }
         }
     }
-    if ((flags & 0x100) != 0) {
+    fl = flags;
+    if ((fl & 0x100) != 0) {
         return done;
     }
-    if ((flags & 2) == 0) {
-        Animation* anim = animation_data;
-        if ((flags & 8) == 0) {
-            if (anim == 0) {
-                y = y - 1;
+    if ((fl & 2) == 0) {
+        if ((fl & 8) != 0) {
+            if (animation_data == 0) {
+                y = y + (int)(-scale);
+            } else {
+                y = y + (int)((animation_data->data->height - 1) * scale);
             }
-            else {
+        } else {
+            if (animation_data == 0) {
+                y = y - 1;
+            } else {
                 y = y + animation_data->data->height - 1;
             }
         }
-        else if (anim == 0) {
-            y = y + (int)(-scale);
-        }
-        else {
-            y = y + (int)((animation_data->data->height - 1) * scale);
-        }
     }
     int mode = 0;
-    if ((flags & 8) == 0) {
-        if ((flags & 0x40) != 0) {
+    if ((fl & 8) == 0) {
+        if ((fl & 0x40) != 0) {
             mode = 1;
         }
+    } else {
+        fl &= 0x40;
+        mode = (fl < 1) ? 2 : 3;
     }
-    else {
-        int transparent = flags & 0x40;
-        mode = ((transparent < 1) ? -1 : 0) + 3;
+    g_ZBufferManager_0043698c->PlayAnimationSound(animation_data->data, priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
+    fl = flags & 1;
+    if (fl != 0) {
+        return 0;
     }
-    VBuffer* vbData = animation_data->data;
-    /*ShowMessage("Sprite::Do data=%x clip=(%d,%d,%d,%d) x=%d y=%d mode=%d", 
-        (int)vbData, 
-        vbData ? vbData->clip_x1 : -1, 
-        vbData ? vbData->clip_x2 : -1, 
-        vbData ? vbData->clip_y1 : -1, 
-        vbData ? vbData->clip_y2 : -1, 
-        x, y, mode);*/
-    g_ZBufferManager_0043698c->PlayAnimationSound(vbData, priority, x, y, mode, *(int*)&scale, *((int*)&scale + 1));
-    return -((flags & 1) == 0) & done;
+    return done;
 }
 
 /* Function start: 0x41D500 */
@@ -368,39 +380,45 @@ void Sprite::CheckRanges1()
 /* Function start: 0x41d590 */
 int Sprite::CheckConditions()
 {
-    int iVar1;
-    LogicCondition* piVar2;
+    int state_idx;
+    LogicCondition* cond;
+    GameState* gs;
 
     if ((num_logic_conditions == 0) || (logic_conditions == 0)) {
         return 1;
     }
     if (num_logic_conditions > 0) {
         for (int i = 0; i < num_logic_conditions; i++) {
-            piVar2 = &logic_conditions[i];
-            if (piVar2->type == 1) {
-                iVar1 = piVar2->state_index;
-                if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
+            cond = (LogicCondition*)((char*)logic_conditions + i * 8);
+            if (cond->type == 1) {
+                state_idx = cond->state_index;
+                gs = g_GameState_00436998;
+                if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState_00436998->stateValues[iVar1] == 0) {
+                if (gs->stateValues[state_idx] == 0) {
                     return 0;
                 }
             }
-            if (piVar2->type == 2) {
-                iVar1 = piVar2->state_index;
-                if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
+            cond = (LogicCondition*)((char*)logic_conditions + i * 8);
+            if (cond->type == 2) {
+                state_idx = cond->state_index;
+                gs = g_GameState_00436998;
+                if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState_00436998->stateValues[iVar1] != 0) {
+                if (gs->stateValues[state_idx] != 0) {
                     return 0;
                 }
             }
-            if (piVar2->type == 3) {
-                iVar1 = piVar2->state_index;
-                if ((0 < iVar1) && (g_GameState_00436998->maxStates <= iVar1)) {
+            cond = (LogicCondition*)((char*)logic_conditions + i * 8);
+            if (cond->type == 3) {
+                state_idx = cond->state_index;
+                gs = g_GameState_00436998;
+                if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
                     ShowError("GameState Error  #%d", 1);
                 }
-                if (g_GameState_00436998->stateValues[iVar1] != handle) {
+                if (gs->stateValues[state_idx] != handle) {
                     return 0;
                 }
             }

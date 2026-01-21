@@ -28,9 +28,6 @@ extern DialogQuestion* __fastcall GetDialogByIndex(Handler9* pThis, int index);
 // Find dialog by id and remove from queue (0x407d20)
 extern DialogQuestion* __fastcall FindDialogById(Handler9* pThis, int id);
 
-// Queue::InsertAtCurrent (0x408790)
-extern void __fastcall Queue_InsertAtCurrent(Queue* pThis, void* data);
-
 // QueueNode constructor (0x408860)
 extern QueueNode* __fastcall QueueNode_Constructor(void* mem, void* data);
 
@@ -456,7 +453,7 @@ int Handler9::Exit(SC_Message* msg) {
                         }
                     }
                 } else {
-                    Queue_InsertAtCurrent(queue, dq);
+                    queue->InsertAtCurrent(dq);
                 }
             }
         }

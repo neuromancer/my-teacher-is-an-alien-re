@@ -53,8 +53,6 @@ void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
     return block;
 }
 
-extern void FUN_406670(void* data, int param);
-
 /* Function start: 0x406610 */
 Handler8* Handler8::CopyParserFields(Parser* src)
 {
@@ -77,6 +75,29 @@ Handler8* Handler8::CopyParserFields(Parser* src)
     } while (i < 0x40);
     pFile = src->pFile;
     return this;
+}
+
+/* Function start: 0x406670 */
+void InitMessageArray(int* param_1, int param_2)
+{
+    int* ptr;
+    int count;
+
+    ptr = param_1;
+    memset(ptr, 0, (unsigned int)(param_2 << 6) * 3);
+
+    count = param_2;
+    param_2 = count - 1;
+    if (count != 0) {
+        do {
+            if (ptr != 0) {
+                ((SC_Message*)ptr)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            }
+            ptr = (int*)((char*)ptr + 0xC0);
+            count = param_2;
+            param_2--;
+        } while (count != 0);
+    }
 }
 
 /* Function start: 0x406120 */
@@ -146,16 +167,18 @@ int Handler8::Exit(SC_Message* msg) {
 /* Function start: 0x4063C0 */
 int Handler8::Update(SC_Message* msg) {
     int prio;
-    if (msg != 0 && handlerId == msg->command) {
-        prio = msg->priority;
-        if (prio == 0) {
-            return 0;
-        }
-        if (prio == 6) {
-            ProcessMessage();
-        }
+
+    if (handlerId != msg->command) {
+        return 0;
     }
-    return 0;
+    prio = msg->priority;
+    if (prio && prio != 6) {
+        return 0;
+    }
+    if (prio == 6) {
+        ProcessMessage();
+    }
+    return 1;
 }
 
 /* Function start: 0x406400 */
@@ -195,7 +218,7 @@ void Handler8::ProcessMessage() {
         item->next = 0;
         queue->count++;
 
-        FUN_406670(&item->data, 1);
+        InitMessageArray((int*)&item->data, 1);
         ((Handler8*)&item->data)->CopyParserFields(msg);
 
         item->field_90 = msg->command;

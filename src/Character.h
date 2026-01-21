@@ -21,6 +21,8 @@ struct PriorityQueue {
     PriorityQueueNode* tail;    // +0x04
     PriorityQueueNode* current; // +0x08
     int type;                   // +0x0C
+
+    void AddAfterCurrent(CharSprite* sprite);
 };
 
 // CharSprite - Sprite for character display
@@ -56,10 +58,8 @@ public:
 
 // External functions used by Character
 extern CharSprite* __fastcall FUN_00408880(CharSprite* mem);
-extern void __fastcall FUN_004043a0(PriorityQueue* queue, CharSprite* sprite);
 extern PriorityQueueNode* __fastcall FUN_00404470(PriorityQueueNode* node, CharSprite* sprite);
 
-// String search function (like strstr but case-sensitive)
-extern "C" char* FUN_00424c00(char* haystack, char* needle);
+// FUN_00424c00 is just strstr from the CRT
 
 #endif // CHARACTER_H

@@ -410,3 +410,36 @@ void* Queue::Destroy(int free_memory)
     }
     return this;
 }
+
+/* Function start: 0x408790 */
+void Queue::InsertAtCurrent(void* data)
+{
+    QueueNode* node;
+
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+
+    node = new QueueNode(data);
+
+    if (m_current == 0) {
+        m_current = m_head;
+    }
+
+    if (m_head == 0) {
+        m_head = node;
+        m_tail = node;
+        m_current = node;
+    }
+    else {
+        node->next = (QueueNode*)m_current;
+        node->prev = ((QueueNode*)m_current)->prev;
+        if (((QueueNode*)m_current)->prev == 0) {
+            m_head = node;
+        }
+        else {
+            ((QueueNode*)((QueueNode*)m_current)->prev)->next = node;
+        }
+        ((QueueNode*)m_current)->prev = node;
+    }
+}

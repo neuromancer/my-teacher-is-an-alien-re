@@ -6,16 +6,7 @@
 #include "TimedEvent.h"
 #include "Queue.h"
 
-// Insert data at current position in list
-extern void __fastcall FUN_004024d0(int* list, int data);
-
-// Append data at end of list
-extern void __fastcall FUN_004025a0(int* list, int data);
-
-// Pop and return current node data from list
-extern void* __fastcall FUN_00402680(int* list);
-
-// Node destructor (calls dtor and frees) - use Queue::Destroy at 0x402700
+// Queue methods used: Insert (0x4024d0), Push (0x4025a0), Pop (0x402680)
 
 /* Function start: 0x401B60 */
 Handler13::Handler13() {
@@ -97,7 +88,6 @@ void Handler13::Init(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x401E20 */
 int Handler13::Update(SC_Message* msg) {
     return 0;
  }
@@ -265,17 +255,17 @@ int Handler13::Exit(SC_Message* msg) {
             pList->current = node;
             if ((pList->flags == 1) || (pList->flags == 2)) {
                 if (node == 0) {
-                    FUN_004024d0((int*)pList, (int)pTimedEvent);
+                    ((Queue*)pList)->Insert(pTimedEvent);
                 } else {
                     do {
                         node = (MessageNode*)pList->current;
                         timedEvent = (TimedEvent*)node->data;
                         if ((unsigned int)timedEvent->m_duration < (unsigned int)pTimedEvent->m_duration) {
-                            FUN_004024d0((int*)pList, (int)pTimedEvent);
+                            ((Queue*)pList)->Insert(pTimedEvent);
                             break;
                         }
                         if (pList->tail == node) {
-                            FUN_004025a0((int*)pList, (int)pTimedEvent);
+                            ((Queue*)pList)->Push(pTimedEvent);
                             break;
                         }
                         if (node != 0) {
@@ -284,7 +274,7 @@ int Handler13::Exit(SC_Message* msg) {
                     } while (pList->current != 0);
                 }
             } else {
-                FUN_004024d0((int*)pList, (int)pTimedEvent);
+                ((Queue*)pList)->Insert(pTimedEvent);
             }
         }
         break;
@@ -304,7 +294,7 @@ int Handler13::Exit(SC_Message* msg) {
                 timedEvent = (TimedEvent*)node->data;
             }
             if (timedEvent->m_duration == pTimedEvent->m_duration) {
-                eventData = (TimedEvent*)FUN_00402680((int*)pList);
+                eventData = (TimedEvent*)((Queue*)pList)->Pop();
                 if (eventData != 0) {
                     eventData->~TimedEvent();
                     FreeMemory(eventData);

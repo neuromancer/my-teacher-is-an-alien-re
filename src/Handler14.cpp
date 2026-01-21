@@ -5,41 +5,14 @@
 #include "string.h"
 #include "SC_OnScreenMessage.h"
 #include "SC_Question.h"
-#include "Sample.h"
-
-// SoundItem class - represents a sound being played
-// Size: 0x20 bytes
-// vtable: 0x431238
-// Layout:
-//   0x00: vtable pointer
-//   0x04-0x17: Timer (size 0x14)
-//   0x18: soundId
-//   0x1C: Sample* soundPtr
-class SoundItem {
-public:
-    void* vtable;           // 0x00
-    Timer timer;            // 0x04 - 0x17
-    int soundId;            // 0x18
-    Sample* soundPtr;       // 0x1C
-};
+#include "SoundItem.h"
 
 // External functions
-extern void __fastcall FUN_0040b5d0(void* item, int soundId);  // SoundItem constructor
-extern int __fastcall FUN_0040b700(void* item);                 // Check if sound finished
-extern void __fastcall FUN_0040b750(int item);                  // Resume sound
-extern void __fastcall FUN_0040b770(int item);                  // Start/play sound
-extern void FUN_0040b790(void* item, int volume);              // Adjust volume
-extern void FUN_0040b7c0(void* item, int volume);              // Set volume
-extern void* FUN_0040c0e0(void* handler, int soundId);         // Find or create sound item
 extern void* __fastcall FUN_0040c500(int* list);               // Pop from list
 extern void* __fastcall FUN_0040c0d0(int list);                // Get current node data
 extern void FUN_0040c580(void* node, int flag);                // Node destructor
-extern void FUN_0040c430(int* list, int data);                 // Insert into list
-// FUN_0041e470 is Sample::Unload() - use soundPtr->Unload() instead
-extern int _AIL_sample_status_4(int sample);                   // AIL sample status
-extern int _AIL_sample_volume_4(int sample);                   // AIL sample volume
-extern void FUN_0041e580(void* sound, int volume, int param);  // Set sound volume
-extern void FUN_0041e6d0(void* sound, int volume, int param);  // Set sound playback
+extern void FUN_0040c430(MessageList* list, SoundItem* data);  // Insert into list
+extern MessageNode* __fastcall FUN_0040c5b0(MessageNode* node, SoundItem* data);  // Node init
 
 /* Function start: 0x40B7E0 */
 Handler14::Handler14() {
@@ -101,13 +74,7 @@ Handler14::~Handler14() {
                 }
                 // Cleanup data object (SoundItem)
                 if (data != 0) {
-                    data->vtable = (void*)0x431238;
-                    if (data->soundPtr != 0) {
-                        data->soundPtr->Unload();
-                        FreeMemory(data->soundPtr);
-                        data->soundPtr = 0;
-                    }
-                    FreeMemory(data);
+                    delete data;
                 }
             }
         }
@@ -131,7 +98,6 @@ int Handler14::HandleMessage(SC_Message* msg) {
     return 1;
 }
 
-/* Function start: 0x40BB00 */
 int Handler14::Update(SC_Message* msg) {
     return 0;
 }
@@ -162,7 +128,7 @@ void Handler14::Draw(int param1, int param2) {
                 soundItem = (SoundItem*)node->data;
             }
 
-            iVar4 = FUN_0040b700(soundItem);
+            iVar4 = soundItem->IsFinished();
             if (iVar4 != 0) {
                 node = (MessageNode*)pList->current;
                 if (node == 0) {
@@ -201,13 +167,7 @@ void Handler14::Draw(int param1, int param2) {
                 }
                 // Cleanup data object (SoundItem)
                 if (data != 0) {
-                    data->vtable = (void*)0x431238;
-                    if (data->soundPtr != 0) {
-                        data->soundPtr->Unload();
-                        FreeMemory(data->soundPtr);
-                        data->soundPtr = 0;
-                    }
-                    FreeMemory(data);
+                    delete data;
                 }
             }
 
@@ -244,8 +204,8 @@ int Handler14::Exit(SC_Message* msg) {
 
     switch (msg->priority) {
     case 3:
-        pvVar7 = FUN_0040c0e0(this, msg->data);
-        FUN_0040b770((int)pvVar7);
+        pvVar7 = FindOrCreateSound(msg->data);
+        ((SoundItem*)pvVar7)->Start();
         break;
 
     case 0xf:
@@ -256,35 +216,29 @@ int Handler14::Exit(SC_Message* msg) {
             while (pList->head != 0) {
                 data = (SoundItem*)FUN_0040c500((int*)pList);
                 if (data != 0) {
-                    data->vtable = (void*)0x431238;
-                    if (data->soundPtr != 0) {
-                        data->soundPtr->Unload();
-                        FreeMemory(data->soundPtr);
-                        data->soundPtr = 0;
-                    }
-                    FreeMemory(data);
+                    delete data;
                 }
             }
         }
         break;
 
     case 0x10:
-        pvVar7 = FUN_0040c0e0(this, msg->data);
-        FUN_0040b790(pvVar7, 10);
+        pvVar7 = FindOrCreateSound(msg->data);
+        ((SoundItem*)pvVar7)->AdjustVolume(10);
         break;
 
     case 0x11:
-        pvVar7 = FUN_0040c0e0(this, msg->data);
-        FUN_0040b790(pvVar7, -10);
+        pvVar7 = FindOrCreateSound(msg->data);
+        ((SoundItem*)pvVar7)->AdjustVolume(-10);
         break;
 
     case 0x12:
-        pvVar7 = FUN_0040c0e0(this, msg->data);
-        FUN_0040b7c0(pvVar7, msg->param1);
+        pvVar7 = FindOrCreateSound(msg->data);
+        ((SoundItem*)pvVar7)->SetVolume(msg->param1);
         break;
 
     case 0x13:
-        FUN_0040c0e0(this, msg->data);
+        FindOrCreateSound(msg->data);
         break;
 
     case 0x14:
@@ -332,13 +286,7 @@ int Handler14::Exit(SC_Message* msg) {
                 }
                 // Cleanup data object
                 if (eventData != 0) {
-                    eventData->vtable = (void*)0x431238;
-                    if (eventData->soundPtr != 0) {
-                        eventData->soundPtr->Unload();
-                        FreeMemory(eventData->soundPtr);
-                        eventData->soundPtr = 0;
-                    }
-                    FreeMemory(eventData);
+                    delete eventData;
                 }
             }
             node = (MessageNode*)pList->current;
@@ -353,8 +301,8 @@ int Handler14::Exit(SC_Message* msg) {
         break;
 
     case 0x1a:
-        pvVar7 = FUN_0040c0e0(this, msg->data);
-        FUN_0040b750((int)pvVar7);
+        pvVar7 = FindOrCreateSound(msg->data);
+        ((SoundItem*)pvVar7)->Resume();
         break;
 
     case 0x1b:
@@ -366,4 +314,177 @@ int Handler14::Exit(SC_Message* msg) {
     }
 
     return 1;
+}
+
+/* Function start: 0x40C0E0 */
+SoundItem* Handler14::FindOrCreateSound(int soundId)
+{
+    MessageList* pList;
+    MessageNode* currNode;
+    SoundItem* foundItem;
+    void* allocResult;
+    SoundItem* newItem;
+    MessageNode* newNode;
+    int currData;
+
+    pList = Handler14::list;
+    currData = (int)pList->head;
+    if (currData != 0) {
+        pList->current = pList->head;
+        currData = (int)pList->head;
+        while (currData != 0) {
+            currNode = (MessageNode*)pList->current;
+            currData = 0x18;
+            if (currNode != 0) {
+                currData = ((SoundItem*)currNode->data)->soundId;
+            }
+            if (soundId == currData) {
+                currNode = (MessageNode*)pList->current;
+                if (currNode == 0) {
+                    foundItem = 0;
+                } else {
+                    foundItem = (SoundItem*)currNode->data;
+                }
+                return foundItem;
+            }
+            if (pList->tail == pList->current) {
+                break;
+            }
+            if (currNode != 0) {
+                pList->current = currNode->next;
+            }
+            currData = (int)pList->head;
+        }
+    }
+
+    // Not found - allocate new SoundItem
+    allocResult = operator new(0x20);
+    newItem = 0;
+    if (allocResult != 0) {
+        newItem = (SoundItem*)allocResult;
+        newItem->SoundItem::SoundItem(soundId);
+    }
+
+    if (newItem == 0) {
+        ShowError("queue fault 0101");
+    }
+
+    pList->current = pList->head;
+
+    // Check list type for insertion method
+    if (pList->flags == 1 || pList->flags == 2) {
+        if (pList->head == 0) {
+            if (newItem == 0) {
+                ShowError("queue fault 0102");
+            }
+
+            allocResult = operator new(0xc);
+            newNode = 0;
+            if (allocResult != 0) {
+                newNode = FUN_0040c5b0((MessageNode*)allocResult, newItem);
+            }
+
+            if (pList->current == 0) {
+                pList->current = pList->head;
+            }
+
+            if (pList->head == 0) {
+                pList->head = newNode;
+                pList->tail = newNode;
+                pList->current = newNode;
+            } else {
+                newNode->prev = (MessageNode*)pList->current;
+                newNode->next = ((MessageNode*)pList->current)->next;
+                if (((MessageNode*)pList->current)->next == 0) {
+                    pList->head = newNode;
+                    ((MessageNode*)pList->current)->next = newNode;
+                } else {
+                    ((MessageNode*)pList->current)->next->prev = newNode;
+                    ((MessageNode*)pList->current)->next = newNode;
+                }
+            }
+        } else {
+            // Priority insertion loop
+            while (pList->current != 0) {
+                currNode = (MessageNode*)pList->current;
+                if (((SoundItem*)currNode->data)->soundId < newItem->soundId) {
+                    if (newItem == 0) {
+                        ShowError("queue fault 0102");
+                    }
+
+                    allocResult = operator new(0xc);
+                    newNode = 0;
+                    if (allocResult != 0) {
+                        ((MessageNode*)allocResult)->data = newItem;
+                        ((MessageNode*)allocResult)->prev = 0;
+                        ((MessageNode*)allocResult)->next = 0;
+                        newNode = (MessageNode*)allocResult;
+                    }
+
+                    if (pList->current == 0) {
+                        pList->current = pList->head;
+                    }
+
+                    if (pList->head == 0) {
+                        pList->head = newNode;
+                        pList->tail = newNode;
+                        pList->current = newNode;
+                    } else {
+                        newNode->prev = (MessageNode*)pList->current;
+                        newNode->next = ((MessageNode*)pList->current)->next;
+                        if (((MessageNode*)pList->current)->next == 0) {
+                            pList->head = newNode;
+                            ((MessageNode*)pList->current)->next = newNode;
+                        } else {
+                            ((MessageNode*)pList->current)->next->prev = newNode;
+                            ((MessageNode*)pList->current)->next = newNode;
+                        }
+                    }
+                    return newItem;
+                }
+
+                if (pList->tail == pList->current) {
+                    if (newItem == 0) {
+                        ShowError("queue fault 0112");
+                    }
+
+                    allocResult = operator new(0xc);
+                    newNode = 0;
+                    if (allocResult != 0) {
+                        ((MessageNode*)allocResult)->data = newItem;
+                        ((MessageNode*)allocResult)->prev = 0;
+                        ((MessageNode*)allocResult)->next = 0;
+                        newNode = (MessageNode*)allocResult;
+                    }
+
+                    if (pList->current == 0) {
+                        pList->current = pList->tail;
+                    }
+
+                    if (pList->head == 0) {
+                        pList->head = newNode;
+                        pList->tail = newNode;
+                        pList->current = newNode;
+                    } else {
+                        if (pList->tail == 0 || ((MessageNode*)pList->tail)->prev != 0) {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->prev = 0;
+                        newNode->next = (MessageNode*)pList->tail;
+                        ((MessageNode*)pList->tail)->prev = newNode;
+                        pList->tail = newNode;
+                    }
+                    return newItem;
+                }
+
+                if (currNode != 0) {
+                    pList->current = currNode->next;
+                }
+            }
+        }
+    } else {
+        FUN_0040c430(pList, newItem);
+    }
+
+    return newItem;
 }

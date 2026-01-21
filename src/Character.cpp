@@ -5,8 +5,69 @@
 #include "string.h"
 
 // External queue functions
-extern void __fastcall FUN_004043a0(PriorityQueue* queue, CharSprite* sprite);
 extern PriorityQueueNode* __fastcall FUN_00404470(PriorityQueueNode* node, CharSprite* sprite);
+
+// strstr is just strstr from the CRT - use standard library
+
+/* Function start: 0x4043A0 */
+void PriorityQueue::AddAfterCurrent(CharSprite* sprite)
+{
+    void* allocResult;
+    PriorityQueueNode* newNode;
+
+    if (sprite == 0) {
+        ShowError("queue fault 0102");
+    }
+
+    allocResult = operator new(0xc);
+    newNode = 0;
+    if (allocResult != 0) {
+        newNode = (PriorityQueueNode*)allocResult;
+        newNode->data = sprite;
+        newNode->next = 0;
+        newNode->prev = 0;
+    }
+
+    if (PriorityQueue::current == 0) {
+        PriorityQueue::current = PriorityQueue::head;
+    }
+
+    if (PriorityQueue::head == 0) {
+        PriorityQueue::head = newNode;
+        PriorityQueue::tail = newNode;
+        PriorityQueue::current = newNode;
+    } else {
+        newNode->prev = PriorityQueue::current;
+        newNode->next = PriorityQueue::current->next;
+        if (PriorityQueue::current->next == 0) {
+            PriorityQueue::head = newNode;
+            PriorityQueue::current->next = newNode;
+        } else {
+            PriorityQueue::current->next->prev = newNode;
+            PriorityQueue::current->next = newNode;
+        }
+    }
+}
+
+/* Function start: 0x408880 */
+CharSprite* __fastcall FUN_00408880(CharSprite* param_1)
+{
+    int* ptr4c;
+    int* puVar3;
+    int iVar2;
+
+    ptr4c = (int*)((char*)param_1 + 0x4c);
+    ptr4c[0] = 0;
+    ptr4c[1] = 0;
+    ptr4c[2] = 0;
+    ptr4c[3] = 0;
+    puVar3 = (int*)param_1;
+    for (iVar2 = 0x17; iVar2 != 0; iVar2--) {
+        *puVar3 = 0;
+        puVar3++;
+    }
+    return param_1;
+}
 
 /* Function start: 0x403700 */
 Character::Character(char* param_1) {
@@ -47,7 +108,7 @@ Character::Character(char* param_1) {
     queue = pQueue;
 
     // Check for "peter"
-    if (FUN_00424c00(param_1, "peter") != 0) {
+    if (strstr(param_1, "peter") != 0) {
         counter = 0;
         characterType = 0;
 
@@ -62,7 +123,7 @@ Character::Character(char* param_1) {
             // Check queue exists
             if (queue == 0) {
                 ShowError("Missing activeQ");
-            } else if (FUN_00424c00(param_1, "peter") != 0) {
+            } else if (strstr(param_1, "peter") != 0) {
                 if ((unsigned int)counter <= 4) {
                     // Copy "MEET MY" to sprite->name
                     strcpy(sprite->name, "MEET MY");
@@ -80,7 +141,7 @@ Character::Character(char* param_1) {
             // Check queue type for priority insertion
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head == 0) {
-                    FUN_004043a0(pQueue, sprite);
+                    pQueue->AddAfterCurrent(sprite);
                 } else {
                     // Priority insertion loop
                     while (pQueue->current != 0) {
@@ -170,14 +231,14 @@ Character::Character(char* param_1) {
                     }
                 }
             } else {
-                FUN_004043a0(pQueue, sprite);
+                pQueue->AddAfterCurrent(sprite);
             }
 
             counter++;
         } while (counter < 1);
     }
     // Check for "susan"
-    else if (FUN_00424c00(param_1, "susan") != 0) {
+    else if (strstr(param_1, "susan") != 0) {
         counter = 0;
         characterType = 1;
 
@@ -190,7 +251,7 @@ Character::Character(char* param_1) {
 
             if (queue == 0) {
                 ShowError("Missing activeQ");
-            } else if (FUN_00424c00(param_1, "susan") != 0) {
+            } else if (strstr(param_1, "susan") != 0) {
                 if ((unsigned int)counter <= 4) {
                     strcpy(sprite->name, "SUS");
                 }
@@ -205,7 +266,7 @@ Character::Character(char* param_1) {
 
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head == 0) {
-                    FUN_004043a0(pQueue, sprite);
+                    pQueue->AddAfterCurrent(sprite);
                 } else {
                     while (pQueue->current != 0) {
                         PriorityQueueNode* curr = pQueue->current;
@@ -285,14 +346,14 @@ Character::Character(char* param_1) {
                     }
                 }
             } else {
-                FUN_004043a0(pQueue, sprite);
+                pQueue->AddAfterCurrent(sprite);
             }
 
             counter++;
         } while (counter < 1);
     }
     // Check for "duncan"
-    else if (FUN_00424c00(param_1, "duncan") != 0) {
+    else if (strstr(param_1, "duncan") != 0) {
         counter = 0;
         characterType = 2;
 
@@ -305,7 +366,7 @@ Character::Character(char* param_1) {
 
             if (queue == 0) {
                 ShowError("Missing activeQ");
-            } else if (FUN_00424c00(param_1, "duncan") != 0) {
+            } else if (strstr(param_1, "duncan") != 0) {
                 if ((unsigned int)counter <= 4) {
                     strcpy(sprite->name, "TESTPUZZLE");
                 }
@@ -320,7 +381,7 @@ Character::Character(char* param_1) {
 
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head == 0) {
-                    FUN_004043a0(pQueue, sprite);
+                    pQueue->AddAfterCurrent(sprite);
                 } else {
                     while (pQueue->current != 0) {
                         PriorityQueueNode* curr = pQueue->current;
@@ -400,7 +461,7 @@ Character::Character(char* param_1) {
                     }
                 }
             } else {
-                FUN_004043a0(pQueue, sprite);
+                pQueue->AddAfterCurrent(sprite);
             }
 
             counter++;
@@ -412,7 +473,7 @@ Character::Character(char* param_1) {
 
     // Set ability flags based on character type
     // Peter: all abilities enabled
-    if (FUN_00424c00(param_1, "peter") != 0) {
+    if (strstr(param_1, "peter") != 0) {
         int val = 1;
         abilities[0] = val;
         abilities[1] = val;
@@ -425,7 +486,7 @@ Character::Character(char* param_1) {
     }
 
     // Susan: most abilities, but abilities[2] and abilities[6] disabled
-    if (FUN_00424c00(param_1, "susan") != 0) {
+    if (strstr(param_1, "susan") != 0) {
         int val = 1;
         abilities[0] = val;
         abilities[1] = val;
@@ -438,7 +499,7 @@ Character::Character(char* param_1) {
     }
 
     // Duncan: most abilities, but abilities[4] disabled
-    if (FUN_00424c00(param_1, "duncan") != 0) {
+    if (strstr(param_1, "duncan") != 0) {
         int val = 1;
         abilities[0] = val;
         abilities[1] = val;

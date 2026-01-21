@@ -53,10 +53,8 @@ extern "C" {
     void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
 }
 
-extern "C" void InitWorkBuffer(int width, int height);
-
 /* Function start: 0x41A8C0 */
-void InitWorkBuffer(int width, int height)
+extern "C" void InitWorkBuffer(int width, int height)
 {
     if (g_WorkBuffer_00436974 != 0) {
         delete g_WorkBuffer_00436974;

@@ -9,6 +9,15 @@
 #include "globals.h"
 #include "ZBufferManager.h"
 #include "SC_Question.h"
+#include "SC_OnScreenMessage.h"
+#include "Handler11.h"
+#include "InputManager.h"
+#include "Character.h"
+#include "SoundItem.h"
+#include "Parser.h"
+#include "Engine.h"
+#include "Handler9.h"
+#include "Queue.h"
 
 extern "C" {
 
@@ -29,27 +38,12 @@ void FUN_00421840() {}
 // CRT internal function
 void CleanupObjectArray(void* a, int b) {}
 
-// Functions moved to their class files as proper class members:
-// - AllocateMemory_Wrapper -> Memory.cpp (extern "C" function)
-// - FormatFilePath -> FileSystem.cpp (extern "C" function)
-// - OptionMenu::SetOptionState, OptionMenu::GetOptionQ -> OptionMenu.cpp
-// - HotspotManager::HotspotManager() constructor -> Hotspot.cpp
-// - mCNavNode_Update, mCNavNode_GetNextNode, NavNode_Constructor -> mCNavigator.cpp
-// - FindCharIndex -> mCNavigator.cpp
-
-#include "InputManager.h"
-// InputManager::PollEvents - InputManager.cpp
-
 // ============================================================================
 // Global variables needed for linking
 // ============================================================================
 
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
-
-#include "SC_OnScreenMessage.h"
-#include "SC_Question.h"
-#include "Handler11.h"
 
 // ============================================================================
 // Handler8 stubs - message queue management
@@ -58,112 +52,31 @@ short _param_3 = 0; // Sound.obj ?_param_3@@3FA
 // Forward declaration for MessageQueue (defined in Handler8.cpp)
 struct MessageQueue;
 
-// Message queue globals and helpers
 MessageQueue* g_MessageQueue = 0;
-// FUN_4065e0 (ExpandPool) implemented in Handler8.cpp
-void FUN_406670(void* data, int param) {}
-// FUN_406610 (CopyParserData) implemented in Handler8.cpp
 
 // ============================================================================
 // Handler11 stubs
 // ============================================================================
 
-// FUN_00418d60 now implemented in Parser.cpp as ParseFile()
-
-// Placeholder destructors
 SC_Dialog::~SC_Dialog() {}
 UnknownClass_4092e0::~UnknownClass_4092e0() {}
 
 // ============================================================================
-// Handler10 stubs - Character/OptionMenu/Sprite functions
+// Handler10/Hotspot stubs
 // ============================================================================
-
-// Character object constructor now in Character.cpp
-
-// Functions used by Character constructor
-#include "Character.h"
-extern "C" char* FUN_00424c00(char* haystack, char* needle) { return haystack; }  // String search stub
-CharSprite* __fastcall FUN_00408880(CharSprite* mem) { return mem; }  // CharSprite constructor
-void __fastcall FUN_004043a0(PriorityQueue* queue, CharSprite* sprite) {}  // Queue add
-
-// CharSprite/CharButton functions now implemented in Hotspot.cpp as Hotspot methods:
-// - FUN_00409400 -> Hotspot::Do()
-// - FUN_00409440 -> Hotspot::SetState(int)
-// - FUN_00409470 -> Hotspot::GetState()
-// - FUN_004094a0 -> Hotspot::Exit()
-
-// FUN_004092e0 now implemented in Hotspot.cpp
 
 // FUN_0041ce30 - Hotspot-related cleanup function
 void __fastcall FUN_0041ce30(void* data) {}
 
-// OptionMenu functions now implemented in OptionMenu.cpp:
-// - FUN_00409bf0 -> OptionMenu::~OptionMenu()
-// - FUN_00409f00 -> OptionMenu::Render()
-// - FUN_00409fb0 -> OptionMenu::SetOptionState()
-// - FUN_0040a150 -> OptionMenu::SelectCharacter()
-// - FUN_0040a1a0 -> OptionMenu::Deactivate()
-
-// MouseControl functions now implemented in MouseControl.cpp:
-// - FUN_0041f360 -> MouseControl::~MouseControl()
-// - FUN_0041f480 -> MouseControl::StopAll()
-// - FUN_0041f800 -> MouseControl::DoAll()
-
-// IconBar::PlayButtonSound is now in IconBar.cpp:
-// - FUN_00403300 -> IconBar::PlayButtonSound(int)
-
 // ============================================================================
-// Handler13 stubs - MessageList and TimerNode functions
+// Handler14 stubs - Sound list functions
 // ============================================================================
-
-// FUN_00401890 - TimerNode constructor (returns new TimerNode)
-void* __fastcall FUN_00401890(void* mem) { return mem; }
-
-// FUN_00401910 - cleanup function for node data in Handler13's MessageList
-void __fastcall FUN_00401910(void* data) {}
-
-// FUN_00401990 - Set timer duration on TimerNode
-void __fastcall FUN_00401990(void* timerNode, int duration) {}
-
-// FUN_004019a0 - Timer check/process function
-int __fastcall FUN_004019a0(void* timerNode) { return 0; }
-
-// FUN_004024d0 - Insert node at current position in list
-void __fastcall FUN_004024d0(int* list, int node) {}
-
-// FUN_004025a0 - Append node at end of list
-void __fastcall FUN_004025a0(int* list, int node) {}
-
-// FUN_00402680 - Pop and return current node from list
-void* __fastcall FUN_00402680(int* list) { return 0; }
-
-// FUN_00402700 - Node destructor (calls dtor and frees)
-void __fastcall FUN_00402700(void* node, int shouldDelete) {}
-
-// ============================================================================
-// Handler14 stubs - SC_Sound handler functions
-// ============================================================================
-
-// FUN_0040b700 - Check if sound finished playing
-int __fastcall FUN_0040b700(void* item) { return 0; }
-
-// FUN_0040b750 - Resume sound playback
-void __fastcall FUN_0040b750(int item) {}
-
-// FUN_0040b770 - Start/play sound
-void __fastcall FUN_0040b770(int item) {}
-
-// FUN_0040b790 - Adjust volume by delta
-void FUN_0040b790(void* item, int volume) {}
-
-// FUN_0040b7c0 - Set volume to specific value
-void FUN_0040b7c0(void* item, int volume) {}
 
 // FUN_0040c0d0 - Get current node data from list
 void* __fastcall FUN_0040c0d0(int list) { return 0; }
 
-// FUN_0040c0e0 - Find or create sound item in list
-void* FUN_0040c0e0(void* handler, int soundId) { return 0; }
+// FUN_0040c430 - Insert SoundItem into list
+void FUN_0040c430(MessageList* list, SoundItem* data) {}
 
 // FUN_0040c500 - Pop from sound list
 void* __fastcall FUN_0040c500(int* list) { return 0; }
@@ -171,14 +84,12 @@ void* __fastcall FUN_0040c500(int* list) { return 0; }
 // FUN_0040c580 - Sound node destructor
 void FUN_0040c580(void* node, int flag) {}
 
-// FUN_0041e470 is Sample::Unload() - implemented in Sample.cpp
+// FUN_0040c5b0 - Node init with SoundItem
+MessageNode* __fastcall FUN_0040c5b0(MessageNode* node, SoundItem* data) { return node; }
 
 // ============================================================================
 // Engine-related stubs
 // ============================================================================
-
-#include "Parser.h"
-#include "Engine.h"
 
 // FUN_00413bc0 - Navigation check (used by Engine::UpdateAndCheck)
 int __fastcall FUN_00413bc0(Parser* parser) { return 0; }
@@ -186,7 +97,6 @@ int __fastcall FUN_00413bc0(Parser* parser) { return 0; }
 // ============================================================================
 // Handler15 stubs
 // ============================================================================
-#include "OnScreenMessage.h"
 
 // FUN_0040a290 - OnScreenMessage::Update
 int __fastcall FUN_0040a290(OnScreenMessage* param1, int param2) { return 0; }
@@ -198,38 +108,37 @@ int FUN_00420d90(void* param1, unsigned int param2, char* param3) { return 0; }
 // Handler16 stubs
 // ============================================================================
 
-// FUN_004199a0 - Unknown function
+// FUN_004199a0 - Parser destructor wrapper
 void __fastcall FUN_004199a0(void* param) {}
-
-// InitWorkBuffer - Initialize work buffer
-void InitWorkBuffer(int width, int height) {}
 
 // PTR_LAB_00431050 - Data pointer
 void* PTR_LAB_00431050 = 0;
 
-// g_CombatEngine - Global combat engine pointer
+// g_CombatEngine - Combat engine pointer (defined in globals.h as extern)
 Engine* g_CombatEngine = 0;
 
-// FUN_00410ca0 - Unknown function
+// FUN_00410ca0 - Handler16 internal draw function
 void __fastcall FUN_00410ca0(void* param) {}
 
 // ============================================================================
 // mCNavigator stubs
 // ============================================================================
 
+// FUN_0041cf10 - Sprite cleanup
 void __fastcall FUN_0041cf10(void* param) {}
+
+// FUN_004131d0 - mCNavNode::GetNextNode
 int __fastcall FUN_004131d0(void* param) { return 0; }
+
+// FUN_00413280 - mCNavNode::Update
 int __fastcall FUN_00413280(void* param) { return 0; }
 
 // ============================================================================
 // Handler9 stubs
 // ============================================================================
-#include "Handler9.h"
-#include "Queue.h"
 
 void __fastcall DialogQuestion_Destructor(DialogQuestion* param) {}
 void __fastcall SC_Question_Finalize(DialogQuestion* param) {}
 DialogQuestion* __fastcall FindDialogById(Handler9* handler, int id) { return 0; }
 DialogQuestion* __fastcall GetDialogByIndex(Handler9* handler, int index) { return 0; }
-void __fastcall Queue_InsertAtCurrent(Queue* queue, void* item) {}
 SC_Dialog_H9::~SC_Dialog_H9() {}
