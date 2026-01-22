@@ -94,7 +94,7 @@ void Handler16::Init(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pNode = ZBuffer::PopNode((int*)pQueue);
+            pNode = ZBuffer::PopNode(pQueue);
             if (pNode != 0) {
                 *(void**)pNode = &PTR_LAB_00431050;
                 FreeMemory(pNode);
@@ -107,7 +107,7 @@ void Handler16::Init(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pNode = ZBuffer::PopNode_2((int*)pQueue);
+            pNode = ZBuffer::PopNode_2(pQueue);
             if (pNode != 0) {
                 ((DrawEntry*)pNode)->Cleanup(1);
             }
@@ -115,7 +115,7 @@ void Handler16::Init(SC_Message* msg) {
     }
 
     // Clear queue at 0x9c
-    ZBuffer::ClearList((int*)pZBuf->m_queue9c);
+    ZBuffer::ClearList(pZBuf->m_queue9c);
 
     savedRendererState = zState;
     if (msg != 0) {
@@ -216,7 +216,7 @@ int Handler16::Update(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            puVar7 = ZBuffer::PopNode((int*)pQueue);
+            puVar7 = ZBuffer::PopNode(pQueue);
             if (puVar7 != 0) {
                 *(void**)puVar7 = &PTR_LAB_00431050;
                 FreeMemory(puVar7);
@@ -229,7 +229,7 @@ int Handler16::Update(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pVVar5 = ZBuffer::PopNode_2((int*)pQueue);
+            pVVar5 = ZBuffer::PopNode_2(pQueue);
             if (pVVar5 != 0) {
                 ((ZBuffer*)pVVar5)->CleanUpVBuffer();
                 FreeMemory(pVVar5);

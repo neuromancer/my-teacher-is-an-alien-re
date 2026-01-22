@@ -3,10 +3,19 @@
 
 #include "Handler.h"
 #include "SC_Question.h"
+#include "GlyphRect.h"
 
 class Sprite;
 class SoundList;
 class Sample;
+
+// Simple rect struct for icon bar bounds (no destructor)
+struct Rect {
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+};
 
 // IconBarButton - Individual button on the icon bar
 // Size: 0xE0 bytes
@@ -19,10 +28,7 @@ public:
     Sprite* sprite;         // 0x00 - SMK animation sprite
     int field_04;           // 0x04
     SC_Message message;     // 0x08 - embedded SC_Message (0xC0 bytes)
-    int x1;                 // 0xC8 - left bound
-    int y1;                 // 0xCC - top bound
-    int x2;                 // 0xD0 - right bound
-    int y2;                 // 0xD4 - bottom bound
+    GlyphRect bounds;       // 0xC8 - button bounds (uses GlyphRect for proper destructor)
     int enabled;            // 0xD8 - button is enabled/active
     Sample* clickSound;     // 0xDC - click sound sample
 };
@@ -52,10 +58,7 @@ public:
     void PlayButtonSound(int buttonIndex);  // 0x403300
 
     // Icon bar rect (0xA0-0xAF)
-    int barX1;          // 0xA0
-    int barY1;          // 0xA4
-    int barX2;          // 0xA8
-    int barY2;          // 0xAC
+    Rect barBounds;     // 0xA0 - icon bar bounds
 
     // Icon bar sprite (0xB0)
     Sprite* iconbarSprite;  // 0xB0

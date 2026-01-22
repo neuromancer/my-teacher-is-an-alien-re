@@ -6,12 +6,7 @@ struct GlyphRect {
     int top;     // 0x04 - top edge Y coordinate
     int right;   // 0x08 - right edge X coordinate
     int bottom;  // 0x0C - bottom edge Y coordinate
-    GlyphRect() {
-        left = 0;
-        top = 0;
-        right = 0;
-        bottom = 0;
-    }
+    GlyphRect() {}
     ~GlyphRect();  // Destructor - generates thunk at 0x401680
 };
 

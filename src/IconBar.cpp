@@ -17,10 +17,6 @@ extern "C" void __cdecl WriteToMessageLog(const char*);
 IconBarButton::IconBarButton()
     : message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 {
-    x1 = 0;
-    y1 = 0;
-    x2 = 0;
-    y2 = 0;
 }
 
 /* Function start: 0x402D60 */
@@ -39,13 +35,13 @@ IconBar::IconBar() {
     // buttons[] array is automatically constructed via IconBarButton constructor
 
     // Zero more fields
-    memset(&barX1, 0, 0x560);
+    memset(&barBounds, 0, 0x560);
 
     // Set icon bar bounds
-    barX1 = 0;
-    barY1 = 0x1ab;
-    barX2 = 0x280;
-    barY2 = 0x1e0;
+    barBounds.x1 = 0;
+    barBounds.y1 = 0x1ab;
+    barBounds.x2 = 0x280;
+    barBounds.y2 = 0x1e0;
 
     // Create iconbar sprite
     iconbarSprite = new Sprite("elements\\iconbar.smk");
@@ -117,40 +113,40 @@ IconBar::IconBar() {
 
     // Set button bounds
     // Button 0 (choice)
-    buttons[0].x1 = 0x5e;
-    buttons[0].y1 = 0x1b5;
-    buttons[0].x2 = 0x9f;
-    buttons[0].y2 = 0x1d3;
+    buttons[0].bounds.left = 0x5e;
+    buttons[0].bounds.top = 0x1b5;
+    buttons[0].bounds.right = 0x9f;
+    buttons[0].bounds.bottom = 0x1d3;
 
     // Button 1 (backpack)
-    buttons[1].x1 = 0xad;
-    buttons[1].y1 = 0x1b5;
-    buttons[1].x2 = 0xf9;
-    buttons[1].y2 = 0x1d6;
+    buttons[1].bounds.left = 0xad;
+    buttons[1].bounds.top = 0x1b5;
+    buttons[1].bounds.right = 0xf9;
+    buttons[1].bounds.bottom = 0x1d6;
 
     // Button 2 (aliencom)
-    buttons[2].x1 = 0x115;
-    buttons[2].y1 = 0x1b4;
-    buttons[2].x2 = 0x155;
-    buttons[2].y2 = 0x1d6;
+    buttons[2].bounds.left = 0x115;
+    buttons[2].bounds.top = 0x1b4;
+    buttons[2].bounds.right = 0x155;
+    buttons[2].bounds.bottom = 0x1d6;
 
     // Button 3 (schedule)
-    buttons[3].x1 = 0x165;
-    buttons[3].y1 = 0x1b5;
-    buttons[3].x2 = 0x1ae;
-    buttons[3].y2 = 0x1d2;
+    buttons[3].bounds.left = 0x165;
+    buttons[3].bounds.top = 0x1b5;
+    buttons[3].bounds.right = 0x1ae;
+    buttons[3].bounds.bottom = 0x1d2;
 
     // Button 4 (mainmenu)
-    buttons[4].x1 = 0x1d1;
-    buttons[4].y1 = 0x1b6;
-    buttons[4].x2 = 0x207;
-    buttons[4].y2 = 0x1d2;
+    buttons[4].bounds.left = 0x1d1;
+    buttons[4].bounds.top = 0x1b6;
+    buttons[4].bounds.right = 0x207;
+    buttons[4].bounds.bottom = 0x1d2;
 
     // Button 5 (quit)
-    buttons[5].x1 = 0x22a;
-    buttons[5].y1 = 0x1b6;
-    buttons[5].x2 = 0x270;
-    buttons[5].y2 = 0x1d5;
+    buttons[5].bounds.left = 0x22a;
+    buttons[5].bounds.top = 0x1b6;
+    buttons[5].bounds.right = 0x270;
+    buttons[5].bounds.bottom = 0x1d5;
 
     // Set additional config values (from assembly)
     // These are at specific offsets in the button structures
@@ -238,8 +234,8 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
     msgX = msg->clickX;
 
     // Check bar bounds
-    if (barX1 > msgX || barX2 < msgX ||
-        barY1 > msg->clickY || barY2 < msg->clickY) {
+    if (barBounds.x1 > msgX || barBounds.x2 < msgX ||
+        barBounds.y1 > msg->clickY || barBounds.y2 < msg->clickY) {
         inBounds = 0;
     } else {
         inBounds = 1;
@@ -367,8 +363,8 @@ void IconBar::DrawIconBar(int param1, int param2) {
         }
 
         // Check if mouse is over button
-        if (mouseX < buttons[i].x1 || mouseX > buttons[i].x2 ||
-            mouseY < buttons[i].y1 || mouseY > buttons[i].y2) {
+        if (mouseX < buttons[i].bounds.left || mouseX > buttons[i].bounds.right ||
+            mouseY < buttons[i].bounds.top || mouseY > buttons[i].bounds.bottom) {
             inBounds = 0;
         } else {
             inBounds = 1;

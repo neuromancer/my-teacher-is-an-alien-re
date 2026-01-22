@@ -44,50 +44,49 @@ void ZBuffer::AddMessage(int param_1)
 }
 
 /* Function start: 0x401350 */
-int ZBuffer::ProcessMessage(void* param_1)
+int ZBuffer::ProcessMessage(Message* msg)
 {
-    Message* msg = (Message*)param_1;
     if (msg->targetAddress != m_address) {
         return 0;
     }
     timer.Reset();
     int iVar1 = msg->priority;
     if (iVar1 == 3) {
-        *(int*)g_ZBufferManager_0043698c |= 2;
+        g_ZBufferManager_0043698c->m_flags |= 2;
         g_ZBufferManager_0043698c->timer.Reset();
         return 1;
     }
     if (iVar1 == 0xe) {
         g_ZBufferManager_0043698c->m_state = 2;
-        int* piVar2 = (int*)g_ZBufferManager_0043698c->m_queueA0;
-        if (*piVar2 != 0) {
-            piVar2[2] = *piVar2;
-            while (*piVar2 != 0) {
-                void* puVar4 = ZBuffer::PopNode(piVar2);
-                if (puVar4 != 0) {
-                    *(void**)puVar4 = 0;
-                    FreeFromGlobalHeap(puVar4);
+        ZBQueue* queue = g_ZBufferManager_0043698c->m_queueA0;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                void* data = ZBuffer::PopNode(queue);
+                if (data != 0) {
+                    *(void**)data = 0;
+                    FreeFromGlobalHeap(data);
                 }
             }
         }
-        piVar2 = (int*)g_ZBufferManager_0043698c->m_queueA4;
-        if (*piVar2 != 0) {
-            piVar2[2] = *piVar2;
-            while (*piVar2 != 0) {
-                ZBuffer* pVVar5 = (ZBuffer*)ZBuffer::PopNode_2(piVar2);
-                if (pVVar5 != 0) {
-                    pVVar5->CleanUpVBuffer();
-                    FreeFromGlobalHeap(pVVar5);
+        queue = g_ZBufferManager_0043698c->m_queueA4;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                ZBuffer* zb = (ZBuffer*)ZBuffer::PopNode_2(queue);
+                if (zb != 0) {
+                    zb->CleanUpVBuffer();
+                    FreeFromGlobalHeap(zb);
                 }
             }
         }
-        piVar2 = (int*)g_ZBufferManager_0043698c->m_queue9c;
-        if (*piVar2 != 0) {
-            piVar2[2] = *piVar2;
-            while (*piVar2 != 0) {
-                void* this_00 = ZBuffer::PopNode_2(piVar2);
-                if (this_00 != 0) {
-                    FreeFromGlobalHeap(this_00);
+        queue = g_ZBufferManager_0043698c->m_queue9c;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                void* data = ZBuffer::PopNode_2(queue);
+                if (data != 0) {
+                    FreeFromGlobalHeap(data);
                 }
             }
         }
@@ -96,29 +95,29 @@ int ZBuffer::ProcessMessage(void* param_1)
             return 0;
         }
         g_ZBufferManager_0043698c->m_state = 1;
-        int* piVar2 = (int*)g_ZBufferManager_0043698c->m_queueA0;
-        if (*piVar2 != 0) {
-            piVar2[2] = *piVar2;
-            while (*piVar2 != 0) {
-                void* puVar4 = ZBuffer::PopNode(piVar2);
-                if (puVar4 != 0) {
-                    *(void**)puVar4 = 0;
-                    FreeFromGlobalHeap(puVar4);
+        ZBQueue* queue = g_ZBufferManager_0043698c->m_queueA0;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                void* data = ZBuffer::PopNode(queue);
+                if (data != 0) {
+                    *(void**)data = 0;
+                    FreeFromGlobalHeap(data);
                 }
             }
         }
-        piVar2 = (int*)g_ZBufferManager_0043698c->m_queueA4;
-        if (*piVar2 != 0) {
-            piVar2[2] = *piVar2;
-            while (*piVar2 != 0) {
-                ZBuffer* pVVar5 = (ZBuffer*)ZBuffer::PopNode_2(piVar2);
-                if (pVVar5 != 0) {
-                    pVVar5->CleanUpVBuffer();
-                    FreeFromGlobalHeap(pVVar5);
+        queue = g_ZBufferManager_0043698c->m_queueA4;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                ZBuffer* zb = (ZBuffer*)ZBuffer::PopNode_2(queue);
+                if (zb != 0) {
+                    zb->CleanUpVBuffer();
+                    FreeFromGlobalHeap(zb);
                 }
             }
         }
-        ZBuffer::ClearList((int*)g_ZBufferManager_0043698c->m_queue9c);
+        ZBuffer::ClearList(g_ZBufferManager_0043698c->m_queue9c);
     }
     return 1;
 }
@@ -145,154 +144,145 @@ ZBuffer::~ZBuffer()
     CleanUpVBuffer();
 }
 
+// ZBQueue is defined in ZBufferManager.h
+#include "ZBufferManager.h"
+
 /* Function start: 0x401710 */
-void* __fastcall ZBuffer::PopNode(int* param_1)
+void* ZBuffer::PopNode(ZBQueue* queue)
 {
-    int* piVar1 = (int*)param_1[2];
-    if (piVar1 == 0) {
+    ZBQueueNode* node = queue->current;
+    if (node == 0) {
         return 0;
     }
-    if ((int*)*param_1 == piVar1) {
-        *param_1 = piVar1[1];
+    if (queue->head == node) {
+        queue->head = node->prev;
     }
-    if ((int*)param_1[1] == piVar1) {
-        param_1[1] = *piVar1;
+    if (queue->tail == node) {
+        queue->tail = node->next;
     }
-    if (*piVar1 != 0) {
-        *(int*)(*piVar1 + 4) = piVar1[1];
+    if (node->next != 0) {
+        node->next->prev = node->prev;
     }
-    void** puVar2 = (void**)((void**)param_1[2])[1];
-    if (puVar2 != 0) {
-        *puVar2 = *(void**)param_1[2];
+    ZBQueueNode* prevNode = queue->current->prev;
+    if (prevNode != 0) {
+        prevNode->next = queue->current->next;
     }
-    void** puVar2_2 = (void**)param_1[2];
-    void* uVar3 = 0;
-    if (puVar2_2 != 0) {
-        uVar3 = (void*)puVar2_2[2];
-        puVar2_2[2] = 0;
-        *puVar2_2 = 0;
-        puVar2_2[1] = 0;
-        FreeFromGlobalHeap(puVar2_2);
-        param_1[2] = 0;
+    ZBQueueNode* currentNode = queue->current;
+    void* data = 0;
+    if (currentNode != 0) {
+        data = currentNode->data;
+        delete currentNode;
+        queue->current = 0;
     }
-    param_1[2] = *param_1;
-    return uVar3;
+    queue->current = queue->head;
+    return data;
 }
 
 /* Function start: 0x401790 */
-void* __fastcall ZBuffer::PopNode_2(int* param_1)
+void* ZBuffer::PopNode_2(ZBQueue* queue)
 {
-    int* piVar1 = (int*)param_1[2];
-    if (piVar1 == 0) {
+    ZBQueueNode* node = queue->current;
+    if (node == 0) {
         return 0;
     }
-    if ((int*)*param_1 == piVar1) {
-        *param_1 = piVar1[1];
+    if (queue->head == node) {
+        queue->head = node->prev;
     }
-    if ((int*)param_1[1] == piVar1) {
-        param_1[1] = *piVar1;
+    if (queue->tail == node) {
+        queue->tail = node->next;
     }
-    if (*piVar1 != 0) {
-        *(int*)(*piVar1 + 4) = piVar1[1];
+    if (node->next != 0) {
+        node->next->prev = node->prev;
     }
-    void** puVar2 = (void**)((void**)param_1[2])[1];
-    if (puVar2 != 0) {
-        *puVar2 = *(void**)param_1[2];
+    ZBQueueNode* prevNode = queue->current->prev;
+    if (prevNode != 0) {
+        prevNode->next = queue->current->next;
     }
-    void** puVar2_2 = (void**)param_1[2];
-    void* uVar3 = 0;
-    if (puVar2_2 != 0) {
-        uVar3 = (void*)puVar2_2[2];
-        puVar2_2[2] = 0;
-        *puVar2_2 = 0;
-        puVar2_2[1] = 0;
-        FreeFromGlobalHeap(puVar2_2);
-        param_1[2] = 0;
+    ZBQueueNode* currentNode = queue->current;
+    void* data = 0;
+    if (currentNode != 0) {
+        data = currentNode->data;
+        delete currentNode;
+        queue->current = 0;
     }
-    param_1[2] = *param_1;
-    return uVar3;
+    queue->current = queue->head;
+    return data;
 }
-
-// ZBQueue is defined in ZBufferManager.h but this method is adjacent to ZBuffer functions
-#include "ZBufferManager.h"
 
 /* Function start: 0x401810 */
 void* ZBQueue::PopNode()
 {
-    ZBQueueNode* piVar1;
-    ZBQueueNode* puVar2;
-    void* uVar3;
+    ZBQueueNode* node;
+    ZBQueueNode* prevNode;
+    void* data;
 
-    piVar1 = (ZBQueueNode*)current;
-    if (piVar1 == 0) {
+    node = current;
+    if (node == 0) {
         return 0;
     }
-    if (head == piVar1) {
-        head = piVar1->prev;
+    if (head == node) {
+        head = node->prev;
     }
-    if (tail == piVar1) {
-        tail = piVar1->next;
+    if (tail == node) {
+        tail = node->next;
     }
-    if (piVar1->next != 0) {
-        ((ZBQueueNode*)piVar1->next)->prev = piVar1->prev;
+    if (node->next != 0) {
+        node->next->prev = node->prev;
     }
-    puVar2 = (ZBQueueNode*)((ZBQueueNode*)current)->prev;
-    if (puVar2 != 0) {
-        puVar2->next = ((ZBQueueNode*)current)->next;
+    prevNode = current->prev;
+    if (prevNode != 0) {
+        prevNode->next = current->next;
     }
-    puVar2 = (ZBQueueNode*)current;
-    uVar3 = 0;
-    if (puVar2 != 0) {
-        uVar3 = puVar2->data;
+    prevNode = current;
+    data = 0;
+    if (prevNode != 0) {
+        data = prevNode->data;
     }
-    if (puVar2 != 0) {
-        delete puVar2;
+    if (prevNode != 0) {
+        delete prevNode;
         current = 0;
     }
     current = head;
-    return uVar3;
+    return data;
 }
 
 /* Function start: 0x401560 */
-void __fastcall ZBuffer::ClearList(int* param_1)
+void ZBuffer::ClearList(ZBQueue* queue)
 {
-    if (*param_1 != 0) {
-        param_1[2] = *param_1;
+    if (queue->head != 0) {
+        queue->current = queue->head;
         do {
-            int* piVar1 = (int*)param_1[2];
-            void* local_18;
-            if (piVar1 == 0) {
-                local_18 = 0;
+            ZBQueueNode* node = queue->current;
+            void* data;
+            if (node == 0) {
+                data = 0;
             } else {
-                if ((int*)*param_1 == piVar1) {
-                    *param_1 = piVar1[1];
+                if (queue->head == node) {
+                    queue->head = node->prev;
                 }
-                if ((int*)param_1[1] == piVar1) {
-                    param_1[1] = *piVar1;
+                if (queue->tail == node) {
+                    queue->tail = node->next;
                 }
-                if (*piVar1 != 0) {
-                    *(int*)(*piVar1 + 4) = piVar1[1];
+                if (node->next != 0) {
+                    node->next->prev = node->prev;
                 }
-                void** puVar2 = (void**)((void**)param_1[2])[1];
-                if (puVar2 != 0) {
-                    *puVar2 = *(void**)param_1[2];
+                ZBQueueNode* prevNode = queue->current->prev;
+                if (prevNode != 0) {
+                    prevNode->next = queue->current->next;
                 }
-                local_18 = 0;
-                void** puVar2_2 = (void**)param_1[2];
-                if (puVar2_2 != 0) {
-                    local_18 = (void*)puVar2_2[2];
-                    puVar2_2[2] = 0;
-                    *puVar2_2 = 0;
-                    puVar2_2[1] = 0;
-                    FreeFromGlobalHeap(puVar2_2);
-                    param_1[2] = 0;
+                data = 0;
+                ZBQueueNode* currentNode = queue->current;
+                if (currentNode != 0) {
+                    data = currentNode->data;
+                    delete currentNode;
+                    queue->current = 0;
                 }
-                param_1[2] = *param_1;
+                queue->current = queue->head;
             }
-            if (local_18 != 0) {
-                *(void**)local_18 = 0;
-                FreeFromGlobalHeap(local_18);
+            if (data != 0) {
+                *(void**)data = 0;
+                FreeFromGlobalHeap(data);
             }
-        } while (*param_1 != 0);
+        } while (queue->head != 0);
     }
 }

@@ -145,7 +145,14 @@ done:
 /* Function start: 0x417C50 */
 SC_Message* TimedEventPool::PopSafe(SC_Message* buffer)
 {
-    Pop(buffer);
+    volatile int local_10 = 0;
+
+    try {
+        Pop(buffer);
+    }
+    catch (...) {
+    }
+    local_10 |= 1;
     return buffer;
 }
 

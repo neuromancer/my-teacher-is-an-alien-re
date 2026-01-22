@@ -95,11 +95,18 @@ def read_assembly(function_name, file_path):
 
     # For each ret from the end, check if everything after is just SEH handlers or data
     # We want the LAST ret after which only SEH code or data follows
+    #
+    # Real SEH handlers have specific patterns:
+    # - mov eax, OFFSET FLAT:$Lxxxx or $Txxxx (exception state tables)
+    # - jmp ___CxxFrameHandler
+    #
+    # Normal else branches (like push string / call ShowError / ret) should NOT be excluded
     cutoff_idx = len(lines)
     for ret_idx in reversed(ret_indices):
         # Check what's after this ret
         remaining = stripped_lines[ret_idx+1:]
         is_seh_or_data_only = True
+        has_seh_signature = False  # Must find actual SEH patterns, not just any code
         i = 0
         while i < len(remaining):
             line = remaining[i]
@@ -114,15 +121,11 @@ def read_assembly(function_name, file_path):
                 if label_name in jump_table_targets:
                     is_seh_or_data_only = False
                     break
-                # Look at next two instructions for SEH handler pattern
-                if i + 1 < len(remaining):
-                    next_line = remaining[i + 1]
-                    if 'OFFSET FLAT:$' in next_line or 'jmp' in next_line.lower():
-                        i += 1
-                        continue
                 i += 1
                 continue
-            elif 'OFFSET FLAT:$' in line:
+            # SEH signature: references to exception state tables ($L or $T labels)
+            elif 'OFFSET FLAT:$L' in line or 'OFFSET FLAT:$T' in line:
+                has_seh_signature = True
                 i += 1
                 continue
             elif line.startswith('ret') or line == 'ret 0':
@@ -132,13 +135,15 @@ def read_assembly(function_name, file_path):
                 # SEH handlers jump to CxxFrameHandler or to cleanup funclets (mangled names)
                 # Mangled names start with ? or ?? and contain @@
                 if 'CxxFrameHandler' in line or '??' in line or ('?' in line and '@@' in line):
+                    has_seh_signature = True
                     i += 1
                     continue
                 else:
                     is_seh_or_data_only = False
                     break
             elif line.startswith('mov') or line.startswith('push') or line.startswith('call') or line.startswith('add'):
-                # After SEH label, mov/push/call/add instructions are part of the cleanup funclet
+                # These could be SEH cleanup OR normal else branch code
+                # Only treat as SEH if we've already seen SEH signatures
                 i += 1
                 continue
             # Check for jump table data directives (DD, DB, npad, etc.)
@@ -153,7 +158,8 @@ def read_assembly(function_name, file_path):
                 is_seh_or_data_only = False
                 break
 
-        if is_seh_or_data_only and len(remaining) > 0:
+        # Only cut off if we found actual SEH signatures, not just any code after ret
+        if is_seh_or_data_only and has_seh_signature and len(remaining) > 0:
             cutoff_idx = ret_idx + 1
             break
 

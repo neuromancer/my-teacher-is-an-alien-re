@@ -4,6 +4,9 @@
 #include "Timer.h"
 #include "Parser.h"
 
+class Message;
+struct ZBQueue;
+
 class ZBuffer : public Parser {
 public:
     int m_address;
@@ -13,12 +16,12 @@ public:
 
     void Update(int, int);
     void AddMessage(int);
-    int ProcessMessage(void*);
+    int ProcessMessage(Message* msg);
     ~ZBuffer();
     void CleanUpVBuffer();
-    static void __fastcall ClearList(int*);
-    static void* __fastcall PopNode(int*);
-    static void* __fastcall PopNode_2(int*);
+    static void ClearList(ZBQueue* queue);
+    static void* PopNode(ZBQueue* queue);
+    static void* PopNode_2(ZBQueue* queue);
 };
 
 #endif // ZBUFFER_H

@@ -243,7 +243,7 @@ void ZBufferManager::Cleanup() {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = ZBuffer::PopNode((int*)queue);
+                data = ZBuffer::PopNode(queue);
                 if (data != 0) {
                     delete (SoundCommand*)data;
                 }
@@ -259,7 +259,7 @@ void ZBufferManager::Cleanup() {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = ZBuffer::PopNode_2((int*)queue);
+                data = ZBuffer::PopNode_2(queue);
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;
@@ -398,7 +398,7 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
             cmd->bottom = p4;
 
             int temp;
-            if (cmd->left > cmd->right) {
+            if (cmd->right < cmd->left) {
                 temp = cmd->left;
                 cmd->left = cmd->right;
                 cmd->right = temp;
@@ -443,26 +443,21 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
     ZBQueueNode* node;
     ZBQueueNode* newNode;
     int qtype;
-    int local_height;
-    int local_width;
     GlyphRect rect;
 
-    local_height = g_WorkBuffer_00436974->height - 1;
-    local_width = g_WorkBuffer_00436974->width - 1;
+    rect.bottom = g_WorkBuffer_00436974->height - 1;
+    rect.right = g_WorkBuffer_00436974->width - 1;
     rect.left = 0;
     rect.top = 0;
-    rect.right = local_width;
-    rect.bottom = local_height;
 
-    if (m_state == 1) {
+    switch (m_state) {
+    case 1:
         cmd->Execute(&rect);
         if (cmd != 0) {
             delete cmd;
         }
         return;
-    }
-
-    if (m_state == 2) {
+    case 2:
         queue = m_queueA0;
         if (cmd == 0) {
             ShowError("queue fault 0101");
@@ -514,9 +509,7 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
         }
         queue->InsertBeforeCurrent(cmd);
         return;
-    }
-
-    if (m_state == 3) {
+    case 3:
         queue = m_queueA0;
         if (cmd == 0) {
             ShowError("queue fault 0101");
@@ -586,6 +579,7 @@ void ZBufferManager::ProcessRenderQueues()
     int local_width;
     int local_1c;
     int local_20;
+    GlyphRect rect;
 
     m_head = 0;
 
@@ -603,6 +597,8 @@ void ZBufferManager::ProcessRenderQueues()
         local_width = g_WorkBuffer_00436974->width - 1;
         local_20 = 0;
         local_1c = 0;
+        rect.right = local_width;
+        rect.bottom = local_height;
 
         while (m_queueA0->head != 0) {
             data = 0;
@@ -617,12 +613,12 @@ void ZBufferManager::ProcessRenderQueues()
             }
 
             if (queue->current != 0) {
-                data = ZBuffer::PopNode((int*)queue);
+                data = ZBuffer::PopNode(queue);
             }
 
             if (data != 0) {
                 // Virtual call - Execute on SoundCommand
-                ((SoundCommand*)data)->Execute((GlyphRect*)&local_20);
+                ((SoundCommand*)data)->Execute(&rect);
 
                 if (data != 0) {
                     delete data;
@@ -635,7 +631,7 @@ void ZBufferManager::ProcessRenderQueues()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = ZBuffer::PopNode_2((int*)queue);
+                data = ZBuffer::PopNode_2(queue);
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;
@@ -743,7 +739,7 @@ void ZBufferManager::ProcessRenderQueues()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = ZBuffer::PopNode_2((int*)queue);
+                data = ZBuffer::PopNode_2(queue);
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;
@@ -767,18 +763,18 @@ void ZBufferManager::UpdateScreen() {
     ZBQueueNode* nextNode;
     ZBQueueNode* prevNode;
     RenderEntry* local_10;
-    GlyphRect local_rect;
     int queueType;
 
-    if (m_state == 1) {
+    switch (m_state) {
+    case 1:
         FlipScreen();
         return;
-    }
-    if (m_state == 2) {
+    case 2:
         FlipScreen();
         return;
-    }
-    if (m_state != 3) {
+    case 3:
+        break;
+    default:
         return;
     }
 
@@ -824,20 +820,23 @@ void ZBufferManager::UpdateScreen() {
                 node->data = 0;
                 node->next = 0;
                 node->prev = 0;
-                FreeMemory(node);
+                operator delete(node);
                 queue->current = 0;
             }
-            local_10 = (RenderEntry*)local_10;
             queue->current = queue->head;
         }
 
-        local_rect = local_10->rect;
-        if (g_WorkBuffer_00436974 != 0) {
-            g_WorkBuffer_00436974->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);
-        }
+        {
+            GlyphRect local_rect;
+            local_rect = local_10->rect;
+            if (g_WorkBuffer_00436974 != 0) {
+                g_WorkBuffer_00436974->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);
+            }
 
-        if (local_10 != 0) {
-            delete local_10;
+            if (local_10 != 0) {
+                local_10->RenderEntry::~RenderEntry();
+                operator delete(local_10);
+            }
         }
 
         queue = m_queue9c;
