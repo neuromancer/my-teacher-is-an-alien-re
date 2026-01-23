@@ -86,16 +86,11 @@ int Handler10::LBLParse(char* line) {
 /* Function start: 0x404CA0 */
 Handler10::Handler10() {
     int i;
-    int* ptrClear;
 
     // Note: IconBar constructor is called automatically via inheritance
 
-    // Zero 0x2a dwords at offset 0x600 (palette through sounds array initialization area)
-    ptrClear = (int*)&palette;
-    for (i = 0x2a; i != 0; i--) {
-        *ptrClear = 0;
-        ptrClear++;
-    }
+    // Zero all fields from palette to the end of the class (0x2a dwords)
+    memset(&palette, 0, 0x2a * 4);
 
     // Initialize state fields
     needsRefresh = 0;
@@ -119,13 +114,9 @@ Handler10::Handler10() {
         sounds[i].enabled = 1;
     }
 
-    // Create peter character object
+    // Create character objects
     DAT_00435a74 = new Character("peter");
-
-    // Create susan character object
     DAT_00435a78 = new Character("susan");
-
-    // Create duncan character object
     DAT_00435a7c = new Character("duncan");
 }
 
@@ -660,67 +651,60 @@ void Handler10::RenderChoiceScreen(int characterIndex) {
 
 /* Function start: 0x405900 */
 void Handler10::ProcessCharacterHover(int mouseX, int mouseY) {
-    Hotspot** charPtr;
-    int i;
     int noHover;
-    char* isHit;
-    int prevChar;
+    int i;
+    Hotspot** charPtr;
+    int isHit;
 
     noHover = 1;
     i = 0;
     charPtr = &characters[0];
 
-    do {
+    for (; i < 3; i++, charPtr++) {
         {
             MousePoint pos;
             pos.x = mouseX;
             pos.y = mouseY;
 
             if ((*charPtr)->enabled == 0) {
-                // Disabled - skip hit test entirely (matches original JMP to next iteration)
+                continue;
+            }
+
+            if (pos.x < (*charPtr)->rect_x || pos.x > (*charPtr)->rect_w ||
+                pos.y < (*charPtr)->rect_y || pos.y > (*charPtr)->rect_h) {
+                isHit = 0;
             } else {
-                if (pos.x < (*charPtr)->rect_x ||
-                    (*charPtr)->rect_w < pos.x ||
-                    pos.y < (*charPtr)->rect_y ||
-                    (*charPtr)->rect_h < pos.y) {
-                    isHit = (char*)0;
-                } else {
-                    isHit = (char*)1;
-                }
-
-                // Hit processing must be inside the else block (when enabled)
-                if (isHit != (char*)0) {
-                    hoverCharacterIndex = i;
-
-                    if ((*charPtr)->GetState() != 2) {
-                        (*charPtr)->SetState(3);
-                    }
-
-                    prevChar = prevHoverCharacter;
-                    if (prevChar == -1) {
-                        prevHoverCharacter = i;
-                        (*charPtr)->SetState(3);
-                    } else if (i != prevChar) {
-                        characters[prevChar]->SetState(0);
-                        prevHoverCharacter = i;
-                    }
-
-                    noHover = 0;
-                }
+                isHit = 1;
             }
         }
 
-        charPtr = charPtr + 1;
-        i = i + 1;
-    } while (i < 3);
+        if (isHit != 0) {
+            hoverCharacterIndex = i;
 
-    if (noHover != 0) {
-        if (prevHoverCharacter != -1) {
-            characters[prevHoverCharacter]->SetState(0);
-            prevHoverCharacter = -1;
+            if ((*charPtr)->GetState() != 2) {
+                (*charPtr)->SetState(3);
+            }
+
+            if (prevHoverCharacter == -1) {
+                prevHoverCharacter = i;
+                (*charPtr)->SetState(3);
+            } else if (i != prevHoverCharacter) {
+                characters[prevHoverCharacter]->SetState(0);
+                prevHoverCharacter = i;
+            }
+
+            noHover = 0;
         }
     }
+
+    if (noHover != 0 && prevHoverCharacter != -1) {
+        characters[prevHoverCharacter]->SetState(0);
+        prevHoverCharacter = -1;
+    }
 }
+
+
+
 
 /* Function start: 0x405BB0 */
 void Handler10::ProcessSubmenuHover(int mouseX, int mouseY) {
