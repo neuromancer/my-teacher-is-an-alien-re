@@ -92,16 +92,14 @@ void Sound::StopAllSamples() {
 int __stdcall OpenDigitalDriver(int rate, unsigned short bits,
                       unsigned short channels) {
   HDIGDRIVER driver;
+  int product = channels * (bits / 8);
 
   g_pcm.wf.nChannels = channels;
-  unsigned short shifted = bits >> 3;
-  unsigned int product = (unsigned int)channels * (unsigned int)shifted;
   g_pcm.wf.wFormatTag = 1;
-  g_pcm.wf.nBlockAlign = channels * shifted;
-  product = product * rate;
+  g_pcm.wf.nBlockAlign = product;
   g_pcm.wBitsPerSample = bits;
   g_pcm.wf.nSamplesPerSec = rate;
-  g_pcm.wf.nAvgBytesPerSec = product;
+  g_pcm.wf.nAvgBytesPerSec = product * rate;
 
   if (AIL_waveOutOpen(&driver, 0, -1, &g_pcm)) {
     return 0;
