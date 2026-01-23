@@ -173,10 +173,13 @@ void IconBar::InitIconBar(SC_Message* msg) {
     // Create sound list
     soundList = new SoundList(0x32);
 
-    // Register sounds and assign to specific buttons
-    buttons[1].clickSound = (Sample*)soundList->Register("audio\\Snd0023.wav");
-    buttons[2].clickSound = (Sample*)soundList->Register("audio\\Snd0024.wav");
-    buttons[3].clickSound = (Sample*)soundList->Register("audio\\Snd0025.wav");
+    // Register sounds
+    if (soundList != 0) {
+        // Store sound handles at specific offsets
+        soundList->Register("audio\\Snd0023.wav");
+        soundList->Register("audio\\Snd0024.wav");
+        soundList->Register("audio\\Snd0025.wav");
+    }
 }
 
 /* Function start: 0x402FD0 */
