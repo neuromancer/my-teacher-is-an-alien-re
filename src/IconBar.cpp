@@ -19,7 +19,6 @@
 IconBar::IconBar() {
     int i;
     Sprite* sprite;
-    void* mem;
 
     // Zero handler fields at 0x88-0x9F
     memset(&handlerId, 0, 6 * sizeof(int));
@@ -37,80 +36,63 @@ IconBar::IconBar() {
 
     // Create iconbar sprite
     iconbarSprite = new Sprite("elements\\iconbar.smk");
-    if (iconbarSprite != 0) {
-        iconbarSprite->flags &= ~2;  // Clear flag 0x2
-        iconbarSprite->loc_x = 0;
-        iconbarSprite->loc_y = 0x1ab;
-        iconbarSprite->SetState(4);
-        iconbarSprite->SetRange(0, 1, 1);
-        iconbarSprite->SetRange(1, 2, 2);
-        iconbarSprite->SetRange(2, 3, 3);
-        iconbarSprite->SetRange(3, 4, 4);
-        iconbarSprite->priority = 1000;
-    }
+    iconbarSprite->flags &= ~2;  // Clear flag 0x2
+    iconbarSprite->loc_x = 0;
+    iconbarSprite->loc_y = 0x1ab;
+    iconbarSprite->SetState(4);
+    iconbarSprite->SetRange(0, 1, 1);
+    iconbarSprite->SetRange(1, 2, 2);
+    iconbarSprite->SetRange(2, 3, 3);
+    iconbarSprite->SetRange(3, 4, 4);
+    iconbarSprite->priority = 1000;
 
     // Create choice button (index 0)
     buttons[0].sprite = new Sprite("elements\\choice.smk");
-    if (buttons[0].sprite != 0) {
-        buttons[0].sprite->loc_x = 0x5e;
-        buttons[0].sprite->loc_y = 0x1b5;
-    }
+    buttons[0].sprite->loc_x = 0x5e;
+    buttons[0].sprite->loc_y = 0x1b5;
 
     // Create backpack button (index 1)
     buttons[1].sprite = new Sprite("elements\\backpack.smk");
-    if (buttons[1].sprite != 0) {
-        buttons[1].sprite->loc_x = 0xad;
-        buttons[1].sprite->loc_y = 0x1b5;
-    }
+    buttons[1].sprite->loc_x = 0xad;
+    buttons[1].sprite->loc_y = 0x1b5;
 
     // Create aliencom button (index 2)
     buttons[2].sprite = new Sprite("elements\\aliencom.smk");
-    if (buttons[2].sprite != 0) {
-        buttons[2].sprite->loc_x = 0x115;
-        buttons[2].sprite->loc_y = 0x1b4;
-    }
+    buttons[2].sprite->loc_x = 0x115;
+    buttons[2].sprite->loc_y = 0x1b4;
 
     // Create schedule button (index 3)
     buttons[3].sprite = new Sprite("elements\\schedule.smk");
-    if (buttons[3].sprite != 0) {
-        buttons[3].sprite->loc_x = 0x165;
-        buttons[3].sprite->loc_y = 0x1b5;
-    }
+    buttons[3].sprite->loc_x = 0x165;
+    buttons[3].sprite->loc_y = 0x1b5;
 
     // Create mainmenu button (index 4)
     buttons[4].sprite = new Sprite("elements\\mainmenu.smk");
-    if (buttons[4].sprite != 0) {
-        buttons[4].sprite->loc_x = 0x1d1;
-        buttons[4].sprite->loc_y = 0x1b6;
-    }
+    buttons[4].sprite->loc_x = 0x1d1;
+    buttons[4].sprite->loc_y = 0x1b6;
 
     // Create quit button (index 5)
     buttons[5].sprite = new Sprite("elements\\quit.smk");
-    if (buttons[5].sprite != 0) {
-        buttons[5].sprite->loc_x = 0x22a;
-        buttons[5].sprite->loc_y = 0x1b6;
-    }
+    buttons[5].sprite->loc_x = 0x22a;
+    buttons[5].sprite->loc_y = 0x1b6;
 
     // Configure all 6 buttons
     for (i = 0; i < 6; i++) {
         Sprite* btn = buttons[i].sprite;
-        if (btn != 0) {
-            btn->flags &= ~2;  // Clear flag
-            btn->SetState(2);
-            btn->SetRange(0, 1, 1);
-            btn->SetRange(1, 2, 2);
-            btn->priority = 0x3e9;
-        }
+        btn->flags &= ~2;  // Clear flag
+        btn->SetState(2);
+        btn->SetRange(0, 1, 1);
+        btn->SetRange(1, 2, 2);
+        btn->priority = 0x3e9;
     }
 
     // Set button bounds
-    // Button 0 (choice)
     buttons[0].bounds.left = 0x5e;
-    buttons[0].bounds.top = 0x1b5;
     buttons[0].bounds.right = 0x9f;
+    
+    buttons[0].bounds.top = 0x1b5;
+    buttons[1].bounds.top = 0x1b5;
     buttons[0].bounds.bottom = 0x1d3;
-
-    // Button 1 (backpack)
     buttons[1].bounds.left = 0xad;
     buttons[1].bounds.top = 0x1b5;
     buttons[1].bounds.right = 0xf9;
@@ -140,11 +122,21 @@ IconBar::IconBar() {
     buttons[5].bounds.right = 0x270;
     buttons[5].bounds.bottom = 0x1d5;
 
-    // Set additional config values (from assembly)
-    // These are at specific offsets in the button structures
-    // Choice button (0): field at 0x148 = 10, 0x14c = 1, 0x150 = 6, 0x158 = 5
-    // Mainmenu button (4): similar pattern
-    // Quit button (5): field at 0x5a8 = 2, 0x5b8 = 5
+    // Button 0 template message
+    buttons[0].message.command = 10;
+    buttons[0].message.sourceAddress = 1;
+    buttons[0].message.targetAddress = 6;
+    buttons[0].message.priority = 5;
+
+    // Button 4 template message
+    buttons[4].message.command = 10;
+    buttons[4].message.sourceAddress = 1;
+    buttons[4].message.targetAddress = 6;
+    buttons[4].message.priority = 5;
+
+    // Button 5 template message
+    buttons[5].message.command = 2;
+    buttons[5].message.priority = 5;
 }
 
 IconBar::~IconBar() {
@@ -169,10 +161,8 @@ void IconBar::InitIconBar(SC_Message* msg) {
     CopyCommandData(msg);
 
     // Check DAT_00435a80 (used as pointer) and set iconbar state
-    // The decompiled code treats DAT_00435a80 as int*, dereferences it
-    int* pIconBarState = (int*)DAT_00435a80;
-    if (pIconBarState != 0) {
-        iconbarSprite->SetState2(*pIconBarState + 1);
+    if (DAT_00435a80 != 0) {
+        iconbarSprite->SetState2(*(int*)DAT_00435a80 + 1);
     }
 
     // Enable all buttons
@@ -183,13 +173,10 @@ void IconBar::InitIconBar(SC_Message* msg) {
     // Create sound list
     soundList = new SoundList(0x32);
 
-    // Register sounds
-    if (soundList != 0) {
-        // Store sound handles at specific offsets
-        soundList->Register("audio\\Snd0023.wav");
-        soundList->Register("audio\\Snd0024.wav");
-        soundList->Register("audio\\Snd0025.wav");
-    }
+    // Register sounds and assign to specific buttons
+    buttons[1].clickSound = (Sample*)soundList->Register("audio\\Snd0023.wav");
+    buttons[2].clickSound = (Sample*)soundList->Register("audio\\Snd0024.wav");
+    buttons[3].clickSound = (Sample*)soundList->Register("audio\\Snd0025.wav");
 }
 
 /* Function start: 0x402FD0 */
