@@ -4,13 +4,10 @@
 #include "SpriteList.h"
 #include "Character.h"
 #include "string.h"
+#include "globals.h"
 
 #include <stdio.h>
 #include <string.h>
-
-extern void* DAT_00435a74;
-extern void* DAT_00435a78;
-extern void* DAT_00435a7c;
 
 /* Function start: 0x409940 */
 OptionMenu::OptionMenu()
@@ -324,7 +321,7 @@ void OptionMenu::SelectCharacter(int characterIndex)
 {
     switch (characterIndex) {
     case 0:
-        spriteList = (SpriteNode*)((Character*)DAT_00435a74)->queue;
+        spriteList = (SpriteNode*)DAT_00435a74->queue;
         break;
     case 1:
         spriteList = (SpriteNode*)((Character*)DAT_00435a78)->queue;

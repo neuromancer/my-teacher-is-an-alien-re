@@ -16,6 +16,7 @@
 #include "ZBufferManager.h"
 #include "GameLoop.h"
 #include "AssetList.h"
+#include "Character.h"
 #include "Message.h"
 #include "TimedEvent.h"
 #include "string.h"
@@ -35,7 +36,7 @@
 
 // Globals moved from globals.cpp to match layout
 StringTable* g_Strings_00435a70 = 0;
-void* DAT_00435a74 = 0;
+Character* DAT_00435a74 = 0;
 void* DAT_00435a78 = 0;
 void* DAT_00435a7c = 0;
 int DAT_00435a80 = 0;
@@ -47,37 +48,23 @@ GameWindow g_GameWindow;
 
 
 extern "C" {
-void FUN_004227a0(void *);
 void __fastcall CDData_ChangeToBaseDir(void *);
-void PlayIntroCinematic();
-
-
-void CheckDebug();
 void ClearMessageLog();
 void InitWorkBuffer(int, int);
 void SetStateFlag(int, int);
 int SetCursorVisible(unsigned int);
 int FileExists(const char *);
-void SetErrorCode(unsigned int);
 void ParsePath(const char *, char *, char *, char *, char *);
+int ProcessMessages();
 }
 
-
+// Forward declarations for functions defined in this file
+void InitGameSystems();
 void ShutdownGameSystems();
-// Function Declarations
-void InitGameSystems(void);
+void CheckDebug();
 void CreateGameObject_1();
 int GetFileAttributes_Wrapper(const char *param_1, char param_2);
-extern "C" {
-  void FUN_0040cd15(); 
-  void FUN_0040cd1d();
-  void FUN_004227a0(void*); // Config Cleanup
-}
-
-
-
-extern "C" int ProcessMessages();
-int FUN_00422510();
+int IsAppDeactivated();
 
 
 
@@ -204,7 +191,7 @@ void RunGame() {
     }
 
     if (DAT_00435a74 != 0) {
-        delete ((AssetList*)DAT_00435a74);
+        delete DAT_00435a74;
         DAT_00435a74 = 0;
     }
     if (DAT_00435a78 != 0) {
@@ -241,7 +228,7 @@ void CleanupCinematic(void) {}
 
 
 /* Function start: 0x4192F0 */
-int ProcessMessages() {
+extern "C" int ProcessMessages() {
   MSG local_1c;
   int iVar1;
 
@@ -261,7 +248,7 @@ int ProcessMessages() {
       DispatchMessageA(&local_1c);
       iVar1 = PeekMessageA(&local_1c, NULL, 0, 0, PM_REMOVE);
     }
-    iVar1 = FUN_00422510();
+    iVar1 = IsAppDeactivated();
     if (iVar1 != 0) {
       return 0;
     }
@@ -269,7 +256,7 @@ int ProcessMessages() {
 }
 
 /* Function start: 0x4195A0 */
-int FileExists(const char *filename) {
+extern "C" int FileExists(const char *filename) {
   int iVar1;
   iVar1 = GetFileAttributes_Wrapper(filename, 0);
   return iVar1 == 0;
@@ -403,7 +390,7 @@ int WaitForInput() {
 }
 
 /* Function start: 0x422510 */
-int FUN_00422510() {
+int IsAppDeactivated() {
   return DAT_0043de94;
 }
 
@@ -431,7 +418,7 @@ int __cdecl CalculateBufferSize(int width, unsigned int height) {
 }
 
 /* Function start: 0x4261C0 */
-void ParsePath(const char *param_1, char *param_2, char *param_3, char *param_4,
+extern "C" void ParsePath(const char *param_1, char *param_2, char *param_3, char *param_4,
                char *param_5) {
   unsigned char bVar1;
   unsigned char *_Source;

@@ -4,12 +4,12 @@
 #include <stdlib.h>
 
 extern "C" {
-    FILE* __cdecl FUN_00425e50(const char* filename, const char* mode);
-    unsigned int __cdecl FUN_004269e0(void* buffer, unsigned int size, unsigned int count, FILE* stream);
     extern char DAT_004371a8[];
     extern char* PTR_s_Setup_cfg_00437454;
     int FileExists(const char* filename);
 }
+
+#include <stdio.h>
 
 /* Function start: 0x422690 */
 GameConfig::GameConfig() {
@@ -37,7 +37,7 @@ GameConfig::~GameConfig() {
 
 /* Function start: 0x422800 */
 FILE* GameConfig::Open(char* mode) {
-    fp = FUN_00425e50(PTR_s_Setup_cfg_00437454, mode);
+    fp = fopen(PTR_s_Setup_cfg_00437454, mode);
     return fp;
 }
 
@@ -65,7 +65,7 @@ void GameConfig::CreateDefaultConfig() {
 /* Function start: 0x422870 */
 void GameConfig::LoadConfig() {
     if (Open(DAT_004371a8)) {
-        FUN_004269e0(&data, 80, 1, fp);
+        fread(&data, 80, 1, fp);
         Close();
     }
 }

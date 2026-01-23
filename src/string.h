@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 extern "C" {
-    char* FUN_00425fd0(char* dest, const char* src, int count);
     char* strstr_custom(const char* haystack, const char* needle);
     void ExecuteFunctionArray(void** param_1, void** param_2);
     void ShowError(const char* format, ...);

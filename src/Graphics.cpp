@@ -241,7 +241,7 @@ extern int DAT_004374c6;  // Video buffer width
 extern int DAT_004374d2;  // Video buffer height
 
 /* Function start: 0x42449b */
-extern "C" int FUN_0042449b(int x)
+extern "C" int ScaleClientToBufferX(int x)
 {
     RECT rect;
     HWND hWnd = GetActiveWindow();
@@ -250,7 +250,7 @@ extern "C" int FUN_0042449b(int x)
 }
 
 /* Function start: 0x4244c2 */
-extern "C" int FUN_004244c2(int y)
+extern "C" int ScaleClientToBufferY(int y)
 {
     RECT rect;
     HWND hWnd = GetActiveWindow();
@@ -273,8 +273,8 @@ extern "C" int GetMousePosition(int* out_x, int* out_y)
         HWND hWnd = GetActiveWindow();
         ScreenToClient(hWnd, &pt);
     }
-    x = FUN_0042449b(pt.x);
-    y = FUN_004244c2(pt.y);
+    x = ScaleClientToBufferX(pt.x);
+    y = ScaleClientToBufferY(pt.y);
     if (x < 0 || x >= DAT_004374c6 || y < 0 || y >= DAT_004374d2) {
         goto fail;
     }

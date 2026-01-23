@@ -2,8 +2,6 @@
 #include <windows.h>
 #include <string.h>
 
-// FUN_00423076 is now inlined in CreateTable below
-
 // g_WinGDC_0043841c is already declared in globals.h
 extern HDC DAT_00437488;
 extern int DAT_004374ca;

@@ -1,8 +1,8 @@
 #ifndef ASSETLIST_H
 #define ASSETLIST_H
 
-// AssetList class  
-// Used for DAT_00435a74, DAT_00435a78, DAT_00435a7c
+// AssetList class
+// Note: DAT_00435a74/78/7c are Character*, not AssetList*
 // Contains linked list of assets
 class AssetList {
 public:

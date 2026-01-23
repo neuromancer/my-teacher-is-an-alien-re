@@ -19,6 +19,7 @@ class ZBufferManager;
 class FlagArray;
 class TimedEventPool;
 class Engine;
+class Character;
 struct MessageQueue;
 
 
@@ -365,7 +366,7 @@ struct MessageQueue;
 // extern char DAT_00435932; // { /* 1 bytes */ }
 // extern char DAT_00435933; // { /* 1 bytes */ }
 extern StringTable* g_Strings_00435a70; // 00435a70
-extern void* DAT_00435a74; // { /* 4 bytes */ }
+extern Character* DAT_00435a74; // peter character
 extern void* DAT_00435a78; // { /* 4 bytes */ }
 extern void* DAT_00435a7c; // { /* 4 bytes */ }
 extern int DAT_00435a80; // { /* 4 bytes */ }

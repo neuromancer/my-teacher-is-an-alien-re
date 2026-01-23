@@ -2,13 +2,9 @@
 #include "Memory.h"
 #include "Sprite.h"
 #include "ZBufferManager.h"
+#include "string.h"
 #include <stdio.h>
 #include <string.h>
-
-extern "C" {
-    void FUN_0041d040(int); // Sprite::Update/Init?
-    void ShowError(const char*, ...);
-}
 
 /* Function start: 0x408C40 */
 void MMPlayer2::AddSprite(Sprite* s)

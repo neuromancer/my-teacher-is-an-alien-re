@@ -36,14 +36,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// Helper functions for CleanupLoop
-// FUN_00417660 is now VBuffer::Destroy (C++ member function)
-// FUN_004189a0 is now ZBQueueNode::Cleanup (C++ member function)
-
-
-// Thiscall functions - declared outside extern "C"
-// FUN_00411080 is DrawEntry::Cleanup, defined in DrawEntry.cpp
-
 // Base handler class for vtable calls
 class BaseHandler {
 public:
@@ -529,13 +521,6 @@ void GameLoop::CleanupLoop() {
     } while (pEventList->current != 0);
 }
 
-// External functions for UpdateGame
-// FUN_004191d0 is WriteToMessageLog from string.h
-// FUN_0041a150 is SC_Message_Send from Message.h
-
-// extern void* DAT_004369a4;  // GameState for string lookup (replaced with g_GameState2_004369a4 from globals.h)
-// g_Unknown_00436994 is declared in globals.h
-
 /* Function start: 0x417CB0 */
 void GameLoop::ProcessMessage(SC_Message* msg)
 {
@@ -699,34 +684,6 @@ int GameLoop::UpdateGame()
     local_d8.SC_Message::~SC_Message();
     return local_14;
 }
-
-// -------------------------------------------------------------------------
-// Stubs for missing functions
-// -------------------------------------------------------------------------
-
-static void __cdecl StubDestructor(int) {}
-static void __cdecl StubMethods() {}
-static void __stdcall StubDraw(int, int) {}
-static void __fastcall StubHandlerMethod(void* _this, SC_Message* msg) {}
-
-static int StubHandleMessage(SC_Message* msg) {
-    return 1; // Mark handled
-}
-
-static void* g_HandlerVTable[] = { 
-    (void*)StubDestructor,    // 0x00
-    (void*)StubMethods,       // 0x04
-    (void*)StubMethods,       // 0x08
-    (void*)StubDestructor,    // 0x0c
-    (void*)StubMethods,       // 0x10
-    (void*)StubHandlerMethod, // 0x14
-    (void*)StubDestructor,    // 0x18
-    (void*)StubDraw,          // 0x1c
-    (void*)StubHandleMessage  // 0x20
-};
-static void* g_StubObject = g_HandlerVTable;
-
-// FUN_0041a150 is SC_Message_Send, implemented in Message.cpp
 
 /* Function start: 0x417F40 */
 void GameLoop::HandleSystemMessage(SC_Message* msg) {
@@ -1214,8 +1171,5 @@ Handler* GameLoop::GetOrCreateHandler(int command) {
     }
     return handler;
 }
-
-// FUN_00411080 is DrawEntry::Cleanup, implemented in DrawEntry.cpp
-
 
 

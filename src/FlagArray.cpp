@@ -4,22 +4,6 @@
 #include <string.h>
 #include <stdio.h>
 
-extern "C" {
-    // Using standard library wrapper names to match link expectations or implementations
-    FILE* fsopen(const char* filename, const char* mode);
-    // Stub for fopen wrapper
-    FILE* FUN_00425e50(const char* filename, const char* mode) {
-        return fopen(filename, mode);
-    }
-    // Stub for fwrite wrapper
-    void FUN_004269e0(const void* ptr, size_t size, size_t n, FILE* stream) {
-        fwrite(ptr, size, n, stream);
-    }
-    // Stub for fread wrapper
-    void __fread_lk(void* ptr, size_t size, size_t n, FILE* stream) {
-        fread(ptr, size, n, stream);
-    }
-}
 
 // These strings need to be defined somewhere. Defining them here or referencing globals.
 // "rb+"
@@ -45,14 +29,14 @@ FlagArray::FlagArray(char* f, int max_states) {
     strcpy(filename, f);
     
     // Try open rb+
-    int result = (int)FUN_00425e50(filename, DAT_004371ac);
+    int result = (int)fopen(filename, DAT_004371ac);
     fp = (FILE*)result;
     
     if (result == 0) {
         // Failed, create new wb+
         // Need to reference DAT_004371a8 (wb+) properly.
         // Assuming "wb+"
-        fp_temp = FUN_00425e50(filename, "wb+");
+        fp_temp = fopen(filename, "wb+");
         fp = fp_temp;
         
         if (fp_temp == NULL) {
@@ -64,11 +48,11 @@ FlagArray::FlagArray(char* f, int max_states) {
              field_0x44 = 4;
              
              // Write header (from field_0x38 onwards, size 0x94)
-             FUN_004269e0(&field_0x38, 0x94, 1, fp);
+             fwrite(&field_0x38, 0x94, 1, fp);
              
              // Write flags (0)
              for (i = 0; i < max_states; i++) {
-                 FUN_004269e0(buffer, 4, 1, fp);
+                 fwrite(buffer, 4, 1, fp);
              }
         }
     }
@@ -98,7 +82,7 @@ void FlagArray::Open() {
         ShowError("double FlagArray::Open()");
     }
     
-    FILE* fp_temp = FUN_00425e50(filename, DAT_004371ac);
+    FILE* fp_temp = fopen(filename, DAT_004371ac);
     fp = fp_temp;
     
     if (fp_temp == NULL) {
@@ -106,7 +90,7 @@ void FlagArray::Open() {
     }
     
     // Read header back
-    __fread_lk(&field_0x38, 0x94, 1, fp);
+    fread(&field_0x38, 0x94, 1, fp);
 }
 
 /* Function start: 0x4202D0 */
@@ -146,7 +130,7 @@ unsigned int FlagArray::GetFlag(int index, unsigned int mask) {
     unsigned int val = 0;
     Open();
     Seek(index);
-    __fread_lk(&val, field_0x44, 1, fp);
+    fread(&val, field_0x44, 1, fp);
     Close();
     return val & mask;
 }
@@ -156,10 +140,10 @@ void FlagArray::SetFlag(int index, unsigned int mask) {
     unsigned int val = 0;
     Open();
     Seek(index);
-    __fread_lk(&val, field_0x44, 1, fp);
+    fread(&val, field_0x44, 1, fp);
     val |= mask;
     Seek(index); // Go back
-    FUN_004269e0(&val, field_0x44, 1, fp);
+    fwrite(&val, field_0x44, 1, fp);
     Close();
 }
 
@@ -172,7 +156,7 @@ void FlagArray::ClearAllFlags() {
     Seek(0);
     if (max_states > 0) {
         do {
-            FUN_004269e0(buffer, 4, 1, fp);
+            fwrite(buffer, 4, 1, fp);
             i++;
         } while (i < max_states);
     }

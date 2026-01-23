@@ -110,7 +110,7 @@ void WriteToMessageLog(const char *msg,...)
 }
 
 /* Function start: 0x419220 */
-void AddToStringTable(char *param_1)
+extern "C" void AddToStringTable(char *param_1)
 {
     char local_20[32];
     int iVar2;

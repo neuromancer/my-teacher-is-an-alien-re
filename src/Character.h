@@ -64,6 +64,4 @@ public:
 // External functions used by Character
 extern PriorityQueueNode* __fastcall FUN_00404470(PriorityQueueNode* node, CharSprite* sprite);
 
-// FUN_00424c00 is just strstr from the CRT
-
 #endif // CHARACTER_H
