@@ -84,17 +84,6 @@ void Handler14::Init(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x40BD10 */
-int Handler14::HandleMessage(SC_Message* msg) {
-    WriteMessageAddress(msg);
-    WriteToMessageLog("SC_Sound::AddMessage");
-    return 1;
-}
-
-int Handler14::Update(SC_Message* msg) {
-    return 0;
-}
-
 /* Function start: 0x40BB10 */
 void Handler14::Draw(int param1, int param2) {
     MessageList* pList;
@@ -178,6 +167,17 @@ void Handler14::Draw(int param1, int param2) {
     if (handlerId == param2) {
         WriteToMessageLog("SC_Sound::Update");
     }
+}
+
+/* Function start: 0x40BD10 */
+int Handler14::HandleMessage(SC_Message* msg) {
+    WriteMessageAddress(msg);
+    WriteToMessageLog("SC_Sound::AddMessage");
+    return 1;
+}
+
+int Handler14::Update(SC_Message* msg) {
+    return 0;
 }
 
 /* Function start: 0x40BD30 */

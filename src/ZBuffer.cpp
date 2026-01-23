@@ -12,18 +12,8 @@ char s_hIam[] = "hIam %d";
 #include "Timer.h"
 #include "string.h"
 
-// This is a guess based on usage.
-// This is a guess based on usage.
-// struct SoundManager {
-//     char pad[0x84];
-//     Timer timer;
-//     int field_98;
-//     void* field_9c;
-//     void* field_a0;
-//     void* field_a4;
-// };
-
-// extern SoundManager* g_ZBufferManager_0043698c;
+// ZBQueue is defined in ZBufferManager.h
+#include "ZBufferManager.h"
 
 /* Function start: 0x4012D0 */
 void ZBuffer::Update(int param_1, int param_2)
@@ -138,14 +128,52 @@ void ZBuffer::CleanUpVBuffer()
     }
 }
 
+/* Function start: 0x401560 */
+void ZBuffer::ClearList(ZBQueue* queue)
+{
+    if (queue->head != 0) {
+        queue->current = queue->head;
+        do {
+            ZBQueueNode* node = queue->current;
+            void* data;
+            if (node == 0) {
+                data = 0;
+            } else {
+                if (queue->head == node) {
+                    queue->head = node->prev;
+                }
+                if (queue->tail == node) {
+                    queue->tail = node->next;
+                }
+                if (node->next != 0) {
+                    node->next->prev = node->prev;
+                }
+                ZBQueueNode* prevNode = queue->current->prev;
+                if (prevNode != 0) {
+                    prevNode->next = queue->current->next;
+                }
+                data = 0;
+                ZBQueueNode* currentNode = queue->current;
+                if (currentNode != 0) {
+                    data = currentNode->data;
+                    delete currentNode;
+                    queue->current = 0;
+                }
+                queue->current = queue->head;
+            }
+            if (data != 0) {
+                *(void**)data = 0;
+                FreeFromGlobalHeap(data);
+            }
+        } while (queue->head != 0);
+    }
+}
+
 /* Function start: 0x4016A0 */
 ZBuffer::~ZBuffer()
 {
     CleanUpVBuffer();
 }
-
-// ZBQueue is defined in ZBufferManager.h
-#include "ZBufferManager.h"
 
 /* Function start: 0x401710 */
 void* ZBuffer::PopNode(ZBQueue* queue)
@@ -244,45 +272,4 @@ void* ZBQueue::PopNode()
     }
     current = head;
     return data;
-}
-
-/* Function start: 0x401560 */
-void ZBuffer::ClearList(ZBQueue* queue)
-{
-    if (queue->head != 0) {
-        queue->current = queue->head;
-        do {
-            ZBQueueNode* node = queue->current;
-            void* data;
-            if (node == 0) {
-                data = 0;
-            } else {
-                if (queue->head == node) {
-                    queue->head = node->prev;
-                }
-                if (queue->tail == node) {
-                    queue->tail = node->next;
-                }
-                if (node->next != 0) {
-                    node->next->prev = node->prev;
-                }
-                ZBQueueNode* prevNode = queue->current->prev;
-                if (prevNode != 0) {
-                    prevNode->next = queue->current->next;
-                }
-                data = 0;
-                ZBQueueNode* currentNode = queue->current;
-                if (currentNode != 0) {
-                    data = currentNode->data;
-                    delete currentNode;
-                    queue->current = 0;
-                }
-                queue->current = queue->head;
-            }
-            if (data != 0) {
-                *(void**)data = 0;
-                FreeFromGlobalHeap(data);
-            }
-        } while (queue->head != 0);
-    }
 }

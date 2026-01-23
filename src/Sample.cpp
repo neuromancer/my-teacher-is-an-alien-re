@@ -13,6 +13,38 @@ Sample::Sample() {
   m_sample = 0;
 }
 
+/* Function start: 0x41E470 */
+void Sample::Unload() {
+  if (m_data != 0) {
+    Sample::~Sample();
+    AIL_mem_free_lock(m_data);
+    m_data = 0;
+  }
+}
+
+/* Function start: 0x41E490 */
+int Sample::Load(char *filename) {
+  if (g_Sound_0043696c->digital_driver == 0) {
+    return 1;
+  }
+  if (m_data != 0) {
+    Unload();
+  }
+  m_size = 0;
+  FILE *_File = OpenFileAndFindKey((char *)0x0, filename, "rb",
+                                   (unsigned int *)&m_size);
+  if ((_File != 0) && (m_size != 0)) {
+    m_data = (char *)AIL_mem_alloc_lock(m_size);
+    if (m_data == 0) {
+      return 1;
+    }
+    fread(m_data, m_size, 1, _File);
+    fclose(_File);
+    return 0;
+  }
+  return 1;
+}
+
 /* Function start: 0x41E530 */
 void Sample::Init(int volume) {
   if (m_sample == 0) {
@@ -91,38 +123,6 @@ int Sample::Play(int volume, int loop_count) {
     if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
       AIL_start_sample(m_sample);
     }
-    return 0;
-  }
-  return 1;
-}
-
-/* Function start: 0x41E470 */
-void Sample::Unload() {
-  if (m_data != 0) {
-    Sample::~Sample();
-    AIL_mem_free_lock(m_data);
-    m_data = 0;
-  }
-}
-
-/* Function start: 0x41E490 */
-int Sample::Load(char *filename) {
-  if (g_Sound_0043696c->digital_driver == 0) {
-    return 1;
-  }
-  if (m_data != 0) {
-    Unload();
-  }
-  m_size = 0;
-  FILE *_File = OpenFileAndFindKey((char *)0x0, filename, "rb",
-                                   (unsigned int *)&m_size);
-  if ((_File != 0) && (m_size != 0)) {
-    m_data = (char *)AIL_mem_alloc_lock(m_size);
-    if (m_data == 0) {
-      return 1;
-    }
-    fread(m_data, m_size, 1, _File);
-    fclose(_File);
     return 0;
   }
   return 1;

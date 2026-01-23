@@ -3,27 +3,10 @@
 #include <stdarg.h>
 #include <share.h>
 #include <ctype.h>
+#include <windows.h>
 #include "string.h"
 #include "Memory.h"
 #include <mbstring.h>
-
-/* Function start: 0x425E50 */
-// Wrapper for _fsopen with _SH_DENYNO (0x40) share mode
-FILE* fsopen(const char* filename, const char* mode)
-{
-    return _fsopen(filename, mode, _SH_DENYNO);
-}
-
-/* Function start: 0x425FD0 */
-/* This is strncpy from MSVC CRT - the assembly uses LODSB/STOSB/LOOP string instructions */
-/* which are characteristic of the statically linked CRT implementation */
-
-
-// This is a highly literal C++ translation of the original assembly for strstr_custom (strstr).
-// It uses 'goto' to precisely replicate the unconventional control flow of the 1997 compiler's
-// output, which is necessary to produce a matching assembly file.
-
-#include <windows.h>
 
 extern "C" {
 extern void SetCursorVisible(int visible);
@@ -42,73 +25,12 @@ extern int DAT_00435038;
 extern int DAT_0043503c;
 extern int DAT_00435040;
 
+void DeleteFile_Wrapper(const char* filename);
+
 // Message log enabled flag (was hardcoded at 0x43d5a8)
 // File-local since only used in string.cpp
 static char g_messageLogEnabled = 1;
 
-
-char* strstr_custom(const char* haystack, const char* needle) {
-    const char* haystack_base = haystack;
-    const char* needle_base = needle;
-
-    if (*needle_base == '\0') {
-        return (char*)haystack;
-    }
-
-loop_start:
-    if (*haystack == '\0') {
-        return NULL;
-    }
-
-    if (*haystack == *needle) {
-        // A character matches. Advance both pointers.
-        haystack++;
-        needle++;
-        if (*needle == '\0') {
-            // We've reached the end of the needle, so we have a full match.
-            return (char*)haystack_base;
-        }
-        // This is the key part: jump back to the top to re-evaluate the loop conditions
-        // for the next character, rather than using a nested loop.
-        goto loop_start;
-    } else {
-        // The characters do not match.
-        // Advance the base haystack pointer and reset the other pointers.
-        haystack_base++;
-        haystack = haystack_base;
-        needle = needle_base;
-        goto loop_start;
-    }
-}
-
-/* Function start 0x426030 */
-void exitWithError_(unsigned int param_1)
-{
-    exitWithErrorInternal(param_1, 0, 0);
-}
-
-/* 0x426070 */
-void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
-{
-    DAT_0043be34 = 1;
-    DAT_0043be30 = (char)param_3;
-    if (param_2 == 0) {
-        if ((DAT_0043f104 != 0) && ((unsigned int)DAT_0043f100 - 4 >= (unsigned int)DAT_0043f104)) {
-            void** puVar1 = (void**)((char*)DAT_0043f100 - 4);
-            do {
-                if (*puVar1 != 0) {
-                    ((void (*)(void)) *puVar1)();
-                }
-                puVar1 = puVar1 - 1;
-            } while ((unsigned int)puVar1 >= (unsigned int)DAT_0043f104);
-        }
-        ExecuteFunctionArray(&DAT_00435030, &DAT_00435038);
-    }
-    ExecuteFunctionArray(&DAT_0043503c, &DAT_00435040);
-    if (param_3 == 0) {
-        ExitProcess(param_1);
-    }
-}
 
 /* Function start: 0x419080 */
 void ExtractQuotedString(char *param_1,char *param_2,int param_3)
@@ -164,16 +86,6 @@ void ShowMessage(char *param_1, ...)
     SetCursorVisible(0);
 }
 
-/* Function start: 0x426110 */
-void DeleteFile_Wrapper(const char* filename)
-{
-    if (DeleteFileA(filename) == 0) {
-        int error = GetLastError();
-        if (error != 0) {
-            SetErrorCode(error);
-        }
-    }
-}
 
 /* Function start: 0x4191C0 */
 void ClearMessageLog()
@@ -400,4 +312,87 @@ int ExecuteFunctionArray(void* param_1, void* param_2)
         } while (p1 < p2);
     }
     return 0;
+}
+
+/* Function start: 0x425E50 */
+// Wrapper for _fsopen with _SH_DENYNO (0x40) share mode
+FILE* fsopen(const char* filename, const char* mode)
+{
+    return _fsopen(filename, mode, _SH_DENYNO);
+}
+
+/* Function start: 0x425FD0 */
+char* strstr_custom(const char* haystack, const char* needle) {
+
+    const char* haystack_base = haystack;
+    const char* needle_base = needle;
+
+    if (*needle_base == '\0') {
+        return (char*)haystack;
+    }
+
+loop_start:
+    if (*haystack == '\0') {
+        return NULL;
+    }
+
+    if (*haystack == *needle) {
+        // A character matches. Advance both pointers.
+        haystack++;
+        needle++;
+        if (*needle == '\0') {
+            // We've reached the end of the needle, so we have a full match.
+            return (char*)haystack_base;
+        }
+        // This is the key part: jump back to the top to re-evaluate the loop conditions
+        // for the next character, rather than using a nested loop.
+        goto loop_start;
+    } else {
+        // The characters do not match.
+        // Advance the base haystack pointer and reset the other pointers.
+        haystack_base++;
+        haystack = haystack_base;
+        needle = needle_base;
+        goto loop_start;
+    }
+}
+
+/* Function start 0x426030 */
+void exitWithError_(unsigned int param_1)
+{
+    exitWithErrorInternal(param_1, 0, 0);
+}
+
+/* 0x426070 */
+void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
+{
+    DAT_0043be34 = 1;
+    DAT_0043be30 = (char)param_3;
+    if (param_2 == 0) {
+        if ((DAT_0043f104 != 0) && ((unsigned int)DAT_0043f100 - 4 >= (unsigned int)DAT_0043f104)) {
+            void** puVar1 = (void**)((char*)DAT_0043f100 - 4);
+            do {
+                if (*puVar1 != 0) {
+                    ((void (*)(void)) *puVar1)();
+                }
+                puVar1 = puVar1 - 1;
+            } while ((unsigned int)puVar1 >= (unsigned int)DAT_0043f104);
+        }
+        ExecuteFunctionArray(&DAT_00435030, &DAT_00435038);
+    }
+    ExecuteFunctionArray(&DAT_0043503c, &DAT_00435040);
+    if (param_3 == 0) {
+        ExitProcess(param_1);
+    }
+}
+
+/* Function start: 0x426110 */
+void DeleteFile_Wrapper(const char* filename)
+{
+    if (DeleteFileA(filename) == 0) {
+        int error = GetLastError();
+        if (error != 0) {
+            SetErrorCode(error);
+        }
+    }
 }

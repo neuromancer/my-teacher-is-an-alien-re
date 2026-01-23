@@ -14,16 +14,6 @@
 // External functions
 extern "C" void __cdecl WriteToMessageLog(const char*);
 
-/* Function start: 0x402CD0 */
-IconBarButton::IconBarButton()
-    : message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-{
-}
-
-/* Function start: 0x402D60 */
-IconBarButton::~IconBarButton() {
-}
-
 /* Function start: 0x402730 */
 IconBar::IconBar() {
     int i;
@@ -158,6 +148,16 @@ IconBar::IconBar() {
 
 IconBar::~IconBar() {
     // Destructor - cleanup handled by CleanupIconBar
+}
+
+/* Function start: 0x402CD0 */
+IconBarButton::IconBarButton()
+    : message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+{
+}
+
+/* Function start: 0x402D60 */
+IconBarButton::~IconBarButton() {
 }
 
 /* Function start: 0x402ED0 */

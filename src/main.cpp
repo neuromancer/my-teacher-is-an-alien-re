@@ -234,8 +234,6 @@ void RunGame() {
   //}
 }
 
-/* Function start: 0x40d28c */
-void CleanupCinematic(void) {}
 
 /* Function start: 0x40d230 */
 void PlayIntroCinematic(void) {
@@ -244,6 +242,10 @@ void PlayIntroCinematic(void) {
   anim.Play("cine\\cine0001.smk", 0x20);
   ShutdownGameSystems();
 }
+
+/* Function start: 0x40d28c */
+void CleanupCinematic(void) {}
+
 
 /* Function start: 0x4192F0 */
 int ProcessMessages() {

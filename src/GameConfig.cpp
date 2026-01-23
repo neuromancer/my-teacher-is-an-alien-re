@@ -11,11 +11,6 @@ extern "C" {
     int FileExists(const char* filename);
 }
 
-/* Function start: 0x422750 */
-ConfigData::~ConfigData() {
-    // Empty destructor
-}
-
 /* Function start: 0x422690 */
 GameConfig::GameConfig() {
     // Zero entire object (0x25 dwords = 148 bytes = 0x94)
@@ -28,6 +23,11 @@ GameConfig::GameConfig() {
     }
     SaveConfig();
     CheckWindir();
+}
+
+/* Function start: 0x422750 */
+ConfigData::~ConfigData() {
+    // Empty destructor
 }
 
 /* Function start: 0x4227A0 */

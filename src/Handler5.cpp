@@ -67,6 +67,69 @@ void Handler5::Init(SC_Message* msg) {
     }
 }
 
+/* Function start: 0x40FE70 */
+int Handler5::Update(SC_Message* msg) {
+    if (sprite != 0) {
+        sprite->StopAnimationSound();
+    }
+    return 0;
+}
+
+/* Function start: 0x40FE90 */
+void Handler5::Draw(int param1, int param2) {
+    int idx;
+    int local_1c[4];
+    Sprite* spr;
+    char* stateStr;
+    int y;
+
+    local_1c[0] = 0;
+    local_1c[1] = 0;
+    local_1c[2] = 0;
+    local_1c[3] = 0;
+
+    if (timer.Update() > 10000) {
+        SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+    }
+    
+    if (handlerId == param2) {
+        spr = sprite;
+        if (spr != 0) {
+            spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        }
+        idx = field_B8;
+        if (idx < field_B8 + 0xe) {
+            do {
+                stateStr = g_GameState_00436998->GetState(idx);
+                if (stateStr == 0) {
+                    sprintf(g_Buffer_00436960, "\"NOLABEL\"");
+                } else {
+                    stateStr = g_GameState_00436998->GetState(idx);
+                    sprintf(g_Buffer_00436960, "%s", stateStr);
+                }
+                y = ((idx - field_B8) + 1) * field_E8 + field_E4;
+                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0, y, 10000, 8);
+
+                if (idx > 0 && g_GameState_00436998->maxStates <= idx) {
+                    ShowError("GameState Error  #%d", 1);
+                }
+                sprintf(g_Buffer_00436960, "%d", g_GameState_00436998->stateValues[idx]);
+                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0 + 0x15e, y, 10000, 8);
+
+                int rowIdx = idx - field_B8;
+                int top = rowIdx * field_E8 + field_E4;
+                int bottom = (rowIdx + 1) * field_E8 + field_E4;
+
+                if (field_BC == idx) {
+                    g_ZBufferManager_0043698c->DrawRect(0, top, 0x27f, bottom, 0x28, 8, 1);
+                }
+                idx = idx + 1;
+            } while (idx < field_B8 + 0xe);
+        }
+        g_Mouse_00436978->DrawCursor();
+    }
+}
+
 /* Function start: 0x4100E0 */
 int Handler5::HandleMessage(SC_Message* msg) {
     int stateIdx;
@@ -147,69 +210,6 @@ int Handler5::HandleMessage(SC_Message* msg) {
         return 1;
     }
     return 1;
-}
-
-/* Function start: 0x40FE70 */
-int Handler5::Update(SC_Message* msg) {
-    if (sprite != 0) {
-        sprite->StopAnimationSound();
-    }
-    return 0;
-}
-
-/* Function start: 0x40FE90 */
-void Handler5::Draw(int param1, int param2) {
-    int idx;
-    int local_1c[4];
-    Sprite* spr;
-    char* stateStr;
-    int y;
-
-    local_1c[0] = 0;
-    local_1c[1] = 0;
-    local_1c[2] = 0;
-    local_1c[3] = 0;
-
-    if (timer.Update() > 10000) {
-        SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
-    }
-    
-    if (handlerId == param2) {
-        spr = sprite;
-        if (spr != 0) {
-            spr->Do(spr->loc_x, spr->loc_y, 1.0);
-        }
-        idx = field_B8;
-        if (idx < field_B8 + 0xe) {
-            do {
-                stateStr = g_GameState_00436998->GetState(idx);
-                if (stateStr == 0) {
-                    sprintf(g_Buffer_00436960, "\"NOLABEL\"");
-                } else {
-                    stateStr = g_GameState_00436998->GetState(idx);
-                    sprintf(g_Buffer_00436960, "%s", stateStr);
-                }
-                y = ((idx - field_B8) + 1) * field_E8 + field_E4;
-                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0, y, 10000, 8);
-
-                if (idx > 0 && g_GameState_00436998->maxStates <= idx) {
-                    ShowError("GameState Error  #%d", 1);
-                }
-                sprintf(g_Buffer_00436960, "%d", g_GameState_00436998->stateValues[idx]);
-                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0 + 0x15e, y, 10000, 8);
-
-                int rowIdx = idx - field_B8;
-                int top = rowIdx * field_E8 + field_E4;
-                int bottom = (rowIdx + 1) * field_E8 + field_E4;
-
-                if (field_BC == idx) {
-                    g_ZBufferManager_0043698c->DrawRect(0, top, 0x27f, bottom, 0x28, 8, 1);
-                }
-                idx = idx + 1;
-            } while (idx < field_B8 + 0xe);
-        }
-        g_Mouse_00436978->DrawCursor();
-    }
 }
 
 /* Function start: 0x4102E0 */

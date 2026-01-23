@@ -17,10 +17,6 @@ extern "C" int ProcessMessages(); // 0x4192F0 - Message pump loop
 extern Timer g_leftClickTimer;  // 0x43de40
 extern Timer g_rightClickTimer; // 0x43de58
 
-/* Function start: 0x421c24 */
-MousePoint::~MousePoint() {
-}
-
 InputState::InputState() {
     x = 0;
     y = 0;
@@ -148,6 +144,10 @@ int InputManager::PollMouse(InputState* state) {
     }
 
     return 1;
+}
+
+/* Function start: 0x421c24 */
+MousePoint::~MousePoint() {
 }
 
 /* Function start: 0x421c30 */

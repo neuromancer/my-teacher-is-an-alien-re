@@ -166,57 +166,6 @@ void Handler9::Init(SC_Message* msg) {
     ParseFile(this, buffer, "[DIALOG%4.4d]", msg->sourceAddress);
 }
 
-/* Function start: 0x4074E0 */
-int Handler9::HandleMessage(SC_Message* msg) {
-    int result;
-    DialogQuestion* dq;
-    InputState* pMouse;
-
-    result = IconBar::CheckButtonClick(msg);
-    if (result != 0) {
-        return 1;
-    }
-
-    if (currentDialog != 0) {
-        if (msg->field_b4 == 0x1b) {
-            currentDialog->Finalize();
-            dq = currentDialog;
-            if (dq->state == 2) {
-                if (dq != 0) {
-                    dq->~SC_Question();
-                    FreeMemory(dq);
-                    currentDialog = 0;
-                    return 1;
-                }
-            }
-        } else {
-            if (msg->mouseY > 1) {
-                SC_Message_Send(Handler9::field_90, Handler9::field_94, 9, Handler9::field_8C, 5, 6, 0, 0, 0, 0);
-                return 1;
-            }
-        }
-    } else {
-        if (msg->mouseX > 1) {
-            msg->command = 9;
-            pMouse = g_InputManager_00436968->pMouse;
-            if (pMouse == 0 || pMouse->y < 10) {
-                msg->sourceAddress = -1;
-            } else if (pMouse == 0) {
-                msg->sourceAddress = 0;
-            } else {
-                msg->sourceAddress = (pMouse->y - 10) / 0x22;
-            }
-            msg->priority = 3;
-            return 1;
-        }
-        if (msg->field_b4 == 0x1b) {
-            SC_Message_Send(Handler9::field_90, Handler9::field_94, 9, Handler9::field_8C, 5, 6, 0, 0, 0, 0);
-        }
-    }
-
-    return 1;
-}
-
 /* Function start: 0x407380 */
 int Handler9::Update(SC_Message* msg) {
     DialogQuestion* dq;
@@ -296,6 +245,57 @@ int Handler9::Update(SC_Message* msg) {
     WriteToMessageLog("\"EXIT DIALOG\\n\"");
 
     return 0;
+}
+
+/* Function start: 0x4074E0 */
+int Handler9::HandleMessage(SC_Message* msg) {
+    int result;
+    DialogQuestion* dq;
+    InputState* pMouse;
+
+    result = IconBar::CheckButtonClick(msg);
+    if (result != 0) {
+        return 1;
+    }
+
+    if (currentDialog != 0) {
+        if (msg->field_b4 == 0x1b) {
+            currentDialog->Finalize();
+            dq = currentDialog;
+            if (dq->state == 2) {
+                if (dq != 0) {
+                    dq->~SC_Question();
+                    FreeMemory(dq);
+                    currentDialog = 0;
+                    return 1;
+                }
+            }
+        } else {
+            if (msg->mouseY > 1) {
+                SC_Message_Send(Handler9::field_90, Handler9::field_94, 9, Handler9::field_8C, 5, 6, 0, 0, 0, 0);
+                return 1;
+            }
+        }
+    } else {
+        if (msg->mouseX > 1) {
+            msg->command = 9;
+            pMouse = g_InputManager_00436968->pMouse;
+            if (pMouse == 0 || pMouse->y < 10) {
+                msg->sourceAddress = -1;
+            } else if (pMouse == 0) {
+                msg->sourceAddress = 0;
+            } else {
+                msg->sourceAddress = (pMouse->y - 10) / 0x22;
+            }
+            msg->priority = 3;
+            return 1;
+        }
+        if (msg->field_b4 == 0x1b) {
+            SC_Message_Send(Handler9::field_90, Handler9::field_94, 9, Handler9::field_8C, 5, 6, 0, 0, 0, 0);
+        }
+    }
+
+    return 1;
 }
 
 void Handler9::Draw(int param1, int param2) {

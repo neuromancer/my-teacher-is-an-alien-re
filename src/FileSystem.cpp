@@ -142,24 +142,10 @@ fill_stat:
     return 0;
 }
 
-/* Function start: 0x42DF20 */
-int __cdecl __validdrive(unsigned int drive)
+/* Function start: 0x42DDD0 */
+void __cdecl GetCurrentDir(char *buffer, int size)
 {
-    unsigned int type;
-    char path[4];
-
-    if (drive == 0) {
-        return 1;
-    }
-    path[1] = ':';
-    path[2] = '\\';
-    path[3] = 0;
-    path[0] = (char)drive + '@';
-    type = GetDriveTypeA(path);
-    if (type != 0 && type != 1) {
-        return 1;
-    }
-    return 0;
+    GetDriveDir(0, buffer, size);
 }
 
 /* Function start: 0x42DDF0 */
@@ -209,10 +195,24 @@ char * __cdecl GetDriveDir(unsigned int drive, char *buffer, size_t size)
     return buffer;
 }
 
-/* Function start: 0x42DDD0 */
-void __cdecl GetCurrentDir(char *buffer, int size)
+/* Function start: 0x42DF20 */
+int __cdecl __validdrive(unsigned int drive)
 {
-    GetDriveDir(0, buffer, size);
+    unsigned int type;
+    char path[4];
+
+    if (drive == 0) {
+        return 1;
+    }
+    path[1] = ':';
+    path[2] = '\\';
+    path[3] = 0;
+    path[0] = (char)drive + '@';
+    type = GetDriveTypeA(path);
+    if (type != 0 && type != 1) {
+        return 1;
+    }
+    return 0;
 }
 
 // Path formatting stub - returns path unchanged

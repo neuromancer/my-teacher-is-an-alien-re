@@ -9,63 +9,6 @@ extern PriorityQueueNode* __fastcall FUN_00404470(PriorityQueueNode* node, CharS
 
 // strstr is just strstr from the CRT - use standard library
 
-/* Function start: 0x4043A0 */
-void PriorityQueue::AddAfterCurrent(CharSprite* sprite)
-{
-    void* allocResult;
-    PriorityQueueNode* newNode;
-
-    if (sprite == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    allocResult = operator new(0xc);
-    newNode = 0;
-    if (allocResult != 0) {
-        newNode = (PriorityQueueNode*)allocResult;
-        newNode->data = sprite;
-        newNode->next = 0;
-        newNode->prev = 0;
-    }
-
-    if (PriorityQueue::current == 0) {
-        PriorityQueue::current = PriorityQueue::head;
-    }
-
-    if (PriorityQueue::head == 0) {
-        PriorityQueue::head = newNode;
-        PriorityQueue::tail = newNode;
-        PriorityQueue::current = newNode;
-    } else {
-        newNode->prev = PriorityQueue::current;
-        newNode->next = PriorityQueue::current->next;
-        if (PriorityQueue::current->next == 0) {
-            PriorityQueue::head = newNode;
-            PriorityQueue::current->next = newNode;
-        } else {
-            PriorityQueue::current->next->prev = newNode;
-            PriorityQueue::current->next = newNode;
-        }
-    }
-}
-
-/* Function start: 0x408880 */
-CharSprite::CharSprite()
-{
-    int* puVar3;
-    int iVar2;
-
-    bounds.left = 0;
-    bounds.top = 0;
-    bounds.right = 0;
-    bounds.bottom = 0;
-    puVar3 = (int*)this;
-    for (iVar2 = 0x17; iVar2 != 0; iVar2--) {
-        *puVar3 = 0;
-        puVar3++;
-    }
-}
-
 /* Function start: 0x403700 */
 Character::Character(char* param_1) {
     int i;
@@ -493,5 +436,62 @@ Character::Character(char* param_1) {
         abilities[6] = val;
         abilities[4] = 0;
         abilities[7] = val;
+    }
+}
+
+/* Function start: 0x4043A0 */
+void PriorityQueue::AddAfterCurrent(CharSprite* sprite)
+{
+    void* allocResult;
+    PriorityQueueNode* newNode;
+
+    if (sprite == 0) {
+        ShowError("queue fault 0102");
+    }
+
+    allocResult = operator new(0xc);
+    newNode = 0;
+    if (allocResult != 0) {
+        newNode = (PriorityQueueNode*)allocResult;
+        newNode->data = sprite;
+        newNode->next = 0;
+        newNode->prev = 0;
+    }
+
+    if (PriorityQueue::current == 0) {
+        PriorityQueue::current = PriorityQueue::head;
+    }
+
+    if (PriorityQueue::head == 0) {
+        PriorityQueue::head = newNode;
+        PriorityQueue::tail = newNode;
+        PriorityQueue::current = newNode;
+    } else {
+        newNode->prev = PriorityQueue::current;
+        newNode->next = PriorityQueue::current->next;
+        if (PriorityQueue::current->next == 0) {
+            PriorityQueue::head = newNode;
+            PriorityQueue::current->next = newNode;
+        } else {
+            PriorityQueue::current->next->prev = newNode;
+            PriorityQueue::current->next = newNode;
+        }
+    }
+}
+
+/* Function start: 0x408880 */
+CharSprite::CharSprite()
+{
+    int* puVar3;
+    int iVar2;
+
+    bounds.left = 0;
+    bounds.top = 0;
+    bounds.right = 0;
+    bounds.bottom = 0;
+    puVar3 = (int*)this;
+    for (iVar2 = 0x17; iVar2 != 0; iVar2--) {
+        *puVar3 = 0;
+        puVar3++;
     }
 }

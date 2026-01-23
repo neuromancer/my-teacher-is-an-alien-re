@@ -55,19 +55,6 @@ void Handler1::Init(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x403650 */
-int Handler1::HandleMessage(SC_Message* msg) {
-    Handler1::WriteMessageAddress(msg);
-    if (msg->mouseX >= 2) {
-        msg->command = 10;
-        msg->priority = 5;
-        msg->data = 1;
-        msg->targetAddress = 1;
-        msg->sourceAddress = 1;
-    }
-    return 1;
-}
-
 /* Function start: 0x4035C0 */
 int Handler1::Update(SC_Message* msg) {
     Sprite* spr;
@@ -87,16 +74,29 @@ int Handler1::Update(SC_Message* msg) {
     return 0;
 }
 
+/* Function start: 0x403650 */
+int Handler1::HandleMessage(SC_Message* msg) {
+    Handler1::WriteMessageAddress(msg);
+    if (msg->mouseX >= 2) {
+        msg->command = 10;
+        msg->priority = 5;
+        msg->data = 1;
+        msg->targetAddress = 1;
+        msg->sourceAddress = 1;
+    }
+    return 1;
+}
+
+/* Function start: 0x4036A0 */
+int Handler1::Exit(SC_Message* msg) {
+    return handlerId == msg->command;
+}
+
 /* Function start: 0x4036C0 */
 void Handler1::Draw(int param1, int param2) {
     if (handlerId == param2) {
         sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         g_Mouse_00436978->DrawCursor();
     }
-}
-
-/* Function start: 0x4036A0 */
-int Handler1::Exit(SC_Message* msg) {
-    return handlerId == msg->command;
 }
 

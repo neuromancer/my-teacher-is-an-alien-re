@@ -100,24 +100,6 @@ void Handler6::Init(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x404810 */
-int Handler6::HandleMessage(SC_Message* msg) {
-    // Call parent handler (IconBar::CheckButtonClick)
-    int result = CheckButtonClick(msg);
-    if (result != 0) {
-        return 1;
-    }
-
-    // Check if button 2 was pressed (mouseX >= 2) and no hotspot currently selected
-    if (msg->mouseX >= 2 && currentHotspot == 0) {
-        int clickedIndex = FindClickedHotspot();
-        if (clickedIndex > -1) {
-            currentHotspot = hotspots[clickedIndex];
-        }
-    }
-    return 1;
-}
-
 /* Function start: 0x404760 */
 int Handler6::Update(SC_Message* msg) {
     // Cleanup palette at 0x600
@@ -156,6 +138,30 @@ int Handler6::Update(SC_Message* msg) {
     // Log message
     WriteToMessageLog("EXIT SEARCH SCREEN\n");
     return 0;
+}
+
+/* Function start: 0x404810 */
+int Handler6::HandleMessage(SC_Message* msg) {
+    // Call parent handler (IconBar::CheckButtonClick)
+    int result = CheckButtonClick(msg);
+    if (result != 0) {
+        return 1;
+    }
+
+    // Check if button 2 was pressed (mouseX >= 2) and no hotspot currently selected
+    if (msg->mouseX >= 2 && currentHotspot == 0) {
+        int clickedIndex = FindClickedHotspot();
+        if (clickedIndex > -1) {
+            currentHotspot = hotspots[clickedIndex];
+        }
+    }
+    return 1;
+}
+
+/* Function start: 0x404870 */
+int Handler6::Exit(SC_Message* msg) {
+    // Compare handlerId == msg->command
+    return handlerId == msg->command;
 }
 
 /* Function start: 0x404890 */
@@ -211,30 +217,6 @@ void Handler6::Draw(int param1, int param2) {
     SC_Message_Send(10, 1, 0xb, 1, 5, 0, 0, 0, 0, 0);
 }
 
-/* Function start: 0x404870 */
-int Handler6::Exit(SC_Message* msg) {
-    // Compare handlerId == msg->command
-    return handlerId == msg->command;
-}
-
-/* Function start: 0x4049F0 */
-int Handler6::CountActiveHotspots() {
-    int count = 0;
-    Hotspot** ptr = hotspots;
-    int remaining = 10;
-
-    do {
-        Hotspot* hotspot = *ptr;
-        if (hotspot != 0 && hotspot->field_D0 != 0) {
-            count++;
-        }
-        ptr++;
-        remaining--;
-    } while (remaining != 0);
-
-    return count;
-}
-
 /* Function start: 0x404970 */
 int Handler6::FindClickedHotspot() {
     int index = 0;
@@ -277,4 +259,22 @@ int Handler6::FindClickedHotspot() {
     } while (index < 10);
 
     return -1;
+}
+
+/* Function start: 0x4049F0 */
+int Handler6::CountActiveHotspots() {
+    int count = 0;
+    Hotspot** ptr = hotspots;
+    int remaining = 10;
+
+    do {
+        Hotspot* hotspot = *ptr;
+        if (hotspot != 0 && hotspot->field_D0 != 0) {
+            count++;
+        }
+        ptr++;
+        remaining--;
+    } while (remaining != 0);
+
+    return count;
 }

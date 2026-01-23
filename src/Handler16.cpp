@@ -27,6 +27,11 @@ extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.c
 // Vtable pointer at 0x431050
 extern void* PTR_LAB_00431050;
 
+/* Function start: 0x410610 */
+int Handler16::Exit(SC_Message* msg) {
+    return 0;
+}
+
 /* Function start: 0x410650 */
 Handler16::Handler16() {
     int* pA0;
@@ -381,9 +386,4 @@ void Handler16::ProcessMessage()
         return;
     }
     SC_Message_Send(Handler16::field_90, Handler16::field_94, Handler16::handlerId, Handler16::field_8C, 5, 0, 0, 0, 0, 0);
-}
-
-/* Function start: 0x410610 */
-int Handler16::Exit(SC_Message* msg) {
-    return 0;
 }

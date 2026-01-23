@@ -45,13 +45,8 @@ struct CommandType2 : public SoundCommand {
 // Returns 0 if palette changed, non-zero if unchanged
 int __fastcall IsPaletteUnchanged(void* storedPalette) { return 0; }
 
-
-
 extern "C" void FlipScreen();
-
 extern VBuffer* g_WorkBuffer_00436974;
-
-
 
 // Functions for rectangle drawing
 extern "C" int __cdecl SetFillColor(unsigned char color);
@@ -72,11 +67,57 @@ struct CommandType3 : public SoundCommand {
     virtual void Execute(GlyphRect* rect);
 };
 
-
-
-ZBufferManager::~ZBufferManager()
+/* Function start: 0x409160 */
+void ZBQueue::Insert(void* data)
 {
-    Cleanup();
+    ZBQueueNode* newNode;
+    ZBQueueNode* node;
+
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+
+    newNode = (ZBQueueNode*)operator new(sizeof(ZBQueueNode));
+    node = 0;
+    if (newNode != 0) {
+        newNode->data = data;
+        newNode->next = 0;
+        newNode->prev = 0;
+        node = newNode;
+    }
+
+    if (current == 0) {
+        current = head;
+    }
+
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
+        return;
+    }
+
+    node->prev = current;
+    node->next = current->next;
+    if (current->next == 0) {
+        head = node;
+        current->next = node;
+    } else {
+        current->next->prev = node;
+        current->next = node;
+    }
+}
+
+/* Function start: 0x4189A0 */
+void* ZBQueueNode::Cleanup(int flag)
+{
+    ZBQueueNode::data = 0;
+    ZBQueueNode::next = 0;
+    ZBQueueNode::prev = 0;
+    if ((flag & 1) != 0) {
+        delete this;
+    }
+    return this;
 }
 
 /* Function start: 0x41B5D0 */
@@ -284,6 +325,11 @@ void ZBufferManager::Cleanup() {
         delete local_14;
         m_queue9c = 0;
     }
+}
+
+ZBufferManager::~ZBufferManager()
+{
+    Cleanup();
 }
 
 /* Function start: 0x41BB10 */
@@ -841,47 +887,6 @@ void ZBufferManager::UpdateScreen() {
     } while (queue->head != 0);
 }
 
-/* Function start: 0x409160 */
-void ZBQueue::Insert(void* data)
-{
-    ZBQueueNode* newNode;
-    ZBQueueNode* node;
-
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    newNode = (ZBQueueNode*)operator new(sizeof(ZBQueueNode));
-    node = 0;
-    if (newNode != 0) {
-        newNode->data = data;
-        newNode->next = 0;
-        newNode->prev = 0;
-        node = newNode;
-    }
-
-    if (current == 0) {
-        current = head;
-    }
-
-    if (head == 0) {
-        head = node;
-        tail = node;
-        current = node;
-        return;
-    }
-
-    node->prev = current;
-    node->next = current->next;
-    if (current->next == 0) {
-        head = node;
-        current->next = node;
-    } else {
-        current->next->prev = node;
-        current->next = node;
-    }
-}
-
 /* Function start: 0x41CB40 */
 void ZBQueue::InsertBeforeCurrent(void* data)
 {
@@ -920,18 +925,6 @@ void ZBQueue::InsertBeforeCurrent(void* data)
     }
 }
 
-/* Function start: 0x4189A0 */
-void* ZBQueueNode::Cleanup(int flag)
-{
-    ZBQueueNode::data = 0;
-    ZBQueueNode::next = 0;
-    ZBQueueNode::prev = 0;
-    if ((flag & 1) != 0) {
-        delete this;
-    }
-    return this;
-}
-
 /* Function start: 0x41CCE0 */
 void* ZBQueueNode::CleanupNode(int flag)
 {
@@ -943,4 +936,3 @@ void* ZBQueueNode::CleanupNode(int flag)
     }
     return this;
 }
-

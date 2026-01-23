@@ -6,52 +6,6 @@
 #include "Message.h"
 #include "SC_Question.h"
 
-/* Function start: 0x40D2A0 */
-TimedEventPool::~TimedEventPool()
-{
-    PooledEvent* node;
-    SC_Message* msg;
-    int counter;
-    int tmp;
-    PooledEvent* poolBlock;
-    PooledEvent* nextBlock;
-
-    // Iterate through active events list (linked via next pointer)
-    node = list.head;
-    if (node != 0) {
-        do {
-            // Get embedded SC_Message at offset +8 (field_0x8)
-            msg = (SC_Message*)&node->field_0x8;
-            counter = 0;
-            do {
-                // Call SC_Message destructor
-                msg->~SC_Message();
-                msg = (SC_Message*)((char*)msg + 0xc0);
-                tmp = counter;
-                counter--;
-            } while (tmp != 0);
-            node = (PooledEvent*)node->next;
-        } while (node != 0);
-    }
-
-    // Clear pool state fields
-    m_count = 0;
-    m_free_list = 0;
-    list.tail = 0;
-    list.head = 0;
-
-    // Free pool memory blocks (linked at offset 0x10)
-    poolBlock = m_pool;
-    if (poolBlock != 0) {
-        do {
-            nextBlock = (PooledEvent*)poolBlock->next;
-            FreeMemory(poolBlock);
-            poolBlock = nextBlock;
-        } while (poolBlock != 0);
-    }
-    m_pool = 0;
-}
-
 /* Function start: 0x402310 */
 PooledEvent* PooledEvent::CopyFrom(const PooledEvent* other)
 {
@@ -140,6 +94,217 @@ done:
         if (tmp != 0) goto loop;
     }
     return esi;
+}
+
+/* Function start: 0x4024D0 */
+void Queue::Insert(void* data)
+{
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+
+    QueueNode* newNode = new QueueNode(data);
+    QueueNode* node = 0;
+    if (newNode != 0) {
+        node = newNode;
+    }
+
+    if (m_current == 0) {
+        m_current = m_head;
+    }
+
+    if (m_head == 0) {
+        m_head = node;
+        m_tail = node;
+        m_current = node;
+    }
+    else {
+        node->next = (QueueNode*)m_current;
+        node->prev = ((QueueNode*)m_current)->prev;
+        if (((QueueNode*)m_current)->prev == 0) {
+            m_head = node;
+        }
+        else {
+            ((QueueNode*)((QueueNode*)m_current)->prev)->next = node;
+        }
+        ((QueueNode*)m_current)->prev = node;
+    }
+}
+
+/* Function start: 0x4025A0 */
+void Queue::Push(void* data)
+{
+    if (data == 0) {
+        ShowError("queue fault 0112");
+    }
+
+    QueueNode* newNode = new QueueNode(data);
+    QueueNode* node;
+    if (newNode == 0) {
+        node = 0;
+    }
+    else {
+        node = newNode;
+    }
+
+    if (m_current == 0) {
+        m_current = m_tail;
+    }
+
+    if (m_head == 0) {
+        m_head = node;
+        m_tail = node;
+        m_current = node;
+    }
+    else {
+        if (m_tail == 0 || ((QueueNode*)m_tail)->next != 0) {
+            ShowError("queue fault 0113");
+        }
+        node->next = 0;
+        node->prev = (QueueNode*)m_tail;
+        ((QueueNode*)m_tail)->next = node;
+        m_tail = node;
+    }
+}
+
+/* Function start: 0x402680 */
+void* Queue::Pop()
+{
+    QueueNode* node = (QueueNode*)m_current;
+    if (node == 0) {
+        return 0;
+    }
+
+    if (m_head == node) {
+        m_head = node->next;
+    }
+    if (m_tail == node) {
+        m_tail = node->prev;
+    }
+
+    if (node->prev != 0) {
+        node->prev->next = node->next;
+    }
+
+    QueueNode* nextNode = ((QueueNode*)m_current)->next;
+    if (nextNode != 0) {
+        nextNode->prev = ((QueueNode*)m_current)->prev;
+    }
+
+    QueueNode* curr = (QueueNode*)m_current;
+    void* data = 0;
+    if (curr != 0) {
+        data = curr->data;
+        curr->data = 0;
+        curr->prev = 0;
+        curr->next = 0;
+        FreeMemory(curr);
+        m_current = 0;
+    }
+
+    m_current = m_head;
+    return data;
+}
+
+/* Function start: 0x402700 */
+void* Queue::Destroy(int free_memory)
+{
+    m_current = 0;
+    m_head = 0;
+    m_tail = 0;
+    if (free_memory & 1) {
+        FreeMemory(this);
+    }
+    return this;
+}
+
+/* Function start: 0x408790 */
+void Queue::InsertAtCurrent(void* data)
+{
+    QueueNode* node;
+
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+
+    node = new QueueNode(data);
+
+    if (m_current == 0) {
+        m_current = m_head;
+    }
+
+    if (m_head == 0) {
+        m_head = node;
+        m_tail = node;
+        m_current = node;
+    }
+    else {
+        node->next = (QueueNode*)m_current;
+        node->prev = ((QueueNode*)m_current)->prev;
+        if (((QueueNode*)m_current)->prev == 0) {
+            m_head = node;
+        }
+        else {
+            ((QueueNode*)((QueueNode*)m_current)->prev)->next = node;
+        }
+        ((QueueNode*)m_current)->prev = node;
+    }
+}
+
+/* Function start: 0x40D2A0 */
+TimedEventPool::~TimedEventPool()
+{
+    PooledEvent* node;
+    SC_Message* msg;
+    int counter;
+    int tmp;
+    PooledEvent* poolBlock;
+    PooledEvent* nextBlock;
+
+    // Iterate through active events list (linked via next pointer)
+    node = list.head;
+    if (node != 0) {
+        do {
+            // Get embedded SC_Message at offset +8 (field_0x8)
+            msg = (SC_Message*)&node->field_0x8;
+            counter = 0;
+            do {
+                // Call SC_Message destructor
+                msg->~SC_Message();
+                msg = (SC_Message*)((char*)msg + 0xc0);
+                tmp = counter;
+                counter--;
+            } while (tmp != 0);
+            node = (PooledEvent*)node->next;
+        } while (node != 0);
+    }
+
+    // Clear pool state fields
+    m_count = 0;
+    m_free_list = 0;
+    list.tail = 0;
+    list.head = 0;
+
+    // Free pool memory blocks (linked at offset 0x10)
+    poolBlock = m_pool;
+    if (poolBlock != 0) {
+        do {
+            nextBlock = (PooledEvent*)poolBlock->next;
+            FreeMemory(poolBlock);
+            poolBlock = nextBlock;
+        } while (poolBlock != 0);
+    }
+    m_pool = 0;
+}
+
+/* Function start: 0x417680 */
+void* Queue::GetCurrentData()
+{
+    QueueNode* node = (QueueNode*)m_current;
+    if (node != 0) {
+        return node->data;
+    }
+    return 0;
 }
 
 /* Function start: 0x417C50 */
@@ -283,170 +448,4 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     local_1c |= 1;
     
     return buffer;
-}
-
-
-/* Function start: 0x4024D0 */
-void Queue::Insert(void* data)
-{
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    QueueNode* newNode = new QueueNode(data);
-    QueueNode* node = 0;
-    if (newNode != 0) {
-        node = newNode;
-    }
-
-    if (m_current == 0) {
-        m_current = m_head;
-    }
-
-    if (m_head == 0) {
-        m_head = node;
-        m_tail = node;
-        m_current = node;
-    }
-    else {
-        node->next = (QueueNode*)m_current;
-        node->prev = ((QueueNode*)m_current)->prev;
-        if (((QueueNode*)m_current)->prev == 0) {
-            m_head = node;
-        }
-        else {
-            ((QueueNode*)((QueueNode*)m_current)->prev)->next = node;
-        }
-        ((QueueNode*)m_current)->prev = node;
-    }
-}
-
-/* Function start: 0x4025A0 */
-void Queue::Push(void* data)
-{
-    if (data == 0) {
-        ShowError("queue fault 0112");
-    }
-
-    QueueNode* newNode = new QueueNode(data);
-    QueueNode* node;
-    if (newNode == 0) {
-        node = 0;
-    }
-    else {
-        node = newNode;
-    }
-
-    if (m_current == 0) {
-        m_current = m_tail;
-    }
-
-    if (m_head == 0) {
-        m_head = node;
-        m_tail = node;
-        m_current = node;
-    }
-    else {
-        if (m_tail == 0 || ((QueueNode*)m_tail)->next != 0) {
-            ShowError("queue fault 0113");
-        }
-        node->next = 0;
-        node->prev = (QueueNode*)m_tail;
-        ((QueueNode*)m_tail)->next = node;
-        m_tail = node;
-    }
-}
-
-/* Function start: 0x402680 */
-void* Queue::Pop()
-{
-    QueueNode* node = (QueueNode*)m_current;
-    if (node == 0) {
-        return 0;
-    }
-
-    if (m_head == node) {
-        m_head = node->next;
-    }
-    if (m_tail == node) {
-        m_tail = node->prev;
-    }
-
-    if (node->prev != 0) {
-        node->prev->next = node->next;
-    }
-
-    QueueNode* nextNode = ((QueueNode*)m_current)->next;
-    if (nextNode != 0) {
-        nextNode->prev = ((QueueNode*)m_current)->prev;
-    }
-
-    QueueNode* curr = (QueueNode*)m_current;
-    void* data = 0;
-    if (curr != 0) {
-        data = curr->data;
-        curr->data = 0;
-        curr->prev = 0;
-        curr->next = 0;
-        FreeMemory(curr);
-        m_current = 0;
-    }
-
-    m_current = m_head;
-    return data;
-}
-
-/* Function start: 0x417680 */
-void* Queue::GetCurrentData()
-{
-    QueueNode* node = (QueueNode*)m_current;
-    if (node != 0) {
-        return node->data;
-    }
-    return 0;
-}
-
-/* Function start: 0x402700 */
-void* Queue::Destroy(int free_memory)
-{
-    m_current = 0;
-    m_head = 0;
-    m_tail = 0;
-    if (free_memory & 1) {
-        FreeMemory(this);
-    }
-    return this;
-}
-
-/* Function start: 0x408790 */
-void Queue::InsertAtCurrent(void* data)
-{
-    QueueNode* node;
-
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    node = new QueueNode(data);
-
-    if (m_current == 0) {
-        m_current = m_head;
-    }
-
-    if (m_head == 0) {
-        m_head = node;
-        m_tail = node;
-        m_current = node;
-    }
-    else {
-        node->next = (QueueNode*)m_current;
-        node->prev = ((QueueNode*)m_current)->prev;
-        if (((QueueNode*)m_current)->prev == 0) {
-            m_head = node;
-        }
-        else {
-            ((QueueNode*)((QueueNode*)m_current)->prev)->next = node;
-        }
-        ((QueueNode*)m_current)->prev = node;
-    }
 }

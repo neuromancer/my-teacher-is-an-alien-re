@@ -91,6 +91,41 @@ Engine::Engine() {
   Engine::Initialize();
 }
 
+/* Function start: 0x411320 */
+void Engine::StopAndCleanup() {
+  g_Sound_0043696c->StopAllSamples();
+  VirtCleanup();
+}
+
+/* Function start: 0x411340 */
+int Engine::UpdateAndCheck() {
+  int result;
+
+  result = VirtCheck1();
+  if (result != 0) {
+    return 1;
+  }
+
+  VirtUpdate();
+
+  result = ((mCNavigator*)DAT_00435f24)->Update();
+  if (result != 0) {
+    return 1;
+  }
+
+  result = VirtCheck2();
+  if (result != 0) {
+    return 1;
+  }
+
+  VirtProcess();
+
+  Engine::m_framesA++;
+  Engine::m_framesL++;
+
+  return 0;
+}
+
 /* Function start: 0x411550 */
 void Engine::Initialize() {
   Engine::m_subParser = new EngineInfoParser();
@@ -164,41 +199,6 @@ int Engine::LBLParse(char* line) {
   else {
     Parser::LBLParse("Engine");
   }
-  return 0;
-}
-
-/* Function start: 0x411320 */
-void Engine::StopAndCleanup() {
-  g_Sound_0043696c->StopAllSamples();
-  VirtCleanup();
-}
-
-/* Function start: 0x411340 */
-int Engine::UpdateAndCheck() {
-  int result;
-
-  result = VirtCheck1();
-  if (result != 0) {
-    return 1;
-  }
-
-  VirtUpdate();
-
-  result = ((mCNavigator*)DAT_00435f24)->Update();
-  if (result != 0) {
-    return 1;
-  }
-
-  result = VirtCheck2();
-  if (result != 0) {
-    return 1;
-  }
-
-  VirtProcess();
-
-  Engine::m_framesA++;
-  Engine::m_framesL++;
-
   return 0;
 }
 

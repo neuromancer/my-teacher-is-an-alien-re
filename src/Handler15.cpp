@@ -86,17 +86,6 @@ void Handler15::Init(SC_Message* msg) {
     }
 }
 
-int Handler15::Update(SC_Message* msg) {
-    return 0;
-}
-
-/* Function start: 0x40A7C0 */
-int Handler15::HandleMessage(SC_Message* msg) {
-    WriteMessageAddress(msg);
-    WriteToMessageLog("SC_OnScreenMessage::AddMessage");
-    return 1;
-}
-
 /* Function start: 0x40A5E0 */
 void Handler15::Draw(int param1, int param2) {
     MessageNode* node;
@@ -188,6 +177,17 @@ check_timer:
     if (handlerId == param2) {
         WriteToMessageLog("SC_OnScreenMessage::Update");
     }
+}
+
+int Handler15::Update(SC_Message* msg) {
+    return 0;
+}
+
+/* Function start: 0x40A7C0 */
+int Handler15::HandleMessage(SC_Message* msg) {
+    WriteMessageAddress(msg);
+    WriteToMessageLog("SC_OnScreenMessage::AddMessage");
+    return 1;
 }
 
 /* Function start: 0x40A7E0 */

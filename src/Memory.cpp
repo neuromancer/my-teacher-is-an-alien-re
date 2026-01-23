@@ -1,9 +1,6 @@
 #include "Memory.h"
 #include <windows.h>
 
-extern "C" {
-}
-
 extern HANDLE DAT_0043eff0;
 extern int (*g_OutOfMemoryCallback)(unsigned int);
 
@@ -16,8 +13,28 @@ void operator delete(void* ptr) {
     FreeMemory(ptr);
 }
 
+/* Function start: 0x424940 */
+void FreeMemory(void* ptr)
+{
+    FreeFromGlobalHeap(ptr);
+}
+
 /* Function start: 0x4249C0 */
 void* AllocateMemory(unsigned int size)
+{
+    return AllocateMemoryInternal(size, 1);
+}
+
+/* Function start: 0x4277E0 */
+void FreeFromGlobalHeap(void* ptr)
+{
+    if (ptr != 0) {
+        HeapFree(DAT_0043eff0, 0, ptr);
+    }
+}
+
+/* Function start: 0x428440 */
+void* FUN_00428440(unsigned int size)
 {
     return AllocateMemoryInternal(size, 1);
 }
@@ -46,12 +63,6 @@ void* AllocateMemoryInternal(unsigned int size, int flag)
     return 0;
 }
 
-/* Function start: 0x424940 */
-void FreeMemory(void* ptr)
-{
-    FreeFromGlobalHeap(ptr);
-}
-
 /* Function start: 0x4284A0 */
 void* HeapAllocWrapper(unsigned int size)
 {
@@ -71,21 +82,6 @@ int OutOfMemoryHandler(unsigned int size)
         }
     }
     return 0;
-}
-
-
-/* Function start: 0x4277E0 */
-void FreeFromGlobalHeap(void* ptr)
-{
-    if (ptr != 0) {
-        HeapFree(DAT_0043eff0, 0, ptr);
-    }
-}
-
-/* Function start: 0x428440 */
-void* FUN_00428440(unsigned int size)
-{
-    return AllocateMemoryInternal(size, 1);
 }
 
 // Wrapper used by menu/UI code

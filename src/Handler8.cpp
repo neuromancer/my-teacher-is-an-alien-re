@@ -11,6 +11,10 @@
 extern "C" int FileExists(const char* filename);
 extern void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
 
+// Forward declarations
+void* __stdcall ExpandPool(void** pool, int capacity, int itemSize);
+void InitMessageArray(int* param_1, int param_2);
+
 // Message queue structures
 // Queue item is 0xc8 (200) bytes
 struct MessageQueueItem {
@@ -41,64 +45,6 @@ struct MessageQueue {
     void* poolBase;          // 0x10
     int poolCapacity;        // 0x14
 };
-
-/* Function start: 0x4065E0 */
-void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
-{
-    void** block;
-
-    block = (void**)new char[capacity * itemSize + 4];
-    *block = *pool;
-    *pool = block;
-    return block;
-}
-
-/* Function start: 0x406610 */
-Parser* Parser::CopyParserFields(Parser* src)
-{
-    unsigned int i;
-
-    Parser::m_subObject = src->m_subObject;
-    Parser::isProcessingKey = src->isProcessingKey;
-    i = 0;
-    do {
-        Parser::currentKey[i] = src->currentKey[i];
-        i++;
-    } while (i < 0x20);
-    Parser::lineNumber = src->lineNumber;
-    Parser::savedFilePos = src->savedFilePos;
-    Parser::field_0x3c = src->field_0x3c;
-    i = 0;
-    do {
-        Parser::filename[i] = src->filename[i];
-        i++;
-    } while (i < 0x40);
-    Parser::pFile = src->pFile;
-    return this;
-}
-
-/* Function start: 0x406670 */
-void InitMessageArray(int* param_1, int param_2)
-{
-    int* ptr;
-    int count;
-
-    ptr = param_1;
-    memset(ptr, 0, (unsigned int)(param_2 << 6) * 3);
-
-    count = param_2;
-    param_2 = count - 1;
-    if (count != 0) {
-        do {
-            if (ptr != 0) {
-                ((SC_Message*)ptr)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            }
-            ptr = (int*)((char*)ptr + 0xC0);
-            count = param_2;
-            param_2--;
-        } while (count != 0);
-    }
-}
 
 /* Function start: 0x406120 */
 Handler8::Handler8() {
@@ -252,4 +198,62 @@ void Handler8::ProcessMessage() {
         return;
     }
     SC_Message_Send(field_90, field_94, handlerId, field_8C, 5, 0, 0, 0, 0, 0);
+}
+
+/* Function start: 0x4065E0 */
+void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
+{
+    void** block;
+
+    block = (void**)new char[capacity * itemSize + 4];
+    *block = *pool;
+    *pool = block;
+    return block;
+}
+
+/* Function start: 0x406610 */
+Parser* Parser::CopyParserFields(Parser* src)
+{
+    unsigned int i;
+
+    Parser::m_subObject = src->m_subObject;
+    Parser::isProcessingKey = src->isProcessingKey;
+    i = 0;
+    do {
+        Parser::currentKey[i] = src->currentKey[i];
+        i++;
+    } while (i < 0x20);
+    Parser::lineNumber = src->lineNumber;
+    Parser::savedFilePos = src->savedFilePos;
+    Parser::field_0x3c = src->field_0x3c;
+    i = 0;
+    do {
+        Parser::filename[i] = src->filename[i];
+        i++;
+    } while (i < 0x40);
+    Parser::pFile = src->pFile;
+    return this;
+}
+
+/* Function start: 0x406670 */
+void InitMessageArray(int* param_1, int param_2)
+{
+    int* ptr;
+    int count;
+
+    ptr = param_1;
+    memset(ptr, 0, (unsigned int)(param_2 << 6) * 3);
+
+    count = param_2;
+    param_2 = count - 1;
+    if (count != 0) {
+        do {
+            if (ptr != 0) {
+                ((SC_Message*)ptr)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            }
+            ptr = (int*)((char*)ptr + 0xC0);
+            count = param_2;
+            param_2--;
+        } while (count != 0);
+    }
 }

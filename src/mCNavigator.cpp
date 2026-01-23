@@ -47,42 +47,6 @@ Sprite* g_Sprite_004360a0 = 0;
 
 
 
-/* Function start: 0x413C80 */
-void* ObjectPool::Allocate_2()
-{
-    if (freeList == 0) {
-        int* p = (int*)AllocateMemory(objectSize * 0x10 + 4);
-        *p = (int)memoryBlock;
-        memoryBlock = p;
-
-        int i = objectSize;
-        int offset = i * 0x10;
-        i--;
-        p = (int*)((char*)p + offset - 0xc);
-        if (i >= 0) {
-            do {
-                int prev = (int)freeList;
-                i--;
-                *p = prev;
-                freeList = p;
-                p = p - 4;
-            } while (i >= 0);
-        }
-    }
-
-    int* p = (int*)freeList;
-    freeList = (void*)*p;
-    allocatedCount++;
-    int n = 0;
-    p[2] = n;
-    while (n--)
-        ;
-    n = 0;
-    p[3] = n;
-    while (n--)
-        ;
-    return p;
-}
 
 /* Function start: 0x413670 */
 mCNavigator::mCNavigator()
@@ -193,50 +157,7 @@ void mCNavigator::SetCurrentNode()
     }
 }
 
-/* Function start: 0x413BC0 */
-int mCNavigator::Update()
-{
-    unsigned int hash;
 
-    if (currentNode == 0) {
-        return 0;
-    }
-
-    int result = ((mCNavNode*)currentNode)->Update();
-    if (result == 1) {
-        int nextNodeId = ((mCNavNode*)currentNode)->GetNextNode();
-        field_A0 = ((Hotspot*)currentNode)->field_DC;
-
-        hash = ((unsigned int)nextNodeId >> 4) % navNodePool->size;
-
-        NavNode* node = 0;
-        if (navNodePool->memory) {
-            node = ((NavNode**)navNodePool->memory)[hash];
-        }
-
-        while (node) {
-            if (node->field_8 == nextNodeId) {
-                break;
-            }
-            node = node->next;
-        }
-
-        if (node == 0) {
-            return 2;
-        }
-
-        currentNode = node->field_C;
-        return 0;
-    }
-
-    if (result != 3) {
-        if (result != 2) {
-            return 0;
-        }
-    }
-    *DAT_00435f28 = 2;
-    return result;
-}
 
 /* Function start: 0x4138c0 */
 int mCNavigator::LBLParse(char* param_1)
@@ -345,4 +266,86 @@ int mCNavigator::LBLParse(char* param_1)
     }
 
     return 0;
+}
+
+/* Function start: 0x413BC0 */
+int mCNavigator::Update()
+{
+    unsigned int hash;
+
+    if (currentNode == 0) {
+        return 0;
+    }
+
+    int result = ((mCNavNode*)currentNode)->Update();
+    if (result == 1) {
+        int nextNodeId = ((mCNavNode*)currentNode)->GetNextNode();
+        field_A0 = ((Hotspot*)currentNode)->field_DC;
+
+        hash = ((unsigned int)nextNodeId >> 4) % navNodePool->size;
+
+        NavNode* node = 0;
+        if (navNodePool->memory) {
+            node = ((NavNode**)navNodePool->memory)[hash];
+        }
+
+        while (node) {
+            if (node->field_8 == nextNodeId) {
+                break;
+            }
+            node = node->next;
+        }
+
+        if (node == 0) {
+            return 2;
+        }
+
+        currentNode = node->field_C;
+        return 0;
+    }
+
+    if (result != 3) {
+        if (result != 2) {
+            return 0;
+        }
+    }
+    *DAT_00435f28 = 2;
+    return result;
+}
+
+/* Function start: 0x413C80 */
+void* ObjectPool::Allocate_2()
+{
+    if (freeList == 0) {
+        int* p = (int*)AllocateMemory(objectSize * 0x10 + 4);
+        *p = (int)memoryBlock;
+        memoryBlock = p;
+
+        int i = objectSize;
+        int offset = i * 0x10;
+        i--;
+        p = (int*)((char*)p + offset -  0xc);
+        if (i >= 0) {
+            do {
+                int prev = (int)freeList;
+                i--;
+                *p = prev;
+                freeList = p;
+                p = p - 4;
+            } while (i >= 0);
+        }
+    }
+
+    int* p = (int*)freeList;
+    freeList = (void*)*p;
+    allocatedCount++;
+    int n = 0;
+    p[2] = n;
+    while (n--)
+        ;
+    n = 0;
+    p[3] = n;
+    while (n--)
+        ;
+    return p;
 }

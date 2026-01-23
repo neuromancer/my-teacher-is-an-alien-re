@@ -144,45 +144,6 @@ void MouseControl::Init()
     field_0x8c = field_0x8c | 0x2000;
 }
 
-/* Function start: 0x41F800 */
-int MouseControl::DoAll()
-{
-    Queue* queue;
-    QueueNode* current;
-    Sprite* sprite;
-    int result;
-
-    field_0x90 = 1;
-    if ((field_0x8c & 0x2000) == 0) {
-        Init();
-    }
-    queue = m_queue;
-    queue->m_current = queue->m_head;
-    if (queue->m_head != 0) {
-        do {
-            current = (QueueNode*)queue->m_current;
-            sprite = 0;
-            if (current != 0) {
-                sprite = (Sprite*)current->data;
-            }
-            result = sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-            if (result != 0) {
-                field_0x90 = 0;
-            }
-
-            queue = m_queue;
-            current = (QueueNode*)queue->m_current;
-            if (queue->m_tail == current) {
-                break;
-            }
-            if (current != 0) {
-                queue->m_current = current->next;
-            }
-        } while (queue->m_head != 0);
-    }
-    return field_0x90;
-}
-
 /* Function start: 0x41F560 */
 void MouseControl::AddSprite(Sprite* s)
 {
@@ -235,6 +196,45 @@ void MouseControl::AddSprite(Sprite* s)
     } else {
         queue->Insert(s);
     }
+}
+
+/* Function start: 0x41F800 */
+int MouseControl::DoAll()
+{
+    Queue* queue;
+    QueueNode* current;
+    Sprite* sprite;
+    int result;
+
+    field_0x90 = 1;
+    if ((field_0x8c & 0x2000) == 0) {
+        Init();
+    }
+    queue = m_queue;
+    queue->m_current = queue->m_head;
+    if (queue->m_head != 0) {
+        do {
+            current = (QueueNode*)queue->m_current;
+            sprite = 0;
+            if (current != 0) {
+                sprite = (Sprite*)current->data;
+            }
+            result = sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+            if (result != 0) {
+                field_0x90 = 0;
+            }
+
+            queue = m_queue;
+            current = (QueueNode*)queue->m_current;
+            if (queue->m_tail == current) {
+                break;
+            }
+            if (current != 0) {
+                queue->m_current = current->next;
+            }
+        } while (queue->m_head != 0);
+    }
+    return field_0x90;
 }
 
 /* Function start: 0x41F8A0 */

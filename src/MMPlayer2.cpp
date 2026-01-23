@@ -10,28 +10,6 @@ extern "C" {
     void ShowError(const char*, ...);
 }
 
-/* Function start: 0x409030 */
-int MMPlayer2::LBLParse(char* param_1)
-{
-    char local_34[32];
-    
-    sscanf(param_1, " %s ", local_34);
-    
-    if (_strcmpi(local_34, "SPRITE") == 0) {
-        Sprite* s = new Sprite(0);
-        Parser::ProcessFile(s, this, 0);
-        AddSprite(s);
-    }
-    else if (_strcmpi(local_34, "END") == 0) {
-        return 1;
-    }
-    else {
-        return Parser::LBLParse("MMPlayer2");
-    }
-    
-    return 0;
-}
-
 /* Function start: 0x408C40 */
 void MMPlayer2::AddSprite(Sprite* s)
 {
@@ -78,4 +56,26 @@ void MMPlayer2::AddSprite(Sprite* s)
             list->Insert(s);
         }
     }
+}
+
+/* Function start: 0x409030 */
+int MMPlayer2::LBLParse(char* param_1)
+{
+    char local_34[32];
+    
+    sscanf(param_1, " %s ", local_34);
+    
+    if (_strcmpi(local_34, "SPRITE") == 0) {
+        Sprite* s = new Sprite(0);
+        Parser::ProcessFile(s, this, 0);
+        AddSprite(s);
+    }
+    else if (_strcmpi(local_34, "END") == 0) {
+        return 1;
+    }
+    else {
+        return Parser::LBLParse("MMPlayer2");
+    }
+    
+    return 0;
 }

@@ -11,8 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
-
 /* Function start: 0x4066D0 */
 SC_Question::SC_Question(int id)
 {
@@ -193,90 +191,6 @@ void SC_Question::Finalize()
             FreeMemory(msgData);
         }
     } while (messageQueue->m_head != 0);
-}
-
-/* Function start: 0x4199A0 */
-SC_Message::~SC_Message()
-{
-}
-
-/* Function start: 0x4198C0 */
-SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY)
-{
-    this->targetAddress = targetAddress;
-    this->sourceAddress = sourceAddress;
-    this->command = command;
-    this->data = data;
-    this->priority = priority;
-    this->param1 = param1;
-    this->param2 = param2;
-    this->userPtr = userPtr;
-    this->clickX = clickX;
-    this->clickY = clickY;
-}
-
-/* Function start: 0x419FD0 */
-void SC_Message::Dump(int unused)
-{
-    int targetAddr;
-    int srcAddr;
-    const char* str1;
-    const char* str2;
-    
-    // Log ADDRESS field
-    // EDI = targetAddress, EAX = sourceAddress
-    targetAddr = targetAddress;
-    srcAddr = sourceAddress;
-    if (targetAddr == 5) {
-        str1 = g_GameState_00436998->GetState(srcAddr);
-        str2 = g_GameState3_0043699c->GetState(targetAddr);
-        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %s", str2, str1);
-    } else {
-        str1 = g_GameState3_0043699c->GetState(targetAddr);
-        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %d", str1, srcAddr);
-    }
-    
-    // Log FROM field
-    // EDI = command, EAX = data
-    targetAddr = command;
-    srcAddr = data;
-    if (targetAddr == 5) {
-        str1 = g_GameState_00436998->GetState(srcAddr);
-        str2 = g_GameState3_0043699c->GetState(targetAddr);
-        WriteToMessageLog("\t\t\tFROM\t\t%s  %s", str2, str1);
-    } else {
-        str1 = g_GameState3_0043699c->GetState(targetAddr);
-        WriteToMessageLog("\t\t\tFROM\t\t%s  %d", str1, srcAddr);
-    }
-    
-    // Log INSTRUCTION field
-    str1 = g_GameState4_004369a0->GetState(priority);
-    WriteToMessageLog("\t\t\tINSTRUCTION\t%s", str1);
-    
-    // Log MOUSE field (clickX=0xa4, clickY=0xa8)
-    WriteToMessageLog("\t\t\tMOUSE\t\t%d\t%d", clickX, clickY);
-    
-    // Log optional fields
-    if (mouseX != 0) {
-        WriteToMessageLog("\t\t\tBUTTON1\t\t%d", mouseX);
-    }
-    if (mouseY != 0) {
-        WriteToMessageLog("\t\t\tBUTTON2\t\t%d", mouseY);
-    }
-    if (field_b4 != 0) {
-        WriteToMessageLog("\t\t\tLASTKEY\t\t%d", field_b4);
-    }
-    if (field_b8 != 0) {
-        WriteToMessageLog("\t\t\tTIME\t\t%lu", field_b8);
-    }
-    if (param1 != 0) {
-        WriteToMessageLog("\t\t\tEXTRA1\t\t%lu", param1);
-    }
-    if (param2 != 0) {
-        WriteToMessageLog("\t\t\tEXTRA2\t\t%lu", param2);
-    }
-    
-    WriteToMessageLog("\t\tEND\t\t//message");
 }
 
 /* Function start: 0x406AF0 */
@@ -475,4 +389,88 @@ void SC_Question::DumpMessageQueue(int unused)
     }
     
     WriteToMessageLog("end queue dump");
+}
+
+/* Function start: 0x4198C0 */
+SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY)
+{
+    this->targetAddress = targetAddress;
+    this->sourceAddress = sourceAddress;
+    this->command = command;
+    this->data = data;
+    this->priority = priority;
+    this->param1 = param1;
+    this->param2 = param2;
+    this->userPtr = userPtr;
+    this->clickX = clickX;
+    this->clickY = clickY;
+}
+
+/* Function start: 0x4199A0 */
+SC_Message::~SC_Message()
+{
+}
+
+/* Function start: 0x419FD0 */
+void SC_Message::Dump(int unused)
+{
+    int targetAddr;
+    int srcAddr;
+    const char* str1;
+    const char* str2;
+    
+    // Log ADDRESS field
+    // EDI = targetAddress, EAX = sourceAddress
+    targetAddr = targetAddress;
+    srcAddr = sourceAddress;
+    if (targetAddr == 5) {
+        str1 = g_GameState_00436998->GetState(srcAddr);
+        str2 = g_GameState3_0043699c->GetState(targetAddr);
+        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %s", str2, str1);
+    } else {
+        str1 = g_GameState3_0043699c->GetState(targetAddr);
+        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %d", str1, srcAddr);
+    }
+    
+    // Log FROM field
+    // EDI = command, EAX = data
+    targetAddr = command;
+    srcAddr = data;
+    if (targetAddr == 5) {
+        str1 = g_GameState_00436998->GetState(srcAddr);
+        str2 = g_GameState3_0043699c->GetState(targetAddr);
+        WriteToMessageLog("\t\t\tFROM\t\t%s  %s", str2, str1);
+    } else {
+        str1 = g_GameState3_0043699c->GetState(targetAddr);
+        WriteToMessageLog("\t\t\tFROM\t\t%s  %d", str1, srcAddr);
+    }
+    
+    // Log INSTRUCTION field
+    str1 = g_GameState4_004369a0->GetState(priority);
+    WriteToMessageLog("\t\t\tINSTRUCTION\t%s", str1);
+    
+    // Log MOUSE field (clickX=0xa4, clickY=0xa8)
+    WriteToMessageLog("\t\t\tMOUSE\t\t%d\t%d", clickX, clickY);
+    
+    // Log optional fields
+    if (mouseX != 0) {
+        WriteToMessageLog("\t\t\tBUTTON1\t\t%d", mouseX);
+    }
+    if (mouseY != 0) {
+        WriteToMessageLog("\t\t\tBUTTON2\t\t%d", mouseY);
+    }
+    if (field_b4 != 0) {
+        WriteToMessageLog("\t\t\tLASTKEY\t\t%d", field_b4);
+    }
+    if (field_b8 != 0) {
+        WriteToMessageLog("\t\t\tTIME\t\t%lu", field_b8);
+    }
+    if (param1 != 0) {
+        WriteToMessageLog("\t\t\tEXTRA1\t\t%lu", param1);
+    }
+    if (param2 != 0) {
+        WriteToMessageLog("\t\t\tEXTRA2\t\t%lu", param2);
+    }
+    
+    WriteToMessageLog("\t\tEND\t\t//message");
 }

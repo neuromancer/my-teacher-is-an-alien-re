@@ -389,6 +389,37 @@ void Handler4::ResetPuzzle() {
     }
 }
 
+/* Function start: 0x40F370 */
+void Handler4::PlaySound(int index, int loop) {
+    char filename[48];
+
+    // Range check
+    if (index < 0 || index > 9) {
+        if (index != 9) {
+            ShowError("%d is out of sound array range", index);
+        }
+    }
+
+    // Stop current sound
+    if (sound1 != 0) {
+        sound1->Stop();
+        if (sound1 != 0) {
+            sound1->Unload();
+            delete sound1;
+            sound1 = 0;
+        }
+    }
+
+    // Play new sound if state allows
+    if (soundStates[index] != 0) {
+        sprintf(filename, "audio\\snd%4.4d.wav", index + 11);
+        soundStates[index] = loop;
+        sound1 = new Sample();
+        sound1->Load(filename);
+        sound1->Play(100, 1);
+    }
+}
+
 /* Function start: 0x40F490 */
 void Handler4::DisplayButtons() {
     int i;
@@ -507,36 +538,5 @@ void Handler4::DisplayFloors() {
     for (i = 0; i < 3; i++) {
         floor = (&lowfloor)[i];
         floor->Do(floor->loc_x, floor->loc_y, 1.0);
-    }
-}
-
-/* Function start: 0x40F370 */
-void Handler4::PlaySound(int index, int loop) {
-    char filename[48];
-
-    // Range check
-    if (index < 0 || index > 9) {
-        if (index != 9) {
-            ShowError("%d is out of sound array range", index);
-        }
-    }
-
-    // Stop current sound
-    if (sound1 != 0) {
-        sound1->Stop();
-        if (sound1 != 0) {
-            sound1->Unload();
-            delete sound1;
-            sound1 = 0;
-        }
-    }
-
-    // Play new sound if state allows
-    if (soundStates[index] != 0) {
-        sprintf(filename, "audio\\snd%4.4d.wav", index + 11);
-        soundStates[index] = loop;
-        sound1 = new Sample();
-        sound1->Load(filename);
-        sound1->Play(100, 1);
     }
 }

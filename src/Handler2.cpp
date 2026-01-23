@@ -67,16 +67,6 @@ void Handler2::Init(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x40FA90 */
-int Handler2::HandleMessage(SC_Message* msg) {
-    Handler2::WriteMessageAddress(msg);
-    if (msg->mouseX >= 2) {
-        msg->command = 3;
-        msg->priority = 6;
-    }
-    return 1;
-}
-
 /* Function start: 0x40FA30 */
 int Handler2::Update(SC_Message* msg) {
     if (sprite != 0) {
@@ -89,6 +79,21 @@ int Handler2::Update(SC_Message* msg) {
     }
     WriteToMessageLogIfEnabled(L"EXIT TEACHER SCREEN TO LEAVE\n");
     return 0;
+}
+
+/* Function start: 0x40FA90 */
+int Handler2::HandleMessage(SC_Message* msg) {
+    Handler2::WriteMessageAddress(msg);
+    if (msg->mouseX >= 2) {
+        msg->command = 3;
+        msg->priority = 6;
+    }
+    return 1;
+}
+
+/* Function start: 0x40FAD0 */
+int Handler2::Exit(SC_Message* msg) {
+    return handlerId <= msg->targetAddress;
 }
 
 /* Function start: 0x40FAF0 */
@@ -119,10 +124,5 @@ void Handler2::Draw(int param1, int param2) {
             }
         }
     }
-}
-
-/* Function start: 0x40FAD0 */
-int Handler2::Exit(SC_Message* msg) {
-    return handlerId <= msg->targetAddress;
 }
 
