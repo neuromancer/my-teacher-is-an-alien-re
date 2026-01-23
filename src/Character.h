@@ -2,6 +2,7 @@
 #define CHARACTER_H
 
 #include <windows.h>
+#include "GlyphRect.h"
 
 // Forward declarations
 struct CharSprite;
@@ -34,7 +35,7 @@ struct CharSprite {
     char name[64];              // +0x04 - name/label string
     int priority;               // +0x44
     int field_48;               // +0x48
-    RECT bounds;                // +0x4c
+    GlyphRect bounds;           // +0x4c
 
     CharSprite();               // 0x408880
 };

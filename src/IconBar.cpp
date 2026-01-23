@@ -147,6 +147,10 @@ IconBar::~IconBar() {
 IconBarButton::IconBarButton()
     : message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 {
+    bounds.left = 0;
+    bounds.top = 0;
+    bounds.right = 0;
+    bounds.bottom = 0;
 }
 
 /* Function start: 0x402D60 */

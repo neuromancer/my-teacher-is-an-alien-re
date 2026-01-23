@@ -14,58 +14,57 @@ Character::Character(char* param_1) {
     int i;
     int* ptrClear;
     PriorityQueue* pQueue;
-    PriorityQueue* queueTemp;
     CharSprite* sprite;
-    PriorityQueueNode* node;
-    PriorityQueueNode* nodeTemp;
+    PriorityQueueNode* newNode;
     int counter;
 
-    // Zero 16 dwords (0x40 bytes) starting at this
+    // Zero 64 bytes (16 dwords)
     ptrClear = (int*)this;
-    for (i = 0x10; i != 0; i--) {
+    for (i = 16; i != 0; i--) {
         *ptrClear = 0;
         ptrClear++;
     }
 
-    // Initialize queue pointers to 0
+    // Explicitly zero these members again
     queue = 0;
     field_3c = 0;
 
-    // Set character type to -1 (uninitialized)
+    // Set character type to -1
     characterType = -1;
 
-    // Allocate PriorityQueue (0x10 bytes)
-    queueTemp = (PriorityQueue*)operator new(0x10);
-    pQueue = 0;
-    if (queueTemp != 0) {
-        queueTemp->type = 0;
-        queueTemp->head = 0;
-        queueTemp->tail = 0;
-        queueTemp->current = queueTemp->head;
-        pQueue = queueTemp;
+    // Allocate PriorityQueue and initialize it manually
+    pQueue = (PriorityQueue*)operator new(0x10);
+    if (pQueue != 0) {
+        pQueue->type = 0;
+        pQueue->head = 0;
+        pQueue->tail = 0;
+        pQueue->current = pQueue->head;
+        queue = pQueue;
     }
-    queue = pQueue;
 
-    // Check for "peter"
+    // Peter block
     if (strstr(param_1, "peter") != 0) {
         counter = 0;
         characterType = 0;
 
         do {
-            // Allocate CharSprite (0x5C bytes)
             sprite = new CharSprite();
 
-            // Check queue exists
             if (queue == 0) {
                 ShowError("Missing activeQ");
             } else if (strstr(param_1, "peter") != 0) {
                 if ((unsigned int)counter <= 4) {
-                    // Copy "MEET MY" to sprite->name
-                    strcpy(sprite->name, "MEET MY");
+                    switch (counter) {
+                        case 0: strcpy(sprite->name, ""); break;
+                        case 1: strcpy(sprite->name, "MEET MY"); break;
+                        case 2: strcpy(sprite->name, "OOOO OOO OOO OOOO"); break;
+                        case 3: strcpy(sprite->name, ""); break;
+                        case 4: strcpy(sprite->name, "TESTPUZZLE"); break;
+                    }
+                    if (counter == 0) strcpy(sprite->name, "MEET MY");
                 }
             }
 
-            // Verify sprite allocated
             if (sprite == 0) {
                 ShowError("queue fault 0101");
             }
@@ -73,106 +72,71 @@ Character::Character(char* param_1) {
             pQueue = queue;
             pQueue->current = pQueue->head;
 
-            // Check queue type for priority insertion
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head == 0) {
                     pQueue->AddAfterCurrent(sprite);
                 } else {
-                    // Priority insertion loop
                     while (pQueue->current != 0) {
-                        PriorityQueueNode* curr = pQueue->current;
-
-                        // Check if sprite priority is higher
-                        if (curr->data->priority < sprite->priority) {
-                            if (sprite == 0) {
-                                ShowError("queue fault 0102");
+                        if (pQueue->current->data->priority < sprite->priority) {
+                            if (sprite == 0) ShowError("queue fault 0102");
+                            newNode = (PriorityQueueNode*)operator new(0xc);
+                            if (newNode != 0) {
+                                FUN_00404470(newNode, sprite);
                             }
-
-                            // Allocate new node
-                            nodeTemp = (PriorityQueueNode*)operator new(0xc);
-                            node = 0;
-                            if (nodeTemp != 0) {
-                                node = nodeTemp;
-                                nodeTemp->data = sprite;
-                                nodeTemp->next = 0;
-                                nodeTemp->prev = 0;
-                            }
-
-                            // Reset current if needed
-                            if (pQueue->current == 0) {
-                                pQueue->current = pQueue->head;
-                            }
-
-                            // Insert node
+                            if (pQueue->current == 0) pQueue->current = pQueue->head;
                             if (pQueue->head == 0) {
-                                pQueue->head = node;
-                                pQueue->tail = node;
-                                pQueue->current = node;
+                                pQueue->head = newNode;
+                                pQueue->tail = newNode;
+                                pQueue->current = newNode;
                             } else {
-                                node->prev = pQueue->current;
-                                node->next = pQueue->current->next;
+                                newNode->prev = pQueue->current;
+                                newNode->next = pQueue->current->next;
                                 if (pQueue->current->next == 0) {
-                                    pQueue->head = node;
-                                    pQueue->current->next = node;
+                                    pQueue->head = newNode;
+                                    pQueue->current->next = newNode;
                                 } else {
-                                    pQueue->current->next->prev = node;
-                                    pQueue->current->next = node;
+                                    pQueue->current->next->prev = newNode;
+                                    pQueue->current->next = newNode;
                                 }
                             }
                             break;
                         }
-
-                        // Check if at tail
-                        if (pQueue->tail == curr) {
-                            if (sprite == 0) {
-                                ShowError("queue fault 0112");
+                        if (pQueue->tail == pQueue->current) {
+                            if (sprite == 0) ShowError("queue fault 0112");
+                            newNode = (PriorityQueueNode*)operator new(0xc);
+                            if (newNode != 0) {
+                                newNode->data = sprite;
+                                newNode->next = 0;
+                                newNode->prev = 0;
                             }
-
-                            // Allocate node at tail
-                            nodeTemp = (PriorityQueueNode*)operator new(0xc);
-                            if (nodeTemp == 0) {
-                                node = 0;
-                            } else {
-                                nodeTemp->data = sprite;
-                                node = nodeTemp;
-                                nodeTemp->next = 0;
-                                nodeTemp->prev = 0;
-                            }
-
-                            if (pQueue->current == 0) {
-                                pQueue->current = pQueue->tail;
-                            }
-
+                            if (pQueue->current == 0) pQueue->current = pQueue->tail;
                             if (pQueue->head == 0) {
-                                pQueue->head = node;
-                                pQueue->tail = node;
-                                pQueue->current = node;
+                                pQueue->head = newNode;
+                                pQueue->tail = newNode;
+                                pQueue->current = newNode;
                             } else {
                                 if (pQueue->tail == 0 || pQueue->tail->prev != 0) {
                                     ShowError("queue fault 0113");
                                 }
-                                node->prev = 0;
-                                node->next = pQueue->tail;
-                                pQueue->tail->prev = node;
-                                pQueue->tail = node;
+                                newNode->prev = 0;
+                                newNode->next = pQueue->tail;
+                                pQueue->tail->prev = newNode;
+                                pQueue->tail = newNode;
                             }
                             break;
                         }
-
-                        // Move to previous node
-                        if (curr != 0) {
-                            pQueue->current = curr->prev;
+                        if (pQueue->current != 0) {
+                            pQueue->current = pQueue->current->prev;
                         }
                     }
                 }
             } else {
                 pQueue->AddAfterCurrent(sprite);
             }
-
             counter++;
         } while (counter < 1);
     }
-    // Check for "susan"
+    // Susan block
     else if (strstr(param_1, "susan") != 0) {
         counter = 0;
         characterType = 1;
@@ -184,7 +148,13 @@ Character::Character(char* param_1) {
                 ShowError("Missing activeQ");
             } else if (strstr(param_1, "susan") != 0) {
                 if ((unsigned int)counter <= 4) {
-                    strcpy(sprite->name, "SUS");
+                    switch (counter) {
+                        case 0: strcpy(sprite->name, "SUS"); break;
+                        case 1: strcpy(sprite->name, "DIALOG"); break;
+                        case 2: strcpy(sprite->name, "COMBAT"); break;
+                        case 3: strcpy(sprite->name, "TESTPUZZLE"); break;
+                        case 4: strcpy(sprite->name, ""); break;
+                    }
                 }
             }
 
@@ -200,90 +170,66 @@ Character::Character(char* param_1) {
                     pQueue->AddAfterCurrent(sprite);
                 } else {
                     while (pQueue->current != 0) {
-                        PriorityQueueNode* curr = pQueue->current;
-
-                        if (curr->data->priority < sprite->priority) {
-                            if (sprite == 0) {
-                                ShowError("queue fault 0102");
+                        if (pQueue->current->data->priority < sprite->priority) {
+                            if (sprite == 0) ShowError("queue fault 0102");
+                            newNode = (PriorityQueueNode*)operator new(0xc);
+                            if (newNode != 0) {
+                                FUN_00404470(newNode, sprite);
                             }
-                            nodeTemp = (PriorityQueueNode*)operator new(0xc);
-                            node = 0;
-                            if (nodeTemp != 0) {
-                                node = nodeTemp;
-                                nodeTemp->data = sprite;
-                                nodeTemp->next = 0;
-                                nodeTemp->prev = 0;
-                            }
-
-                            if (pQueue->current == 0) {
-                                pQueue->current = pQueue->head;
-                            }
-
+                            if (pQueue->current == 0) pQueue->current = pQueue->head;
                             if (pQueue->head == 0) {
-                                pQueue->head = node;
-                                pQueue->tail = node;
-                                pQueue->current = node;
+                                pQueue->head = newNode;
+                                pQueue->tail = newNode;
+                                pQueue->current = newNode;
                             } else {
-                                node->prev = pQueue->current;
-                                node->next = pQueue->current->next;
+                                newNode->prev = pQueue->current;
+                                newNode->next = pQueue->current->next;
                                 if (pQueue->current->next == 0) {
-                                    pQueue->head = node;
-                                    pQueue->current->next = node;
+                                    pQueue->head = newNode;
+                                    pQueue->current->next = newNode;
                                 } else {
-                                    pQueue->current->next->prev = node;
-                                    pQueue->current->next = node;
+                                    pQueue->current->next->prev = newNode;
+                                    pQueue->current->next = newNode;
                                 }
                             }
                             break;
                         }
-
-                        if (pQueue->tail == curr) {
-                            if (sprite == 0) {
-                                ShowError("queue fault 0112");
+                        if (pQueue->tail == pQueue->current) {
+                            if (sprite == 0) ShowError("queue fault 0112");
+                            newNode = (PriorityQueueNode*)operator new(0xc);
+                            if (newNode != 0) {
+                                newNode->data = sprite;
+                                newNode->next = 0;
+                                newNode->prev = 0;
                             }
-                            nodeTemp = (PriorityQueueNode*)operator new(0xc);
-                            if (nodeTemp == 0) {
-                                node = 0;
-                            } else {
-                                nodeTemp->data = sprite;
-                                node = nodeTemp;
-                                nodeTemp->next = 0;
-                                nodeTemp->prev = 0;
-                            }
-
-                            if (pQueue->current == 0) {
-                                pQueue->current = pQueue->tail;
-                            }
-
+                            if (pQueue->current == 0) pQueue->current = pQueue->tail;
                             if (pQueue->head == 0) {
-                                pQueue->head = node;
-                                pQueue->tail = node;
-                                pQueue->current = node;
+                                pQueue->head = newNode;
+                                pQueue->tail = newNode;
+                                pQueue->current = newNode;
                             } else {
                                 if (pQueue->tail == 0 || pQueue->tail->prev != 0) {
                                     ShowError("queue fault 0113");
                                 }
-                                node->prev = 0;
-                                node->next = pQueue->tail;
-                                pQueue->tail->prev = node;
-                                pQueue->tail = node;
+                                newNode->prev = 0;
+                                newNode->next = pQueue->tail;
+                                pQueue->tail->prev = newNode;
+                                pQueue->tail = newNode;
                             }
                             break;
                         }
-
-                        if (curr != 0) {
-                            pQueue->current = curr->prev;
+                        if (pQueue->current != 0) {
+                            pQueue->current = pQueue->current->prev;
                         }
                     }
                 }
             } else {
                 pQueue->AddAfterCurrent(sprite);
             }
-
             counter++;
         } while (counter < 1);
     }
-    // Check for "duncan"
+    // Duncan block
     else if (strstr(param_1, "duncan") != 0) {
         counter = 0;
         characterType = 2;
@@ -295,7 +241,14 @@ Character::Character(char* param_1) {
                 ShowError("Missing activeQ");
             } else if (strstr(param_1, "duncan") != 0) {
                 if ((unsigned int)counter <= 4) {
-                    strcpy(sprite->name, "TESTPUZZLE");
+                    switch (counter) {
+                        case 0: strcpy(sprite->name, "DIALOG"); break;
+                        case 1: strcpy(sprite->name, "COMBATS"); break;
+                        case 2: strcpy(sprite->name, "TESTPUZZLE"); break;
+                        case 3: strcpy(sprite->name, ""); break;
+                        case 4: strcpy(sprite->name, ""); break;
+                    }
+                    if (counter == 0) strcpy(sprite->name, "TESTPUZZLE");
                 }
             }
 
@@ -311,131 +264,79 @@ Character::Character(char* param_1) {
                     pQueue->AddAfterCurrent(sprite);
                 } else {
                     while (pQueue->current != 0) {
-                        PriorityQueueNode* curr = pQueue->current;
-
-                        if (curr->data->priority < sprite->priority) {
-                            if (sprite == 0) {
-                                ShowError("queue fault 0102");
+                        if (pQueue->current->data->priority < sprite->priority) {
+                            if (sprite == 0) ShowError("queue fault 0102");
+                            newNode = (PriorityQueueNode*)operator new(0xc);
+                            if (newNode != 0) {
+                                FUN_00404470(newNode, sprite);
                             }
-                            nodeTemp = (PriorityQueueNode*)operator new(0xc);
-                            node = 0;
-                            if (nodeTemp != 0) {
-                                node = nodeTemp;
-                                nodeTemp->data = sprite;
-                                nodeTemp->next = 0;
-                                nodeTemp->prev = 0;
-                            }
-
-                            if (pQueue->current == 0) {
-                                pQueue->current = pQueue->head;
-                            }
-
+                            if (pQueue->current == 0) pQueue->current = pQueue->head;
                             if (pQueue->head == 0) {
-                                pQueue->head = node;
-                                pQueue->tail = node;
-                                pQueue->current = node;
+                                pQueue->head = newNode;
+                                pQueue->tail = newNode;
+                                pQueue->current = newNode;
                             } else {
-                                node->prev = pQueue->current;
-                                node->next = pQueue->current->next;
+                                newNode->prev = pQueue->current;
+                                newNode->next = pQueue->current->next;
                                 if (pQueue->current->next == 0) {
-                                    pQueue->head = node;
-                                    pQueue->current->next = node;
+                                    pQueue->head = newNode;
+                                    pQueue->current->next = newNode;
                                 } else {
-                                    pQueue->current->next->prev = node;
-                                    pQueue->current->next = node;
+                                    pQueue->current->next->prev = newNode;
+                                    pQueue->current->next = newNode;
                                 }
                             }
                             break;
                         }
-
-                        if (pQueue->tail == curr) {
-                            if (sprite == 0) {
-                                ShowError("queue fault 0112");
+                        if (pQueue->tail == pQueue->current) {
+                            if (sprite == 0) ShowError("queue fault 0112");
+                            newNode = (PriorityQueueNode*)operator new(0xc);
+                            if (newNode != 0) {
+                                newNode->data = sprite;
+                                newNode->next = 0;
+                                newNode->prev = 0;
                             }
-                            nodeTemp = (PriorityQueueNode*)operator new(0xc);
-                            if (nodeTemp == 0) {
-                                node = 0;
-                            } else {
-                                nodeTemp->data = sprite;
-                                node = nodeTemp;
-                                nodeTemp->next = 0;
-                                nodeTemp->prev = 0;
-                            }
-
-                            if (pQueue->current == 0) {
-                                pQueue->current = pQueue->tail;
-                            }
-
+                            if (pQueue->current == 0) pQueue->current = pQueue->tail;
                             if (pQueue->head == 0) {
-                                pQueue->head = node;
-                                pQueue->tail = node;
-                                pQueue->current = node;
+                                pQueue->head = newNode;
+                                pQueue->tail = newNode;
+                                pQueue->current = newNode;
                             } else {
                                 if (pQueue->tail == 0 || pQueue->tail->prev != 0) {
                                     ShowError("queue fault 0113");
                                 }
-                                node->prev = 0;
-                                node->next = pQueue->tail;
-                                pQueue->tail->prev = node;
-                                pQueue->tail = node;
+                                newNode->prev = 0;
+                                newNode->next = pQueue->tail;
+                                pQueue->tail->prev = newNode;
+                                pQueue->tail = newNode;
                             }
                             break;
                         }
-
-                        if (curr != 0) {
-                            pQueue->current = curr->prev;
+                        if (pQueue->current != 0) {
+                            pQueue->current = pQueue->current->prev;
                         }
                     }
                 }
             } else {
                 pQueue->AddAfterCurrent(sprite);
             }
-
             counter++;
         } while (counter < 1);
     } else {
-        // Unknown character name - error
         ShowError("Error in Charcter.cpp - Constructor");
     }
 
-    // Set ability flags based on character type
-    // Peter: all abilities enabled
     if (strstr(param_1, "peter") != 0) {
-        int val = 1;
-        abilities[0] = val;
-        abilities[1] = val;
-        abilities[2] = val;
-        abilities[3] = val;
-        abilities[4] = val;
-        abilities[5] = val;
-        abilities[6] = val;
-        abilities[7] = val;
+        abilities[0] = 1; abilities[1] = 1; abilities[2] = 1; abilities[3] = 1;
+        abilities[4] = 1; abilities[5] = 1; abilities[6] = 1; abilities[7] = 1;
     }
-
-    // Susan: most abilities, but abilities[2] and abilities[6] disabled
     if (strstr(param_1, "susan") != 0) {
-        int val = 1;
-        abilities[0] = val;
-        abilities[1] = val;
-        abilities[2] = 0;
-        abilities[3] = val;
-        abilities[4] = val;
-        abilities[5] = val;
-        abilities[6] = 0;
-        abilities[7] = val;
+        abilities[0] = 1; abilities[1] = 1; abilities[2] = 0; abilities[3] = 1;
+        abilities[4] = 1; abilities[5] = 1; abilities[6] = 0; abilities[7] = 1;
     }
-
-    // Duncan: most abilities, but abilities[4] disabled
     if (strstr(param_1, "duncan") != 0) {
-        int val = 1;
-        abilities[0] = val;
-        abilities[1] = val;
-        abilities[2] = val;
-        abilities[3] = val;
-        abilities[5] = val;
-        abilities[6] = val;
-        abilities[4] = 0;
-        abilities[7] = val;
+        abilities[0] = 1; abilities[1] = 1; abilities[2] = 1; abilities[3] = 1;
+        abilities[4] = 0; abilities[5] = 1; abilities[6] = 1; abilities[7] = 1;
     }
 }
 
@@ -482,16 +383,9 @@ void PriorityQueue::AddAfterCurrent(CharSprite* sprite)
 /* Function start: 0x408880 */
 CharSprite::CharSprite()
 {
-    int* puVar3;
-    int iVar2;
-
     bounds.left = 0;
     bounds.top = 0;
     bounds.right = 0;
     bounds.bottom = 0;
-    puVar3 = (int*)this;
-    for (iVar2 = 0x17; iVar2 != 0; iVar2--) {
-        *puVar3 = 0;
-        puVar3++;
-    }
+    memset(this, 0, sizeof(CharSprite));
 }
