@@ -324,10 +324,10 @@ void OptionMenu::SelectCharacter(int characterIndex)
         spriteList = (SpriteNode*)DAT_00435a74->queue;
         break;
     case 1:
-        spriteList = (SpriteNode*)((Character*)DAT_00435a78)->queue;
+        spriteList = (SpriteNode*)DAT_00435a78->queue;
         break;
     case 2:
-        spriteList = (SpriteNode*)((Character*)DAT_00435a7c)->queue;
+        spriteList = (SpriteNode*)DAT_00435a7c->queue;
         break;
     }
 }

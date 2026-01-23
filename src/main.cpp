@@ -37,8 +37,8 @@
 // Globals moved from globals.cpp to match layout
 StringTable* g_Strings_00435a70 = 0;
 Character* DAT_00435a74 = 0;
-void* DAT_00435a78 = 0;
-void* DAT_00435a7c = 0;
+Character* DAT_00435a78 = 0;
+Character* DAT_00435a7c = 0;
 int DAT_00435a80 = 0;
 FlagArray* g_Manager_00435a84 = 0;
 
@@ -195,11 +195,11 @@ void RunGame() {
         DAT_00435a74 = 0;
     }
     if (DAT_00435a78 != 0) {
-        delete ((AssetList*)DAT_00435a78);
+        delete DAT_00435a78;
         DAT_00435a78 = 0;
     }
     if (DAT_00435a7c != 0) {
-        delete ((AssetList*)DAT_00435a7c);
+        delete DAT_00435a7c;
         DAT_00435a7c = 0;
     }
 

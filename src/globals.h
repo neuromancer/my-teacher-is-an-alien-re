@@ -367,8 +367,8 @@ struct MessageQueue;
 // extern char DAT_00435933; // { /* 1 bytes */ }
 extern StringTable* g_Strings_00435a70; // 00435a70
 extern Character* DAT_00435a74; // peter character
-extern void* DAT_00435a78; // { /* 4 bytes */ }
-extern void* DAT_00435a7c; // { /* 4 bytes */ }
+extern Character* DAT_00435a78; // susan character
+extern Character* DAT_00435a7c; // duncan character
 extern int DAT_00435a80; // { /* 4 bytes */ }
 extern FlagArray* g_Manager_00435a84; // 00435a84
 // extern int DAT_00435b88; // { /* 4 bytes */ }
