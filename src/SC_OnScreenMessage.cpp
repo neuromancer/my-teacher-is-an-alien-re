@@ -69,21 +69,18 @@ SC_OnScreenMessage::~SC_OnScreenMessage()
                     data = 0;
                     if (node != 0) {
                         data = node->data;
-                        node->data = 0;
-                        node->prev = 0;
-                        node->next = 0;
-                        FreeMemory(node);
+                        delete node;
                         list->current = 0;
                     }
                     list->current = list->head;
                 }
                 if (data != 0) {
                     Timer_DecrementCounter();
-                    FreeMemory(data);
+                    delete (char*)data;
                 }
             }
         }
-        FreeMemory(list);
+        delete list;
         m_messageList = 0;
     }
 }
@@ -144,17 +141,13 @@ void SC_OnScreenMessage::Update(int param_1, int param_2)
                 }
                 else {
                     local_18 = node->data;
-                    node->data = 0;
-                    node->prev = 0;
-                    node->next = 0;
-                    FreeMemory(node);
+                    delete node;
                     list->current = 0;
                 }
                 list->current = list->head;
             }
             if (local_18 != 0) {
-                ((OnScreenMessage*)local_18)->timer.~Timer();
-                FreeMemory(local_18);
+                delete (OnScreenMessage*)local_18;
             }
         }
         local_1c = local_1c + 1;

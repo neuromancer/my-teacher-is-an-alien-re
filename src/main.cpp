@@ -281,13 +281,11 @@ void InitGameSystems(void) {
 /* Function start: 0x41A550 */
 void ShutdownGameSystems(void) {
   if (g_TextManager_00436990 != 0) {
-    g_TextManager_00436990->~AnimatedAsset();
-    FreeMemory(g_TextManager_00436990);
+    delete g_TextManager_00436990;
     g_TextManager_00436990 = 0;
   }
   if (g_WorkBuffer_00436974 != 0) {
-    g_WorkBuffer_00436974->~VBuffer();
-    FreeMemory(g_WorkBuffer_00436974);
+    delete g_WorkBuffer_00436974;
     g_WorkBuffer_00436974 = 0;
   }
   if (g_Sound_0043696c != 0) {

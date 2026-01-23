@@ -191,8 +191,7 @@ void Handler8::ProcessMessage() {
 
         msg = Handler8::message;
         if (msg != 0) {
-            msg->~SC_Message();
-            FreeMemory(msg);
+            delete msg;
             Handler8::message = 0;
         }
         return;

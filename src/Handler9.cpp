@@ -102,21 +102,17 @@ Handler9::~Handler9() {
                     dq = 0;
                     if (node != 0) {
                         dq = (DialogQuestion*)node->data;
-                        node->data = 0;
-                        node->prev = 0;
-                        node->next = 0;
-                        FreeMemory(node);
+                        delete node;
                         queue->m_current = 0;
                     }
                     queue->m_current = queue->m_head;
                 }
                 if (dq != 0) {
-                    dq->~SC_Question();
-                    FreeMemory(dq);
+                    delete dq;
                 }
             }
         }
-        FreeMemory(queue);
+        delete queue;
         dialogQueue = 0;
     }
 }
@@ -140,7 +136,7 @@ void Handler9::Init(SC_Message* msg) {
         initData->ptr1 = 0;
         initData->ptr2 = 0;
         if (initData != 0) {
-            FreeMemory(initData);
+            delete initData;
         }
     }
 
@@ -187,8 +183,7 @@ int Handler9::Update(SC_Message* msg) {
     mouseControl = 0;
     dialog = 0;
     if (dq != 0) {
-        dq->~SC_Question();
-        FreeMemory(dq);
+        delete dq;
         currentDialog = 0;
     }
 
@@ -219,21 +214,17 @@ int Handler9::Update(SC_Message* msg) {
                     dq = 0;
                     if (node != 0) {
                         dq = (DialogQuestion*)node->data;
-                        node->data = 0;
-                        node->prev = 0;
-                        node->next = 0;
-                        FreeMemory(node);
+                        delete node;
                         queue->m_current = 0;
                     }
                     queue->m_current = queue->m_head;
                 }
                 if (dq != 0) {
-                    dq->~SC_Question();
-                    FreeMemory(dq);
+                    delete dq;
                 }
             }
         }
-        FreeMemory(queue);
+        delete queue;
         dialogQueue = 0;
     }
 
@@ -264,8 +255,7 @@ int Handler9::HandleMessage(SC_Message* msg) {
             dq = currentDialog;
             if (dq->state == 2) {
                 if (dq != 0) {
-                    dq->~SC_Question();
-                    FreeMemory(dq);
+                    delete dq;
                     currentDialog = 0;
                     return 1;
                 }
@@ -341,8 +331,7 @@ int Handler9::Exit(SC_Message* msg) {
 
             if (dq->state == 2) {
                 if (dq != 0) {
-                    dq->~SC_Question();
-                    goto free_dq;
+                    delete dq;
                 }
             } else {
                 queue = dialogQueue;
@@ -457,9 +446,7 @@ int Handler9::Exit(SC_Message* msg) {
         dq = FindDialogById(this, msg->sourceAddress);
         g_Manager_00435a84->SetFlag(msg->sourceAddress, 1);
         if (dq != 0) {
-            dq->~SC_Question();
-free_dq:
-            FreeMemory(dq);
+            delete dq;
         }
         break;
 
@@ -516,10 +503,7 @@ LAB_loop:
         result = 0;
         if (node != 0) {
             result = (DialogQuestion*)node->data;
-            node->data = 0;
-            node->prev = 0;
-            node->next = 0;
-            FreeMemory(node);
+            delete node;
             queue->m_current = 0;
         }
         queue->m_current = queue->m_head;
@@ -576,8 +560,7 @@ LAB_search:
     if (nodeData->questionId == searchQuestion->questionId) {
         // Found - cleanup search question
         if (searchQuestion != 0) {
-            searchQuestion->~SC_Question();
-            FreeMemory(searchQuestion);
+            delete searchQuestion;
         }
 
         // Remove node from queue
@@ -604,10 +587,7 @@ LAB_search:
         result = 0;
         if (node != 0) {
             result = (DialogQuestion*)node->data;
-            node->data = 0;
-            node->prev = 0;
-            node->next = 0;
-            FreeMemory(node);
+            delete node;
             queue->m_current = 0;
         }
         queue->m_current = queue->m_head;

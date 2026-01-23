@@ -426,8 +426,7 @@ void GameLoop::CleanupLoop() {
         while (pQueue->head != 0) {
             pResult = ZBuffer::PopNode(pQueue);
             if (pResult != 0) {
-                *(int*)pResult = 0x431050;
-                FreeMemory(pResult);
+                delete (SoundCommand*)pResult;
             }
         }
     }
@@ -447,7 +446,7 @@ void GameLoop::CleanupLoop() {
                     (*(void (__stdcall **)(int))(*(int*)((int*)pResult)[2]))(1);
                     ((int*)pResult)[2] = 0;
                 }
-                FreeMemory(pResult);
+                delete (char*)pResult;
             }
         }
     }
@@ -486,9 +485,8 @@ void GameLoop::CleanupLoop() {
             }
             if (pData != 0) {
                 RenderEntry* pEntry = (RenderEntry*)pData;
-                *(int*)pEntry = 0x431058;
                 pEntry->rect.~GlyphRect();
-                FreeMemory(pData);
+                delete (char*)pData;
             }
         }
     }

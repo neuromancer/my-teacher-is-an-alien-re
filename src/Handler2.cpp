@@ -118,8 +118,7 @@ void Handler2::Draw(int param1, int param2) {
             }
             samp = sample;
             if (samp != 0) {
-                samp->~Sample();
-                FreeMemory(samp);
+                delete samp;
                 sample = 0;
             }
         }

@@ -6,6 +6,7 @@
 #include "SC_Question.h"
 #include "Parser.h"
 #include "ZBuffer.h"
+#include "SoundCommand.h"
 #include "ZBufferManager.h"
 #include "InputManager.h"
 #include "VBuffer.h"
@@ -23,8 +24,6 @@ extern void InitMessageArray(int* param_1, int param_2);
 // - DrawEntry::Cleanup(int) at 0x411080 in Engine.cpp
 extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.cpp
 
-// Vtable pointer at 0x431050
-extern void* PTR_LAB_00431050;
 
 /* Function start: 0x410610 */
 int Handler16::Exit(SC_Message* msg) {
@@ -100,8 +99,7 @@ void Handler16::Init(SC_Message* msg) {
         while (pQueue->head != 0) {
             pNode = ZBuffer::PopNode(pQueue);
             if (pNode != 0) {
-                *(void**)pNode = &PTR_LAB_00431050;
-                FreeMemory(pNode);
+                delete (SoundCommand*)pNode;
             }
         }
     }
@@ -222,8 +220,7 @@ int Handler16::Update(SC_Message* msg) {
         while (pQueue->head != 0) {
             puVar7 = ZBuffer::PopNode(pQueue);
             if (puVar7 != 0) {
-                *(void**)puVar7 = &PTR_LAB_00431050;
-                FreeMemory(puVar7);
+                delete (SoundCommand*)puVar7;
             }
         }
     }
@@ -235,8 +232,7 @@ int Handler16::Update(SC_Message* msg) {
         while (pQueue->head != 0) {
             pVVar5 = ZBuffer::PopNode_2(pQueue);
             if (pVVar5 != 0) {
-                ((ZBuffer*)pVVar5)->CleanUpVBuffer();
-                FreeMemory(pVVar5);
+                delete (ZBuffer*)pVVar5;
             }
         }
     }

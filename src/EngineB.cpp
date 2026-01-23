@@ -47,8 +47,7 @@ void EngineB::DestructorHelper() {
   // Delete field_0xe8 SoundList
   SoundList* soundList = (SoundList*)EngineB::field_0xe8;
   if (soundList != 0) {
-    soundList->~SoundList();
-    FreeMemory(soundList);
+    delete soundList;
     EngineB::field_0xe8 = 0;
   }
 }

@@ -60,9 +60,6 @@ struct MessageQueue;
 
 MessageQueue* g_MessageQueue = 0;
 
-// PTR_LAB_00431050 - Data pointer
-void* PTR_LAB_00431050 = 0;
-
 // g_CombatEngine - Combat engine pointer (defined in globals.h as extern)
 Engine* g_CombatEngine = 0;
 

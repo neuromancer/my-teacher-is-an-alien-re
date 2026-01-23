@@ -11,6 +11,12 @@ struct QueueNode {
         prev = 0;
         next = 0;
     }
+
+    ~QueueNode() {
+        data = 0;
+        prev = 0;
+        next = 0;
+    }
 };
 
 class Queue {

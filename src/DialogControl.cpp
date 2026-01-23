@@ -35,29 +35,25 @@ DialogControl::~DialogControl()
 
     spr = sprite;
     if (spr != 0) {
-        spr->~Sprite();
-        FreeMemory(spr);
+        delete spr;
         sprite = 0;
     }
 
     mc = mouseArea1;
     if (mc != 0) {
-        mc->~MouseControl();
-        FreeMemory(mc);
+        delete mc;
         mouseArea1 = 0;
     }
 
     mc = mouseArea2;
     if (mc != 0) {
-        mc->~MouseControl();
-        FreeMemory(mc);
+        delete mc;
         mouseArea2 = 0;
     }
 
     mc = mouseArea3;
     if (mc != 0) {
-        mc->~MouseControl();
-        FreeMemory(mc);
+        delete mc;
         mouseArea3 = 0;
     }
 }

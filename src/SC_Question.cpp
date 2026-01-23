@@ -187,8 +187,7 @@ void SC_Question::Finalize()
         
         // Destroy the original message if not null
         if (msgData != 0) {
-            ((SC_Message*)msgData)->~SC_Message();
-            FreeMemory(msgData);
+            delete (SC_Message*)msgData;
         }
     } while (messageQueue->m_head != 0);
 }

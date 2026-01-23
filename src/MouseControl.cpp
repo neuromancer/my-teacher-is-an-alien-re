@@ -62,21 +62,17 @@ MouseControl::~MouseControl()
                     sprite = 0;
                     if (node != 0) {
                         sprite = node->data;
-                        node->data = 0;
-                        node->next = 0;
-                        node->prev = 0;
-                        FreeMemory(node);
+                        delete node;
                         queue->m_current = 0;
                     }
                     queue->m_current = queue->m_head;
                 }
                 if (sprite != 0) {
-                    ((Sprite*)sprite)->~Sprite();
-                    FreeMemory(sprite);
+                    delete (Sprite*)sprite;
                 }
             }
         }
-        FreeMemory(queue);
+        delete queue;
         m_queue = 0;
     }
 }

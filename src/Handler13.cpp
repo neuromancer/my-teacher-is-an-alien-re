@@ -60,22 +60,18 @@ Handler13::~Handler13() {
                         data = (TimedEvent*)node->data;
                     }
                     if (node != 0) {
-                        node->data = 0;
-                        node->prev = 0;
-                        node->next = 0;
-                        FreeMemory(node);
+                        delete node;
                         pList->current = 0;
                     }
                     pList->current = pList->head;
                 }
                 // Cleanup data object (TimedEvent)
                 if (data != 0) {
-                    data->~TimedEvent();
-                    FreeMemory(data);
+                    delete data;
                 }
             }
         }
-        FreeMemory(pList);
+        delete pList;
         list = 0;
     }
 }
@@ -141,17 +137,13 @@ void Handler13::Draw(int param1, int param2) {
                 pvVar6 = 0;
                 if (node != 0) {
                     pvVar6 = node->data;
-                    node->data = 0;
-                    node->prev = 0;
-                    node->next = 0;
-                    FreeMemory(node);
+                    delete node;
                     list->current = 0;
                 }
                 list->current = list->head;
             }
             if (pvVar6 != 0) {
-                ((TimedEvent*)pvVar6)->~TimedEvent();
-                FreeMemory(pvVar6);
+                delete (TimedEvent*)pvVar6;
             }
         }
         node = (MessageNode*)list->current;
@@ -229,8 +221,7 @@ int Handler13::Exit(SC_Message* msg) {
                     pList->current = pList->head;
                 }
                 if (eventData != 0) {
-                    eventData->~TimedEvent();
-                    FreeMemory(eventData);
+                    delete eventData;
                 }
             }
         }
@@ -296,8 +287,7 @@ int Handler13::Exit(SC_Message* msg) {
             if (timedEvent->m_duration == pTimedEvent->m_duration) {
                 eventData = (TimedEvent*)((Queue*)pList)->Pop();
                 if (eventData != 0) {
-                    eventData->~TimedEvent();
-                    FreeMemory(eventData);
+                    delete eventData;
                 }
                 break;
             }

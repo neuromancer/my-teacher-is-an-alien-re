@@ -5,23 +5,15 @@
 #include <smack.h>
 #include <sys/types.h>
 #include <string.h>
+#include <mmsystem.h>
 #include "GameConfig.h"
 
 extern short _param_3;
 
-// Forward declaration for 0x41E3D0
-int OpenDigitalDriver(int param_1, unsigned short param_2,
-                      unsigned short param_3);
-
-int DAT_0043de30;
-short DAT_0043de32;
-int DAT_0043de34;
-int DAT_0043de38;
-int DAT_0043de3c;
-short DAT_0043de3e;
+PCMWAVEFORMAT g_pcm;
 
 /* Function start: 0x41E1F0 */
-Sound::Sound(int param_1, unsigned short param_2, short param_3) {
+Sound::Sound(int param_1, short param_2, int param_3) {
   int *puVar4 = (int *)this;
   for (int i = 0; i < 15; i++) {
     *puVar4++ = 0;
@@ -29,38 +21,38 @@ Sound::Sound(int param_1, unsigned short param_2, short param_3) {
 
   AIL_startup();
   if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
+    ShowMessage("Sound():: Not Initialized (No Sound Requested)");
+  } else {
     AIL_set_preference(0xf, 0);
     int iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
-    digital_driver = (HDIGDRIVER)iVar3;
+    Sound::digital_driver = (HDIGDRIVER)iVar3;
     if (iVar3 == 0) {
       AIL_set_preference(0xf, 1);
     }
-    if (digital_driver == 0) {
+    if (Sound::digital_driver == 0) {
       iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
-      digital_driver = (HDIGDRIVER)iVar3;
+      Sound::digital_driver = (HDIGDRIVER)iVar3;
     }
-    if (digital_driver == 0) {
-      const char *puVar2 = "Miles 32-bit";
-      if (_param_3 == 0) {
-        puVar2 = "Miles 16-bit";
+    if (Sound::digital_driver == 0) {
+      const char *puVar2 = "yes";
+      if (param_3 == 0) {
+        puVar2 = "no";
       }
-      WriteToMessageLog("Sound :: Cannot initialize sound %d bit %d hz %s",
+      ShowMessage("Sound():: Cannot initialize sound driver at bits=%d frequency=%lu stereo=%s",
                         (int)param_2, param_1, puVar2);
     } else {
-      SmackSoundUseMSS(digital_driver);
-      AllocateSampleHandles();
+      SmackSoundUseMSS(Sound::digital_driver);
+      Sound::AllocateSampleHandles();
       char auStack_80[128];
       auStack_80[0] = 0;
-      AIL_digital_configuration(digital_driver, 0, 0, auStack_80);
-      const char *puVar2 = "Miles 32-bit";
-      if (_param_3 == 0) {
-        puVar2 = "Miles 16-bit";
+      AIL_digital_configuration(Sound::digital_driver, 0, 0, auStack_80);
+      const char *puVar2 = "yes";
+      if (param_3 == 0) {
+        puVar2 = "no";
       }
-      WriteToMessageLog("Sound :: Initialized at %d bits, %d hz %s - %s",
+      WriteToMessageLog("Sound():: Initialized at bits=%d frequency=%lu stereo=%s using\n    %s",
                         (int)param_2, param_1, puVar2, auStack_80);
     }
-  } else {
-    WriteToMessageLog("Sound :: Not Initialized (No Sound Card)");
   }
 }
 
@@ -97,23 +89,22 @@ void Sound::StopAllSamples() {
 }
 
 /* Function start: 0x41E3D0 */
-int OpenDigitalDriver(int param_1, unsigned short param_2,
-                      unsigned short param_3) {
-  int local_4;
+int __stdcall OpenDigitalDriver(int rate, unsigned short bits,
+                      unsigned short channels) {
+  HDIGDRIVER driver;
 
-  // Preserve register/stack order and exact assignments to match original
-  // assembly
-  DAT_0043de32 = param_3;
-  DAT_0043de30 = 1;
-  DAT_0043de3c = param_3 * (param_2 >> 3);
-  DAT_0043de38 = (unsigned int)param_3 * (unsigned int)(param_2 >> 3) * param_1;
-  DAT_0043de3e = param_2;
-  DAT_0043de34 = param_1;
+  g_pcm.wf.nChannels = channels;
+  unsigned short shifted = bits >> 3;
+  unsigned int product = (unsigned int)channels * (unsigned int)shifted;
+  g_pcm.wf.wFormatTag = 1;
+  g_pcm.wf.nBlockAlign = channels * shifted;
+  product = product * rate;
+  g_pcm.wBitsPerSample = bits;
+  g_pcm.wf.nSamplesPerSec = rate;
+  g_pcm.wf.nAvgBytesPerSec = product;
 
-  int result = AIL_waveOutOpen((HDIGDRIVER *)&local_4, 0, 0xffffffff,
-                               (PCMWAVEFORMAT *)&DAT_0043de30);
-  if (result != 0) {
+  if (AIL_waveOutOpen(&driver, 0, -1, &g_pcm)) {
     return 0;
   }
-  return local_4;
+  return (int)driver;
 }

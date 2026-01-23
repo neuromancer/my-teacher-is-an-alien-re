@@ -213,8 +213,7 @@ void IconBar::CleanupIconBar() {
     }
 
     if (soundList != 0) {
-        soundList->~SoundList();
-        FreeMemory(soundList);
+        delete soundList;
         soundList = 0;
     }
 }

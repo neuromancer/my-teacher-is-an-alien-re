@@ -3,9 +3,11 @@
 
 #include "mss.h"
 
+int __stdcall OpenDigitalDriver(int param_1, unsigned short param_2, unsigned short param_3);
+
 class Sound {
 public:
-    Sound(int param_1, unsigned short param_2, short param_3);
+    Sound(int param_1, short param_2, int param_3);
     void AllocateSampleHandles();
     HSAMPLE FindFreeSampleHandle();
     void StopAllSamples();
