@@ -200,7 +200,7 @@ void GameLoop::ProcessInput() {
     if (boolResult != 0) {
         // SC_Message on stack - triggers SEH
         SC_Message localMessage(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        int keyCode;
+        int keyCode = 0;
 
         localMessage.command = 3;
 

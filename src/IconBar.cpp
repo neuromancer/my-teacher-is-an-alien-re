@@ -9,10 +9,11 @@
 #include "Parser.h"
 #include "globals.h"
 #include "Array.h"
+#include "string.h"
 #include "SC_Question.h"
 
 // External functions
-extern "C" void __cdecl WriteToMessageLog(const char*);
+//extern "C" void __cdecl WriteToMessageLog(const char*);
 
 /* Function start: 0x402730 */
 IconBar::IconBar() {
@@ -234,7 +235,7 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
     msgX = msg->clickX;
 
     // Check bar bounds
-    if (barBounds.x1 > msgX || barBounds.x2 < msgX ||
+    if (barBounds.x1 > msg->clickX || barBounds.x2 < msg->clickX ||
         barBounds.y1 > msg->clickY || barBounds.y2 < msg->clickY) {
         inBounds = 0;
     } else {
@@ -251,20 +252,20 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
 
     // Loop through buttons - use pointer to enabled field
     i = 0;
-    enabledPtr = &buttons[0].enabled;
-
     do {
-        if (*enabledPtr == 0) {
+        if (buttons[i].enabled == 0) {
             goto nextButton;
         }
 
         // Check button bounds using offsets from enabled pointer
-        if (enabledPtr[-4] > msgX || enabledPtr[-2] < msgX ||
-            enabledPtr[-3] > msg->clickY || enabledPtr[-1] < msg->clickY) {
+        if (buttons[i].bounds.left > msg->clickX || buttons[i].bounds.right < msg->clickX ||
+            buttons[i].bounds.top > msg->clickY || buttons[i].bounds.bottom < msg->clickY) {
             inBounds = 0;
         } else {
             inBounds = 1;
         }
+
+        ShowMessage("Click (%d, %d) bounds: %d %d %d %d and inBounds: %d", msg->clickX, msg->clickY, buttons[i].bounds.left, buttons[i].bounds.top, buttons[i].bounds.right, buttons[i].bounds.bottom, inBounds);
 
         if (inBounds != 0) {
             // Button found - play sound and copy button data to message
@@ -320,7 +321,7 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
         }
 
 nextButton:
-        enabledPtr = (int*)((char*)enabledPtr + 0xE0);
+        //enabledPtr = (int*)((char*)enabledPtr + 0xE0);
         i++;
     } while (i < 6);
 

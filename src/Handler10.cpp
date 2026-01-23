@@ -339,7 +339,7 @@ int Handler10::HandleMessage(SC_Message* msg) {
     if (result != 0) {
         return 1;
     }
-
+    //ShowMessage("Msg fields: sender %d, receiver %d, type %d, x %d, y %d, data %d", msg->sourceAddress, msg->targetAddress, msg->command, msg->mouseX, msg->mouseY, msg->data);
     // If voiceover playing, return
     if (sounds[0].enabled != 0) {
         return 1;
@@ -689,6 +689,7 @@ void Handler10::ProcessCharacterHover(int mouseX, int mouseY) {
             pos.y = mouseY;
 
             if ((*charPtr)->enabled == 0) {
+                // Disabled - skip hit test entirely (matches original JMP to next iteration)
             } else {
                 if (pos.x < (*charPtr)->rect_x ||
                     (*charPtr)->rect_w < pos.x ||
@@ -698,26 +699,27 @@ void Handler10::ProcessCharacterHover(int mouseX, int mouseY) {
                 } else {
                     isHit = (char*)1;
                 }
+
+                // Hit processing must be inside the else block (when enabled)
+                if (isHit != (char*)0) {
+                    hoverCharacterIndex = i;
+
+                    if ((*charPtr)->GetState() != 2) {
+                        (*charPtr)->SetState(3);
+                    }
+
+                    prevChar = prevHoverCharacter;
+                    if (prevChar == -1) {
+                        prevHoverCharacter = i;
+                        (*charPtr)->SetState(3);
+                    } else if (i != prevChar) {
+                        characters[prevChar]->SetState(0);
+                        prevHoverCharacter = i;
+                    }
+
+                    noHover = 0;
+                }
             }
-        }
-
-        if (isHit != (char*)0) {
-            hoverCharacterIndex = i;
-
-            if ((*charPtr)->GetState() != 2) {
-                (*charPtr)->SetState(3);
-            }
-
-            prevChar = prevHoverCharacter;
-            if (prevChar == -1) {
-                prevHoverCharacter = i;
-                (*charPtr)->SetState(3);
-            } else if (i != prevChar) {
-                characters[prevChar]->SetState(0);
-                prevHoverCharacter = i;
-            }
-
-            noHover = 0;
         }
 
         charPtr = charPtr + 1;
