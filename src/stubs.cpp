@@ -24,7 +24,10 @@ extern "C" {
 // SEH cleanup funclets (auto-generated compiler code, not real functions)
 // FUN_00421671, FUN_0041fbd3, FUN_00421c24, FUN_0041ae0c - All removed (SEH funclets)
 
+void __fastcall FUN_00404230_impl(void* thisptr);
+
 } // extern "C"
+
 
 // ============================================================================
 // C++ Stubs (need C++ linkage for name mangling)
@@ -41,6 +44,12 @@ void CleanupObjectArray(void* a, int b) {}
 
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
+
+
+
+extern "C" {
+void __fastcall FUN_00404230_impl(void* thisptr) {}
+}
 
 // ============================================================================
 // Handler8 stubs - message queue management

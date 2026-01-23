@@ -29,7 +29,7 @@
 
 
 
-extern int FUN_00422510();
+
 
 #include "globals.h"
 
@@ -77,6 +77,7 @@ extern "C" {
 
 
 extern "C" int ProcessMessages();
+int FUN_00422510();
 
 
 
@@ -92,16 +93,8 @@ extern "C" int ProcessMessages();
 
 
 
-// Stubs and Wrappers for Linker
-extern "C" {
 
-// Stubs for new class external implementations
-void __fastcall FUN_0041b8e0_impl(void* thisptr) {}
-void* __fastcall FUN_00417200_impl(void* thisptr) { return thisptr; }
-void __fastcall FUN_00417690_impl(void* thisptr) {}
-void __fastcall FUN_00404230_impl(void* thisptr) {}
 
-}
 
 /* Function start: 0x40C5D0 */
 void RunGame() {

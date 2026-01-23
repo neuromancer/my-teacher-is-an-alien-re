@@ -18,7 +18,6 @@ struct MessageQueue;
 extern MessageQueue* g_MessageQueue;
 extern void* __stdcall ExpandPool(void** pool, int capacity, int itemSize);
 extern void InitMessageArray(int* param_1, int param_2);
-extern void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
 
 // Already implemented elsewhere:
 // - DrawEntry::Cleanup(int) at 0x411080 in Engine.cpp

@@ -6,9 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// External functions for cleanup
-extern void FreeMemory(void*);  // 0x00424940
-
 // T_Hotspot class - base class for CharSprite/CharButton
 // Has vtable 0x4311b8, different from Hotspot (0x431278)
 // Used by Handler10 for goButton, cancelButton, characters[]

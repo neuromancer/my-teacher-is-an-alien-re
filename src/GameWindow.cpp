@@ -15,10 +15,10 @@ void InvalidateVideoMode();
 int CleanupVideoSystem();
 }
 
-extern "C" void __stdcall ParseCommandLine(char *);
 extern "C" int* GetWindowedModeFlag();
 LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
+void __stdcall ParseCommandLine(char *);
 int ParseCommandLineArgs(char *, char **, int);
 
 /* Function start: 0x422060 */
