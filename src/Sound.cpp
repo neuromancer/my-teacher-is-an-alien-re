@@ -20,7 +20,7 @@ Sound::Sound(int param_1, short param_2, int param_3) {
   }
 
   AIL_startup();
-  if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
+  if (g_GameConfig_00436970->data.rawData[2] != '\x02') {
     ShowMessage("Sound():: Not Initialized (No Sound Requested)");
   } else {
     AIL_set_preference(0xf, 0);

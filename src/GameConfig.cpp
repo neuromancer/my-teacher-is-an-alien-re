@@ -21,7 +21,7 @@ GameConfig::GameConfig() {
     if (FileExists(PTR_s_Setup_cfg_00437454) == 0) {
         CreateDefaultConfig();
     }
-    SaveConfig();
+    ReloadConfig();
     CheckWindir();
 }
 
@@ -71,9 +71,9 @@ void GameConfig::LoadConfig() {
 }
 
 /* Function start: 0x4228A0 */
-void GameConfig::SaveConfig() {
-    if (Open("wb")) {
-        fwrite(&data, 0x50, 1, fp);
+void GameConfig::ReloadConfig() {
+    if (Open(DAT_004371a8)) {
+        fread(&data, 0x50, 1, fp);
         Close();
     }
     CheckWindir();

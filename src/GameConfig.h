@@ -28,7 +28,7 @@ public:
     ~GameConfig(); // 0x4227A0
     int Init(char* cmdLine);
     void LoadConfig(); // 0x422870
-    void SaveConfig(); // 0x4228A0
+    void ReloadConfig(); // 0x4228A0
     FILE* Open(char* mode); // 0x422800
     void Close(); // 0x422820
     void CreateDefaultConfig(); // 0x422840
