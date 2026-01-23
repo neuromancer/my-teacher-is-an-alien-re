@@ -646,21 +646,24 @@ void Handler10::RenderChoiceScreen(int characterIndex) {
 
 /* Function start: 0x405900 */
 void Handler10::ProcessCharacterHover(MousePoint pt) {
-    int noHover = 1;
     int i;
-    Hotspot** charPtr = &characters[0];
+    Hotspot** charPtr;
+    int noHover = 1;
     int isHit;
 
-    for (i = 0; i < 3; i++, charPtr++) {
-        if ((*charPtr)->enabled == 0) {
-            continue;
-        }
+    for (i = 0, charPtr = characters; i < 3; i++, charPtr++) {
+        {
+            MousePoint local_pt = pt;
+            if ((*charPtr)->enabled == 0) {
+                continue;
+            }
 
-        if (pt.x < (*charPtr)->rect_x || pt.x > (*charPtr)->rect_w ||
-            pt.y < (*charPtr)->rect_y || pt.y > (*charPtr)->rect_h) {
-            isHit = 0;
-        } else {
-            isHit = 1;
+            if (local_pt.x < (*charPtr)->rect_x || local_pt.x > (*charPtr)->rect_w ||
+                local_pt.y < (*charPtr)->rect_y || local_pt.y > (*charPtr)->rect_h) {
+                isHit = 0;
+            } else {
+                isHit = 1;
+            }
         }
 
         if (isHit != 0) {

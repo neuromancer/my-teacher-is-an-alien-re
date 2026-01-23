@@ -343,39 +343,29 @@ Character::Character(char* param_1) {
 /* Function start: 0x4043A0 */
 void PriorityQueue::AddAfterCurrent(CharSprite* sprite)
 {
-    void* allocResult;
-    PriorityQueueNode* newNode;
-
     if (sprite == 0) {
         ShowError("queue fault 0102");
     }
 
-    allocResult = operator new(0xc);
-    newNode = 0;
-    if (allocResult != 0) {
-        newNode = (PriorityQueueNode*)allocResult;
-        newNode->data = sprite;
-        newNode->next = 0;
-        newNode->prev = 0;
+    PriorityQueueNode* newNode = new PriorityQueueNode(sprite);
+
+    if (current == 0) {
+        current = head;
     }
 
-    if (PriorityQueue::current == 0) {
-        PriorityQueue::current = PriorityQueue::head;
-    }
-
-    if (PriorityQueue::head == 0) {
-        PriorityQueue::head = newNode;
-        PriorityQueue::tail = newNode;
-        PriorityQueue::current = newNode;
+    if (head == 0) {
+        head = newNode;
+        tail = newNode;
+        current = newNode;
     } else {
-        newNode->prev = PriorityQueue::current;
-        newNode->next = PriorityQueue::current->next;
-        if (PriorityQueue::current->next == 0) {
-            PriorityQueue::head = newNode;
-            PriorityQueue::current->next = newNode;
+        newNode->prev = current;
+        newNode->next = current->next;
+        if (current->next != 0) {
+            current->next->prev = newNode;
+            current->next = newNode;
         } else {
-            PriorityQueue::current->next->prev = newNode;
-            PriorityQueue::current->next = newNode;
+            head = newNode;
+            current->next = newNode;
         }
     }
 }

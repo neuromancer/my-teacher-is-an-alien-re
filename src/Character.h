@@ -15,13 +15,19 @@ struct PriorityQueueNode {
     PriorityQueueNode* next;    // +0x00
     PriorityQueueNode* prev;    // +0x04
     CharSprite* data;           // +0x08
+
+    PriorityQueueNode(CharSprite* s) {
+        data = s;
+        next = 0;
+        prev = 0;
+    }
 };
 
 // PriorityQueue - Priority queue for CharSprites
 // Size: 0x10 bytes (16 bytes)
 struct PriorityQueue {
-    PriorityQueueNode* head;    // +0x00
-    PriorityQueueNode* tail;    // +0x04
+    PriorityQueueNode* head;    // +0x00 (List end/Last node)
+    PriorityQueueNode* tail;    // +0x04 (List start/First node)
     PriorityQueueNode* current; // +0x08
     int type;                   // +0x0C
 
