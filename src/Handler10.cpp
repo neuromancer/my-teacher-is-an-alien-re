@@ -596,42 +596,30 @@ void Handler10::DisplaySubmenuHover(int mouseX, int mouseY) {
 
 /* Function start: 0x405AA0 */
 void Handler10::ProcessGoButtonHover(int mouseX, int mouseY, Hotspot* button, int* outConfirmFlag) {
-    int selectionComplete;
-    int setStateArg;
-
-    selectionComplete = IsSelectionComplete();
-    if (selectionComplete == 0) {
-        setStateArg = 0;
-        *outConfirmFlag = 0;
-    } else {
-        MousePoint pos;
-        int isHit;
-
-        pos.x = mouseX;
-        pos.y = mouseY;
-
-        if (button->enabled == 0) {
-            setStateArg = 1;
-            *outConfirmFlag = 0;
-        } else {
-            if (pos.x < button->rect_x || button->rect_w < pos.x ||
-                pos.y < button->rect_y || button->rect_h < pos.y) {
-                isHit = 0;
-            } else {
-                isHit = 1;
-            }
-
-            if (isHit != 0) {
-                *outConfirmFlag = 1;
-                setStateArg = 2;
-            } else {
-                *outConfirmFlag = 0;
-                setStateArg = 1;
+    if (IsSelectionComplete()) {
+        int isHit = 0;
+        {
+            MousePoint pos;
+            pos.x = mouseX;
+            pos.y = mouseY;
+            if (button->enabled != 0) {
+                if (pos.x >= button->rect_x && pos.x <= button->rect_w &&
+                    pos.y >= button->rect_y && pos.y <= button->rect_h) {
+                    isHit = 1;
+                }
             }
         }
+        if (isHit != 0) {
+            *outConfirmFlag = 1;
+            button->SetState(2);
+        } else {
+            *outConfirmFlag = 0;
+            button->SetState(1);
+        }
+    } else {
+        *outConfirmFlag = 0;
+        button->SetState(0);
     }
-
-    button->SetState(setStateArg);
     cancelButton->SetState(0);
 }
 
