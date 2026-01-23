@@ -305,12 +305,11 @@ void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, i
 void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
     GlyphRect local_2c;
-    GlyphRect local_1c;
-
     local_2c.left = clip_x1;
-    local_2c.top = clip_y1;
     local_2c.right = clip_x2;
+    local_2c.top = clip_y1;
     local_2c.bottom = clip_y2;
+    GlyphRect local_1c;
     local_1c.left = param_1;
     local_1c.top = param_3;
     local_1c.right = param_2;
@@ -326,12 +325,11 @@ void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, in
 void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
     GlyphRect local_2c;
-    GlyphRect local_1c;
-
     local_2c.left = clip_x1;
-    local_2c.top = clip_y1;
     local_2c.right = clip_x2;
+    local_2c.top = clip_y1;
     local_2c.bottom = clip_y2;
+    GlyphRect local_1c;
     local_1c.left = param_1;
     local_1c.top = param_3;
     local_1c.right = param_2;
@@ -346,32 +344,36 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41B110 */
 void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale)
 {
-    GlyphRect local_30;
-    GlyphRect local_20;
-    int local_10;
-
     int scaledWidth = (int)(srcBuffer->width * scale);
     int scaledHeight = (int)(srcBuffer->height * scale);
 
     if ((scaledWidth >= 1) && (scaledHeight >= 1)) {
-        local_10 = CreateTableFromBuffer((int)g_Buffer_00436964, scaledWidth, scaledHeight);
+        int local_10 = CreateTableFromBuffer((int)g_Buffer_00436964, scaledWidth, scaledHeight);
         if (local_10 < 0) {
             ShowError("VBuffer::ScaleTCCopy");
         }
         void* puVar3 = (void*)GetVideoBufferData(local_10);
         ScaleBuffer(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
 
-        local_30.left = clip_x1;
-        local_30.top = clip_y1;
-        local_30.right = clip_x2;
-        local_30.bottom = clip_y2;
+        GlyphRect local_30;
+        local_30.left = 0;
+        local_30.top = 0;
+        local_30.right = 0;
+        local_30.bottom = 0;
+        GlyphRect local_20;
         local_20.left = 0;
         local_20.top = 0;
+        local_20.right = 0;
+        local_20.bottom = 0;
+
+        local_30.left = clip_x1;
+        local_30.right = clip_x2;
+        local_30.top = clip_y1;
+        local_30.bottom = clip_y2;
         local_20.right = scaledWidth - 1;
         local_20.bottom = scaledHeight - 1;
 
-        int iVar4 = ClipRectBottomUp(&local_30.left, &local_20.left, &param_1, &param_2);
-        if (iVar4 != 0) {
+        if (ClipRectBottomUp(&local_30.left, &local_20.left, &param_1, &param_2)) {
             BlitBufferTransparent(local_20.left, local_20.right, local_20.top, local_20.bottom, param_1, param_2, local_10, handle);
             ReleaseBufferEntry(local_10);
         }

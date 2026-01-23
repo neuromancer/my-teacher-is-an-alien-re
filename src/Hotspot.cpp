@@ -7,7 +7,6 @@
 #include <string.h>
 
 // External functions for cleanup
-extern void __fastcall FUN_0041ce30(void*);  // Sprite destructor
 extern void FreeMemory(void*);  // 0x00424940
 
 // T_Hotspot class - base class for CharSprite/CharButton
@@ -33,32 +32,28 @@ T_Hotspot::~T_Hotspot()
     // Clean up sprite at 0x88
     spr = sprite;
     if (spr != 0) {
-        FUN_0041ce30(spr);
-        FreeMemory(spr);
+        delete spr;
         sprite = 0;
     }
 
     // Clean up list1 at 0x8c
     lst = list1;
     if (lst != 0) {
-        lst->~MouseControl();
-        FreeMemory(lst);
+        delete lst;
         list1 = 0;
     }
 
     // Clean up list2 at 0x90
     lst = list2;
     if (lst != 0) {
-        lst->~MouseControl();
-        FreeMemory(lst);
+        delete lst;
         list2 = 0;
     }
 
     // Clean up list3 at 0x94
     lst = list3;
     if (lst != 0) {
-        lst->~MouseControl();
-        FreeMemory(lst);
+        delete lst;
         list3 = 0;
     }
 }

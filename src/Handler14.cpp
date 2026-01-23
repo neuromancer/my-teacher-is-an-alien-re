@@ -7,13 +7,6 @@
 #include "SC_Question.h"
 #include "SoundItem.h"
 
-// External functions
-extern void* __fastcall FUN_0040c500(int* list);               // Pop from list
-extern void* __fastcall FUN_0040c0d0(int list);                // Get current node data
-extern void FUN_0040c580(void* node, int flag);                // Node destructor
-extern void FUN_0040c430(MessageList* list, SoundItem* data);  // Insert into list
-extern MessageNode* __fastcall FUN_0040c5b0(MessageNode* node, SoundItem* data);  // Node init
-
 /* Function start: 0x40B7E0 */
 Handler14::Handler14() {
     // Set handlerId to 14
@@ -214,7 +207,7 @@ int Handler14::Exit(SC_Message* msg) {
         if (pList->head != 0) {
             pList->current = pList->head;
             while (pList->head != 0) {
-                data = (SoundItem*)FUN_0040c500((int*)pList);
+                data = (SoundItem*)pList->PopCurrent();
                 if (data != 0) {
                     delete data;
                 }
@@ -277,9 +270,9 @@ int Handler14::Exit(SC_Message* msg) {
                     if (node->next != 0) {
                         node->next->prev = node->prev;
                     }
-                    eventData = (SoundItem*)FUN_0040c0d0((int)pList);
+                    eventData = (SoundItem*)pList->GetCurrentData();
                     if (pList->current != 0) {
-                        FUN_0040c580(pList->current, 1);
+                        ((MessageNode*)pList->current)->Destroy(1);
                         pList->current = 0;
                     }
                     pList->current = pList->head;
@@ -381,7 +374,7 @@ SoundItem* Handler14::FindOrCreateSound(int soundId)
             allocResult = operator new(0xc);
             newNode = 0;
             if (allocResult != 0) {
-                newNode = FUN_0040c5b0((MessageNode*)allocResult, newItem);
+                newNode = ((MessageNode*)allocResult)->Init(newItem);
             }
 
             if (pList->current == 0) {
@@ -483,7 +476,7 @@ SoundItem* Handler14::FindOrCreateSound(int soundId)
             }
         }
     } else {
-        FUN_0040c430(pList, newItem);
+        pList->InsertBeforeCurrent(newItem);
     }
 
     return newItem;

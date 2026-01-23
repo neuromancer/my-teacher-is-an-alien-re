@@ -63,7 +63,6 @@ void ParsePath(const char *, char *, char *, char *, char *);
 }
 
 
-void FUN_00421840();
 void ShutdownGameSystems();
 // Function Declarations
 void InitGameSystems(void);
@@ -114,10 +113,12 @@ void RunGame() {
     g_WorkBuffer_00436974->ClearScreen(0);
 
 
-    delete g_Mouse_00436978;
-    g_Mouse_00436978 = 0;
-    
-    g_Mouse_00436978 = new Mouse(); //pMouse;
+    if (g_Mouse_00436978 != 0) {
+        delete g_Mouse_00436978;
+        g_Mouse_00436978 = 0;
+    }
+
+    g_Mouse_00436978 = new Mouse();
     ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
     
     g_Unknown_00436994 = new char[0x40];
@@ -151,7 +152,7 @@ void RunGame() {
 
     g_Mouse_00436978->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
-    //g_TextManager_00436990->charAdvance = 2;
+    g_TextManager_00436990->char_adv.advance = 2;
     g_Timer_00436980->Reset();
 
     SC_Message_Send(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
@@ -313,8 +314,7 @@ void ShutdownGameSystems(void) {
     g_Sound_0043696c = 0;
   }
   if (g_InputManager_00436968 != 0) {
-    FUN_00421840();
-    FreeMemory(g_InputManager_00436968);
+    delete g_InputManager_00436968;
     g_InputManager_00436968 = 0;
   }
 

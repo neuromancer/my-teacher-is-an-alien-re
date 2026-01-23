@@ -37,6 +37,9 @@ public:
     virtual void Draw(int param1, int param2);
     virtual int Exit(SC_Message* msg);
 
+    // Helper method
+    void ProcessMessage();
+
     // Handler16-specific fields starting at 0xA0
     // Note: field_98 from Handler is used as isInitialized flag
     int savedScreenX;       // 0xA0

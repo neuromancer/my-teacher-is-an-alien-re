@@ -1,6 +1,8 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#include <windows.h>
+
 // Forward declarations
 struct CharSprite;
 struct PriorityQueue;
@@ -28,10 +30,13 @@ struct PriorityQueue {
 // CharSprite - Sprite for character display
 // Size: 0x5C bytes (92 bytes)
 struct CharSprite {
-    char field_0x00[4];         // +0x00
+    int field_00;               // +0x00
     char name[64];              // +0x04 - name/label string
     int priority;               // +0x44
-    char field_0x48[20];        // +0x48-0x5B
+    int field_48;               // +0x48
+    RECT bounds;                // +0x4c
+
+    CharSprite();               // 0x408880
 };
 
 // Character - Game character object
@@ -57,7 +62,6 @@ public:
 };
 
 // External functions used by Character
-extern CharSprite* __fastcall FUN_00408880(CharSprite* mem);
 extern PriorityQueueNode* __fastcall FUN_00404470(PriorityQueueNode* node, CharSprite* sprite);
 
 // FUN_00424c00 is just strstr from the CRT

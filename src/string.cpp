@@ -43,7 +43,8 @@ extern int DAT_0043503c;
 extern int DAT_00435040;
 
 // Message log enabled flag (was hardcoded at 0x43d5a8)
-char g_messageLogEnabled = 1;
+// File-local since only used in string.cpp
+static char g_messageLogEnabled = 1;
 
 
 char* strstr_custom(const char* haystack, const char* needle) {

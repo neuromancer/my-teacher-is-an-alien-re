@@ -69,7 +69,7 @@ void Sound::AllocateSampleHandles() {
   short sVar2 = 0;
   while (sVar2 < 13) {
     int index = sVar2;
-    HSAMPLE *slot = (HSAMPLE *)((char *)this + 4 + index * 4);
+    HSAMPLE *slot = &samples[index];
     HSAMPLE handle = AIL_allocate_sample_handle(digital_driver);
     *slot = handle;
     if (handle == 0)

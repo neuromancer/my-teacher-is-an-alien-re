@@ -78,7 +78,7 @@ public:
     void ProcessSubmenuHover(int mouseX, int mouseY);
     void ProcessGoButtonHover(int mouseX, int mouseY, Hotspot* goButton, int* confirmFlag);
     void DisplaySubmenuHover(int mouseX, int mouseY);
-    void RenderAll(int mouseX, int mouseY);
+
     void SetCharacterOption(int characterIndex);
     void SetSubmenuOption(int submenuIndex, int state);
     void PlaySoundsIfNeeded();

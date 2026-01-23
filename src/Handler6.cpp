@@ -92,11 +92,11 @@ void Handler6::Init(SC_Message* msg) {
 
     // Set palette if needed
     if (palette != 0) {
-        int* palettePtr = (int*)((char*)g_ZBufferManager_0043698c + 0xa8);
+        void** palettePtr = &g_ZBufferManager_0043698c->m_fieldA8;
         if (*palettePtr != 0) {
             WriteToMessageLog("ddouble palette");
         }
-        *palettePtr = (int)palette;
+        *palettePtr = palette;
     }
 }
 

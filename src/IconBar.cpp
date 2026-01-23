@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "Sprite.h"
+#include "InputManager.h"
 #include "SoundList.h"
 #include "Sample.h"
 #include "Memory.h"
@@ -346,7 +347,7 @@ void IconBar::DrawIconBar(int param1, int param2) {
     }
 
     // Get mouse position
-    mouseData = *(int**)((char*)g_InputManager_00436968 + 0x1a0);
+    mouseData = (int*)g_InputManager_00436968->pMouse;
     if (mouseData == 0) {
         mouseX = 0;
         mouseY = 0;

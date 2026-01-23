@@ -13,20 +13,14 @@
 #include <string.h>
 #include <stdio.h>
 
-// External destructor for DialogQuestion (0x4067e0)
-extern void __fastcall DialogQuestion_Destructor(DialogQuestion* pThis);
+// SC_Question::~SC_Question() at 0x4067e0
+// SC_Question::Finalize() at 0x4069b0
+// SC_Question::SC_Question(int) at 0x4066d0
+// All implemented in SC_Question.cpp
 
-// SC_Question::Finalize (0x4069b0)
-extern void __fastcall SC_Question_Finalize(DialogQuestion* pThis);
-
-// SC_Question constructor (0x4066d0)
-extern DialogQuestion* __fastcall SC_Question_Constructor(void* mem, int id);
-
-// Get dialog from queue by index (0x407c50)
-extern DialogQuestion* __fastcall GetDialogByIndex(Handler9* pThis, int index);
-
-// Find dialog by id and remove from queue (0x407d20)
-extern DialogQuestion* __fastcall FindDialogById(Handler9* pThis, int id);
+// Forward declarations (implemented at end of file)
+DialogQuestion* __fastcall GetDialogByIndex(Handler9* pThis, int index);
+DialogQuestion* __fastcall FindDialogById(Handler9* pThis, int id);
 
 // QueueNode constructor (0x408860)
 extern QueueNode* __fastcall QueueNode_Constructor(void* mem, void* data);
@@ -50,7 +44,7 @@ Handler9::Handler9() {
 /* Function start: 0x407070 */
 Handler9::~Handler9() {
     MouseControl* mc;
-    SC_Dialog_H9* dlg;
+    SC_Dialog* dlg;
     Sprite* spr;
     Queue* queue;
     QueueNode* node;
@@ -117,7 +111,7 @@ Handler9::~Handler9() {
                     queue->m_current = queue->m_head;
                 }
                 if (dq != 0) {
-                    DialogQuestion_Destructor(dq);
+                    dq->~SC_Question();
                     FreeMemory(dq);
                 }
             }
@@ -142,7 +136,7 @@ void Handler9::Init(SC_Message* msg) {
     if (initData != 0 && msg->targetAddress == 0xb) {
         msg->userPtr = 0;
         mouseControl = (MouseControl*)initData->ptr1;
-        dialog = (SC_Dialog_H9*)initData->ptr2;
+        dialog = (SC_Dialog*)initData->ptr2;
         initData->ptr1 = 0;
         initData->ptr2 = 0;
         if (initData != 0) {
@@ -185,11 +179,11 @@ int Handler9::HandleMessage(SC_Message* msg) {
 
     if (currentDialog != 0) {
         if (msg->field_b4 == 0x1b) {
-            SC_Question_Finalize(currentDialog);
+            currentDialog->Finalize();
             dq = currentDialog;
             if (dq->state == 2) {
                 if (dq != 0) {
-                    DialogQuestion_Destructor(dq);
+                    dq->~SC_Question();
                     FreeMemory(dq);
                     currentDialog = 0;
                     return 1;
@@ -244,7 +238,7 @@ int Handler9::Update(SC_Message* msg) {
     mouseControl = 0;
     dialog = 0;
     if (dq != 0) {
-        DialogQuestion_Destructor(dq);
+        dq->~SC_Question();
         FreeMemory(dq);
         currentDialog = 0;
     }
@@ -285,7 +279,7 @@ int Handler9::Update(SC_Message* msg) {
                     queue->m_current = queue->m_head;
                 }
                 if (dq != 0) {
-                    DialogQuestion_Destructor(dq);
+                    dq->~SC_Question();
                     FreeMemory(dq);
                 }
             }
@@ -347,7 +341,7 @@ int Handler9::Exit(SC_Message* msg) {
 
             if (dq->state == 2) {
                 if (dq != 0) {
-                    DialogQuestion_Destructor(dq);
+                    dq->~SC_Question();
                     goto free_dq;
                 }
             } else {
@@ -463,7 +457,7 @@ int Handler9::Exit(SC_Message* msg) {
         dq = FindDialogById(this, msg->sourceAddress);
         g_Manager_00435a84->SetFlag(msg->sourceAddress, 1);
         if (dq != 0) {
-            DialogQuestion_Destructor(dq);
+            dq->~SC_Question();
 free_dq:
             FreeMemory(dq);
         }
@@ -474,4 +468,166 @@ free_dq:
     }
 
     return 1;
+}
+
+/* Function start: 0x407C50 */
+DialogQuestion* __fastcall GetDialogByIndex(Handler9* pThis, int index)
+{
+    int counter;
+    Queue* queue;
+    QueueNode* node;
+    QueueNode* prevNode;
+    QueueNode* nextNode;
+    DialogQuestion* result;
+
+    counter = 0;
+    queue = pThis->dialogQueue;
+    if (queue == 0) {
+        return 0;
+    }
+    queue->m_current = queue->m_head;
+    if (queue->m_head == 0) {
+        return 0;
+    }
+
+LAB_loop:
+    queue = pThis->dialogQueue;
+    node = (QueueNode*)queue->m_current;
+    if (counter == index) {
+        if (node == 0) {
+            return 0;
+        }
+        // Unlink node from queue
+        if (queue->m_head == node) {
+            queue->m_head = node->next;
+        }
+        if (queue->m_tail == queue->m_current) {
+            queue->m_tail = ((QueueNode*)queue->m_current)->prev;
+        }
+        prevNode = ((QueueNode*)queue->m_current)->prev;
+        if (prevNode != 0) {
+            prevNode->next = ((QueueNode*)queue->m_current)->next;
+        }
+        nextNode = ((QueueNode*)queue->m_current)->next;
+        if (nextNode != 0) {
+            nextNode->prev = ((QueueNode*)queue->m_current)->prev;
+        }
+        node = (QueueNode*)queue->m_current;
+        result = 0;
+        if (node != 0) {
+            result = (DialogQuestion*)node->data;
+            node->data = 0;
+            node->prev = 0;
+            node->next = 0;
+            FreeMemory(node);
+            queue->m_current = 0;
+        }
+        queue->m_current = queue->m_head;
+        return result;
+    }
+    if (queue->m_tail == node) {
+        return 0;
+    }
+    if (node != 0) {
+        queue->m_current = node->next;
+    }
+    counter++;
+    if (queue->m_head != 0) {
+        goto LAB_loop;
+    }
+
+    return 0;
+}
+
+/* Function start: 0x407D20 */
+DialogQuestion* __fastcall FindDialogById(Handler9* pThis, int id)
+{
+    void* mem;
+    DialogQuestion* searchQuestion;
+    Queue* queue;
+    QueueNode* node;
+    QueueNode* prevNode;
+    QueueNode* nextNode;
+    DialogQuestion* nodeData;
+    DialogQuestion* result;
+
+    searchQuestion = new SC_Question(id);
+
+    queue = pThis->dialogQueue;
+    if (queue == 0) {
+        goto LAB_cleanup;
+    }
+
+    if (searchQuestion == 0) {
+        ShowError("queue fault 0103");
+    }
+
+    queue->m_current = queue->m_head;
+    if (queue->m_head == 0) {
+        goto LAB_cleanup;
+    }
+
+LAB_search:
+    node = (QueueNode*)queue->m_current;
+    nodeData = 0;
+    if (node != 0) {
+        nodeData = (DialogQuestion*)node->data;
+    }
+    if (nodeData->questionId == searchQuestion->questionId) {
+        // Found - cleanup search question
+        if (searchQuestion != 0) {
+            searchQuestion->~SC_Question();
+            FreeMemory(searchQuestion);
+        }
+
+        // Remove node from queue
+        queue = pThis->dialogQueue;
+        node = (QueueNode*)queue->m_current;
+        if (node == 0) {
+            return 0;
+        }
+        if (queue->m_head == node) {
+            queue->m_head = node->next;
+        }
+        if (queue->m_tail == queue->m_current) {
+            queue->m_tail = ((QueueNode*)queue->m_current)->prev;
+        }
+        prevNode = ((QueueNode*)queue->m_current)->prev;
+        if (prevNode != 0) {
+            prevNode->next = ((QueueNode*)queue->m_current)->next;
+        }
+        nextNode = ((QueueNode*)queue->m_current)->next;
+        if (nextNode != 0) {
+            nextNode->prev = ((QueueNode*)queue->m_current)->prev;
+        }
+        node = (QueueNode*)queue->m_current;
+        result = 0;
+        if (node != 0) {
+            result = (DialogQuestion*)node->data;
+            node->data = 0;
+            node->prev = 0;
+            node->next = 0;
+            FreeMemory(node);
+            queue->m_current = 0;
+        }
+        queue->m_current = queue->m_head;
+        return result;
+    }
+
+    if (queue->m_tail == node) {
+        goto LAB_cleanup;
+    }
+    if (node != 0) {
+        queue->m_current = node->next;
+    }
+    if (queue->m_current != 0) {
+        goto LAB_search;
+    }
+
+LAB_cleanup:
+    if (searchQuestion != 0) {
+        searchQuestion->~SC_Question();
+        FreeMemory(searchQuestion);
+    }
+    return 0;
 }

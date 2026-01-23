@@ -27,7 +27,7 @@ EngineB::EngineB() {
   EngineB::field_0x158.field_0 = 0;
   EngineB::field_0x158.field_4 = 0;
 
-  memset((char*)this + 0xe8, 0, 0x80);
+  memset(&field_0xe8, 0, 0x80);
 }
 
 /* Function start: 0x4121f0 */

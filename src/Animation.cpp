@@ -10,6 +10,7 @@
 
 #include "Memory.h"
 #include <windows.h>
+#include <new>
 
 extern "C" {
 void *GetGameWindowHandle();
@@ -25,12 +26,14 @@ extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, un
 
 /* Function start: 0x41FA50 */
 Animation::Animation() {
+  field_10 = 0;
+  field_14 = 0;
   CleanArray10();
 }
 
 /* Function start: 0x41FAC0 */
 void Animation::Delete(unsigned char param_1) {
-  delete this;
+  Animation::~Animation();
   if ((param_1 & 1) != 0) {
     FreeMemory(this);
   }
@@ -38,13 +41,10 @@ void Animation::Delete(unsigned char param_1) {
 
 /* Function start: 0x41FAE0 */
 Animation::Animation(char *filename) {
-  //field_10 = 0;
-  //field_14 = 0;
-  //try {
-    CleanArray10();
-    OpenAndConvertToBuffer(filename);
-  //} catch (...) {
-  //}
+  field_10 = 0;
+  field_14 = 0;
+  CleanArray10();
+  OpenAndConvertToBuffer(filename);
 }
 
 /* Function start: 0x41FB60 */
@@ -81,7 +81,7 @@ void Animation::CloseSmackerBuffer() {
 /* Function start: 0x41FC20 */
 int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
   if (smk != 0 && smack_buffer != 0) {
-    data->SetCurrentVideoMode(data->handle);
+    targetBuffer->SetCurrentVideoMode(targetBuffer->handle);
     if (smk->NewPalette != 0) {
       SmackBufferNewPalette(smack_buffer, smk->Palette, 0);
       SmackColorRemap(smk, smack_buffer->Palette,
@@ -89,7 +89,7 @@ int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
                       smack_buffer->Unk43C);
     }
     SetPaletteEntriesAnimation((char *)smk->Palette, param_1, param_2);
-    data->InvalidateVideoMode();
+    targetBuffer->InvalidateVideoMode();
     return 0;
   }
   return 0;
@@ -145,14 +145,6 @@ void Animation::VBInit() {
     ShowError("Animation::VBInit() - Virtual Buffer already defined");
   }
 
-  /*VBuffer *vbuffer = (VBuffer *)AllocateMemory(0x30);
-  try {
-    if (vbuffer != 0) {
-      HSMACK smk = smk;
-      vbuffer = vbuffer->CreateAndClean(smk->Width, smk->Height);
-    }
-  } catch (...) {
-  }*/
   vbuffer = new VBuffer(smk->Width, smk->Height);
 }
 
@@ -160,7 +152,7 @@ void Animation::VBInit() {
 void Animation::FreeVBuffer() {
   delete vbuffer;
   vbuffer = 0;
-  data = 0;
+  targetBuffer = 0;
 }
 
 /* Function start: 0x41FE50 */
@@ -184,18 +176,18 @@ void Animation::ToBufferVB(VBuffer *buffer) {
     ShowError("Animation::ToBuffer() - No smk defined");
   }
 
-  smack_handle = GetGameWindowHandle();
-  smack_buffer = SmackBufferOpen(smack_handle, 4, 4, 4, 0, 0);
+  windowHandle = (HWND)GetGameWindowHandle();
+  smack_buffer = SmackBufferOpen(windowHandle, 4, 4, 4, 0, 0);
 
   if (smack_buffer == 0) {
     ShowError("Animation::ToBuffer() - Buffer creation failed");
   }
 
-  if (data != 0) {
+  if (targetBuffer != 0) {
     ShowError("Animation::ToBuffer() - Virtual Buffer already defined");
   }
 
-  data = buffer;
+  targetBuffer = buffer;
   unsigned int uVar3 = *(unsigned char*)smack_buffer;
   void *uVar1 = buffer->GetData();
   SmackToBuffer(smk, 0, 0, smk->Width, smk->Height, uVar1,
@@ -207,14 +199,10 @@ void Animation::Play(char *filename, unsigned int flags) {
   Palette *palette;
 
   Animation::flags = flags;
-  Animation::palette = 0;
+  Animation::playStatus = 0;
 
   if ((flags & 1) == 0) {
-    void *mem = AllocateMemory(8);
-    palette = 0;
-    if (mem != 0) {
-      palette = CreatePaletteBuffer((Palette *)mem);
-    }
+    palette = new Palette();
     palette->CopyEntries(0, 0x100);
   }
 
@@ -230,10 +218,7 @@ void Animation::Play(char *filename, unsigned int flags) {
   if (palette != 0) {
     BlankScreen();
     palette->SetPalette(0, 0x100);
-    if (palette != 0) {
-      palette->Cleanup();
-      FreeMemory(palette);
-    }
+    delete palette;
   }
 }
 
@@ -244,7 +229,7 @@ void Animation::MainLoop() {
   }
 
   int frame = 1;
-  data->SetCurrentVideoMode(data->handle);
+  targetBuffer->SetCurrentVideoMode(targetBuffer->handle);
   if (smk->Frames >= frame) {
     do {
       if (smk->NewPalette != 0) {
@@ -270,13 +255,13 @@ void Animation::MainLoop() {
               goto wait;
             }
           }
-          *(unsigned int *)((char*)this + 0x20) |= 1;
+          playStatus |= 1;
           goto end_loop;
         }
       wait:;
       } while (SmackWait(smk) != 0);
 
-      VBuffer *vbuffer = data;
+      VBuffer *vbuffer = targetBuffer;
       int iVar1 = *GetWindowHeight() - 1;
       int iVar2 = *GetWindowWidth() - 1;
       vbuffer->CallBlitter5(
@@ -291,6 +276,6 @@ void Animation::MainLoop() {
     } while (frame <= smk->Frames);
   }
 end_loop:
-  data->InvalidateVideoMode();
+  targetBuffer->InvalidateVideoMode();
 }
 

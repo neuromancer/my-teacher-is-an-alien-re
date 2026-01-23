@@ -36,21 +36,7 @@ int SCI_Dialog::LBLParse(char* param_1)
         Parser::ProcessFile(s, this, 0);
     }
     else if (_strcmpi(key, "HANDLE") == 0) {
-        // Param 0x8c? 
-        // SearchScreen is 0x638+? 
-        // 0x8c is NOT in SearchScreen fields which start at 0x600?
-        // Wait, SearchScreen inherits Parser (0x88). 0x88, 0x8c are available?
-        // Parser has fields up to 0x88 (0x84 actually, size is 0x88).
-        // 0x88 -> Parser end.
-        // So 0x8c is free if SearchScreen adds fields? 
-        // My SearchScreen definition: field_600.
-        // It has padding [0x600 - sizeof(Parser)].
-        // So 0x8c is inside padding?
-        // If SCI_Dialog uses 0x8c, I should expose it in SearchScreen or SCI_Dialog.
-        // I'll add field_8c to SearchScreen or SCI_Dialog (via shadowing padding).
-        // For now, I'll access via byte offset.
-        
-        sscanf(param_1, "%*s %d", (int*)((char*)this + 0x8c));
+        sscanf(param_1, "%*s %d", &field_8c);
     }
     else if (_strcmpi(key, "AMBIENTSCONTROLLER") == 0) {
         int val;

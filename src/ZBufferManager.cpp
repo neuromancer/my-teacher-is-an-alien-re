@@ -25,10 +25,9 @@ struct CommandType1 : public SoundCommand {
     int x;                   // 0x0c
     int y;                   // 0x10
     int mode;                // 0x14
-    int scale_low;           // 0x18
-    int scale_high;          // 0x1c
+    double scale;            // 0x18
 
-    CommandType1() : parameter1(0), data(0), x(0), y(0), mode(0), scale_low(0), scale_high(0) {}
+    CommandType1() : parameter1(0), data(0), x(0), y(0), mode(0), scale(0) {}
 
     virtual void Execute(GlyphRect* rect);
 };
@@ -96,10 +95,10 @@ void CommandType1::Execute(GlyphRect* rect)
         g_WorkBuffer_00436974->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
         return;
     case 2:
-        DrawScaledSprite(x, y, data, *(double*)&scale_low);
+        DrawScaledSprite(x, y, data, scale);
         return;
     case 3:
-        g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, *(double*)&scale_low);
+        g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, scale);
     }
     return;
 }
@@ -298,7 +297,7 @@ void* ZBQueue::GetCurrentData()
 }
 
 /* Function start: 0x41BE20 */
-void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, int mode, int scale1, int scale2)
+void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, int mode, double scale)
 {
     if (m_state != 0) {
         if (m_state != 1) {
@@ -308,19 +307,18 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
 
             cmd->data = data;
             cmd->parameter1 = priority;
-            
+
             // Apply jitter if flags & 2
             if ((m_flags & 2) != 0) {
                  x = rand() % 5 - 2 + x;
                  y = rand() % 5 - 2 + y;
             }
-            
+
             cmd->x = x;
             cmd->y = y;
             cmd->mode = mode;
-            cmd->scale_high = scale2;
-            cmd->scale_low = scale1;
-            
+            cmd->scale = scale;
+
             QueueCommand(cmd);
         }
         else {
@@ -333,10 +331,10 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
                      g_WorkBuffer_00436974->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
                      break;
                 case 2:
-                     DrawScaledSprite(x, y, data, *(double*)&scale1);
+                     DrawScaledSprite(x, y, data, scale);
                      break;
                 case 3:
-                     g_WorkBuffer_00436974->ScaleTCCopy(x, y, vbuf, *(double*)&scale1);
+                     g_WorkBuffer_00436974->ScaleTCCopy(x, y, vbuf, scale);
                      break;
             }
         }

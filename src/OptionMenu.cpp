@@ -253,6 +253,72 @@ void OptionMenu::SetOptionState(int param_1, int param_2)
     }
 }
 
+/* Function start: 0x40A040 */
+int OptionMenu::HitTest(MousePoint pt, int* indexOut, int* hitOut)
+{
+    SpriteListNode* node;
+    SpriteData* data;
+    SpriteNode* pList;
+    int hit;
+
+    pList = spriteList;
+    if (pList != 0) {
+        pList->current = pList->head;
+        pList = spriteList;
+        if (pList->head != 0) {
+            while (1) {
+                pList = spriteList;
+                data = 0;
+                node = pList->current;
+                if (node != 0) {
+                    data = (SpriteData*)node->data;
+                }
+
+                if (data->rect_x > pt.x) {
+                    hit = 0;
+                } else if (data->rect_w < pt.x) {
+                    hit = 0;
+                } else if (data->rect_y > pt.y) {
+                    hit = 0;
+                } else {
+                    hit = 1;
+                    if (data->rect_h < pt.y) {
+                        hit = 0;
+                    }
+                }
+
+                if (hit != 0) {
+                    node = spriteList->current;
+                    if (node == 0) {
+                        data = 0;
+                    } else {
+                        data = (SpriteData*)node->data;
+                    }
+                    data->state = 3;
+                    *hitOut = 0;
+                    break;
+                }
+
+                if (pList->tail == node) {
+                    break;
+                }
+
+                if (node != 0) {
+                    pList->current = node->prev;
+                }
+
+                ++*indexOut;
+
+                if (spriteList->head == 0) {
+                    break;
+                }
+            }
+        }
+    }
+
+    return *hitOut == 0;
+}
+
 /* Function start: 0x40A150 */
 void OptionMenu::SelectCharacter(int characterIndex)
 {

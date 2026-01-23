@@ -355,7 +355,7 @@ int Handler10::HandleMessage(SC_Message* msg) {
         currentCharacterIndex = hoverCharacterIndex;
 
         if (prevCharacter == -1) {
-            SetCharacterOption(currentCharacterIndex);
+            SetCharacterOptionInternal();
         }
 
         characters[currentCharacterIndex]->SetState(1);
@@ -393,8 +393,8 @@ int Handler10::HandleMessage(SC_Message* msg) {
             msg->command = handlerVal;
         }
         msg->targetAddress = handlerId;
+        msg->data = field_8C;
         msg->priority = 5;
-        msg->sourceAddress = field_8C;
     }
 
     return 1;
@@ -431,7 +431,7 @@ void Handler10::Draw(int param1, int param2) {
     }
 
     // Render all elements and process hover
-    RenderAll(mouseX, mouseY);
+    DisplaySubmenuHover(mouseX, mouseY);
 
     // Draw iconbar
     IconBar::DrawIconBar(param1, param2);
@@ -533,6 +533,108 @@ void Handler10::PlayCharacterSound(int soundIndex) {
     }
 }
 
+/* Function start: 0x405590 */
+void Handler10::DisplaySubmenuHover(int mouseX, int mouseY) {
+    MousePoint pos;
+    int iVar1;
+
+    pos.x = mouseX;
+    pos.y = mouseY;
+
+    ResetHoverState();
+    ProcessCharacterHover(pos.x, pos.y);
+    ProcessSubmenuHover(pos.x, pos.y);
+    ProcessGoButtonHover(pos.x, pos.y, goButton, &confirmFlag);
+
+    if (sounds[0].enabled != 0) {
+        hoverCharacterIndex = 1;
+    }
+
+    iVar1 = prevCharacter;
+    if (iVar1 != -1 && currentCharacterIndex != iVar1) {
+        characters[iVar1]->SetState(0);
+        currentSubmenuIndex = -1;
+        prevSubmenu = -1;
+        prevCharacter = currentCharacterIndex;
+        SetCharacterOptionInternal();
+    }
+
+    iVar1 = currentCharacterIndex;
+    if (iVar1 != -1) {
+        if (hoverCharacterIndex != iVar1) {
+            characters[iVar1]->SetState(1);
+            prevCharacter = currentCharacterIndex;
+        } else {
+            if (iVar1 != -1 && hoverCharacterIndex == iVar1) {
+                characters[iVar1]->SetState(2);
+            }
+        }
+    }
+
+    iVar1 = prevSubmenu;
+    if (iVar1 != -1 && currentSubmenuIndex != iVar1) {
+        SetSubmenuOption(iVar1, 0);
+    }
+
+    iVar1 = currentSubmenuIndex;
+    if (iVar1 != -1) {
+        if (hoverSubmenuIndex != iVar1) {
+            SetSubmenuOption(iVar1, 1);
+            prevSubmenu = currentSubmenuIndex;
+        } else {
+            if (iVar1 != -1 && hoverSubmenuIndex == iVar1) {
+                SetSubmenuOption(iVar1, 2);
+            }
+        }
+    }
+
+    if (needsRefresh != 0 && currentCharacterIndex != -1) {
+        SetCharacterOptionInternal();
+        needsRefresh = 0;
+    }
+}
+
+/* Function start: 0x405AA0 */
+void Handler10::ProcessGoButtonHover(int mouseX, int mouseY, Hotspot* button, int* outConfirmFlag) {
+    int selectionComplete;
+    int setStateArg;
+
+    selectionComplete = IsSelectionComplete();
+    if (selectionComplete == 0) {
+        setStateArg = 0;
+        *outConfirmFlag = 0;
+    } else {
+        MousePoint pos;
+        int isHit;
+
+        pos.x = mouseX;
+        pos.y = mouseY;
+
+        if (button->enabled == 0) {
+            setStateArg = 1;
+            *outConfirmFlag = 0;
+        } else {
+            if (pos.x < button->rect_x || button->rect_w < pos.x ||
+                pos.y < button->rect_y || button->rect_h < pos.y) {
+                isHit = 0;
+            } else {
+                isHit = 1;
+            }
+
+            if (isHit != 0) {
+                *outConfirmFlag = 1;
+                setStateArg = 2;
+            } else {
+                *outConfirmFlag = 0;
+                setStateArg = 1;
+            }
+        }
+    }
+
+    button->SetState(setStateArg);
+    cancelButton->SetState(0);
+}
+
 /* Function start: 0x405880 */
 void Handler10::RenderGoButton() {
     if (goButton != 0) {
@@ -569,7 +671,7 @@ void Handler10::RenderChoiceScreen(int characterIndex) {
 }
 
 /* Function start: 0x405900 */
-void Handler10::RenderAll(int mouseX, int mouseY) {
+void Handler10::ProcessCharacterHover(int mouseX, int mouseY) {
     Hotspot** charPtr;
     int i;
     int noHover;
@@ -626,6 +728,37 @@ void Handler10::RenderAll(int mouseX, int mouseY) {
         if (prevHoverCharacter != -1) {
             characters[prevHoverCharacter]->SetState(0);
             prevHoverCharacter = -1;
+        }
+    }
+}
+
+/* Function start: 0x405BB0 */
+void Handler10::ProcessSubmenuHover(int mouseX, int mouseY) {
+    MousePoint pos;
+    int hitOut;
+
+    pos.x = 0;
+    hitOut = 1;
+
+    if (currentCharacterIndex != -1) {
+        MousePoint mousePt;
+        mousePt.x = mouseX;
+        mousePt.y = mouseY;
+        if (choiceScreen->HitTest(mousePt, &pos.x, &hitOut) != 0) {
+            hoverSubmenuIndex = pos.x;
+        }
+
+        if (hoverSubmenuIndex != prevSubmenuHover) {
+            if (prevSubmenuHover != -1) {
+                pos.x = prevSubmenuHover;
+                SetSubmenuOption(prevSubmenuHover, 0);
+            }
+        }
+
+        if (hitOut == 0) {
+            prevSubmenuHover = -1;
+        } else {
+            prevSubmenuHover = hoverSubmenuIndex;
         }
     }
 }

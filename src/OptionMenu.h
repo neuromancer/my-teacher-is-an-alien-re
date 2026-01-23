@@ -2,6 +2,7 @@
 #define OPTIONMENU_H
 
 #include "Sprite.h"
+#include "InputManager.h"
 
 struct SpriteNode;
 
@@ -15,6 +16,7 @@ public:
     OptionMenu();
     ~OptionMenu();
     int LBLParse(char* command);
+    int HitTest(MousePoint pt, int* indexOut, int* hitOut);
     void UpdateSpriteStates(int sprite_count, int sprite_index);
     void Render(int characterIndex);
     void SetOptionState(int param_1, int param_2);

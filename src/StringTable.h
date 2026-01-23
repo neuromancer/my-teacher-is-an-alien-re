@@ -12,11 +12,12 @@ public:
 
     StringTable(char* filename, int loadNow);
     ~StringTable();
-    
+
     // Internal helpers
-    void Load(); 
-    void Unload(); 
+    void Load();
+    void Unload();
     FILE* Open();
+    int GetString(unsigned int id, char* outBuffer);
 };
 
 #endif

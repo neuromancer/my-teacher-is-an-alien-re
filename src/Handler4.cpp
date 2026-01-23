@@ -213,7 +213,7 @@ Handler4::~Handler4() {
 
 /* Function start: 0x40EB80 */
 void Handler4::Init(SC_Message* msg) {
-    int* rendererPtr;
+    void** rendererPtr;
     Palette* p;
 
     WriteToMessageLog("\nENTER FORCEFIELD PUZZLE");
@@ -223,11 +223,11 @@ void Handler4::Init(SC_Message* msg) {
     // Set palette
     p = palette;
     if (p != 0) {
-        rendererPtr = (int*)((char*)g_ZBufferManager_0043698c + 0xa8);
+        rendererPtr = &g_ZBufferManager_0043698c->m_fieldA8;
         if (*rendererPtr != 0) {
             WriteToMessageLog("ddouble palette");
         }
-        *rendererPtr = (int)p;
+        *rendererPtr = p;
     }
 
     // Create sound if soundStates[9] is set (0x65c offset check)

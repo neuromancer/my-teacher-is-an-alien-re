@@ -4,13 +4,14 @@
 #include "Parser.h"
 #include "string.h"
 #include "Memory.h"
+#include "globals.h"
 #include <string.h>
 #include <stdio.h>
 
 extern "C" int FileExists(const char* filename);
 extern void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
 
-// Message queue structure at 0x436988
+// Message queue structures
 // Queue item is 0xc8 (200) bytes
 struct MessageQueueItem {
     MessageQueueItem* next;  // 0x00
@@ -41,7 +42,6 @@ struct MessageQueue {
     int poolCapacity;        // 0x14
 };
 
-extern MessageQueue* g_MessageQueue;  // 0x436988
 /* Function start: 0x4065E0 */
 void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
 {
@@ -54,26 +54,26 @@ void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
 }
 
 /* Function start: 0x406610 */
-Handler8* Handler8::CopyParserFields(Parser* src)
+Parser* Parser::CopyParserFields(Parser* src)
 {
     unsigned int i;
 
-    m_subObject = src->m_subObject;
-    isProcessingKey = src->isProcessingKey;
+    Parser::m_subObject = src->m_subObject;
+    Parser::isProcessingKey = src->isProcessingKey;
     i = 0;
     do {
-        currentKey[i] = src->currentKey[i];
+        Parser::currentKey[i] = src->currentKey[i];
         i++;
     } while (i < 0x20);
-    lineNumber = src->lineNumber;
-    savedFilePos = src->savedFilePos;
-    field_0x3c = src->field_0x3c;
+    Parser::lineNumber = src->lineNumber;
+    Parser::savedFilePos = src->savedFilePos;
+    Parser::field_0x3c = src->field_0x3c;
     i = 0;
     do {
-        filename[i] = src->filename[i];
+        Parser::filename[i] = src->filename[i];
         i++;
     } while (i < 0x40);
-    pFile = src->pFile;
+    Parser::pFile = src->pFile;
     return this;
 }
 
@@ -219,7 +219,7 @@ void Handler8::ProcessMessage() {
         queue->count++;
 
         InitMessageArray((int*)&item->data, 1);
-        ((Handler8*)&item->data)->CopyParserFields(msg);
+        ((Parser*)&item->data)->CopyParserFields(msg);
 
         item->field_90 = msg->command;
         item->field_94 = msg->data;

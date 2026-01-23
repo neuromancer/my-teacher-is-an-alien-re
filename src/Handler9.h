@@ -2,31 +2,16 @@
 #define HANDLER9_H
 
 #include "IconBar.h"
+#include "SC_Question.h"
+#include "SC_Dialog.h"
 
 class SC_Message;
 class MouseControl;
 class Sprite;
 class Queue;
 
-// SC_Dialog placeholder (destructor 0x408a40)
-class SC_Dialog_H9 {
-public:
-    ~SC_Dialog_H9();
-};
-
-// DialogQuestion placeholder (destructor 0x4067e0)
-// Similar to SC_Question, extends Parser
-class DialogQuestion {
-public:
-    ~DialogQuestion();
-    char parserData[0x88];  // Parser base
-    void* mouseControl;     // 0x88
-    void* messageQueue;     // 0x8c
-    int questionId;         // 0x90
-    int field_94;           // 0x94
-    int state;              // 0x98 - 0=new, 2=answered
-    char remaining[0x84];   // 0x9c onwards
-};
+// DialogQuestion is SC_Question (destructor 0x4067e0, Finalize 0x4069b0)
+typedef SC_Question DialogQuestion;
 
 // Handler9 - DialogPlayer handler
 // Size: 0x650 bytes
@@ -37,7 +22,7 @@ public:
 // Layout:
 //   0x00-0x5FF: IconBar base class
 //   0x600: MouseControl*
-//   0x604: SC_Dialog_H9*
+//   0x604: SC_Dialog*
 //   0x608: Sprite* (button)
 //   0x60C: Sprite* (hilite)
 //   0x610: Queue* (dialog queue)
@@ -58,7 +43,7 @@ public:
 
     // Handler9-specific fields
     MouseControl* mouseControl;     // 0x600
-    SC_Dialog_H9* dialog;           // 0x604
+    SC_Dialog* dialog;           // 0x604
     Sprite* buttonSprite;           // 0x608
     Sprite* hiliteSprite;           // 0x60C
     Queue* dialogQueue;             // 0x610

@@ -54,7 +54,7 @@ public:
     void DrawRect(int, int, int, int, int, int, int); // 0x41C130
 
     // Methods previously attributed to "SoundManager"
-    void PlayAnimationSound(void* data, int priority, int x, int y, int mode, int scale1, int scale2); // 0x41BE20
+    void PlayAnimationSound(void* data, int priority, int x, int y, int mode, double scale); // 0x41BE20
     void QueueCommand(SoundCommand* cmd); // 0x41C2C0
 
     // Layout: 0xAC bytes total

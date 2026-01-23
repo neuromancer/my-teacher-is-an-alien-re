@@ -12,16 +12,17 @@
 #include "DrawEntry.h"
 #include "Engine.h"
 
-// External functions
-extern void __fastcall FUN_004199a0(void* parser);  // Parser destructor wrapper (0x4199A0)
-extern void __fastcall FUN_00410ca0(void* handler);  // Handler16 internal draw (0x410CA0)
+// Forward declarations for queue management (from Handler8.cpp)
+struct MessageQueueItem;
+struct MessageQueue;
+extern MessageQueue* g_MessageQueue;
+extern void* __stdcall ExpandPool(void** pool, int capacity, int itemSize);
+extern void InitMessageArray(int* param_1, int param_2);
+extern void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
 
 // Already implemented elsewhere:
 // - DrawEntry::Cleanup(int) at 0x411080 in Engine.cpp
 extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.cpp
-
-// Global combat engine object (EngineB or Engine subclass)
-extern Engine* g_CombatEngine;
 
 // Vtable pointer at 0x431050
 extern void* PTR_LAB_00431050;
@@ -64,8 +65,7 @@ Handler16::~Handler16() {
 
     pParser = scriptParser;
     if (pParser != 0) {
-        FUN_004199a0(pParser);
-        FreeMemory(pParser);
+        delete (SC_Message*)pParser;
         scriptParser = 0;
     }
 }
@@ -274,8 +274,113 @@ void Handler16::Draw(int param1, int param2) {
     // Check if combat engine is active
     result = g_CombatEngine->UpdateAndCheck();
     if (result != 0) {
-        FUN_00410ca0(this);
+        ProcessMessage();
     }
+}
+
+// MessageQueueItem structure (size 0xC8 = 200 bytes)
+struct MessageQueueItem {
+    MessageQueueItem* next;  // 0x00
+    int tailRef;             // 0x04
+    char data[0x88];         // 0x08 - Parser fields copied here
+    int field_90;            // 0x90 - command
+    int field_94;            // 0x94 - sourceAddress
+    int field_98;            // 0x98 - targetAddress
+    int field_9c;            // 0x9c - data
+    int field_a0;            // 0xa0 - priority
+    int field_a4;            // 0xa4 - param1
+    int field_a8;            // 0xa8 - param2
+    int field_ac;            // 0xac - clickX
+    int field_b0;            // 0xb0 - clickY
+    int field_b4;            // 0xb4 - mouseX
+    int field_b8;            // 0xb8 - mouseY
+    int field_bc;            // 0xbc - field_b4
+    int field_c0;            // 0xc0 - field_b8
+    int field_c4;            // 0xc4 - userPtr
+};
+
+// MessageQueue structure
+struct MessageQueue {
+    MessageQueueItem* head;     // 0x00
+    MessageQueueItem* tail;     // 0x04
+    int count;                  // 0x08
+    MessageQueueItem* freeList; // 0x0c
+    void* poolBase;             // 0x10
+    int poolCapacity;           // 0x14
+};
+
+/* Function start: 0x410CA0 */
+void Handler16::ProcessMessage()
+{
+    SC_Message* script;
+    MessageQueue* queue;
+    MessageQueueItem** tailPtr;
+    int tail;
+    MessageQueueItem* item;
+    int i;
+    char* poolResult;
+    MessageQueueItem** freeListPtr;
+
+    script = (SC_Message*)Handler16::scriptParser;
+    if (script != 0) {
+        queue = g_MessageQueue;
+        freeListPtr = &queue->freeList;
+        tailPtr = &queue->tail;
+        tail = (int)queue->tail;
+
+        if (*freeListPtr == 0) {
+            poolResult = (char*)ExpandPool(&queue->poolBase, queue->poolCapacity, 0xc8);
+            i = queue->poolCapacity;
+            i--;
+            item = (MessageQueueItem*)(poolResult + i * 0xc8 - 0xc4);
+            while (i >= 0) {
+                item->next = *freeListPtr;
+                *freeListPtr = item;
+                item = (MessageQueueItem*)((char*)item - 0xc8);
+                i--;
+            }
+        }
+
+        item = *freeListPtr;
+        *freeListPtr = item->next;
+        item->tailRef = tail;
+        item->next = 0;
+        queue->count++;
+
+        InitMessageArray((int*)&item->data, 1);
+        ((Parser*)&item->data)->CopyParserFields(script);
+
+        // Copy SC_Message fields in memory order
+        item->field_90 = script->command;
+        item->field_94 = script->sourceAddress;
+        item->field_98 = script->targetAddress;
+        item->field_9c = script->data;
+        item->field_a0 = script->priority;
+        item->field_a4 = script->param1;
+        item->field_a8 = script->param2;
+        item->field_ac = script->clickX;
+        item->field_b0 = script->clickY;
+        item->field_b4 = script->mouseX;
+        item->field_b8 = script->mouseY;
+        item->field_bc = script->field_b4;
+        item->field_c0 = script->field_b8;
+        item->field_c4 = script->userPtr;
+
+        if (*tailPtr != 0) {
+            (*tailPtr)->next = item;
+        } else {
+            queue->head = item;
+        }
+        *tailPtr = item;
+
+        script = (SC_Message*)Handler16::scriptParser;
+        if (script != 0) {
+            delete script;
+            Handler16::scriptParser = 0;
+        }
+        return;
+    }
+    SC_Message_Send(Handler16::field_90, Handler16::field_94, Handler16::handlerId, Handler16::field_8C, 5, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x410610 */

@@ -30,6 +30,8 @@
 #include "Handler15.h"
 #include "Handler16.h"
 #include "Handler9.h"
+#include "SoundCommand.h"
+#include "RenderEntry.h"
 #include <smack.h>
 #include <stdio.h>
 #include <string.h>
@@ -414,11 +416,9 @@ void GameLoop::DrawFrame() {
 
 /* Function start: 0x417450 */
 void GameLoop::CleanupLoop() {
-    return;
     ZBufferManager* pZBuf;
     ZBQueue* pQueue;
-    ZBQueueNode* pNode;
-    ZBQueueNode* pNextNode;
+    ZBQueue* pQueue9c;
     void* pResult;
     void* pData;
     EventList* pEventList;
@@ -433,7 +433,10 @@ void GameLoop::CleanupLoop() {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
             pResult = ZBuffer::PopNode(pQueue);
-            delete pResult;
+            if (pResult != 0) {
+                *(int*)pResult = 0x431050;
+                FreeMemory(pResult);
+            }
         }
     }
 
@@ -444,73 +447,77 @@ void GameLoop::CleanupLoop() {
         while (pQueue->head != 0) {
             pResult = ZBuffer::PopNode_2(pQueue);
             if (pResult != 0) {
-                pNode = (ZBQueueNode*)pResult;
-                if (pNode->prev != 0) {
-                    ((VBuffer*)pNode->prev)->Destroy(1);
-                    pNode->prev = 0;
+                if (((int*)pResult)[1] != 0) {
+                    ((VBuffer*)((int*)pResult)[1])->Destroy(1);
+                    ((int*)pResult)[1] = 0;
                 }
-                if (pNode->data != 0) {
-                    // TODO: Fix vtable call - needs __thiscall with ECX=pNode->data
-                    // (*(void (**)(int))(*(int*)pNode->data))(1);
-                    pNode->data = 0;
+                if (((int*)pResult)[2] != 0) {
+                    (*(void (__stdcall **)(int))(*(int*)((int*)pResult)[2]))(1);
+                    ((int*)pResult)[2] = 0;
                 }
-                delete pResult;
+                FreeMemory(pResult);
             }
         }
     }
 
     // Process queue at offset 0x9c - unlink and delete nodes
-    pQueue = pZBuf->m_queue9c;
-    if (pQueue->head != 0) {
-        pQueue->current = pQueue->head;
-        while (pQueue->head != 0) {
-            pNode = pQueue->current;
-            if (pNode == 0) {
+    pQueue9c = pZBuf->m_queue9c;
+    if (pQueue9c->head != 0) {
+        pQueue9c->current = pQueue9c->head;
+        while (pQueue9c->head != 0) {
+            if (pQueue9c->current == 0) {
                 pData = 0;
             } else {
                 // Unlink from head
-                if (pQueue->head == pNode) {
-                    pQueue->head = pNode->prev;
+                if (pQueue9c->head == pQueue9c->current) {
+                    pQueue9c->head = pQueue9c->current->prev;
                 }
                 // Unlink from tail
-                if (pQueue->tail == pNode) {
-                    pQueue->tail = pNode->next;
+                if (pQueue9c->tail == pQueue9c->current) {
+                    pQueue9c->tail = pQueue9c->current->next;
                 }
                 // Update next->prev
-                pNextNode = pNode->next;
-                if (pNextNode != 0) {
-                    pNextNode->prev = pNode->prev;
+                if (pQueue9c->current->next != 0) {
+                    pQueue9c->current->next->prev = pQueue9c->current->prev;
                 }
                 // Update prev->next
-                if (pNode->prev != 0) {
-                    pNode->prev->next = pNode->next;
+                if (pQueue9c->current->prev != 0) {
+                    pQueue9c->current->prev->next = pQueue9c->current->next;
                 }
                 // Get data and cleanup node
-                pData = pQueue->GetCurrentData();
-                if (pQueue->current != 0) {
-                    pQueue->current->Cleanup(1);
-                    pQueue->current = 0;
+                pData = pQueue9c->GetCurrentData();
+                if (pQueue9c->current != 0) {
+                    pQueue9c->current->Cleanup(1);
+                    pQueue9c->current = 0;
                 }
-                pQueue->current = pQueue->head;
+                pQueue9c->current = pQueue9c->head;
             }
-            delete pData;
+            if (pData != 0) {
+                RenderEntry* pEntry = (RenderEntry*)pData;
+                *(int*)pEntry = 0x431058;
+                pEntry->rect.~GlyphRect();
+                FreeMemory(pData);
+            }
         }
     }
 
     // Process eventList - call Update(0) on each handler
-    pEventList = eventList;
+    pEventList = GameLoop::eventList;
     pEventList->current = pEventList->head;
+    pEventList = GameLoop::eventList;
     if (pEventList->current == 0) {
         return;
     }
 
     do {
+        pEventList = GameLoop::eventList;
         pCurrent = pEventList->current;
         pHandler = (Handler*)pCurrent->data;
         if (pHandler == 0) {
             break;
         }
         pHandler->Update(0);
+        pEventList = GameLoop::eventList;
         pCurrent = pEventList->current;
         if (pEventList->tail == pCurrent) {
             break;
@@ -518,6 +525,7 @@ void GameLoop::CleanupLoop() {
         if (pCurrent != 0) {
             pEventList->current = pCurrent->prev;
         }
+        pEventList = GameLoop::eventList;
     } while (pEventList->current != 0);
 }
 

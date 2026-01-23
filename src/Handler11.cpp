@@ -16,7 +16,7 @@ Handler11::~Handler11() {
     Palette* pal;
     MouseControl* mouse;
     SC_Dialog* dialog;
-    UnknownClass_4092e0* unk;
+    DialogControl* dc;
     int i;
 
     pal = field_600;
@@ -38,9 +38,9 @@ Handler11::~Handler11() {
     }
 
     for (i = 0; i < 10; i++) {
-        unk = field_60C[i];
-        if (unk != 0) {
-            delete unk;
+        dc = field_60C[i];
+        if (dc != 0) {
+            delete dc;
             field_60C[i] = 0;
         }
     }

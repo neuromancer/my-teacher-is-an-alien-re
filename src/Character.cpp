@@ -50,23 +50,20 @@ void PriorityQueue::AddAfterCurrent(CharSprite* sprite)
 }
 
 /* Function start: 0x408880 */
-CharSprite* __fastcall FUN_00408880(CharSprite* param_1)
+CharSprite::CharSprite()
 {
-    int* ptr4c;
     int* puVar3;
     int iVar2;
 
-    ptr4c = (int*)((char*)param_1 + 0x4c);
-    ptr4c[0] = 0;
-    ptr4c[1] = 0;
-    ptr4c[2] = 0;
-    ptr4c[3] = 0;
-    puVar3 = (int*)param_1;
+    bounds.left = 0;
+    bounds.top = 0;
+    bounds.right = 0;
+    bounds.bottom = 0;
+    puVar3 = (int*)this;
     for (iVar2 = 0x17; iVar2 != 0; iVar2--) {
         *puVar3 = 0;
         puVar3++;
     }
-    return param_1;
 }
 
 /* Function start: 0x403700 */
@@ -76,7 +73,6 @@ Character::Character(char* param_1) {
     PriorityQueue* pQueue;
     PriorityQueue* queueTemp;
     CharSprite* sprite;
-    CharSprite* spriteMem;
     PriorityQueueNode* node;
     PriorityQueueNode* nodeTemp;
     int counter;
@@ -114,11 +110,7 @@ Character::Character(char* param_1) {
 
         do {
             // Allocate CharSprite (0x5C bytes)
-            spriteMem = (CharSprite*)operator new(0x5c);
-            sprite = 0;
-            if (spriteMem != 0) {
-                sprite = FUN_00408880(spriteMem);
-            }
+            sprite = new CharSprite();
 
             // Check queue exists
             if (queue == 0) {
@@ -243,11 +235,7 @@ Character::Character(char* param_1) {
         characterType = 1;
 
         do {
-            spriteMem = (CharSprite*)operator new(0x5c);
-            sprite = 0;
-            if (spriteMem != 0) {
-                sprite = FUN_00408880(spriteMem);
-            }
+            sprite = new CharSprite();
 
             if (queue == 0) {
                 ShowError("Missing activeQ");
@@ -358,11 +346,7 @@ Character::Character(char* param_1) {
         characterType = 2;
 
         do {
-            spriteMem = (CharSprite*)operator new(0x5c);
-            sprite = 0;
-            if (spriteMem != 0) {
-                sprite = FUN_00408880(spriteMem);
-            }
+            sprite = new CharSprite();
 
             if (queue == 0) {
                 ShowError("Missing activeQ");

@@ -30,10 +30,25 @@ def read_assembly(function_name, file_path):
     # Parse assembly code
     if f"; {function_name}, COMDAT" in assembly:
         assembly = assembly.split(f"; {function_name}, COMDAT")[1]
-        assembly = assembly.split(f"; {function_name}")[0]
-        # Also remove lines containing ENDP (since PROC NEAR was before the split point)
-        lines = assembly.split("\n")
-        assembly = "\n".join([line for line in lines if "ENDP" not in line])
+        # Find the ENDP marker for this function - look for ENDP followed by comment with function name
+        # Use regex to handle variable whitespace between ENDP and the comment
+        endp_pattern = re.compile(rf'ENDP\s*;\s*{re.escape(function_name)}')
+        endp_match = endp_pattern.search(assembly)
+        if endp_match:
+            assembly = assembly[:endp_match.start()]
+        else:
+            # Fallback: look for the mangled ENDP marker
+            if '::' in function_name:
+                mangled_endp = f"?{function_name.split('::')[1]}@{function_name.split('::')[0]}@@"
+            else:
+                mangled_endp = f"?{function_name}@@"
+            endp_match = re.search(rf'{re.escape(mangled_endp)}[A-Z@]+\s+ENDP', assembly)
+            if endp_match:
+                assembly = assembly[:endp_match.start()]
+            else:
+                # Last resort: remove lines containing ENDP
+                lines = assembly.split("\n")
+                assembly = "\n".join([line for line in lines if "ENDP" not in line])
     elif f"_{function_name} PROC NEAR" in assembly:
         assembly = assembly.split(f"_{function_name} PROC NEAR")[1]
         assembly = assembly.split(f"_{function_name} ENDP")[0]
@@ -57,10 +72,17 @@ def read_assembly(function_name, file_path):
     # Discard empty lines
     assembly = "\n".join([line for line in assembly.split("\n") if line.strip() != ""])
 
-    # Remove the header
-    if "PROC NEAR" in assembly:
-        assembly = assembly.split("PROC NEAR")[1]
-        assembly = assembly.split("ENDP")[0]
+    # Remove the header - only if it appears at the very start (first few lines)
+    # This handles cases where the PROC NEAR wasn't split correctly earlier
+    lines = assembly.split("\n")
+    for i, line in enumerate(lines[:5]):  # Check first 5 lines
+        if "PROC NEAR" in line:
+            # Found PROC NEAR near start, remove it
+            assembly = "\n".join(lines[i+1:])
+            # Now find matching ENDP (first occurrence)
+            if "ENDP" in assembly:
+                assembly = assembly.split("ENDP")[0]
+            break
 
     # Remove SEH handler code that appears after the main function body
     # SEH handlers come after the final ret and have patterns like:
@@ -124,7 +146,8 @@ def read_assembly(function_name, file_path):
                 i += 1
                 continue
             # SEH signature: references to exception state tables ($L or $T labels)
-            elif 'OFFSET FLAT:$L' in line or 'OFFSET FLAT:$T' in line:
+            # Also detect $Txxxxx[ebp] patterns used in cleanup handlers
+            elif 'OFFSET FLAT:$L' in line or 'OFFSET FLAT:$T' in line or re.search(r'\$T\d+\[ebp\]', line):
                 has_seh_signature = True
                 i += 1
                 continue
@@ -153,15 +176,20 @@ def read_assembly(function_name, file_path):
             elif line.startswith('npad'):
                 i += 1
                 continue
+            # Function name marker at end (e.g. ?FunctionName@@)
+            elif line.startswith('?') and '@@' in line:
+                i += 1
+                continue
             else:
                 # Non-SEH/non-data code found after ret
                 is_seh_or_data_only = False
                 break
 
         # Only cut off if we found actual SEH signatures, not just any code after ret
+        # Don't break - keep looking for earlier valid cutoffs (we want the earliest one)
         if is_seh_or_data_only and has_seh_signature and len(remaining) > 0:
             cutoff_idx = ret_idx + 1
-            break
+            # Continue checking earlier rets to find the earliest valid cutoff
 
     assembly = "\n".join(lines[:cutoff_idx])
     seh_code = "\n".join(lines[cutoff_idx:])

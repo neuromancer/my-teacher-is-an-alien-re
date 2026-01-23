@@ -103,6 +103,72 @@ void StringTable::Unload() {
     }
 }
 
+/* Function start: 0x420d90 */
+int StringTable::GetString(unsigned int id, char* outBuffer)
+{
+    char buffer[300];
+    fpos_t filePos;
+    fpos_t filePosHigh;
+    unsigned int parsedId;
+    int found;
+    HashTable* ht;
+    HashNode* node;
+    unsigned int bucketIdx;
+    char* startQuote;
+    char* endQuote;
+    int len;
+    FILE* f;
+
+    found = 0;
+    filePos = 0;
+    filePosHigh = 0;
+
+    ht = hashTable;
+    if (ht != 0) {
+        bucketIdx = (id >> 4) % (unsigned int)ht->numBuckets;
+        if (ht->buckets != 0) {
+            node = *(HashNode**)(ht->buckets + bucketIdx);
+            while (node != 0) {
+                if (node->key == id) {
+                    break;
+                }
+                node = node->next;
+            }
+        } else {
+            node = 0;
+        }
+
+        if (node != 0) {
+            filePos = node->filePosLow;
+            filePosHigh = node->filePosHigh;
+        }
+    }
+
+    f = Open();
+    if (f != 0) {
+        fsetpos(fp, &filePos);
+        do {
+            do {
+                char* result = internal_ReadLine(buffer, 0xff, fp);
+                if (result == 0) {
+                    goto done;
+                }
+                sscanf(buffer, "%u", &parsedId);
+            } while (parsedId != id);
+
+            startQuote = strchr(buffer, '\"');
+            startQuote = startQuote + 1;
+            endQuote = strrchr(buffer, '\"');
+        } while (startQuote == (char*)1 || endQuote == 0 || (len = endQuote - startQuote) < 1);
+
+        found = 1;
+        strncpy(outBuffer, startQuote, len);
+done:
+        Unload();
+    }
+    return found;
+}
+
 /* Function start: 0x420b40 */
 void StringTable::Load() {
     char buffer[300];

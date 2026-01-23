@@ -11,6 +11,7 @@
 #include "Palette.h"
 #include "EngineSubsystems.h"
 #include "Sound.h"
+#include "RockThrower.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,9 +20,6 @@
 extern "C" {
 int GetCurrentTimestamp(int*);  // 0x425000 - returns timestamp, optionally stores in *param
 void SetTimeSeed(int);          // 0x424FC0 - sets global time seed (DAT_0043bc88)
-
-// Constructor for RockThrower weapon (size 0xb8)
-Parser* __fastcall FUN_004165d0(void* mem);
 
 // Globals for sub-parsers
 extern Parser* DAT_00435f00;  // ENGINE_INFO parser
@@ -125,7 +123,6 @@ void Engine::DisplayFrameRate() {
 int Engine::LBLParse(char* line) {
   char local_54[32];
   char local_34[32];
-  void* local_14;
   Parser* piVar4;
 
   sscanf(line, "%s", local_34);
@@ -150,11 +147,7 @@ int Engine::LBLParse(char* line) {
         Engine::m_subParser = (Parser*)0;
       }
       if (strcmp(local_54, "ROCKTHROWER") == 0) {
-        local_14 = AllocateMemory(0xb8);
-        piVar4 = (Parser*)0;
-        if (local_14 != (void*)0) {
-          piVar4 = FUN_004165d0(local_14);
-        }
+        piVar4 = new RockThrower();
         Engine::m_subParser = piVar4;
         DAT_00435f14 = piVar4;
       }
@@ -180,9 +173,6 @@ void Engine::StopAndCleanup() {
   VirtCleanup();
 }
 
-// External function for navigation check
-extern int __fastcall FUN_00413bc0(Parser* parser);
-
 /* Function start: 0x411340 */
 int Engine::UpdateAndCheck() {
   int result;
@@ -194,7 +184,7 @@ int Engine::UpdateAndCheck() {
 
   VirtUpdate();
 
-  result = FUN_00413bc0(DAT_00435f24);
+  result = ((mCNavigator*)DAT_00435f24)->Update();
   if (result != 0) {
     return 1;
   }

@@ -8,9 +8,6 @@
 #include "StringTable.h"
 #include "OnScreenMessage.h"
 
-// External functions
-extern int __fastcall FUN_0040a290(OnScreenMessage* item, int param);  // Check if message should be removed
-extern int FUN_00420d90(void* stringTable, unsigned int index, char* outBuffer);  // Get string from StringTable
 
 /* Function start: 0x40A2E0 */
 Handler15::Handler15() {
@@ -126,7 +123,7 @@ void Handler15::Draw(int param1, int param2) {
             msgItem = (OnScreenMessage*)node->data;
         }
 
-        iVar4 = FUN_0040a290(msgItem, counter);
+        iVar4 = msgItem->Update(counter);
         if (iVar4 != 0) {
             pList = list;
             node = (MessageNode*)pList->current;
@@ -228,7 +225,7 @@ process_message:
         }
     } else {
         if (g_Strings_00435a70 != 0) {
-            int result = FUN_00420d90(g_Strings_00435a70, msg->data, g_Buffer_00436960);
+            int result = g_Strings_00435a70->GetString(msg->data, g_Buffer_00436960);
             if (result != 0) {
                 newItem = new OnScreenMessage(g_Buffer_00436960, msg->param1);
             }

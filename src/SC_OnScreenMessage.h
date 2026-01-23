@@ -18,6 +18,10 @@ struct MessageList {
         tail = 0;
         current = head;
     }
+
+    void* GetCurrentData();                  // 0x40C0D0
+    void InsertBeforeCurrent(void* data);    // 0x40C430
+    void* PopCurrent();                      // 0x40C500
 };
 
 // MessageNode for linked list items
@@ -32,6 +36,9 @@ struct MessageNode {
         prev = 0;
         next = 0;
     }
+
+    MessageNode* Destroy(int flag);      // 0x40C580
+    MessageNode* Init(void* nodeData);   // 0x40C5B0
 };
 
 class SC_OnScreenMessage : ScriptHandler {
