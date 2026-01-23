@@ -221,109 +221,76 @@ void IconBar::CleanupIconBar() {
 
 /* Function start: 0x403040 */
 int IconBar::CheckButtonClick(SC_Message* msg) {
-    int i;
-    int msgX;
-    int inBounds;
-    int* enabledPtr;
-    int buttonOffset;
-    char* buttonBase;
     unsigned int j;
-    int* msgField38Ptr;
+    int i;
+    int ok;
 
     WriteMessageAddress(msg);
 
-    msgX = msg->clickX;
+    // Initial bar bounds check
+    ok = (barBounds.x1 <= msg->clickX && barBounds.x2 >= msg->clickX &&
+          barBounds.y1 <= msg->clickY && barBounds.y2 >= msg->clickY);
+    if (!ok) return 0;
 
-    // Check bar bounds
-    if (barBounds.x1 > msg->clickX || barBounds.x2 < msg->clickX ||
-        barBounds.y1 > msg->clickY || barBounds.y2 < msg->clickY) {
-        inBounds = 0;
-    } else {
-        inBounds = 1;
-    }
-
-    if (inBounds == 0) {
-        return 0;
-    }
-
+    // Only proceed for specific mouse states
     if (msg->mouseX < 2) {
         return 1;
     }
 
-    // Loop through buttons - use pointer to enabled field
-    i = 0;
-    do {
-        if (buttons[i].enabled == 0) {
-            goto nextButton;
+    // Loop through buttons using for loop
+    for (i = 0; i < 6; i++) {
+        if (buttons[i].enabled) {
+            // Button bounds check
+            ok = (buttons[i].bounds.left <= msg->clickX && buttons[i].bounds.right >= msg->clickX &&
+                  buttons[i].bounds.top <= msg->clickY && buttons[i].bounds.bottom >= msg->clickY);
+            
+            if (ok) {
+                PlayButtonSound(i);
+
+                SC_Message* pSrc = &buttons[i].message;
+
+                // Copy button template message to target message
+                msg->m_subObject = pSrc->m_subObject;
+                msg->isProcessingKey = pSrc->isProcessingKey;
+
+                j = 0;
+                do {
+                    j++;
+                    msg->currentKey[j - 1] = pSrc->currentKey[j - 1];
+                } while (j < 32);
+
+                msg->lineNumber = pSrc->lineNumber;
+                
+                int* pMsg38 = &msg->savedFilePos;
+                pMsg38[0] = pSrc->savedFilePos;
+                pMsg38[1] = pSrc->field_0x3c;
+
+                j = 0;
+                do {
+                    j++;
+                    msg->filename[j - 1] = pSrc->filename[j - 1];
+                } while (j < 64);
+
+                msg->pFile = pSrc->pFile;
+                msg->command = pSrc->command;
+                msg->sourceAddress = pSrc->sourceAddress;
+                msg->targetAddress = pSrc->targetAddress;
+                msg->data = pSrc->data;
+                msg->priority = pSrc->priority;
+                msg->param1 = pSrc->param1;
+                msg->param2 = pSrc->param2;
+                msg->clickX = pSrc->clickX;
+                msg->clickY = pSrc->clickY;
+                msg->mouseX = pSrc->mouseX;
+                msg->mouseY = pSrc->mouseY;
+                msg->field_b4 = pSrc->field_b4;
+                msg->field_b8 = pSrc->field_b8;
+                msg->userPtr = pSrc->userPtr;
+
+                return 1;
+            }
         }
-
-        // Check button bounds using offsets from enabled pointer
-        if (buttons[i].bounds.left > msg->clickX || buttons[i].bounds.right < msg->clickX ||
-            buttons[i].bounds.top > msg->clickY || buttons[i].bounds.bottom < msg->clickY) {
-            inBounds = 0;
-        } else {
-            inBounds = 1;
-        }
-
-        ShowMessage("Click (%d, %d) bounds: %d %d %d %d and inBounds: %d", msg->clickX, msg->clickY, buttons[i].bounds.left, buttons[i].bounds.top, buttons[i].bounds.right, buttons[i].bounds.bottom, inBounds);
-
-        if (inBounds != 0) {
-            // Button found - play sound and copy button data to message
-            PlayButtonSound(i);
-
-            buttonOffset = i * 0xE0;
-            buttonBase = (char*)this + buttonOffset;
-
-            // Copy button's embedded SC_Message data to msg
-            // Parser fields (inherited by SC_Message)
-            msg->m_subObject = buttons[i].message.m_subObject;
-            msg->isProcessingKey = buttons[i].message.isProcessingKey;
-
-            // Copy 32 bytes for currentKey
-            j = 0;
-            do {
-                j++;
-                msg->currentKey[j - 1] = buttonBase[0xCF + j];
-            } while (j < 0x20);
-
-            // Copy lineNumber and savedFilePos/field_0x3c
-            msg->lineNumber = buttons[i].message.lineNumber;
-            msgField38Ptr = &msg->savedFilePos;
-            msgField38Ptr[0] = buttons[i].message.savedFilePos;
-            msgField38Ptr[1] = buttons[i].message.field_0x3c;
-
-            // Copy 64 bytes for filename
-            j = 0;
-            do {
-                char* thisJ = (char*)this + j;
-                j++;
-                msg->filename[j - 1] = thisJ[buttonOffset + 0x100];
-            } while (j < 0x40);
-
-            // Copy remaining fields from embedded SC_Message
-            msg->pFile = buttons[i].message.pFile;
-            msg->command = buttons[i].message.command;
-            msg->sourceAddress = buttons[i].message.sourceAddress;
-            msg->targetAddress = buttons[i].message.targetAddress;
-            msg->data = buttons[i].message.data;
-            msg->priority = buttons[i].message.priority;
-            msg->param1 = buttons[i].message.param1;
-            msg->param2 = buttons[i].message.param2;
-            msg->clickX = buttons[i].message.clickX;
-            msg->clickY = buttons[i].message.clickY;
-            msg->mouseX = buttons[i].message.mouseX;
-            msg->mouseY = buttons[i].message.mouseY;
-            msg->field_b4 = buttons[i].message.field_b4;
-            msg->field_b8 = buttons[i].message.field_b8;
-            msg->userPtr = buttons[i].message.userPtr;
-
-            return 1;
-        }
-
-nextButton:
-        //enabledPtr = (int*)((char*)enabledPtr + 0xE0);
-        i++;
-    } while (i < 6);
+    }
 
     return 1;
 }
@@ -333,50 +300,36 @@ void IconBar::DrawIconBar(int param1, int param2) {
     int i;
     int mouseX;
     int mouseY;
-    int* mouseData;
-    int inBounds;
+    IconBarButton* pBtn;
 
-    // Check if this is for our handler
     if (handlerId != param2) {
         return;
     }
 
-    // Draw iconbar sprite
-    if (iconbarSprite != 0) {
-        iconbarSprite->Do(iconbarSprite->loc_x, iconbarSprite->loc_y, 1.0);
-    }
+    iconbarSprite->Do(iconbarSprite->loc_x, iconbarSprite->loc_y, 1.0);
 
-    // Get mouse position
-    mouseData = (int*)g_InputManager_00436968->pMouse;
-    if (mouseData == 0) {
-        mouseX = 0;
-        mouseY = 0;
-    } else {
-        mouseX = mouseData[0];
-        mouseY = mouseData[1];
-    }
+    pBtn = buttons;
+    for (i = 6; i > 0; i--) {
+        if (pBtn->sprite != 0) {
+            mouseY = 0;
+            if (g_InputManager_00436968->pMouse != 0) {
+                mouseY = g_InputManager_00436968->pMouse->y;
+            }
 
-    // Draw each button
-    for (i = 0; i < 6; i++) {
-        Sprite* btn = buttons[i].sprite;
-        if (btn == 0) {
-            continue;
+            if (g_InputManager_00436968->pMouse != 0) {
+                mouseX = g_InputManager_00436968->pMouse->x;
+            } else {
+                mouseX = 0;
+            }
+
+            pBtn->sprite->SetState2(pBtn->bounds.left <= mouseX && pBtn->bounds.right >= mouseX &&
+                                    pBtn->bounds.top <= mouseY && pBtn->bounds.bottom >= mouseY);
+
+            if (pBtn->enabled != 0) {
+                pBtn->sprite->Do(pBtn->sprite->loc_x, pBtn->sprite->loc_y, 1.0);
+            }
         }
-
-        // Check if mouse is over button
-        if (mouseX < buttons[i].bounds.left || mouseX > buttons[i].bounds.right ||
-            mouseY < buttons[i].bounds.top || mouseY > buttons[i].bounds.bottom) {
-            inBounds = 0;
-        } else {
-            inBounds = 1;
-        }
-
-        btn->SetState2(inBounds);
-
-        // Draw button if enabled
-        if (buttons[i].enabled != 0) {
-            btn->Do(btn->loc_x, btn->loc_y, 1.0);
-        }
+        pBtn++;
     }
 }
 
