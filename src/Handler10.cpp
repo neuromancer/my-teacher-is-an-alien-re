@@ -533,9 +533,9 @@ void Handler10::DisplaySubmenuHover(int mouseX, int mouseY) {
     pos.y = mouseY;
 
     ResetHoverState();
-    ProcessCharacterHover(pos.x, pos.y);
-    ProcessSubmenuHover(pos.x, pos.y);
-    ProcessGoButtonHover(pos.x, pos.y, goButton, &confirmFlag);
+    ProcessCharacterHover(pos);
+    ProcessSubmenuHover(pos);
+    ProcessGoButtonHover(pos, goButton, &confirmFlag);
 
     if (sounds[0].enabled != 0) {
         hoverCharacterIndex = 1;
@@ -586,18 +586,13 @@ void Handler10::DisplaySubmenuHover(int mouseX, int mouseY) {
 }
 
 /* Function start: 0x405AA0 */
-void Handler10::ProcessGoButtonHover(int mouseX, int mouseY, Hotspot* button, int* outConfirmFlag) {
+void Handler10::ProcessGoButtonHover(MousePoint pt, Hotspot* button, int* outConfirmFlag) {
     if (IsSelectionComplete()) {
         int isHit = 0;
-        {
-            MousePoint pos;
-            pos.x = mouseX;
-            pos.y = mouseY;
-            if (button->enabled != 0) {
-                if (pos.x >= button->rect_x && pos.x <= button->rect_w &&
-                    pos.y >= button->rect_y && pos.y <= button->rect_h) {
-                    isHit = 1;
-                }
+        if (button->enabled != 0) {
+            if (pt.x >= button->rect_x && pt.x <= button->rect_w &&
+                pt.y >= button->rect_y && pt.y <= button->rect_h) {
+                isHit = 1;
             }
         }
         if (isHit != 0) {
@@ -650,32 +645,22 @@ void Handler10::RenderChoiceScreen(int characterIndex) {
 }
 
 /* Function start: 0x405900 */
-void Handler10::ProcessCharacterHover(int mouseX, int mouseY) {
-    int noHover;
+void Handler10::ProcessCharacterHover(MousePoint pt) {
+    int noHover = 1;
     int i;
-    Hotspot** charPtr;
+    Hotspot** charPtr = &characters[0];
     int isHit;
 
-    noHover = 1;
-    i = 0;
-    charPtr = &characters[0];
+    for (i = 0; i < 3; i++, charPtr++) {
+        if ((*charPtr)->enabled == 0) {
+            continue;
+        }
 
-    for (; i < 3; i++, charPtr++) {
-        {
-            MousePoint pos;
-            pos.x = mouseX;
-            pos.y = mouseY;
-
-            if ((*charPtr)->enabled == 0) {
-                continue;
-            }
-
-            if (pos.x < (*charPtr)->rect_x || pos.x > (*charPtr)->rect_w ||
-                pos.y < (*charPtr)->rect_y || pos.y > (*charPtr)->rect_h) {
-                isHit = 0;
-            } else {
-                isHit = 1;
-            }
+        if (pt.x < (*charPtr)->rect_x || pt.x > (*charPtr)->rect_w ||
+            pt.y < (*charPtr)->rect_y || pt.y > (*charPtr)->rect_h) {
+            isHit = 0;
+        } else {
+            isHit = 1;
         }
 
         if (isHit != 0) {
@@ -703,33 +688,22 @@ void Handler10::ProcessCharacterHover(int mouseX, int mouseY) {
     }
 }
 
-
-
-
 /* Function start: 0x405BB0 */
-void Handler10::ProcessSubmenuHover(int mouseX, int mouseY) {
-    MousePoint pos;
-    int hitOut;
-
-    pos.x = 0;
-    hitOut = 1;
+void Handler10::ProcessSubmenuHover(MousePoint pt) {
+    int indexOut = 0;
+    int hitOut = 1;
 
     if (currentCharacterIndex != -1) {
-        MousePoint mousePt;
-        mousePt.x = mouseX;
-        mousePt.y = mouseY;
-        if (choiceScreen->HitTest(mousePt, &pos.x, &hitOut) != 0) {
-            hoverSubmenuIndex = pos.x;
+        if (choiceScreen->HitTest(pt, &indexOut, &hitOut)) {
+            hoverSubmenuIndex = indexOut;
         }
 
-        if (hoverSubmenuIndex != prevSubmenuHover) {
-            if (prevSubmenuHover != -1) {
-                pos.x = prevSubmenuHover;
-                SetSubmenuOption(prevSubmenuHover, 0);
-            }
+        if (hoverSubmenuIndex != prevSubmenuHover && prevSubmenuHover != -1) {
+            indexOut = prevSubmenuHover;
+            SetSubmenuOption(indexOut, 0);
         }
 
-        if (hitOut == 0) {
+        if (hitOut != 0) {
             prevSubmenuHover = -1;
         } else {
             prevSubmenuHover = hoverSubmenuIndex;

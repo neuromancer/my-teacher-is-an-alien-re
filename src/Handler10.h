@@ -2,6 +2,7 @@
 #define HANDLER10_H
 
 #include "IconBar.h"
+#include "InputManager.h"
 
 class SC_Message;
 class Palette;
@@ -74,9 +75,9 @@ public:
     void RenderGoButton();
     void RenderCharacters();
     void RenderChoiceScreen(int characterIndex);
-    void ProcessCharacterHover(int mouseX, int mouseY);
-    void ProcessSubmenuHover(int mouseX, int mouseY);
-    void ProcessGoButtonHover(int mouseX, int mouseY, Hotspot* goButton, int* confirmFlag);
+    void ProcessCharacterHover(MousePoint pt);
+    void ProcessSubmenuHover(MousePoint pt);
+    void ProcessGoButtonHover(MousePoint pt, Hotspot* goButton, int* confirmFlag);
     void DisplaySubmenuHover(int mouseX, int mouseY);
 
     void SetCharacterOption(int characterIndex);
