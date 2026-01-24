@@ -652,17 +652,16 @@ void Handler10::ProcessCharacterHover(MousePoint pt) {
     int isHit;
 
     for (i = 0, charPtr = characters; i < 3; i++, charPtr++) {
+        isHit = 0;
         {
             MousePoint local_pt = pt;
-            if ((*charPtr)->enabled == 0) {
-                continue;
-            }
-
-            if (local_pt.x < (*charPtr)->rect_x || local_pt.x > (*charPtr)->rect_w ||
-                local_pt.y < (*charPtr)->rect_y || local_pt.y > (*charPtr)->rect_h) {
-                isHit = 0;
-            } else {
-                isHit = 1;
+            if ((*charPtr)->enabled != 0) {
+                if ((*charPtr)->rect_x > local_pt.x || (*charPtr)->rect_w < local_pt.x ||
+                    (*charPtr)->rect_y > local_pt.y || (*charPtr)->rect_h < local_pt.y) {
+                    isHit = 0;
+                } else {
+                    isHit = 1;
+                }
             }
         }
 

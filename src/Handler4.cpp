@@ -13,52 +13,34 @@ extern "C" char* __cdecl CDData_FormatPath(char*, ...);
 /* Function start: 0x40E220 */
 Handler4::Handler4() {
     int i;
-    Sprite** spritePtr;
-    Sprite* sprite;
-    char* path;
-
-    // Parent constructor IconBar::IconBar() is called automatically
-
-    // Initialize rects to zero (at 0x69c) - handled by GlyphRect constructor
-
-    // Zero 0x3c dwords at offset 0x600 (sprites, sounds, states)
     memset(&palette, 0, 0xf0);
 
-    // Set handlerId to 4
+    rect1.left = 0;
+    rect1.top = 0;
     handlerId = 4;
-
-    // Set initialized flag at 0x698
     needsUpdate = 1;
-
-    // Initialize rect coordinates (from original disassembly)
-    // rect1 at 0x69c: left=0, top=0, right=0x197, bottom=0x1aa
     rect1.right = 0x197;
     rect1.bottom = 0x1aa;
-    // rect2 at 0x6ac: left=0x1d7, top=0x3b, right=0x25c, bottom=0xbb
     rect2.left = 0x1d7;
     rect2.top = 0x3b;
     rect2.right = 0x25c;
     rect2.bottom = 0xbb;
-    // rect3 at 0x6bc: left=0x1de, top=0xf1, right=0x25b, bottom=0x16d
-    rect3.left = 0x1de;
     rect3.top = 0xf1;
     rect3.right = 0x25b;
     rect3.bottom = 0x16d;
-    // rect4 at 0x6cc: left=0x73, top=0x11d, right=0x12f, bottom=0x149
     rect4.left = 0x73;
     rect4.top = 0x11d;
     rect4.right = 0x12f;
     rect4.bottom = 0x149;
-    // rect5 at 0x6dc: left=0x32, top=0x14a, right=0x172, bottom=0x192
     rect5.left = 0x32;
+    
+    palette = new Palette();
+    rect3.left = 0x1de;
     rect5.top = 0x14a;
     rect5.right = 0x172;
     rect5.bottom = 0x192;
 
-    // Create Palette
-    palette = new Palette();
-    path = CDData_FormatPath("puzzle1\\Puzztest.col");
-    palette->Load(path);
+    palette->Load(CDData_FormatPath("puzzle1\\Puzztest.col"));
 
     // Create sprites
     buttons1 = new Sprite("puzzle1\\buttons1.smk");
@@ -85,34 +67,28 @@ Handler4::Handler4() {
     paths3->loc_x = 0x1ee;
     paths3->loc_y = 0x53;
 
-    // Initialize buttons and paths sprites
-    spritePtr = &buttons1;
     for (i = 0; i < 3; i++) {
-        sprite = spritePtr[i];
-        sprite->flags &= ~2;
-        sprite->priority = 10;
-        sprite->InitLogic(3);
-        sprite->SetRange(0, 1, 1);
-        sprite->SetRange(1, 2, 2);
-        sprite->SetRange(2, 3, 3);
+        (&buttons1)[i]->flags &= ~2;
+        (&buttons1)[i]->priority = 10;
+        (&buttons1)[i]->InitLogic(3);
+        (&buttons1)[i]->SetRange(0, 1, 1);
+        (&buttons1)[i]->SetRange(1, 2, 2);
+        (&buttons1)[i]->SetRange(2, 3, 3);
 
-        sprite = (&paths1)[i];
-        sprite->flags &= ~2;
-        sprite->priority = 10;
-        sprite->InitLogic(3);
-        sprite->SetRange(0, 1, 1);
-        sprite->SetRange(1, 2, 2);
-        sprite->SetRange(2, 3, 3);
+        (&paths1)[i]->flags &= ~2; 
+        (&paths1)[i]->priority = 10;
+        (&paths1)[i]->InitLogic(3);
+        (&paths1)[i]->SetRange(0, 1, 1);
+        (&paths1)[i]->SetRange(1, 2, 2);
+        (&paths1)[i]->SetRange(2, 3, 3);
     }
 
-    // Create puzztest sprite
     puzztest = new Sprite("puzzle1\\puzztest.smk");
     puzztest->flags &= ~2;
     puzztest->priority = 5;
     puzztest->loc_x = 0;
     puzztest->loc_y = 0;
 
-    // Create litdoors sprite
     litdoors = new Sprite("puzzle1\\litdoors.smk");
     litdoors->flags &= ~2;
     litdoors->priority = 10;
@@ -122,7 +98,6 @@ Handler4::Handler4() {
     litdoors->SetRange(1, 2, 2);
     litdoors->SetRange(2, 3, 3);
 
-    // Create floor sprites
     lowfloor = new Sprite("puzzle1\\lowfloor.smk");
     lowfloor->loc_x = 0x1d;
     lowfloor->loc_y = 0x150;
@@ -135,21 +110,17 @@ Handler4::Handler4() {
     topfloor->loc_x = 0x5a;
     topfloor->loc_y = 0x11c;
 
-    // Initialize floor sprites
-    spritePtr = &lowfloor;
     for (i = 0; i < 3; i++) {
-        sprite = spritePtr[i];
-        sprite->flags &= ~2;
-        sprite->priority = 10;
-        sprite->flags |= 0x40;
-        sprite->InitLogic(4);
-        sprite->SetRange(0, 1, 4);
-        sprite->SetRange(1, 5, 8);
-        sprite->SetRange(2, 9, 0xc);
-        sprite->SetRange(3, 0xd, 0x10);
+        (&lowfloor)[i]->flags &= ~2;
+        (&lowfloor)[i]->priority = 10;
+        (&lowfloor)[i]->flags |= 0x40;
+        (&lowfloor)[i]->InitLogic(4);
+        (&lowfloor)[i]->SetRange(0, 1, 4);
+        (&lowfloor)[i]->SetRange(1, 5, 8);
+        (&lowfloor)[i]->SetRange(2, 9, 12);
+        (&lowfloor)[i]->SetRange(3, 13, 16);
     }
 
-    // Initialize soundStates to 1
     for (i = 0; i < 10; i++) {
         soundStates[i] = 1;
     }
@@ -157,54 +128,37 @@ Handler4::Handler4() {
 
 /* Function start: 0x40E9A0 */
 Handler4::~Handler4() {
-    int i;
-    Sprite* sprite;
-    Sprite** floorPtr;
-
-    // Cleanup floor, paths, and button sprites
-    // Original uses pointer at 0x624 (lowfloor) and accesses paths at -0x18, buttons at -0xc
-    floorPtr = &lowfloor;
-    for (i = 0; i < 3; i++) {
-        sprite = *floorPtr;
-        if (sprite != 0) {
-            sprite->FreeAnimation();
-            delete sprite;
-            *floorPtr = 0;
+    for (int i = 0; i < 3; i++) {
+        if ((&lowfloor)[i]) {
+            (&lowfloor)[i]->FreeAnimation();
+            delete (&lowfloor)[i];
+            (&lowfloor)[i] = 0;
         }
-
-        sprite = floorPtr[-6];  // paths1: offset -0x18 = -24 bytes = -6 pointers
-        if (sprite != 0) {
-            sprite->FreeAnimation();
-            delete sprite;
-            floorPtr[-6] = 0;
+        if ((&paths1)[i]) {
+            (&paths1)[i]->FreeAnimation();
+            delete (&paths1)[i];
+            (&paths1)[i] = 0;
         }
-
-        sprite = floorPtr[-3];  // buttons1: offset -0xc = -12 bytes = -3 pointers
-        if (sprite != 0) {
-            sprite->FreeAnimation();
-            delete sprite;
-            floorPtr[-3] = 0;
+        if ((&buttons1)[i]) {
+            (&buttons1)[i]->FreeAnimation();
+            delete (&buttons1)[i];
+            (&buttons1)[i] = 0;
         }
-
-        floorPtr++;
     }
 
-    // Cleanup litdoors
-    if (litdoors != 0) {
+    if (litdoors) {
         litdoors->FreeAnimation();
         delete litdoors;
         litdoors = 0;
     }
 
-    // Cleanup puzztest
-    if (puzztest != 0) {
+    if (puzztest) {
         puzztest->FreeAnimation();
         delete puzztest;
         puzztest = 0;
     }
 
-    // Cleanup palette
-    if (palette != 0) {
+    if (palette) {
         palette->Cleanup();
         delete palette;
         palette = 0;
@@ -213,31 +167,22 @@ Handler4::~Handler4() {
 
 /* Function start: 0x40EB80 */
 void Handler4::Init(SC_Message* msg) {
-    void** rendererPtr;
-    Palette* p;
-
     WriteToMessageLog("\nENTER FORCEFIELD PUZZLE");
-
     InitIconBar(msg);
 
-    // Set palette
-    p = palette;
-    if (p != 0) {
-        rendererPtr = &g_ZBufferManager_0043698c->m_fieldA8;
-        if (*rendererPtr != 0) {
+    if (palette != 0) {
+        if (g_ZBufferManager_0043698c->m_fieldA8 != 0) {
             WriteToMessageLog("ddouble palette");
         }
-        *rendererPtr = p;
+        g_ZBufferManager_0043698c->m_fieldA8 = palette;
     }
 
-    // Create sound if soundStates[9] is set (0x65c offset check)
     if (soundStates[9] != 0) {
         sound2 = new Sample();
         sound2->Load("audio\\Snd0020.wav");
         sound2->Play(100, 0);
     }
 
-    // Initialize puzzle if soundStates[4] is set (0x648 offset check)
     if (soundStates[4] != 0) {
         PlaySound(4, 0);
     }
@@ -245,145 +190,120 @@ void Handler4::Init(SC_Message* msg) {
 
 /* Function start: 0x40EC80 */
 int Handler4::Exit(SC_Message* msg) {
-    int i;
-    Sprite** spritePtr;
+    if (puzztest) puzztest->FreeAnimation();
+    if (litdoors) litdoors->FreeAnimation();
 
-    // Render puzztest sprite
-    if (puzztest != 0) {
-        puzztest->Do(0, 0, 1.0);
+    for (int i = 0; i < 3; i++) {
+        (&paths1)[i]->FreeAnimation();
+        (&buttons1)[i]->FreeAnimation();
+        (&lowfloor)[i]->FreeAnimation();
     }
 
-    // Render litdoors sprite
-    if (litdoors != 0) {
-        litdoors->Do(0, 0, 1.0);
-    }
-
-    // Render path, button and floor sprites
-    spritePtr = &paths1;
-    for (i = 0; i < 3; i++) {
-        spritePtr[0]->Do(0, 0, 1.0);
-        spritePtr[3]->Do(0, 0, 1.0);
-        spritePtr[6]->Do(0, 0, 1.0);
-        spritePtr++;
-    }
-
-    // Stop and cleanup sound1
     if (sound1 != 0) {
         sound1->Stop();
-    }
-    if (sound1 != 0) {
-        sound1->Unload();
         delete sound1;
         sound1 = 0;
     }
 
-    // Stop and cleanup sound2
     if (sound2 != 0) {
         sound2->Stop();
-        if (sound2 != 0) {
-            sound2->Unload();
-            delete sound2;
-            sound2 = 0;
-        }
+        delete sound2;
+        sound2 = 0;
     }
 
-    // Call parent exit
     CleanupIconBar();
-
     WriteToMessageLog("EXIT FORCEFIELD PUZZLE\n");
-
     return 1;
 }
 
 /* Function start: 0x40ED50 */
 int Handler4::HandleMessage(SC_Message* msg) {
-    int result;
-
-    // Call parent handler
-    result = CheckButtonClick(msg);
-    if (result != 0) {
+    int i;
+    if (CheckButtonClick(msg)) {
         return 1;
     }
 
-    // Check click type
     if (msg->mouseX < 2) {
         return 1;
     }
 
-    // Get mouse position and handle clicks
-    // Complex click handling logic would go here
+    Rect* pRect = (Rect*)0x43d100;
+    for (i = 0; i < 3; i++) {
+        if (floorStates[i]) {
+            if (msg->clickX >= pRect->x1 && msg->clickX <= pRect->x2 &&
+                msg->clickY >= pRect->y1 && msg->clickY <= pRect->y2) {
+                
+                if (i == 0) ResetPuzzle();
+                
+                msg->targetAddress = 8;
+                msg->sourceAddress = (i >= 1) ? 3 : 2;
+                msg->command = (i == 0) ? 10 : handlerId;
+                msg->data = (i == 0) ? 1 : field_8C;
+                msg->priority = 5;
+            }
+        }
+        pRect++;
+    }
 
     return 1;
 }
 
 /* Function start: 0x40EEB0 */
+int Handler4::Update(SC_Message* msg) {
+    return handlerId == msg->command;
+}
+
+/* Function start: 0x40EED0 */
 void Handler4::Draw(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
-    // Rendering is handled in Update for this handler
-}
 
-/* Function start: 0x40EED0 */
-int Handler4::Update(SC_Message* msg) {
-    if (msg == 0 || handlerId != msg->command) {
-        return 0;
-    }
-
-    // Stop and cleanup sound1 if playing
     if (sound1 != 0) {
-        // Check if sound finished
-        if (sound1->m_sample != 0) {
-            // ... check sound status
+        Sample* s = sound1;
+        if (s->m_sample != 0 && *(int*)((char*)s->m_sample + 0xc) == s->m_size) {
+            if (AIL_sample_status(s->m_sample) != 4) {
+                delete sound1;
+                sound1 = 0;
+            }
         }
-        sound1->Unload();
-        delete sound1;
-        sound1 = 0;
     }
 
-    // Display various elements
+    DrawIconBar(param1, param2);
+
+    if (puzztest != 0) {
+        puzztest->Do(puzztest->loc_x, puzztest->loc_y, 1.0);
+    }
+
     DisplayButtons();
     DisplayPaths();
-
     if (litdoors != 0) {
         DisplayLitDoors();
     }
-
     if (initialized != 0) {
         DisplayFloors();
     }
 
-    // Update mouse
     g_Mouse_00436978->DrawCursor();
-    return 0;
 }
 
 /* Function start: 0x40F310 */
 void Handler4::ResetPuzzle() {
     int i;
-    int* floorPtr;
-    Sprite** spritePtr;
-
-    // Reset floor states using pointer access
-    floorPtr = floorStates;
-    floorPtr[0] = 0;
-    floorPtr[1] = 0;
-    floorPtr[2] = 0;
-
-    // Reset button states (memset generates rep stosd)
+    floorStates[0] = 0;
+    floorStates[1] = 0;
+    floorStates[2] = 0;
     memset(buttonStates, 0, 9 * sizeof(int));
-
     puzzleSolved = 0;
     initialized = 0;
 
-    // Reset floor sprite states
-    spritePtr = &lowfloor;
-    for (i = 0; i < 3; i++) {
-        spritePtr[0]->SetState(3);
-        spritePtr++;
+    Sprite** pFloor = &lowfloor;
+    i = 3;
+    while (i--) {
+        (*pFloor)->SetState(3);
+        pFloor++;
     }
 
-    // Reset sound states - need rep stosd with value 1
     for (i = 0; i < 10; i++) {
         soundStates[i] = 1;
     }
@@ -393,24 +313,18 @@ void Handler4::ResetPuzzle() {
 void Handler4::PlaySound(int index, int loop) {
     char filename[48];
 
-    // Range check
     if (index < 0 || index > 9) {
         if (index != 9) {
             ShowError("%d is out of sound array range", index);
         }
     }
 
-    // Stop current sound
     if (sound1 != 0) {
         sound1->Stop();
-        if (sound1 != 0) {
-            sound1->Unload();
-            delete sound1;
-            sound1 = 0;
-        }
+        delete sound1;
+        sound1 = 0;
     }
 
-    // Play new sound if state allows
     if (soundStates[index] != 0) {
         sprintf(filename, "audio\\snd%4.4d.wav", index + 11);
         soundStates[index] = loop;
@@ -422,66 +336,36 @@ void Handler4::PlaySound(int index, int loop) {
 
 /* Function start: 0x40F490 */
 void Handler4::DisplayButtons() {
-    int i;
-    int row;
-    int col;
-    Sprite** buttonPtr;
-
-    for (i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
-            row = i / 3;
-            buttonPtr = &buttons1 + row;
-            col = i % 3;
-            (*buttonPtr)->SetState(col);
-            (*buttonPtr)->Do((*buttonPtr)->loc_x, (*buttonPtr)->loc_y, 1.0);
+            Sprite* btn = (&buttons1)[i / 3];
+            btn->SetState(i % 3);
+            btn->Do(btn->loc_x, btn->loc_y, 1.0);
         }
     }
 }
 
 /* Function start: 0x40F4F0 */
 void Handler4::DisplayPaths() {
-    int i;
-    int row;
-    int col;
-    Sprite** pathPtr;
-
     if (paths1 == 0 || paths2 == 0 || paths3 == 0) {
         WriteToMessageLog("Error in SCIpuzz1.cpp - DisplayMap()");
     }
-
-    for (i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
-            row = i / 3;
-            pathPtr = &paths1 + row;
-            col = i % 3;
-            (*pathPtr)->SetState(col);
-            (*pathPtr)->Do((*pathPtr)->loc_x, (*pathPtr)->loc_y, 1.0);
+            Sprite* path = (&paths1)[i / 3];
+            path->SetState(i % 3);
+            path->Do(path->loc_x, path->loc_y, 1.0);
         }
     }
 }
 
 /* Function start: 0x40F580 */
 void Handler4::DisplayLitDoors() {
-    int i;
-    int x;
-    int y;
-
-    for (i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         if (floorStates[i] != 0) {
             litdoors->SetState(i);
-            x = 0;
-            if (i != 0) {
-                if ((unsigned)(i - 1) < 1) {
-                    x = 0x138 - 0xa6;
-                } else {
-                    x = 0x138;
-                }
-            }
-            if ((unsigned)(i - 1) < 1) {
-                y = 0x60 + 0xe;
-            } else {
-                y = 0x60;
-            }
+            int x = (i == 1) ? (0x138 - 0xa6) : ((i == 2) ? 0x138 : 0);
+            int y = (i == 1) ? (0x60 + 0xe) : 0x60;
             litdoors->Do(x, y, 1.0);
         }
     }
@@ -491,52 +375,36 @@ void Handler4::DisplayLitDoors() {
 void Handler4::DisplayFloors() {
     int floorRow[3];
     int i;
-    Sprite** floorPtr;
-    int state;
-    Sprite* floor;
-
     floorRow[0] = -1;
     floorRow[1] = -1;
     floorRow[2] = -1;
 
-    if (lowfloor == 0 || midfloor == 0 || topfloor == 0) {
-        return;
-    }
+    if (lowfloor == 0 || midfloor == 0 || topfloor == 0) return;
 
-    // Determine which buttons are active in each row
     for (i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
-            if (i >= 0 && i <= 2) {
-                floorRow[0] = i;
-            } else if (i >= 3 && i <= 5) {
-                floorRow[1] = i % 3;
-            } else if (i >= 6 && i <= 8) {
-                floorRow[2] = i % 3;
-            }
+            if (i < 3) floorRow[0] = i;
+            else if (i < 6) floorRow[1] = i % 3;
+            else floorRow[2] = i % 3;
         }
     }
 
-    // Update floor sprites if needed
     if (needsUpdate != 0) {
         needsUpdate = 0;
-
-        floorPtr = &lowfloor;
         for (i = 0; i < 3; i++) {
-            floorPtr[i]->flags |= 0x20;
-            state = floorRow[i];
+            Sprite* s = (&lowfloor)[i];
+            s->flags |= 0x20;
+            int state = floorRow[i];
             if (state < -1 || state > 2) {
-                WriteToMessageLog("Error in SCIpuzz1.cpp - DisplayThisFloorRow:  Invalid case value");
+                 WriteToMessageLog("Error in SCIpuzz1.cpp - DisplayThisFloorRow:  Invalid case value");
             }
-            if (state == -1) {
-                state = 3;
-            }
-            floorPtr[i]->SetState(state);
+            if (state == -1) state = 3;
+            s->SetState(state);
         }
     }
 
-    // Render floors
     for (i = 0; i < 3; i++) {
-        floor = (&lowfloor)[i];
-        floor->Do(floor->loc_x, floor->loc_y, 1.0);
+        Sprite* s = (&lowfloor)[i];
+        s->Do(s->loc_x, s->loc_y, 1.0);
     }
 }
