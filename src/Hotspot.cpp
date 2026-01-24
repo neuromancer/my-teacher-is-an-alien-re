@@ -1,4 +1,5 @@
 #include "Hotspot.h"
+#include "SC_Question.h"
 #include "string.h"
 #include "Message.h"
 #include "Memory.h"
@@ -274,9 +275,15 @@ int Hotspot::LBLParse(char* line)
 {
     char keyword[48];
     sscanf(line, "%s", keyword);
+    WriteToMessageLog(line);
 
     if (strcmp(keyword, "RECT") == 0) {
-        sscanf(line, " %s %d %d %d %d", keyword, &rect.left, &rect.top, &rect.right, &rect.bottom);
+        int l, t, r, b;
+        sscanf(line, " %s %d %d %d %d", keyword, &l, &t, &r, &b);
+        rect.left = l;
+        rect.top = t;
+        rect.right = r;
+        rect.bottom = b;
     } else if (strcmp(keyword, "HOTSBEGIN") == 0) {
         hotspot = new MouseControl();
         Parser::ProcessFile(hotspot, this, 0);
@@ -288,20 +295,126 @@ int Hotspot::LBLParse(char* line)
         Parser::ProcessFile(wrong_tool, this, 0);
     } else if (strcmp(keyword, "PREMESSAGE") == 0) {
         if (!pre_message) pre_message = new Queue();
-        Message* msg = new Message(); // (0, 0, 0, 0, 0, 0, 0, 0, 0);
+        SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         msg->command = 7;
-        Parser::ProcessFile((Parser*)msg, this, 0);
-        pre_message->Push(msg);
+        Parser::ProcessFile(msg, this, 0);
+        
+        Queue* q = pre_message;
+        if (msg == 0) ShowError("queue fault 0101");
+        q->m_current = q->m_head;
+        if (q->m_field_0xc == 1 || q->m_field_0xc == 2) {
+            if (q->m_head != 0) {
+                do {
+                    QueueNode* currentPtr = (QueueNode*)q->m_current;
+                    if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
+                        if (msg == 0) ShowError("queue fault 0102");
+                        QueueNode* node = new QueueNode(msg);
+                        if (q->m_current == 0) q->m_current = q->m_head;
+                        if (q->m_head == 0) {
+                            q->m_head = node;
+                            q->m_tail = node;
+                            q->m_current = node;
+                        } else {
+                            node->next = (QueueNode*)q->m_current;
+                            node->prev = ((QueueNode*)q->m_current)->prev;
+                            if (((QueueNode*)q->m_current)->prev == 0) {
+                                q->m_head = node;
+                            } else {
+                                ((QueueNode*)q->m_current)->prev->next = node;
+                            }
+                            ((QueueNode*)q->m_current)->prev = node;
+                        }
+                        goto done_premessage;
+                    }
+                    if (q->m_tail == currentPtr) {
+                        if (msg == 0) ShowError("queue fault 0112");
+                        QueueNode* node = new QueueNode(msg);
+                        if (q->m_current == 0) q->m_current = q->m_tail;
+                        if (q->m_head == 0) {
+                            q->m_head = node;
+                            q->m_tail = node;
+                            q->m_current = node;
+                        } else {
+                            if (q->m_tail == 0 || ((QueueNode*)q->m_tail)->next != 0) ShowError("queue fault 0113");
+                            node->next = 0;
+                            node->prev = (QueueNode*)q->m_tail;
+                            ((QueueNode*)q->m_tail)->next = node;
+                            q->m_tail = node;
+                        }
+                        goto done_premessage;
+                    }
+                    if (currentPtr != 0) q->m_current = currentPtr->next;
+                } while (q->m_current != 0);
+            } else {
+                q->InsertAtCurrent(msg);
+            }
+        } else {
+            q->InsertAtCurrent(msg);
+        }
+done_premessage:;
     } else if (strcmp(keyword, "MESSAGE") == 0) {
         if (!message) message = new Queue();
-        Message* msg = new Message(); //(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         msg->command = 7;
-        Parser::ProcessFile((Parser*)msg, this, 0);
-        message->Push(msg);
+        Parser::ProcessFile(msg, this, 0);
+        
+        Queue* q = message;
+        if (msg == 0) ShowError("queue fault 0101");
+        q->m_current = q->m_head;
+        if (q->m_field_0xc == 1 || q->m_field_0xc == 2) {
+            if (q->m_head != 0) {
+                do {
+                    QueueNode* currentPtr = (QueueNode*)q->m_current;
+                    if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
+                        if (msg == 0) ShowError("queue fault 0102");
+                        QueueNode* node = new QueueNode(msg);
+                        if (q->m_current == 0) q->m_current = q->m_head;
+                        if (q->m_head == 0) {
+                            q->m_head = node;
+                            q->m_tail = node;
+                            q->m_current = node;
+                        } else {
+                            node->next = (QueueNode*)q->m_current;
+                            node->prev = ((QueueNode*)q->m_current)->prev;
+                            if (((QueueNode*)q->m_current)->prev == 0) {
+                                q->m_head = node;
+                            } else {
+                                ((QueueNode*)q->m_current)->prev->next = node;
+                            }
+                            ((QueueNode*)q->m_current)->prev = node;
+                        }
+                        goto done_message;
+                    }
+                    if (q->m_tail == currentPtr) {
+                        if (msg == 0) ShowError("queue fault 0112");
+                        QueueNode* node = new QueueNode(msg);
+                        if (q->m_current == 0) q->m_current = q->m_tail;
+                        if (q->m_head == 0) {
+                            q->m_head = node;
+                            q->m_tail = node;
+                            q->m_current = node;
+                        } else {
+                            if (q->m_tail == 0 || ((QueueNode*)q->m_tail)->next != 0) ShowError("queue fault 0113");
+                            node->next = 0;
+                            node->prev = (QueueNode*)q->m_tail;
+                            ((QueueNode*)q->m_tail)->next = node;
+                            q->m_tail = node;
+                        }
+                        goto done_message;
+                    }
+                    if (currentPtr != 0) q->m_current = currentPtr->next;
+                } while (q->m_current != 0);
+            } else {
+                q->InsertAtCurrent(msg);
+            }
+        } else {
+            q->InsertAtCurrent(msg);
+        }
+done_message:;
     } else if (strcmp(keyword, "LABEL") == 0) {
         sscanf(line, "%s %s", keyword, label);
     } else if (strcmp(keyword, "MOUSE") == 0) {
-        sscanf(line, "%s %d", keyword, &state);
+        sscanf(line, "%s %d", keyword, &field_D4);
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
     } else {
