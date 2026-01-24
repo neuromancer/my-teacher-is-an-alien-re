@@ -22,6 +22,9 @@ public:
     SC_Dialog();
     ~SC_Dialog();
 
+    void StopAll();         // 0x408B60
+    void Draw();            // 0x408EE0
+
     int field_88;           // 0x88 - set to 0x54 in constructor
     int field_8c;           // 0x8c
     int field_90;           // 0x90 - set to 1 in constructor
