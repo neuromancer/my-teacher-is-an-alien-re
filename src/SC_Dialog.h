@@ -22,6 +22,8 @@ public:
     SC_Dialog();
     ~SC_Dialog();
 
+    virtual int LBLParse(char* line); // 0x409030
+    void AddSprite(Sprite* spr);    // 0x408C40
     void StopAll();         // 0x408B60
     void Draw();            // 0x408EE0
 

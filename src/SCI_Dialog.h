@@ -1,38 +1,62 @@
 #ifndef SCI_DIALOG_H
 #define SCI_DIALOG_H
 
-#include "SearchScreen.h"
+#include "IconBar.h"
+#include "SC_Question.h"
 
+class SC_Message;
+class SC_Dialog;
+class MouseControl;
 class Sprite;
 class Queue;
 
-class SCI_Dialog : public SearchScreen
-{
+// DialogQuestion is SC_Question (destructor 0x4067e0, Finalize 0x4069b0)
+typedef SC_Question DialogQuestion;
+
+// SCI_Dialog - DialogPlayer handler
+// Size: 0x650 bytes
+// vtable: 0x431170
+// Inherits from IconBar (0x600 bytes)
+// handlerId: 9 at offset 0x88
+//
+// Layout:
+//   0x00-0x5FF: IconBar base class
+//   0x600: MouseControl*
+//   0x604: SC_Dialog*
+//   0x608: Sprite* (button)
+//   0x60C: Sprite* (hilite)
+//   0x610: Queue* (dialog queue)
+//   0x614: DialogQuestion* (current dialog)
+//   0x618-0x63F: int[10] (ambient controllers state)
+class SCI_Dialog : public IconBar {
 public:
-    // Reusing SearchScreen fields or overlaying
-    // SearchScreen has void* field_608[11];
-    
-    // Accessors or reinterpret_cast for ease?
-    // We can define methods to access them, or unions if we modify SearchScreen.
-    // For now, I'll rely on the fact they are pointers.
-    
-    // 0x608
-    Sprite* GetButton() { return (Sprite*)field_608[0]; }
-    void SetButton(Sprite* s) { field_608[0] = (void*)s; }
-    
-    // 0x60c
-    Sprite* GetHilite() { return (Sprite*)field_608[1]; }
-    void SetHilite(Sprite* s) { field_608[1] = (void*)s; }
-    
-    // 0x610
-    Queue* GetQuestionQueue() { return (Queue*)field_608[2]; }
-    void SetQuestionQueue(Queue* q) { field_608[2] = (void*)q; }
-    
-    // 0x618 is field_608[4]? (0x608 + 4*4 = 0x618)
-    // AmbientsController array?
-    
-    /* Function start: 0x407EC6 */
+    SCI_Dialog();
+    ~SCI_Dialog();
+
+    // Virtual method overrides
+    virtual void Init(SC_Message* msg);
+    virtual int HandleMessage(SC_Message* msg);
+    virtual int Update(SC_Message* msg);
+    virtual void Draw(int param1, int param2);
+    virtual int Exit(SC_Message* msg);
     virtual int LBLParse(char* line);
+
+    // SCI_Dialog-specific methods
+    DialogQuestion* GetDialogByIndex(int index);
+    DialogQuestion* FindDialogById(int id);
+
+    // Fields
+    MouseControl* mouseControl;     // 0x600
+    SC_Dialog* dialog;           // 0x604
+    Sprite* buttonSprite;           // 0x608
+    Sprite* hiliteSprite;           // 0x60C
+    Queue* dialogQueue;             // 0x610
+    DialogQuestion* currentDialog;  // 0x614
+    int ambientState[10];           // 0x618
+    int field_640;
+    int field_644;
+    int field_648;
+    int field_64C;
 };
 
 #endif

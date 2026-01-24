@@ -269,7 +269,7 @@ void Handler4::Draw(int param1, int param2) {
         }
     }
 
-    DrawIconBar(param1, param2);
+    IconBar::Draw(param1, param2);
 
     if (puzztest != 0) {
         puzztest->Do(puzztest->loc_x, puzztest->loc_y, 1.0);

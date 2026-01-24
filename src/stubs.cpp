@@ -16,7 +16,7 @@
 #include "SoundItem.h"
 #include "Parser.h"
 #include "Engine.h"
-#include "Handler9.h"
+#include "SCI_Dialog.h"
 #include "Queue.h"
 
 extern "C" {

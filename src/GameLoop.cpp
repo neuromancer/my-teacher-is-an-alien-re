@@ -29,7 +29,7 @@
 #include "Handler14.h"
 #include "SC_OnScreenMessage.h"
 #include "Handler16.h"
-#include "Handler9.h"
+#include "SCI_Dialog.h"
 #include "SoundCommand.h"
 #include "RenderEntry.h"
 #include <smack.h>
@@ -884,7 +884,7 @@ Handler* CreateHandler(int command) {
         handler = new Handler8();
         break;
     case 9:
-        handler = new Handler9();
+        handler = new SCI_Dialog();
         break;
     case 10:
         handler = new SCI_AfterSchoolMenu();

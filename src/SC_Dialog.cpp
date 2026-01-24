@@ -76,3 +76,67 @@ SC_Dialog::~SC_Dialog()
         spriteQueue = 0;
     }
 }
+
+/* Function start: 0x408B60 */
+void SC_Dialog::StopAll()
+{
+    if (spriteQueue == 0) return;
+
+    QueueNode* node = (QueueNode*)spriteQueue->m_head;
+    while (node != 0) {
+        Sprite* sprite = (Sprite*)node->data;
+        if (sprite != 0) {
+            sprite->StopAnimationSound();
+        }
+        node = node->next;
+    }
+    field_8c &= ~0x2000;
+}
+
+/* Function start: 0x408EE0 */
+void SC_Dialog::Draw()
+{
+    field_90 = 1;
+    // ... logic for 0x408BD0 if needed ...
+    
+    if (spriteQueue == 0) return;
+
+    QueueNode* node = (QueueNode*)spriteQueue->m_head;
+    while (node != 0) {
+        Sprite* sprite = (Sprite*)node->data;
+        if (sprite != 0) {
+            if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
+                field_90 = 0;
+            }
+        }
+        node = node->next;
+    }
+}
+
+/* Function start: 0x408C40 */
+void SC_Dialog::AddSprite(Sprite* spr)
+{
+    spriteQueue->Insert(spr);
+}
+
+/* Function start: 0x409030 */
+int SC_Dialog::LBLParse(char* line)
+{
+    char command[32];
+    Sprite* sprite;
+
+    if (sscanf(line, " %s ", command) != 1) {
+        return 0;
+    }
+
+    if (strcmp(command, "SPRITE") == 0) {
+        sprite = new Sprite(0);
+        AddSprite(sprite);
+        Parser::ProcessFile(sprite, this, 0);
+    } else if (strcmp(command, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("MMPlayer2");
+    }
+    return 0;
+}

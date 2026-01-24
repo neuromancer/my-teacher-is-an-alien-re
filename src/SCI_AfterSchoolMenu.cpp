@@ -421,7 +421,7 @@ void SCI_AfterSchoolMenu::Draw(int param1, int param2) {
     DisplaySubmenuHover(mouseX, mouseY);
 
     // Draw iconbar
-    IconBar::DrawIconBar(param1, param2);
+    IconBar::Draw(param1, param2);
 
     // Render background sprite
     if (background != 0) {

@@ -5,10 +5,10 @@
 #include "Message.h"
 #include "InputManager.h"
 #include "Mouse.h"
+#include "string.h"
 #include <string.h>
 #include <stdio.h>
 
-extern void WriteToMessageLog(const char* format, ...);
 extern "C" char* CDData_FormatPath(char* path, ...);
 
 /* Function start: 0x40ACC0 */
@@ -152,7 +152,7 @@ void Handler11::Draw(int param1, int param2) {
         return;
     }
 
-    IconBar::DrawIconBar(param1, param2);
+    IconBar::Draw(param1, param2);
 
     if (field_604 != 0) {
         field_604->Init();
@@ -239,7 +239,7 @@ int Handler11::LBLParse(char* line) {
     if (strcmp(token, "BACKGROUND") == 0) {
         field_604 = new MouseControl();
         ProcessFile(field_604, this, 0);
-    } else if (strcmp(token, "PALETTE") == 0) {
+    } else if (strcmp(token, "PALE") == 0) {
         if (field_600 == 0) {
             sscanf(line, "%s %s", token, arg1);
             field_600 = new Palette();

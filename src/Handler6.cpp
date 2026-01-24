@@ -170,8 +170,8 @@ void Handler6::Draw(int param1, int param2) {
         return;
     }
 
-    // Call parent draw (IconBar::DrawIconBar)
-    DrawIconBar(param1, param2);
+    // Call parent draw (IconBar::Draw)
+    IconBar::Draw(param1, param2);
 
     // Draw ambient
     if (ambient) ambient->DoAll();

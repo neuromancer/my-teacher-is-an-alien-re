@@ -55,7 +55,7 @@ public:
     void InitIconBar(SC_Message* msg);
     void CleanupIconBar();
     int CheckButtonClick(SC_Message* msg);
-    void DrawIconBar(int param1, int param2);
+    virtual void Draw(int param1, int param2);
     void PlayButtonSound(int buttonIndex);  // 0x403300
 
     // Icon bar rect (0xA0-0xAF)
