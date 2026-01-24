@@ -557,7 +557,7 @@ int SCI_Dialog::LBLParse(char* line) {
     QueueNode* newNode;
     int curNode;
 
-    if (sscanf(line, "%s", token) != 1) return 0;
+    sscanf(line, "%s", token);
 
     if (strcmp(token, "BACKGROUND") == 0) {
         WriteToMessageLog("SCI_Dialog::LBLParse %s, a background already exists", token);
@@ -572,17 +572,25 @@ int SCI_Dialog::LBLParse(char* line) {
     } else if (strcmp(token, "HILITE") == 0) {
         hiliteSprite = new Sprite(0);
         Parser::ProcessFile(hiliteSprite, this, 0);
+    } else if (strcmp(token, "HANDLE") == 0) {
+        sscanf(line, "%s %d", token, &field_8C);
     } else if (strcmp(token, "AMBIENTSCONTROLLER") == 0) {
         int ambientVal;
         sscanf(line, "%s %d", token, &ambientVal);
         int temp = ambientVal;
-        do {
+        int count = 1;
+        while (temp >= 10) {
+            temp /= 10;
+            count++;
+        }
+        temp = ambientVal;
+        for (int i = 0; i < count; i++) {
             ambientState[temp % 10] = 0;
             temp /= 10;
-        } while (temp != 0);
+        }
     } else if (strcmp(token, "QUESTION") == 0) {
         int questionId;
-        sscanf(line, "%s %d", token, &questionId);
+        sscanf(line, "%s %d ", token, &questionId);
         dq = new SC_Question(questionId);
         if (dq->state == 2) {
             delete dq;
@@ -650,7 +658,7 @@ int SCI_Dialog::LBLParse(char* line) {
                             }
                             break;
                         }
-                        if (curNode != 0) queue->m_current = ((QueueNode*)curNode)->prev;
+                        if (curNode != 0) queue->m_current = ((QueueNode*)curNode)->next;
                         if (queue->m_current == 0) break;
                     }
                 }
@@ -661,7 +669,7 @@ int SCI_Dialog::LBLParse(char* line) {
     } else if (strcmp(token, "END") == 0) {
         return 1;
     } else {
-        return Parser::LBLParse("SCI_Dialog");
+        Parser::LBLParse("SCI_Dialog");
     }
 
     return 0;
