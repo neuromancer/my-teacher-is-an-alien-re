@@ -12,48 +12,49 @@
 /* Function start: 0x409940 */
 OptionMenu::OptionMenu()
 {
-    for (int i = 0; i < 6; i++) {
-        options[i] = 0;
-    }
+    // The original code zeroes 6 dwords starting at offset 0x88
+    // This includes options[0..2], field_94, spriteList, and selected_option
+    memset(&options[0], 0, 6 * sizeof(void*));
+    
     selected_option = 5;
 
-    Sprite* option1 = new Sprite("demo/option1.smk");
-    if (option1) {
-        option1->flags &= ~2;
-        option1->loc_x = 216;
-        option1->loc_y = 202;
-        option1->priority = 10;
-        option1->SetState(4);
-        option1->SetRange(0, 1, 1);
-        option1->SetRange(1, 2, 2);
-        option1->SetRange(2, 3, 12);
-        option1->SetRange(3, 13, 13);
+    options[0] = new Sprite("demo/option1.smk");
+    if (options[0]) {
+        options[0]->flags &= ~2;
+        options[0]->loc_x = 216;
+        options[0]->loc_y = 202;
+        options[0]->priority = 10;
+        options[0]->SetState(4);
+        options[0]->SetRange(0, 1, 1);
+        options[0]->SetRange(1, 2, 2);
+        options[0]->SetRange(2, 3, 12);
+        options[0]->SetRange(3, 13, 13);
     }
 
-    Sprite* option2 = new Sprite("demo/option2.smk");
-    if (option2) {
-        option2->flags &= ~2;
-        option2->loc_x = 216;
-        option2->loc_y = 202;
-        option2->priority = 10;
-        option2->SetState(4);
-        option2->SetRange(0, 1, 1);
-        option2->SetRange(1, 2, 2);
-        option2->SetRange(2, 3, 12);
-        option2->SetRange(3, 13, 13);
+    options[1] = new Sprite("demo/option2.smk");
+    if (options[1]) {
+        options[1]->flags &= ~2;
+        options[1]->loc_x = 216;
+        options[1]->loc_y = 202;
+        options[1]->priority = 10;
+        options[1]->SetState(4);
+        options[1]->SetRange(0, 1, 1);
+        options[1]->SetRange(1, 2, 2);
+        options[1]->SetRange(2, 3, 12);
+        options[1]->SetRange(3, 13, 13);
     }
 
-    Sprite* option3 = new Sprite("demo/option3.smk");
-    if (option3) {
-        option3->flags &= ~2;
-        option3->loc_x = 216;
-        option3->loc_y = 202;
-        option3->priority = 10;
-        option3->SetState(4);
-        option3->SetRange(0, 1, 1);
-        option3->SetRange(1, 2, 2);
-        option3->SetRange(2, 3, 12);
-        option3->SetRange(3, 13, 13);
+    options[2] = new Sprite("demo/option3.smk");
+    if (options[2]) {
+        options[2]->flags &= ~2;
+        options[2]->loc_x = 216;
+        options[2]->loc_y = 202;
+        options[2]->priority = 10;
+        options[2]->SetState(4);
+        options[2]->SetRange(0, 1, 1);
+        options[2]->SetRange(1, 2, 2);
+        options[2]->SetRange(2, 3, 12);
+        options[2]->SetRange(3, 13, 13);
     }
 }
 
@@ -101,64 +102,42 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
         sprite_count = selected_option;
     }
 
-    spriteList->current = spriteList->head;
-
-    if (spriteList->head == 0) {
+    if (spriteList == 0 || spriteList->head == 0) {
         return;
     }
 
+    spriteList->current = spriteList->head;
+
     do {
         if (i >= sprite_count) {
-            return;
+            break;
         }
-
-        if (sprite_index == 0) {
-            node = spriteList->current;
-            data = (node != 0) ? (SpriteData*)node->data : 0;
-            options[0]->SetState2(data->state);
-            sprite = options[0];
-            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-        }
-        if (sprite_index == 1) {
-            node = spriteList->current;
-            data = (node != 0) ? (SpriteData*)node->data : 0;
-            options[1]->SetState2(data->state);
-            sprite = options[1];
-            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-        }
-        if (sprite_index == 2) {
-            node = spriteList->current;
-            data = (node != 0) ? (SpriteData*)node->data : 0;
-            options[2]->SetState2(data->state);
-            sprite = options[2];
-            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-        }
-
-        // Set bounding box values on the current list item
-        node = spriteList->current;
-        data = (node != 0) ? (SpriteData*)node->data : 0;
-        data->rect_x = 0xda;
 
         node = spriteList->current;
         data = (node != 0) ? (SpriteData*)node->data : 0;
-        data->rect_y = 0xcc;
 
-        node = spriteList->current;
-        data = (node != 0) ? (SpriteData*)node->data : 0;
-        data->rect_w = 0x1b3;
+        if (data != 0 && sprite_index >= 0 && sprite_index < 3) {
+            sprite = options[sprite_index];
+            if (sprite != 0) {
+                sprite->SetState2(data->state);
+                sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+            }
+        }
 
-        node = spriteList->current;
-        data = (node != 0) ? (SpriteData*)node->data : 0;
-        data->rect_h = 0xee;
+        if (data != 0) {
+            data->rect_x = 0xda;
+            data->rect_y = 0xcc;
+            data->rect_w = 0x1b3;
+            data->rect_h = 0xee;
+        }
 
         // Advance iterator
-        node = spriteList->current;
         if (spriteList->tail == node) break;
         if (node != 0) {
             spriteList->current = node->prev;
         }
         i++;
-    } while (spriteList->head != 0);
+    } while (spriteList->current != 0);
 }
 
 /* Function start: 0x409F00 */
