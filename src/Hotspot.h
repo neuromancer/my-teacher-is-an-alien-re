@@ -61,10 +61,7 @@ public:
     int dialogParseFileNumber;      // 0x120 - set to -1
     int parseFileIndex;             // 0x124 - set to -1
     int dialog;                     // 0x128
-    int rect_x;                     // 0x12C
-    int rect_y;                     // 0x130
-    int rect_w;                     // 0x134
-    int rect_h;                     // 0x138
+    GlyphRect rect;                 // 0x12C
     int field_13C;                  // 0x13C
 
     int LBLParse(char* line);       // 0x409620

@@ -586,8 +586,8 @@ void SCI_AfterSchoolMenu::ProcessGoButtonHover(MousePoint pt, T_Hotspot* button,
     if (IsSelectionComplete()) {
         int isHit = 0;
         if (button->enabled != 0) {
-            if (pt.x >= button->rect_x && pt.x <= button->rect_w &&
-                pt.y >= button->rect_y && pt.y <= button->rect_h) {
+            if (pt.x >= button->rect.left && pt.x <= button->rect.right &&
+                pt.y >= button->rect.top && pt.y <= button->rect.bottom) {
                 isHit = 1;
             }
         }
@@ -652,8 +652,8 @@ void SCI_AfterSchoolMenu::ProcessCharacterHover(MousePoint pt) {
         {
             MousePoint local_pt = pt;
             if ((*charPtr)->enabled != 0) {
-                if ((*charPtr)->rect_x > local_pt.x || (*charPtr)->rect_w < local_pt.x ||
-                    (*charPtr)->rect_y > local_pt.y || (*charPtr)->rect_h < local_pt.y) {
+                if ((*charPtr)->rect.left > local_pt.x || (*charPtr)->rect.right < local_pt.x ||
+                    (*charPtr)->rect.top > local_pt.y || (*charPtr)->rect.bottom < local_pt.y) {
                     isHit = 0;
                 } else {
                     isHit = 1;

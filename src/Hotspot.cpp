@@ -19,20 +19,7 @@ extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 /* Function start: 0x409230 */
 T_Hotspot::T_Hotspot()
 {
-    int* ptr;
-    int i;
-
-    field_13C = 0;
-    rect_x = 0;
-    rect_y = 0;
-    rect_w = 0;
-    rect_h = 0;
-
-    ptr = (int*)&sprite;
-    for (i = 0x2e; i != 0; i--) {
-        *ptr = 0;
-        ptr++;
-    }
+    memset(&sprite, 0, 0x2e * 4);
     enabled = 1;
     state = 1;
     dialogParseFileNumber = -1;
@@ -179,28 +166,30 @@ int T_Hotspot::Update(int param_1, int param_2, int param_3)
 /* Function start: 0x409620 */
 int T_Hotspot::LBLParse(char* line)
 {
+    int b, r, t, l;
     char command[32];
     sscanf(line, " %s ", command);
 
     if (strcmp(command, "RECT") == 0) {
-        sscanf(line, "%*s %d %d %d %d", &rect_x, &rect_y, &rect_w, &rect_h);
+        sscanf(line, " %s %d %d %d %d", command, &l, &t, &r, &b);
+        rect.left = l;
+        rect.top = t;
+        rect.right = r;
+        rect.bottom = b;
     } else if (strcmp(command, "DIALOG") == 0) {
         dialog = 1;
     } else if (strcmp(command, "DIALOGPARSEFILENUMBER") == 0) {
-        sscanf(line, "%*s %d", &dialogParseFileNumber);
+        sscanf(line, "%s %d", command, &dialogParseFileNumber);
     } else if (strcmp(command, "PARSEFILEINDEX") == 0) {
-        sscanf(line, "%*s %d", &parseFileIndex);
+        sscanf(line, "%s %d", command, &parseFileIndex);
     } else if (strcmp(command, "SPRITE") == 0) {
-        Sprite* newSprite = (Sprite*)AllocateMemory(0xd8);
-        if (newSprite) {
-            newSprite->Sprite::Sprite(NULL);
-        }
-        sprite = newSprite;
+        Sprite* spr = new Sprite(NULL);
+        sprite = spr;
         Parser::ProcessFile(sprite, this, 0);
     } else if (strcmp(command, "LABEL") == 0) {
-        sscanf(line, "%*s %s", label);
+        sscanf(line, "%s %s", command, label);
     } else if (strcmp(command, "MOUSE") == 0) {
-        sscanf(line, "%*s %s", mouse);
+        sscanf(line, "%s %s", command, label);
     } else if (strcmp(command, "END") == 0) {
         return 1;
     } else {
@@ -212,11 +201,6 @@ int T_Hotspot::LBLParse(char* line)
 /* Function start: 0x40D300 */
 Hotspot::Hotspot()
 {
-    Parser::Parser();
-    rect.left = 0;
-    rect.top = 0;
-    rect.right = 0;
-    rect.bottom = 0;
     memset(&hotspot, 0, 104);
     field_D0 = 1;
     state = 1;
@@ -225,47 +209,66 @@ Hotspot::Hotspot()
 /* Function start: 0x40D3A0 */
 Hotspot::~Hotspot()
 {
-    if (hotspot) delete hotspot;
-    if (right_tool) delete right_tool;
-    if (wrong_tool) delete wrong_tool;
+    if (hotspot) {
+        delete hotspot;
+        hotspot = 0;
+    }
+    if (right_tool) {
+        delete right_tool;
+        right_tool = 0;
+    }
+    if (wrong_tool) {
+        delete wrong_tool;
+        wrong_tool = 0;
+    }
 
     if (pre_message) {
-        pre_message->m_current = pre_message->m_head;
-        while (pre_message->m_head) {
-            QueueNode* node = (QueueNode*)pre_message->m_current;
-
-            if (pre_message->m_head == node) pre_message->m_head = (void*)node->next;
-            if (pre_message->m_tail == node) pre_message->m_tail = (void*)node->prev;
-            if (node->prev) node->prev->next = node->next;
-            if (node->next) node->next->prev = node->prev;
-
-            Message* msg = (Message*)node->data;
-            delete node;
-            if (msg) delete msg;
-
+        if (pre_message->m_head) {
             pre_message->m_current = pre_message->m_head;
+            do {
+                Message* msg = 0;
+                QueueNode* node = (QueueNode*)pre_message->m_current;
+                if (node) {
+                    if (pre_message->m_head == node) pre_message->m_head = (void*)node->next;
+                    if (pre_message->m_tail == node) pre_message->m_tail = (void*)node->prev;
+                    if (node->prev) ((QueueNode*)node->prev)->next = node->next;
+                    if (node->next) ((QueueNode*)node->next)->prev = node->prev;
+
+                    msg = (Message*)pre_message->GetCurrentData();
+                    delete node;
+                    pre_message->m_current = 0;
+                }
+                pre_message->m_current = pre_message->m_head;
+
+                if (msg) delete msg;
+            } while (pre_message->m_head);
         }
-        FreeMemory(pre_message);
+        delete pre_message;
         pre_message = 0;
     }
 
     if (message) {
-        message->m_current = message->m_head;
-        while (message->m_head) {
-            QueueNode* node = (QueueNode*)message->m_current;
-
-            if (message->m_head == node) message->m_head = (void*)node->next;
-            if (message->m_tail == node) message->m_tail = (void*)node->prev;
-            if (node->prev) node->prev->next = node->next;
-            if (node->next) node->next->prev = node->prev;
-
-            Message* msg = (Message*)node->data;
-            delete node;
-            if (msg) delete msg;
-
+        if (message->m_head) {
             message->m_current = message->m_head;
+            do {
+                Message* msg = 0;
+                QueueNode* node = (QueueNode*)message->m_current;
+                if (node) {
+                    if (message->m_head == node) message->m_head = (void*)node->next;
+                    if (message->m_tail == node) message->m_tail = (void*)node->prev;
+                    if (node->prev) ((QueueNode*)node->prev)->next = node->next;
+                    if (node->next) ((QueueNode*)node->next)->prev = node->prev;
+
+                    msg = (Message*)message->GetCurrentData();
+                    delete node;
+                    message->m_current = 0;
+                }
+                message->m_current = message->m_head;
+
+                if (msg) delete msg;
+            } while (message->m_head);
         }
-        FreeMemory(message);
+        delete message;
         message = 0;
     }
 }
