@@ -5,7 +5,7 @@
 #include "string.h"
 
 // External queue functions
-extern PriorityQueueNode* __fastcall FUN_00404470(PriorityQueueNode* node, CharSprite* sprite);
+// External queue functions
 
 // strstr is just strstr from the CRT - use standard library
 
@@ -79,10 +79,7 @@ Character::Character(char* param_1) {
                     while (pQueue->current != 0) {
                         if (pQueue->current->data->priority < sprite->priority) {
                             if (sprite == 0) ShowError("queue fault 0102");
-                            newNode = (PriorityQueueNode*)operator new(0xc);
-                            if (newNode != 0) {
-                                FUN_00404470(newNode, sprite);
-                            }
+                            newNode = new PriorityQueueNode(sprite);
                             if (pQueue->current == 0) pQueue->current = pQueue->head;
                             if (pQueue->head == 0) {
                                 pQueue->head = newNode;
@@ -172,10 +169,7 @@ Character::Character(char* param_1) {
                     while (pQueue->current != 0) {
                         if (pQueue->current->data->priority < sprite->priority) {
                             if (sprite == 0) ShowError("queue fault 0102");
-                            newNode = (PriorityQueueNode*)operator new(0xc);
-                            if (newNode != 0) {
-                                FUN_00404470(newNode, sprite);
-                            }
+                            newNode = new PriorityQueueNode(sprite);
                             if (pQueue->current == 0) pQueue->current = pQueue->head;
                             if (pQueue->head == 0) {
                                 pQueue->head = newNode;
@@ -266,10 +260,7 @@ Character::Character(char* param_1) {
                     while (pQueue->current != 0) {
                         if (pQueue->current->data->priority < sprite->priority) {
                             if (sprite == 0) ShowError("queue fault 0102");
-                            newNode = (PriorityQueueNode*)operator new(0xc);
-                            if (newNode != 0) {
-                                FUN_00404470(newNode, sprite);
-                            }
+                            newNode = new PriorityQueueNode(sprite);
                             if (pQueue->current == 0) pQueue->current = pQueue->head;
                             if (pQueue->head == 0) {
                                 pQueue->head = newNode;
@@ -368,6 +359,14 @@ void PriorityQueue::AddAfterCurrent(CharSprite* sprite)
             current->next = newNode;
         }
     }
+}
+
+/* Function start: 0x404470 */
+PriorityQueueNode::PriorityQueueNode(CharSprite* s)
+{
+    next = 0;
+    prev = 0;
+    data = s;
 }
 
 /* Function start: 0x408880 */

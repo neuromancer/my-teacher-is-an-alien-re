@@ -53,6 +53,9 @@ public:
     int field_644;                  // 0x644
     int field_648;                  // 0x648
     int field_64C;                  // 0x64C
+
+    DialogQuestion* GetDialogByIndex(int index);
+    DialogQuestion* FindDialogById(int id);
 };
 
 #endif // HANDLER9_H

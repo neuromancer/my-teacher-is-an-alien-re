@@ -16,11 +16,7 @@ struct PriorityQueueNode {
     PriorityQueueNode* prev;    // +0x04
     CharSprite* data;           // +0x08
 
-    PriorityQueueNode(CharSprite* s) {
-        data = s;
-        next = 0;
-        prev = 0;
-    }
+    PriorityQueueNode(CharSprite* s); // 0x404470
 };
 
 // PriorityQueue - Priority queue for CharSprites
@@ -69,6 +65,5 @@ public:
 };
 
 // External functions used by Character
-extern PriorityQueueNode* __fastcall FUN_00404470(PriorityQueueNode* node, CharSprite* sprite);
 
 #endif // CHARACTER_H
