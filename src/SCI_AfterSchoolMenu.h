@@ -2,6 +2,7 @@
 #define SCI_AFTERSCHOOLMENU_H
 
 #include "IconBar.h"
+#include "Hotspot.h"
 #include "InputManager.h"
 
 class SC_Message;
@@ -77,7 +78,7 @@ public:
     void RenderChoiceScreen(int characterIndex);
     void ProcessCharacterHover(MousePoint pt);
     void ProcessSubmenuHover(MousePoint pt);
-    void ProcessGoButtonHover(MousePoint pt, Hotspot* goButton, int* confirmFlag);
+    void ProcessGoButtonHover(MousePoint pt, T_Hotspot* goButton, int* confirmFlag);
     void DisplaySubmenuHover(int mouseX, int mouseY);
 
     void SetCharacterOption(int characterIndex);
@@ -89,9 +90,9 @@ public:
     Palette* palette;           // 0x600
     MouseControl* background;   // 0x604
     OptionMenu* choiceScreen;   // 0x608
-    Hotspot* goButton;          // 0x60C - CharButton*
-    Hotspot* cancelButton;      // 0x610 - CharButton*
-    Hotspot* characters[3];     // 0x614 - CharSprite* array (peter, susan, duncan)
+    T_Hotspot* goButton;          // 0x60C - CharButton*
+    T_Hotspot* cancelButton;      // 0x610 - CharButton*
+    T_Hotspot* characters[3];     // 0x614 - CharSprite* array (peter, susan, duncan)
     SoundSlot sounds[8];        // 0x620 - 0x660 (8 * 8 = 0x40 bytes)
     Sample* currentSound;       // 0x660
     int savedCharacterIndex;    // 0x664

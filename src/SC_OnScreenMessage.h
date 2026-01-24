@@ -19,6 +19,7 @@ struct MessageNode {
 
     MessageNode* Destroy(int flag);      // 0x40C580
     MessageNode* Init(void* nodeData);   // 0x40C5B0
+    MessageNode* Init_40ACA0(void* nodeData); // 0x40ACA0
 };
 
 // MessageList control structure for SC_OnScreenMessage

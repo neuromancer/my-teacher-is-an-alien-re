@@ -8,17 +8,7 @@
 #include "StringTable.h"
 #include "OnScreenMessage.h"
 
-/* Function start: 0x40A1D0 */
-OnScreenMessage::OnScreenMessage(char* message, unsigned int dur) {
-    strcpy(text, message);
-    timer.Reset();
-    duration = dur;
-}
-
-/* Function start: 0x40A290 */
-int OnScreenMessage::Update(int index) {
-    return duration >= timer.Update();
-}
+// OnScreenMessage methods moved to OnScreenMessage.cpp
 
 /* Function start: 0x40A2E0 */
 Handler15::Handler15() {
@@ -256,7 +246,7 @@ process_message:
             if (pList->tail == node) {
                 if (newItem == 0) WriteToMessageLog("queue fault 0112");
                 MessageNode* newNode = new MessageNode();
-                if (newNode != 0) newNode->Init(newItem);
+                if (newNode != 0) newNode->Init_40ACA0(newItem);
                 if (pList->current == 0) pList->current = pList->tail;
                 if (pList->head == 0) {
                     pList->head = newNode;
@@ -337,7 +327,7 @@ void MessageList::InsertNode(void* data) {
     }
     MessageNode* newNode = new MessageNode();
     if (newNode != 0) {
-        newNode->Init(data);
+        newNode->Init_40ACA0(data);
     }
     if (current == 0) {
         current = head;
@@ -359,7 +349,7 @@ void MessageList::InsertNode(void* data) {
 }
 
 /* Function start: 0x40ACA0 */
-MessageNode* MessageNode::Init(void* nodeData) {
+MessageNode* MessageNode::Init_40ACA0(void* nodeData) {
     data = nodeData;
     prev = 0;
     next = 0;

@@ -37,7 +37,7 @@ int SCI_AfterSchoolMenu::LBLParse(char* line) {
     char filepath[64];
     MouseControl* mc;
     Palette* pal;
-    Hotspot* hotspot;
+    T_Hotspot* hotspot;
     OptionMenu* optMenu;
 
     sscanf(line, "%s", label);
@@ -54,16 +54,16 @@ int SCI_AfterSchoolMenu::LBLParse(char* line) {
             pal->Load(CDData_FormatPath(filepath));
         }
     } else if (strcmp(label, "CHAR") == 0) {
-        hotspot = new HotspotManager();
+        hotspot = new T_Hotspot();
         characters[characterCount] = hotspot;
         Parser::ProcessFile(hotspot, this, (char*)0);
         characterCount = characterCount + 1;
     } else if (strcmp(label, "CANCEL") == 0) {
-        hotspot = new HotspotManager();
+        hotspot = new T_Hotspot();
         cancelButton = hotspot;
         Parser::ProcessFile(hotspot, this, (char*)0);
     } else if (strcmp(label, "OKAY") == 0) {
-        hotspot = new HotspotManager();
+        hotspot = new T_Hotspot();
         goButton = hotspot;
         Parser::ProcessFile(hotspot, this, (char*)0);
     } else if (strcmp(label, "OPTION_MENU") == 0) {
@@ -119,7 +119,7 @@ SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
 /* Function start: 0x404E60 */
 SCI_AfterSchoolMenu::~SCI_AfterSchoolMenu() {
     int i;
-    Hotspot* obj;
+    T_Hotspot* obj;
 
     // Cleanup palette
     if (palette != 0) {
@@ -268,7 +268,7 @@ int SCI_AfterSchoolMenu::Exit(SC_Message* msg) {
 
         // Exit character sprites
         for (i = 0; i < 3; i++) {
-            Hotspot* obj = characters[i];
+            T_Hotspot* obj = characters[i];
             if (obj != 0) {
                 obj->Exit();
             }
@@ -582,7 +582,7 @@ void SCI_AfterSchoolMenu::DisplaySubmenuHover(int mouseX, int mouseY) {
 }
 
 /* Function start: 0x405AA0 */
-void SCI_AfterSchoolMenu::ProcessGoButtonHover(MousePoint pt, Hotspot* button, int* outConfirmFlag) {
+void SCI_AfterSchoolMenu::ProcessGoButtonHover(MousePoint pt, T_Hotspot* button, int* outConfirmFlag) {
     if (IsSelectionComplete()) {
         int isHit = 0;
         if (button->enabled != 0) {
@@ -618,7 +618,7 @@ void SCI_AfterSchoolMenu::RenderGoButton() {
 /* Function start: 0x4058B0 */
 void SCI_AfterSchoolMenu::RenderCharacters() {
     int i;
-    Hotspot* charSprite;
+    T_Hotspot* charSprite;
 
     for (i = 0; i < 3; i++) {
         charSprite = characters[i];
@@ -643,7 +643,7 @@ void SCI_AfterSchoolMenu::RenderChoiceScreen(int characterIndex) {
 /* Function start: 0x405900 */
 void SCI_AfterSchoolMenu::ProcessCharacterHover(MousePoint pt) {
     int i;
-    Hotspot** charPtr;
+    T_Hotspot** charPtr;
     int isHit;
     int noHit = 1;
 

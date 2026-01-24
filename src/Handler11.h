@@ -5,7 +5,7 @@
 #include "Palette.h"
 #include "MouseControl.h"
 #include "SC_Dialog.h"
-#include "DialogControl.h"
+#include "Hotspot.h"
 
 class SC_Message;
 

@@ -2,85 +2,91 @@
 #include "string.h"
 #include "Message.h"
 #include "Memory.h"
-#include "SpriteList.h"
+#include "Sprite.h"
+#include "MouseControl.h"
 #include <stdio.h>
 #include <string.h>
 
-// T_Hotspot class - base class for CharSprite/CharButton
-// Has vtable 0x4311b8, different from Hotspot (0x431278)
-// Used by SCI_AfterSchoolMenu for goButton, cancelButton, characters[]
-class T_Hotspot : public Parser {
-public:
-    T_Hotspot();
-    virtual ~T_Hotspot();
+// Helper for Miles Sound System
+typedef void* HSAMPLE;
+extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 
-    Sprite* sprite;      // 0x88
-    SpriteList* list1;   // 0x8c
-    SpriteList* list2;   // 0x90
-    SpriteList* list3;   // 0x94
-};
+/* Function start: 0x409230 */
+T_Hotspot::T_Hotspot()
+{
+    int* ptr;
+    int i;
+
+    field_13C = 0;
+    rect_x = 0;
+    rect_y = 0;
+    rect_w = 0;
+    rect_h = 0;
+
+    ptr = (int*)&sprite;
+    for (i = 0x2e; i != 0; i--) {
+        *ptr = 0;
+        ptr++;
+    }
+    enabled = 1;
+    state = 1;
+    dialogParseFileNumber = -1;
+    parseFileIndex = -1;
+}
 
 /* Function start: 0x4092E0 */
 T_Hotspot::~T_Hotspot()
 {
     Sprite* spr;
-    SpriteList* lst;
+    MouseControl* mc;
 
-    // Clean up sprite at 0x88
     spr = sprite;
     if (spr != 0) {
         delete spr;
         sprite = 0;
     }
 
-    // Clean up list1 at 0x8c
-    lst = list1;
-    if (lst != 0) {
-        delete lst;
+    mc = list1;
+    if (mc != 0) {
+        delete mc;
         list1 = 0;
     }
 
-    // Clean up list2 at 0x90
-    lst = list2;
-    if (lst != 0) {
-        delete lst;
+    mc = list2;
+    if (mc != 0) {
+        delete mc;
         list2 = 0;
     }
 
-    // Clean up list3 at 0x94
-    lst = list3;
-    if (lst != 0) {
-        delete lst;
+    mc = list3;
+    if (mc != 0) {
+        delete mc;
         list3 = 0;
     }
 }
 
-// Wrapper for SCI_AfterSchoolMenu compatibility
+// Wrapper for SCI_AfterSchoolMenu compatibility (SEH handler often needs a simpler entry)
 void __fastcall FUN_004092e0(void* obj)
 {
-    ((T_Hotspot*)obj)->~T_Hotspot();
-}
-
-// HotspotManager constructor
-HotspotManager::HotspotManager() {
-    // Inherits from Hotspot, adds 4 extra bytes
+    if (obj) {
+        ((T_Hotspot*)obj)->~T_Hotspot();
+    }
 }
 
 /* Function start: 0x409400 */
-unsigned char Hotspot::Do()
+unsigned char T_Hotspot::Do()
 {
-    if (sprite != (Sprite *)0x0) {
+    if (sprite != 0) {
         return sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
     }
-    // WARNING: Subroutine does not return
     ShowError("Missing sprite in Hotspot Do()");
     return 0;
 }
 
 /* Function start: 0x409440 */
-int Hotspot::SetState(int newState)
+int T_Hotspot::SetState(int newState)
 {
-    if (sprite != (Sprite *)0x0) {
+    if (sprite != 0) {
         sprite->SetState2(newState);
         return 1;
     }
@@ -89,9 +95,9 @@ int Hotspot::SetState(int newState)
 }
 
 /* Function start: 0x409470 */
-int Hotspot::GetState()
+int T_Hotspot::GetState()
 {
-    if (sprite == (Sprite *)0x0) {
+    if (sprite == 0) {
         ShowError("Error in T_Hotspot::Get_State");
         return 0;
     }
@@ -99,24 +105,24 @@ int Hotspot::GetState()
 }
 
 /* Function start: 0x4094A0 */
-void Hotspot::Exit()
+void T_Hotspot::Exit()
 {
-    if (sprite != (Sprite *)0x0) {
+    if (sprite != 0) {
         sprite->StopAnimationSound();
     }
-    if (list1 != (SpriteList *)0x0) {
+    if (list1 != 0) {
         list1->StopAll();
     }
-    if (list2 != (SpriteList *)0x0) {
+    if (list2 != 0) {
         list2->StopAll();
     }
-    if (list3 != (SpriteList *)0x0) {
+    if (list3 != 0) {
         list3->StopAll();
     }
 }
 
 /* Function start: 0x4094F0 */
-int Hotspot::Update(int param_1, int param_2, int param_3)
+int T_Hotspot::Update(int param_1, int param_2, int param_3)
 {
     int iVar1;
     int* puVar2;
@@ -167,7 +173,7 @@ int Hotspot::Update(int param_1, int param_2, int param_3)
 }
 
 /* Function start: 0x409620 */
-int Hotspot::LBLParse(char* line)
+int T_Hotspot::LBLParse(char* line)
 {
     char command[32];
     sscanf(line, " %s ", command);
@@ -199,22 +205,51 @@ int Hotspot::LBLParse(char* line)
     return 0;
 }
 
-/* Function start: 0x40d300 */
-Hotspot::Hotspot() : field_E0(0), field_E4(0), field_E8(0), field_EC(0) {
-    // Clear 26 dwords starting at sprite (0x88)
-    // This covers range 0x88 to 0xF0 (exclusive)
+/* Function start: 0x40D300 */
+Hotspot::Hotspot()
+{
     memset(&sprite, 0, 104);
-
     field_D0 = 1;
     field_D8 = 1;
 }
 
-/* Function start: 0x40d3a0 */
-Hotspot::~Hotspot() {
-    // Stub destructor
+/* Function start: 0x40D3A0 */
+Hotspot::~Hotspot()
+{
+    // Implementation from FUN_40D3A0
+    if (sprite != 0) {
+        sprite->~Sprite(); // Or delete? Disassembly shows call 0x41f360 then free 0x00424940
+        FreeMemory(sprite);
+        sprite = 0;
+    }
+    if (list1 != 0) {
+        list1->~MouseControl();
+        FreeMemory(list1);
+        list1 = 0;
+    }
+    if (list2 != 0) {
+        list2->~MouseControl();
+        FreeMemory(list2);
+        list2 = 0;
+    }
+    // and more... stubs for now to fix build
 }
 
-/* Function start: 0x40d610 */
-int Hotspot::Draw_40d610() {
-    return 0; // Stub
+/* Function start: 0x40D710 */
+int Hotspot::LBLParse(char* line)
+{
+    // Stub for build fixing
+    return 0;
+}
+
+/* Function start: 0x40D610 */
+int Hotspot::Draw_40d610()
+{
+    // Stub for build fixing
+    return 0;
+}
+
+unsigned char Hotspot::Do()
+{
+    return 0;
 }
