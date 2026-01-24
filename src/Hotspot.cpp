@@ -133,14 +133,36 @@ int T_Hotspot::Update(int param_1, int param_2, int param_3)
 
     switch (state) {
     case 1:
-        if ((list1 == 0) || (iVar1 = list1->DoAll(), iVar1 != 0)) {
+        if (list1 == 0 || list1->DoAll() != 0) {
             state = 2;
         }
-        if (state != 2) {
-            return 0;
+        if (state == 2) {
+            goto case_2;
         }
+        return 0;
+    case 3:
+        if (list3 != 0) {
+            if (list3->DoAll() != 0) {
+                state = 1;
+                return 1;
+            }
+        }
+        else {
+            state = 1;
+            return 1;
+        }
+        return 1;
+    case 4:
+        return 1;
     case 2:
-        if (list2 == 0) {
+    case_2:
+        if (list2 != 0) {
+            if (list2->DoAll() != 0) {
+                state = 3;
+                return 0;
+            }
+        }
+        else {
             state = 3;
             if (dialog != 0) {
                 puVar2 = (int*)AllocateMemory(8);
@@ -149,31 +171,10 @@ int T_Hotspot::Update(int param_1, int param_2, int param_3)
                 SC_Message_Send(9, parseFileIndex, 0xb, param_3, 5, dialogParseFileNumber, 0, (int)puVar2, 0, 0);
             }
         }
-        else {
-            iVar1 = list2->DoAll();
-            if (iVar1 != 0) {
-                state = 3;
-                return 0;
-            }
-        }
         return 0;
-    case 3:
-        if (list3 == 0) {
-            state = 1;
-        }
-        else {
-            iVar1 = list3->DoAll();
-            if (iVar1 != 0) {
-                state = 1;
-                return 1;
-            }
-        }
-        return 1;
-    case 4:
-        return 1;
     }
     ShowError("Error in Thotspot.cpp - Update()");
-    return 0;
+    return 1;
 }
 
 /* Function start: 0x409620 */
