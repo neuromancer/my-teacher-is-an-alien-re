@@ -107,17 +107,17 @@ IconBar::IconBar() {
     buttons[5].bounds.bottom = 0x1d5;
 
     // Message templates
-    buttons[0].message.command = 10;
+    buttons[0].message.targetAddress = 10;
     buttons[0].message.sourceAddress = 1;
-    buttons[0].message.targetAddress = 6;
+    buttons[0].message.command = 6;
     buttons[0].message.priority = 5;
 
-    buttons[4].message.command = 10;
+    buttons[4].message.targetAddress = 10;
     buttons[4].message.sourceAddress = 1;
-    buttons[4].message.targetAddress = 6;
+    buttons[4].message.command = 6;
     buttons[4].message.priority = 5;
 
-    buttons[5].message.command = 2;
+    buttons[5].message.targetAddress = 2;
     buttons[5].message.priority = 5;
 }
 

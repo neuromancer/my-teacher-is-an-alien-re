@@ -9,11 +9,10 @@ Handler::~Handler() {
 
 // Default Init implementation - copies command data from message
 // Corresponds to FUN_00417180
-/* Function start: 0x417180 */
 void Handler::CopyCommandData(SC_Message* msg) {
     if (msg != 0) {
-        field_90 = msg->targetAddress;
-        field_94 = msg->sourceAddress;
+        field_90 = msg->command;
+        field_94 = msg->data;
     }
 }
 

@@ -198,7 +198,7 @@ int Handler15::Exit(SC_Message* msg) {
     OnScreenMessage* pvVar6;
     int count;
 
-    if (msg->command != handlerId) {
+    if (msg->targetAddress != handlerId) {
         return 0;
     }
 

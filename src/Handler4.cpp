@@ -250,7 +250,7 @@ int Handler4::HandleMessage(SC_Message* msg) {
 
 /* Function start: 0x40EEB0 */
 int Handler4::Update(SC_Message* msg) {
-    return handlerId == msg->command;
+    return handlerId == msg->targetAddress;
 }
 
 /* Function start: 0x40EED0 */

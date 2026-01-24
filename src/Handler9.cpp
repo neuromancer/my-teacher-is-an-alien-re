@@ -224,8 +224,8 @@ int Handler9::Update(SC_Message* msg) {
         dialogQueue = 0;
     }
 
-    Handler9::buttons[0].enabled = 1;
-    Handler9::buttons[4].enabled = 1;
+    buttons[0].enabled = 1;
+    buttons[4].enabled = 1;
 
     IconBar::CleanupIconBar();
 
@@ -264,7 +264,7 @@ int Handler9::HandleMessage(SC_Message* msg) {
         }
     } else {
         if (msg->mouseX > 1) {
-            msg->command = 9;
+            msg->targetAddress = 9;
             pMouse = g_InputManager_00436968->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
                 msg->sourceAddress = -1;
@@ -296,7 +296,7 @@ int Handler9::Exit(SC_Message* msg) {
     QueueNode* newNode;
     int curNode;
 
-    if (Handler9::handlerId != msg->command) {
+    if (msg->targetAddress != handlerId) {
         return 0;
     }
 

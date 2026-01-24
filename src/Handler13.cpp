@@ -177,7 +177,7 @@ int Handler13::Exit(SC_Message* msg) {
     TimedEvent* eventData;
     TimedEvent* pTimedEvent;
 
-    if (msg->command != handlerId) {
+    if (msg->targetAddress != handlerId) {
         return 0;
     }
 

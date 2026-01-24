@@ -96,9 +96,9 @@ void Handler8::Init(SC_Message* msg) {
 int Handler8::HandleMessage(SC_Message* msg) {
     Handler8::WriteMessageAddress(msg);
     if (msg->field_b4 == 0x1b || msg->mouseY > 1) {
-        msg->command = Handler8::field_90;
+        msg->targetAddress = field_90;
         msg->priority = 5;
-        msg->data = Handler8::field_94;
+        msg->sourceAddress = field_94;
     }
     return 1;
 }
@@ -114,7 +114,7 @@ int Handler8::Exit(SC_Message* msg) {
 int Handler8::Update(SC_Message* msg) {
     int prio;
 
-    if (handlerId != msg->command) {
+    if (handlerId != msg->targetAddress) {
         return 0;
     }
     prio = msg->priority;
@@ -167,10 +167,10 @@ void Handler8::ProcessMessage() {
         InitMessageArray((int*)&item->data, 1);
         ((Parser*)&item->data)->CopyParserFields(msg);
 
-        item->field_90 = msg->command;
-        item->field_94 = msg->data;
-        item->field_98 = msg->targetAddress;
-        item->field_9c = msg->sourceAddress;
+        item->field_90 = msg->targetAddress;
+        item->field_94 = msg->sourceAddress;
+        item->field_98 = msg->command;
+        item->field_9c = msg->data;
         item->field_a0 = msg->priority;
         item->field_a4 = msg->param1;
         item->field_a8 = msg->param2;

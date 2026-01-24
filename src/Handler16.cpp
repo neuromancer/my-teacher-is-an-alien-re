@@ -351,9 +351,9 @@ void Handler16::ProcessMessage()
         ((Parser*)&item->data)->CopyParserFields(script);
 
         // Copy SC_Message fields in memory order
-        item->field_90 = script->command;
+        item->field_90 = script->targetAddress;
         item->field_94 = script->sourceAddress;
-        item->field_98 = script->targetAddress;
+        item->field_98 = script->command;
         item->field_9c = script->data;
         item->field_a0 = script->priority;
         item->field_a4 = script->param1;

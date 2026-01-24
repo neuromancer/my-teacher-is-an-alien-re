@@ -528,7 +528,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
     unsigned int pData;
 
     if (msg->priority == 5) {
-        if (msg->command != 3) {
+        if (msg->targetAddress != 3) {
             result = 1;
             HandleSystemMessage(msg);
         }
@@ -538,10 +538,10 @@ void GameLoop::ProcessMessage(SC_Message* msg)
             strcpy(g_Unknown_00436994, srcStr);
         }
     }
-    else if (msg->command == 0) {
+    else if (msg->targetAddress == 0) {
         result = 1;
     }
-    else if (msg->command == 3) {
+    else if (msg->targetAddress == 3) {
         result = ProcessControlMessage(msg);
     }
     else {
@@ -570,7 +570,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
     }
 
     if (result == 0) {
-        Handler* pDefaultHandler = GetOrCreateHandler(msg->command);
+        Handler* pDefaultHandler = GetOrCreateHandler(msg->targetAddress);
         if (pDefaultHandler->Exit(msg) == 0) {
             msg->Dump(0);
             WriteToMessageLog("lost message");
@@ -734,11 +734,11 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         ZBuffer::ClearList(pZBuf->m_queue9c);
     }
     
-    // Try to find existing handler for this command using msg->command
-    int found = FindHandlerInEventList(msg->command);
+    // Try to find existing handler for this command using msg->targetAddress
+    int found = FindHandlerInEventList(msg->targetAddress);
     if (found == 0) {
         // Not found - create/insert new handler
-        handler = GetOrCreateHandler(msg->command);
+        handler = GetOrCreateHandler(msg->targetAddress);
         currentHandler = handler;
     } else {
         // Found - pop handler from eventList at field_0x14
@@ -834,7 +834,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
 
 /* Function start: 0x417E20 */
 int GameLoop::ProcessControlMessage(SC_Message* msg) {
-    if (msg->command != 3) {
+    if (msg->targetAddress != 3) {
         return 0;
     }
     switch(msg->priority) {

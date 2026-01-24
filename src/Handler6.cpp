@@ -160,8 +160,7 @@ int Handler6::HandleMessage(SC_Message* msg) {
 
 /* Function start: 0x404870 */
 int Handler6::Exit(SC_Message* msg) {
-    // Compare handlerId == msg->command
-    return handlerId == msg->command;
+    return handlerId <= msg->targetAddress;
 }
 
 /* Function start: 0x404890 */

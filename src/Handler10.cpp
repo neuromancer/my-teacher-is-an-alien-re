@@ -378,12 +378,12 @@ int Handler10::HandleMessage(SC_Message* msg) {
     if (result != 0 && confirmFlag != 0) {
         // Start game with selected character
         if (currentCharacterIndex == 0) {
-            msg->command = 4;  // Handler 4
+            msg->targetAddress = 4;  // Handler 4
         } else {
-            int handlerVal = ((currentCharacterIndex == 1) ? -5 : 0) + 0x10;
-            msg->command = handlerVal;
+            int handlerVal = (currentCharacterIndex == 1) ? 11 : 16;
+            msg->targetAddress = handlerVal;
         }
-        msg->targetAddress = handlerId;
+        msg->command = handlerId;
         msg->data = field_8C;
         msg->priority = 5;
     }
@@ -393,7 +393,7 @@ int Handler10::HandleMessage(SC_Message* msg) {
 
 /* Function start: 0x405420 */
 int Handler10::Update(SC_Message* msg) {
-    return handlerId == msg->command;
+    return handlerId == msg->targetAddress;
 }
 
 /* Function start: 0x405490 */

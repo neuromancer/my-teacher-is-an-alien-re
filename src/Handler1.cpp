@@ -78,18 +78,18 @@ int Handler1::Update(SC_Message* msg) {
 int Handler1::HandleMessage(SC_Message* msg) {
     Handler1::WriteMessageAddress(msg);
     if (msg->mouseX >= 2) {
-        msg->command = 10;
+        msg->targetAddress = 10;
         msg->priority = 5;
-        msg->data = 1;
-        msg->targetAddress = 1;
         msg->sourceAddress = 1;
+        msg->command = 1;
+        msg->data = 1;
     }
     return 1;
 }
 
 /* Function start: 0x4036A0 */
 int Handler1::Exit(SC_Message* msg) {
-    return handlerId == msg->command;
+    return handlerId <= msg->targetAddress;
 }
 
 /* Function start: 0x4036C0 */

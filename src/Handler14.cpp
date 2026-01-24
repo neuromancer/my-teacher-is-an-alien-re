@@ -189,7 +189,7 @@ int Handler14::Exit(SC_Message* msg) {
     void* pvVar7;
     int iVar1;
 
-    if (msg->command != handlerId) {
+    if (msg->targetAddress != handlerId) {
         return 0;
     }
 
