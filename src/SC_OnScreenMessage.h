@@ -1,8 +1,8 @@
 #ifndef SC_ONSCREENMESSAGE_H
 #define SC_ONSCREENMESSAGE_H
 
+#include "Handler.h"
 #include "Timer.h"
-#include "ScriptHandler.h"
 
 // MessageNode for linked list items
 // Layout: prev(0), next(4), data(8)
@@ -19,7 +19,6 @@ struct MessageNode {
 
     MessageNode* Destroy(int flag);      // 0x40C580
     MessageNode* Init(void* nodeData);   // 0x40C5B0
-    MessageNode* Init_40ACA0(void* nodeData); // 0x40ACA0
 };
 
 // MessageList control structure for SC_OnScreenMessage
@@ -44,22 +43,28 @@ struct MessageList {
     void* PopCurrent();                      // 0x40C500
 };
 
-class SC_OnScreenMessage : ScriptHandler {
+// SC_OnScreenMessage - Handler class with ID 15
+// Size: 0xB8 bytes
+// vtable: 0x4311e8
+// Constructor: 0x40A2E0
+// Destructor: 0x40A410
+class SC_OnScreenMessage : public Handler {
 public:
     SC_OnScreenMessage();
-    ~SC_OnScreenMessage();
-    void Destroy(int free);
-    void Update(int, int);
-    void AddMessage();
+    virtual ~SC_OnScreenMessage();
+
+    // Virtual method overrides from Handler
+    virtual void Init(SC_Message* msg);
+    virtual int HandleMessage(SC_Message* msg);
+    virtual int Update(SC_Message* msg);
+    virtual void Draw(int param1, int param2);
+    virtual int Exit(SC_Message* msg);
+
     void Copy(SC_OnScreenMessage* other);
 
-    // targetAddress inherited from ScriptHandler at 0x88
-    // sourceAddress inherited from ScriptHandler at 0x8c
-    // command inherited from ScriptHandler at 0x90
-    // data inherited from ScriptHandler at 0x94
-    char pad2[0xa0 - 0x98];
-    MessageList* m_messageList; // 0xa0 - pointer to message list control structure
-    Timer timer;  // 0xa4
+    // Fields starting at 0xA0 (0x00-0x87 is Parser, 0x88-0x9F is Handler base fields)
+    MessageList* m_messageList; // 0xA0
+    Timer timer;                // 0xA4 - 0xB7 (size 0x14)
 };
 
 #endif // SC_ONSCREENMESSAGE_H

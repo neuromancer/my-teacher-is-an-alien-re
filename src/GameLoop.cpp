@@ -27,7 +27,7 @@
 #include "Handler.h"
 #include "Handler13.h"
 #include "Handler14.h"
-#include "Handler15.h"
+#include "SC_OnScreenMessage.h"
 #include "Handler16.h"
 #include "Handler9.h"
 #include "SoundCommand.h"
@@ -902,7 +902,7 @@ Handler* CreateHandler(int command) {
         handler = new Handler14();
         break;
     case 15:
-        handler = new Handler15();
+        handler = new SC_OnScreenMessage();
         break;
     case 16:
         handler = new Handler16();
