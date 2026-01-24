@@ -232,9 +232,7 @@ int Handler11::LBLParse(char* line) {
     char token[32];
     char arg1[64];
     
-    if (sscanf(line, "%s", token) != 1) {
-        return 0;
-    }
+    sscanf(line, "%s", token);
 
     if (strcmp(token, "BACKGROUND") == 0) {
         field_604 = new MouseControl();
@@ -254,7 +252,7 @@ int Handler11::LBLParse(char* line) {
         field_60C[field_63C] = dc;
         ProcessFile(dc, this, 0);
         field_63C++;
-    } else if (strcmp(token, "MUSIC") == 0) {
+    } else if (strcmp(token, "END") == 0) {
         return 1;
     } else {
         return Parser::LBLParse("SCI_SearchScreen");
