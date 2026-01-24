@@ -178,7 +178,7 @@ void Handler6::Draw(int param1, int param2) {
     
     // Handle hotspot animation
     if (currentHotspot != 0) {
-        int result = currentHotspot->Draw_40d610();
+        int result = currentHotspot->Do();
         if (result == 0) {
             return;
         }
@@ -240,10 +240,10 @@ int Handler6::FindClickedHotspot() {
 
             int inBounds;
             if (hotspot->field_D0 == 0 ||
-                hotspot->field_E0 > mouseX ||
-                hotspot->field_E8 < mouseX ||
-                hotspot->field_E4 > mouseY ||
-                hotspot->field_EC < mouseY) {
+                hotspot->rect.left > mouseX ||
+                hotspot->rect.right < mouseX ||
+                hotspot->rect.top > mouseY ||
+                hotspot->rect.bottom < mouseY) {
                 inBounds = 0;
             } else {
                 inBounds = 1;

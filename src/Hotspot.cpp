@@ -4,12 +4,16 @@
 #include "Memory.h"
 #include "Sprite.h"
 #include "MouseControl.h"
+#include "TimedEvent.h"
+#include "globals.h"
+#include "string.h"
 #include <stdio.h>
 #include <string.h>
 
 // Helper for Miles Sound System
 typedef void* HSAMPLE;
 extern "C" int __stdcall AIL_sample_status(HSAMPLE);
+
 
 /* Function start: 0x409230 */
 T_Hotspot::T_Hotspot()
@@ -208,48 +212,153 @@ int T_Hotspot::LBLParse(char* line)
 /* Function start: 0x40D300 */
 Hotspot::Hotspot()
 {
-    memset(&sprite, 0, 104);
+    Parser::Parser();
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = 0;
+    rect.bottom = 0;
+    memset(&hotspot, 0, 104);
     field_D0 = 1;
-    field_D8 = 1;
+    state = 1;
 }
 
 /* Function start: 0x40D3A0 */
 Hotspot::~Hotspot()
 {
-    // Implementation from FUN_40D3A0
-    if (sprite != 0) {
-        sprite->~Sprite(); // Or delete? Disassembly shows call 0x41f360 then free 0x00424940
-        FreeMemory(sprite);
-        sprite = 0;
+    if (hotspot) delete hotspot;
+    if (right_tool) delete right_tool;
+    if (wrong_tool) delete wrong_tool;
+
+    if (pre_message) {
+        pre_message->m_current = pre_message->m_head;
+        while (pre_message->m_head) {
+            QueueNode* node = (QueueNode*)pre_message->m_current;
+
+            if (pre_message->m_head == node) pre_message->m_head = (void*)node->next;
+            if (pre_message->m_tail == node) pre_message->m_tail = (void*)node->prev;
+            if (node->prev) node->prev->next = node->next;
+            if (node->next) node->next->prev = node->prev;
+
+            Message* msg = (Message*)node->data;
+            delete node;
+            if (msg) delete msg;
+
+            pre_message->m_current = pre_message->m_head;
+        }
+        FreeMemory(pre_message);
+        pre_message = 0;
     }
-    if (list1 != 0) {
-        list1->~MouseControl();
-        FreeMemory(list1);
-        list1 = 0;
+
+    if (message) {
+        message->m_current = message->m_head;
+        while (message->m_head) {
+            QueueNode* node = (QueueNode*)message->m_current;
+
+            if (message->m_head == node) message->m_head = (void*)node->next;
+            if (message->m_tail == node) message->m_tail = (void*)node->prev;
+            if (node->prev) node->prev->next = node->next;
+            if (node->next) node->next->prev = node->prev;
+
+            Message* msg = (Message*)node->data;
+            delete node;
+            if (msg) delete msg;
+
+            message->m_current = message->m_head;
+        }
+        FreeMemory(message);
+        message = 0;
     }
-    if (list2 != 0) {
-        list2->~MouseControl();
-        FreeMemory(list2);
-        list2 = 0;
-    }
-    // and more... stubs for now to fix build
 }
 
 /* Function start: 0x40D710 */
 int Hotspot::LBLParse(char* line)
 {
-    // Stub for build fixing
+    char keyword[48];
+    sscanf(line, "%s", keyword);
+
+    if (strcmp(keyword, "RECT") == 0) {
+        sscanf(line, " %s %d %d %d %d", keyword, &rect.left, &rect.top, &rect.right, &rect.bottom);
+    } else if (strcmp(keyword, "HOTSBEGIN") == 0) {
+        hotspot = new MouseControl();
+        Parser::ProcessFile(hotspot, this, 0);
+    } else if (strcmp(keyword, "RIGHT_TOOL") == 0) {
+        right_tool = new MouseControl();
+        Parser::ProcessFile(right_tool, this, 0);
+    } else if (strcmp(keyword, "WRONG_TOOL") == 0) {
+        wrong_tool = new MouseControl();
+        Parser::ProcessFile(wrong_tool, this, 0);
+    } else if (strcmp(keyword, "PREMESSAGE") == 0) {
+        if (!pre_message) pre_message = new Queue();
+        Message* msg = new Message(); // (0, 0, 0, 0, 0, 0, 0, 0, 0);
+        msg->command = 7;
+        Parser::ProcessFile((Parser*)msg, this, 0);
+        pre_message->Push(msg);
+    } else if (strcmp(keyword, "MESSAGE") == 0) {
+        if (!message) message = new Queue();
+        Message* msg = new Message(); //(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        msg->command = 7;
+        Parser::ProcessFile((Parser*)msg, this, 0);
+        message->Push(msg);
+    } else if (strcmp(keyword, "LABEL") == 0) {
+        sscanf(line, "%s %s", keyword, label);
+    } else if (strcmp(keyword, "MOUSE") == 0) {
+        sscanf(line, "%s %d", keyword, &state);
+    } else if (strcmp(keyword, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("T_Hotspot");
+    }
     return 0;
 }
 
 /* Function start: 0x40D610 */
-int Hotspot::Draw_40d610()
-{
-    // Stub for build fixing
-    return 0;
-}
-
 unsigned char Hotspot::Do()
 {
-    return 0;
+    switch (state) {
+    case 1:
+        QueueEvents(pre_message);
+        state = 2;
+    case 2:
+        if (hotspot == 0 || hotspot->DoAll() == 0) {
+            state = 4;
+        }
+        if (state != 4) return 0;
+    case 4:
+        QueueEvents(message);
+        WriteToMessageLog("\n\n\nJUST SENT MESSAGES\n\n\n");
+        return 1;
+    }
+
+    ShowError("Error in Thotspot.cpp - Update()");
+    return 1;
 }
+
+/* Function start: 0x40D6A0 */
+void Hotspot::QueueEvents(Queue* q)
+{
+    if (!q) return;
+    q->m_current = q->m_head;
+    if (!q->m_head) return;
+
+    do {
+        Message* msg = (Message*)((QueueNode*)q->m_current)->data;
+        TimedEventPool* pool = g_TimedEventPool2_00436988;
+        PooledEvent* evt = pool->Create(pool->list.tail, 0);
+        if (evt) {
+            //((Message*)((char*)evt + 8))->CopyFrom(msg);
+            
+            if (pool->list.tail) {
+                *(void**)pool->list.tail = evt;
+            } else {
+                pool->list.head = evt;
+            }
+            pool->list.tail = evt;
+        }
+
+        if (q->m_current == q->m_tail) break;
+        q->m_current = ((QueueNode*)q->m_current)->next;
+    } while (q->m_head);
+}
+
+
+

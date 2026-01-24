@@ -27,8 +27,9 @@ struct Message {
     int mouseY;         // 0xb0 - current mouse Y
     int field_0xb4;
     int field_0xb8;
-    int userPtr;        // 0xbc - user pointer (param8)
-    // Note: Uses SC_Message::SC_Message at 0x4198C0 for initialization
+    int userPtr;        // 0xBC - user pointer (param8)
+
+    //Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9); // 0x4198C0
 };
 
 void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data,

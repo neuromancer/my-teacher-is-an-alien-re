@@ -217,7 +217,7 @@ int mCNavigator::LBLParse(char* param_1)
         }
 
         if (node) {
-            ShowError("mCNavigator::LoadNodes() - %s has a dublicate node handle (%d)", (char*)&((Hotspot*)parser)->field_E0, nodeId);
+            ShowError("mCNavigator::LoadNodes() - %s has a dublicate node handle (%d)", (char*)&((Hotspot*)parser)->rect.left, nodeId);
         }
 
         nodeId = ((Hotspot*)parser)->field_DC;
