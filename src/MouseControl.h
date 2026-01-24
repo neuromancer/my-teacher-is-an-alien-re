@@ -10,7 +10,7 @@ class Sprite;
  * MouseControl - Mouse Interaction Area Management (also known as SpriteList)
  *
  * This class manages clickable regions via a Queue of Sprite objects:
- * - Used by SC_Question, SearchScreen, SCI_AfterSchoolMenu, Handler10 etc. for interactive menus
+ * - Used by SC_Question, SearchScreen, SCI_AfterSchoolMenu etc. for interactive menus
  * - m_queue holds sprites representing clickable areas/buttons
  * - Destructor properly cleans up all queued sprites
  *

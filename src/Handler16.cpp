@@ -27,6 +27,7 @@ extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.c
 
 /* Function start: 0x410610 */
 int Handler16::Exit(SC_Message* msg) {
+    memset(&DAT_0043d130, 0, 16);
     return 0;
 }
 

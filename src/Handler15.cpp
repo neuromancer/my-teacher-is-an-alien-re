@@ -8,6 +8,17 @@
 #include "StringTable.h"
 #include "OnScreenMessage.h"
 
+/* Function start: 0x40A1D0 */
+OnScreenMessage::OnScreenMessage(char* message, unsigned int dur) {
+    strcpy(text, message);
+    timer.Reset();
+    duration = dur;
+}
+
+/* Function start: 0x40A290 */
+int OnScreenMessage::Update(int index) {
+    return duration >= timer.Update();
+}
 
 /* Function start: 0x40A2E0 */
 Handler15::Handler15() {
@@ -78,12 +89,9 @@ Handler15::~Handler15() {
     }
 }
 
-/* Function start: 0x40A5A0 */
-void Handler15::Init(SC_Message* msg) {
-    CopyCommandData(msg);
-    if (msg != 0) {
-        field_8C = msg->data;
-    }
+/* Function start: 0x40A5D0 */
+int Handler15::Update(SC_Message* msg) {
+    return 0;
 }
 
 /* Function start: 0x40A5E0 */
@@ -179,8 +187,12 @@ check_timer:
     }
 }
 
-int Handler15::Update(SC_Message* msg) {
-    return 0;
+/* Function start: 0x40A7AA */
+void Handler15::Init(SC_Message* msg) {
+    CopyCommandData(msg);
+    if (msg != 0) {
+        field_8C = msg->data;
+    }
 }
 
 /* Function start: 0x40A7C0 */
@@ -197,142 +209,90 @@ int Handler15::Exit(SC_Message* msg) {
     OnScreenMessage* newItem;
     OnScreenMessage* pvVar6;
     int count;
+    SC_Message* pMsg = msg;
 
-    if (msg->targetAddress != handlerId) {
+    if (pMsg->targetAddress != handlerId) {
         return 0;
     }
 
     timer.Reset();
 
-    if (msg->priority == 0xf) {
+    if (pMsg->priority == 0xF) {
         goto send_remove_message;
     }
-    if (msg->priority == 0x13) {
+    if (pMsg->priority == 0x13) {
         goto process_message;
     }
-    if (msg->priority == 0x1b) {
+    if (pMsg->priority == 0x1B) {
         goto send_remove_message;
     }
     return 0;
 
 process_message:
-    // Priority 0x13 - add message
     newItem = 0;
-    if (msg->data == 0) {
-        if (msg->userPtr != 0) {
-            newItem = new OnScreenMessage((char*)msg->userPtr, msg->param1);
-            msg->userPtr = 0;
+    if (pMsg->sourceAddress != 0) {
+        if (g_Strings_00435a70 != 0) {
+            if (g_Strings_00435a70->GetString(pMsg->sourceAddress, g_Buffer_00436960)) {
+                newItem = new OnScreenMessage(g_Buffer_00436960, pMsg->param1);
+            }
+        }
+    } else if (pMsg->userPtr != 0) {
+        newItem = new OnScreenMessage((char*)pMsg->userPtr, pMsg->param1);
+        pMsg->userPtr = 0;
+    }
+
+    if (newItem == 0) {
+        goto count_items;
+    }
+    pList = list;
+    pList->current = pList->head;
+    if ((pList->flags == 1 || pList->flags == 2) && pList->head != 0) {
+        while (pList->current != 0) {
+            node = (MessageNode*)pList->current;
+            if (((OnScreenMessage*)node->data)->timer.Update() < newItem->timer.Update()) {
+                pList->InsertNode(newItem);
+                goto count_items;
+            }
+            if (pList->tail == node) {
+                if (newItem == 0) WriteToMessageLog("queue fault 0112");
+                MessageNode* newNode = new MessageNode();
+                if (newNode != 0) newNode->Init(newItem);
+                if (pList->current == 0) pList->current = pList->tail;
+                if (pList->head == 0) {
+                    pList->head = newNode;
+                    pList->tail = newNode;
+                    pList->current = newNode;
+                } else {
+                    if (pList->tail == 0 || ((MessageNode*)pList->tail)->next != 0) WriteToMessageLog("queue fault 0113");
+                    newNode->next = 0;
+                    newNode->prev = (MessageNode*)pList->tail;
+                    ((MessageNode*)pList->tail)->next = newNode;
+                    pList->tail = newNode;
+                }
+                goto count_items;
+            }
+            pList->current = node->next;
         }
     } else {
-        if (g_Strings_00435a70 != 0) {
-            int result = g_Strings_00435a70->GetString(msg->data, g_Buffer_00436960);
-            if (result != 0) {
-                newItem = new OnScreenMessage(g_Buffer_00436960, msg->param1);
-            }
-        }
+        pList->InsertNode(newItem);
     }
 
-    if (newItem != 0) {
-        // Insert into list with priority ordering
-        pList = list;
-        pList->current = pList->head;
-        if ((pList->flags == 1 || pList->flags == 2) && pList->head != 0) {
-            // Priority-based insertion
-            while (pList->current != 0) {
-                node = (MessageNode*)pList->current;
-                // Compare timer values
-                unsigned int existingTime = ((OnScreenMessage*)node->data)->timer.Update();
-                unsigned int newTime = newItem->timer.Update();
-                if (existingTime < newTime) {
-                    // Insert before current
-                    goto insert_node;
-                }
-                if (pList->tail == node) {
-                    // Append at end
-                    goto append_node;
-                }
-                if (node != 0) {
-                    pList->current = node->next;
-                }
-            }
-        } else {
-insert_node:
-            // Insert at current position
-            if (newItem == 0) {
-                WriteToMessageLog("queue fault 0102");
-            }
-            MessageNode* newNode = (MessageNode*)AllocateMemory(0xc);
-            if (newNode != 0) {
-                newNode->data = newItem;
-                newNode->prev = 0;
-                newNode->next = 0;
-            }
-            if (pList->current == 0) {
-                pList->current = pList->head;
-            }
-            if (pList->head == 0) {
-                pList->head = newNode;
-                pList->tail = newNode;
-                pList->current = newNode;
-            } else {
-                newNode->next = (MessageNode*)pList->current;
-                newNode->prev = ((MessageNode*)pList->current)->prev;
-                if (((MessageNode*)pList->current)->prev == 0) {
-                    pList->head = newNode;
-                    ((MessageNode*)pList->current)->prev = newNode;
-                } else {
-                    ((MessageNode*)pList->current)->prev->next = newNode;
-                    ((MessageNode*)pList->current)->prev = newNode;
-                }
-            }
-            goto count_and_trim;
-        }
-append_node:
-        if (newItem == 0) {
-            WriteToMessageLog("queue fault 0112");
-        }
-        MessageNode* newNode = (MessageNode*)AllocateMemory(0xc);
-        if (newNode != 0) {
-            newNode->data = newItem;
-            newNode->prev = 0;
-            newNode->next = 0;
-        }
-        if (pList->current == 0) {
-            pList->current = pList->tail;
-        }
-        if (pList->head == 0) {
-            pList->head = newNode;
-            pList->tail = newNode;
-            pList->current = newNode;
-        } else {
-            if (pList->tail == 0 || ((MessageNode*)pList->tail)->next != 0) {
-                WriteToMessageLog("queue fault 0113");
-            }
-            newNode->next = 0;
-            newNode->prev = (MessageNode*)pList->tail;
-            ((MessageNode*)pList->tail)->next = newNode;
-            pList->tail = newNode;
-        }
-    }
-
-count_and_trim:
-    // Count items and trim if over 10
+count_items:
     count = 0;
     pList = list;
     pList->current = pList->head;
-    while (pList->current != 0) {
-        count++;
-        node = (MessageNode*)pList->current;
-        if (pList->tail == node) {
-            break;
-        }
-        if (node != 0) {
-            pList->current = node->next;
-        }
+    if (pList->current != 0) {
+        do {
+            count++;
+            if (pList->current == pList->tail) break;
+            if (pList->current != 0) {
+                pList->current = ((MessageNode*)pList->current)->next;
+            }
+        } while (pList->current != 0);
     }
 
-    while (count > 10) {
-        // Remove oldest item
+    if (count > 10) {
+        pvVar6 = 0;
         pList = list;
         if (pList->flags == 1 || pList->flags == 4) {
             pList->current = pList->head;
@@ -340,49 +300,21 @@ count_and_trim:
             pList->current = pList->tail;
         } else {
             WriteToMessageLog("bad queue type %lu", pList->flags);
+            pList->current = pList->tail;
         }
 
         node = (MessageNode*)pList->current;
         if (node != 0) {
-            // Unlink node
-            if (pList->head == node) {
-                pList->head = node->next;
-            }
-            if (pList->tail == node) {
-                pList->tail = node->prev;
-            }
-            if (node->prev != 0) {
-                node->prev->next = node->next;
-            }
-            if (node->next != 0) {
-                node->next->prev = node->prev;
-            }
-            pvVar6 = 0;
-            if (node != 0) {
-                pvVar6 = (OnScreenMessage*)node->data;
-                delete node;
-                pList->current = 0;
-            }
+            pList->UnlinkNode(node);
+            pvVar6 = (OnScreenMessage*)node->data;
+            delete node;
+            pList->current = 0;
             pList->current = pList->head;
-
             if (pvVar6 != 0) {
                 delete pvVar6;
             }
         }
-
-        // Recount
-        count = 0;
-        pList->current = pList->head;
-        while (pList->current != 0) {
-            count++;
-            node = (MessageNode*)pList->current;
-            if (pList->tail == node) {
-                break;
-            }
-            if (node != 0) {
-                pList->current = node->next;
-            }
-        }
+        goto count_items;
     }
 
     return 1;
@@ -390,4 +322,63 @@ count_and_trim:
 send_remove_message:
     SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
     return 1;
+}
+
+/* Function start: 0x40AB81 */
+// Destructor thunk for OnScreenMessage timer
+void OnScreenMessage_Timer_Destructor(OnScreenMessage* msg) {
+    msg->timer.~Timer();
+}
+
+/* Function start: 0x40ABD0 */
+void MessageList::InsertNode(void* data) {
+    if (data == 0) {
+        WriteToMessageLog("queue fault 0102");
+    }
+    MessageNode* newNode = new MessageNode();
+    if (newNode != 0) {
+        newNode->Init(data);
+    }
+    if (current == 0) {
+        current = head;
+    }
+    if (head == 0) {
+        head = newNode;
+        tail = newNode;
+        current = newNode;
+    } else {
+        newNode->next = (MessageNode*)current;
+        newNode->prev = ((MessageNode*)current)->prev;
+        if (((MessageNode*)current)->prev == 0) {
+            head = newNode;
+        } else {
+            ((MessageNode*)current)->prev->next = newNode;
+        }
+        ((MessageNode*)current)->prev = newNode;
+    }
+}
+
+/* Function start: 0x40ACA0 */
+MessageNode* MessageNode::Init(void* nodeData) {
+    data = nodeData;
+    prev = 0;
+    next = 0;
+    return this;
+}
+
+/* Function start: 0x40AD50 */
+void MessageList::UnlinkNode(MessageNode* node) {
+    if (head == node) {
+        head = node->next;
+    }
+    if (tail == node) {
+        tail = node->prev;
+    }
+    if (node->prev != 0) {
+        node->prev->next = node->next;
+    }
+    if (node->next != 0) {
+        node->next->prev = node->prev;
+    }
+    current = 0;
 }

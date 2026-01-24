@@ -20,7 +20,7 @@ void Handler::CopyCommandData(SC_Message* msg) {
 // Corresponds to FUN_004171B0
 /* Function start: 0x4171B0 */
 int Handler::WriteMessageAddress(SC_Message* msg) {
-    ShowMessage("WriteMessage mouseX=%d click=(%d,%d)", msg->mouseX, msg->clickX, msg->clickY);
+    //ShowMessage("WriteMessage mouseX=%d click=(%d,%d)", msg->mouseX, msg->clickX, msg->clickY);
     if (msg == 0) {
         return -1;
     }

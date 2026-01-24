@@ -22,7 +22,7 @@
 #include "Handler5.h"
 #include "Handler6.h"
 #include "Handler8.h"
-#include "Handler10.h"
+#include "SCI_AfterSchoolMenu.h"
 #include "Handler11.h"
 #include "Handler.h"
 #include "Handler13.h"
@@ -887,7 +887,7 @@ Handler* CreateHandler(int command) {
         handler = new Handler9();
         break;
     case 10:
-        handler = new Handler10();
+        handler = new SCI_AfterSchoolMenu();
         break;
     case 11:
         handler = new Handler11();

@@ -8,7 +8,7 @@
 
 // T_Hotspot class - base class for CharSprite/CharButton
 // Has vtable 0x4311b8, different from Hotspot (0x431278)
-// Used by Handler10 for goButton, cancelButton, characters[]
+// Used by SCI_AfterSchoolMenu for goButton, cancelButton, characters[]
 class T_Hotspot : public Parser {
 public:
     T_Hotspot();
@@ -55,7 +55,7 @@ T_Hotspot::~T_Hotspot()
     }
 }
 
-// Wrapper for Handler10 compatibility
+// Wrapper for SCI_AfterSchoolMenu compatibility
 void __fastcall FUN_004092e0(void* obj)
 {
     ((T_Hotspot*)obj)->~T_Hotspot();
