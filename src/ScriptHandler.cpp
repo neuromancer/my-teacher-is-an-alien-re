@@ -8,8 +8,6 @@ ScriptHandler::~ScriptHandler() {
 /* Function start: 0x417180 */
 void ScriptHandler::CopyCommandData(ScriptHandler* other) {
     if (other != 0) {
-        targetAddress = other->targetAddress;
-        sourceAddress = other->sourceAddress;
         command = other->command;
         data = other->data;
     }
@@ -17,9 +15,16 @@ void ScriptHandler::CopyCommandData(ScriptHandler* other) {
 
 /* Function start: 0x4171B0 */
 int ScriptHandler::WriteMessageAddress(Message* msg) {
-    if (msg != 0) {
-        msg->targetAddress = targetAddress;
+    if (msg == 0) {
+        return -1;
     }
+
+    msg->targetAddress = targetAddress;
+    msg->sourceAddress = sourceAddress;
+    msg->command = targetAddress;
+    msg->data = sourceAddress;
+    msg->priority = 0;
+
     return 0;
 }
 

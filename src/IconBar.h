@@ -15,6 +15,7 @@ struct Rect {
     int y1;
     int x2;
     int y2;
+    Rect() { x1 = y1 = x2 = y2 = 0; }
 };
 
 // IconBarButton - Individual button on the icon bar

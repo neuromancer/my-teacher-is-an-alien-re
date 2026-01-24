@@ -18,14 +18,11 @@
 /* Function start: 0x402730 */
 IconBar::IconBar() {
     int i;
-    Sprite* sprite;
 
-    // Zero handler fields at 0x88-0x9F
-    memset(&handlerId, 0, 6 * sizeof(int));
+    // The implicit call to Handler constructor handles memset(&handlerId, 0, 24)
 
-    // buttons[] array is automatically constructed via IconBarButton constructor
-
-    // Zero more fields
+    // Zero from barBounds (0xA0) to the end of the class (0x600)
+    // 0x600 - 0xA0 = 0x560
     memset(&barBounds, 0, 0x560);
 
     // Set icon bar bounds
@@ -36,7 +33,7 @@ IconBar::IconBar() {
 
     // Create iconbar sprite
     iconbarSprite = new Sprite("elements\\iconbar.smk");
-    iconbarSprite->flags &= ~2;  // Clear flag 0x2
+    iconbarSprite->flags &= ~2;
     iconbarSprite->loc_x = 0;
     iconbarSprite->loc_y = 0x1ab;
     iconbarSprite->SetState(4);
@@ -46,95 +43,80 @@ IconBar::IconBar() {
     iconbarSprite->SetRange(3, 4, 4);
     iconbarSprite->priority = 1000;
 
-    // Create choice button (index 0)
+    // Create sprites for buttons
     buttons[0].sprite = new Sprite("elements\\choice.smk");
     buttons[0].sprite->loc_x = 0x5e;
     buttons[0].sprite->loc_y = 0x1b5;
 
-    // Create backpack button (index 1)
     buttons[1].sprite = new Sprite("elements\\backpack.smk");
     buttons[1].sprite->loc_x = 0xad;
     buttons[1].sprite->loc_y = 0x1b5;
 
-    // Create aliencom button (index 2)
     buttons[2].sprite = new Sprite("elements\\aliencom.smk");
     buttons[2].sprite->loc_x = 0x115;
     buttons[2].sprite->loc_y = 0x1b4;
 
-    // Create schedule button (index 3)
     buttons[3].sprite = new Sprite("elements\\schedule.smk");
     buttons[3].sprite->loc_x = 0x165;
     buttons[3].sprite->loc_y = 0x1b5;
 
-    // Create mainmenu button (index 4)
     buttons[4].sprite = new Sprite("elements\\mainmenu.smk");
     buttons[4].sprite->loc_x = 0x1d1;
     buttons[4].sprite->loc_y = 0x1b6;
 
-    // Create quit button (index 5)
     buttons[5].sprite = new Sprite("elements\\quit.smk");
     buttons[5].sprite->loc_x = 0x22a;
     buttons[5].sprite->loc_y = 0x1b6;
 
-    // Configure all 6 buttons
+    // Configure all 6 buttons using common settings
+    IconBarButton* pBtn = buttons;
     for (i = 0; i < 6; i++) {
-        Sprite* btn = buttons[i].sprite;
-        btn->flags &= ~2;  // Clear flag
+        Sprite* btn = pBtn->sprite;
+        btn->flags &= ~2;
         btn->SetState(2);
         btn->SetRange(0, 1, 1);
         btn->SetRange(1, 2, 2);
-        btn->priority = 0x3e9;
+        btn->priority = 1001;
+        pBtn++;
     }
 
-    // Set button bounds
+    // Set button bounds in the order they appear in assembly
     buttons[0].bounds.left = 0x5e;
     buttons[0].bounds.right = 0x9f;
-    
     buttons[0].bounds.top = 0x1b5;
     buttons[1].bounds.top = 0x1b5;
     buttons[0].bounds.bottom = 0x1d3;
     buttons[1].bounds.left = 0xad;
-    buttons[1].bounds.top = 0x1b5;
     buttons[1].bounds.right = 0xf9;
     buttons[1].bounds.bottom = 0x1d6;
-
-    // Button 2 (aliencom)
+    buttons[2].bounds.bottom = 0x1d6;
     buttons[2].bounds.left = 0x115;
     buttons[2].bounds.top = 0x1b4;
     buttons[2].bounds.right = 0x155;
-    buttons[2].bounds.bottom = 0x1d6;
-
-    // Button 3 (schedule)
-    buttons[3].bounds.left = 0x165;
     buttons[3].bounds.top = 0x1b5;
-    buttons[3].bounds.right = 0x1ae;
-    buttons[3].bounds.bottom = 0x1d2;
-
-    // Button 4 (mainmenu)
-    buttons[4].bounds.left = 0x1d1;
     buttons[4].bounds.top = 0x1b6;
-    buttons[4].bounds.right = 0x207;
-    buttons[4].bounds.bottom = 0x1d2;
-
-    // Button 5 (quit)
-    buttons[5].bounds.left = 0x22a;
     buttons[5].bounds.top = 0x1b6;
+    buttons[3].bounds.left = 0x165;
+    buttons[3].bounds.bottom = 0x1d2;
+    buttons[4].bounds.bottom = 0x1d2;
+    buttons[3].bounds.right = 0x1ae;
+    buttons[4].bounds.left = 0x1d1;
+    buttons[4].bounds.right = 0x207;
+    buttons[5].bounds.left = 0x22a;
     buttons[5].bounds.right = 0x270;
     buttons[5].bounds.bottom = 0x1d5;
 
-    // Button 0 template message
+    // Message templates
     buttons[0].message.command = 10;
     buttons[0].message.sourceAddress = 1;
     buttons[0].message.targetAddress = 6;
     buttons[0].message.priority = 5;
 
-    // Button 4 template message
     buttons[4].message.command = 10;
     buttons[4].message.sourceAddress = 1;
     buttons[4].message.targetAddress = 6;
     buttons[4].message.priority = 5;
 
-    // Button 5 template message
     buttons[5].message.command = 2;
     buttons[5].message.priority = 5;
 }
@@ -147,10 +129,6 @@ IconBar::~IconBar() {
 IconBarButton::IconBarButton()
     : message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 {
-    bounds.left = 0;
-    bounds.top = 0;
-    bounds.right = 0;
-    bounds.bottom = 0;
 }
 
 /* Function start: 0x402D60 */
@@ -180,9 +158,9 @@ void IconBar::InitIconBar(SC_Message* msg) {
     // Register sounds
     if (soundList != 0) {
         // Store sound handles at specific offsets
-        soundList->Register("audio\\Snd0023.wav");
-        soundList->Register("audio\\Snd0024.wav");
-        soundList->Register("audio\\Snd0025.wav");
+        buttons[1].clickSound = (Sample*)soundList->Register("audio\\Snd0023.wav");
+        buttons[2].clickSound = (Sample*)soundList->Register("audio\\Snd0024.wav");
+        buttons[3].clickSound = (Sample*)soundList->Register("audio\\Snd0025.wav");
     }
 }
 
