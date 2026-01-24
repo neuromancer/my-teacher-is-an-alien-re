@@ -93,51 +93,41 @@ int OptionMenu::LBLParse(char* command)
 /* Function start: 0x409D50 */
 void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
 {
-    int i = 0;
-    SpriteListNode* node;
-    SpriteData* data;
-    Sprite* sprite;
-
     if (sprite_count > selected_option) {
         sprite_count = selected_option;
     }
 
-    if (spriteList == 0 || spriteList->head == 0) {
-        return;
-    }
-
+    int i = 0;
     spriteList->current = spriteList->head;
+    if (spriteList->head == 0) return;
 
-    do {
-        if (i >= sprite_count) {
-            break;
+    while (i < sprite_count) {
+        if (sprite_index == 0) {
+            options[0]->SetState2((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state);
+            options[0]->Do(options[0]->loc_x, options[0]->loc_y, 1.0);
+        }
+        if (sprite_index == 1) {
+            options[1]->SetState2((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state);
+            options[1]->Do(options[1]->loc_x, options[1]->loc_y, 1.0);
+        }
+        if (sprite_index == 2) {
+            options[2]->SetState2((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state);
+            options[2]->Do(options[2]->loc_x, options[2]->loc_y, 1.0);
         }
 
-        node = spriteList->current;
-        data = (node != 0) ? (SpriteData*)node->data : 0;
+        (spriteList->current ? (SpriteData*)spriteList->current->data : 0)->rect_x = 0xda;
+        (spriteList->current ? (SpriteData*)spriteList->current->data : 0)->rect_y = 0xcc;
+        (spriteList->current ? (SpriteData*)spriteList->current->data : 0)->rect_w = 0x1b3;
+        (spriteList->current ? (SpriteData*)spriteList->current->data : 0)->rect_h = 0xee;
 
-        if (data != 0 && sprite_index >= 0 && sprite_index < 3) {
-            sprite = options[sprite_index];
-            if (sprite != 0) {
-                sprite->SetState2(data->state);
-                sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-            }
-        }
-
-        if (data != 0) {
-            data->rect_x = 0xda;
-            data->rect_y = 0xcc;
-            data->rect_w = 0x1b3;
-            data->rect_h = 0xee;
-        }
-
-        // Advance iterator
+        SpriteListNode* node = spriteList->current;
         if (spriteList->tail == node) break;
         if (node != 0) {
             spriteList->current = node->prev;
         }
         i++;
-    } while (spriteList->current != 0);
+        if (spriteList->head == 0) break;
+    }
 }
 
 /* Function start: 0x409F00 */
