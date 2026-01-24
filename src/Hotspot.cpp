@@ -453,23 +453,28 @@ void Hotspot::QueueEvents(Queue* q)
     if (!q->m_head) return;
 
     do {
-        Message* msg = (Message*)((QueueNode*)q->m_current)->data;
-        TimedEventPool* pool = g_TimedEventPool2_00436988;
-        PooledEvent* evt = pool->Create(pool->list.tail, 0);
-        if (evt) {
-            //((Message*)((char*)evt + 8))->CopyFrom(msg);
-            
-            if (pool->list.tail) {
-                *(void**)pool->list.tail = evt;
-            } else {
-                pool->list.head = evt;
-            }
-            pool->list.tail = evt;
+        Message* msg = 0;
+        if (q->m_current) {
+            msg = (Message*)((QueueNode*)q->m_current)->data;
         }
 
-        if (q->m_current == q->m_tail) break;
-        q->m_current = ((QueueNode*)q->m_current)->next;
-    } while (q->m_head);
+        TimedEventPool* pool = g_TimedEventPool2_00436988;
+        PooledEvent* evt = pool->Create(pool->list.tail, 0);
+
+        ((PooledEvent*)((char*)evt + 8))->CopyFrom((PooledEvent*)msg);
+
+        if (pool->list.tail) {
+            ((PooledEvent*)pool->list.tail)->next = evt;
+        } else {
+            pool->list.head = evt;
+        }
+        pool->list.tail = evt;
+
+        if (q->m_current == q->m_tail) return;
+        if (q->m_current) {
+            q->m_current = ((QueueNode*)q->m_current)->next;
+        }
+    } while (q->m_head != 0);
 }
 
 
