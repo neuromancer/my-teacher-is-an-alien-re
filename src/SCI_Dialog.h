@@ -46,13 +46,13 @@ public:
     DialogQuestion* FindDialogById(int id);
 
     // Fields
-    MouseControl* mouseControl;     // 0x600
-    SC_Dialog* dialog;           // 0x604
-    Sprite* buttonSprite;           // 0x608
-    Sprite* hiliteSprite;           // 0x60C
-    Queue* dialogQueue;             // 0x610
-    DialogQuestion* currentDialog;  // 0x614
-    int ambientState[10];           // 0x618
+    MouseControl* field_600;
+    SC_Dialog* field_604;
+    Sprite* field_608;
+    Sprite* field_60C;
+    Queue* field_610;
+    DialogQuestion* field_614;
+    int field_618[10];
     int field_640;
     int field_644;
     int field_648;

@@ -18,7 +18,7 @@
 /* Function start: 0x406FC0 */
 SCI_Dialog::SCI_Dialog() {
     // Zero 0x14 dwords (80 bytes) at offset 0x600
-    memset(&mouseControl, 0, 0x14 * sizeof(int));
+    memset(&field_600, 0, 0x14 * sizeof(int));
 
     WriteToMessageLog("\"declaring DialogPlayer\"");
 
@@ -35,31 +35,31 @@ SCI_Dialog::~SCI_Dialog() {
     QueueNode* nextNode;
     DialogQuestion* dq;
 
-    mc = mouseControl;
+    mc = field_600;
     if (mc != 0) {
         delete mc;
-        mouseControl = 0;
+        field_600 = 0;
     }
 
-    dlg = dialog;
+    dlg = field_604;
     if (dlg != 0) {
         delete dlg;
-        dialog = 0;
+        field_604 = 0;
     }
 
-    spr = buttonSprite;
+    spr = field_608;
     if (spr != 0) {
         delete spr;
-        buttonSprite = 0;
+        field_608 = 0;
     }
 
-    spr = hiliteSprite;
+    spr = field_60C;
     if (spr != 0) {
         delete spr;
-        hiliteSprite = 0;
+        field_60C = 0;
     }
 
-    queue = dialogQueue;
+    queue = field_610;
     if (queue != 0) {
         if (queue->m_head != 0) {
             queue->m_current = queue->m_head;
@@ -97,7 +97,7 @@ SCI_Dialog::~SCI_Dialog() {
             }
         }
         delete queue;
-        dialogQueue = 0;
+        field_610 = 0;
     }
 }
 
@@ -120,15 +120,15 @@ void SCI_Dialog::Init(SC_Message* msg) {
     DialogInitData* initData = (DialogInitData*)msg->userPtr;
     if (initData != 0 && msg->targetAddress == 0xb) {
         msg->userPtr = 0;
-        mouseControl = (MouseControl*)initData->ptr1;
-        dialog = (SC_Dialog*)initData->ptr2;
+        field_600 = (MouseControl*)initData->ptr1;
+        field_604 = (SC_Dialog*)initData->ptr2;
         initData->ptr1 = 0;
         initData->ptr2 = 0;
         delete initData;
     }
 
     // Fill ambientState with 0x01010101
-    memset(ambientState, 0x01, 10 * sizeof(int));
+    memset(field_618, 0x01, 10 * sizeof(int));
 
     sprintf(buffer, "mis\\dialog%2.2d.mis", msg->param1);
 
@@ -139,7 +139,7 @@ void SCI_Dialog::Init(SC_Message* msg) {
         queue = local_14;
     }
 
-    dialogQueue = queue;
+    field_610 = queue;
 
     // Disable choice and mainmenu buttons
     buttons[0].enabled = 0;
@@ -157,23 +157,23 @@ int SCI_Dialog::Update(SC_Message* msg) {
 
     WriteToMessageLog("\"SCI_Dialog::ShutDown\"");
 
-    if (buttonSprite != 0) {
-        buttonSprite->StopAnimationSound();
+    if (field_608 != 0) {
+        field_608->StopAnimationSound();
     }
 
-    if (hiliteSprite != 0) {
-        hiliteSprite->StopAnimationSound();
+    if (field_60C != 0) {
+        field_60C->StopAnimationSound();
     }
 
-    dq = currentDialog;
-    mouseControl = 0;
-    dialog = 0;
+    dq = field_614;
+    field_600 = 0;
+    field_604 = 0;
     if (dq != 0) {
         delete dq;
-        currentDialog = 0;
+        field_614 = 0;
     }
 
-    queue = dialogQueue;
+    queue = field_610;
     if (queue != 0) {
         if (queue->m_head != 0) {
             queue->m_current = queue->m_head;
@@ -211,7 +211,7 @@ int SCI_Dialog::Update(SC_Message* msg) {
             }
         }
         delete queue;
-        dialogQueue = 0;
+        field_610 = 0;
     }
 
     buttons[0].enabled = 1;
@@ -233,13 +233,13 @@ int SCI_Dialog::HandleMessage(SC_Message* msg) {
         return 1;
     }
 
-    if (currentDialog != 0) {
+    if (field_614 != 0) {
         if (msg->field_b4 == 0x1b) {
-            currentDialog->Finalize();
-            dq = currentDialog;
+            field_614->Finalize();
+            dq = field_614;
             if (dq->state == 2) {
                 delete dq;
-                currentDialog = 0;
+                field_614 = 0;
                 return 1;
             }
         } else {
@@ -282,11 +282,11 @@ int SCI_Dialog::Exit(SC_Message* msg) {
     switch (msg->priority) {
     case 3:
         IconBar::PlayButtonSound(-1);
-        if (currentDialog == 0) {
-            currentDialog = GetDialogByIndex(msg->sourceAddress);
+        if (field_614 == 0) {
+            field_614 = GetDialogByIndex(msg->sourceAddress);
         }
-        if (currentDialog != 0) {
-            currentDialog->state = 1;
+        if (field_614 != 0) {
+            field_614->state = 1;
         }
         break;
 
@@ -297,7 +297,7 @@ int SCI_Dialog::Exit(SC_Message* msg) {
             if (dq->state == 2) {
                 delete dq;
             } else {
-                queue = dialogQueue;
+                queue = field_610;
                 if (dq == 0) ShowError("queue fault 0101");
                 queue->m_current = queue->m_head;
                 if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2) {
@@ -387,74 +387,63 @@ int SCI_Dialog::Exit(SC_Message* msg) {
 
 /* Function start: 0x407A40 */
 void SCI_Dialog::Draw(int param1, int param2) {
-    void* data;
-    DialogQuestion* dq;
-    Queue* queue;
-    QueueNode* node;
-    int counter;
-    int y;
-    int x;
+    int y = 10;
+    int counter = 0;
 
-    if (handlerId != param2) {
+    if (handlerId != param2) return;
+
+    IconBar::Draw(param1, param2);
+    if (field_600 != 0) field_600->DoAll();
+    g_Mouse_00436978->DrawCursor();
+
+    if (field_614 != 0) {
+        field_614->Update(18, 10);
+        if (field_604 != 0) field_604->DrawWithStates(field_618);
+        if (field_614->state == 2) {
+            delete field_614;
+            field_614 = 0;
+        }
         return;
     }
 
-    IconBar::Draw(param1, param2);
-
-    if (mouseControl != 0) {
-        mouseControl->DoAll();
+    if (field_610 == 0 || field_610->m_head == 0) {
+        if (field_604 != 0) field_604->Draw();
+        SC_Message_Send(field_90, field_94, 9, field_8C, 5, 6, 0, 0, 0, 0);
+        return;
     }
 
-    g_Mouse_00436978->DrawCursor();
+    if (field_604 != 0) field_604->Draw();
 
-    if (currentDialog != 0) {
-        currentDialog->Update(0x12, 10);
-        if (buttonSprite != 0) {
-            buttonSprite->Do(0x12, 10, 1.0);
-        }
-
-        dq = currentDialog;
-        if (dq->state == 2) {
-            delete dq;
-            currentDialog = 0;
-        }
+    int mouseIndex;
+    InputState* pMouse = g_InputManager_00436968->pMouse;
+    if (pMouse == 0 || pMouse->y < 10) {
+        mouseIndex = -1;
     } else {
-        queue = dialogQueue;
-        if (queue != 0 && queue->m_head != 0) {
-            queue->m_current = queue->m_head;
-            counter = 0;
-            y = 10;
-            x = 10;
-            while (1) {
-                node = (QueueNode*)queue->m_current;
-                data = (node != 0) ? node->data : 0;
-                
-                // local_4 logic from decompiled - determine if this is the highlighted choice
-                int local_4;
-                InputState* pMouse = g_InputManager_00436968->pMouse;
-                if (pMouse == 0 || pMouse->y < 10) local_4 = -1;
-                else local_4 = (pMouse->y - 10) / 0x22;
+        mouseIndex = (pMouse->y - 10) / 34;
+    }
 
-                if (counter == local_4) {
-                    ((DialogQuestion*)data)->Update(0x12, y);
-                    data = (void*)hiliteSprite;
-                } else {
-                    ((DialogQuestion*)data)->Update(0x12, y);
-                    data = (void*)buttonSprite;
-                }
-
-                if (data != 0) {
-                    ((Sprite*)data)->Do(0x12, x, 1.0);
-                }
-
-                counter++;
-                y += 0x22;
-                x += 0x22;
-                if (queue->m_tail == queue->m_current) break;
-                if (queue->m_current != 0) queue->m_current = ((QueueNode*)queue->m_current)->prev;
-                if (queue->m_current == 0) return;
+    int x = 10;
+    field_610->m_current = field_610->m_head;
+    if (field_610->m_head != 0) {
+        do {
+            QueueNode* node = (QueueNode*)field_610->m_current;
+            DialogQuestion* dq = (node != 0) ? (DialogQuestion*)node->data : 0;
+            
+            if (counter == mouseIndex) {
+                dq->Update(18, y);
+                if (field_60C != 0) field_60C->Do(18, x, 1.0);
+            } else {
+                dq->Update(18, y);
+                if (field_608 != 0) field_608->Do(18, x, 1.0);
             }
-        }
+
+            counter++;
+            y += 34;
+            x += 34;
+
+            if (field_610->m_tail == field_610->m_current) return;
+            if (node != 0) field_610->m_current = node->next;
+        } while (field_610->m_head != 0);
     }
 }
 
@@ -465,7 +454,7 @@ DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
     QueueNode* prevNode;
     QueueNode* nextNode;
     DialogQuestion* result;
-    Queue* queue = dialogQueue;
+    Queue* queue = field_610;
 
     if (queue == 0) return 0;
     queue->m_current = queue->m_head;
@@ -502,7 +491,7 @@ DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
 /* Function start: 0x407D20 */
 DialogQuestion* SCI_Dialog::FindDialogById(int id) {
     DialogQuestion* searchQuestion = new SC_Question(id);
-    Queue* queue = dialogQueue;
+    Queue* queue = field_610;
     QueueNode* node;
     QueueNode* prevNode;
     QueueNode* nextNode;
@@ -566,13 +555,13 @@ int SCI_Dialog::LBLParse(char* line) {
         WriteToMessageLog("SCI_Dialog::LBLParse %s, a palette already exists", token);
         sscanf(line, "%s %s", token, arg1);
     } else if (strcmp(token, "BUTTON") == 0) {
-        buttonSprite = new Sprite(0);
-        Parser::ProcessFile(buttonSprite, this, 0);
+        field_608 = new Sprite(0);
+        Parser::ProcessFile(field_608, this, 0);
     } else if (strcmp(token, "AMBIENT_SPRS") == 0) {
         WriteToMessageLog("SCI_Dialog::LBLParse %s, ambients already exist", token);
     } else if (strcmp(token, "HILITE") == 0) {
-        hiliteSprite = new Sprite(0);
-        Parser::ProcessFile(hiliteSprite, this, 0);
+        field_60C = new Sprite(0);
+        Parser::ProcessFile(field_60C, this, 0);
     } else if (strcmp(token, "HANDLE") == 0) {
         sscanf(line, "%s %d", token, &field_8C);
     } else if (strcmp(token, "AMBIENTSCONTROLLER") == 0) {
@@ -589,7 +578,7 @@ int SCI_Dialog::LBLParse(char* line) {
         } while (i_digits < 10);
         temp = ambientVal;
         for (int i = 0; i < count; i++) {
-            ambientState[temp % 10] = 0;
+            field_618[temp % 10] = 0;
             temp /= 10;
         }
     } else if (strcmp(token, "QUESTION") == 0) {
@@ -599,7 +588,7 @@ int SCI_Dialog::LBLParse(char* line) {
         if (dq->state == 2) {
             delete dq;
         } else {
-            queue = dialogQueue;
+            queue = field_610;
             if (dq == 0) ShowError("queue fault 0101");
             queue->m_current = queue->m_head;
             if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2) {

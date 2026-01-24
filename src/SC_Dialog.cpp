@@ -25,7 +25,7 @@ SC_Dialog::SC_Dialog()
         queue->m_tail = 0;
         queue->m_current = queue->m_head;
     }
-    spriteQueue = queue;
+    field_bc = queue;
     field_88 = 0x54;
 }
 
@@ -37,7 +37,7 @@ SC_Dialog::~SC_Dialog()
     Sprite* sprite;
     Queue* queue;
 
-    queue = spriteQueue;
+    queue = field_bc;
     if (queue != 0) {
         if (queue->m_head != 0) {
             queue->m_current = queue->m_head;
@@ -73,16 +73,16 @@ SC_Dialog::~SC_Dialog()
             }
         }
         delete queue;
-        spriteQueue = 0;
+        field_bc = 0;
     }
 }
 
 /* Function start: 0x408B60 */
 void SC_Dialog::StopAll()
 {
-    if (spriteQueue == 0) return;
+    if (field_bc == 0) return;
 
-    QueueNode* node = (QueueNode*)spriteQueue->m_head;
+    QueueNode* node = (QueueNode*)field_bc->m_head;
     while (node != 0) {
         Sprite* sprite = (Sprite*)node->data;
         if (sprite != 0) {
@@ -97,26 +97,84 @@ void SC_Dialog::StopAll()
 void SC_Dialog::Draw()
 {
     field_90 = 1;
-    // ... logic for 0x408BD0 if needed ...
-    
-    if (spriteQueue == 0) return;
+    if (!(field_8c & 0x2000)) {
+        PreDraw();
+    }
 
-    QueueNode* node = (QueueNode*)spriteQueue->m_head;
-    while (node != 0) {
-        Sprite* sprite = (Sprite*)node->data;
-        if (sprite != 0) {
-            if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
+    if (field_bc == 0) return;
+
+    if (field_bc->m_head != 0) {
+        field_bc->m_current = field_bc->m_head;
+        while (1) {
+            QueueNode* node = (QueueNode*)field_bc->m_current;
+            Sprite* spr = (node != 0) ? (Sprite*)node->data : 0;
+            if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
                 field_90 = 0;
             }
+            if (field_bc->m_tail == field_bc->m_current) break;
+            field_bc->m_current = node->next;
+            if (field_bc->m_current == 0) break;
         }
-        node = node->next;
     }
+}
+
+/* Function start: 0x408F80 */
+int SC_Dialog::DrawWithStates(int* states)
+{
+    field_90 = 1;
+    if (!(field_8c & 0x2000)) {
+        PreDraw();
+    }
+
+    Queue* queue = field_bc;
+    if (queue == 0) return 1;
+
+    void* head = queue->m_head;
+    queue->m_current = head;
+    if (head != 0) {
+        int i = 0;
+        do {
+            QueueNode* node = (QueueNode*)queue->m_current;
+            if (states[i++] != 0) {
+                Sprite* spr = (Sprite*)0;
+                if (node != 0) spr = (Sprite*)node->data;
+                if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
+                    field_90 = 0;
+                }
+            }
+            if (queue->m_tail == queue->m_current) break;
+            if (node != 0) queue->m_current = node->next;
+        } while (queue->m_head != 0);
+    }
+    return field_90;
+}
+
+/* Function start: 0x408BD0 */
+void SC_Dialog::PreDraw()
+{
+    Queue* queue = field_bc;
+    if (queue == 0) return;
+
+    void* head = queue->m_head;
+    queue->m_current = head;
+    if (head != 0) {
+        do {
+            QueueNode* node = (QueueNode*)queue->m_current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
+            spr->Init();
+            if (queue->m_tail == queue->m_current) break;
+            if (node != 0) queue->m_current = node->next;
+        } while (queue->m_head != 0);
+    }
+    field_90 = 1;
+    field_8c |= 0x2000;
 }
 
 /* Function start: 0x408C40 */
 void SC_Dialog::AddSprite(Sprite* spr)
 {
-    spriteQueue->Insert(spr);
+    field_bc->Insert(spr);
 }
 
 /* Function start: 0x409030 */

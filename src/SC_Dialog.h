@@ -25,7 +25,9 @@ public:
     virtual int LBLParse(char* line); // 0x409030
     void AddSprite(Sprite* spr);    // 0x408C40
     void StopAll();         // 0x408B60
+    void PreDraw();         // 0x408BD0
     void Draw();            // 0x408EE0
+    int DrawWithStates(int* states); // 0x408F80
 
     int field_88;           // 0x88 - set to 0x54 in constructor
     int field_8c;           // 0x8c
@@ -40,7 +42,7 @@ public:
     int field_b0;           // 0xb0
     int field_b4;           // 0xb4
     int field_b8;           // 0xb8
-    Queue* spriteQueue;     // 0xbc
+    Queue* field_bc;        // 0xbc
 };
 
 #endif // SC_DIALOG_H
