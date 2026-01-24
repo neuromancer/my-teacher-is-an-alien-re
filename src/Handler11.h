@@ -6,6 +6,7 @@
 #include "MouseControl.h"
 #include "SC_Dialog.h"
 #include "Hotspot.h"
+#include "Sample.h"
 
 class SC_Message;
 
@@ -28,18 +29,24 @@ public:
     ~Handler11();
 
     // Virtual method overrides
+    virtual int LBLParse(char* line);
     virtual void Init(SC_Message* msg);
     virtual int HandleMessage(SC_Message* msg);
     virtual int Update(SC_Message* msg);
     virtual void Draw(int param1, int param2);
     virtual int Exit(SC_Message* msg);
 
+private:
+    int FindControlAtMouse();       // 0x40B230
+    int GetActiveControlCount();    // 0x40B2B0
+
+public:
     Palette* field_600;              // 0x600
     MouseControl* field_604;         // 0x604
     SC_Dialog* field_608;            // 0x608
     DialogControl* field_60C[10];    // 0x60C-0x633
-    int field_634;      // 0x634
-    int field_638;      // 0x638
+    DialogControl* field_634;        // 0x634
+    Sample* field_638;               // 0x638
     int field_63C;      // 0x63C
     int field_640;      // 0x640
     int field_644;      // 0x644
