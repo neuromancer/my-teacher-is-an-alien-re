@@ -70,14 +70,14 @@ Handler4::Handler4() {
     for (i = 0; i < 3; i++) {
         (&buttons1)[i]->flags &= ~2;
         (&buttons1)[i]->priority = 10;
-        (&buttons1)[i]->InitLogic(3);
+        (&buttons1)[i]->SetState(3);
         (&buttons1)[i]->SetRange(0, 1, 1);
         (&buttons1)[i]->SetRange(1, 2, 2);
         (&buttons1)[i]->SetRange(2, 3, 3);
 
         (&paths1)[i]->flags &= ~2; 
         (&paths1)[i]->priority = 10;
-        (&paths1)[i]->InitLogic(3);
+        (&paths1)[i]->SetState(3);
         (&paths1)[i]->SetRange(0, 1, 1);
         (&paths1)[i]->SetRange(1, 2, 2);
         (&paths1)[i]->SetRange(2, 3, 3);
@@ -93,7 +93,7 @@ Handler4::Handler4() {
     litdoors->flags &= ~2;
     litdoors->priority = 10;
     litdoors->flags |= 0x40;
-    litdoors->InitLogic(3);
+    litdoors->SetState(3);
     litdoors->SetRange(0, 1, 1);
     litdoors->SetRange(1, 2, 2);
     litdoors->SetRange(2, 3, 3);
@@ -114,7 +114,7 @@ Handler4::Handler4() {
         (&lowfloor)[i]->flags &= ~2;
         (&lowfloor)[i]->priority = 10;
         (&lowfloor)[i]->flags |= 0x40;
-        (&lowfloor)[i]->InitLogic(4);
+        (&lowfloor)[i]->SetState(4);
         (&lowfloor)[i]->SetRange(0, 1, 4);
         (&lowfloor)[i]->SetRange(1, 5, 8);
         (&lowfloor)[i]->SetRange(2, 9, 12);
@@ -300,7 +300,7 @@ void Handler4::ResetPuzzle() {
     Sprite** pFloor = &lowfloor;
     i = 3;
     while (i--) {
-        (*pFloor)->SetState(3);
+        (*pFloor)->SetState2(3);
         pFloor++;
     }
 
@@ -339,7 +339,7 @@ void Handler4::DisplayButtons() {
     for (int i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
             Sprite* btn = (&buttons1)[i / 3];
-            btn->SetState(i % 3);
+            btn->SetState2(i % 3);
             btn->Do(btn->loc_x, btn->loc_y, 1.0);
         }
     }
@@ -353,7 +353,7 @@ void Handler4::DisplayPaths() {
     for (int i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
             Sprite* path = (&paths1)[i / 3];
-            path->SetState(i % 3);
+            path->SetState2(i % 3);
             path->Do(path->loc_x, path->loc_y, 1.0);
         }
     }
@@ -363,7 +363,7 @@ void Handler4::DisplayPaths() {
 void Handler4::DisplayLitDoors() {
     for (int i = 0; i < 3; i++) {
         if (floorStates[i] != 0) {
-            litdoors->SetState(i);
+            litdoors->SetState2(i);
             int x = (i == 1) ? (0x138 - 0xa6) : ((i == 2) ? 0x138 : 0);
             int y = (i == 1) ? (0x60 + 0xe) : 0x60;
             litdoors->Do(x, y, 1.0);
@@ -399,7 +399,7 @@ void Handler4::DisplayFloors() {
                  WriteToMessageLog("Error in SCIpuzz1.cpp - DisplayThisFloorRow:  Invalid case value");
             }
             if (state == -1) state = 3;
-            s->SetState(state);
+            s->SetState2(state);
         }
     }
 

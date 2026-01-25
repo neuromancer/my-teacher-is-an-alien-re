@@ -42,7 +42,6 @@ SRCS_ORDERED = \
 	src/MMPlayer2.cpp \
 	src/OptionMenu.cpp \
 	src/SC_OnScreenMessage.cpp \
-	src/SearchScreen.cpp \
 	src/Engine.cpp \
 	src/EngineB.cpp \
 	src/mCNavigator.cpp \
