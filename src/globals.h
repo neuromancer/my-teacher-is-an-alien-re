@@ -393,15 +393,14 @@ extern int DAT_004374ce; // { /* 4 bytes */ }
 // extern char DAT_00435ef6; // { /* 1 bytes */ }
 // extern char DAT_00435ef7; // { /* 1 bytes */ }
 // Engine parser subsystem globals
-extern Parser* DAT_00435f00;  // ENGINE_INFO parser
+extern class EngineInfoParser* DAT_00435f00;  // ENGINE_INFO parser
 extern Parser* DAT_00435f04;  // Console parser
-// extern int DAT_00435f08; // { /* 4 bytes */ }
+extern class Viewport* g_EngineViewport; // 0x435f08
 extern Parser* DAT_00435f0c;  // TARGETS parser
 extern Parser* DAT_00435f10;  // SPRITELIST parser
 extern Parser* DAT_00435f14;  // Weapon parser (RockThrower)
-// extern int DAT_00435f18; // { /* 4 bytes */ }
-// extern int DAT_00435f1c; // { /* 4 bytes */ }
-// extern int DAT_00435f20; // { /* 4 bytes */ }
+extern class Palette* g_EnginePalette; // 0x435f18
+extern int* g_ScoreManager; // 0x435f20
 extern Parser* DAT_00435f24;  // NAVIGATION parser
 // extern int DAT_00435f28; // { /* 4 bytes */ }
 // extern char DAT_00436094; // { /* 1 bytes */ }

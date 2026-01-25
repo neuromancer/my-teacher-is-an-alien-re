@@ -12,6 +12,7 @@
 #include "EngineSubsystems.h"
 #include "Sound.h"
 #include "RockThrower.h"
+#include "Sample.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -20,15 +21,11 @@
 extern "C" {
 int GetCurrentTimestamp(int*);  // 0x425000 - returns timestamp, optionally stores in *param
 void SetTimeSeed(int);          // 0x424FC0 - sets global time seed (DAT_0043bc88)
+}
+void BlankScreen();             // 0x419390
 
 // Globals for sub-parsers
-extern Parser* DAT_00435f00;  // ENGINE_INFO parser
-extern Parser* DAT_00435f04;  // Console parser
-extern Parser* DAT_00435f0c;  // TARGETS parser
-extern Parser* DAT_00435f10;  // SPRITELIST parser
-extern Parser* DAT_00435f14;  // Weapon parser
-extern Parser* DAT_00435f24;  // NAVIGATION parser
-}
+// (Now declared in globals.h)
 
 // Empty virtual function overrides (0x4010E0, 0x4010F0)
 void Engine::OnProcessStart() {}
@@ -89,6 +86,41 @@ Engine::Engine() {
   int result = GetCurrentTimestamp(0);
   SetTimeSeed(result);
   Engine::Initialize();
+}
+
+/* Function start: 0x411230 */
+void Engine::SetupViewport() {
+  int height;
+  int width;
+  Animation* anim;
+
+  g_EngineViewport->SetDimensions(DAT_00435f00->width, DAT_00435f00->height);
+  
+  anim = ((mCNavigator*)DAT_00435f24)->sprite->animation_data;
+  height = 0;
+  if (anim != 0) {
+    height = anim->targetBuffer->height;
+  }
+  width = 0;
+  if (anim != 0) {
+    width = anim->targetBuffer->width;
+  }
+  
+  g_EngineViewport->SetDimensions2(width - g_EngineViewport->x1, height - g_EngineViewport->y1);
+  g_EngineViewport->SetCenter();
+  g_EngineViewport->SetAnchor(DAT_00435f00->anchorX, DAT_00435f00->anchorY);
+  
+  g_ScoreManager[1] = 100;
+  m_framesL = 1;
+  m_framesA = 1;
+  
+  BlankScreen();
+  
+  g_EnginePalette->SetPalette(DAT_00435f00->paletteStart, (DAT_00435f00->paletteEnd - DAT_00435f00->paletteStart) + 1);
+  
+  if (field_0xe0 != 0) {
+    ((Sample*)field_0xe0)->Play(100, 0);
+  }
 }
 
 /* Function start: 0x411320 */

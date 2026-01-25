@@ -7,8 +7,33 @@
 
 class EngineInfoParser : public Parser {
 public:
-  char padding[0xa8 - sizeof(Parser)];
+  int anchorX;     // 0x88
+  int anchorY;     // 0x8c
+  int width;       // 0x90
+  int height;      // 0x94
+  int paletteStart; // 0x98
+  int paletteEnd;   // 0x9c
+  int field_0xa0;
+  int field_0xa4;
   EngineInfoParser() {}
+};
+
+class Viewport {
+public:
+    int x1, y1, x2, y2; // 0x00, 0x04, 0x08, 0x0c
+    int width, height;  // 0x10, 0x14
+    int field_0x18;
+    int field_0x1c;
+    int field_0x20;
+    int field_0x24;
+    int field_0x28;
+
+    void SetDimensions(int w, int h); // 0x412C30
+    void SetAnchor(int x, int y);     // 0x412C50
+    void SetDimensions2(int w, int h); // 0x412C90
+    void SetCenter();                 // 0x412CB0
+    void FUN_00412ce0(int x);         // 0x412CE0
+    void FUN_00412d00(int y);         // 0x412D00
 };
 
 class SceneManager {

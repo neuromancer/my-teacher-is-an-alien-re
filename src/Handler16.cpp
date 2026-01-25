@@ -406,7 +406,7 @@ int Handler16::LBLParse(char* line) {
             }
         }
         Parser::ProcessFile(g_CombatEngine, this, 0);
-        g_CombatEngine->FUN_00411230();
+        g_CombatEngine->SetupViewport();
         return 0;
     }
 
