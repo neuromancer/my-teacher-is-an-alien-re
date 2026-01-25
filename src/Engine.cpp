@@ -162,7 +162,7 @@ int Engine::UpdateAndCheck() {
 void Engine::Initialize() {
   Engine::m_subParser = new EngineInfoParser();
   Engine::m_soundList = new SoundList(0x32);
-  Engine::m_spriteManager = new SpriteManager();
+  Engine::m_engineInfoParser = new EngineInfoParser();
   Engine::m_navigator = new mCNavigator();
   Engine::m_timerManager = new Palette();
   Engine::m_inputHandler = new InputHandler();

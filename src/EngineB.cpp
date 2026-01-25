@@ -2,6 +2,7 @@
 #include "SoundList.h"
 #include "Memory.h"
 #include <string.h>
+#include <stdio.h>
 
 /* Function start: 0x412110 */
 EngineB::EngineB() {
@@ -52,8 +53,18 @@ void EngineB::DestructorHelper() {
   }
 }
 
+/* Function start: 0x4129A0 */
+int EngineB::LBLParse(char* line) {
+  char token[32];
+  sscanf(line, "%s", token);
+  if (strcmp(token, "END_ENGINEA_INFO") == 0) {
+    return 1;
+  }
+  Engine::LBLParse(line);
+  return 0;
+}
+
 // Stub implementations for virtual method overrides (to be implemented later)
-int EngineB::LBLParse(char* line) { return 0; }
 void EngineB::OnProcessEnd() {}
 void EngineB::VirtProcess() {}
 void EngineB::VirtDraw() {}

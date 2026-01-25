@@ -9,7 +9,7 @@ class Parser
 {
 public:
     Parser();
-    ~Parser();
+    virtual ~Parser();
     virtual int LBLParse(char*);
     virtual void OnProcessStart();
     virtual void OnProcessEnd();

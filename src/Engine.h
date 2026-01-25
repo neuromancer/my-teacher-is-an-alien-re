@@ -35,11 +35,11 @@ public:
   // Engine fields start at 0x88
 
   SceneManager* m_sceneManager;     // 0x88 - scene/level manager (size 0x1c8)
-  SpriteManager* m_spriteManager;   // 0x8c - sprite manager (size 0xb8)
+  EngineInfoParser* m_engineInfoParser; // 0x8c - engine info parser (size 0xa8)
   int field_0x90;                   // 0x90
   DialogManager* m_dialogManager;   // 0x94 - dialog/text manager (size 0x2c)
   InputHandler* m_inputHandler;     // 0x98 - input handler (size 0x98)
-  Parser* m_subParser;              // 0x9c - sub-parser object (can be EngineInfoParser, RockThrower, etc)
+  Parser* m_subParser;              // 0x9c - sub-parser object (can be Console, Weapon, etc)
   Palette* m_timerManager;          // 0xa0 - timer manager (size 0x8)
   SoundList* m_soundList;           // 0xa4 - sound list (size 0x10)
   CursorManager* m_cursorManager;   // 0xa8 - cursor manager (size 0x24)

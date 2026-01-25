@@ -7,15 +7,21 @@
 
 class EngineInfoParser : public Parser {
 public:
-  int anchorX;     // 0x88
-  int anchorY;     // 0x8c
-  int width;       // 0x90
-  int height;      // 0x94
+  int anchorX;      // 0x88
+  int anchorY;      // 0x8c
+  int width;        // 0x90
+  int height;       // 0x94
   int paletteStart; // 0x98
   int paletteEnd;   // 0x9c
-  int field_0xa0;
-  int field_0xa4;
-  EngineInfoParser() {}
+  int field_0xa0;   // 0xa0
+  int field_0xa4;   // 0xa4
+  
+  EngineInfoParser(); // 0x416BD0
+  virtual ~EngineInfoParser(); // 0x416CD0
+  virtual int LBLParse(char* line); // 0x416D70
+
+  void ParseAnchor(char* line); // 0x416FD0
+  void ParseDimensions(char* line); // 0x417000
 };
 
 class Viewport {

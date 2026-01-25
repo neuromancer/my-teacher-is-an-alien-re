@@ -1,4 +1,6 @@
 #include "EngineA.h"
+#include <stdio.h>
+#include <string.h>
 
 /* Function start: 0x412A10 */
 EngineA::EngineA() {
@@ -11,5 +13,13 @@ EngineA::~EngineA() {
   // Destructor body - calls Engine destructor automatically
 }
 
-// Stub implementation (to be implemented later)
-int EngineA::LBLParse(char* line) { return 0; }
+/* Function start: 0x412AE0 */
+int EngineA::LBLParse(char* line) {
+  char token[32];
+  sscanf(line, "%s", token);
+  if (strcmp(token, "END_ENGINEB_INFO") == 0) {
+    return 1;
+  }
+  Engine::LBLParse(line);
+  return 0;
+}
