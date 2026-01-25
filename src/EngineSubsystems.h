@@ -30,8 +30,6 @@ public:
   void FUN_00417170(char* line); // 0x417170
 };
 
-void FUN_00418B30(const char* name);
-
 class Viewport {
 public:
     int x1, y1, x2, y2; // 0x00, 0x04, 0x08, 0x0c

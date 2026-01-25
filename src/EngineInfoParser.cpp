@@ -1,8 +1,10 @@
 #include "EngineSubsystems.h"
-#include "Parser.h"
 #include "globals.h"
 #include <stdio.h>
-#include <string.h>
+#include "string.h"
+#include "Engine.h"
+#include "SoundList.h"
+#include "Palette.h"
 
 /* Function start: 0x416BD0 */
 EngineInfoParser::EngineInfoParser() : Parser() {
@@ -58,18 +60,74 @@ int EngineInfoParser::LBLParse(char* line) {
     if (label[0] == '\0') {
       return 1;
     }
-    FUN_00418B30("MapScene");
+    Parser::LBLParse("MapScene");
   }
 
   return 0;
 }
 
+extern "C" char *FUN_004195c0(char *filename);
+
+/* Function start: 0x416F70 */
+void EngineInfoParser::FUN_00416F70(char *line, int arg2) {
+  if ((char)arg2 == '1') {
+    sscanf(line, "%d %d", &g_CombatEngine->field_0xc8,
+           &g_CombatEngine->field_0xd0);
+  } else {
+    sscanf(line, "%d %d", &g_CombatEngine->field_0xb8,
+           &g_CombatEngine->field_0xc0);
+  }
+}
+
 /* Function start: 0x416FD0 */
-void EngineInfoParser::ParseAnchor(char* line) {
+void EngineInfoParser::ParseAnchor(char *line) {
   sscanf(line, "%d %d", &anchorX, &anchorY);
 }
 
 /* Function start: 0x417000 */
-void EngineInfoParser::ParseDimensions(char* line) {
+void EngineInfoParser::ParseDimensions(char *line) {
   sscanf(line, "%d %d", &width, &height);
 }
+
+/* Function start: 0x417030 */
+void EngineInfoParser::FUN_00417030(char *line, int index) {
+  char buffer[128];
+  sscanf(line, "%s", buffer);
+
+  void *sound = g_SoundList_00435f1c->Register(buffer);
+  
+  if (index > 5) {
+    ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);
+  } else {
+    switch (index) {
+    case 0:
+      g_CombatEngine->field_0xe0 = (int)sound;
+      break;
+    case 1:
+      *(void **)((char *)DAT_00435f14 + 0xa4) = sound;
+      break;
+    case 2:
+      *(void **)((char *)DAT_00435f0c + 0x1b4) = sound;
+      break;
+    case 3:
+      *(void **)((char *)DAT_00435f0c + 0x1b8) = sound;
+      break;
+    case 4:
+      *(void **)((char *)DAT_00435f0c + 0x1bc) = sound;
+      break;
+    case 5:
+      *(void **)((char *)DAT_00435f0c + 0x1c0) = sound;
+      break;
+    }
+  }
+}
+
+/* Function start: 0x417130 */
+void EngineInfoParser::FUN_00417130(char *line) {
+  char buffer[128];
+  sscanf(line, "%s", buffer);
+  g_EnginePalette->Load(FUN_004195c0(buffer));
+}
+
+/* Function start: 0x417170 */
+void EngineInfoParser::FUN_00417170(char *line) {}

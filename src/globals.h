@@ -400,6 +400,7 @@ extern Parser* DAT_00435f0c;  // TARGETS parser
 extern Parser* DAT_00435f10;  // SPRITELIST parser
 extern Parser* DAT_00435f14;  // Weapon parser (RockThrower)
 extern class Palette* g_EnginePalette; // 0x435f18
+extern class SoundList* g_SoundList_00435f1c; // 0x435f1c
 extern int* g_ScoreManager; // 0x435f20
 extern Parser* DAT_00435f24;  // NAVIGATION parser
 // extern int DAT_00435f28; // { /* 4 bytes */ }
