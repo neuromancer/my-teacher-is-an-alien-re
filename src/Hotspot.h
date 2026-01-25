@@ -25,7 +25,6 @@ public:
     int state;                      // 0xD8
     int field_DC;                   // 0xDC
     GlyphRect rect;                 // 0xE0
-    int field_F0;                   // 0xF0
     
     virtual int LBLParse(char* line); // 0x40D710
     unsigned char Do();               // 0x40D610

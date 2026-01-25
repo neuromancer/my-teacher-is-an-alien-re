@@ -13,6 +13,7 @@
 
 // External functions used by Handler6
 extern "C" void __cdecl WriteToMessageLog(const char*);
+extern "C" char* __cdecl CDData_FormatPath(char* format, ...);
 
 /* Function start: 0x4044C0 */
 Handler6::Handler6() {
@@ -276,4 +277,37 @@ int Handler6::CountActiveHotspots() {
     } while (remaining != 0);
 
     return count;
+}
+
+/* Function start: 0x404A20 */
+int Handler6::LBLParse(char* line) {
+    char token[32];
+    char param[64];
+
+    sscanf(line, "%s", token);
+    WriteToMessageLog(line);
+
+    if (strcmp(token, "PALETTE") == 0) {
+        sscanf(line, "%s %s", token, param);
+        if (palette == 0) {
+            palette = new Palette();
+            palette->Load(CDData_FormatPath(param));
+        }
+    } else if (strcmp(token, "AMBIENT") == 0) {
+        if (ambient == 0) {
+            ambient = new SpriteList();
+        }
+        Parser::ProcessFile(ambient, this, 0);
+    } else if (strcmp(token, "HOTSPOT") == 0) {
+        Hotspot* hs = new Hotspot();
+        hotspots[hotspotCount] = hs;
+        Parser::ProcessFile(hs, this, 0);
+        hotspotCount++;
+    } else if (strcmp(token, "END") == 0) {
+        return 1;
+    } else {
+        return Parser::LBLParse("SearchScreen");
+    }
+
+    return 0;
 }
