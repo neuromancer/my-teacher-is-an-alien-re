@@ -15,6 +15,8 @@ public:
   int paletteEnd;   // 0x9c
   int field_0xa0;   // 0xa0
   int field_0xa4;   // 0xa4
+  int field_0xa8;   // 0xa8
+  int field_0xac;   // 0xac
   
   EngineInfoParser(); // 0x416BD0
   virtual ~EngineInfoParser(); // 0x416CD0
@@ -22,7 +24,13 @@ public:
 
   void ParseAnchor(char* line); // 0x416FD0
   void ParseDimensions(char* line); // 0x417000
+  void FUN_00416F70(char* line, int arg2); // 0x416F70
+  void FUN_00417130(char* line); // 0x417130
+  void FUN_00417030(char* line, int index); // 0x417030
+  void FUN_00417170(char* line); // 0x417170
 };
+
+void FUN_00418B30(const char* name);
 
 class Viewport {
 public:
