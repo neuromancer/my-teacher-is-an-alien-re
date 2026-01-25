@@ -84,4 +84,28 @@ public:
   StateManager() {}
 };
 
+class Target : public Parser {
+public:
+    Target(); // 0x413DC0
+    virtual ~Target(); // 0x413F10
+    
+    char data_88[0x60]; // 0x88 - 0xE8
+    int id;             // 0xE8
+    char data_EC[0x158 - 0xEC];
+
+    void Init(char* line); // 0x4145E0
+};
+
+class TargetList : public Parser {
+public:
+    int count; // 0x88
+    Target* targets[73]; // 0x8c
+    void* field_0x1B0; // 0x1B0
+    int field_0x1B4[5]; // 0x1B4-0x1C7
+
+    TargetList(); // 0x414D80
+    virtual ~TargetList(); // 0x414DF0
+    virtual int LBLParse(char* line); // 0x414FD0
+};
+
 #endif // ENGINE_SUBSYSTEMS_H
