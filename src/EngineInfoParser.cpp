@@ -93,8 +93,8 @@ void EngineInfoParser::ParseDimensions(char *line) {
 void EngineInfoParser::FUN_00417030(char *line, int index) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-
-  void *sound = g_SoundList_00435f1c->Register(buffer);
+  return;
+  void *sound = 0; //g_SoundList_00435f1c->Register(buffer);
   
   if (index > 5) {
     ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);
@@ -126,7 +126,7 @@ void EngineInfoParser::FUN_00417030(char *line, int index) {
 void EngineInfoParser::FUN_00417130(char *line) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-  g_EnginePalette->Load(FUN_004195c0(buffer));
+  //g_EnginePalette->Load(FUN_004195c0(buffer));
 }
 
 /* Function start: 0x417170 */
