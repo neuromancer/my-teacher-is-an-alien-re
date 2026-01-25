@@ -63,6 +63,18 @@ HWND DAT_0043de7c = 0;
 int DAT_0043bdf0 = 0; 
 char DAT_00435ef4 = 'A';  // Original has 0x41
 
+SolutionEntry g_SolutionData_00435b88[9] = {
+    {{1, 4, 6}, 0},
+    {{2, 4, 6}, 0},
+    {{0, 5, 8}, 1},
+    {{1, 3, 8}, 1},
+    {{2, 3, 8}, 1},
+    {{0, 4, 0}, 2},
+    {{0, 4, 6}, 2},
+    {{0, 4, 7}, 2},
+    {{0, 4, 8}, 2}
+};
+
 // Engine parser subsystem globals (0x435f00 - 0x435f28)
 Parser* DAT_00435f00 = 0;  // ENGINE_INFO parser
 Parser* DAT_00435f04 = 0;  // Console parser
@@ -112,6 +124,9 @@ int DAT_0043d564 = 0;
 int DAT_0043d558 = 0;
 char DAT_0043d560 = 0;
 int DAT_0043bc88 = 1;  // Time seed (original has 1)
+GlyphRect g_PuzzleRects1_0043d068[9];
+char DAT_0043d0f8 = 0;
+GlyphRect g_PuzzleRects2_0043d100[3];
 int DAT_0043d130 = 0;  // Game state save area
 int DAT_0043d134 = 0;  // Game state save area
 int DAT_0043d138 = 0;  // Game state save area

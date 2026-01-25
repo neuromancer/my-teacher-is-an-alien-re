@@ -3,6 +3,7 @@
 #include <windows.h>
 #include "Timer.h"
 #include "ZBufferManager.h"
+#include "GlyphRect.h"
 
 class VBuffer;
 class GameState;
@@ -371,9 +372,13 @@ extern Character* DAT_00435a78; // susan character
 extern Character* DAT_00435a7c; // duncan character
 extern int DAT_00435a80; // { /* 4 bytes */ }
 extern FlagArray* g_Manager_00435a84; // 00435a84
-// extern int DAT_00435b88; // { /* 4 bytes */ }
-// extern int DAT_00435b8c; // { /* 4 bytes */ }
-// extern int DAT_00435b94; // { /* 4 bytes */ }
+
+struct SolutionEntry {
+    int buttonIndices[3];
+    int result;
+};
+
+extern SolutionEntry g_SolutionData_00435b88[9];
 extern Engine* g_CombatEngine; // 00435eb0 - Combat engine (EngineB subclass)
 // extern char DAT_00435ef0; // { /* 1 bytes */ }
 // extern char DAT_00435ef1; // { /* 1 bytes */ }
@@ -732,23 +737,8 @@ extern int DAT_0043c8c8; // DAT_0043c8c8  { /* 4 bytes */ }
 // extern short DAT_0043cd20; // { /* 2 bytes */ }
 // extern char DAT_0043cd22; // { /* 1 bytes */ }
 // extern int DAT_0043cd24; // { /* 4 bytes */ }
-// extern int DAT_0043d068; // { /* 4 bytes */ }
-// extern int DAT_0043d06c; // { /* 4 bytes */ }
-// extern int DAT_0043d070; // { /* 4 bytes */ }
-// extern int DAT_0043d074; // { /* 4 bytes */ }
-// extern int DAT_0043d078; // { /* 4 bytes */ }
-// extern int DAT_0043d07c; // { /* 4 bytes */ }
-// extern int DAT_0043d080; // { /* 4 bytes */ }
-// extern int DAT_0043d084; // { /* 4 bytes */ }
-// extern char DAT_0043d0f8; // { /* 1 bytes */ }
-// extern int DAT_0043d100; // { /* 4 bytes */ }
-// extern int DAT_0043d104; // { /* 4 bytes */ }
-// extern int DAT_0043d108; // { /* 4 bytes */ }
-// extern int DAT_0043d10c; // { /* 4 bytes */ }
-// extern int DAT_0043d110; // { /* 4 bytes */ }
-// extern int DAT_0043d114; // { /* 4 bytes */ }
-// extern int DAT_0043d118; // { /* 4 bytes */ }
-// extern int DAT_0043d11c; // { /* 4 bytes */ }
+extern GlyphRect g_PuzzleRects1_0043d068[9];
+extern GlyphRect g_PuzzleRects2_0043d100[3];
 extern int DAT_0043d130; // Game state save area
 extern int DAT_0043d134; // Game state save area
 extern int DAT_0043d138; // Game state save area
@@ -758,7 +748,7 @@ extern int DAT_0043d13c; // Game state save area
 // extern int DAT_0043d150; // { /* 4 bytes */ }
 // extern int DAT_0043d558; // { /* 4 bytes */ }
 extern int DAT_0043d55c; // DAT_0043d55c  { /* 4 bytes */ }
-// extern char DAT_0043d560; // { /* 1 bytes */ }
+extern char DAT_0043d560; // { /* 1 bytes */ }
 extern char DAT_0043d568[]; // DAT_0043d568  { /* 1 bytes */ }
 // extern int DAT_0043d5b0; // { /* 4 bytes */ }
 // extern int DAT_0043d5b4; // { /* 4 bytes */ }

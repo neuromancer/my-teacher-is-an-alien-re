@@ -241,31 +241,31 @@ int Handler4::HandleMessage(SC_Message* msg) {
 
     int i = 0;
     int* pFloorState = floorStates;
-    GlyphRect* pRect = (GlyphRect*)0x43d100;
+    GlyphRect* pRect = g_PuzzleRects2_0043d100;
     
     do {
         if (*pFloorState != 0) {
             InputState* pM = g_InputManager_00436968->pMouse;
-            int curX, curY;
-            if (pM == (void*)0) {
-                curY = 0;
-                curX = 0;
-            } else {
+            int curY = 0;
+            if (pM != (void*)0) {
                 curY = pM->y;
+            }
+            int curX = 0;
+            if (pM != (void*)0) {
                 curX = pM->x;
             }
 
             if (pRect->left <= curX && curX <= pRect->right &&
                 pRect->top <= curY && curY <= pRect->bottom) {
                 
-                if (pRect == (GlyphRect*)0x43d100) {
+                if (pRect == g_PuzzleRects2_0043d100) {
                     ResetPuzzle();
                 }
                 
                 msg->targetAddress = 8;
                 msg->sourceAddress = (i < 1) ? 2 : 3;
                 
-                if (pRect == (GlyphRect*)0x43d100) {
+                if (pRect == g_PuzzleRects2_0043d100) {
                     msg->command = 10;
                     msg->data = 1;
                 } else {
@@ -278,7 +278,7 @@ int Handler4::HandleMessage(SC_Message* msg) {
         pRect++;
         pFloorState++;
         i++;
-    } while ((int)pRect < 0x43d130);
+    } while ((unsigned int)pRect < (unsigned int)&g_PuzzleRects2_0043d100[3]);
 
     return 1;
 }
@@ -452,7 +452,7 @@ void Handler4::OnClick(int x, int y) {
     }
 
     if (rect3.left <= x && x <= rect3.right && rect3.top <= y && y <= rect3.bottom) {
-        GlyphRect* pRect = (GlyphRect*)0x43d068;
+        GlyphRect* pRect = g_PuzzleRects1_0043d068;
         for (int i = 0; i < 9; i++) {
             if (pRect->left <= x && x <= pRect->right && pRect->top <= y && y <= pRect->bottom) {
                 OnButtonClick(i);
@@ -467,13 +467,13 @@ void Handler4::OnClick(int x, int y) {
         PlaySound(3, 1);
     } else {
         if (rect1.left <= x && x <= rect1.right && rect1.top <= y && y <= rect1.bottom) {
-            GlyphRect* pFlt = (GlyphRect*)0x43d100;
-            do {
+            GlyphRect* pFlt = g_PuzzleRects2_0043d100;
+            for (int i = 0; i < 3; i++) {
                 if (pFlt->left <= x && x <= pFlt->right && pFlt->top <= y && y <= pFlt->bottom) {
                     PlaySound(1, 1);
                 }
                 pFlt++;
-            } while ((int)pFlt < 0x43d130);
+            }
 
             if ((rect4.left <= x && x <= rect4.right && rect4.top <= y && y <= rect4.bottom) ||
                 (rect5.left <= x && x <= rect5.right && rect5.top <= y && y <= rect5.bottom)) {
@@ -506,39 +506,51 @@ void Handler4::OnButtonClick(int buttonIndex) {
 
 /* Function start: 0x40F220 */
 int Handler4::CheckSolution() {
-    extern int DAT_00435b88[1]; // Solution mapping start
-    int* pSol = (int*)0x435b88;
+    SolutionEntry* pEntry = g_SolutionData_00435b88;
     
     floorStates[0] = 0;
     floorStates[1] = 0;
     floorStates[2] = 0;
 
-    int j;
+    int iVar7 = 0;
     while (1) {
-        int tempStates[9];
-        for (j = 0; j < 9; j++) tempStates[j] = 0;
+        int local_24[9];
+        int j = 9;
+        int* pT = local_24;
+        do {
+            *pT = 0;
+            pT++;
+            j--;
+        } while (j != 0);
         
-        for (j = 0; j < 3; j++) {
-            tempStates[pSol[j]] = 1;
-        }
+        j = 3;
+        int* pS = pEntry->buttonIndices;
+        do {
+            local_24[*pS] = 1;
+            pS++;
+            j--;
+        } while (j != 0);
 
         puzzleSolved = 1;
-        for (j = 0; j < 9; j++) {
-            if (buttonStates[j] != tempStates[j]) {
+        int* pV = local_24;
+        int* pP = (int*)&buttonStates[0];
+        do {
+            if (*pP != *pV) {
                 puzzleSolved = 0;
-                break;
             }
-        }
+            pV++;
+            pP++;
+        } while (pV < &local_24[9]);
 
         if (puzzleSolved != 0) break;
         
-        pSol += 4;
-        if (pSol > (int*)0x435c17) {
+        pEntry++;
+        iVar7++;
+        if (iVar7 >= 9) {
             return -1;
         }
     }
 
-    int iVar7 = ((int)pSol - 0x435b88) / 16;
     int floorIdx;
     if (iVar7 < 2) {
         floorIdx = 0;
@@ -551,5 +563,5 @@ int Handler4::CheckSolution() {
     int soundIdx = (iVar7 < 2) ? 5 : 2;
     PlaySound(soundIdx, 1);
     
-    return ((int*)0x435b94)[iVar7 * 4];
+    return pEntry->result;
 }
