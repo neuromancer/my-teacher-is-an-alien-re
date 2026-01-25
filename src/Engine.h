@@ -87,6 +87,7 @@ public:
 
   // Non-virtual methods
   void StopAndCleanup();  // 0x411320
+  void FUN_00411230();    // 0x411230
 };
 
 #endif // ENGINE_H

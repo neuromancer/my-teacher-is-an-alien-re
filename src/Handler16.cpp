@@ -12,6 +12,8 @@
 #include "VBuffer.h"
 #include "DrawEntry.h"
 #include "Engine.h"
+#include "EngineA.h"
+#include "EngineB.h"
 
 // Forward declarations for queue management (from Handler8.cpp)
 struct MessageQueueItem;
@@ -382,4 +384,36 @@ void Handler16::ProcessMessage()
         return;
     }
     SC_Message_Send(Handler16::field_90, Handler16::field_94, Handler16::handlerId, Handler16::field_8C, 5, 0, 0, 0, 0, 0);
+}
+
+/* Function start: 0x410E80 */
+int Handler16::LBLParse(char* line) {
+    char label[32];
+    char moduleType[32];
+
+    if (sscanf(line, "%s", label) != 1) {
+        return 0;
+    }
+
+    if (strcmp(label, "MODULE") == 0) {
+        if (sscanf(line, "%s %s", label, moduleType) == 2) {
+            if (strcmp(moduleType, "A") == 0) {
+                g_CombatEngine = new EngineB();
+            } else if (strcmp(moduleType, "B") == 0) {
+                g_CombatEngine = new EngineA();
+            } else {
+                Parser::LBLParse("SC_Combat1");
+            }
+        }
+        Parser::ProcessFile(g_CombatEngine, this, 0);
+        g_CombatEngine->FUN_00411230();
+        return 0;
+    }
+
+    if (strcmp(label, "END") == 0) {
+        return 1;
+    }
+
+    Parser::LBLParse("SC_Combat1");
+    return 0;
 }
