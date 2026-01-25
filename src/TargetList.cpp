@@ -1,8 +1,7 @@
 #include "EngineSubsystems.h"
 #include <stdio.h>
 #include <string.h>
-
-extern "C" int _stricmp(const char*, const char*);
+#include <stdlib.h>
 
 /* Function start: 0x414D80 */
 TargetList::TargetList() : Parser() {
@@ -11,11 +10,54 @@ TargetList::TargetList() : Parser() {
 
 /* Function start: 0x414DF0 */
 TargetList::~TargetList() {
-  // vtable is set to 0x431498 by the compiler in the destructor
-  for (int i = 0; i < count; i++) {
-    if (targets[i]) {
-      delete targets[i];
+  TargetList* self = this;
+  while (self->count > 0) {
+    self->count--;
+    Target* t = self->targets[self->count];
+    if (t) {
+      delete t;
+      self->targets[self->count] = (Target*)0;
     }
+    self->targets[self->count] = (Target*)0;
+  }
+
+  HashTable* ht = self->hashTable;
+  if (ht) {
+    if (ht->buckets) {
+      int* buckets = ht->buckets;
+      int n = ht->numBuckets;
+      if (n > 0) {
+        do {
+          HashNode* node = (HashNode*)*buckets;
+          if (node) {
+            do {
+              int i = 0;
+              while (i--) {}
+              i = 0;
+              while (i--) {}
+              node = node->next;
+            } while (node);
+          }
+          buckets++;
+          n--;
+        } while (n);
+      }
+      free(ht->buckets);
+    }
+    ht->buckets = 0;
+    ht->count = 0;
+    ht->freeList = 0;
+    HashNode* pool = (HashNode*)ht->nodePool;
+    if (pool) {
+      do {
+        HashNode* next = pool->next;
+        free(pool);
+        pool = next;
+      } while (pool);
+    }
+    ht->nodePool = 0;
+    free(ht);
+    self->hashTable = 0;
   }
 }
 
@@ -41,7 +83,7 @@ int TargetList::LBLParse(char* line) {
     ProcessFile(targets[currentCount], this, NULL);
     return 0;
   } else {
-    if (_stricmp(type, "END") == 0) {
+    if (stricmp(type, "END") == 0) {
       return 1;
     }
     Parser::LBLParse((char*)"TargetList");

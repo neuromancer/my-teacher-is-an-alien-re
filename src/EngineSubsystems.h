@@ -2,6 +2,7 @@
 #define ENGINE_SUBSYSTEMS_H
 
 #include "Parser.h"
+#include "HashTable.h"
 
 // Stub classes for Engine subsystems (sizes match original)
 
@@ -100,7 +101,7 @@ class TargetList : public Parser {
 public:
     int count; // 0x88
     Target* targets[73]; // 0x8c
-    void* field_0x1B0; // 0x1B0
+    HashTable* hashTable; // 0x1B0
     int field_0x1B4[5]; // 0x1B4-0x1C7
 
     TargetList(); // 0x414D80
