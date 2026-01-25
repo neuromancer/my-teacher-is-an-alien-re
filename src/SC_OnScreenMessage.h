@@ -3,6 +3,7 @@
 
 #include "Handler.h"
 #include "Timer.h"
+#include "Memory.h"
 
 // MessageNode for linked list items
 // Layout: prev(0), next(4), data(8)
@@ -17,7 +18,15 @@ struct MessageNode {
         next = 0;
     }
 
-    MessageNode* Destroy(int flag);      // 0x40C580
+    MessageNode* Destroy(int flag) {
+        data = 0;
+        prev = 0;
+        next = 0;
+        if (flag & 1) {
+            FreeMemory(this);
+        }
+        return this;
+    }
     MessageNode* Init(void* nodeData);   // 0x40C5B0
 };
 

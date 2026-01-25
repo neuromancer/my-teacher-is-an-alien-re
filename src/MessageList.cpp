@@ -60,60 +60,47 @@ void MessageList::InsertBeforeCurrent(void* data)
 /* Function start: 0x40C500 */
 void* MessageList::PopCurrent()
 {
-    MessageNode* curr;
-    MessageNode* next;
-    void* data;
+    MessageNode* node;
+    void* result;
+    int zero;
 
-    curr = (MessageNode*)MessageList::current;
-    if (curr == 0) {
+    node = (MessageNode*)current;
+    if (node == 0) {
         return 0;
     }
 
-    if (MessageList::head == curr) {
-        MessageList::head = curr->next;
+    if (head == node) {
+        head = node->next;
     }
 
-    if (MessageList::tail == MessageList::current) {
-        MessageList::tail = ((MessageNode*)MessageList::current)->prev;
+    if (tail == node) {
+        tail = node->prev;
     }
 
-    curr = (MessageNode*)MessageList::current;
-    if (curr->prev != 0) {
-        curr->prev->next = curr->next;
+    if (node->prev != 0) {
+        node->prev->next = node->next;
     }
 
-    curr = (MessageNode*)MessageList::current;
-    next = curr->next;
-    if (next != 0) {
-        next->prev = curr->prev;
+    if (((MessageNode*)current)->next != 0) {
+        ((MessageNode*)current)->next->prev = ((MessageNode*)current)->prev;
     }
 
-    curr = (MessageNode*)MessageList::current;
-    data = 0;
-    if (curr != 0) {
-        data = curr->data;
-        curr->data = 0;
-        curr->prev = 0;
-        curr->next = 0;
-        FreeMemory(curr);
-        MessageList::current = 0;
+    node = (MessageNode*)current;
+    result = 0;
+    if (node != 0) {
+        result = node->data;
     }
 
-    MessageList::current = MessageList::head;
-    return data;
+    if (node != 0) {
+        node->Destroy(1);
+        current = 0;
+    }
+
+    current = head;
+    return result;
 }
 
-/* Function start: 0x40C580 */
-MessageNode* MessageNode::Destroy(int flag)
-{
-    MessageNode::data = 0;
-    MessageNode::prev = 0;
-    MessageNode::next = 0;
-    if (flag & 1) {
-        FreeMemory(this);
-    }
-    return this;
-}
+
 
 /* Function start: 0x40C5B0 */
 MessageNode* MessageNode::Init(void* nodeData)
