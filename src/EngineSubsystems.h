@@ -50,12 +50,6 @@ public:
     void SetCenterY(int y);           // 0x412D00
 };
 
-class SceneManager {
-public:
-  char data[0x1c8];
-  SceneManager() {}
-};
-
 class SpriteManager {
 public:
   char data[0xb8];
@@ -128,6 +122,7 @@ public:
     virtual int LBLParse(char* line); // 0x414930
 
     void Init(char* line); // 0x4145E0
+    void ParseSound(char* line); // 0x414690
 };
 
 class TargetList : public Parser {
@@ -140,6 +135,7 @@ public:
     TargetList(); // 0x414D80
     virtual ~TargetList(); // 0x414DF0
     virtual int LBLParse(char* line); // 0x414FD0
+    virtual void OnProcessEnd(); // 0x414F30
 };
 
 #endif // ENGINE_SUBSYSTEMS_H

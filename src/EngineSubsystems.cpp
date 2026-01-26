@@ -2,12 +2,14 @@
 #include "globals.h"
 #include "Sprite.h"
 #include "Memory.h"
+#include "SoundList.h"
+#include "string.h"
 #include <string.h>
 #include <stdio.h>
 
 extern CDData* g_CDData_0043697c;
 extern int FUN_00421f90(void* cdData, char* param);
-extern void FUN_00414690(void* obj, char* line);
+extern void ShowError(const char* message, ...);
 
 // ============================================================================
 // Target implementation
@@ -78,6 +80,36 @@ void Target::Init(char* line)
             Target::field_0xe0 = (char*)AllocateMemory(len);
             memcpy(Target::field_0xe0, src, len);
         }
+    }
+}
+
+/* Function start: 0x414690 */
+void Target::ParseSound(char* line)
+{
+    char buffer[128];
+    int index;
+    int sound;
+
+    sscanf(line + 3, "%s", buffer);
+    index = line[1] - '0';
+    sound = (int)g_SoundList_00435f1c->Register(buffer);
+
+    switch (index) {
+    case 0:
+        Target::field_0x130 = (void*)sound;
+        break;
+    case 1:
+        Target::field_0x134 = sound;
+        break;
+    case 2:
+        Target::field_0x138 = sound;
+        break;
+    case 3:
+        Target::field_0x13c = sound;
+        break;
+    default:
+        ShowError("TargetScene::ParseSound() - Undefined sound type => %s", line);
+        break;
     }
 }
 
@@ -168,7 +200,7 @@ int Target::LBLParse(char* line)
         sscanf(line + 3, "%d %d", &Target::field_0xfc, &Target::field_0x100);
     }
     else if (firstChar == 'S') {
-        FUN_00414690(this, line);
+        Target::ParseSound(line);
     }
     else if (firstChar == 'V') {
         sscanf(line + 3, "%d", &Target::field_0x10c);

@@ -1,4 +1,5 @@
 #include "EngineSubsystems.h"
+#include "Memory.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -90,4 +91,14 @@ int TargetList::LBLParse(char* line) {
   }
 
   return 0;
+}
+
+/* Function start: 0x414F30 */
+void TargetList::OnProcessEnd() {
+  HashTable* ht;
+
+  if (TargetList::count != 0) {
+    ht = new HashTable(TargetList::count);
+    TargetList::hashTable = ht;
+  }
 }

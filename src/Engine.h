@@ -8,7 +8,7 @@ class mCNavigator;
 class SoundList;
 class Palette;
 class EngineInfoParser;
-class SceneManager;
+class TargetList;
 class SpriteManager;
 class DialogManager;
 class InputHandler;
@@ -34,7 +34,7 @@ public:
   // Parser fields end at 0x88
   // Engine fields start at 0x88
 
-  SceneManager* m_sceneManager;     // 0x88 - scene/level manager (size 0x1c8)
+  TargetList* m_targetList;         // 0x88 - target list manager (size 0x1c8)
   EngineInfoParser* m_engineInfoParser; // 0x8c - engine info parser (size 0xa8)
   int field_0x90;                   // 0x90
   DialogManager* m_dialogManager;   // 0x94 - dialog/text manager (size 0x2c)

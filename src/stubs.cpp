@@ -40,7 +40,6 @@ void CleanupObjectArray(void* a, int b) {}
 
 // Target helper stubs
 int FUN_00421f90(void* cdData, char* param) { return 0; }
-void FUN_00414690(void* obj, char* line) {}
 
 // ============================================================================
 // Global variables needed for linking

@@ -81,7 +81,7 @@ Engine::Engine() {
   pcc[0] = 0;
   pcc[1] = 0;
 
-  memset(&m_sceneManager, 0, 0x60);
+  memset(&m_targetList, 0, 0x60);
 
   int result = GetCurrentTimestamp(0);
   SetTimeSeed(result);
@@ -166,7 +166,7 @@ void Engine::Initialize() {
   Engine::m_navigator = new mCNavigator();
   Engine::m_timerManager = new Palette();
   Engine::m_inputHandler = new InputHandler();
-  Engine::m_sceneManager = new SceneManager();
+  Engine::m_targetList = new TargetList();
   Engine::m_cursorManager = new CursorManager();
   Engine::m_dialogManager = new DialogManager();
   Engine::m_stateManager = new StateManager();
