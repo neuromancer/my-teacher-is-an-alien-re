@@ -738,6 +738,7 @@ extern int DAT_0043c8c8; // DAT_0043c8c8  { /* 4 bytes */ }
 // extern char DAT_0043cd22; // { /* 1 bytes */ }
 // extern int DAT_0043cd24; // { /* 4 bytes */ }
 extern GlyphRect g_PuzzleRects1_0043d068[9];
+extern char DAT_0043d0f8;
 extern GlyphRect g_PuzzleRects2_0043d100[3];
 extern int DAT_0043d130; // Game state save area
 extern int DAT_0043d134; // Game state save area
