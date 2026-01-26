@@ -28,38 +28,39 @@ EngineInfoParser::~EngineInfoParser() {
 
 /* Function start: 0x416D70 */
 int EngineInfoParser::LBLParse(char* line) {
+  char secondChar;
+  char firstChar;
   char label[32];
-  
+
+  secondChar = ';';
   sscanf(line, " %s ", label);
+  sscanf(label, "%c%c", &firstChar, &secondChar);
 
   if (strcmp(label, "END") == 0) {
     return 1;
   }
 
-  if (label[0] == 'A') {
+  if (firstChar == 'A') {
     ParseAnchor(line + 3);
-  } else if (label[0] == 'C') {
+  } else if (firstChar == 'C') {
     sscanf(line + 3, "%d", &field_0xa8);
-  } else if (label[0] == 'D') {
+  } else if (firstChar == 'D') {
     sscanf(line + 3, "%d", &field_0xac);
-  } else if (label[0] == 'O') {
-    FUN_00416F70(line + 3, *(int*)&label[1]);
-  } else if (label[0] == 'P') {
+  } else if (firstChar == 'O') {
+    ParseOffset(line + 3, secondChar);
+  } else if (firstChar == 'P') {
     sscanf(line + 3, "%d %d", &paletteStart, &paletteEnd);
-  } else if (label[0] == 'Q') {
+  } else if (firstChar == 'Q') {
     sscanf(line + 3, "%d %d", &field_0xa0, &field_0xa4);
-  } else if (label[0] == 'R') {
-    FUN_00417130(line + 3);
-  } else if (label[0] == 'S') {
-    FUN_00417030(line + 3, label[1] - '0');
-  } else if (label[0] == 'T') {
-    FUN_00417170(line + 1);
-  } else if (label[0] == 'V') {
+  } else if (firstChar == 'R') {
+    ParsePalette(line + 3);
+  } else if (firstChar == 'S') {
+    ParseSound(line + 3, secondChar - '0');
+  } else if (firstChar == 'T') {
+    ParseText(line + 1);
+  } else if (firstChar == 'V') {
     ParseDimensions(line + 3);
   } else {
-    if (label[0] == '\0') {
-      return 1;
-    }
     Parser::LBLParse("MapScene");
   }
 
@@ -69,7 +70,7 @@ int EngineInfoParser::LBLParse(char* line) {
 extern "C" char *FUN_004195c0(char *filename);
 
 /* Function start: 0x416F70 */
-void EngineInfoParser::FUN_00416F70(char *line, int arg2) {
+void EngineInfoParser::ParseOffset(char *line, int arg2) {
   if ((char)arg2 == '1') {
     sscanf(line, "%d %d", &g_CombatEngine->field_0xc8,
            &g_CombatEngine->field_0xd0);
@@ -90,44 +91,43 @@ void EngineInfoParser::ParseDimensions(char *line) {
 }
 
 /* Function start: 0x417030 */
-void EngineInfoParser::FUN_00417030(char *line, int index) {
+void EngineInfoParser::ParseSound(char *line, int index) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-  return;
-  void *sound = 0; //g_SoundList_00435f1c->Register(buffer);
-  
-  if (index > 5) {
+  int sound = (int)g_SoundList_00435f1c->Register(buffer);
+
+  switch (index) {
+  case 0:
+    g_CombatEngine->field_0xe0 = sound;
+    break;
+  case 1:
+    *(int *)((char *)DAT_00435f14 + 0xa4) = sound;
+    break;
+  case 2:
+    *(int *)((char *)DAT_00435f0c + 0x1b4) = sound;
+    break;
+  case 3:
+    *(int *)((char *)DAT_00435f0c + 0x1b8) = sound;
+    break;
+  case 4:
+    *(int *)((char *)DAT_00435f0c + 0x1bc) = sound;
+    break;
+  case 5:
+    *(int *)((char *)DAT_00435f0c + 0x1c0) = sound;
+    break;
+  default:
     ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);
-  } else {
-    switch (index) {
-    case 0:
-      g_CombatEngine->field_0xe0 = (int)sound;
-      break;
-    case 1:
-      *(void **)((char *)DAT_00435f14 + 0xa4) = sound;
-      break;
-    case 2:
-      *(void **)((char *)DAT_00435f0c + 0x1b4) = sound;
-      break;
-    case 3:
-      *(void **)((char *)DAT_00435f0c + 0x1b8) = sound;
-      break;
-    case 4:
-      *(void **)((char *)DAT_00435f0c + 0x1bc) = sound;
-      break;
-    case 5:
-      *(void **)((char *)DAT_00435f0c + 0x1c0) = sound;
-      break;
-    }
+    break;
   }
 }
 
 /* Function start: 0x417130 */
-void EngineInfoParser::FUN_00417130(char *line) {
+void EngineInfoParser::ParsePalette(char *line) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-  //g_EnginePalette->Load(FUN_004195c0(buffer));
+  g_EnginePalette->Load(FUN_004195c0(buffer));
 }
 
 /* Function start: 0x417170 */
-void EngineInfoParser::FUN_00417170(char *line) {}
+void EngineInfoParser::ParseText(char *line) {
+}

@@ -23,12 +23,12 @@ public:
   virtual ~EngineInfoParser(); // 0x416CD0
   virtual int LBLParse(char* line); // 0x416D70
 
+  void ParseOffset(char* line, int arg2); // 0x416F70
   void ParseAnchor(char* line); // 0x416FD0
   void ParseDimensions(char* line); // 0x417000
-  void FUN_00416F70(char* line, int arg2); // 0x416F70
-  void FUN_00417130(char* line); // 0x417130
-  void FUN_00417030(char* line, int index); // 0x417030
-  void FUN_00417170(char* line); // 0x417170
+  void ParseSound(char* line, int index); // 0x417030
+  void ParsePalette(char* line); // 0x417130
+  void ParseText(char* line); // 0x417170
 };
 
 class Viewport {
