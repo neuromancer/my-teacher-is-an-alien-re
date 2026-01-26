@@ -26,7 +26,7 @@
 #include "Handler11.h"
 #include "Handler.h"
 #include "Handler13.h"
-#include "Handler14.h"
+#include "SC_Sound.h"
 #include "SC_OnScreenMessage.h"
 #include "SC_Combat1.h"
 #include "SCI_Dialog.h"
@@ -899,7 +899,7 @@ Handler* CreateHandler(int command) {
         handler = new Handler13();
         break;
     case 14:
-        handler = new Handler14();
+        handler = new SC_Sound();
         break;
     case 15:
         handler = new SC_OnScreenMessage();

@@ -1,4 +1,4 @@
-#include "Handler14.h"
+#include "SC_Sound.h"
 #include "Memory.h"
 #include "Message.h"
 #include "globals.h"
@@ -8,7 +8,7 @@
 #include "SoundItem.h"
 
 /* Function start: 0x40B7E0 */
-Handler14::Handler14() {
+SC_Sound::SC_Sound() {
     // Set handlerId to 14
     handlerId = 14;
 
@@ -20,7 +20,7 @@ Handler14::Handler14() {
 }
 
 /* Function start: 0x40B910 */
-Handler14::~Handler14() {
+SC_Sound::~SC_Sound() {
     MessageList* pList;
     MessageNode* node;
     SoundItem* data;
@@ -77,7 +77,7 @@ Handler14::~Handler14() {
 }
 
 /* Function start: 0x40BAD0 */
-void Handler14::Init(SC_Message* msg) {
+void SC_Sound::Init(SC_Message* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
         field_8C = msg->data;
@@ -85,7 +85,7 @@ void Handler14::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x40BB10 */
-void Handler14::Draw(int param1, int param2) {
+void SC_Sound::Draw(int param1, int param2) {
     MessageList* pList;
     MessageNode* node;
     unsigned int uVar3;
@@ -170,18 +170,18 @@ void Handler14::Draw(int param1, int param2) {
 }
 
 /* Function start: 0x40BD10 */
-int Handler14::HandleMessage(SC_Message* msg) {
+int SC_Sound::HandleMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     WriteToMessageLog("SC_Sound::AddMessage");
     return 1;
 }
 
-int Handler14::Update(SC_Message* msg) {
+int SC_Sound::Update(SC_Message* msg) {
     return 0;
 }
 
 /* Function start: 0x40BD30 */
-int Handler14::Exit(SC_Message* msg) {
+int SC_Sound::Exit(SC_Message* msg) {
     MessageList* pList;
     MessageNode* node;
     SoundItem* eventData;
@@ -310,7 +310,7 @@ int Handler14::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x40C0E0 */
-SoundItem* Handler14::FindOrCreateSound(int soundId)
+SoundItem* SC_Sound::FindOrCreateSound(int soundId)
 {
     MessageList* pList;
     MessageNode* currNode;
@@ -320,7 +320,7 @@ SoundItem* Handler14::FindOrCreateSound(int soundId)
     MessageNode* newNode;
     int currData;
 
-    pList = Handler14::list;
+    pList = SC_Sound::list;
     currData = (int)pList->head;
     if (currData != 0) {
         pList->current = pList->head;

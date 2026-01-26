@@ -1,5 +1,5 @@
-#ifndef HANDLER14_H
-#define HANDLER14_H
+#ifndef SC_SOUND_H
+#define SC_SOUND_H
 
 #include "Handler.h"
 #include "Timer.h"
@@ -7,7 +7,7 @@
 
 class SoundItem;
 
-// Handler14 - SC_Sound handler class with ID 14
+// SC_Sound - Sound handler class with ID 14
 // Size: 0xB8 bytes
 // vtable: 0x431240
 // Constructor: 0x40B7E0
@@ -18,10 +18,10 @@ class SoundItem;
 //   0x88-0x9F: Handler fields (handlerId + 5 fields, zeroed)
 //   0xA0-0xB3: Timer timer (size 0x14)
 //   0xB4: MessageList* list
-class Handler14 : public Handler {
+class SC_Sound : public Handler {
 public:
-    Handler14();
-    ~Handler14();
+    SC_Sound();
+    ~SC_Sound();
 
     // Virtual method overrides
     virtual void Init(SC_Message* msg);
@@ -33,9 +33,9 @@ public:
     // Find or create SoundItem in the list
     SoundItem* FindOrCreateSound(int soundId);
 
-    // Handler14-specific fields starting at 0xA0
+    // SC_Sound-specific fields starting at 0xA0
     Timer timer;            // 0xA0 - 0xB3 (size 0x14)
     MessageList* list;      // 0xB4
 };
 
-#endif // HANDLER14_H
+#endif // SC_SOUND_H
