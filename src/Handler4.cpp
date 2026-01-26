@@ -311,12 +311,12 @@ void Handler4::Update(int param1, int param2) {
     }
 
     DisplayButtons();
-    DisplayPaths();
+    DisplayMap();
     if (litdoors != 0) {
         DisplayLitDoors();
     }
     if (initialized != 0) {
-        DisplayFloors();
+        DisplayThisFloorRow();
     }
 
     g_Mouse_00436978->DrawCursor();
@@ -381,7 +381,7 @@ void Handler4::DisplayButtons() {
 }
 
 /* Function start: 0x40F4F0 */
-void Handler4::DisplayPaths() {
+void Handler4::DisplayMap() {
     if (paths1 == 0 || paths2 == 0 || paths3 == 0) {
         WriteToMessageLog("Error in SCIpuzz1.cpp - DisplayMap()");
     }
@@ -407,7 +407,7 @@ void Handler4::DisplayLitDoors() {
 }
 
 /* Function start: 0x40F5F0 */
-void Handler4::DisplayFloors() {
+void Handler4::DisplayThisFloorRow() {
     int floorRow[3];
     int i;
     floorRow[0] = -1;

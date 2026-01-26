@@ -1,4 +1,4 @@
-#include "Handler5.h"
+#include "SearchScreen.h"
 #include "globals.h"
 #include "string.h"
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 #include "ZBufferManager.h"
 
 /* Function start: 0x40FB80 */
-Handler5::Handler5() {
+SearchScreen::SearchScreen() {
     // Handler base class zeros handlerId through field_9C via memset
     // Timer constructor called implicitly
 
@@ -27,7 +27,7 @@ Handler5::Handler5() {
     memset(&timer, 0, 0x14 * sizeof(int));
 
     handlerId = 5;
-    
+
     // Reset Timer
     timer.Reset();
 
@@ -52,7 +52,7 @@ Handler5::Handler5() {
 }
 
 /* Function start: 0x40FD70 */
-Handler5::~Handler5() {
+SearchScreen::~SearchScreen() {
     if (sprite) {
         delete sprite;
         sprite = 0;
@@ -60,15 +60,15 @@ Handler5::~Handler5() {
 }
 
 /* Function start: 0x40FE40 */
-void Handler5::Init(SC_Message* msg) {
-    Handler5::CopyCommandData(msg);
+void SearchScreen::Init(SC_Message* msg) {
+    SearchScreen::CopyCommandData(msg);
     if (msg != 0) {
         field_8C = msg->data;
     }
 }
 
 /* Function start: 0x40FE70 */
-int Handler5::ShutDown(SC_Message* msg) {
+int SearchScreen::ShutDown(SC_Message* msg) {
     if (sprite != 0) {
         sprite->StopAnimationSound();
     }
@@ -76,7 +76,7 @@ int Handler5::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x40FE90 */
-void Handler5::Update(int param1, int param2) {
+void SearchScreen::Update(int param1, int param2) {
     int idx;
     int local_1c[4];
     Sprite* spr;
@@ -91,7 +91,7 @@ void Handler5::Update(int param1, int param2) {
     if (timer.Update() > 10000) {
         SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
     }
-    
+
     if (handlerId == param2) {
         spr = sprite;
         if (spr != 0) {
@@ -131,14 +131,14 @@ void Handler5::Update(int param1, int param2) {
 }
 
 /* Function start: 0x4100E0 */
-int Handler5::AddMessage(SC_Message* msg) {
+int SearchScreen::AddMessage(SC_Message* msg) {
     int stateIdx;
     GameState* pGameState;
     int inRect;
     int clickX;
     int rowIdx;
 
-    Handler5::WriteMessageAddress(msg);
+    SearchScreen::WriteMessageAddress(msg);
 
     if (msg->field_b4 != 0) {
         if (msg->field_b4 == 0x44) {
@@ -213,15 +213,15 @@ int Handler5::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x4102E0 */
-int Handler5::Exit(SC_Message* msg) {
+int SearchScreen::Exit(SC_Message* msg) {
     int stateIdx;
-    
+
     if (msg->targetAddress != handlerId) {
         return 0;
     }
-    
+
     timer.Reset();
-    
+
     switch (msg->priority) {
     case 0:
         return 1;

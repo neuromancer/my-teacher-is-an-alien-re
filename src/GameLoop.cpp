@@ -19,7 +19,7 @@
 #include "Handler1.h"
 #include "Handler2.h"
 #include "Handler4.h"
-#include "Handler5.h"
+#include "SearchScreen.h"
 #include "Handler6.h"
 #include "Handler8.h"
 #include "SCI_AfterSchoolMenu.h"
@@ -875,7 +875,7 @@ Handler* CreateHandler(int command) {
         handler = new Handler4();
         break;
     case 5:
-        handler = new Handler5();
+        handler = new SearchScreen();
         break;
     case 6:
         handler = new Handler6();

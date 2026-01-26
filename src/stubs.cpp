@@ -84,3 +84,16 @@ void FUN_0041ff30(void* soundItem, char* soundName, unsigned int flags) {}
 
 // FUN_0041fb70 - SoundItem destructor
 void __fastcall FUN_0041fb70(void* soundItem) {}
+
+// ============================================================================
+// CombatSprite stubs
+// ============================================================================
+#include "CombatSprite.h"
+
+// SpriteHashTable method stubs
+void* SpriteHashTable::Lookup(int index, int* outSlot) { return 0; }
+void SpriteHashTable::Resize(int size, int flag) {}
+void* SpriteHashTable::AllocEntry() { return 0; }
+
+// CombatSprite method stubs
+void CombatSprite::ParseSpriteData(char* line) {}

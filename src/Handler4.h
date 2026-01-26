@@ -43,9 +43,9 @@ public:
     void OnButtonClick(int buttonIndex);
     int CheckSolution();
     void DisplayButtons();
-    void DisplayPaths();
+    void DisplayMap();
     void DisplayLitDoors();
-    void DisplayFloors();
+    void DisplayThisFloorRow();
     void PlaySound(int index, int loop);
 
     // Handler4-specific fields starting at 0x600
