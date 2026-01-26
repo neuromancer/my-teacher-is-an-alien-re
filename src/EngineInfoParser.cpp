@@ -6,6 +6,8 @@
 #include "SoundList.h"
 #include "Palette.h"
 
+extern "C" char* CDData_FormatPath(char* filename, ...);
+
 /* Function start: 0x416BD0 */
 EngineInfoParser::EngineInfoParser() : Parser() {
   anchorX = 0;
@@ -67,8 +69,6 @@ int EngineInfoParser::LBLParse(char* line) {
   return 0;
 }
 
-extern "C" char *FUN_004195c0(char *filename);
-
 /* Function start: 0x416F70 */
 void EngineInfoParser::ParseOffset(char *line, int arg2) {
   if ((char)arg2 == '1') {
@@ -125,7 +125,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
 void EngineInfoParser::ParsePalette(char *line) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-  g_EnginePalette->Load(FUN_004195c0(buffer));
+  g_EnginePalette->Load(CDData_FormatPath(buffer));
 }
 
 /* Function start: 0x417170 */
