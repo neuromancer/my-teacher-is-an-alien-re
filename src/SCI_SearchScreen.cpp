@@ -1,4 +1,4 @@
-#include "Handler11.h"
+#include "SCI_SearchScreen.h"
 #include "Parser.h"
 #include "SC_Question.h"
 #include "globals.h"
@@ -12,7 +12,7 @@
 extern "C" char* CDData_FormatPath(char* path, ...);
 
 /* Function start: 0x40ACC0 */
-Handler11::Handler11() {
+SCI_SearchScreen::SCI_SearchScreen() {
     Palette** ptr = &field_600;
     memset(ptr, 0, 0x12 * sizeof(int));
     handlerId = 0xb;
@@ -20,7 +20,7 @@ Handler11::Handler11() {
 }
 
 /* Function start: 0x40AD70 */
-Handler11::~Handler11() {
+SCI_SearchScreen::~SCI_SearchScreen() {
     Palette* pal;
     MouseControl* mouse;
     SC_Dialog* dialog;
@@ -55,7 +55,7 @@ Handler11::~Handler11() {
 }
 
 /* Function start: 0x40AE80 */
-void Handler11::Init(SC_Message* msg) {
+void SCI_SearchScreen::Init(SC_Message* msg) {
     WriteToMessageLog("\nENTER SEARCH SCREEN");
     IconBar::InitIconBar(msg);
     if (msg->param1 == 5) {
@@ -88,7 +88,7 @@ void Handler11::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x40AFD0 */
-int Handler11::ShutDown(SC_Message* msg) {
+int SCI_SearchScreen::ShutDown(SC_Message* msg) {
     int i;
 
     if (msg == 0 || msg->targetAddress != 9) {
@@ -128,7 +128,7 @@ int Handler11::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x40B0B0 */
-int Handler11::AddMessage(SC_Message* msg) {
+int SCI_SearchScreen::AddMessage(SC_Message* msg) {
     if (IconBar::CheckButtonClick(msg)) {
         return 1;
     }
@@ -142,12 +142,12 @@ int Handler11::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x40B110 */
-int Handler11::Exit(SC_Message* msg) {
+int SCI_SearchScreen::Exit(SC_Message* msg) {
     return handlerId <= msg->targetAddress;
 }
 
 /* Function start: 0x40B130 */
-void Handler11::Update(int param1, int param2) {
+void SCI_SearchScreen::Update(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
@@ -193,7 +193,7 @@ void Handler11::Update(int param1, int param2) {
 
 
 /* Function start: 0x40B230 */
-int Handler11::FindControlAtMouse() {
+int SCI_SearchScreen::FindControlAtMouse() {
     int x, y;
     InputState* pMouse = g_InputManager_00436968->pMouse;
     if (pMouse == 0) {
@@ -217,7 +217,7 @@ int Handler11::FindControlAtMouse() {
 }
 
 /* Function start: 0x40B2B0 */
-int Handler11::GetActiveControlCount() {
+int SCI_SearchScreen::GetActiveControlCount() {
     int count = 0;
     for (int i = 0; i < 10; i++) {
         if (field_60C[i] != 0 && field_60C[i]->enabled != 0) {
@@ -228,10 +228,10 @@ int Handler11::GetActiveControlCount() {
 }
 
 /* Function start: 0x40B2E0 */
-int Handler11::LBLParse(char* line) {
+int SCI_SearchScreen::LBLParse(char* line) {
     char token[32];
     char arg1[64];
-    
+
     sscanf(line, "%s", token);
 
     if (strcmp(token, "BACKGROUND") == 0) {
@@ -257,7 +257,6 @@ int Handler11::LBLParse(char* line) {
     } else {
         return Parser::LBLParse("SCI_SearchScreen");
     }
-    
+
     return 0;
 }
-

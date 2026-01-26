@@ -111,7 +111,7 @@ void SCI_Dialog::Init(SC_Message* msg) {
 
     IconBar::InitIconBar(msg);
 
-    // Structure passed via userPtr from Handler11
+    // Structure passed via userPtr from SCI_SearchScreen
     struct DialogInitData {
         void* ptr1;
         void* ptr2;

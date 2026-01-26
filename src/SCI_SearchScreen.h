@@ -1,5 +1,5 @@
-#ifndef HANDLER11_H
-#define HANDLER11_H
+#ifndef SCI_SEARCHSCREEN_H
+#define SCI_SEARCHSCREEN_H
 
 #include "IconBar.h"
 #include "Palette.h"
@@ -10,7 +10,7 @@
 
 class SC_Message;
 
-// Handler11 - Script/Scene handler
+// SCI_SearchScreen - Script/Scene handler
 // Size: 0x648 bytes
 // vtable: 0x431210
 // Inherits from IconBar (0x600 bytes)
@@ -23,10 +23,10 @@ class SC_Message;
 //   0x608: SC_Dialog* (destructor 0x408a40)
 //   0x60C-0x633: DialogControl* array[10] (destructor 0x4092e0)
 //   0x634-0x647: remaining fields (12 bytes)
-class Handler11 : public IconBar {
+class SCI_SearchScreen : public IconBar {
 public:
-    Handler11();
-    ~Handler11();
+    SCI_SearchScreen();
+    ~SCI_SearchScreen();
 
     // Virtual method overrides
     virtual int LBLParse(char* line);
@@ -52,4 +52,4 @@ public:
     int field_644;      // 0x644
 };
 
-#endif // HANDLER11_H
+#endif // SCI_SEARCHSCREEN_H

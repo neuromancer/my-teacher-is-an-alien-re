@@ -10,7 +10,7 @@
 #include "ZBufferManager.h"
 #include "SC_Question.h"
 #include "SC_OnScreenMessage.h"
-#include "Handler11.h"
+#include "SCI_SearchScreen.h"
 #include "InputManager.h"
 #include "Character.h"
 #include "SoundItem.h"
