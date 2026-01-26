@@ -3,6 +3,7 @@
 
 #include "Parser.h"
 #include "HashTable.h"
+#include "Sprite.h"
 
 // Stub classes for Engine subsystems (sizes match original)
 
@@ -35,18 +36,18 @@ class Viewport {
 public:
     int x1, y1, x2, y2; // 0x00, 0x04, 0x08, 0x0c
     int width, height;  // 0x10, 0x14
-    int field_0x18;
-    int field_0x1c;
-    int field_0x20;
-    int field_0x24;
-    int field_0x28;
+    int centerX;        // 0x18
+    int centerY;        // 0x1c
+    int scrollX;        // 0x20
+    int scrollY;        // 0x24
+    int anchorOffsetY;  // 0x28
 
     void SetDimensions(int w, int h); // 0x412C30
     void SetAnchor(int x, int y);     // 0x412C50
     void SetDimensions2(int w, int h); // 0x412C90
     void SetCenter();                 // 0x412CB0
-    void FUN_00412ce0(int x);         // 0x412CE0
-    void FUN_00412d00(int y);         // 0x412D00
+    void SetCenterX(int x);           // 0x412CE0
+    void SetCenterY(int y);           // 0x412D00
 };
 
 class SceneManager {
@@ -85,14 +86,46 @@ public:
   StateManager() {}
 };
 
-class Target : public Parser {
+class Target : public Sprite {
 public:
+    // Target-specific fields (0xD8 - 0x157)
+    // Sprite ends at 0xD8, so Target fields start here
+    int field_0xd8;       // 0xd8
+    int field_0xdc;       // 0xdc - flags
+    char* field_0xe0;     // 0xe0 - string pointer (INIT)
+    char* field_0xe4;     // 0xe4 - string pointer (I case)
+    int id;               // 0xe8
+    int field_0xec;       // 0xec
+    int field_0xf0;       // 0xf0
+    int field_0xf4;       // 0xf4
+    int field_0xf8;       // 0xf8
+    int field_0xfc;       // 0xfc
+    int field_0x100;      // 0x100
+    int field_0x104;      // 0x104
+    int field_0x108;      // 0x108
+    int field_0x10c;      // 0x10c
+    int field_0x110;      // 0x110
+    int field_0x114;      // 0x114
+    int field_0x118;      // 0x118
+    int field_0x11c;      // 0x11c
+    int field_0x120;      // 0x120
+    int field_0x124;      // 0x124
+    int field_0x128;      // 0x128
+    void* field_0x12c;    // 0x12c - list structure
+    void* field_0x130;    // 0x130
+    int field_0x134;      // 0x134
+    int field_0x138;      // 0x138
+    int field_0x13c;      // 0x13c
+    int field_0x140;      // 0x140
+    int field_0x144;      // 0x144
+    int field_0x148;      // 0x148
+    int field_0x14c;      // 0x14c
+    int field_0x150;      // 0x150
+    int field_0x154;      // 0x154
+
     Target(); // 0x413DC0
     virtual ~Target(); // 0x413F10
-    
-    char data_88[0x60]; // 0x88 - 0xE8
-    int id;             // 0xE8
-    char data_EC[0x158 - 0xEC];
+    virtual int LBLParse(char* line); // 0x414930
 
     void Init(char* line); // 0x4145E0
 };

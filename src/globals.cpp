@@ -212,3 +212,7 @@ int DAT_004374ea = 0;  // Clip bottom
 
 // Added for GameLoop::Run assembly match
 void* g_SmackSoundCheck_0044053c = 0;
+
+// Target/Sprite globals
+int DAT_004362cc = 0;
+int DAT_004362c8 = 0;
