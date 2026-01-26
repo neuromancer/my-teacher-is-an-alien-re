@@ -15,6 +15,33 @@ char s_hIam[] = "hIam %d";
 // ZBQueue is defined in ZBufferManager.h
 #include "ZBufferManager.h"
 
+extern void LogToMessageFile(char* format, ...);
+
+/* Function start: 0x4010C0 */
+int ZBuffer::LBLParse(char* param_1)
+{
+    ShowError("Parser:: Must define an LBLParse func");
+    return 0;
+}
+
+/* Function start: 0x401150 */
+int ZBuffer::ShutDown(Message* msg)
+{
+    return 0;
+}
+
+/* Function start: 0x401160 */
+int ZBuffer::Exit(Message* msg)
+{
+    return 0;
+}
+
+/* Function start: 0x401170 */
+void ZBuffer::OnInput(Message* msg)
+{
+    //LogToMessageFile("hIam %d", m_address);
+}
+
 /* Function start: 0x4012D0 */
 void ZBuffer::Update(int param_1, int param_2)
 {

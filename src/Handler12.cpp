@@ -27,6 +27,7 @@ int Handler12::AddMessage(SC_Message* msg) {
     return 1;
 }
 
+/* Function start: 0x4012C0 */
 int Handler12::ShutDown(SC_Message* msg) {
     return 0;
 }

@@ -22,10 +22,10 @@ struct SubObj8 {
 //   [0] LBLParse: 0x004129a0
 //   [2] OnProcessEnd: 0x00412690
 //   [3] destructor: 0x004121f0
-//   [11] VirtProcess: 0x00412610
-//   [12] VirtDraw: 0x00412300
-//   [13] Virt13: 0x00412490
-//   [17] Virt17: 0x00412640
+//   [11] ProcessTargets: 0x00412610
+//   [12] Draw: 0x00412300
+//   [13] UpdateMeter: 0x00412490
+//   [17] PlayCompletionSound: 0x00412640
 class EngineB : public Engine {
 public:
   // EngineB-specific fields (Engine ends at 0xe8)
@@ -54,10 +54,10 @@ public:
   // Virtual method overrides
   virtual int LBLParse(char* line);       // vtable[0] 0x4129a0
   virtual void OnProcessEnd();            // vtable[2] 0x412690
-  virtual void VirtProcess();             // vtable[11] 0x412610
-  virtual void VirtDraw();                // vtable[12] 0x412300
-  virtual void Virt13();                  // vtable[13] 0x412490
-  virtual void Virt17();                  // vtable[17] 0x412640
+  virtual void ProcessTargets();          // vtable[11] 0x412610
+  virtual void Draw();                    // vtable[12] 0x412300
+  virtual void UpdateMeter();             // vtable[13] 0x412490
+  virtual void PlayCompletionSound();     // vtable[17] 0x412640
 
   void DestructorHelper();  // 0x412210
 };

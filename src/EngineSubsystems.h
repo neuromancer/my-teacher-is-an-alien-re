@@ -121,6 +121,13 @@ public:
     virtual ~Target(); // 0x413F10
     virtual int LBLParse(char* line); // 0x414930
 
+    void Deactivate(); // 0x414230
+    int CheckTimeInRange(); // 0x4142C0
+    int CheckTimeInRangeParam(int* coords); // 0x414310
+    int AdvanceHotspot(); // 0x414350
+    void UpdateProgress(int delta); // 0x4143B0
+    int Update(); // 0x414410
+
     void Init(char* line); // 0x4145E0
     void ParseSound(char* line); // 0x414690
 };

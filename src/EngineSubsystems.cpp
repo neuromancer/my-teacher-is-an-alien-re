@@ -3,6 +3,8 @@
 #include "Sprite.h"
 #include "Memory.h"
 #include "SoundList.h"
+#include "Sample.h"
+#include "InputManager.h"
 #include "string.h"
 #include <string.h>
 #include <stdio.h>
@@ -63,6 +65,205 @@ Target::~Target()
         FreeMemory(Target::field_0x12c);
         Target::field_0x12c = 0;
     }
+}
+
+extern int FUN_00422a46(int x, int y);
+extern void FUN_00416ba0(int* scoreManager, int value);
+
+/* Function start: 0x414230 */
+void Target::Deactivate()
+{
+    HashTable* hashTable;
+    int** bucketPtr;
+    int* node;
+    int* prevNode;
+    unsigned int hash;
+    int i;
+
+    if (Target::field_0xd8 != 0) {
+        hashTable = ((TargetList*)DAT_00435f0c)->hashTable;
+        if (hashTable != 0 && hashTable->buckets != 0) {
+            hash = ((unsigned int)Target::id >> 4) % (unsigned int)hashTable->numBuckets;
+            bucketPtr = (int**)(hashTable->buckets + hash);
+            node = *bucketPtr;
+            if (node != 0) {
+                while (node[2] != Target::id) {
+                    prevNode = node;
+                    node = (int*)*node;
+                    if (node == 0) {
+                        goto cleanup;
+                    }
+                    bucketPtr = (int**)prevNode;
+                }
+                *bucketPtr = (int*)*node;
+                i = 0;
+                do {
+                    i--;
+                } while (i != 0);
+                i = 0;
+                do {
+                    i--;
+                } while (i != 0);
+                *node = (int)hashTable->freeList;
+                hashTable->freeList = (HashNode*)node;
+                hashTable->count--;
+            }
+        }
+cleanup:
+        Sprite::FreeAnimation();
+        Target::field_0xd8 = 0;
+    }
+}
+
+/* Function start: 0x4142C0 */
+int Target::CheckTimeInRange()
+{
+    int* timePtr;
+    int x;
+    int y;
+    int result;
+
+    timePtr = *(int**)(((char*)g_InputManager_00436968) + 0x1a0);
+    y = 0;
+    if (timePtr != 0) {
+        y = timePtr[1];
+    }
+    if (timePtr != 0) {
+        x = *timePtr;
+    } else {
+        x = 0;
+    }
+    result = FUN_00422a46(x, y);
+    if (Target::field_0xfc <= result && result <= Target::field_0x100) {
+        return 1;
+    }
+    return 0;
+}
+
+/* Function start: 0x414310 */
+int Target::CheckTimeInRangeParam(int* coords)
+{
+    int result;
+
+    result = FUN_00422a46(coords[0], coords[1]);
+    if (Target::field_0xfc <= result && result <= Target::field_0x100) {
+        return 1;
+    }
+    return 0;
+}
+
+/* Function start: 0x414350 */
+int Target::AdvanceHotspot()
+{
+    int* listData;
+    int* hotspotIdPtr;
+    int* nodePtr;
+
+    listData = (int*)Target::field_0x12c;
+    if (listData != 0) {
+        hotspotIdPtr = (int*)((char*)listData + 0x1c);
+        if (Target::animation_data == 0) {
+            if (*hotspotIdPtr == 0) {
+                goto advance;
+            }
+        } else if (*(int*)(*(int*)((char*)Target::animation_data + 0xc) + 0x374) == *hotspotIdPtr) {
+advance:
+            nodePtr = (int*)*(int*)((char*)listData + 0x18);
+            if (nodePtr == 0) {
+                *hotspotIdPtr = -1;
+            } else {
+                *(int*)((char*)listData + 0x18) = *nodePtr;
+                *hotspotIdPtr = nodePtr[2];
+            }
+            *(Target**)((char*)DAT_00435f0c + 0x1a4) = this;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/* Function start: 0x4143B0 */
+void Target::UpdateProgress(int delta)
+{
+    int newValue;
+    int shouldTrigger;
+    Sample* sample;
+
+    if (Target::field_0xd8 != 1) {
+        return;
+    }
+    newValue = Target::field_0x104 + delta;
+    Target::field_0x104 = newValue;
+    if (Target::field_0x108 == 0) {
+        shouldTrigger = 0;
+    } else if (newValue >= Target::field_0x108) {
+        shouldTrigger = 1;
+    } else {
+        shouldTrigger = 0;
+    }
+    if (shouldTrigger != 0) {
+        Target::field_0x150 = 3;
+        return;
+    }
+    sample = (Sample*)Target::field_0x134;
+    if (sample != 0) {
+        sample->Play(100, 1);
+    }
+}
+
+/* Function start: 0x414410 */
+int Target::Update()
+{
+    int state;
+    int tmpX;
+    int tmpY;
+    Sample* sample;
+    int doResult;
+
+    if (Target::field_0xd8 == 0) {
+        return 1;
+    }
+    state = Target::field_0x150;
+    if (state == 1) {
+        if (Target::field_0xf0 == Target::current_state) {
+            *g_ScoreManager = *g_ScoreManager - Target::field_0x118;
+            Target::Deactivate();
+            return 1;
+        }
+        Sprite::SetState2(Target::current_state + 1);
+    } else if (state == 3) {
+        Target::field_0xd8 = 3;
+        Sprite::SetState2(Target::field_0xf4 + Target::current_state);
+        if ((Target::field_0xdc & 1) != 0) {
+            tmpX = Target::field_0x148;
+            tmpY = Target::field_0x14c;
+            Target::loc_x = tmpX;
+            Target::loc_y = tmpY;
+        }
+        sample = (Sample*)Target::field_0x130;
+        if (sample != 0) {
+            sample->~Sample();
+        }
+        sample = (Sample*)Target::field_0x138;
+        if (sample != 0) {
+            sample->Play(100, 1);
+        }
+        g_ScoreManager[3] = g_ScoreManager[3] + 1;
+        *g_ScoreManager = *g_ScoreManager + Target::field_0x114;
+        FUN_00416ba0(g_ScoreManager, Target::field_0x10c);
+        *(int*)((char*)g_CombatEngine + 0xb4) = *(int*)((char*)g_CombatEngine + 0xb4) + Target::field_0x11c;
+        *(int*)((char*)g_CombatEngine + 0xc4) = *(int*)((char*)g_CombatEngine + 0xc4) + Target::field_0x124;
+    }
+    Target::field_0x150 = 0;
+    doResult = Sprite::Do(Target::loc_x, Target::loc_y, 1.0);
+    if (doResult != 0) {
+        if (Target::field_0xd8 == 3) {
+            Target::Deactivate();
+        } else {
+            Target::field_0x150 = Target::field_0xd8;
+        }
+    }
+    return 0;
 }
 
 /* Function start: 0x4145E0 */

@@ -150,7 +150,7 @@ int Engine::UpdateAndCheck() {
     return 1;
   }
 
-  VirtProcess();
+  ProcessTargets();
 
   Engine::m_framesA++;
   Engine::m_framesL++;
@@ -241,9 +241,9 @@ void Engine::VirtCleanup() {}
 void Engine::VirtUpdate() {}
 int Engine::VirtCheck1() { return 0; }
 int Engine::VirtCheck2() { return 0; }
-void Engine::VirtProcess() {}
-void Engine::VirtDraw() {}
-void Engine::Virt13() {}
+void Engine::ProcessTargets() {}
+void Engine::Draw() {}
+void Engine::UpdateMeter() {}
 void Engine::Virt15() {}
 void Engine::Virt16() {}
-void Engine::Virt17() {}
+void Engine::PlayCompletionSound() {}

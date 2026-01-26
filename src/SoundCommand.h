@@ -9,7 +9,10 @@ struct GlyphRect;
 // Note: No virtual destructor - Execute is at vtable[0]
 // Non-virtual destructor sets vtable back to base class before delete
 struct SoundCommand {
-    virtual void Execute(GlyphRect* rect) = 0;
+    /* Function start: 0x401540 */
+    virtual void Execute(GlyphRect* rect) {}
+    /* Function start: 0x401550 */
+    virtual void Release(int flag) {}
     ~SoundCommand() {}
 };
 

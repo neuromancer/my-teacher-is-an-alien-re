@@ -77,13 +77,13 @@ public:
   virtual void VirtUpdate();          // vtable[8] 0x411460
   virtual int VirtCheck1();           // vtable[9] 0x411dd0
   virtual int VirtCheck2();           // vtable[10] 0x411440
-  virtual void VirtProcess();         // vtable[11] 0x4113a0
-  virtual void VirtDraw();            // vtable[12] 0x411510
-  virtual void Virt13();              // vtable[13] 0x411190
+  virtual void ProcessTargets();      // vtable[11] 0x4113a0
+  virtual void Draw();                // vtable[12] 0x411510
+  virtual void UpdateMeter();         // vtable[13] 0x411190
   virtual int UpdateAndCheck();       // vtable[14] 0x411340
   virtual void Virt15();              // vtable[15] 0x411ca0
   virtual void Virt16();              // vtable[16] 0x411d20
-  virtual void Virt17();              // vtable[17] 0x4111a0
+  virtual void PlayCompletionSound(); // vtable[17] 0x4111a0
 
   // Non-virtual methods
   void StopAndCleanup();  // 0x411320

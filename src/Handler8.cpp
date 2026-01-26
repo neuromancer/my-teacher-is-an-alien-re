@@ -77,7 +77,6 @@ void Handler8::Init(SC_Message* msg) {
     if (msg != 0) {
         field_8C = msg->data;
         sprintf(filename, "cine\\cine%4.4d.smk", field_8C);
-        ShowMessage(filename);
         if (FileExists(filename)) {
             Animation anim;
             anim.Play(filename, 0);
@@ -92,6 +91,15 @@ void Handler8::Init(SC_Message* msg) {
     }
 }
 
+/* Function start: 0x406350 */
+int Handler8::ShutDown(SC_Message* msg) {
+    return 0;
+}
+
+/* Function start: 0x406360 */
+void Handler8::Update(int param1, int param2) {
+}
+
 /* Function start: 0x406370 */
 int Handler8::AddMessage(SC_Message* msg) {
     Handler8::WriteMessageAddress(msg);
@@ -103,15 +111,8 @@ int Handler8::AddMessage(SC_Message* msg) {
     return 1;
 }
 
-void Handler8::Update(int param1, int param2) {
-}
-
-int Handler8::Exit(SC_Message* msg) {
-    return handlerId <= msg->targetAddress;
-}
-
 /* Function start: 0x4063C0 */
-int Handler8::ShutDown(SC_Message* msg) {
+int Handler8::Exit(SC_Message* msg) {
     int prio;
 
     if (handlerId != msg->targetAddress) {
