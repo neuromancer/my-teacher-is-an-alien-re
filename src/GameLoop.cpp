@@ -28,7 +28,7 @@
 #include "Handler13.h"
 #include "Handler14.h"
 #include "SC_OnScreenMessage.h"
-#include "Handler16.h"
+#include "SC_Combat1.h"
 #include "SCI_Dialog.h"
 #include "SoundCommand.h"
 #include "RenderEntry.h"
@@ -905,7 +905,7 @@ Handler* CreateHandler(int command) {
         handler = new SC_OnScreenMessage();
         break;
     case 16:
-        handler = new Handler16();
+        handler = new SC_Combat1();
         break;
     default:
         ShowError("Unknown modual %d", command);

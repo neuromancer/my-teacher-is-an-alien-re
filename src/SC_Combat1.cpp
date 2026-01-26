@@ -1,4 +1,4 @@
-#include "Handler16.h"
+#include "SC_Combat1.h"
 #include "Memory.h"
 #include "Message.h"
 #include "globals.h"
@@ -28,13 +28,13 @@ extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.c
 
 
 /* Function start: 0x410610 */
-int Handler16::Exit(SC_Message* msg) {
+int SC_Combat1::Exit(SC_Message* msg) {
     memset(&DAT_0043d130, 0, 16);
     return 0;
 }
 
 /* Function start: 0x410650 */
-Handler16::Handler16() {
+SC_Combat1::SC_Combat1() {
     int* pA0;
     int* pA8;
     int i;
@@ -66,7 +66,7 @@ Handler16::Handler16() {
 }
 
 /* Function start: 0x410760 */
-Handler16::~Handler16() {
+SC_Combat1::~SC_Combat1() {
     Parser* pParser;
 
     pParser = scriptParser;
@@ -77,7 +77,7 @@ Handler16::~Handler16() {
 }
 
 /* Function start: 0x410810 */
-void Handler16::Init(SC_Message* msg) {
+void SC_Combat1::Init(SC_Message* msg) {
     ZBQueue* pQueue;
     void* pNode;
     int zState;
@@ -169,7 +169,7 @@ void Handler16::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x4109B0 */
-int Handler16::Update(SC_Message* msg) {
+int SC_Combat1::Update(SC_Message* msg) {
     ZBQueue* pQueue;
     void* puVar7;
     void* pVVar5;
@@ -257,14 +257,14 @@ int Handler16::Update(SC_Message* msg) {
     return 0;
 }
 
-int Handler16::HandleMessage(SC_Message* msg) {
+int SC_Combat1::HandleMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     WriteToMessageLog("SC_Combat1");
     return 1;
 }
 
 /* Function start: 0x410B00 */
-void Handler16::Draw(int param1, int param2) {
+void SC_Combat1::Draw(int param1, int param2) {
     int result;
 
     if (field_98 == 0) {
@@ -313,7 +313,7 @@ struct MessageQueue {
 };
 
 /* Function start: 0x410CA0 */
-void Handler16::ProcessMessage()
+void SC_Combat1::ProcessMessage()
 {
     SC_Message* script;
     MessageQueue* queue;
@@ -324,7 +324,7 @@ void Handler16::ProcessMessage()
     char* poolResult;
     MessageQueueItem** freeListPtr;
 
-    script = (SC_Message*)Handler16::scriptParser;
+    script = (SC_Message*)SC_Combat1::scriptParser;
     if (script != 0) {
         queue = g_MessageQueue;
         freeListPtr = &queue->freeList;
@@ -376,18 +376,18 @@ void Handler16::ProcessMessage()
         }
         *tailPtr = item;
 
-        script = (SC_Message*)Handler16::scriptParser;
+        script = (SC_Message*)SC_Combat1::scriptParser;
         if (script != 0) {
             delete script;
-            Handler16::scriptParser = 0;
+            SC_Combat1::scriptParser = 0;
         }
         return;
     }
-    SC_Message_Send(Handler16::field_90, Handler16::field_94, Handler16::handlerId, Handler16::field_8C, 5, 0, 0, 0, 0, 0);
+    SC_Message_Send(SC_Combat1::field_90, SC_Combat1::field_94, SC_Combat1::handlerId, SC_Combat1::field_8C, 5, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x410E80 */
-int Handler16::LBLParse(char* line) {
+int SC_Combat1::LBLParse(char* line) {
     char label[32];
     char moduleType[32];
 

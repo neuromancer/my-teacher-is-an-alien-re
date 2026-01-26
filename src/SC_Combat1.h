@@ -1,5 +1,5 @@
-#ifndef HANDLER16_H
-#define HANDLER16_H
+#ifndef SC_COMBAT1_H
+#define SC_COMBAT1_H
 
 #include "Handler.h"
 
@@ -7,7 +7,7 @@
 class Parser;
 class Engine;
 
-// Handler16 - SC_Combat1 handler class with ID 16
+// SC_Combat1 - Combat handler class with ID 16
 // Size: 0xF8 bytes
 // vtable: 0x431318
 // Constructor: 0x410650
@@ -25,10 +25,10 @@ class Engine;
 //   0xB0-0xEF: filename buffer (64 bytes)
 //   0xF0: savedRendererState
 //   0xF4: scriptParser pointer
-class Handler16 : public Handler {
+class SC_Combat1 : public Handler {
 public:
-    Handler16();
-    ~Handler16();
+    SC_Combat1();
+    ~SC_Combat1();
 
     // Virtual method overrides
     virtual void Init(SC_Message* msg);
@@ -41,7 +41,7 @@ public:
     // Helper method
     void ProcessMessage();
 
-    // Handler16-specific fields starting at 0xA0
+    // SC_Combat1-specific fields starting at 0xA0
     // Note: field_98 from Handler is used as isInitialized flag
     int savedScreenX;       // 0xA0
     int savedScreenY;       // 0xA4
@@ -52,4 +52,4 @@ public:
     Parser* scriptParser;   // 0xF4
 };
 
-#endif // HANDLER16_H
+#endif // SC_COMBAT1_H
