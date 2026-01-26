@@ -39,15 +39,15 @@ void Handler::Init(SC_Message* msg) {
     CopyCommandData(msg);
 }
 
-int Handler::HandleMessage(SC_Message* msg) {
+int Handler::AddMessage(SC_Message* msg) {
     return 1; // Handled
 }
 
-int Handler::Update(SC_Message* msg) {
+int Handler::ShutDown(SC_Message* msg) {
     return 0;
 }
 
-void Handler::Draw(int param1, int param2) {
+void Handler::Update(int param1, int param2) {
 }
 
 int Handler::Exit(SC_Message* msg) {

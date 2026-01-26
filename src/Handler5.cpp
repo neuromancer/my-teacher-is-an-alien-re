@@ -68,7 +68,7 @@ void Handler5::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x40FE70 */
-int Handler5::Update(SC_Message* msg) {
+int Handler5::ShutDown(SC_Message* msg) {
     if (sprite != 0) {
         sprite->StopAnimationSound();
     }
@@ -76,7 +76,7 @@ int Handler5::Update(SC_Message* msg) {
 }
 
 /* Function start: 0x40FE90 */
-void Handler5::Draw(int param1, int param2) {
+void Handler5::Update(int param1, int param2) {
     int idx;
     int local_1c[4];
     Sprite* spr;
@@ -131,7 +131,7 @@ void Handler5::Draw(int param1, int param2) {
 }
 
 /* Function start: 0x4100E0 */
-int Handler5::HandleMessage(SC_Message* msg) {
+int Handler5::AddMessage(SC_Message* msg) {
     int stateIdx;
     GameState* pGameState;
     int inRect;

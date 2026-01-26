@@ -94,12 +94,12 @@ void SC_OnScreenMessage::Copy(SC_OnScreenMessage* other) {
 }
 
 /* Function start: 0x40A5D0 */
-int SC_OnScreenMessage::Update(SC_Message* msg) {
+int SC_OnScreenMessage::ShutDown(SC_Message* msg) {
     return 0;
 }
 
 /* Function start: 0x40A5E0 */
-void SC_OnScreenMessage::Draw(int param1, int param2) {
+void SC_OnScreenMessage::Update(int param1, int param2) {
     MessageNode* node;
     unsigned int uVar3;
     int iVar4;
@@ -201,7 +201,7 @@ void SC_OnScreenMessage::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x40A7C0 */
-int SC_OnScreenMessage::HandleMessage(SC_Message* msg) {
+int SC_OnScreenMessage::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     WriteToMessageLog("SC_OnScreenMessage::AddMessage");
     return 1;

@@ -23,15 +23,15 @@ void Handler12::Init(SC_Message* msg) {
     Handler::Init(msg);
 }
 
-int Handler12::HandleMessage(SC_Message* msg) {
+int Handler12::AddMessage(SC_Message* msg) {
     return 1;
 }
 
-int Handler12::Update(SC_Message* msg) {
+int Handler12::ShutDown(SC_Message* msg) {
     return 0;
 }
 
-void Handler12::Draw(int param1, int param2) {
+void Handler12::Update(int param1, int param2) {
 }
 
 int Handler12::Exit(SC_Message* msg) {

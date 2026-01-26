@@ -64,9 +64,9 @@ public:
 
     // Virtual method overrides from Handler
     virtual void Init(SC_Message* msg);
-    virtual int HandleMessage(SC_Message* msg);
-    virtual int Update(SC_Message* msg);
-    virtual void Draw(int param1, int param2);
+    virtual int AddMessage(SC_Message* msg);
+    virtual int ShutDown(SC_Message* msg);
+    virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
 
     void Copy(SC_OnScreenMessage* other);

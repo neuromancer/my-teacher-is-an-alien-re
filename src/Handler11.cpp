@@ -88,7 +88,7 @@ void Handler11::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x40AFD0 */
-int Handler11::Update(SC_Message* msg) {
+int Handler11::ShutDown(SC_Message* msg) {
     int i;
 
     if (msg == 0 || msg->targetAddress != 9) {
@@ -128,7 +128,7 @@ int Handler11::Update(SC_Message* msg) {
 }
 
 /* Function start: 0x40B0B0 */
-int Handler11::HandleMessage(SC_Message* msg) {
+int Handler11::AddMessage(SC_Message* msg) {
     if (IconBar::CheckButtonClick(msg)) {
         return 1;
     }
@@ -147,12 +147,12 @@ int Handler11::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x40B130 */
-void Handler11::Draw(int param1, int param2) {
+void Handler11::Update(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
 
-    IconBar::Draw(param1, param2);
+    IconBar::Update(param1, param2);
 
     if (field_604 != 0) {
         field_604->Init();

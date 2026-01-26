@@ -318,7 +318,7 @@ int SCI_AfterSchoolMenu::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x4052D0 */
-int SCI_AfterSchoolMenu::HandleMessage(SC_Message* msg) {
+int SCI_AfterSchoolMenu::AddMessage(SC_Message* msg) {
     int result;
 
     // Check iconbar button click first
@@ -388,12 +388,12 @@ int SCI_AfterSchoolMenu::HandleMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x405420 */
-int SCI_AfterSchoolMenu::Update(SC_Message* msg) {
+int SCI_AfterSchoolMenu::ShutDown(SC_Message* msg) {
     return handlerId == msg->targetAddress;
 }
 
 /* Function start: 0x405490 */
-void SCI_AfterSchoolMenu::Draw(int param1, int param2) {
+void SCI_AfterSchoolMenu::Update(int param1, int param2) {
     int mouseX;
     int mouseY;
     int* mousePtr;
@@ -420,8 +420,8 @@ void SCI_AfterSchoolMenu::Draw(int param1, int param2) {
     // Render all elements and process hover
     DisplaySubmenuHover(mouseX, mouseY);
 
-    // Draw iconbar
-    IconBar::Draw(param1, param2);
+    // Update iconbar
+    IconBar::Update(param1, param2);
 
     // Render background sprite
     if (background != 0) {

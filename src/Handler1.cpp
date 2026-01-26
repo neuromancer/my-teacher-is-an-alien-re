@@ -56,7 +56,7 @@ void Handler1::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x4035C0 */
-int Handler1::Update(SC_Message* msg) {
+int Handler1::ShutDown(SC_Message* msg) {
     Sprite* spr;
     Palette* pal;
     spr = sprite;
@@ -75,7 +75,7 @@ int Handler1::Update(SC_Message* msg) {
 }
 
 /* Function start: 0x403650 */
-int Handler1::HandleMessage(SC_Message* msg) {
+int Handler1::AddMessage(SC_Message* msg) {
     Handler1::WriteMessageAddress(msg);
     if (msg->mouseX >= 2) {
         msg->targetAddress = 10;
@@ -93,7 +93,7 @@ int Handler1::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x4036C0 */
-void Handler1::Draw(int param1, int param2) {
+void Handler1::Update(int param1, int param2) {
     if (handlerId == param2) {
         sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         g_Mouse_00436978->DrawCursor();

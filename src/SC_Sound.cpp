@@ -85,7 +85,7 @@ void SC_Sound::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x40BB10 */
-void SC_Sound::Draw(int param1, int param2) {
+void SC_Sound::Update(int param1, int param2) {
     MessageList* pList;
     MessageNode* node;
     unsigned int uVar3;
@@ -170,13 +170,13 @@ void SC_Sound::Draw(int param1, int param2) {
 }
 
 /* Function start: 0x40BD10 */
-int SC_Sound::HandleMessage(SC_Message* msg) {
+int SC_Sound::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     WriteToMessageLog("SC_Sound::AddMessage");
     return 1;
 }
 
-int SC_Sound::Update(SC_Message* msg) {
+int SC_Sound::ShutDown(SC_Message* msg) {
     return 0;
 }
 

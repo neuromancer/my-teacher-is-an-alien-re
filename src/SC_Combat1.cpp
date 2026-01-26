@@ -169,7 +169,7 @@ void SC_Combat1::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x4109B0 */
-int SC_Combat1::Update(SC_Message* msg) {
+int SC_Combat1::ShutDown(SC_Message* msg) {
     ZBQueue* pQueue;
     void* puVar7;
     void* pVVar5;
@@ -257,14 +257,14 @@ int SC_Combat1::Update(SC_Message* msg) {
     return 0;
 }
 
-int SC_Combat1::HandleMessage(SC_Message* msg) {
+int SC_Combat1::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     WriteToMessageLog("SC_Combat1");
     return 1;
 }
 
 /* Function start: 0x410B00 */
-void SC_Combat1::Draw(int param1, int param2) {
+void SC_Combat1::Update(int param1, int param2) {
     int result;
 
     if (field_98 == 0) {

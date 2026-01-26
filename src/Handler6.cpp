@@ -102,7 +102,7 @@ void Handler6::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x404760 */
-int Handler6::Update(SC_Message* msg) {
+int Handler6::ShutDown(SC_Message* msg) {
     // Cleanup palette at 0x600
     if (palette != 0) {
         delete palette;
@@ -142,7 +142,7 @@ int Handler6::Update(SC_Message* msg) {
 }
 
 /* Function start: 0x404810 */
-int Handler6::HandleMessage(SC_Message* msg) {
+int Handler6::AddMessage(SC_Message* msg) {
     // Call parent handler (IconBar::CheckButtonClick)
     int result = CheckButtonClick(msg);
     if (result != 0) {
@@ -165,14 +165,14 @@ int Handler6::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x404890 */
-void Handler6::Draw(int param1, int param2) {
+void Handler6::Update(int param1, int param2) {
     // Check if this is for us
     if (handlerId != param2) {
         return;
     }
 
-    // Call parent draw (IconBar::Draw)
-    IconBar::Draw(param1, param2);
+    // Call parent update (IconBar::Update)
+    IconBar::Update(param1, param2);
 
     // Draw ambient
     if (ambient) ambient->DoAll();

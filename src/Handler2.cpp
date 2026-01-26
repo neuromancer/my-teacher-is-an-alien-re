@@ -68,7 +68,7 @@ void Handler2::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x40FA30 */
-int Handler2::Update(SC_Message* msg) {
+int Handler2::ShutDown(SC_Message* msg) {
     if (sprite != 0) {
         delete sprite;
         sprite = 0;
@@ -82,7 +82,7 @@ int Handler2::Update(SC_Message* msg) {
 }
 
 /* Function start: 0x40FA90 */
-int Handler2::HandleMessage(SC_Message* msg) {
+int Handler2::AddMessage(SC_Message* msg) {
     Handler2::WriteMessageAddress(msg);
     if (msg->mouseX >= 2) {
         msg->targetAddress = 3;
@@ -97,7 +97,7 @@ int Handler2::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x40FAF0 */
-void Handler2::Draw(int param1, int param2) {
+void Handler2::Update(int param1, int param2) {
     Sprite* spr;
     Sample* samp;
     int iVar1;

@@ -268,7 +268,7 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
 }
 
 /* Function start: 0x403230 */
-void IconBar::Draw(int param1, int param2) {
+void IconBar::Update(int param1, int param2) {
     int i;
     int mouseX;
     int mouseY;

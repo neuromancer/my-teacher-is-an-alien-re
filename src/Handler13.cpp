@@ -84,12 +84,12 @@ void Handler13::Init(SC_Message* msg) {
     }
 }
 
-int Handler13::Update(SC_Message* msg) {
+int Handler13::ShutDown(SC_Message* msg) {
     return 0;
  }
 
 /* Function start: 0x401E30 */
-void Handler13::Draw(int param1, int param2) {
+void Handler13::Update(int param1, int param2) {
     MessageNode* node;
     MessageNode* prevNode;
     unsigned int uVar3;
@@ -162,7 +162,7 @@ void Handler13::Draw(int param1, int param2) {
 }
 
 /* Function start: 0x401F90 */
-int Handler13::HandleMessage(SC_Message* msg) {
+int Handler13::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     WriteToMessageLog("SC_Timer::AddMessage");
     return 1;

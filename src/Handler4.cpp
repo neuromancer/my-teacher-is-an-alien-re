@@ -218,7 +218,7 @@ int Handler4::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x40ED50 */
-int Handler4::HandleMessage(SC_Message* msg) {
+int Handler4::AddMessage(SC_Message* msg) {
     if (CheckButtonClick(msg)) {
         return 1;
     }
@@ -284,12 +284,12 @@ int Handler4::HandleMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x40EEB0 */
-int Handler4::Update(SC_Message* msg) {
+int Handler4::ShutDown(SC_Message* msg) {
     return handlerId == msg->targetAddress;
 }
 
 /* Function start: 0x40EED0 */
-void Handler4::Draw(int param1, int param2) {
+void Handler4::Update(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
@@ -304,7 +304,7 @@ void Handler4::Draw(int param1, int param2) {
         }
     }
 
-    IconBar::Draw(param1, param2);
+    IconBar::Update(param1, param2);
 
     if (puzztest != 0) {
         puzztest->Do(puzztest->loc_x, puzztest->loc_y, 1.0);

@@ -149,7 +149,7 @@ void SCI_Dialog::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x407380 */
-int SCI_Dialog::Update(SC_Message* msg) {
+int SCI_Dialog::ShutDown(SC_Message* msg) {
     DialogQuestion* dq;
     Queue* queue;
     QueueNode* node;
@@ -225,7 +225,7 @@ int SCI_Dialog::Update(SC_Message* msg) {
 }
 
 /* Function start: 0x4074E0 */
-int SCI_Dialog::HandleMessage(SC_Message* msg) {
+int SCI_Dialog::AddMessage(SC_Message* msg) {
     DialogQuestion* dq;
     InputState* pMouse;
 
@@ -386,13 +386,13 @@ int SCI_Dialog::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x407A40 */
-void SCI_Dialog::Draw(int param1, int param2) {
+void SCI_Dialog::Update(int param1, int param2) {
     int y = 10;
     int counter = 0;
 
     if (handlerId != param2) return;
 
-    IconBar::Draw(param1, param2);
+    IconBar::Update(param1, param2);
     if (field_600 != 0) field_600->DoAll();
     g_Mouse_00436978->DrawCursor();
 

@@ -271,7 +271,7 @@ void GameLoop::ProcessInput() {
         else {
             Handler* pHandler = currentHandler;
             if (pHandler != 0) {
-                pHandler->HandleMessage(&localMessage);
+                pHandler->AddMessage(&localMessage);
             }
         }
 
@@ -393,7 +393,7 @@ void GameLoop::DrawFrame() {
         if (pHandler == 0) {
             return;
         }
-        pHandler->Draw(0, currentHandler->handlerId);
+        pHandler->Update(0, currentHandler->handlerId);
         pList = eventList;
         pNode = pList->current;
         if (pList->tail == pNode) {
@@ -506,7 +506,7 @@ void GameLoop::CleanupLoop() {
         if (pHandler == 0) {
             break;
         }
-        pHandler->Update(0);
+        pHandler->ShutDown(0);
         pEventList = GameLoop::eventList;
         pCurrent = pEventList->current;
         if (pEventList->tail == pCurrent) {
@@ -696,10 +696,10 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         return;
     }
 
-    // Call current handler's Update method
+    // Call current handler's ShutDown method
     handler = currentHandler;
     if (handler != 0) {
-        handler->Update(msg);
+        handler->ShutDown(msg);
     }
     
     // Clear ZBufferManager queues if g_ZBufferManager_0043698c exists

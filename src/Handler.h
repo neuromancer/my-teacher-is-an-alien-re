@@ -15,9 +15,9 @@ class SC_Message;
 //   +0x08: Parser::OnProcessStart
 //   +0x0C: Handler scalar deleting destructor
 //   +0x10: Init (virtual) - called when entering handler
-//   +0x14: HandleMessage (virtual) - process messages
-//   +0x18: Update (virtual) - called on system messages
-//   +0x1C: Draw (virtual) - render handler content
+//   +0x14: AddMessage (virtual) - process messages
+//   +0x18: ShutDown (virtual) - called on system messages
+//   +0x1C: Update (virtual) - render/update handler content
 //   +0x20: Exit (virtual) - called when leaving handler
 //   +0x24: OnInput (virtual) - input handling
 //
@@ -33,9 +33,9 @@ public:
     // Virtual methods - these form the handler interface
     // Override in derived classes to implement handler behavior
     virtual void Init(SC_Message* msg);
-    virtual int HandleMessage(SC_Message* msg);
-    virtual int Update(SC_Message* msg);
-    virtual void Draw(int param1, int param2);
+    virtual int AddMessage(SC_Message* msg);
+    virtual int ShutDown(SC_Message* msg);
+    virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
     virtual void OnInput();
     

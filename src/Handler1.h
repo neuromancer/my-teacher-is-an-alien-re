@@ -15,9 +15,9 @@ public:
     
     // Virtual method overrides
     virtual void Init(SC_Message* msg);
-    virtual int HandleMessage(SC_Message* msg);
-    virtual int Update(SC_Message* msg);
-    virtual void Draw(int param1, int param2);
+    virtual int AddMessage(SC_Message* msg);
+    virtual int ShutDown(SC_Message* msg);
+    virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
 
     // Handler1-specific fields (handlerId through field_9C are in Handler base)
