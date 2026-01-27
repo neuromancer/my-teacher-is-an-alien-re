@@ -35,7 +35,7 @@ Target::Target() : Sprite((char*)0),
     combatBonus1(0), field_0x120(0),
     combatBonus2(0), field_0x128(0),
     animParam1(0), animParam2(0),
-    hitX(0), hitY(0)
+    hitOffset()
 {
     memset((char*)this + 0xd8, 0, 0x80);
 
@@ -209,16 +209,11 @@ void Target::UpdateProgress(int delta)
 /* Function start: 0x414410 */
 int Target::Update()
 {
-    int state;
-    int tmpX;
-    int tmpY;
-    Sample* sample;
-    int doResult;
-
     if (Target::active == 0) {
         return 1;
     }
-    state = Target::pendingAction;
+
+    int state = Target::pendingAction;
     if (state == 1) {
         if (Target::animRange.end == Target::current_state) {
             *g_ScoreManager = *g_ScoreManager - Target::missPoints;
@@ -230,28 +225,27 @@ int Target::Update()
         Target::active = 3;
         Sprite::SetState2(Target::hitRange.start + Target::current_state);
         if ((Target::targetFlags & 1) != 0) {
-            tmpX = Target::hitX;
-            tmpY = Target::hitY;
-            Target::loc_x = tmpX;
-            Target::loc_y = tmpY;
+            Range temp = Target::hitOffset;
+            Target::loc_y = temp.end;
+            Target::loc_x = temp.start;
         }
-        sample = Target::stopSound;
-        if (sample != 0) {
-            sample->~Sample();
+        if (Target::stopSound != 0) {
+            Target::stopSound->~Sample();
         }
-        sample = Target::hitSound;
-        if (sample != 0) {
-            sample->Play(100, 1);
+        if (Target::hitSound != 0) {
+            Target::hitSound->Play(100, 1);
         }
-        g_ScoreManager[3] = g_ScoreManager[3] + 1;
-        *g_ScoreManager = *g_ScoreManager + Target::hitPoints;
+        g_ScoreManager[3]++;
+        *g_ScoreManager += Target::hitPoints;
         FUN_00416ba0(g_ScoreManager, Target::scoreIndex);
-        g_CombatEngine->field_0xb4 = g_CombatEngine->field_0xb4 + Target::combatBonus1;
-        g_CombatEngine->field_0xc4 = g_CombatEngine->field_0xc4 + Target::combatBonus2.val;
+        g_CombatEngine->field_0xb4 += Target::combatBonus1;
+        g_CombatEngine->field_0xc4 += Target::combatBonus2.val;
     }
+
+    int y = Target::loc_y;
+    int x = Target::loc_x;
     Target::pendingAction = 0;
-    doResult = Sprite::Do(Target::loc_x, Target::loc_y, 1.0);
-    if (doResult != 0) {
+    if (Sprite::Do(x, y, 1.0)) {
         if (Target::active == 3) {
             Target::Deactivate();
         } else {
@@ -266,15 +260,12 @@ void Target::Init(char* line)
 {
     char buffer[64];
 
-    int result = sscanf(line, "%s", buffer);
-    if (result == 1) {
+    if (sscanf(line, "%s", buffer) == 1) {
         if (stricmp(buffer, "INIT") != 0) {
             FUN_00421f90(g_CDData_0043697c, buffer);
 
-            char* src = &g_CDData_0043697c->field_0xc0[0x85];
-            unsigned int len = strlen(src) + 1;
-            Target::animFilename = (char*)AllocateMemory(len);
-            memcpy(Target::animFilename, src, len);
+            Target::animFilename = (char*)AllocateMemory(strlen((char*)g_CDData_0043697c + 0x145) + 1);
+            strcpy(Target::animFilename, (char*)g_CDData_0043697c + 0x145);
         }
     }
 }
@@ -415,7 +406,7 @@ int Target::LBLParse(char* line)
         }
     }
     else if (firstChar == 'O') {
-        sscanf(line + 3, "%d %d", &Target::hitX, &Target::hitY);
+        sscanf(line + 3, "%d %d", &Target::hitOffset.start, &Target::hitOffset.end);
         Target::targetFlags |= 1;
     }
     else if (firstChar == 'P') {

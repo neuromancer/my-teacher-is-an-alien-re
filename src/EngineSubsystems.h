@@ -134,8 +134,7 @@ public:
     Sample* sound3;       // 0x13c - sound 3
     int animParam1;       // 0x140 - from 'A' label
     int animParam2;       // 0x144 - from 'A' label
-    int hitX;             // 0x148 - hit offset X (from 'O' label)
-    int hitY;             // 0x14c - hit offset Y (from 'O' label)
+    Range hitOffset;      // 0x148 - hit offset (from 'O' label)
     int pendingAction;    // 0x150 - pending action (0=none, 1=miss, 3=hit)
     int field_0x154;      // 0x154
 
