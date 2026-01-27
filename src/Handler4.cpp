@@ -4,7 +4,7 @@
 #include "Memory.h"
 #include "globals.h"
 #include "SC_Question.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "string.h"
 #include "InputManager.h"
 

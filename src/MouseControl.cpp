@@ -1,6 +1,6 @@
 #include "globals.h"
 #include <windows.h>
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "Sprite.h"
 #include "Parser.h"
 #include <string.h>
@@ -12,7 +12,7 @@
 #include "InputManager.h"
 
 /* Function start: 0x41ECA0 */
-Mouse::Mouse()
+MouseControl::MouseControl()
 {
     memset(m_labels, 0, sizeof(m_labels));
     m_sprite = 0;
@@ -34,7 +34,7 @@ Mouse::Mouse()
 
 
 /* Function start: 0x41EE30 */
-Mouse::~Mouse()
+MouseControl::~MouseControl()
 {
     Sample* audio = m_audio;
     if (audio != 0) {
@@ -64,7 +64,7 @@ Mouse::~Mouse()
 }
 
 /* Function start: 0x41EF50 */
-int Mouse::LBLParse(char* line)
+int MouseControl::LBLParse(char* line)
 {
     int index;
     void* ptr;
@@ -105,14 +105,14 @@ int Mouse::LBLParse(char* line)
         m_sprite2 = 0;
         return 1;
     } else {
-        Parser::LBLParse("MMPlayer");
+        Parser::LBLParse("MouseControl");
     }
 
     return 0;
 }
 
 /* Function start: 0x41F200 */
-void Mouse::DrawCursor()
+void MouseControl::DrawCursor()
 {
     if (m_sprite == 0) {
         ShowError("missing mouse ");

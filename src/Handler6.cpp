@@ -8,7 +8,7 @@
 #include "globals.h"
 #include "SC_Question.h"
 #include "Message.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "InputManager.h"
 
 // External functions used by Handler6

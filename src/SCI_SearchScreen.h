@@ -19,7 +19,7 @@ class SC_Message;
 // Layout:
 //   0x00-0x5FF: IconBar base class
 //   0x600: Palette* (destructor 0x41ea80)
-//   0x604: MouseControl* (destructor 0x41f360)
+//   0x604: MMPlayer* (destructor 0x41f360)
 //   0x608: MMPlayer2* (destructor 0x408a40)
 //   0x60C-0x633: DialogControl* array[10] (destructor 0x4092e0)
 //   0x634-0x647: remaining fields (12 bytes)

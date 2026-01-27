@@ -12,8 +12,7 @@ class Sound;
 class Sprite;
 class InputManager;
 class CDData;
-class Mouse;
-class Mouse;
+class MouseControl;
 class Parser;
 class StringTable;
 class ZBufferManager;
@@ -441,7 +440,7 @@ extern InputManager* g_InputManager_00436968; // DAT_00436968  { /* 4 bytes */ }
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
-extern Mouse* g_Mouse_00436978; // DAT_00436978
+extern MouseControl* g_Mouse_00436978; // DAT_00436978
 extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
 extern Timer* g_Timer_00436980; // DAT_00436980
 extern "C" {

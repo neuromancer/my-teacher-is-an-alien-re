@@ -3,7 +3,7 @@
 #include "string.h"
 #include "mss.h"
 #include "SC_Question.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "Memory.h"
 
 /* Function start: 0x40F710 */

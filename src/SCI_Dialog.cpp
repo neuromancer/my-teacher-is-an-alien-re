@@ -1,6 +1,6 @@
 #include "SCI_Dialog.h"
 #include "MMPlayer2.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "string.h"
 #include "MMPlayer.h"
 #include "Sprite.h"

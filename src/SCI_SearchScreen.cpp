@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "Message.h"
 #include "InputManager.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "string.h"
 #include <string.h>
 #include <stdio.h>

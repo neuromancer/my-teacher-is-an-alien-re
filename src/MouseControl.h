@@ -1,12 +1,12 @@
-#ifndef MOUSE_H
-#define MOUSE_H
+#ifndef MOUSECONTROL_H
+#define MOUSECONTROL_H
 
 #include "Parser.h"
 #include "Sprite.h"
 class Sample;
 
 /**
- * Mouse - Cursor Rendering and Appearance
+ * MouseControl - Cursor Rendering and Appearance
  * 
  * This class manages the visual cursor (pointer) display:
  * - Cursor sprite graphics (m_sprite, m_sprite2)
@@ -19,15 +19,15 @@ class Sample;
  * 
  * NOTE: This is DIFFERENT from MMPlayer (0x98 bytes), which manages
  * clickable interaction areas via a Queue of Sprite objects. Do not merge.
- * The similarity in names is due to the string "MMPlayer" being used
- * in Mouse::LBLParse for unknown command delegation.
+ * The similarity in names is due to the string "MouseControl" being used
+ * in MouseControl::LBLParse for unknown command delegation.
  */
 extern "C" int SetCursorVisible(unsigned int);
 
-class Mouse : public Parser {
+class MouseControl : public Parser {
 public:
-    Mouse();
-    ~Mouse();
+    MouseControl();
+    ~MouseControl();
     int LBLParse(char* line);
     void DrawCursor();
 

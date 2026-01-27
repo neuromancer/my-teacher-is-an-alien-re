@@ -7,8 +7,7 @@
 #include "GameWindow.h"
 #include "Sprite.h"
 #include "CDData.h"
-#include "Mouse.h"
-#include "Parser.h"
+#include "MouseControl.h"
 #include "Parser.h"
 #include "Timer.h"
 //#include "Manager.h"
@@ -25,7 +24,7 @@ Sound* g_Sound_0043696c = 0;
 #include "GameConfig.h"
 GameConfig* g_GameConfig_00436970 = 0;
 VBuffer* g_WorkBuffer_00436974 = 0;
-Mouse* g_Mouse_00436978 = 0;
+MouseControl* g_Mouse_00436978 = 0;
 CDData* g_CDData_0043697c = 0;
 Timer* g_Timer_00436980 = 0;
 TimedEventPool* g_TimedEventPool1_00436984 = 0;

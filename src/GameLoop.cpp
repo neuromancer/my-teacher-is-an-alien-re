@@ -9,7 +9,7 @@
 #include "SC_Question.h"
 #include "ScriptHandler.h"
 #include "Sample.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "TimedEvent.h"
 #include "globals.h"
 #include "Message.h"

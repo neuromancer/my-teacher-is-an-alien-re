@@ -17,7 +17,7 @@ class Sprite;
  * Size: 0x98 (152 bytes)
  * Functions: 0x41F280, 0x41F360, 0x41F480, 0x41F4F0, 0x41F800
  *
- * NOTE: This is DIFFERENT from Mouse (0x1C0 / 448 bytes), which manages
+ * NOTE: This is DIFFERENT from MouseControl (0x1C0 / 448 bytes), which manages
  * cursor rendering/appearance (sprites, hotspots, labels, audio). Do not merge.
  */
 class MMPlayer : public Parser {

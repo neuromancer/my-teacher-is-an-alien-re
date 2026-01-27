@@ -20,7 +20,7 @@ SRCS_ORDERED = \
 	src/FlagArray.cpp \
 	src/GameState.cpp \
 	src/GameWindow.cpp \
-	src/Mouse.cpp \
+	src/MouseControl.cpp \
 	src/MMPlayer.cpp \
 	src/Parser.cpp \
 	src/Sample.cpp \

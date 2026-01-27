@@ -3,7 +3,7 @@
 #include "string.h"
 #include "globals.h"
 #include "Message.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include <string.h>
 
 extern "C" {

@@ -8,7 +8,7 @@
 #include "Sound.h"
 #include "VBuffer.h"
 #include "CDData.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "Timer.h"
 #include "Parser.h"
 #include "FlagArray.h"
@@ -98,7 +98,7 @@ void RunGame() {
         g_Mouse_00436978 = 0;
     }
 
-    g_Mouse_00436978 = new Mouse();
+    g_Mouse_00436978 = new MouseControl();
     ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
     
     g_StateString_00436994 = new char[0x40];

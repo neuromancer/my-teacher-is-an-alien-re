@@ -8,7 +8,7 @@
 #include "Palette.h"
 #include "Sprite.h"
 #include "Sample.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "MMPlayer.h"
 #include "Hotspot.h"
 #include "InputManager.h"

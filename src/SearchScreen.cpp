@@ -5,7 +5,7 @@
 #include "SC_Question.h"
 #include "GameState.h"
 #include "Message.h"
-#include "Mouse.h"
+#include "MouseControl.h"
 #include "ZBufferManager.h"
 
 /* Function start: 0x40FB80 */

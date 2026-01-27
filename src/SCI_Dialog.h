@@ -21,7 +21,7 @@ typedef SC_Question DialogQuestion;
 //
 // Layout:
 //   0x00-0x5FF: IconBar base class
-//   0x600: MouseControl*
+//   0x600: MMPlayer*
 //   0x604: SC_Dialog*
 //   0x608: Sprite* (button)
 //   0x60C: Sprite* (hilite)
