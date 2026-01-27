@@ -9,6 +9,7 @@
 #include "Sprite.h"
 #include "globals.h"
 #include "InputManager.h"
+#include "RockThrower.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,28 +29,19 @@ static unsigned char g_TimeOutInitFlag_0043d14c = 0;
 /* Function start: 0x412110 */
 EngineB::EngineB() {
   // Engine::Engine() is called automatically via inheritance
+  // GlyphRect constructors for m_meterEmptyRect and m_meterFullRect
+  // are called automatically (they zero their fields and have destructors,
+  // generating SEH state tracking)
 
-  // Initialize SubObj16 at 0x130
-  EngineB::field_0x130.field_0 = 0;
-  EngineB::field_0x130.field_4 = 0;
-  EngineB::field_0x130.field_8 = 0;
-  EngineB::field_0x130.field_c = 0;
+  // Initialize IntPair at 0x150
+  EngineB::m_progress.field_0 = 0;
+  EngineB::m_progress.field_4 = 0;
 
-  // Initialize SubObj16 at 0x140
-  EngineB::field_0x140.field_0 = 0;
-  EngineB::field_0x140.field_4 = 0;
-  EngineB::field_0x140.field_8 = 0;
-  EngineB::field_0x140.field_c = 0;
+  // Initialize IntPair at 0x158
+  EngineB::m_meterPosition.field_0 = 0;
+  EngineB::m_meterPosition.field_4 = 0;
 
-  // Initialize SubObj8 at 0x150
-  EngineB::field_0x150.field_0 = 0;
-  EngineB::field_0x150.field_4 = 0;
-
-  // Initialize SubObj8 at 0x158
-  EngineB::field_0x158.field_0 = 0;
-  EngineB::field_0x158.field_4 = 0;
-
-  memset(&field_0xe8, 0, 0x80);
+  memset(&m_localSoundList, 0, 0x80);
 }
 
 /* Function start: 0x4121f0 */
@@ -59,18 +51,18 @@ EngineB::~EngineB() {
 
 /* Function start: 0x412210 */
 void EngineB::DestructorHelper() {
-  // Delete field_0x128 object via its virtual destructor
-  void* obj128 = EngineB::field_0x128;
+  // Delete m_meterAnimation
+  Animation* obj128 = EngineB::m_meterAnimation;
   if (obj128 != 0) {
     delete obj128;
-    EngineB::field_0x128 = 0;
+    EngineB::m_meterAnimation = 0;
   }
 
-  // Delete field_0xe8 SoundList
-  SoundList* soundList = (SoundList*)EngineB::field_0xe8;
+  // Delete m_localSoundList
+  SoundList* soundList = EngineB::m_localSoundList;
   if (soundList != 0) {
     delete soundList;
-    EngineB::field_0xe8 = 0;
+    EngineB::m_localSoundList = 0;
   }
 }
 
@@ -87,6 +79,74 @@ int EngineB::LBLParse(char* line) {
 
 /* Function start: 0x412300 */
 void EngineB::Draw() {
+  if (DAT_00435f04 == 0) {
+    return;
+  }
+
+  if (EngineB::field_0xf0[1] != g_ScoreManager[5]) {
+    // Target was hit
+    EngineB::field_0xf0[1] = g_ScoreManager[5];
+    ((Sprite*)DAT_00435f04)->SetState2(8);
+    EngineB::m_progress.field_0 += ((int*)EngineB::m_targetConfig)[1];
+
+    int hitIdx = rand() % 3;
+    Sample* hitSample = (Sample*)(&field_0x108[2])[hitIdx];
+    EngineB::m_localSoundList->StopAll();
+
+    if (hitSample != 0) {
+      hitSample->Play(0x64, 1);
+    }
+  } else if (EngineB::field_0xf0[3] != g_ScoreManager[3]) {
+    // Idle sound change
+    EngineB::field_0xf0[3] = g_ScoreManager[3];
+    ((Sprite*)DAT_00435f04)->SetState2(9);
+
+    Sample* idleSample = (Sample*)(&field_0x11c)[rand() % 2];
+    if (idleSample != 0) {
+      idleSample->Play(0x64, 1);
+    }
+  }
+
+  // Weapon hit effect
+  int weaponHit = ((RockThrower*)EngineB::m_weaponParser)->field_0xb0;
+  if (weaponHit != 0) {
+    EngineB::m_progress.field_0 += weaponHit;
+
+    if (EngineB::m_missSound != 0) {
+      ((Sample*)EngineB::m_missSound)->Play(0x64, 1);
+    }
+
+    if (EngineB::m_progress.field_0 == 0x13 || EngineB::m_progress.field_0 == 0x25) {
+      if (EngineB::field_0x124 != 0) {
+        ((Sample*)EngineB::field_0x124)->Play(0x64, 1);
+      }
+    }
+  }
+
+  // Aim cursor based on mouse position
+  if (((Weapon*)DAT_00435f14)->field_0xa0 != 0) {
+    InputState* pMouse = g_InputManager_00436968->pMouse;
+    int mouseX;
+    if (pMouse == 0) {
+      mouseX = 0;
+    } else {
+      mouseX = pMouse->x;
+    }
+    ((Sprite*)DAT_00435f04)->SetState2(mouseX / 0x6a + 5);
+  }
+
+  // Animate sprite
+  Sprite* consoleSprite = (Sprite*)DAT_00435f04;
+  if (consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0) != 0) {
+    InputState* pMouse = g_InputManager_00436968->pMouse;
+    int mouseX;
+    if (pMouse == 0) {
+      mouseX = 0;
+    } else {
+      mouseX = pMouse->x;
+    }
+    ((Sprite*)DAT_00435f04)->SetState2((mouseX + ((mouseX >> 31) & 0x3f)) >> 6);
+  }
 }
 
 /* Function start: 0x412490 */
@@ -95,14 +155,14 @@ void EngineB::UpdateMeter() {
   int progressMax;
   int barPos;
 
-  if (EngineB::field_0x12c == 0) {
+  if (EngineB::m_meterBuffer == 0) {
     return;
   }
 
-  progressMax = EngineB::field_0x150.field_4;
-  if (progressMax == 0 || EngineB::field_0x150.field_0 < progressMax) {
+  progressMax = EngineB::m_progress.field_4;
+  if (progressMax == 0 || EngineB::m_progress.field_0 < progressMax) {
     // Calculate progress bar position
-    progressCurrent = EngineB::field_0x150.field_0;
+    progressCurrent = EngineB::m_progress.field_0;
     barPos = (progressCurrent * 0x36) / progressMax - rand() % 3 + 1;
     if (barPos < 0) {
       barPos = 0;
@@ -114,21 +174,21 @@ void EngineB::UpdateMeter() {
     // Draw first part of progress bar
     g_WorkBuffer_00436974->CallBlitter2(
       0, barPos,
-      EngineB::field_0x140.field_4,
-      EngineB::field_0x140.field_c,
-      EngineB::field_0x158.field_0,
-      EngineB::field_0x158.field_4,
-      (VBuffer*)EngineB::field_0x12c);
+      EngineB::m_meterFullRect.top,
+      EngineB::m_meterFullRect.bottom,
+      EngineB::m_meterPosition.field_0,
+      EngineB::m_meterPosition.field_4,
+      (VBuffer*)EngineB::m_meterBuffer);
 
     // Draw second part of progress bar
     g_WorkBuffer_00436974->CallBlitter2(
       barPos,
-      EngineB::field_0x140.field_8,
-      EngineB::field_0x130.field_4,
-      EngineB::field_0x130.field_c,
-      EngineB::field_0x158.field_0 + barPos,
-      EngineB::field_0x158.field_4,
-      (VBuffer*)EngineB::field_0x12c);
+      EngineB::m_meterFullRect.right,
+      EngineB::m_meterEmptyRect.top,
+      EngineB::m_meterEmptyRect.bottom,
+      EngineB::m_meterPosition.field_0 + barPos,
+      EngineB::m_meterPosition.field_4,
+      (VBuffer*)EngineB::m_meterBuffer);
   } else {
     // Progress complete - use TimeOut
     if ((g_TimeOutInitFlag_0043d14c & 1) == 0) {
@@ -139,12 +199,12 @@ void EngineB::UpdateMeter() {
     // Draw full progress bar
     g_WorkBuffer_00436974->CallBlitter2(
       0,
-      EngineB::field_0x140.field_8,
-      EngineB::field_0x140.field_4,
-      EngineB::field_0x140.field_c,
-      EngineB::field_0x158.field_0,
-      EngineB::field_0x158.field_4,
-      (VBuffer*)EngineB::field_0x12c);
+      EngineB::m_meterFullRect.right,
+      EngineB::m_meterFullRect.top,
+      EngineB::m_meterFullRect.bottom,
+      EngineB::m_meterPosition.field_0,
+      EngineB::m_meterPosition.field_4,
+      (VBuffer*)EngineB::m_meterBuffer);
 
     // Check if TimeOut is active by comparing first dword (m_isActive) to 1
     if (*(int*)&g_TimeOut_0043d140 != 1) {
@@ -167,19 +227,19 @@ void AtExitCleanup_0043d140() {
 /* Function start: 0x412610 */
 void EngineB::ProcessTargets() {
   ((TargetList*)DAT_00435f0c)->ProcessTargets();
-  FUN_00416880((int*)EngineB::field_0x160);
+  FUN_00416880((int*)EngineB::m_weaponParser);
   EngineB::Draw();
   EngineB::UpdateMeter();
 }
 
 /* Function start: 0x412640 */
 void EngineB::PlayCompletionSound() {
-  if (EngineB::field_0x100 == 0) {
+  if (EngineB::m_completionSound == 0) {
     return;
   }
 
-  if (EngineB::field_0xe8 != 0) {
-    ((SoundList*)EngineB::field_0xe8)->StopAll();
+  if (EngineB::m_localSoundList != 0) {
+    EngineB::m_localSoundList->StopAll();
   }
 
   Sample* sampleE0 = (Sample*)EngineB::field_0xe0;
@@ -187,7 +247,7 @@ void EngineB::PlayCompletionSound() {
     sampleE0->Fade(0x14, 0x2ee);
   }
 
-  Sample* sample100 = (Sample*)EngineB::field_0x100;
+  Sample* sample100 = (Sample*)EngineB::m_completionSound;
   sample100->Play(0x64, 1);
   sample100->Stop();
 }
@@ -202,17 +262,17 @@ void EngineB::OnProcessEnd() {
   }
 
   if (DAT_00435f04 != 0) {
-    int* pTime = (int*)((char*)g_InputManager_00436968 + 0x1a0);
+    InputState* pMouse = g_InputManager_00436968->pMouse;
     int timeVal;
-    if (*pTime == 0) {
+    if (pMouse == 0) {
       timeVal = 0;
     } else {
-      timeVal = **(int**)pTime;
+      timeVal = pMouse->x;
     }
     ((Sprite*)DAT_00435f04)->SetState2((timeVal + ((timeVal >> 31) & 0x3f)) >> 6);
   }
 
-  // Allocate and initialize field_0x164 (8 byte object)
+  // Allocate and initialize m_targetConfig (8 byte object)
   int* pObj164 = (int*)AllocateMemory(8);
   if (pObj164 != 0) {
     pObj164[0] = 1;
@@ -220,75 +280,76 @@ void EngineB::OnProcessEnd() {
   } else {
     pObj164 = 0;
   }
-  EngineB::field_0x164 = (int)pObj164;
-  EngineB::field_0x160 = (int)DAT_00435f14;
+  EngineB::m_targetConfig = (int)pObj164;
+  EngineB::m_weaponParser = (int)DAT_00435f14;
 
   // Update field_0x108 on all targets
-  numTargets = *(int*)((char*)DAT_00435f0c + 0x88);
+  TargetList* targetList = (TargetList*)DAT_00435f0c;
+  numTargets = targetList->count;
   if (numTargets > 0) {
     for (i = 0; i < numTargets; i++) {
-      int* pTarget = *(int**)((char*)DAT_00435f0c + 0x8c + i * 4);
-      *(int*)((char*)pTarget + 0x108) = *(int*)EngineB::field_0x164;
+      Target* pTarget = targetList->targets[i];
+      pTarget->field_0x108 = *(int*)EngineB::m_targetConfig;
     }
   }
 
-  // Create SoundList at field_0xe8
+  // Create SoundList at m_localSoundList
   SoundList* soundListResult = 0;
   void* soundListMem = AllocateMemory(0x10);
   if (soundListMem != 0) {
     soundListResult = new SoundList(10);
   }
-  EngineB::field_0xe8 = soundListResult;
+  EngineB::m_localSoundList = soundListResult;
 
-  // Create Animation at field_0x128
+  // Create Animation at m_meterAnimation
   Animation* animResult = 0;
   void* animMem = AllocateMemory(0x2c);
   if (animMem != 0) {
     animResult = new Animation("rat1\\nmeter.smk");
   }
-  EngineB::field_0x128 = animResult;
+  EngineB::m_meterAnimation = animResult;
 
   // DoFrame on animation
   if (animResult != 0) {
-    ((Animation*)animResult)->DoFrame();
+    animResult->DoFrame();
   }
 
   // Initialize progress meter fields from animation
-  Animation* anim = (Animation*)EngineB::field_0x128;
-  EngineB::field_0x12c = (int)anim->smk->Height;
+  Animation* anim = EngineB::m_meterAnimation;
+  EngineB::m_meterBuffer = (int)anim->smk->Height;
 
   // Initialize meter configuration
-  EngineB::field_0x130.field_0 = 0;
-  EngineB::field_0x130.field_4 = 0;
-  EngineB::field_0x130.field_8 = 0xff;
-  EngineB::field_0x130.field_c = 0xf;
-  EngineB::field_0x140.field_0 = 0;
-  EngineB::field_0x140.field_4 = 0x12;
-  EngineB::field_0x140.field_8 = 0xff;
-  EngineB::field_0x140.field_c = 0x21;
-  EngineB::field_0x150.field_0 = 0;
-  EngineB::field_0x150.field_4 = 0x36;
-  EngineB::field_0x158.field_0 = 0x20;
-  EngineB::field_0x158.field_4 = 0x14;
+  EngineB::m_meterEmptyRect.left = 0;
+  EngineB::m_meterEmptyRect.top = 0;
+  EngineB::m_meterEmptyRect.right = 0xff;
+  EngineB::m_meterEmptyRect.bottom = 0xf;
+  EngineB::m_meterFullRect.left = 0;
+  EngineB::m_meterFullRect.top = 0x12;
+  EngineB::m_meterFullRect.right = 0xff;
+  EngineB::m_meterFullRect.bottom = 0x21;
+  EngineB::m_progress.field_0 = 0;
+  EngineB::m_progress.field_4 = 0x36;
+  EngineB::m_meterPosition.field_0 = 0x20;
+  EngineB::m_meterPosition.field_4 = 0x14;
 
   // Register sounds if g_SoundList_00435f1c is available
   if (g_SoundList_00435f1c != 0) {
-    EngineB::field_0xec = (int)g_SoundList_00435f1c->Register("audio\\slingmis.wav");
-    EngineB::field_0x100 = (int)g_SoundList_00435f1c->Register("audio\\ldu013_1.wav");
+    EngineB::m_missSound = (int)g_SoundList_00435f1c->Register("audio\\slingmis.wav");
+    EngineB::m_completionSound = (int)g_SoundList_00435f1c->Register("audio\\ldu013_1.wav");
   }
 
-  // Register sounds if field_0xe8 SoundList is available
-  SoundList* sList = (SoundList*)EngineB::field_0xe8;
+  // Register sounds if m_localSoundList is available
+  SoundList* sList = EngineB::m_localSoundList;
   if (sList != 0) {
     char* filename = FUN_0040d200("audio\\ldu010_1.wav");
     EngineB::field_0x11c = (int)sList->Register(filename);
-    EngineB::field_0x120 = (int)((SoundList*)EngineB::field_0xe8)->Register("audio\\ldu011_1.wav");
-    EngineB::field_0x108[2] = (int)((SoundList*)EngineB::field_0xe8)->Register("audio\\ldu008_1.wav");
-    EngineB::field_0x108[3] = (int)((SoundList*)EngineB::field_0xe8)->Register("audio\\ldu009_1.wav");
-    EngineB::field_0x118 = (int)((SoundList*)EngineB::field_0xe8)->Register("audio\\ldu007_2.wav");
-    EngineB::field_0x124 = (int)((SoundList*)EngineB::field_0xe8)->Register("audio\\ldu006_1.wav");
-    Sample* sample104 = (Sample*)((SoundList*)EngineB::field_0xe8)->Register("audio\\ldu005_1.wav");
-    EngineB::field_0x104 = (int)sample104;
+    EngineB::field_0x120 = (int)sList->Register("audio\\ldu011_1.wav");
+    EngineB::field_0x108[2] = (int)sList->Register("audio\\ldu008_1.wav");
+    EngineB::field_0x108[3] = (int)sList->Register("audio\\ldu009_1.wav");
+    EngineB::field_0x118 = (int)sList->Register("audio\\ldu007_2.wav");
+    EngineB::field_0x124 = (int)sList->Register("audio\\ldu006_1.wav");
+    Sample* sample104 = (Sample*)sList->Register("audio\\ldu005_1.wav");
+    EngineB::m_ambientSound = (int)sample104;
     if (sample104 != 0) {
       sample104->Play(0x64, 1);
     }

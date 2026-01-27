@@ -2,15 +2,11 @@
 #define ENGINEB_H
 
 #include "Engine.h"
+#include "GlyphRect.h"
 
-struct SubObj16 {
-  int field_0;
-  int field_4;
-  int field_8;
-  int field_c;
-};
+class Animation;
 
-struct SubObj8 {
+struct IntPair {
   int field_0;
   int field_4;
 };
@@ -29,24 +25,24 @@ struct SubObj8 {
 class EngineB : public Engine {
 public:
   // EngineB-specific fields (Engine ends at 0xe8)
-  void* field_0xe8;     // 0xe8 - SoundList*
-  int field_0xec;       // 0xec
-  int field_0xf0[4];    // 0xf0-0xff
-  int field_0x100;      // 0x100
-  int field_0x104;      // 0x104
-  int field_0x108[4];   // 0x108-0x117
-  int field_0x118;      // 0x118
-  int field_0x11c;      // 0x11c
-  int field_0x120;      // 0x120
-  int field_0x124;      // 0x124
-  void* field_0x128;    // 0x128 - pointer to object with vtable
-  int field_0x12c;      // 0x12c
-  SubObj16 field_0x130; // 0x130-0x13f
-  SubObj16 field_0x140; // 0x140-0x14f
-  SubObj8 field_0x150;  // 0x150-0x157
-  SubObj8 field_0x158;  // 0x158-0x15f
-  int field_0x160;      // 0x160
-  int field_0x164;      // 0x164
+  SoundList* m_localSoundList;     // 0xe8 - local SoundList for combat sounds
+  int m_missSound;                 // 0xec - Sample* "audio\\slingmis.wav"
+  int field_0xf0[4];              // 0xf0-0xff
+  int m_completionSound;          // 0x100 - Sample* "audio\\ldu013_1.wav"
+  int m_ambientSound;             // 0x104 - Sample* "audio\\ldu005_1.wav"
+  int field_0x108[4];             // 0x108-0x117
+  int field_0x118;                // 0x118 - Sample* "audio\\ldu007_2.wav"
+  int field_0x11c;                // 0x11c - Sample* "audio\\ldu010_1.wav"
+  int field_0x120;                // 0x120 - Sample* "audio\\ldu011_1.wav"
+  int field_0x124;                // 0x124 - Sample* "audio\\ldu006_1.wav"
+  Animation* m_meterAnimation;    // 0x128 - "rat1\\nmeter.smk"
+  int m_meterBuffer;              // 0x12c - VBuffer* for meter blitting
+  GlyphRect m_meterEmptyRect;     // 0x130-0x13f - source rect for empty meter
+  GlyphRect m_meterFullRect;      // 0x140-0x14f - source rect for full meter
+  IntPair m_progress;             // 0x150-0x157 - {current, max}
+  IntPair m_meterPosition;        // 0x158-0x15f - {x, y} destination
+  int m_weaponParser;             // 0x160 - weapon/parser pointer
+  int m_targetConfig;             // 0x164 - allocated config object
 
   EngineB();
   virtual ~EngineB();
