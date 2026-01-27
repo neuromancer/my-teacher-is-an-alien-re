@@ -175,7 +175,7 @@ void Handler6::Update(int param1, int param2) {
     IconBar::Update(param1, param2);
 
     // Draw ambient
-    if (ambient) ambient->DoAll();
+    if (ambient) ambient->Draw();
     
     // Handle hotspot animation
     if (currentHotspot != 0) {

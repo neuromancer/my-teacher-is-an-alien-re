@@ -1,6 +1,6 @@
 #include "SC_Question.h"
 #include "Memory.h"
-#include "MouseControl.h"
+#include "MMPlayer.h"
 #include "SpriteList.h"
 #include "FlagArray.h"
 #include "TimedEvent.h"
@@ -92,7 +92,7 @@ void SC_Question::Update(int x, int y)
         break;
     case 1:
         if (mouseControl != 0) {
-            if (((SpriteList*)mouseControl)->DoAll() == 0) {
+            if (mouseControl->Draw() == 0) {
                 Finalize();
             }
         }
@@ -201,7 +201,7 @@ int SC_Question::LBLParse(char* param_1)
     sscanf(param_1, "%s", local_34);
     
     if (strcmp(local_34, "OVERLAYS") == 0) {
-        MouseControl* mc = new MouseControl();
+        MMPlayer* mc = new MMPlayer();
         mouseControl = mc;
         Parser::ProcessFile(mc, this, 0);
     }

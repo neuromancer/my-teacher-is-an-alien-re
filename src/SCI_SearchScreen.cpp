@@ -22,7 +22,7 @@ SCI_SearchScreen::SCI_SearchScreen() {
 /* Function start: 0x40AD70 */
 SCI_SearchScreen::~SCI_SearchScreen() {
     Palette* pal;
-    MouseControl* mouse;
+    MMPlayer* mouse;
     MMPlayer2* dialog;
     DialogControl* dc;
     int i;
@@ -235,7 +235,7 @@ int SCI_SearchScreen::LBLParse(char* line) {
     sscanf(line, "%s", token);
 
     if (strcmp(token, "BACKGROUND") == 0) {
-        field_604 = new MouseControl();
+        field_604 = new MMPlayer();
         ProcessFile(field_604, this, 0);
     } else if (strcmp(token, "PALE") == 0) {
         if (field_600 == 0) {

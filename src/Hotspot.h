@@ -3,19 +3,19 @@
 
 #include "Parser.h"
 #include "Sprite.h"
-#include "MouseControl.h"
+#include "MMPlayer.h"
 #include "GlyphRect.h"
 
-// SpriteList is typedef'd to MouseControl in MouseControl.h
+// SpriteList is typedef'd to MMPlayer in MMPlayer.h
 
 class Hotspot : public Parser {
 public:
     Hotspot();                      // 0x40D300
     virtual ~Hotspot();             // 0x40D3A0
 
-    MouseControl* hotspot;          // 0x88
-    MouseControl* right_tool;       // 0x8C
-    MouseControl* wrong_tool;       // 0x90
+    MMPlayer* hotspot;          // 0x88
+    MMPlayer* right_tool;       // 0x8C
+    MMPlayer* wrong_tool;       // 0x90
     Queue* pre_message;             // 0x94
     Queue* message;                 // 0x98
     char label[32];                 // 0x9C

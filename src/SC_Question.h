@@ -4,7 +4,7 @@
 #include "Parser.h"
 #include "Queue.h"
 
-class MouseControl;
+class MMPlayer;
 
 class SC_Message : public Parser {
 public:
@@ -33,7 +33,7 @@ public:
 class SC_Question : public Parser
 {
 public:
-    MouseControl* mouseControl; // 0x88
+    MMPlayer* mouseControl; // 0x88
     Queue* messageQueue;        // 0x8c
     int questionId;             // 0x90 - question ID passed to constructor
     int field_94;

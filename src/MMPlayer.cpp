@@ -1,4 +1,4 @@
-#include "MouseControl.h"
+#include "MMPlayer.h"
 #include "Memory.h"
 #include "Sprite.h"
 #include "string.h"
@@ -6,13 +6,8 @@
 #include <string.h>
 #include <stdio.h>
 
-// C wrapper for MouseControl constructor (used by SCI_AfterSchoolMenu)
-extern "C" void* MouseControl_Constructor(void* mem) {
-    return new(mem) MouseControl();
-}
-
 /* Function start: 0x41F280 */
-MouseControl::MouseControl()
+MMPlayer::MMPlayer()
 {
     field_0x88 = 0;
     field_0x8c = 0;
@@ -30,7 +25,7 @@ MouseControl::MouseControl()
 }
 
 /* Function start: 0x41F360 */
-MouseControl::~MouseControl()
+MMPlayer::~MMPlayer()
 {
     QueueNode* node;
     QueueNode* current;
@@ -78,7 +73,7 @@ MouseControl::~MouseControl()
 }
 
 /* Function start: 0x41F480 */
-void MouseControl::StopAll()
+void MMPlayer::StopAll()
 {
     Queue* queue;
     QueueNode* current;
@@ -109,7 +104,7 @@ void MouseControl::StopAll()
 }
 
 /* Function start: 0x41F4F0 */
-void MouseControl::Init()
+void MMPlayer::Init()
 {
     Queue* queue;
     QueueNode* current;
@@ -141,7 +136,7 @@ void MouseControl::Init()
 }
 
 /* Function start: 0x41F560 */
-void MouseControl::AddSprite(Sprite* s)
+void MMPlayer::AddSprite(Sprite* s)
 {
     if (s == 0)
     {
@@ -272,7 +267,7 @@ void MouseControl::AddSprite(Sprite* s)
 }
 
 /* Function start: 0x41F800 */
-int MouseControl::DoAll()
+int MMPlayer::Draw()
 {
     Queue* queue;
     QueueNode* current;
@@ -311,7 +306,7 @@ int MouseControl::DoAll()
 }
 
 /* Function start: 0x41F8A0 */
-int MouseControl::LBLParse(char* param_1)
+int MMPlayer::LBLParse(char* param_1)
 {
     char local_34[32];
     Sprite* sprite;

@@ -9,7 +9,7 @@
 #include "Sprite.h"
 #include "Sample.h"
 #include "Mouse.h"
-#include "MouseControl.h"
+#include "MMPlayer.h"
 #include "Hotspot.h"
 #include "InputManager.h"
 #include "SC_Question.h"
@@ -35,7 +35,7 @@ extern "C" {
 int SCI_AfterSchoolMenu::LBLParse(char* line) {
     char label[32];
     char filepath[64];
-    MouseControl* mc;
+    MMPlayer* mc;
     Palette* pal;
     T_Hotspot* hotspot;
     OptionMenu* optMenu;
@@ -43,7 +43,7 @@ int SCI_AfterSchoolMenu::LBLParse(char* line) {
     sscanf(line, "%s", label);
 
     if (strcmp(label, "BACK") == 0) {
-        mc = new MouseControl();
+        mc = new MMPlayer();
         background = mc;
         Parser::ProcessFile(mc, this, (char*)0);
     } else if (strcmp(label, "PALE") == 0) {
@@ -425,7 +425,7 @@ void SCI_AfterSchoolMenu::Update(int param1, int param2) {
 
     // Render background sprite
     if (background != 0) {
-        background->DoAll();
+        background->Draw();
     }
 
     // Render buttons

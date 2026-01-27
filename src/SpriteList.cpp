@@ -1,5 +1,5 @@
-// SpriteList has been merged into MouseControl
-// See MouseControl.cpp for implementations at:
+// SpriteList has been merged into MMPlayer
+// See MMPlayer.cpp for implementations at:
 // - 0x41F280: Constructor
 // - 0x41F360: Destructor
 // - 0x41F480: StopAll

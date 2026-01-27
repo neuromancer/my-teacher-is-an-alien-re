@@ -2,7 +2,7 @@
 #include "MMPlayer2.h"
 #include "Mouse.h"
 #include "string.h"
-#include "MouseControl.h"
+#include "MMPlayer.h"
 #include "Sprite.h"
 #include "Queue.h"
 #include "Memory.h"
@@ -27,7 +27,7 @@ SCI_Dialog::SCI_Dialog() {
 
 /* Function start: 0x407070 */
 SCI_Dialog::~SCI_Dialog() {
-    MouseControl* mc;
+    MMPlayer* mc;
     MMPlayer2* dlg;
     Sprite* spr;
     Queue* queue;
@@ -120,7 +120,7 @@ void SCI_Dialog::Init(SC_Message* msg) {
     DialogInitData* initData = (DialogInitData*)msg->userPtr;
     if (initData != 0 && msg->targetAddress == 0xb) {
         msg->userPtr = 0;
-        field_600 = (MouseControl*)initData->ptr1;
+        field_600 = (MMPlayer*)initData->ptr1;
         field_604 = (MMPlayer2*)initData->ptr2;
         initData->ptr1 = 0;
         initData->ptr2 = 0;
@@ -401,7 +401,7 @@ void SCI_Dialog::Update(int param1, int param2) {
     if (handlerId != param2) return;
 
     IconBar::Update(param1, param2);
-    if (field_600 != 0) field_600->DoAll();
+    if (field_600 != 0) field_600->Draw();
     g_Mouse_00436978->DrawCursor();
 
     if (field_614 != 0) {

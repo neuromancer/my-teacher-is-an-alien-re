@@ -1,5 +1,5 @@
-#ifndef MOUSECONTROL_H
-#define MOUSECONTROL_H
+#ifndef MMPLAYER_H
+#define MMPLAYER_H
 
 #include "Parser.h"
 #include "Queue.h"
@@ -7,7 +7,7 @@
 class Sprite;
 
 /**
- * MouseControl - Mouse Interaction Area Management (also known as SpriteList)
+ * MMPlayer - Mouse Interaction Area Management (also known as SpriteList)
  *
  * This class manages clickable regions via a Queue of Sprite objects:
  * - Used by SC_Question, SearchScreen, SCI_AfterSchoolMenu etc. for interactive menus
@@ -20,15 +20,15 @@ class Sprite;
  * NOTE: This is DIFFERENT from Mouse (0x1C0 / 448 bytes), which manages
  * cursor rendering/appearance (sprites, hotspots, labels, audio). Do not merge.
  */
-class MouseControl : public Parser {
+class MMPlayer : public Parser {
 public:
-    MouseControl();
-    ~MouseControl();
+    MMPlayer();
+    ~MMPlayer();
 
     virtual int LBLParse(char* param_1);  // 0x41F8A0
     void Init();            // 0x41F4F0
     void StopAll();         // 0x41F480
-    int DoAll();            // 0x41F800
+    int Draw();            // 0x41F800
     void AddSprite(Sprite* s);  // 0x41F560
 
     int field_0x88;           // 0x88
@@ -37,7 +37,7 @@ public:
     Queue* m_queue;           // 0x94
 };
 
-// SpriteList is the same class as MouseControl
-typedef MouseControl SpriteList;
+// SpriteList is the same class as MMPlayer
+typedef MMPlayer SpriteList;
 
-#endif // MOUSECONTROL_H
+#endif // MMPLAYER_H

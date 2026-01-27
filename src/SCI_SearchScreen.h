@@ -3,7 +3,7 @@
 
 #include "IconBar.h"
 #include "Palette.h"
-#include "MouseControl.h"
+#include "MMPlayer.h"
 #include "MMPlayer2.h"
 #include "Hotspot.h"
 #include "Sample.h"
@@ -42,7 +42,7 @@ private:
 
 public:
     Palette* field_600;              // 0x600
-    MouseControl* field_604;         // 0x604
+    MMPlayer* field_604;         // 0x604
     MMPlayer2* field_608;            // 0x608
     DialogControl* field_60C[10];    // 0x60C-0x633
     DialogControl* field_634;        // 0x634

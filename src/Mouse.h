@@ -17,9 +17,9 @@ class Sample;
  * Size: 0x1C0 (448 bytes)
  * Functions: 0x41ECA0-0x41F200, 0x422D98
  * 
- * NOTE: This is DIFFERENT from MouseControl (0x98 bytes), which manages
+ * NOTE: This is DIFFERENT from MMPlayer (0x98 bytes), which manages
  * clickable interaction areas via a Queue of Sprite objects. Do not merge.
- * The similarity in names is due to the string "MouseControl" being used
+ * The similarity in names is due to the string "MMPlayer" being used
  * in Mouse::LBLParse for unknown command delegation.
  */
 extern "C" int SetCursorVisible(unsigned int);

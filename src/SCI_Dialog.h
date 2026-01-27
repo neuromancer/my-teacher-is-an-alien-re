@@ -6,7 +6,7 @@
 
 class SC_Message;
 class MMPlayer2;
-class MouseControl;
+class MMPlayer;
 class Sprite;
 class Queue;
 
@@ -46,7 +46,7 @@ public:
     DialogQuestion* FindDialogById(int id);
 
     // Fields
-    MouseControl* field_600;
+    MMPlayer* field_600;
     MMPlayer2* field_604;
     Sprite* field_608;
     Sprite* field_60C;

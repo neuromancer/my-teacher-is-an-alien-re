@@ -4,7 +4,7 @@
 #include "Message.h"
 #include "Memory.h"
 #include "Sprite.h"
-#include "MouseControl.h"
+#include "MMPlayer.h"
 #include "TimedEvent.h"
 #include "globals.h"
 #include "string.h"
@@ -30,7 +30,7 @@ T_Hotspot::T_Hotspot()
 T_Hotspot::~T_Hotspot()
 {
     Sprite* spr;
-    MouseControl* mc;
+    MMPlayer* mc;
 
     spr = sprite;
     if (spr != 0) {
@@ -121,7 +121,7 @@ int T_Hotspot::Update(int param_1, int param_2, int param_3)
 
     switch (state) {
     case 1:
-        if (list1 == 0 || list1->DoAll() != 0) {
+        if (list1 == 0 || list1->Draw() != 0) {
             state = 2;
         }
         if (state != 2) {
@@ -129,7 +129,7 @@ int T_Hotspot::Update(int param_1, int param_2, int param_3)
         }
     case 2:
         if (list2 != 0) {
-            if (list2->DoAll() != 0) {
+            if (list2->Draw() != 0) {
                 state = 3;
                 return 0;
             }
@@ -146,7 +146,7 @@ int T_Hotspot::Update(int param_1, int param_2, int param_3)
         return 0;
     case 3:
         if (list3 != 0) {
-            if (list3->DoAll() != 0) {
+            if (list3->Draw() != 0) {
                 state = 1;
                 return 1;
             }
@@ -288,13 +288,13 @@ int Hotspot::LBLParse(char* line)
         rect.right = r;
         rect.bottom = b;
     } else if (strcmp(keyword, "HOTSBEGIN") == 0) {
-        hotspot = new MouseControl();
+        hotspot = new MMPlayer();
         Parser::ProcessFile(hotspot, this, 0);
     } else if (strcmp(keyword, "RIGHT_TOOL") == 0) {
-        right_tool = new MouseControl();
+        right_tool = new MMPlayer();
         Parser::ProcessFile(right_tool, this, 0);
     } else if (strcmp(keyword, "WRONG_TOOL") == 0) {
-        wrong_tool = new MouseControl();
+        wrong_tool = new MMPlayer();
         Parser::ProcessFile(wrong_tool, this, 0);
     } else if (strcmp(keyword, "PREMESSAGE") == 0) {
         if (!pre_message) pre_message = new Queue();
@@ -434,7 +434,7 @@ unsigned char Hotspot::Do()
         QueueEvents(pre_message);
         state = 2;
     case 2:
-        if (hotspot == 0 || hotspot->DoAll() == 0) {
+        if (hotspot == 0 || hotspot->Draw() == 0) {
             state = 4;
         }
         if (state != 4) return 0;

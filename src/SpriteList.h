@@ -1,9 +1,9 @@
 #ifndef SPRITELIST_H
 #define SPRITELIST_H
 
-// SpriteList class is now merged into MouseControl
+// SpriteList class is now merged into MMPlayer
 // This header provides backwards compatibility
-#include "MouseControl.h"
+#include "MMPlayer.h"
 
 struct SpriteListNode;
 

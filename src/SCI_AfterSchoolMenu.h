@@ -9,7 +9,7 @@ class SC_Message;
 class Palette;
 class Sprite;
 class Sample;
-class MouseControl;
+class MMPlayer;
 class Hotspot;
 class OptionMenu;
 
@@ -88,7 +88,7 @@ public:
 
     // SCI_AfterSchoolMenu-specific fields starting at 0x600
     Palette* palette;           // 0x600
-    MouseControl* background;   // 0x604
+    MMPlayer* background;   // 0x604
     OptionMenu* choiceScreen;   // 0x608
     T_Hotspot* goButton;          // 0x60C - CharButton*
     T_Hotspot* cancelButton;      // 0x610 - CharButton*
