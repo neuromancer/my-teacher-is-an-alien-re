@@ -75,6 +75,34 @@ public:
   StateManager() {}
 };
 
+struct HotspotNode {
+    HotspotNode* next;  // 0x0
+    int field_4;        // 0x4
+    int id;             // 0x8
+
+    HotspotNode() : next(0), field_4(0), id(0) {}
+};
+
+class TargetMember {
+public:
+    int val;
+    TargetMember() : val(0) {}
+    TargetMember(int v) : val(v) {}
+    ~TargetMember() {}
+};
+
+class HotspotListData {
+public:
+    int fields[6];      // 0x00
+    HotspotNode* head;  // 0x18
+    int currentId;      // 0x1c
+
+    HotspotListData() : head(0), currentId(0) {
+        memset(fields, 0, sizeof(fields));
+    }
+    ~HotspotListData() {}
+};
+
 class Target : public Sprite {
 public:
     // Target-specific fields (0xD8 - 0x157)
@@ -84,23 +112,19 @@ public:
     char* animFilename;   // 0xe0 - animation filename from INIT
     char* identifier;     // 0xe4 - identifier string from 'I' label
     int id;               // 0xe8
-    int field_0xec;       // 0xec
-    int endAnimState;     // 0xf0 - last animation state (from 'B' label)
-    int hitAnimOffset;    // 0xf4 - offset to hit animation state (from 'K' label)
-    int hitEndState;      // 0xf8 - last hit animation state (from 'K' label)
-    int timeMin;          // 0xfc - time range minimum (from 'P' label)
-    int timeMax;          // 0x100 - time range maximum (from 'P' label)
-    int progress;         // 0x104 - accumulated progress
-    int progressMax;      // 0x108 - progress threshold (from 'C' label)
+    Range animRange;      // 0xec
+    Range hitRange;       // 0xf4
+    Range timeRange;      // 0xfc
+    Range progressRange;  // 0x104
     int scoreIndex;       // 0x10c - score index (from 'V' label)
     int weight;           // 0x110 - weight value (from 'W' label)
     int hitPoints;        // 0x114 - points awarded on hit (from 'D' label)
     int missPoints;       // 0x118 - points deducted on miss
     int combatBonus1;     // 0x11c - added to combat engine field_0xb4
     int field_0x120;      // 0x120
-    int combatBonus2;     // 0x124 - added to combat engine field_0xc4
-    int field_0x128;      // 0x128
-    void* hotspotList;    // 0x12c - hotspot list structure
+    TargetMember combatBonus2; // 0x124 - added to combat engine field_0xc4
+    TargetMember field_0x128;  // 0x128
+    HotspotListData* hotspotList; // 0x12c - hotspot list structure
     Sample* stopSound;    // 0x130 - sound stopped on hit
     Sample* progressSound; // 0x134 - sound played on progress
     Sample* hitSound;     // 0x138 - sound played on hit

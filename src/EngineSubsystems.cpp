@@ -19,29 +19,15 @@ extern int FUN_00421f90(void* cdData, char* param);
 // ============================================================================
 
 /* Function start: 0x413DC0 */
-Target::Target() : Sprite((char*)0)
+Target::Target() : Sprite((char*)0), 
+    animRange(), hitRange(), timeRange(), progressRange(),
+    scoreIndex(0), weight(0),
+    hitPoints(0), missPoints(0),
+    combatBonus1(0), field_0x120(0),
+    combatBonus2(0), field_0x128(0),
+    animParam1(0), animParam2(0),
+    hitX(0), hitY(0)
 {
-    Target::field_0xec = 0;
-    Target::endAnimState = 0;
-    Target::hitAnimOffset = 0;
-    Target::hitEndState = 0;
-    Target::timeMin = 0;
-    Target::timeMax = 0;
-    Target::progress = 0;
-    Target::progressMax = 0;
-    Target::scoreIndex = 0;
-    Target::weight = 0;
-    Target::hitPoints = 0;
-    Target::missPoints = 0;
-    Target::combatBonus1 = 0;
-    Target::field_0x120 = 0;
-    Target::combatBonus2 = 0;
-    Target::field_0x128 = 0;
-    Target::animParam1 = 0;
-    Target::animParam2 = 0;
-    Target::hitX = 0;
-    Target::hitY = 0;
-
     memset((char*)this + 0xd8, 0, 0x80);
 
     Target::active = 0;
@@ -63,6 +49,7 @@ Target::~Target()
     }
 
     if (Target::hotspotList != 0) {
+        Target::hotspotList->~HotspotListData();
         FreeMemory(Target::hotspotList);
         Target::hotspotList = 0;
     }
@@ -135,7 +122,7 @@ int Target::CheckTimeInRange()
         x = 0;
     }
     result = GetPixelAt(x, y);
-    if (Target::timeMin <= result && result <= Target::timeMax) {
+    if (Target::timeRange.start <= result && result <= Target::timeRange.end) {
         return 1;
     }
     return 0;
@@ -147,7 +134,7 @@ int Target::CheckTimeInRangeParam(int* coords)
     int result;
 
     result = GetPixelAt(coords[0], coords[1]);
-    if (Target::timeMin <= result && result <= Target::timeMax) {
+    if (Target::timeRange.start <= result && result <= Target::timeRange.end) {
         return 1;
     }
     return 0;
@@ -156,25 +143,23 @@ int Target::CheckTimeInRangeParam(int* coords)
 /* Function start: 0x414350 */
 int Target::AdvanceHotspot()
 {
-    int* listData;
-    int* hotspotIdPtr;
-    int* nodePtr;
+    HotspotListData* list;
+    HotspotNode* node;
 
-    listData = (int*)Target::hotspotList;
-    if (listData != 0) {
-        hotspotIdPtr = (int*)((char*)listData + 0x1c);
+    list = Target::hotspotList;
+    if (list != 0) {
         if (Target::animation_data == 0) {
-            if (*hotspotIdPtr == 0) {
+            if (list->currentId == 0) {
                 goto advance;
             }
-        } else if (*(int*)((char*)Target::animation_data->smk + 0x374) == *hotspotIdPtr) {
+        } else if (Target::animation_data->smk->FrameNum == list->currentId) {
 advance:
-            nodePtr = (int*)*(int*)((char*)listData + 0x18);
-            if (nodePtr == 0) {
-                *hotspotIdPtr = -1;
+            node = list->head;
+            if (node == 0) {
+                list->currentId = -1;
             } else {
-                *(int*)((char*)listData + 0x18) = *nodePtr;
-                *hotspotIdPtr = nodePtr[2];
+                list->head = node->next;
+                list->currentId = node->id;
             }
             ((TargetList*)DAT_00435f0c)->currentTarget = this;
             return 1;
@@ -193,11 +178,11 @@ void Target::UpdateProgress(int delta)
     if (Target::active != 1) {
         return;
     }
-    newValue = Target::progress + delta;
-    Target::progress = newValue;
-    if (Target::progressMax == 0) {
+    newValue = Target::progressRange.start + delta;
+    Target::progressRange.start = newValue;
+    if (Target::progressRange.end == 0) {
         shouldTrigger = 0;
-    } else if (newValue >= Target::progressMax) {
+    } else if (newValue >= Target::progressRange.end) {
         shouldTrigger = 1;
     } else {
         shouldTrigger = 0;
@@ -226,7 +211,7 @@ int Target::Update()
     }
     state = Target::pendingAction;
     if (state == 1) {
-        if (Target::endAnimState == Target::current_state) {
+        if (Target::animRange.end == Target::current_state) {
             *g_ScoreManager = *g_ScoreManager - Target::missPoints;
             Target::Deactivate();
             return 1;
@@ -234,7 +219,7 @@ int Target::Update()
         Sprite::SetState2(Target::current_state + 1);
     } else if (state == 3) {
         Target::active = 3;
-        Sprite::SetState2(Target::hitAnimOffset + Target::current_state);
+        Sprite::SetState2(Target::hitRange.start + Target::current_state);
         if ((Target::targetFlags & 1) != 0) {
             tmpX = Target::hitX;
             tmpY = Target::hitY;
@@ -253,7 +238,7 @@ int Target::Update()
         *g_ScoreManager = *g_ScoreManager + Target::hitPoints;
         FUN_00416ba0(g_ScoreManager, Target::scoreIndex);
         g_CombatEngine->field_0xb4 = g_CombatEngine->field_0xb4 + Target::combatBonus1;
-        g_CombatEngine->field_0xc4 = g_CombatEngine->field_0xc4 + Target::combatBonus2;
+        g_CombatEngine->field_0xc4 = g_CombatEngine->field_0xc4 + Target::combatBonus2.val;
     }
     Target::pendingAction = 0;
     doResult = Sprite::Do(Target::loc_x, Target::loc_y, 1.0);
@@ -343,13 +328,13 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
             Target::SetRange(DAT_004362cc, value1, value2);
-            Target::endAnimState = DAT_004362cc;
+            Target::animRange.end = DAT_004362cc;
             DAT_004362c8 = value2;
             DAT_004362cc++;
         }
     }
     else if (firstChar == 'C') {
-        sscanf(line + 1, "%d", &Target::progressMax);
+        sscanf(line + 1, "%d", &Target::progressRange.end);
     }
     else if (firstChar == 'D') {
         sscanf(line + 3, "%d", &Target::hitPoints);
@@ -362,11 +347,11 @@ int Target::LBLParse(char* line)
         if (result == 1) {
             // Simplified hotspot handling - allocate list if needed
             if (Target::hotspotList == 0) {
-                Target::hotspotList = AllocateMemory(0x20);
+                Target::hotspotList = new HotspotListData;
                 if (Target::hotspotList != 0) {
-                    memset(Target::hotspotList, 0, 0x20);
-                    ((int*)Target::hotspotList)[5] = 10;
-                    ((int*)Target::hotspotList)[7] = -1;
+                    memset(Target::hotspotList, 0, sizeof(HotspotListData));
+                    Target::hotspotList->fields[5] = 10;
+                    Target::hotspotList->currentId = -1;
                 }
             }
             // Add hotspot value to list (simplified)
@@ -387,10 +372,10 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
             Target::SetRange(DAT_004362cc, value1, value2);
-            if (Target::hitAnimOffset == 0) {
-                Target::hitAnimOffset = DAT_004362cc;
+            if (Target::hitRange.start == 0) {
+                Target::hitRange.start = DAT_004362cc;
             }
-            Target::hitEndState = DAT_004362cc;
+            Target::hitRange.end = DAT_004362cc;
             DAT_004362cc++;
         }
     }
@@ -399,7 +384,7 @@ int Target::LBLParse(char* line)
         Target::targetFlags |= 1;
     }
     else if (firstChar == 'P') {
-        sscanf(line + 3, "%d %d", &Target::timeMin, &Target::timeMax);
+        sscanf(line + 3, "%d %d", &Target::timeRange.start, &Target::timeRange.end);
     }
     else if (firstChar == 'S') {
         Target::ParseSound(line);

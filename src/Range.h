@@ -4,8 +4,8 @@
 struct Range {
     int start;   // 0x00
     int end;     // 0x04
-    Range();     // Constructor - generates thunk at 0x41d850
-    ~Range() {}  // Destructor - inline, trivial
+    inline Range() : start(0), end(0) {}
+    ~Range() {}
 };
 
 #endif // RANGE_H
