@@ -216,57 +216,53 @@ void Animation::Play(char *filename, unsigned int flags) {
 
 /* Function start: 0x420020 */
 void Animation::MainLoop() {
-  if (smk == 0) {
-    return;
-  }
+  if (!smk) return;
 
-  int frame = 1;
   targetBuffer->SetCurrentVideoMode(targetBuffer->handle);
+  int frame = 1;
+  int skipFlag = 4;
+
   if (smk->Frames >= frame) {
     do {
-      if (smk->NewPalette != 0) {
+      if (smk->NewPalette) {
         SetPalette(0, 0x100);
       }
       DoFrame();
-      do {
-        if (g_InputManager_00436968->PollEvents(1) != 0) {
-          goto end_loop;
-        }
-        if ((flags & 4) == 0) {
-          InputState* pMouse = g_InputManager_00436968->pMouse;
-          unsigned int uVar3 = 0;
-          if (pMouse != 0) {
-            uVar3 = pMouse->buttons & 2; // offset 8
-          }
-          if (uVar3 != 0 || (pMouse->prevButtons & 2) == 0) { // offset 0xc equals prevButtons
-            int bVar5 = 0;
-            if (DAT_004373bc != 0) {
-              bVar5 = WaitForInput() == 0x1b;
-            }
-            if (!bVar5) {
-              goto wait;
+
+      while (true) {
+        if (g_InputManager_00436968->PollEvents(1)) goto end_loop;
+
+        if (!(flags & skipFlag)) {
+          InputState *pMouse = g_InputManager_00436968->pMouse;
+          int buttons = 0;
+          if (pMouse) buttons = pMouse->buttons & 2;
+
+          if (!buttons) {
+            if (pMouse->prevButtons & 2) {
+              playStatus |= 1;
+              goto end_loop;
             }
           }
-          playStatus |= 1;
-          goto end_loop;
+
+          if (DAT_004373bc && WaitForInput() == 0x1b) {
+            playStatus |= 1;
+            goto end_loop;
+          }
         }
-      wait:;
-      } while (SmackWait(smk) != 0);
 
-      VBuffer *vbuffer = targetBuffer;
-      int iVar1 = *GetWindowHeight() - 1;
-      int iVar2 = *GetWindowWidth() - 1;
-      vbuffer->CallBlitter5(
-          vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->clip_y1,
-          vbuffer->clip_y2, 0, iVar2, 0, iVar1);
-
-      if (smk->Frames - 1 <= frame) {
-        break;
+        if (!SmackWait(smk)) break;
       }
+
+      VBuffer *vb = targetBuffer;
+      vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0,
+                       *GetWindowWidth() - 1, 0, *GetWindowHeight() - 1);
+
+      if (smk->Frames - 1 <= frame) break;
       frame++;
       NextFrame();
-    } while (frame <= smk->Frames);
+    } while (smk->Frames >= frame);
   }
+
 end_loop:
   targetBuffer->InvalidateVideoMode();
 }

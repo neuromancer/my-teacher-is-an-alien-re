@@ -41,7 +41,6 @@ Character* DAT_00435a78 = 0;
 Character* DAT_00435a7c = 0;
 int DAT_00435a80 = 0;
 FlagArray* g_Manager_00435a84 = 0;
-char* g_StateString_00436994 = 0;
 
 static char s_TeacherDemo[] = "Teacher Demo"; 
 
