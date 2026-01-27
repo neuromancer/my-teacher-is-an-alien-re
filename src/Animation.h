@@ -4,14 +4,14 @@
 #include "VBuffer.h"
 #include <smack.h>
 #include <windows.h>
+#include "Range.h"
 
 class Animation {
 public:
   int field_4;              // 0x4 - unused/reserved
   VBuffer *vbuffer;         // 0x8 - internal frame buffer
   HSMACK smk;               // 0xc - smacker file handle
-  int field_10;             // 0x10 - unused/reserved
-  int field_14;             // 0x14 - unused/reserved
+  Range range_10;           // 0x10 - previously field_10/14
   VBuffer *targetBuffer;    // 0x18 - render target buffer
   unsigned int flags;       // 0x1c - playback flags
   unsigned int playStatus;  // 0x20 - status (bit 0: user cancelled)
@@ -20,7 +20,7 @@ public:
 
   Animation();
   Animation(char *filename);
-  ~Animation();
+  virtual ~Animation();
   void AnimationInit();
   int Open(char *, int, int);
   void ToBuffer();

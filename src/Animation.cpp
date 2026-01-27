@@ -26,8 +26,6 @@ extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, un
 
 /* Function start: 0x41FA50 */
 Animation::Animation() {
-  field_10 = 0;
-  field_14 = 0;
   CleanArray10();
 }
 
@@ -41,18 +39,13 @@ void Animation::Delete(unsigned char param_1) {
 
 /* Function start: 0x41FAE0 */
 Animation::Animation(char *filename) {
-  field_10 = 0;
-  field_14 = 0;
   CleanArray10();
   OpenAndConvertToBuffer(filename);
 }
 
 /* Function start: 0x41FB60 */
 void Animation::CleanArray10() {
-  int *p = (int *)((char *)this + 4);
-  for (int i = 0; i < 10; i++) {
-    *p++ = 0;
-  }
+  memset((char *)this + 4, 0, 40);
 }
 
 /* Function start: 0x41FB70 */

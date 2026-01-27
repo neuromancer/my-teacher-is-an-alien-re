@@ -12,6 +12,13 @@ struct IntPair {
   int field_4;
 };
 
+struct MeterPos {
+  int x;
+  int y;
+  MeterPos() { x = 0; y = 0; }
+  ~MeterPos() { }
+};
+
 // EngineB inherits from Engine (vtable 0x4313c0, size 0x168)
 // Used for combat/action scenes (COMBAT1.MIS)
 //
@@ -47,7 +54,7 @@ public:
   GlyphRect m_meterEmptyRect;     // 0x130-0x13f - source rect for empty meter
   GlyphRect m_meterFullRect;      // 0x140-0x14f - source rect for full meter
   IntPair m_progress;             // 0x150-0x157 - {current, max}
-  IntPair m_meterPosition;        // 0x158-0x15f - {x, y} destination
+  MeterPos m_meterPosition;        // 0x158-0x15f - {x, y} destination
   Parser* m_weaponParser;         // 0x160 - weapon/parser pointer
   int* m_targetConfig;            // 0x164 - allocated config object
 
@@ -61,8 +68,6 @@ public:
   virtual void Draw();                    // vtable[12] 0x412300
   virtual void UpdateMeter();             // vtable[13] 0x412490
   virtual void PlayCompletionSound();     // vtable[17] 0x412640
-
-  void DestructorHelper();  // 0x412210
 };
 
 #endif // ENGINEB_H

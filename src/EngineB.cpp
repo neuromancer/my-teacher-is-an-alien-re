@@ -37,32 +37,25 @@ EngineB::EngineB() {
   EngineB::m_progress.field_0 = 0;
   EngineB::m_progress.field_4 = 0;
 
-  // Initialize IntPair at 0x158
-  EngineB::m_meterPosition.field_0 = 0;
-  EngineB::m_meterPosition.field_4 = 0;
+  // Initialize MeterPos at 0x158
+  EngineB::m_meterPosition.x = 0;
+  EngineB::m_meterPosition.y = 0;
 
   memset(&m_localSoundList, 0, 0x80);
 }
 
 /* Function start: 0x4121f0 */
 EngineB::~EngineB() {
-  EngineB::DestructorHelper();
-}
-
-/* Function start: 0x412210 */
-void EngineB::DestructorHelper() {
-  // Delete m_meterAnimation
-  Animation* obj128 = EngineB::m_meterAnimation;
-  if (obj128 != 0) {
-    delete obj128;
-    EngineB::m_meterAnimation = 0;
+  // Delete m_meterAnimation (offset 0x128)
+  if (m_meterAnimation != 0) {
+    delete m_meterAnimation;
+    m_meterAnimation = 0;
   }
 
-  // Delete m_localSoundList
-  SoundList* soundList = EngineB::m_localSoundList;
-  if (soundList != 0) {
-    delete soundList;
-    EngineB::m_localSoundList = 0;
+  // Delete m_localSoundList (offset 0xe8)
+  if (m_localSoundList != 0) {
+    delete m_localSoundList;
+    m_localSoundList = 0;
   }
 }
 
@@ -176,8 +169,8 @@ void EngineB::UpdateMeter() {
       0, barPos,
       EngineB::m_meterFullRect.top,
       EngineB::m_meterFullRect.bottom,
-      EngineB::m_meterPosition.field_0,
-      EngineB::m_meterPosition.field_4,
+      EngineB::m_meterPosition.x,
+      EngineB::m_meterPosition.y,
       (VBuffer*)EngineB::m_meterBuffer);
 
     // Draw second part of progress bar
@@ -186,8 +179,8 @@ void EngineB::UpdateMeter() {
       EngineB::m_meterFullRect.right,
       EngineB::m_meterEmptyRect.top,
       EngineB::m_meterEmptyRect.bottom,
-      EngineB::m_meterPosition.field_0 + barPos,
-      EngineB::m_meterPosition.field_4,
+      EngineB::m_meterPosition.x + barPos,
+      EngineB::m_meterPosition.y,
       (VBuffer*)EngineB::m_meterBuffer);
   } else {
     // Progress complete - use TimeOut
@@ -202,8 +195,8 @@ void EngineB::UpdateMeter() {
       EngineB::m_meterFullRect.right,
       EngineB::m_meterFullRect.top,
       EngineB::m_meterFullRect.bottom,
-      EngineB::m_meterPosition.field_0,
-      EngineB::m_meterPosition.field_4,
+      EngineB::m_meterPosition.x,
+      EngineB::m_meterPosition.y,
       (VBuffer*)EngineB::m_meterBuffer);
 
     // Check if TimeOut is active by comparing first dword (m_isActive) to 1
@@ -328,8 +321,8 @@ void EngineB::OnProcessEnd() {
   EngineB::m_meterFullRect.bottom = 0x21;
   EngineB::m_progress.field_0 = 0;
   EngineB::m_progress.field_4 = 0x36;
-  EngineB::m_meterPosition.field_0 = 0x20;
-  EngineB::m_meterPosition.field_4 = 0x14;
+  EngineB::m_meterPosition.x = 0x20;
+  EngineB::m_meterPosition.y = 0x14;
 
   // Register sounds if g_SoundList_00435f1c is available
   if (g_SoundList_00435f1c != 0) {
