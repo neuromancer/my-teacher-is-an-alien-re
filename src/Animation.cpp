@@ -189,9 +189,8 @@ void Animation::ToBufferVB(VBuffer *buffer) {
 
 /* Function start: 0x41FF30 */
 void Animation::Play(char *filename, unsigned int flags) {
-  Palette *palette;
-
   Animation::flags = flags;
+  Palette *palette = 0;
   Animation::playStatus = 0;
 
   if ((flags & 1) == 0) {
@@ -199,7 +198,7 @@ void Animation::Play(char *filename, unsigned int flags) {
     palette->CopyEntries(0, 0x100);
   }
 
-  if ((flags & 2) == 0) {
+  if ((Animation::flags & 2) == 0) {
     BlankScreen();
   }
 
@@ -208,7 +207,7 @@ void Animation::Play(char *filename, unsigned int flags) {
   MainLoop();
   CloseSmackerFile();
 
-  if (palette != 0) {
+  if (palette) {
     BlankScreen();
     palette->SetPalette(0, 0x100);
     delete palette;
