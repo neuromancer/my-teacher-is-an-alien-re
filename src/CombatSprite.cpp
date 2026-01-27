@@ -1,4 +1,5 @@
 #include "CombatSprite.h"
+#include "Memory.h"
 #include "string.h"
 #include <stdio.h>
 #include <string.h>
@@ -7,12 +8,224 @@
 SpriteHashTable* g_CurrentSprite = 0;   // 0x436348
 int g_CurrentSpriteIndex = 0;           // 0x43634c
 
-CombatSprite::CombatSprite() : Parser() {
-    CombatSprite::spriteTable = 0;
+// External declaration for Parser destructor helper
+extern void FUN_0041556a();
+
+/* Function start: 0x415220 */
+void SpriteHashTable::Clear() {
+    int* node;
+    int* poolBlock;
+    int* nextPool;
+    int delayCounter;
+
+    node = (int*)SpriteHashTable::buckets;
+    while (node != 0) {
+        delayCounter = 0;
+        do {
+            int temp = delayCounter;
+            delayCounter = delayCounter - 1;
+            if (temp == 0) break;
+        } while (1);
+        node = (int*)*node;
+    }
+
+    SpriteHashTable::head = 0;
+    SpriteHashTable::tail = 0;
+    SpriteHashTable::maxSize = 0;
+    SpriteHashTable::buckets = 0;
+
+    poolBlock = (int*)SpriteHashTable::count;
+    while (poolBlock != 0) {
+        nextPool = (int*)*poolBlock;
+        FreeMemory(poolBlock);
+        poolBlock = nextPool;
+    }
+    SpriteHashTable::count = 0;
 }
 
+/* Function start: 0x415270 */
+void SpriteHashTable::AllocateBuckets(int size, int flag) {
+    int* newBuckets;
+    int count;
+
+    if (SpriteHashTable::buckets != 0) {
+        FreeMemory(SpriteHashTable::buckets);
+        SpriteHashTable::buckets = 0;
+    }
+
+    if (flag != 0) {
+        newBuckets = (int*)AllocateMemory(size * 4);
+        count = (size * 4) >> 2;
+        SpriteHashTable::buckets = (void**)newBuckets;
+        while (count != 0) {
+            *newBuckets = 0;
+            newBuckets++;
+            count--;
+        }
+    }
+    SpriteHashTable::maxSize = size;
+}
+
+/* Function start: 0x4152D0 */
+void* SpriteHashTable::AllocateNode() {
+    int* newPool;
+    int* node;
+    int i;
+    int delayCounter;
+
+    if (SpriteHashTable::tail == 0) {
+        newPool = (int*)AllocateMemory(SpriteHashTable::growSize * 16 + 4);
+        *newPool = SpriteHashTable::count;
+        i = SpriteHashTable::growSize;
+        SpriteHashTable::count = (int)newPool;
+        node = (int*)((char*)newPool + i * 16 - 12);
+        i = i - 1;
+        while (i >= 0) {
+            *node = (int)SpriteHashTable::tail;
+            SpriteHashTable::tail = node;
+            node = node - 4;
+            i = i - 1;
+        }
+    }
+
+    node = (int*)SpriteHashTable::tail;
+    SpriteHashTable::tail = (void*)*node;
+    SpriteHashTable::head = (void*)((int)SpriteHashTable::head + 1);
+    node[2] = 0;
+    delayCounter = 0;
+    do {
+        int temp = delayCounter;
+        delayCounter = delayCounter - 1;
+        if (temp == 0) break;
+    } while (1);
+    node[3] = 0;
+    delayCounter = 0;
+    do {
+        int temp = delayCounter;
+        delayCounter = delayCounter - 1;
+        if (temp == 0) break;
+    } while (1);
+    return node;
+}
+
+/* Function start: 0x415340 */
+void FreePointerArray(void** arr, int count) {
+    int temp;
+    temp = count;
+    count = count - 1;
+    if (temp == 0) {
+        return;
+    }
+    do {
+        if (*arr != 0) {
+            FreeMemory(*arr);
+            *arr = 0;
+        }
+        arr = arr + 1;
+        temp = count;
+        count = count - 1;
+    } while (temp != 0);
+}
+
+/* Function start: 0x415380 */
+void FreeNestedHashTables(void** arr, int count) {
+    SpriteHashTable* table;
+    int* node;
+    int* poolBlock;
+    int* nextPool;
+    int temp;
+
+    temp = count;
+    count = count - 1;
+    if (temp == 0) {
+        return;
+    }
+    do {
+        table = (SpriteHashTable*)*arr;
+        if (table != 0) {
+            node = (int*)table->buckets;
+            if (node != 0) {
+                do {
+                    FreePointerArray((void**)(node + 2), 1);
+                    node = (int*)*node;
+                } while (node != 0);
+            }
+            table->head = 0;
+            table->tail = 0;
+            table->maxSize = 0;
+            table->buckets = 0;
+            poolBlock = (int*)table->count;
+            while (poolBlock != 0) {
+                nextPool = (int*)*poolBlock;
+                FreeMemory(poolBlock);
+                poolBlock = nextPool;
+            }
+            table->count = 0;
+            FreeMemory(table);
+            *arr = 0;
+        }
+        arr = arr + 1;
+        temp = count;
+        count = count - 1;
+    } while (temp != 0);
+}
+
+/* Function start: 0x415410 */
+CombatSprite::CombatSprite() : Parser() {
+    CombatSprite::spriteTable = 0;
+    CombatSprite::field_0x8c = 0;
+    CombatSprite::field_0x90 = 0;
+    CombatSprite::field_0x94 = 0;
+}
+
+/* Function start: 0x415480 */
 CombatSprite::~CombatSprite() {
-    // TODO: cleanup spriteTable if needed
+    SpriteHashTable* table;
+    int* node;
+    int* poolBlock;
+    int* nextPool;
+    unsigned int i;
+    int offset;
+    int delayCounter;
+
+    table = CombatSprite::spriteTable;
+    if (table != 0) {
+        if (table->buckets != 0 && table->maxSize != 0) {
+            i = 0;
+            offset = 0;
+            do {
+                node = *(int**)((char*)table->buckets + offset);
+                if (node != 0) {
+                    do {
+                        FreeNestedHashTables((void**)(node + 3), 1);
+                        delayCounter = 0;
+                        do {
+                            int temp = delayCounter;
+                            delayCounter = delayCounter - 1;
+                            if (temp == 0) break;
+                        } while (1);
+                        node = (int*)*node;
+                    } while (node != 0);
+                }
+                offset = offset + 4;
+                i = i + 1;
+            } while ((unsigned int)table->maxSize > i);
+        }
+        FreeMemory(table->buckets);
+        table->buckets = 0;
+        table->head = 0;
+        table->tail = 0;
+        poolBlock = (int*)table->count;
+        while (poolBlock != 0) {
+            nextPool = (int*)*poolBlock;
+            FreeMemory(poolBlock);
+            poolBlock = nextPool;
+        }
+        table->count = 0;
+        FreeMemory(table);
+        CombatSprite::spriteTable = 0;
+    }
+    FUN_0041556a();
 }
 
 /* Function start: 0x41569E */

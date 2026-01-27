@@ -75,6 +75,7 @@
 0x4145BC
 0x414F26
 0x41556A
+0x415D20
 0x415D30
 0x4166F0
 0x416817
@@ -126,6 +127,12 @@
 0x42B980
 0x42D240
 
+# CRT global object init/shutdown thunks
+0x422090
+0x4224A0
+0x4224B0
+0x4224C0
+
 # SEH exception handler funclets (cleanup code for structured exception handling)
 0x401147
 0x4011EF
@@ -146,6 +153,9 @@
 0x40722E
 0x408B51
 0x40AE6F
+0x415DAB
+0x415DF4
+0x4227ED
 
 # Destructors with conditional delete
 0x401190

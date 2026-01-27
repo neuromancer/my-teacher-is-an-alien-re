@@ -135,14 +135,22 @@ public:
 class TargetList : public Parser {
 public:
     int count; // 0x88
-    Target* targets[73]; // 0x8c
+    Target* targets[70]; // 0x8c - 0x1a3
+    Target* currentTarget; // 0x1a4 (was targets[70])
+    int field_0x1a8;  // 0x1a8
+    int field_0x1ac;  // 0x1ac
     HashTable* hashTable; // 0x1B0
-    int field_0x1B4[5]; // 0x1B4-0x1C7
+    int field_0x1b4;  // 0x1b4
+    int field_0x1b8;  // 0x1b8
+    int field_0x1bc;  // 0x1bc
+    void* field_0x1c0; // 0x1c0 - some object pointer
 
     TargetList(); // 0x414D80
     virtual ~TargetList(); // 0x414DF0
     virtual int LBLParse(char* line); // 0x414FD0
     virtual void OnProcessEnd(); // 0x414F30
+
+    Target* ProcessTargets(); // 0x4150F0
 };
 
 #endif // ENGINE_SUBSYSTEMS_H

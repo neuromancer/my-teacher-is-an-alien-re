@@ -9,7 +9,7 @@ import struct
 import argparse
 
 # Library address ranges - functions in these ranges are CRT/library code
-LIBRARY_RANGES = [(0x42A3D0, 0x4304E0)]
+LIBRARY_RANGES = [(0x424540, 0x4304E0)]
 
 
 def parse_pe_text_section(filename):

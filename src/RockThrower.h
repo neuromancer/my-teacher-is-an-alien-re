@@ -17,6 +17,10 @@ public:
     int field_0x9c;     // 0x9c
     int field_0xa0;     // 0xa0
     int field_0xa4;     // 0xa4
+
+    void OnHit();           // 0x415E00
+    void DrawCrosshairs();  // 0x415E20
+    void DrawExplosion();   // 0x415F10
 };
 
 // RockThrower - Rock throwing weapon (vtable 0x4314d0)

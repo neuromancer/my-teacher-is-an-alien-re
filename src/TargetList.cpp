@@ -1,8 +1,12 @@
 #include "EngineSubsystems.h"
 #include "Memory.h"
+#include "globals.h"
+#include "Sample.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+extern void FUN_00416ba0(int* scoreManager, int value);
 
 /* Function start: 0x414D80 */
 TargetList::TargetList() : Parser() {
@@ -101,4 +105,69 @@ void TargetList::OnProcessEnd() {
     ht = new HashTable(TargetList::count);
     TargetList::hashTable = ht;
   }
+}
+
+/* Function start: 0x4150F0 */
+Target* TargetList::ProcessTargets() {
+  HashTable* ht;
+  int* entry;
+  int* nextEntry;
+  Target* target;
+  Target* fallbackTarget;
+  unsigned int bucketIdx;
+  int* bucketPtr;
+
+  fallbackTarget = 0;
+  TargetList::currentTarget = 0;
+  ht = ((TargetList*)DAT_00435f0c)->hashTable;
+  if (ht == 0) {
+    return 0;
+  }
+  entry = (int*)(((unsigned int)ht->count < 1) - 1);
+  if (entry == 0) {
+    return fallbackTarget;
+  }
+  do {
+    if (entry == (int*)-1) {
+      bucketIdx = 0;
+      if (ht->numBuckets != 0) {
+        bucketPtr = ht->buckets;
+        do {
+          entry = (int*)*bucketPtr;
+          if (entry != 0) break;
+          bucketPtr = bucketPtr + 1;
+          bucketIdx = bucketIdx + 1;
+        } while (bucketIdx < (unsigned int)ht->numBuckets);
+      }
+    }
+    nextEntry = (int*)*entry;
+    if (nextEntry == 0) {
+      bucketIdx = *(entry + 1) + 1;
+      if (bucketIdx < (unsigned int)ht->numBuckets) {
+        bucketPtr = (int*)(bucketIdx * 4 + (int)ht->buckets);
+        do {
+          nextEntry = (int*)*bucketPtr;
+          if (nextEntry != 0) break;
+          bucketPtr = bucketPtr + 1;
+          bucketIdx = bucketIdx + 1;
+        } while (bucketIdx < (unsigned int)ht->numBuckets);
+      }
+    }
+    target = (Target*)*(entry + 3);
+    entry = nextEntry;
+    if (target != 0 && target->Update() == 0) {
+      if (target->AdvanceHotspot() != 0) {
+        TargetList::currentTarget = target;
+        g_ScoreManager[5] = g_ScoreManager[5] + 1;
+        FUN_00416ba0(g_ScoreManager, -target->field_0x110);
+        if (TargetList::field_0x1c0 != 0) {
+          ((Sample*)TargetList::field_0x1c0)->Play(100, 1);
+        }
+      }
+      if (fallbackTarget == 0 && target->CheckTimeInRange() != 0) {
+        fallbackTarget = target;
+      }
+    }
+  } while (nextEntry != 0);
+  return fallbackTarget;
 }

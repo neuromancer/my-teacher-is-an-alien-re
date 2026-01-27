@@ -33,32 +33,43 @@ public:
     }
 
     // Methods - thiscall convention
+    void Clear();                           // 0x415220
+    void AllocateBuckets(int size, int flag);  // 0x415270
+    void* AllocateNode();                   // 0x4152D0
     void* Lookup(int index, int* outSlot);  // 0x415c10
     void Resize(int size, int flag);        // 0x415c50
     void* AllocEntry();                     // 0x415cb0
 };
 
 // CombatSprite - Manages combat sprite definitions
-// Size: 0x8C bytes (Parser + 1 pointer)
-// vtable: part of combat engine
+// Size: 0x98 bytes (Parser + 16 bytes)
+// vtable: 0x4314a8
 //
 // Layout:
 //   0x00-0x87: Parser base class
 //   0x88: SpriteHashTable* spriteTable
+//   0x8c-0x94: reserved fields
 class CombatSprite : public Parser {
 public:
-    CombatSprite();
-    virtual ~CombatSprite();
+    CombatSprite();      // 0x415410
+    virtual ~CombatSprite();  // 0x415480
 
     virtual int LBLParse(char* line);
     void ParseSpriteData(char* line);  // 0x415960
 
     // Member variables
     SpriteHashTable* spriteTable;  // 0x88
+    int field_0x8c;                // 0x8c
+    int field_0x90;                // 0x90
+    int field_0x94;                // 0x94
 };
 
 // Global variables used by CombatSprite parsing
 extern SpriteHashTable* g_CurrentSprite;   // 0x436348
 extern int g_CurrentSpriteIndex;           // 0x43634c
+
+// Helper functions for hash table cleanup
+void FreePointerArray(void** arr, int count);         // 0x415340
+void FreeNestedHashTables(void** arr, int count);     // 0x415380
 
 #endif // COMBATSPRITE_H

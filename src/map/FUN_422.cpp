@@ -1,6 +1,6 @@
 /* Function start: 0x422060 */
 
-/* Function start: 0x422090 */
+/* Function start: 0x422090 */ /* compiler-generated: thunk to GameWindow::Shutdown */
 
 /* Function start: 0x4220A0 */
 
@@ -10,11 +10,11 @@
 
 /* Function start: 0x422430 */
 
-/* Function start: 0x4224A0 */
+/* Function start: 0x4224A0 */ /* compiler-generated: global init thunk for g_GameWindow */
 
-/* Function start: 0x4224B0 */
+/* Function start: 0x4224B0 */ /* compiler-generated: atexit registration for g_GameWindow */
 
-/* Function start: 0x4224C0 */
+/* Function start: 0x4224C0 */ /* compiler-generated: global shutdown thunk for g_GameWindow */
 
 /* Function start: 0x4224D0 */
 
@@ -36,7 +36,7 @@
 
 /* Function start: 0x4227A0 */
 
-/* Function start: 0x4227ED */
+/* Function start: 0x4227ED */ /* compiler-generated: SEH unwind funclet for ConfigData::~ConfigData */
 
 /* Function start: 0x422800 */
 

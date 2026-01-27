@@ -59,7 +59,7 @@ def load_auto_complete_functions(filepath):
 
 # Optional address ranges that should be treated as library functions even if
 # the decompiled files don't explicitly mark them. Add tuples as (start, end).
-LIBRARY_RANGES = [ (0x42A3D0, 0x4304E0) ]  # common library range identified by inspection
+LIBRARY_RANGES = [ (0x424540, 0x4304E0) ]  # CRT/library range: EH, FDIV workarounds, stdio, FP, locale, IAT thunks
 
 # Path to auto-complete functions file (relative to script location)
 AUTO_COMPLETE_FILE = os.path.join(os.path.dirname(__file__), '..', 'src', 'auto_complete.txt')
@@ -116,14 +116,22 @@ def print_ranges(all_funcs, implemented_funcs, library_funcs):
         count = end_index - start_index + 1
         # Count how many of these are library functions
         lib_count = sum(1 for a in all_funcs[start_index:end_index+1] if a in library_funcs)
-        status = "✅" if implemented else "❌"
-        lib_marker = " 📚" if lib_count > 0 else ""
-        lib_info = f", {lib_count} library" if lib_count > 0 else ""
 
-        if start == end:
-            print(f"  {status} 0x{start:x} ({count} function{lib_info}){lib_marker}")
+        if not implemented and lib_count == count:
+            # Entire range is library — use 📚 icon and simplified text
+            if start == end:
+                print(f"  📚 0x{start:x} ({count} library function)")
+            else:
+                print(f"  📚 0x{start:x} - 0x{end:x} ({count} library functions)")
         else:
-            print(f"  {status} 0x{start:x} - 0x{end:x} ({count} functions{lib_info}){lib_marker}")
+            status = "✅" if implemented else "❌"
+            lib_marker = " 📚" if lib_count > 0 else ""
+            lib_info = f", {lib_count} library" if lib_count > 0 else ""
+
+            if start == end:
+                print(f"  {status} 0x{start:x} ({count} function{lib_info}){lib_marker}")
+            else:
+                print(f"  {status} 0x{start:x} - 0x{end:x} ({count} functions{lib_info}){lib_marker}")
 
     print("-----------------------------------------")
 
@@ -137,6 +145,11 @@ if __name__ == "__main__":
     implemented_functions = get_implemented_functions(src_directory)
     library_functions = get_library_functions(code_directory)
 
+    # Load auto-completable functions (compiler-generated)
+    auto_complete_functions = load_auto_complete_functions(AUTO_COMPLETE_FILE)
+    auto_complete_in_map = auto_complete_functions.intersection(all_functions)
+    implemented_functions = implemented_functions.union(auto_complete_in_map)
+
     # Add any functions that fall inside configured library ranges
     range_funcs = set()
     for start, end in LIBRARY_RANGES:
@@ -148,11 +161,11 @@ if __name__ == "__main__":
         # merge explicit and range-derived library addresses
         library_functions = library_functions.union(range_funcs)
 
-    # Load and add auto-completable functions (compiler-generated) to implemented set
-    auto_complete_functions = load_auto_complete_functions(AUTO_COMPLETE_FILE)
-    auto_complete_in_map = auto_complete_functions.intersection(all_functions)
-    implemented_functions = implemented_functions.union(auto_complete_in_map)
-    
+    # User functions that happen to sit in the CRT range should not be
+    # classified as library.  If we implemented them (or they are in the
+    # auto-complete list) they are user code.
+    library_functions = library_functions - implemented_functions
+
     # Exclude library functions from the implemented set for percentage calculations
     implemented_no_lib = implemented_functions - library_functions
 
