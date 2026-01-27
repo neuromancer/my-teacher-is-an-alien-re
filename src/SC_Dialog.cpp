@@ -1,15 +1,16 @@
 #include "SC_Dialog.h"
-#include "Queue.h"
 #include "Sprite.h"
 #include "Memory.h"
+#include "string.h"
 #include <string.h>
+#include <stdio.h>
 
 /* Function start: 0x408970 */
 SC_Dialog::SC_Dialog()
 {
     int* ptr;
     int i;
-    Queue* queue;
+    ZBQueue* queue;
 
     ptr = &field_88;
     for (i = 0xe; i != 0; i--) {
@@ -18,12 +19,12 @@ SC_Dialog::SC_Dialog()
     }
     field_90 = 1;
 
-    queue = (Queue*)AllocateMemory(0x10);
+    queue = (ZBQueue*)AllocateMemory(0x10);
     if (queue != 0) {
-        queue->m_field_0xc = 2;
-        queue->m_head = 0;
-        queue->m_tail = 0;
-        queue->m_current = queue->m_head;
+        queue->type = 2;
+        queue->head = 0;
+        queue->tail = 0;
+        queue->current = queue->head;
     }
     field_bc = queue;
     field_88 = 0x54;
@@ -32,47 +33,47 @@ SC_Dialog::SC_Dialog()
 /* Function start: 0x408A40 */
 SC_Dialog::~SC_Dialog()
 {
-    QueueNode* node;
-    QueueNode* current;
+    ZBQueueNode* node;
+    ZBQueueNode* curr;
     Sprite* sprite;
-    Queue* queue;
+    ZBQueue* queue;
 
     queue = field_bc;
     if (queue != 0) {
-        if (queue->m_head != 0) {
-            queue->m_current = queue->m_head;
-            while (queue->m_head != 0) {
-                current = (QueueNode*)queue->m_current;
-                if (current == 0) {
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                curr = (ZBQueueNode*)queue->current;
+                if (curr == 0) {
                     sprite = 0;
                 } else {
-                    if (queue->m_head == current) {
-                        queue->m_head = current->next;
+                    if (queue->head == curr) {
+                        queue->head = curr->prev;
                     }
-                    if (queue->m_tail == current) {
-                        queue->m_tail = current->prev;
+                    if (queue->tail == curr) {
+                        queue->tail = curr->next;
                     }
-                    if (current->prev != 0) {
-                        current->prev->next = current->next;
+                    if (curr->next != 0) {
+                        curr->next->prev = curr->prev;
                     }
-                    if (current->next != 0) {
-                        current->next->prev = current->prev;
+                    if (curr->prev != 0) {
+                        curr->prev->next = curr->next;
                     }
-                    node = current;
+                    node = curr;
                     sprite = 0;
                     if (node != 0) {
                         sprite = (Sprite*)node->data;
-                        delete node;
-                        queue->m_current = 0;
+                        FreeMemory(node);
+                        queue->current = 0;
                     }
-                    queue->m_current = queue->m_head;
+                    queue->current = queue->head;
                 }
                 if (sprite != 0) {
                     delete sprite;
                 }
             }
         }
-        delete queue;
+        FreeMemory(queue);
         field_bc = 0;
     }
 }
@@ -80,42 +81,161 @@ SC_Dialog::~SC_Dialog()
 /* Function start: 0x408B60 */
 void SC_Dialog::StopAll()
 {
-    if (field_bc == 0) return;
-
-    QueueNode* node = (QueueNode*)field_bc->m_head;
-    while (node != 0) {
-        Sprite* sprite = (Sprite*)node->data;
-        if (sprite != 0) {
-            sprite->StopAnimationSound();
-        }
-        node = node->next;
+    field_bc->current = field_bc->head;
+    if (field_bc->head != 0) {
+        do {
+            ZBQueueNode* node = field_bc->current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
+            spr->StopAnimationSound();
+            if (field_bc->tail == field_bc->current) break;
+            if (field_bc->current != 0) field_bc->current = ((ZBQueueNode*)field_bc->current)->prev;
+        } while (field_bc->head != 0);
     }
     field_8c &= ~0x2000;
 }
 
+/* Function start: 0x408BD0 */
+void SC_Dialog::PreDraw()
+{
+    field_bc->current = field_bc->head;
+    if (field_bc->head != 0) {
+        do {
+            ZBQueueNode* node = field_bc->current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
+            spr->Init();
+            if (field_bc->tail == field_bc->current) break;
+            if (field_bc->current != 0) field_bc->current = ((ZBQueueNode*)field_bc->current)->prev;
+        } while (field_bc->head != 0);
+    }
+    field_90 = 1;
+    field_8c |= 0x2000;
+}
+
+/* Function start: 0x408C40 */
+void SC_Dialog::AddSprite(Sprite* spr)
+{
+    ZBQueueNode* newNode;
+    ZBQueueNode* currNode;
+
+    if (spr == 0) return;
+    spr->FreeAnimation();
+
+    ZBQueue* q = field_bc;
+    if (spr == 0) ShowError("queue fault 0101");
+
+    q->current = q->head;
+    if (q->type == 1 || q->type == 2) {
+        if (q->head != 0) {
+            while (1) {
+                currNode = q->current;
+                if (((Sprite*)currNode->data)->field_0xb0 < spr->field_0xb0) {
+                    if (spr == 0) ShowError("queue fault 0102");
+                    newNode = new ZBQueueNode();
+                    if (newNode != 0) {
+                        newNode->data = spr;
+                        newNode->next = 0;
+                        newNode->prev = 0;
+                    }
+                    if (q->current == 0) q->current = q->head;
+                    if (q->head == 0) {
+                        q->head = newNode;
+                        q->tail = newNode;
+                        q->current = newNode;
+                    } else {
+                        newNode->prev = q->current;
+                        newNode->next = q->current->next;
+                        if (q->current->next == 0) {
+                            q->head = newNode;
+                        } else {
+                            q->current->next->prev = newNode;
+                        }
+                        q->current->next = newNode;
+                    }
+                    return;
+                }
+                if (q->tail == currNode) break;
+                q->current = currNode->prev;
+                if (q->current == 0) return;
+            }
+            
+            // Push to tail case
+            if (spr == 0) ShowError("queue fault 0112");
+            newNode = new ZBQueueNode();
+            if (newNode != 0) {
+                newNode->data = spr;
+                newNode->next = 0;
+                newNode->prev = 0;
+            }
+            if (q->current == 0) q->current = q->tail;
+            if (q->head == 0) {
+                q->head = newNode;
+                q->tail = newNode;
+                q->current = newNode;
+            } else {
+                if (q->tail == 0 || q->tail->prev != 0) {
+                    ShowError("queue fault 0113");
+                }
+                newNode->prev = 0;
+                newNode->next = q->tail;
+                q->tail->prev = newNode;
+                q->tail = newNode;
+            }
+        } else {
+            // Head was 0 case
+            if (spr == 0) ShowError("queue fault 0102");
+            newNode = new ZBQueueNode();
+            if (newNode != 0) {
+                newNode->data = spr;
+                newNode->next = 0;
+                newNode->prev = 0;
+            }
+            if (q->current == 0) q->current = q->head;
+            if (q->head == 0) {
+                q->head = newNode;
+                q->tail = newNode;
+                q->current = newNode;
+            } else {
+                newNode->prev = q->current;
+                newNode->next = q->current->next;
+                if (q->current->next == 0) {
+                    q->head = newNode;
+                } else {
+                    q->current->next->prev = newNode;
+                }
+                q->current->next = newNode;
+            }
+        }
+    } else {
+        q->Insert(spr);
+    }
+}
+
 /* Function start: 0x408EE0 */
-void SC_Dialog::Draw()
+int SC_Dialog::Draw()
 {
     field_90 = 1;
     if (!(field_8c & 0x2000)) {
         PreDraw();
     }
 
-    if (field_bc == 0) return;
+    if (field_bc == 0) return 1;
 
-    if (field_bc->m_head != 0) {
-        field_bc->m_current = field_bc->m_head;
-        while (1) {
-            QueueNode* node = (QueueNode*)field_bc->m_current;
-            Sprite* spr = (node != 0) ? (Sprite*)node->data : 0;
+    field_bc->current = field_bc->head;
+    if (field_bc->head != 0) {
+        do {
+            ZBQueueNode* node = field_bc->current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
             if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
                 field_90 = 0;
             }
-            if (field_bc->m_tail == field_bc->m_current) break;
-            field_bc->m_current = node->next;
-            if (field_bc->m_current == 0) break;
-        }
+            if (field_bc->tail == field_bc->current) break;
+            if (field_bc->current != 0) field_bc->current = ((ZBQueueNode*)field_bc->current)->prev;
+        } while (field_bc->head != 0);
     }
+    return field_90;
 }
 
 /* Function start: 0x408F80 */
@@ -126,55 +246,25 @@ int SC_Dialog::DrawWithStates(int* states)
         PreDraw();
     }
 
-    Queue* queue = field_bc;
-    if (queue == 0) return 1;
+    if (field_bc == 0) return 1;
 
-    void* head = queue->m_head;
-    queue->m_current = head;
-    if (head != 0) {
+    field_bc->current = field_bc->head;
+    if (field_bc->head != 0) {
         int i = 0;
         do {
-            QueueNode* node = (QueueNode*)queue->m_current;
+            ZBQueueNode* node = field_bc->current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
             if (states[i++] != 0) {
-                Sprite* spr = (Sprite*)0;
-                if (node != 0) spr = (Sprite*)node->data;
                 if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
                     field_90 = 0;
                 }
             }
-            if (queue->m_tail == queue->m_current) break;
-            if (node != 0) queue->m_current = node->next;
-        } while (queue->m_head != 0);
+            if (field_bc->tail == field_bc->current) break;
+            if (field_bc->current != 0) field_bc->current = ((ZBQueueNode*)field_bc->current)->prev;
+        } while (field_bc->head != 0);
     }
     return field_90;
-}
-
-/* Function start: 0x408BD0 */
-void SC_Dialog::PreDraw()
-{
-    Queue* queue = field_bc;
-    if (queue == 0) return;
-
-    void* head = queue->m_head;
-    queue->m_current = head;
-    if (head != 0) {
-        do {
-            QueueNode* node = (QueueNode*)queue->m_current;
-            Sprite* spr = (Sprite*)0;
-            if (node != 0) spr = (Sprite*)node->data;
-            spr->Init();
-            if (queue->m_tail == queue->m_current) break;
-            if (node != 0) queue->m_current = node->next;
-        } while (queue->m_head != 0);
-    }
-    field_90 = 1;
-    field_8c |= 0x2000;
-}
-
-/* Function start: 0x408C40 */
-void SC_Dialog::AddSprite(Sprite* spr)
-{
-    field_bc->Insert(spr);
 }
 
 /* Function start: 0x409030 */
@@ -189,12 +279,12 @@ int SC_Dialog::LBLParse(char* line)
 
     if (strcmp(command, "SPRITE") == 0) {
         sprite = new Sprite(0);
-        AddSprite(sprite);
         Parser::ProcessFile(sprite, this, 0);
+        AddSprite(sprite);
     } else if (strcmp(command, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("MMPlayer2");
+        return Parser::LBLParse("MMPlayer2");
     }
     return 0;
 }

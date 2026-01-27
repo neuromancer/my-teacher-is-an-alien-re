@@ -1,5 +1,4 @@
 #include "MMPlayer2.h"
-#include "Memory.h"
 #include "Sprite.h"
 #include "ZBufferManager.h"
 #include "string.h"
@@ -7,71 +6,122 @@
 #include <string.h>
 
 /* Function start: 0x408C40 */
-void MMPlayer2::AddSprite(Sprite* s)
+void MMPlayer2::AddSprite(Sprite* spr)
 {
-    if (s != 0) {
-        // FUN_0041d040((int)s); // Some Sprite init
+    ZBQueueNode* newNode;
+    ZBQueueNode* currNode;
 
-        ZBQueue* list = spriteList;
-        if (s == 0) {
-             ShowError("queue fault 0101");
+    if (spr == 0) return;
+    spr->FreeAnimation();
+
+    ZBQueue* q = spriteList;
+    if (spr == 0) ShowError("queue fault 0101");
+
+    q->current = q->head;
+    if (q->type == 1 || q->type == 2) {
+        if (q->head != 0) {
+            while (1) {
+                currNode = q->current;
+                if (((Sprite*)currNode->data)->field_0xb0 < spr->field_0xb0) {
+                    if (spr == 0) ShowError("queue fault 0102");
+                    newNode = new ZBQueueNode();
+                    if (newNode != 0) {
+                        newNode->data = spr;
+                        newNode->next = 0;
+                        newNode->prev = 0;
+                    }
+                    if (q->current == 0) q->current = q->head;
+                    if (q->head == 0) {
+                        q->head = newNode;
+                        q->tail = newNode;
+                        q->current = newNode;
+                    } else {
+                        newNode->prev = q->current;
+                        newNode->next = q->current->next;
+                        if (q->current->next == 0) {
+                            q->head = newNode;
+                        } else {
+                            q->current->next->prev = newNode;
+                        }
+                        q->current->next = newNode;
+                    }
+                    return;
+                }
+                if (q->tail == currNode) break;
+                q->current = currNode->prev;
+                if (q->current == 0) return;
+            }
+            
+            // Push to tail case
+            if (spr == 0) ShowError("queue fault 0112");
+            newNode = new ZBQueueNode();
+            if (newNode != 0) {
+                newNode->data = spr;
+                newNode->next = 0;
+                newNode->prev = 0;
+            }
+            if (q->current == 0) q->current = q->tail;
+            if (q->head == 0) {
+                q->head = newNode;
+                q->tail = newNode;
+                q->current = newNode;
+            } else {
+                if (q->tail == 0 || q->tail->prev != 0) {
+                    ShowError("queue fault 0113");
+                }
+                newNode->prev = 0;
+                newNode->next = q->tail;
+                q->tail->prev = newNode;
+                q->tail = newNode;
+            }
+        } else {
+            // Head was 0 case
+            if (spr == 0) ShowError("queue fault 0102");
+            newNode = new ZBQueueNode();
+            if (newNode != 0) {
+                newNode->data = spr;
+                newNode->next = 0;
+                newNode->prev = 0;
+            }
+            if (q->current == 0) q->current = q->head;
+            if (q->head == 0) {
+                q->head = newNode;
+                q->tail = newNode;
+                q->current = newNode;
+            } else {
+                newNode->prev = q->current;
+                newNode->next = q->current->next;
+                if (q->current->next == 0) {
+                    q->head = newNode;
+                } else {
+                    q->current->next->prev = newNode;
+                }
+                q->current->next = newNode;
+            }
         }
-
-        list->current = list->head;
-        if (list->type == 1 || list->type == 2) {
-             if (list->head == 0) {
-                 if (s == 0) {
-                      ShowError("queue fault 0102");
-                 }
-                 list->Insert(s);
-             }
-             else {
-                 do {
-                     ZBQueueNode* curr = (ZBQueueNode*)list->current;
-                     Sprite* currSprite = (Sprite*)curr->data;
-
-                     // Compare field_b0 (Z-order?)
-                     if (currSprite->field_0xb0 < s->field_0xb0) {
-                         list->Insert(s);
-                         break;
-                     }
-
-                     if (list->tail == curr) {
-                         // Push to end - simplified
-                         list->Insert(s);
-                         break;
-                     }
-
-                     if (curr != 0) {
-                         list->current = curr->prev;
-                     }
-                 } while (list->current != 0);
-             }
-        }
-        else {
-            list->Insert(s);
-        }
+    } else {
+        q->Insert(spr);
     }
 }
 
 /* Function start: 0x409030 */
-int MMPlayer2::LBLParse(char* param_1)
+int MMPlayer2::LBLParse(char* line)
 {
-    char local_34[32];
-    
-    sscanf(param_1, " %s ", local_34);
-    
-    if (_strcmpi(local_34, "SPRITE") == 0) {
-        Sprite* s = new Sprite(0);
-        Parser::ProcessFile(s, this, 0);
-        AddSprite(s);
+    char command[32];
+    Sprite* sprite;
+
+    if (sscanf(line, " %s ", command) != 1) {
+        return 0;
     }
-    else if (_strcmpi(local_34, "END") == 0) {
+
+    if (strcmp(command, "SPRITE") == 0) {
+        sprite = new Sprite(0);
+        Parser::ProcessFile(sprite, this, 0);
+        AddSprite(sprite);
+    } else if (strcmp(command, "END") == 0) {
         return 1;
-    }
-    else {
+    } else {
         return Parser::LBLParse("MMPlayer2");
     }
-    
     return 0;
 }
