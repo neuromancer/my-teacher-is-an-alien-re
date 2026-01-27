@@ -143,53 +143,130 @@ void MouseControl::Init()
 /* Function start: 0x41F560 */
 void MouseControl::AddSprite(Sprite* s)
 {
-    QueueNode* node;
-    QueueNode* current;
-    Queue* queue;
-
-    if (s == 0) {
+    if (s == 0)
+    {
         return;
     }
 
-    s->Init();
-    queue = m_queue;
+    s->StopAnimationSound();
+    Queue* queue = m_queue;
 
-    if (s == 0) {
+    if (s == 0)
+    {
         ShowError("queue fault 0101");
     }
 
     queue->m_current = queue->m_head;
 
-    if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2) {
-        if (queue->m_head == 0) {
-            if (s == 0) {
-                ShowError("queue fault 0102");
+    if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2)
+    {
+        if (queue->m_head == 0)
+        {
+            if (s == 0) ShowError("queue fault 0102");
+            QueueNode* newNode = new QueueNode(s);
+
+            if (queue->m_current == 0)
+            {
+                queue->m_current = queue->m_head;
             }
-            queue->Insert(s);
-        } else {
-            while (1) {
-                current = (QueueNode*)queue->m_current;
-                Sprite* currSprite = (Sprite*)current->data;
 
-                if (currSprite->field_0xb0 < s->field_0xb0) {
-                    queue->Insert(s);
-                    break;
+            if (queue->m_head == 0)
+            {
+                queue->m_head = newNode;
+                queue->m_tail = newNode;
+                queue->m_current = newNode;
+            }
+            else
+            {
+                newNode->next = (QueueNode*)queue->m_current;
+                newNode->prev = ((QueueNode*)queue->m_current)->prev;
+                if (((QueueNode*)queue->m_current)->prev == 0)
+                {
+                    queue->m_head = newNode;
                 }
-
-                if (queue->m_tail == current) {
-                    queue->Insert(s);
-                    break;
+                else
+                {
+                    ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
                 }
-
-                if (current != 0) {
-                    queue->m_current = current->prev;
-                }
-                if (queue->m_current == 0) {
-                    break;
-                }
+                ((QueueNode*)queue->m_current)->prev = newNode;
             }
         }
-    } else {
+        else
+        {
+            while (queue->m_current != 0)
+            {
+                QueueNode* current = (QueueNode*)queue->m_current;
+                Sprite* currSprite = (Sprite*)current->data;
+
+                if ((unsigned int)currSprite->field_0xb0 < (unsigned int)s->field_0xb0)
+                {
+                    if (s == 0) ShowError("queue fault 0102");
+                    QueueNode* newNode = new QueueNode(s);
+
+                    if (queue->m_current == 0)
+                    {
+                        queue->m_current = queue->m_head;
+                    }
+
+                    if (queue->m_head == 0)
+                    {
+                        queue->m_head = newNode;
+                        queue->m_tail = newNode;
+                        queue->m_current = newNode;
+                    }
+                    else
+                    {
+                        newNode->next = (QueueNode*)queue->m_current;
+                        newNode->prev = ((QueueNode*)queue->m_current)->prev;
+                        if (((QueueNode*)queue->m_current)->prev == 0)
+                        {
+                            queue->m_head = newNode;
+                        }
+                        else
+                        {
+                            ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
+                        }
+                        ((QueueNode*)queue->m_current)->prev = newNode;
+                    }
+                    return;
+                }
+
+                if (queue->m_tail == current)
+                {
+                    if (s == 0) ShowError("queue fault 0112");
+                    QueueNode* newNode = new QueueNode(s);
+
+                    if (queue->m_current == 0)
+                    {
+                        queue->m_current = queue->m_tail;
+                    }
+
+                    if (queue->m_head == 0)
+                    {
+                        queue->m_head = newNode;
+                        queue->m_tail = newNode;
+                        queue->m_current = newNode;
+                    }
+                    else
+                    {
+                        if (queue->m_tail == 0 || ((QueueNode*)queue->m_tail)->next != 0)
+                        {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->next = 0;
+                        newNode->prev = (QueueNode*)queue->m_tail;
+                        ((QueueNode*)queue->m_tail)->next = newNode;
+                        queue->m_tail = newNode;
+                    }
+                    return;
+                }
+
+                queue->m_current = current->next;
+            }
+        }
+    }
+    else
+    {
         queue->Insert(s);
     }
 }
@@ -238,23 +315,23 @@ int MouseControl::LBLParse(char* param_1)
 {
     char local_34[32];
     Sprite* sprite;
-    void* mem;
 
     local_34[0] = 0;
     sscanf(param_1, " %s ", local_34);
 
-    if (strcmp(local_34, "SPRITE") == 0) {
-        mem = AllocateMemory(0xd8);
-        sprite = 0;
-        if (mem != 0) {
-            sprite = new (mem) Sprite(0);
-        }
+    if (strcmp(local_34, "SPRITE") == 0)
+    {
+        sprite = new Sprite(0);
         Parser::ProcessFile(sprite, this, 0);
         AddSprite(sprite);
-    } else if (strcmp(local_34, "END") == 0) {
+    }
+    else if (strcmp(local_34, "END") == 0)
+    {
         return 1;
-    } else {
-        Parser::LBLParse("SpriteList");
+    }
+    else
+    {
+        Parser::LBLParse("MMPlayer");
     }
     return 0;
 }
