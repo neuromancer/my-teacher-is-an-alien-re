@@ -5,7 +5,7 @@
 #include "SC_Question.h"
 
 class SC_Message;
-class SC_Dialog;
+class MMPlayer2;
 class MouseControl;
 class Sprite;
 class Queue;
@@ -47,7 +47,7 @@ public:
 
     // Fields
     MouseControl* field_600;
-    SC_Dialog* field_604;
+    MMPlayer2* field_604;
     Sprite* field_608;
     Sprite* field_60C;
     Queue* field_610;

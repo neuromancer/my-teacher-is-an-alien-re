@@ -1,9 +1,117 @@
 #include "MMPlayer2.h"
 #include "Sprite.h"
-#include "ZBufferManager.h"
+#include "Memory.h"
 #include "string.h"
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
+
+/* Function start: 0x408970 */
+MMPlayer2::MMPlayer2()
+{
+    int* ptr;
+    int i;
+    ZBQueue* queue;
+
+    ptr = &field_88;
+    for (i = 0xe; i != 0; i--) {
+        *ptr = 0;
+        ptr++;
+    }
+    field_90 = 1;
+
+    queue = (ZBQueue*)AllocateMemory(0x10);
+    if (queue != 0) {
+        queue->type = 2;
+        queue->head = 0;
+        queue->tail = 0;
+        queue->current = queue->head;
+    }
+    spriteList = queue;
+    field_88 = 0x54;
+}
+
+/* Function start: 0x408A40 */
+MMPlayer2::~MMPlayer2()
+{
+    ZBQueueNode* node;
+    ZBQueueNode* curr;
+    Sprite* sprite;
+    ZBQueue* queue;
+
+    queue = spriteList;
+    if (queue != 0) {
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                curr = (ZBQueueNode*)queue->current;
+                if (curr == 0) {
+                    sprite = 0;
+                } else {
+                    if (queue->head == curr) {
+                        queue->head = curr->prev;
+                    }
+                    if (queue->tail == curr) {
+                        queue->tail = curr->next;
+                    }
+                    if (curr->next != 0) {
+                        curr->next->prev = curr->prev;
+                    }
+                    if (curr->prev != 0) {
+                        curr->prev->next = curr->next;
+                    }
+                    node = curr;
+                    sprite = 0;
+                    if (node != 0) {
+                        sprite = (Sprite*)node->data;
+                        FreeMemory(node);
+                        queue->current = 0;
+                    }
+                    queue->current = queue->head;
+                }
+                if (sprite != 0) {
+                    delete sprite;
+                }
+            }
+        }
+        FreeMemory(queue);
+        spriteList = 0;
+    }
+}
+
+/* Function start: 0x408B60 */
+void MMPlayer2::StopAll()
+{
+    spriteList->current = spriteList->head;
+    if (spriteList->head != 0) {
+        do {
+            ZBQueueNode* node = spriteList->current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
+            spr->StopAnimationSound();
+            if (spriteList->tail == spriteList->current) break;
+            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->prev;
+        } while (spriteList->head != 0);
+    }
+    field_8c &= ~0x2000;
+}
+
+/* Function start: 0x408BD0 */
+void MMPlayer2::PreDraw()
+{
+    spriteList->current = spriteList->head;
+    if (spriteList->head != 0) {
+        do {
+            ZBQueueNode* node = spriteList->current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
+            spr->Init();
+            if (spriteList->tail == spriteList->current) break;
+            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->prev;
+        } while (spriteList->head != 0);
+    }
+    field_90 = 1;
+    field_8c |= 0x2000;
+}
 
 /* Function start: 0x408C40 */
 void MMPlayer2::AddSprite(Sprite* spr)
@@ -102,6 +210,61 @@ void MMPlayer2::AddSprite(Sprite* spr)
     } else {
         q->Insert(spr);
     }
+}
+
+/* Function start: 0x408EE0 */
+int MMPlayer2::Draw()
+{
+    field_90 = 1;
+    if (!(field_8c & 0x2000)) {
+        PreDraw();
+    }
+
+    if (spriteList == 0) return 1;
+
+    spriteList->current = spriteList->head;
+    if (spriteList->head != 0) {
+        do {
+            ZBQueueNode* node = spriteList->current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
+            if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
+                field_90 = 0;
+            }
+            if (spriteList->tail == spriteList->current) break;
+            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->prev;
+        } while (spriteList->head != 0);
+    }
+    return field_90;
+}
+
+/* Function start: 0x408F80 */
+int MMPlayer2::DrawWithStates(int* states)
+{
+    field_90 = 1;
+    if (!(field_8c & 0x2000)) {
+        PreDraw();
+    }
+
+    if (spriteList == 0) return 1;
+
+    spriteList->current = spriteList->head;
+    if (spriteList->head != 0) {
+        int i = 0;
+        do {
+            ZBQueueNode* node = spriteList->current;
+            Sprite* spr = (Sprite*)0;
+            if (node != 0) spr = (Sprite*)node->data;
+            if (states[i++] != 0) {
+                if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
+                    field_90 = 0;
+                }
+            }
+            if (spriteList->tail == spriteList->current) break;
+            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->prev;
+        } while (spriteList->head != 0);
+    }
+    return field_90;
 }
 
 /* Function start: 0x409030 */

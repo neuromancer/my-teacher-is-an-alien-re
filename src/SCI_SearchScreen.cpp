@@ -23,7 +23,7 @@ SCI_SearchScreen::SCI_SearchScreen() {
 SCI_SearchScreen::~SCI_SearchScreen() {
     Palette* pal;
     MouseControl* mouse;
-    SC_Dialog* dialog;
+    MMPlayer2* dialog;
     DialogControl* dc;
     int i;
 
@@ -96,8 +96,8 @@ int SCI_SearchScreen::ShutDown(SC_Message* msg) {
             field_604->StopAll();
         }
         if (field_608 != 0) {
-            // SC_Dialog StopAll logic (calls Sprite::StopAnimationSound on all)
-            // Since we don't have SC_Dialog::StopAll, we might need to call it if it exists.
+            // MMPlayer2 StopAll logic (calls Sprite::StopAnimationSound on all)
+            // Since we don't have MMPlayer2::StopAll, we might need to call it if it exists.
             // Looking at disassembly 0x408B60, it's a specific method.
             // Let's assume it's StopAll for now.
             field_608->StopAll();
@@ -245,7 +245,7 @@ int SCI_SearchScreen::LBLParse(char* line) {
             field_600->Load(path);
         }
     } else if (strcmp(token, "AMBIENTS") == 0) {
-        field_608 = new SC_Dialog();
+        field_608 = new MMPlayer2();
         ProcessFile(field_608, this, 0);
     } else if (strcmp(token, "HOTSPOT") == 0) {
         DialogControl* dc = new DialogControl();

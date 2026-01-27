@@ -1,5 +1,5 @@
 #include "SCI_Dialog.h"
-#include "SC_Dialog.h"
+#include "MMPlayer2.h"
 #include "Mouse.h"
 #include "string.h"
 #include "MouseControl.h"
@@ -28,7 +28,7 @@ SCI_Dialog::SCI_Dialog() {
 /* Function start: 0x407070 */
 SCI_Dialog::~SCI_Dialog() {
     MouseControl* mc;
-    SC_Dialog* dlg;
+    MMPlayer2* dlg;
     Sprite* spr;
     Queue* queue;
     QueueNode* node;
@@ -121,7 +121,7 @@ void SCI_Dialog::Init(SC_Message* msg) {
     if (initData != 0 && msg->targetAddress == 0xb) {
         msg->userPtr = 0;
         field_600 = (MouseControl*)initData->ptr1;
-        field_604 = (SC_Dialog*)initData->ptr2;
+        field_604 = (MMPlayer2*)initData->ptr2;
         initData->ptr1 = 0;
         initData->ptr2 = 0;
         delete initData;

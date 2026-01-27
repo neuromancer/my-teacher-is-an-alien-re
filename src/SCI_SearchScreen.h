@@ -4,7 +4,7 @@
 #include "IconBar.h"
 #include "Palette.h"
 #include "MouseControl.h"
-#include "SC_Dialog.h"
+#include "MMPlayer2.h"
 #include "Hotspot.h"
 #include "Sample.h"
 
@@ -20,7 +20,7 @@ class SC_Message;
 //   0x00-0x5FF: IconBar base class
 //   0x600: Palette* (destructor 0x41ea80)
 //   0x604: MouseControl* (destructor 0x41f360)
-//   0x608: SC_Dialog* (destructor 0x408a40)
+//   0x608: MMPlayer2* (destructor 0x408a40)
 //   0x60C-0x633: DialogControl* array[10] (destructor 0x4092e0)
 //   0x634-0x647: remaining fields (12 bytes)
 class SCI_SearchScreen : public IconBar {
@@ -43,7 +43,7 @@ private:
 public:
     Palette* field_600;              // 0x600
     MouseControl* field_604;         // 0x604
-    SC_Dialog* field_608;            // 0x608
+    MMPlayer2* field_608;            // 0x608
     DialogControl* field_60C[10];    // 0x60C-0x633
     DialogControl* field_634;        // 0x634
     Sample* field_638;               // 0x638
