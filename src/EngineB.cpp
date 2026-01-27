@@ -83,25 +83,25 @@ void EngineB::Draw() {
     return;
   }
 
-  if (EngineB::field_0xf0[1] != g_ScoreManager[5]) {
+  if (EngineB::m_prevHitCount != g_ScoreManager[5]) {
     // Target was hit
-    EngineB::field_0xf0[1] = g_ScoreManager[5];
+    EngineB::m_prevHitCount = g_ScoreManager[5];
     ((Sprite*)DAT_00435f04)->SetState2(8);
-    EngineB::m_progress.field_0 += ((int*)EngineB::m_targetConfig)[1];
+    EngineB::m_progress.field_0 += EngineB::m_targetConfig[1];
 
     int hitIdx = rand() % 3;
-    Sample* hitSample = (Sample*)(&field_0x108[2])[hitIdx];
+    Sample* hitSample = (&m_hitSound1)[hitIdx];
     EngineB::m_localSoundList->StopAll();
 
     if (hitSample != 0) {
       hitSample->Play(0x64, 1);
     }
-  } else if (EngineB::field_0xf0[3] != g_ScoreManager[3]) {
+  } else if (EngineB::m_prevMissCount != g_ScoreManager[3]) {
     // Idle sound change
-    EngineB::field_0xf0[3] = g_ScoreManager[3];
+    EngineB::m_prevMissCount = g_ScoreManager[3];
     ((Sprite*)DAT_00435f04)->SetState2(9);
 
-    Sample* idleSample = (Sample*)(&field_0x11c)[rand() % 2];
+    Sample* idleSample = (&m_tauntSound1)[rand() % 2];
     if (idleSample != 0) {
       idleSample->Play(0x64, 1);
     }
@@ -113,12 +113,12 @@ void EngineB::Draw() {
     EngineB::m_progress.field_0 += weaponHit;
 
     if (EngineB::m_missSound != 0) {
-      ((Sample*)EngineB::m_missSound)->Play(0x64, 1);
+      EngineB::m_missSound->Play(0x64, 1);
     }
 
     if (EngineB::m_progress.field_0 == 0x13 || EngineB::m_progress.field_0 == 0x25) {
-      if (EngineB::field_0x124 != 0) {
-        ((Sample*)EngineB::field_0x124)->Play(0x64, 1);
+      if (EngineB::m_milestoneSound != 0) {
+        EngineB::m_milestoneSound->Play(0x64, 1);
       }
     }
   }
@@ -247,9 +247,8 @@ void EngineB::PlayCompletionSound() {
     sampleE0->Fade(0x14, 0x2ee);
   }
 
-  Sample* sample100 = (Sample*)EngineB::m_completionSound;
-  sample100->Play(0x64, 1);
-  sample100->Stop();
+  EngineB::m_completionSound->Play(0x64, 1);
+  EngineB::m_completionSound->Stop();
 }
 
 /* Function start: 0x412690 */
@@ -280,8 +279,8 @@ void EngineB::OnProcessEnd() {
   } else {
     pObj164 = 0;
   }
-  EngineB::m_targetConfig = (int)pObj164;
-  EngineB::m_weaponParser = (int)DAT_00435f14;
+  EngineB::m_targetConfig = pObj164;
+  EngineB::m_weaponParser = DAT_00435f14;
 
   // Update field_0x108 on all targets
   TargetList* targetList = (TargetList*)DAT_00435f0c;
@@ -289,7 +288,7 @@ void EngineB::OnProcessEnd() {
   if (numTargets > 0) {
     for (i = 0; i < numTargets; i++) {
       Target* pTarget = targetList->targets[i];
-      pTarget->field_0x108 = *(int*)EngineB::m_targetConfig;
+      pTarget->field_0x108 = *EngineB::m_targetConfig;
     }
   }
 
@@ -334,22 +333,22 @@ void EngineB::OnProcessEnd() {
 
   // Register sounds if g_SoundList_00435f1c is available
   if (g_SoundList_00435f1c != 0) {
-    EngineB::m_missSound = (int)g_SoundList_00435f1c->Register("audio\\slingmis.wav");
-    EngineB::m_completionSound = (int)g_SoundList_00435f1c->Register("audio\\ldu013_1.wav");
+    EngineB::m_missSound = (Sample*)g_SoundList_00435f1c->Register("audio\\slingmis.wav");
+    EngineB::m_completionSound = (Sample*)g_SoundList_00435f1c->Register("audio\\ldu013_1.wav");
   }
 
   // Register sounds if m_localSoundList is available
   SoundList* sList = EngineB::m_localSoundList;
   if (sList != 0) {
     char* filename = FUN_0040d200("audio\\ldu010_1.wav");
-    EngineB::field_0x11c = (int)sList->Register(filename);
-    EngineB::field_0x120 = (int)sList->Register("audio\\ldu011_1.wav");
-    EngineB::field_0x108[2] = (int)sList->Register("audio\\ldu008_1.wav");
-    EngineB::field_0x108[3] = (int)sList->Register("audio\\ldu009_1.wav");
-    EngineB::field_0x118 = (int)sList->Register("audio\\ldu007_2.wav");
-    EngineB::field_0x124 = (int)sList->Register("audio\\ldu006_1.wav");
+    EngineB::m_tauntSound1 = (Sample*)sList->Register(filename);
+    EngineB::m_tauntSound2 = (Sample*)sList->Register("audio\\ldu011_1.wav");
+    EngineB::m_hitSound1 = (Sample*)sList->Register("audio\\ldu008_1.wav");
+    EngineB::m_hitSound2 = (Sample*)sList->Register("audio\\ldu009_1.wav");
+    EngineB::m_hitSound3 = (Sample*)sList->Register("audio\\ldu007_2.wav");
+    EngineB::m_milestoneSound = (Sample*)sList->Register("audio\\ldu006_1.wav");
     Sample* sample104 = (Sample*)sList->Register("audio\\ldu005_1.wav");
-    EngineB::m_ambientSound = (int)sample104;
+    EngineB::m_ambientSound = sample104;
     if (sample104 != 0) {
       sample104->Play(0x64, 1);
     }

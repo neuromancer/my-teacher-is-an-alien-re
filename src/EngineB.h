@@ -5,6 +5,7 @@
 #include "GlyphRect.h"
 
 class Animation;
+class Sample;
 
 struct IntPair {
   int field_0;
@@ -26,23 +27,29 @@ class EngineB : public Engine {
 public:
   // EngineB-specific fields (Engine ends at 0xe8)
   SoundList* m_localSoundList;     // 0xe8 - local SoundList for combat sounds
-  int m_missSound;                 // 0xec - Sample* "audio\\slingmis.wav"
-  int field_0xf0[4];              // 0xf0-0xff
-  int m_completionSound;          // 0x100 - Sample* "audio\\ldu013_1.wav"
-  int m_ambientSound;             // 0x104 - Sample* "audio\\ldu005_1.wav"
-  int field_0x108[4];             // 0x108-0x117
-  int field_0x118;                // 0x118 - Sample* "audio\\ldu007_2.wav"
-  int field_0x11c;                // 0x11c - Sample* "audio\\ldu010_1.wav"
-  int field_0x120;                // 0x120 - Sample* "audio\\ldu011_1.wav"
-  int field_0x124;                // 0x124 - Sample* "audio\\ldu006_1.wav"
+  Sample* m_missSound;             // 0xec - "audio\\slingmis.wav"
+  int field_0xf0;                 // 0xf0
+  int m_prevHitCount;             // 0xf4 - tracks g_ScoreManager[5]
+  int field_0xf8;                 // 0xf8
+  int m_prevMissCount;            // 0xfc - tracks g_ScoreManager[3]
+  Sample* m_completionSound;      // 0x100 - "audio\\ldu013_1.wav"
+  Sample* m_ambientSound;         // 0x104 - "audio\\ldu005_1.wav"
+  int field_0x108;                // 0x108
+  int field_0x10c;                // 0x10c
+  Sample* m_hitSound1;            // 0x110 - "audio\\ldu008_1.wav" (hit reaction, rand%3)
+  Sample* m_hitSound2;            // 0x114 - "audio\\ldu009_1.wav" (hit reaction, rand%3)
+  Sample* m_hitSound3;            // 0x118 - "audio\\ldu007_2.wav" (hit reaction, rand%3)
+  Sample* m_tauntSound1;          // 0x11c - "audio\\ldu010_1.wav" (idle taunt, rand%2)
+  Sample* m_tauntSound2;          // 0x120 - "audio\\ldu011_1.wav" (idle taunt, rand%2)
+  Sample* m_milestoneSound;       // 0x124 - "audio\\ldu006_1.wav" (played at progress 0x13/0x25)
   Animation* m_meterAnimation;    // 0x128 - "rat1\\nmeter.smk"
   int m_meterBuffer;              // 0x12c - VBuffer* for meter blitting
   GlyphRect m_meterEmptyRect;     // 0x130-0x13f - source rect for empty meter
   GlyphRect m_meterFullRect;      // 0x140-0x14f - source rect for full meter
   IntPair m_progress;             // 0x150-0x157 - {current, max}
   IntPair m_meterPosition;        // 0x158-0x15f - {x, y} destination
-  int m_weaponParser;             // 0x160 - weapon/parser pointer
-  int m_targetConfig;             // 0x164 - allocated config object
+  Parser* m_weaponParser;         // 0x160 - weapon/parser pointer
+  int* m_targetConfig;            // 0x164 - allocated config object
 
   EngineB();
   virtual ~EngineB();
