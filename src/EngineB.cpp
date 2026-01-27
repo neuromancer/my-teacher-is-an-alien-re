@@ -1,10 +1,12 @@
 #include "EngineB.h"
+#include "EngineSubsystems.h"
 #include "SoundList.h"
 #include "Memory.h"
 #include "Sample.h"
 #include "Animation.h"
 #include "VBuffer.h"
 #include "TimeOut.h"
+#include "Sprite.h"
 #include "globals.h"
 #include "InputManager.h"
 #include <string.h>
@@ -12,11 +14,8 @@
 #include <stdlib.h>
 
 // Extern function declarations
-extern void FUN_004150f0(Parser* parser);
 extern void FUN_00416880(int* param);
 extern char* FUN_0040d200(char* filename);
-extern void FUN_0041d190(void* param, int value);
-extern void* DAT_00435f1c;
 extern int* DAT_00435f28;
 
 // Forward declaration for atexit handler
@@ -167,7 +166,7 @@ void AtExitCleanup_0043d140() {
 
 /* Function start: 0x412610 */
 void EngineB::ProcessTargets() {
-  FUN_004150f0(DAT_00435f0c);
+  ((TargetList*)DAT_00435f0c)->ProcessTargets();
   FUN_00416880((int*)EngineB::field_0x160);
   EngineB::Draw();
   EngineB::UpdateMeter();
@@ -210,7 +209,7 @@ void EngineB::OnProcessEnd() {
     } else {
       timeVal = **(int**)pTime;
     }
-    FUN_0041d190(DAT_00435f04, (timeVal + ((timeVal >> 31) & 0x3f)) >> 6);
+    ((Sprite*)DAT_00435f04)->SetState2((timeVal + ((timeVal >> 31) & 0x3f)) >> 6);
   }
 
   // Allocate and initialize field_0x164 (8 byte object)
@@ -272,10 +271,10 @@ void EngineB::OnProcessEnd() {
   EngineB::field_0x158.field_0 = 0x20;
   EngineB::field_0x158.field_4 = 0x14;
 
-  // Register sounds if DAT_00435f1c is available
-  if (DAT_00435f1c != 0) {
-    EngineB::field_0xec = (int)((SoundList*)DAT_00435f1c)->Register("audio\\slingmis.wav");
-    EngineB::field_0x100 = (int)((SoundList*)DAT_00435f1c)->Register("audio\\ldu013_1.wav");
+  // Register sounds if g_SoundList_00435f1c is available
+  if (g_SoundList_00435f1c != 0) {
+    EngineB::field_0xec = (int)g_SoundList_00435f1c->Register("audio\\slingmis.wav");
+    EngineB::field_0x100 = (int)g_SoundList_00435f1c->Register("audio\\ldu013_1.wav");
   }
 
   // Register sounds if field_0xe8 SoundList is available

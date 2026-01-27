@@ -97,3 +97,41 @@ void* SpriteHashTable::AllocEntry() { return 0; }
 
 // CombatSprite method stubs
 void CombatSprite::ParseSpriteData(char* line) {}
+
+// ============================================================================
+// EngineB stubs
+// ============================================================================
+
+void FUN_004150f0(Parser* parser) {}
+void FUN_00416880(int* param) {}
+char* FUN_0040d200(char* filename) { return filename; }
+void FUN_0041d190(void* param, int value) {}
+void* DAT_00435f1c = 0;
+
+// ============================================================================
+// CombatSprite / misc stubs
+// ============================================================================
+
+void FUN_0041556a() {}
+
+// ============================================================================
+// EngineSubsystems / TargetList stubs
+// ============================================================================
+
+int FUN_00422a46(int x, int y) { return 0; }
+void FUN_00416ba0(int* scoreManager, int value) {}
+
+// ============================================================================
+// Projectile stubs
+// ============================================================================
+
+int DAT_0043d150 = 0;
+
+// ============================================================================
+// Weapon / WeaponDraw stubs (C linkage)
+// ============================================================================
+
+extern "C" {
+int __cdecl FUN_00422ac3(int param_1, int param_2) { return 0; }
+int __cdecl FUN_00422aaf(int param_1) { return 0; }
+}
