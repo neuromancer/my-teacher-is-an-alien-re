@@ -72,18 +72,10 @@ Engine* g_CombatEngine = 0;
 
 // FUN_004130f0 -> mCNavNode::Activate in mCNavNode.cpp
 // FUN_0041d300 -> Sprite::Do in Sprite.cpp
-
-// FUN_004155e0 - SpriteList play by ID
-int FUN_004155e0(Parser* spriteList, int soundId) { return 0; }
-
-// FUN_0041fa50 - SoundItem constructor
-void* __fastcall FUN_0041fa50(void* soundItem) { return soundItem; }
-
-// FUN_0041ff30 - Load/play sound
-void FUN_0041ff30(void* soundItem, char* soundName, unsigned int flags) {}
-
-// FUN_0041fb70 - SoundItem destructor
-void __fastcall FUN_0041fb70(void* soundItem) {}
+// FUN_004155e0 -> CombatSprite::PlayById in CombatSprite.cpp
+// FUN_0041fa50 -> Animation::Animation() in Animation.cpp
+// FUN_0041ff30 -> Animation::Play() in Animation.cpp
+// FUN_0041fb70 -> Animation::~Animation() in Animation.cpp
 
 // ============================================================================
 // CombatSprite stubs

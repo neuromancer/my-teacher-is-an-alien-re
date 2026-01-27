@@ -55,6 +55,7 @@ public:
     virtual ~CombatSprite();  // 0x415480
 
     virtual int LBLParse(char* line);
+    int PlayById(unsigned int param_1);  // 0x4155E0
     void ParseSpriteData(char* line);  // 0x415960
 
     // Member variables

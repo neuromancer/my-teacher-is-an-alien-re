@@ -228,6 +228,41 @@ CombatSprite::~CombatSprite() {
     FUN_0041556a();
 }
 
+/* Function start: 0x4155E0 */
+int CombatSprite::PlayById(unsigned int param_1) {
+    int* puVar2;
+    int* piVar1;
+    unsigned int hashIndex;
+
+    CombatSprite::field_0x8c = 0;
+    piVar1 = (int*)CombatSprite::spriteTable;
+    if (piVar1 != 0) {
+        hashIndex = (param_1 >> 4) % (unsigned int)piVar1[1];
+        puVar2 = (int*)*piVar1;
+        if (puVar2 != 0) {
+            puVar2 = (int*)puVar2[hashIndex];
+            while (puVar2 != 0) {
+                if ((unsigned int)puVar2[2] == param_1) goto found;
+                puVar2 = (int*)*puVar2;
+            }
+        }
+        puVar2 = 0;
+    found:
+        if (puVar2 != 0) {
+            piVar1 = (int*)puVar2[3];
+            CombatSprite::field_0x94 = (int)piVar1;
+            puVar2 = (int*)*piVar1;
+            CombatSprite::field_0x90 = (int)puVar2;
+            if (puVar2 != 0) {
+                CombatSprite::field_0x90 = *puVar2;
+                CombatSprite::field_0x8c = puVar2[2];
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 /* Function start: 0x41569E */
 int CombatSprite::LBLParse(char* line) {
     char token[52];

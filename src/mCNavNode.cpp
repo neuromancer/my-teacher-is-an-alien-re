@@ -3,13 +3,15 @@
 #include "InputManager.h"
 #include "globals.h"
 #include "string.h"
+#include "Animation.h"
+#include "CombatSprite.h"
 #include <stdlib.h>
 
 // Globals
 extern Parser* DAT_00435f24;           // mCNavigator instance
 extern InputManager* g_InputManager_00436968;
 extern Sprite* g_Sprite_004360a0;
-extern Parser* DAT_00435f10;           // SPRITELIST parser
+extern Parser* DAT_00435f10;           // SPRITELIST parser (actually CombatSprite*)
 extern Engine* g_CombatEngine;         // 0x00435eb0
 
 // Hash table entry structure for random pool
@@ -19,14 +21,6 @@ struct HashEntry {
     int key;            // 0x08 - hash key
     int value;          // 0x0C - sound/sprite ID
 };
-
-// Sound-related functions (SoundItem class)
-extern void* __fastcall FUN_0041fa50(void* soundItem);  // SoundItem constructor
-extern void FUN_0041ff30(void* soundItem, char* soundName, unsigned int flags);  // Load/play sound
-extern void __fastcall FUN_0041fb70(void* soundItem);   // SoundItem destructor
-
-// SpriteList play function
-extern int FUN_004155e0(Parser* spriteList, int soundId);
 
 /* Function start: 0x4130F0 */
 int mCNavNode::Activate()
@@ -67,7 +61,7 @@ int mCNavNode::Activate()
         if (entry == 0) {
             ShowError("mCNavNode::Activate() - Invalid Sprite Id S %d of %s", bucketIndex, mCNavNode::nodeName);
         } else {
-            FUN_004155e0(DAT_00435f10, entry->value);
+            ((CombatSprite*)DAT_00435f10)->PlayById(entry->value);
         }
     }
 
@@ -130,8 +124,6 @@ int mCNavNode::GetNextNode()
 /* Function start: 0x413280 */
 int mCNavNode::Update()
 {
-    char soundBuffer[44];
-
     if (mCNavNode::active == 0) {
         mCNavNode::Activate();
     }
@@ -154,9 +146,8 @@ int mCNavNode::Update()
 
 check_sound:
     if ((mCNavNode::flags & 2) != 0) {
-        FUN_0041fa50(soundBuffer);
-        FUN_0041ff30(soundBuffer, (char*)&mCNavNode::soundName[0], 0x20);
-        FUN_0041fb70(soundBuffer);
+        Animation anim;
+        anim.Play((char*)&mCNavNode::soundName[0], 0x20);
         goto return_result;
     }
 
