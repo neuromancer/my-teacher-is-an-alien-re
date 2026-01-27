@@ -5,21 +5,17 @@
 #include "Engine.h"
 #include "SoundList.h"
 #include "Palette.h"
+#include "RockThrower.h"
 
 extern "C" char* CDData_FormatPath(char* filename, ...);
 
 /* Function start: 0x416BD0 */
 EngineInfoParser::EngineInfoParser() : Parser() {
-  anchorX = 0;
-  anchorY = 199; // 0xc7
-  width = 320;   // 0x140
-  height = 200;  // 0xc8
-  paletteStart = 0;
-  paletteEnd = 0;
-  field_0xa0 = 0;
-  field_0xa4 = 0;
-  field_0xa8 = 0;
-  field_0xac = 0;
+  memset(&anchorRect, 0, sizeof(GlyphRect) * 3);
+  anchorRect.left = 0;
+  anchorRect.top = 199; // 0xc7
+  anchorRect.right = 320;   // 0x140
+  anchorRect.bottom = 200;  // 0xc8
 }
 
 /* Function start: 0x416CD0 */
@@ -45,15 +41,15 @@ int EngineInfoParser::LBLParse(char* line) {
   if (firstChar == 'A') {
     ParseAnchor(line + 3);
   } else if (firstChar == 'C') {
-    sscanf(line + 3, "%d", &field_0xa8);
+    sscanf(line + 3, "%d", &rect_0xa8.left);
   } else if (firstChar == 'D') {
-    sscanf(line + 3, "%d", &field_0xac);
+    sscanf(line + 3, "%d", &rect_0xa8.top);
   } else if (firstChar == 'O') {
     ParseOffset(line + 3, secondChar);
   } else if (firstChar == 'P') {
-    sscanf(line + 3, "%d %d", &paletteStart, &paletteEnd);
+    sscanf(line + 3, "%d %d", &paletteRect.left, &paletteRect.top);
   } else if (firstChar == 'Q') {
-    sscanf(line + 3, "%d %d", &field_0xa0, &field_0xa4);
+    sscanf(line + 3, "%d %d", &paletteRect.right, &paletteRect.bottom);
   } else if (firstChar == 'R') {
     ParsePalette(line + 3);
   } else if (firstChar == 'S') {
@@ -82,12 +78,12 @@ void EngineInfoParser::ParseOffset(char *line, int arg2) {
 
 /* Function start: 0x416FD0 */
 void EngineInfoParser::ParseAnchor(char *line) {
-  sscanf(line, "%d %d", &anchorX, &anchorY);
+  sscanf(line, "%d %d", &anchorRect.left, &anchorRect.top);
 }
 
 /* Function start: 0x417000 */
 void EngineInfoParser::ParseDimensions(char *line) {
-  sscanf(line, "%d %d", &width, &height);
+  sscanf(line, "%d %d", &anchorRect.right, &anchorRect.bottom);
 }
 
 /* Function start: 0x417030 */
@@ -101,19 +97,19 @@ void EngineInfoParser::ParseSound(char *line, int index) {
     g_CombatEngine->field_0xe0 = sound;
     break;
   case 1:
-    *(int *)((char *)DAT_00435f14 + 0xa4) = sound;
+    ((Weapon *)DAT_00435f14)->field_0xa4 = sound;
     break;
   case 2:
-    *(int *)((char *)DAT_00435f0c + 0x1b4) = sound;
+    ((TargetList *)DAT_00435f0c)->field_0x1b4 = sound;
     break;
   case 3:
-    *(int *)((char *)DAT_00435f0c + 0x1b8) = sound;
+    ((TargetList *)DAT_00435f0c)->field_0x1b8 = sound;
     break;
   case 4:
-    *(int *)((char *)DAT_00435f0c + 0x1bc) = sound;
+    ((TargetList *)DAT_00435f0c)->field_0x1bc = sound;
     break;
   case 5:
-    *(int *)((char *)DAT_00435f0c + 0x1c0) = sound;
+    ((TargetList *)DAT_00435f0c)->field_0x1c0 = (void*)sound;
     break;
   default:
     ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);

@@ -288,7 +288,7 @@ void EngineB::OnProcessEnd() {
   if (numTargets > 0) {
     for (i = 0; i < numTargets; i++) {
       Target* pTarget = targetList->targets[i];
-      pTarget->field_0x108 = *EngineB::m_targetConfig;
+      pTarget->progressMax = *EngineB::m_targetConfig;
     }
   }
 

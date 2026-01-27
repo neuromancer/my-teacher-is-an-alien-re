@@ -159,7 +159,7 @@ Target* TargetList::ProcessTargets() {
       if (target->AdvanceHotspot() != 0) {
         TargetList::currentTarget = target;
         g_ScoreManager[5] = g_ScoreManager[5] + 1;
-        FUN_00416ba0(g_ScoreManager, -target->field_0x110);
+        FUN_00416ba0(g_ScoreManager, -target->weight);
         if (TargetList::field_0x1c0 != 0) {
           ((Sample*)TargetList::field_0x1c0)->Play(100, 1);
         }

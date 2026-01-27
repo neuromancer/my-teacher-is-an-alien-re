@@ -94,7 +94,7 @@ void Engine::SetupViewport() {
   int width;
   Animation* anim;
 
-  g_EngineViewport->SetDimensions(DAT_00435f00->width, DAT_00435f00->height);
+  g_EngineViewport->SetDimensions(DAT_00435f00->anchorRect.right, DAT_00435f00->anchorRect.bottom);
   
   anim = ((mCNavigator*)DAT_00435f24)->sprite->animation_data;
   height = 0;
@@ -108,7 +108,7 @@ void Engine::SetupViewport() {
   
   g_EngineViewport->SetDimensions2(width - g_EngineViewport->x1, height - g_EngineViewport->y1);
   g_EngineViewport->SetCenter();
-  g_EngineViewport->SetAnchor(DAT_00435f00->anchorX, DAT_00435f00->anchorY);
+  g_EngineViewport->SetAnchor(DAT_00435f00->anchorRect.left, DAT_00435f00->anchorRect.top);
   
   g_ScoreManager[1] = 100;
   m_framesL = 1;
@@ -116,7 +116,7 @@ void Engine::SetupViewport() {
   
   BlankScreen();
   
-  g_EnginePalette->SetPalette(DAT_00435f00->paletteStart, (DAT_00435f00->paletteEnd - DAT_00435f00->paletteStart) + 1);
+  g_EnginePalette->SetPalette(DAT_00435f00->paletteRect.left, (DAT_00435f00->paletteRect.top - DAT_00435f00->paletteRect.left) + 1);
   
   if (field_0xe0 != 0) {
     ((Sample*)field_0xe0)->Play(100, 0);

@@ -5,13 +5,14 @@
 #include "SoundList.h"
 #include "Sample.h"
 #include "InputManager.h"
+#include "Engine.h"
+#include "CDData.h"
 #include "string.h"
 #include <string.h>
 #include <stdio.h>
 
 extern CDData* g_CDData_0043697c;
 extern int FUN_00421f90(void* cdData, char* param);
-extern void ShowError(const char* message, ...);
 
 // ============================================================================
 // Target implementation
@@ -21,49 +22,49 @@ extern void ShowError(const char* message, ...);
 Target::Target() : Sprite((char*)0)
 {
     Target::field_0xec = 0;
-    Target::field_0xf0 = 0;
-    Target::field_0xf4 = 0;
-    Target::field_0xf8 = 0;
-    Target::field_0xfc = 0;
-    Target::field_0x100 = 0;
-    Target::field_0x104 = 0;
-    Target::field_0x108 = 0;
-    Target::field_0x10c = 0;
-    Target::field_0x110 = 0;
-    Target::field_0x114 = 0;
-    Target::field_0x118 = 0;
-    Target::field_0x11c = 0;
+    Target::endAnimState = 0;
+    Target::hitAnimOffset = 0;
+    Target::hitEndState = 0;
+    Target::timeMin = 0;
+    Target::timeMax = 0;
+    Target::progress = 0;
+    Target::progressMax = 0;
+    Target::scoreIndex = 0;
+    Target::weight = 0;
+    Target::hitPoints = 0;
+    Target::missPoints = 0;
+    Target::combatBonus1 = 0;
     Target::field_0x120 = 0;
-    Target::field_0x124 = 0;
+    Target::combatBonus2 = 0;
     Target::field_0x128 = 0;
-    Target::field_0x140 = 0;
-    Target::field_0x144 = 0;
-    Target::field_0x148 = 0;
-    Target::field_0x14c = 0;
+    Target::animParam1 = 0;
+    Target::animParam2 = 0;
+    Target::hitX = 0;
+    Target::hitY = 0;
 
     memset((char*)this + 0xd8, 0, 0x80);
 
-    Target::field_0xd8 = 0;
+    Target::active = 0;
     Target::id = -1;
-    Target::field_0x150 = 0;
+    Target::pendingAction = 0;
 }
 
 /* Function start: 0x413F10 */
 Target::~Target()
 {
-    if (Target::field_0xe0 != 0) {
-        FreeMemory(Target::field_0xe0);
-        Target::field_0xe0 = 0;
+    if (Target::animFilename != 0) {
+        FreeMemory(Target::animFilename);
+        Target::animFilename = 0;
     }
 
-    if (Target::field_0xe4 != 0) {
-        FreeMemory(Target::field_0xe4);
-        Target::field_0xe4 = 0;
+    if (Target::identifier != 0) {
+        FreeMemory(Target::identifier);
+        Target::identifier = 0;
     }
 
-    if (Target::field_0x12c != 0) {
-        FreeMemory(Target::field_0x12c);
-        Target::field_0x12c = 0;
+    if (Target::hotspotList != 0) {
+        FreeMemory(Target::hotspotList);
+        Target::hotspotList = 0;
     }
 }
 
@@ -80,7 +81,7 @@ void Target::Deactivate()
     unsigned int hash;
     int i;
 
-    if (Target::field_0xd8 != 0) {
+    if (Target::active != 0) {
         hashTable = ((TargetList*)DAT_00435f0c)->hashTable;
         if (hashTable != 0 && hashTable->buckets != 0) {
             hash = ((unsigned int)Target::id >> 4) % (unsigned int)hashTable->numBuckets;
@@ -111,7 +112,7 @@ void Target::Deactivate()
         }
 cleanup:
         Sprite::FreeAnimation();
-        Target::field_0xd8 = 0;
+        Target::active = 0;
     }
 }
 
@@ -123,7 +124,7 @@ int Target::CheckTimeInRange()
     int y;
     int result;
 
-    timePtr = *(int**)(((char*)g_InputManager_00436968) + 0x1a0);
+    timePtr = (int*)g_InputManager_00436968->pMouse;
     y = 0;
     if (timePtr != 0) {
         y = timePtr[1];
@@ -134,7 +135,7 @@ int Target::CheckTimeInRange()
         x = 0;
     }
     result = FUN_00422a46(x, y);
-    if (Target::field_0xfc <= result && result <= Target::field_0x100) {
+    if (Target::timeMin <= result && result <= Target::timeMax) {
         return 1;
     }
     return 0;
@@ -146,7 +147,7 @@ int Target::CheckTimeInRangeParam(int* coords)
     int result;
 
     result = FUN_00422a46(coords[0], coords[1]);
-    if (Target::field_0xfc <= result && result <= Target::field_0x100) {
+    if (Target::timeMin <= result && result <= Target::timeMax) {
         return 1;
     }
     return 0;
@@ -159,14 +160,14 @@ int Target::AdvanceHotspot()
     int* hotspotIdPtr;
     int* nodePtr;
 
-    listData = (int*)Target::field_0x12c;
+    listData = (int*)Target::hotspotList;
     if (listData != 0) {
         hotspotIdPtr = (int*)((char*)listData + 0x1c);
         if (Target::animation_data == 0) {
             if (*hotspotIdPtr == 0) {
                 goto advance;
             }
-        } else if (*(int*)(*(int*)((char*)Target::animation_data + 0xc) + 0x374) == *hotspotIdPtr) {
+        } else if (*(int*)((char*)Target::animation_data->smk + 0x374) == *hotspotIdPtr) {
 advance:
             nodePtr = (int*)*(int*)((char*)listData + 0x18);
             if (nodePtr == 0) {
@@ -175,7 +176,7 @@ advance:
                 *(int*)((char*)listData + 0x18) = *nodePtr;
                 *hotspotIdPtr = nodePtr[2];
             }
-            *(Target**)((char*)DAT_00435f0c + 0x1a4) = this;
+            ((TargetList*)DAT_00435f0c)->currentTarget = this;
             return 1;
         }
     }
@@ -189,23 +190,23 @@ void Target::UpdateProgress(int delta)
     int shouldTrigger;
     Sample* sample;
 
-    if (Target::field_0xd8 != 1) {
+    if (Target::active != 1) {
         return;
     }
-    newValue = Target::field_0x104 + delta;
-    Target::field_0x104 = newValue;
-    if (Target::field_0x108 == 0) {
+    newValue = Target::progress + delta;
+    Target::progress = newValue;
+    if (Target::progressMax == 0) {
         shouldTrigger = 0;
-    } else if (newValue >= Target::field_0x108) {
+    } else if (newValue >= Target::progressMax) {
         shouldTrigger = 1;
     } else {
         shouldTrigger = 0;
     }
     if (shouldTrigger != 0) {
-        Target::field_0x150 = 3;
+        Target::pendingAction = 3;
         return;
     }
-    sample = (Sample*)Target::field_0x134;
+    sample = Target::progressSound;
     if (sample != 0) {
         sample->Play(100, 1);
     }
@@ -220,47 +221,47 @@ int Target::Update()
     Sample* sample;
     int doResult;
 
-    if (Target::field_0xd8 == 0) {
+    if (Target::active == 0) {
         return 1;
     }
-    state = Target::field_0x150;
+    state = Target::pendingAction;
     if (state == 1) {
-        if (Target::field_0xf0 == Target::current_state) {
-            *g_ScoreManager = *g_ScoreManager - Target::field_0x118;
+        if (Target::endAnimState == Target::current_state) {
+            *g_ScoreManager = *g_ScoreManager - Target::missPoints;
             Target::Deactivate();
             return 1;
         }
         Sprite::SetState2(Target::current_state + 1);
     } else if (state == 3) {
-        Target::field_0xd8 = 3;
-        Sprite::SetState2(Target::field_0xf4 + Target::current_state);
-        if ((Target::field_0xdc & 1) != 0) {
-            tmpX = Target::field_0x148;
-            tmpY = Target::field_0x14c;
+        Target::active = 3;
+        Sprite::SetState2(Target::hitAnimOffset + Target::current_state);
+        if ((Target::targetFlags & 1) != 0) {
+            tmpX = Target::hitX;
+            tmpY = Target::hitY;
             Target::loc_x = tmpX;
             Target::loc_y = tmpY;
         }
-        sample = (Sample*)Target::field_0x130;
+        sample = Target::stopSound;
         if (sample != 0) {
             sample->~Sample();
         }
-        sample = (Sample*)Target::field_0x138;
+        sample = Target::hitSound;
         if (sample != 0) {
             sample->Play(100, 1);
         }
         g_ScoreManager[3] = g_ScoreManager[3] + 1;
-        *g_ScoreManager = *g_ScoreManager + Target::field_0x114;
-        FUN_00416ba0(g_ScoreManager, Target::field_0x10c);
-        *(int*)((char*)g_CombatEngine + 0xb4) = *(int*)((char*)g_CombatEngine + 0xb4) + Target::field_0x11c;
-        *(int*)((char*)g_CombatEngine + 0xc4) = *(int*)((char*)g_CombatEngine + 0xc4) + Target::field_0x124;
+        *g_ScoreManager = *g_ScoreManager + Target::hitPoints;
+        FUN_00416ba0(g_ScoreManager, Target::scoreIndex);
+        g_CombatEngine->field_0xb4 = g_CombatEngine->field_0xb4 + Target::combatBonus1;
+        g_CombatEngine->field_0xc4 = g_CombatEngine->field_0xc4 + Target::combatBonus2;
     }
-    Target::field_0x150 = 0;
+    Target::pendingAction = 0;
     doResult = Sprite::Do(Target::loc_x, Target::loc_y, 1.0);
     if (doResult != 0) {
-        if (Target::field_0xd8 == 3) {
+        if (Target::active == 3) {
             Target::Deactivate();
         } else {
-            Target::field_0x150 = Target::field_0xd8;
+            Target::pendingAction = Target::active;
         }
     }
     return 0;
@@ -276,10 +277,10 @@ void Target::Init(char* line)
         if (stricmp(buffer, "INIT") != 0) {
             FUN_00421f90(g_CDData_0043697c, buffer);
 
-            char* src = ((char*)g_CDData_0043697c) + 0x145;
+            char* src = &g_CDData_0043697c->field_0xc0[0x85];
             unsigned int len = strlen(src) + 1;
-            Target::field_0xe0 = (char*)AllocateMemory(len);
-            memcpy(Target::field_0xe0, src, len);
+            Target::animFilename = (char*)AllocateMemory(len);
+            memcpy(Target::animFilename, src, len);
         }
     }
 }
@@ -289,24 +290,24 @@ void Target::ParseSound(char* line)
 {
     char buffer[128];
     int index;
-    int sound;
+    Sample* sound;
 
     sscanf(line + 3, "%s", buffer);
     index = line[1] - '0';
-    sound = (int)g_SoundList_00435f1c->Register(buffer);
+    sound = (Sample*)g_SoundList_00435f1c->Register(buffer);
 
     switch (index) {
     case 0:
-        Target::field_0x130 = (void*)sound;
+        Target::stopSound = sound;
         break;
     case 1:
-        Target::field_0x134 = sound;
+        Target::progressSound = sound;
         break;
     case 2:
-        Target::field_0x138 = sound;
+        Target::hitSound = sound;
         break;
     case 3:
-        Target::field_0x13c = sound;
+        Target::sound3 = sound;
         break;
     default:
         ShowError("TargetScene::ParseSound() - Undefined sound type => %s", line);
@@ -336,22 +337,22 @@ int Target::LBLParse(char* line)
     sscanf(label, "%c", &firstChar);
 
     if (firstChar == 'A') {
-        sscanf(line + 3, "%d %d", &Target::field_0x140, &Target::field_0x144);
+        sscanf(line + 3, "%d %d", &Target::animParam1, &Target::animParam2);
     }
     else if (firstChar == 'B') {
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
             Target::SetRange(DAT_004362cc, value1, value2);
-            Target::field_0xf0 = DAT_004362cc;
+            Target::endAnimState = DAT_004362cc;
             DAT_004362c8 = value2;
             DAT_004362cc++;
         }
     }
     else if (firstChar == 'C') {
-        sscanf(line + 1, "%d", &Target::field_0x108);
+        sscanf(line + 1, "%d", &Target::progressMax);
     }
     else if (firstChar == 'D') {
-        sscanf(line + 3, "%d", &Target::field_0x114);
+        sscanf(line + 3, "%d", &Target::hitPoints);
     }
     else if (firstChar == 'F') {
         // Do nothing
@@ -360,12 +361,12 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%d", &value1);
         if (result == 1) {
             // Simplified hotspot handling - allocate list if needed
-            if (Target::field_0x12c == 0) {
-                Target::field_0x12c = AllocateMemory(0x20);
-                if (Target::field_0x12c != 0) {
-                    memset(Target::field_0x12c, 0, 0x20);
-                    ((int*)Target::field_0x12c)[5] = 10;
-                    ((int*)Target::field_0x12c)[7] = -1;
+            if (Target::hotspotList == 0) {
+                Target::hotspotList = AllocateMemory(0x20);
+                if (Target::hotspotList != 0) {
+                    memset(Target::hotspotList, 0, 0x20);
+                    ((int*)Target::hotspotList)[5] = 10;
+                    ((int*)Target::hotspotList)[7] = -1;
                 }
             }
             // Add hotspot value to list (simplified)
@@ -377,8 +378,8 @@ int Target::LBLParse(char* line)
             unsigned int len = strlen(buffer);
             if (len > 0) {
                 len = strlen(buffer) + 1;
-                Target::field_0xe4 = (char*)AllocateMemory(len);
-                memcpy(Target::field_0xe4, buffer, len);
+                Target::identifier = (char*)AllocateMemory(len);
+                memcpy(Target::identifier, buffer, len);
             }
         }
     }
@@ -386,28 +387,28 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
             Target::SetRange(DAT_004362cc, value1, value2);
-            if (Target::field_0xf4 == 0) {
-                Target::field_0xf4 = DAT_004362cc;
+            if (Target::hitAnimOffset == 0) {
+                Target::hitAnimOffset = DAT_004362cc;
             }
-            Target::field_0xf8 = DAT_004362cc;
+            Target::hitEndState = DAT_004362cc;
             DAT_004362cc++;
         }
     }
     else if (firstChar == 'O') {
-        sscanf(line + 3, "%d %d", &Target::field_0x148, &Target::field_0x14c);
-        Target::field_0xdc |= 1;
+        sscanf(line + 3, "%d %d", &Target::hitX, &Target::hitY);
+        Target::targetFlags |= 1;
     }
     else if (firstChar == 'P') {
-        sscanf(line + 3, "%d %d", &Target::field_0xfc, &Target::field_0x100);
+        sscanf(line + 3, "%d %d", &Target::timeMin, &Target::timeMax);
     }
     else if (firstChar == 'S') {
         Target::ParseSound(line);
     }
     else if (firstChar == 'V') {
-        sscanf(line + 3, "%d", &Target::field_0x10c);
+        sscanf(line + 3, "%d", &Target::scoreIndex);
     }
     else if (firstChar == 'W') {
-        sscanf(line + 3, "%d", &Target::field_0x110);
+        sscanf(line + 3, "%d", &Target::weight);
     }
     else if (firstChar == 'Z') {
         return 1;
