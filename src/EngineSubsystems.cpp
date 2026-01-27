@@ -68,7 +68,7 @@ Target::~Target()
     }
 }
 
-extern int FUN_00422a46(int x, int y);
+extern "C" int __cdecl GetPixelAt(int x, int y);
 extern void FUN_00416ba0(int* scoreManager, int value);
 
 /* Function start: 0x414230 */
@@ -134,7 +134,7 @@ int Target::CheckTimeInRange()
     } else {
         x = 0;
     }
-    result = FUN_00422a46(x, y);
+    result = GetPixelAt(x, y);
     if (Target::timeMin <= result && result <= Target::timeMax) {
         return 1;
     }
@@ -146,7 +146,7 @@ int Target::CheckTimeInRangeParam(int* coords)
 {
     int result;
 
-    result = FUN_00422a46(coords[0], coords[1]);
+    result = GetPixelAt(coords[0], coords[1]);
     if (Target::timeMin <= result && result <= Target::timeMax) {
         return 1;
     }

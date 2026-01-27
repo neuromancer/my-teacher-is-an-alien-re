@@ -24,6 +24,20 @@ extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_
     return 0;
 }
 
+/* Function start: 0x422A46 */
+extern "C" int __cdecl GetPixelAt(int x, int y)
+{
+    if (*(signed char*)&DAT_00437f54 < 0) {
+        return -1;
+    }
+    if (x < DAT_004374de || x > DAT_004374e2 ||
+        y < DAT_004374e6 || y > DAT_004374ea) {
+        return -1;
+    }
+    unsigned int rowOffset = (unsigned int)(DAT_004374ca - y) * (unsigned int)DAT_00437f5e;
+    return *(unsigned char*)(x + rowOffset + DAT_00437f66);
+}
+
 /* Function start: 0x422E1A */
 extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
 {
