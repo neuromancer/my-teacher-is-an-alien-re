@@ -77,10 +77,25 @@ public:
 
 struct HotspotNode {
     HotspotNode* next;  // 0x0
-    int field_4;        // 0x4
+    HotspotNode* prev;  // 0x4
     int id;             // 0x8
 
-    HotspotNode() : next(0), field_4(0), id(0) {}
+    HotspotNode() : next(0), prev(0), id(0) {}
+};
+
+class HotspotListData {
+public:
+    HotspotNode* first;    // 0x0
+    HotspotNode* last;     // 0x4
+    int count;             // 0x8
+    HotspotNode* freeList; // 0xc
+    void* nodePool;        // 0x10
+    int growthRate;        // 0x14
+    HotspotNode* processingHead; // 0x18
+    int currentId;         // 0x1c
+
+    HotspotListData();
+    ~HotspotListData() {}
 };
 
 class TargetMember {
@@ -89,18 +104,6 @@ public:
     TargetMember() : val(0) {}
     TargetMember(int v) : val(v) {}
     ~TargetMember() {}
-};
-
-class HotspotListData {
-public:
-    int fields[6];      // 0x00
-    HotspotNode* head;  // 0x18
-    int currentId;      // 0x1c
-
-    HotspotListData() : head(0), currentId(0) {
-        memset(fields, 0, sizeof(fields));
-    }
-    ~HotspotListData() {}
 };
 
 class Target : public Sprite {

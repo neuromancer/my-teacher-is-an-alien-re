@@ -15,6 +15,15 @@ extern CDData* g_CDData_0043697c;
 extern int FUN_00421f90(void* cdData, char* param);
 
 // ============================================================================
+// HotspotListData implementation
+// ============================================================================
+
+HotspotListData::HotspotListData() :
+    first(0), last(0), count(0), freeList(0),
+    nodePool(0), growthRate(10), processingHead(0), currentId(-1)
+{}
+
+// ============================================================================
 // Target implementation
 // ============================================================================
 
@@ -154,11 +163,11 @@ int Target::AdvanceHotspot()
             }
         } else if (Target::animation_data->smk->FrameNum == list->currentId) {
 advance:
-            node = list->head;
+            node = list->processingHead;
             if (node == 0) {
                 list->currentId = -1;
             } else {
-                list->head = node->next;
+                list->processingHead = node->next;
                 list->currentId = node->id;
             }
             ((TargetList*)DAT_00435f0c)->currentTarget = this;
@@ -345,26 +354,52 @@ int Target::LBLParse(char* line)
     else if (firstChar == 'H') {
         int result = sscanf(line + 3, "%d", &value1);
         if (result == 1) {
-            // Simplified hotspot handling - allocate list if needed
-            if (Target::hotspotList == 0) {
-                Target::hotspotList = new HotspotListData;
-                if (Target::hotspotList != 0) {
-                    memset(Target::hotspotList, 0, sizeof(HotspotListData));
-                    Target::hotspotList->fields[5] = 10;
-                    Target::hotspotList->currentId = -1;
+            HotspotListData* list = Target::hotspotList;
+            if (list == 0) {
+                list = new HotspotListData;
+                Target::hotspotList = list;
+            }
+            if (list != 0) {
+                HotspotNode* node = list->freeList;
+                if (node == 0) {
+                    node = (HotspotNode*)AllocateMemory(list->growthRate * 12 + 4);
+                    *(HotspotNode**)node = (HotspotNode*)list->nodePool;
+                    list->nodePool = node;
+                    int n = list->growthRate - 1;
+                    node = (HotspotNode*)((char*)node + (n + 1) * 12 - 8);
+                    do {
+                        node->next = list->freeList;
+                        list->freeList = node;
+                        node = (HotspotNode*)((char*)node - 12);
+                        n--;
+                    } while (n >= 0);
+                    node = list->freeList;
+                }
+                list->freeList = node->next;
+                node->prev = list->last;
+                node->next = 0;
+                list->count++;
+                int temp = 0;
+                do {
+                    temp--;
+                } while (temp != 0);
+                node->id = value1;
+                if (list->last != 0) {
+                    list->last->next = node;
+                    list->last = node;
+                } else {
+                    list->first = node;
+                    list->last = node;
                 }
             }
-            // Add hotspot value to list (simplified)
         }
     }
     else if (firstChar == 'I') {
         int result = sscanf(line + 3, "%s", buffer);
         if (result == 1) {
-            unsigned int len = strlen(buffer);
-            if (len > 0) {
-                len = strlen(buffer) + 1;
-                Target::identifier = (char*)AllocateMemory(len);
-                memcpy(Target::identifier, buffer, len);
+            if (strlen(buffer) != 0) {
+                Target::identifier = (char*)AllocateMemory(strlen(buffer) + 1);
+                strcpy(Target::identifier, buffer);
             }
         }
     }
