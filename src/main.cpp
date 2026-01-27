@@ -41,6 +41,7 @@ Character* DAT_00435a78 = 0;
 Character* DAT_00435a7c = 0;
 int DAT_00435a80 = 0;
 FlagArray* g_Manager_00435a84 = 0;
+char* g_StateString_00436994 = 0;
 
 static char s_TeacherDemo[] = "Teacher Demo"; 
 
@@ -101,7 +102,7 @@ void RunGame() {
     g_Mouse_00436978 = new Mouse();
     ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
     
-    g_Unknown_00436994 = new char[0x40];
+    g_StateString_00436994 = new char[0x40];
 
     g_Timer_00436980 = new Timer();
 
@@ -139,16 +140,21 @@ void RunGame() {
 
     pGameLoop->Run();
     delete pGameLoop;
-    pGameLoop = 0;
 
-    delete g_ZBufferManager_0043698c;
-    g_ZBufferManager_0043698c = 0;
+    if (g_ZBufferManager_0043698c != 0) {
+        delete g_ZBufferManager_0043698c;
+        g_ZBufferManager_0043698c = 0;
+    }
 
-    delete g_TimedEventPool2_00436988;
-    g_TimedEventPool2_00436988 = 0;
+    if (g_TimedEventPool2_00436988 != 0) {
+        delete g_TimedEventPool2_00436988;
+        g_TimedEventPool2_00436988 = 0;
+    }
 
-    delete g_TimedEventPool1_00436984;
-    g_TimedEventPool1_00436984 = 0;
+    if (g_TimedEventPool1_00436984 != 0) {
+        delete g_TimedEventPool1_00436984;
+        g_TimedEventPool1_00436984 = 0;
+    }
 
     if (g_Strings_00435a70 != 0) {
         delete g_Strings_00435a70;
@@ -180,9 +186,9 @@ void RunGame() {
         g_Timer_00436980 = 0;
     }
 
-    if (g_Unknown_00436994 != 0) {
-        FreeMemory(g_Unknown_00436994);
-        g_Unknown_00436994 = 0;
+    if (g_StateString_00436994 != 0) {
+        delete g_StateString_00436994;
+        g_StateString_00436994 = 0;
     }
 
     if (g_Mouse_00436978 != 0) {
@@ -308,11 +314,11 @@ void ShutdownGameSystems(void) {
      g_GameConfig_00436970 = 0;
   }
   if (g_Buffer_00436964 != 0) {
-    delete[] (char*)g_Buffer_00436964;
+    delete (char*)g_Buffer_00436964;
     g_Buffer_00436964 = 0;
   }
   if (g_Buffer_00436960 != 0) {
-    delete[] g_Buffer_00436960;
+    delete g_Buffer_00436960;
     g_Buffer_00436960 = 0;
   }
 }

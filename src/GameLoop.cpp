@@ -535,7 +535,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
         else {
             result = 1;
             char* srcStr = g_GameState2_004369a4->GetState(msg->sourceAddress);
-            strcpy(g_Unknown_00436994, srcStr);
+            strcpy(g_StateString_00436994, srcStr);
         }
     }
     else if (msg->targetAddress == 0) {

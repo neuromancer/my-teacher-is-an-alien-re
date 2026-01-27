@@ -451,7 +451,7 @@ extern "C" {
 }
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
 extern MessageQueue* g_MessageQueue; // Handler8 message queue
-extern char* g_Unknown_00436994; // DAT_00436994 - string buffer used for game state strings
+extern char* g_StateString_00436994; // DAT_00436994 - string buffer used for game state strings
 extern GameState* g_GameState_00436998; // DAT_00436998  { /* 4 bytes */ }
 extern void* g_GameStruct2; // { /* 4 bytes */ }
 extern int DAT_0043d564; // { /* 4 bytes */ }
