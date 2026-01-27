@@ -7,17 +7,18 @@
 /* Function start: 0x40A1D0 */
 OnScreenMessage::OnScreenMessage(char* message, unsigned int dur)
 {
-    Timer* t = new(&timer) Timer();
+    new(&timer) Timer();
     memset(this, 0, sizeof(OnScreenMessage));
-    if (message != 0) {
+    if (message != (char*)0) {
         strcpy(text, message);
     }
-    t->Reset();
-    OnScreenMessage::duration = dur;
-    if (dur < 0xfb) {
-        OnScreenMessage::duration = 0xfa;
+    timer.Reset();
+    duration = dur;
+    if (dur <= 250) {
+        duration = 250;
     }
 }
+
 
 /* Function start: 0x40A290 */
 int OnScreenMessage::Update(int index)
