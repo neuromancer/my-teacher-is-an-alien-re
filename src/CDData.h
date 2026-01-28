@@ -12,6 +12,7 @@ public:
   int CheckFileOnDrive(int drive_letter);
   int ChangeToDriveDirectory(int drive_letter);
   int ChangeDirectory(unsigned char *path);
+  int ResolvePath(char* param_1);  // 0x421F90
 };
 
 #endif

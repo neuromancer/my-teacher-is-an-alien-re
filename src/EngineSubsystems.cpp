@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 extern CDData* g_CDData_0043697c;
-extern int FUN_00421f90(void* cdData, char* param);
+// FUN_00421f90 is now CDData::ResolvePath in CDData.cpp
 
 // ============================================================================
 // HotspotListData implementation
@@ -65,7 +65,20 @@ Target::~Target()
 }
 
 extern "C" int __cdecl GetPixelAt(int x, int y);
-extern void FUN_00416ba0(int* scoreManager, int value);
+
+// ScoreManager::AdjustScore - adds value to field_4, clamps between 0 and 200
+/* Function start: 0x416ba0 */
+void FUN_00416ba0(int* scoreManager, int value) {
+    int newVal = scoreManager[1] + value;
+    scoreManager[1] = newVal;
+    if (newVal < 0) {
+        scoreManager[1] = 0;
+        return;
+    }
+    if (newVal > 0xc8) {
+        scoreManager[1] = 0xc8;
+    }
+}
 
 /* Function start: 0x414230 */
 void Target::Deactivate()
@@ -262,7 +275,7 @@ void Target::Init(char* line)
 
     if (sscanf(line, "%s", buffer) == 1) {
         if (stricmp(buffer, "INIT") != 0) {
-            FUN_00421f90(g_CDData_0043697c, buffer);
+            g_CDData_0043697c->ResolvePath(buffer);
 
             Target::animFilename = (char*)AllocateMemory(strlen((char*)g_CDData_0043697c + 0x145) + 1);
             strcpy(Target::animFilename, (char*)g_CDData_0043697c + 0x145);

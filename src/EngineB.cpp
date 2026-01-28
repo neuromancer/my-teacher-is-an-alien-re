@@ -10,13 +10,11 @@
 #include "globals.h"
 #include "InputManager.h"
 #include "RockThrower.h"
+#include "string.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-// Extern function declarations
-extern void FUN_00416880(int* param);
-extern char* FUN_0040d200(char* filename);
 extern int* DAT_00435f28;
 
 // Forward declaration for atexit handler
@@ -28,31 +26,22 @@ static unsigned char g_TimeOutInitFlag_0043d14c = 0;
 
 /* Function start: 0x412110 */
 EngineB::EngineB() {
-  // Engine::Engine() is called automatically via inheritance
-  // GlyphRect constructors for m_meterEmptyRect and m_meterFullRect
-  // are called automatically (they zero their fields and have destructors,
-  // generating SEH state tracking)
-
-  // Initialize IntPair at 0x150
-  EngineB::m_progress.field_0 = 0;
-  EngineB::m_progress.field_4 = 0;
-
-  // Initialize MeterPos at 0x158
-  EngineB::m_meterPosition.x = 0;
-  EngineB::m_meterPosition.y = 0;
-
+  // Clearing explicitly to match the redundant writes in the original disassembly.
+  // The small members have destructors, causing SEH state updates during construction.
+  m_progress.field_0 = 0;
+  m_progress.field_4 = 0;
+  m_meterPosition.x = 0;
+  m_meterPosition.y = 0;
   memset(&m_localSoundList, 0, 0x80);
 }
 
-/* Function start: 0x4121f0 */
+/* Function start: 0x412210 */
 EngineB::~EngineB() {
-  // Delete m_meterAnimation (offset 0x128)
   if (m_meterAnimation != 0) {
     delete m_meterAnimation;
     m_meterAnimation = 0;
   }
 
-  // Delete m_localSoundList (offset 0xe8)
   if (m_localSoundList != 0) {
     delete m_localSoundList;
     m_localSoundList = 0;
@@ -220,7 +209,7 @@ void AtExitCleanup_0043d140() {
 /* Function start: 0x412610 */
 void EngineB::ProcessTargets() {
   ((TargetList*)DAT_00435f0c)->ProcessTargets();
-  FUN_00416880((int*)EngineB::m_weaponParser);
+  ((RockThrower*)EngineB::m_weaponParser)->UpdateProjectiles();
   EngineB::Draw();
   EngineB::UpdateMeter();
 }
@@ -333,7 +322,7 @@ void EngineB::OnProcessEnd() {
   // Register sounds if m_localSoundList is available
   SoundList* sList = EngineB::m_localSoundList;
   if (sList != 0) {
-    char* filename = FUN_0040d200("audio\\ldu010_1.wav");
+    char* filename = FormatStringVA("audio\\ldu010_1.wav");
     EngineB::m_tauntSound1 = (Sample*)sList->Register(filename);
     EngineB::m_tauntSound2 = (Sample*)sList->Register("audio\\ldu011_1.wav");
     EngineB::m_hitSound1 = (Sample*)sList->Register("audio\\ldu008_1.wav");

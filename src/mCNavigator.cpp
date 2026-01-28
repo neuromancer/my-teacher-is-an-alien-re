@@ -45,13 +45,10 @@ int FindCharIndex(char* param_1)
 
 Sprite* g_Sprite_004360a0 = 0;
 
-
-
-
 /* Function start: 0x413670 */
 mCNavigator::mCNavigator()
 {
-    memset(&sprite, 0, 32);
+    memset(&field_88, 0, 32);
     startingNode = 1;
     field_98 = 0;
 }
@@ -79,7 +76,7 @@ mCNavigator::~mCNavigator()
     do {
         NavNode* node = ((NavNode**)navNodePool->memory)[i];
         while (node) {
-            CleanupObjectArray(node->field_C, 1);
+            CleanupObjectArray(&node->field_C, 1);
             node = node->next;
         }
         i++;
@@ -122,195 +119,177 @@ void mCNavigator::SetBearing(char* param_1)
 /* Function start: 0x413840 */
 void mCNavigator::SetCurrentNode()
 {
-    unsigned int hash;
+	if (sprite) {
+		sprite->Init();
+	}
 
-    if (sprite) {
-        sprite->Init();
-    }
+	ObjectPool* pool = navNodePool;
+	if (pool) {
+		int id = startingNode;
+		unsigned int h = (unsigned int)id >> 4;
+		h %= pool->size;
 
-    if (navNodePool == 0) {
-        return;
-    }
+		NavNode* n = 0;
+		if (pool->memory) {
+			n = ((NavNode**)pool->memory)[h];
+			while (n) {
+				if (n->field_8 == id) {
+					break;
+				}
+				n = n->next;
+			}
+		}
 
-    int nodeId = startingNode;
-    hash = ((unsigned int)nodeId >> 4) % navNodePool->size;
+		if (n) {
+			currentNode = n->field_C;
+		}
 
-    NavNode* node = 0;
-    if (navNodePool->memory) {
-        node = ((NavNode**)navNodePool->memory)[hash];
-    }
-
-    while (node) {
-        if (node->field_8 == nodeId) {
-            break;
-        }
-        node = node->next;
-    }
-
-    if (node) {
-        currentNode = node->field_C;
-    }
-
-    field_A0 = nodeId;
-    if (currentNode) {
-        g_Sprite_004360a0 = sprite;
-    }
+		field_A0 = id;
+		if (currentNode) {
+			g_Sprite_004360a0 = sprite;
+		}
+	}
 }
-
-
 
 /* Function start: 0x4138c0 */
 int mCNavigator::LBLParse(char* param_1)
 {
-    char local_b4[128];
-    char local_34[32];
-    void* local_14;
-    ObjectPool* pool;
-    Parser* parser;
-    Sprite* spr;
+	char token[32];
+	char value[128];
+	mCNavNode* parser;
 
-    local_b4[0] = '\0';
-    local_34[0] = '\0';
-    sscanf(param_1, " %s ", local_34);
-    if (_strcmpi(local_34, "BEARING") == 0) {
-        sscanf(param_1, "%s %s", local_34, local_b4);
-        SetBearing(local_b4);
-    }
-    else if (_strcmpi(local_34, "BASENODE") == 0) {
-        if (navNodePool == 0) {
-            local_14 = AllocateMemory(sizeof(ObjectPool));
-            pool = (ObjectPool*)local_14;
-            if (pool) {
-                pool->memory = 0;
-                pool->size = 0x11;
-                pool->allocatedCount = 0;
-                pool->freeList = 0;
-                pool->memoryBlock = 0;
-                pool->objectSize = 10;
-            }
-            navNodePool = pool;
-        }
+	value[0] = '\0';
+	token[0] = '\0';
+	sscanf(param_1, " %s ", token);
+	if (_strcmpi(token, "BEARING") == 0) {
+		sscanf(param_1, "%s %s", token, value);
+		SetBearing(value);
+	}
+	else if (_strcmpi(token, "BASENODE") == 0) {
+		if (navNodePool == 0) {
+			ObjectPool* pool = (ObjectPool*)AllocateMemory(0x18);
+			if (pool) {
+				pool->memory = 0;
+				pool->size = 0x11;
+				pool->allocatedCount = 0;
+				pool->freeList = 0;
+				pool->memoryBlock = 0;
+				pool->objectSize = 0xa;
+			}
+			navNodePool = pool;
+		}
 
-        local_14 = AllocateMemory(0x100);
-        parser = 0;
-        if (local_14) {
-            parser = (Parser*)NavNode_Constructor(local_14);
-        }
-        Parser::ProcessFile(parser, this, 0);
+		parser = new mCNavNode();
+		Parser::ProcessFile(parser, this, 0);
 
-        if (((Hotspot*)parser)->field_DC == 0) {
-            ShowError("mCNavigator::LoadNodes() - Invalid Node Handle (%d)", 0);
-        }
+		if (parser->nodeHandle == 0) {
+			ShowError("mCNavigator::LoadNodes() - Invalid Node Handle (%d)", 0);
+		}
 
-        unsigned int nodeId = ((Hotspot*)parser)->field_DC;
-        unsigned int hash = (nodeId >> 4) % navNodePool->size;
+		unsigned int handle = parser->nodeHandle;
+		ObjectPool* pool = navNodePool;
+		unsigned int h = (handle >> 4) % pool->size;
 
-        NavNode* node = 0;
-        if (navNodePool->memory) {
-            node = ((NavNode**)navNodePool->memory)[hash];
-            while (node) {
-                if (node->field_8 == nodeId) {
-                    break;
-                }
-                node = node->next;
-            }
-        }
+		NavNode* node = 0;
+		if (pool->memory) {
+			node = ((NavNode**)pool->memory)[h];
+			while (node) {
+				if (node->field_8 == handle) {
+					break;
+				}
+				node = node->next;
+			}
+		}
 
-        if (node) {
-            ShowError("mCNavigator::LoadNodes() - %s has a dublicate node handle (%d)", (char*)&((Hotspot*)parser)->rect.left, nodeId);
-        }
+		if (node) {
+			ShowError("mCNavigator::LoadNodes() - %s has a dublicate node handle (%d)", parser->nodeName, handle);
+		}
 
-        nodeId = ((Hotspot*)parser)->field_DC;
-        hash = (nodeId >> 4) % navNodePool->size;
-        node = 0;
-        if (navNodePool->memory) {
-            node = ((NavNode**)navNodePool->memory)[hash];
-            while (node) {
-                if (node->field_8 == nodeId) {
-                    break;
-                }
-                node = node->next;
-            }
-        }
+		handle = parser->nodeHandle;
+		pool = navNodePool;
+		h = (handle >> 4) % pool->size;
+		
+		node = 0;
+		if (pool->memory) {
+			node = ((NavNode**)pool->memory)[h];
+			while (node) {
+				if (node->field_8 == handle) {
+					break;
+				}
+				node = node->next;
+			}
+		}
 
-        if (node == 0) {
-            if (navNodePool->memory == 0) {
-                navNodePool->MemoryPool_Allocate(navNodePool->size, 1);
-            }
-            node = (NavNode*)navNodePool->Allocate_2();
-            node->field_4 = hash;
-            node->field_8 = nodeId;
-            node->next = ((NavNode**)navNodePool->memory)[hash];
-            ((NavNode**)navNodePool->memory)[hash] = node;
-        }
-        node->field_C = parser;
-    }
-    else if (_strcmpi(local_34, "SPRITE") == 0) {
-        local_14 = AllocateMemory(0xd8);
-        spr = 0;
-        if (local_14) {
-            spr = (Sprite*)local_14;
-            spr->Sprite::Sprite((char*)0);
-        }
-        sprite = spr;
-        Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
-    }
-    else if (_strcmpi(local_34, "STARTING_NODE") == 0) {
-        sscanf(param_1, "%s %d", local_34, &startingNode);
-    }
-    else if (_strcmpi(local_34, "END") == 0) {
-        return 1;
-    }
-    else {
-        return Parser::LBLParse("mCNavigator");
-    }
+		if (node == 0) {
+			if (pool->memory == 0) {
+				pool->MemoryPool_Allocate(pool->size, 1);
+			}
+			node = (NavNode*)pool->Allocate_2();
+			node->field_4 = h;
+			node->field_8 = handle;
+			node->next = ((NavNode**)pool->memory)[h];
+			((NavNode**)pool->memory)[h] = node;
+		}
+		node->field_C = parser;
+	}
+	else if (_strcmpi(token, "SPRITE") == 0) {
+		sprite = new Sprite(0);
+		Parser::ProcessFile(sprite, this, (char*)0);
+	}
+	else if (_strcmpi(token, "STARTING_NODE") == 0) {
+		sscanf(param_1, "%s %d", token, &startingNode);
+	}
+	else if (_strcmpi(token, "END") == 0) {
+		return 1;
+	}
+	else {
+		return Parser::LBLParse("mCNavigator");
+	}
 
-    return 0;
+	return 0;
 }
 
 /* Function start: 0x413BC0 */
 int mCNavigator::Update()
 {
-    unsigned int hash;
+	if (currentNode == 0) {
+		return 0;
+	}
 
-    if (currentNode == 0) {
-        return 0;
-    }
+	int result = ((mCNavNode*)currentNode)->Update();
+	if (result == 1) {
+		int nextNodeId = ((mCNavNode*)currentNode)->GetNextNode();
+		ObjectPool* pool = navNodePool;
+		int handle = ((mCNavNode*)currentNode)->nodeHandle;
+		unsigned int h = (unsigned int)nextNodeId >> 4;
+		field_A0 = handle;
+		h %= pool->size;
 
-    int result = ((mCNavNode*)currentNode)->Update();
-    if (result == 1) {
-        int nextNodeId = ((mCNavNode*)currentNode)->GetNextNode();
-        field_A0 = ((Hotspot*)currentNode)->field_DC;
+		NavNode* node = 0;
+		if (pool->memory) {
+			node = ((NavNode**)pool->memory)[h];
+			while (node) {
+				if (node->field_8 == nextNodeId) {
+					break;
+				}
+				node = node->next;
+			}
+		}
 
-        hash = ((unsigned int)nextNodeId >> 4) % navNodePool->size;
+		if (node == 0) {
+			return 2;
+		}
 
-        NavNode* node = 0;
-        if (navNodePool->memory) {
-            node = ((NavNode**)navNodePool->memory)[hash];
-        }
+		currentNode = node->field_C;
+		return 0;
+	}
 
-        while (node) {
-            if (node->field_8 == nextNodeId) {
-                break;
-            }
-            node = node->next;
-        }
+	if (result == 3 || result == 2) {
+		*DAT_00435f28 = 2;
+		return result;
+	}
 
-        if (node == 0) {
-            return 2;
-        }
-
-        currentNode = node->field_C;
-        return 0;
-    }
-
-    if (result != 3) {
-        if (result != 2) {
-            return 0;
-        }
-    }
-    *DAT_00435f28 = 2;
-    return result;
+	return 0;
 }
 
 /* Function start: 0x413C80 */

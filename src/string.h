@@ -12,6 +12,7 @@ extern "C" {
     void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
     void ExtractQuotedString(char *param_1,char *param_2,int param_3);
     void ShowMessage(char *param_1, ...);
+    char* FormatStringVA(char* format, ...);
     void ClearMessageLog();
     void WriteToMessageLog(const char *msg,...);
     void AddToStringTable(char *param_1);

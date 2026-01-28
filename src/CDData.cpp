@@ -14,6 +14,15 @@ int FileExists(const char *);
 void ParsePath(const char *, char *, char *, char *, char *);
 }
 
+// External helper functions for CDData path resolution
+extern "C" void __cdecl FUN_004195c0(char* param);      // FormatPath helper
+extern "C" void __cdecl FUN_00419620(char* param);      // Path validation
+extern "C" int __cdecl FUN_004195a0(const char* path);  // File check (returns 0 if exists)
+extern "C" void __cdecl FUN_004261c0(char* param1, void* param2, char* outBuffer, void* param4, void* param5);
+extern "C" int __cdecl FUN_004304a0(const char* path);  // Create directory
+extern "C" void __cdecl FUN_00419660(const char* dest, const char* src);  // Path copy
+extern "C" void __cdecl FUN_0042ad80(void);             // Some post-processing
+
 /* Function start: 0x4195C0 */
 extern "C" char* __cdecl CDData_FormatPath(char* param_1, ...)
 {
@@ -79,4 +88,45 @@ int CDData::ChangeToDriveDirectory(int drive_letter) {
           field_0x80, field_0x1c5);
   int result = ChangeDirectory((unsigned char *)local_40);
   return result != 0;
+}
+
+/* Function start: 0x421F90 */
+int CDData::ResolvePath(char* param_1) {
+    char local_104[260];
+    int len;
+    char* ptr;
+
+    FUN_004195c0(param_1);
+    FUN_00419620(param_1);
+
+    if (CDData::field_0xc0[0] == 0) {
+        return 0;
+    }
+
+    // Check if file exists at path offset 0x145
+    if (FUN_004195a0(CDData::field_0xc0 + 0x85) != 0) {
+        return 0;
+    }
+
+    // Get path components
+    FUN_004261c0(param_1, 0, local_104, 0, 0);
+
+    // Remove trailing character if string is not empty
+    if (local_104[0] != 0) {
+        len = strlen(local_104);
+        local_104[len - 1] = 0;
+    }
+
+    // Try to change directory
+    if (chdir(local_104) == 0) {
+        chdir("C:\\");  // DAT_004373cc is typically "C:"
+    } else {
+        FUN_004304a0(local_104);
+    }
+
+    // Copy resolved path
+    FUN_00419660(CDData::field_0xc0 + 5, CDData::field_0xc0 + 0x85);
+    FUN_0042ad80();
+
+    return 1;
 }

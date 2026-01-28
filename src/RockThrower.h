@@ -3,6 +3,8 @@
 
 #include "Parser.h"
 
+class Projectile;
+
 // Weapon - Base class for weapons (vtable 0x4313a8)
 // Intermediate class between Parser and RockThrower
 // Size: 0xa8 (168 bytes)
@@ -30,12 +32,14 @@ class RockThrower : public Weapon {
 public:
     // Fields from 0xa8 to 0xb8 (16 bytes, 4 dwords)
     int m_itemCount;    // 0xa8 - number of items/projectiles
-    void* m_items;      // 0xac - pointer to array of projectile objects
+    Projectile** m_items; // 0xac - pointer to array of projectile objects
     int field_0xb0;     // 0xb0
     int field_0xb4;     // 0xb4
 
     RockThrower();
     ~RockThrower();
+
+    void UpdateProjectiles(); // 0x416880
 
     virtual int LBLParse(char* line);
 };

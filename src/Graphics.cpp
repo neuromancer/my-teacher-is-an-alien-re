@@ -537,3 +537,15 @@ int InitStockFont(int param_1)
     return 0;
 }
 
+// FUN_00422ac3 - Complex Bresenham line drawing algorithm with segment manipulation
+// Too complex to reimplement exactly due to inline assembly and segment registers
+extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2) { return 0; }
+
+// FUN_00424176 - Ellipse/circle drawing function (complex)
+extern "C" int __cdecl FUN_00424176(int param_1, int param_2) { return 0; }
+
+/* Function start: 0x422aaf */
+extern "C" int __cdecl FUN_00422aaf(int param_1) {
+    FUN_00424176(param_1, param_1);
+    return 0;
+}

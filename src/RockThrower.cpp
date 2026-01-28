@@ -1,8 +1,11 @@
 #include "RockThrower.h"
 #include "globals.h"
 #include "Engine.h"
+#include "Projectile.h"
+#include "InputManager.h"
 #include <string.h>
 
+extern int DAT_0043d150;
 extern Engine* g_CombatEngine;
 
 /* Function start: 0x4165D0 */
@@ -49,4 +52,67 @@ RockThrower::~RockThrower() {}
 
 int RockThrower::LBLParse(char* line) {
     return 0;
+}
+
+/* Function start: 0x416880 */
+void RockThrower::UpdateProjectiles() {
+    int** vtable;
+    InputState* pMouse;
+    int buttonState;
+    int prevButtons;
+    Projectile** projectiles;
+    int i;
+
+    if (g_InputManager_00436968->mouseValid == 0) {
+        goto update_all;
+    }
+
+    vtable = *(int***)this;
+    ((void (*)(RockThrower*))vtable[5])(this); // vtable[5] = offset 0x14
+
+    pMouse = g_InputManager_00436968->pMouse;
+    buttonState = 0;
+    if (pMouse != 0) {
+        buttonState = pMouse->buttons & 1;
+    }
+
+    if (buttonState == 0 && (pMouse->prevButtons & 1) != 0) {
+        RockThrower::field_0xa0 = 1;
+    } else {
+        RockThrower::field_0xa0 = 0;
+    }
+
+    i = 0;
+    if (RockThrower::field_0xa0 == 0) {
+        goto update_all;
+    }
+
+    ((void (*)(RockThrower*))vtable[4])(this); // vtable[4] = offset 0x10
+
+    if (RockThrower::m_itemCount <= 0) {
+        goto update_all;
+    }
+
+    projectiles = RockThrower::m_items;
+    do {
+        if (projectiles[i]->active == 0) {
+            RockThrower::m_items[i]->Launch();
+            goto update_all;
+        }
+        i++;
+    } while (i < RockThrower::m_itemCount);
+
+update_all:
+    i = 0;
+    DAT_0043d150 = 0;
+    RockThrower::field_0xb0 = 0;
+
+    if (RockThrower::m_itemCount > 0) {
+        do {
+            RockThrower::m_items[i]->Update();
+            i++;
+        } while (i < RockThrower::m_itemCount);
+    }
+
+    RockThrower::field_0xb0 = DAT_0043d150;
 }

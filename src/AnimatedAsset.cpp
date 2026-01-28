@@ -11,10 +11,9 @@
 /* Function start: 0x420F80 */
 AnimatedAsset::AnimatedAsset()
 {
-    char glyphVal = 1;
-    memset(this, 0, 14 * sizeof(int));
+    ZeroMemory(this, 56);
     color = 2;
-    glyphValue = glyphVal;
+    glyphValue = 1;
 }
 
 /* Function start: 0x421010 */
@@ -153,55 +152,48 @@ int AnimatedAsset::IsCharSupported(int ch)
 }
 
 /* Function start: 0x421420 */
-int AnimatedAsset::DrawChar(int param_1, int param_2, int param_3)
+int AnimatedAsset::DrawChar(int x, int y, int ch)
 {
-    int iVar4;
+    int width;
 
-    //__try {
-        if (param_3 == 0x20) {
-            iVar4 = spaceWidth;
-        }
-        else if (param_3 == 9) {
-            iVar4 = tabWidth;
-        }
-        else {
-            GlyphRect local;
-            int* p = &local.left;
-            int index = param_3 - firstChar;
-            p[0] = 0;
-            index = index << 4;
-            p[1] = 0;
-            index = index + (int)glyphTable;
-            p[2] = 0;
-            p[3] = 0;
-            GlyphRect* piVar5 = (GlyphRect*)index;
-            int iVar1 = piVar5->bottom;
-            int iVar2 = piVar5->right;
-            int iVar3 = piVar5->top;
-            int iVar0 = piVar5->left;
-            local.left = iVar0;
-            local.top = iVar3;
-            local.right = iVar2;
-            local.bottom = iVar1;
-            if (useBuffer == 0) {
-                if (useAttr != 0) {
-                    g_WorkBuffer_00436974->CallBlitter3(iVar0, iVar2, iVar3, iVar1, param_1, param_2, buffer, color, attr);
-                }
-                else {
-                    g_WorkBuffer_00436974->CallBlitter2(iVar0, iVar2, iVar3, iVar1, param_1, param_2, buffer);
-                }
+    if (ch == 0x20) {
+        width = spaceWidth;
+    }
+    else if (ch == 0x9) {
+        width = tabWidth;
+    }
+    else {
+        GlyphRect local;
+        GlyphRect* entry = &glyphTable[ch - firstChar];
+        int b = entry->bottom;
+        int r = entry->right;
+        int t = entry->top;
+        int l = entry->left;
+
+        local.left = l;
+        local.top = t;
+        local.right = r;
+        local.bottom = b;
+
+        if (useBuffer == 0) {
+            if (useAttr != 0) {
+                g_WorkBuffer_00436974->CallBlitter3(local.left, local.right, local.top, local.bottom, x, y, buffer, color, attr);
             }
             else {
-                if (useAttr != 0) {
-                    buffer->BlitTransparent(iVar0, iVar2, iVar3, iVar1, param_1, param_2, color, attr);
-                }
-                else {
-                    buffer->ClipAndBlit((int)g_WorkBuffer_00436974, iVar0, iVar2, iVar3, iVar1, param_1, param_2);
-                }
+                g_WorkBuffer_00436974->CallBlitter2(local.left, local.right, local.top, local.bottom, x, y, buffer);
             }
-            iVar4 = local.right - local.left;
         }
-    return iVar4;
+        else {
+            if (useAttr != 0) {
+                buffer->BlitTransparent(local.left, local.right, local.top, local.bottom, x, y, color, attr);
+            }
+            else {
+                buffer->TPaste(local.left, local.right, local.top, local.bottom, x, y);
+            }
+        }
+        width = local.right - local.left;
+    }
+    return width;
 }
 
 /* Function start: 0x4215A0 */
@@ -263,20 +255,22 @@ void AnimatedAsset::PrepareText(char* text)
 }
 
 /* Function start: 0x421700 */
-void AnimatedAsset::RenderText(char* text, int param_2)
+void AnimatedAsset::RenderText(char* text, int color_param)
 {
-    if (text != (char *)0x0) {
+    if (text != 0) {
         useBuffer = 0;
-        attr = (char)param_2;
-        useAttr = (param_2 != -1);
+        attr = (char)color_param;
+        useAttr = (color_param + 1 != 0);
         PrepareText(text);
         if (*text != '\0') {
-            int* piVar1 = &text_pos.x;
+            int* p_x = &text_pos.x;
             do {
-                char cVar2 = *text;
-                text = text + 1;
-                int iVar3 = DrawChar(*piVar1, text_pos.y, (int)cVar2);
-                *piVar1 = *piVar1 + char_adv.advance + iVar3;
+                int x = *p_x;
+                int ch = (int)*text;
+                text++;
+                int y = p_x[1];
+                int width = DrawChar(x, y, ch);
+                *p_x += width + char_adv.advance;
             } while (*text != '\0');
         }
     }

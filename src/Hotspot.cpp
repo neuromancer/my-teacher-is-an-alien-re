@@ -209,68 +209,76 @@ Hotspot::Hotspot()
 /* Function start: 0x40D3A0 */
 Hotspot::~Hotspot()
 {
-    if (hotspot) {
-        delete hotspot;
-        hotspot = 0;
-    }
-    if (right_tool) {
-        delete right_tool;
-        right_tool = 0;
-    }
-    if (wrong_tool) {
-        delete wrong_tool;
-        wrong_tool = 0;
-    }
+	if (hotspot) {
+		delete hotspot;
+		hotspot = 0;
+	}
+	if (right_tool) {
+		delete right_tool;
+		right_tool = 0;
+	}
+	if (wrong_tool) {
+		delete wrong_tool;
+		wrong_tool = 0;
+	}
 
-    if (pre_message) {
-        if (pre_message->m_head) {
-            pre_message->m_current = pre_message->m_head;
-            do {
-                Message* msg = 0;
-                QueueNode* node = (QueueNode*)pre_message->m_current;
-                if (node) {
-                    if (pre_message->m_head == node) pre_message->m_head = (void*)node->next;
-                    if (pre_message->m_tail == node) pre_message->m_tail = (void*)node->prev;
-                    if (node->prev) ((QueueNode*)node->prev)->next = node->next;
-                    if (node->next) ((QueueNode*)node->next)->prev = node->prev;
+	if (pre_message) {
+		if (pre_message->m_head) {
+			pre_message->m_current = pre_message->m_head;
+			while (pre_message->m_head) {
+				QueueNode* node = (QueueNode*)pre_message->m_current;
+				if (!node) {
+					pre_message->m_current = pre_message->m_head;
+					continue;
+				}
+				if (pre_message->m_head == node) pre_message->m_head = node->next;
+				if (pre_message->m_tail == node) pre_message->m_tail = node->prev;
+				if (node->prev) node->prev->next = node->next;
+				if (node->next) node->next->prev = node->prev;
 
-                    msg = (Message*)pre_message->GetCurrentData();
-                    delete node;
-                    pre_message->m_current = 0;
-                }
-                pre_message->m_current = pre_message->m_head;
+				SC_Message* msg = (SC_Message*)pre_message->GetCurrentData();
 
-                if (msg) delete msg;
-            } while (pre_message->m_head);
-        }
-        delete pre_message;
-        pre_message = 0;
-    }
+				if (pre_message->m_current) {
+					delete (QueueNode*)pre_message->m_current;
+					pre_message->m_current = 0;
+				}
+				pre_message->m_current = pre_message->m_head;
 
-    if (message) {
-        if (message->m_head) {
-            message->m_current = message->m_head;
-            do {
-                Message* msg = 0;
-                QueueNode* node = (QueueNode*)message->m_current;
-                if (node) {
-                    if (message->m_head == node) message->m_head = (void*)node->next;
-                    if (message->m_tail == node) message->m_tail = (void*)node->prev;
-                    if (node->prev) ((QueueNode*)node->prev)->next = node->next;
-                    if (node->next) ((QueueNode*)node->next)->prev = node->prev;
+				if (msg) delete msg;
+			}
+		}
+		delete pre_message;
+		pre_message = 0;
+	}
 
-                    msg = (Message*)message->GetCurrentData();
-                    delete node;
-                    message->m_current = 0;
-                }
-                message->m_current = message->m_head;
+	if (message) {
+		if (message->m_head) {
+			message->m_current = message->m_head;
+			while (message->m_head) {
+				QueueNode* node = (QueueNode*)message->m_current;
+				if (!node) {
+					message->m_current = message->m_head;
+					continue;
+				}
+				if (message->m_head == node) message->m_head = node->next;
+				if (message->m_tail == node) message->m_tail = node->prev;
+				if (node->prev) node->prev->next = node->next;
+				if (node->next) node->next->prev = node->prev;
 
-                if (msg) delete msg;
-            } while (message->m_head);
-        }
-        delete message;
-        message = 0;
-    }
+				SC_Message* msg = (SC_Message*)message->GetCurrentData();
+
+				if (message->m_current) {
+					delete (QueueNode*)message->m_current;
+					message->m_current = 0;
+				}
+				message->m_current = message->m_head;
+
+				if (msg) delete msg;
+			}
+		}
+		delete message;
+		message = 0;
+	}
 }
 
 /* Function start: 0x40D710 */

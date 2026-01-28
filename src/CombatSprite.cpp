@@ -1,12 +1,15 @@
 #include "CombatSprite.h"
 #include "Memory.h"
 #include "string.h"
+#include "EngineSubsystems.h"
+#include "globals.h"
 #include <stdio.h>
 #include <string.h>
 
 // Global variables
 SpriteHashTable* g_CurrentSprite = 0;   // 0x436348
 int g_CurrentSpriteIndex = 0;           // 0x43634c
+int DAT_00436344 = 0;                   // sprite data entry counter
 
 // External declaration for Parser destructor helper
 extern void FUN_0041556a();
@@ -68,6 +71,93 @@ void SpriteHashTable::AllocateBuckets(int size, int flag) {
 
 /* Function start: 0x4152D0 */
 void* SpriteHashTable::AllocateNode() {
+    int* newPool;
+    int* node;
+    int i;
+    int delayCounter;
+
+    if (SpriteHashTable::tail == 0) {
+        newPool = (int*)AllocateMemory(SpriteHashTable::growSize * 16 + 4);
+        *newPool = SpriteHashTable::count;
+        i = SpriteHashTable::growSize;
+        SpriteHashTable::count = (int)newPool;
+        node = (int*)((char*)newPool + i * 16 - 12);
+        i = i - 1;
+        while (i >= 0) {
+            *node = (int)SpriteHashTable::tail;
+            SpriteHashTable::tail = node;
+            node = node - 4;
+            i = i - 1;
+        }
+    }
+
+    node = (int*)SpriteHashTable::tail;
+    SpriteHashTable::tail = (void*)*node;
+    SpriteHashTable::head = (void*)((int)SpriteHashTable::head + 1);
+    node[2] = 0;
+    delayCounter = 0;
+    do {
+        int temp = delayCounter;
+        delayCounter = delayCounter - 1;
+        if (temp == 0) break;
+    } while (1);
+    node[3] = 0;
+    delayCounter = 0;
+    do {
+        int temp = delayCounter;
+        delayCounter = delayCounter - 1;
+        if (temp == 0) break;
+    } while (1);
+    return node;
+}
+
+/* Function start: 0x415c10 */
+void* SpriteHashTable::Lookup(int index, int* outSlot) {
+    int* node;
+
+    *outSlot = ((unsigned int)index >> 4) % (unsigned int)SpriteHashTable::maxSize;
+
+    if (SpriteHashTable::buckets == 0) {
+        return 0;
+    }
+
+    node = (int*)SpriteHashTable::buckets[*outSlot];
+    while (node != 0) {
+        if (node[2] == index) {
+            return node;
+        }
+        node = (int*)*node;
+    }
+    return 0;
+}
+
+/* Function start: 0x415c50 */
+void SpriteHashTable::Resize(int size, int flag) {
+    int* newBuckets;
+    int count;
+
+    if (SpriteHashTable::buckets != 0) {
+        FreeMemory(SpriteHashTable::buckets);
+        SpriteHashTable::buckets = 0;
+    }
+
+    if (flag != 0) {
+        newBuckets = (int*)AllocateMemory(size * 4);
+        count = (size * 4) >> 2;
+        SpriteHashTable::buckets = (void**)newBuckets;
+        while (count != 0) {
+            *newBuckets = 0;
+            newBuckets++;
+            count--;
+        }
+        SpriteHashTable::maxSize = size;
+        return;
+    }
+    SpriteHashTable::maxSize = size;
+}
+
+/* Function start: 0x415cb0 */
+void* SpriteHashTable::AllocEntry() {
     int* newPool;
     int* node;
     int i;
@@ -225,7 +315,6 @@ CombatSprite::~CombatSprite() {
         FreeMemory(table);
         CombatSprite::spriteTable = 0;
     }
-    FUN_0041556a();
 }
 
 /* Function start: 0x4155E0 */
@@ -373,4 +462,143 @@ int CombatSprite::LBLParse(char* line) {
 
         return 0;
     }
+}
+
+// Struct for sprite data entry (8 bytes)
+struct SpriteDataEntry {
+    int index;      // 0x0 - frame index
+    int spriteIdx;  // 0x4 - sprite array index
+};
+
+/* Function start: 0x415960 */
+void CombatSprite::ParseSpriteData(char* line) {
+    char token[64];
+    char spriteName[20];
+    int frameIndex;
+    char* currentPos;
+    int spriteIdx;
+    int iVar;
+    SpriteDataEntry* entryData;
+    SpriteHashTable* spriteTable;
+    int* tailPtr;
+    int* headPtr;
+    int* node;
+    int* newPool;
+    int prevTail;
+    int growCount;
+
+    currentPos = line;
+
+parseLoop:
+    frameIndex = 0;
+    spriteName[0] = 0;
+
+    // Parse "%s" from current position
+    if (sscanf(currentPos, "%s", token) == 0) {
+        return;
+    }
+
+    // Parse "%d,%s" from token
+    if (sscanf(token, "%d,%s", &frameIndex, spriteName) != 2) {
+        return;
+    }
+
+    if (frameIndex == 0) {
+        return;
+    }
+
+    // Find token in currentPos and advance past it
+    currentPos = strstr(currentPos, token);
+    if (currentPos == 0) {
+        return;
+    }
+    currentPos = currentPos + strlen(token);
+
+    // Find sprite index by name in TargetList
+    spriteIdx = 0;
+    iVar = 0;
+    while (1) {
+        if (((TargetList*)DAT_00435f0c)->count == spriteIdx) {
+            ShowError("Error! Uknown sprite id=> %s", spriteName);
+        }
+
+        if (_stricmp(((TargetList*)DAT_00435f0c)->targets[spriteIdx]->identifier, spriteName) == 0) {
+            break;
+        }
+        iVar = iVar + 4;
+        spriteIdx = spriteIdx + 1;
+    }
+
+    // Validate sequence if g_CurrentSprite has entries
+    if (g_CurrentSprite != 0 && (int)g_CurrentSprite->head != 0) {
+        if (frameIndex < *(int*)(*(int*)((int)g_CurrentSprite->tail + 8))) {
+            ShowError("Error! sprite out of sequence %s", token);
+        }
+    }
+
+    // Allocate sprite data entry (8 bytes)
+    entryData = (SpriteDataEntry*)AllocateMemory(8);
+    if (entryData != 0) {
+        entryData->index = frameIndex;
+        entryData->spriteIdx = spriteIdx;
+        DAT_00436344++;
+    } else {
+        entryData = 0;
+    }
+
+    // Add to g_CurrentSprite linked list (similar to SpriteHashTable::AllocEntry)
+    spriteTable = g_CurrentSprite;
+    tailPtr = (int*)&spriteTable->tail;
+    headPtr = (int*)spriteTable + 1;  // buckets (used as head pointer here)
+    prevTail = *headPtr;
+
+    // If no free nodes, allocate more
+    if (*tailPtr == 0) {
+        growCount = *(int*)((int)spriteTable + 0x14);  // growSize
+        newPool = (int*)AllocateMemory(growCount * 12 + 4);
+        *newPool = *(int*)((int)spriteTable + 0x10);  // link to previous pool
+        *(int*)((int)spriteTable + 0x10) = (int)newPool;
+
+        // Build free list from new pool
+        node = (int*)((char*)newPool + growCount * 12 - 8);
+        growCount--;
+        while (growCount >= 0) {
+            *node = *tailPtr;
+            *tailPtr = (int)node;
+            node = node - 3;
+            growCount--;
+        }
+    }
+
+    // Pop node from free list
+    node = (int*)*tailPtr;
+    *tailPtr = *node;
+
+    // Initialize node
+    node[1] = prevTail;
+    node[0] = 0;
+    (*(int*)&spriteTable->head)++;  // count (head used as count in this context)
+    node[2] = 0;
+
+    // destructor delay loop
+    iVar = 0;
+    do {
+        int tmp = iVar;
+        iVar--;
+        if (tmp == 0) break;
+    } while (1);
+
+    // Store entry data
+    node[2] = (int)entryData;
+
+    // Link node into list
+    if ((int*)*headPtr == 0) {
+        *(int*)spriteTable = (int)node;
+        *headPtr = (int)node;
+    } else {
+        *((int*)*headPtr) = (int)node;
+        *headPtr = (int)node;
+    }
+
+    goto parseLoop;
 }

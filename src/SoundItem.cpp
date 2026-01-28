@@ -3,33 +3,28 @@
 #include "Memory.h"
 #include "globals.h"
 #include <stdio.h>
+#include <string.h>
 
 /* Function start: 0x40B5D0 */
 SoundItem::SoundItem(int sndId)
 {
-    Sample* sample;
-    int result;
-
-    // Store soundId
+    // Clear the whole object (32 bytes).
+    memset(this, 0, sizeof(SoundItem));
+    
     soundId = sndId;
-
-    // Reset timer
     timer.Reset();
 
-    // Format filename "audio\snd0001.wav" etc.
     sprintf(g_Buffer_00436960, "audio\\snd%4.4d.wav", soundId);
 
-    // Allocate and construct Sample (0x10 bytes)
-    sample = new Sample();
+    Sample* sample = new Sample();
     soundPtr = sample;
 
-    // Load sound file
-    result = sample->Load(g_Buffer_00436960);
-    if (result != 0 && soundPtr != 0) {
-        // Load failed - cleanup
-        soundPtr->Unload();
-        FreeMemory(soundPtr);
-        soundPtr = 0;
+    if (sample->Load(g_Buffer_00436960)) {
+        if (soundPtr != 0) {
+            soundPtr->Unload();
+            FreeMemory(soundPtr);
+            soundPtr = 0;
+        }
     }
 }
 
@@ -91,16 +86,10 @@ void SoundItem::Start()
 /* Function start: 0x40B790 */
 void SoundItem::AdjustVolume(int delta)
 {
-    Sample* sndPtr;
-    int volume;
-
-    sndPtr = soundPtr;
-    if (sndPtr != 0) {
-        volume = AIL_sample_volume(sndPtr->m_sample);
-        if (delta + volume) {
-            soundPtr->Fade(volume + delta, 0);
-        }
-    }
+    if (soundPtr == 0) return;
+    int volume = AIL_sample_volume(soundPtr->m_sample);
+    if (!(volume + delta)) return;
+    soundPtr->Fade(volume + delta, 0);
 }
 
 /* Function start: 0x40B7C0 */

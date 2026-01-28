@@ -31,6 +31,16 @@ void DeleteFile_Wrapper(const char* filename);
 // File-local since only used in string.cpp
 static char g_messageLogEnabled = 1;
 
+// Static buffer for FormatStringVA at address 0x43cfe8
+static char g_formatBuffer[64];
+
+/* Function start: 0x40D200 */
+char* FormatStringVA(char* format, ...)
+{
+    vsprintf(g_formatBuffer, format, (char*)(&format + 1));
+    strchr(g_formatBuffer, '?');
+    return g_formatBuffer;
+}
 
 /* Function start: 0x419080 */
 void ExtractQuotedString(char *param_1,char *param_2,int param_3)

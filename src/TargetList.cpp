@@ -6,7 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern void FUN_00416ba0(int* scoreManager, int value);
+// Defined in EngineSubsystems.cpp
+void FUN_00416ba0(int* scoreManager, int value);
 
 /* Function start: 0x414D80 */
 TargetList::TargetList() : Parser() {

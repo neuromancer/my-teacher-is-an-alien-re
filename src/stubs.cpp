@@ -24,8 +24,6 @@ extern "C" {
 // SEH cleanup funclets (auto-generated compiler code, not real functions)
 // FUN_00421671, FUN_0041fbd3, FUN_00421c24, FUN_0041ae0c - All removed (SEH funclets)
 
-void __fastcall FUN_00404230_impl(void* thisptr);
-
 } // extern "C"
 
 
@@ -38,8 +36,8 @@ void __fastcall FUN_00404230_impl(void* thisptr);
 // CRT internal function
 void CleanupObjectArray(void* a, int b) {}
 
-// Target helper stubs
-int FUN_00421f90(void* cdData, char* param) { return 0; }
+// FUN_00421f90 -> CDData::ResolvePath in CDData.cpp
+// FUN_00404230 -> AssetList::Cleanup in AssetList.cpp
 
 // ============================================================================
 // Global variables needed for linking
@@ -47,12 +45,6 @@ int FUN_00421f90(void* cdData, char* param) { return 0; }
 
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
 short _param_3 = 0; // Sound.obj ?_param_3@@3FA
-
-
-
-extern "C" {
-void __fastcall FUN_00404230_impl(void* thisptr) {}
-}
 
 // ============================================================================
 // Handler8 stubs - message queue management
@@ -67,50 +59,21 @@ MessageQueue* g_MessageQueue = 0;
 Engine* g_CombatEngine = 0;
 
 // ============================================================================
-// mCNavNode stubs
-// ============================================================================
-
-// FUN_004130f0 -> mCNavNode::Activate in mCNavNode.cpp
-// FUN_0041d300 -> Sprite::Do in Sprite.cpp
-// FUN_004155e0 -> CombatSprite::PlayById in CombatSprite.cpp
-// FUN_0041fa50 -> Animation::Animation() in Animation.cpp
-// FUN_0041ff30 -> Animation::Play() in Animation.cpp
-// FUN_0041fb70 -> Animation::~Animation() in Animation.cpp
-
-// ============================================================================
 // CombatSprite stubs
 // ============================================================================
 #include "CombatSprite.h"
 
-// SpriteHashTable method stubs
-void* SpriteHashTable::Lookup(int index, int* outSlot) { return 0; }
-void SpriteHashTable::Resize(int size, int flag) {}
-void* SpriteHashTable::AllocEntry() { return 0; }
-
-// CombatSprite method stubs
-void CombatSprite::ParseSpriteData(char* line) {}
+// CombatSprite::ParseSpriteData -> CombatSprite.cpp
 
 // ============================================================================
 // EngineB stubs
 // ============================================================================
 
-void FUN_004150f0(Parser* parser) {}
-void FUN_00416880(int* param) {}
-char* FUN_0040d200(char* filename) { return filename; }
-void FUN_0041d190(void* param, int value) {}
 void* DAT_00435f1c = 0;
 
 // ============================================================================
 // CombatSprite / misc stubs
 // ============================================================================
-
-void FUN_0041556a() {}
-
-// ============================================================================
-// EngineSubsystems / TargetList stubs
-// ============================================================================
-
-void FUN_00416ba0(int* scoreManager, int value) {}
 
 // ============================================================================
 // Projectile stubs
@@ -118,11 +81,28 @@ void FUN_00416ba0(int* scoreManager, int value) {}
 
 int DAT_0043d150 = 0;
 
+// FUN_00416ba0 -> EngineSubsystems.cpp
+// FUN_00422ac3, FUN_00422aaf, FUN_00424176 -> Graphics.cpp
+
 // ============================================================================
-// Weapon / WeaponDraw stubs (C linkage)
+// CDData helper stubs
 // ============================================================================
 
 extern "C" {
-int __cdecl FUN_00422ac3(int param_1, int param_2) { return 0; }
-int __cdecl FUN_00422aaf(int param_1) { return 0; }
+void __cdecl FUN_004195c0(char* param) {}
+void __cdecl FUN_00419620(char* param) {}
+int __cdecl FUN_004195a0(const char* path) { return 0; }
+void __cdecl FUN_004261c0(char* param1, void* param2, char* outBuffer, void* param4, void* param5) {}
+int __cdecl FUN_004304a0(const char* path) { return 0; }
+void __cdecl FUN_00419660(const char* dest, const char* src) {}
+void __cdecl FUN_0042ad80(void) {}
+}
+
+// ============================================================================
+// AssetList helper stubs
+// ============================================================================
+
+extern "C" {
+void __fastcall FUN_004088f0(void* thisPtr) {}
+void __fastcall FUN_00404490(void* thisPtr, int param) {}
 }
