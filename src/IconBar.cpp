@@ -200,8 +200,8 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
     WriteMessageAddress(msg);
 
     // Initial bar bounds check
-    ok = (barBounds.x1 <= msg->clickX && barBounds.x2 >= msg->clickX &&
-          barBounds.y1 <= msg->clickY && barBounds.y2 >= msg->clickY);
+    ok = (barBounds.x1 <= msg->clickPos.x && barBounds.x2 >= msg->clickPos.x &&
+          barBounds.y1 <= msg->clickPos.y && barBounds.y2 >= msg->clickPos.y);
     if (!ok) return 0;
 
     // Only proceed for specific mouse states
@@ -213,8 +213,8 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
     for (i = 0; i < 6; i++) {
         if (buttons[i].enabled) {
             // Button bounds check
-            ok = (buttons[i].bounds.left <= msg->clickX && buttons[i].bounds.right >= msg->clickX &&
-                  buttons[i].bounds.top <= msg->clickY && buttons[i].bounds.bottom >= msg->clickY);
+            ok = (buttons[i].bounds.left <= msg->clickPos.x && buttons[i].bounds.right >= msg->clickPos.x &&
+                  buttons[i].bounds.top <= msg->clickPos.y && buttons[i].bounds.bottom >= msg->clickPos.y);
             
             if (ok) {
                 PlayButtonSound(i);
@@ -251,8 +251,8 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
                 msg->priority = pSrc->priority;
                 msg->param1 = pSrc->param1;
                 msg->param2 = pSrc->param2;
-                msg->clickX = pSrc->clickX;
-                msg->clickY = pSrc->clickY;
+                msg->clickPos.x = pSrc->clickPos.x;
+                msg->clickPos.y = pSrc->clickPos.y;
                 msg->mouseX = pSrc->mouseX;
                 msg->mouseY = pSrc->mouseY;
                 msg->field_b4 = pSrc->field_b4;

@@ -40,8 +40,8 @@ PooledEvent* PooledEvent::CopyFrom(const PooledEvent* other)
     priority = other->priority;
     param1 = other->param1;
     param2 = other->param2;
-    clickX = other->clickX;
-    clickY = other->clickY;
+    clickPos.x = other->clickPos.x;
+    clickPos.y = other->clickPos.y;
     mouseX = other->mouseX;
     mouseY = other->mouseY;
     field_0xb4 = other->field_0xb4;
@@ -74,11 +74,11 @@ PooledEvent* TimedEventPool::Create(void* callback, void* data)
     PooledEvent* esi = m_free_list;
     void* ecx_param = callback;
     void* edx_param = data;
-    void* eax = esi->next;
+    PooledEvent* eax = esi->next;
     SC_Message* ebx = (SC_Message*)&esi->field_0x8;
-    m_free_list = (PooledEvent*)eax;
-    esi->prev = ecx_param;
-    esi->next = edx_param;
+    m_free_list = eax;
+    esi->prev = (PooledEvent*)ecx_param;
+    esi->next = (PooledEvent*)edx_param;
     m_count++;
     memset(ebx, 0, 0xC0);
 
@@ -371,8 +371,8 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     local_d8.priority = srcMsg->priority;
     local_d8.param1 = srcMsg->param1;
     local_d8.param2 = srcMsg->param2;
-    local_d8.clickX = srcMsg->clickX;
-    local_d8.clickY = srcMsg->clickY;
+    local_d8.clickPos.x = srcMsg->clickPos.x;
+    local_d8.clickPos.y = srcMsg->clickPos.y;
     local_d8.mouseX = srcMsg->mouseX;
     local_d8.mouseY = srcMsg->mouseY;
     local_d8.field_b4 = srcMsg->field_b4;
@@ -402,7 +402,7 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     } while (1);
 
     // Add node to free list
-    local_18->next = (void*)local_14->m_free_list;
+    local_18->next = local_14->m_free_list;
     local_14->m_free_list = local_18;
     
     // Decrement count
@@ -437,8 +437,8 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     buffer->priority = local_d8.priority;
     buffer->param1 = local_d8.param1;
     buffer->param2 = local_d8.param2;
-    buffer->clickX = local_d8.clickX;
-    buffer->clickY = local_d8.clickY;
+    buffer->clickPos.x = local_d8.clickPos.x;
+    buffer->clickPos.y = local_d8.clickPos.y;
     buffer->mouseX = local_d8.mouseX;
     buffer->mouseY = local_d8.mouseY;
     buffer->field_b4 = local_d8.field_b4;

@@ -73,6 +73,8 @@ public:
     virtual ~Target(); // 0x413F10
     virtual int LBLParse(char* line); // 0x414930
 
+    void Spawn(); // 0x414060 - spawn target with palette and sound
+    void Activate(); // 0x4140B0 - activate target (sets active=1)
     void Deactivate(); // 0x414230
     int CheckTimeInRange(); // 0x4142C0
     int CheckTimeInRangeParam(int* coords); // 0x414310

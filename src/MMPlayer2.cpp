@@ -220,20 +220,21 @@ int MMPlayer2::Draw()
         PreDraw();
     }
 
-    if (spriteList == 0) return 1;
+    ZBQueue* list = spriteList;
+    if (list == 0) return 1;
 
-    spriteList->current = spriteList->head;
-    if (spriteList->head != 0) {
+    list->current = list->head;
+    if (list->head != 0) {
         do {
-            ZBQueueNode* node = spriteList->current;
+            ZBQueueNode* node = list->current;
             Sprite* spr = (Sprite*)0;
             if (node != 0) spr = (Sprite*)node->data;
             if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
                 field_90 = 0;
             }
-            if (spriteList->tail == spriteList->current) break;
-            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->prev;
-        } while (spriteList->head != 0);
+            if (list->tail == list->current) break;
+            if (list->current != 0) list->current = node->prev;
+        } while (list->head != 0);
     }
     return field_90;
 }
@@ -246,23 +247,25 @@ int MMPlayer2::DrawWithStates(int* states)
         PreDraw();
     }
 
-    if (spriteList == 0) return 1;
+    ZBQueue* list = spriteList;
+    if (list == 0) return 1;
 
-    spriteList->current = spriteList->head;
-    if (spriteList->head != 0) {
+    list->current = list->head;
+    if (list->head != 0) {
         int i = 0;
         do {
-            ZBQueueNode* node = spriteList->current;
-            Sprite* spr = (Sprite*)0;
-            if (node != 0) spr = (Sprite*)node->data;
-            if (states[i++] != 0) {
+            int s = states[i++];
+            ZBQueueNode* node = list->current;
+            if (s != 0) {
+                Sprite* spr = (Sprite*)0;
+                if (node != 0) spr = (Sprite*)node->data;
                 if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
                     field_90 = 0;
                 }
             }
-            if (spriteList->tail == spriteList->current) break;
-            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->prev;
-        } while (spriteList->head != 0);
+            if (list->tail == list->current) break;
+            if (list->current != 0) list->current = node->prev;
+        } while (list->head != 0);
     }
     return field_90;
 }

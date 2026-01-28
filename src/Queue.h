@@ -22,10 +22,10 @@ struct QueueNode {
 class Queue {
 public:
     Queue() {
+        m_field_0xc = 0;
         m_head = 0;
         m_tail = 0;
-        m_current = 0;
-        m_field_0xc = 0;
+        m_current = m_head;
     }
     void* Destroy(int free_memory);
 

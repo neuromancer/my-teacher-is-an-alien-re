@@ -20,8 +20,8 @@ SC_Question::SC_Question(int id)
     // Set question ID
     questionId = id;
     
-    state = 0;
     messageQueue = new Queue();
+    state = 0;
     
     // Parse the question file
     ParseFile(this, "mis\\quest001.mis", "[QUESTION%5.5d]", questionId);
@@ -40,7 +40,10 @@ SC_Question::~SC_Question()
     Queue* queue;
     
     // Clean up mouseControl at offset 0x88
-    delete mouseControl;
+    if (mouseControl != 0) {
+        delete mouseControl;
+        mouseControl = 0;
+    }
     
     // Clean up messageQueue at offset 0x8c
     queue = messageQueue;
@@ -57,7 +60,7 @@ SC_Question::~SC_Question()
                         queue->m_head = current->next;
                     }
                     if (queue->m_tail == current) {
-                        queue->m_tail = current->next;
+                        queue->m_tail = current->prev;
                     }
                     if (current->next != 0) {
                         current->next->prev = current->prev;
@@ -79,6 +82,7 @@ SC_Question::~SC_Question()
             }
         }
         delete queue;
+        messageQueue = 0;
     }
     // Parser destructor is called automatically
 }
@@ -174,14 +178,14 @@ void SC_Question::Finalize()
         // Create timed event in pool and add message to it
         pool = g_TimedEventPool2_00436988;
         event = pool->Create((void*)pool->list.tail, 0);
-        ((PooledEvent*)((int*)event + 2))->CopyFrom((PooledEvent*)msgData);
+        event->GetEmbeddedMessage()->CopyFrom((PooledEvent*)msgData);
 
         // Link event to pool tail
         if (pool->list.tail == 0) {
             pool->list.head = event;
         }
         else {
-            *(PooledEvent**)pool->list.tail = event;
+            pool->list.tail->next = event;
         }
         pool->list.tail = event;
         
@@ -391,18 +395,26 @@ void SC_Question::DumpMessageQueue(int unused)
 }
 
 /* Function start: 0x4198C0 */
-SC_Message::SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY)
+SC_Message::SC_Message(int p_targetAddress, int p_sourceAddress, int p_command, int p_data, int p_priority, int p_param1, int p_param2, int p_userPtr, int p_clickX, int p_clickY)
 {
-    this->targetAddress = targetAddress;
-    this->sourceAddress = sourceAddress;
-    this->command = command;
-    this->data = data;
-    this->priority = priority;
-    this->param1 = param1;
-    this->param2 = param2;
-    this->userPtr = userPtr;
-    this->clickX = clickX;
-    this->clickY = clickY;
+    // Zero clickPos first (MousePoint at 0xa4)
+    clickPos.x = 0;
+    clickPos.y = 0;
+    
+    // Zero 14 dwords (0x38 bytes) starting at offset 0x88
+    memset(&targetAddress, 0, 0xe * sizeof(int));
+    
+    // Assign all parameters
+    targetAddress = p_targetAddress;
+    sourceAddress = p_sourceAddress;
+    command = p_command;
+    data = p_data;
+    priority = p_priority;
+    param1 = p_param1;
+    param2 = p_param2;
+    userPtr = p_userPtr;
+    clickPos.x = p_clickX;
+    clickPos.y = p_clickY;
 }
 
 /* Function start: 0x4199A0 */
@@ -448,8 +460,8 @@ void SC_Message::Dump(int unused)
     str1 = g_GameState4_004369a0->GetState(priority);
     WriteToMessageLog("\t\t\tINSTRUCTION\t%s", str1);
     
-    // Log MOUSE field (clickX=0xa4, clickY=0xa8)
-    WriteToMessageLog("\t\t\tMOUSE\t\t%d\t%d", clickX, clickY);
+    // Log MOUSE field (clickPos at 0xa4)
+    WriteToMessageLog("\t\t\tMOUSE\t\t%d\t%d", clickPos.x, clickPos.y);
     
     // Log optional fields
     if (mouseX != 0) {

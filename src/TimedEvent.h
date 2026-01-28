@@ -2,6 +2,7 @@
 #define TIMEDEVENT_H
 
 #include "Timer.h"
+#include "InputManager.h"  // for MousePoint
 
 class TimedEvent;
 class PooledEvent;
@@ -48,11 +49,11 @@ public:
     void SetType(int type);
     int Update();
 
-    void* vtable;            // 0x00 - used as next pointer in lists
-    int m_type;              // 0x04 - event type (0, 1, or 2)
-    int field_0x8;           // 0x08 - stores sourceAddress from message
+    void* nextEvent;         // 0x00 - used as next pointer in lists (reuses vtable slot)
+    int m_type;              // 0x04 - event type (0=one-shot, 1=repeating, 2=countdown display)
+    int m_sourceAddress;     // 0x08 - stores sourceAddress from message (who sent this event)
     int m_duration;          // 0x0c - timer duration in ms
-    void* m_next_event_data; // 0x10 - pointer to next event data (SC_Message*)
+    SC_Message* m_eventData; // 0x10 - pointer to event message data (sent when timer expires)
     Timer m_timer;           // 0x14 (20 bytes)
 };
 
@@ -65,9 +66,12 @@ public:
 class PooledEvent {
 public:
     PooledEvent* CopyFrom(const PooledEvent* other);
+    
+    // Get pointer to embedded message at offset 0x08
+    PooledEvent* GetEmbeddedMessage() { return (PooledEvent*)(&next + 2); }
 
-    void* next;              // 0x00 - next pointer for free list
-    void* prev;              // 0x04 - prev/callback pointer
+    PooledEvent* next;        // 0x00 - next pointer for free list
+    PooledEvent* prev;        // 0x04 - prev/callback pointer
     // Embedded SC_Message fields starting at 0x08
     int field_0x8;           // 0x08 (m_subObject)
     int m_duration;          // 0x0c (isProcessingKey)
@@ -86,8 +90,7 @@ public:
     int priority;            // 0x98 (stores data from SC_Message)
     int param1;              // 0x9c (stores priority from SC_Message)
     int param2;              // 0xa0 (stores param1 from SC_Message)
-    int clickX;              // 0xa4 (stores param2 from SC_Message)
-    int clickY;              // 0xa8 (stores clickX from SC_Message)
+    MousePoint clickPos;     // 0xa4 (stores param2/clickX from SC_Message, MousePoint has empty destructor)
     int mouseX;              // 0xac (stores clickY from SC_Message)
     int mouseY;              // 0xb0 (stores mouseX from SC_Message)
     int field_0xb4;          // 0xb4 (stores mouseY from SC_Message)

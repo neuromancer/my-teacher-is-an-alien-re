@@ -14,14 +14,14 @@ SearchScreen::SearchScreen() {
     // Timer constructor called implicitly
 
     // Zero 8 dwords at 0xC0-0xDF
-    field_C0 = 0;
-    field_C4 = 0;
-    field_C8 = 0;
-    field_CC = 0;
-    field_D0 = 0;
-    field_D4 = 0;
-    field_D8 = 0;
-    field_DC = 0;
+    upScrollLeft = 0;
+    upScrollTop = 0;
+    upScrollRight = 0;
+    upScrollBottom = 0;
+    downScrollLeft = 0;
+    downScrollTop = 0;
+    downScrollRight = 0;
+    downScrollBottom = 0;
 
     // Zero 0x14 dwords (80 bytes) at 0xA0, overwriting timer
     memset(&timer, 0, 0x14 * sizeof(int));
@@ -32,19 +32,19 @@ SearchScreen::SearchScreen() {
     timer.Reset();
 
     // Set rectangle fields
-    field_B8 = 0;
-    field_BC = 0;
-    field_C0 = 0;
-    field_C4 = 0;
-    field_C8 = 0x27f;
-    field_D0 = 0;
-    field_D8 = 0x27f;
-    field_CC = 0x14;
-    field_D4 = 0x1cb;
-    field_DC = 0x1df;
-    field_E0 = 10;
-    field_E4 = 0x1d;
-    field_E8 = 0x1e;
+    scrollOffset = 0;
+    selectedRow = 0;
+    upScrollLeft = 0;
+    upScrollTop = 0;
+    upScrollRight = 0x27f;
+    downScrollLeft = 0;
+    downScrollRight = 0x27f;
+    upScrollBottom = 0x14;
+    downScrollTop = 0x1cb;
+    downScrollBottom = 0x1df;
+    textX = 10;
+    textY = 0x1d;
+    rowHeight = 0x1e;
 
     sprite = new Sprite("elements\\gamestat.smk");
     sprite->flags &= ~2;
@@ -97,8 +97,8 @@ void SearchScreen::Update(int param1, int param2) {
         if (spr != 0) {
             spr->Do(spr->loc_x, spr->loc_y, 1.0);
         }
-        idx = field_B8;
-        if (idx < field_B8 + 0xe) {
+        idx = scrollOffset;
+        if (idx < scrollOffset + 0xe) {
             do {
                 stateStr = g_GameState_00436998->GetState(idx);
                 if (stateStr == 0) {
@@ -107,24 +107,24 @@ void SearchScreen::Update(int param1, int param2) {
                     stateStr = g_GameState_00436998->GetState(idx);
                     sprintf(g_Buffer_00436960, "%s", stateStr);
                 }
-                y = ((idx - field_B8) + 1) * field_E8 + field_E4;
-                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0, y, 10000, 8);
+                y = ((idx - scrollOffset) + 1) * rowHeight + textY;
+                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX, y, 10000, 8);
 
                 if (idx > 0 && g_GameState_00436998->maxStates <= idx) {
                     ShowError("GameState Error  #%d", 1);
                 }
                 sprintf(g_Buffer_00436960, "%d", g_GameState_00436998->stateValues[idx]);
-                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, field_E0 + 0x15e, y, 10000, 8);
+                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX + 0x15e, y, 10000, 8);
 
-                int rowIdx = idx - field_B8;
-                int top = rowIdx * field_E8 + field_E4;
-                int bottom = (rowIdx + 1) * field_E8 + field_E4;
+                int rowIdx = idx - scrollOffset;
+                int top = rowIdx * rowHeight + textY;
+                int bottom = (rowIdx + 1) * rowHeight + textY;
 
-                if (field_BC == idx) {
+                if (selectedRow == idx) {
                     g_ZBufferManager_0043698c->DrawRect(0, top, 0x27f, bottom, 0x28, 8, 1);
                 }
                 idx = idx + 1;
-            } while (idx < field_B8 + 0xe);
+            } while (idx < scrollOffset + 0xe);
         }
         g_Mouse_00436978->DrawCursor();
     }
@@ -142,7 +142,7 @@ int SearchScreen::AddMessage(SC_Message* msg) {
 
     if (msg->field_b4 != 0) {
         if (msg->field_b4 == 0x44) {
-            stateIdx = field_BC;
+            stateIdx = selectedRow;
             pGameState = g_GameState_00436998;
             if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
                 ShowError("GameState Error  #%d", 1);
@@ -153,7 +153,7 @@ int SearchScreen::AddMessage(SC_Message* msg) {
         if (msg->field_b4 != 0x49) {
             return 1;
         }
-        stateIdx = field_BC;
+        stateIdx = selectedRow;
         pGameState = g_GameState_00436998;
         if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
@@ -167,46 +167,46 @@ int SearchScreen::AddMessage(SC_Message* msg) {
         }
         return 1;
     }
-    clickX = msg->clickX;
-    if (field_C0 > clickX || field_C8 < clickX ||
-        field_C4 > msg->clickY || field_CC < msg->clickY) {
+    clickX = msg->clickPos.x;
+    if (upScrollLeft > clickX || upScrollRight < clickX ||
+        upScrollTop > msg->clickPos.y || upScrollBottom < msg->clickPos.y) {
         inRect = 0;
     } else {
         inRect = 1;
     }
     if (inRect != 0) {
-        if (field_B8 > 0) {
-            field_B8 = field_B8 - 1;
+        if (scrollOffset > 0) {
+            scrollOffset = scrollOffset - 1;
         }
-        if (field_BC > field_B8 + 0xd) {
-            field_BC = field_B8 + 0xd;
+        if (selectedRow > scrollOffset + 0xd) {
+            selectedRow = scrollOffset + 0xd;
             return 1;
         }
         return 1;
     }
-    if (field_D0 > clickX || field_D8 < clickX ||
-        field_D4 > msg->clickY || field_DC < msg->clickY) {
+    if (downScrollLeft > clickX || downScrollRight < clickX ||
+        downScrollTop > msg->clickPos.y || downScrollBottom < msg->clickPos.y) {
         inRect = 0;
     } else {
         inRect = 1;
     }
     if (inRect == 0) {
-        rowIdx = (msg->clickY - field_E4) / field_E8;
-        field_BC = rowIdx;
+        rowIdx = (msg->clickPos.y - textY) / rowHeight;
+        selectedRow = rowIdx;
         if (rowIdx > 0xd) {
-            field_BC = 0xd;
+            selectedRow = 0xd;
         }
-        if (field_BC < 0) {
-            field_BC = 0;
+        if (selectedRow < 0) {
+            selectedRow = 0;
         }
-        field_BC = field_BC + field_B8;
+        selectedRow = selectedRow + scrollOffset;
         return 1;
     }
-    if (field_B8 + 0xe < g_GameState_00436998->maxStates - 1) {
-        field_B8 = field_B8 + 1;
+    if (scrollOffset + 0xe < g_GameState_00436998->maxStates - 1) {
+        scrollOffset = scrollOffset + 1;
     }
-    if (field_BC < field_B8) {
-        field_BC = field_B8;
+    if (selectedRow < scrollOffset) {
+        selectedRow = scrollOffset;
         return 1;
     }
     return 1;

@@ -30,23 +30,27 @@ public:
 
     Sprite* sprite;     // 0xB4
 
-    // Rectangle fields 0xB8-0xDC
-    int field_B8;       // 0xB8
-    int field_BC;       // 0xBC
-    int field_C0;       // 0xC0
-    int field_C4;       // 0xC4
-    int field_C8;       // 0xC8
-    int field_CC;       // 0xCC
-    int field_D0;       // 0xD0
-    int field_D4;       // 0xD4
-    int field_D8;       // 0xD8
-    int field_DC;       // 0xDC
+    // Scroll / selection state
+    int scrollOffset;   // 0xB8 - first visible row index
+    int selectedRow;    // 0xBC - currently selected row index
 
-    // Additional fields
-    int field_E0;       // 0xE0
-    int field_E4;       // 0xE4
-    int field_E8;       // 0xE8
-    int field_EC;       // 0xEC
+    // Up scroll rectangle (left, top, right, bottom)
+    int upScrollLeft;   // 0xC0
+    int upScrollTop;    // 0xC4
+    int upScrollRight;  // 0xC8
+    int upScrollBottom; // 0xCC
+
+    // Down scroll rectangle (left, top, right, bottom)
+    int downScrollLeft;   // 0xD0
+    int downScrollTop;    // 0xD4
+    int downScrollRight;  // 0xD8
+    int downScrollBottom; // 0xDC
+
+    // Text layout
+    int textX;          // 0xE0 - x position for state labels
+    int textY;          // 0xE4 - y offset for first row
+    int rowHeight;      // 0xE8 - height of each row
+    int visibleRows;    // 0xEC - number of visible rows (14 = 0xe)
 };
 
 #endif // SEARCHSCREEN_H

@@ -3,6 +3,7 @@
 
 #include "Parser.h"
 #include "Queue.h"
+#include "InputManager.h"  // for MousePoint
 
 class MMPlayer;
 
@@ -15,8 +16,7 @@ public:
     int priority;       // 0x98 - queue priority
     int param1;         // 0x9c
     int param2;         // 0xa0
-    int clickX;         // 0xa4 - mouse click X (param9)
-    int clickY;         // 0xa8 - mouse click Y (param10)
+    MousePoint clickPos; // 0xa4-0xa8 - click position (MousePoint has empty destructor for SEH)
     int mouseX;         // 0xac - current mouse X
     int mouseY;         // 0xb0 - current mouse Y
     int field_b4;

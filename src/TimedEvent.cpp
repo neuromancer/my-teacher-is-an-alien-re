@@ -19,10 +19,10 @@ TimedEvent::TimedEvent()
 /* Function start: 0x401910 */
 TimedEvent::~TimedEvent()
 {
-    SC_Message* next = (SC_Message*)m_next_event_data;
-    if (next) {
-        delete next;
-        m_next_event_data = 0;
+    SC_Message* eventData = m_eventData;
+    if (eventData) {
+        delete eventData;
+        m_eventData = 0;
     }
 }
 
@@ -43,26 +43,25 @@ int TimedEvent::Update()
             return 0;
         }
 
-        void* next_data = m_next_event_data;
-        if (next_data) {
+        void* eventData = m_eventData;
+        if (eventData) {
             pool = g_TimedEventPool2_00436988;
             PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-            // CopyFrom is on the embedded SC_Message at offset 8
-            ((PooledEvent*)((int*)node + 2))->CopyFrom((PooledEvent*)next_data);
+            node->GetEmbeddedMessage()->CopyFrom((PooledEvent*)eventData);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;
             } else {
                 // Set tail->next = node (offset 0 is next pointer)
-                *(PooledEvent**)pool->list.tail = node;
+                pool->list.tail->next = node;
             }
             pool->list.tail = node;
         }
 
-        next_data = m_next_event_data;
-        if (next_data) {
-            delete (SC_Message*)next_data;
-            m_next_event_data = 0;
+        eventData = m_eventData;
+        if (eventData) {
+            delete m_eventData;
+            m_eventData = 0;
         }
         return 1;
     } else if (m_type == 1) {
@@ -70,16 +69,16 @@ int TimedEvent::Update()
             return 0;
         }
 
-        void* next_data = m_next_event_data;
-        if (next_data) {
+        void* eventData = m_eventData;
+        if (eventData) {
             pool = g_TimedEventPool2_00436988;
             PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-            ((PooledEvent*)((int*)node + 2))->CopyFrom((PooledEvent*)next_data);
+            node->GetEmbeddedMessage()->CopyFrom((PooledEvent*)eventData);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;
             } else {
-               *(PooledEvent**)pool->list.tail = node;
+               pool->list.tail->next = node;
             }
             pool->list.tail = node;
         }
@@ -94,24 +93,24 @@ int TimedEvent::Update()
             return 0;
         }
 
-        void* next_data = m_next_event_data;
-        if (next_data) {
+        void* eventData = m_eventData;
+        if (eventData) {
             pool = g_TimedEventPool2_00436988;
             PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-            ((PooledEvent*)((int*)node + 2))->CopyFrom((PooledEvent*)next_data);
+            node->GetEmbeddedMessage()->CopyFrom((PooledEvent*)eventData);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;
             } else {
-                *(PooledEvent**)pool->list.tail = node;
+                pool->list.tail->next = node;
             }
             pool->list.tail = node;
         }
 
-        next_data = m_next_event_data;
-        if (next_data) {
-            delete (SC_Message*)next_data;
-            m_next_event_data = 0;
+        eventData = m_eventData;
+        if (eventData) {
+            delete m_eventData;
+            m_eventData = 0;
         }
         return 1;
     } else {

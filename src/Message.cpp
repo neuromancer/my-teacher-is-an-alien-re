@@ -95,10 +95,10 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
         pNode->priority = pSource->command;
         pNode->param1 = pSource->data;
         pNode->param2 = pSource->priority;
-        pNode->clickX = pSource->param1;
-        pNode->clickY = pSource->param2;
-        pNode->mouseX = pSource->clickX;
-        pNode->mouseY = pSource->clickY;
+        pNode->clickPos.x = pSource->param1;
+        pNode->clickPos.y = pSource->param2;
+        pNode->mouseX = pSource->clickPos.x;
+        pNode->mouseY = pSource->clickPos.y;
         pNode->field_0xb4 = pSource->mouseX;
         pNode->field_0xb8 = pSource->mouseY;
         pNode->userPtr = pSource->field_b4;

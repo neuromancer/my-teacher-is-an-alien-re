@@ -79,6 +79,29 @@ void FUN_00416ba0(int* scoreManager, int value) {
     }
 }
 
+/* Function start: 0x414060 */
+void Target::Spawn()
+{
+    Target::Activate();
+    Target::animation_data->SetPalette(Target::timeRange.start,
+        (Target::timeRange.end - Target::timeRange.start) + 1);
+    if (Target::stopSound != 0) {
+        Target::stopSound->Play(100, 1);
+    }
+    g_ScoreManager[2]++;
+}
+
+/* Function start: 0x4140B0 */
+void Target::Activate()
+{
+    // TODO: Complex function with SEH and hash table operations
+    // For now, just set active state
+    if (Target::active == 0) {
+        Target::progressRange.start = 0;
+        Target::active = 1;
+    }
+}
+
 /* Function start: 0x414230 */
 void Target::Deactivate()
 {

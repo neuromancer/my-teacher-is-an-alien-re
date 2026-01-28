@@ -234,8 +234,8 @@ int Handler13::Exit(SC_Message* msg) {
         } else {
             pTimedEvent = new TimedEvent();
             pTimedEvent->m_duration = msg->field_b8;
-            pTimedEvent->field_0x8 = msg->sourceAddress;
-            pTimedEvent->m_next_event_data = (void*)msg->userPtr;
+            pTimedEvent->m_sourceAddress = msg->sourceAddress;
+            pTimedEvent->m_eventData = (SC_Message*)msg->userPtr;
             msg->userPtr = 0;
             pTimedEvent->SetType(msg->param1);
             pList = list;
@@ -272,7 +272,7 @@ int Handler13::Exit(SC_Message* msg) {
 
     case 0x14:
         pTimedEvent = new TimedEvent();
-        pTimedEvent->field_0x8 = msg->sourceAddress;
+        pTimedEvent->m_sourceAddress = msg->sourceAddress;
         pList = list;
         if (pTimedEvent == 0) {
             WriteToMessageLog("queue fault 0103");

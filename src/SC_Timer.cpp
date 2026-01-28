@@ -234,8 +234,8 @@ int SC_Timer::Input(void *param_1) {
     }
     pNewEvent = new TimedEvent();
     pNewEvent->m_duration = msg->field_0xb8;
-    pNewEvent->field_0x8 = msg->sourceAddress;
-    pNewEvent->m_next_event_data = (void *)msg->userPtr;
+    pNewEvent->m_sourceAddress = msg->sourceAddress;
+    pNewEvent->m_eventData = (SC_Message*)msg->userPtr;
     msg->userPtr = 0;
     pNewEvent->SetType(msg->param1);
     pQueue = m_eventList;
@@ -270,7 +270,7 @@ int SC_Timer::Input(void *param_1) {
     break;
   case 0x14:
     pNewEvent = new TimedEvent();
-    pNewEvent->field_0x8 = msg->sourceAddress;
+    pNewEvent->m_sourceAddress = msg->sourceAddress;
     pQueue = m_eventList;
     if (pNewEvent == 0) {
       ShowError("queue fault 0103");

@@ -103,22 +103,20 @@ SCI_Dialog::~SCI_Dialog() {
 
 /* Function start: 0x407240 */
 void SCI_Dialog::Init(SC_Message* msg) {
-    char buffer[32];
-    Queue* local_14;
-    Queue* queue;
+    char buffer[48];
+    Queue* pQueue;
 
     WriteToMessageLog("\nENTER DIALOG");
 
     IconBar::InitIconBar(msg);
 
-    // Structure passed via userPtr from SCI_SearchScreen
     struct DialogInitData {
         void* ptr1;
         void* ptr2;
     };
 
     DialogInitData* initData = (DialogInitData*)msg->userPtr;
-    if (initData != 0 && msg->targetAddress == 0xb) {
+    if (initData != 0 && msg->command == 0xb) {
         msg->userPtr = 0;
         field_600 = (MMPlayer*)initData->ptr1;
         field_604 = (MMPlayer2*)initData->ptr2;
@@ -127,23 +125,15 @@ void SCI_Dialog::Init(SC_Message* msg) {
         delete initData;
     }
 
-    // Fill ambientState with 0x01010101
     memset(field_618, 0x01, 10 * sizeof(int));
+
+    buttons[0].enabled = 0;
+    buttons[4].enabled = 0;
 
     sprintf(buffer, "mis\\dialog%2.2d.mis", msg->param1);
 
-    local_14 = new Queue();
-    if (local_14 == 0) {
-        queue = 0;
-    } else {
-        queue = local_14;
-    }
-
-    field_610 = queue;
-
-    // Disable choice and mainmenu buttons
-    buttons[0].enabled = 0;
-    buttons[4].enabled = 0;
+    pQueue = new Queue();
+    field_610 = pQueue;
 
     ParseFile(this, buffer, "[DIALOG%4.4d]", msg->sourceAddress);
 }
@@ -422,17 +412,13 @@ void SCI_Dialog::Update(int param1, int param2) {
 
     if (field_604 != 0) field_604->Draw();
 
-    if (g_InputManager_00436968->pMouse == 0 || g_InputManager_00436968->pMouse->y < 10) {
-        mouseIndex = -1;
-    } else if (g_InputManager_00436968->pMouse == 0) {
-        mouseIndex = 0;
-    } else {
+    mouseIndex = -1;
+    if (g_InputManager_00436968->pMouse != 0 && g_InputManager_00436968->pMouse->y >= 10) {
         mouseIndex = (g_InputManager_00436968->pMouse->y - 10) / 34;
     }
 
     field_610->m_current = field_610->m_head;
     if (field_610->m_head == 0) return;
-    x = 10;
 
     do {
         node = (QueueNode*)field_610->m_current;
@@ -441,21 +427,21 @@ void SCI_Dialog::Update(int param1, int param2) {
             if (node != 0) dq = (DialogQuestion*)node->data;
             dq->Update(18, y);
             spr = field_60C;
-            if (spr != 0) goto do_sprite;
+            if (spr != 0) {
+                spr->Do(18, y, 1.0);
+            }
         } else {
             dq = 0;
             if (node != 0) dq = (DialogQuestion*)node->data;
             dq->Update(18, y);
             spr = field_608;
             if (spr != 0) {
-do_sprite:
-                spr->Do(18, x, 1.0);
+                spr->Do(18, y, 1.0);
             }
         }
 
         counter++;
         y += 34;
-        x += 34;
 
         if (field_610->m_tail == field_610->m_current) return;
         if (node != 0) field_610->m_current = node->next;

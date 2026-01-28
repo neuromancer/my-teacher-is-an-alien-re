@@ -25,7 +25,7 @@ class GameOutcome;
 // vtable layout (18 entries):
 //   [0] LBLParse        [1] OnProcessStart   [2] OnProcessEnd    [3] destructor
 //   [4] Initialize      [5] CleanupSubsystems [6] VirtCleanup    [7] DisplayFrameRate
-//   [8] VirtUpdate      [9] VirtCheck1       [10] VirtCheck2     [11] VirtProcess
+//   [8] UpdateCrosshair [9] CheckNavState     [10] UpdateSpriteFrame [11] VirtProcess
 //   [12] VirtDraw       [13] Virt13          [14] UpdateAndCheck [15] Virt15
 //   [16] Virt16         [17] Virt17
 class Engine : public Parser {
@@ -73,15 +73,15 @@ public:
   virtual void CleanupSubsystems();   // vtable[5] 0x411a40
   virtual void VirtCleanup();         // vtable[6] 0x411540 - called by StopAndCleanup
   virtual void DisplayFrameRate();    // vtable[7] 0x411d60
-  virtual void VirtUpdate();          // vtable[8] 0x411460
-  virtual int VirtCheck1();           // vtable[9] 0x411dd0
-  virtual int VirtCheck2();           // vtable[10] 0x411440
+  virtual void UpdateCrosshair();     // vtable[8] 0x411460
+  virtual int CheckNavState();        // vtable[9] 0x411dd0
+  virtual int UpdateSpriteFrame();    // vtable[10] 0x411440
   virtual void ProcessTargets();      // vtable[11] 0x4113a0
   virtual void Draw();                // vtable[12] 0x411510
   virtual void UpdateMeter();         // vtable[13] 0x411190
   virtual int UpdateAndCheck();       // vtable[14] 0x411340
-  virtual void Virt15();              // vtable[15] 0x411ca0
-  virtual void Virt16();              // vtable[16] 0x411d20
+  virtual void CopyToGlobals();       // vtable[15] 0x411ca0 - copies instance fields to globals
+  virtual void ClearGlobals();        // vtable[16] 0x411d20 - clears all global pointers to 0
   virtual void PlayCompletionSound(); // vtable[17] 0x4111a0
 
   // Non-virtual methods

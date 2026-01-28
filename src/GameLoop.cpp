@@ -237,8 +237,8 @@ void GameLoop::ProcessInput() {
         } else {
             clickX = 0;
         }
-        localMessage.clickX = clickX;
-        localMessage.clickY = clickY;
+        localMessage.clickPos.x = clickX;
+        localMessage.clickPos.y = clickY;
 
         pMouse = *ppMouse;
         if (pMouse != 0) {
@@ -625,8 +625,8 @@ int GameLoop::UpdateGame()
         local_d8.priority = pSourceMsg->priority;
         local_d8.param1 = pSourceMsg->param1;
         local_d8.param2 = pSourceMsg->param2;
-        local_d8.clickX = pSourceMsg->clickX;
-        local_d8.clickY = pSourceMsg->clickY;
+        local_d8.clickPos.x = pSourceMsg->clickPos.x;
+        local_d8.clickPos.y = pSourceMsg->clickPos.y;
         local_d8.mouseX = pSourceMsg->mouseX;
         local_d8.mouseY = pSourceMsg->mouseY;
         local_d8.field_b4 = pSourceMsg->field_b4;

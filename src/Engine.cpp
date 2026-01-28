@@ -24,6 +24,8 @@
 
 #include "VideoTable.h"
 
+extern int* DAT_00435f28;
+
 extern "C" {
 int GetCurrentTimestamp(int*);  // 0x425000 - returns timestamp, optionally stores in *param
 void SetTimeSeed(int);          // 0x424FC0 - sets global time seed (DAT_0043bc88)
@@ -139,19 +141,19 @@ void Engine::StopAndCleanup() {
 int Engine::UpdateAndCheck() {
   int result;
 
-  result = VirtCheck1();
+  result = CheckNavState();
   if (result != 0) {
     return 1;
   }
 
-  VirtUpdate();
+  UpdateCrosshair();
 
   result = ((mCNavigator*)DAT_00435f24)->Update();
   if (result != 0) {
     return 1;
   }
 
-  result = VirtCheck2();
+  result = UpdateSpriteFrame();
   if (result != 0) {
     return 1;
   }
@@ -244,9 +246,49 @@ int Engine::LBLParse(char* line) {
 Engine::~Engine() {}
 void Engine::CleanupSubsystems() {}
 void Engine::VirtCleanup() {}
-void Engine::VirtUpdate() {}
-int Engine::VirtCheck1() { return 0; }
-int Engine::VirtCheck2() { return 0; }
+/* Function start: 0x411440 */
+int Engine::UpdateSpriteFrame() {
+  if (DAT_00435f10 != 0) {
+    ((CombatSprite*)DAT_00435f10)->ProcessFrame(Engine::m_framesL);
+  }
+  return 0;
+}
+
+/* Function start: 0x411460 */
+void Engine::UpdateCrosshair() {
+  InputState* mouse;
+
+  mouse = g_InputManager_00436968->pMouse;
+  if (mouse != 0) {
+    ((Weapon*)DAT_00435f14)->field_0x98 = mouse->x;
+  } else {
+    ((Weapon*)DAT_00435f14)->field_0x98 = 0;
+  }
+
+  mouse = g_InputManager_00436968->pMouse;
+  if (mouse != 0) {
+    ((Weapon*)DAT_00435f14)->field_0x9c = mouse->y;
+  } else {
+    ((Weapon*)DAT_00435f14)->field_0x9c = 0;
+  }
+
+  mouse = g_InputManager_00436968->pMouse;
+  if (mouse != 0) {
+    if (mouse->x > 0xAA) {
+      g_EngineViewport->SetCenterX(g_EngineViewport->centerX + 4);
+      return;
+    }
+  }
+  if (mouse != 0 && mouse->x >= 0x96) {
+    return;
+  }
+  g_EngineViewport->SetCenterX(g_EngineViewport->centerX - 4);
+}
+
+/* Function start: 0x411DD0 */
+int Engine::CheckNavState() {
+  return *(unsigned int*)DAT_00435f28 >= 1;
+}
 /* Function start: 0x4113A0 */
 void Engine::ProcessTargets() {
   Target* target;
@@ -287,6 +329,33 @@ void Engine::Draw() {
   }
 }
 void Engine::UpdateMeter() {}
-void Engine::Virt15() {}
-void Engine::Virt16() {}
+/* Function start: 0x411CA0 */
+void Engine::CopyToGlobals() {
+  DAT_00435f04 = (Parser*)Engine::field_0x90;
+  DAT_00435f14 = Engine::m_subParser;
+  g_SoundList_00435f1c = Engine::m_soundList;
+  DAT_00435f00 = Engine::m_engineInfoParser;
+  DAT_00435f24 = (Parser*)Engine::m_navigator;
+  g_EnginePalette = Engine::m_timerManager;
+  DAT_00435f10 = (Parser*)Engine::m_combatSprite;
+  DAT_00435f0c = (Parser*)Engine::m_targetList;
+  g_ScoreManager = (int*)Engine::m_cursorState;
+  g_EngineViewport = Engine::m_viewport;
+  DAT_00435f28 = (int*)Engine::m_stateManager;
+}
+
+/* Function start: 0x411D20 */
+void Engine::ClearGlobals() {
+  DAT_00435f04 = 0;
+  DAT_00435f14 = 0;
+  g_SoundList_00435f1c = 0;
+  DAT_00435f00 = 0;
+  DAT_00435f24 = 0;
+  g_EnginePalette = 0;
+  DAT_00435f10 = 0;
+  DAT_00435f0c = 0;
+  g_ScoreManager = 0;
+  g_EngineViewport = 0;
+  DAT_00435f28 = 0;
+}
 void Engine::PlayCompletionSound() {}

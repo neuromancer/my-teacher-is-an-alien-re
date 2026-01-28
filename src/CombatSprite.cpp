@@ -3,6 +3,7 @@
 #include "string.h"
 #include "EngineSubsystems.h"
 #include "globals.h"
+#include "Target.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -601,4 +602,34 @@ parseLoop:
     }
 
     goto parseLoop;
+}
+
+/* Function start: 0x415B90 */
+int CombatSprite::ProcessFrame(int frame) {
+    int* currentData;
+    int* nextNode;
+    Target* target;
+    int count;
+
+    count = -1;
+    currentData = (int*)CombatSprite::field_0x8c;
+    if (currentData != 0 && (count = 0, *currentData <= frame)) {
+        while (target = ((TargetList*)DAT_00435f0c)->targets[*(int*)(CombatSprite::field_0x8c + 4)],
+               target->active == 0) {
+            count++;
+            target->Spawn();
+            nextNode = (int*)CombatSprite::field_0x90;
+            if (nextNode == 0) {
+                CombatSprite::field_0x8c = 0;
+                return count;
+            }
+            CombatSprite::field_0x90 = *nextNode;
+            currentData = (int*)nextNode[2];
+            CombatSprite::field_0x8c = (int)currentData;
+            if (*currentData > frame) {
+                return count;
+            }
+        }
+    }
+    return count;
 }
