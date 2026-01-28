@@ -17,6 +17,8 @@
 #include "Sound.h"
 #include "RockThrower.h"
 #include "Sample.h"
+#include "InputManager.h"
+#include "Target.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -245,8 +247,45 @@ void Engine::VirtCleanup() {}
 void Engine::VirtUpdate() {}
 int Engine::VirtCheck1() { return 0; }
 int Engine::VirtCheck2() { return 0; }
-void Engine::ProcessTargets() {}
-void Engine::Draw() {}
+/* Function start: 0x4113A0 */
+void Engine::ProcessTargets() {
+  Target* target;
+  InputState* mouse;
+  int buttonDown;
+
+  target = ((TargetList*)DAT_00435f0c)->ProcessTargets();
+  ((Weapon*)DAT_00435f14)->DrawCrosshairs();
+
+  mouse = g_InputManager_00436968->pMouse;
+  buttonDown = 0;
+  if (mouse != 0) {
+    buttonDown = mouse->buttons & 1;
+  }
+  if (buttonDown == 0 && (mouse->prevButtons & 1) != 0) {
+    ((Weapon*)DAT_00435f14)->field_0xa0 = 1;
+  } else {
+    ((Weapon*)DAT_00435f14)->field_0xa0 = 0;
+  }
+
+  if (((Weapon*)DAT_00435f14)->field_0xa0 != 0) {
+    ((Weapon*)DAT_00435f14)->OnHit();
+    if (target != 0) {
+      target->UpdateProgress(1);
+    }
+  }
+
+  Engine::Draw();
+  Engine::UpdateMeter();
+}
+/* Function start: 0x411510 */
+void Engine::Draw() {
+  Sprite* console;
+
+  if (DAT_00435f04 != 0) {
+    console = (Sprite*)DAT_00435f04;
+    console->Do(console->loc_x, console->loc_y, 1.0);
+  }
+}
 void Engine::UpdateMeter() {}
 void Engine::Virt15() {}
 void Engine::Virt16() {}

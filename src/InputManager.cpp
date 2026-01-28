@@ -14,8 +14,8 @@ extern "C" int GetMousePosition(int*, int*); // 0x4239E4 - in Graphics.cpp
 
 extern "C" int ProcessMessages(); // 0x4192F0 - Message pump loop
 
-extern Timer g_leftClickTimer;  // 0x43de40
-extern Timer g_rightClickTimer; // 0x43de58
+Timer g_leftClickTimer;  // 0x43de40
+Timer g_rightClickTimer; // 0x43de58
 
 InputState::InputState() {
     x = 0;

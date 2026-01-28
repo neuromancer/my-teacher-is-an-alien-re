@@ -39,9 +39,7 @@ GameState* g_GameState2_004369a4 = 0;
 
 // Sprite* g_Sprite_004360a0 = 0; // Moved/Removed to match address 0x4360A0 (EngineB/mCNavigator)
 
-// Other globals
-Timer g_leftClickTimer;  // 0x43de40
-Timer g_rightClickTimer; // 0x43de58
+// Other globals (Timer globals defined in InputManager.cpp)
 int DAT_004373b8 = 0; // DoubleClickTime
 
 int DAT_004373bc = 0; // WaitForInput var
