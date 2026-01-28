@@ -22,6 +22,14 @@ struct HashEntry {
     int value;          // 0x0C - sound/sprite ID
 };
 
+/* Function start: 0x412d80 */
+mCNavNode::mCNavNode() : Parser()
+{
+    memset(&active, 0, 120);
+    nextNodeId = 1;
+    strcpy(nodeName, "NONAME");
+}
+
 /* Function start: 0x4130F0 */
 int mCNavNode::Activate()
 {
