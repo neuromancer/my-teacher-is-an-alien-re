@@ -10,6 +10,10 @@
 #include "mCNavigator.h"
 #include "Palette.h"
 #include "EngineSubsystems.h"
+#include "CombatSprite.h"
+#include "Viewport.h"
+#include "CursorState.h"
+#include "GameOutcome.h"
 #include "Sound.h"
 #include "RockThrower.h"
 #include "Sample.h"
@@ -165,11 +169,11 @@ void Engine::Initialize() {
   Engine::m_engineInfoParser = new EngineInfoParser();
   Engine::m_navigator = new mCNavigator();
   Engine::m_timerManager = new Palette();
-  Engine::m_inputHandler = new InputHandler();
+  Engine::m_combatSprite = new CombatSprite();
   Engine::m_targetList = new TargetList();
-  Engine::m_cursorManager = new CursorManager();
-  Engine::m_dialogManager = new DialogManager();
-  Engine::m_stateManager = new StateManager();
+  Engine::m_cursorState = new CursorState();
+  Engine::m_viewport = new Viewport();
+  Engine::m_stateManager = new GameOutcome();
 
   Engine::OnProcessStart();
 }

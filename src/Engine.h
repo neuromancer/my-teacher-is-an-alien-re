@@ -9,11 +9,10 @@ class SoundList;
 class Palette;
 class EngineInfoParser;
 class TargetList;
-class SpriteManager;
-class DialogManager;
-class InputHandler;
-class CursorManager;
-class StateManager;
+class CombatSprite;
+class Viewport;
+class CursorState;
+class GameOutcome;
 
 // Engine - Base class for game engine variants (vtable 0x431340, size 0xe8)
 //
@@ -35,16 +34,16 @@ public:
   // Engine fields start at 0x88
 
   TargetList* m_targetList;         // 0x88 - target list manager (size 0x1c8)
-  EngineInfoParser* m_engineInfoParser; // 0x8c - engine info parser (size 0xa8)
+  EngineInfoParser* m_engineInfoParser; // 0x8c - engine info parser (size 0xb8)
   int field_0x90;                   // 0x90
-  DialogManager* m_dialogManager;   // 0x94 - dialog/text manager (size 0x2c)
-  InputHandler* m_inputHandler;     // 0x98 - input handler (size 0x98)
+  Viewport* m_viewport;             // 0x94 - viewport (size 0x2c)
+  CombatSprite* m_combatSprite;     // 0x98 - combat sprite manager (size 0x98)
   Parser* m_subParser;              // 0x9c - sub-parser object (can be Console, Weapon, etc)
   Palette* m_timerManager;          // 0xa0 - timer manager (size 0x8)
   SoundList* m_soundList;           // 0xa4 - sound list (size 0x10)
-  CursorManager* m_cursorManager;   // 0xa8 - cursor manager (size 0x24)
+  CursorState* m_cursorState;       // 0xa8 - cursor state data (size 0x24)
   mCNavigator* m_navigator;         // 0xac - navigation manager
-  StateManager* m_stateManager;     // 0xb0 - state manager (size 0x4)
+  GameOutcome* m_stateManager;     // 0xb0 - state manager (size 0x4)
   int field_0xb4;             // 0xb4
   int field_0xb8;             // 0xb8
   int field_0xbc;             // 0xbc

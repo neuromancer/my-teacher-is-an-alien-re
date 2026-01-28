@@ -8,8 +8,8 @@
 #include "Sample.h"
 #include "Target.h"
 #include "Viewport.h"
-
-// Stub classes for Engine subsystems (sizes match original)
+#include "CursorState.h"
+#include "GameOutcome.h"
 
 class EngineInfoParser : public Parser {
 public:
@@ -27,36 +27,6 @@ public:
   void ParseSound(char* line, int index); // 0x417030
   void ParsePalette(char* line); // 0x417130
   void ParseText(char* line); // 0x417170
-};
-
-class SpriteManager {
-public:
-  char data[0xb8];
-  SpriteManager() {}
-};
-
-class DialogManager {
-public:
-  char data[0x2c];
-  DialogManager() {}
-};
-
-class InputHandler {
-public:
-  char data[0x98];
-  InputHandler() {}
-};
-
-class CursorManager {
-public:
-  char data[0x24];
-  CursorManager() {}
-};
-
-class StateManager {
-public:
-  char data[0x4];
-  StateManager() {}
 };
 
 #endif // ENGINE_SUBSYSTEMS_H

@@ -11,6 +11,7 @@ public:
     int scrollY;        // 0x24
     int anchorOffsetY;  // 0x28
 
+    Viewport();                       // 0x412B50
     void SetDimensions(int w, int h); // 0x412C30
     void SetAnchor(int x, int y);     // 0x412C50
     void SetDimensions2(int w, int h); // 0x412C90

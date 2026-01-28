@@ -1,4 +1,15 @@
 #include "Viewport.h"
+#include <string.h>
+
+/* Function start: 0x412B50 */
+Viewport::Viewport()
+{
+    memset(this, 0, 0x28);
+    Viewport::SetDimensions(0x140, 0xc8);
+    Viewport::SetDimensions2(0, 0);
+    Viewport::SetCenter();
+    Viewport::SetAnchor(0, Viewport::y1 - 1);
+}
 
 /* Function start: 0x412C30 */
 void Viewport::SetDimensions(int w, int h) {
