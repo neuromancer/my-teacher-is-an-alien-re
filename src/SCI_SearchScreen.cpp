@@ -143,7 +143,7 @@ int SCI_SearchScreen::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x40B110 */
 int SCI_SearchScreen::Exit(SC_Message* msg) {
-    return handlerId <= msg->targetAddress;
+    return handlerId == msg->targetAddress;
 }
 
 /* Function start: 0x40B130 */

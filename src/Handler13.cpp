@@ -203,18 +203,20 @@ int Handler13::Exit(SC_Message* msg) {
                     if (pList->tail == pList->current) {
                         pList->tail = node->prev;
                     }
-                    prevNode = node->prev;
-                    if (prevNode != 0) {
-                        prevNode->next = node->next;
+                    node = (MessageNode*)pList->current;
+                    if (node->prev != 0) {
+                        node->prev->next = node->next;
                     }
-                    prevNode = node->prev;
-                    if (prevNode != 0) {
-                        prevNode->next = node;
+                    node = (MessageNode*)pList->current;
+                    if (node->next != 0) {
+                        node->next->prev = node->prev;
                     }
                     node = (MessageNode*)pList->current;
                     eventData = 0;
                     if (node != 0) {
                         eventData = (TimedEvent*)node->data;
+                    }
+                    if (node != 0) {
                         ((Queue*)node)->Destroy(1);
                         pList->current = 0;
                     }

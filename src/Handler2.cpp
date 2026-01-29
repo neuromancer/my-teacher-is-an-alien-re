@@ -93,7 +93,7 @@ int Handler2::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x40FAD0 */
 int Handler2::Exit(SC_Message* msg) {
-    return (handlerId - msg->targetAddress) < 1;
+    return handlerId == msg->targetAddress;
 }
 
 /* Function start: 0x40FAF0 */
