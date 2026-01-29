@@ -1,12 +1,5 @@
 #include "GlyphRect.h"
 #include "globals.h"
-#include "Array.h"
-#include <stdlib.h>
-
-static void GlyphRect_Destructor(void* ptr)
-{
-    ((GlyphRect*)ptr)->~GlyphRect();
-}
 
 GlyphRect::~GlyphRect()
 {
@@ -53,23 +46,6 @@ void InitPuzzleRects1()
     g_PuzzleRects1_0043d068[8].right = 0x25b;
 }
 
-void CleanupPuzzleRects1(void);
-
-/* Function start: 0x40E110 */
-void RegisterPuzzleRects1Cleanup()
-{
-    atexit(CleanupPuzzleRects1);
-}
-
-/* Function start: 0x40E120 */
-void CleanupPuzzleRects1()
-{
-    if ((DAT_0043d0f8 & 1) == 0) {
-        DAT_0043d0f8 = DAT_0043d0f8 | 1;
-        Array_Cleanup(g_PuzzleRects1_0043d068, 0x10, 9, GlyphRect_Destructor);
-    }
-}
-
 /* Function start: 0x40E160 */
 void InitPuzzleRects2()
 {
@@ -85,21 +61,4 @@ void InitPuzzleRects2()
     g_PuzzleRects2_0043d100[1].bottom = 0x118;
     g_PuzzleRects2_0043d100[2].left = 0x15d;
     g_PuzzleRects2_0043d100[2].right = 0x18f;
-}
-
-void CleanupPuzzleRects2(void);
-
-/* Function start: 0x40E1E0 */
-void RegisterPuzzleRects2Cleanup()
-{
-    atexit(CleanupPuzzleRects2);
-}
-
-/* Function start: 0x40E1F0 */
-void CleanupPuzzleRects2()
-{
-    if ((DAT_0043d0f8 & 2) == 0) {
-        DAT_0043d0f8 = DAT_0043d0f8 | 2;
-        Array_Cleanup(g_PuzzleRects2_0043d100, 0x10, 3, GlyphRect_Destructor);
-    }
 }

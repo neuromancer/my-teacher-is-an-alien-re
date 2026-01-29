@@ -251,9 +251,8 @@ call_insert:
     } else {
         if (list->tail == list->current) {
             if (newItem == 0) WriteToMessageLog("queue fault 0112");
-            MessageNode* newNode = new MessageNode();
+            MessageNode* newNode = new MessageNode(newItem);
             if (newNode != 0) {
-                newNode->Init(newItem);
                 if (list->current == 0) {
                     list->current = list->tail;
                 }
@@ -341,10 +340,7 @@ void MessageList::InsertNode(void* data) {
     if (data == 0) {
         WriteToMessageLog("queue fault 0102");
     }
-    MessageNode* newNode = new MessageNode();
-    if (newNode != 0) {
-        newNode->Init(data);
-    }
+    MessageNode* newNode = new MessageNode(data);
     if (current == 0) {
         current = head;
     }

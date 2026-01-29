@@ -2,17 +2,6 @@
 #include "string.h"
 #include "Memory.h"
 
-/* Function start: 0x4188A0 */
-void* EventNode::Cleanup(int flag) {
-    data = 0;
-    next = 0;
-    prev = 0;
-    if (flag & 1) {
-        FreeMemory(this);
-    }
-    return this;
-}
-
 /* Function start: 0x4188D0 */
 void EventList::InsertNode(void* data) {
     EventNode* newNode;

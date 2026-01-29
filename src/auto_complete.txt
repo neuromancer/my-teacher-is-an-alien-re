@@ -182,3 +182,13 @@
 0x4189D0
 0x41CD10
 0x41CD30
+
+# Compiler-generated array destructor/constructor helpers
+0x4249D0
+0x424B00
+
+# Compiler-generated atexit cleanup thunks for static GlyphRect arrays
+0x40E110
+0x40E120
+0x40E1E0
+0x40E1F0

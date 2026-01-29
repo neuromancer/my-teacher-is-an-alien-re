@@ -13,7 +13,7 @@ StringTable::StringTable(char* f, int loadNow) {
     // strlen to compute allocation size
     int len = strlen(f) + 1;
 
-    filename = (char*)AllocateMemory(len);
+    filename = new char[len];
 
     // Copy using strcpy - compiler should inline as REP MOVS pattern
     strcpy(filename, f);
@@ -174,20 +174,7 @@ void StringTable::Load() {
             }
 
             // Allocate new hash table
-            HashTable* newHashTable = (HashTable*)AllocateMemory(0x18);
-            HashTable* finalTable;
-            if (newHashTable == 0) {
-                finalTable = 0;
-            } else {
-                newHashTable->buckets = 0;
-                newHashTable->numBuckets = 0x11;
-                newHashTable->count = 0;
-                newHashTable->freeList = 0;
-                newHashTable->nodePool = 0;
-                newHashTable->capacity = lineCount;
-                finalTable = newHashTable;
-            }
-            hashTable = finalTable;
+            hashTable = new HashTable(lineCount);
 
             // Reset to beginning of file
             fsetpos(fp, &filePos);

@@ -58,7 +58,7 @@ void SpriteHashTable::AllocateBuckets(int size, int flag) {
     }
 
     if (flag != 0) {
-        newBuckets = (int*)AllocateMemory(size * 4);
+        newBuckets = (int*)new char[size * 4];
         count = (size * 4) >> 2;
         SpriteHashTable::buckets = (void**)newBuckets;
         while (count != 0) {
@@ -78,7 +78,7 @@ void* SpriteHashTable::AllocateNode() {
     int delayCounter;
 
     if (SpriteHashTable::tail == 0) {
-        newPool = (int*)AllocateMemory(SpriteHashTable::growSize * 16 + 4);
+        newPool = (int*)new char[SpriteHashTable::growSize * 16 + 4];
         *newPool = SpriteHashTable::count;
         i = SpriteHashTable::growSize;
         SpriteHashTable::count = (int)newPool;
@@ -143,7 +143,7 @@ void SpriteHashTable::Resize(int size, int flag) {
     }
 
     if (flag != 0) {
-        newBuckets = (int*)AllocateMemory(size * 4);
+        newBuckets = (int*)new char[size * 4];
         count = (size * 4) >> 2;
         SpriteHashTable::buckets = (void**)newBuckets;
         while (count != 0) {
@@ -165,7 +165,7 @@ void* SpriteHashTable::AllocEntry() {
     int delayCounter;
 
     if (SpriteHashTable::tail == 0) {
-        newPool = (int*)AllocateMemory(SpriteHashTable::growSize * 16 + 4);
+        newPool = (int*)new char[SpriteHashTable::growSize * 16 + 4];
         *newPool = SpriteHashTable::count;
         i = SpriteHashTable::growSize;
         SpriteHashTable::count = (int)newPool;
@@ -538,14 +538,10 @@ parseLoop:
     }
 
     // Allocate sprite data entry (8 bytes)
-    entryData = (SpriteDataEntry*)AllocateMemory(8);
-    if (entryData != 0) {
-        entryData->index = frameIndex;
-        entryData->spriteIdx = spriteIdx;
-        DAT_00436344++;
-    } else {
-        entryData = 0;
-    }
+    entryData = new SpriteDataEntry();
+    entryData->index = frameIndex;
+    entryData->spriteIdx = spriteIdx;
+    DAT_00436344++;
 
     // Add to g_CurrentSprite linked list (similar to SpriteHashTable::AllocEntry)
     spriteTable = g_CurrentSprite;
@@ -556,7 +552,7 @@ parseLoop:
     // If no free nodes, allocate more
     if (*tailPtr == 0) {
         growCount = *(int*)((int)spriteTable + 0x14);  // growSize
-        newPool = (int*)AllocateMemory(growCount * 12 + 4);
+        newPool = (int*)new char[growCount * 12 + 4];
         *newPool = *(int*)((int)spriteTable + 0x10);  // link to previous pool
         *(int*)((int)spriteTable + 0x10) = (int)newPool;
 

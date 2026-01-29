@@ -11,6 +11,15 @@ public:
     void* memoryBlock;  // 0x10
     int objectSize;     // 0x14
 
+    ObjectPool(int sz, int objSz) {
+        memory = 0;
+        size = sz;
+        allocatedCount = 0;
+        freeList = 0;
+        memoryBlock = 0;
+        objectSize = objSz;
+    }
+
 public:
     void* Allocate();
     void* Allocate_2();

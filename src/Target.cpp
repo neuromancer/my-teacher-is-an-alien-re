@@ -299,7 +299,7 @@ void Target::Init(char* line)
         if (stricmp(buffer, "INIT") != 0) {
             g_CDData_0043697c->ResolvePath(buffer);
 
-            Target::animFilename = (char*)AllocateMemory(strlen((char*)g_CDData_0043697c + 0x145) + 1);
+            Target::animFilename = new char[strlen((char*)g_CDData_0043697c + 0x145) + 1];
             strcpy(Target::animFilename, (char*)g_CDData_0043697c + 0x145);
         }
     }
@@ -388,7 +388,7 @@ int Target::LBLParse(char* line)
             if (list != 0) {
                 HotspotNode* node = list->freeList;
                 if (node == 0) {
-                    node = (HotspotNode*)AllocateMemory(list->growthRate * 12 + 4);
+                    node = (HotspotNode*)new char[list->growthRate * 12 + 4];
                     *(HotspotNode**)node = (HotspotNode*)list->nodePool;
                     list->nodePool = node;
                     int n = list->growthRate - 1;
@@ -424,7 +424,7 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%s", buffer);
         if (result == 1) {
             if (strlen(buffer) != 0) {
-                Target::identifier = (char*)AllocateMemory(strlen(buffer) + 1);
+                Target::identifier = new char[strlen(buffer) + 1];
                 strcpy(Target::identifier, buffer);
             }
         }

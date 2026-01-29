@@ -104,7 +104,7 @@ void SC_Sound::Update(int param1, int param2) {
                         }
 
                         data = (SoundItem*)node->data;
-                        node->Destroy(1);
+                        delete node;
                         list->current = 0;
                     }
 
@@ -224,7 +224,7 @@ int SC_Sound::Exit(SC_Message* msg) {
                             node->next->prev = node->prev;
                         }
 
-                        node->Destroy(1);
+                        delete node;
                         list->current = 0;
                     }
 
@@ -272,7 +272,6 @@ SoundItem* SC_Sound::FindOrCreateSound(int soundId)
     MessageList* pList;
     MessageNode* currNode;
     SoundItem* foundItem;
-    void* allocResult;
     SoundItem* newItem;
     MessageNode* newNode;
 
@@ -327,11 +326,7 @@ found:
             ShowError("queue fault 0102");
         }
 
-        allocResult = operator new(0xc);
-        newNode = 0;
-        if (allocResult != 0) {
-            newNode = ((MessageNode*)allocResult)->Init(newItem);
-        }
+        newNode = new MessageNode(newItem);
 
         if (pList->current == 0) {
             pList->current = pList->head;
@@ -363,14 +358,7 @@ found:
                 ShowError("queue fault 0102");
             }
 
-            allocResult = operator new(0xc);
-            newNode = 0;
-            if (allocResult != 0) {
-                ((MessageNode*)allocResult)->data = newItem;
-                ((MessageNode*)allocResult)->prev = 0;
-                ((MessageNode*)allocResult)->next = 0;
-                newNode = (MessageNode*)allocResult;
-            }
+            newNode = new MessageNode(newItem);
 
             if (pList->current == 0) {
                 pList->current = pList->head;
@@ -399,14 +387,7 @@ found:
                 ShowError("queue fault 0112");
             }
 
-            allocResult = operator new(0xc);
-            newNode = 0;
-            if (allocResult != 0) {
-                ((MessageNode*)allocResult)->data = newItem;
-                ((MessageNode*)allocResult)->prev = 0;
-                ((MessageNode*)allocResult)->next = 0;
-                newNode = (MessageNode*)allocResult;
-            }
+            newNode = new MessageNode(newItem);
 
             if (pList->current == 0) {
                 pList->current = pList->tail;

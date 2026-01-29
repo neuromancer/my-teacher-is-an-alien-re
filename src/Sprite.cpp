@@ -10,7 +10,6 @@
 #include "Animation.h"
 #include "Queue.h"
 #include "Memory.h"
-#include "Array.h"
 #include "ZBufferManager.h"
 #include "string.h"
 
@@ -118,13 +117,6 @@ void Sprite::InitAnimation()
         return;
     }
 
-    /*Animation* anim = (Animation*)AllocateMemory(0x2c);
-    try {
-        if (anim != 0) {
-            anim = anim->Init();
-        }
-    } catch (...) {
-    }*/
     animation_data = new Animation();
     animation_data->Open(sprite_filename, 0xfe000, -1);
 }

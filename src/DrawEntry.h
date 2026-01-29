@@ -14,10 +14,6 @@ public:
     // Virtual destructor at vtable offset 0x00
     virtual ~DrawEntry();
     
-    // Cleanup method that releases resources
-    // 0x411080 - releases video buffer, destroys child object, optionally frees self
-    void* Cleanup(int freeFlag);
-    
     VBuffer* m_videoBuffer;  // 0x04 - pointer to video buffer data
     SoundCommand* m_childObject;     // 0x08 - pointer to child render/sound command
 };

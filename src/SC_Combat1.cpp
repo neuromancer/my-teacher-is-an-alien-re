@@ -114,7 +114,7 @@ void SC_Combat1::Init(SC_Message* msg) {
         while (pQueue->head != 0) {
             pNode = pQueue->PopNode2_2();
             if (pNode != 0) {
-                ((DrawEntry*)pNode)->Cleanup(1);
+                delete (DrawEntry*)pNode;
             }
         }
     }

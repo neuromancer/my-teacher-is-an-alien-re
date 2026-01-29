@@ -167,16 +167,7 @@ int mCNavigator::LBLParse(char* param_1)
 	}
 	else if (_strcmpi(token, "BASENODE") == 0) {
 		if (navNodePool == 0) {
-			ObjectPool* pool = (ObjectPool*)AllocateMemory(0x18);
-			if (pool) {
-				pool->memory = 0;
-				pool->size = 0x11;
-				pool->allocatedCount = 0;
-				pool->freeList = 0;
-				pool->memoryBlock = 0;
-				pool->objectSize = 0xa;
-			}
-			navNodePool = pool;
+			navNodePool = new ObjectPool(0x11, 0xa);
 		}
 
 		parser = new mCNavNode();
@@ -296,7 +287,7 @@ int mCNavigator::Update()
 void* ObjectPool::Allocate_2()
 {
     if (freeList == 0) {
-        int* p = (int*)AllocateMemory(objectSize * 0x10 + 4);
+        int* p = (int*)new char[objectSize * 0x10 + 4];
         *p = (int)memoryBlock;
         memoryBlock = p;
 

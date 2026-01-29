@@ -38,7 +38,7 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
 
         if (*pFreeList == 0) {
             pPoolSize = &g_TimedEventPool2_00436988->m_pool_size;
-            pNewPool = (int*)AllocateMemory(g_TimedEventPool2_00436988->m_pool_size * 200 + 4);
+            pNewPool = (int*)new char[g_TimedEventPool2_00436988->m_pool_size * 200 + 4];
             *pNewPool = (int)pPool->m_pool;
             pPool->m_pool = (PooledEvent*)pNewPool;
             count = *pPoolSize;

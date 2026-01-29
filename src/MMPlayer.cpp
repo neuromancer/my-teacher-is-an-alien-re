@@ -13,13 +13,8 @@ MMPlayer::MMPlayer()
     field_0x8c = 0;
     field_0x90 = 0;
     field_0x90 = 1;
-    Queue* queue = (Queue*)AllocateMemory(0x10);
-    if (queue != 0) {
-        queue->m_head = 0;
-        queue->m_tail = 0;
-        queue->m_current = 0;
-        queue->m_field_0xc = 2;
-    }
+    Queue* queue = new Queue();
+    queue->m_field_0xc = 2;
     m_queue = queue;
     field_0x88 = 0x54;
 }

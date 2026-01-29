@@ -27,7 +27,11 @@ public:
         m_tail = 0;
         m_current = m_head;
     }
-    void* Destroy(int free_memory);
+    ~Queue() {
+        m_current = 0;
+        m_head = 0;
+        m_tail = 0;
+    }
 
     void Insert(void* data);
     void InsertAtCurrent(void* data);

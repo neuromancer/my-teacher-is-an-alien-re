@@ -33,14 +33,8 @@ Character::Character(char* param_1) {
     characterType = -1;
 
     // Allocate PriorityQueue and initialize it manually
-    pQueue = (PriorityQueue*)operator new(0x10);
-    if (pQueue != 0) {
-        pQueue->type = 0;
-        pQueue->head = 0;
-        pQueue->tail = 0;
-        pQueue->current = pQueue->head;
-        queue = pQueue;
-    }
+    pQueue = new PriorityQueue(0);
+    queue = pQueue;
 
     // Peter block
     if (strstr(param_1, "peter") != 0) {
@@ -100,12 +94,7 @@ Character::Character(char* param_1) {
                         }
                         if (pQueue->tail == pQueue->current) {
                             if (sprite == 0) ShowError("queue fault 0112");
-                            newNode = (PriorityQueueNode*)operator new(0xc);
-                            if (newNode != 0) {
-                                newNode->data = sprite;
-                                newNode->next = 0;
-                                newNode->prev = 0;
-                            }
+                            newNode = new PriorityQueueNode(sprite);
                             if (pQueue->current == 0) pQueue->current = pQueue->tail;
                             if (pQueue->head == 0) {
                                 pQueue->head = newNode;
@@ -190,12 +179,7 @@ Character::Character(char* param_1) {
                         }
                         if (pQueue->tail == pQueue->current) {
                             if (sprite == 0) ShowError("queue fault 0112");
-                            newNode = (PriorityQueueNode*)operator new(0xc);
-                            if (newNode != 0) {
-                                newNode->data = sprite;
-                                newNode->next = 0;
-                                newNode->prev = 0;
-                            }
+                            newNode = new PriorityQueueNode(sprite);
                             if (pQueue->current == 0) pQueue->current = pQueue->tail;
                             if (pQueue->head == 0) {
                                 pQueue->head = newNode;
@@ -281,12 +265,7 @@ Character::Character(char* param_1) {
                         }
                         if (pQueue->tail == pQueue->current) {
                             if (sprite == 0) ShowError("queue fault 0112");
-                            newNode = (PriorityQueueNode*)operator new(0xc);
-                            if (newNode != 0) {
-                                newNode->data = sprite;
-                                newNode->next = 0;
-                                newNode->prev = 0;
-                            }
+                            newNode = new PriorityQueueNode(sprite);
                             if (pQueue->current == 0) pQueue->current = pQueue->tail;
                             if (pQueue->head == 0) {
                                 pQueue->head = newNode;

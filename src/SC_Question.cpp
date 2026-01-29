@@ -199,7 +199,6 @@ void SC_Question::Finalize()
 /* Function start: 0x406AF0 */
 int SC_Question::LBLParse(char* param_1)
 {
-    void* mem;
     char local_34[32];
     
     sscanf(param_1, "%s", local_34);
@@ -232,19 +231,12 @@ int SC_Question::LBLParse(char* param_1)
                             ShowError("queue fault 0102");
                         }
                         
-                        mem = AllocateMemory(0xc);
-                        QueueNode* node = 0;
-                        if (mem != 0) {
-                            node = (QueueNode*)mem;
-                            node->data = msg;
-                            node->prev = 0;
-                            node->next = 0;
-                        }
+                        QueueNode* node = new QueueNode(msg);
 
                         if (queue->m_current == 0) {
                             queue->m_current = queue->m_head;
                         }
-                        
+
                         if (queue->m_head == 0) {
                             queue->m_head = node;
                             queue->m_tail = node;
@@ -269,16 +261,7 @@ int SC_Question::LBLParse(char* param_1)
                             ShowError("queue fault 0112");
                         }
                         
-                        mem = AllocateMemory(0xc);
-                        QueueNode* node;
-                        if (mem != 0) {
-                            ((QueueNode*)mem)->data = msg;
-                            node = (QueueNode*)mem;
-                            ((QueueNode*)mem)->prev = 0;
-                            ((QueueNode*)mem)->next = 0;
-                        } else {
-                            node = 0;
-                        }
+                        QueueNode* node = new QueueNode(msg);
 
                         if (queue->m_current == 0) {
                             queue->m_current = queue->m_tail;
@@ -311,14 +294,7 @@ int SC_Question::LBLParse(char* param_1)
                     ShowError("queue fault 0102");
                 }
                 
-                mem = AllocateMemory(0xc);
-                QueueNode* node = 0;
-                if (mem != 0) {
-                    node = (QueueNode*)mem;
-                    node->data = msg;
-                    node->prev = 0;
-                    node->next = 0;
-                }
+                QueueNode* node = new QueueNode(msg);
 
                 if (queue->m_current == 0) {
                     queue->m_current = queue->m_head;

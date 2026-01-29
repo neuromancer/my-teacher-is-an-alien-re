@@ -9,20 +9,12 @@ void MessageList::InsertBeforeCurrent(void* data)
 {
     MessageNode* newNode;
     MessageNode* curr;
-    void* allocResult;
 
     if (data == 0) {
         ShowError("queue fault 0102");
     }
 
-    allocResult = AllocateMemory(0xc);
-    newNode = (MessageNode*)0;
-    if (allocResult != 0) {
-        newNode = (MessageNode*)allocResult;
-        newNode->data = data;
-        newNode->prev = 0;
-        newNode->next = 0;
-    }
+    newNode = new MessageNode(data);
 
     if (MessageList::current == 0) {
         MessageList::current = MessageList::head;
@@ -81,7 +73,7 @@ void* MessageList::PopCurrent()
     }
 
     if (node != 0) {
-        node->Destroy(1);
+        delete node;
         current = 0;
     }
 

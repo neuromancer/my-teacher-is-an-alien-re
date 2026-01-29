@@ -3,7 +3,6 @@
 #include "Animation.h"
 #include "VBuffer.h"
 #include "Memory.h"
-#include "Array.h"
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>

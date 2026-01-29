@@ -12,21 +12,14 @@ struct MessageNode {
     MessageNode* next;  // 0x4
     void* data;         // 0x8
 
+    MessageNode(void* d) { data = d; prev = 0; next = 0; }
+
     ~MessageNode() {
         data = 0;
         prev = 0;
         next = 0;
     }
 
-    MessageNode* Destroy(int flag) {
-        data = 0;
-        prev = 0;
-        next = 0;
-        if (flag & 1) {
-            FreeMemory(this);
-        }
-        return this;
-    }
     MessageNode* Init(void* nodeData);   // 0x40C5B0
 };
 

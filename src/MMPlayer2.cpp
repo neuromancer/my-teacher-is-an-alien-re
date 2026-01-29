@@ -19,14 +19,7 @@ MMPlayer2::MMPlayer2()
     }
     field_90 = 1;
 
-    queue = (ZBQueue*)AllocateMemory(0x10);
-    if (queue != 0) {
-        queue->type = 2;
-        queue->head = 0;
-        queue->tail = 0;
-        queue->current = queue->head;
-    }
-    spriteList = queue;
+    spriteList = new ZBQueue(2);
     field_88 = 0x54;
 }
 

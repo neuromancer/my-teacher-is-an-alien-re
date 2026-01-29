@@ -8,7 +8,6 @@
 #include "Memory.h"
 #include "Parser.h"
 #include "globals.h"
-#include "Array.h"
 #include "string.h"
 #include "SC_Question.h"
 

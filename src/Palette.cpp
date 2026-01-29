@@ -34,7 +34,7 @@ Palette::Palette()
     m_size = 0;
     m_data = 0;
     m_size = 0x300;
-    m_data = AllocateMemory(0x300);
+    m_data = new char[0x300];
 }
 
 /* Function start: 0x41EA50 - CreatePaletteBuffer is effectively a placement new for Palette */
@@ -44,7 +44,7 @@ Palette* __fastcall CreatePaletteBuffer(Palette* buffer)
         buffer->m_size = 0;
         buffer->m_data = 0;
         buffer->m_size = 0x300;
-        buffer->m_data = AllocateMemory(0x300);
+        buffer->m_data = new char[0x300];
     }
     return buffer;
 }

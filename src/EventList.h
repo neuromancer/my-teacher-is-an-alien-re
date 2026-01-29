@@ -19,8 +19,6 @@ struct EventNode {
     // Inline: inlined in InsertNode; compiler also emits out-of-line copy at 0x4189D0
     EventNode(void* d) { data = d; next = 0; prev = 0; }
 
-    // Out-of-line: scalar deleting destructor at 0x4188A0
-    void* Cleanup(int flag);
 };
 
 // List header structure for eventList

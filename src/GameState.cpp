@@ -37,7 +37,7 @@ GameState::~GameState()
 /* Function start: 0x420570 */
 void GameState::Serialize(int mode)
 {
-    unsigned int* header = (unsigned int*)AllocateMemory(0x110);
+    unsigned int* header = (unsigned int*)new char[0x110];
     char filename[28];
     FILE* file;
 
@@ -81,9 +81,9 @@ void GameState::SetMaxStates(int count)
         ShowError("GameState::SetMaxStates2");
     }
     maxStates = count;
-    stateValues = (int*)AllocateMemory(count * 4);
+    stateValues = (int*)new char[count * 4];
     ClearStates();
-    stateLabels = (char**)AllocateMemory(maxStates * 4);
+    stateLabels = (char**)new char[maxStates * 4];
     char** arr = stateLabels;
     for (int i = 0; i < maxStates; i++) {
         arr[i] = 0;
@@ -106,7 +106,7 @@ int GameState::LBLParse(char* line)
         SetMaxStates(index);
     } else if (strcmp(keyword, "LABEL") == 0) {
         sscanf(line, "%s %d %s", keyword, &index, labelName);
-        stateLabels[index] = (char*)AllocateMemory(0x20);
+        stateLabels[index] = new char[0x20];
         strcpy(stateLabels[index], labelName);
     } else if (strcmp(keyword, "END") == 0) {
         return 1;

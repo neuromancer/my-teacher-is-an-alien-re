@@ -70,21 +70,13 @@ struct CommandType3 : public SoundCommand {
 /* Function start: 0x409160 */
 void ZBQueue::Insert(void* data)
 {
-    ZBQueueNode* newNode;
     ZBQueueNode* node;
 
     if (data == 0) {
         ShowError("queue fault 0102");
     }
 
-    newNode = (ZBQueueNode*)operator new(sizeof(ZBQueueNode));
-    node = 0;
-    if (newNode != 0) {
-        newNode->data = data;
-        newNode->next = 0;
-        newNode->prev = 0;
-        node = newNode;
-    }
+    node = new ZBQueueNode(data);
 
     if (current == 0) {
         current = head;
@@ -106,18 +98,6 @@ void ZBQueue::Insert(void* data)
         current->next->prev = node;
         current->next = node;
     }
-}
-
-/* Function start: 0x4189A0 */
-void* ZBQueueNode::Cleanup(int flag)
-{
-    ZBQueueNode::data = 0;
-    ZBQueueNode::next = 0;
-    ZBQueueNode::prev = 0;
-    if (flag & 1) {
-        FreeMemory(this);
-    }
-    return this;
 }
 
 /* Function start: 0x41B5D0 */
@@ -387,7 +367,7 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
         cmd->y = 0;
 
         len = strlen(text) + 1;
-        newText = (char*)operator new(len);
+        newText = new char[len];
         cmd->text = newText;
         if (newText != 0) {
             strcpy(newText, text);

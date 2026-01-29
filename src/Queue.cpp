@@ -54,7 +54,7 @@ PooledEvent* PooledEvent::CopyFrom(const PooledEvent* other)
 PooledEvent* TimedEventPool::Create(void* callback, void* data)
 {
     if (m_free_list == 0) {
-        int* new_pool = (int*)AllocateMemory(m_pool_size * 200 + 4);
+        int* new_pool = (int*)new char[m_pool_size * 200 + 4];
         *new_pool = (int)m_pool;
         int count = m_pool_size;
         m_pool = (PooledEvent*)new_pool;
@@ -204,18 +204,6 @@ void* Queue::Pop()
 
     m_current = m_head;
     return data;
-}
-
-/* Function start: 0x402700 */
-void* Queue::Destroy(int free_memory)
-{
-    m_current = 0;
-    m_head = 0;
-    m_tail = 0;
-    if (free_memory & 1) {
-        delete this;
-    }
-    return this;
 }
 
 /* Function start: 0x408790 */

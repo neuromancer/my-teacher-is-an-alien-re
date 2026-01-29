@@ -433,7 +433,7 @@ void GameLoop::CleanupLoop() {
             pResult = pQueue->PopNode2_2();
             if (pResult != 0) {
                 if (((int*)pResult)[1] != 0) {
-                    ((VBuffer*)((int*)pResult)[1])->Destroy(1);
+                    delete (VBuffer*)((int*)pResult)[1];
                     ((int*)pResult)[1] = 0;
                 }
                 if (((int*)pResult)[2] != 0) {
@@ -472,7 +472,7 @@ void GameLoop::CleanupLoop() {
                 // Get data and cleanup node
                 pData = pQueue9c->GetCurrentData();
                 if (pQueue9c->current != 0) {
-                    pQueue9c->current->Cleanup(1);
+                    delete pQueue9c->current;
                     pQueue9c->current = 0;
                 }
                 pQueue9c->current = pQueue9c->head;
@@ -719,7 +719,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
             while (pQueue->head != 0) {
                 pPopResult = pQueue->PopNode2_2();
                 if (pPopResult != 0) {
-                    ((DrawEntry*)pPopResult)->Cleanup(1);
+                    delete (DrawEntry*)pPopResult;
                 }
             }
         }
@@ -767,7 +767,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                 pData = (Handler*)pNode->data;
             }
             if (pNode != 0) {
-                pNode->Cleanup(1);
+                delete pNode;
                 pList->current = 0;
             }
             pList->current = pList->head;

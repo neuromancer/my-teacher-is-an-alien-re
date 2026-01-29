@@ -27,6 +27,13 @@ struct PriorityQueue {
     PriorityQueueNode* current; // +0x08
     int type;                   // +0x0C
 
+    PriorityQueue(int t) {
+        type = t;
+        head = 0;
+        tail = 0;
+        current = head;
+    }
+
     void AddAfterCurrent(CharSprite* sprite);
 };
 

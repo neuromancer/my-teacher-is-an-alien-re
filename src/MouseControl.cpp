@@ -20,10 +20,10 @@ MouseControl::MouseControl()
     memset(m_hotspots, 0, sizeof(m_hotspots));
     m_audio = 0;
 
-    m_labels[0] = (char*)AllocateMemory(16);
-    m_labels[1] = (char*)AllocateMemory(16);
-    m_labels[2] = (char*)AllocateMemory(16);
-    m_labels[3] = (char*)AllocateMemory(16);
+    m_labels[0] = new char[16];
+    m_labels[1] = new char[16];
+    m_labels[2] = new char[16];
+    m_labels[3] = new char[16];
 
     strcpy(m_labels[0], "POINTER");
     strcpy(m_labels[1], "EXAMINE");
@@ -67,7 +67,6 @@ MouseControl::~MouseControl()
 int MouseControl::LBLParse(char* line)
 {
     int index;
-    void* ptr;
     int y;
     int x;
     char cmd[32];
@@ -86,12 +85,7 @@ int MouseControl::LBLParse(char* line)
             audio->Load(args);
         }
     } else if (strcmp(cmd, "SPRITE") == 0) {
-        ptr = AllocateMemory(0xd8);
-        Sprite* sprite = 0;
-        if (ptr != 0) {
-            sprite = new (ptr) Sprite(0);
-        }
-        m_sprite = sprite;
+        m_sprite = new Sprite(0);
         m_sprite->flags &= ~2;
         Parser::ProcessFile(m_sprite, this, 0);
     } else if (strcmp(cmd, "HOTPIXEL") == 0) {

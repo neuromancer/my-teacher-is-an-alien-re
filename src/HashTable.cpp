@@ -13,7 +13,7 @@ void HashTable::AllocateBuckets(int numBuckets, int allocateNow) {
         buckets = 0;
     }
     if (allocateNow != 0) {
-        int* newBuckets = (int*)AllocateMemory(numBuckets * 4);
+        int* newBuckets = (int*)new char[numBuckets * 4];
         buckets = newBuckets;
         memset(newBuckets, 0, numBuckets * 4);
     }
@@ -23,7 +23,7 @@ void HashTable::AllocateBuckets(int numBuckets, int allocateNow) {
 /* Function start: 0x420f10 */
 HashNode* HashTable::AllocateNode() {
     if (freeList == 0) {
-        int* block = (int*)AllocateMemory(capacity * 24 + 4);
+        int* block = (int*)new char[capacity * 24 + 4];
         *block = (int)nodePool;
         nodePool = block;
         int count = capacity;

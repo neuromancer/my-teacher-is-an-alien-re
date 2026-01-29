@@ -75,16 +75,6 @@ VBuffer::VBuffer(unsigned int width, unsigned int height)
     InitWithSize(width, height);
 }
 
-/* Function start: 0x417660 */
-void* VBuffer::Destroy(int flag)
-{
-    VBuffer::~VBuffer();
-    if ((flag & 1) != 0) {
-        delete this;
-    }
-    return this;
-}
-
 /* Function start: 0x41aa10 */
 VBuffer::~VBuffer()
 {

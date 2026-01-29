@@ -254,13 +254,9 @@ void EngineB::OnProcessEnd() {
   }
 
   // Allocate and initialize m_targetConfig (8 byte object)
-  int* pObj164 = (int*)AllocateMemory(8);
-  if (pObj164 != 0) {
-    pObj164[0] = 1;
-    pObj164[1] = 3;
-  } else {
-    pObj164 = 0;
-  }
+  int* pObj164 = (int*)new char[8];
+  pObj164[0] = 1;
+  pObj164[1] = 3;
   EngineB::m_targetConfig = pObj164;
   EngineB::m_weaponParser = DAT_00435f14;
 
@@ -275,24 +271,14 @@ void EngineB::OnProcessEnd() {
   }
 
   // Create SoundList at m_localSoundList
-  SoundList* soundListResult = 0;
-  void* soundListMem = AllocateMemory(0x10);
-  if (soundListMem != 0) {
-    soundListResult = new SoundList(10);
-  }
-  EngineB::m_localSoundList = soundListResult;
+  EngineB::m_localSoundList = new SoundList(10);
 
   // Create Animation at m_meterAnimation
-  Animation* animResult = 0;
-  void* animMem = AllocateMemory(0x2c);
-  if (animMem != 0) {
-    animResult = new Animation("rat1\\nmeter.smk");
-  }
-  EngineB::m_meterAnimation = animResult;
+  EngineB::m_meterAnimation = new Animation("rat1\\nmeter.smk");
 
   // DoFrame on animation
-  if (animResult != 0) {
-    animResult->DoFrame();
+  if (EngineB::m_meterAnimation != 0) {
+    EngineB::m_meterAnimation->DoFrame();
   }
 
   // Initialize progress meter fields from animation

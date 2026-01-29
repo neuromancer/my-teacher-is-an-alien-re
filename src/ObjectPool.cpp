@@ -11,7 +11,7 @@ void ObjectPool::MemoryPool_Allocate(unsigned int param_1, int param_2)
     }
 
     if (param_2 != 0) {
-        memory = AllocateMemory(param_1 * 4);
+        memory = new char[param_1 * 4];
         memset(memory, 0, param_1 * 4);
         size = param_1;
     }
@@ -24,7 +24,7 @@ void ObjectPool::MemoryPool_Allocate(unsigned int param_1, int param_2)
 void* ObjectPool::Allocate()
 {
     if (freeList == 0) {
-        int* p = (int*)AllocateMemory(objectSize * 0x10 + 4);
+        int* p = (int*)new char[objectSize * 0x10 + 4];
         *p = (int)memoryBlock;
         memoryBlock = p;
 

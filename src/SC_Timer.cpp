@@ -216,7 +216,7 @@ int SC_Timer::Input(void *param_1) {
           pData = 0;
           if (pCurr != 0) {
             pData = pCurr->data;
-            ((Queue *)pCurr)->Destroy(1);
+            delete pCurr;
             pQueue->m_current = 0;
           }
           pQueue->m_current = pQueue->m_head;

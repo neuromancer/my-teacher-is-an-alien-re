@@ -216,7 +216,7 @@ int Handler13::Exit(SC_Message* msg) {
                         eventData = (TimedEvent*)node->data;
                     }
                     if (node != 0) {
-                        ((Queue*)node)->Destroy(1);
+                        delete node;
                         pList->current = 0;
                     }
                     pList->current = pList->head;
