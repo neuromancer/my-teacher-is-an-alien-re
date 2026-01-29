@@ -119,55 +119,42 @@ SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
 /* Function start: 0x404E60 */
 SCI_AfterSchoolMenu::~SCI_AfterSchoolMenu() {
     int i;
-    T_Hotspot* obj;
 
-    // Cleanup palette
     if (palette != 0) {
         delete palette;
         palette = 0;
     }
 
-    // Cleanup background sprite
     if (background != 0) {
         delete background;
         background = 0;
     }
 
-    // Cleanup choice screen (OptionMenu)
     if (choiceScreen != 0) {
         delete choiceScreen;
         choiceScreen = 0;
     }
 
-    // Cleanup go button
     if (goButton != 0) {
-        FUN_004092e0(goButton);
         delete goButton;
         goButton = 0;
     }
 
-    // Cleanup cancel button
     if (cancelButton != 0) {
-        FUN_004092e0(cancelButton);
         delete cancelButton;
         cancelButton = 0;
     }
 
-    // Cleanup character sprites
     for (i = 0; i < 3; i++) {
-        obj = characters[i];
-        if (obj != 0) {
-            FUN_004092e0(obj);
-            delete obj;
+        if (characters[i] != 0) {
+            delete characters[i];
             characters[i] = 0;
         }
     }
 
-    // Cleanup sound samples
     for (i = 0; i < 8; i++) {
         Sample* smp = sounds[i].sample;
         if (smp != 0) {
-            smp->Unload();
             delete smp;
             sounds[i].sample = 0;
         }

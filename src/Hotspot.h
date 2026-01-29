@@ -11,7 +11,7 @@
 class Hotspot : public Parser {
 public:
     Hotspot();                      // 0x40D300
-    virtual ~Hotspot();             // 0x40D3A0
+    ~Hotspot();             // 0x40D3A0
 
     MMPlayer* hotspot;          // 0x88
     MMPlayer* right_tool;       // 0x8C
@@ -38,7 +38,7 @@ public:
 class T_Hotspot : public Parser {
 public:
     T_Hotspot();                    // 0x409230
-    virtual ~T_Hotspot();           // 0x4092E0
+    ~T_Hotspot();           // 0x4092E0
 
     Sprite* sprite;                 // 0x88
     SpriteList* list1;              // 0x8C

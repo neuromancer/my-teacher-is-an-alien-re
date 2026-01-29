@@ -57,13 +57,6 @@ T_Hotspot::~T_Hotspot()
     }
 }
 
-// Wrapper for SCI_AfterSchoolMenu compatibility (SEH handler often needs a simpler entry)
-void __fastcall FUN_004092e0(void* obj)
-{
-    if (obj) {
-        ((T_Hotspot*)obj)->~T_Hotspot();
-    }
-}
 
 /* Function start: 0x409400 */
 unsigned char T_Hotspot::Do()
