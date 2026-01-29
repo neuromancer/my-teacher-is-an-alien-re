@@ -7,15 +7,13 @@
 
 // Queue node structure - 12 bytes
 struct ZBQueueNode {
-    ZBQueueNode* next;  // 0x00
-    ZBQueueNode* prev;  // 0x04
+    ZBQueueNode* prev;  // 0x00
+    ZBQueueNode* next;  // 0x04
     void* data;         // 0x08
 
-    ZBQueueNode() : next(0), prev(0), data(0) {}
-    ~ZBQueueNode() { data = 0; next = 0; prev = 0; }
-    ZBQueueNode* Init(void* d) { next = 0; prev = 0; data = d; return this; }  // 0x41CD10
-
-    void* CleanupNode(int flag);  // 0x41CCE0
+    ZBQueueNode() : prev(0), next(0), data(0) {}
+    ZBQueueNode(void* d);         // 0x41CD10
+    ~ZBQueueNode();               // 0x41CCE0
     void* Cleanup(int flag);      // 0x4189A0
 };
 
