@@ -2,22 +2,25 @@
 #include "string.h"
 #include "Memory.h"
 
+/* Function start: 0x4188A0 */
+void* EventNode::Cleanup(int flag) {
+    data = 0;
+    next = 0;
+    prev = 0;
+    if (flag & 1) {
+        FreeMemory(this);
+    }
+    return this;
+}
+
 /* Function start: 0x4188D0 */
 void EventList::InsertNode(void* data) {
     EventNode* newNode;
-    EventNode* node;
 
     if (data == 0) {
         ShowError("queue fault 0102");
     }
-    node = new EventNode;
-    newNode = 0;
-    if (node) {
-        newNode = node;
-        node->data = data;
-        node->next = 0;
-        node->prev = 0;
-    }
+    newNode = new EventNode(data);
 
     if (EventList::current == 0) {
         EventList::current = EventList::head;
@@ -29,11 +32,11 @@ void EventList::InsertNode(void* data) {
     } else {
         newNode->prev = EventList::current;
         newNode->next = EventList::current->next;
-        if (EventList::current->next == 0) {
-            EventList::head = newNode;
+        if (EventList::current->next != 0) {
+            EventList::current->next->prev = newNode;
             EventList::current->next = newNode;
         } else {
-            EventList::current->next->prev = newNode;
+            EventList::head = newNode;
             EventList::current->next = newNode;
         }
     }

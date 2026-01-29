@@ -613,9 +613,9 @@ int GameLoop::UpdateGame()
         } while (uVar6 < 0x40);
 
         local_d8.pFile = pSourceMsg->pFile;
-        local_d8.command = pSourceMsg->command;
-        local_d8.sourceAddress = pSourceMsg->sourceAddress;
         local_d8.targetAddress = pSourceMsg->targetAddress;
+        local_d8.sourceAddress = pSourceMsg->sourceAddress;
+        local_d8.command = pSourceMsg->command;
         local_d8.data = pSourceMsg->data;
         local_d8.priority = pSourceMsg->priority;
         local_d8.param1 = pSourceMsg->param1;
@@ -636,10 +636,10 @@ int GameLoop::UpdateGame()
         pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
         pNewEvent->GetEmbeddedMessage()->CopyFrom((PooledEvent*)&local_d8);
 
-        if (pPool->list.tail == 0) {
-            pPool->list.head = pNewEvent;
-        } else {
+        if (pPool->list.tail != 0) {
             *(PooledEvent**)pPool->list.tail = pNewEvent;
+        } else {
+            pPool->list.head = pNewEvent;
         }
         pPool->list.tail = pNewEvent;
     }
@@ -660,10 +660,10 @@ int GameLoop::UpdateGame()
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
             pNewEvent->GetEmbeddedMessage()->CopyFrom((PooledEvent*)pSourceMsg);
 
-            if (pPool->list.tail == 0) {
-                pPool->list.head = pNewEvent;
-            } else {
+            if (pPool->list.tail != 0) {
                 *(PooledEvent**)pPool->list.tail = pNewEvent;
+            } else {
+                pPool->list.head = pNewEvent;
             }
             pPool->list.tail = pNewEvent;
 
@@ -703,30 +703,30 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         
         // Process queue at offset 0xa0
         pQueue = pZBuf->m_queueA0;
-        if (*(int*)pQueue != 0) {
-            ((int*)pQueue)[2] = *(int*)pQueue;
-            while (*(int*)pQueue != 0) {
-                pPopResult = (void*)ZBuffer::PopNode(pQueue);
+        if (pQueue->head != 0) {
+            pQueue->current = pQueue->head;
+            while (pQueue->head != 0) {
+                pPopResult = pQueue->PopNode2();
                 if (pPopResult != 0) {
-                    FreeMemory(pPopResult);
+                    delete (SoundCommand*)pPopResult;
                 }
             }
         }
-        
+
         // Process queue at offset 0xa4
         pQueue = pZBuf->m_queueA4;
-        if (*(int*)pQueue != 0) {
-            ((int*)pQueue)[2] = *(int*)pQueue;
-            while (*(int*)pQueue != 0) {
-                pPopResult = (void*)ZBuffer::PopNode_2(pQueue);
+        if (pQueue->head != 0) {
+            pQueue->current = pQueue->head;
+            while (pQueue->head != 0) {
+                pPopResult = pQueue->PopNode2_2();
                 if (pPopResult != 0) {
                     ((DrawEntry*)pPopResult)->Cleanup(1);
                 }
             }
         }
-        
+
         // Process queue at offset 0x9c
-        ZBuffer::ClearList(pZBuf->m_queue9c);
+        pZBuf->m_queue9c->ClearList();
     }
     
     // Try to find existing handler for this command using msg->targetAddress
@@ -742,23 +742,33 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         if (pNode == 0) {
             currentHandler = 0;
         } else {
-            // Unlink node from list
+            // Unlink from head
             if (pList->head == pNode) {
                 pList->head = pNode->prev;
             }
+            // Reload and check tail
+            pNode = pList->current;
             if (pList->tail == pNode) {
                 pList->tail = pNode->next;
             }
+            // Reload and update next->prev
+            pNode = pList->current;
             if (pNode->next != 0) {
                 pNode->next->prev = pNode->prev;
             }
+            // Reload and update prev->next
+            pNode = pList->current;
             if (pNode->prev != 0) {
                 pNode->prev->next = pNode->next;
             }
+            // Extract data
+            pNode = pList->current;
             pData = 0;
             if (pNode != 0) {
                 pData = (Handler*)pNode->data;
-                delete pNode;
+            }
+            if (pNode != 0) {
+                pNode->Cleanup(1);
                 pList->current = 0;
             }
             pList->current = pList->head;
@@ -820,10 +830,10 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     
     // Call handler's Init method
     handler = currentHandler;
-    if (handler == 0) {
-        ShowError("missing modual %d", msg->command);
-    } else {
+    if (handler != 0) {
         handler->Init(msg);
+    } else {
+        ShowError("missing modual %d", msg->targetAddress);
     }
 }
 

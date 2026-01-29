@@ -10,9 +10,17 @@ struct EventNode {
     EventNode* prev;    // 0x04
     void* data;         // 0x08 - pointer to object with vtable
 
+    // Inline: no standalone function in binary
     EventNode() {}
+
+    // Inline: body inlined into Cleanup at 0x4188A0
     ~EventNode() { data = 0; next = 0; prev = 0; }
+
+    // Inline: inlined in InsertNode; compiler also emits out-of-line copy at 0x4189D0
     EventNode(void* d) { data = d; next = 0; prev = 0; }
+
+    // Out-of-line: scalar deleting destructor at 0x4188A0
+    void* Cleanup(int flag);
 };
 
 // List header structure for eventList

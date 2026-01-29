@@ -27,6 +27,9 @@ struct ZBQueue {
 
     void* GetCurrentData();       // 0x41BB10
     void* PopNode();              // 0x401810
+    void* PopNode2();             // 0x401710
+    void* PopNode2_2();           // 0x401790
+    void ClearList();             // 0x401560
     void Insert(void* data);      // 0x409160
     void InsertBeforeCurrent(void* data);  // 0x41CB40
 };

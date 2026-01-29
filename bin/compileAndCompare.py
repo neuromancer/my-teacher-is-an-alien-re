@@ -236,9 +236,16 @@ def _filter_seh_funclets(assembly, seh_code, jump_table_targets):
 
         is_seh_funclet = False
         if label and label not in jump_table_targets:
-            # Check for SEH temporary references ($Txxxx) or CxxFrameHandler
-            if re.search(r'\$T\d+', block_text) or 'CxxFrameHandler' in block_text:
+            # Check for CxxFrameHandler (always SEH)
+            if 'CxxFrameHandler' in block_text:
                 is_seh_funclet = True
+            # Check for SEH temporary references ($Txxxx) - only if block is a
+            # small cleanup funclet (calls operator delete ??3@) or is very short.
+            # Large blocks with $T refs are main code using compiler temporaries.
+            elif re.search(r'\$T\d+', block_text):
+                block_instructions = [l for l in block_stripped if l and not l.endswith(':')]
+                if len(block_instructions) <= 8 or '??3@' in block_text:
+                    is_seh_funclet = True
 
         if is_seh_funclet:
             extra_seh_lines.extend(lines[start:end])
