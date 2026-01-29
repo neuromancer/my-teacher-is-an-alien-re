@@ -383,7 +383,6 @@ int SCI_AfterSchoolMenu::ShutDown(SC_Message* msg) {
 void SCI_AfterSchoolMenu::Update(int param1, int param2) {
     int mouseX;
     int mouseY;
-    int* mousePtr;
     HSAMPLE sampleHandle;
     int status;
 
@@ -396,12 +395,15 @@ void SCI_AfterSchoolMenu::Update(int param1, int param2) {
     }
 
     // Get mouse position
-    mouseX = 0;
+    InputState* pMouse = g_InputManager_00436968->pMouse;
     mouseY = 0;
-    mousePtr = (int*)g_InputManager_00436968->pMouse;
-    if (mousePtr != 0) {
-        mouseY = mousePtr[1];
-        mouseX = mousePtr[0];
+    if (pMouse != 0) {
+        mouseY = pMouse->y;
+    }
+    if (pMouse != 0) {
+        mouseX = pMouse->x;
+    } else {
+        mouseX = 0;
     }
 
     // Render all elements and process hover
@@ -490,6 +492,7 @@ void SCI_AfterSchoolMenu::PlayCharacterSound(int soundIndex) {
 
     PlayButtonSound(-1);
 
+    // Stop current sound
     if (currentSound != 0) {
         currentSound->~Sample();
         currentSound = 0;
