@@ -9,7 +9,7 @@ HashTable::~HashTable() {
 /* Function start: 0x420eb0 */
 void HashTable::AllocateBuckets(int numBuckets, int allocateNow) {
     if (buckets != 0) {
-        FreeMemory(buckets);
+        delete buckets;
         buckets = 0;
     }
     if (allocateNow != 0) {

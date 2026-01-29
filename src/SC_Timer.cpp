@@ -62,7 +62,7 @@ SC_Timer::~SC_Timer() {
             pNode->data = 0;
             pNode->prev = 0;
             pNode->next = 0;
-            FreeMemory(pNode);
+            delete pNode;
             pQueue->m_current = 0;
           }
           pQueue->m_current = pQueue->m_head;
@@ -72,7 +72,7 @@ SC_Timer::~SC_Timer() {
         }
       }
     }
-    FreeMemory(pQueue);
+    delete pQueue;
     m_eventList = 0;
   }
 }
@@ -134,7 +134,7 @@ loop: {
         pNode->data = 0;
         pNode->prev = 0;
         pNode->next = 0;
-        FreeMemory(pNode);
+        delete pNode;
         pQueue->m_current = 0;
       }
       pQueue->m_current = pQueue->m_head;

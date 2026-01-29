@@ -169,7 +169,7 @@ void SC_Question::Finalize()
                 current->data = 0;
                 current->prev = 0;
                 current->next = 0;
-                FreeMemory(current);
+                delete current;
                 queue->m_current = 0;
             }
             queue->m_current = queue->m_head;

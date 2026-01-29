@@ -965,10 +965,7 @@ int GameLoop::RemoveHandler(int command) {
             }
             // Free node - matches LAB_004184c6
             if (current != 0) {
-                current->data = 0;
-                current->next = 0;
-                current->prev = 0;
-                FreeMemory(current);
+                delete current;
                 list->current = 0;
             }
             list->current = list->head;

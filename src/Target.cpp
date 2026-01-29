@@ -47,18 +47,18 @@ Target::Target() : Sprite((char*)0),
 Target::~Target()
 {
     if (Target::animFilename != 0) {
-        FreeMemory(Target::animFilename);
+        delete Target::animFilename;
         Target::animFilename = 0;
     }
 
     if (Target::identifier != 0) {
-        FreeMemory(Target::identifier);
+        delete Target::identifier;
         Target::identifier = 0;
     }
 
     if (Target::hotspotList != 0) {
         Target::hotspotList->~HotspotListData();
-        FreeMemory(Target::hotspotList);
+        delete Target::hotspotList;
         Target::hotspotList = 0;
     }
 }

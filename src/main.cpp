@@ -295,7 +295,7 @@ void ShutdownGameSystems(void) {
   }
   if (g_Sound_0043696c != 0) {
     AIL_shutdown();
-    FreeMemory(g_Sound_0043696c);
+    delete g_Sound_0043696c;
     g_Sound_0043696c = 0;
   }
   if (g_InputManager_00436968 != 0) {
@@ -305,7 +305,7 @@ void ShutdownGameSystems(void) {
 
   if (g_CDData_0043697c != 0) {
     CDData_ChangeToBaseDir(g_CDData_0043697c);
-    FreeMemory(g_CDData_0043697c);
+    delete g_CDData_0043697c;
     g_CDData_0043697c = 0;
   }
   if (g_GameConfig_00436970 != 0) {

@@ -198,7 +198,7 @@ void* Queue::Pop()
         curr->data = 0;
         curr->prev = 0;
         curr->next = 0;
-        FreeMemory(curr);
+        delete curr;
         m_current = 0;
     }
 
@@ -213,7 +213,7 @@ void* Queue::Destroy(int free_memory)
     m_head = 0;
     m_tail = 0;
     if (free_memory & 1) {
-        FreeMemory(this);
+        delete this;
     }
     return this;
 }
@@ -290,7 +290,7 @@ TimedEventPool::~TimedEventPool()
     if (poolBlock != 0) {
         do {
             nextBlock = (PooledEvent*)poolBlock->next;
-            FreeMemory(poolBlock);
+            delete poolBlock;
             poolBlock = nextBlock;
         } while (poolBlock != 0);
     }

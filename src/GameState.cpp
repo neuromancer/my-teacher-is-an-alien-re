@@ -17,19 +17,19 @@ char s_TESTPUZZLE[] = "TESTPUZZLE";
 GameState::~GameState()
 {
     if (stateValues != 0) {
-        FreeMemory(stateValues);
+        delete stateValues;
         stateValues = 0;
     }
 
     for (int i = 0; i < maxStates; i++) {
         if (stateLabels[i] != 0) {
-            FreeMemory((void*)stateLabels[i]);
+            delete (void*)stateLabels[i];
             stateLabels[i] = 0;
         }
     }
 
     if (stateLabels != 0) {
-        FreeMemory(stateLabels);
+        delete stateLabels;
         stateLabels = 0;
     }
 }

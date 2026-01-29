@@ -480,7 +480,7 @@ DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
                 node->data = 0;
                 node->prev = 0;
                 node->next = 0;
-                FreeMemory(node);
+                delete node;
                 queue->m_current = 0;
             }
             queue->m_current = queue->m_head;
@@ -530,7 +530,7 @@ DialogQuestion* SCI_Dialog::FindDialogById(int id) {
             node->data = 0;
             node->prev = 0;
             node->next = 0;
-            FreeMemory(node);
+            delete node;
             queue->m_current = 0;
             queue->m_current = queue->m_head;
             return result;

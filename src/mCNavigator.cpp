@@ -83,7 +83,7 @@ mCNavigator::~mCNavigator()
     } while (i < navNodePool->size);
 
 free_memory:
-    FreeMemory(navNodePool->memory);
+    delete navNodePool->memory;
     navNodePool->memory = 0;
     navNodePool->allocatedCount = 0;
     navNodePool->freeList = 0;
@@ -91,12 +91,12 @@ free_memory:
     block = navNodePool->memoryBlock;
     while (block) {
         next = *(void**)block;
-        FreeMemory(block);
+        delete block;
         block = next;
     }
     navNodePool->memoryBlock = 0;
 
-    FreeMemory(navNodePool);
+    delete navNodePool;
     navNodePool = 0;
 
 check_sprite:

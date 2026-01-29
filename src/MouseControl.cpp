@@ -57,7 +57,7 @@ MouseControl::~MouseControl()
     for (int i = 0; i < 25; i++) {
         char* label = m_labels[i];
         if (label != 0) {
-            FreeMemory(label);
+            delete label;
             m_labels[i] = 0;
         }
     }

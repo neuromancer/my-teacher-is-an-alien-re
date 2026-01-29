@@ -23,7 +23,7 @@ public:
     virtual ~SoundItem() {
         if (soundPtr != 0) {
             soundPtr->Unload();
-            FreeMemory(soundPtr);
+            delete soundPtr;
             soundPtr = 0;
         }
     }

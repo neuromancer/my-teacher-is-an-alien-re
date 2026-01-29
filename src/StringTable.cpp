@@ -28,7 +28,7 @@ StringTable::~StringTable() {
     Unload();
 
     if (filename != 0) {
-        FreeMemory(filename);
+        delete filename;
         filename = 0;
     }
 
@@ -68,7 +68,7 @@ StringTable::~StringTable() {
         }
 
         // Free the buckets array
-        FreeMemory(ht->buckets);
+        delete ht->buckets;
         ht->buckets = 0;
         ht->count = 0;
         ht->freeList = 0;
@@ -77,13 +77,13 @@ StringTable::~StringTable() {
         int* poolBlock = (int*)ht->nodePool;
         while (poolBlock != 0) {
             int* next = (int*)*poolBlock;
-            FreeMemory(poolBlock);
+            delete poolBlock;
             poolBlock = next;
         }
         ht->nodePool = 0;
 
         // Free the hash table itself
-        FreeMemory(ht);
+        delete ht;
         hashTable = 0;
     }
 }
@@ -156,7 +156,7 @@ void StringTable::Load() {
                     } while (numBuckets != 0);
                 }
 
-                FreeMemory(ht->buckets);
+                delete ht->buckets;
                 ht->buckets = 0;
                 ht->count = 0;
                 ht->freeList = 0;
@@ -164,12 +164,12 @@ void StringTable::Load() {
                 int* poolBlock = (int*)ht->nodePool;
                 while (poolBlock != 0) {
                     int* next = (int*)*poolBlock;
-                    FreeMemory(poolBlock);
+                    delete poolBlock;
                     poolBlock = next;
                 }
                 ht->nodePool = 0;
 
-                FreeMemory(ht);
+                delete ht;
                 hashTable = 0;
             }
 

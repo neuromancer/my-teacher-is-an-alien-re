@@ -22,7 +22,7 @@ SoundItem::SoundItem(int sndId)
     if (sample->Load(g_Buffer_00436960)) {
         if (soundPtr != 0) {
             soundPtr->Unload();
-            FreeMemory(soundPtr);
+            delete soundPtr;
             soundPtr = 0;
         }
     }

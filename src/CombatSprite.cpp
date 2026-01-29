@@ -41,7 +41,7 @@ void SpriteHashTable::Clear() {
     poolBlock = (int*)SpriteHashTable::count;
     while (poolBlock != 0) {
         nextPool = (int*)*poolBlock;
-        FreeMemory(poolBlock);
+        delete poolBlock;
         poolBlock = nextPool;
     }
     SpriteHashTable::count = 0;
@@ -53,7 +53,7 @@ void SpriteHashTable::AllocateBuckets(int size, int flag) {
     int count;
 
     if (SpriteHashTable::buckets != 0) {
-        FreeMemory(SpriteHashTable::buckets);
+        delete SpriteHashTable::buckets;
         SpriteHashTable::buckets = 0;
     }
 
@@ -138,7 +138,7 @@ void SpriteHashTable::Resize(int size, int flag) {
     int count;
 
     if (SpriteHashTable::buckets != 0) {
-        FreeMemory(SpriteHashTable::buckets);
+        delete SpriteHashTable::buckets;
         SpriteHashTable::buckets = 0;
     }
 
@@ -209,7 +209,7 @@ void FreePointerArray(void** arr, int count) {
     }
     do {
         if (*arr != 0) {
-            FreeMemory(*arr);
+            delete *arr;
             *arr = 0;
         }
         arr = arr + 1;
@@ -248,11 +248,11 @@ void FreeNestedHashTables(void** arr, int count) {
             poolBlock = (int*)table->count;
             while (poolBlock != 0) {
                 nextPool = (int*)*poolBlock;
-                FreeMemory(poolBlock);
+                delete poolBlock;
                 poolBlock = nextPool;
             }
             table->count = 0;
-            FreeMemory(table);
+            delete table;
             *arr = 0;
         }
         arr = arr + 1;
@@ -302,18 +302,18 @@ CombatSprite::~CombatSprite() {
                 i = i + 1;
             } while ((unsigned int)table->maxSize > i);
         }
-        FreeMemory(table->buckets);
+        delete table->buckets;
         table->buckets = 0;
         table->head = 0;
         table->tail = 0;
         poolBlock = (int*)table->count;
         while (poolBlock != 0) {
             nextPool = (int*)*poolBlock;
-            FreeMemory(poolBlock);
+            delete poolBlock;
             poolBlock = nextPool;
         }
         table->count = 0;
-        FreeMemory(table);
+        delete table;
         CombatSprite::spriteTable = 0;
     }
 }

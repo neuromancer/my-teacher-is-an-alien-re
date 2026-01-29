@@ -46,7 +46,7 @@ SC_Sound::~SC_Sound() {
                     node->data = 0;
                     node->prev = 0;
                     node->next = 0;
-                    FreeMemory(node);
+                    delete node;
                     list->current = 0;
                 }
 
@@ -54,11 +54,11 @@ SC_Sound::~SC_Sound() {
 
                 if (data != 0) {
                     data->SoundItem::~SoundItem();
-                    FreeMemory(data);
+                    delete data;
                 }
             }
         }
-        FreeMemory(list);
+        delete list;
         list = 0;
     }
 }
@@ -112,7 +112,7 @@ void SC_Sound::Update(int param1, int param2) {
 
                     if (data != 0) {
                         data->SoundItem::~SoundItem();
-                        FreeMemory(data);
+                        delete data;
                     }
                 }
 
@@ -167,7 +167,7 @@ int SC_Sound::Exit(SC_Message* msg) {
                 SoundItem* data = (SoundItem*)list->PopCurrent();
                 if (data != 0) {
                     data->SoundItem::~SoundItem();
-                    FreeMemory(data);
+                    delete data;
                 }
             }
         }
@@ -232,7 +232,7 @@ int SC_Sound::Exit(SC_Message* msg) {
 
                     if (eventData != 0) {
                         eventData->SoundItem::~SoundItem();
-                        FreeMemory(eventData);
+                        delete eventData;
                     }
                 }
 

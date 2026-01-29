@@ -837,7 +837,7 @@ void ZBufferManager::UpdateScreen() {
                 node->data = 0;
                 node->next = 0;
                 node->prev = 0;
-                operator delete(node);
+                delete node;
                 queue->current = 0;
             }
             queue->current = queue->head;
@@ -852,7 +852,7 @@ void ZBufferManager::UpdateScreen() {
 
             if (local_10 != 0) {
                 local_10->RenderEntry::~RenderEntry();
-                operator delete(local_10);
+                delete local_10;
             }
         }
 

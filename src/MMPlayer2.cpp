@@ -63,7 +63,7 @@ MMPlayer2::~MMPlayer2()
                     sprite = 0;
                     if (node != 0) {
                         sprite = (Sprite*)node->data;
-                        FreeMemory(node);
+                        delete node;
                         queue->current = 0;
                     }
                     queue->current = queue->head;
@@ -73,7 +73,7 @@ MMPlayer2::~MMPlayer2()
                 }
             }
         }
-        FreeMemory(queue);
+        delete queue;
         spriteList = 0;
     }
 }

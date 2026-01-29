@@ -9,11 +9,11 @@
 // NOTE: CreatePaletteBuffer at 0x41EA50 is effectively a placement new for Palette
 
 // Cleanup is equivalent to explicit destructor call ~Palette()
-// Original Animation::Play calls destructor explicitly before FreeMemory
+// Original Animation::Play calls destructor explicitly before operator delete
 void Palette::Cleanup()
 {
     if (m_data != 0) {
-        FreeMemory(m_data);
+        delete m_data;
         m_data = 0;
     }
     m_size = 0;
@@ -53,7 +53,7 @@ Palette* __fastcall CreatePaletteBuffer(Palette* buffer)
 Palette::~Palette()
 {
     if (m_data != 0) {
-        FreeMemory(m_data);
+        delete m_data;
         m_data = 0;
     }
     m_size = 0;

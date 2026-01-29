@@ -60,18 +60,18 @@ void AssetList::Cleanup() {
                         node->data = 0;
                         node->next = 0;
                         node->prev = 0;
-                        FreeMemory(node);
+                        delete node;
                         list1->current = 0;
                     }
                     list1->current = list1->head;
                 }
                 if (data != 0) {
                     FUN_004088f0(data);
-                    FreeMemory(data);
+                    delete data;
                 }
             }
         }
-        FreeMemory(list1);
+        delete list1;
         AssetList::field_0x38 = 0;
     }
 
@@ -107,11 +107,11 @@ void AssetList::Cleanup() {
                 }
                 if (data != 0) {
                     FUN_004088f0(data);
-                    FreeMemory(data);
+                    delete data;
                 }
             }
         }
-        FreeMemory(list2);
+        delete list2;
         AssetList::field_0x3c = 0;
     }
 }

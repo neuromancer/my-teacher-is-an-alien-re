@@ -6,7 +6,7 @@
 void ObjectPool::MemoryPool_Allocate(unsigned int param_1, int param_2)
 {
     if (memory != 0) {
-        FreeMemory(memory);
+        delete memory;
         memory = 0;
     }
 
