@@ -181,45 +181,13 @@ void CommandType3::Execute(GlyphRect* rect)
 
 /* Function start: 0x41B760 */
 ZBufferManager::ZBufferManager() {
-    ZBQueue* puVar1;
-    ZBQueue* puVar2;
-    
     WriteToMessageLogIfEnabled(L"declaring ZBuffer");
     memset(this, 0, 0x2b * 4);
-    
-    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
-    puVar2 = 0;
-    if (puVar1 != 0) {
-        puVar1->type = 2;
-        puVar1->head = 0;
-        puVar1->tail = 0;
-        puVar1->current = puVar1->head;
-        puVar2 = puVar1;
-    }
-    m_queueA0 = puVar2;
-    
-    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
-    puVar2 = 0;
-    if (puVar1 != 0) {
-        puVar1->type = 0;
-        puVar1->head = 0;
-        puVar1->tail = 0;
-        puVar1->current = puVar1->head;
-        puVar2 = puVar1;
-    }
-    m_queueA4 = puVar2;
-    
-    puVar1 = (ZBQueue*)operator new(sizeof(ZBQueue));
-    puVar2 = 0;
-    if (puVar1 != 0) {
-        puVar1->type = 1;
-        puVar1->head = 0;
-        puVar1->tail = 0;
-        puVar1->current = puVar1->head;
-        puVar2 = puVar1;
-    }
-    m_queue9c = puVar2;
-    
+
+    m_queueA0 = new ZBQueue(2);
+    m_queueA4 = new ZBQueue(0);
+    m_queue9c = new ZBQueue(1);
+
     m_state = 2;
 }
 

@@ -25,6 +25,13 @@ struct ZBQueue {
     ZBQueueNode* current;  // 0x08
     int type;              // 0x0C
 
+    ZBQueue(int t) {
+        type = t;
+        head = 0;
+        tail = 0;
+        current = head;
+    }
+
     void* GetCurrentData();       // 0x41BB10
     void* PopNode();              // 0x401810
     void* PopNode2();             // 0x401710

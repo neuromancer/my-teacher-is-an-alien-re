@@ -73,15 +73,13 @@ void Palette::OpenAndReadPaletteFile(char* filename)
         ShowError("Error! Could not open palette file '%s'", filename);
     }
 
-    long offset = 0xd;
     int len = strlen(filename);
-    if (len > 4) {
-        if (strnicmp(filename + len - 4, ".col", 4) == 0) {
-            offset = 8;
-        }
+    if (len > 4 && strnicmp(filename + len - 4, ".col", 4) == 0) {
+        fseek(file, 8, 0);
+    } else {
+        fseek(file, 0xd, 0);
     }
 
-    fseek(file, offset, 0);
     fread(m_data, m_size, 1, file);
     fclose(file);
 }

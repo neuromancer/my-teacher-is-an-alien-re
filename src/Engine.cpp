@@ -114,7 +114,7 @@ void Engine::SetupViewport() {
     width = anim->targetBuffer->width;
   }
   
-  g_EngineViewport->SetDimensions2(width - g_EngineViewport->x1, height - g_EngineViewport->y1);
+  g_EngineViewport->SetDimensions2(width - g_EngineViewport->dim.a, height - g_EngineViewport->dim.b);
   g_EngineViewport->SetCenter();
   g_EngineViewport->SetAnchor(DAT_00435f00->anchorRect.left, DAT_00435f00->anchorRect.top);
   
@@ -275,14 +275,14 @@ void Engine::UpdateCrosshair() {
   mouse = g_InputManager_00436968->pMouse;
   if (mouse != 0) {
     if (mouse->x > 0xAA) {
-      g_EngineViewport->SetCenterX(g_EngineViewport->centerX + 4);
+      g_EngineViewport->SetCenterX(g_EngineViewport->scrollX + 4);
       return;
     }
   }
   if (mouse != 0 && mouse->x >= 0x96) {
     return;
   }
-  g_EngineViewport->SetCenterX(g_EngineViewport->centerX - 4);
+  g_EngineViewport->SetCenterX(g_EngineViewport->scrollX - 4);
 }
 
 /* Function start: 0x411DD0 */

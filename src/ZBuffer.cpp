@@ -300,3 +300,68 @@ void* ZBQueue::PopNode()
     current = head;
     return data;
 }
+
+void* ZBQueue::PopNode2()
+{
+    ZBQueueNode* node = current;
+    if (node == 0) {
+        return 0;
+    }
+    if (head == node) {
+        head = node->prev;
+    }
+    if (tail == node) {
+        tail = node->next;
+    }
+    if (node->next != 0) {
+        node->next->prev = node->prev;
+    }
+    ZBQueueNode* prevNode = current->prev;
+    if (prevNode != 0) {
+        prevNode->next = current->next;
+    }
+    ZBQueueNode* currentNode = current;
+    void* data = 0;
+    if (currentNode != 0) {
+        data = currentNode->data;
+        delete currentNode;
+        current = 0;
+    }
+    current = head;
+    return data;
+}
+
+void* ZBQueue::PopNode2_2()
+{
+    ZBQueueNode* node = current;
+    if (node == 0) {
+        return 0;
+    }
+    if (head == node) {
+        head = node->prev;
+    }
+    if (tail == node) {
+        tail = node->next;
+    }
+    if (node->next != 0) {
+        node->next->prev = node->prev;
+    }
+    ZBQueueNode* prevNode = current->prev;
+    if (prevNode != 0) {
+        prevNode->next = current->next;
+    }
+    ZBQueueNode* currentNode = current;
+    void* data = 0;
+    if (currentNode != 0) {
+        data = currentNode->data;
+        delete currentNode;
+        current = 0;
+    }
+    current = head;
+    return data;
+}
+
+void ZBQueue::ClearList()
+{
+    ZBuffer::ClearList(this);
+}

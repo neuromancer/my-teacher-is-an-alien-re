@@ -1,31 +1,35 @@
 #include "Viewport.h"
-#include <string.h>
+
+ViewportPair::~ViewportPair()
+{
+}
 
 /* Function start: 0x412B50 */
 Viewport::Viewport()
 {
-    memset(this, 0, 0x28);
+    Viewport::scrollX = 0;
+    Viewport::scrollY = 0;
     Viewport::SetDimensions(0x140, 0xc8);
     Viewport::SetDimensions2(0, 0);
     Viewport::SetCenter();
-    Viewport::SetAnchor(0, Viewport::y1 - 1);
+    Viewport::SetAnchor(0, Viewport::dim.b - 1);
 }
 
 /* Function start: 0x412C30 */
 void Viewport::SetDimensions(int w, int h) {
     if (w >= 0 && h >= 0) {
-        Viewport::x1 = w;
-        Viewport::y1 = h;
+        Viewport::dim.a = w;
+        Viewport::dim.b = h;
     }
 }
 
 /* Function start: 0x412C50 */
 void Viewport::SetAnchor(int x, int y) {
     int iVar1;
-    iVar1 = (y - Viewport::y1) + 1;
+    iVar1 = (y - Viewport::dim.b) + 1;
     if (iVar1 >= 0 && x >= 0 && x < 0x140 && y >= 0 && y < 0xc8) {
-        Viewport::x2 = x;
-        Viewport::y2 = y;
+        Viewport::anchor.a = x;
+        Viewport::anchor.b = y;
         Viewport::anchorOffsetY = iVar1;
     }
 }
@@ -33,29 +37,29 @@ void Viewport::SetAnchor(int x, int y) {
 /* Function start: 0x412C90 */
 void Viewport::SetDimensions2(int w, int h) {
     if (w >= 0 && h >= 0) {
-        Viewport::width = w;
-        Viewport::height = h;
+        Viewport::size.a = w;
+        Viewport::size.b = h;
     }
 }
 
 /* Function start: 0x412CB0 */
 void Viewport::SetCenter() {
-    Viewport::SetCenterX(Viewport::width / 2);
-    Viewport::SetCenterY(Viewport::height / 2);
+    Viewport::SetCenterX(Viewport::size.a / 2);
+    Viewport::SetCenterY(Viewport::size.b / 2);
 }
 
 /* Function start: 0x412CE0 */
 void Viewport::SetCenterX(int x) {
-    if (x >= 0 && x <= Viewport::width) {
-        Viewport::centerX = x;
-        Viewport::scrollX = Viewport::x1 + x - 1;
+    if (x >= 0 && x <= Viewport::size.a) {
+        Viewport::center.a = x;
+        Viewport::scrollX = Viewport::dim.a + x - 1;
     }
 }
 
 /* Function start: 0x412D00 */
 void Viewport::SetCenterY(int y) {
-    if (y >= 0 && y <= Viewport::height) {
-        Viewport::centerY = y;
-        Viewport::scrollY = Viewport::y1 + y - 1;
+    if (y >= 0 && y <= Viewport::size.b) {
+        Viewport::center.b = y;
+        Viewport::scrollY = Viewport::dim.b + y - 1;
     }
 }

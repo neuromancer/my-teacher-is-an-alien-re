@@ -1,15 +1,21 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
+struct ViewportPair {
+    int a, b;
+    ViewportPair() { a = 0; b = 0; }
+    ~ViewportPair();
+};
+
 class Viewport {
 public:
-    int x1, y1, x2, y2; // 0x00, 0x04, 0x08, 0x0c
-    int width, height;  // 0x10, 0x14
-    int centerX;        // 0x18
-    int centerY;        // 0x1c
-    int scrollX;        // 0x20
-    int scrollY;        // 0x24
-    int anchorOffsetY;  // 0x28
+    ViewportPair dim;       // 0x00 (a=x1, b=y1)
+    ViewportPair anchor;    // 0x08 (a=x2, b=y2)
+    ViewportPair size;      // 0x10 (a=width, b=height)
+    ViewportPair center;    // 0x18 (a=centerX, b=centerY)
+    int scrollX;            // 0x20
+    int scrollY;            // 0x24
+    int anchorOffsetY;      // 0x28
 
     Viewport();                       // 0x412B50
     void SetDimensions(int w, int h); // 0x412C30
