@@ -498,24 +498,23 @@ void SCI_AfterSchoolMenu::ResetSelection() {
 
 /* Function start: 0x405810 */
 void SCI_AfterSchoolMenu::PlayCharacterSound(int soundIndex) {
-    int slotIndex;
+    int idx;
     SoundSlot* slot;
 
     PlayButtonSound(-1);
 
-    // Stop current sound
     if (currentSound != 0) {
         currentSound->~Sample();
         currentSound = 0;
     }
 
-    // Calculate slot index: (soundIndex + currentCharacterIndex * 2)
-    slotIndex = soundIndex + currentCharacterIndex * 2;
-    slot = &sounds[slotIndex];
+    // Force recalculation to match assembly reloading behavior
+    idx = currentCharacterIndex * 2 + soundIndex;
+    slot = &sounds[idx];
 
     if (slot->enabled != 0) {
         slot->enabled = 0;
-        currentSound = slot->sample;
+        currentSound = sounds[currentCharacterIndex * 2 + soundIndex].sample;
         currentSound->Play(100, 1);
     }
 }
@@ -523,12 +522,14 @@ void SCI_AfterSchoolMenu::PlayCharacterSound(int soundIndex) {
 /* Function start: 0x405590 */
 void SCI_AfterSchoolMenu::DisplaySubmenuHover(int mouseX, int mouseY) {
     MousePoint pos;
-    int iVar1;
 
+    pos.x = 0;
+    pos.y = 0;
     pos.x = mouseX;
     pos.y = mouseY;
 
     ResetHoverState();
+    
     ProcessCharacterHover(pos);
     ProcessSubmenuHover(pos);
     ProcessGoButtonHover(pos, goButton, &confirmFlag);
@@ -537,41 +538,35 @@ void SCI_AfterSchoolMenu::DisplaySubmenuHover(int mouseX, int mouseY) {
         hoverCharacterIndex = 1;
     }
 
-    iVar1 = prevCharacter;
-    if (iVar1 != -1 && currentCharacterIndex != iVar1) {
-        characters[iVar1]->SetState(0);
+    if (prevCharacter != -1 && currentCharacterIndex != prevCharacter) {
+        characters[prevCharacter]->SetState(0);
         currentSubmenuIndex = -1;
         prevSubmenu = -1;
         prevCharacter = currentCharacterIndex;
         FillOptionQueue();
     }
 
-    iVar1 = currentCharacterIndex;
-    if (iVar1 != -1) {
-        if (hoverCharacterIndex != iVar1) {
-            characters[iVar1]->SetState(1);
+    if (currentCharacterIndex != -1) {
+        if (hoverCharacterIndex != currentCharacterIndex) {
+            characters[currentCharacterIndex]->SetState(1);
             prevCharacter = currentCharacterIndex;
-        } else {
-            if (iVar1 != -1 && hoverCharacterIndex == iVar1) {
-                characters[iVar1]->SetState(2);
-            }
+        }
+        if (currentCharacterIndex != -1 && hoverCharacterIndex == currentCharacterIndex) {
+            characters[currentCharacterIndex]->SetState(2);
         }
     }
 
-    iVar1 = prevSubmenu;
-    if (iVar1 != -1 && currentSubmenuIndex != iVar1) {
-        SetSubmenuOption(iVar1, 0);
+    if (prevSubmenu != -1 && currentSubmenuIndex != prevSubmenu) {
+        SetSubmenuOption(prevSubmenu, 0);
     }
 
-    iVar1 = currentSubmenuIndex;
-    if (iVar1 != -1) {
-        if (hoverSubmenuIndex != iVar1) {
-            SetSubmenuOption(iVar1, 1);
+    if (currentSubmenuIndex != -1) {
+        if (hoverSubmenuIndex != currentSubmenuIndex) {
+            SetSubmenuOption(currentSubmenuIndex, 1);
             prevSubmenu = currentSubmenuIndex;
-        } else {
-            if (iVar1 != -1 && hoverSubmenuIndex == iVar1) {
-                SetSubmenuOption(iVar1, 2);
-            }
+        }
+        if (currentSubmenuIndex != -1 && hoverSubmenuIndex == currentSubmenuIndex) {
+            SetSubmenuOption(currentSubmenuIndex, 2);
         }
     }
 
