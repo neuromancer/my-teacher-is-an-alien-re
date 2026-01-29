@@ -45,7 +45,12 @@ struct MessageList {
         current = head;
     }
 
-    void* GetCurrentData();                  // 0x40C0D0
+    void* GetCurrentData() {
+        if (current != 0) {
+            return ((MessageNode*)current)->data;
+        }
+        return 0;
+    }
     void InsertBeforeCurrent(void* data);    // 0x40C430
     void InsertNode(void* data);             // 0x40ABD0
     void UnlinkNode(MessageNode* node);      // 0x40ACC0

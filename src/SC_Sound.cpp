@@ -21,57 +21,44 @@ SC_Sound::SC_Sound() {
 
 /* Function start: 0x40B910 */
 SC_Sound::~SC_Sound() {
-    MessageList* pList;
-    MessageNode* node;
-    SoundItem* data;
+    if (list != 0) {
+        if (list->head != 0) {
+            list->current = list->head;
+            while (list->head != 0) {
+                MessageNode* node = (MessageNode*)list->current;
+                SoundItem* data = 0;
 
-    pList = list;
-    if (pList != 0) {
-        if (pList->head != 0) {
-            pList->current = pList->head;
-            while (pList->head != 0) {
-                node = (MessageNode*)pList->current;
-                if (node == 0) {
-                    data = 0;
-                } else {
-                    // Unlink node from head
-                    if (pList->head == node) {
-                        pList->head = node->next;
+                if (node != 0) {
+                    if (list->head == node) {
+                        list->head = node->next;
                     }
-                    // Unlink node from tail
-                    if (pList->tail == pList->current) {
-                        pList->tail = ((MessageNode*)pList->current)->prev;
+                    if (list->tail == node) {
+                        list->tail = node->prev;
                     }
-                    // Update next node's prev pointer
-                    node = (MessageNode*)pList->current;
                     if (node->prev != 0) {
                         node->prev->next = node->next;
                     }
-                    // Update prev node's next pointer
-                    node = (MessageNode*)pList->current;
                     if (node->next != 0) {
                         node->next->prev = node->prev;
                     }
-                    // Get data and free node
-                    node = (MessageNode*)pList->current;
-                    data = 0;
-                    if (node != 0) {
-                        data = (SoundItem*)node->data;
-                        node->data = 0;
-                        node->prev = 0;
-                        node->next = 0;
-                        FreeMemory(node);
-                        pList->current = 0;
-                    }
-                    pList->current = pList->head;
+
+                    data = (SoundItem*)node->data;
+                    node->data = 0;
+                    node->prev = 0;
+                    node->next = 0;
+                    FreeMemory(node);
+                    list->current = 0;
                 }
-                // Cleanup data object (SoundItem)
+
+                list->current = list->head;
+
                 if (data != 0) {
-                    delete data;
+                    data->SoundItem::~SoundItem();
+                    FreeMemory(data);
                 }
             }
         }
-        FreeMemory(pList);
+        FreeMemory(list);
         list = 0;
     }
 }
@@ -80,87 +67,63 @@ SC_Sound::~SC_Sound() {
 void SC_Sound::Init(SC_Message* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
-        field_8C = msg->data;
+        field_8C = msg->sourceAddress;
     }
 }
 
 /* Function start: 0x40BB10 */
 void SC_Sound::Update(int param1, int param2) {
-    MessageList* pList;
-    MessageNode* node;
-    unsigned int uVar3;
-    SoundItem* soundItem;
-    SoundItem* data;
-    int iVar4;
-
-    uVar3 = timer.Update();
-    if ((uVar3 > 60000) && (list->head == 0)) {
-        SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+    if (timer.Update() > 60000) {
+        if (list->head == 0) {
+            SC_Message_Send(3, handlerId, handlerId, field_8C, 20, 0, 0, 0, 0, 0);
+        }
     }
 
-    pList = list;
-    if (pList != 0) {
-        pList->current = pList->head;
-        iVar4 = (int)pList->head;
+    if (list != 0) {
+        list->current = list->head;
+        if (list->head != 0) {
+            do {
+                SoundItem* soundItem = (SoundItem*)list->GetCurrentData();
 
-        while (iVar4 != 0) {
-            soundItem = 0;
-            node = (MessageNode*)pList->current;
-            if (node != 0) {
-                soundItem = (SoundItem*)node->data;
-            }
+                if (soundItem->IsFinished()) {
+                    MessageNode* node = (MessageNode*)list->current;
+                    SoundItem* data = 0;
 
-            iVar4 = soundItem->IsFinished();
-            if (iVar4 != 0) {
-                node = (MessageNode*)pList->current;
-                if (node == 0) {
-                    data = 0;
-                } else {
-                    // Unlink node from head
-                    if (pList->head == node) {
-                        pList->head = node->next;
-                    }
-                    // Unlink node from tail
-                    if (pList->tail == pList->current) {
-                        pList->tail = ((MessageNode*)pList->current)->prev;
-                    }
-                    // Update next node's prev pointer
-                    node = (MessageNode*)pList->current;
-                    if (node->prev != 0) {
-                        node->prev->next = node->next;
-                    }
-                    // Update prev node's next pointer
-                    node = (MessageNode*)pList->current;
-                    if (node->next != 0) {
-                        node->next->prev = node->prev;
-                    }
-                    // Get data and free node
-                    node = (MessageNode*)pList->current;
-                    data = 0;
                     if (node != 0) {
-                        data = (SoundItem*)node->data;
-                        node->data = 0;
-                        node->prev = 0;
-                        node->next = 0;
-                        FreeMemory(node);
-                        pList->current = 0;
-                    }
-                    pList->current = pList->head;
-                }
-                // Cleanup data object (SoundItem)
-                if (data != 0) {
-                    delete data;
-                }
-            }
+                        if (list->head == node) {
+                            list->head = node->next;
+                        }
+                        if (list->tail == node) {
+                            list->tail = node->prev;
+                        }
+                        if (node->prev != 0) {
+                            node->prev->next = node->next;
+                        }
+                        if (node->next != 0) {
+                            node->next->prev = node->prev;
+                        }
 
-            node = (MessageNode*)pList->current;
-            if (pList->tail == node) {
-                break;
-            }
-            if (node != 0) {
-                pList->current = node->next;
-            }
-            iVar4 = (int)pList->head;
+                        data = (SoundItem*)node->data;
+                        node->Destroy(1);
+                        list->current = 0;
+                    }
+
+                    list->current = list->head;
+
+                    if (data != 0) {
+                        data->SoundItem::~SoundItem();
+                        FreeMemory(data);
+                    }
+                }
+
+                if (list->tail == list->current) {
+                    break;
+                }
+
+                if (list->current != 0) {
+                    list->current = ((MessageNode*)list->current)->next;
+                }
+            } while (list->head != 0);
         }
     }
 
@@ -182,13 +145,6 @@ int SC_Sound::ShutDown(SC_Message* msg) {
 
 /* Function start: 0x40BD30 */
 int SC_Sound::Exit(SC_Message* msg) {
-    MessageList* pList;
-    MessageNode* node;
-    SoundItem* eventData;
-    SoundItem* data;
-    void* pvVar7;
-    int iVar1;
-
     if (msg->targetAddress != handlerId) {
         return 0;
     }
@@ -197,109 +153,110 @@ int SC_Sound::Exit(SC_Message* msg) {
 
     switch (msg->priority) {
     case 3:
-        pvVar7 = FindOrCreateSound(msg->data);
-        ((SoundItem*)pvVar7)->Start();
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->Start();
         break;
+    }
 
-    case 0xf:
-        // Clear entire list
-        pList = list;
-        if (pList->head != 0) {
-            pList->current = pList->head;
-            while (pList->head != 0) {
-                data = (SoundItem*)pList->PopCurrent();
+    case 15:
+    {
+        if (list->head != 0) {
+            list->current = list->head;
+            while (list->head != 0) {
+                SoundItem* data = (SoundItem*)list->PopCurrent();
                 if (data != 0) {
-                    delete data;
+                    data->SoundItem::~SoundItem();
+                    FreeMemory(data);
                 }
             }
         }
         break;
+    }
 
-    case 0x10:
-        pvVar7 = FindOrCreateSound(msg->data);
-        ((SoundItem*)pvVar7)->AdjustVolume(10);
+    case 16:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->AdjustVolume(10);
+        break;
+    }
+
+    case 17:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->AdjustVolume(-10);
+        break;
+    }
+
+    case 18:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->SetVolume(msg->param1);
+        break;
+    }
+
+    case 19:
+        FindOrCreateSound(msg->sourceAddress);
         break;
 
-    case 0x11:
-        pvVar7 = FindOrCreateSound(msg->data);
-        ((SoundItem*)pvVar7)->AdjustVolume(-10);
-        break;
+    case 20:
+    {
+        list->current = list->head;
+        if (list->head != 0) {
+            do {
+                MessageNode* node = (MessageNode*)list->current;
+                SoundItem* data = (SoundItem*)node->data;
 
-    case 0x12:
-        pvVar7 = FindOrCreateSound(msg->data);
-        ((SoundItem*)pvVar7)->SetVolume(msg->param1);
-        break;
+                if (data->soundId == msg->sourceAddress) {
+                    SoundItem* eventData = (SoundItem*)list->GetCurrentData();
 
-    case 0x13:
-        FindOrCreateSound(msg->data);
-        break;
+                    if (list->current != 0) {
+                        if (list->head == node) {
+                            list->head = node->next;
+                        }
+                        if (list->tail == node) {
+                            list->tail = node->prev;
+                        }
+                        if (node->prev != 0) {
+                            node->prev->next = node->next;
+                        }
+                        if (node->next != 0) {
+                            node->next->prev = node->prev;
+                        }
 
-    case 0x14:
-        // Remove sound by ID
-        pList = list;
-        pList->current = pList->head;
-        iVar1 = (int)pList->head;
-        while (iVar1 != 0) {
-            node = (MessageNode*)pList->current;
-            data = 0;
-            if (node != 0) {
-                data = (SoundItem*)node->data;
-            } else {
-                data = (SoundItem*)0x18;  // Null pointer access pattern
-            }
-            if (data->soundId == msg->data) {
-                node = (MessageNode*)pList->current;
-                if (node == 0) {
-                    eventData = 0;
-                } else {
-                    // Unlink node from head
-                    if (pList->head == node) {
-                        pList->head = node->next;
+                        node->Destroy(1);
+                        list->current = 0;
                     }
-                    // Unlink node from tail
-                    if (pList->tail == pList->current) {
-                        pList->tail = ((MessageNode*)pList->current)->prev;
+
+                    list->current = list->head;
+
+                    if (eventData != 0) {
+                        eventData->SoundItem::~SoundItem();
+                        FreeMemory(eventData);
                     }
-                    // Update next node's prev pointer
-                    node = (MessageNode*)pList->current;
-                    if (node->prev != 0) {
-                        node->prev->next = node->next;
-                    }
-                    // Update prev node's next pointer
-                    node = (MessageNode*)pList->current;
-                    if (node->next != 0) {
-                        node->next->prev = node->prev;
-                    }
-                    eventData = (SoundItem*)pList->GetCurrentData();
-                    if (pList->current != 0) {
-                        ((MessageNode*)pList->current)->Destroy(1);
-                        pList->current = 0;
-                    }
-                    pList->current = pList->head;
                 }
-                // Cleanup data object
-                if (eventData != 0) {
-                    delete eventData;
+
+                if (list->tail == list->current) {
+                    break;
                 }
-            }
-            node = (MessageNode*)pList->current;
-            if (pList->tail == node) {
-                break;
-            }
-            if (node != 0) {
-                pList->current = node->next;
-            }
-            iVar1 = (int)pList->head;
+
+                if (list->current != 0) {
+                    list->current = ((MessageNode*)list->current)->next;
+                }
+            } while (list->head != 0);
         }
         break;
+    }
 
-    case 0x1a:
-        pvVar7 = FindOrCreateSound(msg->data);
-        ((SoundItem*)pvVar7)->Resume();
+    case 26:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->Resume();
         break;
+    }
 
-    case 0x1b:
-        SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+    case 27:
+        SC_Message_Send(3, handlerId, handlerId, field_8C, 20, 0, 0, 0, 0, 0);
         break;
 
     default:

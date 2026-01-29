@@ -3,17 +3,6 @@
 #include "Memory.h"
 #include "string.h"
 
-/* Function start: 0x40C0D0 */
-void* MessageList::GetCurrentData()
-{
-    MessageNode* curr;
-
-    curr = (MessageNode*)MessageList::current;
-    if (curr != 0) {
-        return curr->data;
-    }
-    return 0;
-}
 
 /* Function start: 0x40C430 */
 void MessageList::InsertBeforeCurrent(void* data)

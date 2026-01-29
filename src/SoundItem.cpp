@@ -28,15 +28,6 @@ SoundItem::SoundItem(int sndId)
     }
 }
 
-/* Function start: 0x40B6E0 */
-SoundItem::~SoundItem()
-{
-    if (soundPtr != 0) {
-        soundPtr->Unload();
-        FreeMemory(soundPtr);
-        soundPtr = 0;
-    }
-}
 
 /* Function start: 0x40B700 */
 int SoundItem::IsFinished()

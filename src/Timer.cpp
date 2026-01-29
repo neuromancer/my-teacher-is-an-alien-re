@@ -48,7 +48,3 @@ void Timer::Wait(unsigned int delay)
     } while (m_elapsedTime < delay);
 }
 
-Timer::~Timer()
-{
-    Timer_DecrementCounter();
-}

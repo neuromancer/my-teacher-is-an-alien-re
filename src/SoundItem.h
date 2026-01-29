@@ -3,6 +3,7 @@
 
 #include "Timer.h"
 #include "Sample.h"
+#include "Memory.h"
 
 // SoundItem class - represents a sound being played
 // Size: 0x20 bytes
@@ -19,7 +20,13 @@ public:
     Sample* soundPtr;       // 0x1C
 
     SoundItem(int sndId);           // 0x40B5D0
-    virtual ~SoundItem();           // 0x40B6E0 - Virtual destructor adds vtable at 0x00
+    virtual ~SoundItem() {
+        if (soundPtr != 0) {
+            soundPtr->Unload();
+            FreeMemory(soundPtr);
+            soundPtr = 0;
+        }
+    }
     int IsFinished();               // 0x40B700
     void Resume();                  // 0x40B750 - Play without loop
     void Start();                   // 0x40B770 - Play with loop
