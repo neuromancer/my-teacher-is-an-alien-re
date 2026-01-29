@@ -212,7 +212,7 @@ int Handler4::Exit(SC_Message* msg) {
         sound2 = 0;
     }
 
-    CleanupIconBar();
+    CleanupIconBar(msg);
     WriteToMessageLog("EXIT FORCEFIELD PUZZLE\n");
     return 1;
 }

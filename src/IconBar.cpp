@@ -165,7 +165,7 @@ void IconBar::InitIconBar(SC_Message* msg) {
 }
 
 /* Function start: 0x402FD0 */
-void IconBar::CleanupIconBar() {
+void IconBar::CleanupIconBar(SC_Message* msg) {
     int i;
 
     // Stop iconbar sprite animation

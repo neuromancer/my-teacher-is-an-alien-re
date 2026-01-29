@@ -297,7 +297,7 @@ int SCI_AfterSchoolMenu::Exit(SC_Message* msg) {
             }
         }
 
-        IconBar::CleanupIconBar();
+        IconBar::CleanupIconBar(msg);
         WriteToMessageLog("EXIT AFTERSCHOOL MENU\n");
     }
 

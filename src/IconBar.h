@@ -53,7 +53,7 @@ public:
 
     // Methods
     void InitIconBar(SC_Message* msg);
-    void CleanupIconBar();
+    void CleanupIconBar(SC_Message* msg);
     int CheckButtonClick(SC_Message* msg);
     virtual void Update(int param1, int param2);
     void PlayButtonSound(int buttonIndex);  // 0x403300

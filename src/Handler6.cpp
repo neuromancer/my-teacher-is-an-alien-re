@@ -134,7 +134,7 @@ int Handler6::ShutDown(SC_Message* msg) {
     counter = 0;
 
     // Call parent cleanup (IconBar::CleanupIconBar)
-    CleanupIconBar();
+    CleanupIconBar(msg);
 
     // Log message
     WriteToMessageLog("EXIT SEARCH SCREEN\n");

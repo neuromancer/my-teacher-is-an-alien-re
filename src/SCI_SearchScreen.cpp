@@ -122,7 +122,7 @@ int SCI_SearchScreen::ShutDown(SC_Message* msg) {
     }
     g_Mouse_00436978->DrawCursor();
 
-    IconBar::CleanupIconBar();
+    IconBar::CleanupIconBar(msg);
     WriteToMessageLog("EXIT SEARCH SCREEN\n");
     return 0;
 }

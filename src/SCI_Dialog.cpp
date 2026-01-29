@@ -207,7 +207,7 @@ int SCI_Dialog::ShutDown(SC_Message* msg) {
     buttons[0].enabled = 1;
     buttons[4].enabled = 1;
 
-    IconBar::CleanupIconBar();
+    IconBar::CleanupIconBar(msg);
 
     WriteToMessageLog("\"EXIT DIALOG\\n\"");
 
