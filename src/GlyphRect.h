@@ -12,6 +12,12 @@ struct GlyphRect {
         right = 0;
         bottom = 0;
     }
+    GlyphRect(int l, int t, int r, int b) {
+        left = l;
+        top = t;
+        right = r;
+        bottom = b;
+    }
     ~GlyphRect();  // Destructor - generates thunk at 0x401680
 };
 

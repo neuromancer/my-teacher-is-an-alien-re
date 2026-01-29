@@ -167,7 +167,7 @@ void VBuffer::Release()
 {
     unsigned int uVar1 = GetCurrentVideoMode();
     if (uVar1 == handle) {
-        InvalidateVideoMode();
+        ::InvalidateVideoMode();
     }
 }
 
@@ -286,41 +286,25 @@ void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, i
 /* Function start: 0x41aee0 */
 void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    GlyphRect local_2c;
-    local_2c.left = clip_x1;
-    local_2c.right = clip_x2;
-    local_2c.top = clip_y1;
-    local_2c.bottom = clip_y2;
-    GlyphRect local_1c;
-    local_1c.left = param_1;
-    local_1c.top = param_3;
-    local_1c.right = param_2;
-    local_1c.bottom = param_4;
+    GlyphRect local_2c(clip_x1, clip_y1, clip_x2, clip_y2);
+    GlyphRect local_1c(param_1, param_3, param_2, param_4);
 
-    if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6))
-    {
-        CallBlitter(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, param_7);
+    if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
+        return;
     }
+    CallBlitter(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, param_7);
 }
 
 /* Function start: 0x41AFC0 */
 void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
-    GlyphRect local_2c;
-    local_2c.left = clip_x1;
-    local_2c.right = clip_x2;
-    local_2c.top = clip_y1;
-    local_2c.bottom = clip_y2;
-    GlyphRect local_1c;
-    local_1c.left = param_1;
-    local_1c.top = param_3;
-    local_1c.right = param_2;
-    local_1c.bottom = param_4;
+    GlyphRect local_2c(clip_x1, clip_y1, clip_x2, clip_y2);
+    GlyphRect local_1c(param_1, param_3, param_2, param_4);
 
-    if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6))
-    {
-        CallBlitter2(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, (VBuffer*)param_7);
+    if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
+        return;
     }
+    CallBlitter2(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, (VBuffer*)param_7);
 }
 
 /* Function start: 0x41B110 */
