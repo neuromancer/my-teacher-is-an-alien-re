@@ -69,7 +69,7 @@ extern "C" void InitWorkBuffer(int width, int height)
 }
 
 /* Function start: 0x41a9f0 */
-VBuffer::VBuffer(unsigned int width, unsigned int height)
+VBuffer::VBuffer(int width, int height)
 {
     InitFields();
     InitWithSize(width, height);
@@ -105,7 +105,7 @@ void VBuffer::Free()
 }
 
 /* Function start: 0x41aaa0 */
-void VBuffer::InitWithSize(unsigned int param_1, unsigned int param_2)
+void* VBuffer::InitWithSize(int param_1, int param_2)
 {
     if ((param_1 == 0) || (param_2 == 0)) {
         ShowError("Error! Invalid buffer size specified =>%lu", param_2 * param_1);
@@ -120,35 +120,28 @@ void VBuffer::InitWithSize(unsigned int param_1, unsigned int param_2)
         ShowError("Error! Virtual buffer already allocated");
     }
 
-    unsigned int uVar2 = (int)param_1 >> 0x1f;
-    if (((param_1 ^ uVar2) - uVar2 & 3 ^ uVar2) != uVar2) {
-        do {
-            param_1 = param_1 + 1;
-            uVar2 = (int)param_1 >> 0x1f;
-        } while (((param_1 ^ uVar2) - uVar2 & 3 ^ uVar2) != uVar2);
+    while (param_1 % 4 != 0) {
+        param_1 = param_1 + 1;
     }
-    uVar2 = (int)param_2 >> 0x1f;
-    if (((param_2 ^ uVar2) - uVar2 & 3 ^ uVar2) != uVar2) {
-        do {
-            param_2 = param_2 + 1;
-            uVar2 = (int)param_2 >> 0x1f;
-        } while (((param_2 ^ uVar2) - uVar2 & 3 ^ uVar2) != uVar2);
+    while (param_2 % 4 != 0) {
+        param_2 = param_2 + 1;
     }
     int iVar1 = CreateTable(param_1, param_2);
     handle = iVar1;
     if (iVar1 == -1) {
         ShowError("VBuffer::Init - Unable To create vb. Table Full");
-        return;
+        return data;
     }
     if (iVar1 == -2) {
         ShowError("VBuffer::Init - Unable To create vb. No memory");
-        return;
+        return data;
     }
     SetCurrentVideoMode(iVar1);
     ApplyVideoPalette();
     InvalidateVideoMode();
     data = (void*)GetVideoBufferData(handle);
     RegisterVBufferHandle(handle);
+    return data;
 }
 
 /* Function start: 0x41abc0 */

@@ -15,8 +15,8 @@ public:
     int clip_x1; // 0x28
     int clip_x2; // 0x2c
 
-    VBuffer(unsigned int param_1, unsigned int param_2);
-    void InitWithSize(unsigned int param_1, unsigned int param_2);
+    VBuffer(int param_1, int param_2);
+    void* InitWithSize(int param_1, int param_2);
     ~VBuffer();
     void Release();
     void Free();
