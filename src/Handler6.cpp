@@ -161,7 +161,7 @@ int Handler6::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x404870 */
 int Handler6::Exit(SC_Message* msg) {
-    return handlerId <= msg->targetAddress;
+    return handlerId == msg->targetAddress;
 }
 
 /* Function start: 0x404890 */

@@ -172,7 +172,6 @@ int Handler13::AddMessage(SC_Message* msg) {
 int Handler13::Exit(SC_Message* msg) {
     MessageList* pList;
     MessageNode* node;
-    MessageNode* prevNode;
     TimedEvent* timedEvent;
     TimedEvent* eventData;
     TimedEvent* pTimedEvent;
