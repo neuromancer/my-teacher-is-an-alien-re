@@ -25,9 +25,6 @@ public:
     int ProcessMessage(Message* msg);
     ~ZBuffer();
     void CleanUpVBuffer();
-    static void ClearList(ZBQueue* queue);
-    static void* PopNode(ZBQueue* queue);
-    static void* PopNode_2(ZBQueue* queue);
 };
 
 #endif // ZBUFFER_H

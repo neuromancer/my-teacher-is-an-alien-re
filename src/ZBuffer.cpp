@@ -79,7 +79,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                void* data = ZBuffer::PopNode(queue);
+                void* data = queue->PopNode2();
                 if (data != 0) {
                     *(void**)data = 0;
                     FreeFromGlobalHeap(data);
@@ -90,7 +90,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                ZBuffer* zb = (ZBuffer*)ZBuffer::PopNode_2(queue);
+                ZBuffer* zb = (ZBuffer*)queue->PopNode2_2();
                 if (zb != 0) {
                     zb->CleanUpVBuffer();
                     FreeFromGlobalHeap(zb);
@@ -101,7 +101,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                void* data = ZBuffer::PopNode_2(queue);
+                void* data = queue->PopNode2_2();
                 if (data != 0) {
                     FreeFromGlobalHeap(data);
                 }
@@ -116,7 +116,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                void* data = ZBuffer::PopNode(queue);
+                void* data = queue->PopNode2();
                 if (data != 0) {
                     *(void**)data = 0;
                     FreeFromGlobalHeap(data);
@@ -127,14 +127,14 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                ZBuffer* zb = (ZBuffer*)ZBuffer::PopNode_2(queue);
+                ZBuffer* zb = (ZBuffer*)queue->PopNode2_2();
                 if (zb != 0) {
                     zb->CleanUpVBuffer();
                     FreeFromGlobalHeap(zb);
                 }
             }
         }
-        ZBuffer::ClearList(g_ZBufferManager_0043698c->m_queue9c);
+        g_ZBufferManager_0043698c->m_queue9c->ClearList();
     }
     return 1;
 }
@@ -156,43 +156,43 @@ void ZBuffer::CleanUpVBuffer()
 }
 
 /* Function start: 0x401560 */
-void ZBuffer::ClearList(ZBQueue* queue)
+void ZBQueue::ClearList()
 {
-    if (queue->head != 0) {
-        queue->current = queue->head;
+    if (head != 0) {
+        current = head;
         do {
-            ZBQueueNode* node = queue->current;
+            ZBQueueNode* node = current;
             void* data;
             if (node == 0) {
                 data = 0;
             } else {
-                if (queue->head == node) {
-                    queue->head = node->prev;
+                if (head == node) {
+                    head = node->prev;
                 }
-                if (queue->tail == node) {
-                    queue->tail = node->next;
+                if (tail == node) {
+                    tail = node->next;
                 }
                 if (node->next != 0) {
                     node->next->prev = node->prev;
                 }
-                ZBQueueNode* prevNode = queue->current->prev;
+                ZBQueueNode* prevNode = current->prev;
                 if (prevNode != 0) {
-                    prevNode->next = queue->current->next;
+                    prevNode->next = current->next;
                 }
                 data = 0;
-                ZBQueueNode* currentNode = queue->current;
+                ZBQueueNode* currentNode = current;
                 if (currentNode != 0) {
                     data = currentNode->data;
                     delete currentNode;
-                    queue->current = 0;
+                    current = 0;
                 }
-                queue->current = queue->head;
+                current = head;
             }
             if (data != 0) {
                 *(void**)data = 0;
                 FreeFromGlobalHeap(data);
             }
-        } while (queue->head != 0);
+        } while (head != 0);
     }
 }
 
@@ -203,64 +203,76 @@ ZBuffer::~ZBuffer()
 }
 
 /* Function start: 0x401710 */
-void* ZBuffer::PopNode(ZBQueue* queue)
+void* ZBQueue::PopNode2()
 {
-    ZBQueueNode* node = queue->current;
+    ZBQueueNode* node;
+    ZBQueueNode* prevNode;
+    void* data;
+
+    node = current;
     if (node == 0) {
         return 0;
     }
-    if (queue->head == node) {
-        queue->head = node->prev;
+    if (head == node) {
+        head = node->prev;
     }
-    if (queue->tail == node) {
-        queue->tail = node->next;
+    if (tail == node) {
+        tail = node->next;
     }
     if (node->next != 0) {
         node->next->prev = node->prev;
     }
-    ZBQueueNode* prevNode = queue->current->prev;
+    prevNode = current->prev;
     if (prevNode != 0) {
-        prevNode->next = queue->current->next;
+        prevNode->next = current->next;
     }
-    ZBQueueNode* currentNode = queue->current;
-    void* data = 0;
-    if (currentNode != 0) {
-        data = currentNode->data;
-        delete currentNode;
-        queue->current = 0;
+    prevNode = current;
+    data = 0;
+    if (prevNode != 0) {
+        data = prevNode->data;
     }
-    queue->current = queue->head;
+    if (prevNode != 0) {
+        delete prevNode;
+        current = 0;
+    }
+    current = head;
     return data;
 }
 
 /* Function start: 0x401790 */
-void* ZBuffer::PopNode_2(ZBQueue* queue)
+void* ZBQueue::PopNode2_2()
 {
-    ZBQueueNode* node = queue->current;
+    ZBQueueNode* node;
+    ZBQueueNode* prevNode;
+    void* data;
+
+    node = current;
     if (node == 0) {
         return 0;
     }
-    if (queue->head == node) {
-        queue->head = node->prev;
+    if (head == node) {
+        head = node->prev;
     }
-    if (queue->tail == node) {
-        queue->tail = node->next;
+    if (tail == node) {
+        tail = node->next;
     }
     if (node->next != 0) {
         node->next->prev = node->prev;
     }
-    ZBQueueNode* prevNode = queue->current->prev;
+    prevNode = current->prev;
     if (prevNode != 0) {
-        prevNode->next = queue->current->next;
+        prevNode->next = current->next;
     }
-    ZBQueueNode* currentNode = queue->current;
-    void* data = 0;
-    if (currentNode != 0) {
-        data = currentNode->data;
-        delete currentNode;
-        queue->current = 0;
+    prevNode = current;
+    data = 0;
+    if (prevNode != 0) {
+        data = prevNode->data;
     }
-    queue->current = queue->head;
+    if (prevNode != 0) {
+        delete prevNode;
+        current = 0;
+    }
+    current = head;
     return data;
 }
 
@@ -299,69 +311,4 @@ void* ZBQueue::PopNode()
     }
     current = head;
     return data;
-}
-
-void* ZBQueue::PopNode2()
-{
-    ZBQueueNode* node = current;
-    if (node == 0) {
-        return 0;
-    }
-    if (head == node) {
-        head = node->prev;
-    }
-    if (tail == node) {
-        tail = node->next;
-    }
-    if (node->next != 0) {
-        node->next->prev = node->prev;
-    }
-    ZBQueueNode* prevNode = current->prev;
-    if (prevNode != 0) {
-        prevNode->next = current->next;
-    }
-    ZBQueueNode* currentNode = current;
-    void* data = 0;
-    if (currentNode != 0) {
-        data = currentNode->data;
-        delete currentNode;
-        current = 0;
-    }
-    current = head;
-    return data;
-}
-
-void* ZBQueue::PopNode2_2()
-{
-    ZBQueueNode* node = current;
-    if (node == 0) {
-        return 0;
-    }
-    if (head == node) {
-        head = node->prev;
-    }
-    if (tail == node) {
-        tail = node->next;
-    }
-    if (node->next != 0) {
-        node->next->prev = node->prev;
-    }
-    ZBQueueNode* prevNode = current->prev;
-    if (prevNode != 0) {
-        prevNode->next = current->next;
-    }
-    ZBQueueNode* currentNode = current;
-    void* data = 0;
-    if (currentNode != 0) {
-        data = currentNode->data;
-        delete currentNode;
-        current = 0;
-    }
-    current = head;
-    return data;
-}
-
-void ZBQueue::ClearList()
-{
-    ZBuffer::ClearList(this);
 }

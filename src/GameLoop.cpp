@@ -419,7 +419,7 @@ void GameLoop::CleanupLoop() {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pResult = ZBuffer::PopNode(pQueue);
+            pResult = pQueue->PopNode2();
             if (pResult != 0) {
                 delete (SoundCommand*)pResult;
             }
@@ -431,7 +431,7 @@ void GameLoop::CleanupLoop() {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pResult = ZBuffer::PopNode_2(pQueue);
+            pResult = pQueue->PopNode2_2();
             if (pResult != 0) {
                 if (((int*)pResult)[1] != 0) {
                     ((VBuffer*)((int*)pResult)[1])->Destroy(1);

@@ -251,7 +251,7 @@ void ZBufferManager::Cleanup() {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = ZBuffer::PopNode(queue);
+                data = queue->PopNode2();
                 if (data != 0) {
                     delete (SoundCommand*)data;
                 }
@@ -267,7 +267,7 @@ void ZBufferManager::Cleanup() {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = ZBuffer::PopNode_2(queue);
+                data = queue->PopNode2_2();
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;
@@ -625,7 +625,7 @@ void ZBufferManager::ProcessRenderQueues()
             }
 
             if (queue->current != 0) {
-                data = ZBuffer::PopNode(queue);
+                data = queue->PopNode2();
             }
 
             if (data != 0) {
@@ -643,7 +643,7 @@ void ZBufferManager::ProcessRenderQueues()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = ZBuffer::PopNode_2(queue);
+                data = queue->PopNode2_2();
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;
@@ -751,7 +751,7 @@ void ZBufferManager::ProcessRenderQueues()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = ZBuffer::PopNode_2(queue);
+                data = queue->PopNode2_2();
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;

@@ -12,6 +12,7 @@ struct ZBQueueNode {
     void* data;         // 0x08
 
     ZBQueueNode() : next(0), prev(0), data(0) {}
+    ~ZBQueueNode() { data = 0; next = 0; prev = 0; }
     ZBQueueNode* Init(void* d) { next = 0; prev = 0; data = d; return this; }  // 0x41CD10
 
     void* CleanupNode(int flag);  // 0x41CCE0

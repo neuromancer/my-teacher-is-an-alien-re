@@ -100,7 +100,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pNode = ZBuffer::PopNode(pQueue);
+            pNode = pQueue->PopNode2();
             if (pNode != 0) {
                 delete (SoundCommand*)pNode;
             }
@@ -112,7 +112,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pNode = ZBuffer::PopNode_2(pQueue);
+            pNode = pQueue->PopNode2_2();
             if (pNode != 0) {
                 ((DrawEntry*)pNode)->Cleanup(1);
             }
@@ -120,7 +120,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     }
 
     // Clear queue at 0x9c
-    ZBuffer::ClearList(pZBuf->m_queue9c);
+    pZBuf->m_queue9c->ClearList();
 
     savedRendererState = zState;
     if (msg != 0) {
@@ -221,7 +221,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            puVar7 = ZBuffer::PopNode(pQueue);
+            puVar7 = pQueue->PopNode2();
             if (puVar7 != 0) {
                 delete (SoundCommand*)puVar7;
             }
@@ -233,7 +233,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pVVar5 = ZBuffer::PopNode_2(pQueue);
+            pVVar5 = pQueue->PopNode2_2();
             if (pVVar5 != 0) {
                 delete (ZBuffer*)pVVar5;
             }
