@@ -1,5 +1,6 @@
 #ifndef GLYPHRECT_H
 #define GLYPHRECT_H
+#include <string.h>
 
 struct GlyphRect {
     int left;    // 0x00 - left edge X coordinate
@@ -7,10 +8,7 @@ struct GlyphRect {
     int right;   // 0x08 - right edge X coordinate
     int bottom;  // 0x0C - bottom edge Y coordinate
     GlyphRect() {
-        left = 0;
-        top = 0;
-        right = 0;
-        bottom = 0;
+        memset(this, 0, sizeof(GlyphRect));
     }
     GlyphRect(int l, int t, int r, int b) {
         left = l;

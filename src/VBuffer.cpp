@@ -322,27 +322,22 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
         ScaleBuffer(srcBuffer->data, puVar3, srcBuffer->width, srcBuffer->height, scaledWidth, scaledHeight);
 
         GlyphRect local_30;
-        local_30.left = 0;
-        local_30.top = 0;
-        local_30.right = 0;
-        local_30.bottom = 0;
         GlyphRect local_20;
-        local_20.left = 0;
-        local_20.top = 0;
-        local_20.right = 0;
-        local_20.bottom = 0;
 
         local_30.left = clip_x1;
-        local_30.right = clip_x2;
         local_30.top = clip_y1;
+        local_30.right = clip_x2;
         local_30.bottom = clip_y2;
+        local_20.left = 0;
+        local_20.top = 0;
         local_20.right = scaledWidth - 1;
         local_20.bottom = scaledHeight - 1;
 
-        if (ClipRectBottomUp(&local_30.left, &local_20.left, &param_1, &param_2)) {
-            BlitBufferTransparent(local_20.left, local_20.right, local_20.top, local_20.bottom, param_1, param_2, local_10, handle);
-            ReleaseBufferEntry(local_10);
+        if (ClipRectBottomUp(&local_30.left, &local_20.left, &param_1, &param_2) == 0) {
+            return;
         }
+        BlitBufferTransparent(local_20.left, local_20.right, local_20.top, local_20.bottom, param_1, param_2, local_10, handle);
+        ReleaseBufferEntry(local_10);
     }
 }
 
