@@ -278,7 +278,7 @@ void GameLoop::ProcessInput() {
         if (localMessage.targetAddress != 0 && localMessage.priority != 0) {
             pPool = g_TimedEventPool2_00436988;
             pEvent = pPool->Create((void*)pPool->list.tail, 0);
-            ((PooledEvent*)((char*)pEvent + 8))->CopyFrom((PooledEvent*)&localMessage);
+            pEvent->GetEmbeddedMessage()->CopyFrom((PooledEvent*)&localMessage);
             if (pPool->list.tail == 0) {
                 pPool->list.head = pEvent;
             } else {
@@ -291,26 +291,24 @@ void GameLoop::ProcessInput() {
 
 /* Function start: 0x417320 */
 void GameLoop::Cleanup() {
-    void* pTimer;
+    Timer* pTimer;
     EventList* pEventList;
     EventNode* pNode;
     EventNode* pNext;
     EventNode* pPrev;
     void* pData;
-    
+
     // Cleanup timer1
     pTimer = timer1;
     if (pTimer != 0) {
-        Timer_DecrementCounter();
-        FreeMemory(pTimer);
+        delete pTimer;
         timer1 = 0;
     }
-    
+
     // Cleanup timer2
     pTimer = timer2;
     if (pTimer != 0) {
-        Timer_DecrementCounter();
-        FreeMemory(pTimer);
+        delete pTimer;
         timer2 = 0;
     }
     
@@ -351,10 +349,7 @@ void GameLoop::Cleanup() {
                         pData = 0;
                         if (pNode != 0) {
                             pData = pNode->data;
-                            pNode->data = 0;
-                            pNode->next = 0;
-                            pNode->prev = 0;
-                            FreeMemory(pNode);
+                            delete pNode;
                             pEventList->current = 0;
                         }
                         pEventList->current = pEventList->head;
@@ -366,7 +361,7 @@ void GameLoop::Cleanup() {
                 } while (pEventList->head != 0);
             }
         }
-        FreeMemory(pEventList);
+        delete pEventList;
         eventList = 0;
     }
     
@@ -639,7 +634,7 @@ int GameLoop::UpdateGame()
         // Create entry in pool1
         pPool = g_TimedEventPool1_00436984;
         pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
-        ((PooledEvent*)((int*)pNewEvent + 2))->CopyFrom((PooledEvent*)&local_d8);
+        pNewEvent->GetEmbeddedMessage()->CopyFrom((PooledEvent*)&local_d8);
 
         if (pPool->list.tail == 0) {
             pPool->list.head = pNewEvent;
@@ -663,7 +658,7 @@ int GameLoop::UpdateGame()
             pSourceMsg = g_TimedEventPool2_00436988->Pop((SC_Message*)local_258);
             pPool = g_TimedEventPool1_00436984;
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
-            ((PooledEvent*)((int*)pNewEvent + 2))->CopyFrom((PooledEvent*)pSourceMsg);
+            pNewEvent->GetEmbeddedMessage()->CopyFrom((PooledEvent*)pSourceMsg);
 
             if (pPool->list.tail == 0) {
                 pPool->list.head = pNewEvent;
@@ -861,7 +856,6 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 
 /* Function start: 0x40CDD0 */
 Handler* CreateHandler(int command) {
-    char buffer[128];
     Handler* handler = 0;
 
     switch(command) {
@@ -925,64 +919,63 @@ int GameLoop::RemoveHandler(int command) {
     BaseHandler* pHandler;
     EventNode* pNext;
     EventNode* pPrev;
-    
+
     // Find the handler in eventList
-    if (FindHandlerInEventList(command) == 0) {
-        return 0;
+    if (FindHandlerInEventList(command) != 0) {
+        // Get eventList and current node
+        list = eventList;
+        current = list->current;
+
+        if (current == 0) {
+            pHandler = 0;
+        } else {
+            // Unlink node from doubly-linked list
+            if (list->head == current) {
+                list->head = current->prev;
+            }
+            current = list->current;
+            if (list->tail == current) {
+                list->tail = current->next;
+            }
+            current = list->current;
+            pNext = current->next;
+            if (pNext != 0) {
+                pNext->prev = current->prev;
+            }
+            current = list->current;
+            pPrev = current->prev;
+            if (pPrev != 0) {
+                pPrev->next = current->next;
+            }
+
+            // Get data from node - matches LAB_004184b7
+            current = list->current;
+            pHandler = 0;
+            if (current != 0) {
+                pHandler = (BaseHandler*)current->data;
+            }
+            // Free node - matches LAB_004184c6
+            if (current != 0) {
+                current->data = 0;
+                current->next = 0;
+                current->prev = 0;
+                FreeMemory(current);
+                list->current = 0;
+            }
+            list->current = list->head;
+        }
+
+        // Call handler's Cleanup method with param 0 (vtable offset 0x18)
+        pHandler->Cleanup(0);
+
+        // Call handler's Delete method with param 1 (vtable offset 0x0c)
+        if (pHandler != 0) {
+            pHandler->Delete(1);
+        }
+
+        return 1;
     }
-    
-    // Get eventList and current node
-    list = eventList;
-    current = list->current;
-    
-    if (current == 0) {
-        pHandler = 0;
-    } else {
-        // Unlink node from doubly-linked list
-        if (list->head == current) {
-            list->head = current->prev;
-        }
-        current = list->current;
-        if (list->tail == current) {
-            list->tail = current->next;
-        }
-        current = list->current;
-        pNext = current->next;
-        if (pNext != 0) {
-            pNext->prev = current->prev;
-        }
-        current = list->current;
-        pPrev = current->prev;
-        if (pPrev != 0) {
-            pPrev->next = current->next;
-        }
-        
-        // Get data from node - matches LAB_004184b7
-        current = list->current;
-        pHandler = 0;
-        if (current != 0) {
-            pHandler = (BaseHandler*)current->data;
-        }
-        // Free node - matches LAB_004184c6
-        if (current != 0) {
-            current->data = 0;
-            current->next = 0;
-            current->prev = 0;
-            FreeMemory(current);
-            list->current = 0;
-        }
-        list->current = list->head;
-    }
-    
-    // Call handler's Cleanup method with param 0 (vtable offset 0x18)
-    pHandler->Cleanup(0);
-    
-    // Call handler's Delete method with param 1 (vtable offset 0x0c)
-    if (pHandler != 0) {
-        pHandler->Delete(1);
-    }
-    
-    return 1;
+    return 0;
 }
 
 /* Function start: 0x418540 */
@@ -996,8 +989,9 @@ int GameLoop::FindHandlerInEventList(int command) {
         return 0;
     }
     list->current = list->head;
+    list = GameLoop::eventList;
     if (list->head == 0) {
-        return 0;
+        goto not_found;
     }
     do {
         list = GameLoop::eventList;
@@ -1005,15 +999,15 @@ int GameLoop::FindHandlerInEventList(int command) {
         if (node != 0) {
             data = node->data;
             if (command == ((Handler*)data)->handlerId) {
-                break;
+                goto found;
             }
         } else {
             if (command == *(int*)0x88) {
-                break;
+                goto found;
             }
         }
         if (list->tail == node) {
-            return 0;
+            goto not_found;
         }
         if (node != 0) {
             list->current = node->prev;
@@ -1021,6 +1015,10 @@ int GameLoop::FindHandlerInEventList(int command) {
         list = GameLoop::eventList;
     } while (list->head != 0);
 
+not_found:
+    return 0;
+
+found:
     node = GameLoop::eventList->current;
     if (node == 0) {
         return 0;

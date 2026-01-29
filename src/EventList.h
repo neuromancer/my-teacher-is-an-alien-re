@@ -11,6 +11,7 @@ struct EventNode {
     void* data;         // 0x08 - pointer to object with vtable
 
     EventNode() {}
+    ~EventNode() { data = 0; next = 0; prev = 0; }
     EventNode(void* d) { data = d; next = 0; prev = 0; }
 };
 

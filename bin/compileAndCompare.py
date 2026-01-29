@@ -194,7 +194,65 @@ def read_assembly(function_name, file_path):
     assembly = "\n".join(lines[:cutoff_idx])
     seh_code = "\n".join(lines[cutoff_idx:])
 
+    # Second pass: filter interleaved SEH cleanup funclets from within the assembly.
+    # In functions with switch/new (like CreateHandler), the compiler interleaves
+    # SEH cleanup funclets (operator delete on exception) between case blocks.
+    # These funclets are labeled blocks ($Lxxxx:) that:
+    #   - Are NOT jump table targets
+    #   - Contain references to SEH temporaries ($Txxxx) or CxxFrameHandler
+    assembly, seh_code = _filter_seh_funclets(assembly, seh_code, jump_table_targets)
+
     return assembly, seh_code
+
+
+def _filter_seh_funclets(assembly, seh_code, jump_table_targets):
+    """Remove interleaved SEH cleanup funclets from assembly."""
+    lines = assembly.split("\n")
+    stripped = [l.strip() for l in lines]
+
+    # Parse into labeled blocks: (start_idx, end_idx, label_or_None)
+    blocks = []
+    current_start = 0
+    current_label = None
+
+    for i, line in enumerate(stripped):
+        label_match = re.match(r'^(\$L\d+)\s*:', line)
+        if label_match:
+            if i > current_start or current_label is not None:
+                blocks.append((current_start, i, current_label))
+            current_start = i
+            current_label = label_match.group(1)
+
+    # Last block
+    if current_start < len(lines):
+        blocks.append((current_start, len(lines), current_label))
+
+    kept_lines = []
+    extra_seh_lines = []
+
+    for start, end, label in blocks:
+        block_stripped = stripped[start:end]
+        block_text = " ".join(block_stripped)
+
+        is_seh_funclet = False
+        if label and label not in jump_table_targets:
+            # Check for SEH temporary references ($Txxxx) or CxxFrameHandler
+            if re.search(r'\$T\d+', block_text) or 'CxxFrameHandler' in block_text:
+                is_seh_funclet = True
+
+        if is_seh_funclet:
+            extra_seh_lines.extend(lines[start:end])
+        else:
+            kept_lines.extend(lines[start:end])
+
+    new_assembly = "\n".join(kept_lines)
+    if extra_seh_lines:
+        if seh_code and seh_code.strip():
+            seh_code = seh_code + "\n" + "\n".join(extra_seh_lines)
+        else:
+            seh_code = "\n".join(extra_seh_lines)
+
+    return new_assembly, seh_code
 
 def parse_mnemonics(assembly_code):
     normalization_map = {
