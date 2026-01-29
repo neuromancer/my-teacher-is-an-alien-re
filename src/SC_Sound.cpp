@@ -275,27 +275,27 @@ SoundItem* SC_Sound::FindOrCreateSound(int soundId)
     void* allocResult;
     SoundItem* newItem;
     MessageNode* newNode;
-    int currData;
 
     pList = SC_Sound::list;
-    currData = (int)pList->head;
-    if (currData != 0) {
+    if (pList->head != 0) {
         pList->current = pList->head;
-        currData = (int)pList->head;
-        while (currData != 0) {
+        while (pList->head != 0) {
             currNode = (MessageNode*)pList->current;
-            currData = 0x18;
-            if (currNode != 0) {
-                currData = ((SoundItem*)currNode->data)->soundId;
-            }
-            if (soundId == currData) {
-                currNode = (MessageNode*)pList->current;
-                if (currNode == 0) {
-                    foundItem = 0;
-                } else {
-                    foundItem = (SoundItem*)currNode->data;
+            if (currNode == 0) {
+                if (soundId == *(int*)0x18) {
+                    goto found;
                 }
-                return foundItem;
+            } else {
+                if (soundId == ((SoundItem*)currNode->data)->soundId) {
+found:
+                    currNode = (MessageNode*)pList->current;
+                    if (currNode == 0) {
+                        foundItem = 0;
+                    } else {
+                        foundItem = (SoundItem*)currNode->data;
+                    }
+                    return foundItem;
+                }
             }
             if (pList->tail == pList->current) {
                 break;
@@ -303,18 +303,13 @@ SoundItem* SC_Sound::FindOrCreateSound(int soundId)
             if (currNode != 0) {
                 pList->current = currNode->next;
             }
-            currData = (int)pList->head;
         }
     }
 
     // Not found - allocate new SoundItem
-    allocResult = operator new(0x20);
-    newItem = 0;
-    if (allocResult != 0) {
-        newItem = (SoundItem*)allocResult;
-        newItem->SoundItem::SoundItem(soundId);
-    }
+    newItem = new SoundItem(soundId);
 
+    pList = SC_Sound::list;
     if (newItem == 0) {
         ShowError("queue fault 0101");
     }
@@ -322,8 +317,48 @@ SoundItem* SC_Sound::FindOrCreateSound(int soundId)
     pList->current = pList->head;
 
     // Check list type for insertion method
-    if (pList->flags == 1 || pList->flags == 2) {
+    if (pList->flags != 1 && pList->flags != 2) {
+        pList->InsertBeforeCurrent(newItem);
+        return newItem;
+    }
+
+    if (pList->head == 0) {
+        if (newItem == 0) {
+            ShowError("queue fault 0102");
+        }
+
+        allocResult = operator new(0xc);
+        newNode = 0;
+        if (allocResult != 0) {
+            newNode = ((MessageNode*)allocResult)->Init(newItem);
+        }
+
+        if (pList->current == 0) {
+            pList->current = pList->head;
+        }
+
         if (pList->head == 0) {
+            pList->head = newNode;
+            pList->tail = newNode;
+            pList->current = newNode;
+        } else {
+            newNode->prev = (MessageNode*)pList->current;
+            newNode->next = ((MessageNode*)pList->current)->next;
+            if (((MessageNode*)pList->current)->next == 0) {
+                pList->head = newNode;
+                ((MessageNode*)pList->current)->next = newNode;
+            } else {
+                ((MessageNode*)pList->current)->next->prev = newNode;
+                ((MessageNode*)pList->current)->next = newNode;
+            }
+        }
+        return newItem;
+    }
+
+    // Priority insertion loop
+    do {
+        currNode = (MessageNode*)pList->current;
+        if ((unsigned int)((SoundItem*)currNode->data)->soundId < (unsigned int)newItem->soundId) {
             if (newItem == 0) {
                 ShowError("queue fault 0102");
             }
@@ -331,7 +366,10 @@ SoundItem* SC_Sound::FindOrCreateSound(int soundId)
             allocResult = operator new(0xc);
             newNode = 0;
             if (allocResult != 0) {
-                newNode = ((MessageNode*)allocResult)->Init(newItem);
+                ((MessageNode*)allocResult)->data = newItem;
+                ((MessageNode*)allocResult)->prev = 0;
+                ((MessageNode*)allocResult)->next = 0;
+                newNode = (MessageNode*)allocResult;
             }
 
             if (pList->current == 0) {
@@ -353,88 +391,47 @@ SoundItem* SC_Sound::FindOrCreateSound(int soundId)
                     ((MessageNode*)pList->current)->next = newNode;
                 }
             }
-        } else {
-            // Priority insertion loop
-            while (pList->current != 0) {
-                currNode = (MessageNode*)pList->current;
-                if (((SoundItem*)currNode->data)->soundId < newItem->soundId) {
-                    if (newItem == 0) {
-                        ShowError("queue fault 0102");
-                    }
-
-                    allocResult = operator new(0xc);
-                    newNode = 0;
-                    if (allocResult != 0) {
-                        ((MessageNode*)allocResult)->data = newItem;
-                        ((MessageNode*)allocResult)->prev = 0;
-                        ((MessageNode*)allocResult)->next = 0;
-                        newNode = (MessageNode*)allocResult;
-                    }
-
-                    if (pList->current == 0) {
-                        pList->current = pList->head;
-                    }
-
-                    if (pList->head == 0) {
-                        pList->head = newNode;
-                        pList->tail = newNode;
-                        pList->current = newNode;
-                    } else {
-                        newNode->prev = (MessageNode*)pList->current;
-                        newNode->next = ((MessageNode*)pList->current)->next;
-                        if (((MessageNode*)pList->current)->next == 0) {
-                            pList->head = newNode;
-                            ((MessageNode*)pList->current)->next = newNode;
-                        } else {
-                            ((MessageNode*)pList->current)->next->prev = newNode;
-                            ((MessageNode*)pList->current)->next = newNode;
-                        }
-                    }
-                    return newItem;
-                }
-
-                if (pList->tail == pList->current) {
-                    if (newItem == 0) {
-                        ShowError("queue fault 0112");
-                    }
-
-                    allocResult = operator new(0xc);
-                    newNode = 0;
-                    if (allocResult != 0) {
-                        ((MessageNode*)allocResult)->data = newItem;
-                        ((MessageNode*)allocResult)->prev = 0;
-                        ((MessageNode*)allocResult)->next = 0;
-                        newNode = (MessageNode*)allocResult;
-                    }
-
-                    if (pList->current == 0) {
-                        pList->current = pList->tail;
-                    }
-
-                    if (pList->head == 0) {
-                        pList->head = newNode;
-                        pList->tail = newNode;
-                        pList->current = newNode;
-                    } else {
-                        if (pList->tail == 0 || ((MessageNode*)pList->tail)->prev != 0) {
-                            ShowError("queue fault 0113");
-                        }
-                        newNode->prev = 0;
-                        newNode->next = (MessageNode*)pList->tail;
-                        ((MessageNode*)pList->tail)->prev = newNode;
-                        pList->tail = newNode;
-                    }
-                    return newItem;
-                }
-
-                if (currNode != 0) {
-                    pList->current = currNode->next;
-                }
-            }
+            return newItem;
         }
-    } else {
-        pList->InsertBeforeCurrent(newItem);
-    }
+
+        if (pList->tail == pList->current) {
+            if (newItem == 0) {
+                ShowError("queue fault 0112");
+            }
+
+            allocResult = operator new(0xc);
+            newNode = 0;
+            if (allocResult != 0) {
+                ((MessageNode*)allocResult)->data = newItem;
+                ((MessageNode*)allocResult)->prev = 0;
+                ((MessageNode*)allocResult)->next = 0;
+                newNode = (MessageNode*)allocResult;
+            }
+
+            if (pList->current == 0) {
+                pList->current = pList->tail;
+            }
+
+            if (pList->head == 0) {
+                pList->head = newNode;
+                pList->tail = newNode;
+                pList->current = newNode;
+            } else {
+                if (pList->tail == 0 || ((MessageNode*)pList->tail)->next != 0) {
+                    ShowError("queue fault 0113");
+                }
+                newNode->prev = 0;
+                newNode->next = (MessageNode*)pList->tail;
+                ((MessageNode*)pList->tail)->prev = newNode;
+                pList->tail = newNode;
+            }
+            return newItem;
+        }
+
+        if (currNode != 0) {
+            pList->current = currNode->next;
+        }
+    } while (pList->current != 0);
 
     return newItem;
 }
