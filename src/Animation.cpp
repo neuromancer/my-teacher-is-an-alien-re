@@ -29,14 +29,6 @@ Animation::Animation() {
   CleanArray10();
 }
 
-/* Function start: 0x41FAC0 */
-void Animation::Delete(unsigned char param_1) {
-  Animation::~Animation();
-  if ((param_1 & 1) != 0) {
-    FreeMemory(this);
-  }
-}
-
 /* Function start: 0x41FAE0 */
 Animation::Animation(char *filename) {
   CleanArray10();

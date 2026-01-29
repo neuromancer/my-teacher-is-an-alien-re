@@ -57,7 +57,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     anim->ToBufferVB(buffer);
     anim->DoFrame();
     if (anim != (Animation *)0x0) {
-        anim->Delete(1);
+        delete anim;
     }
     BuildGlyphTable();
     iVar2 = IsCharSupported(0x41);

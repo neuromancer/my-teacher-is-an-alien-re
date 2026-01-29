@@ -39,10 +39,10 @@
 // Base handler class for vtable calls
 class BaseHandler {
 public:
-    virtual void Destructor(int flag);      // +0x00
-    virtual void Method04();                // +0x04
-    virtual void Method08();                // +0x08
-    virtual void Delete(int flag);          // +0x0c
+    virtual int LBLParse(char*);            // +0x00
+    virtual void OnProcessStart();          // +0x04
+    virtual void OnProcessEnd();            // +0x08
+    virtual ~BaseHandler();                  // +0x0c
     virtual void Method10();                // +0x10
     virtual void Method14();                // +0x14
     virtual void Cleanup(int flag);         // +0x18
@@ -354,9 +354,8 @@ void GameLoop::Cleanup() {
                         }
                         pEventList->current = pEventList->head;
                     }
-                    // Call virtual Delete(1) at vtable offset 0xC
                     if (pData != 0) {
-                        ((BaseHandler*)pData)->Delete(1);
+                        delete (Handler*)pData;
                     }
                 } while (pEventList->head != 0);
             }
@@ -978,9 +977,8 @@ int GameLoop::RemoveHandler(int command) {
         // Call handler's Cleanup method with param 0 (vtable offset 0x18)
         pHandler->Cleanup(0);
 
-        // Call handler's Delete method with param 1 (vtable offset 0x0c)
         if (pHandler != 0) {
-            pHandler->Delete(1);
+            delete (Handler*)pHandler;
         }
 
         return 1;

@@ -114,8 +114,8 @@ void* ZBQueueNode::Cleanup(int flag)
     ZBQueueNode::data = 0;
     ZBQueueNode::next = 0;
     ZBQueueNode::prev = 0;
-    if ((flag & 1) != 0) {
-        delete this;
+    if (flag & 1) {
+        FreeMemory(this);
     }
     return this;
 }

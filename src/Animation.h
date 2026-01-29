@@ -36,7 +36,6 @@ public:
   void CloseSmackerBuffer();
   void CloseSmackerFile();
   
-  virtual void Delete(unsigned char);
   void DoFrame();
 
 private:

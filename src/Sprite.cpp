@@ -100,7 +100,7 @@ void Sprite::StopAnimationSound()
     if (g_ZBufferManager_0043698c != 0 && anim != 0 && g_ZBufferManager_0043698c->m_state != 0) {
         ((Queue*)g_ZBufferManager_0043698c)->Insert(anim);
     } else if (anim != 0) {
-        anim->Delete(1);
+        delete anim;
     }
 
     animation_data = 0;
