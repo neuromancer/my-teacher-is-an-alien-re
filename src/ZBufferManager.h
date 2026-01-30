@@ -39,6 +39,7 @@ struct ZBQueue {
     void ClearList();             // 0x401560
     void Insert(void* data);      // 0x409160
     void InsertBeforeCurrent(void* data);  // 0x41CB40
+    void InsertBefore(void* data);  // 0x41CC10
 };
 
 // Forward declaration for command type used in queuing

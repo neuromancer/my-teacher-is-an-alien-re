@@ -103,6 +103,11 @@ void ZBQueue::Insert(void* data)
 /* Function start: 0x41BB20 */
 void ZBufferManager::QueueAnimationCleanup(void* anim)
 {
+    ZBQueueNode* node;
+    ZBQueueNode* newNode;
+    ZBQueue* queue;
+    int qtype;
+
     if (m_state == 1) {
         if (anim != 0) {
             delete (Animation*)anim;
@@ -117,7 +122,97 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
         return;
     }
 
-    m_queueA4->Insert(anim);
+    node = new ZBQueueNode(anim);
+
+    queue = m_queueA4;
+    if (node == 0) {
+        ShowError("queue fault 0101");
+    }
+    queue->current = queue->head;
+    qtype = queue->type;
+    if (qtype == 1 || qtype == 2) {
+        if (queue->current == 0) {
+            if (node == 0) {
+                ShowError("queue fault 0102");
+            }
+            newNode = new ZBQueueNode(node);
+            if (queue->current == 0) {
+                queue->current = queue->head;
+            }
+            if (queue->head == 0) {
+                queue->head = newNode;
+                queue->tail = newNode;
+                queue->current = newNode;
+            } else {
+                newNode->next = queue->current;
+                newNode->prev = queue->current->prev;
+                if (queue->current->prev == 0) {
+                    queue->head = newNode;
+                    queue->current->prev = newNode;
+                } else {
+                    queue->current->prev->next = newNode;
+                    queue->current->prev = newNode;
+                }
+            }
+            return;
+        }
+        do {
+            ZBQueueNode* curNode = (ZBQueueNode*)queue->current;
+            if (*(unsigned int*)curNode->data < *(unsigned int*)node) {
+                if (node == 0) {
+                    ShowError("queue fault 0102");
+                }
+                newNode = new ZBQueueNode(node);
+                if (queue->current == 0) {
+                    queue->current = queue->head;
+                }
+                if (queue->head == 0) {
+                    queue->head = newNode;
+                    queue->tail = newNode;
+                    queue->current = newNode;
+                } else {
+                    newNode->next = queue->current;
+                    newNode->prev = queue->current->prev;
+                    if (queue->current->prev == 0) {
+                        queue->head = newNode;
+                        queue->current->prev = newNode;
+                    } else {
+                        queue->current->prev->next = newNode;
+                        queue->current->prev = newNode;
+                    }
+                }
+                return;
+            }
+            if (queue->tail == curNode) {
+                if (node == 0) {
+                    ShowError("queue fault 0112");
+                }
+                newNode = new ZBQueueNode(node);
+                if (queue->current == 0) {
+                    queue->current = queue->tail;
+                }
+                if (queue->head == 0) {
+                    queue->head = newNode;
+                    queue->tail = newNode;
+                    queue->current = newNode;
+                } else {
+                    if (queue->tail == 0 || queue->tail->next != 0) {
+                        ShowError("queue fault 0113");
+                    }
+                    newNode->next = 0;
+                    newNode->prev = queue->tail;
+                    queue->tail->next = newNode;
+                    queue->tail = newNode;
+                }
+                return;
+            }
+            if (curNode != 0) {
+                queue->current = curNode->next;
+            }
+        } while (queue->current != 0);
+        return;
+    }
+    queue->InsertBefore(node);
 }
 
 /* Function start: 0x41B5D0 */
@@ -864,6 +959,39 @@ void ZBQueue::InsertBeforeCurrent(void* data)
     } else {
         current->prev->next = result;
         current->prev = result;
+    }
+}
+
+/* Function start: 0x41CC10 */
+void ZBQueue::InsertBefore(void* data)
+{
+    ZBQueueNode* newNode;
+
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+
+    newNode = new ZBQueueNode(data);
+
+    if (current == 0) {
+        current = head;
+    }
+
+    if (head == 0) {
+        head = newNode;
+        tail = newNode;
+        current = newNode;
+        return;
+    }
+
+    newNode->next = current;
+    newNode->prev = current->prev;
+    if (current->prev == 0) {
+        head = newNode;
+        current->prev = newNode;
+    } else {
+        current->prev->next = newNode;
+        current->prev = newNode;
     }
 }
 

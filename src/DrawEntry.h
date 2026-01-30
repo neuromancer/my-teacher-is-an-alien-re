@@ -6,16 +6,15 @@ class VBuffer;
 struct SoundCommand;
 
 // DrawEntry - represents an entry in the draw/render queue (m_queueA4)
-// Size: 0x0C (12 bytes minimum)
-// vtable: unknown
+// Size: 0x0C (12 bytes)
+// No vtable - destructor is non-virtual (0x411080 does not set vtable pointer)
 // Used by ZBufferManager for managing render queue entries
 class DrawEntry {
 public:
-    // Virtual destructor at vtable offset 0x00
-    virtual ~DrawEntry();
-    
-    VBuffer* m_videoBuffer;  // 0x04 - pointer to video buffer data
+    int field_0;                     // 0x00
+    VBuffer* m_videoBuffer;          // 0x04 - pointer to video buffer data
     SoundCommand* m_childObject;     // 0x08 - pointer to child render/sound command
+    ~DrawEntry();
 };
 
 #endif // DRAWENTRY_H
