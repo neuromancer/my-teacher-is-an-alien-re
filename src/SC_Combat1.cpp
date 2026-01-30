@@ -23,7 +23,7 @@ extern void* __stdcall ExpandPool(void** pool, int capacity, int itemSize);
 extern void InitMessageArray(int* param_1, int param_2);
 
 // Already implemented elsewhere:
-// - DrawEntry::Cleanup(int) at 0x411080 in Engine.cpp
+// - 0x411080: DrawEntry scalar deleting destructor (compiler-generated, base dtor inlined)
 extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.cpp
 
 

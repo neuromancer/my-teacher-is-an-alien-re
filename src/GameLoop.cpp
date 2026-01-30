@@ -432,15 +432,7 @@ void GameLoop::CleanupLoop() {
         while (pQueue->head != 0) {
             pResult = pQueue->PopNode2_2();
             if (pResult != 0) {
-                if (((int*)pResult)[1] != 0) {
-                    delete (VBuffer*)((int*)pResult)[1];
-                    ((int*)pResult)[1] = 0;
-                }
-                if (((int*)pResult)[2] != 0) {
-                    (*(void (__stdcall **)(int))(*(int*)((int*)pResult)[2]))(1);
-                    ((int*)pResult)[2] = 0;
-                }
-                delete (char*)pResult;
+                delete (DrawEntry*)pResult;
             }
         }
     }

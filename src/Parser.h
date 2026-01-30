@@ -9,7 +9,7 @@ class Parser
 {
 public:
     Parser();
-    ~Parser(); // DO NOT make this `virtual` or you will break subclasses and have strange crashes!
+    ~Parser();
     virtual int LBLParse(char*);
     virtual void OnProcessStart();
     virtual void OnProcessEnd();

@@ -1,4 +1,4 @@
-/* Function start: 0x411080 */
+/* Function start: 0x411080 */ // compiler-generated: DrawEntry scalar deleting destructor
 
 /* Function start: 0x4110D0 */
 

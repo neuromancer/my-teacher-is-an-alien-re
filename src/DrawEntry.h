@@ -7,7 +7,8 @@ struct SoundCommand;
 
 // DrawEntry - represents an entry in the draw/render queue (m_queueA4)
 // Size: 0x0C (12 bytes)
-// No vtable - destructor is non-virtual (0x411080 does not set vtable pointer)
+// No vtable - destructor is non-virtual
+// 0x411080 is the compiler-generated scalar deleting destructor (base dtor body inlined)
 // Used by ZBufferManager for managing render queue entries
 class DrawEntry {
 public:

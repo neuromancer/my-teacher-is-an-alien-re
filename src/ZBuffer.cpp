@@ -8,6 +8,7 @@ char s_hIam[] = "hIam %d";
 #include "string.h"
 #include <stdlib.h>
 #include "VBuffer.h"
+#include "Animation.h"
 #include "Memory.h"
 #include "Timer.h"
 #include "string.h"
@@ -148,7 +149,7 @@ void ZBuffer::CleanUpVBuffer()
         FreeFromGlobalHeap(vb);
         m_vbuffer = 0;
     }
-    Parser* ptr = (Parser*)m_subObject;
+    Animation* ptr = (Animation*)m_subObject;
     if (ptr != 0) {
         delete ptr;
         m_subObject = 0;

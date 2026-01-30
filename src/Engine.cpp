@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "DrawEntry.h"
+#include "Animation.h"
 #include "AnimatedAsset.h"
 #include "globals.h"
 #include "SoundCommand.h"
@@ -42,17 +43,18 @@ void Engine::OnProcessEnd() {}
 // DrawEntry implementation (originally in same source file as Engine)
 DrawEntry::~DrawEntry() {
     VBuffer* videoBuffer;
-    SoundCommand* childObject;
+    void* childObject;
 
     videoBuffer = DrawEntry::m_videoBuffer;
     if (videoBuffer != 0) {
-        delete videoBuffer;
+        videoBuffer->~VBuffer();
+        FreeFromGlobalHeap(videoBuffer);
         DrawEntry::m_videoBuffer = 0;
     }
 
     childObject = DrawEntry::m_childObject;
     if (childObject != 0) {
-        delete childObject;
+        delete (Animation*)childObject;
         DrawEntry::m_childObject = 0;
     }
 }

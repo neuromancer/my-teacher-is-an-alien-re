@@ -10,10 +10,10 @@ class SC_Message;
 // Handlers are scene/screen managers that process messages and render content
 //
 // vtable layout (extends Parser):
-//   +0x00: Parser::~Parser (base destructor)
-//   +0x04: Parser::LBLParse
-//   +0x08: Parser::OnProcessStart
-//   +0x0C: Handler scalar deleting destructor
+//   +0x00: LBLParse (Parser virtual)
+//   +0x04: OnProcessStart (Parser virtual)
+//   +0x08: OnProcessEnd (Parser virtual)
+//   +0x0C: Handler scalar deleting destructor (virtual ~Handler)
 //   +0x10: Init (virtual) - called when entering handler
 //   +0x14: AddMessage (virtual) - process messages
 //   +0x18: ShutDown (virtual) - called on system messages
