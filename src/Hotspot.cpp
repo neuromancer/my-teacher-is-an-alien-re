@@ -215,61 +215,69 @@ Hotspot::~Hotspot()
 		wrong_tool = 0;
 	}
 
-	if (pre_message) {
-		if (pre_message->m_head) {
-			pre_message->m_current = pre_message->m_head;
-			while (pre_message->m_head) {
-				QueueNode* node = (QueueNode*)pre_message->m_current;
+	Queue* q = pre_message;
+	if (q) {
+		if (q->m_head) {
+			q->m_current = q->m_head;
+			while (q->m_head) {
+				QueueNode* node = (QueueNode*)q->m_current;
+				SC_Message* msg;
 				if (!node) {
-					pre_message->m_current = pre_message->m_head;
-					continue;
+					msg = 0;
+				} else {
+					if (q->m_head == node) q->m_head = node->next;
+					if (q->m_tail == node) q->m_tail = node->prev;
+					if (node->prev) node->prev->next = node->next;
+					if (node->next) node->next->prev = node->prev;
+
+					msg = (SC_Message*)q->GetCurrentData();
+
+					if (q->m_current) {
+						delete (QueueNode*)q->m_current;
+						q->m_current = 0;
+					}
+					q->m_current = q->m_head;
 				}
-				if (pre_message->m_head == node) pre_message->m_head = node->next;
-				if (pre_message->m_tail == node) pre_message->m_tail = node->prev;
-				if (node->prev) node->prev->next = node->next;
-				if (node->next) node->next->prev = node->prev;
-
-				SC_Message* msg = (SC_Message*)pre_message->GetCurrentData();
-
-				if (pre_message->m_current) {
-					delete (QueueNode*)pre_message->m_current;
-					pre_message->m_current = 0;
+				if (msg) {
+					msg->~SC_Message();
+					delete (char*)msg;
 				}
-				pre_message->m_current = pre_message->m_head;
-
-				if (msg) delete msg;
 			}
 		}
-		delete pre_message;
+		delete (char*)q;
 		pre_message = 0;
 	}
 
-	if (message) {
-		if (message->m_head) {
-			message->m_current = message->m_head;
-			while (message->m_head) {
-				QueueNode* node = (QueueNode*)message->m_current;
+	q = message;
+	if (q) {
+		if (q->m_head) {
+			q->m_current = q->m_head;
+			while (q->m_head) {
+				QueueNode* node = (QueueNode*)q->m_current;
+				SC_Message* msg;
 				if (!node) {
-					message->m_current = message->m_head;
-					continue;
+					msg = 0;
+				} else {
+					if (q->m_head == node) q->m_head = node->next;
+					if (q->m_tail == node) q->m_tail = node->prev;
+					if (node->prev) node->prev->next = node->next;
+					if (node->next) node->next->prev = node->prev;
+
+					msg = (SC_Message*)q->GetCurrentData();
+
+					if (q->m_current) {
+						delete (QueueNode*)q->m_current;
+						q->m_current = 0;
+					}
+					q->m_current = q->m_head;
 				}
-				if (message->m_head == node) message->m_head = node->next;
-				if (message->m_tail == node) message->m_tail = node->prev;
-				if (node->prev) node->prev->next = node->next;
-				if (node->next) node->next->prev = node->prev;
-
-				SC_Message* msg = (SC_Message*)message->GetCurrentData();
-
-				if (message->m_current) {
-					delete (QueueNode*)message->m_current;
-					message->m_current = 0;
+				if (msg) {
+					msg->~SC_Message();
+					delete (char*)msg;
 				}
-				message->m_current = message->m_head;
-
-				if (msg) delete msg;
 			}
 		}
-		delete message;
+		delete (char*)q;
 		message = 0;
 	}
 }

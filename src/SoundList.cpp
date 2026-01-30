@@ -34,12 +34,12 @@ SoundList::~SoundList() {
     Sample *sound = m_field8[m_fieldc];
     if (sound != 0) {
       sound->Unload();
-      delete sound;
+      delete (void *)sound;
       m_field8[m_fieldc] = 0;
     }
     char *sound2 = m_sounds[m_fieldc];
     if (sound2 != 0) {
-      delete[] sound2;
+      delete (void *)sound2;
       m_sounds[m_fieldc] = 0;
     }
   }
@@ -55,12 +55,9 @@ SoundList::~SoundList() {
 
 /* Function start: 0x41E870 */
 void SoundList::StopAll() {
-  Sample **field8_ptr = m_field8;
-
   for (short i = 0; i < m_fieldc; i++) {
-    Sample *sample = field8_ptr[i];
-    if (AIL_sample_status(sample->m_sample) == SMP_PLAYING) {
-      sample->Unload();
+    if (AIL_sample_status(m_field8[i]->m_sample) == SMP_PLAYING) {
+      m_field8[i]->Unload();
     }
   }
 }
