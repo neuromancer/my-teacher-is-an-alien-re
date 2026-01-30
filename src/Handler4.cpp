@@ -13,7 +13,6 @@ extern "C" char* __cdecl CDData_FormatPath(char*, ...);
 
 /* Function start: 0x40E220 */
 Handler4::Handler4() {
-    int i;
     memset(&palette, 0, 0xf0);
 
     rect1.left = 0;
@@ -34,16 +33,14 @@ Handler4::Handler4() {
     rect4.right = 0x12f;
     rect4.bottom = 0x149;
     rect5.left = 0x32;
-    
-    palette = new Palette();
     rect3.left = 0x1de;
     rect5.top = 0x14a;
     rect5.right = 0x172;
     rect5.bottom = 0x192;
 
+    palette = new Palette();
     palette->Load(CDData_FormatPath("puzzle1\\Puzztest.col"));
 
-    // Create sprites
     buttons1 = new Sprite("puzzle1\\buttons1.smk");
     buttons1->loc_x = 0x1dc;
     buttons1->loc_y = 0x147;
@@ -68,20 +65,24 @@ Handler4::Handler4() {
     paths3->loc_x = 0x1ee;
     paths3->loc_y = 0x53;
 
-    for (i = 0; i < 3; i++) {
-        (&buttons1)[i]->flags &= ~2;
-        (&buttons1)[i]->priority = 10;
-        (&buttons1)[i]->SetState(3);
-        (&buttons1)[i]->SetRange(0, 1, 1);
-        (&buttons1)[i]->SetRange(1, 2, 2);
-        (&buttons1)[i]->SetRange(2, 3, 3);
+    {
+        int count = 3;
+        do {
+            (&buttons1)[3 - count]->flags &= ~2;
+            (&buttons1)[3 - count]->priority = 10;
+            (&buttons1)[3 - count]->SetState(3);
+            (&buttons1)[3 - count]->SetRange(0, 1, 1);
+            (&buttons1)[3 - count]->SetRange(1, 2, 2);
+            (&buttons1)[3 - count]->SetRange(2, 3, 3);
 
-        (&paths1)[i]->flags &= ~2; 
-        (&paths1)[i]->priority = 10;
-        (&paths1)[i]->SetState(3);
-        (&paths1)[i]->SetRange(0, 1, 1);
-        (&paths1)[i]->SetRange(1, 2, 2);
-        (&paths1)[i]->SetRange(2, 3, 3);
+            (&paths1)[3 - count]->flags &= ~2;
+            (&paths1)[3 - count]->priority = 10;
+            (&paths1)[3 - count]->SetState(3);
+            (&paths1)[3 - count]->SetRange(0, 1, 1);
+            (&paths1)[3 - count]->SetRange(1, 2, 2);
+            (&paths1)[3 - count]->SetRange(2, 3, 3);
+            count--;
+        } while (count != 0);
     }
 
     puzztest = new Sprite("puzzle1\\puzztest.smk");
@@ -111,18 +112,22 @@ Handler4::Handler4() {
     topfloor->loc_x = 0x5a;
     topfloor->loc_y = 0x11c;
 
-    for (i = 0; i < 3; i++) {
-        (&lowfloor)[i]->flags &= ~2;
-        (&lowfloor)[i]->priority = 10;
-        (&lowfloor)[i]->flags |= 0x40;
-        (&lowfloor)[i]->SetState(4);
-        (&lowfloor)[i]->SetRange(0, 1, 4);
-        (&lowfloor)[i]->SetRange(1, 5, 8);
-        (&lowfloor)[i]->SetRange(2, 9, 12);
-        (&lowfloor)[i]->SetRange(3, 13, 16);
+    {
+        int count = 3;
+        do {
+            (&lowfloor)[3 - count]->flags &= ~2;
+            (&lowfloor)[3 - count]->priority = 10;
+            (&lowfloor)[3 - count]->flags |= 0x40;
+            (&lowfloor)[3 - count]->SetState(4);
+            (&lowfloor)[3 - count]->SetRange(0, 1, 4);
+            (&lowfloor)[3 - count]->SetRange(1, 5, 8);
+            (&lowfloor)[3 - count]->SetRange(2, 9, 12);
+            (&lowfloor)[3 - count]->SetRange(3, 13, 16);
+            count--;
+        } while (count != 0);
     }
 
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         soundStates[i] = 1;
     }
 }
@@ -131,36 +136,30 @@ Handler4::Handler4() {
 Handler4::~Handler4() {
     for (int i = 0; i < 3; i++) {
         if ((&lowfloor)[i]) {
-            (&lowfloor)[i]->FreeAnimation();
             delete (&lowfloor)[i];
             (&lowfloor)[i] = 0;
         }
         if ((&paths1)[i]) {
-            (&paths1)[i]->FreeAnimation();
             delete (&paths1)[i];
             (&paths1)[i] = 0;
         }
         if ((&buttons1)[i]) {
-            (&buttons1)[i]->FreeAnimation();
             delete (&buttons1)[i];
             (&buttons1)[i] = 0;
         }
     }
 
     if (litdoors) {
-        litdoors->FreeAnimation();
         delete litdoors;
         litdoors = 0;
     }
 
     if (puzztest) {
-        puzztest->FreeAnimation();
         delete puzztest;
         puzztest = 0;
     }
 
     if (palette) {
-        palette->Cleanup();
         delete palette;
         palette = 0;
     }
