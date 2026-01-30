@@ -172,10 +172,10 @@ void Handler4::Init(SC_Message* msg) {
     InitIconBar(msg);
 
     if (palette != 0) {
-        if (g_ZBufferManager_0043698c->m_fieldA8 != 0) {
+        if (g_ZBufferManager_0043698c->m_palette != 0) {
             WriteToMessageLog("ddouble palette");
         }
-        g_ZBufferManager_0043698c->m_fieldA8 = palette;
+        g_ZBufferManager_0043698c->m_palette = palette;
     }
 
     if (soundStates[9] != 0) {

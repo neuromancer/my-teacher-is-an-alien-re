@@ -42,12 +42,12 @@ Handler1::~Handler1() {
 /* Function start: 0x403570 */
 void Handler1::Init(SC_Message* msg) {
     Palette* pal;
-    void** palettePtr;
+    Palette** palettePtr;
     WriteToMessageLogIfEnabled(L"\"\\nENTER INTRO GAME TEXT\"");
     Handler1::CopyCommandData(msg);
     pal = palette;
     if (pal != 0) {
-        palettePtr = &g_ZBufferManager_0043698c->m_fieldA8;
+        palettePtr = &g_ZBufferManager_0043698c->m_palette;
         if (*palettePtr != 0) {
             WriteToMessageLogIfEnabled(L"ddouble palette");
         }

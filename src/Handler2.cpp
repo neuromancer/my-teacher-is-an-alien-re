@@ -54,12 +54,12 @@ Handler2::~Handler2() {
 /* Function start: 0x40F9E0 */
 void Handler2::Init(SC_Message* msg) {
     Palette* pal;
-    void** palettePtr;
+    Palette** palettePtr;
     WriteToMessageLogIfEnabled(L"\nENTER TEACHER SCREEN TO LEAVE");
     Handler2::CopyCommandData(msg);
     pal = palette;
     if (pal != 0) {
-        palettePtr = &g_ZBufferManager_0043698c->m_fieldA8;
+        palettePtr = &g_ZBufferManager_0043698c->m_palette;
         if (*palettePtr != 0) {
             WriteToMessageLogIfEnabled(L"ddouble palette");
         }

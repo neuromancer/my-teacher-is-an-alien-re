@@ -101,6 +101,22 @@ extern "C" void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int s
   SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
 }
 
+/* Function start: 0x41EBB0 */
+int Palette::IsPaletteUnchanged()
+{
+    Palette* tempPalette;
+    int result;
+
+    tempPalette = new Palette();
+    tempPalette->CopyEntries(0, 0x100);
+    result = Compare(tempPalette->m_data, 0x300);
+    if (tempPalette != 0) {
+        tempPalette->~Palette();
+        delete (void*)tempPalette;
+    }
+    return result;
+}
+
 /* Function start: 0x41EC60 */
 int Palette::Compare(void* data, int size)
 {

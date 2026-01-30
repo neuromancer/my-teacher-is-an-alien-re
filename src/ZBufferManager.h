@@ -5,6 +5,8 @@
 
 #include "Queue.h"
 
+class Palette;
+
 // Queue node structure - 12 bytes
 struct ZBQueueNode {
     ZBQueueNode* prev;  // 0x00
@@ -78,7 +80,7 @@ public:
     ZBQueue* m_queue9c;          // 0x9C - also known as m_list1
     ZBQueue* m_queueA0;          // 0xA0 - also known as m_commandQueue
     ZBQueue* m_queueA4;          // 0xA4 - also known as m_list3
-    void* m_fieldA8;             // 0xA8
+    Palette* m_palette;          // 0xA8
 };
 
 // Global pointer - this is the single global instance

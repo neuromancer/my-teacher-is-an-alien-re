@@ -69,10 +69,10 @@ void SCI_SearchScreen::Init(SC_Message* msg) {
     }
     field_640 = GetActiveControlCount();
     if (field_600 != 0) {
-        if (g_ZBufferManager_0043698c->m_fieldA8 != 0) {
+        if (g_ZBufferManager_0043698c->m_palette != 0) {
             WriteToMessageLog("ddouble palette");
         }
-        g_ZBufferManager_0043698c->m_fieldA8 = (void*)field_600;
+        g_ZBufferManager_0043698c->m_palette = field_600;
     }
 
     if (field_638 != 0) {

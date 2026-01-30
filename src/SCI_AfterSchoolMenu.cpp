@@ -180,10 +180,10 @@ void SCI_AfterSchoolMenu::Init(SC_Message* msg) {
 
         // Set palette if exists
         if (palette != 0) {
-            if (g_ZBufferManager_0043698c->m_fieldA8 != 0) {
+            if (g_ZBufferManager_0043698c->m_palette != 0) {
                 WriteToMessageLog("ddouble palette");
             }
-            g_ZBufferManager_0043698c->m_fieldA8 = palette;
+            g_ZBufferManager_0043698c->m_palette = palette;
         }
 
         // Copy saved state to current state

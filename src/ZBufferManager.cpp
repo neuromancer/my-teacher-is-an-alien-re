@@ -43,9 +43,7 @@ struct CommandType2 : public SoundCommand {
     virtual void Execute(GlyphRect* rect);
 };
 
-// Stub - checks if palette has changed from the stored one
-// Returns 0 if palette changed, non-zero if unchanged
-int __fastcall IsPaletteUnchanged(void* storedPalette) { return 0; }
+
 
 extern "C" void FlipScreen();
 extern VBuffer* g_WorkBuffer_00436974;
@@ -556,12 +554,12 @@ void ZBufferManager::ProcessRenderQueues()
     case 2:
     {
         // State type 2 processing
-        if (m_fieldA8 != 0) {
-            if (IsPaletteUnchanged(m_fieldA8) == 0) {
+        if (m_palette != 0) {
+            if (m_palette->IsPaletteUnchanged() == 0) {
                 BlankScreen();
-                ((Palette*)m_fieldA8)->SetPalette(0, 0x100);
+                m_palette->SetPalette(0, 0x100);
             }
-            m_fieldA8 = 0;
+            m_palette = 0;
         }
 
         {
@@ -622,12 +620,12 @@ void ZBufferManager::ProcessRenderQueues()
     case 3:
     {
         // State type 3 processing
-        if (m_fieldA8 != 0) {
-            if (IsPaletteUnchanged(m_fieldA8) == 0) {
+        if (m_palette != 0) {
+            if (m_palette->IsPaletteUnchanged() == 0) {
                 BlankScreen();
-                ((Palette*)m_fieldA8)->SetPalette(0, 0x100);
+                m_palette->SetPalette(0, 0x100);
             }
-            m_fieldA8 = 0;
+            m_palette = 0;
         }
 
         while (m_queue9c->head != 0) {
