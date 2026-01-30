@@ -46,7 +46,7 @@ public:
     void DisplayMap();
     void DisplayLitDoors();
     void DisplayThisFloorRow();
-    void PlaySound(int index, int loop);
+    void PlayPuzzleSound(int index, int loop);
 
     // Handler4-specific fields starting at 0x600
     Palette* palette;       // 0x600

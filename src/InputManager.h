@@ -9,6 +9,7 @@
 struct MousePoint {
     int x;
     int y;
+    MousePoint() { x = 0; y = 0; }
     ~MousePoint();
 };
 
