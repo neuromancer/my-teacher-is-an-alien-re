@@ -198,11 +198,11 @@ void ZBufferManager::Cleanup() {
         node = (ZBQueueNode*)queue->current;
         if (node != 0) {
             if (queue->head == node) {
-                queue->head = node->prev;
+                queue->head = node->next;
             }
             node = (ZBQueueNode*)queue->current;
             if (queue->tail == node) {
-                queue->tail = node->next;
+                queue->tail = node->prev;
             }
             node = (ZBQueueNode*)queue->current;
             nextNode = node->next;
@@ -644,11 +644,11 @@ void ZBufferManager::ProcessRenderQueues()
             if (node != 0) {
                 // Unlink node from double linked list
                 if (queue->head == node) {
-                    queue->head = node->prev;
+                    queue->head = node->next;
                 }
                 node = (ZBQueueNode*)queue->current;
                 if (queue->tail == node) {
-                    queue->tail = node->next;
+                    queue->tail = node->prev;
                 }
                 node = (ZBQueueNode*)queue->current;
                 nextNode = (ZBQueueNode*)node->next;
@@ -696,7 +696,7 @@ void ZBufferManager::ProcessRenderQueues()
                         break;
                     }
                     if (node != 0) {
-                        queue->current = node->prev;
+                        queue->current = node->next;
                     }
                 } while (m_queueA0->head != 0);
             }

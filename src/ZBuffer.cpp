@@ -214,10 +214,10 @@ void* ZBQueue::PopNode2()
         return 0;
     }
     if (head == node) {
-        head = node->prev;
+        head = node->next;
     }
     if (tail == node) {
-        tail = node->next;
+        tail = node->prev;
     }
     if (node->next != 0) {
         node->next->prev = node->prev;
@@ -251,10 +251,10 @@ void* ZBQueue::PopNode2_2()
         return 0;
     }
     if (head == node) {
-        head = node->prev;
+        head = node->next;
     }
     if (tail == node) {
-        tail = node->next;
+        tail = node->prev;
     }
     if (node->next != 0) {
         node->next->prev = node->prev;
@@ -288,10 +288,10 @@ void* ZBQueue::PopNode()
         return 0;
     }
     if (head == node) {
-        head = node->prev;
+        head = node->next;
     }
     if (tail == node) {
-        tail = node->next;
+        tail = node->prev;
     }
     if (node->next != 0) {
         node->next->prev = node->prev;
