@@ -161,14 +161,6 @@ void CommandType3::Execute(GlyphRect* rect)
     return;
 }
 
-/* Function start: 0x41CD10 */
-ZBQueueNode::ZBQueueNode(void* d)
-{
-    prev = 0;
-    next = 0;
-    data = d;
-}
-
 /* Function start: 0x41B760 */
 ZBufferManager::ZBufferManager() {
     WriteToMessageLogIfEnabled(L"declaring ZBuffer");
@@ -800,10 +792,7 @@ void ZBufferManager::UpdateScreen() {
                 local_10 = (RenderEntry*)node->data;
             }
             if (node != 0) {
-                node->data = 0;
-                node->prev = 0;
-                node->next = 0;
-                delete (void*)node;
+                delete node;
                 queue->current = 0;
             }
             queue->current = queue->head;
@@ -849,21 +838,14 @@ void ZBQueue::InsertBeforeCurrent(void* data)
         return;
     }
 
-    result->prev = current;
-    result->next = current->next;
-    if (current->next == 0) {
+    result->next = current;
+    result->prev = current->prev;
+    if (current->prev == 0) {
         head = result;
-        current->next = result;
+        current->prev = result;
     } else {
-        current->next->prev = result;
-        current->next = result;
+        current->prev->next = result;
+        current->prev = result;
     }
 }
 
-/* Function start: 0x41CCE0 */
-ZBQueueNode::~ZBQueueNode()
-{
-    data = 0;
-    next = 0;
-    prev = 0;
-}
