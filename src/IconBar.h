@@ -15,7 +15,7 @@ struct Rect {
     int y1;
     int x2;
     int y2;
-    Rect() { x1 = y1 = x2 = y2 = 0; }
+    Rect() { x1 = 0; y1 = 0; x2 = 0; y2 = 0; }
 };
 
 // IconBarButton - Individual button on the icon bar
@@ -59,7 +59,7 @@ public:
     void PlayButtonSound(int buttonIndex);  // 0x403300
 
     // Icon bar rect (0xA0-0xAF)
-    Rect barBounds;     // 0xA0 - icon bar bounds
+    GlyphRect barBounds;     // 0xA0 - icon bar bounds
 
     // Icon bar sprite (0xB0)
     Sprite* iconbarSprite;  // 0xB0

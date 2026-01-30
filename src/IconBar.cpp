@@ -16,19 +16,19 @@
 
 /* Function start: 0x402730 */
 IconBar::IconBar() {
-    int i;
-
     // The implicit call to Handler constructor handles memset(&handlerId, 0, 24)
 
     // Zero from barBounds (0xA0) to the end of the class (0x600)
     // 0x600 - 0xA0 = 0x560
     memset(&barBounds, 0, 0x560);
 
+    handlerId = 0;
+
     // Set icon bar bounds
-    barBounds.x1 = 0;
-    barBounds.y1 = 0x1ab;
-    barBounds.x2 = 0x280;
-    barBounds.y2 = 0x1e0;
+    barBounds.left = 0;
+    barBounds.top = 0x1ab;
+    barBounds.right = 0x280;
+    barBounds.bottom = 0x1e0;
 
     // Create iconbar sprite
     iconbarSprite = new Sprite("elements\\iconbar.smk");
@@ -67,16 +67,19 @@ IconBar::IconBar() {
     buttons[5].sprite->loc_x = 0x22a;
     buttons[5].sprite->loc_y = 0x1b6;
 
-    // Configure all 6 buttons using common settings
-    IconBarButton* pBtn = buttons;
-    for (i = 0; i < 6; i++) {
-        Sprite* btn = pBtn->sprite;
-        btn->flags &= ~2;
-        btn->SetState(2);
-        btn->SetRange(0, 1, 1);
-        btn->SetRange(1, 2, 2);
-        btn->priority = 1001;
-        pBtn++;
+    // Configure all 6 buttons using common settings (do-while counting down)
+    {
+        int count = 6;
+        IconBarButton* pBtn = buttons;
+        do {
+            Sprite* btn = pBtn->sprite;
+            btn->flags &= ~2;
+            btn->SetState(2);
+            btn->SetRange(0, 1, 1);
+            btn->SetRange(1, 2, 2);
+            btn->priority = 1001;
+            pBtn++;
+        } while (--count);
     }
 
     // Set button bounds in the order they appear in assembly
@@ -106,18 +109,21 @@ IconBar::IconBar() {
     buttons[5].bounds.bottom = 0x1d5;
 
     // Message templates
-    buttons[0].message.targetAddress = 10;
-    buttons[0].message.sourceAddress = 1;
-    buttons[0].message.command = 6;
-    buttons[0].message.priority = 5;
+    SC_Message* pMsg = &buttons[0].message;
+    pMsg->targetAddress = 10;
+    pMsg->sourceAddress = 1;
+    pMsg->command = 6;
+    pMsg->priority = 5;
 
-    buttons[4].message.targetAddress = 10;
-    buttons[4].message.sourceAddress = 1;
-    buttons[4].message.command = 6;
-    buttons[4].message.priority = 5;
+    pMsg = &buttons[4].message;
+    pMsg->targetAddress = 10;
+    pMsg->sourceAddress = 1;
+    pMsg->command = 6;
+    pMsg->priority = 5;
 
-    buttons[5].message.targetAddress = 2;
-    buttons[5].message.priority = 5;
+    SC_Message* pMsg5 = &buttons[5].message;
+    pMsg5->targetAddress = 2;
+    pMsg5->priority = 5;
 }
 
 IconBar::~IconBar() {
@@ -199,66 +205,63 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
     WriteMessageAddress(msg);
 
     // Initial bar bounds check
-    ok = (barBounds.x1 <= msg->clickPos.x && barBounds.x2 >= msg->clickPos.x &&
-          barBounds.y1 <= msg->clickPos.y && barBounds.y2 >= msg->clickPos.y);
+    ok = (barBounds.left <= msg->clickPos.x && barBounds.right >= msg->clickPos.x &&
+          barBounds.top <= msg->clickPos.y && barBounds.bottom >= msg->clickPos.y);
     if (!ok) return 0;
 
     // Only proceed for specific mouse states
-    if (msg->mouseX < 2) {
-        return 1;
-    }
+    if (msg->mouseX >= 2) {
+        // Loop through buttons
+        for (i = 0; i < 6; i++) {
+            if (buttons[i].enabled) {
+                // Button bounds check
+                ok = (buttons[i].bounds.left <= msg->clickPos.x && buttons[i].bounds.right >= msg->clickPos.x &&
+                      buttons[i].bounds.top <= msg->clickPos.y && buttons[i].bounds.bottom >= msg->clickPos.y);
 
-    // Loop through buttons using for loop
-    for (i = 0; i < 6; i++) {
-        if (buttons[i].enabled) {
-            // Button bounds check
-            ok = (buttons[i].bounds.left <= msg->clickPos.x && buttons[i].bounds.right >= msg->clickPos.x &&
-                  buttons[i].bounds.top <= msg->clickPos.y && buttons[i].bounds.bottom >= msg->clickPos.y);
-            
-            if (ok) {
-                PlayButtonSound(i);
+                if (ok) {
+                    PlayButtonSound(i);
 
-                SC_Message* pSrc = &buttons[i].message;
+                    SC_Message* pSrc = &buttons[i].message;
 
-                // Copy button template message to target message
-                msg->m_subObject = pSrc->m_subObject;
-                msg->isProcessingKey = pSrc->isProcessingKey;
+                    // Copy button template message to target message
+                    msg->m_subObject = pSrc->m_subObject;
+                    msg->isProcessingKey = pSrc->isProcessingKey;
 
-                j = 0;
-                do {
-                    j++;
-                    msg->currentKey[j - 1] = pSrc->currentKey[j - 1];
-                } while (j < 32);
+                    j = 0;
+                    do {
+                        j++;
+                        msg->currentKey[j - 1] = pSrc->currentKey[j - 1];
+                    } while (j < 32);
 
-                msg->lineNumber = pSrc->lineNumber;
-                
-                int* pMsg38 = &msg->savedFilePos;
-                pMsg38[0] = pSrc->savedFilePos;
-                pMsg38[1] = pSrc->field_0x3c;
+                    msg->lineNumber = pSrc->lineNumber;
 
-                j = 0;
-                do {
-                    j++;
-                    msg->filename[j - 1] = pSrc->filename[j - 1];
-                } while (j < 64);
+                    int* pMsg38 = &msg->savedFilePos;
+                    pMsg38[0] = pSrc->savedFilePos;
+                    pMsg38[1] = pSrc->field_0x3c;
 
-                msg->pFile = pSrc->pFile;
-                msg->command = pSrc->command;
-                msg->sourceAddress = pSrc->sourceAddress;
-                msg->targetAddress = pSrc->targetAddress;
-                msg->data = pSrc->data;
-                msg->priority = pSrc->priority;
-                msg->param1 = pSrc->param1;
-                msg->param2 = pSrc->param2;
-                msg->clickPos.x = pSrc->clickPos.x;
-                msg->clickPos.y = pSrc->clickPos.y;
-                msg->mouseX = pSrc->mouseX;
-                msg->mouseY = pSrc->mouseY;
-                msg->field_b4 = pSrc->field_b4;
-                msg->field_b8 = pSrc->field_b8;
-                msg->userPtr = pSrc->userPtr;
+                    j = 0;
+                    do {
+                        j++;
+                        msg->filename[j - 1] = pSrc->filename[j - 1];
+                    } while (j < 64);
 
-                return 1;
+                    msg->pFile = pSrc->pFile;
+                    msg->targetAddress = pSrc->targetAddress;
+                    msg->sourceAddress = pSrc->sourceAddress;
+                    msg->command = pSrc->command;
+                    msg->data = pSrc->data;
+                    msg->priority = pSrc->priority;
+                    msg->param1 = pSrc->param1;
+                    msg->param2 = pSrc->param2;
+                    msg->clickPos.x = pSrc->clickPos.x;
+                    msg->clickPos.y = pSrc->clickPos.y;
+                    msg->mouseX = pSrc->mouseX;
+                    msg->mouseY = pSrc->mouseY;
+                    msg->field_b4 = pSrc->field_b4;
+                    msg->field_b8 = pSrc->field_b8;
+                    msg->userPtr = pSrc->userPtr;
+                    break;
+                }
             }
         }
     }

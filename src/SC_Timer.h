@@ -11,7 +11,7 @@ public:
     ~SC_Timer();
 
     void Update(int, int);
-    void AddMessage(int);
+    int AddMessage(int);
     int Input(void*);
 
 private:

@@ -4,6 +4,7 @@
 #include "Queue.h"
 #include "TimedEvent.h"
 #include "Timer.h"
+#include "SC_Question.h"
 #include "string.h"
 
 #include <stdio.h>
@@ -12,9 +13,6 @@
 
 /* Function start: 0x401B60 */
 SC_Timer::SC_Timer() {
-  // Zero 6 dwords (24 bytes) at offset 0x88
-  memset(&targetAddress, 0, 24);
-
   m_messageId = 0xd;
   timer1.Reset();
 
@@ -59,9 +57,6 @@ SC_Timer::~SC_Timer() {
             pData = pNode->data;
           }
           if (pNode != 0) {
-            pNode->data = 0;
-            pNode->prev = 0;
-            pNode->next = 0;
             delete pNode;
             pQueue->m_current = 0;
           }
@@ -131,9 +126,6 @@ loop: {
         pData = pNode->data;
       }
       if (pNode != 0) {
-        pNode->data = 0;
-        pNode->prev = 0;
-        pNode->next = 0;
         delete pNode;
         pQueue->m_current = 0;
       }
@@ -165,9 +157,10 @@ end_loop:
 }
 
 /* Function start: 0x401F90 */
-void SC_Timer::AddMessage(int param_1) {
+int SC_Timer::AddMessage(int param_1) {
   WriteMessageAddress((Message *)param_1);
   ShowError("SC_Timer::AddMessage");
+  return 1;
 }
 
 /* Function start: 0x401FB0 */
@@ -229,42 +222,44 @@ int SC_Timer::Input(void *param_1) {
     }
     break;
   case 0x13:
-    if (msg->userPtr == 0) {
-      ShowError("SC_Timer::Input");
-    }
-    pNewEvent = new TimedEvent();
-    pNewEvent->m_duration = msg->field_0xb8;
-    pNewEvent->m_sourceAddress = msg->sourceAddress;
-    pNewEvent->m_eventData = (SC_Message*)msg->userPtr;
-    msg->userPtr = 0;
-    pNewEvent->SetType(msg->param1);
-    pQueue = m_eventList;
-    if (pNewEvent == 0) {
-      ShowError("queue fault 0101");
-    }
-    pQueue->m_current = pQueue->m_head;
-    if ((pQueue->m_field_0xc == 1) || (pQueue->m_field_0xc == 2)) {
-      if (pQueue->m_head == 0) {
-        m_eventList->Insert(pNewEvent);
+    if (msg->userPtr != 0) {
+      pNewEvent = new TimedEvent();
+      pNewEvent->m_duration = msg->field_0xb8;
+      pNewEvent->m_sourceAddress = msg->sourceAddress;
+      pNewEvent->m_eventData = (SC_Message*)msg->userPtr;
+      msg->userPtr = 0;
+      pNewEvent->SetType(msg->param1);
+      pQueue = m_eventList;
+      if (pNewEvent == 0) {
+        ShowError("queue fault 0101");
+      }
+      pQueue->m_current = pQueue->m_head;
+      if ((pQueue->m_field_0xc == 1) || (pQueue->m_field_0xc == 2)) {
+        if (pQueue->m_head == 0) {
+          pQueue->Insert(pNewEvent);
+        } else {
+          do {
+            pNode = (QueueNode *)pQueue->m_current;
+            if (((TimedEvent *)pNode->data)->m_duration <
+                (unsigned int)pNewEvent->m_duration) {
+              pQueue->Insert(pNewEvent);
+              goto done_0x13;
+            }
+            if (pQueue->m_tail == pNode) {
+              pQueue->Push(pNewEvent);
+              goto done_0x13;
+            }
+            if (pNode != 0) {
+              pQueue->m_current = pNode->next;
+            }
+          } while (pQueue->m_current != 0);
+        }
       } else {
-        do {
-          pNode = (QueueNode *)pQueue->m_current;
-          if (((TimedEvent *)pNode->data)->m_duration <
-              (unsigned int)pNewEvent->m_duration) {
-            m_eventList->Insert(pNewEvent);
-            goto done_0x13;
-          }
-          if (pQueue->m_tail == pNode) {
-            m_eventList->Push(pNewEvent);
-            goto done_0x13;
-          }
-          if (pNode != 0) {
-            pQueue->m_current = pNode->next;
-          }
-        } while (pQueue->m_current != 0);
+        pQueue->Insert(pNewEvent);
       }
     } else {
-      m_eventList->Insert(pNewEvent);
+      ((SC_Message *)msg)->Dump(0);
+      ShowError("SC_Timer::Input");
     }
   done_0x13:
     break;

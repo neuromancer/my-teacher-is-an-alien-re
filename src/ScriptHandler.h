@@ -2,6 +2,7 @@
 #define SCRIPTHANDLER_H
 
 #include "Parser.h"
+#include <string.h>
 
 struct Message;
 
@@ -10,6 +11,9 @@ struct Message;
 // Size: 0x98 bytes (includes Parser)
 class ScriptHandler : public Parser {
 public:
+    ScriptHandler() {
+        memset(&targetAddress, 0, 24);
+    }
     ~ScriptHandler();
     void CopyCommandData(ScriptHandler* other);
     int WriteMessageAddress(Message* msg);
