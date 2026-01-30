@@ -4,7 +4,7 @@
 #include "Sprite.h"
 #include "InputManager.h"
 
-struct SpriteNode;
+#include "LinkedList.h"
 
 class OptionMenu : public Parser {
 public:

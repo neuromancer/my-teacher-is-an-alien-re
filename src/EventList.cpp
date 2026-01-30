@@ -19,14 +19,14 @@ void EventList::InsertNode(void* data) {
         EventList::tail = newNode;
         EventList::current = newNode;
     } else {
-        newNode->prev = EventList::current;
-        newNode->next = EventList::current->next;
-        if (EventList::current->next != 0) {
-            EventList::current->next->prev = newNode;
-            EventList::current->next = newNode;
+        newNode->next = EventList::current;
+        newNode->prev = EventList::current->prev;
+        if (EventList::current->prev != 0) {
+            EventList::current->prev->next = newNode;
+            EventList::current->prev = newNode;
         } else {
             EventList::head = newNode;
-            EventList::current->next = newNode;
+            EventList::current->prev = newNode;
         }
     }
 }

@@ -23,7 +23,7 @@ SC_OnScreenMessage::SC_OnScreenMessage() {
     // Allocate and initialize list header structure
     m_messageList = new MessageList();
     if (m_messageList != 0) {
-        m_messageList->flags = 1;
+        m_messageList->type = 1;
     }
 }
 
@@ -237,7 +237,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     list = m_messageList;
     list->current = list->head;
-    if (list->flags != 1 && list->flags != 2) {
+    if (list->type != 1 && list->type != 2) {
         goto call_insert;
     }
     if (list->head == 0) {
@@ -297,12 +297,12 @@ count_loop_start:
 
         if (count <= 10) break;
 
-        if (list->flags == 1 || list->flags == 4) {
+        if (list->type == 1 || list->type == 4) {
             list->current = list->head;
-        } else if (list->flags == 2 || list->flags == 0) {
+        } else if (list->type == 2 || list->type == 0) {
             list->current = list->tail;
         } else {
-            WriteToMessageLog("bad queue type %lu", list->flags);
+            WriteToMessageLog("bad queue type %lu", list->type);
             list->current = list->tail;
         }
 

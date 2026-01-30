@@ -61,35 +61,35 @@ SCI_Dialog::~SCI_Dialog() {
 
     queue = field_610;
     if (queue != 0) {
-        if (queue->m_head != 0) {
-            queue->m_current = queue->m_head;
-            while (queue->m_head != 0) {
-                node = (QueueNode*)queue->m_current;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                node = (QueueNode*)queue->current;
                 if (node == 0) {
                     dq = 0;
                 } else {
-                    if (queue->m_head == node) {
-                        queue->m_head = node->next;
+                    if (queue->head == node) {
+                        queue->head = node->next;
                     }
-                    if (queue->m_tail == queue->m_current) {
-                        queue->m_tail = ((QueueNode*)queue->m_current)->prev;
+                    if (queue->tail == queue->current) {
+                        queue->tail = ((QueueNode*)queue->current)->prev;
                     }
-                    nextNode = ((QueueNode*)queue->m_current)->prev;
+                    nextNode = ((QueueNode*)queue->current)->prev;
                     if (nextNode != 0) {
-                        nextNode->next = ((QueueNode*)queue->m_current)->next;
+                        nextNode->next = ((QueueNode*)queue->current)->next;
                     }
-                    nextNode = ((QueueNode*)queue->m_current)->next;
+                    nextNode = ((QueueNode*)queue->current)->next;
                     if (nextNode != 0) {
-                        nextNode->prev = ((QueueNode*)queue->m_current)->prev;
+                        nextNode->prev = ((QueueNode*)queue->current)->prev;
                     }
-                    node = (QueueNode*)queue->m_current;
+                    node = (QueueNode*)queue->current;
                     dq = 0;
                     if (node != 0) {
                         dq = (DialogQuestion*)node->data;
                         delete node;
-                        queue->m_current = 0;
+                        queue->current = 0;
                     }
-                    queue->m_current = queue->m_head;
+                    queue->current = queue->head;
                 }
                 if (dq != 0) {
                     delete dq;
@@ -165,35 +165,35 @@ int SCI_Dialog::ShutDown(SC_Message* msg) {
 
     queue = field_610;
     if (queue != 0) {
-        if (queue->m_head != 0) {
-            queue->m_current = queue->m_head;
-            while (queue->m_head != 0) {
-                node = (QueueNode*)queue->m_current;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                node = (QueueNode*)queue->current;
                 if (node == 0) {
                     dq = 0;
                 } else {
-                    if (queue->m_head == node) {
-                        queue->m_head = node->next;
+                    if (queue->head == node) {
+                        queue->head = node->next;
                     }
-                    if (queue->m_tail == queue->m_current) {
-                        queue->m_tail = ((QueueNode*)queue->m_current)->prev;
+                    if (queue->tail == queue->current) {
+                        queue->tail = ((QueueNode*)queue->current)->prev;
                     }
-                    nextNode = ((QueueNode*)queue->m_current)->prev;
+                    nextNode = ((QueueNode*)queue->current)->prev;
                     if (nextNode != 0) {
-                        nextNode->next = ((QueueNode*)queue->m_current)->next;
+                        nextNode->next = ((QueueNode*)queue->current)->next;
                     }
-                    nextNode = ((QueueNode*)queue->m_current)->next;
+                    nextNode = ((QueueNode*)queue->current)->next;
                     if (nextNode != 0) {
-                        nextNode->prev = ((QueueNode*)queue->m_current)->prev;
+                        nextNode->prev = ((QueueNode*)queue->current)->prev;
                     }
-                    node = (QueueNode*)queue->m_current;
+                    node = (QueueNode*)queue->current;
                     dq = 0;
                     if (node != 0) {
                         dq = (DialogQuestion*)node->data;
                         delete node;
-                        queue->m_current = 0;
+                        queue->current = 0;
                     }
-                    queue->m_current = queue->m_head;
+                    queue->current = queue->head;
                 }
                 if (dq != 0) {
                     delete dq;
@@ -289,70 +289,70 @@ int SCI_Dialog::Exit(SC_Message* msg) {
             } else {
                 queue = field_610;
                 if (dq == 0) ShowError("queue fault 0101");
-                queue->m_current = queue->m_head;
-                if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2) {
-                    if (queue->m_head == 0) {
+                queue->current = queue->head;
+                if (queue->type == 1 || queue->type == 2) {
+                    if (queue->head == 0) {
                         if (dq == 0) ShowError("queue fault 0102");
                         newNode = new QueueNode(dq);
-                        if (queue->m_current == 0) queue->m_current = queue->m_head;
-                        if (queue->m_head == 0) {
-                            queue->m_head = newNode;
-                            queue->m_tail = newNode;
-                            queue->m_current = newNode;
+                        if (queue->current == 0) queue->current = queue->head;
+                        if (queue->head == 0) {
+                            queue->head = newNode;
+                            queue->tail = newNode;
+                            queue->current = newNode;
                         } else {
-                            newNode->next = (QueueNode*)queue->m_current;
-                            newNode->prev = ((QueueNode*)queue->m_current)->prev;
-                            if (((QueueNode*)queue->m_current)->prev == 0) {
-                                queue->m_head = newNode;
+                            newNode->next = (QueueNode*)queue->current;
+                            newNode->prev = ((QueueNode*)queue->current)->prev;
+                            if (((QueueNode*)queue->current)->prev == 0) {
+                                queue->head = newNode;
                             } else {
-                                ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
+                                ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
                             }
-                            ((QueueNode*)queue->m_current)->prev = newNode;
+                            ((QueueNode*)queue->current)->prev = newNode;
                         }
                     } else {
                         while (1) {
-                            curNode = (int)queue->m_current;
+                            curNode = (int)queue->current;
                             if (((DialogQuestion*)((QueueNode*)curNode)->data)->questionId < dq->questionId) {
                                 if (dq == 0) ShowError("queue fault 0102");
                                 newNode = new QueueNode(dq);
-                                if (queue->m_current == 0) queue->m_current = queue->m_head;
-                                if (queue->m_head == 0) {
-                                    queue->m_head = newNode;
-                                    queue->m_tail = newNode;
-                                    queue->m_current = newNode;
+                                if (queue->current == 0) queue->current = queue->head;
+                                if (queue->head == 0) {
+                                    queue->head = newNode;
+                                    queue->tail = newNode;
+                                    queue->current = newNode;
                                 } else {
-                                    newNode->next = (QueueNode*)queue->m_current;
-                                    newNode->prev = ((QueueNode*)queue->m_current)->prev;
-                                    if (((QueueNode*)queue->m_current)->prev == 0) {
-                                        queue->m_head = newNode;
+                                    newNode->next = (QueueNode*)queue->current;
+                                    newNode->prev = ((QueueNode*)queue->current)->prev;
+                                    if (((QueueNode*)queue->current)->prev == 0) {
+                                        queue->head = newNode;
                                     } else {
-                                        ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
+                                        ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
                                     }
-                                    ((QueueNode*)queue->m_current)->prev = newNode;
+                                    ((QueueNode*)queue->current)->prev = newNode;
                                 }
                                 break;
                             }
-                            if (queue->m_tail == (void*)curNode) {
+                            if (queue->tail == (void*)curNode) {
                                 if (dq == 0) ShowError("queue fault 0112");
                                 newNode = new QueueNode(dq);
-                                if (queue->m_current == 0) queue->m_current = queue->m_tail;
-                                if (queue->m_head == 0) {
-                                    queue->m_head = newNode;
-                                    queue->m_tail = newNode;
-                                    queue->m_current = newNode;
+                                if (queue->current == 0) queue->current = queue->tail;
+                                if (queue->head == 0) {
+                                    queue->head = newNode;
+                                    queue->tail = newNode;
+                                    queue->current = newNode;
                                 } else {
-                                    if (queue->m_tail == 0 || ((QueueNode*)queue->m_tail)->next != 0) {
+                                    if (queue->tail == 0 || ((QueueNode*)queue->tail)->next != 0) {
                                         ShowError("queue fault 0113");
                                     }
                                     newNode->next = 0;
-                                    newNode->prev = (QueueNode*)queue->m_tail;
-                                    ((QueueNode*)queue->m_tail)->next = newNode;
-                                    queue->m_tail = newNode;
+                                    newNode->prev = (QueueNode*)queue->tail;
+                                    ((QueueNode*)queue->tail)->next = newNode;
+                                    queue->tail = newNode;
                                 }
                                 break;
                             }
-                            if (curNode != 0) queue->m_current = ((QueueNode*)curNode)->next;
-                            if (queue->m_current == 0) break;
+                            if (curNode != 0) queue->current = ((QueueNode*)curNode)->next;
+                            if (queue->current == 0) break;
                         }
                     }
                 } else {
@@ -404,7 +404,7 @@ void SCI_Dialog::Update(int param1, int param2) {
         return;
     }
 
-    if (field_610 == 0 || field_610->m_head == 0) {
+    if (field_610 == 0 || field_610->head == 0) {
         if (field_604 != 0) field_604->Draw();
         SC_Message_Send(field_90, field_94, 9, field_8C, 5, 6, 0, 0, 0, 0);
         return;
@@ -417,11 +417,11 @@ void SCI_Dialog::Update(int param1, int param2) {
         mouseIndex = (g_InputManager_00436968->pMouse->y - 10) / 34;
     }
 
-    field_610->m_current = field_610->m_head;
-    if (field_610->m_head == 0) return;
+    field_610->current = field_610->head;
+    if (field_610->head == 0) return;
 
     do {
-        node = (QueueNode*)field_610->m_current;
+        node = (QueueNode*)field_610->current;
         if (counter == mouseIndex) {
             dq = 0;
             if (node != 0) dq = (DialogQuestion*)node->data;
@@ -443,9 +443,9 @@ void SCI_Dialog::Update(int param1, int param2) {
         counter++;
         y += 34;
 
-        if (field_610->m_tail == field_610->m_current) return;
-        if (node != 0) field_610->m_current = node->next;
-    } while (field_610->m_head != 0);
+        if (field_610->tail == field_610->current) return;
+        if (node != 0) field_610->current = node->next;
+    } while (field_610->head != 0);
 }
 
 /* Function start: 0x407C50 */
@@ -459,21 +459,21 @@ DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
     counter = 0;
     queue = field_610;
     if (queue == 0) return 0;
-    queue->m_current = queue->m_head;
-    if (field_610->m_head == 0) return 0;
+    queue->current = queue->head;
+    if (field_610->head == 0) return 0;
 
     do {
         queue = field_610;
-        node = (QueueNode*)queue->m_current;
+        node = (QueueNode*)queue->current;
         if (counter == index) {
             if (node == 0) return 0;
-            if (queue->m_head == node) queue->m_head = node->next;
-            if (queue->m_tail == queue->m_current) queue->m_tail = ((QueueNode*)queue->m_current)->prev;
-            tmp = ((QueueNode*)queue->m_current)->prev;
-            if (tmp != 0) tmp->next = ((QueueNode*)queue->m_current)->next;
-            tmp = ((QueueNode*)queue->m_current)->next;
-            if (tmp != 0) tmp->prev = ((QueueNode*)queue->m_current)->prev;
-            node = (QueueNode*)queue->m_current;
+            if (queue->head == node) queue->head = node->next;
+            if (queue->tail == queue->current) queue->tail = ((QueueNode*)queue->current)->prev;
+            tmp = ((QueueNode*)queue->current)->prev;
+            if (tmp != 0) tmp->next = ((QueueNode*)queue->current)->next;
+            tmp = ((QueueNode*)queue->current)->next;
+            if (tmp != 0) tmp->prev = ((QueueNode*)queue->current)->prev;
+            node = (QueueNode*)queue->current;
             result = 0;
             if (node != 0) result = (DialogQuestion*)node->data;
             if (node != 0) {
@@ -481,16 +481,16 @@ DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
                 node->prev = 0;
                 node->next = 0;
                 delete node;
-                queue->m_current = 0;
+                queue->current = 0;
             }
-            queue->m_current = queue->m_head;
+            queue->current = queue->head;
             return result;
         }
-        if (queue->m_tail == node) return 0;
-        if (node != 0) queue->m_current = node->next;
+        if (queue->tail == node) return 0;
+        if (node != 0) queue->current = node->next;
         counter++;
         queue = field_610;
-    } while (queue->m_head != 0);
+    } while (queue->head != 0);
 
     return 0;
 }
@@ -508,19 +508,19 @@ DialogQuestion* SCI_Dialog::FindDialogById(int id) {
     if (queue == 0) goto LAB_cleanup;
     if (searchQuestion == 0) ShowError("queue fault 0103");
 
-    queue->m_current = queue->m_head;
-    if (queue->m_head == 0) goto LAB_cleanup;
+    queue->current = queue->head;
+    if (queue->head == 0) goto LAB_cleanup;
 
     do {
-        node = (QueueNode*)queue->m_current;
+        node = (QueueNode*)queue->current;
         nodeData = (node != 0) ? (DialogQuestion*)node->data : 0;
         if (nodeData->questionId == searchQuestion->questionId) {
             delete searchQuestion;
             searchQuestion = 0;
 
             if (node == 0) return 0;
-            if (queue->m_head == node) queue->m_head = node->next;
-            if (queue->m_tail == queue->m_current) queue->m_tail = node->prev;
+            if (queue->head == node) queue->head = node->next;
+            if (queue->tail == queue->current) queue->tail = node->prev;
             prevNode = node->prev;
             if (prevNode != 0) prevNode->next = node->next;
             nextNode = node->next;
@@ -531,14 +531,14 @@ DialogQuestion* SCI_Dialog::FindDialogById(int id) {
             node->prev = 0;
             node->next = 0;
             delete node;
-            queue->m_current = 0;
-            queue->m_current = queue->m_head;
+            queue->current = 0;
+            queue->current = queue->head;
             return result;
         }
 
-        if (queue->m_tail == node) break;
-        if (node != 0) queue->m_current = node->next;
-    } while (queue->m_current != 0);
+        if (queue->tail == node) break;
+        if (node != 0) queue->current = node->next;
+    } while (queue->current != 0);
 
 LAB_cleanup:
     if (searchQuestion != 0) delete searchQuestion;
@@ -605,89 +605,89 @@ int SCI_Dialog::LBLParse(char* line) {
         } else {
             queue = field_610;
             if (dq == 0) ShowError("queue fault 0101");
-            queue->m_current = queue->m_head;
-            if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2) {
-                if (queue->m_head == 0) {
+            queue->current = queue->head;
+            if (queue->type == 1 || queue->type == 2) {
+                if (queue->head == 0) {
                     if (dq == 0) ShowError("queue fault 0102");
                     newNode = new QueueNode(dq);
-                    if (queue->m_current == 0) queue->m_current = queue->m_head;
-                    if (queue->m_head == 0) {
-                        queue->m_head = newNode;
-                        queue->m_tail = newNode;
-                        queue->m_current = newNode;
+                    if (queue->current == 0) queue->current = queue->head;
+                    if (queue->head == 0) {
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
                     } else {
-                        newNode->next = (QueueNode*)queue->m_current;
-                        newNode->prev = ((QueueNode*)queue->m_current)->prev;
-                        if (((QueueNode*)queue->m_current)->prev == 0) {
-                            queue->m_head = newNode;
+                        newNode->next = (QueueNode*)queue->current;
+                        newNode->prev = ((QueueNode*)queue->current)->prev;
+                        if (((QueueNode*)queue->current)->prev == 0) {
+                            queue->head = newNode;
                         } else {
-                            ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
+                            ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
                         }
-                        ((QueueNode*)queue->m_current)->prev = newNode;
+                        ((QueueNode*)queue->current)->prev = newNode;
                     }
                 } else {
                     while (1) {
-                        QueueNode* node = (QueueNode*)queue->m_current;
+                        QueueNode* node = (QueueNode*)queue->current;
                         if (((DialogQuestion*)node->data)->questionId < dq->questionId) {
                             if (dq == 0) ShowError("queue fault 0102");
                             newNode = new QueueNode(dq);
-                            if (queue->m_current == 0) queue->m_current = queue->m_head;
-                            if (queue->m_head == 0) {
-                                queue->m_head = newNode;
-                                queue->m_tail = newNode;
-                                queue->m_current = newNode;
+                            if (queue->current == 0) queue->current = queue->head;
+                            if (queue->head == 0) {
+                                queue->head = newNode;
+                                queue->tail = newNode;
+                                queue->current = newNode;
                             } else {
-                                newNode->next = (QueueNode*)queue->m_current;
-                                newNode->prev = ((QueueNode*)queue->m_current)->prev;
-                                if (((QueueNode*)queue->m_current)->prev == 0) {
-                                    queue->m_head = newNode;
+                                newNode->next = (QueueNode*)queue->current;
+                                newNode->prev = ((QueueNode*)queue->current)->prev;
+                                if (((QueueNode*)queue->current)->prev == 0) {
+                                    queue->head = newNode;
                                 } else {
-                                    ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
+                                    ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
                                 }
-                                ((QueueNode*)queue->m_current)->prev = newNode;
+                                ((QueueNode*)queue->current)->prev = newNode;
                             }
                             break;
                         }
-                        if (queue->m_tail == (void*)node) {
+                        if (queue->tail == (void*)node) {
                             if (dq == 0) ShowError("queue fault 0112");
                             newNode = new QueueNode(dq);
-                            if (queue->m_current == 0) queue->m_current = queue->m_tail;
-                            if (queue->m_head == 0) {
-                                queue->m_head = newNode;
-                                queue->m_tail = newNode;
-                                queue->m_current = newNode;
+                            if (queue->current == 0) queue->current = queue->tail;
+                            if (queue->head == 0) {
+                                queue->head = newNode;
+                                queue->tail = newNode;
+                                queue->current = newNode;
                             } else {
-                                if (queue->m_tail == 0 || ((QueueNode*)queue->m_tail)->next != 0) {
+                                if (queue->tail == 0 || ((QueueNode*)queue->tail)->next != 0) {
                                     ShowError("queue fault 0113");
                                 }
                                 newNode->next = 0;
-                                newNode->prev = (QueueNode*)queue->m_tail;
-                                ((QueueNode*)queue->m_tail)->next = newNode;
-                                queue->m_tail = newNode;
+                                newNode->prev = (QueueNode*)queue->tail;
+                                ((QueueNode*)queue->tail)->next = newNode;
+                                queue->tail = newNode;
                             }
                             break;
                         }
-                        if (node != 0) queue->m_current = node->next;
-                        if (queue->m_current == 0) break;
+                        if (node != 0) queue->current = node->next;
+                        if (queue->current == 0) break;
                     }
                 }
             } else {
                 if (dq == 0) ShowError("queue fault 0102");
                 newNode = new QueueNode(dq);
-                if (queue->m_current == 0) queue->m_current = queue->m_head;
-                if (queue->m_head == 0) {
-                    queue->m_head = newNode;
-                    queue->m_tail = newNode;
-                    queue->m_current = newNode;
+                if (queue->current == 0) queue->current = queue->head;
+                if (queue->head == 0) {
+                    queue->head = newNode;
+                    queue->tail = newNode;
+                    queue->current = newNode;
                 } else {
-                    newNode->next = (QueueNode*)queue->m_current;
-                    newNode->prev = ((QueueNode*)queue->m_current)->prev;
-                    if (((QueueNode*)queue->m_current)->prev == 0) {
-                        queue->m_head = newNode;
+                    newNode->next = (QueueNode*)queue->current;
+                    newNode->prev = ((QueueNode*)queue->current)->prev;
+                    if (((QueueNode*)queue->current)->prev == 0) {
+                        queue->head = newNode;
                     } else {
-                        ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
+                        ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
                     }
-                    ((QueueNode*)queue->m_current)->prev = newNode;
+                    ((QueueNode*)queue->current)->prev = newNode;
                 }
             }
         }

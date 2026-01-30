@@ -3,39 +3,10 @@
 
 #include <windows.h>
 #include "GlyphRect.h"
+#include "LinkedList.h"
 
 // Forward declarations
 struct CharSprite;
-struct PriorityQueue;
-struct PriorityQueueNode;
-
-// PriorityQueueNode - Node in the priority queue
-// Size: 0xC bytes (12 bytes)
-struct PriorityQueueNode {
-    PriorityQueueNode* next;    // +0x00
-    PriorityQueueNode* prev;    // +0x04
-    CharSprite* data;           // +0x08
-
-    PriorityQueueNode(CharSprite* s); // 0x404470
-};
-
-// PriorityQueue - Priority queue for CharSprites
-// Size: 0x10 bytes (16 bytes)
-struct PriorityQueue {
-    PriorityQueueNode* head;    // +0x00 (List end/Last node)
-    PriorityQueueNode* tail;    // +0x04 (List start/First node)
-    PriorityQueueNode* current; // +0x08
-    int type;                   // +0x0C
-
-    PriorityQueue(int t) {
-        type = t;
-        head = 0;
-        tail = 0;
-        current = head;
-    }
-
-    void AddAfterCurrent(CharSprite* sprite);
-};
 
 // CharSprite - Sprite for character display
 // Size: 0x5C bytes (92 bytes)

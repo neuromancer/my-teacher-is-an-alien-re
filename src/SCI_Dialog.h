@@ -8,7 +8,7 @@ class SC_Message;
 class MMPlayer2;
 class MMPlayer;
 class Sprite;
-class Queue;
+// Queue is now defined via LinkedList.h (included through SC_Question.h -> Queue.h)
 
 // DialogQuestion is SC_Question (destructor 0x4067e0, Finalize 0x4069b0)
 typedef SC_Question DialogQuestion;

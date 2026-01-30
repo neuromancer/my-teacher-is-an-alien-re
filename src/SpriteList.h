@@ -5,23 +5,7 @@
 // This header provides backwards compatibility
 #include "MMPlayer.h"
 
-struct SpriteListNode;
-
-// SpriteNode - linked list header structure used by OptionMenu and others
-// This is the same layout as PriorityQueue
-struct SpriteNode {
-    SpriteListNode* head;     // 0x00
-    SpriteListNode* tail;     // 0x04
-    SpriteListNode* current;  // 0x08
-};
-
-// SpriteListNode - individual node in the linked list
-// This is the same layout as PriorityQueueNode
-struct SpriteListNode {
-    SpriteListNode* next;     // 0x00
-    SpriteListNode* prev;     // 0x04
-    void* data;               // 0x08
-};
+#include "LinkedList.h"
 
 // SpriteData - the data stored in each node
 // This is the same layout as CharSprite
@@ -35,7 +19,5 @@ struct SpriteData {
     int rect_w;               // 0x54
     int rect_h;               // 0x58
 };
-
-// SpriteList is typedef'd to MouseControl in MouseControl.h
 
 #endif // SPRITELIST_H

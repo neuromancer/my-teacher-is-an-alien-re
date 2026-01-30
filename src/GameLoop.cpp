@@ -325,24 +325,24 @@ void GameLoop::Cleanup() {
                     } else {
                         // Unlink node from list - head check
                         if (pEventList->head == pNode) {
-                            pEventList->head = pNode->next;
+                            pEventList->head = pNode->prev;
                         }
                         // Tail check
                         pNode = pEventList->current;
                         if (pEventList->tail == pNode) {
-                            pEventList->tail = pNode->next;
-                        }
-                        // Update next node's prev pointer
-                        pNode = pEventList->current;
-                        pNext = pNode->next;
-                        if (pNext != 0) {
-                            pNext->prev = pNode->prev;
+                            pEventList->tail = pNode->prev;
                         }
                         // Update prev node's next pointer
                         pNode = pEventList->current;
-                        pPrev = pNode->prev;
+                        pNext = pNode->prev;
+                        if (pNext != 0) {
+                            pNext->next = pNode->next;
+                        }
+                        // Update next node's prev pointer
+                        pNode = pEventList->current;
+                        pPrev = pNode->next;
                         if (pPrev != 0) {
-                            pPrev->next = pNode->next;
+                            pPrev->prev = pNode->prev;
                         }
                         // Save data and free node
                         pNode = pEventList->current;
@@ -394,7 +394,7 @@ void GameLoop::DrawFrame() {
             return;
         }
         if (pNode != 0) {
-            pList->current = pNode->prev;
+            pList->current = pNode->next;
         }
         pList = eventList;
     } while (pList->current != 0);
@@ -499,7 +499,7 @@ void GameLoop::CleanupLoop() {
             break;
         }
         if (pCurrent != 0) {
-            pEventList->current = pCurrent->prev;
+            pEventList->current = pCurrent->next;
         }
         pEventList = GameLoop::eventList;
     } while (pEventList->current != 0);
@@ -547,7 +547,7 @@ void GameLoop::ProcessMessage(SC_Message* msg)
                     pNode = pList->current;
                     if (pList->tail == pNode) break;
                     if (pNode != 0) {
-                        pList->current = pNode->prev;
+                        pList->current = pNode->next;
                     }
                     pNode = eventList->current;
                 } while (pNode != 0);
@@ -735,22 +735,22 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         } else {
             // Unlink from head
             if (pList->head == pNode) {
-                pList->head = pNode->prev;
+                pList->head = pNode->next;
             }
             // Reload and check tail
             pNode = pList->current;
             if (pList->tail == pNode) {
-                pList->tail = pNode->next;
-            }
-            // Reload and update next->prev
-            pNode = pList->current;
-            if (pNode->next != 0) {
-                pNode->next->prev = pNode->prev;
+                pList->tail = pNode->prev;
             }
             // Reload and update prev->next
             pNode = pList->current;
             if (pNode->prev != 0) {
                 pNode->prev->next = pNode->next;
+            }
+            // Reload and update next->prev
+            pNode = pList->current;
+            if (pNode->next != 0) {
+                pNode->next->prev = pNode->prev;
             }
             // Extract data
             pNode = pList->current;
@@ -773,7 +773,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
             ShowError("queue fault 0101");
         }
         pList->current = pList->head;
-        if (pList->field_0x0C == 1 || pList->field_0x0C == 2) {
+        if (pList->type == 1 || pList->type == 2) {
             if (pList->head == 0) {
                 pList->InsertNode(handler);
             } else {
@@ -799,18 +799,18 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                             pList->tail = newNode;
                             pList->current = newNode;
                         } else {
-                            if (pList->tail == 0 || pList->tail->prev != 0) {
+                            if (pList->tail == 0 || pList->tail->next != 0) {
                                 ShowError("queue fault 0113");
                             }
-                            newNode->prev = 0;
-                            newNode->next = pList->tail;
-                            pList->tail->prev = newNode;
+                            newNode->next = 0;
+                            newNode->prev = pList->tail;
+                            pList->tail->next = newNode;
                             pList->tail = newNode;
                         }
                         break;
                     }
                     if (pNode != 0) {
-                        pList->current = pNode->prev;
+                        pList->current = pNode->next;
                     }
                 }
             }
@@ -932,21 +932,21 @@ int GameLoop::RemoveHandler(int command) {
         } else {
             // Unlink node from doubly-linked list
             if (list->head == current) {
-                list->head = current->prev;
+                list->head = current->next;
             }
             current = list->current;
             if (list->tail == current) {
-                list->tail = current->next;
+                list->tail = current->prev;
             }
             current = list->current;
-            pNext = current->next;
+            pNext = current->prev;
             if (pNext != 0) {
-                pNext->prev = current->prev;
+                pNext->next = current->next;
             }
             current = list->current;
-            pPrev = current->prev;
+            pPrev = current->next;
             if (pPrev != 0) {
-                pPrev->next = current->next;
+                pPrev->prev = current->prev;
             }
 
             // Get data from node - matches LAB_004184b7
@@ -1007,7 +1007,7 @@ int GameLoop::FindHandlerInEventList(int command) {
             goto not_found;
         }
         if (node != 0) {
-            list->current = node->prev;
+            list->current = node->next;
         }
         list = GameLoop::eventList;
     } while (list->head != 0);
@@ -1065,7 +1065,7 @@ int GameLoop::AddHandler(void* handler) {
         }
         // Move to next (via offset 4)
         if (current != 0) {
-            list->current = current->prev;
+            list->current = current->next;
         }
     }
     
@@ -1077,7 +1077,7 @@ int GameLoop::AddHandler(void* handler) {
     list->current = list->head;
     
     // Check list type
-    if (list->field_0x0C == 1 || list->field_0x0C == 2) {
+    if (list->type == 1 || list->type == 2) {
         // Priority-based insertion for type 1 or 2
         if (list->head == 0) {
             list->InsertNode(handler);
@@ -1103,14 +1103,14 @@ int GameLoop::AddHandler(void* handler) {
                         list->tail = nodePtr;
                         list->current = nodePtr;
                     } else {
-                        nodePtr->prev = list->current;
-                        nodePtr->next = list->current->next;
-                        if (list->current->next == 0) {
+                        nodePtr->next = list->current;
+                        nodePtr->prev = list->current->prev;
+                        if (list->current->prev == 0) {
                             list->head = nodePtr;
-                            list->current->next = nodePtr;
+                            list->current->prev = nodePtr;
                         } else {
-                            list->current->next->prev = nodePtr;
-                            list->current->next = nodePtr;
+                            list->current->prev->next = nodePtr;
+                            list->current->prev = nodePtr;
                         }
                     }
                     break;
@@ -1132,19 +1132,19 @@ int GameLoop::AddHandler(void* handler) {
                         list->tail = (EventNode*)handler;
                         list->current = (EventNode*)handler;
                     } else {
-                        if (list->tail == 0 || list->tail->prev != 0) {
+                        if (list->tail == 0 || list->tail->next != 0) {
                             ShowError("queue fault 0113");
                         }
-                        ((EventNode*)handler)->prev = 0;
-                        ((EventNode*)handler)->next = list->tail;
-                        list->tail->prev = (EventNode*)handler;
+                        ((EventNode*)handler)->next = 0;
+                        ((EventNode*)handler)->prev = list->tail;
+                        list->tail->next = (EventNode*)handler;
                         list->tail = (EventNode*)handler;
                     }
                     break;
                 }
                 // Move to next
                 if (current != 0) {
-                    list->current = current->prev;
+                    list->current = current->next;
                 }
             }
         }

@@ -5,7 +5,7 @@
 #include "Parser.h"
 
 class Message;
-struct ZBQueue;
+#include "LinkedList.h"
 
 class ZBuffer : public Parser {
 public:

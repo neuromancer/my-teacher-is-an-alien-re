@@ -245,7 +245,7 @@ int Handler13::Exit(SC_Message* msg) {
             }
             node = (MessageNode*)pList->head;
             pList->current = node;
-            if ((pList->flags == 1) || (pList->flags == 2)) {
+            if ((pList->type == 1) || (pList->type == 2)) {
                 if (node == 0) {
                     ((Queue*)pList)->Insert(pTimedEvent);
                 } else {

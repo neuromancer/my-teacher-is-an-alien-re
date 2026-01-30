@@ -316,7 +316,7 @@ found:
     pList->current = pList->head;
 
     // Check list type for insertion method
-    if (pList->flags != 1 && pList->flags != 2) {
+    if (pList->type != 1 && pList->type != 2) {
         pList->InsertBeforeCurrent(newItem);
         return newItem;
     }

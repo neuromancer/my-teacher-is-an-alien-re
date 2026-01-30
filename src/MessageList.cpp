@@ -83,6 +83,16 @@ void* MessageList::PopCurrent()
 
 
 
+/* Function start: 0x40C580 */
+void* MessageList::GetCurrentData()
+{
+    MessageNode* node = (MessageNode*)current;
+    if (node != 0) {
+        return node->data;
+    }
+    return 0;
+}
+
 /* Function start: 0x40C5B0 */
 MessageNode* MessageNode::Init(void* nodeData)
 {

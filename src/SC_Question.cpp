@@ -48,19 +48,19 @@ SC_Question::~SC_Question()
     // Clean up messageQueue at offset 0x8c
     queue = messageQueue;
     if (queue != 0) {
-        if (queue->m_head != 0) {
-            queue->m_current = queue->m_head;
-            while (queue->m_head != 0) {
-                current = (QueueNode*)queue->m_current;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                current = (QueueNode*)queue->current;
                 if (current == 0) {
                     msgData = 0;
                 } else {
                     // Unlink the node
-                    if (queue->m_head == current) {
-                        queue->m_head = current->next;
+                    if (queue->head == current) {
+                        queue->head = current->next;
                     }
-                    if (queue->m_tail == current) {
-                        queue->m_tail = current->prev;
+                    if (queue->tail == current) {
+                        queue->tail = current->prev;
                     }
                     if (current->next != 0) {
                         current->next->prev = current->prev;
@@ -74,7 +74,7 @@ SC_Question::~SC_Question()
                         msgData = current->data;
                         delete current;
                     }
-                    queue->m_current = queue->m_head;
+                    queue->current = queue->head;
                 }
                 
                 // Call destructor and free message data
@@ -123,33 +123,33 @@ void SC_Question::Finalize()
     g_Manager_00435a84->SetFlag(questionId, 1);
     
     state = 2;
-    if (messageQueue->m_head == 0) {
+    if (messageQueue->head == 0) {
         return;
     }
     
     do {
         queue = messageQueue;
         msgData = 0;
-        queueType = queue->m_field_0xc;
+        queueType = queue->type;
         
         if (queueType == 1 || queueType == 4) {
-            queue->m_current = queue->m_head;
+            queue->current = queue->head;
         }
         else if (queueType == 2 || queueType == 0) {
-            queue->m_current = queue->m_tail;
+            queue->current = queue->tail;
         }
         else {
             ShowError("bad queue type %lu", queueType);
         }
         
         // Pop the current item from queue
-        current = (QueueNode*)queue->m_current;
+        current = (QueueNode*)queue->current;
         if (current != 0) {
-            if (queue->m_head == current) {
-                queue->m_head = current->next;
+            if (queue->head == current) {
+                queue->head = current->next;
             }
-            if (queue->m_tail == current) {
-                queue->m_tail = current->prev;
+            if (queue->tail == current) {
+                queue->tail = current->prev;
             }
             if (current->next != 0) {
                 current->next->prev = current->prev;
@@ -170,9 +170,9 @@ void SC_Question::Finalize()
                 current->prev = 0;
                 current->next = 0;
                 delete current;
-                queue->m_current = 0;
+                queue->current = 0;
             }
-            queue->m_current = queue->m_head;
+            queue->current = queue->head;
         }
         
         // Create timed event in pool and add message to it
@@ -193,7 +193,7 @@ void SC_Question::Finalize()
         if (msgData != 0) {
             delete (SC_Message*)msgData;
         }
-    } while (messageQueue->m_head != 0);
+    } while (messageQueue->head != 0);
 }
 
 /* Function start: 0x406AF0 */
@@ -220,12 +220,12 @@ int SC_Question::LBLParse(char* param_1)
             ShowError("queue fault 0101");
         }
         
-        queue->m_current = queue->m_head;
+        queue->current = queue->head;
         
-        if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2) {
-            if (queue->m_head != 0) {
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head != 0) {
                 do {
-                    void* currentPtr = queue->m_current;
+                    void* currentPtr = queue->current;
                     if (((SC_Message*)((QueueNode*)currentPtr)->data)->targetAddress < msg->targetAddress) {
                         if (msg == 0) {
                             ShowError("queue fault 0102");
@@ -233,61 +233,61 @@ int SC_Question::LBLParse(char* param_1)
                         
                         QueueNode* node = new QueueNode(msg);
 
-                        if (queue->m_current == 0) {
-                            queue->m_current = queue->m_head;
+                        if (queue->current == 0) {
+                            queue->current = queue->head;
                         }
 
-                        if (queue->m_head == 0) {
-                            queue->m_head = node;
-                            queue->m_tail = node;
-                            queue->m_current = node;
+                        if (queue->head == 0) {
+                            queue->head = node;
+                            queue->tail = node;
+                            queue->current = node;
                         }
                         else {
-                            node->next = (QueueNode*)queue->m_current;
-                            node->prev = ((QueueNode*)queue->m_current)->prev;
-                            if (((QueueNode*)queue->m_current)->prev == 0) {
-                                queue->m_head = node;
-                                ((QueueNode*)queue->m_current)->prev = node;
+                            node->next = (QueueNode*)queue->current;
+                            node->prev = ((QueueNode*)queue->current)->prev;
+                            if (((QueueNode*)queue->current)->prev == 0) {
+                                queue->head = node;
+                                ((QueueNode*)queue->current)->prev = node;
                             } else {
-                                ((QueueNode*)queue->m_current)->prev->next = node;
-                                ((QueueNode*)queue->m_current)->prev = node;
+                                ((QueueNode*)queue->current)->prev->next = node;
+                                ((QueueNode*)queue->current)->prev = node;
                             }
                         }
                         break;
                     }
                     
-                    if (queue->m_tail == currentPtr) {
+                    if (queue->tail == currentPtr) {
                         if (msg == 0) {
                             ShowError("queue fault 0112");
                         }
                         
                         QueueNode* node = new QueueNode(msg);
 
-                        if (queue->m_current == 0) {
-                            queue->m_current = queue->m_tail;
+                        if (queue->current == 0) {
+                            queue->current = queue->tail;
                         }
                         
-                        if (queue->m_head == 0) {
-                            queue->m_head = node;
-                            queue->m_tail = node;
-                            queue->m_current = node;
+                        if (queue->head == 0) {
+                            queue->head = node;
+                            queue->tail = node;
+                            queue->current = node;
                         }
                         else {
-                            if (queue->m_tail == 0 || ((QueueNode*)queue->m_tail)->next != 0) {
+                            if (queue->tail == 0 || ((QueueNode*)queue->tail)->next != 0) {
                                 ShowError("queue fault 0113");
                             }
                             node->next = 0;
-                            node->prev = (QueueNode*)queue->m_tail;
-                            ((QueueNode*)queue->m_tail)->next = node;
-                            queue->m_tail = node;
+                            node->prev = (QueueNode*)queue->tail;
+                            ((QueueNode*)queue->tail)->next = node;
+                            queue->tail = node;
                         }
                         break;
                     }
                     
                     if (currentPtr != 0) {
-                        queue->m_current = ((QueueNode*)currentPtr)->next;
+                        queue->current = ((QueueNode*)currentPtr)->next;
                     }
-                } while (queue->m_current != 0);
+                } while (queue->current != 0);
             }
             else {
                 if (msg == 0) {
@@ -296,24 +296,24 @@ int SC_Question::LBLParse(char* param_1)
                 
                 QueueNode* node = new QueueNode(msg);
 
-                if (queue->m_current == 0) {
-                    queue->m_current = queue->m_head;
+                if (queue->current == 0) {
+                    queue->current = queue->head;
                 }
 
-                if (queue->m_head == 0) {
-                    queue->m_head = node;
-                    queue->m_tail = node;
-                    queue->m_current = node;
+                if (queue->head == 0) {
+                    queue->head = node;
+                    queue->tail = node;
+                    queue->current = node;
                 }
                 else {
-                    node->next = (QueueNode*)queue->m_current;
-                    node->prev = ((QueueNode*)queue->m_current)->prev;
-                    if (((QueueNode*)queue->m_current)->prev == 0) {
-                        queue->m_head = node;
-                        ((QueueNode*)queue->m_current)->prev = node;
+                    node->next = (QueueNode*)queue->current;
+                    node->prev = ((QueueNode*)queue->current)->prev;
+                    if (((QueueNode*)queue->current)->prev == 0) {
+                        queue->head = node;
+                        ((QueueNode*)queue->current)->prev = node;
                     } else {
-                        ((QueueNode*)queue->m_current)->prev->next = node;
-                        ((QueueNode*)queue->m_current)->prev = node;
+                        ((QueueNode*)queue->current)->prev->next = node;
+                        ((QueueNode*)queue->current)->prev = node;
                     }
                 }
             }
@@ -342,28 +342,28 @@ void SC_Question::DumpMessageQueue(int unused)
     if (queue == 0) {
         return;
     }
-    if (queue->m_head == 0) {
+    if (queue->head == 0) {
         return;
     }
     
     WriteToMessageLog("\tmsgQ");
     queue = messageQueue;
-    queue->m_current = queue->m_head;
+    queue->current = queue->head;
     
-    while (queue->m_current != 0) {
-        if (queue->m_current == 0) {
+    while (queue->current != 0) {
+        if (queue->current == 0) {
             msgData = 0;
         } else {
-            msgData = (SC_Message*)((QueueNode*)queue->m_current)->data;
+            msgData = (SC_Message*)((QueueNode*)queue->current)->data;
         }
         msgData->Dump(0);
         
-        if (queue->m_tail == queue->m_current) {
+        if (queue->tail == queue->current) {
             break;
         }
         
-        if (queue->m_current != 0) {
-            queue->m_current = ((QueueNode*)queue->m_current)->next;
+        if (queue->current != 0) {
+            queue->current = ((QueueNode*)queue->current)->next;
         }
     }
     

@@ -217,26 +217,26 @@ Hotspot::~Hotspot()
 
 	Queue* q = pre_message;
 	if (q) {
-		if (q->m_head) {
-			q->m_current = q->m_head;
-			while (q->m_head) {
-				QueueNode* node = (QueueNode*)q->m_current;
+		if (q->head) {
+			q->current = q->head;
+			while (q->head) {
+				QueueNode* node = (QueueNode*)q->current;
 				SC_Message* msg;
 				if (!node) {
 					msg = 0;
 				} else {
-					if (q->m_head == node) q->m_head = node->next;
-					if (q->m_tail == node) q->m_tail = node->prev;
+					if (q->head == node) q->head = node->next;
+					if (q->tail == node) q->tail = node->prev;
 					if (node->prev) node->prev->next = node->next;
 					if (node->next) node->next->prev = node->prev;
 
 					msg = (SC_Message*)q->GetCurrentData();
 
-					if (q->m_current) {
-						delete (QueueNode*)q->m_current;
-						q->m_current = 0;
+					if (q->current) {
+						delete (QueueNode*)q->current;
+						q->current = 0;
 					}
-					q->m_current = q->m_head;
+					q->current = q->head;
 				}
 				if (msg) {
 					msg->~SC_Message();
@@ -250,26 +250,26 @@ Hotspot::~Hotspot()
 
 	q = message;
 	if (q) {
-		if (q->m_head) {
-			q->m_current = q->m_head;
-			while (q->m_head) {
-				QueueNode* node = (QueueNode*)q->m_current;
+		if (q->head) {
+			q->current = q->head;
+			while (q->head) {
+				QueueNode* node = (QueueNode*)q->current;
 				SC_Message* msg;
 				if (!node) {
 					msg = 0;
 				} else {
-					if (q->m_head == node) q->m_head = node->next;
-					if (q->m_tail == node) q->m_tail = node->prev;
+					if (q->head == node) q->head = node->next;
+					if (q->tail == node) q->tail = node->prev;
 					if (node->prev) node->prev->next = node->next;
 					if (node->next) node->next->prev = node->prev;
 
 					msg = (SC_Message*)q->GetCurrentData();
 
-					if (q->m_current) {
-						delete (QueueNode*)q->m_current;
-						q->m_current = 0;
+					if (q->current) {
+						delete (QueueNode*)q->current;
+						q->current = 0;
 					}
-					q->m_current = q->m_head;
+					q->current = q->head;
 				}
 				if (msg) {
 					msg->~SC_Message();
@@ -313,50 +313,50 @@ int Hotspot::LBLParse(char* line)
         
         Queue* q = pre_message;
         if (msg == 0) ShowError("queue fault 0101");
-        q->m_current = q->m_head;
-        if (q->m_field_0xc == 1 || q->m_field_0xc == 2) {
-            if (q->m_head != 0) {
+        q->current = q->head;
+        if (q->type == 1 || q->type == 2) {
+            if (q->head != 0) {
                 do {
-                    QueueNode* currentPtr = (QueueNode*)q->m_current;
+                    QueueNode* currentPtr = (QueueNode*)q->current;
                     if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
                         if (msg == 0) ShowError("queue fault 0102");
                         QueueNode* node = new QueueNode(msg);
-                        if (q->m_current == 0) q->m_current = q->m_head;
-                        if (q->m_head == 0) {
-                            q->m_head = node;
-                            q->m_tail = node;
-                            q->m_current = node;
+                        if (q->current == 0) q->current = q->head;
+                        if (q->head == 0) {
+                            q->head = node;
+                            q->tail = node;
+                            q->current = node;
                         } else {
-                            node->next = (QueueNode*)q->m_current;
-                            node->prev = ((QueueNode*)q->m_current)->prev;
-                            if (((QueueNode*)q->m_current)->prev == 0) {
-                                q->m_head = node;
+                            node->next = (QueueNode*)q->current;
+                            node->prev = ((QueueNode*)q->current)->prev;
+                            if (((QueueNode*)q->current)->prev == 0) {
+                                q->head = node;
                             } else {
-                                ((QueueNode*)q->m_current)->prev->next = node;
+                                ((QueueNode*)q->current)->prev->next = node;
                             }
-                            ((QueueNode*)q->m_current)->prev = node;
+                            ((QueueNode*)q->current)->prev = node;
                         }
                         goto done_premessage;
                     }
-                    if (q->m_tail == currentPtr) {
+                    if (q->tail == currentPtr) {
                         if (msg == 0) ShowError("queue fault 0112");
                         QueueNode* node = new QueueNode(msg);
-                        if (q->m_current == 0) q->m_current = q->m_tail;
-                        if (q->m_head == 0) {
-                            q->m_head = node;
-                            q->m_tail = node;
-                            q->m_current = node;
+                        if (q->current == 0) q->current = q->tail;
+                        if (q->head == 0) {
+                            q->head = node;
+                            q->tail = node;
+                            q->current = node;
                         } else {
-                            if (q->m_tail == 0 || ((QueueNode*)q->m_tail)->next != 0) ShowError("queue fault 0113");
+                            if (q->tail == 0 || ((QueueNode*)q->tail)->next != 0) ShowError("queue fault 0113");
                             node->next = 0;
-                            node->prev = (QueueNode*)q->m_tail;
-                            ((QueueNode*)q->m_tail)->next = node;
-                            q->m_tail = node;
+                            node->prev = (QueueNode*)q->tail;
+                            ((QueueNode*)q->tail)->next = node;
+                            q->tail = node;
                         }
                         goto done_premessage;
                     }
-                    if (currentPtr != 0) q->m_current = currentPtr->next;
-                } while (q->m_current != 0);
+                    if (currentPtr != 0) q->current = currentPtr->next;
+                } while (q->current != 0);
             } else {
                 q->InsertAtCurrent(msg);
             }
@@ -372,50 +372,50 @@ done_premessage:;
         
         Queue* q = message;
         if (msg == 0) ShowError("queue fault 0101");
-        q->m_current = q->m_head;
-        if (q->m_field_0xc == 1 || q->m_field_0xc == 2) {
-            if (q->m_head != 0) {
+        q->current = q->head;
+        if (q->type == 1 || q->type == 2) {
+            if (q->head != 0) {
                 do {
-                    QueueNode* currentPtr = (QueueNode*)q->m_current;
+                    QueueNode* currentPtr = (QueueNode*)q->current;
                     if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
                         if (msg == 0) ShowError("queue fault 0102");
                         QueueNode* node = new QueueNode(msg);
-                        if (q->m_current == 0) q->m_current = q->m_head;
-                        if (q->m_head == 0) {
-                            q->m_head = node;
-                            q->m_tail = node;
-                            q->m_current = node;
+                        if (q->current == 0) q->current = q->head;
+                        if (q->head == 0) {
+                            q->head = node;
+                            q->tail = node;
+                            q->current = node;
                         } else {
-                            node->next = (QueueNode*)q->m_current;
-                            node->prev = ((QueueNode*)q->m_current)->prev;
-                            if (((QueueNode*)q->m_current)->prev == 0) {
-                                q->m_head = node;
+                            node->next = (QueueNode*)q->current;
+                            node->prev = ((QueueNode*)q->current)->prev;
+                            if (((QueueNode*)q->current)->prev == 0) {
+                                q->head = node;
                             } else {
-                                ((QueueNode*)q->m_current)->prev->next = node;
+                                ((QueueNode*)q->current)->prev->next = node;
                             }
-                            ((QueueNode*)q->m_current)->prev = node;
+                            ((QueueNode*)q->current)->prev = node;
                         }
                         goto done_message;
                     }
-                    if (q->m_tail == currentPtr) {
+                    if (q->tail == currentPtr) {
                         if (msg == 0) ShowError("queue fault 0112");
                         QueueNode* node = new QueueNode(msg);
-                        if (q->m_current == 0) q->m_current = q->m_tail;
-                        if (q->m_head == 0) {
-                            q->m_head = node;
-                            q->m_tail = node;
-                            q->m_current = node;
+                        if (q->current == 0) q->current = q->tail;
+                        if (q->head == 0) {
+                            q->head = node;
+                            q->tail = node;
+                            q->current = node;
                         } else {
-                            if (q->m_tail == 0 || ((QueueNode*)q->m_tail)->next != 0) ShowError("queue fault 0113");
+                            if (q->tail == 0 || ((QueueNode*)q->tail)->next != 0) ShowError("queue fault 0113");
                             node->next = 0;
-                            node->prev = (QueueNode*)q->m_tail;
-                            ((QueueNode*)q->m_tail)->next = node;
-                            q->m_tail = node;
+                            node->prev = (QueueNode*)q->tail;
+                            ((QueueNode*)q->tail)->next = node;
+                            q->tail = node;
                         }
                         goto done_message;
                     }
-                    if (currentPtr != 0) q->m_current = currentPtr->next;
-                } while (q->m_current != 0);
+                    if (currentPtr != 0) q->current = currentPtr->next;
+                } while (q->current != 0);
             } else {
                 q->InsertAtCurrent(msg);
             }
@@ -461,13 +461,13 @@ unsigned char Hotspot::Do()
 void Hotspot::QueueEvents(Queue* q)
 {
     if (!q) return;
-    q->m_current = q->m_head;
-    if (!q->m_head) return;
+    q->current = q->head;
+    if (!q->head) return;
 
     do {
         Message* msg = 0;
-        if (q->m_current) {
-            msg = (Message*)((QueueNode*)q->m_current)->data;
+        if (q->current) {
+            msg = (Message*)((QueueNode*)q->current)->data;
         }
 
         TimedEventPool* pool = g_TimedEventPool2_00436988;
@@ -482,11 +482,11 @@ void Hotspot::QueueEvents(Queue* q)
         }
         pool->list.tail = evt;
 
-        if (q->m_current == q->m_tail) return;
-        if (q->m_current) {
-            q->m_current = ((QueueNode*)q->m_current)->next;
+        if (q->current == q->tail) return;
+        if (q->current) {
+            q->current = ((QueueNode*)q->current)->next;
         }
-    } while (q->m_head != 0);
+    } while (q->head != 0);
 }
 
 

@@ -4,7 +4,7 @@
 class SC_Message;
 class Timer;
 class Handler;
-struct EventList;
+#include "LinkedList.h"
 
 // GameLoop class
 // Size: 0x1C (28 bytes)

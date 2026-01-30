@@ -123,7 +123,7 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
         SpriteListNode* node = spriteList->current;
         if (spriteList->tail == node) break;
         if (node != 0) {
-            spriteList->current = node->prev;
+            spriteList->current = node->next;
         }
         i++;
         if (spriteList->head == 0) break;
@@ -145,7 +145,7 @@ void OptionMenu::Render(int characterIndex)
             node = spriteList->current;
             if (spriteList->tail == node) break;
             if (node != 0) {
-                spriteList->current = node->prev;
+                spriteList->current = node->next;
             }
             node = spriteList->current;
         }
@@ -175,7 +175,7 @@ void* OptionMenu::GetOptionByIndex(int index)
                 return 0;
             }
             if (node != 0) {
-                spriteList->current = node->prev;
+                spriteList->current = node->next;
             }
             i = i + 1;
             if (spriteList->head == 0) break;
@@ -200,7 +200,7 @@ void OptionMenu::SetOptionState(int param_1, int param_2)
                 node = spriteList->current;
                 if (spriteList->tail == node) break;
                 if (node != 0) {
-                    spriteList->current = node->prev;
+                    spriteList->current = node->next;
                 }
                 i = i + 1;
                 if (spriteList->head == 0) {
@@ -270,7 +270,7 @@ int OptionMenu::HitTest(MousePoint pt, int* indexOut, int* hitOut)
                 }
 
                 if (node != 0) {
-                    pList->current = node->prev;
+                    pList->current = node->next;
                 }
 
                 ++*indexOut;

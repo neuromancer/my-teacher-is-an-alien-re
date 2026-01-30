@@ -2,45 +2,9 @@
 #define ZBUFFERMANAGER_H
 
 #include "Timer.h"
-
-#include "Queue.h"
+#include "LinkedList.h"
 
 class Palette;
-
-// Queue node structure - 12 bytes
-struct ZBQueueNode {
-    ZBQueueNode* prev;  // 0x00
-    ZBQueueNode* next;  // 0x04
-    void* data;         // 0x08
-
-    ZBQueueNode() : prev(0), next(0), data(0) {}
-    ZBQueueNode(void* d) { data = d; prev = 0; next = 0; }  // 0x41CD10
-    ~ZBQueueNode() { data = 0; prev = 0; next = 0; }
-};
-
-// Queue structure - 16 bytes
-struct ZBQueue {
-    ZBQueueNode* head;     // 0x00
-    ZBQueueNode* tail;     // 0x04
-    ZBQueueNode* current;  // 0x08
-    int type;              // 0x0C
-
-    ZBQueue(int t) {
-        type = t;
-        head = 0;
-        tail = 0;
-        current = head;
-    }
-
-    void* GetCurrentData();       // 0x41BB10
-    void* PopNode();              // 0x401810
-    void* PopNode2();             // 0x401710
-    void* PopNode2_2();           // 0x401790
-    void ClearList();             // 0x401560
-    void Insert(void* data);      // 0x409160
-    void InsertBeforeCurrent(void* data);  // 0x41CB40
-    void InsertBefore(void* data);  // 0x41CC10
-};
 
 // Forward declaration for command type used in queuing
 struct SoundCommand;

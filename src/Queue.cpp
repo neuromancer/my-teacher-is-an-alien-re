@@ -109,25 +109,25 @@ void Queue::Insert(void* data)
         node = newNode;
     }
 
-    if (m_current == 0) {
-        m_current = m_head;
+    if (current == 0) {
+        current = head;
     }
 
-    if (m_head == 0) {
-        m_head = node;
-        m_tail = node;
-        m_current = node;
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
     }
     else {
-        node->next = (QueueNode*)m_current;
-        node->prev = ((QueueNode*)m_current)->prev;
-        if (((QueueNode*)m_current)->prev == 0) {
-            m_head = node;
+        node->next = (QueueNode*)current;
+        node->prev = ((QueueNode*)current)->prev;
+        if (((QueueNode*)current)->prev == 0) {
+            head = node;
         }
         else {
-            ((QueueNode*)((QueueNode*)m_current)->prev)->next = node;
+            ((QueueNode*)((QueueNode*)current)->prev)->next = node;
         }
-        ((QueueNode*)m_current)->prev = node;
+        ((QueueNode*)current)->prev = node;
     }
 }
 
@@ -147,51 +147,51 @@ void Queue::Push(void* data)
         node = newNode;
     }
 
-    if (m_current == 0) {
-        m_current = m_tail;
+    if (current == 0) {
+        current = tail;
     }
 
-    if (m_head == 0) {
-        m_head = node;
-        m_tail = node;
-        m_current = node;
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
     }
     else {
-        if (m_tail == 0 || ((QueueNode*)m_tail)->next != 0) {
+        if (tail == 0 || ((QueueNode*)tail)->next != 0) {
             ShowError("queue fault 0113");
         }
         node->next = 0;
-        node->prev = (QueueNode*)m_tail;
-        ((QueueNode*)m_tail)->next = node;
-        m_tail = node;
+        node->prev = (QueueNode*)tail;
+        ((QueueNode*)tail)->next = node;
+        tail = node;
     }
 }
 
 /* Function start: 0x402680 */
 void* Queue::Pop()
 {
-    QueueNode* node = (QueueNode*)m_current;
+    QueueNode* node = (QueueNode*)current;
     if (node == 0) {
         return 0;
     }
 
-    if (m_head == node) {
-        m_head = node->next;
+    if (head == node) {
+        head = node->next;
     }
-    if (m_tail == node) {
-        m_tail = node->prev;
+    if (tail == node) {
+        tail = node->prev;
     }
 
     if (node->prev != 0) {
         node->prev->next = node->next;
     }
 
-    QueueNode* nextNode = ((QueueNode*)m_current)->next;
+    QueueNode* nextNode = ((QueueNode*)current)->next;
     if (nextNode != 0) {
-        nextNode->prev = ((QueueNode*)m_current)->prev;
+        nextNode->prev = ((QueueNode*)current)->prev;
     }
 
-    QueueNode* curr = (QueueNode*)m_current;
+    QueueNode* curr = (QueueNode*)current;
     void* data = 0;
     if (curr != 0) {
         data = curr->data;
@@ -199,10 +199,10 @@ void* Queue::Pop()
         curr->prev = 0;
         curr->next = 0;
         delete curr;
-        m_current = 0;
+        current = 0;
     }
 
-    m_current = m_head;
+    current = head;
     return data;
 }
 
@@ -217,25 +217,25 @@ void Queue::InsertAtCurrent(void* data)
 
     node = new QueueNode(data);
 
-    if (m_current == 0) {
-        m_current = m_head;
+    if (current == 0) {
+        current = head;
     }
 
-    if (m_head == 0) {
-        m_head = node;
-        m_tail = node;
-        m_current = node;
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
     }
     else {
-        node->next = (QueueNode*)m_current;
-        node->prev = ((QueueNode*)m_current)->prev;
-        if (((QueueNode*)m_current)->prev == 0) {
-            m_head = node;
+        node->next = (QueueNode*)current;
+        node->prev = ((QueueNode*)current)->prev;
+        if (((QueueNode*)current)->prev == 0) {
+            head = node;
         }
         else {
-            ((QueueNode*)((QueueNode*)m_current)->prev)->next = node;
+            ((QueueNode*)((QueueNode*)current)->prev)->next = node;
         }
-        ((QueueNode*)m_current)->prev = node;
+        ((QueueNode*)current)->prev = node;
     }
 }
 
@@ -288,7 +288,7 @@ TimedEventPool::~TimedEventPool()
 /* Function start: 0x417680 */
 void* Queue::GetCurrentData()
 {
-    QueueNode* node = (QueueNode*)m_current;
+    QueueNode* node = (QueueNode*)current;
     if (node != 0) {
         return node->data;
     }

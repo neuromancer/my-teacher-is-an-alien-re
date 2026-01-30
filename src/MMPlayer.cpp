@@ -14,7 +14,7 @@ MMPlayer::MMPlayer()
     field_0x90 = 0;
     field_0x90 = 1;
     Queue* queue = new Queue();
-    queue->m_field_0xc = 2;
+    queue->type = 2;
     m_queue = queue;
     field_0x88 = 0x54;
 }
@@ -29,18 +29,18 @@ MMPlayer::~MMPlayer()
 
     queue = m_queue;
     if (queue != 0) {
-        if (queue->m_head != 0) {
-            queue->m_current = queue->m_head;
-            while (queue->m_head != 0) {
-                current = (QueueNode*)queue->m_current;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                current = (QueueNode*)queue->current;
                 if (current == 0) {
                     sprite = 0;
                 } else {
-                    if (queue->m_head == current) {
-                        queue->m_head = current->next;
+                    if (queue->head == current) {
+                        queue->head = current->next;
                     }
-                    if (queue->m_tail == current) {
-                        queue->m_tail = current->next;
+                    if (queue->tail == current) {
+                        queue->tail = current->next;
                     }
                     if (current->next != 0) {
                         current->next->prev = current->prev;
@@ -53,9 +53,9 @@ MMPlayer::~MMPlayer()
                     if (node != 0) {
                         sprite = node->data;
                         delete node;
-                        queue->m_current = 0;
+                        queue->current = 0;
                     }
-                    queue->m_current = queue->m_head;
+                    queue->current = queue->head;
                 }
                 if (sprite != 0) {
                     delete (Sprite*)sprite;
@@ -75,10 +75,10 @@ void MMPlayer::StopAll()
     Sprite* sprite;
 
     queue = m_queue;
-    queue->m_current = queue->m_head;
-    if (queue->m_head != 0) {
+    queue->current = queue->head;
+    if (queue->head != 0) {
         do {
-            current = (QueueNode*)queue->m_current;
+            current = (QueueNode*)queue->current;
             sprite = 0;
             if (current != 0) {
                 sprite = (Sprite*)current->data;
@@ -86,14 +86,14 @@ void MMPlayer::StopAll()
             sprite->StopAnimationSound();
 
             queue = m_queue;
-            current = (QueueNode*)queue->m_current;
-            if (queue->m_tail == current) {
+            current = (QueueNode*)queue->current;
+            if (queue->tail == current) {
                 break;
             }
             if (current != 0) {
-                queue->m_current = current->next;
+                queue->current = current->next;
             }
-        } while (queue->m_head != 0);
+        } while (queue->head != 0);
     }
     field_0x8c = field_0x8c & ~0x2000;
 }
@@ -106,10 +106,10 @@ void MMPlayer::Init()
     Sprite* sprite;
 
     queue = m_queue;
-    queue->m_current = queue->m_head;
-    if (queue->m_head != 0) {
+    queue->current = queue->head;
+    if (queue->head != 0) {
         do {
-            current = (QueueNode*)queue->m_current;
+            current = (QueueNode*)queue->current;
             sprite = 0;
             if (current != 0) {
                 sprite = (Sprite*)current->data;
@@ -117,14 +117,14 @@ void MMPlayer::Init()
             sprite->Init();
 
             queue = m_queue;
-            current = (QueueNode*)queue->m_current;
-            if (queue->m_tail == current) {
+            current = (QueueNode*)queue->current;
+            if (queue->tail == current) {
                 break;
             }
             if (current != 0) {
-                queue->m_current = current->next;
+                queue->current = current->next;
             }
-        } while (queue->m_head != 0);
+        } while (queue->head != 0);
     }
     field_0x90 = 1;
     field_0x8c = field_0x8c | 0x2000;
@@ -146,46 +146,46 @@ void MMPlayer::AddSprite(Sprite* s)
         ShowError("queue fault 0101");
     }
 
-    queue->m_current = queue->m_head;
+    queue->current = queue->head;
 
-    if (queue->m_field_0xc == 1 || queue->m_field_0xc == 2)
+    if (queue->type == 1 || queue->type == 2)
     {
-        if (queue->m_head == 0)
+        if (queue->head == 0)
         {
             if (s == 0) ShowError("queue fault 0102");
             QueueNode* newNode = new QueueNode(s);
 
-            if (queue->m_current == 0)
+            if (queue->current == 0)
             {
-                queue->m_current = queue->m_head;
+                queue->current = queue->head;
             }
 
-            if (queue->m_head == 0)
+            if (queue->head == 0)
             {
-                queue->m_head = newNode;
-                queue->m_tail = newNode;
-                queue->m_current = newNode;
+                queue->head = newNode;
+                queue->tail = newNode;
+                queue->current = newNode;
             }
             else
             {
-                newNode->next = (QueueNode*)queue->m_current;
-                newNode->prev = ((QueueNode*)queue->m_current)->prev;
-                if (((QueueNode*)queue->m_current)->prev == 0)
+                newNode->next = (QueueNode*)queue->current;
+                newNode->prev = ((QueueNode*)queue->current)->prev;
+                if (((QueueNode*)queue->current)->prev == 0)
                 {
-                    queue->m_head = newNode;
+                    queue->head = newNode;
                 }
                 else
                 {
-                    ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
+                    ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
                 }
-                ((QueueNode*)queue->m_current)->prev = newNode;
+                ((QueueNode*)queue->current)->prev = newNode;
             }
         }
         else
         {
-            while (queue->m_current != 0)
+            while (queue->current != 0)
             {
-                QueueNode* current = (QueueNode*)queue->m_current;
+                QueueNode* current = (QueueNode*)queue->current;
                 Sprite* currSprite = (Sprite*)current->data;
 
                 if ((unsigned int)currSprite->field_0xb0 < (unsigned int)s->field_0xb0)
@@ -193,65 +193,65 @@ void MMPlayer::AddSprite(Sprite* s)
                     if (s == 0) ShowError("queue fault 0102");
                     QueueNode* newNode = new QueueNode(s);
 
-                    if (queue->m_current == 0)
+                    if (queue->current == 0)
                     {
-                        queue->m_current = queue->m_head;
+                        queue->current = queue->head;
                     }
 
-                    if (queue->m_head == 0)
+                    if (queue->head == 0)
                     {
-                        queue->m_head = newNode;
-                        queue->m_tail = newNode;
-                        queue->m_current = newNode;
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
                     }
                     else
                     {
-                        newNode->next = (QueueNode*)queue->m_current;
-                        newNode->prev = ((QueueNode*)queue->m_current)->prev;
-                        if (((QueueNode*)queue->m_current)->prev == 0)
+                        newNode->next = (QueueNode*)queue->current;
+                        newNode->prev = ((QueueNode*)queue->current)->prev;
+                        if (((QueueNode*)queue->current)->prev == 0)
                         {
-                            queue->m_head = newNode;
+                            queue->head = newNode;
                         }
                         else
                         {
-                            ((QueueNode*)((QueueNode*)queue->m_current)->prev)->next = newNode;
+                            ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
                         }
-                        ((QueueNode*)queue->m_current)->prev = newNode;
+                        ((QueueNode*)queue->current)->prev = newNode;
                     }
                     return;
                 }
 
-                if (queue->m_tail == current)
+                if (queue->tail == current)
                 {
                     if (s == 0) ShowError("queue fault 0112");
                     QueueNode* newNode = new QueueNode(s);
 
-                    if (queue->m_current == 0)
+                    if (queue->current == 0)
                     {
-                        queue->m_current = queue->m_tail;
+                        queue->current = queue->tail;
                     }
 
-                    if (queue->m_head == 0)
+                    if (queue->head == 0)
                     {
-                        queue->m_head = newNode;
-                        queue->m_tail = newNode;
-                        queue->m_current = newNode;
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
                     }
                     else
                     {
-                        if (queue->m_tail == 0 || ((QueueNode*)queue->m_tail)->next != 0)
+                        if (queue->tail == 0 || ((QueueNode*)queue->tail)->next != 0)
                         {
                             ShowError("queue fault 0113");
                         }
                         newNode->next = 0;
-                        newNode->prev = (QueueNode*)queue->m_tail;
-                        ((QueueNode*)queue->m_tail)->next = newNode;
-                        queue->m_tail = newNode;
+                        newNode->prev = (QueueNode*)queue->tail;
+                        ((QueueNode*)queue->tail)->next = newNode;
+                        queue->tail = newNode;
                     }
                     return;
                 }
 
-                queue->m_current = current->next;
+                queue->current = current->next;
             }
         }
     }
@@ -274,10 +274,10 @@ int MMPlayer::Draw()
         Init();
     }
     queue = m_queue;
-    queue->m_current = queue->m_head;
-    if (queue->m_head != 0) {
+    queue->current = queue->head;
+    if (queue->head != 0) {
         do {
-            current = (QueueNode*)queue->m_current;
+            current = (QueueNode*)queue->current;
             sprite = 0;
             if (current != 0) {
                 sprite = (Sprite*)current->data;
@@ -288,14 +288,14 @@ int MMPlayer::Draw()
             }
 
             queue = m_queue;
-            current = (QueueNode*)queue->m_current;
-            if (queue->m_tail == current) {
+            current = (QueueNode*)queue->current;
+            if (queue->tail == current) {
                 break;
             }
             if (current != 0) {
-                queue->m_current = current->next;
+                queue->current = current->next;
             }
-        } while (queue->m_head != 0);
+        } while (queue->head != 0);
     }
     return field_0x90;
 }
