@@ -100,6 +100,26 @@ void ZBQueue::Insert(void* data)
     }
 }
 
+/* Function start: 0x41BB20 */
+void ZBufferManager::QueueAnimationCleanup(void* anim)
+{
+    if (m_state == 1) {
+        if (anim != 0) {
+            delete (Animation*)anim;
+        }
+        return;
+    }
+    if (m_state < 2 || m_state > 3) {
+        return;
+    }
+
+    if (anim == 0) {
+        return;
+    }
+
+    m_queueA4->Insert(anim);
+}
+
 /* Function start: 0x41B5D0 */
 void CommandType1::Execute(GlyphRect* rect)
 {

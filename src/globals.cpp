@@ -125,9 +125,23 @@ int DAT_0043d564 = 0;
 int DAT_0043d558 = 0;
 char DAT_0043d560 = 0;
 int DAT_0043bc88 = 1;  // Time seed (original has 1)
-GlyphRect g_PuzzleRects1_0043d068[9];
+GlyphRect g_PuzzleRects1_0043d068[9] = {
+    GlyphRect(0x1de, 0x147, 0x205, 0x16d),  // [0] bottom-left
+    GlyphRect(0x209, 0x147, 0x230, 0x16d),  // [1] bottom-center
+    GlyphRect(0x234, 0x147, 0x25b, 0x16d),  // [2] bottom-right
+    GlyphRect(0x1de, 0x11c, 0x205, 0x143),  // [3] middle-left
+    GlyphRect(0x209, 0x11c, 0x230, 0x143),  // [4] middle-center
+    GlyphRect(0x234, 0x11c, 0x25b, 0x143),  // [5] middle-right
+    GlyphRect(0x1de, 0x0f1, 0x205, 0x118),  // [6] top-left
+    GlyphRect(0x209, 0x0f1, 0x230, 0x118),  // [7] top-center
+    GlyphRect(0x234, 0x0f1, 0x25b, 0x118),  // [8] top-right
+};
 char DAT_0043d0f8 = 0;
-GlyphRect g_PuzzleRects2_0043d100[3];
+GlyphRect g_PuzzleRects2_0043d100[3] = {
+    GlyphRect(0x014, 0x0a1, 0x046, 0x137),  // [0] left floor
+    GlyphRect(0x0b2, 0x0ac, 0x0ef, 0x118),  // [1] middle floor
+    GlyphRect(0x15d, 0x0a1, 0x18f, 0x137),  // [2] right floor
+};
 int DAT_0043d130 = 0;  // Game state save area
 int DAT_0043d134 = 0;  // Game state save area
 int DAT_0043d138 = 0;  // Game state save area

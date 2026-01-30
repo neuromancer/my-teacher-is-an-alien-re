@@ -8,7 +8,6 @@
 #include "Parser.h"
 #include "GameState.h"
 #include "Animation.h"
-#include "Queue.h"
 #include "Memory.h"
 #include "ZBufferManager.h"
 #include "string.h"
@@ -97,7 +96,7 @@ void Sprite::StopAnimationSound()
     }
 
     if (g_ZBufferManager_0043698c != 0 && anim != 0 && g_ZBufferManager_0043698c->m_state != 0) {
-        ((Queue*)g_ZBufferManager_0043698c)->Insert(anim);
+        g_ZBufferManager_0043698c->QueueAnimationCleanup(anim);
     } else if (anim != 0) {
         delete anim;
     }
