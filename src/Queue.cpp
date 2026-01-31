@@ -97,146 +97,18 @@ done:
 }
 
 /* Function start: 0x4024D0 */
-void Queue::Insert(void* data)
-{
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    QueueNode* newNode = new QueueNode(data);
-    QueueNode* node = 0;
-    if (newNode != 0) {
-        node = newNode;
-    }
-
-    if (current == 0) {
-        current = head;
-    }
-
-    if (head == 0) {
-        head = node;
-        tail = node;
-        current = node;
-    }
-    else {
-        node->next = (QueueNode*)current;
-        node->prev = ((QueueNode*)current)->prev;
-        if (((QueueNode*)current)->prev == 0) {
-            head = node;
-        }
-        else {
-            ((QueueNode*)((QueueNode*)current)->prev)->next = node;
-        }
-        ((QueueNode*)current)->prev = node;
-    }
-}
+// void Queue::Insert(void* data) - Moved to LinkedList.h as inline
 
 /* Function start: 0x4025A0 */
-void Queue::Push(void* data)
-{
-    if (data == 0) {
-        ShowError("queue fault 0112");
-    }
-
-    QueueNode* newNode = new QueueNode(data);
-    QueueNode* node;
-    if (newNode == 0) {
-        node = 0;
-    }
-    else {
-        node = newNode;
-    }
-
-    if (current == 0) {
-        current = tail;
-    }
-
-    if (head == 0) {
-        head = node;
-        tail = node;
-        current = node;
-    }
-    else {
-        if (tail == 0 || ((QueueNode*)tail)->next != 0) {
-            ShowError("queue fault 0113");
-        }
-        node->next = 0;
-        node->prev = (QueueNode*)tail;
-        ((QueueNode*)tail)->next = node;
-        tail = node;
-    }
-}
+// void Queue::Push(void* data) - Moved to LinkedList.h as inline
 
 /* Function start: 0x402680 */
-void* Queue::Pop()
-{
-    QueueNode* node = (QueueNode*)current;
-    if (node == 0) {
-        return 0;
-    }
-
-    if (head == node) {
-        head = node->next;
-    }
-    if (tail == node) {
-        tail = node->prev;
-    }
-
-    if (node->prev != 0) {
-        node->prev->next = node->next;
-    }
-
-    QueueNode* nextNode = ((QueueNode*)current)->next;
-    if (nextNode != 0) {
-        nextNode->prev = ((QueueNode*)current)->prev;
-    }
-
-    QueueNode* curr = (QueueNode*)current;
-    void* data = 0;
-    if (curr != 0) {
-        data = curr->data;
-        curr->data = 0;
-        curr->prev = 0;
-        curr->next = 0;
-        delete curr;
-        current = 0;
-    }
-
-    current = head;
-    return data;
-}
+// void* Queue::Pop() - Moved to LinkedList.h as inline
 
 /* Function start: 0x408790 */
 void Queue::InsertAtCurrent(void* data)
 {
-    QueueNode* node;
-
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    node = new QueueNode(data);
-
-    if (current == 0) {
-        current = head;
-    }
-
-    if (head == 0) {
-        head = node;
-        tail = node;
-        current = node;
-    }
-    else {
-        node->next = (QueueNode*)current;
-        node->prev = ((QueueNode*)current)->prev;
-        if (((QueueNode*)current)->prev == 0) {
-            head = node;
-        }
-        else {
-            ((QueueNode*)((QueueNode*)current)->prev)->next = node;
-        }
-        ((QueueNode*)current)->prev = node;
-    }
+    InsertNode(data);
 }
 
 /* Function start: 0x40D2A0 */
@@ -286,14 +158,7 @@ TimedEventPool::~TimedEventPool()
 }
 
 /* Function start: 0x417680 */
-void* Queue::GetCurrentData()
-{
-    QueueNode* node = (QueueNode*)current;
-    if (node != 0) {
-        return node->data;
-    }
-    return 0;
-}
+// void* Queue::GetCurrentData() - Moved to LinkedList.h as inline
 
 /* Function start: 0x417C50 */
 SC_Message* TimedEventPool::PopSafe(SC_Message* buffer)

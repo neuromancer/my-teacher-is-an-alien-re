@@ -35,7 +35,7 @@ class SC_Question : public Parser
 public:
     MMPlayer* mouseControl; // 0x88
     Queue* messageQueue;        // 0x8c
-    int questionId;             // 0x90 - question ID passed to constructor
+    unsigned int questionId;    // 0x90 - question ID passed to constructor
     int field_94;
     int state;                  // 0x98 - 0=new, 2=already answered
     char label[128];            // 0x9c

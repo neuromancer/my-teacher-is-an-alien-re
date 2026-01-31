@@ -216,107 +216,20 @@ int SC_Question::LBLParse(char* param_1)
         Parser::ProcessFile(msg, this, 0);
         
         Queue* queue = messageQueue;
-        if (msg == 0) {
-            ShowError("queue fault 0101");
-        }
-        
-        queue->current = queue->head;
-        
+        queue->ResetForSortedAdd(msg);
+
         if (queue->type == 1 || queue->type == 2) {
             if (queue->head != 0) {
-                do {
-                    void* currentPtr = queue->current;
-                    if (((SC_Message*)((QueueNode*)currentPtr)->data)->targetAddress < msg->targetAddress) {
-                        if (msg == 0) {
-                            ShowError("queue fault 0102");
-                        }
-                        
-                        QueueNode* node = new QueueNode(msg);
-
-                        if (queue->current == 0) {
-                            queue->current = queue->head;
-                        }
-
-                        if (queue->head == 0) {
-                            queue->head = node;
-                            queue->tail = node;
-                            queue->current = node;
-                        }
-                        else {
-                            node->next = (QueueNode*)queue->current;
-                            node->prev = ((QueueNode*)queue->current)->prev;
-                            if (((QueueNode*)queue->current)->prev == 0) {
-                                queue->head = node;
-                                ((QueueNode*)queue->current)->prev = node;
-                            } else {
-                                ((QueueNode*)queue->current)->prev->next = node;
-                                ((QueueNode*)queue->current)->prev = node;
-                            }
-                        }
-                        break;
+                while (1) {
+                    if (((SC_Message*)queue->current->data)->targetAddress < msg->targetAddress) {
+                        queue->Insert(msg);
+                        return 0;
                     }
-                    
-                    if (queue->tail == currentPtr) {
-                        if (msg == 0) {
-                            ShowError("queue fault 0112");
-                        }
-                        
-                        QueueNode* node = new QueueNode(msg);
-
-                        if (queue->current == 0) {
-                            queue->current = queue->tail;
-                        }
-                        
-                        if (queue->head == 0) {
-                            queue->head = node;
-                            queue->tail = node;
-                            queue->current = node;
-                        }
-                        else {
-                            if (queue->tail == 0 || ((QueueNode*)queue->tail)->next != 0) {
-                                ShowError("queue fault 0113");
-                            }
-                            node->next = 0;
-                            node->prev = (QueueNode*)queue->tail;
-                            ((QueueNode*)queue->tail)->next = node;
-                            queue->tail = node;
-                        }
-                        break;
-                    }
-                    
-                    if (currentPtr != 0) {
-                        queue->current = ((QueueNode*)currentPtr)->next;
-                    }
-                } while (queue->current != 0);
-            }
-            else {
-                if (msg == 0) {
-                    ShowError("queue fault 0102");
-                }
-                
-                QueueNode* node = new QueueNode(msg);
-
-                if (queue->current == 0) {
-                    queue->current = queue->head;
-                }
-
-                if (queue->head == 0) {
-                    queue->head = node;
-                    queue->tail = node;
-                    queue->current = node;
-                }
-                else {
-                    node->next = (QueueNode*)queue->current;
-                    node->prev = ((QueueNode*)queue->current)->prev;
-                    if (((QueueNode*)queue->current)->prev == 0) {
-                        queue->head = node;
-                        ((QueueNode*)queue->current)->prev = node;
-                    } else {
-                        ((QueueNode*)queue->current)->prev->next = node;
-                        ((QueueNode*)queue->current)->prev = node;
-                    }
+                    if (queue->tail == queue->current) break;
+                    queue->current = queue->current->next;
                 }
             }
+            queue->Push(msg);
         }
         else {
             queue->Insert(msg);

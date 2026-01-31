@@ -360,19 +360,3 @@ void MessageList::InsertNode(void* data) {
     }
 }
 
-/* Function start: 0x40AD50 */
-void MessageList::UnlinkNode(MessageNode* node) {
-    if (head == node) {
-        head = node->next;
-    }
-    if (tail == node) {
-        tail = node->prev;
-    }
-    if (node->prev != 0) {
-        node->prev->next = node->next;
-    }
-    if (node->next != 0) {
-        node->next->prev = node->prev;
-    }
-    current = 0;
-}

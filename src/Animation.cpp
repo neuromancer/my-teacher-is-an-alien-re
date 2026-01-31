@@ -120,6 +120,7 @@ int Animation::Open(char *filename, int param_2, int param_3) {
   smk = SmackOpen(filename, param_2, param_3);
   if (smk == 0) {
     ShowError("Animation::Open - Cannot open file %s", filename);
+    return 0;
   }
   return 1;
 }
@@ -135,8 +136,10 @@ void Animation::VBInit() {
 
 /* Function start: 0x41FE20 */
 void Animation::FreeVBuffer() {
-  delete vbuffer;
-  vbuffer = 0;
+  if (vbuffer != 0) {
+    delete vbuffer;
+    vbuffer = 0;
+  }
   targetBuffer = 0;
 }
 
@@ -214,7 +217,7 @@ void Animation::MainLoop() {
   int frame = 1;
   int skipFlag = 4;
 
-  if (smk->Frames >= frame) {
+  if ((int)smk->Frames >= frame) {
     do {
       if (smk->NewPalette) {
         SetPalette(0, 0x100);
@@ -236,7 +239,11 @@ void Animation::MainLoop() {
             }
           }
 
-          if (DAT_004373bc && WaitForInput() == 0x1b) {
+          int escaped = 0;
+          if (DAT_004373bc) {
+            escaped = (WaitForInput() == 0x1b);
+          }
+          if (escaped) {
             playStatus |= 1;
             goto end_loop;
           }
@@ -249,10 +256,10 @@ void Animation::MainLoop() {
       vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0,
                        *GetWindowWidth() - 1, 0, *GetWindowHeight() - 1);
 
-      if (smk->Frames - 1 <= frame) break;
+      if ((int)smk->Frames - 1 <= frame) break;
       frame++;
       NextFrame();
-    } while (smk->Frames >= frame);
+    } while ((int)smk->Frames >= frame);
   }
 
 end_loop:

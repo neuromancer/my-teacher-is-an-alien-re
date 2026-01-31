@@ -1,6 +1,8 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
+extern "C" void ShowError(const char* format, ...);
+
 // Unified doubly-linked list node
 // Layout: prev(+0x00), next(+0x04), data(+0x08)
 // Size: 12 bytes (0x0C)
@@ -11,7 +13,7 @@ struct ListNode {
 
     ListNode() : prev(0), next(0), data(0) {}
     ListNode(void* d) { data = d; prev = 0; next = 0; }
-    ~ListNode() { data = 0; prev = 0; next = 0; }
+    ~ListNode() {}
 
     ListNode* Init(void* nodeData);   // 0x40C5B0
 };
@@ -44,33 +46,111 @@ struct LinkedList {
         head = 0;
         tail = 0;
     }
+
+    inline void* GetCurrentData() {
+        if (current != 0) return current->data;
+        return 0;
+    }
+
+    inline void InsertNode(void* data) {
+        if (data == 0) ShowError("queue fault 0102");
+        ListNode* node = new ListNode(data);
+        if (current == 0) current = head;
+        if (head == 0) {
+            head = node;
+            tail = node;
+            current = node;
+        } else {
+            node->next = current;
+            node->prev = current->prev;
+            if (current->prev == 0) {
+                head = node;
+            } else {
+                current->prev->next = node;
+            }
+            current->prev = node;
+        }
+    }
+
+    // Aliases for InsertNode - allows bypassing derived class shadows
+    inline void InsertBeforeCurrent(void* data) { InsertNode(data); }
+    inline void InsertAtCurrent(void* data) { InsertNode(data); }
+    inline void InsertBefore(void* data) { InsertNode(data); }
+    inline void Insert(void* data) { InsertNode(data); }
+
+    inline void PushNode(void* data) {
+        if (data == 0) ShowError("queue fault 0112");
+        ListNode* node = new ListNode(data);
+        if (current == 0) current = tail;
+        if (head == 0) {
+            head = node;
+            tail = node;
+            current = node;
+        } else {
+            if (tail == 0 || tail->next != 0) {
+                ShowError("queue fault 0113");
+            }
+            node->next = 0;
+            node->prev = tail;
+            tail->next = node;
+            tail = node;
+        }
+    }
+
+    inline void* RemoveCurrent() {
+        ListNode* node = current;
+        if (node == 0) return 0;
+        if (head == node) head = node->next;
+        if (tail == node) tail = node->prev;
+        if (node->prev != 0) node->prev->next = node->next;
+        if (current->next != 0) current->next->prev = current->prev;
+        void* data = 0;
+        node = current;
+        if (node != 0) data = node->data;
+        if (node != 0) {
+            node->data = 0;
+            node->prev = 0;
+            node->next = 0;
+            delete node;
+            current = 0;
+        }
+        current = head;
+        return data;
+    }
+
+    inline void Push(void* data) { PushNode(data); }
+    inline void* Pop() { return RemoveCurrent(); }
+    inline void* PopNode() { return RemoveCurrent(); }
+    inline void* PopNode2() { return RemoveCurrent(); }
+    inline void* PopNode2_2() { return RemoveCurrent(); }
+
+    inline void ResetForSortedAdd(void* data) {
+        if (data == 0) ShowError("queue fault 0101");
+        current = head;
+    }
 };
 
 struct Queue : public LinkedList {
     Queue() : LinkedList() {}
     Queue(int t) : LinkedList(t) {}
-    // Queue methods (0x4024D0, 0x408790, 0x4025A0, 0x402680, 0x417680)
-    void Insert(void* data);
+
     void InsertAtCurrent(void* data);
-    void Push(void* data);
-    void* Pop();
-    void* GetCurrentData();
 };
 
 struct EventList : public LinkedList {
     EventList() : LinkedList() {}
     EventList(int t) : LinkedList(t) {}
-    // EventList methods (0x4188D0)
+
+    // Non-inline to force CALL (generates COMDAT per compilation unit)
     void InsertNode(void* data);
 };
 
 struct MessageList : public LinkedList {
     MessageList() : LinkedList() {}
     MessageList(int t) : LinkedList(t) {}
-    // MessageList methods (0x40C430, 0x40ABD0, 0x40ACC0, 0x40AD50, 0x40C500)
+    // MessageList methods (0x40ABD0, 0x40C430, 0x40C500)
     void InsertNode(void* data);
     void InsertBeforeCurrent(void* data);
-    void UnlinkNode(ListNode* node);
     void* PopCurrent();
     void* GetCurrentData();
 };
@@ -78,15 +158,12 @@ struct MessageList : public LinkedList {
 struct ZBQueue : public LinkedList {
     ZBQueue() : LinkedList() {}
     ZBQueue(int t) : LinkedList(t) {}
-    // ZBQueue methods (0x41BB10, 0x401810, 0x401710, 0x401790, 0x401560, 0x409160, 0x41CB40, 0x41CC10)
-    void* GetCurrentData();
-    void* PopNode();
-    void* PopNode2();
-    void* PopNode2_2();
-    void ClearList();
-    void Insert(void* data);
+
+    // Non-inline to force CALL (generates COMDAT per compilation unit)
     void InsertBeforeCurrent(void* data);
-    void InsertBefore(void* data);
+
+    // 0x401560
+    void ClearList();
 };
 
 struct PriorityQueue : public LinkedList {
@@ -94,6 +171,7 @@ struct PriorityQueue : public LinkedList {
     PriorityQueue(int t) : LinkedList(t) {}
     // PriorityQueue methods (0x4043A0)
     void AddAfterCurrent(void* data);
+
 };
 
 // Backward-compatible type aliases

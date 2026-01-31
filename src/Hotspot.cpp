@@ -312,8 +312,7 @@ int Hotspot::LBLParse(char* line)
         Parser::ProcessFile(msg, this, 0);
         
         Queue* q = pre_message;
-        if (msg == 0) ShowError("queue fault 0101");
-        q->current = q->head;
+        q->ResetForSortedAdd(msg);
         if (q->type == 1 || q->type == 2) {
             if (q->head != 0) {
                 do {
@@ -371,8 +370,7 @@ done_premessage:;
         Parser::ProcessFile(msg, this, 0);
         
         Queue* q = message;
-        if (msg == 0) ShowError("queue fault 0101");
-        q->current = q->head;
+        q->ResetForSortedAdd(msg);
         if (q->type == 1 || q->type == 2) {
             if (q->head != 0) {
                 do {

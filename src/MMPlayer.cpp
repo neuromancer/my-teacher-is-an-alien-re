@@ -140,123 +140,21 @@ void MMPlayer::AddSprite(Sprite* s)
 
     s->StopAnimationSound();
     Queue* queue = m_queue;
+    queue->ResetForSortedAdd(s);
 
-    if (s == 0)
-    {
-        ShowError("queue fault 0101");
-    }
-
-    queue->current = queue->head;
-
-    if (queue->type == 1 || queue->type == 2)
-    {
-        if (queue->head == 0)
-        {
-            if (s == 0) ShowError("queue fault 0102");
-            QueueNode* newNode = new QueueNode(s);
-
-            if (queue->current == 0)
-            {
-                queue->current = queue->head;
-            }
-
-            if (queue->head == 0)
-            {
-                queue->head = newNode;
-                queue->tail = newNode;
-                queue->current = newNode;
-            }
-            else
-            {
-                newNode->next = (QueueNode*)queue->current;
-                newNode->prev = ((QueueNode*)queue->current)->prev;
-                if (((QueueNode*)queue->current)->prev == 0)
-                {
-                    queue->head = newNode;
-                }
-                else
-                {
-                    ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
-                }
-                ((QueueNode*)queue->current)->prev = newNode;
-            }
-        }
-        else
-        {
-            while (queue->current != 0)
-            {
-                QueueNode* current = (QueueNode*)queue->current;
-                Sprite* currSprite = (Sprite*)current->data;
-
-                if ((unsigned int)currSprite->field_0xb0 < (unsigned int)s->field_0xb0)
-                {
-                    if (s == 0) ShowError("queue fault 0102");
-                    QueueNode* newNode = new QueueNode(s);
-
-                    if (queue->current == 0)
-                    {
-                        queue->current = queue->head;
-                    }
-
-                    if (queue->head == 0)
-                    {
-                        queue->head = newNode;
-                        queue->tail = newNode;
-                        queue->current = newNode;
-                    }
-                    else
-                    {
-                        newNode->next = (QueueNode*)queue->current;
-                        newNode->prev = ((QueueNode*)queue->current)->prev;
-                        if (((QueueNode*)queue->current)->prev == 0)
-                        {
-                            queue->head = newNode;
-                        }
-                        else
-                        {
-                            ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
-                        }
-                        ((QueueNode*)queue->current)->prev = newNode;
-                    }
+    if (queue->type == 1 || queue->type == 2) {
+        if (queue->head != 0) {
+            while (1) {
+                if (((Sprite*)queue->current->data)->field_0xb0 < s->field_0xb0) {
+                    queue->Insert(s);
                     return;
                 }
-
-                if (queue->tail == current)
-                {
-                    if (s == 0) ShowError("queue fault 0112");
-                    QueueNode* newNode = new QueueNode(s);
-
-                    if (queue->current == 0)
-                    {
-                        queue->current = queue->tail;
-                    }
-
-                    if (queue->head == 0)
-                    {
-                        queue->head = newNode;
-                        queue->tail = newNode;
-                        queue->current = newNode;
-                    }
-                    else
-                    {
-                        if (queue->tail == 0 || ((QueueNode*)queue->tail)->next != 0)
-                        {
-                            ShowError("queue fault 0113");
-                        }
-                        newNode->next = 0;
-                        newNode->prev = (QueueNode*)queue->tail;
-                        ((QueueNode*)queue->tail)->next = newNode;
-                        queue->tail = newNode;
-                    }
-                    return;
-                }
-
-                queue->current = current->next;
+                if (queue->tail == queue->current) break;
+                queue->current = queue->current->next;
             }
         }
-    }
-    else
-    {
+        queue->Push(s);
+    } else {
         queue->Insert(s);
     }
 }

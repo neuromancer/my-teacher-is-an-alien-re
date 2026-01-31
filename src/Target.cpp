@@ -65,17 +65,24 @@ Target::~Target()
 
 extern "C" int __cdecl GetPixelAt(int x, int y);
 
+class ScoreManager {
+public:
+    int field_0;
+    int score;    // field_4
+    void AdjustScore(int value); // 0x416ba0
+};
+
 // ScoreManager::AdjustScore - adds value to field_4, clamps between 0 and 200
 /* Function start: 0x416ba0 */
-void FUN_00416ba0(int* scoreManager, int value) {
-    int newVal = scoreManager[1] + value;
-    scoreManager[1] = newVal;
+void ScoreManager::AdjustScore(int value) {
+    int newVal = ScoreManager::score + value;
+    ScoreManager::score = newVal;
     if (newVal < 0) {
-        scoreManager[1] = 0;
+        ScoreManager::score = 0;
         return;
     }
     if (newVal > 0xc8) {
-        scoreManager[1] = 0xc8;
+        ScoreManager::score = 0xc8;
     }
 }
 
@@ -272,7 +279,7 @@ int Target::Update()
         }
         g_ScoreManager[3]++;
         *g_ScoreManager += Target::hitPoints;
-        FUN_00416ba0(g_ScoreManager, Target::scoreIndex);
+        ((ScoreManager*)g_ScoreManager)->AdjustScore(Target::scoreIndex);
         g_CombatEngine->field_0xb4 += Target::combatBonus1;
         g_CombatEngine->field_0xc4 += Target::combatBonus2.val;
     }

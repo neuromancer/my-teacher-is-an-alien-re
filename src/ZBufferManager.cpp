@@ -68,37 +68,7 @@ struct CommandType3 : public SoundCommand {
 };
 
 /* Function start: 0x409160 */
-void ZBQueue::Insert(void* data)
-{
-    ZBQueueNode* node;
-
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    node = new ZBQueueNode(data);
-
-    if (current == 0) {
-        current = head;
-    }
-
-    if (head == 0) {
-        head = node;
-        tail = node;
-        current = node;
-        return;
-    }
-
-    node->prev = current;
-    node->next = current->next;
-    if (current->next == 0) {
-        head = node;
-        current->next = node;
-    } else {
-        current->next->prev = node;
-        current->next = node;
-    }
-}
+// void ZBQueue::Insert(void* data) - Moved to LinkedList.h as inline
 
 /* Function start: 0x41BB20 */
 void ZBufferManager::QueueAnimationCleanup(void* anim)
@@ -125,94 +95,23 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
     node = new ZBQueueNode(anim);
 
     queue = m_queueA4;
-    if (node == 0) {
-        ShowError("queue fault 0101");
-    }
-    queue->current = queue->head;
-    qtype = queue->type;
-    if (qtype == 1 || qtype == 2) {
-        if (queue->current == 0) {
-            if (node == 0) {
-                ShowError("queue fault 0102");
-            }
-            newNode = new ZBQueueNode(node);
-            if (queue->current == 0) {
-                queue->current = queue->head;
-            }
-            if (queue->head == 0) {
-                queue->head = newNode;
-                queue->tail = newNode;
-                queue->current = newNode;
-            } else {
-                newNode->next = queue->current;
-                newNode->prev = queue->current->prev;
-                if (queue->current->prev == 0) {
-                    queue->head = newNode;
-                    queue->current->prev = newNode;
-                } else {
-                    queue->current->prev->next = newNode;
-                    queue->current->prev = newNode;
+    queue->ResetForSortedAdd(node);
+
+    if (queue->type == 1 || queue->type == 2) {
+        if (queue->head != 0) {
+            while (1) {
+                if (*(unsigned int*)queue->current->data < *(unsigned int*)node) {
+                    queue->Insert(node);
+                    return;
                 }
+                if (queue->tail == queue->current) break;
+                queue->current = queue->current->next;
             }
-            return;
         }
-        do {
-            ZBQueueNode* curNode = (ZBQueueNode*)queue->current;
-            if (*(unsigned int*)curNode->data < *(unsigned int*)node) {
-                if (node == 0) {
-                    ShowError("queue fault 0102");
-                }
-                newNode = new ZBQueueNode(node);
-                if (queue->current == 0) {
-                    queue->current = queue->head;
-                }
-                if (queue->head == 0) {
-                    queue->head = newNode;
-                    queue->tail = newNode;
-                    queue->current = newNode;
-                } else {
-                    newNode->next = queue->current;
-                    newNode->prev = queue->current->prev;
-                    if (queue->current->prev == 0) {
-                        queue->head = newNode;
-                        queue->current->prev = newNode;
-                    } else {
-                        queue->current->prev->next = newNode;
-                        queue->current->prev = newNode;
-                    }
-                }
-                return;
-            }
-            if (queue->tail == curNode) {
-                if (node == 0) {
-                    ShowError("queue fault 0112");
-                }
-                newNode = new ZBQueueNode(node);
-                if (queue->current == 0) {
-                    queue->current = queue->tail;
-                }
-                if (queue->head == 0) {
-                    queue->head = newNode;
-                    queue->tail = newNode;
-                    queue->current = newNode;
-                } else {
-                    if (queue->tail == 0 || queue->tail->next != 0) {
-                        ShowError("queue fault 0113");
-                    }
-                    newNode->next = 0;
-                    newNode->prev = queue->tail;
-                    queue->tail->next = newNode;
-                    queue->tail = newNode;
-                }
-                return;
-            }
-            if (curNode != 0) {
-                queue->current = curNode->next;
-            }
-        } while (queue->current != 0);
-        return;
+        queue->Push(node);
+    } else {
+        queue->Insert(node);
     }
-    queue->InsertBefore(node);
 }
 
 /* Function start: 0x41B5D0 */
@@ -396,14 +295,7 @@ ZBufferManager::~ZBufferManager()
 }
 
 /* Function start: 0x41BB10 */
-void* ZBQueue::GetCurrentData()
-{
-    ZBQueueNode* node = (ZBQueueNode*)current;
-    if (node != 0) {
-        return node->data;
-    }
-    return 0;
-}
+// void* ZBQueue::GetCurrentData() - Moved to LinkedList.h as inline
 
 /* Function start: 0x41BE20 */
 void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, int mode, double scale)
@@ -533,13 +425,7 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
     ZBQueue* queue;
     ZBQueueNode* node;
     ZBQueueNode* newNode;
-    int qtype;
-    GlyphRect rect;
-
-    rect.left = 0;
-    rect.top = 0;
-    rect.right = g_WorkBuffer_00436974->width - 1;
-    rect.bottom = g_WorkBuffer_00436974->height - 1;
+    GlyphRect rect(0, 0, g_WorkBuffer_00436974->width - 1, g_WorkBuffer_00436974->height - 1);
 
     switch (m_state) {
     case 1:
@@ -554,13 +440,12 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
             ShowError("queue fault 0101");
         }
         queue->current = queue->head;
-        qtype = queue->type;
-        if (qtype == 1 || qtype == 2) {
+        if (queue->type == 1 || queue->type == 2) {
             if (queue->current == 0) {
                 queue->InsertBeforeCurrent(cmd);
                 return;
             }
-            while (queue->current != 0) {
+            do {
                 node = (ZBQueueNode*)queue->current;
                 if (((CommandType1*)node->data)->parameter1 < ((CommandType1*)cmd)->parameter1) {
                     queue->InsertBeforeCurrent(cmd);
@@ -570,7 +455,10 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                     if (cmd == 0) {
                         ShowError("queue fault 0112");
                     }
-                    newNode = new ZBQueueNode(cmd);
+                    newNode = (ZBQueueNode*)::operator new(sizeof(ZBQueueNode));
+                    if (newNode != 0) {
+                        newNode = (ZBQueueNode*)newNode->Init(cmd);
+                    }
                     if (queue->current == 0) {
                         queue->current = queue->tail;
                     }
@@ -593,7 +481,7 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                 if (node != 0) {
                     queue->current = node->next;
                 }
-            }
+            } while (queue->current != 0);
             return;
         }
         queue->InsertBeforeCurrent(cmd);
@@ -604,13 +492,12 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
             ShowError("queue fault 0101");
         }
         queue->current = queue->head;
-        qtype = queue->type;
-        if (qtype == 1 || qtype == 2) {
+        if (queue->type == 1 || queue->type == 2) {
             if (queue->current == 0) {
                 queue->InsertBeforeCurrent(cmd);
                 return;
             }
-            while (queue->current != 0) {
+            do {
                 node = (ZBQueueNode*)queue->current;
                 if (((CommandType1*)node->data)->parameter1 < ((CommandType1*)cmd)->parameter1) {
                     queue->InsertBeforeCurrent(cmd);
@@ -620,7 +507,10 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                     if (cmd == 0) {
                         ShowError("queue fault 0112");
                     }
-                    newNode = new ZBQueueNode(cmd);
+                    newNode = (ZBQueueNode*)::operator new(sizeof(ZBQueueNode));
+                    if (newNode != 0) {
+                        newNode = (ZBQueueNode*)newNode->Init(cmd);
+                    }
                     if (queue->current == 0) {
                         queue->current = queue->tail;
                     }
@@ -643,7 +533,7 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
                 if (node != 0) {
                     queue->current = node->next;
                 }
-            }
+            } while (queue->current != 0);
             return;
         }
         queue->InsertBeforeCurrent(cmd);
@@ -930,68 +820,9 @@ void ZBufferManager::UpdateScreen() {
 /* Function start: 0x41CB40 */
 void ZBQueue::InsertBeforeCurrent(void* data)
 {
-    ZBQueueNode* newNode;
-    ZBQueueNode* result;
-
-    if (data == 0) {
-        ShowError("queue fault 0115");
-    }
-
-    newNode = new ZBQueueNode(data);
-    result = newNode;
-
-    if (current == 0) {
-        current = head;
-    }
-
-    if (head == 0) {
-        head = result;
-        tail = result;
-        current = result;
-        return;
-    }
-
-    result->next = current;
-    result->prev = current->prev;
-    if (current->prev == 0) {
-        head = result;
-        current->prev = result;
-    } else {
-        current->prev->next = result;
-        current->prev = result;
-    }
+    LinkedList::InsertNode(data);
 }
 
 /* Function start: 0x41CC10 */
-void ZBQueue::InsertBefore(void* data)
-{
-    ZBQueueNode* newNode;
-
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    newNode = new ZBQueueNode(data);
-
-    if (current == 0) {
-        current = head;
-    }
-
-    if (head == 0) {
-        head = newNode;
-        tail = newNode;
-        current = newNode;
-        return;
-    }
-
-    newNode->next = current;
-    newNode->prev = current->prev;
-    if (current->prev == 0) {
-        head = newNode;
-        current->prev = newNode;
-    } else {
-        current->prev->next = newNode;
-        current->prev = newNode;
-    }
-}
+// Same pattern as 0x41CB40 - InsertNode COMDAT
 

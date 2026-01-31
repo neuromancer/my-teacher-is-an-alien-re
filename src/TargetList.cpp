@@ -6,8 +6,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-// Defined in EngineSubsystems.cpp
-void FUN_00416ba0(int* scoreManager, int value);
+// ScoreManager - g_ScoreManager points to this
+class ScoreManager {
+public:
+  int field_0;
+  int score;    // field_4
+  void AdjustScore(int value); // 0x416ba0
+};
 
 /* Function start: 0x414D80 */
 TargetList::TargetList() : Parser() {
@@ -80,13 +85,12 @@ int TargetList::LBLParse(char* line) {
 
     Target* pTarget = new Target();
 
-    int currentCount = count;
-    targets[currentCount] = pTarget;
-    targets[currentCount]->id = currentCount;
+    targets[count] = pTarget;
+    targets[count]->id = count;
     count++;
 
-    targets[currentCount]->Init(line + 2);
-    ProcessFile(targets[currentCount], this, NULL);
+    pTarget->Init(line + 2);
+    ProcessFile(pTarget, this, NULL);
     return 0;
   } else {
     if (stricmp(type, "END") == 0) {
@@ -110,13 +114,13 @@ void TargetList::OnProcessEnd() {
 
 /* Function start: 0x4150F0 */
 Target* TargetList::ProcessTargets() {
-  HashTable* ht;
-  int* entry;
-  int* nextEntry;
+  HashNode* entry;
+  HashNode* nextEntry;
   Target* target;
   Target* fallbackTarget;
   unsigned int bucketIdx;
   int* bucketPtr;
+  HashTable* ht;
 
   fallbackTarget = 0;
   TargetList::currentTarget = 0;
@@ -124,43 +128,43 @@ Target* TargetList::ProcessTargets() {
   if (ht == 0) {
     return 0;
   }
-  entry = (int*)(((unsigned int)ht->count < 1) - 1);
-  if (entry == 0) {
+  if ((unsigned int)ht->count < 1) {
     return fallbackTarget;
   }
+  entry = (HashNode*)-1;
   do {
-    if (entry == (int*)-1) {
+    if (entry == (HashNode*)-1) {
       bucketIdx = 0;
-      if (ht->numBuckets != 0) {
+      if ((unsigned int)ht->numBuckets != 0) {
         bucketPtr = ht->buckets;
         do {
-          entry = (int*)*bucketPtr;
+          entry = (HashNode*)*bucketPtr;
           if (entry != 0) break;
           bucketPtr = bucketPtr + 1;
           bucketIdx = bucketIdx + 1;
         } while (bucketIdx < (unsigned int)ht->numBuckets);
       }
     }
-    nextEntry = (int*)*entry;
+    nextEntry = entry->next;
     if (nextEntry == 0) {
-      bucketIdx = *(entry + 1) + 1;
+      bucketIdx = entry->bucketIndex + 1;
       if (bucketIdx < (unsigned int)ht->numBuckets) {
         bucketPtr = (int*)(bucketIdx * 4 + (int)ht->buckets);
         do {
-          nextEntry = (int*)*bucketPtr;
+          nextEntry = (HashNode*)*bucketPtr;
           if (nextEntry != 0) break;
           bucketPtr = bucketPtr + 1;
           bucketIdx = bucketIdx + 1;
         } while (bucketIdx < (unsigned int)ht->numBuckets);
       }
     }
-    target = (Target*)*(entry + 3);
+    target = (Target*)entry->reserved;
     entry = nextEntry;
     if (target != 0 && target->Update() == 0) {
       if (target->AdvanceHotspot() != 0) {
         TargetList::currentTarget = target;
         g_ScoreManager[5] = g_ScoreManager[5] + 1;
-        FUN_00416ba0(g_ScoreManager, -target->weight);
+        ((ScoreManager*)g_ScoreManager)->AdjustScore(-target->weight);
         if (TargetList::field_0x1c0 != 0) {
           ((Sample*)TargetList::field_0x1c0)->Play(100, 1);
         }

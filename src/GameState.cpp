@@ -43,7 +43,8 @@ void GameState::Serialize(int mode)
 
     strcpy(filename, "gamestat.sav");
 
-    if (mode == 1) {
+    switch (mode) {
+    case 1:
         file = fsopen(filename, "wb");
         if (file == NULL) {
             ShowError("GameState::Serialize unable to open %s ", filename);
@@ -54,10 +55,8 @@ void GameState::Serialize(int mode)
         header[3] = maxStates * 4 + 0x110;
         fwrite(header, 0x110, 1, file);
         fwrite(stateValues, 4, header[0], file);
-    } else {
-        if (mode != 2) {
-            ShowError("illegal in GameState::Serialize(%d)", mode);
-        }
+        break;
+    case 2:
         file = fsopen(filename, "rb");
         if (file == NULL) {
             ShowError("GameState::Serialize unable to open %s ", filename);
@@ -67,6 +66,10 @@ void GameState::Serialize(int mode)
             ShowError("GameState::Serialize incompatible file");
         }
         fread(stateValues, 0x110, maxStates, file);
+        break;
+    default:
+        ShowError("illegal in GameState::Serialize(%d)", mode);
+        break;
     }
     fclose(file);
 }
@@ -130,10 +133,9 @@ char *GameState::GetState(int stateIndex)
 int GameState::FindState(char* stateName)
 {
     for (int i = 0; i < maxStates; i++) {
-        char* label = stateLabels[i];
-        if (label) {
-            if (strstr(label, stateName)) {
-                if (strlen(label) == strlen(stateName)) {
+        if (stateLabels[i]) {
+            if (strstr(stateLabels[i], stateName)) {
+                if (strlen(stateLabels[i]) == strlen(stateName)) {
                     return i;
                 }
             }
@@ -145,9 +147,5 @@ int GameState::FindState(char* stateName)
 /* Function start: 0x4209C0 */
 void GameState::ClearStates()
 {
-    int* ptr = stateValues;
-    for (unsigned int i = maxStates; i != 0; i--) {
-        *ptr = 0;
-        ptr++;
-    }
+    memset(stateValues, 0, maxStates * 4);
 }

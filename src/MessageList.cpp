@@ -7,35 +7,7 @@
 /* Function start: 0x40C430 */
 void MessageList::InsertBeforeCurrent(void* data)
 {
-    MessageNode* newNode;
-    MessageNode* curr;
-
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    newNode = new MessageNode(data);
-
-    if (MessageList::current == 0) {
-        MessageList::current = MessageList::head;
-    }
-
-    if (MessageList::head == 0) {
-        MessageList::head = newNode;
-        MessageList::tail = newNode;
-        MessageList::current = newNode;
-    } else {
-        curr = (MessageNode*)MessageList::current;
-        newNode->next = curr;
-        newNode->prev = curr->prev;
-        if (curr->prev != 0) {
-            curr->prev->next = newNode;
-            curr->prev = newNode;
-        } else {
-            MessageList::head = newNode;
-            curr->prev = newNode;
-        }
-    }
+    LinkedList::InsertNode(data);
 }
 
 /* Function start: 0x40C500 */
@@ -86,11 +58,7 @@ void* MessageList::PopCurrent()
 /* Function start: 0x40C580 */
 void* MessageList::GetCurrentData()
 {
-    MessageNode* node = (MessageNode*)current;
-    if (node != 0) {
-        return node->data;
-    }
-    return 0;
+    return LinkedList::GetCurrentData();
 }
 
 /* Function start: 0x40C5B0 */
