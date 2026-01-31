@@ -15,6 +15,7 @@ char s_hIam[] = "hIam %d";
 
 // ZBQueue is defined in ZBufferManager.h
 #include "ZBufferManager.h"
+#include "RenderEntry.h"
 
 extern void LogToMessageFile(char* format, ...);
 
@@ -159,42 +160,42 @@ void ZBuffer::CleanUpVBuffer()
 /* Function start: 0x401560 */
 void ZBQueue::ClearList()
 {
-    if (head != 0) {
-        current = head;
-        do {
-            ZBQueueNode* node = current;
-            void* data;
-            if (node == 0) {
-                data = 0;
-            } else {
-                if (head == node) {
-                    head = node->prev;
-                }
-                if (tail == node) {
-                    tail = node->next;
-                }
-                if (node->next != 0) {
-                    node->next->prev = node->prev;
-                }
-                ZBQueueNode* prevNode = current->prev;
-                if (prevNode != 0) {
-                    prevNode->next = current->next;
-                }
-                data = 0;
-                ZBQueueNode* currentNode = current;
-                if (currentNode != 0) {
-                    data = currentNode->data;
-                    delete currentNode;
-                    current = 0;
-                }
-                current = head;
+    void* data;
+
+    if (head == 0) return;
+    current = head;
+    do {
+        ZBQueueNode* node = current;
+        if (node == 0) {
+            data = 0;
+        } else {
+            if (head == node) {
+                head = node->next;
             }
-            if (data != 0) {
-                *(void**)data = 0;
-                FreeFromGlobalHeap(data);
+            if (tail == node) {
+                tail = node->prev;
             }
-        } while (head != 0);
-    }
+            if (node->prev != 0) {
+                node->prev->next = node->next;
+            }
+            if (current->next != 0) {
+                current->next->prev = current->prev;
+            }
+            data = 0;
+            if (current != 0) {
+                data = current->data;
+            }
+            if (current != 0) {
+                delete current;
+                current = 0;
+            }
+            current = head;
+        }
+        if (data != 0) {
+            ((RenderEntry*)data)->RenderEntry::~RenderEntry();
+            ::operator delete(data);
+        }
+    } while (head != 0);
 }
 
 /* Function start: 0x4016A0 */

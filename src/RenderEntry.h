@@ -12,7 +12,7 @@
 struct RenderEntry {
     GlyphRect rect;  // 0x04 - the rectangle to render (vtable is implicit at 0x00)
 
-    virtual ~RenderEntry();  // virtual destructor - generates vtable at 0x431058
+    virtual ~RenderEntry() {}  // virtual destructor - generates vtable at 0x431058
 };
 
 #endif // RENDERENTRY_H

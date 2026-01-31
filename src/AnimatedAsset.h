@@ -12,7 +12,7 @@ struct TextPos {
     ~TextPos() { }
 };
 
-// Embedded subobject at offset 0x30 with constructor/destructor for SEH  
+// Embedded subobject at offset 0x30 with constructor/destructor for SEH
 struct CharAdv {
     int advance;
     int reserved;
