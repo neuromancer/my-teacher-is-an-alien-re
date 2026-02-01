@@ -104,6 +104,9 @@ void SC_Sound::Update(int param1, int param2) {
                         }
 
                         data = (SoundItem*)node->data;
+                        node->data = 0;
+                        node->prev = 0;
+                        node->next = 0;
                         delete node;
                         list->current = 0;
                     }
@@ -309,11 +312,7 @@ found:
     newItem = new SoundItem(soundId);
 
     pList = SC_Sound::list;
-    if (newItem == 0) {
-        ShowError("queue fault 0101");
-    }
-
-    pList->current = pList->head;
+    pList->ResetForSortedAdd(newItem);
 
     // Check list type for insertion method
     if (pList->type != 1 && pList->type != 2) {
@@ -322,31 +321,7 @@ found:
     }
 
     if (pList->head == 0) {
-        if (newItem == 0) {
-            ShowError("queue fault 0102");
-        }
-
-        newNode = new MessageNode(newItem);
-
-        if (pList->current == 0) {
-            pList->current = pList->head;
-        }
-
-        if (pList->head == 0) {
-            pList->head = newNode;
-            pList->tail = newNode;
-            pList->current = newNode;
-        } else {
-            newNode->prev = (MessageNode*)pList->current;
-            newNode->next = ((MessageNode*)pList->current)->next;
-            if (((MessageNode*)pList->current)->next == 0) {
-                pList->head = newNode;
-                ((MessageNode*)pList->current)->next = newNode;
-            } else {
-                ((MessageNode*)pList->current)->next->prev = newNode;
-                ((MessageNode*)pList->current)->next = newNode;
-            }
-        }
+        pList->Insert(newItem);
         return newItem;
     }
 
@@ -354,58 +329,12 @@ found:
     do {
         currNode = (MessageNode*)pList->current;
         if ((unsigned int)((SoundItem*)currNode->data)->soundId < (unsigned int)newItem->soundId) {
-            if (newItem == 0) {
-                ShowError("queue fault 0102");
-            }
-
-            newNode = new MessageNode(newItem);
-
-            if (pList->current == 0) {
-                pList->current = pList->head;
-            }
-
-            if (pList->head == 0) {
-                pList->head = newNode;
-                pList->tail = newNode;
-                pList->current = newNode;
-            } else {
-                newNode->prev = (MessageNode*)pList->current;
-                newNode->next = ((MessageNode*)pList->current)->next;
-                if (((MessageNode*)pList->current)->next == 0) {
-                    pList->head = newNode;
-                    ((MessageNode*)pList->current)->next = newNode;
-                } else {
-                    ((MessageNode*)pList->current)->next->prev = newNode;
-                    ((MessageNode*)pList->current)->next = newNode;
-                }
-            }
+            pList->Insert(newItem);
             return newItem;
         }
 
         if (pList->tail == pList->current) {
-            if (newItem == 0) {
-                ShowError("queue fault 0112");
-            }
-
-            newNode = new MessageNode(newItem);
-
-            if (pList->current == 0) {
-                pList->current = pList->tail;
-            }
-
-            if (pList->head == 0) {
-                pList->head = newNode;
-                pList->tail = newNode;
-                pList->current = newNode;
-            } else {
-                if (pList->tail == 0 || ((MessageNode*)pList->tail)->next != 0) {
-                    ShowError("queue fault 0113");
-                }
-                newNode->prev = 0;
-                newNode->next = (MessageNode*)pList->tail;
-                ((MessageNode*)pList->tail)->prev = newNode;
-                pList->tail = newNode;
-            }
+            pList->Push(newItem);
             return newItem;
         }
 

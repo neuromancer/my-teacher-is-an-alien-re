@@ -100,7 +100,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pNode = pQueue->PopNode2();
+            pNode = pQueue->Pop();
             if (pNode != 0) {
                 delete (SoundCommand*)pNode;
             }
@@ -112,7 +112,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pNode = pQueue->PopNode2_2();
+            pNode = pQueue->Pop();
             if (pNode != 0) {
                 delete (DrawEntry*)pNode;
             }
@@ -221,7 +221,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            puVar7 = pQueue->PopNode2();
+            puVar7 = pQueue->Pop();
             if (puVar7 != 0) {
                 delete (SoundCommand*)puVar7;
             }
@@ -233,7 +233,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pVVar5 = pQueue->PopNode2_2();
+            pVVar5 = pQueue->Pop();
             if (pVVar5 != 0) {
                 delete (ZBuffer*)pVVar5;
             }
@@ -245,7 +245,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pVVar5 = pQueue->PopNode();
+            pVVar5 = pQueue->Pop();
             if (pVVar5 != 0) {
                 delete (ZBuffer*)pVVar5;
             }

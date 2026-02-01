@@ -245,7 +245,7 @@ void ZBufferManager::Cleanup() {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = queue->PopNode2();
+                data = queue->Pop();
                 if (data != 0) {
                     delete (SoundCommand*)data;
                 }
@@ -261,7 +261,7 @@ void ZBufferManager::Cleanup() {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = queue->PopNode2_2();
+                data = queue->Pop();
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;
@@ -278,7 +278,7 @@ void ZBufferManager::Cleanup() {
         if (local_14->head != 0) {
             local_14->current = local_14->head;
             while (local_14->head != 0) {
-                local_18 = local_14->PopNode();
+                local_18 = local_14->Pop();
                 if (local_18 != 0) {
                     delete local_18;
                 }
@@ -587,7 +587,7 @@ void ZBufferManager::ProcessRenderQueues()
                 }
 
                 if (queue->current != 0) {
-                    data = queue->PopNode2();
+                    data = queue->Pop();
                 }
 
                 if (data != 0) {
@@ -606,7 +606,7 @@ void ZBufferManager::ProcessRenderQueues()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = queue->PopNode2_2();
+                data = queue->Pop();
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;
@@ -716,7 +716,7 @@ void ZBufferManager::ProcessRenderQueues()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                data = queue->PopNode2_2();
+                data = queue->Pop();
                 if (data != 0) {
                     ((ZBuffer*)data)->CleanUpVBuffer();
                     delete data;

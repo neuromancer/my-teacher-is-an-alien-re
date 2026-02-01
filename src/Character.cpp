@@ -43,19 +43,26 @@ Character::Character(char* param_1) {
 
         do {
             sprite = new CharSprite();
-            if (strstr(param_1, "peter") != 0 && (unsigned int)counter <= 4) {
-                switch (counter) {
-                    case 0: strcpy(sprite->name, ""); break;
-                    case 1: strcpy(sprite->name, "MEET MY"); break;
-                    case 2: strcpy(sprite->name, "OOOO OOO OOO OOOO"); break;
-                    case 3: strcpy(sprite->name, ""); break;
-                    case 4: strcpy(sprite->name, "TESTPUZZLE"); break;
+
+            if (queue != 0) {
+                if (strstr(param_1, "peter") != 0 && (unsigned int)counter <= 4) {
+                    switch (counter) {
+                        case 0: strcpy(sprite->name, ""); break;
+                        case 1: strcpy(sprite->name, "MEET MY"); break;
+                        case 2: strcpy(sprite->name, "OOOO OOO OOO OOOO"); break;
+                        case 3: strcpy(sprite->name, ""); break;
+                        case 4: strcpy(sprite->name, "TESTPUZZLE"); break;
+                    }
+                    if (counter == 0) strcpy(sprite->name, "MEET MY");
                 }
-                if (counter == 0) strcpy(sprite->name, "MEET MY");
+            } else {
+                ShowError("Missing activeQ");
             }
 
+            if (sprite == 0) ShowError("queue fault 0101");
+
             pQueue = queue;
-            pQueue->ResetForSortedAdd(sprite);
+            pQueue->current = pQueue->head;
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head != 0) {
                     while (1) {
@@ -63,13 +70,20 @@ Character::Character(char* param_1) {
                             pQueue->Insert(sprite);
                             goto next_peter;
                         }
-                        if (pQueue->tail == pQueue->current) break;
-                        pQueue->current = pQueue->current->next;
+                        if (pQueue->tail == pQueue->current) {
+                            pQueue->Push(sprite);
+                            goto next_peter;
+                        }
+                        if (pQueue->current != 0) {
+                            pQueue->current = pQueue->current->next;
+                        }
+                        if (pQueue->current == 0) goto next_peter;
                     }
+                } else {
+                    pQueue->AddAfterCurrent(sprite);
                 }
-                pQueue->Push(sprite);
             } else {
-                pQueue->Insert(sprite);
+                pQueue->AddAfterCurrent(sprite);
             }
         next_peter:
             counter++;
@@ -82,18 +96,25 @@ Character::Character(char* param_1) {
 
         do {
             sprite = new CharSprite();
-            if (strstr(param_1, "susan") != 0 && (unsigned int)counter <= 4) {
-                switch (counter) {
-                    case 0: strcpy(sprite->name, "SUS"); break;
-                    case 1: strcpy(sprite->name, "DIALOG"); break;
-                    case 2: strcpy(sprite->name, "COMBAT"); break;
-                    case 3: strcpy(sprite->name, "TESTPUZZLE"); break;
-                    case 4: strcpy(sprite->name, ""); break;
+
+            if (queue != 0) {
+                if (strstr(param_1, "susan") != 0 && (unsigned int)counter <= 4) {
+                    switch (counter) {
+                        case 0: strcpy(sprite->name, "SUS"); break;
+                        case 1: strcpy(sprite->name, "DIALOG"); break;
+                        case 2: strcpy(sprite->name, "COMBAT"); break;
+                        case 3: strcpy(sprite->name, "TESTPUZZLE"); break;
+                        case 4: strcpy(sprite->name, ""); break;
+                    }
                 }
+            } else {
+                ShowError("Missing activeQ");
             }
 
+            if (sprite == 0) ShowError("queue fault 0101");
+
             pQueue = queue;
-            pQueue->ResetForSortedAdd(sprite);
+            pQueue->current = pQueue->head;
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head != 0) {
                     while (1) {
@@ -101,13 +122,20 @@ Character::Character(char* param_1) {
                             pQueue->Insert(sprite);
                             goto next_susan;
                         }
-                        if (pQueue->tail == pQueue->current) break;
-                        pQueue->current = pQueue->current->next;
+                        if (pQueue->tail == pQueue->current) {
+                            pQueue->Push(sprite);
+                            goto next_susan;
+                        }
+                        if (pQueue->current != 0) {
+                            pQueue->current = pQueue->current->next;
+                        }
+                        if (pQueue->current == 0) goto next_susan;
                     }
+                } else {
+                    pQueue->AddAfterCurrent(sprite);
                 }
-                pQueue->Push(sprite);
             } else {
-                pQueue->Insert(sprite);
+                pQueue->AddAfterCurrent(sprite);
             }
         next_susan:
             counter++;
@@ -120,19 +148,26 @@ Character::Character(char* param_1) {
 
         do {
             sprite = new CharSprite();
-            if (strstr(param_1, "duncan") != 0 && (unsigned int)counter <= 4) {
-                switch (counter) {
-                    case 0: strcpy(sprite->name, "DIALOG"); break;
-                    case 1: strcpy(sprite->name, "COMBATS"); break;
-                    case 2: strcpy(sprite->name, "TESTPUZZLE"); break;
-                    case 3: strcpy(sprite->name, ""); break;
-                    case 4: strcpy(sprite->name, ""); break;
+
+            if (queue != 0) {
+                if (strstr(param_1, "duncan") != 0 && (unsigned int)counter <= 4) {
+                    switch (counter) {
+                        case 0: strcpy(sprite->name, "DIALOG"); break;
+                        case 1: strcpy(sprite->name, "COMBATS"); break;
+                        case 2: strcpy(sprite->name, "TESTPUZZLE"); break;
+                        case 3: strcpy(sprite->name, ""); break;
+                        case 4: strcpy(sprite->name, ""); break;
+                    }
+                    if (counter == 0) strcpy(sprite->name, "TESTPUZZLE");
                 }
-                if (counter == 0) strcpy(sprite->name, "TESTPUZZLE");
+            } else {
+                ShowError("Missing activeQ");
             }
 
+            if (sprite == 0) ShowError("queue fault 0101");
+
             pQueue = queue;
-            pQueue->ResetForSortedAdd(sprite);
+            pQueue->current = pQueue->head;
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head != 0) {
                     while (1) {
@@ -140,13 +175,20 @@ Character::Character(char* param_1) {
                             pQueue->Insert(sprite);
                             goto next_duncan;
                         }
-                        if (pQueue->tail == pQueue->current) break;
-                        pQueue->current = pQueue->current->next;
+                        if (pQueue->tail == pQueue->current) {
+                            pQueue->Push(sprite);
+                            goto next_duncan;
+                        }
+                        if (pQueue->current != 0) {
+                            pQueue->current = pQueue->current->next;
+                        }
+                        if (pQueue->current == 0) goto next_duncan;
                     }
+                } else {
+                    pQueue->AddAfterCurrent(sprite);
                 }
-                pQueue->Push(sprite);
             } else {
-                pQueue->Insert(sprite);
+                pQueue->AddAfterCurrent(sprite);
             }
         next_duncan:
             counter++;
@@ -172,31 +214,7 @@ Character::Character(char* param_1) {
 /* Function start: 0x4043A0 */
 void PriorityQueue::AddAfterCurrent(void* sprite)
 {
-    if (sprite == 0) {
-        ShowError("queue fault 0102");
-    }
-
-    PriorityQueueNode* newNode = new PriorityQueueNode(sprite);
-
-    if (current == 0) {
-        current = head;
-    }
-
-    if (head == 0) {
-        head = newNode;
-        tail = newNode;
-        current = newNode;
-    } else {
-        newNode->next = current;
-        newNode->prev = current->prev;
-        if (current->prev != 0) {
-            current->prev->next = newNode;
-            current->prev = newNode;
-        } else {
-            head = newNode;
-            current->prev = newNode;
-        }
-    }
+    LinkedList::InsertNode(sprite);
 }
 
 // Function 0x404470 now inlined via ListNode(void*) constructor in LinkedList.h

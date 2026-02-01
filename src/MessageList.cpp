@@ -56,10 +56,7 @@ void* MessageList::PopCurrent()
 
 
 /* Function start: 0x40C580 */
-void* MessageList::GetCurrentData()
-{
-    return LinkedList::GetCurrentData();
-}
+// ListNode scalar deleting destructor (compiler-generated)
 
 /* Function start: 0x40C5B0 */
 MessageNode* MessageNode::Init(void* nodeData)

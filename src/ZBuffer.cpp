@@ -81,7 +81,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                void* data = queue->PopNode2();
+                void* data = queue->Pop();
                 if (data != 0) {
                     *(void**)data = 0;
                     FreeFromGlobalHeap(data);
@@ -92,7 +92,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                ZBuffer* zb = (ZBuffer*)queue->PopNode2_2();
+                ZBuffer* zb = (ZBuffer*)queue->Pop();
                 if (zb != 0) {
                     zb->CleanUpVBuffer();
                     FreeFromGlobalHeap(zb);
@@ -103,7 +103,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                void* data = queue->PopNode2_2();
+                void* data = queue->Pop();
                 if (data != 0) {
                     FreeFromGlobalHeap(data);
                 }
@@ -118,7 +118,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                void* data = queue->PopNode2();
+                void* data = queue->Pop();
                 if (data != 0) {
                     *(void**)data = 0;
                     FreeFromGlobalHeap(data);
@@ -129,7 +129,7 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                ZBuffer* zb = (ZBuffer*)queue->PopNode2_2();
+                ZBuffer* zb = (ZBuffer*)queue->Pop();
                 if (zb != 0) {
                     zb->CleanUpVBuffer();
                     FreeFromGlobalHeap(zb);
@@ -205,10 +205,10 @@ ZBuffer::~ZBuffer()
 }
 
 /* Function start: 0x401710 */
-// void* ZBQueue::PopNode2() - Moved to LinkedList.h as inline
+// void* ZBQueue::Pop() - Moved to LinkedList.h as inline
 
 /* Function start: 0x401790 */
-// void* ZBQueue::PopNode2_2() - Moved to LinkedList.h as inline
+// void* ZBQueue::Pop() - Moved to LinkedList.h as inline
 
 /* Function start: 0x401810 */
-// void* ZBQueue::PopNode() - Moved to LinkedList.h as inline
+// void* ZBQueue::Pop() - Moved to LinkedList.h as inline

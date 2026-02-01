@@ -72,10 +72,6 @@ struct LinkedList {
         }
     }
 
-    // Aliases for InsertNode - allows bypassing derived class shadows
-    inline void InsertBeforeCurrent(void* data) { InsertNode(data); }
-    inline void InsertAtCurrent(void* data) { InsertNode(data); }
-    inline void InsertBefore(void* data) { InsertNode(data); }
     inline void Insert(void* data) { InsertNode(data); }
 
     inline void PushNode(void* data) {
@@ -120,9 +116,6 @@ struct LinkedList {
 
     inline void Push(void* data) { PushNode(data); }
     inline void* Pop() { return RemoveCurrent(); }
-    inline void* PopNode() { return RemoveCurrent(); }
-    inline void* PopNode2() { return RemoveCurrent(); }
-    inline void* PopNode2_2() { return RemoveCurrent(); }
 
     inline void ResetForSortedAdd(void* data) {
         if (data == 0) ShowError("queue fault 0101");
@@ -152,7 +145,6 @@ struct MessageList : public LinkedList {
     void InsertNode(void* data);
     void InsertBeforeCurrent(void* data);
     void* PopCurrent();
-    void* GetCurrentData();
 };
 
 struct ZBQueue : public LinkedList {

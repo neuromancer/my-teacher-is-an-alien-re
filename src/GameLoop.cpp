@@ -418,7 +418,7 @@ void GameLoop::CleanupLoop() {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pResult = pQueue->PopNode2();
+            pResult = pQueue->Pop();
             if (pResult != 0) {
                 delete (SoundCommand*)pResult;
             }
@@ -430,7 +430,7 @@ void GameLoop::CleanupLoop() {
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pResult = pQueue->PopNode2_2();
+            pResult = pQueue->Pop();
             if (pResult != 0) {
                 delete (DrawEntry*)pResult;
             }
@@ -697,7 +697,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         if (pQueue->head != 0) {
             pQueue->current = pQueue->head;
             while (pQueue->head != 0) {
-                pPopResult = pQueue->PopNode2();
+                pPopResult = pQueue->Pop();
                 if (pPopResult != 0) {
                     delete (SoundCommand*)pPopResult;
                 }
@@ -709,7 +709,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         if (pQueue->head != 0) {
             pQueue->current = pQueue->head;
             while (pQueue->head != 0) {
-                pPopResult = pQueue->PopNode2_2();
+                pPopResult = pQueue->Pop();
                 if (pPopResult != 0) {
                     delete (DrawEntry*)pPopResult;
                 }
