@@ -50,7 +50,40 @@ RockThrower::RockThrower() {
 
 RockThrower::~RockThrower() {}
 
+/* Function start: 0x4169A0 */
 int RockThrower::LBLParse(char* line) {
+    char token[32];
+    int count;
+
+    if (sscanf(line, "%s", token) != 1) {
+        return 0;
+    }
+
+    if (strcmp(token, "MAXROCKS") == 0) {
+        if (sscanf(line, "%s %d", token, &count) == 2) {
+            m_itemCount = count;
+            m_items = (Projectile**)new char[m_itemCount * 4];
+            for (int i = 0; i < m_itemCount; i++) {
+                m_items[i] = new Projectile();
+            }
+        }
+    }
+    else if (strcmp(token, "SPRITE") == 0) {
+        SaveFilePosition();
+        if (m_itemCount > 0) {
+            for (int i = 0; i < m_itemCount; i++) {
+                RestoreFilePosition();
+                Parser::ProcessFile(m_items[i], this, 0);
+            }
+        }
+    }
+    else if (strcmp(token, "END") == 0) {
+        return 1;
+    }
+    else {
+        Parser::LBLParse("RockThrower");
+    }
+
     return 0;
 }
 

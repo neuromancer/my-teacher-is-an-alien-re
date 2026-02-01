@@ -55,6 +55,7 @@ public:
     virtual ~CombatSprite();  // 0x415480
 
     virtual int LBLParse(char* line);
+    void* FindSprite(unsigned int param_1); // 0x415580
     int PlayById(unsigned int param_1);  // 0x4155E0
     int ProcessFrame(int frame);         // 0x415B90
     void ParseSpriteData(char* line);  // 0x415960

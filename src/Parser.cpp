@@ -149,32 +149,33 @@ Parser *Parser::ProcessFile(Parser *self, Parser *dst, char *key_format, ...) {
   char key_buffer[64];
   char line_buffer[256];
   int result;
+  va_list args;
 
   self->Copy(dst);
 
   if (key_format != NULL && *key_format != 0) {
-    va_list args;
     va_start(args, key_format);
     vsprintf(key_buffer, key_format, args);
+    va_end(args);
     self->FindKey((unsigned char *)key_buffer);
   }
 
   self->OnProcessStart();
 
   do {
-    do {
+    while (1) {
       if (self->pFile == NULL || self->pFile->_flag == 0) {
-        ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer",
+        ShowError("Parser::Parser - premature EOF in \'%s\' - Invalid File Pointer",
                   self->filename);
       }
 
-      char *line = internal_ReadLine(line_buffer, 255, self->pFile);
-      if (line == NULL) {
-        ShowError(
-            "Parser::Parser - premature EOF in '%s'- probably missing END label",
-            self->filename);
+      if (internal_ReadLine(line_buffer, 255, self->pFile) == NULL) {
+        ShowError("Parser::Parser - premature EOF in \'%s\'- probably missing END label",
+                  self->filename);
       }
-    } while (self->GetKey(line_buffer) != 0);
+
+      if (self->GetKey(line_buffer) == 0) break;
+    }
 
     self->lineNumber = (int)line_buffer;
     result = self->LBLParse(line_buffer);

@@ -4,6 +4,7 @@
 #include "EngineSubsystems.h"
 #include "globals.h"
 #include "Target.h"
+#include "HashTable.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -316,6 +317,22 @@ CombatSprite::~CombatSprite() {
         delete table;
         CombatSprite::spriteTable = 0;
     }
+}
+
+/* Function start: 0x415580 */
+void* CombatSprite::FindSprite(unsigned int id) {
+    if (spriteTable == 0) return 0;
+    if (spriteTable->buckets == 0) return 0;
+
+    unsigned int h = (id >> 4) % (unsigned int)spriteTable->maxSize;
+    HashNode* node = (HashNode*)spriteTable->buckets[h];
+    while (node != 0) {
+        if (node->key == id) {
+            return (void*)node->reserved;
+        }
+        node = node->next;
+    }
+    return 0;
 }
 
 /* Function start: 0x4155E0 */

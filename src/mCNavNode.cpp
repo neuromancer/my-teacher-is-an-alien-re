@@ -5,6 +5,7 @@
 #include "string.h"
 #include "Animation.h"
 #include "CombatSprite.h"
+#include "Projectile.h"
 #include <stdlib.h>
 
 // Globals
@@ -166,4 +167,119 @@ check_sound:
 return_result:
     mCNavNode::active = 0;
     return mCNavNode::nextNodeId;
+}
+/* Function start: 0x412f40 */
+void mCNavNode::AddSpriteList(char* name, int id)
+{
+    if (DAT_00435f10 != 0) {
+        void* nodeResult = ((CombatSprite*)DAT_00435f10)->FindSprite(id);
+        if (nodeResult != 0) {
+            if (randomPool == 0) {
+                randomPool = new ObjectPool(0x11, 0xa);
+            }
+            
+            ObjectPool* pool = randomPool;
+            int count = pool->allocatedCount;
+            int h = (count >> 4) % pool->size;
+            
+            HashEntry* entry = 0;
+            if (pool->memory != 0) {
+                entry = ((HashEntry**)pool->memory)[h];
+                while (entry != 0) {
+                    if (entry->key == count) break;
+                    entry = entry->next;
+                }
+            }
+            
+            if (entry == 0) {
+                if (pool->memory == 0) {
+                    pool->MemoryPool_Allocate(pool->size, 1);
+                }
+                entry = (HashEntry*)pool->Allocate_2();
+                entry->field_4 = h;
+                entry->key = count;
+                entry->next = ((HashEntry**)pool->memory)[h];
+                ((HashEntry**)pool->memory)[h] = entry;
+            }
+            entry->value = (int)nodeResult;
+            flags |= 0x8;
+            return;
+        }
+    }
+    ShowError("mCNavNode::AddSpriteList() - Undefined sprite list %s %d", name, id);
+}
+
+/* Function start: 0x413380 */
+int mCNavNode::LBLParse(char* line)
+{
+    char label[32];
+    char value[128];
+    int valInt;
+
+    if (sscanf(line, " %s ", label) != 1) {
+        return 0;
+    }
+
+    if (_strcmpi(label, "EXIT_CODE") == 0) {
+        if (sscanf(line, "%s %d", label, &valInt) == 2) {
+            nextNodeId = valInt;
+            flags |= 0x10;
+        }
+    }
+    else if (_strcmpi(label, "IAM") == 0) {
+        if (sscanf(line, "%s %d", label, &valInt) == 2) {
+            nodeHandle = valInt;
+        }
+    }
+    else if (_strcmpi(label, "LOOP") == 0) {
+        if (sscanf(line, "%s %d", label, &valInt) == 2) {
+            counterLimit = valInt;
+            flags |= 0x4;
+        }
+    }
+    else if (_strcmpi(label, "NAME") == 0) {
+        if (sscanf(line, "%s %s", label, value) == 2) {
+            if (strlen(value) < 32) {
+                strcpy(nodeName, value);
+            }
+        }
+    }
+    else if (_strcmpi(label, "BG") == 0) {
+        if (sscanf(line, "%s %d", label, &valInt) == 2) {
+            animationState = valInt;
+            flags |= 0x1;
+        }
+    }
+    else if (_strcmpi(label, "NEXTNODE") == 0) {
+        char direction[32];
+        if (sscanf(line, "%s %s %d", label, direction, &valInt) == 3) {
+            extern int FindCharIndex(char*); // in mCNavigator.cpp
+            int idx = FindCharIndex(direction);
+            if (idx < 6) {
+                neighborNodes[idx] = valInt;
+            }
+        }
+    }
+    else if (_strcmpi(label, "PLAY_ANIM") == 0) {
+        if (sscanf(line, "%s %s", label, value) == 2) {
+            if (strlen(value) >= 32) {
+                ShowError("mCNavNode::LBLParse() - anim name overflow '%s'", value);
+            }
+            strcpy(soundName, value);
+            flags |= 0x2;
+        }
+    }
+    else if (_strcmpi(label, "SPRITE") == 0) {
+        if (sscanf(line, "%s %s %d", label, value, &valInt) == 3) {
+            AddSpriteList(value, valInt);
+        }
+    }
+    else if (_strcmpi(label, "END") == 0) {
+        return 1;
+    }
+    else {
+        Parser::LBLParse("mCNavNode");
+    }
+
+    return 0;
 }

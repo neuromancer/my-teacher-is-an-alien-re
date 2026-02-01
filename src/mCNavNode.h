@@ -25,6 +25,8 @@ public:
     int Activate();
     int Update();
     int GetNextNode();
+    virtual int LBLParse(char*);
+    void AddSpriteList(char* name, int id);
 };
 
 #endif // MCNAVNODE_H
