@@ -101,54 +101,91 @@ void Target::Spawn()
 /* Function start: 0x4140B0 */
 void Target::Activate()
 {
-    // TODO: Complex function with SEH and hash table operations
-    // For now, just set active state
     if (Target::active == 0) {
+        TargetList* targetList = (TargetList*)DAT_00435f0c;
+        HashTable* hashTable = targetList->hashTable;
+        if (hashTable != 0) {
+            int hash = ((unsigned int)Target::id >> 4) % (unsigned int)hashTable->numBuckets;
+            
+            HashNode* node = 0;
+            if (hashTable->buckets != 0) {
+                node = ((HashNode**)hashTable->buckets)[hash];
+                while (node != 0) {
+                    if (node->key == (unsigned int)Target::id) break;
+                    node = node->next;
+                }
+            }
+
+            if (node == 0) {
+                if (hashTable->buckets == 0) {
+                    hashTable->AllocateBuckets(hashTable->numBuckets, 1);
+                }
+                node = hashTable->AllocateNode();
+                node->bucketIndex = hash;
+                node->key = (unsigned int)Target::id;
+                node->next = ((HashNode**)hashTable->buckets)[hash];
+                ((HashNode**)hashTable->buckets)[hash] = node;
+            }
+            node->reserved = (int)this;
+        }
+
+        if (Target::hotspotList != 0 && Target::hotspotList->count != 0) {
+            Target::hotspotList->processingHead = Target::hotspotList->first;
+            if (Target::hotspotList->processingHead != 0) {
+                HotspotNode* node = Target::hotspotList->processingHead;
+                Target::hotspotList->processingHead = node->next;
+                Target::hotspotList->currentId = node->id;
+            } else {
+                Target::hotspotList->currentId = -1;
+            }
+        }
+
         Target::progressRange.start = 0;
         Target::active = 1;
+        Sprite::SetState2(Target::animRange.start);
+        
+        {
+            Range temp = *(Range*)&animParam1;
+            Target::loc_x = temp.start;
+            Target::loc_y = temp.end;
+        }
+        
+        Target::pendingAction = 0;
     }
 }
 
 /* Function start: 0x414230 */
 void Target::Deactivate()
 {
-    HashTable* hashTable;
-    int** bucketPtr;
-    int* node;
-    int* prevNode;
-    unsigned int hash;
-    int i;
-
     if (Target::active != 0) {
-        hashTable = ((TargetList*)DAT_00435f0c)->hashTable;
+        TargetList* targetList = (TargetList*)DAT_00435f0c;
+        HashTable* hashTable = targetList->hashTable;
         if (hashTable != 0 && hashTable->buckets != 0) {
-            hash = ((unsigned int)Target::id >> 4) % (unsigned int)hashTable->numBuckets;
-            bucketPtr = (int**)(hashTable->buckets + hash);
-            node = *bucketPtr;
-            if (node != 0) {
-                while (node[2] != Target::id) {
-                    prevNode = node;
-                    node = (int*)*node;
-                    if (node == 0) {
-                        goto cleanup;
-                    }
-                    bucketPtr = (int**)prevNode;
+            unsigned int id = (unsigned int)Target::id;
+            int numBuckets = hashTable->numBuckets;
+            int hash = (id >> 4) % (unsigned int)numBuckets;
+
+            void** pNext = (void**)&((int*)hashTable->buckets)[hash];
+            HashNode* node = (HashNode*)*pNext;
+            
+            while (node != 0) {
+                if (node->key == id) {
+                    *pNext = node->next;
+                    
+                    int i = 0;
+                    while (!i--) ;
+                    i = 0;
+                    while (!i--) ;
+
+                    node->next = (HashNode*)hashTable->freeList;
+                    hashTable->freeList = (HashNode*)node;
+                    hashTable->count--;
+                    break;
                 }
-                *bucketPtr = (int*)*node;
-                i = 0;
-                do {
-                    i--;
-                } while (i != 0);
-                i = 0;
-                do {
-                    i--;
-                } while (i != 0);
-                *node = (int)hashTable->freeList;
-                hashTable->freeList = (HashNode*)node;
-                hashTable->count--;
+                pNext = (void**)node;
+                node = node->next;
             }
         }
-cleanup:
         Sprite::FreeAnimation();
         Target::active = 0;
     }
