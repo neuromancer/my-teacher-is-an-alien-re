@@ -102,45 +102,45 @@ int GetJoystickCount()
 
 /* Function start: 0x421b20 */
 int InputManager::PollMouse(InputState* state) {
-    int iVar1;
-    MousePoint localPos;
-
     if (state == 0) {
         return 0;
     }
 
     state->prevButtons = state->buttons;
+    
+    MousePoint localPos;
     localPos.x = 0;
     localPos.y = 0;
+    
     GetMousePosition(&localPos.x, &localPos.y);
 
-    if ((localPos.x == -1) || (localPos.y == -1)) {
+    if (localPos.x == -1 || localPos.y == -1) {
         mouseValid = 0;
-    }
-    else {
-        iVar1 = bounds.left;
-        if ((bounds.left <= localPos.x) && (iVar1 = bounds.right, localPos.x <= bounds.right)) {
-            iVar1 = localPos.x;
+    } else {
+        if (bounds.left > localPos.x) {
+            localPos.x = bounds.left;
+        } else if (bounds.right < localPos.x) {
+            localPos.x = bounds.right;
         }
-        localPos.x = iVar1;
         state->x = localPos.x;
 
-        iVar1 = bounds.top;
-        if ((bounds.top <= localPos.y) && (iVar1 = bounds.bottom, localPos.y <= bounds.bottom)) {
-            iVar1 = localPos.y;
+        if (bounds.top > localPos.y) {
+            localPos.y = bounds.top;
+        } else if (bounds.bottom < localPos.y) {
+            localPos.y = bounds.bottom;
         }
-        localPos.y = iVar1;
         state->y = localPos.y;
 
         mouseValid = 1;
     }
 
+    SHORT (WINAPI *pGetAsyncKeyState)(int) = GetAsyncKeyState;
     state->buttons = 0;
-    if (GetAsyncKeyState(1) != 0) {
-        state->buttons = state->buttons | 1;
+    if (pGetAsyncKeyState(1)) {
+        state->buttons |= 1;
     }
-    if (GetAsyncKeyState(2) != 0) {
-        state->buttons = state->buttons | 2;
+    if (pGetAsyncKeyState(2)) {
+        state->buttons |= 2;
     }
 
     return 1;
