@@ -42,8 +42,8 @@ private:
 
 public:
     Palette* field_600;              // 0x600
-    MMPlayer* field_604;         // 0x604
-    MMPlayer2* field_608;            // 0x608
+    MMPlayer* background;           // 0x604
+    MMPlayer2* ambients;             // 0x608
     DialogControl* field_60C[10];    // 0x60C-0x633
     DialogControl* field_634;        // 0x634
     Sample* field_638;               // 0x638

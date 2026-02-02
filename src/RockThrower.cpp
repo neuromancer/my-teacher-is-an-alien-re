@@ -8,6 +8,10 @@
 extern int DAT_0043d150;
 extern Engine* g_CombatEngine;
 
+extern "C" int __cdecl SetFillColor(unsigned char param_1);
+extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
+extern "C" int __cdecl FUN_00422aaf(int param_1);
+
 /* Function start: 0x4165D0 */
 RockThrower::RockThrower() {
     // Zero Weapon fields 0x98, 0x9c first (redundant but matches original)
@@ -50,6 +54,13 @@ RockThrower::RockThrower() {
 
 RockThrower::~RockThrower() {}
 
+/* Function start: 0x416960 */
+void RockThrower::DrawCrosshairs() {
+    SetFillColor(0xfa);
+    SetDrawPosition(RockThrower::field_0x98, RockThrower::field_0x9c);
+    FUN_00422aaf(7);
+}
+
 /* Function start: 0x4169A0 */
 int RockThrower::LBLParse(char* line) {
     char token[32];
@@ -89,7 +100,6 @@ int RockThrower::LBLParse(char* line) {
 
 /* Function start: 0x416880 */
 void RockThrower::UpdateProjectiles() {
-    int** vtable;
     InputState* pMouse;
     int buttonState;
     int prevButtons;
@@ -100,8 +110,7 @@ void RockThrower::UpdateProjectiles() {
         goto update_all;
     }
 
-    vtable = *(int***)this;
-    ((void (*)(RockThrower*))vtable[5])(this); // vtable[5] = offset 0x14
+    DrawCrosshairs();
 
     pMouse = g_InputManager_00436968->pMouse;
     buttonState = 0;
@@ -120,7 +129,7 @@ void RockThrower::UpdateProjectiles() {
         goto update_all;
     }
 
-    ((void (*)(RockThrower*))vtable[4])(this); // vtable[4] = offset 0x10
+    OnHit();
 
     if (RockThrower::m_itemCount <= 0) {
         goto update_all;

@@ -29,8 +29,8 @@ public:
     ~mCNavigator();
 
     virtual int LBLParse(char*);
+    virtual void OnProcessEnd();
     void SetBearing(char*);
-    void SetCurrentNode();
     int Update();
 };
 

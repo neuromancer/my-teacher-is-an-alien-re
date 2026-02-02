@@ -311,6 +311,88 @@ SC_Message::~SC_Message()
 {
 }
 
+/* Function start: 0x419A10 */
+int SC_Message::LBLParse(char* param_1)
+{
+    char local_30[32];
+    char local_54[32];
+    char local_74[32];
+    int idx;
+
+    local_54[0] = '\0';
+    local_74[0] = '\0';
+    local_30[0] = '\0';
+    sscanf(param_1, "%s", local_30);
+
+    if (strcmp(local_30, "ADDRESS") == 0) {
+        sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
+        idx = g_GameState3_0043699c->FindState(local_54);
+        targetAddress = idx;
+        if (idx < 0 || idx >= 0x18) {
+            ShowError("illegal index %s %s", idx, param_1);
+        }
+        if (targetAddress == 5) {
+            idx = g_GameState_00436998->FindState(local_74);
+            if (idx > 0 && g_GameState_00436998->maxStates <= idx) {
+                ShowError("GameState Error  #%d", 1);
+            }
+            sourceAddress = idx;
+        } else {
+            sscanf(local_74, "%d", &sourceAddress);
+        }
+    } else if (strcmp(local_30, "FROM") == 0) {
+        sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
+        idx = g_GameState3_0043699c->FindState(local_54);
+        command = idx;
+        if (idx < 0 || idx >= 0x18) {
+            ShowError("illegal index %s %s", idx, param_1);
+        }
+        if (command == 5) {
+            idx = g_GameState_00436998->FindState(local_74);
+            if (idx > 0 && g_GameState_00436998->maxStates <= idx) {
+                ShowError("GameState Error  #%d", 1);
+            }
+            data = idx;
+        } else {
+            sscanf(local_74, "%d", &data);
+        }
+    } else if (strcmp(local_30, "INSTRUCTION") == 0) {
+        sscanf(param_1, "%s %s", local_30, local_54);
+        idx = g_GameState4_004369a0->FindState(local_54);
+        priority = idx;
+        if (idx < 0 || idx >= 0x1e) {
+            ShowError("illegal index %d %s", idx, param_1);
+        }
+    } else if (strcmp(local_30, "MESSAGE") == 0) {
+        if (userPtr != 0) {
+            ShowError("double reserve in Message %s", param_1);
+        }
+        SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        userPtr = (int)msg;
+        Parser::ProcessFile((Parser*)msg, (Parser*)this, 0);
+    } else if (strcmp(local_30, "MOUSE") == 0) {
+        sscanf(param_1, "%s %d %d", local_30, &clickPos.x, &clickPos.y);
+    } else if (strcmp(local_30, "BUTTON1") == 0) {
+        sscanf(param_1, "%s %d", local_30, &mouseX);
+    } else if (strcmp(local_30, "BUTTON2") == 0) {
+        sscanf(param_1, "%s %d", local_30, &mouseY);
+    } else if (strcmp(local_30, "LASTKEY") == 0) {
+        sscanf(param_1, "%s %d", local_30, &field_b4);
+    } else if (strcmp(local_30, "TIME") == 0) {
+        sscanf(param_1, "%s %lu", local_30, &field_b8);
+    } else if (strcmp(local_30, "EXTRA1") == 0) {
+        sscanf(param_1, "%s %lu", local_30, &param1);
+    } else if (strcmp(local_30, "EXTRA2") == 0) {
+        sscanf(param_1, "%s %lu", local_30, &param2);
+    } else if (strcmp(local_30, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SC_Message");
+    }
+
+    return 0;
+}
+
 /* Function start: 0x419FD0 */
 void SC_Message::Dump(int unused)
 {

@@ -33,16 +33,16 @@ SCI_SearchScreen::~SCI_SearchScreen() {
         field_600 = 0;
     }
 
-    mouse = field_604;
+    mouse = background;
     if (mouse != 0) {
         delete mouse;
-        field_604 = 0;
+        background = 0;
     }
 
-    dialog = field_608;
+    dialog = ambients;
     if (dialog != 0) {
         delete dialog;
-        field_608 = 0;
+        ambients = 0;
     }
 
     for (i = 0; i < 10; i++) {
@@ -92,15 +92,15 @@ int SCI_SearchScreen::ShutDown(SC_Message* msg) {
     int i;
 
     if (msg == 0 || msg->targetAddress != 9) {
-        if (field_604 != 0) {
-            field_604->StopAll();
+        if (background != 0) {
+            background->StopAll();
         }
-        if (field_608 != 0) {
+        if (ambients != 0) {
             // MMPlayer2 StopAll logic (calls Sprite::StopAnimationSound on all)
             // Since we don't have MMPlayer2::StopAll, we might need to call it if it exists.
             // Looking at disassembly 0x408B60, it's a specific method.
             // Let's assume it's StopAll for now.
-            field_608->StopAll();
+            ambients->StopAll();
         }
     }
 
@@ -154,17 +154,11 @@ void SCI_SearchScreen::Update(int param1, int param2) {
 
     IconBar::Update(param1, param2);
 
-    if (field_604 != 0) {
-        field_604->Init();
-    }
-
-    if (field_608 != 0) {
-        // FUN_00408EE0 call in assembly
-        field_608->Draw();
-    }
+    background->Draw();
+    ambients->Draw();
 
     if (field_634 != 0) {
-        if (field_634->Update((int)field_604, (int)field_608, field_8C) == 0) {
+        if (field_634->Update((int)background, (int)ambients, field_8C) == 0) {
             return;
         }
         field_634 = 0;
@@ -235,8 +229,8 @@ int SCI_SearchScreen::LBLParse(char* line) {
     sscanf(line, "%s", token);
 
     if (strcmp(token, "BACKGROUND") == 0) {
-        field_604 = new MMPlayer();
-        ProcessFile(field_604, this, 0);
+        background = new MMPlayer();
+        ProcessFile(background, this, 0);
     } else if (strcmp(token, "PALE") == 0) {
         if (field_600 == 0) {
             sscanf(line, "%s %s", token, arg1);
@@ -245,8 +239,8 @@ int SCI_SearchScreen::LBLParse(char* line) {
             field_600->Load(path);
         }
     } else if (strcmp(token, "AMBIENTS") == 0) {
-        field_608 = new MMPlayer2();
-        ProcessFile(field_608, this, 0);
+        ambients = new MMPlayer2();
+        ProcessFile(ambients, this, 0);
     } else if (strcmp(token, "HOTSPOT") == 0) {
         DialogControl* dc = new DialogControl();
         field_60C[field_63C] = dc;

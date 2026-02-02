@@ -541,8 +541,110 @@ int InitStockFont(int param_1)
 // Too complex to reimplement exactly due to inline assembly and segment registers
 extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2) { return 0; }
 
-// FUN_00424176 - Ellipse/circle drawing function (complex)
-extern "C" int __cdecl FUN_00424176(int param_1, int param_2) { return 0; }
+// Externs for video buffer access
+extern int DAT_004374ca;  // buffer height - 1
+extern int DAT_00437f5e;  // buffer stride
+extern int DAT_00437f66;  // buffer base
+extern int DAT_004374de;  // clip left
+extern int DAT_004374e2;  // clip right
+extern int DAT_004374e6;  // clip top
+extern int DAT_004374ea;  // clip bottom
+static void DrawEllipseScanline(int y, int left_x, int right_x) {
+    if (y < DAT_004374e6 || y > DAT_004374ea) return;
+    if (right_x < DAT_004374de) return;
+    if (left_x > DAT_004374e2) return;
+
+    int flags = 0;
+    if (left_x < DAT_004374de) flags = 2;
+    if (right_x > DAT_004374e2) flags |= 1;
+
+    int row = DAT_004374ca - y;
+    unsigned char* base = (unsigned char*)(row * DAT_00437f5e + DAT_00437f66);
+    unsigned char color = (unsigned char)DAT_00437490;
+
+    if (!(flags & 2)) {
+        base[left_x] = color;
+    }
+    if (!(flags & 1)) {
+        base[right_x] = color;
+    }
+}
+
+/* Function start: 0x424176 */
+extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
+    if ((signed char)DAT_00437f54 < 0) return 0;
+    if (param_1 <= 0 || param_2 <= 0) return 0;
+
+    unsigned short rx = (unsigned short)param_1;
+    unsigned short ry = (unsigned short)param_2;
+
+    unsigned long a2 = (unsigned long)rx * rx;
+    unsigned long b2 = (unsigned long)ry * ry;
+    unsigned long two_a2 = a2 * 2;
+    unsigned long two_b2 = b2 * 2;
+
+    long term_x = 0;
+    long term_y = (long)(two_a2 * ry);
+    long d = (long)(b2 + (a2 >> 2) - a2 * ry);
+
+    int x = 0;
+    int y = (int)ry;
+
+    // First region: where dy/dx < 1
+    while (term_x <= term_y) {
+        int center_x = DAT_004374c2;
+        int center_y = DAT_004374ce;
+        int draw_y;
+
+        // Draw top scanline (center_y - y)
+        draw_y = center_y - y;
+        DrawEllipseScanline(draw_y, center_x - x, center_x + x);
+
+        // Draw bottom scanline (center_y + y)
+        draw_y = center_y + y;
+        DrawEllipseScanline(draw_y, center_x - x, center_x + x);
+
+        if (d >= 0) {
+            y--;
+            term_y -= two_a2;
+            d -= term_y;
+        }
+
+        x++;
+        term_x += two_b2;
+        d += (long)(b2 + term_x);
+    }
+
+    // Correction term for transition between regions
+    d += (long)((3 * (a2 - b2) / 2 - (term_x + term_y)) / 2);
+
+    // Second region: where dy/dx >= 1
+    while (y >= 0) {
+        int center_x = DAT_004374c2;
+        int center_y = DAT_004374ce;
+        int draw_y;
+
+        // Draw top scanline
+        draw_y = center_y - y;
+        DrawEllipseScanline(draw_y, center_x - x, center_x + x);
+
+        // Draw bottom scanline
+        draw_y = center_y + y;
+        DrawEllipseScanline(draw_y, center_x - x, center_x + x);
+
+        if (d < 0) {
+            x++;
+            term_x += two_b2;
+            d += term_x;
+        }
+
+        y--;
+        term_y -= two_a2;
+        d += (long)(a2 - term_y);
+    }
+
+    return 0;
+}
 
 /* Function start: 0x422aaf */
 extern "C" int __cdecl FUN_00422aaf(int param_1) {

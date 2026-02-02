@@ -117,7 +117,7 @@ void mCNavigator::SetBearing(char* param_1)
 }
 
 /* Function start: 0x413840 */
-void mCNavigator::SetCurrentNode()
+void mCNavigator::OnProcessEnd()
 {
 	if (sprite) {
 		sprite->Init();

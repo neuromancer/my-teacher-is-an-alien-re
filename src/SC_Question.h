@@ -25,7 +25,10 @@ public:
 
     SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY);
     ~SC_Message();
-    
+
+    /* Function start: 0x419A10 */
+    virtual int LBLParse(char* param_1);
+
     /* Function start: 0x419FD0 */
     void Dump(int unused);
 };

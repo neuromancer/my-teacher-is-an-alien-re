@@ -34,6 +34,8 @@ void CombatResult::PlayResult() {
     }
 }
 
+Weapon::~Weapon() {}
+
 /* Function start: 0x415E00 */
 void Weapon::OnHit() {
     g_ScoreManager[6]++;

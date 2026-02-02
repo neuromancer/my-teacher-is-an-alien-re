@@ -201,7 +201,7 @@ void mCNavNode::AddSpriteList(char* name, int id)
                 entry->next = ((HashEntry**)pool->memory)[h];
                 ((HashEntry**)pool->memory)[h] = entry;
             }
-            entry->value = (int)nodeResult;
+            entry->value = id;
             flags |= 0x8;
             return;
         }

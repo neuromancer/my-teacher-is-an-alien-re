@@ -41,10 +41,10 @@ MMPlayer2::~MMPlayer2()
                     sprite = 0;
                 } else {
                     if (queue->head == curr) {
-                        queue->head = curr->prev;
+                        queue->head = curr->next;
                     }
                     if (queue->tail == curr) {
-                        queue->tail = curr->next;
+                        queue->tail = curr->prev;
                     }
                     if (curr->next != 0) {
                         curr->next->prev = curr->prev;
@@ -82,7 +82,7 @@ void MMPlayer2::StopAll()
             if (node != 0) spr = (Sprite*)node->data;
             spr->StopAnimationSound();
             if (spriteList->tail == spriteList->current) break;
-            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->prev;
+            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->next;
         } while (spriteList->head != 0);
     }
     field_8c &= ~0x2000;
@@ -99,7 +99,7 @@ void MMPlayer2::PreDraw()
             if (node != 0) spr = (Sprite*)node->data;
             spr->Init();
             if (spriteList->tail == spriteList->current) break;
-            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->prev;
+            if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->next;
         } while (spriteList->head != 0);
     }
     field_90 = 1;
@@ -155,7 +155,7 @@ int MMPlayer2::Draw()
                 field_90 = 0;
             }
             if (list->tail == list->current) break;
-            if (list->current != 0) list->current = node->prev;
+            if (list->current != 0) list->current = node->next;
         } while (list->head != 0);
     }
     return field_90;
@@ -186,7 +186,7 @@ int MMPlayer2::DrawWithStates(int* states)
                 }
             }
             if (list->tail == list->current) break;
-            if (list->current != 0) list->current = node->prev;
+            if (list->current != 0) list->current = node->next;
         } while (list->head != 0);
     }
     return field_90;

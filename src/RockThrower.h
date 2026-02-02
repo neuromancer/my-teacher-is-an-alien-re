@@ -8,6 +8,9 @@ class Projectile;
 // Weapon - Base class for weapons (vtable 0x4313a8)
 // Intermediate class between Parser and RockThrower
 // Size: 0xa8 (168 bytes)
+// vtable layout:
+//   [0] LBLParse  [1] OnProcessStart  [2] OnProcessEnd
+//   [3] destructor  [4] OnHit  [5] DrawCrosshairs
 class Weapon : public Parser {
 public:
     // Fields from 0x88 to 0xa8 (32 bytes, 8 dwords)
@@ -20,9 +23,10 @@ public:
     int field_0xa0;     // 0xa0
     int field_0xa4;     // 0xa4
 
-    void OnHit();           // 0x415E00
-    void DrawCrosshairs();  // 0x415E20
-    void DrawExplosion();   // 0x415F10
+    virtual ~Weapon();
+    virtual void OnHit();           // 0x415E00 - vtable[4]
+    virtual void DrawCrosshairs();  // vtable[5] - base: 0x411930
+    void DrawExplosion();           // 0x415F10 - non-virtual
 };
 
 // RockThrower - Rock throwing weapon (vtable 0x4314d0)
@@ -37,9 +41,10 @@ public:
     int field_0xb4;     // 0xb4
 
     RockThrower();
-    ~RockThrower();
+    virtual ~RockThrower();
 
     void UpdateProjectiles(); // 0x416880
+    virtual void DrawCrosshairs();  // 0x416960 - override
 
     virtual int LBLParse(char* line);
 };
