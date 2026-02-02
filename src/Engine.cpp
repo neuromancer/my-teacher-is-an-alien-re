@@ -167,7 +167,7 @@ void Engine::Initialize() {
   Engine::m_viewport = new Viewport();
   Engine::m_stateManager = new GameOutcome();
 
-  Engine::OnProcessStart();
+  Engine::CopyToGlobals();
 }
 
 /* Function start: 0x411D60 */

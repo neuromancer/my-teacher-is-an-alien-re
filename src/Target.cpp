@@ -14,27 +14,17 @@
 extern CDData* g_CDData_0043697c;
 
 // ============================================================================
-// HotspotListData implementation
-// ============================================================================
-
-HotspotListData::HotspotListData() :
-    first(0), last(0), count(0), freeList(0),
-    nodePool(0), growthRate(10), processingHead(0), currentId(-1)
-{}
-
-// ============================================================================
 // Target implementation
 // ============================================================================
+
+HotspotListData::~HotspotListData() {}
 
 /* Function start: 0x413DC0 */
 Target::Target() : Sprite((char*)0),
     animRange(), hitRange(), timeRange(), progressRange(),
-    scoreIndex(0), weight(0),
-    hitPoints(0), missPoints(0),
-    combatBonus1(0), field_0x120(0),
+    scoreWeight(), hitMissPoints(), combatBonus(),
     combatBonus2(0), field_0x128(0),
-    animParam1(0), animParam2(0),
-    hitOffset()
+    animParam(), hitOffset()
 {
     memset((char*)this + 0xd8, 0, 0x80);
 
@@ -57,7 +47,6 @@ Target::~Target()
     }
 
     if (Target::hotspotList != 0) {
-        Target::hotspotList->~HotspotListData();
         delete Target::hotspotList;
         Target::hotspotList = 0;
     }
@@ -105,20 +94,25 @@ void Target::Activate()
         TargetList* targetList = (TargetList*)DAT_00435f0c;
         HashTable* hashTable = targetList->hashTable;
         if (hashTable != 0) {
-            int hash = ((unsigned int)Target::id >> 4) % (unsigned int)hashTable->numBuckets;
-            
-            HashNode* node = 0;
-            if (hashTable->buckets != 0) {
-                node = ((HashNode**)hashTable->buckets)[hash];
+            unsigned int id = (unsigned int)Target::id;
+            int numBuckets = hashTable->numBuckets;
+            int hash = (id >> 4) % (unsigned int)numBuckets;
+
+            void* buckets = hashTable->buckets;
+            HashNode* node;
+            if (buckets != 0) {
+                node = ((HashNode**)buckets)[hash];
                 while (node != 0) {
-                    if (node->key == (unsigned int)Target::id) break;
+                    if (node->key == id) break;
                     node = node->next;
                 }
+            } else {
+                node = 0;
             }
 
             if (node == 0) {
                 if (hashTable->buckets == 0) {
-                    hashTable->AllocateBuckets(hashTable->numBuckets, 1);
+                    hashTable->AllocateBuckets(numBuckets, 1);
                 }
                 node = hashTable->AllocateNode();
                 node->bucketIndex = hash;
@@ -129,27 +123,28 @@ void Target::Activate()
             node->reserved = (int)this;
         }
 
-        if (Target::hotspotList != 0 && Target::hotspotList->count != 0) {
-            Target::hotspotList->processingHead = Target::hotspotList->first;
-            if (Target::hotspotList->processingHead != 0) {
-                HotspotNode* node = Target::hotspotList->processingHead;
-                Target::hotspotList->processingHead = node->next;
-                Target::hotspotList->currentId = node->id;
+        HotspotListData* list = Target::hotspotList;
+        if (list != 0 && list->count != 0) {
+            HotspotNode* first = list->first;
+            list->processingHead = first;
+            if (first != 0) {
+                list->processingHead = first->next;
+                list->currentId = first->id;
             } else {
-                Target::hotspotList->currentId = -1;
+                list->currentId = -1;
             }
         }
 
         Target::progressRange.start = 0;
         Target::active = 1;
         Sprite::SetState2(Target::animRange.start);
-        
+
         {
-            Range temp = *(Range*)&animParam1;
+            Range temp = *(Range*)((char*)this + 0x140);
             Target::loc_x = temp.start;
             Target::loc_y = temp.end;
         }
-        
+
         Target::pendingAction = 0;
     }
 }
@@ -268,14 +263,12 @@ void Target::UpdateProgress(int delta)
     }
     newValue = Target::progressRange.start + delta;
     Target::progressRange.start = newValue;
-    if (Target::progressRange.end == 0) {
-        shouldTrigger = 0;
-    } else if (newValue >= Target::progressRange.end) {
-        shouldTrigger = 1;
+    if (Target::progressRange.end) {
+        shouldTrigger = (newValue >= Target::progressRange.end) ? 1 : 0;
     } else {
         shouldTrigger = 0;
     }
-    if (shouldTrigger != 0) {
+    if (shouldTrigger) {
         Target::pendingAction = 3;
         return;
     }
@@ -295,7 +288,7 @@ int Target::Update()
     int state = Target::pendingAction;
     if (state == 1) {
         if (Target::animRange.end == Target::current_state) {
-            *g_ScoreManager = *g_ScoreManager - Target::missPoints;
+            *g_ScoreManager = *g_ScoreManager - Target::hitMissPoints.end;
             Target::Deactivate();
             return 1;
         }
@@ -304,7 +297,7 @@ int Target::Update()
         Target::active = 3;
         Sprite::SetState2(Target::hitRange.start + Target::current_state);
         if ((Target::targetFlags & 1) != 0) {
-            Range temp = Target::hitOffset;
+            Range temp = *(Range*)((char*)this + 0x148);
             Target::loc_y = temp.end;
             Target::loc_x = temp.start;
         }
@@ -315,9 +308,9 @@ int Target::Update()
             Target::hitSound->Play(100, 1);
         }
         g_ScoreManager[3]++;
-        *g_ScoreManager += Target::hitPoints;
-        ((ScoreManager*)g_ScoreManager)->AdjustScore(Target::scoreIndex);
-        g_CombatEngine->field_0xb4 += Target::combatBonus1;
+        *g_ScoreManager += Target::hitMissPoints.start;
+        ((ScoreManager*)g_ScoreManager)->AdjustScore(Target::scoreWeight.start);
+        g_CombatEngine->field_0xb4 += Target::combatBonus.start;
         g_CombatEngine->field_0xc4 += Target::combatBonus2.val;
     }
 
@@ -379,6 +372,84 @@ void Target::ParseSound(char* line)
     }
 }
 
+/* Function start: 0x414730 */
+void Target::OnProcessStart()
+{
+    char buffer[128];
+    extern int DAT_004362cc;
+    extern int DAT_004362c8;
+    extern Parser* DAT_00435f0c;
+
+    DAT_004362c8 = 0;
+    DAT_004362cc = 0;
+    
+    sprintf(buffer, "FNAME %s", animFilename);
+    Sprite::LBLParse(buffer);
+    Sprite::SetState(40);
+    
+    flags = flags | 0x40;
+    flags = flags & ~2;
+    flags = flags | 0x200;
+    
+    InitAnimation();
+    
+    TargetList* tl = (TargetList*)DAT_00435f0c;
+    stopSound     = (Sample*)tl->field_0x1b4;
+    tl = (TargetList*)DAT_00435f0c;
+    progressSound = (Sample*)tl->field_0x1b8;
+    tl = (TargetList*)DAT_00435f0c;
+    hitSound      = (Sample*)tl->field_0x1bc;
+    tl = (TargetList*)DAT_00435f0c;
+    sound3        = (Sample*)tl->field_0x1c0;
+}
+
+/* Function start: 0x4147F0 */
+void Target::OnProcessEnd()
+{
+    extern int DAT_004362c8;
+    if (hotspotList == 0 && DAT_004362c8 != 0) {
+        HotspotListData* list = new HotspotListData;
+        hotspotList = list;
+        
+        HotspotNode* lastNode = list->last;
+        if (list->freeList == 0) {
+            char* mem = new char[list->growthRate * 12 + 4];
+            *(void**)mem = list->nodePool;
+            list->nodePool = mem;
+
+            int n = list->growthRate;
+            HotspotNode* curr = (HotspotNode*)(mem + (n * 12) - 8);
+            n--;
+            if (n >= 0) {
+                do {
+                    curr->next = list->freeList;
+                    n--;
+                    list->freeList = curr;
+                    curr = (HotspotNode*)((char*)curr - 12);
+                } while (n >= 0);
+            }
+        }
+
+        HotspotNode* node = list->freeList;
+        list->freeList = node->next;
+        node->prev = lastNode;
+        node->next = 0;
+        list->count++;
+        node->id = 0;
+
+        int i = 0;
+        do {} while (i--);
+
+        node->id = DAT_004362c8;
+        if (lastNode != 0) {
+            lastNode->next = node;
+        } else {
+            list->first = node;
+        }
+        list->last = node;
+    }
+}
+
 extern int DAT_004362cc;
 extern int DAT_004362c8;
 
@@ -401,22 +472,22 @@ int Target::LBLParse(char* line)
     sscanf(label, "%c", &firstChar);
 
     if (firstChar == 'A') {
-        sscanf(line + 3, "%d %d", &Target::animParam1, &Target::animParam2);
+        sscanf(line + 3, "%d %d", &animParam.start, &animParam.end);
     }
     else if (firstChar == 'B') {
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
-            Target::SetRange(DAT_004362cc, value1, value2);
-            Target::animRange.end = DAT_004362cc;
+            SetRange(DAT_004362cc, value1, value2);
+            animRange.end = DAT_004362cc;
             DAT_004362c8 = value2;
             DAT_004362cc++;
         }
     }
     else if (firstChar == 'C') {
-        sscanf(line + 1, "%d", &Target::progressRange.end);
+        sscanf(line + 1, "%d", &progressRange.end);
     }
     else if (firstChar == 'D') {
-        sscanf(line + 3, "%d", &Target::hitPoints);
+        sscanf(line + 3, "%d", &hitMissPoints.start);
     }
     else if (firstChar == 'F') {
         // Do nothing
@@ -424,35 +495,33 @@ int Target::LBLParse(char* line)
     else if (firstChar == 'H') {
         int result = sscanf(line + 3, "%d", &value1);
         if (result == 1) {
-            HotspotListData* list = Target::hotspotList;
+            HotspotListData* list = hotspotList;
             if (list == 0) {
                 list = new HotspotListData;
-                Target::hotspotList = list;
+                hotspotList = list;
             }
             if (list != 0) {
-                HotspotNode* node = list->freeList;
-                if (node == 0) {
-                    node = (HotspotNode*)new char[list->growthRate * 12 + 4];
-                    *(HotspotNode**)node = (HotspotNode*)list->nodePool;
-                    list->nodePool = node;
-                    int n = list->growthRate - 1;
-                    node = (HotspotNode*)((char*)node + (n + 1) * 12 - 8);
+                if (list->freeList == 0) {
+                    char* mem = new char[list->growthRate * 12 + 4];
+                    *(HotspotNode**)mem = (HotspotNode*)list->nodePool;
+                    list->nodePool = mem;
+                    int i = list->growthRate - 1;
+                    HotspotNode* node = (HotspotNode*)(mem + (i + 1) * 12 - 8);
                     do {
                         node->next = list->freeList;
                         list->freeList = node;
                         node = (HotspotNode*)((char*)node - 12);
-                        n--;
-                    } while (n >= 0);
-                    node = list->freeList;
+                    } while (--i >= 0);
                 }
+                HotspotNode* node = list->freeList;
                 list->freeList = node->next;
                 node->prev = list->last;
                 node->next = 0;
                 list->count++;
-                int temp = 0;
-                do {
-                    temp--;
-                } while (temp != 0);
+                
+                int dummy = 0;
+                do {} while (dummy--);
+                
                 node->id = value1;
                 if (list->last != 0) {
                     list->last->next = node;
@@ -467,38 +536,39 @@ int Target::LBLParse(char* line)
     else if (firstChar == 'I') {
         int result = sscanf(line + 3, "%s", buffer);
         if (result == 1) {
-            if (strlen(buffer) != 0) {
-                Target::identifier = new char[strlen(buffer) + 1];
-                strcpy(Target::identifier, buffer);
+            if (buffer[0] != '\0') {
+                char* id = new char[strlen(buffer) + 1];
+                identifier = id;
+                strcpy(identifier, buffer);
             }
         }
     }
     else if (firstChar == 'K') {
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
-            Target::SetRange(DAT_004362cc, value1, value2);
-            if (Target::hitRange.start == 0) {
-                Target::hitRange.start = DAT_004362cc;
+            SetRange(DAT_004362cc, value1, value2);
+            if (hitRange.start == 0) {
+                hitRange.start = DAT_004362cc;
             }
-            Target::hitRange.end = DAT_004362cc;
+            hitRange.end = DAT_004362cc;
             DAT_004362cc++;
         }
     }
     else if (firstChar == 'O') {
         sscanf(line + 3, "%d %d", &Target::hitOffset.start, &Target::hitOffset.end);
-        Target::targetFlags |= 1;
+        targetFlags |= 1;
     }
     else if (firstChar == 'P') {
-        sscanf(line + 3, "%d %d", &Target::timeRange.start, &Target::timeRange.end);
+        sscanf(line + 3, "%d %d", &timeRange.start, &timeRange.end);
     }
     else if (firstChar == 'S') {
-        Target::ParseSound(line);
+        ParseSound(line);
     }
     else if (firstChar == 'V') {
-        sscanf(line + 3, "%d", &Target::scoreIndex);
+        sscanf(line + 3, "%d", &scoreWeight.start);
     }
     else if (firstChar == 'W') {
-        sscanf(line + 3, "%d", &Target::weight);
+        sscanf(line + 3, "%d", &scoreWeight.end);
     }
     else if (firstChar == 'Z') {
         return 1;

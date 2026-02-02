@@ -15,7 +15,6 @@ Character::Character(char* param_1) {
     int* ptrClear;
     PriorityQueue* pQueue;
     CharSprite* sprite;
-    PriorityQueueNode* newNode;
     int counter;
 
     // Zero 64 bytes (16 dwords)
@@ -45,7 +44,7 @@ Character::Character(char* param_1) {
             sprite = new CharSprite();
 
             if (queue != 0) {
-                if (strstr(param_1, "peter") != 0 && (unsigned int)counter <= 4) {
+                if (strstr(param_1, "peter") != 0) {
                     switch (counter) {
                         case 0: strcpy(sprite->name, ""); break;
                         case 1: strcpy(sprite->name, "MEET MY"); break;
@@ -98,7 +97,7 @@ Character::Character(char* param_1) {
             sprite = new CharSprite();
 
             if (queue != 0) {
-                if (strstr(param_1, "susan") != 0 && (unsigned int)counter <= 4) {
+                if (strstr(param_1, "susan") != 0) {
                     switch (counter) {
                         case 0: strcpy(sprite->name, "SUS"); break;
                         case 1: strcpy(sprite->name, "DIALOG"); break;
@@ -150,7 +149,7 @@ Character::Character(char* param_1) {
             sprite = new CharSprite();
 
             if (queue != 0) {
-                if (strstr(param_1, "duncan") != 0 && (unsigned int)counter <= 4) {
+                if (strstr(param_1, "duncan") != 0) {
                     switch (counter) {
                         case 0: strcpy(sprite->name, "DIALOG"); break;
                         case 1: strcpy(sprite->name, "COMBATS"); break;

@@ -55,8 +55,7 @@ struct MessageQueue;
 
 MessageQueue* g_MessageQueue = 0;
 
-// g_CombatEngine - Combat engine pointer (defined in globals.h as extern)
-Engine* g_CombatEngine = 0;
+
 
 // ============================================================================
 // CombatSprite stubs
@@ -91,13 +90,8 @@ int DAT_0043d150 = 0;
 // ============================================================================
 
 extern "C" {
-void __cdecl FUN_004195c0(char* param) {}
-void __cdecl FUN_00419620(char* param) {}
-int __cdecl FUN_004195a0(const char* path) { return 0; }
-void __cdecl FUN_004261c0(char* param1, void* param2, char* outBuffer, void* param4, void* param5) {}
-int __cdecl FUN_004304a0(const char* path) { return 0; }
-void __cdecl FUN_00419660(const char* dest, const char* src) {}
-void __cdecl FUN_0042ad80(void) {}
+int __cdecl MakeDirectory(const char* path) { return 0; }
+void __cdecl FlushAllFiles(void) {}
 }
 
 // ============================================================================

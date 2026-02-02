@@ -17,6 +17,7 @@
 // Pointers initialized to 0 to avoid crash
 // Sorted by address 0x00436960 - 0x004369A4
 
+Engine* g_CombatEngine = 0; // Moved here to avoid corruption
 char* g_Buffer_00436960 = 0;
 void* g_Buffer_00436964 = 0;
 InputManager* g_InputManager_00436968 = 0;

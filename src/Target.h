@@ -25,8 +25,18 @@ public:
     HotspotNode* processingHead; // 0x18
     int currentId;         // 0x1c
 
-    HotspotListData();
-    ~HotspotListData() {}
+    HotspotListData()
+    {
+        count = 0;
+        freeList = 0;
+        last = 0;
+        first = 0;
+        nodePool = 0;
+        growthRate = 10;
+        processingHead = 0;
+        currentId = -1;
+    }
+    ~HotspotListData();
 };
 
 class TargetMember {
@@ -49,13 +59,10 @@ public:
     Range animRange;      // 0xec
     Range hitRange;       // 0xf4
     Range timeRange;      // 0xfc
-    Range progressRange;  // 0x104
-    int scoreIndex;       // 0x10c - score index (from 'V' label)
-    int weight;           // 0x110 - weight value (from 'W' label)
-    int hitPoints;        // 0x114 - points awarded on hit (from 'D' label)
-    int missPoints;       // 0x118 - points deducted on miss
-    int combatBonus1;     // 0x11c - added to combat engine field_0xb4
-    int field_0x120;      // 0x120
+    IntPair progressRange;  // 0x104
+    IntPair scoreWeight;  // 0x10c - score index (start) and weight (end)
+    IntPair hitMissPoints; // 0x114 - hit points (start) and miss points (end)
+    IntPair combatBonus;  // 0x11c - combatBonus1 (start), field_0x120 (end)
     TargetMember combatBonus2; // 0x124 - added to combat engine field_0xc4
     TargetMember field_0x128;  // 0x128
     HotspotListData* hotspotList; // 0x12c - hotspot list structure
@@ -63,15 +70,16 @@ public:
     Sample* progressSound; // 0x134 - sound played on progress
     Sample* hitSound;     // 0x138 - sound played on hit
     Sample* sound3;       // 0x13c - sound 3
-    int animParam1;       // 0x140 - from 'A' label
-    int animParam2;       // 0x144 - from 'A' label
-    Range hitOffset;      // 0x148 - hit offset (from 'O' label)
+    IntPair animParam;    // 0x140 - from 'A' label
+    IntPair hitOffset;    // 0x148 - hit offset (from 'O' label)
     int pendingAction;    // 0x150 - pending action (0=none, 1=miss, 3=hit)
     int field_0x154;      // 0x154
 
     Target(); // 0x413DC0
     virtual ~Target(); // 0x413F10
     virtual int LBLParse(char* line); // 0x414930
+    virtual void OnProcessStart(); // 0x414730
+    virtual void OnProcessEnd(); // 0x4147F0
 
     void Spawn(); // 0x414060 - spawn target with palette and sound
     void Activate(); // 0x4140B0 - activate target (sets active=1)

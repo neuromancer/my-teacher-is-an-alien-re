@@ -111,7 +111,7 @@ int mCNavNode::GetNextNode()
 
     int result = mCNavNode::neighborNodes[direction];
     if (result == 0) {
-        int* pNeighbors = &mCNavNode::neighborNodes[0];
+        int* pNeighbors = &neighborNodes[0];
         *pDirectionIndex = 0;
         for (;;) {
             result = *pNeighbors;
@@ -156,7 +156,7 @@ int mCNavNode::Update()
 check_sound:
     if ((mCNavNode::flags & 2) != 0) {
         Animation anim;
-        anim.Play((char*)&mCNavNode::soundName[0], 0x20);
+        anim.Play((char*)&soundName[0], 0x20);
         goto return_result;
     }
 

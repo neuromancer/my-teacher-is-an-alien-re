@@ -3,14 +3,10 @@
 
 #include "Engine.h"
 #include "GlyphRect.h"
+#include "Range.h"
 
 class Animation;
 class Sample;
-
-struct IntPair {
-  int field_0;
-  int field_4;
-};
 
 struct MeterPos {
   int x;

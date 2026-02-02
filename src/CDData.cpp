@@ -5,35 +5,37 @@
 #include <string.h>
 #include <stdarg.h>
 #include <direct.h>
+#include <io.h>
 #include "string.h"
 #include "FileSystem.h"
 #include "globals.h"
 
 extern "C" {
-int FileExists(const char *);
 void ParsePath(const char *, char *, char *, char *, char *);
+char* __cdecl CDData_FormatPath(char* format, ...);  // 0x4195C0
+void __cdecl CDData_SetResolvedPath(const char* path); // 0x419620
+int __cdecl FileExists(const char* path);           // 0x4195A0
+void __cdecl _splitpath(const char* path, char* drive, char* dir, char* name, char* ext); // 0x4261C0
+int __cdecl MakeDirectory(const char* path);        // 0x4304A0
+void __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
+void __cdecl FlushAllFiles(void);                   // 0x42AD80
+int __cdecl FUN_00430310(const char* path, int param_2); // 0x430310
 }
-
-// External helper functions for CDData path resolution
-extern "C" void __cdecl FUN_004195c0(char* param);      // FormatPath helper
-extern "C" void __cdecl FUN_00419620(char* param);      // Path validation
-extern "C" int __cdecl FUN_004195a0(const char* path);  // File check (returns 0 if exists)
-extern "C" void __cdecl FUN_004261c0(char* param1, void* param2, char* outBuffer, void* param4, void* param5);
-extern "C" int __cdecl FUN_004304a0(const char* path);  // Create directory
-extern "C" void __cdecl FUN_00419660(const char* dest, const char* src);  // Path copy
-extern "C" void __cdecl FUN_0042ad80(void);             // Some post-processing
 
 /* Function start: 0x4195C0 */
 extern "C" char* __cdecl CDData_FormatPath(char* param_1, ...)
 {
-  char local_104[260];
-  va_list args;
+    char local_104[260];
+    char* args = (char*)(&param_1 + 1);
+    
+    vsprintf(local_104, param_1, args);
+    sprintf(g_CDData_0043697c->field_0xc0 + 5, "%s%s", g_CDData_0043697c->field_0xc0, local_104);
+    return g_CDData_0043697c->field_0xc0 + 5;
+}
 
-  va_start(args, param_1);
-  vsprintf(local_104, param_1, args);
-  va_end(args);
-  sprintf(g_CDData_0043697c->field_0xc0 + 5, "%s%s", g_CDData_0043697c->field_0xc0, local_104);
-  return g_CDData_0043697c->field_0xc0 + 5;
+/* Function start: 0x419620 */
+extern "C" void __cdecl CDData_SetResolvedPath(const char* path) {
+    strcpy(g_CDData_0043697c->field_0xc0 + 0x85, path);
 }
 
 /* Function start: 0x421E40 */
@@ -90,43 +92,91 @@ int CDData::ChangeToDriveDirectory(int drive_letter) {
   return result != 0;
 }
 
+/* Function start: 0x430310 */
+extern "C" int __cdecl FUN_00430310(const char* path, int param_2) {
+    DWORD attr = GetFileAttributesA(path);
+    if (attr == 0xFFFFFFFF) {
+        return -1;
+    }
+    
+    if ((attr & FILE_ATTRIBUTE_READONLY) && (param_2 & 2)) {
+        return -1;
+    }
+    
+    return 0;
+}
+
+/* Function start: 0x419660 */
+extern "C" void __cdecl CopyFileContent(const char* src, const char* dest) {
+    int hSrc, hDest;
+    long totalLen;
+    unsigned int totalRead;
+    unsigned int chunk;
+
+    hSrc = open(src, 0x8000 | 0); // O_BINARY | O_RDONLY
+    if (hSrc < 0) {
+        ShowError("Error Reading CD ROM, searching for %s", src);
+    }
+
+    hDest = open(dest, 0x8000 | 0x301, 0x0040); // O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, S_IREAD
+    if (hDest < 0) {
+        ShowError("Error writing temporary file. Please check disk space.%d", hDest);
+    }
+
+    totalLen = filelength(hSrc);
+    totalRead = 0;
+
+    if (totalLen > 0) {
+        void* buffer = g_Buffer_00436964;
+        while (totalRead < (unsigned int)totalLen) {
+            chunk = (totalLen - totalRead > 0x2000) ? 0x2000 : (totalLen - totalRead);
+            
+            if (read(hSrc, buffer, chunk) != (int)chunk) {
+                ShowError("Error Reading CD");
+            }
+            if (write(hDest, buffer, chunk) != (int)chunk) {
+                ShowError("Error writing temporary file. Please check disk space.");
+            }
+            totalRead += chunk;
+        }
+    }
+
+    FlushAllFiles();
+    close(hSrc);
+    close(hDest);
+}
+
 /* Function start: 0x421F90 */
 int CDData::ResolvePath(char* param_1) {
     char local_104[260];
     int len;
-    char* ptr;
 
-    FUN_004195c0(param_1);
-    FUN_00419620(param_1);
+    CDData_FormatPath(param_1);
+    CDData_SetResolvedPath(param_1);
 
-    if (CDData::field_0xc0[0] == 0) {
+    if (field_0xc0[0] == 0) {
         return 0;
     }
 
-    // Check if file exists at path offset 0x145
-    if (FUN_004195a0(CDData::field_0xc0 + 0x85) != 0) {
+    if (FileExists(field_0xc0 + 0x85) != 0) {
         return 0;
     }
 
-    // Get path components
-    FUN_004261c0(param_1, 0, local_104, 0, 0);
+    _splitpath(param_1, 0, local_104, 0, 0);
 
-    // Remove trailing character if string is not empty
     if (local_104[0] != 0) {
         len = strlen(local_104);
         local_104[len - 1] = 0;
     }
 
-    // Try to change directory
     if (chdir(local_104) == 0) {
-        chdir("C:\\");  // DAT_004373cc is typically "C:"
+        chdir("C:\\"); 
     } else {
-        FUN_004304a0(local_104);
+        MakeDirectory(local_104);
     }
 
-    // Copy resolved path
-    FUN_00419660(CDData::field_0xc0 + 5, CDData::field_0xc0 + 0x85);
-    FUN_0042ad80();
+    CopyFileContent(field_0xc0 + 5, field_0xc0 + 0x85);
+    FlushAllFiles();
 
     return 1;
 }

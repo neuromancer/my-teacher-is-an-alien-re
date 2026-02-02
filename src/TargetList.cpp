@@ -164,7 +164,7 @@ Target* TargetList::ProcessTargets() {
       if (target->AdvanceHotspot() != 0) {
         TargetList::currentTarget = target;
         g_ScoreManager[5] = g_ScoreManager[5] + 1;
-        ((ScoreManager*)g_ScoreManager)->AdjustScore(-target->weight);
+        ((ScoreManager*)g_ScoreManager)->AdjustScore(-target->scoreWeight.end);
         if (TargetList::field_0x1c0 != 0) {
           ((Sample*)TargetList::field_0x1c0)->Play(100, 1);
         }

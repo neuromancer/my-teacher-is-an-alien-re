@@ -28,8 +28,8 @@ static unsigned char g_TimeOutInitFlag_0043d14c = 0;
 EngineB::EngineB() {
   // Clearing explicitly to match the redundant writes in the original disassembly.
   // The small members have destructors, causing SEH state updates during construction.
-  m_progress.field_0 = 0;
-  m_progress.field_4 = 0;
+  m_progress.start = 0;
+  m_progress.end = 0;
   m_meterPosition.x = 0;
   m_meterPosition.y = 0;
   memset(&m_localSoundList, 0, 0x80);
@@ -69,7 +69,7 @@ void EngineB::Draw() {
     // Target was hit
     EngineB::m_prevHitCount = g_ScoreManager[5];
     ((Sprite*)DAT_00435f04)->SetState2(8);
-    EngineB::m_progress.field_0 += EngineB::m_targetConfig[1];
+    EngineB::m_progress.start += EngineB::m_targetConfig[1];
 
     int hitIdx = rand() % 3;
     Sample* hitSample = (&m_hitSound1)[hitIdx];
@@ -92,13 +92,13 @@ void EngineB::Draw() {
   // Weapon hit effect
   int weaponHit = ((RockThrower*)EngineB::m_weaponParser)->field_0xb0;
   if (weaponHit != 0) {
-    EngineB::m_progress.field_0 += weaponHit;
+    EngineB::m_progress.start += weaponHit;
 
     if (EngineB::m_missSound != 0) {
       EngineB::m_missSound->Play(0x64, 1);
     }
 
-    if (EngineB::m_progress.field_0 == 0x13 || EngineB::m_progress.field_0 == 0x25) {
+    if (EngineB::m_progress.start == 0x13 || EngineB::m_progress.start == 0x25) {
       if (EngineB::m_milestoneSound != 0) {
         EngineB::m_milestoneSound->Play(0x64, 1);
       }
@@ -141,10 +141,10 @@ void EngineB::UpdateMeter() {
     return;
   }
 
-  progressMax = EngineB::m_progress.field_4;
-  if (progressMax == 0 || EngineB::m_progress.field_0 < progressMax) {
+  progressMax = EngineB::m_progress.end;
+  if (progressMax == 0 || EngineB::m_progress.start < progressMax) {
     // Calculate progress bar position
-    progressCurrent = EngineB::m_progress.field_0;
+    progressCurrent = EngineB::m_progress.start;
     barPos = (progressCurrent * 0x36) / progressMax - rand() % 3 + 1;
     if (barPos < 0) {
       barPos = 0;
@@ -294,8 +294,8 @@ void EngineB::OnProcessEnd() {
   EngineB::m_meterFullRect.top = 0x12;
   EngineB::m_meterFullRect.right = 0xff;
   EngineB::m_meterFullRect.bottom = 0x21;
-  EngineB::m_progress.field_0 = 0;
-  EngineB::m_progress.field_4 = 0x36;
+  EngineB::m_progress.start = 0;
+  EngineB::m_progress.end = 0x36;
   EngineB::m_meterPosition.x = 0x20;
   EngineB::m_meterPosition.y = 0x14;
 
