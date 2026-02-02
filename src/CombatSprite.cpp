@@ -557,7 +557,8 @@ parseLoop:
 
     // Validate sequence if g_CurrentSprite has entries
     if (g_CurrentSprite != 0 && (int)g_CurrentSprite->head != 0) {
-        if (frameIndex < *(int*)(*(int*)((int)g_CurrentSprite->tail + 8))) {
+        SpriteDataEntry* lastEntry = *(SpriteDataEntry**)(g_CurrentSprite->maxSize + 8);
+        if (frameIndex < lastEntry->index) {
             ShowError("Error! sprite out of sequence %s", token);
         }
     }

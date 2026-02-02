@@ -283,7 +283,7 @@ void EngineB::OnProcessEnd() {
 
   // Initialize progress meter fields from animation
   Animation* anim = EngineB::m_meterAnimation;
-  EngineB::m_meterBuffer = (int)anim->smk->Height;
+  EngineB::m_meterBuffer = (int)anim->targetBuffer;
 
   // Initialize meter configuration
   EngineB::m_meterEmptyRect.left = 0;

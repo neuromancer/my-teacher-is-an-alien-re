@@ -295,7 +295,10 @@ ZBufferManager::~ZBufferManager()
 }
 
 /* Function start: 0x41BB10 */
-// void* ZBQueue::GetCurrentData() - Moved to LinkedList.h as inline
+void* ZBQueue::GetCurrentData()
+{
+    return LinkedList::GetCurrentData();
+}
 
 /* Function start: 0x41BE20 */
 void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, int mode, double scale)

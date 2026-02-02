@@ -152,6 +152,7 @@ struct ZBQueue : public LinkedList {
     ZBQueue(int t) : LinkedList(t) {}
 
     // Non-inline to force CALL (generates COMDAT per compilation unit)
+    void* GetCurrentData();
     void InsertBeforeCurrent(void* data);
 
     // 0x401560

@@ -15,10 +15,7 @@ void ParsePath(const char *, char *, char *, char *, char *);
 char* __cdecl CDData_FormatPath(char* format, ...);  // 0x4195C0
 void __cdecl CDData_SetResolvedPath(const char* path); // 0x419620
 int __cdecl FileExists(const char* path);           // 0x4195A0
-void __cdecl _splitpath(const char* path, char* drive, char* dir, char* name, char* ext); // 0x4261C0
-int __cdecl MakeDirectory(const char* path);        // 0x4304A0
 void __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
-void __cdecl FlushAllFiles(void);                   // 0x42AD80
 int __cdecl FUN_00430310(const char* path, int param_2); // 0x430310
 }
 
@@ -141,7 +138,7 @@ extern "C" void __cdecl CopyFileContent(const char* src, const char* dest) {
         }
     }
 
-    FlushAllFiles();
+    _flushall();
     close(hSrc);
     close(hDest);
 }
@@ -162,7 +159,7 @@ int CDData::ResolvePath(char* param_1) {
         return 0;
     }
 
-    _splitpath(param_1, 0, local_104, 0, 0);
+    ParsePath(param_1, 0, local_104, 0, 0);
 
     if (local_104[0] != 0) {
         len = strlen(local_104);
@@ -172,11 +169,11 @@ int CDData::ResolvePath(char* param_1) {
     if (chdir(local_104) == 0) {
         chdir("C:\\"); 
     } else {
-        MakeDirectory(local_104);
+        mkdir(local_104);
     }
 
     CopyFileContent(field_0xc0 + 5, field_0xc0 + 0x85);
-    FlushAllFiles();
+    _flushall();
 
     return 1;
 }
