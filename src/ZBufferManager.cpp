@@ -73,10 +73,8 @@ struct CommandType3 : public SoundCommand {
 /* Function start: 0x41BB20 */
 void ZBufferManager::QueueAnimationCleanup(void* anim)
 {
-    ZBQueueNode* node;
-    ZBQueueNode* newNode;
+    void* wrapper;
     ZBQueue* queue;
-    int qtype;
 
     if (m_state == 1) {
         if (anim != 0) {
@@ -84,7 +82,10 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
         }
         return;
     }
-    if (m_state < 2 || m_state > 3) {
+    if (m_state < 2) {
+        return;
+    }
+    if (m_state > 3) {
         return;
     }
 
@@ -92,25 +93,38 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
         return;
     }
 
-    node = new ZBQueueNode(anim);
+    // Create 12-byte wrapper: [prev=0, next=0, data=Animation*]
+    // When cast to DrawEntry*, m_videoBuffer(offset 4) = 0 skips VBuffer cleanup
+    // and m_childObject(offset 8) = Animation* gets properly deleted
+    wrapper = ::operator new(0xc);
+    if (wrapper != 0) {
+        ((int*)wrapper)[0] = 0;
+        ((int*)wrapper)[1] = 0;
+        ((void**)wrapper)[2] = anim;
+    } else {
+        wrapper = 0;
+    }
 
     queue = m_queueA4;
-    queue->ResetForSortedAdd(node);
+    if (wrapper == 0) {
+        ShowError("queue fault 0101");
+    }
+    queue->current = queue->head;
 
     if (queue->type == 1 || queue->type == 2) {
         if (queue->head != 0) {
             while (1) {
-                if (*(unsigned int*)queue->current->data < *(unsigned int*)node) {
-                    queue->Insert(node);
+                if (*(unsigned int*)queue->current->data < *(unsigned int*)wrapper) {
+                    queue->Insert(wrapper);
                     return;
                 }
                 if (queue->tail == queue->current) break;
                 queue->current = queue->current->next;
             }
         }
-        queue->Push(node);
+        queue->Push(wrapper);
     } else {
-        queue->Insert(node);
+        queue->Insert(wrapper);
     }
 }
 

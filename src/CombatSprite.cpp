@@ -322,16 +322,19 @@ CombatSprite::~CombatSprite() {
 /* Function start: 0x415580 */
 void* CombatSprite::FindSprite(unsigned int id) {
     void* volatile result = 0;
+    volatile unsigned int idx;
     HashNode* node = 0;
 
     if (spriteTable != 0) {
-        unsigned int idx = (id >> 4) % spriteTable->maxSize;
+        idx = (id >> 4) % spriteTable->maxSize;
         if (spriteTable->buckets != 0) {
             node = (HashNode*)spriteTable->buckets[idx];
-            while (node != 0) {
-                if (node->key == id) goto found;
-                node = node->next;
-            }
+loop:
+            if (node == 0) goto loop_end;
+            if (node->key == id) goto found;
+            node = node->next;
+            goto loop;
+loop_end:
             node = 0;
         }
     }

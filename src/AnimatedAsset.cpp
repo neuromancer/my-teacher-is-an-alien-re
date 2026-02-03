@@ -85,25 +85,22 @@ void AnimatedAsset::BuildGlyphTable()
 
     int baseColMinus1 = buffer->height - 1;
     int baseIndex = (int)buffer->GetData();
-    VBuffer* buf = buffer;
 
     glyphHeight = 1;
 
-    if (buf->height > 1) {
+    if (buffer->height > 1) {
         char glyphVal = glyphValue;
-        int glyphH = glyphHeight;
         do {
-            if (*(char*)((baseColMinus1 - glyphH) * buf->width + baseIndex) == glyphVal) break;
-            glyphH++;
-            glyphHeight = glyphH;
-        } while (buf->height > glyphH);
+            if (*(char*)((baseColMinus1 - glyphHeight) * buffer->width + baseIndex) == glyphVal) break;
+            glyphHeight++;
+        } while (buffer->height > glyphHeight);
     }
 
     int col = 0;
     GlyphRect* entryPtr = glyphTable;
     int offset = 0;
 
-    if (buf->height > 0) {
+    if (buffer->height > 0) {
         do {
             int x = 0;
             int startX = 0;
@@ -112,10 +109,9 @@ void AnimatedAsset::BuildGlyphTable()
 
             if (width > 0) {
                 int tableOffset = col << 4;
-                char glyphVal = glyphValue;
 
                 do {
-                    if (*(char*)(x + chBase) == glyphVal) {
+                    if (*(char*)(x + chBase) == glyphValue) {
                         entryPtr->left = startX;
                         entryPtr->right = x - 1;
                         entryPtr->top = offset;
