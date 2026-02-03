@@ -104,27 +104,27 @@ void GameLoop::Run() {
     int zero;
 
     ResetLoop();
-    
+
     if (field_0x00 != 0) {
         goto exit_loop;
     }
 
     zero = 0;
-    
+
 loop_start:
     ProcessInput();
     if (field_0x00 != zero) {
         goto exit_loop;
     }
-    
+
     UpdateGame();
     if (field_0x00 != zero) {
         goto exit_loop;
     }
-    
+
     DrawFrame();
     g_ZBufferManager_0043698c->ProcessRenderQueues();
-    
+
     elapsedTime = timer1->Update();
     if (elapsedTime < (unsigned int)field_0x08) {
         do {
@@ -132,7 +132,7 @@ loop_start:
             elapsedTime = timer1->Update();
         } while (elapsedTime < (unsigned int)field_0x08);
     }
-    
+
     if (g_GameState_00436998 == (GameState*)zero) {
         goto skip_debug;
     }
@@ -143,15 +143,15 @@ loop_start:
     if (pGameState->stateValues[4] == zero) {
         goto skip_debug;
     }
-    mouseY = 0;
+    mouseY = zero;
     pMouse = g_InputManager_00436968->pMouse;
-    if (pMouse != 0) {
+    if (pMouse != (InputState*)zero) {
         mouseY = pMouse->y;
     }
-    if (pMouse != 0) {
+    if (pMouse != (InputState*)zero) {
         mouseX = pMouse->x;
     } else {
-        mouseX = 0;
+        mouseX = zero;
     }
     elapsedTime = timer1->Update();
     sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
@@ -160,7 +160,7 @@ loop_start:
 skip_debug:
     timer1->Reset();
     g_ZBufferManager_0043698c->UpdateScreen();
-    
+
     if (field_0x00 == zero) {
         goto loop_start;
     }
@@ -447,19 +447,19 @@ void GameLoop::CleanupLoop() {
             } else {
                 // Unlink from head
                 if (pQueue9c->head == pQueue9c->current) {
-                    pQueue9c->head = pQueue9c->current->prev;
+                    pQueue9c->head = pQueue9c->current->next;
                 }
                 // Unlink from tail
                 if (pQueue9c->tail == pQueue9c->current) {
-                    pQueue9c->tail = pQueue9c->current->next;
-                }
-                // Update next->prev
-                if (pQueue9c->current->next != 0) {
-                    pQueue9c->current->next->prev = pQueue9c->current->prev;
+                    pQueue9c->tail = pQueue9c->current->prev;
                 }
                 // Update prev->next
                 if (pQueue9c->current->prev != 0) {
                     pQueue9c->current->prev->next = pQueue9c->current->next;
+                }
+                // Update next->prev
+                if (pQueue9c->current->next != 0) {
+                    pQueue9c->current->next->prev = pQueue9c->current->prev;
                 }
                 // Get data and cleanup node
                 pData = pQueue9c->GetCurrentData();
@@ -1088,58 +1088,12 @@ int GameLoop::AddHandler(void* handler) {
                 data = current->data;
                 // Compare priority at offset 0x88
                 if (((Handler*)data)->handlerId < ((Handler*)handler)->handlerId) {
-                    // Insert before current
-                    if (handler == 0) {
-                        ShowError("queue fault 0102");
-                    }
-                    newNode = new EventNode(handler);
-                    nodePtr = newNode;
-                    // Insert node
-                    if (list->current == 0) {
-                        list->current = list->head;
-                    }
-                    if (list->head == 0) {
-                        list->head = nodePtr;
-                        list->tail = nodePtr;
-                        list->current = nodePtr;
-                    } else {
-                        nodePtr->next = list->current;
-                        nodePtr->prev = list->current->prev;
-                        if (list->current->prev == 0) {
-                            list->head = nodePtr;
-                            list->current->prev = nodePtr;
-                        } else {
-                            list->current->prev->next = nodePtr;
-                            list->current->prev = nodePtr;
-                        }
-                    }
+                    list->Insert(handler);
                     break;
                 }
                 // Check if at tail
                 if (list->tail == current) {
-                    // Append at end
-                    if (handler == 0) {
-                        ShowError("queue fault 0112");
-                    }
-                    newNode = new EventNode(handler);
-                    handler = newNode;
-                    // Insert at tail
-                    if (list->current == 0) {
-                        list->current = list->tail;
-                    }
-                    if (list->head == 0) {
-                        list->head = (EventNode*)handler;
-                        list->tail = (EventNode*)handler;
-                        list->current = (EventNode*)handler;
-                    } else {
-                        if (list->tail == 0 || list->tail->next != 0) {
-                            ShowError("queue fault 0113");
-                        }
-                        ((EventNode*)handler)->next = 0;
-                        ((EventNode*)handler)->prev = list->tail;
-                        list->tail->next = (EventNode*)handler;
-                        list->tail = (EventNode*)handler;
-                    }
+                    list->Push(handler);
                     break;
                 }
                 // Move to next

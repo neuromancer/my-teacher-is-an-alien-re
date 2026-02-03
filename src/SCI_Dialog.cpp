@@ -168,33 +168,7 @@ int SCI_Dialog::ShutDown(SC_Message* msg) {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                node = (QueueNode*)queue->current;
-                if (node == 0) {
-                    dq = 0;
-                } else {
-                    if (queue->head == node) {
-                        queue->head = node->next;
-                    }
-                    if (queue->tail == queue->current) {
-                        queue->tail = ((QueueNode*)queue->current)->prev;
-                    }
-                    nextNode = ((QueueNode*)queue->current)->prev;
-                    if (nextNode != 0) {
-                        nextNode->next = ((QueueNode*)queue->current)->next;
-                    }
-                    nextNode = ((QueueNode*)queue->current)->next;
-                    if (nextNode != 0) {
-                        nextNode->prev = ((QueueNode*)queue->current)->prev;
-                    }
-                    node = (QueueNode*)queue->current;
-                    dq = 0;
-                    if (node != 0) {
-                        dq = (DialogQuestion*)node->data;
-                        delete node;
-                        queue->current = 0;
-                    }
-                    queue->current = queue->head;
-                }
+                dq = (DialogQuestion*)queue->Pop();
                 if (dq != 0) {
                     delete dq;
                 }

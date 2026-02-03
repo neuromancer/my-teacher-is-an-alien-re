@@ -35,48 +35,22 @@ SC_Question::SC_Question(int id)
 /* Function start: 0x4067E0 */
 SC_Question::~SC_Question()
 {
-    QueueNode* current;
     void* msgData;
     Queue* queue;
-    
+
     // Clean up mouseControl at offset 0x88
     if (mouseControl != 0) {
         delete mouseControl;
         mouseControl = 0;
     }
-    
+
     // Clean up messageQueue at offset 0x8c
     queue = messageQueue;
     if (queue != 0) {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                current = (QueueNode*)queue->current;
-                if (current == 0) {
-                    msgData = 0;
-                } else {
-                    // Unlink the node
-                    if (queue->head == current) {
-                        queue->head = current->next;
-                    }
-                    if (queue->tail == current) {
-                        queue->tail = current->prev;
-                    }
-                    if (current->next != 0) {
-                        current->next->prev = current->prev;
-                    }
-                    if (current->prev != 0) {
-                        current->prev->next = current->next;
-                    }
-                    
-                    msgData = 0;
-                    if (current != 0) {
-                        msgData = current->data;
-                        delete current;
-                    }
-                    queue->current = queue->head;
-                }
-                
+                msgData = queue->Pop();
                 // Call destructor and free message data
                 delete (SC_Message*)msgData;
             }

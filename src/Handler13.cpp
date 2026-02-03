@@ -23,7 +23,6 @@ Handler13::Handler13() {
 /* Function start: 0x401CA0 */
 Handler13::~Handler13() {
     MessageList* pList;
-    MessageNode* node;
     TimedEvent* data;
 
     pList = list;
@@ -31,41 +30,7 @@ Handler13::~Handler13() {
         if (pList->head != 0) {
             pList->current = pList->head;
             while (pList->head != 0) {
-                node = (MessageNode*)pList->current;
-                if (node == 0) {
-                    data = 0;
-                } else {
-                    // Unlink node from head
-                    if (pList->head == node) {
-                        pList->head = node->next;
-                    }
-                    // Unlink node from tail
-                    if (pList->tail == pList->current) {
-                        pList->tail = ((MessageNode*)pList->current)->prev;
-                    }
-                    // Update next node's prev pointer
-                    node = (MessageNode*)pList->current;
-                    if (node->prev != 0) {
-                        node->prev->next = node->next;
-                    }
-                    // Update prev node's next pointer
-                    node = (MessageNode*)pList->current;
-                    if (node->next != 0) {
-                        node->next->prev = node->prev;
-                    }
-                    // Get data and free node
-                    node = (MessageNode*)pList->current;
-                    data = 0;
-                    if (node != 0) {
-                        data = (TimedEvent*)node->data;
-                    }
-                    if (node != 0) {
-                        delete node;
-                        pList->current = 0;
-                    }
-                    pList->current = pList->head;
-                }
-                // Cleanup data object (TimedEvent)
+                data = (TimedEvent*)pList->Pop();
                 if (data != 0) {
                     delete data;
                 }
@@ -115,33 +80,7 @@ void Handler13::Update(int param1, int param2) {
         }
         iVar4 = timedEvent->Update();
         if (iVar4 != 0) {
-            node = (MessageNode*)list->current;
-            if (node == 0) {
-                pvVar6 = 0;
-            } else {
-                if (list->head == node) {
-                    list->head = node->next;
-                }
-                if (list->tail == list->current) {
-                    list->tail = ((MessageNode*)list->current)->prev;
-                }
-                node = (MessageNode*)list->current;
-                if (node->prev != 0) {
-                    node->prev->next = node->next;
-                }
-                prevNode = ((MessageNode*)list->current)->prev;
-                if (prevNode != 0) {
-                    prevNode->next = (MessageNode*)list->current;
-                }
-                node = (MessageNode*)list->current;
-                pvVar6 = 0;
-                if (node != 0) {
-                    pvVar6 = node->data;
-                    delete node;
-                    list->current = 0;
-                }
-                list->current = list->head;
-            }
+            pvVar6 = list->Pop();
             if (pvVar6 != 0) {
                 delete (TimedEvent*)pvVar6;
             }
@@ -192,35 +131,7 @@ int Handler13::Exit(SC_Message* msg) {
         if (pList->head != 0) {
             pList->current = pList->head;
             while (pList->head != 0) {
-                node = (MessageNode*)pList->current;
-                if (node == 0) {
-                    eventData = 0;
-                } else {
-                    if (pList->head == node) {
-                        pList->head = node->next;
-                    }
-                    if (pList->tail == pList->current) {
-                        pList->tail = node->prev;
-                    }
-                    node = (MessageNode*)pList->current;
-                    if (node->prev != 0) {
-                        node->prev->next = node->next;
-                    }
-                    node = (MessageNode*)pList->current;
-                    if (node->next != 0) {
-                        node->next->prev = node->prev;
-                    }
-                    node = (MessageNode*)pList->current;
-                    eventData = 0;
-                    if (node != 0) {
-                        eventData = (TimedEvent*)node->data;
-                    }
-                    if (node != 0) {
-                        delete node;
-                        pList->current = 0;
-                    }
-                    pList->current = pList->head;
-                }
+                eventData = (TimedEvent*)pList->Pop();
                 if (eventData != 0) {
                     delete eventData;
                 }

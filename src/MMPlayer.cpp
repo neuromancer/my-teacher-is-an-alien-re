@@ -22,8 +22,6 @@ MMPlayer::MMPlayer()
 /* Function start: 0x41F360 */
 MMPlayer::~MMPlayer()
 {
-    QueueNode* node;
-    QueueNode* current;
     void* sprite;
     Queue* queue;
 
@@ -32,31 +30,7 @@ MMPlayer::~MMPlayer()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                current = (QueueNode*)queue->current;
-                if (current == 0) {
-                    sprite = 0;
-                } else {
-                    if (queue->head == current) {
-                        queue->head = current->next;
-                    }
-                    if (queue->tail == current) {
-                        queue->tail = current->next;
-                    }
-                    if (current->next != 0) {
-                        current->next->prev = current->prev;
-                    }
-                    if (current->prev != 0) {
-                        current->prev->next = current->next;
-                    }
-                    node = current;
-                    sprite = 0;
-                    if (node != 0) {
-                        sprite = node->data;
-                        delete node;
-                        queue->current = 0;
-                    }
-                    queue->current = queue->head;
-                }
+                sprite = queue->Pop();
                 if (sprite != 0) {
                     delete (Sprite*)sprite;
                 }

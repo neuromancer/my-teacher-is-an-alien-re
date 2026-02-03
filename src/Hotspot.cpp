@@ -310,7 +310,7 @@ int Hotspot::LBLParse(char* line)
         SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         msg->command = 7;
         Parser::ProcessFile(msg, this, 0);
-        
+
         Queue* q = pre_message;
         q->ResetForSortedAdd(msg);
         if (q->type == 1 || q->type == 2) {
@@ -318,40 +318,11 @@ int Hotspot::LBLParse(char* line)
                 do {
                     QueueNode* currentPtr = (QueueNode*)q->current;
                     if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
-                        if (msg == 0) ShowError("queue fault 0102");
-                        QueueNode* node = new QueueNode(msg);
-                        if (q->current == 0) q->current = q->head;
-                        if (q->head == 0) {
-                            q->head = node;
-                            q->tail = node;
-                            q->current = node;
-                        } else {
-                            node->next = (QueueNode*)q->current;
-                            node->prev = ((QueueNode*)q->current)->prev;
-                            if (((QueueNode*)q->current)->prev == 0) {
-                                q->head = node;
-                            } else {
-                                ((QueueNode*)q->current)->prev->next = node;
-                            }
-                            ((QueueNode*)q->current)->prev = node;
-                        }
+                        q->Insert(msg);
                         goto done_premessage;
                     }
                     if (q->tail == currentPtr) {
-                        if (msg == 0) ShowError("queue fault 0112");
-                        QueueNode* node = new QueueNode(msg);
-                        if (q->current == 0) q->current = q->tail;
-                        if (q->head == 0) {
-                            q->head = node;
-                            q->tail = node;
-                            q->current = node;
-                        } else {
-                            if (q->tail == 0 || ((QueueNode*)q->tail)->next != 0) ShowError("queue fault 0113");
-                            node->next = 0;
-                            node->prev = (QueueNode*)q->tail;
-                            ((QueueNode*)q->tail)->next = node;
-                            q->tail = node;
-                        }
+                        q->Push(msg);
                         goto done_premessage;
                     }
                     if (currentPtr != 0) q->current = currentPtr->next;
@@ -368,7 +339,7 @@ done_premessage:;
         SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         msg->command = 7;
         Parser::ProcessFile(msg, this, 0);
-        
+
         Queue* q = message;
         q->ResetForSortedAdd(msg);
         if (q->type == 1 || q->type == 2) {
@@ -376,40 +347,11 @@ done_premessage:;
                 do {
                     QueueNode* currentPtr = (QueueNode*)q->current;
                     if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
-                        if (msg == 0) ShowError("queue fault 0102");
-                        QueueNode* node = new QueueNode(msg);
-                        if (q->current == 0) q->current = q->head;
-                        if (q->head == 0) {
-                            q->head = node;
-                            q->tail = node;
-                            q->current = node;
-                        } else {
-                            node->next = (QueueNode*)q->current;
-                            node->prev = ((QueueNode*)q->current)->prev;
-                            if (((QueueNode*)q->current)->prev == 0) {
-                                q->head = node;
-                            } else {
-                                ((QueueNode*)q->current)->prev->next = node;
-                            }
-                            ((QueueNode*)q->current)->prev = node;
-                        }
+                        q->Insert(msg);
                         goto done_message;
                     }
                     if (q->tail == currentPtr) {
-                        if (msg == 0) ShowError("queue fault 0112");
-                        QueueNode* node = new QueueNode(msg);
-                        if (q->current == 0) q->current = q->tail;
-                        if (q->head == 0) {
-                            q->head = node;
-                            q->tail = node;
-                            q->current = node;
-                        } else {
-                            if (q->tail == 0 || ((QueueNode*)q->tail)->next != 0) ShowError("queue fault 0113");
-                            node->next = 0;
-                            node->prev = (QueueNode*)q->tail;
-                            ((QueueNode*)q->tail)->next = node;
-                            q->tail = node;
-                        }
+                        q->Push(msg);
                         goto done_message;
                     }
                     if (currentPtr != 0) q->current = currentPtr->next;

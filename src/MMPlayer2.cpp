@@ -26,8 +26,6 @@ MMPlayer2::MMPlayer2()
 /* Function start: 0x408A40 */
 MMPlayer2::~MMPlayer2()
 {
-    ZBQueueNode* node;
-    ZBQueueNode* curr;
     Sprite* sprite;
     ZBQueue* queue;
 
@@ -36,31 +34,7 @@ MMPlayer2::~MMPlayer2()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                curr = (ZBQueueNode*)queue->current;
-                if (curr == 0) {
-                    sprite = 0;
-                } else {
-                    if (queue->head == curr) {
-                        queue->head = curr->next;
-                    }
-                    if (queue->tail == curr) {
-                        queue->tail = curr->prev;
-                    }
-                    if (curr->next != 0) {
-                        curr->next->prev = curr->prev;
-                    }
-                    if (curr->prev != 0) {
-                        curr->prev->next = curr->next;
-                    }
-                    node = curr;
-                    sprite = 0;
-                    if (node != 0) {
-                        sprite = (Sprite*)node->data;
-                        delete node;
-                        queue->current = 0;
-                    }
-                    queue->current = queue->head;
-                }
+                sprite = (Sprite*)queue->Pop();
                 if (sprite != 0) {
                     delete sprite;
                 }
