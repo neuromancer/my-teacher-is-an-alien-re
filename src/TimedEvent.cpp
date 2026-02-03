@@ -47,7 +47,7 @@ int TimedEvent::Update()
         if (eventData) {
             pool = g_TimedEventPool2_00436988;
             PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-            node->GetEmbeddedMessage()->CopyFrom((PooledEvent*)eventData);
+            node->GetEmbeddedEvent()->CopyFrom((PooledEvent*)eventData);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;
@@ -73,7 +73,7 @@ int TimedEvent::Update()
         if (eventData) {
             pool = g_TimedEventPool2_00436988;
             PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-            node->GetEmbeddedMessage()->CopyFrom((PooledEvent*)eventData);
+            node->GetEmbeddedEvent()->CopyFrom((PooledEvent*)eventData);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;
@@ -97,7 +97,7 @@ int TimedEvent::Update()
         if (eventData) {
             pool = g_TimedEventPool2_00436988;
             PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-            node->GetEmbeddedMessage()->CopyFrom((PooledEvent*)eventData);
+            node->GetEmbeddedEvent()->CopyFrom((PooledEvent*)eventData);
 
             if (pool->list.tail == 0) {
                 pool->list.head = node;

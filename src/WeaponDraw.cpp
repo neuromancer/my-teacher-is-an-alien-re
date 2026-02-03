@@ -1,4 +1,5 @@
 #include "RockThrower.h"
+#include "Target.h"
 #include "globals.h"
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
@@ -6,12 +7,10 @@ extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
 extern "C" int __cdecl FUN_00422aaf(int param_1);
 extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2);
 
-extern Parser* DAT_00435f0c;
-
 /* Function start: 0x415E20 */
 void Weapon::DrawCrosshairs() {
     SetFillColor(0xfa);
-    SetDrawPosition(Weapon::field_0x98, Weapon::field_0x9c);
+    SetDrawPosition(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422aaf(6);
 
     SetFillColor(0xfb);
@@ -25,8 +24,8 @@ void Weapon::DrawCrosshairs() {
     FUN_00422ac3(0xce, 9);
     FUN_00422ac3(0xc8, 9);
 
-    if (*(int*)((char*)DAT_00435f0c + 0x1ac) != 0) {
-        SetDrawPosition(Weapon::field_0x98, Weapon::field_0x9c);
+    if (((TargetList*)DAT_00435f0c)->field_0x1ac != 0) {
+        SetDrawPosition(Weapon::m_crosshairX, Weapon::m_crosshairY);
         FUN_00422aaf(4);
         FUN_00422aaf(8);
     }

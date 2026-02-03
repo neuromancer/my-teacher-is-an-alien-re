@@ -43,13 +43,13 @@ Handler1::~Handler1() {
 void Handler1::Init(SC_Message* msg) {
     Palette* pal;
     Palette** palettePtr;
-    WriteToMessageLogIfEnabled(L"\"\\nENTER INTRO GAME TEXT\"");
+    WriteToMessageLog("\nENTER INTRO GAME TEXT");
     Handler1::CopyCommandData(msg);
     pal = palette;
     if (pal != 0) {
         palettePtr = &g_ZBufferManager_0043698c->m_palette;
         if (*palettePtr != 0) {
-            WriteToMessageLogIfEnabled(L"ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         *palettePtr = pal;
     }
@@ -70,7 +70,7 @@ int Handler1::ShutDown(SC_Message* msg) {
         palette = 0;
     }
     SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
-    WriteToMessageLogIfEnabled(L"\"EXIT INTRO GAME TEXT\"");
+    WriteToMessageLog("EXIT INTRO GAME TEXT");
     return 0;
 }
 

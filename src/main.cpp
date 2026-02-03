@@ -39,7 +39,7 @@ StringTable* g_Strings_00435a70 = 0;
 Character* DAT_00435a74 = 0;
 Character* DAT_00435a78 = 0;
 Character* DAT_00435a7c = 0;
-int DAT_00435a80 = 0;
+Character* DAT_00435a80 = 0;
 FlagArray* g_Manager_00435a84 = 0;
 
 static char s_TeacherDemo[] = "Teacher Demo"; 
@@ -334,19 +334,19 @@ void CheckDebug(void) {
     }
     g_CDData_0043697c = pvVar2;
     if (DAT_0043d568[0] != '\0') {
-      sprintf(local_94, "%s\\%s", DAT_0043d568, pvVar2->field_0x1c5);
+      sprintf(local_94, "%s\\%s", DAT_0043d568, pvVar2->dataFolder);
       if (FileExists(local_94)) {
         g_CDData_0043697c->ChangeDirectory((unsigned char *)local_94);
       } else {
         ShowError("Invalid CD path specified on command line '%s'", local_94);
       }
     } else {
-      if (FileExists(pvVar2->field_0x1c5) ||
+      if (FileExists(pvVar2->dataFolder) ||
           FileExists("Develop.___")) {
         DAT_0043d564 = 1;
         if (g_CDData_0043697c->ChangeDirectory(
-                (unsigned char *)g_CDData_0043697c->field_0x1c5)) {
-          ShowError("Invalid Development directory '%s'", g_CDData_0043697c->field_0x1c5);
+                (unsigned char *)g_CDData_0043697c->dataFolder)) {
+          ShowError("Invalid Development directory '%s'", g_CDData_0043697c->dataFolder);
         }
       } else {
         int i = 3;

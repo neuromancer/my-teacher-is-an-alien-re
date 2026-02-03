@@ -278,7 +278,7 @@ void GameLoop::ProcessInput() {
         if (localMessage.targetAddress != 0 && localMessage.priority != 0) {
             pPool = g_TimedEventPool2_00436988;
             pEvent = pPool->Create((void*)pPool->list.tail, 0);
-            pEvent->GetEmbeddedMessage()->CopyFrom((PooledEvent*)&localMessage);
+            pEvent->GetEmbeddedEvent()->CopyFrom((PooledEvent*)&localMessage);
             if (pPool->list.tail == 0) {
                 pPool->list.head = pEvent;
             } else {
@@ -625,7 +625,7 @@ int GameLoop::UpdateGame()
         // Create entry in pool1
         pPool = g_TimedEventPool1_00436984;
         pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
-        pNewEvent->GetEmbeddedMessage()->CopyFrom((PooledEvent*)&local_d8);
+        pNewEvent->GetEmbeddedEvent()->CopyFrom((PooledEvent*)&local_d8);
 
         if (pPool->list.tail != 0) {
             *(PooledEvent**)pPool->list.tail = pNewEvent;
@@ -649,7 +649,7 @@ int GameLoop::UpdateGame()
             pSourceMsg = g_TimedEventPool2_00436988->Pop((SC_Message*)local_258);
             pPool = g_TimedEventPool1_00436984;
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
-            pNewEvent->GetEmbeddedMessage()->CopyFrom((PooledEvent*)pSourceMsg);
+            pNewEvent->GetEmbeddedEvent()->CopyFrom((PooledEvent*)pSourceMsg);
 
             if (pPool->list.tail != 0) {
                 *(PooledEvent**)pPool->list.tail = pNewEvent;

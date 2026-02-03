@@ -4,6 +4,7 @@
 #include "globals.h"
 #include <stdio.h>
 #include <string.h>
+#include "string.h"
 
 /* Function start: 0x40B5D0 */
 SoundItem::SoundItem(int sndId)
@@ -28,6 +29,11 @@ SoundItem::SoundItem(int sndId)
     }
 }
 
+/* Function start: 0x40B6E0 */
+void SoundItem::LogSomething()
+{
+    WriteToMessageLog("hIam %d", soundId);
+}
 
 /* Function start: 0x40B700 */
 int SoundItem::IsFinished()

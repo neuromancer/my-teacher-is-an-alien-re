@@ -127,6 +127,10 @@ struct Queue : public LinkedList {
     Queue() : LinkedList() {}
     Queue(int t) : LinkedList(t) {}
 
+    void Insert(void* data);         // 0x4024D0
+    void Push(void* data);           // 0x4025A0
+    void* Pop();                     // 0x402680
+    void* GetCurrentData();          // 0x417680
     void InsertAtCurrent(void* data);
 };
 

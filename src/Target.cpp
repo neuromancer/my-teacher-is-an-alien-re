@@ -140,7 +140,7 @@ void Target::Activate()
         Sprite::SetState2(Target::animRange.start);
 
         {
-            Range temp = *(Range*)((char*)this + 0x140);
+            Range temp = *(Range*)&animParam;
             Target::loc_x = temp.start;
             Target::loc_y = temp.end;
         }
@@ -160,24 +160,24 @@ void Target::Deactivate()
             int numBuckets = hashTable->numBuckets;
             int hash = (id >> 4) % (unsigned int)numBuckets;
 
-            void** pNext = (void**)&((int*)hashTable->buckets)[hash];
-            HashNode* node = (HashNode*)*pNext;
-            
+            HashNode** pNext = (HashNode**)&hashTable->buckets[hash];
+            HashNode* node = *pNext;
+
             while (node != 0) {
                 if (node->key == id) {
                     *pNext = node->next;
-                    
+
                     int i = 0;
                     while (!i--) ;
                     i = 0;
                     while (!i--) ;
 
-                    node->next = (HashNode*)hashTable->freeList;
-                    hashTable->freeList = (HashNode*)node;
+                    node->next = hashTable->freeList;
+                    hashTable->freeList = node;
                     hashTable->count--;
                     break;
                 }
-                pNext = (void**)node;
+                pNext = &node->next;
                 node = node->next;
             }
         }
@@ -189,18 +189,18 @@ void Target::Deactivate()
 /* Function start: 0x4142C0 */
 int Target::CheckTimeInRange()
 {
-    int* timePtr;
+    InputState* mouse;
     int x;
     int y;
     int result;
 
-    timePtr = (int*)g_InputManager_00436968->pMouse;
+    mouse = g_InputManager_00436968->pMouse;
     y = 0;
-    if (timePtr != 0) {
-        y = timePtr[1];
+    if (mouse != 0) {
+        y = mouse->y;
     }
-    if (timePtr != 0) {
-        x = *timePtr;
+    if (mouse != 0) {
+        x = mouse->x;
     } else {
         x = 0;
     }
@@ -297,7 +297,7 @@ int Target::Update()
         Target::active = 3;
         Sprite::SetState2(Target::hitRange.start + Target::current_state);
         if ((Target::targetFlags & 1) != 0) {
-            Range temp = *(Range*)((char*)this + 0x148);
+            Range temp = *(Range*)&hitOffset;
             Target::loc_y = temp.end;
             Target::loc_x = temp.start;
         }
@@ -336,8 +336,8 @@ void Target::Init(char* line)
         if (stricmp(buffer, "INIT") != 0) {
             g_CDData_0043697c->ResolvePath(buffer);
 
-            Target::animFilename = new char[strlen((char*)g_CDData_0043697c + 0x145) + 1];
-            strcpy(Target::animFilename, (char*)g_CDData_0043697c + 0x145);
+            Target::animFilename = new char[strlen(g_CDData_0043697c->pathBuffer + 0x85) + 1];
+            strcpy(Target::animFilename, g_CDData_0043697c->pathBuffer + 0x85);
         }
     }
 }

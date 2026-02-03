@@ -277,16 +277,14 @@ CombatSprite::~CombatSprite() {
     int* poolBlock;
     int* nextPool;
     unsigned int i;
-    int offset;
     int delayCounter;
 
     table = CombatSprite::spriteTable;
     if (table != 0) {
         if (table->buckets != 0 && table->maxSize != 0) {
             i = 0;
-            offset = 0;
             do {
-                node = *(int**)((char*)table->buckets + offset);
+                node = (int*)table->buckets[i];
                 if (node != 0) {
                     do {
                         FreeNestedHashTables((void**)(node + 3), 1);
@@ -299,7 +297,6 @@ CombatSprite::~CombatSprite() {
                         node = (int*)*node;
                     } while (node != 0);
                 }
-                offset = offset + 4;
                 i = i + 1;
             } while ((unsigned int)table->maxSize > i);
         }
@@ -351,12 +348,13 @@ int CombatSprite::PlayById(unsigned int param_1) {
     int* puVar2;
     int* piVar1;
     unsigned int hashIndex;
+    SpriteHashTable* table;
 
     CombatSprite::field_0x8c = 0;
-    piVar1 = (int*)CombatSprite::spriteTable;
-    if (piVar1 != 0) {
-        hashIndex = (param_1 >> 4) % (unsigned int)piVar1[1];
-        puVar2 = (int*)*piVar1;
+    table = CombatSprite::spriteTable;
+    if (table != 0) {
+        hashIndex = (param_1 >> 4) % (unsigned int)table->maxSize;
+        puVar2 = (int*)table->buckets;
         if (puVar2 != 0) {
             puVar2 = (int*)puVar2[hashIndex];
             while (puVar2 != 0) {
@@ -559,7 +557,7 @@ parseLoop:
     }
 
     // Validate sequence if g_CurrentSprite has entries
-    if (g_CurrentSprite != 0 && (int)g_CurrentSprite->head != 0) {
+    if (g_CurrentSprite != 0 && g_CurrentSprite->head != 0) {
         SpriteDataEntry* lastEntry = *(SpriteDataEntry**)(g_CurrentSprite->maxSize + 8);
         if (frameIndex < lastEntry->index) {
             ShowError("Error! sprite out of sequence %s", token);
@@ -580,10 +578,10 @@ parseLoop:
 
     // If no free nodes, allocate more
     if (*tailPtr == 0) {
-        growCount = *(int*)((int)spriteTable + 0x14);  // growSize
+        growCount = spriteTable->growSize;
         newPool = (int*)new char[growCount * 12 + 4];
-        *newPool = *(int*)((int)spriteTable + 0x10);  // link to previous pool
-        *(int*)((int)spriteTable + 0x10) = (int)newPool;
+        *newPool = spriteTable->count;  // link to previous pool
+        spriteTable->count = (int)newPool;
 
         // Build free list from new pool
         node = (int*)((char*)newPool + growCount * 12 - 8);

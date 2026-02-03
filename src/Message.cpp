@@ -17,14 +17,14 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
     PooledEvent** pTail;
     TimedEventPool* pPool;
     PooledEvent* pOldTail;
-    PooledEvent* pMsg;
+    SC_Message* pEmbedded;
     int count;
     int tmp;
     SC_Message* pSource;
     PooledEvent* pNode;
     PooledEvent** pFreeList;
     int* pPoolSize;
-    int* pNewPool;
+    char* pNewPool;
     PooledEvent* pEntry;
     unsigned int i;
 
@@ -38,78 +38,82 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
 
         if (*pFreeList == 0) {
             pPoolSize = &g_TimedEventPool2_00436988->m_pool_size;
-            pNewPool = (int*)new char[g_TimedEventPool2_00436988->m_pool_size * 200 + 4];
-            *pNewPool = (int)pPool->m_pool;
+            pNewPool = new char[g_TimedEventPool2_00436988->m_pool_size * 200 + 4];
+            *(PooledEvent**)pNewPool = pPool->m_pool;
             pPool->m_pool = (PooledEvent*)pNewPool;
             count = *pPoolSize;
-            pEntry = (PooledEvent*)((char*)pNewPool + count * 200 - 196);
+            pEntry = (PooledEvent*)(pNewPool + count * 200 - 196);
             count--;
             for (; -1 < count; count--) {
-                *(PooledEvent**)pEntry = *pFreeList;
+                pEntry->next = *pFreeList;
                 *pFreeList = pEntry;
                 pEntry = (PooledEvent*)((char*)pEntry - 200);
             }
         }
         pNode = *pFreeList;
-        *pFreeList = (PooledEvent*)pNode->next;
+        *pFreeList = pNode->next;
         pNode->prev = pOldTail;
         pNode->next = 0;
         pPool->m_count = pPool->m_count + 1;
 
-        pMsg = (PooledEvent*)&pNode->field_0x8;
-        memset(pMsg, 0, 0x30 * sizeof(int));
+        pEmbedded = (SC_Message*)&pNode->field_0x8;
+        memset(pEmbedded, 0, 0xC0);
 
         count = 0;
         do {
-            if (pMsg != 0) {
-                ((SC_Message*)pMsg)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            if (pEmbedded != 0) {
+                pEmbedded->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
-            pMsg = (PooledEvent*)((int*)pMsg + 0x30);
+            pEmbedded = (SC_Message*)((char*)pEmbedded + 0xC0);
             tmp = count;
             count--;
         } while (tmp != 0);
 
-        pNode->field_0x8 = (int)pSource->m_subObject;
-        pNode->m_duration = pSource->isProcessingKey;
+        pEmbedded = (SC_Message*)&pNode->field_0x8;
+        pEmbedded->m_subObject = pSource->m_subObject;
+        pEmbedded->isProcessingKey = pSource->isProcessingKey;
 
         i = 0;
         do {
-            ((char*)pNode)[i + 0x18] = pSource->currentKey[i];
+            pEmbedded->currentKey[i] = pSource->currentKey[i];
             i++;
         } while (i < 0x20);
 
-        pNode->field_0x38 = pSource->lineNumber;
-        tmp = pSource->field_0x3c;
-        *(int*)pNode->m_data_0x40 = pSource->savedFilePos;
-        *(int*)(pNode->m_data_0x40 + 4) = tmp;
+        pEmbedded->lineNumber = pSource->lineNumber;
+        {
+            int savedPos = pSource->savedFilePos;
+            int field3c = pSource->field_0x3c;
+            pEmbedded->savedFilePos = savedPos;
+            pEmbedded->field_0x3c = field3c;
+        }
 
         i = 0;
         do {
-            ((char*)pNode)[i + 0x48] = pSource->filename[i];
+            pEmbedded->filename[i] = pSource->filename[i];
             i++;
         } while (i < 0x40);
 
-        pNode->targetAddress = (int)pSource->pFile;
-        pNode->command = pSource->targetAddress;
-        pNode->data = pSource->sourceAddress;
-        pNode->priority = pSource->command;
-        pNode->param1 = pSource->data;
-        pNode->param2 = pSource->priority;
-        pNode->clickPos.x = pSource->param1;
-        pNode->clickPos.y = pSource->param2;
-        pNode->mouseX = pSource->clickPos.x;
-        pNode->mouseY = pSource->clickPos.y;
-        pNode->field_0xb4 = pSource->mouseX;
-        pNode->field_0xb8 = pSource->mouseY;
-        pNode->userPtr = pSource->field_b4;
-        pNode->field_0xc0 = pSource->field_b8;
-        pNode->field_0xc4 = pSource->userPtr;
+        pEmbedded->pFile = pSource->pFile;
+        pEmbedded->targetAddress = pSource->targetAddress;
+        pEmbedded->sourceAddress = pSource->sourceAddress;
+        pEmbedded->command = pSource->command;
+        pEmbedded->data = pSource->data;
+        pEmbedded->priority = pSource->priority;
+        pEmbedded->param1 = pSource->param1;
+        pEmbedded->param2 = pSource->param2;
+        pEmbedded->clickPos.x = pSource->clickPos.x;
+        pEmbedded->clickPos.y = pSource->clickPos.y;
+        pEmbedded->mouseX = pSource->mouseX;
+        pEmbedded->mouseY = pSource->mouseY;
+        pEmbedded->field_b4 = pSource->field_b4;
+        pEmbedded->field_b8 = pSource->field_b8;
+        pEmbedded->userPtr = pSource->userPtr;
 
         if (*pTail == 0) {
             pPool->list.head = pNode;
         }
         else {
-            *(PooledEvent**)(*pTail) = pNode;
+            (*pTail)->next = pNode;
         }
         *pTail = pNode;
     }

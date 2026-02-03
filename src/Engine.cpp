@@ -248,16 +248,16 @@ void Engine::UpdateCrosshair() {
 
   mouse = g_InputManager_00436968->pMouse;
   if (mouse != 0) {
-    ((Weapon*)DAT_00435f14)->field_0x98 = mouse->x;
+    ((Weapon*)DAT_00435f14)->m_crosshairX = mouse->x;
   } else {
-    ((Weapon*)DAT_00435f14)->field_0x98 = 0;
+    ((Weapon*)DAT_00435f14)->m_crosshairX = 0;
   }
 
   mouse = g_InputManager_00436968->pMouse;
   if (mouse != 0) {
-    ((Weapon*)DAT_00435f14)->field_0x9c = mouse->y;
+    ((Weapon*)DAT_00435f14)->m_crosshairY = mouse->y;
   } else {
-    ((Weapon*)DAT_00435f14)->field_0x9c = 0;
+    ((Weapon*)DAT_00435f14)->m_crosshairY = 0;
   }
 
   mouse = g_InputManager_00436968->pMouse;
@@ -323,9 +323,9 @@ void Engine::CopyToGlobals() {
   DAT_00435f14 = Engine::m_subParser;
   g_SoundList_00435f1c = Engine::m_soundList;
   DAT_00435f00 = Engine::m_engineInfoParser;
-  DAT_00435f24 = (Parser*)Engine::m_navigator;
+  DAT_00435f24 = Engine::m_navigator;
   g_EnginePalette = Engine::m_timerManager;
-  DAT_00435f10 = (Parser*)Engine::m_combatSprite;
+  DAT_00435f10 = Engine::m_combatSprite;
   DAT_00435f0c = (Parser*)Engine::m_targetList;
   g_ScoreManager = (int*)Engine::m_cursorState;
   g_EngineViewport = Engine::m_viewport;

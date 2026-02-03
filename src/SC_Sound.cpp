@@ -24,39 +24,12 @@ SC_Sound::~SC_Sound() {
     if (list != 0) {
         if (list->head != 0) {
             list->current = list->head;
-            while (list->head != 0) {
-                MessageNode* node = (MessageNode*)list->current;
-                SoundItem* data = 0;
-
-                if (node != 0) {
-                    if (list->head == node) {
-                        list->head = node->next;
-                    }
-                    if (list->tail == node) {
-                        list->tail = node->prev;
-                    }
-                    if (node->prev != 0) {
-                        node->prev->next = node->next;
-                    }
-                    if (node->next != 0) {
-                        node->next->prev = node->prev;
-                    }
-
-                    data = (SoundItem*)node->data;
-                    node->data = 0;
-                    node->prev = 0;
-                    node->next = 0;
-                    delete node;
-                    list->current = 0;
-                }
-
-                list->current = list->head;
-
+            do {
+                SoundItem* data = (SoundItem*)list->RemoveCurrent();
                 if (data != 0) {
-                    data->SoundItem::~SoundItem();
                     delete data;
                 }
-            }
+            } while (list->head != 0);
         }
         delete list;
         list = 0;
@@ -86,52 +59,21 @@ void SC_Sound::Update(int param1, int param2) {
                 SoundItem* soundItem = (SoundItem*)list->GetCurrentData();
 
                 if (soundItem->IsFinished()) {
-                    MessageNode* node = (MessageNode*)list->current;
-                    SoundItem* data = 0;
-
-                    if (node != 0) {
-                        if (list->head == node) {
-                            list->head = node->next;
-                        }
-                        if (list->tail == node) {
-                            list->tail = node->prev;
-                        }
-                        if (node->prev != 0) {
-                            node->prev->next = node->next;
-                        }
-                        if (node->next != 0) {
-                            node->next->prev = node->prev;
-                        }
-
-                        data = (SoundItem*)node->data;
-                        node->data = 0;
-                        node->prev = 0;
-                        node->next = 0;
-                        delete node;
-                        list->current = 0;
-                    }
-
-                    list->current = list->head;
-
+                    SoundItem* data = (SoundItem*)list->RemoveCurrent();
                     if (data != 0) {
-                        data->SoundItem::~SoundItem();
                         delete data;
                     }
-                }
-
-                if (list->tail == list->current) {
-                    break;
-                }
-
-                if (list->current != 0) {
-                    list->current = ((MessageNode*)list->current)->next;
+                    if (list->head == 0) break;
+                } else {
+                    if (list->tail == list->current) break;
+                    list->current = (MessageNode*)list->current->next;
                 }
             } while (list->head != 0);
         }
     }
 
     if (handlerId == param2) {
-        WriteToMessageLog("SC_Sound::Update");
+        ShowError("SC_Sound::Update");
     }
 }
 
@@ -166,13 +108,12 @@ int SC_Sound::Exit(SC_Message* msg) {
     {
         if (list->head != 0) {
             list->current = list->head;
-            while (list->head != 0) {
+            do {
                 SoundItem* data = (SoundItem*)list->PopCurrent();
                 if (data != 0) {
-                    data->SoundItem::~SoundItem();
                     delete data;
                 }
-            }
+            } while (list->head != 0);
         }
         break;
     }
@@ -210,41 +151,18 @@ int SC_Sound::Exit(SC_Message* msg) {
                 MessageNode* node = (MessageNode*)list->current;
                 SoundItem* data = (SoundItem*)node->data;
 
-                if (data->soundId == msg->sourceAddress) {
-                    SoundItem* eventData = (SoundItem*)list->GetCurrentData();
-
-                    if (list->current != 0) {
-                        if (list->head == node) {
-                            list->head = node->next;
-                        }
-                        if (list->tail == node) {
-                            list->tail = node->prev;
-                        }
-                        if (node->prev != 0) {
-                            node->prev->next = node->next;
-                        }
-                        if (node->next != 0) {
-                            node->next->prev = node->prev;
-                        }
-
-                        delete node;
-                        list->current = 0;
+                if (node == 0) {
+                    if (*(int*)0x18 == msg->sourceAddress) goto remove;
+                } else if (data->soundId == msg->sourceAddress) {
+                remove:
+                    data = (SoundItem*)list->RemoveCurrent();
+                    if (data != 0) {
+                        delete data;
                     }
-
-                    list->current = list->head;
-
-                    if (eventData != 0) {
-                        eventData->SoundItem::~SoundItem();
-                        delete eventData;
-                    }
-                }
-
-                if (list->tail == list->current) {
-                    break;
-                }
-
-                if (list->current != 0) {
-                    list->current = ((MessageNode*)list->current)->next;
+                    if (list->head == 0) break;
+                } else {
+                    if (list->tail == list->current) break;
+                    list->current = (MessageNode*)list->current->next;
                 }
             } while (list->head != 0);
         }

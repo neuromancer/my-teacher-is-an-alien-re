@@ -55,13 +55,13 @@ Handler2::~Handler2() {
 void Handler2::Init(SC_Message* msg) {
     Palette* pal;
     Palette** palettePtr;
-    WriteToMessageLogIfEnabled(L"\nENTER TEACHER SCREEN TO LEAVE");
+    WriteToMessageLog("\nENTER TEACHER SCREEN TO LEAVE");
     Handler2::CopyCommandData(msg);
     pal = palette;
     if (pal != 0) {
         palettePtr = &g_ZBufferManager_0043698c->m_palette;
         if (*palettePtr != 0) {
-            WriteToMessageLogIfEnabled(L"ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         *palettePtr = pal;
     }
@@ -77,7 +77,7 @@ int Handler2::ShutDown(SC_Message* msg) {
         delete palette;
         palette = 0;
     }
-    WriteToMessageLogIfEnabled(L"EXIT TEACHER SCREEN TO LEAVE\n");
+    WriteToMessageLog("EXIT TEACHER SCREEN TO LEAVE\n");
     return 0;
 }
 

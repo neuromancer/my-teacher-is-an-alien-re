@@ -20,7 +20,8 @@ public:
     Sample* soundPtr;       // 0x1C
 
     SoundItem(int sndId);           // 0x40B5D0
-    virtual ~SoundItem() {
+    virtual void LogSomething();    // 0x40B6E0 - vtable[0]
+    ~SoundItem() {                  // 0x40B7E0? - NON VIRTUAL INLINE
         if (soundPtr != 0) {
             soundPtr->Unload();
             delete soundPtr;

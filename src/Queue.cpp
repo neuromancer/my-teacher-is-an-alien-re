@@ -9,28 +9,21 @@
 /* Function start: 0x402310 */
 PooledEvent* PooledEvent::CopyFrom(const PooledEvent* other)
 {
-    unsigned int eax;
+    unsigned int i;
 
     field_0x8 = other->field_0x8;
-    eax = 0;
     m_duration = other->m_duration;
-    do {
-        data_0x10[eax] = other->data_0x10[eax];
-        eax++;
-    } while (eax < 0x20);
+    for (i = 0; i < 0x20; i++) {
+        data_0x10[i] = other->data_0x10[i];
+    }
 
     field_0x30 = other->field_0x30;
-    {
-        int edi = other->field_0x38;
-        int ebx = other->field_0x3c;
-        field_0x38 = edi;
-        field_0x3c = ebx;
+    field_0x38 = other->field_0x38;
+    field_0x3c = other->field_0x3c;
+
+    for (i = 0; i < 0x40; i++) {
+        m_data_0x40[i] = other->m_data_0x40[i];
     }
-    eax = 0;
-    do {
-        m_data_0x40[eax] = other->m_data_0x40[eax];
-        eax++;
-    } while (eax < 0x40);
 
     field_0x80 = other->field_0x80;
     targetAddress = other->targetAddress;
@@ -75,7 +68,7 @@ PooledEvent* TimedEventPool::Create(void* callback, void* data)
     void* ecx_param = callback;
     void* edx_param = data;
     PooledEvent* eax = esi->next;
-    SC_Message* ebx = (SC_Message*)&esi->field_0x8;
+    SC_Message* ebx = esi->GetEmbeddedSCMessage();
     m_free_list = eax;
     esi->prev = (PooledEvent*)ecx_param;
     esi->next = (PooledEvent*)edx_param;
@@ -97,13 +90,22 @@ done:
 }
 
 /* Function start: 0x4024D0 */
-// void Queue::Insert(void* data) - Moved to LinkedList.h as inline
+void Queue::Insert(void* data)
+{
+    LinkedList::InsertNode(data);
+}
 
 /* Function start: 0x4025A0 */
-// void Queue::Push(void* data) - Moved to LinkedList.h as inline
+void Queue::Push(void* data)
+{
+    LinkedList::PushNode(data);
+}
 
 /* Function start: 0x402680 */
-// void* Queue::Pop() - Moved to LinkedList.h as inline
+void* Queue::Pop()
+{
+    return LinkedList::RemoveCurrent();
+}
 
 /* Function start: 0x408790 */
 void Queue::InsertAtCurrent(void* data)
@@ -114,29 +116,23 @@ void Queue::InsertAtCurrent(void* data)
 /* Function start: 0x40D2A0 */
 TimedEventPool::~TimedEventPool()
 {
-    PooledEvent* node;
     SC_Message* msg;
     int counter;
     int tmp;
-    PooledEvent* poolBlock;
     PooledEvent* nextBlock;
 
     // Iterate through active events list (linked via next pointer)
-    node = list.head;
-    if (node != 0) {
+    for (PooledEvent* node = list.head; node != 0; node = node->next) {
+        // Get embedded SC_Message at offset +8
+        msg = node->GetEmbeddedSCMessage();
+        counter = 0;
         do {
-            // Get embedded SC_Message at offset +8 (field_0x8)
-            msg = (SC_Message*)&node->field_0x8;
-            counter = 0;
-            do {
-                // Call SC_Message destructor
-                msg->~SC_Message();
-                msg = (SC_Message*)((char*)msg + 0xc0);
-                tmp = counter;
-                counter--;
-            } while (tmp != 0);
-            node = (PooledEvent*)node->next;
-        } while (node != 0);
+            // Call SC_Message destructor
+            msg->~SC_Message();
+            msg = (SC_Message*)((char*)msg + 0xc0);
+            tmp = counter;
+            counter--;
+        } while (tmp != 0);
     }
 
     // Clear pool state fields
@@ -145,32 +141,24 @@ TimedEventPool::~TimedEventPool()
     list.tail = 0;
     list.head = 0;
 
-    // Free pool memory blocks (linked at offset 0x10)
-    poolBlock = m_pool;
-    if (poolBlock != 0) {
-        do {
-            nextBlock = (PooledEvent*)poolBlock->next;
-            delete poolBlock;
-            poolBlock = nextBlock;
-        } while (poolBlock != 0);
+    // Free pool memory blocks (linked via next pointer)
+    for (PooledEvent* poolBlock = m_pool; poolBlock != 0; poolBlock = nextBlock) {
+        nextBlock = poolBlock->next;
+        delete poolBlock;
     }
     m_pool = 0;
 }
 
 /* Function start: 0x417680 */
-// void* Queue::GetCurrentData() - Moved to LinkedList.h as inline
+void* Queue::GetCurrentData()
+{
+    return LinkedList::GetCurrentData();
+}
 
 /* Function start: 0x417C50 */
 SC_Message* TimedEventPool::PopSafe(SC_Message* buffer)
 {
-    volatile int local_10 = 0;
-
-    try {
-        Pop(buffer);
-    }
-    catch (...) {
-    }
-    local_10 |= 1;
+    Pop(buffer);
     return buffer;
 }
 
@@ -190,30 +178,27 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     local_18 = list.head;           // ECX = *this
     local_1c = 0;                          // EDX = 0
     
-    // EBX = &head->field_0x8 = SC_Message* in the node (at offset 8 from head)
-    SC_Message* srcMsg = (SC_Message*)&local_18->field_0x8;
+    // Get embedded SC_Message at offset 8 from head
+    SC_Message* srcMsg = local_18->GetEmbeddedSCMessage();
     
     // Copy from srcMsg to local_d8 using field access
     local_d8.m_subObject = srcMsg->m_subObject;
     local_d8.isProcessingKey = srcMsg->isProcessingKey;
-    
+
     // Copy currentKey[32]
-    unsigned int idx = 0;
-    do {
+    unsigned int idx;
+    for (idx = 0; idx < 0x20; idx++) {
         local_d8.currentKey[idx] = srcMsg->currentKey[idx];
-        idx++;
-    } while (idx < 0x20);
-    
+    }
+
     local_d8.lineNumber = srcMsg->lineNumber;
     local_d8.savedFilePos = srcMsg->savedFilePos;
     local_d8.field_0x3c = srcMsg->field_0x3c;
-    
+
     // Copy filename[64]
-    idx = 0;
-    do {
+    for (idx = 0; idx < 0x40; idx++) {
         local_d8.filename[idx] = srcMsg->filename[idx];
-        idx++;
-    } while (idx < 0x40);
+    }
     
     local_d8.pFile = srcMsg->pFile;
     
@@ -233,7 +218,7 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     local_d8.userPtr = srcMsg->userPtr;
 
     // Update list head: list.head = head->next
-    PooledEvent* nextNode = (PooledEvent*)local_18->next;
+    PooledEvent* nextNode = local_18->next;
     local_14->list.head = nextNode;
 
     if (nextNode != 0) {
@@ -264,22 +249,18 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     // Copy from local_d8 to output buffer using field access
     buffer->m_subObject = local_d8.m_subObject;
     buffer->isProcessingKey = local_d8.isProcessingKey;
-    
-    idx = 0;
-    do {
+
+    for (idx = 0; idx < 0x20; idx++) {
         buffer->currentKey[idx] = local_d8.currentKey[idx];
-        idx++;
-    } while (idx < 0x20);
-    
+    }
+
     buffer->lineNumber = local_d8.lineNumber;
     buffer->savedFilePos = local_d8.savedFilePos;
     buffer->field_0x3c = local_d8.field_0x3c;
-    
-    idx = 0;
-    do {
+
+    for (idx = 0; idx < 0x40; idx++) {
         buffer->filename[idx] = local_d8.filename[idx];
-        idx++;
-    } while (idx < 0x40);
+    }
     
     buffer->pFile = local_d8.pFile;
     

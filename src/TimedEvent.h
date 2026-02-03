@@ -66,9 +66,12 @@ public:
 class PooledEvent {
 public:
     PooledEvent* CopyFrom(const PooledEvent* other);
-    
-    // Get pointer to embedded message at offset 0x08
-    PooledEvent* GetEmbeddedMessage() { return (PooledEvent*)(&next + 2); }
+
+    // Get pointer to embedded event data at offset 0x08 (for CopyFrom)
+    PooledEvent* GetEmbeddedEvent() { return (PooledEvent*)&field_0x8; }
+
+    // Get pointer to embedded SC_Message at offset 0x08 (for constructor/destructor calls)
+    SC_Message* GetEmbeddedSCMessage() { return (SC_Message*)&field_0x8; }
 
     PooledEvent* next;        // 0x00 - next pointer for free list
     PooledEvent* prev;        // 0x04 - prev/callback pointer

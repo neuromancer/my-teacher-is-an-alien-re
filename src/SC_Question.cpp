@@ -152,7 +152,7 @@ void SC_Question::Finalize()
         // Create timed event in pool and add message to it
         pool = g_TimedEventPool2_00436988;
         event = pool->Create((void*)pool->list.tail, 0);
-        event->GetEmbeddedMessage()->CopyFrom((PooledEvent*)msgData);
+        event->GetEmbeddedEvent()->CopyFrom((PooledEvent*)msgData);
 
         // Link event to pool tail
         if (pool->list.tail == 0) {

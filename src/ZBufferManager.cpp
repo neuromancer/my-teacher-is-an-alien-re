@@ -189,7 +189,7 @@ void CommandType3::Execute(GlyphRect* rect)
 
 /* Function start: 0x41B760 */
 ZBufferManager::ZBufferManager() {
-    WriteToMessageLogIfEnabled(L"declaring ZBuffer");
+    WriteToMessageLogIfEnabled("declaring ZBuffer");
     memset(this, 0, 0x2b * 4);
 
     m_queueA0 = new ZBQueue(2);
@@ -203,65 +203,59 @@ ZBufferManager::ZBufferManager() {
 void ZBufferManager::Cleanup() {
     ZBQueue* queue;
     ZBQueueNode* node;
-    ZBQueueNode* nextNode;
-    ZBQueueNode* prevNode;
     void* data;
     int queueType;
-    ZBQueue* local_14;
-    void* local_18;
 
-    // First: drain queue at 0xA0 with special handling
+    // First: manual drain of m_queueA0 nodes (matches LAB_0041b916 sequence)
     queue = m_queueA0;
-    while (queue->head != 0) {
-        queue = m_queueA0;
-        queueType = queue->type;
-        if (queueType == 1 || queueType == 4) {
-            queue->current = queue->head;
-        } else if (queueType == 2 || queueType == 0) {
-            queue->current = queue->tail;
-        } else {
-            ShowError("bad queue type %lu", queueType);
-        }
+    if (queue->head != 0) {
+        while (queue->head != 0) {
+            queueType = queue->type;
+            if (queueType == 1 || queueType == 4) {
+                queue->current = queue->head;
+            } else if (queueType == 2 || queueType == 0) {
+                queue->current = queue->tail;
+            } else {
+                ShowError("bad queue type %lu", queueType);
+            }
 
-        node = (ZBQueueNode*)queue->current;
-        if (node != 0) {
-            if (queue->head == node) {
-                queue->head = node->next;
-            }
-            node = (ZBQueueNode*)queue->current;
-            if (queue->tail == node) {
-                queue->tail = node->prev;
-            }
-            node = (ZBQueueNode*)queue->current;
-            nextNode = node->next;
-            if (nextNode != 0) {
-                nextNode->prev = node->prev;
-            }
-            node = (ZBQueueNode*)queue->current;
-            prevNode = node->prev;
-            if (prevNode != 0) {
-                prevNode->next = node->next;
-            }
-            queue->GetCurrentData();
             node = (ZBQueueNode*)queue->current;
             if (node != 0) {
-                delete node;
-                queue->current = 0;
+                if (queue->head == node) {
+                    queue->head = node->next;
+                }
+                if (queue->tail == node) {
+                    queue->tail = node->prev;
+                }
+                if (node->prev != 0) {
+                    node->prev->next = node->next;
+                }
+                if (node->next != 0) {
+                    node->next->prev = node->prev;
+                }
+
+                queue->GetCurrentData(); // line 82
+                node = (ZBQueueNode*)queue->current;
+                if (node != 0) {
+                    delete node; // line 87 calls 0x41CCE0
+                    queue->current = 0; // line 88
+                }
+                queue->current = queue->head; // line 92
             }
-            queue->current = queue->head;
         }
-        queue = m_queueA0;
     }
 
-    // Second: drain queue at 0xA0 (again), freeing remaining items
+    // Second: drain items from m_queueA0 (SoundCommand - non-virtual)
     queue = m_queueA0;
     if (queue != 0) {
         if (queue->head != 0) {
-            queue->current = queue->head;
+            queue->current = queue->head; // line 108
             while (queue->head != 0) {
-                data = queue->Pop();
+                data = queue->Pop(); // line 114 calls 0x401710
                 if (data != 0) {
-                    delete (SoundCommand*)data;
+                    SoundCommand* cmd = (SoundCommand*)data;
+                    cmd->SoundCommand::~SoundCommand(); // line 118 resets vtable
+                    operator delete(cmd); // line 119
                 }
             }
         }
@@ -269,16 +263,16 @@ void ZBufferManager::Cleanup() {
         m_queueA0 = 0;
     }
 
-    // Third: drain queue at 0xA4
+    // Third: drain items from m_queueA4 (ZBuffer)
     queue = m_queueA4;
     if (queue != 0) {
         if (queue->head != 0) {
-            queue->current = queue->head;
+            queue->current = queue->head; // line 141
             while (queue->head != 0) {
-                data = queue->Pop();
+                data = queue->Pop(); // line 147 calls 0x401790
                 if (data != 0) {
-                    ((ZBuffer*)data)->CleanUpVBuffer();
-                    delete data;
+                    ((ZBuffer*)data)->CleanUpVBuffer(); // line 152
+                    delete data; // line 154
                 }
             }
         }
@@ -286,19 +280,21 @@ void ZBufferManager::Cleanup() {
         m_queueA4 = 0;
     }
 
-    // Fourth: drain queue at 0x9C
-    local_14 = m_queue9c;
-    if (local_14 != 0) {
-        if (local_14->head != 0) {
-            local_14->current = local_14->head;
-            while (local_14->head != 0) {
-                local_18 = local_14->Pop();
-                if (local_18 != 0) {
-                    delete local_18;
+    // Fourth: drain items from m_queue9c (RenderEntry - virtual)
+    queue = m_queue9c;
+    if (queue != 0) {
+        if (queue->head != 0) {
+            queue->current = queue->head; // line 177
+            while (queue->head != 0) {
+                data = queue->Pop(); // line 183 calls 0x401810
+                if (data != 0) {
+                    RenderEntry* entry = (RenderEntry*)data;
+                    entry->RenderEntry::~RenderEntry(); // line 188-190 (includes vtable reset and LAB_0041bae6)
+                    operator delete(entry); // line 193
                 }
             }
         }
-        delete local_14;
+        delete queue;
         m_queue9c = 0;
     }
 }

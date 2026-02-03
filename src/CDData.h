@@ -3,10 +3,10 @@
 
 class CDData {
 public:
-  char data[0x80];
-  char field_0x80[0x40];       // offset 0x80
-  char field_0xc0[0x105];      // offset 0xc0 (drive/path storage)
-  char field_0x1c5[0x20];      // offset 0x1c5
+  char baseDir[0x80];          // offset 0x00 - current working directory
+  char cdFolder[0x40];         // offset 0x80 - CD folder name (e.g., "cddata")
+  char pathBuffer[0x105];      // offset 0xc0 - path buffer: [0]=drive, [5]=srcPath, [0x85]=destPath
+  char dataFolder[0x20];       // offset 0x1c5 - data subfolder name (e.g., "DATA")
 
   CDData(char *param_1, char *param_2);
   int CheckFileOnDrive(int drive_letter);

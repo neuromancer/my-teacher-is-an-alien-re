@@ -20,21 +20,21 @@ void InitMessageArray(int* param_1, int param_2);
 struct MessageQueueItem {
     MessageQueueItem* next;  // 0x00
     int tailRef;             // 0x04
-    char data[0x88];         // 0x08 - copied data
-    int field_90;            // 0x90
-    int field_94;            // 0x94
-    int field_98;            // 0x98
-    int field_9c;            // 0x9c
-    int field_a0;            // 0xa0
-    int field_a4;            // 0xa4
-    int field_a8;            // 0xa8
-    int field_ac;            // 0xac
-    int field_b0;            // 0xb0
-    int field_b4;            // 0xb4
-    int field_b8;            // 0xb8
+    char data[0x88];         // 0x08 - copied parser data
+    int targetAddress;       // 0x90
+    int sourceAddress;       // 0x94
+    int command;             // 0x98
+    int msgData;             // 0x9c
+    int priority;            // 0xa0
+    int param1;              // 0xa4
+    int param2;              // 0xa8
+    int clickX;              // 0xac
+    int clickY;              // 0xb0
+    int mouseX;              // 0xb4
+    int mouseY;              // 0xb8
     int field_bc;            // 0xbc
     int field_c0;            // 0xc0
-    int field_c4;            // 0xc4
+    int userPtr;             // 0xc4
 };
 
 struct MessageQueue {
@@ -168,20 +168,20 @@ void Handler8::ProcessMessage() {
         InitMessageArray((int*)&item->data, 1);
         ((Parser*)&item->data)->CopyParserFields(msg);
 
-        item->field_90 = msg->targetAddress;
-        item->field_94 = msg->sourceAddress;
-        item->field_98 = msg->command;
-        item->field_9c = msg->data;
-        item->field_a0 = msg->priority;
-        item->field_a4 = msg->param1;
-        item->field_a8 = msg->param2;
-        item->field_ac = msg->clickPos.x;
-        item->field_b0 = msg->clickPos.y;
-        item->field_b4 = msg->mouseX;
-        item->field_b8 = msg->mouseY;
+        item->targetAddress = msg->targetAddress;
+        item->sourceAddress = msg->sourceAddress;
+        item->command = msg->command;
+        item->msgData = msg->data;
+        item->priority = msg->priority;
+        item->param1 = msg->param1;
+        item->param2 = msg->param2;
+        item->clickX = msg->clickPos.x;
+        item->clickY = msg->clickPos.y;
+        item->mouseX = msg->mouseX;
+        item->mouseY = msg->mouseY;
         item->field_bc = msg->field_b4;
         item->field_c0 = msg->field_b8;
-        item->field_c4 = msg->userPtr;
+        item->userPtr = msg->userPtr;
 
         if (*tailPtr != 0) {
             (*tailPtr)->next = item;
@@ -215,6 +215,9 @@ void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
 Parser* Parser::CopyParserFields(Parser* src)
 {
     unsigned int i;
+    int* dstPtr;
+    int* srcPtr;
+    int tmp1, tmp2;
 
     Parser::m_subObject = src->m_subObject;
     Parser::isProcessingKey = src->isProcessingKey;
@@ -222,15 +225,19 @@ Parser* Parser::CopyParserFields(Parser* src)
     do {
         Parser::currentKey[i] = src->currentKey[i];
         i++;
-    } while (i < 0x20);
+    } while (i < sizeof(currentKey));
     Parser::lineNumber = src->lineNumber;
-    Parser::savedFilePos = src->savedFilePos;
-    Parser::field_0x3c = src->field_0x3c;
+    dstPtr = &savedFilePos;
+    srcPtr = &src->savedFilePos;
+    tmp1 = srcPtr[0];
+    tmp2 = srcPtr[1];
+    dstPtr[0] = tmp1;
+    dstPtr[1] = tmp2;
     i = 0;
     do {
         Parser::filename[i] = src->filename[i];
         i++;
-    } while (i < 0x40);
+    } while (i < sizeof(filename));
     Parser::pFile = src->pFile;
     return this;
 }
@@ -242,16 +249,16 @@ void InitMessageArray(int* param_1, int param_2)
     int count;
 
     ptr = param_1;
-    memset(ptr, 0, (unsigned int)(param_2 << 6) * 3);
+    memset(ptr, 0, param_2 * sizeof(SC_Message));
 
     count = param_2;
     param_2 = count - 1;
     if (count != 0) {
         do {
-            if (ptr != 0) {
-                ((SC_Message*)ptr)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            if (param_1 != 0) {
+                ((SC_Message*)param_1)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
-            ptr = (int*)((char*)ptr + 0xC0);
+            param_1 = param_1 + sizeof(SC_Message) / sizeof(int);
             count = param_2;
             param_2--;
         } while (count != 0);

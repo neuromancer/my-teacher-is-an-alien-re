@@ -15,8 +15,8 @@ extern "C" int __cdecl FUN_00422aaf(int param_1);
 /* Function start: 0x4165D0 */
 RockThrower::RockThrower() {
     // Zero Weapon fields 0x98, 0x9c first (redundant but matches original)
-    field_0x98 = 0;
-    field_0x9c = 0;
+    m_crosshairX = 0;
+    m_crosshairY = 0;
 
     // Zero all Weapon fields (0x88-0xa7 = 32 bytes = 8 dwords)
     int* pFields = &m_posX;
@@ -57,7 +57,7 @@ RockThrower::~RockThrower() {}
 /* Function start: 0x416960 */
 void RockThrower::DrawCrosshairs() {
     SetFillColor(0xfa);
-    SetDrawPosition(RockThrower::field_0x98, RockThrower::field_0x9c);
+    SetDrawPosition(RockThrower::m_crosshairX, RockThrower::m_crosshairY);
     FUN_00422aaf(7);
 }
 

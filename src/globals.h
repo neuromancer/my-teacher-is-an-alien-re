@@ -20,6 +20,8 @@ class FlagArray;
 class TimedEventPool;
 class Engine;
 class Character;
+class mCNavigator;
+class CombatSprite;
 struct MessageQueue;
 
 
@@ -369,7 +371,7 @@ extern StringTable* g_Strings_00435a70; // 00435a70
 extern Character* DAT_00435a74; // peter character
 extern Character* DAT_00435a78; // susan character
 extern Character* DAT_00435a7c; // duncan character
-extern int DAT_00435a80; // { /* 4 bytes */ }
+extern Character* DAT_00435a80; // selected character pointer
 extern FlagArray* g_Manager_00435a84; // 00435a84
 
 struct SolutionEntry {
@@ -396,12 +398,12 @@ extern class EngineInfoParser* DAT_00435f00;  // ENGINE_INFO parser
 extern Parser* DAT_00435f04;  // Console parser
 extern class Viewport* g_EngineViewport; // 0x435f08
 extern Parser* DAT_00435f0c;  // TARGETS parser
-extern Parser* DAT_00435f10;  // SPRITELIST parser
+extern CombatSprite* DAT_00435f10;  // SPRITELIST parser
 extern Parser* DAT_00435f14;  // Weapon parser (RockThrower)
 extern class Palette* g_EnginePalette; // 0x435f18
 extern class SoundList* g_SoundList_00435f1c; // 0x435f1c
 extern int* g_ScoreManager; // 0x435f20
-extern Parser* DAT_00435f24;  // NAVIGATION parser
+extern mCNavigator* DAT_00435f24;  // NAVIGATION parser
 // extern int DAT_00435f28; // { /* 4 bytes */ }
 // extern char DAT_00436094; // { /* 1 bytes */ }
 // extern char DAT_00436095; // { /* 1 bytes */ }

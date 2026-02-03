@@ -10,6 +10,7 @@
 #include "globals.h"
 #include "string.h"
 #include "SC_Question.h"
+#include "Character.h"
 
 // External functions
 //extern "C" void __cdecl WriteToMessageLog(const char*);
@@ -147,9 +148,9 @@ void IconBar::InitIconBar(SC_Message* msg) {
     // Call parent Init (CopyCommandData)
     CopyCommandData(msg);
 
-    // Check DAT_00435a80 (used as pointer) and set iconbar state
+    // Check selected character and set iconbar state
     if (DAT_00435a80 != 0) {
-        iconbarSprite->SetState2(*(int*)DAT_00435a80 + 1);
+        iconbarSprite->SetState2(DAT_00435a80->characterType + 1);
     }
 
     // Enable all buttons

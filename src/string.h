@@ -16,7 +16,7 @@ extern "C" {
     void ClearMessageLog();
     void WriteToMessageLog(const char *msg,...);
     void AddToStringTable(char *param_1);
-    void WriteToMessageLogIfEnabled(wchar_t *param_1, ...);
+    void WriteToMessageLogIfEnabled(const char *param_1, ...);
     void SetErrorCode(unsigned int);
     FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, unsigned int* out_size);
     FILE* fsopen(const char* filename, const char* mode);

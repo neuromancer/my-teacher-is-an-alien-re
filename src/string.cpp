@@ -142,7 +142,7 @@ extern "C" void AddToStringTable(char *param_1)
 }
 
 /* Function start: 0x4192A0 */
-void WriteToMessageLogIfEnabled(wchar_t *param_1, ...)
+void WriteToMessageLogIfEnabled(const char *param_1, ...)
 {
     if ((g_messageLogEnabled & 1) != 0) {
         FILE *_File;
@@ -151,9 +151,9 @@ void WriteToMessageLogIfEnabled(wchar_t *param_1, ...)
         _File = _fsopen("message.log", "a+", _SH_DENYNO);
         if (_File != NULL) {
             va_start(argptr, param_1);
-            vfwprintf(_File, param_1, argptr);
+            vfprintf(_File, param_1, argptr);
             va_end(argptr);
-            fwprintf(_File, L"\n");
+            fprintf(_File, "\n");
             fclose(_File);
         }
     }

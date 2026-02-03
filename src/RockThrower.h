@@ -18,8 +18,8 @@ public:
     int m_posY;         // 0x8c - Y position
     int m_posZ;         // 0x90 - Z position or height
     int field_0x94;     // 0x94
-    int field_0x98;     // 0x98
-    int field_0x9c;     // 0x9c
+    int m_crosshairX;   // 0x98 - crosshair X position
+    int m_crosshairY;   // 0x9c - crosshair Y position
     int field_0xa0;     // 0xa0
     int field_0xa4;     // 0xa4
 

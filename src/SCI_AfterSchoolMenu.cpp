@@ -337,15 +337,15 @@ int SCI_AfterSchoolMenu::AddMessage(SC_Message* msg) {
 
         // Set selected character global
         if (currentCharacterIndex == 0) {
-            DAT_00435a80 = (int)DAT_00435a74;  // peter
+            DAT_00435a80 = DAT_00435a74;  // peter
         } else if (currentCharacterIndex == 1) {
-            DAT_00435a80 = (int)DAT_00435a78;  // susan
+            DAT_00435a80 = DAT_00435a78;  // susan
         } else {
-            DAT_00435a80 = (int)DAT_00435a7c;  // duncan
+            DAT_00435a80 = DAT_00435a7c;  // duncan
         }
 
         // Update iconbar sprite with character state
-        iconbarSprite->SetState2(*(int*)DAT_00435a80 + 1);
+        iconbarSprite->SetState2(DAT_00435a80->characterType + 1);
 
         PlayCharacterSound(2);
     }

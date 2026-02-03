@@ -50,38 +50,38 @@ void Weapon::DrawExplosion() {
     SetFillColor(0xfd);
 
     SetDrawPosition(Weapon::m_posX - 4, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posX - 3, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posX - 2, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posX - 1, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posX + 4, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posX + 3, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posX + 2, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posX + 1, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posY - 4, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posY - 3, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posY - 2, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posY - 1, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posY + 4, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posY + 3, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posY + 2, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posY + 1, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posX, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::field_0x98, Weapon::field_0x9c);
+    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
     FUN_00422ac3(Weapon::m_posY, Weapon::m_posZ);
 }

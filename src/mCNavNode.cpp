@@ -6,13 +6,12 @@
 #include "Animation.h"
 #include "CombatSprite.h"
 #include "Projectile.h"
+#include "mCNavigator.h"
+#include "Engine.h"
 #include <stdlib.h>
 
 // Globals
-extern Parser* DAT_00435f24;           // mCNavigator instance
 extern InputManager* g_InputManager_00436968;
-extern Sprite* g_Sprite_004360a0;
-extern Parser* DAT_00435f10;           // SPRITELIST parser (actually CombatSprite*)
 extern Engine* g_CombatEngine;         // 0x00435eb0
 
 // Hash table entry structure for random pool
@@ -36,7 +35,7 @@ int mCNavNode::Activate()
 {
     int fl;
     int randVal;
-    int bucketIndex;
+    unsigned int bucketIndex;
     HashEntry* entry;
 
     // Check animation flag (bit 0)
@@ -54,7 +53,7 @@ int mCNavNode::Activate()
         randVal = rand();
         ObjectPool* pool = mCNavNode::randomPool;
         randVal = randVal % pool->allocatedCount;
-        bucketIndex = (((unsigned int)randVal) >> 4) % pool->size;
+        bucketIndex = ((unsigned int)randVal >> 4) % pool->size;
 
         entry = 0;
         if (pool->memory != 0) {
@@ -70,13 +69,13 @@ int mCNavNode::Activate()
         if (entry == 0) {
             ShowError("mCNavNode::Activate() - Invalid Sprite Id S %d of %s", bucketIndex, mCNavNode::nodeName);
         } else {
-            ((CombatSprite*)DAT_00435f10)->PlayById(entry->value);
+            DAT_00435f10->PlayById(entry->value);
         }
     }
 
     mCNavNode::counter = 0;
     mCNavNode::active = 1;
-    *(int*)((char*)g_CombatEngine + 0xdc) = 1;
+    g_CombatEngine->m_framesL = 1;
 
     return 0;
 }
@@ -86,8 +85,8 @@ int mCNavNode::GetNextNode()
 {
     int divisor;
 
-    int* pDirectionIndex = (int*)((char*)DAT_00435f24 + 0x98);
-    int currentNode = *(int*)((char*)DAT_00435f24 + 0xa0);
+    int* pDirectionIndex = &DAT_00435f24->field_98;
+    int currentNode = DAT_00435f24->field_A0;
     int currentDir = *pDirectionIndex;
     InputState* pMouse = g_InputManager_00436968->pMouse;
 
@@ -97,7 +96,7 @@ int mCNavNode::GetNextNode()
         direction = pMouse->x / divisor;
     }
 
-    if (direction == 1 && pMouse != 0 && pMouse->y > 0x85) {
+    if (direction == 1 && pMouse != 0 && pMouse->y >= 0x86) {
         direction = 3;
     }
 
@@ -171,42 +170,41 @@ return_result:
 /* Function start: 0x412f40 */
 void mCNavNode::AddSpriteList(char* name, int id)
 {
-    if (DAT_00435f10 != 0) {
-        void* nodeResult = ((CombatSprite*)DAT_00435f10)->FindSprite(id);
-        if (nodeResult != 0) {
-            if (randomPool == 0) {
-                randomPool = new ObjectPool(0x11, 0xa);
-            }
-            
-            ObjectPool* pool = randomPool;
-            int count = pool->allocatedCount;
-            int h = (count >> 4) % pool->size;
-            
-            HashEntry* entry = 0;
-            if (pool->memory != 0) {
-                entry = ((HashEntry**)pool->memory)[h];
-                while (entry != 0) {
-                    if (entry->key == count) break;
-                    entry = entry->next;
-                }
-            }
-            
-            if (entry == 0) {
-                if (pool->memory == 0) {
-                    pool->MemoryPool_Allocate(pool->size, 1);
-                }
-                entry = (HashEntry*)pool->Allocate_2();
-                entry->field_4 = h;
-                entry->key = count;
-                entry->next = ((HashEntry**)pool->memory)[h];
-                ((HashEntry**)pool->memory)[h] = entry;
-            }
-            entry->value = id;
-            flags |= 0x8;
-            return;
+    if (DAT_00435f10 == 0 || DAT_00435f10->FindSprite(id) == 0) {
+        ShowError("mCNavNode::AddSpriteList() - Undefined sprite list %s %d", name, id);
+    }
+
+    if (randomPool == 0) {
+        randomPool = new ObjectPool(0x11, 0xa);
+    }
+
+    ObjectPool* pool = randomPool;
+    unsigned int count = pool->allocatedCount;
+    unsigned int size = pool->size;
+    unsigned int h = (count >> 4) % size;
+    void* memory = pool->memory;
+
+    HashEntry* entry = 0;
+    if (memory != 0) {
+        entry = ((HashEntry**)memory)[h];
+        while (entry != 0) {
+            if (entry->key == count) break;
+            entry = entry->next;
         }
     }
-    ShowError("mCNavNode::AddSpriteList() - Undefined sprite list %s %d", name, id);
+
+    if (entry == 0) {
+        if (memory == 0) {
+            pool->MemoryPool_Allocate(size, 1);
+        }
+        entry = (HashEntry*)pool->Allocate_2();
+        entry->field_4 = h;
+        entry->key = count;
+        entry->next = ((HashEntry**)pool->memory)[h];
+        ((HashEntry**)pool->memory)[h] = entry;
+    }
+    entry->value = id;
+    flags |= 0x8;
 }
 
 /* Function start: 0x413380 */

@@ -96,7 +96,7 @@ void Projectile::Update() {
         Projectile::nextY = Projectile::currentY;
     } else {
         if (Projectile::animation_data != 0) {
-            frameNum = *(int*)((char*)Projectile::animation_data->smk + 0x374) + 1;
+            frameNum = Projectile::animation_data->smk->FrameNum + 1;
         } else {
             frameNum = 1;
         }
@@ -176,7 +176,7 @@ int Projectile::CheckCollision() {
         current = next;
 
         if (target != 0) {
-            if (target->CheckTimeInRangeParam((int*)((char*)this + 0xe8))) {
+            if (target->CheckTimeInRangeParam(&nextX)) {
                 target->UpdateProgress(1);
                 return 1;
             }

@@ -78,12 +78,12 @@ EngineInfoParser* DAT_00435f00 = 0;  // ENGINE_INFO parser
 Parser* DAT_00435f04 = 0;  // Console parser
 Viewport* g_EngineViewport = 0; // 0x435f08
 Parser* DAT_00435f0c = 0;  // TARGETS parser
-Parser* DAT_00435f10 = 0;  // SPRITELIST parser
+CombatSprite* DAT_00435f10 = 0;  // SPRITELIST parser
 Parser* DAT_00435f14 = 0;  // Weapon parser (RockThrower)
 Palette* g_EnginePalette = 0; // 0x435f18
 SoundList* g_SoundList_00435f1c;
 int* g_ScoreManager = 0; // 0x435f20
-Parser* DAT_00435f24 = 0;  // NAVIGATION parser
+mCNavigator* DAT_00435f24 = 0;  // NAVIGATION parser
 static int _navState = 0;  // Navigation state value
 int* DAT_00435f28 = &_navState;  // Pointer to navigation state
 

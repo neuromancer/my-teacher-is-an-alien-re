@@ -188,8 +188,8 @@ void EngineB::UpdateMeter() {
       EngineB::m_meterPosition.y,
       (VBuffer*)EngineB::m_meterBuffer);
 
-    // Check if TimeOut is active by comparing first dword (m_isActive) to 1
-    if (*(int*)&g_TimeOut_0043d140 != 1) {
+    // Check if TimeOut is active
+    if (g_TimeOut_0043d140.m_isActive != 1) {
       g_TimeOut_0043d140.Start(0x5dc);  // 1500ms timeout
       return;
     }

@@ -10,7 +10,6 @@ public:
     int IsTimeOut();
     void Stop();
 
-private:
     int m_isActive;
     int m_timeout;
     Timer m_timer;
