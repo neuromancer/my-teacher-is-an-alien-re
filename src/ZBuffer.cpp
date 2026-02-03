@@ -16,6 +16,7 @@ char s_hIam[] = "hIam %d";
 // ZBQueue is defined in ZBufferManager.h
 #include "ZBufferManager.h"
 #include "RenderEntry.h"
+#include "SoundCommand.h"
 
 extern void LogToMessageFile(char* format, ...);
 
@@ -81,10 +82,10 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                void* data = queue->Pop();
-                if (data != 0) {
-                    *(void**)data = 0;
-                    FreeFromGlobalHeap(data);
+                SoundCommand* cmd = (SoundCommand*)queue->Pop();
+                if (cmd != 0) {
+                    cmd->~SoundCommand();
+                    FreeFromGlobalHeap(cmd);
                 }
             }
         }
@@ -118,10 +119,10 @@ int ZBuffer::ProcessMessage(Message* msg)
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                void* data = queue->Pop();
-                if (data != 0) {
-                    *(void**)data = 0;
-                    FreeFromGlobalHeap(data);
+                SoundCommand* cmd = (SoundCommand*)queue->Pop();
+                if (cmd != 0) {
+                    cmd->~SoundCommand();
+                    FreeFromGlobalHeap(cmd);
                 }
             }
         }
@@ -205,10 +206,9 @@ ZBuffer::~ZBuffer()
 }
 
 /* Function start: 0x401710 */
-// void* ZBQueue::Pop() - Moved to LinkedList.h as inline
-
 /* Function start: 0x401790 */
-// void* ZBQueue::Pop() - Moved to LinkedList.h as inline
-
 /* Function start: 0x401810 */
-// void* ZBQueue::Pop() - Moved to LinkedList.h as inline
+void* ZBQueue::Pop()
+{
+    return LinkedList::RemoveCurrent();
+}
