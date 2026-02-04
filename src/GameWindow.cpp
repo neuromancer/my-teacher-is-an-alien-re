@@ -12,7 +12,7 @@ void InitVideoSystem();
 void InitMouseSettings();
 int SetCursorVisible(unsigned int);
 void AddToStringTable(char *);
-void InvalidateVideoMode();
+int InvalidateVideoMode();
 int CleanupVideoSystem();
 }
 

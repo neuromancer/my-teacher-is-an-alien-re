@@ -528,7 +528,7 @@ extern char DAT_00437b48[1028]; // Palette RGBQUAD array
 // extern int DAT_00437b50; // { /* 4 bytes */ }
 extern int DAT_00437f4c; // DAT_00437f4c  { /* 4 bytes */ }
 extern int DAT_00437f50; // DAT_00437f50  { /* 4 bytes */ }
-extern int DAT_00437f54; // DAT_00437f54  { /* 4 bytes */ } // changed from char to int
+extern char DAT_00437f54; // DAT_00437f54  { /* 1 byte */ } // Current video buffer index
 extern int DAT_00437f5e; // Video buffer width copy
 extern int DAT_0043826c[]; // { /* 4 bytes */ }
 extern void* DAT_00438428; // { /* 4 bytes */ }

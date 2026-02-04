@@ -38,7 +38,7 @@ extern int DAT_004374da;
 extern int DAT_00437514;
 extern char DAT_004374c0;
 extern char DAT_004374c1;
-extern int DAT_00437f54;
+extern char DAT_00437f54;
 extern int DAT_00437f56;
 extern int DAT_00437f5a;
 extern HDC g_WinGDC_0043841c;
@@ -227,8 +227,9 @@ extern "C" void FlipScreen() {
 }
 
 /* Function start: 0x4231BC */
-extern "C" void InvalidateVideoMode() {
-    DAT_00437f54 = 0xff;
+extern "C" int InvalidateVideoMode() {
+    DAT_00437f54 = (char)0xff;
+    return 0;
 }
 
 /* Function start: 0x4231C6 */
@@ -436,7 +437,30 @@ int GetColorBitDepth(void)
 
 /* Function start: 0x423CFE */
 extern "C" int CleanupVideoSystem() {
-    DAT_00437f54 = 0xff;
+    int iVar1;
+    int iVar2;
+    int* piVar3;
+
+    iVar2 = 0x20;
+    piVar3 = DAT_0043826c;
+    do {
+        iVar1 = *piVar3;
+        iVar2 = iVar2 - 1;
+        piVar3 = piVar3 + 1;
+    } while (iVar2 != 0 && iVar1 != 0);
+
+    if (iVar1 == 0) {
+        DAT_00437f54 = (char)0xff;
+        if (DAT_004374ae != (HPALETTE)0) {
+            SelectPalette(DAT_00437488, DAT_004374ae, 0);
+        }
+        if (g_WinGDC_0043841c != 0) {
+            DeleteDC((HDC)g_WinGDC_0043841c);
+            g_WinGDC_0043841c = 0;
+            DAT_00438424 = 0;
+            FreeLibrary(DAT_00438420);
+        }
+    }
     return 0;
 }
 

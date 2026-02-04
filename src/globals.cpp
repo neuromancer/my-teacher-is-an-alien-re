@@ -98,7 +98,7 @@ char DAT_00437720[1028] = {0x00, 0x03, 0x00, 0x01};
 char DAT_00437b48[1028];
 
 int DAT_00437f50 = 0;
-int DAT_00437f54 = 0xff;  // Current video buffer index, 0xff = no selection
+char DAT_00437f54 = (char)0xff;  // Current video buffer index, 0xff = no selection
 int DAT_00437f66 = 0; 
 short DAT_00437f6a = 0;
 HDC g_WinGDC_0043841c = 0;

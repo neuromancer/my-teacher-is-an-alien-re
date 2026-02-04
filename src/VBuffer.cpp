@@ -46,7 +46,7 @@ extern "C" {
     void ApplyVideoPalette();
     int SetFillColor(unsigned char);
     unsigned int GetCurrentVideoMode();
-    void InvalidateVideoMode();
+    int InvalidateVideoMode();
     void BlitBufferOpaque(int, int, int, int, int, int, unsigned int, unsigned int);
     void BlitBufferTransparent(int, int, int, int, int, int, unsigned int, unsigned int);
     void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
