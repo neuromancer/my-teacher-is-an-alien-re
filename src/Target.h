@@ -63,7 +63,7 @@ public:
     IntPair scoreWeight;  // 0x10c - score index (start) and weight (end)
     IntPair hitMissPoints; // 0x114 - hit points (start) and miss points (end)
     IntPair combatBonus;  // 0x11c - combatBonus1 (start), field_0x120 (end)
-    TargetMember combatBonus2; // 0x124 - added to combat engine field_0xc4
+    TargetMember combatBonus2; // 0x124 - added to combat engine m_combatBonus2
     TargetMember field_0x128;  // 0x128
     HotspotListData* hotspotList; // 0x12c - hotspot list structure
     Sample* stopSound;    // 0x130 - sound stopped on hit

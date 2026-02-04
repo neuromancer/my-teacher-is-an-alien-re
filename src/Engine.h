@@ -13,6 +13,9 @@ class CombatSprite;
 class Viewport;
 class CursorState;
 class GameOutcome;
+class Sample;
+class Sprite;
+class Weapon;
 
 // Engine - Base class for game engine variants (vtable 0x431340, size 0xe8)
 //
@@ -35,27 +38,27 @@ public:
 
   TargetList* m_targetList;         // 0x88 - target list manager (size 0x1c8)
   EngineInfoParser* m_engineInfoParser; // 0x8c - engine info parser (size 0xb8)
-  int field_0x90;                   // 0x90
+  Sprite* m_consoleSprite;          // 0x90 - console sprite
   Viewport* m_viewport;             // 0x94 - viewport (size 0x2c)
   CombatSprite* m_combatSprite;     // 0x98 - combat sprite manager (size 0x98)
-  Parser* m_subParser;              // 0x9c - sub-parser object (can be Console, Weapon, etc)
+  Weapon* m_weapon;                 // 0x9c - weapon object (can be RockThrower, etc)
   Palette* m_timerManager;          // 0xa0 - timer manager (size 0x8)
   SoundList* m_soundList;           // 0xa4 - sound list (size 0x10)
   CursorState* m_cursorState;       // 0xa8 - cursor state data (size 0x24)
   mCNavigator* m_navigator;         // 0xac - navigation manager
-  GameOutcome* m_stateManager;     // 0xb0 - state manager (size 0x4)
-  int field_0xb4;             // 0xb4
-  int field_0xb8;             // 0xb8
+  GameOutcome* m_gameOutcome;       // 0xb0 - game outcome state (size 0x4)
+  int m_combatBonus1;         // 0xb4 - accumulates Target::combatBonus.start
+  int m_scrollOffsetX;        // 0xb8 - scroll offset X (from O command)
   int field_0xbc;             // 0xbc
-  int field_0xc0;             // 0xc0
-  int field_0xc4;             // 0xc4
-  int field_0xc8;             // 0xc8
+  int m_scrollOffsetY;        // 0xc0 - scroll offset Y (from O command)
+  int m_combatBonus2;         // 0xc4 - accumulates Target::combatBonus2.val
+  int m_viewOffset1X;         // 0xc8 - view offset 1 X (from O1 command)
   int field_0xcc;             // 0xcc
-  int field_0xd0;             // 0xd0
+  int m_viewOffset1Y;         // 0xd0 - view offset 1 Y (from O1 command)
   int m_framesA;              // 0xd4 - frame counter A
   int field_0xd8;             // 0xd8
   int m_framesL;              // 0xdc - frame counter L
-  int field_0xe0;             // 0xe0
+  Sample* m_backgroundSample; // 0xe0 - background music/ambient sample
   int field_0xe4;             // 0xe4
 
   Engine();

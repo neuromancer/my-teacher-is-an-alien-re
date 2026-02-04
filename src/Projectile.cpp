@@ -133,7 +133,7 @@ int Projectile::CheckCollision() {
     Target* target;
     int* bucket;
 
-    hashTable = ((TargetList*)DAT_00435f0c)->hashTable;
+    hashTable = g_TargetList->hashTable;
     if (hashTable == 0) {
         return 0;
     }

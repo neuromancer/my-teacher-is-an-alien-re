@@ -24,7 +24,7 @@ void Weapon::DrawCrosshairs() {
     FUN_00422ac3(0xce, 9);
     FUN_00422ac3(0xc8, 9);
 
-    if (((TargetList*)DAT_00435f0c)->field_0x1ac != 0) {
+    if (g_TargetList->field_0x1ac != 0) {
         SetDrawPosition(Weapon::m_crosshairX, Weapon::m_crosshairY);
         FUN_00422aaf(4);
         FUN_00422aaf(8);

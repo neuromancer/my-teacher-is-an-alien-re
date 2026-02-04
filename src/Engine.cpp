@@ -25,8 +25,6 @@
 
 #include "VideoTable.h"
 
-extern int* DAT_00435f28;
-
 extern "C" {
 int GetCurrentTimestamp(int*);  // 0x425000 - returns timestamp, optionally stores in *param
 void SetTimeSeed(int);          // 0x424FC0 - sets global time seed (DAT_0043bc88)
@@ -61,21 +59,17 @@ DrawEntry::~DrawEntry() {
 
 /* Function start: 0x4110D0 */
 Engine::Engine() {
-  int* pb4 = &field_0xb4;
-  pb4[0] = 0;
-  pb4[1] = 0;
+  m_combatBonus1 = 0;
+  m_scrollOffsetX = 0;
 
-  int* pbc = &field_0xbc;
-  pbc[0] = 0;
-  pbc[1] = 0;
+  field_0xbc = 0;
+  m_scrollOffsetY = 0;
 
-  int* pc4 = &field_0xc4;
-  pc4[0] = 0;
-  pc4[1] = 0;
+  m_combatBonus2 = 0;
+  m_viewOffset1X = 0;
 
-  int* pcc = &field_0xcc;
-  pcc[0] = 0;
-  pcc[1] = 0;
+  field_0xcc = 0;
+  m_viewOffset1Y = 0;
 
   memset(&m_targetList, 0, 0x60);
 
@@ -106,7 +100,7 @@ void Engine::SetupViewport() {
   g_EngineViewport->SetCenter();
   g_EngineViewport->SetAnchor(DAT_00435f00->anchorRect.left, DAT_00435f00->anchorRect.top);
   
-  g_ScoreManager[1] = 100;
+  g_ScoreManager->scoreInitial = 100;
   m_framesL = 1;
   m_framesA = 1;
   
@@ -114,8 +108,8 @@ void Engine::SetupViewport() {
   
   g_EnginePalette->SetPalette(DAT_00435f00->paletteRect.left, (DAT_00435f00->paletteRect.top - DAT_00435f00->paletteRect.left) + 1);
   
-  if (field_0xe0 != 0) {
-    ((Sample*)field_0xe0)->Play(100, 0);
+  if (m_backgroundSample != 0) {
+    m_backgroundSample->Play(100, 0);
   }
 }
 
@@ -156,7 +150,7 @@ int Engine::UpdateAndCheck() {
 
 /* Function start: 0x411550 */
 void Engine::Initialize() {
-  Engine::m_subParser = new EngineInfoParser();
+  Engine::m_weapon = (Weapon*)new EngineInfoParser();
   Engine::m_soundList = new SoundList(0x32);
   Engine::m_engineInfoParser = new EngineInfoParser();
   Engine::m_navigator = new mCNavigator();
@@ -165,7 +159,7 @@ void Engine::Initialize() {
   Engine::m_targetList = new TargetList();
   Engine::m_cursorState = new CursorState();
   Engine::m_viewport = new Viewport();
-  Engine::m_stateManager = new GameOutcome();
+  Engine::m_gameOutcome = new GameOutcome();
 
   Engine::CopyToGlobals();
 }
@@ -186,7 +180,8 @@ void Engine::DisplayFrameRate() {
 int Engine::LBLParse(char* line) {
   char local_54[32];
   char local_34[32];
-  Parser* piVar4;
+  RockThrower* weaponVar;
+  Sprite* spriteVar;
 
   sscanf(line, "%s", local_34);
 
@@ -194,7 +189,7 @@ int Engine::LBLParse(char* line) {
     Parser::ProcessFile(DAT_00435f00, this, (char*)0);
   }
   else if (strcmp(local_34, "[TARGETS]") == 0) {
-    Parser::ProcessFile(DAT_00435f0c, this, (char*)0);
+    Parser::ProcessFile(g_TargetList, this, (char*)0);
   }
   else if (strcmp(local_34, "[SPRITELIST]") == 0) {
     Parser::ProcessFile(DAT_00435f10, this, (char*)0);
@@ -205,21 +200,21 @@ int Engine::LBLParse(char* line) {
   else if (strcmp(local_34, "WEAPON") == 0) {
     int iVar3 = sscanf(line, " %s %s ", local_34, local_54);
     if (iVar3 == 2) {
-      if (Engine::m_subParser != (Parser*)0) {
-        delete Engine::m_subParser;
-        Engine::m_subParser = (Parser*)0;
+      if (Engine::m_weapon != 0) {
+        delete Engine::m_weapon;
+        Engine::m_weapon = 0;
       }
       if (strcmp(local_54, "ROCKTHROWER") == 0) {
-        piVar4 = new RockThrower();
-        Engine::m_subParser = piVar4;
-        DAT_00435f14 = piVar4;
+        weaponVar = new RockThrower();
+        Engine::m_weapon = weaponVar;
+        g_Weapon = weaponVar;
       }
     }
   }
   else if (strcmp(local_34, "CONSOLE") == 0) {
-    piVar4 = new Sprite((char*)0);
-    DAT_00435f04 = piVar4;
-    Parser::ProcessFile(piVar4, this, (char*)0);
+    spriteVar = new Sprite((char*)0);
+    g_ConsoleSprite = spriteVar;
+    Parser::ProcessFile(spriteVar, this, (char*)0);
   }
   else if (strcmp(local_34, "END") == 0) {
     return 1;
@@ -237,7 +232,7 @@ void Engine::VirtCleanup() {}
 /* Function start: 0x411440 */
 int Engine::UpdateSpriteFrame() {
   if (DAT_00435f10 != 0) {
-    ((CombatSprite*)DAT_00435f10)->ProcessFrame(Engine::m_framesL);
+    DAT_00435f10->ProcessFrame(Engine::m_framesL);
   }
   return 0;
 }
@@ -248,16 +243,16 @@ void Engine::UpdateCrosshair() {
 
   mouse = g_InputManager_00436968->pMouse;
   if (mouse != 0) {
-    ((Weapon*)DAT_00435f14)->m_crosshairX = mouse->x;
+    g_Weapon->m_crosshairX = mouse->x;
   } else {
-    ((Weapon*)DAT_00435f14)->m_crosshairX = 0;
+    g_Weapon->m_crosshairX = 0;
   }
 
   mouse = g_InputManager_00436968->pMouse;
   if (mouse != 0) {
-    ((Weapon*)DAT_00435f14)->m_crosshairY = mouse->y;
+    g_Weapon->m_crosshairY = mouse->y;
   } else {
-    ((Weapon*)DAT_00435f14)->m_crosshairY = 0;
+    g_Weapon->m_crosshairY = 0;
   }
 
   mouse = g_InputManager_00436968->pMouse;
@@ -275,7 +270,7 @@ void Engine::UpdateCrosshair() {
 
 /* Function start: 0x411DD0 */
 int Engine::CheckNavState() {
-  return *(unsigned int*)DAT_00435f28 >= 1;
+  return (unsigned int)g_GameOutcome->outcome >= 1;
 }
 /* Function start: 0x4113A0 */
 void Engine::ProcessTargets() {
@@ -283,8 +278,8 @@ void Engine::ProcessTargets() {
   InputState* mouse;
   int buttonDown;
 
-  target = ((TargetList*)DAT_00435f0c)->ProcessTargets();
-  ((Weapon*)DAT_00435f14)->DrawCrosshairs();
+  target = g_TargetList->ProcessTargets();
+  g_Weapon->DrawCrosshairs();
 
   mouse = g_InputManager_00436968->pMouse;
   buttonDown = 0;
@@ -292,13 +287,13 @@ void Engine::ProcessTargets() {
     buttonDown = mouse->buttons & 1;
   }
   if (buttonDown == 0 && (mouse->prevButtons & 1) != 0) {
-    ((Weapon*)DAT_00435f14)->field_0xa0 = 1;
+    g_Weapon->field_0xa0 = 1;
   } else {
-    ((Weapon*)DAT_00435f14)->field_0xa0 = 0;
+    g_Weapon->field_0xa0 = 0;
   }
 
-  if (((Weapon*)DAT_00435f14)->field_0xa0 != 0) {
-    ((Weapon*)DAT_00435f14)->OnHit();
+  if (g_Weapon->field_0xa0 != 0) {
+    g_Weapon->OnHit();
     if (target != 0) {
       target->UpdateProgress(1);
     }
@@ -311,39 +306,39 @@ void Engine::ProcessTargets() {
 void Engine::Draw() {
   Sprite* console;
 
-  if (DAT_00435f04 != 0) {
-    console = (Sprite*)DAT_00435f04;
+  if (g_ConsoleSprite != 0) {
+    console = g_ConsoleSprite;
     console->Do(console->loc_x, console->loc_y, 1.0);
   }
 }
 void Engine::UpdateMeter() {}
 /* Function start: 0x411CA0 */
 void Engine::CopyToGlobals() {
-  DAT_00435f04 = (Parser*)Engine::field_0x90;
-  DAT_00435f14 = Engine::m_subParser;
+  g_ConsoleSprite = Engine::m_consoleSprite;
+  g_Weapon = Engine::m_weapon;
   g_SoundList_00435f1c = Engine::m_soundList;
   DAT_00435f00 = Engine::m_engineInfoParser;
   DAT_00435f24 = Engine::m_navigator;
   g_EnginePalette = Engine::m_timerManager;
   DAT_00435f10 = Engine::m_combatSprite;
-  DAT_00435f0c = (Parser*)Engine::m_targetList;
-  g_ScoreManager = (int*)Engine::m_cursorState;
+  g_TargetList = Engine::m_targetList;
+  g_ScoreManager = Engine::m_cursorState;
   g_EngineViewport = Engine::m_viewport;
-  DAT_00435f28 = (int*)Engine::m_stateManager;
+  g_GameOutcome = Engine::m_gameOutcome;
 }
 
 /* Function start: 0x411D20 */
 void Engine::ClearGlobals() {
-  DAT_00435f04 = 0;
-  DAT_00435f14 = 0;
+  g_ConsoleSprite = 0;
+  g_Weapon = 0;
   g_SoundList_00435f1c = 0;
   DAT_00435f00 = 0;
   DAT_00435f24 = 0;
   g_EnginePalette = 0;
   DAT_00435f10 = 0;
-  DAT_00435f0c = 0;
+  g_TargetList = 0;
   g_ScoreManager = 0;
   g_EngineViewport = 0;
-  DAT_00435f28 = 0;
+  g_GameOutcome = 0;
 }
 void Engine::PlayCompletionSound() {}

@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "Animation.h"
 #include "EngineSubsystems.h"
+#include "CursorState.h"
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
@@ -38,7 +39,7 @@ Weapon::~Weapon() {}
 
 /* Function start: 0x415E00 */
 void Weapon::OnHit() {
-    g_ScoreManager[6]++;
+    g_ScoreManager->shotsFired++;
     if (Weapon::field_0xa4 != 0) {
         ((Sample*)Weapon::field_0xa4)->Play(100, 1);
     }

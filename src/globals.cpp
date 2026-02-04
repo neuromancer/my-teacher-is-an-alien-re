@@ -13,6 +13,10 @@
 //#include "Manager.h"
 #include "FlagArray.h"
 #include "StringTable.h"
+#include "RockThrower.h"
+#include "GameOutcome.h"
+#include "CursorState.h"
+#include "Target.h"
 
 // Pointers initialized to 0 to avoid crash
 // Sorted by address 0x00436960 - 0x004369A4
@@ -75,17 +79,16 @@ SolutionEntry g_SolutionData_00435b88[9] = {
 
 // Engine parser subsystem globals (0x435f00 - 0x435f28)
 EngineInfoParser* DAT_00435f00 = 0;  // ENGINE_INFO parser
-Parser* DAT_00435f04 = 0;  // Console parser
+Sprite* g_ConsoleSprite = 0; // 0x435f04 - Console sprite
 Viewport* g_EngineViewport = 0; // 0x435f08
-Parser* DAT_00435f0c = 0;  // TARGETS parser
+TargetList* g_TargetList = 0; // 0x435f0c - TARGETS parser
 CombatSprite* DAT_00435f10 = 0;  // SPRITELIST parser
-Parser* DAT_00435f14 = 0;  // Weapon parser (RockThrower)
+Weapon* g_Weapon = 0; // 0x435f14 - Weapon parser (RockThrower)
 Palette* g_EnginePalette = 0; // 0x435f18
 SoundList* g_SoundList_00435f1c;
-int* g_ScoreManager = 0; // 0x435f20
+CursorState* g_ScoreManager = 0; // 0x435f20
 mCNavigator* DAT_00435f24 = 0;  // NAVIGATION parser
-static int _navState = 0;  // Navigation state value
-int* DAT_00435f28 = &_navState;  // Pointer to navigation state
+GameOutcome* g_GameOutcome = 0; // 0x435f28 - Game outcome state
 
 char DAT_004374c0 = 0;
 char DAT_004374c1 = 0;

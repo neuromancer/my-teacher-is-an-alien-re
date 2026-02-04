@@ -2,6 +2,7 @@
 #include "Memory.h"
 #include "globals.h"
 #include "Sample.h"
+#include "CursorState.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -124,7 +125,7 @@ Target* TargetList::ProcessTargets() {
 
   fallbackTarget = 0;
   TargetList::currentTarget = 0;
-  ht = ((TargetList*)DAT_00435f0c)->hashTable;
+  ht = g_TargetList->hashTable;
   if (ht == 0) {
     return 0;
   }
@@ -163,7 +164,7 @@ Target* TargetList::ProcessTargets() {
     if (target != 0 && target->Update() == 0) {
       if (target->AdvanceHotspot() != 0) {
         TargetList::currentTarget = target;
-        g_ScoreManager[5] = g_ScoreManager[5] + 1;
+        g_ScoreManager->hitCount = g_ScoreManager->hitCount + 1;
         ((ScoreManager*)g_ScoreManager)->AdjustScore(-target->scoreWeight.end);
         if (TargetList::field_0x1c0 != 0) {
           ((Sample*)TargetList::field_0x1c0)->Play(100, 1);

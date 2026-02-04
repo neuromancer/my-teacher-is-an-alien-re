@@ -8,6 +8,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "Memory.h"
+#include "GameOutcome.h"
 
 extern "C" {
 #include "mss.h"
@@ -16,8 +17,8 @@ extern "C" {
 extern void ShowError(const char* message, ...);
 extern void CleanupObjectArray(void*, int);
 
-// Global for navigation state
-extern int* DAT_00435f28;
+// Global for game outcome state
+extern GameOutcome* g_GameOutcome;
 
 // NavNode constructor - initializes a 0x100 byte structure
 void* NavNode_Constructor(void* mem) { return mem; }
@@ -276,7 +277,7 @@ int mCNavigator::Update()
 	}
 
 	if (result == 3 || result == 2) {
-		*DAT_00435f28 = 2;
+		g_GameOutcome->outcome = 2;
 		return result;
 	}
 
