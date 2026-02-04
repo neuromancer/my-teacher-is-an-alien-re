@@ -36,11 +36,11 @@
 
 // Globals moved from globals.cpp to match layout
 StringTable* g_Strings_00435a70 = 0;
-Character* DAT_00435a74 = 0;
-Character* DAT_00435a78 = 0;
-Character* DAT_00435a7c = 0;
-Character* DAT_00435a80 = 0;
-FlagArray* g_Manager_00435a84 = 0;
+Character* g_PeterCharacter_00435a74 = 0;
+Character* g_SusanCharacter_00435a78 = 0;
+Character* g_DuncanCharacter_00435a7c = 0;
+Character* g_SelectedCharacter_00435a80 = 0;
+FlagArray* g_FlagManager_00435a84 = 0;
 
 static char s_TeacherDemo[] = "Teacher Demo"; 
 
@@ -105,8 +105,8 @@ void RunGame() {
 
     g_Timer_00436980 = new Timer();
 
-    g_Manager_00435a84 = new FlagArray("question.sav", 1000);
-    g_Manager_00435a84->ClearAllFlags();
+    g_FlagManager_00435a84 = new FlagArray("question.sav", 1000);
+    g_FlagManager_00435a84->ClearAllFlags();
 
     g_GameState_00436998 = new GameState();
     ParseFile(g_GameState_00436998, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
@@ -195,22 +195,22 @@ void RunGame() {
         g_Mouse_00436978 = 0;
     }
 
-    if (DAT_00435a74 != 0) {
-        delete DAT_00435a74;
-        DAT_00435a74 = 0;
+    if (g_PeterCharacter_00435a74 != 0) {
+        delete g_PeterCharacter_00435a74;
+        g_PeterCharacter_00435a74 = 0;
     }
-    if (DAT_00435a78 != 0) {
-        delete DAT_00435a78;
-        DAT_00435a78 = 0;
+    if (g_SusanCharacter_00435a78 != 0) {
+        delete g_SusanCharacter_00435a78;
+        g_SusanCharacter_00435a78 = 0;
     }
-    if (DAT_00435a7c != 0) {
-        delete DAT_00435a7c;
-        DAT_00435a7c = 0;
+    if (g_DuncanCharacter_00435a7c != 0) {
+        delete g_DuncanCharacter_00435a7c;
+        g_DuncanCharacter_00435a7c = 0;
     }
 
-    if (g_Manager_00435a84 != 0) {
-        delete g_Manager_00435a84;
-        g_Manager_00435a84 = 0;
+    if (g_FlagManager_00435a84 != 0) {
+        delete g_FlagManager_00435a84;
+        g_FlagManager_00435a84 = 0;
     }
 
     ShutdownGameSystems();

@@ -32,9 +32,9 @@ public:
   SoundList* m_localSoundList;     // 0xe8 - local SoundList for combat sounds
   Sample* m_missSound;             // 0xec - "audio\\slingmis.wav"
   int field_0xf0;                 // 0xf0
-  int m_prevHitCount;             // 0xf4 - tracks g_ScoreManager[5]
+  int m_prevHitCount;             // 0xf4 - tracks g_ScoreManager_00435f20[5]
   int field_0xf8;                 // 0xf8
-  int m_prevMissCount;            // 0xfc - tracks g_ScoreManager[3]
+  int m_prevMissCount;            // 0xfc - tracks g_ScoreManager_00435f20[3]
   Sample* m_completionSound;      // 0x100 - "audio\\ldu013_1.wav"
   Sample* m_ambientSound;         // 0x104 - "audio\\ldu005_1.wav"
   int field_0x108;                // 0x108

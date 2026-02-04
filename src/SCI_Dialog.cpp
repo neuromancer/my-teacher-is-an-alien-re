@@ -343,7 +343,7 @@ int SCI_Dialog::Exit(SC_Message* msg) {
 
     case 0x14:
         dq = FindDialogById(msg->sourceAddress);
-        g_Manager_00435a84->SetFlag(msg->sourceAddress, 1);
+        g_FlagManager_00435a84->SetFlag(msg->sourceAddress, 1);
         if (dq != 0) delete dq;
         break;
 

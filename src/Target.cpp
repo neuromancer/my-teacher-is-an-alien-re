@@ -85,14 +85,14 @@ void Target::Spawn()
     if (Target::stopSound != 0) {
         Target::stopSound->Play(100, 1);
     }
-    g_ScoreManager->completionCount++;
+    g_ScoreManager_00435f20->completionCount++;
 }
 
 /* Function start: 0x4140B0 */
 void Target::Activate()
 {
     if (Target::active == 0) {
-        TargetList* targetList = g_TargetList;
+        TargetList* targetList = g_TargetList_00435f0c;
         HashTable* hashTable = targetList->hashTable;
         if (hashTable != 0) {
             unsigned int id = (unsigned int)Target::id;
@@ -154,7 +154,7 @@ void Target::Activate()
 void Target::Deactivate()
 {
     if (Target::active != 0) {
-        TargetList* targetList = g_TargetList;
+        TargetList* targetList = g_TargetList_00435f0c;
         HashTable* hashTable = targetList->hashTable;
         if (hashTable != 0 && hashTable->buckets != 0) {
             unsigned int id = (unsigned int)Target::id;
@@ -245,7 +245,7 @@ advance:
                 list->processingHead = node->next;
                 list->currentId = node->id;
             }
-            (g_TargetList)->currentTarget = this;
+            (g_TargetList_00435f0c)->currentTarget = this;
             return 1;
         }
     }
@@ -289,7 +289,7 @@ int Target::Update()
     int state = Target::pendingAction;
     if (state == 1) {
         if (Target::animRange.end == Target::current_state) {
-            g_ScoreManager->score = g_ScoreManager->score - Target::hitMissPoints.end;
+            g_ScoreManager_00435f20->score = g_ScoreManager_00435f20->score - Target::hitMissPoints.end;
             Target::Deactivate();
             return 1;
         }
@@ -308,11 +308,11 @@ int Target::Update()
         if (Target::hitSound != 0) {
             Target::hitSound->Play(100, 1);
         }
-        g_ScoreManager->missCount++;
-        g_ScoreManager->score += Target::hitMissPoints.start;
-        ((ScoreManager*)g_ScoreManager)->AdjustScore(Target::scoreWeight.start);
-        g_CombatEngine->m_combatBonus1 += Target::combatBonus.start;
-        g_CombatEngine->m_combatBonus2 += Target::combatBonus2.val;
+        g_ScoreManager_00435f20->missCount++;
+        g_ScoreManager_00435f20->score += Target::hitMissPoints.start;
+        ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(Target::scoreWeight.start);
+        g_CombatEngine_00435eb0->m_combatBonus1 += Target::combatBonus.start;
+        g_CombatEngine_00435eb0->m_combatBonus2 += Target::combatBonus2.val;
     }
 
     int y = Target::loc_y;
@@ -393,13 +393,13 @@ void Target::OnProcessStart()
     
     InitAnimation();
     
-    TargetList* tl = g_TargetList;
+    TargetList* tl = g_TargetList_00435f0c;
     stopSound     = (Sample*)tl->field_0x1b4;
-    tl = g_TargetList;
+    tl = g_TargetList_00435f0c;
     progressSound = (Sample*)tl->field_0x1b8;
-    tl = g_TargetList;
+    tl = g_TargetList_00435f0c;
     hitSound      = (Sample*)tl->field_0x1bc;
-    tl = g_TargetList;
+    tl = g_TargetList_00435f0c;
     sound3        = (Sample*)tl->field_0x1c0;
 }
 

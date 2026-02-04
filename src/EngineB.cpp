@@ -62,14 +62,14 @@ int EngineB::LBLParse(char* line) {
 
 /* Function start: 0x412300 */
 void EngineB::Draw() {
-  if (g_ConsoleSprite == 0) {
+  if (g_ConsoleSprite_00435f04 == 0) {
     return;
   }
 
-  if (EngineB::m_prevHitCount != g_ScoreManager->hitCount) {
+  if (EngineB::m_prevHitCount != g_ScoreManager_00435f20->hitCount) {
     // Target was hit
-    EngineB::m_prevHitCount = g_ScoreManager->hitCount;
-    g_ConsoleSprite->SetState2(8);
+    EngineB::m_prevHitCount = g_ScoreManager_00435f20->hitCount;
+    g_ConsoleSprite_00435f04->SetState2(8);
     EngineB::m_progress.start += EngineB::m_targetConfig[1];
 
     int hitIdx = rand() % 3;
@@ -79,10 +79,10 @@ void EngineB::Draw() {
     if (hitSample != 0) {
       hitSample->Play(0x64, 1);
     }
-  } else if (EngineB::m_prevMissCount != g_ScoreManager->missCount) {
+  } else if (EngineB::m_prevMissCount != g_ScoreManager_00435f20->missCount) {
     // Idle sound change
-    EngineB::m_prevMissCount = g_ScoreManager->missCount;
-    g_ConsoleSprite->SetState2(9);
+    EngineB::m_prevMissCount = g_ScoreManager_00435f20->missCount;
+    g_ConsoleSprite_00435f04->SetState2(9);
 
     Sample* idleSample = (&m_tauntSound1)[rand() % 2];
     if (idleSample != 0) {
@@ -107,7 +107,7 @@ void EngineB::Draw() {
   }
 
   // Aim cursor based on mouse position
-  if (g_Weapon->field_0xa0 != 0) {
+  if (g_Weapon_00435f14->field_0xa0 != 0) {
     InputState* pMouse = g_InputManager_00436968->pMouse;
     int mouseX;
     if (pMouse == 0) {
@@ -115,11 +115,11 @@ void EngineB::Draw() {
     } else {
       mouseX = pMouse->x;
     }
-    g_ConsoleSprite->SetState2(mouseX / 0x6a + 5);
+    g_ConsoleSprite_00435f04->SetState2(mouseX / 0x6a + 5);
   }
 
   // Animate sprite
-  Sprite* consoleSprite = g_ConsoleSprite;
+  Sprite* consoleSprite = g_ConsoleSprite_00435f04;
   if (consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0) != 0) {
     InputState* pMouse = g_InputManager_00436968->pMouse;
     int mouseX;
@@ -128,7 +128,7 @@ void EngineB::Draw() {
     } else {
       mouseX = pMouse->x;
     }
-    g_ConsoleSprite->SetState2((mouseX + ((mouseX >> 31) & 0x3f)) >> 6);
+    g_ConsoleSprite_00435f04->SetState2((mouseX + ((mouseX >> 31) & 0x3f)) >> 6);
   }
 }
 
@@ -196,7 +196,7 @@ void EngineB::UpdateMeter() {
     }
 
     if (g_TimeOut_0043d140.IsTimeOut() != 0) {
-      g_GameOutcome->outcome = 1;
+      g_GameOutcome_00435f28->outcome = 1;
       return;
     }
   }
@@ -209,7 +209,7 @@ void AtExitCleanup_0043d140() {
 
 /* Function start: 0x412610 */
 void EngineB::ProcessTargets() {
-  g_TargetList->ProcessTargets();
+  g_TargetList_00435f0c->ProcessTargets();
   ((RockThrower*)EngineB::m_weaponParser)->UpdateProjectiles();
   EngineB::Draw();
   EngineB::UpdateMeter();
@@ -242,7 +242,7 @@ void EngineB::OnProcessEnd() {
     g_InputManager_00436968->PollEvents(1);
   }
 
-  if (g_ConsoleSprite != 0) {
+  if (g_ConsoleSprite_00435f04 != 0) {
     InputState* pMouse = g_InputManager_00436968->pMouse;
     int timeVal;
     if (pMouse == 0) {
@@ -250,7 +250,7 @@ void EngineB::OnProcessEnd() {
     } else {
       timeVal = pMouse->x;
     }
-    g_ConsoleSprite->SetState2((timeVal + ((timeVal >> 31) & 0x3f)) >> 6);
+    g_ConsoleSprite_00435f04->SetState2((timeVal + ((timeVal >> 31) & 0x3f)) >> 6);
   }
 
   // Allocate and initialize m_targetConfig (8 byte object)
@@ -258,10 +258,10 @@ void EngineB::OnProcessEnd() {
   pObj164[0] = 1;
   pObj164[1] = 3;
   EngineB::m_targetConfig = pObj164;
-  EngineB::m_weaponParser = g_Weapon;
+  EngineB::m_weaponParser = g_Weapon_00435f14;
 
   // Update field_0x108 on all targets
-  TargetList* targetList = g_TargetList;
+  TargetList* targetList = g_TargetList_00435f0c;
   numTargets = targetList->count;
   if (numTargets > 0) {
     for (i = 0; i < numTargets; i++) {

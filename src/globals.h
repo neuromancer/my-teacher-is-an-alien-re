@@ -372,11 +372,11 @@ struct MessageQueue;
 // extern char DAT_00435932; // { /* 1 bytes */ }
 // extern char DAT_00435933; // { /* 1 bytes */ }
 extern StringTable* g_Strings_00435a70; // 00435a70
-extern Character* DAT_00435a74; // peter character
-extern Character* DAT_00435a78; // susan character
-extern Character* DAT_00435a7c; // duncan character
-extern Character* DAT_00435a80; // selected character pointer
-extern FlagArray* g_Manager_00435a84; // 00435a84
+extern Character* g_PeterCharacter_00435a74;
+extern Character* g_SusanCharacter_00435a78;
+extern Character* g_DuncanCharacter_00435a7c;
+extern Character* g_SelectedCharacter_00435a80;
+extern FlagArray* g_FlagManager_00435a84;
 
 struct SolutionEntry {
     int buttonIndices[3];
@@ -384,7 +384,7 @@ struct SolutionEntry {
 };
 
 extern SolutionEntry g_SolutionData_00435b88[9];
-extern Engine* g_CombatEngine; // 00435eb0 - Combat engine (EngineB subclass)
+extern Engine* g_CombatEngine_00435eb0; // Combat engine (EngineB subclass)
 // extern char DAT_00435ef0; // { /* 1 bytes */ }
 // extern char DAT_00435ef1; // { /* 1 bytes */ }
 // extern char DAT_00435ef2; // { /* 1 bytes */ }
@@ -398,17 +398,17 @@ extern int DAT_004374ce; // { /* 4 bytes */ }
 // extern char DAT_00435ef6; // { /* 1 bytes */ }
 // extern char DAT_00435ef7; // { /* 1 bytes */ }
 // Engine parser subsystem globals
-extern class EngineInfoParser* DAT_00435f00;  // ENGINE_INFO parser
-extern Sprite* g_ConsoleSprite; // 0x435f04 - Console sprite
-extern class Viewport* g_EngineViewport; // 0x435f08
-extern TargetList* g_TargetList; // 0x435f0c - TARGETS parser
-extern CombatSprite* DAT_00435f10;  // SPRITELIST parser
-extern Weapon* g_Weapon; // 0x435f14 - Weapon parser (RockThrower)
-extern class Palette* g_EnginePalette; // 0x435f18
-extern class SoundList* g_SoundList_00435f1c; // 0x435f1c
-extern CursorState* g_ScoreManager; // 0x435f20
-extern mCNavigator* DAT_00435f24;  // NAVIGATION parser
-extern GameOutcome* g_GameOutcome; // 0x435f28 - Game outcome state
+extern class EngineInfoParser* g_EngineInfoParser_00435f00;  // ENGINE_INFO parser
+extern Sprite* g_ConsoleSprite_00435f04; // Console sprite
+extern class Viewport* g_EngineViewport_00435f08;
+extern TargetList* g_TargetList_00435f0c; // TARGETS parser
+extern CombatSprite* g_SpriteList_00435f10;  // SPRITELIST parser
+extern Weapon* g_Weapon_00435f14; // Weapon parser (RockThrower)
+extern class Palette* g_EnginePalette_00435f18;
+extern class SoundList* g_SoundList_00435f1c;
+extern CursorState* g_ScoreManager_00435f20;
+extern mCNavigator* g_Navigator_00435f24;  // NAVIGATION parser
+extern GameOutcome* g_GameOutcome_00435f28; // Game outcome state
 // extern char DAT_00436094; // { /* 1 bytes */ }
 // extern char DAT_00436095; // { /* 1 bytes */ }
 // extern char DAT_00436096; // { /* 1 bytes */ }

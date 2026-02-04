@@ -12,7 +12,7 @@
 
 // Globals
 extern InputManager* g_InputManager_00436968;
-extern Engine* g_CombatEngine;         // 0x00435eb0
+extern Engine* g_CombatEngine_00435eb0;         // 0x00435eb0
 
 // Hash table entry structure for random pool
 struct HashEntry {
@@ -69,13 +69,13 @@ int mCNavNode::Activate()
         if (entry == 0) {
             ShowError("mCNavNode::Activate() - Invalid Sprite Id S %d of %s", bucketIndex, mCNavNode::nodeName);
         } else {
-            DAT_00435f10->PlayById(entry->value);
+            g_SpriteList_00435f10->PlayById(entry->value);
         }
     }
 
     mCNavNode::counter = 0;
     mCNavNode::active = 1;
-    g_CombatEngine->m_framesL = 1;
+    g_CombatEngine_00435eb0->m_framesL = 1;
 
     return 0;
 }
@@ -85,8 +85,8 @@ int mCNavNode::GetNextNode()
 {
     int divisor;
 
-    int* pDirectionIndex = &DAT_00435f24->field_98;
-    int currentNode = DAT_00435f24->field_A0;
+    int* pDirectionIndex = &g_Navigator_00435f24->field_98;
+    int currentNode = g_Navigator_00435f24->field_A0;
     int currentDir = *pDirectionIndex;
     InputState* pMouse = g_InputManager_00436968->pMouse;
 
@@ -170,7 +170,7 @@ return_result:
 /* Function start: 0x412f40 */
 void mCNavNode::AddSpriteList(char* name, int id)
 {
-    if (DAT_00435f10 == 0 || DAT_00435f10->FindSprite(id) == 0) {
+    if (g_SpriteList_00435f10 == 0 || g_SpriteList_00435f10->FindSprite(id) == 0) {
         ShowError("mCNavNode::AddSpriteList() - Undefined sprite list %s %d", name, id);
     }
 

@@ -27,7 +27,7 @@ SC_Question::SC_Question(int id)
     ParseFile(this, "mis\\quest001.mis", "[QUESTION%5.5d]", questionId);
     
     // Check if question was already answered
-    if (g_Manager_00435a84->GetFlag(questionId, 1) != 0) {
+    if (g_FlagManager_00435a84->GetFlag(questionId, 1) != 0) {
         state = 2;
     }
 }
@@ -94,7 +94,7 @@ void SC_Question::Finalize()
     QueueNode* current;
     
     // Mark question as answered in flag array
-    g_Manager_00435a84->SetFlag(questionId, 1);
+    g_FlagManager_00435a84->SetFlag(questionId, 1);
     
     state = 2;
     if (messageQueue->head == 0) {

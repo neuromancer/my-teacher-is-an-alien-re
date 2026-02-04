@@ -68,11 +68,11 @@ int EngineInfoParser::LBLParse(char* line) {
 /* Function start: 0x416F70 */
 void EngineInfoParser::ParseOffset(char *line, int arg2) {
   if ((char)arg2 == '1') {
-    sscanf(line, "%d %d", &g_CombatEngine->m_viewOffset1X,
-           &g_CombatEngine->m_viewOffset1Y);
+    sscanf(line, "%d %d", &g_CombatEngine_00435eb0->m_viewOffset1X,
+           &g_CombatEngine_00435eb0->m_viewOffset1Y);
   } else {
-    sscanf(line, "%d %d", &g_CombatEngine->m_scrollOffsetX,
-           &g_CombatEngine->m_scrollOffsetY);
+    sscanf(line, "%d %d", &g_CombatEngine_00435eb0->m_scrollOffsetX,
+           &g_CombatEngine_00435eb0->m_scrollOffsetY);
   }
 }
 
@@ -94,22 +94,22 @@ void EngineInfoParser::ParseSound(char *line, int index) {
 
   switch (index) {
   case 0:
-    g_CombatEngine->m_backgroundSample = (Sample*)sound;
+    g_CombatEngine_00435eb0->m_backgroundSample = (Sample*)sound;
     break;
   case 1:
-    g_Weapon->field_0xa4 = sound;
+    g_Weapon_00435f14->field_0xa4 = sound;
     break;
   case 2:
-    g_TargetList->field_0x1b4 = sound;
+    g_TargetList_00435f0c->field_0x1b4 = sound;
     break;
   case 3:
-    g_TargetList->field_0x1b8 = sound;
+    g_TargetList_00435f0c->field_0x1b8 = sound;
     break;
   case 4:
-    g_TargetList->field_0x1bc = sound;
+    g_TargetList_00435f0c->field_0x1bc = sound;
     break;
   case 5:
-    g_TargetList->field_0x1c0 = (void*)sound;
+    g_TargetList_00435f0c->field_0x1c0 = (void*)sound;
     break;
   default:
     ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);
@@ -121,7 +121,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
 void EngineInfoParser::ParsePalette(char *line) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-  g_EnginePalette->Load(CDData_FormatPath(buffer));
+  g_EnginePalette_00435f18->Load(CDData_FormatPath(buffer));
 }
 
 /* Function start: 0x417170 */

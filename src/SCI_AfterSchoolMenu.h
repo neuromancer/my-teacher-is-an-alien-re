@@ -115,9 +115,9 @@ public:
 };
 
 // Global character objects created in SCI_AfterSchoolMenu constructor
-// DAT_00435a74: peter character
-// DAT_00435a78: susan character
-// DAT_00435a7c: duncan character
+// g_PeterCharacter_00435a74: peter character
+// g_SusanCharacter_00435a78: susan character
+// g_DuncanCharacter_00435a7c: duncan character
 // DAT_00435a80: currently selected character
 
 #endif // SCI_AFTERSCHOOLMENU_H

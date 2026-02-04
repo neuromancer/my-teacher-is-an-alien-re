@@ -84,9 +84,9 @@ void Engine::SetupViewport() {
   int width;
   Animation* anim;
 
-  g_EngineViewport->SetDimensions(DAT_00435f00->anchorRect.right, DAT_00435f00->anchorRect.bottom);
+  g_EngineViewport_00435f08->SetDimensions(g_EngineInfoParser_00435f00->anchorRect.right, g_EngineInfoParser_00435f00->anchorRect.bottom);
   
-  anim = ((mCNavigator*)DAT_00435f24)->sprite->animation_data;
+  anim = ((mCNavigator*)g_Navigator_00435f24)->sprite->animation_data;
   height = 0;
   if (anim != 0) {
     height = anim->targetBuffer->height;
@@ -96,17 +96,17 @@ void Engine::SetupViewport() {
     width = anim->targetBuffer->width;
   }
   
-  g_EngineViewport->SetDimensions2(width - g_EngineViewport->dim.a, height - g_EngineViewport->dim.b);
-  g_EngineViewport->SetCenter();
-  g_EngineViewport->SetAnchor(DAT_00435f00->anchorRect.left, DAT_00435f00->anchorRect.top);
+  g_EngineViewport_00435f08->SetDimensions2(width - g_EngineViewport_00435f08->dim.a, height - g_EngineViewport_00435f08->dim.b);
+  g_EngineViewport_00435f08->SetCenter();
+  g_EngineViewport_00435f08->SetAnchor(g_EngineInfoParser_00435f00->anchorRect.left, g_EngineInfoParser_00435f00->anchorRect.top);
   
-  g_ScoreManager->scoreInitial = 100;
+  g_ScoreManager_00435f20->scoreInitial = 100;
   m_framesL = 1;
   m_framesA = 1;
   
   BlankScreen();
   
-  g_EnginePalette->SetPalette(DAT_00435f00->paletteRect.left, (DAT_00435f00->paletteRect.top - DAT_00435f00->paletteRect.left) + 1);
+  g_EnginePalette_00435f18->SetPalette(g_EngineInfoParser_00435f00->paletteRect.left, (g_EngineInfoParser_00435f00->paletteRect.top - g_EngineInfoParser_00435f00->paletteRect.left) + 1);
   
   if (m_backgroundSample != 0) {
     m_backgroundSample->Play(100, 0);
@@ -130,7 +130,7 @@ int Engine::UpdateAndCheck() {
 
   UpdateCrosshair();
 
-  result = ((mCNavigator*)DAT_00435f24)->Update();
+  result = ((mCNavigator*)g_Navigator_00435f24)->Update();
   if (result != 0) {
     return 1;
   }
@@ -186,16 +186,16 @@ int Engine::LBLParse(char* line) {
   sscanf(line, "%s", local_34);
 
   if (strcmp(local_34, "[ENGINE_INFO]") == 0) {
-    Parser::ProcessFile(DAT_00435f00, this, (char*)0);
+    Parser::ProcessFile(g_EngineInfoParser_00435f00, this, (char*)0);
   }
   else if (strcmp(local_34, "[TARGETS]") == 0) {
-    Parser::ProcessFile(g_TargetList, this, (char*)0);
+    Parser::ProcessFile(g_TargetList_00435f0c, this, (char*)0);
   }
   else if (strcmp(local_34, "[SPRITELIST]") == 0) {
-    Parser::ProcessFile(DAT_00435f10, this, (char*)0);
+    Parser::ProcessFile(g_SpriteList_00435f10, this, (char*)0);
   }
   else if (strcmp(local_34, "[NAVIGATION]") == 0) {
-    Parser::ProcessFile(DAT_00435f24, this, (char*)0);
+    Parser::ProcessFile(g_Navigator_00435f24, this, (char*)0);
   }
   else if (strcmp(local_34, "WEAPON") == 0) {
     int iVar3 = sscanf(line, " %s %s ", local_34, local_54);
@@ -207,13 +207,13 @@ int Engine::LBLParse(char* line) {
       if (strcmp(local_54, "ROCKTHROWER") == 0) {
         weaponVar = new RockThrower();
         Engine::m_weapon = weaponVar;
-        g_Weapon = weaponVar;
+        g_Weapon_00435f14 = weaponVar;
       }
     }
   }
   else if (strcmp(local_34, "CONSOLE") == 0) {
     spriteVar = new Sprite((char*)0);
-    g_ConsoleSprite = spriteVar;
+    g_ConsoleSprite_00435f04 = spriteVar;
     Parser::ProcessFile(spriteVar, this, (char*)0);
   }
   else if (strcmp(local_34, "END") == 0) {
@@ -231,8 +231,8 @@ void Engine::CleanupSubsystems() {}
 void Engine::VirtCleanup() {}
 /* Function start: 0x411440 */
 int Engine::UpdateSpriteFrame() {
-  if (DAT_00435f10 != 0) {
-    DAT_00435f10->ProcessFrame(Engine::m_framesL);
+  if (g_SpriteList_00435f10 != 0) {
+    g_SpriteList_00435f10->ProcessFrame(Engine::m_framesL);
   }
   return 0;
 }
@@ -243,34 +243,34 @@ void Engine::UpdateCrosshair() {
 
   mouse = g_InputManager_00436968->pMouse;
   if (mouse != 0) {
-    g_Weapon->m_crosshairX = mouse->x;
+    g_Weapon_00435f14->m_crosshairX = mouse->x;
   } else {
-    g_Weapon->m_crosshairX = 0;
+    g_Weapon_00435f14->m_crosshairX = 0;
   }
 
   mouse = g_InputManager_00436968->pMouse;
   if (mouse != 0) {
-    g_Weapon->m_crosshairY = mouse->y;
+    g_Weapon_00435f14->m_crosshairY = mouse->y;
   } else {
-    g_Weapon->m_crosshairY = 0;
+    g_Weapon_00435f14->m_crosshairY = 0;
   }
 
   mouse = g_InputManager_00436968->pMouse;
   if (mouse != 0) {
     if (mouse->x > 0xAA) {
-      g_EngineViewport->SetCenterX(g_EngineViewport->scrollX + 4);
+      g_EngineViewport_00435f08->SetCenterX(g_EngineViewport_00435f08->scrollX + 4);
       return;
     }
   }
   if (mouse != 0 && mouse->x >= 0x96) {
     return;
   }
-  g_EngineViewport->SetCenterX(g_EngineViewport->scrollX - 4);
+  g_EngineViewport_00435f08->SetCenterX(g_EngineViewport_00435f08->scrollX - 4);
 }
 
 /* Function start: 0x411DD0 */
 int Engine::CheckNavState() {
-  return (unsigned int)g_GameOutcome->outcome >= 1;
+  return (unsigned int)g_GameOutcome_00435f28->outcome >= 1;
 }
 /* Function start: 0x4113A0 */
 void Engine::ProcessTargets() {
@@ -278,8 +278,8 @@ void Engine::ProcessTargets() {
   InputState* mouse;
   int buttonDown;
 
-  target = g_TargetList->ProcessTargets();
-  g_Weapon->DrawCrosshairs();
+  target = g_TargetList_00435f0c->ProcessTargets();
+  g_Weapon_00435f14->DrawCrosshairs();
 
   mouse = g_InputManager_00436968->pMouse;
   buttonDown = 0;
@@ -287,13 +287,13 @@ void Engine::ProcessTargets() {
     buttonDown = mouse->buttons & 1;
   }
   if (buttonDown == 0 && (mouse->prevButtons & 1) != 0) {
-    g_Weapon->field_0xa0 = 1;
+    g_Weapon_00435f14->field_0xa0 = 1;
   } else {
-    g_Weapon->field_0xa0 = 0;
+    g_Weapon_00435f14->field_0xa0 = 0;
   }
 
-  if (g_Weapon->field_0xa0 != 0) {
-    g_Weapon->OnHit();
+  if (g_Weapon_00435f14->field_0xa0 != 0) {
+    g_Weapon_00435f14->OnHit();
     if (target != 0) {
       target->UpdateProgress(1);
     }
@@ -306,39 +306,39 @@ void Engine::ProcessTargets() {
 void Engine::Draw() {
   Sprite* console;
 
-  if (g_ConsoleSprite != 0) {
-    console = g_ConsoleSprite;
+  if (g_ConsoleSprite_00435f04 != 0) {
+    console = g_ConsoleSprite_00435f04;
     console->Do(console->loc_x, console->loc_y, 1.0);
   }
 }
 void Engine::UpdateMeter() {}
 /* Function start: 0x411CA0 */
 void Engine::CopyToGlobals() {
-  g_ConsoleSprite = Engine::m_consoleSprite;
-  g_Weapon = Engine::m_weapon;
+  g_ConsoleSprite_00435f04 = Engine::m_consoleSprite;
+  g_Weapon_00435f14 = Engine::m_weapon;
   g_SoundList_00435f1c = Engine::m_soundList;
-  DAT_00435f00 = Engine::m_engineInfoParser;
-  DAT_00435f24 = Engine::m_navigator;
-  g_EnginePalette = Engine::m_timerManager;
-  DAT_00435f10 = Engine::m_combatSprite;
-  g_TargetList = Engine::m_targetList;
-  g_ScoreManager = Engine::m_cursorState;
-  g_EngineViewport = Engine::m_viewport;
-  g_GameOutcome = Engine::m_gameOutcome;
+  g_EngineInfoParser_00435f00 = Engine::m_engineInfoParser;
+  g_Navigator_00435f24 = Engine::m_navigator;
+  g_EnginePalette_00435f18 = Engine::m_timerManager;
+  g_SpriteList_00435f10 = Engine::m_combatSprite;
+  g_TargetList_00435f0c = Engine::m_targetList;
+  g_ScoreManager_00435f20 = Engine::m_cursorState;
+  g_EngineViewport_00435f08 = Engine::m_viewport;
+  g_GameOutcome_00435f28 = Engine::m_gameOutcome;
 }
 
 /* Function start: 0x411D20 */
 void Engine::ClearGlobals() {
-  g_ConsoleSprite = 0;
-  g_Weapon = 0;
+  g_ConsoleSprite_00435f04 = 0;
+  g_Weapon_00435f14 = 0;
   g_SoundList_00435f1c = 0;
-  DAT_00435f00 = 0;
-  DAT_00435f24 = 0;
-  g_EnginePalette = 0;
-  DAT_00435f10 = 0;
-  g_TargetList = 0;
-  g_ScoreManager = 0;
-  g_EngineViewport = 0;
-  g_GameOutcome = 0;
+  g_EngineInfoParser_00435f00 = 0;
+  g_Navigator_00435f24 = 0;
+  g_EnginePalette_00435f18 = 0;
+  g_SpriteList_00435f10 = 0;
+  g_TargetList_00435f0c = 0;
+  g_ScoreManager_00435f20 = 0;
+  g_EngineViewport_00435f08 = 0;
+  g_GameOutcome_00435f28 = 0;
 }
 void Engine::PlayCompletionSound() {}

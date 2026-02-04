@@ -6,7 +6,7 @@
 #include <string.h>
 
 extern int DAT_0043d150;
-extern Engine* g_CombatEngine;
+extern Engine* g_CombatEngine_00435eb0;
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
@@ -49,7 +49,7 @@ RockThrower::RockThrower() {
     pItemCount[0] = 3;
 
     // Initialize from combat engine
-    Parser::ProcessFile(this, (Parser*)g_CombatEngine, (char*)0);
+    Parser::ProcessFile(this, (Parser*)g_CombatEngine_00435eb0, (char*)0);
 }
 
 RockThrower::~RockThrower() {}

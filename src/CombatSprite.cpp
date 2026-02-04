@@ -545,11 +545,11 @@ parseLoop:
     spriteIdx = 0;
     iVar = 0;
     while (1) {
-        if (g_TargetList->count == spriteIdx) {
+        if (g_TargetList_00435f0c->count == spriteIdx) {
             ShowError("Error! Uknown sprite id=> %s", spriteName);
         }
 
-        if (_stricmp(g_TargetList->targets[spriteIdx]->identifier, spriteName) == 0) {
+        if (_stricmp(g_TargetList_00435f0c->targets[spriteIdx]->identifier, spriteName) == 0) {
             break;
         }
         iVar = iVar + 4;
@@ -637,7 +637,7 @@ int CombatSprite::ProcessFrame(int frame) {
     count = -1;
     currentData = (int*)CombatSprite::field_0x8c;
     if (currentData != 0 && (count = 0, *currentData <= frame)) {
-        while (target = g_TargetList->targets[*(int*)(CombatSprite::field_0x8c + 4)],
+        while (target = g_TargetList_00435f0c->targets[*(int*)(CombatSprite::field_0x8c + 4)],
                target->active == 0) {
             count++;
             target->Spawn();

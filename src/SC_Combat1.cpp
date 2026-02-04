@@ -183,11 +183,11 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     field_98 = 0;
 
     // Handle combat object cleanup
-    if (g_CombatEngine != 0) {
-        g_CombatEngine->StopAndCleanup();
-        if (g_CombatEngine != 0) {
-            delete g_CombatEngine;
-            g_CombatEngine = 0;
+    if (g_CombatEngine_00435eb0 != 0) {
+        g_CombatEngine_00435eb0->StopAndCleanup();
+        if (g_CombatEngine_00435eb0 != 0) {
+            delete g_CombatEngine_00435eb0;
+            g_CombatEngine_00435eb0 = 0;
         }
     }
 
@@ -275,7 +275,7 @@ void SC_Combat1::Update(int param1, int param2) {
     }
 
     // Check if combat engine is active
-    result = g_CombatEngine->UpdateAndCheck();
+    result = g_CombatEngine_00435eb0->UpdateAndCheck();
     if (result != 0) {
         ProcessMessage();
     }
@@ -398,15 +398,15 @@ int SC_Combat1::LBLParse(char* line) {
     if (strcmp(label, "MODULE") == 0) {
         if (sscanf(line, "%s %s", label, moduleType) == 2) {
             if (strcmp(moduleType, "A") == 0) {
-                g_CombatEngine = new EngineB();
+                g_CombatEngine_00435eb0 = new EngineB();
             } else if (strcmp(moduleType, "B") == 0) {
-                g_CombatEngine = new EngineA();
+                g_CombatEngine_00435eb0 = new EngineA();
             } else {
                 Parser::LBLParse("SC_Combat1");
             }
         }
-        Parser::ProcessFile(g_CombatEngine, this, 0);
-        g_CombatEngine->SetupViewport();
+        Parser::ProcessFile(g_CombatEngine_00435eb0, this, 0);
+        g_CombatEngine_00435eb0->SetupViewport();
         return 0;
     }
 

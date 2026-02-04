@@ -39,7 +39,7 @@ Weapon::~Weapon() {}
 
 /* Function start: 0x415E00 */
 void Weapon::OnHit() {
-    g_ScoreManager->shotsFired++;
+    g_ScoreManager_00435f20->shotsFired++;
     if (Weapon::field_0xa4 != 0) {
         ((Sample*)Weapon::field_0xa4)->Play(100, 1);
     }

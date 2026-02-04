@@ -18,7 +18,7 @@ extern void ShowError(const char* message, ...);
 extern void CleanupObjectArray(void*, int);
 
 // Global for game outcome state
-extern GameOutcome* g_GameOutcome;
+extern GameOutcome* g_GameOutcome_00435f28;
 
 // NavNode constructor - initializes a 0x100 byte structure
 void* NavNode_Constructor(void* mem) { return mem; }
@@ -277,7 +277,7 @@ int mCNavigator::Update()
 	}
 
 	if (result == 3 || result == 2) {
-		g_GameOutcome->outcome = 2;
+		g_GameOutcome_00435f28->outcome = 2;
 		return result;
 	}
 

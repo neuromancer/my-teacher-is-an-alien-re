@@ -149,8 +149,8 @@ void IconBar::InitIconBar(SC_Message* msg) {
     CopyCommandData(msg);
 
     // Check selected character and set iconbar state
-    if (DAT_00435a80 != 0) {
-        iconbarSprite->SetState2(DAT_00435a80->characterType + 1);
+    if (g_SelectedCharacter_00435a80 != 0) {
+        iconbarSprite->SetState2(g_SelectedCharacter_00435a80->characterType + 1);
     }
 
     // Enable all buttons

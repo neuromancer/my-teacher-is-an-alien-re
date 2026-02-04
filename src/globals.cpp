@@ -21,7 +21,7 @@
 // Pointers initialized to 0 to avoid crash
 // Sorted by address 0x00436960 - 0x004369A4
 
-Engine* g_CombatEngine = 0; // Moved here to avoid corruption
+Engine* g_CombatEngine_00435eb0 = 0; // Combat engine (EngineB subclass)
 char* g_Buffer_00436960 = 0;
 void* g_Buffer_00436964 = 0;
 InputManager* g_InputManager_00436968 = 0;
@@ -78,17 +78,17 @@ SolutionEntry g_SolutionData_00435b88[9] = {
 };
 
 // Engine parser subsystem globals (0x435f00 - 0x435f28)
-EngineInfoParser* DAT_00435f00 = 0;  // ENGINE_INFO parser
-Sprite* g_ConsoleSprite = 0; // 0x435f04 - Console sprite
-Viewport* g_EngineViewport = 0; // 0x435f08
-TargetList* g_TargetList = 0; // 0x435f0c - TARGETS parser
-CombatSprite* DAT_00435f10 = 0;  // SPRITELIST parser
-Weapon* g_Weapon = 0; // 0x435f14 - Weapon parser (RockThrower)
-Palette* g_EnginePalette = 0; // 0x435f18
-SoundList* g_SoundList_00435f1c;
-CursorState* g_ScoreManager = 0; // 0x435f20
-mCNavigator* DAT_00435f24 = 0;  // NAVIGATION parser
-GameOutcome* g_GameOutcome = 0; // 0x435f28 - Game outcome state
+EngineInfoParser* g_EngineInfoParser_00435f00 = 0;  // ENGINE_INFO parser
+Sprite* g_ConsoleSprite_00435f04 = 0; // Console sprite
+Viewport* g_EngineViewport_00435f08 = 0;
+TargetList* g_TargetList_00435f0c = 0; // TARGETS parser
+CombatSprite* g_SpriteList_00435f10 = 0;  // SPRITELIST parser
+Weapon* g_Weapon_00435f14 = 0; // Weapon parser (RockThrower)
+Palette* g_EnginePalette_00435f18 = 0;
+SoundList* g_SoundList_00435f1c = 0;
+CursorState* g_ScoreManager_00435f20 = 0;
+mCNavigator* g_Navigator_00435f24 = 0;  // NAVIGATION parser
+GameOutcome* g_GameOutcome_00435f28 = 0; // Game outcome state
 
 char DAT_004374c0 = 0;
 char DAT_004374c1 = 0;

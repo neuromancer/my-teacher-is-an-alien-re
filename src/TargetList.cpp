@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-// ScoreManager - g_ScoreManager points to this
+// ScoreManager - g_ScoreManager_00435f20 points to this
 class ScoreManager {
 public:
   int field_0;
@@ -125,7 +125,7 @@ Target* TargetList::ProcessTargets() {
 
   fallbackTarget = 0;
   TargetList::currentTarget = 0;
-  ht = g_TargetList->hashTable;
+  ht = g_TargetList_00435f0c->hashTable;
   if (ht == 0) {
     return 0;
   }
@@ -164,8 +164,8 @@ Target* TargetList::ProcessTargets() {
     if (target != 0 && target->Update() == 0) {
       if (target->AdvanceHotspot() != 0) {
         TargetList::currentTarget = target;
-        g_ScoreManager->hitCount = g_ScoreManager->hitCount + 1;
-        ((ScoreManager*)g_ScoreManager)->AdjustScore(-target->scoreWeight.end);
+        g_ScoreManager_00435f20->hitCount = g_ScoreManager_00435f20->hitCount + 1;
+        ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(-target->scoreWeight.end);
         if (TargetList::field_0x1c0 != 0) {
           ((Sample*)TargetList::field_0x1c0)->Play(100, 1);
         }

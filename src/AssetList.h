@@ -2,7 +2,7 @@
 #define ASSETLIST_H
 
 // AssetList class
-// Note: DAT_00435a74/78/7c are Character*, not AssetList*
+// Note: g_PeterCharacter_00435a74/78/7c are Character*, not AssetList*
 // Contains linked list of assets
 class AssetList {
 public:

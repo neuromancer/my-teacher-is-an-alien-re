@@ -111,9 +111,9 @@ SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
     }
 
     // Create character objects
-    DAT_00435a74 = new Character("peter");
-    DAT_00435a78 = new Character("susan");
-    DAT_00435a7c = new Character("duncan");
+    g_PeterCharacter_00435a74 = new Character("peter");
+    g_SusanCharacter_00435a78 = new Character("susan");
+    g_DuncanCharacter_00435a7c = new Character("duncan");
 }
 
 /* Function start: 0x404E60 */
@@ -337,15 +337,15 @@ int SCI_AfterSchoolMenu::AddMessage(SC_Message* msg) {
 
         // Set selected character global
         if (currentCharacterIndex == 0) {
-            DAT_00435a80 = DAT_00435a74;  // peter
+            g_SelectedCharacter_00435a80 = g_PeterCharacter_00435a74;  // peter
         } else if (currentCharacterIndex == 1) {
-            DAT_00435a80 = DAT_00435a78;  // susan
+            g_SelectedCharacter_00435a80 = g_SusanCharacter_00435a78;  // susan
         } else {
-            DAT_00435a80 = DAT_00435a7c;  // duncan
+            g_SelectedCharacter_00435a80 = g_DuncanCharacter_00435a7c;  // duncan
         }
 
         // Update iconbar sprite with character state
-        iconbarSprite->SetState2(DAT_00435a80->characterType + 1);
+        iconbarSprite->SetState2(g_SelectedCharacter_00435a80->characterType + 1);
 
         PlayCharacterSound(2);
     }
