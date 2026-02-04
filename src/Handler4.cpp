@@ -191,14 +191,14 @@ void Handler4::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x40EC80 */
-int Handler4::Exit(SC_Message* msg) {
-    if (puzztest) puzztest->FreeAnimation();
-    if (litdoors) litdoors->FreeAnimation();
+int Handler4::ShutDown(SC_Message* msg) {
+    if (puzztest) puzztest->StopAnimationSound();
+    if (litdoors) litdoors->StopAnimationSound();
 
     for (int i = 0; i < 3; i++) {
-        (&paths1)[i]->FreeAnimation();
-        (&buttons1)[i]->FreeAnimation();
-        (&lowfloor)[i]->FreeAnimation();
+        (&paths1)[i]->StopAnimationSound();
+        (&buttons1)[i]->StopAnimationSound();
+        (&lowfloor)[i]->StopAnimationSound();
     }
 
     if (sound1 != 0) {
@@ -215,7 +215,7 @@ int Handler4::Exit(SC_Message* msg) {
 
     CleanupIconBar(msg);
     WriteToMessageLog("EXIT FORCEFIELD PUZZLE\n");
-    return 1;
+    return 0;
 }
 
 /* Function start: 0x40ED50 */
@@ -290,7 +290,7 @@ int Handler4::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x40EEB0 */
-int Handler4::ShutDown(SC_Message* msg) {
+int Handler4::Exit(SC_Message* msg) {
     return handlerId == msg->targetAddress;
 }
 
