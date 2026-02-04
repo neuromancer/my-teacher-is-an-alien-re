@@ -148,11 +148,17 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
                 if (node->next != 0) {
                     node->next->prev = node->prev;
                 }
-                // Get data and free node
+                // Get data from node
                 node = (MessageNode*)pList->current;
                 pvVar6 = 0;
                 if (node != 0) {
                     pvVar6 = (OnScreenMessage*)node->data;
+                }
+                // Free node
+                if (node != 0) {
+                    node->data = 0;
+                    node->prev = 0;
+                    node->next = 0;
                     delete node;
                     pList->current = 0;
                 }
@@ -205,44 +211,52 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
     OnScreenMessage* deletedItem;
     int count;
 
+    newItem = 0;
+
     if (msg->targetAddress != handlerId) {
         return 0;
     }
 
     timer.Reset();
 
-    if (msg->priority == 0xF || msg->priority == 0x1B) {
+    if (msg->priority == 0xF) {
         goto send_remove_msg;
     }
-    
-    if (msg->priority != 0x13) {
-        return 0;
+    if (msg->priority == 0x13) {
+        goto create_message;
     }
+    if (msg->priority == 0x1B) {
+        goto send_remove_msg;
+    }
+    return 0;
 
-    newItem = (OnScreenMessage*)0;
+create_message:
     if (msg->sourceAddress != 0) {
         if (g_Strings_00435a70 != (StringTable*)0) {
             if (g_Strings_00435a70->GetString(msg->sourceAddress, g_Buffer_00436960)) {
                 newItem = new OnScreenMessage(g_Buffer_00436960, msg->param1);
             }
         }
-    } else if (msg->userPtr != 0) {
-        newItem = new OnScreenMessage((char*)msg->userPtr, msg->param1);
-        msg->userPtr = 0;
+        goto check_newitem;
     }
+    if (msg->userPtr != 0) {
+        newItem = new OnScreenMessage((char*)msg->userPtr, msg->param1);
+    }
+    msg->userPtr = 0;
 
-    if (newItem == (OnScreenMessage*)0) {
+check_newitem:
+    if (newItem == 0) {
         goto count_loop_start;
     }
 
     list = m_messageList;
     list->current = list->head;
-    if (list->type != 1 && list->type != 2) {
-        goto call_insert;
+    if (list->type == 1 || list->type == 2) {
+        if (list->head != 0) {
+            goto insertion_loop;
+        }
     }
-    if (list->head == 0) {
-        goto call_insert;
-    }
+    goto call_insert;
 
 insertion_loop:
     if (((OnScreenMessage*)((MessageNode*)list->current)->data)->timer.Update() < newItem->timer.Update()) {
@@ -281,54 +295,61 @@ call_insert:
     }
 
 count_loop_start:
-    while (1) {
-        count = 0;
-        list = m_messageList;
+    count = 0;
+    list = m_messageList;
+    list->current = list->head;
+    if (list->current != 0) {
+        do {
+            count++;
+            if (list->current == list->tail) break;
+            if (list->current != 0) {
+                list->current = ((MessageNode*)list->current)->next;
+            }
+        } while (list->current != 0);
+    }
+
+    if (count <= 10) {
+        return 1;
+    }
+
+    deletedItem = 0;
+    list = m_messageList;
+    if (list->type == 1 || list->type == 4) {
         list->current = list->head;
-        if (list->current != 0) {
-            do {
-                count++;
-                if (list->current == list->tail) break;
-                if (list->current != 0) {
-                    list->current = ((MessageNode*)list->current)->next;
-                }
-            } while (list->current != 0);
-        }
+    } else if (list->type == 2 || list->type == 0) {
+        list->current = list->tail;
+    } else {
+        WriteToMessageLog("bad queue type %lu", list->type);
+        list->current = list->tail;
+    }
 
-        if (count <= 10) break;
-
-        if (list->type == 1 || list->type == 4) {
-            list->current = list->head;
-        } else if (list->type == 2 || list->type == 0) {
-            list->current = list->tail;
-        } else {
-            WriteToMessageLog("bad queue type %lu", list->type);
-            list->current = list->tail;
-        }
-
+    {
         MessageNode* toDelete = (MessageNode*)list->current;
         if (toDelete != 0) {
             if (list->head == toDelete) list->head = toDelete->next;
             if (list->tail == toDelete) list->tail = toDelete->prev;
             if (toDelete->prev) toDelete->prev->next = toDelete->next;
             if (toDelete->next) toDelete->next->prev = toDelete->prev;
-            
-            deletedItem = (OnScreenMessage*)toDelete->data;
-            
-            toDelete->data = 0;
-            toDelete->prev = 0;
-            toDelete->next = 0;
-            delete toDelete;
-            list->current = 0;
-            list->current = list->head;
 
-            if (deletedItem != 0) {
-                delete deletedItem;
+            if (toDelete != 0) {
+                deletedItem = (OnScreenMessage*)toDelete->data;
             }
+
+            if (toDelete != 0) {
+                toDelete->data = 0;
+                toDelete->prev = 0;
+                toDelete->next = 0;
+                delete toDelete;
+                list->current = 0;
+            }
+            list->current = list->head;
+        }
+
+        if (deletedItem != 0) {
+            delete deletedItem;
         }
     }
-
-    return 1;
+    goto count_loop_start;
 
 send_remove_msg:
     SC_Message_Send(3, handlerId, handlerId, field_8C, 20, 0, 0, 0, 0, 0);
