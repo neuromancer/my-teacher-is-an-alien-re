@@ -333,8 +333,8 @@ void CheckDebug(void) {
       pvVar2 = new CDData("cddata", "DATA");
     }
     g_CDData_0043697c = pvVar2;
-    if (DAT_0043d568[0] != '\0') {
-      sprintf(local_94, "%s\\%s", DAT_0043d568, pvVar2->dataFolder);
+    if (g_CmdLineDataPath_0043d568[0] != '\0') {
+      sprintf(local_94, "%s\\%s", g_CmdLineDataPath_0043d568, pvVar2->dataFolder);
       if (FileExists(local_94)) {
         g_CDData_0043697c->ChangeDirectory((unsigned char *)local_94);
       } else {
@@ -371,12 +371,12 @@ void CheckDebug(void) {
 void CreateGameObject_1() {
   g_GameConfig_00436970 = new GameConfig();
 
-  if (DAT_0043d558 != 0) {
-      g_GameConfig_00436970->data.rawData[2] = (unsigned char)DAT_0043d558;
+  if (g_CmdLineAudioMode_0043d558 != 0) {
+      g_GameConfig_00436970->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
   }
 
-  if (DAT_0043d560 != 0) {
-      g_GameConfig_00436970->data.rawData[0] = (unsigned char)DAT_0043d560;
+  if (g_CmdLineInputMode_0043d560 != 0) {
+      g_GameConfig_00436970->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
   }
 
   g_GameConfig_00436970->LoadConfig();
@@ -406,7 +406,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return 0;
   }
   UpdateWindow(g_GameWindow.hWnd);
-  if (DAT_0043d55c == 0) {
+  if (g_DebugFlag_0043d55c == 0) {
     RunGame();
   } else {
     PlayIntroCinematic();
@@ -513,7 +513,7 @@ void SetErrorCode(unsigned int errorCode) {
 
   iVar1 = 0;
   puVar2 = DAT_0043c760;
-  DAT_0043bdf4 = errorCode;
+  g_ErrorCode_0043bdf4 = errorCode;
   do {
     if (*puVar2 == errorCode) {
       DAT_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
@@ -546,7 +546,7 @@ int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
   }
   if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
     DAT_0043bdf0 = 0xd;
-    DAT_0043bdf4 = 5;
+    g_ErrorCode_0043bdf4 = 5;
     return -1;
   }
   return 0;

@@ -6,7 +6,7 @@
 #include "VBuffer.h"
 #include <string.h>
 
-extern int DAT_0043d150;
+extern int g_ProjectileHits_0043d150;
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
@@ -118,7 +118,7 @@ void Projectile::Update() {
             Projectile::active = 0;
             return;
         }
-        DAT_0043d150++;
+        g_ProjectileHits_0043d150++;
         Projectile::SetState2(1);
     }
 }

@@ -103,7 +103,7 @@ void __stdcall ParseCommandLine(char *param_1) {
   char *local_50[20];
   
   iVar1 = ParseCommandLineArgs(param_1, local_50, 20);
-  piVar2 = &DAT_0043d558;
+  piVar2 = &g_CmdLineAudioMode_0043d558;
   for (int iVar4 = 0x15; iVar4 != 0; iVar4 = iVar4 - 1) {
     *piVar2 = 0;
     piVar2 = piVar2 + 1;
@@ -112,28 +112,28 @@ void __stdcall ParseCommandLine(char *param_1) {
     piVar3 = local_50;
     do {
       if (_strnicmp(*piVar3, "-mis", 4) == 0) {
-        strcpy(DAT_0043d568, *piVar3 + 4);
+        strcpy(g_CmdLineDataPath_0043d568, *piVar3 + 4);
       }
       else if (_strcmpi(*piVar3, "-w") == 0) {
         *GetWindowedModeFlag() = 1;
       }
       else if (_strcmpi(*piVar3, "-dd") == 0) {
-        DAT_0043d560 = 1;
+        g_CmdLineInputMode_0043d560 = 1;
       }
       else if (_strcmpi(*piVar3, "-dd3") == 0) {
-        DAT_0043d560 = 2;
+        g_CmdLineInputMode_0043d560 = 2;
       }
       else if (_strnicmp(*piVar3, "-lq", 3) == 0) {
         AddToStringTable(*piVar3 + 3);
       }
       else if (_strcmpi(*piVar3, "-db") == 0) {
-        *(char *)&DAT_0043d558 = 1;
+        *(char *)&g_CmdLineAudioMode_0043d558 = 1;
       }
       else if (_strcmpi(*piVar3, "-ds") == 0) {
-        *(char *)&DAT_0043d558 = 2;
+        *(char *)&g_CmdLineAudioMode_0043d558 = 2;
       }
       else if (_strcmpi(*piVar3, "-test") == 0) {
-        DAT_0043d55c = 1;
+        g_DebugFlag_0043d55c = 1;
       }
       else if (_strcmpi(*piVar3, "-f") == 0) {
         *GetWindowedModeFlag() = 0;

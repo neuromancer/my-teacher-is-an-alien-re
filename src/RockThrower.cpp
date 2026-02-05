@@ -5,7 +5,7 @@
 #include "InputManager.h"
 #include <string.h>
 
-extern int DAT_0043d150;
+extern int g_ProjectileHits_0043d150;
 extern Engine* g_CombatEngine_00435eb0;
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
@@ -146,7 +146,7 @@ void RockThrower::UpdateProjectiles() {
 
 update_all:
     i = 0;
-    DAT_0043d150 = 0;
+    g_ProjectileHits_0043d150 = 0;
     RockThrower::field_0xb0 = 0;
 
     if (RockThrower::m_itemCount > 0) {
@@ -156,5 +156,5 @@ update_all:
         } while (i < RockThrower::m_itemCount);
     }
 
-    RockThrower::field_0xb0 = DAT_0043d150;
+    RockThrower::field_0xb0 = g_ProjectileHits_0043d150;
 }

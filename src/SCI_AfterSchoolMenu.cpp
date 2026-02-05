@@ -568,18 +568,33 @@ void SCI_AfterSchoolMenu::DisplaySubmenuHover(int mouseX, int mouseY) {
 
 /* Function start: 0x405AA0 */
 void SCI_AfterSchoolMenu::ProcessGoButtonHover(MousePoint pt, T_Hotspot* button, int* outConfirmFlag) {
-    if (IsSelectionComplete()) {
-        int isHit = 0;
-        if (button->enabled != 0) {
-            if (pt.x >= button->rect.left && pt.x <= button->rect.right &&
-                pt.y >= button->rect.top && pt.y <= button->rect.bottom) {
+    int isHit;
+
+    if (IsSelectionComplete() != 0) {
+        {
+            MousePoint local_pt;
+            local_pt.x = pt.x;
+            local_pt.y = pt.y;
+
+            if (button->enabled == 0) {
+                goto not_hit;
+            }
+
+            if (button->rect.left > local_pt.x ||
+                button->rect.right < local_pt.x ||
+                button->rect.top > local_pt.y ||
+                button->rect.bottom < local_pt.y) {
+                isHit = 0;
+            } else {
                 isHit = 1;
             }
         }
+
         if (isHit != 0) {
             *outConfirmFlag = 1;
             button->SetState(2);
         } else {
+not_hit:
             *outConfirmFlag = 0;
             button->SetState(1);
         }

@@ -501,20 +501,20 @@ extern int g_VBufMaxX_0043806c[32];       // Video buffer max X (width - 1)
 extern int g_VBufMaxY_004380ec[32];       // Video buffer max Y (height - 1)
 extern int g_VBufClipLeft_0043816c[32];   // Video buffer clip left
 extern int g_VBufClipTop_004381ec[32];    // Video buffer clip top
-extern int DAT_00437f62; // { /* 4 bytes */ }
-extern int DAT_00437f66; // DAT_00437f66  { /* 4 bytes */ }
-extern short DAT_00437f6a; // DAT_00437f6a  { /* 2 bytes */ }
+extern int g_VideoBufferSize_00437f62;  // Video buffer size (width * height)
+extern int g_VideoBufferBase_00437f66;  // Current video buffer base pointer
+extern short g_VideoBufferDS_00437f6a;  // Data segment (legacy 16-bit)
 // 0x0043826c: Defined above as g_VBufDataPtrs_0043826c[32]
-// extern int DAT_00438270; // { /* 4 bytes */ }
+// 0x00438270: String constant "mCNavigator::LoadNodes() - %s ha..." in mCNavigator.obj
 extern HDC g_WinGDC_0043841c; // DAT_0043841c  { /* 4 bytes */ }
-// extern int DAT_00438420; // { /* 4 bytes */ }
+extern HMODULE g_WinGModule_00438420;  // WinG DLL handle
 extern HGDIOBJ DAT_00438424; // DAT_00438424  { /* 4 bytes */ }
 // 0x00438428: Defined above as g_WinGCreateDIB_00438428
 // WinG function pointers (defined in globals.cpp, used in Graphics.cpp/VideoTable.cpp/PaletteUtils.cpp)
-extern void* DAT_0043842c; // WinGSetDIBColorTable (ordinal 6)
-extern void* DAT_00438430; // WinGRecommendDIBFormat (ordinal 3)
-extern void* DAT_00438434; // WinGBitBlt (ordinal 1)
-extern void* DAT_00438438; // WinGStretchBlt (ordinal 10)
+extern void* g_WinGSetDIBColorTable_0043842c;   // ordinal 6
+extern void* g_WinGRecommendDIBFormat_00438430; // ordinal 3
+extern void* g_WinGBitBlt_00438434;             // ordinal 1
+extern void* g_WinGStretchBlt_00438438;         // ordinal 10
 // 0x0043843c, 0x00438440: Defined in globals.cpp (PTR_DAT_0043843c, DAT_00438440) - WinG far pointer storage
 // 0x00439446: Defined as DAT_00439446[256] TEXTMETRIC buffer in globals.cpp
 // 0x00439456, 0x0043945a: Offsets within TEXTMETRIC buffer (tmExternalLeading, tmAveCharWidth)
@@ -530,12 +530,9 @@ extern int DAT_0043bc88; // Time seed
 // 0x0043bcee - 0x0043bdea: MSVC CRT floating-point division helper switch table
 // Jump targets for FUN_00425177 (__fprem or similar FPU division operations)
 // These are compiler-generated and do not need to be defined as globals
-extern int DAT_0043bdf4; // DAT_0043bdf4  { /* 4 bytes */ }
-// extern int DAT_0043bdf8; // { /* 4 bytes */ }
-// extern int DAT_0043bdfc; // { /* 4 bytes */ }
-// extern int DAT_0043be18; // { /* 4 bytes */ }
-// extern int DAT_0043be1c; // { /* 4 bytes */ }
-// extern int DAT_0043be20; // { /* 4 bytes */ }
+extern int g_ErrorCode_0043bdf4;  // Error/status code (used in FileSystem, main)
+// 0x0043bdf8, 0x0043bdfc: CRT internal (signal handling, FPU init) - library only
+// 0x0043be18, 0x0043be1c, 0x0043be20: CRT _environ/_wenviron pointers - library only
 // extern void* PTR_DAT_0043be60; // (void*)0x0043BE6A
 // extern int DAT_0043c06c; // { /* 4 bytes */ }
 // extern char DAT_0043c070; // { /* 1 bytes */ }
@@ -591,10 +588,9 @@ extern int DAT_0043bdf4; // DAT_0043bdf4  { /* 4 bytes */ }
 // pointer PTR_s_R6009_-_not_enough_space_for_env_0043c684 = (void*)0x0043C5F0;
 // extern int DAT_0043c6f8; // { /* 4 bytes */ }
 // extern int DAT_0043c724; // { /* 4 bytes */ }
-extern unsigned int DAT_0043c760[]; // DAT_0043c760  { /* 4 bytes */ }
-// extern int DAT_0043c768; // { /* 4 bytes */ }
-// extern int DAT_0043c76c; // { /* 4 bytes */ }
-extern int DAT_0043c8c8; // DAT_0043c8c8  { /* 4 bytes */ }
+extern unsigned int DAT_0043c760[];  // CRT error code mapping table [90 entries]
+// 0x0043c768, 0x0043c76c: Elements within DAT_0043c760 array (indices 2, 3)
+// 0x0043c8c8: End of DAT_0043c760 array - only used by CRT library (FUN_42B300/FUN_42B370)
 // extern int DAT_0043c8d4; // { /* 4 bytes */ }
 // extern void* PTR_DAT_0043c8e0; // (void*)0x0043DFF0
 // extern int DAT_0043c8f0; // { /* 4 bytes */ }
@@ -623,17 +619,9 @@ extern int DAT_0043c8c8; // DAT_0043c8c8  { /* 4 bytes */ }
 // extern void* DAT_0043ccf8; // (void*)0x0043C744
 // extern void* DAT_0043ccfc; // (void*)0x00436718
 // extern void* DAT_0043cd00; // (void*)0x0043C724
-// extern int DAT_0043cd04; // { /* 4 bytes */ }
-// extern short DAT_0043cd08; // { /* 2 bytes */ }
-// extern char DAT_0043cd0a; // { /* 1 bytes */ }
-// extern int DAT_0043cd0c; // { /* 4 bytes */ }
-// extern short DAT_0043cd10; // { /* 2 bytes */ }
-// extern int DAT_0043cd14; // { /* 4 bytes */ }
-// extern short DAT_0043cd18; // { /* 2 bytes */ }
-// extern int DAT_0043cd1c; // { /* 4 bytes */ }
-// extern short DAT_0043cd20; // { /* 2 bytes */ }
-// extern char DAT_0043cd22; // { /* 1 bytes */ }
-// extern int DAT_0043cd24; // { /* 4 bytes */ }
+// 0x0043cd04 - 0x0043cd24: CRT floating-point exception state structures
+// Used by library functions FUN_42D570 (signal handling) and FUN_42F560 (FPU state setup)
+// Pattern: {int, short, char} repeated - FPU control word/status structures
 extern GlyphRect g_PuzzleRects1_0043d068[9];
 extern char DAT_0043d0f8;
 extern GlyphRect g_PuzzleRects2_0043d100[3];
@@ -641,17 +629,17 @@ extern int DAT_0043d130; // Game state save area
 extern int DAT_0043d134; // Game state save area
 extern int DAT_0043d138; // Game state save area
 extern int DAT_0043d13c; // Game state save area
-// extern int DAT_0043d140; // { /* 4 bytes */ }
-// extern int DAT_0043d148; // { /* 4 bytes */ }
-// extern int DAT_0043d150; // { /* 4 bytes */ }
-// extern int DAT_0043d558; // { /* 4 bytes */ }
-extern int DAT_0043d55c; // DAT_0043d55c  { /* 4 bytes */ }
-extern char DAT_0043d560; // { /* 1 bytes */ }
-extern char DAT_0043d568[]; // DAT_0043d568  { /* 1 bytes */ }
-// extern int DAT_0043d5b0; // { /* 4 bytes */ }
-// extern int DAT_0043d5b4; // { /* 4 bytes */ }
-// extern char DAT_0043d630; // { /* 1 bytes */ }
-// extern char DAT_0043d670; // { /* 1 bytes */ }
+// 0x0043d140: g_TimeOut_0043d140 (TimeOut struct) defined in EngineB.cpp
+// 0x0043d148: Part of TimeOut struct at 0x0043d140 (offset 8)
+extern int g_ProjectileHits_0043d150;  // Hit counter for projectiles (combat minigame)
+extern int g_CmdLineAudioMode_0043d558;   // Command line -A/-S audio mode (1=A, 2=S)
+extern int g_DebugFlag_0043d55c;          // Debug/init flag checked in main
+extern char g_CmdLineInputMode_0043d560;  // Command line -J/-K input mode (1=J, 2=K)
+extern char g_CmdLineDataPath_0043d568[]; // Command line data path [260 bytes]
+// 0x0043d5b0: Sprite index tracking array (not yet implemented, used in FUN_41A9D0/FUN_41A9E0)
+// 0x0043d5b4: Element [1] of DAT_0043d5b0 array
+// 0x0043d630: Defined above as g_SpriteFilenameTable_0043d630[0x4000]
+// 0x0043d670: Within g_SpriteFilenameTable_0043d630 at offset 0x40 (second filename slot)
 extern HWND DAT_0043de7c; // DAT_0043de7c  { /* 4 bytes */ }
 extern HDC DAT_0043de80; // Window DC
 extern HPALETTE DAT_0043de84; // Window palette
@@ -659,17 +647,17 @@ extern int DAT_0043de88; // Window width
 extern int DAT_0043de8c; // Window height
 extern int DAT_0043de90; // Windowed mode flag
 extern int DAT_0043de94; // Activate app state
-// extern int DAT_0043de9c; // { /* 4 bytes */ }
-// extern int DAT_0043dfa4; // { /* 4 bytes */ }
-// extern int DAT_0043dfa8; // { /* 4 bytes */ }
-// extern short DAT_0043dfb0; // { /* 2 bytes */ }
-// extern char DAT_0043dfb2; // { /* 1 bytes */ }
-// extern int DAT_0043dfe0; // { /* 4 bytes */ }
-// extern int DAT_0043dfe4; // { /* 4 bytes */ }
-extern void* DAT_0043eff0; // DAT_0043eff0  { /* 4 bytes */ }
-// extern int DAT_0043eff4; // { /* 4 bytes */ }
-// extern int DAT_0043f000; // { /* 4 bytes */ }
-// extern int DAT_0043f004; // { /* 4 bytes */ }
+// CRT library internal globals (0x0043de9c - 0x0043dfe4):
+// 0x0043de9c: Float output buffer pointer (__fltout result)
+// 0x0043dfa4: Exception filter func ptr (SetUnhandledExceptionFilter)
+// 0x0043dfa8: CRT callback function pointer
+// 0x0043dfb0/dfb2: FPU control state values
+// 0x0043dfe0/dfe4: FILE stream table (count and array - _nstream/_iob)
+// Memory and file handle globals (0x0043eff0 - 0x0043f004):
+// 0x0043eff0: Process heap handle (GetProcessHeap) - used by Memory.cpp
+// 0x0043eff4: CRT _nhandle (file handle count)
+// 0x0043f000/f004: CRT _pioinfo file info array pointers
+extern void* DAT_0043eff0;
 // extern int DAT_0043f100; // Already defined as g_AtExitTableEnd_0043f100
 // extern int DAT_0043f104; // Already defined as g_AtExitTableStart_0043f104
 // extern int DAT_0043f108; // { /* 4 bytes */ }
@@ -5970,7 +5958,7 @@ extern void* DAT_0043eff0; // DAT_0043eff0  { /* 4 bytes */ }
 // extern word DAT_004446a2; // 0x0
 
 extern int DAT_0043bdf0; // File error code
-extern int DAT_0043d558; // Command line audio mode
-extern char DAT_0043d560; // Command line input mode
+extern int g_CmdLineAudioMode_0043d558; // Command line audio mode
+extern char g_CmdLineInputMode_0043d560; // Command line input mode
 
 #endif

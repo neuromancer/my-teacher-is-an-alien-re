@@ -5,8 +5,8 @@
 // g_WinGDC_0043841c is already declared in globals.h
 extern HDC DAT_00437488;
 extern int g_VideoBufferHeightM1_004374ca;
-extern void* DAT_00438438;
-extern void* DAT_00438434;
+extern void* g_WinGStretchBlt_00438438;
+extern void* g_WinGBitBlt_00438434;
 
 /* Function start: 0x4229EA */
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
@@ -35,7 +35,7 @@ extern "C" int __cdecl GetPixelAt(int x, int y)
         return -1;
     }
     unsigned int rowOffset = (unsigned int)(g_VideoBufferHeightM1_004374ca - y) * (unsigned int)g_VideoBufferStride_00437f5e;
-    return *(unsigned char*)(x + rowOffset + DAT_00437f66);
+    return *(unsigned char*)(x + rowOffset + g_VideoBufferBase_00437f66);
 }
 
 /* Function start: 0x422E1A */
@@ -138,7 +138,7 @@ extern "C" int __cdecl CreateTable(int width, int height) {
 /* Function start: 0x423099 */
 extern "C" int ClearVideoBuffer(void) {
     if (*(char*)&g_CurrentVideoBuffer_00437f54 >= 0) {
-        memset((char*)DAT_00437f66, g_FillColorDword_00437491, DAT_00437f62);
+        memset((char*)g_VideoBufferBase_00437f66, g_FillColorDword_00437491, g_VideoBufferSize_00437f62);
     }
     return 0;
 }
@@ -181,14 +181,14 @@ extern "C" int __cdecl SelectVideoBuffer(int param_1) {
             g_ClipTop_004374e6 = g_VBufClipTop_004381ec[param_1];
             g_ClipBottom_004374ea = g_VBufMaxY_004380ec[param_1];
 
-            DAT_00437f66 = g_VBufDataPtrs_0043826c[param_1];
+            g_VideoBufferBase_00437f66 = g_VBufDataPtrs_0043826c[param_1];
             
             // Replicating DS capture from assembly if possible, otherwise ignore
             // _asm { mov word ptr [DAT_00437f6a], ds }
              
             // Calculate size
             unsigned int size = (unsigned int)g_VideoBufferWidth_004374c6 * (unsigned int)g_VideoBufferHeight_004374d2;
-            DAT_00437f62 = (int)size; // Low 32 bits
+            g_VideoBufferSize_00437f62 = (int)size; // Low 32 bits
             
             return 0;
         }
@@ -220,14 +220,14 @@ extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int p
         
         if (g_WinGDC_0043841c == 0) {
             // Use SetDIBitsToDevice
-            int bitmapInfo = DAT_00437f66 - g_BitmapHeaderSize_00437f4c;
+            int bitmapInfo = g_VideoBufferBase_00437f66 - g_BitmapHeaderSize_00437f4c;
             SetDIBitsToDevice(DAT_00437488, param_5, iVar1, w, h, param_1, param_3, 0, g_VideoBufferHeight_004374d2,
                               (void*)(bitmapInfo + g_BitmapHeaderSize_00437f4c),
                               (BITMAPINFO*)bitmapInfo,
                               g_DibModeFlag_00437f50);
         } else {
             // Use WinG BitBlt via function pointer
-            ((WinGBitBltFunc)DAT_00438434)(DAT_00437488, param_5, iVar1, w, h, g_WinGDC_0043841c, param_1, param_3);
+            ((WinGBitBltFunc)g_WinGBitBlt_00438434)(DAT_00437488, param_5, iVar1, w, h, g_WinGDC_0043841c, param_1, param_3);
         }
     }
     return 0;
@@ -259,10 +259,10 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
         srcHeight = (newY2 - srcY1) + 1;
 
         if (wingDC != 0) {
-            ((WinGStretchBltFunc)DAT_00438438)(DAT_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
+            ((WinGStretchBltFunc)g_WinGStretchBlt_00438438)(DAT_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
         }
         else {
-            int bitmapInfo = DAT_00437f66 - g_BitmapHeaderSize_00437f4c;
+            int bitmapInfo = g_VideoBufferBase_00437f66 - g_BitmapHeaderSize_00437f4c;
             StretchDIBits(DAT_00437488, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
                           (void*)(bitmapInfo + g_BitmapHeaderSize_00437f4c),
                           (BITMAPINFO*)bitmapInfo,
@@ -347,7 +347,7 @@ extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int 
         count = (1 - iVar1) + iVar2;
         int rowWidth = (param_2 + 1) - param_1;
         int stride = g_VideoBufferStride_00437f5e - rowWidth;
-        puVar1 = (unsigned char*)(param_1 + iVar1 * g_VideoBufferStride_00437f5e + DAT_00437f66);
+        puVar1 = (unsigned char*)(param_1 + iVar1 * g_VideoBufferStride_00437f5e + g_VideoBufferBase_00437f66);
 
         do {
             int remaining = rowWidth;

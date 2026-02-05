@@ -80,7 +80,7 @@ void* DAT_00435f1c = 0;
 // Projectile stubs
 // ============================================================================
 
-int DAT_0043d150 = 0;
+int g_ProjectileHits_0043d150 = 0;
 
 // FUN_00416ba0 -> EngineSubsystems.cpp
 // FUN_00422ac3, FUN_00422aaf, FUN_00424176 -> Graphics.cpp

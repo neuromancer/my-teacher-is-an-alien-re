@@ -59,14 +59,14 @@ extern char DAT_00438446[256];
 extern int DAT_00438442;
 extern short DAT_00438440;
 extern HANDLE DAT_004374ee;
-extern HMODULE DAT_00438420;
+extern HMODULE g_WinGModule_00438420;
 
 // WinG function pointers
 extern void* g_WinGCreateDIB_00438428;
-extern void* DAT_0043842c;
-extern void* DAT_00438430;
-extern void* DAT_00438434;
-extern void* DAT_00438438;
+extern void* g_WinGSetDIBColorTable_0043842c;
+extern void* g_WinGRecommendDIBFormat_00438430;
+extern void* g_WinGBitBlt_00438434;
+extern void* g_WinGStretchBlt_00438438;
 
 // External functions
 extern "C" void* GetGameWindowHandle();
@@ -404,21 +404,21 @@ int InitVideoSystem(void)
         CloseHandle(DAT_004374ee);
         pHVar4 = LoadLibraryA("WING32.DLL");
         if (pHVar4 != (HMODULE)0x0) {
-            DAT_00438420 = pHVar4;
+            g_WinGModule_00438420 = pHVar4;
             // Get WinG function pointers using ordinals
             g_WinGCreateDIB_00438428 = (void*)GetProcAddress(pHVar4, (LPCSTR)2);
             if (g_WinGCreateDIB_00438428 == 0) return 0;
-            DAT_0043842c = (void*)GetProcAddress(pHVar4, (LPCSTR)6);
-            if (DAT_0043842c == 0) return 0;
-            DAT_00438430 = (void*)GetProcAddress(pHVar4, (LPCSTR)3);
-            if (DAT_00438430 == 0) return 0;
-            DAT_00438434 = (void*)GetProcAddress(pHVar4, (LPCSTR)1);
-            if (DAT_00438434 == 0) return 0;
-            DAT_00438438 = (void*)GetProcAddress(pHVar4, (LPCSTR)10);
-            if (DAT_00438438 == 0) return 0;
+            g_WinGSetDIBColorTable_0043842c = (void*)GetProcAddress(pHVar4, (LPCSTR)6);
+            if (g_WinGSetDIBColorTable_0043842c == 0) return 0;
+            g_WinGRecommendDIBFormat_00438430 = (void*)GetProcAddress(pHVar4, (LPCSTR)3);
+            if (g_WinGRecommendDIBFormat_00438430 == 0) return 0;
+            g_WinGBitBlt_00438434 = (void*)GetProcAddress(pHVar4, (LPCSTR)1);
+            if (g_WinGBitBlt_00438434 == 0) return 0;
+            g_WinGStretchBlt_00438438 = (void*)GetProcAddress(pHVar4, (LPCSTR)10);
+            if (g_WinGStretchBlt_00438438 == 0) return 0;
             // Call WinGRecommendDIBFormat (ordinal 3)
             typedef int (__stdcall *WinGRecommendDIBFormat_t)();
-            g_WinGDC_0043841c = (HDC)((WinGRecommendDIBFormat_t)DAT_00438430)();
+            g_WinGDC_0043841c = (HDC)((WinGRecommendDIBFormat_t)g_WinGRecommendDIBFormat_00438430)();
         }
     }
     return 0;
@@ -458,7 +458,7 @@ extern "C" int CleanupVideoSystem() {
             DeleteDC((HDC)g_WinGDC_0043841c);
             g_WinGDC_0043841c = 0;
             DAT_00438424 = 0;
-            FreeLibrary(DAT_00438420);
+            FreeLibrary(g_WinGModule_00438420);
         }
     }
     return 0;
@@ -568,7 +568,7 @@ extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2) { return 0; }
 // Externs for video buffer access
 extern int g_VideoBufferHeightM1_004374ca;  // buffer height - 1
 extern int g_VideoBufferStride_00437f5e;  // buffer stride
-extern int DAT_00437f66;  // buffer base
+extern int g_VideoBufferBase_00437f66;  // buffer base
 extern int g_ClipLeft_004374de;  // clip left
 extern int g_ClipRight_004374e2;  // clip right
 extern int g_ClipTop_004374e6;  // clip top
@@ -583,7 +583,7 @@ static void DrawEllipseScanline(int y, int left_x, int right_x) {
     if (right_x > g_ClipRight_004374e2) flags |= 1;
 
     int row = g_VideoBufferHeightM1_004374ca - y;
-    unsigned char* base = (unsigned char*)(row * g_VideoBufferStride_00437f5e + DAT_00437f66);
+    unsigned char* base = (unsigned char*)(row * g_VideoBufferStride_00437f5e + g_VideoBufferBase_00437f66);
     unsigned char color = (unsigned char)DAT_00437490;
 
     if (!(flags & 2)) {

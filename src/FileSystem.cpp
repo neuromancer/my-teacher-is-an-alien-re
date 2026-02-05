@@ -54,14 +54,14 @@ int __cdecl FileStat(const unsigned char* filename, int* stat_buf)
 
     if (_mbspbrk(filename, (const unsigned char*)g_WildcardChars) != 0) {
         DAT_0043bdf0 = 2;
-        DAT_0043bdf4 = 2;
+        g_ErrorCode_0043bdf4 = 2;
         return -1;
     }
 
     if (filename[1] == ':') {
         if (filename[0] != 0 && filename[2] == 0) {
             DAT_0043bdf0 = 2;
-            DAT_0043bdf4 = 2;
+            g_ErrorCode_0043bdf4 = 2;
             return -1;
         }
         drive = _mbctolower((int)(char)filename[0]) - 0x60;
@@ -90,7 +90,7 @@ int __cdecl FileStat(const unsigned char* filename, int* stat_buf)
             }
         }
         DAT_0043bdf0 = 2;
-        DAT_0043bdf4 = 2;
+        g_ErrorCode_0043bdf4 = 2;
         return -1;
     }
 
@@ -159,7 +159,7 @@ char * __cdecl GetDriveDir(unsigned int drive, char *buffer, size_t size)
 
     if (drive != 0) {
         if (__validdrive(drive) == 0) {
-             DAT_0043bdf4 = 0xf;
+             g_ErrorCode_0043bdf4 = 0xf;
              DAT_0043bdf0 = 0xd;
              return 0;
         }

@@ -57,10 +57,10 @@ extern "C" char DAT_004371a8[] = "rb";
 // ...
 
 int g_BitmapHeaderSize_00437f4c = 0;  // Set at runtime by InitVideoSystem based on color depth
-int DAT_0043bdf4 = 0;
+int g_ErrorCode_0043bdf4 = 0;
 unsigned int DAT_0043c760[90] = {0}; 
-int DAT_0043d55c = 0;
-char DAT_0043d568[260] = {0}; 
+int g_DebugFlag_0043d55c = 0;
+char g_CmdLineDataPath_0043d568[260] = {0}; 
 HWND DAT_0043de7c = 0;
 int DAT_0043bdf0 = 0; 
 char g_EngineTypeExplore_00435ef0[4] = "B"; // Engine type for EngineA (exploration)
@@ -103,10 +103,10 @@ char g_BgrPalette_00437b48[1028];
 
 int g_DibModeFlag_00437f50 = 0;
 char g_CurrentVideoBuffer_00437f54 = (char)0xff;  // Current video buffer index, 0xff = no selection
-int DAT_00437f66 = 0; 
-short DAT_00437f6a = 0;
+int g_VideoBufferBase_00437f66 = 0;
+short g_VideoBufferDS_00437f6a = 0;
 HDC g_WinGDC_0043841c = 0;
-void* DAT_0043842c = 0;
+void* g_WinGSetDIBColorTable_0043842c = 0;
 HPALETTE g_Palette_0043748c = 0;
 HPALETTE g_PreviousPalette_004374ae = 0;  
 HGDIOBJ DAT_00438424 = 0;
@@ -121,14 +121,14 @@ int g_VBufClipLeft_0043816c[32];
 int g_VBufClipTop_004381ec[32];
 
 void* g_WinGCreateDIB_00438428 = 0;
-int DAT_00437f62 = 0;
+int g_VideoBufferSize_00437f62 = 0;
 int g_FillColorDword_00437491 = 0;
 char g_SpriteFilenameTable_0043d630[0x4000] = {0};
 int g_SpriteTableInitialized_00436b9c = 0;
 void* g_GameStruct2 = 0;
 int g_DevModeFlag_0043d564 = 0;
-int DAT_0043d558 = 0;
-char DAT_0043d560 = 0;
+int g_CmdLineAudioMode_0043d558 = 0;
+char g_CmdLineInputMode_0043d560 = 0;
 int DAT_0043bc88 = 1;  // Time seed (original has 1)
 GlyphRect g_PuzzleRects1_0043d068[9] = {
     GlyphRect(0x1de, 0x147, 0x205, 0x16d),  // [0] bottom-left
@@ -160,7 +160,7 @@ void* g_AtExitTableEnd_0043f100 = 0;
 char g_ExitCode_0043be30 = 0;
 int g_ExitInProgress_0043be34 = 0;
 
-void* DAT_0043eff0 = 0;
+void* DAT_0043eff0 = 0;  // Process heap handle (GetProcessHeap) - used by Memory.cpp
 
 // Graphics system globals (for Graphics.cpp)
 HDC DAT_00437488 = 0;      // Main device context
@@ -202,12 +202,12 @@ char* PTR_DAT_0043843c = DAT_00438446;  // Points to DAT_00438446
 short DAT_00438440 = 0;
 int DAT_00438442 = 0x1000;  // Original has 4096
 HANDLE DAT_004374ee = 0;
-HMODULE DAT_00438420 = 0;
+HMODULE g_WinGModule_00438420 = 0;
 
 // WinG function pointers
-void* DAT_00438430 = 0;
-void* DAT_00438434 = 0;
-void* DAT_00438438 = 0;
+void* g_WinGRecommendDIBFormat_00438430 = 0;
+void* g_WinGBitBlt_00438434 = 0;
+void* g_WinGStretchBlt_00438438 = 0;
 
 // Window procedure globals
 HDC DAT_0043de80 = 0;       // Main window DC
