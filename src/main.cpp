@@ -242,9 +242,9 @@ extern "C" int ProcessMessages() {
     while (iVar1 != 0) {
       TranslateMessage(&local_1c);
       if (local_1c.message == WM_KEYDOWN) {
-        DAT_004373bc = local_1c.wParam;
+        g_WaitForInputValue_004373bc = local_1c.wParam;
         if (0x7f < local_1c.wParam) {
-          DAT_004373bc = local_1c.wParam & 0x2f;
+          g_WaitForInputValue_004373bc = local_1c.wParam & 0x2f;
         }
         if (local_1c.wParam == VK_F12) {
           return 1;
@@ -313,7 +313,7 @@ void ShutdownGameSystems(void) {
      g_GameConfig_00436970 = 0;
   }
   if (g_Buffer_00436964 != 0) {
-    delete (char*)g_Buffer_00436964;
+    delete[] g_Buffer_00436964;
     g_Buffer_00436964 = 0;
   }
   if (g_Buffer_00436960 != 0) {
@@ -343,7 +343,7 @@ void CheckDebug(void) {
     } else {
       if (FileExists(pvVar2->dataFolder) ||
           FileExists("Develop.___")) {
-        DAT_0043d564 = 1;
+        g_DevModeFlag_0043d564 = 1;
         if (g_CDData_0043697c->ChangeDirectory(
                 (unsigned char *)g_CDData_0043697c->dataFolder)) {
           ShowError("Invalid Development directory '%s'", g_CDData_0043697c->dataFolder);
@@ -384,11 +384,11 @@ void CreateGameObject_1() {
 
 /* Function start: 0x421AF0 */
 int WaitForInput() {
-  while (DAT_004373bc == 0) {
+  while (g_WaitForInputValue_004373bc == 0) {
     ProcessMessages();
   }
-  int iVar1 = DAT_004373bc;
-  DAT_004373bc = 0;
+  int iVar1 = g_WaitForInputValue_004373bc;
+  g_WaitForInputValue_004373bc = 0;
   return iVar1;
 }
 
@@ -417,7 +417,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 /* Function start: 0x422E02 */
 int __cdecl CalculateBufferSize(int width, unsigned int height) {
-  return (((width + 3) & ~3U) * height) + DAT_00437f4c;
+  return (((width + 3) & ~3U) * height) + g_BitmapHeaderSize_00437f4c;
 }
 
 /* Function start: 0x4261C0 */

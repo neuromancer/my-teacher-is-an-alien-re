@@ -16,10 +16,10 @@ extern void* GetGameWindowHandle();
 extern void ShutdownGameSystems();
 extern void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
 extern int ExecuteFunctionArray(void* param_1, void* param_2);
-extern int DAT_0043be34;
-extern char DAT_0043be30;
-extern void* DAT_0043f104;
-extern void* DAT_0043f100;
+extern int g_ExitInProgress_0043be34;
+extern char g_ExitCode_0043be30;
+extern void* g_AtExitTableStart_0043f104;
+extern void* g_AtExitTableEnd_0043f100;
 extern int DAT_00435030;
 extern int DAT_00435038;
 extern int DAT_0043503c;
@@ -376,17 +376,17 @@ void exitWithError_(unsigned int param_1)
 /* 0x426070 */
 void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
 {
-    DAT_0043be34 = 1;
-    DAT_0043be30 = (char)param_3;
+    g_ExitInProgress_0043be34 = 1;
+    g_ExitCode_0043be30 = (char)param_3;
     if (param_2 == 0) {
-        if ((DAT_0043f104 != 0) && ((unsigned int)DAT_0043f100 - 4 >= (unsigned int)DAT_0043f104)) {
-            void** puVar1 = (void**)((char*)DAT_0043f100 - 4);
+        if ((g_AtExitTableStart_0043f104 != 0) && ((unsigned int)g_AtExitTableEnd_0043f100 - 4 >= (unsigned int)g_AtExitTableStart_0043f104)) {
+            void** puVar1 = (void**)((char*)g_AtExitTableEnd_0043f100 - 4);
             do {
                 if (*puVar1 != 0) {
                     ((void (*)(void)) *puVar1)();
                 }
                 puVar1 = puVar1 - 1;
-            } while ((unsigned int)puVar1 >= (unsigned int)DAT_0043f104);
+            } while ((unsigned int)puVar1 >= (unsigned int)g_AtExitTableStart_0043f104);
         }
         ExecuteFunctionArray(&DAT_00435030, &DAT_00435038);
     }

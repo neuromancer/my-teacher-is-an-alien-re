@@ -124,7 +124,7 @@ extern "C" void __cdecl CopyFileContent(const char* src, const char* dest) {
     totalRead = 0;
 
     if (totalLen > 0) {
-        void* buffer = g_Buffer_00436964;
+        char* buffer = g_Buffer_00436964;
         while (totalRead < (unsigned int)totalLen) {
             chunk = (totalLen - totalRead > 0x2000) ? 0x2000 : (totalLen - totalRead);
             

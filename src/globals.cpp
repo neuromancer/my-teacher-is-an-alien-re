@@ -23,7 +23,7 @@
 
 Engine* g_CombatEngine_00435eb0 = 0; // Combat engine (EngineB subclass)
 char* g_Buffer_00436960 = 0;
-void* g_Buffer_00436964 = 0;
+char* g_Buffer_00436964 = 0;
 InputManager* g_InputManager_00436968 = 0;
 Sound* g_Sound_0043696c = 0;
 #include "GameConfig.h"
@@ -45,9 +45,9 @@ GameState* g_GameState2_004369a4 = 0;
 // Sprite* g_Sprite_004360a0 = 0; // Moved/Removed to match address 0x4360A0 (EngineB/mCNavigator)
 
 // Other globals (Timer globals defined in InputManager.cpp)
-int DAT_004373b8 = 0; // DoubleClickTime
+int g_DoubleClickTime_004373b8 = 0;
 
-int DAT_004373bc = 0; // WaitForInput var
+int g_WaitForInputValue_004373bc = 0;
 
 // String pointers for config files
 char s_Setup_cfg[] = "Setup.cfg";
@@ -56,14 +56,15 @@ extern "C" char DAT_004371a8[] = "rb";
 
 // ...
 
-int DAT_00437f4c = 0;  // Set at runtime by InitVideoSystem based on color depth
+int g_BitmapHeaderSize_00437f4c = 0;  // Set at runtime by InitVideoSystem based on color depth
 int DAT_0043bdf4 = 0;
 unsigned int DAT_0043c760[90] = {0}; 
 int DAT_0043d55c = 0;
 char DAT_0043d568[260] = {0}; 
 HWND DAT_0043de7c = 0;
 int DAT_0043bdf0 = 0; 
-char DAT_00435ef4 = 'A';  // Original has 0x41
+char g_EngineTypeExplore_00435ef0[4] = "B"; // Engine type for EngineA (exploration)
+char g_EngineTypeCombat_00435ef4[4] = "A"; // Engine type for EngineB (combat), also used for text metrics
 
 SolutionEntry g_SolutionData_00435b88[9] = {
     {{1, 4, 6}, 0},
@@ -90,42 +91,42 @@ CursorState* g_ScoreManager_00435f20 = 0;
 mCNavigator* g_Navigator_00435f24 = 0;  // NAVIGATION parser
 GameOutcome* g_GameOutcome_00435f28 = 0; // Game outcome state
 
-char DAT_004374c0 = 0;
-char DAT_004374c1 = 0;
-int DAT_004374c2 = 0;
-int DAT_004374ce = 0;
-char DAT_00437506 = 0;
-char DAT_00437507 = 0;
+char g_TextAlignH_004374c0 = 0;
+char g_TextAlignV_004374c1 = 0;
+int g_DrawPosX_004374c2 = 0;
+int g_DrawPosY_004374ce = 0;
+char g_CursorVisible_00437506 = 0;
+char g_CursorState_00437507 = 0;
 // LOGPALETTE structure: palVersion (WORD) = 0x0300, palNumEntries (WORD) = 0x0100 (256)
-char DAT_00437720[1028] = {0x00, 0x03, 0x00, 0x01};
-char DAT_00437b48[1028];
+char g_LogPalette_00437720[1028] = {0x00, 0x03, 0x00, 0x01};
+char g_BgrPalette_00437b48[1028];
 
-int DAT_00437f50 = 0;
-char DAT_00437f54 = (char)0xff;  // Current video buffer index, 0xff = no selection
+int g_DibModeFlag_00437f50 = 0;
+char g_CurrentVideoBuffer_00437f54 = (char)0xff;  // Current video buffer index, 0xff = no selection
 int DAT_00437f66 = 0; 
 short DAT_00437f6a = 0;
 HDC g_WinGDC_0043841c = 0;
 void* DAT_0043842c = 0;
 HPALETTE g_Palette_0043748c = 0;
-HPALETTE DAT_004374ae = 0;  
+HPALETTE g_PreviousPalette_004374ae = 0;  
 HGDIOBJ DAT_00438424 = 0;
-int DAT_0043826c[32];
-int DAT_00437fec[32];
-int DAT_00437f6c[32];
-int DAT_0043836c[32];
-int DAT_004382ec[32];
-int DAT_0043806c[32]; 
-int DAT_004380ec[32];
-int DAT_0043816c[32];
-int DAT_004381ec[32];
+int g_VBufDataPtrs_0043826c[32];
+int g_VBufDibHandles_00437fec[32];
+int g_VBufMemHandles_00437f6c[32];
+int g_VBufWidths_0043836c[32];
+int g_VBufHeights_004382ec[32];
+int g_VBufMaxX_0043806c[32];
+int g_VBufMaxY_004380ec[32];
+int g_VBufClipLeft_0043816c[32];
+int g_VBufClipTop_004381ec[32];
 
-void* DAT_00438428 = 0;
+void* g_WinGCreateDIB_00438428 = 0;
 int DAT_00437f62 = 0;
-int DAT_00437491 = 0;
-char DAT_0043d630[0x4000] = {0};
-int DAT_00436b9c = 0;
+int g_FillColorDword_00437491 = 0;
+char g_SpriteFilenameTable_0043d630[0x4000] = {0};
+int g_SpriteTableInitialized_00436b9c = 0;
 void* g_GameStruct2 = 0;
-int DAT_0043d564 = 0;
+int g_DevModeFlag_0043d564 = 0;
 int DAT_0043d558 = 0;
 char DAT_0043d560 = 0;
 int DAT_0043bc88 = 1;  // Time seed (original has 1)
@@ -154,10 +155,10 @@ int DAT_0043503c = 0;
 int DAT_00435040 = 0;
 int DAT_00435030 = 0;
 int DAT_00435038 = 0;
-void* DAT_0043f104 = 0;
-void* DAT_0043f100 = 0;
-char DAT_0043be30 = 0;
-int DAT_0043be34 = 0;
+void* g_AtExitTableStart_0043f104 = 0;
+void* g_AtExitTableEnd_0043f100 = 0;
+char g_ExitCode_0043be30 = 0;
+int g_ExitInProgress_0043be34 = 0;
 
 void* DAT_0043eff0 = 0;
 
@@ -182,13 +183,13 @@ int DAT_004383ec = 0;
 int DAT_004383f4 = 0;
 int DAT_00438404 = 0;
 int DAT_0043840c = 0;
-int DAT_004374d6 = 0;
-int DAT_004374da = 0;
+int g_LineWidthH_004374d6 = 0;
+int g_LineWidthV_004374da = 0;
 int DAT_00437514 = 0;
 int DAT_00437f56 = 0;
 int DAT_00437f5a = 0;
 // DAT_0043841c is defined above as HDC g_WinGDC_0043841c
-int DAT_004374ca = 0;  // Current buffer height - 1
+int g_VideoBufferHeightM1_004374ca = 0;  // Height - 1
 
 char DAT_00437520[256] = {0};  // Palette identity map
 // This memory is used both as palette data (int[64]) and state flags (BYTE[256])
@@ -217,17 +218,17 @@ int DAT_0043de90;   // Windowed mode flag (0=fullscreen, 1=windowed)
 int DAT_0043de94 = 0;       // Activate app state
 
 // Video table globals (from VideoTable.cpp)
-int DAT_004374c6 = 0;  // Current video buffer width
-int DAT_00437f5e = 0;  // Video buffer width copy
-int DAT_004374d2 = 0;  // Current video buffer height
-int DAT_004374de = 0;  // Clip left
-int DAT_004374e2 = 0;  // Clip right
-int DAT_004374e6 = 0;  // Clip top
-int DAT_004374ea = 0;  // Clip bottom
+int g_VideoBufferWidth_004374c6 = 0;
+int g_VideoBufferStride_00437f5e = 0;  // Video buffer width copy
+int g_VideoBufferHeight_004374d2 = 0;
+int g_ClipLeft_004374de = 0;
+int g_ClipRight_004374e2 = 0;
+int g_ClipTop_004374e6 = 0;
+int g_ClipBottom_004374ea = 0;
 
 // Added for GameLoop::Run assembly match
 void* g_SmackSoundCheck_0044053c = 0;
 
 // Target/Sprite globals
 int DAT_004362cc = 0;
-int DAT_004362c8 = 0;
+int g_TargetBearingValue_004362c8 = 0;

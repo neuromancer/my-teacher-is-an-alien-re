@@ -397,9 +397,9 @@ int SC_Combat1::LBLParse(char* line) {
 
     if (strcmp(label, "MODULE") == 0) {
         if (sscanf(line, "%s %s", label, moduleType) == 2) {
-            if (strcmp(moduleType, "A") == 0) {
+            if (strcmp(moduleType, g_EngineTypeCombat_00435ef4) == 0) {
                 g_CombatEngine_00435eb0 = new EngineB();
-            } else if (strcmp(moduleType, "B") == 0) {
+            } else if (strcmp(moduleType, g_EngineTypeExplore_00435ef0) == 0) {
                 g_CombatEngine_00435eb0 = new EngineA();
             } else {
                 Parser::LBLParse("SC_Combat1");

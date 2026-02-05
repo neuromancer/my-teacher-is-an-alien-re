@@ -188,7 +188,7 @@ void GameLoop::ProcessInput() {
 
     pMouse = g_InputManager_00436968->pMouse;
     if (pMouse != 0) {
-        if (pMouse->ext1 >= 2 || pMouse->ext2 >= 2 || DAT_004373bc != 0) {
+        if (pMouse->ext1 >= 2 || pMouse->ext2 >= 2 || g_WaitForInputValue_004373bc != 0) {
             boolResult = 1;
         } else {
             boolResult = 0;
@@ -204,7 +204,7 @@ void GameLoop::ProcessInput() {
 
         localMessage.command = 3;
 
-        if (DAT_004373bc != 0) {
+        if (g_WaitForInputValue_004373bc != 0) {
             keyCode = WaitForInput();
         }
 

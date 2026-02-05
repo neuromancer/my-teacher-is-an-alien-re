@@ -5,7 +5,7 @@
 // Color setup globals
 extern char DAT_00437490;      // Color value after lookup
 extern char DAT_00437520[];    // Palette identity map (256 bytes)
-extern char DAT_00437b48[];    // BGR palette buffer
+extern char g_BgrPalette_00437b48[];    // BGR palette buffer
 static char DAT_00437495 = 0;  // Current color index
 
 extern "C" {
@@ -19,21 +19,21 @@ int __cdecl SetFillColor(unsigned char param_1)
     // Match original: MOV AH,AL; MOVZX EAX,AX; MOV EDX,EAX; SHL EDX,0x10; OR EAX,EDX
     unsigned short word = mappedColor | (mappedColor << 8);
     unsigned int dword = word | (word << 16);
-    DAT_00437491 = dword;
+    g_FillColorDword_00437491 = dword;
     return 0;
 }
 
 /* Function start: 0x422E8F */
 int __cdecl ApplyVideoPalette(void)
 {
-    if ((signed char)DAT_00437f54 >= 0) {
+    if ((signed char)g_CurrentVideoBuffer_00437f54 >= 0) {
         if (g_WinGDC_0043841c != (HDC)0) {
             // Use SetDIBColorTable via function pointer
             typedef void (__cdecl *SetDIBColorTableFunc)(HDC, unsigned int, unsigned int, void*);
-            // DAT_00437b4c is at offset 4 into DAT_00437b48
-            ((SetDIBColorTableFunc)DAT_0043842c)(g_WinGDC_0043841c, 0, 0x100, &DAT_00437b48[4]);
+            // DAT_00437b4c is at offset 4 into g_BgrPalette_00437b48
+            ((SetDIBColorTableFunc)DAT_0043842c)(g_WinGDC_0043841c, 0, 0x100, &g_BgrPalette_00437b48[4]);
         } else {
-            if (DAT_00437f50 != 0) {
+            if (g_DibModeFlag_00437f50 != 0) {
                 // Fill 256 shorts with sequential values 0-255
                 short* dst = (short*)(DAT_00437f66 - 0x200);
                 short value = 0;
@@ -47,7 +47,7 @@ int __cdecl ApplyVideoPalette(void)
             } else {
                 // Copy 256 DWORDs from DAT_00437b4c to video buffer
                 // Original used REP MOVSD with ES segment
-                memcpy((void*)(DAT_00437f66 - 0x400), &DAT_00437b48[4], 0x400);
+                memcpy((void*)(DAT_00437f66 - 0x400), &g_BgrPalette_00437b48[4], 0x400);
             }
         }
     }
@@ -62,7 +62,7 @@ extern "C" {
 int __cdecl CopyPaletteData(int index, int count, unsigned char* dest)
 {
     if (count != 0) {
-        unsigned char* src = (unsigned char*)&DAT_00437720[(index + 1) * 4];
+        unsigned char* src = (unsigned char*)&g_LogPalette_00437720[(index + 1) * 4];
         do {
             dest[0] = src[0];
             dest[1] = src[1];
@@ -80,9 +80,9 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
 {
     unsigned int i;
 
-    if ((signed char)DAT_00437f54 >= 0 && count != 0) {
+    if ((signed char)g_CurrentVideoBuffer_00437f54 >= 0 && count != 0) {
         int offset = (start + 1) * 4;
-        PALETTEENTRY* pe = (PALETTEENTRY*)&DAT_00437720[offset];
+        PALETTEENTRY* pe = (PALETTEENTRY*)&g_LogPalette_00437720[offset];
         unsigned char* src = data;
 
         // Copy RGB data to palette entries
@@ -95,7 +95,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
         }
 
         // Convert to RGBQUAD format (BGR order)
-        RGBQUAD* quad = (RGBQUAD*)&DAT_00437b48[offset];
+        RGBQUAD* quad = (RGBQUAD*)&g_BgrPalette_00437b48[offset];
         for (i = 0; i < count; i++) {
             quad[i].rgbBlue = pe[i].peBlue;
             quad[i].rgbGreen = pe[i].peGreen;
@@ -104,10 +104,10 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
         }
 
         if (g_WinGDC_0043841c == (HDC)0) {
-            if (DAT_00437f50 == 0) {
+            if (g_DibModeFlag_00437f50 == 0) {
                 // Copy to video buffer
                 unsigned int* dst = (unsigned int*)(DAT_00437f66 - 0x400);
-                unsigned int* srcQuad = (unsigned int*)&DAT_00437b48[4];
+                unsigned int* srcQuad = (unsigned int*)&g_BgrPalette_00437b48[4];
                 for (i = 0x100; i != 0; i--) {
                     *dst++ = *srcQuad++;
                 }
@@ -115,7 +115,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
         } else {
             // Use SetDIBColorTable via function pointer
             typedef void (__cdecl *SetDIBColorTableFunc)(HDC, unsigned int, unsigned int, RGBQUAD*);
-            ((SetDIBColorTableFunc)DAT_0043842c)(g_WinGDC_0043841c, start, count, (RGBQUAD*)&DAT_00437b48[offset]);
+            ((SetDIBColorTableFunc)DAT_0043842c)(g_WinGDC_0043841c, start, count, (RGBQUAD*)&g_BgrPalette_00437b48[offset]);
         }
 
         AnimatePalette(g_Palette_0043748c, start, count, pe);
@@ -126,25 +126,25 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
 /* Function start: 0x4239C8 */
 int __cdecl GetGlobalVertAlign()
 {
-    return (int)(signed char)DAT_004374c1;
+    return (int)(signed char)g_TextAlignV_004374c1;
 }
 
 /* Function start: 0x4239D0 */
 int __cdecl GetGlobalTextAlign()
 {
-    return (int)(signed char)DAT_004374c0;
+    return (int)(signed char)g_TextAlignH_004374c0;
 }
 
 /* Function start: 0x4239D8 */
 int __cdecl GetGlobalTextY()
 {
-    return DAT_004374ce;
+    return g_DrawPosY_004374ce;
 }
 
 /* Function start: 0x4239DE */
 int __cdecl GetGlobalTextX()
 {
-    return DAT_004374c2;
+    return g_DrawPosX_004374c2;
 }
 
 } // extern "C"

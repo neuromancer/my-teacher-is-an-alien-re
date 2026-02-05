@@ -8,13 +8,13 @@
 // Externs for globals
 extern HDC DAT_00437488;
 extern HDC DAT_004374b4;
-extern char DAT_00437506;
-extern char DAT_00437507;
+extern char g_CursorVisible_00437506;
+extern char g_CursorState_00437507;
 extern int DAT_00437508;
 extern int DAT_0043750c;
 extern int DAT_00437510;
-extern int DAT_00437f4c;
-extern int DAT_00437f50;
+extern int g_BitmapHeaderSize_00437f4c;
+extern int g_DibModeFlag_00437f50;
 
 extern HGDIOBJ DAT_00437496;
 extern int DAT_0043749a;
@@ -24,21 +24,21 @@ extern char DAT_00439446[256]; // TEXTMETRIC struct buffer
 
 extern char DAT_00437490;
 extern "C" unsigned short DAT_004374b2;  // C linkage (defined in globals.cpp)
-extern int DAT_00437491;
+extern int g_FillColorDword_00437491;
 extern int DAT_00437518;
 extern int DAT_0043751c;
 extern int DAT_004383ec;
 extern int DAT_004383f4;
 extern int DAT_00438404;
 extern int DAT_0043840c;
-extern int DAT_004374c2;
-extern int DAT_004374ce;
-extern int DAT_004374d6;
-extern int DAT_004374da;
+extern int g_DrawPosX_004374c2;
+extern int g_DrawPosY_004374ce;
+extern int g_LineWidthH_004374d6;
+extern int g_LineWidthV_004374da;
 extern int DAT_00437514;
-extern char DAT_004374c0;
-extern char DAT_004374c1;
-extern char DAT_00437f54;
+extern char g_TextAlignH_004374c0;
+extern char g_TextAlignV_004374c1;
+extern char g_CurrentVideoBuffer_00437f54;
 extern int DAT_00437f56;
 extern int DAT_00437f5a;
 extern HDC g_WinGDC_0043841c;
@@ -46,11 +46,11 @@ extern HGDIOBJ DAT_00438424;
 
 extern char DAT_00437520[256];  // Palette identity map
 extern "C" unsigned char DAT_00437620[256];  // Palette data / State flags (C linkage)
-extern int DAT_0043826c[32];    // Palette data
-extern char DAT_00437720[];     // LOGPALETTE buffer
-extern char DAT_00437afc[];     // inside DAT_00437720
-extern char DAT_00437b4c[];     // inside DAT_00437b48 typically
-extern char DAT_00437b48[];     // BGR palette buffer
+extern int g_VBufDataPtrs_0043826c[32];  // Video buffer data pointers
+extern char g_LogPalette_00437720[];     // LOGPALETTE buffer
+extern char DAT_00437afc[];     // inside g_LogPalette_00437720
+extern char DAT_00437b4c[];     // inside g_BgrPalette_00437b48 typically
+extern char g_BgrPalette_00437b48[];     // BGR palette buffer
 
 
 // Far pointer storage for WinG
@@ -62,7 +62,7 @@ extern HANDLE DAT_004374ee;
 extern HMODULE DAT_00438420;
 
 // WinG function pointers
-extern void* DAT_00438428;
+extern void* g_WinGCreateDIB_00438428;
 extern void* DAT_0043842c;
 extern void* DAT_00438430;
 extern void* DAT_00438434;
@@ -87,7 +87,7 @@ extern "C" int InitVideoSystem(void);
 
 // Additional globals for palette functions
 extern HPALETTE g_Palette_0043748c;
-extern HPALETTE DAT_004374ae;
+extern HPALETTE g_PreviousPalette_004374ae;
 
 
 
@@ -228,18 +228,18 @@ extern "C" void FlipScreen() {
 
 /* Function start: 0x4231BC */
 extern "C" int InvalidateVideoMode() {
-    DAT_00437f54 = (char)0xff;
+    g_CurrentVideoBuffer_00437f54 = (char)0xff;
     return 0;
 }
 
 /* Function start: 0x4231C6 */
 extern "C" int GetCurrentVideoMode() {
-    return (signed char)DAT_00437f54;
+    return (signed char)g_CurrentVideoBuffer_00437f54;
 }
 
 // Extern declarations for coordinate scaling
-extern int DAT_004374c6;  // Video buffer width
-extern int DAT_004374d2;  // Video buffer height
+extern int g_VideoBufferWidth_004374c6;  // Video buffer width
+extern int g_VideoBufferHeight_004374d2;  // Video buffer height
 
 /* Function start: 0x42449b */
 extern "C" int ScaleClientToBufferX(int x)
@@ -247,7 +247,7 @@ extern "C" int ScaleClientToBufferX(int x)
     RECT rect;
     HWND hWnd = GetActiveWindow();
     GetClientRect(hWnd, &rect);
-    return (x * DAT_004374c6) / rect.right;
+    return (x * g_VideoBufferWidth_004374c6) / rect.right;
 }
 
 /* Function start: 0x4244c2 */
@@ -256,7 +256,7 @@ extern "C" int ScaleClientToBufferY(int y)
     RECT rect;
     HWND hWnd = GetActiveWindow();
     GetClientRect(hWnd, &rect);
-    return (y * DAT_004374d2) / rect.bottom;
+    return (y * g_VideoBufferHeight_004374d2) / rect.bottom;
 }
 
 /* Function start: 0x4239E4 */
@@ -266,7 +266,7 @@ extern "C" int GetMousePosition(int* out_x, int* out_y)
     int x;
     int y;
 
-    if (DAT_00437506 == 0) {
+    if (g_CursorVisible_00437506 == 0) {
         goto fail;
     }
     GetCursorPos(&pt);
@@ -276,7 +276,7 @@ extern "C" int GetMousePosition(int* out_x, int* out_y)
     }
     x = ScaleClientToBufferX(pt.x);
     y = ScaleClientToBufferY(pt.y);
-    if (x < 0 || x >= DAT_004374c6 || y < 0 || y >= DAT_004374d2) {
+    if (x < 0 || x >= g_VideoBufferWidth_004374c6 || y < 0 || y >= g_VideoBufferHeight_004374d2) {
         goto fail;
     }
 done:
@@ -301,11 +301,11 @@ int InitMouseSettings(void)
     if (iVar2 != 0) {
         DAT_00437508 = GetSystemMetrics(0xd); // SM_CXDOUBLECLK
         DAT_0043750c = GetSystemMetrics(0xe); // SM_CYDOUBLECLK
-        DAT_00437506 = 1;
-        DAT_00437507 = 1;
+        g_CursorVisible_00437506 = 1;
+        g_CursorState_00437507 = 1;
         return 1;
     }
-    DAT_00437506 = 0;
+    g_CursorVisible_00437506 = 0;
     return -1;
 }
 
@@ -332,7 +332,7 @@ int InitVideoSystem(void)
     InitStockFont(10);  // OEM_FIXED_FONT
     
     cVar1 = '\0';
-    puVar7 = DAT_0043826c;
+    puVar7 = g_VBufDataPtrs_0043826c;
     for (iVar5 = 0x20; iVar5 != 0; iVar5 = iVar5 - 1) {
         *puVar7 = 0;
         puVar7 = puVar7 + 1;
@@ -357,26 +357,26 @@ int InitVideoSystem(void)
     if (bVar10) {
         uVar9 = 0x228;
     }
-    DAT_00437f50 = bVar10;
-    DAT_00437f4c = uVar9;
+    g_DibModeFlag_00437f50 = bVar10;
+    g_BitmapHeaderSize_00437f4c = uVar9;
     
     DAT_00437490 = 0;
     DAT_004374b2 = 0;
-    DAT_00437491 = 0;
+    g_FillColorDword_00437491 = 0;
     DAT_00437518 = 0;
     DAT_0043751c = 0;
     DAT_004383ec = 0;
     DAT_004383f4 = 0;
     DAT_00438404 = 0;
     DAT_0043840c = 0;
-    DAT_004374c2 = 0;
-    DAT_004374ce = 0;
-    DAT_004374d6 = 1;
-    DAT_004374da = 1;
+    g_DrawPosX_004374c2 = 0;
+    g_DrawPosY_004374ce = 0;
+    g_LineWidthH_004374d6 = 1;
+    g_LineWidthV_004374da = 1;
     DAT_00437514 = 1;
-    DAT_004374c0 = (char)0xff;
-    DAT_004374c1 = (char)0xff;
-    DAT_00437f54 = (char)0xff;
+    g_TextAlignH_004374c0 = (char)0xff;
+    g_TextAlignV_004374c1 = (char)0xff;
+    g_CurrentVideoBuffer_00437f54 = (char)0xff;
     DAT_00437f56 = -1;
     DAT_00437f5a = -1;
     g_WinGDC_0043841c = 0;
@@ -406,8 +406,8 @@ int InitVideoSystem(void)
         if (pHVar4 != (HMODULE)0x0) {
             DAT_00438420 = pHVar4;
             // Get WinG function pointers using ordinals
-            DAT_00438428 = (void*)GetProcAddress(pHVar4, (LPCSTR)2);
-            if (DAT_00438428 == 0) return 0;
+            g_WinGCreateDIB_00438428 = (void*)GetProcAddress(pHVar4, (LPCSTR)2);
+            if (g_WinGCreateDIB_00438428 == 0) return 0;
             DAT_0043842c = (void*)GetProcAddress(pHVar4, (LPCSTR)6);
             if (DAT_0043842c == 0) return 0;
             DAT_00438430 = (void*)GetProcAddress(pHVar4, (LPCSTR)3);
@@ -442,7 +442,7 @@ extern "C" int CleanupVideoSystem() {
     int* piVar3;
 
     iVar2 = 0x20;
-    piVar3 = DAT_0043826c;
+    piVar3 = g_VBufDataPtrs_0043826c;
     do {
         iVar1 = *piVar3;
         iVar2 = iVar2 - 1;
@@ -450,9 +450,9 @@ extern "C" int CleanupVideoSystem() {
     } while (iVar2 != 0 && iVar1 != 0);
 
     if (iVar1 == 0) {
-        DAT_00437f54 = (char)0xff;
-        if (DAT_004374ae != (HPALETTE)0) {
-            SelectPalette(DAT_00437488, DAT_004374ae, 0);
+        g_CurrentVideoBuffer_00437f54 = (char)0xff;
+        if (g_PreviousPalette_004374ae != (HPALETTE)0) {
+            SelectPalette(DAT_00437488, g_PreviousPalette_004374ae, 0);
         }
         if (g_WinGDC_0043841c != 0) {
             DeleteDC((HDC)g_WinGDC_0043841c);
@@ -472,8 +472,8 @@ int SelectAndRealizePalette(HPALETTE param_1)
     g_Palette_0043748c = param_1;
     pHVar1 = SelectPalette(DAT_00437488, param_1, 0);
     RealizePalette(DAT_00437488);
-    if (DAT_004374ae == (HPALETTE)0x0) {
-        DAT_004374ae = pHVar1;
+    if (g_PreviousPalette_004374ae == (HPALETTE)0x0) {
+        g_PreviousPalette_004374ae = pHVar1;
     }
     return 0;
 }
@@ -490,12 +490,12 @@ HPALETTE CreateSystemPalette(void)
   unsigned char r, g;
   
   hdc = GetDC((HWND)0x0);
-  pEntries = (unsigned char*)DAT_00437720 + 4;
+  pEntries = (unsigned char*)g_LogPalette_00437720 + 4;
   if (GetColorBitDepth() < 8) {
     GetSystemPaletteEntries(hdc, 0, 8, (PALETTEENTRY*)pEntries);
     GetSystemPaletteEntries(hdc, 8, 8, (PALETTEENTRY*)(pEntries + 0x3e0));
     ReleaseDC((HWND)0x0, hdc);
-    dest = (unsigned char*)DAT_00437720 + 0x24;
+    dest = (unsigned char*)g_LogPalette_00437720 + 0x24;
     src = (unsigned char*)DAT_00423e92;
     count = 0xf0;
   }
@@ -503,7 +503,7 @@ HPALETTE CreateSystemPalette(void)
     GetSystemPaletteEntries(hdc, 0, 10, (PALETTEENTRY*)pEntries);
     GetSystemPaletteEntries(hdc, 246, 10, (PALETTEENTRY*)(pEntries + 0x3d8));
     ReleaseDC((HWND)0x0, hdc);
-    dest = (unsigned char*)DAT_00437720 + 0x2c;
+    dest = (unsigned char*)g_LogPalette_00437720 + 0x2c;
     src = (unsigned char*)DAT_00423e98;
     count = 0xec;
   }
@@ -520,8 +520,8 @@ HPALETTE CreateSystemPalette(void)
   } while (count != 0);
   
   // Second loop: Create BGR reordered copy at DAT_00437b4c
-  pEntries = (unsigned char*)DAT_00437720 + 4;
-  pBgrDest = (unsigned char*)DAT_00437b48 + 4;
+  pEntries = (unsigned char*)g_LogPalette_00437720 + 4;
+  pBgrDest = (unsigned char*)g_BgrPalette_00437b48 + 4;
   count = 0x100;
   do {
     r = pEntries[0];
@@ -535,7 +535,7 @@ HPALETTE CreateSystemPalette(void)
     count = count - 1;
   } while (count != 0);
   
-  return CreatePalette((LOGPALETTE *)DAT_00437720);
+  return CreatePalette((LOGPALETTE *)g_LogPalette_00437720);
 }
 
 /* Function start: 0x424162 */
@@ -566,24 +566,24 @@ int InitStockFont(int param_1)
 extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2) { return 0; }
 
 // Externs for video buffer access
-extern int DAT_004374ca;  // buffer height - 1
-extern int DAT_00437f5e;  // buffer stride
+extern int g_VideoBufferHeightM1_004374ca;  // buffer height - 1
+extern int g_VideoBufferStride_00437f5e;  // buffer stride
 extern int DAT_00437f66;  // buffer base
-extern int DAT_004374de;  // clip left
-extern int DAT_004374e2;  // clip right
-extern int DAT_004374e6;  // clip top
-extern int DAT_004374ea;  // clip bottom
+extern int g_ClipLeft_004374de;  // clip left
+extern int g_ClipRight_004374e2;  // clip right
+extern int g_ClipTop_004374e6;  // clip top
+extern int g_ClipBottom_004374ea;  // clip bottom
 static void DrawEllipseScanline(int y, int left_x, int right_x) {
-    if (y < DAT_004374e6 || y > DAT_004374ea) return;
-    if (right_x < DAT_004374de) return;
-    if (left_x > DAT_004374e2) return;
+    if (y < g_ClipTop_004374e6 || y > g_ClipBottom_004374ea) return;
+    if (right_x < g_ClipLeft_004374de) return;
+    if (left_x > g_ClipRight_004374e2) return;
 
     int flags = 0;
-    if (left_x < DAT_004374de) flags = 2;
-    if (right_x > DAT_004374e2) flags |= 1;
+    if (left_x < g_ClipLeft_004374de) flags = 2;
+    if (right_x > g_ClipRight_004374e2) flags |= 1;
 
-    int row = DAT_004374ca - y;
-    unsigned char* base = (unsigned char*)(row * DAT_00437f5e + DAT_00437f66);
+    int row = g_VideoBufferHeightM1_004374ca - y;
+    unsigned char* base = (unsigned char*)(row * g_VideoBufferStride_00437f5e + DAT_00437f66);
     unsigned char color = (unsigned char)DAT_00437490;
 
     if (!(flags & 2)) {
@@ -596,7 +596,7 @@ static void DrawEllipseScanline(int y, int left_x, int right_x) {
 
 /* Function start: 0x424176 */
 extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
-    if ((signed char)DAT_00437f54 < 0) return 0;
+    if ((signed char)g_CurrentVideoBuffer_00437f54 < 0) return 0;
     if (param_1 <= 0 || param_2 <= 0) return 0;
 
     unsigned short rx = (unsigned short)param_1;
@@ -616,8 +616,8 @@ extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
 
     // First region: where dy/dx < 1
     while (term_x <= term_y) {
-        int center_x = DAT_004374c2;
-        int center_y = DAT_004374ce;
+        int center_x = g_DrawPosX_004374c2;
+        int center_y = g_DrawPosY_004374ce;
         int draw_y;
 
         // Draw top scanline (center_y - y)
@@ -644,8 +644,8 @@ extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
 
     // Second region: where dy/dx >= 1
     while (y >= 0) {
-        int center_x = DAT_004374c2;
-        int center_y = DAT_004374ce;
+        int center_x = g_DrawPosX_004374c2;
+        int center_y = g_DrawPosY_004374ce;
         int draw_y;
 
         // Draw top scanline

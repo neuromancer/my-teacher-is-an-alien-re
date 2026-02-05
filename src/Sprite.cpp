@@ -67,15 +67,15 @@ void Sprite::Init()
     }
 
     if (animation_data->targetBuffer != 0) {
-        if (DAT_00436b9c == 0) {
-            char* ptr = DAT_0043d630;
+        if (g_SpriteTableInitialized_00436b9c == 0) {
+            char* ptr = g_SpriteFilenameTable_0043d630;
             do {
                 *ptr = 0;
                 ptr += 0x40;
-            } while (ptr < &DAT_0043d630[0x800]);
-            DAT_00436b9c = 1;
+            } while (ptr < &g_SpriteFilenameTable_0043d630[0x800]);
+            g_SpriteTableInitialized_00436b9c = 1;
         }
-        strcpy(&DAT_0043d630[animation_data->targetBuffer->handle * 0x40], sprite_filename);
+        strcpy(&g_SpriteFilenameTable_0043d630[animation_data->targetBuffer->handle * 0x40], sprite_filename);
     }
 
     //CheckRanges1();
@@ -104,7 +104,7 @@ void Sprite::StopAnimationSound()
     animation_data = 0;
 
     if (sound_idx != -1) {
-        DAT_0043d630[sound_idx * 0x40] = 0;
+        g_SpriteFilenameTable_0043d630[sound_idx * 0x40] = 0;
     }
     flags |= 0x20;
 }
@@ -125,7 +125,7 @@ void Sprite::FreeAnimation()
 {
     if (animation_data != 0 && animation_data->targetBuffer != 0) {
         if (animation_data->targetBuffer->handle != -1) {
-            DAT_0043d630[animation_data->targetBuffer->handle * 0x40] = 0;
+            g_SpriteFilenameTable_0043d630[animation_data->targetBuffer->handle * 0x40] = 0;
         }
         animation_data->FreeVBuffer();
     }

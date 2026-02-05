@@ -6,7 +6,6 @@
 #include "VBuffer.h"
 #include <string.h>
 
-extern int DAT_0043bc64;
 extern int DAT_0043d150;
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);

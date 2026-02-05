@@ -240,7 +240,7 @@ void Animation::MainLoop() {
           }
 
           int escaped = 0;
-          if (DAT_004373bc) {
+          if (g_WaitForInputValue_004373bc) {
             escaped = (WaitForInput() == 0x1b);
           }
           if (escaped) {

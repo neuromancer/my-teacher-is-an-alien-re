@@ -385,18 +385,12 @@ struct SolutionEntry {
 
 extern SolutionEntry g_SolutionData_00435b88[9];
 extern Engine* g_CombatEngine_00435eb0; // Combat engine (EngineB subclass)
-// extern char DAT_00435ef0; // { /* 1 bytes */ }
-// extern char DAT_00435ef1; // { /* 1 bytes */ }
-// extern char DAT_00435ef2; // { /* 1 bytes */ }
-// extern char DAT_00435ef3; // { /* 1 bytes */ }
-extern char DAT_00435ef4; // { /* 1 bytes */ }
-extern char DAT_004374c0; // { /* 1 bytes */ }
-extern char DAT_004374c1; // { /* 1 bytes */ }
-extern int DAT_004374c2; // { /* 4 bytes */ }
-extern int DAT_004374ce; // { /* 4 bytes */ }
-// extern char DAT_00435ef5; // { /* 1 bytes */ }
-// extern char DAT_00435ef6; // { /* 1 bytes */ }
-// extern char DAT_00435ef7; // { /* 1 bytes */ }
+extern char g_EngineTypeExplore_00435ef0[4]; // Engine type "B" for EngineA (exploration)
+extern char g_EngineTypeCombat_00435ef4[4]; // Engine type "A" for EngineB (combat), also used for text metrics
+extern char g_TextAlignH_004374c0; // Horizontal text alignment (-1 = none)
+extern char g_TextAlignV_004374c1; // Vertical text alignment (-1 = none)
+extern int g_DrawPosX_004374c2; // Current drawing X position
+extern int g_DrawPosY_004374ce; // Current drawing Y position
 // Engine parser subsystem globals
 extern class EngineInfoParser* g_EngineInfoParser_00435f00;  // ENGINE_INFO parser
 extern Sprite* g_ConsoleSprite_00435f04; // Console sprite
@@ -409,39 +403,19 @@ extern class SoundList* g_SoundList_00435f1c;
 extern CursorState* g_ScoreManager_00435f20;
 extern mCNavigator* g_Navigator_00435f24;  // NAVIGATION parser
 extern GameOutcome* g_GameOutcome_00435f28; // Game outcome state
-// extern char DAT_00436094; // { /* 1 bytes */ }
-// extern char DAT_00436095; // { /* 1 bytes */ }
-// extern char DAT_00436096; // { /* 1 bytes */ }
-// extern void* PTR_DAT_0043609c; // (void*)0x00436094
+// Direction chars "NESWUD" at 0x436094 - defined inline in mCNavigator.cpp
+// Pointer to direction chars at 0x43609c - defined inline in mCNavigator.cpp
 extern Sprite* g_Sprite_004360a0; // DAT_004360a0  { /* 4 bytes */ }
-// extern char DAT_004361d4; // { /* 1 bytes */ }
-// extern char DAT_004361d5; // { /* 1 bytes */ }
-// extern char DAT_004361d6; // { /* 1 bytes */ }
-// extern char DAT_004361d7; // { /* 1 bytes */ }
-// extern int DAT_004362c8; // { /* 4 bytes */ }
-extern char DAT_0043d630[0x4000]; // Array of size 0x4000
-extern int DAT_00436b9c; // { /* 4 bytes */ }
-// extern int DAT_00436348; // { /* 4 bytes */ }
-// extern int DAT_0043634c; // { /* 4 bytes */ }
-// extern int DAT_004366b4; // { /* 4 bytes */ }
-// extern char DAT_004367dc; // { /* 1 bytes */ }
-// extern char DAT_004367dd; // { /* 1 bytes */ }
-// extern char DAT_004367de; // { /* 1 bytes */ }
-// extern char DAT_004367df; // { /* 1 bytes */ }
-// extern char DAT_004367e4; // { /* 1 bytes */ }
-// extern char DAT_004367e5; // { /* 1 bytes */ }
-// extern char DAT_004367e6; // { /* 1 bytes */ }
-// extern char DAT_004367e7; // { /* 1 bytes */ }
-// extern char DAT_004367f4; // { /* 1 bytes */ }
-// extern char DAT_004367f5; // { /* 1 bytes */ }
-// extern char DAT_004367f6; // { /* 1 bytes */ }
-// extern char DAT_004367f7; // { /* 1 bytes */ }
-// extern char DAT_0043684c; // { /* 1 bytes */ }
-// extern char DAT_0043684d; // { /* 1 bytes */ }
-// extern char DAT_0043684e; // { /* 1 bytes */ }
-// extern char DAT_0043684f; // { /* 1 bytes */ }
+// mCNavNode keyword strings (0x4361c8-0x4361df) - inline in mCNavNode.cpp: "BG", "NAME", "LOOP", "IAM"
+extern int g_TargetBearingValue_004362c8; // Last bearing value from Target parsing
+extern char g_SpriteFilenameTable_0043d630[0x4000]; // Table of 256 sprite filenames (64 chars each)
+extern int g_SpriteTableInitialized_00436b9c; // Initialization flag for sprite filename table
+// g_CurrentSprite (0x436348) - defined in CombatSprite.cpp
+// g_CurrentSpriteIndex (0x43634c) - defined in CombatSprite.cpp
+// String table index (0x4366b4) - used inline in string.cpp
+// SC_Message keyword strings (0x4367dc-0x43684f) - inline strings in SC_Question.cpp
 extern char* g_Buffer_00436960; // DAT_00436960  { /* 4 bytes */ }
-extern void* g_Buffer_00436964; // DAT_00436964  { /* 4 bytes */ }
+extern char* g_Buffer_00436964; // Scale table buffer
 extern InputManager* g_InputManager_00436968; // DAT_00436968  { /* 4 bytes */ }
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
@@ -459,113 +433,92 @@ extern MessageQueue* g_MessageQueue; // Handler8 message queue
 extern char* g_StateString_00436994; // DAT_00436994 - string buffer used for game state strings
 extern GameState* g_GameState_00436998; // DAT_00436998  { /* 4 bytes */ }
 extern void* g_GameStruct2; // { /* 4 bytes */ }
-extern int DAT_0043d564; // { /* 4 bytes */ }
-extern int DAT_0043503c; // { /* 4 bytes */ }
-extern int DAT_00435040; // { /* 4 bytes */ }
-extern int DAT_00435030; // { /* 4 bytes */ }
-extern int DAT_00435038; // { /* 4 bytes */ }
-extern void* DAT_0043f104; // { /* 4 bytes */ }
-extern void* DAT_0043f100; // { /* 4 bytes */ }
-extern char DAT_0043be30; // { /* 1 bytes */ }
-extern int DAT_0043be34; // { /* 4 bytes */ }
+extern int g_DevModeFlag_0043d564; // 1 = running from dev directory, 0 = running from CD
+// CRT function tables (used by atexit/cleanup)
+extern int DAT_0043503c; // CRT terminator table start
+extern int DAT_00435040; // CRT terminator table end
+extern int DAT_00435030; // CRT initializer table start
+extern int DAT_00435038; // CRT initializer table end
+extern void* g_AtExitTableStart_0043f104; // Start of atexit function pointer array
+extern void* g_AtExitTableEnd_0043f100; // Current end of atexit function pointer array
+extern char g_ExitCode_0043be30; // Exit code
+extern int g_ExitInProgress_0043be34; // 1 = exit in progress
 extern GameState* g_GameState4_004369a0; // DAT_004369a0
 extern GameState* g_GameState2_004369a4; // DAT_004369a4
 extern GameState* g_GameState3_0043699c; // DAT_0043699c
-// extern int DAT_00436a94; // { /* 4 bytes */ }
-// extern int DAT_00436b9c; // { /* 4 bytes */ }
-// extern char DAT_00436d28; // { /* 1 bytes */ }
-// extern char DAT_00436d29; // { /* 1 bytes */ }
-// extern char DAT_00436d2a; // { /* 1 bytes */ }
-// extern char DAT_00436d2b; // { /* 1 bytes */ }
-// extern int DAT_00436fe4; // { /* 4 bytes */ }
-// extern char DAT_0043704c; // { /* 1 bytes */ }
-// extern char DAT_0043704d; // { /* 1 bytes */ }
-// extern char DAT_0043704e; // { /* 1 bytes */ }
-// extern char DAT_0043704f; // { /* 1 bytes */ }
-extern int DAT_004373b8; // DoubleClickTime
-extern int DAT_004373bc; // DAT_004373bc  { /* 4 bytes */ }
-// pointer PTR_s_Setup.cfg_00437454 = (void*)0x00437448;
-// extern int DAT_00437488; // { /* 4 bytes */ }
-extern HPALETTE g_Palette_0043748c; // DAT_0043748c  { /* 4 bytes */ }
-// extern char DAT_00437490; // { /* 1 bytes */ }
-extern int DAT_00437491; // { /* 4 bytes */ }
-// extern int DAT_0043749a; // { /* 4 bytes */ }
-extern HPALETTE DAT_004374ae; // Previously selected palette
-// extern int DAT_004374b4; // { /* 4 bytes */ }
-// extern char DAT_004374c0; // { /* 1 bytes */ }
-// extern char DAT_004374c1; // { /* 1 bytes */ }
-// extern int DAT_004374c2; // { /* 4 bytes */ }
-extern int DAT_004374c6; // Video buffer width
-extern int DAT_004374ca; // Current buffer height - 1
-// extern int DAT_004374ce; // { /* 4 bytes */ }
-extern int DAT_004374d2; // Video buffer height
-// extern int DAT_004374d6; // { /* 4 bytes */ }
-// extern int DAT_004374da; // { /* 4 bytes */ }
-extern int DAT_004374de; // Clip left
-extern int DAT_004374e2; // Clip right
-extern int DAT_004374e6; // Clip top
-extern int DAT_004374ea; // Clip bottom
-// extern int DAT_004374ee; // { /* 4 bytes */ }
-extern char DAT_00437506; // { /* 1 bytes */ }
-extern char DAT_00437507; // { /* 1 bytes */ }
-// extern char DAT_00437520; // { /* 1 bytes */ }
-// extern char DAT_00437521; // { /* 1 bytes */ }
+// extern int DAT_00436a94; // Init flag for DAT_0043d5b0 array (similar to g_SpriteTableInitialized)
+// extern int DAT_00436b9c; // Already defined as g_SpriteTableInitialized_00436b9c
+// extern char DAT_00436d28[4]; // Inline keyword string "POS\0" for sprite parsing (before "FNAME" at 0x436d2c)
+// extern int DAT_00436fe4; // Inline cursor action string (8 bytes before "PICKUP"), used in MouseControl ctor
+// extern char DAT_0043704c[4]; // Inline keyword string "USE\0" for MouseControl parsing
+extern int g_DoubleClickTime_004373b8; // From GetDoubleClickTime()
+extern int g_WaitForInputValue_004373bc; // Keyboard event value
+// PTR_s_Setup_cfg_00437454 - Defined in globals.cpp as pointer to "Setup.cfg"
+// DAT_00437488 - Defined in globals.cpp as HDC (main device context)
+extern HPALETTE g_Palette_0043748c; // Main game palette
+// DAT_00437490 - Defined in globals.cpp as char (color value after palette lookup)
+extern int g_FillColorDword_00437491; // DWORD fill color (4 copies of color byte)
+// DAT_0043749a - Defined in globals.cpp as int (text height + external leading)
+extern HPALETTE g_PreviousPalette_004374ae; // Previously selected palette
+// DAT_004374b4 - Defined in globals.cpp as HDC (secondary device context)
+// DAT_004374c0 - Already defined as g_TextAlignH_004374c0
+// DAT_004374c1 - Already defined as g_TextAlignV_004374c1
+// DAT_004374c2 - Already defined as g_DrawPosX_004374c2
+extern int g_VideoBufferWidth_004374c6;
+extern int g_VideoBufferHeightM1_004374ca; // Height - 1
+// DAT_004374ce - Already defined as g_DrawPosY_004374ce
+extern int g_VideoBufferHeight_004374d2;
+extern int g_LineWidthH_004374d6; // Horizontal line width (drawing)
+extern int g_LineWidthV_004374da; // Vertical line width (drawing)
+extern int g_ClipLeft_004374de;
+extern int g_ClipRight_004374e2;
+extern int g_ClipTop_004374e6;
+extern int g_ClipBottom_004374ea;
+// DAT_004374ee - Defined in globals.cpp as HANDLE (WinG DLL file check)
+extern char g_CursorVisible_00437506; // 1 = cursor visible
+extern char g_CursorState_00437507; // Cursor state tracking
+// DAT_00437520[256] - Defined in globals.cpp as palette identity map array
 extern "C" {
     extern unsigned char DAT_00437620[256]; // State flags / Palette data
     extern unsigned short DAT_004374b2; // State flags bitfield
 }
-extern char DAT_00437720[1028]; // Palette entries array (needed 1028 bytes for 4 byte header + 256*4 entries)
-extern char DAT_00437b48[1028]; // Palette RGBQUAD array
-// extern char DAT_00437724; // { /* 1 bytes */ }
-// extern char DAT_00437725; // { /* 1 bytes */ }
-// extern char DAT_00437726; // { /* 1 bytes */ }
-// extern char DAT_00437728; // { /* 1 bytes */ }
-// extern char DAT_00437729; // { /* 1 bytes */ }
-// extern char DAT_0043772a; // { /* 1 bytes */ }
-// extern short DAT_00437744; // { /* 2 bytes */ }
-// extern short DAT_00437746; // { /* 2 bytes */ }
-// extern short DAT_00437748; // { /* 2 bytes */ }
-// extern short DAT_0043774a; // { /* 2 bytes */ }
-// extern short DAT_0043774c; // { /* 2 bytes */ }
-// extern short DAT_0043774e; // { /* 2 bytes */ }
-// extern int DAT_00437b4c; // { /* 4 bytes */ }
-// extern int DAT_00437b50; // { /* 4 bytes */ }
-extern int DAT_00437f4c; // DAT_00437f4c  { /* 4 bytes */ }
-extern int DAT_00437f50; // DAT_00437f50  { /* 4 bytes */ }
-extern char DAT_00437f54; // DAT_00437f54  { /* 1 byte */ } // Current video buffer index
-extern int DAT_00437f5e; // Video buffer width copy
-extern int DAT_0043826c[]; // { /* 4 bytes */ }
-extern void* DAT_00438428; // { /* 4 bytes */ }
-extern int DAT_00437fec[]; // { /* 4 bytes */ }
-extern int DAT_00437f6c[]; // { /* 4 bytes */ }
-extern int DAT_0043836c[]; // { /* 4 bytes */ }
-extern int DAT_004382ec[]; // { /* 4 bytes */ }
-extern int DAT_0043806c[]; // { /* 4 bytes */ }
-extern int DAT_004380ec[]; // { /* 4 bytes */ }
-extern int DAT_0043816c[]; // { /* 4 bytes */ }
-extern int DAT_004381ec[]; // { /* 4 bytes */ }
+extern char g_LogPalette_00437720[1028]; // LOGPALETTE: 4-byte header + 256 PALETTEENTRY
+extern char g_BgrPalette_00437b48[1028]; // BGR palette: 4-byte header + 256 RGBQUAD
+// 0x437724-0x43772a, 0x437744-0x43774e: Offsets inside g_LogPalette_00437720 (palette entries)
+// 0x437b4c, 0x437b50: Offsets inside g_BgrPalette_00437b48 (RGBQUAD entries at +4, +8)
+extern int g_BitmapHeaderSize_00437f4c; // Bitmap info header size / data offset
+extern int g_DibModeFlag_00437f50; // DIB mode flag (0 = WinG, non-zero = DIB)
+extern char g_CurrentVideoBuffer_00437f54; // Current video buffer index (0xff = no selection)
+extern int g_VideoBufferStride_00437f5e; // Video buffer stride/width
+// Video buffer slot tables (32 slots for video buffers)
+extern int g_VBufDataPtrs_0043826c[32];   // Video buffer data pointers
+extern void* g_WinGCreateDIB_00438428;    // WinG CreateDIBSection function pointer
+extern int g_VBufDibHandles_00437fec[32]; // Video buffer DIB handles
+extern int g_VBufMemHandles_00437f6c[32]; // Video buffer memory handles
+extern int g_VBufWidths_0043836c[32];     // Video buffer widths
+extern int g_VBufHeights_004382ec[32];    // Video buffer heights
+extern int g_VBufMaxX_0043806c[32];       // Video buffer max X (width - 1)
+extern int g_VBufMaxY_004380ec[32];       // Video buffer max Y (height - 1)
+extern int g_VBufClipLeft_0043816c[32];   // Video buffer clip left
+extern int g_VBufClipTop_004381ec[32];    // Video buffer clip top
 extern int DAT_00437f62; // { /* 4 bytes */ }
 extern int DAT_00437f66; // DAT_00437f66  { /* 4 bytes */ }
 extern short DAT_00437f6a; // DAT_00437f6a  { /* 2 bytes */ }
-// extern int DAT_0043826c; // { /* 4 bytes */ }
+// 0x0043826c: Defined above as g_VBufDataPtrs_0043826c[32]
 // extern int DAT_00438270; // { /* 4 bytes */ }
 extern HDC g_WinGDC_0043841c; // DAT_0043841c  { /* 4 bytes */ }
 // extern int DAT_00438420; // { /* 4 bytes */ }
 extern HGDIOBJ DAT_00438424; // DAT_00438424  { /* 4 bytes */ }
-// extern int DAT_00438428; // { /* 4 bytes */ }
-extern void* DAT_0043842c; // DAT_0043842c  { /* 4 bytes */ }
-// extern int DAT_00438430; // { /* 4 bytes */ }
-// extern int DAT_00438434; // { /* 4 bytes */ }
-// extern int DAT_00438438; // { /* 4 bytes */ }
-// extern void* PTR_DAT_0043843c; // (void*)0x00438446
-// extern short DAT_00438440; // { /* 2 bytes */ }
-// extern int DAT_00439446; // { /* 4 bytes */ }
-// extern int DAT_00439456; // { /* 4 bytes */ }
-// extern int DAT_0043945a; // { /* 4 bytes */ }
-// extern int DAT_0043bc4c; // { /* 4 bytes */ }
-// extern int DAT_0043bc50; // { /* 4 bytes */ }
-// extern int DAT_0043bc54; // { /* 4 bytes */ }
-// extern int DAT_0043bc64; // { /* 4 bytes */ }
+// 0x00438428: Defined above as g_WinGCreateDIB_00438428
+// WinG function pointers (defined in globals.cpp, used in Graphics.cpp/VideoTable.cpp/PaletteUtils.cpp)
+extern void* DAT_0043842c; // WinGSetDIBColorTable (ordinal 6)
+extern void* DAT_00438430; // WinGRecommendDIBFormat (ordinal 3)
+extern void* DAT_00438434; // WinGBitBlt (ordinal 1)
+extern void* DAT_00438438; // WinGStretchBlt (ordinal 10)
+// 0x0043843c, 0x00438440: Defined in globals.cpp (PTR_DAT_0043843c, DAT_00438440) - WinG far pointer storage
+// 0x00439446: Defined as DAT_00439446[256] TEXTMETRIC buffer in globals.cpp
+// 0x00439456, 0x0043945a: Offsets within TEXTMETRIC buffer (tmExternalLeading, tmAveCharWidth)
+// 0x0043bc4c - 0x0043bc64: CRT exception/FPU state (__fpmath, exception handling)
 // extern void* PTR___fpmath_0043bc68; // (void*)0x00424B90
 // extern void* DAT_0043bc6c; // (void*)0x00424BB0
 // extern void* DAT_0043bc70; // (void*)0x00424BB0
@@ -574,70 +527,9 @@ extern void* DAT_0043842c; // DAT_0043842c  { /* 4 bytes */ }
 // extern int DAT_0043bc80; // { /* 4 bytes */ }
 // extern int DAT_0043bc84; // { /* 4 bytes */ }
 extern int DAT_0043bc88; // Time seed
-// extern void* switchdataD_0043bcee; // (void*)0x00425184
-// extern void* DAT_0043bcf2; // (void*)0x0042518A
-// extern void* DAT_0043bcf6; // (void*)0x0042518F
-// extern void* DAT_0043bcfa; // (void*)0x00425195
-// extern void* DAT_0043bcfe; // (void*)0x0042519A
-// extern void* DAT_0043bd02; // (void*)0x004251A0
-// extern void* DAT_0043bd06; // (void*)0x004251A6
-// extern void* DAT_0043bd0a; // (void*)0x004251AC
-// extern void* DAT_0043bd0e; // (void*)0x004251B2
-// extern void* DAT_0043bd12; // (void*)0x004251CE
-// extern void* DAT_0043bd16; // (void*)0x004251D3
-// extern void* DAT_0043bd1a; // (void*)0x004251E9
-// extern void* DAT_0043bd1e; // (void*)0x004251EE
-// extern void* DAT_0043bd22; // (void*)0x0042520A
-// extern void* DAT_0043bd26; // (void*)0x0042521A
-// extern void* DAT_0043bd2a; // (void*)0x0042522E
-// extern void* DAT_0043bd2e; // (void*)0x0042523E
-// extern void* DAT_0043bd32; // (void*)0x0042525E
-// extern void* DAT_0043bd36; // (void*)0x00425263
-// extern void* DAT_0043bd3a; // (void*)0x0042527D
-// extern void* DAT_0043bd3e; // (void*)0x00425282
-// extern void* DAT_0043bd42; // (void*)0x004252A2
-// extern void* DAT_0043bd46; // (void*)0x004252B6
-// extern void* DAT_0043bd4a; // (void*)0x004252CE
-// extern void* DAT_0043bd4e; // (void*)0x004252E2
-// extern void* DAT_0043bd52; // (void*)0x00425302
-// extern void* DAT_0043bd56; // (void*)0x00425307
-// extern void* DAT_0043bd5a; // (void*)0x00425321
-// extern void* DAT_0043bd5e; // (void*)0x00425326
-// extern void* DAT_0043bd62; // (void*)0x00425346
-// extern void* DAT_0043bd66; // (void*)0x0042535A
-// extern void* DAT_0043bd6a; // (void*)0x00425372
-// extern void* DAT_0043bd6e; // (void*)0x00425386
-// extern void* DAT_0043bd72; // (void*)0x004253A6
-// extern void* DAT_0043bd76; // (void*)0x004253AB
-// extern void* DAT_0043bd7a; // (void*)0x004253C5
-// extern void* DAT_0043bd7e; // (void*)0x004253CA
-// extern void* DAT_0043bd82; // (void*)0x004253EA
-// extern void* DAT_0043bd86; // (void*)0x004253FE
-// extern void* DAT_0043bd8a; // (void*)0x00425416
-// extern void* DAT_0043bd8e; // (void*)0x0042542A
-// extern void* DAT_0043bd92; // (void*)0x0042544A
-// extern void* DAT_0043bd96; // (void*)0x0042544F
-// extern void* DAT_0043bd9a; // (void*)0x00425469
-// extern void* DAT_0043bd9e; // (void*)0x0042546E
-// extern void* DAT_0043bda2; // (void*)0x0042548E
-// extern void* DAT_0043bda6; // (void*)0x004254A2
-// extern void* DAT_0043bdaa; // (void*)0x004254BA
-// extern void* DAT_0043bdae; // (void*)0x004254CE
-// extern void* DAT_0043bdb2; // (void*)0x004254EE
-// extern void* DAT_0043bdb6; // (void*)0x004254F3
-// extern void* DAT_0043bdba; // (void*)0x0042550D
-// extern void* DAT_0043bdbe; // (void*)0x00425512
-// extern void* DAT_0043bdc2; // (void*)0x00425532
-// extern void* DAT_0043bdc6; // (void*)0x00425546
-// extern void* DAT_0043bdca; // (void*)0x0042555E
-// extern void* DAT_0043bdce; // (void*)0x00425572
-// extern void* DAT_0043bdd2; // (void*)0x00425592
-// extern void* DAT_0043bdd6; // (void*)0x00425597
-// extern void* DAT_0043bdda; // (void*)0x004255B1
-// extern void* DAT_0043bdde; // (void*)0x004255B6
-// extern void* DAT_0043bde2; // (void*)0x004255D6
-// extern void* DAT_0043bde6; // (void*)0x004255EA
-// extern void* DAT_0043bdea; // (void*)0x00425602
+// 0x0043bcee - 0x0043bdea: MSVC CRT floating-point division helper switch table
+// Jump targets for FUN_00425177 (__fprem or similar FPU division operations)
+// These are compiler-generated and do not need to be defined as globals
 extern int DAT_0043bdf4; // DAT_0043bdf4  { /* 4 bytes */ }
 // extern int DAT_0043bdf8; // { /* 4 bytes */ }
 // extern int DAT_0043bdfc; // { /* 4 bytes */ }
@@ -778,8 +670,8 @@ extern void* DAT_0043eff0; // DAT_0043eff0  { /* 4 bytes */ }
 // extern int DAT_0043eff4; // { /* 4 bytes */ }
 // extern int DAT_0043f000; // { /* 4 bytes */ }
 // extern int DAT_0043f004; // { /* 4 bytes */ }
-// extern int DAT_0043f100; // { /* 4 bytes */ }
-// extern int DAT_0043f104; // { /* 4 bytes */ }
+// extern int DAT_0043f100; // Already defined as g_AtExitTableEnd_0043f100
+// extern int DAT_0043f104; // Already defined as g_AtExitTableStart_0043f104
 // extern int DAT_0043f108; // { /* 4 bytes */ }
 // extern dword DWORD_00440000; // 0x4024C
 // extern dword DAT_00440004; // 0x0

@@ -53,7 +53,7 @@ void InputManager::InitDevices(int param_1) {
     bounds.right = screenWidth;
     bounds.bottom = screenHeight;
 
-    DAT_004373b8 = GetDoubleClickTime();
+    g_DoubleClickTime_004373b8 = GetDoubleClickTime();
 
     pState = pMouseLocal;
     if (pState != 0) {
@@ -228,7 +228,7 @@ int InputManager::PollEvents(int param) {
         }
         if ((uVar2 == 0) && ((pState->prevButtons & 1) != 0)) {
             uVar2 = g_leftClickTimer.Update();
-            if (uVar2 < (unsigned int)DAT_004373b8) {
+            if (uVar2 < (unsigned int)g_DoubleClickTime_004373b8) {
                 pMouse->ext1 = 3;
             }
             else {
@@ -253,7 +253,7 @@ int InputManager::PollEvents(int param) {
     }
     if ((uVar2 == 0) && ((pState->prevButtons & 2) != 0)) {
         uVar2 = g_rightClickTimer.Update();
-        if (uVar2 < (unsigned int)DAT_004373b8) {
+        if (uVar2 < (unsigned int)g_DoubleClickTime_004373b8) {
             pMouse->ext2 = 3;
         }
         else {

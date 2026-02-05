@@ -9,21 +9,21 @@ int __cdecl BlitBufferOpaque(int srcX1, int srcX2, int srcY1, int srcY2, int des
     int srcIdx = (srcHandle & 0x1f);
     int destIdx = (destHandle & 0x1f);
     
-    int srcData = DAT_0043826c[srcIdx];
+    int srcData = g_VBufDataPtrs_0043826c[srcIdx];
     if (srcData == 0) {
         return 0;
     }
     
-    int srcWidth = DAT_0043836c[srcIdx];
-    int srcHeight = DAT_004382ec[srcIdx];
+    int srcWidth = g_VBufWidths_0043836c[srcIdx];
+    int srcHeight = g_VBufHeights_004382ec[srcIdx];
     
-    int destData = DAT_0043826c[destIdx];
+    int destData = g_VBufDataPtrs_0043826c[destIdx];
     if (destData == 0) {
         return 0;
     }
     
-    int destWidth = DAT_0043836c[destIdx];
-    int destHeight = DAT_004382ec[destIdx];
+    int destWidth = g_VBufWidths_0043836c[destIdx];
+    int destHeight = g_VBufHeights_004382ec[destIdx];
     
     int flipY1 = (srcHeight - 1) - srcY2;
     int flipY2 = (srcHeight - 1) - srcY1;
@@ -57,21 +57,21 @@ int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, in
     int srcIdx = (srcHandle & 0x1f);
     int destIdx = (destHandle & 0x1f);
     
-    int srcData = DAT_0043826c[srcIdx];
+    int srcData = g_VBufDataPtrs_0043826c[srcIdx];
     if (srcData == 0) {
         return 0;
     }
     
-    int srcWidth = DAT_0043836c[srcIdx];
-    int srcHeight = DAT_004382ec[srcIdx];
+    int srcWidth = g_VBufWidths_0043836c[srcIdx];
+    int srcHeight = g_VBufHeights_004382ec[srcIdx];
     
-    int destData = DAT_0043826c[destIdx];
+    int destData = g_VBufDataPtrs_0043826c[destIdx];
     if (destData == 0) {
         return 0;
     }
     
-    int destWidth = DAT_0043836c[destIdx];
-    int destHeight = DAT_004382ec[destIdx];
+    int destWidth = g_VBufWidths_0043836c[destIdx];
+    int destHeight = g_VBufHeights_004382ec[destIdx];
     
     int flipY1 = (srcHeight - 1) - srcY2;
     int flipY2 = (srcHeight - 1) - srcY1;

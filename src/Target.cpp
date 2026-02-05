@@ -378,9 +378,9 @@ void Target::OnProcessStart()
 {
     char buffer[128];
     extern int DAT_004362cc;
-    extern int DAT_004362c8;
+    extern int g_TargetBearingValue_004362c8;
 
-    DAT_004362c8 = 0;
+    g_TargetBearingValue_004362c8 = 0;
     DAT_004362cc = 0;
     
     sprintf(buffer, "FNAME %s", animFilename);
@@ -406,8 +406,8 @@ void Target::OnProcessStart()
 /* Function start: 0x4147F0 */
 void Target::OnProcessEnd()
 {
-    extern int DAT_004362c8;
-    if (hotspotList == 0 && DAT_004362c8 != 0) {
+    extern int g_TargetBearingValue_004362c8;
+    if (hotspotList == 0 && g_TargetBearingValue_004362c8 != 0) {
         HotspotListData* list = new HotspotListData;
         hotspotList = list;
         
@@ -440,7 +440,7 @@ void Target::OnProcessEnd()
         int i = 0;
         do {} while (i--);
 
-        node->id = DAT_004362c8;
+        node->id = g_TargetBearingValue_004362c8;
         if (lastNode != 0) {
             lastNode->next = node;
         } else {
@@ -451,7 +451,7 @@ void Target::OnProcessEnd()
 }
 
 extern int DAT_004362cc;
-extern int DAT_004362c8;
+extern int g_TargetBearingValue_004362c8;
 
 /* Function start: 0x414930 */
 int Target::LBLParse(char* line)
@@ -479,7 +479,7 @@ int Target::LBLParse(char* line)
         if (result == 2) {
             SetRange(DAT_004362cc, value1, value2);
             animRange.end = DAT_004362cc;
-            DAT_004362c8 = value2;
+            g_TargetBearingValue_004362c8 = value2;
             DAT_004362cc++;
         }
     }

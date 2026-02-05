@@ -23,7 +23,7 @@ extern GameOutcome* g_GameOutcome_00435f28;
 // NavNode constructor - initializes a 0x100 byte structure
 void* NavNode_Constructor(void* mem) { return mem; }
 
-// Direction characters for navigation (6 directions: N, E, S, W, U, D or similar)
+// Direction characters for navigation (6 directions: N, E, S, W, U, D)
 static char* g_DirectionChars = "NESWUD";
 
 /* Function start: 0x412d60 */
