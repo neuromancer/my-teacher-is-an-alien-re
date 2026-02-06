@@ -13,13 +13,17 @@ extern "C" {
 /* Function start: 0x422A01 */
 int __cdecl SetFillColor(unsigned char param_1)
 {
+    unsigned char al;
+    unsigned int eax;
+    unsigned int edx;
+
     DAT_00437495 = param_1;
-    unsigned char mappedColor = DAT_00437520[param_1];
-    DAT_00437490 = mappedColor;
-    // Match original: MOV AH,AL; MOVZX EAX,AX; MOV EDX,EAX; SHL EDX,0x10; OR EAX,EDX
-    unsigned short word = mappedColor | (mappedColor << 8);
-    unsigned int dword = word | (word << 16);
-    g_FillColorDword_00437491 = dword;
+    al = DAT_00437520[param_1];
+    DAT_00437490 = al;
+    eax = al | (al << 8);
+    edx = eax << 16;
+    eax = eax | edx;
+    g_FillColorDword_00437491 = eax;
     return 0;
 }
 
@@ -28,13 +32,9 @@ int __cdecl ApplyVideoPalette(void)
 {
     if ((signed char)g_CurrentVideoBuffer_00437f54 >= 0) {
         if (g_WinGDC_0043841c != (HDC)0) {
-            // Use SetDIBColorTable via function pointer
-            typedef void (__cdecl *SetDIBColorTableFunc)(HDC, unsigned int, unsigned int, void*);
-            // DAT_00437b4c is at offset 4 into g_BgrPalette_00437b48
-            ((SetDIBColorTableFunc)g_WinGSetDIBColorTable_0043842c)(g_WinGDC_0043841c, 0, 0x100, &g_BgrPalette_00437b48[4]);
+            ((void (__cdecl *)(HDC, int, int, void*))g_WinGSetDIBColorTable_0043842c)(g_WinGDC_0043841c, 0, 0x100, &g_BgrPalette_00437b48[4]);
         } else {
             if (g_DibModeFlag_00437f50 != 0) {
-                // Fill 256 shorts with sequential values 0-255
                 short* dst = (short*)(g_VideoBufferBase_00437f66 - 0x200);
                 short value = 0;
                 int count = 0x100;
@@ -45,8 +45,6 @@ int __cdecl ApplyVideoPalette(void)
                     dst++;
                 } while (count != 0);
             } else {
-                // Copy 256 DWORDs from DAT_00437b4c to video buffer
-                // Original used REP MOVSD with ES segment
                 memcpy((void*)(g_VideoBufferBase_00437f66 - 0x400), &g_BgrPalette_00437b48[4], 0x400);
             }
         }
