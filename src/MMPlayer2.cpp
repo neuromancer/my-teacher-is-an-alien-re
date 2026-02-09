@@ -87,7 +87,7 @@ void MMPlayer2::AddSprite(Sprite* spr)
     ZBQueueNode* currNode;
 
     if (spr == 0) return;
-    spr->FreeAnimation();
+    spr->StopAnimationSound();
 
     ZBQueue* q = spriteList;
     q->ResetForSortedAdd(spr);
