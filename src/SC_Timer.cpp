@@ -29,7 +29,7 @@ SC_Timer::~SC_Timer() {
     if (pQueue->head != 0) {
       pQueue->current = pQueue->head;
       while (pQueue->head != 0) {
-        pData = pQueue->Pop();
+        pData = pQueue->RemoveCurrent();
         if (pData != 0) {
           delete (TimedEvent *)pData;
         }
@@ -39,6 +39,7 @@ SC_Timer::~SC_Timer() {
     m_eventList = 0;
   }
 }
+
 
 /* Function start: 0x401E30 */
 void SC_Timer::Update(int param_1, int param_2) {
@@ -60,6 +61,7 @@ void SC_Timer::Update(int param_1, int param_2) {
     goto end_loop;
 
 loop: {
+  pQueue = m_eventList;
   pNode = (QueueNode *)pQueue->current;
   TimedEvent *pEvent = 0;
   if (pNode != 0) {
@@ -67,12 +69,12 @@ loop: {
   }
   if (pEvent->Update()) {
     pQueue = m_eventList;
-    pData = pQueue->Pop();
+    pData = pQueue->RemoveCurrent();
     if (pData != 0) {
       delete (TimedEvent *)pData;
     }
-    goto check_loop;
   }
+}
   pQueue = m_eventList;
   pNode = (QueueNode *)pQueue->current;
   if (pQueue->tail == pNode) {
@@ -81,8 +83,7 @@ loop: {
   if (pNode != 0) {
     pQueue->current = pNode->next;
   }
-}
-check_loop:
+
   pQueue = m_eventList;
   if (pQueue->head != 0)
     goto loop;
@@ -124,7 +125,7 @@ int SC_Timer::Input(void *param_1) {
       pQueue->current = pQueue->head;
       pNode = (QueueNode *)pQueue->head;
       while (pNode != 0) {
-        pData = pQueue->Pop();
+        pData = pQueue->RemoveCurrent();
         if (pData != 0) {
           delete (TimedEvent *)pData;
         }

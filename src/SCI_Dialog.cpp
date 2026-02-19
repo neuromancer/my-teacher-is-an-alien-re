@@ -168,7 +168,7 @@ int SCI_Dialog::ShutDown(SC_Message* msg) {
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                dq = (DialogQuestion*)queue->Pop();
+                dq = (DialogQuestion*)queue->RemoveCurrent();
                 if (dq != 0) {
                     delete dq;
                 }
@@ -584,21 +584,20 @@ int SCI_Dialog::LBLParse(char* line) {
             queue->ResetForSortedAdd(dq);
             if (queue->type == 1 || queue->type == 2) {
                 if (queue->head == 0) {
-                    queue->Insert(dq);
+                    queue->InsertNode(dq);
                 } else {
-                    while (1) {
+                    do {
                         QueueNode* node = (QueueNode*)queue->current;
                         if (((DialogQuestion*)node->data)->questionId < dq->questionId) {
-                            queue->Insert(dq);
-                            break;
+                            queue->InsertNode(dq);
+                            return 0;
                         }
                         if (queue->tail == (void*)node) {
-                            queue->Push(dq);
-                            break;
+                            queue->PushNode(dq);
+                            return 0;
                         }
                         if (node != 0) queue->current = node->next;
-                        if (queue->current == 0) break;
-                    }
+                    } while (queue->current != 0);
                 }
             } else {
                 queue->Insert(dq);

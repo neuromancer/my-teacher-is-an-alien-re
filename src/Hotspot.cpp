@@ -318,12 +318,12 @@ int Hotspot::LBLParse(char* line)
                 do {
                     QueueNode* currentPtr = (QueueNode*)q->current;
                     if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
-                        q->Insert(msg);
-                        goto done_premessage;
+                        q->InsertNode(msg);
+                        return 0;
                     }
                     if (q->tail == currentPtr) {
-                        q->Push(msg);
-                        goto done_premessage;
+                        q->PushNode(msg);
+                        return 0;
                     }
                     if (currentPtr != 0) q->current = currentPtr->next;
                 } while (q->current != 0);
@@ -333,7 +333,6 @@ int Hotspot::LBLParse(char* line)
         } else {
             q->InsertAtCurrent(msg);
         }
-done_premessage:;
     } else if (strcmp(keyword, "MESSAGE") == 0) {
         if (!message) message = new Queue();
         SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -347,12 +346,12 @@ done_premessage:;
                 do {
                     QueueNode* currentPtr = (QueueNode*)q->current;
                     if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
-                        q->Insert(msg);
-                        goto done_message;
+                        q->InsertNode(msg);
+                        return 0;
                     }
                     if (q->tail == currentPtr) {
-                        q->Push(msg);
-                        goto done_message;
+                        q->PushNode(msg);
+                        return 0;
                     }
                     if (currentPtr != 0) q->current = currentPtr->next;
                 } while (q->current != 0);
@@ -362,7 +361,6 @@ done_premessage:;
         } else {
             q->InsertAtCurrent(msg);
         }
-done_message:;
     } else if (strcmp(keyword, "LABEL") == 0) {
         sscanf(line, "%s %s", keyword, label);
     } else if (strcmp(keyword, "MOUSE") == 0) {

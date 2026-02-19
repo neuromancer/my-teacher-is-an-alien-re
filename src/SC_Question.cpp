@@ -35,7 +35,7 @@ SC_Question::SC_Question(int id)
 /* Function start: 0x4067E0 */
 SC_Question::~SC_Question()
 {
-    void* msgData;
+    SC_Message* msgData;
     Queue* queue;
 
     // Clean up mouseControl at offset 0x88
@@ -50,9 +50,11 @@ SC_Question::~SC_Question()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                msgData = queue->Pop();
+                msgData = (SC_Message*)queue->RemoveCurrent();
                 // Call destructor and free message data
-                delete (SC_Message*)msgData;
+                if (msgData != 0) {
+                    delete msgData;
+                }
             }
         }
         delete queue;
@@ -60,6 +62,7 @@ SC_Question::~SC_Question()
     }
     // Parser destructor is called automatically
 }
+
 
 /* Function start: 0x406930 */
 void SC_Question::Update(int x, int y)
@@ -188,22 +191,28 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(local_34, "MESSAGE") == 0) {
         SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         Parser::ProcessFile(msg, this, 0);
-        
+
         Queue* queue = messageQueue;
         queue->ResetForSortedAdd(msg);
 
         if (queue->type == 1 || queue->type == 2) {
-            if (queue->head != 0) {
-                while (1) {
+            if (queue->head == 0) {
+                queue->InsertNode(msg);
+            } else {
+                do {
                     if (((SC_Message*)queue->current->data)->targetAddress < msg->targetAddress) {
-                        queue->Insert(msg);
+                        queue->InsertNode(msg);
                         return 0;
                     }
-                    if (queue->tail == queue->current) break;
-                    queue->current = queue->current->next;
-                }
+                    if (queue->tail == queue->current) {
+                        queue->PushNode(msg);
+                        return 0;
+                    }
+                    if (queue->current != 0) {
+                        queue->current = queue->current->next;
+                    }
+                } while (queue->current != 0);
             }
-            queue->Push(msg);
         }
         else {
             queue->Insert(msg);

@@ -94,25 +94,50 @@ struct LinkedList {
     }
 
     inline void* RemoveCurrent() {
-        ListNode* node = current;
-        if (node == 0) return 0;
-        if (head == node) head = node->next;
-        if (tail == node) tail = node->prev;
-        if (node->prev != 0) node->prev->next = node->next;
-        if (current->next != 0) current->next->prev = current->prev;
-        void* data = 0;
+        ListNode* node;
+        void* data;
+        
         node = current;
-        if (node != 0) data = node->data;
-        if (node != 0) {
-            node->data = 0;
-            node->prev = 0;
-            node->next = 0;
-            delete node;
-            current = 0;
+        if (node == 0) {
+            data = 0;
+        } else {
+            // Unlink from head
+            if (head == node) {
+                head = node->next;
+            }
+            // Unlink from tail
+            if (tail == current) {
+                tail = current->prev;
+            }
+            // Update next node's prev pointer
+            node = current;
+            if (node->prev != 0) {
+                node->prev->next = node->next;
+            }
+            // Update prev node's next pointer
+            node = current;
+            if (node->next != 0) {
+                node->next->prev = node->prev;
+            }
+            // Get data
+            node = current;
+            data = 0;
+            if (node != 0) {
+                data = node->data;
+            }
+            // Free node
+            if (node != 0) {
+                node->data = 0;
+                node->prev = 0;
+                node->next = 0;
+                delete node;
+                current = 0;
+            }
+            current = head;
         }
-        current = head;
         return data;
     }
+
 
     inline void Push(void* data) { PushNode(data); }
     inline void* Pop() { return RemoveCurrent(); }
