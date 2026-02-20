@@ -65,7 +65,7 @@ void GameConfig::CreateDefaultConfig() {
 /* Function start: 0x422870 */
 void GameConfig::LoadConfig() {
     if (Open(DAT_004371a8)) {
-        fread(&data, 80, 1, fp);
+        fwrite(&data, 80, 1, fp);
         Close();
     }
 }

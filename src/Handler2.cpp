@@ -41,7 +41,8 @@ Handler2::Handler2() {
 /* Function start: 0x40F8F0 */
 Handler2::~Handler2() {
     if (sample) {
-        delete sample;
+        sample->Unload();
+        operator delete(sample);
         sample = 0;
     }
     if (sprite) {
@@ -121,7 +122,8 @@ void Handler2::Update(int param1, int param2) {
             }
             samp = sample;
             if (samp != 0) {
-                delete samp;
+                samp->Unload();
+                operator delete(samp);
                 sample = 0;
             }
         }

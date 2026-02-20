@@ -490,7 +490,7 @@ extern int g_BitmapHeaderSize_00437f4c; // Bitmap info header size / data offset
 extern int g_DibModeFlag_00437f50; // DIB mode flag (0 = WinG, non-zero = DIB)
 extern char g_CurrentVideoBuffer_00437f54; // Current video buffer index (0xff = no selection)
 extern int g_VideoBufferStride_00437f5e; // Video buffer stride/width
-// Video buffer slot tables (32 slots for video buffers)
+// Video buffer slot tables (64 slots for video buffers, increased from original 32)
 extern int g_VBufDataPtrs_0043826c[32];   // Video buffer data pointers
 extern void* g_WinGCreateDIB_00438428;    // WinG CreateDIBSection function pointer
 extern int g_VBufDibHandles_00437fec[32]; // Video buffer DIB handles

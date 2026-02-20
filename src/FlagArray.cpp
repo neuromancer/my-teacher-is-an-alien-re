@@ -7,13 +7,14 @@
 extern "C" char DAT_004371a8[];
 char DAT_004371ac[] = "rb+";
 
-extern "C" int FUN_004269e0(void* buf, int size, int count, FILE* stream);
-extern "C" void FUN_00425e70(FILE* stream);
+// 0x4269E0 = fwrite, 0x425E70 = fclose (CRT functions)
 
 /* Function start: 0x420140 */
 FlagArray::FlagArray(char* f, int numStates) {
     int buffer;
     int i;
+    FILE* fp_temp;
+    char* fname;
 
     memset(this, 0, 0x33 * 4);
     buffer = 0;
@@ -21,13 +22,13 @@ FlagArray::FlagArray(char* f, int numStates) {
     if (strlen(f) > 0x32) {
          ShowError("Error in flagaray.cpp - SetFileName: File name too long");
     }
-    strcpy(filename, f);
+    fname = filename;
+    strcpy(fname, f);
 
-    fp = fsopen(filename, DAT_004371ac);
+    fp = fsopen(fname, DAT_004371ac);
 
     if (fp == 0) {
-        FILE* fp_temp;
-        fp_temp = fsopen(filename, DAT_004371a8);
+        fp_temp = fsopen(fname, DAT_004371a8);
         fp = fp_temp;
 
         if (fp_temp != 0) {
@@ -35,21 +36,21 @@ FlagArray::FlagArray(char* f, int numStates) {
             field_0x38 = numStates * 4 + 0x94;
             field_0x3c = 0x94;
             field_0x44 = 4;
-            FUN_004269e0(&field_0x38, 0x94, 1, fp_temp);
+            fwrite(&field_0x38, 0x94, 1, fp_temp);
             i = 0;
 
             if (max_states > i) {
                 do {
-                    FUN_004269e0(&buffer, 4, 1, fp);
+                    fwrite(&buffer, 4, 1, fp);
                     i++;
-                } while (i < max_states);
+                } while (max_states > i);
             }
         } else {
             ShowError("Error in flagaray.cpp - Create:  Cannot create %s", f);
         }
     }
 
-    FUN_00425e70(fp);
+    fclose(fp);
     fp = 0;
 }
 
@@ -95,7 +96,7 @@ void FlagArray::Close() {
 /* Function start: 0x420300 */
 void FlagArray::Seek(int index) {
     if (fp == 0) {
-        ShowError("FlagArray::Seek");
+        WriteToMessageLog("FlagArray::Seek");
     }
     
     int offset = field_0x44 * index + field_0x3c;

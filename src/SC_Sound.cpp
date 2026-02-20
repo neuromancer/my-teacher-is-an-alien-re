@@ -89,7 +89,7 @@ done:
 /* Function start: 0x40BD10 */
 int SC_Sound::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
-    WriteToMessageLog("SC_Sound::AddMessage");
+    ShowError("SC_Sound::AddMessage");
     return 1;
 }
 

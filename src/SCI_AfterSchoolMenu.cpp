@@ -155,7 +155,8 @@ SCI_AfterSchoolMenu::~SCI_AfterSchoolMenu() {
     for (i = 0; i < 8; i++) {
         Sample* smp = sounds[i].sample;
         if (smp != 0) {
-            delete smp;
+            smp->Unload();
+            operator delete(smp);
             sounds[i].sample = 0;
         }
     }
@@ -192,7 +193,7 @@ void SCI_AfterSchoolMenu::Init(SC_Message* msg) {
 
         // If character was saved, initialize choice screen
         if (savedCharacterIndex != -1) {
-            SetCharacterOption(currentCharacterIndex);
+            FillOptionQueue();
             isInitialized = 1;
         }
 
@@ -277,7 +278,7 @@ int SCI_AfterSchoolMenu::Exit(SC_Message* msg) {
         smp = sounds[0].sample;
         if (smp != 0) {
             smp->Unload();
-            delete smp;
+            operator delete(smp);
             sounds[0].sample = 0;
         }
 
@@ -292,7 +293,7 @@ int SCI_AfterSchoolMenu::Exit(SC_Message* msg) {
             smp = sounds[i].sample;
             if (smp != 0) {
                 smp->Unload();
-                delete smp;
+                operator delete(smp);
                 sounds[i].sample = 0;
             }
         }

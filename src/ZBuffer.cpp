@@ -19,6 +19,8 @@ char s_hIam[] = "hIam %d";
 #include "SoundCommand.h"
 
 extern void LogToMessageFile(char* format, ...);
+#include "Handler.h"
+#include "SC_Question.h"
 
 /* Function start: 0x4010C0 */
 int ZBuffer::LBLParse(char* param_1)
@@ -42,7 +44,7 @@ int ZBuffer::Exit(Message* msg)
 /* Function start: 0x401170 */
 void ZBuffer::OnInput(Message* msg)
 {
-    //LogToMessageFile("hIam %d", m_address);
+    WriteToMessageLog("hIam %d", m_address);
 }
 
 /* Function start: 0x4012D0 */
@@ -57,10 +59,11 @@ void ZBuffer::Update(int param_1, int param_2)
 }
 
 /* Function start: 0x401330 */
-void ZBuffer::AddMessage(int param_1)
+int ZBuffer::AddMessage(int param_1)
 {
-    //VFunc5(param_1);
+    ((Handler*)this)->WriteMessageAddress((SC_Message*)param_1);
     ShowError("SC_ZBuffer::AddMessage");
+    return 1;
 }
 
 /* Function start: 0x401350 */
@@ -208,7 +211,6 @@ void ZBQueue::ClearList()
 /* Function start: 0x4016A0 */
 ZBuffer::~ZBuffer()
 {
-    CleanUpVBuffer();
 }
 
 /* Function start: 0x401710 */

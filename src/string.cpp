@@ -321,7 +321,7 @@ FILE* fsopen(const char* filename, const char* mode)
     return _fsopen(filename, mode, _SH_DENYNO);
 }
 
-/* Function start: 0x425FD0 */
+// NOTE: strstr_custom address unknown; 0x425FD0 is actually strncpy in the original binary
 char* strstr_custom(const char* haystack, const char* needle) {
 
     const char* haystack_base = haystack;

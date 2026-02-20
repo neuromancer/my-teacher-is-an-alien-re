@@ -33,7 +33,8 @@ MouseControl::~MouseControl()
 {
     Sample* audio = m_audio;
     if (audio != 0) {
-        delete audio;
+        audio->Unload();
+        operator delete(audio);
         m_audio = 0;
     }
 

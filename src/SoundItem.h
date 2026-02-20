@@ -24,7 +24,7 @@ public:
     ~SoundItem() {                  // 0x40B7E0? - NON VIRTUAL INLINE
         if (soundPtr != 0) {
             soundPtr->Unload();
-            delete soundPtr;
+            operator delete(soundPtr);
             soundPtr = 0;
         }
     }

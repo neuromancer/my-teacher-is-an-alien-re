@@ -217,12 +217,26 @@ int SCI_SearchScreen::FindControlAtMouse() {
             } else {
                 x = 0;
             }
-            if (dc->enabled == 0 || dc->rect.left > x || dc->rect.right < x ||
-                dc->rect.top > y || dc->rect.bottom < y) {
-                inRect = 0;
-            } else {
-                inRect = 1;
+            if (dc->enabled == 0) {
+                goto lbl_fail;
             }
+            if (dc->rect.left > x) {
+                goto lbl_fail;
+            }
+            if (dc->rect.right < x) {
+                goto lbl_fail;
+            }
+            if (dc->rect.top > y) {
+                goto lbl_fail;
+            }
+            if (dc->rect.bottom < y) {
+                goto lbl_fail;
+            }
+            inRect = 1;
+            goto lbl_check;
+        lbl_fail:
+            inRect = 0;
+        lbl_check:
             if (inRect != 0) {
                 return i;
             }

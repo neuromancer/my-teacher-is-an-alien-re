@@ -10,6 +10,8 @@
 static int g_VBufferHandleTableInitialized = 0;
 static int g_VBufferHandleTable[0x20];
 
+
+
 /* Function start: 0x41A9A0 */
 void InitVBufferHandleTable(void)
 {

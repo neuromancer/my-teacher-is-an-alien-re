@@ -21,7 +21,7 @@ public:
     virtual void OnInput(Message* msg);
 
     void Update(int, int);
-    void AddMessage(int);
+    int AddMessage(int);
     int ProcessMessage(Message* msg);
     ~ZBuffer();
     void CleanUpVBuffer();

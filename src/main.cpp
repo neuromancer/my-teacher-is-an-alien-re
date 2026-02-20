@@ -138,10 +138,14 @@ void RunGame() {
     SC_Message_Send(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
 
     pGameLoop->Run();
-    delete pGameLoop;
+    if (pGameLoop != 0) {
+        pGameLoop->Cleanup();
+        operator delete(pGameLoop);
+    }
 
     if (g_ZBufferManager_0043698c != 0) {
-        delete g_ZBufferManager_0043698c;
+        g_ZBufferManager_0043698c->Cleanup();
+        operator delete(g_ZBufferManager_0043698c);
         g_ZBufferManager_0043698c = 0;
     }
 
@@ -196,20 +200,24 @@ void RunGame() {
     }
 
     if (g_PeterCharacter_00435a74 != 0) {
-        delete g_PeterCharacter_00435a74;
+        ((AssetList*)g_PeterCharacter_00435a74)->Cleanup();
+        operator delete(g_PeterCharacter_00435a74);
         g_PeterCharacter_00435a74 = 0;
     }
     if (g_SusanCharacter_00435a78 != 0) {
-        delete g_SusanCharacter_00435a78;
+        ((AssetList*)g_SusanCharacter_00435a78)->Cleanup();
+        operator delete(g_SusanCharacter_00435a78);
         g_SusanCharacter_00435a78 = 0;
     }
     if (g_DuncanCharacter_00435a7c != 0) {
-        delete g_DuncanCharacter_00435a7c;
+        ((AssetList*)g_DuncanCharacter_00435a7c)->Cleanup();
+        operator delete(g_DuncanCharacter_00435a7c);
         g_DuncanCharacter_00435a7c = 0;
     }
 
     if (g_FlagManager_00435a84 != 0) {
-        delete g_FlagManager_00435a84;
+        g_FlagManager_00435a84->SafeClose();
+        operator delete(g_FlagManager_00435a84);
         g_FlagManager_00435a84 = 0;
     }
 

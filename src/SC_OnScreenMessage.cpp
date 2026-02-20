@@ -196,14 +196,14 @@ check_timer:
     }
 
     if (handlerId == param2) {
-        WriteToMessageLog("SC_OnScreenMessage::Update");
+        ShowError("SC_OnScreenMessage::Update");
     }
 }
 
 /* Function start: 0x40A7C0 */
 int SC_OnScreenMessage::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
-    WriteToMessageLog("SC_OnScreenMessage::AddMessage");
+    ShowError("SC_OnScreenMessage::AddMessage");
     return 1;
 }
 
@@ -284,7 +284,7 @@ count_loop_start:
         } else if (list->type == 2 || list->type == 0) {
             list->current = list->tail;
         } else {
-            WriteToMessageLog("bad queue type %lu", list->type);
+            ShowError("bad queue type %lu", list->type);
         }
 
         node = (MessageNode*)list->current;
@@ -341,7 +341,7 @@ insertion_loop:
     goto count_loop_start;
 
 push_to_tail:
-    if (newItem == 0) WriteToMessageLog("queue fault 0112");
+    if (newItem == 0) ShowError("queue fault 0112");
     {
         MessageNode* newNode = new MessageNode(newItem);
         if (newNode != 0) {
@@ -354,7 +354,7 @@ push_to_tail:
                 list->current = newNode;
             } else {
                 if (list->tail == 0 || ((MessageNode*)list->tail)->next != 0) {
-                    WriteToMessageLog("queue fault 0113");
+                    ShowError("queue fault 0113");
                 }
                 newNode->next = 0;
                 newNode->prev = (MessageNode*)list->tail;
@@ -373,7 +373,7 @@ send_remove_msg:
 /* Function start: 0x40ABD0 */
 void MessageList::InsertNode(void* data) {
     if (data == 0) {
-        WriteToMessageLog("queue fault 0102");
+        ShowError("queue fault 0102");
     }
     MessageNode* newNode = new MessageNode(data);
     if (current == 0) {

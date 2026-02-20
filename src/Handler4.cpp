@@ -202,7 +202,7 @@ int Handler4::ShutDown(SC_Message* msg) {
     }
 
     if (sound1 != 0) {
-        sound1->Stop();
+        sound1->Unload();
     }
     if (sound1 != 0) {
         delete sound1;
@@ -210,7 +210,7 @@ int Handler4::ShutDown(SC_Message* msg) {
     }
 
     if (sound2 != 0) {
-        sound2->Stop();
+        sound2->Unload();
     }
     if (sound2 != 0) {
         delete sound2;
@@ -308,7 +308,7 @@ void Handler4::Update(int param1, int param2) {
         if (sound1->m_sample == 0 ||
             *(int*)((char*)sound1->m_sample + 0xc) != sound1->m_size ||
             AIL_sample_status(sound1->m_sample) != 4) {
-            delete sound1;
+            sound1->Unload();
             sound1 = 0;
         }
     }
@@ -369,7 +369,7 @@ void Handler4::PlayPuzzleSound(int index, int loop) {
     }
 
     if (sound1 != 0) {
-        sound1->Stop();
+        sound1->Unload();
         delete sound1;
         sound1 = 0;
     }
@@ -397,7 +397,7 @@ void Handler4::DisplayButtons() {
 /* Function start: 0x40F4F0 */
 void Handler4::DisplayMap() {
     if (paths1 == 0 || paths2 == 0 || paths3 == 0) {
-        WriteToMessageLog("Error in SCIpuzz1.cpp - DisplayMap()");
+        ShowError("Error in SCIpuzz1.cpp - DisplayMap()");
     }
     for (int i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
@@ -454,7 +454,7 @@ void Handler4::DisplayThisFloorRow() {
             int state = *pRow;
             (*pSpr)->flags |= 0x20;
             if (state < -1 || state > 2) {
-                WriteToMessageLog("Error in SCIpuzz1.cpp - DisplayThisFloorRow:  Invalid case value");
+                ShowError("Error in SCIpuzz1.cpp - DisplayThisFloorRow:  Invalid case value");
             }
             if (state == -1) state = 3;
             (*pSpr)->SetState2(state);

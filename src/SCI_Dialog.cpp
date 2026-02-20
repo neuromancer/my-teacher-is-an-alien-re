@@ -20,7 +20,7 @@ SCI_Dialog::SCI_Dialog() {
     // Zero 0x14 dwords (80 bytes) at offset 0x600
     memset(&field_600, 0, 0x14 * sizeof(int));
 
-    WriteToMessageLog("\"declaring DialogPlayer\"");
+    WriteToMessageLogIfEnabled("\"declaring DialogPlayer\"");
 
     handlerId = 9;
 }
@@ -145,7 +145,7 @@ int SCI_Dialog::ShutDown(SC_Message* msg) {
     QueueNode* node;
     QueueNode* nextNode;
 
-    WriteToMessageLog("\"SCI_Dialog::ShutDown\"");
+    WriteToMessageLogIfEnabled("\"SCI_Dialog::ShutDown\"");
 
     if (field_608 != 0) {
         field_608->StopAnimationSound();
@@ -539,15 +539,15 @@ int SCI_Dialog::LBLParse(char* line) {
     sscanf(line, "%s", token);
 
     if (strcmp(token, "BACKGROUND") == 0) {
-        WriteToMessageLog("SCI_Dialog::LBLParse %s, a background already exists", token);
+        ShowError("SCI_Dialog::LBLParse %s, a background already exists", token);
     } else if (strcmp(token, "PALETTE") == 0) {
-        WriteToMessageLog("SCI_Dialog::LBLParse %s, a palette already exists", token);
+        ShowError("SCI_Dialog::LBLParse %s, a palette already exists", token);
         sscanf(line, "%s %s", token, arg1);
     } else if (strcmp(token, "BUTTON") == 0) {
         field_608 = new Sprite(0);
         Parser::ProcessFile(field_608, this, 0);
     } else if (strcmp(token, "AMBIENT_SPRS") == 0) {
-        WriteToMessageLog("SCI_Dialog::LBLParse %s, ambients already exist", token);
+        ShowError("SCI_Dialog::LBLParse %s, ambients already exist", token);
     } else if (strcmp(token, "HILITE") == 0) {
         field_60C = new Sprite(0);
         Parser::ProcessFile(field_60C, this, 0);

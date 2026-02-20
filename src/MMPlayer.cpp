@@ -15,7 +15,7 @@ MMPlayer::MMPlayer()
     ptr[2] = 0;
     ptr[3] = 0;
     field_0x90 = 1;
-    m_queue = new Queue(2);
+    m_queue = new ZBQueue(2);
     field_0x88 = 0x54;
 }
 
@@ -23,7 +23,7 @@ MMPlayer::MMPlayer()
 MMPlayer::~MMPlayer()
 {
     Sprite* sprite;
-    Queue* queue;
+    ZBQueue* queue;
 
     queue = m_queue;
     if (queue != 0) {
@@ -101,7 +101,7 @@ void MMPlayer::AddSprite(Sprite* s)
     }
 
     s->StopAnimationSound();
-    Queue* queue = m_queue;
+    ZBQueue* queue = m_queue;
     queue->ResetForSortedAdd(s);
 
     if (queue->type == 1 || queue->type == 2) {
@@ -123,7 +123,7 @@ void MMPlayer::AddSprite(Sprite* s)
             queue->InsertNode(s);
         }
     } else {
-        queue->Insert(s);
+        queue->InsertBeforeCurrent(s);
     }
 }
 

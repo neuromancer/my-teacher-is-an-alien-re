@@ -39,15 +39,8 @@ SC_Combat1::SC_Combat1() {
     int* pA8;
     int i;
 
-    // Get pointers to 0xa0 and 0xa8 fields
     pA0 = &savedScreen.x;
     pA8 = &screenDim.x;
-
-    // Manually set fields at 0xa0, 0xa4, 0xa8, 0xac to 0
-    *pA0 = 0;
-    pA0[1] = 0;
-    *pA8 = 0;
-    pA8[1] = 0;
 
     // Zero 22 dwords from 0xA0 onwards
     for (i = 0x16; i != 0; i--) {
@@ -60,7 +53,6 @@ SC_Combat1::SC_Combat1() {
 
     // Set default screen dimensions
     *pA8 = 0x140;   // 320
-    // handlerId is set to 16 at offset 0x88
     handlerId = 16;
     screenDim.y = 0xc8;   // 200
 }
@@ -225,14 +217,15 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
         }
     }
 
-    // Clear queue at 0xa4
+    // Clear queue at 0xa4 - call CleanUpVBuffer then free (not destructor)
     pQueue = pZBuf->m_queueA4;
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
             pVVar5 = pQueue->Pop();
             if (pVVar5 != 0) {
-                delete (ZBuffer*)pVVar5;
+                ((ZBuffer*)pVVar5)->CleanUpVBuffer();
+                operator delete(pVVar5);
             }
         }
     }

@@ -34,7 +34,7 @@ public:
     int field_0x88;           // 0x88
     int field_0x8c;           // 0x8c - flags (byte at 0x8d is accessed as (field_0x8c >> 8) & 0xff)
     int field_0x90;           // 0x90 - done/result flag
-    Queue* m_queue;           // 0x94
+    ZBQueue* m_queue;           // 0x94
 };
 
 // SpriteList is the same class as MMPlayer

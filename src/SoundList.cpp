@@ -57,7 +57,7 @@ SoundList::~SoundList() {
 void SoundList::StopAll() {
   for (short i = 0; i < m_fieldc; i++) {
     if (AIL_sample_status(m_field8[i]->m_sample) == SMP_PLAYING) {
-      m_field8[i]->Unload();
+      m_field8[i]->~Sample();
     }
   }
 }

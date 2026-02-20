@@ -21,7 +21,7 @@ Sound::Sound(int param_1, short param_2, int param_3) {
 
   AIL_startup();
   if (g_GameConfig_00436970->data.rawData[2] != '\x02') {
-    ShowMessage("Sound():: Not Initialized (No Sound Requested)");
+    WriteToMessageLog("Sound():: Not Initialized (No Sound Requested)");
   } else {
     AIL_set_preference(0xf, 0);
     int iVar3 = Sound::OpenDigitalDriver(param_1, param_2, param_3 + 1);
@@ -38,7 +38,7 @@ Sound::Sound(int param_1, short param_2, int param_3) {
       if (param_3 == 0) {
         puVar2 = "no";
       }
-      ShowMessage("Sound():: Cannot initialize sound driver at bits=%d frequency=%lu stereo=%s",
+      WriteToMessageLog("Sound():: Cannot initialize sound driver at bits=%d frequency=%lu stereo=%s",
                         (int)param_2, param_1, puVar2);
     } else {
       SmackSoundUseMSS(Sound::digital_driver);

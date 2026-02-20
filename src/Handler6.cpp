@@ -264,8 +264,8 @@ int Handler6::FindClickedHotspot() {
 /* Function start: 0x4049F0 */
 int Handler6::CountActiveHotspots() {
     Hotspot* hotspot;
-    int count;
     Hotspot** ptr;
+    int count;
     int remaining;
 
     count = 0;

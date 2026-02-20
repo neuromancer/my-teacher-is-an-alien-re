@@ -2,6 +2,9 @@
 #include <windows.h>
 #include <string.h>
 
+extern "C" void ShowMessage(char *param_1, ...);
+extern "C" void WriteToMessageLog(const char *msg, ...);
+
 // g_WinGDC_0043841c is already declared in globals.h
 extern HDC DAT_00437488;
 extern int g_VideoBufferHeightM1_004374ca;

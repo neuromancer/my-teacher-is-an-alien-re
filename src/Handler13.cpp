@@ -96,14 +96,14 @@ void Handler13::Update(int param1, int param2) {
     }
 
     if (handlerId == param2) {
-        WriteToMessageLog("SC_Timer::Update");
+        ShowError("SC_Timer::Update");
     }
 }
 
 /* Function start: 0x401F90 */
 int Handler13::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
-    WriteToMessageLog("SC_Timer::AddMessage");
+    ShowError("SC_Timer::AddMessage");
     return 1;
 }
 
@@ -149,7 +149,7 @@ int Handler13::Exit(SC_Message* msg) {
             pTimedEvent->SetType(msg->param1);
             pList = list;
             if (pTimedEvent == 0) {
-                WriteToMessageLog("queue fault 0101");
+                ShowError("queue fault 0101");
             }
             node = (MessageNode*)pList->head;
             pList->current = node;
@@ -178,7 +178,7 @@ int Handler13::Exit(SC_Message* msg) {
             }
         } else {
             msg->Dump(0);
-            WriteToMessageLog("SC_Timer::Input");
+            ShowError("SC_Timer::Input");
         }
         break;
 
@@ -187,7 +187,7 @@ int Handler13::Exit(SC_Message* msg) {
         pTimedEvent->m_sourceAddress = msg->sourceAddress;
         pList = list;
         if (pTimedEvent == 0) {
-            WriteToMessageLog("queue fault 0103");
+            ShowError("queue fault 0103");
         }
         pList->current = pList->head;
         if (pList->head != 0) {

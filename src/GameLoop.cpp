@@ -102,7 +102,6 @@ void GameLoop::Run() {
     int mouseY;
     InputState* pMouse;
     GameState* pGameState;
-    int zero;
 
     ResetLoop();
 
@@ -110,16 +109,14 @@ void GameLoop::Run() {
         goto exit_loop;
     }
 
-    zero = 0;
-
 loop_start:
     ProcessInput();
-    if (field_0x00 != zero) {
+    if (field_0x00 != 0) {
         goto exit_loop;
     }
 
     UpdateGame();
-    if (field_0x00 != zero) {
+    if (field_0x00 != 0) {
         goto exit_loop;
     }
 
@@ -134,25 +131,25 @@ loop_start:
         } while (elapsedTime < (unsigned int)field_0x08);
     }
 
-    if (g_GameState_00436998 == (GameState*)zero) {
+    if (g_GameState_00436998 == 0) {
         goto skip_debug;
     }
     pGameState = g_GameState_00436998;
     if (pGameState->maxStates <= 4) {
         ShowError("GameState Error  #%d", 1);
     }
-    if (pGameState->stateValues[4] == zero) {
+    if (pGameState->stateValues[4] == 0) {
         goto skip_debug;
     }
-    mouseY = zero;
+    mouseY = 0;
     pMouse = g_InputManager_00436968->pMouse;
-    if (pMouse != (InputState*)zero) {
+    if (pMouse != 0) {
         mouseY = pMouse->y;
     }
-    if (pMouse != (InputState*)zero) {
+    if (pMouse != 0) {
         mouseX = pMouse->x;
     } else {
-        mouseX = zero;
+        mouseX = 0;
     }
     elapsedTime = timer1->Update();
     sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
@@ -162,7 +159,7 @@ skip_debug:
     timer1->Reset();
     g_ZBufferManager_0043698c->UpdateScreen();
 
-    if (field_0x00 == zero) {
+    if (field_0x00 == 0) {
         goto loop_start;
     }
 
@@ -595,7 +592,7 @@ int GameLoop::UpdateGame()
 
     // First loop: pop from pool2, copy to local_d8, create in pool1
     while (g_TimedEventPool2_00436988->m_count != 0) {
-        pSourceMsg = g_TimedEventPool2_00436988->Pop((SC_Message*)local_198);
+        pSourceMsg = g_TimedEventPool2_00436988->PopSafe((SC_Message*)local_198);
 
         // Copy Parser base class fields
         local_d8.m_subObject = pSourceMsg->m_subObject;
@@ -651,7 +648,7 @@ int GameLoop::UpdateGame()
 
     // Second loop: pop from pool1
     while (g_TimedEventPool1_00436984->m_count != 0) {
-        pSourceMsg = g_TimedEventPool1_00436984->Pop((SC_Message*)local_198);
+        pSourceMsg = g_TimedEventPool1_00436984->PopSafe((SC_Message*)local_198);
 
         ProcessMessage(pSourceMsg);
 
@@ -660,7 +657,7 @@ int GameLoop::UpdateGame()
 
         // Inner loop: pop from pool2 and add to pool1
         while (g_TimedEventPool2_00436988->m_count != 0) {
-            pSourceMsg = g_TimedEventPool2_00436988->Pop((SC_Message*)local_258);
+            pSourceMsg = g_TimedEventPool2_00436988->PopSafe((SC_Message*)local_258);
             pPool = g_TimedEventPool1_00436984;
             pNewEvent = pPool->Create((void*)pPool->list.tail, 0);
             pNewEvent->GetEmbeddedEvent()->CopyFrom((PooledEvent*)pSourceMsg);

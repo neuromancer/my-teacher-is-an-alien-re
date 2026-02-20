@@ -215,7 +215,7 @@ int SC_Question::LBLParse(char* param_1)
             }
         }
         else {
-            queue->Insert(msg);
+            queue->InsertAtCurrent(msg);
         }
     }
     else if (strcmp(local_34, "END") == 0) {
