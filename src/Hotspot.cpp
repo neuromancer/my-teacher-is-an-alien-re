@@ -59,7 +59,7 @@ T_Hotspot::~T_Hotspot()
 
 
 /* Function start: 0x409400 */
-unsigned char T_Hotspot::Do()
+int T_Hotspot::Do()
 {
     if (sprite != 0) {
         return sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
@@ -374,7 +374,7 @@ int Hotspot::LBLParse(char* line)
 }
 
 /* Function start: 0x40D610 */
-unsigned char Hotspot::Do()
+int Hotspot::Do()
 {
     switch (state) {
     case 1:

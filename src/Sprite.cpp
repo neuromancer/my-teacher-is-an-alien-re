@@ -78,7 +78,7 @@ void Sprite::Init()
         strcpy(&g_SpriteFilenameTable_0043d630[animation_data->targetBuffer->handle * 0x40], sprite_filename);
     }
 
-    //CheckRanges1();
+    CheckRanges1();
     flags |= 0x20;
     SetState2(current_state);
 }
@@ -374,13 +374,16 @@ int Sprite::CheckConditions()
     int state_idx;
     LogicCondition* cond;
     GameState* gs;
+    int offset;
 
     if ((num_logic_conditions == 0) || (logic_conditions == 0)) {
         return 1;
     }
+    offset = 0;
+    int i = 0;
     if (num_logic_conditions > 0) {
-        for (int i = 0; i < num_logic_conditions; i++) {
-            cond = &logic_conditions[i];
+        do {
+            cond = (LogicCondition*)((char*)logic_conditions + offset);
             if (cond->type == 1) {
                 state_idx = cond->state_index;
                 gs = g_GameState_00436998;
@@ -391,7 +394,7 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-            cond = &logic_conditions[i];
+            cond = (LogicCondition*)((char*)logic_conditions + offset);
             if (cond->type == 2) {
                 state_idx = cond->state_index;
                 gs = g_GameState_00436998;
@@ -402,7 +405,7 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-            cond = &logic_conditions[i];
+            cond = (LogicCondition*)((char*)logic_conditions + offset);
             if (cond->type == 3) {
                 state_idx = cond->state_index;
                 gs = g_GameState_00436998;
@@ -413,7 +416,9 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-        }
+            offset += 8;
+            i++;
+        } while (num_logic_conditions > i);
     }
     return 1;
 }
@@ -427,8 +432,9 @@ void Sprite::SetRange(int param_1, int param_2, int param_3)
     if ((param_2 < 1) || (param_3 < 1)) {
         ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", sprite_filename, param_1, param_2, param_3);
     }
-    ranges[param_1].start = param_2;
-    ranges[param_1].end = param_3;
+    Range* rng = ranges;
+    rng[param_1].start = param_2;
+    rng[param_1].end = param_3;
     flags |= 0x20;
 }
 
@@ -439,10 +445,17 @@ void Sprite::SetState(int param_1)
     delete[] ranges;
     ranges = new Range[num_states];
 
-    int edi = 5000;
-    for (int i = 0; i < num_states; i++) {
-        ranges[i].start = 1;
-        ranges[i].end = edi;
+    int i = 0;
+    int offset = 0;
+    if (num_states > i) {
+        int edi = 5000;
+        do {
+            Range* r = (Range*)((char*)ranges + offset);
+            i++;
+            offset += 8;
+            r->start = 1;
+            r->end = edi;
+        } while (num_states > i);
     }
     flags |= 0x20;
 }

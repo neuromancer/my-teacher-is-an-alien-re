@@ -19,43 +19,37 @@ OptionMenu::OptionMenu()
     selected_option = 5;
 
     options[0] = new Sprite("demo/option1.smk");
-    if (options[0]) {
-        options[0]->flags &= ~2;
-        options[0]->loc_x = 216;
-        options[0]->loc_y = 202;
-        options[0]->priority = 10;
-        options[0]->SetState(4);
-        options[0]->SetRange(0, 1, 1);
-        options[0]->SetRange(1, 2, 2);
-        options[0]->SetRange(2, 3, 12);
-        options[0]->SetRange(3, 13, 13);
-    }
+    options[0]->flags &= ~2;
+    options[0]->loc_x = 216;
+    options[0]->loc_y = 202;
+    options[0]->priority = 10;
+    options[0]->SetState(4);
+    options[0]->SetRange(0, 1, 1);
+    options[0]->SetRange(1, 2, 2);
+    options[0]->SetRange(2, 3, 12);
+    options[0]->SetRange(3, 13, 13);
 
     options[1] = new Sprite("demo/option2.smk");
-    if (options[1]) {
-        options[1]->flags &= ~2;
-        options[1]->loc_x = 216;
-        options[1]->loc_y = 202;
-        options[1]->priority = 10;
-        options[1]->SetState(4);
-        options[1]->SetRange(0, 1, 1);
-        options[1]->SetRange(1, 2, 2);
-        options[1]->SetRange(2, 3, 12);
-        options[1]->SetRange(3, 13, 13);
-    }
+    options[1]->flags &= ~2;
+    options[1]->loc_x = 216;
+    options[1]->loc_y = 202;
+    options[1]->priority = 10;
+    options[1]->SetState(4);
+    options[1]->SetRange(0, 1, 1);
+    options[1]->SetRange(1, 2, 2);
+    options[1]->SetRange(2, 3, 12);
+    options[1]->SetRange(3, 13, 13);
 
     options[2] = new Sprite("demo/option3.smk");
-    if (options[2]) {
-        options[2]->flags &= ~2;
-        options[2]->loc_x = 216;
-        options[2]->loc_y = 202;
-        options[2]->priority = 10;
-        options[2]->SetState(4);
-        options[2]->SetRange(0, 1, 1);
-        options[2]->SetRange(1, 2, 2);
-        options[2]->SetRange(2, 3, 12);
-        options[2]->SetRange(3, 13, 13);
-    }
+    options[2]->flags &= ~2;
+    options[2]->loc_x = 216;
+    options[2]->loc_y = 202;
+    options[2]->priority = 10;
+    options[2]->SetState(4);
+    options[2]->SetRange(0, 1, 1);
+    options[2]->SetRange(1, 2, 2);
+    options[2]->SetRange(2, 3, 12);
+    options[2]->SetRange(3, 13, 13);
 }
 
 /* Function start: 0x409BF0 */
@@ -133,21 +127,21 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
 /* Function start: 0x409F00 */
 void OptionMenu::Render(int characterIndex)
 {
-    SpriteListNode* node;
+    SpriteNode* pList;
     int count;
 
-    if (spriteList != 0) {
+    pList = spriteList;
+    if (pList != 0) {
         count = 0;
-        node = spriteList->head;
-        spriteList->current = node;
-        while (node != 0) {
-            count = count + 1;
-            node = spriteList->current;
-            if (spriteList->tail == node) break;
-            if (node != 0) {
-                spriteList->current = node->next;
-            }
-            node = spriteList->current;
+        pList->current = pList->head;
+        if (pList->head != 0) {
+            do {
+                count++;
+                if (pList->tail == pList->current) break;
+                if (pList->current != 0) {
+                    pList->current = pList->current->next;
+                }
+            } while (pList->current != 0);
         }
         UpdateSpriteStates(count, characterIndex);
     }
@@ -156,29 +150,32 @@ void OptionMenu::Render(int characterIndex)
 /* Function start: 0x409F40 */
 void* OptionMenu::GetOptionByIndex(int index)
 {
+    SpriteNode* pList;
     SpriteListNode* node;
     int i;
 
     i = 0;
-    if (spriteList != 0) {
-        spriteList->current = spriteList->head;
-        while (spriteList->head != 0) {
-            if (i == index) {
-                node = spriteList->current;
-                if (node == 0) {
-                    return 0;
+    pList = spriteList;
+    if (pList != 0) {
+        pList->current = pList->head;
+        pList = spriteList;
+        if (pList->head != 0) {
+            do {
+                if (i == index) {
+                    node = spriteList->current;
+                    if (node == 0) {
+                        return 0;
+                    }
+                    return node->data;
                 }
-                return node->data;
-            }
-            node = spriteList->current;
-            if (spriteList->tail == node) {
-                return 0;
-            }
-            if (node != 0) {
-                spriteList->current = node->next;
-            }
-            i = i + 1;
-            if (spriteList->head == 0) break;
+                pList = spriteList;
+                node = pList->current;
+                if (pList->tail == node) break;
+                if (node != 0) {
+                    pList->current = node->next;
+                }
+                i++;
+            } while (spriteList->head != 0);
         }
     }
     return 0;
@@ -225,14 +222,13 @@ int OptionMenu::HitTest(MousePoint pt, int* indexOut, int* hitOut)
     SpriteListNode* node;
     SpriteData* data;
     SpriteNode* pList;
-    int hit;
 
     pList = spriteList;
     if (pList != 0) {
         pList->current = pList->head;
         pList = spriteList;
         if (pList->head != 0) {
-            while (1) {
+            do {
                 pList = spriteList;
                 data = 0;
                 node = pList->current;
@@ -240,20 +236,8 @@ int OptionMenu::HitTest(MousePoint pt, int* indexOut, int* hitOut)
                     data = (SpriteData*)node->data;
                 }
 
-                if (data->rect_x > pt.x) {
-                    hit = 0;
-                } else if (data->rect_w < pt.x) {
-                    hit = 0;
-                } else if (data->rect_y > pt.y) {
-                    hit = 0;
-                } else {
-                    hit = 1;
-                    if (data->rect_h < pt.y) {
-                        hit = 0;
-                    }
-                }
-
-                if (hit != 0) {
+                if (data->rect_x <= pt.x && data->rect_w >= pt.x &&
+                    data->rect_y <= pt.y && data->rect_h >= pt.y) {
                     node = spriteList->current;
                     if (node == 0) {
                         data = 0;
@@ -275,10 +259,7 @@ int OptionMenu::HitTest(MousePoint pt, int* indexOut, int* hitOut)
 
                 ++*indexOut;
 
-                if (spriteList->head == 0) {
-                    break;
-                }
-            }
+            } while (spriteList->head != 0);
         }
     }
 

@@ -21,7 +21,7 @@ void TimeOut::Start(int timeout)
     }
 
     m_isActive = 1;
-    m_timer.Reset();
+    m_timer->Reset();
 }
 
 /* Function start: 0x419060 */
@@ -29,7 +29,7 @@ int TimeOut::IsTimeOut()
 {
     if (m_isActive == 1)
     {
-        if ((unsigned int)m_timeout <= m_timer.Update())
+        if (m_timer->Update() >= (unsigned int)m_timeout)
         {
             return 1;
         }

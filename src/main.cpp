@@ -242,10 +242,11 @@ extern "C" int ProcessMessages() {
     while (iVar1 != 0) {
       TranslateMessage(&local_1c);
       if (local_1c.message == WM_KEYDOWN) {
-        g_WaitForInputValue_004373bc = local_1c.wParam;
-        if (0x7f < local_1c.wParam) {
-          g_WaitForInputValue_004373bc = local_1c.wParam & 0x2f;
+        int wParam = local_1c.wParam;
+        if (local_1c.wParam > 0x7f) {
+          wParam = wParam & 0x2f;
         }
+        g_WaitForInputValue_004373bc = wParam;
         if (local_1c.wParam == VK_F12) {
           return 1;
         }
@@ -511,9 +512,9 @@ void SetErrorCode(unsigned int errorCode) {
   int iVar1;
   unsigned int *puVar2;
 
+  g_ErrorCode_0043bdf4 = errorCode;
   iVar1 = 0;
   puVar2 = DAT_0043c760;
-  g_ErrorCode_0043bdf4 = errorCode;
   do {
     if (*puVar2 == errorCode) {
       DAT_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);

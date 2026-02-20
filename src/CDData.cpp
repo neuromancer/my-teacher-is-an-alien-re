@@ -37,15 +37,7 @@ extern "C" void __cdecl CDData_SetResolvedPath(const char* path) {
 
 /* Function start: 0x421E40 */
 CDData::CDData(char *param_1, char *param_2) {
-  int iVar1;
-  unsigned int *puVar2;
-
-  puVar2 = (unsigned int *)baseDir;
-  for (iVar1 = 0x79; iVar1 != 0; iVar1 = iVar1 - 1) {
-    *puVar2 = 0;
-    puVar2 = puVar2 + 1;
-  }
-  *(char *)puVar2 = 0;
+  memset(this, 0, 0x1e5);
   GetCurrentDir(baseDir, 0x80);
   if (param_1 != 0) {
     strncpy(cdFolder, param_1, 0x40);

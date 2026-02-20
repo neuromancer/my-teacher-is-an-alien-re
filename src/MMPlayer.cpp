@@ -9,20 +9,20 @@
 /* Function start: 0x41F280 */
 MMPlayer::MMPlayer()
 {
-    field_0x88 = 0;
-    field_0x8c = 0;
-    field_0x90 = 0;
+    int* ptr = &field_0x88;
+    ptr[0] = 0;
+    ptr[1] = 0;
+    ptr[2] = 0;
+    ptr[3] = 0;
     field_0x90 = 1;
-    Queue* queue = new Queue();
-    queue->type = 2;
-    m_queue = queue;
+    m_queue = new Queue(2);
     field_0x88 = 0x54;
 }
 
 /* Function start: 0x41F360 */
 MMPlayer::~MMPlayer()
 {
-    void* sprite;
+    Sprite* sprite;
     Queue* queue;
 
     queue = m_queue;
@@ -30,9 +30,9 @@ MMPlayer::~MMPlayer()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                sprite = queue->Pop();
+                sprite = (Sprite*)queue->RemoveCurrent();
                 if (sprite != 0) {
-                    delete (Sprite*)sprite;
+                    delete sprite;
                 }
             }
         }
@@ -44,30 +44,24 @@ MMPlayer::~MMPlayer()
 /* Function start: 0x41F480 */
 void MMPlayer::StopAll()
 {
-    Queue* queue;
-    QueueNode* current;
     Sprite* sprite;
 
-    queue = m_queue;
-    queue->current = queue->head;
-    if (queue->head != 0) {
+    m_queue->current = m_queue->head;
+    if (m_queue->head != 0) {
         do {
-            current = (QueueNode*)queue->current;
             sprite = 0;
-            if (current != 0) {
-                sprite = (Sprite*)current->data;
+            if (m_queue->current != 0) {
+                sprite = (Sprite*)m_queue->current->data;
             }
             sprite->StopAnimationSound();
 
-            queue = m_queue;
-            current = (QueueNode*)queue->current;
-            if (queue->tail == current) {
+            if (m_queue->tail == m_queue->current) {
                 break;
             }
-            if (current != 0) {
-                queue->current = current->next;
+            if (m_queue->current != 0) {
+                m_queue->current = m_queue->current->next;
             }
-        } while (queue->head != 0);
+        } while (m_queue->head != 0);
     }
     field_0x8c = field_0x8c & ~0x2000;
 }
@@ -75,30 +69,24 @@ void MMPlayer::StopAll()
 /* Function start: 0x41F4F0 */
 void MMPlayer::Init()
 {
-    Queue* queue;
-    QueueNode* current;
     Sprite* sprite;
 
-    queue = m_queue;
-    queue->current = queue->head;
-    if (queue->head != 0) {
+    m_queue->current = m_queue->head;
+    if (m_queue->head != 0) {
         do {
-            current = (QueueNode*)queue->current;
             sprite = 0;
-            if (current != 0) {
-                sprite = (Sprite*)current->data;
+            if (m_queue->current != 0) {
+                sprite = (Sprite*)m_queue->current->data;
             }
             sprite->Init();
 
-            queue = m_queue;
-            current = (QueueNode*)queue->current;
-            if (queue->tail == current) {
+            if (m_queue->tail == m_queue->current) {
                 break;
             }
-            if (current != 0) {
-                queue->current = current->next;
+            if (m_queue->current != 0) {
+                m_queue->current = m_queue->current->next;
             }
-        } while (queue->head != 0);
+        } while (m_queue->head != 0);
     }
     field_0x90 = 1;
     field_0x8c = field_0x8c | 0x2000;
@@ -118,16 +106,22 @@ void MMPlayer::AddSprite(Sprite* s)
 
     if (queue->type == 1 || queue->type == 2) {
         if (queue->head != 0) {
-            while (1) {
+            do {
                 if (((Sprite*)queue->current->data)->field_0xb0 < s->field_0xb0) {
-                    queue->Insert(s);
+                    queue->InsertNode(s);
                     return;
                 }
-                if (queue->tail == queue->current) break;
-                queue->current = queue->current->next;
-            }
+                if (queue->tail == queue->current) {
+                    queue->PushNode(s);
+                    return;
+                }
+                if (queue->current != 0) {
+                    queue->current = queue->current->next;
+                }
+            } while (queue->current != 0);
+        } else {
+            queue->InsertNode(s);
         }
-        queue->Push(s);
     } else {
         queue->Insert(s);
     }
@@ -136,38 +130,30 @@ void MMPlayer::AddSprite(Sprite* s)
 /* Function start: 0x41F800 */
 int MMPlayer::Draw()
 {
-    Queue* queue;
-    QueueNode* current;
     Sprite* sprite;
-    int result;
 
     field_0x90 = 1;
     if ((field_0x8c & 0x2000) == 0) {
         Init();
     }
-    queue = m_queue;
-    queue->current = queue->head;
-    if (queue->head != 0) {
+    m_queue->current = m_queue->head;
+    if (m_queue->head != 0) {
         do {
-            current = (QueueNode*)queue->current;
             sprite = 0;
-            if (current != 0) {
-                sprite = (Sprite*)current->data;
+            if (m_queue->current != 0) {
+                sprite = (Sprite*)m_queue->current->data;
             }
-            result = sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-            if (result != 0) {
+            if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0) != 0) {
                 field_0x90 = 0;
             }
 
-            queue = m_queue;
-            current = (QueueNode*)queue->current;
-            if (queue->tail == current) {
+            if (m_queue->tail == m_queue->current) {
                 break;
             }
-            if (current != 0) {
-                queue->current = current->next;
+            if (m_queue->current != 0) {
+                m_queue->current = m_queue->current->next;
             }
-        } while (queue->head != 0);
+        } while (m_queue->head != 0);
     }
     return field_0x90;
 }

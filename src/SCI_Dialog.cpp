@@ -207,13 +207,13 @@ int SCI_Dialog::AddMessage(SC_Message* msg) {
                 return 1;
             }
         } else {
-            if (msg->mouseY > 1) {
+            if (msg->mouseY >= 2) {
                 SC_Message_Send(field_90, field_94, 9, field_8C, 5, 6, 0, 0, 0, 0);
                 return 1;
             }
         }
     } else {
-        if (msg->mouseX > 1) {
+        if (msg->mouseX >= 2) {
             msg->targetAddress = 9;
             pMouse = g_InputManager_00436968->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {

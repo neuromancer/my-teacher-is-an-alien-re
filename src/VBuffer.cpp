@@ -44,7 +44,7 @@ int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* para
 
 extern "C" {
     void ApplyVideoPalette();
-    int SetFillColor(unsigned char);
+    int SetFillColor(int);
     unsigned int GetCurrentVideoMode();
     int InvalidateVideoMode();
     void BlitBufferOpaque(int, int, int, int, int, int, unsigned int, unsigned int);
@@ -148,7 +148,7 @@ void* VBuffer::InitWithSize(int param_1, int param_2)
 void VBuffer::ClearScreen(int color)
 {
     SetCurrentVideoMode(handle);
-    SetFillColor(color);
+    SetFillColor((unsigned char)color);
     ClearVideoBuffer();
     InvalidateVideoMode();
 }
@@ -401,22 +401,18 @@ int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* dest
     }
     
     GlyphRect guard;
-    guard.left = 0;
-    guard.top = 0;
-    guard.right = 0;
-    guard.bottom = 0;
     OffsetRect(srcRect, *destX, *destY);
     IntersectClipRect(clipRect, srcRect, &guard.left);
     OffsetRect(&guard.left, -(*destX), -(*destY));
-    
+
     int iVar1 = *destX;
     if (*destX <= *clipRect) {
         iVar1 = *clipRect;
     }
     *destX = iVar1;
-    
+
     iVar1 = clipRect[1];
-    if (clipRect[1] <= *destY) {
+    if (iVar1 <= *destY) {
         iVar1 = *destY;
     }
     *destY = iVar1;

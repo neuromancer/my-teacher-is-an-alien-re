@@ -3,6 +3,7 @@
 #include "Sound.h"
 #include "string.h"
 #include <mss.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 /* Function start: 0x41E460 */
@@ -63,9 +64,7 @@ void Sample::Fade(int volume, unsigned int duration) {
     return;
   }
   int current_volume = AIL_sample_volume(sample);
-  int diff = current_volume - volume;
-  int sign = diff >> 31;
-  diff = (diff ^ sign) - sign;
+  int diff = abs(current_volume - volume);
   int step;
   if (volume < current_volume) {
     step = -1;

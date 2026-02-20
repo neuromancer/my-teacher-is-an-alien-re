@@ -109,7 +109,7 @@ void WriteToMessageLog(const char *msg,...)
     FILE *_File;
     va_list argptr;
 
-    _File = _fsopen("message.log", "a+", _SH_DENYNO);
+    _File = fsopen("message.log", "a+");
     if (_File != NULL) {
         va_start(argptr, msg);
         vfprintf(_File, msg, argptr);
@@ -148,7 +148,7 @@ void WriteToMessageLogIfEnabled(const char *param_1, ...)
         FILE *_File;
         va_list argptr;
 
-        _File = _fsopen("message.log", "a+", _SH_DENYNO);
+        _File = fsopen("message.log", "a+");
         if (_File != NULL) {
             va_start(argptr, param_1);
             vfprintf(_File, param_1, argptr);

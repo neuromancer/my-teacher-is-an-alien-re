@@ -16,19 +16,18 @@ void* ObjectPool::Allocate()
         p = (int*)((char*)p + offset - 0xc);
         if (i >= 0) {
             do {
-                int prev = (int)freeList;
-                i--;
-                *p = prev;
+                *p = (int)freeList;
                 freeList = p;
                 p = p - 4;
+                i--;
             } while (i >= 0);
         }
     }
 
+    int n = 0;
     int* p = (int*)freeList;
     freeList = (void*)*p;
     allocatedCount++;
-    int n = 0;
     p[2] = n;
     while (n--)
         ;

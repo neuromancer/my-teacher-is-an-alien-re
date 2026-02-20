@@ -27,7 +27,7 @@ public:
     GlyphRect rect;                 // 0xE0
     
     virtual int LBLParse(char* line); // 0x40D710
-    unsigned char Do();               // 0x40D610
+    int Do();                         // 0x40D610
     
     void QueueEvents(Queue* q);       // 0x40D6A0
 };
@@ -64,7 +64,7 @@ public:
     int field_13C;                  // 0x13C
 
     int LBLParse(char* line);       // 0x409620
-    unsigned char Do();             // 0x409400
+    int Do();                       // 0x409400
     int SetState(int newState);     // 0x409440
     int GetState();                 // 0x409470
     void Exit();                    // 0x4094A0

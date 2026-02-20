@@ -112,7 +112,7 @@ void Target::Activate()
             }
 
             if (node == 0) {
-                if (hashTable->buckets == 0) {
+                if (buckets == 0) {
                     hashTable->AllocateBuckets(numBuckets, 1);
                 }
                 node = hashTable->AllocateNode();
@@ -239,11 +239,11 @@ int Target::AdvanceHotspot()
         } else if (Target::animation_data->smk->FrameNum == list->currentId) {
 advance:
             node = list->processingHead;
-            if (node == 0) {
-                list->currentId = -1;
-            } else {
+            if (node != 0) {
                 list->processingHead = node->next;
                 list->currentId = node->id;
+            } else {
+                list->currentId = -1;
             }
             (g_TargetList_00435f0c)->currentTarget = this;
             return 1;
@@ -286,15 +286,16 @@ int Target::Update()
         return 1;
     }
 
-    int state = Target::pendingAction;
-    if (state == 1) {
-        if (Target::animRange.end == Target::current_state) {
-            g_ScoreManager_00435f20->score = g_ScoreManager_00435f20->score - Target::hitMissPoints.end;
+    switch (Target::pendingAction) {
+    case 1:
+        if (Target::current_state == Target::animRange.end) {
+            g_ScoreManager_00435f20->score -= Target::hitMissPoints.end;
             Target::Deactivate();
             return 1;
         }
         Sprite::SetState2(Target::current_state + 1);
-    } else if (state == 3) {
+        break;
+    case 3:
         Target::active = 3;
         Sprite::SetState2(Target::hitRange.start + Target::current_state);
         if ((Target::targetFlags & 1) != 0) {
@@ -313,6 +314,7 @@ int Target::Update()
         ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(Target::scoreWeight.start);
         g_CombatEngine_00435eb0->m_combatBonus1 += Target::combatBonus.start;
         g_CombatEngine_00435eb0->m_combatBonus2 += Target::combatBonus2.val;
+        break;
     }
 
     int y = Target::loc_y;
@@ -495,48 +497,48 @@ int Target::LBLParse(char* line)
     else if (firstChar == 'H') {
         int result = sscanf(line + 3, "%d", &value1);
         if (result == 1) {
-            HotspotListData* list = hotspotList;
-            if (list == 0) {
-                list = new HotspotListData;
-                hotspotList = list;
+            if (hotspotList == 0) {
+                hotspotList = new HotspotListData;
             }
-            if (list != 0) {
-                if (list->freeList == 0) {
-                    char* mem = new char[list->growthRate * 12 + 4];
-                    *(HotspotNode**)mem = (HotspotNode*)list->nodePool;
-                    list->nodePool = mem;
-                    int i = list->growthRate - 1;
-                    HotspotNode* node = (HotspotNode*)(mem + (i + 1) * 12 - 8);
-                    do {
-                        node->next = list->freeList;
-                        list->freeList = node;
-                        node = (HotspotNode*)((char*)node - 12);
-                    } while (--i >= 0);
-                }
-                HotspotNode* node = list->freeList;
-                list->freeList = node->next;
-                node->prev = list->last;
-                node->next = 0;
-                list->count++;
-                
-                int dummy = 0;
-                do {} while (dummy--);
-                
-                node->id = value1;
-                if (list->last != 0) {
-                    list->last->next = node;
-                    list->last = node;
-                } else {
-                    list->first = node;
-                    list->last = node;
-                }
+            HotspotListData* list = hotspotList;
+            HotspotNode* lastNode = list->last;
+            if (list->freeList == 0) {
+                char* mem = new char[list->growthRate * 12 + 4];
+                *(HotspotNode**)mem = (HotspotNode*)list->nodePool;
+                list->nodePool = mem;
+                int i = list->growthRate;
+                HotspotNode* node = (HotspotNode*)(mem + i * 12 - 8);
+                i--;
+                do {
+                    node->next = list->freeList;
+                    list->freeList = node;
+                    node = (HotspotNode*)((char*)node - 12);
+                } while (--i >= 0);
+            }
+            HotspotNode* node = list->freeList;
+            list->freeList = node->next;
+            node->prev = lastNode;
+            node->next = 0;
+            list->count++;
+            node->id = 0;
+
+            int dummy = 0;
+            do {} while (dummy--);
+
+            node->id = value1;
+            if (lastNode != 0) {
+                lastNode->next = node;
+                list->last = node;
+            } else {
+                list->first = node;
+                list->last = node;
             }
         }
     }
     else if (firstChar == 'I') {
         int result = sscanf(line + 3, "%s", buffer);
         if (result == 1) {
-            if (buffer[0] != '\0') {
+            if (strlen(buffer) != 0) {
                 char* id = new char[strlen(buffer) + 1];
                 identifier = id;
                 strcpy(identifier, buffer);

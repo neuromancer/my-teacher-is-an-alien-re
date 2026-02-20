@@ -12,7 +12,7 @@ public:
 
     int m_isActive;
     int m_timeout;
-    Timer m_timer;
+    Timer *m_timer;
 };
 
 #endif // TIMEOUT_H

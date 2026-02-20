@@ -297,8 +297,12 @@ void IconBar::Update(int param1, int param2) {
                 mouseX = 0;
             }
 
-            pBtn->sprite->SetState2(pBtn->bounds.left <= mouseX && pBtn->bounds.right >= mouseX &&
-                                    pBtn->bounds.top <= mouseY && pBtn->bounds.bottom >= mouseY);
+            if (pBtn->bounds.left <= mouseX && pBtn->bounds.right >= mouseX &&
+                pBtn->bounds.top <= mouseY && pBtn->bounds.bottom >= mouseY) {
+                pBtn->sprite->SetState2(1);
+            } else {
+                pBtn->sprite->SetState2(0);
+            }
 
             if (pBtn->enabled != 0) {
                 pBtn->sprite->Do(pBtn->sprite->loc_x, pBtn->sprite->loc_y, 1.0);

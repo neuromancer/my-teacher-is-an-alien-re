@@ -47,9 +47,8 @@ void Parser::CloseFile() {
 
 /* Function start: 0x418B30 */
 int Parser::LBLParse(char *param_1) {
-  ShowError("%s::LBLParse - Uknown Label\n'%s'\nfound in file %s", param_1,
+  return ((int (*)(const char*, ...))ShowError)("%s::LBLParse - Uknown Label\n'%s'\nfound in file %s", param_1,
             lineNumber, filename);
-  return 0;
 }
 
 void Parser::OnProcessEnd() {}
@@ -139,9 +138,9 @@ Parser *ParseFile(Parser *parser, char *filename, char *key_format, ...) {
   }
 
   parser->Open(filename);
-  Parser::ProcessFile(parser, parser, key_buffer);
+  Parser *result = Parser::ProcessFile(parser, parser, key_buffer);
   parser->CloseFile();
-  return parser;
+  return result;
 }
 
 /* Function start: 0x418DC0 */

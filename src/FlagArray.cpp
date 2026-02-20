@@ -127,17 +127,18 @@ void FlagArray::Seek(int index) {
 
 /* Function start: 0x420370 */
 unsigned int FlagArray::GetFlag(int index, unsigned int mask) {
-    unsigned int val = 0;
+    unsigned int val;
     Open();
     Seek(index);
     fread(&val, field_0x44, 1, fp);
+    mask = val & mask;
     Close();
-    return val & mask;
+    return mask;
 }
 
 /* Function start: 0x4203C0 */
 void FlagArray::SetFlag(int index, unsigned int mask) {
-    unsigned int val = 0;
+    unsigned int val;
     Open();
     Seek(index);
     fread(&val, field_0x44, 1, fp);
@@ -150,13 +151,13 @@ void FlagArray::SetFlag(int index, unsigned int mask) {
 /* Function start: 0x420430 */
 void FlagArray::ClearAllFlags() {
     int i = 0;
-    char buffer[4] = {0, 0, 0, 0};
-    
+    int buffer = 0;
+
     Open();
-    Seek(0);
-    if (max_states > 0) {
+    Seek(i);
+    if (max_states > i) {
         do {
-            fwrite(buffer, 4, 1, fp);
+            fwrite(&buffer, 4, 1, fp);
             i++;
         } while (i < max_states);
     }

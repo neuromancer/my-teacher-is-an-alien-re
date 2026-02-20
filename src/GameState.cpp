@@ -87,9 +87,8 @@ void GameState::SetMaxStates(int count)
     stateValues = (int*)new char[count * 4];
     ClearStates();
     stateLabels = (char**)new char[maxStates * 4];
-    char** arr = stateLabels;
     for (int i = 0; i < maxStates; i++) {
-        arr[i] = 0;
+        stateLabels[i] = 0;
     }
 }
 

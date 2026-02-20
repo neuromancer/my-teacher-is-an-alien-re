@@ -24,13 +24,13 @@ Sound::Sound(int param_1, short param_2, int param_3) {
     ShowMessage("Sound():: Not Initialized (No Sound Requested)");
   } else {
     AIL_set_preference(0xf, 0);
-    int iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
+    int iVar3 = Sound::OpenDigitalDriver(param_1, param_2, param_3 + 1);
     Sound::digital_driver = (HDIGDRIVER)iVar3;
     if (iVar3 == 0) {
       AIL_set_preference(0xf, 1);
     }
     if (Sound::digital_driver == 0) {
-      iVar3 = OpenDigitalDriver(param_1, param_2, param_3 + 1);
+      iVar3 = Sound::OpenDigitalDriver(param_1, param_2, param_3 + 1);
       Sound::digital_driver = (HDIGDRIVER)iVar3;
     }
     if (Sound::digital_driver == 0) {
@@ -89,7 +89,7 @@ void Sound::StopAllSamples() {
 }
 
 /* Function start: 0x41E3D0 */
-int __stdcall OpenDigitalDriver(int rate, unsigned short bits,
+int Sound::OpenDigitalDriver(int rate, unsigned short bits,
                       unsigned short channels) {
   HDIGDRIVER driver;
   int product = channels * (bits / 8);

@@ -203,12 +203,16 @@ int Handler4::ShutDown(SC_Message* msg) {
 
     if (sound1 != 0) {
         sound1->Stop();
+    }
+    if (sound1 != 0) {
         delete sound1;
         sound1 = 0;
     }
 
     if (sound2 != 0) {
         sound2->Stop();
+    }
+    if (sound2 != 0) {
         delete sound2;
         sound2 = 0;
     }
@@ -225,8 +229,8 @@ int Handler4::AddMessage(SC_Message* msg) {
     }
 
     if (msg->mouseX >= 2) {
-        int mouseY = 0;
         InputState* pMouse = g_InputManager_00436968->pMouse;
+        int mouseY = 0;
         if (pMouse != (void*)0) {
             mouseY = pMouse->y;
         }
@@ -237,15 +241,15 @@ int Handler4::AddMessage(SC_Message* msg) {
             mouseX = 0;
         }
 
-        GlyphRect* pRect = g_PuzzleRects2_0043d100;
-        int* pFloorState = floorStates;
         OnClick(mouseX, mouseY);
+        int* pFloorState = floorStates;
+        GlyphRect* pRect = g_PuzzleRects2_0043d100;
         int i = 0;
 
         do {
             if (*pFloorState != 0) {
-                int curY = 0;
                 InputState* pM = g_InputManager_00436968->pMouse;
+                int curY = 0;
                 if (pM != (void*)0) {
                     curY = pM->y;
                 }
@@ -301,12 +305,11 @@ void Handler4::Update(int param1, int param2) {
     }
 
     if (sound1 != 0) {
-        Sample* s = sound1;
-        if (s->m_sample != 0 && *(int*)((char*)s->m_sample + 0xc) == s->m_size) {
-            if (AIL_sample_status(s->m_sample) != 4) {
-                delete sound1;
-                sound1 = 0;
-            }
+        if (sound1->m_sample == 0 ||
+            *(int*)((char*)sound1->m_sample + 0xc) != sound1->m_size ||
+            AIL_sample_status(sound1->m_sample) != 4) {
+            delete sound1;
+            sound1 = 0;
         }
     }
 

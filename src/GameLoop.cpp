@@ -690,10 +690,8 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     
     // Clear ZBufferManager queues if g_ZBufferManager_0043698c exists
     if (g_ZBufferManager_0043698c != 0) {
-        ZBufferManager* pZBuf = g_ZBufferManager_0043698c;
-        
         // Process queue at offset 0xa0
-        pQueue = pZBuf->m_queueA0;
+        pQueue = g_ZBufferManager_0043698c->m_queueA0;
         if (pQueue->head != 0) {
             pQueue->current = pQueue->head;
             while (pQueue->head != 0) {
@@ -705,7 +703,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         }
 
         // Process queue at offset 0xa4
-        pQueue = pZBuf->m_queueA4;
+        pQueue = g_ZBufferManager_0043698c->m_queueA4;
         if (pQueue->head != 0) {
             pQueue->current = pQueue->head;
             while (pQueue->head != 0) {
@@ -717,7 +715,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         }
 
         // Process queue at offset 0x9c
-        pZBuf->m_queue9c->ClearList();
+        g_ZBufferManager_0043698c->m_queue9c->ClearList();
     }
     
     // Try to find existing handler for this command using msg->targetAddress
@@ -955,9 +953,12 @@ int GameLoop::RemoveHandler(int command) {
             if (current != 0) {
                 pHandler = (BaseHandler*)current->data;
             }
-            // Free node - matches LAB_004184c6
+            // Free node - matches LAB_004184c6 (zero fields before delete)
             if (current != 0) {
-                delete current;
+                current->data = 0;
+                current->prev = 0;
+                current->next = 0;
+                delete (void*)current;
                 list->current = 0;
             }
             list->current = list->head;
@@ -1017,10 +1018,10 @@ not_found:
 
 found:
     node = GameLoop::eventList->current;
-    if (node == 0) {
-        return 0;
+    if (node != 0) {
+        return (int)node->data;
     }
-    return (int)node->data;
+    return 0;
 }
 
 /* Function start: 0x418200 */

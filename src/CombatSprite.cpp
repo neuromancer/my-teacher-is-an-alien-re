@@ -484,7 +484,7 @@ int CombatSprite::LBLParse(char* line) {
             CombatSprite::ParseSpriteData(line);
         }
         else {
-            ShowError("CombatSprite");
+            Parser::LBLParse("CombatSprite");
         }
 
         return 0;
