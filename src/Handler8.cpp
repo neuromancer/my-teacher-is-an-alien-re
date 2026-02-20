@@ -49,13 +49,11 @@ struct MessageQueue {
 /* Function start: 0x406120 */
 Handler8::Handler8() {
     int* ptr = &handlerId;
-
-    // Zero 6 dwords at offset 0x88-0x9C using memset for rep stosd pattern
-    memset(ptr, 0, 6 * sizeof(int));
+    int* pA0 = (int*)&message;
 
     // Set handler-specific fields at 0xa0 and 0xa4
-    message = 0;
-    field_A4 = 0;
+    pA0[0] = 0;
+    pA0[1] = 0;
 
     // Set handlerId at 0x88
     *ptr = 8;
@@ -119,10 +117,10 @@ int Handler8::Exit(SC_Message* msg) {
         return 0;
     }
     prio = msg->priority;
-    if (prio && prio != 6) {
-        return 0;
-    }
-    if (prio == 6) {
+    if (prio != 0) {
+        if (prio != 6) {
+            return 0;
+        }
         ProcessMessage();
     }
     return 1;

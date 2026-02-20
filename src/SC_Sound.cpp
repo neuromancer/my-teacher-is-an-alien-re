@@ -21,17 +21,22 @@ SC_Sound::SC_Sound() {
 
 /* Function start: 0x40B910 */
 SC_Sound::~SC_Sound() {
-    if (list != 0) {
-        if (list->head != 0) {
-            list->current = list->head;
-            do {
-                SoundItem* data = (SoundItem*)list->RemoveCurrent();
-                if (data != 0) {
-                    delete data;
-                }
-            } while (list->head != 0);
+    MessageList* pList;
+
+    pList = list;
+    if (pList != 0) {
+        if (pList->head != 0) {
+            pList->current = pList->head;
+            if (pList->head != 0) {
+                do {
+                    SoundItem* data = (SoundItem*)pList->RemoveCurrent();
+                    if (data != 0) {
+                        delete data;
+                    }
+                } while (pList->head != 0);
+            }
         }
-        delete list;
+        ::operator delete(pList);
         list = 0;
     }
 }
@@ -55,7 +60,8 @@ void SC_Sound::Update(int param1, int param2) {
     if (list != 0) {
         list->current = list->head;
         if (list->head != 0) {
-            do {
+loop_top:
+            {
                 SoundItem* soundItem = (SoundItem*)list->GetCurrentData();
 
                 if (soundItem->IsFinished()) {
@@ -63,15 +69,18 @@ void SC_Sound::Update(int param1, int param2) {
                     if (data != 0) {
                         delete data;
                     }
-                    if (list->head == 0) break;
-                } else {
-                    if (list->tail == list->current) break;
-                    list->current = (MessageNode*)list->current->next;
                 }
-            } while (list->head != 0);
+            }
+
+            if (list->tail == list->current) goto done;
+            if (list->current != 0) {
+                list->current = (MessageNode*)list->current->next;
+            }
+            if (list->head != 0) goto loop_top;
         }
     }
 
+done:
     if (handlerId == param2) {
         ShowError("SC_Sound::Update");
     }
@@ -90,6 +99,8 @@ int SC_Sound::ShutDown(SC_Message* msg) {
 
 /* Function start: 0x40BD30 */
 int SC_Sound::Exit(SC_Message* msg) {
+    MessageList* pList;
+
     if (msg->targetAddress != handlerId) {
         return 0;
     }
@@ -106,14 +117,17 @@ int SC_Sound::Exit(SC_Message* msg) {
 
     case 15:
     {
-        if (list->head != 0) {
-            list->current = list->head;
-            do {
-                SoundItem* data = (SoundItem*)list->PopCurrent();
-                if (data != 0) {
-                    delete data;
-                }
-            } while (list->head != 0);
+        pList = list;
+        if (pList->head != 0) {
+            pList->current = pList->head;
+            if (pList->head != 0) {
+                do {
+                    SoundItem* data = (SoundItem*)pList->PopCurrent();
+                    if (data != 0) {
+                        delete data;
+                    }
+                } while (pList->head != 0);
+            }
         }
         break;
     }
@@ -147,24 +161,27 @@ int SC_Sound::Exit(SC_Message* msg) {
     {
         list->current = list->head;
         if (list->head != 0) {
-            do {
+case20_loop:
+            {
                 MessageNode* node = (MessageNode*)list->current;
-                SoundItem* data = (SoundItem*)node->data;
 
                 if (node == 0) {
-                    if (*(int*)0x18 == msg->sourceAddress) goto remove;
-                } else if (data->soundId == msg->sourceAddress) {
+                    if (msg->sourceAddress == *(int*)0x18) goto remove;
+                } else if (((SoundItem*)node->data)->soundId == msg->sourceAddress) {
                 remove:
-                    data = (SoundItem*)list->RemoveCurrent();
+                    ;
+                    SoundItem* data = (SoundItem*)list->RemoveCurrent();
                     if (data != 0) {
                         delete data;
                     }
-                    if (list->head == 0) break;
-                } else {
-                    if (list->tail == list->current) break;
-                    list->current = (MessageNode*)list->current->next;
                 }
-            } while (list->head != 0);
+            }
+
+            if (list->tail == list->current) break;
+            if (list->current != 0) {
+                list->current = (MessageNode*)list->current->next;
+            }
+            if (list->head != 0) goto case20_loop;
         }
         break;
     }

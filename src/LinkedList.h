@@ -2,6 +2,7 @@
 #define LINKEDLIST_H
 
 extern "C" void ShowError(const char* format, ...);
+extern void FreeMemory(void* ptr);
 
 // Unified doubly-linked list node
 // Layout: prev(+0x00), next(+0x04), data(+0x08)
@@ -39,12 +40,6 @@ struct LinkedList {
         head = 0;
         tail = 0;
         current = head;
-    }
-
-    ~LinkedList() {
-        current = 0;
-        head = 0;
-        tail = 0;
     }
 
     inline void* GetCurrentData() {
@@ -96,7 +91,7 @@ struct LinkedList {
     inline void* RemoveCurrent() {
         ListNode* node;
         void* data;
-        
+
         node = current;
         if (node == 0) {
             data = 0;
@@ -130,7 +125,7 @@ struct LinkedList {
                 node->data = 0;
                 node->prev = 0;
                 node->next = 0;
-                delete node;
+                FreeMemory(node);
                 current = 0;
             }
             current = head;

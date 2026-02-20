@@ -35,6 +35,8 @@ public:
     Sprite* m_sprite;          // 0xEC
     Sprite* m_sprite2;         // 0xF0
     struct Point {
+        Point() {}
+        ~Point() {}
         int x;
         int y;
     };

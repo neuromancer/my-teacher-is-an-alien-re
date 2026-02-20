@@ -67,7 +67,10 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
                         data = (OnScreenMessage*)node->data;
                     }
                     if (node != 0) {
-                        delete node;
+                        node->data = 0;
+                        node->prev = 0;
+                        node->next = 0;
+                        ::operator delete(node);
                         pList->current = 0;
                     }
                     pList->current = pList->head;
@@ -79,7 +82,7 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
                 }
             }
         }
-        delete pList;
+        ::operator delete(pList);
         m_messageList = 0;
     }
 }
@@ -206,10 +209,8 @@ int SC_OnScreenMessage::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x40A7E0 */
 int SC_OnScreenMessage::Exit(SC_Message* msg) {
-    MessageList* list;
     OnScreenMessage* newItem;
-    OnScreenMessage* deletedItem;
-    int count;
+    MessageList* list;
 
     newItem = 0;
 
@@ -219,15 +220,9 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     timer.Reset();
 
-    if (msg->priority == 0xF) {
-        goto send_remove_msg;
-    }
-    if (msg->priority == 0x13) {
-        goto create_message;
-    }
-    if (msg->priority == 0x1B) {
-        goto send_remove_msg;
-    }
+    if (msg->priority == 0xF) goto send_remove_msg;
+    if (msg->priority == 0x13) goto create_message;
+    if (msg->priority == 0x1B) goto send_remove_msg;
     return 0;
 
 create_message:
@@ -241,8 +236,8 @@ create_message:
     }
     if (msg->userPtr != 0) {
         newItem = new OnScreenMessage((char*)msg->userPtr, msg->param1);
+        msg->userPtr = 0;
     }
-    msg->userPtr = 0;
 
 check_newitem:
     if (newItem == 0) {
@@ -251,95 +246,74 @@ check_newitem:
 
     list = m_messageList;
     list->current = list->head;
-    if (list->type == 1 || list->type == 2) {
-        if (list->head != 0) {
-            goto insertion_loop;
-        }
-    }
-    goto call_insert;
+    if (list->type == 1) goto insertion_loop;
+    if (list->type == 2) goto insertion_loop;
 
-insertion_loop:
-    if (((OnScreenMessage*)((MessageNode*)list->current)->data)->timer.Update() < newItem->timer.Update()) {
 call_insert:
-        list->InsertNode(newItem);
-    } else {
-        if (list->tail == list->current) {
-            if (newItem == 0) WriteToMessageLog("queue fault 0112");
-            MessageNode* newNode = new MessageNode(newItem);
-            if (newNode != 0) {
-                if (list->current == 0) {
-                    list->current = list->tail;
-                }
-                if (list->head == 0) {
-                    list->head = newNode;
-                    list->tail = newNode;
-                    list->current = newNode;
-                } else {
-                    if (list->tail == 0 || ((MessageNode*)list->tail)->next != 0) {
-                        WriteToMessageLog("queue fault 0113");
-                    }
-                    newNode->next = 0;
-                    newNode->prev = (MessageNode*)list->tail;
-                    ((MessageNode*)list->tail)->next = newNode;
-                    list->tail = newNode;
-                }
-            }
-        } else {
-            if (list->current != 0) {
-                list->current = ((MessageNode*)list->current)->next;
-            }
-            if (list->current != 0) {
-                goto insertion_loop;
-            }
-        }
-    }
+    list->InsertNode(newItem);
 
 count_loop_start:
-    count = 0;
-    list = m_messageList;
-    list->current = list->head;
-    if (list->current != 0) {
-        do {
-            count++;
-            if (list->current == list->tail) break;
-            if (list->current != 0) {
-                list->current = ((MessageNode*)list->current)->next;
-            }
-        } while (list->current != 0);
-    }
-
-    if (count <= 10) {
-        return 1;
-    }
-
-    deletedItem = 0;
-    list = m_messageList;
-    if (list->type == 1 || list->type == 4) {
+    {
+        int count;
+        list = m_messageList;
+        count = 0;
         list->current = list->head;
-    } else if (list->type == 2 || list->type == 0) {
-        list->current = list->tail;
-    } else {
-        WriteToMessageLog("bad queue type %lu", list->type);
-        list->current = list->tail;
+        if (list->current != 0) {
+            do {
+                count++;
+                if (list->current == list->tail) break;
+                if (list->current != 0) {
+                    list->current = ((MessageNode*)list->current)->next;
+                }
+            } while (list->current != 0);
+        }
+
+        if (count <= 10) {
+            return 1;
+        }
     }
 
     {
-        MessageNode* toDelete = (MessageNode*)list->current;
-        if (toDelete != 0) {
-            if (list->head == toDelete) list->head = toDelete->next;
-            if (list->tail == toDelete) list->tail = toDelete->prev;
-            if (toDelete->prev) toDelete->prev->next = toDelete->next;
-            if (toDelete->next) toDelete->next->prev = toDelete->prev;
+        OnScreenMessage* deletedItem;
+        MessageNode* node;
 
-            if (toDelete != 0) {
-                deletedItem = (OnScreenMessage*)toDelete->data;
+        deletedItem = 0;
+        list = m_messageList;
+        if (list->type == 1 || list->type == 4) {
+            list->current = list->head;
+        } else if (list->type == 2 || list->type == 0) {
+            list->current = list->tail;
+        } else {
+            WriteToMessageLog("bad queue type %lu", list->type);
+        }
+
+        node = (MessageNode*)list->current;
+        if (node != 0) {
+            if (list->head == node) {
+                list->head = node->next;
             }
-
-            if (toDelete != 0) {
-                toDelete->data = 0;
-                toDelete->prev = 0;
-                toDelete->next = 0;
-                delete toDelete;
+            if (list->tail == (MessageNode*)list->current) {
+                list->tail = ((MessageNode*)list->current)->prev;
+            }
+            node = (MessageNode*)list->current;
+            if (node->prev != 0) {
+                node->prev->next = node->next;
+            }
+            node = (MessageNode*)list->current;
+            if (node->next != 0) {
+                node->next->prev = node->prev;
+            }
+            node = (MessageNode*)list->current;
+            if (node == 0) {
+                deletedItem = 0;
+            } else {
+                deletedItem = (OnScreenMessage*)node->data;
+            }
+            if (node != 0) {
+                node->data = 0;
+                node->prev = 0;
+                node->next = 0;
+                delete node;
                 list->current = 0;
             }
             list->current = list->head;
@@ -347,6 +321,46 @@ count_loop_start:
 
         if (deletedItem != 0) {
             delete deletedItem;
+        }
+    }
+    goto count_loop_start;
+
+insertion_loop:
+    if (((OnScreenMessage*)((MessageNode*)list->current)->data)->timer.Update() < newItem->timer.Update()) {
+        goto call_insert;
+    }
+    if (list->tail == list->current) {
+        goto push_to_tail;
+    }
+    if (list->current != 0) {
+        list->current = ((MessageNode*)list->current)->next;
+    }
+    if (list->current != 0) {
+        goto insertion_loop;
+    }
+    goto count_loop_start;
+
+push_to_tail:
+    if (newItem == 0) WriteToMessageLog("queue fault 0112");
+    {
+        MessageNode* newNode = new MessageNode(newItem);
+        if (newNode != 0) {
+            if (list->current == 0) {
+                list->current = list->tail;
+            }
+            if (list->head == 0) {
+                list->head = newNode;
+                list->tail = newNode;
+                list->current = newNode;
+            } else {
+                if (list->tail == 0 || ((MessageNode*)list->tail)->next != 0) {
+                    WriteToMessageLog("queue fault 0113");
+                }
+                newNode->next = 0;
+                newNode->prev = (MessageNode*)list->tail;
+                ((MessageNode*)list->tail)->next = newNode;
+                list->tail = newNode;
+            }
         }
     }
     goto count_loop_start;

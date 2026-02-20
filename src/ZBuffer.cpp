@@ -70,74 +70,80 @@ int ZBuffer::ProcessMessage(Message* msg)
         return 0;
     }
     timer.Reset();
-    int iVar1 = msg->priority;
-    if (iVar1 == 3) {
+    switch (msg->priority) {
+    case 3:
         g_ZBufferManager_0043698c->m_flags |= 2;
         g_ZBufferManager_0043698c->timer.Reset();
         return 1;
+    case 0xe:
+    {
+        ZBufferManager* mgr = g_ZBufferManager_0043698c;
+        mgr->m_state = 2;
+        ZBQueue* queue = mgr->m_queueA0;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                SoundCommand* cmd = (SoundCommand*)queue->Pop();
+                if (cmd != 0) {
+                    cmd->~SoundCommand();
+                    operator delete(cmd);
+                }
+            }
+        }
+        ZBQueue* queueA4 = mgr->m_queueA4;
+        if (queueA4->head != 0) {
+            queueA4->current = queueA4->head;
+            while (queueA4->head != 0) {
+                ZBuffer* zb = (ZBuffer*)queueA4->Pop();
+                if (zb != 0) {
+                    zb->CleanUpVBuffer();
+                    operator delete(zb);
+                }
+            }
+        }
+        queue = mgr->m_queue9c;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                RenderEntry* entry = (RenderEntry*)queue->Pop();
+                if (entry != 0) {
+                    delete entry;
+                }
+            }
+        }
+        break;
     }
-    if (iVar1 == 0xe) {
-        g_ZBufferManager_0043698c->m_state = 2;
-        ZBQueue* queue = g_ZBufferManager_0043698c->m_queueA0;
+    case 0xf:
+    {
+        ZBufferManager* mgr = g_ZBufferManager_0043698c;
+        mgr->m_state = 1;
+        ZBQueue* queue = mgr->m_queueA0;
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
                 SoundCommand* cmd = (SoundCommand*)queue->Pop();
                 if (cmd != 0) {
                     cmd->~SoundCommand();
-                    FreeFromGlobalHeap(cmd);
+                    operator delete(cmd);
                 }
             }
         }
-        queue = g_ZBufferManager_0043698c->m_queueA4;
-        if (queue->head != 0) {
-            queue->current = queue->head;
-            while (queue->head != 0) {
-                ZBuffer* zb = (ZBuffer*)queue->Pop();
+        ZBQueue* queueA4 = mgr->m_queueA4;
+        if (queueA4->head != 0) {
+            queueA4->current = queueA4->head;
+            while (queueA4->head != 0) {
+                ZBuffer* zb = (ZBuffer*)queueA4->Pop();
                 if (zb != 0) {
                     zb->CleanUpVBuffer();
-                    FreeFromGlobalHeap(zb);
+                    operator delete(zb);
                 }
             }
         }
-        queue = g_ZBufferManager_0043698c->m_queue9c;
-        if (queue->head != 0) {
-            queue->current = queue->head;
-            while (queue->head != 0) {
-                void* data = queue->Pop();
-                if (data != 0) {
-                    FreeFromGlobalHeap(data);
-                }
-            }
-        }
-    } else {
-        if (iVar1 != 0xf) {
-            return 0;
-        }
-        g_ZBufferManager_0043698c->m_state = 1;
-        ZBQueue* queue = g_ZBufferManager_0043698c->m_queueA0;
-        if (queue->head != 0) {
-            queue->current = queue->head;
-            while (queue->head != 0) {
-                SoundCommand* cmd = (SoundCommand*)queue->Pop();
-                if (cmd != 0) {
-                    cmd->~SoundCommand();
-                    FreeFromGlobalHeap(cmd);
-                }
-            }
-        }
-        queue = g_ZBufferManager_0043698c->m_queueA4;
-        if (queue->head != 0) {
-            queue->current = queue->head;
-            while (queue->head != 0) {
-                ZBuffer* zb = (ZBuffer*)queue->Pop();
-                if (zb != 0) {
-                    zb->CleanUpVBuffer();
-                    FreeFromGlobalHeap(zb);
-                }
-            }
-        }
-        g_ZBufferManager_0043698c->m_queue9c->ClearList();
+        mgr->m_queue9c->ClearList();
+        break;
+    }
+    default:
+        return 0;
     }
     return 1;
 }

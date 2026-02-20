@@ -13,7 +13,6 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
     int priority, int param1, int param2, int userPtr,
     int param9, int param10)
 {
-    SC_Message local_dc(targetAddress, sourceAddress, command, data, priority, param1, param2, userPtr, param9, param10);
     PooledEvent** pTail;
     TimedEventPool* pPool;
     PooledEvent* pOldTail;
@@ -29,6 +28,7 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
     unsigned int i;
 
     if (g_TimedEventPool2_00436988 != 0) {
+        SC_Message local_dc(targetAddress, sourceAddress, command, data, priority, param1, param2, userPtr, param9, param10);
         pSource = &local_dc;
 
         pPool = g_TimedEventPool2_00436988;
@@ -44,7 +44,7 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
             count = *pPoolSize;
             pEntry = (PooledEvent*)(pNewPool + count * 200 - 196);
             count--;
-            for (; -1 < count; count--) {
+            for (; count >= 0; count--) {
                 pEntry->next = *pFreeList;
                 *pFreeList = pEntry;
                 pEntry = (PooledEvent*)((char*)pEntry - 200);

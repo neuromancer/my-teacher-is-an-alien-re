@@ -115,16 +115,16 @@ void TargetList::OnProcessEnd() {
 
 /* Function start: 0x4150F0 */
 Target* TargetList::ProcessTargets() {
+  Target* fallbackTarget;
+  Target* target;
   HashNode* entry;
   HashNode* nextEntry;
-  Target* target;
-  Target* fallbackTarget;
   unsigned int bucketIdx;
   int* bucketPtr;
   HashTable* ht;
 
   fallbackTarget = 0;
-  TargetList::currentTarget = 0;
+  currentTarget = 0;
   ht = g_TargetList_00435f0c->hashTable;
   if (ht == 0) {
     return 0;
@@ -163,11 +163,11 @@ Target* TargetList::ProcessTargets() {
     entry = nextEntry;
     if (target != 0 && target->Update() == 0) {
       if (target->AdvanceHotspot() != 0) {
-        TargetList::currentTarget = target;
+        currentTarget = target;
         g_ScoreManager_00435f20->hitCount = g_ScoreManager_00435f20->hitCount + 1;
         ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(-target->scoreWeight.end);
-        if (TargetList::field_0x1c0 != 0) {
-          ((Sample*)TargetList::field_0x1c0)->Play(100, 1);
+        if (field_0x1c0 != 0) {
+          ((Sample*)field_0x1c0)->Play(100, 1);
         }
       }
       if (fallbackTarget == 0 && target->CheckTimeInRange() != 0) {

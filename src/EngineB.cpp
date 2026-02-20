@@ -18,21 +18,10 @@
 #include <stdlib.h>
 
 
-// Forward declaration for atexit handler
-static void AtExitCleanup_0043d140();
-
-// Static TimeOut object and initialization guard
-static TimeOut g_TimeOut_0043d140;
-static unsigned char g_TimeOutInitFlag_0043d14c = 0;
+// Forward declaration - AtExitCleanup_0043d140 is compiler-generated for static local TimeOut
 
 /* Function start: 0x412110 */
 EngineB::EngineB() {
-  // Clearing explicitly to match the redundant writes in the original disassembly.
-  // The small members have destructors, causing SEH state updates during construction.
-  m_progress.start = 0;
-  m_progress.end = 0;
-  m_meterPosition.x = 0;
-  m_meterPosition.y = 0;
   memset(&m_localSoundList, 0, 0x80);
 }
 
@@ -110,10 +99,10 @@ void EngineB::Draw() {
   if (g_Weapon_00435f14->field_0xa0 != 0) {
     InputState* pMouse = g_InputManager_00436968->pMouse;
     int mouseX;
-    if (pMouse == 0) {
-      mouseX = 0;
-    } else {
+    if (pMouse != 0) {
       mouseX = pMouse->x;
+    } else {
+      mouseX = 0;
     }
     g_ConsoleSprite_00435f04->SetState2(mouseX / 0x6a + 5);
   }
@@ -123,12 +112,12 @@ void EngineB::Draw() {
   if (consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0) != 0) {
     InputState* pMouse = g_InputManager_00436968->pMouse;
     int mouseX;
-    if (pMouse == 0) {
-      mouseX = 0;
-    } else {
+    if (pMouse != 0) {
       mouseX = pMouse->x;
+    } else {
+      mouseX = 0;
     }
-    g_ConsoleSprite_00435f04->SetState2((mouseX + ((mouseX >> 31) & 0x3f)) >> 6);
+    g_ConsoleSprite_00435f04->SetState2(mouseX / 64);
   }
 }
 
@@ -147,11 +136,14 @@ void EngineB::UpdateMeter() {
     // Calculate progress bar position
     progressCurrent = EngineB::m_progress.start;
     barPos = (progressCurrent * 0x36) / progressMax - rand() % 3 + 1;
-    if (barPos < 0) {
-      barPos = 0;
-    } else if (barPos > 0x36) {
+    if (barPos < 0) goto barZero;
+    if (barPos > 0x36) {
       barPos = 0x36;
     }
+    goto barReady;
+barZero:
+    barPos = 0;
+barReady:
     barPos = barPos * 4 + 2;
 
     // Draw first part of progress bar
@@ -173,11 +165,8 @@ void EngineB::UpdateMeter() {
       EngineB::m_meterPosition.y,
       (VBuffer*)EngineB::m_meterBuffer);
   } else {
-    // Progress complete - use TimeOut
-    if ((g_TimeOutInitFlag_0043d14c & 1) == 0) {
-      g_TimeOutInitFlag_0043d14c |= 1;
-      atexit(AtExitCleanup_0043d140);
-    }
+    // Progress complete - local static TimeOut generates init guard + atexit
+    static TimeOut g_TimeOut_0043d140;
 
     // Draw full progress bar
     g_WorkBuffer_00436974->CallBlitter2(
@@ -190,29 +179,24 @@ void EngineB::UpdateMeter() {
       (VBuffer*)EngineB::m_meterBuffer);
 
     // Check if TimeOut is active
-    if (g_TimeOut_0043d140.m_isActive != 1) {
-      g_TimeOut_0043d140.Start(0x5dc);  // 1500ms timeout
+    if (g_TimeOut_0043d140.m_isActive == 1) {
+      if (g_TimeOut_0043d140.IsTimeOut() != 0) {
+        g_GameOutcome_00435f28->outcome = 1;
+      }
       return;
     }
 
-    if (g_TimeOut_0043d140.IsTimeOut() != 0) {
-      g_GameOutcome_00435f28->outcome = 1;
-      return;
-    }
+    g_TimeOut_0043d140.Start(0x5dc);  // 1500ms timeout
   }
-}
-
-/* Function start: 0x412600 */
-void AtExitCleanup_0043d140() {
-  g_TimeOut_0043d140.Stop();
 }
 
 /* Function start: 0x412610 */
 void EngineB::ProcessTargets() {
   g_TargetList_00435f0c->ProcessTargets();
   ((RockThrower*)EngineB::m_weaponParser)->UpdateProjectiles();
-  EngineB::Draw();
-  EngineB::UpdateMeter();
+  Engine* self = (Engine*)this;
+  self->Draw();
+  self->UpdateMeter();
 }
 
 /* Function start: 0x412640 */
@@ -245,29 +229,33 @@ void EngineB::OnProcessEnd() {
   if (g_ConsoleSprite_00435f04 != 0) {
     InputState* pMouse = g_InputManager_00436968->pMouse;
     int timeVal;
-    if (pMouse == 0) {
-      timeVal = 0;
-    } else {
+    if (pMouse != 0) {
       timeVal = pMouse->x;
+    } else {
+      timeVal = 0;
     }
-    g_ConsoleSprite_00435f04->SetState2((timeVal + ((timeVal >> 31) & 0x3f)) >> 6);
+    g_ConsoleSprite_00435f04->SetState2(timeVal / 64);
   }
 
   // Allocate and initialize m_targetConfig (8 byte object)
-  int* pObj164 = (int*)new char[8];
-  pObj164[0] = 1;
-  pObj164[1] = 3;
+  int* pObj164 = (int*)AllocateMemory(8);
+  if (pObj164 != 0) {
+    pObj164[0] = 1;
+    pObj164[1] = 3;
+  } else {
+    pObj164 = 0;
+  }
   EngineB::m_targetConfig = pObj164;
   EngineB::m_weaponParser = g_Weapon_00435f14;
 
   // Update field_0x108 on all targets
-  TargetList* targetList = g_TargetList_00435f0c;
-  numTargets = targetList->count;
-  if (numTargets > 0) {
-    for (i = 0; i < numTargets; i++) {
-      Target* pTarget = targetList->targets[i];
+  i = 0;
+  if (g_TargetList_00435f0c->count > 0) {
+    do {
+      Target* pTarget = g_TargetList_00435f0c->targets[i];
+      i++;
       pTarget->progressRange.end = *EngineB::m_targetConfig;
-    }
+    } while (i < g_TargetList_00435f0c->count);
   }
 
   // Create SoundList at m_localSoundList

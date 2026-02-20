@@ -269,13 +269,9 @@ void SC_Question::DumpMessageQueue(int unused)
 /* Function start: 0x4198C0 */
 SC_Message::SC_Message(int p_targetAddress, int p_sourceAddress, int p_command, int p_data, int p_priority, int p_param1, int p_param2, int p_userPtr, int p_clickX, int p_clickY)
 {
-    // Zero clickPos first (MousePoint at 0xa4)
-    clickPos.x = 0;
-    clickPos.y = 0;
-    
     // Zero 14 dwords (0x38 bytes) starting at offset 0x88
     memset(&targetAddress, 0, 0xe * sizeof(int));
-    
+
     // Assign all parameters
     targetAddress = p_targetAddress;
     sourceAddress = p_sourceAddress;
@@ -380,43 +376,29 @@ int SC_Message::LBLParse(char* param_1)
 void SC_Message::Dump(int unused)
 {
     int targetAddr;
-    int srcAddr;
-    const char* str1;
-    const char* str2;
-    
+
     // Log ADDRESS field
-    // EDI = targetAddress, EAX = sourceAddress
     targetAddr = targetAddress;
-    srcAddr = sourceAddress;
     if (targetAddr == 5) {
-        str1 = g_GameState_00436998->GetState(srcAddr);
-        str2 = g_GameState3_0043699c->GetState(targetAddr);
-        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %s", str2, str1);
+        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %s", g_GameState3_0043699c->GetState(targetAddr), g_GameState_00436998->GetState(sourceAddress));
     } else {
-        str1 = g_GameState3_0043699c->GetState(targetAddr);
-        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %d", str1, srcAddr);
+        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %d", g_GameState3_0043699c->GetState(targetAddr), sourceAddress);
     }
-    
+
     // Log FROM field
-    // EDI = command, EAX = data
     targetAddr = command;
-    srcAddr = data;
     if (targetAddr == 5) {
-        str1 = g_GameState_00436998->GetState(srcAddr);
-        str2 = g_GameState3_0043699c->GetState(targetAddr);
-        WriteToMessageLog("\t\t\tFROM\t\t%s  %s", str2, str1);
+        WriteToMessageLog("\t\t\tFROM\t\t%s  %s", g_GameState3_0043699c->GetState(targetAddr), g_GameState_00436998->GetState(data));
     } else {
-        str1 = g_GameState3_0043699c->GetState(targetAddr);
-        WriteToMessageLog("\t\t\tFROM\t\t%s  %d", str1, srcAddr);
+        WriteToMessageLog("\t\t\tFROM\t\t%s  %d", g_GameState3_0043699c->GetState(targetAddr), data);
     }
-    
+
     // Log INSTRUCTION field
-    str1 = g_GameState4_004369a0->GetState(priority);
-    WriteToMessageLog("\t\t\tINSTRUCTION\t%s", str1);
-    
-    // Log MOUSE field (clickPos at 0xa4)
+    WriteToMessageLog("\t\t\tINSTRUCTION\t%s", g_GameState4_004369a0->GetState(priority));
+
+    // Log MOUSE field
     WriteToMessageLog("\t\t\tMOUSE\t\t%d\t%d", clickPos.x, clickPos.y);
-    
+
     // Log optional fields
     if (mouseX != 0) {
         WriteToMessageLog("\t\t\tBUTTON1\t\t%d", mouseX);
@@ -436,6 +418,6 @@ void SC_Message::Dump(int unused)
     if (param2 != 0) {
         WriteToMessageLog("\t\t\tEXTRA2\t\t%lu", param2);
     }
-    
+
     WriteToMessageLog("\t\tEND\t\t//message");
 }

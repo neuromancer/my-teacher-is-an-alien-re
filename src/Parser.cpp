@@ -15,12 +15,14 @@ Parser::~Parser() { CloseFile(); }
 
 /* Function start: 0x418A20 */
 void Parser::Open(char *param_1) {
+  char* fn;
   CloseFile();
-  strcpy(filename, param_1);
-  pFile = fsopen(filename, "r");
+  fn = filename;
+  strcpy(fn, param_1);
+  pFile = fsopen(fn, "r");
   m_subObject = (void*)1;
   if (pFile == NULL) {
-    ShowError("Parser::Open - Unable to open file '%s' ", filename);
+    ShowError("Parser::Open - Unable to open file '%s' ", fn);
   }
 }
 

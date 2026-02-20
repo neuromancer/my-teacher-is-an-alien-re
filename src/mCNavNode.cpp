@@ -13,6 +13,7 @@
 // Globals
 extern InputManager* g_InputManager_00436968;
 extern Engine* g_CombatEngine_00435eb0;         // 0x00435eb0
+extern int FindCharIndex(char* param_1);
 
 // Hash table entry structure for random pool
 struct HashEntry {
@@ -30,6 +31,16 @@ mCNavNode::mCNavNode() : Parser()
     strcpy(nodeName, "NONAME");
 }
 
+/* Function start: 0x4130B0 */
+void mCNavNode::SetNavLink(char* direction, int nodeId)
+{
+    int dirIndex = FindCharIndex(direction);
+    if (dirIndex >= 6) {
+        ShowError("mCNavNode::SetNavLink() - node %d : Undefined direction '%s' %d", mCNavNode::nodeHandle, direction, dirIndex);
+    }
+    mCNavNode::neighborNodes[dirIndex] = nodeId;
+}
+
 /* Function start: 0x4130F0 */
 int mCNavNode::Activate()
 {
@@ -38,7 +49,6 @@ int mCNavNode::Activate()
     unsigned int bucketIndex;
     HashEntry* entry;
 
-    // Check animation flag (bit 0)
     fl = mCNavNode::flags;
     if ((fl & 1) != 0) {
         if (g_Sprite_004360a0 != 0) {
@@ -48,24 +58,31 @@ int mCNavNode::Activate()
         }
     }
 
-    // Check random sound flag (bit 3)
     if ((mCNavNode::flags & 8) != 0) {
         randVal = rand();
         ObjectPool* pool = mCNavNode::randomPool;
         randVal = randVal % pool->allocatedCount;
         bucketIndex = ((unsigned int)randVal >> 4) % pool->size;
+        void* mem = pool->memory;
 
-        entry = 0;
-        if (pool->memory != 0) {
-            entry = ((HashEntry**)pool->memory)[bucketIndex];
-            while (entry != 0) {
-                if (entry->key == randVal) {
-                    break;
-                }
-                entry = entry->next;
-            }
+        if (mem == 0) {
+            goto no_entry;
         }
+        entry = ((HashEntry**)mem)[bucketIndex];
 
+loop_top:
+        if (entry == 0) {
+            goto no_entry;
+        }
+        if (entry->key == randVal) {
+            goto found_entry;
+        }
+        entry = entry->next;
+        goto loop_top;
+
+no_entry:
+        entry = 0;
+found_entry:
         if (entry == 0) {
             ShowError("mCNavNode::Activate() - Invalid Sprite Id S %d of %s", bucketIndex, mCNavNode::nodeName);
         } else {
@@ -137,10 +154,8 @@ int mCNavNode::Update()
     }
 
     if ((mCNavNode::flags & 1) != 0) {
-        int animResult = g_Sprite_004360a0->Do(
-                                       g_Sprite_004360a0->loc_x,
-                                       g_Sprite_004360a0->loc_y,
-                                       1.0);
+        Sprite* spr = g_Sprite_004360a0;
+        int animResult = spr->Do(spr->loc_x, spr->loc_y, 1.0);
         if (animResult != 0) {
             if ((mCNavNode::flags & 4) != 0) {
                 mCNavNode::counter = mCNavNode::counter + 1;
@@ -159,9 +174,10 @@ check_sound:
         goto return_result;
     }
 
-    if ((mCNavNode::flags & 0x10) == 0) {
-        return 0;
+    if ((mCNavNode::flags & 0x10) != 0) {
+        goto return_result;
     }
+    return 0;
 
 return_result:
     mCNavNode::active = 0;
@@ -182,20 +198,32 @@ void mCNavNode::AddSpriteList(char* name, int id)
     unsigned int count = pool->allocatedCount;
     unsigned int size = pool->size;
     unsigned int h = (count >> 4) % size;
-    void* memory = pool->memory;
+    void* mem = pool->memory;
+    HashEntry* entry;
 
-    HashEntry* entry = 0;
-    if (memory != 0) {
-        entry = ((HashEntry**)memory)[h];
-        while (entry != 0) {
-            if (entry->key == count) break;
-            entry = entry->next;
-        }
+    if (mem == 0) {
+        goto no_entry;
     }
+    entry = ((HashEntry**)mem)[h];
 
+loop_top:
     if (entry == 0) {
-        if (memory == 0) {
-            pool->MemoryPool_Allocate(size, 1);
+        goto no_entry;
+    }
+    if (entry->key == count) {
+        goto found_entry;
+    }
+    entry = entry->next;
+    goto loop_top;
+
+no_entry:
+    entry = 0;
+found_entry:
+    if (entry == 0) {
+        if (mem == 0) {
+            pool->memory = new char[size * 4];
+            memset(pool->memory, 0, size * 4);
+            pool->size = size;
         }
         entry = (HashEntry*)pool->Allocate_2();
         entry->field_4 = h;
@@ -213,27 +241,25 @@ int mCNavNode::LBLParse(char* line)
     char label[32];
     char value[128];
     int valInt;
+    int spriteId;
 
-    if (sscanf(line, " %s ", label) != 1) {
-        return 0;
-    }
+    value[0] = 0;
+    label[0] = 0;
+    valInt = 0;
+    spriteId = 0;
+
+    sscanf(line, " %s ", label);
 
     if (_strcmpi(label, "EXIT_CODE") == 0) {
-        if (sscanf(line, "%s %d", label, &valInt) == 2) {
-            nextNodeId = valInt;
-            flags |= 0x10;
-        }
+        sscanf(line, "%s %d", label, &nextNodeId);
+        flags |= 0x10;
     }
     else if (_strcmpi(label, "IAM") == 0) {
-        if (sscanf(line, "%s %d", label, &valInt) == 2) {
-            nodeHandle = valInt;
-        }
+        sscanf(line, "%s %d", label, &nodeHandle);
     }
     else if (_strcmpi(label, "LOOP") == 0) {
-        if (sscanf(line, "%s %d", label, &valInt) == 2) {
-            counterLimit = valInt;
-            flags |= 0x4;
-        }
+        sscanf(line, "%s %d", label, &counterLimit);
+        flags |= 0x4;
     }
     else if (_strcmpi(label, "NAME") == 0) {
         if (sscanf(line, "%s %s", label, value) == 2) {
@@ -243,34 +269,24 @@ int mCNavNode::LBLParse(char* line)
         }
     }
     else if (_strcmpi(label, "BG") == 0) {
-        if (sscanf(line, "%s %d", label, &valInt) == 2) {
-            animationState = valInt;
-            flags |= 0x1;
-        }
+        sscanf(line, "%s %d", label, &animationState);
+        flags |= 0x1;
     }
     else if (_strcmpi(label, "NEXTNODE") == 0) {
-        char direction[32];
-        if (sscanf(line, "%s %s %d", label, direction, &valInt) == 3) {
-            extern int FindCharIndex(char*); // in mCNavigator.cpp
-            int idx = FindCharIndex(direction);
-            if (idx < 6) {
-                neighborNodes[idx] = valInt;
-            }
-        }
+        sscanf(line, "%s %s %d", label, value, &valInt);
+        mCNavNode::SetNavLink(value, valInt);
     }
     else if (_strcmpi(label, "PLAY_ANIM") == 0) {
-        if (sscanf(line, "%s %s", label, value) == 2) {
-            if (strlen(value) >= 32) {
-                ShowError("mCNavNode::LBLParse() - anim name overflow '%s'", value);
-            }
-            strcpy(soundName, value);
-            flags |= 0x2;
+        sscanf(line, "%s %s", label, value);
+        if (strlen(value) >= 32) {
+            ShowError("mCNavNode::LBLParse() - anim name overflow '%s'", value);
         }
+        strcpy(soundName, value);
+        flags |= 0x2;
     }
     else if (_strcmpi(label, "SPRITE") == 0) {
-        if (sscanf(line, "%s %s %d", label, value, &valInt) == 3) {
-            AddSpriteList(value, valInt);
-        }
+        sscanf(line, "%s %s %d", label, value, &spriteId);
+        mCNavNode::AddSpriteList(value, spriteId);
     }
     else if (_strcmpi(label, "END") == 0) {
         return 1;

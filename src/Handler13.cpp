@@ -109,13 +109,13 @@ int Handler13::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x401FB0 */
 int Handler13::Exit(SC_Message* msg) {
-    MessageList* pList;
-    MessageNode* node;
-    TimedEvent* timedEvent;
-    TimedEvent* eventData;
     TimedEvent* pTimedEvent;
+    TimedEvent* eventData;
+    TimedEvent* timedEvent;
+    MessageNode* node;
+    MessageList* pList;
 
-    if (msg->targetAddress != handlerId) {
+    if (msg->targetAddress != Handler13::handlerId) {
         return 0;
     }
 
@@ -140,10 +140,7 @@ int Handler13::Exit(SC_Message* msg) {
         break;
 
     case 0x13:
-        if (msg->userPtr == 0) {
-            msg->Dump(0);
-            WriteToMessageLog("SC_Timer::Input");
-        } else {
+        if (msg->userPtr != 0) {
             pTimedEvent = new TimedEvent();
             pTimedEvent->m_duration = msg->field_b8;
             pTimedEvent->m_sourceAddress = msg->sourceAddress;
@@ -179,6 +176,9 @@ int Handler13::Exit(SC_Message* msg) {
             } else {
                 ((Queue*)pList)->Insert(pTimedEvent);
             }
+        } else {
+            msg->Dump(0);
+            WriteToMessageLog("SC_Timer::Input");
         }
         break;
 
@@ -190,25 +190,27 @@ int Handler13::Exit(SC_Message* msg) {
             WriteToMessageLog("queue fault 0103");
         }
         pList->current = pList->head;
-        while (pList->head != 0) {
-            node = (MessageNode*)pList->current;
-            timedEvent = 0;
-            if (node != 0) {
-                timedEvent = (TimedEvent*)node->data;
-            }
-            if (timedEvent->m_duration == pTimedEvent->m_duration) {
-                eventData = (TimedEvent*)((Queue*)pList)->Pop();
-                if (eventData != 0) {
-                    delete eventData;
+        if (pList->head != 0) {
+            do {
+                node = (MessageNode*)pList->current;
+                timedEvent = 0;
+                if (node != 0) {
+                    timedEvent = (TimedEvent*)node->data;
                 }
-                break;
-            }
-            if (pList->tail == node) {
-                break;
-            }
-            if (node != 0) {
-                pList->current = node->next;
-            }
+                if (timedEvent->m_duration == pTimedEvent->m_duration) {
+                    eventData = (TimedEvent*)((Queue*)pList)->Pop();
+                    if (eventData != 0) {
+                        delete eventData;
+                    }
+                    break;
+                }
+                if (pList->tail == node) {
+                    break;
+                }
+                if (node != 0) {
+                    pList->current = node->next;
+                }
+            } while (pList->current != 0);
         }
         break;
 

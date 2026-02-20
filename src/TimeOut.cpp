@@ -1,6 +1,23 @@
 #include "TimeOut.h"
 #include "string.h"
 
+/* Function start: 0x418F60 */
+TimeOut::~TimeOut()
+{
+    if (m_timer != 0)
+    {
+        delete m_timer;
+        m_timer = 0;
+    }
+}
+
+/* Function start: 0x418F90 */
+TimeOut::TimeOut()
+{
+    m_timer = new Timer();
+    Stop();
+}
+
 /* Function start: 0x419010 */
 void TimeOut::Stop()
 {

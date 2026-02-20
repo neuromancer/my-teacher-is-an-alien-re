@@ -13,9 +13,9 @@
 extern "C" {
 void ParsePath(const char *, char *, char *, char *, char *);
 char* __cdecl CDData_FormatPath(char* format, ...);  // 0x4195C0
-void __cdecl CDData_SetResolvedPath(const char* path); // 0x419620
+char* __cdecl CDData_SetResolvedPath(const char* path); // 0x419620
 int __cdecl FileExists(const char* path);           // 0x4195A0
-void __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
+int __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
 int __cdecl FUN_00430310(const char* path, int param_2); // 0x430310
 }
 
@@ -31,8 +31,8 @@ extern "C" char* __cdecl CDData_FormatPath(char* param_1, ...)
 }
 
 /* Function start: 0x419620 */
-extern "C" void __cdecl CDData_SetResolvedPath(const char* path) {
-    strcpy(g_CDData_0043697c->pathBuffer + 0x85, path);
+extern "C" char* __cdecl CDData_SetResolvedPath(const char* path) {
+    return strcpy((char*)g_CDData_0043697c + 0x145, path);
 }
 
 /* Function start: 0x421E40 */
@@ -96,43 +96,55 @@ extern "C" int __cdecl FUN_00430310(const char* path, int param_2) {
 }
 
 /* Function start: 0x419660 */
-extern "C" void __cdecl CopyFileContent(const char* src, const char* dest) {
-    int hSrc, hDest;
-    long totalLen;
+extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
+    int hSrc;
+    int hDest;
+    unsigned int totalLen;
     unsigned int totalRead;
     unsigned int chunk;
+    char* buf;
+    unsigned int sz;
 
-    hSrc = open(src, 0x8000 | 0); // O_BINARY | O_RDONLY
+    totalRead = 0;
+    hSrc = open(src, 0x8000, totalRead);
     if (hSrc < 0) {
         ShowError("Error Reading CD ROM, searching for %s", src);
     }
 
-    hDest = open(dest, 0x8000 | 0x301, 0x0040); // O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, S_IREAD
+    hDest = open(dest, 0x8301, totalRead);
     if (hDest < 0) {
         ShowError("Error writing temporary file. Please check disk space.%d", hDest);
     }
 
     totalLen = filelength(hSrc);
-    totalRead = 0;
+    if (totalLen >= 0x2000) {
+        chunk = 0x2000;
+    } else {
+        chunk = totalLen;
+    }
 
-    if (totalLen > 0) {
-        char* buffer = g_Buffer_00436964;
-        while (totalRead < (unsigned int)totalLen) {
-            chunk = (totalLen - totalRead > 0x2000) ? 0x2000 : (totalLen - totalRead);
-            
-            if (read(hSrc, buffer, chunk) != (int)chunk) {
+    buf = g_Buffer_00436964;
+    if (totalLen != 0) {
+        do {
+            sz = totalLen - totalRead;
+            if (sz >= chunk) {
+                sz = chunk;
+            }
+
+            if ((unsigned int)read(hSrc, buf, sz) != sz) {
                 ShowError("Error Reading CD");
             }
-            if (write(hDest, buffer, chunk) != (int)chunk) {
+            if ((unsigned int)write(hDest, buf, sz) != sz) {
                 ShowError("Error writing temporary file. Please check disk space.");
             }
-            totalRead += chunk;
-        }
+            totalRead += sz;
+        } while (totalLen > totalRead);
     }
 
     _flushall();
-    close(hSrc);
     close(hDest);
+    close(hSrc);
+    return 0;
 }
 
 /* Function start: 0x421F90 */

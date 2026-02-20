@@ -15,28 +15,35 @@ extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2);
 
 /* Function start: 0x4161B0 */
 Projectile::Projectile() : Sprite(0) {
+    int* pCurrent = &currentX;
+    int* pNext = &nextX;
+
     Projectile::startX = 0;
     Projectile::startY = 0;
-    Projectile::currentX = 0;
-    Projectile::currentY = 0;
-    Projectile::nextX = 0;
-    Projectile::nextY = 0;
-    Projectile::halfWidth = 0;
-    Projectile::halfHeight = 0;
-    Projectile::velocityX = 0;
-    Projectile::velocityY = 0;
+    pCurrent[0] = 0;
+    pCurrent[1] = 0;
+    pNext[0] = 0;
+
+    int* pVelocity = (int*)&velocityX;
+    int* pHalf = &halfWidth;
+
+    pNext[1] = 0;
+    pHalf[0] = 0;
+    pHalf[1] = 0;
+    pVelocity[0] = 0;
+    pVelocity[1] = 0;
     Projectile::active = 0;
     Projectile::field_0x104 = 0;
-    memset((char*)this + 0xd8, 0, 12 * 4);
+    memset(&startX, 0, 12 * 4);
 }
 
 /* Function start: 0x4162C0 */
 void Projectile::Launch() {
     int frameCount;
-    int mouseX;
     int mouseY;
-    int width;
+    int mouseX;
     int height;
+    int width;
     InputState* pMouse;
 
     Projectile::active = 1;
@@ -151,8 +158,8 @@ int Projectile::CheckCollision() {
                 do {
                     current = (HashNode*)*bucket;
                     if (current != 0) break;
-                    bucket = bucket + 1;
-                    bucketIdx = bucketIdx + 1;
+                    bucket++;
+                    bucketIdx++;
                 } while (bucketIdx < (unsigned int)hashTable->numBuckets);
             }
         }
@@ -165,8 +172,8 @@ int Projectile::CheckCollision() {
                 do {
                     next = (HashNode*)*bucket;
                     if (next != 0) break;
-                    bucket = bucket + 1;
-                    bucketIdx = bucketIdx + 1;
+                    bucket++;
+                    bucketIdx++;
                 } while (bucketIdx < (unsigned int)hashTable->numBuckets);
             }
         }
@@ -175,7 +182,7 @@ int Projectile::CheckCollision() {
         current = next;
 
         if (target != 0) {
-            if (target->CheckTimeInRangeParam(&nextX)) {
+            if (target->CheckTimeInRangeParam((int*)((char*)this + 0xe8))) {
                 target->UpdateProgress(1);
                 return 1;
             }

@@ -67,8 +67,7 @@ struct CommandType3 : public SoundCommand {
     virtual void Execute(GlyphRect* rect);
 };
 
-/* Function start: 0x409160 */
-// void ZBQueue::Insert(void* data) - Moved to LinkedList.h as inline
+// 0x409160: ZBQueue::InsertBeforeCurrent COMDAT duplicate (same as 0x41CB40, from different obj)
 
 /* Function start: 0x41BB20 */
 void ZBufferManager::QueueAnimationCleanup(void* anim)
@@ -76,16 +75,16 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
     void* wrapper;
     ZBQueue* queue;
 
-    if (m_state == 1) {
+    switch (m_state) {
+    case 1:
         if (anim != 0) {
             delete (Animation*)anim;
         }
         return;
-    }
-    if (m_state < 2) {
-        return;
-    }
-    if (m_state > 3) {
+    case 2:
+    case 3:
+        break;
+    default:
         return;
     }
 
@@ -94,8 +93,6 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
     }
 
     // Create 12-byte wrapper: [prev=0, next=0, data=Animation*]
-    // When cast to DrawEntry*, m_videoBuffer(offset 4) = 0 skips VBuffer cleanup
-    // and m_childObject(offset 8) = Animation* gets properly deleted
     wrapper = ::operator new(0xc);
     if (wrapper != 0) {
         ((int*)wrapper)[0] = 0;
@@ -113,18 +110,24 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
 
     if (queue->type == 1 || queue->type == 2) {
         if (queue->head != 0) {
-            while (1) {
+            do {
                 if (*(unsigned int*)queue->current->data < *(unsigned int*)wrapper) {
-                    queue->Insert(wrapper);
+                    queue->InsertNode(wrapper);
                     return;
                 }
-                if (queue->tail == queue->current) break;
-                queue->current = queue->current->next;
-            }
+                if (queue->tail == queue->current) {
+                    queue->PushNode(wrapper);
+                    return;
+                }
+                if (queue->current != 0) {
+                    queue->current = queue->current->next;
+                }
+            } while (queue->current != 0);
+            return;
         }
-        queue->Push(wrapper);
+        queue->InsertNode(wrapper);
     } else {
-        queue->Insert(wrapper);
+        queue->InsertBeforeCurrent(wrapper);
     }
 }
 
@@ -202,7 +205,6 @@ ZBufferManager::ZBufferManager() {
 /* Function start: 0x41B8E0 */
 void ZBufferManager::Cleanup() {
     ZBQueue* queue;
-    ZBQueueNode* node;
     void* data;
     int queueType;
 
@@ -210,6 +212,7 @@ void ZBufferManager::Cleanup() {
     queue = m_queueA0;
     if (queue->head != 0) {
         while (queue->head != 0) {
+            queue = m_queueA0;
             queueType = queue->type;
             if (queueType == 1 || queueType == 4) {
                 queue->current = queue->head;
@@ -219,7 +222,7 @@ void ZBufferManager::Cleanup() {
                 ShowError("bad queue type %lu", queueType);
             }
 
-            node = (ZBQueueNode*)queue->current;
+            ZBQueueNode* node = (ZBQueueNode*)queue->current;
             if (node != 0) {
                 if (queue->head == node) {
                     queue->head = node->next;
@@ -234,13 +237,13 @@ void ZBufferManager::Cleanup() {
                     node->next->prev = node->prev;
                 }
 
-                queue->GetCurrentData(); // line 82
+                queue->GetCurrentData();
                 node = (ZBQueueNode*)queue->current;
                 if (node != 0) {
-                    delete node; // line 87 calls 0x41CCE0
-                    queue->current = 0; // line 88
+                    delete node;
+                    queue->current = 0;
                 }
-                queue->current = queue->head; // line 92
+                queue->current = queue->head;
             }
         }
     }
@@ -249,17 +252,17 @@ void ZBufferManager::Cleanup() {
     queue = m_queueA0;
     if (queue != 0) {
         if (queue->head != 0) {
-            queue->current = queue->head; // line 108
+            queue->current = queue->head;
             while (queue->head != 0) {
-                data = queue->Pop(); // line 114 calls 0x401710
+                data = queue->Pop();
                 if (data != 0) {
                     SoundCommand* cmd = (SoundCommand*)data;
-                    cmd->SoundCommand::~SoundCommand(); // line 118 resets vtable
-                    operator delete(cmd); // line 119
+                    cmd->SoundCommand::~SoundCommand();
+                    operator delete(cmd);
                 }
             }
         }
-        delete queue;
+        operator delete(queue);
         m_queueA0 = 0;
     }
 
@@ -267,34 +270,34 @@ void ZBufferManager::Cleanup() {
     queue = m_queueA4;
     if (queue != 0) {
         if (queue->head != 0) {
-            queue->current = queue->head; // line 141
+            queue->current = queue->head;
             while (queue->head != 0) {
-                data = queue->Pop(); // line 147 calls 0x401790
+                data = queue->Pop();
                 if (data != 0) {
-                    ((ZBuffer*)data)->CleanUpVBuffer(); // line 152
-                    delete data; // line 154
+                    ((ZBuffer*)data)->CleanUpVBuffer();
+                    operator delete(data);
                 }
             }
         }
-        delete queue;
+        operator delete(queue);
         m_queueA4 = 0;
     }
 
-    // Fourth: drain items from m_queue9c (RenderEntry - virtual)
+    // Fourth: drain items from m_queue9c (RenderEntry)
     queue = m_queue9c;
     if (queue != 0) {
         if (queue->head != 0) {
-            queue->current = queue->head; // line 177
+            queue->current = queue->head;
             while (queue->head != 0) {
-                data = queue->Pop(); // line 183 calls 0x401810
+                data = queue->Pop();
                 if (data != 0) {
                     RenderEntry* entry = (RenderEntry*)data;
-                    entry->RenderEntry::~RenderEntry(); // line 188-190 (includes vtable reset and LAB_0041bae6)
-                    operator delete(entry); // line 193
+                    entry->RenderEntry::~RenderEntry();
+                    operator delete(entry);
                 }
             }
         }
-        delete queue;
+        operator delete(queue);
         m_queue9c = 0;
     }
 }

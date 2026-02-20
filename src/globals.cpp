@@ -226,6 +226,8 @@ int g_ClipRight_004374e2 = 0;
 int g_ClipTop_004374e6 = 0;
 int g_ClipBottom_004374ea = 0;
 
+int DAT_0043cb64 = 1;
+
 // Added for GameLoop::Run assembly match
 void* g_SmackSoundCheck_0044053c = 0;
 

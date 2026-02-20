@@ -40,8 +40,8 @@ SC_Combat1::SC_Combat1() {
     int i;
 
     // Get pointers to 0xa0 and 0xa8 fields
-    pA0 = &savedScreenX;
-    pA8 = &screenWidth;
+    pA0 = &savedScreen.x;
+    pA8 = &screenDim.x;
 
     // Manually set fields at 0xa0, 0xa4, 0xa8, 0xac to 0
     *pA0 = 0;
@@ -62,7 +62,7 @@ SC_Combat1::SC_Combat1() {
     *pA8 = 0x140;   // 320
     // handlerId is set to 16 at offset 0x88
     handlerId = 16;
-    screenHeight = 0xc8;   // 200
+    screenDim.y = 0xc8;   // 200
 }
 
 /* Function start: 0x410760 */
@@ -80,7 +80,6 @@ SC_Combat1::~SC_Combat1() {
 void SC_Combat1::Init(SC_Message* msg) {
     ZBQueue* pQueue;
     void* pNode;
-    int zState;
     ZBufferManager* pZBuf;
     InputManager* pInput;
 
@@ -92,7 +91,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     CopyCommandData(msg);
 
     pZBuf = g_ZBufferManager_0043698c;
-    zState = pZBuf->m_state;
+    savedRendererState = pZBuf->m_state;
     pZBuf->m_state = 1;
 
     // Clear queue at 0xa0
@@ -122,8 +121,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     // Clear queue at 0x9c
     pZBuf->m_queue9c->ClearList();
 
-    savedRendererState = zState;
-    if (msg != 0) {
+    if (msg != (SC_Message*)0) {
         field_8C = msg->data;
     }
 
@@ -132,33 +130,32 @@ void SC_Combat1::Init(SC_Message* msg) {
         VBuffer* pVB = g_WorkBuffer_00436974;
         int h = pVB->height;
         int w = pVB->width;
-        int sw = screenWidth;
-        savedScreenX = w;
-        savedScreenY = h;
-        InitWorkBuffer(sw, screenHeight);
+        int sw = screenDim.x;
+        savedScreen.x = w;
+        savedScreen.y = h;
+        InitWorkBuffer(sw, screenDim.y);
     }
 
     // Save and set clipping rect
     {
-        GlyphRect* pBounds;
+        int* pBounds;
         int b, r, t, l;
 
-        pInput = g_InputManager_00436968;
-        b = pInput->bounds.bottom;
-        r = pInput->bounds.right;
-        t = pInput->bounds.top;
-        l = pInput->bounds.left;
-        pBounds = &pInput->bounds;
+        pBounds = (int*)&g_InputManager_00436968->bounds;
+        b = pBounds[3];
+        r = pBounds[2];
+        t = pBounds[1];
+        l = pBounds[0];
 
         DAT_0043d130 = l;
         DAT_0043d134 = t;
         DAT_0043d138 = r;
         DAT_0043d13c = b;
 
-        pBounds->left = 0;
-        pBounds->top = 0;
-        pBounds->right = screenWidth - 1;
-        pBounds->bottom = screenHeight - 1;
+        pBounds[0] = 0;
+        pBounds[1] = 0;
+        pBounds[2] = screenDim.x - 1;
+        pBounds[3] = screenDim.y - 1;
     }
 
     // Copy filename and parse
@@ -192,7 +189,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     }
 
     // Restore work buffer to original size
-    InitWorkBuffer(savedScreenX, savedScreenY);
+    InitWorkBuffer(savedScreen.x, savedScreen.y);
 
     // Restore clipping rect
     {

@@ -6,22 +6,25 @@
 #include "MouseControl.h"
 #include "Memory.h"
 
+extern "C" char* CDData_FormatPath(char*, ...);
+
 /* Function start: 0x40F710 */
 Handler2::Handler2() {
-    // Handler base class zeros handlerId through field_9C via memset
-    // but we need to re-zero since we're about to set values
+    int* pA0;
+
+    pA0 = (int*)&palette;
 
     // Zero pointers at 0xA0-0xAC
-    palette = 0;
-    sprite = 0;
-    sample = 0;
-    field_AC = 0;
+    pA0[0] = 0;
+    pA0[1] = 0;
+    pA0[2] = 0;
+    pA0[3] = 0;
 
     handlerId = 2;
     field_8C = 1;
 
     palette = new Palette();
-    palette->Load("demo\\Dummy.col");
+    palette->Load(CDData_FormatPath("demo\\Dummy.col"));
 
     sprite = new Sprite("demo\\Dummy.smk");
     sprite->flags &= ~2;

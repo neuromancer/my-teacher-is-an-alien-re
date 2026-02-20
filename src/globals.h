@@ -595,7 +595,7 @@ extern unsigned int DAT_0043c760[];  // CRT error code mapping table [90 entries
 // extern void* PTR_DAT_0043c8e0; // (void*)0x0043DFF0
 // extern int DAT_0043c8f0; // { /* 4 bytes */ }
 // extern int DAT_0043c910; // { /* 4 bytes */ }
-// extern int DAT_0043cb64; // { /* 4 bytes */ }
+extern int DAT_0043cb64; // { /* 4 bytes */ }
 // extern int DAT_0043cba0; // { /* 4 bytes */ }
 // extern int DAT_0043cbb0; // { /* 4 bytes */ }
 // extern int DAT_0043cbb4; // { /* 4 bytes */ }

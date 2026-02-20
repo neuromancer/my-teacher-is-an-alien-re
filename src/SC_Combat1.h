@@ -2,6 +2,7 @@
 #define SC_COMBAT1_H
 
 #include "Handler.h"
+#include "InputManager.h"
 
 // Forward declaration
 class Parser;
@@ -43,10 +44,8 @@ public:
 
     // SC_Combat1-specific fields starting at 0xA0
     // Note: field_98 from Handler is used as isInitialized flag
-    int savedScreenX;       // 0xA0
-    int savedScreenY;       // 0xA4
-    int screenWidth;        // 0xA8 - default 320
-    int screenHeight;       // 0xAC - default 200
+    MousePoint savedScreen; // 0xA0 (savedScreenX=x, savedScreenY=y)
+    MousePoint screenDim;   // 0xA8 (screenWidth=x, screenHeight=y)
     char filename[64];      // 0xB0 - 0xEF
     int savedRendererState; // 0xF0
     Parser* scriptParser;   // 0xF4

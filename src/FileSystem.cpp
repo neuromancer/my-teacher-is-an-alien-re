@@ -10,8 +10,13 @@ extern "C" {
     int DateTimeToTimestamp(int year, int month, int day, int hour, int minute, int second);
 }
 
-static const char* g_WildcardChars = "*?";
-static const char* g_PathSeparator = "\\";
+extern char g_WildcardChars[];
+extern char g_PathSeparator[];
+
+extern "C" {
+    char* __cdecl GetFullPath(char *dst, const char *src, unsigned int maxlen);
+    void __cdecl SetErrorCode(unsigned int errorCode);
+}
 
 extern "C" {
 
@@ -44,15 +49,16 @@ int __cdecl ___dtoxmode(unsigned int attr, const unsigned char* filename)
 /* Function start: 0x426550 */
 int __cdecl FileStat(const unsigned char* filename, int* stat_buf)
 {
-    WIN32_FIND_DATAA findData;
-    HANDLE hFind;
-    FILETIME localTime;
     SYSTEMTIME sysTime;
-    int drive;
-    int mtime, atime, ctime;
+    FILETIME localTime;
+    WIN32_FIND_DATAA findData;
     char rootPath[260];
+    int drive;
+    int timestamp;
+    HANDLE hFind;
+    char* fullPath;
 
-    if (_mbspbrk(filename, (const unsigned char*)g_WildcardChars) != 0) {
+    if (_mbspbrk(filename, (const unsigned char*)"*?") != 0) {
         DAT_0043bdf0 = 2;
         g_ErrorCode_0043bdf4 = 2;
         return -1;
@@ -71,21 +77,21 @@ int __cdecl FileStat(const unsigned char* filename, int* stat_buf)
 
     hFind = FindFirstFileA((LPCSTR)filename, &findData);
     if (hFind == INVALID_HANDLE_VALUE) {
-        if (_mbspbrk(filename, (const unsigned char*)g_PathSeparator) != 0) {
-            strncpy(rootPath, (const char*)filename, 260);
-            rootPath[259] = 0;
-            if (strlen(rootPath) == 3) {
-                unsigned int driveType = GetDriveTypeA(rootPath);
-                if (driveType > 1) {
-                    findData.nFileSizeHigh = 0;
-                    findData.nFileSizeLow = 0;
-                    findData.cFileName[0] = 0;
-                    findData.dwFileAttributes = 0x10;
-                    mtime = DateTimeToTimestamp(1980, 1, 1, 0, 0, 0);
-                    stat_buf[7] = mtime;
-                    stat_buf[6] = mtime;
-                    stat_buf[8] = mtime;
-                    goto fill_stat;
+        if (_mbspbrk(filename, (const unsigned char*)"\\") != 0) {
+            fullPath = GetFullPath(rootPath, (const char*)filename, 0x104);
+            if (fullPath != 0) {
+                if (strlen(fullPath) == 3) {
+                    if (GetDriveTypeA(fullPath) > 1) {
+                        findData.nFileSizeHigh = 0;
+                        findData.nFileSizeLow = 0;
+                        findData.cFileName[0] = 0;
+                        findData.dwFileAttributes = 0x10;
+                        timestamp = DateTimeToTimestamp(1980, 1, 1, 0, 0, 0);
+                        stat_buf[7] = timestamp;
+                        stat_buf[6] = timestamp;
+                        stat_buf[8] = timestamp;
+                        goto fill_stat;
+                    }
                 }
             }
         }
@@ -96,38 +102,40 @@ int __cdecl FileStat(const unsigned char* filename, int* stat_buf)
 
     if (FileTimeToLocalFileTime(&findData.ftLastWriteTime, &localTime) == 0 ||
         FileTimeToSystemTime(&localTime, &sysTime) == 0) {
-        DWORD err = GetLastError();
+        SetErrorCode(GetLastError());
         FindClose(hFind);
         return -1;
     }
 
-    mtime = DateTimeToTimestamp(sysTime.wYear, sysTime.wMonth, sysTime.wDay,
+    timestamp = DateTimeToTimestamp(sysTime.wYear, sysTime.wMonth, sysTime.wDay,
                                 sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
-    stat_buf[7] = mtime;
+    stat_buf[7] = timestamp;
 
-    atime = mtime;
     if (findData.ftLastAccessTime.dwLowDateTime != 0 || findData.ftLastAccessTime.dwHighDateTime != 0) {
-        if (FileTimeToLocalFileTime(&findData.ftLastAccessTime, &localTime) != 0 &&
-            FileTimeToSystemTime(&localTime, &sysTime) != 0) {
-            atime = DateTimeToTimestamp(sysTime.wYear, sysTime.wMonth, sysTime.wDay,
-                                        sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
-        }
-    }
-    stat_buf[6] = atime;
-
-    if (findData.ftCreationTime.dwLowDateTime == 0 && findData.ftCreationTime.dwHighDateTime == 0) {
-        ctime = stat_buf[7];
-    } else {
-        if (FileTimeToLocalFileTime(&findData.ftCreationTime, &localTime) == 0 ||
+        if (FileTimeToLocalFileTime(&findData.ftLastAccessTime, &localTime) == 0 ||
             FileTimeToSystemTime(&localTime, &sysTime) == 0) {
-            DWORD err = GetLastError();
+            SetErrorCode(GetLastError());
             FindClose(hFind);
             return -1;
         }
-        ctime = DateTimeToTimestamp(sysTime.wYear, sysTime.wMonth, sysTime.wDay,
+        timestamp = DateTimeToTimestamp(sysTime.wYear, sysTime.wMonth, sysTime.wDay,
+                                        sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
+    }
+    stat_buf[6] = timestamp;
+
+    if (findData.ftCreationTime.dwLowDateTime == 0 && findData.ftCreationTime.dwHighDateTime == 0) {
+        timestamp = stat_buf[7];
+    } else {
+        if (FileTimeToLocalFileTime(&findData.ftCreationTime, &localTime) == 0 ||
+            FileTimeToSystemTime(&localTime, &sysTime) == 0) {
+            SetErrorCode(GetLastError());
+            FindClose(hFind);
+            return -1;
+        }
+        timestamp = DateTimeToTimestamp(sysTime.wYear, sysTime.wMonth, sysTime.wDay,
                                     sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
     }
-    stat_buf[8] = ctime;
+    stat_buf[8] = timestamp;
     FindClose(hFind);
 
 fill_stat:

@@ -107,29 +107,39 @@ int InputManager::PollMouse(InputState* state) {
     }
 
     state->prevButtons = state->buttons;
-    
+
     MousePoint localPos;
-    localPos.x = 0;
-    localPos.y = 0;
-    
+
     GetMousePosition(&localPos.x, &localPos.y);
 
     if (localPos.x == -1 || localPos.y == -1) {
         mouseValid = 0;
     } else {
-        if (bounds.left > localPos.x) {
-            localPos.x = bounds.left;
-        } else if (bounds.right < localPos.x) {
-            localPos.x = bounds.right;
+        {
+            int eax = bounds.left;
+            if (eax > localPos.x) goto clamp_x;
+            eax = bounds.right;
+            if (eax < localPos.x) goto clamp_x;
+            eax = localPos.x;
+            goto set_x;
+        clamp_x:
+            localPos.x = eax;
+        set_x:
+            state->x = eax;
         }
-        state->x = localPos.x;
 
-        if (bounds.top > localPos.y) {
-            localPos.y = bounds.top;
-        } else if (bounds.bottom < localPos.y) {
-            localPos.y = bounds.bottom;
+        {
+            int eax = bounds.top;
+            if (eax > localPos.y) goto clamp_y;
+            eax = bounds.bottom;
+            if (eax < localPos.y) goto clamp_y;
+            eax = localPos.y;
+            goto set_y;
+        clamp_y:
+            localPos.y = eax;
+        set_y:
+            state->y = eax;
         }
-        state->y = localPos.y;
 
         mouseValid = 1;
     }

@@ -359,7 +359,7 @@ void CheckDebug(void) {
             break;
           }
         }
-        if (0x18 < i) {
+        if (i >= 0x19) {
           ShowError("Missing the Teacher CD ROM");
         }
       }
@@ -422,87 +422,90 @@ int __cdecl CalculateBufferSize(int width, unsigned int height) {
 }
 
 /* Function start: 0x4261C0 */
-extern "C" void ParsePath(const char *param_1, char *param_2, char *param_3, char *param_4,
-               char *param_5) {
-  unsigned char bVar1;
-  unsigned char *_Source;
-  size_t sVar2;
-  unsigned char *pbVar3;
-  unsigned char *local_4;
+extern "C" void ParsePath(const char *fullPath, char *drive, char *dir, char *fname,
+               char *ext) {
+  unsigned char *lastSlash;
+  unsigned char *dotPos;
+  unsigned char *p;
+  unsigned char ch;
+  size_t len;
 
-  local_4 = (unsigned char *)0;
-  if (((unsigned char *)param_1)[1] == 0x3a) {
-    if (param_2 != (char *)0) {
-      _mbsnbcpy((unsigned char *)param_2, (unsigned char *)param_1, 2);
-      param_2[2] = '\0';
+  lastSlash = 0;
+  dotPos = 0;
+  if (((const unsigned char *)fullPath)[1] == 0x3a) {
+    if (drive != 0) {
+      _mbsnbcpy((unsigned char *)drive, (const unsigned char *)fullPath, 2);
+      drive[2] = '\0';
     }
-    param_1 = param_1 + 2;
+    fullPath = fullPath + 2;
   }
-  else if (param_2 != (char *)0) {
-    *param_2 = '\0';
+  else if (drive != 0) {
+    *drive = '\0';
   }
-  _Source = (unsigned char *)0;
-  pbVar3 = (unsigned char *)param_1;
-  if (*(unsigned char *)param_1 != 0) {
+  lastSlash = 0;
+  p = (unsigned char *)fullPath;
+  if (*p != 0) {
     do {
-      bVar1 = *pbVar3;
-      if ((_mbctype[bVar1 + 1] & 4) == 0) {
-        if ((bVar1 == 0x2f) || (bVar1 == 0x5c)) {
-          _Source = pbVar3 + 1;
+      ch = *p;
+      if ((_mbctype[ch + 1] & 4) == 0) {
+        if (ch == 0x2f || ch == 0x5c) {
+          lastSlash = p + 1;
         }
-        else if (bVar1 == 0x2e) {
-          local_4 = pbVar3;
+        else if (ch == 0x2e) {
+          dotPos = p;
         }
       }
       else {
-        pbVar3 = pbVar3 + 1;
+        p = p + 1;
       }
-      pbVar3 = pbVar3 + 1;
-    } while (*pbVar3 != 0);
+      p = p + 1;
+    } while (*p != 0);
   }
-  if (_Source == (unsigned char *)0) {
-    _Source = (unsigned char *)param_1;
-    if (param_3 != (char *)0) {
-      *param_3 = '\0';
-    }
-  }
-  else if (param_3 != (char *)0) {
-    sVar2 = (int)_Source - (int)param_1;
-    if (sVar2 >= 0xff) {
-      sVar2 = 0xff;
-    }
-    _mbsnbcpy((unsigned char *)param_3, (unsigned char *)param_1, sVar2);
-    param_3[sVar2] = '\0';
-  }
-  if ((local_4 == (unsigned char *)0) || (local_4 < _Source)) {
-    if (param_4 != (char *)0) {
-      sVar2 = (int)pbVar3 - (int)_Source;
-      if (sVar2 >= 0xff) {
-        sVar2 = 0xff;
+  if (lastSlash != 0) {
+    if (dir != 0) {
+      len = (size_t)lastSlash - (size_t)fullPath;
+      if (len >= 0xff) {
+        len = 0xff;
       }
-      _mbsnbcpy((unsigned char *)param_4, _Source, sVar2);
-      param_4[sVar2] = '\0';
+      _mbsnbcpy((unsigned char *)dir, (const unsigned char *)fullPath, len);
+      dir[len] = '\0';
     }
-    if (param_5 != (char *)0) {
-      *param_5 = '\0';
+    fullPath = (const char *)lastSlash;
+  }
+  else {
+    if (dir != 0) {
+      *dir = '\0';
+    }
+  }
+  if (dotPos == 0 || (unsigned int)dotPos < (unsigned int)fullPath) {
+    if (fname != 0) {
+      len = (size_t)p - (size_t)fullPath;
+      if (len >= 0xff) {
+        len = 0xff;
+      }
+      _mbsnbcpy((unsigned char *)fname, (const unsigned char *)fullPath, len);
+      fname[len] = '\0';
+    }
+    if (ext != 0) {
+      *ext = '\0';
     }
   }
   else {
-    if (param_4 != (char *)0) {
-      sVar2 = (int)local_4 - (int)_Source;
-      if (sVar2 >= 0xff) {
-        sVar2 = 0xff;
+    if (fname != 0) {
+      len = (size_t)dotPos - (size_t)fullPath;
+      if (len >= 0xff) {
+        len = 0xff;
       }
-      _mbsnbcpy((unsigned char *)param_4, _Source, sVar2);
-      param_4[sVar2] = '\0';
+      _mbsnbcpy((unsigned char *)fname, (const unsigned char *)fullPath, len);
+      fname[len] = '\0';
     }
-    if (param_5 != (char *)0) {
-      sVar2 = (int)pbVar3 - (int)local_4;
-      if (sVar2 >= 0xff) {
-        sVar2 = 0xff;
+    if (ext != 0) {
+      len = (size_t)p - (size_t)dotPos;
+      if (len >= 0xff) {
+        len = 0xff;
       }
-      _mbsnbcpy((unsigned char *)param_5, local_4, sVar2);
-      param_5[sVar2] = '\0';
+      _mbsnbcpy((unsigned char *)ext, dotPos, len);
+      ext[len] = '\0';
     }
   }
 }

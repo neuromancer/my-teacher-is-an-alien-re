@@ -60,44 +60,50 @@ mCNavigator::~mCNavigator()
     unsigned int i;
     void* block;
     void* next;
+    int n;
+    ObjectPool* pool;
 
-    if (navNodePool == 0) {
+    pool = navNodePool;
+    if (pool == 0) {
         goto check_sprite;
     }
 
-    if (navNodePool->memory == 0) {
-        goto free_memory;
-    }
-
-    if (navNodePool->size == 0) {
+    if (pool->memory == 0) {
         goto free_memory;
     }
 
     i = 0;
+    if (pool->size == 0) {
+        goto free_memory;
+    }
+
     do {
-        NavNode* node = ((NavNode**)navNodePool->memory)[i];
+        NavNode* node = ((NavNode**)pool->memory)[i];
         while (node) {
             CleanupObjectArray(&node->field_C, 1);
+            n = 0;
+            while (n--)
+                ;
             node = node->next;
         }
         i++;
-    } while (i < navNodePool->size);
+    } while (i < pool->size);
 
 free_memory:
-    delete navNodePool->memory;
-    navNodePool->memory = 0;
-    navNodePool->allocatedCount = 0;
-    navNodePool->freeList = 0;
+    delete pool->memory;
+    pool->memory = 0;
+    pool->allocatedCount = 0;
+    pool->freeList = 0;
 
-    block = navNodePool->memoryBlock;
+    block = pool->memoryBlock;
     while (block) {
         next = *(void**)block;
         delete block;
         block = next;
     }
-    navNodePool->memoryBlock = 0;
+    pool->memoryBlock = 0;
 
-    delete navNodePool;
+    delete pool;
     navNodePool = 0;
 
 check_sprite:
@@ -120,35 +126,49 @@ void mCNavigator::SetBearing(char* param_1)
 /* Function start: 0x413840 */
 void mCNavigator::OnProcessEnd()
 {
+	unsigned int h;
+	NavNode* n;
+
 	if (sprite) {
 		sprite->Init();
 	}
 
 	ObjectPool* pool = navNodePool;
-	if (pool) {
-		int id = startingNode;
-		unsigned int h = (unsigned int)id >> 4;
-		h %= pool->size;
+	if (pool == 0) {
+		return;
+	}
 
-		NavNode* n = 0;
-		if (pool->memory) {
-			n = ((NavNode**)pool->memory)[h];
-			while (n) {
-				if (n->field_8 == id) {
-					break;
-				}
-				n = n->next;
-			}
-		}
+	int id = startingNode;
+	h = ((unsigned int)id >> 4) % pool->size;
 
-		if (n) {
-			currentNode = n->field_C;
-		}
+	if (pool->memory == 0) {
+		goto not_found;
+	}
+	n = ((NavNode**)pool->memory)[h];
+	goto loop_test;
 
-		field_A0 = id;
-		if (currentNode) {
-			g_Sprite_004360a0 = sprite;
-		}
+loop_body:
+	n = (NavNode*)n->next;
+loop_test:
+	if (n == 0) {
+		goto not_found;
+	}
+	if (n->field_8 == id) {
+		goto found;
+	}
+	goto loop_body;
+
+not_found:
+	n = 0;
+
+found:
+	if (n) {
+		currentNode = n->field_C;
+	}
+
+	field_A0 = id;
+	if (currentNode) {
+		g_Sprite_004360a0 = sprite;
 	}
 }
 
@@ -158,6 +178,7 @@ int mCNavigator::LBLParse(char* param_1)
 	char token[32];
 	char value[128];
 	mCNavNode* parser;
+	unsigned int h;
 
 	value[0] = '\0';
 	token[0] = '\0';
@@ -178,51 +199,75 @@ int mCNavigator::LBLParse(char* param_1)
 			ShowError("mCNavigator::LoadNodes() - Invalid Node Handle (%d)", 0);
 		}
 
-		unsigned int handle = parser->nodeHandle;
-		ObjectPool* pool = navNodePool;
-		unsigned int h = (handle >> 4) % pool->size;
+		{
+			unsigned int handle = parser->nodeHandle;
+			ObjectPool* pool = navNodePool;
+			h = (handle >> 4) % pool->size;
 
-		NavNode* node = 0;
-		if (pool->memory) {
-			node = ((NavNode**)pool->memory)[h];
-			while (node) {
-				if (node->field_8 == handle) {
-					break;
-				}
-				node = node->next;
-			}
-		}
-
-		if (node) {
-			ShowError("mCNavigator::LoadNodes() - %s has a dublicate node handle (%d)", parser->nodeName, handle);
-		}
-
-		handle = parser->nodeHandle;
-		pool = navNodePool;
-		h = (handle >> 4) % pool->size;
-		
-		node = 0;
-		if (pool->memory) {
-			node = ((NavNode**)pool->memory)[h];
-			while (node) {
-				if (node->field_8 == handle) {
-					break;
-				}
-				node = node->next;
-			}
-		}
-
-		if (node == 0) {
+			NavNode* node = 0;
 			if (pool->memory == 0) {
-				pool->MemoryPool_Allocate(pool->size, 1);
+				goto lookup1_not_found;
 			}
-			node = (NavNode*)pool->Allocate_2();
-			node->field_4 = h;
-			node->field_8 = handle;
-			node->next = ((NavNode**)pool->memory)[h];
-			((NavNode**)pool->memory)[h] = node;
+			node = ((NavNode**)pool->memory)[h];
+			goto lookup1_test;
+
+		lookup1_next:
+			node = (NavNode*)node->next;
+		lookup1_test:
+			if (node == 0) {
+				goto lookup1_not_found;
+			}
+			if (node->field_8 == handle) {
+				goto lookup1_found;
+			}
+			goto lookup1_next;
+
+		lookup1_not_found:
+			node = 0;
+
+		lookup1_found:
+			if (node) {
+				ShowError("mCNavigator::LoadNodes() - %s has a dublicate node handle (%d)", parser->nodeName, handle);
+			}
+
+			handle = parser->nodeHandle;
+			pool = navNodePool;
+			h = (handle >> 4) % pool->size;
+
+			node = 0;
+			if (pool->memory == 0) {
+				goto lookup2_not_found;
+			}
+			node = ((NavNode**)pool->memory)[h];
+			goto lookup2_test;
+
+		lookup2_next:
+			node = (NavNode*)node->next;
+		lookup2_test:
+			if (node == 0) {
+				goto lookup2_not_found;
+			}
+			if (node->field_8 == handle) {
+				goto lookup2_found;
+			}
+			goto lookup2_next;
+
+		lookup2_not_found:
+			node = 0;
+
+		lookup2_found:
+			if (node == 0) {
+				if (pool->memory == 0) {
+					pool->MemoryPool_Allocate(pool->size, 1);
+				}
+				node = (NavNode*)pool->Allocate_2();
+				node->field_4 = h;
+				node->field_8 = handle;
+				node->next = ((NavNode**)pool->memory)[h];
+				((NavNode**)pool->memory)[h] = node;
+			}
+			node->field_C = parser;
 		}
-		node->field_C = parser;
 	}
 	else if (_strcmpi(token, "SPRITE") == 0) {
 		sprite = new Sprite(0);
@@ -235,7 +280,7 @@ int mCNavigator::LBLParse(char* param_1)
 		return 1;
 	}
 	else {
-		return Parser::LBLParse("mCNavigator");
+		Parser::LBLParse("mCNavigator");
 	}
 
 	return 0;
@@ -244,6 +289,9 @@ int mCNavigator::LBLParse(char* param_1)
 /* Function start: 0x413BC0 */
 int mCNavigator::Update()
 {
+	unsigned int h;
+	NavNode* node;
+
 	if (currentNode == 0) {
 		return 0;
 	}
@@ -253,21 +301,30 @@ int mCNavigator::Update()
 		int nextNodeId = ((mCNavNode*)currentNode)->GetNextNode();
 		ObjectPool* pool = navNodePool;
 		int handle = ((mCNavNode*)currentNode)->nodeHandle;
-		unsigned int h = (unsigned int)nextNodeId >> 4;
 		field_A0 = handle;
-		h %= pool->size;
+		h = ((unsigned int)nextNodeId >> 4) % pool->size;
 
-		NavNode* node = 0;
-		if (pool->memory) {
-			node = ((NavNode**)pool->memory)[h];
-			while (node) {
-				if (node->field_8 == nextNodeId) {
-					break;
-				}
-				node = node->next;
-			}
+		if (pool->memory == 0) {
+			goto not_found;
 		}
+		node = ((NavNode**)pool->memory)[h];
+		goto loop_test;
 
+	loop_body:
+		node = (NavNode*)node->next;
+	loop_test:
+		if (node == 0) {
+			goto not_found;
+		}
+		if (node->field_8 == nextNodeId) {
+			goto found;
+		}
+		goto loop_body;
+
+	not_found:
+		node = 0;
+
+	found:
 		if (node == 0) {
 			return 2;
 		}

@@ -25,6 +25,7 @@ public:
     int Activate();
     int Update();
     int GetNextNode();
+    void SetNavLink(char* direction, int nodeId);
     virtual int LBLParse(char*);
     void AddSpriteList(char* name, int id);
 };

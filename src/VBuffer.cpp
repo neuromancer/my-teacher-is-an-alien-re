@@ -232,14 +232,17 @@ void VBuffer::TPaste(int param_1, int param_2, int param_3, int param_4, int par
 /* Function start: 0x41B310 */
 void __cdecl BlitTransparentRows(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor)
 {
-    int width = (srcX2 - srcX1) + 1;
-    int height = (srcY2 - srcY1) + 1;
-    
-    int srcOffset = (srcBuffer->clip_y2 - srcY2) * srcBuffer->width + srcX1;
-    char* srcRow = (char*)srcBuffer->GetData() + srcOffset;
+    int width;
+    int height;
+    char* srcRow;
+    char* destRow;
 
-    int destOffset = (destBuffer->clip_y2 - destY) * destBuffer->width + destX;
-    char* destRow = (char*)destBuffer->GetData() + destOffset;
+    width = (srcX2 - srcX1) + 1;
+    height = (srcY2 - srcY1) + 1;
+
+    srcRow = (char*)srcBuffer->GetData() + (srcBuffer->clip_y2 - srcY2) * srcBuffer->width + srcX1;
+
+    destRow = (char*)destBuffer->GetData() + (destBuffer->clip_y2 - destY) * destBuffer->width + destX;
 
     if (height > 0) {
         do {
@@ -249,7 +252,7 @@ void __cdecl BlitTransparentRows(int srcX1, int srcX2, int srcY1, int srcY2, int
             height--;
         } while (height != 0);
     }
-    
+
     destBuffer->Lock();
     srcBuffer->Lock();
 }

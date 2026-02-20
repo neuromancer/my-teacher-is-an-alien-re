@@ -4,6 +4,7 @@
 #include "Handler.h"
 #include "Timer.h"
 #include "Sprite.h"
+#include "GlyphRect.h"
 
 // SearchScreen - Command 5 Handler (Game State Handler)
 // Size: 0xF0
@@ -35,16 +36,10 @@ public:
     int selectedRow;    // 0xBC - currently selected row index
 
     // Up scroll rectangle (left, top, right, bottom)
-    int upScrollLeft;   // 0xC0
-    int upScrollTop;    // 0xC4
-    int upScrollRight;  // 0xC8
-    int upScrollBottom; // 0xCC
+    GlyphRect upScroll;   // 0xC0-0xCF
 
     // Down scroll rectangle (left, top, right, bottom)
-    int downScrollLeft;   // 0xD0
-    int downScrollTop;    // 0xD4
-    int downScrollRight;  // 0xD8
-    int downScrollBottom; // 0xDC
+    GlyphRect downScroll; // 0xD0-0xDF
 
     // Text layout
     int textX;          // 0xE0 - x position for state labels

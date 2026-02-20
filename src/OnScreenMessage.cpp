@@ -7,7 +7,6 @@
 /* Function start: 0x40A1D0 */
 OnScreenMessage::OnScreenMessage(char* message, unsigned int dur)
 {
-    new(&timer) Timer();
     memset(this, 0, sizeof(OnScreenMessage));
     if (message != (char*)0) {
         strcpy(text, message);

@@ -10,18 +10,22 @@
 
 /* Function start: 0x40FB80 */
 SearchScreen::SearchScreen() {
-    // Handler base class zeros handlerId through field_9C via memset
-    // Timer constructor called implicitly
+    int* pUp;
+    int* pDown;
 
-    // Zero 8 dwords at 0xC0-0xDF
-    upScrollLeft = 0;
-    upScrollTop = 0;
-    upScrollRight = 0;
-    upScrollBottom = 0;
-    downScrollLeft = 0;
-    downScrollTop = 0;
-    downScrollRight = 0;
-    downScrollBottom = 0;
+    // Zero upScroll rect (4 dwords at 0xC0)
+    pUp = &upScroll.left;
+    pUp[0] = 0;
+    pUp[1] = 0;
+    pUp[2] = 0;
+    pUp[3] = 0;
+
+    // Zero downScroll rect (4 dwords at 0xD0)
+    pDown = &downScroll.left;
+    pDown[0] = 0;
+    pDown[1] = 0;
+    pDown[2] = 0;
+    pDown[3] = 0;
 
     // Zero 0x14 dwords (80 bytes) at 0xA0, overwriting timer
     memset(&timer, 0, 0x14 * sizeof(int));
@@ -31,17 +35,17 @@ SearchScreen::SearchScreen() {
     // Reset Timer
     timer.Reset();
 
-    // Set rectangle fields
+    // Set fields
     scrollOffset = 0;
     selectedRow = 0;
-    upScrollLeft = 0;
-    upScrollTop = 0;
-    upScrollRight = 0x27f;
-    downScrollLeft = 0;
-    downScrollRight = 0x27f;
-    upScrollBottom = 0x14;
-    downScrollTop = 0x1cb;
-    downScrollBottom = 0x1df;
+    upScroll.left = 0;
+    upScroll.top = 0;
+    upScroll.right = 0x27f;
+    downScroll.left = 0;
+    downScroll.right = 0x27f;
+    upScroll.bottom = 0x14;
+    downScroll.top = 0x1cb;
+    downScroll.bottom = 0x1df;
     textX = 10;
     textY = 0x1d;
     rowHeight = 0x1e;
@@ -53,7 +57,7 @@ SearchScreen::SearchScreen() {
 
 /* Function start: 0x40FD70 */
 SearchScreen::~SearchScreen() {
-    if (sprite) {
+    if (sprite != 0) {
         delete sprite;
         sprite = 0;
     }
@@ -78,56 +82,58 @@ int SearchScreen::ShutDown(SC_Message* msg) {
 /* Function start: 0x40FE90 */
 void SearchScreen::Update(int param1, int param2) {
     int idx;
-    int local_1c[4];
+    GlyphRect localRect;
     Sprite* spr;
     char* stateStr;
     int y;
-
-    local_1c[0] = 0;
-    local_1c[1] = 0;
-    local_1c[2] = 0;
-    local_1c[3] = 0;
+    GameState* pGameState;
+    int rowIdx;
 
     if (timer.Update() > 10000) {
         SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
     }
 
-    if (handlerId == param2) {
-        spr = sprite;
-        if (spr != 0) {
-            spr->Do(spr->loc_x, spr->loc_y, 1.0);
-        }
-        idx = scrollOffset;
-        if (idx < scrollOffset + 0xe) {
-            do {
-                stateStr = g_GameState_00436998->GetState(idx);
-                if (stateStr == 0) {
-                    sprintf(g_Buffer_00436960, "\"NOLABEL\"");
-                } else {
-                    stateStr = g_GameState_00436998->GetState(idx);
-                    sprintf(g_Buffer_00436960, "%s", stateStr);
-                }
-                y = ((idx - scrollOffset) + 1) * rowHeight + textY;
-                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX, y, 10000, 8);
-
-                if (idx > 0 && g_GameState_00436998->maxStates <= idx) {
-                    ShowError("GameState Error  #%d", 1);
-                }
-                sprintf(g_Buffer_00436960, "%d", g_GameState_00436998->stateValues[idx]);
-                g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX + 0x15e, y, 10000, 8);
-
-                int rowIdx = idx - scrollOffset;
-                int top = rowIdx * rowHeight + textY;
-                int bottom = (rowIdx + 1) * rowHeight + textY;
-
-                if (selectedRow == idx) {
-                    g_ZBufferManager_0043698c->DrawRect(0, top, 0x27f, bottom, 0x28, 8, 1);
-                }
-                idx = idx + 1;
-            } while (idx < scrollOffset + 0xe);
-        }
-        g_Mouse_00436978->DrawCursor();
+    if (handlerId != param2) {
+        return;
     }
+    spr = sprite;
+    if (spr != 0) {
+        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+    }
+    idx = scrollOffset;
+    if (idx < scrollOffset + 0xe) {
+        do {
+            stateStr = g_GameState_00436998->GetState(idx);
+            if (stateStr != 0) {
+                stateStr = g_GameState_00436998->GetState(idx);
+                sprintf(g_Buffer_00436960, "%s", stateStr);
+            } else {
+                sprintf(g_Buffer_00436960, "\"NOLABEL\"");
+            }
+            y = (idx - scrollOffset + 1) * rowHeight + textY;
+            g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX, y, 10000, 8);
+
+            pGameState = g_GameState_00436998;
+            if (idx > 0 && pGameState->maxStates <= idx) {
+                ShowError("GameState Error  #%d", 1);
+            }
+            sprintf(g_Buffer_00436960, "%d", pGameState->stateValues[idx]);
+            g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX + 0x15e, y, 10000, 8);
+
+            rowIdx = idx - scrollOffset;
+            localRect.left = 0;
+            localRect.right = 0x27f;
+            localRect.top = rowIdx * rowHeight + textY;
+            localRect.bottom = (rowIdx + 1) * rowHeight + textY;
+
+            if (selectedRow != idx) {
+            } else {
+                g_ZBufferManager_0043698c->DrawRect(0, localRect.top, 0x27f, localRect.bottom, 0x28, 8, 1);
+            }
+            idx = idx + 1;
+        } while (idx < scrollOffset + 0xe);
+    }
+    g_Mouse_00436978->DrawCursor();
 }
 
 /* Function start: 0x4100E0 */
@@ -141,7 +147,8 @@ int SearchScreen::AddMessage(SC_Message* msg) {
     SearchScreen::WriteMessageAddress(msg);
 
     if (msg->field_b4 != 0) {
-        if (msg->field_b4 == 0x44) {
+        switch (msg->field_b4) {
+        case 0x44:
             stateIdx = selectedRow;
             pGameState = g_GameState_00436998;
             if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
@@ -149,17 +156,17 @@ int SearchScreen::AddMessage(SC_Message* msg) {
             }
             pGameState->stateValues[stateIdx]--;
             return 1;
-        }
-        if (msg->field_b4 != 0x49) {
+        case 0x49:
+            stateIdx = selectedRow;
+            pGameState = g_GameState_00436998;
+            if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
+                ShowError("GameState Error  #%d", 1);
+            }
+            pGameState->stateValues[stateIdx]++;
+            return 1;
+        default:
             return 1;
         }
-        stateIdx = selectedRow;
-        pGameState = g_GameState_00436998;
-        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
-            ShowError("GameState Error  #%d", 1);
-        }
-        pGameState->stateValues[stateIdx]++;
-        return 1;
     }
     if (msg->mouseX <= 1) {
         if (msg->mouseY > 1) {
@@ -168,8 +175,8 @@ int SearchScreen::AddMessage(SC_Message* msg) {
         return 1;
     }
     clickX = msg->clickPos.x;
-    if (upScrollLeft > clickX || upScrollRight < clickX ||
-        upScrollTop > msg->clickPos.y || upScrollBottom < msg->clickPos.y) {
+    if (upScroll.left > clickX || upScroll.right < clickX ||
+        upScroll.top > msg->clickPos.y || upScroll.bottom < msg->clickPos.y) {
         inRect = 0;
     } else {
         inRect = 1;
@@ -184,8 +191,8 @@ int SearchScreen::AddMessage(SC_Message* msg) {
         }
         return 1;
     }
-    if (downScrollLeft > clickX || downScrollRight < clickX ||
-        downScrollTop > msg->clickPos.y || downScrollBottom < msg->clickPos.y) {
+    if (downScroll.left > clickX || downScroll.right < clickX ||
+        downScroll.top > msg->clickPos.y || downScroll.bottom < msg->clickPos.y) {
         inRect = 0;
     } else {
         inRect = 1;
@@ -215,6 +222,8 @@ int SearchScreen::AddMessage(SC_Message* msg) {
 /* Function start: 0x4102E0 */
 int SearchScreen::Exit(SC_Message* msg) {
     int stateIdx;
+    GameState* pGameState;
+    int param1;
 
     if (msg->targetAddress != handlerId) {
         return 0;
@@ -228,62 +237,69 @@ int SearchScreen::Exit(SC_Message* msg) {
     case 1:
         SC_Message_Send(field_90, field_94, handlerId, field_8C, 5, 0, 0, 0, 0, 0);
         return 1;
-    case 0xd:  // Toggle
+    case 0xd:
         stateIdx = msg->sourceAddress;
-        if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        pGameState = g_GameState_00436998;
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
-        if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
-        if (g_GameState_00436998->stateValues[stateIdx] == 0) {
-            if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        if (pGameState->stateValues[stateIdx] == 0) {
+            if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
                 ShowError("GameState Error  #%d", 1);
             }
-            g_GameState_00436998->stateValues[stateIdx] = 1;
+            pGameState->stateValues[stateIdx] = 1;
             return 1;
         }
-        if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
-        g_GameState_00436998->stateValues[stateIdx] = 0;
+        pGameState->stateValues[stateIdx] = 0;
         return 1;
-    case 0xe:  // Set to 1
+    case 0xe:
         stateIdx = msg->sourceAddress;
-        if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        pGameState = g_GameState_00436998;
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
-        g_GameState_00436998->stateValues[stateIdx] = 1;
+        pGameState->stateValues[stateIdx] = 1;
         return 1;
-    case 0xf:  // Set to 0
+    case 0xf:
         stateIdx = msg->sourceAddress;
-        if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        pGameState = g_GameState_00436998;
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
-        g_GameState_00436998->stateValues[stateIdx] = 0;
+        pGameState->stateValues[stateIdx] = 0;
         return 1;
-    case 0x10:  // Increment
+    case 0x10:
         stateIdx = msg->sourceAddress;
-        if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        pGameState = g_GameState_00436998;
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
-        g_GameState_00436998->stateValues[stateIdx]++;
+        pGameState->stateValues[stateIdx]++;
         return 1;
-    case 0x11:  // Decrement
+    case 0x11:
         stateIdx = msg->sourceAddress;
-        if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        pGameState = g_GameState_00436998;
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
-        g_GameState_00436998->stateValues[stateIdx]--;
+        pGameState->stateValues[stateIdx]--;
         return 1;
-    case 0x12:  // Set to value
+    case 0x12:
+        param1 = msg->param1;
+        pGameState = g_GameState_00436998;
         stateIdx = msg->sourceAddress;
-        if (stateIdx > 0 && g_GameState_00436998->maxStates <= stateIdx) {
+        if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
-        g_GameState_00436998->stateValues[stateIdx] = msg->param1;
+        pGameState->stateValues[stateIdx] = param1;
         return 1;
-    case 0x1b:  // Exit
+    case 0x1b:
         SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
         return 1;
     case 0x1c:
@@ -299,11 +315,7 @@ int SearchScreen::Exit(SC_Message* msg) {
 
 /* Function start: 0x410610 */
 extern "C" void ClearGameStateSave() {
-    int* p = &DAT_0043d130;
-    p[0] = 0;
-    p[1] = 0;
-    p[2] = 0;
-    p[3] = 0;
+    memset(&DAT_0043d130, 0, 16);
 }
 
 static void AtExitHandler() {}

@@ -4,6 +4,7 @@
 #include "Animation.h"
 #include "EngineSubsystems.h"
 #include "CursorState.h"
+#include <string.h>
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);

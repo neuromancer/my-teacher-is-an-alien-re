@@ -6,6 +6,8 @@
 class TimeOut
 {
 public:
+    TimeOut();
+    ~TimeOut();
     void Start(int timeout);
     int IsTimeOut();
     void Stop();

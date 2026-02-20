@@ -410,11 +410,15 @@ void Handler4::DisplayMap() {
 
 /* Function start: 0x40F580 */
 void Handler4::DisplayLitDoors() {
-    for (int i = 0; i < 3; i++) {
+    int i;
+    for (i = 0; i < 3; i++) {
         if (floorStates[i] != 0) {
             litdoors->SetState2(i);
-            int x = (i == 1) ? (0x138 - 0xa6) : ((i == 2) ? 0x138 : 0);
-            int y = (i == 1) ? (0x60 + 0xe) : 0x60;
+            int x = 0;
+            if (i != 0) {
+                x = ((unsigned int)(i - 1) < 1 ? 0xffffff5a : 0) + 0x138;
+            }
+            int y = ((unsigned int)(i - 1) < 1 ? 0xe : 0) + 0x60;
             litdoors->Do(x, y, 1.0);
         }
     }

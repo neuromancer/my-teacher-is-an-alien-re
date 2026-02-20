@@ -2,6 +2,7 @@
 #define ROCKTHROWER_H
 
 #include "Parser.h"
+#include <string.h>
 
 class Projectile;
 
@@ -23,6 +24,17 @@ public:
     int field_0xa0;     // 0xa0
     int field_0xa4;     // 0xa4
 
+    Weapon() {
+        m_crosshairX = 0;
+        m_crosshairY = 0;
+        memset(&m_posX, 0, 8 * 4);
+        field_0x94 = 0;
+        field_0xa4 = 0;
+        m_posX = 0x64;
+        field_0xa0 = 0;
+        m_posY = 0xdc;
+        m_posZ = 0xc7;
+    }
     virtual ~Weapon();
     virtual void OnHit();           // 0x415E00 - vtable[4]
     virtual void DrawCrosshairs();  // vtable[5] - base: 0x411930

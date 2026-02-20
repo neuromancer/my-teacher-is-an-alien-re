@@ -18,8 +18,11 @@ PooledEvent* PooledEvent::CopyFrom(const PooledEvent* other)
     }
 
     field_0x30 = other->field_0x30;
-    field_0x38 = other->field_0x38;
-    field_0x3c = other->field_0x3c;
+
+    int* srcPair = (int*)&other->field_0x38;
+    int* dstPair = (int*)&field_0x38;
+    dstPair[0] = srcPair[0];
+    dstPair[1] = srcPair[1];
 
     for (i = 0; i < 0x40; i++) {
         m_data_0x40[i] = other->m_data_0x40[i];
@@ -116,13 +119,13 @@ void Queue::InsertAtCurrent(void* data)
 /* Function start: 0x40D2A0 */
 TimedEventPool::~TimedEventPool()
 {
-    SC_Message* msg;
     int counter;
+    SC_Message* msg;
     int tmp;
-    PooledEvent* nextBlock;
 
     // Iterate through active events list (linked via next pointer)
-    for (PooledEvent* node = list.head; node != 0; node = node->next) {
+    PooledEvent* node = list.head;
+    while (node != 0) {
         // Get embedded SC_Message at offset +8
         msg = node->GetEmbeddedSCMessage();
         counter = 0;
@@ -133,6 +136,7 @@ TimedEventPool::~TimedEventPool()
             tmp = counter;
             counter--;
         } while (tmp != 0);
+        node = node->next;
     }
 
     // Clear pool state fields
@@ -141,10 +145,11 @@ TimedEventPool::~TimedEventPool()
     list.tail = 0;
     list.head = 0;
 
-    // Free pool memory blocks (linked via next pointer)
-    for (PooledEvent* poolBlock = m_pool; poolBlock != 0; poolBlock = nextBlock) {
-        nextBlock = poolBlock->next;
-        delete poolBlock;
+    // Free pool memory blocks (linked via first dword as next pointer)
+    for (PooledEvent* poolBlock = m_pool; poolBlock != 0; ) {
+        PooledEvent* nextBlock = poolBlock->next;
+        FreeMemory(poolBlock);
+        poolBlock = nextBlock;
     }
     m_pool = 0;
 }
@@ -158,78 +163,36 @@ void* Queue::GetCurrentData()
 /* Function start: 0x417C50 */
 SC_Message* TimedEventPool::PopSafe(SC_Message* buffer)
 {
+    MousePoint completed;
+    completed.x = 0;
     Pop(buffer);
+    completed.x |= 1;
     return buffer;
 }
 
 /* Function start: 0x4185C0 */
 SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 {
-    // Local variables matching the assembly stack layout
-    TimedEventPool* local_14;     // [EBP-0x10] - this pointer
-    PooledEvent* local_18;        // [EBP-0x14] - head node pointer
-    int local_1c;                 // [EBP-0x18] - success flag
-    
-    // Local SC_Message on stack for intermediate copy
-    // This will generate SEH due to stack object with destructor
-    SC_Message local_d8(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    
-    local_14 = this;
-    local_18 = list.head;           // ECX = *this
-    local_1c = 0;                          // EDX = 0
-    
-    // Get embedded SC_Message at offset 8 from head
-    SC_Message* srcMsg = local_18->GetEmbeddedSCMessage();
-    
-    // Copy from srcMsg to local_d8 using field access
-    local_d8.m_subObject = srcMsg->m_subObject;
-    local_d8.isProcessingKey = srcMsg->isProcessingKey;
+    TimedEventPool* pool;
+    PooledEvent* headNode;
+    volatile int completed;
 
-    // Copy currentKey[32]
-    unsigned int idx;
-    for (idx = 0; idx < 0x20; idx++) {
-        local_d8.currentKey[idx] = srcMsg->currentKey[idx];
-    }
+    pool = this;
+    headNode = (PooledEvent*)list.head;
+    completed = 0;
 
-    local_d8.lineNumber = srcMsg->lineNumber;
-    local_d8.savedFilePos = srcMsg->savedFilePos;
-    local_d8.field_0x3c = srcMsg->field_0x3c;
+    SC_Message* srcMsg = headNode->GetEmbeddedSCMessage();
+    SC_Message local_msg = *srcMsg;
 
-    // Copy filename[64]
-    for (idx = 0; idx < 0x40; idx++) {
-        local_d8.filename[idx] = srcMsg->filename[idx];
-    }
-    
-    local_d8.pFile = srcMsg->pFile;
-    
-    local_d8.targetAddress = srcMsg->targetAddress;
-    local_d8.sourceAddress = srcMsg->sourceAddress;
-    local_d8.command = srcMsg->command;
-    local_d8.data = srcMsg->data;
-    local_d8.priority = srcMsg->priority;
-    local_d8.param1 = srcMsg->param1;
-    local_d8.param2 = srcMsg->param2;
-    local_d8.clickPos.x = srcMsg->clickPos.x;
-    local_d8.clickPos.y = srcMsg->clickPos.y;
-    local_d8.mouseX = srcMsg->mouseX;
-    local_d8.mouseY = srcMsg->mouseY;
-    local_d8.field_b4 = srcMsg->field_b4;
-    local_d8.field_b8 = srcMsg->field_b8;
-    local_d8.userPtr = srcMsg->userPtr;
-
-    // Update list head: list.head = head->next
-    PooledEvent* nextNode = local_18->next;
-    local_14->list.head = nextNode;
+    PooledEvent* nextNode = headNode->next;
+    pool->list.head = nextNode;
 
     if (nextNode != 0) {
-        // Clear prev pointer of new head
         nextNode->prev = 0;
     } else {
-        // List is now empty, clear tail
-        local_14->list.tail = 0;
+        pool->list.tail = 0;
     }
 
-    // Call destructor on source SC_Message
     int counter = 0;
     do {
         srcMsg->~SC_Message();
@@ -239,47 +202,42 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
         if (tmp == 0) break;
     } while (1);
 
-    // Add node to free list
-    local_18->next = local_14->m_free_list;
-    local_14->m_free_list = local_18;
-    
-    // Decrement count
-    local_14->m_count--;
-    
-    // Copy from local_d8 to output buffer using field access
-    buffer->m_subObject = local_d8.m_subObject;
-    buffer->isProcessingKey = local_d8.isProcessingKey;
+    headNode->next = pool->m_free_list;
+    pool->m_free_list = headNode;
+    pool->m_count--;
 
-    for (idx = 0; idx < 0x20; idx++) {
-        buffer->currentKey[idx] = local_d8.currentKey[idx];
-    }
+    buffer->m_subObject = ((Parser*)&local_msg)->m_subObject;
+    buffer->isProcessingKey = ((Parser*)&local_msg)->isProcessingKey;
+    memcpy(buffer->currentKey, ((Parser*)&local_msg)->currentKey, 0x20);
+    buffer->lineNumber = ((Parser*)&local_msg)->lineNumber;
 
-    buffer->lineNumber = local_d8.lineNumber;
-    buffer->savedFilePos = local_d8.savedFilePos;
-    buffer->field_0x3c = local_d8.field_0x3c;
+    int* srcPair = (int*)&local_msg.savedFilePos;
+    int* dstPair = (int*)&buffer->savedFilePos;
+    dstPair[0] = srcPair[0];
+    dstPair[1] = srcPair[1];
 
-    for (idx = 0; idx < 0x40; idx++) {
-        buffer->filename[idx] = local_d8.filename[idx];
-    }
-    
-    buffer->pFile = local_d8.pFile;
-    
-    buffer->targetAddress = local_d8.targetAddress;
-    buffer->sourceAddress = local_d8.sourceAddress;
-    buffer->command = local_d8.command;
-    buffer->data = local_d8.data;
-    buffer->priority = local_d8.priority;
-    buffer->param1 = local_d8.param1;
-    buffer->param2 = local_d8.param2;
-    buffer->clickPos.x = local_d8.clickPos.x;
-    buffer->clickPos.y = local_d8.clickPos.y;
-    buffer->mouseX = local_d8.mouseX;
-    buffer->mouseY = local_d8.mouseY;
-    buffer->field_b4 = local_d8.field_b4;
-    buffer->field_b8 = local_d8.field_b8;
-    buffer->userPtr = local_d8.userPtr;
-    
-    local_1c |= 1;
-    
+    memcpy(buffer->filename, ((Parser*)&local_msg)->filename, 0x40);
+
+    buffer->pFile = ((Parser*)&local_msg)->pFile;
+    buffer->targetAddress = local_msg.targetAddress;
+    buffer->sourceAddress = local_msg.sourceAddress;
+    buffer->command = local_msg.command;
+    buffer->data = local_msg.data;
+    buffer->priority = local_msg.priority;
+    buffer->param1 = local_msg.param1;
+    buffer->param2 = local_msg.param2;
+
+    int* srcClick = (int*)&local_msg.clickPos;
+    int* dstClick = (int*)&buffer->clickPos;
+    dstClick[0] = srcClick[0];
+    dstClick[1] = srcClick[1];
+
+    buffer->mouseX = local_msg.mouseX;
+    buffer->mouseY = local_msg.mouseY;
+    buffer->field_b4 = local_msg.field_b4;
+    completed |= 1;
+    buffer->field_b8 = local_msg.field_b8;
+    buffer->userPtr = local_msg.userPtr;
+
     return buffer;
 }

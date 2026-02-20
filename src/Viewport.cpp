@@ -9,6 +9,7 @@ Viewport::Viewport()
 {
     Viewport::scrollX = 0;
     Viewport::scrollY = 0;
+    Viewport::anchorOffsetY = 0;
     Viewport::SetDimensions(0x140, 0xc8);
     Viewport::SetDimensions2(0, 0);
     Viewport::SetCenter();

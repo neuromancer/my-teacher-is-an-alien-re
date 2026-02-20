@@ -222,6 +222,7 @@ int OptionMenu::HitTest(MousePoint pt, int* indexOut, int* hitOut)
     SpriteListNode* node;
     SpriteData* data;
     SpriteNode* pList;
+    int inRect;
 
     pList = spriteList;
     if (pList != 0) {
@@ -236,8 +237,14 @@ int OptionMenu::HitTest(MousePoint pt, int* indexOut, int* hitOut)
                     data = (SpriteData*)node->data;
                 }
 
-                if (data->rect_x <= pt.x && data->rect_w >= pt.x &&
-                    data->rect_y <= pt.y && data->rect_h >= pt.y) {
+                if (data->rect_x > pt.x || data->rect_w < pt.x ||
+                    data->rect_y > pt.y || data->rect_h < pt.y) {
+                    inRect = 0;
+                } else {
+                    inRect = 1;
+                }
+
+                if (inRect != 0) {
                     node = spriteList->current;
                     if (node == 0) {
                         data = 0;

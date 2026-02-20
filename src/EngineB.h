@@ -11,7 +11,9 @@ class Sample;
 struct MeterPos {
   int x;
   int y;
-  MeterPos() { x = 0; y = 0; }
+  MeterPos() {
+    memset(this, 0, sizeof(MeterPos));
+  }
   ~MeterPos() { }
 };
 

@@ -11,11 +11,11 @@ extern "C" char* CDData_FormatPath(char* filename, ...);
 
 /* Function start: 0x416BD0 */
 EngineInfoParser::EngineInfoParser() : Parser() {
-  memset(&anchorRect, 0, sizeof(GlyphRect) * 3);
+  memset(&anchorRect, 0, 0xc * 4);
   anchorRect.left = 0;
-  anchorRect.top = 199; // 0xc7
-  anchorRect.right = 320;   // 0x140
-  anchorRect.bottom = 200;  // 0xc8
+  anchorRect.right = 0x140;
+  anchorRect.bottom = 0xc8;
+  anchorRect.top = 0xc7;
 }
 
 /* Function start: 0x416CD0 */

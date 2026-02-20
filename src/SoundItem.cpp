@@ -83,9 +83,13 @@ void SoundItem::Start()
 /* Function start: 0x40B790 */
 void SoundItem::AdjustVolume(int delta)
 {
+    HSAMPLE sample;
+    int volume;
+
     if (soundPtr == 0) return;
-    int volume = AIL_sample_volume(soundPtr->m_sample);
-    if (!(volume + delta)) return;
+    sample = soundPtr->m_sample;
+    volume = AIL_sample_volume(sample);
+    if (delta + volume == 0) return;
     soundPtr->Fade(volume + delta, 0);
 }
 

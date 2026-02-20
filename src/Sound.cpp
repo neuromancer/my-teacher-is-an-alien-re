@@ -58,16 +58,17 @@ Sound::Sound(int param_1, short param_2, int param_3) {
 
 /* Function start: 0x41E320 */
 void Sound::AllocateSampleHandles() {
-  short sVar2 = 0;
-  while (sVar2 < 13) {
-    int index = sVar2;
-    HSAMPLE *slot = &samples[index];
-    HSAMPLE handle = AIL_allocate_sample_handle(digital_driver);
-    *slot = handle;
-    if (handle == 0)
+  short sVar2;
+  HSAMPLE *slot;
+
+  sVar2 = 0;
+  do {
+    slot = &samples[(int)sVar2];
+    *slot = AIL_allocate_sample_handle(digital_driver);
+    if (*slot == 0)
       break;
     sVar2++;
-  }
+  } while (sVar2 < 13);
   num_samples = sVar2;
 }
 
@@ -83,8 +84,12 @@ HSAMPLE Sound::FindFreeSampleHandle() {
 
 /* Function start: 0x41E3A0 */
 void Sound::StopAllSamples() {
-  for (short i = 0; i < num_samples; i++) {
-    AIL_end_sample(samples[i]);
+  short i = 0;
+  if (0 < Sound::num_samples) {
+    do {
+      AIL_end_sample(Sound::samples[(int)i]);
+      i++;
+    } while (i < Sound::num_samples);
   }
 }
 
@@ -92,14 +97,17 @@ void Sound::StopAllSamples() {
 int Sound::OpenDigitalDriver(int rate, unsigned short bits,
                       unsigned short channels) {
   HDIGDRIVER driver;
-  int product = channels * (bits / 8);
 
   g_pcm.wf.nChannels = channels;
   g_pcm.wf.wFormatTag = 1;
-  g_pcm.wf.nBlockAlign = product;
+  g_pcm.wf.nBlockAlign = channels * (bits >> 3);
+
+  int avgBytesPerSec = (unsigned int)channels * (unsigned int)(unsigned short)(bits >> 3);
+  avgBytesPerSec = avgBytesPerSec * rate;
+
   g_pcm.wBitsPerSample = bits;
   g_pcm.wf.nSamplesPerSec = rate;
-  g_pcm.wf.nAvgBytesPerSec = product * rate;
+  g_pcm.wf.nAvgBytesPerSec = avgBytesPerSec;
 
   if (AIL_waveOutOpen(&driver, 0, -1, &g_pcm)) {
     return 0;

@@ -14,41 +14,19 @@ extern "C" int __cdecl FUN_00422aaf(int param_1);
 
 /* Function start: 0x4165D0 */
 RockThrower::RockThrower() {
-    // Zero Weapon fields 0x98, 0x9c first (redundant but matches original)
-    m_crosshairX = 0;
-    m_crosshairY = 0;
+    int* pItemCount = (int*)((char*)this + 0xa8);
 
-    // Zero all Weapon fields (0x88-0xa7 = 32 bytes = 8 dwords)
-    int* pFields = &m_posX;
-    for (int i = 8; i != 0; i--) {
-        *pFields = 0;
-        pFields++;
-    }
-
-    // Initialize Weapon positions
-    field_0x94 = 0;
-    field_0xa4 = 0;
-    m_posX = 0x64;
-    field_0xa0 = 0;
-    m_posY = 0xdc;
-    m_posZ = 0xc7;
-
-    // Zero RockThrower fields using pointer (matches LEA EAX,[ESI+0xa8] pattern)
-    int* pItemCount = &m_itemCount;
     pItemCount[0] = 0;
     pItemCount[1] = 0;
     pItemCount[2] = 0;
     pItemCount[3] = 0;
 
-    // Update positions
-    m_posY = 0xa0;
-    m_posX = 0xa0;
-    m_posZ = 0xa6;
+    RockThrower::m_posY = 0xa0;
+    RockThrower::m_posX = 0xa0;
+    RockThrower::m_posZ = 0xa6;
 
-    // Set item count
     pItemCount[0] = 3;
 
-    // Initialize from combat engine
     Parser::ProcessFile(this, (Parser*)g_CombatEngine_00435eb0, (char*)0);
 }
 

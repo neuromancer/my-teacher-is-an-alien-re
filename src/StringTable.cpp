@@ -169,7 +169,7 @@ void StringTable::Load() {
                 }
                 ht->nodePool = 0;
 
-                delete ht;
+                delete (void*)ht;
                 hashTable = 0;
             }
 
@@ -180,7 +180,7 @@ void StringTable::Load() {
             fsetpos(fp, &filePos);
 
             // Second pass: parse lines
-            while (1) {
+            do {
                 fgetpos(fp, &filePos);
                 result = internal_ReadLine(buffer, 0xff, fp);
                 if (result == 0) break;
@@ -217,7 +217,7 @@ void StringTable::Load() {
                     foundNode->filePosLow = (int)filePos;
                     foundNode->filePosHigh = (int)filePos2;
                 }
-            }
+            } while (1);
         }
         Unload();
     }
@@ -227,59 +227,64 @@ void StringTable::Load() {
 int StringTable::GetString(unsigned int id, char* outBuffer)
 {
     char buffer[300];
-    fpos_t filePos;
-    fpos_t filePosHigh;
     unsigned int parsedId;
+    fpos_t filePos;
     int found;
-    HashTable* ht;
     HashNode* node;
-    unsigned int bucketIdx;
     char* startQuote;
     char* endQuote;
     int len;
-    FILE* f;
 
     found = 0;
     filePos = 0;
-    filePosHigh = 0;
 
-    ht = hashTable;
-    if (ht != 0) {
-        bucketIdx = (id >> 4) % (unsigned int)ht->numBuckets;
-        if (ht->buckets != 0) {
-            node = *(HashNode**)(ht->buckets + bucketIdx);
-            while (node != 0) {
-                if (node->key == id) {
-                    break;
-                }
-                node = node->next;
-            }
-        } else {
-            node = 0;
+    if (StringTable::hashTable != 0) {
+        unsigned int bucketIdx = (id >> 4) % (unsigned int)StringTable::hashTable->numBuckets;
+        if (StringTable::hashTable->buckets == 0) {
+            goto no_node;
         }
+        node = *(HashNode**)(StringTable::hashTable->buckets + bucketIdx);
+        goto hash_test;
 
+    hash_next:
+        node = node->next;
+    hash_test:
+        if (node == 0) {
+            goto no_node;
+        }
+        if (node->key == id) {
+            goto hash_found;
+        }
+        goto hash_next;
+
+    no_node:
+        node = 0;
+
+    hash_found:
         if (node != 0) {
-            filePos = node->filePosLow;
-            filePosHigh = node->filePosHigh;
+            filePos = *(fpos_t*)&node->filePosLow;
         }
     }
 
-    f = Open();
-    if (f != 0) {
-        fsetpos(fp, &filePos);
-        do {
-            do {
-                char* result = internal_ReadLine(buffer, 0xff, fp);
-                if (result == 0) {
-                    goto done;
-                }
-                sscanf(buffer, "%u", &parsedId);
-            } while (parsedId != id);
+    if (Open() != 0) {
+        fsetpos(StringTable::fp, &filePos);
+read_loop:
+        {
+            char* result = internal_ReadLine(buffer, 0xff, StringTable::fp);
+            if (result == 0) {
+                goto done;
+            }
+        }
+        sscanf(buffer, "%u", &parsedId);
+        if (parsedId != id) goto read_loop;
 
-            startQuote = strchr(buffer, '\"');
-            startQuote = startQuote + 1;
-            endQuote = strrchr(buffer, '\"');
-        } while (startQuote == (char*)1 || endQuote == 0 || (len = endQuote - startQuote) < 1);
+        startQuote = strchr(buffer, '\"');
+        startQuote = startQuote + 1;
+        endQuote = strrchr(buffer, '\"');
+        len = endQuote - startQuote;
+        if (startQuote == (char*)0) goto read_loop;
+        if (endQuote == 0) goto read_loop;
+        if (len <= 0) goto read_loop;
 
         found = 1;
         strncpy(outBuffer, startQuote, len);

@@ -8,7 +8,7 @@
 struct TextPos {
     int x;
     int y;
-    TextPos() { x = 0; y = 0; }
+    TextPos() { memset(this, 0, sizeof(TextPos)); }
     ~TextPos() { }
 };
 
@@ -16,7 +16,7 @@ struct TextPos {
 struct CharAdv {
     int advance;
     int reserved;
-    CharAdv() { advance = 0; reserved = 0; }
+    CharAdv() { memset(this, 0, sizeof(CharAdv)); }
     ~CharAdv() { }
 };
 

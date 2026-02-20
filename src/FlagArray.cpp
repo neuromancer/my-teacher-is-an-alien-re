@@ -4,63 +4,53 @@
 #include <string.h>
 #include <stdio.h>
 
+extern "C" char DAT_004371a8[];
+char DAT_004371ac[] = "rb+";
 
-// These strings need to be defined somewhere. Defining them here or referencing globals.
-// "rb+"
-char DAT_004371ac[] = "rb+"; 
-// "wb+" (overrides globals.cpp if duplicate, but better check globals first)
-// extern char DAT_004371a8[]; // in globals.cpp it is "rb", needs fixing
-
-
+extern "C" int FUN_004269e0(void* buf, int size, int count, FILE* stream);
+extern "C" void FUN_00425e70(FILE* stream);
 
 /* Function start: 0x420140 */
-FlagArray::FlagArray(char* f, int max_states) {
-    FILE* fp_temp;
-    char buffer[4] = {0, 0, 0, 0};
+FlagArray::FlagArray(char* f, int numStates) {
+    int buffer;
     int i;
-    
-    // Clear the object memory (0x33 dwords = 204 bytes)
-    memset(this, 0, 204);
-    
-    // Copy filename (max 50 chars)
-    if (strlen(f) > 0x32) { // 50
+
+    memset(this, 0, 0x33 * 4);
+    buffer = 0;
+
+    if (strlen(f) > 0x32) {
          ShowError("Error in flagaray.cpp - SetFileName: File name too long");
     }
     strcpy(filename, f);
-    
-    // Try open rb+
-    int result = (int)fopen(filename, DAT_004371ac);
-    fp = (FILE*)result;
-    
-    if (result == 0) {
-        // Failed, create new wb+
-        // Need to reference DAT_004371a8 (wb+) properly.
-        // Assuming "wb+"
-        fp_temp = fopen(filename, "wb+");
+
+    fp = fsopen(filename, DAT_004371ac);
+
+    if (fp == 0) {
+        FILE* fp_temp;
+        fp_temp = fsopen(filename, DAT_004371a8);
         fp = fp_temp;
-        
-        if (fp_temp == NULL) {
-             ShowError("Error in flagaray.cpp - Create:  Cannot create %s", filename);
+
+        if (fp_temp != 0) {
+            max_states = numStates;
+            field_0x38 = numStates * 4 + 0x94;
+            field_0x3c = 0x94;
+            field_0x44 = 4;
+            FUN_004269e0(&field_0x38, 0x94, 1, fp_temp);
+            i = 0;
+
+            if (max_states > i) {
+                do {
+                    FUN_004269e0(&buffer, 4, 1, fp);
+                    i++;
+                } while (i < max_states);
+            }
         } else {
-             max_states = max_states;
-             field_0x38 = max_states * 4 + 0x94;
-             field_0x3c = 0x94;
-             field_0x44 = 4;
-             
-             // Write header (from field_0x38 onwards, size 0x94)
-             fwrite(&field_0x38, 0x94, 1, fp);
-             
-             // Write flags (0)
-             for (i = 0; i < max_states; i++) {
-                 fwrite(buffer, 4, 1, fp);
-             }
+            ShowError("Error in flagaray.cpp - Create:  Cannot create %s", f);
         }
     }
-    
-    if (fp != NULL) {
-        fclose(fp);
-    }
-    fp = NULL;
+
+    FUN_00425e70(fp);
+    fp = 0;
 }
 
 FlagArray::~FlagArray()

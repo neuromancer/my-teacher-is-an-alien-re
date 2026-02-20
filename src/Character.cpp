@@ -25,34 +25,33 @@ Character::Character(char* param_1) {
     }
 
     // Explicitly zero these members again
-    queue = 0;
-    field_3c = 0;
+    Character::queue = 0;
+    Character::field_3c = 0;
 
     // Set character type to -1
-    characterType = -1;
+    Character::characterType = -1;
 
     // Allocate PriorityQueue and initialize it manually
     pQueue = new PriorityQueue(0);
-    queue = pQueue;
+    Character::queue = pQueue;
 
     // Peter block
     if (strstr(param_1, "peter") != 0) {
         counter = 0;
-        characterType = 0;
+        Character::characterType = 0;
 
         do {
             sprite = new CharSprite();
 
-            if (queue != 0) {
+            if (Character::queue != 0) {
                 if (strstr(param_1, "peter") != 0) {
                     switch (counter) {
-                        case 0: strcpy(sprite->name, ""); break;
-                        case 1: strcpy(sprite->name, "MEET MY"); break;
+                        case 0: strcpy(sprite->name, "MEET MY"); break;
+                        case 1: strcpy(sprite->name, "\0"); break;
                         case 2: strcpy(sprite->name, "OOOO OOO OOO OOOO"); break;
-                        case 3: strcpy(sprite->name, ""); break;
+                        case 3: strcpy(sprite->name, "\0\0"); break;
                         case 4: strcpy(sprite->name, "TESTPUZZLE"); break;
                     }
-                    if (counter == 0) strcpy(sprite->name, "MEET MY");
                 }
             } else {
                 ShowError("Missing activeQ");
@@ -60,24 +59,24 @@ Character::Character(char* param_1) {
 
             if (sprite == 0) ShowError("queue fault 0101");
 
-            pQueue = queue;
+            pQueue = Character::queue;
             pQueue->current = pQueue->head;
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head != 0) {
-                    while (1) {
+                    do {
                         if (((CharSprite*)pQueue->current->data)->priority < sprite->priority) {
-                            pQueue->Insert(sprite);
+                            pQueue->InsertNode(sprite);
                             goto next_peter;
                         }
                         if (pQueue->tail == pQueue->current) {
-                            pQueue->Push(sprite);
+                            pQueue->PushNode(sprite);
                             goto next_peter;
                         }
                         if (pQueue->current != 0) {
                             pQueue->current = pQueue->current->next;
                         }
                         if (pQueue->current == 0) goto next_peter;
-                    }
+                    } while (1);
                 } else {
                     pQueue->AddAfterCurrent(sprite);
                 }
@@ -91,19 +90,19 @@ Character::Character(char* param_1) {
     // Susan block
     else if (strstr(param_1, "susan") != 0) {
         counter = 0;
-        characterType = 1;
+        Character::characterType = 1;
 
         do {
             sprite = new CharSprite();
 
-            if (queue != 0) {
+            if (Character::queue != 0) {
                 if (strstr(param_1, "susan") != 0) {
                     switch (counter) {
-                        case 0: strcpy(sprite->name, "SUS"); break;
+                        case 0: strcpy(sprite->name, "\0\0\0"); break;
                         case 1: strcpy(sprite->name, "DIALOG"); break;
                         case 2: strcpy(sprite->name, "COMBAT"); break;
                         case 3: strcpy(sprite->name, "TESTPUZZLE"); break;
-                        case 4: strcpy(sprite->name, ""); break;
+                        case 4: strcpy(sprite->name, "\0\0\0\0"); break;
                     }
                 }
             } else {
@@ -112,24 +111,24 @@ Character::Character(char* param_1) {
 
             if (sprite == 0) ShowError("queue fault 0101");
 
-            pQueue = queue;
+            pQueue = Character::queue;
             pQueue->current = pQueue->head;
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head != 0) {
-                    while (1) {
+                    do {
                         if (((CharSprite*)pQueue->current->data)->priority < sprite->priority) {
-                            pQueue->Insert(sprite);
+                            pQueue->InsertNode(sprite);
                             goto next_susan;
                         }
                         if (pQueue->tail == pQueue->current) {
-                            pQueue->Push(sprite);
+                            pQueue->PushNode(sprite);
                             goto next_susan;
                         }
                         if (pQueue->current != 0) {
                             pQueue->current = pQueue->current->next;
                         }
                         if (pQueue->current == 0) goto next_susan;
-                    }
+                    } while (1);
                 } else {
                     pQueue->AddAfterCurrent(sprite);
                 }
@@ -143,21 +142,20 @@ Character::Character(char* param_1) {
     // Duncan block
     else if (strstr(param_1, "duncan") != 0) {
         counter = 0;
-        characterType = 2;
+        Character::characterType = 2;
 
         do {
             sprite = new CharSprite();
 
-            if (queue != 0) {
+            if (Character::queue != 0) {
                 if (strstr(param_1, "duncan") != 0) {
                     switch (counter) {
-                        case 0: strcpy(sprite->name, "DIALOG"); break;
-                        case 1: strcpy(sprite->name, "COMBATS"); break;
-                        case 2: strcpy(sprite->name, "TESTPUZZLE"); break;
-                        case 3: strcpy(sprite->name, ""); break;
-                        case 4: strcpy(sprite->name, ""); break;
+                        case 0: strcpy(sprite->name, "TESTPUZZLE"); break;
+                        case 1: strcpy(sprite->name, "DIALOG"); break;
+                        case 2: strcpy(sprite->name, "COMBATS"); break;
+                        case 3: strcpy(sprite->name, "\0\0\0\0\0"); break;
+                        case 4: strcpy(sprite->name, "\0\0\0\0\0\0"); break;
                     }
-                    if (counter == 0) strcpy(sprite->name, "TESTPUZZLE");
                 }
             } else {
                 ShowError("Missing activeQ");
@@ -165,24 +163,24 @@ Character::Character(char* param_1) {
 
             if (sprite == 0) ShowError("queue fault 0101");
 
-            pQueue = queue;
+            pQueue = Character::queue;
             pQueue->current = pQueue->head;
             if (pQueue->type == 1 || pQueue->type == 2) {
                 if (pQueue->head != 0) {
-                    while (1) {
+                    do {
                         if (((CharSprite*)pQueue->current->data)->priority < sprite->priority) {
-                            pQueue->Insert(sprite);
+                            pQueue->InsertNode(sprite);
                             goto next_duncan;
                         }
                         if (pQueue->tail == pQueue->current) {
-                            pQueue->Push(sprite);
+                            pQueue->PushNode(sprite);
                             goto next_duncan;
                         }
                         if (pQueue->current != 0) {
                             pQueue->current = pQueue->current->next;
                         }
                         if (pQueue->current == 0) goto next_duncan;
-                    }
+                    } while (1);
                 } else {
                     pQueue->AddAfterCurrent(sprite);
                 }
@@ -197,16 +195,16 @@ Character::Character(char* param_1) {
     }
 
     if (strstr(param_1, "peter") != 0) {
-        abilities[0] = 1; abilities[1] = 1; abilities[2] = 1; abilities[3] = 1;
-        abilities[4] = 1; abilities[5] = 1; abilities[6] = 1; abilities[7] = 1;
+        Character::abilities[0] = 1; Character::abilities[1] = 1; Character::abilities[2] = 1; Character::abilities[3] = 1;
+        Character::abilities[4] = 1; Character::abilities[5] = 1; Character::abilities[6] = 1; Character::abilities[7] = 1;
     }
     if (strstr(param_1, "susan") != 0) {
-        abilities[0] = 1; abilities[1] = 1; abilities[2] = 0; abilities[3] = 1;
-        abilities[4] = 1; abilities[5] = 1; abilities[6] = 0; abilities[7] = 1;
+        Character::abilities[0] = 1; Character::abilities[1] = 1; Character::abilities[2] = 0; Character::abilities[3] = 1;
+        Character::abilities[4] = 1; Character::abilities[5] = 1; Character::abilities[6] = 0; Character::abilities[7] = 1;
     }
     if (strstr(param_1, "duncan") != 0) {
-        abilities[0] = 1; abilities[1] = 1; abilities[2] = 1; abilities[3] = 1;
-        abilities[4] = 0; abilities[5] = 1; abilities[6] = 1; abilities[7] = 1;
+        Character::abilities[0] = 1; Character::abilities[1] = 1; Character::abilities[2] = 1; Character::abilities[3] = 1;
+        Character::abilities[5] = 1; Character::abilities[6] = 1; Character::abilities[4] = 0; Character::abilities[7] = 1;
     }
 }
 
@@ -221,9 +219,5 @@ void PriorityQueue::AddAfterCurrent(void* sprite)
 /* Function start: 0x408880 */
 CharSprite::CharSprite()
 {
-    bounds.left = 0;
-    bounds.top = 0;
-    bounds.right = 0;
-    bounds.bottom = 0;
     memset(this, 0, sizeof(CharSprite));
 }

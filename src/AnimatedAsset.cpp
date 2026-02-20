@@ -170,20 +170,20 @@ int AnimatedAsset::DrawChar(int x, int y, int ch)
         local.right = r;
         local.bottom = b;
 
-        if (useBuffer == 0) {
-            if (useAttr != 0) {
-                g_WorkBuffer_00436974->CallBlitter3(local.left, local.right, local.top, local.bottom, x, y, buffer, color, attr);
-            }
-            else {
-                g_WorkBuffer_00436974->CallBlitter2(local.left, local.right, local.top, local.bottom, x, y, buffer);
-            }
-        }
-        else {
+        if (useBuffer != 0) {
             if (useAttr != 0) {
                 buffer->BlitTransparent(local.left, local.right, local.top, local.bottom, x, y, color, attr);
             }
             else {
                 buffer->TPaste(local.left, local.right, local.top, local.bottom, x, y);
+            }
+        }
+        else {
+            if (useAttr != 0) {
+                g_WorkBuffer_00436974->CallBlitter3(local.left, local.right, local.top, local.bottom, x, y, buffer, color, attr);
+            }
+            else {
+                g_WorkBuffer_00436974->CallBlitter2(local.left, local.right, local.top, local.bottom, x, y, buffer);
             }
         }
         width = local.right - local.left;
@@ -255,17 +255,13 @@ void AnimatedAsset::RenderText(char* text, int color_param)
     if (text != 0) {
         useBuffer = 0;
         attr = (char)color_param;
-        useAttr = (color_param + 1 != 0);
+        useAttr = (color_param != -1);
         PrepareText(text);
         if (*text != '\0') {
             int* p_x = &text_pos.x;
             do {
-                int x = *p_x;
-                int ch = (int)*text;
-                text++;
-                int y = p_x[1];
-                int width = DrawChar(x, y, ch);
-                *p_x += width + char_adv.advance;
+                int width = DrawChar(*p_x, p_x[1], (int)(char)*text++);
+                *p_x += char_adv.advance + width;
             } while (*text != '\0');
         }
     }

@@ -103,8 +103,8 @@ SCI_Dialog::~SCI_Dialog() {
 
 /* Function start: 0x407240 */
 void SCI_Dialog::Init(SC_Message* msg) {
-    char buffer[48];
     Queue* pQueue;
+    char buffer[32];
 
     WriteToMessageLog("\nENTER DIALOG");
 
@@ -127,13 +127,13 @@ void SCI_Dialog::Init(SC_Message* msg) {
 
     memset(field_618, 0x01, 10 * sizeof(int));
 
-    buttons[0].enabled = 0;
-    buttons[4].enabled = 0;
-
     sprintf(buffer, "mis\\dialog%2.2d.mis", msg->param1);
 
     pQueue = new Queue();
     field_610 = pQueue;
+
+    buttons[0].enabled = 0;
+    buttons[4].enabled = 0;
 
     ParseFile(this, buffer, "[DIALOG%4.4d]", msg->sourceAddress);
 }
@@ -244,10 +244,7 @@ int SCI_Dialog::Exit(SC_Message* msg) {
     }
 
     switch (msg->priority) {
-    case 0: case 1: case 2: case 4: case 5: case 6: case 7:
-    case 8: case 9: case 10: case 11: case 12: case 13: case 14:
-    case 15: case 16: case 17: case 18:
-    default:
+    case 0:
         return 0;
     case 3:
         IconBar::PlayButtonSound(-1);
@@ -281,10 +278,10 @@ int SCI_Dialog::Exit(SC_Message* msg) {
                         } else {
                             newNode->next = (QueueNode*)queue->current;
                             newNode->prev = ((QueueNode*)queue->current)->prev;
-                            if (((QueueNode*)queue->current)->prev == 0) {
-                                queue->head = newNode;
-                            } else {
+                            if (((QueueNode*)queue->current)->prev != 0) {
                                 ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
+                            } else {
+                                queue->head = newNode;
                             }
                             ((QueueNode*)queue->current)->prev = newNode;
                         }
@@ -302,10 +299,10 @@ int SCI_Dialog::Exit(SC_Message* msg) {
                                 } else {
                                     newNode->next = (QueueNode*)queue->current;
                                     newNode->prev = ((QueueNode*)queue->current)->prev;
-                                    if (((QueueNode*)queue->current)->prev == 0) {
-                                        queue->head = newNode;
-                                    } else {
+                                    if (((QueueNode*)queue->current)->prev != 0) {
                                         ((QueueNode*)((QueueNode*)queue->current)->prev)->next = newNode;
+                                    } else {
+                                        queue->head = newNode;
                                     }
                                     ((QueueNode*)queue->current)->prev = newNode;
                                 }
@@ -435,53 +432,56 @@ DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
 
     counter = 0;
     queue = field_610;
-    if (queue == 0) return 0;
+    if (queue == 0) goto LAB_ret_zero;
     queue->current = queue->head;
-    if (field_610->head == 0) return 0;
+    queue = field_610;
+    if (queue->head == 0) goto LAB_ret_zero;
 
     do {
         queue = field_610;
         node = (QueueNode*)queue->current;
-        if (counter == index) {
-            if (node == 0) return 0;
-            if (queue->head == node) queue->head = node->next;
-            if (queue->tail == queue->current) queue->tail = ((QueueNode*)queue->current)->prev;
-            tmp = ((QueueNode*)queue->current)->prev;
-            if (tmp != 0) tmp->next = ((QueueNode*)queue->current)->next;
-            tmp = ((QueueNode*)queue->current)->next;
-            if (tmp != 0) tmp->prev = ((QueueNode*)queue->current)->prev;
-            node = (QueueNode*)queue->current;
-            result = 0;
-            if (node != 0) result = (DialogQuestion*)node->data;
-            if (node != 0) {
-                node->data = 0;
-                node->prev = 0;
-                node->next = 0;
-                delete node;
-                queue->current = 0;
-            }
-            queue->current = queue->head;
-            return result;
+        if (counter != index) goto LAB_advance;
+        if (node == 0) goto LAB_ret_zero;
+        if (queue->head == node) queue->head = node->next;
+        if (queue->tail == queue->current) queue->tail = ((QueueNode*)queue->current)->prev;
+        tmp = ((QueueNode*)queue->current)->prev;
+        if (tmp != 0) tmp->next = ((QueueNode*)queue->current)->next;
+        tmp = ((QueueNode*)queue->current)->next;
+        if (tmp != 0) tmp->prev = ((QueueNode*)queue->current)->prev;
+        node = (QueueNode*)queue->current;
+        result = 0;
+        if (node != 0) result = (DialogQuestion*)node->data;
+        if (node != 0) {
+            node->data = 0;
+            node->prev = 0;
+            node->next = 0;
+            operator delete(node);
+            queue->current = 0;
         }
-        if (queue->tail == node) return 0;
+        queue->current = queue->head;
+        return result;
+
+    LAB_advance:
+        if (queue->tail == node) goto LAB_ret_zero;
         if (node != 0) queue->current = node->next;
         counter++;
         queue = field_610;
     } while (queue->head != 0);
 
+LAB_ret_zero:
     return 0;
 }
 
 /* Function start: 0x407D20 */
 DialogQuestion* SCI_Dialog::FindDialogById(int id) {
     DialogQuestion* searchQuestion = new SC_Question(id);
-    Queue* queue = field_610;
+    Queue* queue;
     QueueNode* node;
-    QueueNode* prevNode;
-    QueueNode* nextNode;
+    QueueNode* tmp;
     DialogQuestion* nodeData;
-    DialogQuestion* result = 0;
+    DialogQuestion* result;
 
+    queue = field_610;
     if (queue == 0) goto LAB_cleanup;
     if (searchQuestion == 0) ShowError("queue fault 0103");
 
@@ -491,29 +491,33 @@ DialogQuestion* SCI_Dialog::FindDialogById(int id) {
     do {
         node = (QueueNode*)queue->current;
         nodeData = (node != 0) ? (DialogQuestion*)node->data : 0;
-        if (nodeData->questionId == searchQuestion->questionId) {
-            delete searchQuestion;
-            searchQuestion = 0;
+        if (nodeData->questionId != searchQuestion->questionId) goto LAB_advance;
+        delete searchQuestion;
 
-            if (node == 0) return 0;
-            if (queue->head == node) queue->head = node->next;
-            if (queue->tail == queue->current) queue->tail = node->prev;
-            prevNode = node->prev;
-            if (prevNode != 0) prevNode->next = node->next;
-            nextNode = node->next;
-            if (nextNode != 0) nextNode->prev = node->prev;
-
-            result = (DialogQuestion*)node->data;
+        queue = field_610;
+        node = (QueueNode*)queue->current;
+        if (node == 0) return 0;
+        if (queue->head == node) queue->head = node->next;
+        if (queue->tail == queue->current) queue->tail = ((QueueNode*)queue->current)->prev;
+        tmp = ((QueueNode*)queue->current)->prev;
+        if (tmp != 0) tmp->next = ((QueueNode*)queue->current)->next;
+        tmp = ((QueueNode*)queue->current)->next;
+        if (tmp != 0) tmp->prev = ((QueueNode*)queue->current)->prev;
+        node = (QueueNode*)queue->current;
+        result = 0;
+        if (node != 0) result = (DialogQuestion*)node->data;
+        if (node != 0) {
             node->data = 0;
             node->prev = 0;
             node->next = 0;
-            delete node;
+            operator delete(node);
             queue->current = 0;
-            queue->current = queue->head;
-            return result;
         }
+        queue->current = queue->head;
+        return result;
 
-        if (queue->tail == node) break;
+    LAB_advance:
+        if (queue->tail == node) goto LAB_cleanup;
         if (node != 0) queue->current = node->next;
     } while (queue->current != 0);
 
@@ -526,6 +530,7 @@ LAB_cleanup:
 int SCI_Dialog::LBLParse(char* line) {
     char token[32];
     char arg1[64];
+    int questionId;
     DialogQuestion* dq;
     Queue* queue;
     QueueNode* newNode;
@@ -539,42 +544,36 @@ int SCI_Dialog::LBLParse(char* line) {
         WriteToMessageLog("SCI_Dialog::LBLParse %s, a palette already exists", token);
         sscanf(line, "%s %s", token, arg1);
     } else if (strcmp(token, "BUTTON") == 0) {
-        if (field_608 != 0) {
-            delete field_608;
-            field_608 = 0;
-        }
         field_608 = new Sprite(0);
         Parser::ProcessFile(field_608, this, 0);
     } else if (strcmp(token, "AMBIENT_SPRS") == 0) {
         WriteToMessageLog("SCI_Dialog::LBLParse %s, ambients already exist", token);
     } else if (strcmp(token, "HILITE") == 0) {
-        if (field_60C != 0) {
-            delete field_60C;
-            field_60C = 0;
-        }
         field_60C = new Sprite(0);
         Parser::ProcessFile(field_60C, this, 0);
     } else if (strcmp(token, "HANDLE") == 0) {
         sscanf(line, "%s %d", token, &field_8C);
     } else if (strcmp(token, "AMBIENTSCONTROLLER") == 0) {
+        int temp;
         int ambientVal;
         sscanf(line, "%s %d", token, &ambientVal);
-        int temp = ambientVal;
         int count = 1;
         int i_digits = 0;
+        temp = ambientVal;
         do {
-            if (temp < 10) break;
-            temp /= 10;
+            if (ambientVal < 10) break;
             count++;
+            ambientVal /= 10;
             i_digits++;
         } while (i_digits < 10);
-        temp = ambientVal;
-        for (int i = 0; i < count; i++) {
-            field_618[temp % 10] = 0;
-            temp /= 10;
+        if (count > 0) {
+            do {
+                field_618[temp % 10] = 0;
+                temp /= 10;
+                count--;
+            } while (count != 0);
         }
     } else if (strcmp(token, "QUESTION") == 0) {
-        int questionId;
         sscanf(line, "%s %d ", token, &questionId);
         dq = new SC_Question(questionId);
         if (dq->state == 2) {
@@ -600,7 +599,7 @@ int SCI_Dialog::LBLParse(char* line) {
                     } while (queue->current != 0);
                 }
             } else {
-                queue->Insert(dq);
+                queue->InsertNode(dq);
             }
         }
     } else if (strcmp(token, "END") == 0) {

@@ -59,17 +59,22 @@ DrawEntry::~DrawEntry() {
 
 /* Function start: 0x4110D0 */
 Engine::Engine() {
-  m_combatBonus1 = 0;
-  m_scrollOffsetX = 0;
+  int* p;
+  p = (int*)&m_combatBonus1;
+  p[0] = 0;
+  p[1] = 0;
 
-  field_0xbc = 0;
-  m_scrollOffsetY = 0;
+  p = (int*)&field_0xbc;
+  p[0] = 0;
+  p[1] = 0;
 
-  m_combatBonus2 = 0;
-  m_viewOffset1X = 0;
+  p = (int*)&m_combatBonus2;
+  p[0] = 0;
+  p[1] = 0;
 
-  field_0xcc = 0;
-  m_viewOffset1Y = 0;
+  p = (int*)&field_0xcc;
+  p[0] = 0;
+  p[1] = 0;
 
   memset(&m_targetList, 0, 0x60);
 
@@ -150,7 +155,7 @@ int Engine::UpdateAndCheck() {
 
 /* Function start: 0x411550 */
 void Engine::Initialize() {
-  Engine::m_weapon = (Weapon*)new EngineInfoParser();
+  Engine::m_weapon = new Weapon();
   Engine::m_soundList = new SoundList(0x32);
   Engine::m_engineInfoParser = new EngineInfoParser();
   Engine::m_navigator = new mCNavigator();
@@ -161,7 +166,7 @@ void Engine::Initialize() {
   Engine::m_viewport = new Viewport();
   Engine::m_gameOutcome = new GameOutcome();
 
-  Engine::CopyToGlobals();
+  CopyToGlobals();
 }
 
 /* Function start: 0x411D60 */

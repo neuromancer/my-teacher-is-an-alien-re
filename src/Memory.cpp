@@ -1,4 +1,5 @@
 #include "Memory.h"
+#include "globals.h"
 #include <windows.h>
 
 extern HANDLE DAT_0043eff0;
@@ -36,31 +37,33 @@ void FreeFromGlobalHeap(void* ptr)
 /* Function start: 0x428440 */
 void* FUN_00428440(unsigned int size)
 {
-    return AllocateMemoryInternal(size, 1);
+    return AllocateMemoryInternal(size, DAT_0043cb64);
 }
 
 /* Function start: 0x428460 */
 void* AllocateMemoryInternal(unsigned int size, int flag)
 {
+    void* mem;
     if (size > 0xffffffe0) {
         return 0;
     }
     if (size == 0) {
         size = 1;
     }
-    while (1) {
-        void* mem = HeapAllocWrapper(size);
-        if (mem != 0) {
-            return mem;
-        }
-        if (flag == 0) {
-            break;
-        }
-        if (OutOfMemoryHandler(size) == 0) {
-            return 0;
-        }
+loop:
+    mem = HeapAllocWrapper(size);
+    if (mem != 0) {
+        goto done;
     }
-    return 0;
+    if (flag == 0) {
+        goto done;
+    }
+    if (OutOfMemoryHandler(size) != 0) {
+        goto loop;
+    }
+    mem = 0;
+done:
+    return mem;
 }
 
 /* Function start: 0x4284A0 */
@@ -68,7 +71,6 @@ void* HeapAllocWrapper(unsigned int size)
 {
     if (DAT_0043eff0 == 0) {
         DAT_0043eff0 = GetProcessHeap();
-        // Alternatively: DAT_0043eff0 = HeapCreate(0, 4096, 0);
     }
     return HeapAlloc(DAT_0043eff0, 0, size);
 }

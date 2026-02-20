@@ -71,14 +71,10 @@ void *SoundList::Register(char *filename) {
     local_54[0] = '\0';
     ParsePath(filename, 0, 0, local_54, 0);
     if (local_54[0] != '\0') {
-      sVar9 = 0;
-      if (m_fieldc > 0) {
-        do {
-          if (strcmpi(m_sounds[sVar9], local_54) == 0) {
-            break;
-          }
-          sVar9++;
-        } while (sVar9 < m_fieldc);
+      for (sVar9 = 0; sVar9 < m_fieldc; sVar9++) {
+        if (strcmpi(m_sounds[sVar9], local_54) == 0) {
+          break;
+        }
       }
 
       if (sVar9 == m_fieldc) {
@@ -88,8 +84,7 @@ void *SoundList::Register(char *filename) {
                     m_fieldc);
         }
 
-        int len = strlen(local_54);
-        m_sounds[m_fieldc] = new char[len + 1];
+        m_sounds[m_fieldc] = new char[strlen(local_54) + 1];
         strcpy(m_sounds[m_fieldc], local_54);
 
         Sample *sound = new Sample();
@@ -98,7 +93,7 @@ void *SoundList::Register(char *filename) {
 
         if (m_field8[m_fieldc]->Load(filename) == 0) {
           sVar9 = m_fieldc;
-          m_fieldc++;
+          m_fieldc = sVar9 + 1;
         }
       }
 

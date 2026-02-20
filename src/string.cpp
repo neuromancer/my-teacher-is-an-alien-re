@@ -15,7 +15,6 @@ extern void* GetGameWindowHandle();
 
 extern void ShutdownGameSystems();
 extern void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
-extern int ExecuteFunctionArray(void* param_1, void* param_2);
 extern int g_ExitInProgress_0043be34;
 extern char g_ExitCode_0043be30;
 extern void* g_AtExitTableStart_0043f104;
@@ -25,7 +24,7 @@ extern int DAT_00435038;
 extern int DAT_0043503c;
 extern int DAT_00435040;
 
-void DeleteFile_Wrapper(const char* filename);
+int DeleteFile_Wrapper(const char* filename);
 
 // Message log enabled flag (was hardcoded at 0x43d5a8)
 // File-local since only used in string.cpp
@@ -66,7 +65,7 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
     if (param_3 < iVar3 + 1) {
         ShowError("dest string too small");
     }
-    memcpy(param_2,pcVar1,iVar3);
+    strncpy(param_2,pcVar1,iVar3);
     param_2[iVar3] = '\0';
     return;
 }
@@ -77,9 +76,7 @@ void ShowError(const char* format, ...)
     char buffer[256];
     vsprintf(buffer, format, (char*)(&format + 1));
     SetCursorVisible(1);
-    char* lpText = buffer;
-    HWND hWnd = (HWND)GetGameWindowHandle();
-    MessageBoxA(hWnd, lpText, "Error", 0x10);
+    MessageBoxA((HWND)GetGameWindowHandle(), buffer, "Error", 0x10);
     ShutdownGameSystems();
     exitWithError_(-1);
 }
@@ -90,9 +87,7 @@ void ShowMessage(char *param_1, ...)
     char buffer[256];
     vsprintf(buffer, param_1, (char*)(&param_1 + 1));
     SetCursorVisible(1);
-    // extern decl moved to global scope
-    HWND hWnd = (HWND)GetGameWindowHandle();
-    MessageBoxA(hWnd, buffer, "Message", 0);
+    MessageBoxA((HWND)GetGameWindowHandle(), buffer, "Message", 0);
     SetCursorVisible(0);
 }
 
@@ -119,24 +114,21 @@ void WriteToMessageLog(const char *msg,...)
     }
 }
 
+int g_stringTableCount = 0; // 0x4366b4
+char g_stringTable[16384] = {0}; // 0x43d158
+
 /* Function start: 0x419220 */
 extern "C" void AddToStringTable(char *param_1)
 {
     char local_20[32];
     int iVar2;
-    unsigned int uVar3;
-    char *pcVar5;
-    char *pcVar6;
 
     local_20[0] = '\0';
     iVar2 = sscanf(param_1, " %s ", local_20);
     if (iVar2 == 1) {
-        uVar3 = strlen(local_20);
-        if (uVar3 > 0) {
-            pcVar5 = local_20;
-            pcVar6 = &((char*)0x43d158)[*(int*)0x4366b4 * 0x20];
-            memcpy(pcVar6, pcVar5, uVar3);
-            (*(int*)0x4366b4)++;
+        if (strlen(local_20) != 0) {
+            strcpy(&g_stringTable[g_stringTableCount * 0x20], local_20);
+            g_stringTableCount++;
         }
     }
 }
@@ -276,52 +268,50 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
 int ParseCommandLineArgs(char *param_1, char **param_2, int param_3)
 {
     int iVar1;
-    
+
     iVar1 = 0;
-    if (param_3 > 0) {
+    if (param_3 <= 0) goto done;
+
+outer_loop:
+    if (*param_1 == '\0') goto done;
+
+    do {
+        if ((__mb_cur_max > 1 ? _isctype(*param_1, _SPACE) : _pctype[*param_1] & _SPACE) == 0) {
+            break;
+        }
+        param_1 = param_1 + 1;
+    } while (*param_1 != '\0');
+    *param_2 = param_1;
+    if (*param_1 != '\0') {
+        do {
+            if ((__mb_cur_max > 1 ? _isctype(*param_1, _SPACE) : _pctype[*param_1] & _SPACE) != 0) {
+                break;
+            }
+            param_1 = param_1 + 1;
+        } while (*param_1 != '\0');
         if (*param_1 != '\0') {
-            do {
-                do {
-                    if (_isctype(*param_1, 0x8) == 0) {
-                        break;
-                    }
-                    param_1 = param_1 + 1;
-                } while (*param_1 != '\0');
-                *param_2 = param_1;
-                if (*param_1 != '\0') {
-                    do {
-                        if (_isctype(*param_1, 0x8) != 0) {
-                            break;
-                        }
-                        param_1 = param_1 + 1;
-                    } while (*param_1 != '\0');
-                    if (*param_1 != '\0') {
-                        *param_1 = '\0';
-                        param_1 = param_1 + 1;
-                    }
-                }
-                param_2 = param_2 + 1;
-                iVar1 = iVar1 + 1;
-            } while (iVar1 < param_3);
+            *param_1 = '\0';
+            param_1 = param_1 + 1;
         }
     }
+    param_2 = param_2 + 1;
+    iVar1 = iVar1 + 1;
+    if (iVar1 < param_3) goto outer_loop;
+
+done:
     return iVar1;
 }
 
 /* Function start: 0x4260F0 */
-int ExecuteFunctionArray(void* param_1, void* param_2)
+void ExecuteFunctionArray(void** param_1, void** param_2)
 {
-    void** p1 = (void**)param_1;
-    void** p2 = (void**)param_2;
-    if (p1 < p2) {
-        do {
-            if (*p1 != 0) {
-                ((void (*)(void)) *p1)();
-            }
-            p1 = p1 + 1;
-        } while (p1 < p2);
-    }
-    return 0;
+    if (param_2 <= param_1) return;
+    do {
+        if (*param_1 != 0) {
+            ((void (*)(void)) *param_1)();
+        }
+        param_1 = param_1 + 1;
+    } while (param_2 > param_1);
 }
 
 /* Function start: 0x425E50 */
@@ -388,21 +378,27 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
                 puVar1 = puVar1 - 1;
             } while ((unsigned int)puVar1 >= (unsigned int)g_AtExitTableStart_0043f104);
         }
-        ExecuteFunctionArray(&DAT_00435030, &DAT_00435038);
+        ExecuteFunctionArray((void**)&DAT_00435030, (void**)&DAT_00435038);
     }
-    ExecuteFunctionArray(&DAT_0043503c, &DAT_00435040);
+    ExecuteFunctionArray((void**)&DAT_0043503c, (void**)&DAT_00435040);
     if (param_3 == 0) {
         ExitProcess(param_1);
     }
 }
 
 /* Function start: 0x426110 */
-void DeleteFile_Wrapper(const char* filename)
+int DeleteFile_Wrapper(const char* filename)
 {
-    if (DeleteFileA(filename) == 0) {
-        int error = GetLastError();
-        if (error != 0) {
-            SetErrorCode(error);
-        }
+    unsigned int error;
+
+    error = DeleteFileA(filename);
+    if (error != 0) goto done;
+    error = GetLastError();
+
+done:
+    if (error != 0) {
+        SetErrorCode(error);
+        return -1;
     }
+    return 0;
 }

@@ -225,8 +225,8 @@ int Handler6::FindClickedHotspot() {
     do {
         Hotspot* hotspot = *ptr;
         if (hotspot != 0) {
-            int mouseY = 0;
             InputState* pMouse = g_InputManager_00436968->pMouse;
+            int mouseY = 0;
 
             if (pMouse != 0) {
                 mouseY = pMouse->y;
@@ -240,16 +240,16 @@ int Handler6::FindClickedHotspot() {
             }
 
             int inBounds;
-            if (hotspot->field_D0 == 0 ||
-                hotspot->rect.left > mouseX ||
-                hotspot->rect.right < mouseX ||
-                hotspot->rect.top > mouseY ||
-                hotspot->rect.bottom < mouseY) {
-                inBounds = 0;
-            } else {
-                inBounds = 1;
-            }
-
+            if (hotspot->field_D0 == 0) goto not_in_bounds;
+            if (hotspot->rect.left > mouseX) goto not_in_bounds;
+            if (hotspot->rect.right < mouseX) goto not_in_bounds;
+            if (hotspot->rect.top > mouseY) goto not_in_bounds;
+            if (hotspot->rect.bottom < mouseY) goto not_in_bounds;
+            inBounds = 1;
+            goto check_bounds;
+        not_in_bounds:
+            inBounds = 0;
+        check_bounds:
             if (inBounds != 0) {
                 return index;
             }
@@ -263,12 +263,16 @@ int Handler6::FindClickedHotspot() {
 
 /* Function start: 0x4049F0 */
 int Handler6::CountActiveHotspots() {
-    int count = 0;
-    Hotspot** ptr = hotspots;
-    int remaining = 10;
+    Hotspot* hotspot;
+    int count;
+    Hotspot** ptr;
+    int remaining;
 
+    count = 0;
+    ptr = hotspots;
+    remaining = 10;
     do {
-        Hotspot* hotspot = *ptr;
+        hotspot = *ptr;
         if (hotspot != 0 && hotspot->field_D0 != 0) {
             count++;
         }
@@ -299,14 +303,13 @@ int Handler6::LBLParse(char* line) {
         }
         Parser::ProcessFile(ambient, this, 0);
     } else if (strcmp(token, "HOTSPOT") == 0) {
-        Hotspot* hs = new Hotspot();
-        hotspots[hotspotCount] = hs;
-        Parser::ProcessFile(hs, this, 0);
+        hotspots[hotspotCount] = new Hotspot();
+        Parser::ProcessFile(hotspots[hotspotCount], this, 0);
         hotspotCount++;
     } else if (strcmp(token, "END") == 0) {
         return 1;
     } else {
-        return Parser::LBLParse("SearchScreen");
+        Parser::LBLParse("SearchScreen");
     }
 
     return 0;

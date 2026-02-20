@@ -32,6 +32,7 @@
 #include "SCI_Dialog.h"
 #include "SoundCommand.h"
 #include "RenderEntry.h"
+#include "Animation.h"
 #include <smack.h>
 #include <stdio.h>
 #include <string.h>
@@ -137,7 +138,7 @@ loop_start:
         goto skip_debug;
     }
     pGameState = g_GameState_00436998;
-    if (pGameState->maxStates < 5) {
+    if (pGameState->maxStates <= 4) {
         ShowError("GameState Error  #%d", 1);
     }
     if (pGameState->stateValues[4] == zero) {
@@ -301,17 +302,19 @@ void GameLoop::Cleanup() {
     // Cleanup timer1
     pTimer = timer1;
     if (pTimer != 0) {
-        delete pTimer;
+        pTimer->~Timer();
+        operator delete(pTimer);
         timer1 = 0;
     }
 
     // Cleanup timer2
     pTimer = timer2;
     if (pTimer != 0) {
-        delete pTimer;
+        pTimer->~Timer();
+        operator delete(pTimer);
         timer2 = 0;
     }
-    
+
     // Cleanup eventList
     pEventList = eventList;
     if (pEventList != 0) {
@@ -325,20 +328,20 @@ void GameLoop::Cleanup() {
                     } else {
                         // Unlink node from list - head check
                         if (pEventList->head == pNode) {
-                            pEventList->head = pNode->prev;
+                            pEventList->head = pNode->next;
                         }
                         // Tail check
                         pNode = pEventList->current;
                         if (pEventList->tail == pNode) {
                             pEventList->tail = pNode->prev;
                         }
-                        // Update prev node's next pointer
+                        // Update prev->next
                         pNode = pEventList->current;
                         pNext = pNode->prev;
                         if (pNext != 0) {
                             pNext->next = pNode->next;
                         }
-                        // Update next node's prev pointer
+                        // Update next->prev
                         pNode = pEventList->current;
                         pPrev = pNode->next;
                         if (pPrev != 0) {
@@ -349,7 +352,10 @@ void GameLoop::Cleanup() {
                         pData = 0;
                         if (pNode != 0) {
                             pData = pNode->data;
-                            delete pNode;
+                            pNode->data = 0;
+                            pNode->prev = 0;
+                            pNode->next = 0;
+                            operator delete(pNode);
                             pEventList->current = 0;
                         }
                         pEventList->current = pEventList->head;
@@ -360,10 +366,10 @@ void GameLoop::Cleanup() {
                 } while (pEventList->head != 0);
             }
         }
-        delete pEventList;
+        operator delete(pEventList);
         eventList = 0;
     }
-    
+
     currentHandler = 0;
 }
 
@@ -371,22 +377,24 @@ void GameLoop::Cleanup() {
 void GameLoop::DrawFrame() {
     EventList* pList;
     EventNode* pNode;
+    void* pData;
     Handler* pHandler;
-    
+
     pList = eventList;
     pList->current = pList->head;
     pList = eventList;
     if (pList->current == 0) {
         return;
     }
-    
+
     do {
         pList = eventList;
         pNode = pList->current;
-        pHandler = (Handler*)pNode->data;
-        if (pHandler == 0) {
+        pData = pNode->data;
+        if (pData == 0) {
             return;
         }
+        pHandler = (pNode != 0) ? (Handler*)pData : 0;
         pHandler->Update(0, currentHandler->handlerId);
         pList = eventList;
         pNode = pList->current;
@@ -402,7 +410,6 @@ void GameLoop::DrawFrame() {
 
 /* Function start: 0x417450 */
 void GameLoop::CleanupLoop() {
-    ZBufferManager* pZBuf;
     ZBQueue* pQueue;
     ZBQueue* pQueue9c;
     void* pResult;
@@ -411,10 +418,8 @@ void GameLoop::CleanupLoop() {
     EventNode* pCurrent;
     Handler* pHandler;
 
-    pZBuf = g_ZBufferManager_0043698c;
-
     // Process queue at offset 0xa0 - simple delete
-    pQueue = pZBuf->m_queueA0;
+    pQueue = g_ZBufferManager_0043698c->m_queueA0;
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
@@ -426,19 +431,28 @@ void GameLoop::CleanupLoop() {
     }
 
     // Process queue at offset 0xa4 - cleanup with destructors
-    pQueue = pZBuf->m_queueA4;
+    pQueue = g_ZBufferManager_0043698c->m_queueA4;
     if (pQueue->head != 0) {
         pQueue->current = pQueue->head;
         while (pQueue->head != 0) {
-            pResult = pQueue->Pop();
-            if (pResult != 0) {
-                delete (DrawEntry*)pResult;
+            DrawEntry* pEntry;
+            pEntry = (DrawEntry*)pQueue->Pop();
+            if (pEntry != 0) {
+                if (pEntry->m_videoBuffer != 0) {
+                    delete pEntry->m_videoBuffer;
+                    pEntry->m_videoBuffer = 0;
+                }
+                if (pEntry->m_childObject != 0) {
+                    delete (Animation*)pEntry->m_childObject;
+                    pEntry->m_childObject = 0;
+                }
+                operator delete(pEntry);
             }
         }
     }
 
     // Process queue at offset 0x9c - unlink and delete nodes
-    pQueue9c = pZBuf->m_queue9c;
+    pQueue9c = g_ZBufferManager_0043698c->m_queue9c;
     if (pQueue9c->head != 0) {
         pQueue9c->current = pQueue9c->head;
         while (pQueue9c->head != 0) {
@@ -470,14 +484,12 @@ void GameLoop::CleanupLoop() {
                 pQueue9c->current = pQueue9c->head;
             }
             if (pData != 0) {
-                RenderEntry* pEntry = (RenderEntry*)pData;
-                pEntry->rect.~GlyphRect();
-                delete (char*)pData;
+                delete (RenderEntry*)pData;
             }
         }
     }
 
-    // Process eventList - call Update(0) on each handler
+    // Process eventList - call ShutDown(0) on each handler
     pEventList = GameLoop::eventList;
     pEventList->current = pEventList->head;
     pEventList = GameLoop::eventList;
@@ -488,10 +500,11 @@ void GameLoop::CleanupLoop() {
     do {
         pEventList = GameLoop::eventList;
         pCurrent = pEventList->current;
-        pHandler = (Handler*)pCurrent->data;
-        if (pHandler == 0) {
+        pData = pCurrent->data;
+        if (pData == 0) {
             break;
         }
+        pHandler = (pCurrent != 0) ? (Handler*)pData : 0;
         pHandler->ShutDown(0);
         pEventList = GameLoop::eventList;
         pCurrent = pEventList->current;
@@ -524,34 +537,35 @@ void GameLoop::ProcessMessage(SC_Message* msg)
             strcpy(g_StateString_00436994, srcStr);
         }
     }
-    else if (msg->targetAddress == 0) {
-        result = 1;
-    }
-    else if (msg->targetAddress == 3) {
-        result = ProcessControlMessage(msg);
-    }
     else {
-        result = currentHandler->Exit(msg);
-        if (result == 0) {
-            pList = eventList;
-            pList->current = pList->head;
-            pNode = eventList->current;
-            if (pNode != 0) {
-                do {
-                    pNode = eventList->current;
-                    pData = (unsigned int)pNode->data;
-                    if (pData == 0) break;
-                    result = ((Handler*)pData)->Exit(msg);
-                    if (result != 0) break;
-                    pList = eventList;
-                    pNode = pList->current;
-                    if (pList->tail == pNode) break;
-                    if (pNode != 0) {
-                        pList->current = pNode->next;
-                    }
-                    pNode = eventList->current;
-                } while (pNode != 0);
+        int targetAddr = msg->targetAddress;
+        if (targetAddr != 0 && targetAddr != 3) {
+            result = currentHandler->Exit(msg);
+            if (result == 0) {
+                pList = eventList;
+                pList->current = pList->head;
+                pNode = eventList->current;
+                if (pNode != 0) {
+                    do {
+                        pNode = eventList->current;
+                        pData = (unsigned int)pNode->data;
+                        if (pData == 0) break;
+                        result = ((Handler*)pData)->Exit(msg);
+                        if (result != 0) break;
+                        pList = eventList;
+                        pNode = pList->current;
+                        if (pList->tail == pNode) break;
+                        if (pNode != 0) {
+                            pList->current = pNode->next;
+                        }
+                        pNode = eventList->current;
+                    } while (pNode != 0);
+                }
             }
+        } else if (targetAddr == 0) {
+            result = 1;
+        } else {
+            result = ProcessControlMessage(msg);
         }
     }
 

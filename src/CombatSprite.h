@@ -36,7 +36,7 @@ public:
     void Clear();                           // 0x415220
     void AllocateBuckets(int size, int flag);  // 0x415270
     void* AllocateNode();                   // 0x4152D0
-    void* Lookup(int index, int* outSlot);  // 0x415c10
+    void* Lookup(volatile int index, int* outSlot);  // 0x415c10
     void Resize(int size, int flag);        // 0x415c50
     void* AllocEntry();                     // 0x415cb0
 };

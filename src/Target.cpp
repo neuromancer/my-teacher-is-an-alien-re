@@ -21,11 +21,7 @@ extern CDData* g_CDData_0043697c;
 HotspotListData::~HotspotListData() {}
 
 /* Function start: 0x413DC0 */
-Target::Target() : Sprite((char*)0),
-    animRange(), hitRange(), timeRange(), progressRange(),
-    scoreWeight(), hitMissPoints(), combatBonus(),
-    combatBonus2(0), field_0x128(0),
-    animParam(), hitOffset()
+Target::Target() : Sprite((char*)0)
 {
     memset((char*)this + 0xd8, 0, 0x80);
 

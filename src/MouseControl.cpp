@@ -14,12 +14,7 @@
 /* Function start: 0x41ECA0 */
 MouseControl::MouseControl()
 {
-    memset(m_labels, 0, sizeof(m_labels));
-    m_sprite = 0;
-    m_sprite2 = 0;
-    memset(m_hotspots, 0, sizeof(m_hotspots));
-    m_audio = 0;
-
+    memset(m_labels, 0, 0x138);
     m_labels[0] = new char[16];
     m_labels[1] = new char[16];
     m_labels[2] = new char[16];
@@ -108,26 +103,30 @@ int MouseControl::LBLParse(char* line)
 /* Function start: 0x41F200 */
 void MouseControl::DrawCursor()
 {
+    InputState* pMouse;
+    Sprite* sprite;
+
     if (m_sprite == 0) {
         ShowError("missing mouse ");
     }
 
-    InputManager* mgr = g_InputManager_00436968;
     int final_x = 0;
-    InputState* pMouse = mgr->pMouse;
+    pMouse = g_InputManager_00436968->pMouse;
     if (pMouse != 0) {
         final_x = pMouse->x;
     }
 
-    Sprite* sprite = m_sprite;
-    if (sprite != 0) {
-        final_x -= m_hotspots[sprite->current_state].x;
-    } else {
+    sprite = m_sprite;
+    if (sprite == 0) {
         final_x -= (int)sprite;
+    } else {
+        final_x -= m_hotspots[sprite->current_state].x;
     }
 
-    int final_y = 0;
-    if (pMouse != 0) {
+    int final_y;
+    if (pMouse == 0) {
+        final_y = 0;
+    } else {
         final_y = pMouse->y;
     }
 

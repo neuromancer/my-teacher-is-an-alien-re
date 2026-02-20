@@ -56,28 +56,33 @@ SCI_SearchScreen::~SCI_SearchScreen() {
 
 /* Function start: 0x40AE80 */
 void SCI_SearchScreen::Init(SC_Message* msg) {
+    Palette* pal;
+    Palette** pPal;
+    Sample* smp;
+
     WriteToMessageLog("\nENTER SEARCH SCREEN");
     IconBar::InitIconBar(msg);
     if (msg->param1 == 5) {
         field_634 = 0;
     }
     if (msg->param1 == 6) {
-        if (field_634 != 0) {
-            field_634->enabled = 0;
-        }
+        field_634->enabled = 0;
         field_634 = 0;
     }
     field_640 = GetActiveControlCount();
-    if (field_600 != 0) {
-        if (g_ZBufferManager_0043698c->m_palette != 0) {
+    pal = field_600;
+    if (pal != 0) {
+        pPal = &g_ZBufferManager_0043698c->m_palette;
+        if (*pPal != 0) {
             WriteToMessageLog("ddouble palette");
         }
-        g_ZBufferManager_0043698c->m_palette = field_600;
+        *pPal = pal;
     }
 
-    if (field_638 != 0) {
-        field_638->Unload();
-        delete field_638;
+    smp = field_638;
+    if (smp != 0) {
+        smp->Unload();
+        operator delete(smp);
         field_638 = 0;
     }
 
@@ -105,10 +110,14 @@ int SCI_SearchScreen::ShutDown(SC_Message* msg) {
     }
 
     if ((((msg == 0 || msg->command == 6) || field_640 == 0)) && field_638 != 0) {
+        Sample* smp;
         field_638->~Sample();
-        field_638->Unload();
-        free(field_638);
-        field_638 = 0;
+        smp = field_638;
+        if (smp != 0) {
+            smp->Unload();
+            operator delete(smp);
+            field_638 = 0;
+        }
     }
 
     for (i = 0; i < 10; i++) {
@@ -132,9 +141,9 @@ int SCI_SearchScreen::AddMessage(SC_Message* msg) {
     if (IconBar::CheckButtonClick(msg)) {
         return 1;
     }
-    if (msg->mouseX > 1 && field_634 == 0) {
+    if (msg->mouseX >= 2 && field_634 == 0) {
         int index = FindControlAtMouse();
-        if (index >= 0) {
+        if (index > -1) {
             field_634 = field_60C[index];
         }
     }
@@ -188,25 +197,38 @@ void SCI_SearchScreen::Update(int param1, int param2) {
 
 /* Function start: 0x40B230 */
 int SCI_SearchScreen::FindControlAtMouse() {
-    int x, y;
-    InputState* pMouse = g_InputManager_00436968->pMouse;
-    if (pMouse == 0) {
-        x = 0;
-        y = 0;
-    } else {
-        x = pMouse->x;
-        y = pMouse->y;
-    }
+    DialogControl* dc;
+    InputState* pMouse;
+    int x;
+    int y;
+    int inRect;
 
-    for (int i = 0; i < 10; i++) {
-        DialogControl* dc = field_60C[i];
+    int i = 0;
+    do {
+        dc = field_60C[i];
         if (dc != 0) {
-            if (dc->enabled && x >= dc->rect.left && x <= dc->rect.right &&
-                y >= dc->rect.top && y <= dc->rect.bottom) {
+            pMouse = g_InputManager_00436968->pMouse;
+            y = 0;
+            if (pMouse != 0) {
+                y = pMouse->y;
+            }
+            if (pMouse != 0) {
+                x = pMouse->x;
+            } else {
+                x = 0;
+            }
+            if (dc->enabled == 0 || dc->rect.left > x || dc->rect.right < x ||
+                dc->rect.top > y || dc->rect.bottom < y) {
+                inRect = 0;
+            } else {
+                inRect = 1;
+            }
+            if (inRect != 0) {
                 return i;
             }
         }
-    }
+        i++;
+    } while (i < 10);
     return -1;
 }
 
@@ -231,26 +253,36 @@ int SCI_SearchScreen::LBLParse(char* line) {
     if (strcmp(token, "BACKGROUND") == 0) {
         background = new MMPlayer();
         ProcessFile(background, this, 0);
-    } else if (strcmp(token, "PALE") == 0) {
-        if (field_600 == 0) {
-            sscanf(line, "%s %s", token, arg1);
-            field_600 = new Palette();
-            char* path = CDData_FormatPath(arg1);
-            field_600->Load(path);
+        goto lbl_ret0;
+    }
+    if (strcmp(token, "PALE") == 0) {
+        sscanf(line, "%s %s", token, arg1);
+        if (field_600 != 0) {
+            goto lbl_ret0;
         }
-    } else if (strcmp(token, "AMBIENTS") == 0) {
+        Palette* pal;
+        pal = new Palette();
+        field_600 = pal;
+        pal->Load(CDData_FormatPath(arg1));
+        goto lbl_ret0;
+    }
+    if (strcmp(token, "AMBIENTS") == 0) {
         ambients = new MMPlayer2();
         ProcessFile(ambients, this, 0);
-    } else if (strcmp(token, "HOTSPOT") == 0) {
+        goto lbl_ret0;
+    }
+    if (strcmp(token, "HOTSPOT") == 0) {
         DialogControl* dc = new DialogControl();
         field_60C[field_63C] = dc;
-        ProcessFile(dc, this, 0);
+        ProcessFile(field_60C[field_63C], this, 0);
         field_63C++;
-    } else if (strcmp(token, "END") == 0) {
-        return 1;
-    } else {
-        return Parser::LBLParse("SCI_SearchScreen");
+        goto lbl_ret0;
     }
+    if (strcmp(token, "END") == 0) {
+        return 1;
+    }
+    Parser::LBLParse("SCI_SearchScreen");
 
+lbl_ret0:
     return 0;
 }

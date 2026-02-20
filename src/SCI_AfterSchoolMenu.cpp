@@ -56,7 +56,7 @@ int SCI_AfterSchoolMenu::LBLParse(char* line) {
     } else if (strcmp(label, "CHAR") == 0) {
         hotspot = new T_Hotspot();
         characters[characterCount] = hotspot;
-        Parser::ProcessFile(hotspot, this, (char*)0);
+        Parser::ProcessFile(characters[characterCount], this, (char*)0);
         characterCount = characterCount + 1;
     } else if (strcmp(label, "CANCEL") == 0) {
         hotspot = new T_Hotspot();
@@ -648,16 +648,16 @@ void SCI_AfterSchoolMenu::ProcessCharacterHover(MousePoint pt) {
     int noHit = 1;
 
     for (i = 0, charPtr = characters; i < 3; i++, charPtr++) {
-        isHit = 0;
         {
             MousePoint local_pt = pt;
-            if ((*charPtr)->enabled != 0) {
-                if ((*charPtr)->rect.left > local_pt.x || (*charPtr)->rect.right < local_pt.x ||
-                    (*charPtr)->rect.top > local_pt.y || (*charPtr)->rect.bottom < local_pt.y) {
-                    isHit = 0;
-                } else {
-                    isHit = 1;
-                }
+            if ((*charPtr)->enabled == 0) {
+                continue;
+            }
+            if ((*charPtr)->rect.left > local_pt.x || (*charPtr)->rect.right < local_pt.x ||
+                (*charPtr)->rect.top > local_pt.y || (*charPtr)->rect.bottom < local_pt.y) {
+                isHit = 0;
+            } else {
+                isHit = 1;
             }
         }
 
@@ -668,12 +668,14 @@ void SCI_AfterSchoolMenu::ProcessCharacterHover(MousePoint pt) {
                 (*charPtr)->SetState(3);
             }
 
-            if (prevHoverCharacter == -1) {
+            if (prevHoverCharacter != -1) {
+                if (prevHoverCharacter != i) {
+                    characters[prevHoverCharacter]->SetState(0);
+                    prevHoverCharacter = i;
+                }
+            } else {
                 prevHoverCharacter = i;
                 (*charPtr)->SetState(3);
-            } else if (i != prevHoverCharacter) {
-                characters[prevHoverCharacter]->SetState(0);
-                prevHoverCharacter = i;
             }
             noHit = 0;
         }

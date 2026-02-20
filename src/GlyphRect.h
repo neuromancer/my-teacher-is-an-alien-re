@@ -8,7 +8,8 @@ struct GlyphRect {
     int right;   // 0x08 - right edge X coordinate
     int bottom;  // 0x0C - bottom edge Y coordinate
     GlyphRect() {
-        memset(this, 0, sizeof(GlyphRect));
+        left = 0;
+        top = 0;
     }
     GlyphRect(int l, int t, int r, int b) {
         left = l;
