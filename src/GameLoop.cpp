@@ -105,65 +105,56 @@ void GameLoop::Run() {
 
     ResetLoop();
 
-    if (field_0x00 != 0) {
-        goto exit_loop;
-    }
-
-loop_start:
-    ProcessInput();
-    if (field_0x00 != 0) {
-        goto exit_loop;
-    }
-
-    UpdateGame();
-    if (field_0x00 != 0) {
-        goto exit_loop;
-    }
-
-    DrawFrame();
-    g_ZBufferManager_0043698c->ProcessRenderQueues();
-
-    elapsedTime = timer1->Update();
-    if (elapsedTime < (unsigned int)field_0x08) {
-        do {
-            SmackSoundCheck();
-            elapsedTime = timer1->Update();
-        } while (elapsedTime < (unsigned int)field_0x08);
-    }
-
-    if (g_GameState_00436998 == 0) {
-        goto skip_debug;
-    }
-    pGameState = g_GameState_00436998;
-    if (pGameState->maxStates <= 4) {
-        ShowError("GameState Error  #%d", 1);
-    }
-    if (pGameState->stateValues[4] == 0) {
-        goto skip_debug;
-    }
-    mouseY = 0;
-    pMouse = g_InputManager_00436968->pMouse;
-    if (pMouse != 0) {
-        mouseY = pMouse->y;
-    }
-    if (pMouse != 0) {
-        mouseX = pMouse->x;
-    } else {
-        mouseX = 0;
-    }
-    elapsedTime = timer1->Update();
-    sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
-    g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
-
-skip_debug:
-    timer1->Reset();
-    g_ZBufferManager_0043698c->UpdateScreen();
-
     if (field_0x00 == 0) {
-        goto loop_start;
+        do {
+            ProcessInput();
+            if (field_0x00 != 0) {
+                break;
+            }
+
+            UpdateGame();
+            if (field_0x00 != 0) {
+                break;
+            }
+
+            DrawFrame();
+            g_ZBufferManager_0043698c->ProcessRenderQueues();
+
+            elapsedTime = timer1->Update();
+            if (elapsedTime < (unsigned int)field_0x08) {
+                do {
+                    SmackSoundCheck();
+                    elapsedTime = timer1->Update();
+                } while (elapsedTime < (unsigned int)field_0x08);
+            }
+
+            if (g_GameState_00436998 != 0) {
+                pGameState = g_GameState_00436998;
+                if (pGameState->maxStates <= 4) {
+                    ShowError("GameState Error  #%d", 1);
+                }
+                if (pGameState->stateValues[4] != 0) {
+                    mouseY = 0;
+                    pMouse = g_InputManager_00436968->pMouse;
+                    if (pMouse != 0) {
+                        mouseY = pMouse->y;
+                    }
+                    if (pMouse != 0) {
+                        mouseX = pMouse->x;
+                    } else {
+                        mouseX = 0;
+                    }
+                    elapsedTime = timer1->Update();
+                    sprintf(g_Buffer_00436960, "FT %d, [%d,%d]", elapsedTime, mouseX, mouseY);
+                    g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, 0x14, 0x1e, 10000, 8);
+                }
+            }
+
+            timer1->Reset();
+            g_ZBufferManager_0043698c->UpdateScreen();
+        } while (field_0x00 == 0);
     }
 
-exit_loop:
     CleanupLoop();
 }
 

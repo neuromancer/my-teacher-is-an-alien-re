@@ -66,16 +66,16 @@ Character::Character(char* param_1) {
                     do {
                         if (((CharSprite*)pQueue->current->data)->priority < sprite->priority) {
                             pQueue->InsertNode(sprite);
-                            goto next_peter;
+                            break;
                         }
                         if (pQueue->tail == pQueue->current) {
                             pQueue->PushNode(sprite);
-                            goto next_peter;
+                            break;
                         }
                         if (pQueue->current != 0) {
                             pQueue->current = pQueue->current->next;
                         }
-                        if (pQueue->current == 0) goto next_peter;
+                        if (pQueue->current == 0) break;
                     } while (1);
                 } else {
                     pQueue->AddAfterCurrent(sprite);
@@ -83,7 +83,6 @@ Character::Character(char* param_1) {
             } else {
                 pQueue->AddAfterCurrent(sprite);
             }
-        next_peter:
             counter++;
         } while (counter < 1);
     }
@@ -118,16 +117,16 @@ Character::Character(char* param_1) {
                     do {
                         if (((CharSprite*)pQueue->current->data)->priority < sprite->priority) {
                             pQueue->InsertNode(sprite);
-                            goto next_susan;
+                            break;
                         }
                         if (pQueue->tail == pQueue->current) {
                             pQueue->PushNode(sprite);
-                            goto next_susan;
+                            break;
                         }
                         if (pQueue->current != 0) {
                             pQueue->current = pQueue->current->next;
                         }
-                        if (pQueue->current == 0) goto next_susan;
+                        if (pQueue->current == 0) break;
                     } while (1);
                 } else {
                     pQueue->AddAfterCurrent(sprite);
@@ -135,7 +134,6 @@ Character::Character(char* param_1) {
             } else {
                 pQueue->AddAfterCurrent(sprite);
             }
-        next_susan:
             counter++;
         } while (counter < 1);
     }
@@ -170,16 +168,16 @@ Character::Character(char* param_1) {
                     do {
                         if (((CharSprite*)pQueue->current->data)->priority < sprite->priority) {
                             pQueue->InsertNode(sprite);
-                            goto next_duncan;
+                            break;
                         }
                         if (pQueue->tail == pQueue->current) {
                             pQueue->PushNode(sprite);
-                            goto next_duncan;
+                            break;
                         }
                         if (pQueue->current != 0) {
                             pQueue->current = pQueue->current->next;
                         }
-                        if (pQueue->current == 0) goto next_duncan;
+                        if (pQueue->current == 0) break;
                     } while (1);
                 } else {
                     pQueue->AddAfterCurrent(sprite);
@@ -187,7 +185,6 @@ Character::Character(char* param_1) {
             } else {
                 pQueue->AddAfterCurrent(sprite);
             }
-        next_duncan:
             counter++;
         } while (counter < 1);
     } else {

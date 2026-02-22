@@ -84,45 +84,45 @@ void RockThrower::UpdateProjectiles() {
     Projectile** projectiles;
     int i;
 
-    if (g_InputManager_00436968->mouseValid == 0) {
-        goto update_all;
-    }
-
-    DrawCrosshairs();
-
-    pMouse = g_InputManager_00436968->pMouse;
-    buttonState = 0;
-    if (pMouse != 0) {
-        buttonState = pMouse->buttons & 1;
-    }
-
-    if (buttonState == 0 && (pMouse->prevButtons & 1) != 0) {
-        RockThrower::field_0xa0 = 1;
-    } else {
-        RockThrower::field_0xa0 = 0;
-    }
-
-    i = 0;
-    if (RockThrower::field_0xa0 == 0) {
-        goto update_all;
-    }
-
-    OnHit();
-
-    if (RockThrower::m_itemCount <= 0) {
-        goto update_all;
-    }
-
-    projectiles = RockThrower::m_items;
     do {
-        if (projectiles[i]->active == 0) {
-            RockThrower::m_items[i]->Launch();
-            goto update_all;
+        if (g_InputManager_00436968->mouseValid == 0) {
+            break;
         }
-        i++;
-    } while (i < RockThrower::m_itemCount);
 
-update_all:
+        DrawCrosshairs();
+
+        pMouse = g_InputManager_00436968->pMouse;
+        buttonState = 0;
+        if (pMouse != 0) {
+            buttonState = pMouse->buttons & 1;
+        }
+
+        if (buttonState == 0 && (pMouse->prevButtons & 1) != 0) {
+            RockThrower::field_0xa0 = 1;
+        } else {
+            RockThrower::field_0xa0 = 0;
+        }
+
+        i = 0;
+        if (RockThrower::field_0xa0 == 0) {
+            break;
+        }
+
+        OnHit();
+
+        if (RockThrower::m_itemCount <= 0) {
+            break;
+        }
+
+        projectiles = RockThrower::m_items;
+        do {
+            if (projectiles[i]->active == 0) {
+                RockThrower::m_items[i]->Launch();
+                break;
+            }
+            i++;
+        } while (i < RockThrower::m_itemCount);
+    } while (0);
     i = 0;
     g_ProjectileHits_0043d150 = 0;
     RockThrower::field_0xb0 = 0;

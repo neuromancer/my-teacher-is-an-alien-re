@@ -270,35 +270,33 @@ int ParseCommandLineArgs(char *param_1, char **param_2, int param_3)
     int iVar1;
 
     iVar1 = 0;
-    if (param_3 <= 0) goto done;
-
-outer_loop:
-    if (*param_1 == '\0') goto done;
-
-    do {
-        if ((__mb_cur_max > 1 ? _isctype(*param_1, _SPACE) : _pctype[*param_1] & _SPACE) == 0) {
-            break;
-        }
-        param_1 = param_1 + 1;
-    } while (*param_1 != '\0');
-    *param_2 = param_1;
-    if (*param_1 != '\0') {
+    if (param_3 > 0) {
         do {
-            if ((__mb_cur_max > 1 ? _isctype(*param_1, _SPACE) : _pctype[*param_1] & _SPACE) != 0) {
-                break;
-            }
-            param_1 = param_1 + 1;
-        } while (*param_1 != '\0');
-        if (*param_1 != '\0') {
-            *param_1 = '\0';
-            param_1 = param_1 + 1;
-        }
-    }
-    param_2 = param_2 + 1;
-    iVar1 = iVar1 + 1;
-    if (iVar1 < param_3) goto outer_loop;
+            if (*param_1 == '\0') break;
 
-done:
+            do {
+                if ((__mb_cur_max > 1 ? _isctype(*param_1, _SPACE) : _pctype[*param_1] & _SPACE) == 0) {
+                    break;
+                }
+                param_1 = param_1 + 1;
+            } while (*param_1 != '\0');
+            *param_2 = param_1;
+            if (*param_1 != '\0') {
+                do {
+                    if ((__mb_cur_max > 1 ? _isctype(*param_1, _SPACE) : _pctype[*param_1] & _SPACE) != 0) {
+                        break;
+                    }
+                    param_1 = param_1 + 1;
+                } while (*param_1 != '\0');
+                if (*param_1 != '\0') {
+                    *param_1 = '\0';
+                    param_1 = param_1 + 1;
+                }
+            }
+            param_2 = param_2 + 1;
+            iVar1 = iVar1 + 1;
+        } while (iVar1 < param_3);
+    }
     return iVar1;
 }
 

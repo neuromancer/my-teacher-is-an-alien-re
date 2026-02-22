@@ -114,10 +114,7 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
     pList->current = pList->head;
     counter = 0;
 
-    if (pList->head == 0) {
-        goto check_timer;
-    }
-
+    if (pList->head != 0) {
     do {
         msgItem = 0;
         pList = m_messageList;
@@ -188,8 +185,8 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
         }
         pList = m_messageList;
     } while (pList->head != 0);
+    }
 
-check_timer:
     uVar3 = timer.Update();
     if (uVar3 > 60000) {
         SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);

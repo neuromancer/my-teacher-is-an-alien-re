@@ -60,27 +60,26 @@ void SC_Sound::Update(int param1, int param2) {
     if (list != 0) {
         list->current = list->head;
         if (list->head != 0) {
-loop_top:
-            {
-                SoundItem* soundItem = (SoundItem*)list->GetCurrentData();
+            do {
+                {
+                    SoundItem* soundItem = (SoundItem*)list->GetCurrentData();
 
-                if (soundItem->IsFinished()) {
-                    SoundItem* data = (SoundItem*)list->RemoveCurrent();
-                    if (data != 0) {
-                        delete data;
+                    if (soundItem->IsFinished()) {
+                        SoundItem* data = (SoundItem*)list->RemoveCurrent();
+                        if (data != 0) {
+                            delete data;
+                        }
                     }
                 }
-            }
 
-            if (list->tail == list->current) goto done;
-            if (list->current != 0) {
-                list->current = (MessageNode*)list->current->next;
-            }
-            if (list->head != 0) goto loop_top;
+                if (list->tail == list->current) break;
+                if (list->current != 0) {
+                    list->current = (MessageNode*)list->current->next;
+                }
+            } while (list->head != 0);
         }
     }
 
-done:
     if (handlerId == param2) {
         ShowError("SC_Sound::Update");
     }
@@ -161,27 +160,27 @@ int SC_Sound::Exit(SC_Message* msg) {
     {
         list->current = list->head;
         if (list->head != 0) {
-case20_loop:
-            {
-                MessageNode* node = (MessageNode*)list->current;
+            do {
+                {
+                    MessageNode* node = (MessageNode*)list->current;
 
-                if (node == 0) {
-                    if (msg->sourceAddress == *(int*)0x18) goto remove;
-                } else if (((SoundItem*)node->data)->soundId == msg->sourceAddress) {
-                remove:
-                    ;
-                    SoundItem* data = (SoundItem*)list->RemoveCurrent();
-                    if (data != 0) {
-                        delete data;
+                    if (node == 0) {
+                        if (msg->sourceAddress == *(int*)0x18) goto remove;
+                    } else if (((SoundItem*)node->data)->soundId == msg->sourceAddress) {
+                    remove:
+                        ;
+                        SoundItem* data = (SoundItem*)list->RemoveCurrent();
+                        if (data != 0) {
+                            delete data;
+                        }
                     }
                 }
-            }
 
-            if (list->tail == list->current) break;
-            if (list->current != 0) {
-                list->current = (MessageNode*)list->current->next;
-            }
-            if (list->head != 0) goto case20_loop;
+                if (list->tail == list->current) break;
+                if (list->current != 0) {
+                    list->current = (MessageNode*)list->current->next;
+                }
+            } while (list->head != 0);
         }
         break;
     }

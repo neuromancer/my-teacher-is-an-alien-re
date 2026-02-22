@@ -136,14 +136,11 @@ void EngineB::UpdateMeter() {
     // Calculate progress bar position
     progressCurrent = EngineB::m_progress.start;
     barPos = (progressCurrent * 0x36) / progressMax - rand() % 3 + 1;
-    if (barPos < 0) goto barZero;
-    if (barPos > 0x36) {
+    if (barPos < 0) {
+      barPos = 0;
+    } else if (barPos > 0x36) {
       barPos = 0x36;
     }
-    goto barReady;
-barZero:
-    barPos = 0;
-barReady:
     barPos = barPos * 4 + 2;
 
     // Draw first part of progress bar

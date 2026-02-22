@@ -64,49 +64,41 @@ mCNavigator::~mCNavigator()
     ObjectPool* pool;
 
     pool = navNodePool;
-    if (pool == 0) {
-        goto check_sprite;
-    }
-
-    if (pool->memory == 0) {
-        goto free_memory;
-    }
-
-    i = 0;
-    if (pool->size == 0) {
-        goto free_memory;
-    }
-
-    do {
-        NavNode* node = ((NavNode**)pool->memory)[i];
-        while (node) {
-            CleanupObjectArray(&node->value, 1);
-            n = 0;
-            while (n--)
-                ;
-            node = node->next;
+    if (pool != 0) {
+        if (pool->memory != 0) {
+            i = 0;
+            if (pool->size != 0) {
+                do {
+                    NavNode* node = ((NavNode**)pool->memory)[i];
+                    while (node) {
+                        CleanupObjectArray(&node->value, 1);
+                        n = 0;
+                        while (n--)
+                            ;
+                        node = node->next;
+                    }
+                    i++;
+                } while (i < pool->size);
+            }
         }
-        i++;
-    } while (i < pool->size);
 
-free_memory:
-    delete pool->memory;
-    pool->memory = 0;
-    pool->allocatedCount = 0;
-    pool->freeList = 0;
+        delete pool->memory;
+        pool->memory = 0;
+        pool->allocatedCount = 0;
+        pool->freeList = 0;
 
-    block = pool->memoryBlock;
-    while (block) {
-        next = *(void**)block;
-        delete block;
-        block = next;
+        block = pool->memoryBlock;
+        while (block) {
+            next = *(void**)block;
+            delete block;
+            block = next;
+        }
+        pool->memoryBlock = 0;
+
+        delete pool;
+        navNodePool = 0;
     }
-    pool->memoryBlock = 0;
 
-    delete pool;
-    navNodePool = 0;
-
-check_sprite:
     if (sprite) {
         delete sprite;
         sprite = 0;

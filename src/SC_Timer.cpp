@@ -57,38 +57,34 @@ void SC_Timer::Update(int param_1, int param_2) {
   pQueue = m_eventList;
   pQueue->current = pQueue->head;
 
-  if (pQueue->head == 0)
-    goto end_loop;
+  if (pQueue->head != 0) {
+    do {
+      pQueue = m_eventList;
+      pNode = (QueueNode *)pQueue->current;
+      TimedEvent *pEvent = 0;
+      if (pNode != 0) {
+        pEvent = (TimedEvent *)pNode->data;
+      }
+      if (pEvent->Update()) {
+        pQueue = m_eventList;
+        pData = pQueue->RemoveCurrent();
+        if (pData != 0) {
+          delete (TimedEvent *)pData;
+        }
+      }
+      pQueue = m_eventList;
+      pNode = (QueueNode *)pQueue->current;
+      if (pQueue->tail == pNode) {
+        break;
+      }
+      if (pNode != 0) {
+        pQueue->current = pNode->next;
+      }
 
-loop: {
-  pQueue = m_eventList;
-  pNode = (QueueNode *)pQueue->current;
-  TimedEvent *pEvent = 0;
-  if (pNode != 0) {
-    pEvent = (TimedEvent *)pNode->data;
-  }
-  if (pEvent->Update()) {
-    pQueue = m_eventList;
-    pData = pQueue->RemoveCurrent();
-    if (pData != 0) {
-      delete (TimedEvent *)pData;
-    }
-  }
-}
-  pQueue = m_eventList;
-  pNode = (QueueNode *)pQueue->current;
-  if (pQueue->tail == pNode) {
-    goto end_loop;
-  }
-  if (pNode != 0) {
-    pQueue->current = pNode->next;
+      pQueue = m_eventList;
+    } while (pQueue->head != 0);
   }
 
-  pQueue = m_eventList;
-  if (pQueue->head != 0)
-    goto loop;
-
-end_loop:
   if (m_messageId == param_2) {
     ShowError("SC_Timer::Update - Timeout waiting for event");
   }
@@ -155,11 +151,11 @@ int SC_Timer::Input(void *param_1) {
             if (((TimedEvent *)pNode->data)->m_duration <
                 (unsigned int)pNewEvent->m_duration) {
               pQueue->Insert(pNewEvent);
-              goto done_0x13;
+              break;
             }
             if (pQueue->tail == pNode) {
               pQueue->Push(pNewEvent);
-              goto done_0x13;
+              break;
             }
             if (pNode != 0) {
               pQueue->current = pNode->next;
@@ -173,7 +169,6 @@ int SC_Timer::Input(void *param_1) {
       ((SC_Message *)msg)->Dump(0);
       ShowError("SC_Timer::Input");
     }
-  done_0x13:
     break;
   case 0x14:
     pNewEvent = new TimedEvent();
