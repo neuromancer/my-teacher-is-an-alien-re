@@ -1,8 +1,6 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-void Timer_DecrementCounter();
-
 struct Timer {
     unsigned int m_pauseDuration;
     unsigned int m_unknown4;
@@ -11,9 +9,7 @@ struct Timer {
     unsigned int m_elapsedTime;
 
     Timer();
-    inline ~Timer() {
-        Timer_DecrementCounter();
-    }
+    ~Timer();
     void Reset();
     unsigned int Update();
     void Wait(unsigned int);

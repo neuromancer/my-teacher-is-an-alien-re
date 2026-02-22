@@ -77,7 +77,6 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
                 }
                 // Cleanup data object
                 if (data != 0) {
-                    Timer_DecrementCounter();
                     delete data;
                 }
             }
@@ -166,7 +165,6 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
             }
             // Cleanup data object
             if (pvVar6 != 0) {
-                Timer_DecrementCounter();
                 delete pvVar6;
             }
         }

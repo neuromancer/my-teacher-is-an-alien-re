@@ -18,7 +18,7 @@ Timer::Timer()
 }
 
 /* Function start: 0x418EE0 */
-void Timer_DecrementCounter()
+Timer::~Timer()
 {
     g_timer_count--;
 }
