@@ -100,38 +100,34 @@ void SearchScreen::Update(int param1, int param2) {
     if (spr != 0) {
         spr->Do(spr->loc_x, spr->loc_y, 1.0);
     }
-    idx = scrollOffset;
-    if (idx < scrollOffset + 0xe) {
-        do {
+    for (idx = scrollOffset; idx < scrollOffset + 0xe; idx++) {
+        stateStr = g_GameState_00436998->GetState(idx);
+        if (stateStr != 0) {
             stateStr = g_GameState_00436998->GetState(idx);
-            if (stateStr != 0) {
-                stateStr = g_GameState_00436998->GetState(idx);
-                sprintf(g_Buffer_00436960, "%s", stateStr);
-            } else {
-                sprintf(g_Buffer_00436960, "\"NOLABEL\"");
-            }
-            y = (idx - scrollOffset + 1) * rowHeight + textY;
-            g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX, y, 10000, 8);
+            sprintf(g_Buffer_00436960, "%s", stateStr);
+        } else {
+            sprintf(g_Buffer_00436960, "\"NOLABEL\"");
+        }
+        y = (idx - scrollOffset + 1) * rowHeight + textY;
+        g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX, y, 10000, 8);
 
-            pGameState = g_GameState_00436998;
-            if (idx > 0 && pGameState->maxStates <= idx) {
-                ShowError("GameState Error  #%d", 1);
-            }
-            sprintf(g_Buffer_00436960, "%d", pGameState->stateValues[idx]);
-            g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX + 0x15e, y, 10000, 8);
+        pGameState = g_GameState_00436998;
+        if (idx > 0 && pGameState->maxStates <= idx) {
+            ShowError("GameState Error  #%d", 1);
+        }
+        sprintf(g_Buffer_00436960, "%d", pGameState->stateValues[idx]);
+        g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX + 0x15e, y, 10000, 8);
 
-            rowIdx = idx - scrollOffset;
-            localRect.left = 0;
-            localRect.right = 0x27f;
-            localRect.top = rowIdx * rowHeight + textY;
-            localRect.bottom = (rowIdx + 1) * rowHeight + textY;
+        rowIdx = idx - scrollOffset;
+        localRect.left = 0;
+        localRect.right = 0x27f;
+        localRect.top = rowIdx * rowHeight + textY;
+        localRect.bottom = (rowIdx + 1) * rowHeight + textY;
 
-            if (selectedRow != idx) {
-            } else {
-                g_ZBufferManager_0043698c->DrawRect(0, localRect.top, 0x27f, localRect.bottom, 0x28, 8, 1);
-            }
-            idx = idx + 1;
-        } while (idx < scrollOffset + 0xe);
+        if (selectedRow != idx) {
+        } else {
+            g_ZBufferManager_0043698c->DrawRect(0, localRect.top, 0x27f, localRect.bottom, 0x28, 8, 1);
+        }
     }
     g_Mouse_00436978->DrawCursor();
 }

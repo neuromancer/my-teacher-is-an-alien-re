@@ -117,16 +117,14 @@ int Handler6::ShutDown(SC_Message* msg) {
 
     // Cleanup hotspots array at 0x608
     Hotspot** ptr = hotspots;
-    int remaining = 10;
-    do {
+    for (int remaining = 10; remaining != 0; remaining--) {
         Hotspot* hs = *ptr;
         if (hs != 0) {
             delete hs;
             *ptr = 0;
         }
         ptr++;
-        remaining--;
-    } while (remaining != 0);
+    }
 
     // Reset counters
     hotspotCount = 0;
@@ -270,15 +268,13 @@ int Handler6::CountActiveHotspots() {
 
     count = 0;
     ptr = hotspots;
-    remaining = 10;
-    do {
+    for (remaining = 10; remaining != 0; remaining--) {
         hotspot = *ptr;
         if (hotspot != 0 && hotspot->field_D0 != 0) {
             count++;
         }
         ptr++;
-        remaining--;
-    } while (remaining != 0);
+    }
 
     return count;
 }

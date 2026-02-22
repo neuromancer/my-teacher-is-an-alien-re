@@ -66,8 +66,7 @@ Handler4::Handler4() {
     paths3->loc_y = 0x53;
 
     {
-        int count = 3;
-        do {
+        for (int count = 3; count != 0; count--) {
             (&buttons1)[3 - count]->flags &= ~2;
             (&buttons1)[3 - count]->priority = 10;
             (&buttons1)[3 - count]->SetState(3);
@@ -81,8 +80,7 @@ Handler4::Handler4() {
             (&paths1)[3 - count]->SetRange(0, 1, 1);
             (&paths1)[3 - count]->SetRange(1, 2, 2);
             (&paths1)[3 - count]->SetRange(2, 3, 3);
-            count--;
-        } while (count != 0);
+        }
     }
 
     puzztest = new Sprite("puzzle1\\puzztest.smk");
@@ -113,8 +111,7 @@ Handler4::Handler4() {
     topfloor->loc_y = 0x11c;
 
     {
-        int count = 3;
-        do {
+        for (int count = 3; count != 0; count--) {
             (&lowfloor)[3 - count]->flags &= ~2;
             (&lowfloor)[3 - count]->priority = 10;
             (&lowfloor)[3 - count]->flags |= 0x40;
@@ -123,8 +120,7 @@ Handler4::Handler4() {
             (&lowfloor)[3 - count]->SetRange(1, 5, 8);
             (&lowfloor)[3 - count]->SetRange(2, 9, 12);
             (&lowfloor)[3 - count]->SetRange(3, 13, 16);
-            count--;
-        } while (count != 0);
+        }
     }
 
     for (int i = 0; i < 10; i++) {
@@ -342,20 +338,16 @@ void Handler4::ResetPuzzle() {
     initialized = 0;
 
     Sprite** pFloor = &lowfloor;
-    int i = 3;
-    do {
+    for (int i = 3; i != 0; i--) {
         (*pFloor)->SetState2(3);
         pFloor++;
-        i--;
-    } while (i != 0);
+    }
 
     int* pSound = soundStates;
-    int j = 10;
-    do {
+    for (int j = 10; j != 0; j--) {
         *pSound = 1;
         pSound++;
-        j--;
-    } while (j != 0);
+    }
 }
 
 /* Function start: 0x40F370 */
@@ -463,12 +455,10 @@ void Handler4::DisplayThisFloorRow() {
         } while (pRow < &floorRow[3]);
     }
 
-    i = 3;
-    do {
+    for (i = 3; i != 0; i--) {
         (*pFloor)->Do((*pFloor)->loc_x, (*pFloor)->loc_y, 1.0);
         pFloor++;
-        i--;
-    } while (i != 0);
+    }
 }
 
 /* Function start: 0x40EFB0 */
@@ -555,21 +545,18 @@ int Handler4::CheckSolution() {
 
     while (1) {
         int local_24[9];
-        int j = 9;
+        int j;
         int* pT = local_24;
-        do {
+        for (j = 9; j != 0; j--) {
             *pT = 0;
             pT++;
-            j--;
-        } while (j != 0);
+        }
 
-        j = 3;
         int* pS = (int*)pEntry;
-        do {
+        for (j = 3; j != 0; j--) {
             local_24[*pS] = 1;
             pS++;
-            j--;
-        } while (j != 0);
+        }
 
         puzzleSolved = 1;
         int* pV = local_24;

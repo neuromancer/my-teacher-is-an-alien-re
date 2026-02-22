@@ -246,13 +246,9 @@ void EngineB::OnProcessEnd() {
   EngineB::m_weaponParser = g_Weapon_00435f14;
 
   // Update field_0x108 on all targets
-  i = 0;
-  if (g_TargetList_00435f0c->count > 0) {
-    do {
-      Target* pTarget = g_TargetList_00435f0c->targets[i];
-      i++;
-      pTarget->progressRange.end = *EngineB::m_targetConfig;
-    } while (i < g_TargetList_00435f0c->count);
+  for (i = 0; i < g_TargetList_00435f0c->count; i++) {
+    Target* pTarget = g_TargetList_00435f0c->targets[i];
+    pTarget->progressRange.end = *EngineB::m_targetConfig;
   }
 
   // Create SoundList at m_localSoundList

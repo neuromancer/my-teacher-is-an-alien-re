@@ -77,10 +77,9 @@ void AnimatedAsset::BuildGlyphTable()
     int count = glyphCount << 4 >> 2;
     glyphTable = table;
     int* p = (int*)table;
-    while (count != 0) {
+    for (; count != 0; count--) {
         *p = 0;
         p++;
-        count--;
     }
 
     int baseColMinus1 = buffer->height - 1;

@@ -37,22 +37,18 @@ TargetList::~TargetList() {
   if (ht) {
     if (ht->buckets) {
       int* buckets = ht->buckets;
-      int n = ht->numBuckets;
-      if (n > 0) {
-        do {
-          HashNode* node = (HashNode*)*buckets;
-          if (node) {
-            do {
-              int i = 0;
-              while (i--) {}
-              i = 0;
-              while (i--) {}
-              node = node->next;
-            } while (node);
-          }
-          buckets++;
-          n--;
-        } while (n);
+      for (int n = ht->numBuckets; n > 0; n--) {
+        HashNode* node = (HashNode*)*buckets;
+        if (node) {
+          do {
+            int i = 0;
+            while (i--) {}
+            i = 0;
+            while (i--) {}
+            node = node->next;
+          } while (node);
+        }
+        buckets++;
       }
       free(ht->buckets);
     }

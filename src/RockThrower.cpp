@@ -115,23 +115,19 @@ void RockThrower::UpdateProjectiles() {
         }
 
         projectiles = RockThrower::m_items;
-        do {
+        for (; i < RockThrower::m_itemCount; i++) {
             if (projectiles[i]->active == 0) {
                 RockThrower::m_items[i]->Launch();
                 break;
             }
-            i++;
-        } while (i < RockThrower::m_itemCount);
+        }
     } while (0);
     i = 0;
     g_ProjectileHits_0043d150 = 0;
     RockThrower::field_0xb0 = 0;
 
-    if (RockThrower::m_itemCount > 0) {
-        do {
-            RockThrower::m_items[i]->Update();
-            i++;
-        } while (i < RockThrower::m_itemCount);
+    for (i = 0; i < RockThrower::m_itemCount; i++) {
+        RockThrower::m_items[i]->Update();
     }
 
     RockThrower::field_0xb0 = g_ProjectileHits_0043d150;

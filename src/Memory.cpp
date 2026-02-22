@@ -50,19 +50,15 @@ void* AllocateMemoryInternal(unsigned int size, int flag)
     if (size == 0) {
         size = 1;
     }
-loop:
-    mem = HeapAllocWrapper(size);
-    if (mem != 0) {
-        goto done;
+    while (1) {
+        mem = HeapAllocWrapper(size);
+        if (mem != 0) break;
+        if (flag == 0) break;
+        if (OutOfMemoryHandler(size) == 0) {
+            mem = 0;
+            break;
+        }
     }
-    if (flag == 0) {
-        goto done;
-    }
-    if (OutOfMemoryHandler(size) != 0) {
-        goto loop;
-    }
-    mem = 0;
-done:
     return mem;
 }
 

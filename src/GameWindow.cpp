@@ -108,39 +108,35 @@ void __stdcall ParseCommandLine(char *param_1) {
     *piVar2 = 0;
     piVar2 = piVar2 + 1;
   }
-  if (0 < iVar1) {
-    piVar3 = local_50;
-    do {
-      if (_strnicmp(*piVar3, "-mis", 4) == 0) {
-        strcpy(g_CmdLineDataPath_0043d568, *piVar3 + 4);
-      }
-      else if (_strcmpi(*piVar3, "-w") == 0) {
-        *GetWindowedModeFlag() = 1;
-      }
-      else if (_strcmpi(*piVar3, "-dd") == 0) {
-        g_CmdLineInputMode_0043d560 = 1;
-      }
-      else if (_strcmpi(*piVar3, "-dd3") == 0) {
-        g_CmdLineInputMode_0043d560 = 2;
-      }
-      else if (_strnicmp(*piVar3, "-lq", 3) == 0) {
-        AddToStringTable(*piVar3 + 3);
-      }
-      else if (_strcmpi(*piVar3, "-db") == 0) {
-        *(char *)&g_CmdLineAudioMode_0043d558 = 1;
-      }
-      else if (_strcmpi(*piVar3, "-ds") == 0) {
-        *(char *)&g_CmdLineAudioMode_0043d558 = 2;
-      }
-      else if (_strcmpi(*piVar3, "-test") == 0) {
-        g_DebugFlag_0043d55c = 1;
-      }
-      else if (_strcmpi(*piVar3, "-f") == 0) {
-        *GetWindowedModeFlag() = 0;
-      }
-      piVar3 = piVar3 + 1;
-      iVar1 = iVar1 - 1;
-    } while (iVar1 != 0);
+  for (piVar3 = local_50; iVar1 > 0; iVar1--) {
+    if (_strnicmp(*piVar3, "-mis", 4) == 0) {
+      strcpy(g_CmdLineDataPath_0043d568, *piVar3 + 4);
+    }
+    else if (_strcmpi(*piVar3, "-w") == 0) {
+      *GetWindowedModeFlag() = 1;
+    }
+    else if (_strcmpi(*piVar3, "-dd") == 0) {
+      g_CmdLineInputMode_0043d560 = 1;
+    }
+    else if (_strcmpi(*piVar3, "-dd3") == 0) {
+      g_CmdLineInputMode_0043d560 = 2;
+    }
+    else if (_strnicmp(*piVar3, "-lq", 3) == 0) {
+      AddToStringTable(*piVar3 + 3);
+    }
+    else if (_strcmpi(*piVar3, "-db") == 0) {
+      *(char *)&g_CmdLineAudioMode_0043d558 = 1;
+    }
+    else if (_strcmpi(*piVar3, "-ds") == 0) {
+      *(char *)&g_CmdLineAudioMode_0043d558 = 2;
+    }
+    else if (_strcmpi(*piVar3, "-test") == 0) {
+      g_DebugFlag_0043d55c = 1;
+    }
+    else if (_strcmpi(*piVar3, "-f") == 0) {
+      *GetWindowedModeFlag() = 0;
+    }
+    piVar3 = piVar3 + 1;
   }
 }
 

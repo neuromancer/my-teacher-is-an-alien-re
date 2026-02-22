@@ -40,7 +40,7 @@ StringTable::~StringTable() {
             int* buckets = ht->buckets;
 
             // Iterate through each bucket
-            do {
+            for (; numBuckets != 0; numBuckets--) {
                 // Walk the chain in this bucket
                 HashNode* node = (HashNode*)*buckets;
                 while (node != 0) {
@@ -63,8 +63,7 @@ StringTable::~StringTable() {
                     node = node->next;
                 }
                 buckets = buckets + 1;
-                numBuckets = numBuckets - 1;
-            } while (numBuckets != 0);
+            }
         }
 
         // Free the buckets array
@@ -132,7 +131,7 @@ void StringTable::Load() {
                     int numBuckets = ht->numBuckets;
                     int* buckets = ht->buckets;
 
-                    do {
+                    for (; numBuckets != 0; numBuckets--) {
                         HashNode* node = (HashNode*)*buckets;
                         while (node != 0) {
                             int i = 0;
@@ -152,8 +151,7 @@ void StringTable::Load() {
                             node = node->next;
                         }
                         buckets = buckets + 1;
-                        numBuckets = numBuckets - 1;
-                    } while (numBuckets != 0);
+                    }
                 }
 
                 delete ht->buckets;

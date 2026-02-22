@@ -68,11 +68,10 @@ IconBar::IconBar() {
     buttons[5].sprite->loc_x = 0x22a;
     buttons[5].sprite->loc_y = 0x1b6;
 
-    // Configure all 6 buttons using common settings (do-while counting down)
+    // Configure all 6 buttons using common settings
     {
-        int count = 6;
         IconBarButton* pBtn = buttons;
-        do {
+        for (int count = 6; count != 0; count--) {
             Sprite* btn = pBtn->sprite;
             btn->flags &= ~2;
             btn->SetState(2);
@@ -80,7 +79,7 @@ IconBar::IconBar() {
             btn->SetRange(1, 2, 2);
             btn->priority = 1001;
             pBtn++;
-        } while (--count);
+        }
     }
 
     // Set button bounds in the order they appear in assembly
@@ -225,11 +224,9 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
                     msg->m_subObject = pSrc->m_subObject;
                     msg->isProcessingKey = pSrc->isProcessingKey;
 
-                    j = 0;
-                    do {
-                        j++;
-                        msg->currentKey[j - 1] = pSrc->currentKey[j - 1];
-                    } while (j < 32);
+                    for (j = 0; j < 32; j++) {
+                        msg->currentKey[j] = pSrc->currentKey[j];
+                    }
 
                     msg->lineNumber = pSrc->lineNumber;
 
@@ -237,11 +234,9 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
                     pMsg38[0] = pSrc->savedFilePos;
                     pMsg38[1] = pSrc->field_0x3c;
 
-                    j = 0;
-                    do {
-                        j++;
-                        msg->filename[j - 1] = pSrc->filename[j - 1];
-                    } while (j < 64);
+                    for (j = 0; j < 64; j++) {
+                        msg->filename[j] = pSrc->filename[j];
+                    }
 
                     msg->pFile = pSrc->pFile;
                     msg->targetAddress = pSrc->targetAddress;

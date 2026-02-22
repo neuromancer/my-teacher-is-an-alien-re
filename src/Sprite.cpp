@@ -360,45 +360,41 @@ int Sprite::CheckConditions()
         return 1;
     }
     offset = 0;
-    int i = 0;
-    if (num_logic_conditions > 0) {
-        do {
-            cond = (LogicCondition*)((char*)logic_conditions + offset);
-            if (cond->type == 1) {
-                state_idx = cond->state_index;
-                gs = g_GameState_00436998;
-                if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
-                    ShowError("GameState Error  #%d", 1);
-                }
-                if (gs->stateValues[state_idx] == 0) {
-                    return 0;
-                }
+    for (int i = 0; i < num_logic_conditions; i++) {
+        cond = (LogicCondition*)((char*)logic_conditions + offset);
+        if (cond->type == 1) {
+            state_idx = cond->state_index;
+            gs = g_GameState_00436998;
+            if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
+                ShowError("GameState Error  #%d", 1);
             }
-            cond = (LogicCondition*)((char*)logic_conditions + offset);
-            if (cond->type == 2) {
-                state_idx = cond->state_index;
-                gs = g_GameState_00436998;
-                if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
-                    ShowError("GameState Error  #%d", 1);
-                }
-                if (gs->stateValues[state_idx] != 0) {
-                    return 0;
-                }
+            if (gs->stateValues[state_idx] == 0) {
+                return 0;
             }
-            cond = (LogicCondition*)((char*)logic_conditions + offset);
-            if (cond->type == 3) {
-                state_idx = cond->state_index;
-                gs = g_GameState_00436998;
-                if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
-                    ShowError("GameState Error  #%d", 1);
-                }
-                if (gs->stateValues[state_idx] != handle) {
-                    return 0;
-                }
+        }
+        cond = (LogicCondition*)((char*)logic_conditions + offset);
+        if (cond->type == 2) {
+            state_idx = cond->state_index;
+            gs = g_GameState_00436998;
+            if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
+                ShowError("GameState Error  #%d", 1);
             }
-            offset += 8;
-            i++;
-        } while (num_logic_conditions > i);
+            if (gs->stateValues[state_idx] != 0) {
+                return 0;
+            }
+        }
+        cond = (LogicCondition*)((char*)logic_conditions + offset);
+        if (cond->type == 3) {
+            state_idx = cond->state_index;
+            gs = g_GameState_00436998;
+            if ((0 < state_idx) && (gs->maxStates <= state_idx)) {
+                ShowError("GameState Error  #%d", 1);
+            }
+            if (gs->stateValues[state_idx] != handle) {
+                return 0;
+            }
+        }
+        offset += 8;
     }
     return 1;
 }

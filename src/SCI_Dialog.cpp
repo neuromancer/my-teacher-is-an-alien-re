@@ -558,20 +558,15 @@ int SCI_Dialog::LBLParse(char* line) {
         int ambientVal;
         sscanf(line, "%s %d", token, &ambientVal);
         int count = 1;
-        int i_digits = 0;
         temp = ambientVal;
-        do {
+        for (int i_digits = 0; i_digits < 10; i_digits++) {
             if (ambientVal < 10) break;
             count++;
             ambientVal /= 10;
-            i_digits++;
-        } while (i_digits < 10);
-        if (count > 0) {
-            do {
-                field_618[temp % 10] = 0;
-                temp /= 10;
-                count--;
-            } while (count != 0);
+        }
+        for (; count > 0; count--) {
+            field_618[temp % 10] = 0;
+            temp /= 10;
         }
     } else if (strcmp(token, "QUESTION") == 0) {
         sscanf(line, "%s %d ", token, &questionId);

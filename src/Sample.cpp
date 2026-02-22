@@ -82,12 +82,11 @@ void Sample::Fade(int volume, unsigned int duration) {
   Timer timer;
   if (duration != 0 && diff > 0) {
     delay = (short)delay;
-    do {
+    for (; diff != 0; diff--) {
       current_volume += step;
       AIL_set_sample_volume(m_sample, current_volume);
       timer.Wait(delay);
-      diff--;
-    } while (diff != 0);
+    }
   }
   AIL_set_sample_volume(m_sample, volume);
 }

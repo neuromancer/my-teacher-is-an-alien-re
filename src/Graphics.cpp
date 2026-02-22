@@ -342,14 +342,12 @@ int InitVideoSystem(void)
         *puVar7 = 0;
         puVar7 = puVar7 + 1;
     }
-    iVar5 = 0x100;
     pcVar8 = DAT_00437520;
-    do {
+    for (iVar5 = 0x100; iVar5 != 0; iVar5--) {
         *pcVar8 = cVar1;
         cVar1 = cVar1 + 1;
-        iVar5 = iVar5 - 1;
         pcVar8 = pcVar8 + 1;
-    } while (iVar5 != 0);
+    }
     
     uVar9 = 0x428;
     lVar11 = GetColorBitDepth();
@@ -441,13 +439,12 @@ extern "C" int CleanupVideoSystem() {
     int iVar2;
     int* piVar3;
 
-    iVar2 = 0x20;
     piVar3 = g_VBufDataPtrs_0043826c;
-    do {
+    for (iVar2 = 0x20; iVar2 != 0; iVar2--) {
         iVar1 = *piVar3;
-        iVar2 = iVar2 - 1;
         piVar3 = piVar3 + 1;
-    } while (iVar2 != 0 && iVar1 != 0);
+        if (iVar1 == 0) break;
+    }
 
     if (iVar1 == 0) {
         g_CurrentVideoBuffer_00437f54 = (char)0xff;

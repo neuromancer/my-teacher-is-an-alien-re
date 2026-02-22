@@ -589,21 +589,17 @@ int GameLoop::UpdateGame()
         local_d8.m_subObject = pSourceMsg->m_subObject;
         local_d8.isProcessingKey = pSourceMsg->isProcessingKey;
 
-        uVar6 = 0;
-        do {
+        for (uVar6 = 0; uVar6 < 0x20; uVar6++) {
             local_d8.currentKey[uVar6] = pSourceMsg->currentKey[uVar6];
-            uVar6++;
-        } while (uVar6 < 0x20);
+        }
 
         local_d8.lineNumber = pSourceMsg->lineNumber;
         local_d8.savedFilePos = pSourceMsg->savedFilePos;
         local_d8.field_0x3c = pSourceMsg->field_0x3c;
 
-        uVar6 = 0;
-        do {
+        for (uVar6 = 0; uVar6 < 0x40; uVar6++) {
             local_d8.filename[uVar6] = pSourceMsg->filename[uVar6];
-            uVar6++;
-        } while (uVar6 < 0x40);
+        }
 
         local_d8.pFile = pSourceMsg->pFile;
         local_d8.targetAddress = pSourceMsg->targetAddress;

@@ -37,13 +37,8 @@ FlagArray::FlagArray(char* f, int numStates) {
             field_0x3c = 0x94;
             field_0x44 = 4;
             fwrite(&field_0x38, 0x94, 1, fp_temp);
-            i = 0;
-
-            if (max_states > i) {
-                do {
-                    fwrite(&buffer, 4, 1, fp);
-                    i++;
-                } while (max_states > i);
+            for (i = 0; i < max_states; i++) {
+                fwrite(&buffer, 4, 1, fp);
             }
         } else {
             ShowError("Error in flagaray.cpp - Create:  Cannot create %s", f);
@@ -141,16 +136,13 @@ void FlagArray::SetFlag(int index, unsigned int mask) {
 
 /* Function start: 0x420430 */
 void FlagArray::ClearAllFlags() {
-    int i = 0;
+    int i;
     int buffer = 0;
 
     Open();
-    Seek(i);
-    if (max_states > i) {
-        do {
-            fwrite(&buffer, 4, 1, fp);
-            i++;
-        } while (i < max_states);
+    Seek(0);
+    for (i = 0; i < max_states; i++) {
+        fwrite(&buffer, 4, 1, fp);
     }
     Close();
 }

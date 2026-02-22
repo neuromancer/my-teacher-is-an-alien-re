@@ -246,13 +246,10 @@ void __cdecl BlitTransparentRows(int srcX1, int srcX2, int srcY1, int srcY2, int
 
     destRow = (char*)destBuffer->GetData() + (destBuffer->clip_y2 - destY) * destBuffer->width + destX;
 
-    if (height > 0) {
-        do {
-            CopyRowTransparent(destRow, srcRow, width, transparentColor, fillColor);
-            destRow += destBuffer->width;
-            srcRow += srcBuffer->width;
-            height--;
-        } while (height != 0);
+    for (; height > 0; height--) {
+        CopyRowTransparent(destRow, srcRow, width, transparentColor, fillColor);
+        destRow += destBuffer->width;
+        srcRow += srcBuffer->width;
     }
 
     destBuffer->Lock();

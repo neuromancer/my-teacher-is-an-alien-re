@@ -61,14 +61,12 @@ void Sound::AllocateSampleHandles() {
   short sVar2;
   HSAMPLE *slot;
 
-  sVar2 = 0;
-  do {
+  for (sVar2 = 0; sVar2 < 13; sVar2++) {
     slot = &samples[(int)sVar2];
     *slot = AIL_allocate_sample_handle(digital_driver);
     if (*slot == 0)
       break;
-    sVar2++;
-  } while (sVar2 < 13);
+  }
   num_samples = sVar2;
 }
 
@@ -84,12 +82,8 @@ HSAMPLE Sound::FindFreeSampleHandle() {
 
 /* Function start: 0x41E3A0 */
 void Sound::StopAllSamples() {
-  short i = 0;
-  if (0 < Sound::num_samples) {
-    do {
-      AIL_end_sample(Sound::samples[(int)i]);
-      i++;
-    } while (i < Sound::num_samples);
+  for (short i = 0; i < Sound::num_samples; i++) {
+    AIL_end_sample(Sound::samples[(int)i]);
   }
 }
 

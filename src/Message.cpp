@@ -73,11 +73,9 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
         pEmbedded->m_subObject = pSource->m_subObject;
         pEmbedded->isProcessingKey = pSource->isProcessingKey;
 
-        i = 0;
-        do {
+        for (i = 0; i < 0x20; i++) {
             pEmbedded->currentKey[i] = pSource->currentKey[i];
-            i++;
-        } while (i < 0x20);
+        }
 
         pEmbedded->lineNumber = pSource->lineNumber;
         {
@@ -87,11 +85,9 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
             pEmbedded->field_0x3c = field3c;
         }
 
-        i = 0;
-        do {
+        for (i = 0; i < 0x40; i++) {
             pEmbedded->filename[i] = pSource->filename[i];
-            i++;
-        } while (i < 0x40);
+        }
 
         pEmbedded->pFile = pSource->pFile;
         pEmbedded->targetAddress = pSource->targetAddress;

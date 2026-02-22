@@ -62,10 +62,9 @@ void SpriteHashTable::AllocateBuckets(int size, int flag) {
         newBuckets = (int*)new char[size * 4];
         count = (size * 4) >> 2;
         SpriteHashTable::buckets = (void**)newBuckets;
-        while (count != 0) {
+        for (; count != 0; count--) {
             *newBuckets = 0;
             newBuckets++;
-            count--;
         }
     }
     SpriteHashTable::maxSize = size;
@@ -151,10 +150,9 @@ void SpriteHashTable::Resize(int size, int flag) {
         newBuckets = (int*)new char[size * 4];
         count = (size * 4) >> 2;
         SpriteHashTable::buckets = (void**)newBuckets;
-        while (count != 0) {
+        for (; count != 0; count--) {
             *newBuckets = 0;
             newBuckets++;
-            count--;
         }
         SpriteHashTable::maxSize = size;
         return;

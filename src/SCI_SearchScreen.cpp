@@ -267,36 +267,27 @@ int SCI_SearchScreen::LBLParse(char* line) {
     if (strcmp(token, "BACKGROUND") == 0) {
         background = new MMPlayer();
         ProcessFile(background, this, 0);
-        goto lbl_ret0;
-    }
-    if (strcmp(token, "PALE") == 0) {
+    } else if (strcmp(token, "PALE") == 0) {
         sscanf(line, "%s %s", token, arg1);
-        if (field_600 != 0) {
-            goto lbl_ret0;
+        if (field_600 == 0) {
+            Palette* pal;
+            pal = new Palette();
+            field_600 = pal;
+            pal->Load(CDData_FormatPath(arg1));
         }
-        Palette* pal;
-        pal = new Palette();
-        field_600 = pal;
-        pal->Load(CDData_FormatPath(arg1));
-        goto lbl_ret0;
-    }
-    if (strcmp(token, "AMBIENTS") == 0) {
+    } else if (strcmp(token, "AMBIENTS") == 0) {
         ambients = new MMPlayer2();
         ProcessFile(ambients, this, 0);
-        goto lbl_ret0;
-    }
-    if (strcmp(token, "HOTSPOT") == 0) {
+    } else if (strcmp(token, "HOTSPOT") == 0) {
         DialogControl* dc = new DialogControl();
         field_60C[field_63C] = dc;
         ProcessFile(field_60C[field_63C], this, 0);
         field_63C++;
-        goto lbl_ret0;
-    }
-    if (strcmp(token, "END") == 0) {
+    } else if (strcmp(token, "END") == 0) {
         return 1;
+    } else {
+        Parser::LBLParse("SCI_SearchScreen");
     }
-    Parser::LBLParse("SCI_SearchScreen");
 
-lbl_ret0:
     return 0;
 }

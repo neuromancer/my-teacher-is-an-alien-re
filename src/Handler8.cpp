@@ -219,11 +219,9 @@ Parser* Parser::CopyParserFields(Parser* src)
 
     Parser::m_subObject = src->m_subObject;
     Parser::isProcessingKey = src->isProcessingKey;
-    i = 0;
-    do {
+    for (i = 0; i < sizeof(currentKey); i++) {
         Parser::currentKey[i] = src->currentKey[i];
-        i++;
-    } while (i < sizeof(currentKey));
+    }
     Parser::lineNumber = src->lineNumber;
     dstPtr = &savedFilePos;
     srcPtr = &src->savedFilePos;
@@ -231,11 +229,9 @@ Parser* Parser::CopyParserFields(Parser* src)
     tmp2 = srcPtr[1];
     dstPtr[0] = tmp1;
     dstPtr[1] = tmp2;
-    i = 0;
-    do {
+    for (i = 0; i < sizeof(filename); i++) {
         Parser::filename[i] = src->filename[i];
-        i++;
-    } while (i < sizeof(filename));
+    }
     Parser::pFile = src->pFile;
     return this;
 }
