@@ -32,7 +32,7 @@ extern "C" char* __cdecl CDData_FormatPath(char* param_1, ...)
 
 /* Function start: 0x419620 */
 extern "C" char* __cdecl CDData_SetResolvedPath(const char* path) {
-    return strcpy((char*)g_CDData_0043697c + 0x145, path);
+    return strcpy(g_CDData_0043697c->pathBuffer + 0x85, path);
 }
 
 /* Function start: 0x421E40 */

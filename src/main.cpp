@@ -338,7 +338,7 @@ void CheckDebug(void) {
 
   //__try {
     pvVar2 = g_CDData_0043697c;
-    if (g_CDData_0043697c == (CDData *)0x0) {
+    if (g_CDData_0043697c == 0) {
       pvVar2 = new CDData("cddata", "DATA");
     }
     g_CDData_0043697c = pvVar2;

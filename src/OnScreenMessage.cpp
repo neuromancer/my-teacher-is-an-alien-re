@@ -8,7 +8,7 @@
 OnScreenMessage::OnScreenMessage(char* message, unsigned int dur)
 {
     memset(this, 0, sizeof(OnScreenMessage));
-    if (message != (char*)0) {
+    if (message != 0) {
         strcpy(text, message);
     }
     timer.Reset();

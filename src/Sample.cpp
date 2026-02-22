@@ -32,7 +32,7 @@ int Sample::Load(char *filename) {
     Unload();
   }
   m_size = 0;
-  FILE *_File = OpenFileAndFindKey((char *)0x0, filename, "rb",
+  FILE *_File = OpenFileAndFindKey(0, filename, "rb",
                                    (unsigned int *)&m_size);
   if ((_File != 0) && (m_size != 0)) {
     m_data = (char *)AIL_mem_alloc_lock(m_size);

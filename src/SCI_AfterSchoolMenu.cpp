@@ -45,7 +45,7 @@ int SCI_AfterSchoolMenu::LBLParse(char* line) {
     if (strcmp(label, "BACK") == 0) {
         mc = new MMPlayer();
         background = mc;
-        Parser::ProcessFile(mc, this, (char*)0);
+        Parser::ProcessFile(mc, this, 0);
     } else if (strcmp(label, "PALE") == 0) {
         sscanf(line, "%s %s", label, filepath);
         if (palette == 0) {
@@ -56,20 +56,20 @@ int SCI_AfterSchoolMenu::LBLParse(char* line) {
     } else if (strcmp(label, "CHAR") == 0) {
         hotspot = new T_Hotspot();
         characters[characterCount] = hotspot;
-        Parser::ProcessFile(characters[characterCount], this, (char*)0);
+        Parser::ProcessFile(characters[characterCount], this, 0);
         characterCount = characterCount + 1;
     } else if (strcmp(label, "CANCEL") == 0) {
         hotspot = new T_Hotspot();
         cancelButton = hotspot;
-        Parser::ProcessFile(hotspot, this, (char*)0);
+        Parser::ProcessFile(hotspot, this, 0);
     } else if (strcmp(label, "OKAY") == 0) {
         hotspot = new T_Hotspot();
         goButton = hotspot;
-        Parser::ProcessFile(hotspot, this, (char*)0);
+        Parser::ProcessFile(hotspot, this, 0);
     } else if (strcmp(label, "OPTION_MENU") == 0) {
         optMenu = new OptionMenu();
         choiceScreen = optMenu;
-        Parser::ProcessFile(optMenu, this, (char*)0);
+        Parser::ProcessFile(optMenu, this, 0);
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
@@ -103,7 +103,7 @@ SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
     field_8C = 1;
 
     // Parse demo.mis file
-    ParseFile(this, "mis\\demo.mis", (char*)0);
+    ParseFile(this, "mis\\demo.mis", 0);
 
     // Initialize sound slots - set all enabled flags to 1
     for (i = 0; i < 8; i++) {

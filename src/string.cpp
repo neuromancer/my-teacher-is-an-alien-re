@@ -48,17 +48,17 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
     char *pcVar2;
     int iVar3;
 
-    if ((param_1 == (char *)0x0) || (param_2 == (char *)0x0)) {
+    if ((param_1 == 0) || (param_2 == 0)) {
         ShowError("missing string");
     }
     pcVar1 = strchr(param_1,'\"');
-    if (pcVar1 == (char *)0x0) {
+    if (pcVar1 == 0) {
         *param_2 = '\0';
         return;
     }
     pcVar1 = pcVar1 + 1;
     pcVar2 = strchr(pcVar1,'\"');
-    if (pcVar2 == (char *)0x0) {
+    if (pcVar2 == 0) {
         ShowError("open quote found in '%s'",param_1);
     }
     iVar3 = (int)pcVar2 - (int)pcVar1;
@@ -392,10 +392,11 @@ int DeleteFile_Wrapper(const char* filename)
     unsigned int error;
 
     error = DeleteFileA(filename);
-    if (error != 0) goto done;
-    error = GetLastError();
-
-done:
+    if (error == 0) {
+        error = GetLastError();
+    } else {
+        error = 0;
+    }
     if (error != 0) {
         SetErrorCode(error);
         return -1;

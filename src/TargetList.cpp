@@ -28,9 +28,9 @@ TargetList::~TargetList() {
     Target* t = self->targets[self->count];
     if (t) {
       delete t;
-      self->targets[self->count] = (Target*)0;
+      self->targets[self->count] = 0;
     }
-    self->targets[self->count] = (Target*)0;
+    self->targets[self->count] = 0;
   }
 
   HashTable* ht = self->hashTable;
@@ -97,7 +97,7 @@ int TargetList::LBLParse(char* line) {
     if (stricmp(type, "END") == 0) {
       return 1;
     }
-    Parser::LBLParse((char*)"TargetList");
+    Parser::LBLParse("TargetList");
   }
 
   return 0;

@@ -37,7 +37,7 @@ GameState::~GameState()
 /* Function start: 0x420570 */
 void GameState::Serialize(int mode)
 {
-    unsigned int* header = (unsigned int*)new char[0x110];
+    unsigned int* header = new unsigned int[0x44];
     char filename[28];
     FILE* file;
 
@@ -84,9 +84,9 @@ void GameState::SetMaxStates(int count)
         ShowError("GameState::SetMaxStates2");
     }
     maxStates = count;
-    stateValues = (int*)new char[count * 4];
+    stateValues = new int[count];
     ClearStates();
-    stateLabels = (char**)new char[maxStates * 4];
+    stateLabels = new char*[maxStates];
     for (int i = 0; i < maxStates; i++) {
         stateLabels[i] = 0;
     }

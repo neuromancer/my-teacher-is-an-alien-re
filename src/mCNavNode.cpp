@@ -170,7 +170,7 @@ int mCNavNode::Update()
 check_sound:
     if ((mCNavNode::flags & 2) != 0) {
         Animation anim;
-        anim.Play((char*)&soundName[0], 0x20);
+        anim.Play(soundName, 0x20);
         goto return_result;
     }
 
@@ -221,7 +221,7 @@ no_entry:
 found_entry:
     if (entry == 0) {
         if (mem == 0) {
-            pool->memory = new char[size * 4];
+            pool->memory = new int[size];
             memset(pool->memory, 0, size * 4);
             pool->size = size;
         }

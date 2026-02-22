@@ -130,7 +130,7 @@ int T_Hotspot::Update(int param_1, int param_2, int param_3)
         else {
             state = 3;
             if (dialog != 0) {
-                puVar2 = (int*)new char[8];
+                puVar2 = new int[2];
                 *puVar2 = param_1;
                 puVar2[1] = param_2;
                 SC_Message_Send(9, parseFileIndex, 0xb, param_3, 5, dialogParseFileNumber, 0, (int)puVar2, 0, 0);

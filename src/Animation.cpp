@@ -37,7 +37,7 @@ Animation::Animation(char *filename) {
 
 /* Function start: 0x41FB60 */
 void Animation::CleanArray10() {
-  memset((char *)this + 4, 0, 40);
+  memset(&field_4, 0, 40);
 }
 
 /* Function start: 0x41FB70 */

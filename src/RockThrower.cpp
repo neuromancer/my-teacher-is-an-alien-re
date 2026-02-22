@@ -14,7 +14,7 @@ extern "C" int __cdecl FUN_00422aaf(int param_1);
 
 /* Function start: 0x4165D0 */
 RockThrower::RockThrower() {
-    int* pItemCount = (int*)((char*)this + 0xa8);
+    int* pItemCount = &m_itemCount;
 
     pItemCount[0] = 0;
     pItemCount[1] = 0;
@@ -27,7 +27,7 @@ RockThrower::RockThrower() {
 
     pItemCount[0] = 3;
 
-    Parser::ProcessFile(this, (Parser*)g_CombatEngine_00435eb0, (char*)0);
+    Parser::ProcessFile(this, g_CombatEngine_00435eb0, 0);
 }
 
 RockThrower::~RockThrower() {}
@@ -51,7 +51,7 @@ int RockThrower::LBLParse(char* line) {
     if (strcmp(token, "MAXROCKS") == 0) {
         if (sscanf(line, "%s %d", token, &count) == 2) {
             m_itemCount = count;
-            m_items = (Projectile**)new char[m_itemCount * 4];
+            m_items = new Projectile*[m_itemCount];
             for (int i = 0; i < m_itemCount; i++) {
                 m_items[i] = new Projectile();
             }

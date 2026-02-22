@@ -113,7 +113,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     // Clear queue at 0x9c
     pZBuf->m_queue9c->ClearList();
 
-    if (msg != (SC_Message*)0) {
+    if (msg != 0) {
         field_8C = msg->data;
     }
 

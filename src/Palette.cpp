@@ -118,11 +118,11 @@ int Palette::IsPaletteUnchanged()
 }
 
 /* Function start: 0x41EC60 */
-int Palette::Compare(void* data, int size)
+int Palette::Compare(char* data, int size)
 {
     if (data != 0 && m_data != 0) {
         for (int i = 0; i < size; i++) {
-            if (((char*)data)[i] != ((char*)m_data)[i]) {
+            if (data[i] != m_data[i]) {
                 return 0;
             }
         }

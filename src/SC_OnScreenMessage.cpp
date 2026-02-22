@@ -90,7 +90,7 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
 /* Function start: 0x40A5A0 */
 void SC_OnScreenMessage::Init(SC_Message* msg) {
     CopyCommandData(msg);
-    if (msg != (SC_Message*)0) {
+    if (msg != 0) {
         field_8C = msg->sourceAddress;
     }
 }
@@ -227,7 +227,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
 create_message:
     if (msg->sourceAddress != 0) {
-        if (g_Strings_00435a70 != (StringTable*)0) {
+        if (g_Strings_00435a70 != 0) {
             if (g_Strings_00435a70->GetString(msg->sourceAddress, g_Buffer_00436960)) {
                 newItem = new OnScreenMessage(g_Buffer_00436960, msg->param1);
             }

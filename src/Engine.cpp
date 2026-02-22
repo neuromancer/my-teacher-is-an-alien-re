@@ -191,16 +191,16 @@ int Engine::LBLParse(char* line) {
   sscanf(line, "%s", local_34);
 
   if (strcmp(local_34, "[ENGINE_INFO]") == 0) {
-    Parser::ProcessFile(g_EngineInfoParser_00435f00, this, (char*)0);
+    Parser::ProcessFile(g_EngineInfoParser_00435f00, this, 0);
   }
   else if (strcmp(local_34, "[TARGETS]") == 0) {
-    Parser::ProcessFile(g_TargetList_00435f0c, this, (char*)0);
+    Parser::ProcessFile(g_TargetList_00435f0c, this, 0);
   }
   else if (strcmp(local_34, "[SPRITELIST]") == 0) {
-    Parser::ProcessFile(g_SpriteList_00435f10, this, (char*)0);
+    Parser::ProcessFile(g_SpriteList_00435f10, this, 0);
   }
   else if (strcmp(local_34, "[NAVIGATION]") == 0) {
-    Parser::ProcessFile(g_Navigator_00435f24, this, (char*)0);
+    Parser::ProcessFile(g_Navigator_00435f24, this, 0);
   }
   else if (strcmp(local_34, "WEAPON") == 0) {
     int iVar3 = sscanf(line, " %s %s ", local_34, local_54);
@@ -217,9 +217,9 @@ int Engine::LBLParse(char* line) {
     }
   }
   else if (strcmp(local_34, "CONSOLE") == 0) {
-    spriteVar = new Sprite((char*)0);
+    spriteVar = new Sprite(0);
     g_ConsoleSprite_00435f04 = spriteVar;
-    Parser::ProcessFile(spriteVar, this, (char*)0);
+    Parser::ProcessFile(spriteVar, this, 0);
   }
   else if (strcmp(local_34, "END") == 0) {
     return 1;

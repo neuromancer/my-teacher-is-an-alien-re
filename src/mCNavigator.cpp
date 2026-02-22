@@ -271,7 +271,7 @@ int mCNavigator::LBLParse(char* param_1)
 	}
 	else if (_strcmpi(token, "SPRITE") == 0) {
 		sprite = new Sprite(0);
-		Parser::ProcessFile(sprite, this, (char*)0);
+		Parser::ProcessFile(sprite, this, 0);
 	}
 	else if (_strcmpi(token, "STARTING_NODE") == 0) {
 		sscanf(param_1, "%s %d", token, &startingNode);

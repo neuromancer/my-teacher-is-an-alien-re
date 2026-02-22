@@ -47,7 +47,7 @@ void MMPlayer2::StopAll()
     if (spriteList->head != 0) {
         do {
             ZBQueueNode* node = spriteList->current;
-            Sprite* spr = (Sprite*)0;
+            Sprite* spr = 0;
             if (node != 0) spr = (Sprite*)node->data;
             spr->StopAnimationSound();
             if (spriteList->tail == spriteList->current) break;
@@ -64,7 +64,7 @@ void MMPlayer2::PreDraw()
     if (spriteList->head != 0) {
         do {
             ZBQueueNode* node = spriteList->current;
-            Sprite* spr = (Sprite*)0;
+            Sprite* spr = 0;
             if (node != 0) spr = (Sprite*)node->data;
             spr->Init();
             if (spriteList->tail == spriteList->current) break;
@@ -120,7 +120,7 @@ int MMPlayer2::Draw()
     spriteList->current = spriteList->head;
     if (spriteList->head != 0) {
         do {
-            spr = (Sprite*)0;
+            spr = 0;
             if (spriteList->current != 0) spr = (Sprite*)spriteList->current->data;
             if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
                 field_90 = 0;
@@ -148,7 +148,7 @@ int MMPlayer2::DrawWithStates(int* states)
     if (spriteList->head != 0) {
         do {
             if (states[i++] != 0) {
-                spr = (Sprite*)0;
+                spr = 0;
                 if (spriteList->current != 0) spr = (Sprite*)spriteList->current->data;
                 if (spr->Do(spr->loc_x, spr->loc_y, 1.0)) {
                     field_90 = 0;

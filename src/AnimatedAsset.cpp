@@ -37,7 +37,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
   char local_9c [128];
   int local_18;
 
-  if (param_1 != (char *)0x0) {
+  if (param_1 != 0) {
     iVar2 = sscanf(param_1, "%s %d %d", local_9c, &firstChar, &local_18);
     if (iVar2 <= 2) {
       local_18 = 0x7e;
@@ -55,7 +55,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
     buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
     anim->ToBufferVB(buffer);
     anim->DoFrame();
-    if (anim != (Animation *)0x0) {
+    if (anim != 0) {
         delete anim;
     }
     BuildGlyphTable();
@@ -196,7 +196,7 @@ int AnimatedAsset::ComputeTextMetrics(char* text)
 {
     int total = 0;
 
-    if (text == (char*)0x0) {
+    if (text == 0) {
         return 0;
     }
 
@@ -209,7 +209,7 @@ int AnimatedAsset::ComputeTextMetrics(char* text)
             total = total + tabWidth;
         }
         else {
-            GlyphRect* piVar3 = (GlyphRect*)((char*)glyphTable + iVar2 * 0x10);
+            GlyphRect* piVar3 = &glyphTable[iVar2];
             GlyphRect local = *piVar3;
             total = (total - local.left) + local.right;
         }

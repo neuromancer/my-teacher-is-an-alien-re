@@ -10,7 +10,7 @@ void ObjectPool::MemoryPool_Allocate(unsigned int param_1, int param_2)
         memory = 0;
     }
     if (param_2 != 0) {
-        memory = new char[param_1 * 4];
+        memory = new int[param_1];
         memset(memory, 0, param_1 * 4);
         size = param_1;
     }

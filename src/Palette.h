@@ -6,14 +6,14 @@
 class Palette {
 public:
     int m_size;
-    void* m_data;
+    char* m_data;
 
     Palette();
     ~Palette();
     void Load(char* filename);
     void CopyEntries(int start, int count);
     void SetPalette(UINT start, UINT count);
-    int Compare(void* data, int size);
+    int Compare(char* data, int size);
     int IsPaletteUnchanged();
     void Cleanup();
 

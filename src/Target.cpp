@@ -21,9 +21,9 @@ extern CDData* g_CDData_0043697c;
 HotspotListData::~HotspotListData() {}
 
 /* Function start: 0x413DC0 */
-Target::Target() : Sprite((char*)0)
+Target::Target() : Sprite(0)
 {
-    memset((char*)this + 0xd8, 0, 0x80);
+    memset(&active, 0, 0x80);
 
     Target::active = 0;
     Target::id = -1;

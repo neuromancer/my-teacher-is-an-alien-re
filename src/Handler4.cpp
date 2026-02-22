@@ -231,11 +231,11 @@ int Handler4::AddMessage(SC_Message* msg) {
     if (msg->mouseX >= 2) {
         InputState* pMouse = g_InputManager_00436968->pMouse;
         int mouseY = 0;
-        if (pMouse != (void*)0) {
+        if (pMouse != 0) {
             mouseY = pMouse->y;
         }
         int mouseX;
-        if (pMouse != (void*)0) {
+        if (pMouse != 0) {
             mouseX = pMouse->x;
         } else {
             mouseX = 0;
@@ -250,11 +250,11 @@ int Handler4::AddMessage(SC_Message* msg) {
             if (*pFloorState != 0) {
                 InputState* pM = g_InputManager_00436968->pMouse;
                 int curY = 0;
-                if (pM != (void*)0) {
+                if (pM != 0) {
                     curY = pM->y;
                 }
                 int curX;
-                if (pM != (void*)0) {
+                if (pM != 0) {
                     curX = pM->x;
                 } else {
                     curX = 0;
@@ -573,7 +573,7 @@ int Handler4::CheckSolution() {
 
         puzzleSolved = 1;
         int* pV = local_24;
-        int* pP = (int*)&buttonStates[0];
+        int* pP = buttonStates;
         do {
             if (*pP != *pV) {
                 puzzleSolved = 0;

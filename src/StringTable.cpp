@@ -282,7 +282,7 @@ read_loop:
         startQuote = startQuote + 1;
         endQuote = strrchr(buffer, '\"');
         len = endQuote - startQuote;
-        if (startQuote == (char*)0) goto read_loop;
+        if (startQuote == 0) goto read_loop;
         if (endQuote == 0) goto read_loop;
         if (len <= 0) goto read_loop;
 

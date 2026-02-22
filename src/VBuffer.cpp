@@ -91,7 +91,7 @@ void VBuffer::InitFields()
         ((int*)this)[i] = 0;
     }
     handle = 0xffffffff;
-    *(int*)this = 0xffffffff;
+    saved_video_mode = 0xffffffff;
     InitVBufferHandleTable();
 }
 
