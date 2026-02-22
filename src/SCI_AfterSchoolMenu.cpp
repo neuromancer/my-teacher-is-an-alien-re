@@ -227,7 +227,7 @@ void SCI_AfterSchoolMenu::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x405190 */
-int SCI_AfterSchoolMenu::Exit(SC_Message* msg) {
+int SCI_AfterSchoolMenu::ShutDown(SC_Message* msg) {
     int i;
     Sample* smp;
 
@@ -376,7 +376,7 @@ int SCI_AfterSchoolMenu::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x405420 */
-int SCI_AfterSchoolMenu::ShutDown(SC_Message* msg) {
+int SCI_AfterSchoolMenu::Exit(SC_Message* msg) {
     return handlerId == msg->targetAddress;
 }
 
