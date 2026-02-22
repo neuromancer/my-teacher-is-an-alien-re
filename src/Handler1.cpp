@@ -15,7 +15,7 @@ Handler1::Handler1() {
     palette = 0;
     sprite = 0;
     handlerId = 1;
-    field_8C = 1;
+    moduleParam = 1;
 
     palette = new Palette();
     palette->Load(CDData_FormatPath("demo\\Demoscrn.col"));
@@ -69,7 +69,7 @@ int Handler1::ShutDown(SC_Message* msg) {
         delete pal;
         palette = 0;
     }
-    SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+    SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
     WriteToMessageLog("EXIT INTRO GAME TEXT");
     return 0;
 }

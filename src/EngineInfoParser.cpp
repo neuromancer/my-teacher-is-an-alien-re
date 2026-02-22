@@ -100,16 +100,16 @@ void EngineInfoParser::ParseSound(char *line, int index) {
     g_Weapon_00435f14->field_0xa4 = sound;
     break;
   case 2:
-    g_TargetList_00435f0c->field_0x1b4 = sound;
+    g_TargetList_00435f0c->defaultStopSound = (Sample*)sound;
     break;
   case 3:
-    g_TargetList_00435f0c->field_0x1b8 = sound;
+    g_TargetList_00435f0c->defaultProgressSound = (Sample*)sound;
     break;
   case 4:
-    g_TargetList_00435f0c->field_0x1bc = sound;
+    g_TargetList_00435f0c->defaultHitSound = (Sample*)sound;
     break;
   case 5:
-    g_TargetList_00435f0c->field_0x1c0 = (void*)sound;
+    g_TargetList_00435f0c->defaultSound = (Sample*)sound;
     break;
   default:
     ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);

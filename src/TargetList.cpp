@@ -166,8 +166,8 @@ Target* TargetList::ProcessTargets() {
         currentTarget = target;
         g_ScoreManager_00435f20->hitCount = g_ScoreManager_00435f20->hitCount + 1;
         ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(-target->scoreWeight.end);
-        if (field_0x1c0 != 0) {
-          ((Sample*)field_0x1c0)->Play(100, 1);
+        if (defaultSound != 0) {
+          defaultSound->Play(100, 1);
         }
       }
       if (fallbackTarget == 0 && target->CheckTimeInRange() != 0) {

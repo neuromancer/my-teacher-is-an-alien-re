@@ -25,11 +25,11 @@ extern "C" {
 // FUN_00421671, FUN_0041fbd3, FUN_00421c24, FUN_0041ae0c - All removed (SEH funclets)
 
 // CRT wrappers referenced by FlagArray and FileSystem
-int FUN_004269e0(void* buf, int size, int count, FILE* stream) {
+int CrtFileRead(void* buf, int size, int count, FILE* stream) {
     return fread(buf, size, count, stream);
 }
 
-void FUN_00425e70(FILE* stream) {
+void CrtFileClose(FILE* stream) {
     fclose(stream);
 }
 
@@ -96,13 +96,13 @@ void* DAT_00435f1c = 0;
 int g_ProjectileHits_0043d150 = 0;
 
 // FUN_00416ba0 -> EngineSubsystems.cpp
-// FUN_00422ac3, FUN_00422aaf, FUN_00424176 -> Graphics.cpp
+// DrawLine, DrawCircle, FUN_00424176 -> Graphics.cpp
 
 // ============================================================================
 // AssetList helper stubs
 // ============================================================================
 
 extern "C" {
-void __fastcall FUN_004088f0(void* thisPtr) {}
-void __fastcall FUN_00404490(void* thisPtr, int param) {}
+void __fastcall AssetCleanup(void* thisPtr) {}
+void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 }

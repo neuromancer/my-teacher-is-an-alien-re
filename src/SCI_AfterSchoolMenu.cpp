@@ -100,7 +100,7 @@ SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
 
     // Set handlerId to 10
     handlerId = 10;
-    field_8C = 1;
+    moduleParam = 1;
 
     // Parse demo.mis file
     ParseFile(this, "mis\\demo.mis", 0);
@@ -368,7 +368,7 @@ int SCI_AfterSchoolMenu::AddMessage(SC_Message* msg) {
             msg->targetAddress = handlerVal;
         }
         msg->command = handlerId;
-        msg->data = field_8C;
+        msg->data = moduleParam;
         msg->priority = 5;
     }
 

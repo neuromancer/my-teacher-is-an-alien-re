@@ -102,10 +102,10 @@ public:
     int field_0x1a8;  // 0x1a8
     int field_0x1ac;  // 0x1ac
     HashTable* hashTable; // 0x1B0
-    int field_0x1b4;  // 0x1b4
-    int field_0x1b8;  // 0x1b8
-    int field_0x1bc;  // 0x1bc
-    void* field_0x1c0; // 0x1c0 - some object pointer
+    Sample* defaultStopSound;     // 0x1b4
+    Sample* defaultProgressSound; // 0x1b8
+    Sample* defaultHitSound;      // 0x1bc
+    Sample* defaultSound;         // 0x1c0
 
     TargetList(); // 0x414D80
     virtual ~TargetList(); // 0x414DF0

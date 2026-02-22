@@ -198,7 +198,7 @@ int SCI_Dialog::AddMessage(SC_Message* msg) {
     }
 
     if (field_614 != 0) {
-        if (msg->field_b4 == 0x1b) {
+        if (msg->lastKey == 0x1b) {
             field_614->Finalize();
             dq = field_614;
             if (dq->state == 2) {
@@ -208,7 +208,7 @@ int SCI_Dialog::AddMessage(SC_Message* msg) {
             }
         } else {
             if (msg->mouseY >= 2) {
-                SC_Message_Send(field_90, field_94, 9, field_8C, 5, 6, 0, 0, 0, 0);
+                SC_Message_Send(savedCommand, savedMsgData, 9, moduleParam, 5, 6, 0, 0, 0, 0);
                 return 1;
             }
         }
@@ -224,8 +224,8 @@ int SCI_Dialog::AddMessage(SC_Message* msg) {
             msg->priority = 3;
             return 1;
         }
-        if (msg->field_b4 == 0x1b) {
-            SC_Message_Send(field_90, field_94, 9, field_8C, 5, 6, 0, 0, 0, 0);
+        if (msg->lastKey == 0x1b) {
+            SC_Message_Send(savedCommand, savedMsgData, 9, moduleParam, 5, 6, 0, 0, 0, 0);
         }
     }
 
@@ -380,7 +380,7 @@ void SCI_Dialog::Update(int param1, int param2) {
 
     if (field_610 == 0 || field_610->head == 0) {
         if (field_604 != 0) field_604->Draw();
-        SC_Message_Send(field_90, field_94, 9, field_8C, 5, 6, 0, 0, 0, 0);
+        SC_Message_Send(savedCommand, savedMsgData, 9, moduleParam, 5, 6, 0, 0, 0, 0);
         return;
     }
 
@@ -552,7 +552,7 @@ int SCI_Dialog::LBLParse(char* line) {
         field_60C = new Sprite(0);
         Parser::ProcessFile(field_60C, this, 0);
     } else if (strcmp(token, "HANDLE") == 0) {
-        sscanf(line, "%s %d", token, &field_8C);
+        sscanf(line, "%s %d", token, &moduleParam);
     } else if (strcmp(token, "AMBIENTSCONTROLLER") == 0) {
         int temp;
         int ambientVal;

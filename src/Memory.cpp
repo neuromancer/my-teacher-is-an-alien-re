@@ -35,7 +35,7 @@ void FreeFromGlobalHeap(void* ptr)
 }
 
 /* Function start: 0x428440 */
-void* FUN_00428440(unsigned int size)
+void* CrtMalloc(unsigned int size)
 {
     return AllocateMemoryInternal(size, DAT_0043cb64);
 }

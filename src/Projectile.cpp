@@ -10,8 +10,8 @@ extern int g_ProjectileHits_0043d150;
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
-extern "C" int __cdecl FUN_00422aaf(int param_1);
-extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2);
+extern "C" int __cdecl DrawCircle(int param_1);
+extern "C" int __cdecl DrawLine(int param_1, int param_2);
 
 /* Function start: 0x4161B0 */
 Projectile::Projectile() : Sprite(0) {

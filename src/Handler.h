@@ -47,9 +47,9 @@ public:
 
     // Common handler fields
     int handlerId;      // 0x88 - handler type identifier
-    int field_8C;       // 0x8C - often sourceAddress
-    int field_90;       // 0x90 - often command
-    int field_94;       // 0x94 - often data
+    int moduleParam;    // 0x8C - handler-specific parameter (sourceAddress, data, etc.)
+    int savedCommand;   // 0x90 - saved command from CopyCommandData
+    int savedMsgData;   // 0x94 - saved data from CopyCommandData
     int field_98;       // 0x98
     int field_9C;       // 0x9C
 };

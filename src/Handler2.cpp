@@ -21,7 +21,7 @@ Handler2::Handler2() {
     pA0[3] = 0;
 
     handlerId = 2;
-    field_8C = 1;
+    moduleParam = 1;
 
     palette = new Palette();
     palette->Load(CDData_FormatPath("demo\\Dummy.col"));

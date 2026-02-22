@@ -626,8 +626,8 @@ int GameLoop::UpdateGame()
         local_d8.clickPos.y = pSourceMsg->clickPos.y;
         local_d8.mouseX = pSourceMsg->mouseX;
         local_d8.mouseY = pSourceMsg->mouseY;
-        local_d8.field_b4 = pSourceMsg->field_b4;
-        local_d8.field_b8 = pSourceMsg->field_b8;
+        local_d8.lastKey = pSourceMsg->lastKey;
+        local_d8.time = pSourceMsg->time;
         local_d8.userPtr = pSourceMsg->userPtr;
 
         // Destruct buffer after copy

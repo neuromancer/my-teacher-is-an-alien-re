@@ -51,7 +51,7 @@ mCNavigator::mCNavigator()
 {
     memset(&field_88, 0, 32);
     startingNode = 1;
-    field_98 = 0;
+    bearing = 0;
 }
 
 /* Function start: 0x4136F0 */
@@ -80,7 +80,7 @@ mCNavigator::~mCNavigator()
     do {
         NavNode* node = ((NavNode**)pool->memory)[i];
         while (node) {
-            CleanupObjectArray(&node->field_C, 1);
+            CleanupObjectArray(&node->value, 1);
             n = 0;
             while (n--)
                 ;
@@ -117,7 +117,7 @@ check_sprite:
 void mCNavigator::SetBearing(char* param_1)
 {
     int iVar1 = FindCharIndex(param_1);
-    field_98 = iVar1;
+    bearing = iVar1;
     if (iVar1 >= 6) {
         ShowError("mCNavigator::SetBearing() - Undefined direction '%s' %d", param_1, iVar1);
     }
@@ -153,7 +153,7 @@ loop_test:
 	if (n == 0) {
 		goto not_found;
 	}
-	if (n->field_8 == id) {
+	if (n->key == id) {
 		goto found;
 	}
 	goto loop_body;
@@ -163,10 +163,10 @@ not_found:
 
 found:
 	if (n) {
-		currentNode = n->field_C;
+		currentNode = n->value;
 	}
 
-	field_A0 = id;
+	previousNodeId = id;
 	if (currentNode) {
 		g_Sprite_004360a0 = sprite;
 	}
@@ -217,7 +217,7 @@ int mCNavigator::LBLParse(char* param_1)
 			if (node == 0) {
 				goto lookup1_not_found;
 			}
-			if (node->field_8 == handle) {
+			if (node->key == handle) {
 				goto lookup1_found;
 			}
 			goto lookup1_next;
@@ -247,7 +247,7 @@ int mCNavigator::LBLParse(char* param_1)
 			if (node == 0) {
 				goto lookup2_not_found;
 			}
-			if (node->field_8 == handle) {
+			if (node->key == handle) {
 				goto lookup2_found;
 			}
 			goto lookup2_next;
@@ -261,12 +261,12 @@ int mCNavigator::LBLParse(char* param_1)
 					pool->MemoryPool_Allocate(pool->size, 1);
 				}
 				node = (NavNode*)pool->Allocate_2();
-				node->field_4 = h;
-				node->field_8 = handle;
+				node->bucketIndex = h;
+				node->key = handle;
 				node->next = ((NavNode**)pool->memory)[h];
 				((NavNode**)pool->memory)[h] = node;
 			}
-			node->field_C = parser;
+			node->value = parser;
 		}
 	}
 	else if (_strcmpi(token, "SPRITE") == 0) {
@@ -301,7 +301,7 @@ int mCNavigator::Update()
 		int nextNodeId = ((mCNavNode*)currentNode)->GetNextNode();
 		ObjectPool* pool = navNodePool;
 		int handle = ((mCNavNode*)currentNode)->nodeHandle;
-		field_A0 = handle;
+		previousNodeId = handle;
 		h = ((unsigned int)nextNodeId >> 4) % pool->size;
 
 		if (pool->memory == 0) {
@@ -316,7 +316,7 @@ int mCNavigator::Update()
 		if (node == 0) {
 			goto not_found;
 		}
-		if (node->field_8 == nextNodeId) {
+		if (node->key == nextNodeId) {
 			goto found;
 		}
 		goto loop_body;
@@ -329,7 +329,7 @@ int mCNavigator::Update()
 			return 2;
 		}
 
-		currentNode = node->field_C;
+		currentNode = node->value;
 		return 0;
 	}
 

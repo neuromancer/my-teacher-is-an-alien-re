@@ -392,13 +392,13 @@ void Target::OnProcessStart()
     InitAnimation();
     
     TargetList* tl = g_TargetList_00435f0c;
-    stopSound     = (Sample*)tl->field_0x1b4;
+    stopSound     = tl->defaultStopSound;
     tl = g_TargetList_00435f0c;
-    progressSound = (Sample*)tl->field_0x1b8;
+    progressSound = tl->defaultProgressSound;
     tl = g_TargetList_00435f0c;
-    hitSound      = (Sample*)tl->field_0x1bc;
+    hitSound      = tl->defaultHitSound;
     tl = g_TargetList_00435f0c;
-    sound3        = (Sample*)tl->field_0x1c0;
+    sound3        = tl->defaultSound;
 }
 
 /* Function start: 0x4147F0 */

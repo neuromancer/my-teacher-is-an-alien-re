@@ -279,7 +279,7 @@ int Handler4::AddMessage(SC_Message* msg) {
                     if (pRect == g_PuzzleRects2_0043d100) {
                         msg->data = 1;
                     } else {
-                        msg->data = field_8C;
+                        msg->data = moduleParam;
                     }
                     msg->priority = 5;
                 }

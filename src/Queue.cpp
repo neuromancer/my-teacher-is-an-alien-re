@@ -234,9 +234,9 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 
     buffer->mouseX = local_msg.mouseX;
     buffer->mouseY = local_msg.mouseY;
-    buffer->field_b4 = local_msg.field_b4;
+    buffer->lastKey = local_msg.lastKey;
     completed |= 1;
-    buffer->field_b8 = local_msg.field_b8;
+    buffer->time = local_msg.time;
     buffer->userPtr = local_msg.userPtr;
 
     return buffer;

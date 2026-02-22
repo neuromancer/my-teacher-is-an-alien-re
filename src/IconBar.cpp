@@ -255,8 +255,8 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
                     msg->clickPos.y = pSrc->clickPos.y;
                     msg->mouseX = pSrc->mouseX;
                     msg->mouseY = pSrc->mouseY;
-                    msg->field_b4 = pSrc->field_b4;
-                    msg->field_b8 = pSrc->field_b8;
+                    msg->lastKey = pSrc->lastKey;
+                    msg->time = pSrc->time;
                     msg->userPtr = pSrc->userPtr;
                     break;
                 }

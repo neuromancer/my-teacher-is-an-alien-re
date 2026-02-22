@@ -45,7 +45,7 @@ Handler13::~Handler13() {
 void Handler13::Init(SC_Message* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
-        field_8C = msg->data;
+        moduleParam = msg->data;
     }
 }
 
@@ -64,7 +64,7 @@ void Handler13::Update(int param1, int param2) {
 
     uVar3 = timer1.Update();
     if ((uVar3 > 10000) && (list->head == 0)) {
-        SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
     }
 
     timer1.Reset();
@@ -142,7 +142,7 @@ int Handler13::Exit(SC_Message* msg) {
     case 0x13:
         if (msg->userPtr != 0) {
             pTimedEvent = new TimedEvent();
-            pTimedEvent->m_duration = msg->field_b8;
+            pTimedEvent->m_duration = msg->time;
             pTimedEvent->m_sourceAddress = msg->sourceAddress;
             pTimedEvent->m_eventData = (SC_Message*)msg->userPtr;
             msg->userPtr = 0;
@@ -216,7 +216,7 @@ int Handler13::Exit(SC_Message* msg) {
 
     case 0x1b:
         if (list->head == 0) {
-            SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+            SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
         }
         break;
 

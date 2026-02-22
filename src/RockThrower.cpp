@@ -10,7 +10,7 @@ extern Engine* g_CombatEngine_00435eb0;
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
-extern "C" int __cdecl FUN_00422aaf(int param_1);
+extern "C" int __cdecl DrawCircle(int param_1);
 
 /* Function start: 0x4165D0 */
 RockThrower::RockThrower() {
@@ -36,7 +36,7 @@ RockThrower::~RockThrower() {}
 void RockThrower::DrawCrosshairs() {
     SetFillColor(0xfa);
     SetDrawPosition(RockThrower::m_crosshairX, RockThrower::m_crosshairY);
-    FUN_00422aaf(7);
+    DrawCircle(7);
 }
 
 /* Function start: 0x4169A0 */

@@ -8,8 +8,8 @@
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
-extern "C" int __cdecl FUN_00422aaf(int param_1);
-extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2);
+extern "C" int __cdecl DrawCircle(int param_1);
+extern "C" int __cdecl DrawLine(int param_1, int param_2);
 
 class CombatResult {
 public:
@@ -52,38 +52,38 @@ void Weapon::DrawExplosion() {
     SetFillColor(0xfd);
 
     SetDrawPosition(Weapon::m_posX - 4, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posX - 3, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posX - 3, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posX - 2, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posX - 1, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posX - 1, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posX + 4, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posX + 3, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posX + 3, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posX + 2, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posX + 1, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posX + 1, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posY - 4, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posY - 3, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posY - 3, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posY - 2, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posY - 1, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posY - 1, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posY + 4, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posY + 3, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posY + 3, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posY + 2, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posY + 1, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posY + 1, Weapon::m_posZ);
 
     SetDrawPosition(Weapon::m_posX, Weapon::m_posZ);
-    FUN_00422ac3(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    FUN_00422ac3(Weapon::m_posY, Weapon::m_posZ);
+    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
+    DrawLine(Weapon::m_posY, Weapon::m_posZ);
 }

@@ -114,7 +114,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     pZBuf->m_queue9c->ClearList();
 
     if (msg != 0) {
-        field_8C = msg->data;
+        moduleParam = msg->data;
     }
 
     // Save screen position and initialize combat buffer
@@ -287,8 +287,8 @@ struct MessageQueueItem {
     int field_b0;            // 0xb0 - clickY
     int field_b4;            // 0xb4 - mouseX
     int field_b8;            // 0xb8 - mouseY
-    int field_bc;            // 0xbc - field_b4
-    int field_c0;            // 0xc0 - field_b8
+    int field_bc;            // 0xbc - lastKey
+    int field_c0;            // 0xc0 - time
     int field_c4;            // 0xc4 - userPtr
 };
 
@@ -355,8 +355,8 @@ void SC_Combat1::ProcessMessage()
         item->field_b0 = script->clickPos.y;
         item->field_b4 = script->mouseX;
         item->field_b8 = script->mouseY;
-        item->field_bc = script->field_b4;
-        item->field_c0 = script->field_b8;
+        item->field_bc = script->lastKey;
+        item->field_c0 = script->time;
         item->field_c4 = script->userPtr;
 
         if (*tailPtr != 0) {
@@ -373,7 +373,7 @@ void SC_Combat1::ProcessMessage()
         }
         return;
     }
-    SC_Message_Send(SC_Combat1::field_90, SC_Combat1::field_94, SC_Combat1::handlerId, SC_Combat1::field_8C, 5, 0, 0, 0, 0, 0);
+    SC_Message_Send(SC_Combat1::savedCommand, SC_Combat1::savedMsgData, SC_Combat1::handlerId, SC_Combat1::moduleParam, 5, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x410E80 */

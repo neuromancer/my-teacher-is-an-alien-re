@@ -561,9 +561,9 @@ int InitStockFont(int param_1)
     return 0;
 }
 
-// FUN_00422ac3 - Complex Bresenham line drawing algorithm with segment manipulation
+// DrawLine - Complex Bresenham line drawing algorithm with segment manipulation
 // Too complex to reimplement exactly due to inline assembly and segment registers
-extern "C" int __cdecl FUN_00422ac3(int param_1, int param_2) { return 0; }
+extern "C" int __cdecl DrawLine(int param_1, int param_2) { return 0; }
 
 // Externs for video buffer access
 extern int g_VideoBufferHeightM1_004374ca;  // buffer height - 1
@@ -671,7 +671,7 @@ extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
 }
 
 /* Function start: 0x422aaf */
-extern "C" int __cdecl FUN_00422aaf(int param_1) {
+extern "C" int __cdecl DrawCircle(int param_1) {
     FUN_00424176(param_1, param_1);
     return 0;
 }

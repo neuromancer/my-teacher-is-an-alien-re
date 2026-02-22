@@ -105,8 +105,8 @@ void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data
         pEmbedded->clickPos.y = pSource->clickPos.y;
         pEmbedded->mouseX = pSource->mouseX;
         pEmbedded->mouseY = pSource->mouseY;
-        pEmbedded->field_b4 = pSource->field_b4;
-        pEmbedded->field_b8 = pSource->field_b8;
+        pEmbedded->lastKey = pSource->lastKey;
+        pEmbedded->time = pSource->time;
         pEmbedded->userPtr = pSource->userPtr;
 
         if (*pTail == 0) {

@@ -67,7 +67,7 @@ SearchScreen::~SearchScreen() {
 void SearchScreen::Init(SC_Message* msg) {
     SearchScreen::CopyCommandData(msg);
     if (msg != 0) {
-        field_8C = msg->data;
+        moduleParam = msg->data;
     }
 }
 
@@ -90,7 +90,7 @@ void SearchScreen::Update(int param1, int param2) {
     int rowIdx;
 
     if (timer.Update() > 10000) {
-        SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
     }
 
     if (handlerId != param2) {
@@ -146,8 +146,8 @@ int SearchScreen::AddMessage(SC_Message* msg) {
 
     SearchScreen::WriteMessageAddress(msg);
 
-    if (msg->field_b4 != 0) {
-        switch (msg->field_b4) {
+    if (msg->lastKey != 0) {
+        switch (msg->lastKey) {
         case 0x44:
             stateIdx = selectedRow;
             pGameState = g_GameState_00436998;
@@ -235,7 +235,7 @@ int SearchScreen::Exit(SC_Message* msg) {
     case 0:
         return 1;
     case 1:
-        SC_Message_Send(field_90, field_94, handlerId, field_8C, 5, 0, 0, 0, 0, 0);
+        SC_Message_Send(savedCommand, savedMsgData, handlerId, moduleParam, 5, 0, 0, 0, 0, 0);
         return 1;
     case 0xd:
         stateIdx = msg->sourceAddress;
@@ -300,7 +300,7 @@ int SearchScreen::Exit(SC_Message* msg) {
         pGameState->stateValues[stateIdx] = param1;
         return 1;
     case 0x1b:
-        SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
         return 1;
     case 0x1c:
         g_GameState_00436998->Serialize(1);

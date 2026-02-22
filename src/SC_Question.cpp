@@ -356,9 +356,9 @@ int SC_Message::LBLParse(char* param_1)
     } else if (strcmp(local_30, "BUTTON2") == 0) {
         sscanf(param_1, "%s %d", local_30, &mouseY);
     } else if (strcmp(local_30, "LASTKEY") == 0) {
-        sscanf(param_1, "%s %d", local_30, &field_b4);
+        sscanf(param_1, "%s %d", local_30, &lastKey);
     } else if (strcmp(local_30, "TIME") == 0) {
-        sscanf(param_1, "%s %lu", local_30, &field_b8);
+        sscanf(param_1, "%s %lu", local_30, &time);
     } else if (strcmp(local_30, "EXTRA1") == 0) {
         sscanf(param_1, "%s %lu", local_30, &param1);
     } else if (strcmp(local_30, "EXTRA2") == 0) {
@@ -406,11 +406,11 @@ void SC_Message::Dump(int unused)
     if (mouseY != 0) {
         WriteToMessageLog("\t\t\tBUTTON2\t\t%d", mouseY);
     }
-    if (field_b4 != 0) {
-        WriteToMessageLog("\t\t\tLASTKEY\t\t%d", field_b4);
+    if (lastKey != 0) {
+        WriteToMessageLog("\t\t\tLASTKEY\t\t%d", lastKey);
     }
-    if (field_b8 != 0) {
-        WriteToMessageLog("\t\t\tTIME\t\t%lu", field_b8);
+    if (time != 0) {
+        WriteToMessageLog("\t\t\tTIME\t\t%lu", time);
     }
     if (param1 != 0) {
         WriteToMessageLog("\t\t\tEXTRA1\t\t%lu", param1);

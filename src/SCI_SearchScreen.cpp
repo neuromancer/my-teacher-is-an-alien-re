@@ -167,7 +167,7 @@ void SCI_SearchScreen::Update(int param1, int param2) {
     ambients->Draw();
 
     if (field_634 != 0) {
-        if (field_634->Update((int)background, (int)ambients, field_8C) == 0) {
+        if (field_634->Update((int)background, (int)ambients, moduleParam) == 0) {
             return;
         }
         field_634 = 0;

@@ -2,8 +2,8 @@
 #include "Memory.h"
 
 // External functions
-extern "C" void __fastcall FUN_004088f0(void* thisPtr);
-extern "C" void __fastcall FUN_00404490(void* thisPtr, int param);
+extern "C" void __fastcall AssetCleanup(void* thisPtr);
+extern "C" void __fastcall AssetNodeDelete(void* thisPtr, int param);
 
 // Node structure for the linked list
 struct AssetNode {
@@ -68,7 +68,7 @@ void AssetList::Cleanup() {
                         list1->current = list1->head;
                     }
                     if (data != 0) {
-                        FUN_004088f0(data);
+                        AssetCleanup(data);
                         delete data;
                     }
                 } while (list1->head != 0);
@@ -106,13 +106,13 @@ void AssetList::Cleanup() {
                             data = node->data;
                         }
                         if (node != 0) {
-                            FUN_00404490(node, 1);
+                            AssetNodeDelete(node, 1);
                             list2->current = 0;
                         }
                         list2->current = list2->head;
                     }
                     if (data != 0) {
-                        FUN_004088f0(data);
+                        AssetCleanup(data);
                         delete data;
                     }
                 } while (list2->head != 0);

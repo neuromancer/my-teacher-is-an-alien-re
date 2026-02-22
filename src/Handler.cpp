@@ -11,8 +11,8 @@ Handler::~Handler() {
 // Corresponds to FUN_00417180
 void Handler::CopyCommandData(SC_Message* msg) {
     if (msg != 0) {
-        field_90 = msg->command;
-        field_94 = msg->data;
+        savedCommand = msg->command;
+        savedMsgData = msg->data;
     }
 }
 
@@ -25,9 +25,9 @@ int Handler::WriteMessageAddress(SC_Message* msg) {
         return -1;
     }
     msg->targetAddress = handlerId;
-    msg->sourceAddress = field_8C;
+    msg->sourceAddress = moduleParam;
     msg->command = handlerId;
-    msg->data = field_8C;
+    msg->data = moduleParam;
     msg->priority = 0;
     return 0;
 }

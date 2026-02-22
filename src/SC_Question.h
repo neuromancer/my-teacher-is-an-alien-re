@@ -19,8 +19,8 @@ public:
     MousePoint clickPos; // 0xa4-0xa8 - click position (MousePoint has empty destructor for SEH)
     int mouseX;         // 0xac - current mouse X
     int mouseY;         // 0xb0 - current mouse Y
-    int field_b4;
-    int field_b8;
+    int lastKey;        // 0xb4 - last key pressed
+    int time;           // 0xb8 - time value
     int userPtr;        // 0xbc - user pointer (param8)
 
     SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY);

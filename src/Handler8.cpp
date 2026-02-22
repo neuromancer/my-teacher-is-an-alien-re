@@ -73,8 +73,8 @@ void Handler8::Init(SC_Message* msg) {
 
     CopyCommandData(msg);
     if (msg != 0) {
-        field_8C = msg->data;
-        sprintf(filename, "cine\\cine%4.4d.smk", field_8C);
+        moduleParam = msg->data;
+        sprintf(filename, "cine\\cine%4.4d.smk", moduleParam);
         if (FileExists(filename)) {
             Animation anim;
             anim.Play(filename, 0);
@@ -101,10 +101,10 @@ void Handler8::Update(int param1, int param2) {
 /* Function start: 0x406370 */
 int Handler8::AddMessage(SC_Message* msg) {
     Handler8::WriteMessageAddress(msg);
-    if (msg->field_b4 == 0x1b || msg->mouseY > 1) {
-        msg->targetAddress = field_90;
+    if (msg->lastKey == 0x1b || msg->mouseY > 1) {
+        msg->targetAddress = savedCommand;
         msg->priority = 5;
-        msg->sourceAddress = field_94;
+        msg->sourceAddress = savedMsgData;
     }
     return 1;
 }
@@ -177,8 +177,8 @@ void Handler8::ProcessMessage() {
         item->clickY = msg->clickPos.y;
         item->mouseX = msg->mouseX;
         item->mouseY = msg->mouseY;
-        item->field_bc = msg->field_b4;
-        item->field_c0 = msg->field_b8;
+        item->field_bc = msg->lastKey;
+        item->field_c0 = msg->time;
         item->userPtr = msg->userPtr;
 
         if (*tailPtr != 0) {
@@ -195,7 +195,7 @@ void Handler8::ProcessMessage() {
         }
         return;
     }
-    SC_Message_Send(field_90, field_94, handlerId, field_8C, 5, 0, 0, 0, 0, 0);
+    SC_Message_Send(savedCommand, savedMsgData, handlerId, moduleParam, 5, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x4065E0 */

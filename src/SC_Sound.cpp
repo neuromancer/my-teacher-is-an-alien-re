@@ -45,7 +45,7 @@ SC_Sound::~SC_Sound() {
 void SC_Sound::Init(SC_Message* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
-        field_8C = msg->sourceAddress;
+        moduleParam = msg->sourceAddress;
     }
 }
 
@@ -53,7 +53,7 @@ void SC_Sound::Init(SC_Message* msg) {
 void SC_Sound::Update(int param1, int param2) {
     if (timer.Update() > 60000) {
         if (list->head == 0) {
-            SC_Message_Send(3, handlerId, handlerId, field_8C, 20, 0, 0, 0, 0, 0);
+            SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
         }
     }
 
@@ -194,7 +194,7 @@ case20_loop:
     }
 
     case 27:
-        SC_Message_Send(3, handlerId, handlerId, field_8C, 20, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
         break;
 
     default:

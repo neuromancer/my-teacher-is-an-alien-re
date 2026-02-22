@@ -97,8 +97,8 @@ public:
     int mouseX;              // 0xac (stores clickY from SC_Message)
     int mouseY;              // 0xb0 (stores mouseX from SC_Message)
     int field_0xb4;          // 0xb4 (stores mouseY from SC_Message)
-    int field_0xb8;          // 0xb8 (stores field_b4 from SC_Message)
-    int userPtr;             // 0xbc (stores field_b8 from SC_Message)
+    int field_0xb8;          // 0xb8 (stores lastKey from SC_Message)
+    int userPtr;             // 0xbc (stores time from SC_Message)
     int field_0xc0;          // 0xc0 (stores userPtr from SC_Message)
     int field_0xc4;          // 0xc4
 };

@@ -7,9 +7,9 @@
 
 struct NavNode {
     NavNode* next;
-    int field_4;
-    int field_8;
-    void* field_C;
+    int bucketIndex;
+    int key;
+    void* value;
 };
 
 class mCNavigator : public Parser
@@ -19,9 +19,9 @@ public:
     Sprite* sprite; // 0x8c
     ObjectPool* navNodePool; // 0x90
     void* currentNode; // 0x94
-    int field_98; // 0x98
+    int bearing; // 0x98
     int startingNode; // 0x9c
-    int field_A0; // 0xA0
+    int previousNodeId; // 0xA0
     int field_A4; // 0xA4
 
 public:

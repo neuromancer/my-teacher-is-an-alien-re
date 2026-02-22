@@ -18,7 +18,7 @@ extern int FindCharIndex(char* param_1);
 // Hash table entry structure for random pool
 struct HashEntry {
     HashEntry* next;    // 0x00
-    int field_4;        // 0x04
+    int bucketIndex;    // 0x04
     int key;            // 0x08 - hash key
     int value;          // 0x0C - sound/sprite ID
 };
@@ -102,8 +102,8 @@ int mCNavNode::GetNextNode()
 {
     int divisor;
 
-    int* pDirectionIndex = &g_Navigator_00435f24->field_98;
-    int currentNode = g_Navigator_00435f24->field_A0;
+    int* pDirectionIndex = &g_Navigator_00435f24->bearing;
+    int currentNode = g_Navigator_00435f24->previousNodeId;
     int currentDir = *pDirectionIndex;
     InputState* pMouse = g_InputManager_00436968->pMouse;
 
@@ -226,7 +226,7 @@ found_entry:
             pool->size = size;
         }
         entry = (HashEntry*)pool->Allocate_2();
-        entry->field_4 = h;
+        entry->bucketIndex = h;
         entry->key = count;
         entry->next = ((HashEntry**)pool->memory)[h];
         ((HashEntry**)pool->memory)[h] = entry;

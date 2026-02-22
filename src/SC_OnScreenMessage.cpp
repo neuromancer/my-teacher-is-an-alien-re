@@ -91,7 +91,7 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
 void SC_OnScreenMessage::Init(SC_Message* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
-        field_8C = msg->sourceAddress;
+        moduleParam = msg->sourceAddress;
     }
 }
 
@@ -192,7 +192,7 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
 check_timer:
     uVar3 = timer.Update();
     if (uVar3 > 60000) {
-        SC_Message_Send(3, handlerId, handlerId, field_8C, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
     }
 
     if (handlerId == param2) {
@@ -366,7 +366,7 @@ push_to_tail:
     goto count_loop_start;
 
 send_remove_msg:
-    SC_Message_Send(3, handlerId, handlerId, field_8C, 20, 0, 0, 0, 0, 0);
+    SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
     return 1;
 }
 

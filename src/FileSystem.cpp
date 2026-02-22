@@ -188,7 +188,7 @@ char * __cdecl GetDriveDir(unsigned int drive, char *buffer, size_t size)
         if ((int)uVar4 <= (int)size) {
             uVar4 = size;
         }
-        buffer = (char*)FUN_00428440(uVar4);
+        buffer = (char*)CrtMalloc(uVar4);
         if (buffer == 0) {
             DAT_0043bdf0 = 0xc;
             return 0;
