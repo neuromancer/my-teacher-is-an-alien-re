@@ -1,15 +1,17 @@
 #ifndef HANDLER_H
 #define HANDLER_H
 
-#include "ScriptHandler.h"
+#include "Parser.h"
+#include <string.h>
 
+struct Message;
 class SC_Message;
 
 // Handler - Base class for all game handlers (modules)
 // Handlers are scene/screen managers that process messages and render content
 //
 // vtable layout (extends Parser):
-//   +0x00: LBLParse (Parser virtual)
+//   +0x00: LBLParse (Handler override)
 //   +0x04: OnProcessStart (Parser virtual)
 //   +0x08: OnProcessEnd (Parser virtual)
 //   +0x0C: Handler scalar deleting destructor (virtual ~Handler)
@@ -22,25 +24,29 @@ class SC_Message;
 //
 // Memory layout:
 //   0x00-0x87: Parser base class (size 0x88)
-//   0x88-0x97: ScriptHandler fields (targetAddress, sourceAddress, command, data)
-//   0x98-0x9F: Handler-specific fields
-class Handler : public ScriptHandler {
+//   0x88-0x9F: Handler fields
+class Handler : public Parser {
 public:
-    Handler() {}
+    Handler() {
+        memset(&targetAddress, 0, 24);
+    }
     virtual ~Handler();
 
-    // Default Init calls CopyCommandData (0x417180), default AddMessage calls WriteMessageAddress (0x4171B0)
-    // In the original binary, the vtable points directly to these ScriptHandler functions.
-    // Inline wrappers ensure derived classes calling Handler::Init/AddMessage
-    // generate a direct CALL to CopyCommandData/WriteMessageAddress.
-    virtual void Init(SC_Message* msg) { CopyCommandData((ScriptHandler*)msg); }
-    virtual int AddMessage(SC_Message* msg) { return WriteMessageAddress((Message*)msg); }
+    // Handler overrides LBLParse with "Must define an LBLParse func" error (0x4010C0)
+    int LBLParse(char*);
+
+    // Handler::Init (0x417180) and Handler::AddMessage (0x4171B0) defined in ScriptHandler.cpp
+    virtual void Init(SC_Message* msg);
+    virtual int AddMessage(SC_Message* msg);
     virtual int ShutDown(SC_Message* msg);
     virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
     virtual void OnInput(SC_Message* msg);
 
-    // Handler-specific fields
+    int targetAddress;  // 0x88 - handler address identifier
+    int sourceAddress;  // 0x8c - source address (from)
+    int command;        // 0x90 - message command/type
+    int data;           // 0x94 - message data
     int field_98;       // 0x98
     int field_9C;       // 0x9C
 };

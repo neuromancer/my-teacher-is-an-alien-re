@@ -49,6 +49,11 @@ void SC_Sound::Init(SC_Message* msg) {
     }
 }
 
+/* Function start: 0x40BB00 */
+int SC_Sound::ShutDown(SC_Message* msg) {
+    return 0;
+}
+
 /* Function start: 0x40BB10 */
 void SC_Sound::Update(int param1, int param2) {
     if (timer.Update() > 60000) {
@@ -90,10 +95,6 @@ int SC_Sound::AddMessage(SC_Message* msg) {
     Handler::AddMessage(msg);
     ShowError("SC_Sound::AddMessage");
     return 1;
-}
-
-int SC_Sound::ShutDown(SC_Message* msg) {
-    return 0;
 }
 
 /* Function start: 0x40BD30 */

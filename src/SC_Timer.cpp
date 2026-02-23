@@ -40,6 +40,18 @@ SC_Timer::~SC_Timer() {
   }
 }
 
+/* Function start: 0x401DF0 */
+void SC_Timer::Init(SC_Message* msg) {
+  Handler::Init(msg);
+  if (msg != 0) {
+    sourceAddress = msg->sourceAddress;
+  }
+}
+
+/* Function start: 0x401E20 */
+int SC_Timer::ShutDown(SC_Message* msg) {
+  return 0;
+}
 
 /* Function start: 0x401E30 */
 void SC_Timer::Update(int param_1, int param_2) {
@@ -91,14 +103,14 @@ void SC_Timer::Update(int param_1, int param_2) {
 }
 
 /* Function start: 0x401F90 */
-int SC_Timer::AddMessage(int param_1) {
-  WriteMessageAddress((Message *)param_1);
+int SC_Timer::AddMessage(SC_Message* msg) {
+  Handler::AddMessage(msg);
   ShowError("SC_Timer::AddMessage");
   return 1;
 }
 
 /* Function start: 0x401FB0 */
-int SC_Timer::Input(void *param_1) {
+int SC_Timer::Exit(SC_Message* param_1) {
   Queue *pQueue;
   QueueNode *pNode;
   void *pData;

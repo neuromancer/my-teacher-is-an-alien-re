@@ -164,7 +164,7 @@ Handler4::~Handler4() {
 /* Function start: 0x40EB80 */
 void Handler4::Init(SC_Message* msg) {
     WriteToMessageLog("\nENTER FORCEFIELD PUZZLE");
-    InitIconBar(msg);
+    IconBar::Init(msg);
 
     Palette* pal = palette;
     if (pal != 0) {
@@ -213,14 +213,14 @@ int Handler4::ShutDown(SC_Message* msg) {
         sound2 = 0;
     }
 
-    CleanupIconBar(msg);
+    IconBar::ShutDown(msg);
     WriteToMessageLog("EXIT FORCEFIELD PUZZLE\n");
     return 0;
 }
 
 /* Function start: 0x40ED50 */
 int Handler4::AddMessage(SC_Message* msg) {
-    if (CheckButtonClick(msg)) {
+    if (IconBar::AddMessage(msg)) {
         return 1;
     }
 

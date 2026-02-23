@@ -14,9 +14,6 @@ public:
     char pad2[0xa0 - 0x8c - 4];
     Timer timer; // 0xa0
 
-    // Virtual method override
-    virtual int LBLParse(char* param_1);
-
     ~ZBuffer();
     void CleanUpVBuffer();
 };

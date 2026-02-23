@@ -67,8 +67,8 @@ void Handler6::Init(SC_Message* msg) {
     // Log entry
     WriteToMessageLog("\nENTER SEARCH SCREEN");
 
-    // Call parent init (IconBar::InitIconBar)
-    InitIconBar(msg);
+    // Call parent init
+    IconBar::Init(msg);
 
     // Format the script file path and labels
     sprintf(filePath, "mis\\room%3.3d.mis", 5);
@@ -131,8 +131,8 @@ int Handler6::ShutDown(SC_Message* msg) {
     activeHotspots = 0;
     counter = 0;
 
-    // Call parent cleanup (IconBar::CleanupIconBar)
-    CleanupIconBar(msg);
+    // Call parent cleanup
+    IconBar::ShutDown(msg);
 
     // Log message
     WriteToMessageLog("EXIT SEARCH SCREEN\n");
@@ -141,8 +141,8 @@ int Handler6::ShutDown(SC_Message* msg) {
 
 /* Function start: 0x404810 */
 int Handler6::AddMessage(SC_Message* msg) {
-    // Call parent handler (IconBar::CheckButtonClick)
-    int result = CheckButtonClick(msg);
+    // Call parent handler
+    int result = IconBar::AddMessage(msg);
     if (result != 0) {
         return 1;
     }

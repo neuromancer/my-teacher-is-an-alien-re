@@ -124,7 +124,7 @@ IconBar::IconBar() {
 }
 
 IconBar::~IconBar() {
-    // Destructor - cleanup handled by CleanupIconBar
+    // Destructor - cleanup handled by ShutDown
 }
 
 /* Function start: 0x402CD0 */
@@ -138,7 +138,7 @@ IconBarButton::~IconBarButton() {
 }
 
 /* Function start: 0x402ED0 */
-void IconBar::InitIconBar(SC_Message* msg) {
+void IconBar::Init(SC_Message* msg) {
     int i;
 
     // Call parent Init (CopyCommandData)
@@ -167,7 +167,7 @@ void IconBar::InitIconBar(SC_Message* msg) {
 }
 
 /* Function start: 0x402FD0 */
-void IconBar::CleanupIconBar(SC_Message* msg) {
+int IconBar::ShutDown(SC_Message* msg) {
     int i;
 
     // Stop iconbar sprite animation
@@ -191,10 +191,11 @@ void IconBar::CleanupIconBar(SC_Message* msg) {
         delete soundList;
         soundList = 0;
     }
+    return 0;
 }
 
 /* Function start: 0x403040 */
-int IconBar::CheckButtonClick(SC_Message* msg) {
+int IconBar::AddMessage(SC_Message* msg) {
     unsigned int j;
     int i;
     int ok;
@@ -260,6 +261,11 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
     }
 
     return 1;
+}
+
+/* Function start: 0x403220 */
+int IconBar::Exit(SC_Message* msg) {
+    return 0;
 }
 
 /* Function start: 0x403230 */

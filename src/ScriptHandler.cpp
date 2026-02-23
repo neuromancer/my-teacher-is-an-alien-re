@@ -1,8 +1,9 @@
-#include "ScriptHandler.h"
+#include "Handler.h"
 #include "Message.h"
 
 /* Function start: 0x417180 */
-void ScriptHandler::CopyCommandData(ScriptHandler* other) {
+void Handler::Init(SC_Message* msg) {
+    Handler* other = (Handler*)msg;
     if (other != 0) {
         command = other->command;
         data = other->data;
@@ -10,16 +11,17 @@ void ScriptHandler::CopyCommandData(ScriptHandler* other) {
 }
 
 /* Function start: 0x4171B0 */
-int ScriptHandler::WriteMessageAddress(Message* msg) {
-    if (msg == 0) {
+int Handler::AddMessage(SC_Message* msg) {
+    Message* m = (Message*)msg;
+    if (m == 0) {
         return -1;
     }
 
-    msg->targetAddress = targetAddress;
-    msg->sourceAddress = sourceAddress;
-    msg->command = targetAddress;
-    msg->data = sourceAddress;
-    msg->priority = 0;
+    m->targetAddress = targetAddress;
+    m->sourceAddress = sourceAddress;
+    m->command = targetAddress;
+    m->data = sourceAddress;
+    m->priority = 0;
 
     return 0;
 }

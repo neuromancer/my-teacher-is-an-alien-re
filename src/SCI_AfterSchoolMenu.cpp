@@ -125,7 +125,7 @@ void SCI_AfterSchoolMenu::Init(SC_Message* msg) {
         DAT_00435448 = 1;
         WriteToMessageLog("\nENTER AFTERSCHOOL MENU");
 
-        IconBar::InitIconBar(msg);
+        IconBar::Init(msg);
 
         // Clear some fields
         buttons[0].enabled = 0;
@@ -250,7 +250,7 @@ int SCI_AfterSchoolMenu::ShutDown(SC_Message* msg) {
             }
         }
 
-        IconBar::CleanupIconBar(msg);
+        IconBar::ShutDown(msg);
         WriteToMessageLog("EXIT AFTERSCHOOL MENU\n");
     }
 
@@ -262,7 +262,7 @@ int SCI_AfterSchoolMenu::AddMessage(SC_Message* msg) {
     int result;
 
     // Check iconbar button click first
-    result = IconBar::CheckButtonClick(msg);
+    result = IconBar::AddMessage(msg);
     if (result != 0) {
         return 1;
     }

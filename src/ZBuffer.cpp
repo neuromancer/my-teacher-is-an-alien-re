@@ -30,7 +30,7 @@ Handler12::Handler12() {
 }
 
 /* Function start: 0x4010C0 */
-int ZBuffer::LBLParse(char* param_1)
+int Handler::LBLParse(char* param_1)
 {
     ShowError("Parser:: Must define an LBLParse func");
     return 0;

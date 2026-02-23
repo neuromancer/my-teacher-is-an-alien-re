@@ -61,7 +61,7 @@ void SCI_SearchScreen::Init(SC_Message* msg) {
     Sample* smp;
 
     WriteToMessageLog("\nENTER SEARCH SCREEN");
-    IconBar::InitIconBar(msg);
+    IconBar::Init(msg);
     if (msg->param1 == 5) {
         field_634 = 0;
     }
@@ -131,14 +131,14 @@ int SCI_SearchScreen::ShutDown(SC_Message* msg) {
     }
     g_Mouse_00436978->DrawCursor();
 
-    IconBar::CleanupIconBar(msg);
+    IconBar::ShutDown(msg);
     WriteToMessageLog("EXIT SEARCH SCREEN\n");
     return 0;
 }
 
 /* Function start: 0x40B0B0 */
 int SCI_SearchScreen::AddMessage(SC_Message* msg) {
-    if (IconBar::CheckButtonClick(msg)) {
+    if (IconBar::AddMessage(msg)) {
         return 1;
     }
     if (msg->mouseX >= 2 && field_634 == 0) {

@@ -108,7 +108,7 @@ void SCI_Dialog::Init(SC_Message* msg) {
 
     WriteToMessageLog("\nENTER DIALOG");
 
-    IconBar::InitIconBar(msg);
+    IconBar::Init(msg);
 
     struct DialogInitData {
         void* ptr1;
@@ -181,7 +181,7 @@ int SCI_Dialog::ShutDown(SC_Message* msg) {
     buttons[0].enabled = 1;
     buttons[4].enabled = 1;
 
-    IconBar::CleanupIconBar(msg);
+    IconBar::ShutDown(msg);
 
     WriteToMessageLog("\"EXIT DIALOG\\n\"");
 
@@ -193,7 +193,7 @@ int SCI_Dialog::AddMessage(SC_Message* msg) {
     DialogQuestion* dq;
     InputState* pMouse;
 
-    if (IconBar::CheckButtonClick(msg)) {
+    if (IconBar::AddMessage(msg)) {
         return 1;
     }
 

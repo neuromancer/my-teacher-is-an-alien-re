@@ -51,11 +51,14 @@ public:
     IconBar();
     virtual ~IconBar();
 
-    // Methods
-    void InitIconBar(SC_Message* msg);
-    void CleanupIconBar(SC_Message* msg);
-    int CheckButtonClick(SC_Message* msg);
+    // Virtual method overrides (from Handler)
+    void Init(SC_Message* msg);
+    int AddMessage(SC_Message* msg);
+    int ShutDown(SC_Message* msg);
     virtual void Update(int param1, int param2);
+    int Exit(SC_Message* msg);
+
+    // Non-virtual methods
     void PlayButtonSound(int buttonIndex);  // 0x403300
 
     // Icon bar rect (0xA0-0xAF)
