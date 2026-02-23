@@ -370,10 +370,10 @@ def main():
     parser = argparse.ArgumentParser(description='Compare initialized global data between PE files')
     parser.add_argument('orig_exe', nargs='?', default='re/demo/CDDATA/TEACHER.ORI.EXE',
                         help='Original executable (default: re/demo/CDDATA/TEACHER.ORI.EXE)')
-    parser.add_argument('new_exe', nargs='?', default='TEACHER.EXE',
-                        help='Recompiled executable (default: TEACHER.EXE)')
-    parser.add_argument('-m', '--map', default='TEACHER.map',
-                        help='Map file for symbol resolution (default: TEACHER.map)')
+    parser.add_argument('new_exe', nargs='?', default='TEACHER-DEMO.EXE',
+                        help='Recompiled executable (default: TEACHER-DEMO.EXE)')
+    parser.add_argument('-m', '--map', default='TEACHER-DEMO.map',
+                        help='Map file for symbol resolution (default: TEACHER-DEMO.map)')
     parser.add_argument('-g', '--globals', default='src/globals.cpp',
                         help='Path to globals.cpp (default: src/globals.cpp)')
     parser.add_argument('-v', '--verbose', action='store_true',

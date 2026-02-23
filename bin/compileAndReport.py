@@ -51,15 +51,32 @@ def run_comparison(function_name, address):
         return f"Error: {e}"
 
 def main():
+    import sys
+
+    full_mode = '--full' in sys.argv
+    if full_mode:
+        src_dir = "src-full"
+        code_dir = "code-full"
+        out_dir = "out-full"
+        clean_target = "clean-full"
+        build_target = "full"
+        map_skip = "src-full/map"
+    else:
+        src_dir = "src"
+        code_dir = "code"
+        out_dir = "out"
+        clean_target = "clean"
+        build_target = "all"
+        map_skip = "src/map"
+
     report = []
-    src_dir = "src"
 
     # Clean and build once
-    os.system("make clean")
-    os.system("make all > /dev/null 2>&1")
+    os.system(f"make {clean_target}")
+    os.system(f"make {build_target} > /dev/null 2>&1")
 
     for root, _, files in os.walk(src_dir):
-        if "src/map" in root:
+        if map_skip in root:
             continue
 
         for file in files:
@@ -76,7 +93,7 @@ def main():
                         for j in range(i + 1, len(lines)):
                             function_name = get_function_name(lines[j])
                             if function_name:
-                                similarity = run_comparison(function_name, address)
+                                similarity = run_comparison_in(function_name, address, code_dir, out_dir)
                                 report.append((filepath, function_name, f"0x{address}", similarity))
                                 break
 
@@ -84,6 +101,22 @@ def main():
     for filepath, function_name, address, similarity in report:
         print(f"File: {filepath}, Function: {function_name}, Address: {address}, Similarity: {similarity}")
     print("-----------------------------------------")
+
+
+def run_comparison_in(function_name, address, code_dir, out_dir="out"):
+    disassembled_file = f"{code_dir}/FUN_{address}.disassembled.txt"
+    if not os.path.exists(disassembled_file):
+        return "N/A"
+
+    try:
+        similarity, _, _ = get_similarity(function_name, disassembled_file, clean_build=False, out_dir=out_dir)
+        if similarity is not None:
+            return f"{similarity:.2f}%"
+        else:
+            return "Error"
+    except Exception as e:
+        return f"Error: {e}"
+
 
 if __name__ == "__main__":
     main()

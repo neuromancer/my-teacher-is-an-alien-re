@@ -304,8 +304,12 @@ void Handler4::Update(int param1, int param2) {
         if (sound1->m_sample == 0 ||
             *(int*)((char*)sound1->m_sample + 0xc) != sound1->m_size ||
             AIL_sample_status(sound1->m_sample) != 4) {
-            sound1->Unload();
-            sound1 = 0;
+            Sample* snd = sound1;
+            if (snd != 0) {
+                snd->Unload();
+                operator delete(snd);
+                sound1 = 0;
+            }
         }
     }
 
@@ -315,8 +319,12 @@ void Handler4::Update(int param1, int param2) {
         puzztest->Do(puzztest->loc_x, puzztest->loc_y, 1.0);
     }
 
-    DisplayButtons();
-    DisplayMap();
+    if (&buttons1 != 0) {
+        DisplayButtons();
+    }
+    if (&paths1 != 0) {
+        DisplayMap();
+    }
     if (litdoors != 0) {
         DisplayLitDoors();
     }

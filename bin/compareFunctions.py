@@ -147,7 +147,7 @@ def find_function_prologues(text_data, text_base):
 def main():
     parser = argparse.ArgumentParser(description='Compare function addresses between original and reconstructed EXE')
     parser.add_argument('--orig', default='data/demo/TEACHER.EXE', help='Original EXE path')
-    parser.add_argument('--new', default='TEACHER.EXE', help='Reconstructed EXE path (optional)')
+    parser.add_argument('--new', default='TEACHER-DEMO.EXE', help='Reconstructed EXE path (optional)')
     parser.add_argument('--map-dir', default='src/map', help='Map directory with function addresses')
     parser.add_argument('--src-dir', default='src', help='Source directory')
     parser.add_argument('--code-dir', default='code', help='Code directory with decompiled files')

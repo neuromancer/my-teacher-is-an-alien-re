@@ -1,0 +1,22 @@
+#ifndef GLYPHRECT_H
+#define GLYPHRECT_H
+#include <string.h>
+
+struct GlyphRect {
+    int left;    // 0x00 - left edge X coordinate
+    int top;     // 0x04 - top edge Y coordinate
+    int right;   // 0x08 - right edge X coordinate
+    int bottom;  // 0x0C - bottom edge Y coordinate
+    GlyphRect() {
+        memset(this, 0, sizeof(GlyphRect));
+    }
+    GlyphRect(int l, int t, int r, int b) {
+        left = l;
+        top = t;
+        right = r;
+        bottom = b;
+    }
+    ~GlyphRect();  // Destructor - generates thunk at 0x401680
+};
+
+#endif // GLYPHRECT_H

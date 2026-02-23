@@ -1,0 +1,281 @@
+#include "SC_Sound.h"
+#include "Memory.h"
+#include "Message.h"
+#include "globals.h"
+#include "string.h"
+#include "SC_OnScreenMessage.h"
+#include "SC_Question.h"
+#include "SoundItem.h"
+
+/* Function start: 0x40B7E0 */ /* DEMO ONLY - no full game match */
+SC_Sound::SC_Sound() {
+    // Set handlerId to 14
+    handlerId = 14;
+
+    // Call Timer::Reset() on timer
+    timer.Reset();
+
+    // Allocate and initialize list header structure
+    list = new MessageList();
+}
+
+/* Function start: 0x40B910 */ /* DEMO ONLY - no full game match */
+SC_Sound::~SC_Sound() {
+    MessageList* pList;
+
+    pList = list;
+    if (pList != 0) {
+        if (pList->head != 0) {
+            pList->current = pList->head;
+            if (pList->head != 0) {
+                do {
+                    SoundItem* data = (SoundItem*)pList->RemoveCurrent();
+                    if (data != 0) {
+                        delete data;
+                    }
+                } while (pList->head != 0);
+            }
+        }
+        ::operator delete(pList);
+        list = 0;
+    }
+}
+
+/* Function start: 0x414370 */ /* ~85% match */
+void SC_Sound::Init(SC_Message* msg) {
+    CopyCommandData(msg);
+    if (msg != 0) {
+        moduleParam = msg->sourceAddress;
+    }
+}
+
+/* Function start: 0x40BB10 */ /* DEMO ONLY - no full game match */
+void SC_Sound::Update(int param1, int param2) {
+    if (timer.Update() > 60000) {
+        if (list->head == 0) {
+            SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
+        }
+    }
+
+    if (list != 0) {
+        list->current = list->head;
+        if (list->head != 0) {
+            do {
+                {
+                    SoundItem* soundItem = (SoundItem*)list->GetCurrentData();
+
+                    if (soundItem->IsFinished()) {
+                        SoundItem* data = (SoundItem*)list->RemoveCurrent();
+                        if (data != 0) {
+                            delete data;
+                        }
+                    }
+                }
+
+                if (list->tail == list->current) break;
+                if (list->current != 0) {
+                    list->current = (MessageNode*)list->current->next;
+                }
+            } while (list->head != 0);
+        }
+    }
+
+    if (handlerId == param2) {
+        ShowError("SC_Sound::Update");
+    }
+}
+
+/* Function start: 0x40BD10 */ /* DEMO ONLY - no full game match */
+int SC_Sound::AddMessage(SC_Message* msg) {
+    WriteMessageAddress(msg);
+    ShowError("SC_Sound::AddMessage");
+    return 1;
+}
+
+int SC_Sound::ShutDown(SC_Message* msg) {
+    return 0;
+}
+
+/* Function start: 0x40BD30 */ /* DEMO ONLY - no full game match */
+int SC_Sound::Exit(SC_Message* msg) {
+    MessageList* pList;
+
+    if (msg->targetAddress != handlerId) {
+        return 0;
+    }
+
+    timer.Reset();
+
+    switch (msg->priority) {
+    case 3:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->Start();
+        break;
+    }
+
+    case 15:
+    {
+        pList = list;
+        if (pList->head != 0) {
+            pList->current = pList->head;
+            if (pList->head != 0) {
+                do {
+                    SoundItem* data = (SoundItem*)pList->PopCurrent();
+                    if (data != 0) {
+                        delete data;
+                    }
+                } while (pList->head != 0);
+            }
+        }
+        break;
+    }
+
+    case 16:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->AdjustVolume(10);
+        break;
+    }
+
+    case 17:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->AdjustVolume(-10);
+        break;
+    }
+
+    case 18:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->SetVolume(msg->param1);
+        break;
+    }
+
+    case 19:
+        FindOrCreateSound(msg->sourceAddress);
+        break;
+
+    case 20:
+    {
+        list->current = list->head;
+        if (list->head != 0) {
+            do {
+                {
+                    MessageNode* node = (MessageNode*)list->current;
+
+                    if (node == 0) {
+                        if (msg->sourceAddress == *(int*)0x18) goto remove;
+                    } else if (((SoundItem*)node->data)->soundId == msg->sourceAddress) {
+                    remove:
+                        ;
+                        SoundItem* data = (SoundItem*)list->RemoveCurrent();
+                        if (data != 0) {
+                            delete data;
+                        }
+                    }
+                }
+
+                if (list->tail == list->current) break;
+                if (list->current != 0) {
+                    list->current = (MessageNode*)list->current->next;
+                }
+            } while (list->head != 0);
+        }
+        break;
+    }
+
+    case 26:
+    {
+        SoundItem* item = FindOrCreateSound(msg->sourceAddress);
+        item->Resume();
+        break;
+    }
+
+    case 27:
+        SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
+        break;
+
+    default:
+        return 0;
+    }
+
+    return 1;
+}
+
+/* Function start: 0x40C0E0 */ /* DEMO ONLY - no full game match */
+SoundItem* SC_Sound::FindOrCreateSound(int soundId)
+{
+    MessageList* pList;
+    MessageNode* currNode;
+    SoundItem* foundItem;
+    SoundItem* newItem;
+    MessageNode* newNode;
+
+    pList = SC_Sound::list;
+    if (pList->head != 0) {
+        pList->current = pList->head;
+        while (pList->head != 0) {
+            currNode = (MessageNode*)pList->current;
+            if (currNode == 0) {
+                if (soundId == *(int*)0x18) {
+                    goto found;
+                }
+            } else {
+                if (soundId == ((SoundItem*)currNode->data)->soundId) {
+found:
+                    currNode = (MessageNode*)pList->current;
+                    if (currNode == 0) {
+                        foundItem = 0;
+                    } else {
+                        foundItem = (SoundItem*)currNode->data;
+                    }
+                    return foundItem;
+                }
+            }
+            if (pList->tail == pList->current) {
+                break;
+            }
+            if (currNode != 0) {
+                pList->current = currNode->next;
+            }
+        }
+    }
+
+    // Not found - allocate new SoundItem
+    newItem = new SoundItem(soundId);
+
+    pList = SC_Sound::list;
+    pList->ResetForSortedAdd(newItem);
+
+    // Check list type for insertion method
+    if (pList->type != 1 && pList->type != 2) {
+        pList->InsertBeforeCurrent(newItem);
+        return newItem;
+    }
+
+    if (pList->head == 0) {
+        pList->Insert(newItem);
+        return newItem;
+    }
+
+    // Priority insertion loop
+    do {
+        currNode = (MessageNode*)pList->current;
+        if ((unsigned int)((SoundItem*)currNode->data)->soundId < (unsigned int)newItem->soundId) {
+            pList->Insert(newItem);
+            return newItem;
+        }
+
+        if (pList->tail == pList->current) {
+            pList->Push(newItem);
+            return newItem;
+        }
+
+        if (currNode != 0) {
+            pList->current = currNode->next;
+        }
+    } while (pList->current != 0);
+
+    return newItem;
+}

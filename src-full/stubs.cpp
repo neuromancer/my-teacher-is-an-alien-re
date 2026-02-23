@@ -1,0 +1,108 @@
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <share.h>
+#include "Memory.h"
+#include "OnScreenMessage.h"
+#include "TimedEvent.h"
+#include "globals.h"
+#include "ZBufferManager.h"
+#include "SC_Question.h"
+#include "SC_OnScreenMessage.h"
+#include "SCI_SearchScreen.h"
+#include "InputManager.h"
+#include "Character.h"
+#include "SoundItem.h"
+#include "Parser.h"
+#include "Engine.h"
+#include "SCI_Dialog.h"
+#include "Queue.h"
+
+extern "C" {
+
+// SEH cleanup funclets (auto-generated compiler code, not real functions)
+// FUN_00421671, FUN_0041fbd3, FUN_00421c24, FUN_0041ae0c - All removed (SEH funclets)
+
+// CRT wrappers referenced by FlagArray and FileSystem
+int CrtFileRead(void* buf, int size, int count, FILE* stream) {
+    return fread(buf, size, count, stream);
+}
+
+void CrtFileClose(FILE* stream) {
+    fclose(stream);
+}
+
+char* GetFullPath(char* dst, const char* src, unsigned int maxlen) {
+    return _fullpath(dst, src, maxlen);
+}
+
+} // extern "C"
+
+
+// ============================================================================
+// C++ Stubs (need C++ linkage for name mangling)
+// ============================================================================
+
+// FUN_00421840 -> InputManager::~InputManager in InputManager.cpp
+
+// CRT internal function
+void CleanupObjectArray(void* a, int b) {}
+
+// FUN_00421f90 -> CDData::ResolvePath in CDData.cpp
+// FUN_00404230 -> AssetList::Cleanup in AssetList.cpp
+
+// ============================================================================
+// Global variables needed for linking
+// ============================================================================
+
+int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
+short _param_3 = 0; // Sound.obj ?_param_3@@3FA
+
+// ============================================================================
+// Handler8 stubs - message queue management
+// ============================================================================
+
+// Forward declaration for MessageQueue (defined in Handler8.cpp)
+struct MessageQueue;
+
+MessageQueue* g_MessageQueue = 0;
+
+
+
+// ============================================================================
+// CombatSprite stubs
+// ============================================================================
+#include "CombatSprite.h"
+
+// CombatSprite::ParseSpriteData -> CombatSprite.cpp
+
+// ============================================================================
+// EngineB stubs
+// ============================================================================
+
+void* DAT_00435f1c = 0;
+
+// ============================================================================
+// CombatSprite / misc stubs
+// ============================================================================
+
+// Target::Spawn (0x414060) -> Target.cpp
+
+// ============================================================================
+// Projectile stubs
+// ============================================================================
+
+int g_ProjectileHits_0043d150 = 0;
+
+// FUN_00416ba0 -> EngineSubsystems.cpp
+// DrawLine, DrawCircle, FUN_00424176 -> Graphics.cpp
+
+// ============================================================================
+// AssetList helper stubs
+// ============================================================================
+
+extern "C" {
+void __fastcall AssetCleanup(void* thisPtr) {}
+void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
+}

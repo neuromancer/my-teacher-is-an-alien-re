@@ -20,145 +20,21 @@ The game executables has the following sha256 signatures:
 
 # Status
 
+Both the demo and full game binaries are being reconstructed. The demo is the primary target, with the full game build derived from it.
+
+## Demo
+
+**Progress: 831 / 876 (94.86%)** — 265 library functions excluded — 178 auto-complete functions marked
+
 The intro video and the first screen from the demo are starting to run:
 
 <img width="640" height="479" alt="image" src="https://github.com/user-attachments/assets/e92594ef-183c-472e-8bd6-101ee6b517a4" />
 
-Additionally, the progress is reported using ranges of functions (not all of them are implemented with 100%, but still provides a sense of progress):
+## Full Game
 
-```--- Progress Report ---
-  ❌ 0x401000 - 0x4012c0 (17 functions)
-  ✅ 0x4012d0 - 0x401500 (4 functions)
-  ❌ 0x401540 - 0x401550 (2 functions)
-  ✅ 0x401560 (1 function)
-  ❌ 0x40166b - 0x401690 (2 functions)
-  ✅ 0x4016a0 (1 function)
-  ❌ 0x4016ff (1 function)
-  ✅ 0x401710 - 0x401790 (2 functions)
-  ❌ 0x401810 (1 function)
-  ✅ 0x401890 - 0x401910 (2 functions)
-  ❌ 0x40197b - 0x401990 (2 functions)
-  ✅ 0x4019a0 - 0x401b60 (2 functions)
-  ❌ 0x401c80 - 0x401e20 (7 functions)
-  ✅ 0x401e30 - 0x402700 (9 functions)
-  ❌ 0x402730 - 0x405c72 (68 functions)
-  ✅ 0x405c80 (1 function)
-  ❌ 0x405cc0 - 0x405cf0 (2 functions)
-  ✅ 0x405d20 (1 function)
-  ❌ 0x405dcd - 0x4093ec (57 functions)
-  ✅ 0x409400 (1 function)
-  ❌ 0x409440 - 0x4094a0 (3 functions)
-  ✅ 0x4094f0 - 0x409bf0 (4 functions)
-  ❌ 0x409cc2 (1 function)
-  ✅ 0x409cd0 - 0x409d50 (2 functions)
-  ❌ 0x409f00 - 0x40a290 (9 functions)
-  ✅ 0x40a2e0 - 0x40a410 (3 functions)
-  ❌ 0x40a56c - 0x40a5d0 (5 functions)
-  ✅ 0x40a5e0 (1 function)
-  ❌ 0x40a7aa - 0x40d200 (50 functions)
-  ✅ 0x40d230 - 0x40d28c (2 functions)
-  ❌ 0x40d2a0 - 0x411c8e (93 functions)
-  ✅ 0x411d60 (1 function)
-  ❌ 0x411de0 - 0x413380 (38 functions)
-  ✅ 0x413670 - 0x4136f0 (2 functions)
-  ❌ 0x413804 (1 function)
-  ✅ 0x413810 - 0x413cf0 (6 functions)
-  ❌ 0x413d50 - 0x4189d0 (112 functions)
-  ✅ 0x4189f0 - 0x418f50 (18 functions)
-  ❌ 0x418f60 - 0x418f90 (2 functions)
-  ✅ 0x419010 - 0x4192f0 (11 functions)
-  ❌ 0x419390 - 0x4193e0 (2 functions)
-  ✅ 0x419420 - 0x4195a0 (2 functions)
-  ❌ 0x4195c0 - 0x419660 (3 functions)
-  ✅ 0x419770 - 0x419780 (2 functions)
-  ❌ 0x419800 - 0x419fd0 (7 functions)
-  ✅ 0x41a150 (1 function)
-  ❌ 0x41a3b9 (1 function)
-  ✅ 0x41a3d0 - 0x41a670 (3 functions)
-  ❌ 0x41a810 - 0x41a8c0 (2 functions)
-  ✅ 0x41a9a0 - 0x41ad50 (19 functions)
-  ❌ 0x41ae0c (1 function)
-  ✅ 0x41ae20 - 0x41aee0 (4 functions)
-  ❌ 0x41af9f - 0x41afb1 (2 functions)
-  ✅ 0x41afc0 (1 function)
-  ❌ 0x41b07f - 0x41b0a0 (3 functions)
-  ✅ 0x41b110 (1 function)
-  ❌ 0x41b29a - 0x41b2ac (2 functions)
-  ✅ 0x41b2c0 - 0x41b310 (2 functions)
-  ❌ 0x41b3b0 - 0x41cd30 (28 functions)
-  ✅ 0x41cd50 - 0x41ce30 (2 functions)
-  ❌ 0x41cef0 - 0x41cf08 (2 functions)
-  ✅ 0x41cf10 - 0x41e580 (24 functions)
-  ❌ 0x41e666 (1 function)
-  ✅ 0x41e670 - 0x41eb70 (13 functions)
-  ❌ 0x41eb90 - 0x41ebb0 (2 functions)
-  ✅ 0x41ec60 - 0x41ef25 (4 functions)
-  ❌ 0x41ef47 (1 function)
-  ✅ 0x41ef50 - 0x41f360 (4 functions)
-  ❌ 0x41f471 - 0x41f480 (2 functions)
-  ✅ 0x41f4f0 (1 function)
-  ❌ 0x41f560 (1 function)
-  ✅ 0x41f800 (1 function)
-  ❌ 0x41f9d0 (1 function)
-  ✅ 0x41fa50 - 0x41fb70 (5 functions)
-  ❌ 0x41fbd3 (1 function)
-  ✅ 0x41fbe0 - 0x41fd80 (8 functions)
-  ❌ 0x41fdfc (1 function)
-  ✅ 0x41fe20 - 0x420480 (15 functions)
-  ❌ 0x42055c (1 function)
-  ✅ 0x420570 - 0x4209c0 (6 functions)
-  ❌ 0x4209e0 - 0x420f10 (8 functions)
-  ✅ 0x420f80 - 0x421010 (2 functions)
-  ❌ 0x4210a8 - 0x4210bd (2 functions)
-  ✅ 0x4210d0 (1 function)
-  ❌ 0x421260 - 0x4213f0 (2 functions)
-  ✅ 0x421420 (1 function)
-  ❌ 0x42157a - 0x421680 (5 functions)
-  ✅ 0x421700 (1 function)
-  ❌ 0x421770 - 0x421ea0 (19 functions)
-  ✅ 0x421eb0 - 0x421f40 (3 functions)
-  ❌ 0x421f90 - 0x422090 (3 functions)
-  ✅ 0x4220a0 (1 function)
-  ❌ 0x422250 (1 function)
-  ✅ 0x4223f0 (1 function)
-  ❌ 0x422430 - 0x422510 (9 functions)
-  ✅ 0x422520 (1 function)
-  ❌ 0x422690 - 0x422ac3 (18 functions)
-  ✅ 0x422d98 - 0x422e02 (3 functions)
-  ❌ 0x422e1a - 0x422e8f (3 functions)
-  ✅ 0x422f00 (1 function)
-  ❌ 0x423076 (1 function)
-  ✅ 0x423099 (1 function)
-  ❌ 0x4230d9 - 0x423843 (13 functions)
-  ✅ 0x4238d9 - 0x423905 (2 functions)
-  ❌ 0x4239c8 - 0x424922 (35 functions)
-  ✅ 0x424940 (1 function)
-  ❌ 0x424950 (1 function)
-  ✅ 0x4249c0 - 0x4249d0 (2 functions)
-  ❌ 0x424a60 - 0x424ae0 (2 functions)
-  ✅ 0x424b00 (1 function)
-  ❌ 0x424b90 - 0x425e20 (23 functions)
-  ✅ 0x425e50 (1 function)
-  ❌ 0x425e70 - 0x426070 (9 functions)
-  ✅ 0x4260f0 - 0x426110 (2 functions)
-  ❌ 0x426140 - 0x426180 (2 functions)
-  ✅ 0x4261c0 (1 function)
-  ❌ 0x426320 - 0x427760 (22 functions)
-  ✅ 0x4277e0 (1 function)
-  ❌ 0x427800 - 0x428440 (9 functions)
-  ✅ 0x428460 - 0x4284a0 (2 functions)
-  ❌ 0x4285a0 - 0x42b150 (51 functions)
-  ✅ 0x42b300 (1 function)
-  ❌ 0x42b370 - 0x42c540 (27 functions)
-  ✅ 0x42c5c0 (1 function)
-  ❌ 0x42c5f0 - 0x430260 (112 functions)
-  ✅ 0x430310 (1 function)
-  ❌ 0x430360 - 0x4304e0 (4 functions)
+**Progress: 792 / 1273 (62.22%)** — 133 library functions excluded — 132 auto-complete functions marked
 
-Progress: 225 / 1142 (19.70%)
-```
-
-Check the [src folder](./src) to see examples of reconstructed functions. All the reconstructed source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/) and Claude Opus.
+The full game build (`src-full/`) is derived from the demo sources with addresses remapped to match the full game binary. Both the demo and full game EXEs compile and link successfully.
 
 # Building
 
@@ -175,3 +51,18 @@ Clone the project and run `make` inside. If you want to see the LLM workflow in 
 
 * [cline](https://cline.bot/) or Copilot.
 * Some LLM API (Claude Opus recommended)
+
+## Build targets
+
+| Target | Command | Description |
+|--------|---------|-------------|
+| Compile demo | `make` | Compiles all demo sources (`src/` -> `out/`) |
+| Compile full game | `make full` | Compiles all full game sources (`src-full/` -> `out-full/`) |
+| Link demo EXE | `make TEACHER-DEMO.EXE` | Links the demo executable |
+| Link full game EXE | `make TEACHER-FULL.EXE` | Links the full game executable |
+| Demo progress | `make progress` | Shows function coverage for the demo |
+| Full game progress | `make progress-full` | Shows function coverage for the full game |
+| Clean demo | `make clean` | Removes demo build artifacts |
+| Clean full game | `make clean-full` | Removes full game build artifacts |
+
+Check the [src folder](./src) to see examples of reconstructed functions. All the reconstructed source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/) and Claude Opus.

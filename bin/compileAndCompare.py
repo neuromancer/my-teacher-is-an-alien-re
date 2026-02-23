@@ -341,7 +341,7 @@ def side_by_side(str1, str2, tab_size=4):
         result.append(combined)
     return '\n'.join(result)
 
-def get_similarity(function_name, disassembled_code_path, clean_build=True):
+def get_similarity(function_name, disassembled_code_path, clean_build=True, out_dir="out"):
     if clean_build:
         system("make clean")
         if system("make all -j12") != 0:
@@ -350,9 +350,9 @@ def get_similarity(function_name, disassembled_code_path, clean_build=True):
 
     asm_file_path = None
     produced_code = None
-    for filename in os.listdir("out"):
+    for filename in os.listdir(out_dir):
         if filename.endswith(".asm"):
-            filepath = os.path.join("out", filename)
+            filepath = os.path.join(out_dir, filename)
             with open(filepath, 'r') as f:
                 content = f.read()
                 if function_name in content:

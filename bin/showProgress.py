@@ -136,23 +136,19 @@ def print_ranges(all_funcs, implemented_funcs, library_funcs):
     print("-----------------------------------------")
 
 
-if __name__ == "__main__":
-    map_directory = "src/map"
-    src_directory = "src"
-    code_directory = "code"
-
+def run(map_directory, src_directory, code_directory, library_ranges, auto_complete_file):
     all_functions = get_all_functions(map_directory)
     implemented_functions = get_implemented_functions(src_directory)
     library_functions = get_library_functions(code_directory)
 
     # Load auto-completable functions (compiler-generated)
-    auto_complete_functions = load_auto_complete_functions(AUTO_COMPLETE_FILE)
+    auto_complete_functions = load_auto_complete_functions(auto_complete_file)
     auto_complete_in_map = auto_complete_functions.intersection(all_functions)
     implemented_functions = implemented_functions.union(auto_complete_in_map)
 
     # Add any functions that fall inside configured library ranges
     range_funcs = set()
-    for start, end in LIBRARY_RANGES:
+    for start, end in library_ranges:
         for a in all_functions:
             if start <= a <= end:
                 range_funcs.add(a)
@@ -182,8 +178,8 @@ if __name__ == "__main__":
         if total_counted > 0:
             percentage = (total_implemented / total_counted) * 100
             range_note = ''
-            if LIBRARY_RANGES:
-                ranges_str = ', '.join(f"0x{start:x}-0x{end:x}" for start, end in LIBRARY_RANGES)
+            if library_ranges:
+                ranges_str = ', '.join(f"0x{start:x}-0x{end:x}" for start, end in library_ranges)
                 range_note = f" (ranges applied: {ranges_str})"
             auto_note = f" — {total_auto_complete} auto-complete functions marked" if total_auto_complete > 0 else ""
             print(f"\nProgress: {total_implemented} / {total_counted} ({percentage:.2f}%) — {total_library} library functions excluded{range_note}{auto_note}")
@@ -191,3 +187,14 @@ if __name__ == "__main__":
             print(f"\nNo non-library functions to implement; {total_library} library functions found and excluded.")
     else:
         print("\nNo functions found in the map directory.")
+
+
+if __name__ == "__main__":
+    import sys
+
+    if '--full' in sys.argv:
+        FULL_LIBRARY_RANGES = [(0x454100, 0x460480)]
+        auto_complete_full = os.path.join(os.path.dirname(__file__), '..', 'src-full', 'auto_complete.txt')
+        run("src-full/map", "src-full", "code-full", FULL_LIBRARY_RANGES, auto_complete_full)
+    else:
+        run("src/map", "src", "code", LIBRARY_RANGES, AUTO_COMPLETE_FILE)
