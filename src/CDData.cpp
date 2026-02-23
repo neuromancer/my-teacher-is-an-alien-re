@@ -35,66 +35,6 @@ extern "C" char* __cdecl CDData_SetResolvedPath(const char* path) {
     return strcpy(g_CDData_0043697c->pathBuffer + 0x85, path);
 }
 
-/* Function start: 0x421E40 */
-CDData::CDData(char *param_1, char *param_2) {
-  memset(this, 0, 0x1e5);
-  GetCurrentDir(baseDir, 0x80);
-  if (param_1 != 0) {
-    strncpy(cdFolder, param_1, 0x40);
-  }
-  if (param_2 != 0) {
-    strncpy(dataFolder, param_2, 0x20);
-  }
-}
-
-/* Function start: 0x421EA0 */
-extern "C" void __fastcall CDData_ChangeToBaseDir(void *cdData) {
-  chdir(((CDData*)cdData)->baseDir);
-}
-
-/* Function start: 0x421EB0 */
-int CDData::CheckFileOnDrive(int drive_letter) {
-  char local_40[64];
-  sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
-          cdFolder, dataFolder);
-  return FileExists(local_40);
-}
-
-/* Function start: 0x421EF0 */
-int CDData::ChangeDirectory(unsigned char *path) {
-  if (path != 0 && *path != 0) {
-    if (chdir((char *)path) != 0) {
-      return 1;
-    }
-    ParsePath((char *)path, pathBuffer, 0, 0, 0);
-  }
-  return 0;
-}
-
-/* Function start: 0x421F40 */
-int CDData::ChangeToDriveDirectory(int drive_letter) {
-  char local_40[64];
-
-  sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
-          cdFolder, dataFolder);
-  int result = ChangeDirectory((unsigned char *)local_40);
-  return result != 0;
-}
-
-/* Function start: 0x430310 */
-extern "C" int __cdecl FUN_00430310(const char* path, int param_2) {
-    DWORD attr = GetFileAttributesA(path);
-    if (attr == 0xFFFFFFFF) {
-        return -1;
-    }
-    
-    if ((attr & FILE_ATTRIBUTE_READONLY) && (param_2 & 2)) {
-        return -1;
-    }
-    
-    return 0;
-}
-
 /* Function start: 0x419660 */
 extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
     int hSrc;
@@ -147,6 +87,52 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
     return 0;
 }
 
+/* Function start: 0x421E40 */
+CDData::CDData(char *param_1, char *param_2) {
+  memset(this, 0, 0x1e5);
+  GetCurrentDir(baseDir, 0x80);
+  if (param_1 != 0) {
+    strncpy(cdFolder, param_1, 0x40);
+  }
+  if (param_2 != 0) {
+    strncpy(dataFolder, param_2, 0x20);
+  }
+}
+
+/* Function start: 0x421EA0 */
+extern "C" void __fastcall CDData_ChangeToBaseDir(void *cdData) {
+  chdir(((CDData*)cdData)->baseDir);
+}
+
+/* Function start: 0x421EB0 */
+int CDData::CheckFileOnDrive(int drive_letter) {
+  char local_40[64];
+  sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
+          cdFolder, dataFolder);
+  return FileExists(local_40);
+}
+
+/* Function start: 0x421EF0 */
+int CDData::ChangeDirectory(unsigned char *path) {
+  if (path != 0 && *path != 0) {
+    if (chdir((char *)path) != 0) {
+      return 1;
+    }
+    ParsePath((char *)path, pathBuffer, 0, 0, 0);
+  }
+  return 0;
+}
+
+/* Function start: 0x421F40 */
+int CDData::ChangeToDriveDirectory(int drive_letter) {
+  char local_40[64];
+
+  sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
+          cdFolder, dataFolder);
+  int result = ChangeDirectory((unsigned char *)local_40);
+  return result != 0;
+}
+
 /* Function start: 0x421F90 */
 int CDData::ResolvePath(char* param_1) {
     char local_104[260];
@@ -181,3 +167,17 @@ int CDData::ResolvePath(char* param_1) {
 
     return 1;
 }
+/* Function start: 0x430310 */
+extern "C" int __cdecl FUN_00430310(const char* path, int param_2) {
+    DWORD attr = GetFileAttributesA(path);
+    if (attr == 0xFFFFFFFF) {
+        return -1;
+    }
+    
+    if ((attr & FILE_ATTRIBUTE_READONLY) && (param_2 & 2)) {
+        return -1;
+    }
+    
+    return 0;
+}
+

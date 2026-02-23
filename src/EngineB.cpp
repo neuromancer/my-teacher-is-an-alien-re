@@ -38,17 +38,6 @@ EngineB::~EngineB() {
   }
 }
 
-/* Function start: 0x4129A0 */
-int EngineB::LBLParse(char* line) {
-  char token[32];
-  sscanf(line, "%s", token);
-  if (strcmp(token, "END_ENGINEA_INFO") == 0) {
-    return 1;
-  }
-  Engine::LBLParse(line);
-  return 0;
-}
-
 /* Function start: 0x412300 */
 void EngineB::Draw() {
   if (g_ConsoleSprite_00435f04 == 0) {
@@ -303,3 +292,14 @@ void EngineB::OnProcessEnd() {
     }
   }
 }
+/* Function start: 0x4129A0 */
+int EngineB::LBLParse(char* line) {
+  char token[32];
+  sscanf(line, "%s", token);
+  if (strcmp(token, "END_ENGINEA_INFO") == 0) {
+    return 1;
+  }
+  Engine::LBLParse(line);
+  return 0;
+}
+

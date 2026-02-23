@@ -20,8 +20,8 @@ Handler2::Handler2() {
     pA0[2] = 0;
     pA0[3] = 0;
 
-    handlerId = 2;
-    moduleParam = 1;
+    targetAddress = 2;
+    sourceAddress = 1;
 
     palette = new Palette();
     palette->Load(CDData_FormatPath("demo\\Dummy.col"));
@@ -60,7 +60,7 @@ void Handler2::Init(SC_Message* msg) {
     Palette* pal;
     Palette** palettePtr;
     WriteToMessageLog("\nENTER TEACHER SCREEN TO LEAVE");
-    Handler2::CopyCommandData(msg);
+    Handler::Init(msg);
     pal = palette;
     if (pal != 0) {
         palettePtr = &g_ZBufferManager_0043698c->m_palette;
@@ -87,7 +87,7 @@ int Handler2::ShutDown(SC_Message* msg) {
 
 /* Function start: 0x40FA90 */
 int Handler2::AddMessage(SC_Message* msg) {
-    Handler2::WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
     if (msg->mouseX >= 2) {
         msg->targetAddress = 3;
         msg->priority = 6;
@@ -97,7 +97,7 @@ int Handler2::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x40FAD0 */
 int Handler2::Exit(SC_Message* msg) {
-    return handlerId == msg->targetAddress;
+    return targetAddress == msg->targetAddress;
 }
 
 /* Function start: 0x40FAF0 */
@@ -106,7 +106,7 @@ void Handler2::Update(int param1, int param2) {
     Sample* samp;
     int iVar1;
 
-    if (handlerId == param2) {
+    if (targetAddress == param2) {
         spr = sprite;
         spr->Do(spr->loc_x, spr->loc_y, 1.0);
         g_Mouse_00436978->DrawCursor();

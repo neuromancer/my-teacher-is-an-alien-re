@@ -14,8 +14,8 @@ extern "C" {
 Handler1::Handler1() {
     palette = 0;
     sprite = 0;
-    handlerId = 1;
-    moduleParam = 1;
+    targetAddress = 1;
+    sourceAddress = 1;
 
     palette = new Palette();
     palette->Load(CDData_FormatPath("demo\\Demoscrn.col"));
@@ -44,7 +44,7 @@ void Handler1::Init(SC_Message* msg) {
     Palette* pal;
     Palette** palettePtr;
     WriteToMessageLog("\nENTER INTRO GAME TEXT");
-    Handler1::CopyCommandData(msg);
+    Handler::Init(msg);
     pal = palette;
     if (pal != 0) {
         palettePtr = &g_ZBufferManager_0043698c->m_palette;
@@ -69,14 +69,14 @@ int Handler1::ShutDown(SC_Message* msg) {
         delete pal;
         palette = 0;
     }
-    SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+    SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
     WriteToMessageLog("EXIT INTRO GAME TEXT");
     return 0;
 }
 
 /* Function start: 0x403650 */
 int Handler1::AddMessage(SC_Message* msg) {
-    Handler1::WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
     if (msg->mouseX >= 2) {
         msg->targetAddress = 10;
         msg->priority = 5;
@@ -89,12 +89,12 @@ int Handler1::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x4036A0 */
 int Handler1::Exit(SC_Message* msg) {
-    return handlerId == msg->targetAddress;
+    return targetAddress == msg->targetAddress;
 }
 
 /* Function start: 0x4036C0 */
 void Handler1::Update(int param1, int param2) {
-    if (handlerId == param2) {
+    if (targetAddress == param2) {
         sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         g_Mouse_00436978->DrawCursor();
     }

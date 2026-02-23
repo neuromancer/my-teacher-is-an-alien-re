@@ -14,7 +14,7 @@ public:
     ScriptHandler() {
         memset(&targetAddress, 0, 24);
     }
-    ~ScriptHandler();
+    ~ScriptHandler() {}
     void CopyCommandData(ScriptHandler* other);
     int WriteMessageAddress(Message* msg);
 

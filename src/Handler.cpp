@@ -3,56 +3,9 @@
 #include "string.h"
 #include <string.h>
 
-// Handler base class destructor
-Handler::~Handler() {
-}
-
-// Default Init implementation - copies command data from message
-// Corresponds to FUN_00417180
-void Handler::CopyCommandData(SC_Message* msg) {
-    if (msg != 0) {
-        savedCommand = msg->command;
-        savedMsgData = msg->data;
-    }
-}
-
-// Default WriteMessageAddress implementation
-// Corresponds to FUN_004171B0
-/* Function start: 0x4171B0 */
-int Handler::WriteMessageAddress(SC_Message* msg) {
-    //ShowMessage("WriteMessage mouseX=%d click=(%d,%d)", msg->mouseX, msg->clickX, msg->clickY);
-    if (msg == 0) {
-        return -1;
-    }
-    msg->targetAddress = handlerId;
-    msg->sourceAddress = moduleParam;
-    msg->command = handlerId;
-    msg->data = moduleParam;
-    msg->priority = 0;
-    return 0;
-}
-
-// Default virtual method implementations - do nothing
-// Derived handlers override these
-
-void Handler::Init(SC_Message* msg) {
-    CopyCommandData(msg);
-}
-
-int Handler::AddMessage(SC_Message* msg) {
-    return 1; // Handled
-}
-
-int Handler::ShutDown(SC_Message* msg) {
-    return 0;
-}
+// Handler::~Handler() defined in ZBuffer.cpp (same compilation unit in original binary)
+// Handler::Init (0x417180) and Handler::AddMessage (0x4171B0) defined in ScriptHandler.cpp
+// Handler::ShutDown (0x401150), Handler::Exit (0x401160), Handler::OnInput (0x401170) defined in ZBuffer.cpp
 
 void Handler::Update(int param1, int param2) {
-}
-
-int Handler::Exit(SC_Message* msg) {
-    return 0;
-}
-
-void Handler::OnInput() {
 }

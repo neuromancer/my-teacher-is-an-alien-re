@@ -75,6 +75,10 @@ extern "C" int SetCursorVisible(unsigned int);
 // Forward declarations
 int InitStockFont(int);
 extern "C" int GetColorBitDepth(void);
+extern "C" int ScaleClientToBufferX(int x);
+extern "C" int ScaleClientToBufferY(int y);
+extern "C" int __cdecl FUN_00424176(int param_1, int param_2);
+static void DrawEllipseScanline(int y, int left_x, int right_x);
 
 // Exported functions
 extern "C" int InitMouseSettings(void);
@@ -226,6 +230,11 @@ extern "C" void FlipScreen() {
     vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0, *piVar1 - 1, iVar3, iVar2);
 }
 
+/* Function start: 0x422aaf */
+extern "C" int __cdecl DrawCircle(int param_1) {
+    FUN_00424176(param_1, param_1);
+    return 0;
+}
 /* Function start: 0x4231BC */
 extern "C" int InvalidateVideoMode() {
     g_CurrentVideoBuffer_00437f54 = (char)0xff;
@@ -240,24 +249,6 @@ extern "C" int GetCurrentVideoMode() {
 // Extern declarations for coordinate scaling
 extern int g_VideoBufferWidth_004374c6;  // Video buffer width
 extern int g_VideoBufferHeight_004374d2;  // Video buffer height
-
-/* Function start: 0x42449b */
-extern "C" int ScaleClientToBufferX(int x)
-{
-    RECT rect;
-    HWND hWnd = GetActiveWindow();
-    GetClientRect(hWnd, &rect);
-    return (x * g_VideoBufferWidth_004374c6) / rect.right;
-}
-
-/* Function start: 0x4244c2 */
-extern "C" int ScaleClientToBufferY(int y)
-{
-    RECT rect;
-    HWND hWnd = GetActiveWindow();
-    GetClientRect(hWnd, &rect);
-    return (y * g_VideoBufferHeight_004374d2) / rect.bottom;
-}
 
 /* Function start: 0x4239E4 */
 extern "C" int GetMousePosition(int* out_x, int* out_y)
@@ -543,54 +534,6 @@ int SetDeviceContext(HDC param_1)
     return 0;
 }
 
-/* Function start: 0x4244E9 */
-int InitStockFont(int param_1)
-{
-    TEXTMETRICA *pTextMetric;
-    
-    DAT_00437496 = GetStockObject(param_1);
-    SelectObject(DAT_004374b4, DAT_00437496);
-    pTextMetric = (TEXTMETRICA *)DAT_00439446;
-    GetTextMetricsA(DAT_004374b4, pTextMetric);
-    DAT_0043749a = pTextMetric->tmHeight + pTextMetric->tmExternalLeading;
-    DAT_0043749e = pTextMetric->tmExternalLeading;
-    DAT_004374a2 = pTextMetric->tmAveCharWidth;
-    return 0;
-}
-
-// DrawLine - Complex Bresenham line drawing algorithm with segment manipulation
-// Too complex to reimplement exactly due to inline assembly and segment registers
-extern "C" int __cdecl DrawLine(int param_1, int param_2) { return 0; }
-
-// Externs for video buffer access
-extern int g_VideoBufferHeightM1_004374ca;  // buffer height - 1
-extern int g_VideoBufferStride_00437f5e;  // buffer stride
-extern int g_VideoBufferBase_00437f66;  // buffer base
-extern int g_ClipLeft_004374de;  // clip left
-extern int g_ClipRight_004374e2;  // clip right
-extern int g_ClipTop_004374e6;  // clip top
-extern int g_ClipBottom_004374ea;  // clip bottom
-static void DrawEllipseScanline(int y, int left_x, int right_x) {
-    if (y < g_ClipTop_004374e6 || y > g_ClipBottom_004374ea) return;
-    if (right_x < g_ClipLeft_004374de) return;
-    if (left_x > g_ClipRight_004374e2) return;
-
-    int flags = 0;
-    if (left_x < g_ClipLeft_004374de) flags = 2;
-    if (right_x > g_ClipRight_004374e2) flags |= 1;
-
-    int row = g_VideoBufferHeightM1_004374ca - y;
-    unsigned char* base = (unsigned char*)(row * g_VideoBufferStride_00437f5e + g_VideoBufferBase_00437f66);
-    unsigned char color = (unsigned char)DAT_00437490;
-
-    if (!(flags & 2)) {
-        base[left_x] = color;
-    }
-    if (!(flags & 1)) {
-        base[right_x] = color;
-    }
-}
-
 /* Function start: 0x424176 */
 extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
     if ((signed char)g_CurrentVideoBuffer_00437f54 < 0) return 0;
@@ -667,8 +610,69 @@ extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
     return 0;
 }
 
-/* Function start: 0x422aaf */
-extern "C" int __cdecl DrawCircle(int param_1) {
-    FUN_00424176(param_1, param_1);
+/* Function start: 0x42449b */
+extern "C" int ScaleClientToBufferX(int x)
+{
+    RECT rect;
+    HWND hWnd = GetActiveWindow();
+    GetClientRect(hWnd, &rect);
+    return (x * g_VideoBufferWidth_004374c6) / rect.right;
+}
+
+/* Function start: 0x4244c2 */
+extern "C" int ScaleClientToBufferY(int y)
+{
+    RECT rect;
+    HWND hWnd = GetActiveWindow();
+    GetClientRect(hWnd, &rect);
+    return (y * g_VideoBufferHeight_004374d2) / rect.bottom;
+}
+
+/* Function start: 0x4244E9 */
+int InitStockFont(int param_1)
+{
+    TEXTMETRICA *pTextMetric;
+    
+    DAT_00437496 = GetStockObject(param_1);
+    SelectObject(DAT_004374b4, DAT_00437496);
+    pTextMetric = (TEXTMETRICA *)DAT_00439446;
+    GetTextMetricsA(DAT_004374b4, pTextMetric);
+    DAT_0043749a = pTextMetric->tmHeight + pTextMetric->tmExternalLeading;
+    DAT_0043749e = pTextMetric->tmExternalLeading;
+    DAT_004374a2 = pTextMetric->tmAveCharWidth;
     return 0;
 }
+
+// DrawLine - Complex Bresenham line drawing algorithm with segment manipulation
+// Too complex to reimplement exactly due to inline assembly and segment registers
+extern "C" int __cdecl DrawLine(int param_1, int param_2) { return 0; }
+
+// Externs for video buffer access
+extern int g_VideoBufferHeightM1_004374ca;  // buffer height - 1
+extern int g_VideoBufferStride_00437f5e;  // buffer stride
+extern int g_VideoBufferBase_00437f66;  // buffer base
+extern int g_ClipLeft_004374de;  // clip left
+extern int g_ClipRight_004374e2;  // clip right
+extern int g_ClipTop_004374e6;  // clip top
+extern int g_ClipBottom_004374ea;  // clip bottom
+static void DrawEllipseScanline(int y, int left_x, int right_x) {
+    if (y < g_ClipTop_004374e6 || y > g_ClipBottom_004374ea) return;
+    if (right_x < g_ClipLeft_004374de) return;
+    if (left_x > g_ClipRight_004374e2) return;
+
+    int flags = 0;
+    if (left_x < g_ClipLeft_004374de) flags = 2;
+    if (right_x > g_ClipRight_004374e2) flags |= 1;
+
+    int row = g_VideoBufferHeightM1_004374ca - y;
+    unsigned char* base = (unsigned char*)(row * g_VideoBufferStride_00437f5e + g_VideoBufferBase_00437f66);
+    unsigned char color = (unsigned char)DAT_00437490;
+
+    if (!(flags & 2)) {
+        base[left_x] = color;
+    }
+    if (!(flags & 1)) {
+        base[right_x] = color;
+    }
+}
+

@@ -14,7 +14,7 @@ class SC_Message;
 // Size: 0x648 bytes
 // vtable: 0x431210
 // Inherits from IconBar (0x600 bytes)
-// handlerId: 11 (0xb) at offset 0x88
+// targetAddress: 11 (0xb) at offset 0x88
 //
 // Layout:
 //   0x00-0x5FF: IconBar base class

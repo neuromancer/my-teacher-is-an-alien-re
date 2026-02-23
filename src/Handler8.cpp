@@ -48,14 +48,14 @@ struct MessageQueue {
 
 /* Function start: 0x406120 */
 Handler8::Handler8() {
-    int* ptr = &handlerId;
+    int* ptr = &targetAddress;
     int* pA0 = (int*)&message;
 
     // Set handler-specific fields at 0xa0 and 0xa4
     pA0[0] = 0;
     pA0[1] = 0;
 
-    // Set handlerId at 0x88
+    // Set targetAddress at 0x88
     *ptr = 8;
 }
 
@@ -71,10 +71,10 @@ Handler8::~Handler8() {
 void Handler8::Init(SC_Message* msg) {
     char filename[32];
 
-    CopyCommandData(msg);
+    Handler::Init(msg);
     if (msg != 0) {
-        moduleParam = msg->data;
-        sprintf(filename, "cine\\cine%4.4d.smk", moduleParam);
+        sourceAddress = msg->data;
+        sprintf(filename, "cine\\cine%4.4d.smk", sourceAddress);
         if (FileExists(filename)) {
             Animation anim;
             anim.Play(filename, 0);
@@ -100,11 +100,11 @@ void Handler8::Update(int param1, int param2) {
 
 /* Function start: 0x406370 */
 int Handler8::AddMessage(SC_Message* msg) {
-    Handler8::WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
     if (msg->lastKey == 0x1b || msg->mouseY > 1) {
-        msg->targetAddress = savedCommand;
+        msg->targetAddress = command;
         msg->priority = 5;
-        msg->sourceAddress = savedMsgData;
+        msg->sourceAddress = data;
     }
     return 1;
 }
@@ -113,7 +113,7 @@ int Handler8::AddMessage(SC_Message* msg) {
 int Handler8::Exit(SC_Message* msg) {
     int prio;
 
-    if (handlerId != msg->targetAddress) {
+    if (targetAddress != msg->targetAddress) {
         return 0;
     }
     prio = msg->priority;
@@ -195,7 +195,7 @@ void Handler8::ProcessMessage() {
         }
         return;
     }
-    SC_Message_Send(savedCommand, savedMsgData, handlerId, moduleParam, 5, 0, 0, 0, 0, 0);
+    SC_Message_Send(command, data, targetAddress, sourceAddress, 5, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x4065E0 */

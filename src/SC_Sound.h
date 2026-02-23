@@ -15,7 +15,7 @@ class SoundItem;
 //
 // Layout:
 //   0x00-0x87: Parser base class (via Handler)
-//   0x88-0x9F: Handler fields (handlerId + 5 fields, zeroed)
+//   0x88-0x9F: Handler fields (targetAddress + 5 fields, zeroed)
 //   0xA0-0xB3: Timer timer (size 0x14)
 //   0xB4: MessageList* list
 class SC_Sound : public Handler {

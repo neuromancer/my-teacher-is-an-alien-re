@@ -153,6 +153,85 @@ int Engine::UpdateAndCheck() {
   return 0;
 }
 
+/* Function start: 0x4113A0 */
+void Engine::ProcessTargets() {
+  Target* target;
+  InputState* mouse;
+  int buttonDown;
+
+  target = g_TargetList_00435f0c->ProcessTargets();
+  g_Weapon_00435f14->DrawCrosshairs();
+
+  mouse = g_InputManager_00436968->pMouse;
+  buttonDown = 0;
+  if (mouse != 0) {
+    buttonDown = mouse->buttons & 1;
+  }
+  if (buttonDown == 0 && (mouse->prevButtons & 1) != 0) {
+    g_Weapon_00435f14->field_0xa0 = 1;
+  } else {
+    g_Weapon_00435f14->field_0xa0 = 0;
+  }
+
+  if (g_Weapon_00435f14->field_0xa0 != 0) {
+    g_Weapon_00435f14->OnHit();
+    if (target != 0) {
+      target->UpdateProgress(1);
+    }
+  }
+
+  Engine::Draw();
+  Engine::UpdateMeter();
+}
+/* Function start: 0x411440 */
+int Engine::UpdateSpriteFrame() {
+  if (g_SpriteList_00435f10 != 0) {
+    g_SpriteList_00435f10->ProcessFrame(Engine::m_framesL);
+  }
+  return 0;
+}
+
+/* Function start: 0x411460 */
+void Engine::UpdateCrosshair() {
+  InputState* mouse;
+
+  mouse = g_InputManager_00436968->pMouse;
+  if (mouse != 0) {
+    g_Weapon_00435f14->m_crosshairX = mouse->x;
+  } else {
+    g_Weapon_00435f14->m_crosshairX = 0;
+  }
+
+  mouse = g_InputManager_00436968->pMouse;
+  if (mouse != 0) {
+    g_Weapon_00435f14->m_crosshairY = mouse->y;
+  } else {
+    g_Weapon_00435f14->m_crosshairY = 0;
+  }
+
+  mouse = g_InputManager_00436968->pMouse;
+  if (mouse != 0) {
+    if (mouse->x > 0xAA) {
+      g_EngineViewport_00435f08->SetCenterX(g_EngineViewport_00435f08->scrollX + 4);
+      return;
+    }
+  }
+  if (mouse != 0 && mouse->x >= 0x96) {
+    return;
+  }
+  g_EngineViewport_00435f08->SetCenterX(g_EngineViewport_00435f08->scrollX - 4);
+}
+
+/* Function start: 0x411510 */
+void Engine::Draw() {
+  Sprite* console;
+
+  if (g_ConsoleSprite_00435f04 != 0) {
+    console = g_ConsoleSprite_00435f04;
+    console->Do(console->loc_x, console->loc_y, 1.0);
+  }
+}
+void Engine::UpdateMeter() {}
 /* Function start: 0x411550 */
 void Engine::Initialize() {
   Engine::m_weapon = new Weapon();
@@ -169,6 +248,36 @@ void Engine::Initialize() {
   CopyToGlobals();
 }
 
+/* Function start: 0x411CA0 */
+void Engine::CopyToGlobals() {
+  g_ConsoleSprite_00435f04 = Engine::m_consoleSprite;
+  g_Weapon_00435f14 = Engine::m_weapon;
+  g_SoundList_00435f1c = Engine::m_soundList;
+  g_EngineInfoParser_00435f00 = Engine::m_engineInfoParser;
+  g_Navigator_00435f24 = Engine::m_navigator;
+  g_EnginePalette_00435f18 = Engine::m_timerManager;
+  g_SpriteList_00435f10 = Engine::m_combatSprite;
+  g_TargetList_00435f0c = Engine::m_targetList;
+  g_ScoreManager_00435f20 = Engine::m_cursorState;
+  g_EngineViewport_00435f08 = Engine::m_viewport;
+  g_GameOutcome_00435f28 = Engine::m_gameOutcome;
+}
+
+/* Function start: 0x411D20 */
+void Engine::ClearGlobals() {
+  g_ConsoleSprite_00435f04 = 0;
+  g_Weapon_00435f14 = 0;
+  g_SoundList_00435f1c = 0;
+  g_EngineInfoParser_00435f00 = 0;
+  g_Navigator_00435f24 = 0;
+  g_EnginePalette_00435f18 = 0;
+  g_SpriteList_00435f10 = 0;
+  g_TargetList_00435f0c = 0;
+  g_ScoreManager_00435f20 = 0;
+  g_EngineViewport_00435f08 = 0;
+  g_GameOutcome_00435f28 = 0;
+}
+void Engine::PlayCompletionSound() {}
 /* Function start: 0x411D60 */
 void Engine::DisplayFrameRate() {
   char local_80[128];
@@ -181,6 +290,10 @@ void Engine::DisplayFrameRate() {
   }
 }
 
+/* Function start: 0x411DD0 */
+int Engine::CheckNavState() {
+  return (unsigned int)g_GameOutcome_00435f28->outcome >= 1;
+}
 /* Function start: 0x411DE0 */
 int Engine::LBLParse(char* line) {
   char local_54[32];
@@ -234,116 +347,3 @@ int Engine::LBLParse(char* line) {
 Engine::~Engine() {}
 void Engine::CleanupSubsystems() {}
 void Engine::VirtCleanup() {}
-/* Function start: 0x411440 */
-int Engine::UpdateSpriteFrame() {
-  if (g_SpriteList_00435f10 != 0) {
-    g_SpriteList_00435f10->ProcessFrame(Engine::m_framesL);
-  }
-  return 0;
-}
-
-/* Function start: 0x411460 */
-void Engine::UpdateCrosshair() {
-  InputState* mouse;
-
-  mouse = g_InputManager_00436968->pMouse;
-  if (mouse != 0) {
-    g_Weapon_00435f14->m_crosshairX = mouse->x;
-  } else {
-    g_Weapon_00435f14->m_crosshairX = 0;
-  }
-
-  mouse = g_InputManager_00436968->pMouse;
-  if (mouse != 0) {
-    g_Weapon_00435f14->m_crosshairY = mouse->y;
-  } else {
-    g_Weapon_00435f14->m_crosshairY = 0;
-  }
-
-  mouse = g_InputManager_00436968->pMouse;
-  if (mouse != 0) {
-    if (mouse->x > 0xAA) {
-      g_EngineViewport_00435f08->SetCenterX(g_EngineViewport_00435f08->scrollX + 4);
-      return;
-    }
-  }
-  if (mouse != 0 && mouse->x >= 0x96) {
-    return;
-  }
-  g_EngineViewport_00435f08->SetCenterX(g_EngineViewport_00435f08->scrollX - 4);
-}
-
-/* Function start: 0x411DD0 */
-int Engine::CheckNavState() {
-  return (unsigned int)g_GameOutcome_00435f28->outcome >= 1;
-}
-/* Function start: 0x4113A0 */
-void Engine::ProcessTargets() {
-  Target* target;
-  InputState* mouse;
-  int buttonDown;
-
-  target = g_TargetList_00435f0c->ProcessTargets();
-  g_Weapon_00435f14->DrawCrosshairs();
-
-  mouse = g_InputManager_00436968->pMouse;
-  buttonDown = 0;
-  if (mouse != 0) {
-    buttonDown = mouse->buttons & 1;
-  }
-  if (buttonDown == 0 && (mouse->prevButtons & 1) != 0) {
-    g_Weapon_00435f14->field_0xa0 = 1;
-  } else {
-    g_Weapon_00435f14->field_0xa0 = 0;
-  }
-
-  if (g_Weapon_00435f14->field_0xa0 != 0) {
-    g_Weapon_00435f14->OnHit();
-    if (target != 0) {
-      target->UpdateProgress(1);
-    }
-  }
-
-  Engine::Draw();
-  Engine::UpdateMeter();
-}
-/* Function start: 0x411510 */
-void Engine::Draw() {
-  Sprite* console;
-
-  if (g_ConsoleSprite_00435f04 != 0) {
-    console = g_ConsoleSprite_00435f04;
-    console->Do(console->loc_x, console->loc_y, 1.0);
-  }
-}
-void Engine::UpdateMeter() {}
-/* Function start: 0x411CA0 */
-void Engine::CopyToGlobals() {
-  g_ConsoleSprite_00435f04 = Engine::m_consoleSprite;
-  g_Weapon_00435f14 = Engine::m_weapon;
-  g_SoundList_00435f1c = Engine::m_soundList;
-  g_EngineInfoParser_00435f00 = Engine::m_engineInfoParser;
-  g_Navigator_00435f24 = Engine::m_navigator;
-  g_EnginePalette_00435f18 = Engine::m_timerManager;
-  g_SpriteList_00435f10 = Engine::m_combatSprite;
-  g_TargetList_00435f0c = Engine::m_targetList;
-  g_ScoreManager_00435f20 = Engine::m_cursorState;
-  g_EngineViewport_00435f08 = Engine::m_viewport;
-  g_GameOutcome_00435f28 = Engine::m_gameOutcome;
-}
-
-/* Function start: 0x411D20 */
-void Engine::ClearGlobals() {
-  g_ConsoleSprite_00435f04 = 0;
-  g_Weapon_00435f14 = 0;
-  g_SoundList_00435f1c = 0;
-  g_EngineInfoParser_00435f00 = 0;
-  g_Navigator_00435f24 = 0;
-  g_EnginePalette_00435f18 = 0;
-  g_SpriteList_00435f10 = 0;
-  g_TargetList_00435f0c = 0;
-  g_ScoreManager_00435f20 = 0;
-  g_EngineViewport_00435f08 = 0;
-  g_GameOutcome_00435f28 = 0;
-}
-void Engine::PlayCompletionSound() {}

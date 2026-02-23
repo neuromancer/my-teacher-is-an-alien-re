@@ -22,7 +22,7 @@ SCI_Dialog::SCI_Dialog() {
 
     WriteToMessageLogIfEnabled("\"declaring DialogPlayer\"");
 
-    handlerId = 9;
+    targetAddress = 9;
 }
 
 /* Function start: 0x407070 */
@@ -208,7 +208,7 @@ int SCI_Dialog::AddMessage(SC_Message* msg) {
             }
         } else {
             if (msg->mouseY >= 2) {
-                SC_Message_Send(savedCommand, savedMsgData, 9, moduleParam, 5, 6, 0, 0, 0, 0);
+                SC_Message_Send(command, data, 9, sourceAddress, 5, 6, 0, 0, 0, 0);
                 return 1;
             }
         }
@@ -225,7 +225,7 @@ int SCI_Dialog::AddMessage(SC_Message* msg) {
             return 1;
         }
         if (msg->lastKey == 0x1b) {
-            SC_Message_Send(savedCommand, savedMsgData, 9, moduleParam, 5, 6, 0, 0, 0, 0);
+            SC_Message_Send(command, data, 9, sourceAddress, 5, 6, 0, 0, 0, 0);
         }
     }
 
@@ -239,7 +239,7 @@ int SCI_Dialog::Exit(SC_Message* msg) {
     QueueNode* newNode;
     int curNode;
 
-    if (msg->targetAddress != handlerId) {
+    if (msg->targetAddress != targetAddress) {
         return 0;
     }
 
@@ -362,7 +362,7 @@ void SCI_Dialog::Update(int param1, int param2) {
     y = 10;
     counter = 0;
 
-    if (handlerId != param2) return;
+    if (targetAddress != param2) return;
 
     IconBar::Update(param1, param2);
     if (field_600 != 0) field_600->Draw();
@@ -380,7 +380,7 @@ void SCI_Dialog::Update(int param1, int param2) {
 
     if (field_610 == 0 || field_610->head == 0) {
         if (field_604 != 0) field_604->Draw();
-        SC_Message_Send(savedCommand, savedMsgData, 9, moduleParam, 5, 6, 0, 0, 0, 0);
+        SC_Message_Send(command, data, 9, sourceAddress, 5, 6, 0, 0, 0, 0);
         return;
     }
 
@@ -552,7 +552,7 @@ int SCI_Dialog::LBLParse(char* line) {
         field_60C = new Sprite(0);
         Parser::ProcessFile(field_60C, this, 0);
     } else if (strcmp(token, "HANDLE") == 0) {
-        sscanf(line, "%s %d", token, &moduleParam);
+        sscanf(line, "%s %d", token, &sourceAddress);
     } else if (strcmp(token, "AMBIENTSCONTROLLER") == 0) {
         int temp;
         int ambientVal;

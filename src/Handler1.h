@@ -20,7 +20,7 @@ public:
     virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
 
-    // Handler1-specific fields (handlerId through field_9C are in Handler base)
+    // Handler1-specific fields (targetAddress through field_9C are in Handler base)
     Palette* palette;   // 0xA0
     Sprite* sprite;     // 0xA4
 };

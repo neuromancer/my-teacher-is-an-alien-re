@@ -1,26 +1,33 @@
+// ZBuffer.cpp - Combined compilation unit for ZBuffer, Handler12, and ScriptHandler destructor
+// Original binary has these interleaved in 0x401000-0x401810 range
+#include "Handler12.h"
 #include "ZBuffer.h"
+#include "ScriptHandler.h"
+#include "SC_Question.h"
 #include "globals.h"
 #include "Message.h"
-
-char s_MustDefine[] = "Parser:: Must define an LBLParse func";
-char s_hIam[] = "hIam %d";
-
 #include "string.h"
+#include <string.h>
 #include <stdlib.h>
 #include "VBuffer.h"
 #include "Animation.h"
 #include "Memory.h"
 #include "Timer.h"
-#include "string.h"
-
-// ZBQueue is defined in ZBufferManager.h
 #include "ZBufferManager.h"
 #include "RenderEntry.h"
 #include "SoundCommand.h"
+#include "Handler.h"
+
+char s_MustDefine[] = "Parser:: Must define an LBLParse func";
+char s_hIam[] = "hIam %d";
 
 extern void LogToMessageFile(char* format, ...);
-#include "Handler.h"
-#include "SC_Question.h"
+
+/* Function start: 0x401000 */
+Handler12::Handler12() {
+    targetAddress = 12;
+    timer.Reset();
+}
 
 /* Function start: 0x4010C0 */
 int ZBuffer::LBLParse(char* param_1)
@@ -29,47 +36,71 @@ int ZBuffer::LBLParse(char* param_1)
     return 0;
 }
 
+/* Function start: 0x4010E0 */
+void Parser::OnProcessStart() {}
+
+/* Function start: 0x4010F0 */
+void Parser::OnProcessEnd() {}
+
+/* Function start: 0x401100 */
+Handler::~Handler() {
+}
+
 /* Function start: 0x401150 */
-int ZBuffer::ShutDown(Message* msg)
+int Handler::ShutDown(SC_Message* msg)
 {
     return 0;
 }
 
 /* Function start: 0x401160 */
-int ZBuffer::Exit(Message* msg)
+int Handler::Exit(SC_Message* msg)
 {
     return 0;
 }
 
 /* Function start: 0x401170 */
-void ZBuffer::OnInput(Message* msg)
+void Handler::OnInput(SC_Message* msg)
 {
-    WriteToMessageLog("hIam %d", m_address);
+    WriteToMessageLog("hIam %d", targetAddress);
+}
+
+/* Function start: 0x401220 */
+Handler12::~Handler12() {
+}
+
+/* Function start: 0x401290 */
+void Handler12::Init(SC_Message* msg) {
+    Handler::Init(msg);
+    if (msg != 0) {
+        sourceAddress = msg->sourceAddress;
+    }
+}
+
+/* Function start: 0x4012C0 */
+int Handler12::ShutDown(SC_Message* msg) {
+    return 0;
 }
 
 /* Function start: 0x4012D0 */
-void ZBuffer::Update(int param_1, int param_2)
-{
+void Handler12::Update(int param_1, int param_2) {
     if (timer.Update() > 10000) {
-        SC_Message_Send(3, m_address, m_address, m_from, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
     }
-    if (m_address == param_2) {
+    if (targetAddress == param_2) {
         ShowError("SC_ZBuffer::Update");
     }
 }
 
 /* Function start: 0x401330 */
-int ZBuffer::AddMessage(int param_1)
-{
-    ((Handler*)this)->WriteMessageAddress((SC_Message*)param_1);
+int Handler12::AddMessage(SC_Message* msg) {
+    Handler::AddMessage(msg);
     ShowError("SC_ZBuffer::AddMessage");
     return 1;
 }
 
 /* Function start: 0x401350 */
-int ZBuffer::ProcessMessage(Message* msg)
-{
-    if (msg->targetAddress != m_address) {
+int Handler12::Exit(SC_Message* msg) {
+    if (msg->targetAddress != targetAddress) {
         return 0;
     }
     timer.Reset();

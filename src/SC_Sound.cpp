@@ -9,8 +9,8 @@
 
 /* Function start: 0x40B7E0 */
 SC_Sound::SC_Sound() {
-    // Set handlerId to 14
-    handlerId = 14;
+    // Set targetAddress to 14
+    targetAddress = 14;
 
     // Call Timer::Reset() on timer
     timer.Reset();
@@ -43,9 +43,9 @@ SC_Sound::~SC_Sound() {
 
 /* Function start: 0x40BAD0 */
 void SC_Sound::Init(SC_Message* msg) {
-    CopyCommandData(msg);
+    Handler::Init(msg);
     if (msg != 0) {
-        moduleParam = msg->sourceAddress;
+        sourceAddress = msg->sourceAddress;
     }
 }
 
@@ -53,7 +53,7 @@ void SC_Sound::Init(SC_Message* msg) {
 void SC_Sound::Update(int param1, int param2) {
     if (timer.Update() > 60000) {
         if (list->head == 0) {
-            SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
+            SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 20, 0, 0, 0, 0, 0);
         }
     }
 
@@ -80,14 +80,14 @@ void SC_Sound::Update(int param1, int param2) {
         }
     }
 
-    if (handlerId == param2) {
+    if (targetAddress == param2) {
         ShowError("SC_Sound::Update");
     }
 }
 
 /* Function start: 0x40BD10 */
 int SC_Sound::AddMessage(SC_Message* msg) {
-    WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
     ShowError("SC_Sound::AddMessage");
     return 1;
 }
@@ -100,7 +100,7 @@ int SC_Sound::ShutDown(SC_Message* msg) {
 int SC_Sound::Exit(SC_Message* msg) {
     MessageList* pList;
 
-    if (msg->targetAddress != handlerId) {
+    if (msg->targetAddress != targetAddress) {
         return 0;
     }
 
@@ -193,7 +193,7 @@ int SC_Sound::Exit(SC_Message* msg) {
     }
 
     case 27:
-        SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 20, 0, 0, 0, 0, 0);
         break;
 
     default:

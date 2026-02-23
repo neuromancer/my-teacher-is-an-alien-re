@@ -11,10 +11,10 @@ class SC_Message;
 // Inherits from Handler (which inherits from Parser)
 // Layout:
 //   0x00-0x87: Parser base class (size 0x88)
-//   0x88: handlerId
-//   0x8C: moduleParam
-//   0x90: savedCommand
-//   0x94: savedMsgData
+//   0x88: targetAddress
+//   0x8C: sourceAddress
+//   0x90: command
+//   0x94: data
 //   0x98: field_98
 //   0x9C: field_9C
 //   0xA0: message - SC_Message* (deleted in destructor)

@@ -59,19 +59,6 @@ public:
 };
 
 // ScoreManager::AdjustScore - adds value to field_4, clamps between 0 and 200
-/* Function start: 0x416ba0 */
-void ScoreManager::AdjustScore(int value) {
-    int newVal = ScoreManager::score + value;
-    ScoreManager::score = newVal;
-    if (newVal < 0) {
-        ScoreManager::score = 0;
-        return;
-    }
-    if (newVal > 0xc8) {
-        ScoreManager::score = 0xc8;
-    }
-}
-
 /* Function start: 0x414060 */
 void Target::Spawn()
 {
@@ -577,3 +564,16 @@ int Target::LBLParse(char* line)
 
     return 0;
 }
+/* Function start: 0x416ba0 */
+void ScoreManager::AdjustScore(int value) {
+    int newVal = ScoreManager::score + value;
+    ScoreManager::score = newVal;
+    if (newVal < 0) {
+        ScoreManager::score = 0;
+        return;
+    }
+    if (newVal > 0xc8) {
+        ScoreManager::score = 0xc8;
+    }
+}
+

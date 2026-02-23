@@ -31,54 +31,6 @@ extern "C" {
     char* CDData_FormatPath(char*, ...);
 }
 
-/* Function start: 0x405D20 */
-int SCI_AfterSchoolMenu::LBLParse(char* line) {
-    char label[32];
-    char filepath[64];
-    MMPlayer* mc;
-    Palette* pal;
-    T_Hotspot* hotspot;
-    OptionMenu* optMenu;
-
-    sscanf(line, "%s", label);
-
-    if (strcmp(label, "BACK") == 0) {
-        mc = new MMPlayer();
-        background = mc;
-        Parser::ProcessFile(mc, this, 0);
-    } else if (strcmp(label, "PALE") == 0) {
-        sscanf(line, "%s %s", label, filepath);
-        if (palette == 0) {
-            pal = new Palette();
-            palette = pal;
-            pal->Load(CDData_FormatPath(filepath));
-        }
-    } else if (strcmp(label, "CHAR") == 0) {
-        hotspot = new T_Hotspot();
-        characters[characterCount] = hotspot;
-        Parser::ProcessFile(characters[characterCount], this, 0);
-        characterCount = characterCount + 1;
-    } else if (strcmp(label, "CANCEL") == 0) {
-        hotspot = new T_Hotspot();
-        cancelButton = hotspot;
-        Parser::ProcessFile(hotspot, this, 0);
-    } else if (strcmp(label, "OKAY") == 0) {
-        hotspot = new T_Hotspot();
-        goButton = hotspot;
-        Parser::ProcessFile(hotspot, this, 0);
-    } else if (strcmp(label, "OPTION_MENU") == 0) {
-        optMenu = new OptionMenu();
-        choiceScreen = optMenu;
-        Parser::ProcessFile(optMenu, this, 0);
-    } else if (strcmp(label, "END") == 0) {
-        return 1;
-    } else {
-        Parser::LBLParse("SCI_AfterSchoolMenu");
-    }
-
-    return 0;
-}
-
 /* Function start: 0x404CA0 */
 SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
     int i;
@@ -98,9 +50,9 @@ SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
     prevSubmenuHover = -1;
     prevSubmenu = -1;
 
-    // Set handlerId to 10
-    handlerId = 10;
-    moduleParam = 1;
+    // Set targetAddress to 10
+    targetAddress = 10;
+    sourceAddress = 1;
 
     // Parse demo.mis file
     ParseFile(this, "mis\\demo.mis", 0);
@@ -367,8 +319,8 @@ int SCI_AfterSchoolMenu::AddMessage(SC_Message* msg) {
             int handlerVal = (currentCharacterIndex == 1) ? 11 : 16;
             msg->targetAddress = handlerVal;
         }
-        msg->command = handlerId;
-        msg->data = moduleParam;
+        msg->command = targetAddress;
+        msg->data = sourceAddress;
         msg->priority = 5;
     }
 
@@ -377,7 +329,24 @@ int SCI_AfterSchoolMenu::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x405420 */
 int SCI_AfterSchoolMenu::Exit(SC_Message* msg) {
-    return handlerId == msg->targetAddress;
+    return targetAddress == msg->targetAddress;
+}
+
+/* Function start: 0x405440 */
+void SCI_AfterSchoolMenu::PlaySoundsIfNeeded() {
+    if (playSoundsFlag != 0) {
+        playSoundsFlag = 0;
+
+        // Play ambient sound
+        if (ambientSound != 0) {
+            ambientSound->Play(100, 0);
+        }
+
+        // Play intro voice if enabled
+        if (sounds[0].enabled != 0 && sounds[0].sample != 0) {
+            sounds[0].sample->Play(100, 1);
+        }
+    }
 }
 
 /* Function start: 0x405490 */
@@ -387,7 +356,7 @@ void SCI_AfterSchoolMenu::Update(int param1, int param2) {
     HSAMPLE sampleHandle;
     int status;
 
-    if (handlerId != param2) {
+    if (targetAddress != param2) {
         return;
     }
 
@@ -456,60 +425,6 @@ void SCI_AfterSchoolMenu::Update(int param1, int param2) {
     }
 }
 
-/* Function start: 0x405780 */
-void SCI_AfterSchoolMenu::ResetHoverState() {
-    hoverCharacterIndex = -1;
-    hoverSubmenuIndex = -1;
-    updateFlag = 0;
-    confirmFlag = 0;
-}
-
-/* Function start: 0x4057A0 */
-int SCI_AfterSchoolMenu::IsSelectionComplete() {
-    if (currentCharacterIndex != -1 && currentSubmenuIndex != -1) {
-        return 1;
-    }
-    return 0;
-}
-
-/* Function start: 0x4057C0 */
-void SCI_AfterSchoolMenu::ResetSelection() {
-    savedCharacterIndex = -1;
-    savedSubmenuIndex = -1;
-    currentCharacterIndex = -1;
-    currentSubmenuIndex = -1;
-    needsRefresh = 0;
-    isInitialized = 0;
-    prevHoverCharacter = -1;
-    prevCharacter = -1;
-    prevSubmenuHover = -1;
-    prevSubmenu = -1;
-}
-
-/* Function start: 0x405810 */
-void SCI_AfterSchoolMenu::PlayCharacterSound(int soundIndex) {
-    int idx;
-    SoundSlot* slot;
-
-    PlayButtonSound(-1);
-
-    // Stop current sound
-    if (currentSound != 0) {
-        currentSound->~Sample();
-        currentSound = 0;
-    }
-
-    // Force recalculation to match assembly reloading behavior
-    idx = currentCharacterIndex * 2 + soundIndex;
-    slot = &sounds[idx];
-
-    if (slot->enabled != 0) {
-        slot->enabled = 0;
-        currentSound = sounds[currentCharacterIndex * 2 + soundIndex].sample;
-        currentSound->Play(100, 1);
-    }
-}
-
 /* Function start: 0x405590 */
 void SCI_AfterSchoolMenu::DisplaySubmenuHover(int mouseX, int mouseY) {
     MousePoint pos;
@@ -567,43 +482,58 @@ void SCI_AfterSchoolMenu::DisplaySubmenuHover(int mouseX, int mouseY) {
     }
 }
 
-/* Function start: 0x405AA0 */
-void SCI_AfterSchoolMenu::ProcessGoButtonHover(MousePoint pt, T_Hotspot* button, int* outConfirmFlag) {
-    int isHit;
+/* Function start: 0x405780 */
+void SCI_AfterSchoolMenu::ResetHoverState() {
+    hoverCharacterIndex = -1;
+    hoverSubmenuIndex = -1;
+    updateFlag = 0;
+    confirmFlag = 0;
+}
 
-    if (IsSelectionComplete() != 0) {
-        {
-            MousePoint local_pt;
-            local_pt.x = pt.x;
-            local_pt.y = pt.y;
-
-            if (button->enabled == 0) {
-                goto not_hit;
-            }
-
-            if (button->rect.left > local_pt.x ||
-                button->rect.right < local_pt.x ||
-                button->rect.top > local_pt.y ||
-                button->rect.bottom < local_pt.y) {
-                isHit = 0;
-            } else {
-                isHit = 1;
-            }
-        }
-
-        if (isHit != 0) {
-            *outConfirmFlag = 1;
-            button->SetState(2);
-        } else {
-not_hit:
-            *outConfirmFlag = 0;
-            button->SetState(1);
-        }
-    } else {
-        *outConfirmFlag = 0;
-        button->SetState(0);
+/* Function start: 0x4057A0 */
+int SCI_AfterSchoolMenu::IsSelectionComplete() {
+    if (currentCharacterIndex != -1 && currentSubmenuIndex != -1) {
+        return 1;
     }
-    cancelButton->SetState(0);
+    return 0;
+}
+
+/* Function start: 0x4057C0 */
+void SCI_AfterSchoolMenu::ResetSelection() {
+    savedCharacterIndex = -1;
+    savedSubmenuIndex = -1;
+    currentCharacterIndex = -1;
+    currentSubmenuIndex = -1;
+    needsRefresh = 0;
+    isInitialized = 0;
+    prevHoverCharacter = -1;
+    prevCharacter = -1;
+    prevSubmenuHover = -1;
+    prevSubmenu = -1;
+}
+
+/* Function start: 0x405810 */
+void SCI_AfterSchoolMenu::PlayCharacterSound(int soundIndex) {
+    int idx;
+    SoundSlot* slot;
+
+    PlayButtonSound(-1);
+
+    // Stop current sound
+    if (currentSound != 0) {
+        currentSound->~Sample();
+        currentSound = 0;
+    }
+
+    // Force recalculation to match assembly reloading behavior
+    idx = currentCharacterIndex * 2 + soundIndex;
+    slot = &sounds[idx];
+
+    if (slot->enabled != 0) {
+        slot->enabled = 0;
+        currentSound = sounds[currentCharacterIndex * 2 + soundIndex].sample;
+        currentSound->Play(100, 1);
+    }
 }
 
 /* Function start: 0x405880 */
@@ -688,6 +618,45 @@ void SCI_AfterSchoolMenu::ProcessCharacterHover(MousePoint pt) {
     }
 }
 
+/* Function start: 0x405AA0 */
+void SCI_AfterSchoolMenu::ProcessGoButtonHover(MousePoint pt, T_Hotspot* button, int* outConfirmFlag) {
+    int isHit;
+
+    if (IsSelectionComplete() != 0) {
+        {
+            MousePoint local_pt;
+            local_pt.x = pt.x;
+            local_pt.y = pt.y;
+
+            if (button->enabled == 0) {
+                goto not_hit;
+            }
+
+            if (button->rect.left > local_pt.x ||
+                button->rect.right < local_pt.x ||
+                button->rect.top > local_pt.y ||
+                button->rect.bottom < local_pt.y) {
+                isHit = 0;
+            } else {
+                isHit = 1;
+            }
+        }
+
+        if (isHit != 0) {
+            *outConfirmFlag = 1;
+            button->SetState(2);
+        } else {
+not_hit:
+            *outConfirmFlag = 0;
+            button->SetState(1);
+        }
+    } else {
+        *outConfirmFlag = 0;
+        button->SetState(0);
+    }
+    cancelButton->SetState(0);
+}
+
 /* Function start: 0x405BB0 */
 void SCI_AfterSchoolMenu::ProcessSubmenuHover(MousePoint pt) {
     int indexOut = 0;
@@ -711,6 +680,18 @@ void SCI_AfterSchoolMenu::ProcessSubmenuHover(MousePoint pt) {
     }
 }
 
+/* Function start: 0x405C80 */
+void SCI_AfterSchoolMenu::FillOptionQueue() {
+    int charIdx;
+
+    charIdx = currentCharacterIndex;
+    if (charIdx < 0 || charIdx > 2) {
+        ShowError("Error in DMChoScr.cpp - FillOptionQueue");
+    } else {
+        SetCharacterOption(charIdx);
+    }
+    SetSubmenuOption(-5, 0);
+}
 /* Function start: 0x405CC0 */
 void SCI_AfterSchoolMenu::SetCharacterOption(int characterIndex) {
     if (choiceScreen != 0) {
@@ -729,32 +710,51 @@ void SCI_AfterSchoolMenu::SetSubmenuOption(int submenuIndex, int state) {
     }
 }
 
-/* Function start: 0x405440 */
-void SCI_AfterSchoolMenu::PlaySoundsIfNeeded() {
-    if (playSoundsFlag != 0) {
-        playSoundsFlag = 0;
+/* Function start: 0x405D20 */
+int SCI_AfterSchoolMenu::LBLParse(char* line) {
+    char label[32];
+    char filepath[64];
+    MMPlayer* mc;
+    Palette* pal;
+    T_Hotspot* hotspot;
+    OptionMenu* optMenu;
 
-        // Play ambient sound
-        if (ambientSound != 0) {
-            ambientSound->Play(100, 0);
+    sscanf(line, "%s", label);
+
+    if (strcmp(label, "BACK") == 0) {
+        mc = new MMPlayer();
+        background = mc;
+        Parser::ProcessFile(mc, this, 0);
+    } else if (strcmp(label, "PALE") == 0) {
+        sscanf(line, "%s %s", label, filepath);
+        if (palette == 0) {
+            pal = new Palette();
+            palette = pal;
+            pal->Load(CDData_FormatPath(filepath));
         }
-
-        // Play intro voice if enabled
-        if (sounds[0].enabled != 0 && sounds[0].sample != 0) {
-            sounds[0].sample->Play(100, 1);
-        }
-    }
-}
-
-/* Function start: 0x405C80 */
-void SCI_AfterSchoolMenu::FillOptionQueue() {
-    int charIdx;
-
-    charIdx = currentCharacterIndex;
-    if (charIdx < 0 || charIdx > 2) {
-        ShowError("Error in DMChoScr.cpp - FillOptionQueue");
+    } else if (strcmp(label, "CHAR") == 0) {
+        hotspot = new T_Hotspot();
+        characters[characterCount] = hotspot;
+        Parser::ProcessFile(characters[characterCount], this, 0);
+        characterCount = characterCount + 1;
+    } else if (strcmp(label, "CANCEL") == 0) {
+        hotspot = new T_Hotspot();
+        cancelButton = hotspot;
+        Parser::ProcessFile(hotspot, this, 0);
+    } else if (strcmp(label, "OKAY") == 0) {
+        hotspot = new T_Hotspot();
+        goButton = hotspot;
+        Parser::ProcessFile(hotspot, this, 0);
+    } else if (strcmp(label, "OPTION_MENU") == 0) {
+        optMenu = new OptionMenu();
+        choiceScreen = optMenu;
+        Parser::ProcessFile(optMenu, this, 0);
+    } else if (strcmp(label, "END") == 0) {
+        return 1;
     } else {
-        SetCharacterOption(charIdx);
+        Parser::LBLParse("SCI_AfterSchoolMenu");
     }
-    SetSubmenuOption(-5, 0);
+
+    return 0;
 }
+

@@ -16,7 +16,7 @@ class Engine;
 //
 // Layout:
 //   0x00-0x87: Parser base class (via Handler)
-//   0x88: handlerId = 16
+//   0x88: targetAddress = 16
 //   0x8C-0x9F: Handler fields
 //   0x98: isInitialized (state flag)
 //   0xA0: savedScreenX

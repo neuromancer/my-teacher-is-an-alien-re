@@ -69,6 +69,16 @@ TargetList::~TargetList() {
   }
 }
 
+/* Function start: 0x414F30 */
+void TargetList::OnProcessEnd() {
+  HashTable* ht;
+
+  if (TargetList::count != 0) {
+    ht = new HashTable(TargetList::count);
+    TargetList::hashTable = ht;
+  }
+}
+
 /* Function start: 0x414FD0 */
 int TargetList::LBLParse(char* line) {
   int id = 0;
@@ -97,16 +107,6 @@ int TargetList::LBLParse(char* line) {
   }
 
   return 0;
-}
-
-/* Function start: 0x414F30 */
-void TargetList::OnProcessEnd() {
-  HashTable* ht;
-
-  if (TargetList::count != 0) {
-    ht = new HashTable(TargetList::count);
-    TargetList::hashTable = ht;
-  }
 }
 
 /* Function start: 0x4150F0 */

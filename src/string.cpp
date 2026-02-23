@@ -300,18 +300,6 @@ int ParseCommandLineArgs(char *param_1, char **param_2, int param_3)
     return iVar1;
 }
 
-/* Function start: 0x4260F0 */
-void ExecuteFunctionArray(void** param_1, void** param_2)
-{
-    if (param_2 <= param_1) return;
-    do {
-        if (*param_1 != 0) {
-            ((void (*)(void)) *param_1)();
-        }
-        param_1 = param_1 + 1;
-    } while (param_2 > param_1);
-}
-
 /* Function start: 0x425E50 */
 // Wrapper for _fsopen with _SH_DENYNO (0x40) share mode
 FILE* fsopen(const char* filename, const char* mode)
@@ -382,6 +370,18 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
     if (param_3 == 0) {
         ExitProcess(param_1);
     }
+}
+
+/* Function start: 0x4260F0 */
+void ExecuteFunctionArray(void** param_1, void** param_2)
+{
+    if (param_2 <= param_1) return;
+    do {
+        if (*param_1 != 0) {
+            ((void (*)(void)) *param_1)();
+        }
+        param_1 = param_1 + 1;
+    } while (param_2 > param_1);
 }
 
 /* Function start: 0x426110 */

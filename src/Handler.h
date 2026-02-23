@@ -1,8 +1,7 @@
 #ifndef HANDLER_H
 #define HANDLER_H
 
-#include "Parser.h"
-#include <string.h>
+#include "ScriptHandler.h"
 
 class SC_Message;
 
@@ -23,33 +22,25 @@ class SC_Message;
 //
 // Memory layout:
 //   0x00-0x87: Parser base class (size 0x88)
-//   0x88: handlerId - identifies the handler type (1, 2, 4, 5, etc.)
-//   0x8C+: Handler-specific fields
-class Handler : public Parser {
+//   0x88-0x97: ScriptHandler fields (targetAddress, sourceAddress, command, data)
+//   0x98-0x9F: Handler-specific fields
+class Handler : public ScriptHandler {
 public:
-    Handler() { memset(&handlerId, 0, 24); }
+    Handler() {}
     virtual ~Handler();
-    
-    // Virtual methods - these form the handler interface
-    // Override in derived classes to implement handler behavior
-    virtual void Init(SC_Message* msg);
-    virtual int AddMessage(SC_Message* msg);
+
+    // Default Init calls CopyCommandData (0x417180), default AddMessage calls WriteMessageAddress (0x4171B0)
+    // In the original binary, the vtable points directly to these ScriptHandler functions.
+    // Inline wrappers ensure derived classes calling Handler::Init/AddMessage
+    // generate a direct CALL to CopyCommandData/WriteMessageAddress.
+    virtual void Init(SC_Message* msg) { CopyCommandData((ScriptHandler*)msg); }
+    virtual int AddMessage(SC_Message* msg) { return WriteMessageAddress((Message*)msg); }
     virtual int ShutDown(SC_Message* msg);
     virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
-    virtual void OnInput();
-    
-    // Copy command/data from message to handler fields
-    void CopyCommandData(SC_Message* msg);
-    
-    // Write handler address to message
-    int WriteMessageAddress(SC_Message* msg);
+    virtual void OnInput(SC_Message* msg);
 
-    // Common handler fields
-    int handlerId;      // 0x88 - handler type identifier
-    int moduleParam;    // 0x8C - handler-specific parameter (sourceAddress, data, etc.)
-    int savedCommand;   // 0x90 - saved command from CopyCommandData
-    int savedMsgData;   // 0x94 - saved data from CopyCommandData
+    // Handler-specific fields
     int field_98;       // 0x98
     int field_9C;       // 0x9C
 };

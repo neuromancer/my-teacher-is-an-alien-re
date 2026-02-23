@@ -30,7 +30,7 @@ SearchScreen::SearchScreen() {
     // Zero 0x14 dwords (80 bytes) at 0xA0, overwriting timer
     memset(&timer, 0, 0x14 * sizeof(int));
 
-    handlerId = 5;
+    targetAddress = 5;
 
     // Reset Timer
     timer.Reset();
@@ -65,9 +65,9 @@ SearchScreen::~SearchScreen() {
 
 /* Function start: 0x40FE40 */
 void SearchScreen::Init(SC_Message* msg) {
-    SearchScreen::CopyCommandData(msg);
+    Handler::Init(msg);
     if (msg != 0) {
-        moduleParam = msg->data;
+        sourceAddress = msg->data;
     }
 }
 
@@ -90,10 +90,10 @@ void SearchScreen::Update(int param1, int param2) {
     int rowIdx;
 
     if (timer.Update() > 10000) {
-        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
     }
 
-    if (handlerId != param2) {
+    if (targetAddress != param2) {
         return;
     }
     spr = sprite;
@@ -140,7 +140,7 @@ int SearchScreen::AddMessage(SC_Message* msg) {
     int clickX;
     int rowIdx;
 
-    SearchScreen::WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
 
     if (msg->lastKey != 0) {
         switch (msg->lastKey) {
@@ -221,7 +221,7 @@ int SearchScreen::Exit(SC_Message* msg) {
     GameState* pGameState;
     int param1;
 
-    if (msg->targetAddress != handlerId) {
+    if (msg->targetAddress != targetAddress) {
         return 0;
     }
 
@@ -231,7 +231,7 @@ int SearchScreen::Exit(SC_Message* msg) {
     case 0:
         return 1;
     case 1:
-        SC_Message_Send(savedCommand, savedMsgData, handlerId, moduleParam, 5, 0, 0, 0, 0, 0);
+        SC_Message_Send(command, data, targetAddress, sourceAddress, 5, 0, 0, 0, 0, 0);
         return 1;
     case 0xd:
         stateIdx = msg->sourceAddress;
@@ -296,7 +296,7 @@ int SearchScreen::Exit(SC_Message* msg) {
         pGameState->stateValues[stateIdx] = param1;
         return 1;
     case 0x1b:
-        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
         return 1;
     case 0x1c:
         g_GameState_00436998->Serialize(1);

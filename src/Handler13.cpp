@@ -10,8 +10,8 @@
 
 /* Function start: 0x401B60 */
 Handler13::Handler13() {
-    // Set handlerId to 13
-    handlerId = 13;
+    // Set targetAddress to 13
+    targetAddress = 13;
 
     // Call Timer::Reset() on first timer
     timer1.Reset();
@@ -43,9 +43,9 @@ Handler13::~Handler13() {
 
 /* Function start: 0x401DF0 */
 void Handler13::Init(SC_Message* msg) {
-    CopyCommandData(msg);
+    Handler::Init(msg);
     if (msg != 0) {
-        moduleParam = msg->data;
+        sourceAddress = msg->data;
     }
 }
 
@@ -64,7 +64,7 @@ void Handler13::Update(int param1, int param2) {
 
     uVar3 = timer1.Update();
     if ((uVar3 > 10000) && (list->head == 0)) {
-        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
     }
 
     timer1.Reset();
@@ -95,14 +95,14 @@ void Handler13::Update(int param1, int param2) {
         iVar4 = (int)list->head;
     }
 
-    if (handlerId == param2) {
+    if (targetAddress == param2) {
         ShowError("SC_Timer::Update");
     }
 }
 
 /* Function start: 0x401F90 */
 int Handler13::AddMessage(SC_Message* msg) {
-    WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
     ShowError("SC_Timer::AddMessage");
     return 1;
 }
@@ -115,7 +115,7 @@ int Handler13::Exit(SC_Message* msg) {
     MessageNode* node;
     MessageList* pList;
 
-    if (msg->targetAddress != Handler13::handlerId) {
+    if (msg->targetAddress != Handler13::targetAddress) {
         return 0;
     }
 
@@ -216,7 +216,7 @@ int Handler13::Exit(SC_Message* msg) {
 
     case 0x1b:
         if (list->head == 0) {
-            SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+            SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
         }
         break;
 

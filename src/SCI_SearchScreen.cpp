@@ -15,7 +15,7 @@ extern "C" char* CDData_FormatPath(char* path, ...);
 SCI_SearchScreen::SCI_SearchScreen() {
     Palette** ptr = &field_600;
     memset(ptr, 0, 0x12 * sizeof(int));
-    handlerId = 0xb;
+    targetAddress = 0xb;
     ParseFile(this, "mis\\SrSc0001.mis", 0);
 }
 
@@ -152,12 +152,12 @@ int SCI_SearchScreen::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x40B110 */
 int SCI_SearchScreen::Exit(SC_Message* msg) {
-    return handlerId == msg->targetAddress;
+    return targetAddress == msg->targetAddress;
 }
 
 /* Function start: 0x40B130 */
 void SCI_SearchScreen::Update(int param1, int param2) {
-    if (handlerId != param2) {
+    if (targetAddress != param2) {
         return;
     }
 
@@ -167,7 +167,7 @@ void SCI_SearchScreen::Update(int param1, int param2) {
     ambients->Draw();
 
     if (field_634 != 0) {
-        if (field_634->Update((int)background, (int)ambients, moduleParam) == 0) {
+        if (field_634->Update((int)background, (int)ambients, sourceAddress) == 0) {
             return;
         }
         field_634 = 0;

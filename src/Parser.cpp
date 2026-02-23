@@ -53,9 +53,8 @@ int Parser::LBLParse(char *param_1) {
             lineNumber, filename);
 }
 
-void Parser::OnProcessEnd() {}
-
-void Parser::OnProcessStart() {}
+// OnProcessStart and OnProcessEnd moved to ZBuffer.cpp
+// (same compilation unit in original binary)
 
 /* Function start: 0x418B50 */
 void Parser::SaveFilePosition() {

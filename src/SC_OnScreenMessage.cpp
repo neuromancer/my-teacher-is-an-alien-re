@@ -14,8 +14,8 @@ extern "C" {
 
 /* Function start: 0x40A2E0 */
 SC_OnScreenMessage::SC_OnScreenMessage() {
-    // Set handlerId to 15
-    handlerId = 15;
+    // Set targetAddress to 15
+    targetAddress = 15;
 
     // Initialize timer
     timer.Reset();
@@ -88,9 +88,9 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
 
 /* Function start: 0x40A5A0 */
 void SC_OnScreenMessage::Init(SC_Message* msg) {
-    CopyCommandData(msg);
+    Handler::Init(msg);
     if (msg != 0) {
-        moduleParam = msg->sourceAddress;
+        sourceAddress = msg->sourceAddress;
     }
 }
 
@@ -187,17 +187,17 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
 
     uVar3 = timer.Update();
     if (uVar3 > 60000) {
-        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
     }
 
-    if (handlerId == param2) {
+    if (targetAddress == param2) {
         ShowError("SC_OnScreenMessage::Update");
     }
 }
 
 /* Function start: 0x40A7C0 */
 int SC_OnScreenMessage::AddMessage(SC_Message* msg) {
-    WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
     ShowError("SC_OnScreenMessage::AddMessage");
     return 1;
 }
@@ -209,7 +209,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     newItem = 0;
 
-    if (msg->targetAddress != handlerId) {
+    if (msg->targetAddress != targetAddress) {
         return 0;
     }
 
@@ -361,7 +361,7 @@ push_to_tail:
     goto count_loop_start;
 
 send_remove_msg:
-    SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
+    SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 20, 0, 0, 0, 0, 0);
     return 1;
 }
 

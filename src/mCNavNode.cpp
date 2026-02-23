@@ -31,6 +31,58 @@ mCNavNode::mCNavNode() : Parser()
     strcpy(nodeName, "NONAME");
 }
 
+/* Function start: 0x412f40 */
+void mCNavNode::AddSpriteList(char* name, int id)
+{
+    if (g_SpriteList_00435f10 == 0 || g_SpriteList_00435f10->FindSprite(id) == 0) {
+        ShowError("mCNavNode::AddSpriteList() - Undefined sprite list %s %d", name, id);
+    }
+
+    if (randomPool == 0) {
+        randomPool = new ObjectPool(0x11, 0xa);
+    }
+
+    ObjectPool* pool = randomPool;
+    unsigned int count = pool->allocatedCount;
+    unsigned int size = pool->size;
+    unsigned int h = (count >> 4) % size;
+    void* mem = pool->memory;
+    HashEntry* entry;
+
+    if (mem == 0) {
+        goto no_entry;
+    }
+    entry = ((HashEntry**)mem)[h];
+
+loop_top:
+    if (entry == 0) {
+        goto no_entry;
+    }
+    if (entry->key == count) {
+        goto found_entry;
+    }
+    entry = entry->next;
+    goto loop_top;
+
+no_entry:
+    entry = 0;
+found_entry:
+    if (entry == 0) {
+        if (mem == 0) {
+            pool->memory = new int[size];
+            memset(pool->memory, 0, size * 4);
+            pool->size = size;
+        }
+        entry = (HashEntry*)pool->Allocate_2();
+        entry->bucketIndex = h;
+        entry->key = count;
+        entry->next = ((HashEntry**)pool->memory)[h];
+        ((HashEntry**)pool->memory)[h] = entry;
+    }
+    entry->value = id;
+    flags |= 0x8;
+}
+
 /* Function start: 0x4130B0 */
 void mCNavNode::SetNavLink(char* direction, int nodeId)
 {
@@ -183,58 +235,6 @@ return_result:
     mCNavNode::active = 0;
     return mCNavNode::nextNodeId;
 }
-/* Function start: 0x412f40 */
-void mCNavNode::AddSpriteList(char* name, int id)
-{
-    if (g_SpriteList_00435f10 == 0 || g_SpriteList_00435f10->FindSprite(id) == 0) {
-        ShowError("mCNavNode::AddSpriteList() - Undefined sprite list %s %d", name, id);
-    }
-
-    if (randomPool == 0) {
-        randomPool = new ObjectPool(0x11, 0xa);
-    }
-
-    ObjectPool* pool = randomPool;
-    unsigned int count = pool->allocatedCount;
-    unsigned int size = pool->size;
-    unsigned int h = (count >> 4) % size;
-    void* mem = pool->memory;
-    HashEntry* entry;
-
-    if (mem == 0) {
-        goto no_entry;
-    }
-    entry = ((HashEntry**)mem)[h];
-
-loop_top:
-    if (entry == 0) {
-        goto no_entry;
-    }
-    if (entry->key == count) {
-        goto found_entry;
-    }
-    entry = entry->next;
-    goto loop_top;
-
-no_entry:
-    entry = 0;
-found_entry:
-    if (entry == 0) {
-        if (mem == 0) {
-            pool->memory = new int[size];
-            memset(pool->memory, 0, size * 4);
-            pool->size = size;
-        }
-        entry = (HashEntry*)pool->Allocate_2();
-        entry->bucketIndex = h;
-        entry->key = count;
-        entry->next = ((HashEntry**)pool->memory)[h];
-        ((HashEntry**)pool->memory)[h] = entry;
-    }
-    entry->value = id;
-    flags |= 0x8;
-}
-
 /* Function start: 0x413380 */
 int mCNavNode::LBLParse(char* line)
 {

@@ -282,6 +282,62 @@ Hotspot::~Hotspot()
 	}
 }
 
+/* Function start: 0x40D610 */
+int Hotspot::Do()
+{
+    switch (state) {
+    case 1:
+        QueueEvents(pre_message);
+        state = 2;
+    case 2:
+        if (hotspot == 0 || hotspot->Draw() == 0) {
+            state = 4;
+        }
+        if (state != 4) return 0;
+    case 4:
+        QueueEvents(message);
+        WriteToMessageLog("\n\n\nJUST SENT MESSAGES\n\n\n");
+        return 1;
+    }
+
+    ShowError("Error in Thotspot.cpp - Update()");
+    return 1;
+}
+
+/* Function start: 0x40D6A0 */
+void Hotspot::QueueEvents(Queue* q)
+{
+    if (!q) return;
+    q->current = q->head;
+    if (!q->head) return;
+
+    do {
+        Message* msg = 0;
+        if (q->current) {
+            msg = (Message*)((QueueNode*)q->current)->data;
+        }
+
+        TimedEventPool* pool = g_TimedEventPool2_00436988;
+        PooledEvent* evt = pool->Create(pool->list.tail, 0);
+
+        ((PooledEvent*)((char*)evt + 8))->CopyFrom((PooledEvent*)msg);
+
+        if (pool->list.tail) {
+            ((PooledEvent*)pool->list.tail)->next = evt;
+        } else {
+            pool->list.head = evt;
+        }
+        pool->list.tail = evt;
+
+        if (q->current == q->tail) return;
+        if (q->current) {
+            q->current = ((QueueNode*)q->current)->next;
+        }
+    } while (q->head != 0);
+}
+
+
+
 /* Function start: 0x40D710 */
 int Hotspot::LBLParse(char* line)
 {
@@ -372,60 +428,4 @@ int Hotspot::LBLParse(char* line)
     }
     return 0;
 }
-
-/* Function start: 0x40D610 */
-int Hotspot::Do()
-{
-    switch (state) {
-    case 1:
-        QueueEvents(pre_message);
-        state = 2;
-    case 2:
-        if (hotspot == 0 || hotspot->Draw() == 0) {
-            state = 4;
-        }
-        if (state != 4) return 0;
-    case 4:
-        QueueEvents(message);
-        WriteToMessageLog("\n\n\nJUST SENT MESSAGES\n\n\n");
-        return 1;
-    }
-
-    ShowError("Error in Thotspot.cpp - Update()");
-    return 1;
-}
-
-/* Function start: 0x40D6A0 */
-void Hotspot::QueueEvents(Queue* q)
-{
-    if (!q) return;
-    q->current = q->head;
-    if (!q->head) return;
-
-    do {
-        Message* msg = 0;
-        if (q->current) {
-            msg = (Message*)((QueueNode*)q->current)->data;
-        }
-
-        TimedEventPool* pool = g_TimedEventPool2_00436988;
-        PooledEvent* evt = pool->Create(pool->list.tail, 0);
-
-        ((PooledEvent*)((char*)evt + 8))->CopyFrom((PooledEvent*)msg);
-
-        if (pool->list.tail) {
-            ((PooledEvent*)pool->list.tail)->next = evt;
-        } else {
-            pool->list.head = evt;
-        }
-        pool->list.tail = evt;
-
-        if (q->current == q->tail) return;
-        if (q->current) {
-            q->current = ((QueueNode*)q->current)->next;
-        }
-    } while (q->head != 0);
-}
-
-
 

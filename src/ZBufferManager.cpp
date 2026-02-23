@@ -69,68 +69,6 @@ struct CommandType3 : public SoundCommand {
 
 // 0x409160: ZBQueue::InsertBeforeCurrent COMDAT duplicate (same as 0x41CB40, from different obj)
 
-/* Function start: 0x41BB20 */
-void ZBufferManager::QueueAnimationCleanup(void* anim)
-{
-    void* wrapper;
-    ZBQueue* queue;
-
-    switch (m_state) {
-    case 1:
-        if (anim != 0) {
-            delete (Animation*)anim;
-        }
-        return;
-    case 2:
-    case 3:
-        break;
-    default:
-        return;
-    }
-
-    if (anim == 0) {
-        return;
-    }
-
-    // Create 12-byte wrapper: [prev=0, next=0, data=Animation*]
-    wrapper = ::operator new(0xc);
-    if (wrapper != 0) {
-        ((int*)wrapper)[0] = 0;
-        ((int*)wrapper)[1] = 0;
-        ((void**)wrapper)[2] = anim;
-    } else {
-        wrapper = 0;
-    }
-
-    queue = m_queueA4;
-    if (wrapper == 0) {
-        ShowError("queue fault 0101");
-    }
-    queue->current = queue->head;
-
-    if (queue->type == 1 || queue->type == 2) {
-        if (queue->head != 0) {
-            do {
-                if (*(unsigned int*)queue->current->data < *(unsigned int*)wrapper) {
-                    queue->InsertNode(wrapper);
-                    return;
-                }
-                if (queue->tail == queue->current) {
-                    queue->PushNode(wrapper);
-                    return;
-                }
-                if (queue->current != 0) {
-                    queue->current = queue->current->next;
-                }
-            } while (queue->current != 0);
-            return;
-        }
-        queue->InsertNode(wrapper);
-    } else {
-        queue->InsertBeforeCurrent(wrapper);
-    }
-}
-
 /* Function start: 0x41B5D0 */
 void CommandType1::Execute(GlyphRect* rect)
 {
@@ -311,6 +249,68 @@ ZBufferManager::~ZBufferManager()
 void* ZBQueue::GetCurrentData()
 {
     return LinkedList::GetCurrentData();
+}
+
+/* Function start: 0x41BB20 */
+void ZBufferManager::QueueAnimationCleanup(void* anim)
+{
+    void* wrapper;
+    ZBQueue* queue;
+
+    switch (m_state) {
+    case 1:
+        if (anim != 0) {
+            delete (Animation*)anim;
+        }
+        return;
+    case 2:
+    case 3:
+        break;
+    default:
+        return;
+    }
+
+    if (anim == 0) {
+        return;
+    }
+
+    // Create 12-byte wrapper: [prev=0, next=0, data=Animation*]
+    wrapper = ::operator new(0xc);
+    if (wrapper != 0) {
+        ((int*)wrapper)[0] = 0;
+        ((int*)wrapper)[1] = 0;
+        ((void**)wrapper)[2] = anim;
+    } else {
+        wrapper = 0;
+    }
+
+    queue = m_queueA4;
+    if (wrapper == 0) {
+        ShowError("queue fault 0101");
+    }
+    queue->current = queue->head;
+
+    if (queue->type == 1 || queue->type == 2) {
+        if (queue->head != 0) {
+            do {
+                if (*(unsigned int*)queue->current->data < *(unsigned int*)wrapper) {
+                    queue->InsertNode(wrapper);
+                    return;
+                }
+                if (queue->tail == queue->current) {
+                    queue->PushNode(wrapper);
+                    return;
+                }
+                if (queue->current != 0) {
+                    queue->current = queue->current->next;
+                }
+            } while (queue->current != 0);
+            return;
+        }
+        queue->InsertNode(wrapper);
+    } else {
+        queue->InsertBeforeCurrent(wrapper);
+    }
 }
 
 /* Function start: 0x41BE20 */

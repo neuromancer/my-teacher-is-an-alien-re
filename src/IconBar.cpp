@@ -17,13 +17,13 @@
 
 /* Function start: 0x402730 */
 IconBar::IconBar() {
-    // The implicit call to Handler constructor handles memset(&handlerId, 0, 24)
+    // The implicit call to Handler constructor handles memset(&targetAddress, 0, 24)
 
     // Zero from barBounds (0xA0) to the end of the class (0x600)
     // 0x600 - 0xA0 = 0x560
     memset(&barBounds, 0, 0x560);
 
-    handlerId = 0;
+    targetAddress = 0;
 
     // Set icon bar bounds
     barBounds.left = 0;
@@ -142,7 +142,7 @@ void IconBar::InitIconBar(SC_Message* msg) {
     int i;
 
     // Call parent Init (CopyCommandData)
-    CopyCommandData(msg);
+    Handler::Init(msg);
 
     // Check selected character and set iconbar state
     if (g_SelectedCharacter_00435a80 != 0) {
@@ -199,7 +199,7 @@ int IconBar::CheckButtonClick(SC_Message* msg) {
     int i;
     int ok;
 
-    WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
 
     // Initial bar bounds check
     ok = (barBounds.left <= msg->clickPos.x && barBounds.right >= msg->clickPos.x &&
@@ -269,7 +269,7 @@ void IconBar::Update(int param1, int param2) {
     int mouseY;
     IconBarButton* pBtn;
 
-    if (handlerId != param2) {
+    if (targetAddress != param2) {
         return;
     }
 

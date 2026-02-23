@@ -17,7 +17,7 @@ typedef SC_Question DialogQuestion;
 // Size: 0x650 bytes
 // vtable: 0x431170
 // Inherits from IconBar (0x600 bytes)
-// handlerId: 9 at offset 0x88
+// targetAddress: 9 at offset 0x88
 //
 // Layout:
 //   0x00-0x5FF: IconBar base class

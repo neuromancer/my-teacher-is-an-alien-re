@@ -53,6 +53,64 @@ Handler* CreateHandler(int command); // 0x40CDD0 - Handler factory
 
 #include "EventList.h"
 
+/* Function start: 0x40CDD0 */
+Handler* CreateHandler(int command) {
+    Handler* handler = 0;
+
+    switch(command) {
+    case 1:
+        handler = new Handler1();
+        break;
+    case 2:
+        handler = new Handler2();
+        break;
+    case 4:
+        handler = new Handler4();
+        break;
+    case 5:
+        handler = new SearchScreen();
+        break;
+    case 6:
+        handler = new Handler6();
+        break;
+    case 8:
+        handler = new Handler8();
+        break;
+    case 9:
+        handler = new SCI_Dialog();
+        break;
+    case 10:
+        handler = new SCI_AfterSchoolMenu();
+        break;
+    case 11:
+        handler = new SCI_SearchScreen();
+        break;
+    case 12:
+        handler = new Handler12();
+        break;
+    case 13:
+        handler = new Handler13();
+        break;
+    case 14:
+        handler = new SC_Sound();
+        break;
+    case 15:
+        handler = new SC_OnScreenMessage();
+        break;
+    case 16:
+        handler = new SC_Combat1();
+        break;
+    default:
+        ShowError("Unknown modual %d", command);
+        handler = 0;
+        break;
+    }
+    return handler;
+}
+
+// Base handler class for vtable calls - moved to top
+
+
 /* Function start: 0x417200 */
 GameLoop::GameLoop() {
     Timer* pResult;
@@ -78,6 +136,89 @@ GameLoop::~GameLoop()
     Cleanup();
 }
 
+/* Function start: 0x417320 */
+void GameLoop::Cleanup() {
+    Timer* pTimer;
+    EventList* pEventList;
+    EventNode* pNode;
+    EventNode* pNext;
+    EventNode* pPrev;
+    void* pData;
+
+    // Cleanup timer1
+    pTimer = timer1;
+    if (pTimer != 0) {
+        pTimer->~Timer();
+        operator delete(pTimer);
+        timer1 = 0;
+    }
+
+    // Cleanup timer2
+    pTimer = timer2;
+    if (pTimer != 0) {
+        pTimer->~Timer();
+        operator delete(pTimer);
+        timer2 = 0;
+    }
+
+    // Cleanup eventList
+    pEventList = eventList;
+    if (pEventList != 0) {
+        if (pEventList->head != 0) {
+            pEventList->current = pEventList->head;
+            if (pEventList->head != 0) {
+                do {
+                    pNode = pEventList->current;
+                    if (pNode == 0) {
+                        pData = 0;
+                    } else {
+                        // Unlink node from list - head check
+                        if (pEventList->head == pNode) {
+                            pEventList->head = pNode->next;
+                        }
+                        // Tail check
+                        pNode = pEventList->current;
+                        if (pEventList->tail == pNode) {
+                            pEventList->tail = pNode->prev;
+                        }
+                        // Update prev->next
+                        pNode = pEventList->current;
+                        pNext = pNode->prev;
+                        if (pNext != 0) {
+                            pNext->next = pNode->next;
+                        }
+                        // Update next->prev
+                        pNode = pEventList->current;
+                        pPrev = pNode->next;
+                        if (pPrev != 0) {
+                            pPrev->prev = pNode->prev;
+                        }
+                        // Save data and free node
+                        pNode = pEventList->current;
+                        pData = 0;
+                        if (pNode != 0) {
+                            pData = pNode->data;
+                            pNode->data = 0;
+                            pNode->prev = 0;
+                            pNode->next = 0;
+                            operator delete(pNode);
+                            pEventList->current = 0;
+                        }
+                        pEventList->current = pEventList->head;
+                    }
+                    if (pData != 0) {
+                        delete (Handler*)pData;
+                    }
+                } while (pEventList->head != 0);
+            }
+        }
+        operator delete(pEventList);
+        eventList = 0;
+    }
+
+    currentHandler = 0;
+}
+
 /* Function start: 0x417420 */
 void GameLoop::ResetLoop() {
     Timer* pTimer;
@@ -93,6 +234,116 @@ void GameLoop::ResetLoop() {
     if (pTimer != 0) {
         pTimer->Reset();
     }
+}
+
+/* Function start: 0x417450 */
+void GameLoop::CleanupLoop() {
+    ZBQueue* pQueue;
+    ZBQueue* pQueue9c;
+    void* pResult;
+    void* pData;
+    EventList* pEventList;
+    EventNode* pCurrent;
+    Handler* pHandler;
+
+    // Process queue at offset 0xa0 - simple delete
+    pQueue = g_ZBufferManager_0043698c->m_queueA0;
+    if (pQueue->head != 0) {
+        pQueue->current = pQueue->head;
+        while (pQueue->head != 0) {
+            pResult = pQueue->Pop();
+            if (pResult != 0) {
+                delete (SoundCommand*)pResult;
+            }
+        }
+    }
+
+    // Process queue at offset 0xa4 - cleanup with destructors
+    pQueue = g_ZBufferManager_0043698c->m_queueA4;
+    if (pQueue->head != 0) {
+        pQueue->current = pQueue->head;
+        while (pQueue->head != 0) {
+            DrawEntry* pEntry;
+            pEntry = (DrawEntry*)pQueue->Pop();
+            if (pEntry != 0) {
+                if (pEntry->m_videoBuffer != 0) {
+                    delete pEntry->m_videoBuffer;
+                    pEntry->m_videoBuffer = 0;
+                }
+                if (pEntry->m_childObject != 0) {
+                    delete (Animation*)pEntry->m_childObject;
+                    pEntry->m_childObject = 0;
+                }
+                operator delete(pEntry);
+            }
+        }
+    }
+
+    // Process queue at offset 0x9c - unlink and delete nodes
+    pQueue9c = g_ZBufferManager_0043698c->m_queue9c;
+    if (pQueue9c->head != 0) {
+        pQueue9c->current = pQueue9c->head;
+        while (pQueue9c->head != 0) {
+            if (pQueue9c->current == 0) {
+                pData = 0;
+            } else {
+                // Unlink from head
+                if (pQueue9c->head == pQueue9c->current) {
+                    pQueue9c->head = pQueue9c->current->next;
+                }
+                // Unlink from tail
+                if (pQueue9c->tail == pQueue9c->current) {
+                    pQueue9c->tail = pQueue9c->current->prev;
+                }
+                // Update prev->next
+                if (pQueue9c->current->prev != 0) {
+                    pQueue9c->current->prev->next = pQueue9c->current->next;
+                }
+                // Update next->prev
+                if (pQueue9c->current->next != 0) {
+                    pQueue9c->current->next->prev = pQueue9c->current->prev;
+                }
+                // Get data and cleanup node
+                pData = pQueue9c->GetCurrentData();
+                if (pQueue9c->current != 0) {
+                    delete pQueue9c->current;
+                    pQueue9c->current = 0;
+                }
+                pQueue9c->current = pQueue9c->head;
+            }
+            if (pData != 0) {
+                delete (RenderEntry*)pData;
+            }
+        }
+    }
+
+    // Process eventList - call ShutDown(0) on each handler
+    pEventList = GameLoop::eventList;
+    pEventList->current = pEventList->head;
+    pEventList = GameLoop::eventList;
+    if (pEventList->current == 0) {
+        return;
+    }
+
+    do {
+        pEventList = GameLoop::eventList;
+        pCurrent = pEventList->current;
+        pData = pCurrent->data;
+        if (pData == 0) {
+            break;
+        }
+        pHandler = (pCurrent != 0) ? (Handler*)pData : 0;
+        pHandler->ShutDown(0);
+        pEventList = GameLoop::eventList;
+        pCurrent = pEventList->current;
+        if (pEventList->tail == pCurrent) {
+            break;
+        }
+        if (pCurrent != 0) {
+            pEventList->current = pCurrent->next;
+        }
+        pEventList = GameLoop::eventList;
+    } while (pEventList->current != 0);
 }
 
 /* Function start: 0x417690 */
@@ -278,295 +529,6 @@ void GameLoop::ProcessInput() {
     }
 }
 
-/* Function start: 0x417320 */
-void GameLoop::Cleanup() {
-    Timer* pTimer;
-    EventList* pEventList;
-    EventNode* pNode;
-    EventNode* pNext;
-    EventNode* pPrev;
-    void* pData;
-
-    // Cleanup timer1
-    pTimer = timer1;
-    if (pTimer != 0) {
-        pTimer->~Timer();
-        operator delete(pTimer);
-        timer1 = 0;
-    }
-
-    // Cleanup timer2
-    pTimer = timer2;
-    if (pTimer != 0) {
-        pTimer->~Timer();
-        operator delete(pTimer);
-        timer2 = 0;
-    }
-
-    // Cleanup eventList
-    pEventList = eventList;
-    if (pEventList != 0) {
-        if (pEventList->head != 0) {
-            pEventList->current = pEventList->head;
-            if (pEventList->head != 0) {
-                do {
-                    pNode = pEventList->current;
-                    if (pNode == 0) {
-                        pData = 0;
-                    } else {
-                        // Unlink node from list - head check
-                        if (pEventList->head == pNode) {
-                            pEventList->head = pNode->next;
-                        }
-                        // Tail check
-                        pNode = pEventList->current;
-                        if (pEventList->tail == pNode) {
-                            pEventList->tail = pNode->prev;
-                        }
-                        // Update prev->next
-                        pNode = pEventList->current;
-                        pNext = pNode->prev;
-                        if (pNext != 0) {
-                            pNext->next = pNode->next;
-                        }
-                        // Update next->prev
-                        pNode = pEventList->current;
-                        pPrev = pNode->next;
-                        if (pPrev != 0) {
-                            pPrev->prev = pNode->prev;
-                        }
-                        // Save data and free node
-                        pNode = pEventList->current;
-                        pData = 0;
-                        if (pNode != 0) {
-                            pData = pNode->data;
-                            pNode->data = 0;
-                            pNode->prev = 0;
-                            pNode->next = 0;
-                            operator delete(pNode);
-                            pEventList->current = 0;
-                        }
-                        pEventList->current = pEventList->head;
-                    }
-                    if (pData != 0) {
-                        delete (Handler*)pData;
-                    }
-                } while (pEventList->head != 0);
-            }
-        }
-        operator delete(pEventList);
-        eventList = 0;
-    }
-
-    currentHandler = 0;
-}
-
-/* Function start: 0x417ED0 */
-void GameLoop::DrawFrame() {
-    EventList* pList;
-    EventNode* pNode;
-    void* pData;
-    Handler* pHandler;
-
-    pList = eventList;
-    pList->current = pList->head;
-    pList = eventList;
-    if (pList->current == 0) {
-        return;
-    }
-
-    do {
-        pList = eventList;
-        pNode = pList->current;
-        pData = pNode->data;
-        if (pData == 0) {
-            return;
-        }
-        pHandler = (pNode != 0) ? (Handler*)pData : 0;
-        pHandler->Update(0, currentHandler->handlerId);
-        pList = eventList;
-        pNode = pList->current;
-        if (pList->tail == pNode) {
-            return;
-        }
-        if (pNode != 0) {
-            pList->current = pNode->next;
-        }
-        pList = eventList;
-    } while (pList->current != 0);
-}
-
-/* Function start: 0x417450 */
-void GameLoop::CleanupLoop() {
-    ZBQueue* pQueue;
-    ZBQueue* pQueue9c;
-    void* pResult;
-    void* pData;
-    EventList* pEventList;
-    EventNode* pCurrent;
-    Handler* pHandler;
-
-    // Process queue at offset 0xa0 - simple delete
-    pQueue = g_ZBufferManager_0043698c->m_queueA0;
-    if (pQueue->head != 0) {
-        pQueue->current = pQueue->head;
-        while (pQueue->head != 0) {
-            pResult = pQueue->Pop();
-            if (pResult != 0) {
-                delete (SoundCommand*)pResult;
-            }
-        }
-    }
-
-    // Process queue at offset 0xa4 - cleanup with destructors
-    pQueue = g_ZBufferManager_0043698c->m_queueA4;
-    if (pQueue->head != 0) {
-        pQueue->current = pQueue->head;
-        while (pQueue->head != 0) {
-            DrawEntry* pEntry;
-            pEntry = (DrawEntry*)pQueue->Pop();
-            if (pEntry != 0) {
-                if (pEntry->m_videoBuffer != 0) {
-                    delete pEntry->m_videoBuffer;
-                    pEntry->m_videoBuffer = 0;
-                }
-                if (pEntry->m_childObject != 0) {
-                    delete (Animation*)pEntry->m_childObject;
-                    pEntry->m_childObject = 0;
-                }
-                operator delete(pEntry);
-            }
-        }
-    }
-
-    // Process queue at offset 0x9c - unlink and delete nodes
-    pQueue9c = g_ZBufferManager_0043698c->m_queue9c;
-    if (pQueue9c->head != 0) {
-        pQueue9c->current = pQueue9c->head;
-        while (pQueue9c->head != 0) {
-            if (pQueue9c->current == 0) {
-                pData = 0;
-            } else {
-                // Unlink from head
-                if (pQueue9c->head == pQueue9c->current) {
-                    pQueue9c->head = pQueue9c->current->next;
-                }
-                // Unlink from tail
-                if (pQueue9c->tail == pQueue9c->current) {
-                    pQueue9c->tail = pQueue9c->current->prev;
-                }
-                // Update prev->next
-                if (pQueue9c->current->prev != 0) {
-                    pQueue9c->current->prev->next = pQueue9c->current->next;
-                }
-                // Update next->prev
-                if (pQueue9c->current->next != 0) {
-                    pQueue9c->current->next->prev = pQueue9c->current->prev;
-                }
-                // Get data and cleanup node
-                pData = pQueue9c->GetCurrentData();
-                if (pQueue9c->current != 0) {
-                    delete pQueue9c->current;
-                    pQueue9c->current = 0;
-                }
-                pQueue9c->current = pQueue9c->head;
-            }
-            if (pData != 0) {
-                delete (RenderEntry*)pData;
-            }
-        }
-    }
-
-    // Process eventList - call ShutDown(0) on each handler
-    pEventList = GameLoop::eventList;
-    pEventList->current = pEventList->head;
-    pEventList = GameLoop::eventList;
-    if (pEventList->current == 0) {
-        return;
-    }
-
-    do {
-        pEventList = GameLoop::eventList;
-        pCurrent = pEventList->current;
-        pData = pCurrent->data;
-        if (pData == 0) {
-            break;
-        }
-        pHandler = (pCurrent != 0) ? (Handler*)pData : 0;
-        pHandler->ShutDown(0);
-        pEventList = GameLoop::eventList;
-        pCurrent = pEventList->current;
-        if (pEventList->tail == pCurrent) {
-            break;
-        }
-        if (pCurrent != 0) {
-            pEventList->current = pCurrent->next;
-        }
-        pEventList = GameLoop::eventList;
-    } while (pEventList->current != 0);
-}
-
-/* Function start: 0x417CB0 */
-void GameLoop::ProcessMessage(SC_Message* msg)
-{
-    int result;
-    EventList* pList;
-    EventNode* pNode;
-    unsigned int pData;
-
-    if (msg->priority == 5) {
-        if (msg->targetAddress != 3) {
-            result = 1;
-            HandleSystemMessage(msg);
-        }
-        else {
-            result = 1;
-            char* srcStr = g_GameState2_004369a4->GetState(msg->sourceAddress);
-            strcpy(g_StateString_00436994, srcStr);
-        }
-    }
-    else {
-        int targetAddr = msg->targetAddress;
-        if (targetAddr != 0 && targetAddr != 3) {
-            result = currentHandler->Exit(msg);
-            if (result == 0) {
-                pList = eventList;
-                pList->current = pList->head;
-                pNode = eventList->current;
-                if (pNode != 0) {
-                    do {
-                        pNode = eventList->current;
-                        pData = (unsigned int)pNode->data;
-                        if (pData == 0) break;
-                        result = ((Handler*)pData)->Exit(msg);
-                        if (result != 0) break;
-                        pList = eventList;
-                        pNode = pList->current;
-                        if (pList->tail == pNode) break;
-                        if (pNode != 0) {
-                            pList->current = pNode->next;
-                        }
-                        pNode = eventList->current;
-                    } while (pNode != 0);
-                }
-            }
-        } else if (targetAddr == 0) {
-            result = 1;
-        } else {
-            result = ProcessControlMessage(msg);
-        }
-    }
-
-    if (result == 0) {
-        Handler* pDefaultHandler = GetOrCreateHandler(msg->targetAddress);
-        if (pDefaultHandler->Exit(msg) == 0) {
-            msg->Dump(0);
-            WriteToMessageLog("lost message");
-            SC_Message_Send(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
-        }
-    }
-}
-
 /* Function start: 0x4179A0 */
 int GameLoop::UpdateGame()
 {
@@ -665,6 +627,129 @@ int GameLoop::UpdateGame()
 
     local_d8.SC_Message::~SC_Message();
     return local_14;
+}
+
+/* Function start: 0x417CB0 */
+void GameLoop::ProcessMessage(SC_Message* msg)
+{
+    int result;
+    EventList* pList;
+    EventNode* pNode;
+    unsigned int pData;
+
+    if (msg->priority == 5) {
+        if (msg->targetAddress != 3) {
+            result = 1;
+            HandleSystemMessage(msg);
+        }
+        else {
+            result = 1;
+            char* srcStr = g_GameState2_004369a4->GetState(msg->sourceAddress);
+            strcpy(g_StateString_00436994, srcStr);
+        }
+    }
+    else {
+        int targetAddr = msg->targetAddress;
+        if (targetAddr != 0 && targetAddr != 3) {
+            result = currentHandler->Exit(msg);
+            if (result == 0) {
+                pList = eventList;
+                pList->current = pList->head;
+                pNode = eventList->current;
+                if (pNode != 0) {
+                    do {
+                        pNode = eventList->current;
+                        pData = (unsigned int)pNode->data;
+                        if (pData == 0) break;
+                        result = ((Handler*)pData)->Exit(msg);
+                        if (result != 0) break;
+                        pList = eventList;
+                        pNode = pList->current;
+                        if (pList->tail == pNode) break;
+                        if (pNode != 0) {
+                            pList->current = pNode->next;
+                        }
+                        pNode = eventList->current;
+                    } while (pNode != 0);
+                }
+            }
+        } else if (targetAddr == 0) {
+            result = 1;
+        } else {
+            result = ProcessControlMessage(msg);
+        }
+    }
+
+    if (result == 0) {
+        Handler* pDefaultHandler = GetOrCreateHandler(msg->targetAddress);
+        if (pDefaultHandler->Exit(msg) == 0) {
+            msg->Dump(0);
+            WriteToMessageLog("lost message");
+            SC_Message_Send(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
+        }
+    }
+}
+
+/* Function start: 0x417E20 */
+int GameLoop::ProcessControlMessage(SC_Message* msg) {
+    if (msg->targetAddress != 3) {
+        return 0;
+    }
+    switch(msg->priority) {
+    case 6:
+        field_0x00 = 1;
+        return 1;
+    case 0x12:
+        field_0x08 = msg->sourceAddress;
+        return 1;
+    case 0x13:
+        GetOrCreateHandler(msg->sourceAddress);
+        return 1;
+    case 0x14:
+        RemoveHandler(msg->sourceAddress);
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+// -------------------------------------------------------------------------
+// Implementations of missing functions
+// -------------------------------------------------------------------------
+
+/* Function start: 0x417ED0 */
+void GameLoop::DrawFrame() {
+    EventList* pList;
+    EventNode* pNode;
+    void* pData;
+    Handler* pHandler;
+
+    pList = eventList;
+    pList->current = pList->head;
+    pList = eventList;
+    if (pList->current == 0) {
+        return;
+    }
+
+    do {
+        pList = eventList;
+        pNode = pList->current;
+        pData = pNode->data;
+        if (pData == 0) {
+            return;
+        }
+        pHandler = (pNode != 0) ? (Handler*)pData : 0;
+        pHandler->Update(0, currentHandler->targetAddress);
+        pList = eventList;
+        pNode = pList->current;
+        if (pList->tail == pNode) {
+            return;
+        }
+        if (pNode != 0) {
+            pList->current = pNode->next;
+        }
+        pList = eventList;
+    } while (pList->current != 0);
 }
 
 /* Function start: 0x417F40 */
@@ -777,7 +862,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                 while (pList->current != 0) {
                     pNode = pList->current;
                     pData = (Handler*)pNode->data;
-                    if (pData->handlerId < handler->handlerId) {
+                    if (pData->targetAddress < handler->targetAddress) {
                         pList->InsertNode(handler);
                         break;
                     }
@@ -824,89 +909,91 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x417E20 */
-int GameLoop::ProcessControlMessage(SC_Message* msg) {
-    if (msg->targetAddress != 3) {
-        return 0;
+/* Function start: 0x418200 */
+int GameLoop::AddHandler(void* handler) {
+    EventList* list;
+    EventNode* current;
+    void* data;
+    EventNode* newNode;
+    EventNode* nodePtr;
+    
+    // Check handler not null
+    if (handler == 0) {
+        ShowError("illegal modual insertion");
     }
-    switch(msg->priority) {
-    case 6:
-        field_0x00 = 1;
-        return 1;
-    case 0x12:
-        field_0x08 = msg->sourceAddress;
-        return 1;
-    case 0x13:
-        GetOrCreateHandler(msg->sourceAddress);
-        return 1;
-    case 0x14:
-        RemoveHandler(msg->sourceAddress);
-        return 1;
-    default:
-        return 0;
+    
+    // Get eventList
+    list = eventList;
+    
+    // Check list not null (uses handler as check, matches disasm)
+    if (handler == 0) {
+        ShowError("queue fault 0103");
     }
+    
+    // Set current to head for duplicate check
+    list->current = list->head;
+    
+    // First loop: check for duplicates
+    while (list->current != 0) {
+        current = list->current;
+        data = 0;
+        if (current != 0) {
+            data = current->data;
+        }
+        // Compare handler IDs at offset 0x88
+        if (((Handler*)data)->targetAddress == ((Handler*)handler)->targetAddress) {
+            ShowError("illegal modual insertion double");
+            return 0;
+        }
+        // Check if at tail
+        if (list->tail == current) {
+            break;
+        }
+        // Move to next (via offset 4)
+        if (current != 0) {
+            list->current = current->next;
+        }
+    }
+    
+    // Reset for insertion
+    list = eventList;
+    if (handler == 0) {
+        ShowError("queue fault 0101");
+    }
+    list->current = list->head;
+    
+    // Check list type
+    if (list->type == 1 || list->type == 2) {
+        // Priority-based insertion for type 1 or 2
+        if (list->head == 0) {
+            list->InsertNode(handler);
+        } else {
+            // Priority insertion loop
+            while (list->current != 0) {
+                current = list->current;
+                data = current->data;
+                // Compare priority at offset 0x88
+                if (((Handler*)data)->targetAddress < ((Handler*)handler)->targetAddress) {
+                    list->Insert(handler);
+                    break;
+                }
+                // Check if at tail
+                if (list->tail == current) {
+                    list->Push(handler);
+                    break;
+                }
+                // Move to next
+                if (current != 0) {
+                    list->current = current->next;
+                }
+            }
+        }
+    } else {
+        list->InsertNode(handler);
+    }
+    
+    return 1;
 }
-
-// -------------------------------------------------------------------------
-// Implementations of missing functions
-// -------------------------------------------------------------------------
-
-/* Function start: 0x40CDD0 */
-Handler* CreateHandler(int command) {
-    Handler* handler = 0;
-
-    switch(command) {
-    case 1:
-        handler = new Handler1();
-        break;
-    case 2:
-        handler = new Handler2();
-        break;
-    case 4:
-        handler = new Handler4();
-        break;
-    case 5:
-        handler = new SearchScreen();
-        break;
-    case 6:
-        handler = new Handler6();
-        break;
-    case 8:
-        handler = new Handler8();
-        break;
-    case 9:
-        handler = new SCI_Dialog();
-        break;
-    case 10:
-        handler = new SCI_AfterSchoolMenu();
-        break;
-    case 11:
-        handler = new SCI_SearchScreen();
-        break;
-    case 12:
-        handler = new Handler12();
-        break;
-    case 13:
-        handler = new Handler13();
-        break;
-    case 14:
-        handler = new SC_Sound();
-        break;
-    case 15:
-        handler = new SC_OnScreenMessage();
-        break;
-    case 16:
-        handler = new SC_Combat1();
-        break;
-    default:
-        ShowError("Unknown modual %d", command);
-        handler = 0;
-        break;
-    }
-    return handler;
-}
-
-// Base handler class for vtable calls - moved to top
 
 
 /* Function start: 0x418460 */
@@ -974,6 +1061,16 @@ int GameLoop::RemoveHandler(int command) {
     return 0;
 }
 
+/* Function start: 0x418510 */
+Handler* GameLoop::GetOrCreateHandler(int command) {
+    Handler* handler = CreateHandler(command);
+    if (handler != 0) {
+        AddHandler(handler);
+    }
+    return handler;
+}
+
+
 /* Function start: 0x418540 */
 int GameLoop::FindHandlerInEventList(int command) {
     EventList* list;
@@ -994,7 +1091,7 @@ int GameLoop::FindHandlerInEventList(int command) {
         node = list->current;
         if (node != 0) {
             data = node->data;
-            if (command == ((Handler*)data)->handlerId) {
+            if (command == ((Handler*)data)->targetAddress) {
                 goto found;
             }
         } else {
@@ -1021,101 +1118,4 @@ found:
     }
     return 0;
 }
-
-/* Function start: 0x418200 */
-int GameLoop::AddHandler(void* handler) {
-    EventList* list;
-    EventNode* current;
-    void* data;
-    EventNode* newNode;
-    EventNode* nodePtr;
-    
-    // Check handler not null
-    if (handler == 0) {
-        ShowError("illegal modual insertion");
-    }
-    
-    // Get eventList
-    list = eventList;
-    
-    // Check list not null (uses handler as check, matches disasm)
-    if (handler == 0) {
-        ShowError("queue fault 0103");
-    }
-    
-    // Set current to head for duplicate check
-    list->current = list->head;
-    
-    // First loop: check for duplicates
-    while (list->current != 0) {
-        current = list->current;
-        data = 0;
-        if (current != 0) {
-            data = current->data;
-        }
-        // Compare handler IDs at offset 0x88
-        if (((Handler*)data)->handlerId == ((Handler*)handler)->handlerId) {
-            ShowError("illegal modual insertion double");
-            return 0;
-        }
-        // Check if at tail
-        if (list->tail == current) {
-            break;
-        }
-        // Move to next (via offset 4)
-        if (current != 0) {
-            list->current = current->next;
-        }
-    }
-    
-    // Reset for insertion
-    list = eventList;
-    if (handler == 0) {
-        ShowError("queue fault 0101");
-    }
-    list->current = list->head;
-    
-    // Check list type
-    if (list->type == 1 || list->type == 2) {
-        // Priority-based insertion for type 1 or 2
-        if (list->head == 0) {
-            list->InsertNode(handler);
-        } else {
-            // Priority insertion loop
-            while (list->current != 0) {
-                current = list->current;
-                data = current->data;
-                // Compare priority at offset 0x88
-                if (((Handler*)data)->handlerId < ((Handler*)handler)->handlerId) {
-                    list->Insert(handler);
-                    break;
-                }
-                // Check if at tail
-                if (list->tail == current) {
-                    list->Push(handler);
-                    break;
-                }
-                // Move to next
-                if (current != 0) {
-                    list->current = current->next;
-                }
-            }
-        }
-    } else {
-        list->InsertNode(handler);
-    }
-    
-    return 1;
-}
-
-
-/* Function start: 0x418510 */
-Handler* GameLoop::GetOrCreateHandler(int command) {
-    Handler* handler = CreateHandler(command);
-    if (handler != 0) {
-        AddHandler(handler);
-    }
-    return handler;
-}
-
 

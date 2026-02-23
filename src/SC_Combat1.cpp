@@ -53,7 +53,7 @@ SC_Combat1::SC_Combat1() {
 
     // Set default screen dimensions
     *pA8 = 0x140;   // 320
-    handlerId = 16;
+    targetAddress = 16;
     screenDim.y = 0xc8;   // 200
 }
 
@@ -80,7 +80,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     }
 
     WriteToMessageLog("ENTER COMBAT1");
-    CopyCommandData(msg);
+    Handler::Init(msg);
 
     pZBuf = g_ZBufferManager_0043698c;
     savedRendererState = pZBuf->m_state;
@@ -114,7 +114,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     pZBuf->m_queue9c->ClearList();
 
     if (msg != 0) {
-        moduleParam = msg->data;
+        sourceAddress = msg->data;
     }
 
     // Save screen position and initialize combat buffer
@@ -248,7 +248,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
 }
 
 int SC_Combat1::AddMessage(SC_Message* msg) {
-    WriteMessageAddress(msg);
+    Handler::AddMessage(msg);
     WriteToMessageLog("SC_Combat1");
     return 1;
 }
@@ -260,7 +260,7 @@ void SC_Combat1::Update(int param1, int param2) {
     if (field_98 == 0) {
         return;
     }
-    if (handlerId != param2) {
+    if (targetAddress != param2) {
         return;
     }
 
@@ -373,7 +373,7 @@ void SC_Combat1::ProcessMessage()
         }
         return;
     }
-    SC_Message_Send(SC_Combat1::savedCommand, SC_Combat1::savedMsgData, SC_Combat1::handlerId, SC_Combat1::moduleParam, 5, 0, 0, 0, 0, 0);
+    SC_Message_Send(SC_Combat1::command, SC_Combat1::data, SC_Combat1::targetAddress, SC_Combat1::sourceAddress, 5, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x410E80 */

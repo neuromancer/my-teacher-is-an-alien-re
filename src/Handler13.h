@@ -14,7 +14,7 @@
 //
 // Layout:
 //   0x00-0x87: Parser base class (via Handler)
-//   0x88-0x9F: Handler fields (handlerId + 5 fields, zeroed)
+//   0x88-0x9F: Handler fields (targetAddress + 5 fields, zeroed)
 //   0xA0-0xB3: Timer timer1 (size 0x14)
 //   0xB4-0xC7: Timer timer2 (size 0x14)
 //   0xC8: MessageList* list

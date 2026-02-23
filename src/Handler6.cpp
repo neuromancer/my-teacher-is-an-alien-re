@@ -24,8 +24,8 @@ Handler6::Handler6() {
     // EDI pointed to this+0x600, then rep stosd with ECX=0x10
     memset(&palette, 0, 0x40);
 
-    // Set handlerId at offset 0x88 to 6
-    handlerId = 6;
+    // Set targetAddress at offset 0x88 to 6
+    targetAddress = 6;
 }
 
 /* Function start: 0x404560 */
@@ -159,13 +159,13 @@ int Handler6::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x404870 */
 int Handler6::Exit(SC_Message* msg) {
-    return handlerId == msg->targetAddress;
+    return targetAddress == msg->targetAddress;
 }
 
 /* Function start: 0x404890 */
 void Handler6::Update(int param1, int param2) {
     // Check if this is for us
-    if (handlerId != param2) {
+    if (targetAddress != param2) {
         return;
     }
 

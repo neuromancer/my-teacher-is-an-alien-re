@@ -12,6 +12,22 @@ static int g_VBufferHandleTable[0x20];
 
 
 
+/* Function start: 0x41A8C0 */
+extern "C" void InitWorkBuffer(int width, int height)
+{
+    if (g_WorkBuffer_00436974 != 0) {
+        delete g_WorkBuffer_00436974;
+        g_WorkBuffer_00436974 = 0;
+    }
+
+    g_WorkBuffer_00436974 = new VBuffer(width, height);
+    if (g_WorkBuffer_00436974->handle != 0) {
+        ShowError("workbuff must be first vb created '%d'", g_WorkBuffer_00436974->handle);
+    }
+    g_WorkBuffer_00436974->SetVideoMode();
+    g_WorkBuffer_00436974->ClearScreen(0);
+}
+
 /* Function start: 0x41A9A0 */
 void InitVBufferHandleTable(void)
 {
@@ -52,22 +68,6 @@ extern "C" {
     void BlitBufferOpaque(int, int, int, int, int, int, unsigned int, unsigned int);
     void BlitBufferTransparent(int, int, int, int, int, int, unsigned int, unsigned int);
     void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
-}
-
-/* Function start: 0x41A8C0 */
-extern "C" void InitWorkBuffer(int width, int height)
-{
-    if (g_WorkBuffer_00436974 != 0) {
-        delete g_WorkBuffer_00436974;
-        g_WorkBuffer_00436974 = 0;
-    }
-
-    g_WorkBuffer_00436974 = new VBuffer(width, height);
-    if (g_WorkBuffer_00436974->handle != 0) {
-        ShowError("workbuff must be first vb created '%d'", g_WorkBuffer_00436974->handle);
-    }
-    g_WorkBuffer_00436974->SetVideoMode();
-    g_WorkBuffer_00436974->ClearScreen(0);
 }
 
 /* Function start: 0x41a9f0 */
@@ -231,31 +231,6 @@ void VBuffer::TPaste(int param_1, int param_2, int param_3, int param_4, int par
 }
 
 
-/* Function start: 0x41B310 */
-void __cdecl BlitTransparentRows(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor)
-{
-    int width;
-    int height;
-    char* srcRow;
-    char* destRow;
-
-    width = (srcX2 - srcX1) + 1;
-    height = (srcY2 - srcY1) + 1;
-
-    srcRow = (char*)srcBuffer->GetData() + (srcBuffer->clip_y2 - srcY2) * srcBuffer->width + srcX1;
-
-    destRow = (char*)destBuffer->GetData() + (destBuffer->clip_y2 - destY) * destBuffer->width + destX;
-
-    for (; height > 0; height--) {
-        CopyRowTransparent(destRow, srcRow, width, transparentColor, fillColor);
-        destRow += destBuffer->width;
-        srcRow += srcBuffer->width;
-    }
-
-    destBuffer->Lock();
-    srcBuffer->Lock();
-}
-
 /* Function start: 0x41ad50 */
 void VBuffer::BlitTransparent(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, char param_7, char param_8)
 {
@@ -341,6 +316,60 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
         BlitBufferTransparent(local_20.left, local_20.right, local_20.top, local_20.bottom, param_1, param_2, local_10, handle);
         ReleaseBufferEntry(local_10);
     }
+}
+
+/* Function start: 0x41B2C0 */
+void CopyRowTransparent(char* dest, char* src, int count, char transparentColor, char fillColor)
+{
+    if (count != 0) {
+        do {
+            while (*src == 0) {
+                dest++;
+                src++;
+                count--;
+                if (count == 0) {
+                    return;
+                }
+            }
+            do {
+                if (count == 0) {
+                    return;
+                }
+                char pixel = *src;
+                *dest = fillColor;
+                if (pixel != transparentColor) {
+                    *dest = pixel;
+                }
+                dest++;
+                src++;
+                count--;
+            } while (*src != 0);
+        } while (count != 0);
+    }
+}
+/* Function start: 0x41B310 */
+void __cdecl BlitTransparentRows(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor)
+{
+    int width;
+    int height;
+    char* srcRow;
+    char* destRow;
+
+    width = (srcX2 - srcX1) + 1;
+    height = (srcY2 - srcY1) + 1;
+
+    srcRow = (char*)srcBuffer->GetData() + (srcBuffer->clip_y2 - srcY2) * srcBuffer->width + srcX1;
+
+    destRow = (char*)destBuffer->GetData() + (destBuffer->clip_y2 - destY) * destBuffer->width + destX;
+
+    for (; height > 0; height--) {
+        CopyRowTransparent(destRow, srcRow, width, transparentColor, fillColor);
+        destRow += destBuffer->width;
+        srcRow += srcBuffer->width;
+    }
+
+    destBuffer->Lock();
+    srcBuffer->Lock();
 }
 
 /* Function start: 0x41B3B0 */
@@ -446,32 +475,3 @@ int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* para
     return result;
 }
 
-/* Function start: 0x41B2C0 */
-void CopyRowTransparent(char* dest, char* src, int count, char transparentColor, char fillColor)
-{
-    if (count != 0) {
-        do {
-            while (*src == 0) {
-                dest++;
-                src++;
-                count--;
-                if (count == 0) {
-                    return;
-                }
-            }
-            do {
-                if (count == 0) {
-                    return;
-                }
-                char pixel = *src;
-                *dest = fillColor;
-                if (pixel != transparentColor) {
-                    *dest = pixel;
-                }
-                dest++;
-                src++;
-                count--;
-            } while (*src != 0);
-        } while (count != 0);
-    }
-}

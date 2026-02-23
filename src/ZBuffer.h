@@ -14,15 +14,9 @@ public:
     char pad2[0xa0 - 0x8c - 4];
     Timer timer; // 0xa0
 
-    // Virtual method overrides
+    // Virtual method override
     virtual int LBLParse(char* param_1);
-    virtual int ShutDown(Message* msg);
-    virtual int Exit(Message* msg);
-    virtual void OnInput(Message* msg);
 
-    void Update(int, int);
-    int AddMessage(int);
-    int ProcessMessage(Message* msg);
     ~ZBuffer();
     void CleanUpVBuffer();
 };

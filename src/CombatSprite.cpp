@@ -112,98 +112,6 @@ void* SpriteHashTable::AllocateNode() {
     return node;
 }
 
-/* Function start: 0x415c10 */
-void* SpriteHashTable::Lookup(volatile int index, int* outSlot) {
-    unsigned int slot;
-    int* node;
-
-    slot = ((unsigned int)index >> 4) % (unsigned int)SpriteHashTable::maxSize;
-    *outSlot = slot;
-
-    if (SpriteHashTable::buckets == 0) {
-        return 0;
-    }
-
-    node = (int*)((int*)SpriteHashTable::buckets)[slot];
-
-loop:
-    if (node == 0) goto not_found;
-    if (node[2] == index) return node;
-    node = (int*)*node;
-    goto loop;
-
-not_found:
-    return 0;
-}
-
-/* Function start: 0x415c50 */
-void SpriteHashTable::Resize(int size, int flag) {
-    int* newBuckets;
-    int count;
-
-    if (SpriteHashTable::buckets != 0) {
-        delete SpriteHashTable::buckets;
-        SpriteHashTable::buckets = 0;
-    }
-
-    if (flag != 0) {
-        newBuckets = (int*)new char[size * 4];
-        count = (size * 4) >> 2;
-        SpriteHashTable::buckets = (void**)newBuckets;
-        for (; count != 0; count--) {
-            *newBuckets = 0;
-            newBuckets++;
-        }
-        SpriteHashTable::maxSize = size;
-        return;
-    }
-    SpriteHashTable::maxSize = size;
-}
-
-/* Function start: 0x415cb0 */
-void* SpriteHashTable::AllocEntry() {
-    int* newPool;
-    int* node;
-    int i;
-    int delayCounter;
-
-    if (SpriteHashTable::tail == 0) {
-        newPool = (int*)AllocateMemory(SpriteHashTable::growSize * 16 + 4);
-        *newPool = SpriteHashTable::count;
-        i = SpriteHashTable::growSize;
-        SpriteHashTable::count = (int)newPool;
-        node = (int*)((char*)newPool + i * 16 - 12);
-        i = i - 1;
-        if (i >= 0) {
-            do {
-                i = i - 1;
-                *node = (int)SpriteHashTable::tail;
-                SpriteHashTable::tail = node;
-                node = node - 4;
-            } while (i >= 0);
-        }
-    }
-
-    node = (int*)SpriteHashTable::tail;
-    delayCounter = 0;
-    SpriteHashTable::tail = (void*)*node;
-    SpriteHashTable::head = (void*)((int)SpriteHashTable::head + 1);
-    node[2] = delayCounter;
-    do {
-        int temp = delayCounter;
-        delayCounter = delayCounter - 1;
-        if (temp == 0) break;
-    } while (1);
-    delayCounter = 0;
-    node[3] = delayCounter;
-    do {
-        int temp = delayCounter;
-        delayCounter = delayCounter - 1;
-        if (temp == 0) break;
-    } while (1);
-    return node;
-}
-
 /* Function start: 0x415340 */
 void FreePointerArray(void** arr, int count) {
     int temp;
@@ -638,3 +546,95 @@ loop:
 done:
     return count;
 }
+/* Function start: 0x415c10 */
+void* SpriteHashTable::Lookup(volatile int index, int* outSlot) {
+    unsigned int slot;
+    int* node;
+
+    slot = ((unsigned int)index >> 4) % (unsigned int)SpriteHashTable::maxSize;
+    *outSlot = slot;
+
+    if (SpriteHashTable::buckets == 0) {
+        return 0;
+    }
+
+    node = (int*)((int*)SpriteHashTable::buckets)[slot];
+
+loop:
+    if (node == 0) goto not_found;
+    if (node[2] == index) return node;
+    node = (int*)*node;
+    goto loop;
+
+not_found:
+    return 0;
+}
+
+/* Function start: 0x415c50 */
+void SpriteHashTable::Resize(int size, int flag) {
+    int* newBuckets;
+    int count;
+
+    if (SpriteHashTable::buckets != 0) {
+        delete SpriteHashTable::buckets;
+        SpriteHashTable::buckets = 0;
+    }
+
+    if (flag != 0) {
+        newBuckets = (int*)new char[size * 4];
+        count = (size * 4) >> 2;
+        SpriteHashTable::buckets = (void**)newBuckets;
+        for (; count != 0; count--) {
+            *newBuckets = 0;
+            newBuckets++;
+        }
+        SpriteHashTable::maxSize = size;
+        return;
+    }
+    SpriteHashTable::maxSize = size;
+}
+
+/* Function start: 0x415cb0 */
+void* SpriteHashTable::AllocEntry() {
+    int* newPool;
+    int* node;
+    int i;
+    int delayCounter;
+
+    if (SpriteHashTable::tail == 0) {
+        newPool = (int*)AllocateMemory(SpriteHashTable::growSize * 16 + 4);
+        *newPool = SpriteHashTable::count;
+        i = SpriteHashTable::growSize;
+        SpriteHashTable::count = (int)newPool;
+        node = (int*)((char*)newPool + i * 16 - 12);
+        i = i - 1;
+        if (i >= 0) {
+            do {
+                i = i - 1;
+                *node = (int)SpriteHashTable::tail;
+                SpriteHashTable::tail = node;
+                node = node - 4;
+            } while (i >= 0);
+        }
+    }
+
+    node = (int*)SpriteHashTable::tail;
+    delayCounter = 0;
+    SpriteHashTable::tail = (void*)*node;
+    SpriteHashTable::head = (void*)((int)SpriteHashTable::head + 1);
+    node[2] = delayCounter;
+    do {
+        int temp = delayCounter;
+        delayCounter = delayCounter - 1;
+        if (temp == 0) break;
+    } while (1);
+    delayCounter = 0;
+    node[3] = delayCounter;
+    do {
+        int temp = delayCounter;
+        delayCounter = delayCounter - 1;
+        if (temp == 0) break;
+    } while (1);
+    return node;
+}
+
