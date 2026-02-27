@@ -83,6 +83,11 @@ Engine::Engine() {
   Engine::Initialize();
 }
 
+/* Function start: 0x4111D0 */
+Engine::~Engine() {
+  CleanupSubsystems();
+}
+
 /* Function start: 0x411230 */
 void Engine::SetupViewport() {
   int height;
@@ -232,6 +237,11 @@ void Engine::Draw() {
   }
 }
 void Engine::UpdateMeter() {}
+/* Function start: 0x411540 */
+void Engine::VirtCleanup() {
+  g_GameOutcome_00435f28->PlayOutcomeVideo();
+}
+
 /* Function start: 0x411550 */
 void Engine::Initialize() {
   Engine::m_weapon = new Weapon();
@@ -246,6 +256,55 @@ void Engine::Initialize() {
   Engine::m_gameOutcome = new GameOutcome();
 
   CopyToGlobals();
+}
+
+/* Function start: 0x411A40 */
+void Engine::CleanupSubsystems() {
+  if (Engine::m_consoleSprite != 0) {
+    delete Engine::m_consoleSprite;
+    Engine::m_consoleSprite = 0;
+  }
+  if (Engine::m_gameOutcome != 0) {
+    delete Engine::m_gameOutcome;
+    Engine::m_gameOutcome = 0;
+  }
+  if (Engine::m_navigator != 0) {
+    delete Engine::m_navigator;
+    Engine::m_navigator = 0;
+  }
+  if (Engine::m_timerManager != 0) {
+    delete Engine::m_timerManager;
+    Engine::m_timerManager = 0;
+  }
+  if (Engine::m_cursorState != 0) {
+    delete Engine::m_cursorState;
+    Engine::m_cursorState = 0;
+  }
+  if (Engine::m_targetList != 0) {
+    delete Engine::m_targetList;
+    Engine::m_targetList = 0;
+  }
+  if (Engine::m_engineInfoParser != 0) {
+    delete Engine::m_engineInfoParser;
+    Engine::m_engineInfoParser = 0;
+  }
+  if (Engine::m_combatSprite != 0) {
+    delete Engine::m_combatSprite;
+    Engine::m_combatSprite = 0;
+  }
+  if (Engine::m_viewport != 0) {
+    delete Engine::m_viewport;
+    Engine::m_viewport = 0;
+  }
+  if (Engine::m_soundList != 0) {
+    delete Engine::m_soundList;
+    Engine::m_soundList = 0;
+  }
+  if (Engine::m_weapon != 0) {
+    delete Engine::m_weapon;
+    Engine::m_weapon = 0;
+  }
+  Engine::ClearGlobals();
 }
 
 /* Function start: 0x411CA0 */
@@ -343,7 +402,4 @@ int Engine::LBLParse(char* line) {
   return 0;
 }
 
-// Stub implementations for virtual methods (to be implemented later)
-Engine::~Engine() {}
-void Engine::CleanupSubsystems() {}
-void Engine::VirtCleanup() {}
+

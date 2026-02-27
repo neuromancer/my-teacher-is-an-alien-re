@@ -606,3 +606,53 @@ int SCI_Dialog::LBLParse(char* line) {
     return 0;
 }
 
+/* Function start: 0x4085D0 */
+void SCI_Dialog::OnInput(SC_Message* msg) {
+    QueueNode* node;
+    SC_Question* dq;
+    Queue* queue;
+
+    WriteToMessageLog("\tDIALOG");
+
+    if (field_600 != 0) {
+        WriteToMessageLog("\tBACKGROUND");
+        field_600->Dump(0);
+    }
+
+    if (field_608 != 0) {
+        WriteToMessageLog("\tBUTTON");
+        field_608->Dump(0);
+    }
+
+    if (field_60C != 0) {
+        WriteToMessageLog("\tHILITE");
+        field_60C->Dump(0);
+    }
+
+    queue = field_610;
+    if (queue != 0 && queue->head != 0) {
+        WriteToMessageLog("active Questions");
+        queue = field_610;
+        queue->current = queue->head;
+        if (queue->current != 0) {
+            do {
+                dq = 0;
+                node = (QueueNode*)queue->current;
+                if (node != 0) {
+                    dq = (SC_Question*)node->data;
+                }
+                dq->DumpMessageQueue(0);
+
+                node = (QueueNode*)queue->current;
+                if (queue->tail == (void*)node) break;
+                if (node != 0) {
+                    queue->current = node->next;
+                }
+            } while (queue->current != 0);
+        }
+        WriteToMessageLog("end queue dump");
+    }
+
+    WriteToMessageLog("\n");
+}
+

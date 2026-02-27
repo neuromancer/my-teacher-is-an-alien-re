@@ -29,6 +29,7 @@ public:
     void Init();            // 0x41F4F0
     void StopAll();         // 0x41F480
     int Draw();            // 0x41F800
+    void Dump(int param);  // 0x41F9D0
     void AddSprite(Sprite* s);  // 0x41F560
 
     int field_0x88;           // 0x88

@@ -542,7 +542,7 @@ int Sprite::LBLParse(char* param_1)
 }
 
 /* Function start: 0x41E010 */
-void Sprite::Dump()
+void Sprite::Dump(int param)
 {
     int i;
     WriteToMessageLog("FNAME: %s", sprite_filename);

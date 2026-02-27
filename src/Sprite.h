@@ -42,7 +42,7 @@ public:
     void Init();
     void InitAnimation();
     virtual int LBLParse(char* param_1);
-    void Dump();
+    void Dump(int param);
     int Do(int, int, double);
     void FreeAnimation();
     void StopAnimationSound();

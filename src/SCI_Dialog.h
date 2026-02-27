@@ -39,6 +39,7 @@ public:
     virtual int ShutDown(SC_Message* msg);
     virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
+    virtual void OnInput(SC_Message* msg);
     virtual int LBLParse(char* line);
 
     // SCI_Dialog-specific methods

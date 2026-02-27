@@ -183,3 +183,40 @@ int MMPlayer::LBLParse(char* param_1)
     }
     return 0;
 }
+
+/* Function start: 0x41F9D0 */
+void MMPlayer::Dump(int param)
+{
+    Sprite* sprite;
+    QueueNode* node;
+    ZBQueue* queue;
+
+    queue = m_queue;
+    queue->current = queue->head;
+    queue = m_queue;
+    if (queue->head == 0) goto done;
+    param++;
+
+    do {
+        WriteToMessageLog("\t\tSPRITE");
+        queue = m_queue;
+        sprite = 0;
+        node = (QueueNode*)queue->current;
+        if (node != 0) {
+            sprite = (Sprite*)node->data;
+        }
+        sprite->Dump(param);
+
+        queue = m_queue;
+        node = (QueueNode*)queue->current;
+        if (queue->tail == (void*)node) goto done;
+        if (node != 0) {
+            queue->current = node->next;
+        }
+
+        queue = m_queue;
+    } while (queue->head != 0);
+
+done:
+    WriteToMessageLog("\t\tEND\t\t//mmplayer");
+}

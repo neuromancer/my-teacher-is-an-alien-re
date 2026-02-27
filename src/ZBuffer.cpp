@@ -43,8 +43,7 @@ void Parser::OnProcessStart() {}
 void Parser::OnProcessEnd() {}
 
 /* Function start: 0x401100 */
-Handler::~Handler() {
-}
+Handler::~Handler() {}
 
 /* Function start: 0x401150 */
 int Handler::ShutDown(SC_Message* msg)

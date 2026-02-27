@@ -28,9 +28,11 @@ extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.c
 
 
 /* Function start: 0x410610 */
-int SC_Combat1::Exit(SC_Message* msg) {
-    memset(&DAT_0043d130, 0, 16);
-    return 0;
+void ClearSavedClipBounds() {
+    DAT_0043d130 = 0;
+    DAT_0043d134 = 0;
+    DAT_0043d138 = 0;
+    DAT_0043d13c = 0;
 }
 
 /* Function start: 0x410650 */
@@ -247,12 +249,6 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     return 0;
 }
 
-int SC_Combat1::AddMessage(SC_Message* msg) {
-    Handler::AddMessage(msg);
-    WriteToMessageLog("SC_Combat1");
-    return 1;
-}
-
 /* Function start: 0x410B00 */
 void SC_Combat1::Update(int param1, int param2) {
     int result;
@@ -269,6 +265,47 @@ void SC_Combat1::Update(int param1, int param2) {
     if (result != 0) {
         ProcessMessage();
     }
+}
+
+/* Function start: 0x410B40 */
+int SC_Combat1::AddMessage(SC_Message* msg) {
+    msg->command = targetAddress;
+    msg->data = sourceAddress;
+    msg->priority = 0;
+    if (msg->lastKey == 0x1b) {
+        ProcessMessage();
+    }
+    return 1;
+}
+
+/* Function start: 0x410B80 */
+int SC_Combat1::Exit(SC_Message* msg) {
+    SC_Message* script;
+
+    if (msg->targetAddress != targetAddress) {
+        return 0;
+    }
+
+    if (msg->priority != 0) {
+        if (msg->priority != 0x13) {
+            return 0;
+        }
+
+        script = (SC_Message*)scriptParser;
+        if (script != 0) {
+            delete script;
+            scriptParser = 0;
+        }
+
+        if (msg->userPtr != 0) {
+            scriptParser = (Parser*)msg->userPtr;
+            msg->userPtr = 0;
+        } else {
+            scriptParser = (Parser*)new SC_Message(command, data, targetAddress, sourceAddress, 5, 0, 0, 0, 0, 0);
+        }
+    }
+
+    return 1;
 }
 
 // MessageQueueItem structure (size 0xC8 = 200 bytes)

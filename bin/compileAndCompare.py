@@ -64,7 +64,17 @@ def read_assembly(function_name, file_path):
             else:
                 return None
         else:
-            return None
+            # Try to find C++ mangled name via comment: ; Class::Method
+            proc_match = re.search(rf'\S+ PROC NEAR\s+;\s*{re.escape(function_name)}', assembly)
+            if proc_match:
+                # Extract the mangled name from the match
+                mangled = proc_match.group(0).split(' PROC NEAR')[0]
+                assembly = assembly.split(proc_match.group(0))[1]
+                endp_marker = f"{mangled} ENDP"
+                if endp_marker in assembly:
+                    assembly = assembly.split(endp_marker)[0]
+            else:
+                return None
 
     # Discard the lines that start with ";"
     assembly = "\n".join([line for line in assembly.split("\n") if not line.strip().startswith(";")])
@@ -297,8 +307,12 @@ def parse_mnemonics(assembly_code):
             parts = line.split()
             if not parts:
                 continue
-            
+
             mnemonic = parts[0]
+
+            # Skip alignment padding directives
+            if mnemonic == 'npad':
+                continue
 
             # Handle Ghidra style .rep/.repne/.repe suffix
             if mnemonic.endswith('.rep'):

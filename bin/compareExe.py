@@ -371,7 +371,7 @@ def normalize_function_bytes(data, base_addr):
     """Disassemble function bytes and extract normalized opcode sequence.
 
     Returns list of (mnemonic, op_str, size, raw_bytes) tuples.
-    Masks absolute address operands for comparison.
+    Strips trailing alignment padding (instructions after the last ret).
     """
     if not HAS_CAPSTONE or data is None:
         return None
@@ -381,6 +381,18 @@ def normalize_function_bytes(data, base_addr):
     instructions = []
     for insn in md.disasm(data, base_addr):
         instructions.append((insn.mnemonic, insn.op_str, insn.size, insn.bytes))
+
+    # Strip trailing alignment padding: remove instructions after the last ret.
+    # MSVC fills gaps between functions with npad (multi-byte NOPs) which appear
+    # after the function's final ret. Without /Gy, these get included in the
+    # function's byte range (since size = distance to next function).
+    last_ret = -1
+    for i, (mn, _, _, _) in enumerate(instructions):
+        if mn == 'ret':
+            last_ret = i
+    if last_ret >= 0 and last_ret < len(instructions) - 1:
+        instructions = instructions[:last_ret + 1]
+
     return instructions
 
 
@@ -715,6 +727,19 @@ def report_detail(orig_file, recomp_file, map_dir, map_file, src_dir, target_add
 
     orig_insns = list(md.disasm(orig_bytes, target_addr))
     recomp_insns = list(md.disasm(recomp_bytes, recomp_addr))
+
+    # Strip trailing padding after last ret
+    def _strip_padding(insns):
+        last_ret = -1
+        for i, insn in enumerate(insns):
+            if insn.mnemonic == 'ret':
+                last_ret = i
+        if last_ret >= 0 and last_ret < len(insns) - 1:
+            return insns[:last_ret + 1]
+        return insns
+
+    orig_insns = _strip_padding(orig_insns)
+    recomp_insns = _strip_padding(recomp_insns)
 
     print(f"  Instructions: {len(orig_insns)} (orig) vs {len(recomp_insns)} (recomp)")
     print()
