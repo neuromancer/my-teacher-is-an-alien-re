@@ -160,6 +160,7 @@ struct EventList : public LinkedList {
 
     // Non-inline to force CALL (generates COMDAT per compilation unit)
     void InsertNode(void* data);
+    void* RemoveCurrent();
 };
 
 struct MessageList : public LinkedList {

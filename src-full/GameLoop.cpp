@@ -69,7 +69,45 @@ public:
 
 Handler* CreateHandler(int command); // 0x424240 - Handler factory (full game)
 
+// Full game globals used by HandleSystemMessage
+extern void* DAT_0046aa08;                 // InputManager-like global
+extern void __fastcall FUN_00426a90(void* self);  // Resets input state on DAT_0046aa08
+
+class GameLoopHelper {
+public:
+    void PostProcess();  // 0x41a960
+};
+extern GameLoopHelper* g_GameLoopHelper;   // DAT_0046a6f0
+extern GameState* g_GameState_0046aa30;    // DAT_0046aa30 - GameState for handler debug
+extern GameState* g_StringTable_0046aa34;  // DAT_0046aa34 - StringTable for handler names
+extern "C" void WriteToLog(const char* format, ...);  // FUN_00425d70
+
 #include "EventList.h"
+
+/* GameLoop::LBLParse - handles labels in start.mis blocks */
+int GameLoop::LBLParse(char* param_1) {
+    char local_24[32];
+
+    local_24[0] = 0;
+    sscanf(param_1, "%s", local_24);
+
+    if (strcmp(local_24, "MESSAGE") == 0) {
+        SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Parser::ProcessFile(msg, this, 0);
+        SC_Message_Send(msg->targetAddress, msg->sourceAddress, msg->command,
+                        msg->data, msg->priority, msg->param1, msg->param2,
+                        msg->userPtr, msg->clickPos.x, msg->clickPos.y);
+        delete msg;
+    }
+    else if (strcmp(local_24, "END") == 0) {
+        return 1;
+    }
+    else {
+        Parser::LBLParse("GameLoop");
+    }
+
+    return 0;
+}
 
 /* Function start: 0x417200 */ /* DEMO ONLY - no full game match */
 GameLoop::GameLoop() {
@@ -685,10 +723,9 @@ int GameLoop::UpdateGame()
     return local_14;
 }
 
-/* Function start: 0x417F40 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x431290 */
 void GameLoop::HandleSystemMessage(SC_Message* msg) {
     Handler* handler;
-    Handler* pData;
     EventList* pList;
     EventNode* pNode;
     ZBQueue* pQueue;
@@ -698,12 +735,17 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         return;
     }
 
+    // Reset input state on global input manager
+    if (DAT_0046aa08 != 0) {
+        FUN_00426a90(DAT_0046aa08);
+    }
+
     // Call current handler's ShutDown method
     handler = currentHandler;
     if (handler != 0) {
         handler->ShutDown(msg);
     }
-    
+
     // Clear ZBufferManager queues if g_ZBufferManager_0043698c exists
     if (g_ZBufferManager_0043698c != 0) {
         // Process queue at offset 0xa0
@@ -732,8 +774,9 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
 
         // Process queue at offset 0x9c
         g_ZBufferManager_0043698c->m_queue9c->ClearList();
+        g_ZBufferManager_0043698c->m_palette = 0;
     }
-    
+
     // Try to find existing handler for this command using msg->targetAddress
     int found = FindHandlerInEventList(msg->targetAddress);
     if (found == 0) {
@@ -741,51 +784,15 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
         handler = GetOrCreateHandler(msg->targetAddress);
         currentHandler = handler;
     } else {
-        // Found - pop handler from eventList at field_0x14
+        // Found - pop handler from eventList using non-inline RemoveCurrent
+        handler = (Handler*)eventList->RemoveCurrent();
         pList = eventList;
-        pNode = pList->current;
-        if (pNode == 0) {
-            currentHandler = 0;
-        } else {
-            // Unlink from head
-            if (pList->head == pNode) {
-                pList->head = pNode->next;
-            }
-            // Reload and check tail
-            pNode = pList->current;
-            if (pList->tail == pNode) {
-                pList->tail = pNode->prev;
-            }
-            // Reload and update prev->next
-            pNode = pList->current;
-            if (pNode->prev != 0) {
-                pNode->prev->next = pNode->next;
-            }
-            // Reload and update next->prev
-            pNode = pList->current;
-            if (pNode->next != 0) {
-                pNode->next->prev = pNode->prev;
-            }
-            // Extract data
-            pNode = pList->current;
-            pData = 0;
-            if (pNode != 0) {
-                pData = (Handler*)pNode->data;
-            }
-            if (pNode != 0) {
-                delete pNode;
-                pList->current = 0;
-            }
-            pList->current = pList->head;
-            currentHandler = pData;
-        }
-        
-        // Reinsert handler with priority-based insertion
-        handler = currentHandler;
-        pList = eventList;
+        currentHandler = handler;
         if (handler == 0) {
             ShowError("queue fault 0101");
         }
+
+        // Reset current to head for reinsertion
         pList->current = pList->head;
         if (pList->type == 1 || pList->type == 2) {
             if (pList->head == 0) {
@@ -794,33 +801,14 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
                 // Priority-based insertion loop
                 while (pList->current != 0) {
                     pNode = pList->current;
-                    pData = (Handler*)pNode->data;
-                    if (pData->handlerId < handler->handlerId) {
+                    pPopResult = pNode->data;
+                    if (((Handler*)pPopResult)->handlerId < handler->handlerId) {
                         pList->InsertNode(handler);
                         break;
                     }
                     if (pList->tail == pNode) {
-                        // Append at end
-                        if (handler == 0) {
-                            ShowError("queue fault 0112");
-                        }
-                        EventNode* newNode = new EventNode(handler);
-                        if (pList->current == 0) {
-                            pList->current = pList->tail;
-                        }
-                        if (pList->head == 0) {
-                            pList->head = newNode;
-                            pList->tail = newNode;
-                            pList->current = newNode;
-                        } else {
-                            if (pList->tail == 0 || pList->tail->next != 0) {
-                                ShowError("queue fault 0113");
-                            }
-                            newNode->next = 0;
-                            newNode->prev = pList->tail;
-                            pList->tail->next = newNode;
-                            pList->tail = newNode;
-                        }
+                        // Append at end - inline PushNode
+                        pList->PushNode(handler);
                         break;
                     }
                     if (pNode != 0) {
@@ -832,7 +820,23 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
             pList->InsertNode(handler);
         }
     }
-    
+
+    // Debug display: show handler name when switching
+    if (g_GameLoopHelper != 0) {
+        GameState* gs = g_GameState_0046aa30;
+        if (gs->maxStates - 1 < 4) {
+            ShowError("Invalid gamestate %d", 4);
+        }
+        if (gs->stateValues[4] != 0) {
+            handler = currentHandler;
+            if (handler != 0) {
+                char* name = g_StringTable_0046aa34->GetState(handler->handlerId);
+                WriteToLog("Switching to modual %s", name);
+                g_GameLoopHelper->PostProcess();
+            }
+        }
+    }
+
     // Call handler's Init method
     handler = currentHandler;
     if (handler != 0) {

@@ -7,3 +7,9 @@ void EventList::InsertNode(void* data)
 {
     LinkedList::InsertNode(data);
 }
+
+/* Function start: 0x431B60 */
+void* EventList::RemoveCurrent()
+{
+    return LinkedList::RemoveCurrent();
+}

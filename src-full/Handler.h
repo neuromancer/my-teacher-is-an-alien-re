@@ -40,6 +40,9 @@ public:
     virtual int Exit(SC_Message* msg);
     virtual void OnInput(void* param);
 
+    // Save return data from incoming message
+    void InitFromMessage(SC_Message* msg);
+
     // Copy command/data from message to handler fields
     void CopyCommandData(SC_Message* msg);
 

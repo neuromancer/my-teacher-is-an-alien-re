@@ -14,6 +14,7 @@ class GameLoop : public Parser {
 public:
     GameLoop();
     ~GameLoop();
+    int LBLParse(char* param_1);
     void Run();
     void ResetLoop();
     void ProcessInput();

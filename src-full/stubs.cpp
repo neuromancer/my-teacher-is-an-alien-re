@@ -163,6 +163,14 @@ void* DAT_0046aa08 = 0;
 void* DAT_0046a6dc = 0;
 char* DAT_0046aa00 = 0;
 
+// Full game globals for HandleSystemMessage debug display
+#include "GameState.h"
+GameState* g_GameState_0046aa30 = 0;   // DAT_0046aa30
+GameState* g_StringTable_0046aa34 = 0; // DAT_0046aa34
+
+extern "C" void WriteToLog(const char* format, ...) {}  // FUN_00425d70 stub
+void __fastcall FUN_00426a90(void* self) {}             // FUN_00426a90 - reset input state
+
 // Functions referenced by SCI_Inventory
 void __fastcall FUN_00432da0(void* self) {}
 void __fastcall FUN_00421bc0(void* self) {}
