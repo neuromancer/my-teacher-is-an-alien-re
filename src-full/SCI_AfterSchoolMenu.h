@@ -2,122 +2,44 @@
 #define SCI_AFTERSCHOOLMENU_H
 
 #include "IconBar.h"
-#include "Hotspot.h"
-#include "InputManager.h"
 
 class SC_Message;
-class Palette;
 class Sprite;
-class Sample;
-class MMPlayer;
-class Hotspot;
-class OptionMenu;
 
-// SoundSlot - structure for character voice samples
-// Size: 8 bytes
-struct SoundSlot {
-    int enabled;        // +0x00
-    Sample* sample;     // +0x04
-};
-
-// SCI_AfterSchoolMenu - Command 10 Handler (After School Menu / Demo Choice Screen)
-// Size: 0x6A8 bytes
-// vtable: 0x431110
-// Inherits from IconBar (0x600 bytes)
-//
-// This handler displays the main menu after the intro, allowing the
-// player to select a character (Peter, Susan, Duncan) and start gameplay.
+// SCI_AfterSchoolMenu - Handler case 31 (0x1F) - Main Menu (full game)
+// Size: 0xD0 bytes
+// vtable: 0x4612E8
+// Constructor: 0x416E70
+// Destructor: 0x416FC0
+// Extends IconBar (which is 0xA8 in full game = same as Handler)
 //
 // Layout:
-//   0x000-0x5FF: IconBar base class
-//   0x600: Palette* palette
-//   0x604: MouseControl* background
-//   0x608: void* choiceScreen (OptionMenu)
-//   0x60C: void* goButton (CharButton)
-//   0x610: void* cancelButton (CharButton)
-//   0x614: void* characters[3] (CharSprite array - peter, susan, duncan)
-//   0x620: SoundSlot sounds[8] (stride 8, total 0x40 bytes)
-//   0x660: Sample* currentSound
-//   0x664: int savedCharacterIndex
-//   0x668: int savedSubmenuIndex
-//   0x66C: int currentCharacterIndex
-//   0x670: int currentSubmenuIndex
-//   0x674: int hoverCharacterIndex
-//   0x678: int hoverSubmenuIndex
-//   0x67C: int needsRefresh
-//   0x680: int isInitialized
-//   0x684: int prevHoverCharacter
-//   0x688: int prevCharacter
-//   0x68C: int prevSubmenuHover
-//   0x690: int prevSubmenu
-//   0x694: int confirmFlag
-//   0x698: int updateFlag
-//   0x69C: int characterCount
-//   0x6A0: Sample* ambientSound
-//   0x6A4: int playSoundsFlag
+//   0x00-0xA7: IconBar base class (= Handler = Parser + 6 handler fields)
+//   0xA8: field_A8
+//   0xAC: field_AC
+//   0xB0: field_B0
+//   0xB4: int field_B4     (pointer, cleaned with FUN_0041DC10)
+//   0xB8: Sprite* sprite1  (elements\option2.smk)
+//   0xBC: Sprite* sprite2  (elements\option2h.smk)
+//   0xC0: field_C0
+//   0xC4: int field_C4     (pointer, cleaned with FUN_004148F0)
+//   0xC8: int field_C8     (linked list pointer)
+//   0xCC: field_CC
 class SCI_AfterSchoolMenu : public IconBar {
 public:
     SCI_AfterSchoolMenu();
     ~SCI_AfterSchoolMenu();
 
-    // Virtual method overrides
-    virtual int LBLParse(char* line);
-    virtual void Init(SC_Message* msg);
-    virtual int AddMessage(SC_Message* msg);
-    virtual int ShutDown(SC_Message* msg);
-    virtual void Update(int param1, int param2);
-    virtual int Exit(SC_Message* msg);
-
-    // SCI_AfterSchoolMenu methods
-    void ResetHoverState();
-    int IsSelectionComplete();
-    void ResetSelection();
-    void PlayCharacterSound(int soundIndex);
-    void RenderGoButton();
-    void RenderCharacters();
-    void RenderChoiceScreen(int characterIndex);
-    void ProcessCharacterHover(MousePoint pt);
-    void ProcessSubmenuHover(MousePoint pt);
-    void ProcessGoButtonHover(MousePoint pt, T_Hotspot* goButton, int* confirmFlag);
-    void DisplaySubmenuHover(int mouseX, int mouseY);
-
-    void SetCharacterOption(int characterIndex);
-    void SetSubmenuOption(int submenuIndex, int state);
-    void PlaySoundsIfNeeded();
-    void FillOptionQueue(); // Replaces SetCharacterOptionInternal based on original name
-
-    // SCI_AfterSchoolMenu-specific fields starting at 0x600
-    Palette* palette;           // 0x600
-    MMPlayer* background;   // 0x604
-    OptionMenu* choiceScreen;   // 0x608
-    T_Hotspot* goButton;          // 0x60C - CharButton*
-    T_Hotspot* cancelButton;      // 0x610 - CharButton*
-    T_Hotspot* characters[3];     // 0x614 - CharSprite* array (peter, susan, duncan)
-    SoundSlot sounds[8];        // 0x620 - 0x660 (8 * 8 = 0x40 bytes)
-    Sample* currentSound;       // 0x660
-    int savedCharacterIndex;    // 0x664
-    int savedSubmenuIndex;      // 0x668
-    int currentCharacterIndex;  // 0x66C
-    int currentSubmenuIndex;    // 0x670
-    int hoverCharacterIndex;    // 0x674
-    int hoverSubmenuIndex;      // 0x678
-    int needsRefresh;           // 0x67C
-    int isInitialized;          // 0x680
-    int prevHoverCharacter;     // 0x684
-    int prevCharacter;          // 0x688
-    int prevSubmenuHover;       // 0x68C
-    int prevSubmenu;            // 0x690
-    int confirmFlag;            // 0x694
-    int updateFlag;             // 0x698
-    int characterCount;         // 0x69C
-    Sample* ambientSound;       // 0x6A0
-    int playSoundsFlag;         // 0x6A4
+    int field_A8;       // 0xA8
+    int field_AC;       // 0xAC
+    int field_B0;       // 0xB0
+    int field_B4;       // 0xB4
+    Sprite* sprite1;    // 0xB8
+    Sprite* sprite2;    // 0xBC
+    int field_C0;       // 0xC0
+    int field_C4;       // 0xC4
+    int field_C8;       // 0xC8
+    int field_CC;       // 0xCC
 };
-
-// Global character objects created in SCI_AfterSchoolMenu constructor
-// g_PeterCharacter_00435a74: peter character
-// g_SusanCharacter_00435a78: susan character
-// g_DuncanCharacter_00435a7c: duncan character
-// DAT_00435a80: currently selected character
 
 #endif // SCI_AFTERSCHOOLMENU_H

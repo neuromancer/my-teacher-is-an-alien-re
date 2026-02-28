@@ -19,6 +19,7 @@ int CleanupVideoSystem();
 extern "C" int* GetWindowedModeFlag();
 LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
+extern GameWindow g_GameWindow;
 void __stdcall ParseCommandLine(char *);
 int ParseCommandLineArgs(char *, char **, int);
 
@@ -36,13 +37,10 @@ GameWindow::GameWindow() {
     savedActiveWindow = GetActiveWindow();
 }
 
-/* Function start: 0x420150 */ /* ~96% match */
+/* Function start: 0x420150 */
 void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
                                   int param_4) {
-  int iVar2;
-  int iVar3;
   WNDCLASSEXA local_30;
-  DWORD dwExStyle;
 
   hInstance = param_1;
   field_8 = param_2;
@@ -64,9 +62,9 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
       RegisterClassExA(&local_30);
     }
     SmackSetSystemRes(2);
-    dwExStyle = 8;
-    iVar2 = 0;
-    iVar3 = 0;
+    hWnd = CreateWindowExA(8, "Teacher Demo", "Teacher Demo",
+                                 0x80000000, 0, 0, 0x280, 0x1e0,
+                                 (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
   } else {
     if (param_2 == 0) {
       local_30.cbClsExtra = 0;
@@ -83,15 +81,12 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
       local_30.hIconSm = local_30.hIcon;
       RegisterClassExA(&local_30);
     }
-    iVar2 = GetSystemMetrics(0);
-    iVar2 = (iVar2 + -0x280) / 2;
-    iVar3 = GetSystemMetrics(1);
-    iVar3 = (iVar3 + -0x1e0) / 2;
-    dwExStyle = 0;
+    int iVar2 = (GetSystemMetrics(0) - 0x280) / 2;
+    int iVar3 = (GetSystemMetrics(1) - 0x1e0) / 2;
+    hWnd = CreateWindowExA(0, "Teacher Demo", "Teacher Demo",
+                                 0x80000000, iVar2, iVar3, 0x280, 0x1e0,
+                                 (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
   }
-  hWnd = CreateWindowExA(dwExStyle, "Teacher Demo", "Teacher Demo",
-                               0x80000000, iVar2, iVar3, 0x280, 0x1e0,
-                               (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
   ShowWindow(hWnd, param_4);
 }
 
@@ -110,7 +105,7 @@ void __stdcall ParseCommandLine(char *param_1) {
   }
   for (piVar3 = local_50; iVar1 > 0; iVar1--) {
     if (_strnicmp(*piVar3, "-mis", 4) == 0) {
-      strcpy(g_CmdLineDataPath_0043d568, *piVar3 + 4);
+      strcpy(g_GameWindow.baseDir, *piVar3 + 4);
     }
     else if (_strcmpi(*piVar3, "-w") == 0) {
       *GetWindowedModeFlag() = 1;
@@ -168,8 +163,6 @@ void GameWindow::Shutdown() {
     ReleaseDC(hWnd, hDC);
     SetActiveWindow(savedActiveWindow);
 }
-
-extern GameWindow g_GameWindow;
 
 /* Function start: 0x420610 */
 extern "C" void* GetGameWindowHandle() {

@@ -239,27 +239,40 @@ not_found:
     return fp;
 }
 
-/* Function start: 0x42B0F0 */
-void internal_ReadLine_placeholder(void)
+/* Function start: 0x4263E0 */
+void DecryptLine(char* buffer)
 {
-    return;
+    int i = 0;
+    if (buffer[0] == '\n') {
+        return;
+    }
+    do {
+        buffer[i] ^= 0xFE;
+        i++;
+    } while (buffer[i] != '\n');
 }
 
-/* Function start: 0x426400 */ /* ~93% match */
+/* Function start: 0x426400 */
 char* internal_ReadLine(char* buffer, int size, FILE* stream)
 {
     char local_buf[128];
     int result;
     char* line;
+    char* semi;
 
     do {
         line = fgets(buffer, size, stream);
         if (line == NULL) {
             return NULL;
         }
-        internal_ReadLine_placeholder();
+        DecryptLine(buffer);
         result = sscanf(buffer, " %s ", local_buf);
     } while (result < 1 || local_buf[0] == ';' || local_buf[0] == '\r');
+
+    semi = strchr(buffer, ';');
+    if (semi != NULL) {
+        *semi = '\0';
+    }
 
     return buffer;
 }

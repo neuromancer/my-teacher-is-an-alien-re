@@ -1,7 +1,7 @@
 #ifndef HANDLER6_H
 #define HANDLER6_H
 
-#include "IconBar.h"
+#include "Handler.h"
 #include "Hotspot.h"
 #include "Palette.h"
 #include "SpriteList.h"
@@ -9,19 +9,11 @@
 class SC_Message;
 
 // Handler6 - Command 6 Handler (Search Screen Handler)
-// Size: 0x640 bytes
-// vtable: 0x4310e8
-// Inherits from IconBar (which inherits from Handler)
-// Layout:
-//   0x00-0x5FF: IconBar base class
-//   0x600: Palette* pointer
-//   0x604: SpriteList* ambient
-//   0x608-0x62F: Hotspot* array[10]
-//   0x630: Hotspot* current hotspot
-//   0x634: int hotspot count
-//   0x638: int active hotspots
-//   0x63C: int counter
-class Handler6 : public IconBar {
+// Full game: Size 0xA8 (same as Handler, no additional fields)
+// vtable: 0x4616B0
+// Constructor: 0x4327C0 - just calls Parser::Parser() + inline Handler init
+// In the full game, Handler6 extends Handler directly (not IconBar)
+class Handler6 : public Handler {
 public:
     Handler6();
     ~Handler6();
@@ -34,22 +26,23 @@ public:
     virtual int Exit(SC_Message* msg);
     virtual int LBLParse(char* line);
 
-    // Helper methods
+    // Helper methods (DEMO ONLY)
     int CountActiveHotspots();
     int FindClickedHotspot();
 
-    // Handler6-specific fields starting at 0x600
-    Palette* palette;          // 0x600
-    SpriteList* ambient;       // 0x604
-    Hotspot* hotspots[10];     // 0x608-0x62F
-    Hotspot* currentHotspot;   // 0x630
-    int hotspotCount;          // 0x634
-    int activeHotspots;        // 0x638
-    int counter;               // 0x63C
+    // DEMO ONLY - these were IconBar methods in the demo
+    void InitIconBar(SC_Message* msg);
+    void CleanupIconBar(SC_Message* msg);
+    int CheckButtonClick(SC_Message* msg);
+
+    // Handler6-specific fields (DEMO ONLY - full game has no extra fields)
+    Palette* palette;          // 0xA8 (was 0x600 in demo)
+    SpriteList* ambient;       // 0xAC
+    Hotspot* hotspots[10];     // 0xB0-0xD7
+    Hotspot* currentHotspot;   // 0xD8
+    int hotspotCount;          // 0xDC
+    int activeHotspots;        // 0xE0
+    int counter;               // 0xE4
 };
 
 #endif // HANDLER6_H
-
-
-
-

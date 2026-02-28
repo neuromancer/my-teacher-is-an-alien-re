@@ -21,15 +21,16 @@ class SC_Message;
 //   +0x20: Exit (virtual) - called when leaving handler
 //   +0x24: OnInput (virtual) - input handling
 //
-// Memory layout:
-//   0x00-0x87: Parser base class (size 0x88)
-//   0x88: handlerId - identifies the handler type (1, 2, 4, 5, etc.)
-//   0x8C+: Handler-specific fields
+// Memory layout (full game):
+//   0x00-0x8F: Parser base class (size 0x90, full game has 2 extra fields at 0x88/0x8C)
+//   0x90: handlerId - identifies the handler type (2, 4, 5, 6, etc.)
+//   0x94+: Handler-specific fields
+//   Total Handler size: 0xA8
 class Handler : public Parser {
 public:
     Handler() { memset(&handlerId, 0, 24); }
     virtual ~Handler();
-    
+
     // Virtual methods - these form the handler interface
     // Override in derived classes to implement handler behavior
     virtual void Init(SC_Message* msg);
@@ -37,21 +38,21 @@ public:
     virtual int ShutDown(SC_Message* msg);
     virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
-    virtual void OnInput();
-    
+    virtual void OnInput(void* param);
+
     // Copy command/data from message to handler fields
     void CopyCommandData(SC_Message* msg);
-    
+
     // Write handler address to message
     int WriteMessageAddress(SC_Message* msg);
 
     // Common handler fields
-    int handlerId;      // 0x88 - handler type identifier
-    int moduleParam;    // 0x8C - handler-specific parameter (sourceAddress, data, etc.)
-    int savedCommand;   // 0x90 - saved command from CopyCommandData
-    int savedMsgData;   // 0x94 - saved data from CopyCommandData
-    int field_98;       // 0x98
-    int field_9C;       // 0x9C
+    int handlerId;      // 0x90 - handler type identifier
+    int moduleParam;    // 0x94 - handler-specific parameter
+    int savedCommand;   // 0x98 - saved command from CopyCommandData
+    int savedMsgData;   // 0x9C - saved data from CopyCommandData
+    int field_A0;       // 0xA0
+    int field_A4;       // 0xA4
 };
 
 #endif // HANDLER_H

@@ -368,7 +368,7 @@ void CheckDebug(void) {
           }
         }
         if (i >= 0x19) {
-          ShowError("Missing the Teacher CD ROM");
+          //ShowError("Missing the Teacher CD ROM");
         }
       }
     }

@@ -132,9 +132,6 @@ void SCI_Dialog::Init(SC_Message* msg) {
     pQueue = new Queue();
     field_610 = pQueue;
 
-    buttons[0].enabled = 0;
-    buttons[4].enabled = 0;
-
     ParseFile(this, buffer, "[DIALOG%4.4d]", msg->sourceAddress);
 }
 
@@ -177,9 +174,6 @@ int SCI_Dialog::ShutDown(SC_Message* msg) {
         delete queue;
         field_610 = 0;
     }
-
-    buttons[0].enabled = 1;
-    buttons[4].enabled = 1;
 
     IconBar::CleanupIconBar(msg);
 

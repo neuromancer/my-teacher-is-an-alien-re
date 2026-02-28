@@ -169,8 +169,8 @@ void Handler6::Update(int param1, int param2) {
         return;
     }
 
-    // Call parent update (IconBar::Update)
-    IconBar::Update(param1, param2);
+    // Call parent update (was IconBar::Update in demo)
+    Handler::Update(param1, param2);
 
     // Draw ambient
     if (ambient) ambient->Draw();
@@ -308,5 +308,15 @@ int Handler6::LBLParse(char* line) {
         Parser::LBLParse("SearchScreen");
     }
 
+    return 0;
+}
+
+void Handler6::InitIconBar(SC_Message* msg) {
+}
+
+void Handler6::CleanupIconBar(SC_Message* msg) {
+}
+
+int Handler6::CheckButtonClick(SC_Message* msg) {
     return 0;
 }

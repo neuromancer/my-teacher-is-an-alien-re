@@ -18,6 +18,7 @@ public:
     void Unload();
     FILE* Open();
     int GetString(unsigned int id, char* outBuffer);
+    void TestStrings(void* textMgr, int count);  // 0x44C480
 };
 
 #endif

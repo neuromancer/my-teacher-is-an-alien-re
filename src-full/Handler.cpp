@@ -54,5 +54,5 @@ int Handler::Exit(SC_Message* msg) {
     return 0;
 }
 
-void Handler::OnInput() {
+void Handler::OnInput(void* param) {
 }

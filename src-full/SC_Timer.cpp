@@ -91,14 +91,14 @@ void SC_Timer::Update(int param_1, int param_2) {
 }
 
 /* Function start: 0x401F90 */ /* DEMO ONLY - no full game match */
-int SC_Timer::AddMessage(int param_1) {
-  WriteMessageAddress((Message *)param_1);
+int SC_Timer::AddMessage(SC_Message* param_1) {
+  WriteMessageAddress(param_1);
   ShowError("SC_Timer::AddMessage");
   return 1;
 }
 
 /* Function start: 0x401FB0 */ /* DEMO ONLY - no full game match */
-int SC_Timer::Input(void *param_1) {
+int SC_Timer::Exit(SC_Message* param_1) {
   Queue *pQueue;
   QueueNode *pNode;
   void *pData;
@@ -211,4 +211,11 @@ int SC_Timer::Input(void *param_1) {
   }
 
   return 1;
+}
+
+void SC_Timer::Init(SC_Message* msg) {
+}
+
+int SC_Timer::ShutDown(SC_Message* msg) {
+    return 0;
 }

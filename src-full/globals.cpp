@@ -234,3 +234,10 @@ void* g_SmackSoundCheck_0044053c = 0;
 // Target/Sprite globals
 int DAT_004362cc = 0;
 int g_TargetBearingValue_004362c8 = 0;
+
+// CDData globals
+int g_DevelopFlag_00472de4 = 0;  // 1 = "Develop.___" file found
+
+// Detention/Period globals
+int g_PeriodStateIdx_0046cb90 = 0;
+char* g_PeriodCharTable_0046cb94 = 0;

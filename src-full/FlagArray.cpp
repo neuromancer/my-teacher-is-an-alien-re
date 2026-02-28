@@ -9,7 +9,7 @@ char DAT_004371ac[] = "rb+";
 
 // 0x4269E0 = fwrite, 0x425E70 = fclose (CRT functions)
 
-/* Function start: 0x420140 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x420790 */
 FlagArray::FlagArray(char* f, int numStates) {
     int buffer;
     int i;
@@ -25,10 +25,21 @@ FlagArray::FlagArray(char* f, int numStates) {
     fname = filename;
     strcpy(fname, f);
 
-    fp = fsopen(fname, DAT_004371ac);
+    fp_temp = fsopen(fname, "rb+");
+    fp = fp_temp;
+
+    if (fp_temp != 0) {
+        fread(&field_0x38, 0x94, 1, fp_temp);
+        if (max_states != numStates) {
+            if (fp != 0) {
+                fclose(fp);
+                fp = 0;
+            }
+        }
+    }
 
     if (fp == 0) {
-        fp_temp = fsopen(fname, DAT_004371a8);
+        fp_temp = fsopen(fname, "wb");
         fp = fp_temp;
 
         if (fp_temp != 0) {
@@ -37,16 +48,22 @@ FlagArray::FlagArray(char* f, int numStates) {
             field_0x3c = 0x94;
             field_0x44 = 4;
             fwrite(&field_0x38, 0x94, 1, fp_temp);
-            for (i = 0; i < max_states; i++) {
-                fwrite(&buffer, 4, 1, fp);
+            i = 0;
+            if (max_states > 0) {
+                do {
+                    fwrite(&buffer, 4, 1, fp);
+                    i++;
+                } while (i < max_states);
             }
         } else {
             ShowError("Error in flagaray.cpp - Create:  Cannot create %s", f);
         }
     }
 
-    fclose(fp);
-    fp = 0;
+    if (fp != 0) {
+        fclose(fp);
+        fp = 0;
+    }
 }
 
 FlagArray::~FlagArray()
@@ -79,13 +96,15 @@ void FlagArray::Open() {
     fread(&field_0x38, 0x94, 1, fp);
 }
 
-/* Function start: 0x420960 */ /* ~87% match */
+/* Function start: 0x420960 */
 void FlagArray::Close() {
     if (fp == 0) {
         ShowError("FlagArray::Close() - attempt to close NULL fp");
     }
-    fclose(fp);
-    fp = 0;
+    if (fp != 0) {
+        fclose(fp);
+        fp = 0;
+    }
 }
 
 /* Function start: 0x420990 */

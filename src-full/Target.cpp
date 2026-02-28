@@ -335,8 +335,8 @@ void Target::Init(char* line)
         if (stricmp(buffer, "INIT") != 0) {
             g_CDData_0043697c->ResolvePath(buffer);
 
-            Target::animFilename = new char[strlen(g_CDData_0043697c->pathBuffer + 0x85) + 1];
-            strcpy(Target::animFilename, g_CDData_0043697c->pathBuffer + 0x85);
+            Target::animFilename = new char[strlen(g_CDData_0043697c->field_190 + 5) + 1];
+            strcpy(Target::animFilename, g_CDData_0043697c->field_190 + 5);
         }
     }
 }

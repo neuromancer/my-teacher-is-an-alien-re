@@ -48,8 +48,8 @@ SC_Combat1::SC_Combat1() {
         pA0++;
     }
 
-    // Set field_98 to 0 (isInitialized flag)
-    field_98 = 0;
+    // Set field_A0 to 0 (isInitialized flag)
+    field_A0 = 0;
 
     // Set default screen dimensions
     *pA8 = 0x140;   // 320
@@ -75,7 +75,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     ZBufferManager* pZBuf;
     InputManager* pInput;
 
-    if (field_98 != 0) {
+    if (field_A0 != 0) {
         return;
     }
 
@@ -154,7 +154,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     strcpy(filename, "mis\\COMBAT1.mis");
     ParseFile(this, filename, 0);
 
-    field_98 = 1;
+    field_A0 = 1;
 }
 
 /* Function start: 0x4109B0 */ /* DEMO ONLY - no full game match */
@@ -165,11 +165,11 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     ZBufferManager* pZBuf;
     InputManager* pInput;
 
-    if (field_98 == 0) {
+    if (field_A0 == 0) {
         return 0;
     }
 
-    field_98 = 0;
+    field_A0 = 0;
 
     // Handle combat object cleanup
     if (g_CombatEngine_00435eb0 != 0) {
@@ -257,7 +257,7 @@ int SC_Combat1::AddMessage(SC_Message* msg) {
 void SC_Combat1::Update(int param1, int param2) {
     int result;
 
-    if (field_98 == 0) {
+    if (field_A0 == 0) {
         return;
     }
     if (handlerId != param2) {

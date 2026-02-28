@@ -11,6 +11,13 @@ public:
         maxStates = 0;
         reserved = 0;
     }
+    GameState(char* filename, char* format, int id) {
+        stateValues = 0;
+        stateLabels = 0;
+        maxStates = 0;
+        reserved = 0;
+        ParseFile(this, filename, format, id);
+    }
     ~GameState();
     void ClearStates();
     int FindState(char* stateName);

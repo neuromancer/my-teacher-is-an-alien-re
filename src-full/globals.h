@@ -434,6 +434,9 @@ extern char* g_StateString_00436994; // DAT_00436994 - string buffer used for ga
 extern GameState* g_GameState_00436998; // DAT_00436998  { /* 4 bytes */ }
 extern void* g_GameStruct2; // { /* 4 bytes */ }
 extern int g_DevModeFlag_0043d564; // 1 = running from dev directory, 0 = running from CD
+extern int g_DevelopFlag_00472de4; // 1 = "Develop.___" file found (CDData::Setup)
+extern int g_PeriodStateIdx_0046cb90;   // DAT_0046cb90 - GameState index for period counter
+extern char* g_PeriodCharTable_0046cb94; // DAT_0046cb94 - byte table mapping period to char
 // CRT function tables (used by atexit/cleanup)
 extern int DAT_0043503c; // CRT terminator table start
 extern int DAT_00435040; // CRT terminator table end

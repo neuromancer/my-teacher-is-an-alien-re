@@ -12,12 +12,10 @@ extern "C" {
     void ShowError(const char*, ...);
 }
 
-/* Function start: 0x4482F0 */ /* ~81% match */
+/* Function start: 0x4482F0 */
 SC_OnScreenMessage::SC_OnScreenMessage() {
-    // Set handlerId to 15
-    handlerId = 15;
-
-    // Initialize timer
+    memset(&timer, 0, 24);
+    handlerId = 4;
     timer.Reset();
 
     // Allocate and initialize list header structure

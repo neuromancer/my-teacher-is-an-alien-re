@@ -71,8 +71,47 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...);
 int __cdecl GetFreeDiskSpaceMB(int drive);
 void __cdecl InitMemoryCache(int param_1, int param_2, float param_3);
 void CleanupMemoryCache();
-void __cdecl ParseQuestionInit(void *dest, const char *filename);
-void RunGame_Cleanup2();
+// QuestionInit - Parser-derived class constructed and immediately destroyed in RunGame
+// FUN_00422880 constructor, calls Parser() + ParseFile(this, filename, NULL)
+class QuestionInit : public Parser {
+public:
+    QuestionInit(const char* filename);  // 0x422880
+    ~QuestionInit();
+};
+
+// SoundTracker class for pre-GameState allocation (size: 1 byte)
+class SoundTracker {
+public:
+    SoundTracker(int param);  // 0x412000
+    ~SoundTracker();           // 0x4120a0
+};
+
+// GameLoopHelper for DAT_0046a6f0 (not created here, only cleaned up)
+class GameLoopHelper {
+public:
+    void PostProcess();  // 0x41a960
+    ~GameLoopHelper();   // 0x41a730
+};
+
+// MsgList for DAT_0046a6dc (inline constructor, 16 bytes)
+class MsgList {
+public:
+    MsgList() {
+        field_c = 0;
+        field_0 = 0;
+        field_4 = 0;
+        field_8 = field_0;
+    }
+    int field_0;
+    int field_4;
+    int field_8;
+    int field_c;
+};
+
+SoundTracker* g_SoundTracker = 0;       // DAT_0046928c
+GameLoopHelper* g_GameLoopHelper = 0;   // DAT_0046a6f0
+MsgList* g_MsgList = 0;                 // DAT_0046a6dc
+int g_StartBlock = 0;                    // DAT_00472e2c
 
 /* Function start: 0x4236F0 */
 void RunGame() {
@@ -86,22 +125,21 @@ void RunGame() {
         anim.Play((char *)splashPath, 3);
     }
 
-    // Create 4 GameStates
-    g_GameState_00436998 = new GameState();
-    ParseFile(g_GameState_00436998, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+    // Pre-GameState manager allocation
+    g_SoundTracker = new SoundTracker(0xfa0);
 
-    g_GameState2_004369a4 = new GameState();
-    ParseFile(g_GameState2_004369a4, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
+    // Create 4 GameStates with inline ParseFile
+    g_GameState_00436998 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
 
-    g_GameState3_0043699c = new GameState();
-    ParseFile(g_GameState3_0043699c, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+    g_GameState2_004369a4 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
 
-    g_GameState4_004369a0 = new GameState();
-    ParseFile(g_GameState4_004369a0, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
+    g_GameState3_0043699c = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+
+    g_GameState4_004369a0 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
 
     // Check CACHE_SIZE from gamestate
     int cacheIdx = g_GameState_00436998->FindState("CACHE_SIZE");
-    if (cacheIdx < 0 || cacheIdx >= g_GameState_00436998->maxStates - 1) {
+    if (cacheIdx < 0 || cacheIdx > g_GameState_00436998->maxStates - 1) {
         ShowError("Invalid gamestate %d", cacheIdx);
     }
     int cacheSize = g_GameState_00436998->stateValues[cacheIdx];
@@ -110,21 +148,26 @@ void RunGame() {
     }
 
     int diskSpace = GetFreeDiskSpaceMB(0);
-    if (diskSpace != -1 && ((diskSpace + (diskSpace >> 0x1f & 0xfffffU)) >> 0x14) < cacheSize) {
+    if (diskSpace != -1 && (diskSpace / 1048576) < cacheSize) {
         ShowError("This game requires %lu MBytes of free disk space.\nPlease free up some disk space and try again.", diskSpace, cacheSize);
     }
     InitMemoryCache(200, cacheSize, 50.0f);
 
     // Delete old mouse if exists, create new
     if (g_Mouse_00436978 != 0) {
-        delete g_Mouse_00436978;
+        MouseControl* p = g_Mouse_00436978;
+        p->~MouseControl();
+        operator delete(p);
         g_Mouse_00436978 = 0;
     }
 
     g_Mouse_00436978 = new MouseControl();
     ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
 
-    g_StateString_00436994 = new char[0x40];
+    // Linked list allocation
+    g_MsgList = new MsgList();
+
+    g_StateString_00436994 = (char *)operator new(0x40);
     *g_StateString_00436994 = 0;
 
     g_Timer_00436980 = new Timer();
@@ -132,24 +175,24 @@ void RunGame() {
     g_FlagManager_00435a84 = new FlagArray("cfg\\question.dat", 10000);
     g_FlagManager_00435a84->ClearAllFlags();
 
-    // Parse question init script
-    char initQBuffer[140];
-    ParseQuestionInit(initQBuffer, "mis\\INIT_Q.mis");
-
-    RunGame_Cleanup2();
+    // Parse question init script (stack-allocated, immediately destroyed)
+    {
+        QuestionInit initQ("mis\\INIT_Q.mis");
+    }
 
     g_Strings_00435a70 = new StringTable("mis\\strings.mis", 1);
 
     // Check TEST_STRINGS in gamestate
     int testIdx = g_GameState_00436998->FindState("TEST_STRINGS");
-    if (testIdx < 0 || testIdx >= g_GameState_00436998->maxStates - 1) {
+    if (testIdx < 0 || testIdx > g_GameState_00436998->maxStates - 1) {
         ShowError("Invalid gamestate %d", testIdx);
     }
     if (g_GameState_00436998->stateValues[testIdx] != 0) {
         int testIdx2 = g_GameState_00436998->FindState("TEST_STRINGS");
-        if (testIdx2 < 0 || testIdx2 >= g_GameState_00436998->maxStates - 1) {
+        if (testIdx2 < 0 || testIdx2 > g_GameState_00436998->maxStates - 1) {
             ShowError("Invalid gamestate %d", testIdx2);
         }
+        g_Strings_00435a70->TestStrings(g_TextManager_00436990, g_GameState_00436998->stateValues[testIdx2]);
     }
 
     g_TimedEventPool1_00436984 = new TimedEventPool();
@@ -160,71 +203,113 @@ void RunGame() {
     g_Mouse_00436978->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
     g_TextManager_00436990->char_adv.advance = 2;
+    g_TextManager_00436990->spaceWidth = 5;
+    g_TextManager_00436990->tabWidth = 0x14;
     g_Timer_00436980->Reset();
 
     SC_Message_Send(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
     SC_Message_Send(1, 0x1e, 0, 0, 0x17, 0, 0, 0, 0, 0);
 
-    // GameLoop (stack-allocated in full game)
+    // GameLoop (stack-allocated)
     GameLoop gameLoop;
-    ParseFile(&gameLoop, "mis\\start.mis", "[BLOCK%4.4d]");
+    ParseFile(&gameLoop, "mis\\start.mis", "[BLOCK%4.4d]", g_StartBlock);
 
-    // Cleanup
+    // Post-GameLoop
+    if (g_GameLoopHelper != 0) {
+        g_GameLoopHelper->PostProcess();
+    }
+
+    // ZBufferManager cleanup before null check
+    g_ZBufferManager_0043698c->Cleanup();
+
+    // Cleanup - explicit destructor + operator delete (tmp inside if to match register allocation)
     if (g_ZBufferManager_0043698c != 0) {
-        g_ZBufferManager_0043698c->Cleanup();
-        operator delete(g_ZBufferManager_0043698c);
+        ZBufferManager* p = g_ZBufferManager_0043698c;
+        p->~ZBufferManager();
+        operator delete(p);
         g_ZBufferManager_0043698c = 0;
     }
 
     if (g_TimedEventPool1_00436984 != 0) {
-        delete g_TimedEventPool1_00436984;
+        TimedEventPool* p = g_TimedEventPool1_00436984;
+        p->~TimedEventPool();
+        operator delete(p);
         g_TimedEventPool1_00436984 = 0;
     }
 
     if (g_Strings_00435a70 != 0) {
-        delete g_Strings_00435a70;
+        StringTable* p = g_Strings_00435a70;
+        p->~StringTable();
+        operator delete(p);
         g_Strings_00435a70 = 0;
     }
 
     if (g_GameState4_004369a0 != 0) {
-        delete g_GameState4_004369a0;
+        GameState* p = g_GameState4_004369a0;
+        p->~GameState();
+        operator delete(p);
         g_GameState4_004369a0 = 0;
     }
 
     if (g_GameState3_0043699c != 0) {
-        delete g_GameState3_0043699c;
+        GameState* p = g_GameState3_0043699c;
+        p->~GameState();
+        operator delete(p);
         g_GameState3_0043699c = 0;
     }
 
     if (g_GameState2_004369a4 != 0) {
-        delete g_GameState2_004369a4;
+        GameState* p = g_GameState2_004369a4;
+        p->~GameState();
+        operator delete(p);
         g_GameState2_004369a4 = 0;
     }
 
     if (g_GameState_00436998 != 0) {
-        delete g_GameState_00436998;
+        GameState* p = g_GameState_00436998;
+        p->~GameState();
+        operator delete(p);
         g_GameState_00436998 = 0;
     }
 
     if (g_Timer_00436980 != 0) {
-        delete g_Timer_00436980;
+        Timer* p = g_Timer_00436980;
+        p->~Timer();
+        operator delete(p);
         g_Timer_00436980 = 0;
     }
 
     if (g_StateString_00436994 != 0) {
-        delete g_StateString_00436994;
+        operator delete(g_StateString_00436994);
         g_StateString_00436994 = 0;
     }
 
     if (g_Mouse_00436978 != 0) {
-        delete g_Mouse_00436978;
+        MouseControl* p = g_Mouse_00436978;
+        p->~MouseControl();
+        operator delete(p);
         g_Mouse_00436978 = 0;
     }
 
     if (g_FlagManager_00435a84 != 0) {
-        g_FlagManager_00435a84->SafeClose();
-        operator delete(g_FlagManager_00435a84);
+        FlagArray* p = g_FlagManager_00435a84;
+        p->~FlagArray();
+        operator delete(p);
         g_FlagManager_00435a84 = 0;
+    }
+
+    if (g_GameLoopHelper != 0) {
+        GameLoopHelper* p = g_GameLoopHelper;
+        p->~GameLoopHelper();
+        operator delete(p);
+        g_GameLoopHelper = 0;
+    }
+
+    if (g_SoundTracker != 0) {
+        SoundTracker* p = g_SoundTracker;
+        p->~SoundTracker();
+        operator delete(p);
+        g_SoundTracker = 0;
     }
 
     CleanupMemoryCache();
@@ -242,7 +327,7 @@ void PlayIntroCinematic(void) {
 void CleanupCinematic(void) {}
 
 
-/* Function start: 0x425E90 */ /* ~86% match */
+/* Function start: 0x425E90 */
 extern "C" int ProcessMessages() {
   MSG local_1c;
   int iVar1;
@@ -257,9 +342,6 @@ extern "C" int ProcessMessages() {
           wParam = wParam & 0x2f;
         }
         g_WaitForInputValue_004373bc = wParam;
-        if (local_1c.wParam == VK_F12) {
-          return 1;
-        }
       }
       DispatchMessageA(&local_1c);
       iVar1 = PeekMessageA(&local_1c, NULL, 0, 0, PM_REMOVE);
@@ -305,8 +387,9 @@ void ShutdownGameSystems(void) {
     g_WorkBuffer_00436974 = 0;
   }
   if (g_Sound_0043696c != 0) {
-    AIL_shutdown();
-    delete g_Sound_0043696c;
+    Sound* p = g_Sound_0043696c;
+    p->~Sound();
+    operator delete(p);
     g_Sound_0043696c = 0;
   }
   if (g_InputManager_00436968 != 0) {
@@ -315,8 +398,9 @@ void ShutdownGameSystems(void) {
   }
 
   if (g_CDData_0043697c != 0) {
-    CDData_ChangeToBaseDir(g_CDData_0043697c);
-    delete g_CDData_0043697c;
+    CDData* p = g_CDData_0043697c;
+    p->~CDData();
+    operator delete(p);
     g_CDData_0043697c = 0;
   }
   if (g_GameConfig_00436970 != 0) {
@@ -398,12 +482,12 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...) {
 
     vsprintf(local_104, format, args);
     if (FileExists(local_104) == 0) {
-        sprintf(g_CDData_0043697c->pathBuffer + 0x45, "%s\\%s",
-                g_CDData_0043697c->pathBuffer + 0x40, local_104);
+        sprintf(g_CDData_0043697c->field_190 + 5, "%s\\%s",
+                g_CDData_0043697c->field_190, local_104);
     } else {
-        strcpy(g_CDData_0043697c->pathBuffer + 0x45, local_104);
+        strcpy(g_CDData_0043697c->field_190 + 5, local_104);
     }
-    return g_CDData_0043697c->pathBuffer + 0x45;
+    return g_CDData_0043697c->field_190 + 5;
 }
 
 /* Function start: 0x426690 */
@@ -435,14 +519,6 @@ void __cdecl InitMemoryCache(int param_1, int param_2, float param_3) {
 
 /* Function start: 0x434170 */
 void CleanupMemoryCache() {
-}
-
-// ParseQuestionInit and RunGame_Cleanup2 are compiler-generated thunks
-// embedded within RunGame's code in the original binary
-void __cdecl ParseQuestionInit(void *dest, const char *filename) {
-}
-
-void RunGame_Cleanup2() {
 }
 
 // ParsePath is a CRT library function in the full game (0x4560F0, in library range)

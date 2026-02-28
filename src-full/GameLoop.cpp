@@ -15,21 +15,39 @@
 #include "Message.h"
 #include "string.h"
 #include "DrawEntry.h"
-#include "Handler12.h"
-#include "Handler1.h"
-#include "Handler2.h"
-#include "Handler4.h"
-#include "SearchScreen.h"
-#include "Handler6.h"
-#include "Handler8.h"
-#include "SCI_AfterSchoolMenu.h"
-#include "SCI_SearchScreen.h"
 #include "Handler.h"
-#include "Handler13.h"
-#include "SC_Sound.h"
+#include "SC_Game.h"
+#include "SC_Cinematic.h"
 #include "SC_OnScreenMessage.h"
-#include "SC_Combat1.h"
-#include "SCI_Dialog.h"
+#include "SC_BgSnd.h"
+#include "SC_Timer.h"
+#include "SCI_Inventory.h"
+#include "SCI_AfterSchoolMenu.h"
+#include "SCI_IconBarModule.h"
+#include "SC_ZBuffer.h"
+#include "SCI_AfterSchoolMenu2.h"
+#include "SC_CrystalPuzzle.h"
+#include "SCI_Schedule.h"
+#include "SC_DemoScreen.h"
+#include "SCI_PracticeRoom.h"
+#include "SC_Detention.h"
+#include "SC_SelectHotSpot.h"
+#include "SC_DuctNav.h"
+#include "SC_SaveLoad.h"
+#include "SC_Wahoo.h"
+#include "SC_Fan.h"
+#include "SC_Slime.h"
+#include "SC_FireAlarm.h"
+#include "SC_ExtBridge.h"
+#include "SC_Rats.h"
+#include "SC_DodgeOrville.h"
+#include "SC_Pods.h"
+#include "SC_SpaceShipNav.h"
+#include "SC_Roach.h"
+#include "SCI_SearchScreen.h"
+#include "SC_FakeRoom.h"
+#include "SC_Gauntlet.h"
+#include "SC_WordSearch.h"
 #include "SoundCommand.h"
 #include "RenderEntry.h"
 #include "Animation.h"
@@ -49,7 +67,7 @@ public:
     virtual void Cleanup(int flag);         // +0x18
 };
 
-Handler* CreateHandler(int command); // 0x40CDD0 - Handler factory
+Handler* CreateHandler(int command); // 0x424240 - Handler factory (full game)
 
 #include "EventList.h"
 
@@ -58,7 +76,7 @@ GameLoop::GameLoop() {
     Timer* pResult;
     EventList* pList;
     
-    memset(this, 0, 7 * sizeof(int));
+    memset(&field_0x00, 0, 7 * sizeof(int));
     
     pResult = new Timer();
     timer1 = pResult;
@@ -851,52 +869,106 @@ int GameLoop::ProcessControlMessage(SC_Message* msg) {
 // Implementations of missing functions
 // -------------------------------------------------------------------------
 
-/* Function start: 0x40CDD0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x424240 */
 Handler* CreateHandler(int command) {
     Handler* handler = 0;
 
     switch(command) {
-    case 1:
-        handler = new Handler1();
-        break;
     case 2:
-        handler = new Handler2();
+        handler = new SC_Game();
+        break;
+    case 3:
+        handler = new SC_Cinematic();
         break;
     case 4:
-        handler = new Handler4();
-        break;
-    case 5:
-        handler = new SearchScreen();
-        break;
-    case 6:
-        handler = new Handler6();
-        break;
-    case 8:
-        handler = new Handler8();
-        break;
-    case 9:
-        handler = new SCI_Dialog();
-        break;
-    case 10:
-        handler = new SCI_AfterSchoolMenu();
-        break;
-    case 11:
-        handler = new SCI_SearchScreen();
-        break;
-    case 12:
-        handler = new Handler12();
-        break;
-    case 13:
-        handler = new Handler13();
-        break;
-    case 14:
-        handler = new SC_Sound();
-        break;
-    case 15:
         handler = new SC_OnScreenMessage();
         break;
-    case 16:
-        handler = new SC_Combat1();
+    case 5:
+        handler = new SC_BgSnd();
+        break;
+    case 6:
+        handler = new SC_Timer();
+        break;
+    case 0x1E:
+        handler = new SCI_Inventory();
+        break;
+    case 0x1F:
+        handler = new SCI_AfterSchoolMenu();
+        break;
+    case 0x20:
+        handler = new SCI_IconBarModule();
+        break;
+    case 0x22:
+        handler = new SC_ZBuffer();
+        break;
+    case 0x25:
+        handler = new SCI_AfterSchoolMenu2();
+        break;
+    case 0x26:
+        handler = new SC_CrystalPuzzle();
+        break;
+    case 0x27:
+        handler = new SCI_Schedule();
+        break;
+    case 0x29:
+        handler = new SC_DemoScreen();
+        break;
+    case 0x2B:
+        handler = new SCI_PracticeRoom();
+        break;
+    case 0x2C:
+        handler = new SC_Detention();
+        break;
+    case 0x2D:
+        handler = new SC_SelectHotSpot();
+        break;
+    case 0x2E:
+        handler = new SC_DuctNav();
+        break;
+    case 0x2F:
+        handler = new SC_SaveLoad();
+        break;
+    case 0x3D:
+        handler = new SC_Wahoo();
+        break;
+    case 0x3E:
+        handler = new SC_Fan();
+        break;
+    case 0x3F:
+        handler = new SC_Slime();
+        break;
+    case 0x40:
+        handler = new SC_FireAlarm();
+        break;
+    case 0x41:
+        handler = new SC_ExtBridge();
+        break;
+    case 0x42:
+        handler = new SC_Rats();
+        break;
+    case 0x43:
+        handler = new SC_DodgeOrville();
+        break;
+    case 0x44:
+        handler = new SC_Pods();
+        break;
+    case 0x46:
+        handler = new SC_SpaceShipNav();
+        break;
+    case 0x47:
+        handler = new SC_Roach();
+        break;
+    case 0x48:
+        handler = new SCI_SearchScreen();
+        break;
+    case 0x49:
+        handler = new SC_FakeRoom();
+        break;
+    case 0x50:
+        handler = new SC_Gauntlet();
+        break;
+    case 0x51:
+        handler = new SC_WordSearch();
         break;
     default:
         ShowError("Unknown modual %d", command);

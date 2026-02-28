@@ -357,10 +357,16 @@ def side_by_side(str1, str2, tab_size=4):
 
 def get_similarity(function_name, disassembled_code_path, clean_build=True, out_dir="out"):
     if clean_build:
-        system("make clean")
-        if system("make all -j12") != 0:
-            print("Make failed")
-            exit(1)
+        if out_dir == "out-full":
+            system("make clean-full")
+            if system("make full -j12") != 0:
+                print("Make failed")
+                exit(1)
+        else:
+            system("make clean")
+            if system("make all -j12") != 0:
+                print("Make failed")
+                exit(1)
 
     asm_file_path = None
     produced_code = None
@@ -403,9 +409,11 @@ def main():
     parser = ArgumentParser(description="Recover high-level code from assembly code")
     parser.add_argument("function_name", help="Function name to compare")
     parser.add_argument("disassembled_code", help="Path to the disassembled code from Ghidra")
+    parser.add_argument("--full", action="store_true", help="Use full game build (src-full/out-full)")
     args = parser.parse_args()
 
-    similarity, comparison_text, seh_code = get_similarity(args.function_name, args.disassembled_code)
+    out_dir = "out-full" if args.full else "out"
+    similarity, comparison_text, seh_code = get_similarity(args.function_name, args.disassembled_code, out_dir=out_dir)
 
     print (f"Comparison for function '{args.function_name}':")
     if similarity is None:

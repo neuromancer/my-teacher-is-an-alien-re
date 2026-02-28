@@ -28,7 +28,13 @@ public:
     int field_0xb0;
     char sprite_filename[28]; // 0xb4
     Animation* animation_data; // 0xd0
-    int field_0xd4; // 0xd4 - total Sprite size = 0xD8
+    int field_0xd4; // 0xd4
+    int field_0xd8; // full game fields
+    int field_0xdc;
+    int field_0xe0;
+    int field_0xe4;
+    int field_0xe8;
+    int field_0xec; // total Sprite size = 0xF8 (full game)
 
     Sprite(char* filename);
     ~Sprite();
@@ -46,6 +52,7 @@ public:
     int Do(int, int, double);
     void FreeAnimation();
     void StopAnimationSound();
+    void ResetAnimation(int param1, int param2);  // 0x44CB40
 };
 
 #endif // SPRITE_H

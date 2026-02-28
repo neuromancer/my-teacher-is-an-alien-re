@@ -11,24 +11,13 @@
 #include "new.h"
 #include "InputManager.h"
 
-/* Function start: 0x41ECA0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4327C0 */
 MouseControl::MouseControl()
 {
-    memset(m_labels, 0, 0x138);
-    m_labels[0] = new char[16];
-    m_labels[1] = new char[16];
-    m_labels[2] = new char[16];
-    m_labels[3] = new char[16];
-
-    strcpy(m_labels[0], "POINTER");
-    strcpy(m_labels[1], "EXAMINE");
-    strcpy(m_labels[2], "PICKUP");
-    strcpy(m_labels[3], "");
+    memset(&m_labels, 0, 24);
 }
 
-
-
-/* Function start: 0x41EE30 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x432830 */
 MouseControl::~MouseControl()
 {
     Sample* audio = m_audio;
@@ -50,16 +39,31 @@ MouseControl::~MouseControl()
         m_sprite2 = 0;
     }
 
-    for (int i = 0; i < 25; i++) {
-        char* label = m_labels[i];
-        if (label != 0) {
-            delete label;
-            m_labels[i] = 0;
+    if (m_hotspots != 0) {
+        delete[] m_hotspots;
+        m_hotspots = 0;
+    }
+
+    if (m_labels != 0) {
+        int i = 0;
+        if (m_maxMice > 0) {
+            do {
+                if (m_labels[i] != 0) {
+                    operator delete(m_labels[i]);
+                    m_labels[i] = 0;
+                }
+                i++;
+            } while (i < m_maxMice);
         }
+    }
+
+    if (m_labels != 0) {
+        operator delete(m_labels);
+        m_labels = 0;
     }
 }
 
-/* Function start: 0x41EF50 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4329B0 */
 int MouseControl::LBLParse(char* line)
 {
     int index;
@@ -81,15 +85,32 @@ int MouseControl::LBLParse(char* line)
             audio->Load(args);
         }
     } else if (strcmp(cmd, "SPRITE") == 0) {
-        m_sprite = new Sprite(0);
-        m_sprite->flags &= ~2;
+        Sprite* sprite = new Sprite(0);
+        m_sprite = sprite;
+        sprite->flags &= ~2;
         Parser::ProcessFile(m_sprite, this, 0);
+    } else if (strcmp(cmd, "MAXMICE") == 0) {
+        sscanf(line, " %s %d", cmd, &m_maxMice);
+        m_hotspots = new Point[m_maxMice];
+        m_labels = (char**)operator new(m_maxMice * 4);
+        int i = 0;
+        if (m_maxMice > 0) {
+            do {
+                m_labels[i] = 0;
+                i++;
+            } while (m_maxMice > i);
+        }
     } else if (strcmp(cmd, "HOTPIXEL") == 0) {
         sscanf(line, " %s %d %d %d", cmd, &index, &x, &y);
         m_hotspots[index].x = x;
         m_hotspots[index].y = y;
-    } else if (strcmp(cmd, "LABLE") == 0) {
+    } else if (strcmp(cmd, "LABEL") == 0) {
         sscanf(line, " %s %d %s", cmd, &index, args);
+        if (m_labels[index] != 0) {
+            operator delete(m_labels[index]);
+            m_labels[index] = 0;
+        }
+        m_labels[index] = (char*)operator new(0x10);
         strncpy(m_labels[index], args, 0x10);
     } else if (strcmp(cmd, "END") == 0) {
         m_sprite2 = 0;
@@ -101,25 +122,21 @@ int MouseControl::LBLParse(char* line)
     return 0;
 }
 
-/* Function start: 0x41F200 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x432DA0 */
 void MouseControl::DrawCursor()
 {
-    InputState* pMouse;
     Sprite* sprite;
+    InputState* pMouse;
 
-    if (m_sprite == 0) {
-        ShowError("missing mouse ");
-    }
-
-    int final_x = 0;
     pMouse = g_InputManager_00436968->pMouse;
+    int final_x = 0;
     if (pMouse != 0) {
         final_x = pMouse->x;
     }
 
     sprite = m_sprite;
     if (sprite == 0) {
-        final_x -= (int)sprite;
+        final_x -= m_hotspots[-1].x;
     } else {
         final_x -= m_hotspots[sprite->current_state].x;
     }
@@ -132,7 +149,7 @@ void MouseControl::DrawCursor()
     }
 
     if (sprite == 0) {
-        final_y -= (int)m_sprite2;
+        final_y -= m_hotspots[-1].y;
     } else {
         final_y -= m_hotspots[sprite->current_state].y;
     }

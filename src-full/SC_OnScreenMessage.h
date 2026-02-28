@@ -6,11 +6,11 @@
 #include "Memory.h"
 #include "LinkedList.h"
 
-// SC_OnScreenMessage - Handler class with ID 15
-// Size: 0xB8 bytes
-// vtable: 0x4311e8
-// Constructor: 0x40A2E0
-// Destructor: 0x40A410
+// SC_OnScreenMessage - Handler class with ID 4 (full game)
+// Size: 0xC0 bytes
+// vtable: 0x461a60
+// Constructor: 0x4482F0
+// Destructor: 0x448420
 class SC_OnScreenMessage : public Handler {
 public:
     SC_OnScreenMessage();
@@ -25,9 +25,9 @@ public:
 
     void Copy(SC_OnScreenMessage* other);
 
-    // Fields starting at 0xA0 (0x00-0x87 is Parser, 0x88-0x9F is Handler base fields)
-    MessageList* m_messageList; // 0xA0
-    Timer timer;                // 0xA4 - 0xB7 (size 0x14)
+    // Fields starting at 0xA8 (Handler base is 0xA8 in full game)
+    Timer timer;                // 0xA8 - 0xBB (size 0x14)
+    MessageList* m_messageList; // 0xBC
 };
 
 #endif // SC_ONSCREENMESSAGE_H
