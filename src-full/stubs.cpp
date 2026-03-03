@@ -253,3 +253,120 @@ void StringTable::TestStrings(void* textMgr, int count) {}
 #include "CDData.h"
 CDData::~CDData() {}
 // CDData::Setup -> CDData.cpp
+
+// ============================================================================
+// SC_Cinematic + SC_SelectHotSpot link stubs
+// ============================================================================
+
+// --- extern "C" globals ---
+extern "C" {
+    int DAT_0046a6ec = 0;
+    void* DAT_0046aa14 = 0;
+    void* DAT_0046aa30 = 0;
+    int DAT_0046ac04 = 0;
+    char DAT_00473400 = 0;
+    int (__stdcall *DAT_0047655c)(int) = 0;
+}
+
+// --- extern "C" functions ---
+extern "C" {
+    void FUN_004114f0(int, int, int, int, int, int, void*) {}
+    int* FUN_004205e0() { static int v = 0; return &v; }
+    int* FUN_004205f0() { static int v = 0; return &v; }
+    void FUN_00425f10() {}
+    int FUN_00425fa0(void*) { return 0; }
+    void* FUN_004260f0(char*) { return 0; }
+    int FUN_00426ac0() { return 0; }
+    void FUN_004307b0(int) {}
+    char* FUN_0044e3e0(int) { return 0; }
+    void FUN_004524c2(int, int) {}
+    void FUN_004525ec(int) {}
+    void FUN_0045329b(char*, int) {}
+}
+
+// --- C++ __fastcall stubs ---
+void* __fastcall FUN_00403520(void*) { return 0; }
+void* __fastcall FUN_004035a0(void*) { return 0; }
+void* __fastcall FUN_00403620(void*) { return 0; }
+void __fastcall FUN_00401130(void*) {}
+void __fastcall FUN_00401c80(void*) {}
+void __fastcall FUN_004061e0(void*) {}
+void __fastcall FUN_00406cc0(void*, int, void*) {}
+void __fastcall FUN_00406fd0(void*, int, int) {}
+void __fastcall FUN_004070a0(void*, int, int) {}
+void __fastcall FUN_004145f0(void*) {}
+void __fastcall FUN_0041dc10(void*) {}
+void __fastcall FUN_00424ee0(void*) {}
+void __fastcall FUN_004308c0(void*) {}
+void __fastcall FUN_00443990(void*) {}
+void __fastcall FUN_00443ab0(void*) {}
+void __fastcall FUN_00443e30(void*) {}
+void __fastcall FUN_00444af0(void*) {}
+void __fastcall FUN_0044c740(void*) {}
+void __fastcall FUN_0044c9d0(void*) {}
+void* __fastcall FUN_00407180(void*) { return 0; }
+void* __fastcall FUN_0041dbe0(void*) { return 0; }
+void* __fastcall FUN_004438a0(void*) { return 0; }
+int __fastcall FUN_00433ae0(void*, int, char*) { return 0; }
+
+// --- C++ __cdecl stubs ---
+void __cdecl FUN_00412a50() {}
+void __cdecl FUN_00413e70(void*, int, char*) {}
+void __cdecl FUN_00425a90(int, int) {}
+void __cdecl FUN_00425c50(char*, ...) {}
+void __cdecl FUN_00425d70(char*, ...) {}
+void __cdecl FUN_00444e40(void*) {}
+void __cdecl FUN_00445450(void*, void*) {}
+void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int) { return 0; }
+char* __cdecl FUN_00426190(char*) { return 0; }
+
+// --- C++ global ---
+int DAT_00472d58 = 0;
+
+// --- Class method stubs for SC_Cinematic local classes ---
+class SmkPlayer {
+public:
+    SmkPlayer(char*);
+    int Open(int, int);
+    void SetVolume(int, int);
+    void Render();
+    void NextFrame();
+};
+SmkPlayer::SmkPlayer(char*) {}
+int SmkPlayer::Open(int, int) { return 0; }
+void SmkPlayer::SetVolume(int, int) {}
+void SmkPlayer::Render() {}
+void SmkPlayer::NextFrame() {}
+
+class GameLoop {
+public:
+    int ProcessEvents(int);
+};
+int GameLoop::ProcessEvents(int) { return 0; }
+
+// VBuffer::Blit stub - declared locally in SC_Cinematic.cpp
+// Must add to VBuffer.h to avoid class redefinition
+
+struct CinematicAction {
+    void Execute(int);
+};
+void CinematicAction::Execute(int) {}
+
+// Handler::InitFromMessage stub
+#include "Handler.h"
+void Handler::InitFromMessage(SC_Message*) {}
+
+// VBuffer::Blit stub
+#include "VBuffer.h"
+void VBuffer::Blit(int, int, int, int, int, int, int, int) {}
+
+// PaletteObj::Load stub
+class PaletteObj {
+public:
+    void Load(char*);
+};
+void PaletteObj::Load(char*) {}
+
+// Non-variadic overloads for SC_SelectHotSpot (different mangling from variadic versions)
+void __cdecl FUN_00425c50(char*) {}
+void __cdecl FUN_00425d70(char*) {}

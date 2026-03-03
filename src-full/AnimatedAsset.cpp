@@ -7,10 +7,12 @@
 #include <string.h>
 #include <windows.h>
 
-/* Function start: 0x43A6E0 */ /* ~97% match */
+extern char* __cdecl FUN_00426190(char* name);
+
+/* Function start: 0x43A6E0 */
 AnimatedAsset::AnimatedAsset()
 {
-    ZeroMemory(this, 56);
+    ZeroMemory(this, 120);
     color = 2;
     glyphValue = 1;
 }
@@ -29,7 +31,7 @@ AnimatedAsset::~AnimatedAsset()
     }
 }
 
-/* Function start: 0x4210D0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x43A830 */
 void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 {
   int iVar2;
@@ -39,32 +41,37 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 
   if (param_1 != 0) {
     iVar2 = sscanf(param_1, "%s %d %d", local_9c, &firstChar, &local_18);
-    if (iVar2 <= 2) {
-      local_18 = 0x7e;
-    }
-    if (iVar2 <= 1) {
-      firstChar = 0x21;
-    }
-    glyphCount = (local_18 - firstChar) + 1;
-    delete buffer;
-    buffer = 0;
+    if (strcmp(cachedFilename, local_9c) != 0) {
+      strcpy(cachedFilename, local_9c);
+      if (iVar2 <= 2) {
+        local_18 = 0x7e;
+      }
+      if (iVar2 <= 1) {
+        firstChar = 0x21;
+      }
+      glyphCount = (local_18 - firstChar) + 1;
+      if (buffer != 0) {
+        delete buffer;
+        buffer = 0;
+      }
 
-    anim = new Animation();
-    anim->Open(local_9c,0xfe000,0xffffffff);
+      anim = new Animation();
+      anim->Open(FUN_00426190(local_9c), 0xfe000, 0xffffffff);
 
-    buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
-    anim->ToBufferVB(buffer);
-    anim->DoFrame();
-    if (anim != 0) {
+      buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
+      anim->ToBufferVB(buffer);
+      anim->DoFrame();
+      if (anim != 0) {
         delete anim;
-    }
-    BuildGlyphTable();
-    iVar2 = IsCharSupported(0x41);
-    if (iVar2 != 0) {
-      iVar2 = ComputeTextMetrics(g_EngineTypeCombat_00435ef4);
-      iVar2 = (iVar2 * 2) / 3;
-      spaceWidth = iVar2;
-      tabWidth = iVar2 << 2;
+      }
+      BuildGlyphTable();
+      iVar2 = IsCharSupported(0x41);
+      if (iVar2 != 0) {
+        iVar2 = ComputeTextMetrics(g_EngineTypeCombat_00435ef4);
+        iVar2 = (iVar2 * 2) / 3;
+        spaceWidth = iVar2;
+        tabWidth = iVar2 << 2;
+      }
     }
   }
 }
@@ -208,7 +215,7 @@ int AnimatedAsset::ComputeTextMetrics(char* text)
             total = total + tabWidth;
         }
         else {
-            GlyphRect* piVar3 = &glyphTable[iVar2];
+            GlyphRect* piVar3 = &glyphTable[iVar2 - firstChar];
             GlyphRect local = *piVar3;
             total = (total - local.left) + local.right;
         }
@@ -248,7 +255,7 @@ void AnimatedAsset::PrepareText(char* text)
     }
 }
 
-/* Function start: 0x421700 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x43AEB0 */
 void AnimatedAsset::RenderText(char* text, int color_param)
 {
     if (text != 0) {

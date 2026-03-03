@@ -10,6 +10,14 @@ SC_ZBuffer::SC_ZBuffer() {
 SC_ZBuffer::~SC_ZBuffer() {
 }
 
+/* Function start: 0x414370 */
+void SC_ZBuffer::Init(SC_Message* msg) {
+    CopyCommandData(msg);
+    if (msg != 0) {
+        moduleParam = ((int*)msg)[1];
+    }
+}
+
 /* Function start: 0x4143A0 */
 void SC_ZBuffer::Update(int param1, int param2) {
   unsigned int elapsed;

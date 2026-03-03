@@ -2,28 +2,22 @@
 #define ZBUFFER_H
 
 #include "Timer.h"
-#include "Parser.h"
+#include "Handler.h"
 
 class Message;
 #include "LinkedList.h"
 
-class ZBuffer : public Parser {
+// ZBuffer extends Handler in the full game (same layout as SC_ZBuffer).
+// Demo code used "ZBuffer" but error strings confirm the real name is "SC_ZBuffer".
+// Handler base provides: handlerId (0x90), moduleParam (0x94), etc.
+class ZBuffer : public Handler {
 public:
-    int m_address;
-    int m_from;
-    char pad2[0xa0 - 0x8c - 4];
-    Timer timer; // 0xa0
+    Timer timer; // 0xA8
 
-    // Virtual method overrides
-    virtual int LBLParse(char* param_1);
-    virtual int ShutDown(Message* msg);
-    virtual int Exit(Message* msg);
-    virtual void OnInput(Message* msg);
-
+    int Exit(SC_Message* msg);
     void Update(int, int);
     int AddMessage(int);
     int ProcessMessage(Message* msg);
-    ~ZBuffer();
     void CleanUpVBuffer();
 };
 

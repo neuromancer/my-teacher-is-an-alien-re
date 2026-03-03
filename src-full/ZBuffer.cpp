@@ -19,41 +19,21 @@ char s_hIam[] = "hIam %d";
 #include "SoundCommand.h"
 
 extern void LogToMessageFile(char* format, ...);
-#include "Handler.h"
 #include "SC_Question.h"
 
-/* Function start: 0x4010C0 */ /* DEMO ONLY - no full game match */
-int ZBuffer::LBLParse(char* param_1)
-{
-    ShowError("Parser:: Must define an LBLParse func");
-    return 0;
-}
-
-/* Function start: 0x401150 */ /* DEMO ONLY - no full game match */
-int ZBuffer::ShutDown(Message* msg)
-{
-    return 0;
-}
-
 /* Function start: 0x44B5A0 */
-int ZBuffer::Exit(Message* msg)
+int ZBuffer::Exit(SC_Message* msg)
 {
     return 0;
-}
-
-/* Function start: 0x401170 */ /* DEMO ONLY - no full game match */
-void ZBuffer::OnInput(Message* msg)
-{
-    WriteToMessageLog("hIam %d", m_address);
 }
 
 /* Function start: 0x4012D0 */ /* DEMO ONLY - no full game match */
 void ZBuffer::Update(int param_1, int param_2)
 {
     if (timer.Update() > 10000) {
-        SC_Message_Send(3, m_address, m_address, m_from, 0x14, 0, 0, 0, 0, 0);
+        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
     }
-    if (m_address == param_2) {
+    if (handlerId == param_2) {
         ShowError("SC_ZBuffer::Update");
     }
 }
@@ -69,7 +49,7 @@ int ZBuffer::AddMessage(int param_1)
 /* Function start: 0x401350 */ /* DEMO ONLY - no full game match */
 int ZBuffer::ProcessMessage(Message* msg)
 {
-    if (msg->targetAddress != m_address) {
+    if (msg->targetAddress != handlerId) {
         return 0;
     }
     timer.Reset();
@@ -206,11 +186,6 @@ void ZBQueue::ClearList()
             ::operator delete(data);
         }
     } while (head != 0);
-}
-
-/* Function start: 0x414710 */
-ZBuffer::~ZBuffer()
-{
 }
 
 /* Function start: 0x42BC50 */

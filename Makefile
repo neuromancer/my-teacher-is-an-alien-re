@@ -108,8 +108,9 @@ ASMS = $(patsubst src/%.cpp,$(OUT_DIR)/%.asm,$(SRCS))
 
 # Full game build
 OUT_DIR_FULL = out-full
-SRCS_ORDERED_FULL = $(patsubst src/%,src-full/%,$(SRCS_ORDERED))
-SRCS_FULL = $(SRCS_ORDERED_FULL) $(filter-out $(SRCS_ORDERED_FULL), $(wildcard src-full/*.cpp))
+SRCS_ORDERED_FULL_ALL = $(patsubst src/%,src-full/%,$(SRCS_ORDERED))
+SRCS_ORDERED_FULL = $(filter $(wildcard src-full/*.cpp), $(SRCS_ORDERED_FULL_ALL))
+SRCS_FULL = $(SRCS_ORDERED_FULL) $(filter-out $(SRCS_ORDERED_FULL_ALL), $(wildcard src-full/*.cpp))
 OBJS_FULL = $(patsubst src-full/%.cpp,$(OUT_DIR_FULL)/%.obj,$(SRCS_FULL))
 ASMS_FULL = $(patsubst src-full/%.cpp,$(OUT_DIR_FULL)/%.asm,$(SRCS_FULL))
 

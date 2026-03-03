@@ -37,6 +37,7 @@ public:
     void CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8);
     void InitFields();
     void ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale);
+    void Blit(int, int, int, int, int, int, int, int);
 
     // Copy rectangle rows from srcBuffer into this buffer with transparent handling
 

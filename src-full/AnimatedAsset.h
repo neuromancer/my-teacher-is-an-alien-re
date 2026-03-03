@@ -37,7 +37,7 @@ public:
     int tabWidth; // 0x28 - width of tab
     int glyphHeight; // 0x2C - height (rows) per glyph
     CharAdv char_adv; // 0x30 - inter-character advance and reserved
-    int reserved_38; // 0x38 - unknown / reserved
+    char cachedFilename[64]; // 0x38 - cached filename for reload check
 
     AnimatedAsset();
     AnimatedAsset* Init();

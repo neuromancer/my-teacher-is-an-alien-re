@@ -15,19 +15,23 @@ public:
     SC_Cinematic();
     ~SC_Cinematic();
 
-    void CleanUp(int param);  // 0x4300D0
+    void Init(SC_Message* msg);         // 0x42FCF0
+    int ShutDown(SC_Message* msg);      // 0x4300D0
+    void Update(int param1, int param2);// 0x430350
+    int AddMessage(SC_Message* msg);    // 0x4306A0
+    void EndCinematic();                // 0x430730
 
-    int field_A8;       // 0xA8
-    int field_AC;       // 0xAC
-    int field_B0;       // 0xB0
-    int field_B4;       // 0xB4
-    int field_B8;       // 0xB8
-    int field_BC;       // 0xBC
-    int field_C0;       // 0xC0
-    int field_C4;       // 0xC4
-    int field_C8;       // 0xC8
-    int field_CC;       // 0xCC
-    int field_D0;       // 0xD0
+    int field_A8;       // 0xA8 - Palette*
+    int field_AC;       // 0xAC - SmkPlayer*
+    int field_B0;       // 0xB0 - saved state index
+    int field_B4;       // 0xB4 - saved render context
+    int field_B8;       // 0xB8 - flags
+    int field_BC;       // 0xBC - start X
+    int field_C0;       // 0xC0 - start Y
+    int field_C4;       // 0xC4 - volume (default 100)
+    int field_C8;       // 0xC8 - param
+    int field_CC;       // 0xCC - loop/ended flag
+    int field_D0;       // 0xD0 - Sprite*
     int field_D4;       // 0xD4
 };
 
