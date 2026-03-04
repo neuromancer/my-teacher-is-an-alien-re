@@ -232,14 +232,18 @@ public:
 SoundTracker::SoundTracker(int param) {}
 SoundTracker::~SoundTracker() {}
 
-// GameLoopHelper
+// GameLoopHelper (animation cache at 0x46a6f0)
 class GameLoopHelper {
 public:
     void PostProcess();
     ~GameLoopHelper();
+    void AddAnimation(char* name, int handle);    // 0x41A7A0
+    void RemoveAnimation(int handle);             // 0x41A8D0
 };
 GameLoopHelper::~GameLoopHelper() {}
 void GameLoopHelper::PostProcess() {}
+void GameLoopHelper::AddAnimation(char* name, int handle) {}
+void GameLoopHelper::RemoveAnimation(int handle) {}
 
 // ============================================================================
 // StringTable::TestStrings stub
@@ -261,27 +265,39 @@ CDData::~CDData() {}
 // --- extern "C" globals ---
 extern "C" {
     int DAT_0046a6ec = 0;
+    void* DAT_0046aa10 = 0;
     void* DAT_0046aa14 = 0;
     void* DAT_0046aa30 = 0;
     int DAT_0046ac04 = 0;
     char DAT_00473400 = 0;
     int (__stdcall *DAT_0047655c)(int) = 0;
+    // Smack function pointer table (populated at runtime from SMACKW32.DLL)
+    void (__stdcall *DAT_00476538)(int, void*, unsigned int, unsigned int) = 0; // SmackColorRemap
+    unsigned int (__stdcall *DAT_00476540)(int) = 0;                            // SmackDoFrame
+    void (__stdcall *DAT_00476544)(int) = 0;                                    // SmackNextFrame
+    unsigned int (__stdcall *DAT_00476548)(int, unsigned int) = 0;              // SmackGoto
+    void (__stdcall *DAT_0047654c)(int) = 0;                                    // SmackClose
+    void (__stdcall *DAT_00476550)(void*, void*, unsigned int) = 0;             // SmackBufferNewPalette
+    int (__stdcall *DAT_00476554)(const char*, unsigned int, unsigned int) = 0; // SmackOpen
+    unsigned int (__stdcall *DAT_00476570)(int, unsigned int) = 0;              // SmackSoundOnOff
+    // Animation global buffers
+    char DAT_00472c70[256] = {0};   // g_AnimFilename
+    char DAT_00472cb0[256] = {0};   // g_AnimFilename2
+    void FUN_004265a0() {}
 }
 
 // --- extern "C" functions ---
 extern "C" {
-    void FUN_004114f0(int, int, int, int, int, int, void*) {}
     int* FUN_004205e0() { static int v = 0; return &v; }
     int* FUN_004205f0() { static int v = 0; return &v; }
     void FUN_00425f10() {}
     int FUN_00425fa0(void*) { return 0; }
-    void* FUN_004260f0(char*) { return 0; }
-    int FUN_00426ac0() { return 0; }
+    void* FUN_004260f0(char* name) { return name; }
     void FUN_004307b0(int) {}
     char* FUN_0044e3e0(int) { return 0; }
-    void FUN_004524c2(int, int) {}
-    void FUN_004525ec(int) {}
-    void FUN_0045329b(char*, int) {}
+    void SetFontPosition(int, int) {}       // 0x4524C2
+    void SetFontColor(int) {}               // 0x4525EC
+    void DrawFontText(char*, int) {}        // 0x45329B
 }
 
 // --- C++ __fastcall stubs ---
@@ -308,9 +324,17 @@ void* __fastcall FUN_00407180(void*) { return 0; }
 void* __fastcall FUN_0041dbe0(void*) { return 0; }
 void* __fastcall FUN_004438a0(void*) { return 0; }
 int __fastcall FUN_00433ae0(void*, int, char*) { return 0; }
+void __fastcall FUN_0042be00(void*) {}
+void __fastcall FUN_0042bf00(void*) {}
+void __fastcall FUN_004252a0(void*) {}
+void __fastcall FUN_00404d70(void*, int, int) {}
+void __fastcall FUN_0040b760(void*, int, int) {}
+void __fastcall FUN_0044bac0(void*, int, int, int) {}
+void* __fastcall FUN_00450b10(void*) { return 0; }
 
 // --- C++ __cdecl stubs ---
 void __cdecl FUN_00412a50() {}
+void Parser::ReportUnknownLabel(char*) {}
 void __cdecl FUN_00413e70(void*, int, char*) {}
 void __cdecl FUN_00425a90(int, int) {}
 void __cdecl FUN_00425c50(char*, ...) {}
@@ -318,30 +342,31 @@ void __cdecl FUN_00425d70(char*, ...) {}
 void __cdecl FUN_00444e40(void*) {}
 void __cdecl FUN_00445450(void*, void*) {}
 void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int) { return 0; }
-char* __cdecl FUN_00426190(char*) { return 0; }
+// SpriteAction class (same definition as in SC_Rats.cpp)
+class SpriteAction {
+    int field_0[14];
+public:
+    void* operator new(size_t s) { return AllocateMemory(s); }
+    void operator delete(void* p) { FreeMemory(p); }
+    SpriteAction(int, int, int, int, int, int, int, int, int, int);
+};
+SpriteAction::SpriteAction(int, int, int, int, int, int, int, int, int, int) {}
+char* __cdecl FUN_00426190(char* name) { return name; }
 
 // --- C++ global ---
 int DAT_00472d58 = 0;
+int (__stdcall *DAT_0047652c)(int) = 0;
 
-// --- Class method stubs for SC_Cinematic local classes ---
-class SmkPlayer {
-public:
-    SmkPlayer(char*);
-    int Open(int, int);
-    void SetVolume(int, int);
-    void Render();
-    void NextFrame();
-};
+// --- Class method stubs for SC_Cinematic ---
+#include "SmkPlayer.h"
 SmkPlayer::SmkPlayer(char*) {}
+SmkPlayer::~SmkPlayer() {}
 int SmkPlayer::Open(int, int) { return 0; }
 void SmkPlayer::SetVolume(int, int) {}
 void SmkPlayer::Render() {}
 void SmkPlayer::NextFrame() {}
 
-class GameLoop {
-public:
-    int ProcessEvents(int);
-};
+#include "GameLoop.h"
 int GameLoop::ProcessEvents(int) { return 0; }
 
 // VBuffer::Blit stub - declared locally in SC_Cinematic.cpp
@@ -356,9 +381,8 @@ void CinematicAction::Execute(int) {}
 #include "Handler.h"
 void Handler::InitFromMessage(SC_Message*) {}
 
-// VBuffer::Blit stub
+// VBuffer stubs (CallBlitter, CallBlitter5 are implemented in VBuffer.cpp)
 #include "VBuffer.h"
-void VBuffer::Blit(int, int, int, int, int, int, int, int) {}
 
 // PaletteObj::Load stub
 class PaletteObj {
@@ -370,3 +394,48 @@ void PaletteObj::Load(char*) {}
 // Non-variadic overloads for SC_SelectHotSpot (different mangling from variadic versions)
 void __cdecl FUN_00425c50(char*) {}
 void __cdecl FUN_00425d70(char*) {}
+
+// ============================================================================
+// SCI_AfterSchoolMenu2 stubs
+// ============================================================================
+
+// extern "C" globals
+extern "C" {
+    int DAT_0046a190 = 0;
+    void* DAT_0046af08 = 0;
+    int DAT_00472d20 = 0;
+}
+
+// extern "C" functions
+extern "C" {
+    void FUN_00413e10(void*, char*, char*, ...) {}
+    void FUN_00454400(void*) {}
+    void* FUN_00454500(int) { return 0; }
+    int FUN_00454510(char*, char*, ...) { return 0; }
+    int FUN_00454850(char*, char*, ...) { return 0; }
+    char* FUN_00454960(char*, char*) { return 0; }
+    void FUN_00444e20(void*) {}
+}
+
+// C++ globals
+int DAT_0046cb90 = 0;
+char* DAT_0046cb94 = 0;
+int DAT_00473358 = 0;
+int DAT_0047337c = 0;
+
+// C++ fastcall stubs
+void __fastcall FUN_00420d90(void*) {}
+void __fastcall FUN_00424ed0(void*) {}
+void __fastcall FUN_00421020(void*) {}
+void __fastcall FUN_00421880(void*) {}
+void __fastcall FUN_004250e0(void*) {}
+
+// Class method stubs for SCI_AfterSchoolMenu2
+class GSVal { public: void FUN_00409f20(int); int GetStateValue(int); };
+void GSVal::FUN_00409f20(int) {}
+
+class QObj { public: void FUN_00444920(void*); };
+void QObj::FUN_00444920(void*) {}
+
+class SprInit { public: void FUN_00420ce0(int); };
+void SprInit::FUN_00420ce0(int) {}

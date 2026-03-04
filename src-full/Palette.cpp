@@ -101,6 +101,24 @@ extern "C" void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int s
   SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
 }
 
+/* Function start: 0x41DFE0 */
+int Palette::IsSimilar(void* data, int start, int count) {
+    int ofs = start * 3;
+    int end = count * 3;
+    char* src = (char*)data + ofs;
+    char* dst = m_data + ofs;
+    while (end > ofs) {
+        unsigned char diff = (unsigned char)(*src ^ *dst);
+        if (diff & 0xFC) {
+            return 0;
+        }
+        ofs++;
+        src++;
+        dst++;
+    }
+    return 1;
+}
+
 /* Function start: 0x41EBB0 */ /* DEMO ONLY - no full game match */
 int Palette::IsPaletteUnchanged()
 {

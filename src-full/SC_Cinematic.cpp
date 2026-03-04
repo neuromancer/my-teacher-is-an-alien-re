@@ -1,56 +1,25 @@
 #include "SC_Cinematic.h"
+#include "SmkPlayer.h"
+#include "GameLoop.h"
+#include "VBuffer.h"
+#include "GameState.h"
+#include "InputManager.h"
 #include "Memory.h"
 #include "Timer.h"
 #include "LinkedList.h"
 #include <string.h>
+#include <smack.h>
 
-// SmkPlayer - Smacker video player class
-// Size: 0x2C (44 bytes)
-// Constructor: 0x41AA60
-class SmkPlayer {
-public:
-    SmkPlayer(char* path);       // 0x41AA60
-    virtual ~SmkPlayer();        // vtable[0] = sdtor
-    int Open(int p1, int p2);    // 0x41AC10
-    void SetVolume(int, int);    // 0x41AD30
-    void Render();               // 0x41AD90
-    void NextFrame();            // 0x41ADA0
-
-    int field_04;
-    int field_08;
-    int field_0C;   // Smack handle
-    int field_10;
-    int field_14;
-    int field_18;   // surface pointer
-    int field_1C;
-    int field_20;
-    int field_24;
-    int field_28;
-};
-
-// Minimal GameLoop class for __thiscall calling convention
-class GameLoop {
-public:
-    int ProcessEvents(int flag);   // 0x426CE0
-};
-
-// Minimal VBuffer class for __thiscall calling convention
-class VBuffer {
-public:
-    void Blit(int, int, int, int, int, int, int, int);  // 0x4113C0
-};
-
-extern "C" void ShowError(const char* format, ...);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* FUN_0044e3e0(int handle);
 
+extern GameState* g_GameState_0046aa30;
 extern void* DAT_0046aa24;
 extern void* DAT_0046aa08;
 extern void* DAT_0046aa18;
 
 extern "C" {
     extern int DAT_0046a6ec;
-    extern void* DAT_0046aa30;
     extern void* DAT_0046aa14;
     extern int DAT_0046ac04;
     extern char DAT_00473400;
@@ -76,9 +45,6 @@ extern void __fastcall FUN_00432da0(void* self);
 extern "C" void* FUN_004260f0(char* name);
 extern "C" int FUN_00425fa0(void* path);
 
-// GameState operations
-extern int __fastcall FUN_00433ae0(void* gstate, int dummy, char* key);
-
 // Palette
 extern void __fastcall FUN_0041dc10(void* palette);
 
@@ -86,18 +52,9 @@ extern void __fastcall FUN_0041dc10(void* palette);
 extern void __fastcall FUN_00444af0(void* msg);
 extern void __cdecl FUN_00444e40(void* msg);
 
-// Node destruction (ListNode sdtor)
-extern void __fastcall FUN_00404d70(void* node, int dummy, int flag);
-
-// GameLoop
-extern "C" int FUN_00426ac0();
-
-// Screen dimensions
+// Screen dimensions (0x4205E0, 0x4205F0 - return ptrs to render target w/h)
 extern "C" int* FUN_004205f0();
 extern "C" int* FUN_004205e0();
-
-// VBuffer blit (cdecl - viewport version, 7 params)
-extern "C" void FUN_004114f0(int, int, int, int, int, int, void*);
 
 // Summary
 extern "C" void FUN_004307b0(int handle);
@@ -106,13 +63,13 @@ extern "C" void FUN_004307b0(int handle);
 extern void __fastcall FUN_004308c0(void* list);
 extern void __fastcall FUN_004145f0(void* list);
 
-// Smack frame
-extern "C" {
-    extern int (__stdcall *DAT_0047655c)(int);
-    extern void FUN_004525ec(int);
-    extern void FUN_004524c2(int, int);
-    extern void FUN_0045329b(char*, int);
-}
+// SmackWait function pointer (IAT entry at 0x47655c)
+extern "C" extern int (__stdcall *DAT_0047655c)(int);
+
+// Text rendering (font system)
+extern "C" void SetFontColor(int index);            // 0x4525EC - sets palette color for text
+extern "C" void SetFontPosition(int x, int y);      // 0x4524C2 - sets text cursor position
+extern "C" void DrawFontText(char* text, int len);   // 0x45329B - renders text via GDI
 
 // CinematicAction - objects in list1 of DAT_0046aa24
 struct CinematicAction {
@@ -203,13 +160,12 @@ void SC_Cinematic::Init(SC_Message* msg) {
         FUN_00425d70("missing cinematic %s", moviePath);
         EndCinematic();
     } else {
-        if (DAT_0046aa30 != 0) {
-            int* gstate = (int*)DAT_0046aa30;
-            if (gstate[0x98/4] - 1 < 4) {
+        if (g_GameState_0046aa30 != 0) {
+            GameState* gs = g_GameState_0046aa30;
+            if (gs->maxStates - 1 < 4) {
                 FUN_00425c50("Invalid gamestate %d", 4);
             }
-            int* stateArray = (int*)gstate[0x90/4];
-            if (*(int*)((char*)stateArray + 0x10) != 0) {
+            if (gs->stateValues[4] != 0) {
                 field_B8 |= 0x100;
                 strcpy(&DAT_00473400, moviePath);
             }
@@ -301,13 +257,12 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
         }
 
         if (field_AC != 0) {
-            void* gstate = DAT_0046aa30;
-            int idx = FUN_00433ae0(gstate, 0, "CINE_SUMMARY");
-            if (idx < 0 || *(int*)((int)gstate + 0x98) - 1 < idx) {
+            GameState* gs = g_GameState_0046aa30;
+            int idx = gs->FindState("CINE_SUMMARY");
+            if (idx < 0 || gs->maxStates - 1 < idx) {
                 FUN_00425c50("Invalid gamestate %d", idx);
             }
-            int* stateArray = *(int**)((int)gstate + 0x90);
-            if (stateArray[idx] != 0) {
+            if (gs->stateValues[idx] != 0) {
                 int handle = *(int*)(field_AC + 0xc);
                 FUN_004307b0(handle);
             }
@@ -358,9 +313,8 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         SmkPlayer* smk = (SmkPlayer*)field_AC;
-        int* vp = (int*)DAT_0046aa14;
-        void* surface = (void*)smk->field_18;
-        FUN_004114f0(vp[10], vp[11], vp[8], vp[9], vp[10], vp[9], surface);
+        VBuffer* vp = (VBuffer*)DAT_0046aa14;
+        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, smk->field_18);
         FUN_00432da0(DAT_0046aa18);
         return;
     }
@@ -393,7 +347,7 @@ void SC_Cinematic::Update(int param1, int param2) {
 
             hasInput = 0;
             if (DAT_0046ac04 != 0) {
-                int key = FUN_00426ac0();
+                int key = WaitForInput();
                 hasInput = (key == 0x1b);
             }
             if (hasInput) {
@@ -421,20 +375,20 @@ void SC_Cinematic::Update(int param1, int param2) {
 
     {
         SmkPlayer* smk = (SmkPlayer*)field_AC;
-        int* surface = (int*)smk->field_18;
+        VBuffer* surface = (VBuffer*)smk->field_18;
         int* screenH = FUN_004205f0();
         int h = *screenH - 1;
         int* screenW = FUN_004205e0();
         int w = *screenW - 1;
 
-        ((VBuffer*)surface)->Blit(surface[10], surface[11], surface[8], surface[9], 0, w, 0, h);
+        surface->CallBlitter5(surface->clip_x1, surface->clip_x2, surface->clip_y1, surface->clip_y2, 0, w, 0, h);
     }
 
     if (field_B8 & 0x100) {
-        FUN_004525ec(0xfa);
-        FUN_004524c2(0x14, 0x14);
+        SetFontColor(0xfa);
+        SetFontPosition(0x14, 0x14);
         int len = strlen(&DAT_00473400);
-        FUN_0045329b(&DAT_00473400, len);
+        DrawFontText(&DAT_00473400, len);
     }
 
     {
@@ -486,9 +440,8 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         SmkPlayer* smk2 = (SmkPlayer*)field_AC;
-        int* vp = (int*)DAT_0046aa14;
-        void* surface2 = (void*)smk2->field_18;
-        FUN_004114f0(vp[10], vp[11], vp[8], vp[9], vp[10], vp[9], surface2);
+        VBuffer* vp = (VBuffer*)DAT_0046aa14;
+        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, smk2->field_18);
     } else {
         Timer timer;
         timer.Wait(0x96);

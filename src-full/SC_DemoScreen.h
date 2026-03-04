@@ -13,7 +13,14 @@ public:
     SC_DemoScreen();
     ~SC_DemoScreen();
 
-    int field_A8[2];    // 0xA8-0xAF (0x08 bytes)
+    void Init(SC_Message* msg);
+    int AddMessage(SC_Message* msg);
+    int ShutDown(SC_Message* msg);
+    void Update(int param1, int param2);
+    int Exit(SC_Message* msg);
+
+    int field_A8;    // 0xA8 - Palette*
+    int field_AC;    // 0xAC - Sprite*
 };
 
 #endif // SC_DEMOSCREEN_H

@@ -14,6 +14,7 @@ public:
     void CopyEntries(int start, int count);
     void SetPalette(UINT start, UINT count);
     int Compare(char* data, int size);
+    int IsSimilar(void* data, int start, int count);
     int IsPaletteUnchanged();
     void Cleanup();
 

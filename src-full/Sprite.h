@@ -34,7 +34,9 @@ public:
     int field_0xe0;
     int field_0xe4;
     int field_0xe8;
-    int field_0xec; // total Sprite size = 0xF8 (full game)
+    int field_0xec;
+    int field_0xf0;
+    int field_0xf4; // total Sprite size = 0xF8 (full game)
 
     Sprite(char* filename);
     ~Sprite();

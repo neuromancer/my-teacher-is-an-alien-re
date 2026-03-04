@@ -17,6 +17,7 @@ public:
     int LBLParse(char* param_1);
     void Run();
     void ResetLoop();
+    int ProcessEvents(int flag);    // 0x426CE0
     void ProcessInput();
     void Cleanup();
     void DrawFrame();

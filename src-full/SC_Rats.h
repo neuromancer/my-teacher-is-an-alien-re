@@ -13,7 +13,22 @@ public:
     SC_Rats();
     ~SC_Rats();
 
-    int field_A8[2];    // 0xA8-0xAF (0x08 bytes)
+    int LBLParse(char* param);
+    void Init(SC_Message* msg);
+    int AddMessage(SC_Message* msg);
+    int ShutDown(SC_Message* msg);
+    void Update(int param1, int param2);
+    int Exit(SC_Message* msg);
+
+    void ProcessState();
+    void State0Handler();
+    void State1Handler();
+    void State2Handler();
+    void State3Handler();
+    void State4Handler();
+
+    int field_A8;    // 0xA8 - sprite data pointer
+    int field_AC;    // 0xAC - engine info object pointer
 };
 
 #endif // SC_RATS_H

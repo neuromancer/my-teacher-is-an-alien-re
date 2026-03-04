@@ -14,6 +14,7 @@ public:
     virtual void OnProcessStart();
     virtual void OnProcessEnd();
 
+    void ReportUnknownLabel(char* name);  // 0x412A50
     void CloseFile();
     void Open(char *param_1);
     void Copy(Parser* other);
@@ -37,8 +38,6 @@ public:
     char filename[64];      // 0x40 - 0x7f
     FILE* pFile;            // 0x80
     int field_0x84;         // 0x84
-    int field_0x88;         // 0x88 (full game only)
-    int field_0x8C;         // 0x8C (full game only)
 };
 
 Parser* ParseFile(Parser* parser, char* filename, char* key_format, ...);

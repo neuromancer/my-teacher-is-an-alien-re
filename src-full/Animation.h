@@ -21,7 +21,6 @@ public:
   Animation();
   Animation(char *filename);
   virtual ~Animation();
-  void AnimationInit();
   int Open(char *, int, int);
   void ToBuffer();
   void ToBufferVB(VBuffer *buffer);
@@ -33,9 +32,10 @@ public:
   void GotoFrame(int frame);
   void NextFrame();
   int SetPalette(unsigned int, unsigned int);
+  int ApplyPalette(unsigned int start, unsigned int count);
+  int UpdatePalette(unsigned int start, unsigned int count);
   void CloseSmackerBuffer();
   void CloseSmackerFile();
-  
   void DoFrame();
 
 private:
