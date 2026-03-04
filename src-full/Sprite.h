@@ -42,7 +42,7 @@ public:
     ~Sprite();
     void CheckRanges1();
     int CheckConditions();
-    void SetRange(int param_1, int param_2, int param_3);
+    void SetRange(int param_1, int param_2, int param_3, int param_4 = 0);
     void SetState(int param_1);
     void SetState2(int param_1);
     void SetLogic(int param_1, int param_2);

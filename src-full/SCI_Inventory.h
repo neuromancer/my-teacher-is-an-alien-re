@@ -2,16 +2,7 @@
 #define SCI_INVENTORY_H
 
 #include "IconBar.h"
-
-// 16-byte embedded object, ctor 0x40D0C0, dtor 0x401130
-struct InvSlotItem {
-    int field_0;
-    int field_4;
-    int field_8;
-    int field_C;
-    InvSlotItem();
-    ~InvSlotItem();
-};
+#include "InvSlotItem.h"
 
 // 24-byte embedded object, ctor 0x43E560, dtor 0x43E580
 struct InvPanel {

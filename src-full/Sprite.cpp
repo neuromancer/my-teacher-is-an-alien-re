@@ -400,7 +400,7 @@ int Sprite::CheckConditions()
 }
 
 /* Function start: 0x41D6D0 */ /* DEMO ONLY - no full game match */
-void Sprite::SetRange(int param_1, int param_2, int param_3)
+void Sprite::SetRange(int param_1, int param_2, int param_3, int param_4)
 {
     if (num_states <= param_1) {
         ShowError("Sprite::SetRange#1 %s %d", sprite_filename, param_1);

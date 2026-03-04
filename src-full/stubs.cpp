@@ -135,7 +135,6 @@ void SC_Detention::ProcessPeriodAction(int param) {}
 #include "SCI_Inventory.h"
 #include "LinkedList.h"
 
-InvSlotItem::InvSlotItem() {}
 InvSlotItem::~InvSlotItem() {}
 InvPanel::InvPanel() {}
 InvPanel::~InvPanel() {}
@@ -353,6 +352,10 @@ public:
 SpriteAction::SpriteAction(int, int, int, int, int, int, int, int, int, int) {}
 char* __cdecl FUN_00426190(char* name) { return name; }
 
+// T_MenuHotspot stub
+#include "T_MenuHotspot.h"
+int T_MenuHotspot::LBLParse(char*) { return 0; }
+
 // --- C++ global ---
 int DAT_00472d58 = 0;
 int (__stdcall *DAT_0047652c)(int) = 0;
@@ -439,3 +442,45 @@ void QObj::FUN_00444920(void*) {}
 
 class SprInit { public: void FUN_00420ce0(int); };
 void SprInit::FUN_00420ce0(int) {}
+
+// ============================================================================
+// SC_Slime stubs
+// ============================================================================
+#include "SC_Slime.h"
+
+void SC_Slime::Update(int, int) {}
+SlimeDim::~SlimeDim() {}
+SlotPair::SlotPair() { field_0 = 0; field_4 = 0; }
+
+int DAT_00468bbc = 0;
+
+// SlimeTable stubs (class defined locally in SC_Slime.cpp)
+class SlimeTable {
+    int fields[3];
+public:
+    SlimeTable();
+    ~SlimeTable();
+    void Init(int);
+};
+SlimeTable::SlimeTable() {}
+SlimeTable::~SlimeTable() {}
+void SlimeTable::Init(int) {}
+
+// TimerWrapper stubs (class defined locally in SC_Slime.cpp)
+class TimerWrapper {
+    int fields[3];
+public:
+    TimerWrapper();
+    ~TimerWrapper();
+};
+TimerWrapper::TimerWrapper() {}
+TimerWrapper::~TimerWrapper() {}
+
+void __fastcall FUN_00425200(void*) {}
+void __fastcall FUN_00425490(void*) {}
+void __fastcall FUN_00421930(void*) {}
+void __fastcall FUN_00426ce0(void*, int, int) {}
+
+extern "C" {
+    void FUN_004309c0(void*) {}
+}

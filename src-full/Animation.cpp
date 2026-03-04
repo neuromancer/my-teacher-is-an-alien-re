@@ -123,7 +123,7 @@ int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
 
   if (smk->NewPalette != 0) {
     DAT_00476550(smack_buffer, &smk->Palette, 0);
-    if (smack_buffer->PalColorsInUse < 0x100) {
+    if (smack_buffer->StartPalColor < 0x100) {
       DAT_00476538((int)smk, &smack_buffer->Palette, smack_buffer->PalColorsInUse,
                    smack_buffer->Unk43C);
     }
@@ -150,7 +150,7 @@ int Animation::ApplyPalette(unsigned int start, unsigned int count) {
 int Animation::UpdatePalette(unsigned int start, unsigned int count) {
   if (smk->NewPalette != 0) {
     DAT_00476550(smack_buffer, &smk->Palette, 0);
-    if (smack_buffer->PalColorsInUse < 0x100) {
+    if (smack_buffer->StartPalColor < 0x100) {
       DAT_00476538((int)smk, &smack_buffer->Palette, smack_buffer->PalColorsInUse,
                    smack_buffer->Unk43C);
     }
@@ -176,12 +176,13 @@ void Animation::NextFrame() {
 /* Function start: 0x41ADB0 */
 void Animation::GotoFrame(int frame) {
   if (smk != 0) {
+    unsigned int (__stdcall *soundOnOff)(int, unsigned int) = DAT_00476570;
     if (*(char*)((int)DAT_0046aa10 + 0x46) == '\x02') {
-      DAT_00476570((int)smk, 0);
+      soundOnOff((int)smk, 0);
     }
     DAT_00476548((int)smk, frame);
     if (*(char*)((int)DAT_0046aa10 + 0x46) == '\x02') {
-      DAT_00476570((int)smk, 1);
+      soundOnOff((int)smk, 1);
     }
   }
 }

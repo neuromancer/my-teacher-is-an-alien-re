@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "Memory.h"
+#include "Animation.h"
+
+extern char* __cdecl FUN_00426190(char* name);
+extern "C" int FUN_00425fa0(void*);
 
 // NOTE: CreatePaletteBuffer at 0x41EA50 is effectively a placement new for Palette
 
@@ -28,6 +32,16 @@ void Palette::Cleanup()
 extern "C" {
 }
 
+/* Function start: 0x41DBF0 */
+Palette::Palette(char* filename)
+{
+    m_size = 0;
+    m_data = 0;
+    m_size = 0x300;
+    m_data = new char[0x300];
+    LoadFile(filename);
+}
+
 /* Function start: 0x41DC40 */ /* ~96% match */
 Palette::Palette()
 {
@@ -35,6 +49,50 @@ Palette::Palette()
     m_data = 0;
     m_size = 0x300;
     m_data = new char[0x300];
+}
+
+/* Function start: 0x41DCA0 */
+void Palette::CopyData(void* source)
+{
+    char* dst = m_data;
+    char* src = (char*)source;
+    int i = 0;
+    while (i < m_size) {
+        *dst = *src;
+        src++;
+        dst++;
+        i++;
+    }
+}
+
+/* Function start: 0x41DCC0 */
+void Palette::LoadFile(char* filename)
+{
+    char* path = FUN_00426190(filename);
+    if (!FUN_00425fa0(path)) {
+        ShowError("Palette::Load - Can't find palette file '%s'", filename);
+    }
+
+    int len = strlen(filename);
+    if (strnicmp(filename + len - 4, ".smk", 4) == 0) {
+        Animation anim;
+        anim.Open(filename, 0xFE000, -1);
+        CopyData(anim.smk->Palette);
+    } else {
+        FILE* file = fsopen(filename, "rb");
+        if (file == 0) {
+            ShowError("Palette::Load - Could not open palette file '%s'", filename);
+        }
+
+        if (strnicmp(filename + len - 4, ".col", 4) == 0) {
+            fseek(file, 8, 0);
+        } else {
+            fseek(file, 0xd, 0);
+        }
+
+        fread(m_data, m_size, 1, file);
+        fclose(file);
+    }
 }
 
 /* Function start: 0x41EA50 - CreatePaletteBuffer is effectively a placement new for Palette */
