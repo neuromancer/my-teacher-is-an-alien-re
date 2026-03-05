@@ -1,4 +1,5 @@
 #include "SC_Rats.h"
+#include "SpriteAction.h"
 #include "Memory.h"
 #include "Sample.h"
 #include "GameState.h"
@@ -21,16 +22,7 @@ extern "C" void FUN_004265a0();
 extern void __fastcall FUN_0042bf00(void*);
 extern void __fastcall FUN_0042be00(void*);
 extern void __fastcall FUN_004252a0(void*);
-extern void __fastcall FUN_00444af0(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-// SpriteAction - 0x38-byte object, constructor is FUN_00444a40 (thiscall)
-class SpriteAction {
-    int field_0[14]; // 0x38 bytes
-public:
-    void* operator new(size_t s) { return AllocateMemory(s); }
-    void operator delete(void* p) { FreeMemory(p); }
-    SpriteAction(int, int, int, int, int, int, int, int, int, int);
-};
 extern void __cdecl FUN_00444e40(void*);
 extern void __cdecl FUN_00425c50(char*, ...);
 extern int __fastcall FUN_00433ae0(void*, int, char*);
@@ -173,8 +165,7 @@ int SC_Rats::ShutDown(SC_Message* msg) {
         DAT_0046ae78 = 0;
     }
     if (field_A8 != 0) {
-        FUN_00444af0((void*)field_A8);
-        FreeMemory((void*)field_A8);
+        delete (SpriteAction*)field_A8;
         field_A8 = 0;
     }
     if (msg != 0) {
@@ -241,8 +232,7 @@ void SC_Rats::ProcessState() {
     if (savedCommand == 0x2B) {
         if (DAT_00473e18 == 2) {
             if (field_A8 != 0) {
-                FUN_00444af0((void*)field_A8);
-                FreeMemory((void*)field_A8);
+                delete (SpriteAction*)field_A8;
                 field_A8 = 0;
             }
             field_A8 = (int)new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -250,8 +240,7 @@ void SC_Rats::ProcessState() {
             ParseFile(&temp, "mis\\cb_rats.mis", "_WIN_LBL_PR_");
         } else if (DAT_00473e18 == 3) {
             if (field_A8 != 0) {
-                FUN_00444af0((void*)field_A8);
-                FreeMemory((void*)field_A8);
+                delete (SpriteAction*)field_A8;
                 field_A8 = 0;
             }
             field_A8 = (int)new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -270,8 +259,7 @@ void SC_Rats::ProcessState() {
             gs->stateValues[idx] += 0x14;
         } else if (DAT_00473e18 == 3) {
             if (field_A8 != 0) {
-                FUN_00444af0((void*)field_A8);
-                FreeMemory((void*)field_A8);
+                delete (SpriteAction*)field_A8;
                 field_A8 = 0;
             }
             field_A8 = (int)new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -294,8 +282,7 @@ void SC_Rats::ProcessState() {
     }
     FUN_00444e40((void*)field_A8);
     if (field_A8 != 0) {
-        FUN_00444af0((void*)field_A8);
-        FreeMemory((void*)field_A8);
+        delete (SpriteAction*)field_A8;
         field_A8 = 0;
     }
 }

@@ -26,37 +26,38 @@ public:
     SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY);
     ~SC_Message();
 
-    /* Function start: 0x419A10 */ /* DEMO ONLY - no full game match */
     virtual int LBLParse(char* param_1);
 
-    /* Function start: 0x444B70 */ /* ~86% match */
     void Dump(int unused);
 };
 
+// SC_Question - Question/dialog system (full game)
+// Constructor: 0x414780, Destructor: 0x4148F0
+// Vtable: 0x4612D8
+// Extends Parser directly
 class SC_Question : public Parser
 {
 public:
-    MMPlayer* mouseControl; // 0x88
-    Queue* messageQueue;        // 0x8c
-    unsigned int questionId;    // 0x90 - question ID passed to constructor
-    int field_94;
-    int state;                  // 0x98 - 0=new, 2=already answered
-    char label[128];            // 0x9c
+    int field_88;               // 0x88
+    int field_8C;               // 0x8C
+    Queue* messageQueue;        // 0x90
+    int field_94;               // 0x94 (flags, bit 8 used)
+    int state;                  // 0x98 - 0=new, 1=active, 2=answered
+    char label[128];            // 0x9C-0x11B
+    void* mouseControl;         // 0x11C (MMPlayer*)
+    void* dialogPtr;            // 0x120 (SCI_Dialog*)
+    int actionIndex[3];         // 0x124, 0x128, 0x12C
+    unsigned int questionId;    // 0x130
+    int field_134;              // 0x134
 
-    SC_Question(int id);
+    SC_Question(int id, int dialog);
     ~SC_Question();
-    
-    /* Function start: 0x406930 */ /* DEMO ONLY - no full game match */
+
     void Update(int x, int y);
-    
-    /* Function start: 0x4069B0 */ /* DEMO ONLY - no full game match */
     void Finalize();
-    
-    /* Function start: 0x406AF0 */ /* DEMO ONLY - no full game match */
+    void InitState();
+    int OnInput(SC_Message* msg);
     virtual int LBLParse(char* line);
-    
-    /* Function start: 0x406F50 */ /* DEMO ONLY - no full game match */
-    void DumpMessageQueue(int unused);
 };
 
 #endif

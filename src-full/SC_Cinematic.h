@@ -22,7 +22,7 @@ public:
     void EndCinematic();                // 0x430730
 
     int field_A8;       // 0xA8 - Palette*
-    int field_AC;       // 0xAC - SmkPlayer*
+    int field_AC;       // 0xAC - Animation*
     int field_B0;       // 0xB0 - saved state index
     int field_B4;       // 0xB4 - saved render context
     int field_B8;       // 0xB8 - flags

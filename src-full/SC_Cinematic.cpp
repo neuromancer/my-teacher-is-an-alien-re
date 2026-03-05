@@ -1,5 +1,6 @@
 #include "SC_Cinematic.h"
-#include "SmkPlayer.h"
+#include "SpriteAction.h"
+#include "Animation.h"
 #include "GameLoop.h"
 #include "VBuffer.h"
 #include "GameState.h"
@@ -49,7 +50,6 @@ extern "C" int FUN_00425fa0(void* path);
 extern void __fastcall FUN_0041dc10(void* palette);
 
 // Message operations
-extern void __fastcall FUN_00444af0(void* msg);
 extern void __cdecl FUN_00444e40(void* msg);
 
 // Screen dimensions (0x4205E0, 0x4205F0 - return ptrs to render target w/h)
@@ -171,7 +171,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
             }
         }
 
-        field_AC = (int)new SmkPlayer(moviePath);
+        field_AC = (int)new Animation(moviePath);
 
         *(int*)(DAT_0046a6ec + 0x1c) = 0;
 
@@ -186,8 +186,8 @@ void SC_Cinematic::Init(SC_Message* msg) {
 
         field_C8 = pmsg[8];
 
-        SmkPlayer* smk = (SmkPlayer*)field_AC;
-        if ((field_B8 & 0x2) != 0 || smk->Open(0, 0x100) == 0) {
+        Animation* smk = (Animation*)field_AC;
+        if ((field_B8 & 0x2) != 0 || smk->SetPalette(0, 0x100) == 0) {
             FUN_00425f10();
         }
 
@@ -263,14 +263,14 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                 FUN_00425c50("Invalid gamestate %d", idx);
             }
             if (gs->stateValues[idx] != 0) {
-                int handle = *(int*)(field_AC + 0xc);
+                int handle = (int)((Animation*)field_AC)->smk;
                 FUN_004307b0(handle);
             }
         }
     }
 
     if (field_AC != 0) {
-        delete (SmkPlayer*)field_AC;
+        delete (Animation*)field_AC;
         field_AC = 0;
     }
 
@@ -283,8 +283,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
 
     if (field_D0 != 0) {
         void* spr = (void*)field_D0;
-        FUN_00444af0(spr);
-        FreeMemory(spr);
+        delete (SpriteAction*)spr;
         field_D0 = 0;
     }
 
@@ -312,9 +311,9 @@ void SC_Cinematic::Update(int param1, int param2) {
             EndCinematic();
         }
 
-        SmkPlayer* smk = (SmkPlayer*)field_AC;
+        Animation* smk = (Animation*)field_AC;
         VBuffer* vp = (VBuffer*)DAT_0046aa14;
-        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, smk->field_18);
+        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk->targetBuffer);
         FUN_00432da0(DAT_0046aa18);
         return;
     }
@@ -356,26 +355,26 @@ void SC_Cinematic::Update(int param1, int param2) {
             }
         }
 
-        SmkPlayer* smk = (SmkPlayer*)field_AC;
-        if (smkWait(smk->field_0C) == 0) {
+        Animation* smk = (Animation*)field_AC;
+        if (smkWait((int)smk->smk) == 0) {
             break;
         }
     }
 
     /* Frame ready - play it */
     {
-        SmkPlayer* smk = (SmkPlayer*)field_AC;
-        int* smkData = (int*)smk->field_0C;
+        Animation* smk = (Animation*)field_AC;
+        int* smkData = (int*)(int)smk->smk;
         if (*(int*)((char*)smkData + 0x68) != 0) {
-            smk->SetVolume(0, 0x100);
+            smk->UpdatePalette(0, 0x100);
         }
     }
 
-    ((SmkPlayer*)field_AC)->Render();
+    ((Animation*)field_AC)->DoFrame();
 
     {
-        SmkPlayer* smk = (SmkPlayer*)field_AC;
-        VBuffer* surface = (VBuffer*)smk->field_18;
+        Animation* smk = (Animation*)field_AC;
+        VBuffer* surface = (VBuffer*)(int)smk->targetBuffer;
         int* screenH = FUN_004205f0();
         int h = *screenH - 1;
         int* screenW = FUN_004205e0();
@@ -392,8 +391,8 @@ void SC_Cinematic::Update(int param1, int param2) {
     }
 
     {
-        SmkPlayer* smk = (SmkPlayer*)field_AC;
-        int* smkData = (int*)smk->field_0C;
+        Animation* smk = (Animation*)field_AC;
+        int* smkData = (int*)(int)smk->smk;
         int totalFrames = *(int*)((char*)smkData + 0xc);
         int skipped = *(int*)((char*)smkData + 0x374);
         if (totalFrames - skipped != 1) {
@@ -406,8 +405,8 @@ void SC_Cinematic::Update(int param1, int param2) {
     if (field_B8 & 0x200) {
         field_CC = 1;
 
-        SmkPlayer* smk = (SmkPlayer*)field_AC;
-        int* smkSurface = (int*)smk->field_18;
+        Animation* smk = (Animation*)field_AC;
+        int* smkSurface = (int*)(int)smk->targetBuffer;
         FUN_00425a90(smkSurface[5], smkSurface[6]);
 
         *(int*)(DAT_0046a6ec + 0x1c) = field_B4;
@@ -439,9 +438,9 @@ void SC_Cinematic::Update(int param1, int param2) {
             }
         }
 
-        SmkPlayer* smk2 = (SmkPlayer*)field_AC;
+        Animation* smk2 = (Animation*)field_AC;
         VBuffer* vp = (VBuffer*)DAT_0046aa14;
-        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, smk2->field_18);
+        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk2->targetBuffer);
     } else {
         Timer timer;
         timer.Wait(0x96);
@@ -468,8 +467,7 @@ void SC_Cinematic::EndCinematic() {
         FUN_00444e40((void*)field_D0);
         void* spr = (void*)field_D0;
         if (spr != 0) {
-            FUN_00444af0(spr);
-            FreeMemory(spr);
+            delete (SpriteAction*)spr;
             field_D0 = 0;
         }
     } else {

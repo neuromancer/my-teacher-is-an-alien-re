@@ -1,4 +1,5 @@
 #include "SC_Slime.h"
+#include "SpriteAction.h"
 #include "Sprite.h"
 #include "Palette.h"
 #include "Memory.h"
@@ -13,14 +14,6 @@ extern void __cdecl FUN_00425a90(int, int);
 extern void __cdecl FUN_00425d70(char*);
 extern void* DAT_0046aa24;
 
-// SpriteAction - 0x38-byte object, constructor at 0x00444a40
-class SpriteAction {
-    int field_0[14];
-public:
-    SpriteAction(int, int, int, int, int, int, int, int, int, int);
-    ~SpriteAction();
-};
-
 // SlimeTable - 12-byte object, constructor at 0x00425480
 class SlimeTable {
     int fields[3];
@@ -30,13 +23,8 @@ public:
     void Init(int);
 };
 
-// TimerWrapper - 12-byte object, constructor at 0x00421920
-class TimerWrapper {
-    int fields[3];
-public:
-    TimerWrapper();
-    ~TimerWrapper();
-};
+// TimerWrapper = TimeOut (ctor 0x421920 wraps 0x421960, dtor 0x421930)
+#include "TimeOut.h"
 
 /* Function start: 0x40CF60 */
 SC_Slime::SC_Slime()
@@ -109,7 +97,7 @@ void SC_Slime::Init(SC_Message* msg)
     field_170[5] = 1;
     field_170[6] = 0;
 
-    TimerWrapper* timer = new TimerWrapper();
+    TimeOut* timer = new TimeOut();
     field_B8 = (int)timer;
 }
 
@@ -139,9 +127,7 @@ int SC_Slime::ShutDown(SC_Message* msg)
         spriteBC = 0;
     }
     if (field_B8 != 0) {
-        extern void __fastcall FUN_00421930(void*);
-        FUN_00421930((void*)field_B8);
-        delete (void*)field_B8;
+        delete (TimeOut*)field_B8;
         field_B8 = 0;
     }
     if (spriteC8 != 0) {
@@ -173,9 +159,7 @@ int SC_Slime::ShutDown(SC_Message* msg)
         sprite12C = 0;
     }
     if (field_A8 != 0) {
-        extern void __fastcall FUN_00444af0(void*);
-        FUN_00444af0((void*)field_A8);
-        delete (void*)field_A8;
+        delete (SpriteAction*)field_A8;
         field_A8 = 0;
     }
     if (field_16C != 0) {

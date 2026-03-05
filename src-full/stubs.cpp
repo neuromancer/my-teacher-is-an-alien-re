@@ -107,7 +107,7 @@ void __fastcall AssetCleanup(void* thisPtr) {}
 void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 }
 
-// SCI_AfterSchoolMenu helper functions
+// Handler31 helper functions
 void __fastcall FUN_004148f0(void* param) {}
 void* __fastcall FUN_00418540(void* param) { return 0; }
 
@@ -315,8 +315,7 @@ void __fastcall FUN_00424ee0(void*) {}
 void __fastcall FUN_004308c0(void*) {}
 void __fastcall FUN_00443990(void*) {}
 void __fastcall FUN_00443ab0(void*) {}
-void __fastcall FUN_00443e30(void*) {}
-void __fastcall FUN_00444af0(void*) {}
+int __fastcall FUN_00443e30(void*) { return 0; }
 void __fastcall FUN_0044c740(void*) {}
 void __fastcall FUN_0044c9d0(void*) {}
 void* __fastcall FUN_00407180(void*) { return 0; }
@@ -330,6 +329,12 @@ void __fastcall FUN_00404d70(void*, int, int) {}
 void __fastcall FUN_0040b760(void*, int, int) {}
 void __fastcall FUN_0044bac0(void*, int, int, int) {}
 void* __fastcall FUN_00450b10(void*) { return 0; }
+void* __fastcall FUN_0044c660(void*, int, char*) { return 0; }
+void __fastcall FUN_00443b90(void*, int, int) {}
+void __fastcall FUN_0044d2a0(void*, int, int) {}
+void __fastcall FUN_0044c880(void*) {}
+void __fastcall FUN_0044d210(void*, int, int, int, int, int) {}
+void __fastcall FUN_00420ac0(void*, int, int) {}
 
 // --- C++ __cdecl stubs ---
 void __cdecl FUN_00412a50() {}
@@ -341,15 +346,6 @@ void __cdecl FUN_00425d70(char*, ...) {}
 void __cdecl FUN_00444e40(void*) {}
 void __cdecl FUN_00445450(void*, void*) {}
 void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int) { return 0; }
-// SpriteAction class (same definition as in SC_Rats.cpp)
-class SpriteAction {
-    int field_0[14];
-public:
-    void* operator new(size_t s) { return AllocateMemory(s); }
-    void operator delete(void* p) { FreeMemory(p); }
-    SpriteAction(int, int, int, int, int, int, int, int, int, int);
-};
-SpriteAction::SpriteAction(int, int, int, int, int, int, int, int, int, int) {}
 char* __cdecl FUN_00426190(char* name) { return name; }
 
 // T_MenuHotspot stub
@@ -361,14 +357,6 @@ int DAT_00472d58 = 0;
 int (__stdcall *DAT_0047652c)(int) = 0;
 
 // --- Class method stubs for SC_Cinematic ---
-#include "SmkPlayer.h"
-SmkPlayer::SmkPlayer(char*) {}
-SmkPlayer::~SmkPlayer() {}
-int SmkPlayer::Open(int, int) { return 0; }
-void SmkPlayer::SetVolume(int, int) {}
-void SmkPlayer::Render() {}
-void SmkPlayer::NextFrame() {}
-
 #include "GameLoop.h"
 int GameLoop::ProcessEvents(int) { return 0; }
 
@@ -399,7 +387,7 @@ void __cdecl FUN_00425c50(char*) {}
 void __cdecl FUN_00425d70(char*) {}
 
 // ============================================================================
-// SCI_AfterSchoolMenu2 stubs
+// SCI_SchoolMenu stubs
 // ============================================================================
 
 // extern "C" globals
@@ -433,7 +421,7 @@ void __fastcall FUN_00421020(void*) {}
 void __fastcall FUN_00421880(void*) {}
 void __fastcall FUN_004250e0(void*) {}
 
-// Class method stubs for SCI_AfterSchoolMenu2
+// Class method stubs for SCI_SchoolMenu
 class GSVal { public: void FUN_00409f20(int); int GetStateValue(int); };
 void GSVal::FUN_00409f20(int) {}
 
@@ -461,26 +449,97 @@ public:
     SlimeTable();
     ~SlimeTable();
     void Init(int);
+    void FUN_00425620(int, char*, int);
+    void FUN_004254a0(int);
 };
 SlimeTable::SlimeTable() {}
 SlimeTable::~SlimeTable() {}
 void SlimeTable::Init(int) {}
+void SlimeTable::FUN_00425620(int, char*, int) {}
+void SlimeTable::FUN_004254a0(int) {}
 
-// TimerWrapper stubs (class defined locally in SC_Slime.cpp)
-class TimerWrapper {
-    int fields[3];
-public:
-    TimerWrapper();
-    ~TimerWrapper();
-};
-TimerWrapper::TimerWrapper() {}
-TimerWrapper::~TimerWrapper() {}
+// TimerWrapper/TimerObj stubs removed — now using TimeOut class
 
 void __fastcall FUN_00425200(void*) {}
 void __fastcall FUN_00425490(void*) {}
-void __fastcall FUN_00421930(void*) {}
+// FUN_00421930 stub removed — now TimeOut::~TimeOut
 void __fastcall FUN_00426ce0(void*, int, int) {}
 
 extern "C" {
     void FUN_004309c0(void*) {}
 }
+
+// ============================================================================
+// SC_Message method stubs (engine message class, used by many systems)
+// ============================================================================
+
+SC_Message::SC_Message(int, int, int, int, int, int, int, int, int, int) {}
+SC_Message::~SC_Message() {}
+int SC_Message::LBLParse(char*) { return 0; }
+void SC_Message::Dump(int) {}
+
+// ============================================================================
+// SC_Question extern stubs (full game)
+// ============================================================================
+
+int __fastcall FUN_0044c350(void*, int, char*) { return 0; }
+void __cdecl FUN_00425cb0(char*, ...) {}
+int __fastcall FUN_00420a00(void*, int, int) { return 0; }
+void __fastcall FUN_00420a50(void*, int, int) {}
+void __fastcall FUN_00404230(void*, int, char*, int, int, int, int) {}
+void __fastcall FUN_00443ed0(void*, int, int) {}
+
+// SC_Question globals
+void* DAT_0046a6e0 = 0;
+void* DAT_0046a6e8 = 0;
+char DAT_00468108[32] = {0};
+char DAT_00468168[32] = {0};
+char DAT_004690e4[32] = {0};
+void* DAT_0046aa38 = 0;
+
+// ============================================================================
+// SCI_PracticeRoom / SC_Wahoo / SC_WordSearch link stubs
+// ============================================================================
+
+// Missing __fastcall stubs
+void __fastcall FUN_004309a0(void*, int, int) {}
+void __fastcall FUN_0042b100(void*) {}
+void __fastcall FUN_0042b270(void*) {}
+void __fastcall FUN_00429c10(void*) {}
+void* __fastcall FUN_0042bc50(void*) { return 0; }
+void __fastcall FUN_00420f00(void*) {}
+void __fastcall FUN_00429df0(void*) {}
+int __fastcall FUN_0042a010(void*, int, void*) { return 0; }
+void* __fastcall FUN_00429b60(void*, int, int, void*) { return 0; }
+void* __fastcall FUN_00420ce0(void*, int, int) { return 0; }
+void __fastcall FUN_00410fd0(void*) {}
+void __fastcall FUN_00409f20(void*, int) {}
+void __fastcall FUN_004274c0(void*, int, int) {}
+void* __fastcall FUN_00410fb0(void*, int, char*, int) { return 0; }
+void __fastcall FUN_004218c0(void*) {}
+unsigned int __fastcall FUN_004218e0(void*) { return 0; }
+void __fastcall FUN_00411180(void*, int, int) {}
+void __fastcall FUN_00404350(void*, int, int, int, int, int, int, int, int) {}
+
+// Missing __cdecl stubs
+char* __cdecl FUN_0044e470(char*) { return 0; }
+
+// Missing C++ globals
+int DAT_0046ad6c = 0;
+void* DAT_0046bbfc = 0;
+char* DAT_0046bacc = 0;
+
+// Class method stubs for SC_Wahoo local classes
+class InputObj { public: void Refresh(int); };
+void InputObj::Refresh(int) {}
+
+class DetectionObj { public: void Render(); };
+void DetectionObj::Render() {}
+
+class DetMask { public: unsigned int CheckHit(int, int); };
+unsigned int DetMask::CheckHit(int, int) { return 0; }
+
+// SC_WordSearch virtual method stubs
+#include "SC_WordSearch.h"
+int SC_WordSearch::AddMessage(SC_Message*) { return 0; }
+int SC_WordSearch::LBLParse(char*) { return 0; }

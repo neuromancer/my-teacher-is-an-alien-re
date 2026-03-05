@@ -1,4 +1,4 @@
-#include "SCI_AfterSchoolMenu.h"
+#include "Handler31.h"
 #include <string.h>
 #include "Sprite.h"
 #include "Palette.h"
@@ -7,7 +7,7 @@ extern void __fastcall FUN_004148f0(void*);
 extern void* __fastcall FUN_00418540(void*);
 
 /* Function start: 0x416E70 */
-SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
+Handler31::Handler31() {
     memset(&field_A8, 0, 40);
     handlerId = 0x1F;
 
@@ -21,7 +21,7 @@ SCI_AfterSchoolMenu::SCI_AfterSchoolMenu() {
 }
 
 /* Function start: 0x416FC0 */
-SCI_AfterSchoolMenu::~SCI_AfterSchoolMenu() {
+Handler31::~Handler31() {
     if (sprite1 != 0) {
         delete sprite1;
         sprite1 = 0;

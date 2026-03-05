@@ -1,12 +1,12 @@
-#ifndef SCI_AFTERSCHOOLMENU_H
-#define SCI_AFTERSCHOOLMENU_H
+#ifndef HANDLER31_H
+#define HANDLER31_H
 
 #include "IconBar.h"
 
 class SC_Message;
 class Sprite;
 
-// SCI_AfterSchoolMenu - Handler case 31 (0x1F) - Main Menu (full game)
+// Handler31 - Handler case 31 (0x1F)
 // Size: 0xD0 bytes
 // vtable: 0x4612E8
 // Constructor: 0x416E70
@@ -25,10 +25,10 @@ class Sprite;
 //   0xC4: int field_C4     (pointer, cleaned with FUN_004148F0)
 //   0xC8: int field_C8     (linked list pointer)
 //   0xCC: field_CC
-class SCI_AfterSchoolMenu : public IconBar {
+class Handler31 : public IconBar {
 public:
-    SCI_AfterSchoolMenu();
-    ~SCI_AfterSchoolMenu();
+    Handler31();
+    ~Handler31();
 
     int field_A8;       // 0xA8
     int field_AC;       // 0xAC
@@ -42,4 +42,4 @@ public:
     int field_CC;       // 0xCC
 };
 
-#endif // SCI_AFTERSCHOOLMENU_H
+#endif // HANDLER31_H

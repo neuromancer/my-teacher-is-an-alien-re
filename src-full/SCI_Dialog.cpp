@@ -253,7 +253,7 @@ int SCI_Dialog::Exit(SC_Message* msg) {
     case 0x13:
         dq = FindDialogById(msg->sourceAddress);
         if (dq == 0) {
-            dq = new SC_Question(msg->sourceAddress);
+            dq = new SC_Question(msg->sourceAddress, (int)this);
             if (dq->state == 2) {
                 delete dq;
             } else {
@@ -468,7 +468,7 @@ LAB_ret_zero:
 
 /* Function start: 0x417E60 */ /* ~89% match */
 DialogQuestion* SCI_Dialog::FindDialogById(int id) {
-    DialogQuestion* searchQuestion = new SC_Question(id);
+    DialogQuestion* searchQuestion = new SC_Question(id, (int)this);
     Queue* queue;
     QueueNode* node;
     QueueNode* tmp;
@@ -564,7 +564,7 @@ int SCI_Dialog::LBLParse(char* line) {
         }
     } else if (strcmp(token, "QUESTION") == 0) {
         sscanf(line, "%s %d ", token, &questionId);
-        dq = new SC_Question(questionId);
+        dq = new SC_Question(questionId, (int)this);
         if (dq->state == 2) {
             delete dq;
         } else {

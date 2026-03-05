@@ -1,4 +1,5 @@
 #include "SC_SelectHotSpot.h"
+#include "SpriteAction.h"
 #include "LinkedList.h"
 #include "Memory.h"
 #include "Sprite.h"
@@ -32,7 +33,7 @@ extern void __fastcall FUN_00424ee0(void* sample);
 // Ambient functions (fastcall - 0 extra params)
 extern void __fastcall FUN_00443990(void* ambient);
 extern void __fastcall FUN_00443ab0(void* ambient);
-extern void __fastcall FUN_00443e30(void* ambient);
+extern int __fastcall FUN_00443e30(void* ambient);
 extern void* __fastcall FUN_004438a0(void* mem);
 
 // Palette functions (fastcall - 0 extra params)
@@ -45,8 +46,7 @@ extern char* __cdecl FUN_00426190(char* name);
 // Parser operations
 extern void __cdecl FUN_00413e70(void* parser, int parent, char* key);
 
-// Message operations (thiscall - 0 extra params)
-extern void __fastcall FUN_00444af0(void* msg);
+// Message operations
 extern void* __cdecl FUN_00444a40(void* mem, int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00445450(void* msg, void* owner);
 extern void __cdecl FUN_00444e40(void* msg);
@@ -120,8 +120,7 @@ SelectHotspot::~SelectHotspot() {
             while (list->head != 0) {
                 void* data = list->RemoveCurrent();
                 if (data != 0) {
-                    FUN_00444af0(data);
-                    FreeMemory(data);
+                    delete (SpriteAction*)data;
                 }
             }
         }

@@ -22,10 +22,10 @@
 #include "SC_BgSnd.h"
 #include "SC_Timer.h"
 #include "SCI_Inventory.h"
-#include "SCI_AfterSchoolMenu.h"
+#include "Handler31.h"
 #include "SCI_IconBarModule.h"
 #include "SC_ZBuffer.h"
-#include "SCI_AfterSchoolMenu2.h"
+#include "SCI_SchoolMenu.h"
 #include "SC_CrystalPuzzle.h"
 #include "SCI_Schedule.h"
 #include "SC_DemoScreen.h"
@@ -897,7 +897,7 @@ Handler* CreateHandler(int command) {
         handler = new SCI_Inventory();
         break;
     case 0x1F:
-        handler = new SCI_AfterSchoolMenu();
+        handler = new Handler31();
         break;
     case 0x20:
         handler = new SCI_IconBarModule();
@@ -906,7 +906,7 @@ Handler* CreateHandler(int command) {
         handler = new SC_ZBuffer();
         break;
     case 0x25:
-        handler = new SCI_AfterSchoolMenu2();
+        handler = new SCI_SchoolMenu();
         break;
     case 0x26:
         handler = new SC_CrystalPuzzle();

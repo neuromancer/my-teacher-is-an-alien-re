@@ -1,4 +1,5 @@
-#include "SCI_AfterSchoolMenu2.h"
+#include "SCI_SchoolMenu.h"
+#include "SpriteAction.h"
 #include <string.h>
 #include <stdio.h>
 #include "GameState.h"
@@ -61,7 +62,6 @@ extern "C" {
 }
 // C++ linkage functions (matching stubs.cpp)
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
-extern void __fastcall FUN_00444af0(void*);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00425d70(char*, ...);
@@ -72,14 +72,14 @@ extern void* __fastcall FUN_00403620(void*);
 extern void __fastcall FUN_00401c80(void*);
 
 /* Function start: 0x41E030 */
-SCI_AfterSchoolMenu2::SCI_AfterSchoolMenu2() {
+SCI_SchoolMenu::SCI_SchoolMenu() {
     memset(&field_A8, 0, 0x50);
     handlerId = 0x25;
     moduleParam = 1;
 }
 
 /* Function start: 0x41E0E0 */
-SCI_AfterSchoolMenu2::~SCI_AfterSchoolMenu2() {
+SCI_SchoolMenu::~SCI_SchoolMenu() {
     void* ptr;
     int i;
 
@@ -138,7 +138,7 @@ SCI_AfterSchoolMenu2::~SCI_AfterSchoolMenu2() {
 }
 
 /* Function start: 0x41E270 */
-void SCI_AfterSchoolMenu2::Init(SC_Message* msg) {
+void SCI_SchoolMenu::Init(SC_Message* msg) {
     int periodIdx;
     int periodVal;
     int* charSprite;
@@ -402,7 +402,7 @@ void SCI_AfterSchoolMenu2::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x41E950 */
-int SCI_AfterSchoolMenu2::ShutDown(SC_Message* msg) {
+int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     void* ptr;
     int i;
 
@@ -529,12 +529,12 @@ int GSVal::GetStateValue(int index) {
 }
 
 /* Function start: 0x41F6A0 */
-void SCI_AfterSchoolMenu2::PlayMenuSound() {
+void SCI_SchoolMenu::PlayMenuSound() {
     FUN_00444e20(&DAT_00472d20);
 }
 
 /* Function start: 0x41F6B0 */
-int SCI_AfterSchoolMenu2::IsCharacterActive() {
+int SCI_SchoolMenu::IsCharacterActive() {
     int i = 0;
     int* p = characters;
     do {
@@ -552,7 +552,7 @@ int SCI_AfterSchoolMenu2::IsCharacterActive() {
 }
 
 /* Function start: 0x41F6E0 */
-void SCI_AfterSchoolMenu2::SetupOptions() {
+void SCI_SchoolMenu::SetupOptions() {
     void* gs;
     int* stateVals;
     int periodIdx;
@@ -695,7 +695,7 @@ void InitAllSchedule() {
 }
 
 /* Function start: 0x41ECE0 */
-int SCI_AfterSchoolMenu2::AddMessage(SC_Message* msg) {
+int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
     int ret;
     void* gs;
     int* stateVals;
@@ -1083,7 +1083,7 @@ check_back:
 }
 
 /* Function start: 0x41F9D0 */
-int SCI_AfterSchoolMenu2::LBLParse(char* line) {
+int SCI_SchoolMenu::LBLParse(char* line) {
     char label[32];
     char buf1[32];
     char buf2[32];

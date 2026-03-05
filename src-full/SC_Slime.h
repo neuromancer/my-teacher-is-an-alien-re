@@ -3,18 +3,11 @@
 
 #include "Handler.h"
 #include "InvSlotItem.h"
+#include "SpriteAction.h"
 
 class Sprite;
 class Palette;
 class SC_Message;
-
-// 8-byte embedded object at 0xB0, dtor 0x401120
-struct SlimeDim {
-    int field_0;
-    int field_4;
-    SlimeDim() { field_0 = 0; field_4 = 0; }
-    ~SlimeDim();
-};
 
 // 8-byte embedded object, ctor 0x40D0D0 (zeros 2 fields), no dtor
 struct SlotPair {
@@ -46,7 +39,7 @@ public:
     int field_A8;       // 0xA8 - action/message object pointer
     int field_AC;       // 0xAC
     SlimeDim dimB0;     // 0xB0-0xB7 (width/height)
-    int field_B8;       // 0xB8 - timer wrapper pointer
+    int field_B8;       // 0xB8 - TimeOut*
     Sprite* spriteBC;   // 0xBC - slime meter sprite
     Palette* palette;   // 0xC0 - palette
     Sprite* spriteC4;   // 0xC4 - sprite

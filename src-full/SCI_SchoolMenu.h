@@ -1,21 +1,21 @@
-#ifndef SCI_AFTERSCHOOLMENU2_H
-#define SCI_AFTERSCHOOLMENU2_H
+#ifndef SCI_SCHOOLMENU_H
+#define SCI_SCHOOLMENU_H
 
 #include "IconBar.h"
 
 class SC_Message;
 
-// SCI_AfterSchoolMenu2 - During School Menu handler (case 37/0x25)
+// SCI_SchoolMenu - During School Menu handler (case 37/0x25)
 // Error string: "SCI_SchoolMenu"
 // Constructor: 0x41E030
 // Destructor: 0x41E0E0
 // Size: 0xF8
 // Vtable: 0x461388
 // Extends IconBar
-class SCI_AfterSchoolMenu2 : public IconBar {
+class SCI_SchoolMenu : public IconBar {
 public:
-    SCI_AfterSchoolMenu2();
-    ~SCI_AfterSchoolMenu2();
+    SCI_SchoolMenu();
+    ~SCI_SchoolMenu();
 
     void Init(SC_Message* msg);
     int AddMessage(SC_Message* msg);
@@ -39,4 +39,4 @@ public:
     int field_F4;           // 0xF4
 };
 
-#endif // SCI_AFTERSCHOOLMENU2_H
+#endif // SCI_SCHOOLMENU_H
