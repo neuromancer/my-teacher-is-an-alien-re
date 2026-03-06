@@ -83,6 +83,41 @@ MessageQueue* g_MessageQueue = 0;
 
 void* DAT_00435f1c = 0;
 
+extern "C" {
+    void* DAT_0046ae4c = 0;
+    void* DAT_0046ae50 = 0;
+    void* DAT_0046ae58 = 0;
+    void* DAT_0046ae60 = 0;
+    void* DAT_0046ae64 = 0;
+    void* DAT_0046ae68 = 0;
+    void* DAT_0046ae6c = 0;
+    int DAT_00473e18 = 0;
+}
+
+class TargetListFull {
+public:
+    void ProcessTargets();
+};
+void TargetListFull::ProcessTargets() {}
+
+class WeaponParser {
+public:
+    void UpdateProjectiles();
+};
+void WeaponParser::UpdateProjectiles() {}
+
+class InputManagerFull {
+public:
+    void PollEvents(int);
+};
+void InputManagerFull::PollEvents(int) {}
+
+class PaletteLoader {
+public:
+    void Load(char*);
+};
+void PaletteLoader::Load(char*) {}
+
 // ============================================================================
 // CombatSprite / misc stubs
 // ============================================================================
@@ -166,6 +201,8 @@ char* DAT_0046aa00 = 0;
 #include "GameState.h"
 GameState* g_GameState_0046aa30 = 0;   // DAT_0046aa30
 GameState* g_StringTable_0046aa34 = 0; // DAT_0046aa34
+char* DAT_0046aa2c = 0;               // DAT_0046aa2c - string buffer for ProcessMessage
+GameState* DAT_0046aa3c = 0;          // DAT_0046aa3c - GameState for ProcessMessage
 
 extern "C" void WriteToLog(const char* format, ...) {}  // FUN_00425d70 stub
 void __fastcall FUN_00426a90(void* self) {}             // FUN_00426a90 - reset input state

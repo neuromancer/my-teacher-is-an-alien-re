@@ -4,6 +4,7 @@
 #include "Parser.h"
 #include "HashTable.h"
 #include "Sprite.h"
+#include "SpriteAction.h"
 #include "GlyphRect.h"
 #include "Sample.h"
 #include "Target.h"
@@ -11,22 +12,31 @@
 #include "CursorState.h"
 #include "GameOutcome.h"
 
+// EngineInfoParser - Full game version
+// Constructor: 0x434660, Destructor: 0x434740
+// Vtable: 0x4616E8
+// Parser is 0x90 bytes in full game, so EngineInfoParser fields start at 0x90
 class EngineInfoParser : public Parser {
 public:
-  GlyphRect anchorRect;   // 0x88: left=anchorX, top=anchorY, right=width, bottom=height
-  GlyphRect paletteRect;  // 0x98: left=paletteStart, top=paletteEnd, right=field_0xa0, bottom=field_0xa4
-  GlyphRect rect_0xa8;    // 0xa8: left=field_0xa8, top=field_0xac, right=field_0xb0, bottom=field_0xb4
+  SlimeDim anchor;          // 0x90-0x97: parsed by 'A' (x, y position)
+  SlimeDim dimensions;      // 0x98-0x9F: parsed by 'V' (width, height)
+  SlimeDim paletteStart;    // 0xA0-0xA7: parsed by 'P' (start x, y)
+  SlimeDim paletteEnd;      // 0xA8-0xAF: parsed by 'Q' (end x, y)
+  int field_0xB0;           // 0xB0: parsed by 'C'
+  int field_0xB4;           // 0xB4: parsed by 'D'
+  int field_0xB8;           // 0xB8
+  int field_0xBC;           // 0xBC
 
-  EngineInfoParser(); // 0x416BD0
-  virtual ~EngineInfoParser(); // 0x416CD0
-  virtual int LBLParse(char* line); // 0x416D70
+  EngineInfoParser();                       // 0x434660
+  virtual ~EngineInfoParser();              // 0x434740
+  virtual int LBLParse(char* line);         // 0x434820
 
-  void ParseOffset(char* line, int arg2); // 0x416F70
-  void ParseAnchor(char* line); // 0x416FD0
-  void ParseDimensions(char* line); // 0x417000
-  void ParseSound(char* line, int index); // 0x417030
-  void ParsePalette(char* line); // 0x417130
-  void ParseText(char* line); // 0x417170
+  void SetupDimensions();                   // 0x434800
+  void ParseOffset(char* line, int arg2);   // 0x434A00
+  void ParseAnchor(char* line);             // 0x434A60
+  void ParseDimensions(char* line);         // 0x434A90
+  void ParseSound(char* line, int index);   // 0x434AC0
+  void ParsePalette(char* line);            // 0x434BD0
 };
 
 #endif // ENGINE_SUBSYSTEMS_H

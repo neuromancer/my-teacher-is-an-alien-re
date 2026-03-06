@@ -1,12 +1,13 @@
 #ifndef ENGINEB_H
 #define ENGINEB_H
 
-#include "Engine.h"
+#include "SC_CombatBase.h"
 #include "GlyphRect.h"
 #include "Range.h"
 
 class Animation;
 class Sample;
+class SoundList;
 
 struct MeterPos {
   int x;
@@ -17,55 +18,68 @@ struct MeterPos {
   ~MeterPos() { }
 };
 
-// EngineB inherits from Engine (vtable 0x4313c0, size 0x168)
+// EngineB inherits from SC_CombatBase (full game vtable 0x461c90, size 0x178)
 // Used for combat/action scenes (COMBAT1.MIS)
 //
-// Overrides from Engine:
-//   [0] LBLParse: 0x004129a0
-//   [2] OnProcessEnd: 0x00412690
-//   [3] destructor: 0x004121f0
-//   [11] ProcessTargets: 0x00412610
-//   [12] Draw: 0x00412300
-//   [13] UpdateMeter: 0x00412490
-//   [17] PlayCompletionSound: 0x00412640
-class EngineB : public Engine {
+// Vtable layout (18 entries, SC_CombatBase base):
+//   [0]  LBLParse           0x451690 (OVERRIDE)
+//   [1]  OnProcessStart     0x401140 (inherited)
+//   [2]  OnProcessEnd       0x451230 (OVERRIDE)
+//   [3]  ~EngineB sdtor     0x450BF0 (OVERRIDE)
+//   [4]  Initialize         0x42C240 (inherited)
+//   [5]  CleanupAll         0x42C630 (inherited)
+//   [6]  ResetState         0x42C230 (inherited)
+//   [7]  ProcessInput       0x42C960 (inherited)
+//   [8]  method8            0x42C070 (inherited)
+//   [9]  method9            0x42C050 (inherited)
+//   [10] method10           0x451180 (OVERRIDE - ProcessTargets)
+//   [11] method11           0x450DB0 (OVERRIDE - Draw)
+//   [12] method12           0x450F70 (OVERRIDE - UpdateMeter)
+//   [13] HandleAction       0x4511C0 (OVERRIDE)
+//   [14] StopAndCleanup     0x42BF20 (inherited)
+//   [15] SetupViewport      0x42C8A0 (inherited)
+//   [16] RenderState        0x42C920 (inherited)
+//   [17] UpdateAndCheck     0x40BC90 (inherited)
+class EngineB : public SC_CombatBase {
 public:
-  // EngineB-specific fields (Engine ends at 0xe8)
-  SoundList* m_localSoundList;     // 0xe8 - local SoundList for combat sounds
-  Sample* m_missSound;             // 0xec - "audio\\slingmis.wav"
-  int field_0xf0;                 // 0xf0
-  int m_prevHitCount;             // 0xf4 - tracks g_ScoreManager_00435f20[5]
-  int field_0xf8;                 // 0xf8
-  int m_prevMissCount;            // 0xfc - tracks g_ScoreManager_00435f20[3]
-  Sample* m_completionSound;      // 0x100 - "audio\\ldu013_1.wav"
-  Sample* m_ambientSound;         // 0x104 - "audio\\ldu005_1.wav"
+  // EngineB-specific fields (SC_CombatBase ends at 0xF0)
+  int* m_targetConfig;            // 0xF0 - allocated config object [0]=base, [1]=points
+  int m_prevHitCount;             // 0xF4 - tracks score manager hit count
+  int field_0xF8;                 // 0xF8
+  int m_prevMissCount;            // 0xFC - tracks score manager miss count
+  SoundList* m_localSoundList;    // 0x100 - local SoundList for combat sounds
+  Sample* m_missSound;            // 0x104 - "cb_rats\\snd3012"
   int field_0x108;                // 0x108
-  int field_0x10c;                // 0x10c
-  Sample* m_hitSound1;            // 0x110 - "audio\\ldu008_1.wav" (hit reaction, rand%3)
-  Sample* m_hitSound2;            // 0x114 - "audio\\ldu009_1.wav" (hit reaction, rand%3)
-  Sample* m_hitSound3;            // 0x118 - "audio\\ldu007_2.wav" (hit reaction, rand%3)
-  Sample* m_tauntSound1;          // 0x11c - "audio\\ldu010_1.wav" (idle taunt, rand%2)
-  Sample* m_tauntSound2;          // 0x120 - "audio\\ldu011_1.wav" (idle taunt, rand%2)
-  Sample* m_milestoneSound;       // 0x124 - "audio\\ldu006_1.wav" (played at progress 0x13/0x25)
-  Animation* m_meterAnimation;    // 0x128 - "rat1\\nmeter.smk"
-  int m_meterBuffer;              // 0x12c - VBuffer* for meter blitting
-  GlyphRect m_meterEmptyRect;     // 0x130-0x13f - source rect for empty meter
-  GlyphRect m_meterFullRect;      // 0x140-0x14f - source rect for full meter
-  IntPair m_progress;             // 0x150-0x157 - {current, max}
-  MeterPos m_meterPosition;        // 0x158-0x15f - {x, y} destination
-  Parser* m_weaponParser;         // 0x160 - weapon/parser pointer
-  int* m_targetConfig;            // 0x164 - allocated config object
+  int field_0x10C;                // 0x10C
+  Sample* field_0x110;            // 0x110 - "cb_rats\\snd5010"
+  Sample* m_completionSound;      // 0x114 - "cb_rats\\snd5009"
+  Sample* m_ambientSound;         // 0x118 - "cb_rats\\snd5001"
+  int field_0x11C;                // 0x11C
+  int field_0x120;                // 0x120
+  Sample* m_hitSound1;            // 0x124 - "cb_rats\\snd5004" (hit reaction, rand%3)
+  Sample* m_hitSound2;            // 0x128 - "cb_rats\\snd5005" (hit reaction, rand%3)
+  Sample* m_hitSound3;            // 0x12C - "cb_rats\\snd5006" (hit reaction, rand%3)
+  Sample* m_tauntSound1;          // 0x130 - "cb_rats\\snd5007" (idle taunt, rand%2)
+  Sample* m_tauntSound2;          // 0x134 - "cb_rats\\snd5008" (idle taunt, rand%2)
+  Sample* m_milestoneSound;       // 0x138 - "cb_rats\\snd5002" (progress milestone)
+  Animation* m_meterAnimation;    // 0x13C - "combats\\nmeter.smk"
+  int m_meterBuffer;              // 0x140 - VBuffer* for meter blitting
+  GlyphRect m_meterEmptyRect;     // 0x144-0x153 - source rect for empty meter
+  GlyphRect m_meterFullRect;      // 0x154-0x163 - source rect for full meter
+  IntPair m_progress;             // 0x164-0x16B - {current, max}
+  MeterPos m_meterPosition;       // 0x16C-0x173 - {x, y} destination
+  int m_weaponParser;             // 0x174 - weapon/parser pointer
 
   EngineB();
   virtual ~EngineB();
 
   // Virtual method overrides
-  virtual int LBLParse(char* line);       // vtable[0] 0x4129a0
-  virtual void OnProcessEnd();            // vtable[2] 0x412690
-  virtual void ProcessTargets();          // vtable[11] 0x412610
-  virtual void Draw();                    // vtable[12] 0x412300
-  virtual void UpdateMeter();             // vtable[13] 0x412490
-  virtual void PlayCompletionSound();     // vtable[17] 0x412640
+  virtual int LBLParse(char* line);       // [0] 0x451690
+  virtual void OnProcessEnd();            // [2] 0x451230
+  virtual void method10();               // [10] 0x451180 - ProcessTargets
+  virtual void method11();               // [11] 0x450DB0 - Draw
+  virtual int method12();                // [12] 0x450F70 - UpdateMeter
+  virtual int HandleAction(int* param);  // [13] 0x4511C0
 };
 
 #endif // ENGINEB_H

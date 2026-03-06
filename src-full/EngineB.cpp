@@ -1,305 +1,300 @@
 #include "EngineB.h"
-#include "EngineSubsystems.h"
 #include "SoundList.h"
 #include "Memory.h"
 #include "Sample.h"
 #include "Animation.h"
 #include "VBuffer.h"
-#include "TimeOut.h"
 #include "Sprite.h"
+#include "GameState.h"
 #include "globals.h"
-#include "InputManager.h"
-#include "RockThrower.h"
-#include "GameOutcome.h"
-#include "CursorState.h"
+#include "Target.h"
 #include "string.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+extern void* DAT_0046aa08;
+extern "C" void* DAT_0046aa30;
+extern int DAT_0046cb90;
+extern "C" int DAT_00473e18;
 
-// Forward declaration - AtExitCleanup_0043d140 is compiler-generated for static local TimeOut
+extern "C" void* DAT_0046ae4c;
+extern "C" void* DAT_0046ae50;
+extern "C" void* DAT_0046ae58;
+extern "C" void* DAT_0046ae60;
+extern "C" void* DAT_0046ae68;
+extern "C" void* DAT_0046ae6c;
 
-/* Function start: 0x450B10 */ /* ~88% match */
+extern void __cdecl FUN_00425c50(char*, ...);
+extern char* __cdecl FUN_0044e470(char*);
+static char* FormatSoundPath(char* path);
+
+class TargetListFull {
+public:
+    void ProcessTargets();  // 0x443660
+};
+
+class WeaponParser {
+public:
+    void UpdateProjectiles();  // 0x427880
+};
+
+class InputManagerFull {
+public:
+    void PollEvents(int param);  // 0x426ce0
+};
+
+/* Function start: 0x450B10 */
 EngineB::EngineB() {
-  memset(&m_localSoundList, 0, 0x80);
+    memset(&m_targetConfig, 0, 0x88);
 }
 
-/* Function start: 0x412210 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x450C10 */
 EngineB::~EngineB() {
-  if (m_meterAnimation != 0) {
-    delete m_meterAnimation;
-    m_meterAnimation = 0;
-  }
+    if (EngineB::m_meterAnimation != 0) {
+        delete EngineB::m_meterAnimation;
+        EngineB::m_meterAnimation = 0;
+    }
 
-  if (m_localSoundList != 0) {
-    delete m_localSoundList;
-    m_localSoundList = 0;
-  }
+    if (EngineB::m_localSoundList != 0) {
+        delete EngineB::m_localSoundList;
+        EngineB::m_localSoundList = 0;
+    }
+
+    if (EngineB::m_targetConfig != 0) {
+        operator delete(EngineB::m_targetConfig);
+        EngineB::m_targetConfig = 0;
+    }
+
+    EngineB::m_meterBuffer = 0;
+    EngineB::m_missSound = 0;
+    EngineB::field_0x108 = 0;
+    EngineB::field_0x10C = 0;
+    EngineB::field_0x110 = 0;
+    EngineB::m_completionSound = 0;
+    EngineB::field_0x120 = 0;
+    EngineB::field_0x11C = 0;
+    EngineB::m_ambientSound = 0;
+    EngineB::m_hitSound3 = 0;
+    EngineB::m_hitSound2 = 0;
+    EngineB::m_hitSound1 = 0;
+    EngineB::m_tauntSound2 = 0;
+    EngineB::m_tauntSound1 = 0;
+    EngineB::m_milestoneSound = 0;
 }
 
-/* Function start: 0x4448A0 */ /* ~99% match */
+/* Function start: 0x451690 */
 int EngineB::LBLParse(char* line) {
-  char token[32];
-  sscanf(line, "%s", token);
-  if (strcmp(token, "END_ENGINEA_INFO") == 0) {
-    return 1;
-  }
-  Engine::LBLParse(line);
-  return 0;
+    char token[32];
+    sscanf(line, "%s", token);
+    if (strcmp(token, "END_DERIVED_ENGINE_INFO") == 0) {
+        return 1;
+    }
+    SC_CombatBase::LBLParse(line);
+    return 0;
 }
 
-/* Function start: 0x412300 */ /* DEMO ONLY - no full game match */
-void EngineB::Draw() {
-  if (g_ConsoleSprite_00435f04 == 0) {
-    return;
-  }
-
-  if (EngineB::m_prevHitCount != g_ScoreManager_00435f20->hitCount) {
-    // Target was hit
-    EngineB::m_prevHitCount = g_ScoreManager_00435f20->hitCount;
-    g_ConsoleSprite_00435f04->SetState2(8);
-    EngineB::m_progress.start += EngineB::m_targetConfig[1];
-
-    int hitIdx = rand() % 3;
-    Sample* hitSample = (&m_hitSound1)[hitIdx];
-    EngineB::m_localSoundList->StopAll();
-
-    if (hitSample != 0) {
-      hitSample->Play(0x64, 1);
+/* Function start: 0x451180 */
+void EngineB::method10() {
+    ((TargetListFull*)DAT_0046ae58)->ProcessTargets();
+    if (DAT_00473e18 == 1) {
+        ((WeaponParser*)EngineB::m_weaponParser)->UpdateProjectiles();
+        method11();
+        method12();
     }
-  } else if (EngineB::m_prevMissCount != g_ScoreManager_00435f20->missCount) {
-    // Idle sound change
-    EngineB::m_prevMissCount = g_ScoreManager_00435f20->missCount;
-    g_ConsoleSprite_00435f04->SetState2(9);
+}
 
-    Sample* idleSample = (&m_tauntSound1)[rand() % 2];
-    if (idleSample != 0) {
-      idleSample->Play(0x64, 1);
-    }
-  }
-
-  // Weapon hit effect
-  int weaponHit = ((RockThrower*)EngineB::m_weaponParser)->field_0xb0;
-  if (weaponHit != 0) {
-    EngineB::m_progress.start += weaponHit;
-
-    if (EngineB::m_missSound != 0) {
-      EngineB::m_missSound->Play(0x64, 1);
-    }
-
-    if (EngineB::m_progress.start == 0x13 || EngineB::m_progress.start == 0x25) {
-      if (EngineB::m_milestoneSound != 0) {
-        EngineB::m_milestoneSound->Play(0x64, 1);
-      }
-    }
-  }
-
-  // Aim cursor based on mouse position
-  if (g_Weapon_00435f14->field_0xa0 != 0) {
-    InputState* pMouse = g_InputManager_00436968->pMouse;
+/* Function start: 0x450DB0 */
+void EngineB::method11() {
+    int hitCount;
+    int missCount;
+    int r;
+    Sample* snd;
+    int weaponHit;
     int mouseX;
-    if (pMouse != 0) {
-      mouseX = pMouse->x;
+    int divisor;
+
+    if (DAT_0046ae50 == 0) {
+        return;
+    }
+
+    hitCount = ((int*)DAT_0046ae6c)[5];
+    if (EngineB::m_prevHitCount != hitCount) {
+        EngineB::m_prevHitCount = hitCount;
+        ((Sprite*)DAT_0046ae50)->ResetAnimation(8, 0);
+        EngineB::m_progress.start += EngineB::m_targetConfig[1];
+        r = rand() % 3;
+        snd = (&m_hitSound1)[r];
+        EngineB::m_localSoundList->StopAll();
+        if (snd != 0) {
+            snd->Play(100, 1);
+        }
     } else {
-      mouseX = 0;
-    }
-    g_ConsoleSprite_00435f04->SetState2(mouseX / 0x6a + 5);
-  }
-
-  // Animate sprite
-  Sprite* consoleSprite = g_ConsoleSprite_00435f04;
-  if (consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0) != 0) {
-    InputState* pMouse = g_InputManager_00436968->pMouse;
-    int mouseX;
-    if (pMouse != 0) {
-      mouseX = pMouse->x;
-    } else {
-      mouseX = 0;
-    }
-    g_ConsoleSprite_00435f04->SetState2(mouseX / 64);
-  }
-}
-
-/* Function start: 0x412490 */ /* DEMO ONLY - no full game match */
-void EngineB::UpdateMeter() {
-  int progressCurrent;
-  int progressMax;
-  int barPos;
-
-  if (EngineB::m_meterBuffer == 0) {
-    return;
-  }
-
-  progressMax = EngineB::m_progress.end;
-  if (progressMax == 0 || EngineB::m_progress.start < progressMax) {
-    // Calculate progress bar position
-    progressCurrent = EngineB::m_progress.start;
-    barPos = (progressCurrent * 0x36) / progressMax - rand() % 3 + 1;
-    if (barPos < 0) {
-      barPos = 0;
-    } else if (barPos > 0x36) {
-      barPos = 0x36;
-    }
-    barPos = barPos * 4 + 2;
-
-    // Draw first part of progress bar
-    g_WorkBuffer_00436974->CallBlitter2(
-      0, barPos,
-      EngineB::m_meterFullRect.top,
-      EngineB::m_meterFullRect.bottom,
-      EngineB::m_meterPosition.x,
-      EngineB::m_meterPosition.y,
-      (VBuffer*)EngineB::m_meterBuffer);
-
-    // Draw second part of progress bar
-    g_WorkBuffer_00436974->CallBlitter2(
-      barPos,
-      EngineB::m_meterFullRect.right,
-      EngineB::m_meterEmptyRect.top,
-      EngineB::m_meterEmptyRect.bottom,
-      EngineB::m_meterPosition.x + barPos,
-      EngineB::m_meterPosition.y,
-      (VBuffer*)EngineB::m_meterBuffer);
-  } else {
-    // Progress complete - local static TimeOut generates init guard + atexit
-    static TimeOut g_TimeOut_0043d140;
-
-    // Draw full progress bar
-    g_WorkBuffer_00436974->CallBlitter2(
-      0,
-      EngineB::m_meterFullRect.right,
-      EngineB::m_meterFullRect.top,
-      EngineB::m_meterFullRect.bottom,
-      EngineB::m_meterPosition.x,
-      EngineB::m_meterPosition.y,
-      (VBuffer*)EngineB::m_meterBuffer);
-
-    // Check if TimeOut is active
-    if (g_TimeOut_0043d140.m_isActive == 1) {
-      if (g_TimeOut_0043d140.IsTimeOut() != 0) {
-        g_GameOutcome_00435f28->outcome = 1;
-      }
-      return;
+        missCount = ((int*)DAT_0046ae6c)[3];
+        if (EngineB::m_prevMissCount != missCount) {
+            EngineB::m_prevMissCount = missCount;
+            ((Sprite*)DAT_0046ae50)->ResetAnimation(9, 0);
+            r = rand() % 2;
+            snd = (&m_tauntSound1)[r];
+            if (snd != 0) {
+                snd->Play(100, 1);
+            }
+        }
     }
 
-    g_TimeOut_0043d140.Start(0x5dc);  // 1500ms timeout
-  }
+    weaponHit = ((int*)EngineB::m_weaponParser)[0x30];
+    if (weaponHit != 0) {
+        EngineB::m_progress.start += weaponHit;
+        if (EngineB::m_missSound != 0) {
+            EngineB::m_missSound->Play(100, 1);
+        }
+        if (EngineB::m_progress.start == 0x13 || EngineB::m_progress.start == 0x25) {
+            if (EngineB::m_milestoneSound != 0) {
+                EngineB::m_milestoneSound->Play(100, 1);
+            }
+        }
+    }
+
+    if (((int*)DAT_0046ae60)[0x2A] != 0) {
+        mouseX = 0;
+        if (((int*)DAT_0046aa08)[0x68] != 0) {
+            mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
+        }
+        divisor = ((int*)DAT_0046ae4c)[0x26] / 3;
+        ((Sprite*)DAT_0046ae50)->ResetAnimation(mouseX / divisor + 5, 0);
+    }
+
+    if (((Sprite*)DAT_0046ae50)->Do(((Sprite*)DAT_0046ae50)->num_states, ((Sprite*)DAT_0046ae50)->field_0xb0, 1.0)) {
+        mouseX = 0;
+        if (((int*)DAT_0046aa08)[0x68] != 0) {
+            mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
+        }
+        divisor = ((int*)DAT_0046ae4c)[0x26] / 5;
+        ((Sprite*)DAT_0046ae50)->ResetAnimation(mouseX / divisor, 0);
+    }
 }
 
-/* Function start: 0x412610 */ /* DEMO ONLY - no full game match */
-void EngineB::ProcessTargets() {
-  g_TargetList_00435f0c->ProcessTargets();
-  ((RockThrower*)EngineB::m_weaponParser)->UpdateProjectiles();
-  Engine* self = (Engine*)this;
-  self->Draw();
-  self->UpdateMeter();
+/* Function start: 0x450F70 */
+int EngineB::method12() {
+    return 0;
 }
 
-/* Function start: 0x412640 */ /* DEMO ONLY - no full game match */
-void EngineB::PlayCompletionSound() {
-  if (EngineB::m_completionSound == 0) {
-    return;
-  }
-
-  if (EngineB::m_localSoundList != 0) {
-    EngineB::m_localSoundList->StopAll();
-  }
-
-  if (EngineB::m_backgroundSample != 0) {
-    EngineB::m_backgroundSample->Fade(0x14, 0x2ee);
-  }
-
-  EngineB::m_completionSound->Play(0x64, 1);
-  EngineB::m_completionSound->Stop();
+/* Function start: 0x4511C0 */
+int EngineB::HandleAction(int* param) {
+    return 0;
 }
 
-/* Function start: 0x412690 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x451230 */
 void EngineB::OnProcessEnd() {
-  int i;
-  int numTargets;
+    int* config;
+    int stateVal;
+    GameState* gs;
+    int idx;
+    int i;
+    int mouseX;
+    int divisor;
+    SoundList* sList;
+    Animation* anim;
 
-  if (g_InputManager_00436968 != 0) {
-    g_InputManager_00436968->PollEvents(1);
-  }
+    config = (int*)operator new(8);
+    if (config != 0) {
+        char* p = (char*)config + 1;
+        *(int*)p = 0;
+        *(short*)(p + 4) = 0;
+        p[6] = 0;
 
-  if (g_ConsoleSprite_00435f04 != 0) {
-    InputState* pMouse = g_InputManager_00436968->pMouse;
-    int timeVal;
-    if (pMouse != 0) {
-      timeVal = pMouse->x;
+        gs = (GameState*)DAT_0046aa30;
+        if (DAT_0046cb90 < 0 || gs->maxStates - 1 < DAT_0046cb90) {
+            FUN_00425c50("Invalid gamestate %d", DAT_0046cb90);
+        }
+        stateVal = gs->stateValues[DAT_0046cb90];
+        switch (stateVal) {
+        case 0:
+            config[0] = 1;
+            config[1] = 3;
+            break;
+        case 1:
+            config[0] = 1;
+            config[1] = 2;
+            break;
+        case 2:
+            config[0] = 1;
+            config[1] = 1;
+            break;
+        }
     } else {
-      timeVal = 0;
+        config = 0;
     }
-    g_ConsoleSprite_00435f04->SetState2(timeVal / 64);
-  }
+    EngineB::m_targetConfig = config;
 
-  // Allocate and initialize m_targetConfig (8 byte object)
-  int* pObj164 = (int*)AllocateMemory(8);
-  if (pObj164 != 0) {
-    pObj164[0] = 1;
-    pObj164[1] = 3;
-  } else {
-    pObj164 = 0;
-  }
-  EngineB::m_targetConfig = pObj164;
-  EngineB::m_weaponParser = g_Weapon_00435f14;
-
-  // Update field_0x108 on all targets
-  for (i = 0; i < g_TargetList_00435f0c->count; i++) {
-    Target* pTarget = g_TargetList_00435f0c->targets[i];
-    pTarget->progressRange.end = *EngineB::m_targetConfig;
-  }
-
-  // Create SoundList at m_localSoundList
-  EngineB::m_localSoundList = new SoundList(10);
-
-  // Create Animation at m_meterAnimation
-  EngineB::m_meterAnimation = new Animation("rat1\\nmeter.smk");
-
-  // DoFrame on animation
-  if (EngineB::m_meterAnimation != 0) {
-    EngineB::m_meterAnimation->DoFrame();
-  }
-
-  // Initialize progress meter fields from animation
-  Animation* anim = EngineB::m_meterAnimation;
-  EngineB::m_meterBuffer = (int)anim->targetBuffer;
-
-  // Initialize meter configuration
-  EngineB::m_meterEmptyRect.left = 0;
-  EngineB::m_meterEmptyRect.top = 0;
-  EngineB::m_meterEmptyRect.right = 0xff;
-  EngineB::m_meterEmptyRect.bottom = 0xf;
-  EngineB::m_meterFullRect.left = 0;
-  EngineB::m_meterFullRect.top = 0x12;
-  EngineB::m_meterFullRect.right = 0xff;
-  EngineB::m_meterFullRect.bottom = 0x21;
-  EngineB::m_progress.start = 0;
-  EngineB::m_progress.end = 0x36;
-  EngineB::m_meterPosition.x = 0x20;
-  EngineB::m_meterPosition.y = 0x14;
-
-  // Register sounds if g_SoundList_00435f1c is available
-  if (g_SoundList_00435f1c != 0) {
-    EngineB::m_missSound = (Sample*)g_SoundList_00435f1c->Register("audio\\slingmis.wav");
-    EngineB::m_completionSound = (Sample*)g_SoundList_00435f1c->Register("audio\\ldu013_1.wav");
-  }
-
-  // Register sounds if m_localSoundList is available
-  SoundList* sList = EngineB::m_localSoundList;
-  if (sList != 0) {
-    char* filename = FormatStringVA("audio\\ldu010_1.wav");
-    EngineB::m_tauntSound1 = (Sample*)sList->Register(filename);
-    EngineB::m_tauntSound2 = (Sample*)sList->Register("audio\\ldu011_1.wav");
-    EngineB::m_hitSound1 = (Sample*)sList->Register("audio\\ldu008_1.wav");
-    EngineB::m_hitSound2 = (Sample*)sList->Register("audio\\ldu009_1.wav");
-    EngineB::m_hitSound3 = (Sample*)sList->Register("audio\\ldu007_2.wav");
-    EngineB::m_milestoneSound = (Sample*)sList->Register("audio\\ldu006_1.wav");
-    Sample* sample104 = (Sample*)sList->Register("audio\\ldu005_1.wav");
-    EngineB::m_ambientSound = sample104;
-    if (sample104 != 0) {
-      sample104->Play(0x64, 1);
+    if (DAT_0046aa08 != 0) {
+        ((InputManagerFull*)DAT_0046aa08)->PollEvents(1);
     }
-  }
+
+    if (DAT_0046ae50 != 0) {
+        mouseX = 0;
+        if (((int*)DAT_0046aa08)[0x68] != 0) {
+            mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
+        }
+        divisor = ((int*)DAT_0046ae4c)[0x26] / 5;
+        ((Sprite*)DAT_0046ae50)->ResetAnimation(mouseX / divisor, 0);
+    }
+
+    EngineB::m_weaponParser = (int)DAT_0046ae60;
+    for (i = 0; i < ((int*)DAT_0046ae58)[0x24]; i++) {
+        int* target = (int*)*(int*)((char*)DAT_0046ae58 + 0x94 + i * 4);
+        target[0x4A] = EngineB::m_targetConfig[0];
+    }
+
+    EngineB::m_localSoundList = new SoundList(10);
+
+    anim = new Animation(FormatStringVA("combats\\nmeter.smk"));
+    EngineB::m_meterAnimation = anim;
+    anim->DoFrame();
+
+    EngineB::m_meterBuffer = (int)EngineB::m_meterAnimation->targetBuffer;
+    EngineB::m_meterEmptyRect.right = 0x10D;
+    EngineB::m_meterEmptyRect.left = 0;
+    EngineB::m_meterEmptyRect.top = 0;
+    EngineB::m_meterEmptyRect.bottom = 0x13;
+
+    gs = (GameState*)DAT_0046aa30;
+    idx = gs->FindState("MAX_NOISE_ALLOWED_RATS");
+
+    EngineB::m_meterFullRect.right = 0x10D;
+    EngineB::m_meterFullRect.left = 0;
+    EngineB::m_meterFullRect.top = 0x14;
+    EngineB::m_meterFullRect.bottom = 0x27;
+
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        FUN_00425c50("Invalid gamestate %d", idx);
+    }
+    EngineB::m_progress.start = 0;
+    EngineB::m_meterPosition.x = 0x19;
+    EngineB::m_meterPosition.y = 0x16;
+    EngineB::m_progress.end = gs->stateValues[idx];
+
+    if (DAT_0046ae68 != 0) {
+        EngineB::m_missSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd3012"));
+        EngineB::m_completionSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5009"));
+    }
+
+    sList = EngineB::m_localSoundList;
+    if (sList != 0) {
+        EngineB::m_tauntSound1 = (Sample*)sList->Register(FormatSoundPath("cb_rats\\snd5007"));
+        EngineB::m_tauntSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5008"));
+        EngineB::m_hitSound1 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5004"));
+        EngineB::m_hitSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5005"));
+        EngineB::m_hitSound3 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5006"));
+        EngineB::m_milestoneSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5002"));
+        EngineB::m_ambientSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5001"));
+        EngineB::field_0x110 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5010"));
+    }
+
+    DAT_00473e18 = 0;
+}
+
+/* Function start: 0x451680 */
+static char* FormatSoundPath(char* path) {
+    return FUN_0044e470(path);
 }

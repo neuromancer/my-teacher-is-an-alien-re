@@ -81,6 +81,8 @@ extern GameLoopHelper* g_GameLoopHelper;   // DAT_0046a6f0
 extern GameState* g_GameState_0046aa30;    // DAT_0046aa30 - GameState for handler debug
 extern GameState* g_StringTable_0046aa34;  // DAT_0046aa34 - StringTable for handler names
 extern "C" void WriteToLog(const char* format, ...);  // FUN_00425d70
+extern char* DAT_0046aa2c;                // String buffer for ProcessMessage
+extern GameState* DAT_0046aa3c;           // GameState for ProcessMessage string lookup
 
 #include "EventList.h"
 
@@ -417,7 +419,7 @@ void GameLoop::Cleanup() {
     currentHandler = 0;
 }
 
-/* Function start: 0x417ED0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x431210 */
 void GameLoop::DrawFrame() {
     EventList* pList;
     EventNode* pNode;
@@ -438,8 +440,13 @@ void GameLoop::DrawFrame() {
         if (pData == 0) {
             return;
         }
-        pHandler = (pNode != 0) ? (Handler*)pData : 0;
-        pHandler->Update(0, currentHandler->handlerId);
+        if (currentHandler != 0) {
+            pHandler = (pNode != 0) ? (Handler*)pData : 0;
+            pHandler->Update(0, currentHandler->handlerId);
+        } else {
+            pHandler = (pNode != 0) ? (Handler*)pData : 0;
+            pHandler->Update(0, 0);
+        }
         pList = eventList;
         pNode = pList->current;
         if (pList->tail == pNode) {
@@ -562,64 +569,66 @@ void GameLoop::CleanupLoop() {
     } while (pEventList->current != 0);
 }
 
-/* Function start: 0x417CB0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x431030 */
 void GameLoop::ProcessMessage(SC_Message* msg)
 {
     int result;
     EventList* pList;
     EventNode* pNode;
-    unsigned int pData;
+    void* pData;
 
-    if (msg->priority == 5) {
-        if (msg->targetAddress != 3) {
-            result = 1;
+    result = 0;
+
+    if (msg->priority == 4) {
+        result = 1;
+        if (msg->targetAddress != 1) {
             HandleSystemMessage(msg);
-        }
-        else {
-            result = 1;
-            char* srcStr = g_GameState2_004369a4->GetState(msg->sourceAddress);
-            strcpy(g_StateString_00436994, srcStr);
-        }
-    }
-    else {
-        int targetAddr = msg->targetAddress;
-        if (targetAddr != 0 && targetAddr != 3) {
-            result = currentHandler->Exit(msg);
-            if (result == 0) {
-                pList = eventList;
-                pList->current = pList->head;
-                pNode = eventList->current;
-                if (pNode != 0) {
-                    do {
-                        pNode = eventList->current;
-                        pData = (unsigned int)pNode->data;
-                        if (pData == 0) break;
-                        result = ((Handler*)pData)->Exit(msg);
-                        if (result != 0) break;
-                        pList = eventList;
-                        pNode = pList->current;
-                        if (pList->tail == pNode) break;
-                        if (pNode != 0) {
-                            pList->current = pNode->next;
-                        }
-                        pNode = eventList->current;
-                    } while (pNode != 0);
-                }
-            }
-        } else if (targetAddr == 0) {
-            result = 1;
         } else {
-            result = ProcessControlMessage(msg);
+            char* srcStr = DAT_0046aa3c->GetState(msg->sourceAddress);
+            strcpy(DAT_0046aa2c, srcStr);
+        }
+    } else {
+        if (msg->targetAddress != 0) {
+            if (msg->targetAddress != 1) {
+                if (currentHandler != 0) {
+                    result = currentHandler->Exit(msg);
+                }
+                if (result == 0) {
+                    pList = eventList;
+                    pList->current = pList->head;
+                    pList = eventList;
+                    if (pList->current != 0) {
+                        do {
+                            pList = eventList;
+                            pNode = pList->current;
+                            pData = pNode->data;
+                            if (pData == 0) break;
+                            {
+                                Handler* pH = (pNode != 0) ? (Handler*)pData : 0;
+                                result = pH->Exit(msg);
+                            }
+                            if (result != 0) break;
+                            pList = eventList;
+                            pNode = pList->current;
+                            if (pList->tail == pNode) break;
+                            if (pNode != 0) {
+                                pList->current = pNode->next;
+                            }
+                            pList = eventList;
+                        } while (pList->current != 0);
+                    }
+                }
+            } else {
+                result = 1;
+                ProcessControlMessage(msg);
+            }
+        } else {
+            result = 1;
         }
     }
 
     if (result == 0) {
-        Handler* pDefaultHandler = GetOrCreateHandler(msg->targetAddress);
-        if (pDefaultHandler->Exit(msg) == 0) {
-            msg->Dump(0);
-            WriteToMessageLog("lost message");
-            SC_Message_Send(0xf, 2, 3, 0, 0x13, 0, 0, 0, 0, 0);
-        }
+        GetOrCreateHandler(msg->targetAddress)->Exit(msg);
     }
 }
 
@@ -846,22 +855,24 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x417E20 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x431160 */
 int GameLoop::ProcessControlMessage(SC_Message* msg) {
-    if (msg->targetAddress != 3) {
+    if (msg->targetAddress != 1) {
         return 0;
     }
     switch(msg->priority) {
-    case 6:
+    case 5:
         field_0x00 = 1;
         return 1;
-    case 0x12:
-        field_0x08 = msg->sourceAddress;
-        return 1;
     case 0x13:
+        field_0xB0 = field_0xAC;
+        field_0xB4 = 0;
+        field_0xAC = msg->sourceAddress;
+        return 1;
+    case 0x17:
         GetOrCreateHandler(msg->sourceAddress);
         return 1;
-    case 0x14:
+    case 0x18:
         RemoveHandler(msg->sourceAddress);
         return 1;
     default:
@@ -985,64 +996,63 @@ Handler* CreateHandler(int command) {
 // Base handler class for vtable calls - moved to top
 
 
-/* Function start: 0x418460 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4317C0 */
 int GameLoop::RemoveHandler(int command) {
     EventList* list;
     EventNode* current;
-    BaseHandler* pHandler;
-    EventNode* pNext;
-    EventNode* pPrev;
+    Handler* pHandler;
 
-    // Find the handler in eventList
     if (FindHandlerInEventList(command) != 0) {
-        // Get eventList and current node
         list = eventList;
         current = list->current;
 
         if (current == 0) {
             pHandler = 0;
         } else {
-            // Unlink node from doubly-linked list
+            // Unlink from head
             if (list->head == current) {
                 list->head = current->next;
             }
+            // Unlink from tail
             current = list->current;
             if (list->tail == current) {
                 list->tail = current->prev;
             }
+            // Update prev->next
             current = list->current;
-            pNext = current->prev;
-            if (pNext != 0) {
-                pNext->next = current->next;
+            if (current->prev != 0) {
+                current->prev->next = current->next;
             }
+            // Update next->prev
             current = list->current;
-            pPrev = current->next;
-            if (pPrev != 0) {
-                pPrev->prev = current->prev;
+            if (current->next != 0) {
+                current->next->prev = current->prev;
             }
-
-            // Get data from node - matches LAB_004184b7
+            // Get data
             current = list->current;
             pHandler = 0;
             if (current != 0) {
-                pHandler = (BaseHandler*)current->data;
+                pHandler = (Handler*)current->data;
             }
-            // Free node - matches LAB_004184c6 (zero fields before delete)
+            // Free node
             if (current != 0) {
                 current->data = 0;
                 current->prev = 0;
                 current->next = 0;
-                delete (void*)current;
+                FreeMemory(current);
                 list->current = 0;
             }
             list->current = list->head;
         }
 
-        // Call handler's Cleanup method with param 0 (vtable offset 0x18)
-        pHandler->Cleanup(0);
+        // If removing the current handler, clear it
+        if (currentHandler == pHandler) {
+            currentHandler = 0;
+        }
 
+        // Delete the handler via virtual destructor
         if (pHandler != 0) {
-            delete (Handler*)pHandler;
+            delete pHandler;
         }
 
         return 1;

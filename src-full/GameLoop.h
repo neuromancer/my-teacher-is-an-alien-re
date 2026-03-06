@@ -38,6 +38,9 @@ public:
     Timer* timer2;
     EventList* eventList;
     Handler* currentHandler;
+    int field_0xAC;          // used in ProcessControlMessage
+    int field_0xB0;          // used in ProcessControlMessage
+    int field_0xB4;          // used in ProcessControlMessage
 };
 
 #endif // GAMELOOP_H
