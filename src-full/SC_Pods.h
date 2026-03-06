@@ -13,6 +13,13 @@ public:
     SC_Pods();
     ~SC_Pods();
 
+    virtual int LBLParse(char* line);       // 0x442090
+    virtual void Init(SC_Message* msg);     // 0x441700
+    virtual int AddMessage(SC_Message* msg); // 0x441AE0
+    virtual int ShutDown(SC_Message* msg);  // 0x4419E0
+
+    void HandleResult();                    // 0x441B60
+
     int field_A8[2];    // 0xA8-0xAF (0x08 bytes)
 };
 

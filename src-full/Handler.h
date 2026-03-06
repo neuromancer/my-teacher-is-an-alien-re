@@ -22,8 +22,7 @@ class SC_Message;
 //   +0x24: OnInput (virtual) - input handling
 //
 // Memory layout (full game):
-//   0x00-0x87: Parser base class (size 0x88)
-//   0x88-0x8F: Handler extra fields (field_0x88, field_0x8C)
+//   0x00-0x8F: Parser base class (size 0x90)
 //   0x90: handlerId - identifies the handler type (2, 4, 5, 6, etc.)
 //   0x94+: Handler-specific fields
 //   Total Handler size: 0xA8
@@ -49,10 +48,6 @@ public:
 
     // Write handler address to message
     int WriteMessageAddress(SC_Message* msg);
-
-    // Handler fields before handlerId (full game only)
-    int field_0x88;     // 0x88
-    int field_0x8C;     // 0x8C
 
     // Common handler fields
     int handlerId;      // 0x90 - handler type identifier

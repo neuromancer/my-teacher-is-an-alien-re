@@ -7,12 +7,12 @@
 #include "CombatSprite.h"
 #include "Projectile.h"
 #include "mCNavigator.h"
-#include "Engine.h"
+#include "SC_CombatBase.h"
 #include <stdlib.h>
 
 // Globals
 extern InputManager* g_InputManager_00436968;
-extern Engine* g_CombatEngine_00435eb0;         // 0x00435eb0
+extern SC_CombatBase* g_CombatEngine_00435eb0;   // 0x00435eb0
 extern int FindCharIndex(char* param_1);
 
 // Hash table entry structure for random pool
@@ -92,7 +92,7 @@ found_entry:
 
     mCNavNode::counter = 0;
     mCNavNode::active = 1;
-    g_CombatEngine_00435eb0->m_framesL = 1;
+    g_CombatEngine_00435eb0->field_0xDC = 1;
 
     return 0;
 }

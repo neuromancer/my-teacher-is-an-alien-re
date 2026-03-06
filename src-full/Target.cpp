@@ -5,7 +5,7 @@
 #include "SoundList.h"
 #include "Sample.h"
 #include "InputManager.h"
-#include "Engine.h"
+#include "SC_CombatBase.h"
 #include "CDData.h"
 #include "CursorState.h"
 #include "string.h"
@@ -308,8 +308,8 @@ int Target::Update()
         g_ScoreManager_00435f20->missCount++;
         g_ScoreManager_00435f20->score += Target::hitMissPoints.start;
         ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(Target::scoreWeight.start);
-        g_CombatEngine_00435eb0->m_combatBonus1 += Target::combatBonus.start;
-        g_CombatEngine_00435eb0->m_combatBonus2 += Target::combatBonus2.val;
+        g_CombatEngine_00435eb0->field_0xB4 += Target::combatBonus.start;
+        g_CombatEngine_00435eb0->field_0xC4 += Target::combatBonus2.val;
         break;
     }
 

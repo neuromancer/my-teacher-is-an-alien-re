@@ -19,6 +19,7 @@ class ZBufferManager;
 class FlagArray;
 class TimedEventPool;
 class Engine;
+class SC_CombatBase;
 class Character;
 class mCNavigator;
 class CombatSprite;
@@ -384,7 +385,7 @@ struct SolutionEntry {
 };
 
 extern SolutionEntry g_SolutionData_00435b88[9];
-extern Engine* g_CombatEngine_00435eb0; // Combat engine (EngineB subclass)
+extern SC_CombatBase* g_CombatEngine_00435eb0; // Combat engine (EngineA or EngineB)
 extern char g_EngineTypeExplore_00435ef0[4]; // Engine type "B" for EngineA (exploration)
 extern char g_EngineTypeCombat_00435ef4[4]; // Engine type "A" for EngineB (combat), also used for text metrics
 extern char g_TextAlignH_004374c0; // Horizontal text alignment (-1 = none)

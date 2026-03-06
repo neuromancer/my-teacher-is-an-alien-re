@@ -2,94 +2,91 @@
 #define ENGINE_H
 
 #include "Parser.h"
+#include "SpriteAction.h"
 
-// Forward declarations for Engine subsystems
-class mCNavigator;
-class SoundList;
-class Palette;
-class EngineInfoParser;
-class TargetList;
-class CombatSprite;
-class Viewport;
-class CursorState;
-class GameOutcome;
-class Sample;
 class Sprite;
-class Weapon;
+class SoundList;
+class Sample;
+class Palette;
 
-// Engine - Base class for game engine variants (vtable 0x431340, size 0xe8)
+// Engine - Base class for game engine variants (vtable 0x461A90, size 0x118)
 //
 // Class hierarchy:
-//   Parser
-//     └── Engine (base, vtable 0x431340, size 0xe8)
-//           ├── EngineA (exploration, vtable 0x431410, size 0xe8)
-//           └── EngineB (combat, vtable 0x4313c0, size 0x168)
+//   Parser (0x90 bytes)
+//     └── Engine (base, vtable 0x461A90, size 0x118)
 //
-// vtable layout (18 entries):
-//   [0] LBLParse        [1] OnProcessStart   [2] OnProcessEnd    [3] destructor
-//   [4] Initialize      [5] CleanupSubsystems [6] VirtCleanup    [7] DisplayFrameRate
-//   [8] UpdateCrosshair [9] CheckNavState     [10] UpdateSpriteFrame [11] VirtProcess
-//   [12] VirtDraw       [13] Virt13          [14] UpdateAndCheck [15] Virt15
-//   [16] Virt16         [17] Virt17
+// vtable layout (13 entries):
+//   [0] LBLParse           [1] OnProcessStart    [2] OnProcessEnd     [3] destructor
+//   [4] Initialize         [5] CleanupSubsystems [6] VirtCleanup      [7] ProcessActions
+//   [8] HandleInput        [9] CheckNavState     [10] fn10            [11] ProcessTargets
+//   [12] fn12
 class Engine : public Parser {
 public:
-  // Parser fields end at 0x88
-  // Engine fields start at 0x88
+  // Parser fields end at 0x90
+  // Engine fields start at 0x90
 
-  TargetList* m_targetList;         // 0x88 - target list manager (size 0x1c8)
-  EngineInfoParser* m_engineInfoParser; // 0x8c - engine info parser (size 0xb8)
-  Sprite* m_consoleSprite;          // 0x90 - console sprite
-  Viewport* m_viewport;             // 0x94 - viewport (size 0x2c)
-  CombatSprite* m_combatSprite;     // 0x98 - combat sprite manager (size 0x98)
-  Weapon* m_weapon;                 // 0x9c - weapon object (can be RockThrower, etc)
-  Palette* m_timerManager;          // 0xa0 - timer manager (size 0x8)
-  SoundList* m_soundList;           // 0xa4 - sound list (size 0x10)
-  CursorState* m_cursorState;       // 0xa8 - cursor state data (size 0x24)
-  mCNavigator* m_navigator;         // 0xac - navigation manager
-  GameOutcome* m_gameOutcome;       // 0xb0 - game outcome state (size 0x4)
-  int m_combatBonus1;         // 0xb4 - accumulates Target::combatBonus.start
-  int m_scrollOffsetX;        // 0xb8 - scroll offset X (from O command)
-  int field_0xbc;             // 0xbc
-  int m_scrollOffsetY;        // 0xc0 - scroll offset Y (from O command)
-  int m_combatBonus2;         // 0xc4 - accumulates Target::combatBonus2.val
-  int m_viewOffset1X;         // 0xc8 - view offset 1 X (from O1 command)
-  int field_0xcc;             // 0xcc
-  int m_viewOffset1Y;         // 0xd0 - view offset 1 Y (from O1 command)
-  int m_framesA;              // 0xd4 - frame counter A
-  int field_0xd8;             // 0xd8
-  int m_framesL;              // 0xdc - frame counter L
-  Sample* m_backgroundSample; // 0xe0 - background music/ambient sample
-  int field_0xe4;             // 0xe4
+  int field_0x90;        // 0x90 - engine type ID
+  int field_0x94;        // 0x94
+  int field_0x98;        // 0x98
+  int field_0x9C;        // 0x9C
+  int field_0xA0;        // 0xA0
+  int field_0xA4;        // 0xA4
+  int* field_0xA8;       // 0xA8 - action array (allocated, freed in VirtCleanup)
+  int field_0xAC;        // 0xAC - action loop counter
+  int field_0xB0;        // 0xB0
+  int m_combatBonus1;    // 0xB4 - (demo: combatBonus1, full: action count)
+  SlimeDim field_0xB8;   // 0xB8 - SlimeDim subobject (dtor 0x401120)
+  int m_scrollOffsetX;   // 0xC0
+  int m_combatBonus2;    // 0xC4
+  int m_scrollOffsetY;   // 0xC8
+  int field_0xCC;        // 0xCC
+  int m_viewOffset1X;    // 0xD0
+  int m_framesA;         // 0xD4
+  int m_viewOffset1Y;    // 0xD8
+  int m_framesL;         // 0xDC
+  Sample* m_backgroundSample; // 0xE0
+  int field_0xE4;        // 0xE4
+  int field_0xE8;        // 0xE8
+  int field_0xEC;        // 0xEC
+  int field_0xF0;        // 0xF0
+  int field_0xF4;        // 0xF4
+  int field_0xF8;        // 0xF8
+  int field_0xFC;        // 0xFC
+  SpriteAction* field_0x100; // 0x100 - SpriteAction (0x444AF0 dtor)
+  Palette* field_0x104;  // 0x104 - palette ptr (0x41DC10 dtor)
+  Sprite* field_0x108;   // 0x108 - background sprite ptr (0x44C740 dtor)
+  Sprite* field_0x10C;   // 0x10C - console sprite ptr (0x44C740 dtor)
+  SoundList* field_0x110; // 0x110 - sound list ptr (0x425490 dtor)
+  int field_0x114;       // 0x114
 
   Engine();
 
-  // Virtual function overrides from Parser (vtable[0-2])
-  virtual int LBLParse(char* line);
-  virtual void OnProcessStart();
-  virtual void OnProcessEnd();
+  // Full game virtual methods (vtable 0x461A90, entries 0-12)
+  virtual int LBLParse(char* line);           // [0] 0x449600
+  virtual void OnProcessStart();              // [1] 0x401140
+  virtual void OnProcessEnd();                // [2] 0x449520
+  virtual ~Engine();                          // [3] 0x4491C0/0x4491E0
+  virtual void Initialize(int* param);        // [4] 0x449260
+  virtual int CleanupSubsystems(int* param);  // [5] 0x449400
+  virtual void VirtCleanup(int flag);         // [6] 0x449320
+  virtual void ProcessActions(int p1, int p2);// [7] 0x449480
+  virtual int HandleInput(int* param);        // [8] 0x449410
+  virtual int CheckNavState(int* param);      // [9] 0x405D60
+  virtual void fn10(int param);               // [10] 0x401160
+  virtual void ProcessTargets();              // [11] 0x4494E0
+  virtual void fn12(int index, int* action);  // [12] 0x4491B0
 
-  // Engine virtual destructor (vtable[3])
-  virtual ~Engine();
-
-  // Engine virtual methods (vtable[4-17])
-  virtual void Initialize();          // vtable[4] 0x411550
-  virtual void CleanupSubsystems();   // vtable[5] 0x411a40
-  virtual void VirtCleanup();         // vtable[6] 0x411540 - called by StopAndCleanup
-  virtual void DisplayFrameRate();    // vtable[7] 0x411d60
-  virtual void UpdateCrosshair();     // vtable[8] 0x411460
-  virtual int CheckNavState();        // vtable[9] 0x411dd0
-  virtual int UpdateSpriteFrame();    // vtable[10] 0x411440
-  virtual void ProcessTargets();      // vtable[11] 0x4113a0
-  virtual void Draw();                // vtable[12] 0x411510
-  virtual void UpdateMeter();         // vtable[13] 0x411190
-  virtual int UpdateAndCheck();       // vtable[14] 0x411340
-  virtual void CopyToGlobals();       // vtable[15] 0x411ca0 - copies instance fields to globals
-  virtual void ClearGlobals();        // vtable[16] 0x411d20 - clears all global pointers to 0
-  virtual void PlayCompletionSound(); // vtable[17] 0x4111a0
+  // Demo-compat virtual stubs (not in full game vtable, needed for EngineB)
+  virtual void Draw();
+  virtual void UpdateMeter();
+  virtual int UpdateAndCheck();
+  virtual void CopyToGlobals();
+  virtual void ClearGlobals();
+  virtual void PlayCompletionSound();
 
   // Non-virtual methods
-  void StopAndCleanup();  // 0x411320
-  void SetupViewport();   // 0x411230
+  void StopAndCleanup();                      // 0x42BF00
+  void SetupViewport();
 };
 
 #endif // ENGINE_H

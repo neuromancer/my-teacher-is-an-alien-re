@@ -326,6 +326,7 @@ void __fastcall FUN_0042be00(void*) {}
 void __fastcall FUN_0042bf00(void*) {}
 void __fastcall FUN_004252a0(void*) {}
 void __fastcall FUN_00404d70(void*, int, int) {}
+void* __fastcall FUN_00404b80(void*) { return 0; }
 void __fastcall FUN_0040b760(void*, int, int) {}
 void __fastcall FUN_0044bac0(void*, int, int, int) {}
 void* __fastcall FUN_00450b10(void*) { return 0; }
@@ -336,9 +337,34 @@ void __fastcall FUN_0044c880(void*) {}
 void __fastcall FUN_0044d210(void*, int, int, int, int, int) {}
 void __fastcall FUN_00420ac0(void*, int, int) {}
 
+// --- Parser link stubs ---
+int g_ParserCount = 0;              // DAT_00469288
+void* g_FilePosCache = 0;           // DAT_00469144
+void __fastcall FUN_004128f0(void*) {}  // destructor for g_FilePosCache
+// Parser::ProcessFile -> Parser.cpp
+// Parser::GetKey -> Parser.cpp
+
+// Parser method stubs (called by GetKey)
+int Parser::GetTokenType(char* line) { return 0; }
+void Parser::HandleToken(int tokenType, char* line) {}
+void Parser::BeginComment(char* line, int flag) {}
+int Parser::EndComment() { return 0; }
+int Parser::DoCommentsMatch(char* line) { return 0; }
+void Parser::SubstituteVars(char* src, char* dst) {}
+int DAT_00469160 = 0;  // preprocessor variable substitution flag
+
+// Parser::ProcessFile timing globals
+int DAT_00469148 = 0;
+int DAT_0046914c = 0;
+int DAT_00469150 = 0;
+int DAT_00469154 = 0;
+int DAT_00469158 = 0;
+int DAT_0046915c = 0;
+
 // --- C++ __cdecl stubs ---
+// FUN_00412a50 -> Parser::ReportUnknownLabel in Parser.cpp
 void __cdecl FUN_00412a50() {}
-void Parser::ReportUnknownLabel(char*) {}
+int __cdecl FUN_00412a50(void*) { return 0; }
 void __cdecl FUN_00413e70(void*, int, char*) {}
 void __cdecl FUN_00425a90(int, int) {}
 void __cdecl FUN_00425c50(char*, ...) {}
@@ -543,3 +569,51 @@ unsigned int DetMask::CheckHit(int, int) { return 0; }
 #include "SC_WordSearch.h"
 int SC_WordSearch::AddMessage(SC_Message*) { return 0; }
 int SC_WordSearch::LBLParse(char*) { return 0; }
+
+// ============================================================================
+// SC_FireAlarm / SC_Pods link stubs
+// ============================================================================
+
+void* __fastcall FUN_00425480(void*) { return 0; }
+void __fastcall FUN_00444af0(void*) {}
+void __fastcall FUN_004254a0(void*, int, int) {}
+void* __fastcall FUN_00440860(void*) { return 0; }
+int DAT_004685ac = 0;
+void* DAT_0046bf28 = 0;
+
+// ============================================================================
+// Engine link stubs
+// ============================================================================
+
+#include "Sound.h"
+#include "SpriteAction.h"
+
+void __stdcall FUN_004309C0(int*) {}
+void FUN_00444E40(SpriteAction*) {}
+Sound* DAT_0046AA0C = 0;
+int DAT_0046AA24 = 0;
+
+// ============================================================================
+// SC_CombatBase / EngineA link stubs
+// ============================================================================
+
+#include "SC_CombatBase.h"
+#include "GameState.h"
+
+SC_CombatBase::SC_CombatBase() {}
+SC_CombatBase::~SC_CombatBase() {}
+int SC_CombatBase::LBLParse(char*) { return 0; }
+void SC_CombatBase::Initialize() {}
+void SC_CombatBase::CleanupAll() {}
+void SC_CombatBase::ResetState() {}
+void SC_CombatBase::ProcessInput() {}
+void SC_CombatBase::method8() {}
+void SC_CombatBase::method9() {}
+void SC_CombatBase::method10() {}
+void SC_CombatBase::method11() {}
+int SC_CombatBase::method12() { return 0; }
+int SC_CombatBase::HandleAction(int*) { return 0; }
+void SC_CombatBase::StopAndCleanup() {}
+void SC_CombatBase::SetupViewport() {}
+void SC_CombatBase::RenderState() {}
+int SC_CombatBase::UpdateAndCheck() { return 0; }

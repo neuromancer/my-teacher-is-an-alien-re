@@ -2,7 +2,7 @@
 #include "globals.h"
 #include <stdio.h>
 #include "string.h"
-#include "Engine.h"
+#include "SC_CombatBase.h"
 #include "SoundList.h"
 #include "Palette.h"
 #include "RockThrower.h"
@@ -68,11 +68,11 @@ int EngineInfoParser::LBLParse(char* line) {
 /* Function start: 0x434A00 */ /* ~83% match */
 void EngineInfoParser::ParseOffset(char *line, int arg2) {
   if ((char)arg2 == '1') {
-    sscanf(line, "%d %d", &g_CombatEngine_00435eb0->m_viewOffset1X,
-           &g_CombatEngine_00435eb0->m_viewOffset1Y);
+    sscanf(line, "%d %d", &g_CombatEngine_00435eb0->field_0xD0,
+           &g_CombatEngine_00435eb0->field_0xD8);
   } else {
-    sscanf(line, "%d %d", &g_CombatEngine_00435eb0->m_scrollOffsetX,
-           &g_CombatEngine_00435eb0->m_scrollOffsetY);
+    sscanf(line, "%d %d", &g_CombatEngine_00435eb0->field_0xC0,
+           &g_CombatEngine_00435eb0->field_0xC8);
   }
 }
 
@@ -94,7 +94,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
 
   switch (index) {
   case 0:
-    g_CombatEngine_00435eb0->m_backgroundSample = (Sample*)sound;
+    g_CombatEngine_00435eb0->field_0xE0 = (int)sound;
     break;
   case 1:
     g_Weapon_00435f14->field_0xa4 = sound;

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "SC_CombatBase.h"
 #include "GameState.h"
 #include "InputManager.h"
 #include "VBuffer.h"
@@ -21,7 +22,7 @@
 // Pointers initialized to 0 to avoid crash
 // Sorted by address 0x00436960 - 0x004369A4
 
-Engine* g_CombatEngine_00435eb0 = 0; // Combat engine (EngineB subclass)
+SC_CombatBase* g_CombatEngine_00435eb0 = 0; // Combat engine (EngineA or EngineB)
 char* g_Buffer_00436960 = 0;
 char* g_Buffer_00436964 = 0;
 InputManager* g_InputManager_00436968 = 0;

@@ -1,12 +1,12 @@
 #include "RockThrower.h"
 #include "globals.h"
-#include "Engine.h"
+#include "SC_CombatBase.h"
 #include "Projectile.h"
 #include "InputManager.h"
 #include <string.h>
 
 extern int g_ProjectileHits_0043d150;
-extern Engine* g_CombatEngine_00435eb0;
+extern SC_CombatBase* g_CombatEngine_00435eb0;
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
