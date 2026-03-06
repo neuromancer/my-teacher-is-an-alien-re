@@ -6,7 +6,9 @@
 #include <string.h>
 #include <stdio.h>
 
-/* Function start: 0x41F280 */ /* DEMO ONLY - no full game match */
+extern "C" int DAT_0046a6ec;
+
+/* Function start: 0x4438A0 */
 MMPlayer::MMPlayer()
 {
     int* ptr = &field_0x88;
@@ -16,10 +18,10 @@ MMPlayer::MMPlayer()
     ptr[3] = 0;
     field_0x90 = 1;
     m_queue = new ZBQueue(2);
-    field_0x88 = 0x54;
+    field_0x88 = *(int*)(DAT_0046a6ec + 0x1c);
 }
 
-/* Function start: 0x41F360 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x443990 */
 MMPlayer::~MMPlayer()
 {
     Sprite* sprite;
@@ -41,7 +43,7 @@ MMPlayer::~MMPlayer()
     }
 }
 
-/* Function start: 0x41F480 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x443AB0 */
 void MMPlayer::StopAll()
 {
     Sprite* sprite;
@@ -66,7 +68,7 @@ void MMPlayer::StopAll()
     field_0x8c = field_0x8c & ~0x2000;
 }
 
-/* Function start: 0x41F4F0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x443B20 */
 void MMPlayer::Init()
 {
     Sprite* sprite;
@@ -92,7 +94,7 @@ void MMPlayer::Init()
     field_0x8c = field_0x8c | 0x2000;
 }
 
-/* Function start: 0x41F560 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x443B90 */
 void MMPlayer::AddSprite(Sprite* s)
 {
     if (s == 0)
@@ -127,7 +129,7 @@ void MMPlayer::AddSprite(Sprite* s)
     }
 }
 
-/* Function start: 0x41F800 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x443E30 */
 int MMPlayer::Draw()
 {
     Sprite* sprite;
@@ -158,19 +160,52 @@ int MMPlayer::Draw()
     return field_0x90;
 }
 
-/* Function start: 0x41F8A0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x443ED0 */
+void MMPlayer::ResetAnimations(int param_1)
+{
+    Sprite* sprite;
+
+    m_queue->current = m_queue->head;
+    if (m_queue->head != 0) {
+        do {
+            sprite = 0;
+            if (m_queue->current != 0) {
+                sprite = (Sprite*)m_queue->current->data;
+            }
+            sprite->ResetAnimation(param_1, 0);
+
+            if (m_queue->tail == m_queue->current) {
+                break;
+            }
+            if (m_queue->current != 0) {
+                m_queue->current = m_queue->current->next;
+            }
+        } while (m_queue->head != 0);
+    }
+}
+
+/* Function start: 0x443F40 */
 int MMPlayer::LBLParse(char* param_1)
 {
     char local_34[32];
     Sprite* sprite;
+    char local_b0[128];
 
-    local_34[0] = 0;
     sscanf(param_1, " %s ", local_34);
 
     if (strcmp(local_34, "SPRITE") == 0)
     {
         sprite = new Sprite(0);
         Parser::ProcessFile(sprite, this, 0);
+        AddSprite(sprite);
+    }
+    else if (strncmp(local_34, "OVE", 3) == 0)
+    {
+        if (sscanf(param_1, " %s %s ", local_34, local_b0) < 2) {
+            Parser::LBLParse("MMPlayer");
+        }
+        sprite = new Sprite(local_b0);
+        sprite->LBLParse(param_1);
         AddSprite(sprite);
     }
     else if (strcmp(local_34, "END") == 0)

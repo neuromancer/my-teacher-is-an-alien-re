@@ -15,7 +15,7 @@ class Sprite;
  * - Destructor properly cleans up all queued sprites
  *
  * Size: 0x98 (152 bytes)
- * Functions: 0x41F280, 0x41F360, 0x41F480, 0x41F4F0, 0x41F800
+ * Functions: 0x4438A0, 0x443990, 0x443AB0, 0x443B20, 0x443B90, 0x443E30, 0x443ED0, 0x443F40
  *
  * NOTE: This is DIFFERENT from MouseControl (0x1C0 / 448 bytes), which manages
  * cursor rendering/appearance (sprites, hotspots, labels, audio). Do not merge.
@@ -25,11 +25,12 @@ public:
     MMPlayer();
     ~MMPlayer();
 
-    virtual int LBLParse(char* param_1);  // 0x41F8A0
-    void Init();            // 0x41F4F0
-    void StopAll();         // 0x41F480
-    int Draw();            // 0x41F800
-    void AddSprite(Sprite* s);  // 0x41F560
+    virtual int LBLParse(char* param_1);  // 0x443F40
+    void Init();            // 0x443B20
+    void StopAll();         // 0x443AB0
+    int Draw();            // 0x443E30
+    void AddSprite(Sprite* s);  // 0x443B90
+    void ResetAnimations(int param_1);  // 0x443ED0
 
     int field_0x88;           // 0x88
     int field_0x8c;           // 0x8c - flags (byte at 0x8d is accessed as (field_0x8c >> 8) & 0xff)

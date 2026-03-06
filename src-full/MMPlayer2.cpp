@@ -17,7 +17,7 @@ MMPlayer2::MMPlayer2()
     field_88 = 0x54;
 }
 
-/* Function start: 0x443990 */ /* ~98% match */
+/* Function start: 0x408A40 */ /* DEMO ONLY - no full game match */
 MMPlayer2::~MMPlayer2()
 {
     Sprite* sprite;
@@ -75,7 +75,7 @@ void MMPlayer2::PreDraw()
     field_8c |= 0x2000;
 }
 
-/* Function start: 0x443B90 */ /* ~98% match */
+/* Function start: 0x408C40 */ /* DEMO ONLY - no full game match */
 void MMPlayer2::AddSprite(Sprite* spr)
 {
     ZBQueueNode* newNode;

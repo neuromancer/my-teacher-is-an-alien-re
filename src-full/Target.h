@@ -107,12 +107,12 @@ public:
     Sample* defaultHitSound;      // 0x1bc
     Sample* defaultSound;         // 0x1c0
 
-    TargetList(); // 0x414D80
-    virtual ~TargetList(); // 0x414DF0
-    virtual int LBLParse(char* line); // 0x414FD0
-    virtual void OnProcessEnd(); // 0x414F30
+    TargetList(); // 0x4432F0
+    virtual ~TargetList(); // 0x443360
+    virtual int LBLParse(char* line); // 0x443540
+    virtual void OnProcessEnd(); // 0x4434A0
 
-    Target* ProcessTargets(); // 0x4150F0
+    Target* ProcessTargets(); // 0x443660
 };
 
 #endif // TARGET_H
