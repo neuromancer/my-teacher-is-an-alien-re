@@ -22,18 +22,7 @@ void BlankScreen();
 // SetPaletteEntriesAnimation moved to Palette.cpp (0x41DE40)
 extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count);
 
-// Smack function pointer table (loaded from SMACKW32.DLL at runtime)
-extern "C" {
-    extern void (__stdcall *DAT_00476538)(int, void*, unsigned int, unsigned int); // SmackColorRemap
-    extern unsigned int (__stdcall *DAT_00476540)(int);                            // SmackDoFrame
-    extern void (__stdcall *DAT_00476544)(int);                                    // SmackNextFrame
-    extern unsigned int (__stdcall *DAT_00476548)(int, unsigned int);              // SmackGoto
-    extern void (__stdcall *DAT_0047654c)(int);                                    // SmackClose
-    extern void (__stdcall *DAT_00476550)(void*, void*, unsigned int);             // SmackBufferNewPalette
-    extern int (__stdcall *DAT_00476554)(const char*, unsigned int, unsigned int);  // SmackOpen
-    extern int (__stdcall *DAT_0047655c)(int);                                     // SmackWait
-    extern unsigned int (__stdcall *DAT_00476570)(int, unsigned int);              // SmackSoundOnOff
-}
+// Smack functions are linked via smackw32.lib (IAT entries in original binary at 0x004765xx)
 
 // Full game globals (extern "C" linkage)
 extern "C" {
@@ -99,12 +88,12 @@ void Animation::CloseSmackerFile() {
       }
     }
     if (*(char*)((int)DAT_0046aa10 + 0x46) == '\x02') {
-      DAT_00476570((int)smk, 0);
+      SmackSoundOnOff(smk, 0);
     }
     if (g_GameLoopHelper != 0) {
       g_GameLoopHelper->RemoveAnimation((int)smk);
     }
-    DAT_0047654c((int)smk);
+    SmackClose(smk);
     smk = 0;
   }
 }
@@ -122,9 +111,9 @@ int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
   int result;
 
   if (smk->NewPalette != 0) {
-    DAT_00476550(smack_buffer, &smk->Palette, 0);
+    SmackBufferNewPalette(smack_buffer, &smk->Palette, 0);
     if (smack_buffer->StartPalColor < 0x100) {
-      DAT_00476538((int)smk, &smack_buffer->Palette, smack_buffer->PalColorsInUse,
+      SmackColorRemap(smk, &smack_buffer->Palette, smack_buffer->PalColorsInUse,
                    smack_buffer->Unk43C);
     }
   }
@@ -149,9 +138,9 @@ int Animation::ApplyPalette(unsigned int start, unsigned int count) {
 /* Function start: 0x41AD30 */
 int Animation::UpdatePalette(unsigned int start, unsigned int count) {
   if (smk->NewPalette != 0) {
-    DAT_00476550(smack_buffer, &smk->Palette, 0);
+    SmackBufferNewPalette(smack_buffer, &smk->Palette, 0);
     if (smack_buffer->StartPalColor < 0x100) {
-      DAT_00476538((int)smk, &smack_buffer->Palette, smack_buffer->PalColorsInUse,
+      SmackColorRemap(smk, &smack_buffer->Palette, smack_buffer->PalColorsInUse,
                    smack_buffer->Unk43C);
     }
   }
@@ -162,27 +151,26 @@ int Animation::UpdatePalette(unsigned int start, unsigned int count) {
 /* Function start: 0x41AD90 */
 void Animation::DoFrame() {
   if (smk != 0) {
-    DAT_00476540((int)smk);
+    SmackDoFrame(smk);
   }
 }
 
 /* Function start: 0x41ADA0 */
 void Animation::NextFrame() {
   if (smk != 0) {
-    DAT_00476544((int)smk);
+    SmackNextFrame(smk);
   }
 }
 
 /* Function start: 0x41ADB0 */
 void Animation::GotoFrame(int frame) {
   if (smk != 0) {
-    unsigned int (__stdcall *soundOnOff)(int, unsigned int) = DAT_00476570;
     if (*(char*)((int)DAT_0046aa10 + 0x46) == '\x02') {
-      soundOnOff((int)smk, 0);
+      SmackSoundOnOff(smk, 0);
     }
-    DAT_00476548((int)smk, frame);
+    SmackGoto(smk, frame);
     if (*(char*)((int)DAT_0046aa10 + 0x46) == '\x02') {
-      soundOnOff((int)smk, 1);
+      SmackSoundOnOff(smk, 1);
     }
   }
 }
@@ -198,7 +186,7 @@ int Animation::Open(char *filename, int param_2, int param_3) {
   }
   param_2 = param_2 | 0x400;
 
-  smk = (HSMACK)DAT_00476554(filename, param_2, param_3);
+  smk = SmackOpen(filename, param_2, param_3);
   if (smk == 0) {
     ShowError("Animation::Open - Cannot open file '%s'", filename);
     return 0;
@@ -356,7 +344,7 @@ void Animation::MainLoop() {
           }
         }
 
-        if (!DAT_0047655c((int)smk)) break;
+        if (!SmackWait(smk)) break;
       }
 
       VBuffer *vb = targetBuffer;

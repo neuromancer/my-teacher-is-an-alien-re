@@ -7,6 +7,8 @@
 #include "string.h"
 #include "GlyphRect.h"
 
+extern "C" extern void* DAT_0046aa14;
+
 static int g_VBufferHandleTableInitialized = 0;
 static int g_VBufferHandleTable[0x20];
 
@@ -68,6 +70,7 @@ extern "C" void InitWorkBuffer(int width, int height)
     }
     g_WorkBuffer_00436974->SetVideoMode();
     g_WorkBuffer_00436974->ClearScreen(0);
+    DAT_0046aa14 = g_WorkBuffer_00436974;
 }
 
 /* Function start: 0x410F90 */

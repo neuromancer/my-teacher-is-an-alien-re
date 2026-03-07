@@ -153,6 +153,49 @@ void Parser::FindKey(unsigned char *param_1) {
   }
 }
 
+extern "C" char* FUN_00454960(char*, char*);
+extern "C" char* FUN_00426570(char*, char*);
+
+/* Function start: 0x413810 */
+int Parser::GetTokenType(char* line) {
+    char local_40[64];
+    char* openTag;
+    char* closeTag;
+    int len;
+
+    openTag = FUN_00426570(line, "<<");
+    if (openTag == 0) {
+        return 0;
+    }
+
+    closeTag = FUN_00454960(line, ">>");
+    len = (int)closeTag - (int)openTag;
+    if (closeTag == 0 || len <= 0) {
+        return 0;
+    }
+
+    strncpy(DAT_0046aa00, openTag, len);
+    DAT_0046aa00[len] = '\0';
+    sscanf(DAT_0046aa00, " %s ", local_40);
+
+    if (strcmp(local_40, "_IF_") == 0) return 2;
+    if (strcmp(local_40, "_ELSEIF_") == 0) return 3;
+    if (strcmp(local_40, "_ELSE_") == 0) return 4;
+    if (strcmp(local_40, "_ENDIF_") == 0) return 5;
+    if (strcmp(local_40, "_SET_GAMESTATE_") == 0) return 6;
+    if (strcmp(local_40, "_SET_MOUSE_") == 0) return 7;
+    if (strcmp(local_40, "_GOTO_") == 0) return 8;
+    if (strcmp(local_40, "_GOSUB_") == 0) return 9;
+    if (strcmp(local_40, "_RETURN_") == 0) return 10;
+    if (strcmp(local_40, "_EXIT_") == 0) return 0xC;
+    if (strcmp(local_40, "_HALT_") == 0) return 0xB;
+    if (strcmp(local_40, "_V_") == 0) return 0xD;
+    if (strncmp(local_40, "**", 2) == 0) return 1;
+
+    ShowError("Parser::GetTokenType - Invaild TOKEN \n'%s'", local_40);
+    return 1;
+}
+
 /* Function start: 0x413BD0 */
 int Parser::GetKey(char* line) {
   char local_100[256];

@@ -146,6 +146,11 @@ void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 void __fastcall FUN_004148f0(void* param) {}
 void* __fastcall FUN_00418540(void* param) { return 0; }
 
+// Engine base class methods (called via fastcall trick from SC_DodgeOrville)
+void __fastcall FUN_00449320(void* self, int edx, int flag) {}
+int __fastcall FUN_00449400(void* self, int edx, void* msg) { return 0; }
+void __fastcall FUN_004494e0(void* self) {}
+
 // ============================================================================
 // SC_Detention method stubs (called from AddMessage/Exit)
 // ============================================================================
@@ -381,8 +386,7 @@ void __fastcall FUN_004128f0(void*) {}  // destructor for g_FilePosCache
 // Parser::ProcessFile -> Parser.cpp
 // Parser::GetKey -> Parser.cpp
 
-// Parser method stubs (called by GetKey)
-int Parser::GetTokenType(char* line) { return 0; }
+// Parser::GetTokenType -> Parser.cpp
 void Parser::HandleToken(int tokenType, char* line) {}
 void Parser::BeginComment(char* line, int flag) {}
 int Parser::EndComment() { return 0; }
@@ -467,7 +471,15 @@ extern "C" {
     void* FUN_00454500(int) { return 0; }
     int FUN_00454510(char*, char*, ...) { return 0; }
     int FUN_00454850(char*, char*, ...) { return 0; }
-    char* FUN_00454960(char*, char*) { return 0; }
+    char* FUN_00454960(char* s1, char* s2) { return strstr(s1, s2); }
+    /* Function start: 0x426570 */
+    char* FUN_00426570(char* s1, char* s2) {
+        char* p = strstr(s1, s2);
+        if (p != 0) {
+            p += strlen(s2);
+        }
+        return p;
+    }
     void FUN_00444e20(void*) {}
 }
 
@@ -590,6 +602,7 @@ char* __cdecl FUN_0044e470(char*) { return 0; }
 // Missing C++ globals
 int DAT_0046ad6c = 0;
 void* DAT_0046bbfc = 0;
+void* DAT_00468ef0 = 0;
 char* DAT_0046bacc = 0;
 
 // Class method stubs for SC_Wahoo local classes
@@ -654,3 +667,34 @@ void SC_CombatBase::StopAndCleanup() {}
 void SC_CombatBase::SetupViewport() {}
 void SC_CombatBase::RenderState() {}
 int SC_CombatBase::UpdateAndCheck() { return 0; }
+
+// ============================================================================
+// SC_Fan link stubs
+// ============================================================================
+
+void __fastcall FUN_00421920(void*) {}
+void __fastcall FUN_00421930(void*) {}
+void __fastcall FUN_00425100(void*, int, int, int) {}
+void __fastcall FUN_00427880(void*) {}
+void __fastcall FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int) {}
+int __cdecl FUN_00454920() { return 0; }
+void __fastcall FUN_004219f0(void*, int, int) {}
+int __fastcall FUN_00421a30(void*) { return 0; }
+int __fastcall FUN_00424f00(void*, int, char*) { return 0; }
+
+// GameStateObj::FindLabel stub (SC_Fan uses this wrapper for __thiscall FUN_00433ae0)
+class GameStateObj { public: int FindLabel(char* name); };
+int GameStateObj::FindLabel(char*) { return 0; }
+
+// SC_Fan externs that need C++ linkage versions
+int __cdecl FUN_0044ccf0(int, int, int, int) { return 0; }
+void __fastcall FUN_0044cb40(void*, int, int, int) {}
+void __fastcall FUN_004127c0(void*) {}
+void __fastcall FUN_00407b60(void*) {}
+
+// ============================================================================
+// InitMemoryCache / CleanupMemoryCache link stubs
+// ============================================================================
+
+void __cdecl FUN_004344b0() {}
+void __cdecl FUN_00434030(void*, int) {}

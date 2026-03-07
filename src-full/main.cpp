@@ -56,7 +56,15 @@ int SetCursorVisible(unsigned int);
 int FileExists(const char *);
 void ParsePath(const char *, char *, char *, char *, char *);
 int ProcessMessages();
+
+// Bridge globals (extern "C" linkage)
+extern void* DAT_0046aa10;   // = g_GameConfig_00436970
+extern void* DAT_0046aa14;   // = g_WorkBuffer_00436974
 }
+
+// Bridge globals (C++ linkage, defined in stubs.cpp)
+extern char* DAT_0046aa00;   // = g_Buffer_00436960
+extern void* DAT_0046aa08;   // = g_InputManager_00436968
 
 // Forward declarations for functions defined in this file
 void InitGameSystems();
@@ -71,6 +79,39 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...);
 int __cdecl GetFreeDiskSpaceMB(int drive);
 void __cdecl InitMemoryCache(int param_1, int param_2, float param_3);
 void CleanupMemoryCache();
+
+// MemoryCache struct (24 bytes = 0x18) used by InitMemoryCache/CleanupMemoryCache
+class MemoryCache {
+public:
+    int field_0;
+    int field_4;
+    int field_8;
+    int field_c;
+    int field_10;
+    int field_14;
+
+    MemoryCache(int param) {
+        field_8 = 0;
+        field_c = 0;
+        field_4 = 0;
+        field_0 = 0;
+        field_10 = 0;
+        field_14 = param;
+    }
+};
+
+extern void __cdecl FUN_004344b0();
+extern void __cdecl FUN_00434030(void*, int);
+extern "C" void FUN_00454400(void*);
+extern void __fastcall FUN_004218c0(void*);
+
+static float g_PercentScale = 0.01f;
+int DAT_00473440 = 0;
+int DAT_00473444 = 0;
+int DAT_0046b780 = 0;
+int DAT_0046b790 = 0;
+MemoryCache* DAT_0046b78c = 0;
+int DAT_00473448 = 0;
 // QuestionInit - Parser-derived class constructed and immediately destroyed in RunGame
 // FUN_00422880 constructor, calls Parser() + ParseFile(this, filename, NULL)
 class QuestionInit : public Parser {
@@ -363,12 +404,14 @@ extern "C" int FileExists(const char *filename) {
 /* Function start: 0x425720 */
 void InitGameSystems(void) {
     g_Buffer_00436960 = new char[0x100];
+    DAT_0046aa00 = g_Buffer_00436960;
     g_Buffer_00436964 = new char[CalculateBufferSize(0x280, 0x1e0)];
     CheckDebug();
     ClearMessageLog();
     CreateGameObject_1();
     InitWorkBuffer(0x280, 0x1e0);
     g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
+    DAT_0046aa08 = g_InputManager_00436968;
     g_Sound_0043696c = new Sound(0x5622, 8, 1);
     g_TextManager_00436990 = new AnimatedAsset();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
@@ -385,6 +428,7 @@ void ShutdownGameSystems(void) {
   if (g_WorkBuffer_00436974 != 0) {
     delete g_WorkBuffer_00436974;
     g_WorkBuffer_00436974 = 0;
+    DAT_0046aa14 = 0;
   }
   if (g_Sound_0043696c != 0) {
     Sound* p = g_Sound_0043696c;
@@ -395,6 +439,7 @@ void ShutdownGameSystems(void) {
   if (g_InputManager_00436968 != 0) {
     delete g_InputManager_00436968;
     g_InputManager_00436968 = 0;
+    DAT_0046aa08 = 0;
   }
 
   if (g_CDData_0043697c != 0) {
@@ -406,6 +451,7 @@ void ShutdownGameSystems(void) {
   if (g_GameConfig_00436970 != 0) {
      delete g_GameConfig_00436970;
      g_GameConfig_00436970 = 0;
+     DAT_0046aa10 = 0;
   }
   if (g_Buffer_00436964 != 0) {
     delete[] g_Buffer_00436964;
@@ -414,6 +460,7 @@ void ShutdownGameSystems(void) {
   if (g_Buffer_00436960 != 0) {
     delete g_Buffer_00436960;
     g_Buffer_00436960 = 0;
+    DAT_0046aa00 = 0;
   }
 }
 
@@ -435,6 +482,7 @@ void CreateGameObject_1() {
   }
 
   g_GameConfig_00436970->LoadConfig();
+  DAT_0046aa10 = g_GameConfig_00436970;
 }
 
 /* Function start: 0x426AC0 */
@@ -481,44 +529,74 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...) {
     char *args = (char *)(&format + 1);
 
     vsprintf(local_104, format, args);
-    if (FileExists(local_104) == 0) {
+    if (FileExists(local_104)) {
+        strcpy(g_CDData_0043697c->field_190 + 5, local_104);
+    } else {
         sprintf(g_CDData_0043697c->field_190 + 5, "%s\\%s",
                 g_CDData_0043697c->field_190, local_104);
-    } else {
-        strcpy(g_CDData_0043697c->field_190 + 5, local_104);
     }
     return g_CDData_0043697c->field_190 + 5;
 }
 
 /* Function start: 0x426690 */
 int __cdecl GetFreeDiskSpaceMB(int param_1) {
-    DWORD local_10;
-    DWORD local_c;
     DWORD local_18;
     DWORD local_14;
-    LPCSTR lpRootPathName;
+    DWORD local_10;
+    DWORD local_c;
     char local_8[8];
     int result;
 
     result = -1;
-    if (param_1 == 0) {
-        lpRootPathName = 0;
-    } else {
+    if (param_1 != 0) {
         sprintf(local_8, "%c:\\", param_1 + 0x40);
-        lpRootPathName = local_8;
-    }
-    if (GetDiskFreeSpaceA(lpRootPathName, &local_10, &local_14, &local_18, &local_c) != 0) {
-        result = local_18 * local_14 * local_10;
+        if (GetDiskFreeSpaceA(local_8, &local_10, &local_14, &local_18, &local_c) != 0) {
+            result = local_18 * local_14 * local_10;
+        }
+    } else {
+        if (GetDiskFreeSpaceA(0, &local_10, &local_14, &local_18, &local_c) != 0) {
+            result = local_18 * local_14 * local_10;
+        }
     }
     return result;
 }
 
 /* Function start: 0x4340A0 */
 void __cdecl InitMemoryCache(int param_1, int param_2, float param_3) {
+    CleanupMemoryCache();
+    DAT_00473440 = 0;
+    DAT_00473444 = param_2 << 20;
+    DAT_0046b780 = param_1;
+    DAT_0046b790 = DAT_00473444 - (int)((float)DAT_00473444 * param_3 * g_PercentScale);
+    MemoryCache* ptr = new MemoryCache(DAT_0046b780);
+    DAT_0046b78c = ptr;
+    FUN_004218c0((void*)&DAT_00473448);
 }
 
 /* Function start: 0x434170 */
 void CleanupMemoryCache() {
+    FUN_004344b0();
+    if (DAT_0046b78c != 0) {
+        MemoryCache* cache = DAT_0046b78c;
+        int* node = (int*)cache->field_0;
+        while (node != 0) {
+            FUN_00434030((void*)&node[2], 1);
+            node = (int*)node[0];
+        }
+        cache->field_8 = 0;
+        cache->field_c = 0;
+        cache->field_4 = 0;
+        cache->field_0 = 0;
+        int* freeNode = (int*)cache->field_10;
+        while (freeNode != 0) {
+            int* next = (int*)freeNode[0];
+            FUN_00454400(freeNode);
+            freeNode = next;
+        }
+        cache->field_10 = 0;
+        FUN_00454400(cache);
+        DAT_0046b78c = 0;
+    }
 }
 
 // ParsePath is a CRT library function in the full game (0x4560F0, in library range)

@@ -63,8 +63,7 @@ extern "C" void FUN_004307b0(int handle);
 extern void __fastcall FUN_004308c0(void* list);
 extern void __fastcall FUN_004145f0(void* list);
 
-// SmackWait function pointer (IAT entry at 0x47655c)
-extern "C" extern int (__stdcall *DAT_0047655c)(int);
+// SmackWait is linked via smackw32.lib (IAT entry at 0x47655c in original binary)
 
 // Text rendering (font system)
 extern "C" void SetFontColor(int index);            // 0x4525EC - sets palette color for text
@@ -318,7 +317,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         return;
     }
 
-    int (__stdcall *smkWait)(int) = DAT_0047655c;
+    // SmackWait linked directly via smackw32.lib
 
     while (1) {
         if (((GameLoop*)DAT_0046aa08)->ProcessEvents(1) != 0) {
@@ -356,7 +355,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         Animation* smk = (Animation*)field_AC;
-        if (smkWait((int)smk->smk) == 0) {
+        if (SmackWait(smk->smk) == 0) {
             break;
         }
     }
