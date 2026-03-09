@@ -247,8 +247,8 @@ void SC_Slime::ResetSprites()
 
     extern void* DAT_0046aa08;
     if (DAT_0046aa08 != 0) {
-        extern void __fastcall FUN_00426ce0(void*, int, int);
-        FUN_00426ce0(DAT_0046aa08, 0, 1);
+        extern int __fastcall FUN_00426ce0(void*);
+        FUN_00426ce0(DAT_0046aa08);
     }
 
     if (spriteBC != 0) {

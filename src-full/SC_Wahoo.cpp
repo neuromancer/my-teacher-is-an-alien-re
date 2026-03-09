@@ -3,6 +3,7 @@
 #include "Sprite.h"
 #include "Sample.h"
 #include "SoundList.h"
+#include "mss.h"
 #include "Memory.h"
 #include <string.h>
 #include <stdio.h>
@@ -54,7 +55,6 @@ public:
     unsigned int CheckHit(int x, int y);  // 0x411330
 };
 
-extern int (__stdcall *DAT_0047652c)(int);
 
 extern int __fastcall FUN_00433ae0(void*, int, char*);
 extern void __fastcall FUN_00409f20(void*, int);
@@ -795,7 +795,7 @@ int SC_Wahoo::FUN_438F10(int param_1) {
         if (iVar3 == 3 && (iVar7 = (int)field_124, iVar7 != 0) &&
             (iVar5 = *(int*)(iVar7 + 0xc), iVar5 != 0) &&
             *(int*)(iVar5 + 0xc) == *(int*)(iVar7 + 4)) {
-            iVar7 = DAT_0047652c(iVar5);
+            iVar7 = AIL_sample_status((HSAMPLE)iVar5);
             if (iVar7 == 4) {
                 ((Sample*)field_124)->Stop();
             }
@@ -880,7 +880,7 @@ LAB_00439160:
                     if (iVar3 != 0) {
                         iVar5 = *(int*)(iVar3 + 0xc);
                         if (iVar5 != 0 && *(int*)(iVar3 + 4) == *(int*)(iVar5 + 0xc)) {
-                            iVar3 = DAT_0047652c(iVar5);
+                            iVar3 = AIL_sample_status((HSAMPLE)iVar5);
                             if (iVar3 == 4) goto LAB_004392aa;
                         }
                         ((Sample*)field_124)->Play(100, 0);

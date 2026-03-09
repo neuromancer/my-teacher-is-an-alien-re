@@ -2,6 +2,42 @@
 #include <string.h>
 #include "Memory.h"
 
+/* Function start: 0x444920 */
+SpriteAction* SpriteAction::CopyFrom(SpriteAction* other) {
+    if (this != other) {
+        SpriteAction* child;
+
+        child = (SpriteAction*)field_34;
+        if (child != 0) {
+            child->~SpriteAction();
+            FreeMemory(child);
+            field_34 = 0;
+        }
+
+        field_00 = other->field_00;
+        field_04 = other->field_04;
+        field_08 = other->field_08;
+        field_0C = other->field_0C;
+        field_10 = other->field_10;
+        field_14 = other->field_14;
+        field_18 = other->field_18;
+        dim.field_0 = other->dim.field_0;
+        dim.field_4 = other->dim.field_4;
+        field_24 = other->field_24;
+        field_28 = other->field_28;
+        field_2C = other->field_2C;
+        field_30 = other->field_30;
+
+        if (other->field_34 != 0) {
+            child = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            child->CopyFrom((SpriteAction*)other->field_34);
+            field_34 = (int)child;
+        }
+    }
+
+    return this;
+}
+
 /* Function start: 0x444A40 */
 SpriteAction::SpriteAction(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10) {
     memset(&field_00, 0, 0x38);

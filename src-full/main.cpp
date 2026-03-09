@@ -65,6 +65,7 @@ extern void* DAT_0046aa14;   // = g_WorkBuffer_00436974
 // Bridge globals (C++ linkage, defined in stubs.cpp)
 extern char* DAT_0046aa00;   // = g_Buffer_00436960
 extern void* DAT_0046aa08;   // = g_InputManager_00436968
+extern void* DAT_0046aa24;   // ZBufferManager* (rendering manager, 0xAC bytes)
 
 // Forward declarations for functions defined in this file
 void InitGameSystems();
@@ -103,7 +104,15 @@ public:
 extern void __cdecl FUN_004344b0();
 extern void __cdecl FUN_00434030(void*, int);
 extern "C" void FUN_00454400(void*);
+extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_004218c0(void*);
+
+#include "GameEngine.h"
+extern "C" int DAT_0046a6ec;
+extern "C" extern void* DAT_0046aa30;
+extern GameState* DAT_0046aa3c;
+extern GameState* g_StringTable_0046aa34;
+extern void* DAT_0046aa38;
 
 static float g_PercentScale = 0.01f;
 int DAT_00473440 = 0;
@@ -171,12 +180,16 @@ void RunGame() {
 
     // Create 4 GameStates with inline ParseFile
     g_GameState_00436998 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+    DAT_0046aa30 = g_GameState_00436998;
 
     g_GameState2_004369a4 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
+    DAT_0046aa3c = g_GameState2_004369a4;
 
     g_GameState3_0043699c = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+    g_StringTable_0046aa34 = g_GameState3_0043699c;
 
     g_GameState4_004369a0 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
+    DAT_0046aa38 = g_GameState4_004369a0;
 
     // Check CACHE_SIZE from gamestate
     int cacheIdx = g_GameState_00436998->FindState("CACHE_SIZE");
@@ -238,8 +251,13 @@ void RunGame() {
 
     g_TimedEventPool1_00436984 = new TimedEventPool();
 
-    ZBufferManager* pZBuffer = new ZBufferManager();
-    g_ZBufferManager_0043698c = pZBuffer;
+    // Original creates TWO objects (assembly lines 421-452 of FUN_4236F0):
+    // 1. DAT_0046aa24 = new ZBufferManager (0xAC bytes, constructor 0x403910) — rendering
+    // 2. [0x0046a6ec] = new GameEngine (0x28 bytes, constructor 0x430A00) — game loop
+    DAT_0046aa24 = (void*) new ZBufferManager();
+    g_ZBufferManager_0043698c = (ZBufferManager*)DAT_0046aa24;
+    GameEngine* gameEngine = new GameEngine();
+    DAT_0046a6ec = (int)gameEngine;
 
     g_Mouse_00436978->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
@@ -248,8 +266,8 @@ void RunGame() {
     g_TextManager_00436990->tabWidth = 0x14;
     g_Timer_00436980->Reset();
 
-    SC_Message_Send(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
-    SC_Message_Send(1, 0x1e, 0, 0, 0x17, 0, 0, 0, 0, 0);
+    FUN_00444d90(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
+    FUN_00444d90(1, 0x1e, 0, 0, 0x17, 0, 0, 0, 0, 0);
 
     // GameLoop (stack-allocated)
     GameLoop gameLoop;
@@ -260,14 +278,20 @@ void RunGame() {
         g_GameLoopHelper->PostProcess();
     }
 
-    // ZBufferManager cleanup before null check
-    g_ZBufferManager_0043698c->Cleanup();
+    // Game loop — GameEngine::RunGameLoop (0x430CD0)
+    gameEngine->RunGameLoop();
 
-    // Cleanup - explicit destructor + operator delete (tmp inside if to match register allocation)
-    if (g_ZBufferManager_0043698c != 0) {
-        ZBufferManager* p = g_ZBufferManager_0043698c;
-        p->~ZBufferManager();
-        operator delete(p);
+    // Cleanup: GameEngine destructor + delete (assembly lines 509-514)
+    if (gameEngine != 0) {
+        gameEngine->~GameEngine();
+        operator delete(gameEngine);
+    }
+
+    // Cleanup: ZBufferManager Cleanup + delete (assembly lines 515-528)
+    if (DAT_0046aa24 != 0) {
+        ((ZBufferManager*)DAT_0046aa24)->Cleanup();
+        operator delete(DAT_0046aa24);
+        DAT_0046aa24 = 0;
         g_ZBufferManager_0043698c = 0;
     }
 
@@ -733,4 +757,3 @@ int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
   }
   return 0;
 }
-

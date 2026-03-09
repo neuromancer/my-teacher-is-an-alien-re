@@ -78,7 +78,8 @@ public:
     void PostProcess();  // 0x41a960
 };
 extern GameLoopHelper* g_GameLoopHelper;   // DAT_0046a6f0
-extern GameState* g_GameState_0046aa30;    // DAT_0046aa30 - GameState for handler debug
+extern "C" extern void* DAT_0046aa30;
+#define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
 extern GameState* g_StringTable_0046aa34;  // DAT_0046aa34 - StringTable for handler names
 extern "C" void WriteToLog(const char* format, ...);  // FUN_00425d70
 extern char* DAT_0046aa2c;                // String buffer for ProcessMessage

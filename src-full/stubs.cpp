@@ -13,11 +13,20 @@
 #include "SCI_SearchScreen.h"
 #include "InputManager.h"
 #include "Character.h"
+#include "smack.h"
+#include "mss.h"
 #include "SoundItem.h"
 #include "Parser.h"
 #include "Engine.h"
+#include "GameEngine.h"
+#include "Timer.h"
 #include "SCI_Dialog.h"
 #include "Queue.h"
+
+extern "C" int DAT_0046a6ec;
+extern "C" int ProcessMessages();
+extern Timer g_leftClickTimer;
+extern Timer g_rightClickTimer;
 
 extern "C" {
 
@@ -204,13 +213,21 @@ char* DAT_0046aa00 = 0;
 
 // Full game globals for HandleSystemMessage debug display
 #include "GameState.h"
-GameState* g_GameState_0046aa30 = 0;   // DAT_0046aa30
+extern "C" extern void* DAT_0046aa30;
+#define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
 GameState* g_StringTable_0046aa34 = 0; // DAT_0046aa34
 char* DAT_0046aa2c = 0;               // DAT_0046aa2c - string buffer for ProcessMessage
 GameState* DAT_0046aa3c = 0;          // DAT_0046aa3c - GameState for ProcessMessage
 
 extern "C" void WriteToLog(const char* format, ...) {}  // FUN_00425d70 stub
-void __fastcall FUN_00426a90(void* self) {}             // FUN_00426a90 - reset input state
+/* Function start: 0x426A90 */
+void __fastcall FUN_00426a90(void* self) {
+    InputState* mouse;
+
+    mouse = ((InputManager*)self)->pMouse;
+    mouse->ext2 = 0;
+    mouse->ext1 = mouse->ext2;
+}
 
 // Functions referenced by SCI_Inventory
 void __fastcall FUN_00432da0(void* self) {}
@@ -219,7 +236,14 @@ void* __fastcall FUN_004407c0(void* self) { return 0; }
 void __fastcall FUN_0040c6e0(void* self) {}
 
 extern "C" {
-void FUN_00444d90(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {}
+void FUN_00444d90(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
+    SpriteAction action(a, b, c, d, e, f, g, h, i, j);
+
+    if (DAT_0046a6ec != 0) {
+        ((GameEngine*)DAT_0046a6ec)->EnqueueAction(&action);
+        action.field_34 = 0;
+    }
+}
 char* FUN_0044e530(int handle) { return 0; }
 }
 
@@ -311,16 +335,6 @@ extern "C" {
     void* DAT_0046aa30 = 0;
     int DAT_0046ac04 = 0;
     char DAT_00473400 = 0;
-    int (__stdcall *DAT_0047655c)(int) = 0;
-    // Smack function pointer table (populated at runtime from SMACKW32.DLL)
-    void (__stdcall *DAT_00476538)(int, void*, unsigned int, unsigned int) = 0; // SmackColorRemap
-    unsigned int (__stdcall *DAT_00476540)(int) = 0;                            // SmackDoFrame
-    void (__stdcall *DAT_00476544)(int) = 0;                                    // SmackNextFrame
-    unsigned int (__stdcall *DAT_00476548)(int, unsigned int) = 0;              // SmackGoto
-    void (__stdcall *DAT_0047654c)(int) = 0;                                    // SmackClose
-    void (__stdcall *DAT_00476550)(void*, void*, unsigned int) = 0;             // SmackBufferNewPalette
-    int (__stdcall *DAT_00476554)(const char*, unsigned int, unsigned int) = 0; // SmackOpen
-    unsigned int (__stdcall *DAT_00476570)(int, unsigned int) = 0;              // SmackSoundOnOff
     // Animation global buffers
     char DAT_00472c70[256] = {0};   // g_AnimFilename
     char DAT_00472cb0[256] = {0};   // g_AnimFilename2
@@ -342,8 +356,10 @@ extern "C" {
 }
 
 // --- C++ __fastcall stubs ---
-void* __fastcall FUN_00403520(void*) { return 0; }
-void* __fastcall FUN_004035a0(void*) { return 0; }
+/* Function start: 0x403520 */
+void* __fastcall FUN_00403520(void* self) { return ((ZBQueue*)self)->Pop(); }
+/* Function start: 0x4035A0 */
+void* __fastcall FUN_004035a0(void* self) { return ((ZBQueue*)self)->Pop(); }
 void* __fastcall FUN_00403620(void*) { return 0; }
 void __fastcall FUN_00401130(void*) {}
 void __fastcall FUN_00401c80(void*) {}
@@ -351,7 +367,8 @@ void __fastcall FUN_004061e0(void*) {}
 void __fastcall FUN_00406cc0(void*, int, void*) {}
 void __fastcall FUN_00406fd0(void*, int, int) {}
 void __fastcall FUN_004070a0(void*, int, int) {}
-void __fastcall FUN_004145f0(void*) {}
+/* Function start: 0x4145F0 */
+void __fastcall FUN_004145f0(void* self) { ((ZBQueue*)self)->ClearList(); }
 void __fastcall FUN_0041dc10(void*) {}
 void __fastcall FUN_00424ee0(void*) {}
 void __fastcall FUN_004308c0(void*) {}
@@ -421,7 +438,6 @@ int T_MenuHotspot::LBLParse(char*) { return 0; }
 
 // --- C++ global ---
 int DAT_00472d58 = 0;
-int (__stdcall *DAT_0047652c)(int) = 0;
 
 // --- Class method stubs for SC_Cinematic ---
 #include "GameLoop.h"
@@ -480,7 +496,12 @@ extern "C" {
         }
         return p;
     }
-    void FUN_00444e20(void*) {}
+    void FUN_00444e20(void* action) {
+        if (DAT_0046a6ec != 0) {
+            ((GameEngine*)DAT_0046a6ec)->EnqueueAction((SpriteAction*)action);
+            ((SpriteAction*)action)->field_34 = 0;
+        }
+    }
 }
 
 // C++ globals
@@ -538,7 +559,72 @@ void SlimeTable::FUN_004254a0(int) {}
 void __fastcall FUN_00425200(void*) {}
 void __fastcall FUN_00425490(void*) {}
 // FUN_00421930 stub removed — now TimeOut::~TimeOut
-void __fastcall FUN_00426ce0(void*, int, int) {}
+/* Function start: 0x426CE0 */
+int __fastcall FUN_00426ce0(void* self) {
+    InputManager* input;
+    InputState* mouse;
+    unsigned int buttons;
+
+    if (ProcessMessages() != 0) {
+        return 1;
+    }
+
+    input = (InputManager*)self;
+    input->PollMouse(input->pMouseLocal);
+    input->PollJoystick(input->pJoystick);
+    FUN_00426a90(self);
+
+    mouse = input->pMouse;
+    buttons = 0;
+    if (mouse != 0) {
+        buttons = mouse->buttons & 1;
+    }
+
+    if (buttons != 0) {
+        mouse->ext1 = 1;
+    } else {
+        buttons = 0;
+        if (mouse != 0) {
+            buttons = mouse->buttons & 1;
+        }
+        if (buttons == 0 && (mouse->prevButtons & 1) != 0) {
+            buttons = g_leftClickTimer.Update();
+            if (buttons < (unsigned int)g_DoubleClickTime_004373b8) {
+                input->pMouse->ext1 = 3;
+            } else {
+                input->pMouse->ext1 = 2;
+            }
+            g_leftClickTimer.Reset();
+        }
+    }
+
+    mouse = input->pMouse;
+    buttons = 0;
+    if (mouse != 0) {
+        buttons = mouse->buttons & 2;
+    }
+
+    if (buttons != 0) {
+        mouse->ext2 = 1;
+        return 0;
+    }
+
+    buttons = 0;
+    if (mouse != 0) {
+        buttons = mouse->buttons & 2;
+    }
+    if (buttons == 0 && (mouse->prevButtons & 2) != 0) {
+        buttons = g_rightClickTimer.Update();
+        if (buttons < (unsigned int)g_DoubleClickTime_004373b8) {
+            input->pMouse->ext2 = 3;
+        } else {
+            input->pMouse->ext2 = 2;
+        }
+        g_rightClickTimer.Reset();
+    }
+
+    return 0;
+}
 
 extern "C" {
     void FUN_004309c0(void*) {}
@@ -550,7 +636,104 @@ extern "C" {
 
 SC_Message::SC_Message(int, int, int, int, int, int, int, int, int, int) {}
 SC_Message::~SC_Message() {}
-int SC_Message::LBLParse(char*) { return 0; }
+/* Function start: 0x444E60 */
+int SC_Message::LBLParse(char* param_1)
+{
+    extern void* DAT_0046aa38;
+    char local_30[32];
+    char local_54[32];
+    char local_74[32];
+    int idx;
+
+    local_54[0] = '\0';
+    local_74[0] = '\0';
+    local_30[0] = '\0';
+    sscanf(param_1, "%s", local_30);
+
+    if (strcmp(local_30, "ADDRESS") == 0) {
+        sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
+        if (g_StringTable_0046aa34 != 0) {
+            idx = g_StringTable_0046aa34->FindState(local_54);
+        } else {
+            sscanf(local_54, "%d", &idx);
+        }
+        targetAddress = idx;
+        if (targetAddress < 0) {
+            FUN_00425c50("SC_MessageParser::ADDRESS illegal index %s %s", local_54, param_1);
+        }
+        if (targetAddress == 2) {
+            if (g_GameState_0046aa30 != 0) {
+                idx = g_GameState_0046aa30->FindState(local_74);
+                if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
+                    FUN_00425c50("Invalid gamestate %d", idx);
+                }
+                sourceAddress = idx;
+            }
+        } else {
+            sscanf(local_74, "%d", &sourceAddress);
+        }
+    } else if (strcmp(local_30, "FROM") == 0) {
+        sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
+        if (g_StringTable_0046aa34 != 0) {
+            idx = g_StringTable_0046aa34->FindState(local_54);
+        } else {
+            sscanf(local_54, "%d", &idx);
+        }
+        command = idx;
+        if (command < 0) {
+            FUN_00425c50("FROM illegal index %s %s", local_54, param_1);
+        }
+        if (command == 2) {
+            if (g_GameState_0046aa30 != 0) {
+                idx = g_GameState_0046aa30->FindState(local_74);
+                if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
+                    FUN_00425c50("Invalid gamestate %d", idx);
+                }
+                data = idx;
+            }
+        } else {
+            sscanf(local_74, "%d", &data);
+        }
+    } else if (strcmp(local_30, "INSTRUCTION") == 0) {
+        sscanf(param_1, "%s %s", local_30, local_54);
+        if (DAT_0046aa38 != 0) {
+            idx = ((GameState*)DAT_0046aa38)->FindState(local_54);
+        } else {
+            sscanf(local_54, "%d", &idx);
+        }
+        priority = idx;
+        if (priority < 0) {
+            FUN_00425c50("INSTRUCTION illegal index %d %s", idx, param_1);
+        }
+    } else if (strcmp(local_30, "MESSAGE") == 0) {
+        if (userPtr != 0) {
+            FUN_00425c50("double reserve in Message %s", param_1);
+        }
+        SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        userPtr = (int)msg;
+        Parser::ProcessFile((Parser*)msg, (Parser*)this, 0);
+    } else if (strcmp(local_30, "MOUSE") == 0) {
+        sscanf(param_1, "%s %d %d", local_30, &clickPos.x, &clickPos.y);
+    } else if (strcmp(local_30, "BUTTON1") == 0) {
+        sscanf(param_1, "%s %d", local_30, &mouseX);
+    } else if (strcmp(local_30, "BUTTON2") == 0) {
+        sscanf(param_1, "%s %d", local_30, &mouseY);
+    } else if (strcmp(local_30, "LASTKEY") == 0) {
+        sscanf(param_1, "%s %d", local_30, &lastKey);
+    } else if (strcmp(local_30, "TIME") == 0) {
+        sscanf(param_1, "%s %lu", local_30, &time);
+    } else if (strcmp(local_30, "EXTRA1") == 0) {
+        sscanf(param_1, "%s %lu", local_30, &param1);
+    } else if (strcmp(local_30, "EXTRA2") == 0) {
+        sscanf(param_1, "%s %lu", local_30, &param2);
+    } else if (strcmp(local_30, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SC_Message");
+    }
+
+    return 0;
+}
 void SC_Message::Dump(int) {}
 
 // ============================================================================
@@ -561,6 +744,8 @@ int __fastcall FUN_0044c350(void*, int, char*) { return 0; }
 void __cdecl FUN_00425cb0(char*, ...) {}
 int __fastcall FUN_00420a00(void*, int, int) { return 0; }
 void __fastcall FUN_00420a50(void*, int, int) {}
+void __fastcall FUN_004047c0(void*) {}
+void __fastcall FUN_00404b90(void*) {}
 void __fastcall FUN_00404230(void*, int, char*, int, int, int, int) {}
 void __fastcall FUN_00443ed0(void*, int, int) {}
 
@@ -591,8 +776,14 @@ void __fastcall FUN_00410fd0(void*) {}
 void __fastcall FUN_00409f20(void*, int) {}
 void __fastcall FUN_004274c0(void*, int, int) {}
 void* __fastcall FUN_00410fb0(void*, int, char*, int) { return 0; }
-void __fastcall FUN_004218c0(void*) {}
-unsigned int __fastcall FUN_004218e0(void*) { return 0; }
+/* Function start: 0x4218C0 */
+void __fastcall FUN_004218c0(void* self) {
+    ((Timer*)self)->Reset();
+}
+/* Function start: 0x4218E0 */
+unsigned int __fastcall FUN_004218e0(void* self) {
+    return ((Timer*)self)->Update();
+}
 void __fastcall FUN_00411180(void*, int, int) {}
 void __fastcall FUN_00404350(void*, int, int, int, int, int, int, int, int) {}
 
@@ -639,7 +830,12 @@ void* DAT_0046bf28 = 0;
 #include "SpriteAction.h"
 
 void __stdcall FUN_004309C0(int*) {}
-void FUN_00444E40(SpriteAction*) {}
+void FUN_00444E40(SpriteAction* action) {
+    if (DAT_0046a6ec != 0) {
+        ((GameEngine*)DAT_0046a6ec)->EnqueueAction(action);
+        action->field_34 = 0;
+    }
+}
 Sound* DAT_0046AA0C = 0;
 int DAT_0046AA24 = 0;
 

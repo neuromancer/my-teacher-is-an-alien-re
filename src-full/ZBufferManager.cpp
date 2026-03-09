@@ -304,7 +304,9 @@ void ZBufferManager::Cleanup() {
 
 ZBufferManager::~ZBufferManager()
 {
-    Cleanup();
+    // Original destructor at 0x430B90 does NOT call Cleanup.
+    // It cleans up buffers at offsets 0x08, 0x0c, 0x10 instead.
+    // Cleanup (0x403A90) handles queues at 0x9C/0xA0/0xA4 separately.
 }
 
 /* Function start: 0x404B80 */

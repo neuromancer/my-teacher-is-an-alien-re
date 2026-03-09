@@ -1,6 +1,7 @@
 #include "SC_Fan.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "mss.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,7 +60,6 @@ extern void* DAT_0046aa24;
 extern "C" { extern void* DAT_0046aa30; }
 extern void* DAT_0046aa18;
 extern void* DAT_0046aa08;
-extern int (__stdcall *DAT_0047652c)(int);
 
 /* Function start: 0x40EFF0 */
 SC_Fan::SC_Fan()
@@ -429,7 +429,7 @@ void SC_Fan::State0Handler() {
         if (sample != 0) {
             if (*(int*)((int)sample + 0xC) != 0) {
                 if (*(int*)((int)sample + 4) == *(int*)(*(int*)((int)sample + 0xC) + 0xC)) {
-                    if (DAT_0047652c(*(int*)((int)sample + 0xC)) == 4) {
+                    if (AIL_sample_status(*(HSAMPLE*)((int)sample + 0xC)) == 4) {
                         return;
                     }
                 }
@@ -455,7 +455,7 @@ void SC_Fan::State2Handler() {
     if (sample != 0) {
         if (*(int*)((int)sample + 0xC) != 0) {
             if (*(int*)((int)sample + 4) == *(int*)(*(int*)((int)sample + 0xC) + 0xC)) {
-                if (DAT_0047652c(*(int*)((int)sample + 0xC)) == 4) {
+                if (AIL_sample_status(*(HSAMPLE*)((int)sample + 0xC)) == 4) {
                     return;
                 }
             }
@@ -498,7 +498,7 @@ void SC_Fan::State4Handler() {
         if (sample != 0) {
             if (*(int*)((int)sample + 0xC) != 0) {
                 if (*(int*)((int)sample + 4) == *(int*)(*(int*)((int)sample + 0xC) + 0xC)) {
-                    if (DAT_0047652c(*(int*)((int)sample + 0xC)) == 4) {
+                    if (AIL_sample_status(*(HSAMPLE*)((int)sample + 0xC)) == 4) {
                         goto end;
                     }
                 }

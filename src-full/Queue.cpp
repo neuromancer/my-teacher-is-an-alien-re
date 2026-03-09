@@ -5,6 +5,7 @@
 #include "TimedEvent.h"
 #include "Message.h"
 #include "SC_Question.h"
+#include "SpriteAction.h"
 
 /* Function start: 0x402310 */ /* DEMO ONLY - no full game match */
 PooledEvent* PooledEvent::CopyFrom(const PooledEvent* other)
@@ -170,6 +171,17 @@ SC_Message* TimedEventPool::PopSafe(SC_Message* buffer)
     return buffer;
 }
 
+/* Function start: 0x42CAB0 */
+SpriteAction* TimedEventPool::PopSafe(SpriteAction* buffer)
+{
+    int completed;
+
+    completed = 0;
+    Pop(buffer);
+    completed |= 1;
+    return buffer;
+}
+
 /* Function start: 0x4185C0 */ /* DEMO ONLY - no full game match */
 SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 {
@@ -238,6 +250,40 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     completed |= 1;
     buffer->time = local_msg.time;
     buffer->userPtr = local_msg.userPtr;
+
+    return buffer;
+}
+
+/* Function start: 0x42D1A0 */
+SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
+{
+    int completed;
+    int* headNode;
+    SpriteAction localAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    completed = 0;
+    headNode = (int*)list.head;
+    localAction.CopyFrom((SpriteAction*)(headNode + 2));
+
+    list.head = (PooledEvent*)headNode[0];
+    if (list.head == 0) {
+        list.tail = 0;
+    }
+    else {
+        ((int*)list.head)[1] = 0;
+    }
+
+    ((SpriteAction*)(headNode + 2))->~SpriteAction();
+    headNode[0] = (int)m_free_list;
+    m_free_list = (PooledEvent*)headNode;
+    m_count = m_count - 1;
+
+    completed = 3;
+    buffer->dim.field_0 = 0;
+    buffer->dim.field_4 = 0;
+    memset(buffer, 0, sizeof(SpriteAction));
+    buffer->CopyFrom(&localAction);
+    completed |= 1;
 
     return buffer;
 }

@@ -14,7 +14,8 @@
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* FUN_0044e3e0(int handle);
 
-extern GameState* g_GameState_0046aa30;
+extern "C" extern void* DAT_0046aa30;
+#define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
 extern void* DAT_0046aa24;
 extern void* DAT_0046aa08;
 extern void* DAT_0046aa18;

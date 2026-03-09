@@ -3,6 +3,7 @@
 #include "Memory.h"
 #include "Sample.h"
 #include "GameState.h"
+#include "mss.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -37,7 +38,6 @@ extern void* __fastcall FUN_00403520(void*);
 extern void* __fastcall FUN_004035a0(void*);
 
 // IAT entries
-extern int (__stdcall *DAT_0047652c)(int);
 
 // Scene data globals
 extern void* DAT_0046aa24;
@@ -307,7 +307,7 @@ void SC_Rats::State0Handler() {
     } else {
         if (DAT_00473e14 != 1) goto done;
         if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
-            if (DAT_0047652c((int)snd->m_sample) == 4) goto done;
+            if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
     DAT_00473e14++;
@@ -343,7 +343,7 @@ void SC_Rats::State2Handler() {
     } else {
         if (DAT_00473e20 != 1) goto done;
         if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
-            if (DAT_0047652c((int)snd->m_sample) == 4) goto done;
+            if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
     DAT_00473e20++;
@@ -373,7 +373,7 @@ void SC_Rats::State3Handler() {
     } else {
         if (DAT_00473e1c != 1) goto done;
         if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
-            if (DAT_0047652c((int)snd->m_sample) == 4) goto done;
+            if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
     DAT_00473e1c++;
@@ -403,7 +403,7 @@ void SC_Rats::State4Handler() {
     } else {
         if (DAT_00473df8 != 1) goto done;
         if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
-            if (DAT_0047652c((int)snd->m_sample) == 4) goto done;
+            if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
     DAT_00473df8++;
