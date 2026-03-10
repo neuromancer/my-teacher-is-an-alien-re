@@ -19,7 +19,8 @@ class SC_Message;
 //   +0x18: ShutDown (virtual) - called on system messages
 //   +0x1C: Update (virtual) - render/update handler content
 //   +0x20: Exit (virtual) - called when leaving handler
-//   +0x24: OnInput (virtual) - input handling
+//   +0x24: Serialize (virtual) - save/load handler state
+//   +0x28: OnInput (virtual) - input handling
 //
 // Memory layout (full game):
 //   0x00-0x8F: Parser base class (size 0x90)
@@ -38,6 +39,7 @@ public:
     virtual int ShutDown(SC_Message* msg);
     virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
+    virtual void Serialize(void* param);
     virtual void OnInput(void* param);
 
     // Save return data from incoming message

@@ -11,6 +11,7 @@
 #include "smack.h"
 #include <string.h>
 #include <stdio.h>
+#include <new.h>
 
 // External globals (C++ linkage - defined in stubs.cpp without extern "C")
 extern void* DAT_0046aa24;   // ZBufferManager*
@@ -32,9 +33,15 @@ extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int); // S
 
 extern void __cdecl FUN_00425c50(char*, ...);   // ShowError
 extern "C" int FUN_00454510(char*, char*, ...); // sprintf
+extern "C" void* FUN_00454500(int);
 extern "C" void FUN_00444e20(void*);
 extern void __fastcall FUN_00426a90(void*);
-extern int __fastcall FUN_00426ce0(void*);
+
+// FUN_00426ce0 is thiscall with 1 param (not fastcall)
+class InputObj {
+public:
+    int Refresh(int param);  // 0x426CE0
+};
 Handler* CreateHandler(int command);
 
 class GameLoopHelper {
@@ -166,40 +173,57 @@ void GameEngine::RunGameLoop() {
 void GameEngine::ProcessInput() {
     int hasInput;
     InputState* mouse;
-    SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     int* actionData;
+    InputState** pMouse;
 
-    action.field_08 = 1;
-    m_exitFlag |= FUN_00426ce0(DAT_0046aa08);
+    m_exitFlag |= ((InputObj*)DAT_0046aa08)->Refresh(1);
     if (m_exitFlag != 0) {
         return;
     }
 
     mouse = ((InputManager*)DAT_0046aa08)->pMouse;
-    hasInput = 1;
-    if (mouse == 0 || (mouse->ext1 < 1 && mouse->ext2 < 1)) {
-        hasInput = DAT_0046ac04 != 0;
+    if (mouse != 0 && (mouse->ext1 >= 1 || mouse->ext2 >= 1 || DAT_0046ac04 != 0)) {
+        hasInput = 1;
+    } else {
+        hasInput = 0;
     }
     if (hasInput == 0) {
         return;
     }
 
-    actionData = (int*)&action;
+    SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    action.field_08 = 1;
+
     if (DAT_0046ac04 != 0) {
-        actionData[11] = WaitForInput();
-    }
-    if (mouse == 0) {
-        actionData[7] = 0;
-        actionData[8] = 0;
-        actionData[9] = 0;
-        actionData[10] = 0;
-    } else {
-        actionData[7] = mouse->x;
-        actionData[8] = mouse->y;
-        actionData[9] = mouse->ext1;
-        actionData[10] = mouse->ext2;
+        action.field_2C = WaitForInput();
     }
 
+    pMouse = &((InputManager*)DAT_0046aa08)->pMouse;
+    if (*pMouse == 0) {
+        action.field_24 = 0;
+    } else {
+        action.field_24 = (*pMouse)->ext1;
+    }
+    if (*pMouse == 0) {
+        action.field_28 = 0;
+    } else {
+        action.field_28 = (*pMouse)->ext2;
+    }
+    mouse = *pMouse;
+    int mouseY = 0;
+    int mouseX;
+    if (mouse != 0) {
+        mouseY = mouse->y;
+    }
+    if (mouse != 0) {
+        mouseX = mouse->x;
+    } else {
+        mouseX = 0;
+    }
+    action.dim.field_0 = mouseX;
+    action.dim.field_4 = mouseY;
+
+    mouse = *pMouse;
     if (mouse != 0 && (mouse->ext1 >= 2 || mouse->ext2 >= 2)) {
         if (*(void**)((char*)DAT_0046aa18 + 0xa4) != 0) {
             ((Sample*)*(void**)((char*)DAT_0046aa18 + 0xa4))->Play(100, 1);
@@ -210,6 +234,7 @@ void GameEngine::ProcessInput() {
         ((Handler*)m_activeHandler)->AddMessage((SC_Message*)&action);
     }
 
+    actionData = (int*)&action;
     if (actionData[0] != 0 && actionData[4] != 0) {
         FUN_00444e20(&action);
     }
@@ -220,15 +245,10 @@ int GameEngine::ProcessEvents() {
     int count;
 
     count = 0;
-    if (m_eventPool == 0) {
-        return count;
-    }
-
     while (m_eventPool->m_count != 0) {
-        SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        SpriteAction action;
 
-        m_eventPool->PopSafe(&action);
-        ProcessMessage((SC_Message*)&action);
+        ProcessMessage((SC_Message*)m_eventPool->PopSafe(&action));
         count = count + 1;
     }
 
@@ -260,31 +280,28 @@ void GameEngine::ProcessMessage(SC_Message* msg) {
             handled = ((Handler*)m_activeHandler)->Exit(msg);
         }
         if (handled == 0) {
-            LinkedList* list;
-
-            list = m_handlerList;
-            list->current = list->head;
-            if (list->current != 0) {
+            m_handlerList->current = m_handlerList->head;
+            if (m_handlerList->current != 0) {
                 do {
-                    Handler* handler;
+                    void* data;
 
-                    handler = (Handler*)list->GetCurrentData();
-                    if (handler == 0) {
+                    data = m_handlerList->current->data;
+                    if (data == 0) {
                         break;
                     }
 
-                    handled = handler->Exit(msg);
+                    handled = ((Handler*)m_handlerList->GetCurrentData())->Exit(msg);
                     if (handled != 0) {
                         break;
                     }
 
-                    if (list->tail == list->current) {
+                    if (m_handlerList->tail == m_handlerList->current) {
                         break;
                     }
-                    if (list->current != 0) {
-                        list->current = list->current->next;
+                    if (m_handlerList->current != 0) {
+                        m_handlerList->current = m_handlerList->current->next;
                     }
-                } while (list->current != 0);
+                } while (m_handlerList->current != 0);
             }
         }
     }
@@ -404,35 +421,36 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
         handler = GetOrCreateHandler(msgData[0]);
         m_activeHandler = handler;
     } else {
-        handler = (Handler*)m_handlerList->RemoveCurrent();
+        LinkedList* list;
+
+        handler = (Handler*)((EventList*)m_handlerList)->RemoveCurrent();
+        list = m_handlerList;
         m_activeHandler = handler;
         if (handler == 0) {
             FUN_00425c50("queue fault 0101");
         }
-        m_handlerList->current = m_handlerList->head;
-        if (m_handlerList->type == 1 || m_handlerList->type == 2) {
-            if (m_handlerList->head == 0) {
-                m_handlerList->InsertNode(handler);
-            } else {
-                while (m_handlerList->current != 0) {
-                    Handler* currentHandler;
+        list->current = list->head;
+        if (list->type != 1 && list->type != 2) {
+            ((EventList*)list)->InsertNode(handler);
+        } else if (list->head == 0) {
+            ((EventList*)list)->InsertNode(handler);
+        } else {
+            while (list->current != 0) {
+                Handler* currentHandler;
 
-                    currentHandler = (Handler*)m_handlerList->GetCurrentData();
-                    if (currentHandler->handlerId < handler->handlerId) {
-                        m_handlerList->InsertNode(handler);
-                        break;
-                    }
-                    if (m_handlerList->tail == m_handlerList->current) {
-                        m_handlerList->PushNode(handler);
-                        break;
-                    }
-                    if (m_handlerList->current != 0) {
-                        m_handlerList->current = m_handlerList->current->next;
-                    }
+                currentHandler = (Handler*)list->current->data;
+                if (currentHandler->handlerId < handler->handlerId) {
+                    ((EventList*)list)->InsertNode(handler);
+                    break;
+                }
+                if (list->tail == list->current) {
+                    list->PushNode(handler);
+                    break;
+                }
+                if (list->current != 0) {
+                    list->current = list->current->next;
                 }
             }
-        } else {
-            m_handlerList->InsertNode(handler);
         }
     }
 
@@ -463,51 +481,61 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
 
 /* Function start: 0x431560 */
 int GameEngine::AddHandler(Handler* handler) {
+    LinkedList* list;
+
     if (handler == 0) {
         FUN_00425c50("illegal modual insertion");
     }
-    if (m_handlerList == 0) {
+
+    list = m_handlerList;
+    if (handler == 0) {
         FUN_00425c50("queue fault 0103");
     }
 
-    m_handlerList->current = m_handlerList->head;
-    while (m_handlerList->current != 0) {
+    list->current = list->head;
+    while (list->current != 0) {
         Handler* currentHandler;
 
-        currentHandler = (Handler*)m_handlerList->GetCurrentData();
+        currentHandler = (Handler*)list->GetCurrentData();
         if (currentHandler->handlerId == handler->handlerId) {
             FUN_00425c50("illegal modual insertion double");
             return 0;
         }
 
-        if (m_handlerList->tail == m_handlerList->current) {
+        if (list->tail == list->current) {
             break;
         }
-        if (m_handlerList->current != 0) {
-            m_handlerList->current = m_handlerList->current->next;
+        if (list->current != 0) {
+            list->current = list->current->next;
         }
     }
 
-    m_handlerList->current = m_handlerList->head;
-    if ((m_handlerList->type == 1 || m_handlerList->type == 2) && m_handlerList->head != 0) {
+    list = m_handlerList;
+    if (handler == 0) {
+        FUN_00425c50("queue fault 0102");
+    }
+    list->current = list->head;
+    if (list->type != 1 && list->type != 2) {
+        ((EventList*)list)->InsertNode(handler);
+    } else if (list->head == 0) {
+        ((EventList*)list)->InsertNode(handler);
+    } else {
         do {
             Handler* currentHandler;
 
-            currentHandler = (Handler*)m_handlerList->GetCurrentData();
+            currentHandler = (Handler*)list->current->data;
             if (currentHandler->handlerId < handler->handlerId) {
-                m_handlerList->InsertNode(handler);
+                list->InsertNode(handler);
                 return 1;
             }
-            if (m_handlerList->tail == m_handlerList->current) {
-                m_handlerList->PushNode(handler);
+            if (list->tail == list->current) {
+                list->PushNode(handler);
                 return 1;
             }
-            if (m_handlerList->current != 0) {
-                m_handlerList->current = m_handlerList->current->next;
+            if (list->current != 0) {
+                list->current = list->current->next;
             }
-        } while (m_handlerList->current != 0);
-    } else {
-        m_handlerList->InsertNode(handler);
+        } while (list->current != 0);
     }
 
     return 1;
@@ -516,21 +544,21 @@ int GameEngine::AddHandler(Handler* handler) {
 /* Function start: 0x4317C0 */
 int GameEngine::RemoveHandler(int command) {
     Handler* handler;
+    LinkedList* list;
 
     handler = FindHandlerInList(command);
-    if (handler == 0) {
-        return 0;
-    }
-
-    handler = (Handler*)m_handlerList->RemoveCurrent();
-    if (m_activeHandler == handler) {
-        m_activeHandler = 0;
-    }
     if (handler != 0) {
-        delete handler;
+        list = m_handlerList;
+        handler = (Handler*)list->RemoveCurrent();
+        if (m_activeHandler == handler) {
+            m_activeHandler = 0;
+        }
+        if (handler != 0) {
+            delete handler;
+        }
+        return 1;
     }
-
-    return 1;
+    return 0;
 }
 
 /* Function start: 0x431880 */
@@ -551,12 +579,19 @@ Handler* GameEngine::FindHandlerInList(int command) {
     }
 
     m_handlerList->current = m_handlerList->head;
-    while (m_handlerList->current != 0) {
+    if (m_handlerList->head == 0) {
+        return 0;
+    }
+
+    do {
         Handler* handler;
 
         handler = (Handler*)m_handlerList->GetCurrentData();
-        if (handler != 0 && handler->handlerId == command) {
-            return handler;
+        if (handler->handlerId == command) {
+            if (m_handlerList->current == 0) {
+                return 0;
+            }
+            return (Handler*)m_handlerList->current->data;
         }
 
         if (m_handlerList->tail == m_handlerList->current) {
@@ -565,7 +600,7 @@ Handler* GameEngine::FindHandlerInList(int command) {
         if (m_handlerList->current != 0) {
             m_handlerList->current = m_handlerList->current->next;
         }
-    }
+    } while (m_handlerList->head != 0);
 
     return 0;
 }
@@ -575,23 +610,17 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
     int* pool;
     int* node;
     int oldTail;
-
-    if (action == 0) {
-        return;
-    }
+    SpriteAction* saPtr;
+    int i;
 
     pool = (int*)m_eventPool;
-    if (pool == 0) {
-        return;
-    }
-
     oldTail = pool[1];
     if (pool[3] == 0) {
         int* block;
         int count;
         int* entry;
 
-        block = (int*)operator new(pool[5] * 0x40 + 4);
+        block = (int*)FUN_00454500(pool[5] * 0x40 + 4);
         *block = pool[4];
         pool[4] = (int)block;
         count = pool[5];
@@ -606,12 +635,21 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
     }
 
     node = (int*)pool[3];
+    saPtr = (SpriteAction*)(node + 2);
     pool[3] = *node;
     node[1] = oldTail;
     node[0] = 0;
     pool[2] = pool[2] + 1;
-
     memset(node + 2, 0, sizeof(SpriteAction));
+
+    i = 0;
+    do {
+        if (saPtr != 0) {
+            new ((void*)saPtr) SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        saPtr = (SpriteAction*)((char*)saPtr + sizeof(SpriteAction));
+    } while (i-- != 0);
+
     ((SpriteAction*)(node + 2))->CopyFrom(action);
 
     if (pool[1] == 0) {

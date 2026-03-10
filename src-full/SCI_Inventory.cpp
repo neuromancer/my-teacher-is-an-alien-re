@@ -744,7 +744,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
 }
 
 /* Function start: 0x43F9B0 */
-void SCI_Inventory::OnInput(void* param) {
+void SCI_Inventory::Serialize(void* param) {
     volatile int self = (int)this;
     int strLen = strlen("INVENTORY_INFO") + 1;
     volatile int fp = (int)*(FILE**)((char*)param + 0x44);

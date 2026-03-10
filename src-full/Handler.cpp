@@ -54,5 +54,9 @@ int Handler::Exit(SC_Message* msg) {
     return 0;
 }
 
+/* Function start: 0x405D60 */
+void Handler::Serialize(void* param) {
+}
+
 void Handler::OnInput(void* param) {
 }

@@ -18,6 +18,11 @@
 
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
+extern "C" extern void* DAT_0046aa14;
+extern void __fastcall FUN_00401c80(void*);
+extern void __fastcall FUN_00401130(void*);
+extern void __fastcall FUN_00404d70(void*, int, int);
+
 
 struct CommandType1 : public SoundCommand {
     unsigned int parameter1; // 0x04 - Priority
@@ -382,12 +387,11 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
     g_TextManager_00436990->RenderText(text, -1);
 }
 
-/* Function start: 0x41C130 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x404350 */
 void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, int p7)
 {
     if (m_state != 0) {
         if (m_state != 1) {
-            // Queued rendering path
             CommandType3* cmd = new CommandType3();
             cmd->priority = p5;
             cmd->field_1c = p6;
@@ -413,9 +417,8 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
             QueueCommand(cmd);
         }
         else {
-            // Direct rendering path (m_state == 1)
             SetFillColor(p6);
-            g_WorkBuffer_00436974->SetVideoMode();
+            ((VBuffer*)DAT_0046aa14)->SetVideoMode();
             if (p1 < 0) {
                 p1 = 0;
             }
@@ -428,7 +431,7 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
             if (p4 > 0x1df) {
                 p4 = 0x1df;
             }
-            if (m_state == 1) {
+            if (m_state == 2) {
                 DrawRectOutline(p1, p3, p2, p4);
             } else {
                 VideoFillRect(p1, p3, p2, p4);
@@ -437,21 +440,24 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
     }
 }
 
-/* Function start: 0x41C2C0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4044E0 */
 void ZBufferManager::QueueCommand(SoundCommand* cmd)
 {
     ZBQueue* queue;
     ZBQueueNode* node;
-    ZBQueueNode* newNode;
-    GlyphRect rect(0, 0, g_WorkBuffer_00436974->width - 1, g_WorkBuffer_00436974->height - 1);
-
+    ListNode* newNode;
+    VBuffer* vbuf = (VBuffer*)DAT_0046aa14;
+    int maxY = vbuf->height - 1;
+    int maxX = vbuf->width - 1;
+    GlyphRect rect(0, 0, maxX, maxY);
     switch (m_state) {
     case 1:
         cmd->Execute(&rect);
         if (cmd != 0) {
-            delete cmd;
+            *(int*)cmd = 0x461030;
+            FreeMemory(cmd);
         }
-        return;
+        break;
     case 2:
         queue = m_queueA0;
         if (cmd == 0) {
@@ -459,51 +465,47 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
         }
         queue->current = queue->head;
         if (queue->type == 1 || queue->type == 2) {
-            if (queue->current == 0) {
+            if (queue->head == 0) {
                 queue->InsertBeforeCurrent(cmd);
-                return;
-            }
-            do {
-                node = (ZBQueueNode*)queue->current;
-                if (((CommandType1*)node->data)->parameter1 < ((CommandType1*)cmd)->parameter1) {
-                    queue->InsertBeforeCurrent(cmd);
-                    return;
-                }
-                if (queue->tail == node) {
-                    if (cmd == 0) {
-                        ShowError("queue fault 0112");
+            } else {
+                do {
+                    node = (ZBQueueNode*)queue->current;
+                    if (*(unsigned int*)((char*)node->data + 4) < *(unsigned int*)((char*)cmd + 4)) {
+                        queue->InsertBeforeCurrent(cmd);
+                        break;
                     }
-                    newNode = (ZBQueueNode*)::operator new(sizeof(ZBQueueNode));
-                    if (newNode != 0) {
-                        newNode = (ZBQueueNode*)newNode->Init(cmd);
-                    }
-                    if (queue->current == 0) {
-                        queue->current = queue->tail;
-                    }
-                    if (queue->head == 0) {
-                        queue->head = newNode;
-                        queue->tail = newNode;
-                        queue->current = newNode;
-                    } else {
-                        ZBQueueNode* tail = queue->tail;
-                        if (tail == 0 || tail->next != 0) {
-                            ShowError("queue fault 0113");
+                    if (queue->tail == node) {
+                        if (cmd == 0) {
+                            ShowError("queue fault 0112");
                         }
-                        newNode->next = 0;
-                        newNode->prev = tail;
-                        tail->next = newNode;
-                        queue->tail = newNode;
+                        newNode = new ListNode(cmd);
+                        if (queue->current == 0) {
+                            queue->current = queue->tail;
+                        }
+                        if (queue->head == 0) {
+                            queue->head = newNode;
+                            queue->tail = newNode;
+                            queue->current = newNode;
+                        } else {
+                            if (queue->tail == 0 || queue->tail->next != 0) {
+                                ShowError("queue fault 0113");
+                            }
+                            newNode->next = 0;
+                            newNode->prev = queue->tail;
+                            queue->tail->next = newNode;
+                            queue->tail = newNode;
+                        }
+                        break;
                     }
-                    return;
-                }
-                if (node != 0) {
-                    queue->current = node->next;
-                }
-            } while (queue->current != 0);
-            return;
+                    if (node != 0) {
+                        queue->current = node->next;
+                    }
+                } while (queue->current != 0);
+            }
+        } else {
+            queue->InsertBeforeCurrent(cmd);
         }
-        queue->InsertBeforeCurrent(cmd);
-        return;
+        break;
     case 3:
         queue = m_queueA0;
         if (cmd == 0) {
@@ -511,61 +513,55 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
         }
         queue->current = queue->head;
         if (queue->type == 1 || queue->type == 2) {
-            if (queue->current == 0) {
+            if (queue->head == 0) {
                 queue->InsertBeforeCurrent(cmd);
-                return;
-            }
-            do {
-                node = (ZBQueueNode*)queue->current;
-                if (((CommandType1*)node->data)->parameter1 < ((CommandType1*)cmd)->parameter1) {
-                    queue->InsertBeforeCurrent(cmd);
-                    return;
-                }
-                if (queue->tail == node) {
-                    if (cmd == 0) {
-                        ShowError("queue fault 0112");
+            } else {
+                do {
+                    node = (ZBQueueNode*)queue->current;
+                    if (*(unsigned int*)((char*)node->data + 4) < *(unsigned int*)((char*)cmd + 4)) {
+                        queue->InsertBeforeCurrent(cmd);
+                        break;
                     }
-                    newNode = (ZBQueueNode*)::operator new(sizeof(ZBQueueNode));
-                    if (newNode != 0) {
-                        newNode = (ZBQueueNode*)newNode->Init(cmd);
-                    }
-                    if (queue->current == 0) {
-                        queue->current = queue->tail;
-                    }
-                    if (queue->head == 0) {
-                        queue->head = newNode;
-                        queue->tail = newNode;
-                        queue->current = newNode;
-                    } else {
-                        ZBQueueNode* tail = queue->tail;
-                        if (tail == 0 || tail->next != 0) {
-                            ShowError("queue fault 0113");
+                    if (queue->tail == node) {
+                        if (cmd == 0) {
+                            ShowError("queue fault 0112");
                         }
-                        newNode->next = 0;
-                        newNode->prev = tail;
-                        tail->next = newNode;
-                        queue->tail = newNode;
+                        newNode = new ListNode(cmd);
+                        if (queue->current == 0) {
+                            queue->current = queue->tail;
+                        }
+                        if (queue->head == 0) {
+                            queue->head = newNode;
+                            queue->tail = newNode;
+                            queue->current = newNode;
+                        } else {
+                            if (queue->tail == 0 || queue->tail->next != 0) {
+                                ShowError("queue fault 0113");
+                            }
+                            newNode->next = 0;
+                            newNode->prev = queue->tail;
+                            queue->tail->next = newNode;
+                            queue->tail = newNode;
+                        }
+                        break;
                     }
-                    return;
-                }
-                if (node != 0) {
-                    queue->current = node->next;
-                }
-            } while (queue->current != 0);
-            return;
+                    if (node != 0) {
+                        queue->current = node->next;
+                    }
+                } while (queue->current != 0);
+            }
+        } else {
+            queue->InsertBeforeCurrent(cmd);
         }
-        queue->InsertBeforeCurrent(cmd);
-        return;
+        break;
     }
 }
 
-/* Function start: 0x41C5A0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4047C0 */
 void ZBufferManager::ProcessRenderQueues()
 {
     ZBQueue* queue;
     ZBQueueNode* node;
-    ZBQueueNode* nextNode;
-    ZBQueueNode* prevNode;
     void* data;
     unsigned int elapsed;
     int queueType;
@@ -573,24 +569,20 @@ void ZBufferManager::ProcessRenderQueues()
 
     m_head = 0;
 
-    switch (m_state) {
-    case 2:
-    {
-        // State type 2 processing
+    if (m_state == 1) {
         if (m_palette != 0) {
-            if (m_palette->IsPaletteUnchanged() == 0) {
-                BlankScreen();
-                m_palette->SetPalette(0, 0x100);
-            }
+            m_palette->SetPalette(0, 0x100);
+            m_palette = 0;
+        }
+    } else if (m_state == 2) {
+        if (m_palette != 0) {
+            m_palette->SetPalette(0, 0x100);
             m_palette = 0;
         }
 
         {
-            GlyphRect rect;
-            rect.left = 0;
-            rect.top = 0;
-            rect.right = g_WorkBuffer_00436974->width - 1;
-            rect.bottom = g_WorkBuffer_00436974->height - 1;
+            VBuffer* vbuf = (VBuffer*)DAT_0046aa14;
+            GlyphRect rect(0, 0, vbuf->width - 1, vbuf->height - 1);
 
             while (m_queueA0->head != 0) {
                 data = 0;
@@ -612,22 +604,21 @@ void ZBufferManager::ProcessRenderQueues()
                     ((SoundCommand*)data)->Execute(&rect);
 
                     if (data != 0) {
-                        ((SoundCommand*)data)->~SoundCommand();
-                        delete data;
+                        *(int*)data = 0x461030;
+                        FreeMemory(data);
                     }
                 }
             }
         }
 
-        // Process queue at 0xa4
         queue = m_queueA4;
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
                 data = queue->Pop();
                 if (data != 0) {
-                    ((ZBuffer*)data)->CleanUpVBuffer();
-                    delete data;
+                    FUN_00401c80(data);
+                    FreeMemory(data);
                 }
             }
         }
@@ -635,19 +626,12 @@ void ZBufferManager::ProcessRenderQueues()
         if ((m_flags & 2) != 0) {
             elapsed = timer.Update();
             if (elapsed > 2000) {
-                m_flags = m_flags & 0xfffffffd;
+                m_flags = m_flags & ~2;
             }
         }
-        break;
-    }
-    case 3:
-    {
-        // State type 3 processing
+    } else if (m_state == 3) {
         if (m_palette != 0) {
-            if (m_palette->IsPaletteUnchanged() == 0) {
-                BlankScreen();
-                m_palette->SetPalette(0, 0x100);
-            }
+            m_palette->SetPalette(0, 0x100);
             m_palette = 0;
         }
 
@@ -665,38 +649,30 @@ void ZBufferManager::ProcessRenderQueues()
 
             node = (ZBQueueNode*)queue->current;
             if (node != 0) {
-                // Unlink node from double linked list
                 if (queue->head == node) {
                     queue->head = node->next;
                 }
-                node = (ZBQueueNode*)queue->current;
-                if (queue->tail == node) {
-                    queue->tail = node->prev;
+                if (queue->tail == (ZBQueueNode*)queue->current) {
+                    queue->tail = ((ZBQueueNode*)queue->current)->prev;
                 }
                 node = (ZBQueueNode*)queue->current;
-                nextNode = (ZBQueueNode*)node->next;
-                if (nextNode != 0) {
-                    nextNode->prev = node->prev;
+                if (node->prev != 0) {
+                    node->prev->next = node->next;
                 }
                 node = (ZBQueueNode*)queue->current;
-                prevNode = (ZBQueueNode*)node->prev;
-                if (prevNode != 0) {
-                    prevNode->next = node->next;
+                if (node->next != 0) {
+                    node->next->prev = node->prev;
                 }
 
+                local_14 = queue->GetCurrentData();
                 node = (ZBQueueNode*)queue->current;
-                if (node == 0) {
-                    data = 0;
-                } else {
-                    data = node->data;
-                    delete node;
+                if (node != 0) {
+                    FUN_00404d70(node, 0, 1);
                     queue->current = 0;
                 }
                 queue->current = queue->head;
-                local_14 = data;
             }
 
-            // Check queue at 0xa0
             queue = m_queueA0;
             if (queue == 0 || queue->head == 0) {
                 break;
@@ -704,12 +680,14 @@ void ZBufferManager::ProcessRenderQueues()
             queue->current = queue->head;
 
             if (m_queueA0->head != 0) {
-                GlyphRect* iterPtr = (GlyphRect*)((unsigned int*)local_14 + 1);
+                GlyphRect* iterPtr = (GlyphRect*)((int*)local_14 + 1);
                 do {
-                    SoundCommand* cmd = 0;
+                    SoundCommand* cmd;
                     node = (ZBQueueNode*)m_queueA0->current;
                     if (node != 0) {
                         cmd = (SoundCommand*)node->data;
+                    } else {
+                        cmd = 0;
                     }
                     cmd->Execute(iterPtr);
 
@@ -723,21 +701,22 @@ void ZBufferManager::ProcessRenderQueues()
                     }
                 } while (m_queueA0->head != 0);
             }
+
             if (local_14 != 0) {
-                ((RenderEntry*)local_14)->RenderEntry::~RenderEntry();
-                delete local_14;
+                *(int*)local_14 = 0x46102c;
+                FUN_00401130((char*)local_14 + 4);
+                FreeMemory(local_14);
             }
         }
 
-        // Process queue at 0xa4
         queue = m_queueA4;
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
                 data = queue->Pop();
                 if (data != 0) {
-                    ((ZBuffer*)data)->CleanUpVBuffer();
-                    delete data;
+                    FUN_00401c80(data);
+                    FreeMemory(data);
                 }
             }
         }
@@ -745,11 +724,9 @@ void ZBufferManager::ProcessRenderQueues()
         if ((m_flags & 2) != 0) {
             elapsed = timer.Update();
             if (elapsed > 2000) {
-                m_flags = m_flags & 0xfffffffd;
+                m_flags = m_flags & ~2;
             }
         }
-        break;
-    }
     }
 }
 

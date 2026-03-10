@@ -8,7 +8,7 @@ struct SlimeDim {
     int field_0;
     int field_4;
     SlimeDim() { field_0 = 0; field_4 = 0; }
-    ~SlimeDim();
+    ~SlimeDim() {}
 };
 
 // SpriteAction (aka SpriteAction) - Chainable action/message struct
@@ -33,6 +33,7 @@ public:
     int field_30;   // 0x30 - TIME
     int field_34;   // 0x34 - chain pointer (SpriteAction*)
 
+    SpriteAction() {}
     SpriteAction(int, int, int, int, int, int, int, int, int, int);
     ~SpriteAction();
     SpriteAction* CopyFrom(SpriteAction*);  // 0x444920

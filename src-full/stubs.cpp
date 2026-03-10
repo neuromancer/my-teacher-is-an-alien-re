@@ -533,7 +533,7 @@ void SprInit::FUN_00420ce0(int) {}
 #include "SC_Slime.h"
 
 void SC_Slime::Update(int, int) {}
-SlimeDim::~SlimeDim() {}
+
 SlotPair::SlotPair() { field_0 = 0; field_4 = 0; }
 
 int DAT_00468bbc = 0;
@@ -744,7 +744,7 @@ int __fastcall FUN_0044c350(void*, int, char*) { return 0; }
 void __cdecl FUN_00425cb0(char*, ...) {}
 int __fastcall FUN_00420a00(void*, int, int) { return 0; }
 void __fastcall FUN_00420a50(void*, int, int) {}
-void __fastcall FUN_004047c0(void*) {}
+// FUN_004047c0 = ZBufferManager::ProcessRenderQueues (implemented)
 void __fastcall FUN_00404b90(void*) {}
 void __fastcall FUN_00404230(void*, int, char*, int, int, int, int) {}
 void __fastcall FUN_00443ed0(void*, int, int) {}
@@ -785,7 +785,7 @@ unsigned int __fastcall FUN_004218e0(void* self) {
     return ((Timer*)self)->Update();
 }
 void __fastcall FUN_00411180(void*, int, int) {}
-void __fastcall FUN_00404350(void*, int, int, int, int, int, int, int, int) {}
+// FUN_00404350 = ZBufferManager::DrawRect (implemented)
 
 // Missing __cdecl stubs
 char* __cdecl FUN_0044e470(char*) { return 0; }

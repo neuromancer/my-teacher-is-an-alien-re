@@ -52,7 +52,6 @@ public:
     int ShutDown(SC_Message* msg);      // 0x406240
     void Update(int param1, int param2);// 0x4062C0
     int Exit(SC_Message* msg);          // 0x4063E0
-    void OnInput(void* param);          // 0x405D60
     void OnProcessStart();              // 0x4064A0
     int LBLParse(char* line);           // 0x4065E0
 

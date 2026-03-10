@@ -33,7 +33,7 @@ public:
     virtual int ShutDown(SC_Message* msg);      // 0x43E990
     virtual void Update(int param1, int param2); // 0x43EE20
     virtual int Exit(SC_Message* msg);          // 0x43EFD0
-    virtual void OnInput(void* param);           // 0x43F9B0
+    virtual void Serialize(void* param);         // 0x43F9B0
 
     // Helper methods
     void DisplayPanels(int param);              // 0x43F840

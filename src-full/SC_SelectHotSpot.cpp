@@ -416,9 +416,7 @@ SC_SelectHotSpot::SC_SelectHotSpot() {
     handlerId = 0x2D;
 }
 
-/* Function start: 0x405D60 */
-void SC_SelectHotSpot::OnInput(void* param) {
-}
+/* 0x405D60 = Handler::Serialize (base, empty) */
 
 /* Function start: 0x405E00 */
 SC_SelectHotSpot::~SC_SelectHotSpot() {
