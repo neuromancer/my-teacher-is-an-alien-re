@@ -1,5 +1,6 @@
 #include "SC_DodgeOrville.h"
 #include "SpriteAction.h"
+#include "GameState.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -24,10 +25,6 @@ public:
     void* actionPtr;  // 0x90 - SpriteAction*
 };
 
-class GameStateObj {
-public:
-    int FindLabel(char* name);  // 0x433AE0
-};
 
 /* Function start: 0x428840 */
 SC_DodgeOrville::SC_DodgeOrville() {
@@ -102,14 +99,14 @@ void SC_DodgeOrville::ProcessTargets() {
                 *(int*)(field_A8[22] + 0x14) = 6;
 
                 void* gs = DAT_0046aa30;
-                int idx = ((GameStateObj*)gs)->FindLabel("DODGE_COMBAT_AVAILABLE");
+                int idx = ((GameState*)gs)->FindLabel("DODGE_COMBAT_AVAILABLE");
                 if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                     FUN_00425c50("Invalid gamestate %d", idx);
                 }
                 *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 0;
 
                 gs = DAT_0046aa30;
-                idx = ((GameStateObj*)gs)->FindLabel("NUM_ACTIONS");
+                idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
                 if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                     FUN_00425c50("Invalid gamestate %d", idx);
                 }

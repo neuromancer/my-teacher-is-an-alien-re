@@ -28,8 +28,6 @@ extern void __cdecl FUN_00425bc0(char*, char*, int);
 extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00445450(void*, void*);
 
-class GSObj { public: int FUN_00433bb0(int*); };
-class LookupObj { public: int FUN_00432e20(char*); };
 
 class MMPlayer : public Parser {
 public:
@@ -234,7 +232,7 @@ int HotspotAction::CheckConditions() {
                 data = 0;
             }
             if (data[0] != 2) goto notType2;
-            result = ((GSObj*)DAT_0046aa30)->FUN_00433bb0(data);
+            result = ((GameState*)DAT_0046aa30)->FUN_00433bb0(data);
             goto afterCheck;
 notType2:
             ShowError("illegal message 15");
@@ -345,7 +343,7 @@ int HotspotAction::LBLParse(char* line) {
     }
     else if (strcmp(label, "ROLLOVER") == 0) {
         sscanf(line, " %s %s", label, buf_C0);
-        local_14 = ((LookupObj*)DAT_0046aa18)->FUN_00432e20(buf_C0);
+        local_14 = ((GameState*)DAT_0046aa18)->FUN_00432e20(buf_C0);
         field_B0 = local_14;
         FUN_00425bc0(line, field_B4, 0x40);
     }

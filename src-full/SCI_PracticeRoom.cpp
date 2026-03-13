@@ -1,6 +1,7 @@
 #include "SCI_PracticeRoom.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
+#include "Palette.h"
 #include "Sample.h"
 #include "LinkedList.h"
 #include <string.h>
@@ -47,10 +48,6 @@ extern void* DAT_0046aa18;
 extern void* DAT_0046aa24;
 extern int DAT_0046ad6c;
 
-class PaletteObj {
-public:
-    void Load(char* name);
-};
 
 class SlimeTable {
     int fields[3];
@@ -398,7 +395,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             newPal = FUN_0041dbe0(mem);
         }
         *(void**)((int)this + 0xB4) = newPal;
-        ((PaletteObj*)newPal)->Load(local_bc);
+        ((Palette*)newPal)->Load(local_bc);
     } else if (strcmp(local_3c, "HOTSPOT") == 0) {
         sscanf(param_1, "%s %d ", local_3c, &local_18);
         if (*(int*)((int)this + 0xB8) == 0) {

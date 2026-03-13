@@ -1,6 +1,7 @@
 #include "SC_Fan.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "GameState.h"
 #include "mss.h"
 #include <string.h>
 #include <stdio.h>
@@ -28,10 +29,6 @@ extern int __cdecl FUN_0044ccf0(int, int, int, int);
 extern void __fastcall FUN_004250e0(void*);
 extern void __fastcall FUN_00425100(void*, int, int, int);
 // FUN_00433ae0 is thiscall with 1 stack param (not fastcall)
-class GameStateObj {
-public:
-    int FindLabel(char* name);  // 0x433AE0
-};
 extern void __fastcall FUN_004127c0(void*);
 extern void __fastcall FUN_00421920(void*);
 extern void __fastcall FUN_00407b60(void*);
@@ -334,7 +331,7 @@ void SC_Fan::ProcessRound() {
             *(int*)((int)field_A8 + 0x20) = 0;
 
             void* gs = DAT_0046aa30;
-            int idx = ((GameStateObj*)gs)->FindLabel("NUM_ACTIONS");
+            int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                 FUN_00425c50("Invalid gamestate %d", idx);
             }
@@ -356,14 +353,14 @@ void SC_Fan::ProcessRound() {
             return;
         } else if (field_17C == 2) {
             void* gs = DAT_0046aa30;
-            int idx = ((GameStateObj*)gs)->FindLabel("NUM_ACTIONS");
+            int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                 FUN_00425c50("Invalid gamestate %d", idx);
             }
             *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x1E;
 
             gs = DAT_0046aa30;
-            idx = ((GameStateObj*)gs)->FindLabel("COMBAT_FAN_WON");
+            idx = ((GameState*)gs)->FindLabel("COMBAT_FAN_WON");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                 FUN_00425c50("Invalid gamestate %d", idx);
             }
@@ -730,7 +727,7 @@ int SC_Fan::LBLParse(char* param_1) {
         sscanf(param_1, " %s %s %d ", local_38, local_b8, &local_18);
         int val = local_18;
         void* gs = DAT_0046aa30;
-        int idx = ((GameStateObj*)gs)->FindLabel(local_b8);
+        int idx = ((GameState*)gs)->FindLabel(local_b8);
         if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
             FUN_00425c50("Invalid gamestate %d", idx);
         }

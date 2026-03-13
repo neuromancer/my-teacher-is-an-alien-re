@@ -197,16 +197,36 @@ void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 }
 
 // ============================================================================
-// Proxy class stubs (fake names for unidentified classes)
+// Real class method stubs (methods not yet implemented)
 // ============================================================================
 
-// SCI_SchoolMenu proxy classes
-class GSVal { public: void FUN_00409f20(int); int GetStateValue(int); };
-void GSVal::FUN_00409f20(int) {}
+#include "Sprite.h"
+#include "Palette.h"
 
-class QObj { public: void FUN_00444920(void*); };
-void QObj::FUN_00444920(void*) {}
+// GameState methods
+void GameState::FUN_00409f20(int) {}
+int GameState::GetStateValue(int) { return 0; }
+int GameState::FindLabel(char*) { return 0; }
+int GameState::FUN_00433bb0(int*) { return 0; }
+int GameState::FUN_00432e20(char*) { return 0; }
 
+// InputManager methods
+int InputManager::Refresh(int) { return 0; }
+
+// Sprite methods
+int Sprite::RenderAt(int, int, int, int) { return 0; }
+void Sprite::ConfigRange(int, int, int, int) {}
+void Sprite::ConfigStates(int) {}
+
+// Palette methods
+void Palette::PlaySound(int) {}
+int Palette::CheckSound(int) { return 0; }
+
+// ============================================================================
+// Remaining proxy classes (real class unknown)
+// ============================================================================
+
+// SCI_SchoolMenu - constructor proxy (0x420CE0)
 class SprInit { public: void FUN_00420ce0(int); };
 void SprInit::FUN_00420ce0(int) {}
 
@@ -238,57 +258,16 @@ struct HitPoint {
 };
 HitPoint::~HitPoint() {}
 
-// SC_Wahoo proxy classes
-class InputObj { public: int Refresh(int); };
-int InputObj::Refresh(int) { return 0; }
-
+// SC_Wahoo proxy classes (real class unconfirmed)
 class DetectionObj { public: void Render(); };
 void DetectionObj::Render() {}
 
 class DetMask { public: int CheckHit(int, int); };
 int DetMask::CheckHit(int, int) { return 0; }
 
-// SC_Fan proxy classes
-class GameStateObj { public: int FindLabel(char* name); };
-int GameStateObj::FindLabel(char*) { return 0; }
-
-// IconBar proxy classes
-class SpriteRender { public: int RenderAt(int, int, int, int); };
-int SpriteRender::RenderAt(int, int, int, int) { return 0; }
-
-class SpriteSetup {
-public:
-    void ConfigRange(int, int, int, int);
-    void ConfigStates(int);
-};
-void SpriteSetup::ConfigRange(int, int, int, int) {}
-void SpriteSetup::ConfigStates(int) {}
-
-// HotspotAction proxy classes
-class GSObj { public: int FUN_00433bb0(int*); };
-int GSObj::FUN_00433bb0(int*) { return 0; }
-
-class LookupObj { public: int FUN_00432e20(char*); };
-int LookupObj::FUN_00432e20(char*) { return 0; }
-
-// SCI_IconBarModule proxy classes
+// SCI_IconBarModule proxy class (real class unconfirmed)
 class CursorControl { public: void SetCursor(int, int); };
 void CursorControl::SetCursor(int, int) {}
-
-// SC_FireAlarm proxy classes
-class SpriteAnim { public: void ResetAnimation(int, int); };
-void SpriteAnim::ResetAnimation(int, int) {}
-
-// PaletteObj proxy class
-class PaletteObj {
-public:
-    void Load(char*);
-    void PlaySound(int);
-    int CheckSound(int);
-};
-void PaletteObj::Load(char*) {}
-void PaletteObj::PlaySound(int) {}
-int PaletteObj::CheckSound(int) { return 0; }
 
 // SC_Cinematic proxy class
 struct CinematicAction { void Execute(int); };

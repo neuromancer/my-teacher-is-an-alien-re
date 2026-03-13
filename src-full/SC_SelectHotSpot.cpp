@@ -3,15 +3,10 @@
 #include "LinkedList.h"
 #include "Memory.h"
 #include "Sprite.h"
+#include "Palette.h"
 #include "Sample.h"
 #include <stdio.h>
 #include <string.h>
-
-// Wrapper class for Palette::Load (avoids including Palette.h / windows.h)
-class PaletteObj {
-public:
-    void Load(char* name);
-};
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
@@ -787,7 +782,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
             pal = FUN_0041dbe0(mem);
         }
         SC_SelectHotSpot::palette = pal;
-        ((PaletteObj*)SC_SelectHotSpot::palette)->Load(nameBuf);
+        ((Palette*)SC_SelectHotSpot::palette)->Load(nameBuf);
     } else if (strcmp(keyword, "HOTSPOT") == 0) {
         int sortKey;
         sscanf(line, "%s %d ", keyword, &sortKey);

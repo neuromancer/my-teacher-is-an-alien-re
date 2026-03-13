@@ -55,6 +55,9 @@ public:
     void FreeAnimation();
     void StopAnimationSound();
     void ResetAnimation(int param1, int param2);  // 0x44CB40
+    int RenderAt(int, int, int, int);              // 0x44CCF0
+    void ConfigRange(int, int, int, int);          // 0x44D210
+    void ConfigStates(int);                        // 0x44D2A0
 };
 
 #endif // SPRITE_H

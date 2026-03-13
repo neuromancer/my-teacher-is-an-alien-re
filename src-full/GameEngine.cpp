@@ -37,10 +37,6 @@ extern "C" void FUN_00444e20(void*);
 extern void __fastcall FUN_00426a90(void*);
 
 // FUN_00426ce0 is thiscall with 1 param (not fastcall)
-class InputObj {
-public:
-    int Refresh(int param);  // 0x426CE0
-};
 Handler* CreateHandler(int command);
 
 class GameLoopHelper {
@@ -175,7 +171,7 @@ void GameEngine::ProcessInput() {
     int* actionData;
     InputState** pMouse;
 
-    m_exitFlag |= ((InputObj*)DAT_0046aa08)->Refresh(1);
+    m_exitFlag |= ((InputManager*)DAT_0046aa08)->Refresh(1);
     if (m_exitFlag != 0) {
         return;
     }

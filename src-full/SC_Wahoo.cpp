@@ -1,6 +1,8 @@
 #include "SC_Wahoo.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
+#include "Palette.h"
+#include "InputManager.h"
 #include "Sample.h"
 #include "SoundList.h"
 #include "mss.h"
@@ -28,17 +30,9 @@ extern char* __cdecl FUN_0044e470(char*);
 extern void* __fastcall FUN_00410fb0(void*, int, char*, int);
 extern void __fastcall FUN_004274c0(void*, int, int);
 
-class PaletteObj {
-public:
-    void Load(char* filename);  // 0x41DCC0
-};
 
 // FUN_00426ce0 is thiscall with 1 param (not fastcall)
 // Use local class wrapper for correct calling convention
-class InputObj {
-public:
-    int Refresh(int param);  // 0x426CE0
-};
 
 // TimerObj = TimeOut (ctor 0x421920 wraps 0x421960, dtor 0x421930)
 // Check() = IsTimeOut() @ 0x421A30, Set() = Start() @ 0x4219F0
@@ -372,7 +366,7 @@ void SC_Wahoo::OnProcessEnd() {
     field_160 = 0x91;
 
     if (DAT_0046aa08 != 0) {
-        ((InputObj*)DAT_0046aa08)->Refresh(1);
+        ((InputManager*)DAT_0046aa08)->Refresh(1);
     }
 
     if (field_13C != 0) {
@@ -552,7 +546,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             pal = FUN_0041dbe0(mem);
         }
         field_AC = pal;
-        ((PaletteObj*)pal)->Load(local_b8);
+        ((Palette*)pal)->Load(local_b8);
     }
     else if (strcmp(local_38, "DETECTION_MASK") == 0) {
         sscanf(param_1, "%s %s", local_38, local_b8);

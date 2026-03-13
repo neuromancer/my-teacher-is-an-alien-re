@@ -49,18 +49,9 @@ extern SpriteAction DAT_00472d20;
 extern SpriteAction DAT_00472d90;
 
 // FUN_0044ccf0 is a thiscall Sprite method (4 stack params)
-class SpriteRender {
-public:
-    int RenderAt(int x, int y, int p3, int p4);  // 0x44CCF0
-};
 
 
 // Thiscall Sprite methods
-class SpriteSetup {
-public:
-    void ConfigStates(int p1);              // 0x44D2A0
-    void ConfigRange(int, int, int, int);   // 0x44D210
-};
 
 /* Function start: 0x42D460 */
 IconBar::IconBar() {
@@ -357,7 +348,7 @@ void IconBar::Update(int param1, int param2) {
         return;
     }
 
-    ((SpriteRender*)g_IconBarSprite)->RenderAt(
+    ((Sprite*)g_IconBarSprite)->RenderAt(
         g_IconBarSprite->num_states,
         g_IconBarSprite->field_0xb0,
         0, 0x3ff00000);
@@ -396,7 +387,7 @@ void IconBar::Update(int param1, int param2) {
                         FUN_00425c50("Invalid gamestate %d", 0x3c);
                     }
                     if (gs->stateValues[0x3c] != 1) {
-                        ((SpriteRender*)entry->sprite)->RenderAt(
+                        ((Sprite*)entry->sprite)->RenderAt(
                             entry->sprite->num_states,
                             entry->sprite->field_0xb0,
                             0, 0x3ff00000);
@@ -421,7 +412,7 @@ void IconBar::Update(int param1, int param2) {
                 }
 
                 if (entry->field_14 != 0) {
-                    ((SpriteRender*)entry->sprite)->RenderAt(
+                    ((Sprite*)entry->sprite)->RenderAt(
                         entry->sprite->num_states,
                         entry->sprite->field_0xb0,
                         0, 0x3ff00000);
@@ -527,9 +518,9 @@ int IconBar::LBLParse(char* param) {
         Sprite* spr = new Sprite(0);
         g_IconBarEntries[index].sprite = spr;
         spr->flags &= ~2;
-        ((SpriteSetup*)g_IconBarEntries[index].sprite)->ConfigStates(2);
-        ((SpriteSetup*)g_IconBarEntries[index].sprite)->ConfigRange(0, 1, 1, 1);
-        ((SpriteSetup*)g_IconBarEntries[index].sprite)->ConfigRange(1, 2, 2, 1);
+        ((Sprite*)g_IconBarEntries[index].sprite)->ConfigStates(2);
+        ((Sprite*)g_IconBarEntries[index].sprite)->ConfigRange(0, 1, 1, 1);
+        ((Sprite*)g_IconBarEntries[index].sprite)->ConfigRange(1, 2, 2, 1);
         g_IconBarEntries[index].sprite->handle = 0x3e9;
         FUN_00413e70(g_IconBarEntries[index].sprite, (int)this, (char*)0);
     } else if (strcmp(label, "ICON_SOUND") == 0) {

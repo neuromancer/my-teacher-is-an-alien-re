@@ -15,7 +15,6 @@ extern char* DAT_0046aa00;
 extern int DAT_00468764;
 extern SpriteAction DAT_00472d58;
 
-class GSVal { public: void FUN_00409f20(int); };
 
 /* Function start: 0x4098C0 */
 SC_Detention::SC_Detention() {
@@ -346,7 +345,7 @@ void SC_Detention::ResetAnimations() {
 
     gs = (GameState*)DAT_0046aa30;
     idx = gs->FindState("PERIOD");
-    ((GSVal*)gs)->FUN_00409f20(idx);
+    ((GameState*)gs)->FUN_00409f20(idx);
     int periodVal = gs->stateValues[idx];
 
     sprintf(sectionBuf, "[PERIOD_%d]", periodVal);
@@ -356,32 +355,32 @@ void SC_Detention::ResetAnimations() {
     case 5:
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("P_AWARE_MIKE");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("P_AWARE_LINSEY");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("S_AWARE_MIKE");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("S_AWARE_LINSEY");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("D_AWARE_MIKE");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("D_AWARE_LINSEY");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
         SC_Detention::ProcessPeriodAction(0x21B6);
@@ -390,7 +389,7 @@ void SC_Detention::ResetAnimations() {
     case 0xD:
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("AWARE_TEACHER");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) {
             SC_Detention::ProcessPeriodAction(0x21AC);
         }
@@ -399,32 +398,32 @@ void SC_Detention::ResetAnimations() {
     case 0x11:
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("LINSEY_ALIEN");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("MIKE_ALIEN");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("WENDY_ALIEN");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("JACK_ALIEN");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("STACY_ALIEN");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
         gs = (GameState*)DAT_0046aa30;
         idx = gs->FindState("STACY_ALIEN");
-        ((GSVal*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
         SC_Detention::ProcessPeriodAction(0x11F8);
@@ -437,7 +436,7 @@ void SC_Detention::ResetAnimations() {
 
     gs = (GameState*)DAT_0046aa30;
     idx = gs->FindState("PERIOD");
-    ((GSVal*)gs)->FUN_00409f20(idx);
+    ((GameState*)gs)->FUN_00409f20(idx);
     sprintf(DAT_0046aa00, "ACTIONSPERIOD%2.2d", gs->stateValues[idx]);
 
     gs = (GameState*)DAT_0046aa30;

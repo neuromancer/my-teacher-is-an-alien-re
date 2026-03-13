@@ -19,6 +19,8 @@ public:
     int IsPaletteUnchanged();
     void Cleanup();
     void CopyData(void* source);
+    void PlaySound(int);              // 0x425550
+    int CheckSound(int);              // 0x4256D0
 
 private:
     void OpenAndReadPaletteFile(char* filename);

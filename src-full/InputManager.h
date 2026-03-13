@@ -33,6 +33,7 @@ public:
     
 // private:
     // Helper functions
+    int Refresh(int);                   // FUN_00426CE0
     int PollMouse(InputState* state); // FUN_00421b20
     int PollJoystick(InputState* state); // FUN_00421c30
 
