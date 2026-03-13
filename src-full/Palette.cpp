@@ -207,3 +207,9 @@ int Palette::Compare(char* data, int size)
     return 0;
 }
 
+/* Function start: 0x425550 */
+void Palette::PlaySound(int) {}
+
+/* Function start: 0x4256D0 */
+int Palette::CheckSound(int) { return 0; }
+

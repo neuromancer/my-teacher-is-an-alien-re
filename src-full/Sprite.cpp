@@ -589,3 +589,12 @@ void Sprite::Dump()
 }
 
 void Sprite::ResetAnimation(int param1, int param2) {}
+
+/* Function start: 0x44CCF0 */
+int Sprite::RenderAt(int, int, int, int) { return 0; }
+
+/* Function start: 0x44D210 */
+void Sprite::ConfigRange(int, int, int, int) {}
+
+/* Function start: 0x44D2A0 */
+void Sprite::ConfigStates(int) {}

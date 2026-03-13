@@ -273,3 +273,6 @@ int InputManager::PollEvents(int param) {
     }
     return 0;
 }
+
+/* Function start: 0x426CE0 */
+int InputManager::Refresh(int) { return 0; }

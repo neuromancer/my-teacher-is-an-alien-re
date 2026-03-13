@@ -197,32 +197,6 @@ void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 }
 
 // ============================================================================
-// Real class method stubs (methods not yet implemented)
-// ============================================================================
-
-#include "Sprite.h"
-#include "Palette.h"
-
-// GameState methods
-void GameState::FUN_00409f20(int) {}
-int GameState::GetStateValue(int) { return 0; }
-int GameState::FindLabel(char*) { return 0; }
-int GameState::FUN_00433bb0(int*) { return 0; }
-int GameState::FUN_00432e20(char*) { return 0; }
-
-// InputManager methods
-int InputManager::Refresh(int) { return 0; }
-
-// Sprite methods
-int Sprite::RenderAt(int, int, int, int) { return 0; }
-void Sprite::ConfigRange(int, int, int, int) {}
-void Sprite::ConfigStates(int) {}
-
-// Palette methods
-void Palette::PlaySound(int) {}
-int Palette::CheckSound(int) { return 0; }
-
-// ============================================================================
 // Remaining proxy classes (real class unknown)
 // ============================================================================
 

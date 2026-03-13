@@ -148,3 +148,15 @@ void GameState::ClearStates()
 {
     memset(stateValues, 0, maxStates * 4);
 }
+
+/* Function start: 0x409F20 */
+void GameState::FUN_00409f20(int) {}
+
+/* Function start: 0x432E20 */
+int GameState::FUN_00432e20(char*) { return 0; }
+
+/* Function start: 0x433AE0 */
+int GameState::FindLabel(char*) { return 0; }
+
+/* Function start: 0x433BB0 */
+int GameState::FUN_00433bb0(int*) { return 0; }
