@@ -19,6 +19,10 @@ public:
     int AddMessage(SC_Message* msg);
     int ShutDown(SC_Message* msg);
     int Exit(SC_Message* msg);
+    void ResetState();              // 0x407BB0
+    int HandleClick(int* param);    // 0x407C20
+    void Render();                  // 0x407E50
+    void ProcessFrame();            // 0x407EE0
 
     int field_A8;           // 0xA8 - SpriteAction*
     int field_AC;           // 0xAC

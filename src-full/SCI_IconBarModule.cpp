@@ -23,7 +23,7 @@ public:
 };
 
 extern void __fastcall FUN_00432da0(void*);
-extern void __fastcall FUN_00443e30(void*);
+extern int __fastcall FUN_00443e30(void*);
 extern int __fastcall FUN_00421a30(void*);
 extern void __fastcall FUN_004219f0(void*, int, int);
 extern void __cdecl FUN_00425c50(char*, ...);

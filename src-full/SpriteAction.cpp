@@ -1,6 +1,9 @@
 #include "SpriteAction.h"
 #include <string.h>
-#include "Memory.h"
+#include <stdlib.h>
+
+/* Function start: 0x401120 */
+SlimeDim::~SlimeDim() {}
 
 /* Function start: 0x444920 */
 SpriteAction* SpriteAction::CopyFrom(SpriteAction* other) {
@@ -10,7 +13,7 @@ SpriteAction* SpriteAction::CopyFrom(SpriteAction* other) {
         child = (SpriteAction*)field_34;
         if (child != 0) {
             child->~SpriteAction();
-            FreeMemory(child);
+            free(child);
             field_34 = 0;
         }
 
@@ -30,8 +33,8 @@ SpriteAction* SpriteAction::CopyFrom(SpriteAction* other) {
 
         if (other->field_34 != 0) {
             child = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            child->CopyFrom((SpriteAction*)other->field_34);
             field_34 = (int)child;
+            child->CopyFrom((SpriteAction*)other->field_34);
         }
     }
 
@@ -58,7 +61,7 @@ SpriteAction::~SpriteAction() {
     SpriteAction* p = (SpriteAction*)field_34;
     if (p != 0) {
         p->~SpriteAction();
-        FreeMemory(p);
+        free(p);
         field_34 = 0;
     }
 }

@@ -1,14 +1,17 @@
 #include "SC_FireAlarm.h"
 #include "Memory.h"
 #include "Engine.h"
+#include "Animation.h"
 #include <string.h>
+#include <stdlib.h>
 
-extern "C" void* FUN_00454500(int);
-extern "C" void FUN_00454400(void*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern "C" int FUN_00425fa0(char*);
 extern "C" void FUN_004265a0();
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" char* FUN_0044e3e0(int);
+extern "C" void* FUN_004260f0(char*);
+extern int __cdecl FUN_00454920();
 extern void __fastcall FUN_00444af0(void*);
 extern void __fastcall FUN_00425490(void*);
 extern void* __fastcall FUN_00425480(void*);
@@ -16,8 +19,44 @@ extern void __cdecl FUN_00425a90(int, int);
 extern void __cdecl FUN_00425c50(char*, ...);
 extern void __fastcall FUN_0041dc10(void*);
 extern void __fastcall FUN_0044c740(void*);
+extern void __fastcall FUN_004279a0(void*);
+extern void __fastcall FUN_00427880(void*);
+extern void __fastcall FUN_00432da0(void*);
+
+// Thiscall wrapper classes for sprite/palette methods
+class SpriteRender {
+public:
+    int RenderAt(int x, int y, int p3, int p4);  // 0x44CCF0
+};
+
+class SpriteAnim {
+public:
+    void ResetAnimation(int frame, int flags);  // 0x44CB40
+};
+
+class PaletteObj {
+public:
+    void PlaySound(int value);     // 0x425550
+    int CheckSound(int value);     // 0x4256D0
+};
+
+class DetMask {
+public:
+    int CheckHit(int x, int y);  // 0x411330
+};
+
+class RenderObj {
+public:
+    void Render();               // 0x432DA0
+};
 
 extern int DAT_004685ac;
+extern void* DAT_0046aa08;
+extern "C" extern void* DAT_0046aa14;
+extern void* DAT_0046aa18;
+extern int DAT_004685a0;
+extern int DAT_00472bd8;
+extern int DAT_00472bdc;
 
 /* Function start: 0x407290 */
 SC_FireAlarm::SC_FireAlarm() {
@@ -47,7 +86,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
 
     moduleParam = pmsg[1];
 
-    void* pal = (void*)FUN_00454500(0xC);
+    void* pal = (void*)malloc(0xC);
     void* palObj = 0;
     if (pal != 0) {
         palObj = FUN_00425480(pal);
@@ -186,4 +225,347 @@ int SC_FireAlarm::Exit(SC_Message* msg) {
     }
 
     return 1;
+}
+
+/* Function start: 0x407BB0 */
+void SC_FireAlarm::ResetState() {
+    field_B0 = 0;
+    field_AC = 0;
+    if (field_10C != 0) {
+        ((SpriteAnim*)field_10C)->ResetAnimation(-1, 0);
+    }
+    if (field_C8 != 0) {
+        ((SpriteAnim*)field_C8)->ResetAnimation(-1, 0);
+    }
+    if (field_140 == 0) {
+        ((PaletteObj*)field_148)->PlaySound(9);
+    }
+    field_AC |= 8;
+}
+
+/* Function start: 0x407C20 */
+int SC_FireAlarm::HandleClick(int* param) {
+    int* coords = (int*)((char*)param + 0x120);
+    int animIdx = *(int*)((char*)param + 0x98);
+    int* animBase = *(int**)((char*)param + 0x90);
+    int frameCount = *(int*)((char*)animBase + animIdx * 16 + 4);
+    frameCount--;
+
+    int hitResult = ((DetMask*)DAT_0046aa14)->CheckHit(coords[0], coords[1]);
+
+    if (dim_FC.field_0 <= hitResult && dim_FC.field_4 >= hitResult) {
+        int y = coords[1] - 0x4B;
+        int x = coords[0] - 0xA1;
+        *(int*)(field_F8 + 0xAC) = x;
+        *(int*)(field_F8 + 0xB0) = y;
+        ((SpriteAnim*)field_F8)->ResetAnimation(2, 0);
+        ((PaletteObj*)field_148)->PlaySound(2);
+        return 1;
+    }
+
+    int pf0 = *(int*)((char*)param + 0xF0);
+    if (pf0 == 0) {
+        if (frameCount != 0) {
+            return 0;
+        }
+    } else {
+        if (*(int*)(*(int*)(pf0 + 0xC) + 0x374) != frameCount) {
+            return 0;
+        }
+    }
+
+    int soundId;
+
+    if (dim_E8.field_0 <= hitResult && dim_E8.field_4 >= hitResult) {
+        field_F0++;
+        field_138 += DAT_004685a0;
+        int done;
+        if (field_F4 == 0) {
+            done = 0;
+        } else if (field_F0 >= field_F4) {
+            done = 1;
+        } else {
+            done = 0;
+        }
+        if (done) {
+            ((PaletteObj*)field_148)->PlaySound(0xF);
+            field_F0 = 0;
+            goto returnOne;
+        }
+        soundId = 3;
+        goto playSound;
+    }
+
+    if (dim_114.field_0 <= hitResult && dim_114.field_4 >= hitResult) {
+        soundId = 0xA;
+        field_138 += DAT_00472bd8;
+        goto playSound;
+    }
+
+    {
+        int inSlot;
+        if (slot_CC.field_0 > coords[0] || slot_CC.field_8 < coords[0] ||
+            slot_CC.field_4 > coords[1] || slot_CC.field_C < coords[1]) {
+            inSlot = 0;
+        } else {
+            inSlot = 1;
+        }
+
+        if (inSlot) {
+            ((SpriteAnim*)field_C8)->ResetAnimation(*(int*)(field_C8 + 0x98) + 1, 0);
+
+            {
+                int curFrame = *(int*)(field_C8 + 0x98);
+                if (curFrame >= 0 && curFrame <= 2) {
+                    soundId = curFrame + 4;
+                    goto callSound;
+                }
+                if (curFrame != 4) goto afterSound;
+                soundId = 7;
+callSound:
+                ((PaletteObj*)field_148)->PlaySound(soundId);
+afterSound:;
+            }
+
+            if (*(int*)(field_C8 + 0x98) == 4) {
+                field_AC |= 2;
+                goto returnOne;
+            }
+
+            if (*(int*)(field_DC + 0x98) == 0) {
+                ((SpriteAnim*)field_DC)->ResetAnimation(1, 0);
+            }
+            goto returnOne;
+        }
+    }
+
+    soundId = 8;
+playSound:
+    ((PaletteObj*)field_148)->PlaySound(soundId);
+returnOne:
+    return 1;
+}
+
+/* Function start: 0x407E50 */
+void SC_FireAlarm::Render() {
+    ((SpriteRender*)field_C4)->RenderAt(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 0, 0x3ff00000);
+    ((SpriteRender*)field_110)->RenderAt(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 0, 0x3ff00000);
+    ((SpriteRender*)field_DC)->RenderAt(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 0, 0x3ff00000);
+    if (((PaletteObj*)field_148)->CheckSound(9) == 0) {
+        field_B0 = 1;
+        field_AC &= ~8;
+    }
+}
+
+/* Function start: 0x407EE0 */
+void SC_FireAlarm::ProcessFrame() {
+    int spr110;
+    int iVar4;
+
+    if ((field_AC & 0xF) == 0 && field_13C != 0 && field_138 >= field_13C) {
+        field_138 = 0;
+        spr110 = field_110;
+        int animRes = *(int*)(spr110 + 0xF0);
+        int dataPtr = *(int*)(animRes + 0xC);
+        int curFrame = *(int*)(spr110 + 0x98);
+        int totalFrames = *(int*)(dataPtr + 0x374);
+        int frameBase = *(int*)(spr110 + 0x90);
+        int distance = totalFrames - *(int*)(curFrame * 16 + frameBase) + 1;
+        field_134 = distance;
+
+        if (distance >= 0x3D && distance <= 0x55) {
+            int y = dim_12C.field_4;
+            int x = dim_12C.field_0 - 0x19;
+            *(int*)(spr110 + 0xAC) = x;
+            *(int*)(spr110 + 0xB0) = y;
+        } else if (distance >= 0x15 && distance <= 0x32) {
+            int y = dim_12C.field_4;
+            int x = dim_12C.field_0 + 0x19;
+            *(int*)(spr110 + 0xAC) = x;
+            *(int*)(spr110 + 0xB0) = y;
+        }
+
+        ((SpriteAnim*)field_DC)->ResetAnimation(0, 0);
+
+        if (*(int*)(field_F8 + 0x98) == 0) {
+            ((SpriteAnim*)field_F8)->ResetAnimation(-1, 0);
+        }
+
+        ((SpriteAnim*)field_10C)->ResetAnimation(*(int*)(field_10C + 0x98) + 1, 0);
+
+        iVar4 = *(int*)(field_10C + 0x98);
+        if (iVar4 == 2) {
+            field_AC |= 4;
+        }
+
+        FUN_004279a0((void*)DAT_004685ac);
+
+        ((SpriteAnim*)field_110)->ResetAnimation(iVar4 + 1, 0);
+
+        ((PaletteObj*)field_148)->PlaySound(iVar4 + 0xC);
+
+        field_AC |= 1;
+    }
+
+    ((SpriteRender*)field_C4)->RenderAt(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 0, 0x3ff00000);
+
+    int renderResult = ((SpriteRender*)field_110)->RenderAt(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 0, 0x3ff00000);
+
+    if ((field_AC & 0xF) == 0) {
+        int animData = *(int*)(field_110 + 0xF0);
+        int frameCount;
+        if (animData != 0) {
+            frameCount = *(int*)(*(int*)(animData + 0xC) + 0x374);
+        } else {
+            frameCount = 0;
+        }
+
+        if (frameCount == 0x28) {
+            ((SpriteAnim*)field_F8)->ResetAnimation(0, 0);
+        } else if (frameCount == 0x50) {
+            if (*(int*)(field_DC + 0x98) == 0) {
+                ((SpriteAnim*)field_DC)->ResetAnimation(1, 0);
+            }
+        }
+    }
+
+    if (renderResult != 0) {
+        int* spr = (int*)field_110;
+        int frame = spr[0x98/4];
+        if (frame >= 1 && frame <= 3) {
+            {
+                SlimeDim temp(dim_12C);
+                spr[0xAC/4] = temp.field_0;
+                spr[0xB0/4] = temp.field_4;
+            }
+
+            ((SpriteAnim*)field_110)->ResetAnimation(0, field_134);
+
+            int ac = field_AC & ~1;
+            field_AC = ac;
+            if (ac & 4) {
+                field_140++;
+                int done;
+                if (field_144 == 0) {
+                    done = 0;
+                } else if (field_140 >= field_144) {
+                    done = 1;
+                } else {
+                    done = 0;
+                }
+                if (done) {
+                    field_B0 = 3;
+                } else {
+                    char* name = FUN_0044e3e0(0x13A6);
+                    char* path = (char*)FUN_004260f0(name);
+                    if (FUN_00425fa0(path) != 0) {
+                        Animation anim;
+                        anim.Play(path, 0);
+                    }
+                    SC_FireAlarm::ResetState();
+                }
+            }
+        }
+    }
+
+    {
+        int dcRender = ((SpriteRender*)field_DC)->RenderAt(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 0, 0x3ff00000);
+        if (dcRender != 0) {
+            int dcFrame = *(int*)(field_DC + 0x98);
+            switch (dcFrame) {
+            case 1:
+                ((SpriteAnim*)field_DC)->ResetAnimation(2, 0);
+                {
+                    int r = FUN_00454920();
+                    field_E0 = 0;
+                    field_E4 = r % 0x14 + 0x14;
+                }
+                break;
+            case 2:
+                {
+                    field_E0++;
+                    int done2;
+                    if (field_E4 == 0) {
+                        done2 = 0;
+                    } else if (field_E0 >= field_E4) {
+                        done2 = 1;
+                    } else {
+                        done2 = 0;
+                    }
+                    if (!done2) break;
+                }
+                ((SpriteAnim*)field_DC)->ResetAnimation(3, 0);
+                break;
+            case 3:
+                ((SpriteAnim*)field_DC)->ResetAnimation(0, 0);
+                break;
+            }
+        }
+    }
+
+    {
+        int f8Render = ((SpriteRender*)field_F8)->RenderAt(*(int*)(field_F8 + 0xAC), *(int*)(field_F8 + 0xB0), 0, 0x3ff00000);
+        if (f8Render != 0) {
+            int f8Frame = *(int*)(field_F8 + 0x98);
+            switch (f8Frame) {
+            case 0:
+                ((SpriteAnim*)field_F8)->ResetAnimation(1, 0);
+                field_138 += DAT_00472bdc;
+                ((PaletteObj*)field_148)->PlaySound(0xB);
+                break;
+            case 1:
+                ((SpriteAnim*)field_F8)->ResetAnimation(-1, 0);
+                break;
+            case 2:
+                {
+                    SlimeDim temp2(dim_104);
+                    *(int*)(field_F8 + 0xAC) = temp2.field_0;
+                    *(int*)(field_F8 + 0xB0) = temp2.field_4;
+                }
+                ((SpriteAnim*)field_F8)->ResetAnimation(-1, 0);
+                break;
+            }
+        }
+    }
+
+    {
+        int c8Render = ((SpriteRender*)field_C8)->RenderAt(*(int*)(field_C8 + 0xAC), *(int*)(field_C8 + 0xB0), 0, 0x3ff00000);
+        if (c8Render != 0) {
+            int c8Frame = *(int*)(field_C8 + 0x98);
+            switch (c8Frame) {
+            case 2:
+                ((SpriteAnim*)field_C8)->ResetAnimation(3, 0);
+                break;
+            case 4:
+                field_B0 = 2;
+                break;
+            }
+        }
+    }
+
+    ((SpriteRender*)field_10C)->RenderAt(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 0, 0x3ff00000);
+
+    if ((field_AC & 0xF) == 0) {
+        FUN_00432da0(DAT_0046aa18);
+        FUN_00427880((void*)DAT_004685ac);
+
+        int bcRender = ((SpriteRender*)field_BC)->RenderAt(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 0, 0x3ff00000);
+        if (bcRender != 0) {
+            int mouseVal = 0;
+            int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+            if (mousePtr != 0) {
+                mouseVal = *mousePtr;
+            }
+            ((SpriteAnim*)field_BC)->ResetAnimation(mouseVal / (dim_B4.field_0 / 5), 0);
+        }
+
+        if (*(int*)(DAT_004685ac + 0xA8) != 0) {
+            int mouseVal2 = 0;
+            int* mousePtr2 = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+            if (mousePtr2 != 0) {
+                mouseVal2 = *mousePtr2;
+            }
+            ((SpriteAnim*)field_BC)->ResetAnimation(mouseVal2 / (dim_B4.field_0 / 3) + 5, 0);
+        }
+    }
 }

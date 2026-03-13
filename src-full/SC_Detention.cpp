@@ -2,10 +2,20 @@
 #include <string.h>
 #include <stdio.h>
 #include "GameState.h"
+#include "GameEngine.h"
+#include "SpriteAction.h"
 #include "globals.h"
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+
+extern "C" extern void* DAT_0046aa30;
+extern "C" extern int DAT_0046a6ec;
+extern char* DAT_0046aa00;
+extern int DAT_00468764;
+extern SpriteAction DAT_00472d58;
+
+class GSVal { public: void FUN_00409f20(int); };
 
 /* Function start: 0x4098C0 */
 SC_Detention::SC_Detention() {
@@ -316,6 +326,170 @@ void SC_Detention::HandleInput40() {
     }
     gs->stateValues[idx] = 3;
     ProcessPeriodAction(0x1272);
+}
+
+/* Function start: 0x40A130 */
+void SC_Detention::ResetAnimations() {
+    GameState* gs;
+    int idx;
+    char sectionBuf[64];
+
+    field_160 = 0;
+    DAT_00468764 = 0;
+
+    {
+        SpriteAction action(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
+        ((GameEngine*)DAT_0046a6ec)->EnqueueAction(&action);
+    }
+
+    ParseFile(this, "mis\\detention.mis", "[MOVE_TO_NEXT_PERIOD]");
+
+    gs = (GameState*)DAT_0046aa30;
+    idx = gs->FindState("PERIOD");
+    ((GSVal*)gs)->FUN_00409f20(idx);
+    int periodVal = gs->stateValues[idx];
+
+    sprintf(sectionBuf, "[PERIOD_%d]", periodVal);
+    ParseFile(this, "mis\\detention.mis", sectionBuf);
+
+    switch (periodVal) {
+    case 5:
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("P_AWARE_MIKE");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] != 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("P_AWARE_LINSEY");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] != 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("S_AWARE_MIKE");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] != 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("S_AWARE_LINSEY");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] != 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("D_AWARE_MIKE");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] != 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("D_AWARE_LINSEY");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] != 0) break;
+
+        SC_Detention::ProcessPeriodAction(0x21B6);
+        break;
+
+    case 0xD:
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("AWARE_TEACHER");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] == 0) {
+            SC_Detention::ProcessPeriodAction(0x21AC);
+        }
+        break;
+
+    case 0x11:
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("LINSEY_ALIEN");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] == 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("MIKE_ALIEN");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] == 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("WENDY_ALIEN");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] == 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("JACK_ALIEN");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] == 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("STACY_ALIEN");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] == 0) break;
+
+        gs = (GameState*)DAT_0046aa30;
+        idx = gs->FindState("STACY_ALIEN");
+        ((GSVal*)gs)->FUN_00409f20(idx);
+        if (gs->stateValues[idx] == 0) break;
+
+        SC_Detention::ProcessPeriodAction(0x11F8);
+        break;
+
+    case 0x15:
+        ShowError("end of Game");
+        break;
+    }
+
+    gs = (GameState*)DAT_0046aa30;
+    idx = gs->FindState("PERIOD");
+    ((GSVal*)gs)->FUN_00409f20(idx);
+    sprintf(DAT_0046aa00, "ACTIONSPERIOD%2.2d", gs->stateValues[idx]);
+
+    gs = (GameState*)DAT_0046aa30;
+    idx = gs->FindState(DAT_0046aa00);
+    if (idx < 0 || idx >= gs->maxStates - 1) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    field_148 = gs->stateValues[idx];
+
+    gs = (GameState*)DAT_0046aa30;
+    idx = gs->FindState("P_IN_DETENTION");
+    if (idx < 0 || idx >= gs->maxStates - 1) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    if (gs->stateValues[idx] == 0) return;
+
+    gs = (GameState*)DAT_0046aa30;
+    idx = gs->FindState("S_IN_DETENTION");
+    if (idx < 0 || idx >= gs->maxStates - 1) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    if (gs->stateValues[idx] == 0) return;
+
+    gs = (GameState*)DAT_0046aa30;
+    idx = gs->FindState("D_IN_DETENTION");
+    if (idx < 0 || idx >= gs->maxStates - 1) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    if (gs->stateValues[idx] == 0) return;
+
+    SC_Detention::ProcessPeriodAction(0x1202);
+}
+
+/* Function start: 0x40A620 */
+void SC_Detention::ProcessPeriodAction(int param) {
+    GameState* gs;
+    int idx;
+
+    field_150 = 1;
+    FUN_00444d90(3, param, 0x2D, 1, 4, 0, 0, 0, 0, 0);
+
+    {
+        SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        DAT_00472d58.CopyFrom(&action);
+    }
+
+    gs = (GameState*)DAT_0046aa30;
+    idx = gs->FindState("MUST_SAVEGAME");
+    if (idx < 0 || idx >= gs->maxStates - 1) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    gs->stateValues[idx] = 0;
 }
 
 /* Function start: 0x40AD50 */

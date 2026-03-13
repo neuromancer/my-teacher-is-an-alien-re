@@ -21,7 +21,7 @@ extern "C" int __stdcall AIL_sample_status(void*);
 extern void* DAT_0046aa24;
 extern void* DAT_0046aa18;
 extern void* DAT_0046aa08;
-extern int DAT_00472d58;
+extern SpriteAction DAT_00472d58;
 
 // Sprite functions (fastcall - 0 extra params = same as thiscall)
 extern void __fastcall FUN_0044c740(void* sprite);
@@ -357,7 +357,7 @@ int SelectHotspot::LBLParse(char* line) {
         if (msgMem != 0) {
             msgObj = (int*)FUN_00444a40(msgMem, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
-        int* src = &DAT_00472d58;
+        int* src = (int*)&DAT_00472d58;
         int* dst = msgObj;
         int i;
         for (i = 0x0E; i != 0; i--) {

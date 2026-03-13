@@ -4,10 +4,11 @@
 #include "Engine.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 extern void __fastcall FUN_004309a0(void*, int, int);
-extern "C" void* FUN_00454500(int);
-extern "C" void FUN_00454400(void*);
+
+
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern "C" int FUN_00425fa0(char*);
@@ -29,7 +30,7 @@ extern void __fastcall FUN_00409f20(void*, int);
 extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00444e40(void*);
 extern void* __fastcall FUN_00440860(void*);
-extern int __cdecl FUN_00454510(char*, char*, ...);
+
 extern int __cdecl FUN_00412a50(void*);
 
 extern int DAT_0046ae78;
@@ -77,7 +78,7 @@ void SC_Pods::Init(SC_Message* msg) {
                 void* obj = FUN_00403520(list1);
                 if (obj != 0) {
                     *(int*)obj = 0x461030;
-                    FUN_00454400(obj);
+                    free(obj);
                 }
             }
         }
@@ -90,7 +91,7 @@ void SC_Pods::Init(SC_Message* msg) {
                 void* item = FUN_004035a0(list2);
                 if (item != 0) {
                     FUN_00401c80(item);
-                    FUN_00454400(item);
+                    free(item);
                 }
             }
         }
@@ -103,7 +104,7 @@ void SC_Pods::Init(SC_Message* msg) {
                 void* item = FUN_00403620(list3);
                 if (item != 0) {
                     FUN_004061e0(item);
-                    FUN_00454400(item);
+                    free(item);
                 }
             }
         }
@@ -143,7 +144,7 @@ void SC_Pods::Init(SC_Message* msg) {
     }
 
     // Create palette object
-    void* pal = (void*)FUN_00454500(0xc);
+    void* pal = malloc(0xc);
     void* palObj = 0;
     if (pal != 0) {
         palObj = FUN_00425480(pal);
@@ -218,7 +219,7 @@ int SC_Pods::LBLParse(char* line) {
     sscanf(line, " %s ", label);
 
     if (strcmp(label, "DERIVED_ENGINE_INFO") == 0) {
-        void* mem = FUN_00454500(0x118);
+        void* mem = malloc(0x118);
         void* eng = 0;
         if (mem != 0) {
             eng = FUN_00440860(mem);

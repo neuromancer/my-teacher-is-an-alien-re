@@ -10,6 +10,7 @@
 #include "ZBufferManager.h"
 #include "smack.h"
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <new.h>
 
@@ -32,8 +33,6 @@ extern void __fastcall FUN_00404b90(void*);                              // Upda
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int); // ShowSubtitle on DAT_0046aa24
 
 extern void __cdecl FUN_00425c50(char*, ...);   // ShowError
-extern "C" int FUN_00454510(char*, char*, ...); // sprintf
-extern "C" void* FUN_00454500(int);
 extern "C" void FUN_00444e20(void*);
 extern void __fastcall FUN_00426a90(void*);
 
@@ -157,7 +156,7 @@ void GameEngine::RunGameLoop() {
                 } else {
                     mouseX = 0;
                 }
-                FUN_00454510(DAT_0046aa00, "FT %d   %d %d ", m_timer1->Update(), mouseX, mouseY);
+                sprintf(DAT_0046aa00, "FT %d   %d %d ", m_timer1->Update(), mouseX, mouseY);
                 FUN_00404230(DAT_0046aa24, 0, DAT_0046aa00, 0x14, 0x1e, 10000, -1);
             }
 
@@ -620,7 +619,7 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
         int count;
         int* entry;
 
-        block = (int*)FUN_00454500(pool[5] * 0x40 + 4);
+        block = (int*)malloc(pool[5] * 0x40 + 4);
         *block = pool[4];
         pool[4] = (int)block;
         count = pool[5];

@@ -6,11 +6,10 @@
 #include "mss.h"
 #include "Memory.h"
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern "C" void FUN_00454400(void*);
-extern "C" void* FUN_00454500(int);
 
 extern void* __fastcall FUN_0041dbe0(void*);
 extern void* __fastcall FUN_0044c660(void*, int, char*);
@@ -38,7 +37,7 @@ public:
 // Use local class wrapper for correct calling convention
 class InputObj {
 public:
-    void Refresh(int param);  // 0x426CE0
+    int Refresh(int param);  // 0x426CE0
 };
 
 // TimerObj = TimeOut (ctor 0x421920 wraps 0x421960, dtor 0x421930)
@@ -52,7 +51,7 @@ public:
 
 class DetMask {
 public:
-    unsigned int CheckHit(int x, int y);  // 0x411330
+    int CheckHit(int x, int y);  // 0x411330
 };
 
 
@@ -172,49 +171,49 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
     ptr = field_AC;
     if (ptr != 0) {
         FUN_0041dc10(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_AC = 0;
     }
 
     ptr = field_B0;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_B0 = 0;
     }
 
     ptr = field_B4;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_B4 = 0;
     }
 
     ptr = field_C4;
     if (ptr != 0) {
         FUN_00410fd0(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_C4 = 0;
     }
 
     ptr = field_B8;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_B8 = 0;
     }
 
     ptr = field_BC;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_BC = 0;
     }
 
     ptr = field_C0;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_C0 = 0;
     }
 
@@ -226,7 +225,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
     ptr = field_13C;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_13C = 0;
     }
 
@@ -245,7 +244,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
     ptr = field_114;
     if (ptr != 0) {
         FUN_00425200(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_114 = 0;
     }
 
@@ -260,7 +259,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
         ptr = field_DC[0xe - i];
         if (ptr != 0) {
             FUN_00424ee0(ptr);
-            FUN_00454400(ptr);
+            free(ptr);
             field_DC[0xe - i] = 0;
         }
     }
@@ -547,7 +546,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
 
     if (strcmp(local_38, "PALETTE") == 0) {
         sscanf(param_1, "%s %s", local_38, local_b8);
-        void* mem = FUN_00454500(8);
+        void* mem = malloc(8);
         void* pal = 0;
         if (mem != 0) {
             pal = FUN_0041dbe0(mem);
@@ -557,7 +556,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
     }
     else if (strcmp(local_38, "DETECTION_MASK") == 0) {
         sscanf(param_1, "%s %s", local_38, local_b8);
-        void* mem = FUN_00454500(0x30);
+        void* mem = malloc(0x30);
         void* obj = 0;
         if (mem != 0) {
             char* path = FUN_00426190(local_b8);
@@ -566,7 +565,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         field_C4 = obj;
     }
     else if (strcmp(local_38, "BACKGROUND_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -575,7 +574,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "RESET_SWITCH_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -584,7 +583,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "INNER_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -593,7 +592,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "MIDDLE_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -602,7 +601,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "OUTER_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -611,7 +610,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "CONSOLE_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -667,7 +666,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             int err = smp->Load(path);
             if (err != 0 && field_DC[local_18] != 0) {
                 FUN_00424ee0(field_DC[local_18]);
-                FUN_00454400(field_DC[local_18]);
+                free(field_DC[local_18]);
                 field_DC[local_18] = 0;
             }
         }
@@ -679,7 +678,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         int ret = sscanf(param_1, " %s %s ", local_38, local_b8);
         if (ret == 2) {
             if (strcmp(local_b8, "ROCKTHROWER2") == 0) {
-                void* mem = FUN_00454500(200);
+                void* mem = malloc(200);
                 if (mem == 0) {
                     DAT_0046bbfc = 0;
                 } else {

@@ -2,23 +2,25 @@
 #include "SpriteAction.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "GameState.h"
 #include "globals.h"
 #include "Sprite.h"
 #include "Sample.h"
 #include "Timer.h"
 #include "Palette.h"
+#include "RenderEntry.h"
 
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
     extern void* DAT_0046aa30;
     extern int DAT_0046a190;
     extern void* DAT_0046af08;
-    extern int DAT_00472d20;
 }
 // extern globals - C++ linkage (matching stubs.cpp)
+extern SpriteAction DAT_00472d20;
 extern void* DAT_0046aa24;
-extern int DAT_00472d58;
+extern SpriteAction DAT_00472d58;
 extern int DAT_0046cb90;
 extern char* DAT_0046cb94;
 extern int DAT_00473334;
@@ -53,11 +55,6 @@ extern "C" {
     void FUN_004265a0();
     void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
     char* FUN_0044e530(int);
-    void FUN_00454400(void*);
-    void* FUN_00454500(int);
-    int FUN_00454510(char*, char*, ...);
-    int FUN_00454850(char*, char*, ...);
-    char* FUN_00454960(char*, char*);
     void FUN_00444e20(void*);
 }
 // C++ linkage functions (matching stubs.cpp)
@@ -86,35 +83,35 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
     ptr = (void*)field_A8;
     if (ptr != 0) {
         FUN_0041dc10(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_A8 = 0;
     }
 
     ptr = (void*)field_AC;
     if (ptr != 0) {
         FUN_00443990(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_AC = 0;
     }
 
     ptr = (void*)field_B0;
     if (ptr != 0) {
         FUN_00420d90(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_B0 = 0;
     }
 
     ptr = (void*)field_B4;
     if (ptr != 0) {
         FUN_00420d90(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_B4 = 0;
     }
 
     ptr = (void*)field_E8;
     if (ptr != 0) {
         FUN_00424ee0(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_E8 = 0;
     }
 
@@ -122,7 +119,7 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
         ptr = (void*)characters[3 - i];
         if (ptr != 0) {
             FUN_00420d90(ptr);
-            FUN_00454400(ptr);
+            free(ptr);
             characters[3 - i] = 0;
         }
     }
@@ -131,7 +128,7 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
         ptr = (void*)options[9 - i];
         if (ptr != 0) {
             FUN_00420d90(ptr);
-            FUN_00454400(ptr);
+            free(ptr);
             options[9 - i] = 0;
         }
     }
@@ -188,12 +185,12 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     ptr = (void*)field_E8;
     if (ptr != 0) {
         FUN_00424ee0(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_E8 = 0;
     }
 
     // Allocate new sound object
-    void* sndMem = FUN_00454500(0x10);
+    void* sndMem = malloc(0x10);
     void* sndObj = 0;
     if (sndMem != 0) {
         FUN_00424ed0(sndMem);
@@ -385,9 +382,8 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 // All 3 in detention - send detention message
                 FUN_00444d90(3, 0x1202, 0x2d, 1, 4, 0, 0, 0, 0, 0);
                 // Create and push empty SpriteAction
-                char local_48[52];
-                void* action = FUN_00444a40(local_48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                ((QObj*)&DAT_00472d58)->FUN_00444920(action);
+                SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                ((QObj*)&DAT_00472d58)->FUN_00444920(&action);
 
                 // Clear MUST_SAVEGAME
                 gs = DAT_0046aa30;
@@ -404,7 +400,8 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
 /* Function start: 0x41E950 */
 int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     void* ptr;
-    int i;
+    int* base;
+    int count;
 
     if (DAT_0046a190 == 0) {
         return 0;
@@ -420,7 +417,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
             void* item = (void*)FUN_00403520((void*)list1);
             if (item != 0) {
                 *(int*)item = 0x461030;
-                FUN_00454400(item);
+                free(item);
             }
         }
     }
@@ -432,7 +429,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
             void* item = (void*)FUN_004035a0((void*)list2);
             if (item != 0) {
                 FUN_00401c80(item);
-                FUN_00454400(item);
+                free(item);
             }
         }
     }
@@ -441,11 +438,10 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     if (*list3 != 0) {
         list3[2] = *list3;
         while (*list3 != 0) {
-            void* item = (void*)FUN_00403620((void*)list3);
+            RenderEntry* item = (RenderEntry*)FUN_00403620((void*)list3);
             if (item != 0) {
-                *(int*)item = 0x46102c;
-                FUN_00401130((void*)((int)item + 4));
-                FUN_00454400(item);
+                item->RenderEntry::~RenderEntry();
+                free(item);
             }
         }
     }
@@ -456,55 +452,63 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     ptr = (void*)field_A8;
     if (ptr != 0) {
         FUN_0041dc10(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_A8 = 0;
     }
 
     ptr = (void*)field_AC;
     if (ptr != 0) {
         FUN_00443990(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_AC = 0;
     }
 
     ptr = (void*)field_B0;
     if (ptr != 0) {
         FUN_00420d90(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_B0 = 0;
     }
 
     ptr = (void*)field_B4;
     if (ptr != 0) {
         FUN_00420d90(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_B4 = 0;
     }
 
     ptr = (void*)field_E8;
     if (ptr != 0) {
         FUN_00424ee0(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_E8 = 0;
     }
 
-    for (i = 3; i != 0; i--) {
-        ptr = (void*)characters[3 - i];
+    base = (int*)((char*)this + 0xb8);
+    count = 3;
+    do {
+        ptr = (void*)*base;
         if (ptr != 0) {
             FUN_00420d90(ptr);
-            FUN_00454400(ptr);
-            characters[3 - i] = 0;
+            free(ptr);
+            *base = 0;
         }
-    }
+        base++;
+        count--;
+    } while (count != 0);
 
-    for (i = 9; i != 0; i--) {
-        ptr = (void*)options[9 - i];
+    base = (int*)((char*)this + 0xc4);
+    count = 9;
+    do {
+        ptr = (void*)*base;
         if (ptr != 0) {
             FUN_00420d90(ptr);
-            FUN_00454400(ptr);
-            options[9 - i] = 0;
+            free(ptr);
+            *base = 0;
         }
-    }
+        base++;
+        count--;
+    } while (count != 0);
 
     IconBar::CleanupIconBar(msg);
     return 0;
@@ -616,7 +620,7 @@ void SCI_SchoolMenu::SetupOptions() {
         }
 
         i++;
-        FUN_00454510(buf, "%cRM%d", (int)ch, i);
+        sprintf(buf, "%cRM%d", (int)ch, i);
 
         if (*optPtr == 0) {
             goto next_option;
@@ -681,7 +685,7 @@ void InitAllSchedule() {
                 ch = DAT_0046cb94[charIdx];
             }
 
-            FUN_00454510(buf, "%cRM%d", (int)ch, i);
+            sprintf(buf, "%cRM%d", (int)ch, i);
 
             void* gs = DAT_0046aa30;
             int stIdx = ((GameState*)gs)->FindState(buf);
@@ -696,102 +700,142 @@ void InitAllSchedule() {
 
 /* Function start: 0x41ECE0 */
 int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
-    int ret;
     void* gs;
     int* stateVals;
-    int idx;
     int i;
+    int hitResult;
+    int* charBase;
+    int* charPtr;
+    int* msgMouse;
+    int hitChar;
+    char buf[28];
+    int* optBase;
+    int* optPtr;
+    int hitOpt;
+    int* selPtr;
+    char capBuf[28];
+    char nextChar;
 
-    ret = IconBar::CheckButtonClick(msg);
-    if (ret != 0) return 1;
-    if (((int*)msg)[9] < 2) return 1;
+    if (IconBar::CheckButtonClick(msg) != 0) goto done;
+    if (((int*)msg)[9] < 2) goto done;
 
     // Check NUM_ACTIONS state
     gs = DAT_0046aa30;
-    idx = ((GameState*)gs)->FindState("NUM_ACTIONS");
-    ((GSVal*)gs)->FUN_00409f20(idx);
+    i = ((GameState*)gs)->FindState("NUM_ACTIONS");
+    ((GSVal*)gs)->FUN_00409f20(i);
     stateVals = (int*)((int*)((int)gs + 0x90))[0];
-    if (stateVals[idx] < 1) {
-        // Check character sprite hit
-        int* charPtr = characters;
-        int hitChar = 0;
+    if (stateVals[i] >= 1) goto check_options;
 
-        for (i = 0; i < 3; i++) {
-            int chr = *charPtr;
-            if (((int*)chr)[0x24] != 0) {
-                int x = ((int*)msg)[7];
-                int y = ((int*)msg)[8];
-                if (x >= ((int*)chr)[0x27] && x <= ((int*)chr)[0x29] &&
-                    y >= ((int*)chr)[0x28] && y <= ((int*)chr)[0x2a]) {
-                    hitChar = 1;
-                } else {
-                    hitChar = 0;
-                }
-            } else {
+    charBase = characters;
+    charPtr = characters;
+    i = 0;
+    msgMouse = (int*)((char*)msg + 0x1C);
+
+char_loop:
+    {
+        SlimeDim mouseCoords = *(SlimeDim*)msgMouse;
+        int chr = *charPtr;
+        if (((int*)chr)[0x24] != 0) {
+            if (((int*)chr)[0x27] > mouseCoords.field_0 ||
+                ((int*)chr)[0x29] < mouseCoords.field_0 ||
+                ((int*)chr)[0x28] > mouseCoords.field_4 ||
+                ((int*)chr)[0x2A] < mouseCoords.field_4) {
                 hitChar = 0;
+            } else {
+                hitChar = 1;
             }
+        } else {
+            hitChar = 0;
+        }
+    }
+    if (hitChar != 0) goto char_click;
+    charPtr++;
+    i++;
+    if (i < 3) goto char_loop;
 
-            if (hitChar != 0) {
-                break;
+check_options:
+    if (IsCharacterActive() == 0) goto check_go;
+
+    i = 0;
+    optBase = options;
+    optPtr = options;
+
+opt_loop:
+    {
+        int opt = *optPtr;
+        if (opt == 0) goto next_opt;
+        {
+            SlimeDim optCoords = *(SlimeDim*)((char*)msg + 0x1C);
+            if (((int*)opt)[0x24] == 0) goto opt_miss;
+            if (((HitRect*)((int)opt + 0x9c))->HitTest(optCoords.field_0, optCoords.field_4)) {
+                hitOpt = 1;
+                goto opt_done;
             }
-            charPtr++;
+opt_miss:
+            hitOpt = 0;
+opt_done:
+            ;
+        }
+        if (hitOpt != 0) goto opt_click;
+    }
+    goto next_opt;
+
+char_click:
+    // Character was clicked
+    {
+        char ch;
+        if (i == -1) {
+            gs = DAT_0046aa30;
+            int charIdx = DAT_0046cb90;
+            ((GSVal*)gs)->FUN_00409f20(charIdx);
+            stateVals = (int*)((int*)((int)gs + 0x90))[0];
+            ch = DAT_0046cb94[stateVals[charIdx]];
+        } else {
+            ch = DAT_0046cb94[i];
         }
 
-        if (hitChar != 0) {
-            // Character was clicked
-            char ch;
-            if (i == -1) {
-                gs = DAT_0046aa30;
-                int charIdx = DAT_0046cb90;
-                ((GSVal*)gs)->FUN_00409f20(charIdx);
-                stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                ch = DAT_0046cb94[stateVals[charIdx]];
-            } else {
-                ch = DAT_0046cb94[i];
-            }
+        sprintf(buf, "%c_IN_DETENTION", (int)ch);
+        gs = DAT_0046aa30;
+        hitResult = ((GameState*)gs)->FindState(buf);
+        ((GSVal*)gs)->FUN_00409f20(hitResult);
+        stateVals = (int*)((int*)((int)gs + 0x90))[0];
+        if (stateVals[hitResult] != 0) goto check_options;
 
-            char buf[28];
-            FUN_00454510(buf, "%c_IN_DETENTION", (int)ch);
+        if (i == -1) {
             gs = DAT_0046aa30;
-            idx = ((GameState*)gs)->FindState(buf);
-            ((GSVal*)gs)->FUN_00409f20(idx);
+            int charIdx = DAT_0046cb90;
+            ((GSVal*)gs)->FUN_00409f20(charIdx);
             stateVals = (int*)((int*)((int)gs + 0x90))[0];
-            if (stateVals[idx] != 0) goto check_options;
+            ch = DAT_0046cb94[stateVals[charIdx]];
+        } else {
+            ch = DAT_0046cb94[i];
+        }
+        sprintf(buf, "%c_DETENTION_SUSPENSION", (int)ch);
+        gs = DAT_0046aa30;
+        hitResult = ((GameState*)gs)->FindState(buf);
+        ((GSVal*)gs)->FUN_00409f20(hitResult);
+        stateVals = (int*)((int*)((int)gs + 0x90))[0];
+        if (stateVals[hitResult] > 2) goto check_options;
 
-            if (i == -1) {
-                gs = DAT_0046aa30;
-                int charIdx = DAT_0046cb90;
-                ((GSVal*)gs)->FUN_00409f20(charIdx);
-                stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                ch = DAT_0046cb94[stateVals[charIdx]];
-            } else {
-                ch = DAT_0046cb94[i];
-            }
-            FUN_00454510(buf, "%c_DETENTION_SUSPENSION", (int)ch);
+        if (i == -1) {
             gs = DAT_0046aa30;
-            idx = ((GameState*)gs)->FindState(buf);
-            ((GSVal*)gs)->FUN_00409f20(idx);
+            int charIdx = DAT_0046cb90;
+            ((GSVal*)gs)->FUN_00409f20(charIdx);
             stateVals = (int*)((int*)((int)gs + 0x90))[0];
-            if (stateVals[idx] > 2) goto check_options;
+            ch = DAT_0046cb94[stateVals[charIdx]];
+        } else {
+            ch = DAT_0046cb94[i];
+        }
+        sprintf(buf, "%c_CAPTURED", (int)ch);
+        gs = DAT_0046aa30;
+        hitResult = ((GameState*)gs)->FindState(buf);
+        ((GSVal*)gs)->FUN_00409f20(hitResult);
+        stateVals = (int*)((int*)((int)gs + 0x90))[0];
+        if (stateVals[hitResult] != 0) goto check_options;
 
-            if (i == -1) {
-                gs = DAT_0046aa30;
-                int charIdx = DAT_0046cb90;
-                ((GSVal*)gs)->FUN_00409f20(charIdx);
-                stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                ch = DAT_0046cb94[stateVals[charIdx]];
-            } else {
-                ch = DAT_0046cb94[i];
-            }
-            FUN_00454510(buf, "%c_CAPTURED", (int)ch);
-            gs = DAT_0046aa30;
-            idx = ((GameState*)gs)->FindState(buf);
-            ((GSVal*)gs)->FUN_00409f20(idx);
-            stateVals = (int*)((int*)((int)gs + 0x90))[0];
-            if (stateVals[idx] != 0) goto check_options;
-
-            // Select this character
-            int* basePtr = characters;
+        // Select this character - reset all
+        {
+            int* basePtr = charBase;
             int count = 3;
             do {
                 int chr = *basePtr;
@@ -803,40 +847,44 @@ int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
                 basePtr++;
                 count--;
             } while (count != 0);
+        }
 
-            int* selCharPtr = &characters[i];
-            int selChr = *selCharPtr;
+        selPtr = &characters[i];
+        {
+            int selChr = *selPtr;
             ((int*)selChr)[0x25] = 1;
             void* animCtrl = (void*)((int*)selChr)[0x67];
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(1, 0);
             }
+        }
 
-            // Update global character selection
-            gs = DAT_0046aa30;
-            int charStateIdx = DAT_0046cb90;
-            ((GSVal*)gs)->FUN_00409f20(charStateIdx);
-            stateVals = (int*)((int*)((int)gs + 0x90))[0];
-            stateVals[charStateIdx] = i;
+        // Update global character selection
+        gs = DAT_0046aa30;
+        hitResult = DAT_0046cb90;
+        ((GSVal*)gs)->FUN_00409f20(hitResult);
+        stateVals = (int*)((int*)((int)gs + 0x90))[0];
+        stateVals[hitResult] = i;
 
-            charStateIdx = DAT_0046cb90;
-            gs = DAT_0046aa30;
-            ((GSVal*)gs)->FUN_00409f20(charStateIdx);
-            stateVals = (int*)((int*)((int)gs + 0x90))[0];
-            ((Sprite*)DAT_0046af08)->ResetAnimation(stateVals[charStateIdx] + 1, 0);
+        hitResult = DAT_0046cb90;
+        gs = DAT_0046aa30;
+        ((GSVal*)gs)->FUN_00409f20(hitResult);
+        stateVals = (int*)((int*)((int)gs + 0x90))[0];
+        ((Sprite*)DAT_0046af08)->ResetAnimation(stateVals[hitResult] + 1, 0);
 
-            SetupOptions();
-            selectedOption = -1;
+        SetupOptions();
+        selectedOption = -1;
 
-            // Play sound
-            FUN_004250e0((void*)field_E8);
-            // TimedEvent for sound
-            char timedEvtBuf[24];
-            FUN_00421880(timedEvtBuf);
-            ((Timer*)timedEvtBuf)->Wait(0x96);
+        // Play sound
+        FUN_004250e0((void*)field_E8);
+        {
+            Timer timedEvt;
+            timedEvt.Wait(0x96);
+        }
 
-            // Load character-specific sound
-            int selSpr = *selCharPtr;
+        // Load character-specific sound
+        {
+            int selSpr = *selPtr;
             gs = DAT_0046aa30;
             int periodIdx2 = DAT_0046cb90;
             int pIdx = ((GameState*)gs)->FindState("PERIOD");
@@ -848,47 +896,21 @@ int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
             char* sndFile = FUN_0044e530(((int*)selSpr)[0x28 + fullIdx]);
             ((Sample*)(void*)field_E8)->Load(sndFile);
             ((Sample*)(void*)field_E8)->Play(100, 1);
-
-            goto check_options;
         }
+
     }
+    goto check_options;
 
-check_options:
-    if (IsCharacterActive() == 0) goto check_go_button;
-
-    // Check option hit
-    {
-        int* optPtr = options;
-        int hitOpt = 0;
-
-        for (i = 0; i < 9; i++) {
-            int opt = *optPtr;
-            if (opt == 0) goto next_opt;
-
-            int optX, optY;
-            optX = ((int*)msg)[7];
-            optY = ((int*)msg)[8];
-            if (((int*)opt)[0x24] != 0) {
-                if (((HitRect*)((int)opt + 0x9c))->HitTest(optX, optY)) {
-                    hitOpt = 1;
-                } else {
-                    hitOpt = 0;
-                }
-            } else {
-                hitOpt = 0;
-            }
-
-            if (hitOpt != 0) {
-                break;
-            }
 next_opt:
-            optPtr++;
-        }
+    optPtr++;
+    i++;
+    if (i < 9) goto opt_loop;
+    goto check_go;
 
-        if (hitOpt == 0 && i >= 9) goto check_go_button2;
-
-        // Option was clicked
-        int* baseOpts = options;
+opt_click:
+    // Option was clicked - reset all
+    {
+        int* baseOpts = optBase;
         int count = 9;
         do {
             int opt = *baseOpts;
@@ -902,16 +924,21 @@ next_opt:
             baseOpts++;
             count--;
         } while (count != 0);
+    }
 
-        int* selOptPtr = &options[i];
-        int selOpt = *selOptPtr;
+    selPtr = &options[i];
+    {
+        int selOpt = *selPtr;
         ((int*)selOpt)[0x25] = 1;
         void* animCtrl = (void*)((int*)selOpt)[0x67];
         if (animCtrl != 0) {
             ((Sprite*)animCtrl)->ResetAnimation(1, 0);
         }
+    }
 
-        // Load option sound
+    // Load option sound
+    {
+        int selOpt2 = *selPtr;
         gs = DAT_0046aa30;
         int charStateIdx = DAT_0046cb90;
         int pIdx = ((GameState*)gs)->FindState("PERIOD");
@@ -920,165 +947,163 @@ next_opt:
         int period = stateVals[pIdx];
         int offset = ((GSVal*)DAT_0046aa30)->GetStateValue(charStateIdx);
         int fullIdx = period * 3 + offset;
-        char* sndFile = FUN_0044e530(((int*)selOpt)[0x28 + fullIdx]);
+        char* sndFile = FUN_0044e530(((int*)selOpt2)[0x28 + fullIdx]);
         ((Sample*)(void*)field_E8)->Load(sndFile);
         ((Sample*)(void*)field_E8)->Play(100, 1);
-        selectedOption = i;
     }
+    selectedOption = i;
+    goto check_go;
 
-check_go_button2:
-    ;
-
-check_go_button:
+check_go:
     if (selectedOption <= -1) goto check_back;
     if (IsCharacterActive() == 0) goto check_back;
 
     // Check go button hit
     {
+        SlimeDim goCoords;
+        int* goMouse = (int*)((char*)msg + 0x1C);
+        goCoords.field_0 = goMouse[0];
+        goCoords.field_4 = goMouse[1];
         int goSpr = field_B0;
         if (((int*)goSpr)[0x24] != 0) {
-            int x = ((int*)msg)[7];
-            int y = ((int*)msg)[8];
-            int hit;
-            if (((HitRect*)(goSpr + 0x9c))->HitTest(x, y)) {
-                hit = 1;
+            if (((HitRect*)(goSpr + 0x9c))->HitTest(goCoords.field_0, goCoords.field_4)) {
+                hitResult = 1;
             } else {
-                hit = 0;
+                hitResult = 0;
             }
-            if (hit != 0) {
-                // Go button clicked - increment NUM_ACTIONS
+        } else {
+            hitResult = 0;
+        }
+    }
+    if (hitResult != 0) {
+        // Go button clicked - increment NUM_ACTIONS
+        gs = DAT_0046aa30;
+        i = ((GameState*)gs)->FindState("NUM_ACTIONS");
+        ((GSVal*)gs)->FUN_00409f20(i);
+        stateVals = (int*)((int*)((int)gs + 0x90))[0];
+        stateVals[i]++;
+
+        // Execute option action
+        FUN_00421020((void*)options[selectedOption]);
+
+        // Determine next character
+        gs = DAT_0046aa30;
+        i = ((GameState*)gs)->FindState("PERIOD");
+        nextChar = 0;
+        ((GSVal*)gs)->FUN_00409f20(i);
+        stateVals = (int*)((int*)((int)gs + 0x90))[0];
+        int period = stateVals[i];
+
+        if (period == 0x12) {
+            gs = DAT_0046aa30;
+            int charIdx = DAT_0046cb90;
+            ((GSVal*)gs)->FUN_00409f20(charIdx);
+            stateVals = (int*)((int*)((int)gs + 0x90))[0];
+            if (DAT_0046cb94[stateVals[charIdx]] == 'D') {
+                nextChar = 'P';
+            } else {
                 gs = DAT_0046aa30;
-                idx = ((GameState*)gs)->FindState("NUM_ACTIONS");
-                ((GSVal*)gs)->FUN_00409f20(idx);
+                charIdx = DAT_0046cb90;
+                ((GSVal*)gs)->FUN_00409f20(charIdx);
                 stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                stateVals[idx]++;
-
-                // Execute option action
-                FUN_00421020((void*)options[selectedOption]);
-
-                // Determine next character
-                gs = DAT_0046aa30;
-                int pIdx = ((GameState*)gs)->FindState("PERIOD");
-                char nextChar = 0;
-                ((GSVal*)gs)->FUN_00409f20(pIdx);
-                stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                int period = stateVals[pIdx];
-
-                if (period == 0x12) {
-                    // Period 18 - check current char and assign next
+                if (DAT_0046cb94[stateVals[charIdx]] == 'S') {
+                    nextChar = 'D';
+                } else {
                     gs = DAT_0046aa30;
-                    int charIdx = DAT_0046cb90;
+                    charIdx = DAT_0046cb90;
                     ((GSVal*)gs)->FUN_00409f20(charIdx);
                     stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                    if (DAT_0046cb94[stateVals[charIdx]] == 'D') {
-                        nextChar = 'P';
-                    } else {
-                        gs = DAT_0046aa30;
-                        charIdx = DAT_0046cb90;
-                        ((GSVal*)gs)->FUN_00409f20(charIdx);
-                        stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                        if (DAT_0046cb94[stateVals[charIdx]] == 'S') {
-                            nextChar = 'D';
-                        } else {
-                            gs = DAT_0046aa30;
-                            charIdx = DAT_0046cb90;
-                            ((GSVal*)gs)->FUN_00409f20(charIdx);
-                            stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                            if (DAT_0046cb94[stateVals[charIdx]] == 'P') {
-                                nextChar = 'S';
-                            }
-                        }
+                    if (DAT_0046cb94[stateVals[charIdx]] == 'P') {
+                        nextChar = 'S';
                     }
-                } else if (period == 0x13) {
-                    // Period 19 - check captured states
-                    gs = DAT_0046aa30;
-                    idx = ((GameState*)gs)->FindState("D_CAPTURED");
-                    ((GSVal*)gs)->FUN_00409f20(idx);
-                    stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                    if (stateVals[idx] == 0) {
-                        gs = DAT_0046aa30;
-                        int charIdx = DAT_0046cb90;
-                        ((GSVal*)gs)->FUN_00409f20(charIdx);
-                        stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                        if (DAT_0046cb94[stateVals[charIdx]] != 'D') {
-                            nextChar = 'D';
-                            goto set_captured;
-                        }
-                    }
-
-                    gs = DAT_0046aa30;
-                    idx = ((GameState*)gs)->FindState("S_CAPTURED");
-                    ((GSVal*)gs)->FUN_00409f20(idx);
-                    stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                    if (stateVals[idx] == 0) {
-                        gs = DAT_0046aa30;
-                        int charIdx = DAT_0046cb90;
-                        ((GSVal*)gs)->FUN_00409f20(charIdx);
-                        stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                        if (DAT_0046cb94[stateVals[charIdx]] != 'S') {
-                            nextChar = 'S';
-                            goto set_captured;
-                        }
-                    }
-
-                    gs = DAT_0046aa30;
-                    idx = ((GameState*)gs)->FindState("P_CAPTURED");
-                    ((GSVal*)gs)->FUN_00409f20(idx);
-                    stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                    if (stateVals[idx] == 0) {
-                        gs = DAT_0046aa30;
-                        int charIdx = DAT_0046cb90;
-                        ((GSVal*)gs)->FUN_00409f20(charIdx);
-                        stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                        if (DAT_0046cb94[stateVals[charIdx]] != 'P') {
-                            nextChar = 'P';
-                        }
-                    }
-                }
-
-set_captured:
-                if (nextChar != 0) {
-                    char capBuf[28];
-                    FUN_00454510(capBuf, "%c_CAPTURED", (int)nextChar);
-                    gs = DAT_0046aa30;
-                    idx = ((GameState*)gs)->FindState(capBuf);
-                    ((GSVal*)gs)->FUN_00409f20(idx);
-                    stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                    stateVals[idx] = 1;
-
-                    FUN_00454510(capBuf, "%c_IN_DETENTION", (int)nextChar);
-                    gs = DAT_0046aa30;
-                    idx = ((GameState*)gs)->FindState(capBuf);
-                    ((GSVal*)gs)->FUN_00409f20(idx);
-                    stateVals = (int*)((int*)((int)gs + 0x90))[0];
-                    stateVals[idx] = 1;
                 }
             }
+        } else if (period == 0x13) {
+            gs = DAT_0046aa30;
+            i = ((GameState*)gs)->FindState("D_CAPTURED");
+            ((GSVal*)gs)->FUN_00409f20(i);
+            stateVals = (int*)((int*)((int)gs + 0x90))[0];
+            if (stateVals[i] == 0) {
+                gs = DAT_0046aa30;
+                int charIdx = DAT_0046cb90;
+                ((GSVal*)gs)->FUN_00409f20(charIdx);
+                stateVals = (int*)((int*)((int)gs + 0x90))[0];
+                if (DAT_0046cb94[stateVals[charIdx]] != 'D') {
+                    nextChar = 'D';
+                    goto set_captured;
+                }
+            }
+
+            gs = DAT_0046aa30;
+            i = ((GameState*)gs)->FindState("S_CAPTURED");
+            ((GSVal*)gs)->FUN_00409f20(i);
+            stateVals = (int*)((int*)((int)gs + 0x90))[0];
+            if (stateVals[i] == 0) {
+                gs = DAT_0046aa30;
+                int charIdx = DAT_0046cb90;
+                ((GSVal*)gs)->FUN_00409f20(charIdx);
+                stateVals = (int*)((int*)((int)gs + 0x90))[0];
+                if (DAT_0046cb94[stateVals[charIdx]] != 'S') {
+                    nextChar = 'S';
+                    goto set_captured;
+                }
+            }
+
+            gs = DAT_0046aa30;
+            i = ((GameState*)gs)->FindState("P_CAPTURED");
+            ((GSVal*)gs)->FUN_00409f20(i);
+            stateVals = (int*)((int*)((int)gs + 0x90))[0];
+            if (stateVals[i] == 0) {
+                gs = DAT_0046aa30;
+                int charIdx = DAT_0046cb90;
+                ((GSVal*)gs)->FUN_00409f20(charIdx);
+                stateVals = (int*)((int*)((int)gs + 0x90))[0];
+                if (DAT_0046cb94[stateVals[charIdx]] != 'P') {
+                    nextChar = 'P';
+                }
+            }
+        }
+
+set_captured:
+        if (nextChar != 0) {
+            sprintf(capBuf, "%c_CAPTURED", (int)nextChar);
+            gs = DAT_0046aa30;
+            i = ((GameState*)gs)->FindState(capBuf);
+            ((GSVal*)gs)->FUN_00409f20(i);
+            stateVals = (int*)((int*)((int)gs + 0x90))[0];
+            stateVals[i] = 1;
+
+            sprintf(capBuf, "%c_IN_DETENTION", (int)nextChar);
+            gs = DAT_0046aa30;
+            i = ((GameState*)gs)->FindState(capBuf);
+            ((GSVal*)gs)->FUN_00409f20(i);
+            stateVals = (int*)((int*)((int)gs + 0x90))[0];
+            stateVals[i] = 1;
         }
     }
 
 check_back:
-    // Check back button hit
-    if (field_B4 == 0) return 1;
+    if (field_B4 == 0) goto done;
     {
+        SlimeDim backCoords;
+        backCoords.field_0 = ((int*)msg)[7];
+        backCoords.field_4 = ((int*)msg)[8];
         int backSpr = field_B4;
-        int x = ((int*)msg)[7];
-        int y = ((int*)msg)[8];
-        int hit;
         if (((int*)backSpr)[0x24] != 0) {
-            if (((HitRect*)(backSpr + 0x9c))->HitTest(x, y)) {
-                hit = 1;
+            if (((HitRect*)(backSpr + 0x9c))->HitTest(backCoords.field_0, backCoords.field_4)) {
+                hitResult = 1;
             } else {
-                hit = 0;
+                hitResult = 0;
             }
         } else {
-            hit = 0;
-        }
-        if (hit != 0) {
-            PlayMenuSound();
+            hitResult = 0;
         }
     }
+    if (hitResult != 0) {
+        PlayMenuSound();
+    }
 
+done:
     return 1;
 }
 
@@ -1100,10 +1125,10 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     int* stateVals;
     int idx;
 
-    FUN_00454850(line, "%s", label);
+    sscanf(line, "%s", label);
 
     if (strcmp(label, "BACK") == 0) {
-        void* mem = FUN_00454500(0xa0);
+        void* mem = malloc(0xa0);
         void* obj = 0;
         if (mem != 0) {
             FUN_004438a0(mem);
@@ -1115,7 +1140,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     }
 
     if (strcmp(label, "AVAILABILITY") == 0) {
-        count = FUN_00454850(line, "%s %d %s %s %s", label, &period, buf1, buf2, buf3);
+        count = sscanf(line, "%s %d %s %s %s", label, &period, buf1, buf2, buf3);
         if (count < 3 || period > 0x14 || period < 1) {
             ReportUnknownLabel("SCI_SchoolMenu");
         }
@@ -1147,8 +1172,8 @@ int SCI_SchoolMenu::LBLParse(char* line) {
 
     if (strcmp(label, "PALE") == 0) {
         char filename[64];
-        FUN_00454850(line, "%s %s", label, filename);
-        void* mem = FUN_00454500(8);
+        sscanf(line, "%s %s", label, filename);
+        void* mem = malloc(8);
         void* obj = 0;
         if (mem != 0) {
             FUN_0041dbe0(mem);
@@ -1160,13 +1185,13 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     }
 
     if (strcmp(label, "BGSND") == 0) {
-        FUN_00454850(line, "%s %d", label, &field_F0);
+        sscanf(line, "%s %d", label, &field_F0);
         return 0;
     }
 
     if (strcmp(label, "CHAR") == 0) {
-        FUN_00454850(line, "%s %d", label, &period);
-        void* mem = FUN_00454500(0x1a8);
+        sscanf(line, "%s %d", label, &period);
+        void* mem = malloc(0x1a8);
         void* obj = 0;
         if (mem != 0) {
             ((SprInit*)mem)->FUN_00420ce0(period);
@@ -1177,9 +1202,9 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         return 0;
     }
 
-    if (FUN_00454960(label, "OPTION") != 0) {
-        FUN_00454850(line, "%s %d", label, &period);
-        void* mem = FUN_00454500(0x1a8);
+    if (strstr(label, "OPTION") != 0) {
+        sscanf(line, "%s %d", label, &period);
+        void* mem = malloc(0x1a8);
         void* obj = 0;
         if (mem != 0) {
             ((SprInit*)mem)->FUN_00420ce0(period);
@@ -1191,7 +1216,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     }
 
     if (strcmp(label, "OKAY") == 0) {
-        void* mem = FUN_00454500(0x1a8);
+        void* mem = malloc(0x1a8);
         void* obj = 0;
         if (mem != 0) {
             ((SprInit*)mem)->FUN_00420ce0(0);
@@ -1203,7 +1228,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     }
 
     if (strcmp(label, "CANCEL") == 0) {
-        void* mem = FUN_00454500(0x1a8);
+        void* mem = malloc(0x1a8);
         void* obj = 0;
         if (mem != 0) {
             ((SprInit*)mem)->FUN_00420ce0(0);
@@ -1221,14 +1246,14 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         stateVals = (int*)((int*)((int)gs + 0x90))[0];
         if (stateVals[idx] == 0 && field_B4 != 0) {
             FUN_00420d90((void*)field_B4);
-            FUN_00454400((void*)field_B4);
+            free((void*)field_B4);
             field_B4 = 0;
         }
         return 0;
     }
 
-    if (FUN_00454960(label, "CLASS") != 0) {
-        count = FUN_00454850(line, "%s %d %s %d %s %d %s %d", label, &period, buf4, &val1, buf5, &val2, buf6, &val3);
+    if (strstr(label, "CLASS") != 0) {
+        count = sscanf(line, "%s %d %s %d %s %d %s %d", label, &period, buf4, &val1, buf5, &val2, buf6, &val3);
         if (count < 4 || period > 0x14 || period < 1) {
             ReportUnknownLabel("SCI_SchoolMenu");
         }

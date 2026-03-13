@@ -1,17 +1,18 @@
 #include "Memory.h"
 #include "globals.h"
 #include <windows.h>
+#include <stdlib.h>
 
 extern HANDLE DAT_0043eff0;
 extern int (*g_OutOfMemoryCallback)(unsigned int);
 
-// Global operator new/delete that forward to game's memory allocator
+// Global operator new/delete - full game uses CRT malloc/free (0x454500/0x454400)
 void* operator new(unsigned int size) {
-    return AllocateMemory(size);
+    return malloc(size);
 }
 
 void operator delete(void* ptr) {
-    FreeMemory(ptr);
+    free(ptr);
 }
 
 /* Function start: 0x424940 */ /* DEMO ONLY - no full game match */

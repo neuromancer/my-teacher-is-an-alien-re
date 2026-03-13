@@ -65,7 +65,7 @@ def read_assembly(function_name, file_path):
                 return None
         else:
             # Try to find C++ mangled name via comment: ; Class::Method
-            proc_match = re.search(rf'\S+ PROC NEAR\s+;\s*{re.escape(function_name)}', assembly)
+            proc_match = re.search(rf'\S+ PROC NEAR\s+;\s*{re.escape(function_name)}$', assembly, re.MULTILINE)
             if proc_match:
                 # Extract the mangled name from the match
                 mangled = proc_match.group(0).split(' PROC NEAR')[0]

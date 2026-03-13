@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <share.h>
 #include "Memory.h"
@@ -175,8 +176,8 @@ void __fastcall FUN_004494e0(void* self) {}
 void SC_Detention::HandleCombat() {}
 // SC_Detention::HandleInput40 -> SC_Detention.cpp
 void SC_Detention::HandlePractice() {}
-void SC_Detention::ResetAnimations() {}
-void SC_Detention::ProcessPeriodAction(int param) {}
+// SC_Detention::ResetAnimations -> SC_Detention.cpp
+// SC_Detention::ProcessPeriodAction -> SC_Detention.cpp
 
 // ============================================================================
 // SCI_Inventory stubs
@@ -436,8 +437,9 @@ char* __cdecl FUN_00426190(char* name) { return name; }
 #include "T_MenuHotspot.h"
 int T_MenuHotspot::LBLParse(char*) { return 0; }
 
-// --- C++ global ---
-int DAT_00472d58 = 0;
+// --- C++ globals ---
+SpriteAction DAT_00472d58;
+SpriteAction DAT_00472d90;  // needed by IconBar and HotspotAction
 
 // --- Class method stubs for SC_Cinematic ---
 #include "GameLoop.h"
@@ -458,12 +460,16 @@ void Handler::InitFromMessage(SC_Message*) {}
 // VBuffer stubs (CallBlitter, CallBlitter5 are implemented in VBuffer.cpp)
 #include "VBuffer.h"
 
-// PaletteObj::Load stub
+// PaletteObj stubs
 class PaletteObj {
 public:
     void Load(char*);
+    void PlaySound(int);
+    int CheckSound(int);
 };
 void PaletteObj::Load(char*) {}
+void PaletteObj::PlaySound(int) {}
+int PaletteObj::CheckSound(int) { return 0; }
 
 // Non-variadic overloads for SC_SelectHotSpot (different mangling from variadic versions)
 void __cdecl FUN_00425c50(char*) {}
@@ -477,17 +483,12 @@ void __cdecl FUN_00425d70(char*) {}
 extern "C" {
     int DAT_0046a190 = 0;
     void* DAT_0046af08 = 0;
-    int DAT_00472d20 = 0;
 }
+SpriteAction DAT_00472d20;
 
 // extern "C" functions
 extern "C" {
     void FUN_00413e10(void*, char*, char*, ...) {}
-    void FUN_00454400(void*) {}
-    void* FUN_00454500(int) { return 0; }
-    int FUN_00454510(char*, char*, ...) { return 0; }
-    int FUN_00454850(char*, char*, ...) { return 0; }
-    char* FUN_00454960(char* s1, char* s2) { return strstr(s1, s2); }
     /* Function start: 0x426570 */
     char* FUN_00426570(char* s1, char* s2) {
         char* p = strstr(s1, s2);
@@ -797,14 +798,14 @@ void* DAT_00468ef0 = 0;
 char* DAT_0046bacc = 0;
 
 // Class method stubs for SC_Wahoo local classes
-class InputObj { public: void Refresh(int); };
-void InputObj::Refresh(int) {}
+class InputObj { public: int Refresh(int); };
+int InputObj::Refresh(int) { return 0; }
 
 class DetectionObj { public: void Render(); };
 void DetectionObj::Render() {}
 
-class DetMask { public: unsigned int CheckHit(int, int); };
-unsigned int DetMask::CheckHit(int, int) { return 0; }
+class DetMask { public: int CheckHit(int, int); };
+int DetMask::CheckHit(int, int) { return 0; }
 
 // SC_WordSearch virtual method stubs
 #include "SC_WordSearch.h"
@@ -873,7 +874,7 @@ void __fastcall FUN_00421930(void*) {}
 void __fastcall FUN_00425100(void*, int, int, int) {}
 void __fastcall FUN_00427880(void*) {}
 void __fastcall FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int) {}
-int __cdecl FUN_00454920() { return 0; }
+int __cdecl FUN_00454920() { return 0; }  // C++ linkage for SC_Fan
 void __fastcall FUN_004219f0(void*, int, int) {}
 int __fastcall FUN_00421a30(void*) { return 0; }
 int __fastcall FUN_00424f00(void*, int, char*) { return 0; }
@@ -894,3 +895,88 @@ void __fastcall FUN_00407b60(void*) {}
 
 void __cdecl FUN_004344b0() {}
 void __cdecl FUN_00434030(void*, int) {}
+
+// ============================================================================
+// Additional link stubs for TEACHER-FULL.EXE
+// ============================================================================
+
+// IconBar.obj: __stdcall stubs
+void __stdcall FUN_004309a0(int) {}
+// FUN_004309c0 __stdcall version conflicts with extern "C" cdecl version
+// Cannot provide both from same TU
+
+// SpriteRender::RenderAt - SC_FireAlarm wants int, IconBar wants void
+// Provide int version (SC_FireAlarm uses return value)
+class SpriteRender { public: int RenderAt(int, int, int, int); };
+int SpriteRender::RenderAt(int, int, int, int) { return 0; }
+
+// IconBar.obj: FUN_00444e40 with SpriteAction* param (different mangling from void* version)
+void FUN_00444e40(SpriteAction* action) {
+    if (DAT_0046a6ec != 0) {
+        ((GameEngine*)DAT_0046a6ec)->EnqueueAction(action);
+        action->field_34 = 0;
+    }
+}
+
+// IconBar.obj: FUN_00412a50 as __fastcall
+void __fastcall FUN_00412a50(void*, int, char*) {}
+
+// IconBar.obj: SpriteSetup stubs
+class SpriteSetup {
+public:
+    void ConfigRange(int, int, int, int);
+    void ConfigStates(int);
+};
+void SpriteSetup::ConfigRange(int, int, int, int) {}
+void SpriteSetup::ConfigStates(int) {}
+
+// GameEngine.obj: FUN_004047c0
+void __fastcall FUN_004047c0(void*) {}
+
+// HotspotAction.obj: FUN_004036a0
+void* __fastcall FUN_004036a0(void*) { return 0; }
+
+// HotspotAction.obj: GSObj::FUN_00433bb0
+class GSObj { public: int FUN_00433bb0(int*); };
+int GSObj::FUN_00433bb0(int*) { return 0; }
+
+// HotspotAction.obj: DAT_0046aa34 as void* (C++ linkage)
+void* DAT_0046aa34 = 0;
+
+// HotspotAction.obj: FUN_00425bc0
+void __cdecl FUN_00425bc0(char*, char*, int) {}
+
+// HotspotAction.obj: LookupObj::FUN_00432e20
+class LookupObj { public: int FUN_00432e20(char*); };
+int LookupObj::FUN_00432e20(char*) { return 0; }
+
+// SCI_IconBarModule.obj: CursorControl::SetCursor
+class CursorControl { public: void SetCursor(int, int); };
+void CursorControl::SetCursor(int, int) {}
+
+// SCI_IconBarModule.obj: __fastcall stubs
+void __fastcall FUN_00445970(void*) {}
+void __fastcall FUN_004459a0(void*, int, int) {}
+
+// FUN_00443e30: SCI_IconBarModule wants void return, others want int return
+// Can't provide both from same TU - void version unsatisfied from stubs alone
+
+// SCI_IconBarModule.obj + SC_Detention.obj: DAT_00468764
+int DAT_00468764 = 0;
+
+// SC_FireAlarm.obj: SpriteAnim::ResetAnimation
+class SpriteAnim { public: void ResetAnimation(int, int); };
+void SpriteAnim::ResetAnimation(int, int) {}
+
+// SC_FireAlarm.obj: globals
+int DAT_00472bd8 = 0;
+int DAT_004685a0 = 0;
+int DAT_00472bdc = 0;
+
+// SC_FireAlarm.obj: FUN_004279a0
+void __fastcall FUN_004279a0(void*) {}
+
+// FUN_00454920 extern "C" needed by SC_FireAlarm, but conflicts with C++ version above
+
+// SC_WordSearch.obj: FUN_00404350
+void __fastcall FUN_00404350(void*, int, int, int, int, int, int, int, int) {}

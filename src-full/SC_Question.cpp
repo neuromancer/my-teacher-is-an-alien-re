@@ -8,6 +8,7 @@
 #include "ZBufferManager.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 extern int __fastcall FUN_0044c350(void*, int, char*);
 extern void __cdecl FUN_00425cb0(char*, ...);
@@ -15,7 +16,6 @@ extern int __fastcall FUN_00433ae0(void*, int, char*);
 extern int __fastcall FUN_00420a00(void*, int, int);
 extern void __fastcall FUN_00420a50(void*, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
-extern "C" int FUN_00454510(char*, char*, ...);
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
 extern int __fastcall FUN_00443e30(void*);
 extern void __fastcall FUN_00443ed0(void*, int, int);
@@ -23,8 +23,6 @@ extern void __fastcall FUN_00443990(void*);
 extern void* __fastcall FUN_004438a0(void*);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void __cdecl FUN_00444e40(void*);
-extern "C" void FUN_00454400(void*);
-extern "C" void* FUN_00454500(int);
 extern void __fastcall FUN_00425550(void*, int, int);
 extern void* __fastcall FUN_0044c660(void*, int, char*);
 extern void __fastcall FUN_00443b90(void*, int, int);
@@ -66,7 +64,7 @@ SC_Question::SC_Question(int id, int dialog)
 
     if (FUN_0044c350(DAT_0046a6e0, id, label) == 0) {
         FUN_00425cb0("SC_Question::SC_Question missing label %d", id);
-        FUN_00454510(label, "Missing Label %d", questionId);
+        sprintf(label, "Missing Label %d", questionId);
     }
 
     gsIndex = FUN_00433ae0(DAT_0046aa30, 0, DAT_00468108);
@@ -74,7 +72,7 @@ SC_Question::SC_Question(int id, int dialog)
         ShowError("Invalid gamestate %d", gsIndex);
     }
 
-    FUN_00454510(questFile, "mis\\quest%2.2d.mis",
+    sprintf(questFile, "mis\\quest%2.2d.mis",
         *(int*)(*(int*)((char*)DAT_0046aa30 + 0x90) + gsIndex * 4));
 
     FUN_00413e10(this, questFile, "[QUESTION%d]", questionId);
@@ -97,7 +95,7 @@ SC_Question::~SC_Question()
     mc = mouseControl;
     if (mc != 0) {
         FUN_00443990(mc);
-        FUN_00454400(mc);
+        free(mc);
         mouseControl = 0;
     }
 
@@ -128,7 +126,7 @@ SC_Question::~SC_Question()
                         current->data = 0;
                         current->prev = 0;
                         current->next = 0;
-                        FUN_00454400(current);
+                        free(current);
                         queue->current = 0;
                     }
                     queue->current = queue->head;
@@ -140,7 +138,7 @@ SC_Question::~SC_Question()
                 }
             }
         }
-        FUN_00454400(queue);
+        free(queue);
         messageQueue = 0;
     }
     dialogPtr = 0;
@@ -157,7 +155,7 @@ void SC_Question::Update(int x, int y)
     }
 
     if (*(int*)(*(int*)((char*)gs + 0x90) + 0x10) == 1) {
-        FUN_00454510(DAT_0046aa00, DAT_004690e4, questionId);
+        sprintf(DAT_0046aa00, DAT_004690e4, questionId);
         FUN_00404230(DAT_0046aa24, 0, DAT_0046aa00, 0x22b, y + 0x17, 10000, -1);
     }
 
@@ -301,7 +299,7 @@ void SC_Question::Finalize()
                 current->data = 0;
                 current->prev = 0;
                 current->next = 0;
-                FUN_00454400(current);
+                free(current);
                 queue->current = 0;
             }
             queue->current = queue->head;
@@ -335,7 +333,7 @@ int SC_Question::LBLParse(char* param_1)
 
     if (strcmp(keyword, "OVERLAYS") == 0) {
         if (mouseControl == 0) {
-            mem = FUN_00454500(0xa0);
+            mem = malloc(0xa0);
             void* mc = 0;
             if (mem != 0) {
                 mc = FUN_004438a0(mem);
@@ -346,14 +344,14 @@ int SC_Question::LBLParse(char* param_1)
     }
     else if (strncmp(keyword, "OVE", 3) == 0) {
         if (mouseControl == 0) {
-            mem = FUN_00454500(0xa0);
+            mem = malloc(0xa0);
             void* mc = 0;
             if (mem != 0) {
                 mc = FUN_004438a0(mem);
             }
             mouseControl = mc;
         }
-        mem = FUN_00454500(0xf8);
+        mem = malloc(0xf8);
         sprite = 0;
         if (mem != 0) {
             sprite = FUN_0044c660(mem, 0, 0);
@@ -365,7 +363,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "STANDARD_SPR") == 0) {
         sscanf(param_1, " %s %d %d", keyword, &id, &val);
         if (mouseControl == 0) {
-            mem = FUN_00454500(0xa0);
+            mem = malloc(0xa0);
             void* mc = 0;
             if (mem != 0) {
                 mc = FUN_004438a0(mem);
@@ -373,7 +371,7 @@ int SC_Question::LBLParse(char* param_1)
             mouseControl = mc;
         }
         sprintf(buf1, "questions\\idi%4.4d.smk", questionId);
-        mem = FUN_00454500(0xf8);
+        mem = malloc(0xf8);
         sprite = 0;
         if (mem != 0) {
             sprite = FUN_0044c660(mem, 0, (char*)buf1);
@@ -407,13 +405,13 @@ int SC_Question::LBLParse(char* param_1)
         if (result != 2) {
             FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
             action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x17, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -443,7 +441,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -484,13 +482,13 @@ int SC_Question::LBLParse(char* param_1)
         if (result != 2) {
             FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
             action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x13, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -520,7 +518,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -561,13 +559,13 @@ int SC_Question::LBLParse(char* param_1)
         if (result != 2) {
             FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
             action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x18, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -597,7 +595,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -638,13 +636,13 @@ int SC_Question::LBLParse(char* param_1)
         if (result != 2) {
             FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
             action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x0f, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -674,7 +672,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -715,13 +713,13 @@ int SC_Question::LBLParse(char* param_1)
         if (result != 2) {
             FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
             action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x10, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -751,7 +749,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -808,7 +806,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "GAMESTATE") == 0) {
         result = sscanf(param_1, "%s %s %s %d", keyword, buf1, buf2, &id);
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -819,7 +817,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             messageQueue = (Queue*)queue;
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         if (mem == 0) {
             action = 0;
         } else {
@@ -854,7 +852,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -893,7 +891,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "GIVELATE") == 0) {
         sscanf(param_1, "%s %s %s %d", keyword, buf1, buf2, &id);
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -904,7 +902,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             messageQueue = (Queue*)queue;
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         if (mem == 0) {
             action = 0;
         } else {
@@ -929,7 +927,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -968,7 +966,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "GIVECUT") == 0) {
         sscanf(param_1, "%s %s %s %d", keyword, buf1, buf2, &id);
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -979,7 +977,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             messageQueue = (Queue*)queue;
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         if (mem == 0) {
             action = 0;
         } else {
@@ -1004,7 +1002,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -1043,7 +1041,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "GIVELATE") == 0) {
         sscanf(param_1, "%s %s %s %d", keyword, buf1, buf2, &id);
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -1054,7 +1052,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             messageQueue = (Queue*)queue;
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         if (mem == 0) {
             action = 0;
         } else {
@@ -1079,7 +1077,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -1121,7 +1119,7 @@ int SC_Question::LBLParse(char* param_1)
             FUN_00425c50("Error in ThotsLvl.cpp: %s in parse file is incomplete");
         }
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -1132,7 +1130,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             messageQueue = (Queue*)queue;
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         if (mem == 0) {
             action = 0;
         } else {
@@ -1157,7 +1155,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -1192,7 +1190,7 @@ int SC_Question::LBLParse(char* param_1)
         } else {
             FUN_00406fd0(queue, 0, (int)action);
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         if (mem == 0) {
             action = 0;
         } else {
@@ -1217,7 +1215,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -1254,14 +1252,14 @@ int SC_Question::LBLParse(char* param_1)
         }
     }
     else if (strcmp(keyword, "MESSAGE") == 0) {
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
             action = FUN_00444a40(mem, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
         FUN_00445450(action, this);
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -1291,7 +1289,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {
@@ -1330,7 +1328,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "PLAYSOUND") == 0) {
         sscanf(param_1, " %s %d", keyword, &id);
         if (messageQueue == 0) {
-            mem = FUN_00454500(0x10);
+            mem = malloc(0x10);
             queue = 0;
             if (mem != 0) {
                 ((int*)mem)[3] = 0;
@@ -1341,7 +1339,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             messageQueue = (Queue*)queue;
         }
-        mem = FUN_00454500(0x38);
+        mem = malloc(0x38);
         if (mem == 0) {
             action = 0;
         } else {
@@ -1366,7 +1364,7 @@ int SC_Question::LBLParse(char* param_1)
                         if (action == 0) {
                             FUN_00425c50("queue fault 0112");
                         }
-                        mem = FUN_00454500(0xc);
+                        mem = malloc(0xc);
                         if (mem == 0) {
                             action = 0;
                         } else {

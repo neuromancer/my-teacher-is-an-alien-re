@@ -153,7 +153,6 @@ void Parser::FindKey(unsigned char *param_1) {
   }
 }
 
-extern "C" char* FUN_00454960(char*, char*);
 extern "C" char* FUN_00426570(char*, char*);
 
 /* Function start: 0x413810 */
@@ -168,7 +167,7 @@ int Parser::GetTokenType(char* line) {
         return 0;
     }
 
-    closeTag = FUN_00454960(line, ">>");
+    closeTag = strstr(line, ">>");
     len = (int)closeTag - (int)openTag;
     if (closeTag == 0 || len <= 0) {
         return 0;

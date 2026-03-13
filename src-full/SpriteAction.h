@@ -7,8 +7,8 @@
 struct SlimeDim {
     int field_0;
     int field_4;
-    SlimeDim() { field_0 = 0; field_4 = 0; }
-    ~SlimeDim() {}
+    SlimeDim() {}
+    ~SlimeDim();
 };
 
 // SpriteAction (aka SpriteAction) - Chainable action/message struct

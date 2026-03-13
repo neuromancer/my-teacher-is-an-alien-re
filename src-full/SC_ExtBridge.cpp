@@ -5,11 +5,10 @@
 #include "Memory.h"
 #include "LinkedList.h"
 #include <string.h>
+#include <stdlib.h>
 
 extern void __fastcall FUN_0041dc10(void*);
 extern void __fastcall FUN_004309a0(void*, int, int);
-extern "C" void* FUN_00454500(int);
-extern "C" void FUN_00454400(void*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00425a90(int, int);
 extern void __fastcall FUN_0044bac0(void*, int, int, int);
@@ -94,7 +93,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
                 void* obj = FUN_00403520(list1);
                 if (obj != 0) {
                     *(int*)obj = 0x461030;
-                    FUN_00454400(obj);
+                    free(obj);
                 }
             }
         }
@@ -115,7 +114,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
                         (*(void (__fastcall **)(void*, int, int))(*(int*)sub))(sub, 0, 1);
                         *(int*)((int)item + 8) = 0;
                     }
-                    FUN_00454400(item);
+                    free(item);
                 }
             }
         }

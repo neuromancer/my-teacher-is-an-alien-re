@@ -9,13 +9,13 @@
 #include "Sound.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 extern void FUN_00444E40(SpriteAction*);   // SpriteAction method
 extern void __stdcall FUN_004309C0(int*);  // handler call
 extern void __cdecl FUN_00425d70(char*, ...); // WriteToLog
 extern void __cdecl FUN_00425c50(char*, ...); // ShowError
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern "C" void* FUN_00454500(int);        // AllocateMemory
 extern void* __fastcall FUN_00425480(void*); // SoundList default constructor
 extern void __fastcall FUN_004309a0(void*, int, int); // handler init
 extern void __cdecl FUN_00413e70(void*, int, char*); // Sprite add to parent
@@ -230,7 +230,7 @@ int Engine::LBLParse(char* line) {
             Engine::field_0xA8 = 0;
         }
         Engine::m_combatBonus1 = local_14;
-        Engine::field_0xA8 = (int*)FUN_00454500(local_14 * 4);
+        Engine::field_0xA8 = (int*)malloc(local_14 * 4);
         memset(Engine::field_0xA8, 0, Engine::m_combatBonus1 * 4);
     } else if (strcmp(label, "ACTION") == 0) {
         sscanf(line, " %s %d %d ", label, &local_14, &local_1c);

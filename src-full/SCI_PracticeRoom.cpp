@@ -5,10 +5,9 @@
 #include "LinkedList.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern "C" void FUN_00454400(void*);
-extern "C" void* FUN_00454500(int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00425a90(int, int);
 
@@ -145,13 +144,13 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
     pVar = *(void**)((int)this + 0xAC);
     if (pVar != 0) {
         FUN_00443990(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xAC) = 0;
     }
     pVar = *(void**)((int)this + 0xB0);
     if (pVar != 0) {
         FUN_0044c740(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xB0) = 0;
     }
     int* piVar = *(int**)((int)this + 0xB8);
@@ -162,23 +161,23 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
                 pVar = FUN_0042bc50(piVar);
                 if (pVar != 0) {
                     FUN_00429c10(pVar);
-                    FUN_00454400(pVar);
+                    free(pVar);
                 }
             }
         }
-        FUN_00454400(piVar);
+        free(piVar);
         *(void**)((int)this + 0xB8) = 0;
     }
     pVar = *(void**)((int)this + 0xB4);
     if (pVar != 0) {
         FUN_0041dc10(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xB4) = 0;
     }
     pVar = *(void**)((int)this + 0xC8);
     if (pVar != 0) {
         FUN_00425490(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xC8) = 0;
     }
     int* pBC = (int*)((int)this + 0xBC);
@@ -187,7 +186,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
         void* pSprite = (void*)*pBC;
         if (pSprite != 0) {
             FUN_00420d90(pSprite);
-            FUN_00454400(pSprite);
+            free(pSprite);
             *pBC = 0;
         }
         pBC++;
@@ -390,10 +389,10 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         void* pal = *(void**)((int)this + 0xB4);
         if (pal != 0) {
             FUN_0041dc10(pal);
-            FUN_00454400(pal);
+            free(pal);
             *(void**)((int)this + 0xB4) = 0;
         }
-        void* mem = FUN_00454500(8);
+        void* mem = malloc(8);
         void* newPal = 0;
         if (mem != 0) {
             newPal = FUN_0041dbe0(mem);
@@ -406,7 +405,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             LinkedList* newList = new LinkedList();
             *(LinkedList**)((int)this + 0xB8) = newList;
         }
-        void* mem = FUN_00454500(0xC0);
+        void* mem = malloc(0xC0);
         int* piVar6 = 0;
         if (mem != 0) {
             piVar6 = (int*)FUN_00429b60(mem, 0, local_18, this);
@@ -441,7 +440,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         }
     } else if (strcmp(local_3c, "CHAR") == 0) {
         sscanf(param_1, "%s %d", local_3c, &local_18);
-        void* mem = FUN_00454500(0x1A8);
+        void* mem = malloc(0x1A8);
         void* piVar6 = 0;
         if (mem != 0) {
             piVar6 = FUN_00420ce0(mem, 0, local_18);
@@ -450,7 +449,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         FUN_00413e70(piVar6, (int)this, 0);
     } else if (strcmp(local_3c, "AMBIENT") == 0) {
         if (*(int*)((int)this + 0xAC) == 0) {
-            void* mem = FUN_00454500(0xA0);
+            void* mem = malloc(0xA0);
             void* amb = 0;
             if (mem != 0) {
                 amb = FUN_004438a0(mem);
@@ -460,7 +459,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         FUN_00413e70(*(void**)((int)this + 0xAC), (int)this, 0);
     } else if (strcmp(local_3c, "INTRO") == 0) {
         if (*(int*)((int)this + 0xB0) == 0) {
-            void* mem = FUN_00454500(0xF8);
+            void* mem = malloc(0xF8);
             void* spr = 0;
             if (mem != 0) {
                 spr = FUN_0044c660(mem, 0, (char*)0);

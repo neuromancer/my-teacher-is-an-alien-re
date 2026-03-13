@@ -12,7 +12,6 @@ extern void __fastcall FUN_00444af0(void*);
 extern void __fastcall FUN_00424ee0(void*);
 extern void __fastcall FUN_00421930(void*);
 extern void __fastcall FUN_00410fd0(void*);
-extern "C" void FUN_00454400(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 
 extern "C" int FUN_00425fa0(void*);
@@ -21,7 +20,6 @@ extern void __fastcall FUN_004309a0(void*, int, int);
 extern void __fastcall FUN_004309c0(void*, int, void*);
 extern void __cdecl FUN_00425a90(int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
-extern "C" void* FUN_00454500(int);
 extern void __cdecl FUN_00425d70(char*, ...);
 extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00444e40(void*);
@@ -113,7 +111,7 @@ void SC_Fan::Init(SC_Message* msg) {
         *target = (int)ptr;
     }
 
-    mem = FUN_00454500(0xC);
+    mem = malloc(0xC);
     ptr = 0;
     if (mem != 0) {
         FUN_00421920(mem);
@@ -130,49 +128,49 @@ void SC_Fan::Cleanup(int flag) {
     ptr = field_C4;
     if (ptr != 0) {
         FUN_0041dc10(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_C4 = 0;
     }
 
     ptr = field_C8;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_C8 = 0;
     }
 
     ptr = field_CC;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_CC = 0;
     }
 
     ptr = field_E0;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_E0 = 0;
     }
 
     ptr = field_E4;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_E4 = 0;
     }
 
     ptr = field_E8;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_E8 = 0;
     }
 
     ptr = field_EC;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_EC = 0;
     }
 
@@ -184,35 +182,35 @@ void SC_Fan::Cleanup(int flag) {
     ptr = field_C0;
     if (ptr != 0) {
         FUN_0044c740(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_C0 = 0;
     }
 
     ptr = field_144;
     if (ptr != 0) {
         FUN_00410fd0(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_144 = 0;
     }
 
     ptr = field_BC;
     if (ptr != 0) {
         FUN_00421930(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_BC = 0;
     }
 
     ptr = field_AC;
     if (ptr != 0) {
         FUN_00444af0(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_AC = 0;
     }
 
     ptr = field_A8;
     if (ptr != 0) {
         FUN_00444af0(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_A8 = 0;
     }
 
@@ -220,7 +218,7 @@ void SC_Fan::Cleanup(int flag) {
         ptr = field_198[0xb - i];
         if (ptr != 0) {
             FUN_00424ee0(ptr);
-            FUN_00454400(ptr);
+            free(ptr);
             field_198[0xb - i] = 0;
         }
     }
@@ -303,7 +301,7 @@ void SC_Fan::ProcessRound() {
             ptr = field_A8;
             if (ptr != 0) {
                 FUN_00444af0(ptr);
-                FUN_00454400(ptr);
+                free(ptr);
                 field_A8 = 0;
             }
             {
@@ -316,7 +314,7 @@ void SC_Fan::ProcessRound() {
             ptr = field_A8;
             if (ptr != 0) {
                 FUN_00444af0(ptr);
-                FUN_00454400(ptr);
+                free(ptr);
                 field_A8 = 0;
             }
             {
@@ -346,13 +344,13 @@ void SC_Fan::ProcessRound() {
             ptr = field_AC;
             if (ptr != 0) {
                 FUN_00444af0(ptr);
-                FUN_00454400(ptr);
+                free(ptr);
                 field_AC = 0;
             }
             ptr = field_A8;
             if (ptr != 0) {
                 FUN_00444af0(ptr);
-                FUN_00454400(ptr);
+                free(ptr);
                 field_A8 = 0;
             }
             return;
@@ -381,7 +379,7 @@ void SC_Fan::ProcessRound() {
     ptr = field_A8;
     if (ptr != 0) {
         FUN_00444af0(ptr);
-        FUN_00454400(ptr);
+        free(ptr);
         field_A8 = 0;
     }
 }
@@ -644,7 +642,7 @@ int SC_Fan::LBLParse(char* param_1) {
         pal->Load(local_b8);
     }
     else if (strcmp(local_38, "BACKGROUND_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -653,7 +651,7 @@ int SC_Fan::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "STOP_SWITCH_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -662,7 +660,7 @@ int SC_Fan::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "TL_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -671,7 +669,7 @@ int SC_Fan::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "BL_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -680,7 +678,7 @@ int SC_Fan::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "TR_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -689,7 +687,7 @@ int SC_Fan::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "BR_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -698,7 +696,7 @@ int SC_Fan::LBLParse(char* param_1) {
         FUN_00413e70(spr, (int)this, (char*)0);
     }
     else if (strcmp(local_38, "CONSOLE_SPRITE") == 0) {
-        void* mem = FUN_00454500(0xf8);
+        void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
             spr = FUN_0044c660(mem, 0, (char*)0);
@@ -709,7 +707,7 @@ int SC_Fan::LBLParse(char* param_1) {
     else if (strcmp(local_38, "NOISE_METER_VBUFFER") == 0) {
         sscanf(param_1, " %s %s %d %d %d ", local_38, local_b8,
                &dim_170.field_0, &dim_170.field_4, &dim_168.field_4);
-        void* mem = FUN_00454500(0x30);
+        void* mem = malloc(0x30);
         void* obj = 0;
         if (mem != 0) {
             char* path = FUN_00426190(local_b8);
@@ -752,7 +750,7 @@ int SC_Fan::LBLParse(char* param_1) {
             FUN_00444d90(4, field_1C4, handlerId, moduleParam, 0x1b, 1, 0, 0, 0, 0);
         }
         else {
-            void* mem = FUN_00454500(0x10);
+            void* mem = malloc(0x10);
             void* smp = 0;
             if (mem != 0) {
                 FUN_00424ed0(mem);
@@ -763,7 +761,7 @@ int SC_Fan::LBLParse(char* param_1) {
             int err = FUN_00424f00(smp, 0, path);
             if (err != 0 && field_198[local_18] != 0) {
                 FUN_00424ee0(field_198[local_18]);
-                FUN_00454400(field_198[local_18]);
+                free(field_198[local_18]);
                 field_198[local_18] = 0;
             }
         }
@@ -772,7 +770,7 @@ int SC_Fan::LBLParse(char* param_1) {
         int ret = sscanf(param_1, " %s %s ", local_38, local_b8);
         if (ret == 2) {
             if (strcmp(local_b8, "ROCKTHROWER2") == 0) {
-                void* mem = FUN_00454500(200);
+                void* mem = malloc(200);
                 if (mem == 0) {
                     DAT_00468ef0 = 0;
                 } else {

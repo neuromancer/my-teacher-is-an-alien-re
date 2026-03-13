@@ -103,7 +103,6 @@ public:
 
 extern void __cdecl FUN_004344b0();
 extern void __cdecl FUN_00434030(void*, int);
-extern "C" void FUN_00454400(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_004218c0(void*);
 
@@ -614,11 +613,11 @@ void CleanupMemoryCache() {
         int* freeNode = (int*)cache->field_10;
         while (freeNode != 0) {
             int* next = (int*)freeNode[0];
-            FUN_00454400(freeNode);
+            free(freeNode);
             freeNode = next;
         }
         cache->field_10 = 0;
-        FUN_00454400(cache);
+        free(cache);
         DAT_0046b78c = 0;
     }
 }

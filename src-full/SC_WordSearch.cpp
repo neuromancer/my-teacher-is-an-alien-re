@@ -4,10 +4,9 @@
 #include "Sample.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern "C" void FUN_00454400(void*);
-extern "C" void* FUN_00454500(int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 
 extern void __fastcall FUN_004218c0(void*);
@@ -83,37 +82,37 @@ int SC_WordSearch::ShutDown(SC_Message* msg) {
     pVar = *(void**)((int)this + 0xAC);
     if (pVar != 0) {
         FUN_0044c740(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xAC) = 0;
     }
     pVar = *(void**)((int)this + 0xA8);
     if (pVar != 0) {
         FUN_0041dc10(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xA8) = 0;
     }
     pVar = *(void**)((int)this + 0xB8);
     if (pVar != 0) {
         FUN_00424ee0(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xB8) = 0;
     }
     pVar = *(void**)((int)this + 0xB0);
     if (pVar != 0) {
         FUN_00424ee0(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xB0) = 0;
     }
     pVar = *(void**)((int)this + 0xB4);
     if (pVar != 0) {
         FUN_00424ee0(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xB4) = 0;
     }
     pVar = *(void**)((int)this + 0xBC);
     if (pVar != 0) {
         FUN_00424ee0(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0xBC) = 0;
     }
     pVar = *(void**)((int)this + 0x830);
@@ -124,25 +123,25 @@ int SC_WordSearch::ShutDown(SC_Message* msg) {
     pVar = *(void**)((int)this + 0x820);
     if (pVar != 0) {
         FUN_0044c740(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0x820) = 0;
     }
     pVar = *(void**)((int)this + 0x824);
     if (pVar != 0) {
         FUN_0044c740(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0x824) = 0;
     }
     pVar = *(void**)((int)this + 0x828);
     if (pVar != 0) {
         FUN_0044c740(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0x828) = 0;
     }
     pVar = *(void**)((int)this + 0x82C);
     if (pVar != 0) {
         FUN_0044c740(pVar);
-        FUN_00454400(pVar);
+        free(pVar);
         *(void**)((int)this + 0x82C) = 0;
     }
     if ((int)msg != 0) {
