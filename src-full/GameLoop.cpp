@@ -1206,3 +1206,5 @@ Handler* GameLoop::GetOrCreateHandler(int command) {
 }
 
 
+
+int GameLoop::ProcessEvents(int) { return 0; }

@@ -913,3 +913,13 @@ void SCI_Inventory::Serialize(void* param) {
     DAT_0046a6e4 = ((SCI_Inventory*)self)->FindItem(handle);
     fread((char*)DAT_0046a6e4 + 0x90, 4, 1, (FILE*)fp);
 }
+
+// Stubs (moved from stubs.cpp)
+InvSlotItem::~InvSlotItem() {}
+InvPanel::InvPanel() {}
+InvPanel::~InvPanel() {}
+
+void SCI_Inventory::DisplayPanels(int param) {}
+void SCI_Inventory::ProcessInventory() {}
+void* SCI_Inventory::FindItem(int itemID) { return 0; }
+int* SCI_Inventory::FindItemInList(int itemID) { return 0; }

@@ -514,3 +514,6 @@ void SC_Detention::SetupDetentionState() {
     sprintf(field_1A4, "%c_LATE_CUT", periodChar);
     sprintf(field_1C4, "%c_IN_DETENTION", periodChar);
 }
+
+void SC_Detention::HandleCombat() {}
+void SC_Detention::HandlePractice() {}

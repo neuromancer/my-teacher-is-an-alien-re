@@ -21,6 +21,8 @@ public:
     SlimeTable();
     ~SlimeTable();
     void Init(int);
+    void FUN_00425620(int, char*, int);
+    void FUN_004254a0(int);
 };
 
 // TimerWrapper = TimeOut (ctor 0x421920 wraps 0x421960, dtor 0x421930)
@@ -286,3 +288,16 @@ int SC_Slime::Exit(SC_Message* msg)
     }
     return 1;
 }
+
+// Stubs (moved from stubs.cpp)
+void SC_Slime::Update(int, int) {}
+
+SlotPair::SlotPair() { field_0 = 0; field_4 = 0; }
+
+int DAT_00468bbc = 0;
+
+SlimeTable::SlimeTable() {}
+SlimeTable::~SlimeTable() {}
+void SlimeTable::Init(int) {}
+void SlimeTable::FUN_00425620(int, char*, int) {}
+void SlimeTable::FUN_004254a0(int) {}

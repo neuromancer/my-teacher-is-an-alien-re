@@ -485,3 +485,6 @@ int SC_WordSearch::Exit(SC_Message* msg) {
     }
     return 1;
 }
+
+int SC_WordSearch::AddMessage(SC_Message*) { return 0; }
+int SC_WordSearch::LBLParse(char*) { return 0; }

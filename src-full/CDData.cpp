@@ -244,3 +244,5 @@ int CDData::ResolvePath(char* param_1) {
 
     return 1;
 }
+
+CDData::~CDData() {}

@@ -60,3 +60,5 @@ void Handler::Serialize(void* param) {
 
 void Handler::OnInput(void* param) {
 }
+
+void Handler::InitFromMessage(SC_Message*) {}

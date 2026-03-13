@@ -587,3 +587,5 @@ void Sprite::Dump()
     }
     WriteToMessageLog("END");
 }
+
+void Sprite::ResetAnimation(int param1, int param2) {}

@@ -354,3 +354,10 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
 
   return (Parser*)result;
 }
+
+// Stubs (moved from stubs.cpp)
+void Parser::HandleToken(int tokenType, char* line) {}
+void Parser::BeginComment(char* line, int flag) {}
+int Parser::EndComment() { return 0; }
+int Parser::DoCommentsMatch(char* line) { return 0; }
+void Parser::SubstituteVars(char* src, char* dst) {}

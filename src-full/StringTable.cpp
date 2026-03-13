@@ -291,3 +291,5 @@ done:
     }
     return found;
 }
+
+void StringTable::TestStrings(void* textMgr, int count) {}
