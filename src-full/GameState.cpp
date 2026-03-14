@@ -1,8 +1,27 @@
 #include "GameState.h"
+#include "ObjectPool.h"
 #include "string.h"
 #include "Memory.h"
 #include <stdio.h>
 #include <string.h>
+
+// Hash table entry for GameState label storage
+struct GSHashEntry {
+    GSHashEntry* next;  // 0x00
+    int bucketIndex;    // 0x04
+    char* label;        // 0x08 (value)
+    int stateIndex;     // 0x0C (key)
+};
+
+// Hash function for label strings (from original binary)
+static unsigned int HashLabel(char* str) {
+    unsigned int hash = 0;
+    while (*str) {
+        hash = hash * 33 + (unsigned char)*str;
+        str++;
+    }
+    return hash;
+}
 
 char s_COMBATS[] = "COMBATS";
 char s_duncan[] = "duncan";
@@ -84,18 +103,27 @@ void GameState::Serialize(int mode)
 void GameState::SetMaxStates(int count)
 {
     if (stateValues != 0) {
-        ShowError("GameState::SetMaxStates1");
-    }
-    if (stateLabels != 0) {
-        ShowError("GameState::SetMaxStates2");
+        ShowError("GameState::SetMaxStates - Already Called");
     }
     maxStates = count;
     stateValues = new int[count];
     ClearStates();
-    stateLabels = new char*[maxStates];
-    for (int i = 0; i < maxStates; i++) {
-        stateLabels[i] = 0;
+
+    ObjectPool* pool = new ObjectPool(0x11, count);
+
+    if (count != 0xa) {
+        if (pool->memory != 0) {
+            FreeMemory(pool->memory);
+            pool->memory = 0;
+        }
+        int numBuckets = count + (int)((double)count * 0.3);
+        int* buckets = (int*)AllocateMemory(numBuckets * 4);
+        memset(buckets, 0, numBuckets * 4);
+        pool->memory = buckets;
+        pool->size = numBuckets;
     }
+
+    stateLabels = (char**)pool;
 }
 
 /* Function start: 0x433710 */
@@ -116,8 +144,38 @@ int GameState::LBLParse(char* line)
         SetMaxStates(index);
     } else if (strcmp(keyword, "LABEL") == 0) {
         numParsed = sscanf(line, "%s %d %s %d", keyword, &index, labelName, &defaultValue);
-        stateLabels[index] = new char[0x20];
-        strcpy(stateLabels[index], labelName);
+
+        // Allocate and copy label string
+        char* newLabel = new char[strlen(labelName) + 1];
+        strcpy(newLabel, labelName);
+
+        // Hash the label string and insert into ObjectPool hash table
+        ObjectPool* pool = (ObjectPool*)stateLabels;
+        unsigned int h = HashLabel(newLabel) % pool->size;
+
+        // Search for existing entry with same label
+        GSHashEntry* entry = 0;
+        if (pool->memory != 0) {
+            entry = ((GSHashEntry**)pool->memory)[h];
+            while (entry != 0) {
+                if (strcmp(entry->label, newLabel) == 0) break;
+                entry = entry->next;
+            }
+        }
+
+        if (entry == 0) {
+            // Not found - allocate new entry
+            if (pool->memory == 0) {
+                pool->MemoryPool_Allocate(pool->size, 1);
+            }
+            entry = (GSHashEntry*)pool->Allocate_2();
+            entry->bucketIndex = h;
+            entry->next = ((GSHashEntry**)pool->memory)[h];
+            ((GSHashEntry**)pool->memory)[h] = entry;
+        }
+        entry->label = newLabel;
+        entry->stateIndex = index;
+
         if (numParsed > 3) {
             if (index < 0 || maxStates - 1 < index) {
                 ShowError("Invalid gamestate %d", index);
@@ -134,36 +192,108 @@ int GameState::LBLParse(char* line)
 }
 
 /* Function start: 0x433A20 */
+// Full game stateLabels (0x94) is a hash table:
+//   [0]=buckets, [4]=numBuckets, [8]=count
+// Node: [0]=next, [4]=bucketIndex, [8]=value(char*), [C]=key
 char *GameState::GetState(int stateIndex)
 {
-    if ((stateIndex > 0) && (maxStates <= stateIndex)) {
-        ShowError("GameState Error  #%d", 1);
+    if (stateIndex < 0 || maxStates - 1 < stateIndex) {
+        ShowError("Invalid gamestate %d", stateIndex);
     }
-    return stateLabels[stateIndex];
-}
 
-/* Helper used by FindLabel - demo equivalent was at 0x420940 */
-int GameState::FindState(char* stateName)
-{
-    for (int i = 0; i < maxStates; i++) {
-        if (stateLabels[i]) {
-            if (strstr(stateLabels[i], stateName)) {
-                if (strlen(stateLabels[i]) == strlen(stateName)) {
-                    return i;
-                }
-            }
+    int* hashTable = (int*)stateLabels;
+    int* cursor;
+    int* node;
+
+    // ADC pattern: cursor = (count < 1) ? 0 : -1
+    cursor = 0;
+    if (hashTable[2] >= 1) {
+        cursor = (int*)-1;
+    }
+
+loop:
+    if (cursor == 0) {
+        return 0;
+    }
+    node = (int*)cursor;
+    if (cursor == (int*)-1) {
+        // Find first non-empty bucket
+        int i = 0;
+        int numBuckets = hashTable[1];
+        if (numBuckets == 0) goto found_node;
+        int* buckets = (int*)hashTable[0];
+    scan_buckets:
+        node = (int*)buckets[i];
+        if (node != 0) goto found_node;
+        i++;
+        if ((unsigned int)i < (unsigned int)numBuckets) goto scan_buckets;
+    }
+
+found_node:
+    {
+        int bIdx;
+        int numBuckets;
+        int* next = (int*)node[0];
+        if (next != 0) goto advance;
+        bIdx = node[1];
+        numBuckets = hashTable[1];
+        bIdx++;
+        if ((unsigned int)bIdx >= (unsigned int)numBuckets) goto advance;
+        { int* ptr = (int*)hashTable[0] + bIdx;
+    scan_next:
+        next = (int*)*ptr;
+        if (next != 0) goto advance;
+        ptr++;
+        bIdx++;
+        if ((unsigned int)bIdx < (unsigned int)numBuckets) goto scan_next;
+        }
+
+    advance:
+        ;
+        char* value = (char*)node[2];
+        cursor = next;
+        if (node[3] == stateIndex) {
+            return value;
         }
     }
-    return -1;
+    goto loop;
+}
+
+// FindState delegates to FindLabel (hash lookup)
+int GameState::FindState(char* stateName)
+{
+    return FindLabel(stateName);
 }
 
 /* Function start: 0x433AE0 */
 int GameState::FindLabel(char* name) {
-    int idx = FindState(name);
-    if (idx == -1) {
-        ShowError("GameState::StateIndex()-Invalid gamestate = '%s'", name);
+    ObjectPool* pool = (ObjectPool*)stateLabels;
+
+    // Inline hash: hash = hash * 33 + char
+    unsigned int hash = 0;
+    char* p = name;
+    while (*p) {
+        hash = hash * 33 + (unsigned char)*p;
+        p++;
     }
-    return idx;
+
+    unsigned int h = hash % pool->size;
+
+    GSHashEntry* entry = 0;
+    if (pool->memory != 0) {
+        entry = ((GSHashEntry**)pool->memory)[h];
+        while (entry != 0) {
+            if (strcmp(entry->label, name) == 0) break;
+            entry = entry->next;
+        }
+    }
+
+    if (entry == 0) {
+        ShowError("GameState::StateIndex()-Invalid gamestate = '%s'", name);
+    } else {
+        h = entry->stateIndex;
+    }
+    return h;
 }
 
 /* Function start: 0x433B90 */

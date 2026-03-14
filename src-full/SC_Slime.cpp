@@ -1,4 +1,5 @@
 #include "SC_Slime.h"
+#include "InputManager.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
 #include "Palette.h"
@@ -249,8 +250,7 @@ void SC_Slime::ResetSprites()
 
     extern void* DAT_0046aa08;
     if (DAT_0046aa08 != 0) {
-        extern int __fastcall FUN_00426ce0(void*);
-        FUN_00426ce0(DAT_0046aa08);
+        ((InputManager*)DAT_0046aa08)->Refresh(1);
     }
 
     if (spriteBC != 0) {

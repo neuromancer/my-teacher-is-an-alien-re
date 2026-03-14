@@ -293,8 +293,7 @@ void __fastcall FUN_00426a90(void* self) {
 }
 
 /* Function start: 0x426CE0 */
-int __fastcall FUN_00426ce0(void* self) {
-    InputManager* input;
+int InputManager::Refresh(int) {
     InputState* mouse;
     unsigned int buttons;
 
@@ -302,12 +301,11 @@ int __fastcall FUN_00426ce0(void* self) {
         return 1;
     }
 
-    input = (InputManager*)self;
-    input->PollMouse(input->pMouseLocal);
-    input->PollJoystick(input->pJoystick);
-    FUN_00426a90(self);
+    PollMouse(pMouseLocal);
+    PollJoystick(pJoystick);
+    FUN_00426a90(this);
 
-    mouse = input->pMouse;
+    mouse = pMouse;
     buttons = 0;
     if (mouse != 0) {
         buttons = mouse->buttons & 1;
@@ -323,15 +321,15 @@ int __fastcall FUN_00426ce0(void* self) {
         if (buttons == 0 && (mouse->prevButtons & 1) != 0) {
             buttons = g_leftClickTimer.Update();
             if (buttons < (unsigned int)g_DoubleClickTime_004373b8) {
-                input->pMouse->ext1 = 3;
+                pMouse->ext1 = 3;
             } else {
-                input->pMouse->ext1 = 2;
+                pMouse->ext1 = 2;
             }
             g_leftClickTimer.Reset();
         }
     }
 
-    mouse = input->pMouse;
+    mouse = pMouse;
     buttons = 0;
     if (mouse != 0) {
         buttons = mouse->buttons & 2;
@@ -349,9 +347,9 @@ int __fastcall FUN_00426ce0(void* self) {
     if (buttons == 0 && (mouse->prevButtons & 2) != 0) {
         buttons = g_rightClickTimer.Update();
         if (buttons < (unsigned int)g_DoubleClickTime_004373b8) {
-            input->pMouse->ext2 = 3;
+            pMouse->ext2 = 3;
         } else {
-            input->pMouse->ext2 = 2;
+            pMouse->ext2 = 2;
         }
         g_rightClickTimer.Reset();
     }

@@ -160,17 +160,7 @@ void InputManagerFull::PollEvents(int) {}
 class PaletteLoader { public: void Load(char*); };
 void PaletteLoader::Load(char*) {}
 
-extern "C" int ProcessMessages();
-
-/* Function start: 0x426CE0 */
-int InputManager::Refresh(int) {
-    if (ProcessMessages() != 0) {
-        return 1;
-    }
-    PollMouse(pMouseLocal);
-    PollJoystick(pJoystick);
-    return 0;
-}
+// InputManager::Refresh → InputManager.cpp
 
 // Engine COMDAT thunks (needed by SC_DodgeOrville)
 void __fastcall FUN_00449320(void*, int, int) {}

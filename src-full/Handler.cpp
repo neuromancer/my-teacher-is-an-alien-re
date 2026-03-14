@@ -7,12 +7,14 @@
 Handler::~Handler() {
 }
 
-// Default Init implementation - copies command data from message
-// Corresponds to FUN_00417180
+/* Function start: 0x4309A0 */
+// CopyCommandData - saves FROM fields from SpriteAction message
+// Original reads msg+0x08 (field_08) and msg+0x0C (field_0C)
 void Handler::CopyCommandData(SC_Message* msg) {
-    if (msg != 0) {
-        savedCommand = msg->command;
-        savedMsgData = msg->data;
+    int* pmsg = (int*)msg;
+    if (pmsg != 0) {
+        savedCommand = pmsg[2];  // offset 0x08
+        savedMsgData = pmsg[3];  // offset 0x0C
     }
 }
 
