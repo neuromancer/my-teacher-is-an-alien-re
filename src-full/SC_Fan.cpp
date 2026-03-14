@@ -14,7 +14,7 @@
 extern void __fastcall FUN_00410fd0(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 
-extern "C" int FUN_00425fa0(void*);
+extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
 extern void __fastcall FUN_004309a0(void*, int, int);
 extern void __fastcall FUN_004309c0(void*, int, void*);
@@ -69,7 +69,7 @@ void SC_Fan::Init(SC_Message* msg) {
     memset(&field_A8, 0, 0x120);
     handlerId = savedId;
 
-    if (!FUN_00425fa0("CB_Fan")) {
+    if (!FileExists("CB_Fan")) {
         FUN_004265a0();
     }
 

@@ -22,7 +22,7 @@ int DAT_0046ae78 = 0;
 int DAT_0046ae70 = 0;
 
 // Extern functions
-extern "C" int FUN_00425fa0(void*);
+extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
 extern void __fastcall FUN_0042be00(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
@@ -64,7 +64,7 @@ void SC_Rats::Init(SC_Message* msg) {
     DAT_00473e18 = 0;
     CopyCommandData(msg);
     moduleParam = ((int*)msg)[1];
-    if (!FUN_00425fa0("CB_Rats")) {
+    if (!FileExists("CB_Rats")) {
         FUN_004265a0();
     }
     int sceneData = (int)DAT_0046aa24;

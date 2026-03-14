@@ -32,37 +32,30 @@ void TimedEvent::SetType(int type)
     m_type = type;
 }
 
-/* Function start: 0x4019A0 */ /* DEMO ONLY - no full game match */
+extern void FUN_00444e40(void*);
+extern void __fastcall FUN_00444af0(void*);
+extern void FreeMemory(void*);
+extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
+extern char* DAT_0046aa00;
+extern void* DAT_0046aa24;
+
+/* Function start: 0x422AE0 */
 int TimedEvent::Update()
 {
     int remaining_time = m_duration - m_timer.Update();
-    TimedEventPool* pool;
 
     switch (m_type) {
     case 0:
         if (remaining_time > 0) {
             return 0;
         }
-        {
-            void* eventData = m_eventData;
-            if (eventData) {
-                pool = g_TimedEventPool2_00436988;
-                PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-                node->GetEmbeddedEvent()->CopyFrom((PooledEvent*)eventData);
-
-                if (pool->list.tail == 0) {
-                    pool->list.head = node;
-                } else {
-                    pool->list.tail->next = node;
-                }
-                pool->list.tail = node;
-            }
-
-            eventData = m_eventData;
-            if (eventData) {
-                delete m_eventData;
-                m_eventData = 0;
-            }
+        if (m_eventData != 0) {
+            FUN_00444e40(m_eventData);
+        }
+        if (m_eventData != 0) {
+            FUN_00444af0(m_eventData);
+            FreeMemory(m_eventData);
+            m_eventData = 0;
         }
         return 1;
 
@@ -70,51 +63,25 @@ int TimedEvent::Update()
         if (remaining_time > 0) {
             return 0;
         }
-        {
-            void* eventData = m_eventData;
-            if (eventData) {
-                pool = g_TimedEventPool2_00436988;
-                PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-                node->GetEmbeddedEvent()->CopyFrom((PooledEvent*)eventData);
-
-                if (pool->list.tail == 0) {
-                    pool->list.head = node;
-                } else {
-                    pool->list.tail->next = node;
-                }
-                pool->list.tail = node;
-            }
+        if (m_eventData != 0) {
+            FUN_00444e40(m_eventData);
         }
         m_timer.Reset();
         return 0;
 
     case 2:
-        sprintf(g_Buffer_00436960, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
-        g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, 0x208, 0x1c2, 10000, 8);
-
+        sprintf(DAT_0046aa00, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
+        FUN_00404230(DAT_0046aa24, 0, DAT_0046aa00, 0x208, 0x1c2, 10000, -1);
         if (remaining_time > 0) {
             return 0;
         }
-        {
-            void* eventData = m_eventData;
-            if (eventData) {
-                pool = g_TimedEventPool2_00436988;
-                PooledEvent* node = pool->Create((void*)pool->list.tail, 0);
-                node->GetEmbeddedEvent()->CopyFrom((PooledEvent*)eventData);
-
-                if (pool->list.tail == 0) {
-                    pool->list.head = node;
-                } else {
-                    pool->list.tail->next = node;
-                }
-                pool->list.tail = node;
-            }
-
-            eventData = m_eventData;
-            if (eventData) {
-                delete m_eventData;
-                m_eventData = 0;
-            }
+        if (m_eventData != 0) {
+            FUN_00444e40(m_eventData);
+        }
+        if (m_eventData != 0) {
+            FUN_00444af0(m_eventData);
+            FreeMemory(m_eventData);
+            m_eventData = 0;
         }
         return 1;
 

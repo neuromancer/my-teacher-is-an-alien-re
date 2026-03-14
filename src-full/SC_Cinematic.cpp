@@ -14,7 +14,7 @@
 #include <smack.h>
 
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern "C" char* FUN_0044e3e0(int handle);
+extern "C" char* GetCinematicFilename(int id);
 
 extern "C" extern void* DAT_0046aa30;
 #define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
@@ -42,7 +42,7 @@ extern void __fastcall FUN_00432da0(void* self);
 
 // File operations
 extern "C" void* FUN_004260f0(char* name);
-extern "C" int FUN_00425fa0(void* path);
+extern "C" int FileExists(const char*);
 
 // Palette
 #include "Palette.h"
@@ -72,6 +72,27 @@ struct CinematicAction {
     void Execute(int flag);  // 0x430980
 };
 void CinematicAction::Execute(int) {}
+
+extern int g_PeriodStateIdx_0046cb90;
+extern char* g_PeriodCharTable_0046cb94;
+static char g_CinematicPath_00473cb0[256];
+
+/* Function start: 0x44E3E0 */
+extern "C" char* GetCinematicFilename(int param_1)
+{
+    if (param_1 >= 5000) {
+        int stateIdx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = g_GameState_0046aa30;
+        if (stateIdx < 0 || gs->maxStates - 1 < stateIdx) {
+            ShowError("Invalid gamestate %d", stateIdx);
+        }
+        char suffix = g_PeriodCharTable_0046cb94[gs->stateValues[stateIdx]];
+        sprintf(g_CinematicPath_00473cb0, "cine\\cin%4.4d%c.smk", param_1, (int)suffix);
+        return g_CinematicPath_00473cb0;
+    }
+    sprintf(g_CinematicPath_00473cb0, "cine\\cin%4.4d.smk", param_1);
+    return g_CinematicPath_00473cb0;
+}
 
 /* Function start: 0x42FBD0 */
 SC_Cinematic::SC_Cinematic() {
@@ -150,10 +171,10 @@ void SC_Cinematic::Init(SC_Message* msg) {
         pmsg[13] = 0;
     }
 
-    char* movieName = FUN_0044e3e0(moduleParam);
+    char* movieName = GetCinematicFilename(moduleParam);
     char* moviePath = (char*)FUN_004260f0(movieName);
 
-    if (FUN_00425fa0(moviePath) == 0) {
+    if (FileExists(moviePath) == 0) {
         WriteToLog("missing cinematic %s", moviePath);
         EndCinematic();
     } else {
@@ -294,7 +315,7 @@ void SC_Cinematic::Update(int param1, int param2) {
     }
 
     if (field_CC != 0) {
-        ((GameLoop*)DAT_0046aa08)->ProcessEvents(1);
+        ((InputManager*)DAT_0046aa08)->Refresh(1);
 
         int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1a0);
         int hasInput;
@@ -318,7 +339,7 @@ void SC_Cinematic::Update(int param1, int param2) {
     // SmackWait linked directly via smackw32.lib
 
     while (1) {
-        if (((GameLoop*)DAT_0046aa08)->ProcessEvents(1) != 0) {
+        if (((InputManager*)DAT_0046aa08)->Refresh(1) != 0) {
             EndCinematic();
             return;
         }

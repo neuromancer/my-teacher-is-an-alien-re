@@ -26,6 +26,12 @@ public:
     int AddMessage(SC_Message* msg);   // 0x428AF0 - overrides Engine::CleanupSubsystems [5]
     void ProcessTargets();             // 0x428B60 - overrides Engine::ProcessTargets [11]
 
+    void UpdateGame();                 // 0x429110
+    void UpdateReticle();              // 0x429380
+    void ThrowBomb();                  // 0x4294A0
+    void InitGameState();              // 0x4297D0
+    void InitReset();                  // 0x429860
+
     int field_118[3];     // 0x118-0x123 (12 bytes)
     SlimeDim dim_124;     // 0x124-0x12B (8 bytes, non-trivial dtor)
     int field_12C;        // 0x12C - Sprite/SpriteAction pointer

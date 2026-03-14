@@ -10,6 +10,7 @@
 class mCNavNode : public Parser {
 public:
     mCNavNode(); // 0x412d80
+    ~mCNavNode(); // 0x412e50
     int active;             // 0x88 - activation state (0=inactive, 1=active)
     int flags;              // 0x8c - flags (bit 0: animation, bit 1: sound, bit 2: counter, bit 4: ?, bit 8: random, bit 0x10: terminate)
     int nextNodeId;         // 0x90 - result node ID to return

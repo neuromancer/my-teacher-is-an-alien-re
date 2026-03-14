@@ -192,3 +192,29 @@
 0x44EAA0
 0x434000
 0x44EB70
+
+# Sample::Fade SEH funclet (Timer cleanup)
+0x4250D3
+
+# T_Hotspot SEH funclets (compiler-generated)
+0x4454DA
+0x445968
+
+# ZBuffer destructor chain (compiler-generated sdtor + SEH funclets)
+0x4276F0
+0x427817
+0x427825
+0x427833
+0x427841
+0x42784F
+
+# Compiler-generated SlimeDim/BombData global init/cleanup (SC_DodgeOrville.cpp)
+0x428600
+0x428620
+0x4286C0
+0x4286D0
+0x428731
+0x428760
+0x4287E0
+0x4287F0
+0x42882B

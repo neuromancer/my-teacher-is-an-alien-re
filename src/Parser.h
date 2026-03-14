@@ -9,10 +9,10 @@ class Parser
 {
 public:
     Parser();
-    ~Parser();
     virtual int LBLParse(char*);
     virtual void OnProcessStart();
     virtual void OnProcessEnd();
+    virtual ~Parser();
 
     void CloseFile();
     void Open(char *param_1);

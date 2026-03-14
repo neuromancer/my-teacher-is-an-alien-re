@@ -26,12 +26,6 @@
 #include <windows.h>
 #include "GameConfig.h"
 
-
-
-
-
-
-
 #include "globals.h"
 
 // Globals moved from globals.cpp to match layout
@@ -372,6 +366,7 @@ extern "C" int FileExists(const char *filename) {
   iVar1 = GetFileAttributes_Wrapper(filename, 0);
   return iVar1 == 0;
 }
+
 
 /* Function start: 0x425720 */
 void InitGameSystems(void) {

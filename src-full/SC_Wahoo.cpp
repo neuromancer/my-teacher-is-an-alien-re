@@ -52,7 +52,7 @@ extern void __cdecl FUN_00413e70(void*, int, char*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 
 extern void __fastcall FUN_004309a0(void*, int, int);
-extern "C" int FUN_00425fa0(char*);
+extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
 extern void __cdecl FUN_00425a90(int, int);
 extern "C" void WriteToLog(const char* format, ...);
@@ -104,7 +104,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
 
     *(int*)((int)this + 0x164) = 0;
 
-    if (!FUN_00425fa0("CB_Bridge")) {
+    if (!FileExists("CB_Bridge")) {
         FUN_004265a0();
     }
 

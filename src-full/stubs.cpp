@@ -77,7 +77,7 @@ int DAT_004733e8 = 0;
 void* DAT_0046aa08 = 0;
 void* DAT_0046a6dc = 0;
 char* DAT_0046aa00 = 0;
-LinkedList* g_InventoryList = 0;
+// g_InventoryList removed - same global as g_MsgList (DAT_0046a6dc) in main.cpp
 
 // Full game globals
 extern "C" extern void* DAT_0046aa30;
@@ -308,10 +308,10 @@ extern "C" {
     int* FUN_004205e0() { static int v = 0; return &v; }
     int* FUN_004205f0() { static int v = 0; return &v; }
     void FUN_00425f10() {}
-    int FUN_00425fa0(void*) { return 0; }
+    // FUN_00425fa0 = FileExists in main.cpp
     void* FUN_004260f0(char* name) { return name; }
     void FUN_004307b0(int) {}
-    char* FUN_0044e3e0(int) { return 0; }
+    // FUN_0044e3e0 = GetCinematicFilename in SC_Cinematic.cpp
     void SetFontPosition(int, int) {}
     void SetFontColor(int) {}
     void DrawFontText(char*, int) {}
@@ -336,3 +336,54 @@ void __fastcall FUN_00412a50(void*, int, char*) {}
 
 // VBuffer stubs
 #include "VBuffer.h"
+
+// ============================================================================
+// Unresolved externals from new implementations
+// ============================================================================
+
+// Hotspot/T_Hotspot stubs
+#include "Hotspot.h"
+Hotspot::Hotspot() { memset(&hotspot, 0, 104); field_D0 = 1; state = 1; }
+Hotspot::~Hotspot() {}
+int Hotspot::Do() { return 0; }
+int Hotspot::LBLParse(char*) { return 0; }
+int T_Hotspot::LBLParse(char*) { return 0; }
+void T_Hotspot::Exit() {}
+int T_Hotspot::Update(int, int, int) { return 0; }
+int T_Hotspot::Do() { return 0; }
+int T_Hotspot::SetState(int) { return 0; }
+int T_Hotspot::GetState() { return 0; }
+void Hotspot::QueueEvents(Queue*) {}
+
+// EventList stub
+#include "EventList.h"
+void EventList::InsertNode(void* data) { LinkedList::InsertNode(data); }
+
+// SC_DodgeOrville / SC_PRHotSpot external stubs
+void __fastcall FUN_0044c740(void*) {}
+void __fastcall FUN_00444af0(void*) {}
+void __fastcall FUN_0041b3a0(void*) {}
+int __fastcall FUN_0041b790(void*) { return 0; }
+void __fastcall FUN_0041b6e0(void*, int, int) {}
+void __fastcall FUN_0041b5a0(void*) {}
+void __fastcall FUN_00425550(void*, int, int) {}
+void __fastcall FUN_00449520(void*) {}
+void __fastcall FUN_00425100(void*, int, int, int) {}
+void __fastcall FUN_0042b0f0(void*) {}
+
+extern "C" {
+    void FUN_00455040(FILE*) {}
+    FILE* FUN_00455110(char*, char*) { return 0; }
+}
+
+int FUN_00425fc0(char*) { return 0; }
+
+// SC_DodgeOrville globals
+struct HitBounds { int minVal; int maxVal; };
+HitBounds g_HitBounds_00473260[3];
+struct BombData { int data[6]; };
+BombData g_BombData_00473278[6];
+int g_AnimStates_0046ac30[5];
+int g_LastBombDir_0046ac44;
+POINT g_CursorPos_00473308;
+int rand_00454920() { return rand(); }

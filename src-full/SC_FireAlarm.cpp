@@ -9,10 +9,10 @@
 #include <stdlib.h>
 
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
-extern "C" int FUN_00425fa0(char*);
+extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern "C" char* FUN_0044e3e0(int);
+extern "C" char* GetCinematicFilename(int);
 extern "C" void* FUN_004260f0(char*);
 
 extern void __fastcall FUN_00425490(void*);
@@ -64,7 +64,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
 
     Handler::Init(msg);
 
-    if (FUN_00425fa0("CB_FireAlarm") == 0) {
+    if (FileExists("CB_FireAlarm") == 0) {
         FUN_004265a0();
     }
 
@@ -445,9 +445,9 @@ void SC_FireAlarm::ProcessFrame() {
                 if (done) {
                     field_B0 = 3;
                 } else {
-                    char* name = FUN_0044e3e0(0x13A6);
+                    char* name = GetCinematicFilename(0x13A6);
                     char* path = (char*)FUN_004260f0(name);
-                    if (FUN_00425fa0(path) != 0) {
+                    if (FileExists(path) != 0) {
                         Animation anim;
                         anim.Play(path, 0);
                     }

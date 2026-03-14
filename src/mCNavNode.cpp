@@ -23,12 +23,68 @@ struct HashEntry {
     int value;          // 0x0C - sound/sprite ID
 };
 
+/* Function start: 0x412D20 */
+void CleanupObjectArray(Parser** array, int count)
+{
+    while (count--) {
+        if (*array != 0) {
+            delete *array;
+            *array = 0;
+        }
+        array++;
+    }
+}
+
 /* Function start: 0x412d80 */
 mCNavNode::mCNavNode() : Parser()
 {
     memset(&active, 0, 120);
     nextNodeId = 1;
     strcpy(nodeName, "NONAME");
+}
+
+/* Function start: 0x412E50 */
+mCNavNode::~mCNavNode()
+{
+    ObjectPool* pool = mCNavNode::randomPool;
+    if (pool != 0) {
+        if (pool->memory != 0) {
+            if (pool->size != 0) {
+                HashEntry** buckets = (HashEntry**)pool->memory;
+                unsigned int count = pool->size;
+                do {
+                    HashEntry* entry = *buckets;
+                    while (entry) {
+                        int n = 0;
+                        while (n--)
+                            ;
+                        n = 0;
+                        while (n--)
+                            ;
+                        entry = entry->next;
+                    }
+                    buckets++;
+                    count--;
+                } while (count != 0);
+            }
+        }
+
+        delete pool->memory;
+        pool->memory = 0;
+        pool->allocatedCount = 0;
+        pool->freeList = 0;
+
+        void* block = pool->memoryBlock;
+        while (block) {
+            void* next = *(void**)block;
+            delete block;
+            block = next;
+        }
+        pool->memoryBlock = 0;
+
+        delete pool;
+        mCNavNode::randomPool = 0;
+    }
 }
 
 /* Function start: 0x412f40 */

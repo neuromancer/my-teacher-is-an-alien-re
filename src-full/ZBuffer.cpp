@@ -1,4 +1,5 @@
 #include "ZBuffer.h"
+#include "SpriteAction.h"
 #include "globals.h"
 #include "Message.h"
 
@@ -20,6 +21,47 @@ char s_hIam[] = "hIam %d";
 
 extern void LogToMessageFile(char* format, ...);
 #include "SC_Question.h"
+
+extern void __fastcall FUN_0044c740(void*);
+extern void FreeMemory(void*);
+
+/* Function start: 0x427710 */
+ZBuffer::~ZBuffer()
+{
+    while (ZBuffer::itemCount != 0) {
+        int idx = ZBuffer::itemCount - 1;
+        ZBuffer::itemCount = idx;
+        void* item = ZBuffer::items[idx];
+        if (item != 0) {
+            SlimeDim* sd;
+
+            sd = (SlimeDim*)((char*)item + 0x120);
+            sd->~SlimeDim();
+
+            sd = (SlimeDim*)((char*)item + 0x114);
+            sd->~SlimeDim();
+
+            sd = (SlimeDim*)((char*)item + 0x10c);
+            sd->~SlimeDim();
+
+            sd = (SlimeDim*)((char*)item + 0x104);
+            sd->~SlimeDim();
+
+            sd = (SlimeDim*)((char*)item + 0xfc);
+            sd->~SlimeDim();
+
+            FUN_0044c740(item);
+
+            FreeMemory(item);
+
+            ZBuffer::items[ZBuffer::itemCount] = 0;
+        }
+    }
+    if (ZBuffer::items != 0) {
+        FreeMemory(ZBuffer::items);
+        ZBuffer::items = 0;
+    }
+}
 
 /* Function start: 0x44B5A0 */
 int ZBuffer::Exit(SC_Message* msg)

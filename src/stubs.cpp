@@ -46,8 +46,7 @@ char* GetFullPath(char* dst, const char* src, unsigned int maxlen) {
 
 // FUN_00421840 -> InputManager::~InputManager in InputManager.cpp
 
-// CRT internal function
-void CleanupObjectArray(void* a, int b) {}
+// CleanupObjectArray -> mCNavNode.cpp
 
 // FUN_00421f90 -> CDData::ResolvePath in CDData.cpp
 // FUN_00404230 -> AssetList::Cleanup in AssetList.cpp

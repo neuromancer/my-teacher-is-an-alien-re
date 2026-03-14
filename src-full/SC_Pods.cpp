@@ -13,7 +13,7 @@ extern void __fastcall FUN_004309a0(void*, int, int);
 
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00413e70(void*, int, char*);
-extern "C" int FUN_00425fa0(char*);
+extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_0042be00(void*);
@@ -57,7 +57,7 @@ void SC_Pods::Init(SC_Message* msg) {
     FUN_004309a0(this, 0, (int)msg);
     moduleParam = pmsg[1];
 
-    if (FUN_00425fa0("CB_Pods") == 0) {
+    if (FileExists("CB_Pods") == 0) {
         FUN_004265a0();
     }
 

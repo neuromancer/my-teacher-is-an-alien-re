@@ -11,7 +11,9 @@ extern "C" void ShowError(const char* format, ...);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* FUN_0044e530(int handle);
 
-extern LinkedList* g_InventoryList;
+#include "MsgList.h"
+extern MsgList* g_MsgList; // DAT_0046a6dc
+#define g_InventoryList ((LinkedList*)g_MsgList)
 extern void* DAT_0046aa24;
 extern void* DAT_0046aa18;
 extern void* DAT_0046a6e4;

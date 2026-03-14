@@ -9,7 +9,7 @@
 
 extern "C" void __cdecl FUN_004309c0(void*);
 extern "C" void __cdecl FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern "C" int FUN_00425fa0(char*);
+extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
 extern void __cdecl FUN_00425a90(int, int);
 extern "C" void WriteToLog(const char* format, ...);
@@ -50,7 +50,7 @@ void SC_Slime::Init(SC_Message* msg)
     memset(&field_A8, 0, 0xD8);
     handlerId = savedId;
 
-    if (FUN_00425fa0("CB_Slime") == 0) {
+    if (FileExists("CB_Slime") == 0) {
         FUN_004265a0();
     }
 

@@ -8,7 +8,7 @@
 #include "Animation.h"
 
 extern char* __cdecl FUN_00426190(char* name);
-extern "C" int FUN_00425fa0(void*);
+extern "C" int FileExists(const char*);
 
 // NOTE: CreatePaletteBuffer at 0x41EA50 is effectively a placement new for Palette
 
@@ -69,7 +69,7 @@ void Palette::CopyData(void* source)
 void Palette::LoadFile(char* filename)
 {
     char* path = FUN_00426190(filename);
-    if (!FUN_00425fa0(path)) {
+    if (!FileExists(path)) {
         ShowError("Palette::Load - Can't find palette file '%s'", filename);
     }
 

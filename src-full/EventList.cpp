@@ -2,11 +2,8 @@
 #include "string.h"
 #include "Memory.h"
 
-/* Function start: 0x4188D0 */ /* DEMO ONLY - no full game match */
-void EventList::InsertNode(void* data)
-{
-    LinkedList::InsertNode(data);
-}
+// Demo had EventList::InsertNode (0x4188D0) as a non-inline wrapper
+// around LinkedList::InsertNode. Full game inlines this call.
 
 /* Function start: 0x431B60 */
 void* EventList::RemoveCurrent()

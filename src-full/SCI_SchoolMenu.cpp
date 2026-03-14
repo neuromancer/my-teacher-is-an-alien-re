@@ -51,7 +51,7 @@ public:
 // extern "C" functions (matching stubs.cpp)
 extern "C" {
     void FUN_00413e10(void*, char*, char*, ...);
-    int FUN_00425fa0(void*);
+    int FileExists(const char*);
     void FUN_004265a0();
     void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
     char* FUN_0044e530(int);

@@ -4,11 +4,39 @@
 #include "GameState.h"
 #include <string.h>
 #include <stdlib.h>
+#include <windows.h>
 
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_004127c0(void*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern "C" void ShowError(const char* format, ...);
+extern int FUN_0044ccf0(int, int, int, int);
+extern void __fastcall FUN_0044cb40(void*, int, int, int);
+extern void __fastcall FUN_00425550(void*, int, int);
+extern void FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int);
+
+extern void* DAT_0046aa24;
+extern int g_AnimStates_0046ac30[5];
+extern int g_LastBombDir_0046ac44;
+
+struct HitBounds {
+    int minVal;
+    int maxVal;
+};
+extern HitBounds g_HitBounds_00473260[3];
+
+struct BombData {
+    int data[6];
+};
+extern BombData g_BombData_00473278[6];
+
+extern POINT g_CursorPos_00473308;
+
+extern int __cdecl rand_00454920();
+extern void __fastcall FUN_00449520(void*);
+
+int CompareRange(int center, int pos, int range);
+int CheckCursorRange(int range);
 
 // Engine base class calls (thiscall via fastcall trick)
 extern void __fastcall FUN_00449320(void*, int, int);  // Engine::VirtCleanup
@@ -177,4 +205,225 @@ void SC_DodgeOrville::ProcessTargets() {
     }
 
     FUN_004494e0(this);
+}
+
+/* Function start: 0x429110 */
+void SC_DodgeOrville::UpdateGame()
+{
+#if 0 // TODO: fix FUN_00403fd0 call signature
+    int* spr108 = (int*)field_A8[24]; // 0x108
+    FUN_0044ccf0(*(int*)((char*)spr108 + 0xb0), *(int*)((char*)spr108 + 0xac), 0, 0x3ff00000);
+    if (FUN_0044ccf0(*(int*)((char*)spr108 + 0xb0), *(int*)((char*)spr108 + 0xac), 0, 0x3ff00000) != 0) {
+        if (*(int*)((char*)spr108 + 0x98) != 7) {
+            SC_DodgeOrville::ThrowBomb();
+        }
+    }
+
+    int* spr10c = (int*)field_A8[25]; // 0x10c
+    spr108 = (int*)field_A8[24]; // 0x108
+    int state = *(int*)((char*)spr10c + 0x98);
+    int f0val = *(int*)((char*)spr108 + 0xf0);
+    int frameVal = 0;
+    if (f0val != 0) {
+        frameVal = *(int*)(*(int*)(f0val + 0xc) + 0x374);
+    }
+
+    if (frameVal != 0 && state >= 0 && state <= 2) {
+        if (g_HitBounds_00473260[state].minVal <= frameVal && g_HitBounds_00473260[state].maxVal >= frameVal) {
+            g_HitBounds_00473260[state].minVal = 0;
+            g_HitBounds_00473260[state].maxVal = 0;
+            FUN_0044cb40(spr10c, 0, state + 7, 0);
+            SC_DodgeOrville::dim_144.field_0++;
+            FUN_00425550((void*)field_A8[26], 0, 2); // 0x110
+            FUN_00425550((void*)field_A8[26], 0, field_154[0] + 5);
+            if (field_154[0] < 2) {
+                field_154[0]++;
+            }
+        }
+    }
+
+    SC_DodgeOrville::UpdateReticle();
+
+    int* spr130 = (int*)field_130;
+    FUN_0044ccf0(*(int*)((char*)spr130 + 0xb0), *(int*)((char*)spr130 + 0xac), 0, 0x3ff00000);
+    int* spr12c = (int*)field_12C;
+    FUN_0044ccf0(*(int*)((char*)spr12c + 0xb0), *(int*)((char*)spr12c + 0xac), 0, 0x3ff00000);
+
+    spr130 = (int*)field_130;
+    int renderData = 0;
+    if (*(int*)((char*)spr130 + 0xf0) != 0) {
+        renderData = *(int*)(*(int*)((char*)spr130 + 0xf0) + 0x18);
+    }
+
+    FUN_00403fd0(DAT_0046aa24, 0, 0x7531, dim_14C.field_0, dim_14C.field_4, 1.0, 2, 0, dim_134.field_0, dim_134.field_4, dim_13C.field_0, dim_13C.field_4);
+
+    if (dim_144.field_4 != 0 && dim_144.field_0 >= dim_144.field_4) {
+        spr12c = (int*)field_12C;
+        int renderData2 = 0;
+        if (*(int*)((char*)spr12c + 0xf0) != 0) {
+            renderData2 = *(int*)(*(int*)((char*)spr12c + 0xf0) + 0x18);
+        }
+        int w = *(int*)(renderData2 + 0x24);
+        int h = *(int*)(renderData2 + 0x2c);
+        FUN_00403fd0(DAT_0046aa24, 0, 0x7532, dim_14C.field_0, dim_14C.field_4, 1.0, 2, 0, 0, w, 0, h);
+    } else {
+        int hits = dim_144.field_0;
+        int maxHits = dim_144.field_4;
+        int fillHeight = (hits * 0x7c) / maxHits + 0x1e;
+        if (fillHeight >= dim_13C.field_0) {
+            fillHeight = dim_13C.field_0;
+        }
+
+        spr12c = (int*)field_12C;
+        int rd3 = 0;
+        if (*(int*)((char*)spr12c + 0xf0) != 0) {
+            rd3 = *(int*)(*(int*)((char*)spr12c + 0xf0) + 0x18);
+        }
+        FUN_00403fd0(DAT_0046aa24, 0, 0x7532, dim_14C.field_0, dim_14C.field_4, 1.0, 2, 0, dim_134.field_0, fillHeight, dim_134.field_4, dim_13C.field_4);
+    }
+}
+
+#endif
+}
+
+/* Function start: 0x429380 */
+void SC_DodgeOrville::UpdateReticle()
+{
+    Sprite* spr10c = (Sprite*)field_A8[25]; // 0x10c
+    if (spr10c->Do(spr10c->loc_x, spr10c->loc_y, 1.0) == 0) {
+        return;
+    }
+
+    int state = field_118[0];
+    if (state != 1 && state != 3) {
+        field_118[1] = CheckCursorRange(0x32);
+    }
+
+    int dir = field_118[1];
+    int newState = field_118[0] + dir;
+    field_118[0] = newState;
+    if (newState < 0) {
+        field_118[0] = 0;
+    } else if (newState > 4) {
+        field_118[0] = 4;
+    }
+
+    int animState = g_AnimStates_0046ac30[field_118[0]];
+    if (dir < 0) {
+        if (animState == 3 || animState == 5) {
+            animState++;
+        }
+    }
+
+    FUN_0044cb40(spr10c, 0, animState, 0);
+}
+
+/* Function start: 0x429430 */
+int CheckCursorRange(int range)
+{
+    GetCursorPos(&g_CursorPos_00473308);
+    int result = CompareRange(0x200, g_CursorPos_00473308.x, range);
+    SetCursorPos(0x200, 0x15e);
+    return result;
+}
+
+/* Function start: 0x429470 */
+int CompareRange(int center, int pos, int range)
+{
+    int diff = pos - center;
+    if (diff > 0) {
+        if (diff > range) {
+            return 1;
+        }
+    } else if (diff < 0) {
+        if (-diff > range) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+/* Function start: 0x4294A0 */
+void SC_DodgeOrville::ThrowBomb()
+{
+    if (dim_144.field_4 != 0 && dim_144.field_0 >= dim_144.field_4) {
+        ((int*)field_A8[0])[0] = 1;
+        return;
+    }
+
+    int throwCount = field_118[2] + 1; // 0x124
+    field_118[2] = throwCount;
+    int maxThrows = dim_124.field_0; // 0x128 (via field_118[3] alias)
+
+    int atLimit;
+    if (maxThrows == 0) {
+        atLimit = 0;
+    } else {
+        atLimit = (maxThrows <= throwCount) ? 1 : 0;
+    }
+
+    if (atLimit != 0) {
+        ((int*)field_A8[0])[1] = 1;
+        return;
+    }
+
+    int dir;
+    do {
+        dir = rand_00454920() % 6;
+    } while (dir == g_LastBombDir_0046ac44);
+
+    g_LastBombDir_0046ac44 = dir;
+    FUN_0044cb40((void*)field_A8[24], 0, dir + 1, 0); // 0x108
+
+    // Copy bomb data to hit bounds
+    int* src = (int*)&g_BombData_00473278[dir];
+    int* dst = (int*)&g_HitBounds_00473260[0];
+    do {
+        dst[0] = src[0];
+        dst[1] = src[1];
+        src += 2;
+        dst += 2;
+    } while ((unsigned int)dst < 0x473278);
+
+    FUN_00425550((void*)field_A8[26], 0, 3); // 0x110
+
+    int r = rand_00454920();
+    int maxTh = dim_124.field_0;
+    int rem = r % maxTh;
+    if (maxTh / 0x14 > rem) {
+        FUN_00425550((void*)field_A8[26], 0, 8);
+        return;
+    }
+    if (maxTh / 0xa > rem) {
+        FUN_00425550((void*)field_A8[26], 0, 9);
+    }
+}
+
+/* Function start: 0x4297D0 */
+void SC_DodgeOrville::InitGameState()
+{
+    dim_134.field_0 = 0;
+    dim_134.field_4 = 0;
+    dim_13C.field_0 = 0xb3;
+    dim_13C.field_4 = 0x13;
+    dim_14C.field_0 = 0x46;
+    dim_14C.field_4 = 0x1e;
+
+    GameState* gs = (GameState*)DAT_0046aa30;
+    int idx = gs->FindLabel("MAX_HITS_BY_STINK_BOMBS");
+    if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    dim_144.field_0 = 0;
+    dim_144.field_4 = *(int*)(*(int*)((int)gs + 0x90) + idx * 4);
+}
+
+/* Function start: 0x429860 */
+void SC_DodgeOrville::InitReset()
+{
+    FUN_00449520(this);
+    CheckCursorRange(0);
+    field_118[2] = 0; // 0x120
+    field_118[0] = 2; // 0x118
+    field_118[1] = 0; // 0x11c
 }

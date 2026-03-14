@@ -12,7 +12,11 @@ class Message;
 // Handler base provides: handlerId (0x90), moduleParam (0x94), etc.
 class ZBuffer : public Handler {
 public:
-    Timer timer; // 0xA8
+    ~ZBuffer(); // 0x427710
+
+    Timer timer;        // 0xA8 (demo uses this, full game repurposes some fields)
+    int itemCount;      // 0xB0 - number of items in array (overlaps Timer.m_startTime)
+    void** items;       // 0xB4 - array of item pointers (overlaps Timer.m_currentTime)
 
     int Exit(SC_Message* msg);
     void Update(int, int);

@@ -1,4 +1,5 @@
 #include "Hotspot.h"
+#include "SpriteAction.h"
 #include "SC_Question.h"
 #include "string.h"
 #include "Message.h"
@@ -15,8 +16,9 @@
 typedef void* HSAMPLE;
 extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 
+extern void __fastcall FUN_0041b3a0(void*);
+extern void FreeMemory(void*);
 
-/* Function start: 0x409230 */ /* DEMO ONLY - no full game match */
 T_Hotspot::T_Hotspot()
 {
     memset(&sprite, 0, 0x2e * 4);
@@ -26,38 +28,104 @@ T_Hotspot::T_Hotspot()
     parseFileIndex = -1;
 }
 
-/* Function start: 0x4092E0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x445830 */
+T_Hotspot::T_Hotspot(int param_1) : Parser()
+{
+    dim_A4.field_0 = 0;
+    dim_A4.field_4 = 0;
+    field_AC = 0;
+    field_B0 = 0;
+    memset(&field_90, 0, 0x12 * 4);
+    field_98 = param_1;
+}
+
+/* Function start: 0x4458D0 */
 T_Hotspot::~T_Hotspot()
 {
-    Sprite* spr;
-    MMPlayer* mc;
+    void* ptr;
+    int i;
+    void** p = &items[0];
 
-    spr = sprite;
-    if (spr != 0) {
-        delete spr;
-        sprite = 0;
-    }
-
-    mc = list1;
-    if (mc != 0) {
-        delete mc;
-        list1 = 0;
-    }
-
-    mc = list2;
-    if (mc != 0) {
-        delete mc;
-        list2 = 0;
-    }
-
-    mc = list3;
-    if (mc != 0) {
-        delete mc;
-        list3 = 0;
+    for (i = 0; i < 8; i++) {
+        ptr = *p;
+        if (ptr != 0) {
+            FUN_0041b3a0(ptr);
+            FreeMemory(ptr);
+            *p = 0;
+        }
+        p++;
     }
 }
 
 
+extern int __fastcall FUN_0041b790(void*);
+extern void __fastcall FUN_0041b5a0(void*);
+extern void __fastcall FUN_0041b6e0(void*, int, int);
+
+/* Function start: 0x4459A0 */
+void T_Hotspot::DoItem(int param)
+{
+    T_Hotspot::SelectItem();
+    void* item = T_Hotspot::items[T_Hotspot::currentIndex];
+    if (item != 0) {
+        FUN_0041b6e0(item, 0, param);
+    }
+}
+
+/* Function start: 0x4459D0 */
+void T_Hotspot::SelectItem()
+{
+    int i;
+    void** p;
+
+    p = &items[0];
+    for (i = 0; i < 8; i++) {
+        if (*p != 0) {
+            int status = *(int*)((char*)*p + 0xa0);
+            if (status != 0 && status == 1) {
+                goto done;
+            }
+        }
+        p++;
+    }
+
+    p = &items[0];
+    for (i = 0; i < 8; i++) {
+        if (*p != 0) {
+            if (FUN_0041b790(*p) != 0) {
+                break;
+            }
+        }
+        p++;
+    }
+
+    T_Hotspot::currentIndex = i;
+    if (i > 7) {
+        T_Hotspot::currentIndex = 7;
+    }
+
+done:
+    ;
+}
+
+/* Function start: 0x445970 */
+void T_Hotspot::StopAll()
+{
+    void** p = &items[0];
+    int i = 8;
+    do {
+        if (*p != 0) {
+            FUN_0041b5a0(*p);
+        }
+        p++;
+        i--;
+    } while (i != 0);
+}
+
+// Demo-only T_Hotspot/Hotspot functions below use the old demo layout
+// (sprite, list1-3, enabled, state, etc.) which doesn't exist in the
+// full game. Kept as reference in #if 0 block.
+#if 0
 /* Function start: 0x409400 */ /* DEMO ONLY - no full game match */
 int T_Hotspot::Do()
 {
@@ -426,6 +494,4 @@ void Hotspot::QueueEvents(Queue* q)
         }
     } while (q->head != 0);
 }
-
-
-
+#endif
