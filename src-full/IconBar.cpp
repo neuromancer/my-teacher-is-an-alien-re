@@ -1,5 +1,7 @@
 #include "IconBar.h"
+#include "InvSlotItem.h"
 #include <string.h>
+#include "LinkedList.h"
 #include "Sprite.h"
 #include "SpriteAction.h"
 #include "Memory.h"
@@ -18,9 +20,7 @@ static Sprite* g_IconBarSprite;                 // 0x46af08
 static int g_IconBarRefCount;                   // 0x46af0c
 
 // External functions
-extern void __fastcall FUN_0044c740(void*);     // Sprite destructor helper
-extern void __fastcall FUN_0044c9d0(void*);     // Sprite notify
-extern void __fastcall FUN_00444af0(void*);     // SpriteAction destructor
+
 extern void FUN_00444e40(SpriteAction*);        // SpriteAction method (cdecl 1 param)
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00425c50(char*, ...);
@@ -29,9 +29,6 @@ extern void __stdcall FUN_004309a0(int);
 extern "C" void FUN_004309c0(void*);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void __fastcall FUN_00412a50(void*, int, char*);
-extern void* __fastcall FUN_00403520(void* list);
-extern void* __fastcall FUN_004035a0(void* list);
-extern void __fastcall FUN_00401130(void*);
 extern void __fastcall FUN_00401c80(void*);
 extern void* __fastcall FUN_00404b80(void*);
 extern void __fastcall FUN_00404d70(void*, int, int);
@@ -75,7 +72,7 @@ IconBar::~IconBar() {
         do {
             spr = entry->sprite;
             if (spr != 0) {
-                FUN_0044c740(spr);
+                ((Sprite*)spr)->~Sprite();
                 FreeMemory(spr);
                 entry->sprite = 0;
             }
@@ -84,7 +81,7 @@ IconBar::~IconBar() {
             do {
                 act = *pSlot;
                 if (act != 0) {
-                    FUN_00444af0(act);
+                    ((SpriteAction*)act)->~SpriteAction();
                     FreeMemory(act);
                     *pSlot = 0;
                 }
@@ -95,7 +92,7 @@ IconBar::~IconBar() {
         } while (entry < &g_IconBarEntries[6]);
         if (g_IconBarSprite != 0) {
             spr = g_IconBarSprite;
-            FUN_0044c740(spr);
+            ((Sprite*)spr)->~Sprite();
             FreeMemory(spr);
             g_IconBarSprite = 0;
         }
@@ -123,7 +120,7 @@ void IconBar::Init(SC_Message* msg) {
         if (*piVar1 != 0) {
             piVar1[2] = *piVar1;
             while (*piVar1 != 0) {
-                int* item = (int*)FUN_00403520(piVar1);
+                int* item = (int*)((LinkedList*)piVar1)->RemoveCurrent();
                 if (item != 0) {
                     *item = 0x461030;
                     FreeMemory(item);
@@ -136,7 +133,7 @@ void IconBar::Init(SC_Message* msg) {
         if (*piVar1 != 0) {
             piVar1[2] = *piVar1;
             while (*piVar1 != 0) {
-                void* item = FUN_004035a0(piVar1);
+                void* item = ((LinkedList*)piVar1)->RemoveCurrent();
                 if (item != 0) {
                     FUN_00401c80(item);
                     FreeMemory(item);
@@ -174,7 +171,7 @@ void IconBar::Init(SC_Message* msg) {
                 }
                 if (data != 0) {
                     *(int*)data = 0x46102c;
-                    FUN_00401130((void*)((int)data + 4));
+                    ((InvSlotItem*)((int)data + 4))->~InvSlotItem();
                     FreeMemory(data);
                 }
             }
@@ -205,12 +202,12 @@ int IconBar::ShutDown(SC_Message* msg) {
             IconBarEntry* entry = g_IconBarEntries;
             do {
                 if (entry->sprite != 0) {
-                    FUN_0044c9d0(entry->sprite);
+                    ((Sprite*)entry->sprite)->StopAnimationSound();
                 }
                 entry = entry + 1;
             } while (entry < &g_IconBarEntries[6]);
             if (g_IconBarSprite != 0) {
-                FUN_0044c9d0(g_IconBarSprite);
+                g_IconBarSprite->StopAnimationSound();
             }
         }
     }

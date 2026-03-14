@@ -1,6 +1,9 @@
 #include "SpriteAction.h"
+#include "GameEngine.h"
 #include <string.h>
 #include <stdlib.h>
+
+extern "C" int DAT_0046a6ec;
 
 /* Function start: 0x401120 */
 SlimeDim::~SlimeDim() {}
@@ -63,5 +66,38 @@ SpriteAction::~SpriteAction() {
         p->~SpriteAction();
         free(p);
         field_34 = 0;
+    }
+}
+
+/* Function start: 0x444D90 */
+extern "C" void FUN_00444d90(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
+    SpriteAction action(a, b, c, d, e, f, g, h, i, j);
+    if (DAT_0046a6ec != 0) {
+        ((GameEngine*)DAT_0046a6ec)->EnqueueAction(&action);
+        action.field_34 = 0;
+    }
+}
+
+/* Function start: 0x444E20 */
+extern "C" void FUN_00444e20(void* action) {
+    if (DAT_0046a6ec != 0) {
+        ((GameEngine*)DAT_0046a6ec)->EnqueueAction((SpriteAction*)action);
+        ((SpriteAction*)action)->field_34 = 0;
+    }
+}
+
+/* Function start: 0x444E40 */
+void FUN_00444E40(SpriteAction* action) {
+    if (DAT_0046a6ec != 0) {
+        ((GameEngine*)DAT_0046a6ec)->EnqueueAction(action);
+        action->field_34 = 0;
+    }
+}
+
+// IconBar.obj: FUN_00444e40 with SpriteAction* param (different mangling from void* version)
+void FUN_00444e40(SpriteAction* action) {
+    if (DAT_0046a6ec != 0) {
+        ((GameEngine*)DAT_0046a6ec)->EnqueueAction(action);
+        action->field_34 = 0;
     }
 }

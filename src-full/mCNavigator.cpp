@@ -15,7 +15,6 @@ extern "C" {
 }
 
 extern void ShowError(const char* message, ...);
-extern void CleanupObjectArray(void*, int);
 
 // Global for game outcome state
 extern GameOutcome* g_GameOutcome_00435f28;
@@ -71,7 +70,6 @@ mCNavigator::~mCNavigator()
                 do {
                     NavNode* node = ((NavNode**)pool->memory)[i];
                     while (node) {
-                        CleanupObjectArray(&node->value, 1);
                         n = 0;
                         while (n--)
                             ;

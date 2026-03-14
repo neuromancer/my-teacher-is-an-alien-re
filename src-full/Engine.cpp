@@ -13,7 +13,7 @@
 
 extern void FUN_00444E40(SpriteAction*);   // SpriteAction method
 extern void __stdcall FUN_004309C0(int*);  // handler call
-extern void __cdecl FUN_00425d70(char*, ...); // WriteToLog
+extern "C" void WriteToLog(const char* format, ...);
 extern void __cdecl FUN_00425c50(char*, ...); // ShowError
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void* __fastcall FUN_00425480(void*); // SoundList default constructor
@@ -118,7 +118,7 @@ void Engine::StopAndCleanup() {
 
 /* Function start: 0x401160 */
 void Engine::fn10(int param) {
-    FUN_00425d70("hIam %d", Engine::field_0x90);
+    WriteToLog("hIam %d", Engine::field_0x90);
 }
 
 /* Function start: 0x4491B0 */
@@ -184,7 +184,7 @@ void Engine::OnProcessEnd() {
     if (Engine::field_0x104 != 0) {
         int* target = (int*)(DAT_0046AA24 + 0xA8);
         if (*target != 0) {
-            FUN_00425d70("ddouble palette");
+            WriteToLog("ddouble palette");
         }
         *target = (int)Engine::field_0x104;
     }

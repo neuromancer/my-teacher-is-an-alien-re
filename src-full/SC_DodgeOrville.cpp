@@ -1,11 +1,10 @@
 #include "SC_DodgeOrville.h"
 #include "SpriteAction.h"
+#include "Sprite.h"
 #include "GameState.h"
 #include <string.h>
 #include <stdlib.h>
 
-extern void __fastcall FUN_0044c740(void*);
-extern void __fastcall FUN_00444af0(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_004127c0(void*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
@@ -42,14 +41,14 @@ void SC_DodgeOrville::Cleanup(int flag) {
 
     ptr = (void*)field_12C;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_12C = 0;
     }
 
     ptr = (void*)field_130;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_130 = 0;
     }
@@ -83,7 +82,7 @@ void SC_DodgeOrville::ProcessTargets() {
         if (((int*)field_A8[0])[1] != 0) {
             ptr = (void*)field_A8[22];
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_A8[22] = 0;
             }
@@ -116,7 +115,7 @@ void SC_DodgeOrville::ProcessTargets() {
         else if (((int*)field_A8[0])[0] != 0) {
             ptr = (void*)field_A8[22];
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_A8[22] = 0;
             }
@@ -131,7 +130,7 @@ void SC_DodgeOrville::ProcessTargets() {
         else {
             ptr = (void*)field_A8[22];
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_A8[22] = 0;
             }
@@ -148,7 +147,7 @@ void SC_DodgeOrville::ProcessTargets() {
         if (((int*)field_A8[0])[1] != 0) {
             ptr = (void*)field_A8[22];
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_A8[22] = 0;
             }
@@ -163,7 +162,7 @@ void SC_DodgeOrville::ProcessTargets() {
         else if (((int*)field_A8[0])[0] != 0) {
             ptr = (void*)field_A8[22];
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_A8[22] = 0;
             }

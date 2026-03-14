@@ -2,16 +2,13 @@
 #include "GameState.h"
 #include "SpriteAction.h"
 #include "Queue.h"
+#include "MMPlayer.h"
 #include <string.h>
 #include <stdio.h>
 
 extern "C" void ShowError(const char* format, ...);
 extern void FreeMemory(void* ptr);
 
-extern void __fastcall FUN_00443990(void*);
-extern void __fastcall FUN_00443ab0(void*);
-extern int __fastcall FUN_00443e30(void*);
-extern void __fastcall FUN_00444af0(void*);
 extern void __cdecl FUN_00444e40(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void* __fastcall FUN_004036a0(void*);
@@ -29,15 +26,6 @@ extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00445450(void*, void*);
 
 
-class MMPlayer : public Parser {
-public:
-    MMPlayer();
-    int field_mm_90;
-    int field_mm_94;
-    int field_mm_98;
-    int field_mm_9C;
-};
-
 /* Function start: 0x41B320 */
 HotspotAction::HotspotAction(int id) {
     memset(&field_90, 0, 0x80);
@@ -52,14 +40,14 @@ HotspotAction::~HotspotAction() {
 
     ptr = (void*)field_F4;
     if (ptr != 0) {
-        FUN_00443990(ptr);
+        ((MMPlayer*)ptr)->~MMPlayer();
         FreeMemory(ptr);
         field_F4 = 0;
     }
 
     ptr = (void*)field_F8;
     if (ptr != 0) {
-        FUN_00443990(ptr);
+        ((MMPlayer*)ptr)->~MMPlayer();
         FreeMemory(ptr);
         field_F8 = 0;
     }
@@ -71,7 +59,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = FUN_004036a0(list);
                 if (item != 0) {
-                    FUN_00444af0(item);
+                    ((SpriteAction*)item)->~SpriteAction();
                     FreeMemory(item);
                 }
             }
@@ -87,7 +75,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = FUN_004036a0(list);
                 if (item != 0) {
-                    FUN_00444af0(item);
+                    ((SpriteAction*)item)->~SpriteAction();
                     FreeMemory(item);
                 }
             }
@@ -103,7 +91,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = FUN_004036a0(list);
                 if (item != 0) {
-                    FUN_00444af0(item);
+                    ((SpriteAction*)item)->~SpriteAction();
                     FreeMemory(item);
                 }
             }
@@ -119,7 +107,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = FUN_004036a0(list);
                 if (item != 0) {
-                    FUN_00444af0(item);
+                    ((SpriteAction*)item)->~SpriteAction();
                     FreeMemory(item);
                 }
             }
@@ -134,10 +122,10 @@ void HotspotAction::Reset() {
     field_A8 = 0;
     state = 0;
     if (field_F4 != 0) {
-        FUN_00443ab0((void*)field_F4);
+        ((MMPlayer*)field_F4)->StopAll();
     }
     if (field_F8 != 0) {
-        FUN_00443ab0((void*)field_F8);
+        ((MMPlayer*)field_F8)->StopAll();
     }
 }
 
@@ -191,7 +179,7 @@ int HotspotAction::Update(int param) {
         if (field_F4 == 0) {
             ShowError("illegal player in hotspot %d", hotspotId);
         }
-        if (FUN_00443e30((void*)field_F4) == 0) {
+        if (((MMPlayer*)field_F4)->Draw() == 0) {
             state = 0;
             ProcessQueue100();
             Reset();
@@ -202,7 +190,7 @@ int HotspotAction::Update(int param) {
         if (field_F8 == 0) {
             ShowError("illegal player in hotspot %d", hotspotId);
         }
-        if (FUN_00443e30((void*)field_F8) == 0) {
+        if (((MMPlayer*)field_F8)->Draw() == 0) {
             state = 0;
             Reset();
         }

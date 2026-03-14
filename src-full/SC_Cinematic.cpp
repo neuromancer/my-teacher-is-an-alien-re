@@ -1,5 +1,6 @@
 #include "SC_Cinematic.h"
 #include "SpriteAction.h"
+#include "InvSlotItem.h"
 #include "Animation.h"
 #include "GameLoop.h"
 #include "VBuffer.h"
@@ -8,6 +9,7 @@
 #include "Memory.h"
 #include "Timer.h"
 #include "LinkedList.h"
+#include "ZBuffer.h"
 #include <string.h>
 #include <smack.h>
 
@@ -28,17 +30,13 @@ extern "C" {
 }
 
 // Engine list operations
-extern void* __fastcall FUN_00403520(void* list);
-extern void* __fastcall FUN_004035a0(void* list);
 extern void* __fastcall FUN_00403620(void* list);
 extern void __fastcall FUN_00401c80(void* obj);
 
-// Embedded object destructor (16-byte object at +4 in 3rd list objects)
-extern void __fastcall FUN_00401130(void* obj);
 
 // Engine/Misc
 extern void __cdecl FUN_00425a90(int width, int height);
-extern void __cdecl FUN_00425d70(char* msg, ...);
+extern "C" void WriteToLog(const char* format, ...);
 extern void __cdecl FUN_00425c50(char* msg, ...);
 extern "C" void FUN_00425f10();
 extern void __fastcall FUN_00432da0(void* self);
@@ -48,7 +46,7 @@ extern "C" void* FUN_004260f0(char* name);
 extern "C" int FUN_00425fa0(void* path);
 
 // Palette
-extern void __fastcall FUN_0041dc10(void* palette);
+#include "Palette.h"
 
 // Message operations
 extern void __cdecl FUN_00444e40(void* msg);
@@ -62,7 +60,6 @@ extern "C" void FUN_004307b0(int handle);
 
 // List cleanup
 extern void __fastcall FUN_004308c0(void* list);
-extern void __fastcall FUN_004145f0(void* list);
 
 // SmackWait is linked via smackw32.lib (IAT entry at 0x47655c in original binary)
 
@@ -75,6 +72,7 @@ extern "C" void DrawFontText(char* text, int len);   // 0x45329B - renders text 
 struct CinematicAction {
     void Execute(int flag);  // 0x430980
 };
+void CinematicAction::Execute(int) {}
 
 /* Function start: 0x42FBD0 */
 SC_Cinematic::SC_Cinematic() {
@@ -107,7 +105,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
             if (*piVar5 != 0) {
                 piVar5[2] = *piVar5;
                 while (*piVar5 != 0) {
-                    void* obj = FUN_00403520(piVar5);
+                    void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
                     if (obj != 0) {
                         *(int*)obj = 0x461030;
                         FreeMemory(obj);
@@ -119,7 +117,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
             if (*piVar6 != 0) {
                 piVar6[2] = *piVar6;
                 while (*piVar6 != 0) {
-                    void* obj = FUN_004035a0(piVar6);
+                    void* obj = ((LinkedList*)piVar6)->RemoveCurrent();
                     if (obj != 0) {
                         FUN_00401c80(obj);
                         FreeMemory(obj);
@@ -134,7 +132,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
                     void* obj = list3->RemoveCurrent();
                     if (obj != 0) {
                         *(int*)obj = 0x46102c;
-                        FUN_00401130((char*)obj + 4);
+                        ((InvSlotItem*)((char*)obj + 4))->~InvSlotItem();
                         FreeMemory(obj);
                     }
                 }
@@ -157,7 +155,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
     char* moviePath = (char*)FUN_004260f0(movieName);
 
     if (FUN_00425fa0(moviePath) == 0) {
-        FUN_00425d70("missing cinematic %s", moviePath);
+        WriteToLog("missing cinematic %s", moviePath);
         EndCinematic();
     } else {
         if (g_GameState_0046aa30 != 0) {
@@ -209,7 +207,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                 if (*piVar5 != 0) {
                     piVar5[2] = *piVar5;
                     while (*piVar5 != 0) {
-                        void* obj = FUN_00403520(piVar5);
+                        void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
                         if (obj != 0) {
                             *(int*)obj = 0x461030;
                             FreeMemory(obj);
@@ -221,7 +219,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                 if (*piVar6 != 0) {
                     piVar6[2] = *piVar6;
                     while (*piVar6 != 0) {
-                        void* obj = FUN_004035a0(piVar6);
+                        void* obj = ((LinkedList*)piVar6)->RemoveCurrent();
                         if (obj != 0) {
                             FUN_00401c80(obj);
                             FreeMemory(obj);
@@ -236,7 +234,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                         void* obj = FUN_00403620(list3);
                         if (obj != 0) {
                             *(int*)obj = 0x46102c;
-                            FUN_00401130((char*)obj + 4);
+                            ((InvSlotItem*)((char*)obj + 4))->~InvSlotItem();
                             FreeMemory(obj);
                         }
                     }
@@ -276,7 +274,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
 
     if (field_A8 != 0) {
         void* pal = (void*)field_A8;
-        FUN_0041dc10(pal);
+        ((Palette*)pal)->~Palette();
         FreeMemory(pal);
         field_A8 = 0;
     }
@@ -425,7 +423,7 @@ void SC_Cinematic::Update(int param1, int param2) {
                 if (*list1 != 0) {
                     list1[2] = *list1;
                     while (*list1 != 0) {
-                        void* obj = FUN_00403520(list1);
+                        void* obj = ((LinkedList*)list1)->RemoveCurrent();
                         if (obj != 0) {
                             ((CinematicAction*)obj)->Execute(1);
                         }
@@ -433,7 +431,7 @@ void SC_Cinematic::Update(int param1, int param2) {
                 }
 
                 FUN_004308c0(*(void**)(iVar2 + 0xa4));
-                FUN_004145f0(*(void**)(iVar2 + 0x9c));
+                ((ZBQueue*)*(void**)(iVar2 + 0x9c))->ClearList();
                 *(int*)(iVar2 + 0xa8) = 0;
             }
         }

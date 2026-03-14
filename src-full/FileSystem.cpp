@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "Memory.h"
 #include <string.h>
+#include <stdlib.h>
 #include <mbstring.h>
 #include <direct.h>
 
@@ -14,7 +15,6 @@ extern char g_WildcardChars[];
 extern char g_PathSeparator[];
 
 extern "C" {
-    char* __cdecl GetFullPath(char *dst, const char *src, unsigned int maxlen);
     void __cdecl SetErrorCode(unsigned int errorCode);
 }
 
@@ -78,7 +78,7 @@ int __cdecl FileStat(const unsigned char* filename, int* stat_buf)
     hFind = FindFirstFileA((LPCSTR)filename, &findData);
     if (hFind == INVALID_HANDLE_VALUE) {
         if (_mbspbrk(filename, (const unsigned char*)"\\") != 0) {
-            fullPath = GetFullPath(rootPath, (const char*)filename, 0x104);
+            fullPath = _fullpath(rootPath, (const char*)filename, 0x104);
             if (fullPath != 0) {
                 if (strlen(fullPath) == 3) {
                     if (GetDriveTypeA(fullPath) > 1) {

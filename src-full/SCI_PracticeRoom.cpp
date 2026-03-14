@@ -4,41 +4,36 @@
 #include "Palette.h"
 #include "Sample.h"
 #include "LinkedList.h"
+#include "MMPlayer.h"
+#include "GameState.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <new.h>
 
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00425a90(int, int);
 
 extern void __fastcall FUN_004309a0(void*, int, int);
-extern void __fastcall FUN_00443990(void*);
-extern void __fastcall FUN_0044c740(void*);
-extern void __fastcall FUN_0041dc10(void*);
 extern void __fastcall FUN_00420d90(void*);
 extern void __fastcall FUN_00425490(void*);
 extern void __fastcall FUN_00429c10(void*);
 extern void* __fastcall FUN_0042bc50(void*);
 extern void __fastcall FUN_0042b270(void*);
 extern void __fastcall FUN_0042b100(void*);
-extern int __fastcall FUN_00443e30(void*);
-extern void __fastcall FUN_0044c9d0(void*);
 extern void __fastcall FUN_00429df0(void*);
 extern void __fastcall FUN_00420f00(void*);
 extern void __fastcall FUN_00432da0(void*);
 extern void* __fastcall FUN_00425480(void*);
 extern void __fastcall FUN_00425550(void*, int, int);
-extern int __fastcall FUN_00433ae0(void*, int, char*);
 extern int __fastcall FUN_0042a010(void*, int, void*);
 
 extern void __cdecl FUN_00425c50(char*, ...);
-extern void __cdecl FUN_00425d70(char*);
+extern "C" void WriteToLog(const char* format, ...);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 
 extern void* __fastcall FUN_0041dbe0(void*);
-extern void* __fastcall FUN_004438a0(void*);
-extern void* __fastcall FUN_0044c660(void*, int, char*);
 extern void* __fastcall FUN_00429b60(void*, int, int, void*);
 extern void* __fastcall FUN_00420ce0(void*, int, int);
 
@@ -79,7 +74,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     SlimeTable* table = new SlimeTable();
     *(SlimeTable**)((int)this + 0xC8) = table;
     void* pvVar = DAT_0046aa30;
-    int iGameState = FUN_00433ae0(pvVar, 0, "FINAL_PRACTICEROOM");
+    int iGameState = ((GameState*)pvVar)->FindLabel("FINAL_PRACTICEROOM");
     if (iGameState < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGameState) {
         FUN_00425c50("Invalid gamestate %d", iGameState);
     }
@@ -119,7 +114,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     if (palette != 0) {
         int* pSlot = (int*)((int)DAT_0046aa24 + 0xA8);
         if (*pSlot != 0) {
-            FUN_00425d70("ddouble palette");
+            WriteToLog("ddouble palette");
         }
         *pSlot = (int)palette;
     }
@@ -140,13 +135,13 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
 
     pVar = *(void**)((int)this + 0xAC);
     if (pVar != 0) {
-        FUN_00443990(pVar);
+        ((MMPlayer*)pVar)->~MMPlayer();
         free(pVar);
         *(void**)((int)this + 0xAC) = 0;
     }
     pVar = *(void**)((int)this + 0xB0);
     if (pVar != 0) {
-        FUN_0044c740(pVar);
+        ((Sprite*)pVar)->~Sprite();
         free(pVar);
         *(void**)((int)this + 0xB0) = 0;
     }
@@ -167,7 +162,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
     }
     pVar = *(void**)((int)this + 0xB4);
     if (pVar != 0) {
-        FUN_0041dc10(pVar);
+        ((Palette*)pVar)->~Palette();
         free(pVar);
         *(void**)((int)this + 0xB4) = 0;
     }
@@ -213,14 +208,14 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
             if (*(int*)((int)this + 0xA8) == 0) {
                 return;
             }
-            FUN_0044c9d0(*(void**)((int)this + 0xB0));
+            ((Sprite*)*(void**)((int)this + 0xB0))->StopAnimationSound();
             return;
         }
         *(int*)((int)this + 0xA8) = 1;
     }
     void* pAC = *(void**)((int)this + 0xAC);
     if (pAC != 0) {
-        FUN_00443e30(pAC);
+        ((MMPlayer*)pAC)->Draw();
     }
     int* pList = *(int**)((int)this + 0xB8);
     if (pList != 0) {
@@ -385,7 +380,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         sscanf(param_1, "%s %s", local_3c, local_bc);
         void* pal = *(void**)((int)this + 0xB4);
         if (pal != 0) {
-            FUN_0041dc10(pal);
+            ((Palette*)pal)->~Palette();
             free(pal);
             *(void**)((int)this + 0xB4) = 0;
         }
@@ -449,7 +444,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             void* mem = malloc(0xA0);
             void* amb = 0;
             if (mem != 0) {
-                amb = FUN_004438a0(mem);
+                amb = new (mem) MMPlayer();
             }
             *(void**)((int)this + 0xAC) = amb;
         }
@@ -459,7 +454,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             void* mem = malloc(0xF8);
             void* spr = 0;
             if (mem != 0) {
-                spr = FUN_0044c660(mem, 0, (char*)0);
+                spr = new (mem) Sprite((char*)0);
             }
             *(void**)((int)this + 0xB0) = spr;
         }

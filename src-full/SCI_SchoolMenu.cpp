@@ -1,8 +1,10 @@
 #include "SCI_SchoolMenu.h"
 #include "SpriteAction.h"
+#include "LinkedList.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <new.h>
 #include "GameState.h"
 #include "globals.h"
 #include "Sprite.h"
@@ -10,6 +12,7 @@
 #include "Timer.h"
 #include "Palette.h"
 #include "RenderEntry.h"
+#include "MMPlayer.h"
 
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
@@ -29,18 +32,11 @@ extern int DAT_004733e8;
 extern int DAT_0047337c;
 
 // extern functions (single-param __fastcall == thiscall with 0 stack params)
-extern void __fastcall FUN_0041dc10(void*);
-extern void __fastcall FUN_00443990(void*);
 extern void __fastcall FUN_00420d90(void*);
-extern void __fastcall FUN_00424ee0(void*);
-extern void __fastcall FUN_00424ed0(void*);
-extern void __fastcall FUN_004250e0(void*);
 extern void __fastcall FUN_00421020(void*);
 extern void __fastcall FUN_00421880(void*);
 extern void __fastcall FUN_004218b0(void*);
 extern void* __fastcall FUN_0041dbe0(void*);
-extern void* __fastcall FUN_004438a0(void*);
-extern void __fastcall FUN_00401130(void*);
 
 // Thiscall wrapper classes for correct calling convention (no real class header found)
 class HitRect {
@@ -65,10 +61,8 @@ extern "C" {
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void __cdecl FUN_00425c50(char*, ...);
-extern void __cdecl FUN_00425d70(char*, ...);
+extern "C" void WriteToLog(const char* format, ...);
 
-extern void* __fastcall FUN_00403520(void*);
-extern void* __fastcall FUN_004035a0(void*);
 extern void* __fastcall FUN_00403620(void*);
 extern void __fastcall FUN_00401c80(void*);
 
@@ -86,14 +80,14 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
 
     ptr = (void*)field_A8;
     if (ptr != 0) {
-        FUN_0041dc10(ptr);
+        ((Palette*)ptr)->~Palette();
         free(ptr);
         field_A8 = 0;
     }
 
     ptr = (void*)field_AC;
     if (ptr != 0) {
-        FUN_00443990(ptr);
+        ((MMPlayer*)ptr)->~MMPlayer();
         free(ptr);
         field_AC = 0;
     }
@@ -114,7 +108,7 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
 
     ptr = (void*)field_E8;
     if (ptr != 0) {
-        FUN_00424ee0(ptr);
+        ((Sample*)ptr)->Unload();
         free(ptr);
         field_E8 = 0;
     }
@@ -180,7 +174,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     if (palVal != 0) {
         int* dstPtr = (int*)((int)DAT_0046aa24 + 0xa8);
         if (*dstPtr != 0) {
-            FUN_00425d70("ddouble palette");
+            WriteToLog("ddouble palette");
         }
         *dstPtr = palVal;
     }
@@ -188,7 +182,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     // Clean up existing sound
     ptr = (void*)field_E8;
     if (ptr != 0) {
-        FUN_00424ee0(ptr);
+        ((Sample*)ptr)->Unload();
         free(ptr);
         field_E8 = 0;
     }
@@ -197,7 +191,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     void* sndMem = malloc(0x10);
     void* sndObj = 0;
     if (sndMem != 0) {
-        FUN_00424ed0(sndMem);
+        new (sndMem) Sample();
         sndObj = sndMem;
     }
     field_E8 = (int)sndObj;
@@ -418,7 +412,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     if (*list1 != 0) {
         list1[2] = *list1;
         while (*list1 != 0) {
-            void* item = (void*)FUN_00403520((void*)list1);
+            void* item = ((LinkedList*)list1)->RemoveCurrent();
             if (item != 0) {
                 *(int*)item = 0x461030;
                 free(item);
@@ -430,7 +424,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     if (*list2 != 0) {
         list2[2] = *list2;
         while (*list2 != 0) {
-            void* item = (void*)FUN_004035a0((void*)list2);
+            void* item = ((LinkedList*)list2)->RemoveCurrent();
             if (item != 0) {
                 FUN_00401c80(item);
                 free(item);
@@ -455,14 +449,14 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     // Clean up own fields
     ptr = (void*)field_A8;
     if (ptr != 0) {
-        FUN_0041dc10(ptr);
+        ((Palette*)ptr)->~Palette();
         free(ptr);
         field_A8 = 0;
     }
 
     ptr = (void*)field_AC;
     if (ptr != 0) {
-        FUN_00443990(ptr);
+        ((MMPlayer*)ptr)->~MMPlayer();
         free(ptr);
         field_AC = 0;
     }
@@ -483,7 +477,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
 
     ptr = (void*)field_E8;
     if (ptr != 0) {
-        FUN_00424ee0(ptr);
+        ((Sample*)ptr)->Unload();
         free(ptr);
         field_E8 = 0;
     }
@@ -879,7 +873,7 @@ char_click:
         selectedOption = -1;
 
         // Play sound
-        FUN_004250e0((void*)field_E8);
+        ((Sample*)field_E8)->~Sample();
         {
             Timer timedEvt;
             timedEvt.Wait(0x96);
@@ -1134,7 +1128,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         void* mem = malloc(0xa0);
         void* obj = 0;
         if (mem != 0) {
-            FUN_004438a0(mem);
+            new (mem) MMPlayer();
             obj = mem;
         }
         field_AC = (int)obj;

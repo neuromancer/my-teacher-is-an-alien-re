@@ -1,17 +1,16 @@
 #include "SC_Fan.h"
 #include "Sprite.h"
+#include "SpriteAction.h"
 #include "Palette.h"
+#include "Sample.h"
 #include "GameState.h"
 #include "mss.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <new.h>
+#include "TimeOut.h"
 
-extern void __fastcall FUN_0041dc10(void*);
-extern void __fastcall FUN_0044c740(void*);
-extern void __fastcall FUN_00444af0(void*);
-extern void __fastcall FUN_00424ee0(void*);
-extern void __fastcall FUN_00421930(void*);
 extern void __fastcall FUN_00410fd0(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 
@@ -21,25 +20,18 @@ extern void __fastcall FUN_004309a0(void*, int, int);
 extern void __fastcall FUN_004309c0(void*, int, void*);
 extern void __cdecl FUN_00425a90(int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
-extern void __cdecl FUN_00425d70(char*, ...);
+extern "C" void WriteToLog(const char* format, ...);
 extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00444e40(void*);
 extern void __fastcall FUN_0044cb40(void*, int, int, int);
 extern int __cdecl FUN_0044ccf0(int, int, int, int);
-extern void __fastcall FUN_004250e0(void*);
-extern void __fastcall FUN_00425100(void*, int, int, int);
-// FUN_00433ae0 is thiscall with 1 stack param (not fastcall)
 extern void __fastcall FUN_004127c0(void*);
 extern void __fastcall FUN_00421920(void*);
 extern void __fastcall FUN_00407b60(void*);
 extern void __fastcall FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_00432da0(void*);
 extern void __fastcall FUN_00427880(void*);
-extern int __fastcall FUN_00421a30(void*);
-extern void __fastcall FUN_004219f0(void*, int, int);
-extern int __cdecl FUN_00454920();
 
-extern void* __fastcall FUN_0044c660(void*, int, char*);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern char* __cdecl FUN_00426190(char* name);
 extern void* __fastcall FUN_00410fb0(void*, int, char*, int);
@@ -47,8 +39,6 @@ extern void __fastcall FUN_004274c0(void*, int, int);
 extern void __cdecl FUN_00412a50();
 extern char* __cdecl FUN_0044e470(char*);
 extern void __cdecl FUN_00445450(void*, void*);
-extern void __fastcall FUN_00424ed0(void*);
-extern int __fastcall FUN_00424f00(void*, int, char*);
 
 extern void* DAT_00468ef0;
 extern void* DAT_0046aa24;
@@ -103,7 +93,7 @@ void SC_Fan::Init(SC_Message* msg) {
     if (ptr != 0) {
         target = (int*)((int)DAT_0046aa24 + 0xA8);
         if (*target != 0) {
-            FUN_00425d70("ddouble palette");
+            WriteToLog("ddouble palette");
         }
         *target = (int)ptr;
     }
@@ -124,49 +114,49 @@ void SC_Fan::Cleanup(int flag) {
 
     ptr = field_C4;
     if (ptr != 0) {
-        FUN_0041dc10(ptr);
+        ((Palette*)ptr)->~Palette();
         free(ptr);
         field_C4 = 0;
     }
 
     ptr = field_C8;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_C8 = 0;
     }
 
     ptr = field_CC;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_CC = 0;
     }
 
     ptr = field_E0;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_E0 = 0;
     }
 
     ptr = field_E4;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_E4 = 0;
     }
 
     ptr = field_E8;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_E8 = 0;
     }
 
     ptr = field_EC;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_EC = 0;
     }
@@ -178,7 +168,7 @@ void SC_Fan::Cleanup(int flag) {
 
     ptr = field_C0;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_C0 = 0;
     }
@@ -192,21 +182,21 @@ void SC_Fan::Cleanup(int flag) {
 
     ptr = field_BC;
     if (ptr != 0) {
-        FUN_00421930(ptr);
+        ((TimeOut*)ptr)->~TimeOut();
         free(ptr);
         field_BC = 0;
     }
 
     ptr = field_AC;
     if (ptr != 0) {
-        FUN_00444af0(ptr);
+        ((SpriteAction*)ptr)->~SpriteAction();
         free(ptr);
         field_AC = 0;
     }
 
     ptr = field_A8;
     if (ptr != 0) {
-        FUN_00444af0(ptr);
+        ((SpriteAction*)ptr)->~SpriteAction();
         free(ptr);
         field_A8 = 0;
     }
@@ -214,7 +204,7 @@ void SC_Fan::Cleanup(int flag) {
     for (i = 0xb; i != 0; i--) {
         ptr = field_198[0xb - i];
         if (ptr != 0) {
-            FUN_00424ee0(ptr);
+            ((Sample*)ptr)->Unload();
             free(ptr);
             field_198[0xb - i] = 0;
         }
@@ -297,7 +287,7 @@ void SC_Fan::ProcessRound() {
         if (field_17C == 2) {
             ptr = field_A8;
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_A8 = 0;
             }
@@ -310,7 +300,7 @@ void SC_Fan::ProcessRound() {
         } else if (field_17C == 3) {
             ptr = field_A8;
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_A8 = 0;
             }
@@ -340,13 +330,13 @@ void SC_Fan::ProcessRound() {
             FUN_00444e40(field_AC);
             ptr = field_AC;
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_AC = 0;
             }
             ptr = field_A8;
             if (ptr != 0) {
-                FUN_00444af0(ptr);
+                ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
                 field_A8 = 0;
             }
@@ -375,7 +365,7 @@ void SC_Fan::ProcessRound() {
     FUN_00444e40(field_A8);
     ptr = field_A8;
     if (ptr != 0) {
-        FUN_00444af0(ptr);
+        ((SpriteAction*)ptr)->~SpriteAction();
         free(ptr);
         field_A8 = 0;
     }
@@ -414,7 +404,7 @@ void SC_Fan::State0Handler() {
 
         sample = field_198[1];
         if (sample != 0) {
-            FUN_00425100(sample, 0, 100, 1);
+            ((Sample*)sample)->Play(100, 1);
         }
         return;
     }
@@ -471,7 +461,7 @@ void SC_Fan::State4Handler() {
         i = 0xB;
         do {
             if (*(void**)ptr != 0) {
-                FUN_004250e0(*(void**)ptr);
+                ((Sample*)*(void**)ptr)->~Sample();
             }
             ptr = (char*)ptr + 4;
             i--;
@@ -479,7 +469,7 @@ void SC_Fan::State4Handler() {
 
         sample = field_198[10];
         if (sample != 0) {
-            FUN_00425100(sample, 0, 100, 1);
+            ((Sample*)sample)->Play(100, 1);
         }
 
         field_190++;
@@ -562,17 +552,17 @@ void SC_Fan::RenderFan() {
                          invSlot_158.field_8, invSlot_158.field_C);
 
             if (*(int*)field_BC == 1) {
-                if (FUN_00421a30(field_BC)) {
+                if (((TimeOut*)field_BC)->IsTimeOut()) {
                     field_17C = 3;
                 }
             } else {
-                FUN_004219f0(field_BC, 0, 0x5DC);
+                ((TimeOut*)field_BC)->Start(0x5DC);
             }
         } else {
             int offset;
             int rnd;
             offset = dim_168.field_0 * 0x36 / dimVal;
-            rnd = FUN_00454920();
+            rnd = rand();
             offset = offset - rnd % 3 + 1;
             if (offset < 0) {
                 offset = 0;
@@ -642,7 +632,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_C8 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -651,7 +641,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_CC = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -660,7 +650,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_E0 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -669,7 +659,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_E4 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -678,7 +668,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_E8 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -687,7 +677,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_EC = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -696,7 +686,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_C0 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -750,14 +740,14 @@ int SC_Fan::LBLParse(char* param_1) {
             void* mem = malloc(0x10);
             void* smp = 0;
             if (mem != 0) {
-                FUN_00424ed0(mem);
+                new (mem) Sample();
                 smp = mem;
             }
             field_198[local_18] = smp;
             char* path = FUN_0044e470(local_b8);
-            int err = FUN_00424f00(smp, 0, path);
+            int err = ((Sample*)smp)->Load(path);
             if (err != 0 && field_198[local_18] != 0) {
-                FUN_00424ee0(field_198[local_18]);
+                ((Sample*)field_198[local_18])->Unload();
                 free(field_198[local_18]);
                 field_198[local_18] = 0;
             }

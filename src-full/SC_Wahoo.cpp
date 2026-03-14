@@ -7,20 +7,17 @@
 #include "SoundList.h"
 #include "mss.h"
 #include "Memory.h"
+#include "GameState.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <new.h>
 
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 
 extern void* __fastcall FUN_0041dbe0(void*);
-extern void* __fastcall FUN_0044c660(void*, int, char*);
-extern void __fastcall FUN_0041dc10(void*);
-extern void __fastcall FUN_0044c740(void*);
 extern void __fastcall FUN_00410fd0(void*);
 // FUN_00421930 = TimeOut::~TimeOut (full game)
-extern void __fastcall FUN_00424ee0(void*);
-extern void __fastcall FUN_00425200(void*);
 
 extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00412a50();
@@ -47,10 +44,8 @@ class DetMask {
 public:
     int CheckHit(int x, int y);  // 0x411330
 };
+void DetectionObj::Render() {}
 
-
-extern int __fastcall FUN_00433ae0(void*, int, char*);
-extern void __fastcall FUN_00409f20(void*, int);
 extern void __cdecl FUN_00444e40(void*);
 
 extern void __cdecl FUN_00413e70(void*, int, char*);
@@ -60,7 +55,7 @@ extern void __fastcall FUN_004309a0(void*, int, int);
 extern "C" int FUN_00425fa0(char*);
 extern "C" void FUN_004265a0();
 extern void __cdecl FUN_00425a90(int, int);
-extern void __cdecl FUN_00425d70(char*);
+extern "C" void WriteToLog(const char* format, ...);
 extern void* DAT_0046aa24;
 
 
@@ -120,7 +115,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
     *(int*)((int)this + 0x94) = *(int*)((int)msg + 4);
 
     void* pvVar4 = DAT_0046aa30;
-    unsigned int uVar3 = FUN_00433ae0(pvVar4, 0, "PLAY_RIGHT_BRIDGE");
+    unsigned int uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
     if ((int)uVar3 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < (int)uVar3) {
         FUN_00425c50("Invalid gamestate %d", uVar3);
     }
@@ -129,7 +124,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
     FUN_00413e10(this, "mis\\cb_bridge.mis", (char*)0);
 
     pvVar4 = DAT_0046aa30;
-    uVar3 = FUN_00433ae0(pvVar4, 0, "PLAY_RIGHT_BRIDGE");
+    uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
     if ((int)uVar3 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < (int)uVar3) {
         FUN_00425c50("Invalid gamestate %d", uVar3);
     }
@@ -149,7 +144,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
     if (iVar7 != 0) {
         int* piVar8 = (int*)((int)DAT_0046aa24 + 0xa8);
         if (*piVar8 != 0) {
-            FUN_00425d70("ddouble palette");
+            WriteToLog("ddouble palette");
         }
         *piVar8 = iVar7;
     }
@@ -164,21 +159,21 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 
     ptr = field_AC;
     if (ptr != 0) {
-        FUN_0041dc10(ptr);
+        ((Palette*)ptr)->~Palette();
         free(ptr);
         field_AC = 0;
     }
 
     ptr = field_B0;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_B0 = 0;
     }
 
     ptr = field_B4;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_B4 = 0;
     }
@@ -192,21 +187,21 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 
     ptr = field_B8;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_B8 = 0;
     }
 
     ptr = field_BC;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_BC = 0;
     }
 
     ptr = field_C0;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_C0 = 0;
     }
@@ -218,7 +213,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 
     ptr = field_13C;
     if (ptr != 0) {
-        FUN_0044c740(ptr);
+        ((Sprite*)ptr)->~Sprite();
         free(ptr);
         field_13C = 0;
     }
@@ -237,7 +232,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 
     ptr = field_114;
     if (ptr != 0) {
-        FUN_00425200(ptr);
+        ((SoundList*)ptr)->~SoundList();
         free(ptr);
         field_114 = 0;
     }
@@ -252,7 +247,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
     for (i = 0xe; i != 0; i--) {
         ptr = field_DC[0xe - i];
         if (ptr != 0) {
-            FUN_00424ee0(ptr);
+            ((Sample*)ptr)->Unload();
             free(ptr);
             field_DC[0xe - i] = 0;
         }
@@ -404,8 +399,8 @@ void SC_Wahoo::Update(int param1, int param2) {
         }
         int val = field_140;
         void* gs = DAT_0046aa30;
-        int idx = FUN_00433ae0(gs, 0, "COMBAT_BRIDGE_STATE");
-        FUN_00409f20(gs, idx);
+        int idx = ((GameState*)gs)->FindLabel("COMBAT_BRIDGE_STATE");
+        ((GameState*)gs)->FUN_00409f20(idx);
         *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = val + 1;
         ProcessState();
         return;
@@ -562,7 +557,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_B0 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -571,7 +566,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_B4 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -580,7 +575,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_B8 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -589,7 +584,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_BC = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -598,7 +593,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_C0 = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -607,7 +602,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* mem = malloc(0xf8);
         void* spr = 0;
         if (mem != 0) {
-            spr = FUN_0044c660(mem, 0, (char*)0);
+            spr = new (mem) Sprite((char*)0);
         }
         field_13C = spr;
         FUN_00413e70(spr, (int)this, (char*)0);
@@ -616,7 +611,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         sscanf(param_1, " %s %s %d ", local_38, local_b8, &local_18);
         int val = local_18;
         void* gs = DAT_0046aa30;
-        unsigned int idx = FUN_00433ae0(gs, 0, local_b8);
+        unsigned int idx = ((GameState*)gs)->FindLabel(local_b8);
         if ((int)idx < 0 || *(int*)((int)gs + 0x98) - 1 < (int)idx) {
             FUN_00425c50("Invalid gamestate %d");
         }
@@ -659,7 +654,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             char* path = FUN_0044e470(local_b8);
             int err = smp->Load(path);
             if (err != 0 && field_DC[local_18] != 0) {
-                FUN_00424ee0(field_DC[local_18]);
+                ((Sample*)field_DC[local_18])->Unload();
                 free(field_DC[local_18]);
                 field_DC[local_18] = 0;
             }
@@ -852,7 +847,7 @@ LAB_00439160:
         if (*(int*)((int)field_B4 + 0x98) == 1) {
             pvVar6 = DAT_0046aa30;
             {
-            unsigned int uVar2 = FUN_00433ae0(pvVar6, 0, "NUM_ACTIONS");
+            unsigned int uVar2 = ((GameState*)pvVar6)->FindLabel("NUM_ACTIONS");
             if ((int)uVar2 < 0 || *(int*)((int)pvVar6 + 0x98) - 1 < (int)uVar2) {
                 FUN_00425c50("Invalid gamestate %d", uVar2);
             }

@@ -2,6 +2,7 @@
 #include "SpriteAction.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "SoundList.h"
 #include "Memory.h"
 #include "LinkedList.h"
 #include <string.h>
@@ -11,7 +12,7 @@ extern "C" void __cdecl FUN_00444d90(int, int, int, int, int, int, int, int, int
 extern "C" int FUN_00425fa0(char*);
 extern "C" void FUN_004265a0();
 extern void __cdecl FUN_00425a90(int, int);
-extern void __cdecl FUN_00425d70(char*);
+extern "C" void WriteToLog(const char* format, ...);
 extern void* DAT_0046aa24;
 
 // SlimeTable - 12-byte object, constructor at 0x00425480
@@ -86,7 +87,7 @@ void SC_Slime::Init(SC_Message* msg)
     if (palette != 0) {
         int* palSlot = (int*)((int)DAT_0046aa24 + 0xa8);
         if (*palSlot != 0) {
-            FUN_00425d70("ddouble palette");
+            WriteToLog("ddouble palette");
         }
         *palSlot = (int)palette;
     }
@@ -171,8 +172,7 @@ int SC_Slime::ShutDown(SC_Message* msg)
         field_16C = 0;
     }
     if (field_150 != 0) {
-        extern void __fastcall FUN_00425200(void*);
-        FUN_00425200((void*)field_150);
+        ((SoundList*)field_150)->~SoundList();
         delete (void*)field_150;
         field_150 = 0;
     }

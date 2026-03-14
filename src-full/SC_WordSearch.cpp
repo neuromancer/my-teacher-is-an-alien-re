@@ -1,7 +1,10 @@
 #include "SC_WordSearch.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
+#include "Palette.h"
 #include "Sample.h"
+#include "Timer.h"
+#include "GameState.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,18 +12,12 @@
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 
-extern void __fastcall FUN_004218c0(void*);
-extern void __fastcall FUN_0044c740(void*);
-extern void __fastcall FUN_0041dc10(void*);
-extern void __fastcall FUN_00424ee0(void*);
 extern void __fastcall FUN_004309a0(void*, int, int);
-extern int __fastcall FUN_00433ae0(void*, int, char*);
 
 extern void __cdecl FUN_00444e40(void*);
 
 extern void __cdecl FUN_00425c50(char*, ...);
 
-extern unsigned int __fastcall FUN_004218e0(void*);
 extern void __fastcall FUN_00432da0(void* self);
 extern void __fastcall FUN_00411180(void*, int, int);
 extern void __fastcall FUN_00404350(void*, int, int, int, int, int, int, int, int);
@@ -66,7 +63,7 @@ void SC_WordSearch::Init(SC_Message* msg) {
     }
     ((Sprite*)*(void**)((int)this + 0x82c))->ResetAnimation(
         *(int*)(*(int*)((int)pvVar4 + 0x90) + iVar2 * 4), 0);
-    FUN_004218c0((void*)((int)this + 0xC0));
+    ((Timer*)((int)this + 0xC0))->Reset();
     if (*(void**)((int)this + 0xB8) != 0) {
         ((Sample*)*(void**)((int)this + 0xB8))->Play(100, 1);
     }
@@ -81,37 +78,37 @@ int SC_WordSearch::ShutDown(SC_Message* msg) {
 
     pVar = *(void**)((int)this + 0xAC);
     if (pVar != 0) {
-        FUN_0044c740(pVar);
+        ((Sprite*)pVar)->~Sprite();
         free(pVar);
         *(void**)((int)this + 0xAC) = 0;
     }
     pVar = *(void**)((int)this + 0xA8);
     if (pVar != 0) {
-        FUN_0041dc10(pVar);
+        ((Palette*)pVar)->~Palette();
         free(pVar);
         *(void**)((int)this + 0xA8) = 0;
     }
     pVar = *(void**)((int)this + 0xB8);
     if (pVar != 0) {
-        FUN_00424ee0(pVar);
+        ((Sample*)pVar)->Unload();
         free(pVar);
         *(void**)((int)this + 0xB8) = 0;
     }
     pVar = *(void**)((int)this + 0xB0);
     if (pVar != 0) {
-        FUN_00424ee0(pVar);
+        ((Sample*)pVar)->Unload();
         free(pVar);
         *(void**)((int)this + 0xB0) = 0;
     }
     pVar = *(void**)((int)this + 0xB4);
     if (pVar != 0) {
-        FUN_00424ee0(pVar);
+        ((Sample*)pVar)->Unload();
         free(pVar);
         *(void**)((int)this + 0xB4) = 0;
     }
     pVar = *(void**)((int)this + 0xBC);
     if (pVar != 0) {
-        FUN_00424ee0(pVar);
+        ((Sample*)pVar)->Unload();
         free(pVar);
         *(void**)((int)this + 0xBC) = 0;
     }
@@ -122,25 +119,25 @@ int SC_WordSearch::ShutDown(SC_Message* msg) {
     }
     pVar = *(void**)((int)this + 0x820);
     if (pVar != 0) {
-        FUN_0044c740(pVar);
+        ((Sprite*)pVar)->~Sprite();
         free(pVar);
         *(void**)((int)this + 0x820) = 0;
     }
     pVar = *(void**)((int)this + 0x824);
     if (pVar != 0) {
-        FUN_0044c740(pVar);
+        ((Sprite*)pVar)->~Sprite();
         free(pVar);
         *(void**)((int)this + 0x824) = 0;
     }
     pVar = *(void**)((int)this + 0x828);
     if (pVar != 0) {
-        FUN_0044c740(pVar);
+        ((Sprite*)pVar)->~Sprite();
         free(pVar);
         *(void**)((int)this + 0x828) = 0;
     }
     pVar = *(void**)((int)this + 0x82C);
     if (pVar != 0) {
-        FUN_0044c740(pVar);
+        ((Sprite*)pVar)->~Sprite();
         free(pVar);
         *(void**)((int)this + 0x82C) = 0;
     }
@@ -163,7 +160,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         spr->ResetAnimation(0, 0);
     }
 
-    unsigned int uVar4 = FUN_004218e0((void*)((int)this + 0xC0));
+    unsigned int uVar4 = ((Timer*)((int)this + 0xC0))->Update();
     if (uVar4 > 60000 && param2 != handlerId) {
         FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
@@ -374,7 +371,7 @@ void SC_WordSearch::FUN_436790() {
     if (*(int*)((int)this + 0x98) != 0x2B) {
         pvVar2 = DAT_0046aa30;
         if (*(unsigned char*)((int)this + 0x81c) & 1) {
-            uVar3 = FUN_00433ae0(pvVar2, 0, "PUZ_WAHOO_WON");
+            uVar3 = ((GameState*)pvVar2)->FindLabel("PUZ_WAHOO_WON");
             if (uVar3 < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < uVar3) {
                 FUN_00425c50("Invalid gamestate %d", uVar3);
             }
@@ -384,7 +381,7 @@ void SC_WordSearch::FUN_436790() {
             *(int*)(*(int*)((int)this + 0x830) + 0x14) = 0x13;
             FUN_00444d90(4, 0x1BA8, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
         } else {
-            uVar3 = FUN_00433ae0(pvVar2, 0, "PERIOD");
+            uVar3 = ((GameState*)pvVar2)->FindLabel("PERIOD");
             if (uVar3 < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < uVar3) {
                 FUN_00425c50("Invalid gamestate %d", uVar3);
             }
@@ -475,7 +472,7 @@ int SC_WordSearch::Exit(SC_Message* msg) {
     if (*(int*)msg != handlerId) {
         return 0;
     }
-    FUN_004218c0((void*)((int)this + 0xC0));
+    ((Timer*)((int)this + 0xC0))->Reset();
     int iVar = *(int*)((int)msg + 0x10);
     if (iVar != 0) {
         if (iVar != 7) {

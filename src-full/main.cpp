@@ -104,7 +104,6 @@ public:
 extern void __cdecl FUN_004344b0();
 extern void __cdecl FUN_00434030(void*, int);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern void __fastcall FUN_004218c0(void*);
 
 #include "GameEngine.h"
 extern "C" int DAT_0046a6ec;
@@ -119,7 +118,7 @@ int DAT_00473444 = 0;
 int DAT_0046b780 = 0;
 int DAT_0046b790 = 0;
 MemoryCache* DAT_0046b78c = 0;
-int DAT_00473448 = 0;
+Timer DAT_00473448;
 // QuestionInit - Parser-derived class constructed and immediately destroyed in RunGame
 // FUN_00422880 constructor, calls Parser() + ParseFile(this, filename, NULL)
 class QuestionInit : public Parser {
@@ -593,7 +592,7 @@ void __cdecl InitMemoryCache(int param_1, int param_2, float param_3) {
     DAT_0046b790 = DAT_00473444 - (int)((float)DAT_00473444 * param_3 * g_PercentScale);
     MemoryCache* ptr = new MemoryCache(DAT_0046b780);
     DAT_0046b78c = ptr;
-    FUN_004218c0((void*)&DAT_00473448);
+    DAT_00473448.Reset();
 }
 
 /* Function start: 0x434170 */

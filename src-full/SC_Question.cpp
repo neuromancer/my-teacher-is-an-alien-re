@@ -2,6 +2,7 @@
 #include "SpriteAction.h"
 #include "Memory.h"
 #include "MMPlayer.h"
+#include "Sprite.h"
 #include "FlagArray.h"
 #include "GameState.h"
 #include "globals.h"
@@ -9,27 +10,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <new.h>
 
 extern int __fastcall FUN_0044c350(void*, int, char*);
 extern void __cdecl FUN_00425cb0(char*, ...);
-extern int __fastcall FUN_00433ae0(void*, int, char*);
 extern int __fastcall FUN_00420a00(void*, int, int);
 extern void __fastcall FUN_00420a50(void*, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
-extern int __fastcall FUN_00443e30(void*);
-extern void __fastcall FUN_00443ed0(void*, int, int);
-extern void __fastcall FUN_00443990(void*);
-extern void* __fastcall FUN_004438a0(void*);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void __cdecl FUN_00444e40(void*);
 extern void __fastcall FUN_00425550(void*, int, int);
-extern void* __fastcall FUN_0044c660(void*, int, char*);
-extern void __fastcall FUN_00443b90(void*, int, int);
-extern void __fastcall FUN_0044d2a0(void*, int, int);
 extern void __fastcall FUN_0044c880(void*);
-extern void __fastcall FUN_0044d210(void*, int, int, int, int, int);
-extern void __fastcall FUN_0044c9d0(void*);
 extern void __fastcall FUN_00420ac0(void*, int, int);
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00445450(void*, void*);
@@ -67,7 +59,7 @@ SC_Question::SC_Question(int id, int dialog)
         sprintf(label, "Missing Label %d", questionId);
     }
 
-    gsIndex = FUN_00433ae0(DAT_0046aa30, 0, DAT_00468108);
+    gsIndex = ((GameState*)DAT_0046aa30)->FindLabel(DAT_00468108);
     if (gsIndex < 0 || *(int*)((char*)DAT_0046aa30 + 0x98) - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
     }
@@ -94,7 +86,7 @@ SC_Question::~SC_Question()
 
     mc = mouseControl;
     if (mc != 0) {
-        FUN_00443990(mc);
+        ((MMPlayer*)mc)->~MMPlayer();
         free(mc);
         mouseControl = 0;
     }
@@ -166,13 +158,13 @@ void SC_Question::Update(int x, int y)
     case 1:
         if (mouseControl != 0) {
             if ((field_94 & 8) == 0) {
-                if (FUN_00443e30(mouseControl) == 0) {
+                if (((MMPlayer*)mouseControl)->Draw() == 0) {
                     Finalize();
                     return;
                 }
             } else {
-                if (FUN_00443e30(mouseControl) == 0) {
-                    FUN_00443ed0(mouseControl, 0, 1);
+                if (((MMPlayer*)mouseControl)->Draw() == 0) {
+                    ((MMPlayer*)mouseControl)->ResetAnimations(1);
                     return;
                 }
             }
@@ -233,7 +225,7 @@ void SC_Question::InitState()
     }
 
     gs = DAT_0046aa30;
-    gsIndex = FUN_00433ae0(gs, 0, DAT_00468168);
+    gsIndex = ((GameState*)gs)->FindLabel(DAT_00468168);
     if (gsIndex < 0 || *(int*)((char*)gs + 0x98) - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
     }
@@ -336,7 +328,7 @@ int SC_Question::LBLParse(char* param_1)
             mem = malloc(0xa0);
             void* mc = 0;
             if (mem != 0) {
-                mc = FUN_004438a0(mem);
+                mc = new (mem) MMPlayer();
             }
             mouseControl = mc;
         }
@@ -347,18 +339,18 @@ int SC_Question::LBLParse(char* param_1)
             mem = malloc(0xa0);
             void* mc = 0;
             if (mem != 0) {
-                mc = FUN_004438a0(mem);
+                mc = new (mem) MMPlayer();
             }
             mouseControl = mc;
         }
         mem = malloc(0xf8);
         sprite = 0;
         if (mem != 0) {
-            sprite = FUN_0044c660(mem, 0, 0);
+            sprite = new (mem) Sprite((char*)0);
         }
         *(int*)((char*)sprite + 0x94) |= 0x400;
         ((Parser*)sprite)->LBLParse(param_1);
-        FUN_00443b90(mouseControl, 0, (int)sprite);
+        ((MMPlayer*)mouseControl)->AddSprite((Sprite*)sprite);
     }
     else if (strcmp(keyword, "STANDARD_SPR") == 0) {
         sscanf(param_1, " %s %d %d", keyword, &id, &val);
@@ -366,7 +358,7 @@ int SC_Question::LBLParse(char* param_1)
             mem = malloc(0xa0);
             void* mc = 0;
             if (mem != 0) {
-                mc = FUN_004438a0(mem);
+                mc = new (mem) MMPlayer();
             }
             mouseControl = mc;
         }
@@ -374,7 +366,7 @@ int SC_Question::LBLParse(char* param_1)
         mem = malloc(0xf8);
         sprite = 0;
         if (mem != 0) {
-            sprite = FUN_0044c660(mem, 0, (char*)buf1);
+            sprite = new (mem) Sprite((char*)buf1);
         }
         *(int*)((char*)sprite + 0x94) |= 0x400;
         *(int*)((char*)sprite + 0xac) = id;
@@ -382,16 +374,16 @@ int SC_Question::LBLParse(char* param_1)
         *(int*)((char*)sprite + 0x94) |= 0x40;
         *(int*)((char*)sprite + 0x9c) = 0x14;
         if ((field_94 & 8) != 0) {
-            FUN_0044d2a0(sprite, 0, 2);
+            ((Sprite*)sprite)->ConfigStates(2);
             FUN_0044c880(sprite);
             framePtr = (int*)(*(int*)((char*)sprite + 0x90) + *(int*)((char*)sprite + 0x98) * 0x10);
-            FUN_0044d210(sprite, 0, 0, 1, (framePtr[1] - framePtr[0]) + 1, 1);
+            ((Sprite*)sprite)->ConfigRange(0, 1, (framePtr[1] - framePtr[0]) + 1, 1);
             framePtr = (int*)(*(int*)((char*)sprite + 0x90) + *(int*)((char*)sprite + 0x98) * 0x10);
             frameCount = (framePtr[1] - framePtr[0]) + 1;
-            FUN_0044d210(sprite, 0, 1, frameCount, frameCount, 1);
-            FUN_0044c9d0(sprite);
+            ((Sprite*)sprite)->ConfigRange(1, frameCount, frameCount, 1);
+            ((Sprite*)sprite)->StopAnimationSound();
         }
-        FUN_00443b90(mouseControl, 0, (int)sprite);
+        ((MMPlayer*)mouseControl)->AddSprite((Sprite*)sprite);
     }
     else if (strcmp(keyword, "TEXT") == 0) {
         sscanf(param_1, " %s %d", keyword, &id);
@@ -797,7 +789,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             if (actionIndex[result] == 0) {
                 sprintf(DAT_0046aa00, "SPRITE%d", id);
-                actionIndex[result] = FUN_00433ae0(DAT_0046aa30, 0, DAT_0046aa00);
+                actionIndex[result] = ((GameState*)DAT_0046aa30)->FindLabel(DAT_0046aa00);
                 break;
             }
             result = result + 1;
@@ -823,8 +815,8 @@ int SC_Question::LBLParse(char* param_1)
         } else {
             int gsIdx1;
             int gsIdx2;
-            gsIdx1 = FUN_00433ae0(DAT_0046aa38, 0, buf2);
-            gsIdx2 = FUN_00433ae0(DAT_0046aa30, 0, buf1);
+            gsIdx1 = ((GameState*)DAT_0046aa38)->FindLabel(buf2);
+            gsIdx2 = ((GameState*)DAT_0046aa30)->FindLabel(buf1);
             action = FUN_00444a40(mem, 2, gsIdx2, 0, 0, gsIdx1, id, 0, 0, 0, 0);
         }
         if ((((int*)action)[4] == 0x11 || ((int*)action)[4] == 0x12) && result < 4) {

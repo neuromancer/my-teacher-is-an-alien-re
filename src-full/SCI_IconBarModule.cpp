@@ -2,8 +2,10 @@
 #include "SC_Question.h"
 #include "GameState.h"
 #include "InputManager.h"
+#include "MMPlayer.h"
 #include <stdio.h>
 #include <string.h>
+#include "TimeOut.h"
 
 extern void* DAT_0046aa08;
 extern void* DAT_0046aa18;
@@ -13,7 +15,6 @@ extern char* DAT_0046aa2c;
 extern "C" extern void* DAT_0046aa30;
 extern int DAT_00468764;
 
-extern void __fastcall FUN_00443ab0(void*);
 extern void __fastcall FUN_00445970(void*);
 extern void __fastcall FUN_004459a0(void*, int, int);
 // FUN_0044cb40 is __thiscall (this in ECX, 2 stack params)
@@ -21,13 +22,10 @@ class CursorControl {
 public:
     void SetCursor(int hotspot, int param2); // 0x44CB40
 };
+void CursorControl::SetCursor(int, int) {}
 
 extern void __fastcall FUN_00432da0(void*);
-extern int __fastcall FUN_00443e30(void*);
-extern int __fastcall FUN_00421a30(void*);
-extern void __fastcall FUN_004219f0(void*, int, int);
 extern void __cdecl FUN_00425c50(char*, ...);
-extern int __fastcall FUN_00433ae0(void*, int, char*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x401000 */
@@ -44,14 +42,14 @@ int SCI_IconBarModule::ShutDown(SC_Message* msg) {
 
     if (msg == 0) {
         if (field_E8 != 0) {
-            FUN_00443ab0(field_E8);
+            ((MMPlayer*)field_E8)->StopAll();
         }
     } else {
         if (*(int*)msg == 0x1f) {
             goto skip_cursor;
         }
         if (field_E8 != 0) {
-            FUN_00443ab0(field_E8);
+            ((MMPlayer*)field_E8)->StopAll();
         }
     }
 
@@ -86,13 +84,13 @@ void SCI_IconBarModule::Update(int param1, int param2) {
     int spriteParam;
 
     if (param2 == 0x1f) {
-        FUN_00443e30(field_E8);
+        ((MMPlayer*)field_E8)->Draw();
     }
     if (handlerId != param2) {
         return;
     }
     if (DAT_00468764 != 0) {
-        if (FUN_00421a30(field_E0) != 0) {
+        if (((TimeOut*)field_E0)->IsTimeOut() != 0) {
             FUN_00444d90(0x2c, 0, 0, 0, 0x3b, 0, 0, 0, 0, 0);
             return;
         }
@@ -102,7 +100,7 @@ void SCI_IconBarModule::Update(int param1, int param2) {
     }
     spriteParam = param1;
 
-    FUN_00443e30(field_E8);
+    ((MMPlayer*)field_E8)->Draw();
     pIcon = icons;
     i = 15;
     do {
@@ -123,7 +121,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
     int* pCounter;
     int iconIdx;
 
-    FUN_004219f0(field_E0, 0, 2000);
+    ((TimeOut*)field_E0)->Start(2000);
 
     if (field_AC == 0) {
         if (IconBar::AddMessage(msg) != 0) {
@@ -155,7 +153,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
 
             if (field_C4 == 0) {
                 gsPtr = (int*)DAT_0046aa30;
-                idx = FUN_00433ae0(DAT_0046aa30, 0, "NUM_ACTIONS");
+                idx = ((GameState*)DAT_0046aa30)->FindLabel("NUM_ACTIONS");
                 if (idx < 0 || gsPtr[0x98 / 4] - 1 < idx) {
                     FUN_00425c50("Invalid gamestate %d", idx);
                 }
@@ -183,7 +181,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
         }
     } else if (((int*)msg)[10] >= 2) {
         gsPtr = (int*)DAT_0046aa30;
-        idx = FUN_00433ae0(DAT_0046aa30, 0, "NUM_ACTIONS");
+        idx = ((GameState*)DAT_0046aa30)->FindLabel("NUM_ACTIONS");
         if (idx < 0 || gsPtr[0x98 / 4] - 1 < idx) {
             FUN_00425c50("Invalid gamestate %d", idx);
         }

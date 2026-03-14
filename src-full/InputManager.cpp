@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <string.h>
 #include "InputManager.h"
 #include "Timer.h"
 #include "Memory.h"
@@ -274,5 +275,86 @@ int InputManager::PollEvents(int param) {
     return 0;
 }
 
+/* Function start: 0x426570 */
+extern "C" char* FUN_00426570(char* s1, char* s2) {
+    char* p = strstr(s1, s2);
+    if (p != 0) {
+        p += strlen(s2);
+    }
+    return p;
+}
+
+/* Function start: 0x426A90 */
+void __fastcall FUN_00426a90(void* self) {
+    InputState* mouse;
+    mouse = ((InputManager*)self)->pMouse;
+    mouse->ext2 = 0;
+    mouse->ext1 = mouse->ext2;
+}
+
 /* Function start: 0x426CE0 */
-int InputManager::Refresh(int) { return 0; }
+int __fastcall FUN_00426ce0(void* self) {
+    InputManager* input;
+    InputState* mouse;
+    unsigned int buttons;
+
+    if (ProcessMessages() != 0) {
+        return 1;
+    }
+
+    input = (InputManager*)self;
+    input->PollMouse(input->pMouseLocal);
+    input->PollJoystick(input->pJoystick);
+    FUN_00426a90(self);
+
+    mouse = input->pMouse;
+    buttons = 0;
+    if (mouse != 0) {
+        buttons = mouse->buttons & 1;
+    }
+
+    if (buttons != 0) {
+        mouse->ext1 = 1;
+    } else {
+        buttons = 0;
+        if (mouse != 0) {
+            buttons = mouse->buttons & 1;
+        }
+        if (buttons == 0 && (mouse->prevButtons & 1) != 0) {
+            buttons = g_leftClickTimer.Update();
+            if (buttons < (unsigned int)g_DoubleClickTime_004373b8) {
+                input->pMouse->ext1 = 3;
+            } else {
+                input->pMouse->ext1 = 2;
+            }
+            g_leftClickTimer.Reset();
+        }
+    }
+
+    mouse = input->pMouse;
+    buttons = 0;
+    if (mouse != 0) {
+        buttons = mouse->buttons & 2;
+    }
+
+    if (buttons != 0) {
+        mouse->ext2 = 1;
+        return 0;
+    }
+
+    buttons = 0;
+    if (mouse != 0) {
+        buttons = mouse->buttons & 2;
+    }
+    if (buttons == 0 && (mouse->prevButtons & 2) != 0) {
+        buttons = g_rightClickTimer.Update();
+        if (buttons < (unsigned int)g_DoubleClickTime_004373b8) {
+            input->pMouse->ext2 = 3;
+        } else {
+            input->pMouse->ext2 = 2;
+        }
+        g_rightClickTimer.Reset();
+    }
+
+    return 0;
+}

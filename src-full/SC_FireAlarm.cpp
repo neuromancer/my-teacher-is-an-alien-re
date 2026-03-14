@@ -1,4 +1,5 @@
 #include "SC_FireAlarm.h"
+#include "SpriteAction.h"
 #include "Memory.h"
 #include "Engine.h"
 #include "Animation.h"
@@ -13,14 +14,11 @@ extern "C" void FUN_004265a0();
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* FUN_0044e3e0(int);
 extern "C" void* FUN_004260f0(char*);
-extern int __cdecl FUN_00454920();
-extern void __fastcall FUN_00444af0(void*);
+
 extern void __fastcall FUN_00425490(void*);
 extern void* __fastcall FUN_00425480(void*);
 extern void __cdecl FUN_00425a90(int, int);
 extern void __cdecl FUN_00425c50(char*, ...);
-extern void __fastcall FUN_0041dc10(void*);
-extern void __fastcall FUN_0044c740(void*);
 extern void __fastcall FUN_004279a0(void*);
 extern void __fastcall FUN_00427880(void*);
 extern void __fastcall FUN_00432da0(void*);
@@ -38,6 +36,8 @@ class RenderObj {
 public:
     void Render();               // 0x432DA0
 };
+int DetMask::CheckHit(int, int) { return 0; }
+void RenderObj::Render() {}
 
 extern int DAT_004685ac;
 extern void* DAT_0046aa08;
@@ -97,14 +97,14 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
 
     p = (void*)field_C0;
     if (p != 0) {
-        FUN_0041dc10(p);
+        ((Palette*)p)->~Palette();
         FreeMemory(p);
         field_C0 = 0;
     }
 
     p = (void*)field_C4;
     if (p != 0) {
-        FUN_0044c740(p);
+        ((Sprite*)p)->~Sprite();
         FreeMemory(p);
         field_C4 = 0;
     }
@@ -118,49 +118,49 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
 
     p = (void*)field_BC;
     if (p != 0) {
-        FUN_0044c740(p);
+        ((Sprite*)p)->~Sprite();
         FreeMemory(p);
         field_BC = 0;
     }
 
     p = (void*)field_F8;
     if (p != 0) {
-        FUN_0044c740(p);
+        ((Sprite*)p)->~Sprite();
         FreeMemory(p);
         field_F8 = 0;
     }
 
     p = (void*)field_DC;
     if (p != 0) {
-        FUN_0044c740(p);
+        ((Sprite*)p)->~Sprite();
         FreeMemory(p);
         field_DC = 0;
     }
 
     p = (void*)field_110;
     if (p != 0) {
-        FUN_0044c740(p);
+        ((Sprite*)p)->~Sprite();
         FreeMemory(p);
         field_110 = 0;
     }
 
     p = (void*)field_10C;
     if (p != 0) {
-        FUN_0044c740(p);
+        ((Sprite*)p)->~Sprite();
         FreeMemory(p);
         field_10C = 0;
     }
 
     p = (void*)field_C8;
     if (p != 0) {
-        FUN_0044c740(p);
+        ((Sprite*)p)->~Sprite();
         FreeMemory(p);
         field_C8 = 0;
     }
 
     p = (void*)field_A8;
     if (p != 0) {
-        FUN_00444af0(p);
+        ((SpriteAction*)p)->~SpriteAction();
         FreeMemory(p);
         field_A8 = 0;
     }
@@ -465,7 +465,7 @@ void SC_FireAlarm::ProcessFrame() {
             case 1:
                 ((Sprite*)field_DC)->ResetAnimation(2, 0);
                 {
-                    int r = FUN_00454920();
+                    int r = rand();
                     field_E0 = 0;
                     field_E4 = r % 0x14 + 0x14;
                 }

@@ -1,8 +1,12 @@
 #include "SC_Rats.h"
 #include "SpriteAction.h"
+#include "InvSlotItem.h"
 #include "Memory.h"
 #include "Sample.h"
+#include "SoundList.h"
 #include "GameState.h"
+#include "Engine.h"
+#include "LinkedList.h"
 #include "mss.h"
 #include <string.h>
 #include <stdio.h>
@@ -20,22 +24,16 @@ int DAT_0046ae70 = 0;
 // Extern functions
 extern "C" int FUN_00425fa0(void*);
 extern "C" void FUN_004265a0();
-extern void __fastcall FUN_0042bf00(void*);
 extern void __fastcall FUN_0042be00(void*);
-extern void __fastcall FUN_004252a0(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00444e40(void*);
 extern void __cdecl FUN_00425c50(char*, ...);
-extern int __fastcall FUN_00433ae0(void*, int, char*);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void* __fastcall FUN_00450b10(void*);
 extern void __fastcall FUN_0044bac0(void*, int, int, int);
 // FUN_00412a50 is Parser::ReportUnknownLabel (thiscall, declared in Parser.h)
 extern void __fastcall FUN_0040b760(void*, int, int);
 extern void __fastcall FUN_00404d70(void*, int, int);
-extern void __fastcall FUN_00401130(void*);
-extern void* __fastcall FUN_00403520(void*);
-extern void* __fastcall FUN_004035a0(void*);
 
 // IAT entries
 
@@ -77,7 +75,7 @@ void SC_Rats::Init(SC_Message* msg) {
         if (*list1 != 0) {
             list1[2] = *list1;
             while (*list1 != 0) {
-                int* item = (int*)FUN_00403520(list1);
+                int* item = (int*)((LinkedList*)list1)->RemoveCurrent();
                 if (item != 0) {
                     *item = 0x461030;
                     FreeMemory(item);
@@ -88,7 +86,7 @@ void SC_Rats::Init(SC_Message* msg) {
         if (*list2 != 0) {
             list2[2] = *list2;
             while (*list2 != 0) {
-                int* item = (int*)FUN_004035a0(list2);
+                int* item = (int*)((LinkedList*)list2)->RemoveCurrent();
                 if (item != 0) {
                     if (*(int*)((int)item + 4) != 0) {
                         FUN_0040b760((void*)*(int*)((int)item + 4), 0, 1);
@@ -135,7 +133,7 @@ void SC_Rats::Init(SC_Message* msg) {
                 }
                 if (removed != 0) {
                     *removed = 0x46102C;
-                    FUN_00401130((void*)((int)removed + 4));
+                    ((InvSlotItem*)((int)removed + 4))->~InvSlotItem();
                     FreeMemory(removed);
                 }
             }
@@ -157,7 +155,7 @@ void SC_Rats::Init(SC_Message* msg) {
 /* Function start: 0x451B30 */
 int SC_Rats::ShutDown(SC_Message* msg) {
     if (field_AC != 0) {
-        FUN_0042bf00((void*)field_AC);
+        ((Engine*)field_AC)->StopAndCleanup();
         if (field_AC != 0) {
             delete (Handler*)field_AC;
             field_AC = 0;
@@ -252,7 +250,7 @@ void SC_Rats::ProcessState() {
             int* spriteData = (int*)field_A8;
             spriteData[8] = 2 - spriteData[8];
             GameState* gs = (GameState*)DAT_0046aa30;
-            idx = FUN_00433ae0(gs, 0, "NUM_ACTIONS");
+            idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 FUN_00425c50("Invalid gamestate %d", idx);
             }
@@ -267,13 +265,13 @@ void SC_Rats::ProcessState() {
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_");
         } else if (DAT_00473e18 == 2) {
             GameState* gs = (GameState*)DAT_0046aa30;
-            idx = FUN_00433ae0(gs, 0, "RAT_COMBAT_AVAILABLE");
+            idx = ((GameState*)gs)->FindLabel("RAT_COMBAT_AVAILABLE");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 FUN_00425c50("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] = 0;
             gs = (GameState*)DAT_0046aa30;
-            idx = FUN_00433ae0(gs, 0, "NUM_ACTIONS");
+            idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 FUN_00425c50("Invalid gamestate %d", idx);
             }
@@ -297,7 +295,7 @@ void SC_Rats::State0Handler() {
     if (DAT_00473e14 == 0) {
         DAT_00473e14 = 1;
         if (*(int*)(engineObj + 0x100) != 0) {
-            FUN_004252a0((void*)*(int*)(engineObj + 0x100));
+            ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
         FUN_00444d90(5, 0x3E9, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
         if (snd != 0) {
@@ -334,7 +332,7 @@ void SC_Rats::State2Handler() {
     if (DAT_00473e20 == 0) {
         DAT_00473e20 = 1;
         if (*(int*)(engineObj + 0x100) != 0) {
-            FUN_004252a0((void*)*(int*)(engineObj + 0x100));
+            ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
         if (snd != 0) {
             snd->Play(100, 1);
@@ -364,7 +362,7 @@ void SC_Rats::State3Handler() {
     if (DAT_00473e1c == 0) {
         DAT_00473e1c = 1;
         if (*(int*)(engineObj + 0x100) != 0) {
-            FUN_004252a0((void*)*(int*)(engineObj + 0x100));
+            ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
         if (snd != 0) {
             snd->Play(100, 1);
@@ -394,7 +392,7 @@ void SC_Rats::State4Handler() {
     if (DAT_00473df8 == 0) {
         DAT_00473df8 = 1;
         if (*(int*)(engineObj + 0x100) != 0) {
-            FUN_004252a0((void*)*(int*)(engineObj + 0x100));
+            ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
         if (snd != 0) {
             snd->Play(100, 1);

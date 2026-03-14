@@ -49,6 +49,12 @@ class InvListItem {
 public:
     void Cleanup();
 };
+void InvListItem::Cleanup() {}
+void InvItemObj::Display(int x, int y, int visible) {}
+void InvItemObj::Reset() {}
+void InvItemObj::HandleMsg(int* msg) {}
+void SelectionDraw::DrawSelection(int x1, int y1, int x2, int y2, int p5, int p6, int p7) {}
+HitPoint::~HitPoint() {}
 
 // 0x18-byte list object, same layout as inventory list in constructor
 class InvListObj {

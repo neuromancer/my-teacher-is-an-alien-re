@@ -51,7 +51,7 @@ extern "C" void SetFontColor(int);
 extern "C" void DrawFontText(char*, int);
 
 // WriteToLog (C++ linkage to match stubs.cpp)
-void __cdecl FUN_00425d70(char*, ...);
+extern "C" void WriteToLog(const char* format, ...);
 
 /* Function start: 0x41A9D0 */
 Animation::Animation() {
@@ -81,7 +81,7 @@ void Animation::CloseSmackerFile() {
   if (smk != 0) {
     if (DAT_0046a6ec != 0) {
       if (*(int*)(DAT_0046a6ec + 0x24) == (int)smk) {
-        FUN_00425d70("Animation Close - restoring framerate to %dms",
+        WriteToLog("Animation Close - restoring framerate to %dms",
                      *(int*)(DAT_0046a6ec + 0x20));
         *(int*)(DAT_0046a6ec + 0x24) = 0;
         *(int*)(DAT_0046a6ec + 0x1c) = *(int*)(DAT_0046a6ec + 0x20);

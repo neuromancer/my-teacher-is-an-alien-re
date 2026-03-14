@@ -111,3 +111,5 @@ SC_SaveLoad::~SC_SaveLoad()
         btnCancel = 0;
     }
 }
+
+int T_MenuHotspot::LBLParse(char*) { return 0; }

@@ -2,6 +2,8 @@
 #include "SpriteAction.h"
 #include "Memory.h"
 #include "Engine.h"
+#include "LinkedList.h"
+#include "GameState.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,19 +16,14 @@ extern void __cdecl FUN_00413e70(void*, int, char*);
 extern "C" int FUN_00425fa0(char*);
 extern "C" void FUN_004265a0();
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern void __fastcall FUN_0042bf00(void*);
 extern void __fastcall FUN_0042be00(void*);
-extern void __fastcall FUN_00444af0(void*);
+
 extern void __fastcall FUN_00425490(void*);
 extern void* __fastcall FUN_00425480(void*);
 extern void __fastcall FUN_004254a0(void*, int, int);
-extern void* __fastcall FUN_00403520(void*);
-extern void* __fastcall FUN_004035a0(void*);
 extern void* __fastcall FUN_00403620(void*);
 extern void __fastcall FUN_00401c80(void*);
 extern void __fastcall FUN_004061e0(void*);
-extern int __fastcall FUN_00433ae0(void*, int, char*);
-extern void __fastcall FUN_00409f20(void*, int);
 extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00444e40(void*);
 extern void* __fastcall FUN_00440860(void*);
@@ -75,7 +72,7 @@ void SC_Pods::Init(SC_Message* msg) {
         if (*list1 != 0) {
             list1[2] = *list1;
             while (*list1 != 0) {
-                void* obj = FUN_00403520(list1);
+                void* obj = ((LinkedList*)list1)->RemoveCurrent();
                 if (obj != 0) {
                     *(int*)obj = 0x461030;
                     free(obj);
@@ -88,7 +85,7 @@ void SC_Pods::Init(SC_Message* msg) {
         if (*list2 != 0) {
             list2[2] = *list2;
             while (*list2 != 0) {
-                void* item = FUN_004035a0(list2);
+                void* item = ((LinkedList*)list2)->RemoveCurrent();
                 if (item != 0) {
                     FUN_00401c80(item);
                     free(item);
@@ -114,14 +111,14 @@ void SC_Pods::Init(SC_Message* msg) {
 
     if (savedCommand == 0x2b) {
         void* gs = DAT_0046aa30;
-        int idx = FUN_00433ae0(gs, 0, "OBJ011");
+        int idx = ((GameState*)gs)->FindLabel("OBJ011");
         if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
             FUN_00425c50("Invalid gamestate %d", idx);
         }
         *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 1;
 
         gs = DAT_0046aa30;
-        int idx2 = FUN_00433ae0(gs, 0, "KID");
+        int idx2 = ((GameState*)gs)->FindLabel("KID");
         if (idx2 < 0 || *(int*)((int)gs + 0x98) - 1 < idx2) {
             FUN_00425c50("Invalid gamestate %d", idx2);
         }
@@ -136,7 +133,7 @@ void SC_Pods::Init(SC_Message* msg) {
             periodVal = 0x10;
         }
 
-        int idx3 = FUN_00433ae0(gs2, 0, "PERIOD");
+        int idx3 = ((GameState*)gs2)->FindLabel("PERIOD");
         if (idx3 < 0 || *(int*)((int)gs2 + 0x98) - 1 < idx3) {
             FUN_00425c50("Invalid gamestate %d", idx3);
         }
@@ -166,7 +163,7 @@ void SC_Pods::Init(SC_Message* msg) {
 /* Function start: 0x4419E0 */
 int SC_Pods::ShutDown(SC_Message* msg) {
     if (field_A8[1] != 0) {
-        FUN_0042bf00((void*)field_A8[1]);
+        ((Engine*)field_A8[1])->StopAndCleanup();
         if (field_A8[1] != 0) {
             delete (Engine*)field_A8[1];
             field_A8[1] = 0;
@@ -176,7 +173,7 @@ int SC_Pods::ShutDown(SC_Message* msg) {
 
     void* spr = (void*)field_A8[0];
     if (spr != 0) {
-        FUN_00444af0(spr);
+        ((SpriteAction*)spr)->~SpriteAction();
         FreeMemory(spr);
         field_A8[0] = 0;
     }

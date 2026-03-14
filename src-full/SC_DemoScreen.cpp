@@ -4,7 +4,7 @@
 #include "Memory.h"
 
 extern "C" int FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00425d70(char* msg, ...);
+extern "C" void WriteToLog(const char* format, ...);
 extern void __fastcall FUN_00432da0(void* self);
 
 extern void* DAT_0046aa24;
@@ -47,7 +47,7 @@ void SC_DemoScreen::Init(SC_Message* msg) {
     if (pal != 0) {
         int* palSlot = (int*)((char*)DAT_0046aa24 + 0xa8);
         if (*palSlot != 0) {
-            FUN_00425d70("ddouble palette");
+            WriteToLog("ddouble palette");
         }
         *palSlot = (int)pal;
     }

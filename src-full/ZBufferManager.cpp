@@ -15,12 +15,12 @@
 
 #include "VideoTable.h"
 #include "AnimatedAsset.h"
+#include "InvSlotItem.h"
 
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
 extern "C" extern void* DAT_0046aa14;
 extern void __fastcall FUN_00401c80(void*);
-extern void __fastcall FUN_00401130(void*);
 extern void __fastcall FUN_00404d70(void*, int, int);
 
 
@@ -704,7 +704,7 @@ void ZBufferManager::ProcessRenderQueues()
 
             if (local_14 != 0) {
                 *(int*)local_14 = 0x46102c;
-                FUN_00401130((char*)local_14 + 4);
+                ((InvSlotItem*)((char*)local_14 + 4))->~InvSlotItem();
                 FreeMemory(local_14);
             }
         }

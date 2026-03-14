@@ -1,24 +1,22 @@
 #include "SC_ExtBridge.h"
 #include "SpriteAction.h"
+#include "InvSlotItem.h"
 #include "EngineA.h"
 #include "Engine.h"
 #include "Memory.h"
 #include "LinkedList.h"
+#include "Palette.h"
 #include <string.h>
 #include <stdlib.h>
 
-extern void __fastcall FUN_0041dc10(void*);
 extern void __fastcall FUN_004309a0(void*, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00425a90(int, int);
 extern void __fastcall FUN_0044bac0(void*, int, int, int);
-extern void* __fastcall FUN_00403520(void*);
-extern void* __fastcall FUN_004035a0(void*);
 extern void __fastcall FUN_0040b760(void*, int, int);
 extern void* __fastcall FUN_00404b80(void*);
 extern void __fastcall FUN_00404d70(void*, int, int);
-extern void __fastcall FUN_00401130(void*);
-extern void __cdecl FUN_00425d70(char*);
+extern "C" void WriteToLog(const char* format, ...);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern int DAT_0046ae78;
 extern int DAT_0046ae70;
@@ -41,7 +39,7 @@ SC_ExtBridge::~SC_ExtBridge() {
 
     void* p2 = (void*)field_B0;
     if (p2 != 0) {
-        FUN_0041dc10(p2);
+        ((Palette*)p2)->~Palette();
         FreeMemory(p2);
         field_B0 = 0;
     }
@@ -90,7 +88,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
         if (*list1 != 0) {
             list1[2] = *list1;
             while (*list1 != 0) {
-                void* obj = FUN_00403520(list1);
+                void* obj = ((LinkedList*)list1)->RemoveCurrent();
                 if (obj != 0) {
                     *(int*)obj = 0x461030;
                     free(obj);
@@ -103,7 +101,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
         if (*list2 != 0) {
             list2[2] = *list2;
             while (*list2 != 0) {
-                int* item = (int*)FUN_004035a0(list2);
+                int* item = (int*)((LinkedList*)list2)->RemoveCurrent();
                 if (item != 0) {
                     if (*(int*)((int)item + 4) != 0) {
                         FUN_0040b760((void*)*(int*)((int)item + 4), 0, 1);
@@ -150,7 +148,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
                 }
                 if (data != 0) {
                     *(int*)data = 0x46102c;
-                    FUN_00401130((void*)((int)data + 4));
+                    ((InvSlotItem*)((int)data + 4))->~InvSlotItem();
                     FreeMemory(data);
                 }
             }
@@ -171,7 +169,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     if (edi != 0) {
         int* palSlot = (int*)((int)DAT_0046aa24 + 0xa8);
         if (*palSlot != 0) {
-            FUN_00425d70("ddouble palette");
+            WriteToLog("ddouble palette");
         }
         *palSlot = edi;
     }
