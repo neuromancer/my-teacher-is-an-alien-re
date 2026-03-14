@@ -17,7 +17,7 @@ extern void __fastcall FUN_0040b760(void*, int, int);
 extern void* __fastcall FUN_00404b80(void*);
 extern void __fastcall FUN_00404d70(void*, int, int);
 extern "C" void WriteToLog(const char* format, ...);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern int DAT_0046ae78;
 extern int DAT_0046ae70;
 extern void* DAT_0046aa24;
@@ -175,5 +175,5 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     }
 
     // Send message
-    FUN_00444d90(5, field_BC, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+    SendGameMessage(5, field_BC, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
 }

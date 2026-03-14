@@ -15,7 +15,7 @@ extern void FUN_00444E40(SpriteAction*);   // SpriteAction method
 extern void __stdcall FUN_004309C0(int*);  // handler call
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void ShowError(const char* format, ...);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void* __fastcall FUN_00425480(void*); // SoundList default constructor
 extern void __fastcall FUN_004309a0(void*, int, int); // handler init
 extern void __cdecl FUN_00413e70(void*, int, char*); // Sprite add to parent
@@ -134,7 +134,7 @@ int Engine::HandleInput(int* param) {
     case 0:
         return 1;
     case 7:
-        FUN_00444d90(1, Engine::field_0x90, Engine::field_0x90, Engine::field_0x94, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, Engine::field_0x90, Engine::field_0x90, Engine::field_0x94, 0x18, 0, 0, 0, 0, 0);
         return 1;
     case 0x17:
         ShowError("SCMI_INSERT");

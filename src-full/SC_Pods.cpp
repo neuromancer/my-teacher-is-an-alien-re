@@ -15,7 +15,7 @@ extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_0042be00(void*);
 
 extern void __fastcall FUN_00425490(void*);
@@ -185,7 +185,7 @@ int SC_Pods::ShutDown(SC_Message* msg) {
     }
 
     if (msg != 0) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
     return 0;
@@ -225,7 +225,7 @@ int SC_Pods::LBLParse(char* line) {
         FUN_00413e70(eng, (int)this, (char*)0);
     } else if (strcmp(label, "BGSOUND") == 0) {
         sscanf(line, " %s %d ", label, &soundId);
-        FUN_00444d90(5, soundId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+        SendGameMessage(5, soundId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {

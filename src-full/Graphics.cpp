@@ -192,8 +192,8 @@ static const unsigned char DAT_00423e98[708] = {
 
 #include "VBuffer.h"
 extern VBuffer* g_WorkBuffer_00436974;
-extern "C" int* GetWindowWidth();
-extern "C" int* GetWindowHeight();
+extern "C" int* GetScreenWidth();
+extern "C" int* GetScreenHeight();
 
 /* Function start: 0x425F10 */
 void BlankScreen() {
@@ -202,8 +202,8 @@ void BlankScreen() {
     VBuffer *vbuffer = g_WorkBuffer_00436974;
     vbuffer->CallBlitter5(
         vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->clip_y1,
-        vbuffer->clip_y2, 0, *GetWindowWidth() - 1, 0,
-        *GetWindowHeight() - 1);
+        vbuffer->clip_y2, 0, *GetScreenWidth() - 1, 0,
+        *GetScreenHeight() - 1);
   }
 }
 
@@ -219,10 +219,10 @@ extern "C" void FlipScreen() {
         return;
     }
     vb = g_WorkBuffer_00436974;
-    piVar1 = GetWindowHeight();
+    piVar1 = GetScreenHeight();
     iVar2 = *piVar1 - 1;
     iVar3 = 0;
-    piVar1 = GetWindowWidth();
+    piVar1 = GetScreenWidth();
     vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0, *piVar1 - 1, iVar3, iVar2);
 }
 

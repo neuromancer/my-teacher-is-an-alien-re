@@ -26,7 +26,7 @@ void CursorControl::SetCursor(int, int) {}
 
 extern void __fastcall FUN_00432da0(void*);
 extern "C" void ShowError(const char* format, ...);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x401000 */
 SCI_IconBarModule::SCI_IconBarModule() {
@@ -91,7 +91,7 @@ void SCI_IconBarModule::Update(int param1, int param2) {
     }
     if (DAT_00468764 != 0) {
         if (((TimeOut*)field_E0)->IsTimeOut() != 0) {
-            FUN_00444d90(0x2c, 0, 0, 0, 0x3b, 0, 0, 0, 0, 0);
+            SendGameMessage(0x2c, 0, 0, 0, 0x3b, 0, 0, 0, 0, 0);
             return;
         }
     }
@@ -176,7 +176,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
                 inRect = 1;
             }
             if (inRect != 0) {
-                FUN_00444d90(0x2c, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+                SendGameMessage(0x2c, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
             }
         }
     } else if (((int*)msg)[10] >= 2) {

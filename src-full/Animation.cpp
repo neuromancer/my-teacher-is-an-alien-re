@@ -29,7 +29,7 @@ extern "C" {
     extern int DAT_0046a6ec;        // Timer manager pointer
     extern void* DAT_0046aa10;      // GameConfig pointer
     extern void* DAT_0046aa30;      // Game state pointer
-    extern int DAT_0046ac04;        // WaitForInput flag
+    extern int g_WaitForInputValue_004373bc;        // WaitForInput flag
     extern char DAT_00472c70[];     // Animation filename buffer
     extern char DAT_00472cb0[];     // Animation filename buffer 2
 }
@@ -314,7 +314,7 @@ void Animation::MainLoop() {
       }
 
       while (1) {
-        if (((InputManager*)DAT_0046aa08)->PollEvents(1)) goto end_loop;
+        if (((InputManager*)DAT_0046aa08)->Refresh(1)) goto end_loop;
 
         if (!(flags & 4)) {
           InputState *pMouse = ((InputManager*)DAT_0046aa08)->pMouse;
@@ -329,7 +329,7 @@ void Animation::MainLoop() {
           }
 
           escaped = 0;
-          if (DAT_0046ac04 != 0) {
+          if (g_WaitForInputValue_004373bc != 0) {
             escaped = (WaitForInput() == 0x1b);
           }
           if (escaped) {

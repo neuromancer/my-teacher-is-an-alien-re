@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <new.h>
 
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00425a90(int, int);
 
@@ -121,7 +121,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     if (pSprSub != 0) {
         ((Sprite*)pSprSub)->ResetAnimation(0, 0);
     }
-    FUN_00444d90(5, *(int*)((int)this + 0xCC), handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
+    SendGameMessage(5, *(int*)((int)this + 0xCC), handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
     if (*(int*)((int)this + 0x98) == 0x2D) {
         (*(SlimeTable**)((int)this + 0xC8))->Init(DAT_0046ad6c == 0);
         DAT_0046ad6c = 0;
@@ -188,7 +188,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
             FUN_0042b270(this);
         }
         if ((int)msg != 0) {
-            FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+            SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         }
     }
     return 0;
@@ -354,7 +354,7 @@ int SCI_PracticeRoom::Exit(SC_Message* msg) {
         return 1;
     }
     case 7:
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         break;
     default:
         return 0;

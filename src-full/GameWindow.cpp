@@ -174,14 +174,18 @@ extern "C" int* GetWindowWidth() {
   return &DAT_0043de88;
 }
 
+// Full game globals for screen dimensions (initialized in .data section)
+int g_ScreenWidth_00472d08 = 640;   // DAT_00472d08
+int g_ScreenHeight_00472d0c = 480;  // DAT_00472d0c
+
 /* Function start: 0x4205E0 */
-extern "C" int* GetWindowHeight() {
-  return &DAT_0043de8c;
+extern "C" int* GetScreenWidth() {
+  return &g_ScreenWidth_00472d08;
 }
 
 /* Function start: 0x4205F0 */
-extern "C" int* GetWindowedModeFlag() {
-  return &DAT_0043de90;
+extern "C" int* GetScreenHeight() {
+  return &g_ScreenHeight_00472d0c;
 }
 
 int SetDeviceContext(HDC);
@@ -201,8 +205,8 @@ LRESULT CALLBACK GameWindowProc(HWND param_1, UINT param_2, WPARAM param_3, unsi
     PostQuitMessage(0);
     return 0;
   case 5: // WM_SIZE
-    *(unsigned int *)GetWindowWidth() = (unsigned short)param_4;
-    *(unsigned int *)GetWindowHeight() = (unsigned short)((unsigned int)param_4 >> 0x10);
+    *(unsigned int *)GetScreenWidth() = (unsigned short)param_4;
+    *(unsigned int *)GetScreenHeight() = (unsigned short)((unsigned int)param_4 >> 0x10);
     return 0;
   case 7: // WM_SETFOCUS
     SelectAndRealizePalette(DAT_0043de84);

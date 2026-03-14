@@ -53,7 +53,7 @@ extern "C" {
     void FUN_00413e10(void*, char*, char*, ...);
     int FileExists(const char*);
     void FUN_004265a0();
-    void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+    void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
     char* FUN_0044e530(int);
     void FUN_00444e20(void*);
 }
@@ -197,7 +197,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     selectedOption = -1;
 
     // Send initial message
-    FUN_00444d90(5, 0x455, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+    SendGameMessage(5, 0x455, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
 
     // Reset character sprites
     i = 0;
@@ -281,7 +281,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                     stateVals = (int*)((int)gs + 0x90);
                     stateVals = (int*)*stateVals;
                     stateVals[awareIdx] = 1;
-                    FUN_00444d90(4, 0x1e87, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                    SendGameMessage(4, 0x1e87, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                 }
             }
         } else if (stateVals[alienIdx] == 2) {
@@ -304,7 +304,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                     stateVals = (int*)((int)gs + 0x90);
                     stateVals = (int*)*stateVals;
                     stateVals[awareIdx] = 2;
-                    FUN_00444d90(4, 0x1e89, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                    SendGameMessage(4, 0x1e89, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                 }
             }
         } else if (stateVals[alienIdx] == 3) {
@@ -332,14 +332,14 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                     stateVals = (int*)((int)gs + 0x90);
                     stateVals = (int*)*stateVals;
                     stateVals[awareIdx] = 3;
-                    FUN_00444d90(4, 0x1e88, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                    SendGameMessage(4, 0x1e88, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                 }
             }
         }
     }
 
     // Send background sound message
-    FUN_00444d90(5, field_F0, 0, 0, 0x1b, 0, 0, 0, 0, 0);
+    SendGameMessage(5, field_F0, 0, 0, 0x1b, 0, 0, 0, 0, 0);
 
     // Set PREVIOUSROOM state
     gs = DAT_0046aa30;
@@ -377,7 +377,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             stateVals = (int*)*stateVals;
             if (stateVals[dDetIdx] != 0) {
                 // All 3 in detention - send detention message
-                FUN_00444d90(3, 0x1202, 0x2d, 1, 4, 0, 0, 0, 0, 0);
+                SendGameMessage(3, 0x1202, 0x2d, 1, 4, 0, 0, 0, 0, 0);
                 // Create and push empty SpriteAction
                 SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 DAT_00472d58.CopyFrom(&action);

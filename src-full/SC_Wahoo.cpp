@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <new.h>
 
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 extern void* __fastcall FUN_0041dbe0(void*);
 extern void __fastcall FUN_00410fd0(void*);
@@ -254,7 +254,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
     }
 
     if (msg != 0) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
     return 0;
@@ -306,7 +306,7 @@ int SC_Wahoo::Exit(SC_Message* msg) {
     case 0:
         break;
     case 7:
-        FUN_00444d90(1, id, id, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, id, id, moduleParam, 0x18, 0, 0, 0, 0, 0);
         return 1;
     case 0x17:
         ShowError("SCMI_INSERT");
@@ -624,7 +624,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         }
         if (local_18 == 0) {
             int iVar3 = atoi(local_b8);
-            FUN_00444d90(5, iVar3, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+            SendGameMessage(5, iVar3, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
         }
         else if (local_18 >= 1 && local_18 <= 6) {
             char* path = FUN_0044e470(local_b8);

@@ -3,7 +3,7 @@
 #include "Palette.h"
 #include "Memory.h"
 
-extern "C" int FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" int SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void WriteToLog(const char* format, ...);
 extern void __fastcall FUN_00432da0(void* self);
 
@@ -63,7 +63,7 @@ int SC_DemoScreen::ShutDown(SC_Message* msg) {
         delete (Palette*)field_A8;
         field_A8 = 0;
     }
-    return FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+    return SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x44E8B0 */

@@ -8,7 +8,7 @@
 #include <string.h>
 
 extern "C" void __cdecl FUN_004309c0(void*);
-extern "C" void __cdecl FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void __cdecl SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
 extern void __cdecl FUN_00425a90(int, int);
@@ -187,7 +187,7 @@ int SC_Slime::ShutDown(SC_Message* msg)
     }
 
     if (msg != 0) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
     return 0;
@@ -278,7 +278,7 @@ int SC_Slime::Exit(SC_Message* msg)
     case 0:
         break;
     case 7:
-        FUN_00444d90(1, id, id, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, id, id, moduleParam, 0x18, 0, 0, 0, 0, 0);
         return 1;
     case 0x17:
         ShowError("SCMI_INSERT");

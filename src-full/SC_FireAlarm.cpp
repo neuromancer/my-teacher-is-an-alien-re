@@ -11,7 +11,7 @@
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetCinematicFilename(int);
 extern "C" void* FUN_004260f0(char*);
 
@@ -173,7 +173,7 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
     }
 
     if (msg != 0) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
     return 0;
@@ -204,7 +204,7 @@ int SC_FireAlarm::Exit(SC_Message* msg) {
     case 0:
         break;
     case 7:
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         return 1;
     case 0x17:
         ShowError("SCMI_INSERT");

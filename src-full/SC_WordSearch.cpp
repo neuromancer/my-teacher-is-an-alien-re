@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 
 extern void __fastcall FUN_004309a0(void*, int, int);
@@ -142,7 +142,7 @@ int SC_WordSearch::ShutDown(SC_Message* msg) {
         *(void**)((int)this + 0x82C) = 0;
     }
     if ((int)msg != 0) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
     return 0;
 }
@@ -162,7 +162,7 @@ void SC_WordSearch::Update(int param1, int param2) {
 
     unsigned int uVar4 = ((Timer*)((int)this + 0xC0))->Update();
     if (uVar4 > 60000 && param2 != handlerId) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
     if (handlerId != param2) {
         return;
@@ -379,7 +379,7 @@ void SC_WordSearch::FUN_436790() {
             *(int*)(*(int*)((int)this + 0x830)) = 0x20;
             *(int*)(*(int*)((int)this + 0x830) + 4) = 1;
             *(int*)(*(int*)((int)this + 0x830) + 0x14) = 0x13;
-            FUN_00444d90(4, 0x1BA8, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+            SendGameMessage(4, 0x1BA8, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
         } else {
             uVar3 = ((GameState*)pvVar2)->FindLabel("PERIOD");
             if (uVar3 < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < uVar3) {
@@ -478,7 +478,7 @@ int SC_WordSearch::Exit(SC_Message* msg) {
         if (iVar != 7) {
             return 0;
         }
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
     return 1;
 }

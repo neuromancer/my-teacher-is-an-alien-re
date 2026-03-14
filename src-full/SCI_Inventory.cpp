@@ -8,7 +8,7 @@
 #include "InputManager.h"
 
 extern "C" void ShowError(const char* format, ...);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* FUN_0044e530(int handle);
 
 #include "MsgList.h"
@@ -359,7 +359,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         if (DAT_0046a6e4 == 0) {
             goto handle_item_click;
         }
-        FUN_00444d90(0x1E, *(int*)((char*)DAT_0046a6e4 + 0x94), 0x1E, 0, 0x17, 0, 0, 0, 0, 0);
+        SendGameMessage(0x1E, *(int*)((char*)DAT_0046a6e4 + 0x94), 0x1E, 0, 0x17, 0, 0, 0, 0, 0);
         {
             Sprite* spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
             if (spr != 0) {
@@ -538,7 +538,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         }
 
         if (DAT_0046a6e4 != 0) {
-            FUN_00444d90(0x1e, *(int*)((char*)DAT_0046a6e4 + 0x94), 0x1e, 0, 0x17, 0, 0, 0, 0, 0);
+            SendGameMessage(0x1e, *(int*)((char*)DAT_0046a6e4 + 0x94), 0x1e, 0, 0x17, 0, 0, 0, 0, 0);
             {
                 void* obj = DAT_0046aa18;
                 Sprite* spr = *(Sprite**)((char*)obj + 0x94);

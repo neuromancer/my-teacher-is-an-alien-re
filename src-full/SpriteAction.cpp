@@ -70,7 +70,7 @@ SpriteAction::~SpriteAction() {
 }
 
 /* Function start: 0x444D90 */
-extern "C" void FUN_00444d90(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
+extern "C" void SendGameMessage(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
     SpriteAction action(a, b, c, d, e, f, g, h, i, j);
     if (DAT_0046a6ec != 0) {
         ((GameEngine*)DAT_0046a6ec)->EnqueueAction(&action);

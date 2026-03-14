@@ -10,7 +10,7 @@ extern "C" void ShowError(const char* format, ...);
 extern void FreeMemory(void* ptr);
 
 extern void __cdecl FUN_00444e40(void*);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void* __fastcall FUN_004036a0(void*);
 
 extern "C" extern void* DAT_0046aa30;
@@ -152,7 +152,7 @@ int HotspotAction::HandleMessage(int* msg) {
             return 1;
         }
         if (val != 0) {
-            FUN_00444d90(0x1e, val, 0x1e, 0, 6, 0, 0, 0, 0, 0);
+            SendGameMessage(0x1e, val, 0x1e, 0, 6, 0, 0, 0, 0, 0);
             state = 0;
             return 1;
         }

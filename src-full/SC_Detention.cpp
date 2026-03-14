@@ -7,7 +7,7 @@
 #include "globals.h"
 
 extern "C" void ShowError(const char* format, ...);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void ParseSpriteAction(void*, void*);
 
 extern "C" extern void* DAT_0046aa30;
@@ -185,7 +185,7 @@ void SC_Detention::GoToClass() {
         if (idx < 0 || idx >= gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", idx);
         }
-        FUN_00444d90(3, field_F0[gs->stateValues[idx]], 0x25, 1, 4, 0, 0, 0, 0, 0);
+        SendGameMessage(3, field_F0[gs->stateValues[idx]], 0x25, 1, 4, 0, 0, 0, 0, 0);
     }
 }
 
@@ -477,7 +477,7 @@ void SC_Detention::ProcessPeriodAction(int param) {
     int idx;
 
     field_150 = 1;
-    FUN_00444d90(3, param, 0x2D, 1, 4, 0, 0, 0, 0, 0);
+    SendGameMessage(3, param, 0x2D, 1, 4, 0, 0, 0, 0, 0);
 
     {
         SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -494,7 +494,7 @@ void SC_Detention::ProcessPeriodAction(int param) {
 
 /* Function start: 0x40AD50 */
 void SC_Detention::DrawDetention() {
-    FUN_00444d90(1, 0, handlerId, moduleParam, 5, 0, 0, 0, 0, 0);
+    SendGameMessage(1, 0, handlerId, moduleParam, 5, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x40B030 */

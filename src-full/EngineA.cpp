@@ -4,7 +4,7 @@
 #include <string.h>
 
 extern "C" void ShowError(const char* format, ...);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void* DAT_0046aa30;
 
 /* Function start: 0x43A4C0 */
@@ -50,8 +50,8 @@ int EngineA::HandleAction(int* param) {
             gs->stateValues[idx] = 1;
         }
     } else if (param[5] == 2) {
-        FUN_00444d90(1, param[7], 0x41, 1, 4, 0, 0, 0, 0, 0);
-        FUN_00444d90(0x20, param[8], 0x41, 1, 4, 0, 0, 0, 0, 0);
+        SendGameMessage(1, param[7], 0x41, 1, 4, 0, 0, 0, 0, 0);
+        SendGameMessage(0x20, param[8], 0x41, 1, 4, 0, 0, 0, 0, 0);
         result = 1;
     }
 

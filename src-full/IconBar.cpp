@@ -22,7 +22,7 @@ static int g_IconBarRefCount;                   // 0x46af0c
 // External functions
 
 extern void FUN_00444e40(SpriteAction*);        // SpriteAction method (cdecl 1 param)
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00425a90(int, int);
 extern void __stdcall FUN_004309a0(int);
 extern "C" void FUN_004309c0(void*);
@@ -232,7 +232,7 @@ int IconBar::AddMessage(SC_Message* msg) {
                              4, 0, 0, 0, 0, 0);
             DAT_00472d58.CopyFrom(&temp);
         }
-        FUN_00444d90(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+        SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
         return 1;
     }
 
@@ -254,7 +254,7 @@ int IconBar::AddMessage(SC_Message* msg) {
     }
 
     if (DAT_0046a6e4 != 0) {
-        FUN_00444d90(0x1e, *(int*)((char*)DAT_0046a6e4 + 0x94),
+        SendGameMessage(0x1e, *(int*)((char*)DAT_0046a6e4 + 0x94),
                      handlerId, moduleParam, 0x17, 0, 0, 0, 0, 0);
     }
 
@@ -322,7 +322,7 @@ int IconBar::AddMessage(SC_Message* msg) {
         result = ((GameState*)DAT_0046aa3c)->FindState((char*)DAT_0046aa2c);
         if (handlerId == 0x20) {
             if (result == 5 || result == 0x12) {
-                FUN_00444d90(4, 0x1b86, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                SendGameMessage(4, 0x1b86, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                 return 1;
             }
         }
@@ -467,7 +467,7 @@ void IconBar::PlayButtonSound(int buttonIndex) {
             i = i - 1;
         } while (i != 0);
     }
-    FUN_00444d90(4, g_IconBarEntries[buttonIndex].field_14,
+    SendGameMessage(4, g_IconBarEntries[buttonIndex].field_14,
                  handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
 }
 

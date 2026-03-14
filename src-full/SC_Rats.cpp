@@ -25,7 +25,7 @@ int DAT_0046ae70 = 0;
 extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
 extern void __fastcall FUN_0042be00(void*);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00444e40(void*);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void* __fastcall FUN_00450b10(void*);
@@ -166,7 +166,7 @@ int SC_Rats::ShutDown(SC_Message* msg) {
         field_A8 = 0;
     }
     if (msg != 0) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
     return 0;
 }
@@ -296,7 +296,7 @@ void SC_Rats::State0Handler() {
         if (*(int*)(engineObj + 0x100) != 0) {
             ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
-        FUN_00444d90(5, 0x3E9, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
+        SendGameMessage(5, 0x3E9, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
         if (snd != 0) {
             snd->Play(100, 1);
             goto done;

@@ -11,7 +11,7 @@
 #include <new.h>
 
 extern "C" void ShowError(const char* format, ...);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* FUN_0044e530(int handle);
 extern "C" int __stdcall AIL_sample_status(void*);
 
@@ -555,7 +555,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
         spr->ResetAnimation(0, 0);
     }
 
-    FUN_00444d90(5, 0x3ed, SC_SelectHotSpot::handlerId, SC_SelectHotSpot::moduleParam, 0x1b, 0, 0, 0, 0, 0);
+    SendGameMessage(5, 0x3ed, SC_SelectHotSpot::handlerId, SC_SelectHotSpot::moduleParam, 0x1b, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x406240 */
@@ -680,7 +680,7 @@ int SC_SelectHotSpot::Exit(SC_Message* msg) {
         break;
     }
     case 7:
-        FUN_00444d90(1, SC_SelectHotSpot::handlerId, SC_SelectHotSpot::handlerId, SC_SelectHotSpot::moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, SC_SelectHotSpot::handlerId, SC_SelectHotSpot::handlerId, SC_SelectHotSpot::moduleParam, 0x18, 0, 0, 0, 0, 0);
         break;
     default:
         return 0;

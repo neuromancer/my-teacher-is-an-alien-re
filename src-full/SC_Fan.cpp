@@ -12,7 +12,7 @@
 #include "TimeOut.h"
 
 extern void __fastcall FUN_00410fd0(void*);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 extern "C" int FileExists(const char*);
 extern "C" void FUN_004265a0();
@@ -213,7 +213,7 @@ void SC_Fan::Cleanup(int flag) {
     field_1C4 = 0;
 
     if (flag != 0) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 }
 
@@ -266,7 +266,7 @@ int SC_Fan::Exit(SC_Message* msg) {
     case 0:
         break;
     case 7:
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         return 1;
     case 0x17:
         ShowError("SCMI_INSERT");
@@ -282,7 +282,7 @@ void SC_Fan::ProcessRound() {
     void* ptr;
 
     if (savedCommand == 0x2B) {
-        FUN_00444d90(4, field_1C4, handlerId, moduleParam, 0x13, 0, 100, 0, 0, 0);
+        SendGameMessage(4, field_1C4, handlerId, moduleParam, 0x13, 0, 100, 0, 0, 0);
 
         if (field_17C == 2) {
             ptr = field_A8;
@@ -312,8 +312,8 @@ void SC_Fan::ProcessRound() {
             }
         }
     } else {
-        FUN_00444d90(4, field_1C4, handlerId, moduleParam, 0x13, 0, 1000, 0, 0, 0);
-        FUN_00444d90(5, 0, handlerId, moduleParam, 0x13, 0, 0, 0, 0, 0);
+        SendGameMessage(4, field_1C4, handlerId, moduleParam, 0x13, 0, 1000, 0, 0, 0);
+        SendGameMessage(5, 0, handlerId, moduleParam, 0x13, 0, 0, 0, 0, 0);
 
         if (field_17C == 4) {
             *(int*)((int)field_A8 + 0x14) = 1;
@@ -400,7 +400,7 @@ void SC_Fan::State0Handler() {
 
     if (field_180 == 0) {
         field_180 = 1;
-        FUN_00444d90(4, field_1C4, handlerId, moduleParam, 0x13, 0x32, 0x3E8, 0, 0, 0);
+        SendGameMessage(4, field_1C4, handlerId, moduleParam, 0x13, 0x32, 0x3E8, 0, 0, 0);
 
         sample = field_198[1];
         if (sample != 0) {
@@ -515,7 +515,7 @@ void SC_Fan::RenderFan() {
         if (field_CC != 0) {
             if (((Sprite*)field_CC)->Do(((Sprite*)field_CC)->num_states, ((Sprite*)field_CC)->field_0xb0, 1.0)) {
                 DisplaySprites(0);
-                FUN_00444d90(4, field_1C4, handlerId, moduleParam, 0x13, 0x32, 0x3E8, 0, 0, 0);
+                SendGameMessage(4, field_1C4, handlerId, moduleParam, 0x13, 0x32, 0x3E8, 0, 0, 0);
             }
         }
     }
@@ -730,11 +730,11 @@ int SC_Fan::LBLParse(char* param_1) {
         }
         if (local_18 == 0) {
             int sndId = atoi(local_b8);
-            FUN_00444d90(5, sndId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+            SendGameMessage(5, sndId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
         }
         else if (local_18 == -1) {
             field_1C4 = atoi(local_b8);
-            FUN_00444d90(4, field_1C4, handlerId, moduleParam, 0x1b, 1, 0, 0, 0, 0);
+            SendGameMessage(4, field_1C4, handlerId, moduleParam, 0x1b, 1, 0, 0, 0, 0);
         }
         else {
             void* mem = malloc(0x10);

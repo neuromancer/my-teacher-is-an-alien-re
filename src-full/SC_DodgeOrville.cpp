@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <windows.h>
 
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_004127c0(void*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern "C" void ShowError(const char* format, ...);
@@ -84,7 +84,7 @@ void SC_DodgeOrville::Cleanup(int flag) {
     FUN_00449320(this, 0, flag);
 
     if (flag != 0) {
-        FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 }
 

@@ -13,7 +13,7 @@
 #include <string.h>
 #include <smack.h>
 
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetCinematicFilename(int id);
 
 extern "C" extern void* DAT_0046aa30;
@@ -25,9 +25,9 @@ extern void* DAT_0046aa18;
 extern "C" {
     extern int DAT_0046a6ec;
     extern void* DAT_0046aa14;
-    extern int DAT_0046ac04;
     extern char DAT_00473400;
 }
+extern int g_WaitForInputValue_004373bc;
 
 // Engine list operations
 extern void* __fastcall FUN_00403620(void* list);
@@ -37,7 +37,7 @@ extern void __fastcall FUN_00401c80(void* obj);
 // Engine/Misc
 extern void __cdecl FUN_00425a90(int width, int height);
 extern "C" void WriteToLog(const char* format, ...);
-extern "C" void FUN_00425f10();
+extern void BlankScreen();
 extern void __fastcall FUN_00432da0(void* self);
 
 // File operations
@@ -50,9 +50,9 @@ extern "C" int FileExists(const char*);
 // Message operations
 extern void __cdecl FUN_00444e40(void* msg);
 
-// Screen dimensions (0x4205E0, 0x4205F0 - return ptrs to render target w/h)
-extern "C" int* FUN_004205f0();
-extern "C" int* FUN_004205e0();
+// Screen dimensions
+extern "C" int* GetScreenWidth();
+extern "C" int* GetScreenHeight();
 
 // Summary
 extern "C" void FUN_004307b0(int handle);
@@ -206,11 +206,11 @@ void SC_Cinematic::Init(SC_Message* msg) {
 
         Animation* smk = (Animation*)field_AC;
         if ((field_B8 & 0x2) != 0 || smk->SetPalette(0, 0x100) == 0) {
-            FUN_00425f10();
+            BlankScreen();
         }
 
         if (field_B8 & 0x10) {
-            FUN_00444d90(5, 0, handlerId, moduleParam, 0x13, field_BC, field_C0, 0, 0, 0);
+            SendGameMessage(5, 0, handlerId, moduleParam, 0x13, field_BC, field_C0, 0, 0, 0);
         }
     }
 }
@@ -267,11 +267,11 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
         *(int*)(DAT_0046a6ec + 0x1c) = field_B4;
 
         if (field_B8 & 0x20) {
-            FUN_00444d90(5, 0, handlerId, moduleParam, 0x13, field_C4, field_C8, 0, 0, 0);
+            SendGameMessage(5, 0, handlerId, moduleParam, 0x13, field_C4, field_C8, 0, 0, 0);
         }
 
         if (field_B8 & 0x4) {
-            FUN_00425f10();
+            BlankScreen();
         }
 
         if (field_AC != 0) {
@@ -319,7 +319,7 @@ void SC_Cinematic::Update(int param1, int param2) {
 
         int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1a0);
         int hasInput;
-        if (mousePtr != 0 && (mousePtr[4] >= 1 || mousePtr[5] >= 1 || DAT_0046ac04 != 0)) {
+        if (mousePtr != 0 && (mousePtr[4] >= 1 || mousePtr[5] >= 1 || g_WaitForInputValue_004373bc != 0)) {
             hasInput = 1;
         } else {
             hasInput = 0;
@@ -363,7 +363,7 @@ void SC_Cinematic::Update(int param1, int param2) {
             }
 
             hasInput = 0;
-            if (DAT_0046ac04 != 0) {
+            if (g_WaitForInputValue_004373bc != 0) {
                 int key = WaitForInput();
                 hasInput = (key == 0x1b);
             }
@@ -393,9 +393,9 @@ void SC_Cinematic::Update(int param1, int param2) {
     {
         Animation* smk = (Animation*)field_AC;
         VBuffer* surface = (VBuffer*)(int)smk->targetBuffer;
-        int* screenH = FUN_004205f0();
+        int* screenH = GetScreenHeight();
         int h = *screenH - 1;
-        int* screenW = FUN_004205e0();
+        int* screenW = GetScreenWidth();
         int w = *screenW - 1;
 
         surface->CallBlitter5(surface->clip_x1, surface->clip_x2, surface->clip_y1, surface->clip_y2, 0, w, 0, h);
@@ -489,6 +489,6 @@ void SC_Cinematic::EndCinematic() {
             field_D0 = 0;
         }
     } else {
-        FUN_00444d90(4, 0, handlerId, moduleParam, 0, 0, savedCommand, savedMsgData, 0, 0);
+        SendGameMessage(savedMsgData, savedCommand, moduleParam, handlerId, 4, 0, 0, 0, 0, 0);
     }
 }

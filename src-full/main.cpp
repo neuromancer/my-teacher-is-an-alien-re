@@ -83,7 +83,7 @@ void CleanupMemoryCache();
 
 extern void __cdecl FUN_004344b0();
 extern void __cdecl FUN_00434030(void*, int);
-extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "GameEngine.h"
 extern "C" int DAT_0046a6ec;
@@ -208,8 +208,8 @@ void RunGame() {
     g_TextManager_00436990->tabWidth = 0x14;
     g_Timer_00436980->Reset();
 
-    FUN_00444d90(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
-    FUN_00444d90(1, 0x1e, 0, 0, 0x17, 0, 0, 0, 0, 0);
+    SendGameMessage(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
+    SendGameMessage(1, 0x1e, 0, 0, 0x17, 0, 0, 0, 0, 0);
 
     // GameLoop (stack-allocated)
     GameLoop gameLoop;
@@ -463,8 +463,12 @@ int WaitForInput() {
 }
 
 /* Function start: 0x453CC8 */
+// Original returns [0x472d14] - a .data initialized global (always 1).
+// ProcessMessages loops until this returns non-zero, making it non-blocking.
+static int g_AppReady_00472d14 = 1; // DAT_00472d14
+
 int IsAppDeactivated() {
-  return DAT_0043de94;
+  return g_AppReady_00472d14;
 }
 
 /* Function start: 0x420620 */

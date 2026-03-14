@@ -107,7 +107,7 @@ extern "C" {
     void* DAT_0046aa10 = 0;
     void* DAT_0046aa14 = 0;
     void* DAT_0046aa30 = 0;
-    int DAT_0046ac04 = 0;
+    // DAT_0046ac04 = g_WaitForInputValue_004373bc in globals.cpp (last key pressed)
     char DAT_00473400 = 0;
     char DAT_00472c70[256] = {0};
     char DAT_00472cb0[256] = {0};
@@ -160,7 +160,17 @@ void InputManagerFull::PollEvents(int) {}
 class PaletteLoader { public: void Load(char*); };
 void PaletteLoader::Load(char*) {}
 
-int InputManager::Refresh(int) { return 0; }
+extern "C" int ProcessMessages();
+
+/* Function start: 0x426CE0 */
+int InputManager::Refresh(int) {
+    if (ProcessMessages() != 0) {
+        return 1;
+    }
+    PollMouse(pMouseLocal);
+    PollJoystick(pJoystick);
+    return 0;
+}
 
 // Engine COMDAT thunks (needed by SC_DodgeOrville)
 void __fastcall FUN_00449320(void*, int, int) {}
@@ -305,9 +315,13 @@ void __cdecl FUN_00425bc0(char*, char*, int) {}
 // ============================================================================
 
 extern "C" {
-    int* FUN_004205e0() { static int v = 0; return &v; }
-    int* FUN_004205f0() { static int v = 0; return &v; }
-    void FUN_00425f10() {}
+    // FUN_004205e0 = GetScreenWidth in GameWindow.cpp
+    // FUN_004205f0 = GetScreenHeight in GameWindow.cpp
+    // FUN_00425f10 = BlankScreen in Graphics.cpp
+    static int s_WindowHeight = 480;
+    int* GetWindowHeight() { return &s_WindowHeight; }
+    static int s_WindowedMode = 0;
+    int* GetWindowedModeFlag() { return &s_WindowedMode; }
     // FUN_00425fa0 = FileExists in main.cpp
     void* FUN_004260f0(char* name) { return name; }
     void FUN_004307b0(int) {}
