@@ -489,6 +489,6 @@ void SC_Cinematic::EndCinematic() {
             field_D0 = 0;
         }
     } else {
-        SendGameMessage(savedMsgData, savedCommand, moduleParam, handlerId, 4, 0, 0, 0, 0, 0);
+        SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }
 }

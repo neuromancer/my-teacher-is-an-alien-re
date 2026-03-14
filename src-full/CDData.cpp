@@ -158,6 +158,38 @@ extern "C" int __cdecl FUN_00430310(const char* path, int param_2) {
     return 0;
 }
 
+extern void* DAT_0046aa1c; // CDData* for path resolution
+extern int __cdecl FUN_004341f0(char*);
+extern int __cdecl FUN_00425fc0(char*);
+extern void __cdecl FUN_004342d0(char*, int);
+extern void __fastcall FUN_00433230(void*, int, char*);
+extern "C" void* FUN_004260f0(char*);
+extern "C" void WriteToLog(const char*, ...);
+
+/* Function start: 0x426190 */
+char* ResolveAssetPath(char* name) {
+    char* basePath = (char*)((int)DAT_0046aa1c + 0x21a);
+    sprintf(basePath, "%s", name);
+
+    if (FUN_004341f0(basePath) != 0) {
+        return basePath;
+    }
+    if (FileExists(basePath) != 0) {
+        return basePath;
+    }
+
+    char* resolved = (char*)FUN_004260f0(basePath);
+    int size = FUN_00425fc0(resolved);
+    if (size == -1) {
+        resolved = (char*)FUN_004260f0(basePath);
+        WriteToLog("missing file %s", resolved);
+        return basePath;
+    }
+    FUN_004342d0(basePath, size);
+    FUN_00433230(DAT_0046aa1c, 0, basePath);
+    return basePath;
+}
+
 /* Function start: 0x426220 */ /* ~96% match */
 extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
     int hSrc;

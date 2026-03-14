@@ -33,7 +33,7 @@ extern void __fastcall FUN_00432da0(void*);
 extern void __fastcall FUN_00427880(void*);
 
 extern void __cdecl FUN_00413e70(void*, int, char*);
-extern char* __cdecl FUN_00426190(char* name);
+extern char* __cdecl ResolveAssetPath(char* name);
 extern void* __fastcall FUN_00410fb0(void*, int, char*, int);
 extern void __fastcall FUN_004274c0(void*, int, int);
 extern void __cdecl FUN_00412a50();
@@ -697,7 +697,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* mem = malloc(0x30);
         void* obj = 0;
         if (mem != 0) {
-            char* path = FUN_00426190(local_b8);
+            char* path = ResolveAssetPath(local_b8);
             obj = FUN_00410fb0(mem, 0, path, 0);
         }
         field_144 = obj;

@@ -292,7 +292,14 @@ void __cdecl FUN_00425a90(int, int) {}
 void __cdecl FUN_00444e40(void*) {}
 // ParseSpriteAction (was FUN_00445450) moved to SC_Message.cpp
 void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int) { return 0; }
-char* __cdecl FUN_00426190(char* name) { return name; }
+// FUN_00426190 = ResolveAssetPath in CDData.cpp
+
+// Path resolution helpers (stubbed until CDData is fully implemented)
+void* DAT_0046aa1c = 0;
+int __cdecl FUN_004341f0(char*) { return 0; }
+void __cdecl FUN_004342d0(char*, int) {}
+void __fastcall FUN_00433230(void*, int, char*) {}
+
 void __cdecl FUN_00425cb0(char*, ...) {}
 int __cdecl FUN_0044ccf0(int, int, int, int) { return 0; }
 void __cdecl FUN_004344b0() {}
@@ -375,10 +382,8 @@ void __fastcall FUN_00449520(void*) {}
 void __fastcall FUN_00425100(void*, int, int, int) {}
 void __fastcall FUN_0042b0f0(void*) {}
 
-extern "C" {
-    void FUN_00455040(FILE*) {}
-    FILE* FUN_00455110(char*, char*) { return 0; }
-}
+// FUN_00455040 = fclose (CRT)
+// FUN_00455110 = fsopen (string.cpp) = _fsopen(filename, mode, _SH_DENYNO)
 
 int FUN_00425fc0(char*) { return 0; }
 

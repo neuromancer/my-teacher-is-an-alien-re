@@ -7,7 +7,7 @@
 #include "Memory.h"
 #include "Animation.h"
 
-extern char* __cdecl FUN_00426190(char* name);
+extern char* __cdecl ResolveAssetPath(char* name);
 extern "C" int FileExists(const char*);
 
 // NOTE: CreatePaletteBuffer at 0x41EA50 is effectively a placement new for Palette
@@ -68,7 +68,7 @@ void Palette::CopyData(void* source)
 /* Function start: 0x41DCC0 */
 void Palette::LoadFile(char* filename)
 {
-    char* path = FUN_00426190(filename);
+    char* path = ResolveAssetPath(filename);
     if (!FileExists(path)) {
         ShowError("Palette::Load - Can't find palette file '%s'", filename);
     }
@@ -117,10 +117,10 @@ Palette::~Palette()
     m_size = 0;
 }
 
-/* Function start: 0x41EAB0 */ /* DEMO ONLY - no full game match */
+// Load delegates to LoadFile in the full game
 void Palette::Load(char* filename)
 {
-    OpenAndReadPaletteFile(filename);
+    LoadFile(filename);
 }
 
 /* Function start: 0x41EAC0 */ /* DEMO ONLY - no full game match */
@@ -160,19 +160,21 @@ extern "C" void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int s
 }
 
 /* Function start: 0x41DFE0 */
+/* Function start: 0x41DFE0 */
 int Palette::IsSimilar(void* data, int start, int count) {
     int ofs = start * 3;
     int end = count * 3;
-    char* src = (char*)data + ofs;
-    char* dst = m_data + ofs;
+    char* dst = (char*)data + ofs;
+    char* src = m_data + ofs;
     while (end > ofs) {
-        unsigned char diff = (unsigned char)(*src ^ *dst);
-        if (diff & 0xFC) {
+        int diff = 0;
+        diff = (unsigned char)(*dst ^ *src);
+        if (diff & 0xFFFFFFFC) {
             return 0;
         }
         ofs++;
-        src++;
         dst++;
+        src++;
     }
     return 1;
 }

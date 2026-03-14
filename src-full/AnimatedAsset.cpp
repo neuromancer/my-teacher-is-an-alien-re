@@ -7,7 +7,7 @@
 #include <string.h>
 #include <windows.h>
 
-extern char* __cdecl FUN_00426190(char* name);
+extern char* __cdecl ResolveAssetPath(char* name);
 
 /* Function start: 0x43A6E0 */
 AnimatedAsset::AnimatedAsset()
@@ -56,7 +56,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
       }
 
       anim = new Animation();
-      anim->Open(FUN_00426190(local_9c), 0xfe000, 0xffffffff);
+      anim->Open(ResolveAssetPath(local_9c), 0xfe000, 0xffffffff);
 
       buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
       anim->ToBufferVB(buffer);

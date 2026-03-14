@@ -66,6 +66,7 @@ void InitGameSystems();
 void ShutdownGameSystems();
 void CheckDebug();
 void CreateGameObject_1();
+void InitGameConfig();
 int GetFileAttributes_Wrapper(const char *param_1, char param_2);
 int IsAppDeactivated();
 
@@ -376,6 +377,7 @@ void InitGameSystems(void) {
     CheckDebug();
     ClearMessageLog();
     CreateGameObject_1();
+    InitGameConfig();
     InitWorkBuffer(0x280, 0x1e0);
     g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
     DAT_0046aa08 = g_InputManager_00436968;
@@ -437,19 +439,30 @@ void CheckDebug(void) {
 }
 
 /* Function start: 0x4259E0 */
+extern void* DAT_0046aa1c;
+
+/* Function start: 0x424BB0 */
 void CreateGameObject_1() {
-  g_GameConfig_00436970 = new GameConfig();
+  static char s_pathBuffer[260]; // DAT_00472de8
+  CDData* cd = new CDData(s_pathBuffer, "teacher_id", "Missing the Teacher CD ROM");
+  DAT_0046aa1c = cd;
+}
+
+/* Function start: 0x4259E0 */
+void InitGameConfig() {
+  GameConfig* cfg = new GameConfig();
+  DAT_0046aa10 = cfg;
+  g_GameConfig_00436970 = cfg;
 
   if (g_CmdLineAudioMode_0043d558 != 0) {
-      g_GameConfig_00436970->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
+      ((GameConfig*)DAT_0046aa10)->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
   }
 
   if (g_CmdLineInputMode_0043d560 != 0) {
-      g_GameConfig_00436970->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
+      ((GameConfig*)DAT_0046aa10)->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
   }
 
-  g_GameConfig_00436970->LoadConfig();
-  DAT_0046aa10 = g_GameConfig_00436970;
+  ((GameConfig*)DAT_0046aa10)->LoadConfig();
 }
 
 /* Function start: 0x426AC0 */

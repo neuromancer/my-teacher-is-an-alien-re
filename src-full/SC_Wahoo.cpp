@@ -21,7 +21,7 @@ extern void __fastcall FUN_00410fd0(void*);
 
 extern "C" void ShowError(const char* format, ...);
 extern void __cdecl FUN_00412a50();
-extern char* __cdecl FUN_00426190(char* name);
+extern char* __cdecl ResolveAssetPath(char* name);
 extern char* __cdecl FUN_0044e470(char*);
 
 extern void* __fastcall FUN_00410fb0(void*, int, char*, int);
@@ -548,7 +548,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* mem = malloc(0x30);
         void* obj = 0;
         if (mem != 0) {
-            char* path = FUN_00426190(local_b8);
+            char* path = ResolveAssetPath(local_b8);
             obj = FUN_00410fb0(mem, 0, path, 0);
         }
         field_C4 = obj;

@@ -26,7 +26,7 @@ extern SpriteAction DAT_00472d58;
 extern void* __fastcall FUN_0041dbe0(void* mem);
 
 // Sound table
-extern char* __cdecl FUN_00426190(char* name);
+extern char* __cdecl ResolveAssetPath(char* name);
 
 // Parser operations
 extern void __cdecl FUN_00413e70(void* parser, int parent, char* key);
@@ -287,7 +287,7 @@ int SelectHotspot::LBLParse(char* line) {
         }
         Sample* smp = new Sample();
         SelectHotspot::rollonSound = smp;
-        char* path = FUN_00426190(name);
+        char* path = ResolveAssetPath(name);
         smp->Load(path);
     } else if (strcmp(keyword, "ROLLOFF") == 0) {
         sscanf(line, "%s %d", keyword, &handle);
@@ -300,7 +300,7 @@ int SelectHotspot::LBLParse(char* line) {
         }
         Sample* smp = new Sample();
         SelectHotspot::rolloffSound = smp;
-        char* path = FUN_00426190(name);
+        char* path = ResolveAssetPath(name);
         smp->Load(path);
     } else if (strcmp(keyword, "SELECTED") == 0) {
         sscanf(line, "%s %d", keyword, &handle);
@@ -313,7 +313,7 @@ int SelectHotspot::LBLParse(char* line) {
         }
         Sample* smp = new Sample();
         SelectHotspot::selectedSound = smp;
-        char* path = FUN_00426190(name);
+        char* path = ResolveAssetPath(name);
         smp->Load(path);
     } else if (strcmp(keyword, "MESSAGE") == 0) {
         void* msgMem = AllocateMemory(0x38);

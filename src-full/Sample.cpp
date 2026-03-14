@@ -23,10 +23,9 @@ void Sample::Unload() {
   }
 }
 
-extern char* __cdecl FUN_00426190(char*);
+extern char* __cdecl ResolveAssetPath(char*);
 extern int __cdecl FUN_00425fc0(char*);
-extern "C" FILE* FUN_00455110(char*, char*);
-extern "C" void FUN_00455040(FILE*);
+extern "C" FILE* fsopen(const char*, const char*);
 
 /* Function start: 0x424F00 */
 int Sample::Load(char *filename) {
@@ -36,12 +35,12 @@ int Sample::Load(char *filename) {
   if (m_data != 0) {
     Unload();
   }
-  FUN_00426190(filename);
+  ResolveAssetPath(filename);
   m_field8 = FUN_00425fc0(filename);
   if (m_field8 == 0) {
     return 1;
   }
-  FILE* file = FUN_00455110(filename, "rb");
+  FILE* file = fsopen(filename, "rb");
   if (file == 0) {
     return 1;
   }
@@ -50,7 +49,7 @@ int Sample::Load(char *filename) {
     return 1;
   }
   fread(m_data, m_field8, 1, file);
-  FUN_00455040(file);
+  fclose(file);
   return 0;
 }
 
