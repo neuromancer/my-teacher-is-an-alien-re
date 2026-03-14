@@ -25,7 +25,6 @@ extern "C" void* DAT_0046ae60;
 extern "C" void* DAT_0046ae68;
 extern "C" void* DAT_0046ae6c;
 
-extern void __cdecl FUN_00425c50(char*, ...);
 extern char* __cdecl FUN_0044e470(char*);
 static char* FormatSoundPath(char* path);
 
@@ -205,7 +204,7 @@ void EngineB::OnProcessEnd() {
 
         gs = (GameState*)DAT_0046aa30;
         if (DAT_0046cb90 < 0 || gs->maxStates - 1 < DAT_0046cb90) {
-            FUN_00425c50("Invalid gamestate %d", DAT_0046cb90);
+            ShowError("Invalid gamestate %d", DAT_0046cb90);
         }
         stateVal = gs->stateValues[DAT_0046cb90];
         switch (stateVal) {
@@ -267,7 +266,7 @@ void EngineB::OnProcessEnd() {
     EngineB::m_meterFullRect.bottom = 0x27;
 
     if (idx < 0 || gs->maxStates - 1 < idx) {
-        FUN_00425c50("Invalid gamestate %d", idx);
+        ShowError("Invalid gamestate %d", idx);
     }
     EngineB::m_progress.start = 0;
     EngineB::m_meterPosition.x = 0x19;

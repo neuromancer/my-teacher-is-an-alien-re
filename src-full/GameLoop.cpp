@@ -73,11 +73,7 @@ Handler* CreateHandler(int command); // 0x424240 - Handler factory (full game)
 extern void* DAT_0046aa08;                 // InputManager-like global
 extern void __fastcall FUN_00426a90(void* self);  // Resets input state on DAT_0046aa08
 
-class GameLoopHelper {
-public:
-    void PostProcess();  // 0x41a960
-};
-extern GameLoopHelper* g_GameLoopHelper;   // DAT_0046a6f0
+#include "GameLoopHelper.h"
 extern "C" extern void* DAT_0046aa30;
 #define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
 extern GameState* g_StringTable_0046aa34;  // DAT_0046aa34 - StringTable for handler names
@@ -99,7 +95,7 @@ int GameLoop::LBLParse(char* param_1) {
         Parser::ProcessFile(msg, this, 0);
         SC_Message_Send(msg->targetAddress, msg->sourceAddress, msg->command,
                         msg->data, msg->priority, msg->param1, msg->param2,
-                        msg->userPtr, msg->clickPos.x, msg->clickPos.y);
+                        msg->userPtr, msg->clickX, msg->clickY);
         delete msg;
     }
     else if (strcmp(local_24, "END") == 0) {
@@ -285,8 +281,8 @@ void GameLoop::ProcessInput() {
         } else {
             clickX = 0;
         }
-        localMessage.clickPos.x = clickX;
-        localMessage.clickPos.y = clickY;
+        localMessage.clickX = clickX;
+        localMessage.clickY = clickY;
 
         pMouse = *ppMouse;
         if (pMouse != 0) {
@@ -675,8 +671,8 @@ int GameLoop::UpdateGame()
         local_d8.priority = pSourceMsg->priority;
         local_d8.param1 = pSourceMsg->param1;
         local_d8.param2 = pSourceMsg->param2;
-        local_d8.clickPos.x = pSourceMsg->clickPos.x;
-        local_d8.clickPos.y = pSourceMsg->clickPos.y;
+        local_d8.clickX = pSourceMsg->clickX;
+        local_d8.clickY = pSourceMsg->clickY;
         local_d8.mouseX = pSourceMsg->mouseX;
         local_d8.mouseY = pSourceMsg->mouseY;
         local_d8.lastKey = pSourceMsg->lastKey;

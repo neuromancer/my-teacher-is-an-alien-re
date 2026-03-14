@@ -33,13 +33,12 @@ extern void __cdecl FUN_00413e70(void* parser, int parent, char* key);
 
 // Message operations
 extern void* __cdecl FUN_00444a40(void* mem, int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00445450(void* msg, void* owner);
+extern void __cdecl ParseSpriteAction(void* msg, void* owner);
 extern void __cdecl FUN_00444e40(void* msg);
 
 // Engine/Misc
 extern void __cdecl FUN_00425a90(int width, int height);
 extern "C" void WriteToLog(const char* format, ...);
-extern void __cdecl FUN_00425c50(char* msg);
 extern void __fastcall FUN_00432da0(void* self);
 
 // Engine list operations
@@ -220,7 +219,7 @@ void SelectHotspot::Update() {
         break;
     }
     default:
-        FUN_00425c50("SC_SelectHotSpot::Update()");
+        ShowError("SC_SelectHotSpot::Update()");
         return;
     }
 }
@@ -322,7 +321,7 @@ int SelectHotspot::LBLParse(char* line) {
         if (msgMem != 0) {
             msgObj = (int*)FUN_00444a40(msgMem, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
-        FUN_00445450(msgObj, this);
+        ParseSpriteAction(msgObj, this);
         if (SelectHotspot::messageList == 0) {
             LinkedList* newList = (LinkedList*)AllocateMemory(sizeof(LinkedList));
             if (newList != 0) {
@@ -360,7 +359,7 @@ int SelectHotspot::LBLParse(char* line) {
         }
         LinkedList* list = SelectHotspot::messageList;
         if (msgObj == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         list->current = list->head;
         if (list->type == 1 || list->type == 2) {
@@ -793,7 +792,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         LinkedList* hsList = SC_SelectHotSpot::hotspotList;
 
         if (hsAddr == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         hsList->current = hsList->head;
         if (hsList->type == 1 || hsList->type == 2) {

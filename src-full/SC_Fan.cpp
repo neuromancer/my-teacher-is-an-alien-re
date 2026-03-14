@@ -21,7 +21,7 @@ extern void __fastcall FUN_004309c0(void*, int, void*);
 extern void __cdecl FUN_00425a90(int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern "C" void WriteToLog(const char* format, ...);
-extern void __cdecl FUN_00425c50(char*, ...);
+extern "C" void ShowError(const char* format, ...);
 extern void __cdecl FUN_00444e40(void*);
 extern void __fastcall FUN_0044cb40(void*, int, int, int);
 extern int __cdecl FUN_0044ccf0(int, int, int, int);
@@ -38,7 +38,7 @@ extern void* __fastcall FUN_00410fb0(void*, int, char*, int);
 extern void __fastcall FUN_004274c0(void*, int, int);
 extern void __cdecl FUN_00412a50();
 extern char* __cdecl FUN_0044e470(char*);
-extern void __cdecl FUN_00445450(void*, void*);
+extern void __cdecl ParseSpriteAction(void*, void*);
 
 extern void* DAT_00468ef0;
 extern void* DAT_0046aa24;
@@ -269,7 +269,7 @@ int SC_Fan::Exit(SC_Message* msg) {
         FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         return 1;
     case 0x17:
-        FUN_00425c50("SCMI_INSERT");
+        ShowError("SCMI_INSERT");
         break;
     default:
         return 0;
@@ -323,7 +323,7 @@ void SC_Fan::ProcessRound() {
             void* gs = DAT_0046aa30;
             int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x14;
         } else if (field_17C == 3) {
@@ -345,14 +345,14 @@ void SC_Fan::ProcessRound() {
             void* gs = DAT_0046aa30;
             int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x1E;
 
             gs = DAT_0046aa30;
             idx = ((GameState*)gs)->FindLabel("COMBAT_FAN_WON");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 1;
 
@@ -719,7 +719,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* gs = DAT_0046aa30;
         int idx = ((GameState*)gs)->FindLabel(local_b8);
         if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
         *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = val;
     }
@@ -772,7 +772,7 @@ int SC_Fan::LBLParse(char* param_1) {
     else if (strcmp(local_38, "LOSE_MESSAGE") == 0) {
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         field_AC = action;
-        FUN_00445450(action, this);
+        ParseSpriteAction(action, this);
     }
     else if (strcmp(local_38, "END") == 0) {
         return 1;

@@ -3,27 +3,26 @@
 
 #include "Parser.h"
 #include "Queue.h"
-#include "InputManager.h"  // for MousePoint
-
 class MMPlayer;
 
 class SC_Message : public Parser {
 public:
-    int targetAddress;  // 0x88 - destination handler address
-    int sourceAddress;  // 0x8c - source/from address
-    int command;        // 0x90 - message type/command code
-    int data;           // 0x94 - associated data
-    int priority;       // 0x98 - queue priority
-    int param1;         // 0x9c
-    int param2;         // 0xa0
-    MousePoint clickPos; // 0xa4-0xa8 - click position (MousePoint has empty destructor for SEH)
-    int mouseX;         // 0xac - current mouse X
-    int mouseY;         // 0xb0 - current mouse Y
-    int lastKey;        // 0xb4 - last key pressed
-    int time;           // 0xb8 - time value
-    int userPtr;        // 0xbc - user pointer (param8)
+    int targetAddress;  // 0x90 - destination handler address / SpriteAction*
+    int sourceAddress;  // 0x94 - source/from address
+    int command;        // 0x98 - message type/command code
+    int data;           // 0x9c - associated data
+    int priority;       // 0xa0 - queue priority
+    int param1;         // 0xa4
+    int param2;         // 0xa8
+    int clickX;         // 0xac - click position X
+    int clickY;         // 0xb0 - click position Y
+    int mouseX;         // 0xb4 - current mouse X
+    int mouseY;         // 0xb8 - current mouse Y
+    int lastKey;        // 0xbc - last key pressed
+    int time;           // 0xc0 - time value
+    int userPtr;        // 0xc4 - user pointer (param8)
 
-    SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY);
+    SC_Message(int, int, int, int, int, int, int, int, int, int) {}
     ~SC_Message();
 
     virtual int LBLParse(char* param_1);

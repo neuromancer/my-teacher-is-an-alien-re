@@ -24,8 +24,7 @@ extern void __fastcall FUN_00425550(void*, int, int);
 extern void __fastcall FUN_0044c880(void*);
 extern void __fastcall FUN_00420ac0(void*, int, int);
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00445450(void*, void*);
-extern void __cdecl FUN_00425c50(char*, ...);
+extern void __cdecl ParseSpriteAction(void*, void*);
 extern void __cdecl FUN_00412a50();
 extern void __fastcall FUN_00406fd0(void*, int, int);
 
@@ -395,7 +394,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "ACTIVATEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
-            FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
+            ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         mem = malloc(0x38);
         action = 0;
@@ -416,7 +415,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -431,7 +430,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -451,7 +450,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -472,7 +471,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "ENABLEACTIVATEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
-            FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
+            ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         mem = malloc(0x38);
         action = 0;
@@ -493,7 +492,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -508,7 +507,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -528,7 +527,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -549,7 +548,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "DEACTIVATEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
-            FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
+            ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         mem = malloc(0x38);
         action = 0;
@@ -570,7 +569,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -585,7 +584,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -605,7 +604,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -626,7 +625,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "ENABLEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
-            FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
+            ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         mem = malloc(0x38);
         action = 0;
@@ -647,7 +646,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -662,7 +661,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -682,7 +681,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -703,7 +702,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "DISABLEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
-            FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
+            ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         mem = malloc(0x38);
         action = 0;
@@ -724,7 +723,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -739,7 +738,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -759,7 +758,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -780,12 +779,12 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "DISABLESPRITE") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
-            FUN_00425c50("Error in SCIdilog.cpp: %s in parse file is incorrect");
+            ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         result = 0;
         do {
             if ((result == 2) && (questionId != 0)) {
-                FUN_00425c50("Error in SCIdilog.cpp: Cannot disable more than three sprites per question");
+                ShowError("Error in SCIdilog.cpp: Cannot disable more than three sprites per question");
             }
             if (actionIndex[result] == 0) {
                 sprintf(DAT_0046aa00, "SPRITE%d", id);
@@ -827,7 +826,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -842,7 +841,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -862,7 +861,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -902,7 +901,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -917,7 +916,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -937,7 +936,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -977,7 +976,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -992,7 +991,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -1012,7 +1011,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -1052,7 +1051,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -1067,7 +1066,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -1087,7 +1086,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -1108,7 +1107,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "SWITCHROOM") == 0) {
         result = sscanf(param_1, " %s %d %d", keyword, &id, &val);
         if (result != 3) {
-            FUN_00425c50("Error in ThotsLvl.cpp: %s in parse file is incomplete");
+            ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete");
         }
         if (messageQueue == 0) {
             mem = malloc(0x10);
@@ -1130,7 +1129,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -1145,7 +1144,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -1165,7 +1164,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -1190,7 +1189,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -1205,7 +1204,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -1225,7 +1224,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -1249,7 +1248,7 @@ int SC_Question::LBLParse(char* param_1)
         if (mem != 0) {
             action = FUN_00444a40(mem, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
-        FUN_00445450(action, this);
+        ParseSpriteAction(action, this);
         if (messageQueue == 0) {
             mem = malloc(0x10);
             queue = 0;
@@ -1264,7 +1263,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -1279,7 +1278,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -1299,7 +1298,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];
@@ -1339,7 +1338,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         queue = (int*)messageQueue;
         if (action == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
@@ -1354,7 +1353,7 @@ int SC_Question::LBLParse(char* param_1)
                     }
                     if (queue[1] == cur) {
                         if (action == 0) {
-                            FUN_00425c50("queue fault 0112");
+                            ShowError("queue fault 0112");
                         }
                         mem = malloc(0xc);
                         if (mem == 0) {
@@ -1374,7 +1373,7 @@ int SC_Question::LBLParse(char* param_1)
                             queue[2] = (int)action;
                         } else {
                             if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
-                                FUN_00425c50("queue fault 0113");
+                                ShowError("queue fault 0113");
                             }
                             ((int*)action)[1] = 0;
                             ((int*)action)[0] = queue[1];

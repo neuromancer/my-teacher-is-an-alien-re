@@ -194,16 +194,11 @@ int __cdecl FUN_0041a6d0(void* a, void* b) { return 0; }
 // ============================================================================
 // SoundTracker stubs and globals
 // ============================================================================
+#include "SoundTracker.h"
 struct SoundPool;
 SoundPool* DAT_00469134 = 0;
 int DAT_00469128 = 0;
 
-class SoundTracker {
-public:
-    char field_0;
-    void Init();
-    void Cleanup();
-};
 void SoundTracker::Init() {}
 void SoundTracker::Cleanup() {}
 
@@ -294,16 +289,14 @@ void __cdecl FUN_00412a50() {}
 int __cdecl FUN_00412a50(void*) { return 0; }
 void __cdecl FUN_00413e70(void*, int, char*) {}
 void __cdecl FUN_00425a90(int, int) {}
-void __cdecl FUN_00425c50(char*, ...) {}
 void __cdecl FUN_00444e40(void*) {}
-void __cdecl FUN_00445450(void*, void*) {}
+// ParseSpriteAction (was FUN_00445450) moved to SC_Message.cpp
 void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int) { return 0; }
 char* __cdecl FUN_00426190(char* name) { return name; }
 void __cdecl FUN_00425cb0(char*, ...) {}
 int __cdecl FUN_0044ccf0(int, int, int, int) { return 0; }
 void __cdecl FUN_004344b0() {}
 void __cdecl FUN_00434030(void*, int) {}
-void __cdecl FUN_00425c50(char*) {}
 char* __cdecl FUN_0044e470(char*) { return 0; }
 void __cdecl FUN_00425bc0(char*, char*, int) {}
 

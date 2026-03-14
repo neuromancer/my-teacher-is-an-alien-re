@@ -10,7 +10,6 @@ extern "C" void* DAT_0046ae64;
 extern "C" void* DAT_0046ae68;
 extern int DAT_0046ae78;
 extern char* __cdecl FUN_0044e470(char*);
-extern void __cdecl FUN_00425c50(char*, ...);
 
 class PaletteLoader {
 public:
@@ -125,7 +124,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
     *(int*)((char*)DAT_0046ae58 + 0x1C8) = sound;
     break;
   default:
-    FUN_00425c50("MapScene::ParseSound() - Undefined sound type => %s", line);
+    ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);
     break;
   }
 }

@@ -23,7 +23,6 @@ static int g_IconBarRefCount;                   // 0x46af0c
 
 extern void FUN_00444e40(SpriteAction*);        // SpriteAction method (cdecl 1 param)
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00425a90(int, int);
 extern void __stdcall FUN_004309a0(int);
 extern "C" void FUN_004309c0(void*);
@@ -190,7 +189,7 @@ void IconBar::Init(SC_Message* msg) {
     idx = DAT_0046cb90;
     gs = (GameState*)DAT_0046aa30;
     if (idx < 0 || gs->maxStates - 1 < idx) {
-        FUN_00425c50("Invalid gamestate %d", idx);
+        ShowError("Invalid gamestate %d", idx);
     }
     g_IconBarSprite->ResetAnimation(gs->stateValues[idx] + 1, 0);
 }
@@ -309,7 +308,7 @@ int IconBar::AddMessage(SC_Message* msg) {
         {
         int idx = gs->FindState("PERIOD");
         if (idx < 0 || gs->maxStates - 1 < idx) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
         if (gs->stateValues[idx] == 1) {
             return 1;
@@ -356,7 +355,7 @@ void IconBar::Update(int param1, int param2) {
             if (entry == &g_IconBarEntries[2]) {
                 gs = (GameState*)DAT_0046aa30;
                 if (gs->maxStates - 1 < 0x44) {
-                    FUN_00425c50("Invalid gamestate %d", 0x44);
+                    ShowError("Invalid gamestate %d", 0x44);
                 }
                 if (*(int*)(*(int*)((char*)gs + 0x90) + 0x110) != 0) {
                     entry->sprite->ResetAnimation(2, 0);
@@ -381,7 +380,7 @@ void IconBar::Update(int param1, int param2) {
                 if (entry->field_14 != 0) {
                     gs = (GameState*)DAT_0046aa30;
                     if (gs->maxStates - 1 < 0x3c) {
-                        FUN_00425c50("Invalid gamestate %d", 0x3c);
+                        ShowError("Invalid gamestate %d", 0x3c);
                     }
                     if (gs->stateValues[0x3c] != 1) {
                         ((Sprite*)entry->sprite)->RenderAt(
@@ -456,7 +455,7 @@ void IconBar::PlayButtonSound(int buttonIndex) {
     SpriteAction** pSlot;
 
     if (buttonIndex < 0 || buttonIndex > 6) {
-        FUN_00425c50("Error in SC_IconBr.cpp: Invalid array index");
+        ShowError("Error in SC_IconBr.cpp: Invalid array index");
     } else {
         i = 2;
         pSlot = &g_IconBarEntries[buttonIndex].slot0;
@@ -487,7 +486,7 @@ void IconBar::UpdateAllSlots() {
     gs = (GameState*)DAT_0046aa30;
     idx = gs->FindState("PERIOD");
     if (idx < 0 || gs->maxStates - 1 < idx) {
-        FUN_00425c50("Invalid gamestate %d", idx);
+        ShowError("Invalid gamestate %d", idx);
     }
     *(int*)g_IconBarEntries[0].slot0 = 0x25;
 }

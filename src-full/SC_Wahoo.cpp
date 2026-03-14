@@ -19,7 +19,7 @@ extern void* __fastcall FUN_0041dbe0(void*);
 extern void __fastcall FUN_00410fd0(void*);
 // FUN_00421930 = TimeOut::~TimeOut (full game)
 
-extern void __cdecl FUN_00425c50(char*, ...);
+extern "C" void ShowError(const char* format, ...);
 extern void __cdecl FUN_00412a50();
 extern char* __cdecl FUN_00426190(char* name);
 extern char* __cdecl FUN_0044e470(char*);
@@ -117,7 +117,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
     void* pvVar4 = DAT_0046aa30;
     unsigned int uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
     if ((int)uVar3 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < (int)uVar3) {
-        FUN_00425c50("Invalid gamestate %d", uVar3);
+        ShowError("Invalid gamestate %d", uVar3);
     }
     field_140 = *(int*)(*(int*)((int)pvVar4 + 0x90) + uVar3 * 4);
 
@@ -126,7 +126,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
     pvVar4 = DAT_0046aa30;
     uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
     if ((int)uVar3 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < (int)uVar3) {
-        FUN_00425c50("Invalid gamestate %d", uVar3);
+        ShowError("Invalid gamestate %d", uVar3);
     }
     field_140 = *(int*)(*(int*)((int)pvVar4 + 0x90) + uVar3 * 4);
 
@@ -309,7 +309,7 @@ int SC_Wahoo::Exit(SC_Message* msg) {
         FUN_00444d90(1, id, id, moduleParam, 0x18, 0, 0, 0, 0, 0);
         return 1;
     case 0x17:
-        FUN_00425c50("SCMI_INSERT");
+        ShowError("SCMI_INSERT");
         break;
     default:
         return 0;
@@ -613,7 +613,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* gs = DAT_0046aa30;
         unsigned int idx = ((GameState*)gs)->FindLabel(local_b8);
         if ((int)idx < 0 || *(int*)((int)gs + 0x98) - 1 < (int)idx) {
-            FUN_00425c50("Invalid gamestate %d");
+            ShowError("Invalid gamestate %d");
         }
         *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = val;
     }
@@ -849,7 +849,7 @@ LAB_00439160:
             {
             unsigned int uVar2 = ((GameState*)pvVar6)->FindLabel("NUM_ACTIONS");
             if ((int)uVar2 < 0 || *(int*)((int)pvVar6 + 0x98) - 1 < (int)uVar2) {
-                FUN_00425c50("Invalid gamestate %d", uVar2);
+                ShowError("Invalid gamestate %d", uVar2);
             }
             piVar4 = (int*)(*(int*)((int)pvVar6 + 0x90) + uVar2 * 4);
             }

@@ -24,7 +24,6 @@ extern void __fastcall FUN_004254a0(void*, int, int);
 extern void* __fastcall FUN_00403620(void*);
 extern void __fastcall FUN_00401c80(void*);
 extern void __fastcall FUN_004061e0(void*);
-extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00444e40(void*);
 extern void* __fastcall FUN_00440860(void*);
 
@@ -113,14 +112,14 @@ void SC_Pods::Init(SC_Message* msg) {
         void* gs = DAT_0046aa30;
         int idx = ((GameState*)gs)->FindLabel("OBJ011");
         if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
         *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 1;
 
         gs = DAT_0046aa30;
         int idx2 = ((GameState*)gs)->FindLabel("KID");
         if (idx2 < 0 || *(int*)((int)gs + 0x98) - 1 < idx2) {
-            FUN_00425c50("Invalid gamestate %d", idx2);
+            ShowError("Invalid gamestate %d", idx2);
         }
 
         int kidVal = *(int*)(*(int*)((int)gs + 0x90) + idx2 * 4);
@@ -135,7 +134,7 @@ void SC_Pods::Init(SC_Message* msg) {
 
         int idx3 = ((GameState*)gs2)->FindLabel("PERIOD");
         if (idx3 < 0 || *(int*)((int)gs2 + 0x98) - 1 < idx3) {
-            FUN_00425c50("Invalid gamestate %d", idx3);
+            ShowError("Invalid gamestate %d", idx3);
         }
         *(int*)(*(int*)((int)gs2 + 0x90) + idx3 * 4) = periodVal;
     }

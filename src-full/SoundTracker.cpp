@@ -1,3 +1,4 @@
+#include "SoundTracker.h"
 #include <stdlib.h>
 
 struct SoundPool {
@@ -21,16 +22,6 @@ struct SoundPool {
 
 extern int DAT_00469128;
 extern SoundPool* DAT_00469134;
-
-class SoundTracker {
-public:
-    char field_0;
-
-    SoundTracker(int param);
-    ~SoundTracker();
-    void Init();     // 0x412480
-    void Cleanup();  // 0x412730
-};
 
 /* Function start: 0x412000 */
 SoundTracker::SoundTracker(int param) {

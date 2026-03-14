@@ -37,13 +37,7 @@ extern "C" {
 // C++ linkage globals
 extern void* DAT_0046aa08;          // InputManager pointer
 
-// Animation cache (g_GameLoopHelper at 0x46a6f0)
-class GameLoopHelper {
-public:
-    void AddAnimation(char* name, int handle);
-    void RemoveAnimation(int handle);
-};
-extern GameLoopHelper* g_GameLoopHelper;
+#include "GameLoopHelper.h"
 
 // Font display functions
 extern "C" void SetFontPosition(int, int);

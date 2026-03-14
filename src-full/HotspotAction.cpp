@@ -22,8 +22,7 @@ extern char* DAT_0046cb94;
 extern SpriteAction DAT_00472d90;
 
 extern void __cdecl FUN_00425bc0(char*, char*, int);
-extern void __cdecl FUN_00425c50(char*, ...);
-extern void __cdecl FUN_00445450(void*, void*);
+extern void __cdecl ParseSpriteAction(void*, void*);
 
 
 /* Function start: 0x41B320 */
@@ -390,7 +389,7 @@ int HotspotAction::LBLParse(char* line) {
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->field_08 = 0x24;
         sa->field_0C = hotspotId;
-        FUN_00445450(sa, this);
+        ParseSpriteAction(sa, this);
         list = queue100;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
@@ -422,7 +421,7 @@ int HotspotAction::LBLParse(char* line) {
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->field_08 = 0x24;
         sa->field_0C = hotspotId;
-        FUN_00445450(sa, this);
+        ParseSpriteAction(sa, this);
         list = queue104;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
@@ -454,7 +453,7 @@ int HotspotAction::LBLParse(char* line) {
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->field_08 = 0x24;
         sa->field_0C = hotspotId;
-        FUN_00445450(sa, this);
+        ParseSpriteAction(sa, this);
         list = queueFC;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
@@ -486,7 +485,7 @@ int HotspotAction::LBLParse(char* line) {
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->field_08 = 0x24;
         sa->field_0C = hotspotId;
-        FUN_00445450(sa, this);
+        ParseSpriteAction(sa, this);
         list = queue108;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
@@ -643,13 +642,13 @@ int HotspotAction::LBLParse(char* line) {
             GameState* gs = (GameState*)DAT_0046aa30;
             int idx = DAT_0046cb90;
             if (idx < 0 || gs->maxStates - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             int val = gs->stateValues[idx];
             char c;
             if (val == -1) {
                 if (idx < 0 || gs->maxStates - 1 < idx) {
-                    FUN_00425c50("Invalid gamestate %d", idx);
+                    ShowError("Invalid gamestate %d", idx);
                 }
                 c = DAT_0046cb94[gs->stateValues[idx]];
             } else {
@@ -772,7 +771,7 @@ int HotspotAction::LBLParse(char* line) {
     else if (strcmp(label, "SWITCHROOM") == 0) {
         result = sscanf(line, " %s %d %d", label, &local_14, &local_38);
         if (result != 3) {
-            FUN_00425c50("Error in ThotsLvl.cpp %s in parameter", line);
+            ShowError("Error in ThotsLvl.cpp %s in parameter", line);
         }
         if (queue100 == 0) {
             queue100 = new LinkedList();

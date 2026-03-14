@@ -27,7 +27,6 @@ extern "C" void FUN_004265a0();
 extern void __fastcall FUN_0042be00(void*);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00444e40(void*);
-extern void __cdecl FUN_00425c50(char*, ...);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void* __fastcall FUN_00450b10(void*);
 extern void __fastcall FUN_0044bac0(void*, int, int, int);
@@ -218,7 +217,7 @@ int SC_Rats::Exit(SC_Message* msg) {
     if (((int*)msg)[4] != 0x17) {
         return 0;
     }
-    FUN_00425c50("SCMI_INSERT");
+    ShowError("SCMI_INSERT");
     return 1;
 }
 
@@ -252,7 +251,7 @@ void SC_Rats::ProcessState() {
             GameState* gs = (GameState*)DAT_0046aa30;
             idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] += 0x14;
         } else if (DAT_00473e18 == 3) {
@@ -267,13 +266,13 @@ void SC_Rats::ProcessState() {
             GameState* gs = (GameState*)DAT_0046aa30;
             idx = ((GameState*)gs)->FindLabel("RAT_COMBAT_AVAILABLE");
             if (idx < 0 || gs->maxStates - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] = 0;
             gs = (GameState*)DAT_0046aa30;
             idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] += 0x1E;
         }

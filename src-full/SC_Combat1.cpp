@@ -351,8 +351,8 @@ void SC_Combat1::ProcessMessage()
         item->field_a0 = script->priority;
         item->field_a4 = script->param1;
         item->field_a8 = script->param2;
-        item->field_ac = script->clickPos.x;
-        item->field_b0 = script->clickPos.y;
+        item->field_ac = script->clickX;
+        item->field_b0 = script->clickY;
         item->field_b4 = script->mouseX;
         item->field_b8 = script->mouseY;
         item->field_bc = script->lastKey;

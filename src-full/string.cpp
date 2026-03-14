@@ -74,9 +74,12 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
 void ShowError(const char* format, ...)
 {
     char buffer[256];
+    char buffer2[300];
+    unsigned int caller = *((unsigned int*)&format - 1);
     vsprintf(buffer, format, (char*)(&format + 1));
+    sprintf(buffer2, "%s\n[caller: 0x%08X]", buffer, caller);
     SetCursorVisible(1);
-    MessageBoxA((HWND)GetGameWindowHandle(), buffer, "Error", 0x10);
+    MessageBoxA((HWND)GetGameWindowHandle(), buffer2, "Error", 0x10);
     ShutdownGameSystems();
     exitWithError_(-1);
 }

@@ -16,7 +16,7 @@ extern void __fastcall FUN_004309a0(void*, int, int);
 
 extern void __cdecl FUN_00444e40(void*);
 
-extern void __cdecl FUN_00425c50(char*, ...);
+extern "C" void ShowError(const char* format, ...);
 
 extern void __fastcall FUN_00432da0(void* self);
 extern void __fastcall FUN_00411180(void*, int, int);
@@ -59,7 +59,7 @@ void SC_WordSearch::Init(SC_Message* msg) {
     int iVar2 = DAT_0046cb90;
     void* pvVar4 = DAT_0046aa30;
     if (iVar2 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < iVar2) {
-        FUN_00425c50("Invalid gamestate %d", iVar2);
+        ShowError("Invalid gamestate %d", iVar2);
     }
     ((Sprite*)*(void**)((int)this + 0x82c))->ResetAnimation(
         *(int*)(*(int*)((int)pvVar4 + 0x90) + iVar2 * 4), 0);
@@ -373,7 +373,7 @@ void SC_WordSearch::FUN_436790() {
         if (*(unsigned char*)((int)this + 0x81c) & 1) {
             uVar3 = ((GameState*)pvVar2)->FindLabel("PUZ_WAHOO_WON");
             if (uVar3 < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < uVar3) {
-                FUN_00425c50("Invalid gamestate %d", uVar3);
+                ShowError("Invalid gamestate %d", uVar3);
             }
             *(int*)(*(int*)((int)pvVar2 + 0x90) + uVar3 * 4) = 1;
             *(int*)(*(int*)((int)this + 0x830)) = 0x20;
@@ -383,7 +383,7 @@ void SC_WordSearch::FUN_436790() {
         } else {
             uVar3 = ((GameState*)pvVar2)->FindLabel("PERIOD");
             if (uVar3 < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < uVar3) {
-                FUN_00425c50("Invalid gamestate %d", uVar3);
+                ShowError("Invalid gamestate %d", uVar3);
             }
             if (*(int*)(*(int*)((int)pvVar2 + 0x90) + uVar3 * 4) % 5 == 0) {
                 *(int*)(*(int*)((int)this + 0x830)) = 0x2C;
@@ -408,7 +408,7 @@ void SC_WordSearch::FUN_4368F0() {
     int iVar2 = DAT_0046cb90;
     void* pvVar3 = DAT_0046aa30;
     if (iVar2 < 0 || *(int*)((int)pvVar3 + 0x98) - 1 < iVar2) {
-        FUN_00425c50("Invalid gamestate %d", iVar2);
+        ShowError("Invalid gamestate %d", iVar2);
     }
     int gsVal = *(int*)(*(int*)((int)pvVar3 + 0x90) + iVar2 * 4);
     if (gsVal == 0) {

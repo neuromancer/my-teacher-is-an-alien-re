@@ -3,12 +3,10 @@
 #include <string.h>
 #include <stdio.h>
 
-extern void __cdecl FUN_00425c50(char*, ...);
 extern GameState* g_StringTable_0046aa34;
 extern "C" extern void* DAT_0046aa30;
 #define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
 
-SC_Message::SC_Message(int, int, int, int, int, int, int, int, int, int) {}
 SC_Message::~SC_Message() {}
 
 /* Function start: 0x444E60 */
@@ -34,13 +32,13 @@ int SC_Message::LBLParse(char* param_1)
         }
         targetAddress = idx;
         if (targetAddress < 0) {
-            FUN_00425c50("SC_MessageParser::ADDRESS illegal index %s %s", local_54, param_1);
+            ShowError("SC_MessageParser::ADDRESS illegal index %s %s", local_54, param_1);
         }
         if (targetAddress == 2) {
             if (g_GameState_0046aa30 != 0) {
                 idx = g_GameState_0046aa30->FindState(local_74);
                 if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
-                    FUN_00425c50("Invalid gamestate %d", idx);
+                    ShowError("Invalid gamestate %d", idx);
                 }
                 sourceAddress = idx;
             }
@@ -56,13 +54,13 @@ int SC_Message::LBLParse(char* param_1)
         }
         command = idx;
         if (command < 0) {
-            FUN_00425c50("FROM illegal index %s %s", local_54, param_1);
+            ShowError("FROM illegal index %s %s", local_54, param_1);
         }
         if (command == 2) {
             if (g_GameState_0046aa30 != 0) {
                 idx = g_GameState_0046aa30->FindState(local_74);
                 if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
-                    FUN_00425c50("Invalid gamestate %d", idx);
+                    ShowError("Invalid gamestate %d", idx);
                 }
                 data = idx;
             }
@@ -78,17 +76,17 @@ int SC_Message::LBLParse(char* param_1)
         }
         priority = idx;
         if (priority < 0) {
-            FUN_00425c50("INSTRUCTION illegal index %d %s", idx, param_1);
+            ShowError("INSTRUCTION illegal index %d %s", idx, param_1);
         }
     } else if (strcmp(local_30, "MESSAGE") == 0) {
         if (userPtr != 0) {
-            FUN_00425c50("double reserve in Message %s", param_1);
+            ShowError("double reserve in Message %s", param_1);
         }
         SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         userPtr = (int)msg;
         Parser::ProcessFile((Parser*)msg, (Parser*)this, 0);
     } else if (strcmp(local_30, "MOUSE") == 0) {
-        sscanf(param_1, "%s %d %d", local_30, &clickPos.x, &clickPos.y);
+        sscanf(param_1, "%s %d %d", local_30, &clickX, &clickY);
     } else if (strcmp(local_30, "BUTTON1") == 0) {
         sscanf(param_1, "%s %d", local_30, &mouseX);
     } else if (strcmp(local_30, "BUTTON2") == 0) {
@@ -111,3 +109,11 @@ int SC_Message::LBLParse(char* param_1)
 }
 
 void SC_Message::Dump(int) {}
+
+/* Function start: 0x445450 */
+void ParseSpriteAction(void* param_1, void* param_2)
+{
+    SC_Message msg(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    msg.targetAddress = (int)param_1;
+    Parser::ProcessFile(&msg, (Parser*)param_2, 0);
+}

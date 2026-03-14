@@ -29,7 +29,6 @@ extern void* __fastcall FUN_00425480(void*);
 extern void __fastcall FUN_00425550(void*, int, int);
 extern int __fastcall FUN_0042a010(void*, int, void*);
 
-extern void __cdecl FUN_00425c50(char*, ...);
 extern "C" void WriteToLog(const char* format, ...);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 
@@ -76,7 +75,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     void* pvVar = DAT_0046aa30;
     int iGameState = ((GameState*)pvVar)->FindLabel("FINAL_PRACTICEROOM");
     if (iGameState < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGameState) {
-        FUN_00425c50("Invalid gamestate %d", iGameState);
+        ShowError("Invalid gamestate %d", iGameState);
     }
     FUN_00413e10(this,
         *(int*)(*(int*)((int)pvVar + 0x90) + iGameState * 4) != 0
@@ -99,7 +98,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     int iGS = DAT_0046cb90;
     void* pvVar2 = DAT_0046aa30;
     if (iGS < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < iGS) {
-        FUN_00425c50("Invalid gamestate %d", iGS);
+        ShowError("Invalid gamestate %d", iGS);
     }
     int gsIdx = *(int*)(*(int*)((int)pvVar2 + 0x90) + iGS * 4);
     int selSprite = *(int*)((int)this + gsIdx * 4 + 0xBC);
@@ -298,7 +297,7 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
                 int iGS = DAT_0046cb90;
                 void* pvVar = DAT_0046aa30;
                 if (iGS < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGS) {
-                    FUN_00425c50("Invalid gamestate %d", iGS);
+                    ShowError("Invalid gamestate %d", iGS);
                 }
                 *(int*)(*(int*)((int)pvVar + 0x90) + iGS * 4) = local_14;
                 *(int*)((int)msg + 0x10) = 0;
@@ -405,7 +404,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         FUN_00413e70(piVar6, (int)this, 0);
         LinkedList* list = *(LinkedList**)((int)this + 0xB8);
         if (piVar6 == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         list->current = list->head;
         if (list->type == 1 || list->type == 2) {

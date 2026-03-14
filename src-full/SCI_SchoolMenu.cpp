@@ -60,7 +60,6 @@ extern "C" {
 // C++ linkage functions (matching stubs.cpp)
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00413e70(void*, int, char*);
-extern void __cdecl FUN_00425c50(char*, ...);
 extern "C" void WriteToLog(const char* format, ...);
 
 extern void* __fastcall FUN_00403620(void*);
@@ -313,7 +312,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             gs = DAT_0046aa30;
             int na1Idx = ((GameState*)gs)->FindState("1_NOTALIEN");
             if (na1Idx < 0 || na1Idx > ((int*)((int)gs + 0x98))[0] - 1) {
-                FUN_00425c50("Invalid gamestate %d", na1Idx);
+                ShowError("Invalid gamestate %d", na1Idx);
             }
             stateVals = (int*)((int)gs + 0x90);
             stateVals = (int*)*stateVals;
@@ -322,7 +321,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 gs = DAT_0046aa30;
                 int na2Idx = ((GameState*)gs)->FindState("2_NOTALIEN");
                 if (na2Idx < 0 || na2Idx > ((int*)((int)gs + 0x98))[0] - 1) {
-                    FUN_00425c50("Invalid gamestate %d", na2Idx);
+                    ShowError("Invalid gamestate %d", na2Idx);
                 }
                 stateVals = (int*)((int)gs + 0x90);
                 stateVals = (int*)*stateVals;
@@ -354,7 +353,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     gs = DAT_0046aa30;
     int pDetIdx = ((GameState*)gs)->FindState("P_IN_DETENTION");
     if (pDetIdx < 0 || pDetIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-        FUN_00425c50("Invalid gamestate %d", pDetIdx);
+        ShowError("Invalid gamestate %d", pDetIdx);
     }
     stateVals = (int*)((int)gs + 0x90);
     stateVals = (int*)*stateVals;
@@ -363,7 +362,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
         gs = DAT_0046aa30;
         int sDetIdx = ((GameState*)gs)->FindState("S_IN_DETENTION");
         if (sDetIdx < 0 || sDetIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-            FUN_00425c50("Invalid gamestate %d", sDetIdx);
+            ShowError("Invalid gamestate %d", sDetIdx);
         }
         stateVals = (int*)((int)gs + 0x90);
         stateVals = (int*)*stateVals;
@@ -372,7 +371,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             gs = DAT_0046aa30;
             int dDetIdx = ((GameState*)gs)->FindState("D_IN_DETENTION");
             if (dDetIdx < 0 || dDetIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-                FUN_00425c50("Invalid gamestate %d", dDetIdx);
+                ShowError("Invalid gamestate %d", dDetIdx);
             }
             stateVals = (int*)((int)gs + 0x90);
             stateVals = (int*)*stateVals;
@@ -524,7 +523,7 @@ int HitRect::HitTest(int x, int y) {
 /* Function start: 0x41F640 */
 int GameState::GetStateValue(int index) {
     if (index < 0 || index > maxStates - 1) {
-        FUN_00425c50("Invalid gamestate %d", index);
+        ShowError("Invalid gamestate %d", index);
     }
     return stateValues[index];
 }
@@ -567,7 +566,7 @@ void SCI_SchoolMenu::SetupOptions() {
     gs = DAT_0046aa30;
     periodIdx = ((GameState*)gs)->FindState("PERIOD");
     if (periodIdx < 0 || periodIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-        FUN_00425c50("Invalid gamestate %d", periodIdx);
+        ShowError("Invalid gamestate %d", periodIdx);
     }
     stateVals = (int*)((int*)((int)gs + 0x90))[0];
     periodVal = stateVals[periodIdx];
@@ -597,7 +596,7 @@ void SCI_SchoolMenu::SetupOptions() {
         charIdx = DAT_0046cb90;
         gs = DAT_0046aa30;
         if (charIdx < 0 || charIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-            FUN_00425c50("Invalid gamestate %d", charIdx);
+            ShowError("Invalid gamestate %d", charIdx);
         }
         stateVals = (int*)((int*)((int)gs + 0x90))[0];
         charVal = stateVals[charIdx];
@@ -608,7 +607,7 @@ void SCI_SchoolMenu::SetupOptions() {
             charIdx = DAT_0046cb90;
             gs = DAT_0046aa30;
             if (charIdx < 0 || charIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-                FUN_00425c50("Invalid gamestate %d", charIdx);
+                ShowError("Invalid gamestate %d", charIdx);
             }
             stateVals = (int*)((int*)((int)gs + 0x90))[0];
             ch = DAT_0046cb94[stateVals[charIdx]];
@@ -626,7 +625,7 @@ void SCI_SchoolMenu::SetupOptions() {
         gs = DAT_0046aa30;
         stIdx = ((GameState*)gs)->FindState(buf);
         if (stIdx < 0 || stIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-            FUN_00425c50("Invalid gamestate %d", stIdx);
+            ShowError("Invalid gamestate %d", stIdx);
         }
 
         int stVal;
@@ -638,7 +637,7 @@ void SCI_SchoolMenu::SetupOptions() {
         gs = DAT_0046aa30;
         stIdx = ((GameState*)gs)->FindState(buf);
         if (stIdx < 0 || stIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-            FUN_00425c50("Invalid gamestate %d", stIdx);
+            ShowError("Invalid gamestate %d", stIdx);
         }
         stateVals = (int*)((int*)((int)gs + 0x90))[0];
 
@@ -674,7 +673,7 @@ void InitAllSchedule() {
                 void* gs = DAT_0046aa30;
                 int periodIdx = DAT_0046cb90;
                 if (periodIdx < 0 || periodIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-                    FUN_00425c50("Invalid gamestate %d", periodIdx);
+                    ShowError("Invalid gamestate %d", periodIdx);
                 }
                 int* stateVals = (int*)((int*)((int)gs + 0x90))[0];
                 ch = DAT_0046cb94[stateVals[periodIdx]];
@@ -687,7 +686,7 @@ void InitAllSchedule() {
             void* gs = DAT_0046aa30;
             int stIdx = ((GameState*)gs)->FindState(buf);
             if (stIdx < 0 || stIdx > ((int*)((int)gs + 0x98))[0] - 1) {
-                FUN_00425c50("Invalid gamestate %d", stIdx);
+                ShowError("Invalid gamestate %d", stIdx);
             }
             int* stateVals = (int*)((int*)((int)gs + 0x90))[0];
             stateVals[stIdx] = 1;
@@ -1144,7 +1143,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         gs = DAT_0046aa30;
         idx = ((GameState*)gs)->FindState("PERIOD");
         if (idx < 0 || idx > ((int*)((int)gs + 0x98))[0] - 1) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
         stateVals = (int*)((int*)((int)gs + 0x90))[0];
         if (stateVals[idx] == period) {
@@ -1155,7 +1154,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
                     gs = DAT_0046aa30;
                     idx = ((GameState*)gs)->FindState(p);
                     if (idx < 0 || idx > ((int*)((int)gs + 0x98))[0] - 1) {
-                        FUN_00425c50("Invalid gamestate %d", idx);
+                        ShowError("Invalid gamestate %d", idx);
                     }
                     stateVals = (int*)((int*)((int)gs + 0x90))[0];
                     p = p + 0x20;
@@ -1238,7 +1237,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         gs = DAT_0046aa30;
         idx = ((GameState*)gs)->FindState("NUM_ACTIONS");
         if (idx < 0 || idx > ((int*)((int)gs + 0x98))[0] - 1) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
         stateVals = (int*)((int*)((int)gs + 0x90))[0];
         if (stateVals[idx] == 0 && field_B4 != 0) {
@@ -1257,14 +1256,14 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         gs = DAT_0046aa30;
         idx = ((GameState*)gs)->FindState("PERIOD");
         if (idx < 0 || idx > ((int*)((int)gs + 0x98))[0] - 1) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
         stateVals = (int*)((int*)((int)gs + 0x90))[0];
         if (stateVals[idx] == period) {
             gs = DAT_0046aa30;
             idx = ((GameState*)gs)->FindState(buf4);
             if (idx < 0 || idx > ((int*)((int)gs + 0x98))[0] - 1) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             stateVals = (int*)((int*)((int)gs + 0x90))[0];
             stateVals[idx] = val1;
@@ -1272,7 +1271,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             gs = DAT_0046aa30;
             idx = ((GameState*)gs)->FindState(buf5);
             if (idx < 0 || idx > ((int*)((int)gs + 0x98))[0] - 1) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             stateVals = (int*)((int*)((int)gs + 0x90))[0];
             stateVals[idx] = val2;
@@ -1280,7 +1279,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             gs = DAT_0046aa30;
             idx = ((GameState*)gs)->FindState(buf6);
             if (idx < 0 || idx > ((int*)((int)gs + 0x98))[0] - 1) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             stateVals = (int*)((int*)((int)gs + 0x90))[0];
             stateVals[idx] = val3;

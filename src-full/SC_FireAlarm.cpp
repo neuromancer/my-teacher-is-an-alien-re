@@ -18,7 +18,7 @@ extern "C" void* FUN_004260f0(char*);
 extern void __fastcall FUN_00425490(void*);
 extern void* __fastcall FUN_00425480(void*);
 extern void __cdecl FUN_00425a90(int, int);
-extern void __cdecl FUN_00425c50(char*, ...);
+extern "C" void ShowError(const char* format, ...);
 extern void __fastcall FUN_004279a0(void*);
 extern void __fastcall FUN_00427880(void*);
 extern void __fastcall FUN_00432da0(void*);
@@ -207,7 +207,7 @@ int SC_FireAlarm::Exit(SC_Message* msg) {
         FUN_00444d90(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         return 1;
     case 0x17:
-        FUN_00425c50("SCMI_INSERT");
+        ShowError("SCMI_INSERT");
         break;
     default:
         return 0;

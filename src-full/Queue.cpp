@@ -239,8 +239,8 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     buffer->param1 = local_msg.param1;
     buffer->param2 = local_msg.param2;
 
-    int* srcClick = (int*)&local_msg.clickPos;
-    int* dstClick = (int*)&buffer->clickPos;
+    int* srcClick = &local_msg.clickX;
+    int* dstClick = &buffer->clickX;
     dstClick[0] = srcClick[0];
     dstClick[1] = srcClick[1];
 

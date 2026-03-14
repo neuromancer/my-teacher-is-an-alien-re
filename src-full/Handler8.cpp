@@ -173,8 +173,8 @@ void Handler8::ProcessMessage() {
         item->priority = msg->priority;
         item->param1 = msg->param1;
         item->param2 = msg->param2;
-        item->clickX = msg->clickPos.x;
-        item->clickY = msg->clickPos.y;
+        item->clickX = msg->clickX;
+        item->clickY = msg->clickY;
         item->mouseX = msg->mouseX;
         item->mouseY = msg->mouseY;
         item->field_bc = msg->lastKey;

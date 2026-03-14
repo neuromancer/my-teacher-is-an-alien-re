@@ -37,7 +37,6 @@ extern void __fastcall FUN_00401c80(void* obj);
 // Engine/Misc
 extern void __cdecl FUN_00425a90(int width, int height);
 extern "C" void WriteToLog(const char* format, ...);
-extern void __cdecl FUN_00425c50(char* msg, ...);
 extern "C" void FUN_00425f10();
 extern void __fastcall FUN_00432da0(void* self);
 
@@ -161,7 +160,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
         if (g_GameState_0046aa30 != 0) {
             GameState* gs = g_GameState_0046aa30;
             if (gs->maxStates - 1 < 4) {
-                FUN_00425c50("Invalid gamestate %d", 4);
+                ShowError("Invalid gamestate %d", 4);
             }
             if (gs->stateValues[4] != 0) {
                 field_B8 |= 0x100;
@@ -258,7 +257,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
             GameState* gs = g_GameState_0046aa30;
             int idx = gs->FindState("CINE_SUMMARY");
             if (idx < 0 || gs->maxStates - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             if (gs->stateValues[idx] != 0) {
                 int handle = (int)((Animation*)field_AC)->smk;

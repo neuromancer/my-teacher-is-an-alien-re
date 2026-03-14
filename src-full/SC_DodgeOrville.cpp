@@ -8,7 +8,7 @@
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_004127c0(void*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
-extern void __cdecl FUN_00425c50(char*, ...);
+extern "C" void ShowError(const char* format, ...);
 
 // Engine base class calls (thiscall via fastcall trick)
 extern void __fastcall FUN_00449320(void*, int, int);  // Engine::VirtCleanup
@@ -100,14 +100,14 @@ void SC_DodgeOrville::ProcessTargets() {
                 void* gs = DAT_0046aa30;
                 int idx = ((GameState*)gs)->FindLabel("DODGE_COMBAT_AVAILABLE");
                 if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
-                    FUN_00425c50("Invalid gamestate %d", idx);
+                    ShowError("Invalid gamestate %d", idx);
                 }
                 *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 0;
 
                 gs = DAT_0046aa30;
                 idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
                 if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
-                    FUN_00425c50("Invalid gamestate %d", idx);
+                    ShowError("Invalid gamestate %d", idx);
                 }
                 *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x1E;
             }

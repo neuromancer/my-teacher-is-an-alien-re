@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-extern void __cdecl FUN_00425c50(char*, ...);
+extern "C" void ShowError(const char* format, ...);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 extern "C" void* DAT_0046aa30;
 
@@ -24,7 +24,7 @@ int EngineA::HandleAction(int* param) {
     result = 0;
 
     if (param[4] != 0x37) {
-        FUN_00425c50("EngineNavigateDucts::OnLogicMessage - unsupported instruction %d", param[4]);
+        ShowError("EngineNavigateDucts::OnLogicMessage - unsupported instruction %d", param[4]);
     }
 
     if (param[5] == 1) {
@@ -32,20 +32,20 @@ int EngineA::HandleAction(int* param) {
         gs = (GameState*)DAT_0046aa30;
 
         if (idx < 0 || gs->maxStates - 1 < idx) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
         if (idx < 0 || gs->maxStates - 1 < idx) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
 
         if (gs->stateValues[idx] != 0) {
             if (idx < 0 || gs->maxStates - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] = 0;
         } else {
             if (idx < 0 || gs->maxStates - 1 < idx) {
-                FUN_00425c50("Invalid gamestate %d", idx);
+                ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] = 1;
         }

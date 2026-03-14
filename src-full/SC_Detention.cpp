@@ -8,6 +8,7 @@
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
+extern void ParseSpriteAction(void*, void*);
 
 extern "C" extern void* DAT_0046aa30;
 extern "C" extern int DAT_0046a6ec;
@@ -512,6 +513,32 @@ void SC_Detention::SetupDetentionState() {
     sprintf(field_184, "%c_TATTLES", periodChar);
     sprintf(field_1A4, "%c_LATE_CUT", periodChar);
     sprintf(field_1C4, "%c_IN_DETENTION", periodChar);
+}
+
+/* Function start: 0x40B240 */
+int SC_Detention::LBLParse(char* line) {
+    char keyword[32];
+    int index;
+    int value;
+
+    sscanf(line, " %s ", keyword);
+
+    if (strcmp(keyword, "POSTMESSAGE") == 0) {
+        SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        ParseSpriteAction(&action, this);
+    } else if (strcmp(keyword, "ENDPERIODANNOUNCE") == 0) {
+        sscanf(line, " %s %d %d", keyword, &index, &value);
+        field_F0[index + 2] = value;
+    } else if (strcmp(keyword, "ANNOUNCE") == 0) {
+        sscanf(line, " %s %d %d", keyword, &index, &value);
+        field_A8[index] = value;
+    } else if (strcmp(keyword, "END") == 0) {
+        return 1;
+    } else {
+        ReportUnknownLabel("SCI_SearchScreen");
+    }
+
+    return 0;
 }
 
 void SC_Detention::HandleCombat() {}

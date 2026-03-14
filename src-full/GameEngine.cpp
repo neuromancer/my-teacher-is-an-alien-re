@@ -32,19 +32,13 @@ extern void __fastcall FUN_004047c0(void*);                              // Proc
 extern void __fastcall FUN_00404b90(void*);                              // UpdateScreen on DAT_0046aa24
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int); // ShowSubtitle on DAT_0046aa24
 
-extern void __cdecl FUN_00425c50(char*, ...);   // ShowError
 extern "C" void FUN_00444e20(void*);
 extern void __fastcall FUN_00426a90(void*);
 
 // FUN_00426ce0 is thiscall with 1 param (not fastcall)
 Handler* CreateHandler(int command);
 
-class GameLoopHelper {
-public:
-    void PostProcess();
-};
-
-extern GameLoopHelper* g_GameLoopHelper;
+#include "GameLoopHelper.h"
 extern "C" void WriteToLog(const char* format, ...);
 
 /* Function start: 0x430A00 */
@@ -137,7 +131,7 @@ void GameEngine::RunGameLoop() {
 
             int* gs = (int*)DAT_0046aa30;
             if (gs[0x98 / 4] - 1 < 4) {
-                FUN_00425c50("Invalid gamestate %d", 4);
+                ShowError("Invalid gamestate %d", 4);
             }
 
             if (*(int*)(gs[0x90 / 4] + 0x10) != 0) {
@@ -422,7 +416,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
         list = m_handlerList;
         m_activeHandler = handler;
         if (handler == 0) {
-            FUN_00425c50("queue fault 0101");
+            ShowError("queue fault 0101");
         }
         list->current = list->head;
         if (list->type != 1 && list->type != 2) {
@@ -454,7 +448,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
 
         gs = (GameState*)DAT_0046aa30;
         if (gs->maxStates - 1 < 4) {
-            FUN_00425c50("Invalid gamestate %d", 4);
+            ShowError("Invalid gamestate %d", 4);
         }
         if (gs->stateValues[4] != 0) {
             handler = (Handler*)m_activeHandler;
@@ -467,7 +461,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
 
     handler = (Handler*)m_activeHandler;
     if (handler == 0) {
-        FUN_00425c50("missing modual %d", msgData[0]);
+        ShowError("missing modual %d", msgData[0]);
         return;
     }
 
@@ -479,12 +473,12 @@ int GameEngine::AddHandler(Handler* handler) {
     LinkedList* list;
 
     if (handler == 0) {
-        FUN_00425c50("illegal modual insertion");
+        ShowError("illegal modual insertion");
     }
 
     list = m_handlerList;
     if (handler == 0) {
-        FUN_00425c50("queue fault 0103");
+        ShowError("queue fault 0103");
     }
 
     list->current = list->head;
@@ -493,7 +487,7 @@ int GameEngine::AddHandler(Handler* handler) {
 
         currentHandler = (Handler*)list->GetCurrentData();
         if (currentHandler->handlerId == handler->handlerId) {
-            FUN_00425c50("illegal modual insertion double");
+            ShowError("illegal modual insertion double");
             return 0;
         }
 
@@ -507,7 +501,7 @@ int GameEngine::AddHandler(Handler* handler) {
 
     list = m_handlerList;
     if (handler == 0) {
-        FUN_00425c50("queue fault 0102");
+        ShowError("queue fault 0102");
     }
     list->current = list->head;
     if (list->type != 1 && list->type != 2) {

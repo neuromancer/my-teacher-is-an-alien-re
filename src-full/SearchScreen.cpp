@@ -170,9 +170,9 @@ int SearchScreen::AddMessage(SC_Message* msg) {
         }
         return 1;
     }
-    clickX = msg->clickPos.x;
+    clickX = msg->clickX;
     if (upScroll.left > clickX || upScroll.right < clickX ||
-        upScroll.top > msg->clickPos.y || upScroll.bottom < msg->clickPos.y) {
+        upScroll.top > msg->clickY || upScroll.bottom < msg->clickY) {
         inRect = 0;
     } else {
         inRect = 1;
@@ -188,13 +188,13 @@ int SearchScreen::AddMessage(SC_Message* msg) {
         return 1;
     }
     if (downScroll.left > clickX || downScroll.right < clickX ||
-        downScroll.top > msg->clickPos.y || downScroll.bottom < msg->clickPos.y) {
+        downScroll.top > msg->clickY || downScroll.bottom < msg->clickY) {
         inRect = 0;
     } else {
         inRect = 1;
     }
     if (inRect == 0) {
-        rowIdx = (msg->clickPos.y - textY) / rowHeight;
+        rowIdx = (msg->clickY - textY) / rowHeight;
         selectedRow = rowIdx;
         if (rowIdx > 0xd) {
             selectedRow = 0xd;

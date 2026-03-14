@@ -25,7 +25,7 @@ public:
 void CursorControl::SetCursor(int, int) {}
 
 extern void __fastcall FUN_00432da0(void*);
-extern void __cdecl FUN_00425c50(char*, ...);
+extern "C" void ShowError(const char* format, ...);
 extern "C" void FUN_00444d90(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x401000 */
@@ -155,7 +155,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
                 gsPtr = (int*)DAT_0046aa30;
                 idx = ((GameState*)DAT_0046aa30)->FindLabel("NUM_ACTIONS");
                 if (idx < 0 || gsPtr[0x98 / 4] - 1 < idx) {
-                    FUN_00425c50("Invalid gamestate %d", idx);
+                    ShowError("Invalid gamestate %d", idx);
                 }
                 pCounter = (int*)(gsPtr[0x90 / 4] + idx * 4);
                 *pCounter = *pCounter + 1;
@@ -183,7 +183,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
         gsPtr = (int*)DAT_0046aa30;
         idx = ((GameState*)DAT_0046aa30)->FindLabel("NUM_ACTIONS");
         if (idx < 0 || gsPtr[0x98 / 4] - 1 < idx) {
-            FUN_00425c50("Invalid gamestate %d", idx);
+            ShowError("Invalid gamestate %d", idx);
         }
         pCounter = (int*)(gsPtr[0x90 / 4] + idx * 4);
         *pCounter = *pCounter + 1;
@@ -293,7 +293,7 @@ void SCI_IconBarModule::Serialize(void* param) {
         fread(DAT_0046aa00, strLen, 1, fp);
 
         if (strcmp(DAT_0046aa00, "INVENTORY_INFO") != 0) {
-            FUN_00425c50("SCI_SearchScreen::Serialize() - Error Loading (Wrong ID '%s')", DAT_0046aa00);
+            ShowError("SCI_SearchScreen::Serialize() - Error Loading (Wrong ID '%s')", DAT_0046aa00);
         }
         fread(DAT_0046aa2c, 0x40, 1, fp);
     }

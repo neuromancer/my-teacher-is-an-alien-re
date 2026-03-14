@@ -81,25 +81,11 @@ int __cdecl GetFreeDiskSpaceMB(int drive);
 void __cdecl InitMemoryCache(int param_1, int param_2, float param_3);
 void CleanupMemoryCache();
 
-// MemoryCache struct (24 bytes = 0x18) used by InitMemoryCache/CleanupMemoryCache
-class MemoryCache {
-public:
-    int field_0;
-    int field_4;
-    int field_8;
-    int field_c;
-    int field_10;
-    int field_14;
-
-    MemoryCache(int param) {
-        field_8 = 0;
-        field_c = 0;
-        field_4 = 0;
-        field_0 = 0;
-        field_10 = 0;
-        field_14 = param;
-    }
-};
+#include "MemoryCache.h"
+#include "QuestionInit.h"
+#include "SoundTracker.h"
+#include "GameLoopHelper.h"
+#include "MsgList.h"
 
 extern void __cdecl FUN_004344b0();
 extern void __cdecl FUN_00434030(void*, int);
@@ -119,42 +105,6 @@ int DAT_0046b780 = 0;
 int DAT_0046b790 = 0;
 MemoryCache* DAT_0046b78c = 0;
 Timer DAT_00473448;
-// QuestionInit - Parser-derived class constructed and immediately destroyed in RunGame
-// FUN_00422880 constructor, calls Parser() + ParseFile(this, filename, NULL)
-class QuestionInit : public Parser {
-public:
-    QuestionInit(const char* filename);  // 0x422880
-    ~QuestionInit();
-};
-
-// SoundTracker class for pre-GameState allocation (size: 1 byte)
-class SoundTracker {
-public:
-    SoundTracker(int param);  // 0x412000
-    ~SoundTracker();           // 0x4120a0
-};
-
-// GameLoopHelper for DAT_0046a6f0 (not created here, only cleaned up)
-class GameLoopHelper {
-public:
-    void PostProcess();  // 0x41a960
-    ~GameLoopHelper();   // 0x41a730
-};
-
-// MsgList for DAT_0046a6dc (inline constructor, 16 bytes)
-class MsgList {
-public:
-    MsgList() {
-        field_c = 0;
-        field_0 = 0;
-        field_4 = 0;
-        field_8 = field_0;
-    }
-    int field_0;
-    int field_4;
-    int field_8;
-    int field_c;
-};
 
 SoundTracker* g_SoundTracker = 0;       // DAT_0046928c
 GameLoopHelper* g_GameLoopHelper = 0;   // DAT_0046a6f0
@@ -192,7 +142,7 @@ void RunGame() {
     // Check CACHE_SIZE from gamestate
     int cacheIdx = g_GameState_00436998->FindState("CACHE_SIZE");
     if (cacheIdx < 0 || cacheIdx > g_GameState_00436998->maxStates - 1) {
-        ShowError("Invalid gamestate %d", cacheIdx);
+        ShowError("0. Invalid gamestate %d", cacheIdx);
     }
     int cacheSize = g_GameState_00436998->stateValues[cacheIdx];
     if (cacheSize == 0) {
@@ -237,12 +187,12 @@ void RunGame() {
     // Check TEST_STRINGS in gamestate
     int testIdx = g_GameState_00436998->FindState("TEST_STRINGS");
     if (testIdx < 0 || testIdx > g_GameState_00436998->maxStates - 1) {
-        ShowError("Invalid gamestate %d", testIdx);
+        ShowError("1. Invalid gamestate %d", testIdx);
     }
     if (g_GameState_00436998->stateValues[testIdx] != 0) {
         int testIdx2 = g_GameState_00436998->FindState("TEST_STRINGS");
         if (testIdx2 < 0 || testIdx2 > g_GameState_00436998->maxStates - 1) {
-            ShowError("Invalid gamestate %d", testIdx2);
+            ShowError("2. Invalid gamestate %d", testIdx2);
         }
         g_Strings_00435a70->TestStrings(g_TextManager_00436990, g_GameState_00436998->stateValues[testIdx2]);
     }
