@@ -153,6 +153,18 @@ void FlagArray::SetFlag(int index, unsigned int mask) {
     Close();
 }
 
+/* Function start: 0x420AC0 */
+void FlagArray::ClearFlag(int index, unsigned int mask) {
+    unsigned int val;
+    Open();
+    Seek(index);
+    fread(&val, field_0x44, 1, fp);
+    val &= ~mask;
+    Seek(index);
+    fwrite(&val, field_0x44, 1, fp);
+    Close();
+}
+
 /* Function start: 0x420B30 */
 void FlagArray::ClearAllFlags() {
     int i;

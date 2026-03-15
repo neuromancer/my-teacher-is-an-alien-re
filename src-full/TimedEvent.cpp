@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "TimedEvent.h"
+#include "SpriteAction.h"
 #include <string.h>
 #include <stdio.h>
 #include "Memory.h"
@@ -32,7 +33,6 @@ void TimedEvent::SetType(int type)
     m_type = type;
 }
 
-extern void FUN_00444e40(void*);
 extern void __fastcall FUN_00444af0(void*);
 extern void FreeMemory(void*);
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
@@ -50,7 +50,7 @@ int TimedEvent::Update()
             return 0;
         }
         if (m_eventData != 0) {
-            FUN_00444e40(m_eventData);
+            EnqueueSpriteAction((void*)m_eventData);
         }
         if (m_eventData != 0) {
             FUN_00444af0(m_eventData);
@@ -64,7 +64,7 @@ int TimedEvent::Update()
             return 0;
         }
         if (m_eventData != 0) {
-            FUN_00444e40(m_eventData);
+            EnqueueSpriteAction((void*)m_eventData);
         }
         m_timer.Reset();
         return 0;
@@ -76,7 +76,7 @@ int TimedEvent::Update()
             return 0;
         }
         if (m_eventData != 0) {
-            FUN_00444e40(m_eventData);
+            EnqueueSpriteAction((void*)m_eventData);
         }
         if (m_eventData != 0) {
             FUN_00444af0(m_eventData);
@@ -90,4 +90,3 @@ int TimedEvent::Update()
         return 1;
     }
 }
-

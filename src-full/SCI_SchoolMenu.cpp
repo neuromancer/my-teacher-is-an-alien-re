@@ -13,6 +13,7 @@
 #include "Palette.h"
 #include "RenderEntry.h"
 #include "MMPlayer.h"
+#include "main.h"
 
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
@@ -33,10 +34,11 @@ extern int DAT_0047337c;
 
 // extern functions (single-param __fastcall == thiscall with 0 stack params)
 extern void __fastcall FUN_00420d90(void*);
-extern void __fastcall FUN_00421020(void*);
+// FUN_00421020 = ProcessSpriteActions - implemented below
+void __fastcall ProcessSpriteActions(void* obj);
 extern void __fastcall FUN_00421880(void*);
 extern void __fastcall FUN_004218b0(void*);
-extern void* __fastcall FUN_0041dbe0(void*);
+// FUN_0041dbe0 = InitPalette (Palette.h)
 
 // Thiscall wrapper classes for correct calling convention (no real class header found)
 class HitRect {
@@ -52,10 +54,8 @@ public:
 extern "C" {
     void FUN_00413e10(void*, char*, char*, ...);
     int FileExists(const char*);
-    void FUN_004265a0();
     void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
     char* FUN_0044e530(int);
-    void FUN_00444e20(void*);
 }
 // C++ linkage functions (matching stubs.cpp)
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
@@ -530,7 +530,7 @@ int GameState::GetStateValue(int index) {
 
 /* Function start: 0x41F6A0 */
 void SCI_SchoolMenu::PlayMenuSound() {
-    FUN_00444e20(&DAT_00472d20);
+    EnqueueSpriteAction((void*)&DAT_00472d20);
 }
 
 /* Function start: 0x41F6B0 */
@@ -696,6 +696,7 @@ void InitAllSchedule() {
 
 /* Function start: 0x41ECE0 */
 int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
+    SpriteAction* action;
     void* gs;
     int* stateVals;
     int i;
@@ -712,8 +713,9 @@ int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
     char capBuf[28];
     char nextChar;
 
+    action = (SpriteAction*)msg;
     if (IconBar::CheckButtonClick(msg) != 0) goto done;
-    if (((int*)msg)[9] < 2) goto done;
+    if (action->button1 < 2) goto done;
 
     // Check NUM_ACTIONS state
     gs = DAT_0046aa30;
@@ -725,7 +727,7 @@ int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
     charBase = characters;
     charPtr = characters;
     i = 0;
-    msgMouse = (int*)((char*)msg + 0x1C);
+    msgMouse = &action->mousePos.field_0;
 
 char_loop:
     {
@@ -761,7 +763,7 @@ opt_loop:
         int opt = *optPtr;
         if (opt == 0) goto next_opt;
         {
-            SlimeDim optCoords = *(SlimeDim*)((char*)msg + 0x1C);
+            SlimeDim optCoords = action->mousePos;
             if (((int*)opt)[0x24] == 0) goto opt_miss;
             if (((HitRect*)((int)opt + 0x9c))->HitTest(optCoords.field_0, optCoords.field_4)) {
                 hitOpt = 1;
@@ -957,7 +959,7 @@ check_go:
     // Check go button hit
     {
         SlimeDim goCoords;
-        int* goMouse = (int*)((char*)msg + 0x1C);
+        int* goMouse = &action->mousePos.field_0;
         goCoords.field_0 = goMouse[0];
         goCoords.field_4 = goMouse[1];
         int goSpr = field_B0;
@@ -980,7 +982,7 @@ check_go:
         stateVals[i]++;
 
         // Execute option action
-        FUN_00421020((void*)options[selectedOption]);
+        ProcessSpriteActions((void*)options[selectedOption]);
 
         // Determine next character
         gs = DAT_0046aa30;
@@ -1172,7 +1174,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         void* mem = malloc(8);
         void* obj = 0;
         if (mem != 0) {
-            FUN_0041dbe0(mem);
+            InitPalette((Palette*)mem);
             obj = mem;
         }
         field_A8 = (int)obj;
@@ -1293,4 +1295,34 @@ int SCI_SchoolMenu::LBLParse(char* line) {
 
     ReportUnknownLabel("SCI_SchoolMenu");
     return 0;
+}
+
+
+/* Function start: 0x421020 */
+void __fastcall ProcessSpriteActions(void* obj)
+{
+    int param_1 = (int)obj;
+    int* list = *(int**)(param_1 + 0x1a0);
+    if (list != 0) {
+        list[2] = *list;
+        if (**(int**)(param_1 + 0x1a0) == 0) return;
+        do {
+            int cur = *(int*)(*(int*)(param_1 + 0x1a0) + 8);
+            void* data;
+            if (cur == 0) {
+                data = 0;
+            } else {
+                data = *(void**)(cur + 8);
+            }
+            EnqueueSpriteAction(data);
+            int listPtr = *(int*)(param_1 + 0x1a0);
+            int curNode = *(int*)(listPtr + 8);
+            if (*(int*)(listPtr + 4) == curNode) {
+                return;
+            }
+            if (curNode != 0) {
+                *(int*)(listPtr + 8) = *(int*)(curNode + 4);
+            }
+        } while (**(int**)(param_1 + 0x1a0) != 0);
+    }
 }

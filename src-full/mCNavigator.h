@@ -31,6 +31,9 @@ public:
     virtual int LBLParse(char*);
     virtual void OnProcessEnd();
     void SetBearing(char*);
+    void SetField(unsigned int);    // 0x44BA80
+    void SetMode(int);              // 0x44BA70
+    void SetNavParams(unsigned int param1, int param2);
     int Update();
 };
 

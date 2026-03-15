@@ -8,23 +8,20 @@
 #include "globals.h"
 #include "ZBufferManager.h"
 #include <stdio.h>
+#include "string.h"
 #include <string.h>
 #include <stdlib.h>
 #include <new.h>
 
-extern int __fastcall FUN_0044c350(void*, int, char*);
-extern void __cdecl FUN_00425cb0(char*, ...);
-extern int __fastcall FUN_00420a00(void*, int, int);
-extern void __fastcall FUN_00420a50(void*, int, int);
+#include "StringTable.h"
+// FUN_00425cb0 = ShowMessage in string.h
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
 extern void __cdecl FUN_00413e70(void*, int, char*);
-extern void __cdecl FUN_00444e40(void*);
 extern void __fastcall FUN_00425550(void*, int, int);
 extern void __fastcall FUN_0044c880(void*);
-extern void __fastcall FUN_00420ac0(void*, int, int);
+// FUN_00420ac0 = FlagArray::ClearFlag in FlagArray.h
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl ParseSpriteAction(void*, void*);
 extern void __cdecl FUN_00412a50();
 extern void __fastcall FUN_00406fd0(void*, int, int);
 
@@ -53,8 +50,8 @@ SC_Question::SC_Question(int id, int dialog)
     state = 0;
     dialogPtr = (void*)dialog;
 
-    if (FUN_0044c350(DAT_0046a6e0, id, label) == 0) {
-        FUN_00425cb0("SC_Question::SC_Question missing label %d", id);
+    if (((StringTable*)DAT_0046a6e0)->GetString( id, label) == 0) {
+        ShowMessage("SC_Question::SC_Question missing label %d", id);
         sprintf(label, "Missing Label %d", questionId);
     }
 
@@ -68,9 +65,9 @@ SC_Question::SC_Question(int id, int dialog)
 
     FUN_00413e10(this, questFile, "[QUESTION%d]", questionId);
 
-    if (FUN_00420a00(DAT_0046a6e8, questionId, 2) != 0) {
+    if (((FlagArray*)DAT_0046a6e8)->GetFlag( questionId, 2) != 0) {
         state = 2;
-    } else if (FUN_00420a00(DAT_0046a6e8, questionId, 1) != 0) {
+    } else if (((FlagArray*)DAT_0046a6e8)->GetFlag( questionId, 1) != 0) {
         state = 2;
     }
 }
@@ -239,8 +236,8 @@ void SC_Question::Finalize()
     void* msgData;
     int queueType;
 
-    if (FUN_00420a00(DAT_0046a6e8, questionId, 4) == 0) {
-        FUN_00420a50(DAT_0046a6e8, questionId, 2);
+    if (((FlagArray*)DAT_0046a6e8)->GetFlag( questionId, 4) == 0) {
+        ((FlagArray*)DAT_0046a6e8)->SetFlag( questionId, 2);
     }
 
     state = 2;
@@ -296,7 +293,7 @@ void SC_Question::Finalize()
             queue->current = queue->head;
         }
 
-        FUN_00444e40(msgData);
+        EnqueueSpriteAction(msgData);
         if (msgData != 0) {
             delete (SpriteAction*)msgData;
         }
@@ -386,7 +383,7 @@ int SC_Question::LBLParse(char* param_1)
     }
     else if (strcmp(keyword, "TEXT") == 0) {
         sscanf(param_1, " %s %d", keyword, &id);
-        result = FUN_0044c350(DAT_0046a6e0, id, (char*)((int)this + 0x9c));
+        result = ((StringTable*)DAT_0046a6e0)->GetString( id, (char*)((int)this + 0x9c));
         if (result == 0) {
             FUN_00412a50();
         }
@@ -1392,10 +1389,10 @@ int SC_Question::LBLParse(char* param_1)
         }
     }
     else if (strcmp(keyword, "CONSTANT") == 0) {
-        FUN_00420a50(DAT_0046a6e8, questionId, 4);
+        ((FlagArray*)DAT_0046a6e8)->SetFlag( questionId, 4);
     }
     else if (strcmp(keyword, "SINGLE_PLAY") == 0) {
-        FUN_00420ac0(DAT_0046a6e8, questionId, 4);
+        ((FlagArray*)DAT_0046a6e8)->ClearFlag(questionId, 4);
     }
     else if (strcmp(keyword, "HOLD") == 0) {
         field_94 |= 8;

@@ -5,12 +5,13 @@
 #include "Animation.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "ZBuffer.h"
+#include "main.h"
 #include <string.h>
 #include <stdlib.h>
 
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern "C" int FileExists(const char*);
-extern "C" void FUN_004265a0();
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetCinematicFilename(int);
 extern "C" void* FUN_004260f0(char*);
@@ -19,9 +20,9 @@ extern void __fastcall FUN_00425490(void*);
 extern void* __fastcall FUN_00425480(void*);
 extern void __cdecl FUN_00425a90(int, int);
 extern "C" void ShowError(const char* format, ...);
-extern void __fastcall FUN_004279a0(void*);
+// FUN_004279a0 = ZBuffer::ResetItems (ZBuffer.h)
 extern void __fastcall FUN_00427880(void*);
-extern void __fastcall FUN_00432da0(void*);
+#include "MouseControl.h"
 
 // Thiscall wrapper classes for sprite/palette methods
 
@@ -65,7 +66,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
     Handler::Init(msg);
 
     if (FileExists("CB_FireAlarm") == 0) {
-        FUN_004265a0();
+        ShowLoadingScreen();
     }
 
     dim_B4.field_0 = 0x140;
@@ -387,7 +388,7 @@ void SC_FireAlarm::ProcessFrame() {
             field_AC |= 4;
         }
 
-        FUN_004279a0((void*)DAT_004685ac);
+        ((ZBuffer*)DAT_004685ac)->ResetItems();
 
         ((Sprite*)field_110)->ResetAnimation(iVar4 + 1, 0);
 
@@ -535,7 +536,7 @@ void SC_FireAlarm::ProcessFrame() {
     ((Sprite*)field_10C)->RenderAt(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 0, 0x3ff00000);
 
     if ((field_AC & 0xF) == 0) {
-        FUN_00432da0(DAT_0046aa18);
+        ((MouseControl*)DAT_0046aa18)->DrawCursor();
         FUN_00427880((void*)DAT_004685ac);
 
         int bcRender = ((Sprite*)field_BC)->RenderAt(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 0, 0x3ff00000);

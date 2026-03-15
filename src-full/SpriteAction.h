@@ -1,8 +1,8 @@
 #ifndef SPRITEACTION_H
 #define SPRITEACTION_H
 
-// SlimeDim - 8-byte embedded object, destructor at 0x401120
-// Used as a member in SpriteAction, SC_Slime, SCI_PracticeRoom, etc.
+// SlimeDim - generic 8-byte coordinate/dimension pair, destructor at 0x401120.
+// The name is legacy; the type is also used for mouse coordinates.
 // Inline constructor triggers SEH in containing class constructors.
 struct SlimeDim {
     int field_0;
@@ -11,27 +11,27 @@ struct SlimeDim {
     ~SlimeDim();
 };
 
-// SpriteAction (aka SpriteAction) - Chainable action/message struct
+// SpriteAction - chainable action/message payload.
 // Original class name: "SpriteAction" (string at 0x46C1E0)
 // Constructor: 0x444A40 (__thiscall, 10 params)
 // Destructor: 0x444AF0
 // Size: 0x38 (14 ints equivalent)
-// field_34 is a chain pointer to another SpriteAction (recursively destroyed)
+// Field meanings are evidenced by the 0x444B70 dump routine.
 class SpriteAction {
 public:
-    int field_00;   // 0x00 - ADDRESS type
-    int field_04;   // 0x04 - ADDRESS id
-    int field_08;   // 0x08 - FROM type
-    int field_0C;   // 0x0C - FROM id
-    int field_10;   // 0x10 - INSTRUCTION
-    int field_14;   // 0x14 - EXTRA1
-    int field_18;   // 0x18 - EXTRA2
-    SlimeDim dim;   // 0x1C-0x23 - MOUSE (x, y)
-    int field_24;   // 0x24 - BUTTON1
-    int field_28;   // 0x28 - BUTTON2
-    int field_2C;   // 0x2C - LASTKEY
-    int field_30;   // 0x30 - TIME
-    int field_34;   // 0x34 - chain pointer (SpriteAction*)
+    int addressType;           // 0x00
+    int addressValue;          // 0x04
+    int fromType;              // 0x08
+    int fromValue;             // 0x0C
+    int instruction;           // 0x10
+    int extra1;                // 0x14
+    int extra2;                // 0x18
+    SlimeDim mousePos;         // 0x1C-0x23
+    int button1;               // 0x24
+    int button2;               // 0x28
+    int lastKey;               // 0x2C
+    int time;                  // 0x30
+    SpriteAction* childAction; // 0x34 - owned nested SpriteAction*
 
     SpriteAction() {}
     SpriteAction(int, int, int, int, int, int, int, int, int, int);
@@ -40,5 +40,9 @@ public:
     void Print(int);                         // 0x444B70
     void Serialize(void*);                   // 0x444CD0
 };
+
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+void EnqueueSpriteAction(void*);
+void EnqueueSpriteAction(SpriteAction*);
 
 #endif // SPRITEACTION_H

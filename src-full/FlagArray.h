@@ -22,6 +22,7 @@ public:
     void Seek(int index);
     unsigned int GetFlag(int index, unsigned int mask);
     void SetFlag(int index, unsigned int mask);
+    void ClearFlag(int index, unsigned int mask);
     void ClearAllFlags();
 };
 

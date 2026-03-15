@@ -12,14 +12,12 @@
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 
-extern void __fastcall FUN_004309a0(void*, int, int);
 
-extern void __cdecl FUN_00444e40(void*);
 
 extern "C" void ShowError(const char* format, ...);
 
-extern void __fastcall FUN_00432da0(void* self);
-extern void __fastcall FUN_00411180(void*, int, int);
+#include "MouseControl.h"
+#include "VBuffer.h"
 extern void __fastcall FUN_00404350(void*, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
 
@@ -40,7 +38,7 @@ SC_WordSearch::~SC_WordSearch() {
 
 /* Function start: 0x435BE0 */
 void SC_WordSearch::Init(SC_Message* msg) {
-    FUN_004309a0(this, 0, (int)msg);
+    CopyCommandData((SC_Message*)msg);
     if (msg != 0) {
         *(int*)((int)this + 0x94) = *(int*)((int)msg + 4);
         SC_WordSearch::FUN_4368F0();
@@ -173,7 +171,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
         pvVar10 = *(void**)((int)this + 0x82c);
         ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
-        FUN_00432da0(DAT_0046aa18);
+        ((MouseControl*)DAT_0046aa18)->DrawCursor();
         piVar1 = *(int**)((int)DAT_0046aa08 + 0x1a0);
         iVar9 = 0;
         if (piVar1 != 0) {
@@ -203,7 +201,7 @@ void SC_WordSearch::Update(int param1, int param2) {
     if (pvVar10 != 0) {
         ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
     } else {
-        FUN_00411180(DAT_0046aa14, 0, 0);
+        ((VBuffer*)DAT_0046aa14)->ClearScreen(0);
     }
 
     int* piVar13 = (int*)((int)this + 0x4d4);
@@ -358,7 +356,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         }
     }
     FUN_00404230(DAT_0046aa24, 0, (char*)((int)this + 0x718), 0x49, 0xdc, 10000, 0);
-    FUN_00432da0(DAT_0046aa18);
+    ((MouseControl*)DAT_0046aa18)->DrawCursor();
     pvVar10 = *(void**)((int)this + 0x82c);
     ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
 }
@@ -395,7 +393,7 @@ void SC_WordSearch::FUN_436790() {
             }
         }
     }
-    FUN_00444e40(*(void**)((int)this + 0x830));
+    EnqueueSpriteAction(*(void**)((int)this + 0x830));
     void* pVar = *(void**)((int)this + 0x830);
     if (pVar != 0) {
         delete (SpriteAction*)pVar;

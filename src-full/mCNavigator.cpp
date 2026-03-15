@@ -331,6 +331,16 @@ int mCNavigator::Update()
 	return 0;
 }
 
+extern void __fastcall FUN_0044b7e0(void*);
+
+/* Function start: 0x44BAC0 */
+void mCNavigator::SetNavParams(unsigned int param1, int param2)
+{
+    SetField(param1);
+    SetMode(param2);
+    FUN_0044b7e0((void*)bearing);
+}
+
 /* Function start: 0x44BEC0 */ /* ~89% match */
 void* ObjectPool::Allocate_2()
 {

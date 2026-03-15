@@ -38,7 +38,7 @@ extern void __fastcall FUN_00401c80(void* obj);
 extern void __cdecl FUN_00425a90(int width, int height);
 extern "C" void WriteToLog(const char* format, ...);
 extern void BlankScreen();
-extern void __fastcall FUN_00432da0(void* self);
+#include "MouseControl.h"
 
 // File operations
 extern "C" void* FUN_004260f0(char* name);
@@ -47,9 +47,6 @@ extern "C" int FileExists(const char*);
 // Palette
 #include "Palette.h"
 
-// Message operations
-extern void __cdecl FUN_00444e40(void* msg);
-
 // Screen dimensions
 extern "C" int* GetScreenWidth();
 extern "C" int* GetScreenHeight();
@@ -57,8 +54,8 @@ extern "C" int* GetScreenHeight();
 // Summary
 extern "C" void FUN_004307b0(int handle);
 
-// List cleanup
-extern void __fastcall FUN_004308c0(void* list);
+// FUN_004308c0 = ClearActionList - implemented below
+void __fastcall ClearActionList(LinkedList* list);
 
 // SmackWait is linked via smackw32.lib (IAT entry at 0x47655c in original binary)
 
@@ -332,7 +329,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         Animation* smk = (Animation*)field_AC;
         VBuffer* vp = (VBuffer*)DAT_0046aa14;
         vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk->targetBuffer);
-        FUN_00432da0(DAT_0046aa18);
+        ((MouseControl*)DAT_0046aa18)->DrawCursor();
         return;
     }
 
@@ -450,7 +447,7 @@ void SC_Cinematic::Update(int param1, int param2) {
                     }
                 }
 
-                FUN_004308c0(*(void**)(iVar2 + 0xa4));
+                ClearActionList((LinkedList*)*(void**)(iVar2 + 0xa4));
                 ((ZBQueue*)*(void**)(iVar2 + 0x9c))->ClearList();
                 *(int*)(iVar2 + 0xa8) = 0;
             }
@@ -482,7 +479,7 @@ int SC_Cinematic::AddMessage(SC_Message* msg) {
 /* Function start: 0x430730 */
 void SC_Cinematic::EndCinematic() {
     if (field_D0 != 0) {
-        FUN_00444e40((void*)field_D0);
+        EnqueueSpriteAction((void*)field_D0);
         void* spr = (void*)field_D0;
         if (spr != 0) {
             delete (SpriteAction*)spr;
@@ -490,5 +487,30 @@ void SC_Cinematic::EndCinematic() {
         }
     } else {
         SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+    }
+}
+
+/* Function start: 0x4308C0 */
+void __fastcall ClearActionList(LinkedList* list)
+{
+    if (list->head != 0) {
+        list->current = list->head;
+        do {
+            void* data = list->RemoveCurrent();
+            if (data != 0) {
+                void* ptr = *(void**)((int)data + 4);
+                if (ptr != 0) {
+                    ((VBuffer*)ptr)->~VBuffer();
+                    FreeMemory(ptr);
+                    *(void**)((int)data + 4) = 0;
+                }
+                Handler* obj = *(Handler**)((int)data + 8);
+                if (obj != 0) {
+                    delete obj;
+                    *(void**)((int)data + 8) = 0;
+                }
+                FreeMemory(data);
+            }
+        } while (list->head != 0);
     }
 }

@@ -221,7 +221,7 @@ void StringTable::Load() {
     }
 }
 
-/* Function start: 0x420d90 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x44C350 */ /* ~90% match */
 int StringTable::GetString(unsigned int id, char* outBuffer)
 {
     char buffer[300];

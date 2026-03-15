@@ -11,6 +11,13 @@ TimeOut::~TimeOut()
     }
 }
 
+/* Function start: 0x421920 */
+TimeOut* __fastcall InitTimeOut(TimeOut* buffer)
+{
+    buffer->TimeOut::TimeOut();
+    return buffer;
+}
+
 /* Function start: 0x421960 */
 TimeOut::TimeOut()
 {

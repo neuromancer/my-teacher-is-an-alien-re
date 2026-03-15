@@ -20,8 +20,8 @@ extern void* DAT_0046a6e4;
 extern int DAT_00473334;
 extern int DAT_004733e8;
 
-extern void __fastcall FUN_00432da0(void* self);
-extern void __fastcall FUN_00421bc0(void* self);
+#include "MouseControl.h"
+#include "T_MenuHotspot.h"
 extern void* DAT_0046aa08;
 extern void* DAT_0046a6dc;
 extern char* DAT_0046aa00;
@@ -153,7 +153,7 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
         spr->ResetAnimation(0, 0);
     }
 
-    FUN_00432da0(DAT_0046aa18);
+    ((MouseControl*)DAT_0046aa18)->DrawCursor();
 
     DAT_004733e8 = 1;
     IconBar::CleanupIconBar(msg);
@@ -403,10 +403,10 @@ void SCI_Inventory::Update(int param1, int param2) {
         ((Sprite*)field_178)->Do(0, 0, 1.0);
     }
 
-    FUN_00421bc0((void*)field_188);
-    FUN_00421bc0((void*)field_18C);
-    FUN_00421bc0((void*)field_190);
-    FUN_00421bc0((void*)field_194);
+    ((T_MenuHotspot*)field_188)->Update();
+    ((T_MenuHotspot*)field_18C)->Update();
+    ((T_MenuHotspot*)field_190)->Update();
+    ((T_MenuHotspot*)field_194)->Update();
 
     startIdx = field_12C;
     {
@@ -488,7 +488,7 @@ void SCI_Inventory::Update(int param1, int param2) {
         }
     }
 
-    FUN_00432da0(DAT_0046aa18);
+    ((MouseControl*)DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x43EFD0 */

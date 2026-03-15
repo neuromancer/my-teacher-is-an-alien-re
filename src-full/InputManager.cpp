@@ -285,9 +285,9 @@ extern "C" char* FUN_00426570(char* s1, char* s2) {
 }
 
 /* Function start: 0x426A90 */
-void __fastcall FUN_00426a90(void* self) {
+void InputManager::ResetClickState() {
     InputState* mouse;
-    mouse = ((InputManager*)self)->pMouse;
+    mouse = pMouse;
     mouse->ext2 = 0;
     mouse->ext1 = mouse->ext2;
 }
@@ -303,7 +303,7 @@ int InputManager::Refresh(int) {
 
     PollMouse(pMouseLocal);
     PollJoystick(pJoystick);
-    FUN_00426a90(this);
+    ResetClickState();
 
     mouse = pMouse;
     buttons = 0;

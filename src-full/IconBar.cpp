@@ -21,7 +21,6 @@ static int g_IconBarRefCount;                   // 0x46af0c
 
 // External functions
 
-extern void FUN_00444e40(SpriteAction*);        // SpriteAction method (cdecl 1 param)
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void __cdecl FUN_00425a90(int, int);
 extern void __stdcall FUN_004309a0(int);
@@ -223,12 +222,12 @@ int IconBar::AddMessage(SC_Message* msg) {
     act = (SpriteAction*)msg;
     FUN_004309c0(msg);
 
-    if (act->field_2C == 0x77) {
+    if (act->lastKey == 0x77) {
         if (g_IconBarEntries[4].field_14 == 0) {
             return 0;
         }
         {
-            SpriteAction temp(act->field_00, act->field_04, act->field_08, act->field_0C,
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, 0, 0, 0, 0, 0);
             DAT_00472d58.CopyFrom(&temp);
         }
@@ -238,8 +237,8 @@ int IconBar::AddMessage(SC_Message* msg) {
 
     {
         int inBounds;
-        if (g_IconBarLeft <= act->dim.field_0 && g_IconBarRight >= act->dim.field_0 &&
-            g_IconBarTop <= act->dim.field_4 && g_IconBarBottom >= act->dim.field_4) {
+        if (g_IconBarLeft <= act->mousePos.field_0 && g_IconBarRight >= act->mousePos.field_0 &&
+            g_IconBarTop <= act->mousePos.field_4 && g_IconBarBottom >= act->mousePos.field_4) {
             inBounds = 1;
         } else {
             inBounds = 0;
@@ -249,7 +248,7 @@ int IconBar::AddMessage(SC_Message* msg) {
         }
     }
 
-    if (act->field_24 < 2) {
+    if (act->button1 < 2) {
         return 1;
     }
 
@@ -266,7 +265,7 @@ int IconBar::AddMessage(SC_Message* msg) {
 
     if (buttonIndex == 4) {
         {
-            SpriteAction temp(act->field_00, act->field_04, act->field_08, act->field_0C,
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, 0, 0, 0, 0, 0);
             DAT_00472d58.CopyFrom(&temp);
         }
@@ -276,7 +275,7 @@ int IconBar::AddMessage(SC_Message* msg) {
 
     if (buttonIndex == 5) {
         {
-            SpriteAction temp(act->field_00, act->field_04, act->field_08, act->field_0C,
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, 0, 0, 0, 0, 0);
             DAT_00472d58.CopyFrom(&temp);
         }
@@ -286,7 +285,7 @@ int IconBar::AddMessage(SC_Message* msg) {
 
     if (buttonIndex == 0) {
         {
-            SpriteAction temp(act->field_00, act->field_04, act->field_08, act->field_0C,
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, 0, 0, 0, 0, 0);
             DAT_00472d20.CopyFrom(&temp);
         }
@@ -300,7 +299,7 @@ int IconBar::AddMessage(SC_Message* msg) {
             result = ((GameState*)DAT_0046aa3c)->FindState((char*)DAT_0046aa2c);
         }
         {
-            SpriteAction temp(act->field_00, act->field_04, act->field_08, act->field_0C,
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, result, 0, 0, 0, 0);
             DAT_00472d90.CopyFrom(&temp);
         }
@@ -461,7 +460,7 @@ void IconBar::PlayButtonSound(int buttonIndex) {
         pSlot = &g_IconBarEntries[buttonIndex].slot0;
         do {
             if (*pSlot != 0) {
-                FUN_00444e40(*pSlot);
+                EnqueueSpriteAction(*pSlot);
             }
             pSlot = pSlot + 1;
             i = i - 1;
@@ -553,9 +552,9 @@ void IconBarEntry::CreateAction(int p1, int p2, int p3) {
     SpriteAction* action;
 
     action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    action->field_00 = p1;
-    action->field_04 = p2;
-    action->field_10 = p3;
+    action->addressType = p1;
+    action->addressValue = p2;
+    action->instruction = p3;
     RegisterSlot(action);
 }
 
@@ -585,8 +584,8 @@ void IconBarEntry::SetSlotProperties(int p1, int p2) {
     pSlot = &slot0;
     do {
         if (*pSlot != 0) {
-            (*pSlot)->field_08 = p1;
-            (*pSlot)->field_0C = p2;
+            (*pSlot)->fromType = p1;
+            (*pSlot)->fromValue = p2;
         }
         pSlot = pSlot + 1;
         i = i - 1;

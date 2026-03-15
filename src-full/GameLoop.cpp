@@ -67,11 +67,8 @@ public:
     virtual void Cleanup(int flag);         // +0x18
 };
 
-Handler* CreateHandler(int command); // 0x424240 - Handler factory (full game)
-
 // Full game globals used by HandleSystemMessage
 extern void* DAT_0046aa08;                 // InputManager-like global
-extern void __fastcall FUN_00426a90(void* self);  // Resets input state on DAT_0046aa08
 
 #include "GameLoopHelper.h"
 extern "C" extern void* DAT_0046aa30;
@@ -743,7 +740,7 @@ void GameLoop::HandleSystemMessage(SC_Message* msg) {
 
     // Reset input state on global input manager
     if (DAT_0046aa08 != 0) {
-        FUN_00426a90(DAT_0046aa08);
+        ((InputManager*)DAT_0046aa08)->ResetClickState();
     }
 
     // Call current handler's ShutDown method

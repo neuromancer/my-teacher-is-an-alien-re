@@ -5,9 +5,9 @@
 #include "SpriteAction.h"
 
 class Sprite;
-class SoundList;
 class Sample;
 class Palette;
+class SlimeTable;
 
 // Engine - Base class for game engine variants (vtable 0x461A90, size 0x118)
 //
@@ -56,7 +56,7 @@ public:
   Palette* field_0x104;  // 0x104 - palette ptr (0x41DC10 dtor)
   Sprite* field_0x108;   // 0x108 - background sprite ptr (0x44C740 dtor)
   Sprite* field_0x10C;   // 0x10C - console sprite ptr (0x44C740 dtor)
-  SoundList* field_0x110; // 0x110 - sound list ptr (0x425490 dtor)
+  SlimeTable* field_0x110; // 0x110 - table of indexed samples
   int field_0x114;       // 0x114
 
   Engine();

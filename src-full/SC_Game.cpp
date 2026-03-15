@@ -11,7 +11,7 @@ extern "C" extern void* DAT_0046aa30;
 extern char* DAT_0046aa00;
 extern void* DAT_0046aa24;
 extern void* DAT_0046aa18;
-extern void __fastcall FUN_00432da0(void* self);
+#include "MouseControl.h"
 
 /* Function start: 0x431D20 */
 SC_Game::SC_Game() {
@@ -117,7 +117,7 @@ void SC_Game::Update(int param1, int param2) {
         } while (row < scrollOffset + 0xe);
     }
 
-    FUN_00432da0(DAT_0046aa18);
+    ((MouseControl*)DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4322D0 */

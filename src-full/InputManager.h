@@ -36,6 +36,7 @@ public:
     int Refresh(int);                   // FUN_00426CE0
     int PollMouse(InputState* state); // FUN_00421b20
     int PollJoystick(InputState* state); // FUN_00421c30
+    void ResetClickState();           // 0x426A90
 
     JOYCAPSA joyCaps;           // 0x0 - 0x193 (0x194 bytes)
     int padding_194;            // 0x194 - padding to align pointers

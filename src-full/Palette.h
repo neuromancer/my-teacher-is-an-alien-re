@@ -30,4 +30,7 @@ private:
 // CreatePaletteBuffer at 0x41EA50 is a placement new for Palette
 Palette* __fastcall CreatePaletteBuffer(Palette* buffer);
 
+// InitPalette at 0x41DBE0 - constructs Palette via default constructor
+Palette* __fastcall InitPalette(Palette* buffer);
+
 #endif // PALETTE_H

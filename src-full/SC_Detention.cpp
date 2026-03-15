@@ -4,11 +4,11 @@
 #include "GameState.h"
 #include "GameEngine.h"
 #include "SpriteAction.h"
+#include "SC_Question.h"
 #include "globals.h"
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern void ParseSpriteAction(void*, void*);
 
 extern "C" extern void* DAT_0046aa30;
 extern "C" extern int DAT_0046a6ec;

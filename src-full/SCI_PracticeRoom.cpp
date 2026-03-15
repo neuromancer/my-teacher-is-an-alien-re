@@ -15,7 +15,6 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00425a90(int, int);
 
-extern void __fastcall FUN_004309a0(void*, int, int);
 extern void __fastcall FUN_00420d90(void*);
 extern void __fastcall FUN_00425490(void*);
 extern void __fastcall FUN_00429c10(void*);
@@ -24,7 +23,7 @@ extern void __fastcall FUN_0042b270(void*);
 extern void __fastcall FUN_0042b100(void*);
 extern void __fastcall FUN_00429df0(void*);
 extern void __fastcall FUN_00420f00(void*);
-extern void __fastcall FUN_00432da0(void*);
+#include "MouseControl.h"
 extern void* __fastcall FUN_00425480(void*);
 extern void __fastcall FUN_00425550(void*, int, int);
 extern int __fastcall FUN_0042a010(void*, int, void*);
@@ -32,7 +31,6 @@ extern int __fastcall FUN_0042a010(void*, int, void*);
 extern "C" void WriteToLog(const char* format, ...);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 
-extern void* __fastcall FUN_0041dbe0(void*);
 extern void* __fastcall FUN_00429b60(void*, int, int, void*);
 extern void* __fastcall FUN_00420ce0(void*, int, int);
 
@@ -43,15 +41,7 @@ extern void* DAT_0046aa24;
 extern int DAT_0046ad6c;
 
 
-class SlimeTable {
-    int fields[3];
-public:
-    SlimeTable();
-    ~SlimeTable();
-    void Init(int);
-    void FUN_004254a0(int);
-    void FUN_00425620(int, char*, int);
-};
+#include "SlimeTable.h"
 
 /* Function start: 0x42A8D0 */
 SCI_PracticeRoom::SCI_PracticeRoom() {
@@ -62,7 +52,7 @@ SCI_PracticeRoom::~SCI_PracticeRoom() {
 
 /* Function start: 0x42A9F0 */
 void SCI_PracticeRoom::Init(SC_Message* msg) {
-    FUN_004309a0(this, 0, (int)msg);
+    CopyCommandData((SC_Message*)msg);
     int iVar = *(int*)((int)msg + 4);
     *(int*)((int)this + 0xA8) = 0;
     moduleParam = iVar;
@@ -250,12 +240,14 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
         pSprites++;
         iCount--;
     } while (iCount != 0);
-    FUN_00432da0(DAT_0046aa18);
+    ((MouseControl*)DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x42AE80 */
 int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
-    if (*(int*)((int)msg + 0x24) >= 2) {
+    SpriteAction* action = (SpriteAction*)msg;
+
+    if (action->button1 >= 2) {
         int local_14 = 0;
         int* pBC = (int*)((int)this + 0xBC);
         int* local_28 = pBC;
@@ -263,8 +255,8 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
             int bHit;
             {
                 SlimeDim pt;
-                pt.field_0 = *(int*)((int)msg + 0x1C);
-                pt.field_4 = *(int*)((int)msg + 0x20);
+                pt.field_0 = action->mousePos.field_0;
+                pt.field_4 = action->mousePos.field_4;
                 int sprite = *local_28;
                 if (*(int*)(sprite + 0x90) == 0 ||
                     *(int*)(sprite + 0x9C) > pt.field_0 ||
@@ -386,7 +378,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         void* mem = malloc(8);
         void* newPal = 0;
         if (mem != 0) {
-            newPal = FUN_0041dbe0(mem);
+            newPal = InitPalette((Palette*)mem);
         }
         *(void**)((int)this + 0xB4) = newPal;
         ((Palette*)newPal)->Load(local_bc);
@@ -462,12 +454,12 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         sscanf(param_1, " %s %d ", local_3c, (int)this + 0xCC);
     } else if (strcmp(local_3c, "MAX_SOUNDS") == 0) {
         sscanf(param_1, " %s %d ", local_3c, &local_18);
-        (*(SlimeTable**)((int)this + 0xC8))->FUN_004254a0(local_18);
+        (*(SlimeTable**)((int)this + 0xC8))->Allocate(local_18);
     } else {
         if (strcmp(local_3c, "SOUND") == 0) {
             sscanf(param_1, " %s %d %s %d ", local_3c, &local_18, local_bc, &local_1c);
             if (local_18 >= 0 && local_18 <= *(*(int**)((int)this + 0xC8)) - 1) {
-                (*(SlimeTable**)((int)this + 0xC8))->FUN_00425620(local_18, local_bc, local_1c);
+                (*(SlimeTable**)((int)this + 0xC8))->LoadEntry(local_18, local_bc, local_1c);
                 goto lbl_done;
             }
         } else if (strcmp(local_3c, "END") == 0) {

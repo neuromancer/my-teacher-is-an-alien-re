@@ -5,28 +5,18 @@
 #include "Memory.h"
 #include "Sprite.h"
 #include "Palette.h"
-#include "SoundList.h"
 #include "Sound.h"
+#include "Handler.h"
+#include "main.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-extern void FUN_00444E40(SpriteAction*);   // SpriteAction method
-extern void __stdcall FUN_004309C0(int*);  // handler call
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern void* __fastcall FUN_00425480(void*); // SoundList default constructor
-extern void __fastcall FUN_004309a0(void*, int, int); // handler init
-extern void __cdecl FUN_00413e70(void*, int, char*); // Sprite add to parent
-extern void __cdecl FUN_00425a90(int, int);           // SetVideoRes
 
-// SlimeTable forward declaration for SoundList method calls
-class SlimeTable {
-public:
-    void FUN_004254a0(int);
-    void FUN_00425620(int, char*, int);
-};
+#include "SlimeTable.h"
 
 extern Sound* DAT_0046AA0C;              // Sound global
 extern int DAT_0046AA24;                 // global object pointer
@@ -92,7 +82,7 @@ void Engine::VirtCleanup(int flag) {
 
 /* Function start: 0x449400 */
 int Engine::CleanupSubsystems(int* param) {
-    FUN_004309C0(param);
+    ((Handler*)this)->WriteMessageAddress((SC_Message*)param);
     return 0;
 }
 
@@ -103,7 +93,7 @@ int Engine::CheckNavState(int* param) {
 
 /* Function start: 0x4494E0 */
 void Engine::ProcessTargets() {
-    FUN_00444E40(Engine::field_0x100);
+    EnqueueSpriteAction(Engine::field_0x100);
     if (Engine::field_0x100 != 0) {
         delete Engine::field_0x100;
         Engine::field_0x100 = 0;
@@ -164,12 +154,12 @@ void Engine::ProcessActions(int p1, int p2) {
 /* Function start: 0x449260 */
 void Engine::Initialize(int* param) {
     memset(&field_0xA8, 0, 112);
-    Engine::field_0x110 = new SoundList(0);
+    Engine::field_0x110 = new SlimeTable();
     if (param[13] != 0) {
         Engine::field_0x100 = (SpriteAction*)param[13];
         param[13] = 0;
     }
-    FUN_004309a0(this, 0, (int)param);
+    ((Handler*)this)->CopyCommandData((SC_Message*)param);
     Engine::field_0x94 = param[1];
 }
 
@@ -206,23 +196,23 @@ int Engine::LBLParse(char* line) {
         Engine::field_0x104->Load(filename);
     } else if (strcmp(label, "BACKGROUND_SPRITE") == 0) {
         Engine::field_0x108 = new Sprite(0);
-        FUN_00413e70(Engine::field_0x108, (int)this, 0);
+        Parser::ProcessFile((Parser*)Engine::field_0x108, this, 0);
     } else if (strcmp(label, "CONSOLE_SPRITE") == 0) {
         Engine::field_0x10C = new Sprite(0);
-        FUN_00413e70(Engine::field_0x10C, (int)this, 0);
+        Parser::ProcessFile((Parser*)Engine::field_0x10C, this, 0);
     } else if (strcmp(label, "VIDEO_RES") == 0) {
         sscanf(line, " %s %d %d ", label, &Engine::field_0xB8.field_0, &Engine::field_0xB8.field_4);
-        FUN_00425a90(Engine::field_0xB8.field_0, Engine::field_0xB8.field_4);
+        SetVideoRes(Engine::field_0xB8.field_0, Engine::field_0xB8.field_4);
     } else if (strcmp(label, "BG_SOUND") == 0) {
         sscanf(line, " %s %d ", label, &Engine::field_0x114);
     } else if (strcmp(label, "MAX_SOUNDS") == 0) {
         sscanf(line, " %s %d ", label, &local_14);
-        ((SlimeTable*)Engine::field_0x110)->FUN_004254a0(local_14);
+        Engine::field_0x110->Allocate(local_14);
     } else if (strcmp(label, "SOUND") == 0) {
         sscanf(line, " %s %d %s %d ", label, &local_14, filename, &local_1c);
         if (local_14 < 0) goto lbl_error;
         if (*((int*)Engine::field_0x110) - 1 < local_14) goto lbl_error;
-        ((SlimeTable*)Engine::field_0x110)->FUN_00425620(local_14, filename, local_1c);
+        Engine::field_0x110->LoadEntry(local_14, filename, local_1c);
     } else if (strcmp(label, "MAX_ACTIONS") == 0) {
         sscanf(line, " %s %d ", label, &local_14);
         if (Engine::field_0xA8 != 0) {

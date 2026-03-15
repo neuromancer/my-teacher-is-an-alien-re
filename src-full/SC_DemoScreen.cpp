@@ -5,7 +5,7 @@
 
 extern "C" int SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void WriteToLog(const char* format, ...);
-extern void __fastcall FUN_00432da0(void* self);
+#include "MouseControl.h"
 
 extern void* DAT_0046aa24;
 extern void* DAT_0046aa18;
@@ -91,6 +91,6 @@ void SC_DemoScreen::Update(int param1, int param2) {
     if (handlerId == param2) {
         Sprite* spr = (Sprite*)field_AC;
         spr->Do(spr->num_states, spr->field_0xb0, 1.0);
-        FUN_00432da0(DAT_0046aa18);
+        ((MouseControl*)DAT_0046aa18)->DrawCursor();
     }
 }

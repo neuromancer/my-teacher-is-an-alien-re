@@ -14,6 +14,8 @@ You are working with a disassembled Windows 95 release of "My Teacher is an Alie
 
 IMPORTANT: The assembly output and the extracted strings are the *only* source of truth. Decompiled code can be a good hint, but is NOT authoritative.
 
+The demo assembly is in `code` and the full game assembly is in `code-full`. For the reimplemented code, `src` is the demo and `src-full` is the full game.
+
 ---
 
 ## Absolute Rules (Do Not Violate)
@@ -22,10 +24,9 @@ IMPORTANT: The assembly output and the extracted strings are the *only* source o
 - DO NOT remove existing code.
 - DO NOT change calling conventions (class methods must remain __thiscall; do not explicitly specify it).
 - DO NOT add:
-  - main()
   - inline assembly
   - dummy variables
-  - new helper functions
+  - don't add internal class functions, excepts you have evidence from the assembly
   - vtable fields or manual vtable handling
   - unions or substructures
   - .c files
@@ -59,26 +60,26 @@ If you give up, still provide the best possible implementation.
 
 To implement a function at a specific address (e.g. 0x418C70):
 
-grep -r -i 418C70 code
+grep -r -i 418C70 code-full
 
 Always use -i to ensure case-insensitive matches.
 
-IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use the python scripts to compare them. Same with the TEACHER.map file, this is *only* for the reimplemented code, not the original assembly.
+IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use the python scripts to compare them. Same with the TEACHER-FULL.map file, this is *only* for the reimplemented code, not the original assembly.
 
 ### Compiling & Comparing Assembly
 
 After implementing code in a file (e.g. Class::Name):
 
-python3 bin/compileAndCompare.py Class::Name code/FUN_418C70.dissasembled.txt
+python3 bin/compileAndCompare.py Class::Name code-full/FUN_418C70.dissasembled.txt
 
 This shows compiler errors or the generated assembly diff.
 
 ## Required Files & Documentation
 
-- src/map  
+- src-full/map  
   Sorted address lists showing which functions are adjacent in the binary.
 
-- code/strings.txt  
+- code-full/strings.txt  
   Address-to-string mappings. Always review when strings appear.
 
 - docs/game.txt  
@@ -139,7 +140,6 @@ local_u = 0xffffffff;
 
 This usually indicates a SEH.
 
-- If a function involves vtables, skip it.
 - The code will be compiled but not linked.
 - Do not modify compiler flags in bin/compile.bat.
 

@@ -99,6 +99,35 @@ void Queue::Insert(void* data)
     LinkedList::InsertNode(data);
 }
 
+/* Function start: 0x406CC0 */
+void Queue::Add(void* data)
+{
+    if (data == 0) ShowError("queue fault 0101");
+    current = head;
+    if (type == 1 || type == 2) {
+        if (head != 0) {
+            do {
+                ListNode* cur = current;
+                if (*(int*)(cur->data) < *(int*)data) {
+                    InsertNode(data);
+                    return;
+                }
+                if (tail == cur) {
+                    PushNode(data);
+                    return;
+                }
+                if (cur != 0) {
+                    current = cur->next;
+                }
+            } while (current != 0);
+            return;
+        }
+        InsertNode(data);
+    } else {
+        InsertNode(data);
+    }
+}
+
 /* Function start: 0x4070A0 */
 void Queue::Push(void* data)
 {
@@ -279,8 +308,8 @@ SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
     m_count = m_count - 1;
 
     completed = 3;
-    buffer->dim.field_0 = 0;
-    buffer->dim.field_4 = 0;
+    buffer->mousePos.field_0 = 0;
+    buffer->mousePos.field_4 = 0;
     memset(buffer, 0, sizeof(SpriteAction));
     buffer->CopyFrom(&localAction);
     completed |= 1;

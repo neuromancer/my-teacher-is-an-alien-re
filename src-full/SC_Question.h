@@ -30,6 +30,8 @@ public:
     void Dump(int unused);
 };
 
+void ParseSpriteAction(void* param_1, void* param_2);
+
 // SC_Question - Question/dialog system (full game)
 // Constructor: 0x414780, Destructor: 0x4148F0
 // Vtable: 0x4612D8

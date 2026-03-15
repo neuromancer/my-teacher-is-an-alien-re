@@ -15,8 +15,8 @@ extern char* DAT_0046aa2c;
 extern "C" extern void* DAT_0046aa30;
 extern int DAT_00468764;
 
-extern void __fastcall FUN_00445970(void*);
 extern void __fastcall FUN_004459a0(void*, int, int);
+#include "Hotspot.h"
 // FUN_0044cb40 is __thiscall (this in ECX, 2 stack params)
 class CursorControl {
 public:
@@ -24,7 +24,7 @@ public:
 };
 void CursorControl::SetCursor(int, int) {}
 
-extern void __fastcall FUN_00432da0(void*);
+#include "MouseControl.h"
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
@@ -58,7 +58,7 @@ skip_cursor:
     i = 15;
     do {
         if (*pIcon != 0) {
-            FUN_00445970(*pIcon);
+            ((T_Hotspot*)*pIcon)->StopAll();
         }
         pIcon = pIcon + 1;
         i = i - 1;
@@ -68,7 +68,7 @@ skip_cursor:
         ((CursorControl*)*(void**)((char*)DAT_0046aa18 + 0x94))->SetCursor(0, 0);
     }
 
-    FUN_00432da0(DAT_0046aa18);
+    ((MouseControl*)DAT_0046aa18)->DrawCursor();
 
     if (field_AC == 0) {
         IconBar::ShutDown(msg);
@@ -269,7 +269,7 @@ void SCI_IconBarModule::UpdateCursor() {
     }
 
 done:
-    FUN_00432da0(DAT_0046aa18);
+    ((MouseControl*)DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4021C0 */

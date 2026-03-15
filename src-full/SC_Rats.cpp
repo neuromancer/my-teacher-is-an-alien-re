@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "LinkedList.h"
 #include "mss.h"
+#include "main.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -23,13 +24,12 @@ int DAT_0046ae70 = 0;
 
 // Extern functions
 extern "C" int FileExists(const char*);
-extern "C" void FUN_004265a0();
-extern void __fastcall FUN_0042be00(void*);
+extern void __fastcall InitCombatScreen(void*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00444e40(void*);
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern void* __fastcall FUN_00450b10(void*);
-extern void __fastcall FUN_0044bac0(void*, int, int, int);
+// FUN_0044bac0 = mCNavigator::SetNavParams
+#include "mCNavigator.h"
 // FUN_00412a50 is Parser::ReportUnknownLabel (thiscall, declared in Parser.h)
 extern void __fastcall FUN_0040b760(void*, int, int);
 extern void __fastcall FUN_00404d70(void*, int, int);
@@ -65,7 +65,7 @@ void SC_Rats::Init(SC_Message* msg) {
     CopyCommandData(msg);
     moduleParam = ((int*)msg)[1];
     if (!FileExists("CB_Rats")) {
-        FUN_004265a0();
+        ShowLoadingScreen();
     }
     int sceneData = (int)DAT_0046aa24;
     if (*(int*)(sceneData + 0x98) != 1) {
@@ -140,14 +140,14 @@ void SC_Rats::Init(SC_Message* msg) {
         *(int*)(sceneData + 0xA8) = 0;
     }
     ParseFile(this, "mis\\cb_rats.mis", (char*)0);
-    FUN_0042be00((void*)DAT_0046ae78);
+    InitCombatScreen((void*)DAT_0046ae78);
     if (field_A8 == 0) {
         SpriteAction* sprite = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
         field_A8 = (int)sprite;
-        ((int*)sprite)[5] = ((int*)msg)[5];
-        *(int*)(field_A8 + 0x1C) = ((int*)msg)[7];
-        *(int*)(field_A8 + 0x20) = ((int*)msg)[8];
+        sprite->extra1 = ((int*)msg)[5];
+        sprite->mousePos.field_0 = ((int*)msg)[7];
+        sprite->mousePos.field_4 = ((int*)msg)[8];
     }
 }
 
@@ -277,7 +277,7 @@ void SC_Rats::ProcessState() {
             gs->stateValues[idx] += 0x1E;
         }
     }
-    FUN_00444e40((void*)field_A8);
+    EnqueueSpriteAction((void*)field_A8);
     if (field_A8 != 0) {
         delete (SpriteAction*)field_A8;
         field_A8 = 0;
@@ -313,7 +313,7 @@ done:
     if (DAT_00473e14 == 2) {
         DAT_00473e14 = 3;
         DAT_00473e18 = 1;
-        FUN_0044bac0((void*)DAT_0046ae70, 0, 1, 0);
+        ((mCNavigator*)DAT_0046ae70)->SetNavParams(1, 0);
     }
 }
 

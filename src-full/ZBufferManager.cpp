@@ -37,6 +37,24 @@ struct CommandType1 : public SoundCommand {
     virtual void Execute(GlyphRect* rect);
 };
 
+struct BlitCommand : public SoundCommand {
+    unsigned int priority; // 0x04
+    void* data;            // 0x08
+    int x;                 // 0x0c
+    int y;                 // 0x10
+    int left;              // 0x14
+    int top;               // 0x18
+    int right;             // 0x1c
+    int bottom;            // 0x20
+    int mode;              // 0x24
+    double scale;          // 0x28
+
+    BlitCommand()
+        : priority(0), data(0), x(0), y(0), left(0), top(0), right(0), bottom(0), mode(0), scale(0) {}
+
+    virtual void Execute(GlyphRect* rect);
+};
+
 struct CommandType2 : public SoundCommand {
     unsigned int parameter1; // 0x04 - priority field
     char* text;              // 0x08
@@ -52,6 +70,7 @@ struct CommandType2 : public SoundCommand {
 
 extern "C" void FlipScreen();
 extern VBuffer* g_WorkBuffer_00436974;
+int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4);
 
 // Functions for rectangle drawing
 extern "C" int __cdecl SetFillColor(unsigned char color);
@@ -158,6 +177,50 @@ void CommandType1::Execute(GlyphRect* rect)
         g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, scale);
     }
     return;
+}
+
+void BlitCommand::Execute(GlyphRect* rect)
+{
+    GlyphRect clipRect;
+    GlyphRect srcRect;
+    int destX;
+    int destY;
+    VBuffer* vbuf;
+
+    vbuf = (VBuffer*)DAT_0046aa14;
+    switch (mode) {
+    case 0:
+        vbuf->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
+        return;
+    case 1:
+        vbuf->ClipAndPaste(left, right, top, bottom, x, y, (int)data);
+        return;
+    case 2:
+        vbuf->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
+        return;
+    case 3:
+        clipRect.left = vbuf->clip_x1;
+        clipRect.top = vbuf->clip_y1;
+        clipRect.right = vbuf->clip_x2;
+        clipRect.bottom = vbuf->clip_y2;
+        srcRect.left = left;
+        srcRect.top = top;
+        srcRect.right = right;
+        srcRect.bottom = bottom;
+        destX = x;
+        destY = y;
+        if (ClipRectBottomUp(&clipRect.left, &srcRect.left, &destX, &destY) != 0) {
+            vbuf->CallBlitter3(srcRect.left, srcRect.right, srcRect.top, srcRect.bottom,
+                               destX, destY, (VBuffer*)data, 0, 1);
+        }
+        return;
+    case 4:
+        DrawScaledSprite(x, y, data, scale);
+        return;
+    case 5:
+        vbuf->ScaleTCCopy(x, y, (VBuffer*)data, scale);
+        return;
+    }
 }
 
 /* Function start: 0x41B690 */ /* DEMO ONLY - no full game match */
@@ -363,6 +426,56 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
             }
         }
     }
+}
+
+/* Function start: 0x403FD0 */
+void ZBufferManager::DrawVBufferRegion(void* data, int priority, int x, int y, int mode, double scale,
+                                       int left, int top, int right, int bottom)
+{
+    BlitCommand temp;
+    BlitCommand* cmd;
+
+    if (m_state == 0) {
+        return;
+    }
+
+    if (m_state == 1) {
+        temp.data = data;
+        temp.priority = priority;
+        temp.x = x;
+        temp.y = y;
+        temp.left = left;
+        temp.top = top;
+        temp.right = right;
+        temp.bottom = bottom;
+        temp.mode = mode;
+        temp.scale = scale;
+        temp.Execute(0);
+        return;
+    }
+
+    cmd = new BlitCommand();
+    if (cmd == 0) {
+        return;
+    }
+
+    cmd->data = data;
+    cmd->priority = priority;
+
+    if ((m_flags & 2) != 0) {
+        x = rand() % 5 - 2 + x;
+        y = rand() % 5 - 2 + y;
+    }
+
+    cmd->x = x;
+    cmd->y = y;
+    cmd->left = left;
+    cmd->top = top;
+    cmd->right = right;
+    cmd->bottom = bottom;
+    cmd->mode = mode;
+    cmd->scale = scale;
+    QueueCommand(cmd);
 }
 
 /* Function start: 0x41C000 */ /* DEMO ONLY - no full game match */
@@ -820,4 +933,3 @@ void ZBQueue::InsertBeforeCurrent(void* data)
 
 /* Function start: 0x431C30 */
 // Same pattern as 0x41CB40 - InsertNode COMDAT
-

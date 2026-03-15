@@ -16,6 +16,7 @@ public:
     int clip_x2; // 0x2c
 
     VBuffer(int param_1, int param_2);
+    VBuffer(char* filename, int param_2);
     void* InitWithSize(int param_1, int param_2);
     ~VBuffer();
     void Release();
@@ -36,6 +37,7 @@ public:
     void CallBlitter4(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6);
     void CallBlitter5(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8);
     void InitFields();
+    void LoadFromFile(char* filename, int param_2); // 0x411270
     void ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale);
 
     // Copy rectangle rows from srcBuffer into this buffer with transparent handling

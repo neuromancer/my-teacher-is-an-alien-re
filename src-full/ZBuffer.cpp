@@ -230,6 +230,20 @@ void ZBQueue::ClearList()
     } while (head != 0);
 }
 
+/* Function start: 0x4279A0 */
+void ZBuffer::ResetItems()
+{
+    int i = 0;
+    if (0 < itemCount) {
+        int offset = 0;
+        do {
+            offset = offset + 4;
+            i = i + 1;
+            *(int*)(*(int*)((int)items + offset - 4) + 0x11c) = 0;
+        } while (i < itemCount);
+    }
+}
+
 /* Function start: 0x42BC50 */
 /* Function start: 0x4036A0 */
 /* Function start: 0x4035A0 */

@@ -6,6 +6,8 @@
 #include <windows.h>
 #include "string.h"
 #include "Memory.h"
+#include "globals.h"
+#include "GameState.h"
 #include <mbstring.h>
 
 extern "C" {
@@ -32,6 +34,7 @@ static char g_messageLogEnabled = 1;
 
 // Static buffer for FormatStringVA at address 0x43cfe8
 static char g_formatBuffer[64];
+static char g_audioNameBuffer[260];
 
 /* Function start: 0x40D200 */ /* DEMO ONLY - no full game match */
 char* FormatStringVA(char* format, ...)
@@ -39,6 +42,37 @@ char* FormatStringVA(char* format, ...)
     vsprintf(g_formatBuffer, format, (char*)(&format + 1));
     strchr(g_formatBuffer, '?');
     return g_formatBuffer;
+}
+
+/* Function start: 0x44E470 */
+char* MakeAudioName(char* baseName)
+{
+    int nameLength;
+    int suffixValue;
+    GameState* gameState;
+
+    nameLength = strlen(baseName);
+    if (nameLength < 4) {
+        ShowError("MakeAudioName - invalid base name = '%s'", baseName);
+    }
+
+    suffixValue = atoi(baseName + nameLength - 4);
+    if (suffixValue == 0) {
+        return baseName;
+    }
+
+    if (suffixValue > 4999) {
+        gameState = g_GameState_00436998;
+        if (g_PeriodStateIdx_0046cb90 < 0 || gameState->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+            ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+        }
+        sprintf(g_audioNameBuffer, "%s%c.wav", baseName,
+                g_PeriodCharTable_0046cb94[gameState->stateValues[g_PeriodStateIdx_0046cb90]]);
+        return g_audioNameBuffer;
+    }
+
+    sprintf(g_audioNameBuffer, "%s.wav", baseName);
+    return g_audioNameBuffer;
 }
 
 /* Function start: 0x425BC0 */

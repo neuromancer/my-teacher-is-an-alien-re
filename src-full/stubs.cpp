@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <share.h>
+#include "string.h"
 #include "Memory.h"
 #include "OnScreenMessage.h"
 #include "TimedEvent.h"
@@ -28,6 +29,9 @@
 #include "LinkedList.h"
 
 extern "C" int DAT_0046a6ec;
+extern "C" void ShowLoadingScreen(void);
+extern "C" void SetVideoRes(int width, int height);
+extern "C" char* MakeAudioName(char* baseName);
 
 // ============================================================================
 // Global variables needed for linking
@@ -46,11 +50,13 @@ void* DAT_00435f1c = 0;
 extern "C" {
     void* DAT_0046ae4c = 0;
     void* DAT_0046ae50 = 0;
+    void* DAT_0046ae54 = 0;
     void* DAT_0046ae58 = 0;
     void* DAT_0046ae60 = 0;
     void* DAT_0046ae64 = 0;
     void* DAT_0046ae68 = 0;
     void* DAT_0046ae6c = 0;
+    void* DAT_0046ae70 = 0;
     int DAT_00473e18 = 0;
 }
 
@@ -210,7 +216,7 @@ extern "C" void WriteToLog(const char* format, ...) {}
 
 extern "C" {
 char* FUN_0044e530(int handle) { return 0; }
-void FUN_004265a0() {}
+void FUN_004265a0() { ShowLoadingScreen(); }
 } // extern "C"
 
 // ============================================================================
@@ -222,25 +228,26 @@ void* __fastcall FUN_00418540(void* param) { return 0; }
 void* __fastcall FUN_00403620(void*) { return 0; }
 void __fastcall FUN_00401c80(void*) {}
 void __fastcall FUN_004061e0(void*) {}
-void __fastcall FUN_00406cc0(void*, int, void*) {}
+// FUN_00406cc0 = Queue::Add in Queue.cpp
 void __fastcall FUN_00406fd0(void*, int, int) {}
 void __fastcall FUN_004070a0(void*, int, int) {}
-void __fastcall FUN_004308c0(void*) {}
+// FUN_004308c0 = ClearActionList in SC_Cinematic.cpp
 void* __fastcall FUN_00407180(void*) { return 0; }
-void* __fastcall FUN_0041dbe0(void*) { return 0; }
-void __fastcall FUN_0042be00(void*) {}
+// FUN_0041dbe0 = InitPalette in Palette.cpp
+// FUN_0042be00 = InitCombatScreen in SC_Pods.cpp
 void __fastcall FUN_00404d70(void*, int, int) {}
 void* __fastcall FUN_00404b80(void*) { return 0; }
 void __fastcall FUN_0040b760(void*, int, int) {}
-void __fastcall FUN_0044bac0(void*, int, int, int) {}
+// FUN_0044bac0 = mCNavigator::SetNavParams in mCNavigator.cpp
 void* __fastcall FUN_00450b10(void*) { return 0; }
 void __fastcall FUN_0044c880(void*) {}
-void __fastcall FUN_00420ac0(void*, int, int) {}
+// FUN_00420ac0 = FlagArray::ClearFlag in FlagArray.cpp
 void __fastcall FUN_004128f0(void*) {}
-void __fastcall FUN_00432da0(void* self) {}
-void __fastcall FUN_00421bc0(void* self) {}
+// FUN_00432da0 = MouseControl::DrawCursor in MouseControl.cpp
+// FUN_00421bc0 = T_MenuHotspot::Update in SC_SaveLoad.cpp
 void* __fastcall FUN_004407c0(void* self) { return 0; }
 void __fastcall FUN_0040c6e0(void* self) {}
+// FUN_004309a0 = Handler::CopyCommandData in Handler.cpp (Engine.cpp still uses __fastcall extern)
 void __fastcall FUN_004309a0(void*, int, int) {}
 void __fastcall FUN_0042b100(void*) {}
 void __fastcall FUN_0042b270(void*) {}
@@ -251,33 +258,42 @@ void __fastcall FUN_00429df0(void*) {}
 int __fastcall FUN_0042a010(void*, int, void*) { return 0; }
 void* __fastcall FUN_00429b60(void*, int, int, void*) { return 0; }
 void* __fastcall FUN_00420ce0(void*, int, int) { return 0; }
-void __fastcall FUN_00410fd0(void*) {}
+// FUN_00410fd0 = VBuffer::~VBuffer in VBuffer.cpp
 void __fastcall FUN_004274c0(void*, int, int) {}
+// FUN_00410fb0 = VBuffer::VBuffer(char*, int) in VBuffer.cpp (callers still use __fastcall extern)
 void* __fastcall FUN_00410fb0(void*, int, char*, int) { return 0; }
-void __fastcall FUN_00411180(void*, int, int) {}
+// FUN_00411180 = VBuffer::ClearScreen in VBuffer.cpp
 void __fastcall FUN_00420d90(void*) {}
-void __fastcall FUN_00421020(void*) {}
-void __fastcall FUN_00421880(void*) {}
+// FUN_00421020 = ProcessSpriteActions in SCI_SchoolMenu.cpp
+// FUN_00421880 = Timer constructor in Timer.cpp
 void __fastcall FUN_00425490(void*) {}
 void* __fastcall FUN_00425480(void*) { return 0; }
 
-void __fastcall FUN_004254a0(void*, int, int) {}
+// FUN_004254a0 = SlimeTable::Allocate in SC_Slime.cpp
 void* __fastcall FUN_00440860(void*) { return 0; }
-void __fastcall FUN_00421920(void*) {}
+// FUN_00421920 = InitTimeOut in TimeOut.cpp
 void __fastcall FUN_00427880(void*) {}
-void __fastcall FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int) {}
+void __fastcall FUN_00403fd0(void* self, int, void* data, int priority, int x, int y, int mode, int scale_lo, int scale_hi, int left, int top, int right, int bottom) {
+    double scale;
+
+    ((int*)&scale)[0] = scale_lo;
+    ((int*)&scale)[1] = scale_hi;
+    ((ZBufferManager*)self)->DrawVBufferRegion(data, priority, x, y, mode, scale, left, top, right, bottom);
+}
 void __fastcall FUN_0044cb40(void*, int, int, int) {}
-void __fastcall FUN_004127c0(void*) {}
+// FUN_004127c0 = Parser::Parser in Parser.cpp
 void __fastcall FUN_00407b60(void*) {}
-void __fastcall FUN_004047c0(void*) {}
-void* __fastcall FUN_004036a0(void*) { return 0; }
-void __fastcall FUN_00445970(void*) {}
+// FUN_004047c0 = ZBufferManager::ProcessMessage in ZBufferManager.cpp
+// Legacy alias for the remove-current wrapper used by older callers.
+void* __fastcall FUN_004036a0(void* self) { return ((LinkedList*)self)->RemoveCurrent(); }
+// FUN_00445970 = T_Hotspot::StopAll in Hotspot.cpp (removed stub, callers updated)
+// FUN_004459a0 = T_Hotspot::DoItem in Hotspot.cpp (stub kept: __fastcall caller loads EDX=0, __thiscall would not)
 void __fastcall FUN_004459a0(void*, int, int) {}
-void __fastcall FUN_004279a0(void*) {}
+// FUN_004279a0 = ZBuffer::ResetItems in ZBuffer.cpp
 void __fastcall FUN_00404350(void*, int, int, int, int, int, int, int, int) {}
-int __fastcall FUN_0044c350(void*, int, char*) { return 0; }
-int __fastcall FUN_00420a00(void*, int, int) { return 0; }
-void __fastcall FUN_00420a50(void*, int, int) {}
+// FUN_0044c350 = StringTable::GetString in StringTable.cpp
+// FUN_00420a00 = FlagArray::GetFlag in FlagArray.cpp
+// FUN_00420a50 = FlagArray::SetFlag in FlagArray.cpp
 void __fastcall FUN_00404b90(void*) {}
 void __fastcall FUN_00404230(void*, int, char*, int, int, int, int) {}
 
@@ -288,9 +304,11 @@ void __fastcall FUN_00404230(void*, int, char*, int, int, int, int) {}
 void __cdecl FUN_00412a50() {}
 int __cdecl FUN_00412a50(void*) { return 0; }
 void __cdecl FUN_00413e70(void*, int, char*) {}
-void __cdecl FUN_00425a90(int, int) {}
-void __cdecl FUN_00444e40(void*) {}
+void __cdecl FUN_00425a90(int width, int height) { SetVideoRes(width, height); }
+// Legacy alias for the renamed enqueue wrapper in SpriteAction.cpp.
+void __cdecl FUN_00444e40(void* action) { EnqueueSpriteAction(action); }
 // ParseSpriteAction (was FUN_00445450) moved to SC_Message.cpp
+// FUN_00444a40 = SpriteAction::SpriteAction constructor in SpriteAction.cpp (stub kept: callers use __cdecl, real is __thiscall constructor)
 void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int) { return 0; }
 // FUN_00426190 = ResolveAssetPath in CDData.cpp
 
@@ -300,12 +318,13 @@ int __cdecl FUN_004341f0(char*) { return 0; }
 void __cdecl FUN_004342d0(char*, int) {}
 void __fastcall FUN_00433230(void*, int, char*) {}
 
-void __cdecl FUN_00425cb0(char*, ...) {}
+// FUN_00425cb0 = ShowMessage in string.cpp
+// FUN_0044ccf0 = Sprite::RenderAt in Sprite.cpp (stub kept: callers use __cdecl, real is __thiscall method)
 int __cdecl FUN_0044ccf0(int, int, int, int) { return 0; }
 void __cdecl FUN_004344b0() {}
 void __cdecl FUN_00434030(void*, int) {}
-char* __cdecl FUN_0044e470(char*) { return 0; }
-void __cdecl FUN_00425bc0(char*, char*, int) {}
+char* __cdecl FUN_0044e470(char* baseName) { return MakeAudioName(baseName); }
+void __cdecl FUN_00425bc0(char* param_1, char* param_2, int param_3) { ExtractQuotedString(param_1, param_2, param_3); }
 
 // ============================================================================
 // Remaining extern "C" stubs
@@ -347,6 +366,24 @@ void __fastcall FUN_00412a50(void*, int, char*) {}
 
 // VBuffer stubs
 #include "VBuffer.h"
+void VBuffer::LoadFromFile(char*, int) {}
+
+// mCNavigator stubs
+#include "mCNavigator.h"
+void mCNavigator::SetField(unsigned int) {}
+void mCNavigator::SetMode(int) {}
+void __fastcall FUN_0044b7e0(void*) {}
+
+// CombatViewport/CombatWeapon/CombatSprite2 stubs (from InitCombatScreen)
+class CombatViewport { public: int x; int y; void SetClip(int, int); void SetOffset(int, int); void Refresh(); void SetSize(int, int); };
+void CombatViewport::SetClip(int, int) {}
+void CombatViewport::SetOffset(int, int) {}
+void CombatViewport::Refresh() {}
+void CombatViewport::SetSize(int, int) {}
+class CombatWeapon { public: void SetPriority(unsigned int, int); };
+void CombatWeapon::SetPriority(unsigned int, int) {}
+class CombatSprite2 { public: void SetVolume(int, int); };
+void CombatSprite2::SetVolume(int, int) {}
 
 // ============================================================================
 // Unresolved externals from new implementations

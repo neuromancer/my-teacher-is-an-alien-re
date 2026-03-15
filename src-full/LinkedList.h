@@ -152,6 +152,7 @@ struct Queue : public LinkedList {
     void* Pop();                     // 0x402680
     void* GetCurrentData();          // 0x417680
     void InsertAtCurrent(void* data);
+    void Add(void* data);            // 0x406CC0
 };
 
 struct EventList : public LinkedList {

@@ -43,4 +43,6 @@ public:
     int field_0xB4;          // used in ProcessControlMessage
 };
 
+Handler* CreateHandler(int command);
+
 #endif // GAMELOOP_H

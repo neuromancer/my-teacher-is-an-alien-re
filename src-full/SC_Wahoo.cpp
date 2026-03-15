@@ -12,11 +12,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <new.h>
+#include "VBuffer.h"
+#include "main.h"
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
-extern void* __fastcall FUN_0041dbe0(void*);
-extern void __fastcall FUN_00410fd0(void*);
 // FUN_00421930 = TimeOut::~TimeOut (full game)
 
 extern "C" void ShowError(const char* format, ...);
@@ -46,14 +46,10 @@ public:
 };
 void DetectionObj::Render() {}
 
-extern void __cdecl FUN_00444e40(void*);
-
 extern void __cdecl FUN_00413e70(void*, int, char*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 
-extern void __fastcall FUN_004309a0(void*, int, int);
 extern "C" int FileExists(const char*);
-extern "C" void FUN_004265a0();
 extern void __cdecl FUN_00425a90(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 extern void* DAT_0046aa24;
@@ -100,12 +96,12 @@ void SC_Wahoo::Init(SC_Message* msg) {
     }
     *(int*)((int)this + 0x90) = uVar1;
 
-    FUN_004309a0(this, 0, (int)msg);
+    CopyCommandData((SC_Message*)msg);
 
     *(int*)((int)this + 0x164) = 0;
 
     if (!FileExists("CB_Bridge")) {
-        FUN_004265a0();
+        ShowLoadingScreen();
     }
 
     *(int*)((int)this + 0x134) = 0x140;
@@ -180,7 +176,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 
     ptr = field_C4;
     if (ptr != 0) {
-        FUN_00410fd0(ptr);
+        ((VBuffer*)ptr)->~VBuffer();
         free(ptr);
         field_C4 = 0;
     }
@@ -514,7 +510,7 @@ void SC_Wahoo::ProcessState() {
         }
     }
 
-    FUN_00444e40(field_A8);
+    EnqueueSpriteAction(field_A8);
     sprAction = field_A8;
     if (sprAction != 0) {
         delete (SpriteAction*)sprAction;
@@ -538,7 +534,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         void* mem = malloc(8);
         void* pal = 0;
         if (mem != 0) {
-            pal = FUN_0041dbe0(mem);
+            pal = InitPalette((Palette*)mem);
         }
         field_AC = pal;
         ((Palette*)pal)->Load(local_b8);

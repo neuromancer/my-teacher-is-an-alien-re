@@ -7,7 +7,6 @@
 #include <windows.h>
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern void __fastcall FUN_004127c0(void*);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern "C" void ShowError(const char* format, ...);
 extern int FUN_0044ccf0(int, int, int, int);

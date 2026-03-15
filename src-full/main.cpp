@@ -48,6 +48,8 @@ void InitWorkBuffer(int, int);
 void SetStateFlag(int, int);
 int SetCursorVisible(unsigned int);
 int FileExists(const char *);
+int* GetScreenWidth();
+int* GetScreenHeight();
 void ParsePath(const char *, char *, char *, char *, char *);
 int ProcessMessages();
 
@@ -520,6 +522,26 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...) {
                 g_CDData_0043697c->field_190, local_104);
     }
     return g_CDData_0043697c->field_190 + 5;
+}
+
+/* Function start: 0x4265A0 */
+extern "C" void ShowLoadingScreen(void) {
+    const char* path;
+    VBuffer* buffer;
+    int x;
+    int* screen;
+
+    path = CDData_ResolvePath("elements\\loading.smk");
+    if (FileExists(path) != 0) {
+        buffer = new VBuffer((char*)path, 0);
+        screen = GetScreenWidth();
+        x = (*screen - buffer->width) / 2;
+        screen = GetScreenHeight();
+        buffer->CallBlitter4(buffer->clip_x1, buffer->clip_x2, buffer->clip_y1,
+                             buffer->clip_y2, x,
+                             (*screen - buffer->height) / 2 + buffer->height);
+        delete buffer;
+    }
 }
 
 /* Function start: 0x426690 */

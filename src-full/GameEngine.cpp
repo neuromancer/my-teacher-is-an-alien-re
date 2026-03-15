@@ -8,6 +8,7 @@
 #include "SoundCommand.h"
 #include "SpriteAction.h"
 #include "ZBufferManager.h"
+#include "GameLoop.h"
 #include "smack.h"
 #include <string.h>
 #include <stdlib.h>
@@ -28,16 +29,6 @@ extern GameState* DAT_0046aa3c;
 extern GameState* g_StringTable_0046aa34;
 
 // External functions
-extern void __fastcall FUN_004047c0(void*);                              // ProcessRenderQueues on DAT_0046aa24
-extern void __fastcall FUN_00404b90(void*);                              // UpdateScreen on DAT_0046aa24
-extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int); // ShowSubtitle on DAT_0046aa24
-
-extern "C" void FUN_00444e20(void*);
-extern void __fastcall FUN_00426a90(void*);
-
-// FUN_00426ce0 is thiscall with 1 param (not fastcall)
-Handler* CreateHandler(int command);
-
 #include "GameLoopHelper.h"
 extern "C" void WriteToLog(const char* format, ...);
 
@@ -114,7 +105,7 @@ void GameEngine::RunGameLoop() {
             if (m_exitFlag != 0) break;
             UpdateHandlers();
 
-            FUN_004047c0(DAT_0046aa24);
+            ((ZBufferManager*)DAT_0046aa24)->ProcessRenderQueues();
 
             if (m_smackHandle != 0) {
                 int result = SmackWait((HSMACK)m_smackHandle);
@@ -147,11 +138,11 @@ void GameEngine::RunGameLoop() {
                     mouseX = 0;
                 }
                 sprintf(DAT_0046aa00, "FT %d   %d %d ", m_timer1->Update(), mouseX, mouseY);
-                FUN_00404230(DAT_0046aa24, 0, DAT_0046aa00, 0x14, 0x1e, 10000, -1);
+                ((ZBufferManager*)DAT_0046aa24)->ShowSubtitle(DAT_0046aa00, 0x14, 0x1e, 10000, -1);
             }
 
             m_timer1->Reset();
-            FUN_00404b90(DAT_0046aa24);
+            ((ZBufferManager*)DAT_0046aa24)->UpdateScreen();
 
         } while (m_exitFlag == 0);
     }
@@ -162,7 +153,6 @@ void GameEngine::RunGameLoop() {
 void GameEngine::ProcessInput() {
     int hasInput;
     InputState* mouse;
-    int* actionData;
     InputState** pMouse;
 
     m_exitFlag |= ((InputManager*)DAT_0046aa08)->Refresh(1);
@@ -181,22 +171,22 @@ void GameEngine::ProcessInput() {
     }
 
     SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    action.field_08 = 1;
+    action.fromType = 1;
 
     if (g_WaitForInputValue_004373bc != 0) {
-        action.field_2C = WaitForInput();
+        action.lastKey = WaitForInput();
     }
 
     pMouse = &((InputManager*)DAT_0046aa08)->pMouse;
     if (*pMouse == 0) {
-        action.field_24 = 0;
+        action.button1 = 0;
     } else {
-        action.field_24 = (*pMouse)->ext1;
+        action.button1 = (*pMouse)->ext1;
     }
     if (*pMouse == 0) {
-        action.field_28 = 0;
+        action.button2 = 0;
     } else {
-        action.field_28 = (*pMouse)->ext2;
+        action.button2 = (*pMouse)->ext2;
     }
     mouse = *pMouse;
     int mouseY = 0;
@@ -209,8 +199,8 @@ void GameEngine::ProcessInput() {
     } else {
         mouseX = 0;
     }
-    action.dim.field_0 = mouseX;
-    action.dim.field_4 = mouseY;
+    action.mousePos.field_0 = mouseX;
+    action.mousePos.field_4 = mouseY;
 
     mouse = *pMouse;
     if (mouse != 0 && (mouse->ext1 >= 2 || mouse->ext2 >= 2)) {
@@ -223,9 +213,8 @@ void GameEngine::ProcessInput() {
         ((Handler*)m_activeHandler)->AddMessage((SC_Message*)&action);
     }
 
-    actionData = (int*)&action;
-    if (actionData[0] != 0 && actionData[4] != 0) {
-        FUN_00444e20(&action);
+    if (action.addressType != 0 && action.instruction != 0) {
+        EnqueueSpriteAction((void*)&action);
     }
 }
 
@@ -365,7 +354,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
 
     msgData = (int*)msg;
     if (DAT_0046aa08 != 0) {
-        FUN_00426a90(DAT_0046aa08);
+        ((InputManager*)DAT_0046aa08)->ResetClickState();
     }
 
     handler = (Handler*)m_activeHandler;

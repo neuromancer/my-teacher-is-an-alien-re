@@ -57,10 +57,11 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
 
   if (cdFolder[0] != '\0') {
     sprintf(local_80, "%s\\%s", cdFolder, param_2);
-    if (FileExists(local_80) == 0) {
-      ShowError("%s\nInvalid cmdLine-'%s'\nCan't find file '%s'",
-                param_3, cdFolder, local_80);
-    }
+    // Disabled for local testing without a real CD-ROM marker file.
+    // if (FileExists(local_80) == 0) {
+    //   ShowError("%s\nInvalid cmdLine-'%s'\nCan't find file '%s'",
+    //             param_3, cdFolder, local_80);
+    // }
     sprintf(local_80, "%s\\CDDATA\\DATA", cdFolder);
     chdir(local_80);
     ParsePath(local_80, field_190, 0, 0, 0);
@@ -70,30 +71,37 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
     }
     param_3 = "Game Not Properly Installed-Missing local DATA dir.";
   } else {
-    iVar4 = 3;
-    do {
-      sprintf(local_80, "%c:\\%s", iVar4 + 0x40, cdIdentifier);
-      if (FileExists(local_80) != 0) {
-        ParsePath(local_80, field_190, 0, 0, 0);
-        if (field_190[0] == baseDir[0]) {
-          ShowError("Please run Setup.exe");
-        }
-        sprintf(local_80, "%s\\CDDATA\\DATA", field_190);
-        if (chdir(local_80) != 0) {
-          ShowError("%s\nInvalid CD in Drive-'%s'\nCan't find subdir '%s'",
-                    param_3, field_190, local_80);
-        }
-        sprintf(local_80, "%s\\DATA", baseDir);
-        if (chdir(local_80) != 0) {
-          ShowError("Game Not Properly Installed-Missing local DATA dir.");
-        }
-        break;
-      }
-      iVar4++;
-    } while (iVar4 < 0x1a);
-    if (iVar4 < 0x19) {
+    // Disabled CD-ROM teacher_id drive scan for local testing without a real CD.
+    // iVar4 = 3;
+    // do {
+    //   sprintf(local_80, "%c:\\%s", iVar4 + 0x40, cdIdentifier);
+    //   if (FileExists(local_80) != 0) {
+    //     ParsePath(local_80, field_190, 0, 0, 0);
+    //     if (field_190[0] == baseDir[0]) {
+    //       ShowError("Please run Setup.exe");
+    //     }
+    //     sprintf(local_80, "%s\\CDDATA\\DATA", field_190);
+    //     if (chdir(local_80) != 0) {
+    //       ShowError("%s\nInvalid CD in Drive-'%s'\nCan't find subdir '%s'",
+    //                 param_3, field_190, local_80);
+    //     }
+    //     sprintf(local_80, "%s\\DATA", baseDir);
+    //     if (chdir(local_80) != 0) {
+    //       ShowError("Game Not Properly Installed-Missing local DATA dir.");
+    //     }
+    //     break;
+    //   }
+    //   iVar4++;
+    // } while (iVar4 < 0x1a);
+    // if (iVar4 < 0x19) {
+    //   return;
+    // }
+    ParsePath(baseDir, field_190, 0, 0, 0);
+    sprintf(local_80, "%s\\DATA", baseDir);
+    if (chdir(local_80) == 0) {
       return;
     }
+    param_3 = "Game Not Properly Installed-Missing local DATA dir.";
   }
   ShowError(param_3);
 }

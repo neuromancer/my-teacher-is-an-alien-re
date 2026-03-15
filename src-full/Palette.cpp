@@ -10,7 +10,12 @@
 extern char* __cdecl ResolveAssetPath(char* name);
 extern "C" int FileExists(const char*);
 
-// NOTE: CreatePaletteBuffer at 0x41EA50 is effectively a placement new for Palette
+/* Function start: 0x41DBE0 */
+Palette* __fastcall InitPalette(Palette* buffer)
+{
+    buffer->Palette::Palette();
+    return buffer;
+}
 
 // Cleanup is equivalent to explicit destructor call ~Palette()
 // Original Animation::Play calls destructor explicitly before operator delete

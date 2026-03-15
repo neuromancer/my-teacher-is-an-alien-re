@@ -3,15 +3,15 @@
 #include "SpriteAction.h"
 #include "Queue.h"
 #include "MMPlayer.h"
+#include "Memory.h"
+#include "SC_Question.h"
+#include "string.h"
 #include <string.h>
 #include <stdio.h>
 
 extern "C" void ShowError(const char* format, ...);
-extern void FreeMemory(void* ptr);
 
-extern void __cdecl FUN_00444e40(void*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern void* __fastcall FUN_004036a0(void*);
 
 extern "C" extern void* DAT_0046aa30;
 extern void* DAT_0046aa18;
@@ -20,9 +20,6 @@ extern void* DAT_0046aa38;
 extern int DAT_0046cb90;
 extern char* DAT_0046cb94;
 extern SpriteAction DAT_00472d90;
-
-extern void __cdecl FUN_00425bc0(char*, char*, int);
-extern void __cdecl ParseSpriteAction(void*, void*);
 
 
 /* Function start: 0x41B320 */
@@ -56,7 +53,7 @@ HotspotAction::~HotspotAction() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = FUN_004036a0(list);
+                item = list->RemoveCurrent();
                 if (item != 0) {
                     ((SpriteAction*)item)->~SpriteAction();
                     FreeMemory(item);
@@ -72,7 +69,7 @@ HotspotAction::~HotspotAction() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = FUN_004036a0(list);
+                item = list->RemoveCurrent();
                 if (item != 0) {
                     ((SpriteAction*)item)->~SpriteAction();
                     FreeMemory(item);
@@ -88,7 +85,7 @@ HotspotAction::~HotspotAction() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = FUN_004036a0(list);
+                item = list->RemoveCurrent();
                 if (item != 0) {
                     ((SpriteAction*)item)->~SpriteAction();
                     FreeMemory(item);
@@ -104,7 +101,7 @@ HotspotAction::~HotspotAction() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = FUN_004036a0(list);
+                item = list->RemoveCurrent();
                 if (item != 0) {
                     ((SpriteAction*)item)->~SpriteAction();
                     FreeMemory(item);
@@ -250,7 +247,7 @@ void HotspotAction::ProcessQueue100() {
             } else {
                 data = queue100->current->data;
             }
-            FUN_00444e40(data);
+            EnqueueSpriteAction(data);
             if (queue100->tail == queue100->current) {
                 return;
             }
@@ -273,7 +270,7 @@ void HotspotAction::ProcessQueue104() {
             } else {
                 data = queue104->current->data;
             }
-            FUN_00444e40(data);
+            EnqueueSpriteAction(data);
             if (queue104->tail == queue104->current) {
                 return;
             }
@@ -296,7 +293,7 @@ void HotspotAction::ProcessQueueFC() {
             } else {
                 data = queueFC->current->data;
             }
-            FUN_00444e40(data);
+            EnqueueSpriteAction(data);
             if (queueFC->tail == queueFC->current) {
                 return;
             }
@@ -332,7 +329,7 @@ int HotspotAction::LBLParse(char* line) {
         sscanf(line, " %s %s", label, buf_C0);
         local_14 = ((GameState*)DAT_0046aa18)->FUN_00432e20(buf_C0);
         field_B0 = local_14;
-        FUN_00425bc0(line, field_B4, 0x40);
+        ExtractQuotedString(line, field_B4, 0x40);
     }
     else if (strcmp(label, "CORRECT") == 0) {
         sscanf(line, " %s ", label);
@@ -353,11 +350,11 @@ int HotspotAction::LBLParse(char* line) {
             queueFC = new LinkedList();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        sa->field_00 = 2;
-        sa->field_04 = ((GameState*)DAT_0046aa30)->FindState("PERIOD");
-        sa->field_08 = 0x24;
-        sa->field_0C = hotspotId;
-        sa->field_10 = 0x11;
+        sa->addressType = 2;
+        sa->addressValue = ((GameState*)DAT_0046aa30)->FindState("PERIOD");
+        sa->fromType = 0x24;
+        sa->fromValue = hotspotId;
+        sa->instruction = 0x11;
         list = queueFC;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
@@ -365,7 +362,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -387,8 +384,8 @@ int HotspotAction::LBLParse(char* line) {
             queue100 = new LinkedList();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        sa->field_08 = 0x24;
-        sa->field_0C = hotspotId;
+        sa->fromType = 0x24;
+        sa->fromValue = hotspotId;
         ParseSpriteAction(sa, this);
         list = queue100;
         list->ResetForSortedAdd(sa);
@@ -397,7 +394,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -419,8 +416,8 @@ int HotspotAction::LBLParse(char* line) {
             queue104 = new LinkedList();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        sa->field_08 = 0x24;
-        sa->field_0C = hotspotId;
+        sa->fromType = 0x24;
+        sa->fromValue = hotspotId;
         ParseSpriteAction(sa, this);
         list = queue104;
         list->ResetForSortedAdd(sa);
@@ -429,7 +426,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -451,8 +448,8 @@ int HotspotAction::LBLParse(char* line) {
             queueFC = new LinkedList();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        sa->field_08 = 0x24;
-        sa->field_0C = hotspotId;
+        sa->fromType = 0x24;
+        sa->fromValue = hotspotId;
         ParseSpriteAction(sa, this);
         list = queueFC;
         list->ResetForSortedAdd(sa);
@@ -461,7 +458,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -483,8 +480,8 @@ int HotspotAction::LBLParse(char* line) {
             queue108 = new LinkedList();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        sa->field_08 = 0x24;
-        sa->field_0C = hotspotId;
+        sa->fromType = 0x24;
+        sa->fromValue = hotspotId;
         ParseSpriteAction(sa, this);
         list = queue108;
         list->ResetForSortedAdd(sa);
@@ -493,7 +490,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -525,7 +522,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -556,7 +553,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -586,7 +583,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -616,7 +613,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -671,7 +668,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -708,7 +705,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -738,10 +735,10 @@ int HotspotAction::LBLParse(char* line) {
             0, 0,
             ((GameState*)DAT_0046aa38)->FindState(buf_140),
             local_14, 0, 0, 0, 0);
-        if ((sa->field_10 == 0x11 || sa->field_10 == 0x12) && result < 4) {
-            sa->field_14 = 1;
+        if ((sa->instruction == 0x11 || sa->instruction == 0x12) && result < 4) {
+            sa->extra1 = 1;
         }
-        if (sa->field_10 == 0x11 && result < 4) {
+        if (sa->instruction == 0x11 && result < 4) {
             ReportUnknownLabel("HotspotAction");
         }
         list = queue100;
@@ -751,7 +748,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -784,7 +781,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -815,7 +812,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }
@@ -847,7 +844,7 @@ int HotspotAction::LBLParse(char* line) {
                 ((Queue*)list)->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->field_00) {
+                    if (*(int*)list->current->data < sa->addressType) {
                         ((Queue*)list)->InsertAtCurrent(sa);
                         break;
                     }

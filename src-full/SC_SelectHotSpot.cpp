@@ -6,6 +6,7 @@
 #include "Palette.h"
 #include "Sample.h"
 #include "MMPlayer.h"
+#include "SC_Question.h"
 #include <stdio.h>
 #include <string.h>
 #include <new.h>
@@ -22,8 +23,8 @@ extern SpriteAction DAT_00472d58;
 
 
 
-// Palette functions (fastcall - 0 extra params)
-extern void* __fastcall FUN_0041dbe0(void* mem);
+// Palette functions
+#include "Palette.h"
 
 // Sound table
 extern char* __cdecl ResolveAssetPath(char* name);
@@ -33,13 +34,11 @@ extern void __cdecl FUN_00413e70(void* parser, int parent, char* key);
 
 // Message operations
 extern void* __cdecl FUN_00444a40(void* mem, int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl ParseSpriteAction(void* msg, void* owner);
-extern void __cdecl FUN_00444e40(void* msg);
 
 // Engine/Misc
 extern void __cdecl FUN_00425a90(int width, int height);
 extern "C" void WriteToLog(const char* format, ...);
-extern void __fastcall FUN_00432da0(void* self);
+#include "MouseControl.h"
 
 // Engine list operations
 extern void* __fastcall FUN_00403620(void* list);
@@ -50,7 +49,7 @@ extern void __fastcall FUN_004061e0(void* obj);
 extern void* __fastcall FUN_00407180(void* list);
 
 // Queue operations (thiscall via fastcall + dummy EDX)
-extern void __fastcall FUN_00406cc0(void* list, int edx, void* data);
+// FUN_00406cc0 = Queue::Add in LinkedList.h
 extern void __fastcall FUN_00406fd0(void* list, int edx, int data);
 extern void __fastcall FUN_004070a0(void* list, int edx, int data);
 
@@ -197,7 +196,7 @@ void SelectHotspot::Update() {
                         if (node != 0) {
                             data = node->data;
                         }
-                        FUN_00444e40(data);
+                        EnqueueSpriteAction(data);
                         ListNode* cur = ((LinkedList*)SelectHotspot::messageList)->current;
                         if (((LinkedList*)SelectHotspot::messageList)->tail == cur) break;
                         if (cur != 0) {
@@ -332,7 +331,7 @@ int SelectHotspot::LBLParse(char* line) {
             }
             SelectHotspot::messageList = newList;
         }
-        FUN_00406cc0(SelectHotspot::messageList, 0, msgObj);
+        ((Queue*)SelectHotspot::messageList)->Add(msgObj);
     } else if (strcmp(keyword, "RETURNMESSAGE") == 0) {
         void* msgMem = AllocateMemory(0x38);
         int* msgObj = 0;
@@ -631,7 +630,7 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
             }
         }
     }
-    FUN_00432da0(DAT_0046aa18);
+    ((MouseControl*)DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4063A0 */
@@ -766,7 +765,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         void* mem = AllocateMemory(8);
         void* pal = 0;
         if (mem != 0) {
-            pal = FUN_0041dbe0(mem);
+            pal = InitPalette((Palette*)mem);
         }
         SC_SelectHotSpot::palette = pal;
         ((Palette*)SC_SelectHotSpot::palette)->Load(nameBuf);

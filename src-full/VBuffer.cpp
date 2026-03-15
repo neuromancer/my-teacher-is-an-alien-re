@@ -8,6 +8,8 @@
 #include "GlyphRect.h"
 
 extern "C" extern void* DAT_0046aa14;
+extern void* DAT_0046aa08;
+extern "C" void SetVideoRes(int width, int height);
 
 static int g_VBufferHandleTableInitialized = 0;
 static int g_VBufferHandleTable[0x20];
@@ -59,18 +61,40 @@ extern "C" {
 /* Function start: 0x41A8C0 */ /* DEMO ONLY - no full game match */
 extern "C" void InitWorkBuffer(int width, int height)
 {
+    SetVideoRes(width, height);
+}
+
+/* Function start: 0x425A90 */
+extern "C" void SetVideoRes(int width, int height)
+{
+    int* inputManager;
+
     if (g_WorkBuffer_00436974 != 0) {
+        if (g_WorkBuffer_00436974->width == width && g_WorkBuffer_00436974->height == height) {
+            return;
+        }
         delete g_WorkBuffer_00436974;
         g_WorkBuffer_00436974 = 0;
+        DAT_0046aa14 = 0;
     }
 
     g_WorkBuffer_00436974 = new VBuffer(width, height);
+    DAT_0046aa14 = g_WorkBuffer_00436974;
+
     if (g_WorkBuffer_00436974->handle != 0) {
         ShowError("workbuff must be first vb created '%d'", g_WorkBuffer_00436974->handle);
     }
+
     g_WorkBuffer_00436974->SetVideoMode();
     g_WorkBuffer_00436974->ClearScreen(0);
-    DAT_0046aa14 = g_WorkBuffer_00436974;
+
+    inputManager = (int*)DAT_0046aa08;
+    if (inputManager != 0) {
+        inputManager[0x69] = 0;
+        inputManager[0x6A] = 0;
+        inputManager[0x6B] = width - 1;
+        inputManager[0x6C] = height - 1;
+    }
 }
 
 /* Function start: 0x410F90 */
@@ -78,6 +102,13 @@ VBuffer::VBuffer(int width, int height)
 {
     InitFields();
     InitWithSize(width, height);
+}
+
+/* Function start: 0x410FB0 */
+VBuffer::VBuffer(char* filename, int param_2)
+{
+    InitFields();
+    LoadFromFile(filename, param_2);
 }
 
 /* Function start: 0x410FD0 */

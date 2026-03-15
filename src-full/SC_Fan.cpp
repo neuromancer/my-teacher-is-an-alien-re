@@ -10,35 +10,24 @@
 #include <stdlib.h>
 #include <new.h>
 #include "TimeOut.h"
+#include "VBuffer.h"
+#include "ZBufferManager.h"
+#include "SC_Question.h"
+#include "main.h"
+#include "string.h"
 
-extern void __fastcall FUN_00410fd0(void*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 extern "C" int FileExists(const char*);
-extern "C" void FUN_004265a0();
-extern void __fastcall FUN_004309a0(void*, int, int);
-extern void __fastcall FUN_004309c0(void*, int, void*);
-extern void __cdecl FUN_00425a90(int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void ShowError(const char* format, ...);
-extern void __cdecl FUN_00444e40(void*);
-extern void __fastcall FUN_0044cb40(void*, int, int, int);
-extern int __cdecl FUN_0044ccf0(int, int, int, int);
-extern void __fastcall FUN_004127c0(void*);
-extern void __fastcall FUN_00421920(void*);
-extern void __fastcall FUN_00407b60(void*);
-extern void __fastcall FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int);
-extern void __fastcall FUN_00432da0(void*);
+// FUN_00421920 = InitTimeOut (TimeOut.h)
+#include "MouseControl.h"
 extern void __fastcall FUN_00427880(void*);
 
-extern void __cdecl FUN_00413e70(void*, int, char*);
 extern char* __cdecl ResolveAssetPath(char* name);
-extern void* __fastcall FUN_00410fb0(void*, int, char*, int);
 extern void __fastcall FUN_004274c0(void*, int, int);
-extern void __cdecl FUN_00412a50();
-extern char* __cdecl FUN_0044e470(char*);
-extern void __cdecl ParseSpriteAction(void*, void*);
 
 extern void* DAT_00468ef0;
 extern void* DAT_0046aa24;
@@ -70,7 +59,7 @@ void SC_Fan::Init(SC_Message* msg) {
     handlerId = savedId;
 
     if (!FileExists("CB_Fan")) {
-        FUN_004265a0();
+        ShowLoadingScreen();
     }
 
     Handler::Init(msg);
@@ -79,7 +68,7 @@ void SC_Fan::Init(SC_Message* msg) {
     dim_B4.field_0 = 0x140;
     dim_B4.field_4 = 0xF0;
 
-    FUN_00425a90(0x140, 0xF0);
+    SetVideoRes(0x140, 0xF0);
 
     moduleParam = *((int*)msg + 1);
 
@@ -101,7 +90,7 @@ void SC_Fan::Init(SC_Message* msg) {
     mem = malloc(0xC);
     ptr = 0;
     if (mem != 0) {
-        FUN_00421920(mem);
+        InitTimeOut((TimeOut*)mem);
         ptr = mem;
     }
     field_BC = ptr;
@@ -175,7 +164,7 @@ void SC_Fan::Cleanup(int flag) {
 
     ptr = field_144;
     if (ptr != 0) {
-        FUN_00410fd0(ptr);
+        ((VBuffer*)ptr)->~VBuffer();
         free(ptr);
         field_144 = 0;
     }
@@ -316,9 +305,9 @@ void SC_Fan::ProcessRound() {
         SendGameMessage(5, 0, handlerId, moduleParam, 0x13, 0, 0, 0, 0, 0);
 
         if (field_17C == 4) {
-            *(int*)((int)field_A8 + 0x14) = 1;
-            *(int*)((int)field_A8 + 0x1C) = 0x78;
-            *(int*)((int)field_A8 + 0x20) = 0;
+            ((SpriteAction*)field_A8)->extra1 = 1;
+            ((SpriteAction*)field_A8)->mousePos.field_0 = 0x78;
+            ((SpriteAction*)field_A8)->mousePos.field_4 = 0;
 
             void* gs = DAT_0046aa30;
             int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
@@ -327,7 +316,7 @@ void SC_Fan::ProcessRound() {
             }
             *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x14;
         } else if (field_17C == 3) {
-            FUN_00444e40(field_AC);
+            EnqueueSpriteAction(field_AC);
             ptr = field_AC;
             if (ptr != 0) {
                 ((SpriteAction*)ptr)->~SpriteAction();
@@ -356,13 +345,13 @@ void SC_Fan::ProcessRound() {
             }
             *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 1;
 
-            *(int*)((int)field_A8 + 0x14) = 1;
-            *(int*)((int)field_A8 + 0x1C) = 0x78;
-            *(int*)((int)field_A8 + 0x20) = 0;
+            ((SpriteAction*)field_A8)->extra1 = 1;
+            ((SpriteAction*)field_A8)->mousePos.field_0 = 0x78;
+            ((SpriteAction*)field_A8)->mousePos.field_4 = 0;
         }
     }
 
-    FUN_00444e40(field_A8);
+    EnqueueSpriteAction(field_A8);
     ptr = field_A8;
     if (ptr != 0) {
         ((SpriteAction*)ptr)->~SpriteAction();
@@ -546,10 +535,9 @@ void SC_Fan::RenderFan() {
         int dimVal;
         dimVal = dim_168.field_4;
         if (dimVal != 0 && dim_168.field_0 >= dimVal) {
-            FUN_00403fd0((void*)DAT_0046aa24, 0, field_144, 0x7531,
-                         dim_170.field_0, dim_170.field_4, 2, 0, 0x3FF00000,
-                         invSlot_158.field_0, invSlot_158.field_4,
-                         invSlot_158.field_8, invSlot_158.field_C);
+            ((ZBufferManager*)DAT_0046aa24)->DrawVBufferRegion(
+                field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
+                invSlot_158.field_0, invSlot_158.field_4, invSlot_158.field_8, invSlot_158.field_C);
 
             if (*(int*)field_BC == 1) {
                 if (((TimeOut*)field_BC)->IsTimeOut()) {
@@ -571,15 +559,13 @@ void SC_Fan::RenderFan() {
             }
             offset = offset * 4 + 0x12;
 
-            FUN_00403fd0((void*)DAT_0046aa24, 0, field_144, 0x7531,
-                         dim_170.field_0, dim_170.field_4, 2, 0, 0x3FF00000,
-                         invSlot_158.field_0, invSlot_158.field_4,
-                         offset, invSlot_158.field_C);
+            ((ZBufferManager*)DAT_0046aa24)->DrawVBufferRegion(
+                field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
+                invSlot_158.field_0, invSlot_158.field_4, offset, invSlot_158.field_C);
 
-            FUN_00403fd0((void*)DAT_0046aa24, 0, field_144, 0x7531,
-                         dim_170.field_0 + offset, dim_170.field_4, 2, 0, 0x3FF00000,
-                         offset, invSlot_148.field_4,
-                         invSlot_148.field_8, invSlot_148.field_C);
+            ((ZBufferManager*)DAT_0046aa24)->DrawVBufferRegion(
+                field_144, 0x7531, dim_170.field_0 + offset, dim_170.field_4, 2, 1.0,
+                offset, invSlot_148.field_4, invSlot_148.field_8, invSlot_148.field_C);
         }
     }
 
@@ -587,7 +573,7 @@ void SC_Fan::RenderFan() {
         int frames;
         void* p;
 
-        FUN_00432da0(DAT_0046aa18);
+        ((MouseControl*)DAT_0046aa18)->DrawCursor();
         FUN_00427880(DAT_00468ef0);
 
         if (*(int*)((int)DAT_00468ef0 + 0xA8) != 0) {
@@ -635,7 +621,7 @@ int SC_Fan::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_C8 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "STOP_SWITCH_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -644,7 +630,7 @@ int SC_Fan::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_CC = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "TL_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -653,7 +639,7 @@ int SC_Fan::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_E0 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "BL_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -662,7 +648,7 @@ int SC_Fan::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_E4 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "TR_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -671,7 +657,7 @@ int SC_Fan::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_E8 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "BR_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -680,7 +666,7 @@ int SC_Fan::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_EC = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "CONSOLE_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -689,7 +675,7 @@ int SC_Fan::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_C0 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "NOISE_METER_VBUFFER") == 0) {
         sscanf(param_1, " %s %s %d %d %d ", local_38, local_b8,
@@ -698,7 +684,7 @@ int SC_Fan::LBLParse(char* param_1) {
         void* obj = 0;
         if (mem != 0) {
             char* path = ResolveAssetPath(local_b8);
-            obj = FUN_00410fb0(mem, 0, path, 0);
+            obj = new (mem) VBuffer(path, 0);
         }
         field_144 = obj;
         invSlot_148.field_8 = 0x10D;
@@ -726,7 +712,7 @@ int SC_Fan::LBLParse(char* param_1) {
     else if (strcmp(local_38, "SOUND") == 0) {
         int ret = sscanf(param_1, " %s %d %s ", local_38, &local_18, local_b8);
         if (ret != 3 || local_18 < -1 || 10 < local_18) {
-            FUN_00412a50();
+            ReportUnknownLabel("SC_Fan");
         }
         if (local_18 == 0) {
             int sndId = atoi(local_b8);
@@ -744,7 +730,7 @@ int SC_Fan::LBLParse(char* param_1) {
                 smp = mem;
             }
             field_198[local_18] = smp;
-            char* path = FUN_0044e470(local_b8);
+            char* path = MakeAudioName(local_b8);
             int err = ((Sample*)smp)->Load(path);
             if (err != 0 && field_198[local_18] != 0) {
                 ((Sample*)field_198[local_18])->Unload();
@@ -765,7 +751,7 @@ int SC_Fan::LBLParse(char* param_1) {
                     DAT_00468ef0 = mem;
                 }
             } else {
-                FUN_00412a50();
+                ReportUnknownLabel("SC_Fan");
             }
         }
     }
@@ -778,7 +764,7 @@ int SC_Fan::LBLParse(char* param_1) {
         return 1;
     }
     else {
-        FUN_00412a50();
+        ReportUnknownLabel("SC_Fan");
     }
 
     return 0;

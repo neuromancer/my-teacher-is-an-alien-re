@@ -9,10 +9,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern void __fastcall FUN_004309a0(void*, int, int);
 extern "C" void FUN_00413e10(void*, char*, char*, ...);
 extern void __cdecl FUN_00425a90(int, int);
-extern void __fastcall FUN_0044bac0(void*, int, int, int);
+// FUN_0044bac0 = mCNavigator::SetNavParams in mCNavigator.h
+#include "mCNavigator.h"
 extern void __fastcall FUN_0040b760(void*, int, int);
 extern void* __fastcall FUN_00404b80(void*);
 extern void __fastcall FUN_00404d70(void*, int, int);
@@ -55,7 +55,7 @@ SC_ExtBridge::~SC_ExtBridge() {
 void SC_ExtBridge::Init(SC_Message* msg) {
     int* pmsg = (int*)msg;
 
-    FUN_004309a0(this, 0, (int)msg);
+    CopyCommandData((SC_Message*)msg);
 
     if (msg != 0) {
         moduleParam = pmsg[1];
@@ -73,7 +73,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     pAC->CopyToGlobals();
 
     if (msg != 0 && pmsg[5] == 1) {
-        FUN_0044bac0((void*)DAT_0046ae70, 0, pmsg[7], pmsg[8]);
+        ((mCNavigator*)DAT_0046ae70)->SetNavParams(pmsg[7], pmsg[8]);
     }
 
     FUN_00425a90(dim.field_0, dim.field_4);

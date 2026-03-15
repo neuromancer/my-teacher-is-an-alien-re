@@ -1,4 +1,5 @@
 #include "SC_PRHotSpot.h"
+#include "SpriteAction.h"
 #include "Sprite.h"
 #include <string.h>
 
@@ -7,7 +8,6 @@ extern void __fastcall FUN_00425100(void*, int, int, int);
 extern void __fastcall FUN_0044ccf0(void*, int, int, int, int);
 extern void __fastcall FUN_0044c740(void*);
 extern void __fastcall FUN_00424ee0(void*);
-extern void FUN_00444e40(void*);
 extern "C" void ShowError(const char* format, ...);
 extern void __fastcall FUN_0042b0f0(void*);
 extern "C" void FreeMemory(void*);
@@ -130,7 +130,7 @@ void SC_PRHotSpot::Update()
                     } else {
                         nodeData = *(int*)((char*)(void*)current + 0x8);
                     }
-                    FUN_00444e40((void*)nodeData);
+                    EnqueueSpriteAction((void*)nodeData);
 
                     listPtr = (void*)field_bc;
                     int cur = *(int*)((char*)listPtr + 0x8);

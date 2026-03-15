@@ -23,6 +23,7 @@ public:
     int AddMessage(int);
     int ProcessMessage(Message* msg);
     void CleanUpVBuffer();
+    void ResetItems();
 };
 
 #endif // ZBUFFER_H

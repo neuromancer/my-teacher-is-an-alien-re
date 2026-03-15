@@ -4,28 +4,20 @@
 #include "Sprite.h"
 #include "Palette.h"
 #include "SoundList.h"
+#include "Sample.h"
+#include "main.h"
 #include "Memory.h"
 #include "LinkedList.h"
+#include <new.h>
 #include <string.h>
 
-extern "C" void __cdecl FUN_004309c0(void*);
-extern "C" void __cdecl SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" int FileExists(const char*);
-extern "C" void FUN_004265a0();
 extern void __cdecl FUN_00425a90(int, int);
+extern char* __cdecl FUN_0044e470(char*);
 extern "C" void WriteToLog(const char* format, ...);
 extern void* DAT_0046aa24;
+extern int DAT_00468bbc;
 
-// SlimeTable - 12-byte object, constructor at 0x00425480
-class SlimeTable {
-    int fields[3];
-public:
-    SlimeTable();
-    ~SlimeTable();
-    void Init(int);
-    void FUN_00425620(int, char*, int);
-    void FUN_004254a0(int);
-};
+#include "SlimeTable.h"
 
 // TimerWrapper = TimeOut (ctor 0x421920 wraps 0x421960, dtor 0x421930)
 #include "TimeOut.h"
@@ -52,7 +44,7 @@ void SC_Slime::Init(SC_Message* msg)
     handlerId = savedId;
 
     if (FileExists("CB_Slime") == 0) {
-        FUN_004265a0();
+        ShowLoadingScreen();
     }
 
     CopyCommandData(msg);
@@ -117,7 +109,6 @@ int SC_Slime::ShutDown(SC_Message* msg)
         spriteC4 = 0;
     }
 
-    extern int DAT_00468bbc;
     if (DAT_00468bbc != 0) {
         int* obj = (int*)DAT_00468bbc;
         int* vtbl = (int*)*obj;
@@ -167,8 +158,7 @@ int SC_Slime::ShutDown(SC_Message* msg)
         field_A8 = 0;
     }
     if (field_16C != 0) {
-        extern void __fastcall FUN_00425490(void*);
-        FUN_00425490((void*)field_16C);
+        ((SlimeTable*)field_16C)->~SlimeTable();
         delete (void*)field_16C;
         field_16C = 0;
     }
@@ -215,7 +205,7 @@ void SC_Slime::UpdateArmSprites()
 /* Function start: 0x40D720 */
 int SC_Slime::AddMessage(SC_Message* msg)
 {
-    FUN_004309c0(msg);
+    WriteMessageAddress(msg);
     if (*(int*)((char*)msg + 0x2c) == 0x1b) {
         field_170[2] = 1;
     }
@@ -296,8 +286,68 @@ SlotPair::SlotPair() { field_0 = 0; field_4 = 0; }
 
 int DAT_00468bbc = 0;
 
-SlimeTable::SlimeTable() {}
-SlimeTable::~SlimeTable() {}
-void SlimeTable::Init(int) {}
-void SlimeTable::FUN_00425620(int, char*, int) {}
-void SlimeTable::FUN_004254a0(int) {}
+/* Function start: 0x425480 */
+SlimeTable::SlimeTable()
+{
+    fields[0] = 0;
+    fields[1] = 0;
+    fields[2] = 0;
+}
+
+/* Function start: 0x425490 */
+SlimeTable::~SlimeTable()
+{
+    Cleanup();
+}
+
+void SlimeTable::Init(int count)
+{
+    Allocate(count);
+}
+
+/* Function start: 0x425620 */
+void SlimeTable::LoadEntry(int index, char* filename, int value)
+{
+    if (index < 0 || fields[0] - 1 < index) {
+        return;
+    }
+
+    Sample* sample = new Sample();
+    ((void**)fields[1])[index] = sample;
+    sample->Load(FUN_0044e470(filename));
+    ((int*)fields[2])[index] = value;
+}
+
+/* Function start: 0x4254F0 */
+void SlimeTable::Cleanup()
+{
+    int i;
+
+    for (i = 0; i < fields[0]; i++) {
+        void* entry = ((void**)fields[1])[i];
+        if (entry != 0) {
+            ((Sample*)entry)->Unload();
+            operator delete(entry);
+            ((void**)fields[1])[i] = 0;
+        }
+    }
+
+    if ((void*)fields[1] != 0) {
+        operator delete((void*)fields[1]);
+        fields[1] = 0;
+    }
+
+    fields[0] = 0;
+}
+
+/* Function start: 0x4254A0 */
+void SlimeTable::Allocate(int count)
+{
+    Cleanup();
+    fields[0] = count;
+    fields[1] = (int)operator new(count * 4);
+    memset((void*)fields[1], 0, fields[0] * 4);
+
+    fields[2] = (int)operator new(fields[0] * 4);
+    memset((void*)fields[2], 0, fields[0] * 4);
+}
