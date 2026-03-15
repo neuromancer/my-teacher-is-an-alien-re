@@ -1,48 +1,24 @@
 #ifndef GAMELOOP_H
 #define GAMELOOP_H
 
-class SC_Message;
-class Timer;
-class Handler;
-#include "LinkedList.h"
 #include "Parser.h"
 
+class SpriteAction;
+class Handler;
+
 // GameLoop class - full game version
-// In the full game, GameLoop inherits from Parser (unlike the demo)
-// and is parsed with "mis\\start.mis" via ParseFile
+// Extends Parser, constructed on the stack in RunGame (0x4236F0).
+// Constructor is inlined: Parser::Parser() + vtable set to 0x461458.
+// Parses "mis\\start.mis" via ParseFile.
+// Size: 0x90 (same as Parser, no extra fields)
 class GameLoop : public Parser {
 public:
-    GameLoop();
-    ~GameLoop();
-    int LBLParse(char* param_1);
-    void Run();
-    void ResetLoop();
-    int ProcessEvents(int flag);    // 0x426CE0
-    void ProcessInput();
-    void Cleanup();
-    void DrawFrame();
-    int UpdateGame();
-    void CleanupLoop();
-    void ProcessMessage(SC_Message* msg);
-    void HandleSystemMessage(SC_Message* msg);
-    int ProcessControlMessage(SC_Message* msg);
-    int AddHandler(void* handler);
-    int FindHandlerInEventList(int command);
-    Handler* GetOrCreateHandler(int command);
-    int RemoveHandler(int command);
-
-    int field_0x00;          // after Parser fields
-    int field_0x04;
-    int field_0x08;
-    Timer* timer1;
-    Timer* timer2;
-    EventList* eventList;
-    Handler* currentHandler;
-    int field_0xAC;          // used in ProcessControlMessage
-    int field_0xB0;          // used in ProcessControlMessage
-    int field_0xB4;          // used in ProcessControlMessage
+    GameLoop() {}
+    ~GameLoop();                        // 0x424050
+    int LBLParse(char* param_1);        // 0x4240A0
 };
 
-Handler* CreateHandler(int command);
+// Free function: handler factory used by GameEngine
+Handler* CreateHandler(int command);    // 0x424240
 
 #endif // GAMELOOP_H
