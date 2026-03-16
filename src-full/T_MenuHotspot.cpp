@@ -9,7 +9,7 @@ extern InputManager* DAT_0046aa08;
 /* Function start: 0x420CE0 */
 T_MenuHotspot::T_MenuHotspot(int param) : Parser()
 {
-    memset(&enabled, 0, 0x46 * 4);
+    memset(&sprite, 0, 0x46 * 4);
     field_98 = param;
 }
 
@@ -27,7 +27,7 @@ T_MenuHotspot::~T_MenuHotspot()
 T_MenuHotspot::T_MenuHotspot(char* name, int* rect)
     : bounds(0, 0, 0, 0)
 {
-    memset(&enabled, 0, 42 * 4);
+    memset(&sprite, 0, 42 * 4);
 
     if (name != 0) {
         Sprite* spr = new Sprite(name);

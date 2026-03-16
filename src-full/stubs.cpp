@@ -250,7 +250,7 @@ void __fastcall FUN_004128f0(void*) {}
 // FUN_00432da0 = MouseControl::DrawCursor in MouseControl.cpp
 // FUN_00421bc0 = T_MenuHotspot::Update in SC_SaveLoad.cpp
 void* __fastcall FUN_004407c0(void* self) { return 0; }
-void __fastcall FUN_0040c6e0(void* self) {}
+// FUN_0040c6e0 = T_Object::~T_Object in T_Object.cpp (callers updated)
 // FUN_004309a0 = Handler::CopyCommandData in Handler.cpp (no remaining callers)
 void __fastcall FUN_0042b100(void*) {}
 void __fastcall FUN_0042b270(void*) {}

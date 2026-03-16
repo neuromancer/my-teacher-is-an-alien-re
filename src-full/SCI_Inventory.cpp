@@ -1,4 +1,5 @@
 #include "SCI_Inventory.h"
+#include "T_Object.h"
 #include <string.h>
 #include <stdio.h>
 #include "Memory.h"
@@ -28,53 +29,15 @@ extern InputManager* DAT_0046aa08;
 extern void* DAT_0046a6dc;
 extern char* DAT_0046aa00;
 extern void* __fastcall FUN_004407c0(void* self);
-extern void __fastcall FUN_0040c6e0(void* self);
 
-class InvItemObj {
-public:
-    void Display(int x, int y, int visible);
-    void Reset();
-    void HandleMsg(int* msg);
-};
+// T_Object — now implemented in T_Object.cpp
 
-class SelectionDraw {
-public:
-    void DrawSelection(int x1, int y1, int x2, int y2, int param5, int param6, int param7);
-};
+// InvListItem = T_Object (confirmed: Cleanup() maps to T_Object::~T_Object at 0x40C6E0)
 
-struct HitPoint {
-    int x;
-    int y;
-    HitPoint(int* ptr) { x = ptr[0]; y = ptr[1]; }
-    ~HitPoint();
-};
+// SelectionDraw = ZBufferManager::DrawRect (same 7-param signature, confirmed)
 
-class InvListItem {
-public:
-    void Cleanup();
-};
-void InvListItem::Cleanup() {}
-void InvItemObj::Display(int x, int y, int visible) {}
-void InvItemObj::Reset() {}
-void InvItemObj::HandleMsg(int* msg) {}
-void SelectionDraw::DrawSelection(int x1, int y1, int x2, int y2, int p5, int p6, int p7) {}
-HitPoint::~HitPoint() {}
-
-// 0x18-byte list object, same layout as inventory list in constructor
-class InvListObj {
-public:
-    int head, tail, count, freeList, blocks, growBy;
-    InvListObj() { count = 0; freeList = 0; tail = 0; head = 0; blocks = 0; growBy = 10; }
-    ~InvListObj();
-};
-
-// 0x10-byte queue object for global queue
-class InvQueueObj {
-public:
-    int head, tail, current, count;
-    InvQueueObj() { count = 0; head = 0; tail = 0; current = head; }
-    ~InvQueueObj();
-};
+#include "SpriteAction.h"  // for SlimeDim
+#include "TimedEvent.h"    // TimedEventPool = InvListObj
 
 /* Function start: 0x43E360 */
 SCI_Inventory::SCI_Inventory() {
@@ -100,7 +63,7 @@ SCI_Inventory::SCI_Inventory() {
         while (invList->head != 0) {
             void* data = invList->RemoveCurrent();
             if (data != 0) {
-                ((InvListItem*)data)->Cleanup();
+                ((T_Object*)data)->~T_Object();
                 FreeMemory(data);
             }
         }
@@ -149,8 +112,8 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
 
     ProcessInventory();
 
-    obj = DAT_0046aa18;
-    spr = *(Sprite**)((char*)obj + 0x94);
+    
+    spr = DAT_0046aa18->m_sprite;
     if (spr != 0) {
         spr->ResetAnimation(0, 0);
     }
@@ -160,22 +123,22 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
     DAT_004733e8 = 1;
     IconBar::CleanupIconBar(msg);
 
-    spr = *(Sprite**)((char*)putBackButton + 0x90);
+    spr = putBackButton->sprite;
     if (spr != 0) {
         spr->StopAnimationSound();
     }
 
-    spr = *(Sprite**)((char*)useButton + 0x90);
+    spr = useButton->sprite;
     if (spr != 0) {
         spr->StopAnimationSound();
     }
 
-    spr = *(Sprite**)((char*)scrollDownBtn + 0x90);
+    spr = scrollDownBtn->sprite;
     if (spr != 0) {
         spr->StopAnimationSound();
     }
 
-    spr = *(Sprite**)((char*)scrollUpBtn + 0x90);
+    spr = scrollUpBtn->sprite;
     if (spr != 0) {
         spr->StopAnimationSound();
     }
@@ -223,12 +186,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     /* Test against scrollDownBtn rectangle */
     {
-        HitPoint pos(cursorPtr);
+        SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
         rect = (int*)scrollDownBtn;
-        if (*(int*)((char*)rect + 0x94) <= pos.x &&
-            *(int*)((char*)rect + 0x9C) >= pos.x &&
-            *(int*)((char*)rect + 0x98) <= pos.y &&
-            *(int*)((char*)rect + 0xA0) >= pos.y) {
+        if (((T_MenuHotspot*)rect)->field_94 <= pos.field_0 &&
+            ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
+            ((T_MenuHotspot*)rect)->field_98 <= pos.field_4 &&
+            ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -241,12 +204,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     /* Test against scrollUpBtn rectangle */
     {
-        HitPoint pos(cursorPtr);
+        SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
         rect = (int*)scrollUpBtn;
-        if (*(int*)((char*)rect + 0x94) <= pos.x &&
-            *(int*)((char*)rect + 0x9C) >= pos.x &&
-            *(int*)((char*)rect + 0x98) <= pos.y &&
-            *(int*)((char*)rect + 0xA0) >= pos.y) {
+        if (((T_MenuHotspot*)rect)->field_94 <= pos.field_0 &&
+            ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
+            ((T_MenuHotspot*)rect)->field_98 <= pos.field_4 &&
+            ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -259,12 +222,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     /* Test against useButton rectangle */
     {
-        HitPoint pos(cursorPtr);
+        SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
         rect = (int*)useButton;
-        if (*(int*)((char*)rect + 0x94) <= pos.x &&
-            *(int*)((char*)rect + 0x9C) >= pos.x &&
-            *(int*)((char*)rect + 0x98) <= pos.y &&
-            *(int*)((char*)rect + 0xA0) >= pos.y) {
+        if (((T_MenuHotspot*)rect)->field_94 <= pos.field_0 &&
+            ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
+            ((T_MenuHotspot*)rect)->field_98 <= pos.field_4 &&
+            ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -335,8 +298,8 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
         {
             void* invItem = DAT_0046a6e4;
-            Sprite* spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
-            int yOffset = *(int*)((char*)invItem + 0x94) + 0x1D;
+            Sprite* spr = DAT_0046aa18->m_sprite;
+            int yOffset = ((T_Object*)invItem)->itemId + 0x1D;
             if (spr != 0) {
                 spr->ResetAnimation(0, yOffset);
             }
@@ -346,12 +309,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     /* Test against putBackButton rectangle */
     {
-        HitPoint pos(cursorPtr);
+        SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
         rect = (int*)putBackButton;
-        if (*(int*)((char*)rect + 0x94) <= pos.x &&
-            *(int*)((char*)rect + 0x9C) >= pos.x &&
-            *(int*)((char*)rect + 0x98) <= pos.y &&
-            *(int*)((char*)rect + 0xA0) >= pos.y) {
+        if (((T_MenuHotspot*)rect)->field_94 <= pos.field_0 &&
+            ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
+            ((T_MenuHotspot*)rect)->field_98 <= pos.field_4 &&
+            ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -361,9 +324,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         if (DAT_0046a6e4 == 0) {
             goto handle_item_click;
         }
-        SendGameMessage(0x1E, *(int*)((char*)DAT_0046a6e4 + 0x94), 0x1E, 0, 0x17, 0, 0, 0, 0, 0);
+        SendGameMessage(0x1E, ((T_Object*)DAT_0046a6e4)->itemId, 0x1E, 0, 0x17, 0, 0, 0, 0, 0);
         {
-            Sprite* spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+            Sprite* spr = DAT_0046aa18->m_sprite;
             if (spr != 0) {
                 spr->ResetAnimation(0, 0);
             }
@@ -375,7 +338,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
     msgData[4] = 2;
     msgData[0] = 0x1E;
     if (DAT_0046a6e4 != 0) {
-        msgData[5] = *(int*)((char*)DAT_0046a6e4 + 0x94);
+        msgData[5] = ((T_Object*)DAT_0046a6e4)->itemId;
     }
     goto done;
 
@@ -440,7 +403,7 @@ void SCI_Inventory::Update(int param1, int param2) {
             curNode = nextNode;
 
             if (data != 0) {
-                int* mouseObj = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+                int* mouseObj = (int*)DAT_0046aa08->pMouse;
                 int mouseY = 0;
                 if (mouseObj != 0) {
                     mouseY = mouseObj[1];
@@ -454,9 +417,9 @@ void SCI_Inventory::Update(int param1, int param2) {
                     slot->field_8 >= mouseX &&
                     slot->field_4 <= mouseY &&
                     slot->field_C >= mouseY) {
-                    ((InvItemObj*)data)->Display(slot->field_0, slot->field_4, 1);
+                    ((T_Object*)data)->Display(slot->field_0, slot->field_4, 1);
                 } else {
-                    ((InvItemObj*)data)->Display(slot->field_0, slot->field_4, 0);
+                    ((T_Object*)data)->Display(slot->field_0, slot->field_4, 0);
                 }
             }
 
@@ -468,7 +431,7 @@ void SCI_Inventory::Update(int param1, int param2) {
     {
         int selectedIdx = selectedSlot;
         if (selectedIdx != -1) {
-            ((SelectionDraw*)DAT_0046aa24)->DrawSelection(
+            DAT_0046aa24->DrawRect(
                 slots[selectedIdx].field_0,
                 slots[selectedIdx].field_4,
                 slots[selectedIdx].field_8,
@@ -478,13 +441,13 @@ void SCI_Inventory::Update(int param1, int param2) {
     }
 
     if (DAT_0046a6e4 != 0) {
-        int yOffset = *(int*)((char*)DAT_0046a6e4 + 0x94) + 0x1D;
-        spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+        int yOffset = ((T_Object*)DAT_0046a6e4)->itemId + 0x1D;
+        spr = DAT_0046aa18->m_sprite;
         if (spr != 0) {
             spr->ResetAnimation(yOffset, 0);
         }
     } else {
-        spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+        spr = DAT_0046aa18->m_sprite;
         if (spr != 0) {
             spr->ResetAnimation(0, 0);
         }
@@ -540,10 +503,10 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         }
 
         if (DAT_0046a6e4 != 0) {
-            SendGameMessage(0x1e, *(int*)((char*)DAT_0046a6e4 + 0x94), 0x1e, 0, 0x17, 0, 0, 0, 0, 0);
+            SendGameMessage(0x1e, ((T_Object*)DAT_0046a6e4)->itemId, 0x1e, 0, 0x17, 0, 0, 0, 0, 0);
             {
-                void* obj = DAT_0046aa18;
-                Sprite* spr = *(Sprite**)((char*)obj + 0x94);
+
+                Sprite* spr = DAT_0046aa18->m_sprite;
                 if (spr != 0) {
                     goto do_reset;
                 }
@@ -603,7 +566,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         if (item == 0) {
             break;
         }
-        ((InvItemObj*)item)->HandleMsg(msgData);
+        ((T_Object*)item)->HandleMsg(msgData);
         break;
     }
     case 0x11:
@@ -635,8 +598,8 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         if (FindItemInList((int)msgData) != 0) break;
 
         if (DAT_0046a6e4 != 0) {
-            if (*(int*)((char*)DAT_0046a6e4 + 0x94) == (int)msgData) {
-                Sprite* spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+            if (((T_Object*)DAT_0046a6e4)->itemId == (int)msgData) {
+                Sprite* spr = DAT_0046aa18->m_sprite;
                 if (spr != 0) {
                     spr->ResetAnimation(0, 0);
                 }
@@ -645,7 +608,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         }
 
         item = FindItem((int)msgData);
-        ((InvItemObj*)item)->Reset();
+        ((T_Object*)item)->Reset();
 
         ebx = (int*)itemPool;
         head = (int*)ebx[0];
@@ -738,13 +701,13 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         }
 
         if (DAT_0046a6e4 == 0) break;
-        if (*(int*)((char*)DAT_0046a6e4 + 0x94) != msgData[1]) break;
+        if (((T_Object*)DAT_0046a6e4)->itemId != msgData[1]) break;
         {
-            Sprite* spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+            Sprite* spr = DAT_0046aa18->m_sprite;
             if (spr == 0) goto do_clear;
         }
     do_reset:
-        ((Sprite*)*(int*)((char*)DAT_0046aa18 + 0x94))->ResetAnimation(0, 0);
+        (DAT_0046aa18->m_sprite)->ResetAnimation(0, 0);
     do_clear:
         DAT_0046a6e4 = 0;
         break;
@@ -786,8 +749,8 @@ void SCI_Inventory::Serialize(void* param) {
         fwrite(&handle, 4, 1, (FILE*)fp);
 
         if (DAT_0046a6e4 != 0) {
-            fwrite((char*)DAT_0046a6e4 + 0x94, 4, 1, (FILE*)fp);
-            fwrite((char*)DAT_0046a6e4 + 0x90, 4, 1, (FILE*)fp);
+            fwrite((char*)&((T_Object*)DAT_0046a6e4)->itemId, 4, 1, (FILE*)fp);
+            fwrite((char*)&((T_Object*)DAT_0046a6e4)->field_90, 4, 1, (FILE*)fp);
         } else {
             fwrite(&handle, 4, 1, (FILE*)fp);
         }
@@ -838,7 +801,7 @@ void SCI_Inventory::Serialize(void* param) {
     }
 
     /* Allocate new inventory list */
-    esi_ptr = (int*)(new InvListObj());
+    esi_ptr = (int*)(new TimedEventPool(10));
     *(int*)(self + 0x184) = (int)esi_ptr;
 
     /* Clean up global queue */
@@ -849,7 +812,7 @@ void SCI_Inventory::Serialize(void* param) {
             while (esi_ptr[0] != 0) {
                 void* data = FUN_004407c0(esi_ptr);
                 if (data != 0) {
-                    FUN_0040c6e0(data);
+                    ((T_Object*)data)->~T_Object();
                     FreeMemory(data);
                 }
             }
@@ -859,7 +822,7 @@ void SCI_Inventory::Serialize(void* param) {
     }
 
     /* Allocate new global queue */
-    esi_ptr = (int*)(new InvQueueObj());
+    esi_ptr = (int*)(new LinkedList());
     DAT_0046a6dc = (void*)esi_ptr;
 
     /* Read items loop */
@@ -921,7 +884,7 @@ void SCI_Inventory::Serialize(void* param) {
     if (handle == 999) return;
 
     DAT_0046a6e4 = ((SCI_Inventory*)self)->FindItem(handle);
-    fread((char*)DAT_0046a6e4 + 0x90, 4, 1, (FILE*)fp);
+    fread((char*)&((T_Object*)DAT_0046a6e4)->field_90, 4, 1, (FILE*)fp);
 }
 
 // Stubs (moved from stubs.cpp)
