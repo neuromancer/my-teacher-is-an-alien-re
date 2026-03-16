@@ -194,8 +194,8 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     do {
         T_MenuHotspot* chr = *charSprite;
         if (chr != 0) {
-            ((T_MenuHotspot*)chr)->state = 0;
-            void* animCtrl = ((T_MenuHotspot*)chr)->cursor;
+            chr->state = 0;
+            Sprite* animCtrl = chr->cursor;
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(0, 0);
             }
@@ -217,9 +217,9 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
         gs->FUN_00409f20(charIdx);
         stateVals = (int*)gs->stateValues;
         stateVals = (int*)*stateVals;
-        void* chrPtr = characters[stateVals[charIdx]];
-        ((T_MenuHotspot*)chrPtr)->state = 1;
-        void* animCtrl = ((T_MenuHotspot*)chrPtr)->cursor;
+        T_MenuHotspot* chrPtr = characters[stateVals[charIdx]];
+        chrPtr->state = 1;
+        Sprite* animCtrl = chrPtr->cursor;
         if (animCtrl != 0) {
             ((Sprite*)animCtrl)->ResetAnimation(1, 0);
         }
@@ -530,7 +530,7 @@ int SCI_SchoolMenu::IsCharacterActive() {
     do {
         T_MenuHotspot* chr = *p;
         if (chr != 0) {
-            int state = ((T_MenuHotspot*)chr)->state;
+            int state = chr->state;
             if (state == 1 || state == 2) {
                 return 1;
             }
@@ -568,8 +568,8 @@ void SCI_SchoolMenu::SetupOptions() {
         do {
             T_MenuHotspot* opt = *p;
             if (opt != 0) {
-                ((T_MenuHotspot*)opt)->state = 0;
-                void* animCtrl = ((T_MenuHotspot*)opt)->cursor;
+                opt->state = 0;
+                Sprite* animCtrl = opt->cursor;
                 if (animCtrl != 0) {
                     ((Sprite*)animCtrl)->ResetAnimation(0, 0);
                 }
@@ -619,7 +619,7 @@ void SCI_SchoolMenu::SetupOptions() {
         }
 
         int stVal;
-        void* opt;
+        T_MenuHotspot* opt;
         opt = *optPtr;
         stateVals = gs->stateValues;
         stVal = stateVals[stIdx];
@@ -632,14 +632,14 @@ void SCI_SchoolMenu::SetupOptions() {
         stateVals = gs->stateValues;
 
         if (stateVals[stIdx] == 0) {
-            ((T_MenuHotspot*)opt)->state = -1;
-            void* animCtrl = ((T_MenuHotspot*)opt)->cursor;
+            opt->state = -1;
+            Sprite* animCtrl = opt->cursor;
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(-1, 0);
             }
         } else {
-            ((T_MenuHotspot*)opt)->state = 0;
-            void* animCtrl = ((T_MenuHotspot*)opt)->cursor;
+            opt->state = 0;
+            Sprite* animCtrl = opt->cursor;
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(0, 0);
             }
@@ -721,11 +721,11 @@ char_loop:
     {
         SlimeDim mouseCoords = *(SlimeDim*)msgMouse;
         T_MenuHotspot* chr = *charPtr;
-        if (((T_MenuHotspot*)chr)->enabled != 0) {
-            if (((T_MenuHotspot*)chr)->bounds.left > mouseCoords.field_0 ||
-                ((T_MenuHotspot*)chr)->bounds.right < mouseCoords.field_0 ||
-                ((T_MenuHotspot*)chr)->bounds.top > mouseCoords.field_4 ||
-                ((T_MenuHotspot*)chr)->bounds.bottom < mouseCoords.field_4) {
+        if (chr->enabled != 0) {
+            if (chr->bounds.left > mouseCoords.field_0 ||
+                chr->bounds.right < mouseCoords.field_0 ||
+                chr->bounds.top > mouseCoords.field_4 ||
+                chr->bounds.bottom < mouseCoords.field_4) {
                 hitChar = 0;
             } else {
                 hitChar = 1;
@@ -752,8 +752,8 @@ opt_loop:
         if (opt == 0) goto next_opt;
         {
             SlimeDim optCoords = action->mousePos;
-            if (((T_MenuHotspot*)opt)->enabled == 0) goto opt_miss;
-            if (((T_MenuHotspot*)opt)->bounds.HitTest(optCoords.field_0, optCoords.field_4)) {
+            if (opt->enabled == 0) goto opt_miss;
+            if (opt->bounds.HitTest(optCoords.field_0, optCoords.field_4)) {
                 hitOpt = 1;
                 goto opt_done;
             }
@@ -825,8 +825,8 @@ char_click:
             int count = 3;
             do {
                 T_MenuHotspot* chr = *basePtr;
-                ((T_MenuHotspot*)chr)->state = 0;
-                void* animCtrl = ((T_MenuHotspot*)chr)->cursor;
+                chr->state = 0;
+                Sprite* animCtrl = chr->cursor;
                 if (animCtrl != 0) {
                     ((Sprite*)animCtrl)->ResetAnimation(0, 0);
                 }
@@ -838,8 +838,8 @@ char_click:
         selPtr = &characters[i];
         {
             T_MenuHotspot* selChr = *selPtr;
-            ((T_MenuHotspot*)selChr)->state = 1;
-            void* animCtrl = ((T_MenuHotspot*)selChr)->cursor;
+            selChr->state = 1;
+            Sprite* animCtrl = selChr->cursor;
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(1, 0);
             }
@@ -901,8 +901,8 @@ opt_click:
         do {
             T_MenuHotspot* opt = *baseOpts;
             if (opt != 0) {
-                ((T_MenuHotspot*)opt)->state = 0;
-                void* animCtrl = ((T_MenuHotspot*)opt)->cursor;
+                opt->state = 0;
+                Sprite* animCtrl = opt->cursor;
                 if (animCtrl != 0) {
                     ((Sprite*)animCtrl)->ResetAnimation(0, 0);
                 }
@@ -915,8 +915,8 @@ opt_click:
     selPtr = &options[i];
     {
         T_MenuHotspot* selOpt = *selPtr;
-        ((T_MenuHotspot*)selOpt)->state = 1;
-        void* animCtrl = ((T_MenuHotspot*)selOpt)->cursor;
+        selOpt->state = 1;
+        Sprite* animCtrl = selOpt->cursor;
         if (animCtrl != 0) {
             ((Sprite*)animCtrl)->ResetAnimation(1, 0);
         }
@@ -951,8 +951,8 @@ check_go:
         goCoords.field_0 = goMouse[0];
         goCoords.field_4 = goMouse[1];
         T_MenuHotspot* goSpr = okayButton;
-        if (((T_MenuHotspot*)goSpr)->enabled != 0) {
-            if (((T_MenuHotspot*)goSpr)->bounds.HitTest(goCoords.field_0, goCoords.field_4)) {
+        if (goSpr->enabled != 0) {
+            if (goSpr->bounds.HitTest(goCoords.field_0, goCoords.field_4)) {
                 hitResult = 1;
             } else {
                 hitResult = 0;
@@ -1075,8 +1075,8 @@ check_back:
         backCoords.field_0 = ((int*)msg)[7];
         backCoords.field_4 = ((int*)msg)[8];
         T_MenuHotspot* backSpr = cancelButton;
-        if (((T_MenuHotspot*)backSpr)->enabled != 0) {
-            if (((T_MenuHotspot*)backSpr)->bounds.HitTest(backCoords.field_0, backCoords.field_4)) {
+        if (backSpr->enabled != 0) {
+            if (backSpr->bounds.HitTest(backCoords.field_0, backCoords.field_4)) {
                 hitResult = 1;
             } else {
                 hitResult = 0;
