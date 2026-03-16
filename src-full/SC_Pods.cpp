@@ -11,8 +11,8 @@
 
 
 
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
-extern void __cdecl FUN_00413e70(void*, int, char*);
+// FUN_00413e10 = ParseFile in Parser.h
+// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 // FUN_0042be00 = InitCombatScreen - implemented below
@@ -26,7 +26,7 @@ extern void __fastcall FUN_00401c80(void*);
 extern void __fastcall FUN_004061e0(void*);
 extern void* __fastcall FUN_00440860(void*);
 
-extern int __cdecl FUN_00412a50(void*);
+// FUN_00412a50 = Parser::LBLParse in Parser.h
 
 extern int DAT_0046ae78;
 extern void* DAT_0046aa24;
@@ -147,7 +147,7 @@ void SC_Pods::Init(SC_Message* msg) {
     DAT_0046bf28 = palObj;
     ((SlimeTable*)palObj)->Allocate(5);
 
-    FUN_00413e10(this, "mis\\cb_Pods.mis", (char*)0);
+    ParseFile(this, "mis\\cb_Pods.mis", (char*)0);
     InitCombatScreen((void*)DAT_0046ae78);
 
     // Create SpriteAction
@@ -221,14 +221,14 @@ int SC_Pods::LBLParse(char* line) {
         }
         field_A8[1] = (int)eng;
         DAT_0046ae78 = (int)eng;
-        FUN_00413e70(eng, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)eng, this, (char*)0);
     } else if (strcmp(label, "BGSOUND") == 0) {
         sscanf(line, " %s %d ", label, &soundId);
         SendGameMessage(5, soundId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
-        FUN_00412a50(this);
+        Parser::LBLParse("SC_Pods");
     }
 
     return 0;

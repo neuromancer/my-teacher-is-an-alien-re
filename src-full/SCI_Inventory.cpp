@@ -9,7 +9,7 @@
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" char* FUN_0044e530(int handle);
+extern "C" char* GetSoundFilename(int handle);
 
 #include "MsgList.h"
 extern MsgList* g_MsgList; // DAT_0046a6dc
@@ -587,7 +587,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
             {
                 Sample* newSample = new Sample();
                 field_17C = (int)newSample;
-                char* soundFile = FUN_0044e530(*(int*)((char*)(node[2]) + 0x9C));
+                char* soundFile = GetSoundFilename(*(int*)((char*)(node[2]) + 0x9C));
                 newSample->Load(soundFile);
                 ((Sample*)field_17C)->Play(0x64, 1);
             }

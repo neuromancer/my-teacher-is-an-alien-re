@@ -15,14 +15,14 @@
 
 #include "StringTable.h"
 // FUN_00425cb0 = ShowMessage in string.h
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
+// FUN_00413e10 = ParseFile in Parser.h
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
-extern void __cdecl FUN_00413e70(void*, int, char*);
+// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 extern void __fastcall FUN_00425550(void*, int, int);
 extern void __fastcall FUN_0044c880(void*);
 // FUN_00420ac0 = FlagArray::ClearFlag in FlagArray.h
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00412a50();
+// FUN_00412a50 = Parser::LBLParse in Parser.h
 extern void __fastcall FUN_00406fd0(void*, int, int);
 
 extern void* DAT_0046a6e0;
@@ -63,7 +63,7 @@ SC_Question::SC_Question(int id, int dialog)
     sprintf(questFile, "mis\\quest%2.2d.mis",
         *(int*)(*(int*)((char*)DAT_0046aa30 + 0x90) + gsIndex * 4));
 
-    FUN_00413e10(this, questFile, "[QUESTION%d]", questionId);
+    ParseFile(this, questFile, "[QUESTION%d]", questionId);
 
     if (((FlagArray*)DAT_0046a6e8)->GetFlag( questionId, 2) != 0) {
         state = 2;
@@ -328,7 +328,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             mouseControl = mc;
         }
-        FUN_00413e70(mouseControl, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)mouseControl, this, (char*)0);
     }
     else if (strncmp(keyword, "OVE", 3) == 0) {
         if (mouseControl == 0) {
@@ -385,7 +385,7 @@ int SC_Question::LBLParse(char* param_1)
         sscanf(param_1, " %s %d", keyword, &id);
         result = ((StringTable*)DAT_0046a6e0)->GetString( id, (char*)((int)this + 0x9c));
         if (result == 0) {
-            FUN_00412a50();
+            Parser::LBLParse("SC_Question");
         }
     }
     else if (strcmp(keyword, "ACTIVATEQ") == 0) {
@@ -819,7 +819,7 @@ int SC_Question::LBLParse(char* param_1)
             ((int*)action)[5] = 1;
         }
         if (((int*)action)[4] == 0x11 && result < 4) {
-            FUN_00412a50();
+            Parser::LBLParse("SC_Question");
         }
         queue = (int*)messageQueue;
         if (action == 0) {
@@ -1401,7 +1401,7 @@ int SC_Question::LBLParse(char* param_1)
         return 1;
     }
     else {
-        FUN_00412a50();
+        Parser::LBLParse("SC_Question");
     }
 
     return 0;

@@ -12,8 +12,8 @@
 #include <new.h>
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
-extern void __cdecl FUN_00425a90(int, int);
+// FUN_00413e10 = ParseFile in Parser.h
+extern "C" void SetVideoRes(int, int);
 
 extern void __fastcall FUN_00420d90(void*);
 extern void __fastcall FUN_00425490(void*);
@@ -29,7 +29,7 @@ extern void __fastcall FUN_00425550(void*, int, int);
 extern int __fastcall FUN_0042a010(void*, int, void*);
 
 extern "C" void WriteToLog(const char* format, ...);
-extern void __cdecl FUN_00413e70(void*, int, char*);
+// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 
 extern void* __fastcall FUN_00429b60(void*, int, int, void*);
 extern void* __fastcall FUN_00420ce0(void*, int, int);
@@ -59,7 +59,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     if (*(int*)((int)msg + 8) == 0x2D) {
         FUN_0042b100(this);
     }
-    FUN_00425a90(0x280, 0x1E0);
+    SetVideoRes(0x280, 0x1E0);
     SlimeTable* table = new SlimeTable();
     *(SlimeTable**)((int)this + 0xC8) = table;
     void* pvVar = DAT_0046aa30;
@@ -67,7 +67,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     if (iGameState < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGameState) {
         ShowError("Invalid gamestate %d", iGameState);
     }
-    FUN_00413e10(this,
+    ParseFile(this,
         *(int*)(*(int*)((int)pvVar + 0x90) + iGameState * 4) != 0
             ? "mis\\practice.mis" : "mis\\practice_old.mis",
         (char*)0);
@@ -393,7 +393,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         if (mem != 0) {
             piVar6 = (int*)FUN_00429b60(mem, 0, local_18, this);
         }
-        FUN_00413e70(piVar6, (int)this, 0);
+        Parser::ProcessFile((Parser*)piVar6, this, 0);
         LinkedList* list = *(LinkedList**)((int)this + 0xB8);
         if (piVar6 == 0) {
             ShowError("queue fault 0101");
@@ -429,7 +429,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             piVar6 = FUN_00420ce0(mem, 0, local_18);
         }
         *(void**)((int)this + local_18 * 4 + 0xBC) = piVar6;
-        FUN_00413e70(piVar6, (int)this, 0);
+        Parser::ProcessFile((Parser*)piVar6, this, 0);
     } else if (strcmp(local_3c, "AMBIENT") == 0) {
         if (*(int*)((int)this + 0xAC) == 0) {
             void* mem = malloc(0xA0);
@@ -439,7 +439,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             }
             *(void**)((int)this + 0xAC) = amb;
         }
-        FUN_00413e70(*(void**)((int)this + 0xAC), (int)this, 0);
+        Parser::ProcessFile((Parser*)*(void**)((int)this + 0xAC), this, 0);
     } else if (strcmp(local_3c, "INTRO") == 0) {
         if (*(int*)((int)this + 0xB0) == 0) {
             void* mem = malloc(0xF8);
@@ -449,7 +449,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             }
             *(void**)((int)this + 0xB0) = spr;
         }
-        FUN_00413e70(*(void**)((int)this + 0xB0), (int)this, 0);
+        Parser::ProcessFile((Parser*)*(void**)((int)this + 0xB0), this, 0);
     } else if (strcmp(local_3c, "BG_SOUND") == 0) {
         sscanf(param_1, " %s %d ", local_3c, (int)this + 0xCC);
     } else if (strcmp(local_3c, "MAX_SOUNDS") == 0) {

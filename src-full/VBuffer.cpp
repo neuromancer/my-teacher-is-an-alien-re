@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "VBuffer.h"
 #include "VideoTable.h"
+#include "Animation.h"
 #include <stdlib.h>
 #include <windows.h>
 #include "Memory.h"
@@ -109,6 +110,33 @@ VBuffer::VBuffer(char* filename, int param_2)
 {
     InitFields();
     LoadFromFile(filename, param_2);
+}
+
+extern "C" extern void* DAT_0046aa10;
+
+/* Function start: 0x411270 */
+void VBuffer::LoadFromFile(char* filename, int param_2)
+{
+    Release();
+    Free();
+
+    Animation anim;
+    anim.Open(filename, 0xFE000, -1);
+
+    if (*(char*)((int)DAT_0046aa10 + 0x46) == 2) {
+        SmackBufferClose((SmackBuf*)anim.vbuffer);
+    }
+
+    int w = ((int*)anim.vbuffer)[1]; // vbuffer->width at +0x04
+    int h = ((int*)anim.vbuffer)[2]; // vbuffer->height at +0x08
+    InitWithSize(w, h);
+    anim.ToBufferVB(this);
+
+    if (param_2 != 0) {
+        anim.GotoFrame(param_2);
+    }
+
+    anim.DoFrame();
 }
 
 /* Function start: 0x410FD0 */

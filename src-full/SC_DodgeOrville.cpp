@@ -7,7 +7,7 @@
 #include <windows.h>
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
+// FUN_00413e10 = ParseFile in Parser.h
 extern "C" void ShowError(const char* format, ...);
 extern int FUN_0044ccf0(int, int, int, int);
 extern void __fastcall FUN_0044cb40(void*, int, int, int);
@@ -118,7 +118,7 @@ void SC_DodgeOrville::ProcessTargets() {
                 field_A8[22] = (int)newAction;
                 ActionParser temp;
                 temp.actionPtr = (void*)newAction;
-                FUN_00413e10(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL]");
+                ParseFile(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL]");
 
                 *(int*)(field_A8[22] + 8) = savedCommand;
                 *(int*)(field_A8[22] + 0xC) = savedMsgData;
@@ -151,7 +151,7 @@ void SC_DodgeOrville::ProcessTargets() {
                 field_A8[22] = (int)newAction;
                 ActionParser temp;
                 temp.actionPtr = (void*)newAction;
-                FUN_00413e10(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL]");
+                ParseFile(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL]");
             }
         }
         else {
@@ -166,7 +166,7 @@ void SC_DodgeOrville::ProcessTargets() {
                 field_A8[22] = (int)newAction;
                 ActionParser temp;
                 temp.actionPtr = (void*)newAction;
-                FUN_00413e10(&temp, "mis\\cb_DOrville.mis", "[QUIT_LBL]");
+                ParseFile(&temp, "mis\\cb_DOrville.mis", "[QUIT_LBL]");
             }
         }
     }
@@ -183,7 +183,7 @@ void SC_DodgeOrville::ProcessTargets() {
                 field_A8[22] = (int)newAction;
                 ActionParser temp;
                 temp.actionPtr = (void*)newAction;
-                FUN_00413e10(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL_PR]");
+                ParseFile(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL_PR]");
             }
         }
         else if (((int*)field_A8[0])[0] != 0) {
@@ -198,7 +198,7 @@ void SC_DodgeOrville::ProcessTargets() {
                 field_A8[22] = (int)newAction;
                 ActionParser temp;
                 temp.actionPtr = (void*)newAction;
-                FUN_00413e10(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL_PR]");
+                ParseFile(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL_PR]");
             }
         }
     }

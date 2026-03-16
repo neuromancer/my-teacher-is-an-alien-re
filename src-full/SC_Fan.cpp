@@ -19,7 +19,7 @@
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 extern "C" int FileExists(const char*);
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
+// FUN_00413e10 = ParseFile in Parser.h
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void ShowError(const char* format, ...);
 // FUN_00421920 = InitTimeOut (TimeOut.h)
@@ -72,7 +72,7 @@ void SC_Fan::Init(SC_Message* msg) {
 
     moduleParam = *((int*)msg + 1);
 
-    FUN_00413e10(this, "mis\\cb_fan.mis", (char*)0);
+    ParseFile(this, "mis\\cb_fan.mis", (char*)0);
 
     if (field_A8 == 0) {
         field_A8 = new SpriteAction(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
@@ -284,7 +284,7 @@ void SC_Fan::ProcessRound() {
                 void* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 Parser temp;
                 field_A8 = newAction;
-                FUN_00413e10(&temp, "mis\\cb_fan.mis", "[WIN_LBL_PR]");
+                ParseFile(&temp, "mis\\cb_fan.mis", "[WIN_LBL_PR]");
             }
         } else if (field_17C == 3) {
             ptr = field_A8;
@@ -297,7 +297,7 @@ void SC_Fan::ProcessRound() {
                 void* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 Parser temp;
                 field_A8 = newAction;
-                FUN_00413e10(&temp, "mis\\cb_fan.mis", "[LOSE_LBL_PR]");
+                ParseFile(&temp, "mis\\cb_fan.mis", "[LOSE_LBL_PR]");
             }
         }
     } else {

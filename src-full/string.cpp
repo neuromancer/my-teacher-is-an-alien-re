@@ -35,6 +35,7 @@ static char g_messageLogEnabled = 1;
 // Static buffer for FormatStringVA at address 0x43cfe8
 static char g_formatBuffer[64];
 static char g_audioNameBuffer[260];
+static char g_soundFileBuffer[260];  // 0x473D10
 
 /* Function start: 0x40D200 */ /* DEMO ONLY - no full game match */
 char* FormatStringVA(char* format, ...)
@@ -73,6 +74,24 @@ char* MakeAudioName(char* baseName)
 
     sprintf(g_audioNameBuffer, "%s.wav", baseName);
     return g_audioNameBuffer;
+}
+
+/* Function start: 0x44E530 */
+extern "C" char* GetSoundFilename(int handle)
+{
+    if (handle >= 0x1388) {
+        int idx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = g_GameState_00436998;
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        char ch = g_PeriodCharTable_0046cb94[gs->stateValues[idx]];
+        sprintf(g_soundFileBuffer, "audio\\snd%4.4d%c.wav", handle, (int)ch);
+        return g_soundFileBuffer;
+    }
+
+    sprintf(g_soundFileBuffer, "audio\\snd%4.4d.wav", handle);
+    return g_soundFileBuffer;
 }
 
 /* Function start: 0x425BC0 */

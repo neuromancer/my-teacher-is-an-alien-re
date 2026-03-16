@@ -26,7 +26,7 @@ int DAT_0046ae70 = 0;
 extern "C" int FileExists(const char*);
 extern void __fastcall InitCombatScreen(void*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00413e70(void*, int, char*);
+// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 extern void* __fastcall FUN_00450b10(void*);
 // FUN_0044bac0 = mCNavigator::SetNavParams
 #include "mCNavigator.h"
@@ -426,7 +426,7 @@ int SC_Rats::LBLParse(char* param) {
         }
         field_AC = (int)obj;
         DAT_0046ae78 = (int)obj;
-        FUN_00413e70(obj, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)obj, this, (char*)0);
         return 0;
     }
     if (strcmp(buf, "CB") == 0) {

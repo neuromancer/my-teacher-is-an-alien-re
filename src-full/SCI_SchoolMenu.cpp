@@ -52,14 +52,14 @@ public:
 
 // extern "C" functions (matching stubs.cpp)
 extern "C" {
-    void FUN_00413e10(void*, char*, char*, ...);
+    // FUN_00413e10 = ParseFile in Parser.h
     int FileExists(const char*);
     void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-    char* FUN_0044e530(int);
+    char* GetSoundFilename(int handle);
 }
 // C++ linkage functions (matching stubs.cpp)
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00413e70(void*, int, char*);
+// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 extern "C" void WriteToLog(const char* format, ...);
 
 extern void* __fastcall FUN_00403620(void*);
@@ -166,8 +166,8 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
         DAT_0047337c = 1;
     }
 
-    FUN_00413e10(this, "mis\\skool.mis", "[DURINGSCHOOLMENU]");
-    FUN_00413e10(this, "mis\\skool.mis", "[ROOMAVALIBLITY_PERIOD%d]", periodVal);
+    ParseFile(this, "mis\\skool.mis", "[DURINGSCHOOLMENU]");
+    ParseFile(this, "mis\\skool.mis", "[ROOMAVALIBLITY_PERIOD%d]", periodVal);
 
     int palVal = field_A8;
     if (palVal != 0) {
@@ -891,7 +891,7 @@ char_click:
             int period = stateVals[pIdx];
             int offset = ((GameState*)DAT_0046aa30)->GetStateValue(periodIdx2);
             int fullIdx = period * 3 + offset;
-            char* sndFile = FUN_0044e530(((int*)selSpr)[0x28 + fullIdx]);
+            char* sndFile = GetSoundFilename(((int*)selSpr)[0x28 + fullIdx]);
             ((Sample*)(void*)field_E8)->Load(sndFile);
             ((Sample*)(void*)field_E8)->Play(100, 1);
         }
@@ -945,7 +945,7 @@ opt_click:
         int period = stateVals[pIdx];
         int offset = ((GameState*)DAT_0046aa30)->GetStateValue(charStateIdx);
         int fullIdx = period * 3 + offset;
-        char* sndFile = FUN_0044e530(((int*)selOpt2)[0x28 + fullIdx]);
+        char* sndFile = GetSoundFilename(((int*)selOpt2)[0x28 + fullIdx]);
         ((Sample*)(void*)field_E8)->Load(sndFile);
         ((Sample*)(void*)field_E8)->Play(100, 1);
     }
@@ -1133,7 +1133,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             obj = mem;
         }
         field_AC = (int)obj;
-        FUN_00413e70(obj, (int)this, 0);
+        Parser::ProcessFile((Parser*)obj, this, 0);
         return 0;
     }
 
@@ -1196,7 +1196,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             obj = mem;
         }
         characters[period] = (int)obj;
-        FUN_00413e70(obj, (int)this, 0);
+        Parser::ProcessFile((Parser*)obj, this, 0);
         return 0;
     }
 
@@ -1209,7 +1209,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             obj = mem;
         }
         options[period] = (int)obj;
-        FUN_00413e70(obj, (int)this, 0);
+        Parser::ProcessFile((Parser*)obj, this, 0);
         return 0;
     }
 
@@ -1221,7 +1221,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             obj = mem;
         }
         field_B0 = (int)obj;
-        FUN_00413e70(obj, (int)this, 0);
+        Parser::ProcessFile((Parser*)obj, this, 0);
         return 0;
     }
 
@@ -1233,7 +1233,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             obj = mem;
         }
         field_B4 = (int)obj;
-        FUN_00413e70(obj, (int)this, 0);
+        Parser::ProcessFile((Parser*)obj, this, 0);
 
         // Check if NUM_ACTIONS is 0 - if so, destroy back button
         gs = DAT_0046aa30;

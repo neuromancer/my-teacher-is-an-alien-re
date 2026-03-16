@@ -11,7 +11,7 @@
 #include <new.h>
 #include <string.h>
 
-extern void __cdecl FUN_00425a90(int, int);
+extern "C" void SetVideoRes(int, int);
 extern char* __cdecl FUN_0044e470(char*);
 extern "C" void WriteToLog(const char* format, ...);
 extern void* DAT_0046aa24;
@@ -53,7 +53,7 @@ void SC_Slime::Init(SC_Message* msg)
     dimB0.field_4 = 0xf0;
     field_AC = 0;
 
-    FUN_00425a90(0x140, 0xf0);
+    SetVideoRes(0x140, 0xf0);
 
     if (field_170 != 0) {
         delete field_170;

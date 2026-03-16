@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
+// FUN_00413e10 = ParseFile in Parser.h
 
 
 
@@ -43,7 +43,7 @@ void SC_WordSearch::Init(SC_Message* msg) {
         *(int*)((int)this + 0x94) = *(int*)((int)msg + 4);
         SC_WordSearch::FUN_4368F0();
     }
-    FUN_00413e10(this, DAT_0046bacc, (char*)0);
+    ParseFile(this, DAT_0046bacc, (char*)0);
     if (*(int*)((int)this + 0x830) == 0) {
         *(void**)((int)this + 0x830) = new SpriteAction(
             *(int*)((int)this + 0x98),

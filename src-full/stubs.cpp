@@ -215,7 +215,7 @@ void SoundTracker::Cleanup() {}
 extern "C" void WriteToLog(const char* format, ...) {}
 
 extern "C" {
-char* FUN_0044e530(int handle) { return 0; }
+// FUN_0044e530 = GetSoundFilename in string.cpp (callers updated)
 void FUN_004265a0() { ShowLoadingScreen(); }
 } // extern "C"
 
@@ -226,6 +226,8 @@ void FUN_004265a0() { ShowLoadingScreen(); }
 void __fastcall FUN_004148f0(void* param) {}
 void* __fastcall FUN_00418540(void* param) { return 0; }
 void* __fastcall FUN_00403620(void*) { return 0; }
+// FUN_00401c80 = ZBuffer::CleanUpVBuffer / DrawEntry::~DrawEntry (in ZBuffer.cpp/Engine.cpp)
+// Still called from: ZBufferManager, SC_Pods, SC_Cinematic, SCI_SchoolMenu, SC_SelectHotSpot
 void __fastcall FUN_00401c80(void*) {}
 void __fastcall FUN_004061e0(void*) {}
 // FUN_00406cc0 = Queue::Add in Queue.cpp
@@ -235,7 +237,9 @@ void __fastcall FUN_004070a0(void*, int, int) {}
 void* __fastcall FUN_00407180(void*) { return 0; }
 // FUN_0041dbe0 = InitPalette in Palette.cpp
 // FUN_0042be00 = InitCombatScreen in SC_Pods.cpp
+// FUN_00404d70 = ListNode sdtor (callers: SC_ExtBridge, SC_Rats, ZBufferManager)
 void __fastcall FUN_00404d70(void*, int, int) {}
+// FUN_00404b80 = LinkedList::GetCurrentData non-inline (callers: SC_ExtBridge)
 void* __fastcall FUN_00404b80(void*) { return 0; }
 void __fastcall FUN_0040b760(void*, int, int) {}
 // FUN_0044bac0 = mCNavigator::SetNavParams in mCNavigator.cpp
@@ -247,8 +251,7 @@ void __fastcall FUN_004128f0(void*) {}
 // FUN_00421bc0 = T_MenuHotspot::Update in SC_SaveLoad.cpp
 void* __fastcall FUN_004407c0(void* self) { return 0; }
 void __fastcall FUN_0040c6e0(void* self) {}
-// FUN_004309a0 = Handler::CopyCommandData in Handler.cpp (Engine.cpp still uses __fastcall extern)
-void __fastcall FUN_004309a0(void*, int, int) {}
+// FUN_004309a0 = Handler::CopyCommandData in Handler.cpp (no remaining callers)
 void __fastcall FUN_0042b100(void*) {}
 void __fastcall FUN_0042b270(void*) {}
 void __fastcall FUN_00429c10(void*) {}
@@ -301,10 +304,9 @@ void __fastcall FUN_00404230(void*, int, char*, int, int, int, int) {}
 // Remaining __cdecl stubs
 // ============================================================================
 
-void __cdecl FUN_00412a50() {}
-int __cdecl FUN_00412a50(void*) { return 0; }
-void __cdecl FUN_00413e70(void*, int, char*) {}
-void __cdecl FUN_00425a90(int width, int height) { SetVideoRes(width, height); }
+// FUN_00412a50 = Parser::LBLParse/ReportUnknownLabel in Parser.cpp (callers updated)
+// FUN_00413e70 = Parser::ProcessFile in Parser.cpp (callers updated)
+// FUN_00425a90 = SetVideoRes in VBuffer.cpp (callers updated)
 // Legacy alias for the renamed enqueue wrapper in SpriteAction.cpp.
 void __cdecl FUN_00444e40(void* action) { EnqueueSpriteAction(action); }
 // ParseSpriteAction (was FUN_00445450) moved to SC_Message.cpp
@@ -345,34 +347,18 @@ extern "C" {
     void SetFontPosition(int, int) {}
     void SetFontColor(int) {}
     void DrawFontText(char*, int) {}
-    void FUN_00413e10(void*, char*, char*, ...) {}
-    void FUN_004309c0(void*) {}
+    // FUN_00413e10 = ParseFile in Parser.cpp (callers updated)
+    // FUN_004309c0 = Handler::WriteMessageAddress in Handler.cpp (callers updated)
 }
-
-// ============================================================================
-// Remaining __stdcall stubs
-// ============================================================================
-
-void __stdcall FUN_004309C0(int*) {}
-void __stdcall FUN_004309a0(int) {}
 
 // ============================================================================
 // Remaining IconBar.obj stubs
 // ============================================================================
 
-void __fastcall FUN_00412a50(void*, int, char*) {}
+// FUN_00412a50 = Parser::LBLParse in Parser.cpp (callers updated)
 
 #include "GameLoop.h"
-
-// VBuffer stubs
-#include "VBuffer.h"
-void VBuffer::LoadFromFile(char*, int) {}
-
-// mCNavigator stubs
-#include "mCNavigator.h"
-void mCNavigator::SetField(unsigned int) {}
-void mCNavigator::SetMode(int) {}
-void __fastcall FUN_0044b7e0(void*) {}
+// FUN_0044b7e0 = mCNavNode::CallActivateNeighbor in mCNavNode.cpp (callers updated)
 
 // CombatViewport/CombatWeapon/CombatSprite2 stubs (from InitCombatScreen)
 class CombatViewport { public: int x; int y; void SetClip(int, int); void SetOffset(int, int); void Refresh(); void SetSize(int, int); };
@@ -389,19 +375,7 @@ void CombatSprite2::SetVolume(int, int) {}
 // Unresolved externals from new implementations
 // ============================================================================
 
-// Hotspot/T_Hotspot stubs
-#include "Hotspot.h"
-Hotspot::Hotspot() { memset(&hotspot, 0, 104); field_D0 = 1; state = 1; }
-Hotspot::~Hotspot() {}
-int Hotspot::Do() { return 0; }
-int Hotspot::LBLParse(char*) { return 0; }
-int T_Hotspot::LBLParse(char*) { return 0; }
-void T_Hotspot::Exit() {}
-int T_Hotspot::Update(int, int, int) { return 0; }
-int T_Hotspot::Do() { return 0; }
-int T_Hotspot::SetState(int) { return 0; }
-int T_Hotspot::GetState() { return 0; }
-void Hotspot::QueueEvents(Queue*) {}
+// Hotspot/T_Hotspot stubs moved to Hotspot.cpp
 
 // EventList stub
 #include "EventList.h"
@@ -410,10 +384,10 @@ void EventList::InsertNode(void* data) { LinkedList::InsertNode(data); }
 // SC_DodgeOrville / SC_PRHotSpot external stubs
 void __fastcall FUN_0044c740(void*) {}
 void __fastcall FUN_00444af0(void*) {}
-void __fastcall FUN_0041b3a0(void*) {}
-int __fastcall FUN_0041b790(void*) { return 0; }
-void __fastcall FUN_0041b6e0(void*, int, int) {}
-void __fastcall FUN_0041b5a0(void*) {}
+// FUN_0041b3a0 = HotspotAction::~HotspotAction in HotspotAction.cpp (removed, callers updated)
+// FUN_0041b790 = HotspotAction::CheckConditions in HotspotAction.cpp (removed, callers updated)
+// FUN_0041b6e0 = HotspotAction::Update in HotspotAction.cpp (removed, callers updated)
+// FUN_0041b5a0 = HotspotAction::Reset in HotspotAction.cpp (removed, callers updated)
 void __fastcall FUN_00425550(void*, int, int) {}
 void __fastcall FUN_00449520(void*) {}
 void __fastcall FUN_00425100(void*, int, int, int) {}

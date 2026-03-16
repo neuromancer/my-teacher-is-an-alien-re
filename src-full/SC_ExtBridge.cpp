@@ -9,8 +9,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
-extern void __cdecl FUN_00425a90(int, int);
+// FUN_00413e10 = ParseFile in Parser.h
+extern "C" void SetVideoRes(int, int);
 // FUN_0044bac0 = mCNavigator::SetNavParams in mCNavigator.h
 #include "mCNavigator.h"
 extern void __fastcall FUN_0040b760(void*, int, int);
@@ -65,7 +65,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
         EngineA* eng = new EngineA();
         field_AC = (int)eng;
         DAT_0046ae78 = (int)eng;
-        FUN_00413e10(this, "mis\\cb_ducts.mis", (char*)0);
+        ParseFile(this, "mis\\cb_ducts.mis", (char*)0);
     }
 
     Engine* pAC = (Engine*)field_AC;
@@ -76,7 +76,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
         ((mCNavigator*)DAT_0046ae70)->SetNavParams(pmsg[7], pmsg[8]);
     }
 
-    FUN_00425a90(dim.field_0, dim.field_4);
+    SetVideoRes(dim.field_0, dim.field_4);
 
     int iVar2 = (int)DAT_0046aa24;
     int* pState = (int*)(iVar2 + 0x98);

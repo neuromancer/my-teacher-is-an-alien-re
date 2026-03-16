@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
+// FUN_00413e10 = ParseFile in Parser.h
 extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetCinematicFilename(int);
@@ -18,7 +18,7 @@ extern "C" void* FUN_004260f0(char*);
 
 extern void __fastcall FUN_00425490(void*);
 extern void* __fastcall FUN_00425480(void*);
-extern void __cdecl FUN_00425a90(int, int);
+extern "C" void SetVideoRes(int, int);
 extern "C" void ShowError(const char* format, ...);
 // FUN_004279a0 = ZBuffer::ResetItems (ZBuffer.h)
 extern void __fastcall FUN_00427880(void*);
@@ -72,7 +72,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
     dim_B4.field_0 = 0x140;
     dim_B4.field_4 = 0xF0;
 
-    FUN_00425a90(0x140, 0xF0);
+    SetVideoRes(0x140, 0xF0);
 
     moduleParam = pmsg[1];
 
@@ -83,7 +83,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
     }
     field_148 = (int)palObj;
 
-    FUN_00413e10(this, "mis\\CB_FireAlarm.mis", (char*)0);
+    ParseFile(this, "mis\\CB_FireAlarm.mis", (char*)0);
 
     if (field_A8 == 0) {
         SpriteAction* sprite = new SpriteAction(

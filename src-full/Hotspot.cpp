@@ -16,8 +16,12 @@
 typedef void* HSAMPLE;
 extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 
-extern void __fastcall FUN_0041b3a0(void*);
 extern void FreeMemory(void*);
+extern void __fastcall FUN_00406fd0(void*, int, int);  // LinkedList::Add (thiscall, 1 stack param)
+extern "C" void* DAT_0046aa30;
+
+#include "HotspotAction.h"
+#include "GameState.h"
 
 T_Hotspot::T_Hotspot()
 {
@@ -49,7 +53,7 @@ T_Hotspot::~T_Hotspot()
     for (i = 0; i < 8; i++) {
         ptr = *p;
         if (ptr != 0) {
-            FUN_0041b3a0(ptr);
+            ((HotspotAction*)ptr)->~HotspotAction();
             FreeMemory(ptr);
             *p = 0;
         }
@@ -58,17 +62,13 @@ T_Hotspot::~T_Hotspot()
 }
 
 
-extern int __fastcall FUN_0041b790(void*);
-extern void __fastcall FUN_0041b5a0(void*);
-extern void __fastcall FUN_0041b6e0(void*, int, int);
-
 /* Function start: 0x4459A0 */
 void T_Hotspot::DoItem(int param)
 {
     T_Hotspot::SelectItem();
     void* item = T_Hotspot::items[T_Hotspot::currentIndex];
     if (item != 0) {
-        FUN_0041b6e0(item, 0, param);
+        ((HotspotAction*)item)->Update(param);
     }
 }
 
@@ -81,7 +81,7 @@ void T_Hotspot::SelectItem()
     p = &items[0];
     for (i = 0; i < 8; i++) {
         if (*p != 0) {
-            int status = *(int*)((char*)*p + 0xa0);
+            int status = ((HotspotAction*)*p)->state;
             if (status != 0 && status == 1) {
                 goto done;
             }
@@ -92,7 +92,7 @@ void T_Hotspot::SelectItem()
     p = &items[0];
     for (i = 0; i < 8; i++) {
         if (*p != 0) {
-            if (FUN_0041b790(*p) != 0) {
+            if (((HotspotAction*)*p)->CheckConditions() != 0) {
                 break;
             }
         }
@@ -115,383 +115,293 @@ void T_Hotspot::StopAll()
     int i = 8;
     do {
         if (*p != 0) {
-            FUN_0041b5a0(*p);
+            ((HotspotAction*)*p)->Reset();
         }
         p++;
         i--;
     } while (i != 0);
 }
 
-// Demo-only T_Hotspot/Hotspot functions below use the old demo layout
-// (sprite, list1-3, enabled, state, etc.) which doesn't exist in the
-// full game. Kept as reference in #if 0 block.
-#if 0
-/* Function start: 0x409400 */ /* DEMO ONLY - no full game match */
-int T_Hotspot::Do()
-{
-    if (sprite != 0) {
-        return sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-    }
-    ShowError("Missing sprite in Hotspot Do()");
-    return 0;
-}
+// =========================================================================
+// Hotspot class — DEMO ONLY (used by Handler6.cpp, no full game equivalent)
+// =========================================================================
 
-/* Function start: 0x409440 */ /* DEMO ONLY - no full game match */
-int T_Hotspot::SetState(int newState)
-{
-    if (sprite != 0) {
-        sprite->SetState2(newState);
-        return 1;
-    }
-    ShowError("Error in T_Hotspot::Set_State");
-    return 0;
-}
+Hotspot::Hotspot() { memset(&hotspot, 0, 104); field_D0 = 1; state = 1; }
+Hotspot::~Hotspot() {}
+int Hotspot::Do() { return 0; }
+int Hotspot::LBLParse(char*) { return 0; }
 
-/* Function start: 0x409470 */ /* DEMO ONLY - no full game match */
-int T_Hotspot::GetState()
-{
-    if (sprite == 0) {
-        ShowError("Error in T_Hotspot::Get_State");
-        return 0;
-    }
-    return sprite->current_state;
-}
+// Demo stubs needed by linker
+void T_Hotspot::Exit() {}
+int T_Hotspot::Update(int, int, int) { return 0; }
 
-/* Function start: 0x4094A0 */ /* DEMO ONLY - no full game match */
-void T_Hotspot::Exit()
+/* Function start: 0x445A30 */
+int T_Hotspot::LBLParse(char* param_1)
 {
-    if (sprite != 0) {
-        sprite->StopAnimationSound();
-    }
-    if (list1 != 0) {
-        list1->StopAll();
-    }
-    if (list2 != 0) {
-        list2->StopAll();
-    }
-    if (list3 != 0) {
-        list3->StopAll();
-    }
-}
+    int iVar5;
+    void* action;
+    int* list;
+    SpriteAction* msg;
+    char value[32];
+    char token[32];
+    int param;
+    int param2;
 
-/* Function start: 0x4094F0 */ /* DEMO ONLY - no full game match */
-int T_Hotspot::Update(int param_1, int param_2, int param_3)
-{
-    int iVar1;
-    int* puVar2;
+    param = 0;
+    param2 = 0;
+    token[0] = '\0';
+    sscanf(param_1, " %s ", token);
 
-    switch (state) {
-    case 1:
-        if (list1 == 0 || list1->Draw() != 0) {
-            state = 2;
+    if (strcmp(token, "HANDLE") == 0) {
+        sscanf(param_1, " %s %d", token, &field_98);
+    }
+    else if (strcmp(token, "HOTSPOT") == 0) {
+        iVar5 = sscanf(param_1, "%s %s %d", token, value, &param);
+        if (iVar5 != 3) {
+            ShowError("Error in Thotspot.cpp : %s - missing parameters in parse file", param_1);
         }
-        if (state != 2) {
-            return 0;
+
+        action = (void*)new HotspotAction(field_98);
+        field_D4 = (int)action;
+        *(int*)((int)action + 0x90) = field_90;
+        *(int*)(*(int*)((int)this + 0xD0 + 0x60) + 0x94) = field_94;
+
+        if (strstr(value, "LEFT") != 0) {
+            dim_A4.field_0 = 0;
+            dim_A4.field_4 = 100;
+            field_AC = 0x4B;
+            field_B0 = 300;
+            *(int*)(*(int*)((int)this + 0xD0 + 0x60) + 0xB0) = 4;
+        } else if (strstr(value, "RIGHT") != 0) {
+            dim_A4.field_0 = 0x234;
+            dim_A4.field_4 = 100;
+            field_AC = 0x27F;
+            field_B0 = 300;
+            *(int*)(*(int*)((int)this + 0xD0 + 0x60) + 0xB0) = 3;
         }
-    case 2:
-        if (list2 != 0) {
-            if (list2->Draw() != 0) {
-                state = 3;
-                return 0;
+
+        // Ensure action list exists at [action + 0x100]
+        action = (void*)field_D4;
+        if (*(int*)((int)action + 0x100) == 0) {
+            LinkedList* newList = new LinkedList();
+            *(LinkedList**)((int)action + 0x100) = newList;
+        }
+
+        // Create SpriteAction
+        msg = new SpriteAction(field_90, param, field_90, field_94, 4, 0, 0, 0, 0, 0);
+        if (msg == 0) {
+            ShowError("queue fault 0101");
+        }
+
+        // Sorted insert into action list
+        list = *(int**)((int)field_D4 + 0x100);
+        list[2] = list[0];
+        if (list[3] == 1 || list[3] == 2) {
+            if (list[0] == 0) {
+                ((LinkedList*)list)->InsertNode(msg);
+            } else {
+                while (list[2] != 0) {
+                    int nodeData = *(int*)(list[2] + 8);
+                    if (*(int*)nodeData < *(int*)msg) {
+                        ((LinkedList*)list)->InsertNode(msg);
+                        goto done;
+                    }
+                    if (list[1] == list[2]) {
+                        ((LinkedList*)list)->PushNode(msg);
+                        goto done;
+                    }
+                    if (list[2] != 0) {
+                        list[2] = *(int*)(list[2] + 4);
+                    }
+                }
             }
+        } else {
+            FUN_00406fd0(list, 0, (int)msg);
         }
-        else {
-            state = 3;
-            if (dialog != 0) {
-                puVar2 = new int[2];
-                *puVar2 = param_1;
-                puVar2[1] = param_2;
-                SC_Message_Send(9, parseFileIndex, 0xb, param_3, 5, dialogParseFileNumber, 0, (int)puVar2, 0, 0);
-            }
-        }
-        return 0;
-    case 3:
-        if (list3 != 0) {
-            if (list3->Draw() != 0) {
-                state = 1;
-                return 1;
-            }
-        }
-        else {
-            state = 1;
-            return 1;
-        }
-        return 1;
-    case 4:
-        return 1;
     }
-    ShowError("Error in Thotspot.cpp - Update()");
-    return 1;
-}
+    else if (strcmp(token, "PLAYSOUND") == 0) {
+        iVar5 = sscanf(param_1, " %s %d", token, &param);
+        if (iVar5 != 2) {
+            ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete", param_1);
+        }
 
-/* Function start: 0x409620 */ /* DEMO ONLY - no full game match */
-int T_Hotspot::LBLParse(char* line)
-{
-    int b, r, t, l;
-    char command[32];
-    sscanf(line, " %s ", command);
+        action = (void*)new HotspotAction(field_98);
+        field_D4 = (int)action;
+        *(int*)((int)action + 0x90) = field_90;
+        *(int*)((int)field_D4 + 0x94) = field_94;
+        *(int*)((int)field_D4 + 0xB0) = 2;
 
-    if (strcmp(command, "RECT") == 0) {
-        sscanf(line, " %s %d %d %d %d", command, &l, &t, &r, &b);
-        rect.left = l;
-        rect.top = t;
-        rect.right = r;
-        rect.bottom = b;
-    } else if (strcmp(command, "DIALOG") == 0) {
-        dialog = 1;
-    } else if (strcmp(command, "DIALOGPARSEFILENUMBER") == 0) {
-        sscanf(line, "%s %d", command, &dialogParseFileNumber);
-    } else if (strcmp(command, "PARSEFILEINDEX") == 0) {
-        sscanf(line, "%s %d", command, &parseFileIndex);
-    } else if (strcmp(command, "SPRITE") == 0) {
-        Sprite* spr = new Sprite(NULL);
-        sprite = spr;
-        Parser::ProcessFile(sprite, this, 0);
-    } else if (strcmp(command, "LABEL") == 0) {
-        sscanf(line, "%s %s", command, label);
-    } else if (strcmp(command, "MOUSE") == 0) {
-        sscanf(line, "%s %s", command, label);
-    } else if (strcmp(command, "END") == 0) {
-        return 1;
-    } else {
-        Parser::LBLParse("T_Hotspot");
+        if (*(int*)((int)field_D4 + 0x100) == 0) {
+            *(LinkedList**)((int)field_D4 + 0x100) = new LinkedList();
+        }
+
+        msg = new SpriteAction(4, param, field_90, field_94, 2, 0, 0, 0, 0, 0);
+        if (msg == 0) {
+            ShowError("queue fault 0101");
+        }
+
+        list = *(int**)((int)field_D4 + 0x100);
+        list[2] = list[0];
+        if (list[3] == 1 || list[3] == 2) {
+            if (list[0] == 0) {
+                ((LinkedList*)list)->InsertNode(msg);
+            } else {
+                while (list[2] != 0) {
+                    if (*(int*)(*(int*)(list[2] + 8)) < *(int*)msg) {
+                        ((LinkedList*)list)->InsertNode(msg);
+                        goto done;
+                    }
+                    if (list[1] == list[2]) {
+                        ((LinkedList*)list)->PushNode(msg);
+                        goto done;
+                    }
+                    if (list[2] != 0) {
+                        list[2] = *(int*)(list[2] + 4);
+                    }
+                }
+            }
+        } else {
+            FUN_00406fd0(list, 0, (int)msg);
+        }
     }
-    return 0;
-}
+    else if (strcmp(token, "SWITCHROOM") == 0) {
+        iVar5 = sscanf(param_1, " %s %d %d", token, &param, &param2);
+        if (iVar5 != 3) {
+            ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete", param_1);
+        }
 
-/* Function start: 0x40D300 */ /* DEMO ONLY - no full game match */
-Hotspot::Hotspot()
-{
-    memset(&hotspot, 0, 104);
-    field_D0 = 1;
-    state = 1;
-}
+        action = (void*)new HotspotAction(field_98);
+        field_D4 = (int)action;
+        *(int*)((int)action + 0x90) = field_90;
+        *(int*)((int)field_D4 + 0x94) = field_94;
+        *(int*)((int)field_D4 + 0xB0) = 2;
 
-/* Function start: 0x40D3A0 */ /* DEMO ONLY - no full game match */
-Hotspot::~Hotspot()
-{
-	if (hotspot) {
-		delete hotspot;
-		hotspot = 0;
-	}
-	if (right_tool) {
-		delete right_tool;
-		right_tool = 0;
-	}
-	if (wrong_tool) {
-		delete wrong_tool;
-		wrong_tool = 0;
-	}
+        if (*(int*)((int)field_D4 + 0x100) == 0) {
+            *(LinkedList**)((int)field_D4 + 0x100) = new LinkedList();
+        }
 
-	Queue* q = pre_message;
-	if (q) {
-		if (q->head) {
-			q->current = q->head;
-			while (q->head) {
-				QueueNode* node = (QueueNode*)q->current;
-				SC_Message* msg;
-				if (!node) {
-					msg = 0;
-				} else {
-					if (q->head == node) q->head = node->next;
-					if (q->tail == node) q->tail = node->prev;
-					if (node->prev) node->prev->next = node->next;
-					if (node->next) node->next->prev = node->prev;
+        msg = new SpriteAction(0x20, param2, field_90, field_94, 4, param, 0, 0, 0, 0);
+        if (msg == 0) {
+            ShowError("queue fault 0101");
+        }
 
-					msg = (SC_Message*)q->GetCurrentData();
+        list = *(int**)((int)field_D4 + 0x100);
+        list[2] = list[0];
+        if (list[3] == 1 || list[3] == 2) {
+            if (list[0] == 0) {
+                ((LinkedList*)list)->InsertNode(msg);
+            } else {
+                while (list[2] != 0) {
+                    if (*(int*)(*(int*)(list[2] + 8)) < *(int*)msg) {
+                        ((LinkedList*)list)->InsertNode(msg);
+                        goto done;
+                    }
+                    if (list[1] == list[2]) {
+                        ((LinkedList*)list)->PushNode(msg);
+                        goto done;
+                    }
+                    if (list[2] != 0) {
+                        list[2] = *(int*)(list[2] + 4);
+                    }
+                }
+            }
+        } else {
+            FUN_00406fd0(list, 0, (int)msg);
+        }
+    }
+    else if (strcmp(token, "DIALOG") == 0) {
+        sscanf(param_1, " %s %d", token, &param);
 
-					if (q->current) {
-						delete (QueueNode*)q->current;
-						q->current = 0;
-					}
-					q->current = q->head;
-				}
-				if (msg) {
-					msg->~SC_Message();
-					delete (char*)msg;
-				}
-			}
-		}
-		delete (char*)q;
-		pre_message = 0;
-	}
+        action = (void*)new HotspotAction(field_98);
+        field_D4 = (int)action;
+        *(int*)((int)action + 0x90) = field_90;
+        *(int*)((int)field_D4 + 0x94) = field_94;
+        *(int*)((int)field_D4 + 0xB0) = 6;
 
-	q = message;
-	if (q) {
-		if (q->head) {
-			q->current = q->head;
-			while (q->head) {
-				QueueNode* node = (QueueNode*)q->current;
-				SC_Message* msg;
-				if (!node) {
-					msg = 0;
-				} else {
-					if (q->head == node) q->head = node->next;
-					if (q->tail == node) q->tail = node->prev;
-					if (node->prev) node->prev->next = node->next;
-					if (node->next) node->next->prev = node->prev;
+        if (*(int*)((int)field_D4 + 0x100) == 0) {
+            *(LinkedList**)((int)field_D4 + 0x100) = new LinkedList();
+        }
 
-					msg = (SC_Message*)q->GetCurrentData();
+        // Look up ROOMINSTANCE gamestate
+        int* gs = (int*)DAT_0046aa30;
+        int gsIdx = ((GameState*)gs)->FindState("ROOMINSTANCE");
+        if (gsIdx < 0 || gs[0x98 / 4] - 1 < gsIdx) {
+            ShowError("Invalid gamestate %d", gsIdx);
+        }
+        int roomInstance = ((int*)gs[0x90 / 4])[gsIdx];
 
-					if (q->current) {
-						delete (QueueNode*)q->current;
-						q->current = 0;
-					}
-					q->current = q->head;
-				}
-				if (msg) {
-					msg->~SC_Message();
-					delete (char*)msg;
-				}
-			}
-		}
-		delete (char*)q;
-		message = 0;
-	}
-}
+        msg = new SpriteAction(0x1F, roomInstance, field_90, field_94, 4, param, 0, 0, 0, 0);
+        if (msg == 0) {
+            ShowError("queue fault 0101");
+        }
 
-/* Function start: 0x40D710 */ /* DEMO ONLY - no full game match */
-int Hotspot::LBLParse(char* line)
-{
-    char keyword[48];
-    sscanf(line, "%s", keyword);
-    WriteToMessageLog(line);
-
-    if (strcmp(keyword, "RECT") == 0) {
+        list = *(int**)((int)field_D4 + 0x100);
+        list[2] = list[0];
+        if (list[3] == 1 || list[3] == 2) {
+            if (list[0] == 0) {
+                FUN_00406fd0(list, 0, (int)msg);
+            } else {
+                while (list[2] != 0) {
+                    if (*(int*)(*(int*)(list[2] + 8)) < *(int*)msg) {
+                        ((LinkedList*)list)->InsertNode(msg);
+                        goto done;
+                    }
+                    if (list[1] == list[2]) {
+                        ((LinkedList*)list)->PushNode(msg);
+                        goto done;
+                    }
+                    if (list[2] != 0) {
+                        list[2] = *(int*)(list[2] + 4);
+                    }
+                }
+            }
+        } else {
+            FUN_00406fd0(list, 0, (int)msg);
+        }
+    }
+    else if (strcmp(token, "RECT") == 0) {
         int l, t, r, b;
-        sscanf(line, " %s %d %d %d %d", keyword, &l, &t, &r, &b);
-        rect.left = l;
-        rect.top = t;
-        rect.right = r;
-        rect.bottom = b;
-    } else if (strcmp(keyword, "HOTSBEGIN") == 0) {
-        hotspot = new MMPlayer();
-        Parser::ProcessFile(hotspot, this, 0);
-    } else if (strcmp(keyword, "RIGHT_TOOL") == 0) {
-        right_tool = new MMPlayer();
-        Parser::ProcessFile(right_tool, this, 0);
-    } else if (strcmp(keyword, "WRONG_TOOL") == 0) {
-        wrong_tool = new MMPlayer();
-        Parser::ProcessFile(wrong_tool, this, 0);
-    } else if (strcmp(keyword, "PREMESSAGE") == 0) {
-        if (!pre_message) pre_message = new Queue();
-        SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        msg->command = 7;
-        Parser::ProcessFile(msg, this, 0);
-
-        Queue* q = pre_message;
-        q->ResetForSortedAdd(msg);
-        if (q->type == 1 || q->type == 2) {
-            if (q->head != 0) {
-                do {
-                    QueueNode* currentPtr = (QueueNode*)q->current;
-                    if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
-                        q->InsertNode(msg);
-                        return 0;
-                    }
-                    if (q->tail == currentPtr) {
-                        q->PushNode(msg);
-                        return 0;
-                    }
-                    if (currentPtr != 0) q->current = currentPtr->next;
-                } while (q->current != 0);
-            } else {
-                q->InsertAtCurrent(msg);
-            }
-        } else {
-            q->InsertAtCurrent(msg);
+        l = 0; t = 0; r = 0; b = 0;
+        sscanf(param_1, " %s %d %d %d %d", token, &l, &t, &r, &b);
+        dim_A4.field_0 = l;
+        dim_A4.field_4 = t;
+        field_AC = r;
+        field_B0 = b;
+    }
+    else if (strcmp(token, "CONTROLCAPTUREOFF") == 0) {
+        field_A0 |= 2;
+    }
+    else if (strcmp(token, "TUCKER") == 0) {
+        field_A0 |= 4;
+        field_A0 |= 8;
+    }
+    else if (strcmp(token, "MARSH") == 0) {
+        field_A0 |= 4;
+        field_A0 |= 0x10;
+    }
+    else if (strcmp(token, "DANIELS") == 0) {
+        field_A0 |= 4;
+        field_A0 |= 0x20;
+    }
+    else if (strcmp(token, "LEVEL") == 0) {
+        sscanf(param_1, " %s %d", token, &currentIndex);
+        if (currentIndex >= 8) {
+            ShowError("illegal index %d %s", currentIndex, param_1);
         }
-    } else if (strcmp(keyword, "MESSAGE") == 0) {
-        if (!message) message = new Queue();
-        SC_Message* msg = new SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        msg->command = 7;
-        Parser::ProcessFile(msg, this, 0);
 
-        Queue* q = message;
-        q->ResetForSortedAdd(msg);
-        if (q->type == 1 || q->type == 2) {
-            if (q->head != 0) {
-                do {
-                    QueueNode* currentPtr = (QueueNode*)q->current;
-                    if (((SC_Message*)currentPtr->data)->targetAddress < msg->targetAddress) {
-                        q->InsertNode(msg);
-                        return 0;
-                    }
-                    if (q->tail == currentPtr) {
-                        q->PushNode(msg);
-                        return 0;
-                    }
-                    if (currentPtr != 0) q->current = currentPtr->next;
-                } while (q->current != 0);
-            } else {
-                q->InsertAtCurrent(msg);
-            }
-        } else {
-            q->InsertAtCurrent(msg);
-        }
-    } else if (strcmp(keyword, "LABEL") == 0) {
-        sscanf(line, "%s %s", keyword, label);
-    } else if (strcmp(keyword, "MOUSE") == 0) {
-        sscanf(line, "%s %d", keyword, &field_D4);
-    } else if (strcmp(keyword, "END") == 0) {
+        action = (void*)new HotspotAction(field_98);
+        items[currentIndex] = action;
+        *(int*)(*(int*)((int)this + currentIndex * 4 + 0xB4) + 0x90) = field_90;
+        *(int*)(*(int*)((int)this + currentIndex * 4 + 0xB4) + 0x94) = field_94;
+        Parser::ProcessFile((Parser*)items[currentIndex], this, (char*)0);
+    }
+    else if (strcmp(token, "END") == 0) {
         return 1;
-    } else {
+    }
+    else {
         Parser::LBLParse("T_Hotspot");
     }
+
+done:
     return 0;
 }
-
-/* Function start: 0x40D610 */ /* DEMO ONLY - no full game match */
-int Hotspot::Do()
-{
-    switch (state) {
-    case 1:
-        QueueEvents(pre_message);
-        state = 2;
-    case 2:
-        if (hotspot == 0 || hotspot->Draw() == 0) {
-            state = 4;
-        }
-        if (state != 4) return 0;
-    case 4:
-        QueueEvents(message);
-        WriteToMessageLog("\n\n\nJUST SENT MESSAGES\n\n\n");
-        return 1;
-    }
-
-    ShowError("Error in Thotspot.cpp - Update()");
-    return 1;
-}
-
-/* Function start: 0x40D6A0 */ /* DEMO ONLY - no full game match */
-void Hotspot::QueueEvents(Queue* q)
-{
-    if (!q) return;
-    q->current = q->head;
-    if (!q->head) return;
-
-    do {
-        Message* msg = 0;
-        if (q->current) {
-            msg = (Message*)((QueueNode*)q->current)->data;
-        }
-
-        TimedEventPool* pool = g_TimedEventPool2_00436988;
-        PooledEvent* evt = pool->Create(pool->list.tail, 0);
-
-        ((PooledEvent*)((char*)evt + 8))->CopyFrom((PooledEvent*)msg);
-
-        if (pool->list.tail) {
-            ((PooledEvent*)pool->list.tail)->next = evt;
-        } else {
-            pool->list.head = evt;
-        }
-        pool->list.tail = evt;
-
-        if (q->current == q->tail) return;
-        if (q->current) {
-            q->current = ((QueueNode*)q->current)->next;
-        }
-    } while (q->head != 0);
-}
-#endif

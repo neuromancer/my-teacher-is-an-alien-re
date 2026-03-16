@@ -5,7 +5,7 @@
 #include "string.h"
 
 extern "C" void ShowError(const char* format, ...);
-extern "C" char* FUN_0044e530(int handle);
+extern "C" char* GetSoundFilename(int handle);
 extern "C" extern void* DAT_0046aa30;
 #define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
 extern "C" extern void* DAT_0046aa10;
@@ -83,7 +83,7 @@ void SC_BgSnd::AddMessage(int soundHandle) {
 
     Sample* newSnd = new Sample();
     if (newSnd != 0) {
-        char* filename = FUN_0044e530(soundHandle);
+        char* filename = GetSoundFilename(soundHandle);
         if (newSnd->Load(filename) == 0) {
             if (sndId != 0 && soundHandle != sndId) {
                 Sample* old = snd;

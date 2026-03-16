@@ -20,7 +20,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 // FUN_00421930 = TimeOut::~TimeOut (full game)
 
 extern "C" void ShowError(const char* format, ...);
-extern void __cdecl FUN_00412a50();
+// FUN_00412a50 = Parser::LBLParse in Parser.h
 extern char* __cdecl ResolveAssetPath(char* name);
 extern char* __cdecl FUN_0044e470(char*);
 
@@ -46,11 +46,11 @@ public:
 };
 void DetectionObj::Render() {}
 
-extern void __cdecl FUN_00413e70(void*, int, char*);
-extern "C" void FUN_00413e10(void*, char*, char*, ...);
+// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
+// FUN_00413e10 = ParseFile in Parser.h
 
 extern "C" int FileExists(const char*);
-extern void __cdecl FUN_00425a90(int, int);
+extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 extern void* DAT_0046aa24;
 
@@ -106,7 +106,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
 
     *(int*)((int)this + 0x134) = 0x140;
     *(int*)((int)this + 0x138) = 0xf0;
-    FUN_00425a90(0x140, 0xf0);
+    SetVideoRes(0x140, 0xf0);
 
     *(int*)((int)this + 0x94) = *(int*)((int)msg + 4);
 
@@ -117,7 +117,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
     }
     field_140 = *(int*)(*(int*)((int)pvVar4 + 0x90) + uVar3 * 4);
 
-    FUN_00413e10(this, "mis\\cb_bridge.mis", (char*)0);
+    ParseFile(this, "mis\\cb_bridge.mis", (char*)0);
 
     pvVar4 = DAT_0046aa30;
     uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
@@ -506,7 +506,7 @@ void SC_Wahoo::ProcessState() {
         field_A8 = (void*)new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         {
             Parser temp;
-            FUN_00413e10(&temp, "mis\\cb_bridge.mis", "_WIN_LBL_PR_");
+            ParseFile(&temp, "mis\\cb_bridge.mis", "_WIN_LBL_PR_");
         }
     }
 
@@ -556,7 +556,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_B0 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "RESET_SWITCH_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -565,7 +565,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_B4 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "INNER_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -574,7 +574,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_B8 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "MIDDLE_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -583,7 +583,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_BC = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "OUTER_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -592,7 +592,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_C0 = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "CONSOLE_SPRITE") == 0) {
         void* mem = malloc(0xf8);
@@ -601,7 +601,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             spr = new (mem) Sprite((char*)0);
         }
         field_13C = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "SET_GAMESTATE") == 0) {
         sscanf(param_1, " %s %s %d ", local_38, local_b8, &local_18);
@@ -656,7 +656,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             }
         }
         else {
-            FUN_00412a50();
+            Parser::LBLParse("SC_Wahoo");
         }
     }
     else if (strcmp(local_38, "WEAPON") == 0) {
@@ -677,7 +677,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         return 1;
     }
     else {
-        FUN_00412a50();
+        Parser::LBLParse("SC_Wahoo");
     }
 
     return 0;

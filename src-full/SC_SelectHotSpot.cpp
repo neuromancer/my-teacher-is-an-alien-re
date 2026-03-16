@@ -13,7 +13,7 @@
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" char* FUN_0044e530(int handle);
+extern "C" char* GetSoundFilename(int handle);
 extern "C" int __stdcall AIL_sample_status(void*);
 
 extern void* DAT_0046aa24;
@@ -30,13 +30,13 @@ extern SpriteAction DAT_00472d58;
 extern char* __cdecl ResolveAssetPath(char* name);
 
 // Parser operations
-extern void __cdecl FUN_00413e70(void* parser, int parent, char* key);
+// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 
 // Message operations
 extern void* __cdecl FUN_00444a40(void* mem, int, int, int, int, int, int, int, int, int, int);
 
 // Engine/Misc
-extern void __cdecl FUN_00425a90(int width, int height);
+extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 
@@ -54,7 +54,7 @@ extern void __fastcall FUN_00406fd0(void* list, int edx, int data);
 extern void __fastcall FUN_004070a0(void* list, int edx, int data);
 
 // Parser fallback
-extern void __cdecl FUN_00412a50();
+// FUN_00412a50 = Parser::LBLParse in Parser.h
 
 /* Function start: 0x404FB0 */
 SelectHotspot::SelectHotspot(int key) {
@@ -269,7 +269,7 @@ int SelectHotspot::LBLParse(char* line) {
         }
         Sprite* spr = new Sprite(0);
         SelectHotspot::sprite = spr;
-        FUN_00413e70(spr, (int)this, 0);
+        Parser::ProcessFile((Parser*)spr, this, 0);
         ((Sprite*)SelectHotspot::sprite)->ResetAnimation(SelectHotspot::state, 0);
     } else if (strcmp(keyword, "LOC") == 0) {
         sscanf(line, "%s %d %d %d %d", keyword, &x1, &y1, &x2, &y2);
@@ -277,7 +277,7 @@ int SelectHotspot::LBLParse(char* line) {
         sscanf(line, "%s %d", keyword, &keyCode);
     } else if (strcmp(keyword, "ROLLON") == 0) {
         sscanf(line, "%s %d", keyword, &handle);
-        char* name = FUN_0044e530(handle);
+        char* name = GetSoundFilename(handle);
         void* tmp = SelectHotspot::rollonSound;
         if (tmp != 0) {
             ((Sample*)tmp)->Unload();
@@ -290,7 +290,7 @@ int SelectHotspot::LBLParse(char* line) {
         smp->Load(path);
     } else if (strcmp(keyword, "ROLLOFF") == 0) {
         sscanf(line, "%s %d", keyword, &handle);
-        char* name = FUN_0044e530(handle);
+        char* name = GetSoundFilename(handle);
         void* tmp = SelectHotspot::rolloffSound;
         if (tmp != 0) {
             ((Sample*)tmp)->Unload();
@@ -303,7 +303,7 @@ int SelectHotspot::LBLParse(char* line) {
         smp->Load(path);
     } else if (strcmp(keyword, "SELECTED") == 0) {
         sscanf(line, "%s %d", keyword, &handle);
-        char* name = FUN_0044e530(handle);
+        char* name = GetSoundFilename(handle);
         void* tmp = SelectHotspot::selectedSound;
         if (tmp != 0) {
             ((Sample*)tmp)->Unload();
@@ -386,7 +386,7 @@ int SelectHotspot::LBLParse(char* line) {
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
     } else {
-        FUN_00412a50();
+        Parser::LBLParse("SC_SelectHotSpot");
     }
     return 0;
 }
@@ -461,7 +461,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
     int* pmsg = (int*)msg;
 
     InitFromMessage(msg);
-    FUN_00425a90(0x280, 0x1e0);
+    SetVideoRes(0x280, 0x1e0);
 
     int iVar2 = (int)DAT_0046aa24;
     if (*(int*)(iVar2 + 0x98) != 2) {
@@ -785,7 +785,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         SelectHotspot* hs = new SelectHotspot(sortKey);
         SC_SelectHotSpot::currentHotspot = hs;
         hs->parent = this;
-        FUN_00413e70(SC_SelectHotSpot::currentHotspot, (int)this, 0);
+        Parser::ProcessFile((Parser*)SC_SelectHotSpot::currentHotspot, this, 0);
 
         int hsAddr = (int)SC_SelectHotSpot::currentHotspot;
         LinkedList* hsList = SC_SelectHotSpot::hotspotList;
@@ -826,18 +826,18 @@ int SC_SelectHotSpot::LBLParse(char* line) {
             }
             SC_SelectHotSpot::ambient = amb;
         }
-        FUN_00413e70(SC_SelectHotSpot::ambient, (int)this, 0);
+        Parser::ProcessFile((Parser*)SC_SelectHotSpot::ambient, this, 0);
     } else if (strcmp(keyword, "INTRO") == 0) {
         if (SC_SelectHotSpot::introSprite == 0) {
             Sprite* spr = new Sprite(0);
             SC_SelectHotSpot::introSprite = spr;
         }
-        FUN_00413e70(SC_SelectHotSpot::introSprite, (int)this, 0);
+        Parser::ProcessFile((Parser*)SC_SelectHotSpot::introSprite, this, 0);
     } else if (strcmp(keyword, "END") == 0) {
         SC_SelectHotSpot::currentHotspot = 0;
         return 1;
     } else {
-        FUN_00412a50();
+        Parser::LBLParse("SC_SelectHotSpot");
     }
     return 0;
 }

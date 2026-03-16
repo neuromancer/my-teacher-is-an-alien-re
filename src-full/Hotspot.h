@@ -84,10 +84,7 @@ public:
     void SelectItem();              // 0x4459D0
     void DoItem(int param);         // 0x4459A0
 
-    // Demo-only methods (SCI_SearchScreen references these)
-    int Do();
-    int SetState(int newState);
-    int GetState();
+    // Demo stubs (still referenced by SCI_SearchScreen, SC_SelectHotSpot)
     void Exit();
     int Update(int, int, int);
 };

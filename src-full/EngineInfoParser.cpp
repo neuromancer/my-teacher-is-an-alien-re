@@ -20,7 +20,7 @@ class FuncCaller0x425a90 {
 public:
     static void __cdecl Call(int, int);  // 0x425a90
 };
-extern void __cdecl FUN_00425a90(int, int);
+extern "C" void SetVideoRes(int, int);
 
 /* Function start: 0x434660 */
 EngineInfoParser::EngineInfoParser() : Parser() {
@@ -33,7 +33,7 @@ EngineInfoParser::~EngineInfoParser() {
 
 /* Function start: 0x434800 */
 void EngineInfoParser::SetupDimensions() {
-    FUN_00425a90(EngineInfoParser::dimensions.field_0, EngineInfoParser::dimensions.field_4);
+    SetVideoRes(EngineInfoParser::dimensions.field_0, EngineInfoParser::dimensions.field_4);
 }
 
 /* Function start: 0x434820 */

@@ -35,7 +35,7 @@ extern void __fastcall FUN_00401c80(void* obj);
 
 
 // Engine/Misc
-extern void __cdecl FUN_00425a90(int width, int height);
+extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 extern void BlankScreen();
 #include "MouseControl.h"
@@ -422,7 +422,7 @@ void SC_Cinematic::Update(int param1, int param2) {
 
         Animation* smk = (Animation*)field_AC;
         int* smkSurface = (int*)(int)smk->targetBuffer;
-        FUN_00425a90(smkSurface[5], smkSurface[6]);
+        SetVideoRes(smkSurface[5], smkSurface[6]);
 
         *(int*)(DAT_0046a6ec + 0x1c) = field_B4;
 

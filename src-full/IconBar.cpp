@@ -9,6 +9,9 @@
 #include "globals.h"
 #include "SC_Question.h"
 #include "GameState.h"
+#include "DrawEntry.h"
+#include "Animation.h"
+#include "VBuffer.h"
 
 // Static data
 static int g_IconBarLeft;                       // 0x473310
@@ -20,16 +23,8 @@ static Sprite* g_IconBarSprite;                 // 0x46af08
 static int g_IconBarRefCount;                   // 0x46af0c
 
 // External functions
-
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern void __cdecl FUN_00425a90(int, int);
-extern void __stdcall FUN_004309a0(int);
-extern "C" void FUN_004309c0(void*);
-extern void __cdecl FUN_00413e70(void*, int, char*);
-extern void __fastcall FUN_00412a50(void*, int, char*);
-extern void __fastcall FUN_00401c80(void*);
-extern void* __fastcall FUN_00404b80(void*);
-extern void __fastcall FUN_00404d70(void*, int, int);
+extern "C" void SetVideoRes(int, int);         // 0x425A90 - in VBuffer.cpp
 
 extern void* DAT_0046aa08;
 extern "C" extern void* DAT_0046aa30;
@@ -46,17 +41,19 @@ extern SpriteAction DAT_00472d90;
 // FUN_0044ccf0 is a thiscall Sprite method (4 stack params)
 
 
-// Thiscall Sprite methods
+/* Function start: 0x42D340 */
+void IconBar::SetIconBarRect() {
+    g_IconBarLeft = 0;
+    g_IconBarTop = 0x1AB;
+    g_IconBarRight = 0x27F;
+    g_IconBarBottom = 0x1E0;
+}
 
 /* Function start: 0x42D460 */
 IconBar::IconBar() {
     handlerId = 0;
 }
 
-// Stub implementations for SCI_Dialog compatibility
-void IconBar::InitIconBar(SC_Message* msg) {}
-void IconBar::CleanupIconBar(SC_Message* msg) {}
-int IconBar::CheckButtonClick(SC_Message* msg) { return 0; }
 
 /* Function start: 0x42D5F0 */
 IconBar::~IconBar() {
@@ -106,8 +103,8 @@ void IconBar::Init(SC_Message* msg) {
     GameState* gs;
     int idx;
 
-    FUN_004309a0((int)msg);
-    FUN_00425a90(0x280, 0x1e0);
+    CopyCommandData(msg);
+    SetVideoRes(0x280, 0x1e0);
 
     iVar3 = (int)DAT_0046aa24;
     if (*(int*)(iVar3 + 0x98) != 2) {
@@ -131,9 +128,9 @@ void IconBar::Init(SC_Message* msg) {
         if (*piVar1 != 0) {
             piVar1[2] = *piVar1;
             while (*piVar1 != 0) {
-                void* item = ((LinkedList*)piVar1)->RemoveCurrent();
+                DrawEntry* item = (DrawEntry*)((LinkedList*)piVar1)->RemoveCurrent();
                 if (item != 0) {
-                    FUN_00401c80(item);
+                    item->~DrawEntry();
                     FreeMemory(item);
                 }
             }
@@ -160,9 +157,9 @@ void IconBar::Init(SC_Message* msg) {
                     if (current[1] != 0) {
                         *(int*)current[1] = *current;
                     }
-                    data = FUN_00404b80(piVar1);
+                    data = ((LinkedList*)piVar1)->GetCurrentData();
                     if ((void*)piVar1[2] != 0) {
-                        FUN_00404d70((void*)piVar1[2], 0, 1);
+                        delete (ListNode*)piVar1[2];
                         piVar1[2] = 0;
                     }
                     piVar1[2] = *piVar1;
@@ -220,7 +217,7 @@ int IconBar::AddMessage(SC_Message* msg) {
     int result;
 
     act = (SpriteAction*)msg;
-    FUN_004309c0(msg);
+    WriteMessageAddress(msg);
 
     if (act->lastKey == 0x77) {
         if (g_IconBarEntries[4].field_14 == 0) {
@@ -329,6 +326,11 @@ int IconBar::AddMessage(SC_Message* msg) {
 
     PlayButtonSound(buttonIndex);
     return 1;
+}
+
+/* Function start: 0x42DD30 */ /* 16 bytes, no assembly file extracted */
+int IconBar::Exit(SC_Message* msg) {
+    return WriteMessageAddress(msg);
 }
 
 /* Function start: 0x42DD40 */
@@ -507,7 +509,7 @@ int IconBar::LBLParse(char* param) {
     if (strcmp(label, "ICONBAR_SPRITE") == 0) {
         Sprite* spr = new Sprite(0);
         g_IconBarSprite = spr;
-        FUN_00413e70(spr, (int)this, (char*)0);
+        Parser::ProcessFile(spr, this, (char*)0);
     } else if (strcmp(label, "ICON_SPRITE") == 0) {
         sscanf(param, " %s  %d ", label, &index);
         Sprite* spr = new Sprite(0);
@@ -517,7 +519,7 @@ int IconBar::LBLParse(char* param) {
         ((Sprite*)g_IconBarEntries[index].sprite)->ConfigRange(0, 1, 1, 1);
         ((Sprite*)g_IconBarEntries[index].sprite)->ConfigRange(1, 2, 2, 1);
         g_IconBarEntries[index].sprite->handle = 0x3e9;
-        FUN_00413e70(g_IconBarEntries[index].sprite, (int)this, (char*)0);
+        Parser::ProcessFile(g_IconBarEntries[index].sprite, this, (char*)0);
     } else if (strcmp(label, "ICON_SOUND") == 0) {
         sscanf(param, " %s  %d %d", label, &index, &value);
         g_IconBarEntries[index].field_18 = value;
@@ -530,7 +532,7 @@ int IconBar::LBLParse(char* param) {
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
-        FUN_00412a50(this, 0, "SC_IconBarModule");
+        Parser::LBLParse("SC_IconBarModule");
     }
     return 0;
 }

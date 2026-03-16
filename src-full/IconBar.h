@@ -44,11 +44,19 @@ public:
     virtual int AddMessage(SC_Message* msg);       // 0x42D9A0
     virtual int ShutDown(SC_Message* msg);         // 0x42D920
     virtual void Update(int param1, int param2);   // 0x42DD40
+    virtual int Exit(SC_Message* msg);             // 0x42DD30
 
-    // Non-virtual methods
-    void InitIconBar(SC_Message* msg);
-    void CleanupIconBar(SC_Message* msg);
-    int CheckButtonClick(SC_Message* msg);
+    // Non-virtual aliases used by derived classes to call IconBar base
+    // implementation directly (bypassing virtual dispatch).
+    // Always inlined at call sites in the original binary — no separate
+    // function body exists. Confirmed by assembly in callers:
+    //   SCI_SchoolMenu::Init  → CALL 0x42D6E0 (IconBar::Init)
+    //   SCI_Inventory::ShutDown → CALL 0x42D920 (IconBar::ShutDown)
+    //   SCI_SchoolMenu::AddMessage → CALL 0x42D9A0 (IconBar::AddMessage)
+    void InitIconBar(SC_Message* msg) { IconBar::Init(msg); }
+    void CleanupIconBar(SC_Message* msg) { IconBar::ShutDown(msg); }
+    int CheckButtonClick(SC_Message* msg) { return IconBar::AddMessage(msg); }
+    void SetIconBarRect();                         // 0x42D340
     int FindClickedEntry(int* param);              // 0x42DEC0
     void PlayButtonSound(int buttonIndex);         // 0x42DF10
     void UpdateAllSlots();                         // 0x42DFA0
