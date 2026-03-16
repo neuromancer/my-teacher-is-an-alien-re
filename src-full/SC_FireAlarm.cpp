@@ -41,9 +41,11 @@ int DetMask::CheckHit(int, int) { return 0; }
 void RenderObj::Render() {}
 
 extern int DAT_004685ac;
-extern void* DAT_0046aa08;
+class InputManager;
+extern InputManager* DAT_0046aa08;
 extern "C" extern void* DAT_0046aa14;
-extern void* DAT_0046aa18;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
 extern int DAT_004685a0;
 extern int DAT_00472bd8;
 extern int DAT_00472bdc;
@@ -536,7 +538,7 @@ void SC_FireAlarm::ProcessFrame() {
     ((Sprite*)field_10C)->RenderAt(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 0, 0x3ff00000);
 
     if ((field_AC & 0xF) == 0) {
-        ((MouseControl*)DAT_0046aa18)->DrawCursor();
+        (DAT_0046aa18)->DrawCursor();
         FUN_00427880((void*)DAT_004685ac);
 
         int bcRender = ((Sprite*)field_BC)->RenderAt(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 0, 0x3ff00000);

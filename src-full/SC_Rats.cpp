@@ -37,8 +37,9 @@ extern void __fastcall FUN_00404d70(void*, int, int);
 // IAT entries
 
 // Scene data globals
-extern void* DAT_0046aa24;
-extern "C" void* DAT_0046aa30;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
+extern "C" GameState* DAT_0046aa30;
 
 /* Function start: 0x451700 */
 SC_Rats::SC_Rats() {
@@ -248,7 +249,7 @@ void SC_Rats::ProcessState() {
         if (DAT_00473e18 == 4) {
             int* spriteData = (int*)field_A8;
             spriteData[8] = 2 - spriteData[8];
-            GameState* gs = (GameState*)DAT_0046aa30;
+            GameState* gs = DAT_0046aa30;
             idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
@@ -263,13 +264,13 @@ void SC_Rats::ProcessState() {
             Parser temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_");
         } else if (DAT_00473e18 == 2) {
-            GameState* gs = (GameState*)DAT_0046aa30;
+            GameState* gs = DAT_0046aa30;
             idx = ((GameState*)gs)->FindLabel("RAT_COMBAT_AVAILABLE");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] = 0;
-            gs = (GameState*)DAT_0046aa30;
+            gs = DAT_0046aa30;
             idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);

@@ -16,11 +16,13 @@
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetCinematicFilename(int id);
 
-extern "C" extern void* DAT_0046aa30;
-#define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
-extern void* DAT_0046aa24;
-extern void* DAT_0046aa08;
-extern void* DAT_0046aa18;
+extern "C" extern GameState* DAT_0046aa30;
+#define g_GameState_0046aa30 (DAT_0046aa30)
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
+extern InputManager* DAT_0046aa08;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
 
 extern "C" {
     extern int DAT_0046a6ec;
@@ -312,7 +314,7 @@ void SC_Cinematic::Update(int param1, int param2) {
     }
 
     if (field_CC != 0) {
-        ((InputManager*)DAT_0046aa08)->Refresh(1);
+        (DAT_0046aa08)->Refresh(1);
 
         int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1a0);
         int hasInput;
@@ -329,14 +331,14 @@ void SC_Cinematic::Update(int param1, int param2) {
         Animation* smk = (Animation*)field_AC;
         VBuffer* vp = (VBuffer*)DAT_0046aa14;
         vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk->targetBuffer);
-        ((MouseControl*)DAT_0046aa18)->DrawCursor();
+        (DAT_0046aa18)->DrawCursor();
         return;
     }
 
     // SmackWait linked directly via smackw32.lib
 
     while (1) {
-        if (((InputManager*)DAT_0046aa08)->Refresh(1) != 0) {
+        if ((DAT_0046aa08)->Refresh(1) != 0) {
             EndCinematic();
             return;
         }

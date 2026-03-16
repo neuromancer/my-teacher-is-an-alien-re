@@ -35,9 +35,11 @@ extern void* __fastcall FUN_00429b60(void*, int, int, void*);
 extern void* __fastcall FUN_00420ce0(void*, int, int);
 
 extern int DAT_0046cb90;
-extern "C" extern void* DAT_0046aa30;
-extern void* DAT_0046aa18;
-extern void* DAT_0046aa24;
+extern "C" extern GameState* DAT_0046aa30;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 extern int DAT_0046ad6c;
 
 
@@ -240,7 +242,7 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
         pSprites++;
         iCount--;
     } while (iCount != 0);
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x42AE80 */

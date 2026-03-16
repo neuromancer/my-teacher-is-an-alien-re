@@ -16,9 +16,12 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" char* GetSoundFilename(int handle);
 extern "C" int __stdcall AIL_sample_status(void*);
 
-extern void* DAT_0046aa24;
-extern void* DAT_0046aa18;
-extern void* DAT_0046aa08;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
+class InputManager;
+extern InputManager* DAT_0046aa08;
 extern SpriteAction DAT_00472d58;
 
 
@@ -630,7 +633,7 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
             }
         }
     }
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4063A0 */

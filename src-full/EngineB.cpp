@@ -13,8 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern void* DAT_0046aa08;
-extern "C" void* DAT_0046aa30;
+extern InputManager* DAT_0046aa08;
+extern "C" GameState* DAT_0046aa30;
 extern int DAT_0046cb90;
 extern "C" int DAT_00473e18;
 
@@ -202,7 +202,7 @@ void EngineB::OnProcessEnd() {
         *(short*)(p + 4) = 0;
         p[6] = 0;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         if (DAT_0046cb90 < 0 || gs->maxStates - 1 < DAT_0046cb90) {
             ShowError("Invalid gamestate %d", DAT_0046cb90);
         }
@@ -257,7 +257,7 @@ void EngineB::OnProcessEnd() {
     EngineB::m_meterEmptyRect.top = 0;
     EngineB::m_meterEmptyRect.bottom = 0x13;
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState("MAX_NOISE_ALLOWED_RATS");
 
     EngineB::m_meterFullRect.right = 0x10D;

@@ -8,6 +8,7 @@
 #include "SoundCommand.h"
 #include "SpriteAction.h"
 #include "ZBufferManager.h"
+#include "MouseControl.h"
 #include "GameLoop.h"
 #include "smack.h"
 #include <string.h>
@@ -16,13 +17,14 @@
 #include <new.h>
 
 // External globals (C++ linkage - defined in stubs.cpp without extern "C")
-extern void* DAT_0046aa24;   // ZBufferManager*
-extern void* DAT_0046aa08;   // InputManager*
-extern void* DAT_0046aa18;
+extern ZBufferManager* DAT_0046aa24;   // ZBufferManager*
+extern InputManager* DAT_0046aa08;   // InputManager*
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
 extern char* DAT_0046aa00;   // string buffer
 
 // GameState pointer
-extern "C" extern void* DAT_0046aa30;
+extern "C" extern GameState* DAT_0046aa30;
 extern int g_WaitForInputValue_004373bc;
 extern char* DAT_0046aa2c;
 extern GameState* DAT_0046aa3c;
@@ -105,7 +107,7 @@ void GameEngine::RunGameLoop() {
             if (m_exitFlag != 0) break;
             UpdateHandlers();
 
-            ((ZBufferManager*)DAT_0046aa24)->ProcessRenderQueues();
+            (DAT_0046aa24)->ProcessRenderQueues();
 
             if (m_smackHandle != 0) {
                 int result = SmackWait((HSMACK)m_smackHandle);
@@ -138,11 +140,11 @@ void GameEngine::RunGameLoop() {
                     mouseX = 0;
                 }
                 sprintf(DAT_0046aa00, "FT %d   %d %d ", m_timer1->Update(), mouseX, mouseY);
-                ((ZBufferManager*)DAT_0046aa24)->ShowSubtitle(DAT_0046aa00, 0x14, 0x1e, 10000, -1);
+                (DAT_0046aa24)->ShowSubtitle(DAT_0046aa00, 0x14, 0x1e, 10000, -1);
             }
 
             m_timer1->Reset();
-            ((ZBufferManager*)DAT_0046aa24)->UpdateScreen();
+            (DAT_0046aa24)->UpdateScreen();
 
         } while (m_exitFlag == 0);
     }
@@ -155,12 +157,12 @@ void GameEngine::ProcessInput() {
     InputState* mouse;
     InputState** pMouse;
 
-    m_exitFlag |= ((InputManager*)DAT_0046aa08)->Refresh(1);
+    m_exitFlag |= (DAT_0046aa08)->Refresh(1);
     if (m_exitFlag != 0) {
         return;
     }
 
-    mouse = ((InputManager*)DAT_0046aa08)->pMouse;
+    mouse = (DAT_0046aa08)->pMouse;
     if (mouse != 0 && (mouse->ext1 >= 1 || mouse->ext2 >= 1 || g_WaitForInputValue_004373bc != 0)) {
         hasInput = 1;
     } else {
@@ -177,7 +179,7 @@ void GameEngine::ProcessInput() {
         action.lastKey = WaitForInput();
     }
 
-    pMouse = &((InputManager*)DAT_0046aa08)->pMouse;
+    pMouse = &(DAT_0046aa08)->pMouse;
     if (*pMouse == 0) {
         action.button1 = 0;
     } else {
@@ -354,7 +356,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
 
     msgData = (int*)msg;
     if (DAT_0046aa08 != 0) {
-        ((InputManager*)DAT_0046aa08)->ResetClickState();
+        (DAT_0046aa08)->ResetClickState();
     }
 
     handler = (Handler*)m_activeHandler;
@@ -362,7 +364,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
         handler->ShutDown(msg);
     }
 
-    manager = (ZBufferManager*)DAT_0046aa24;
+    manager = DAT_0046aa24;
     if (manager != 0) {
         queue = manager->m_queueA0;
         if (queue->head != 0) {
@@ -435,7 +437,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
     if (g_GameLoopHelper != 0) {
         GameState* gs;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         if (gs->maxStates - 1 < 4) {
             ShowError("Invalid gamestate %d", 4);
         }

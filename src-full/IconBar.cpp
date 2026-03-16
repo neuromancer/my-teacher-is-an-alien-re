@@ -1,17 +1,30 @@
 #include "IconBar.h"
+#include "MouseControl.h"
 #include "InvSlotItem.h"
+#include "MouseControl.h"
 #include <string.h>
 #include "LinkedList.h"
+#include "MouseControl.h"
 #include "Sprite.h"
+#include "MouseControl.h"
 #include "SpriteAction.h"
+#include "MouseControl.h"
 #include "Memory.h"
+#include "MouseControl.h"
 #include "Parser.h"
+#include "MouseControl.h"
 #include "globals.h"
+#include "MouseControl.h"
 #include "SC_Question.h"
+#include "MouseControl.h"
 #include "GameState.h"
+#include "MouseControl.h"
 #include "DrawEntry.h"
+#include "MouseControl.h"
 #include "Animation.h"
+#include "MouseControl.h"
 #include "VBuffer.h"
+#include "MouseControl.h"
 
 // Static data
 static int g_IconBarLeft;                       // 0x473310
@@ -26,10 +39,13 @@ static int g_IconBarRefCount;                   // 0x46af0c
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void SetVideoRes(int, int);         // 0x425A90 - in VBuffer.cpp
 
-extern void* DAT_0046aa08;
-extern "C" extern void* DAT_0046aa30;
-extern void* DAT_0046aa18;
-extern void* DAT_0046aa24;
+class InputManager;
+extern InputManager* DAT_0046aa08;
+extern "C" extern GameState* DAT_0046aa30;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 extern char* DAT_0046aa2c;
 extern GameState* DAT_0046aa3c;
 extern void* DAT_0046a6e4;
@@ -183,7 +199,7 @@ void IconBar::Init(SC_Message* msg) {
     }
 
     idx = DAT_0046cb90;
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
@@ -300,7 +316,7 @@ int IconBar::AddMessage(SC_Message* msg) {
                              4, result, 0, 0, 0, 0);
             DAT_00472d90.CopyFrom(&temp);
         }
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         {
         int idx = gs->FindState("PERIOD");
         if (idx < 0 || gs->maxStates - 1 < idx) {
@@ -354,7 +370,7 @@ void IconBar::Update(int param1, int param2) {
     do {
         if (entry->sprite != 0) {
             if (entry == &g_IconBarEntries[2]) {
-                gs = (GameState*)DAT_0046aa30;
+                gs = DAT_0046aa30;
                 if (gs->maxStates - 1 < 0x44) {
                     ShowError("Invalid gamestate %d", 0x44);
                 }
@@ -379,7 +395,7 @@ void IconBar::Update(int param1, int param2) {
                     }
                 }
                 if (entry->field_14 != 0) {
-                    gs = (GameState*)DAT_0046aa30;
+                    gs = DAT_0046aa30;
                     if (gs->maxStates - 1 < 0x3c) {
                         ShowError("Invalid gamestate %d", 0x3c);
                     }
@@ -484,7 +500,7 @@ void IconBar::UpdateAllSlots() {
         entry = entry + 1;
     } while (entry < &g_IconBarEntries[6]);
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState("PERIOD");
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);

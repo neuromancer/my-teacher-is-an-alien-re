@@ -27,15 +27,15 @@ public:
     void PlayMenuSound();
 
     // Fields 0xA8-0xF7 (0x50 bytes = 20 ints)
-    int field_A8;           // 0xA8 - palette pointer
-    int field_AC;           // 0xAC - bg object pointer
-    int field_B0;           // 0xB0 - okay sprite pointer
-    int field_B4;           // 0xB4 - back/cancel sprite pointer
-    int characters[3];      // 0xB8 - character sprites (P, S, D)
-    int options[9];         // 0xC4 - activity option sprites
-    int field_E8;           // 0xE8 - sound object pointer
-    int selectedOption;     // 0xEC - currently selected option (-1 = none)
-    int field_F0;           // 0xF0 - priority/message param from BGSND
+    int palette;            // 0xA8 - Palette* for background palette
+    int background;         // 0xAC - MMPlayer* background animation
+    int okayButton;         // 0xB0 - SprInit* (0x1A8) "OKAY" confirm button
+    int cancelButton;       // 0xB4 - SprInit* (0x1A8) "CANCEL" back button
+    int characters[3];      // 0xB8 - SprInit* character buttons [P=Peter, S=Susan, D=Duncan]
+    int options[9];         // 0xC4 - SprInit* activity option buttons [rooms 1-9]
+    int menuSound;          // 0xE8 - Sample* menu click sound
+    int selectedOption;     // 0xEC - currently selected option index (-1 = none)
+    int bgSoundId;          // 0xF0 - background sound handle (from BGSND label)
     int field_F4;           // 0xF4
 };
 

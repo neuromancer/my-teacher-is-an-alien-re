@@ -14,7 +14,8 @@
 extern "C" void SetVideoRes(int, int);
 extern char* __cdecl FUN_0044e470(char*);
 extern "C" void WriteToLog(const char* format, ...);
-extern void* DAT_0046aa24;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 extern int DAT_00468bbc;
 
 #include "SlimeTable.h"
@@ -238,13 +239,13 @@ void SC_Slime::ResetSprites()
     invSlot3.field_8 = 0xfb;
     invSlot3.field_C = 0xb9;
 
-    extern void* DAT_0046aa08;
+    extern InputManager* DAT_0046aa08;
     if (DAT_0046aa08 != 0) {
-        ((InputManager*)DAT_0046aa08)->Refresh(1);
+        (DAT_0046aa08)->Refresh(1);
     }
 
     if (spriteBC != 0) {
-        extern void* DAT_0046aa08;
+        extern InputManager* DAT_0046aa08;
         int mouseX = 0;
         int* pMouse = *(int**)((char*)DAT_0046aa08 + 0x1a0);
         if (pMouse != 0) {

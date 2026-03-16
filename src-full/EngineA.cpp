@@ -5,7 +5,7 @@
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void* DAT_0046aa30;
+extern "C" GameState* DAT_0046aa30;
 
 /* Function start: 0x43A4C0 */
 EngineA::EngineA() {
@@ -28,8 +28,8 @@ int EngineA::HandleAction(int* param) {
     }
 
     if (param[5] == 1) {
-        idx = ((GameState*)DAT_0046aa30)->FindState("DUCT_SWITCH");
-        gs = (GameState*)DAT_0046aa30;
+        idx = (DAT_0046aa30)->FindState("DUCT_SWITCH");
+        gs = DAT_0046aa30;
 
         if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);

@@ -20,7 +20,8 @@ extern "C" void WriteToLog(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern int DAT_0046ae78;
 extern int DAT_0046ae70;
-extern void* DAT_0046aa24;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 
 /* Function start: 0x4399E0 */
 SC_ExtBridge::SC_ExtBridge() {

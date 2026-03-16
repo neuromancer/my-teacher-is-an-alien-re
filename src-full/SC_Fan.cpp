@@ -30,10 +30,12 @@ extern char* __cdecl ResolveAssetPath(char* name);
 extern void __fastcall FUN_004274c0(void*, int, int);
 
 extern void* DAT_00468ef0;
-extern void* DAT_0046aa24;
-extern "C" { extern void* DAT_0046aa30; }
-extern void* DAT_0046aa18;
-extern void* DAT_0046aa08;
+extern ZBufferManager* DAT_0046aa24;
+extern "C" { extern GameState* DAT_0046aa30; }
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
+class InputManager;
+extern InputManager* DAT_0046aa08;
 
 /* Function start: 0x40EFF0 */
 SC_Fan::SC_Fan()
@@ -535,7 +537,7 @@ void SC_Fan::RenderFan() {
         int dimVal;
         dimVal = dim_168.field_4;
         if (dimVal != 0 && dim_168.field_0 >= dimVal) {
-            ((ZBufferManager*)DAT_0046aa24)->DrawVBufferRegion(
+            (DAT_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
                 invSlot_158.field_0, invSlot_158.field_4, invSlot_158.field_8, invSlot_158.field_C);
 
@@ -559,11 +561,11 @@ void SC_Fan::RenderFan() {
             }
             offset = offset * 4 + 0x12;
 
-            ((ZBufferManager*)DAT_0046aa24)->DrawVBufferRegion(
+            (DAT_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
                 invSlot_158.field_0, invSlot_158.field_4, offset, invSlot_158.field_C);
 
-            ((ZBufferManager*)DAT_0046aa24)->DrawVBufferRegion(
+            (DAT_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0 + offset, dim_170.field_4, 2, 1.0,
                 offset, invSlot_148.field_4, invSlot_148.field_8, invSlot_148.field_C);
         }
@@ -573,7 +575,7 @@ void SC_Fan::RenderFan() {
         int frames;
         void* p;
 
-        ((MouseControl*)DAT_0046aa18)->DrawCursor();
+        (DAT_0046aa18)->DrawCursor();
         FUN_00427880(DAT_00468ef0);
 
         if (*(int*)((int)DAT_00468ef0 + 0xA8) != 0) {

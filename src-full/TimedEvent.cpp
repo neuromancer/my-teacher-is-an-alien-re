@@ -37,7 +37,8 @@ extern void __fastcall FUN_00444af0(void*);
 extern void FreeMemory(void*);
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
 extern char* DAT_0046aa00;
-extern void* DAT_0046aa24;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 
 /* Function start: 0x422AE0 */
 int TimedEvent::Update()

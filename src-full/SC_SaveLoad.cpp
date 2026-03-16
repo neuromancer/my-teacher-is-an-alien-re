@@ -36,7 +36,8 @@ void T_MenuHotspot::Update()
         return;
     }
 
-    extern void* DAT_0046aa08;
+    class InputManager;
+extern InputManager* DAT_0046aa08;
     int mouseX = 0;
     int* pMouse = *(int**)((char*)DAT_0046aa08 + 0x1A0);
     if (pMouse != 0) {

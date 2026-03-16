@@ -14,15 +14,17 @@ extern "C" char* GetSoundFilename(int handle);
 #include "MsgList.h"
 extern MsgList* g_MsgList; // DAT_0046a6dc
 #define g_InventoryList ((LinkedList*)g_MsgList)
-extern void* DAT_0046aa24;
-extern void* DAT_0046aa18;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
 extern void* DAT_0046a6e4;
 extern int DAT_00473334;
 extern int DAT_004733e8;
 
 #include "MouseControl.h"
 #include "T_MenuHotspot.h"
-extern void* DAT_0046aa08;
+extern InputManager* DAT_0046aa08;
 extern void* DAT_0046a6dc;
 extern char* DAT_0046aa00;
 extern void* __fastcall FUN_004407c0(void* self);
@@ -153,7 +155,7 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
         spr->ResetAnimation(0, 0);
     }
 
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
 
     DAT_004733e8 = 1;
     IconBar::CleanupIconBar(msg);
@@ -488,7 +490,7 @@ void SCI_Inventory::Update(int param1, int param2) {
         }
     }
 
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x43EFD0 */

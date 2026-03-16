@@ -7,8 +7,10 @@ extern "C" int SendGameMessage(int, int, int, int, int, int, int, int, int, int)
 extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 
-extern void* DAT_0046aa24;
-extern void* DAT_0046aa18;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
 
 /* Function start: 0x44E5C0 */
 SC_DemoScreen::SC_DemoScreen() {
@@ -91,6 +93,6 @@ void SC_DemoScreen::Update(int param1, int param2) {
     if (handlerId == param2) {
         Sprite* spr = (Sprite*)field_AC;
         spr->Do(spr->num_states, spr->field_0xb0, 1.0);
-        ((MouseControl*)DAT_0046aa18)->DrawCursor();
+        (DAT_0046aa18)->DrawCursor();
     }
 }

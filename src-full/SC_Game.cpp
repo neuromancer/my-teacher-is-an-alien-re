@@ -7,10 +7,11 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" extern void* DAT_0046aa30;
+extern "C" extern GameState* DAT_0046aa30;
 extern char* DAT_0046aa00;
-extern void* DAT_0046aa24;
-extern void* DAT_0046aa18;
+extern ZBufferManager* DAT_0046aa24;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
 #include "MouseControl.h"
 
 /* Function start: 0x431D20 */
@@ -80,7 +81,7 @@ void SC_Game::Update(int param1, int param2) {
             if (stateName != 0) {
                 stateName = (int)((GameState*)field_F4)->GetState(row);
                 sprintf(DAT_0046aa00, "%s", stateName);
-                ((ZBufferManager*)DAT_0046aa24)->ShowSubtitle(
+                (DAT_0046aa24)->ShowSubtitle(
                     DAT_0046aa00, textX,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
@@ -90,13 +91,13 @@ void SC_Game::Update(int param1, int param2) {
                     ShowError("Invalid gamestate %d", row);
                 }
                 sprintf(DAT_0046aa00, "%d", *(int*)(*(int*)(gs + 0x90) + row * 4));
-                ((ZBufferManager*)DAT_0046aa24)->ShowSubtitle(
+                (DAT_0046aa24)->ShowSubtitle(
                     DAT_0046aa00, textX + 0x15e,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
             } else {
                 sprintf(DAT_0046aa00, "**NOLABEL**");
-                ((ZBufferManager*)DAT_0046aa24)->ShowSubtitle(
+                (DAT_0046aa24)->ShowSubtitle(
                     DAT_0046aa00, textX,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
@@ -109,7 +110,7 @@ void SC_Game::Update(int param1, int param2) {
             localRect.top = top;
             localRect.bottom = bottom;
             if (selectedRow == row) {
-                ((ZBufferManager*)DAT_0046aa24)->DrawRect(
+                (DAT_0046aa24)->DrawRect(
                     0, top, 0x27f, bottom, 0x28, 0xfb, 2);
             }
 
@@ -117,7 +118,7 @@ void SC_Game::Update(int param1, int param2) {
         } while (row < scrollOffset + 0xe);
     }
 
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4322D0 */

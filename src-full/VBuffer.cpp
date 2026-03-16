@@ -9,7 +9,8 @@
 #include "GlyphRect.h"
 
 extern "C" extern void* DAT_0046aa14;
-extern void* DAT_0046aa08;
+class InputManager;
+extern InputManager* DAT_0046aa08;
 extern "C" void SetVideoRes(int width, int height);
 
 static int g_VBufferHandleTableInitialized = 0;

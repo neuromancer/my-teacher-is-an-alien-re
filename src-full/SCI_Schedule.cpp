@@ -8,10 +8,13 @@
 #include <stdio.h>
 #include <string.h>
 
-extern void* DAT_0046aa08;
-extern void* DAT_0046aa18;
-extern "C" extern void* DAT_0046aa30;
-extern void* DAT_0046aa24;
+class InputManager;
+extern InputManager* DAT_0046aa08;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
+extern "C" extern GameState* DAT_0046aa30;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 extern int DAT_004733e8;
 
 extern void* __fastcall FUN_00420ce0(void*, int, int);  // MapScene ctor
@@ -269,7 +272,7 @@ void SCI_Schedule::Update(int param1, int param2)
     ((Sprite*)field_A8[6])->RenderAt(0x1BB, 0x190, 0, 0x3FF00000);
 
     FUN_00420f00((void*)field_A8[11]);
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4356E0 */

@@ -14,7 +14,8 @@ extern void __fastcall FUN_0044cb40(void*, int, int, int);
 extern void __fastcall FUN_00425550(void*, int, int);
 extern void FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int);
 
-extern void* DAT_0046aa24;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 extern int g_AnimStates_0046ac30[5];
 extern int g_LastBombDir_0046ac44;
 
@@ -42,7 +43,7 @@ extern void __fastcall FUN_00449320(void*, int, int);  // Engine::VirtCleanup
 extern int __fastcall FUN_00449400(void*, int, void*);  // Engine::CleanupSubsystems
 extern void __fastcall FUN_004494e0(void*);              // Engine::ProcessTargets
 
-extern "C" { extern void* DAT_0046aa30; }
+extern "C" { extern GameState* DAT_0046aa30; }
 
 // Parser-derived class used for MIS file action parsing
 // vtable 0x461100 in original binary
@@ -408,7 +409,7 @@ void SC_DodgeOrville::InitGameState()
     dim_14C.field_0 = 0x46;
     dim_14C.field_4 = 0x1e;
 
-    GameState* gs = (GameState*)DAT_0046aa30;
+    GameState* gs = DAT_0046aa30;
     int idx = gs->FindLabel("MAX_HITS_BY_STINK_BOMBS");
     if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);

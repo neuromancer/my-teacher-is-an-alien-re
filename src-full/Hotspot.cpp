@@ -18,7 +18,7 @@ extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 
 extern void FreeMemory(void*);
 extern void __fastcall FUN_00406fd0(void*, int, int);  // LinkedList::Add (thiscall, 1 stack param)
-extern "C" void* DAT_0046aa30;
+extern "C" GameState* DAT_0046aa30;
 
 #include "HotspotAction.h"
 #include "GameState.h"

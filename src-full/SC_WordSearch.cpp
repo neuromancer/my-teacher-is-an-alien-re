@@ -23,10 +23,13 @@ extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
 
 extern char* DAT_0046bacc;
 extern int DAT_0046cb90;
-extern "C" extern void* DAT_0046aa30;
-extern void* DAT_0046aa18;
-extern void* DAT_0046aa08;
-extern void* DAT_0046aa24;
+extern "C" extern GameState* DAT_0046aa30;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
+class InputManager;
+extern InputManager* DAT_0046aa08;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 extern "C" extern void* DAT_0046aa14;
 
 /* Function start: 0x435800 */
@@ -171,7 +174,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
         pvVar10 = *(void**)((int)this + 0x82c);
         ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
-        ((MouseControl*)DAT_0046aa18)->DrawCursor();
+        (DAT_0046aa18)->DrawCursor();
         piVar1 = *(int**)((int)DAT_0046aa08 + 0x1a0);
         iVar9 = 0;
         if (piVar1 != 0) {
@@ -356,7 +359,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         }
     }
     FUN_00404230(DAT_0046aa24, 0, (char*)((int)this + 0x718), 0x49, 0xdc, 10000, 0);
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
     pvVar10 = *(void**)((int)this + 0x82c);
     ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
 }

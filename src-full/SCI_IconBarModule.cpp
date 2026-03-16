@@ -7,12 +7,13 @@
 #include <string.h>
 #include "TimeOut.h"
 
-extern void* DAT_0046aa08;
-extern void* DAT_0046aa18;
+extern InputManager* DAT_0046aa08;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
 extern void* DAT_0046a6e4;
 extern char* DAT_0046aa00;
 extern char* DAT_0046aa2c;
-extern "C" extern void* DAT_0046aa30;
+extern "C" extern GameState* DAT_0046aa30;
 extern int DAT_00468764;
 
 extern void __fastcall FUN_004459a0(void*, int, int);
@@ -68,7 +69,7 @@ skip_cursor:
         ((CursorControl*)*(void**)((char*)DAT_0046aa18 + 0x94))->SetCursor(0, 0);
     }
 
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
 
     if (field_AC == 0) {
         IconBar::ShutDown(msg);
@@ -153,7 +154,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
 
             if (field_C4 == 0) {
                 gsPtr = (int*)DAT_0046aa30;
-                idx = ((GameState*)DAT_0046aa30)->FindLabel("NUM_ACTIONS");
+                idx = (DAT_0046aa30)->FindLabel("NUM_ACTIONS");
                 if (idx < 0 || gsPtr[0x98 / 4] - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
@@ -181,7 +182,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
         }
     } else if (((int*)msg)[10] >= 2) {
         gsPtr = (int*)DAT_0046aa30;
-        idx = ((GameState*)DAT_0046aa30)->FindLabel("NUM_ACTIONS");
+        idx = (DAT_0046aa30)->FindLabel("NUM_ACTIONS");
         if (idx < 0 || gsPtr[0x98 / 4] - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
@@ -269,7 +270,7 @@ void SCI_IconBarModule::UpdateCursor() {
     }
 
 done:
-    ((MouseControl*)DAT_0046aa18)->DrawCursor();
+    (DAT_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4021C0 */

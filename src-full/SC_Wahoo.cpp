@@ -1,19 +1,31 @@
 #include "SC_Wahoo.h"
+#include "MouseControl.h"
 #include "SpriteAction.h"
+#include "MouseControl.h"
 #include "Sprite.h"
+#include "MouseControl.h"
 #include "Palette.h"
+#include "MouseControl.h"
 #include "InputManager.h"
+#include "MouseControl.h"
 #include "Sample.h"
+#include "MouseControl.h"
 #include "SoundList.h"
+#include "MouseControl.h"
 #include "mss.h"
+#include "MouseControl.h"
 #include "Memory.h"
+#include "MouseControl.h"
 #include "GameState.h"
+#include "MouseControl.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <new.h>
 #include "VBuffer.h"
+#include "MouseControl.h"
 #include "main.h"
+#include "MouseControl.h"
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
@@ -34,6 +46,7 @@ extern void __fastcall FUN_004274c0(void*, int, int);
 // TimerObj = TimeOut (ctor 0x421920 wraps 0x421960, dtor 0x421930)
 // Check() = IsTimeOut() @ 0x421A30, Set() = Start() @ 0x4219F0
 #include "TimeOut.h"
+#include "MouseControl.h"
 
 class DetectionObj {
 public:
@@ -52,13 +65,15 @@ void DetectionObj::Render() {}
 extern "C" int FileExists(const char*);
 extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
-extern void* DAT_0046aa24;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
 
 
 extern void* DAT_0046bbfc;
-extern void* DAT_0046aa08;
-extern void* DAT_0046aa18;
-extern "C" extern void* DAT_0046aa30;
+extern InputManager* DAT_0046aa08;
+class MouseControl;
+extern MouseControl* DAT_0046aa18;
+extern "C" extern GameState* DAT_0046aa30;
 
 /* Function start: 0x437830 */
 SC_Wahoo::SC_Wahoo() {
@@ -357,7 +372,7 @@ void SC_Wahoo::OnProcessEnd() {
     field_160 = 0x91;
 
     if (DAT_0046aa08 != 0) {
-        ((InputManager*)DAT_0046aa08)->Refresh(1);
+        (DAT_0046aa08)->Refresh(1);
     }
 
     if (field_13C != 0) {

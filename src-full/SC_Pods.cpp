@@ -29,8 +29,9 @@ extern void* __fastcall FUN_00440860(void*);
 // FUN_00412a50 = Parser::LBLParse in Parser.h
 
 extern int DAT_0046ae78;
-extern void* DAT_0046aa24;
-extern "C" extern void* DAT_0046aa30;
+class ZBufferManager;
+extern ZBufferManager* DAT_0046aa24;
+extern "C" extern GameState* DAT_0046aa30;
 extern void* DAT_0046bf28;
 extern int DAT_004734a4;
 extern int DAT_0046cb90;

@@ -10,7 +10,7 @@
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
-extern "C" extern void* DAT_0046aa30;
+extern "C" extern GameState* DAT_0046aa30;
 extern "C" extern int DAT_0046a6ec;
 extern char* DAT_0046aa00;
 extern int DAT_00468764;
@@ -344,7 +344,7 @@ void SC_Detention::ResetAnimations() {
 
     ParseFile(this, "mis\\detention.mis", "[MOVE_TO_NEXT_PERIOD]");
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState("PERIOD");
     ((GameState*)gs)->FUN_00409f20(idx);
     int periodVal = gs->stateValues[idx];
@@ -354,32 +354,32 @@ void SC_Detention::ResetAnimations() {
 
     switch (periodVal) {
     case 5:
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("P_AWARE_MIKE");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("P_AWARE_LINSEY");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("S_AWARE_MIKE");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("S_AWARE_LINSEY");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("D_AWARE_MIKE");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("D_AWARE_LINSEY");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] != 0) break;
@@ -388,7 +388,7 @@ void SC_Detention::ResetAnimations() {
         break;
 
     case 0xD:
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("AWARE_TEACHER");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) {
@@ -397,32 +397,32 @@ void SC_Detention::ResetAnimations() {
         break;
 
     case 0x11:
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("LINSEY_ALIEN");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("MIKE_ALIEN");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("WENDY_ALIEN");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("JACK_ALIEN");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("STACY_ALIEN");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
 
-        gs = (GameState*)DAT_0046aa30;
+        gs = DAT_0046aa30;
         idx = gs->FindState("STACY_ALIEN");
         ((GameState*)gs)->FUN_00409f20(idx);
         if (gs->stateValues[idx] == 0) break;
@@ -435,33 +435,33 @@ void SC_Detention::ResetAnimations() {
         break;
     }
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState("PERIOD");
     ((GameState*)gs)->FUN_00409f20(idx);
     sprintf(DAT_0046aa00, "ACTIONSPERIOD%2.2d", gs->stateValues[idx]);
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState(DAT_0046aa00);
     if (idx < 0 || idx >= gs->maxStates - 1) {
         ShowError("Invalid gamestate %d", idx);
     }
     field_148 = gs->stateValues[idx];
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState("P_IN_DETENTION");
     if (idx < 0 || idx >= gs->maxStates - 1) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] == 0) return;
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState("S_IN_DETENTION");
     if (idx < 0 || idx >= gs->maxStates - 1) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] == 0) return;
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState("D_IN_DETENTION");
     if (idx < 0 || idx >= gs->maxStates - 1) {
         ShowError("Invalid gamestate %d", idx);
@@ -484,7 +484,7 @@ void SC_Detention::ProcessPeriodAction(int param) {
         DAT_00472d58.CopyFrom(&action);
     }
 
-    gs = (GameState*)DAT_0046aa30;
+    gs = DAT_0046aa30;
     idx = gs->FindState("MUST_SAVEGAME");
     if (idx < 0 || idx >= gs->maxStates - 1) {
         ShowError("Invalid gamestate %d", idx);

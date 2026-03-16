@@ -13,7 +13,8 @@ extern void __fastcall FUN_0042b0f0(void*);
 extern "C" void FreeMemory(void*);
 
 
-extern void* DAT_0046aa08;
+class InputManager;
+extern InputManager* DAT_0046aa08;
 
 /* Function start: 0x429470 */ /* already in SC_DodgeOrville.cpp */
 

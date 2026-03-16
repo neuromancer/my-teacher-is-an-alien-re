@@ -28,8 +28,8 @@ extern void __fastcall FUN_00406fd0(void*, int, int);
 extern void* DAT_0046a6e0;
 extern void* DAT_0046a6e8;
 extern "C" int DAT_0046a6ec;
-extern "C" void* DAT_0046aa30;
-extern void* DAT_0046aa24;
+extern "C" GameState* DAT_0046aa30;
+extern ZBufferManager* DAT_0046aa24;
 extern char* DAT_0046aa00;
 extern char DAT_00468108[];
 extern char DAT_00468150[];
@@ -55,7 +55,7 @@ SC_Question::SC_Question(int id, int dialog)
         sprintf(label, "Missing Label %d", questionId);
     }
 
-    gsIndex = ((GameState*)DAT_0046aa30)->FindLabel(DAT_00468108);
+    gsIndex = (DAT_0046aa30)->FindLabel(DAT_00468108);
     if (gsIndex < 0 || *(int*)((char*)DAT_0046aa30 + 0x98) - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
     }
@@ -785,7 +785,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             if (actionIndex[result] == 0) {
                 sprintf(DAT_0046aa00, "SPRITE%d", id);
-                actionIndex[result] = ((GameState*)DAT_0046aa30)->FindLabel(DAT_0046aa00);
+                actionIndex[result] = (DAT_0046aa30)->FindLabel(DAT_0046aa00);
                 break;
             }
             result = result + 1;
@@ -812,7 +812,7 @@ int SC_Question::LBLParse(char* param_1)
             int gsIdx1;
             int gsIdx2;
             gsIdx1 = ((GameState*)DAT_0046aa38)->FindLabel(buf2);
-            gsIdx2 = ((GameState*)DAT_0046aa30)->FindLabel(buf1);
+            gsIdx2 = (DAT_0046aa30)->FindLabel(buf1);
             action = FUN_00444a40(mem, 2, gsIdx2, 0, 0, gsIdx1, id, 0, 0, 0, 0);
         }
         if ((((int*)action)[4] == 0x11 || ((int*)action)[4] == 0x12) && result < 4) {

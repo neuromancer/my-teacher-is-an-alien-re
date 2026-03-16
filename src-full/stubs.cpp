@@ -14,6 +14,7 @@
 #include "SC_OnScreenMessage.h"
 #include "SCI_SearchScreen.h"
 #include "InputManager.h"
+#include "MouseControl.h"
 #include "Character.h"
 #include "smack.h"
 #include "mss.h"
@@ -74,20 +75,19 @@ int DAT_00469154 = 0;
 int DAT_00469158 = 0;
 int DAT_0046915c = 0;
 
-// SCI_Inventory globals
-void* DAT_0046aa24 = 0;
-void* DAT_0046aa18 = 0;
+// SCI_Inventory globals — typed as their real classes
+ZBufferManager* DAT_0046aa24 = 0;    // was void*
+MouseControl* DAT_0046aa18 = 0;      // was void*
 void* DAT_0046a6e4 = 0;
 int DAT_00473334 = 0;
 int DAT_004733e8 = 0;
-void* DAT_0046aa08 = 0;
+InputManager* DAT_0046aa08 = 0;      // was void*
 void* DAT_0046a6dc = 0;
 char* DAT_0046aa00 = 0;
 // g_InventoryList removed - same global as g_MsgList (DAT_0046a6dc) in main.cpp
 
-// Full game globals
-extern "C" extern void* DAT_0046aa30;
-#define g_GameState_0046aa30 ((GameState*)DAT_0046aa30)
+// Full game globals — DAT_0046aa30 typed as GameState* (extern "C" definition below)
+extern "C" extern GameState* DAT_0046aa30;
 GameState* g_StringTable_0046aa34 = 0;
 char* DAT_0046aa2c = 0;
 GameState* DAT_0046aa3c = 0;
@@ -112,7 +112,7 @@ extern "C" {
     int DAT_0046a6ec = 0;
     void* DAT_0046aa10 = 0;
     void* DAT_0046aa14 = 0;
-    void* DAT_0046aa30 = 0;
+    GameState* DAT_0046aa30 = 0;
     // DAT_0046ac04 = g_WaitForInputValue_004373bc in globals.cpp (last key pressed)
     char DAT_00473400 = 0;
     char DAT_00472c70[256] = {0};

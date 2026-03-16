@@ -60,8 +60,8 @@ extern void* DAT_0046aa14;   // = g_WorkBuffer_00436974
 
 // Bridge globals (C++ linkage, defined in stubs.cpp)
 extern char* DAT_0046aa00;   // = g_Buffer_00436960
-extern void* DAT_0046aa08;   // = g_InputManager_00436968
-extern void* DAT_0046aa24;   // ZBufferManager* (rendering manager, 0xAC bytes)
+extern InputManager* DAT_0046aa08;   // = g_InputManager_00436968
+extern ZBufferManager* DAT_0046aa24;   // ZBufferManager* (rendering manager, 0xAC bytes)
 
 // Forward declarations for functions defined in this file
 void InitGameSystems();
@@ -90,7 +90,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 
 #include "GameEngine.h"
 extern "C" int DAT_0046a6ec;
-extern "C" extern void* DAT_0046aa30;
+extern "C" extern GameState* DAT_0046aa30;
 extern GameState* DAT_0046aa3c;
 extern GameState* g_StringTable_0046aa34;
 extern void* DAT_0046aa38;
@@ -199,8 +199,8 @@ void RunGame() {
     // Original creates TWO objects (assembly lines 421-452 of FUN_4236F0):
     // 1. DAT_0046aa24 = new ZBufferManager (0xAC bytes, constructor 0x403910) — rendering
     // 2. [0x0046a6ec] = new GameEngine (0x28 bytes, constructor 0x430A00) — game loop
-    DAT_0046aa24 = (void*) new ZBufferManager();
-    g_ZBufferManager_0043698c = (ZBufferManager*)DAT_0046aa24;
+    DAT_0046aa24 = new ZBufferManager();
+    g_ZBufferManager_0043698c = DAT_0046aa24;
     GameEngine* gameEngine = new GameEngine();
     DAT_0046a6ec = (int)gameEngine;
 
@@ -234,7 +234,7 @@ void RunGame() {
 
     // Cleanup: ZBufferManager Cleanup + delete (assembly lines 515-528)
     if (DAT_0046aa24 != 0) {
-        ((ZBufferManager*)DAT_0046aa24)->Cleanup();
+        (DAT_0046aa24)->Cleanup();
         operator delete(DAT_0046aa24);
         DAT_0046aa24 = 0;
         g_ZBufferManager_0043698c = 0;
