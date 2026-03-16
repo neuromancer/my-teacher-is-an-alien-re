@@ -70,12 +70,12 @@ public:
     virtual void ResetState();              // [6] 0x42C230
     virtual void ProcessInput();            // [7] 0x42C960
     virtual void method8();                 // [8] 0x42C070
-    virtual void method9();                 // [9] 0x42C050
+    virtual int method9();                  // [9] 0x42C050
     virtual void method10();               // [10] 0x42BFC0
     virtual void method11();               // [11] 0x42C120
     virtual int method12();                // [12] 0x40BC80
     virtual int HandleAction(int* param);  // [13] 0x42BD70
-    virtual void StopAndCleanup();         // [14] 0x42BF20
+    virtual int StopAndCleanup();          // [14] 0x42BF20
     virtual void SetupViewport();          // [15] 0x42C8A0
     virtual void RenderState();              // [16] 0x42C920
     virtual int UpdateAndCheck();          // [17] 0x40BC90

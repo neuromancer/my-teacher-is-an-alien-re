@@ -168,7 +168,7 @@ extern "C" int __cdecl FUN_00430310(const char* path, int param_2) {
 
 extern void* DAT_0046aa1c; // CDData* for path resolution
 extern int __cdecl FUN_004341f0(char*);
-extern int __cdecl FUN_00425fc0(char*);
+extern int __cdecl GetFileSize(char*);
 extern void __cdecl FUN_004342d0(char*, int);
 extern void __fastcall FUN_00433230(void*, int, char*);
 extern "C" void* FUN_004260f0(char*);
@@ -187,7 +187,7 @@ char* ResolveAssetPath(char* name) {
     }
 
     char* resolved = (char*)FUN_004260f0(basePath);
-    int size = FUN_00425fc0(resolved);
+    int size = GetFileSize(resolved);
     if (size == -1) {
         resolved = (char*)FUN_004260f0(basePath);
         WriteToLog("missing file %s", resolved);

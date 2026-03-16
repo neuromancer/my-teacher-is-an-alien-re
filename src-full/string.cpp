@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <share.h>
+#include <sys/stat.h>
 #include <ctype.h>
 #include <windows.h>
 #include "string.h"
@@ -331,6 +332,22 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
     }
 
     return buffer;
+}
+
+/* Function start: 0x425FC0 */
+int GetFileSize(char* path) {
+    struct _stat statbuf;
+    if (_stat(path, &statbuf) != 0) {
+        return -1;
+    }
+    return statbuf.st_size;
+}
+
+/* Function start: 0x426490 */
+void EncryptAndWrite(char* buffer, FILE* file)
+{
+    DecryptLine(buffer);
+    fputs(buffer, file);
 }
 
 /* Function start: 0x4264B0 */

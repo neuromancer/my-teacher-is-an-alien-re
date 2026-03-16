@@ -71,12 +71,12 @@ FlagArray::~FlagArray()
     SafeClose();
 }
 
-/* Function start: 0x44C0E0 */
+/* Function start: 0x4208E0 */
 void FlagArray::SafeClose() {
-    if (fp != NULL) {
+    if (fp != 0) {
         fclose(fp);
+        fp = 0;
     }
-    fp = 0;
 }
 
 /* Function start: 0x420900 */

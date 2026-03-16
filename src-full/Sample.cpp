@@ -24,7 +24,7 @@ void Sample::Unload() {
 }
 
 extern char* __cdecl ResolveAssetPath(char*);
-extern int __cdecl FUN_00425fc0(char*);
+extern int __cdecl GetFileSize(char*);
 extern "C" FILE* fsopen(const char*, const char*);
 
 /* Function start: 0x424F00 */
@@ -36,7 +36,7 @@ int Sample::Load(char *filename) {
     Unload();
   }
   ResolveAssetPath(filename);
-  m_field8 = FUN_00425fc0(filename);
+  m_field8 = GetFileSize(filename);
   if (m_field8 == 0) {
     return 1;
   }

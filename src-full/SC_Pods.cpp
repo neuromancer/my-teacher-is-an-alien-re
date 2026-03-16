@@ -4,44 +4,45 @@
 #include "Engine.h"
 #include "LinkedList.h"
 #include "GameState.h"
+#include "Viewport.h"
+#include "Palette.h"
+#include "SC_CombatBase.h"
+#include "SC_Question.h"
+#include "Sprite.h"
+#include "Animation.h"
+#include "Sample.h"
 #include "main.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "SlimeTable.h"
 
-
-// FUN_00413e10 = ParseFile in Parser.h
-// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-// FUN_0042be00 = InitCombatScreen - implemented below
 void __fastcall InitCombatScreen(void* self);
 
-extern void __fastcall FUN_00425490(void*);
-extern void* __fastcall FUN_00425480(void*);
-#include "SlimeTable.h"
-extern void* __fastcall FUN_00403620(void*);
-extern void __fastcall FUN_00401c80(void*);
-extern void __fastcall FUN_004061e0(void*);
-extern void* __fastcall FUN_00440860(void*);
+extern void __fastcall FUN_00425490(void*);   // SlimeTable dtor
+extern void* __fastcall FUN_00425480(void*);  // SlimeTable ctor
+extern void* __fastcall FUN_00403620(void*);  // LinkedList RemoveCurrent
+extern void __fastcall FUN_00401c80(void*);   // DrawEntry dtor
+extern void __fastcall FUN_004061e0(void*);   // SoundEntry dtor
+extern void* __fastcall FUN_00440860(void*);  // EngineB ctor
 
-// FUN_00412a50 = Parser::LBLParse in Parser.h
-
-extern int DAT_0046ae78;
-class ZBufferManager;
+extern int DAT_0046ae78;                      // active combat engine instance
+#include "ZBufferManager.h"
 extern ZBufferManager* DAT_0046aa24;
 extern "C" extern GameState* DAT_0046aa30;
-extern void* DAT_0046bf28;
+extern void* DAT_0046bf28;                    // g_SoundTable (SlimeTable*)
 extern int DAT_004734a4;
-extern int DAT_0046cb90;
-extern char* DAT_0046cb94;
+extern int DAT_0046cb90;                      // g_PeriodStateIdx
+extern char* DAT_0046cb94;                    // g_PeriodCharTable
 
 /* Function start: 0x4415E0 */
 SC_Pods::SC_Pods() {
     memset(&handlerId, 0, 24);
-    field_A8[0] = 0;
-    field_A8[1] = 0;
+    resultAction = 0;
+    combatEngine = 0;
     handlerId = 0x44;
 }
 
@@ -52,22 +53,19 @@ SC_Pods::~SC_Pods() {
 
 /* Function start: 0x441700 */
 void SC_Pods::Init(SC_Message* msg) {
-    int* pmsg = (int*)msg;
-
-    CopyCommandData((SC_Message*)msg);
-    moduleParam = pmsg[1];
+    CopyCommandData(msg);
+    moduleParam = ((int*)msg)[1];
 
     if (FileExists("CB_Pods") == 0) {
         ShowLoadingScreen();
     }
 
-    int iVar2 = (int)DAT_0046aa24;
-    int* pState = (int*)(iVar2 + 0x98);
-    if (*pState != 1) {
-        *pState = 1;
+    ZBufferManager* zbm = DAT_0046aa24;
+    if (zbm->m_state != 1) {
+        zbm->m_state = 1;
 
-        // First list cleanup (offset 0xA0)
-        int* list1 = *(int**)(iVar2 + 0xa0);
+        // Clear command queue
+        int* list1 = (int*)zbm->m_queueA0;
         if (*list1 != 0) {
             list1[2] = *list1;
             while (*list1 != 0) {
@@ -79,8 +77,8 @@ void SC_Pods::Init(SC_Message* msg) {
             }
         }
 
-        // Second list cleanup (offset 0xA4)
-        int* list2 = *(int**)(iVar2 + 0xa4);
+        // Clear draw entry queue
+        int* list2 = (int*)zbm->m_queueA4;
         if (*list2 != 0) {
             list2[2] = *list2;
             while (*list2 != 0) {
@@ -92,8 +90,8 @@ void SC_Pods::Init(SC_Message* msg) {
             }
         }
 
-        // Third list cleanup (offset 0x9C)
-        int* list3 = *(int**)(iVar2 + 0x9c);
+        // Clear sound queue
+        int* list3 = (int*)zbm->m_queue9c;
         if (*list3 != 0) {
             list3[2] = *list3;
             while (*list3 != 0) {
@@ -105,82 +103,72 @@ void SC_Pods::Init(SC_Message* msg) {
             }
         }
 
-        *(int*)(iVar2 + 0xa8) = 0;
+        zbm->m_palette = 0;
     }
 
+    // Practice mode setup
     if (savedCommand == 0x2b) {
-        void* gs = DAT_0046aa30;
-        int idx = ((GameState*)gs)->FindLabel("OBJ011");
-        if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+        int idx = DAT_0046aa30->FindState("OBJ011");
+        if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
-        *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 1;
+        DAT_0046aa30->stateValues[idx] = 1;
 
-        gs = DAT_0046aa30;
-        int idx2 = ((GameState*)gs)->FindLabel("KID");
-        if (idx2 < 0 || *(int*)((int)gs + 0x98) - 1 < idx2) {
-            ShowError("Invalid gamestate %d", idx2);
+        int kidIdx = DAT_0046aa30->FindState("KID");
+        if (kidIdx < 0 || DAT_0046aa30->maxStates - 1 < kidIdx) {
+            ShowError("Invalid gamestate %d", kidIdx);
         }
 
-        int kidVal = *(int*)(*(int*)((int)gs + 0x90) + idx2 * 4);
-        void* gs2 = DAT_0046aa30;
+        int kidVal = DAT_0046aa30->stateValues[kidIdx];
+        int periodVal = (kidVal == 1) ? 0x0e : 0x10;
 
-        int periodVal;
-        if (kidVal == 1) {
-            periodVal = 0x0e;
-        } else {
-            periodVal = 0x10;
+        int periodIdx = DAT_0046aa30->FindState("PERIOD");
+        if (periodIdx < 0 || DAT_0046aa30->maxStates - 1 < periodIdx) {
+            ShowError("Invalid gamestate %d", periodIdx);
         }
-
-        int idx3 = ((GameState*)gs2)->FindLabel("PERIOD");
-        if (idx3 < 0 || *(int*)((int)gs2 + 0x98) - 1 < idx3) {
-            ShowError("Invalid gamestate %d", idx3);
-        }
-        *(int*)(*(int*)((int)gs2 + 0x90) + idx3 * 4) = periodVal;
+        DAT_0046aa30->stateValues[periodIdx] = periodVal;
     }
 
-    // Create palette object
-    void* pal = malloc(0xc);
-    void* palObj = 0;
-    if (pal != 0) {
-        palObj = FUN_00425480(pal);
+    // Create sound table
+    void* mem = malloc(0xc);
+    void* soundTable = 0;
+    if (mem != 0) {
+        soundTable = FUN_00425480(mem);
     }
-    DAT_0046bf28 = palObj;
-    ((SlimeTable*)palObj)->Allocate(5);
+    DAT_0046bf28 = soundTable;
+    ((SlimeTable*)soundTable)->Allocate(5);
 
     ParseFile(this, "mis\\cb_Pods.mis", (char*)0);
     InitCombatScreen((void*)DAT_0046ae78);
 
-    // Create SpriteAction
-    if (field_A8[0] == 0) {
-        SpriteAction* sprite = new SpriteAction(
+    // Create result action
+    if (resultAction == 0) {
+        SpriteAction* action = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        field_A8[0] = (int)sprite;
+        resultAction = (int)action;
     }
 }
 
 /* Function start: 0x4419E0 */
 int SC_Pods::ShutDown(SC_Message* msg) {
-    if (field_A8[1] != 0) {
-        ((Engine*)field_A8[1])->StopAndCleanup();
-        if (field_A8[1] != 0) {
-            delete (Engine*)field_A8[1];
-            field_A8[1] = 0;
+    if (combatEngine != 0) {
+        ((Engine*)combatEngine)->StopAndCleanup();
+        if (combatEngine != 0) {
+            delete (Engine*)combatEngine;
+            combatEngine = 0;
         }
         DAT_0046ae78 = 0;
     }
 
-    void* spr = (void*)field_A8[0];
-    if (spr != 0) {
-        ((SpriteAction*)spr)->~SpriteAction();
-        FreeMemory(spr);
-        field_A8[0] = 0;
+    if (resultAction != 0) {
+        ((SpriteAction*)resultAction)->~SpriteAction();
+        FreeMemory((void*)resultAction);
+        resultAction = 0;
     }
 
     if (DAT_0046bf28 != 0) {
-        void* pal = DAT_0046bf28;
-        FUN_00425490(pal);
-        FreeMemory(pal);
+        FUN_00425490(DAT_0046bf28);
+        FreeMemory(DAT_0046bf28);
         DAT_0046bf28 = 0;
     }
 
@@ -193,14 +181,12 @@ int SC_Pods::ShutDown(SC_Message* msg) {
 
 /* Function start: 0x441AE0 */
 int SC_Pods::AddMessage(SC_Message* msg) {
-    int* pmsg = (int*)msg;
+    msg->command = handlerId;
+    msg->priority = 0;
+    msg->data = moduleParam;
 
-    pmsg[2] = handlerId;
-    pmsg[4] = 0;
-    pmsg[3] = moduleParam;
-
-    if (pmsg[11] == 0x1b && savedCommand == 0x2b) {
-        *(int*)(DAT_0046ae78 + 0xdc) |= 4;
+    if (msg->mouseX == 0x1b && savedCommand == 0x2b) {
+        ((SC_CombatBase*)DAT_0046ae78)->field_0xDC |= 4;
     }
 
     return 1;
@@ -220,7 +206,7 @@ int SC_Pods::LBLParse(char* line) {
         if (mem != 0) {
             eng = FUN_00440860(mem);
         }
-        field_A8[1] = (int)eng;
+        combatEngine = (int)eng;
         DAT_0046ae78 = (int)eng;
         Parser::ProcessFile((Parser*)eng, this, (char*)0);
     } else if (strcmp(label, "BGSOUND") == 0) {
@@ -235,72 +221,53 @@ int SC_Pods::LBLParse(char* line) {
     return 0;
 }
 
+// Combat globals (set by SC_CombatBase::SetupViewport)
 extern "C" {
-    extern void* DAT_0046ae4c;
-    extern void* DAT_0046ae54;
-    extern void* DAT_0046ae64;
-    extern void* DAT_0046ae6c;
-    extern void* DAT_0046ae70;
+    extern void* DAT_0046ae4c;  // g_WeaponParser (has sprite bounds at +0x90-0xA4)
+    extern void* DAT_0046ae54;  // g_Viewport (Viewport*)
+    extern void* DAT_0046ae64;  // g_Palette (Palette*)
+    extern void* DAT_0046ae6c;  // g_ScoreDisplay
+    extern void* DAT_0046ae70;  // g_Navigator (mCNavigator*)
 }
 extern void BlankScreen();
-
-class CombatViewport {
-public:
-    int x; int y;
-    void SetClip(int, int);     // 0x445590
-    void SetOffset(int, int);   // 0x4455F0
-    void Refresh();             // 0x445610
-    void SetSize(int, int);     // 0x4455B0
-};
-
-class CombatWeapon {
-public:
-    void SetPriority(unsigned int, int); // 0x0041de20
-};
-
-class CombatSprite2 {
-public:
-    void SetVolume(int, int);   // 0x425100
-};
 
 /* Function start: 0x42BE00 */
 void __fastcall InitCombatScreen(void* self)
 {
-    int param_1 = (int)self;
-    *(int*)(param_1 + 0xdc) = 0;
+    SC_CombatBase* engine = (SC_CombatBase*)self;
+    Viewport* vp = (Viewport*)DAT_0046ae54;
+    int* wpData = (int*)DAT_0046ae4c;  // WeaponParser sprite data
 
-    ((CombatViewport*)DAT_0046ae54)->SetClip(
-        *(int*)((int)DAT_0046ae4c + 0x98),
-        *(int*)((int)DAT_0046ae4c + 0x9c));
+    engine->field_0xDC = 0;
 
-    int iVar1 = *(int*)(*(int*)((int)DAT_0046ae70 + 0xa0) + 0xf0);
-    int iVar3 = 0;
-    if (iVar1 != 0) {
-        iVar3 = *(int*)(*(int*)(iVar1 + 0x18) + 0x18);
+    // wpData offsets: +0x90=x, +0x94=y, +0x98=width, +0x9c=height, +0xa0=palStart, +0xa4=palEnd
+    vp->SetDimensions(*(int*)((char*)wpData + 0x98), *(int*)((char*)wpData + 0x9c));
+
+    Sprite* navSprite = *(Sprite**)((char*)DAT_0046ae70 + 0xa0);
+    Animation* anim = navSprite->animation_data;
+    int frameHeight = 0;
+    if (anim != 0) {
+        frameHeight = anim->targetBuffer->height;
     }
-    int iVar2 = 0;
-    if (iVar1 != 0) {
-        iVar2 = *(int*)(*(int*)(iVar1 + 0x18) + 0x14);
+    int frameWidth = 0;
+    if (anim != 0) {
+        frameWidth = anim->targetBuffer->width;
     }
 
-    ((CombatViewport*)DAT_0046ae54)->SetOffset(
-        iVar2 - *(int*)DAT_0046ae54,
-        iVar3 - *((int*)DAT_0046ae54 + 1));
-    ((CombatViewport*)DAT_0046ae54)->Refresh();
-    ((CombatViewport*)DAT_0046ae54)->SetSize(
-        *(int*)((int)DAT_0046ae4c + 0x90),
-        *(int*)((int)DAT_0046ae4c + 0x94));
+    vp->SetDimensions2(frameWidth - vp->dim.a, frameHeight - vp->dim.b);
+    vp->SetCenter();
+    vp->SetAnchor(*(int*)((char*)wpData + 0x90), *(int*)((char*)wpData + 0x94));
 
     *(int*)((int)DAT_0046ae6c + 4) = 100;
-    *(int*)(param_1 + 0xe8) = 1;
-    *(int*)(param_1 + 0xe0) = 1;
+    engine->field_0xE8 = 1;
+    engine->field_0xE0 = 1;
     BlankScreen();
 
-    ((CombatWeapon*)DAT_0046ae64)->SetPriority(
-        *(unsigned int*)((int)DAT_0046ae4c + 0xa0),
-        *(int*)((int)DAT_0046ae4c + 0xa4) - *(int*)((int)DAT_0046ae4c + 0xa0) + 1);
+    ((Palette*)DAT_0046ae64)->SetPalette(
+        *(unsigned int*)((char*)wpData + 0xa0),
+        *(int*)((char*)wpData + 0xa4) - *(int*)((char*)wpData + 0xa0) + 1);
 
-    if (*(void**)(param_1 + 0xec) != 0) {
-        ((CombatSprite2*)*(void**)(param_1 + 0xec))->SetVolume(100, 0);
+    if (engine->field_0xEC != 0) {
+        ((Sample*)engine->field_0xEC)->Play(100, 0);
     }
 }

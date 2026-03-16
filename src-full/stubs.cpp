@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <share.h>
+#include <sys/stat.h>
 #include "string.h"
 #include "Memory.h"
 #include "OnScreenMessage.h"
@@ -53,11 +54,13 @@ extern "C" {
     void* DAT_0046ae50 = 0;
     void* DAT_0046ae54 = 0;
     void* DAT_0046ae58 = 0;
+    void* DAT_0046ae5c = 0;
     void* DAT_0046ae60 = 0;
     void* DAT_0046ae64 = 0;
     void* DAT_0046ae68 = 0;
     void* DAT_0046ae6c = 0;
     void* DAT_0046ae70 = 0;
+    void* DAT_0046ae74 = 0;
     int DAT_00473e18 = 0;
 }
 
@@ -277,7 +280,11 @@ void* __fastcall FUN_00410fb0(void*, int, char*, int) { return 0; }
 void __fastcall FUN_00420d90(void*) {}
 // FUN_00421020 = ProcessSpriteActions in SCI_SchoolMenu.cpp
 // FUN_00421880 = Timer constructor in Timer.cpp
+// FUN_00425490 = SlimeTable::~SlimeTable in SC_Slime.cpp
+// Still needed as extern by SCI_PracticeRoom, SC_FireAlarm, SC_Pods
 void __fastcall FUN_00425490(void*) {}
+// FUN_00425480 = SlimeTable::SlimeTable in SC_Slime.cpp
+// Still needed as extern by SC_FireAlarm, SC_Pods
 void* __fastcall FUN_00425480(void*) { return 0; }
 
 // FUN_004254a0 = SlimeTable::Allocate in SC_Slime.cpp
@@ -368,16 +375,10 @@ extern "C" {
 #include "GameLoop.h"
 // FUN_0044b7e0 = mCNavNode::CallActivateNeighbor in mCNavNode.cpp (callers updated)
 
-// CombatViewport/CombatWeapon/CombatSprite2 stubs (from InitCombatScreen)
-class CombatViewport { public: int x; int y; void SetClip(int, int); void SetOffset(int, int); void Refresh(); void SetSize(int, int); };
-void CombatViewport::SetClip(int, int) {}
-void CombatViewport::SetOffset(int, int) {}
-void CombatViewport::Refresh() {}
-void CombatViewport::SetSize(int, int) {}
-class CombatWeapon { public: void SetPriority(unsigned int, int); };
-void CombatWeapon::SetPriority(unsigned int, int) {}
-class CombatSprite2 { public: void SetVolume(int, int); };
-void CombatSprite2::SetVolume(int, int) {}
+// CombatViewport = Viewport class (SetClip=SetDimensions, SetOffset=SetDimensions2, Refresh=SetCenter, SetSize=SetAnchor)
+// Methods implemented in Viewport.cpp
+// CombatWeapon = Palette class (SetPriority = SetPalette) — implemented in Palette.cpp
+// CombatSprite2 = Sample class (SetVolume = Play) — implemented in Sample.cpp
 
 // ============================================================================
 // Unresolved externals from new implementations
@@ -401,10 +402,36 @@ void __fastcall FUN_00449520(void*) {}
 void __fastcall FUN_00425100(void*, int, int, int) {}
 void __fastcall FUN_0042b0f0(void*) {}
 
+// SC_CombatBase extern stubs
+int __fastcall FUN_0044be70(void*, int) { return 0; }
+int FUN_0042c9d0(void*) { return 0; }
+void __fastcall FUN_00442940(void*, int, int) {}
+void* __fastcall FUN_00443660(void*, int) { return 0; }
+void __fastcall FUN_00409730(void*, int, int) {}
+// SC_CombatBase::Initialize extern stubs (constructors)
+void* __fastcall FUN_00425170(void*, int, int) { return 0; }
+void* __fastcall FUN_00434660(void*, int) { return 0; }
+void* __fastcall FUN_0044b8d0(void*, int) { return 0; }
+void* __fastcall FUN_0041dbe0(void*, int) { return 0; }
+void* __fastcall FUN_00408fb0(void*, int) { return 0; }
+void* __fastcall FUN_004432f0(void*, int) { return 0; }
+void* __fastcall FUN_0040c5e0(void*, int) { return 0; }
+void* __fastcall FUN_004454f0(void*, int) { return 0; }
+void __fastcall FUN_004127c0(void*, int) {}
+// SC_CombatBase::CleanupAll extern stubs (destructors)
+void __fastcall FUN_0044b950(void*, int) {}
+void __fastcall FUN_0041dc10(void*, int) {}
+void __fastcall FUN_00443360(void*, int) {}
+void __fastcall FUN_00434740(void*, int) {}
+void __fastcall FUN_00409020(void*, int) {}
+void __fastcall FUN_00425200(void*, int) {}
+// mCNavigator extern
+void __fastcall FUN_0044aec0(void*, int) {}
+
 // FUN_00455040 = fclose (CRT)
 // FUN_00455110 = fsopen (string.cpp) = _fsopen(filename, mode, _SH_DENYNO)
 
-int FUN_00425fc0(char*) { return 0; }
+// FUN_00425FC0 = GetFileSize (moved to string.cpp)
 
 // SC_DodgeOrville globals
 struct HitBounds { int minVal; int maxVal; };
