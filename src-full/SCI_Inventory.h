@@ -53,7 +53,7 @@ public:
     Sprite* bgSprite;              // 0x178 — background sprite
     Sample* clickSound;            // 0x17C — item click sound effect
     Palette* palette;              // 0x180 — inventory screen palette
-    void* itemPool;                // 0x184 — item pool (0x18 bytes: head, tail, count, freeList, ...)
+    void* itemPool;                // 0x184 — TimedEventPool* (inlined ctor; accessed via raw int* throughout)
     T_MenuHotspot* putBackButton;    // 0x188 — "put back" button (unknown class, has Sprite* at +0x90, rect at +0x94)
     T_MenuHotspot* useButton;        // 0x18C — "use item" button
     T_MenuHotspot* scrollDownBtn;    // 0x190 — scroll down button (msg 0x12)

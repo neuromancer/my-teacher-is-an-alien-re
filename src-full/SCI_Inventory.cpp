@@ -46,14 +46,15 @@ SCI_Inventory::SCI_Inventory() {
     memset(&slots, 0, 0xF0);
     handlerId = 0x1E;
 
+    // Inline TimedEventPool(10) construction — inlined in original binary
     listObj = (int*)AllocateMemory(0x18);
     if (listObj != 0) {
-        listObj[2] = 0;
-        listObj[3] = 0;
-        listObj[1] = 0;
-        listObj[0] = 0;
-        listObj[4] = 0;
-        listObj[5] = 10;
+        listObj[2] = 0;    // m_count
+        listObj[3] = 0;    // m_free_list
+        listObj[1] = 0;    // list.tail
+        listObj[0] = 0;    // list.head
+        listObj[4] = 0;    // m_pool
+        listObj[5] = 10;   // m_pool_size
     }
     itemPool = (void*)listObj;
 
