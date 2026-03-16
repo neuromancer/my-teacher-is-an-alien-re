@@ -8,6 +8,8 @@
 #include "Memory.h"
 #include "Parser.h"
 #include "SC_Question.h"
+#include "GameState.h"
+extern "C" extern GameState* DAT_0046aa30;
 #include "Message.h"
 #include "globals.h"
 #include "InputManager.h"
@@ -518,6 +520,33 @@ DialogQuestion* SCI_Dialog::FindDialogById(int id) {
 LAB_cleanup:
     if (searchQuestion != 0) delete searchQuestion;
     return 0;
+}
+
+static char g_SpriteString[] = "SPRITE0";
+
+/* Function start: 0x417FE0 */
+void ResetSpriteStates()
+{
+    char name[8];
+    char digit;
+    int i;
+
+    digit = '1';
+    i = 5;
+    *(int*)name = *(int*)g_SpriteString;
+    *(int*)(name + 4) = *(int*)(g_SpriteString + 4);
+
+    do {
+        GameState* gs = DAT_0046aa30;
+        name[6] = digit;
+        int idx = gs->FindState(name);
+        digit++;
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        i--;
+        gs->stateValues[idx] = 0;
+    } while (i != 0);
 }
 
 /* Function start: 0x407EC6 */ /* DEMO ONLY - no full game match */

@@ -1,82 +1,75 @@
 #include "SCI_Schedule.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "T_MenuHotspot.h"
 #include "Memory.h"
 #include "SC_Question.h"
 #include "GameState.h"
 #include "MouseControl.h"
+#include "InputManager.h"
 #include <stdio.h>
 #include <string.h>
 
-class InputManager;
 extern InputManager* DAT_0046aa08;
-class MouseControl;
 extern MouseControl* DAT_0046aa18;
 extern "C" extern GameState* DAT_0046aa30;
-class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
 extern int DAT_004733e8;
-
-extern void* __fastcall FUN_00420ce0(void*, int, int);  // MapScene ctor
-// FUN_00420ef0 inlined: calls StopAnimationSound on [this+0x19C]
-extern void __fastcall FUN_00420f00(void*);            // MapScene render
-extern void __fastcall FUN_00420d90(void*);            // MapScene destructor
 
 /* Function start: 0x434C10 */
 SCI_Schedule::SCI_Schedule()
 {
-    memset(&field_A8, 0, 0xC * 4);
+    memset(&palette, 0, 0xC * 4);
 
     handlerId = 0x27;
     ParseFile(this, "mis\\schedule.mis", (char*)0);
 
     Palette* pal = new Palette();
-    field_A8[0] = (int)pal;
+    palette = pal;
     pal->Load("schedual\\schedule.col");
 
     Sprite* spr = new Sprite("schedual\\schedule.smk");
-    field_A8[1] = (int)spr;
+    bgSprite = spr;
     spr->ConfigStates(3);
     spr->ConfigRange(0, 1, 1, 1);
     spr->ConfigRange(1, 2, 2, 1);
     spr->ConfigRange(2, 3, 3, 1);
-    ((Sprite*)field_A8[1])->handle = 0;
+    bgSprite->handle = 0;
 
     Sprite* spr2 = new Sprite("schedual\\shedbox1.smk");
-    field_A8[2] = (int)spr2;
-    ((Sprite*)field_A8[2])->handle = 5;
-    ((Sprite*)field_A8[2])->flags |= 0x40;
+    selBox1 = spr2;
+    selBox1->handle = 5;
+    selBox1->flags |= 0x40;
 
     Sprite* spr3 = new Sprite("schedual\\shedbox2.smk");
-    field_A8[3] = (int)spr3;
-    ((Sprite*)field_A8[3])->handle = 5;
-    ((Sprite*)field_A8[3])->flags |= 0x40;
+    selBox2 = spr3;
+    selBox2->handle = 5;
+    selBox2->flags |= 0x40;
 
     Sprite* spr4 = new Sprite("schedual\\tardies.smk");
-    int* ebx = &field_A8[4];
-    *ebx = (int)spr4;
-    ((Sprite*)*ebx)->loc_x = 0x54;
-    ((Sprite*)*ebx)->loc_y = 0x190;
+    Sprite** ebx = &tardiesSprite;
+    *ebx = spr4;
+    (*ebx)->loc_x = 0x54;
+    (*ebx)->loc_y = 0x190;
 
     Sprite* spr5 = new Sprite("schedual\\cuts.smk");
-    field_A8[5] = (int)spr5;
-    ((Sprite*)field_A8[5])->loc_x = 0x105;
-    ((Sprite*)field_A8[5])->loc_y = 0x190;
+    cutsSprite = spr5;
+    cutsSprite->loc_x = 0x105;
+    cutsSprite->loc_y = 0x190;
 
     Sprite* spr6 = new Sprite("schedual\\schedule.smk");
-    field_A8[6] = (int)spr6;
-    ((Sprite*)field_A8[6])->loc_x = 0x1BB;
-    ((Sprite*)field_A8[6])->loc_y = 0x190;
+    scheduleSprite = spr6;
+    scheduleSprite->loc_x = 0x1BB;
+    scheduleSprite->loc_y = 0x190;
 
-    // Configure sprites B8-C0 (loop 3 times)
+    // Configure tardies/cuts/schedule sprites (loop 3 times)
     int count = 3;
     do {
-        ((Sprite*)*ebx)->ConfigStates(3);
-        ((Sprite*)*ebx)->ConfigRange(0, 1, 1, 1);
-        ((Sprite*)*ebx)->ConfigRange(1, 2, 2, 1);
-        ((Sprite*)*ebx)->ConfigRange(2, 3, 3, 1);
-        ((Sprite*)*ebx)->handle = 5;
-        ((Sprite*)*ebx)->flags |= 0x40;
+        (*ebx)->ConfigStates(3);
+        (*ebx)->ConfigRange(0, 1, 1, 1);
+        (*ebx)->ConfigRange(1, 2, 2, 1);
+        (*ebx)->ConfigRange(2, 3, 3, 1);
+        (*ebx)->handle = 5;
+        (*ebx)->flags |= 0x40;
         ebx++;
         count--;
     } while (count != 0);
@@ -85,24 +78,22 @@ SCI_Schedule::SCI_Schedule()
 /* Function start: 0x434FB0 */
 SCI_Schedule::~SCI_Schedule()
 {
-    Palette* pal = (Palette*)field_A8[0];
-    if (pal != 0) {
-        pal->~Palette();
-        FreeMemory(pal);
-        field_A8[0] = 0;
+    if (palette != 0) {
+        palette->~Palette();
+        FreeMemory(palette);
+        palette = 0;
     }
 
-    Sprite* spr = (Sprite*)field_A8[1];
-    if (spr != 0) {
-        spr->~Sprite();
-        FreeMemory(spr);
-        field_A8[1] = 0;
+    if (bgSprite != 0) {
+        bgSprite->~Sprite();
+        FreeMemory(bgSprite);
+        bgSprite = 0;
     }
 
-    int* ptr = &field_A8[2];
+    Sprite** ptr = &selBox1;
     int i = 6;
     do {
-        Sprite* s = (Sprite*)*ptr;
+        Sprite* s = *ptr;
         if (s != 0) {
             s->~Sprite();
             FreeMemory(s);
@@ -112,11 +103,10 @@ SCI_Schedule::~SCI_Schedule()
         i--;
     } while (i != 0);
 
-    void* mapScene = (void*)field_A8[11];
-    if (mapScene != 0) {
-        FUN_00420d90(mapScene);
-        FreeMemory(mapScene);
-        field_A8[11] = 0;
+    if (mapHotspot != 0) {
+        mapHotspot->~T_MenuHotspot();
+        FreeMemory(mapHotspot);
+        mapHotspot = 0;
     }
 }
 
@@ -129,31 +119,26 @@ void SCI_Schedule::Init(SC_Message* msg)
 /* Function start: 0x4353E0 */
 int SCI_Schedule::ShutDown(SC_Message* msg)
 {
-    int* ptr = &field_A8[2];
+    Sprite** ptr = &selBox1;
     int i = 6;
     do {
-        Sprite* spr = (Sprite*)*ptr;
-        if (spr != 0) {
-            spr->StopAnimationSound();
+        if (*ptr != 0) {
+            (*ptr)->StopAnimationSound();
         }
         ptr++;
         i--;
     } while (i != 0);
 
-    Sprite* mainSpr = (Sprite*)field_A8[1];
-    if (mainSpr != 0) {
-        mainSpr->StopAnimationSound();
+    if (bgSprite != 0) {
+        bgSprite->StopAnimationSound();
     }
 
     DAT_004733e8 = 1;
     IconBar::ShutDown(msg);
 
-    void* mapScene = (void*)field_A8[11];
-    if (mapScene != 0) {
-        // FUN_00420ef0 inlined: StopAnimationSound on cursor sprite
-        Sprite* cursor = (Sprite*)((int*)mapScene)[0x19C/4];
-        if (cursor != 0) {
-            cursor->StopAnimationSound();
+    if (mapHotspot != 0) {
+        if (mapHotspot->cursor != 0) {
+            mapHotspot->cursor->StopAnimationSound();
         }
     }
 
@@ -178,20 +163,20 @@ int SCI_Schedule::AddMessage(SC_Message* msg)
 
     if (msgData[9] >= 2) {
         int mouseX, mouseY;
-        int* mouse = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+        InputState* mouse = DAT_0046aa08->pMouse;
         mouseY = 0;
         if (mouse != 0) {
-            mouseY = mouse[1];
+            mouseY = mouse->y;
         }
         mouseX = 0;
         if (mouse != 0) {
-            mouseX = mouse[0];
+            mouseX = mouse->x;
         }
 
-        int* ms = (int*)field_A8[11];
-        if (ms[0x90/4] != 0 &&
-            ms[0x9C/4] <= mouseX && ms[0xA4/4] >= mouseX &&
-            ms[0xA0/4] <= mouseY && ms[0xA8/4] >= mouseY) {
+        T_MenuHotspot* hs = mapHotspot;
+        if (hs->sprite != 0 &&
+            hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
+            hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
             msgData[0] = savedCommand;
             msgData[4] = 4;
             msgData[1] = savedMsgData;
@@ -216,20 +201,18 @@ void SCI_Schedule::Update(int param1, int param2)
 
     IconBar::Update(param1, param2);
 
-    Sprite* mainSpr = (Sprite*)field_A8[1];
-    mainSpr->RenderAt(mainSpr->num_states, mainSpr->field_0xb0, 0, 0x3FF00000);
+    bgSprite->RenderAt(bgSprite->num_states, bgSprite->field_0xb0, 0, 0x3FF00000);
 
-    int selState = field_A8[8];
-    if (selState == 1) {
-        ((Sprite*)field_A8[3])->RenderAt(field_A8[9], field_A8[10], 0, 0x3FF00000);
-    } else if (selState == 0) {
-        ((Sprite*)field_A8[2])->RenderAt(field_A8[9], field_A8[10], 0, 0x3FF00000);
+    if (selectionState == 1) {
+        selBox2->RenderAt(renderX, renderY, 0, 0x3FF00000);
+    } else if (selectionState == 0) {
+        selBox1->RenderAt(renderX, renderY, 0, 0x3FF00000);
     }
 
-    int* sprPtr = &field_A8[4];
+    Sprite** sprPtr = &tardiesSprite;
     int count = 4;
     do {
-        Sprite* s = (Sprite*)*sprPtr;
+        Sprite* s = *sprPtr;
         if (s != 0) {
             s->RenderAt(s->num_states, s->field_0xb0, 0, 0x3FF00000);
         }
@@ -238,41 +221,39 @@ void SCI_Schedule::Update(int param1, int param2)
     } while (count != 0);
 
     int mouseX, mouseY;
-    int* mouse = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+    InputState* mouse = DAT_0046aa08->pMouse;
     mouseY = 0;
     if (mouse != 0) {
-        mouseY = mouse[1];
+        mouseY = mouse->y;
     }
     if (mouse != 0) {
-        mouseX = mouse[0];
+        mouseX = mouse->x;
     } else {
         mouseX = 0;
     }
 
-    int* ms = (int*)field_A8[11];
-    if (ms[0x90/4] != 0) {
-        if (ms[0x9C/4] <= mouseX && ms[0xA4/4] >= mouseX &&
-            ms[0xA0/4] <= mouseY && ms[0xA8/4] >= mouseY) {
-            ms[0x94/4] = 1;
-            Sprite* cursor = (Sprite*)ms[0x19C/4];
-            if (cursor != 0) {
-                cursor->ResetAnimation(1, 0);
+    T_MenuHotspot* hs = mapHotspot;
+    if (hs->sprite != 0) {
+        if (hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
+            hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
+            hs->field_94 = 1;
+            if (hs->cursor != 0) {
+                hs->cursor->ResetAnimation(1, 0);
             }
         } else {
-            ms[0x94/4] = 0;
-            Sprite* cursor = (Sprite*)ms[0x19C/4];
-            if (cursor != 0) {
-                cursor->ResetAnimation(0, 0);
+            hs->field_94 = 0;
+            if (hs->cursor != 0) {
+                hs->cursor->ResetAnimation(0, 0);
             }
         }
     }
 
-    ((Sprite*)field_A8[4])->RenderAt(0x55, 0x190, 0, 0x3FF00000);
-    ((Sprite*)field_A8[5])->RenderAt(0x105, 0x190, 0, 0x3FF00000);
-    ((Sprite*)field_A8[6])->RenderAt(0x1BB, 0x190, 0, 0x3FF00000);
+    tardiesSprite->RenderAt(0x55, 0x190, 0, 0x3FF00000);
+    cutsSprite->RenderAt(0x105, 0x190, 0, 0x3FF00000);
+    scheduleSprite->RenderAt(0x1BB, 0x190, 0, 0x3FF00000);
 
-    FUN_00420f00((void*)field_A8[11]);
-    (DAT_0046aa18)->DrawCursor();
+    mapHotspot->Update();
+    DAT_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x4356E0 */
@@ -284,12 +265,8 @@ int SCI_Schedule::LBLParse(char* param_1)
     sscanf(param_1, " %s ", token);
 
     if (strcmp(token, "HOTSPOT") == 0) {
-        void* mapScene = (void*)new char[0x1A8];
-        if (mapScene != 0) {
-            FUN_00420ce0(mapScene, 0, 0);
-        }
-        field_A8[11] = (int)mapScene;
-        Parser::ProcessFile((Parser*)mapScene, this, (char*)0);
+        mapHotspot = new T_MenuHotspot(0);
+        Parser::ProcessFile(mapHotspot, this, (char*)0);
     }
     else if (strcmp(token, "END") == 0) {
         return 1;

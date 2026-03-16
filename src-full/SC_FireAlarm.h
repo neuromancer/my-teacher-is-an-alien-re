@@ -19,6 +19,7 @@ public:
     int AddMessage(SC_Message* msg);
     int ShutDown(SC_Message* msg);
     int Exit(SC_Message* msg);
+    void SendResultMessage();       // 0x4079E0
     void ResetState();              // 0x407BB0
     int HandleClick(int* param);    // 0x407C20
     void Render();                  // 0x407E50

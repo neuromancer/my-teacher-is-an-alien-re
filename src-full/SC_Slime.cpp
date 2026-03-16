@@ -10,6 +10,8 @@
 #include "LinkedList.h"
 #include <new.h>
 #include <string.h>
+#include "GameState.h"
+extern "C" extern GameState* DAT_0046aa30;
 
 extern "C" void SetVideoRes(int, int);
 extern char* __cdecl FUN_0044e470(char*);
@@ -185,6 +187,74 @@ int SC_Slime::ShutDown(SC_Message* msg)
     return 0;
 }
 
+/* Function start: 0x40DF30 */
+void SC_Slime::ProcessSprite(Sprite* spr) {
+    if (spr == 0) {
+        goto render_timer;
+    }
+    if (spr->handle == -1) {
+        goto render_timer;
+    }
+
+    if (spr == 0) {
+        goto render_timer;
+    }
+
+    if (spr->RenderAt(spr->num_states, spr->field_0xb0, 0, 0x3FF00000) == 0) {
+        goto render_timer;
+    }
+
+    switch (spr->handle) {
+    case 0:
+        field_130++;
+        {
+            int done;
+            if (field_134 != 0 && field_130 >= field_134) {
+                done = 1;
+            } else {
+                done = 0;
+            }
+            if (done != 0) {
+                field_170[0] = 1;
+                goto update_progress;
+            }
+        }
+
+        if (field_168 != 0) {
+            ((Sample*)field_168)->Play(100, 1);
+        }
+        spriteBC->ResetAnimation(8, 0);
+
+    update_progress:
+        {
+            int progress = (field_130 * 8) / field_134;
+            if (progress >= 7) {
+                progress = 7;
+            }
+            sprite12C->ResetAnimation(progress, 0);
+        }
+        spr->ResetAnimation(1, 0);
+        break;
+
+    case 1:
+    case 2:
+        spr->ResetAnimation(-1, 0);
+        break;
+
+    default:
+        break;
+    }
+
+render_timer:
+    if (sprite128 == 0) {
+        return;
+    }
+    if (sprite128->RenderAt(sprite128->num_states, sprite128->field_0xb0, 0, 0x3FF00000) == 0) {
+        return;
+    }
+    sprite128->ResetAnimation(-1, 0);
+}
+
 /* Function start: 0x40E070 */
 void SC_Slime::UpdateArmSprites()
 {
@@ -280,8 +350,109 @@ int SC_Slime::Exit(SC_Message* msg)
     return 1;
 }
 
+/* Function start: 0x40D7C0 */
+void SC_Slime::SendResultMessage() {
+    int idx;
+    int* gameResult;
+    if (savedCommand != 0x2B) {
+        // Non-practice mode
+        gameResult = (int*)field_170;
+        if (gameResult[0] != 0) {
+            // Won — send room switch + add 20 to NUM_ACTIONS
+            ((int*)field_A8)[0] = 0x2C;
+            ((int*)field_A8)[1] = 1;
+            goto enqueue;
+        }
+        if (gameResult[2] != 0) {
+            // Alternate win — send room switch + add 30 to NUM_ACTIONS
+            ((int*)field_A8)[0] = 0x20;
+            ((int*)field_A8)[1] = 2;
+            idx = DAT_0046aa30->FindState("NUM_ACTIONS");
+            if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+                ShowError("Invalid gamestate %d", idx);
+            }
+            DAT_0046aa30->stateValues[idx] += 0x14;
+            goto enqueue;
+        }
+        // Lost — add 30 to NUM_ACTIONS
+        idx = DAT_0046aa30->FindState("NUM_ACTIONS");
+        if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        DAT_0046aa30->stateValues[idx] += 0x1E;
+
+    enqueue:
+        EnqueueSpriteAction((void*)field_A8);
+        if (field_A8 != 0) {
+            ((SpriteAction*)field_A8)->~SpriteAction();
+            FreeMemory((void*)field_A8);
+            field_A8 = 0;
+        }
+        return;
+    }
+
+    // Practice mode (savedCommand == 0x2B)
+    gameResult = (int*)field_170;
+    if (gameResult[1] != 0) {
+        // Lost in practice
+        if (field_A8 != 0) {
+            ((SpriteAction*)field_A8)->~SpriteAction();
+            FreeMemory((void*)field_A8);
+            field_A8 = 0;
+        }
+        SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        field_A8 = (int)action;
+        Parser temp;
+        ParseFile(&temp, "mis\\cb_slime.mis", "[WIN_LBL_PR]");
+        goto enqueue;
+    }
+
+    if (gameResult[0] != 0) {
+        // Won in practice
+        if (field_A8 != 0) {
+            ((SpriteAction*)field_A8)->~SpriteAction();
+            FreeMemory((void*)field_A8);
+            field_A8 = 0;
+        }
+        SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        field_A8 = (int)action;
+        Parser temp;
+        ParseFile(&temp, "mis\\cb_slime.mis", "[LOSE_LBL_PR]");
+        goto enqueue;
+    }
+
+    goto enqueue;
+}
+
 // Stubs (moved from stubs.cpp)
 void SC_Slime::Update(int, int) {}
+
+/* Function start: 0x40DEB0 */
+void SC_Slime::CheckTimerExpired(Sprite* spr)
+{
+    if (spr == 0) {
+        return;
+    }
+
+    if (spr->RenderAt(spr->num_states, spr->field_0xb0, 0, 0x3FF00000) == 0) {
+        return;
+    }
+
+    if (spr->handle != 4) {
+        return;
+    }
+
+    if (((Sprite*)field_D0)->handle != 4) {
+        return;
+    }
+
+    if (((Sprite*)field_D4)->handle != 4) {
+        return;
+    }
+
+    spriteC4->ResetAnimation(2, 0);
+    field_170[1] = 1;
+}
 
 SlotPair::SlotPair() { field_0 = 0; field_4 = 0; }
 

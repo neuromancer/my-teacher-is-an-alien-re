@@ -33,8 +33,11 @@ public:
     virtual void Update(int param1, int param2);
     virtual int Exit(SC_Message* msg);
 
+    void ProcessSprite(Sprite* spr); // 0x40DF30
+    void SendResultMessage();    // 0x40D7C0
     void ResetSprites();         // 0x40E0D0
     void UpdateArmSprites();     // 0x40E070
+    void CheckTimerExpired(Sprite* spr); // 0x40DEB0
 
     int field_A8;       // 0xA8 - action/message object pointer
     int field_AC;       // 0xAC

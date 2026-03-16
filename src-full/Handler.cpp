@@ -20,7 +20,7 @@ void Handler::CopyCommandData(SC_Message* msg) {
 
 // Default WriteMessageAddress implementation
 // Corresponds to FUN_004171B0
-/* Function start: 0x4171B0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4309C0 */
 int Handler::WriteMessageAddress(SC_Message* msg) {
     //ShowMessage("WriteMessage mouseX=%d click=(%d,%d)", msg->mouseX, msg->clickX, msg->clickY);
     if (msg == 0) {

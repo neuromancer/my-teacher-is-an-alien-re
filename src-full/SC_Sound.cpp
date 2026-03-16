@@ -92,7 +92,19 @@ int SC_Sound::AddMessage(SC_Message* msg) {
     return 1;
 }
 
+extern int DAT_0046ae78;
+extern void __fastcall FUN_00449320(void*, int, int);
+
+/* Function start: 0x40B780 */
 int SC_Sound::ShutDown(SC_Message* msg) {
+    if (DAT_0046ae78 != 0) {
+        int* obj = (int*)DAT_0046ae78;
+        int* vtbl = (int*)*obj;
+        void (__fastcall *fn)(int*, int, int) = (void (__fastcall *)(int*, int, int))vtbl[3];
+        fn(obj, 0, 1);
+        DAT_0046ae78 = 0;
+    }
+    FUN_00449320(this, 0, (int)msg);
     return 0;
 }
 

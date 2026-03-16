@@ -195,7 +195,12 @@ void SprInit::FUN_00420ce0(int) {}
 // GameLoopHelper helper stubs
 // ============================================================================
 void __cdecl FUN_0041a6f0(void* data, int count) {}
-int __cdecl FUN_0041a6d0(void* a, void* b) { return 0; }
+/* Function start: 0x41A6D0 */
+int __cdecl FUN_0041a6d0(void* a, void* b) {
+    int diff = *(int*)(*(int*)b + 0x40) - *(int*)(*(int*)a + 0x40);
+    if (diff < 1) return 0;
+    return 1;
+}
 
 // ============================================================================
 // SoundTracker stubs and globals
@@ -204,6 +209,9 @@ int __cdecl FUN_0041a6d0(void* a, void* b) { return 0; }
 struct SoundPool;
 SoundPool* DAT_00469134 = 0;
 int DAT_00469128 = 0;
+void* DAT_00469138 = 0;    // FilePosCache LRU node
+int DAT_0046912c = 0;      // FilePosCache hit counter
+int DAT_00469130 = 0;      // FilePosCache miss counter
 
 void SoundTracker::Init() {}
 void SoundTracker::Cleanup() {}
@@ -246,7 +254,7 @@ void __fastcall FUN_0040b760(void*, int, int) {}
 void* __fastcall FUN_00450b10(void*) { return 0; }
 void __fastcall FUN_0044c880(void*) {}
 // FUN_00420ac0 = FlagArray::ClearFlag in FlagArray.cpp
-void __fastcall FUN_004128f0(void*) {}
+// FUN_004128f0 = TimedEventPool dtor in Parser.cpp (callers updated)
 // FUN_00432da0 = MouseControl::DrawCursor in MouseControl.cpp
 // FUN_00421bc0 = T_MenuHotspot::Update in SC_SaveLoad.cpp
 void* __fastcall FUN_004407c0(void* self) { return 0; }

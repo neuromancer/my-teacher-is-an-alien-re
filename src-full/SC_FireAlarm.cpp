@@ -37,7 +37,30 @@ class RenderObj {
 public:
     void Render();               // 0x432DA0
 };
-int DetMask::CheckHit(int, int) { return 0; }
+/* Function start: 0x411330 */
+int DetMask::CheckHit(int x, int y) {
+    // DetMask IS a VBuffer — uses VBuffer field layout
+    int* self = (int*)this;
+    int w = self[5];        // width at +0x14
+    int h = self[6];        // height at +0x18
+    int cx1 = self[10];     // clip_x1 at +0x28
+    int cx2 = self[11];     // clip_x2 at +0x2C
+    int cy1 = self[8];      // clip_y1 at +0x20
+    int cy2 = self[9];      // clip_y2 at +0x24
+
+    // Pixel offset: (height - 1 - y) * width + x
+    int offset = (h - 1 - y) * w + x;
+
+    // Bounds check
+    if (cx1 > x || cx2 < x || cy1 > y || cy2 < y) {
+        return -1;
+    }
+
+    // Read pixel from data buffer
+    ((VBuffer*)this)->Lock();
+    unsigned char pixel = ((unsigned char*)((VBuffer*)this)->data)[offset];
+    return (int)pixel;
+}
 void RenderObj::Render() {}
 
 extern int DAT_004685ac;
@@ -217,6 +240,42 @@ int SC_FireAlarm::Exit(SC_Message* msg) {
     }
 
     return 1;
+}
+
+/* Function start: 0x4079E0 */
+void SC_FireAlarm::SendResultMessage() {
+    // Destroy existing action at field_A8
+    if (field_A8 != 0) {
+        ((SpriteAction*)field_A8)->~SpriteAction();
+        FreeMemory((void*)field_A8);
+        field_A8 = 0;
+    }
+
+    // Create new SpriteAction
+    SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    field_A8 = (int)action;
+
+    // Parse win or lose message from CB_FireAlarm.mis
+    Parser temp;
+    if (field_AC & 2) {
+        ParseFile(&temp, "mis\\CB_FireAlarm.mis", "[WIN_MESSAGE]");
+    } else {
+        ParseFile(&temp, "mis\\CB_FireAlarm.mis", "[LOSE_MESSAGE]");
+    }
+
+    // Copy handler IDs if this is SCI_PracticeRoom (0x2B)
+    if (savedCommand == 0x2B) {
+        ((int*)field_A8)[2] = savedCommand;
+        ((int*)field_A8)[3] = savedMsgData;
+    }
+
+    // Enqueue and destroy
+    EnqueueSpriteAction((void*)field_A8);
+    if (field_A8 != 0) {
+        ((SpriteAction*)field_A8)->~SpriteAction();
+        FreeMemory((void*)field_A8);
+        field_A8 = 0;
+    }
 }
 
 /* Function start: 0x407BB0 */

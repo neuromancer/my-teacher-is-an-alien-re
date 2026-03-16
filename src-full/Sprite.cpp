@@ -14,13 +14,22 @@
 
 #include "VBuffer.h"
 
+// Video buffer name table: 32 entries × 64 bytes at 0x4734B0
+static char g_VideoBufferNameTable[32][64];
+
+/* Function start: 0x44C650 */
+extern "C" char* GetVideoBufferNameSlot(int handle)
+{
+    return g_VideoBufferNameTable[handle];
+}
+
 /* Function start: 0x44C660 */ /* ~82% match */
 Sprite::Sprite(char* filename)
 {
     // BaseObject::BaseObject_Init((undefined4 *)this);
-    loc_x = 0;
-    loc_y = 0;
-    memset(&ranges, 0, 0x14 * 4);
+    num_states = 0;
+    field_0xb0 = 0;
+    memset(&ranges, 0, 0x1A * 4);
     flags |= 0x20;
     if (filename != 0) {
         sscanf(filename, "%s", sprite_filename);
@@ -68,14 +77,14 @@ void Sprite::Init()
 
     if (animation_data->targetBuffer != 0) {
         if (g_SpriteTableInitialized_00436b9c == 0) {
-            char* ptr = g_SpriteFilenameTable_0043d630;
+            char* ptr = (char*)g_VideoBufferNameTable;
             do {
                 *ptr = 0;
                 ptr += 0x40;
-            } while (ptr < &g_SpriteFilenameTable_0043d630[0x800]);
+            } while (ptr < (char*)g_VideoBufferNameTable + 0x800);
             g_SpriteTableInitialized_00436b9c = 1;
         }
-        strcpy(&g_SpriteFilenameTable_0043d630[animation_data->targetBuffer->handle * 0x40], sprite_filename);
+        strcpy(g_VideoBufferNameTable[animation_data->targetBuffer->handle], sprite_filename);
     }
 
     CheckRanges1();
@@ -104,7 +113,7 @@ void Sprite::StopAnimationSound()
     animation_data = 0;
 
     if (sound_idx != -1) {
-        g_SpriteFilenameTable_0043d630[sound_idx * 0x40] = 0;
+        g_VideoBufferNameTable[sound_idx][0] = 0;
     }
     flags |= 0x20;
 }
@@ -120,15 +129,19 @@ void Sprite::InitAnimation()
     animation_data->Open(sprite_filename, 0xfe000, -1);
 }
 
-/* Function start: 0x44CB10 */ /* ~86% match */
+/* Function start: 0x44CB10 */
 void Sprite::FreeAnimation()
 {
-    if (animation_data != 0 && animation_data->targetBuffer != 0) {
-        if (animation_data->targetBuffer->handle != -1) {
-            g_SpriteFilenameTable_0043d630[animation_data->targetBuffer->handle * 0x40] = 0;
-        }
-        animation_data->FreeVBuffer();
+    if (animation_data == 0) {
+        return;
     }
+    if (animation_data->targetBuffer == 0) {
+        return;
+    }
+    if (animation_data->targetBuffer->handle != -1) {
+        g_VideoBufferNameTable[animation_data->targetBuffer->handle][0] = '\0';
+    }
+    animation_data->FreeVBuffer();
 }
 
 /* Function start: 0x41D190 */ /* DEMO ONLY - no full game match */
@@ -305,7 +318,7 @@ after_anim:
     return done;
 }
 
-/* Function start: 0x41D500 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x44CF50 */
 void Sprite::CheckRanges1()
 {
     if (animation_data == 0) {
@@ -314,36 +327,23 @@ void Sprite::CheckRanges1()
     if (ranges == 0) {
         ShowError("error Sprite::CheckRanges1");
     }
-    /*if (num_states > 0) {
-        for (int i = 0; i < num_states; i++) {
-            Range *range = &ranges[i];
-            int iVar1 = animation_data->smk->FrameNum;
-            if (iVar1 < range->end) {
-                range->end = iVar1;
-            }
-            if (range->end < range->start) {
-                ShowError("bad range[%d].start = %d in %s", i, range->start, sprite_filename);
-            }   
-        }
-    }*/
 
     int iVar4 = 0;
-    if (0 < num_states) {
+    if (0 < loc_x) {
         int iVar3 = 0;
         do {
             int* piVar2 = (int*)((char*)ranges + iVar3 + 4);
-            int iVar1 = animation_data->smk->Frames;
+            int iVar1 = *(int*)(*(int*)(*(int*)((char*)animation_data + 0xc) + 0xc));
             if (iVar1 < *piVar2) {
                 *piVar2 = iVar1;
             }
             piVar2 = (int*)((char*)ranges + iVar3);
-            iVar1 = *piVar2;
-            if (piVar2[1] < iVar1) {
-                ShowError("bad range[%d].start = %d in %s", iVar4, iVar1, sprite_filename);
+            if (piVar2[1] < *piVar2) {
+                ShowError("bad range[%d].start = %d in %s", iVar4, *piVar2, sprite_filename);
             }
-            iVar3 += 8;
+            iVar3 += 0x10;
             iVar4++;
-        } while (iVar4 < num_states);
+        } while (iVar4 < loc_x);
     }
 }
 

@@ -4,16 +4,11 @@ ViewportPair::~ViewportPair()
 {
 }
 
-/* Function start: 0x412B50 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4454F0 */
 Viewport::Viewport()
 {
-    Viewport::scrollX = 0;
-    Viewport::scrollY = 0;
-    Viewport::anchorOffsetY = 0;
-    Viewport::SetDimensions(0x140, 0xc8);
-    Viewport::SetDimensions2(0, 0);
-    Viewport::SetCenter();
-    Viewport::SetAnchor(0, Viewport::dim.b - 1);
+    scrollX = 0;
+    scrollY = 0;
 }
 
 /* Function start: 0x445590 */
@@ -24,11 +19,16 @@ void Viewport::SetDimensions(int w, int h) {
     }
 }
 
-/* Function start: 0x412C50 */ /* DEMO ONLY - no full game match */
+extern "C" extern void* DAT_0046ae4c;
+
+/* Function start: 0x4455B0 */
 void Viewport::SetAnchor(int x, int y) {
     int iVar1;
     iVar1 = (y - Viewport::dim.b) + 1;
-    if (iVar1 >= 0 && x >= 0 && x < 0x140 && y >= 0 && y < 0xc8) {
+    if (iVar1 >= 0 && x >= 0 &&
+        *(int*)((int)DAT_0046ae4c + 0x98) > x &&
+        y >= 0 &&
+        *(int*)((int)DAT_0046ae4c + 0x9c) > y) {
         Viewport::anchor.a = x;
         Viewport::anchor.b = y;
         Viewport::anchorOffsetY = iVar1;

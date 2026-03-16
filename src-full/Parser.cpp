@@ -3,6 +3,9 @@
 #include "GameConfig.h"
 #include "Memory.h"
 #include "Timer.h"
+#include "TimedEvent.h"
+#include "SpriteAction.h"
+#include "GameState.h"
 #include "string.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -10,10 +13,11 @@
 #include <string.h>
 
 extern int g_ParserCount;          // DAT_00469288
-extern void* g_FilePosCache;       // DAT_00469144
+extern void* g_FilePosCache;
+extern "C" extern GameState* DAT_0046aa30;       // DAT_00469144
 extern char* DAT_0046aa00;        // global string buffer
 
-extern void __fastcall FUN_004128f0(void*); // destructor for g_FilePosCache
+// FUN_004128f0 = TimedEventPool destructor wrapper (inlined below)
 
 extern int DAT_00469160;  // preprocessor variable substitution flag
 
@@ -41,9 +45,8 @@ Parser::~Parser() {
   }
   g_ParserCount--;
   if (g_ParserCount == 0 && g_FilePosCache != 0) {
-    void* p = g_FilePosCache;
-    FUN_004128f0(p);
-    FreeMemory(p);
+    ((TimedEventPool*)g_FilePosCache)->~TimedEventPool();
+    FreeMemory(g_FilePosCache);
     g_FilePosCache = 0;
   }
 }
@@ -109,14 +112,9 @@ void Parser::RestoreFilePosition() {
   }
 }
 
-class FilePosCache {
-public:
-  __int64 Lookup(char* filename, char* key);   // 0x412130
-  void Store(char* filename, char* key, int posLo, int posHi);  // 0x412210
-};
-FilePosCache* g_FilePosCache_46928c = 0;  // DAT_0046928c
-__int64 FilePosCache::Lookup(char* filename, char* key) { return -1; }
-void FilePosCache::Store(char* filename, char* key, int posLo, int posHi) {}
+// FilePosCache moved to FilePosCache.cpp
+#include "FilePosCache.h"
+
 
 /* Function start: 0x412AD0 */
 void Parser::FindKey(unsigned char *param_1) {
@@ -153,7 +151,7 @@ void Parser::FindKey(unsigned char *param_1) {
   }
 }
 
-extern "C" char* FUN_00426570(char*, char*);
+extern "C" char* FUN_00426570(char*, char*); // case-insensitive strstr (0x426570)
 
 /* Function start: 0x413810 */
 int Parser::GetTokenType(char* line) {
@@ -355,9 +353,197 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
   return (Parser*)result;
 }
 
-// Stubs (moved from stubs.cpp)
-void Parser::HandleToken(int tokenType, char* line) {}
-void Parser::BeginComment(char* line, int flag) {}
-int Parser::EndComment() { return 0; }
-int Parser::DoCommentsMatch(char* line) { return 0; }
+// Duplicates removed — FUN_00426570, g_FilePosCache, DAT_0046aa30 declared at top of file
+
+/* Function start: 0x412C00 */
+void Parser::BeginComment(char* line, int flag) {
+    char* start = FUN_00426570(line, "/*");
+    char* end = strstr(line, "*/");
+    int len = end - start;
+    if (start == 0 || end == 0 || len <= 0) {
+        ShowError("Parser::SaveComment - %s", line);
+    }
+    memcpy(&isProcessingKey + 2, start, len); // offset +0x10 = commentBuffer
+    ((char*)(&isProcessingKey + 2))[len] = '\0';
+}
+
+/* Function start: 0x412C60 */
+int Parser::DoCommentsMatch(char* line) {
+    char localBuf[32];
+    char* start = FUN_00426570(line, "/*");
+    char* end = strstr(line, "*/");
+    int len = end - start;
+    if (start == 0 || end == 0 || len <= 0) {
+        ShowError("Parser::DoCommentsMatch - %s", line);
+    }
+    memcpy(localBuf, start, len);
+    localBuf[len] = '\0';
+    if (strcmp(localBuf, (char*)(&isProcessingKey + 2)) == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+/* Function start: 0x4130E0 */
+void Parser::UpdateProcessingState() {
+    isProcessingKey = 0;
+    int* cache = (int*)g_FilePosCache;
+    int* node = (int*)cache[0]; // head
+    while (node != 0) {
+        if (node[2] & 1) {
+            node = (int*)node[0]; // next
+        } else {
+            isProcessingKey = 1;
+            return;
+        }
+    }
+}
+
+/* Function start: 0x412EB0 */
+void Parser::PushConditionalState(int value) {
+    // Ensure g_FilePosCache exists
+    if (g_FilePosCache == 0) {
+        g_FilePosCache = (void*)new TimedEventPool(10);
+    }
+
+    // Allocate node from pool
+    TimedEventPool* pool = (TimedEventPool*)g_FilePosCache;
+    int* freeList = (int*)&pool->m_free_list;
+    if (*freeList == 0) {
+        // Grow pool
+        int growBy = pool->m_pool_size;
+        int* block = (int*)AllocateMemory(growBy * 12 + 4);
+        *block = (int)pool->m_pool;
+        pool->m_pool = (PooledEvent*)block;
+        int i = growBy - 1;
+        int* p = (int*)((char*)block + growBy * 12 - 8);
+        while (i >= 0) {
+            *p = *freeList;
+            *freeList = (int)p;
+            p -= 3;
+            i--;
+        }
+    }
+
+    int* node = (int*)*freeList;
+    *freeList = node[0];
+    node[1] = 0;
+    node[0] = (int)pool->list.head;
+    pool->m_count++;
+    node[2] = 0;
+
+    // Zero loop (matches assembly volatile pattern)
+    { volatile int n = 0; while (n-- != 0); }
+
+    node[2] = value;
+
+    // Link to head
+    if (pool->list.head != 0) {
+        ((int*)pool->list.head)[1] = (int)node;
+    } else {
+        pool->list.tail = (PooledEvent*)node;
+    }
+    pool->list.head = (PooledEvent*)node;
+
+    UpdateProcessingState();
+}
+
+/* Function start: 0x412FE0 */
+int Parser::EndComment() {
+    // Ensure g_FilePosCache exists
+    if (g_FilePosCache == 0) {
+        g_FilePosCache = (void*)new TimedEventPool(10);
+    }
+
+    TimedEventPool* pool = (TimedEventPool*)g_FilePosCache;
+    if (pool->m_count == 0) {
+        ShowError("Parser::Pop - IF/ELSEIF ordering Error in %s", filename);
+    }
+
+    // Pop head node
+    int* head = (int*)pool->list.head;
+    int result = head[2]; // saved value
+    int* next = (int*)head[0];
+    pool->list.head = (PooledEvent*)next;
+    if (next != 0) {
+        next[1] = 0;
+    } else {
+        pool->list.tail = 0;
+    }
+
+    // Zero loop (matches assembly volatile pattern)
+    { volatile int n = 0; while (n-- != 0); }
+
+    // Return to free list
+    head[0] = (int)pool->m_free_list;
+    pool->m_free_list = (PooledEvent*)head;
+    pool->m_count--;
+
+    UpdateProcessingState();
+    return result;
+}
+
+/* Function start: 0x412D00 */
+void Parser::HandleToken_IF(char* line, int prevResult) {
+    int result;
+
+    if (isProcessingKey != 0) {
+        goto push_result;
+    }
+
+    {
+        char gsName[128];
+        char gsOp[32];
+        int gsValue;
+        result = 0;
+
+        char* ifPos = FUN_00426570(line, "GAMESTATE");
+        if (ifPos == 0) {
+            goto check_params;
+        }
+        result = sscanf(ifPos, " GAMESTATE %s %s %d", gsName, gsOp, &gsValue);
+
+    check_params:
+        if (result != 3) {
+            ShowError("Parser::HandleToken_IF - Invaild IF/ELSEIF statement '%s'", line);
+        }
+
+        // Build SpriteAction with parsed values
+        SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Parser temp;
+
+        // Format: "ADDRESS\t\tGAMESTATE %s"
+        char tempBuf[256];
+        sprintf(tempBuf, "ADDRESS\t\tGAMESTATE %s", gsName);
+        temp.LBLParse(tempBuf);
+
+        sprintf(tempBuf, "INSTRUCTION   %s", gsOp);
+        temp.LBLParse(tempBuf);
+
+        sprintf(tempBuf, "EXTRA1        %d", gsValue);
+        temp.LBLParse(tempBuf);
+
+        // Evaluate the condition
+        result = 0; // TODO: condition evaluation
+    }
+
+push_result:
+    if (prevResult != 0) {
+        prevResult |= 3;
+    }
+    PushConditionalState(prevResult);
+}
+
+/* Function start: 0x413120 */
+void Parser::HandleToken(int tokenType, char* line) {
+    // Large switch on tokenType (1-13), dispatching to various handlers:
+    //   1: SET_GAMESTATE, SET_MOUSE, GOSUB, GOTO, HALT, VARIABLE, _RETURN_
+    //   3: BeginComment + Push(0) + set field_0xC = 1
+    //   4: Pop, check bit 2, push result — ELSEIF
+    //   5: Pop, check bit 2, push toggled — ELSE
+    //   6: SET_GAMESTATE (token 6)
+    //   7-13: various other token handlers
+    // TODO: Full implementation needed (656 lines of assembly)
+}
+
 void Parser::SubstituteVars(char* src, char* dst) {}

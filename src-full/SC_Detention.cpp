@@ -541,5 +541,51 @@ int SC_Detention::LBLParse(char* line) {
     return 0;
 }
 
-void SC_Detention::HandleCombat() {}
+/* Function start: 0x40AB90 */
+void SC_Detention::HandleCombat() {
+    SpriteAction temp(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
+    DAT_00472d58.CopyFrom(&temp);
+
+    SendGameMessage(3, 0xC7, 0x2D, 1, 4, 0, 0, 0, 0, 0);
+
+    int idx = DAT_0046aa30->FindState("MUST_SAVEGAME");
+    if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    DAT_0046aa30->stateValues[idx] = 0;
+}
 void SC_Detention::HandlePractice() {}
+
+/* Function start: 0x40B0D0 */
+void SC_Detention::Serialize(void* param) {
+    int strLen;
+    FILE* fp;
+    int id;
+
+    strLen = strlen("DETENTION_INFO") + 1;
+    fp = *(FILE**)((char*)param + 0x44);
+
+    if (*(int*)param != 0) {
+        /* SAVE */
+        id = handlerId;
+        fwrite(&id, 4, 1, fp);
+        fwrite("DETENTION_INFO", strLen, 1, fp);
+        fwrite(&field_148, 1, 4, fp);
+        fwrite(&field_14C, 1, 4, fp);
+        fwrite(&field_150, 1, 4, fp);
+        fwrite(&field_160, 1, 4, fp);
+    } else {
+        /* LOAD */
+        extern char* DAT_0046aa00;
+        *DAT_0046aa00 = 0;
+        fread(DAT_0046aa00, strLen, 1, fp);
+
+        if (strcmp(DAT_0046aa00, "DETENTION_INFO") != 0) {
+            ShowError("SCI_SearchScreen::Serialize() - Error Loading (Wrong ID '%s')", DAT_0046aa00);
+        }
+        fread(&field_148, 1, 4, fp);
+        fread(&field_14C, 1, 4, fp);
+        fread(&field_150, 1, 4, fp);
+        fread(&field_160, 1, 4, fp);
+    }
+}

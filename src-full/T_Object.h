@@ -18,6 +18,7 @@ public:
     ~T_Object();                    // 0x40C6E0
     virtual int LBLParse(char*);    // 0x40CA20
 
+    void StopSound();                          // 0x40C830
     void Display(int x, int y, int visible);  // 0x40C840
     void Reset();                              // 0x40C890
     int HandleMsg(int* msg);                   // 0x40C9E0

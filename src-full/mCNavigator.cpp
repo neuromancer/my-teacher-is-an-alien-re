@@ -24,6 +24,25 @@ char* g_DirectionChars = "NESWUD";
 
 Sprite* g_Sprite_004360a0 = 0;
 
+extern void __fastcall FUN_0044aec0(void*, int);
+
+/* Function start: 0x449AE0 */
+void __cdecl CleanupNavNodes(void** array, int count)
+{
+    void* node;
+    int i = count;
+
+    while (i-- != 0) {
+        node = *array;
+        if (node != 0) {
+            FUN_0044aec0(node, 0);
+            FreeMemory(node);
+            *array = 0;
+        }
+        array++;
+    }
+}
+
 /* Function start: 0x449B20 */
 int FindCharIndex(char ch)
 {

@@ -30,6 +30,7 @@ public:
     void DrawDetention();           // 0x40AD50
     void HandleCombat();            // 0x40AB90
     void HandleInput40();           // 0x40AB30
+    void Serialize(void* param);    // 0x40B0D0
     void HandlePractice();          // 0x40AC70
     void ResetAnimations();         // 0x40A130
     void ProcessPeriodAction(int param);  // 0x40AD80

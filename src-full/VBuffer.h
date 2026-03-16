@@ -40,7 +40,10 @@ public:
     void LoadFromFile(char* filename, int param_2); // 0x411270
     void ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale);
 
-    // Copy rectangle rows from srcBuffer into this buffer with transparent handling
+    void DumpHandleInfo();                  // 0x410F40
+    void BlitTransparentRegion(int, int, int, int, int, int, int);  // 0x411530
+    void BlitReversedRows(int, int, int, int, int, int, int);      // 0x4115F0
+    void ClipAndBlitReversed(int, int, int, int, int, int, int);   // 0x4118E0
 
 
     // Member function version to match __thiscall calling convention (0x41A9F0)

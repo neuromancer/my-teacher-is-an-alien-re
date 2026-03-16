@@ -31,10 +31,54 @@ void InitVBufferHandleTable(void)
     }
 }
 
-/* Function start: 0x41A9D0 */ /* DEMO ONLY - no full game match */
+// GetVideoBufferNameSlot(handle) = 0x4734B0 + handle * 64
+extern "C" char* GetVideoBufferNameSlot(int handle);  // 0x44C650
+extern "C" extern char DAT_00472c70[];                 // pending filename buffer
+
+/* Function start: 0x410ED0 */
 void RegisterVBufferHandle(int handle)
 {
     g_VBufferHandleTable[handle] = handle;
+    char* name = GetVideoBufferNameSlot(handle);
+    if (name[0] == '\0' && DAT_00472c70[0] != '\0') {
+        strcpy(name, DAT_00472c70);
+        DAT_00472c70[0] = '\0';
+    }
+}
+
+/* Function start: 0x410E80 */
+int GetVideoBufferCount()
+{
+    int count = 0;
+    int* ptr = g_VBufferHandleTable;
+    do {
+        if (*ptr != -1) {
+            count++;
+        }
+        ptr++;
+    } while (ptr < &g_VBufferHandleTable[0x20]);
+    return count;
+}
+
+extern "C" void WriteToLog(const char* format, ...);
+
+/* Function start: 0x410F40 */
+void DumpVBufferHandles()
+{
+    int i;
+
+    int count = GetVideoBufferCount();
+    WriteToLog("%d Virtual Buffers in use", count);
+
+    i = 0;
+    do {
+        int handle = g_VBufferHandleTable[i];
+        if (handle != -1) {
+            char* name = GetVideoBufferNameSlot(i);
+            WriteToLog("\tVB handle=%d addr=%d name=%s", i, handle, name);
+        }
+        i++;
+    } while (i < 0x20);
 }
 
 /* Function start: 0x410F30 */
@@ -46,8 +90,12 @@ void ReleaseVBufferHandle(int handle)
 // Forward declarations
 void CopyRowTransparent(char* dest, char* src, int count, char transparentColor, char fillColor);
 void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, char transparentColor, char fillColor);
+void CopyRowReversedTransparent(char* dest, char* src, int count);
+void CopyRowReversed(char* dest, char* src, int count);
+void BlitRowsReversed(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, int transparentFlag);
 int __cdecl IntersectClipRect(int* clipRect, int* srcRect, int* destRect);
 void __cdecl OffsetRect(int* rect, int offsetX, int offsetY);
+int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* destY);
 int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4);
 
 extern "C" {
@@ -348,6 +396,12 @@ void VBuffer::CallBlitter3(int param_1, int param_2, int param_3, int param_4, i
     BlitTransparentRows(param_1, param_2, param_3, param_4, param_5, param_6, srcBuffer, this, param_8, param_9);
 }
 
+/* Function start: 0x4115F0 */
+void VBuffer::BlitReversedRows(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
+{
+    BlitRowsReversed(param_1, param_2, param_3, param_4, param_5, param_6, (VBuffer*)param_7, this, 1);
+}
+
 /* Function start: 0x411630 */
 void VBuffer::ClipAndBlit(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {
@@ -370,6 +424,25 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
         return;
     }
     CallBlitter2(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, (VBuffer*)param_7);
+}
+
+/* Function start: 0x4118E0 */
+void VBuffer::ClipAndBlitReversed(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
+{
+    GlyphRect local_2c(clip_x1, clip_y1, clip_x2, clip_y2);
+    GlyphRect local_1c(param_1, param_3, param_2, param_4);
+
+    if (param_1 != 0x38) {
+        if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
+            return;
+        }
+    } else {
+        if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
+            return;
+        }
+    }
+
+    BlitReversedRows(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, param_7);
 }
 
 /* Function start: 0x411A40 */
@@ -406,37 +479,117 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
     }
 }
 
-/* Function start: 0x41B3B0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x411CE0 */
+void CopyRowReversedTransparent(char* dest, char* src, int count)
+{
+    char* destEnd = dest + count - 1;
+    if (count == 0) {
+        return;
+    }
+
+    do {
+        while (*src == 0) {
+            destEnd--;
+            src++;
+            count--;
+            if (count == 0) {
+                return;
+            }
+        }
+        do {
+            if (count == 0) {
+                return;
+            }
+            char c = *src;
+            destEnd--;
+            src++;
+            count--;
+            *(destEnd + 1) = c;
+        } while (*src != 0);
+    } while (count != 0);
+}
+
+/* Function start: 0x411D20 */
+void CopyRowReversed(char* dest, char* src, int count)
+{
+    char* destEnd = dest + count - 1;
+    if (count == 0) {
+        return;
+    }
+
+    do {
+        char c = *src;
+        src++;
+        *destEnd = c;
+        destEnd--;
+        count--;
+    } while (count != 0);
+}
+
+/* Function start: 0x411D40 */
+void BlitRowsReversed(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, int transparentFlag)
+{
+    int width = (srcX2 - srcX1) + 1;
+    int height = (srcY2 - srcY1) + 1;
+
+    char* srcRow = (char*)srcBuffer->GetData() + (srcBuffer->clip_y2 - srcY2) * srcBuffer->width + srcX1;
+    char* destRow = (char*)destBuffer->GetData() + (destBuffer->clip_y2 - destY) * destBuffer->width + destX;
+
+    if (transparentFlag != 0) {
+        if (height > 0) {
+            do {
+                CopyRowReversedTransparent(destRow, srcRow, width);
+                destRow += destBuffer->width;
+                srcRow += srcBuffer->width;
+                height--;
+            } while (height != 0);
+        }
+    } else {
+        if (height > 0) {
+            do {
+                CopyRowReversed(destRow, srcRow, width);
+                destRow += destBuffer->width;
+                srcRow += srcBuffer->width;
+                height--;
+            } while (height != 0);
+        }
+    }
+
+    destBuffer->Lock();
+    srcBuffer->Lock();
+}
+
+/* Function start: 0x411E00 */
 int __cdecl IntersectClipRect(int* clipRect, int* srcRect, int* destRect)
 {
-    int x1 = srcRect[0];
-    if (srcRect[0] <= clipRect[0]) {
-        x1 = clipRect[0];
+    int left = *srcRect;
+    if (*srcRect <= *clipRect) {
+        left = *clipRect;
     }
-    destRect[0] = x1;
-    
-    int x2 = srcRect[2];
+    *destRect = left;
+
+    int right = srcRect[2];
     if (clipRect[2] <= srcRect[2]) {
-        x2 = clipRect[2];
+        right = clipRect[2];
     }
-    destRect[2] = x2;
-    
-    int y1 = srcRect[1];
-    if (srcRect[1] <= clipRect[1]) {
-        y1 = clipRect[1];
+    destRect[2] = right;
+
+    int top = clipRect[1];
+    if (clipRect[1] <= srcRect[1]) {
+        top = srcRect[1];
     }
-    destRect[1] = y1;
-    
-    int y2 = srcRect[3];
+    destRect[1] = top;
+
+    int bottom = srcRect[3];
     if (clipRect[3] <= srcRect[3]) {
-        y2 = clipRect[3];
+        bottom = clipRect[3];
     }
-    destRect[3] = y2;
-    
-    if ((x1 < x2) && (y1 < y2)) {
+    destRect[3] = bottom;
+
+    if ((left <= right) && (top <= bottom)) {
         return 1;
     }
-    destRect[0] = 0;
+    *destRect = 0;
     destRect[1] = 0;
     destRect[2] = 0;
     destRect[3] = 0;
@@ -452,37 +605,31 @@ void __cdecl OffsetRect(int* rect, int offsetX, int offsetY)
     rect[3] = rect[3] + offsetY;
 }
 
-/* Function start: 0x41B450 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x411EA0 */
 int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* destY)
 {
-    if ((clipRect[2] < *destX) || (clipRect[3] < *destY)) {
-        srcRect[0] = 0;
-        srcRect[1] = 0;
-        srcRect[2] = 0;
-        srcRect[3] = 0;
-        *destX = 0;
-        *destY = 0;
-        return 0;
-    }
-    
     GlyphRect guard;
-    OffsetRect(srcRect, *destX, *destY);
+
+    int offsetX = *destX - srcRect[0];
+    int offsetY = *destY - srcRect[1];
+
+    OffsetRect(srcRect, offsetX, offsetY);
     IntersectClipRect(clipRect, srcRect, &guard.left);
-    OffsetRect(&guard.left, -(*destX), -(*destY));
+    OffsetRect(&guard.left, -offsetX, -offsetY);
 
-    int iVar1 = *destX;
+    int dx = *destX;
     if (*destX <= *clipRect) {
-        iVar1 = *clipRect;
+        dx = *clipRect;
     }
-    *destX = iVar1;
+    *destX = dx;
 
-    iVar1 = clipRect[1];
-    if (iVar1 <= *destY) {
-        iVar1 = *destY;
+    int dy = clipRect[1];
+    if (clipRect[1] <= *destY) {
+        dy = *destY;
     }
-    *destY = iVar1;
-    
-    if ((guard.right == guard.left) || (guard.bottom == guard.top)) {
+    *destY = dy;
+
+    if (guard.right == guard.left || guard.bottom == guard.top) {
         srcRect[0] = 0;
         srcRect[1] = 0;
         srcRect[2] = 0;
@@ -491,7 +638,7 @@ int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* dest
         *destY = 0;
         return 0;
     }
-    
+
     srcRect[0] = guard.left;
     srcRect[1] = guard.top;
     srcRect[2] = guard.right;
@@ -537,4 +684,11 @@ void CopyRowTransparent(char* dest, char* src, int count, char transparentColor,
             } while (*src != 0);
         } while (count != 0);
     }
+}
+
+
+/* Function start: 0x411530 */
+void VBuffer::BlitTransparentRegion(int p1, int p2, int p3, int p4, int p5, int p6, int p7)
+{
+    BlitTransparentRows(p1, p2, p3, p4, p5, p6, (VBuffer*)p7, this, 0, 0);
 }

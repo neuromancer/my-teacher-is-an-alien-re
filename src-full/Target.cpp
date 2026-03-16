@@ -18,7 +18,30 @@ extern CDData* g_CDData_0043697c;
 // Target implementation
 // ============================================================================
 
-HotspotListData::~HotspotListData() {}
+/* Function start: 0x443780 */
+HotspotListData::~HotspotListData()
+{
+    HotspotNode* node = first;
+    while (node != 0) {
+        int i = 0;
+        do {
+        } while (i-- != 0);
+        node = node->next;
+    }
+
+    count = 0;
+    freeList = 0;
+    last = 0;
+    first = 0;
+
+    void* pool = nodePool;
+    while (pool != 0) {
+        void* next = *(void**)pool;
+        FreeMemory(pool);
+        pool = next;
+    }
+    nodePool = 0;
+}
 
 /* Function start: 0x442350 */ /* ~80% match */
 Target::Target() : Sprite(0)
@@ -146,7 +169,7 @@ void Target::Activate()
     }
 }
 
-/* Function start: 0x414230 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4427C0 */
 void Target::Deactivate()
 {
     if (Target::active != 0) {
@@ -248,30 +271,28 @@ advance:
     return 0;
 }
 
-/* Function start: 0x4143B0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x442940 */
 void Target::UpdateProgress(int delta)
 {
     int newValue;
     int shouldTrigger;
-    Sample* sample;
 
     if (Target::active != 1) {
         return;
     }
     newValue = Target::progressRange.start + delta;
     Target::progressRange.start = newValue;
-    if (Target::progressRange.end) {
-        shouldTrigger = (newValue >= Target::progressRange.end) ? 1 : 0;
+    if (Target::progressRange.end != 0) {
+        shouldTrigger = (Target::progressRange.end <= newValue) ? 1 : 0;
     } else {
         shouldTrigger = 0;
     }
-    if (shouldTrigger) {
+    if (shouldTrigger != 0) {
         Target::pendingAction = 3;
         return;
     }
-    sample = Target::progressSound;
-    if (sample != 0) {
-        sample->Play(100, 1);
+    if (Target::progressSound != 0) {
+        Target::progressSound->Play(100, 1);
     }
 }
 
@@ -341,28 +362,30 @@ void Target::Init(char* line)
     }
 }
 
-/* Function start: 0x414690 */ /* DEMO ONLY - no full game match */
+extern char* __cdecl FUN_0044e470(char*);
+extern "C" extern void* DAT_0046ae68;
+
+/* Function start: 0x442BD0 */
 void Target::ParseSound(char* line)
 {
     char buffer[128];
-    int index;
-    Sample* sound;
 
     sscanf(line + 3, "%s", buffer);
-    index = line[1] - '0';
-    sound = (Sample*)g_SoundList_00435f1c->Register(buffer);
+    char type = line[1];
+    char* resolved = FUN_0044e470(buffer);
+    Sample* sound = (Sample*)((SoundList*)DAT_0046ae68)->Register(resolved);
 
-    switch (index) {
-    case 0:
+    switch (type) {
+    case '0':
         Target::stopSound = sound;
         break;
-    case 1:
+    case '1':
         Target::progressSound = sound;
         break;
-    case 2:
+    case '2':
         Target::hitSound = sound;
         break;
-    case 3:
+    case '3':
         Target::sound3 = sound;
         break;
     default:

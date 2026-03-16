@@ -76,6 +76,33 @@ extern int g_PeriodStateIdx_0046cb90;
 extern char* g_PeriodCharTable_0046cb94;
 static char g_CinematicPath_00473cb0[256];
 
+static char g_AnimNameBuf_00473cf0[64];
+
+/* Function start: 0x44E320 */
+extern "C" char* MakeAnimName(char* baseName)
+{
+    int len = strlen(baseName);
+    if (len < 4) {
+        ShowError("MakeAnimName - invalid base name");
+    }
+    int num = atoi(baseName + (len - 4));
+    if (num == 0) {
+        return baseName;
+    }
+    if (num > 4999) {
+        int stateIdx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = g_GameState_0046aa30;
+        if (stateIdx < 0 || gs->maxStates - 1 < stateIdx) {
+            ShowError("Invalid gamestate %d", stateIdx);
+        }
+        sprintf(g_AnimNameBuf_00473cf0, "%s%c.smk", baseName,
+                (int)(char)g_PeriodCharTable_0046cb94[gs->stateValues[stateIdx]]);
+        return g_AnimNameBuf_00473cf0;
+    }
+    sprintf(g_AnimNameBuf_00473cf0, "%s.smk", baseName);
+    return g_AnimNameBuf_00473cf0;
+}
+
 /* Function start: 0x44E3E0 */
 extern "C" char* GetCinematicFilename(int param_1)
 {

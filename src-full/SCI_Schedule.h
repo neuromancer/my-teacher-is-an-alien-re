@@ -4,6 +4,9 @@
 #include "IconBar.h"
 
 class SC_Message;
+class Palette;
+class Sprite;
+class T_MenuHotspot;
 
 // SCI_Schedule - School schedule/map screen (case 39/0x27)
 // Constructor: 0x434C10, Destructor: 0x434FB0
@@ -22,7 +25,18 @@ public:
     virtual void Update(int param1, int param2);    // 0x435520
     virtual int Exit(SC_Message* msg);              // 0x435500
 
-    int field_A8[12];   // 0xA8-0xD7 (0x30 bytes)
+    Palette* palette;           // 0xA8 — "schedual\\schedule.col"
+    Sprite* bgSprite;           // 0xAC — main background
+    Sprite* selBox1;            // 0xB0 — selection highlight box 1
+    Sprite* selBox2;            // 0xB4 — selection highlight box 2
+    Sprite* tardiesSprite;      // 0xB8 — tardies counter
+    Sprite* cutsSprite;         // 0xBC — cuts counter
+    Sprite* scheduleSprite;     // 0xC0 — schedule overlay
+    int field_C4;               // 0xC4
+    int selectionState;         // 0xC8 — 0=box1, 1=box2
+    int renderX;                // 0xCC — selection box X position
+    int renderY;                // 0xD0 — selection box Y position
+    T_MenuHotspot* mapHotspot;  // 0xD4 — HOTSPOT (0x1A8 bytes)
 };
 
 #endif // SCI_SCHEDULE_H

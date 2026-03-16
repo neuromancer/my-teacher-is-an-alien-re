@@ -48,6 +48,14 @@ T_Object::~T_Object()
     }
 }
 
+/* Function start: 0x40C830 */
+void T_Object::StopSound()
+{
+    if (sprite != 0) {
+        sprite->StopAnimationSound();
+    }
+}
+
 /* Function start: 0x40C840 */
 void T_Object::Display(int x, int y, int visible)
 {
