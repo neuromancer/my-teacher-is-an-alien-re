@@ -4,6 +4,10 @@
 #include "IconBar.h"
 
 class SC_Message;
+class Palette;
+class MMPlayer;
+class Sample;
+class T_MenuHotspot;
 
 // SCI_SchoolMenu - During School Menu handler (case 37/0x25)
 // Error string: "SCI_SchoolMenu"
@@ -26,14 +30,14 @@ public:
     void SetupOptions();
     void PlayMenuSound();
 
-    // Fields 0xA8-0xF7 (0x50 bytes = 20 ints)
-    int palette;            // 0xA8 - Palette* for background palette
-    int background;         // 0xAC - MMPlayer* background animation
-    int okayButton;         // 0xB0 - SprInit* (0x1A8) "OKAY" confirm button
-    int cancelButton;       // 0xB4 - SprInit* (0x1A8) "CANCEL" back button
-    int characters[3];      // 0xB8 - SprInit* character buttons [P=Peter, S=Susan, D=Duncan]
-    int options[9];         // 0xC4 - SprInit* activity option buttons [rooms 1-9]
-    int menuSound;          // 0xE8 - Sample* menu click sound
+    // Fields 0xA8-0xF7 (0x50 bytes)
+    Palette* palette;       // 0xA8 - background palette
+    MMPlayer* background;   // 0xAC - background animation
+    T_MenuHotspot* okayButton;    // 0xB0 - "OKAY" confirm button
+    T_MenuHotspot* cancelButton;  // 0xB4 - "CANCEL" back button
+    T_MenuHotspot* characters[3]; // 0xB8 - character buttons [P=Peter, S=Susan, D=Duncan]
+    T_MenuHotspot* options[9];    // 0xC4 - activity option buttons [rooms 1-9]
+    Sample* menuSound;      // 0xE8 - menu click sound
     int selectedOption;     // 0xEC - currently selected option index (-1 = none)
     int bgSoundId;          // 0xF0 - background sound handle (from BGSND label)
     int field_F4;           // 0xF4

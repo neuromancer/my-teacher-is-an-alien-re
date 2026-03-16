@@ -6,33 +6,51 @@
 #include <string.h>
 #include <new>
 
+/* Function start: 0x420CE0 */
+T_MenuHotspot::T_MenuHotspot(int param) : Parser()
+{
+    memset(&enabled, 0, 0x46 * 4);
+    field_98 = param;
+}
+
+/* Function start: 0x420D90 */
+T_MenuHotspot::~T_MenuHotspot()
+{
+    if (cursor != 0) {
+        cursor->~Sprite();
+        FreeMemory(cursor);
+        cursor = 0;
+    }
+}
+
 /* Function start: 0x421A50 */
 T_MenuHotspot::T_MenuHotspot(char* name, int* rect)
-    : rect_left(0), rect_top(0), rect_right(0), rect_bottom(0)
+    : bounds(0, 0, 0, 0)
 {
-    memset(this, 0, 42 * 4);
+    memset(&enabled, 0, 42 * 4);
 
     if (name != 0) {
-        sprite = new Sprite(name);
-        sprite->handle = 2;
-        sprite->loc_x = rect[0];
-        sprite->loc_y = rect[1];
-        sprite->SetState2(2);
-        sprite->flags |= 0x40;
-        sprite->SetRange(0, 1, 1, 1);
-        sprite->SetRange(1, 2, 2, 1);
+        Sprite* spr = new Sprite(name);
+        cursor = spr;
+        spr->handle = 2;
+        spr->loc_x = rect[0];
+        spr->loc_y = rect[1];
+        spr->SetState2(2);
+        spr->flags |= 0x40;
+        spr->SetRange(0, 1, 1, 1);
+        spr->SetRange(1, 2, 2, 1);
     }
 
-    rect_left = rect[0];
-    rect_top = rect[1];
-    rect_right = rect[2];
-    rect_bottom = rect[3];
+    bounds.left = rect[0];
+    bounds.top = rect[1];
+    bounds.right = rect[2];
+    bounds.bottom = rect[3];
 }
 
 /* Function start: 0x421BC0 */
 void T_MenuHotspot::Update()
 {
-    if (sprite == 0) {
+    if (cursor == 0) {
         return;
     }
 
@@ -50,14 +68,14 @@ extern InputManager* DAT_0046aa08;
         mouseY = 0;
     }
 
-    if (rect_left <= mouseY && rect_right >= mouseY &&
-        rect_top <= mouseX && rect_bottom >= mouseX) {
-        sprite->ResetAnimation(1, 0);
+    if (bounds.left <= mouseY && bounds.right >= mouseY &&
+        bounds.top <= mouseX && bounds.bottom >= mouseX) {
+        cursor->ResetAnimation(1, 0);
     } else {
-        sprite->ResetAnimation(0, 0);
+        cursor->ResetAnimation(0, 0);
     }
 
-    sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+    cursor->Do(cursor->loc_x, cursor->loc_y, 1.0);
 }
 
 /* Function start: 0x421C40 */

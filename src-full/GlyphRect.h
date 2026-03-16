@@ -17,6 +17,7 @@ struct GlyphRect {
         bottom = b;
     }
     ~GlyphRect();  // Destructor - generates thunk at 0x401680
+    int HitTest(int x, int y);  // 0x41F610
 };
 
 #endif // GLYPHRECT_H
