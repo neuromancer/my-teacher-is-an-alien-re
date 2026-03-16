@@ -4,6 +4,11 @@
 #include "IconBar.h"
 #include "InvSlotItem.h"
 
+class Sprite;
+class Sample;
+class Palette;
+class T_MenuHotspot;
+
 // 24-byte embedded object, ctor 0x43E560, dtor 0x43E580
 struct InvPanel {
     int field_0;
@@ -41,18 +46,18 @@ public:
     void* FindItem(int itemID);                 // 0x43F490
     int* FindItemInList(int itemID);            // 0x43F7F0
 
-    InvSlotItem field_A8[8];  // 0xA8-0x127 (128 bytes)
-    int field_128;            // 0x128
-    int field_12C;            // 0x12C
-    InvPanel field_130[3];    // 0x130-0x177 (72 bytes)
-    int field_178;            // 0x178 - Sprite*
-    int field_17C;            // 0x17C
-    int field_180;            // 0x180 - Palette*
-    int field_184;            // 0x184 - inventory list
-    int field_188;            // 0x188
-    int field_18C;            // 0x18C
-    int field_190;            // 0x190
-    int field_194;            // 0x194
+    InvSlotItem slots[8];         // 0xA8-0x127 — inventory slot hit-test rectangles
+    int selectedSlot;              // 0x128 — currently selected slot index (-1 = none)
+    int scrollOffset;              // 0x12C — scroll position in item list
+    InvPanel panels[3];            // 0x130-0x177 — display panels
+    Sprite* bgSprite;              // 0x178 — background sprite
+    Sample* clickSound;            // 0x17C — item click sound effect
+    Palette* palette;              // 0x180 — inventory screen palette
+    void* itemPool;                // 0x184 — item pool (0x18 bytes: head, tail, count, freeList, ...)
+    T_MenuHotspot* putBackButton;  // 0x188 — "put back" button
+    T_MenuHotspot* useButton;      // 0x18C — "use item" button
+    T_MenuHotspot* scrollDownBtn;  // 0x190 — scroll down button (msg 0x12)
+    T_MenuHotspot* scrollUpBtn;    // 0x194 — scroll up button (msg 0x11)
 };
 
 #endif // SCI_INVENTORY_H

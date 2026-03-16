@@ -14,7 +14,7 @@ extern "C" char* GetSoundFilename(int handle);
 #include "MsgList.h"
 extern MsgList* g_MsgList; // DAT_0046a6dc
 #define g_InventoryList ((LinkedList*)g_MsgList)
-class ZBufferManager;
+#include "ZBufferManager.h"
 extern ZBufferManager* DAT_0046aa24;
 class MouseControl;
 extern MouseControl* DAT_0046aa18;
@@ -80,7 +80,7 @@ public:
 SCI_Inventory::SCI_Inventory() {
     int* listObj;
 
-    memset(&field_A8, 0, 0xF0);
+    memset(&slots, 0, 0xF0);
     handlerId = 0x1E;
 
     listObj = (int*)AllocateMemory(0x18);
@@ -92,7 +92,7 @@ SCI_Inventory::SCI_Inventory() {
         listObj[4] = 0;
         listObj[5] = 10;
     }
-    field_184 = (int)listObj;
+    itemPool = (void*)listObj;
 
     LinkedList* invList = g_InventoryList;
     if (invList->head != 0) {
@@ -115,7 +115,7 @@ SCI_Inventory::~SCI_Inventory() {
 
 /* Function start: 0x43E920 */
 void SCI_Inventory::Init(SC_Message* msg) {
-    int palette;
+    
     int* palSlot;
     int* ptr;
 
@@ -128,13 +128,13 @@ void SCI_Inventory::Init(SC_Message* msg) {
     } while ((unsigned int)ptr < (unsigned int)&DAT_004733e8);
     DAT_004733e8 = 0;
 
-    palette = field_180;
-    palSlot = (int*)((char*)DAT_0046aa24 + 0xA8);
-    if (*palSlot != 0) {
+    
+    // Use typed ZBufferManager palette field
+    if (DAT_0046aa24->m_palette != 0) {
         ShowError("double palette");
     }
-    *palSlot = palette;
-    field_128 = -1;
+    DAT_0046aa24->m_palette = palette;
+    selectedSlot = -1;
     DisplayPanels(0);
 }
 
@@ -143,8 +143,8 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
     Sprite* spr;
     void* obj;
 
-    if (field_178 != 0) {
-        ((Sprite*)field_178)->StopAnimationSound();
+    if (bgSprite != 0) {
+        bgSprite->StopAnimationSound();
     }
 
     ProcessInventory();
@@ -160,32 +160,32 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
     DAT_004733e8 = 1;
     IconBar::CleanupIconBar(msg);
 
-    spr = *(Sprite**)((char*)field_188 + 0x90);
+    spr = *(Sprite**)((char*)putBackButton + 0x90);
     if (spr != 0) {
         spr->StopAnimationSound();
     }
 
-    spr = *(Sprite**)((char*)field_18C + 0x90);
+    spr = *(Sprite**)((char*)useButton + 0x90);
     if (spr != 0) {
         spr->StopAnimationSound();
     }
 
-    spr = *(Sprite**)((char*)field_190 + 0x90);
+    spr = *(Sprite**)((char*)scrollDownBtn + 0x90);
     if (spr != 0) {
         spr->StopAnimationSound();
     }
 
-    spr = *(Sprite**)((char*)field_194 + 0x90);
+    spr = *(Sprite**)((char*)scrollUpBtn + 0x90);
     if (spr != 0) {
         spr->StopAnimationSound();
     }
 
     {
-        Sample* sample = (Sample*)field_17C;
+        Sample* sample = clickSound;
         if (sample != 0) {
             sample->Unload();
             FreeMemory(sample);
-            field_17C = 0;
+            clickSound = 0;
         }
     }
     return 0;
@@ -221,10 +221,10 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     cursorPtr = &msgData[7];
 
-    /* Test against field_190 rectangle */
+    /* Test against scrollDownBtn rectangle */
     {
         HitPoint pos(cursorPtr);
-        rect = (int*)field_190;
+        rect = (int*)scrollDownBtn;
         if (*(int*)((char*)rect + 0x94) <= pos.x &&
             *(int*)((char*)rect + 0x9C) >= pos.x &&
             *(int*)((char*)rect + 0x98) <= pos.y &&
@@ -239,10 +239,10 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         goto done;
     }
 
-    /* Test against field_194 rectangle */
+    /* Test against scrollUpBtn rectangle */
     {
         HitPoint pos(cursorPtr);
-        rect = (int*)field_194;
+        rect = (int*)scrollUpBtn;
         if (*(int*)((char*)rect + 0x94) <= pos.x &&
             *(int*)((char*)rect + 0x9C) >= pos.x &&
             *(int*)((char*)rect + 0x98) <= pos.y &&
@@ -257,10 +257,10 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         goto done;
     }
 
-    /* Test against field_18C rectangle */
+    /* Test against useButton rectangle */
     {
         HitPoint pos(cursorPtr);
-        rect = (int*)field_18C;
+        rect = (int*)useButton;
         if (*(int*)((char*)rect + 0x94) <= pos.x &&
             *(int*)((char*)rect + 0x9C) >= pos.x &&
             *(int*)((char*)rect + 0x98) <= pos.y &&
@@ -275,12 +275,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         msgData[4] = 4;
         msgData[1] = savedMsgData;
 
-        if (field_128 == -1) {
+        if (selectedSlot == -1) {
             goto done;
         }
 
-        selectedIdx = field_12C + field_128;
-        listPtr = (int*)field_184;
+        selectedIdx = scrollOffset + selectedSlot;
+        listPtr = (int*)itemPool;
         if (listPtr[2] <= selectedIdx) {
             node = 0;
         } else {
@@ -303,7 +303,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         DAT_0046a6e4 = (void*)node[2];
 
         nextNode = (int*)node[0];
-        listPtr = (int*)field_184;
+        listPtr = (int*)itemPool;
         if ((int*)listPtr[0] == node) {
             listPtr[0] = (int)nextNode;
         } else {
@@ -344,10 +344,10 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         goto done;
     }
 
-    /* Test against field_188 rectangle */
+    /* Test against putBackButton rectangle */
     {
         HitPoint pos(cursorPtr);
-        rect = (int*)field_188;
+        rect = (int*)putBackButton;
         if (*(int*)((char*)rect + 0x94) <= pos.x &&
             *(int*)((char*)rect + 0x9C) >= pos.x &&
             *(int*)((char*)rect + 0x98) <= pos.y &&
@@ -401,18 +401,18 @@ void SCI_Inventory::Update(int param1, int param2) {
     counter = 0;
     IconBar::Update(param1, param2);
 
-    if (field_178 != 0) {
-        ((Sprite*)field_178)->Do(0, 0, 1.0);
+    if (bgSprite != 0) {
+        bgSprite->Do(0, 0, 1.0);
     }
 
-    ((T_MenuHotspot*)field_188)->Update();
-    ((T_MenuHotspot*)field_18C)->Update();
-    ((T_MenuHotspot*)field_190)->Update();
-    ((T_MenuHotspot*)field_194)->Update();
+    putBackButton->Update();
+    useButton->Update();
+    scrollDownBtn->Update();
+    scrollUpBtn->Update();
 
-    startIdx = field_12C;
+    startIdx = scrollOffset;
     {
-        int* listPtr = (int*)field_184;
+        int* listPtr = (int*)itemPool;
         if (listPtr[2] <= startIdx) {
             curNode = 0;
         } else {
@@ -430,7 +430,7 @@ void SCI_Inventory::Update(int param1, int param2) {
     }
 
     {
-        InvSlotItem* slot = &field_A8[0];
+        InvSlotItem* slot = &slots[0];
 
         do {
             if (curNode == 0) break;
@@ -466,13 +466,13 @@ void SCI_Inventory::Update(int param1, int param2) {
     }
 
     {
-        int selectedIdx = field_128;
+        int selectedIdx = selectedSlot;
         if (selectedIdx != -1) {
             ((SelectionDraw*)DAT_0046aa24)->DrawSelection(
-                field_A8[selectedIdx].field_0,
-                field_A8[selectedIdx].field_4,
-                field_A8[selectedIdx].field_8,
-                field_A8[selectedIdx].field_C,
+                slots[selectedIdx].field_0,
+                slots[selectedIdx].field_4,
+                slots[selectedIdx].field_8,
+                slots[selectedIdx].field_C,
                 0x2710, 0xFC, 2);
         }
     }
@@ -517,8 +517,8 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         int hit;
 
         i = 0;
-        slot = &field_A8[0];
-        field_128 = -1;
+        slot = &slots[0];
+        selectedSlot = -1;
         do {
             if (slot->field_0 <= msgData[7] &&
                 slot->field_8 >= msgData[7] &&
@@ -529,13 +529,13 @@ int SCI_Inventory::Exit(SC_Message* msg) {
                 hit = 0;
             }
             if (hit) {
-                field_128 = i;
+                selectedSlot = i;
             }
             slot++;
             i++;
         } while (i < 8);
 
-        if (field_128 < 0 || field_128 >= 8) {
+        if (selectedSlot < 0 || selectedSlot >= 8) {
             break;
         }
 
@@ -556,8 +556,8 @@ int SCI_Inventory::Exit(SC_Message* msg) {
             int* listPtr;
             int* node;
 
-            idx = field_12C + field_128;
-            listPtr = (int*)field_184;
+            idx = scrollOffset + selectedSlot;
+            listPtr = (int*)itemPool;
             if (listPtr[2] <= idx) {
                 node = 0;
             } else {
@@ -578,20 +578,20 @@ int SCI_Inventory::Exit(SC_Message* msg) {
             }
 
             {
-                Sample* oldSample = (Sample*)field_17C;
+                Sample* oldSample = clickSound;
                 if (oldSample != 0) {
                     oldSample->Unload();
                     FreeMemory(oldSample);
-                    field_17C = 0;
+                    clickSound = 0;
                 }
             }
 
             {
                 Sample* newSample = new Sample();
-                field_17C = (int)newSample;
+                clickSound = newSample;
                 char* soundFile = GetSoundFilename(*(int*)((char*)(node[2]) + 0x9C));
                 newSample->Load(soundFile);
-                ((Sample*)field_17C)->Play(0x64, 1);
+                (clickSound)->Play(0x64, 1);
             }
         }
         break;
@@ -607,21 +607,21 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         break;
     }
     case 0x11:
-        field_12C += 2;
+        scrollOffset += 2;
         {
-            int maxScroll = ((int*)field_184)[2] - 8;
-            if (maxScroll < field_12C) {
-                field_12C = maxScroll;
+            int maxScroll = ((int*)itemPool)[2] - 8;
+            if (maxScroll < scrollOffset) {
+                scrollOffset = maxScroll;
             }
         }
-        if (field_12C < 0) {
-            field_12C = 0;
+        if (scrollOffset < 0) {
+            scrollOffset = 0;
         }
         break;
     case 0x12:
-        field_12C -= 2;
-        if (field_12C < 0) {
-            field_12C = 0;
+        scrollOffset -= 2;
+        if (scrollOffset < 0) {
+            scrollOffset = 0;
         }
         break;
     case 0x17: {
@@ -647,7 +647,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         item = FindItem((int)msgData);
         ((InvItemObj*)item)->Reset();
 
-        ebx = (int*)field_184;
+        ebx = (int*)itemPool;
         head = (int*)ebx[0];
 
         if (ebx[3] == 0) {
@@ -706,7 +706,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
 
         node = (int*)FindItemInList(msgData[1]);
         if (node != 0) {
-            listPtr = (int*)field_184;
+            listPtr = (int*)itemPool;
             {
                 int* nextN = (int*)node[0];
                 if ((int*)listPtr[0] == node) {
