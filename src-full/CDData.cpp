@@ -171,8 +171,23 @@ extern int __cdecl FUN_004341f0(char*);
 extern int __cdecl GetFileSize(char*);
 extern void __cdecl FUN_004342d0(char*, int);
 extern void __fastcall FUN_00433230(void*, int, char*);
-extern "C" void* FUN_004260f0(char*);
+extern "C" int FileExists(const char*);
 extern "C" void WriteToLog(const char*, ...);
+
+/* Function start: 0x4260F0 */
+extern "C" char* FormatAssetPath(char* format, ...)
+{
+    char localPath[260];
+
+    vsprintf(localPath, format, (char*)&format + 4);
+
+    if (FileExists(localPath) != 0) {
+        strcpy((char*)DAT_0046aa1c + 0x195, localPath);
+    } else {
+        sprintf((char*)DAT_0046aa1c + 0x195, "%s%s", (char*)DAT_0046aa1c + 0x190, localPath);
+    }
+    return (char*)DAT_0046aa1c + 0x195;
+}
 
 /* Function start: 0x426190 */
 char* ResolveAssetPath(char* name) {
@@ -186,10 +201,10 @@ char* ResolveAssetPath(char* name) {
         return basePath;
     }
 
-    char* resolved = (char*)FUN_004260f0(basePath);
+    char* resolved = (char*)FormatAssetPath(basePath);
     int size = GetFileSize(resolved);
     if (size == -1) {
-        resolved = (char*)FUN_004260f0(basePath);
+        resolved = (char*)FormatAssetPath(basePath);
         WriteToLog("missing file %s", resolved);
         return basePath;
     }

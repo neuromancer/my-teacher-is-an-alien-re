@@ -49,18 +49,30 @@ MessageQueue* g_MessageQueue = 0;
 // EngineB globals
 void* DAT_00435f1c = 0;
 
+class EngineInfoParser;
+class Sprite;
+class Viewport;
+class TargetList;
+class CombatSprite;
+class Parser;
+class Palette;
+class ScoreManager;
+class ScoreDisplay;
+class mCNavigator;
+struct HotspotListData;
+
 extern "C" {
-    void* DAT_0046ae4c = 0;
-    void* DAT_0046ae50 = 0;
-    void* DAT_0046ae54 = 0;
-    void* DAT_0046ae58 = 0;
-    void* DAT_0046ae5c = 0;
-    void* DAT_0046ae60 = 0;
-    void* DAT_0046ae64 = 0;
-    void* DAT_0046ae68 = 0;
-    void* DAT_0046ae6c = 0;
-    void* DAT_0046ae70 = 0;
-    void* DAT_0046ae74 = 0;
+    EngineInfoParser* DAT_0046ae4c = 0;
+    Sprite*           DAT_0046ae50 = 0;
+    Viewport*         DAT_0046ae54 = 0;
+    TargetList*       DAT_0046ae58 = 0;
+    CombatSprite*     DAT_0046ae5c = 0;
+    Parser*           DAT_0046ae60 = 0;
+    Palette*          DAT_0046ae64 = 0;
+    ScoreManager*     DAT_0046ae68 = 0;
+    ScoreDisplay*     DAT_0046ae6c = 0;
+    mCNavigator*      DAT_0046ae70 = 0;
+    HotspotListData*  DAT_0046ae74 = 0;
     int DAT_00473e18 = 0;
 }
 
@@ -140,6 +152,7 @@ char* DAT_0046bacc = 0;
 int DAT_00468a18 = 0;
 extern "C" void* DAT_0046bf30 = 0;   // Pods palette pointer
 void __fastcall FUN_00447790(void*, int, int) {} // SC_SpaceShipNav::ShutDown
+void* __fastcall FUN_0044c660(void*, int, char*) { return 0; } // Sprite ctor wrapper
 int __cdecl FUN_00426ac0() { return 0; }
 void __fastcall FUN_00408ee0(void*, int, int) {}
 
@@ -364,8 +377,8 @@ extern "C" {
     static int s_WindowedMode = 0;
     int* GetWindowedModeFlag() { return &s_WindowedMode; }
     // FUN_00425fa0 = FileExists in main.cpp
-    void* FUN_004260f0(char* name) { return name; }
-    // FUN_004307b0 = SmackSummary display in SC_Cinematic.cpp
+    // FUN_004260f0 = FormatAssetPath in CDData.cpp
+    // FUN_004307b0 = ShowSmackSummary in SC_Cinematic.cpp
     void __stdcall SmackSummary(void*, void*) {}
     // FUN_0044e3e0 = GetCinematicFilename in SC_Cinematic.cpp
     void SetFontPosition(int, int) {}

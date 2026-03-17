@@ -329,8 +329,8 @@ int Target::Update()
         g_ScoreManager_00435f20->missCount++;
         g_ScoreManager_00435f20->score += Target::hitMissPoints.start;
         ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(Target::scoreWeight.start);
-        g_CombatEngine_00435eb0->field_0xB4 += Target::combatBonus.start;
-        g_CombatEngine_00435eb0->field_0xC4 += Target::combatBonus2.val;
+        *(int*)&g_CombatEngine_00435eb0->navigator += Target::combatBonus.start;
+        g_CombatEngine_00435eb0->combatBonus += Target::combatBonus2.val;
         break;
     }
 
@@ -363,7 +363,6 @@ void Target::Init(char* line)
 }
 
 extern char* __cdecl FUN_0044e470(char*);
-extern "C" extern void* DAT_0046ae68;
 
 /* Function start: 0x442BD0 */
 void Target::ParseSound(char* line)

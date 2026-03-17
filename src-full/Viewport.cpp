@@ -1,4 +1,5 @@
 #include "Viewport.h"
+#include "SC_CombatBase.h"
 
 ViewportPair::~ViewportPair()
 {
@@ -19,7 +20,6 @@ void Viewport::SetDimensions(int w, int h) {
     }
 }
 
-extern "C" extern void* DAT_0046ae4c;
 
 /* Function start: 0x4455B0 */
 void Viewport::SetAnchor(int x, int y) {

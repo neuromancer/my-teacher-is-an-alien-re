@@ -19,7 +19,6 @@ extern void __fastcall FUN_00404d70(void*, int, int);
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern int DAT_0046ae78;
-extern int DAT_0046ae70;
 class ZBufferManager;
 extern ZBufferManager* DAT_0046aa24;
 
@@ -74,7 +73,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     pAC->CopyToGlobals();
 
     if (msg != 0 && pmsg[5] == 1) {
-        ((mCNavigator*)DAT_0046ae70)->SetNavParams(pmsg[7], pmsg[8]);
+        DAT_0046ae70->SetNavParams(pmsg[7], pmsg[8]);
     }
 
     SetVideoRes(dim.field_0, dim.field_4);

@@ -42,7 +42,7 @@ extern void BlankScreen();
 #include "MouseControl.h"
 
 // File operations
-extern "C" void* FUN_004260f0(char* name);
+extern "C" char* FormatAssetPath(char*, ...);
 extern "C" int FileExists(const char*);
 
 // Palette
@@ -55,7 +55,7 @@ extern "C" int* GetScreenHeight();
 extern "C" void __stdcall SmackSummary(void*, void*);
 
 /* Function start: 0x4307B0 */
-extern "C" void FUN_004307b0(unsigned int handle)
+extern "C" void ShowSmackSummary(unsigned int handle)
 {
     int summary[19];
     char buffer[1036];
@@ -208,7 +208,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
     }
 
     char* movieName = GetCinematicFilename(moduleParam);
-    char* moviePath = (char*)FUN_004260f0(movieName);
+    char* moviePath = FormatAssetPath(movieName);
 
     if (FileExists(moviePath) == 0) {
         WriteToLog("missing cinematic %s", moviePath);
@@ -318,7 +318,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
             }
             if (gs->stateValues[idx] != 0) {
                 int handle = (int)((Animation*)animation)->smk;
-                FUN_004307b0(handle);
+                ShowSmackSummary(handle);
             }
         }
     }

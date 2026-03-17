@@ -30,11 +30,11 @@ struct MeterPos {
 //   [5]  CleanupAll         0x42C630 (inherited)
 //   [6]  ResetState         0x42C230 (inherited)
 //   [7]  ProcessInput       0x42C960 (inherited)
-//   [8]  method8            0x42C070 (inherited)
-//   [9]  method9            0x42C050 (inherited)
-//   [10] method10           0x451180 (OVERRIDE - ProcessTargets)
-//   [11] method11           0x450DB0 (OVERRIDE - Draw)
-//   [12] method12           0x450F70 (OVERRIDE - UpdateMeter)
+//   [8]  BeginFrame            0x42C070 (inherited)
+//   [9]  UpdateSprites            0x42C050 (inherited)
+//   [10] ProcessFrame           0x451180 (OVERRIDE - ProcessTargets)
+//   [11] RenderBackground           0x450DB0 (OVERRIDE - Draw)
+//   [12] PostRender           0x450F70 (OVERRIDE - UpdateMeter)
 //   [13] HandleAction       0x4511C0 (OVERRIDE)
 //   [14] StopAndCleanup     0x42BF20 (inherited)
 //   [15] SetupViewport      0x42C8A0 (inherited)
@@ -76,9 +76,9 @@ public:
   // Virtual method overrides
   virtual int LBLParse(char* line);       // [0] 0x451690
   virtual void OnProcessEnd();            // [2] 0x451230
-  virtual void method10();               // [10] 0x451180 - ProcessTargets
-  virtual void method11();               // [11] 0x450DB0 - Draw
-  virtual int method12();                // [12] 0x450F70 - UpdateMeter
+  virtual void ProcessFrame();               // [10] 0x451180 - ProcessTargets
+  virtual void RenderBackground();               // [11] 0x450DB0 - Draw
+  virtual int PostRender();                // [12] 0x450F70 - UpdateMeter
   virtual int HandleAction(int* param);  // [13] 0x4511C0
 };
 

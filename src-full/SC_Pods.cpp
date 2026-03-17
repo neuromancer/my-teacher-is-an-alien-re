@@ -178,7 +178,7 @@ int SC_Pods::AddMessage(SC_Message* msg) {
     msg->data = moduleParam;
 
     if (msg->mouseX == 0x1b && savedCommand == 0x2b) {
-        ((SC_CombatBase*)DAT_0046ae78)->field_0xDC |= 4;
+        ((SC_CombatBase*)DAT_0046ae78)->combatFlags |= 4;
     }
 
     return 1;
@@ -209,24 +209,16 @@ int SC_Pods::LBLParse(char* line) {
     return 0;
 }
 
-// Combat globals (set by SC_CombatBase::SetupViewport)
-extern "C" {
-    extern void* DAT_0046ae4c;  // g_WeaponParser (has sprite bounds at +0x90-0xA4)
-    extern void* DAT_0046ae54;  // g_Viewport (Viewport*)
-    extern void* DAT_0046ae64;  // g_Palette (Palette*)
-    extern void* DAT_0046ae6c;  // g_ScoreDisplay
-    extern void* DAT_0046ae70;  // g_Navigator (mCNavigator*)
-}
 extern void BlankScreen();
 
 /* Function start: 0x42BE00 */
 void __fastcall InitCombatScreen(void* self)
 {
     SC_CombatBase* engine = (SC_CombatBase*)self;
-    Viewport* vp = (Viewport*)DAT_0046ae54;
+    Viewport* vp = DAT_0046ae54;
     int* wpData = (int*)DAT_0046ae4c;  // WeaponParser sprite data
 
-    engine->field_0xDC = 0;
+    engine->combatFlags = 0;
 
     // wpData offsets: +0x90=x, +0x94=y, +0x98=width, +0x9c=height, +0xa0=palStart, +0xa4=palEnd
     vp->SetDimensions(*(int*)((char*)wpData + 0x98), *(int*)((char*)wpData + 0x9c));
@@ -247,15 +239,15 @@ void __fastcall InitCombatScreen(void* self)
     vp->SetAnchor(*(int*)((char*)wpData + 0x90), *(int*)((char*)wpData + 0x94));
 
     *(int*)((int)DAT_0046ae6c + 4) = 100;
-    engine->field_0xE8 = 1;
-    engine->field_0xE0 = 1;
+    engine->spriteFrameCount = 1;
+    engine->frameCount = 1;
     BlankScreen();
 
-    ((Palette*)DAT_0046ae64)->SetPalette(
+    DAT_0046ae64->SetPalette(
         *(unsigned int*)((char*)wpData + 0xa0),
         *(int*)((char*)wpData + 0xa4) - *(int*)((char*)wpData + 0xa0) + 1);
 
-    if (engine->field_0xEC != 0) {
-        ((Sample*)engine->field_0xEC)->Play(100, 0);
+    if (engine->backgroundSound != 0) {
+        engine->backgroundSound->Play(100, 0);
     }
 }

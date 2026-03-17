@@ -1,13 +1,10 @@
 #include "EngineSubsystems.h"
 #include "globals.h"
+#include "SC_CombatBase.h"
 #include <stdio.h>
 #include "string.h"
 #include "SoundList.h"
 
-extern "C" void* DAT_0046ae58;
-extern "C" void* DAT_0046ae60;
-extern "C" void* DAT_0046ae64;
-extern "C" void* DAT_0046ae68;
 extern int DAT_0046ae78;
 extern char* __cdecl FUN_0044e470(char*);
 

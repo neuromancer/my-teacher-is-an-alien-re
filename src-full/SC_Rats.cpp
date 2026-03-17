@@ -1,4 +1,5 @@
 #include "SC_Rats.h"
+#include "SC_CombatBase.h"
 #include "SpriteAction.h"
 #include "InvSlotItem.h"
 #include "Memory.h"
@@ -20,7 +21,6 @@ int DAT_00473e18 = 0;
 int DAT_00473e1c = 0;
 int DAT_00473e20 = 0;
 int DAT_0046ae78 = 0;
-int DAT_0046ae70 = 0;
 
 // Extern functions
 extern "C" int FileExists(const char*);
@@ -314,7 +314,7 @@ done:
     if (DAT_00473e14 == 2) {
         DAT_00473e14 = 3;
         DAT_00473e18 = 1;
-        ((mCNavigator*)DAT_0046ae70)->SetNavParams(1, 0);
+        DAT_0046ae70->SetNavParams(1, 0);
     }
 }
 

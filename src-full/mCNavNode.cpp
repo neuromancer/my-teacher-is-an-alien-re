@@ -1,4 +1,5 @@
 #include "mCNavNode.h"
+#include "SC_CombatBase.h"
 #include "Sprite.h"
 #include "InputManager.h"
 #include "globals.h"
@@ -10,7 +11,6 @@
 #include <string.h>
 
 // Globals
-extern "C" extern void* DAT_0046ae70;
 
 // Direction characters (shared with mCNavigator)
 extern char* g_DirectionChars;

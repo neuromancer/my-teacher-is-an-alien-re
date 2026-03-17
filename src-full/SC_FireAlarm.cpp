@@ -14,7 +14,7 @@
 extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetCinematicFilename(int);
-extern "C" void* FUN_004260f0(char*);
+extern "C" char* FormatAssetPath(char*, ...);
 
 extern void __fastcall FUN_00425490(void*);
 extern void* __fastcall FUN_00425480(void*);
@@ -508,7 +508,7 @@ void SC_FireAlarm::ProcessFrame() {
                     field_B0 = 3;
                 } else {
                     char* name = GetCinematicFilename(0x13A6);
-                    char* path = (char*)FUN_004260f0(name);
+                    char* path = FormatAssetPath(name);
                     if (FileExists(path) != 0) {
                         Animation anim;
                         anim.Play(path, 0);

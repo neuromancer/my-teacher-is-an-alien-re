@@ -5,11 +5,6 @@
 
 class InputManager;
 extern InputManager* DAT_0046aa08;
-extern "C" {
-    extern void* DAT_0046ae50;
-    extern void* DAT_0046ae58;
-    extern void* DAT_0046ae60;
-}
 extern void* __fastcall FUN_00443660(void*, int);
 extern void __fastcall FUN_00442940(void*, int, int);
 extern void __fastcall FUN_0044c740(void*);
@@ -71,7 +66,7 @@ void EngineC::method10()
     mouseReleased |= (buttonDown == 0) ? 1 : 0;
     ((int*)DAT_0046ae60)[0x2a] = 0;
 
-    if (((Sprite*)DAT_0046ae50)->handle < 5) {
+    if (DAT_0046ae50->handle < 5) {
         if (pMouse == 0) {
             buttonDown = 0;
         } else {
@@ -91,5 +86,5 @@ void EngineC::method10()
         }
     }
 
-    method11();
+    RenderBackground();
 }

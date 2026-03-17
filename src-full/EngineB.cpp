@@ -18,12 +18,6 @@ extern "C" GameState* DAT_0046aa30;
 extern int DAT_0046cb90;
 extern "C" int DAT_00473e18;
 
-extern "C" void* DAT_0046ae4c;
-extern "C" void* DAT_0046ae50;
-extern "C" void* DAT_0046ae58;
-extern "C" void* DAT_0046ae60;
-extern "C" void* DAT_0046ae68;
-extern "C" void* DAT_0046ae6c;
 
 extern char* __cdecl FUN_0044e470(char*);
 static char* FormatSoundPath(char* path);
@@ -94,17 +88,17 @@ int EngineB::LBLParse(char* line) {
 }
 
 /* Function start: 0x451180 */
-void EngineB::method10() {
+void EngineB::ProcessFrame() {
     ((TargetListFull*)DAT_0046ae58)->ProcessTargets();
     if (DAT_00473e18 == 1) {
         ((WeaponParser*)EngineB::m_weaponParser)->UpdateProjectiles();
-        method11();
-        method12();
+        RenderBackground();
+        PostRender();
     }
 }
 
 /* Function start: 0x450DB0 */
-void EngineB::method11() {
+void EngineB::RenderBackground() {
     int hitCount;
     int missCount;
     int r;
@@ -120,7 +114,7 @@ void EngineB::method11() {
     hitCount = ((int*)DAT_0046ae6c)[5];
     if (EngineB::m_prevHitCount != hitCount) {
         EngineB::m_prevHitCount = hitCount;
-        ((Sprite*)DAT_0046ae50)->ResetAnimation(8, 0);
+        DAT_0046ae50->ResetAnimation(8, 0);
         EngineB::m_progress.start += EngineB::m_targetConfig[1];
         r = rand() % 3;
         snd = (&m_hitSound1)[r];
@@ -132,7 +126,7 @@ void EngineB::method11() {
         missCount = ((int*)DAT_0046ae6c)[3];
         if (EngineB::m_prevMissCount != missCount) {
             EngineB::m_prevMissCount = missCount;
-            ((Sprite*)DAT_0046ae50)->ResetAnimation(9, 0);
+            DAT_0046ae50->ResetAnimation(9, 0);
             r = rand() % 2;
             snd = (&m_tauntSound1)[r];
             if (snd != 0) {
@@ -160,21 +154,21 @@ void EngineB::method11() {
             mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
         }
         divisor = ((int*)DAT_0046ae4c)[0x26] / 3;
-        ((Sprite*)DAT_0046ae50)->ResetAnimation(mouseX / divisor + 5, 0);
+        DAT_0046ae50->ResetAnimation(mouseX / divisor + 5, 0);
     }
 
-    if (((Sprite*)DAT_0046ae50)->Do(((Sprite*)DAT_0046ae50)->num_states, ((Sprite*)DAT_0046ae50)->field_0xb0, 1.0)) {
+    if (DAT_0046ae50->Do(DAT_0046ae50->num_states, DAT_0046ae50->field_0xb0, 1.0)) {
         mouseX = 0;
         if (((int*)DAT_0046aa08)[0x68] != 0) {
             mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
         }
         divisor = ((int*)DAT_0046ae4c)[0x26] / 5;
-        ((Sprite*)DAT_0046ae50)->ResetAnimation(mouseX / divisor, 0);
+        DAT_0046ae50->ResetAnimation(mouseX / divisor, 0);
     }
 }
 
 /* Function start: 0x450F70 */
-int EngineB::method12() {
+int EngineB::PostRender() {
     return 0;
 }
 
@@ -236,7 +230,7 @@ void EngineB::OnProcessEnd() {
             mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
         }
         divisor = ((int*)DAT_0046ae4c)[0x26] / 5;
-        ((Sprite*)DAT_0046ae50)->ResetAnimation(mouseX / divisor, 0);
+        DAT_0046ae50->ResetAnimation(mouseX / divisor, 0);
     }
 
     EngineB::m_weaponParser = (int)DAT_0046ae60;
