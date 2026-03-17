@@ -46,6 +46,11 @@ short _param_3 = 0; // Sound.obj ?_param_3@@3FA
 struct MessageQueue;
 MessageQueue* g_MessageQueue = 0;
 
+// Graphics globals
+int DAT_0043748c = 0;     // HDC for text rendering
+int DAT_004374ae = 640;   // max X position for text
+int DAT_00437608[256];    // palette color table
+
 // EngineB globals
 void* DAT_00435f1c = 0;
 
@@ -358,6 +363,10 @@ void __cdecl FUN_004342d0(char*, int) {}
 void __fastcall FUN_00433230(void*, int, char*) {}
 
 
+// SC_Combat base method stubs
+#include "SC_Combat.h"
+void __fastcall FUN_00432da0(void*) {}
+
 // ProcessEvents helper stubs
 void __fastcall FUN_0042d1a0(void*, int, int*) {}
 void __fastcall FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int, int) {}
@@ -380,18 +389,13 @@ extern "C" {
     // FUN_004205e0 = GetScreenWidth in GameWindow.cpp
     // FUN_004205f0 = GetScreenHeight in GameWindow.cpp
     // FUN_00425f10 = BlankScreen in Graphics.cpp
-    static int s_WindowHeight = 480;
-    int* GetWindowHeight() { return &s_WindowHeight; }
-    static int s_WindowedMode = 0;
-    int* GetWindowedModeFlag() { return &s_WindowedMode; }
+    // GetWindowHeight, GetWindowedModeFlag moved to GameWindow.cpp
     // FUN_00425fa0 = FileExists in main.cpp
     // FUN_004260f0 = FormatAssetPath in CDData.cpp
     // FUN_004307b0 = ShowSmackSummary in SC_Cinematic.cpp
     void __stdcall SmackSummary(void*, void*) {}
     // FUN_0044e3e0 = GetCinematicFilename in SC_Cinematic.cpp
-    void SetFontPosition(int, int) {}
-    void SetFontColor(int) {}
-    void DrawFontText(char*, int) {}
+    // SetFontPosition, SetFontColor, DrawFontText moved to Graphics.cpp
     // FUN_00413e10 = ParseFile in Parser.cpp (callers updated)
     // FUN_004309c0 = Handler::WriteMessageAddress in Handler.cpp (callers updated)
 }
@@ -423,6 +427,8 @@ void EventList::InsertNode(void* data) { LinkedList::InsertNode(data); }
 // SC_DodgeOrville / SC_PRHotSpot external stubs
 void __fastcall FUN_0044c740(void*) {}
 void __fastcall FUN_00444af0(void*) {}
+void* __fastcall FUN_00421880(void*, int) { return 0; }
+void __fastcall FUN_00418690(void*, int, int) {}
 // FUN_0041b3a0 = HotspotAction::~HotspotAction in HotspotAction.cpp (removed, callers updated)
 // FUN_0041b790 = HotspotAction::CheckConditions in HotspotAction.cpp (removed, callers updated)
 // FUN_0041b6e0 = HotspotAction::Update in HotspotAction.cpp (removed, callers updated)

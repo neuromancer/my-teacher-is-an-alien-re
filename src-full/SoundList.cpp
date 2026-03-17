@@ -53,6 +53,11 @@ SoundList::~SoundList() {
   }
 }
 
+/* Function start: 0x425550 */
+int SoundList::Play(int index) {
+    return 0;
+}
+
 /* Function start: 0x4252A0 */
 void SoundList::StopAll() {
   for (short i = 0; i < m_fieldc; i++) {

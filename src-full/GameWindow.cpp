@@ -16,7 +16,14 @@ int InvalidateVideoMode();
 int CleanupVideoSystem();
 }
 
-extern "C" int* GetWindowedModeFlag();
+static int s_WindowHeight = 480;
+static int s_WindowedMode = 0;
+
+/* Function start: 0x4224F0 */
+extern "C" int* GetWindowHeight() { return &s_WindowHeight; }
+
+extern "C" int* GetWindowedModeFlag() { return &s_WindowedMode; }
+
 LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
 extern GameWindow g_GameWindow;

@@ -667,6 +667,54 @@ extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
     return 0;
 }
 
+// Font rendering globals (full game addresses)
+extern int g_DrawPosX_004374c2;    // 0x46d0aa in full game - cursor X
+extern int g_DrawPosY_004374ce;    // 0x46d0b6 in full game - cursor Y
+extern char g_TextAlignH_004374c0; // 0x46d0a8 in full game
+extern char g_TextAlignV_004374c1; // 0x46d0a9 in full game
+extern int DAT_0043749a;           // 0x46d082 in full game - font height
+extern int DAT_0043749e;           // 0x46d086 in full game - font descent
+extern int DAT_004374ae;           // 0x46d0ae in full game - max X
+extern int DAT_0043748c;           // 0x46d09c in full game - HDC
+extern int DAT_00437608[1];        // 0x46d308 in full game - palette color table
+
+/* Function start: 0x4524C2 */
+extern "C" void SetFontPosition(int x, int y) {
+    g_DrawPosX_004374c2 = x;
+    g_DrawPosY_004374ce = y;
+}
+
+extern "C" int __cdecl SetFillColor(unsigned char);
+
+/* Function start: 0x4525EC */
+extern "C" void SetFontColor(int index) {
+    SetFillColor((unsigned char)index);
+}
+
+/* Function start: 0x45329B */
+extern "C" int DrawFontText(char* text, int len) {
+    SetTextColor((HDC)DAT_0043748c, DAT_00437608[(unsigned char)DAT_00437490 + 1] & 0xffffff);
+    SetBkMode((HDC)DAT_0043748c, 1);
+    SetTextAlign((HDC)DAT_0043748c, 0);
+
+    if (g_TextAlignH_004374c0 >= 0) {
+        SIZE sz;
+        GetTextExtentPointA((HDC)DAT_0043748c, text, len, &sz);
+        g_DrawPosX_004374c2 -= (unsigned int)((g_TextAlignH_004374c0 + 1) * sz.cx) >> 1;
+    }
+    if (g_TextAlignV_004374c1 >= 0) {
+        g_DrawPosY_004374ce += (unsigned int)((g_TextAlignV_004374c1 + 1) * (DAT_0043749a - DAT_0043749e)) >> 1;
+    }
+    g_DrawPosY_004374ce -= DAT_0043749a;
+
+    int advance = TextOutA((HDC)DAT_0043748c, g_DrawPosX_004374c2, g_DrawPosY_004374ce, text, len);
+    g_DrawPosX_004374c2 += advance;
+    if ((unsigned int)DAT_004374ae < (unsigned int)g_DrawPosX_004374c2) {
+        g_DrawPosX_004374c2 = DAT_004374ae;
+    }
+    return 0;
+}
+
 /* Function start: 0x453C87 */ /* ~90% match */
 extern "C" int __cdecl DrawCircle(int param_1) {
     FUN_00424176(param_1, param_1);

@@ -32,11 +32,11 @@ int SCI_SearchScreen::LBLParse(char* line) {
     } else if (strcmp(token, "ENDPERIODANNOUNCE") == 0) {
         int index, value;
         sscanf(line, "%s %d %d", token, &index, &value);
-        field_A8[index + 20] = value;
+        ((int*)&statusPtr)[index + 20] = value;
     } else if (strcmp(token, "ANNOUNCE") == 0) {
         int index, value;
         sscanf(line, "%s %d %d", token, &index, &value);
-        field_A8[index] = value;
+        ((int*)&statusPtr)[index] = value;
     } else if (strcmp(token, "END") == 0) {
         return 1;
     } else {

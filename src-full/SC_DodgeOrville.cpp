@@ -11,7 +11,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" void ShowError(const char* format, ...);
 extern int FUN_0044ccf0(int, int, int, int);
 extern void __fastcall FUN_0044cb40(void*, int, int, int);
-extern void __fastcall FUN_00425550(void*, int, int);
+#include "SoundList.h"
 extern void FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int);
 
 class ZBufferManager;
@@ -49,7 +49,7 @@ extern "C" { extern GameState* DAT_0046aa30; }
 // vtable 0x461100 in original binary
 class ActionParser : public Parser {
 public:
-    void* actionPtr;  // 0x90 - SpriteAction*
+    SpriteAction* actionPtr;  // 0x90
 };
 
 
@@ -97,7 +97,7 @@ int SC_DodgeOrville::AddMessage(SC_Message* msg) {
         return 1;
     }
     if (*((int*)msg + 0xB) == 0x1B) {
-        ((int*)field_A8[0])[2] = 1;
+        statusPtr[2] = 1;
     }
     return 1;
 }
@@ -107,23 +107,23 @@ void SC_DodgeOrville::ProcessTargets() {
     void* ptr;
 
     if (savedCommand != 0x2B) {
-        if (((int*)field_A8[0])[1] != 0) {
-            ptr = (void*)field_A8[22];
+        if (statusPtr[1] != 0) {
+            ptr = (void*)pendingAction;
             if (ptr != 0) {
                 ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
-                field_A8[22] = 0;
+                pendingAction = 0;
             }
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                field_A8[22] = (int)newAction;
+                pendingAction = newAction;
                 ActionParser temp;
-                temp.actionPtr = (void*)newAction;
+                temp.actionPtr = newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL]");
 
-                *(int*)(field_A8[22] + 8) = savedCommand;
-                *(int*)(field_A8[22] + 0xC) = savedMsgData;
-                *(int*)(field_A8[22] + 0x14) = 6;
+                pendingAction->fromType = savedCommand;
+                pendingAction->fromValue = savedMsgData;
+                pendingAction->extra1 = 6;
 
                 void* gs = DAT_0046aa30;
                 int idx = ((GameState*)gs)->FindLabel("DODGE_COMBAT_AVAILABLE");
@@ -140,65 +140,65 @@ void SC_DodgeOrville::ProcessTargets() {
                 *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x1E;
             }
         }
-        else if (((int*)field_A8[0])[0] != 0) {
-            ptr = (void*)field_A8[22];
+        else if (statusPtr[0] != 0) {
+            ptr = (void*)pendingAction;
             if (ptr != 0) {
                 ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
-                field_A8[22] = 0;
+                pendingAction = 0;
             }
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                field_A8[22] = (int)newAction;
+                pendingAction = newAction;
                 ActionParser temp;
-                temp.actionPtr = (void*)newAction;
+                temp.actionPtr = newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL]");
             }
         }
         else {
-            ptr = (void*)field_A8[22];
+            ptr = (void*)pendingAction;
             if (ptr != 0) {
                 ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
-                field_A8[22] = 0;
+                pendingAction = 0;
             }
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                field_A8[22] = (int)newAction;
+                pendingAction = newAction;
                 ActionParser temp;
-                temp.actionPtr = (void*)newAction;
+                temp.actionPtr = newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[QUIT_LBL]");
             }
         }
     }
     else {
-        if (((int*)field_A8[0])[1] != 0) {
-            ptr = (void*)field_A8[22];
+        if (statusPtr[1] != 0) {
+            ptr = (void*)pendingAction;
             if (ptr != 0) {
                 ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
-                field_A8[22] = 0;
+                pendingAction = 0;
             }
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                field_A8[22] = (int)newAction;
+                pendingAction = newAction;
                 ActionParser temp;
-                temp.actionPtr = (void*)newAction;
+                temp.actionPtr = newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL_PR]");
             }
         }
-        else if (((int*)field_A8[0])[0] != 0) {
-            ptr = (void*)field_A8[22];
+        else if (statusPtr[0] != 0) {
+            ptr = (void*)pendingAction;
             if (ptr != 0) {
                 ((SpriteAction*)ptr)->~SpriteAction();
                 free(ptr);
-                field_A8[22] = 0;
+                pendingAction = 0;
             }
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                field_A8[22] = (int)newAction;
+                pendingAction = newAction;
                 ActionParser temp;
-                temp.actionPtr = (void*)newAction;
+                temp.actionPtr = newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL_PR]");
             }
         }
@@ -211,7 +211,7 @@ void SC_DodgeOrville::ProcessTargets() {
 void SC_DodgeOrville::UpdateGame()
 {
 #if 0 // TODO: fix FUN_00403fd0 call signature
-    int* spr108 = (int*)field_A8[24]; // 0x108
+    int* spr108 = (int*)bgSprite; // 0x108
     FUN_0044ccf0(*(int*)((char*)spr108 + 0xb0), *(int*)((char*)spr108 + 0xac), 0, 0x3ff00000);
     if (FUN_0044ccf0(*(int*)((char*)spr108 + 0xb0), *(int*)((char*)spr108 + 0xac), 0, 0x3ff00000) != 0) {
         if (*(int*)((char*)spr108 + 0x98) != 7) {
@@ -219,8 +219,8 @@ void SC_DodgeOrville::UpdateGame()
         }
     }
 
-    int* spr10c = (int*)field_A8[25]; // 0x10c
-    spr108 = (int*)field_A8[24]; // 0x108
+    int* spr10c = (int*)field_0x10C; // 0x10c
+    spr108 = (int*)bgSprite; // 0x108
     int state = *(int*)((char*)spr10c + 0x98);
     int f0val = *(int*)((char*)spr108 + 0xf0);
     int frameVal = 0;
@@ -234,8 +234,8 @@ void SC_DodgeOrville::UpdateGame()
             g_HitBounds_00473260[state].maxVal = 0;
             FUN_0044cb40(spr10c, 0, state + 7, 0);
             SC_DodgeOrville::dim_144.field_0++;
-            FUN_00425550((void*)field_A8[26], 0, 2); // 0x110
-            FUN_00425550((void*)field_A8[26], 0, field_154[0] + 5);
+            bgSound->Play(2); // 0x110
+            bgSound->Play(field_154[0] + 5);
             if (field_154[0] < 2) {
                 field_154[0]++;
             }
@@ -289,7 +289,7 @@ void SC_DodgeOrville::UpdateGame()
 /* Function start: 0x429380 */
 void SC_DodgeOrville::UpdateReticle()
 {
-    Sprite* spr10c = (Sprite*)field_A8[25]; // 0x10c
+    Sprite* spr10c = (Sprite*)field_0x10C; // 0x10c
     if (spr10c->Do(spr10c->loc_x, spr10c->loc_y, 1.0) == 0) {
         return;
     }
@@ -347,7 +347,7 @@ int CompareRange(int center, int pos, int range)
 void SC_DodgeOrville::ThrowBomb()
 {
     if (dim_144.field_4 != 0 && dim_144.field_0 >= dim_144.field_4) {
-        ((int*)field_A8[0])[0] = 1;
+        statusPtr[0] = 1;
         return;
     }
 
@@ -363,7 +363,7 @@ void SC_DodgeOrville::ThrowBomb()
     }
 
     if (atLimit != 0) {
-        ((int*)field_A8[0])[1] = 1;
+        statusPtr[1] = 1;
         return;
     }
 
@@ -373,7 +373,7 @@ void SC_DodgeOrville::ThrowBomb()
     } while (dir == g_LastBombDir_0046ac44);
 
     g_LastBombDir_0046ac44 = dir;
-    FUN_0044cb40((void*)field_A8[24], 0, dir + 1, 0); // 0x108
+    FUN_0044cb40((void*)bgSprite, 0, dir + 1, 0); // 0x108
 
     // Copy bomb data to hit bounds
     int* src = (int*)&g_BombData_00473278[dir];
@@ -385,17 +385,17 @@ void SC_DodgeOrville::ThrowBomb()
         dst += 2;
     } while ((unsigned int)dst < 0x473278);
 
-    FUN_00425550((void*)field_A8[26], 0, 3); // 0x110
+    bgSound->Play(3); // 0x110
 
     int r = rand_00454920();
     int maxTh = dim_124.field_0;
     int rem = r % maxTh;
     if (maxTh / 0x14 > rem) {
-        FUN_00425550((void*)field_A8[26], 0, 8);
+        bgSound->Play(8);
         return;
     }
     if (maxTh / 0xa > rem) {
-        FUN_00425550((void*)field_A8[26], 0, 9);
+        bgSound->Play(9);
     }
 }
 
