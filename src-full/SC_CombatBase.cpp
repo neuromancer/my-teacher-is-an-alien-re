@@ -5,6 +5,14 @@
 #include "Memory.h"
 #include "Viewport.h"
 #include "Target.h"
+#include "SoundList.h"
+#include "EngineSubsystems.h"
+#include "mCNavigator.h"
+#include "Palette.h"
+#include "CombatSprite.h"
+#include "ScoreDisplay.h"
+#include "CombatDisplay.h"
+#include "WeaponDisplay.h"
 #include <string.h>
 
 class InputManager;
@@ -127,7 +135,7 @@ void SC_CombatBase::SetupViewport()
 {
     DAT_0046ae50 = bgSprite;
     DAT_0046ae60 = combatDisplay;
-    DAT_0046ae68 = scoreManager;
+    DAT_0046ae68 = soundList;
     DAT_0046ae4c = weaponParser;
     DAT_0046ae70 = navigator;
     DAT_0046ae64 = palette;
@@ -138,129 +146,30 @@ void SC_CombatBase::SetupViewport()
     DAT_0046ae74 = hotspotPool;
 }
 
-extern void* __fastcall FUN_00425170(void*, int, int); // ScoreManager ctor
-extern void* __fastcall FUN_00434660(void*, int);      // WeaponParser ctor
-extern void* __fastcall FUN_0044b8d0(void*, int);      // mCNavigator ctor
-extern void* __fastcall FUN_0041dbe0(void*, int);      // Palette ctor
-extern void* __fastcall FUN_00408fb0(void*, int);      // CombatSprite ctor
-extern void* __fastcall FUN_004432f0(void*, int);      // TargetList ctor
-extern void* __fastcall FUN_0040c5e0(void*, int);      // ScoreDisplay ctor
-extern void* __fastcall FUN_004454f0(void*, int);      // Viewport ctor
-extern void __fastcall FUN_004127c0(void*, int);        // Parser ctor
-
 /* Function start: 0x42C240 */
 void SC_CombatBase::Initialize()
 {
-    void* mem;
-    void* result;
+    combatDisplay = new CombatDisplay();
 
-    // Combat display (0xB0 bytes, Parser-derived inline ctor)
-    mem = operator new(0xB0);
-    result = 0;
-    if (mem != 0) {
-        FUN_004127c0(mem, 0);
-        int* obj = (int*)mem;
-        *(int*)((char*)mem + 0xA0) = 0;
-        *(int*)((char*)mem + 0xA4) = 0;
-        obj[0] = 0x4614b0;
-        memset((char*)mem + 0x90, 0, 8 * 4);
-        *(int*)((char*)mem + 0x90) = 100;
-        *(int*)((char*)mem + 0x94) = 0xDC;
-        *(int*)((char*)mem + 0x98) = 199;
-        *(int*)((char*)mem + 0x9C) = 0;
-        *(int*)((char*)mem + 0xAC) = 0;
-        *(int*)((char*)mem + 0xA8) = 0;
-        obj[0] = 0x4615a0;
-        result = mem;
-    }
-    combatDisplay = (Parser*)result;
+    // SoundList (0x10 bytes)
+    soundList = new SoundList(0x32);
 
-    // ScoreManager (0x10 bytes)
-    mem = operator new(0x10);
-    result = 0;
-    if (mem != 0) {
-        result = FUN_00425170(mem, 0, 0x32);
-    }
-    scoreManager = (ScoreManager*)result;
-
-    // WeaponParser (0xC0 bytes)
-    mem = operator new(0xC0);
-    result = 0;
-    if (mem != 0) {
-        result = FUN_00434660(mem, 0);
-    }
-    weaponParser = (EngineInfoParser*)result;
-
-    // mCNavigator (0xA8 bytes)
-    mem = operator new(0xA8);
-    result = 0;
-    if (mem != 0) {
-        result = FUN_0044b8d0(mem, 0);
-    }
-    navigator = (mCNavigator*)result;
-
-    // Palette wrapper (0x08 bytes)
-    mem = operator new(0x08);
-    result = 0;
-    if (mem != 0) {
-        result = FUN_0041dbe0(mem, 0);
-    }
-    palette = (Palette*)result;
-
-    // CombatSprite (0xA0 bytes)
-    mem = operator new(0xA0);
-    result = 0;
-    if (mem != 0) {
-        result = FUN_00408fb0(mem, 0);
-    }
-    combatSprite = (CombatSprite*)result;
-
-    // TargetList (0x1D0 bytes)
-    mem = operator new(0x1D0);
-    result = 0;
-    if (mem != 0) {
-        result = FUN_004432f0(mem, 0);
-    }
-    targetList = (TargetList*)result;
-
-    // ScoreDisplay (0x24 bytes)
-    mem = operator new(0x24);
-    result = 0;
-    if (mem != 0) {
-        result = FUN_0040c5e0(mem, 0);
-    }
-    scoreDisplay = (ScoreDisplay*)result;
-
-    // Viewport (0x2C bytes)
-    mem = operator new(0x2C);
-    result = 0;
-    if (mem != 0) {
-        result = FUN_004454f0(mem, 0);
-    }
-    viewport = (Viewport*)result;
-
-    // HotspotPool (0x18 bytes, inline init)
-    int* pool = (int*)operator new(0x18);
-    if (pool != 0) {
-        pool[2] = 0;
-        pool[3] = 0;
-        pool[1] = 0;
-        pool[0] = 0;
-        pool[4] = 0;
-        pool[5] = 10;
-    }
-    hotspotPool = (HotspotListData*)pool;
+    weaponParser = new EngineInfoParser();
+    navigator = new mCNavigator();
+    palette = new Palette();
+    combatSprite = new CombatSprite();
+    targetList = new TargetList();
+    scoreDisplay = new ScoreDisplay();
+    viewport = new Viewport();
+    hotspotPool = new HotspotListData();
 
     SetupViewport();
 }
 
 extern void __fastcall FUN_0044c740(void*);  // Sprite dtor
-extern void __fastcall FUN_0044b950(void*, int);  // mCNavigator dtor
-extern void __fastcall FUN_0041dc10(void*, int);  // Palette wrapper dtor
 extern void __fastcall FUN_00443360(void*, int);  // TargetList dtor
-extern void __fastcall FUN_00434740(void*, int);  // WeaponParser dtor
+extern void __fastcall FUN_00434740(void*, int);  // EngineInfoParser dtor
 extern void __fastcall FUN_00409020(void*, int);  // CombatSprite dtor
-extern void __fastcall FUN_00425200(void*, int);  // ScoreManager dtor
 
 /* Function start: 0x42C630 */
 void SC_CombatBase::CleanupAll()
@@ -271,17 +180,15 @@ void SC_CombatBase::CleanupAll()
         bgSprite = 0;
     }
     if (navigator != 0) {
-        FUN_0044b950(navigator, 0);
-        FreeMemory(navigator);
+        delete navigator;
         navigator = 0;
     }
     if (palette != 0) {
-        FUN_0041dc10(palette, 0);
-        FreeMemory(palette);
+        delete palette;
         palette = 0;
     }
     if (scoreDisplay != 0) {
-        FreeMemory(scoreDisplay);
+        delete scoreDisplay;
         scoreDisplay = 0;
     }
     if (targetList != 0) {
@@ -300,19 +207,15 @@ void SC_CombatBase::CleanupAll()
         combatSprite = 0;
     }
     if (viewport != 0) {
-        viewport->~Viewport();
-        FreeMemory(viewport);
+        delete viewport;
         viewport = 0;
     }
-    if (scoreManager != 0) {
-        FUN_00425200(scoreManager, 0);
-        FreeMemory(scoreManager);
-        scoreManager = 0;
+    if (soundList != 0) {
+        delete soundList;
+        soundList = 0;
     }
     if (combatDisplay != 0) {
-        int* obj = (int*)combatDisplay;
-        int* vtbl = (int*)*obj;
-        ((void (__cdecl *)(int))vtbl[3])(1);
+        delete combatDisplay;
         combatDisplay = 0;
     }
     if (hotspotPool != 0) {
@@ -324,8 +227,6 @@ void SC_CombatBase::CleanupAll()
     RenderState();
 }
 
-extern void __fastcall FUN_004274c0(void*, int, int); // WeaponDisplay ctor
-extern void* __fastcall FUN_0044c660(void*, int, char*); // Sprite ctor
 
 /* Function start: 0x42CB2E */
 int SC_CombatBase::LBLParse(char* line)
@@ -359,52 +260,21 @@ int SC_CombatBase::LBLParse(char* line)
         int n = sscanf(line, " %s %s", token, arg);
         if (n == 2) {
             if (combatDisplay != 0) {
-                int* obj = (int*)combatDisplay;
-                int* vtbl = (int*)*obj;
-                ((void (__cdecl *)(int))vtbl[3])(1);
+                delete combatDisplay;
                 combatDisplay = 0;
             }
             if (strcmp(arg, "ROCKTHROWER") == 0) {
-                void* mem = operator new(200);
-                void* wp = 0;
-                if (mem != 0) {
-                    FUN_004274c0(mem, 0, (int)this);
-                    wp = mem;
-                }
-                combatDisplay = (Parser*)wp;
-                DAT_0046ae60 = (Parser*)wp;
+                combatDisplay = new RockThrower(this);
+                DAT_0046ae60 = combatDisplay;
             } else {
-                void* mem = operator new(0xB0);
-                void* wp = 0;
-                if (mem != 0) {
-                    FUN_004127c0(mem, 0);
-                    int* obj = (int*)mem;
-                    *(int*)((char*)mem + 0xA0) = 0;
-                    *(int*)((char*)mem + 0xA4) = 0;
-                    obj[0] = 0x4614b0;
-                    memset((char*)mem + 0x90, 0, 8 * 4);
-                    *(int*)((char*)mem + 0x90) = 100;
-                    *(int*)((char*)mem + 0x94) = 0xDC;
-                    *(int*)((char*)mem + 0x98) = 199;
-                    *(int*)((char*)mem + 0x9C) = 0;
-                    *(int*)((char*)mem + 0xAC) = 0;
-                    *(int*)((char*)mem + 0xA8) = 0;
-                    obj[0] = 0x4615b8;
-                    wp = mem;
-                }
-                combatDisplay = (Parser*)wp;
-                DAT_0046ae60 = (Parser*)wp;
+                combatDisplay = new WeaponDisplay();
+                DAT_0046ae60 = combatDisplay;
             }
         }
     } else if (strcmp(token, "CONSOLE") == 0) {
-        void* mem = operator new(0xF8);
-        Sprite* spr = 0;
-        if (mem != 0) {
-            spr = (Sprite*)FUN_0044c660(mem, 0, (char*)0);
-        }
-        bgSprite = spr;
-        DAT_0046ae50 = spr;
-        Parser::ProcessFile((Parser*)spr, this, (char*)0);
+        bgSprite = new Sprite((char*)0);
+        DAT_0046ae50 = bgSprite;
+        Parser::ProcessFile(bgSprite, this, (char*)0);
     } else if (strcmp(token, "END") == 0) {
         return 1;
     } else {

@@ -372,7 +372,7 @@ void Target::ParseSound(char* line)
     sscanf(line + 3, "%s", buffer);
     char type = line[1];
     char* resolved = FUN_0044e470(buffer);
-    Sample* sound = (Sample*)((SoundList*)DAT_0046ae68)->Register(resolved);
+    Sample* sound = (Sample*)DAT_0046ae68->Register(resolved);
 
     switch (type) {
     case '0':

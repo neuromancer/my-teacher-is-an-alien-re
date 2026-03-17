@@ -99,7 +99,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
   sscanf(line, "%s", buffer);
   char* path = FUN_0044e470(buffer);
   char* formatted = FormatStringVA(path);
-  int sound = (int)((SoundList*)DAT_0046ae68)->Register(formatted);
+  int sound = (int)DAT_0046ae68->Register(formatted);
 
   switch (index) {
   case 0:

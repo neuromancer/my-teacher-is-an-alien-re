@@ -30,6 +30,20 @@ RockThrower::RockThrower() {
     Parser::ProcessFile(this, g_CombatEngine_00435eb0, 0);
 }
 
+/* Function start: 0x4274C0 */
+RockThrower::RockThrower(Parser* parent) {
+    int* p = &m_itemCount;
+    for (int i = 6; i != 0; i--) {
+        *p = 0;
+        p++;
+    }
+    m_itemCount = 3;
+    m_posY = 0xa0;
+    m_posX = 0xa0;
+    m_posZ = 0xa6;
+    Parser::ProcessFile(this, parent, 0);
+}
+
 RockThrower::~RockThrower() {}
 
 /* Function start: 0x416960 */ /* DEMO ONLY - no full game match */
@@ -98,13 +112,13 @@ void RockThrower::UpdateProjectiles() {
         }
 
         if (buttonState == 0 && (pMouse->prevButtons & 1) != 0) {
-            RockThrower::field_0xa0 = 1;
+            RockThrower::m_clicked = 1;
         } else {
-            RockThrower::field_0xa0 = 0;
+            RockThrower::m_clicked = 0;
         }
 
         i = 0;
-        if (RockThrower::field_0xa0 == 0) {
+        if (RockThrower::m_clicked == 0) {
             break;
         }
 
@@ -124,11 +138,11 @@ void RockThrower::UpdateProjectiles() {
     } while (0);
     i = 0;
     g_ProjectileHits_0043d150 = 0;
-    RockThrower::field_0xb0 = 0;
+    RockThrower::field_2 = 0;
 
     for (i = 0; i < RockThrower::m_itemCount; i++) {
         RockThrower::m_items[i]->Update();
     }
 
-    RockThrower::field_0xb0 = g_ProjectileHits_0043d150;
+    RockThrower::field_2 = g_ProjectileHits_0043d150;
 }

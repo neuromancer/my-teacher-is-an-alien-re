@@ -55,8 +55,9 @@ class Viewport;
 class TargetList;
 class CombatSprite;
 class Parser;
+class Weapon;
 class Palette;
-class ScoreManager;
+class SoundList;
 class ScoreDisplay;
 class mCNavigator;
 struct HotspotListData;
@@ -67,9 +68,9 @@ extern "C" {
     Viewport*         DAT_0046ae54 = 0;
     TargetList*       DAT_0046ae58 = 0;
     CombatSprite*     DAT_0046ae5c = 0;
-    Parser*           DAT_0046ae60 = 0;
+    Weapon*           DAT_0046ae60 = 0;
     Palette*          DAT_0046ae64 = 0;
-    ScoreManager*     DAT_0046ae68 = 0;
+    SoundList*        DAT_0046ae68 = 0;
     ScoreDisplay*     DAT_0046ae6c = 0;
     mCNavigator*      DAT_0046ae70 = 0;
     HotspotListData*  DAT_0046ae74 = 0;
@@ -355,6 +356,13 @@ void* DAT_0046aa1c = 0;
 int __cdecl FUN_004341f0(char*) { return 0; }
 void __cdecl FUN_004342d0(char*, int) {}
 void __fastcall FUN_00433230(void*, int, char*) {}
+
+
+// ProcessEvents helper stubs
+void __fastcall FUN_0042d1a0(void*, int, int*) {}
+void __fastcall FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int, int) {}
+void __fastcall FUN_00444920(void*, int, int*) {}
+void __fastcall FUN_00444af0(void*, int) {}
 
 // FUN_00425cb0 = ShowMessage in string.cpp
 // FUN_0044ccf0 = Sprite::RenderAt in Sprite.cpp (stub kept: callers use __cdecl, real is __thiscall method)

@@ -10,9 +10,10 @@ class Sprite;
 class Sample;
 class CombatSprite;
 class mCNavigator;
-class ScoreManager;
+class SoundList;
 class ScoreDisplay;
 class EngineInfoParser;
+class Weapon;
 struct HotspotListData;
 
 // Combat globals (set by SC_CombatBase::SetupViewport from class fields)
@@ -22,9 +23,9 @@ extern "C" {
     extern Viewport*         DAT_0046ae54;  // g_Viewport
     extern TargetList*       DAT_0046ae58;  // g_TargetList
     extern CombatSprite*     DAT_0046ae5c;  // g_CombatSprite
-    extern Parser*           DAT_0046ae60;  // g_CombatDisplay
+    extern Weapon*           DAT_0046ae60;  // g_CombatDisplay
     extern Palette*          DAT_0046ae64;  // g_Palette
-    extern ScoreManager*     DAT_0046ae68;  // g_ScoreManager
+    extern SoundList*        DAT_0046ae68;  // g_SoundList
     extern ScoreDisplay*     DAT_0046ae6c;  // g_ScoreDisplay
     extern mCNavigator*      DAT_0046ae70;  // g_Navigator
     extern HotspotListData*  DAT_0046ae74;  // g_HotspotPool
@@ -65,9 +66,9 @@ public:
     Sprite* bgSprite;                // 0x98 (background console sprite)
     Viewport* viewport;              // 0x9C (0x2C bytes)
     CombatSprite* combatSprite;      // 0xA0 (0xA0 bytes)
-    Parser* combatDisplay;           // 0xA4 (0xB0 bytes, vtable 0x4615A0)
+    Weapon* combatDisplay;           // 0xA4 (0xB0 bytes, vtable 0x4615A0)
     Palette* palette;                // 0xA8 (0x08 bytes)
-    ScoreManager* scoreManager;      // 0xAC (0x10 bytes)
+    SoundList* soundList;            // 0xAC (0x10 bytes)
     ScoreDisplay* scoreDisplay;      // 0xB0 (0x24 bytes)
     mCNavigator* navigator;          // 0xB4 (0xA8 bytes)
     HotspotListData* hotspotPool;    // 0xB8 (0x18 bytes)
