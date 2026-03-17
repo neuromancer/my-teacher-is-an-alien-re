@@ -129,10 +129,11 @@ int DAT_00473358 = 0;
 int DAT_0047337c = 0;
 
 // SC_Cinematic + SC_SelectHotSpot globals
+#include "VBuffer.h"
 extern "C" {
     int DAT_0046a6ec = 0;
     void* DAT_0046aa10 = 0;
-    void* DAT_0046aa14 = 0;
+    VBuffer* DAT_0046aa14 = 0;
     GameState* DAT_0046aa30 = 0;
     // DAT_0046ac04 = g_WaitForInputValue_004373bc in globals.cpp (last key pressed)
     char DAT_00473400 = 0;
@@ -151,7 +152,8 @@ void* DAT_0046aa38 = 0;
 // SC_Wahoo / SC_WordSearch / SCI_PracticeRoom globals
 int DAT_0046ad6c = 0;
 void* DAT_0046bbfc = 0;
-void* DAT_00468ef0 = 0;
+class Weapon;
+Weapon* DAT_00468ef0 = 0;
 char* DAT_0046bacc = 0;
 
 // SC_Detention globals
@@ -318,13 +320,7 @@ void* __fastcall FUN_00425480(void*) { return 0; }
 void* __fastcall FUN_00440860(void*) { return 0; }
 // FUN_00421920 = InitTimeOut in TimeOut.cpp
 void __fastcall FUN_00427880(void*) {}
-void __fastcall FUN_00403fd0(void* self, int, void* data, int priority, int x, int y, int mode, int scale_lo, int scale_hi, int left, int top, int right, int bottom) {
-    double scale;
-
-    ((int*)&scale)[0] = scale_lo;
-    ((int*)&scale)[1] = scale_hi;
-    ((ZBufferManager*)self)->DrawVBufferRegion(data, priority, x, y, mode, scale, left, top, right, bottom);
-}
+// FUN_00403fd0 = ZBufferManager::DrawVBufferRegion (callers updated to use method call)
 void __fastcall FUN_0044cb40(void*, int, int, int) {}
 // FUN_004127c0 = Parser::Parser in Parser.cpp
 void __fastcall FUN_00407b60(void*) {}
@@ -365,7 +361,7 @@ void __fastcall FUN_00433230(void*, int, char*) {}
 
 // SC_Combat base method stubs
 #include "SC_Combat.h"
-void __fastcall FUN_00432da0(void*) {}
+// FUN_00432da0 = MouseControl::DrawCursor (removed, callers updated)
 
 // ProcessEvents helper stubs
 void __fastcall FUN_0042d1a0(void*, int, int*) {}
@@ -373,13 +369,10 @@ void __fastcall FUN_00444a40(void*, int, int, int, int, int, int, int, int, int,
 void __fastcall FUN_00444920(void*, int, int*) {}
 void __fastcall FUN_00444af0(void*, int) {}
 
-// FUN_00425cb0 = ShowMessage in string.cpp
-// FUN_0044ccf0 = Sprite::RenderAt in Sprite.cpp (stub kept: callers use __cdecl, real is __thiscall method)
-int __cdecl FUN_0044ccf0(int, int, int, int) { return 0; }
+// FUN_0044ccf0 = Sprite::Do — callers updated to use method calls
+// FUN_004344b0 / FUN_00434030 — called from main.cpp, not yet identified
 void __cdecl FUN_004344b0() {}
 void __cdecl FUN_00434030(void*, int) {}
-char* __cdecl FUN_0044e470(char* baseName) { return MakeAudioName(baseName); }
-void __cdecl FUN_00425bc0(char* param_1, char* param_2, int param_3) { ExtractQuotedString(param_1, param_2, param_3); }
 
 // ============================================================================
 // Remaining extern "C" stubs
@@ -424,45 +417,29 @@ extern "C" {
 #include "EventList.h"
 void EventList::InsertNode(void* data) { LinkedList::InsertNode(data); }
 
-// SC_DodgeOrville / SC_PRHotSpot external stubs
-void __fastcall FUN_0044c740(void*) {}
-void __fastcall FUN_00444af0(void*) {}
-void* __fastcall FUN_00421880(void*, int) { return 0; }
-void __fastcall FUN_00418690(void*, int, int) {}
-// FUN_0041b3a0 = HotspotAction::~HotspotAction in HotspotAction.cpp (removed, callers updated)
-// FUN_0041b790 = HotspotAction::CheckConditions in HotspotAction.cpp (removed, callers updated)
-// FUN_0041b6e0 = HotspotAction::Update in HotspotAction.cpp (removed, callers updated)
-// FUN_0041b5a0 = HotspotAction::Reset in HotspotAction.cpp (removed, callers updated)
-void __fastcall FUN_00425550(void*, int, int) {}
-void __fastcall FUN_00449520(void*) {}
-void __fastcall FUN_00425100(void*, int, int, int) {}
-void __fastcall FUN_0042b0f0(void*) {}
+// External function stubs (still referenced by other .cpp files)
+// Extern stubs still referenced by callers using raw __fastcall convention
+void __fastcall FUN_0044c740(void*) {}                          // Sprite::~Sprite — EngineC uses raw extern
+void __fastcall FUN_00444af0(void*) {}                          // SpriteAction::~SpriteAction — GameLoop, SC_CombatBase
+void __fastcall FUN_0042b0f0(void*) {}                           // SC_PRHotSpot helper
+void __fastcall FUN_00409730(void*, int, int) {}                 // CombatSprite::ProcessFrame
+int __fastcall FUN_0044be70(void*, int) { return 0; }           // mCNavigator update
+void __fastcall FUN_00443360(void*, int) {}                      // TargetList dtor (virtual, called directly)
+void __fastcall FUN_00434740(void*, int) {}                      // EngineInfoParser dtor (virtual, called directly)
+void __fastcall FUN_00409020(void*, int) {}                      // CombatSprite dtor (virtual, called directly)
 
-// SC_CombatBase extern stubs
-int __fastcall FUN_0044be70(void*, int) { return 0; }
-int FUN_0042c9d0(void*) { return 0; }
-void __fastcall FUN_00442940(void*, int, int) {}
-void* __fastcall FUN_00443660(void*, int) { return 0; }
-void __fastcall FUN_00409730(void*, int, int) {}
-// SC_CombatBase::Initialize extern stubs (constructors)
-void* __fastcall FUN_00425170(void*, int, int) { return 0; }
-void* __fastcall FUN_00434660(void*, int) { return 0; }
-void* __fastcall FUN_0044b8d0(void*, int) { return 0; }
-void* __fastcall FUN_0041dbe0(void*, int) { return 0; }
-void* __fastcall FUN_00408fb0(void*, int) { return 0; }
-void* __fastcall FUN_004432f0(void*, int) { return 0; }
-void* __fastcall FUN_0040c5e0(void*, int) { return 0; }
-void* __fastcall FUN_004454f0(void*, int) { return 0; }
-void __fastcall FUN_004127c0(void*, int) {}
-// SC_CombatBase::CleanupAll extern stubs (destructors)
-void __fastcall FUN_0044b950(void*, int) {}
-void __fastcall FUN_0041dc10(void*, int) {}
-void __fastcall FUN_00443360(void*, int) {}
-void __fastcall FUN_00434740(void*, int) {}
-void __fastcall FUN_00409020(void*, int) {}
-void __fastcall FUN_00425200(void*, int) {}
-// mCNavigator extern
-// FUN_0044aec0 = mCNavNode::~mCNavNode (moved to mCNavNode.cpp)
+// Not-yet-typed ctors (classes not fully defined)
+void* __fastcall FUN_00421880(void*, int) { return 0; }         // progress obj ctor — SC_Roach
+void __fastcall FUN_00418690(void*, int, int) {}                // crystal ctor — SC_Roach
+void* __fastcall FUN_0041dbf0(void*, int, char*) { return 0; } // Palette ctor w/ name — SC_DuctNav, SC_ExtBridge
+void* __fastcall FUN_00421a50(void*, int, char*, int*) { return 0; } // Button ctor — SC_DuctNav
+void __cdecl FUN_0044d210(void*, int, int, int, int) {}         // Sprite anim setup — SC_DuctNav
+
+// SC_ExtBridge extern stubs
+void __fastcall FUN_0044c9d0(void*) {}                           // Sprite::Destroy
+void __fastcall FUN_00431030(void*, int, int*) {}                // GameEngine::EnqueueAction
+// FUN_00444e40 already defined above as __cdecl (SpriteAction::Dispatch)
+void __fastcall FUN_0041dcc0(void*, int, char*) {}               // Palette::LoadFromFile
 
 // FUN_00455040 = fclose (CRT)
 // FUN_00455110 = fsopen (string.cpp) = _fsopen(filename, mode, _SH_DENYNO)

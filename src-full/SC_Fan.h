@@ -23,12 +23,14 @@ public:
     SC_Fan();
     ~SC_Fan();
 
-    int LBLParse(char* line);          // 0x4104B0
-    void Init(SC_Message* msg);        // 0x40F290
-    void Cleanup(int flag);            // 0x40F420
-    int AddMessage(SC_Message* msg);   // 0x40F6C0
-    void Update(int param1, int param2); // 0x40F660
-    int Exit(SC_Message* msg);         // 0x40F6F0
+    virtual int LBLParse(char* line);          // [0] 0x4104B0
+    virtual void OnProcessEnd();               // [2] 0x410390
+    virtual void Init(SC_Message* msg);        // [4] 0x40F290
+    virtual int AddMessage(SC_Message* msg);   // [5] 0x40F6C0
+    virtual void Update(int param1, int param2); // [7] 0x40F660
+    virtual int Exit(SC_Message* msg);         // [8] 0x40F6F0
+
+    void Cleanup(int flag);            // [6] 0x40F420 (vtable ShutDown slot)
 
     void ProcessRound();               // 0x40F760
     void DisplaySprites(int frame);    // 0x40FBD0

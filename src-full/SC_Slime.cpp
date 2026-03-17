@@ -14,7 +14,7 @@
 extern "C" extern GameState* DAT_0046aa30;
 
 extern "C" void SetVideoRes(int, int);
-extern char* __cdecl FUN_0044e470(char*);
+#include "string.h"
 extern "C" void WriteToLog(const char* format, ...);
 class ZBufferManager;
 extern ZBufferManager* DAT_0046aa24;
@@ -486,7 +486,7 @@ void SlimeTable::LoadEntry(int index, char* filename, int value)
 
     Sample* sample = new Sample();
     ((void**)fields[1])[index] = sample;
-    sample->Load(FUN_0044e470(filename));
+    sample->Load(MakeAudioName(filename));
     ((int*)fields[2])[index] = value;
 }
 

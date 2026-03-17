@@ -20,8 +20,6 @@ extern InputManager* DAT_0046aa08;
 extern "C" extern GameState* DAT_0046aa30;
 
 extern void __fastcall FUN_00409730(void*, int, int);  // CombatSprite::ProcessFrame
-extern void* __fastcall FUN_00443660(void*, int);      // TargetList::ProcessTargets
-extern void __fastcall FUN_00442940(void*, int, int);  // Target::UpdateProgress
 extern int __fastcall FUN_0044be70(void*, int);         // WeaponParser::UpdateProjectiles
 extern void __fastcall FUN_0042d1a0(void*, int, int*);    // HotspotPool::PopEvent
 extern void __fastcall FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int, int); // HotspotEvent ctor
@@ -84,7 +82,7 @@ int SC_CombatBase::StopAndCleanup()
 /* Function start: 0x42BFC0 */
 void SC_CombatBase::ProcessFrame()
 {
-    void* target = FUN_00443660(DAT_0046ae58, 0);
+    void* target = DAT_0046ae58->ProcessTargets();
 
     int* obj60 = (int*)DAT_0046ae60;
     int* vtbl60 = (int*)*obj60;
@@ -102,7 +100,7 @@ void SC_CombatBase::ProcessFrame()
         int* vtbl60b = (int*)*(int*)DAT_0046ae60;
         ((void (__fastcall *)(int*, int))vtbl60b[4])((int*)DAT_0046ae60, 0);
         if (target != 0) {
-            FUN_00442940(target, 0, 1);
+            ((Target*)target)->UpdateProgress(1);
         }
     }
 

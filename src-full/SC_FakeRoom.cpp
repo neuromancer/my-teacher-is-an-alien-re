@@ -14,7 +14,6 @@ extern MouseControl* DAT_0046aa18;
 extern "C" extern GameState* DAT_0046aa30;
 
 extern void __fastcall FUN_0044cb40(void*, int, int, int);  // Sprite::ResetAnimation
-extern void __fastcall FUN_00432da0(void*);                  // MouseControl method
 extern void __fastcall FUN_004494e0(void*);                  // SC_Combat base ProcessLose tail
 
 // Parser-derived class used for MIS file action parsing
@@ -108,7 +107,7 @@ void SC_FakeRoom::RenderFrame()
         if (cursor != 0) {
             FUN_0044cb40(cursor, 0, state, 0);
         }
-        FUN_00432da0(DAT_0046aa18);
+        DAT_0046aa18->DrawCursor();
         return;
     }
 
@@ -132,7 +131,7 @@ void SC_FakeRoom::RenderFrame()
     if (cursor != 0) {
         FUN_0044cb40(cursor, 0, state, 0);
     }
-    FUN_00432da0(DAT_0046aa18);
+    DAT_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x4447B0 */

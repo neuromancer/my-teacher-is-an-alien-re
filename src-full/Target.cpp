@@ -362,7 +362,7 @@ void Target::Init(char* line)
     }
 }
 
-extern char* __cdecl FUN_0044e470(char*);
+#include "string.h"
 
 /* Function start: 0x442BD0 */
 void Target::ParseSound(char* line)
@@ -371,7 +371,7 @@ void Target::ParseSound(char* line)
 
     sscanf(line + 3, "%s", buffer);
     char type = line[1];
-    char* resolved = FUN_0044e470(buffer);
+    char* resolved = MakeAudioName(buffer);
     Sample* sound = (Sample*)DAT_0046ae68->Register(resolved);
 
     switch (type) {

@@ -40,6 +40,7 @@ public:
     void LoadFromFile(char* filename, int param_2); // 0x411270
     void ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double scale);
 
+    int CheckHit(int x, int y);             // 0x411330
     void DumpHandleInfo();                  // 0x410F40
     void BlitTransparentRegion(int, int, int, int, int, int, int);  // 0x411530
     void BlitReversedRows(int, int, int, int, int, int, int);      // 0x4115F0

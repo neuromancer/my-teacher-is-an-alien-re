@@ -18,7 +18,6 @@
 // FUN_00413e10 = ParseFile in Parser.h
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
-extern void __fastcall FUN_00425550(void*, int, int);
 extern void __fastcall FUN_0044c880(void*);
 // FUN_00420ac0 = FlagArray::ClearFlag in FlagArray.h
 extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);

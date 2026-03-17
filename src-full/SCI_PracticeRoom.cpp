@@ -25,7 +25,6 @@ extern void __fastcall FUN_00429df0(void*);
 extern void __fastcall FUN_00420f00(void*);
 #include "MouseControl.h"
 extern void* __fastcall FUN_00425480(void*);
-extern void __fastcall FUN_00425550(void*, int, int);
 extern int __fastcall FUN_0042a010(void*, int, void*);
 
 extern "C" void WriteToLog(const char* format, ...);

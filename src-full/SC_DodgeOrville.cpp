@@ -9,12 +9,9 @@
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 // FUN_00413e10 = ParseFile in Parser.h
 extern "C" void ShowError(const char* format, ...);
-extern int FUN_0044ccf0(int, int, int, int);
 extern void __fastcall FUN_0044cb40(void*, int, int, int);
 #include "SoundList.h"
-extern void FUN_00403fd0(void*, int, void*, int, int, int, int, int, int, int, int, int, int);
-
-class ZBufferManager;
+#include "ZBufferManager.h"
 extern ZBufferManager* DAT_0046aa24;
 extern int g_AnimStates_0046ac30[5];
 extern int g_LastBombDir_0046ac44;
@@ -33,7 +30,6 @@ extern BombData g_BombData_00473278[6];
 extern POINT g_CursorPos_00473308;
 
 extern int __cdecl rand_00454920();
-extern void __fastcall FUN_00449520(void*);
 
 int CompareRange(int center, int pos, int range);
 int CheckCursorRange(int range);
@@ -210,19 +206,18 @@ void SC_DodgeOrville::ProcessTargets() {
 /* Function start: 0x429110 */
 void SC_DodgeOrville::UpdateGame()
 {
-#if 0 // TODO: fix FUN_00403fd0 call signature
-    int* spr108 = (int*)bgSprite; // 0x108
-    FUN_0044ccf0(*(int*)((char*)spr108 + 0xb0), *(int*)((char*)spr108 + 0xac), 0, 0x3ff00000);
-    if (FUN_0044ccf0(*(int*)((char*)spr108 + 0xb0), *(int*)((char*)spr108 + 0xac), 0, 0x3ff00000) != 0) {
-        if (*(int*)((char*)spr108 + 0x98) != 7) {
+    Sprite* spr108 = (Sprite*)bgSprite; // 0x108
+    spr108->Do(spr108->num_states, spr108->field_0xb0, 1.0);
+    if (spr108->Do(spr108->num_states, spr108->field_0xb0, 1.0) != 0) {
+        if (spr108->handle != 7) {
             SC_DodgeOrville::ThrowBomb();
         }
     }
 
-    int* spr10c = (int*)field_0x10C; // 0x10c
-    spr108 = (int*)bgSprite; // 0x108
-    int state = *(int*)((char*)spr10c + 0x98);
-    int f0val = *(int*)((char*)spr108 + 0xf0);
+    Sprite* spr10c = (Sprite*)field_0x10C; // 0x10c
+    spr108 = (Sprite*)bgSprite; // 0x108
+    int state = spr10c->handle;
+    int f0val = (int)spr108->animation_data;
     int frameVal = 0;
     if (f0val != 0) {
         frameVal = *(int*)(*(int*)(f0val + 0xc) + 0x374);
@@ -244,28 +239,28 @@ void SC_DodgeOrville::UpdateGame()
 
     SC_DodgeOrville::UpdateReticle();
 
-    int* spr130 = (int*)field_130;
-    FUN_0044ccf0(*(int*)((char*)spr130 + 0xb0), *(int*)((char*)spr130 + 0xac), 0, 0x3ff00000);
-    int* spr12c = (int*)field_12C;
-    FUN_0044ccf0(*(int*)((char*)spr12c + 0xb0), *(int*)((char*)spr12c + 0xac), 0, 0x3ff00000);
+    Sprite* spr130 = (Sprite*)field_130;
+    spr130->Do(spr130->num_states, spr130->field_0xb0, 1.0);
+    Sprite* spr12c = (Sprite*)field_12C;
+    spr12c->Do(spr12c->num_states, spr12c->field_0xb0, 1.0);
 
-    spr130 = (int*)field_130;
+    spr130 = (Sprite*)field_130;
     int renderData = 0;
-    if (*(int*)((char*)spr130 + 0xf0) != 0) {
-        renderData = *(int*)(*(int*)((char*)spr130 + 0xf0) + 0x18);
+    if ((int)spr130->animation_data != 0) {
+        renderData = *(int*)((int)spr130->animation_data + 0x18);
     }
 
-    FUN_00403fd0(DAT_0046aa24, 0, 0x7531, dim_14C.field_0, dim_14C.field_4, 1.0, 2, 0, dim_134.field_0, dim_134.field_4, dim_13C.field_0, dim_13C.field_4);
+    DAT_0046aa24->DrawVBufferRegion(0, 0x7531, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, dim_134.field_4, dim_13C.field_0, dim_13C.field_4);
 
     if (dim_144.field_4 != 0 && dim_144.field_0 >= dim_144.field_4) {
-        spr12c = (int*)field_12C;
+        spr12c = (Sprite*)field_12C;
         int renderData2 = 0;
-        if (*(int*)((char*)spr12c + 0xf0) != 0) {
-            renderData2 = *(int*)(*(int*)((char*)spr12c + 0xf0) + 0x18);
+        if ((int)spr12c->animation_data != 0) {
+            renderData2 = *(int*)((int)spr12c->animation_data + 0x18);
         }
         int w = *(int*)(renderData2 + 0x24);
         int h = *(int*)(renderData2 + 0x2c);
-        FUN_00403fd0(DAT_0046aa24, 0, 0x7532, dim_14C.field_0, dim_14C.field_4, 1.0, 2, 0, 0, w, 0, h);
+        DAT_0046aa24->DrawVBufferRegion(0, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, 0, w, 0, h);
     } else {
         int hits = dim_144.field_0;
         int maxHits = dim_144.field_4;
@@ -274,16 +269,13 @@ void SC_DodgeOrville::UpdateGame()
             fillHeight = dim_13C.field_0;
         }
 
-        spr12c = (int*)field_12C;
+        spr12c = (Sprite*)field_12C;
         int rd3 = 0;
-        if (*(int*)((char*)spr12c + 0xf0) != 0) {
-            rd3 = *(int*)(*(int*)((char*)spr12c + 0xf0) + 0x18);
+        if ((int)spr12c->animation_data != 0) {
+            rd3 = *(int*)((int)spr12c->animation_data + 0x18);
         }
-        FUN_00403fd0(DAT_0046aa24, 0, 0x7532, dim_14C.field_0, dim_14C.field_4, 1.0, 2, 0, dim_134.field_0, fillHeight, dim_134.field_4, dim_13C.field_4);
+        DAT_0046aa24->DrawVBufferRegion(0, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, fillHeight, dim_134.field_4, dim_13C.field_4);
     }
-}
-
-#endif
 }
 
 /* Function start: 0x429380 */
@@ -421,7 +413,7 @@ void SC_DodgeOrville::InitGameState()
 /* Function start: 0x429860 */
 void SC_DodgeOrville::InitReset()
 {
-    FUN_00449520(this);
+    SC_Combat::OnProcessEnd();
     CheckCursorRange(0);
     field_118[2] = 0; // 0x120
     field_118[0] = 2; // 0x118

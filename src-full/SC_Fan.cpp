@@ -4,6 +4,7 @@
 #include "Palette.h"
 #include "Sample.h"
 #include "GameState.h"
+#include "RockThrower.h"
 #include "mss.h"
 #include <string.h>
 #include <stdio.h>
@@ -13,28 +14,21 @@
 #include "VBuffer.h"
 #include "ZBufferManager.h"
 #include "SC_Question.h"
+#include "InputManager.h"
+#include "MouseControl.h"
 #include "main.h"
 #include "string.h"
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-
 extern "C" int FileExists(const char*);
-// FUN_00413e10 = ParseFile in Parser.h
 extern "C" void WriteToLog(const char* format, ...);
-extern "C" void ShowError(const char* format, ...);
-// FUN_00421920 = InitTimeOut (TimeOut.h)
-#include "MouseControl.h"
-extern void __fastcall FUN_00427880(void*);
-
 extern char* __cdecl ResolveAssetPath(char* name);
-extern void __fastcall FUN_004274c0(void*, int, int);
+extern void __fastcall FUN_00427880(void*);  // Weapon::Render
 
-extern void* DAT_00468ef0;
+extern Weapon* DAT_00468ef0;                 // active weapon display
 extern ZBufferManager* DAT_0046aa24;
 extern "C" { extern GameState* DAT_0046aa30; }
-class MouseControl;
 extern MouseControl* DAT_0046aa18;
-class InputManager;
 extern InputManager* DAT_0046aa08;
 
 /* Function start: 0x40EFF0 */
@@ -153,7 +147,7 @@ void SC_Fan::Cleanup(int flag) {
     }
 
     if (DAT_00468ef0 != 0) {
-        (*(void (**)(int))(*((int*)DAT_00468ef0) + 0xC))(1);
+        delete DAT_00468ef0;
         DAT_00468ef0 = 0;
     }
 
@@ -578,7 +572,7 @@ void SC_Fan::RenderFan() {
         (DAT_0046aa18)->DrawCursor();
         FUN_00427880(DAT_00468ef0);
 
-        if (*(int*)((int)DAT_00468ef0 + 0xA8) != 0) {
+        if (DAT_00468ef0->m_clicked != 0) {
             frames = 0;
             p = *(void**)((int)DAT_0046aa08 + 0x1A0);
             if (p != 0) {
@@ -597,6 +591,11 @@ void SC_Fan::RenderFan() {
             sprite->ResetAnimation(frames / (dim_B4.field_0 / 5), 0);
         }
     }
+}
+
+/* Function start: 0x410390 */
+void SC_Fan::OnProcessEnd()
+{
 }
 
 /* Function start: 0x4104B0 */
@@ -749,8 +748,8 @@ int SC_Fan::LBLParse(char* param_1) {
                 if (mem == 0) {
                     DAT_00468ef0 = 0;
                 } else {
-                    FUN_004274c0(mem, 0, (int)this);
-                    DAT_00468ef0 = mem;
+                    new (mem) RockThrower(this);
+                    DAT_00468ef0 = (Weapon*)mem;
                 }
             } else {
                 ReportUnknownLabel("SC_Fan");

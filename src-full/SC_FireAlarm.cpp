@@ -28,45 +28,11 @@ extern void __fastcall FUN_00427880(void*);
 
 
 
-class DetMask {
-public:
-    int CheckHit(int x, int y);  // 0x411330
-};
-
-class RenderObj {
-public:
-    void Render();               // 0x432DA0
-};
-/* Function start: 0x411330 */
-int DetMask::CheckHit(int x, int y) {
-    // DetMask IS a VBuffer — uses VBuffer field layout
-    int* self = (int*)this;
-    int w = self[5];        // width at +0x14
-    int h = self[6];        // height at +0x18
-    int cx1 = self[10];     // clip_x1 at +0x28
-    int cx2 = self[11];     // clip_x2 at +0x2C
-    int cy1 = self[8];      // clip_y1 at +0x20
-    int cy2 = self[9];      // clip_y2 at +0x24
-
-    // Pixel offset: (height - 1 - y) * width + x
-    int offset = (h - 1 - y) * w + x;
-
-    // Bounds check
-    if (cx1 > x || cx2 < x || cy1 > y || cy2 < y) {
-        return -1;
-    }
-
-    // Read pixel from data buffer
-    ((VBuffer*)this)->Lock();
-    unsigned char pixel = ((unsigned char*)((VBuffer*)this)->data)[offset];
-    return (int)pixel;
-}
-void RenderObj::Render() {}
 
 extern int DAT_004685ac;
 class InputManager;
 extern InputManager* DAT_0046aa08;
-extern "C" extern void* DAT_0046aa14;
+extern "C" extern VBuffer* DAT_0046aa14;
 class MouseControl;
 extern MouseControl* DAT_0046aa18;
 extern int DAT_004685a0;
@@ -302,7 +268,7 @@ int SC_FireAlarm::HandleClick(int* param) {
     int frameCount = *(int*)((char*)animBase + animIdx * 16 + 4);
     frameCount--;
 
-    int hitResult = ((DetMask*)DAT_0046aa14)->CheckHit(coords[0], coords[1]);
+    int hitResult = DAT_0046aa14->CheckHit(coords[0], coords[1]);
 
     if (dim_FC.field_0 <= hitResult && dim_FC.field_4 >= hitResult) {
         int y = coords[1] - 0x4B;

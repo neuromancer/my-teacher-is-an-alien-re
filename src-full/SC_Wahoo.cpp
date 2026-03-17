@@ -34,7 +34,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" void ShowError(const char* format, ...);
 // FUN_00412a50 = Parser::LBLParse in Parser.h
 extern char* __cdecl ResolveAssetPath(char* name);
-extern char* __cdecl FUN_0044e470(char*);
+#include "string.h"
 
 extern void* __fastcall FUN_00410fb0(void*, int, char*, int);
 extern void __fastcall FUN_004274c0(void*, int, int);
@@ -53,10 +53,7 @@ public:
     void Render();            // 0x427880
 };
 
-class DetMask {
-public:
-    int CheckHit(int x, int y);  // 0x411330
-};
+// DetMask IS VBuffer — CheckHit at 0x411330 now in VBuffer.h
 void DetectionObj::Render() {}
 
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
@@ -638,7 +635,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
             SendGameMessage(5, iVar3, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
         }
         else if (local_18 >= 1 && local_18 <= 6) {
-            char* path = FUN_0044e470(local_b8);
+            char* path = MakeAudioName(local_b8);
             void* snd = ((SoundList*)field_114)->Register(path);
             if (local_18 == 1) {
                 field_11C = (int)snd;
@@ -662,7 +659,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         else if (local_18 >= 7 && local_18 <= 0xd) {
             Sample* smp = new Sample();
             field_DC[local_18] = (void*)smp;
-            char* path = FUN_0044e470(local_b8);
+            char* path = MakeAudioName(local_b8);
             int err = smp->Load(path);
             if (err != 0 && field_DC[local_18] != 0) {
                 ((Sample*)field_DC[local_18])->Unload();
@@ -738,7 +735,7 @@ int SC_Wahoo::FUN_438F10(int param_1) {
         if (!bVar1) goto LAB_004392b0;
 
         {
-        unsigned int uVar2 = ((DetMask*)field_C4)->CheckHit(
+        unsigned int uVar2 = ((VBuffer*)field_C4)->CheckHit(
             iVar7 - field_154,
             *(int*)(param_1 + 0x124) - field_158);
 

@@ -19,7 +19,7 @@ extern int DAT_0046cb90;
 extern "C" int DAT_00473e18;
 
 
-extern char* __cdecl FUN_0044e470(char*);
+#include "string.h"
 static char* FormatSoundPath(char* path);
 
 class TargetListFull {
@@ -289,5 +289,5 @@ void EngineB::OnProcessEnd() {
 
 /* Function start: 0x451680 */
 static char* FormatSoundPath(char* path) {
-    return FUN_0044e470(path);
+    return MakeAudioName(path);
 }

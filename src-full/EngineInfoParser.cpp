@@ -6,7 +6,7 @@
 #include "SoundList.h"
 
 extern int DAT_0046ae78;
-extern char* __cdecl FUN_0044e470(char*);
+#include "string.h"
 
 class PaletteLoader {
 public:
@@ -97,7 +97,7 @@ void EngineInfoParser::ParseDimensions(char *line) {
 void EngineInfoParser::ParseSound(char *line, int index) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-  char* path = FUN_0044e470(buffer);
+  char* path = MakeAudioName(buffer);
   char* formatted = FormatStringVA(path);
   int sound = (int)DAT_0046ae68->Register(formatted);
 

@@ -5,8 +5,7 @@
 
 class InputManager;
 extern InputManager* DAT_0046aa08;
-extern void* __fastcall FUN_00443660(void*, int);
-extern void __fastcall FUN_00442940(void*, int, int);
+#include "Target.h"
 extern void __fastcall FUN_0044c740(void*);
 
 /* Function start: 0x40BBF0 */
@@ -49,7 +48,7 @@ EngineC::~EngineC()
 /* Function start: 0x40C0D0 */
 void EngineC::method10()
 {
-    void* target = FUN_00443660(DAT_0046ae58, 0);
+    void* target = DAT_0046ae58->ProcessTargets();
 
     int* obj60 = (int*)DAT_0046ae60;
     int* vtbl60 = (int*)*obj60;
@@ -82,7 +81,7 @@ void EngineC::method10()
         int* vtbl60b = (int*)*(int*)DAT_0046ae60;
         ((void (__fastcall *)(int*, int))vtbl60b[4])((int*)DAT_0046ae60, 0);
         if (target != 0) {
-            FUN_00442940(target, 0, 1);
+            ((Target*)target)->UpdateProgress(1);
         }
     }
 

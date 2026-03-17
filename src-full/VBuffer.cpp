@@ -188,6 +188,19 @@ void VBuffer::LoadFromFile(char* filename, int param_2)
     anim.DoFrame();
 }
 
+/* Function start: 0x411330 */
+int VBuffer::CheckHit(int x, int y) {
+    int offset = (height - 1 - y) * width + x;
+
+    if (clip_x1 > x || clip_x2 < x || clip_y1 > y || clip_y2 < y) {
+        return -1;
+    }
+
+    Lock();
+    unsigned char pixel = ((unsigned char*)data)[offset];
+    return (int)pixel;
+}
+
 /* Function start: 0x410FD0 */
 VBuffer::~VBuffer()
 {
