@@ -515,31 +515,7 @@ void SC_Detention::SetupDetentionState() {
     sprintf(field_1C4, "%c_IN_DETENTION", periodChar);
 }
 
-/* Function start: 0x40B240 */
-int SC_Detention::LBLParse(char* line) {
-    char keyword[32];
-    int index;
-    int value;
-
-    sscanf(line, " %s ", keyword);
-
-    if (strcmp(keyword, "POSTMESSAGE") == 0) {
-        SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        ParseSpriteAction(&action, this);
-    } else if (strcmp(keyword, "ENDPERIODANNOUNCE") == 0) {
-        sscanf(line, " %s %d %d", keyword, &index, &value);
-        field_F0[index + 2] = value;
-    } else if (strcmp(keyword, "ANNOUNCE") == 0) {
-        sscanf(line, " %s %d %d", keyword, &index, &value);
-        field_A8[index] = value;
-    } else if (strcmp(keyword, "END") == 0) {
-        return 1;
-    } else {
-        ReportUnknownLabel("SCI_SearchScreen");
-    }
-
-    return 0;
-}
+// 0x40B240 = SCI_SearchScreen::LBLParse (moved to SCI_SearchScreen.cpp)
 
 /* Function start: 0x40AB90 */
 void SC_Detention::HandleCombat() {
@@ -588,4 +564,20 @@ void SC_Detention::Serialize(void* param) {
         fread(&field_150, 1, 4, fp);
         fread(&field_160, 1, 4, fp);
     }
+}
+
+extern int DAT_00468a18;
+extern int __cdecl FUN_00426ac0();
+extern int DAT_0046ae78;
+
+/* Function start: 0x40B9E0 */
+void UpdateCombatEngine()
+{
+    if (DAT_00468a18 != 0) {
+        int key = FUN_00426ac0();
+        DAT_00468a18 = (key != 0x54) ? 1 : 0;
+    }
+    int* engine = (int*)DAT_0046ae78;
+    int* vtbl = (int*)*engine;
+    ((void (__fastcall *)(int*, int))vtbl[14])(engine, 0);
 }

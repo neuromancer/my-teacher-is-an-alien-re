@@ -45,6 +45,20 @@ mCNavNode::mCNavNode(char* param_1) : Parser()
     sscanf(nodeName, "N%d", &nodeHandle);
 }
 
+/* Function start: 0x44AEC0 */
+mCNavNode::~mCNavNode()
+{
+    int i;
+    for (i = 0; i < 6; i++) {
+        if (neighborNodes[i] != 0) {
+            int* obj = (int*)neighborNodes[i];
+            int* vtbl = (int*)*obj;
+            ((void (__fastcall *)(int*, int, int))vtbl[3])(obj, 0, 1);
+            neighborNodes[i] = 0;
+        }
+    }
+}
+
 /* Function start: 0x44B7E0 */
 void mCNavNode::CallActivateNeighbor()
 {

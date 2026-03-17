@@ -24,7 +24,7 @@ char* g_DirectionChars = "NESWUD";
 
 Sprite* g_Sprite_004360a0 = 0;
 
-extern void __fastcall FUN_0044aec0(void*, int);
+#include "mCNavNode.h"
 
 /* Function start: 0x449AE0 */
 void __cdecl CleanupNavNodes(void** array, int count)
@@ -35,7 +35,7 @@ void __cdecl CleanupNavNodes(void** array, int count)
     while (i-- != 0) {
         node = *array;
         if (node != 0) {
-            FUN_0044aec0(node, 0);
+            ((mCNavNode*)node)->~mCNavNode();
             FreeMemory(node);
             *array = 0;
         }

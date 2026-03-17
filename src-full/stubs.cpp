@@ -136,9 +136,17 @@ void* DAT_0046bbfc = 0;
 void* DAT_00468ef0 = 0;
 char* DAT_0046bacc = 0;
 
+// SC_Detention globals
+int DAT_00468a18 = 0;
+extern "C" void* DAT_0046bf30 = 0;   // Pods palette pointer
+void __fastcall FUN_00447790(void*, int, int) {} // SC_SpaceShipNav::ShutDown
+int __cdecl FUN_00426ac0() { return 0; }
+void __fastcall FUN_00408ee0(void*, int, int) {}
+
 // SC_FireAlarm / SC_Pods globals
 int DAT_004685ac = 0;
-void* DAT_0046bf28 = 0;
+class SlimeTable;
+SlimeTable* DAT_0046bf28 = 0;
 int DAT_00472bd8 = 0;
 int DAT_004685a0 = 0;
 int DAT_00472bdc = 0;
@@ -357,7 +365,8 @@ extern "C" {
     int* GetWindowedModeFlag() { return &s_WindowedMode; }
     // FUN_00425fa0 = FileExists in main.cpp
     void* FUN_004260f0(char* name) { return name; }
-    void FUN_004307b0(int) {}
+    // FUN_004307b0 = SmackSummary display in SC_Cinematic.cpp
+    void __stdcall SmackSummary(void*, void*) {}
     // FUN_0044e3e0 = GetCinematicFilename in SC_Cinematic.cpp
     void SetFontPosition(int, int) {}
     void SetFontColor(int) {}
@@ -426,7 +435,7 @@ void __fastcall FUN_00434740(void*, int) {}
 void __fastcall FUN_00409020(void*, int) {}
 void __fastcall FUN_00425200(void*, int) {}
 // mCNavigator extern
-void __fastcall FUN_0044aec0(void*, int) {}
+// FUN_0044aec0 = mCNavNode::~mCNavNode (moved to mCNavNode.cpp)
 
 // FUN_00455040 = fclose (CRT)
 // FUN_00455110 = fsopen (string.cpp) = _fsopen(filename, mode, _SH_DENYNO)

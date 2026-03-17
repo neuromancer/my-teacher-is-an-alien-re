@@ -24,8 +24,9 @@
 //   0xAC: nodeName[36]
 class mCNavNode : public Parser {
 public:
-    // Full game constructor
+    // Full game constructor/destructor
     mCNavNode(char* line);          // 0x44AE10
+    ~mCNavNode();                   // 0x44AEC0
 
     // Demo constructor
     mCNavNode();                    // 0x412D80

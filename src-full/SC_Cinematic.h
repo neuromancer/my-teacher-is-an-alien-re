@@ -4,6 +4,10 @@
 #include "Handler.h"
 #include <string.h>
 
+class Animation;
+class Palette;
+class SpriteAction;
+
 // SC_Cinematic - Cinematic/cutscene player (case 3)
 // Constructor: 0x42FBD0
 // Destructor: 0x42FC90
@@ -21,17 +25,17 @@ public:
     int AddMessage(SC_Message* msg);    // 0x4306A0
     void EndCinematic();                // 0x430730
 
-    int field_A8;       // 0xA8 - Palette*
-    int field_AC;       // 0xAC - Animation*
-    int field_B0;       // 0xB0 - saved state index
-    int field_B4;       // 0xB4 - saved render context
-    int field_B8;       // 0xB8 - flags
-    int field_BC;       // 0xBC - start X
-    int field_C0;       // 0xC0 - start Y
-    int field_C4;       // 0xC4 - volume (default 100)
-    int field_C8;       // 0xC8 - param
-    int field_CC;       // 0xCC - loop/ended flag
-    int field_D0;       // 0xD0 - Sprite*
+    int palette;        // 0xA8 — Palette*
+    int animation;      // 0xAC — Animation*
+    int savedZBState;   // 0xB0 — saved ZBufferManager state
+    int savedRenderCtx; // 0xB4 — saved render context from GameEngine
+    int flags;          // 0xB8 — playback flags (bit0=no-skip, bit1=no-palette, bit2=blank-after, etc.)
+    int startX;         // 0xBC — start position X
+    int startY;         // 0xC0 — start position Y
+    int volume;         // 0xC4 — audio volume (default 100)
+    int soundParam;     // 0xC8 — sound parameter
+    int waitForInput;   // 0xCC — 1 = waiting for click after last frame
+    int pendingAction;  // 0xD0 — SpriteAction* to execute on end
     int field_D4;       // 0xD4
 };
 

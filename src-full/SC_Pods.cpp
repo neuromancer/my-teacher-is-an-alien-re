@@ -22,18 +22,15 @@ extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 void __fastcall InitCombatScreen(void* self);
 
-extern void __fastcall FUN_00425490(void*);   // SlimeTable dtor
-extern void* __fastcall FUN_00425480(void*);  // SlimeTable ctor
-extern void* __fastcall FUN_00403620(void*);  // LinkedList RemoveCurrent
 extern void __fastcall FUN_00401c80(void*);   // DrawEntry dtor
 extern void __fastcall FUN_004061e0(void*);   // SoundEntry dtor
-extern void* __fastcall FUN_00440860(void*);  // EngineB ctor
+#include "PodsEngine.h"
 
 extern int DAT_0046ae78;                      // active combat engine instance
 #include "ZBufferManager.h"
 extern ZBufferManager* DAT_0046aa24;
 extern "C" extern GameState* DAT_0046aa30;
-extern void* DAT_0046bf28;                    // g_SoundTable (SlimeTable*)
+extern SlimeTable* DAT_0046bf28;               // g_SoundTable
 extern int DAT_004734a4;
 extern int DAT_0046cb90;                      // g_PeriodStateIdx
 extern char* DAT_0046cb94;                    // g_PeriodCharTable
@@ -71,7 +68,6 @@ void SC_Pods::Init(SC_Message* msg) {
             while (*list1 != 0) {
                 void* obj = ((LinkedList*)list1)->RemoveCurrent();
                 if (obj != 0) {
-                    *(int*)obj = 0x461030;
                     free(obj);
                 }
             }
@@ -95,7 +91,7 @@ void SC_Pods::Init(SC_Message* msg) {
         if (*list3 != 0) {
             list3[2] = *list3;
             while (*list3 != 0) {
-                void* item = FUN_00403620(list3);
+                void* item = ((LinkedList*)list3)->RemoveCurrent();
                 if (item != 0) {
                     FUN_004061e0(item);
                     free(item);
@@ -130,13 +126,9 @@ void SC_Pods::Init(SC_Message* msg) {
     }
 
     // Create sound table
-    void* mem = malloc(0xc);
-    void* soundTable = 0;
-    if (mem != 0) {
-        soundTable = FUN_00425480(mem);
-    }
+    SlimeTable* soundTable = new SlimeTable();
     DAT_0046bf28 = soundTable;
-    ((SlimeTable*)soundTable)->Allocate(5);
+    soundTable->Allocate(5);
 
     ParseFile(this, "mis\\cb_Pods.mis", (char*)0);
     InitCombatScreen((void*)DAT_0046ae78);
@@ -167,7 +159,7 @@ int SC_Pods::ShutDown(SC_Message* msg) {
     }
 
     if (DAT_0046bf28 != 0) {
-        FUN_00425490(DAT_0046bf28);
+        DAT_0046bf28->~SlimeTable();
         FreeMemory(DAT_0046bf28);
         DAT_0046bf28 = 0;
     }
@@ -201,11 +193,7 @@ int SC_Pods::LBLParse(char* line) {
     sscanf(line, " %s ", label);
 
     if (strcmp(label, "DERIVED_ENGINE_INFO") == 0) {
-        void* mem = malloc(0x118);
-        void* eng = 0;
-        if (mem != 0) {
-            eng = FUN_00440860(mem);
-        }
+        PodsEngine* eng = new PodsEngine();
         combatEngine = (int)eng;
         DAT_0046ae78 = (int)eng;
         Parser::ProcessFile((Parser*)eng, this, (char*)0);

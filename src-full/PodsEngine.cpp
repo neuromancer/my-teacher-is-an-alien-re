@@ -1,0 +1,41 @@
+#include "PodsEngine.h"
+#include "Sprite.h"
+#include "Palette.h"
+#include "Memory.h"
+#include <string.h>
+
+extern "C" extern void* DAT_0046bf30;  // Palette* for pods
+
+/* Function start: 0x440860 */
+PodsEngine::PodsEngine()
+{
+    field_0xF4 = 0;
+    field_0xF8 = 0;
+    field_0xFC = 0;
+    field_0x100 = 0;
+    memset(&bgSprite, 0, 0xA * 4);
+    field_0xF4 = 0;
+    field_0xF8 = 3;
+}
+
+/* Function start: 0x440950 */
+PodsEngine::~PodsEngine()
+{
+    if (DAT_0046bf30 != 0) {
+        ((Palette*)DAT_0046bf30)->~Palette();
+        FreeMemory(DAT_0046bf30);
+        DAT_0046bf30 = 0;
+    }
+    if (bgSprite != 0) {
+        bgSprite->~Sprite();
+        FreeMemory(bgSprite);
+        bgSprite = 0;
+    }
+    if (field_0x108 != 0) {
+        // Object at field_0x108 has some destructor called via funclet
+        // Using generic cleanup pattern
+        void* obj = (void*)field_0x108;
+        FreeMemory(obj);
+        field_0x108 = 0;
+    }
+}

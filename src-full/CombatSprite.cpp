@@ -15,6 +15,37 @@ int DAT_00436344 = 0;                   // sprite data entry counter
 
 // External declaration for Parser destructor helper
 extern void FUN_0041556a();
+extern void __fastcall FUN_00408ee0(void*, int, int); // MMPlayer2::Draw
+
+/* Function start: 0x408F20 */
+void __cdecl CleanupSpriteHashArray(void** array, int count)
+{
+    while (count != 0) {
+        count--;
+        int* table = (int*)*array;
+        if (table != 0) {
+            int* node = (int*)*table;
+            while (node != 0) {
+                FUN_00408ee0(node + 2, 0, 1);
+                node = (int*)*node;
+            }
+            table[2] = 0;
+            table[3] = 0;
+            table[1] = 0;
+            *table = 0;
+            int* pool = (int*)table[4];
+            while (pool != 0) {
+                int* next = (int*)*pool;
+                FreeMemory(pool);
+                pool = next;
+            }
+            table[4] = 0;
+            FreeMemory(table);
+            *array = 0;
+        }
+        array++;
+    }
+}
 
 /* Function start: 0x43E250 */
 void SpriteHashTable::Clear() {
