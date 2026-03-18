@@ -93,7 +93,7 @@ extern "C" int DAT_0046a6ec;
 extern "C" extern GameState* DAT_0046aa30;
 extern GameState* DAT_0046aa3c;
 extern GameState* g_StringTable_0046aa34;
-extern void* DAT_0046aa38;
+extern GameState* DAT_0046aa38;
 
 static float g_PercentScale = 0.01f;
 int DAT_00473440 = 0;

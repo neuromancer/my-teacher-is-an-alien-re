@@ -142,12 +142,12 @@ extern "C" {
 }
 
 // SC_Question globals
-void* DAT_0046a6e0 = 0;
+class StringTable;
+StringTable* DAT_0046a6e0 = 0;
 void* DAT_0046a6e8 = 0;
 char DAT_00468108[32] = {0};
-char DAT_00468168[32] = {0};
 char DAT_004690e4[32] = {0};
-void* DAT_0046aa38 = 0;
+GameState* DAT_0046aa38 = 0;
 
 // SC_Wahoo / SC_WordSearch / SCI_PracticeRoom globals
 int DAT_0046ad6c = 0;
@@ -203,7 +203,7 @@ void PaletteLoader::Load(char*) {}
 // Engine COMDAT thunks (needed by SC_DodgeOrville)
 void __fastcall FUN_00449320(void*, int, int) {}
 int __fastcall FUN_00449400(void*, int, void*) { return 0; }
-void __fastcall FUN_004494e0(void*) {}
+// FUN_004494e0 = SC_Combat::ProcessLose (callers updated)
 
 // ============================================================================
 // AssetList helper stubs
@@ -321,7 +321,7 @@ void* __fastcall FUN_00440860(void*) { return 0; }
 // FUN_00421920 = InitTimeOut in TimeOut.cpp
 void __fastcall FUN_00427880(void*) {}
 // FUN_00403fd0 = ZBufferManager::DrawVBufferRegion (callers updated to use method call)
-void __fastcall FUN_0044cb40(void*, int, int, int) {}
+// FUN_0044cb40 = Sprite::ResetAnimation (callers updated)
 // FUN_004127c0 = Parser::Parser in Parser.cpp
 void __fastcall FUN_00407b60(void*) {}
 // FUN_004047c0 = ZBufferManager::ProcessMessage in ZBufferManager.cpp

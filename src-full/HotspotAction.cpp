@@ -25,7 +25,7 @@ extern "C" extern GameState* DAT_0046aa30;
 class MouseControl;
 extern MouseControl* DAT_0046aa18;
 extern void* DAT_0046aa34;
-extern void* DAT_0046aa38;
+extern GameState* DAT_0046aa38;
 extern int DAT_0046cb90;
 extern char* DAT_0046cb94;
 extern SpriteAction DAT_00472d90;
@@ -668,7 +668,7 @@ int HotspotAction::LBLParse(char* line) {
         sa = new SpriteAction(2,
             (DAT_0046aa30)->FindState(local_40),
             field_90, field_94,
-            ((GameState*)DAT_0046aa38)->FindState(buf_140),
+            DAT_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
         list = queue108;
         list->ResetForSortedAdd(sa);
@@ -705,7 +705,7 @@ int HotspotAction::LBLParse(char* line) {
         sa = new SpriteAction(2,
             (DAT_0046aa30)->FindState(buf_C0),
             0, 0,
-            ((GameState*)DAT_0046aa38)->FindState(buf_140),
+            DAT_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
         list = queue108;
         list->ResetForSortedAdd(sa);
@@ -742,7 +742,7 @@ int HotspotAction::LBLParse(char* line) {
         sa = new SpriteAction(2,
             (DAT_0046aa30)->FindState(buf_C0),
             0, 0,
-            ((GameState*)DAT_0046aa38)->FindState(buf_140),
+            DAT_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
         if ((sa->instruction == 0x11 || sa->instruction == 0x12) && result < 4) {
             sa->extra1 = 1;
@@ -844,7 +844,7 @@ int HotspotAction::LBLParse(char* line) {
             queue100 = new LinkedList();
         }
         sa = new SpriteAction(0x1e, local_14, field_90, field_94,
-            ((GameState*)DAT_0046aa38)->FindState(buf_C0),
+            DAT_0046aa38->FindState(buf_C0),
             0, 0, 0, 0, 0);
         list = queue100;
         list->ResetForSortedAdd(sa);

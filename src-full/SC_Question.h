@@ -22,6 +22,7 @@ public:
     int time;           // 0xc0 - time value
     int userPtr;        // 0xc4 - user pointer (param8)
 
+    SC_Message() {}
     SC_Message(int, int, int, int, int, int, int, int, int, int) {}
     ~SC_Message();
 

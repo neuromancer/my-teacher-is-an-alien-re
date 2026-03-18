@@ -1,5 +1,6 @@
 #include "SC_Question.h"
 #include "SpriteAction.h"
+#include "Queue.h"
 #include "Memory.h"
 #include "MMPlayer.h"
 #include "Sprite.h"
@@ -16,26 +17,18 @@
 #include "StringTable.h"
 // FUN_00425cb0 = ShowMessage in string.h
 // FUN_00413e10 = ParseFile in Parser.h
-extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
-// FUN_00413e70 = Parser::ProcessFile in Parser.cpp
-extern void __fastcall FUN_0044c880(void*);
-// FUN_00420ac0 = FlagArray::ClearFlag in FlagArray.h
-extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
-// FUN_00412a50 = Parser::LBLParse in Parser.h
-extern void __fastcall FUN_00406fd0(void*, int, int);
+extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int); // ZBufferManager::ShowText
+extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int); // SpriteAction ctor (__cdecl bridge)
 
-extern void* DAT_0046a6e0;
-extern void* DAT_0046a6e8;
-extern "C" int DAT_0046a6ec;
+extern StringTable* DAT_0046a6e0;
+extern void* DAT_0046a6e8;           // MMPlayer*
+extern "C" int DAT_0046a6ec;         // GameEngine instance
 extern "C" GameState* DAT_0046aa30;
 extern ZBufferManager* DAT_0046aa24;
-extern char* DAT_0046aa00;
-extern char DAT_00468108[];
-extern char DAT_00468150[];
-extern char DAT_00468168[];
-extern char DAT_00468464[];
-extern char DAT_004690e4[];
-extern void* DAT_0046aa38;
+extern char* DAT_0046aa00;           // temp string buffer
+extern char DAT_00468108[];          // GameState key (quest level)
+extern char DAT_004690e4[];          // format string for quest
+extern GameState* DAT_0046aa38;      // secondary GameState (string table)
 
 /* Function start: 0x414780 */
 SC_Question::SC_Question(int id, int dialog)
@@ -49,18 +42,18 @@ SC_Question::SC_Question(int id, int dialog)
     state = 0;
     dialogPtr = (void*)dialog;
 
-    if (((StringTable*)DAT_0046a6e0)->GetString( id, label) == 0) {
+    if (DAT_0046a6e0->GetString( id, label) == 0) {
         ShowMessage("SC_Question::SC_Question missing label %d", id);
         sprintf(label, "Missing Label %d", questionId);
     }
 
-    gsIndex = (DAT_0046aa30)->FindLabel(DAT_00468108);
-    if (gsIndex < 0 || *(int*)((char*)DAT_0046aa30 + 0x98) - 1 < gsIndex) {
+    gsIndex = (DAT_0046aa30)->FindState(DAT_00468108);
+    if (gsIndex < 0 || DAT_0046aa30->maxStates - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
     }
 
     sprintf(questFile, "mis\\quest%2.2d.mis",
-        *(int*)(*(int*)((char*)DAT_0046aa30 + 0x90) + gsIndex * 4));
+        DAT_0046aa30->stateValues[gsIndex]);
 
     ParseFile(this, questFile, "[QUESTION%d]", questionId);
 
@@ -134,14 +127,14 @@ SC_Question::~SC_Question()
 /* Function start: 0x414A50 */
 void SC_Question::Update(int x, int y)
 {
-    void* gs;
+    GameState* gs;
 
     gs = DAT_0046aa30;
-    if (*(int*)((char*)gs + 0x98) - 1 < 4) {
+    if (gs->maxStates - 1 < 4) {
         ShowError("Invalid gamestate %d", 4);
     }
 
-    if (*(int*)(*(int*)((char*)gs + 0x90) + 0x10) == 1) {
+    if (gs->stateValues[4] == 1) {
         sprintf(DAT_0046aa00, DAT_004690e4, questionId);
         FUN_00404230(DAT_0046aa24, 0, DAT_0046aa00, 0x22b, y + 0x17, 10000, -1);
     }
@@ -181,16 +174,17 @@ int SC_Question::OnInput(SC_Message* msg)
     int edx;
     int key;
 
-    key = *(int*)((char*)msg + 0x2c);
+    SpriteAction* action = (SpriteAction*)msg;
+    key = action->lastKey;
     if (key == 0x1b || key == 0x20 || key == 0x77 ||
-        *(int*)((char*)msg + 0x28) == 2) {
+        action->button2 == 2) {
         goto do_finalize;
     }
     edx = field_94 & 8;
     if (edx != 0 && key != 0) {
         goto do_finalize;
     }
-    if (edx != 0 && *(int*)((char*)msg + 0x24) == 2) {
+    if (edx != 0 && action->button1 == 2) {
 do_finalize:
         Finalize();
     }
@@ -203,7 +197,7 @@ void SC_Question::InitState()
 {
     int i;
     int val;
-    void* gs;
+    GameState* gs;
     int gsIndex;
 
     state = 1;
@@ -212,19 +206,19 @@ void SC_Question::InitState()
         val = actionIndex[i];
         if (val != 0) {
             gs = DAT_0046aa30;
-            if (val < 0 || *(int*)((char*)gs + 0x98) - 1 < val) {
+            if (val < 0 || gs->maxStates - 1 < val) {
                 ShowError("Invalid gamestate %d", val);
             }
-            *(int*)(*(int*)((char*)gs + 0x90) + val * 4) = 1;
+            gs->stateValues[val] = 1;
         }
     }
 
     gs = DAT_0046aa30;
-    gsIndex = ((GameState*)gs)->FindLabel(DAT_00468168);
-    if (gsIndex < 0 || *(int*)((char*)gs + 0x98) - 1 < gsIndex) {
+    gsIndex = gs->FindState("NUM_ACTIONS");
+    if (gsIndex < 0 || gs->maxStates - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
     }
-    *(int*)(*(int*)((char*)gs + 0x90) + gsIndex * 4) += 3;
+    gs->stateValues[gsIndex] += 3;
 }
 
 /* Function start: 0x414C60 */
@@ -240,7 +234,7 @@ void SC_Question::Finalize()
     }
 
     state = 2;
-    *(int*)((char*)dialogPtr + 0xcc) = 1;
+    ((int*)dialogPtr)[0x33] = 1;
 
     queue = messageQueue;
     if (queue == 0) return;
@@ -343,7 +337,7 @@ int SC_Question::LBLParse(char* param_1)
         if (mem != 0) {
             sprite = new (mem) Sprite((char*)0);
         }
-        *(int*)((char*)sprite + 0x94) |= 0x400;
+        ((Sprite*)sprite)->flags |= 0x400;
         ((Parser*)sprite)->LBLParse(param_1);
         ((MMPlayer*)mouseControl)->AddSprite((Sprite*)sprite);
     }
@@ -363,17 +357,17 @@ int SC_Question::LBLParse(char* param_1)
         if (mem != 0) {
             sprite = new (mem) Sprite((char*)buf1);
         }
-        *(int*)((char*)sprite + 0x94) |= 0x400;
-        *(int*)((char*)sprite + 0xac) = id;
-        *(int*)((char*)sprite + 0xb0) = val;
-        *(int*)((char*)sprite + 0x94) |= 0x40;
-        *(int*)((char*)sprite + 0x9c) = 0x14;
+        ((Sprite*)sprite)->flags |= 0x400;
+        ((Sprite*)sprite)->num_states = id;
+        ((Sprite*)sprite)->field_0xb0 = val;
+        ((Sprite*)sprite)->flags |= 0x40;
+        ((Sprite*)sprite)->priority = 0x14;
         if ((field_94 & 8) != 0) {
             ((Sprite*)sprite)->ConfigStates(2);
-            FUN_0044c880(sprite);
-            framePtr = (int*)(*(int*)((char*)sprite + 0x90) + *(int*)((char*)sprite + 0x98) * 0x10);
+            ((Sprite*)sprite)->InitAnimation();
+            framePtr = (int*)((int)((Sprite*)sprite)->ranges + ((Sprite*)sprite)->handle * 0x10);
             ((Sprite*)sprite)->ConfigRange(0, 1, (framePtr[1] - framePtr[0]) + 1, 1);
-            framePtr = (int*)(*(int*)((char*)sprite + 0x90) + *(int*)((char*)sprite + 0x98) * 0x10);
+            framePtr = (int*)((int)((Sprite*)sprite)->ranges + ((Sprite*)sprite)->handle * 0x10);
             frameCount = (framePtr[1] - framePtr[0]) + 1;
             ((Sprite*)sprite)->ConfigRange(1, frameCount, frameCount, 1);
             ((Sprite*)sprite)->StopAnimationSound();
@@ -382,7 +376,7 @@ int SC_Question::LBLParse(char* param_1)
     }
     else if (strcmp(keyword, "TEXT") == 0) {
         sscanf(param_1, " %s %d", keyword, &id);
-        result = ((StringTable*)DAT_0046a6e0)->GetString( id, (char*)((int)this + 0x9c));
+        result = DAT_0046a6e0->GetString( id, label);
         if (result == 0) {
             Parser::LBLParse("SC_Question");
         }
@@ -416,12 +410,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -461,7 +455,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "ENABLEACTIVATEQ") == 0) {
@@ -493,12 +487,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -538,7 +532,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "DEACTIVATEQ") == 0) {
@@ -570,12 +564,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -615,7 +609,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "ENABLEQ") == 0) {
@@ -647,12 +641,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -692,7 +686,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "DISABLEQ") == 0) {
@@ -724,12 +718,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -769,7 +763,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "DISABLESPRITE") == 0) {
@@ -784,7 +778,7 @@ int SC_Question::LBLParse(char* param_1)
             }
             if (actionIndex[result] == 0) {
                 sprintf(DAT_0046aa00, "SPRITE%d", id);
-                actionIndex[result] = (DAT_0046aa30)->FindLabel(DAT_0046aa00);
+                actionIndex[result] = (DAT_0046aa30)->FindState(DAT_0046aa00);
                 break;
             }
             result = result + 1;
@@ -810,14 +804,14 @@ int SC_Question::LBLParse(char* param_1)
         } else {
             int gsIdx1;
             int gsIdx2;
-            gsIdx1 = ((GameState*)DAT_0046aa38)->FindLabel(buf2);
-            gsIdx2 = (DAT_0046aa30)->FindLabel(buf1);
+            gsIdx1 = DAT_0046aa38->FindState(buf2);
+            gsIdx2 = (DAT_0046aa30)->FindState(buf1);
             action = FUN_00444a40(mem, 2, gsIdx2, 0, 0, gsIdx1, id, 0, 0, 0, 0);
         }
-        if ((((int*)action)[4] == 0x11 || ((int*)action)[4] == 0x12) && result < 4) {
-            ((int*)action)[5] = 1;
+        if ((((SpriteAction*)action)->instruction == 0x11 || ((SpriteAction*)action)->instruction == 0x12) && result < 4) {
+            ((SpriteAction*)action)->extra1 = 1;
         }
-        if (((int*)action)[4] == 0x11 && result < 4) {
+        if (((SpriteAction*)action)->instruction == 0x11 && result < 4) {
             Parser::LBLParse("SC_Question");
         }
         queue = (int*)messageQueue;
@@ -827,12 +821,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -872,7 +866,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "GIVELATE") == 0) {
@@ -902,12 +896,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -947,7 +941,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "GIVECUT") == 0) {
@@ -977,12 +971,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -1022,7 +1016,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "GIVELATE") == 0) {
@@ -1052,12 +1046,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -1097,7 +1091,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "SWITCHROOM") == 0) {
@@ -1130,12 +1124,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -1175,7 +1169,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
         mem = malloc(0x38);
         if (mem == 0) {
@@ -1190,12 +1184,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -1235,7 +1229,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "MESSAGE") == 0) {
@@ -1264,12 +1258,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -1309,7 +1303,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "PLAYSOUND") == 0) {
@@ -1339,12 +1333,12 @@ int SC_Question::LBLParse(char* param_1)
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                FUN_00406fd0(queue, 0, (int)action);
+                ((Queue*)queue)->InsertAtCurrent(action);
             } else {
                 do {
                     cur = queue[2];
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        FUN_00406fd0(queue, 0, (int)action);
+                        ((Queue*)queue)->InsertAtCurrent(action);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -1384,7 +1378,7 @@ int SC_Question::LBLParse(char* param_1)
                 } while (queue[2] != 0);
             }
         } else {
-            FUN_00406fd0(queue, 0, (int)action);
+            ((Queue*)queue)->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "CONSTANT") == 0) {

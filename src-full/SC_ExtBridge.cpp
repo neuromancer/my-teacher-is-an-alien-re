@@ -1,4 +1,6 @@
 #include "SC_ExtBridge.h"
+#include "SC_CombatBase.h"
+#include "SC_Question.h"
 #include "SpriteAction.h"
 #include "InvSlotItem.h"
 #include "EngineA.h"
@@ -6,20 +8,18 @@
 #include "Memory.h"
 #include "LinkedList.h"
 #include "Palette.h"
+#include "mCNavigator.h"
+#include "ZBufferManager.h"
 #include <string.h>
 #include <stdlib.h>
 
-// FUN_00413e10 = ParseFile in Parser.h
 extern "C" void SetVideoRes(int, int);
-// FUN_0044bac0 = mCNavigator::SetNavParams in mCNavigator.h
-#include "mCNavigator.h"
-extern void __fastcall FUN_0040b760(void*, int, int);
-extern void* __fastcall FUN_00404b80(void*);
-extern void __fastcall FUN_00404d70(void*, int, int);
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+extern void __fastcall FUN_0040b760(void*, int, int);  // ZBuffer node cleanup
+extern void* __fastcall FUN_00404b80(void*);            // LinkedList pop helper
+extern void __fastcall FUN_00404d70(void*, int, int);   // ZBuffer node dtor
 extern int DAT_0046ae78;
-class ZBufferManager;
 extern ZBufferManager* DAT_0046aa24;
 
 /* Function start: 0x4399E0 */
@@ -50,12 +50,12 @@ SC_ExtBridge::~SC_ExtBridge() {
 
 /* Function start: 0x439BB0 */
 void SC_ExtBridge::Init(SC_Message* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
 
-    CopyCommandData((SC_Message*)msg);
+    CopyCommandData(msg);
 
     if (msg != 0) {
-        moduleParam = pmsg[1];
+        moduleParam = action->addressValue;
     }
 
     if (engine == 0) {
@@ -68,8 +68,8 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     DAT_0046ae78 = engine;
     ((Engine*)engine)->CopyToGlobals();
 
-    if (msg != 0 && pmsg[5] == 1) {
-        DAT_0046ae70->SetNavParams(pmsg[7], pmsg[8]);
+    if (msg != 0 && action->extra1 == 1) {
+        DAT_0046ae70->SetNavParams(action->mousePos.field_0, action->mousePos.field_4);
     }
 
     SetVideoRes(dim.field_0, dim.field_4);
@@ -172,12 +172,9 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     SendGameMessage(5, bgSoundId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
 }
 
-extern void __fastcall FUN_00431030(void*, int, int*);   // GameEngine::EnqueueAction
+extern void __fastcall FUN_00431030(void*, int, int*);   // GameEngine::DispatchAction
 extern "C" extern int DAT_0046a6ec;                       // GameEngine instance
 extern void __fastcall FUN_0044c9d0(void*);               // Sprite::Destroy
-extern void __cdecl FUN_00444e40(void*);                  // SpriteAction::Dispatch
-extern void* __fastcall FUN_0041dbf0(void*, int, char*);  // Palette ctor with name
-extern void __fastcall FUN_0041dcc0(void*, int, char*);   // Palette::LoadFromFile
 extern SpriteAction DAT_00472d58;                          // global SpriteAction
 
 /* Function start: 0x439F30 */
@@ -191,9 +188,8 @@ int SC_ExtBridge::ShutDown(SC_Message* msg)
     }
 
     if (DAT_0046ae78 != 0) {
-        mCNavigator* nav = DAT_0046ae70;
-        if (nav != 0 && *(int*)((char*)nav + 0xa0) != 0) {
-            FUN_0044c9d0(*(void**)((char*)nav + 0xa0));
+        if (DAT_0046ae70 != 0 && DAT_0046ae70->sprite != 0) {
+            FUN_0044c9d0(DAT_0046ae70->sprite);
         }
         int* vtbl = *(int**)DAT_0046ae78;
         ((void (__fastcall*)(int*, int))vtbl[16])((int*)DAT_0046ae78, 0);
@@ -210,19 +206,19 @@ void SC_ExtBridge::Update(int p1, int p2)
 /* Function start: 0x43A0C0 */
 int SC_ExtBridge::AddMessage(SC_Message* msg)
 {
-    int* pmsg = (int*)msg;
-    pmsg[2] = handlerId;
-    pmsg[4] = 0;
-    pmsg[3] = moduleParam;
+    SpriteAction* action = (SpriteAction*)msg;
+    action->fromType = handlerId;
+    action->instruction = 0;
+    action->fromValue = moduleParam;
 
     if (savedCommand == 0x2b) {
-        if (pmsg[11] == 0x1b) {
+        if (action->lastKey == 0x1b) {
             ProcessEscape();
         }
-    } else if (pmsg[11] == 0x77) {
+    } else if (action->lastKey == 0x77) {
         SpriteAction local(
             handlerId, moduleParam, handlerId, moduleParam, 4, 1, 0, 0,
-            *(int*)((char*)DAT_0046ae70 + 0x94), *(int*)((char*)DAT_0046ae70 + 0x90));
+            DAT_0046ae70->bearing, DAT_0046ae70->startingNode);
         DAT_00472d58.CopyFrom(&local);
         SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }
@@ -240,7 +236,7 @@ int SC_ExtBridge::Exit(SC_Message* msg)
 void SC_ExtBridge::ProcessEscape()
 {
     if (actionMsg != 0) {
-        FUN_00444e40(actionMsg);
+        EnqueueSpriteAction(actionMsg);
         if (actionMsg != 0) {
             actionMsg->~SpriteAction();
             FreeMemory(actionMsg);
@@ -263,13 +259,8 @@ int SC_ExtBridge::LBLParse(char* line)
 
     if (strcmp(label, "PALETTE") == 0) {
         sscanf(line, "%s %s", label, name);
-        void* mem = operator new(8);
-        Palette* pal = 0;
-        if (mem != 0) {
-            pal = (Palette*)FUN_0041dbf0(mem, 0, 0);
-        }
-        palette = pal;
-        FUN_0041dcc0(pal, 0, name);
+        palette = new Palette();
+        palette->Load(name);
     } else if (strcmp(label, "NAVIGATION") == 0) {
         Parser::ProcessFile((Parser*)DAT_0046ae70, this, (char*)0);
     } else if (strcmp(label, "SET_WORKBUFF") == 0) {

@@ -8,7 +8,6 @@
 #include <string.h>
 
 extern "C" extern GameState* DAT_0046aa30;
-extern void __fastcall FUN_0044cb40(void*, int, int, int);  // Sprite::ResetAnimation
 extern void* __fastcall FUN_00421880(void*, int);            // progress obj ctor
 extern void __fastcall FUN_00418690(void*, int, int);        // crystal ctor
 extern void __fastcall FUN_0044c740(void*);                  // Sprite dtor
@@ -108,7 +107,7 @@ int SC_Roach::TryDropOnSource(int* msg)
 
     *(int*)(crystal + 0x94 / 4) = 0;
     if (*(void**)(crystal + 0x4d8 / 4) != 0) {
-        FUN_0044cb40(*(void**)(crystal + 0x4d8 / 4), 0, 0, 0);
+        ((Sprite*)*(void**)(crystal + 0x4d8 / 4))->ResetAnimation(0, 0);
     }
     *(int*)(*(int*)((char*)this + 0x6f8) + 0x90) * 0x2c;
     *(int*)((char*)this + *(int*)(*(int*)((char*)this + 0x6f8) + 0x90) * 0x2c + 0x140) =

@@ -1,4 +1,5 @@
 #include "SC_DodgeOrville.h"
+#include "SC_Question.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
 #include "GameState.h"
@@ -9,7 +10,6 @@
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 // FUN_00413e10 = ParseFile in Parser.h
 extern "C" void ShowError(const char* format, ...);
-extern void __fastcall FUN_0044cb40(void*, int, int, int);
 #include "SoundList.h"
 #include "ZBufferManager.h"
 extern ZBufferManager* DAT_0046aa24;
@@ -37,16 +37,12 @@ int CheckCursorRange(int range);
 // Engine base class calls (thiscall via fastcall trick)
 extern void __fastcall FUN_00449320(void*, int, int);  // Engine::VirtCleanup
 extern int __fastcall FUN_00449400(void*, int, void*);  // Engine::CleanupSubsystems
-extern void __fastcall FUN_004494e0(void*);              // Engine::ProcessTargets
 
 extern "C" { extern GameState* DAT_0046aa30; }
 
 // Parser-derived class used for MIS file action parsing
 // vtable 0x461100 in original binary
-class ActionParser : public Parser {
-public:
-    SpriteAction* actionPtr;  // 0x90
-};
+// ActionParser is SC_Message — vtable 0x461100
 
 
 /* Function start: 0x428840 */
@@ -113,8 +109,8 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                ActionParser temp;
-                temp.actionPtr = newAction;
+                SC_Message temp;
+                temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL]");
 
                 pendingAction->fromType = savedCommand;
@@ -146,8 +142,8 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                ActionParser temp;
-                temp.actionPtr = newAction;
+                SC_Message temp;
+                temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL]");
             }
         }
@@ -161,8 +157,8 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                ActionParser temp;
-                temp.actionPtr = newAction;
+                SC_Message temp;
+                temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[QUIT_LBL]");
             }
         }
@@ -178,8 +174,8 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                ActionParser temp;
-                temp.actionPtr = newAction;
+                SC_Message temp;
+                temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL_PR]");
             }
         }
@@ -193,14 +189,14 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                ActionParser temp;
-                temp.actionPtr = newAction;
+                SC_Message temp;
+                temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL_PR]");
             }
         }
     }
 
-    FUN_004494e0(this);
+    SC_Combat::ProcessLose();
 }
 
 /* Function start: 0x429110 */
@@ -227,7 +223,7 @@ void SC_DodgeOrville::UpdateGame()
         if (g_HitBounds_00473260[state].minVal <= frameVal && g_HitBounds_00473260[state].maxVal >= frameVal) {
             g_HitBounds_00473260[state].minVal = 0;
             g_HitBounds_00473260[state].maxVal = 0;
-            FUN_0044cb40(spr10c, 0, state + 7, 0);
+            spr10c->ResetAnimation(state + 7, 0);
             SC_DodgeOrville::dim_144.field_0++;
             bgSound->Play(2); // 0x110
             bgSound->Play(field_154[0] + 5);
@@ -307,7 +303,7 @@ void SC_DodgeOrville::UpdateReticle()
         }
     }
 
-    FUN_0044cb40(spr10c, 0, animState, 0);
+    spr10c->ResetAnimation(animState, 0);
 }
 
 /* Function start: 0x429430 */
@@ -365,7 +361,7 @@ void SC_DodgeOrville::ThrowBomb()
     } while (dir == g_LastBombDir_0046ac44);
 
     g_LastBombDir_0046ac44 = dir;
-    FUN_0044cb40((void*)bgSprite, 0, dir + 1, 0); // 0x108
+    ((Sprite*)bgSprite)->ResetAnimation(dir + 1, 0); // 0x108
 
     // Copy bomb data to hit bounds
     int* src = (int*)&g_BombData_00473278[dir];

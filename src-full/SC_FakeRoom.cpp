@@ -4,24 +4,17 @@
 #include "SpriteAction.h"
 #include "Sprite.h"
 #include "GameState.h"
+#include "InputManager.h"
+#include "MouseControl.h"
 #include "Memory.h"
 #include <string.h>
 
-#include "InputManager.h"
-#include "MouseControl.h"
 extern InputManager* DAT_0046aa08;
 extern MouseControl* DAT_0046aa18;
 extern "C" extern GameState* DAT_0046aa30;
 
-extern void __fastcall FUN_0044cb40(void*, int, int, int);  // Sprite::ResetAnimation
-extern void __fastcall FUN_004494e0(void*);                  // SC_Combat base ProcessLose tail
-
-// Parser-derived class used for MIS file action parsing
-// vtable 0x461100 in original binary
-class ActionParser : public Parser {
-public:
-    SpriteAction* actionPtr;  // 0x90
-};
+// ActionParser is SC_Message — vtable 0x461100, LBLParse at 0x444E60
+// SC_Message::targetAddress (0x90) stores the SpriteAction* to fill
 
 /* Function start: 0x4441E0 */
 SC_FakeRoom::SC_FakeRoom()
@@ -61,7 +54,7 @@ int SC_FakeRoom::AddMessage(SC_Message* msg)
             }
         } else if (mouseX < 100 || mouseX > 0x21c) {
             stateFlags = stateFlags & ~1;
-            FUN_0044cb40(bgSprite, 0, 1, 0);
+            bgSprite->ResetAnimation(1, 0);
             return 1;
         }
     }
@@ -105,7 +98,7 @@ void SC_FakeRoom::RenderFrame()
         }
         Sprite* cursor = DAT_0046aa18->m_sprite;
         if (cursor != 0) {
-            FUN_0044cb40(cursor, 0, state, 0);
+            cursor->ResetAnimation(state, 0);
         }
         DAT_0046aa18->DrawCursor();
         return;
@@ -129,7 +122,7 @@ void SC_FakeRoom::RenderFrame()
     }
     Sprite* cursor = DAT_0046aa18->m_sprite;
     if (cursor != 0) {
-        FUN_0044cb40(cursor, 0, state, 0);
+        cursor->ResetAnimation(state, 0);
     }
     DAT_0046aa18->DrawCursor();
 }
@@ -165,6 +158,7 @@ void SC_FakeRoom::OnProcessEnd() {}
 void SC_FakeRoom::Init(SC_Message* msg) {}
 void SC_FakeRoom::Update(int p1, int p2) {}
 int SC_FakeRoom::Exit(SC_Message* msg) { return 0; }
+
 /* Function start: 0x4444E0 */
 void SC_FakeRoom::ProcessLose()
 {
@@ -179,8 +173,8 @@ void SC_FakeRoom::ProcessLose()
 
         pendingAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        ActionParser temp;
-        temp.actionPtr = pendingAction;
+        SC_Message temp;
+        temp.targetAddress = (int)pendingAction;
         ParseFile(&temp, "mis\\CB_FakeRoom.mis", "LOSE_MESSAGE");
 
         if (savedCommand == 0x2b) {
@@ -196,5 +190,5 @@ void SC_FakeRoom::ProcessLose()
         gs->stateValues[idx] += 0x14;
     }
 
-    FUN_004494e0(this);
+    SC_Combat::ProcessLose();
 }

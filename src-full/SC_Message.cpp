@@ -12,7 +12,7 @@ SC_Message::~SC_Message() {}
 /* Function start: 0x444E60 */
 int SC_Message::LBLParse(char* param_1)
 {
-    extern void* DAT_0046aa38;
+    extern GameState* DAT_0046aa38;
     char local_30[32];
     char local_54[32];
     char local_74[32];
