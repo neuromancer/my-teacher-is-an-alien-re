@@ -70,7 +70,7 @@ void T_Object::Display(int x, int y, int visible)
     } else {
         sprite->ResetAnimation(0, 0);
     }
-    sprite->RenderAt(x, y, 0, 0x3FF00000);
+    sprite->Do(x, y, 1.0);
 }
 
 /* Function start: 0x40C890 */

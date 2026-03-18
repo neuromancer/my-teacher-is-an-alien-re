@@ -201,12 +201,12 @@ void SCI_Schedule::Update(int param1, int param2)
 
     IconBar::Update(param1, param2);
 
-    bgSprite->RenderAt(bgSprite->num_states, bgSprite->field_0xb0, 0, 0x3FF00000);
+    bgSprite->Do(bgSprite->num_states, bgSprite->field_0xb0, 1.0);
 
     if (selectionState == 1) {
-        selBox2->RenderAt(renderX, renderY, 0, 0x3FF00000);
+        selBox2->Do(renderX, renderY, 1.0);
     } else if (selectionState == 0) {
-        selBox1->RenderAt(renderX, renderY, 0, 0x3FF00000);
+        selBox1->Do(renderX, renderY, 1.0);
     }
 
     Sprite** sprPtr = &tardiesSprite;
@@ -214,7 +214,7 @@ void SCI_Schedule::Update(int param1, int param2)
     do {
         Sprite* s = *sprPtr;
         if (s != 0) {
-            s->RenderAt(s->num_states, s->field_0xb0, 0, 0x3FF00000);
+            s->Do(s->num_states, s->field_0xb0, 1.0);
         }
         sprPtr++;
         count--;
@@ -248,9 +248,9 @@ void SCI_Schedule::Update(int param1, int param2)
         }
     }
 
-    tardiesSprite->RenderAt(0x55, 0x190, 0, 0x3FF00000);
-    cutsSprite->RenderAt(0x105, 0x190, 0, 0x3FF00000);
-    scheduleSprite->RenderAt(0x1BB, 0x190, 0, 0x3FF00000);
+    tardiesSprite->Do(0x55, 0x190, 1.0);
+    cutsSprite->Do(0x105, 0x190, 1.0);
+    scheduleSprite->Do(0x1BB, 0x190, 1.0);
 
     mapHotspot->Update();
     DAT_0046aa18->DrawCursor();

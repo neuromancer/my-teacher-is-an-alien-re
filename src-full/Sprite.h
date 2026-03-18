@@ -6,11 +6,12 @@
 #include "Range.h"
 
 struct LogicCondition {
-    int state_index;
-    int type;
+    int state_index;  // 0x00
+    int type;         // 0x04
+    int field_8;      // 0x08
 
     LogicCondition() {}
-    ~LogicCondition() {}
+    ~LogicCondition();
 };
 
 class Sprite : public Parser {
@@ -19,15 +20,15 @@ public:
     // ProcessSprite asm (0x40DF30), and Target::AdvanceHotspot (0x4428E0)
     Range* ranges; // 0x90
     int flags; // 0x94
-    int handle;   // 0x98
+    int handle;   // 0x98 — also current range state (set by ResetAnimation)
     int priority; // 0x9c
-    int current_state; // 0xa0
-    LogicCondition* logic_conditions; // 0xa4
+    LogicCondition* logic_conditions; // 0xa0
+    int field_0xa4; // 0xa4
     int num_logic_conditions;   // 0xa8
-    int num_states; // 0xac
-    int field_0xb0; // 0xb0
-    int loc_x; // 0xb4
-    int loc_y; // 0xb8
+    int num_states; // 0xac — position X (set by LOC keyword)
+    int field_0xb0; // 0xb0 — position Y (set by LOC keyword)
+    int loc_x; // 0xb4 — range count (set by ConfigStates)
+    int loc_y; // 0xb8 — HANDLE value (set by full game LBLParse HANDLE keyword)
     char sprite_filename[28]; // 0xbc-0xd7
     int field_0xd8; // 0xd8
     int field_0xdc; // 0xdc
@@ -41,22 +42,17 @@ public:
 
     Sprite(char* filename);
     ~Sprite();
-    void CheckRanges1();
-    int CheckConditions();
-    void SetRange(int param_1, int param_2, int param_3, int param_4 = 0);
-    void SetState(int param_1);
-    void SetState2(int param_1);
-    void SetLogic(int param_1, int param_2);
-    void InitLogic(int param_1);
-    void Init();
-    void InitAnimation();
-    virtual int LBLParse(char* param_1);
-    void Dump();
-    int Do(int, int, double);
-    void FreeAnimation();
-    void StopAnimationSound();
-    void ResetAnimation(int param1, int param2);  // 0x44CB40
-    int RenderAt(int, int, int, int);              // 0x44CCF0
+    void CheckRanges1();                           // 0x44CF50
+    int CheckConditions();                         // 0x44CFE0
+    void SetLogic(int param_1, int param_2, int param_3 = 0); // 0x44D530
+    void SetSpriteLogic(char* gsName, char* condition, int value); // 0x44D420
+    void InitLogic(int param_1);                   // 0x44D5C0
+    void InitAnimation();                          // 0x44C880
+    virtual int LBLParse(char* param_1);           // 0x44D700
+    void FreeAnimation();                          // 0x44CB10
+    void StopAnimationSound();                     // 0x44C9D0
+    void ResetAnimation(int param1, int param2);   // 0x44CB40
+    int Do(int, int, double);                       // 0x44CCF0
     void ConfigRange(int, int, int, int);          // 0x44D210
     void ConfigStates(int);                        // 0x44D2A0
 };

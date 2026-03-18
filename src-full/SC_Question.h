@@ -4,6 +4,7 @@
 #include "Parser.h"
 #include "Queue.h"
 class MMPlayer;
+class SCI_Dialog;
 
 class SC_Message : public Parser {
 public:
@@ -46,13 +47,13 @@ public:
     int field_94;               // 0x94 (flags, bit 8 used)
     int state;                  // 0x98 - 0=new, 1=active, 2=answered
     char label[128];            // 0x9C-0x11B
-    void* mouseControl;         // 0x11C (MMPlayer*)
-    void* dialogPtr;            // 0x120 (SCI_Dialog*)
+    MMPlayer* mouseControl;     // 0x11C
+    SCI_Dialog* dialogPtr;      // 0x120
     int actionIndex[3];         // 0x124, 0x128, 0x12C
     unsigned int questionId;    // 0x130
     int field_134;              // 0x134
 
-    SC_Question(int id, int dialog);
+    SC_Question(int id, SCI_Dialog* dialog);
     ~SC_Question();
 
     void Update(int x, int y);

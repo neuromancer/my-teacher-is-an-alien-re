@@ -66,7 +66,7 @@ void MMPlayer2::PreDraw()
             ZBQueueNode* node = spriteList->current;
             Sprite* spr = 0;
             if (node != 0) spr = (Sprite*)node->data;
-            spr->Init();
+            spr->InitAnimation();
             if (spriteList->tail == spriteList->current) break;
             if (spriteList->current != 0) spriteList->current = ((ZBQueueNode*)spriteList->current)->next;
         } while (spriteList->head != 0);

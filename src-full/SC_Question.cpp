@@ -18,10 +18,9 @@
 // FUN_00425cb0 = ShowMessage in string.h
 // FUN_00413e10 = ParseFile in Parser.h
 extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int); // ZBufferManager::ShowText
-extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int); // SpriteAction ctor (__cdecl bridge)
 
 extern StringTable* DAT_0046a6e0;
-extern void* DAT_0046a6e8;           // MMPlayer*
+extern FlagArray* DAT_0046a6e8;
 extern "C" int DAT_0046a6ec;         // GameEngine instance
 extern "C" GameState* DAT_0046aa30;
 extern ZBufferManager* DAT_0046aa24;
@@ -31,7 +30,7 @@ extern char DAT_004690e4[];          // format string for quest
 extern GameState* DAT_0046aa38;      // secondary GameState (string table)
 
 /* Function start: 0x414780 */
-SC_Question::SC_Question(int id, int dialog)
+SC_Question::SC_Question(int id, SCI_Dialog* dialog)
 {
     int gsIndex;
     char questFile[32];
@@ -40,7 +39,7 @@ SC_Question::SC_Question(int id, int dialog)
 
     questionId = id;
     state = 0;
-    dialogPtr = (void*)dialog;
+    dialogPtr = dialog;
 
     if (DAT_0046a6e0->GetString( id, label) == 0) {
         ShowMessage("SC_Question::SC_Question missing label %d", id);
@@ -57,9 +56,9 @@ SC_Question::SC_Question(int id, int dialog)
 
     ParseFile(this, questFile, "[QUESTION%d]", questionId);
 
-    if (((FlagArray*)DAT_0046a6e8)->GetFlag( questionId, 2) != 0) {
+    if (DAT_0046a6e8->GetFlag( questionId, 2) != 0) {
         state = 2;
-    } else if (((FlagArray*)DAT_0046a6e8)->GetFlag( questionId, 1) != 0) {
+    } else if (DAT_0046a6e8->GetFlag( questionId, 1) != 0) {
         state = 2;
     }
 }
@@ -67,14 +66,14 @@ SC_Question::SC_Question(int id, int dialog)
 /* Function start: 0x4148F0 */
 SC_Question::~SC_Question()
 {
-    void* mc;
+    MMPlayer* mc;
     Queue* queue;
     QueueNode* current;
     void* msgData;
 
     mc = mouseControl;
     if (mc != 0) {
-        ((MMPlayer*)mc)->~MMPlayer();
+        mc->~MMPlayer();
         free(mc);
         mouseControl = 0;
     }
@@ -146,13 +145,13 @@ void SC_Question::Update(int x, int y)
     case 1:
         if (mouseControl != 0) {
             if ((field_94 & 8) == 0) {
-                if (((MMPlayer*)mouseControl)->Draw() == 0) {
+                if (mouseControl->Draw() == 0) {
                     Finalize();
                     return;
                 }
             } else {
-                if (((MMPlayer*)mouseControl)->Draw() == 0) {
-                    ((MMPlayer*)mouseControl)->ResetAnimations(1);
+                if (mouseControl->Draw() == 0) {
+                    mouseControl->ResetAnimations(1);
                     return;
                 }
             }
@@ -229,12 +228,12 @@ void SC_Question::Finalize()
     void* msgData;
     int queueType;
 
-    if (((FlagArray*)DAT_0046a6e8)->GetFlag( questionId, 4) == 0) {
-        ((FlagArray*)DAT_0046a6e8)->SetFlag( questionId, 2);
+    if (DAT_0046a6e8->GetFlag( questionId, 4) == 0) {
+        DAT_0046a6e8->SetFlag( questionId, 2);
     }
 
     state = 2;
-    ((int*)dialogPtr)[0x33] = 1;
+    ((int*)dialogPtr)[0x33] = 1; // offset 0xCC in SCI_Dialog
 
     queue = messageQueue;
     if (queue == 0) return;
@@ -304,7 +303,7 @@ int SC_Question::LBLParse(char* param_1)
     void* mem;
     int result;
     void* action;
-    void* sprite;
+    Sprite* sprite;
     int* queue;
     int cur;
     int* framePtr;
@@ -315,18 +314,18 @@ int SC_Question::LBLParse(char* param_1)
     if (strcmp(keyword, "OVERLAYS") == 0) {
         if (mouseControl == 0) {
             mem = malloc(0xa0);
-            void* mc = 0;
+            MMPlayer* mc = 0;
             if (mem != 0) {
                 mc = new (mem) MMPlayer();
             }
             mouseControl = mc;
         }
-        Parser::ProcessFile((Parser*)mouseControl, this, (char*)0);
+        Parser::ProcessFile(mouseControl, this, (char*)0);
     }
     else if (strncmp(keyword, "OVE", 3) == 0) {
         if (mouseControl == 0) {
             mem = malloc(0xa0);
-            void* mc = 0;
+            MMPlayer* mc = 0;
             if (mem != 0) {
                 mc = new (mem) MMPlayer();
             }
@@ -337,15 +336,15 @@ int SC_Question::LBLParse(char* param_1)
         if (mem != 0) {
             sprite = new (mem) Sprite((char*)0);
         }
-        ((Sprite*)sprite)->flags |= 0x400;
-        ((Parser*)sprite)->LBLParse(param_1);
-        ((MMPlayer*)mouseControl)->AddSprite((Sprite*)sprite);
+        sprite->flags |= 0x400;
+        sprite->LBLParse(param_1);
+        mouseControl->AddSprite((Sprite*)sprite);
     }
     else if (strcmp(keyword, "STANDARD_SPR") == 0) {
         sscanf(param_1, " %s %d %d", keyword, &id, &val);
         if (mouseControl == 0) {
             mem = malloc(0xa0);
-            void* mc = 0;
+            MMPlayer* mc = 0;
             if (mem != 0) {
                 mc = new (mem) MMPlayer();
             }
@@ -357,22 +356,22 @@ int SC_Question::LBLParse(char* param_1)
         if (mem != 0) {
             sprite = new (mem) Sprite((char*)buf1);
         }
-        ((Sprite*)sprite)->flags |= 0x400;
-        ((Sprite*)sprite)->num_states = id;
-        ((Sprite*)sprite)->field_0xb0 = val;
-        ((Sprite*)sprite)->flags |= 0x40;
-        ((Sprite*)sprite)->priority = 0x14;
+        sprite->flags |= 0x400;
+        sprite->num_states = id;
+        sprite->field_0xb0 = val;
+        sprite->flags |= 0x40;
+        sprite->priority = 0x14;
         if ((field_94 & 8) != 0) {
-            ((Sprite*)sprite)->ConfigStates(2);
-            ((Sprite*)sprite)->InitAnimation();
-            framePtr = (int*)((int)((Sprite*)sprite)->ranges + ((Sprite*)sprite)->handle * 0x10);
-            ((Sprite*)sprite)->ConfigRange(0, 1, (framePtr[1] - framePtr[0]) + 1, 1);
-            framePtr = (int*)((int)((Sprite*)sprite)->ranges + ((Sprite*)sprite)->handle * 0x10);
+            sprite->ConfigStates(2);
+            sprite->InitAnimation();
+            framePtr = (int*)((int)sprite->ranges + sprite->handle * 0x10);
+            sprite->ConfigRange(0, 1, (framePtr[1] - framePtr[0]) + 1, 1);
+            framePtr = (int*)((int)sprite->ranges + sprite->handle * 0x10);
             frameCount = (framePtr[1] - framePtr[0]) + 1;
-            ((Sprite*)sprite)->ConfigRange(1, frameCount, frameCount, 1);
-            ((Sprite*)sprite)->StopAnimationSound();
+            sprite->ConfigRange(1, frameCount, frameCount, 1);
+            sprite->StopAnimationSound();
         }
-        ((MMPlayer*)mouseControl)->AddSprite((Sprite*)sprite);
+        mouseControl->AddSprite((Sprite*)sprite);
     }
     else if (strcmp(keyword, "TEXT") == 0) {
         sscanf(param_1, " %s %d", keyword, &id);
@@ -389,7 +388,7 @@ int SC_Question::LBLParse(char* param_1)
         mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
-            action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x17, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x1f, id, 0, 0, 0x17, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
             mem = malloc(0x10);
@@ -466,7 +465,7 @@ int SC_Question::LBLParse(char* param_1)
         mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
-            action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x13, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x1f, id, 0, 0, 0x13, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
             mem = malloc(0x10);
@@ -543,7 +542,7 @@ int SC_Question::LBLParse(char* param_1)
         mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
-            action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x18, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x1f, id, 0, 0, 0x18, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
             mem = malloc(0x10);
@@ -620,7 +619,7 @@ int SC_Question::LBLParse(char* param_1)
         mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
-            action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x0f, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x1f, id, 0, 0, 0x0f, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
             mem = malloc(0x10);
@@ -697,7 +696,7 @@ int SC_Question::LBLParse(char* param_1)
         mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
-            action = FUN_00444a40(mem, 0x1f, id, 0, 0, 0x10, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x1f, id, 0, 0, 0x10, 0, 0, 0, 0, 0);
         }
         if (messageQueue == 0) {
             mem = malloc(0x10);
@@ -806,7 +805,7 @@ int SC_Question::LBLParse(char* param_1)
             int gsIdx2;
             gsIdx1 = DAT_0046aa38->FindState(buf2);
             gsIdx2 = (DAT_0046aa30)->FindState(buf1);
-            action = FUN_00444a40(mem, 2, gsIdx2, 0, 0, gsIdx1, id, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 2, gsIdx2, 0, 0, gsIdx1, id, 0, 0, 0, 0);
         }
         if ((((SpriteAction*)action)->instruction == 0x11 || ((SpriteAction*)action)->instruction == 0x12) && result < 4) {
             ((SpriteAction*)action)->extra1 = 1;
@@ -887,7 +886,7 @@ int SC_Question::LBLParse(char* param_1)
         if (mem == 0) {
             action = 0;
         } else {
-            action = FUN_00444a40(mem, 0x2c, 0, 0, 0, 0x3c, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x2c, 0, 0, 0, 0x3c, 0, 0, 0, 0, 0);
         }
         queue = (int*)messageQueue;
         if (action == 0) {
@@ -962,7 +961,7 @@ int SC_Question::LBLParse(char* param_1)
         if (mem == 0) {
             action = 0;
         } else {
-            action = FUN_00444a40(mem, 0x2c, 0, 0, 0, 0x3d, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x2c, 0, 0, 0, 0x3d, 0, 0, 0, 0, 0);
         }
         queue = (int*)messageQueue;
         if (action == 0) {
@@ -1037,7 +1036,7 @@ int SC_Question::LBLParse(char* param_1)
         if (mem == 0) {
             action = 0;
         } else {
-            action = FUN_00444a40(mem, 0x2c, 0, 0, 0, 0x3e, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x2c, 0, 0, 0, 0x3e, 0, 0, 0, 0, 0);
         }
         queue = (int*)messageQueue;
         if (action == 0) {
@@ -1115,7 +1114,7 @@ int SC_Question::LBLParse(char* param_1)
         if (mem == 0) {
             action = 0;
         } else {
-            action = FUN_00444a40(mem, 1, id, 0x1f, 0, 4, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 1, id, 0x1f, 0, 4, 0, 0, 0, 0, 0);
         }
         queue = (int*)messageQueue;
         if (action == 0) {
@@ -1175,7 +1174,7 @@ int SC_Question::LBLParse(char* param_1)
         if (mem == 0) {
             action = 0;
         } else {
-            action = FUN_00444a40(mem, 0x20, val, 0x1f, 0, 4, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0x20, val, 0x1f, 0, 4, 0, 0, 0, 0, 0);
         }
         queue = (int*)messageQueue;
         if (action == 0) {
@@ -1236,7 +1235,7 @@ int SC_Question::LBLParse(char* param_1)
         mem = malloc(0x38);
         action = 0;
         if (mem != 0) {
-            action = FUN_00444a40(mem, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
         ParseSpriteAction(action, this);
         if (messageQueue == 0) {
@@ -1324,7 +1323,7 @@ int SC_Question::LBLParse(char* param_1)
         if (mem == 0) {
             action = 0;
         } else {
-            action = FUN_00444a40(mem, 4, id, 0, 0, 2, id, 0, 0, 0, 0);
+            action = new (mem) SpriteAction( 4, id, 0, 0, 2, id, 0, 0, 0, 0);
         }
         queue = (int*)messageQueue;
         if (action == 0) {
@@ -1382,10 +1381,10 @@ int SC_Question::LBLParse(char* param_1)
         }
     }
     else if (strcmp(keyword, "CONSTANT") == 0) {
-        ((FlagArray*)DAT_0046a6e8)->SetFlag( questionId, 4);
+        DAT_0046a6e8->SetFlag( questionId, 4);
     }
     else if (strcmp(keyword, "SINGLE_PLAY") == 0) {
-        ((FlagArray*)DAT_0046a6e8)->ClearFlag(questionId, 4);
+        DAT_0046a6e8->ClearFlag(questionId, 4);
     }
     else if (strcmp(keyword, "HOLD") == 0) {
         field_94 |= 8;

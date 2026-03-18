@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <share.h>
 #include <sys/stat.h>
 #include <ctype.h>
@@ -486,4 +487,48 @@ int DeleteFile_Wrapper(const char* filename)
         return -1;
     }
     return 0;
+}
+
+extern "C" GameState* DAT_0046aa30;
+static char g_AnimNameBuf[64];  // DAT_00473cf0
+static char g_CineNameBuf[64]; // DAT_00473cb0
+
+/* Function start: 0x44E320 */
+char* MakeSoundName(char* baseName) {
+    int len = strlen(baseName);
+    if (len < 4) {
+        ShowError("MakeAnimName - invalid base name = '%s'", baseName);
+    }
+    int index = atoi(baseName + (len - 4));
+    if (index == 0) {
+        return baseName;
+    }
+    if (4999 < index) {
+        int gsIdx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = DAT_0046aa30;
+        if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
+            ShowError("Invalid gamestate %d", gsIdx);
+        }
+        sprintf(g_AnimNameBuf, "%s%c.smk", baseName,
+                (int)(char)g_PeriodCharTable_0046cb94[gs->stateValues[gsIdx]]);
+        return g_AnimNameBuf;
+    }
+    sprintf(g_AnimNameBuf, "%s.smk", baseName);
+    return g_AnimNameBuf;
+}
+
+/* Function start: 0x44E3E0 */
+char* MakeAnimName(int index) {
+    if (4999 < index) {
+        int gsIdx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = DAT_0046aa30;
+        if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
+            ShowError("Invalid gamestate %d", gsIdx);
+        }
+        sprintf(g_CineNameBuf, "cine\\cin%4.4d%c.smk", index,
+                (int)(char)g_PeriodCharTable_0046cb94[gs->stateValues[gsIdx]]);
+        return g_CineNameBuf;
+    }
+    sprintf(g_CineNameBuf, "cine\\cin%4.4d.smk", index);
+    return g_CineNameBuf;
 }

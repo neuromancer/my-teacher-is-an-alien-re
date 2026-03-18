@@ -66,7 +66,6 @@ extern ZBufferManager* DAT_0046aa24;   // ZBufferManager* (rendering manager, 0x
 // Forward declarations for functions defined in this file
 void InitGameSystems();
 void ShutdownGameSystems();
-void CheckDebug();
 void CreateGameObject_1();
 void InitGameConfig();
 int GetFileAttributes_Wrapper(const char *param_1, char param_2);
@@ -376,9 +375,8 @@ void InitGameSystems(void) {
     g_Buffer_00436960 = new char[0x100];
     DAT_0046aa00 = g_Buffer_00436960;
     g_Buffer_00436964 = new char[CalculateBufferSize(0x280, 0x1e0)];
-    CheckDebug();
-    ClearMessageLog();
     CreateGameObject_1();
+    ClearMessageLog();
     InitGameConfig();
     InitWorkBuffer(0x280, 0x1e0);
     g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
@@ -389,6 +387,8 @@ void InitGameSystems(void) {
     SetStateFlag(0, 1);
     SetCursorVisible(0);
 }
+
+extern void* DAT_0046aa1c;
 
 /* Function start: 0x4258C0 */ /* ~97% match */
 void ShutdownGameSystems(void) {
@@ -418,6 +418,7 @@ void ShutdownGameSystems(void) {
     p->~CDData();
     operator delete(p);
     g_CDData_0043697c = 0;
+    DAT_0046aa1c = 0;
   }
   if (g_GameConfig_00436970 != 0) {
      delete g_GameConfig_00436970;
@@ -436,18 +437,11 @@ void ShutdownGameSystems(void) {
 }
 
 /* Function start: 0x424BB0 */
-void CheckDebug(void) {
-  g_CDData_0043697c = new CDData(g_GameWindow.baseDir, "teacher_id", "Missing the Teacher CD ROM");
-}
-
-/* Function start: 0x4259E0 */
-extern void* DAT_0046aa1c;
-
-/* Function start: 0x424BB0 */
 void CreateGameObject_1() {
   static char s_pathBuffer[260]; // DAT_00472de8
-  CDData* cd = new CDData(s_pathBuffer, "teacher_id", "Missing the Teacher CD ROM");
+  CDData* cd = new CDData(s_pathBuffer, "teacher.id", "Missing the Teacher CD ROM");
   DAT_0046aa1c = cd;
+  g_CDData_0043697c = cd;
 }
 
 /* Function start: 0x4259E0 */

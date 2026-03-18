@@ -17,7 +17,7 @@ public:
     SC_Detention();
     ~SC_Detention();
 
-    // LBLParse: 0x40B240 is actually SCI_SearchScreen::LBLParse, not SC_Detention
+    virtual int LBLParse(char* line);          // 0x40B240 (shared with SCI_SearchScreen)
     virtual int AddMessage(SC_Message* msg);  // 0x409AD0
     virtual int Exit(SC_Message* msg);        // 0x409F70
 

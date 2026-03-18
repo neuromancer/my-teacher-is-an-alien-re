@@ -69,17 +69,17 @@ Handler4::Handler4() {
         for (int count = 3; count != 0; count--) {
             (&buttons1)[3 - count]->flags &= ~2;
             (&buttons1)[3 - count]->priority = 10;
-            (&buttons1)[3 - count]->SetState(3);
-            (&buttons1)[3 - count]->SetRange(0, 1, 1);
-            (&buttons1)[3 - count]->SetRange(1, 2, 2);
-            (&buttons1)[3 - count]->SetRange(2, 3, 3);
+            (&buttons1)[3 - count]->ConfigStates(3);
+            (&buttons1)[3 - count]->ConfigRange(0, 1, 1, 1);
+            (&buttons1)[3 - count]->ConfigRange(1, 2, 2, 1);
+            (&buttons1)[3 - count]->ConfigRange(2, 3, 3, 1);
 
             (&paths1)[3 - count]->flags &= ~2;
             (&paths1)[3 - count]->priority = 10;
-            (&paths1)[3 - count]->SetState(3);
-            (&paths1)[3 - count]->SetRange(0, 1, 1);
-            (&paths1)[3 - count]->SetRange(1, 2, 2);
-            (&paths1)[3 - count]->SetRange(2, 3, 3);
+            (&paths1)[3 - count]->ConfigStates(3);
+            (&paths1)[3 - count]->ConfigRange(0, 1, 1, 1);
+            (&paths1)[3 - count]->ConfigRange(1, 2, 2, 1);
+            (&paths1)[3 - count]->ConfigRange(2, 3, 3, 1);
         }
     }
 
@@ -93,10 +93,10 @@ Handler4::Handler4() {
     litdoors->flags &= ~2;
     litdoors->priority = 10;
     litdoors->flags |= 0x40;
-    litdoors->SetState(3);
-    litdoors->SetRange(0, 1, 1);
-    litdoors->SetRange(1, 2, 2);
-    litdoors->SetRange(2, 3, 3);
+    litdoors->ConfigStates(3);
+    litdoors->ConfigRange(0, 1, 1, 1);
+    litdoors->ConfigRange(1, 2, 2, 1);
+    litdoors->ConfigRange(2, 3, 3, 1);
 
     lowfloor = new Sprite("puzzle1\\lowfloor.smk");
     lowfloor->loc_x = 0x1d;
@@ -115,11 +115,11 @@ Handler4::Handler4() {
             (&lowfloor)[3 - count]->flags &= ~2;
             (&lowfloor)[3 - count]->priority = 10;
             (&lowfloor)[3 - count]->flags |= 0x40;
-            (&lowfloor)[3 - count]->SetState(4);
-            (&lowfloor)[3 - count]->SetRange(0, 1, 4);
-            (&lowfloor)[3 - count]->SetRange(1, 5, 8);
-            (&lowfloor)[3 - count]->SetRange(2, 9, 12);
-            (&lowfloor)[3 - count]->SetRange(3, 13, 16);
+            (&lowfloor)[3 - count]->ConfigStates(4);
+            (&lowfloor)[3 - count]->ConfigRange(0, 1, 4, 1);
+            (&lowfloor)[3 - count]->ConfigRange(1, 5, 8, 1);
+            (&lowfloor)[3 - count]->ConfigRange(2, 9, 12, 1);
+            (&lowfloor)[3 - count]->ConfigRange(3, 13, 16, 1);
         }
     }
 
@@ -347,7 +347,7 @@ void Handler4::ResetPuzzle() {
 
     Sprite** pFloor = &lowfloor;
     for (int i = 3; i != 0; i--) {
-        (*pFloor)->SetState2(3);
+        (*pFloor)->ResetAnimation(3, 0);
         pFloor++;
     }
 
@@ -388,7 +388,7 @@ void Handler4::DisplayButtons() {
     for (int i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
             Sprite** ppBtn = &(&buttons1)[i / 3];
-            (*ppBtn)->SetState2(i % 3);
+            (*ppBtn)->ResetAnimation(i % 3, 0);
             (*ppBtn)->Do((*ppBtn)->loc_x, (*ppBtn)->loc_y, 1.0);
         }
     }
@@ -402,7 +402,7 @@ void Handler4::DisplayMap() {
     for (int i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
             Sprite** ppPath = &(&paths1)[i / 3];
-            (*ppPath)->SetState2(i % 3);
+            (*ppPath)->ResetAnimation(i % 3, 0);
             (*ppPath)->Do((*ppPath)->loc_x, (*ppPath)->loc_y, 1.0);
         }
     }
@@ -413,7 +413,7 @@ void Handler4::DisplayLitDoors() {
     int i;
     for (i = 0; i < 3; i++) {
         if (floorStates[i] != 0) {
-            litdoors->SetState2(i);
+            litdoors->ResetAnimation(i, 0);
             int x = 0;
             if (i != 0) {
                 x = ((unsigned int)(i - 1) < 1 ? 0xffffff5a : 0) + 0x138;
@@ -457,7 +457,7 @@ void Handler4::DisplayThisFloorRow() {
                 ShowError("Error in SCIpuzz1.cpp - DisplayThisFloorRow:  Invalid case value");
             }
             if (state == -1) state = 3;
-            (*pSpr)->SetState2(state);
+            (*pSpr)->ResetAnimation(state, 0);
             pRow++;
             pSpr++;
         } while (pRow < &floorRow[3]);

@@ -35,10 +35,10 @@ T_MenuHotspot::T_MenuHotspot(char* name, int* rect)
         spr->handle = 2;
         spr->loc_x = rect[0];
         spr->loc_y = rect[1];
-        spr->SetState2(2);
+        spr->ResetAnimation(2, 0);
         spr->flags |= 0x40;
-        spr->SetRange(0, 1, 1, 1);
-        spr->SetRange(1, 2, 2, 1);
+        spr->ConfigRange(0, 1, 1, 1);
+        spr->ConfigRange(1, 2, 2, 1);
     }
 
     bounds.left = rect[0];

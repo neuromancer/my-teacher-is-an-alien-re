@@ -36,7 +36,6 @@ extern char* __cdecl ResolveAssetPath(char* name);
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 
 // Message operations
-extern void* __cdecl FUN_00444a40(void* mem, int, int, int, int, int, int, int, int, int, int);
 
 // Engine/Misc
 extern "C" void SetVideoRes(int, int);
@@ -321,7 +320,7 @@ int SelectHotspot::LBLParse(char* line) {
         void* msgMem = AllocateMemory(0x38);
         int* msgObj = 0;
         if (msgMem != 0) {
-            msgObj = (int*)FUN_00444a40(msgMem, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            msgObj = (int*)new (msgMem) SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
         ParseSpriteAction(msgObj, this);
         if (SelectHotspot::messageList == 0) {
@@ -339,7 +338,7 @@ int SelectHotspot::LBLParse(char* line) {
         void* msgMem = AllocateMemory(0x38);
         int* msgObj = 0;
         if (msgMem != 0) {
-            msgObj = (int*)FUN_00444a40(msgMem, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            msgObj = (int*)new (msgMem) SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
         int* src = (int*)&DAT_00472d58;
         int* dst = msgObj;

@@ -47,10 +47,10 @@ void Projectile::Launch() {
     InputState* pMouse;
 
     Projectile::active = 1;
-    Projectile::SetState2(0);
+    Projectile::ResetAnimation(0, 0);
 
-    frameCount = Projectile::ranges[Projectile::current_state].end
-               - Projectile::ranges[Projectile::current_state].start + 1;
+    frameCount = Projectile::ranges[Projectile::handle].end
+               - Projectile::ranges[Projectile::handle].start + 1;
 
     Projectile::startX = 0xa0;
     Projectile::startY = 0xb4;
@@ -95,7 +95,7 @@ void Projectile::Update() {
         return;
     }
 
-    isExploding = (Projectile::current_state == 1);
+    isExploding = (Projectile::handle == 1);
 
     if (isExploding) {
         Projectile::nextX = Projectile::currentX;
@@ -113,7 +113,7 @@ void Projectile::Update() {
         if (Projectile::CheckCollision()) {
             Projectile::currentX = Projectile::nextX;
             Projectile::currentY = Projectile::nextY;
-            Projectile::SetState2(1);
+            Projectile::ResetAnimation(1, 0);
         }
     }
 
@@ -126,7 +126,7 @@ void Projectile::Update() {
             return;
         }
         g_ProjectileHits_0043d150++;
-        Projectile::SetState2(1);
+        Projectile::ResetAnimation(1, 0);
     }
 }
 

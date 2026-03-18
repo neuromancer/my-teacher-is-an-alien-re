@@ -515,7 +515,32 @@ void SC_Detention::SetupDetentionState() {
     sprintf(field_1C4, "%c_IN_DETENTION", periodChar);
 }
 
-// 0x40B240 = SCI_SearchScreen::LBLParse (moved to SCI_SearchScreen.cpp)
+/* Function start: 0x40B240 */
+int SC_Detention::LBLParse(char* line) {
+    char token[32];
+
+    sscanf(line, "%s", token);
+
+    if (strcmp(token, "POSTMESSAGE") == 0) {
+        SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        ParseSpriteAction(&action, this);
+        EnqueueSpriteAction((void*)&action);
+    } else if (strcmp(token, "ENDPERIODANNOUNCE") == 0) {
+        int index, value;
+        sscanf(line, "%s %d %d", token, &index, &value);
+        field_A8[index + 20] = value;
+    } else if (strcmp(token, "ANNOUNCE") == 0) {
+        int index, value;
+        sscanf(line, "%s %d %d", token, &index, &value);
+        field_A8[index] = value;
+    } else if (strcmp(token, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SCI_SearchScreen");
+    }
+
+    return 0;
+}
 
 /* Function start: 0x40AB90 */
 void SC_Detention::HandleCombat() {

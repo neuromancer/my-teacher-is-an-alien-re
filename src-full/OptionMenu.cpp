@@ -23,33 +23,33 @@ OptionMenu::OptionMenu()
     options[0]->loc_x = 216;
     options[0]->loc_y = 202;
     options[0]->priority = 10;
-    options[0]->SetState(4);
-    options[0]->SetRange(0, 1, 1);
-    options[0]->SetRange(1, 2, 2);
-    options[0]->SetRange(2, 3, 12);
-    options[0]->SetRange(3, 13, 13);
+    options[0]->ConfigStates(4);
+    options[0]->ConfigRange(0, 1, 1, 1);
+    options[0]->ConfigRange(1, 2, 2, 1);
+    options[0]->ConfigRange(2, 3, 12, 1);
+    options[0]->ConfigRange(3, 13, 13, 1);
 
     options[1] = new Sprite("demo/option2.smk");
     options[1]->flags &= ~2;
     options[1]->loc_x = 216;
     options[1]->loc_y = 202;
     options[1]->priority = 10;
-    options[1]->SetState(4);
-    options[1]->SetRange(0, 1, 1);
-    options[1]->SetRange(1, 2, 2);
-    options[1]->SetRange(2, 3, 12);
-    options[1]->SetRange(3, 13, 13);
+    options[1]->ConfigStates(4);
+    options[1]->ConfigRange(0, 1, 1, 1);
+    options[1]->ConfigRange(1, 2, 2, 1);
+    options[1]->ConfigRange(2, 3, 12, 1);
+    options[1]->ConfigRange(3, 13, 13, 1);
 
     options[2] = new Sprite("demo/option3.smk");
     options[2]->flags &= ~2;
     options[2]->loc_x = 216;
     options[2]->loc_y = 202;
     options[2]->priority = 10;
-    options[2]->SetState(4);
-    options[2]->SetRange(0, 1, 1);
-    options[2]->SetRange(1, 2, 2);
-    options[2]->SetRange(2, 3, 12);
-    options[2]->SetRange(3, 13, 13);
+    options[2]->ConfigStates(4);
+    options[2]->ConfigRange(0, 1, 1, 1);
+    options[2]->ConfigRange(1, 2, 2, 1);
+    options[2]->ConfigRange(2, 3, 12, 1);
+    options[2]->ConfigRange(3, 13, 13, 1);
 }
 
 /* Function start: 0x409BF0 */ /* DEMO ONLY - no full game match */
@@ -97,15 +97,15 @@ void OptionMenu::UpdateSpriteStates(int sprite_count, int sprite_index)
 
     while (i < sprite_count) {
         if (sprite_index == 0) {
-            options[0]->SetState2((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state);
+            options[0]->ResetAnimation((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state, 0);
             options[0]->Do(options[0]->loc_x, options[0]->loc_y, 1.0);
         }
         if (sprite_index == 1) {
-            options[1]->SetState2((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state);
+            options[1]->ResetAnimation((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state, 0);
             options[1]->Do(options[1]->loc_x, options[1]->loc_y, 1.0);
         }
         if (sprite_index == 2) {
-            options[2]->SetState2((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state);
+            options[2]->ResetAnimation((spriteList->current ? (SpriteData*)spriteList->current->data : 0)->state, 0);
             options[2]->Do(options[2]->loc_x, options[2]->loc_y, 1.0);
         }
 

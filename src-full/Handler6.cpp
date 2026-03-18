@@ -194,11 +194,11 @@ void Handler6::Update(int param1, int param2) {
 
         if (clickedIndex == -1) {
             if (sprite != 0) {
-                sprite->SetState2(0);
+                sprite->ResetAnimation(0, 0);
             }
         } else {
             if (sprite != 0) {
-                sprite->SetState2(1);
+                sprite->ResetAnimation(1, 0);
             }
         }
         g_Mouse_00436978->DrawCursor();

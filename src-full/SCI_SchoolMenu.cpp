@@ -52,7 +52,6 @@ extern "C" {
     char* GetSoundFilename(int handle);
 }
 // C++ linkage functions (matching stubs.cpp)
-extern void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int);
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 extern "C" void WriteToLog(const char* format, ...);
 

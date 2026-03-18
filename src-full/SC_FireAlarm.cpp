@@ -365,9 +365,9 @@ returnOne:
 
 /* Function start: 0x407E50 */
 void SC_FireAlarm::Render() {
-    ((Sprite*)field_C4)->RenderAt(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 0, 0x3ff00000);
-    ((Sprite*)field_110)->RenderAt(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 0, 0x3ff00000);
-    ((Sprite*)field_DC)->RenderAt(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 0, 0x3ff00000);
+    ((Sprite*)field_C4)->Do(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 1.0);
+    ((Sprite*)field_110)->Do(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 1.0);
+    ((Sprite*)field_DC)->Do(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 1.0);
     if (((Palette*)field_148)->CheckSound(9) == 0) {
         field_B0 = 1;
         field_AC &= ~8;
@@ -424,9 +424,9 @@ void SC_FireAlarm::ProcessFrame() {
         field_AC |= 1;
     }
 
-    ((Sprite*)field_C4)->RenderAt(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 0, 0x3ff00000);
+    ((Sprite*)field_C4)->Do(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 1.0);
 
-    int renderResult = ((Sprite*)field_110)->RenderAt(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 0, 0x3ff00000);
+    int renderResult = ((Sprite*)field_110)->Do(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 1.0);
 
     if ((field_AC & 0xF) == 0) {
         int animData = *(int*)(field_110 + 0xF0);
@@ -486,7 +486,7 @@ void SC_FireAlarm::ProcessFrame() {
     }
 
     {
-        int dcRender = ((Sprite*)field_DC)->RenderAt(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 0, 0x3ff00000);
+        int dcRender = ((Sprite*)field_DC)->Do(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 1.0);
         if (dcRender != 0) {
             int dcFrame = *(int*)(field_DC + 0x98);
             switch (dcFrame) {
@@ -521,7 +521,7 @@ void SC_FireAlarm::ProcessFrame() {
     }
 
     {
-        int f8Render = ((Sprite*)field_F8)->RenderAt(*(int*)(field_F8 + 0xAC), *(int*)(field_F8 + 0xB0), 0, 0x3ff00000);
+        int f8Render = ((Sprite*)field_F8)->Do(*(int*)(field_F8 + 0xAC), *(int*)(field_F8 + 0xB0), 1.0);
         if (f8Render != 0) {
             int f8Frame = *(int*)(field_F8 + 0x98);
             switch (f8Frame) {
@@ -546,7 +546,7 @@ void SC_FireAlarm::ProcessFrame() {
     }
 
     {
-        int c8Render = ((Sprite*)field_C8)->RenderAt(*(int*)(field_C8 + 0xAC), *(int*)(field_C8 + 0xB0), 0, 0x3ff00000);
+        int c8Render = ((Sprite*)field_C8)->Do(*(int*)(field_C8 + 0xAC), *(int*)(field_C8 + 0xB0), 1.0);
         if (c8Render != 0) {
             int c8Frame = *(int*)(field_C8 + 0x98);
             switch (c8Frame) {
@@ -560,13 +560,13 @@ void SC_FireAlarm::ProcessFrame() {
         }
     }
 
-    ((Sprite*)field_10C)->RenderAt(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 0, 0x3ff00000);
+    ((Sprite*)field_10C)->Do(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 1.0);
 
     if ((field_AC & 0xF) == 0) {
         (DAT_0046aa18)->DrawCursor();
         FUN_00427880((void*)DAT_004685ac);
 
-        int bcRender = ((Sprite*)field_BC)->RenderAt(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 0, 0x3ff00000);
+        int bcRender = ((Sprite*)field_BC)->Do(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 1.0);
         if (bcRender != 0) {
             int mouseVal = 0;
             int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1A0);

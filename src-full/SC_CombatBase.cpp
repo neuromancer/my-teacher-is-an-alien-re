@@ -1,5 +1,6 @@
 #include "SC_CombatBase.h"
 #include "SC_Question.h"
+#include "SpriteAction.h"
 #include "Sprite.h"
 #include "GameState.h"
 #include "Memory.h"
@@ -21,10 +22,7 @@ extern "C" extern GameState* DAT_0046aa30;
 
 extern void __fastcall FUN_00409730(void*, int, int);  // CombatSprite::ProcessFrame
 extern int __fastcall FUN_0044be70(void*, int);         // WeaponParser::UpdateProjectiles
-extern void __fastcall FUN_0042d1a0(void*, int, int*);    // HotspotPool::PopEvent
-extern void __fastcall FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int, int); // HotspotEvent ctor
-extern void __fastcall FUN_00444920(void*, int, int*);   // HotspotEvent::CopyFrom
-extern void __fastcall FUN_00444af0(void*, int);          // HotspotEvent dtor
+extern void __fastcall FUN_0042d1a0(void*, int, SpriteAction*);    // HotspotPool::PopEvent
 
 /* Function start: 0x42BCD0 */
 SC_CombatBase::SC_CombatBase()
@@ -121,10 +119,9 @@ int SC_CombatBase::UpdateSprites()
 void SC_CombatBase::RenderBackground()
 {
     if (DAT_0046ae50 != 0) {
-        DAT_0046ae50->RenderAt(
+        DAT_0046ae50->Do(
             DAT_0046ae50->num_states,
-            DAT_0046ae50->field_0xb0,
-            0, 0x3FF00000);
+            DAT_0046ae50->field_0xb0, 1.0);
     }
 }
 
@@ -284,28 +281,25 @@ int SC_CombatBase::LBLParse(char* line)
 /* Function start: 0x42C9D0 */
 int SC_CombatBase::ProcessEvents()
 {
-    int localEvent[14];
-    int tempEvent[14];
-
-    FUN_00444a40((void*)localEvent, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    SpriteAction localEvent(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    SpriteAction tempEvent;
 
     int result = 0;
     HotspotListData* pool = DAT_0046ae74;
 
     if (pool->count != 0) {
         int* vtbl = *(int**)this;
-        int (__fastcall *handleAction)(void*, int, int*) =
-            (int (__fastcall *)(void*, int, int*))vtbl[13];
+        int (__fastcall *handleAction)(void*, int, SpriteAction*) =
+            (int (__fastcall *)(void*, int, SpriteAction*))vtbl[13];
 
         do {
-            FUN_0042d1a0(pool, 0, tempEvent);
-            FUN_00444920((void*)localEvent, 0, tempEvent);
-            FUN_00444af0((void*)tempEvent, 0);
-            result |= handleAction(this, 0, localEvent);
+            FUN_0042d1a0(pool, 0, &tempEvent);
+            localEvent.CopyFrom(&tempEvent);
+            tempEvent.~SpriteAction();
+            result |= handleAction(this, 0, &localEvent);
         } while (pool->count != 0);
     }
 
-    FUN_00444af0((void*)localEvent, 0);
     return result;
 }
 

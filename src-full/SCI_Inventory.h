@@ -33,6 +33,7 @@ public:
     ~SCI_Inventory();
 
     // Virtual overrides
+    virtual int LBLParse(char* line);           // 0x43FDD0
     virtual void Init(SC_Message* msg);         // 0x43E920
     virtual int AddMessage(SC_Message* msg);    // 0x43EA60
     virtual int ShutDown(SC_Message* msg);      // 0x43E990

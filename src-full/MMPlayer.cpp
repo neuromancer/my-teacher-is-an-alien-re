@@ -80,7 +80,7 @@ void MMPlayer::Init()
             if (m_queue->current != 0) {
                 sprite = (Sprite*)m_queue->current->data;
             }
-            sprite->Init();
+            sprite->InitAnimation();
 
             if (m_queue->tail == m_queue->current) {
                 break;

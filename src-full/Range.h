@@ -6,8 +6,10 @@
 struct Range {
     int start;   // 0x00
     int end;     // 0x04
-    inline Range() { memset(this, 0, sizeof(Range)); }
-    ~Range() {}
+    int field_8; // 0x08
+    int field_C; // 0x0C
+    Range() { memset(this, 0, sizeof(Range)); }
+    ~Range();    // 0x44C830
 };
 
 struct IntPair {

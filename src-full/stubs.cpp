@@ -28,6 +28,7 @@
 #include "Sound.h"
 #include "SpriteAction.h"
 #include "GameState.h"
+#include "FlagArray.h"
 #include "LinkedList.h"
 
 extern "C" int DAT_0046a6ec;
@@ -144,7 +145,7 @@ extern "C" {
 // SC_Question globals
 class StringTable;
 StringTable* DAT_0046a6e0 = 0;
-void* DAT_0046a6e8 = 0;
+FlagArray* DAT_0046a6e8 = 0;
 char DAT_00468108[32] = {0};
 char DAT_004690e4[32] = {0};
 GameState* DAT_0046aa38 = 0;
@@ -348,8 +349,7 @@ void __fastcall FUN_00404230(void*, int, char*, int, int, int, int) {}
 // Legacy alias for the renamed enqueue wrapper in SpriteAction.cpp.
 void __cdecl FUN_00444e40(void* action) { EnqueueSpriteAction(action); }
 // ParseSpriteAction (was FUN_00445450) moved to SC_Message.cpp
-// FUN_00444a40 = SpriteAction::SpriteAction constructor in SpriteAction.cpp (stub kept: callers use __cdecl, real is __thiscall constructor)
-void* __cdecl FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int) { return 0; }
+// FUN_00444a40 = SpriteAction::SpriteAction constructor in SpriteAction.cpp (callers updated to use placement new)
 // FUN_00426190 = ResolveAssetPath in CDData.cpp
 
 // Path resolution helpers (stubbed until CDData is fully implemented)
@@ -364,10 +364,12 @@ void __fastcall FUN_00433230(void*, int, char*) {}
 // FUN_00432da0 = MouseControl::DrawCursor (removed, callers updated)
 
 // ProcessEvents helper stubs
-void __fastcall FUN_0042d1a0(void*, int, int*) {}
-void __fastcall FUN_00444a40(void*, int, int, int, int, int, int, int, int, int, int, int) {}
-void __fastcall FUN_00444920(void*, int, int*) {}
-void __fastcall FUN_00444af0(void*, int) {}
+void __fastcall FUN_0042d1a0(void*, int, SpriteAction*) {}
+// FUN_00444a40/FUN_00444920/FUN_00444af0 = SpriteAction ctor/CopyFrom/dtor (callers updated)
+
+// FUN_0044e3e0 = MakeAnimName — moved to string.cpp
+// FUN_0044e320 = MakeSoundName — moved to string.cpp
+// FUN_0044d420 = Sprite::SetSpriteLogic — moved to Sprite.cpp as class member
 
 // FUN_0044ccf0 = Sprite::Do — callers updated to use method calls
 // FUN_004344b0 / FUN_00434030 — called from main.cpp, not yet identified

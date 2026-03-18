@@ -890,6 +890,179 @@ void SCI_Inventory::Serialize(void* param) {
 
 // Stubs (moved from stubs.cpp)
 InvSlotItem::~InvSlotItem() {}
+#include "Palette.h"
+#include "GameState.h"
+#include <new.h>
+extern void* DAT_0046a6dc;
+extern "C" GameState* DAT_0046aa30;
+
+/* Function start: 0x43FDD0 */
+int SCI_Inventory::LBLParse(char* line) {
+    char token[32];
+    char name[32];
+    int params[5];
+    int index;
+    void* mem;
+    void* obj;
+
+    params[0] = 0;
+    params[1] = 0;
+    params[2] = 0;
+    params[3] = 0;
+    params[4] = 0;
+    token[0] = 0;
+    name[0] = 0;
+    index = 0;
+
+    sscanf(line, "%s", token);
+
+    if (strcmp(token, "BACKGROUND") == 0) {
+        if (bgSprite == 0) {
+            mem = malloc(0xf8);
+            obj = 0;
+            if (mem != 0) {
+                obj = new (mem) Sprite((char*)0);
+            }
+            bgSprite = (Sprite*)obj;
+        }
+        Parser::ProcessFile(bgSprite, this, (char*)0);
+    }
+    else if (strcmp(token, "OBJECT") == 0) {
+        sscanf(line, " %s %d", token, &index);
+        mem = malloc(0xc8);
+        obj = 0;
+        if (mem != 0) {
+            obj = new (mem) T_Object(index);
+        }
+        int* queue = (int*)DAT_0046a6dc;
+        if (obj == 0) {
+            ShowError("queue fault 0101");
+        }
+        queue[2] = queue[0];
+        if (queue[3] == 1 || queue[3] == 2) {
+            if (queue[0] == 0) {
+                ((Queue*)queue)->InsertAtCurrent(obj);
+            } else {
+                do {
+                    int cur = queue[2];
+                    if (*(unsigned int*)(*(int*)(cur + 8) + 0x94) < *(unsigned int*)((int)obj + 0x94)) {
+                        ((Queue*)queue)->InsertAtCurrent(obj);
+                        break;
+                    }
+                    if (queue[1] == cur) {
+                        if (obj == 0) {
+                            ShowError("queue fault 0112");
+                        }
+                        mem = malloc(0xc);
+                        if (mem == 0) {
+                            obj = 0;
+                        } else {
+                            ((int*)mem)[2] = (int)obj;
+                            ((int*)mem)[0] = 0;
+                            ((int*)mem)[1] = 0;
+                            obj = mem;
+                        }
+                        if (queue[2] == 0) {
+                            queue[2] = queue[1];
+                        }
+                        if (queue[0] == 0) {
+                            queue[0] = (int)obj;
+                            queue[1] = (int)obj;
+                            queue[2] = (int)obj;
+                        } else {
+                            if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
+                                ShowError("queue fault 0113");
+                            }
+                            ((int*)obj)[1] = 0;
+                            ((int*)obj)[0] = queue[1];
+                            *(int*)(queue[1] + 4) = (int)obj;
+                            queue[1] = (int)obj;
+                        }
+                        break;
+                    }
+                    if (cur != 0) {
+                        queue[2] = *(int*)(cur + 4);
+                    }
+                } while (queue[2] != 0);
+            }
+        } else {
+            ((Queue*)queue)->InsertAtCurrent(obj);
+        }
+    }
+    else if (strcmp(token, "PALETTE") == 0) {
+        sscanf(line, " %s %s", token, name);
+        mem = malloc(0x8);
+        Palette* pal = 0;
+        if (mem != 0) {
+            pal = new (mem) Palette();
+        }
+        palette = pal;
+        pal->Load(name);
+    }
+    else if (strcmp(token, "CANCEL") == 0) {
+        sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
+        mem = malloc(0xa8);
+        obj = 0;
+        if (mem != 0) {
+            obj = new (mem) T_MenuHotspot(name, params);
+        }
+        putBackButton = (T_MenuHotspot*)obj;
+    }
+    else if (strcmp(token, "USE") == 0) {
+        sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
+        mem = malloc(0xa8);
+        obj = 0;
+        if (mem != 0) {
+            obj = new (mem) T_MenuHotspot(name, params);
+        }
+        useButton = (T_MenuHotspot*)obj;
+    }
+    else if (strcmp(token, "SCROLLUP") == 0) {
+        sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
+        mem = malloc(0xa8);
+        obj = 0;
+        if (mem != 0) {
+            obj = new (mem) T_MenuHotspot(name, params);
+        }
+        scrollDownBtn = (T_MenuHotspot*)obj;
+    }
+    else if (strcmp(token, "SCROLLDOWN") == 0) {
+        sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
+        mem = malloc(0xa8);
+        obj = 0;
+        if (mem != 0) {
+            obj = new (mem) T_MenuHotspot(name, params);
+        }
+        scrollUpBtn = (T_MenuHotspot*)obj;
+    }
+    else if (strcmp(token, "AUTOCOMBINE") == 0) {
+        sscanf(line, " %s %d %d %d %d %d %d %s", token, &index, &params[0], &params[1], &params[2], &params[3], &params[4], name);
+        int* panelBase = (int*)((int)this + index * 0x18 + 0x130);
+        panelBase[0] = params[0];
+        panelBase[1] = params[1];
+        panelBase[2] = params[2];
+        panelBase[3] = params[3];
+        panelBase[4] = params[4];
+        panelBase[5] = DAT_0046aa30->FindState(name);
+    }
+    else if (strcmp(token, "HITAREA") == 0) {
+        sscanf(line, " %s %d %d %d %d %d", token, &index, &params[0], &params[1], &params[2], &params[3]);
+        int* slotBase = (int*)((int)this + index * 0x10 + 0xA8);
+        slotBase[0] = params[0];
+        slotBase[1] = params[1];
+        slotBase[2] = params[2];
+        slotBase[3] = params[3];
+    }
+    else if (strcmp(token, "END") == 0) {
+        return 1;
+    }
+    else {
+        Parser::LBLParse("SCI_Inventory");
+    }
+
+    return 0;
+}
+
 InvPanel::InvPanel() {}
 InvPanel::~InvPanel() {}
 

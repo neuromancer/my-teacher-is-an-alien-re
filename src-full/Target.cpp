@@ -157,7 +157,7 @@ void Target::Activate()
 
         Target::progressRange.start = 0;
         Target::active = 1;
-        Sprite::SetState2(Target::animRange.start);
+        Sprite::ResetAnimation(Target::animRange.start, 0);
 
         {
             Range temp = *(Range*)&animParam;
@@ -305,16 +305,16 @@ int Target::Update()
 
     switch (Target::pendingAction) {
     case 1:
-        if (Target::current_state == Target::animRange.end) {
+        if (Target::handle == Target::animRange.end) {
             g_ScoreManager_00435f20->score -= Target::hitMissPoints.end;
             Target::Deactivate();
             return 1;
         }
-        Sprite::SetState2(Target::current_state + 1);
+        Sprite::ResetAnimation(Target::handle + 1, 0);
         break;
     case 3:
         Target::active = 3;
-        Sprite::SetState2(Target::hitRange.start + Target::current_state);
+        Sprite::ResetAnimation(Target::hitRange.start + Target::handle, 0);
         if ((Target::targetFlags & 1) != 0) {
             Range temp = *(Range*)&hitOffset;
             Target::loc_y = temp.end;
@@ -405,7 +405,7 @@ void Target::OnProcessStart()
     
     sprintf(buffer, "FNAME %s", animFilename);
     Sprite::LBLParse(buffer);
-    Sprite::SetState(40);
+    Sprite::ConfigStates(40);
     
     flags = flags | 0x40;
     flags = flags & ~2;
@@ -497,7 +497,7 @@ int Target::LBLParse(char* line)
     else if (firstChar == 'B') {
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
-            SetRange(DAT_004362cc, value1, value2);
+            ConfigRange(DAT_004362cc, value1, value2, 1);
             animRange.end = DAT_004362cc;
             g_TargetBearingValue_004362c8 = value2;
             DAT_004362cc++;
@@ -566,7 +566,7 @@ int Target::LBLParse(char* line)
     else if (firstChar == 'K') {
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
-            SetRange(DAT_004362cc, value1, value2);
+            ConfigRange(DAT_004362cc, value1, value2, 1);
             if (hitRange.start == 0) {
                 hitRange.start = DAT_004362cc;
             }

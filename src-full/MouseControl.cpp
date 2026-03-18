@@ -138,7 +138,7 @@ void MouseControl::DrawCursor()
     if (sprite == 0) {
         final_x -= m_hotspots[-1].x;
     } else {
-        final_x -= m_hotspots[sprite->current_state].x;
+        final_x -= m_hotspots[sprite->handle].x;
     }
 
     int final_y;
@@ -151,7 +151,7 @@ void MouseControl::DrawCursor()
     if (sprite == 0) {
         final_y -= m_hotspots[-1].y;
     } else {
-        final_y -= m_hotspots[sprite->current_state].y;
+        final_y -= m_hotspots[sprite->handle].y;
     }
 
     sprite->Do(final_x, final_y, 1.0);
