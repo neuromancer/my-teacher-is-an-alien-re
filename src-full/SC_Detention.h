@@ -33,6 +33,7 @@ public:
     void Serialize(void* param);    // 0x40B0D0
     void HandlePractice();          // 0x40AC70
     void ResetAnimations();         // 0x40A130
+    void SendPeriodAction(int param);     // 0x40A620
     void ProcessPeriodAction(int param);  // 0x40AD80
 
     int field_A8[18];     // 0xA8-0xEF

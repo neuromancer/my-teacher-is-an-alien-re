@@ -144,7 +144,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
                 }
                 if (data != 0) {
                     *(int*)data = 0x46102c;
-                    ((InvSlotItem*)((int)data + 4))->~InvSlotItem();
+                    ((Rect*)((int)data + 4))->~Rect();
                     FreeMemory(data);
                 }
             }

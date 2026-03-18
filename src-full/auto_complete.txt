@@ -218,3 +218,88 @@
 0x4287E0
 0x4287F0
 0x42882B
+
+# SCI_IconBarModule destructor chain (sdtor + SEH funclets)
+0x401180
+0x4013A9
+
+# SCI_IconBarModule::Init SEH funclet
+0x401C22
+
+# RemoveCurrent/GetCurrentData COMDATs (inline duplicates)
+0x403520
+0x403620
+0x403CC0
+
+# ZBufferManager constructor SEH funclet
+0x403CAB
+
+# Parser/Handler SEH funclets
+0x4047AC
+0x404969
+0x405227
+
+# SC_SelectHotSpot SEH wrapper destructor + funclet
+0x405CF0
+0x405DCF
+
+# SEH wrapper dtor + funclet (vtable 0x46102c)
+0x4061E0
+0x406227
+
+# RemoveCurrent COMDAT + ListNode sdtor
+0x407180
+0x407220
+
+# SC_FireAlarm destructor SEH funclets (Rect/SlimeDim at various offsets)
+0x407511
+0x40751F
+0x40752D
+0x40753B
+0x407549
+0x407557
+0x407565
+
+# SC_FireAlarm SEH funclet + wrapper
+0x407B3C
+0x407B60
+
+# Adjustor thunks (JMP SC_FireAlarm::SendResultMessage)
+0x407E20
+0x407E30
+0x407E40
+
+# SC_Rats SEH funclets
+0x408255
+0x40825D
+
+# SEH funclets (ZBuffer dtor, Parser dtor, chained SEH dtor)
+0x408EC9
+0x40910A
+0x409AC7
+
+# SC_Detention SEH funclets (SpriteAction dtor)
+0x40A5E1
+0x40A6F8
+0x40AC5D
+0x40AD3A
+
+# SC_Detention::HandleInput40 SEH funclet
+0x40B2FC
+
+# SC_Wahoo SEH funclet + sdtor
+0x40B751
+0x40B760
+
+# SC_CombatBase SEH funclet
+0x40B9B4
+
+# SC_CombatBase destructor SEH funclet
+0x40BDB5
+
+# SlotPair sdtor (SC_Slime)
+0x40D0E0
+
+# SC_Slime destructor SEH funclets
+0x40D174
+0x40D18C

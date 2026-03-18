@@ -296,18 +296,18 @@ void SC_Slime::ResetSprites()
         sprite128->ResetAnimation(-1, 0);
     }
 
-    invSlots[0].field_0 = 0x40;
-    invSlots[0].field_4 = 0x18;
-    invSlots[0].field_8 = 0x60;
-    invSlots[0].field_C = 0x48;
-    invSlots[1].field_0 = 0xdd;
-    invSlots[1].field_4 = 0x19;
-    invSlots[1].field_8 = 0xfd;
-    invSlots[1].field_C = 0x49;
-    invSlot3.field_0 = 0x4c;
-    invSlot3.field_4 = 0x4d;
-    invSlot3.field_8 = 0xfb;
-    invSlot3.field_C = 0xb9;
+    invSlots[0].left = 0x40;
+    invSlots[0].top = 0x18;
+    invSlots[0].right = 0x60;
+    invSlots[0].bottom = 0x48;
+    invSlots[1].left = 0xdd;
+    invSlots[1].top = 0x19;
+    invSlots[1].right = 0xfd;
+    invSlots[1].bottom = 0x49;
+    invSlot3.left = 0x4c;
+    invSlot3.top = 0x4d;
+    invSlot3.right = 0xfb;
+    invSlot3.bottom = 0xb9;
 
     extern InputManager* DAT_0046aa08;
     if (DAT_0046aa08 != 0) {
@@ -454,6 +454,7 @@ void SC_Slime::CheckTimerExpired(Sprite* spr)
     field_170[1] = 1;
 }
 
+/* Function start: 0x40D0D0 */
 SlotPair::SlotPair() { field_0 = 0; field_4 = 0; }
 
 int DAT_00468bbc = 0;

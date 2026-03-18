@@ -133,7 +133,7 @@ void SC_Rats::Init(SC_Message* msg) {
                 }
                 if (removed != 0) {
                     *removed = 0x46102C;
-                    ((InvSlotItem*)((int)removed + 4))->~InvSlotItem();
+                    ((Rect*)((int)removed + 4))->~Rect();
                     FreeMemory(removed);
                 }
             }

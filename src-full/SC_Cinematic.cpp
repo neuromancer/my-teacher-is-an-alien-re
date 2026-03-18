@@ -188,7 +188,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
                     void* obj = list3->RemoveCurrent();
                     if (obj != 0) {
                         // vtable reset before free (no-op)
-                        ((InvSlotItem*)((char*)obj + 4))->~InvSlotItem();
+                        ((Rect*)((char*)obj + 4))->~Rect();
                         FreeMemory(obj);
                     }
                 }
@@ -290,7 +290,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                         void* obj = ((LinkedList*)list3)->RemoveCurrent();
                         if (obj != 0) {
                             // vtable reset before free (no-op)
-                            ((InvSlotItem*)((char*)obj + 4))->~InvSlotItem();
+                            ((Rect*)((char*)obj + 4))->~Rect();
                             FreeMemory(obj);
                         }
                     }

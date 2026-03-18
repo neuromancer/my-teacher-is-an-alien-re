@@ -33,7 +33,7 @@ public:
     int field_C0;           // 0xC0
     int field_C4;           // 0xC4
     int field_C8;           // 0xC8
-    InvSlotItem slot_CC;    // 0xCC-0xDB
+    Rect slot_CC;    // 0xCC-0xDB
     int field_DC;           // 0xDC
     int field_E0;           // 0xE0
     int field_E4;           // 0xE4
@@ -46,7 +46,7 @@ public:
     int field_10C;          // 0x10C
     int field_110;          // 0x110
     SlimeDim dim_114;       // 0x114-0x11B
-    InvSlotItem slot_11C;   // 0x11C-0x12B
+    Rect slot_11C;   // 0x11C-0x12B
     SlimeDim dim_12C;       // 0x12C-0x133
     int field_134;          // 0x134
     int field_138;          // 0x138

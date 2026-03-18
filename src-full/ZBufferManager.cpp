@@ -817,7 +817,7 @@ void ZBufferManager::ProcessRenderQueues()
 
             if (local_14 != 0) {
                 *(int*)local_14 = 0x46102c;
-                ((InvSlotItem*)((char*)local_14 + 4))->~InvSlotItem();
+                ((Rect*)((char*)local_14 + 4))->~Rect();
                 FreeMemory(local_14);
             }
         }

@@ -3,6 +3,8 @@
 
 #include "IconBar.h"
 #include "Sprite.h"
+#include "SpriteAction.h"
+#include "InvSlotItem.h"
 
 class SC_Message;
 class TimeOut;
@@ -33,12 +35,8 @@ public:
     int field_BC;               // 0xBC
     int field_C0;               // 0xC0
     int skipActionsCount;       // 0xC4 — if nonzero, skip NUM_ACTIONS increment
-    int field_C8;               // 0xC8
-    int field_CC;               // 0xCC
-    int boundLeft;              // 0xD0 — boundary rect left
-    int boundTop;               // 0xD4 — boundary rect top
-    int boundRight;             // 0xD8 — boundary rect right
-    int boundBottom;            // 0xDC — boundary rect bottom
+    SlimeDim field_C8;          // 0xC8 — SlimeDim sub-object
+    Rect boundRect;             // 0xD0 — boundary rect
     TimeOut* timeout;           // 0xE0 — inactivity timeout
     int field_E4;               // 0xE4
     MMPlayer* mmPlayer;         // 0xE8 — background animation/cursor

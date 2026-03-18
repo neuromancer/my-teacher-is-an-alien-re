@@ -47,7 +47,7 @@ public:
     void* FindItem(int itemID);                 // 0x43F490
     int* FindItemInList(int itemID);            // 0x43F7F0
 
-    InvSlotItem slots[8];         // 0xA8-0x127 — inventory slot hit-test rectangles
+    Rect slots[8];         // 0xA8-0x127 — inventory slot hit-test rectangles
     int selectedSlot;              // 0x128 — currently selected slot index (-1 = none)
     int scrollOffset;              // 0x12C — scroll position in item list
     InvPanel panels[3];            // 0x130-0x177 — display panels

@@ -50,7 +50,7 @@ public:
     Sprite* spriteCC;   // 0xCC - sprite
     int field_D0;       // 0xD0
     int field_D4;       // 0xD4
-    InvSlotItem invSlots[2];  // 0xD8-0xF7 (2 x 16 bytes)
+    Rect invSlots[2];  // 0xD8-0xF7 (2 x 16 bytes)
     SlotPair pairs1[2];       // 0xF8-0x107 (2 x 8 bytes)
     SlotPair pairs2[2];       // 0x108-0x117 (2 x 8 bytes)
     Sprite* sprite118;  // 0x118
@@ -63,7 +63,7 @@ public:
     int field_134;      // 0x134
     int field_138;      // 0x138
     int field_13C;      // 0x13C
-    InvSlotItem invSlot3;     // 0x140-0x14F (16 bytes)
+    Rect invSlot3;     // 0x140-0x14F (16 bytes)
     int field_150;      // 0x150 - object pointer
     int field_154;      // 0x154
     int field_158;      // 0x158

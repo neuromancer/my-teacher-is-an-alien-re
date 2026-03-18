@@ -321,8 +321,8 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     {
         int inSlot;
-        if (slot_CC.field_0 > coords[0] || slot_CC.field_8 < coords[0] ||
-            slot_CC.field_4 > coords[1] || slot_CC.field_C < coords[1]) {
+        if (slot_CC.left > coords[0] || slot_CC.right < coords[0] ||
+            slot_CC.top > coords[1] || slot_CC.bottom < coords[1]) {
             inSlot = 0;
         } else {
             inSlot = 1;

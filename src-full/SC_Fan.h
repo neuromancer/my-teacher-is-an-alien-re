@@ -48,7 +48,7 @@ public:
     void* field_C4;       // 0xC4 - Palette*
     void* field_C8;       // 0xC8 - Sprite*
     void* field_CC;       // 0xCC - Sprite*
-    InvSlotItem invSlot_D0; // 0xD0 - InvSlotItem (16 bytes)
+    Rect invSlot_D0; // 0xD0 - Rect (16 bytes)
     void* field_E0;       // 0xE0 - Sprite*
     void* field_E4;       // 0xE4 - Sprite*
     void* field_E8;       // 0xE8 - Sprite*
@@ -57,11 +57,11 @@ public:
     int field_F4;         // 0xF4
     int field_F8;         // 0xF8
     int field_FC;         // 0xFC
-    InvSlotItem invSlots_100[4]; // 0x100 - TypedArray (4 x 16 bytes)
+    Rect invSlots_100[4]; // 0x100 - TypedArray (4 x 16 bytes)
     int field_140;        // 0x140
     void* field_144;      // 0x144
-    InvSlotItem invSlot_148; // 0x148 - InvSlotItem (16 bytes)
-    InvSlotItem invSlot_158; // 0x158 - InvSlotItem (16 bytes)
+    Rect invSlot_148; // 0x148 - Rect (16 bytes)
+    Rect invSlot_158; // 0x158 - Rect (16 bytes)
     FanDim dim_168;       // 0x168 - FanDim (8 bytes, trivial dtor)
     SlimeDim dim_170;     // 0x170 - SlimeDim (8 bytes)
     int field_178;        // 0x178

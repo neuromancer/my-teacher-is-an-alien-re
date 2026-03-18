@@ -533,7 +533,7 @@ void SC_Fan::RenderFan() {
         if (dimVal != 0 && dim_168.field_0 >= dimVal) {
             (DAT_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
-                invSlot_158.field_0, invSlot_158.field_4, invSlot_158.field_8, invSlot_158.field_C);
+                invSlot_158.left, invSlot_158.top, invSlot_158.right, invSlot_158.bottom);
 
             if (*(int*)field_BC == 1) {
                 if (((TimeOut*)field_BC)->IsTimeOut()) {
@@ -557,11 +557,11 @@ void SC_Fan::RenderFan() {
 
             (DAT_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
-                invSlot_158.field_0, invSlot_158.field_4, offset, invSlot_158.field_C);
+                invSlot_158.left, invSlot_158.top, offset, invSlot_158.bottom);
 
             (DAT_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0 + offset, dim_170.field_4, 2, 1.0,
-                offset, invSlot_148.field_4, invSlot_148.field_8, invSlot_148.field_C);
+                offset, invSlot_148.top, invSlot_148.right, invSlot_148.bottom);
         }
     }
 
@@ -688,14 +688,14 @@ int SC_Fan::LBLParse(char* param_1) {
             obj = new (mem) VBuffer(path, 0);
         }
         field_144 = obj;
-        invSlot_148.field_8 = 0x10D;
-        invSlot_148.field_0 = 0;
-        invSlot_148.field_4 = 0;
-        invSlot_158.field_0 = 0;
-        invSlot_158.field_8 = 0x10D;
-        invSlot_148.field_C = 0x13;
-        invSlot_158.field_4 = 0x14;
-        invSlot_158.field_C = 0x27;
+        invSlot_148.right = 0x10D;
+        invSlot_148.left = 0;
+        invSlot_148.top = 0;
+        invSlot_158.left = 0;
+        invSlot_158.right = 0x10D;
+        invSlot_148.bottom = 0x13;
+        invSlot_158.top = 0x14;
+        invSlot_158.bottom = 0x27;
     }
     else if (strcmp(local_38, "NUM_BOLTS_REMAINING") == 0) {
         /* recognized but no action */

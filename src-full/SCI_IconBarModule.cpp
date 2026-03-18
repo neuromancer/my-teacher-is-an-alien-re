@@ -22,6 +22,7 @@ extern int DAT_00468764;
 #include "Hotspot.h"
 extern void __fastcall FUN_004459a0(void*, int, int);
 
+extern void* __fastcall FUN_004036a0(void*);
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" int FileExists(const char*);
@@ -40,16 +41,78 @@ extern ZBufferManager* DAT_0046aa24;
 /* Function start: 0x401000 */
 SCI_IconBarModule::SCI_IconBarModule() {
     memset(&field_A8, 0, 0x22 * 4);
-    boundLeft = 0;
-    boundTop = 0;
-    boundRight = 0;
-    boundBottom = 0;
+    boundRect.left = 0;
+    boundRect.top = 0;
+    boundRect.right = 0;
+    boundRect.bottom = 0;
     handlerId = 0x20;
     field_B4 = -1;
     timeout = new TimeOut();
 }
 
+/* Function start: 0x4011A0 */
 SCI_IconBarModule::~SCI_IconBarModule() {
+    Sprite** p;
+    int i;
+    void* data;
+
+    if (field_E4 != 0) {
+        ((Palette*)field_E4)->~Palette();
+        FreeMemory((void*)field_E4);
+        field_E4 = 0;
+    }
+
+    if (mmPlayer != 0) {
+        mmPlayer->~MMPlayer();
+        FreeMemory(mmPlayer);
+        mmPlayer = 0;
+    }
+
+    i = 15;
+    p = icons;
+    do {
+        if (*p != 0) {
+            ((T_Hotspot*)*p)->~T_Hotspot();
+            FreeMemory(*p);
+            *p = 0;
+        }
+        p++;
+        i--;
+    } while (i != 0);
+
+    LinkedList* list = (LinkedList*)field_128;
+    if (list != 0 && list->head != 0) {
+        list->current = list->head;
+        while (list->head != 0) {
+            data = list->RemoveCurrent();
+            if (data != 0) {
+                ((SpriteAction*)data)->~SpriteAction();
+                FreeMemory(data);
+            }
+        }
+    }
+
+    list = (LinkedList*)field_128;
+    if (list != 0) {
+        if (list->head != 0) {
+            list->current = list->head;
+            while (list->head != 0) {
+                data = FUN_004036a0(list);
+                if (data != 0) {
+                    ((SpriteAction*)data)->~SpriteAction();
+                    FreeMemory(data);
+                }
+            }
+        }
+        FreeMemory(list);
+        field_128 = 0;
+    }
+
+    if (timeout != 0) {
+        timeout->~TimeOut();
+        FreeMemory(timeout);
+        timeout = 0;
+    }
 }
 
 /* Function start: 0x4013E0 */
@@ -197,8 +260,8 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         field_BC = 0;
         mode = 0;
-        field_C8 = 0x280;
-        field_CC = 0x1E0;
+        field_C8.field_0 = 0x280;
+        field_C8.field_4 = 0x1E0;
 
         // Parse static scene
         sprintf(key, "[SEARCHSCREEN%d_STATIC]", moduleParam);
@@ -282,7 +345,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             arr = arr + 9;
         } while ((unsigned int)arr < (unsigned int)&DAT_004733e8);
 
-        SetVideoRes(field_C8, field_CC);
+        SetVideoRes(field_C8.field_0, field_C8.field_4);
 
         // ZBufferManager queue cleanup
         if (DAT_0046aa24->m_state != 2) {
@@ -465,7 +528,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
             int mx = ((int*)msg)[7];
             int my = ((int*)msg)[8];
             int inRect;
-            if (boundLeft > mx || boundRight < mx || boundTop > my || boundBottom < my) {
+            if (boundRect.left > mx || boundRect.right < mx || boundRect.top > my || boundRect.bottom < my) {
                 inRect = 0;
             } else {
                 inRect = 1;
