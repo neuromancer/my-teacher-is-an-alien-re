@@ -1,4 +1,5 @@
 #include "SC_Roach.h"
+#include <new.h>
 #include "SC_Question.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
@@ -9,8 +10,23 @@
 
 extern "C" extern GameState* DAT_0046aa30;
 extern void* __fastcall FUN_00421880(void*, int);            // progress obj ctor
-extern void __fastcall FUN_00418690(void*, int, int);        // crystal ctor
 extern void __fastcall FUN_0044c740(void*);                  // Sprite dtor
+extern char* DAT_0046aa00;
+
+/* Function start: 0x418690 */
+NavCrystal::NavCrystal(int id) {
+    memset(&crystalId, 0, 0x114 * 4);
+    crystalId = id;
+    sprintf(DAT_0046aa00, "puz\\navcrystal\\crytls_%d.smk", id + 1);
+    sprite = new Sprite(DAT_0046aa00);
+    sprite->flags |= 0x40;
+    sprite->priority = 1;
+    sprite->ConfigStates(4);
+    sprite->ConfigRange(0, 1, 1, 1);
+    sprite->ConfigRange(1, 0xB, 0xB, 1);
+    sprite->ConfigRange(2, 0x15, 0x15, 1);
+    sprite->ConfigRange(3, 0x1F, 0x1F, 1);
+}
 
 /* Function start: 0x418C20 */
 SC_Roach::SC_Roach()
@@ -348,12 +364,11 @@ int SC_Roach::LBLParse(char* line)
         }
         // Allocate new crystal (0x4E0 bytes)
         void* mem = operator new(0x4E0);
-        int* obj = 0;
+        NavCrystal* obj = 0;
         if (mem != 0) {
-            FUN_00418690(mem, 0, idx);
-            obj = (int*)mem;
+            obj = new(mem) NavCrystal(idx);
         }
-        crystals[idx] = obj;
+        crystals[idx] = (int*)obj;
         Parser::ProcessFile((Parser*)obj, this, (char*)0);
     } else if (strcmp(label, "END") == 0) {
         return 1;

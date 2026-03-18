@@ -30,6 +30,12 @@ public:
     Handler31();
     ~Handler31();
 
+    virtual int LBLParse(char* line);            // 0x418060
+    virtual int AddMessage(SC_Message* msg);    // 0x417750
+    virtual int ShutDown(SC_Message* msg);     // 0x4173D0
+    virtual void Update(int param1, int param2); // 0x417500
+    int CheckDuplicateQuestion(int param);     // 0x417D50
+
     int field_A8;       // 0xA8
     int field_AC;       // 0xAC
     int field_B0;       // 0xB0

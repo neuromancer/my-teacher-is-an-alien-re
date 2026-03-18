@@ -2,8 +2,26 @@
 #define SC_ROACH_H
 
 #include "SC_Combat.h"
+#include "SpriteAction.h"
 
 class Sprite;
+
+// NavCrystal - Crystal piece for SC_Roach puzzle
+// Constructor: 0x418690, LBLParse: 0x418850
+// Size: 0x4DC
+// Vtable: 0x461320
+// Extends Parser
+class NavCrystal : public Parser {
+public:
+    NavCrystal(int id);
+
+    int crystalId;               // 0x90
+    int field_94;                // 0x94
+    int pad_98[0x100];           // 0x98-0x497
+    SlimeDim dimArray1[4];       // 0x498-0x4B7
+    SlimeDim dimArray2[4];       // 0x4B8-0x4D7
+    Sprite* sprite;              // 0x4D8
+};
 
 struct CrystalSource {
     int hitboxLeft;   // +0x00

@@ -439,6 +439,24 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
     CallBlitter2(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, (VBuffer*)param_7);
 }
 
+/* Function start: 0x4117F0 */
+void VBuffer::ClipAndBlitRegion(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
+{
+    GlyphRect local_2c(clip_x1, clip_y1, clip_x2, clip_y2);
+    GlyphRect local_1c(param_1, param_3, param_2, param_4);
+
+    if (param_1 == 0x38) {
+        if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
+            return;
+        }
+    } else {
+        if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
+            return;
+        }
+    }
+    CallBlitter2(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, (VBuffer*)param_7);
+}
+
 /* Function start: 0x4118E0 */
 void VBuffer::ClipAndBlitReversed(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7)
 {

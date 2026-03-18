@@ -546,4 +546,57 @@ void Parser::HandleToken(int tokenType, char* line) {
     // TODO: Full implementation needed (656 lines of assembly)
 }
 
-void Parser::SubstituteVars(char* src, char* dst) {}
+extern char DAT_00469168[160];
+
+/* Function start: 0x414040 */
+void __stdcall ParseGosubParams(char* line) {
+    int done;
+    int i;
+    char* start;
+    char* end;
+    int len;
+
+    done = 0;
+    i = 0;
+    do {
+        start = line + 1;
+        end = strchr(start, ',');
+        if (end == 0) {
+            end = strchr(start, ')');
+            done = 1;
+            if (end == 0) {
+                ShowError(line);
+            }
+        }
+        len = end - start;
+        if (start == 0 || end == 0 || len <= 0) {
+            ShowError(line);
+        }
+        strncpy(&DAT_00469168[i], start, len);
+        DAT_00469168[i + len] = 0;
+        i += 0x20;
+        if (start == 0 || done != 0) break;
+        line = end;
+    } while (1);
+}
+
+/* Function start: 0x4140F0 */
+void Parser::SubstituteVars(char* src, char* dst) {
+    char* pos;
+    int varIdx;
+    char* varStr;
+    int varLen;
+
+    *dst = 0;
+    while (1) {
+        pos = strchr(src, '%');
+        if (pos == 0) break;
+        strncat(dst, src, pos - src);
+        varIdx = *(pos + 1) - '1';
+        varStr = &DAT_00469168[varIdx * 0x20];
+        varLen = strlen(varStr);
+        strcat(dst, varStr);
+        src = pos + 2;
+    }
+    strncat(dst, src, -1 - (int)src);
+}

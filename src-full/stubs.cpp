@@ -245,9 +245,35 @@ int DAT_00469128 = 0;
 void* DAT_00469138 = 0;    // FilePosCache LRU node
 int DAT_0046912c = 0;      // FilePosCache hit counter
 int DAT_00469130 = 0;      // FilePosCache miss counter
+int DAT_00469140 = 0;
+int DAT_0046913c = 0;
+char DAT_00469310[64] = "cfg\\miscache.dat";
+char DAT_00469304[64] = "mis\\*.mis";
+char DAT_00469300[4] = "r";
+char DAT_0046933c[4] = "w";
+char DAT_004692f0[32] = " %s %s %lu %d";
+char DAT_004692e8[16] = "mis\\%s";
+char DAT_00469324[32] = "%-32s %-32s %4lu %4d \n";
+char DAT_00468448[8] = " %s ";
 
-void SoundTracker::Init() {}
-void SoundTracker::Cleanup() {}
+extern "C" void FUN_00455130(char*) {}
+extern "C" int FUN_00425fa0(char*) { return 0; }
+extern "C" void* FUN_00455110(char*, char*) { return 0; }
+extern "C" char* FUN_00426400(char*, int, void*) { return 0; }
+extern "C" void FUN_00426490(char*, void*) {}
+extern "C" int FUN_00454850(char*, ...) { return 0; }
+extern "C" long FUN_00454d20(char*, void*) { return -1; }
+extern "C" int FUN_00454e70(long, void*) { return -1; }
+extern "C" void FUN_00455040(void*) {}
+extern "C" void FUN_004550b0(void*, int*) {}
+extern "C" int FUN_00454510(char*, ...) { return 0; }
+void __fastcall FUN_00421880(void*) {}
+void __fastcall FUN_004218c0(void*) {}
+int __fastcall FUN_004218e0(void*) { return 0; }
+void FUN_00412210(char*, char*, int, int) {}
+
+// Parser globals
+char DAT_00469168[160] = {0};
 
 // ============================================================================
 // Implemented functions (with real code)

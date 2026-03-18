@@ -303,3 +303,84 @@
 # SC_Slime destructor SEH funclets
 0x40D174
 0x40D18C
+
+# SC_Slime SEH funclets (chained to 0x407B60)
+0x40D9E7
+0x40DAD6
+
+# SC_DodgeOrville sdtor
+0x40F170
+
+# SC_DodgeOrville destructor SEH funclets
+0x40F211
+0x40F23B
+0x40F261
+
+# SC_DodgeOrville SEH funclets (chained)
+0x40F89C
+0x40F98B
+
+# SC_DodgeOrville adjustor thunk
+0x40FFB0
+
+# VBuffer/SC_Fan SEH funclets
+0x4114DC
+0x4116EF
+
+# VBuffer ClipAndBlit SEH funclets
+0x4117CF
+0x4117E1
+0x4118C2
+
+# VBuffer SEH funclets
+0x4119C4
+0x411BCA
+0x411BDC
+0x411FB6
+
+# Parser destructor SEH funclets
+0x412880
+0x412892
+
+# Parser SEH funclet + wrapper
+0x4128E1
+0x4128F0
+
+# Parser/Handler SEH funclets
+0x412E8E
+0x412EA3
+0x41327D
+
+# Handler12 SEH funclet (Timer dtor)
+0x41402F
+
+# Handler12 sdtor
+0x4142E0
+
+# Handler12 SEH funclets
+0x41434A
+0x414362
+
+# Handler12/SC_Sound SEH funclet
+0x4146FB
+
+# SEH wrapper sdtor (vtable 0x46102c)
+0x414710
+
+# Handler31 sdtor
+0x416FA0
+
+# SCI_Dialog SEH funclet (IconBar dtor)
+0x41710A
+
+# Parser destructor SEH funclets
+0x418E02
+0x418E0D
+0x418E22
+
+# SoundPool destructor COMDATs
+0x414180
+0x4141D0
+
+# RemoveCurrent COMDAT
+0x418540

@@ -44,6 +44,7 @@ public:
     void DumpHandleInfo();                  // 0x410F40
     void BlitTransparentRegion(int, int, int, int, int, int, int);  // 0x411530
     void BlitReversedRows(int, int, int, int, int, int, int);      // 0x4115F0
+    void ClipAndBlitRegion(int, int, int, int, int, int, int);     // 0x4117F0
     void ClipAndBlitReversed(int, int, int, int, int, int, int);   // 0x4118E0
 
 
