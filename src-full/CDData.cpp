@@ -159,12 +159,219 @@ extern "C" int __cdecl FUN_00430310(const char* path, int param_2) {
 }
 
 extern void* DAT_0046aa1c; // CDData* for path resolution
-extern int __cdecl FUN_004341f0(char*);
 extern int __cdecl GetFileSize(char*);
-extern void __cdecl FUN_004342d0(char*, int);
-extern void __fastcall FUN_00433230(void*, int, char*);
 extern "C" int FileExists(const char*);
 extern "C" void WriteToLog(const char*, ...);
+
+// FileCache globals
+#include "MemoryCache.h"
+extern MemoryCache* DAT_0046b78c;  // cache pointer
+extern int DAT_0046b784;   // cache hit counter
+extern int DAT_0046b788;   // cache miss counter
+extern int DAT_0046b790;   // cache eviction threshold
+extern int DAT_00473440;   // total cached size
+extern int DAT_00473444;   // cache size limit
+
+extern "C" int __cdecl FUN_004260a0(char*);  // delete file + rmdir parent
+extern "C" void FUN_00434520();              // cache error handler 1
+extern "C" void FUN_004345b0();              // cache error handler 2
+extern int DAT_004719c0;
+
+/* Function start: 0x434030 */
+void __cdecl FileCacheEntryCleanup(void* entries, int count) {
+    int* ptr;
+    char* name;
+
+    if (count == 0) return;
+    ptr = (int*)entries;
+    do {
+        count--;
+        name = (char*)*ptr;
+        if (name != 0) {
+            if (FUN_004260a0(name) == -1) {
+                FUN_00434520();
+                FUN_004345b0();
+                WriteToLog("HDCache::Unable to delete '%s' (%d)", name, DAT_004719c0);
+            }
+            FreeMemory(name);
+            *ptr = 0;
+        }
+        ptr++;
+    } while (count != 0);
+}
+
+/* Function start: 0x4344B0 */
+void __cdecl FileCacheCleanup() {
+    int* cache = (int*)DAT_0046b78c;
+    if (cache == 0) return;
+
+    int* node = (int*)cache[0];
+    while (node != 0) {
+        FileCacheEntryCleanup((void*)(node + 2), 1);
+        node = (int*)node[0];
+    }
+    cache[2] = 0;
+    cache[3] = 0;
+    cache[1] = 0;
+    cache[0] = 0;
+    int* block = (int*)cache[4];
+    while (block != 0) {
+        int* next = (int*)block[0];
+        FreeMemory(block);
+        block = next;
+    }
+    cache[4] = 0;
+    DAT_0046b788 = 0;
+    DAT_0046b784 = 0;
+}
+
+/* Function start: 0x4341F0 */
+int __cdecl FileCacheLookup(char* name) {
+    int* node;
+
+    if (DAT_0046b78c == 0) {
+        return 0;
+    }
+    node = (int*)((int*)DAT_0046b78c)[0];
+    while (node != 0) {
+        int* next = (int*)node[0];
+        char* entryName = (char*)node[2];
+        if (strcmp(entryName, name) == 0) {
+            DAT_0046b784++;
+            *(int*)((char*)entryName + 0x24) += 1;
+            *(int*)((char*)entryName + 0x28) = GetTickCount();
+            // Move to front of LRU
+            if (((int*)DAT_0046b78c)[0] != (int)node) {
+                int* prev = (int*)node[1];
+                int* nxt = (int*)node[0];
+                prev[0] = (int)nxt;
+                if (nxt != 0) {
+                    nxt[1] = (int)prev;
+                } else {
+                    ((int*)DAT_0046b78c)[1] = (int)prev;
+                }
+                node[0] = ((int*)DAT_0046b78c)[0];
+                *(int*)(((int*)DAT_0046b78c)[0] + 4) = (int)node;
+                ((int*)DAT_0046b78c)[0] = (int)node;
+                node[1] = 0;
+            }
+            return 1;
+        }
+        node = next;
+    }
+    DAT_0046b788++;
+    return 0;
+}
+
+/* Function start: 0x4342D0 */
+void __cdecl FileCacheRegister(char* name, int size) {
+    int* cache;
+    int* node;
+    char* entry;
+
+    if (DAT_0046b78c == 0) return;
+
+    DAT_00473440 += size;
+
+    // Evict if over limit
+    if (DAT_00473444 != 0 && DAT_00473444 <= DAT_00473440) {
+        do {
+            cache = (int*)DAT_0046b78c;
+            node = (int*)cache[1]; // tail
+            entry = (char*)node[2];
+            int entrySize = *(int*)(entry + 0x20);
+            DAT_00473440 -= entrySize;
+            if (DAT_00473440 <= 0) DAT_00473440 = 0;
+
+            // Remove from tail
+            int* prev = (int*)node[1];
+            cache[1] = (int)prev;
+            if (prev != 0) {
+                prev[0] = 0;
+            } else {
+                cache[0] = 0;
+            }
+
+            FileCacheEntryCleanup(entry, 1);
+
+            // Return node to free list
+            node[0] = cache[3];
+            cache[3] = (int)node;
+            cache[2]--;
+        } while (cache[2] > 0 && DAT_0046b790 < DAT_00473440);
+    }
+
+    // Allocate new entry (0x2C bytes)
+    entry = (char*)operator new(0x2C);
+    if (entry != 0) {
+        strcpy(entry, name);
+        *(int*)(entry + 0x20) = size;
+        *(int*)(entry + 0x24) = 0;
+        *(int*)(entry + 0x28) = GetTickCount();
+    }
+
+    // Get a free node from pool
+    cache = (int*)DAT_0046b78c;
+    if (cache[3] == 0) {
+        // Allocate new block of nodes
+        int blockSize = cache[5];
+        int* block = (int*)operator new(blockSize * 12 + 4);
+        block[0] = cache[4];
+        cache[4] = (int)block;
+        int cnt = blockSize - 1;
+        int* p = block + blockSize * 3 - 2;
+        while (cnt >= 0) {
+            p[0] = cache[3];
+            cache[3] = (int)p;
+            p -= 3;
+            cnt--;
+        }
+    }
+    node = (int*)cache[3];
+    cache[3] = node[0];
+    node[1] = 0;
+    node[0] = (int)(int*)cache[0]; // was head
+    cache[2]++;
+    node[2] = 0;
+    {
+        int dummy = 0;
+        do { int tmp = dummy; dummy--; if (tmp == 0) break; } while (1);
+    }
+    node[2] = (int)entry;
+
+    if (cache[0] != 0) {
+        *(int*)(cache[0] + 4) = (int)node;
+    } else {
+        cache[1] = (int)node;
+    }
+    cache[0] = (int)node;
+}
+
+extern "C" char* FormatAssetPath(char* format, ...);
+extern "C" int __cdecl CopyFileContent(const char*, const char*);
+
+/* Function start: 0x433230 */
+int CDData::ResolvePath(char* name) {
+    char drive[260];
+    char pathBuf[260];
+
+    FormatAssetPath(name);
+    if (field_190[0] == 0) {
+        return 0;
+    }
+    if (FileExists(name) != 0) {
+        return 0;
+    }
+
+    _splitpath(name, 0, pathBuf, 0, drive);
+    if (_chdir(pathBuf) != 0) {
+        _mkdir(drive);
+    } else {
+        _chdir("C:\\");
+    }
+    CopyFileContent(name, (char*)((int)this + 0x195));
+    return 1;
+}
 
 /* Function start: 0x4260F0 */
 extern "C" char* FormatAssetPath(char* format, ...)
@@ -186,7 +393,7 @@ char* ResolveAssetPath(char* name) {
     char* basePath = (char*)((int)DAT_0046aa1c + 0x21a);
     sprintf(basePath, "%s", name);
 
-    if (FUN_004341f0(basePath) != 0) {
+    if (FileCacheLookup(basePath) != 0) {
         return basePath;
     }
     if (FileExists(basePath) != 0) {
@@ -200,8 +407,8 @@ char* ResolveAssetPath(char* name) {
         WriteToLog("missing file %s", resolved);
         return basePath;
     }
-    FUN_004342d0(basePath, size);
-    FUN_00433230(DAT_0046aa1c, 0, basePath);
+    FileCacheRegister(basePath, size);
+    ((CDData*)DAT_0046aa1c)->ResolvePath(basePath);
     return basePath;
 }
 
@@ -257,39 +464,6 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
     return 0;
 }
 
-/* Function start: 0x421F90 */ /* DEMO ONLY - no full game match */
-int CDData::ResolvePath(char* param_1) {
-    char local_104[260];
-    int len;
-
-    CDData_FormatPath(param_1);
-    CDData_SetResolvedPath(param_1);
-
-    if (cdIdentifier[0] == 0) {
-        return 0;
-    }
-
-    if (FileExists(field_190 + 0x45) != 0) {
-        return 0;
-    }
-
-    ParsePath(param_1, 0, local_104, 0, 0);
-
-    if (local_104[0] != 0) {
-        len = strlen(local_104);
-        local_104[len - 1] = 0;
-    }
-
-    if (chdir(local_104) == 0) {
-        chdir("C:\\"); 
-    } else {
-        mkdir(local_104);
-    }
-
-    CopyFileContent(cdIdentifier + 5, field_190 + 0x45);
-    _flushall();
-
-    return 1;
-}
+// FUN_00421F90 = CDData::ResolvePath (DEMO ONLY) — replaced by 0x433230 full game version above
 
 CDData::~CDData() {}

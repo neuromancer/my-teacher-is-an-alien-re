@@ -16,7 +16,7 @@
 extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern void __fastcall FUN_0040b760(void*, int, int);  // ZBuffer node cleanup
+// FUN_0040b760 = VBuffer sdtor — callers updated
 // FUN_00404b80 = LinkedList::GetCurrentData — callers updated
 // FUN_00404d70 = ListNode sdtor — callers updated to use delete
 extern int DAT_0046ae78;
@@ -100,7 +100,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
                 int* item = (int*)((LinkedList*)list2)->RemoveCurrent();
                 if (item != 0) {
                     if (*(int*)((int)item + 4) != 0) {
-                        FUN_0040b760((void*)*(int*)((int)item + 4), 0, 1);
+                        delete (VBuffer*)*(int*)((int)item + 4);
                         *(int*)((int)item + 4) = 0;
                     }
                     if (*(int*)((int)item + 8) != 0) {
@@ -172,16 +172,15 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     SendGameMessage(5, bgSoundId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
 }
 
-extern void __fastcall FUN_00431030(void*, int, int*);   // GameEngine::DispatchAction
+#include "GameEngine.h"
 extern "C" extern int DAT_0046a6ec;                       // GameEngine instance
-extern void __fastcall FUN_0044c9d0(void*);               // Sprite::Destroy
 extern SpriteAction DAT_00472d58;                          // global SpriteAction
 
 /* Function start: 0x439F30 */
 int SC_ExtBridge::ShutDown(SC_Message* msg)
 {
     SpriteAction* action = new SpriteAction(5, 0x458, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
-    FUN_00431030((void*)DAT_0046a6ec, 0, (int*)action);
+    ((GameEngine*)DAT_0046a6ec)->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         FreeMemory(action);
@@ -189,7 +188,7 @@ int SC_ExtBridge::ShutDown(SC_Message* msg)
 
     if (DAT_0046ae78 != 0) {
         if (DAT_0046ae70 != 0 && DAT_0046ae70->sprite != 0) {
-            FUN_0044c9d0(DAT_0046ae70->sprite);
+            DAT_0046ae70->sprite->StopAnimationSound();
         }
         int* vtbl = *(int**)DAT_0046ae78;
         ((void (__fastcall*)(int*, int))vtbl[16])((int*)DAT_0046ae78, 0);
@@ -198,9 +197,43 @@ int SC_ExtBridge::ShutDown(SC_Message* msg)
     return 0;
 }
 
+#include "mCNavigator.h"
+extern int DAT_0046bcd0[];
+#include "MouseControl.h"
+#include "InputManager.h"
+extern MouseControl* DAT_0046aa18;
+extern InputManager* DAT_0046aa08;
+
 /* Function start: 0x43A030 */
 void SC_ExtBridge::Update(int p1, int p2)
 {
+    Sprite* spr;
+    int mouseVal;
+    int idx;
+
+    if (handlerId == p2) {
+        if (DAT_0046ae70->Update() == 0) {
+            spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+            if (spr != 0 && *(int*)((char*)spr + 0x98) != -1) {
+                int* pMouse = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+                if (pMouse == 0) {
+                    mouseVal = 0;
+                } else {
+                    mouseVal = *pMouse * 3;
+                }
+                idx = mouseVal / *(int*)((char*)this + 0xB4);
+                if (idx < 0) {
+                    idx = 0;
+                } else if (idx > 2) {
+                    idx = 2;
+                }
+                if (spr != 0) {
+                    spr->ResetAnimation(DAT_0046bcd0[idx], 0);
+                }
+                DAT_0046aa18->DrawCursor();
+            }
+        }
+    }
 }
 
 /* Function start: 0x43A0C0 */

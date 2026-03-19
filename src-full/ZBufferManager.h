@@ -27,6 +27,7 @@ public:
     void UpdateScreen();          // 0x41C960
     void ShowSubtitle(char* text, int x, int y, int duration, int font); // 0x41C000
     void DrawRect(int, int, int, int, int, int, int); // 0x41C130
+    void ShowText(char* text, int x, int y, int priority, int color); // 0x404230
 
     // Methods previously attributed to "SoundManager"
     void DrawVBufferRegion(void* data, int priority, int x, int y, int mode, double scale,

@@ -38,8 +38,6 @@
 #include <stdio.h>
 #include <string.h>
 
-extern void __fastcall FUN_00444af0(void*);
-
 /* Function start: 0x424050 */
 GameLoop::~GameLoop()
 {
@@ -58,8 +56,7 @@ int GameLoop::LBLParse(char* param_1) {
         ParseSpriteAction(action, this);
         EnqueueSpriteAction(action);
         if (action != 0) {
-            FUN_00444af0(action);
-            FreeMemory(action);
+            delete (SpriteAction*)action;
         }
     }
     else if (strcmp(local_24, "END") == 0) {

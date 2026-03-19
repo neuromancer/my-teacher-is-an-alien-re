@@ -26,6 +26,7 @@ public:
     void Serialize(void* param);
     void SetMaxStates(int count);
     void ValidateIndex(int idx);      // 0x409F20
+    void SetFromAction(int* action);  // 0x433CB0
     int GetStateValue(int);           // get state value by index
     int FindLabel(char* name);        // find label index (0x433AE0)
     int FUN_00433bb0(int*);           // state check (0x433BB0)

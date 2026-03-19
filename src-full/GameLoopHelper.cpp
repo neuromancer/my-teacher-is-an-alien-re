@@ -2,8 +2,27 @@
 #include <string.h>
 
 extern "C" void WriteToLog(const char*, ...);
-extern void __cdecl FUN_0041a6f0(void* data, int count);
-extern int __cdecl FUN_0041a6d0(void* a, void* b);
+extern void FreeMemory(void*);
+
+/* Function start: 0x41A6D0 */
+int __cdecl CompareNodePriority(void* a, void* b) {
+    int diff = *(int*)(*(int*)b + 0x40) - *(int*)(*(int*)a + 0x40);
+    if (diff < 1) return 0;
+    return 1;
+}
+
+/* Function start: 0x41A6F0 */
+void __cdecl FreeNodeData(void* ptr, int count) {
+    int** data = (int**)ptr;
+    while (count != 0) {
+        count--;
+        if (*data != 0) {
+            FreeMemory(*data);
+            *data = 0;
+        }
+        data++;
+    }
+}
 
 struct AnimData {
     char name[64];    // 0x00 - 0x3F
@@ -29,7 +48,7 @@ GameLoopHelper::~GameLoopHelper() {
     if (p != 0) {
         node = p->head;
         while (node != 0) {
-            FUN_0041a6f0((void*)(node + 2), 1);
+            FreeNodeData((void*)(node + 2), 1);
             node = (int*)node[0];
         }
         p->count = 0;
@@ -110,7 +129,7 @@ void GameLoopHelper::RemoveAnimation(int handle) {
     p = pool;
     node = p->head;
     while (node != 0) {
-        if (FUN_0041a6d0((void*)(node + 2), (void*)&searchPtr) != 0) {
+        if (CompareNodePriority((void*)(node + 2), (void*)&searchPtr) != 0) {
             goto found;
         }
         node = (int*)node[0];
@@ -129,7 +148,7 @@ found:
     } else {
         *(int*)(node[0] + 4) = node[1];
     }
-    FUN_0041a6f0((void*)(node + 2), 1);
+    FreeNodeData((void*)(node + 2), 1);
     node[0] = (int)p->freeList;
     p->freeList = node;
     p->count = p->count - 1;

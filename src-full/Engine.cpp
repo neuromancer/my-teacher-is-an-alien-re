@@ -6,6 +6,7 @@
 #include "Sprite.h"
 #include "Palette.h"
 #include "Sound.h"
+#include "ZBufferManager.h"
 #include "Handler.h"
 #include "main.h"
 #include <stdio.h>
@@ -19,7 +20,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 #include "SlimeTable.h"
 
 extern Sound* DAT_0046AA0C;              // Sound global
-extern int DAT_0046AA24;                 // global object pointer
+extern ZBufferManager* DAT_0046aa24;     // ZBufferManager*
 
 // DrawEntry implementation (originally in same source file as Engine)
 DrawEntry::~DrawEntry() {
@@ -172,7 +173,7 @@ void Engine::OnProcessEnd() {
             4, 0, 0, 0, 0, 0);
     }
     if (Engine::field_0x104 != 0) {
-        int* target = (int*)(DAT_0046AA24 + 0xA8);
+        int* target = (int*)((int)DAT_0046aa24 + 0xA8);
         if (*target != 0) {
             WriteToLog("ddouble palette");
         }

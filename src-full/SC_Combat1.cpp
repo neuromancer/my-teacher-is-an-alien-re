@@ -376,7 +376,6 @@ void SC_Combat1::ProcessMessage()
     SC_Message_Send(SC_Combat1::savedCommand, SC_Combat1::savedMsgData, SC_Combat1::handlerId, SC_Combat1::moduleParam, 5, 0, 0, 0, 0, 0);
 }
 
-/* Function start: 0x410E80 */
 int SC_Combat1::LBLParse(char* line) {
     char label[32];
     char moduleType[32];

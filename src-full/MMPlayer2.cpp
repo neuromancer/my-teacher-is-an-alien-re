@@ -107,7 +107,6 @@ void MMPlayer2::AddSprite(Sprite* spr)
     }
 }
 
-/* Function start: 0x408EE0 */
 int MMPlayer2::Draw()
 {
     Sprite* spr;

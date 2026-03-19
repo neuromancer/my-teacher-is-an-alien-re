@@ -15,23 +15,23 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 // FUN_00413e10 = ParseFile in Parser.h
 extern "C" void SetVideoRes(int, int);
 
-extern void __fastcall FUN_00420d90(void*);
-extern void __fastcall FUN_00425490(void*);
-extern void __fastcall FUN_00429c10(void*);
+
+
+// FUN_00429c10 = SC_PRHotSpot::~SC_PRHotSpot — callers updated
 extern void* __fastcall FUN_0042bc50(void*);
 extern void __fastcall FUN_0042b270(void*);
 extern void __fastcall FUN_0042b100(void*);
-extern void __fastcall FUN_00429df0(void*);
-extern void __fastcall FUN_00420f00(void*);
+// FUN_00429df0 = SC_PRHotSpot::Update — callers updated
+// FUN_00420f00 = T_MenuHotspot::Update — callers updated
+#include "SC_PRHotSpot.h"
+#include "T_MenuHotspot.h"
 #include "MouseControl.h"
-extern void* __fastcall FUN_00425480(void*);
-extern int __fastcall FUN_0042a010(void*, int, void*);
 
 extern "C" void WriteToLog(const char* format, ...);
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 
-extern void* __fastcall FUN_00429b60(void*, int, int, void*);
-extern void* __fastcall FUN_00420ce0(void*, int, int);
+// FUN_00429b60 = SC_PRHotSpot ctor — callers updated to use new
+// FUN_00420ce0 = T_MenuHotspot(int) ctor — callers updated to use new
 
 extern int DAT_0046cb90;
 extern "C" extern GameState* DAT_0046aa30;
@@ -140,7 +140,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
             while (*piVar != 0) {
                 pVar = FUN_0042bc50(piVar);
                 if (pVar != 0) {
-                    FUN_00429c10(pVar);
+                    ((SC_PRHotSpot*)pVar)->~SC_PRHotSpot();
                     free(pVar);
                 }
             }
@@ -155,8 +155,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
     }
     pVar = *(void**)((int)this + 0xC8);
     if (pVar != 0) {
-        FUN_00425490(pVar);
-        free(pVar);
+        delete (SlimeTable*)pVar;
         *(void**)((int)this + 0xC8) = 0;
     }
     int* pBC = (int*)((int)this + 0xBC);
@@ -164,7 +163,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
     do {
         void* pSprite = (void*)*pBC;
         if (pSprite != 0) {
-            FUN_00420d90(pSprite);
+            delete (T_MenuHotspot*)pSprite;
             free(pSprite);
             *pBC = 0;
         }
@@ -217,7 +216,7 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
                 if (pCur != 0) {
                     pNode = (void*)pCur[2];
                 }
-                FUN_00429df0(pNode);
+                ((SC_PRHotSpot*)pNode)->Update();
                 pListR = *(int**)((int)this + 0xB8);
                 int* pCurNode = (int*)pListR[2];
                 if (pListR[1] == (int)pCurNode) {
@@ -233,7 +232,7 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
     int iCount = 3;
     do {
         if (*pSprites != 0) {
-            FUN_00420f00((void*)*pSprites);
+            ((T_MenuHotspot*)*pSprites)->Update();
         }
         pSprites++;
         iCount--;
@@ -329,7 +328,7 @@ int SCI_PracticeRoom::Exit(SC_Message* msg) {
             if (pCur != 0) {
                 pNode = (void*)pCur[2];
             }
-            if (FUN_0042a010(pNode, 0, msg) != 0) {
+            if (((SC_PRHotSpot*)pNode)->CheckCollision(msg) != 0) {
                 break;
             }
             pListR = *(int**)((int)this + 0xB8);
@@ -385,11 +384,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             LinkedList* newList = new LinkedList();
             *(LinkedList**)((int)this + 0xB8) = newList;
         }
-        void* mem = malloc(0xC0);
-        int* piVar6 = 0;
-        if (mem != 0) {
-            piVar6 = (int*)FUN_00429b60(mem, 0, local_18, this);
-        }
+        SC_PRHotSpot* piVar6 = new SC_PRHotSpot(local_18, (int)this);
         Parser::ProcessFile((Parser*)piVar6, this, 0);
         LinkedList* list = *(LinkedList**)((int)this + 0xB8);
         if (piVar6 == 0) {
@@ -420,11 +415,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         }
     } else if (strcmp(local_3c, "CHAR") == 0) {
         sscanf(param_1, "%s %d", local_3c, &local_18);
-        void* mem = malloc(0x1A8);
-        void* piVar6 = 0;
-        if (mem != 0) {
-            piVar6 = FUN_00420ce0(mem, 0, local_18);
-        }
+        T_MenuHotspot* piVar6 = new T_MenuHotspot(local_18);
         *(void**)((int)this + local_18 * 4 + 0xBC) = piVar6;
         Parser::ProcessFile((Parser*)piVar6, this, 0);
     } else if (strcmp(local_3c, "AMBIENT") == 0) {

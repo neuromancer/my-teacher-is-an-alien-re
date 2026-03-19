@@ -48,21 +48,20 @@ void SC_Sound::Init(SC_Message* msg) {
     }
 }
 
-extern void __fastcall FUN_00449480(void*, int, int, int);
+#include "SC_Combat.h"
 
 /* Function start: 0x40B7C0 */
 void SC_Sound::Update(int param1, int param2) {
     if (handlerId == param2) {
-        FUN_00449480(this, 0, param1, param2);
+        ((SC_Combat*)this)->SC_Combat::Update(param1, param2);
     }
 }
 
-extern int __fastcall FUN_00449400(void*, int, void*);
 
 /* Function start: 0x40B7E0 */
 int SC_Sound::AddMessage(SC_Message* msg) {
     int* msgData = (int*)msg;
-    if (FUN_00449400(this, 0, msg) != 0) {
+    if (((SC_Combat*)this)->SC_Combat::AddMessage(msg) != 0) {
         return 1;
     }
     if (msgData[0xB] == 0x1B) {
@@ -74,7 +73,6 @@ int SC_Sound::AddMessage(SC_Message* msg) {
 }
 
 extern int DAT_0046ae78;
-extern void __fastcall FUN_00449320(void*, int, int);
 
 /* Function start: 0x40B780 */
 int SC_Sound::ShutDown(SC_Message* msg) {
@@ -85,7 +83,7 @@ int SC_Sound::ShutDown(SC_Message* msg) {
         fn(obj, 0, 1);
         DAT_0046ae78 = 0;
     }
-    FUN_00449320(this, 0, (int)msg);
+    ((SC_Combat*)this)->SC_Combat::ShutDown(msg);
     return 0;
 }
 

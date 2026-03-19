@@ -39,8 +39,104 @@ void GameState::ValidateIndex(int idx) {
     }
 }
 
+/* Function start: 0x433CB0 */
+void GameState::SetFromAction(int* action) {
+    int idx;
+    int val;
+
+    idx = action[1];
+    if (idx < 0 || maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+
+    switch (action[4]) {
+    case 0:
+        return;
+    case 0xE:
+        if (idx < 0 || maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        if (idx < 0 || maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        if (stateValues[idx] == 0) {
+            ValidateIndex(idx);
+            stateValues[idx] = 1;
+        } else {
+            ValidateIndex(idx);
+            stateValues[idx] = 0;
+        }
+        return;
+    case 0xF:
+        if (idx < 0 || maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        stateValues[idx] = 1;
+        return;
+    case 0x10:
+        if (idx < 0 || maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        stateValues[idx] = 0;
+        return;
+    case 0x11:
+        val = action[5];
+        if (idx < 0 || maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        stateValues[idx] += val;
+        return;
+    case 0x12:
+        val = action[5];
+        if (idx < 0 || maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        stateValues[idx] -= val;
+        return;
+    case 0x13:
+        val = action[5];
+        if (idx < 0 || maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        stateValues[idx] = val;
+        return;
+    case 0x14:
+        if (idx < 0 || maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        val = stateValues[idx];
+        {
+            int mask = action[5];
+            if (idx < 0 || maxStates - 1 < idx) {
+                ShowError("Invalid gamestate %d", idx);
+            }
+            stateValues[idx] = val | mask;
+        }
+        return;
+    default:
+        ShowError("GameState::SetState() - invalid instruction in action");
+        return;
+    }
+}
+
 /* Function start: 0x432E20 */
-int GameState::FUN_00432e20(char*) { return 0; }
+int GameState::FUN_00432e20(char* name) {
+    int i;
+
+    i = 0;
+    while (i < maxStates) {
+        if (stateLabels != 0 && stateLabels[i] != 0) {
+            if (strstr((char*)stateLabels[i], name) != 0) {
+                if (strlen((char*)stateLabels[i]) == strlen(name)) {
+                    return i;
+                }
+            }
+        }
+        i++;
+    }
+    ShowError("GameState::FindState unable to find %s", name);
+    return -1;
+}
 
 /* Function start: 0x4333D0 */
 GameState::~GameState()

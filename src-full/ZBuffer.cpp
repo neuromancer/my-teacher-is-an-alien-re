@@ -22,7 +22,6 @@ char s_hIam[] = "hIam %d";
 extern void LogToMessageFile(char* format, ...);
 #include "SC_Question.h"
 
-extern void __fastcall FUN_0044c740(void*);
 extern void FreeMemory(void*);
 
 /* Function start: 0x427710 */
@@ -50,9 +49,7 @@ ZBuffer::~ZBuffer()
             sd = (SlimeDim*)((char*)item + 0xfc);
             sd->~SlimeDim();
 
-            FUN_0044c740(item);
-
-            FreeMemory(item);
+            delete (Sprite*)item;
 
             ZBuffer::items[ZBuffer::itemCount] = 0;
         }

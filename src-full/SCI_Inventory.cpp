@@ -26,9 +26,9 @@ extern int DAT_004733e8;
 #include "MouseControl.h"
 #include "T_MenuHotspot.h"
 extern InputManager* DAT_0046aa08;
-extern void* DAT_0046a6dc;
+// DAT_0046a6dc is g_MsgList — use g_MsgList directly
 extern char* DAT_0046aa00;
-extern void* __fastcall FUN_004407c0(void* self);
+// FUN_004407c0 = RemoveCurrent COMDAT — callers updated
 
 // T_Object — now implemented in T_Object.cpp
 
@@ -804,24 +804,24 @@ void SCI_Inventory::Serialize(void* param) {
     ((SCI_Inventory*)self)->itemPool = new TimedEventPool(10);
 
     /* Clean up global queue */
-    if (DAT_0046a6dc != 0) {
-        esi_ptr = (int*)DAT_0046a6dc;
+    if (g_MsgList != 0) {
+        esi_ptr = (int*)g_MsgList;
         if (esi_ptr[0] != 0) {
             esi_ptr[2] = esi_ptr[0];
             while (esi_ptr[0] != 0) {
-                void* data = FUN_004407c0(esi_ptr);
+                void* data = ((LinkedList*)esi_ptr)->RemoveCurrent();
                 if (data != 0) {
                     delete (T_Object*)data;
                 }
             }
         }
         FreeMemory(esi_ptr);
-        DAT_0046a6dc = 0;
+        g_MsgList = 0;
     }
 
     /* Allocate new global queue */
     esi_ptr = (int*)(new LinkedList());
-    DAT_0046a6dc = (void*)esi_ptr;
+    g_MsgList = (MsgList*)esi_ptr;
 
     /* Read items loop */
     for (;;) {
@@ -890,7 +890,6 @@ Rect::~Rect() {}
 #include "Palette.h"
 #include "GameState.h"
 #include <new.h>
-extern void* DAT_0046a6dc;
 extern "C" GameState* DAT_0046aa30;
 
 /* Function start: 0x43FDD0 */
@@ -922,7 +921,7 @@ int SCI_Inventory::LBLParse(char* line) {
     else if (strcmp(token, "OBJECT") == 0) {
         sscanf(line, " %s %d", token, &index);
         obj = new T_Object(index);
-        int* queue = (int*)DAT_0046a6dc;
+        int* queue = (int*)g_MsgList;
         if (obj == 0) {
             ShowError("queue fault 0101");
         }
@@ -1073,7 +1072,7 @@ next_panel:
 }
 /* Function start: 0x43F420 */
 void SCI_Inventory::ProcessInventory() {
-    LinkedList* list = (LinkedList*)DAT_0046a6dc;
+    LinkedList* list = (LinkedList*)g_MsgList;
     if (list != 0 && list->head != 0) {
         list->current = list->head;
         while (1) {

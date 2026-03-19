@@ -6,8 +6,6 @@
 class InputManager;
 extern InputManager* DAT_0046aa08;
 #include "Target.h"
-extern void __fastcall FUN_0044c740(void*);
-
 /* Function start: 0x40BBF0 */
 EngineC::EngineC()
 {
@@ -24,23 +22,19 @@ EngineC::EngineC()
 EngineC::~EngineC()
 {
     if (sprite118 != 0) {
-        FUN_0044c740(sprite118);
-        FreeMemory(sprite118);
+        delete (Sprite*)sprite118;
         sprite118 = 0;
     }
     if (sprite104 != 0) {
-        FUN_0044c740(sprite104);
-        FreeMemory(sprite104);
+        delete (Sprite*)sprite104;
         sprite104 = 0;
     }
     if (sprite110 != 0) {
-        FUN_0044c740(sprite110);
-        FreeMemory(sprite110);
+        delete (Sprite*)sprite110;
         sprite110 = 0;
     }
     if (sprite114 != 0) {
-        FUN_0044c740(sprite114);
-        FreeMemory(sprite114);
+        delete (Sprite*)sprite114;
         sprite114 = 0;
     }
 }

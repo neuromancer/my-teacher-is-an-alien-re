@@ -22,7 +22,6 @@ extern int DAT_00468764;
 #include "Hotspot.h"
 extern void __fastcall FUN_004459a0(void*, int, int);
 
-extern void* __fastcall FUN_004036a0(void*);
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" int FileExists(const char*);
@@ -93,7 +92,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                data = FUN_004036a0(list);
+                data = list->RemoveCurrent();
                 if (data != 0) {
                     delete (SpriteAction*)data;
                 }

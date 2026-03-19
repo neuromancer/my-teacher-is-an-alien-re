@@ -9,7 +9,6 @@
 #include "InputManager.h"
 extern "C" void ShowError(const char* format, ...);
 extern void __fastcall FUN_0042b0f0(void*);
-extern void __fastcall FUN_00444af0(void*); // SpriteAction dtor
 
 extern InputManager* DAT_0046aa08;
 
@@ -55,8 +54,7 @@ SC_PRHotSpot::~SC_PRHotSpot()
             while (actionList->head != 0) {
                 void* data = actionList->RemoveCurrent();
                 if (data != 0) {
-                    FUN_00444af0(data);
-                    FreeMemory(data);
+                    delete (SpriteAction*)data;
                 }
             }
         }

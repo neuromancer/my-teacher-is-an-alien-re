@@ -17,7 +17,7 @@
 #include "StringTable.h"
 // FUN_00425cb0 = ShowMessage in string.h
 // FUN_00413e10 = ParseFile in Parser.h
-extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int); // ZBufferManager::ShowText
+
 
 extern StringTable* DAT_0046a6e0;
 extern FlagArray* DAT_0046a6e8;
@@ -135,12 +135,12 @@ void SC_Question::Update(int x, int y)
 
     if (gs->stateValues[4] == 1) {
         sprintf(DAT_0046aa00, DAT_004690e4, questionId);
-        FUN_00404230(DAT_0046aa24, 0, DAT_0046aa00, 0x22b, y + 0x17, 10000, -1);
+        DAT_0046aa24->ShowText(DAT_0046aa00, 0x22b, y + 0x17, 10000, -1);
     }
 
     switch (state) {
     case 0:
-        FUN_00404230(DAT_0046aa24, 0, label, x + 10, y + 0x17, 10000, -1);
+        DAT_0046aa24->ShowText(label, x + 10, y + 0x17, 10000, -1);
         return;
     case 1:
         if (mouseControl != 0) {

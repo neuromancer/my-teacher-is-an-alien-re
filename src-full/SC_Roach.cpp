@@ -10,9 +10,7 @@
 #include <string.h>
 
 extern "C" extern GameState* DAT_0046aa30;
-extern void* __fastcall FUN_00421880(void*, int);            // progress obj ctor
-extern void __fastcall FUN_0044c740(void*);                  // Sprite dtor
-extern void __fastcall FUN_004218b0(void*);                  // Timer dtor
+#include "Timer.h"
 extern char* DAT_0046aa00;
 extern void* DAT_0046aa18;
 
@@ -57,20 +55,17 @@ int SC_Roach::ShutDown(SC_Message* msg) {
     SC_Combat::ShutDown(msg);
 
     if (progressObj != 0) {
-        FUN_004218b0(progressObj);
-        FreeMemory(progressObj);
+        delete (Timer*)progressObj;
         progressObj = 0;
     }
 
     if (circleSprite != 0) {
-        FUN_0044c740(circleSprite);
-        FreeMemory(circleSprite);
+        delete (Sprite*)circleSprite;
         circleSprite = 0;
     }
 
     if (barSprite != 0) {
-        FUN_0044c740(barSprite);
-        FreeMemory(barSprite);
+        delete (Sprite*)barSprite;
         barSprite = 0;
     }
 
@@ -92,8 +87,7 @@ int SC_Roach::ShutDown(SC_Message* msg) {
             *(int*)crystal = 0x461320;
             spr = crystal->sprite;
             if (spr != 0) {
-                FUN_0044c740(spr);
-                FreeMemory(spr);
+                delete (Sprite*)spr;
                 crystal->sprite = 0;
             }
             FreeMemory(crystal);
@@ -388,13 +382,7 @@ void SC_Roach::OnProcessEnd()
     sources[6].crystalPtr = (int)crystals[6];
     sources[7].crystalPtr = (int)crystals[7];
 
-    // Allocate progress object (0x14 bytes)
-    void* mem = operator new(0x14);
-    void* obj = 0;
-    if (mem != 0) {
-        obj = FUN_00421880(mem, 0);
-    }
-    progressObj = obj;
+    progressObj = new Timer();
 
     SendGameMessage(5, *(int*)((char*)this + 0x114),
         *(int*)((char*)this + 0x90), *(int*)((char*)this + 0x94),
@@ -490,8 +478,7 @@ int SC_Roach::LBLParse(char* line)
             *(int*)crystals[idx] = 0x461320;  // set vtable
             Sprite* spr = *(Sprite**)((char*)crystals[idx] + 0x4d8);
             if (spr != 0) {
-                FUN_0044c740(spr);
-                FreeMemory(spr);
+                delete (Sprite*)spr;
                 *(int*)((char*)crystals[idx] + 0x4d8) = 0;
             }
             FreeMemory(crystals[idx]);

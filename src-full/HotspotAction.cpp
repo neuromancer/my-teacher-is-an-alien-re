@@ -307,9 +307,8 @@ void HotspotAction::ProcessQueueFC() {
     }
 }
 
-/* Function start: 0x41B960 */
 /* Function start: 0x41B993 */
-int HotspotAction::LBLParse(char* line) {
+int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     char label[64];
     char buf_C0[128];
     char buf_140[128];

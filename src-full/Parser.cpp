@@ -544,7 +544,6 @@ extern void __stdcall ParseGosubParams(char* line);
 
 extern "C" char* FUN_00426570(char* s1, char* s2);
 extern "C" char* strstr(const char*, const char*);
-extern void __fastcall FUN_00433cb0(void*, int, int);
 
 /* Function start: 0x413120 */
 void Parser::HandleToken(int tokenType, char* line) {
@@ -609,7 +608,7 @@ void Parser::HandleToken(int tokenType, char* line) {
             local_6c = DAT_0046aa30->FindState(local_38);
             local_60 = DAT_0046aa38->FindState(local_90);
             local_5c = local_14;
-            FUN_00433cb0(DAT_0046aa30, 0, (int)&action);
+            DAT_0046aa30->SetFromAction((int*)&action);
         }
         break;
 

@@ -87,7 +87,6 @@ int Handler1::AddMessage(SC_Message* msg) {
     return 1;
 }
 
-/* Function start: 0x4036A0 */
 int Handler1::Exit(SC_Message* msg) {
     return handlerId == msg->targetAddress;
 }

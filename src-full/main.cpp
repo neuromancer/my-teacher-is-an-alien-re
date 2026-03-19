@@ -83,8 +83,8 @@ void CleanupMemoryCache();
 #include "GameLoopHelper.h"
 #include "MsgList.h"
 
-extern void __cdecl FUN_004344b0();
-extern void __cdecl FUN_00434030(void*, int);
+extern void __cdecl FileCacheCleanup();
+extern void __cdecl FileCacheEntryCleanup(void*, int);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "GameEngine.h"
@@ -575,12 +575,12 @@ void __cdecl InitMemoryCache(int param_1, int param_2, float param_3) {
 
 /* Function start: 0x434170 */
 void CleanupMemoryCache() {
-    FUN_004344b0();
+    FileCacheCleanup();
     if (DAT_0046b78c != 0) {
         MemoryCache* cache = DAT_0046b78c;
         int* node = (int*)cache->field_0;
         while (node != 0) {
-            FUN_00434030((void*)&node[2], 1);
+            FileCacheEntryCleanup((void*)&node[2], 1);
             node = (int*)node[0];
         }
         cache->field_8 = 0;

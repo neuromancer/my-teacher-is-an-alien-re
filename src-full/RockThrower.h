@@ -21,8 +21,10 @@ public:
     int m_height;       // demo 0x94, full 0x9C
     int m_crosshairX;   // demo 0x98, full 0xA0
     int m_crosshairY;   // demo 0x9C, full 0xA4
-    int m_clicked;      // demo 0xA0, full 0xA8 — clicked flag
+    int m_clicked;      // demo 0xA0, full 0xA8 — clicked/fire flag
     int m_sound;        // demo 0xA4, full 0xAC — Sample* sound
+    // Fields at +0xB0..+0xC0 accessed by offset in UpdateProjectiles
+    // DO NOT add them here — it shifts derived class layouts
 
     Weapon() {
         m_crosshairX = 0;
@@ -39,6 +41,7 @@ public:
     virtual void OnHit();           // vtable[4]
     virtual void DrawCrosshairs();  // vtable[5]
     void DrawExplosion();           // non-virtual
+    void UpdateProjectiles();       // 0x427880
 };
 
 // RockThrower - Rock throwing weapon

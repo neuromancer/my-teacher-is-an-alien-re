@@ -36,8 +36,8 @@ extern "C" void ShowError(const char* format, ...);
 extern char* __cdecl ResolveAssetPath(char* name);
 #include "string.h"
 
-extern void* __fastcall FUN_00410fb0(void*, int, char*, int);
-extern void __fastcall FUN_004274c0(void*, int, int);
+// FUN_00410fb0 = VBuffer ctor — callers updated to use new
+#include "RockThrower.h"
 
 
 // FUN_00426ce0 is thiscall with 1 param (not fastcall)
@@ -521,8 +521,8 @@ void SC_Wahoo::ProcessState() {
     }
 }
 
-/* Function start: 0x438630 */
-int SC_Wahoo::LBLParse(char* param_1) {
+/* Function start: 0x438660 */
+int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
     char local_b8[128];
     char local_38[32];
     int local_18;
@@ -631,13 +631,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         int ret = sscanf(param_1, " %s %s ", local_38, local_b8);
         if (ret == 2) {
             if (strcmp(local_b8, "ROCKTHROWER2") == 0) {
-                void* mem = malloc(200);
-                if (mem == 0) {
-                    DAT_0046bbfc = 0;
-                } else {
-                    FUN_004274c0(mem, 0, (int)this);
-                    DAT_0046bbfc = mem;
-                }
+                DAT_0046bbfc = new RockThrower(this);
             }
         }
     }

@@ -588,8 +588,8 @@ void SC_Detention::SetupDetentionState() {
     sprintf(field_1C4, "%c_IN_DETENTION", periodChar);
 }
 
-/* Function start: 0x40B240 */
-int SC_Detention::LBLParse(char* line) {
+/* Function start: 0x40B25E */
+int SC_Detention::LBLParse(char* line) { // prologue at 0x40B240
     char token[32];
 
     sscanf(line, "%s", token);

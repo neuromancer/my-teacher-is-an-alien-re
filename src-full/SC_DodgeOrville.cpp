@@ -29,14 +29,12 @@ extern BombData g_BombData_00473278[6];
 
 extern POINT g_CursorPos_00473308;
 
-extern int __cdecl rand_00454920();
+
 
 int CompareRange(int center, int pos, int range);
 int CheckCursorRange(int range);
 
-// Engine base class calls (thiscall via fastcall trick)
-extern void __fastcall FUN_00449320(void*, int, int);  // Engine::VirtCleanup
-extern int __fastcall FUN_00449400(void*, int, void*);  // Engine::CleanupSubsystems
+// SC_Combat base class calls — now using proper inheritance
 
 extern "C" { extern GameState* DAT_0046aa30; }
 
@@ -71,7 +69,7 @@ void SC_DodgeOrville::Cleanup(int flag) {
         field_130 = 0;
     }
 
-    FUN_00449320(this, 0, flag);
+    SC_Combat::ShutDown((SC_Message*)flag);
 
     if (flag != 0) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
@@ -82,7 +80,7 @@ void SC_DodgeOrville::Cleanup(int flag) {
 int SC_DodgeOrville::AddMessage(SC_Message* msg) {
     int ret;
 
-    ret = FUN_00449400(this, 0, msg);
+    ret = SC_Combat::AddMessage(msg);
     if (ret != 0) {
         return 1;
     }
@@ -350,7 +348,7 @@ void SC_DodgeOrville::ThrowBomb()
 
     int dir;
     do {
-        dir = rand_00454920() % 6;
+        dir = rand() % 6;
     } while (dir == g_LastBombDir_0046ac44);
 
     g_LastBombDir_0046ac44 = dir;
@@ -368,7 +366,7 @@ void SC_DodgeOrville::ThrowBomb()
 
     bgSound->Play(3); // 0x110
 
-    int r = rand_00454920();
+    int r = rand();
     int maxTh = dim_124.field_0;
     int rem = r % maxTh;
     if (maxTh / 0x14 > rem) {

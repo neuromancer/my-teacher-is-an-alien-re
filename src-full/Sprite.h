@@ -49,6 +49,7 @@ public:
     void InitLogic(int param_1);                   // 0x44D5C0
     void InitAnimation();                          // 0x44C880
     virtual int LBLParse(char* param_1);           // 0x44D700
+    virtual void OnProcessEnd();                   // 0x44D6E0
     void FreeAnimation();                          // 0x44CB10
     void StopAnimationSound();                     // 0x44C9D0
     void ResetAnimation(int param1, int param2);   // 0x44CB40

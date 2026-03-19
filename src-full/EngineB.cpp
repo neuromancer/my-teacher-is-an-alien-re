@@ -22,20 +22,10 @@ extern "C" int DAT_00473e18;
 #include "string.h"
 static char* FormatSoundPath(char* path);
 
-class TargetListFull {
-public:
-    void ProcessTargets();  // 0x443660
-};
+#include "Target.h"
+#include "InputManager.h"
 
-class WeaponParser {
-public:
-    void UpdateProjectiles();  // 0x427880
-};
-
-class InputManagerFull {
-public:
-    void PollEvents(int param);  // 0x426ce0
-};
+#include "RockThrower.h"
 
 /* Function start: 0x450B10 */
 EngineB::EngineB() {
@@ -89,9 +79,9 @@ int EngineB::LBLParse(char* line) {
 
 /* Function start: 0x451180 */
 void EngineB::ProcessFrame() {
-    ((TargetListFull*)DAT_0046ae58)->ProcessTargets();
+    ((TargetList*)DAT_0046ae58)->ProcessTargets();
     if (DAT_00473e18 == 1) {
-        ((WeaponParser*)EngineB::m_weaponParser)->UpdateProjectiles();
+        ((Weapon*)EngineB::m_weaponParser)->UpdateProjectiles();
         RenderBackground();
         PostRender();
     }
@@ -221,7 +211,7 @@ void EngineB::OnProcessEnd() {
     EngineB::m_targetConfig = config;
 
     if (DAT_0046aa08 != 0) {
-        ((InputManagerFull*)DAT_0046aa08)->PollEvents(1);
+        ((InputManager*)DAT_0046aa08)->Refresh(1);
     }
 
     if (DAT_0046ae50 != 0) {

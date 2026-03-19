@@ -4,10 +4,7 @@
 #include "Memory.h"
 #include <string.h>
 
-extern void __fastcall FUN_0044c740(void*);                        // Sprite dtor
-extern void* __fastcall FUN_0041dbf0(void*, int, char*);           // Palette ctor with name
-extern void* __fastcall FUN_00421a50(void*, int, char*, int*);     // Button ctor
-extern void __cdecl FUN_0044d210(void*, int, int, int, int);       // Sprite animation setup
+#include "T_MenuHotspot.h"
 
 /* Function start: 0x43AF10 */
 SC_DuctNav::SC_DuctNav()
@@ -21,7 +18,7 @@ SC_DuctNav::SC_DuctNav()
             _btn[0] = 0x4613D0; \
             void* _spr = (void*)_btn[0x24]; \
             if (_spr != 0) { \
-                FUN_0044c740(_spr); \
+                ((Sprite*)_spr)->~Sprite(); \
                 FreeMemory(_spr); \
                 _btn[0x24] = 0; \
             } \
@@ -32,13 +29,9 @@ SC_DuctNav::SC_DuctNav()
 
 #define CREATE_BUTTON(slot, _name, _params) \
     { \
-        void* _mem = operator new(0xA8); \
-        void* _obj = 0; \
-        if (_mem != 0) { \
-            _obj = FUN_00421a50(_mem, 0, _name, _params); \
-        } \
+        T_MenuHotspot* _obj = new T_MenuHotspot(_name, _params); \
         (slot) = _obj; \
-        FUN_0044d210(*(void**)((char*)_obj + 0x90), 1, 2, 10, 1); \
+        ((Sprite*)_obj->sprite)->ConfigRange(1, 2, 10, 1); \
     }
 
 /* Function start: 0x43D5B0 */
@@ -64,8 +57,7 @@ int SC_DuctNav::LBLParse(char* line)
         fontPalette = new Palette(name);
     } else if (strcmp(label, "SPRITE") == 0) {
         if (menuSprite != 0) {
-            FUN_0044c740(menuSprite);
-            FreeMemory(menuSprite);
+            delete (Sprite*)menuSprite;
             menuSprite = 0;
         }
         menuSprite = new Sprite((char*)0);

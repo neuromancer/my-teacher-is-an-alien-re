@@ -1,4 +1,5 @@
 #include "SC_WordSearch.h"
+#include "ZBufferManager.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
 #include "Palette.h"
@@ -18,8 +19,6 @@ extern "C" void ShowError(const char* format, ...);
 
 #include "MouseControl.h"
 #include "VBuffer.h"
-extern void __fastcall FUN_00404350(void*, int, int, int, int, int, int, int, int);
-extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
 
 extern char* DAT_0046bacc;
 extern int DAT_0046cb90;
@@ -187,7 +186,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         if (spr != 0) {
             spr->ResetAnimation(0xf, 0);
         }
-        FUN_00404350(DAT_0046aa24, 0,
+        DAT_0046aa24->DrawRect(
             *(int*)((int)this + 0x704), *(int*)((int)this + 0x708),
             *(int*)((int)this + 0x70c), *(int*)((int)this + 0x710),
             10000, 0xfc, 2);
@@ -224,7 +223,7 @@ void SC_WordSearch::Update(int param1, int param2) {
             } else {
                 iVar8 = 0xFD;
             }
-            FUN_00404230(DAT_0046aa24, 0, pcVar12, *piVar11 + 10, iVar5, 10000, iVar8);
+            DAT_0046aa24->ShowText(pcVar12, *piVar11 + 10, iVar5, 10000, iVar8);
         }
         piVar11 = piVar11 + 4;
         pcVar12 = pcVar12 + 0x20;
@@ -308,7 +307,7 @@ void SC_WordSearch::Update(int param1, int param2) {
                     if (spr != 0) {
                         spr->ResetAnimation(0xf, 0);
                     }
-                    FUN_00404350(DAT_0046aa24, 0,
+                    DAT_0046aa24->DrawRect(
                         *(int*)((int)this + 0x6f4), *(int*)((int)this + 0x6f8),
                         *(int*)((int)this + 0x6fc), *(int*)((int)this + 0x700),
                         10000, 0xfc, 2);
@@ -318,7 +317,7 @@ void SC_WordSearch::Update(int param1, int param2) {
                 if (spr != 0) {
                     spr->ResetAnimation(0xf, 0);
                 }
-                FUN_00404350(DAT_0046aa24, 0,
+                DAT_0046aa24->DrawRect(
                     *(int*)((int)this + 0x6e4), *(int*)((int)this + 0x6e8),
                     *(int*)((int)this + 0x6ec), *(int*)((int)this + 0x6f0),
                     10000, 0xfc, 2);
@@ -328,7 +327,7 @@ void SC_WordSearch::Update(int param1, int param2) {
             if (spr != 0) {
                 spr->ResetAnimation(0xf, 0);
             }
-            FUN_00404350(DAT_0046aa24, 0,
+            DAT_0046aa24->DrawRect(
                 *(int*)((int)this + 0x6d4), *(int*)((int)this + 0x6d8),
                 *(int*)((int)this + 0x6dc), *(int*)((int)this + 0x6e0),
                 10000, 0xfc, 2);
@@ -352,7 +351,7 @@ void SC_WordSearch::Update(int param1, int param2) {
             ((Sprite*)*(void**)((int)this + 0x824))->ResetAnimation(-1, 0);
         }
     }
-    FUN_00404230(DAT_0046aa24, 0, (char*)((int)this + 0x718), 0x49, 0xdc, 10000, 0);
+    DAT_0046aa24->ShowText((char*)((int)this + 0x718), 0x49, 0xdc, 10000, 0);
     (DAT_0046aa18)->DrawCursor();
     pvVar10 = *(void**)((int)this + 0x82c);
     ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);

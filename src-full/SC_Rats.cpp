@@ -31,7 +31,6 @@ extern void* __fastcall FUN_00450b10(void*);
 // FUN_0044bac0 = mCNavigator::SetNavParams
 #include "mCNavigator.h"
 // FUN_00412a50 is Parser::ReportUnknownLabel (thiscall, declared in Parser.h)
-extern void __fastcall FUN_0040b760(void*, int, int);
 
 // IAT entries
 
@@ -88,7 +87,7 @@ void SC_Rats::Init(SC_Message* msg) {
                 int* item = (int*)((LinkedList*)list2)->RemoveCurrent();
                 if (item != 0) {
                     if (*(int*)((int)item + 4) != 0) {
-                        FUN_0040b760((void*)*(int*)((int)item + 4), 0, 1);
+                        delete (VBuffer*)*(int*)((int)item + 4);
                         *(int*)((int)item + 4) = 0;
                     }
                     if (*(int*)((int)item + 8) != 0) {

@@ -570,14 +570,50 @@ void SC_Fan::RenderFan() {
     }
 }
 
+extern int DAT_00472be0;
+extern int DAT_00472be4;
+extern int DAT_00472be8;
+extern int DAT_00472bec;
+
 /* Function start: 0x410390 */
 void SC_Fan::OnProcessEnd()
 {
+    invSlot_D0.left = 0xDB;
+    invSlot_D0.top = 0xBA;
+    invSlot_D0.right = 0xEC;
+    invSlot_D0.bottom = 0xC7;
+    DAT_00472be0 = 0x90;
+    DAT_00472be4 = 0x18;
+    DAT_00472be8 = 0xF0;
+    DAT_00472bec = 0x64;
+    invSlots_100[0].left = 0x99;
+    invSlots_100[0].right = 0x9C;
+    invSlots_100[1].left = 0x99;
+    invSlots_100[1].right = 0x9C;
+    invSlots_100[1].bottom = 0x5E;
+    invSlots_100[2].left = 0xE3;
+    invSlots_100[0].top = 0x1E;
+    invSlots_100[0].bottom = 0x21;
+    invSlots_100[1].top = 0x5A;
+    invSlots_100[2].top = 0x1E;
+    invSlots_100[2].right = 0xE7;
+    invSlots_100[2].bottom = 0xE3;
+    invSlots_100[3].left = 0x5E;
+    invSlots_100[2].bottom = 0x22;
+    invSlots_100[3].top = 0x5A;
+    invSlots_100[3].right = 0xE6;
+    field_F0 = 0;
+    field_F4 = 0;
+    field_FC = 0;
+    field_F8 = 0;
+    field_140 = 0;
+    dim_168.field_0 = 0;
+    field_178 = 0;
+    field_17C = 0;
 }
 
-/* Function start: 0x4104B0 */
 /* Function start: 0x4104E0 */
-int SC_Fan::LBLParse(char* param_1) {
+int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
     char local_b8[128];
     char local_38[32];
     int local_18;

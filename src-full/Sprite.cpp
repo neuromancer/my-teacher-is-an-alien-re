@@ -327,6 +327,14 @@ void Sprite::InitLogic(int param_1)
 
 extern char* MakeAnimName(int);
 extern char* MakeSoundName(char*);
+extern char* ResolveAssetPath(char*);
+
+/* Function start: 0x44D6E0 */
+void Sprite::OnProcessEnd() {
+    if ((flags & 0x400) == 0) {
+        ResolveAssetPath(sprite_filename);
+    }
+}
 
 /* Function start: 0x44D700 */
 int Sprite::LBLParse(char* param_1)

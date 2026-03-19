@@ -33,9 +33,8 @@ void TimedEvent::SetType(int type)
     m_type = type;
 }
 
-extern void __fastcall FUN_00444af0(void*);
 extern void FreeMemory(void*);
-extern void __fastcall FUN_00404230(void*, int, char*, int, int, int, int);
+
 extern char* DAT_0046aa00;
 class ZBufferManager;
 extern ZBufferManager* DAT_0046aa24;
@@ -54,8 +53,7 @@ int TimedEvent::Update()
             EnqueueSpriteAction((void*)m_eventData);
         }
         if (m_eventData != 0) {
-            FUN_00444af0(m_eventData);
-            FreeMemory(m_eventData);
+            delete (SpriteAction*)m_eventData;
             m_eventData = 0;
         }
         return 1;
@@ -72,7 +70,7 @@ int TimedEvent::Update()
 
     case 2:
         sprintf(DAT_0046aa00, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
-        FUN_00404230(DAT_0046aa24, 0, DAT_0046aa00, 0x208, 0x1c2, 10000, -1);
+        DAT_0046aa24->ShowText(DAT_0046aa00, 0x208, 0x1c2, 10000, -1);
         if (remaining_time > 0) {
             return 0;
         }
@@ -80,8 +78,7 @@ int TimedEvent::Update()
             EnqueueSpriteAction((void*)m_eventData);
         }
         if (m_eventData != 0) {
-            FUN_00444af0(m_eventData);
-            FreeMemory(m_eventData);
+            delete (SpriteAction*)m_eventData;
             m_eventData = 0;
         }
         return 1;

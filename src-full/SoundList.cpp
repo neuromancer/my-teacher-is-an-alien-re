@@ -53,9 +53,33 @@ SoundList::~SoundList() {
   }
 }
 
+#include "Sample.h"
+
 /* Function start: 0x425550 */
 int SoundList::Play(int index) {
-    return 0;
+    int i;
+    int* soundIds;
+    int* samples;
+
+    if (index < 0 || index > m_count - 1) {
+        return 0;
+    }
+    soundIds = (int*)m_field8;
+    samples = (int*)m_sounds;
+    if (soundIds[index] != 0) {
+        i = 0;
+        while (i < m_count) {
+            if (soundIds[i] == soundIds[index] && samples[i] != 0) {
+                ((Sample*)samples[i])->~Sample();
+            }
+            i++;
+        }
+    }
+    Sample* smp = (Sample*)samples[index];
+    if (smp != 0) {
+        smp->Play(100, 1);
+    }
+    return smp != 0;
 }
 
 /* Function start: 0x4252A0 */

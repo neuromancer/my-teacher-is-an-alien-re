@@ -22,9 +22,8 @@ extern FlagArray* DAT_0046a6e8;
 
 extern void ResetSpriteStates();
 
-/* Function start: 0x418060 */
 /* Function start: 0x418086 */
-int Handler31::LBLParse(char* line) {
+int Handler31::LBLParse(char* line) { // prologue at 0x418060
     char token[32];
     char arg2[32];
     int id;

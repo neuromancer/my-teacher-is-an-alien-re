@@ -23,9 +23,10 @@ public:
     void PlaySound(int);              // 0x425550
     int CheckSound(int);              // 0x4256D0
 
+    void LoadFile(char* filename);
+
 private:
     void OpenAndReadPaletteFile(char* filename);
-    void LoadFile(char* filename);
 };
 
 // CreatePaletteBuffer at 0x41EA50 is a placement new for Palette

@@ -29,33 +29,19 @@ extern int DAT_0046912c;
 extern int DAT_00469130;
 extern void* DAT_00469138;
 extern int DAT_00469140;
-extern char DAT_00469310[];
-extern char DAT_00469304[];
-extern char DAT_00469300[];
-extern char DAT_0046933c[];
-extern char DAT_004692f0[];
-extern char DAT_004692e8[];
-extern char DAT_00469324[];
 extern int DAT_0046913c;
-extern char DAT_00468448[];
 
-extern "C" void FUN_00455130(char*);
-extern "C" int FUN_00425fa0(char*);
-extern "C" void* FUN_00455110(char*, char*);
-extern "C" char* FUN_00426400(char*, int, void*);
-extern "C" void FUN_00426490(char*, void*);
-extern "C" int FUN_00454850(char*, ...);
-extern "C" long FUN_00454d20(char*, void*);
-extern "C" int FUN_00454e70(long, void*);
-extern "C" void FUN_00455040(void*);
-extern "C" void FUN_004550b0(void*, int*);
+extern "C" int FileExists(const char*);
+extern "C" char* internal_ReadLine(char*, int, FILE*);
+extern void EncryptAndWrite(char*, FILE*);
+// sscanf from stdio.h
+// _findfirst/_findnext from io.h
 extern "C" int FUN_00454510(char*, ...);
 extern "C" int FUN_0044e470(char*);
 
-extern void __fastcall FUN_00421880(void*);
-extern void __fastcall FUN_004218c0(void*);
-extern int __fastcall FUN_004218e0(void*);
-extern void FUN_00412210(char*, char*, int, int);
+#include "Timer.h"
+#include "FilePosCache.h"
+extern void* g_FilePosCache;
 
 /* Function start: 0x412000 */
 SoundTracker::SoundTracker(int param) {
@@ -151,10 +137,10 @@ void SoundTracker::ClearPool() {
 
 /* Function start: 0x412480 */
 void SoundTracker::Init() {
-    int timer[5];
+    Timer timer;
     int maxTime;
     char lineBuf[256];
-    long findData[3];
+    struct _finddata_t findData;
     int fileTime;
     char fileName[260];
     char sectionBuf[64];
@@ -162,64 +148,63 @@ void SoundTracker::Init() {
     int filePos[2];
 
     maxTime = 0;
-    FUN_00421880(timer);
     DAT_00469140 = 0;
     ClearPool();
-    FUN_004218c0(timer);
+    timer.Reset();
 
-    FUN_00455130(DAT_00469310);
+    remove("cfg\\miscache.dat");
 
-    if (FUN_00425fa0(DAT_00469310) != 0) {
-        long handle = FUN_00454d20(DAT_00469304, findData);
+    if (FileExists("cfg\\miscache.dat") != 0) {
+        long handle = _findfirst("mis\\*.mis", &findData);
         if (handle != -1) {
             do {
-                fileTime = *(int*)((char*)findData + 0x14);
+                fileTime = findData.time_write;
                 if (maxTime <= fileTime) {
                     maxTime = fileTime;
                 }
-            } while (FUN_00454e70(handle, findData) == 0);
+            } while (_findnext(handle, &findData) == 0);
         }
-        FUN_00454d20(DAT_00469310, findData);
-        if (*(int*)((char*)findData + 0x14) < maxTime) {
-            FUN_00455130(DAT_00469310);
+        _findfirst("cfg\\miscache.dat", &findData);
+        if (findData.time_write < maxTime) {
+            remove("cfg\\miscache.dat");
         }
     }
 
-    if (FUN_00425fa0(DAT_00469310) != 0) {
-        void* fp = FUN_00455110(DAT_00469310, DAT_00469300);
-        char* result = FUN_00426400(lineBuf, 0xff, fp);
+    if (FileExists("cfg\\miscache.dat") != 0) {
+        FILE* fp = _fsopen("cfg\\miscache.dat", "r", 0x40);
+        char* result = internal_ReadLine(lineBuf, 0xff, fp);
         while (result != 0) {
-            sscanf(lineBuf, DAT_004692f0, filePath, sectionBuf, &filePos[0], &filePos[1]);
+            sscanf(lineBuf, " %s %s %lu %d", filePath, sectionBuf, &filePos[0], &filePos[1]);
             filePos[0] = filePos[0];
             filePos[1] = 0;
-            FUN_00412210(filePath, sectionBuf, filePos[0], 0);
-            result = FUN_00426400(lineBuf, 0xff, fp);
+            ((FilePosCache*)g_FilePosCache)->Store(filePath, sectionBuf, filePos[0], 0);
+            result = internal_ReadLine(lineBuf, 0xff, fp);
         }
-        FUN_00455040(fp);
+        fclose(fp);
     } else {
-        long handle = FUN_00454d20(DAT_00469304, findData);
+        long handle = _findfirst("mis\\*.mis", &findData);
         if (handle != -1) {
             do {
                 char misPath[64];
-                FUN_00454510(misPath, DAT_004692e8, (char*)findData + 0x1e);
-                void* fp = FUN_00455110(misPath, DAT_00469300);
-                char* result = FUN_00426400(lineBuf, 0xff, fp);
+                sprintf(misPath, "mis\\%s", findData.name);
+                FILE* fp = _fsopen(misPath, "r", 0x40);
+                char* result = internal_ReadLine(lineBuf, 0xff, fp);
                 while (result != 0) {
-                    FUN_00454850(sectionBuf, DAT_00468448, lineBuf);
+                    sscanf(lineBuf, " %s ", sectionBuf);
                     if (sectionBuf[0] == '[') {
-                        FUN_004550b0(fp, &filePos[0]);
-                        FUN_00412210(misPath, sectionBuf, filePos[0], filePos[1]);
+                        fgetpos(fp, (fpos_t*)&filePos[0]);
+                        ((FilePosCache*)g_FilePosCache)->Store(misPath, sectionBuf, filePos[0], filePos[1]);
                     }
                     DAT_00469140++;
-                    result = FUN_00426400(lineBuf, 0xff, fp);
+                    result = internal_ReadLine(lineBuf, 0xff, fp);
                 }
-                FUN_00455040(fp);
-            } while (FUN_00454e70(handle, findData) == 0);
+                fclose(fp);
+            } while (_findnext(handle, &findData) == 0);
             Cleanup();
         }
     }
 
-    DAT_0046913c = FUN_004218e0(timer);
+    DAT_0046913c = timer.Update();
 }
 
 /* Function start: 0x412730 */
@@ -228,14 +213,14 @@ void SoundTracker::Cleanup() {
     int* node;
     int* data;
 
-    void* fp = FUN_00455110(DAT_00469310, DAT_0046933c);
+    FILE* fp = _fsopen("cfg\\miscache.dat", "w", 0x40);
     node = DAT_00469134->head;
     while (node != 0) {
         int* next = (int*)node[0];
         data = node + 2;
-        sprintf(lineBuf, DAT_00469324, data + 1, data + 9, data[0x12], data[0]);
-        FUN_00426490(lineBuf, fp);
+        sprintf(lineBuf, "%-32s %-32s %4lu %4d \n", data + 1, data + 9, data[0x12], data[0]);
+        EncryptAndWrite(lineBuf, fp);
         node = next;
     }
-    FUN_00455040(fp);
+    fclose(fp);
 }

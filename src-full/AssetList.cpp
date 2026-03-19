@@ -24,7 +24,7 @@ AssetList::~AssetList()
     Cleanup();
 }
 
-/* Function start: 0x404230 */
+// 0x404230 is ZBufferManager::DrawText, not AssetList::Cleanup
 void AssetList::Cleanup() {
     AssetListHeader* list1;
     AssetListHeader* list2;

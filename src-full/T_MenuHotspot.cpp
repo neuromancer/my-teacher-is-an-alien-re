@@ -96,7 +96,7 @@ void T_MenuHotspot::Update()
 extern "C" void ShowError(const char* format, ...);
 extern void* DAT_0046aa34;
 
-extern void __fastcall FUN_00445450(void*, int, void*);
+extern void ParseSpriteAction(void*, void*);
 extern void* __fastcall FUN_0040cf40(void*, int, void*);
 
 /* Function start: 0x421080 */
@@ -145,7 +145,7 @@ int T_MenuHotspot::LBLParse(char* line) {
             field_1A0 = (int)new Queue();
         }
         action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        FUN_00445450(action, 0, this);
+        ParseSpriteAction(action, this);
         queue = (int*)field_1A0;
         if (action == 0) {
             ShowError("queue fault 0101");

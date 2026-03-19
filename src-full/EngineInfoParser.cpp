@@ -8,10 +8,7 @@
 extern int DAT_0046ae78;
 #include "string.h"
 
-class PaletteLoader {
-public:
-    void Load(char* path);  // 0x41dcc0
-};
+#include "Palette.h"
 
 class FuncCaller0x425a90 {
 public:
@@ -130,5 +127,5 @@ void EngineInfoParser::ParseSound(char *line, int index) {
 void EngineInfoParser::ParsePalette(char *line) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-  ((PaletteLoader*)DAT_0046ae64)->Load(buffer);
+  ((Palette*)DAT_0046ae64)->LoadFile(buffer);
 }

@@ -552,6 +552,11 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
     }
 }
 
+/* Function start: 0x404230 */
+void ZBufferManager::ShowText(char* text, int x, int y, int priority, int color) {
+    // TODO: implement text rendering to ZBuffer
+}
+
 /* Function start: 0x4044E0 */
 void ZBufferManager::QueueCommand(SoundCommand* cmd)
 {

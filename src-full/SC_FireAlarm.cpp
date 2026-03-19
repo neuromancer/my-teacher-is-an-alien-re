@@ -17,7 +17,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" char* GetCinematicFilename(int);
 extern "C" char* FormatAssetPath(char*, ...);
 
-extern void __fastcall FUN_00425490(void*);
+
 extern "C" void SetVideoRes(int, int);
 extern "C" void ShowError(const char* format, ...);
 // FUN_004279a0 = ZBuffer::ResetItems (ZBuffer.h)
@@ -145,8 +145,7 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
 
     p = (void*)field_148;
     if (p != 0) {
-        FUN_00425490(p);
-        FreeMemory(p);
+        delete (SlimeTable*)p;
         field_148 = 0;
     }
 

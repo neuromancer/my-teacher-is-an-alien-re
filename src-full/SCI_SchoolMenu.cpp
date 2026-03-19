@@ -35,7 +35,7 @@ extern int DAT_004733e8;
 extern int DAT_0047337c;
 
 // extern functions (single-param __fastcall == thiscall with 0 stack params)
-extern void __fastcall FUN_00420d90(void*);
+
 // FUN_00421020 = ProcessSpriteActions - implemented below
 void __fastcall ProcessSpriteActions(void* obj);
 extern void __fastcall FUN_00421880(void*);
@@ -84,14 +84,14 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
 
     ptr = okayButton;
     if (ptr != 0) {
-        FUN_00420d90(ptr);
+        delete (T_MenuHotspot*)ptr;
         free(ptr);
         okayButton = 0;
     }
 
     ptr = cancelButton;
     if (ptr != 0) {
-        FUN_00420d90(ptr);
+        delete (T_MenuHotspot*)ptr;
         free(ptr);
         cancelButton = 0;
     }
@@ -105,7 +105,7 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
     for (i = 3; i != 0; i--) {
         ptr = characters[3 - i];
         if (ptr != 0) {
-            FUN_00420d90(ptr);
+            delete (T_MenuHotspot*)ptr;
             free(ptr);
             characters[3 - i] = 0;
         }
@@ -114,7 +114,7 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
     for (i = 9; i != 0; i--) {
         ptr = options[9 - i];
         if (ptr != 0) {
-            FUN_00420d90(ptr);
+            delete (T_MenuHotspot*)ptr;
             free(ptr);
             options[9 - i] = 0;
         }
@@ -449,14 +449,14 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
 
     ptr = okayButton;
     if (ptr != 0) {
-        FUN_00420d90(ptr);
+        delete (T_MenuHotspot*)ptr;
         free(ptr);
         okayButton = 0;
     }
 
     ptr = cancelButton;
     if (ptr != 0) {
-        FUN_00420d90(ptr);
+        delete (T_MenuHotspot*)ptr;
         free(ptr);
         cancelButton = 0;
     }
@@ -473,7 +473,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     do {
         ptr = (void*)*base;
         if (ptr != 0) {
-            FUN_00420d90(ptr);
+            delete (T_MenuHotspot*)ptr;
             free(ptr);
             *base = 0;
         }
@@ -486,7 +486,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     do {
         ptr = (void*)*base;
         if (ptr != 0) {
-            FUN_00420d90(ptr);
+            delete (T_MenuHotspot*)ptr;
             free(ptr);
             *base = 0;
         }
@@ -1227,7 +1227,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         }
         stateVals = gs->stateValues;
         if (stateVals[idx] == 0 && cancelButton != 0) {
-            FUN_00420d90(cancelButton);
+            delete (T_MenuHotspot*)cancelButton;
             free(cancelButton);
             cancelButton = 0;
         }

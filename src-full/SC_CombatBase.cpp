@@ -20,9 +20,9 @@ class InputManager;
 extern InputManager* DAT_0046aa08;
 extern "C" extern GameState* DAT_0046aa30;
 
-extern void __fastcall FUN_00409730(void*, int, int);  // CombatSprite::ProcessFrame
-extern int __fastcall FUN_0044be70(void*, int);         // WeaponParser::UpdateProjectiles
-extern void __fastcall FUN_0042d1a0(void*, int, SpriteAction*);    // HotspotPool::PopEvent
+#include "CombatSprite.h"
+#include "mCNavigator.h"
+#include "TimedEvent.h"
 
 /* Function start: 0x42BCD0 */
 SC_CombatBase::SC_CombatBase()
@@ -54,7 +54,7 @@ int SC_CombatBase::StopAndCleanup()
         return 1;
     }
 
-    if (FUN_0044be70(DAT_0046ae70, 0) != 0) {
+    if (DAT_0046ae70->Update() != 0) {
         return 1;
     }
 
@@ -110,7 +110,7 @@ void SC_CombatBase::ProcessFrame()
 int SC_CombatBase::UpdateSprites()
 {
     if (DAT_0046ae5c != 0) {
-        FUN_00409730(DAT_0046ae5c, 0, spriteFrameCount);
+        DAT_0046ae5c->ProcessFrame(spriteFrameCount);
     }
     return 0;
 }
@@ -161,17 +161,13 @@ void SC_CombatBase::Initialize()
     SetupViewport();
 }
 
-extern void __fastcall FUN_0044c740(void*);  // Sprite dtor
-extern void __fastcall FUN_00443360(void*, int);  // TargetList dtor
-extern void __fastcall FUN_00434740(void*, int);  // EngineInfoParser dtor
-extern void __fastcall FUN_00409020(void*, int);  // CombatSprite dtor
+#include "Target.h"
 
 /* Function start: 0x42C630 */
 void SC_CombatBase::CleanupAll()
 {
     if (bgSprite != 0) {
-        FUN_0044c740(bgSprite);
-        FreeMemory(bgSprite);
+        delete (Sprite*)bgSprite;
         bgSprite = 0;
     }
     if (navigator != 0) {
@@ -187,18 +183,15 @@ void SC_CombatBase::CleanupAll()
         scoreDisplay = 0;
     }
     if (targetList != 0) {
-        FUN_00443360(targetList, 0);
-        FreeMemory(targetList);
+        delete targetList;
         targetList = 0;
     }
     if (weaponParser != 0) {
-        FUN_00434740(weaponParser, 0);
-        FreeMemory(weaponParser);
+        delete weaponParser;
         weaponParser = 0;
     }
     if (combatSprite != 0) {
-        FUN_00409020(combatSprite, 0);
-        FreeMemory(combatSprite);
+        delete combatSprite;
         combatSprite = 0;
     }
     if (viewport != 0) {
@@ -293,7 +286,7 @@ int SC_CombatBase::ProcessEvents()
             (int (__fastcall *)(void*, int, SpriteAction*))vtbl[13];
 
         do {
-            FUN_0042d1a0(pool, 0, &tempEvent);
+            ((TimedEventPool*)pool)->Pop(&tempEvent);
             localEvent.CopyFrom(&tempEvent);
             tempEvent.~SpriteAction();
             result |= handleAction(this, 0, &localEvent);
