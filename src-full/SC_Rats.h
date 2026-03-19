@@ -3,6 +3,8 @@
 
 #include "Handler.h"
 
+class SpriteAction;
+
 // SC_Rats - Rats scene handler (case 66/0x42)
 // Constructor: 0x451700
 // Size: 0xB0
@@ -27,7 +29,7 @@ public:
     void State3Handler();
     void State4Handler();
 
-    int field_A8;    // 0xA8 - sprite data pointer
+    SpriteAction* field_A8;    // 0xA8 - sprite data pointer
     int field_AC;    // 0xAC - engine info object pointer
 };
 

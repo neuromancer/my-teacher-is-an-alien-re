@@ -3,6 +3,14 @@
 
 #include "Handler.h"
 
+class SpriteAction;
+class Palette;
+class Sprite;
+class VBuffer;
+class TimeOut;
+class SoundList;
+class Sample;
+
 // SC_Wahoo - Wahoo mini-game handler (case 61/0x3D)
 // Constructor: 0x437830
 // Size: 0x168
@@ -27,31 +35,31 @@ public:
     void ProcessState();                      // 0x4382F0
     void OnProcessEnd();                      // 0x438470
 
-    void* field_A8;      // 0xA8 - SpriteAction*
-    void* field_AC;      // 0xAC - Palette*
-    void* field_B0;      // 0xB0 - Sprite*
-    void* field_B4;      // 0xB4 - Sprite*
-    void* field_B8;      // 0xB8 - Sprite*
-    void* field_BC;      // 0xBC - Sprite*
-    void* field_C0;      // 0xC0 - Sprite*
-    void* field_C4;      // 0xC4 - unknown object (dtor 0x410fd0)
-    void* field_C8;      // 0xC8 - TimeOut*
+    SpriteAction* field_A8;      // 0xA8 - SpriteAction*
+    Palette* field_AC;      // 0xAC - Palette*
+    Sprite* field_B0;      // 0xB0 - Sprite*
+    Sprite* field_B4;      // 0xB4 - Sprite*
+    Sprite* field_B8;      // 0xB8 - Sprite*
+    Sprite* field_BC;      // 0xBC - Sprite*
+    Sprite* field_C0;      // 0xC0 - Sprite*
+    VBuffer* field_C4;      // 0xC4 - unknown object (dtor 0x410fd0)
+    TimeOut* field_C8;      // 0xC8 - TimeOut*
     int field_CC;        // 0xCC
     int field_D0;        // 0xD0
     int field_D4;        // 0xD4
     int field_D8;        // 0xD8
     void* field_DC[14];  // 0xDC-0x110 - Sample* array
-    void* field_114;     // 0x114 - SoundList*
+    SoundList* field_114;     // 0x114 - SoundList*
     int field_118;       // 0x118
     int field_11C;       // 0x11C
-    void* field_120;     // 0x120
-    void* field_124;     // 0x124
-    void* field_128;     // 0x128
+    Sample* field_120;     // 0x120
+    Sample* field_124;     // 0x124
+    Sample* field_128;     // 0x128
     int field_12C;       // 0x12C
     int field_130;       // 0x130
     int field_134;       // 0x134 - width (0x140)
     int field_138;       // 0x138 - height (0xF0)
-    void* field_13C;     // 0x13C - Sprite*
+    Sprite* field_13C;     // 0x13C - Sprite*
     int field_140;       // 0x140 - gamestate value
     int field_144;       // 0x144
     int field_148;       // 0x148

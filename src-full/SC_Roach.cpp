@@ -33,9 +33,14 @@ NavCrystal::NavCrystal(int id) {
     sprite->ConfigRange(3, 0x1F, 0x1F, 1);
 }
 
+CrystalSource::CrystalSource() { memset(this, 0, sizeof(CrystalSource)); }
+GridCell::GridCell() { memset(this, 0, sizeof(GridCell)); }
+
 /* Function start: 0x418C20 */
 SC_Roach::SC_Roach()
 {
+    memset(&grid, 0, 0x186 * 4);
+    handlerId = 0x47;
 }
 
 /* Function start: 0x418F10 */

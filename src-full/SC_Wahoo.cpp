@@ -327,17 +327,17 @@ void SC_Wahoo::OnProcessEnd() {
     field_D8 = 0xF0;
 
     if (field_B4 != 0) {
-        ((Sprite*)field_B4)->ResetAnimation(0, 0);
+        field_B4->ResetAnimation(0, 0);
     }
-    ((Sprite*)field_B8)->ResetAnimation(0, 0);
-    ((Sprite*)field_C0)->ResetAnimation(4, 0);
+    field_B8->ResetAnimation(0, 0);
+    field_C0->ResetAnimation(4, 0);
 
     if (field_B4 != 0) {
-        ((Sprite*)field_B4)->ResetAnimation(1, 0);
+        field_B4->ResetAnimation(1, 0);
     }
-    ((Sprite*)field_B8)->ResetAnimation(3, 0);
-    ((Sprite*)field_BC)->ResetAnimation(4, 0);
-    ((Sprite*)field_C0)->ResetAnimation(1, 0);
+    field_B8->ResetAnimation(3, 0);
+    field_BC->ResetAnimation(4, 0);
+    field_C0->ResetAnimation(1, 0);
 
     if (field_140 != 0) {
         field_144 = 0x116;
@@ -368,11 +368,11 @@ void SC_Wahoo::OnProcessEnd() {
         if (*(int*)((int)DAT_0046aa08 + 0x1A0) != 0) {
             iVar1 = **(int**)((int)DAT_0046aa08 + 0x1A0);
         }
-        ((Sprite*)field_13C)->ResetAnimation(iVar1 / (field_134 / 5), 0);
+        field_13C->ResetAnimation(iVar1 / (field_134 / 5), 0);
     }
 
     if (field_128 != 0) {
-        ((Sample*)field_128)->Play(100, 0);
+        field_128->Play(100, 0);
     }
 
     if (field_DC[9] != 0) {
@@ -393,13 +393,13 @@ void SC_Wahoo::Update(int param1, int param2) {
     }
 
     if (*(int*)((int)field_C8) == 1) {
-        if (((TimeOut*)field_C8)->IsTimeOut() == 0) {
+        if (field_C8->IsTimeOut() == 0) {
             return;
         }
         int val = field_140;
         void* gs = DAT_0046aa30;
         int idx = ((GameState*)gs)->FindLabel("COMBAT_BRIDGE_STATE");
-        ((GameState*)gs)->FUN_00409f20(idx);
+        ((GameState*)gs)->ValidateIndex(idx);
         *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = val + 1;
         ProcessState();
         return;
@@ -408,7 +408,7 @@ void SC_Wahoo::Update(int param1, int param2) {
     spr = (Sprite*)field_B0;
     if ((*(char*)((int)&field_164) & 1) != 0) {
         if (((Sprite*)spr)->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
-            ((TimeOut*)field_C8)->Start(2000);
+            field_C8->Start(2000);
         }
         spr = (Sprite*)field_B8;
         if (spr != 0) {
@@ -483,7 +483,7 @@ label_done:
         if (*(int**)((int)DAT_0046aa08 + 0x1A0) != 0) {
             cursorX = **(int**)((int)DAT_0046aa08 + 0x1A0);
         }
-        ((Sprite*)field_13C)->ResetAnimation(cursorX / (field_134 / 3) + 5, 0);
+        field_13C->ResetAnimation(cursorX / (field_134 / 3) + 5, 0);
     }
 
     spr = (Sprite*)field_13C;
@@ -492,7 +492,7 @@ label_done:
         if (*(int**)((int)DAT_0046aa08 + 0x1A0) != 0) {
             cursorX = **(int**)((int)DAT_0046aa08 + 0x1A0);
         }
-        ((Sprite*)field_13C)->ResetAnimation(cursorX / (field_134 / 5), 0);
+        field_13C->ResetAnimation(cursorX / (field_134 / 5), 0);
     }
 }
 
@@ -506,7 +506,7 @@ void SC_Wahoo::ProcessState() {
             delete (SpriteAction*)sprAction;
             field_A8 = 0;
         }
-        field_A8 = (void*)new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        field_A8 = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         {
             Parser temp;
             ParseFile(&temp, "mis\\cb_bridge.mis", "_WIN_LBL_PR_");
@@ -534,13 +534,8 @@ int SC_Wahoo::LBLParse(char* param_1) {
 
     if (strcmp(local_38, "PALETTE") == 0) {
         sscanf(param_1, "%s %s", local_38, local_b8);
-        void* mem = malloc(8);
-        void* pal = 0;
-        if (mem != 0) {
-            pal = InitPalette((Palette*)mem);
-        }
-        field_AC = pal;
-        ((Palette*)pal)->Load(local_b8);
+        field_AC = new Palette();
+        field_AC->Load(local_b8);
     }
     else if (strcmp(local_38, "DETECTION_MASK") == 0) {
         sscanf(param_1, "%s %s", local_38, local_b8);
@@ -589,7 +584,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
     else if (strcmp(local_38, "SOUND") == 0) {
         sscanf(param_1, " %s %d %s ", local_38, &local_18, local_b8);
         if (field_114 == 0) {
-            field_114 = (void*)new SoundList(0xf);
+            field_114 = new SoundList(0xf);
         }
         if (local_18 == 0) {
             int iVar3 = atoi(local_b8);
@@ -597,7 +592,7 @@ int SC_Wahoo::LBLParse(char* param_1) {
         }
         else if (local_18 >= 1 && local_18 <= 6) {
             char* path = MakeAudioName(local_b8);
-            void* snd = ((SoundList*)field_114)->Register(path);
+            Sample* snd = (Sample*)field_114->Register(path);
             if (local_18 == 1) {
                 field_11C = (int)snd;
             }
@@ -696,7 +691,7 @@ int SC_Wahoo::FUN_438F10(int param_1) {
         if (!bVar1) goto LAB_004392b0;
 
         {
-        unsigned int uVar2 = ((VBuffer*)field_C4)->CheckHit(
+        unsigned int uVar2 = field_C4->CheckHit(
             iVar7 - field_154,
             *(int*)(param_1 + 0x124) - field_158);
 
@@ -704,7 +699,7 @@ int SC_Wahoo::FUN_438F10(int param_1) {
             (pvVar6 = *(void**)((int)this + uVar2 * 4 + 0xb4),
              *(int*)((int)pvVar6 + 0x98) != 0)) {
             if (field_120 != 0) {
-                ((Sample*)field_120)->Play(100, 1);
+                field_120->Play(100, 1);
             }
             return 1;
         }
@@ -754,7 +749,7 @@ int SC_Wahoo::FUN_438F10(int param_1) {
             *(int*)(iVar5 + 0xc) == *(int*)(iVar7 + 4)) {
             iVar7 = AIL_sample_status((HSAMPLE)iVar5);
             if (iVar7 == 4) {
-                ((Sample*)field_124)->Stop();
+                field_124->Stop();
             }
         }
 
@@ -774,7 +769,7 @@ int SC_Wahoo::FUN_438F10(int param_1) {
         if (*(int*)((int)field_B4 + 0x98) == 0 && 1 < iVar3) {
             if (iVar7 == 3) {
                 *(unsigned int*)((int)this + 0x164) = *(unsigned int*)((int)this + 0x164) | 1;
-                ((Sprite*)field_B0)->ResetAnimation(1, 0);
+                field_B0->ResetAnimation(1, 0);
                 pvVar6 = *(void**)((int)this + 0x130);
                 if (pvVar6 != 0) {
                     uVar10 = 1;
@@ -782,7 +777,7 @@ int SC_Wahoo::FUN_438F10(int param_1) {
                 }
             }
             else if (iVar7 != iVar3) {
-                ((Sprite*)field_B4)->ResetAnimation(1, 0);
+                field_B4->ResetAnimation(1, 0);
                 pvVar6 = field_128;
                 if (pvVar6 != 0) {
                     uVar10 = 0;
@@ -823,9 +818,9 @@ LAB_00439160:
             piVar4 = (int*)(*(int*)((int)pvVar6 + 0x90) + uVar2 * 4);
             }
             *piVar4 = *piVar4 + 5;
-            ((Sprite*)field_B4)->ResetAnimation(0, 0);
+            field_B4->ResetAnimation(0, 0);
             if (field_128 != 0) {
-                ((Sample*)field_128)->Stop();
+                field_128->Stop();
             }
             {
             void** puVar9 = (void**)((int)this + 0xb8);
@@ -840,7 +835,7 @@ LAB_00439160:
                             iVar3 = AIL_sample_status((HSAMPLE)iVar5);
                             if (iVar3 == 4) goto LAB_004392aa;
                         }
-                        ((Sample*)field_124)->Play(100, 0);
+                        field_124->Play(100, 0);
                     }
                 }
 LAB_004392aa:
@@ -853,7 +848,7 @@ LAB_004392aa:
 
 LAB_004392b0:
     if (field_120 != 0) {
-        ((Sample*)field_120)->Play(100, 1);
+        field_120->Play(100, 1);
     }
     return 1;
 }

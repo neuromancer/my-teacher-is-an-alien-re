@@ -68,7 +68,7 @@ void SC_Slime::Init(SC_Message* msg)
     memset(field_170, 0, field_17C * sizeof(int));
 
     SlimeTable* table = new SlimeTable();
-    field_16C = (int)table;
+    field_16C = table;
     table->Init(0xC);
 
     moduleParam = ((int*)msg)[1];
@@ -77,7 +77,7 @@ void SC_Slime::Init(SC_Message* msg)
     if (field_A8 == 0) {
         SpriteAction* action = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        field_A8 = (int)action;
+        field_A8 = action;
     }
 
     if (palette != 0) {
@@ -97,7 +97,7 @@ void SC_Slime::Init(SC_Message* msg)
     field_170[6] = 0;
 
     TimeOut* timer = new TimeOut();
-    field_B8 = (int)timer;
+    field_B8 = timer;
 }
 
 /* Function start: 0x40D430 */
@@ -219,7 +219,7 @@ void SC_Slime::ProcessSprite(Sprite* spr) {
         }
 
         if (field_168 != 0) {
-            ((Sample*)field_168)->Play(100, 1);
+            field_168->Play(100, 1);
         }
         spriteBC->ResetAnimation(8, 0);
 
@@ -397,7 +397,7 @@ void SC_Slime::SendResultMessage() {
             field_A8 = 0;
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        field_A8 = (int)action;
+        field_A8 = action;
         Parser temp;
         ParseFile(&temp, "mis\\cb_slime.mis", "[WIN_LBL_PR]");
         goto enqueue;
@@ -410,7 +410,7 @@ void SC_Slime::SendResultMessage() {
             field_A8 = 0;
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        field_A8 = (int)action;
+        field_A8 = action;
         Parser temp;
         ParseFile(&temp, "mis\\cb_slime.mis", "[LOSE_LBL_PR]");
         goto enqueue;

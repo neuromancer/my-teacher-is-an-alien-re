@@ -19,15 +19,14 @@ SC_DemoScreen::SC_DemoScreen() {
     handlerId = 0x29;
     moduleParam = 1;
 
-    Palette* pal = new Palette();
-    field_A8 = (int)pal;
-    pal->Load("elements\\Demoscrn.col");
+    field_A8 = new Palette();
+    field_A8->Load("elements\\Demoscrn.col");
 
-    field_AC = (int)new Sprite("elements\\Demoscrn.smk");
-    ((Sprite*)field_AC)->priority &= ~2;
-    ((Sprite*)field_AC)->handle = 0;
-    ((Sprite*)field_AC)->num_states = 0;
-    ((Sprite*)field_AC)->field_0xb0 = 0;
+    field_AC = new Sprite("elements\\Demoscrn.smk");
+    field_AC->priority &= ~2;
+    field_AC->handle = 0;
+    field_AC->num_states = 0;
+    field_AC->field_0xb0 = 0;
 }
 
 /* Function start: 0x44E740 */

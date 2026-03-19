@@ -534,15 +534,272 @@ push_result:
 }
 
 /* Function start: 0x413120 */
+#include "Sprite.h"
+
+extern "C" extern GameState* DAT_0046aa30;
+extern GameState* DAT_0046aa38;
+extern MouseControl* DAT_0046aa18;
+extern int DAT_00469160;
+extern void __stdcall ParseGosubParams(char* line);
+
+extern "C" char* FUN_00426570(char* s1, char* s2);
+extern "C" char* strstr(const char*, const char*);
+extern void __fastcall FUN_00433cb0(void*, int, int);
+
+/* Function start: 0x413120 */
 void Parser::HandleToken(int tokenType, char* line) {
-    // Large switch on tokenType (1-13), dispatching to various handlers:
-    //   1: SET_GAMESTATE, SET_MOUSE, GOSUB, GOTO, HALT, VARIABLE, _RETURN_
-    //   3: BeginComment + Push(0) + set field_0xC = 1
-    //   4: Pop, check bit 2, push result — ELSEIF
-    //   5: Pop, check bit 2, push toggled — ELSE
-    //   6: SET_GAMESTATE (token 6)
-    //   7-13: various other token handlers
-    // TODO: Full implementation needed (656 lines of assembly)
+    char local_210[128];
+    char local_190[128];
+    char local_110[32];
+    char local_f0[96];
+    char local_90[24];
+    SpriteAction local_70;
+    char* local_74;
+    int local_6c;
+    int local_60;
+    char* local_5c;
+    char local_58[32];
+    char local_38[24];
+    int local_20;
+    char* local_1c;
+    int local_18;
+    char* local_14;
+    int iVar12;
+    char* pcVar6;
+    char* pcVar7;
+    int result;
+
+    switch (tokenType) {
+    case 1:
+        BeginComment(line, 0);
+        PushConditionalState(0);
+        isProcessingKey = 1;
+        break;
+
+    case 3:
+        result = EndComment();
+        if ((result & 2) == 0) {
+            HandleToken_IF(line, result);
+        } else {
+            PushConditionalState(result & 0xFFFFFFFE);
+        }
+        break;
+
+    case 4:
+        result = EndComment();
+        if ((result & 2) == 0) {
+            result = result | 1;
+        } else {
+            result = result & 0xFFFFFFFE;
+        }
+        PushConditionalState(result);
+        break;
+
+    case 6:
+        pcVar7 = FUN_00426570(line, "SET_GAMESTATE_");
+        pcVar6 = local_14;
+        if (pcVar7 != 0) {
+            pcVar6 = (char*)sscanf(pcVar7, " %s %s %d", local_38, local_90, &local_14);
+        }
+        if (pcVar6 != (char*)3) {
+            ShowError("Parser::HandleToken - Invalid SET_GAMESTATE statement '%s'");
+        }
+        {
+            SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            local_6c = DAT_0046aa30->FindState(local_38);
+            local_60 = DAT_0046aa38->FindState(local_90);
+            local_5c = local_14;
+            FUN_00433cb0(DAT_0046aa30, 0, (int)&action);
+        }
+        break;
+
+    case 7:
+        pcVar7 = FUN_00426570(line, "SET_MOUSE_");
+        pcVar6 = local_14;
+        if (pcVar7 != 0) {
+            pcVar6 = (char*)sscanf(pcVar7, " %d", &local_14);
+        }
+        if (pcVar6 != (char*)1) {
+            ShowError("Parser::HandleToken - Invalid SET_MOUSE statement '%s'");
+        }
+        if (DAT_0046aa18 != 0 && *(void**)((char*)DAT_0046aa18 + 0x94) != 0) {
+            ((Sprite*)*(void**)((char*)DAT_0046aa18 + 0x94))->ResetAnimation((int)local_14, 0);
+        }
+        break;
+
+    case 8:
+        local_14 = strstr(line, "(");
+        pcVar6 = FUN_00426570(line, ")");
+        iVar12 = (int)pcVar6 - (int)local_14;
+        if (local_14 == 0 || pcVar6 == 0 || iVar12 < 1) {
+            ShowError("Parser::HandleToken - Invalid GOTO statement. cannot find sub name '%s'");
+        }
+        strncpy((char*)local_90, local_14, iVar12);
+        local_90[iVar12] = 0;
+        FindKey((unsigned char*)local_90);
+        break;
+
+    case 9:
+        if (field_0x3c == 0) {
+            local_14 = (char*)operator new(0x18);
+            if (local_14 == 0) {
+                pcVar6 = 0;
+            } else {
+                memset(local_14, 0, 0x18);
+                *(int*)(local_14 + 0x14) = 10;
+                pcVar6 = local_14;
+            }
+            field_0x3c = (int)pcVar6;
+        }
+        {
+            int filePos[2];
+            filePos[0] = 0;
+            filePos[1] = 0;
+            fgetpos(pFile, (fpos_t*)filePos);
+
+            int* pool = (int*)field_0x3c;
+            int headVal = *pool;
+            local_18 = filePos[0];
+            local_14 = (char*)filePos[1];
+
+            if (pool[3] == 0) {
+                int* newBlock = (int*)operator new(pool[5] * 16 + 4);
+                *newBlock = pool[4];
+                pool[4] = (int)newBlock;
+                int cnt = pool[5];
+                int* p = newBlock + cnt * 4 - 3;
+                while (cnt-- > 0) {
+                    *p = pool[3];
+                    pool[3] = (int)p;
+                    p -= 4;
+                }
+            }
+            int* node = (int*)pool[3];
+            pool[3] = *node;
+            node[1] = 0;
+            *node = headVal;
+            pool[2]++;
+            node[2] = 0;
+            node[3] = 0;
+            {
+                int dummy = 0;
+                do { int tmp = dummy; dummy--; if (tmp == 0) break; } while (1);
+            }
+            node[2] = local_18;
+            node[3] = (int)local_14;
+            if (*pool == 0) {
+                pool[1] = (int)node;
+            } else {
+                *(int*)(*pool + 4) = (int)node;
+            }
+            *pool = (int)node;
+
+            local_14 = strstr(line, "(");
+            local_74 = FUN_00426570(line, ")");
+            iVar12 = (int)local_74 - (int)local_14;
+            if (local_14 == 0 || local_74 == 0 || iVar12 < 1) {
+                ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot find sub name '%s'");
+            }
+            strncpy((char*)local_58, local_14, iVar12);
+            local_58[iVar12] = 0;
+
+            local_14 = strstr(local_74, "(");
+            if (local_14 != 0) {
+                local_74 = FUN_00426570(local_14, ")");
+            }
+            iVar12 = (int)local_74 - (int)local_14;
+            if (local_14 != 0 && local_74 != 0 && iVar12 > 0) {
+                if (DAT_00469160 != 0) {
+                    ShowError("Parser::HandleToken - Invalid GOSUB statement. Nested sub not allowed '%s'");
+                }
+                DAT_00469160 = 1;
+                strncpy(local_f0, local_14, iVar12);
+                local_f0[iVar12] = 0;
+                ParseGosubParams(local_f0);
+            }
+            FindKey((unsigned char*)local_58);
+        }
+        break;
+
+    case 10:
+        if (field_0x3c == 0 || *(int*)(field_0x3c + 8) == 0) {
+            ShowError("Parser::HandleToken - Invalid <<_RETURN_>>");
+        }
+        {
+            int* pool = (int*)field_0x3c;
+            int* node = (int*)*pool;
+            local_74 = (char*)node[3];
+            int savedPos = node[2];
+            int nextNode = *node;
+            *pool = nextNode;
+            if (nextNode == 0) {
+                pool[1] = 0;
+            } else {
+                *(int*)(nextNode + 4) = 0;
+            }
+            {
+                int dummy = 0;
+                do { int tmp = dummy; dummy--; if (tmp == 0) break; } while (1);
+            }
+            *node = pool[3];
+            pool[3] = (int)node;
+            pool[2]--;
+            local_18 = savedPos;
+            local_14 = local_74;
+            fsetpos(pFile, (fpos_t*)&savedPos);
+            DAT_00469160 = 0;
+        }
+        break;
+
+    case 0xB:
+        FUN_00426570(line, "HALT_");
+        pcVar6 = strstr(line, "\0");
+        if (pcVar6 != 0) {
+            *pcVar6 = 0;
+        }
+        ShowError(" %s %s");
+        break;
+
+    case 0xD:
+        iVar12 = 0;
+        local_14 = FUN_00426570(line, "=");
+        if (local_14 == 0) {
+            pcVar6 = 0;
+        } else {
+            pcVar6 = strstr(local_14, "(");
+            if (pcVar6 != 0) {
+                local_1c = FUN_00426570(pcVar6, ")");
+                if (local_1c != 0) {
+                    iVar12 = sscanf(pcVar6 + 2, "%s %s", local_110, local_58);
+                    pcVar7 = strstr((char*)local_58, ")");
+                    if (pcVar7 != 0) {
+                        *pcVar7 = 0;
+                    }
+                }
+            }
+        }
+        if (iVar12 != 2) {
+            ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'");
+        }
+        if (strcmp((char*)local_110, "INT") == 0) {
+            local_74 = (char*)DAT_0046aa30;
+            int idx = DAT_0046aa30->FindState((char*)local_58);
+            if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+                ShowError("Invalid gamestate %d", idx);
+            }
+            pcVar7 = (char*)DAT_0046aa30->stateValues[idx];
+        } else {
+            ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'");
+            pcVar7 = local_14;
+        }
+        iVar12 = (int)pcVar6 - (int)local_14;
+        strncpy(local_190, local_14, iVar12);
+        pcVar6 = local_1c;
+        local_190[iVar12] = 0;
+        sprintf(local_210, "%s_%d_%s", local_190, pcVar7, pcVar6);
+        strcpy(line, local_210);
+        break;
+    }
 }
 
 extern char DAT_00469168[160];
@@ -550,32 +807,32 @@ extern char DAT_00469168[160];
 /* Function start: 0x414040 */
 void __stdcall ParseGosubParams(char* line) {
     int done;
-    int i;
     char* start;
-    char* end;
-    int len;
+    int i;
 
     done = 0;
     i = 0;
+
     do {
         start = line + 1;
-        end = strchr(start, ',');
-        if (end == 0) {
-            end = strchr(start, ')');
+        line = strchr(start, ',');
+        if (line == 0) {
+            line = strchr(start, ')');
             done = 1;
-            if (end == 0) {
-                ShowError(line);
+            if (line == 0) {
+                ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot fill variable list '%s'", line);
             }
         }
-        len = end - start;
-        if (start == 0 || end == 0 || len <= 0) {
-            ShowError(line);
+        {
+            int len = line - start;
+            if (start == 0 || line == 0 || len <= 0) {
+                ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot fill variable list '%s'", line);
+            }
+            strncpy(&DAT_00469168[i], start, len);
+            DAT_00469168[i + len] = 0;
+            i += 0x20;
         }
-        strncpy(&DAT_00469168[i], start, len);
-        DAT_00469168[i + len] = 0;
-        i += 0x20;
         if (start == 0 || done != 0) break;
-        line = end;
     } while (1);
 }
 

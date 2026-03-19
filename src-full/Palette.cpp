@@ -1,5 +1,6 @@
 #include "Palette.h"
 #include "PaletteUtils.h"
+#include "mss.h"
 #include "string.h"
 
 #include <stdio.h>
@@ -226,5 +227,16 @@ int Palette::Compare(char* data, int size)
 void Palette::PlaySound(int) {}
 
 /* Function start: 0x4256D0 */
-int Palette::CheckSound(int) { return 0; }
+int Palette::CheckSound(int idx) {
+    if (idx < 0 || m_size - 1 < idx) {
+        return 0;
+    }
+    int* sample = ((int**)m_data)[idx];
+    if (sample == 0) return 0;
+    int* handle = (int*)sample[3];
+    if (handle == 0) return 0;
+    if (sample[1] != *(int*)((char*)handle + 0xC)) return 0;
+    if (AIL_sample_status((HSAMPLE)handle) != 4) return 0;
+    return 1;
+}
 

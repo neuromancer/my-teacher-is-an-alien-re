@@ -22,8 +22,8 @@ extern FlagArray* DAT_0046a6e8;
 
 extern void ResetSpriteStates();
 
-/* Function start: 0x418086 */
 /* Function start: 0x418060 */
+/* Function start: 0x418086 */
 int Handler31::LBLParse(char* line) {
     char token[32];
     char arg2[32];
@@ -41,18 +41,17 @@ int Handler31::LBLParse(char* line) {
     } else if (strcmp(token, "PALETTE") == 0) {
         sscanf(line, "%s %s", token, arg2);
         if (field_B4 != 0) {
-            delete (Palette*)field_B4;
+            delete field_B4;
             field_B4 = 0;
         }
-        Palette* pal = new Palette();
-        field_B4 = (int)pal;
-        pal->Load(arg2);
+        field_B4 = new Palette();
+        field_B4->Load(arg2);
     } else if (strcmp(token, "QUESTION") == 0) {
         sscanf(line, " %s %d ", token, &id);
         question = new SC_Question(id, (SCI_Dialog*)this);
 
         if (question->state != 2) {
-            list = (LinkedList*)field_C8;
+            list = field_C8;
             count = 0;
             node = list->head;
             list->current = node;
@@ -66,7 +65,7 @@ int Handler31::LBLParse(char* line) {
             }
 
             if (count < 0xD) {
-                list = (LinkedList*)field_C8;
+                list = field_C8;
                 if (question == 0) {
                     ShowError("queue fault 0112");
                 }
@@ -98,9 +97,8 @@ int Handler31::LBLParse(char* line) {
     } else if (strcmp(token, "PLACEHOLDER") == 0) {
         sscanfResult = sscanf(line, " %s %d %s", token, &id, arg2);
 
-        if (((LinkedList*)field_C8)->head == 0) {
-            question = new SC_Question(id, (SCI_Dialog*)this);
-            field_C4 = (int)question;
+        if ((field_C8)->head == 0) {
+            field_C4 = new SC_Question(id, (SCI_Dialog*)this);
         }
 
         DAT_0046a6e8->SetFlag(id, 4);
@@ -114,7 +112,7 @@ int Handler31::LBLParse(char* line) {
             }
         }
 
-        question = (SC_Question*)field_C4;
+        question = field_C4;
         if (question != 0 && question->state == 2 && question != 0) {
             question->~SC_Question();
             FreeMemory(question);
@@ -138,7 +136,7 @@ int Handler31::CheckDuplicateQuestion(int param) {
 
     question = new SC_Question(param, (SCI_Dialog*)this);
 
-    list = (LinkedList*)field_C8;
+    list = field_C8;
     if (list != 0) {
         if (question == 0) {
             ShowError("queue fault 0103");
@@ -201,27 +199,26 @@ Handler31::~Handler31() {
     }
 
     if (field_C8 != 0) {
-        int* list = (int*)field_C8;
-        if (*list != 0) {
-            list[2] = *list;
-            while (*list != 0) {
-                void* item = ((LinkedList*)field_C8)->RemoveCurrent();
+        if (field_C8->head != 0) {
+            field_C8->current = field_C8->head;
+            while (field_C8->head != 0) {
+                void* item = field_C8->RemoveCurrent();
                 if (item != 0) {
                     delete (SC_Question*)item;
                 }
             }
         }
-        operator delete((void*)field_C8);
+        operator delete(field_C8);
         field_C8 = 0;
     }
 
     if (field_C4 != 0) {
-        delete (SC_Question*)field_C4;
+        delete field_C4;
         field_C4 = 0;
     }
 
     if (field_B4 != 0) {
-        delete (Palette*)field_B4;
+        delete field_B4;
         field_B4 = 0;
     }
 }
@@ -239,8 +236,8 @@ int Handler31::ShutDown(SC_Message* msg) {
     }
 
     if (field_C0 != 0) {
-        ((SC_Question*)field_C0)->Finalize();
-        question = (SC_Question*)field_C0;
+        field_C0->Finalize();
+        question = field_C0;
         if (question != 0) {
             question->~SC_Question();
             FreeMemory(question);
@@ -249,7 +246,7 @@ int Handler31::ShutDown(SC_Message* msg) {
     }
 
     if (field_C8 != 0) {
-        LinkedList* list = (LinkedList*)field_C8;
+        LinkedList* list = field_C8;
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
@@ -264,12 +261,12 @@ int Handler31::ShutDown(SC_Message* msg) {
     }
 
     if (field_C4 != 0) {
-        delete (SC_Question*)field_C4;
+        delete field_C4;
         field_C4 = 0;
     }
 
     if (field_B4 != 0) {
-        delete (Palette*)field_B4;
+        delete field_B4;
         field_B4 = 0;
     }
 
@@ -322,22 +319,22 @@ void Handler31::Update(int param1, int param2) {
         field_CC = 0;
     }
 
-    if (field_C0 == 0 && field_C8 != 0 && ((LinkedList*)field_C8)->head == 0 && field_C4 != 0) {
+    if (field_C0 == 0 && field_C8 != 0 && (field_C8)->head == 0 && field_C4 != 0) {
         field_C0 = field_C4;
-        ((SC_Question*)field_C0)->InitState();
+        field_C0->InitState();
         field_C4 = 0;
     }
 
     if (field_C0 != 0) {
-        ((SC_Question*)field_C0)->Update(0x12, 0xA);
-        question = (SC_Question*)field_C0;
+        field_C0->Update(0x12, 0xA);
+        question = field_C0;
         if (question->state == 2 && question != 0) {
             question->~SC_Question();
             FreeMemory(question);
             field_C0 = 0;
         }
     } else {
-        list = (LinkedList*)field_C8;
+        list = field_C8;
         if (list != 0 && list->head != 0) {
             pMouse = DAT_0046aa08->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
@@ -399,8 +396,8 @@ int Handler31::AddMessage(SC_Message* msg) {
     if (field_C0 != 0) {
         msgData[0] = savedCommand;
         msgData[1] = savedCommand;
-        ((SC_Question*)field_C0)->OnInput((SC_Message*)msgData);
-        question = (SC_Question*)field_C0;
+        field_C0->OnInput((SC_Message*)msgData);
+        question = field_C0;
         if (question->state == 2 && question != 0) {
             question->~SC_Question();
             FreeMemory(question);

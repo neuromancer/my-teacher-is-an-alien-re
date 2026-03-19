@@ -299,10 +299,10 @@ int SearchScreen::Exit(SC_Message* msg) {
         SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
         return 1;
     case 0x1c:
-        g_GameState_00436998->Serialize(1);
+        { int mode = 1; g_GameState_00436998->Serialize(&mode); }
         return 1;
     case 0x1d:
-        g_GameState_00436998->Serialize(2);
+        { int mode = 2; g_GameState_00436998->Serialize(&mode); }
         return 1;
     default:
         return 0;

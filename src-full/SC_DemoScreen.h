@@ -3,6 +3,9 @@
 
 #include "Handler.h"
 
+class Palette;
+class Sprite;
+
 // SC_DemoScreen - Demo screen handler (case 41/0x29)
 // Constructor: 0x44E5C0
 // Size: 0xB0
@@ -19,8 +22,8 @@ public:
     void Update(int param1, int param2);
     int Exit(SC_Message* msg);
 
-    int field_A8;    // 0xA8 - Palette*
-    int field_AC;    // 0xAC - Sprite*
+    Palette* field_A8;    // 0xA8 - Palette*
+    Sprite* field_AC;    // 0xAC - Sprite*
 };
 
 #endif // SC_DEMOSCREEN_H

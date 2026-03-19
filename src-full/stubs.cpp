@@ -482,3 +482,8 @@ int g_AnimStates_0046ac30[5];
 int g_LastBombDir_0046ac44;
 POINT g_CursorPos_00473308;
 int rand_00454920() { return rand(); }
+void __fastcall FUN_00433cb0(void*, int, int) {}
+void __fastcall FUN_00425620(void*, int, int, char*, int) {}
+void __fastcall FUN_004254a0(void*, int, int) {}
+void __fastcall FUN_00445450(void*, int, void*) {}
+void __fastcall FUN_00449480(void*, int, int, int) {}

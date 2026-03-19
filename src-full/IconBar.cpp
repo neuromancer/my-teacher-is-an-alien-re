@@ -341,9 +341,9 @@ int IconBar::AddMessage(SC_Message* msg) {
     return 1;
 }
 
-/* Function start: 0x42DD30 */ /* 16 bytes, no assembly file extracted */
+/* Function start: 0x42DD30 */
 int IconBar::Exit(SC_Message* msg) {
-    return WriteMessageAddress(msg);
+    return 0;
 }
 
 /* Function start: 0x42DD40 */
@@ -547,17 +547,16 @@ int IconBar::LBLParse(char* param) {
     return 0;
 }
 
-IconBarEntry::~IconBarEntry() {
-}
-
 /* Function start: 0x42E330 */
 IconBarEntry::IconBarEntry() {
     left = 0;
     top = 0;
     right = 0;
     bottom = 0;
-    memset(this, 0, sizeof(IconBarEntry));
+    memset(this, 0, 9 * 4);
 }
+
+// IconBarEntry::~IconBarEntry defined in IconBarEntry.cpp (separate TU forces SEH in ctor)
 
 /* Function start: 0x42E3A0 */
 void IconBarEntry::CreateAction(int p1, int p2, int p3) {

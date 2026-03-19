@@ -41,7 +41,7 @@ extern int DAT_00472bdc;
 
 /* Function start: 0x407290 */
 SC_FireAlarm::SC_FireAlarm() {
-    memset(&field_A8, 0, 0xA8);
+    memset(&field_A8, 0, 0x2A * 4);
     handlerId = 0x40;
 }
 
@@ -74,7 +74,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
     if (field_A8 == 0) {
         SpriteAction* sprite = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        field_A8 = (int)sprite;
+        field_A8 = sprite;
     }
 }
 
@@ -204,7 +204,7 @@ void SC_FireAlarm::SendResultMessage() {
 
     // Create new SpriteAction
     SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    field_A8 = (int)action;
+    field_A8 = action;
 
     // Parse win or lose message from CB_FireAlarm.mis
     Parser temp;
@@ -233,10 +233,10 @@ void SC_FireAlarm::ResetState() {
     field_B0 = 0;
     field_AC = 0;
     if (field_10C != 0) {
-        ((Sprite*)field_10C)->ResetAnimation(-1, 0);
+        field_10C->ResetAnimation(-1, 0);
     }
     if (field_C8 != 0) {
-        ((Sprite*)field_C8)->ResetAnimation(-1, 0);
+        field_C8->ResetAnimation(-1, 0);
     }
     if (field_140 == 0) {
         ((Palette*)field_148)->PlaySound(9);
@@ -259,7 +259,7 @@ int SC_FireAlarm::HandleClick(int* param) {
         int x = coords[0] - 0xA1;
         *(int*)(field_F8 + 0xAC) = x;
         *(int*)(field_F8 + 0xB0) = y;
-        ((Sprite*)field_F8)->ResetAnimation(2, 0);
+        field_F8->ResetAnimation(2, 0);
         ((Palette*)field_148)->PlaySound(2);
         return 1;
     }
@@ -278,19 +278,19 @@ int SC_FireAlarm::HandleClick(int* param) {
     int soundId;
 
     if (dim_E8.field_0 <= hitResult && dim_E8.field_4 >= hitResult) {
-        field_F0++;
-        field_138 += DAT_004685a0;
+        dim_F0.field_0++;
+        dim_138.field_0 += DAT_004685a0;
         int done;
-        if (field_F4 == 0) {
+        if (dim_F0.field_4 == 0) {
             done = 0;
-        } else if (field_F0 >= field_F4) {
+        } else if (dim_F0.field_0 >= dim_F0.field_4) {
             done = 1;
         } else {
             done = 0;
         }
         if (done) {
             ((Palette*)field_148)->PlaySound(0xF);
-            field_F0 = 0;
+            dim_F0.field_0 = 0;
             goto returnOne;
         }
         soundId = 3;
@@ -299,7 +299,7 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     if (dim_114.field_0 <= hitResult && dim_114.field_4 >= hitResult) {
         soundId = 0xA;
-        field_138 += DAT_00472bd8;
+        dim_138.field_0 += DAT_00472bd8;
         goto playSound;
     }
 
@@ -313,7 +313,7 @@ int SC_FireAlarm::HandleClick(int* param) {
         }
 
         if (inSlot) {
-            ((Sprite*)field_C8)->ResetAnimation(*(int*)(field_C8 + 0x98) + 1, 0);
+            field_C8->ResetAnimation(*(int*)(field_C8 + 0x98) + 1, 0);
 
             {
                 int curFrame = *(int*)(field_C8 + 0x98);
@@ -334,7 +334,7 @@ afterSound:;
             }
 
             if (*(int*)(field_DC + 0x98) == 0) {
-                ((Sprite*)field_DC)->ResetAnimation(1, 0);
+                field_DC->ResetAnimation(1, 0);
             }
             goto returnOne;
         }
@@ -349,9 +349,9 @@ returnOne:
 
 /* Function start: 0x407E50 */
 void SC_FireAlarm::Render() {
-    ((Sprite*)field_C4)->Do(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 1.0);
-    ((Sprite*)field_110)->Do(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 1.0);
-    ((Sprite*)field_DC)->Do(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 1.0);
+    field_C4->Do(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 1.0);
+    field_110->Do(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 1.0);
+    field_DC->Do(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 1.0);
     if (((Palette*)field_148)->CheckSound(9) == 0) {
         field_B0 = 1;
         field_AC &= ~8;
@@ -360,11 +360,11 @@ void SC_FireAlarm::Render() {
 
 /* Function start: 0x407EE0 */
 void SC_FireAlarm::ProcessFrame() {
-    int spr110;
+    Sprite* spr110;
     int iVar4;
 
-    if ((field_AC & 0xF) == 0 && field_13C != 0 && field_138 >= field_13C) {
-        field_138 = 0;
+    if ((field_AC & 0xF) == 0 && dim_138.field_4 != 0 && dim_138.field_0 >= dim_138.field_4) {
+        dim_138.field_0 = 0;
         spr110 = field_110;
         int animRes = *(int*)(spr110 + 0xF0);
         int dataPtr = *(int*)(animRes + 0xC);
@@ -386,13 +386,13 @@ void SC_FireAlarm::ProcessFrame() {
             *(int*)(spr110 + 0xB0) = y;
         }
 
-        ((Sprite*)field_DC)->ResetAnimation(0, 0);
+        field_DC->ResetAnimation(0, 0);
 
         if (*(int*)(field_F8 + 0x98) == 0) {
-            ((Sprite*)field_F8)->ResetAnimation(-1, 0);
+            field_F8->ResetAnimation(-1, 0);
         }
 
-        ((Sprite*)field_10C)->ResetAnimation(*(int*)(field_10C + 0x98) + 1, 0);
+        field_10C->ResetAnimation(*(int*)(field_10C + 0x98) + 1, 0);
 
         iVar4 = *(int*)(field_10C + 0x98);
         if (iVar4 == 2) {
@@ -401,16 +401,16 @@ void SC_FireAlarm::ProcessFrame() {
 
         ((ZBuffer*)DAT_004685ac)->ResetItems();
 
-        ((Sprite*)field_110)->ResetAnimation(iVar4 + 1, 0);
+        field_110->ResetAnimation(iVar4 + 1, 0);
 
         ((Palette*)field_148)->PlaySound(iVar4 + 0xC);
 
         field_AC |= 1;
     }
 
-    ((Sprite*)field_C4)->Do(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 1.0);
+    field_C4->Do(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 1.0);
 
-    int renderResult = ((Sprite*)field_110)->Do(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 1.0);
+    int renderResult = field_110->Do(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 1.0);
 
     if ((field_AC & 0xF) == 0) {
         int animData = *(int*)(field_110 + 0xF0);
@@ -422,10 +422,10 @@ void SC_FireAlarm::ProcessFrame() {
         }
 
         if (frameCount == 0x28) {
-            ((Sprite*)field_F8)->ResetAnimation(0, 0);
+            field_F8->ResetAnimation(0, 0);
         } else if (frameCount == 0x50) {
             if (*(int*)(field_DC + 0x98) == 0) {
-                ((Sprite*)field_DC)->ResetAnimation(1, 0);
+                field_DC->ResetAnimation(1, 0);
             }
         }
     }
@@ -440,7 +440,7 @@ void SC_FireAlarm::ProcessFrame() {
                 spr[0xB0/4] = temp.field_4;
             }
 
-            ((Sprite*)field_110)->ResetAnimation(0, field_134);
+            field_110->ResetAnimation(0, field_134);
 
             int ac = field_AC & ~1;
             field_AC = ac;
@@ -470,52 +470,52 @@ void SC_FireAlarm::ProcessFrame() {
     }
 
     {
-        int dcRender = ((Sprite*)field_DC)->Do(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 1.0);
+        int dcRender = field_DC->Do(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 1.0);
         if (dcRender != 0) {
             int dcFrame = *(int*)(field_DC + 0x98);
             switch (dcFrame) {
             case 1:
-                ((Sprite*)field_DC)->ResetAnimation(2, 0);
+                field_DC->ResetAnimation(2, 0);
                 {
                     int r = rand();
-                    field_E0 = 0;
-                    field_E4 = r % 0x14 + 0x14;
+                    dim_E0.field_0 = 0;
+                    dim_E0.field_4 = r % 0x14 + 0x14;
                 }
                 break;
             case 2:
                 {
-                    field_E0++;
+                    dim_E0.field_0++;
                     int done2;
-                    if (field_E4 == 0) {
+                    if (dim_E0.field_4 == 0) {
                         done2 = 0;
-                    } else if (field_E0 >= field_E4) {
+                    } else if (dim_E0.field_0 >= dim_E0.field_4) {
                         done2 = 1;
                     } else {
                         done2 = 0;
                     }
                     if (!done2) break;
                 }
-                ((Sprite*)field_DC)->ResetAnimation(3, 0);
+                field_DC->ResetAnimation(3, 0);
                 break;
             case 3:
-                ((Sprite*)field_DC)->ResetAnimation(0, 0);
+                field_DC->ResetAnimation(0, 0);
                 break;
             }
         }
     }
 
     {
-        int f8Render = ((Sprite*)field_F8)->Do(*(int*)(field_F8 + 0xAC), *(int*)(field_F8 + 0xB0), 1.0);
+        int f8Render = field_F8->Do(*(int*)(field_F8 + 0xAC), *(int*)(field_F8 + 0xB0), 1.0);
         if (f8Render != 0) {
             int f8Frame = *(int*)(field_F8 + 0x98);
             switch (f8Frame) {
             case 0:
-                ((Sprite*)field_F8)->ResetAnimation(1, 0);
-                field_138 += DAT_00472bdc;
+                field_F8->ResetAnimation(1, 0);
+                dim_138.field_0 += DAT_00472bdc;
                 ((Palette*)field_148)->PlaySound(0xB);
                 break;
             case 1:
-                ((Sprite*)field_F8)->ResetAnimation(-1, 0);
+                field_F8->ResetAnimation(-1, 0);
                 break;
             case 2:
                 {
@@ -523,19 +523,19 @@ void SC_FireAlarm::ProcessFrame() {
                     *(int*)(field_F8 + 0xAC) = temp2.field_0;
                     *(int*)(field_F8 + 0xB0) = temp2.field_4;
                 }
-                ((Sprite*)field_F8)->ResetAnimation(-1, 0);
+                field_F8->ResetAnimation(-1, 0);
                 break;
             }
         }
     }
 
     {
-        int c8Render = ((Sprite*)field_C8)->Do(*(int*)(field_C8 + 0xAC), *(int*)(field_C8 + 0xB0), 1.0);
+        int c8Render = field_C8->Do(*(int*)(field_C8 + 0xAC), *(int*)(field_C8 + 0xB0), 1.0);
         if (c8Render != 0) {
             int c8Frame = *(int*)(field_C8 + 0x98);
             switch (c8Frame) {
             case 2:
-                ((Sprite*)field_C8)->ResetAnimation(3, 0);
+                field_C8->ResetAnimation(3, 0);
                 break;
             case 4:
                 field_B0 = 2;
@@ -544,20 +544,20 @@ void SC_FireAlarm::ProcessFrame() {
         }
     }
 
-    ((Sprite*)field_10C)->Do(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 1.0);
+    field_10C->Do(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 1.0);
 
     if ((field_AC & 0xF) == 0) {
         (DAT_0046aa18)->DrawCursor();
         FUN_00427880((void*)DAT_004685ac);
 
-        int bcRender = ((Sprite*)field_BC)->Do(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 1.0);
+        int bcRender = field_BC->Do(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 1.0);
         if (bcRender != 0) {
             int mouseVal = 0;
             int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1A0);
             if (mousePtr != 0) {
                 mouseVal = *mousePtr;
             }
-            ((Sprite*)field_BC)->ResetAnimation(mouseVal / (dim_B4.field_0 / 5), 0);
+            field_BC->ResetAnimation(mouseVal / (dim_B4.field_0 / 5), 0);
         }
 
         if (*(int*)(DAT_004685ac + 0xA8) != 0) {
@@ -566,7 +566,7 @@ void SC_FireAlarm::ProcessFrame() {
             if (mousePtr2 != 0) {
                 mouseVal2 = *mousePtr2;
             }
-            ((Sprite*)field_BC)->ResetAnimation(mouseVal2 / (dim_B4.field_0 / 3) + 5, 0);
+            field_BC->ResetAnimation(mouseVal2 / (dim_B4.field_0 / 3) + 5, 0);
         }
     }
 }

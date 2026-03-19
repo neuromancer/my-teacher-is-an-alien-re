@@ -35,11 +35,15 @@ struct CrystalSource {
     int field_0x20;   // +0x20
     int field_0x24;   // +0x24
     int crystalPtr;   // +0x28 — assigned crystal object
+    CrystalSource();
+    ~CrystalSource();
 };
 
 struct GridCell {
     int values[4];    // +0x00..+0x0C — pattern values per cell row
     int pad[4];       // +0x10..+0x1C
+    GridCell();
+    ~GridCell();
 };
 
 // SC_Roach - Crystal thought puzzle handler (case 71/0x47)

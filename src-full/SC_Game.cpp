@@ -36,7 +36,7 @@ SC_Game::SC_Game() {
 
     sprite = new Sprite("elements\\gamestat.smk");
     sprite->priority = 0;
-    field_F4 = (int)DAT_0046aa30;
+    field_F4 = DAT_0046aa30;
 }
 
 /* Function start: 0x431F30 */
@@ -77,16 +77,16 @@ void SC_Game::Update(int param1, int param2) {
     int row = scrollOffset;
     if (row < scrollOffset + 0xe) {
         do {
-            int stateName = (int)((GameState*)field_F4)->GetState(row);
+            int stateName = (int)field_F4->GetState(row);
             if (stateName != 0) {
-                stateName = (int)((GameState*)field_F4)->GetState(row);
+                stateName = (int)field_F4->GetState(row);
                 sprintf(DAT_0046aa00, "%s", stateName);
                 (DAT_0046aa24)->ShowSubtitle(
                     DAT_0046aa00, textX,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
 
-                int gs = field_F4;
+                GameState* gs = field_F4;
                 if (row < 0 || *(int*)(gs + 0x98) - 1 < row) {
                     ShowError("Invalid gamestate %d", row);
                 }

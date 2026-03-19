@@ -229,7 +229,18 @@ int SC_ExtBridge::AddMessage(SC_Message* msg)
 /* Function start: 0x43A1D0 */
 int SC_ExtBridge::Exit(SC_Message* msg)
 {
-    return 0;
+    int* msgData = (int*)msg;
+    if (msgData[0] != handlerId) {
+        return 0;
+    }
+    int cmd = msgData[4];
+    if (cmd == 0) {
+        return 1;
+    }
+    if (cmd == 0x17) {
+        ShowError("SCMI_INSERT");
+    }
+    return 1;
 }
 
 /* Function start: 0x43A210 */

@@ -4,6 +4,8 @@
 #include "Parser.h"
 #include "LinkedList.h"
 
+class MMPlayer;
+
 class HotspotAction : public Parser {
 public:
     HotspotAction(int id);
@@ -28,8 +30,8 @@ public:
     int field_AC;           // 0xAC
     int field_B0;           // 0xB0
     char field_B4[64];      // 0xB4
-    int field_F4;           // 0xF4
-    int field_F8;           // 0xF8
+    MMPlayer* field_F4;           // 0xF4
+    MMPlayer* field_F8;           // 0xF8
     LinkedList* queueFC;    // 0xFC
     LinkedList* queue100;   // 0x100
     LinkedList* queue104;   // 0x104

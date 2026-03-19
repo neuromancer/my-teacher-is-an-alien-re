@@ -7,7 +7,6 @@
 #include "SC_Question.h"
 #include "SoundItem.h"
 
-/* Function start: 0x40B7E0 */ /* DEMO ONLY - no full game match */
 SC_Sound::SC_Sound() {
     // Set handlerId to 14
     handlerId = 14;
@@ -49,46 +48,28 @@ void SC_Sound::Init(SC_Message* msg) {
     }
 }
 
-/* Function start: 0x40BB10 */ /* DEMO ONLY - no full game match */
+extern void __fastcall FUN_00449480(void*, int, int, int);
+
+/* Function start: 0x40B7C0 */
 void SC_Sound::Update(int param1, int param2) {
-    if (timer.Update() > 60000) {
-        if (list->head == 0) {
-            SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
-        }
-    }
-
-    if (list != 0) {
-        list->current = list->head;
-        if (list->head != 0) {
-            do {
-                {
-                    SoundItem* soundItem = (SoundItem*)list->GetCurrentData();
-
-                    if (soundItem->IsFinished()) {
-                        SoundItem* data = (SoundItem*)list->RemoveCurrent();
-                        if (data != 0) {
-                            delete data;
-                        }
-                    }
-                }
-
-                if (list->tail == list->current) break;
-                if (list->current != 0) {
-                    list->current = (MessageNode*)list->current->next;
-                }
-            } while (list->head != 0);
-        }
-    }
-
     if (handlerId == param2) {
-        ShowError("SC_Sound::Update");
+        FUN_00449480(this, 0, param1, param2);
     }
 }
 
-/* Function start: 0x40BD10 */ /* DEMO ONLY - no full game match */
+extern int __fastcall FUN_00449400(void*, int, void*);
+
+/* Function start: 0x40B7E0 */
 int SC_Sound::AddMessage(SC_Message* msg) {
-    WriteMessageAddress(msg);
-    ShowError("SC_Sound::AddMessage");
+    int* msgData = (int*)msg;
+    if (FUN_00449400(this, 0, msg) != 0) {
+        return 1;
+    }
+    if (msgData[0xB] == 0x1B) {
+        if (savedCommand == 0x2B) {
+            *(int*)(*(int*)((char*)this + 0xA8) + 8) = 1;
+        }
+    }
     return 1;
 }
 

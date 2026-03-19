@@ -121,10 +121,10 @@ void HotspotAction::Reset() {
     field_A8 = 0;
     state = 0;
     if (field_F4 != 0) {
-        ((MMPlayer*)field_F4)->StopAll();
+        field_F4->StopAll();
     }
     if (field_F8 != 0) {
-        ((MMPlayer*)field_F8)->StopAll();
+        field_F8->StopAll();
     }
 }
 
@@ -178,7 +178,7 @@ int HotspotAction::Update(int param) {
         if (field_F4 == 0) {
             ShowError("illegal player in hotspot %d", hotspotId);
         }
-        if (((MMPlayer*)field_F4)->Draw() == 0) {
+        if (field_F4->Draw() == 0) {
             state = 0;
             ProcessQueue100();
             Reset();
@@ -189,7 +189,7 @@ int HotspotAction::Update(int param) {
         if (field_F8 == 0) {
             ShowError("illegal player in hotspot %d", hotspotId);
         }
-        if (((MMPlayer*)field_F8)->Draw() == 0) {
+        if (field_F8->Draw() == 0) {
             state = 0;
             Reset();
         }
@@ -308,6 +308,7 @@ void HotspotAction::ProcessQueueFC() {
 }
 
 /* Function start: 0x41B960 */
+/* Function start: 0x41B993 */
 int HotspotAction::LBLParse(char* line) {
     char label[64];
     char buf_C0[128];
@@ -337,16 +338,16 @@ int HotspotAction::LBLParse(char* line) {
     else if (strcmp(label, "CORRECT") == 0) {
         sscanf(line, " %s ", label);
         if (field_F4 == 0) {
-            field_F4 = (int)new MMPlayer();
+            field_F4 = new MMPlayer();
         }
-        Parser::ProcessFile((Parser*)field_F4, this, 0);
+        Parser::ProcessFile(field_F4, this, 0);
     }
     else if (strcmp(label, "INCORRECT") == 0) {
         sscanf(line, " %s ", label);
         if (field_F8 == 0) {
-            field_F8 = (int)new MMPlayer();
+            field_F8 = new MMPlayer();
         }
-        Parser::ProcessFile((Parser*)field_F8, this, 0);
+        Parser::ProcessFile(field_F8, this, 0);
     }
     else if (strcmp(label, "INC_ACTIONS") == 0) {
         if (queueFC == 0) {

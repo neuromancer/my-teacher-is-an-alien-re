@@ -420,3 +420,6 @@
 
 # HotspotAction SEH funclet (Parser dtor)
 0x41B58F
+
+# Handler4 sdtor (SC_CombatBase)
+0x42BD80

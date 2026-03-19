@@ -144,7 +144,7 @@ void SC_Rats::Init(SC_Message* msg) {
     if (field_A8 == 0) {
         SpriteAction* sprite = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        field_A8 = (int)sprite;
+        field_A8 = sprite;
         sprite->extra1 = ((int*)msg)[5];
         sprite->mousePos.field_0 = ((int*)msg)[7];
         sprite->mousePos.field_4 = ((int*)msg)[8];
@@ -232,7 +232,7 @@ void SC_Rats::ProcessState() {
                 delete (SpriteAction*)field_A8;
                 field_A8 = 0;
             }
-            field_A8 = (int)new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            field_A8 = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             Parser temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_WIN_LBL_PR_");
         } else if (DAT_00473e18 == 3) {
@@ -240,7 +240,7 @@ void SC_Rats::ProcessState() {
                 delete (SpriteAction*)field_A8;
                 field_A8 = 0;
             }
-            field_A8 = (int)new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            field_A8 = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             Parser temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_PR_");
         }
@@ -259,7 +259,7 @@ void SC_Rats::ProcessState() {
                 delete (SpriteAction*)field_A8;
                 field_A8 = 0;
             }
-            field_A8 = (int)new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            field_A8 = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             Parser temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_");
         } else if (DAT_00473e18 == 2) {

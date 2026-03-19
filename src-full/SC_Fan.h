@@ -5,6 +5,11 @@
 #include "SpriteAction.h"
 #include "InvSlotItem.h"
 
+class Sprite;
+class Palette;
+class TimeOut;
+class VBuffer;
+
 // 8-byte embedded object with inline ctor, trivial dtor (no SEH cleanup needed)
 struct FanDim {
     int field_0;
@@ -39,27 +44,27 @@ public:
     void State4Handler();              // 0x40FFC0
     void RenderFan();                  // 0x410060
 
-    void* field_A8;       // 0xA8 - SpriteAction*
-    void* field_AC;       // 0xAC - SpriteAction*
+    SpriteAction* field_A8;       // 0xA8 - SpriteAction*
+    SpriteAction* field_AC;       // 0xAC - SpriteAction*
     int field_B0;         // 0xB0
     SlimeDim dim_B4;      // 0xB4 - SlimeDim (8 bytes)
-    void* field_BC;       // 0xBC - TimeOut*
-    void* field_C0;       // 0xC0 - Sprite*
-    void* field_C4;       // 0xC4 - Palette*
-    void* field_C8;       // 0xC8 - Sprite*
-    void* field_CC;       // 0xCC - Sprite*
+    TimeOut* field_BC;       // 0xBC - TimeOut*
+    Sprite* field_C0;       // 0xC0 - Sprite*
+    Palette* field_C4;       // 0xC4 - Palette*
+    Sprite* field_C8;       // 0xC8 - Sprite*
+    Sprite* field_CC;       // 0xCC - Sprite*
     Rect invSlot_D0; // 0xD0 - Rect (16 bytes)
-    void* field_E0;       // 0xE0 - Sprite*
-    void* field_E4;       // 0xE4 - Sprite*
-    void* field_E8;       // 0xE8 - Sprite*
-    void* field_EC;       // 0xEC - Sprite*
+    Sprite* field_E0;       // 0xE0 - Sprite*
+    Sprite* field_E4;       // 0xE4 - Sprite*
+    Sprite* field_E8;       // 0xE8 - Sprite*
+    Sprite* field_EC;       // 0xEC - Sprite*
     int field_F0;         // 0xF0
     int field_F4;         // 0xF4
     int field_F8;         // 0xF8
     int field_FC;         // 0xFC
     Rect invSlots_100[4]; // 0x100 - TypedArray (4 x 16 bytes)
     int field_140;        // 0x140
-    void* field_144;      // 0x144
+    VBuffer* field_144;      // 0x144
     Rect invSlot_148; // 0x148 - Rect (16 bytes)
     Rect invSlot_158; // 0x158 - Rect (16 bytes)
     FanDim dim_168;       // 0x168 - FanDim (8 bytes, trivial dtor)

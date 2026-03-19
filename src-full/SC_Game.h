@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "Sprite.h"
 #include "GlyphRect.h"
+#include "GameState.h"
 
 // SC_Game - Game state handler (case 2)
 // Full game version of SearchScreen (demo)
@@ -30,7 +31,7 @@ public:
     int textX;              // 0xE8
     int textY;              // 0xEC
     int rowHeight;          // 0xF0
-    int field_F4;           // 0xF4
+    GameState* field_F4;           // 0xF4
 };
 
 #endif // SC_GAME_H

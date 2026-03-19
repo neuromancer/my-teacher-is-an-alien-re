@@ -147,7 +147,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
 
     gs = DAT_0046aa30;
     periodIdx = gs->FindState("PERIOD");
-    gs->FUN_00409f20(periodIdx);
+    gs->ValidateIndex(periodIdx);
     periodVal = gs->stateValues[periodIdx];
     if (periodVal == 1) {
         DAT_0047337c = 0;
@@ -206,14 +206,14 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     // Select current character
     gs = DAT_0046aa30;
     int charIdx = DAT_0046cb90;
-    gs->FUN_00409f20(charIdx);
+    gs->ValidateIndex(charIdx);
     int* stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
     int selChar = stateVals[charIdx];
     if (characters[selChar] != 0 && characters[i] != 0) {
         gs = DAT_0046aa30;
         charIdx = DAT_0046cb90;
-        gs->FUN_00409f20(charIdx);
+        gs->ValidateIndex(charIdx);
         stateVals = (int*)gs->stateValues;
         stateVals = (int*)*stateVals;
         T_MenuHotspot* chrPtr = characters[stateVals[charIdx]];
@@ -227,7 +227,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     // Set cursor
     charIdx = DAT_0046cb90;
     gs = DAT_0046aa30;
-    gs->FUN_00409f20(charIdx);
+    gs->ValidateIndex(charIdx);
     stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
     ((Sprite*)DAT_0046af08)->ResetAnimation(stateVals[charIdx] + 1, 0);
@@ -237,35 +237,35 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     // Check AWARE_TEACHER state
     gs = DAT_0046aa30;
     int awareIdx = gs->FindState("AWARE_TEACHER");
-    gs->FUN_00409f20(awareIdx);
+    gs->ValidateIndex(awareIdx);
     stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
     if (stateVals[awareIdx] == 0) {
         // Check TEACHER_ALIEN state
         gs = DAT_0046aa30;
         int alienIdx = gs->FindState("TEACHER_ALIEN");
-        gs->FUN_00409f20(alienIdx);
+        gs->ValidateIndex(alienIdx);
         stateVals = (int*)gs->stateValues;
         stateVals = (int*)*stateVals;
         if (stateVals[alienIdx] == 1) {
             // Check 2_NOTALIEN
             gs = DAT_0046aa30;
             int na2Idx = gs->FindState("2_NOTALIEN");
-            gs->FUN_00409f20(na2Idx);
+            gs->ValidateIndex(na2Idx);
             stateVals = (int*)gs->stateValues;
             stateVals = (int*)*stateVals;
             if (stateVals[na2Idx] != 0) {
                 // Check 3_NOTALIEN
                 gs = DAT_0046aa30;
                 int na3Idx = gs->FindState("3_NOTALIEN");
-                gs->FUN_00409f20(na3Idx);
+                gs->ValidateIndex(na3Idx);
                 stateVals = (int*)gs->stateValues;
                 stateVals = (int*)*stateVals;
                 if (stateVals[na3Idx] != 0) {
                     // Set AWARE_TEACHER = 1
                     gs = DAT_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
-                    gs->FUN_00409f20(awareIdx);
+                    gs->ValidateIndex(awareIdx);
                     stateVals = (int*)gs->stateValues;
                     stateVals = (int*)*stateVals;
                     stateVals[awareIdx] = 1;
@@ -276,19 +276,19 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             // Check 1_NOTALIEN
             gs = DAT_0046aa30;
             int na1Idx = gs->FindState("1_NOTALIEN");
-            gs->FUN_00409f20(na1Idx);
+            gs->ValidateIndex(na1Idx);
             stateVals = (int*)gs->stateValues;
             stateVals = (int*)*stateVals;
             if (stateVals[na1Idx] != 0) {
                 gs = DAT_0046aa30;
                 int na3Idx = gs->FindState("3_NOTALIEN");
-                gs->FUN_00409f20(na3Idx);
+                gs->ValidateIndex(na3Idx);
                 stateVals = (int*)gs->stateValues;
                 stateVals = (int*)*stateVals;
                 if (stateVals[na3Idx] != 0) {
                     gs = DAT_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
-                    gs->FUN_00409f20(awareIdx);
+                    gs->ValidateIndex(awareIdx);
                     stateVals = (int*)gs->stateValues;
                     stateVals = (int*)*stateVals;
                     stateVals[awareIdx] = 2;
@@ -316,7 +316,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 if (stateVals[na2Idx] != 0) {
                     gs = DAT_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
-                    gs->FUN_00409f20(awareIdx);
+                    gs->ValidateIndex(awareIdx);
                     stateVals = (int*)gs->stateValues;
                     stateVals = (int*)*stateVals;
                     stateVals[awareIdx] = 3;
@@ -332,7 +332,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     // Set PREVIOUSROOM state
     gs = DAT_0046aa30;
     int prevIdx = gs->FindState("PREVIOUSROOM");
-    gs->FUN_00409f20(prevIdx);
+    gs->ValidateIndex(prevIdx);
     stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
     stateVals[prevIdx] = 0x62;
@@ -373,7 +373,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 // Clear MUST_SAVEGAME
                 gs = DAT_0046aa30;
                 int saveIdx = gs->FindState("MUST_SAVEGAME");
-                gs->FUN_00409f20(saveIdx);
+                gs->ValidateIndex(saveIdx);
                 stateVals = (int*)gs->stateValues;
                 stateVals = (int*)*stateVals;
                 stateVals[saveIdx] = 0;
@@ -704,7 +704,7 @@ int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
     // Check NUM_ACTIONS state
     gs = DAT_0046aa30;
     i = gs->FindState("NUM_ACTIONS");
-    gs->FUN_00409f20(i);
+    gs->ValidateIndex(i);
     stateVals = gs->stateValues;
     if (stateVals[i] >= 1) goto check_options;
 
@@ -769,7 +769,7 @@ char_click:
         if (i == -1) {
             gs = DAT_0046aa30;
             int charIdx = DAT_0046cb90;
-            gs->FUN_00409f20(charIdx);
+            gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
             ch = DAT_0046cb94[stateVals[charIdx]];
         } else {
@@ -779,14 +779,14 @@ char_click:
         sprintf(buf, "%c_IN_DETENTION", (int)ch);
         gs = DAT_0046aa30;
         hitResult = gs->FindState(buf);
-        gs->FUN_00409f20(hitResult);
+        gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         if (stateVals[hitResult] != 0) goto check_options;
 
         if (i == -1) {
             gs = DAT_0046aa30;
             int charIdx = DAT_0046cb90;
-            gs->FUN_00409f20(charIdx);
+            gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
             ch = DAT_0046cb94[stateVals[charIdx]];
         } else {
@@ -795,14 +795,14 @@ char_click:
         sprintf(buf, "%c_DETENTION_SUSPENSION", (int)ch);
         gs = DAT_0046aa30;
         hitResult = gs->FindState(buf);
-        gs->FUN_00409f20(hitResult);
+        gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         if (stateVals[hitResult] > 2) goto check_options;
 
         if (i == -1) {
             gs = DAT_0046aa30;
             int charIdx = DAT_0046cb90;
-            gs->FUN_00409f20(charIdx);
+            gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
             ch = DAT_0046cb94[stateVals[charIdx]];
         } else {
@@ -811,7 +811,7 @@ char_click:
         sprintf(buf, "%c_CAPTURED", (int)ch);
         gs = DAT_0046aa30;
         hitResult = gs->FindState(buf);
-        gs->FUN_00409f20(hitResult);
+        gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         if (stateVals[hitResult] != 0) goto check_options;
 
@@ -844,13 +844,13 @@ char_click:
         // Update global character selection
         gs = DAT_0046aa30;
         hitResult = DAT_0046cb90;
-        gs->FUN_00409f20(hitResult);
+        gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         stateVals[hitResult] = i;
 
         hitResult = DAT_0046cb90;
         gs = DAT_0046aa30;
-        gs->FUN_00409f20(hitResult);
+        gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         ((Sprite*)DAT_0046af08)->ResetAnimation(stateVals[hitResult] + 1, 0);
 
@@ -870,7 +870,7 @@ char_click:
             gs = DAT_0046aa30;
             int periodIdx2 = DAT_0046cb90;
             int pIdx = gs->FindState("PERIOD");
-            gs->FUN_00409f20(pIdx);
+            gs->ValidateIndex(pIdx);
             stateVals = gs->stateValues;
             int period = stateVals[pIdx];
             int offset = (DAT_0046aa30)->GetStateValue(periodIdx2);
@@ -924,7 +924,7 @@ opt_click:
         gs = DAT_0046aa30;
         int charStateIdx = DAT_0046cb90;
         int pIdx = gs->FindState("PERIOD");
-        gs->FUN_00409f20(pIdx);
+        gs->ValidateIndex(pIdx);
         stateVals = gs->stateValues;
         int period = stateVals[pIdx];
         int offset = (DAT_0046aa30)->GetStateValue(charStateIdx);
@@ -961,7 +961,7 @@ check_go:
         // Go button clicked - increment NUM_ACTIONS
         gs = DAT_0046aa30;
         i = gs->FindState("NUM_ACTIONS");
-        gs->FUN_00409f20(i);
+        gs->ValidateIndex(i);
         stateVals = gs->stateValues;
         stateVals[i]++;
 
@@ -972,28 +972,28 @@ check_go:
         gs = DAT_0046aa30;
         i = gs->FindState("PERIOD");
         nextChar = 0;
-        gs->FUN_00409f20(i);
+        gs->ValidateIndex(i);
         stateVals = gs->stateValues;
         int period = stateVals[i];
 
         if (period == 0x12) {
             gs = DAT_0046aa30;
             int charIdx = DAT_0046cb90;
-            gs->FUN_00409f20(charIdx);
+            gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
             if (DAT_0046cb94[stateVals[charIdx]] == 'D') {
                 nextChar = 'P';
             } else {
                 gs = DAT_0046aa30;
                 charIdx = DAT_0046cb90;
-                gs->FUN_00409f20(charIdx);
+                gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
                 if (DAT_0046cb94[stateVals[charIdx]] == 'S') {
                     nextChar = 'D';
                 } else {
                     gs = DAT_0046aa30;
                     charIdx = DAT_0046cb90;
-                    gs->FUN_00409f20(charIdx);
+                    gs->ValidateIndex(charIdx);
                     stateVals = gs->stateValues;
                     if (DAT_0046cb94[stateVals[charIdx]] == 'P') {
                         nextChar = 'S';
@@ -1003,12 +1003,12 @@ check_go:
         } else if (period == 0x13) {
             gs = DAT_0046aa30;
             i = gs->FindState("D_CAPTURED");
-            gs->FUN_00409f20(i);
+            gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
                 gs = DAT_0046aa30;
                 int charIdx = DAT_0046cb90;
-                gs->FUN_00409f20(charIdx);
+                gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
                 if (DAT_0046cb94[stateVals[charIdx]] != 'D') {
                     nextChar = 'D';
@@ -1018,12 +1018,12 @@ check_go:
 
             gs = DAT_0046aa30;
             i = gs->FindState("S_CAPTURED");
-            gs->FUN_00409f20(i);
+            gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
                 gs = DAT_0046aa30;
                 int charIdx = DAT_0046cb90;
-                gs->FUN_00409f20(charIdx);
+                gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
                 if (DAT_0046cb94[stateVals[charIdx]] != 'S') {
                     nextChar = 'S';
@@ -1033,12 +1033,12 @@ check_go:
 
             gs = DAT_0046aa30;
             i = gs->FindState("P_CAPTURED");
-            gs->FUN_00409f20(i);
+            gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
                 gs = DAT_0046aa30;
                 int charIdx = DAT_0046cb90;
-                gs->FUN_00409f20(charIdx);
+                gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
                 if (DAT_0046cb94[stateVals[charIdx]] != 'P') {
                     nextChar = 'P';
@@ -1051,14 +1051,14 @@ set_captured:
             sprintf(capBuf, "%c_CAPTURED", (int)nextChar);
             gs = DAT_0046aa30;
             i = gs->FindState(capBuf);
-            gs->FUN_00409f20(i);
+            gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             stateVals[i] = 1;
 
             sprintf(capBuf, "%c_IN_DETENTION", (int)nextChar);
             gs = DAT_0046aa30;
             i = gs->FindState(capBuf);
-            gs->FUN_00409f20(i);
+            gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             stateVals[i] = 1;
         }

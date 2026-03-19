@@ -33,7 +33,11 @@ char s_TESTPUZZLE[] = "TESTPUZZLE";
 
 
 /* Function start: 0x409F20 */
-void GameState::FUN_00409f20(int) {}
+void GameState::ValidateIndex(int idx) {
+    if (idx < 0 || maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+}
 
 /* Function start: 0x432E20 */
 int GameState::FUN_00432e20(char*) { return 0; }
@@ -60,13 +64,16 @@ GameState::~GameState()
 }
 
 /* Function start: 0x433480 */
-void GameState::Serialize(int mode)
+void GameState::Serialize(void* param)
 {
-    unsigned int* header = new unsigned int[0x44];
+    unsigned int* header = (unsigned int*)operator new(0x110);
     char filename[28];
     FILE* file;
+    int mode;
 
+    file = *(FILE**)((char*)param + 0x44);
     strcpy(filename, "gamestat.sav");
+    mode = *(int*)param;
 
     switch (mode) {
     case 1:

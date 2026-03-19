@@ -6,6 +6,10 @@
 #include "SpriteAction.h"
 
 class Sprite;
+class TimeOut;
+class SoundList;
+class SlimeTable;
+class Sample;
 class Palette;
 class SC_Message;
 
@@ -39,10 +43,10 @@ public:
     void UpdateArmSprites();     // 0x40E070
     void CheckTimerExpired(Sprite* spr); // 0x40DEB0
 
-    int field_A8;       // 0xA8 - action/message object pointer
+    SpriteAction* field_A8;       // 0xA8 - action/message object pointer
     int field_AC;       // 0xAC
     SlimeDim dimB0;     // 0xB0-0xB7 (width/height)
-    int field_B8;       // 0xB8 - TimeOut*
+    TimeOut* field_B8;       // 0xB8 - TimeOut*
     Sprite* spriteBC;   // 0xBC - slime meter sprite
     Palette* palette;   // 0xC0 - palette
     Sprite* spriteC4;   // 0xC4 - sprite
@@ -64,14 +68,14 @@ public:
     int field_138;      // 0x138
     int field_13C;      // 0x13C
     Rect invSlot3;     // 0x140-0x14F (16 bytes)
-    int field_150;      // 0x150 - object pointer
+    SoundList* field_150;      // 0x150 - object pointer
     int field_154;      // 0x154
     int field_158;      // 0x158
     int field_15C;      // 0x15C
     int field_160;      // 0x160
     int field_164;      // 0x164
-    int field_168;      // 0x168
-    int field_16C;      // 0x16C - object pointer
+    Sample* field_168;      // 0x168
+    SlimeTable* field_16C;      // 0x16C - object pointer
     int* field_170;     // 0x170 - dynamic array (7 elements)
     int field_174;      // 0x174
     int field_178;      // 0x178

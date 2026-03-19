@@ -5,6 +5,9 @@
 
 class SC_Message;
 class Sprite;
+class Palette;
+class SC_Question;
+struct LinkedList;
 
 // Handler31 - Handler case 31 (0x1F)
 // Size: 0xD0 bytes
@@ -39,12 +42,12 @@ public:
     int field_A8;       // 0xA8
     int field_AC;       // 0xAC
     int field_B0;       // 0xB0
-    int field_B4;       // 0xB4
+    Palette* field_B4;       // 0xB4
     Sprite* sprite1;    // 0xB8
     Sprite* sprite2;    // 0xBC
-    int field_C0;       // 0xC0
-    int field_C4;       // 0xC4
-    int field_C8;       // 0xC8
+    SC_Question* field_C0;       // 0xC0
+    SC_Question* field_C4;       // 0xC4
+    LinkedList* field_C8;       // 0xC8
     int field_CC;       // 0xCC
 };
 

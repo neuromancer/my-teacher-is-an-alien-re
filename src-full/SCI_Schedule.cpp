@@ -186,10 +186,9 @@ int SCI_Schedule::AddMessage(SC_Message* msg)
     return 1;
 }
 
-/* Function start: 0x435500 */ /* No assembly extracted */
-int SCI_Schedule::Exit(SC_Message* msg)
-{
-    return WriteMessageAddress(msg);
+/* Function start: 0x435500 */
+int SCI_Schedule::Exit(SC_Message* msg) {
+    return handlerId == ((int*)msg)[0];
 }
 
 /* Function start: 0x435520 */

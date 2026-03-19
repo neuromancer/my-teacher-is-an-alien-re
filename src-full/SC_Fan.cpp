@@ -258,9 +258,8 @@ void SC_Fan::ProcessRound() {
                 field_A8 = 0;
             }
             {
-                void* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                field_A8 = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 Parser temp;
-                field_A8 = newAction;
                 ParseFile(&temp, "mis\\cb_fan.mis", "[WIN_LBL_PR]");
             }
         } else if (field_17C == 3) {
@@ -270,9 +269,8 @@ void SC_Fan::ProcessRound() {
                 field_A8 = 0;
             }
             {
-                void* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                field_A8 = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 Parser temp;
-                field_A8 = newAction;
                 ParseFile(&temp, "mis\\cb_fan.mis", "[LOSE_LBL_PR]");
             }
         }
@@ -281,9 +279,9 @@ void SC_Fan::ProcessRound() {
         SendGameMessage(5, 0, handlerId, moduleParam, 0x13, 0, 0, 0, 0, 0);
 
         if (field_17C == 4) {
-            ((SpriteAction*)field_A8)->extra1 = 1;
-            ((SpriteAction*)field_A8)->mousePos.field_0 = 0x78;
-            ((SpriteAction*)field_A8)->mousePos.field_4 = 0;
+            field_A8->extra1 = 1;
+            field_A8->mousePos.field_0 = 0x78;
+            field_A8->mousePos.field_4 = 0;
 
             void* gs = DAT_0046aa30;
             int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
@@ -319,9 +317,9 @@ void SC_Fan::ProcessRound() {
             }
             *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 1;
 
-            ((SpriteAction*)field_A8)->extra1 = 1;
-            ((SpriteAction*)field_A8)->mousePos.field_0 = 0x78;
-            ((SpriteAction*)field_A8)->mousePos.field_4 = 0;
+            field_A8->extra1 = 1;
+            field_A8->mousePos.field_0 = 0x78;
+            field_A8->mousePos.field_4 = 0;
         }
     }
 
@@ -336,9 +334,9 @@ void SC_Fan::ProcessRound() {
 /* Function start: 0x40FBD0 */
 void SC_Fan::DisplaySprites(int frame) {
     int i;
-    void** ptr;
+    Sprite** ptr;
 
-    ((Sprite*)field_C8)->ResetAnimation(frame, 0);
+    field_C8->ResetAnimation(frame, 0);
 
     ptr = &field_E0;
     i = 4;
@@ -347,9 +345,9 @@ void SC_Fan::DisplaySprites(int frame) {
             int val;
             val = *((int*)ptr + 4) ? -1 : 0;
             val = (val & 5) + frame;
-            ((Sprite*)*ptr)->ResetAnimation(val, 0);
+            (*ptr)->ResetAnimation(val, 0);
         }
-        ptr = (void**)((char*)ptr + 4);
+        ptr++;
         i--;
     } while (i != 0);
 }
@@ -395,7 +393,7 @@ void SC_Fan::State2Handler() {
 
     sprite = (Sprite*)field_C8;
     if (sprite->Do(sprite->num_states, sprite->field_0xb0, 1.0)) {
-        ((Sprite*)field_C8)->ResetAnimation(5, 0);
+        field_C8->ResetAnimation(5, 0);
     }
 
     sample = field_198[8];
@@ -475,22 +473,24 @@ void SC_Fan::RenderFan() {
 
     if (state == 3) {
         if (field_CC != 0) {
-            if (((Sprite*)field_CC)->Do(((Sprite*)field_CC)->num_states, ((Sprite*)field_CC)->field_0xb0, 1.0)) {
+            if (field_CC->Do(field_CC->num_states, field_CC->field_0xb0, 1.0)) {
                 DisplaySprites(0);
                 SendGameMessage(4, field_1C4, handlerId, moduleParam, 0x13, 0x32, 0x3E8, 0, 0, 0);
             }
         }
     }
 
-    ptr = &field_E0;
-    i = 4;
-    do {
-        if (*ptr != 0) {
-            ((Sprite*)*ptr)->Do(((Sprite*)*ptr)->num_states, ((Sprite*)*ptr)->field_0xb0, 1.0);
-        }
-        ptr = (void**)((char*)ptr + 4);
-        i--;
-    } while (i != 0);
+    {
+        Sprite** sp = &field_E0;
+        i = 4;
+        do {
+            if (*sp != 0) {
+                (*sp)->Do((*sp)->num_states, (*sp)->field_0xb0, 1.0);
+            }
+            sp++;
+            i--;
+        } while (i != 0);
+    }
 
     sprite = (Sprite*)field_C8;
     if (sprite->Do(sprite->num_states, sprite->field_0xb0, 1.0)) {
@@ -498,7 +498,7 @@ void SC_Fan::RenderFan() {
             DisplaySprites(1);
         } else if (state == 2) {
             if (field_CC != 0) {
-                ((Sprite*)field_CC)->ResetAnimation(1, 0);
+                field_CC->ResetAnimation(1, 0);
             }
             DisplaySprites(3);
         }
@@ -513,11 +513,11 @@ void SC_Fan::RenderFan() {
                 invSlot_158.left, invSlot_158.top, invSlot_158.right, invSlot_158.bottom);
 
             if (*(int*)field_BC == 1) {
-                if (((TimeOut*)field_BC)->IsTimeOut()) {
+                if (field_BC->IsTimeOut()) {
                     field_17C = 3;
                 }
             } else {
-                ((TimeOut*)field_BC)->Start(0x5DC);
+                field_BC->Start(0x5DC);
             }
         } else {
             int offset;
@@ -555,7 +555,7 @@ void SC_Fan::RenderFan() {
             if (p != 0) {
                 frames = *(int*)p;
             }
-            ((Sprite*)field_C0)->ResetAnimation(frames / (dim_B4.field_0 / 3) + 5, 0);
+            field_C0->ResetAnimation(frames / (dim_B4.field_0 / 3) + 5, 0);
         }
 
         sprite = (Sprite*)field_C0;
@@ -631,13 +631,7 @@ int SC_Fan::LBLParse(char* param_1) {
     else if (strcmp(local_38, "NOISE_METER_VBUFFER") == 0) {
         sscanf(param_1, " %s %s %d %d %d ", local_38, local_b8,
                &dim_170.field_0, &dim_170.field_4, &dim_168.field_4);
-        void* mem = malloc(0x30);
-        void* obj = 0;
-        if (mem != 0) {
-            char* path = ResolveAssetPath(local_b8);
-            obj = new (mem) VBuffer(path, 0);
-        }
-        field_144 = obj;
+        field_144 = new VBuffer(ResolveAssetPath(local_b8), 0);
         invSlot_148.right = 0x10D;
         invSlot_148.left = 0;
         invSlot_148.top = 0;
