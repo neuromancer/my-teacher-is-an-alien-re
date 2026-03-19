@@ -24,7 +24,7 @@ AssetList::~AssetList()
     Cleanup();
 }
 
-/* Function start: 0x404230 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x404230 */
 void AssetList::Cleanup() {
     AssetListHeader* list1;
     AssetListHeader* list2;

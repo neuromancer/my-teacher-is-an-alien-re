@@ -174,7 +174,6 @@ void Palette::CopyRGBData(int source, int startIdx, int count) {
 }
 
 /* Function start: 0x41DFE0 */
-/* Function start: 0x41DFE0 */
 int Palette::IsSimilar(void* data, int start, int count) {
     int ofs = start * 3;
     int end = count * 3;

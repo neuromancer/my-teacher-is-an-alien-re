@@ -387,7 +387,7 @@ int ParseCommandLineArgs(char *param_1, char **param_2, int param_3)
     return iVar1;
 }
 
-/* Function start: 0x4260F0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4260F0 */
 void ExecuteFunctionArray(void** param_1, void** param_2)
 {
     if (param_2 <= param_1) return;

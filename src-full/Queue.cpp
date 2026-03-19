@@ -211,7 +211,7 @@ SpriteAction* TimedEventPool::PopSafe(SpriteAction* buffer)
     return buffer;
 }
 
-/* Function start: 0x4185C0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4185C0 */
 SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 {
     TimedEventPool* pool;

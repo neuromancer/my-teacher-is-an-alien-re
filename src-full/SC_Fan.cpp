@@ -575,8 +575,8 @@ void SC_Fan::OnProcessEnd()
 {
 }
 
-/* Function start: 0x4104E0 */
 /* Function start: 0x4104B0 */
+/* Function start: 0x4104E0 */
 int SC_Fan::LBLParse(char* param_1) {
     char local_b8[128];
     char local_38[32];
