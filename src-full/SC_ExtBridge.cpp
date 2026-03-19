@@ -17,8 +17,8 @@ extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern void __fastcall FUN_0040b760(void*, int, int);  // ZBuffer node cleanup
-extern void* __fastcall FUN_00404b80(void*);            // LinkedList pop helper
-extern void __fastcall FUN_00404d70(void*, int, int);   // ZBuffer node dtor
+// FUN_00404b80 = LinkedList::GetCurrentData — callers updated
+// FUN_00404d70 = ListNode sdtor — callers updated to use delete
 extern int DAT_0046ae78;
 extern ZBufferManager* DAT_0046aa24;
 
@@ -135,9 +135,9 @@ void SC_ExtBridge::Init(SC_Message* msg) {
                     if (current[1] != 0) {
                         *(int*)current[1] = *current;
                     }
-                    data = FUN_00404b80(list3);
+                    data = ((LinkedList*)list3)->GetCurrentData();
                     if ((void*)list3[2] != 0) {
-                        FUN_00404d70((void*)list3[2], 0, 1);
+                        delete (ListNode*)list3[2];
                         list3[2] = 0;
                     }
                     list3[2] = *list3;

@@ -384,3 +384,39 @@
 
 # RemoveCurrent COMDAT
 0x418540
+
+# SC_Roach sdtor + destructor SEH funclets
+0x418EF0
+0x418F6D
+0x418F85
+
+# SC_Roach::Init SEH funclets (array dtors)
+0x4191B1
+0x4191C9
+
+# SC_Roach SEH funclets
+0x4194B8
+0x4195A3
+
+# SC_Roach::LBLParse SEH funclets
+0x419EBF
+0x419F30
+
+# SC_Roach::ProcessAction SEH funclets
+0x41A14F
+0x41A247
+0x41A24F
+
+# NavCrystal destructor SEH funclets (array dtors)
+0x41A602
+0x41A61A
+0x41A632
+
+# SC_PRHotSpot SEH funclet
+0x41AB53
+
+# HotspotAction SEH funclet
+0x41ACD9
+
+# HotspotAction SEH funclet (Parser dtor)
+0x41B58F

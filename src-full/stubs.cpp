@@ -290,24 +290,23 @@ void FUN_004265a0() { ShowLoadingScreen(); }
 // Remaining __fastcall stubs (unidentified functions)
 // ============================================================================
 
-void __fastcall FUN_004148f0(void* param) {}
-void* __fastcall FUN_00418540(void* param) { return 0; }
-void* __fastcall FUN_00403620(void*) { return 0; }
-// FUN_00401c80 = ZBuffer::CleanUpVBuffer / DrawEntry::~DrawEntry (in ZBuffer.cpp/Engine.cpp)
-// Still called from: ZBufferManager, SC_Pods, SC_Cinematic, SCI_SchoolMenu, SC_SelectHotSpot
-void __fastcall FUN_00401c80(void*) {}
-void __fastcall FUN_004061e0(void*) {}
+// FUN_004148f0 = SC_Question::~SC_Question — callers updated to use dtor directly
+// FUN_00418540 = LinkedList::RemoveCurrent COMDAT — callers updated
+// FUN_00403620 = LinkedList::RemoveCurrent COMDAT — callers updated
+// FUN_00401c80 = ZBuffer::CleanUpVBuffer — callers updated
+void __fastcall FUN_004061e0(void*) {}  // SEH wrapper dtor (auto-complete, still needed for linking)
+void __fastcall FUN_004218b0(void*) {} // Timer dtor (used by SC_Roach)
 // FUN_00406cc0 = Queue::Add in Queue.cpp
-void __fastcall FUN_00406fd0(void*, int, int) {}
-void __fastcall FUN_004070a0(void*, int, int) {}
+// FUN_00406fd0 = Queue::InsertAtCurrent in Queue.cpp — callers updated
+// FUN_004070a0 = Queue::Push in Queue.cpp — callers updated
 // FUN_004308c0 = ClearActionList in SC_Cinematic.cpp
-void* __fastcall FUN_00407180(void*) { return 0; }
+// FUN_00407180 = LinkedList::RemoveCurrent COMDAT — callers updated
 // FUN_0041dbe0 = InitPalette in Palette.cpp
 // FUN_0042be00 = InitCombatScreen in SC_Pods.cpp
 // FUN_00404d70 = ListNode sdtor (callers: SC_ExtBridge, SC_Rats, ZBufferManager)
-void __fastcall FUN_00404d70(void*, int, int) {}
+// FUN_00404d70 = ListNode sdtor — callers updated to use delete
 // FUN_00404b80 = LinkedList::GetCurrentData non-inline (callers: SC_ExtBridge)
-void* __fastcall FUN_00404b80(void*) { return 0; }
+// FUN_00404b80 = LinkedList::GetCurrentData — callers updated
 void __fastcall FUN_0040b760(void*, int, int) {}
 // FUN_0044bac0 = mCNavigator::SetNavParams in mCNavigator.cpp
 void* __fastcall FUN_00450b10(void*) { return 0; }

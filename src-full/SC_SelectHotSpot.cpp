@@ -7,6 +7,7 @@
 #include "Sample.h"
 #include "MMPlayer.h"
 #include "SC_Question.h"
+#include "ZBuffer.h"
 #include <stdio.h>
 #include <string.h>
 #include <new.h>
@@ -42,18 +43,10 @@ extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 
-// Engine list operations
-extern void* __fastcall FUN_00403620(void* list);
-extern void __fastcall FUN_00401c80(void* obj);
 extern void __fastcall FUN_004061e0(void* obj);
-
-// LinkedList RemoveCurrent (non-inline version)
-extern void* __fastcall FUN_00407180(void* list);
 
 // Queue operations (thiscall via fastcall + dummy EDX)
 // FUN_00406cc0 = Queue::Add in LinkedList.h
-extern void __fastcall FUN_00406fd0(void* list, int edx, int data);
-extern void __fastcall FUN_004070a0(void* list, int edx, int data);
 
 // Parser fallback
 // FUN_00412a50 = Parser::LBLParse in Parser.h
@@ -74,8 +67,7 @@ SelectHotspot::~SelectHotspot() {
     void* tmp;
     tmp = SelectHotspot::sprite;
     if (tmp != 0) {
-        ((Sprite*)tmp)->~Sprite();
-        FreeMemory(tmp);
+        delete (Sprite*)tmp;
         SelectHotspot::sprite = 0;
     }
     tmp = SelectHotspot::rollonSound;
@@ -265,8 +257,7 @@ int SelectHotspot::LBLParse(char* line) {
     if (strcmp(keyword, "SPRITE") == 0) {
         void* tmp = SelectHotspot::sprite;
         if (tmp != 0) {
-            ((Sprite*)tmp)->~Sprite();
-            FreeMemory(tmp);
+            delete (Sprite*)tmp;
             SelectHotspot::sprite = 0;
         }
         Sprite* spr = new Sprite(0);
@@ -365,16 +356,16 @@ int SelectHotspot::LBLParse(char* line) {
         list->current = list->head;
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                FUN_00406fd0(list, 0, (int)msgObj);
+                ((Queue*)list)->InsertAtCurrent((void*)msgObj);
             } else {
                 do {
                     int cur = (int)list->current;
                     if (*(int*)(*(int*)(cur + 8)) < *msgObj) {
-                        FUN_00406fd0(list, 0, (int)msgObj);
+                        ((Queue*)list)->InsertAtCurrent((void*)msgObj);
                         break;
                     }
                     if ((int)list->tail == cur) {
-                        FUN_004070a0(list, 0, (int)msgObj);
+                        ((Queue*)list)->Push((void*)msgObj);
                         break;
                     }
                     if (cur != 0) {
@@ -383,7 +374,7 @@ int SelectHotspot::LBLParse(char* line) {
                 } while (list->current != 0);
             }
         } else {
-            FUN_00406fd0(list, 0, (int)msgObj);
+            ((Queue*)list)->InsertAtCurrent((void*)msgObj);
         }
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
@@ -404,13 +395,11 @@ SC_SelectHotSpot::SC_SelectHotSpot() {
 /* Function start: 0x405E00 */
 SC_SelectHotSpot::~SC_SelectHotSpot() {
     if (SC_SelectHotSpot::ambient) {
-        ((MMPlayer*)SC_SelectHotSpot::ambient)->~MMPlayer();
-        FreeMemory(SC_SelectHotSpot::ambient);
+        delete (MMPlayer*)SC_SelectHotSpot::ambient;
         SC_SelectHotSpot::ambient = 0;
     }
     if (SC_SelectHotSpot::introSprite) {
-        ((Sprite*)SC_SelectHotSpot::introSprite)->~Sprite();
-        FreeMemory(SC_SelectHotSpot::introSprite);
+        delete (Sprite*)SC_SelectHotSpot::introSprite;
         SC_SelectHotSpot::introSprite = 0;
     }
     SC_SelectHotSpot::currentHotspot = 0;
@@ -451,8 +440,7 @@ SC_SelectHotSpot::~SC_SelectHotSpot() {
         SC_SelectHotSpot::hotspotList = 0;
     }
     if (SC_SelectHotSpot::palette) {
-        ((Palette*)SC_SelectHotSpot::palette)->~Palette();
-        FreeMemory(SC_SelectHotSpot::palette);
+        delete (Palette*)SC_SelectHotSpot::palette;
         SC_SelectHotSpot::palette = 0;
     }
     SC_SelectHotSpot::field_A8 = 0;
@@ -487,7 +475,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
             while (*piVar5 != 0) {
                 void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
                 if (obj != 0) {
-                    FUN_00401c80(obj);
+                    ((ZBuffer*)obj)->CleanUpVBuffer();
                     FreeMemory(obj);
                 }
             }
@@ -497,7 +485,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
         if (*piVar5 != 0) {
             piVar5[2] = *piVar5;
             while (*piVar5 != 0) {
-                void* obj = FUN_00403620(piVar5);
+                void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
                 if (obj != 0) {
                     FUN_004061e0(obj);
                     FreeMemory(obj);
@@ -511,8 +499,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
     if (pmsg != 0) {
         SC_SelectHotSpot::moduleParam = pmsg[1];
         if (SC_SelectHotSpot::ambient != 0) {
-            ((MMPlayer*)SC_SelectHotSpot::ambient)->~MMPlayer();
-            FreeMemory(SC_SelectHotSpot::ambient);
+            delete (MMPlayer*)SC_SelectHotSpot::ambient;
             SC_SelectHotSpot::ambient = 0;
         }
         SC_SelectHotSpot::currentHotspot = 0;
@@ -522,10 +509,9 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
             if (hsList->head != 0) {
                 hsList->current = hsList->head;
                 while (hsList->head != 0) {
-                    void* data = FUN_00407180(hsList);
+                    void* data = ((LinkedList*)hsList)->RemoveCurrent();
                     if (data != 0) {
-                        ((SelectHotspot*)data)->~SelectHotspot();
-                        FreeMemory(data);
+                        delete (SelectHotspot*)data;
                     }
                 }
             }
@@ -534,8 +520,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
         }
 
         if (SC_SelectHotSpot::palette != 0) {
-            ((Palette*)SC_SelectHotSpot::palette)->~Palette();
-            FreeMemory(SC_SelectHotSpot::palette);
+            delete (Palette*)SC_SelectHotSpot::palette;
             SC_SelectHotSpot::palette = 0;
         }
 
@@ -692,13 +677,11 @@ int SC_SelectHotSpot::Exit(SC_Message* msg) {
 /* Function start: 0x4064A0 */
 void SC_SelectHotSpot::OnProcessStart() {
     if (SC_SelectHotSpot::ambient != 0) {
-        ((MMPlayer*)SC_SelectHotSpot::ambient)->~MMPlayer();
-        FreeMemory(SC_SelectHotSpot::ambient);
+        delete (MMPlayer*)SC_SelectHotSpot::ambient;
         SC_SelectHotSpot::ambient = 0;
     }
     if (SC_SelectHotSpot::introSprite != 0) {
-        ((Sprite*)SC_SelectHotSpot::introSprite)->~Sprite();
-        FreeMemory(SC_SelectHotSpot::introSprite);
+        delete (Sprite*)SC_SelectHotSpot::introSprite;
         SC_SelectHotSpot::introSprite = 0;
     }
     SC_SelectHotSpot::currentHotspot = 0;
@@ -739,8 +722,7 @@ void SC_SelectHotSpot::OnProcessStart() {
         SC_SelectHotSpot::hotspotList = 0;
     }
     if (SC_SelectHotSpot::palette != 0) {
-        ((Palette*)SC_SelectHotSpot::palette)->~Palette();
-        FreeMemory(SC_SelectHotSpot::palette);
+        delete (Palette*)SC_SelectHotSpot::palette;
         SC_SelectHotSpot::palette = 0;
     }
     SC_SelectHotSpot::field_A8 = 0;
@@ -760,8 +742,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
     } else if (strcmp(keyword, "PALETTE") == 0) {
         sscanf(line, "%s %s", keyword, nameBuf);
         if (SC_SelectHotSpot::palette != 0) {
-            ((Palette*)SC_SelectHotSpot::palette)->~Palette();
-            FreeMemory(SC_SelectHotSpot::palette);
+            delete (Palette*)SC_SelectHotSpot::palette;
             SC_SelectHotSpot::palette = 0;
         }
         void* mem = AllocateMemory(8);

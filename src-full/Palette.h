@@ -19,6 +19,7 @@ public:
     int IsPaletteUnchanged();
     void Cleanup();
     void CopyData(void* source);
+    void CopyRGBData(int source, int startIdx, int count); // 0x41DC70
     void PlaySound(int);              // 0x425550
     int CheckSound(int);              // 0x4256D0
 

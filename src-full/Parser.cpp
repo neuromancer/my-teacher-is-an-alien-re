@@ -45,8 +45,7 @@ Parser::~Parser() {
   }
   g_ParserCount--;
   if (g_ParserCount == 0 && g_FilePosCache != 0) {
-    ((TimedEventPool*)g_FilePosCache)->~TimedEventPool();
-    FreeMemory(g_FilePosCache);
+    delete (TimedEventPool*)g_FilePosCache;
     g_FilePosCache = 0;
   }
 }

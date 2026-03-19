@@ -35,8 +35,7 @@ void __cdecl CleanupNavNodes(void** array, int count)
     while (i-- != 0) {
         node = *array;
         if (node != 0) {
-            ((mCNavNode*)node)->~mCNavNode();
-            FreeMemory(node);
+            delete (mCNavNode*)node;
             *array = 0;
         }
         array++;

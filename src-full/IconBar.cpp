@@ -83,8 +83,7 @@ IconBar::~IconBar() {
         do {
             spr = entry->sprite;
             if (spr != 0) {
-                ((Sprite*)spr)->~Sprite();
-                FreeMemory(spr);
+                delete (Sprite*)spr;
                 entry->sprite = 0;
             }
             j = 2;
@@ -92,8 +91,7 @@ IconBar::~IconBar() {
             do {
                 act = *pSlot;
                 if (act != 0) {
-                    ((SpriteAction*)act)->~SpriteAction();
-                    FreeMemory(act);
+                    delete (SpriteAction*)act;
                     *pSlot = 0;
                 }
                 pSlot = pSlot + 1;
@@ -103,8 +101,7 @@ IconBar::~IconBar() {
         } while (entry < &g_IconBarEntries[6]);
         if (g_IconBarSprite != 0) {
             spr = g_IconBarSprite;
-            ((Sprite*)spr)->~Sprite();
-            FreeMemory(spr);
+            delete (Sprite*)spr;
             g_IconBarSprite = 0;
         }
     }

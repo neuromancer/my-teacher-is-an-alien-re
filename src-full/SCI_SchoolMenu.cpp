@@ -14,6 +14,7 @@
 #include "RenderEntry.h"
 #include "MMPlayer.h"
 #include "main.h"
+#include "ZBuffer.h"
 
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
@@ -55,8 +56,7 @@ extern "C" {
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 extern "C" void WriteToLog(const char* format, ...);
 
-extern void* __fastcall FUN_00403620(void*);
-extern void __fastcall FUN_00401c80(void*);
+
 
 /* Function start: 0x41E030 */
 SCI_SchoolMenu::SCI_SchoolMenu() {
@@ -415,7 +415,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         while (queue->head != 0) {
             void* item = ((LinkedList*)queue)->RemoveCurrent();
             if (item != 0) {
-                FUN_00401c80(item);
+                ((ZBuffer*)item)->CleanUpVBuffer();
                 free(item);
             }
         }
@@ -425,7 +425,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     if (queue9c->head != 0) {
         queue9c->current = queue9c->head;
         while (queue9c->head != 0) {
-            RenderEntry* item = (RenderEntry*)FUN_00403620((void*)queue9c);
+            RenderEntry* item = (RenderEntry*)((LinkedList*)queue9c)->RemoveCurrent();
             if (item != 0) {
                 item->RenderEntry::~RenderEntry();
                 free(item);
@@ -436,17 +436,14 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     zbm->m_palette = 0;
 
     // Clean up own fields
-    ptr = palette;
-    if (ptr != 0) {
-        (palette)->~Palette();
-        free(ptr);
+    if (palette != 0) {
+        delete palette;
         palette = 0;
     }
 
     ptr = background;
     if (ptr != 0) {
-        ((MMPlayer*)ptr)->~MMPlayer();
-        free(ptr);
+        delete (MMPlayer*)ptr;
         background = 0;
     }
 

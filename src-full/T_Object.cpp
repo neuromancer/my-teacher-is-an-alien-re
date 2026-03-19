@@ -9,7 +9,6 @@
 extern "C" extern GameState* DAT_0046aa30;
 extern char* DAT_0046aa00;
 
-extern void __fastcall FUN_00406fd0(void*, int, int); // LinkedList::Add
 
 /* Function start: 0x40C630 */
 T_Object::T_Object(int id) : Parser()
@@ -38,8 +37,7 @@ T_Object::~T_Object()
             while (list->head != 0) {
                 void* data = list->RemoveCurrent();
                 if (data != 0) {
-                    ((SpriteAction*)data)->~SpriteAction();
-                    FreeMemory(data);
+                    delete (SpriteAction*)data;
                 }
             }
         }
@@ -177,7 +175,7 @@ int T_Object::LBLParse(char* param_1)
                 }
             }
         } else {
-            FUN_00406fd0(list, 0, (int)action);
+            ((Queue*)list)->InsertAtCurrent((void*)action);
         }
 
     parse_action:

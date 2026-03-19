@@ -61,15 +61,13 @@ void SC_DodgeOrville::Cleanup(int flag) {
 
     ptr = (void*)field_12C;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_12C = 0;
     }
 
     ptr = (void*)field_130;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_130 = 0;
     }
 
@@ -102,8 +100,7 @@ void SC_DodgeOrville::ProcessTargets() {
         if (statusPtr[1] != 0) {
             ptr = (void*)pendingAction;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 pendingAction = 0;
             }
             {
@@ -135,8 +132,7 @@ void SC_DodgeOrville::ProcessTargets() {
         else if (statusPtr[0] != 0) {
             ptr = (void*)pendingAction;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 pendingAction = 0;
             }
             {
@@ -150,8 +146,7 @@ void SC_DodgeOrville::ProcessTargets() {
         else {
             ptr = (void*)pendingAction;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 pendingAction = 0;
             }
             {
@@ -167,8 +162,7 @@ void SC_DodgeOrville::ProcessTargets() {
         if (statusPtr[1] != 0) {
             ptr = (void*)pendingAction;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 pendingAction = 0;
             }
             {
@@ -182,8 +176,7 @@ void SC_DodgeOrville::ProcessTargets() {
         else if (statusPtr[0] != 0) {
             ptr = (void*)pendingAction;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 pendingAction = 0;
             }
             {

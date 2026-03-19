@@ -5,8 +5,6 @@
 #include "SC_Question.h"
 #include "LinkedList.h"
 
-extern void __fastcall FUN_004148f0(void*);
-extern void* __fastcall FUN_00418540(void*);
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
@@ -43,8 +41,7 @@ int Handler31::LBLParse(char* line) {
     } else if (strcmp(token, "PALETTE") == 0) {
         sscanf(line, "%s %s", token, arg2);
         if (field_B4 != 0) {
-            ((Palette*)field_B4)->~Palette();
-            FreeMemory((void*)field_B4);
+            delete (Palette*)field_B4;
             field_B4 = 0;
         }
         Palette* pal = new Palette();
@@ -208,10 +205,9 @@ Handler31::~Handler31() {
         if (*list != 0) {
             list[2] = *list;
             while (*list != 0) {
-                void* item = (void*)FUN_00418540((void*)field_C8);
+                void* item = ((LinkedList*)field_C8)->RemoveCurrent();
                 if (item != 0) {
-                    FUN_004148f0(item);
-                    operator delete(item);
+                    delete (SC_Question*)item;
                 }
             }
         }
@@ -220,14 +216,12 @@ Handler31::~Handler31() {
     }
 
     if (field_C4 != 0) {
-        FUN_004148f0((void*)field_C4);
-        operator delete((void*)field_C4);
+        delete (SC_Question*)field_C4;
         field_C4 = 0;
     }
 
     if (field_B4 != 0) {
-        ((Palette*)field_B4)->~Palette();
-        operator delete((void*)field_B4);
+        delete (Palette*)field_B4;
         field_B4 = 0;
     }
 }
@@ -259,10 +253,9 @@ int Handler31::ShutDown(SC_Message* msg) {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = FUN_00418540(list);
+                item = list->RemoveCurrent();
                 if (item != 0) {
-                    FUN_004148f0(item);
-                    FreeMemory(item);
+                    delete (SC_Question*)item;
                 }
             }
         }
@@ -271,14 +264,12 @@ int Handler31::ShutDown(SC_Message* msg) {
     }
 
     if (field_C4 != 0) {
-        FUN_004148f0((void*)field_C4);
-        FreeMemory((void*)field_C4);
+        delete (SC_Question*)field_C4;
         field_C4 = 0;
     }
 
     if (field_B4 != 0) {
-        ((Palette*)field_B4)->~Palette();
-        FreeMemory((void*)field_B4);
+        delete (Palette*)field_B4;
         field_B4 = 0;
     }
 

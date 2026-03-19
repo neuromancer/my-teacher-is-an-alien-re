@@ -3,6 +3,7 @@
 #include "SC_Question.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
+#include "Palette.h"
 #include "SoundList.h"
 #include "GameState.h"
 #include "Memory.h"
@@ -11,7 +12,11 @@
 extern "C" extern GameState* DAT_0046aa30;
 extern void* __fastcall FUN_00421880(void*, int);            // progress obj ctor
 extern void __fastcall FUN_0044c740(void*);                  // Sprite dtor
+extern void __fastcall FUN_004218b0(void*);                  // Timer dtor
 extern char* DAT_0046aa00;
+extern void* DAT_0046aa18;
+
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x418690 */
 NavCrystal::NavCrystal(int id) {
@@ -31,6 +36,137 @@ NavCrystal::NavCrystal(int id) {
 /* Function start: 0x418C20 */
 SC_Roach::SC_Roach()
 {
+}
+
+/* Function start: 0x418F10 */
+SC_Roach::~SC_Roach() {
+    ShutDown(0);
+}
+
+/* Function start: 0x419010 */
+int SC_Roach::ShutDown(SC_Message* msg) {
+    int i;
+    Sprite* spr;
+    NavCrystal* crystal;
+
+    SC_Combat::ShutDown(msg);
+
+    if (progressObj != 0) {
+        FUN_004218b0(progressObj);
+        FreeMemory(progressObj);
+        progressObj = 0;
+    }
+
+    if (circleSprite != 0) {
+        FUN_0044c740(circleSprite);
+        FreeMemory(circleSprite);
+        circleSprite = 0;
+    }
+
+    if (barSprite != 0) {
+        FUN_0044c740(barSprite);
+        FreeMemory(barSprite);
+        barSprite = 0;
+    }
+
+    {
+        int* srcPtr = (int*)((char*)this + 0x140);
+        i = 8;
+        do {
+            *srcPtr = 0;
+            srcPtr = (int*)((char*)srcPtr + 0x2C);
+            i--;
+        } while (i != 0);
+    }
+
+    i = 0;
+    int** crystalArr = (int**)&crystals[0];
+    do {
+        crystal = (NavCrystal*)*crystalArr;
+        if (crystal != 0) {
+            *(int*)crystal = 0x461320;
+            spr = crystal->sprite;
+            if (spr != 0) {
+                FUN_0044c740(spr);
+                FreeMemory(spr);
+                crystal->sprite = 0;
+            }
+            FreeMemory(crystal);
+            *crystalArr = 0;
+        }
+        crystalArr++;
+        i++;
+    } while (i < 8);
+
+    currentPiece = 0;
+
+    if (msg != 0) {
+        SendGameMessage(0, 0, 0, 0, 0x1B, 0, 0, 0, 0, 0);
+    }
+
+    return 0;
+}
+
+/* Function start: 0x419220 */
+int SC_Roach::AddMessage(SC_Message* msg) {
+    int* msgData;
+    int i;
+    int count;
+    int* srcPtr;
+    int result;
+
+    msgData = (int*)msg;
+    if (SC_Combat::AddMessage(msg) != 0) {
+        return 1;
+    }
+
+    if (msgData[0xB] == 0x1B) {
+        if (savedCommand == 0x2B) {
+            *(int*)(*(int*)((char*)this + 0xA8) + 8) = 1;
+        }
+    } else if (msgData[9] >= 2) {
+        if (currentPiece == 0) {
+            result = PickFromGrid(msgData);
+            if (result == 0) {
+                PickFromSource(msgData);
+            }
+        } else {
+            result = TryPlacePiece(msgData);
+            if (result == 0) {
+                result = TryDropOnSource(msgData);
+                if (result == 0) {
+                    ((Palette*)*(int*)((char*)this + 0x110))->PlaySound(8);
+                }
+            }
+        }
+    } else if (msgData[0xA] >= 2) {
+        if (currentPiece != 0) {
+            ((Palette*)*(int*)((char*)this + 0x110))->PlaySound(7);
+            field_0x728 = 1;
+            field_0x72C = (field_0x72C + 1) % 4;
+            Sprite* spr = (Sprite*)*(int*)((char*)currentPiece + 0x4D8);
+            if (spr != 0) {
+                spr->ResetAnimation(field_0x72C, 0);
+            }
+        }
+    }
+
+    count = 0;
+    srcPtr = (int*)((char*)this + 0x140);
+    i = 8;
+    do {
+        if (*srcPtr != 0) {
+            count++;
+        }
+        srcPtr = (int*)((char*)srcPtr + 0x2C);
+        i--;
+    } while (i != 0);
+
+    if (currentPiece == 0 && count == 0) {
+        *(int*)(*(int*)((char*)this + 0xA8) + 4) = 1;
+    }
+
+    return 1;
 }
 
 /* Function start: 0x4198B0 */
@@ -260,13 +396,7 @@ void SC_Roach::OnProcessEnd()
         0x1b, 0, 0, 0, 0, 0);
 }
 
-SC_Roach::~SC_Roach()
-{
-}
-
 void SC_Roach::Init(SC_Message* msg) {}
-int SC_Roach::AddMessage(SC_Message* msg) { return 0; }
-int SC_Roach::ShutDown(SC_Message* msg) { return 0; }
 void SC_Roach::Update(int p1, int p2) {}
 int SC_Roach::Exit(SC_Message* msg) { return 0; }
 void SC_Roach::ProcessLose() {}

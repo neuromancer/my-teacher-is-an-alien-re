@@ -125,14 +125,12 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
 
     pVar = *(void**)((int)this + 0xAC);
     if (pVar != 0) {
-        ((MMPlayer*)pVar)->~MMPlayer();
-        free(pVar);
+        delete (MMPlayer*)pVar;
         *(void**)((int)this + 0xAC) = 0;
     }
     pVar = *(void**)((int)this + 0xB0);
     if (pVar != 0) {
-        ((Sprite*)pVar)->~Sprite();
-        free(pVar);
+        delete (Sprite*)pVar;
         *(void**)((int)this + 0xB0) = 0;
     }
     int* piVar = *(int**)((int)this + 0xB8);
@@ -152,8 +150,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
     }
     pVar = *(void**)((int)this + 0xB4);
     if (pVar != 0) {
-        ((Palette*)pVar)->~Palette();
-        free(pVar);
+        delete (Palette*)pVar;
         *(void**)((int)this + 0xB4) = 0;
     }
     pVar = *(void**)((int)this + 0xC8);
@@ -372,8 +369,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         sscanf(param_1, "%s %s", local_3c, local_bc);
         void* pal = *(void**)((int)this + 0xB4);
         if (pal != 0) {
-            ((Palette*)pal)->~Palette();
-            free(pal);
+            delete (Palette*)pal;
             *(void**)((int)this + 0xB4) = 0;
         }
         void* mem = malloc(8);
@@ -433,21 +429,13 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         Parser::ProcessFile((Parser*)piVar6, this, 0);
     } else if (strcmp(local_3c, "AMBIENT") == 0) {
         if (*(int*)((int)this + 0xAC) == 0) {
-            void* mem = malloc(0xA0);
-            void* amb = 0;
-            if (mem != 0) {
-                amb = new (mem) MMPlayer();
-            }
+            MMPlayer* amb = new MMPlayer();
             *(void**)((int)this + 0xAC) = amb;
         }
         Parser::ProcessFile((Parser*)*(void**)((int)this + 0xAC), this, 0);
     } else if (strcmp(local_3c, "INTRO") == 0) {
         if (*(int*)((int)this + 0xB0) == 0) {
-            void* mem = malloc(0xF8);
-            void* spr = 0;
-            if (mem != 0) {
-                spr = new (mem) Sprite((char*)0);
-            }
+            Sprite* spr = new Sprite((char*)0);
             *(void**)((int)this + 0xB0) = spr;
         }
         Parser::ProcessFile((Parser*)*(void**)((int)this + 0xB0), this, 0);

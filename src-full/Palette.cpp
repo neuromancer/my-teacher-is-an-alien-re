@@ -164,6 +164,14 @@ extern "C" void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int s
   SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
 }
 
+/* Function start: 0x41DC70 */
+void Palette::CopyRGBData(int source, int startIdx, int count) {
+    char* src = (char*)(source + startIdx * 3);
+    char* dst = m_data + startIdx * 3;
+    int bytes = count * 3;
+    memcpy(dst, src, bytes);
+}
+
 /* Function start: 0x41DFE0 */
 /* Function start: 0x41DFE0 */
 int Palette::IsSimilar(void* data, int start, int count) {

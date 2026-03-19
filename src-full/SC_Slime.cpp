@@ -161,13 +161,11 @@ int SC_Slime::ShutDown(SC_Message* msg)
         field_A8 = 0;
     }
     if (field_16C != 0) {
-        ((SlimeTable*)field_16C)->~SlimeTable();
-        delete (void*)field_16C;
+        delete (SlimeTable*)field_16C;
         field_16C = 0;
     }
     if (field_150 != 0) {
-        ((SoundList*)field_150)->~SoundList();
-        delete (void*)field_150;
+        delete (SoundList*)field_150;
         field_150 = 0;
     }
     field_168 = 0;
@@ -384,8 +382,7 @@ void SC_Slime::SendResultMessage() {
     enqueue:
         EnqueueSpriteAction((void*)field_A8);
         if (field_A8 != 0) {
-            ((SpriteAction*)field_A8)->~SpriteAction();
-            FreeMemory((void*)field_A8);
+            delete (SpriteAction*)field_A8;
             field_A8 = 0;
         }
         return;
@@ -396,8 +393,7 @@ void SC_Slime::SendResultMessage() {
     if (gameResult[1] != 0) {
         // Lost in practice
         if (field_A8 != 0) {
-            ((SpriteAction*)field_A8)->~SpriteAction();
-            FreeMemory((void*)field_A8);
+            delete (SpriteAction*)field_A8;
             field_A8 = 0;
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -410,8 +406,7 @@ void SC_Slime::SendResultMessage() {
     if (gameResult[0] != 0) {
         // Won in practice
         if (field_A8 != 0) {
-            ((SpriteAction*)field_A8)->~SpriteAction();
-            FreeMemory((void*)field_A8);
+            delete (SpriteAction*)field_A8;
             field_A8 = 0;
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);

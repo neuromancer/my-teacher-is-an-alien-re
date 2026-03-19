@@ -12,6 +12,7 @@
 #include "Animation.h"
 #include "Sample.h"
 #include "main.h"
+#include "ZBuffer.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +23,7 @@ extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 void __fastcall InitCombatScreen(void* self);
 
-extern void __fastcall FUN_00401c80(void*);   // DrawEntry dtor
+
 extern void __fastcall FUN_004061e0(void*);   // SoundEntry dtor
 #include "PodsEngine.h"
 
@@ -80,7 +81,7 @@ void SC_Pods::Init(SC_Message* msg) {
             while (*list2 != 0) {
                 void* item = ((LinkedList*)list2)->RemoveCurrent();
                 if (item != 0) {
-                    FUN_00401c80(item);
+                    ((ZBuffer*)item)->CleanUpVBuffer();
                     free(item);
                 }
             }
@@ -153,8 +154,7 @@ int SC_Pods::ShutDown(SC_Message* msg) {
     }
 
     if (resultAction != 0) {
-        ((SpriteAction*)resultAction)->~SpriteAction();
-        FreeMemory((void*)resultAction);
+        delete (SpriteAction*)resultAction;
         resultAction = 0;
     }
 

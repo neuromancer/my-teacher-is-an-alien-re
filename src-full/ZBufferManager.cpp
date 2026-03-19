@@ -20,8 +20,7 @@
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
 extern "C" extern void* DAT_0046aa14;
-extern void __fastcall FUN_00401c80(void*);
-extern void __fastcall FUN_00404d70(void*, int, int);
+
 
 
 struct CommandType1 : public SoundCommand {
@@ -730,7 +729,7 @@ void ZBufferManager::ProcessRenderQueues()
             while (queue->head != 0) {
                 data = queue->Pop();
                 if (data != 0) {
-                    FUN_00401c80(data);
+                    ((ZBuffer*)data)->CleanUpVBuffer();
                     FreeMemory(data);
                 }
             }
@@ -780,7 +779,7 @@ void ZBufferManager::ProcessRenderQueues()
                 local_14 = queue->GetCurrentData();
                 node = (ZBQueueNode*)queue->current;
                 if (node != 0) {
-                    FUN_00404d70(node, 0, 1);
+                    delete (ListNode*)node;
                     queue->current = 0;
                 }
                 queue->current = queue->head;
@@ -828,7 +827,7 @@ void ZBufferManager::ProcessRenderQueues()
             while (queue->head != 0) {
                 data = queue->Pop();
                 if (data != 0) {
-                    FUN_00401c80(data);
+                    ((ZBuffer*)data)->CleanUpVBuffer();
                     FreeMemory(data);
                 }
             }

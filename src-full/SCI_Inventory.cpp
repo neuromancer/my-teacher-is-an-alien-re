@@ -64,8 +64,7 @@ SCI_Inventory::SCI_Inventory() {
         while (invList->head != 0) {
             void* data = invList->RemoveCurrent();
             if (data != 0) {
-                ((T_Object*)data)->~T_Object();
-                FreeMemory(data);
+                delete (T_Object*)data;
             }
         }
     }
@@ -812,8 +811,7 @@ void SCI_Inventory::Serialize(void* param) {
             while (esi_ptr[0] != 0) {
                 void* data = FUN_004407c0(esi_ptr);
                 if (data != 0) {
-                    ((T_Object*)data)->~T_Object();
-                    FreeMemory(data);
+                    delete (T_Object*)data;
                 }
             }
         }

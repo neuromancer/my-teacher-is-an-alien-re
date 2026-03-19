@@ -79,14 +79,12 @@ int SC_WordSearch::ShutDown(SC_Message* msg) {
 
     pVar = *(void**)((int)this + 0xAC);
     if (pVar != 0) {
-        ((Sprite*)pVar)->~Sprite();
-        free(pVar);
+        delete (Sprite*)pVar;
         *(void**)((int)this + 0xAC) = 0;
     }
     pVar = *(void**)((int)this + 0xA8);
     if (pVar != 0) {
-        ((Palette*)pVar)->~Palette();
-        free(pVar);
+        delete (Palette*)pVar;
         *(void**)((int)this + 0xA8) = 0;
     }
     pVar = *(void**)((int)this + 0xB8);
@@ -120,26 +118,22 @@ int SC_WordSearch::ShutDown(SC_Message* msg) {
     }
     pVar = *(void**)((int)this + 0x820);
     if (pVar != 0) {
-        ((Sprite*)pVar)->~Sprite();
-        free(pVar);
+        delete (Sprite*)pVar;
         *(void**)((int)this + 0x820) = 0;
     }
     pVar = *(void**)((int)this + 0x824);
     if (pVar != 0) {
-        ((Sprite*)pVar)->~Sprite();
-        free(pVar);
+        delete (Sprite*)pVar;
         *(void**)((int)this + 0x824) = 0;
     }
     pVar = *(void**)((int)this + 0x828);
     if (pVar != 0) {
-        ((Sprite*)pVar)->~Sprite();
-        free(pVar);
+        delete (Sprite*)pVar;
         *(void**)((int)this + 0x828) = 0;
     }
     pVar = *(void**)((int)this + 0x82C);
     if (pVar != 0) {
-        ((Sprite*)pVar)->~Sprite();
-        free(pVar);
+        delete (Sprite*)pVar;
         *(void**)((int)this + 0x82C) = 0;
     }
     if ((int)msg != 0) {

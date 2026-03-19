@@ -45,15 +45,13 @@ HotspotAction::~HotspotAction() {
 
     ptr = (void*)field_F4;
     if (ptr != 0) {
-        ((MMPlayer*)ptr)->~MMPlayer();
-        FreeMemory(ptr);
+        delete (MMPlayer*)ptr;
         field_F4 = 0;
     }
 
     ptr = (void*)field_F8;
     if (ptr != 0) {
-        ((MMPlayer*)ptr)->~MMPlayer();
-        FreeMemory(ptr);
+        delete (MMPlayer*)ptr;
         field_F8 = 0;
     }
 
@@ -64,8 +62,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = list->RemoveCurrent();
                 if (item != 0) {
-                    ((SpriteAction*)item)->~SpriteAction();
-                    FreeMemory(item);
+                    delete (SpriteAction*)item;
                 }
             }
         }
@@ -80,8 +77,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = list->RemoveCurrent();
                 if (item != 0) {
-                    ((SpriteAction*)item)->~SpriteAction();
-                    FreeMemory(item);
+                    delete (SpriteAction*)item;
                 }
             }
         }
@@ -96,8 +92,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = list->RemoveCurrent();
                 if (item != 0) {
-                    ((SpriteAction*)item)->~SpriteAction();
-                    FreeMemory(item);
+                    delete (SpriteAction*)item;
                 }
             }
         }
@@ -112,8 +107,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = list->RemoveCurrent();
                 if (item != 0) {
-                    ((SpriteAction*)item)->~SpriteAction();
-                    FreeMemory(item);
+                    delete (SpriteAction*)item;
                 }
             }
         }

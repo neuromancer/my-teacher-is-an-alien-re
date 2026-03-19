@@ -58,16 +58,10 @@ int SC_DuctNav::LBLParse(char* line)
     if (strcmp(label, "FONT") == 0) {
         sscanf(line, "%s %s", label, name);
         if (fontPalette != 0) {
-            fontPalette->~Palette();
-            FreeMemory(fontPalette);
+            delete fontPalette;
             fontPalette = 0;
         }
-        void* mem = operator new(8);
-        Palette* pal = 0;
-        if (mem != 0) {
-            pal = (Palette*)FUN_0041dbf0(mem, 0, name);
-        }
-        fontPalette = pal;
+        fontPalette = new Palette(name);
     } else if (strcmp(label, "SPRITE") == 0) {
         if (menuSprite != 0) {
             FUN_0044c740(menuSprite);

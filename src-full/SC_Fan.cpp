@@ -83,13 +83,7 @@ void SC_Fan::Init(SC_Message* msg) {
         *target = (int)ptr;
     }
 
-    mem = malloc(0xC);
-    ptr = 0;
-    if (mem != 0) {
-        InitTimeOut((TimeOut*)mem);
-        ptr = mem;
-    }
-    field_BC = ptr;
+    field_BC = new TimeOut();
 }
 
 /* Function start: 0x40F420 */
@@ -99,50 +93,43 @@ void SC_Fan::Cleanup(int flag) {
 
     ptr = field_C4;
     if (ptr != 0) {
-        ((Palette*)ptr)->~Palette();
-        free(ptr);
+        delete (Palette*)ptr;
         field_C4 = 0;
     }
 
     ptr = field_C8;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_C8 = 0;
     }
 
     ptr = field_CC;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_CC = 0;
     }
 
     ptr = field_E0;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_E0 = 0;
     }
 
     ptr = field_E4;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_E4 = 0;
     }
 
     ptr = field_E8;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_E8 = 0;
     }
 
     ptr = field_EC;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_EC = 0;
     }
 
@@ -153,36 +140,31 @@ void SC_Fan::Cleanup(int flag) {
 
     ptr = field_C0;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_C0 = 0;
     }
 
     ptr = field_144;
     if (ptr != 0) {
-        ((VBuffer*)ptr)->~VBuffer();
-        free(ptr);
+        delete (VBuffer*)ptr;
         field_144 = 0;
     }
 
     ptr = field_BC;
     if (ptr != 0) {
-        ((TimeOut*)ptr)->~TimeOut();
-        free(ptr);
+        delete (TimeOut*)ptr;
         field_BC = 0;
     }
 
     ptr = field_AC;
     if (ptr != 0) {
-        ((SpriteAction*)ptr)->~SpriteAction();
-        free(ptr);
+        delete (SpriteAction*)ptr;
         field_AC = 0;
     }
 
     ptr = field_A8;
     if (ptr != 0) {
-        ((SpriteAction*)ptr)->~SpriteAction();
-        free(ptr);
+        delete (SpriteAction*)ptr;
         field_A8 = 0;
     }
 
@@ -272,8 +254,7 @@ void SC_Fan::ProcessRound() {
         if (field_17C == 2) {
             ptr = field_A8;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 field_A8 = 0;
             }
             {
@@ -285,8 +266,7 @@ void SC_Fan::ProcessRound() {
         } else if (field_17C == 3) {
             ptr = field_A8;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 field_A8 = 0;
             }
             {
@@ -315,14 +295,12 @@ void SC_Fan::ProcessRound() {
             EnqueueSpriteAction(field_AC);
             ptr = field_AC;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 field_AC = 0;
             }
             ptr = field_A8;
             if (ptr != 0) {
-                ((SpriteAction*)ptr)->~SpriteAction();
-                free(ptr);
+                delete (SpriteAction*)ptr;
                 field_A8 = 0;
             }
             return;
@@ -350,8 +328,7 @@ void SC_Fan::ProcessRound() {
     EnqueueSpriteAction(field_A8);
     ptr = field_A8;
     if (ptr != 0) {
-        ((SpriteAction*)ptr)->~SpriteAction();
-        free(ptr);
+        delete (SpriteAction*)ptr;
         field_A8 = 0;
     }
 }
@@ -617,65 +594,37 @@ int SC_Fan::LBLParse(char* param_1) {
         pal->Load(local_b8);
     }
     else if (strcmp(local_38, "BACKGROUND_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_C8 = spr;
         Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "STOP_SWITCH_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_CC = spr;
         Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "TL_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_E0 = spr;
         Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "BL_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_E4 = spr;
         Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "TR_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_E8 = spr;
         Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "BR_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_EC = spr;
         Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }
     else if (strcmp(local_38, "CONSOLE_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_C0 = spr;
         Parser::ProcessFile((Parser*)spr, (Parser*)this, (char*)0);
     }

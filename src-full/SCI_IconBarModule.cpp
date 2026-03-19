@@ -57,14 +57,12 @@ SCI_IconBarModule::~SCI_IconBarModule() {
     void* data;
 
     if (field_E4 != 0) {
-        ((Palette*)field_E4)->~Palette();
-        FreeMemory((void*)field_E4);
+        delete (Palette*)field_E4;
         field_E4 = 0;
     }
 
     if (mmPlayer != 0) {
-        mmPlayer->~MMPlayer();
-        FreeMemory(mmPlayer);
+        delete mmPlayer;
         mmPlayer = 0;
     }
 
@@ -72,8 +70,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
     p = icons;
     do {
         if (*p != 0) {
-            ((T_Hotspot*)*p)->~T_Hotspot();
-            FreeMemory(*p);
+            delete (T_Hotspot*)*p;
             *p = 0;
         }
         p++;
@@ -86,8 +83,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
         while (list->head != 0) {
             data = list->RemoveCurrent();
             if (data != 0) {
-                ((SpriteAction*)data)->~SpriteAction();
-                FreeMemory(data);
+                delete (SpriteAction*)data;
             }
         }
     }
@@ -99,8 +95,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
             while (list->head != 0) {
                 data = FUN_004036a0(list);
                 if (data != 0) {
-                    ((SpriteAction*)data)->~SpriteAction();
-                    FreeMemory(data);
+                    delete (SpriteAction*)data;
                 }
             }
         }
@@ -109,8 +104,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
     }
 
     if (timeout != 0) {
-        timeout->~TimeOut();
-        FreeMemory(timeout);
+        delete timeout;
         timeout = 0;
     }
 }
@@ -216,8 +210,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Cleanup Palette
         if (field_E4 != 0) {
-            ((Palette*)field_E4)->~Palette();
-            FreeMemory((void*)field_E4);
+            delete (Palette*)field_E4;
             field_E4 = 0;
         }
 
@@ -233,8 +226,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
         Sprite** p = icons;
         do {
             if (*p != 0) {
-                ((T_Hotspot*)*p)->~T_Hotspot();
-                FreeMemory(*p);
+                delete (T_Hotspot*)*p;
                 *p = 0;
             }
             p++;
@@ -249,8 +241,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                 while (list->head != 0) {
                     void* data = list->RemoveCurrent();
                     if (data != 0) {
-                        ((SpriteAction*)data)->~SpriteAction();
-                        FreeMemory(data);
+                        delete (SpriteAction*)data;
                     }
                 }
             }

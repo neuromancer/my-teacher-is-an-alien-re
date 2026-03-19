@@ -32,7 +32,7 @@ extern "C" {
 extern int g_WaitForInputValue_004373bc;
 
 // Engine list operations
-extern void __fastcall FUN_00401c80(void* obj);  // DrawEntry dtor
+
 
 
 // Engine/Misc
@@ -175,7 +175,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
                 while (*piVar6 != 0) {
                     void* obj = ((LinkedList*)piVar6)->RemoveCurrent();
                     if (obj != 0) {
-                        FUN_00401c80(obj);
+                        ((ZBuffer*)obj)->CleanUpVBuffer();
                         FreeMemory(obj);
                     }
                 }
@@ -277,7 +277,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                     while (*piVar6 != 0) {
                         void* obj = ((LinkedList*)piVar6)->RemoveCurrent();
                         if (obj != 0) {
-                            FUN_00401c80(obj);
+                            ((ZBuffer*)obj)->CleanUpVBuffer();
                             FreeMemory(obj);
                         }
                     }
@@ -330,8 +330,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
 
     if (palette != 0) {
         void* pal = (void*)palette;
-        ((Palette*)pal)->~Palette();
-        FreeMemory(pal);
+        delete (Palette*)pal;
         palette = 0;
     }
 
@@ -539,8 +538,7 @@ void __fastcall ClearActionList(LinkedList* list)
             if (data != 0) {
                 void* ptr = *(void**)((int)data + 4);
                 if (ptr != 0) {
-                    ((VBuffer*)ptr)->~VBuffer();
-                    FreeMemory(ptr);
+                    delete (VBuffer*)ptr;
                     *(void**)((int)data + 4) = 0;
                 }
                 Handler* obj = *(Handler**)((int)data + 8);

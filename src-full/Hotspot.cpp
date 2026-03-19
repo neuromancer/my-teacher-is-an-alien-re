@@ -17,7 +17,7 @@ typedef void* HSAMPLE;
 extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 
 extern void FreeMemory(void*);
-extern void __fastcall FUN_00406fd0(void*, int, int);  // LinkedList::Add (thiscall, 1 stack param)
+
 extern "C" GameState* DAT_0046aa30;
 
 #include "HotspotAction.h"
@@ -53,8 +53,7 @@ T_Hotspot::~T_Hotspot()
     for (i = 0; i < 8; i++) {
         ptr = *p;
         if (ptr != 0) {
-            ((HotspotAction*)ptr)->~HotspotAction();
-            FreeMemory(ptr);
+            delete (HotspotAction*)ptr;
             *p = 0;
         }
         p++;
@@ -216,7 +215,7 @@ int T_Hotspot::LBLParse(char* param_1)
                 }
             }
         } else {
-            FUN_00406fd0(list, 0, (int)msg);
+            ((Queue*)list)->InsertAtCurrent((void*)msg);
         }
     }
     else if (strcmp(token, "PLAYSOUND") == 0) {
@@ -261,7 +260,7 @@ int T_Hotspot::LBLParse(char* param_1)
                 }
             }
         } else {
-            FUN_00406fd0(list, 0, (int)msg);
+            ((Queue*)list)->InsertAtCurrent((void*)msg);
         }
     }
     else if (strcmp(token, "SWITCHROOM") == 0) {
@@ -306,7 +305,7 @@ int T_Hotspot::LBLParse(char* param_1)
                 }
             }
         } else {
-            FUN_00406fd0(list, 0, (int)msg);
+            ((Queue*)list)->InsertAtCurrent((void*)msg);
         }
     }
     else if (strcmp(token, "DIALOG") == 0) {
@@ -339,7 +338,7 @@ int T_Hotspot::LBLParse(char* param_1)
         list[2] = list[0];
         if (list[3] == 1 || list[3] == 2) {
             if (list[0] == 0) {
-                FUN_00406fd0(list, 0, (int)msg);
+                ((Queue*)list)->InsertAtCurrent((void*)msg);
             } else {
                 while (list[2] != 0) {
                     if (*(int*)(*(int*)(list[2] + 8)) < *(int*)msg) {
@@ -356,7 +355,7 @@ int T_Hotspot::LBLParse(char* param_1)
                 }
             }
         } else {
-            FUN_00406fd0(list, 0, (int)msg);
+            ((Queue*)list)->InsertAtCurrent((void*)msg);
         }
     }
     else if (strcmp(token, "RECT") == 0) {

@@ -6,6 +6,7 @@
 #include "Sprite.h"
 #include "Palette.h"
 #include "ZBuffer.h"
+#include "SlimeTable.h"
 #include "main.h"
 #include <string.h>
 #include <stdlib.h>
@@ -17,7 +18,6 @@ extern "C" char* GetCinematicFilename(int);
 extern "C" char* FormatAssetPath(char*, ...);
 
 extern void __fastcall FUN_00425490(void*);
-extern void* __fastcall FUN_00425480(void*);
 extern "C" void SetVideoRes(int, int);
 extern "C" void ShowError(const char* format, ...);
 // FUN_004279a0 = ZBuffer::ResetItems (ZBuffer.h)
@@ -67,12 +67,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
 
     moduleParam = pmsg[1];
 
-    void* pal = (void*)malloc(0xC);
-    void* palObj = 0;
-    if (pal != 0) {
-        palObj = FUN_00425480(pal);
-    }
-    field_148 = (int)palObj;
+    field_148 = (int)new SlimeTable();
 
     ParseFile(this, "mis\\CB_FireAlarm.mis", (char*)0);
 
@@ -89,15 +84,13 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
 
     p = (void*)field_C0;
     if (p != 0) {
-        ((Palette*)p)->~Palette();
-        FreeMemory(p);
+        delete (Palette*)p;
         field_C0 = 0;
     }
 
     p = (void*)field_C4;
     if (p != 0) {
-        ((Sprite*)p)->~Sprite();
-        FreeMemory(p);
+        delete (Sprite*)p;
         field_C4 = 0;
     }
 
@@ -110,50 +103,43 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
 
     p = (void*)field_BC;
     if (p != 0) {
-        ((Sprite*)p)->~Sprite();
-        FreeMemory(p);
+        delete (Sprite*)p;
         field_BC = 0;
     }
 
     p = (void*)field_F8;
     if (p != 0) {
-        ((Sprite*)p)->~Sprite();
-        FreeMemory(p);
+        delete (Sprite*)p;
         field_F8 = 0;
     }
 
     p = (void*)field_DC;
     if (p != 0) {
-        ((Sprite*)p)->~Sprite();
-        FreeMemory(p);
+        delete (Sprite*)p;
         field_DC = 0;
     }
 
     p = (void*)field_110;
     if (p != 0) {
-        ((Sprite*)p)->~Sprite();
-        FreeMemory(p);
+        delete (Sprite*)p;
         field_110 = 0;
     }
 
     p = (void*)field_10C;
     if (p != 0) {
-        ((Sprite*)p)->~Sprite();
-        FreeMemory(p);
+        delete (Sprite*)p;
         field_10C = 0;
     }
 
     p = (void*)field_C8;
     if (p != 0) {
-        ((Sprite*)p)->~Sprite();
-        FreeMemory(p);
+        delete (Sprite*)p;
         field_C8 = 0;
     }
 
     p = (void*)field_A8;
     if (p != 0) {
-        ((SpriteAction*)p)->~SpriteAction();
-        FreeMemory(p);
+        delete (SpriteAction*)p;
         field_A8 = 0;
     }
 
@@ -212,8 +198,7 @@ int SC_FireAlarm::Exit(SC_Message* msg) {
 void SC_FireAlarm::SendResultMessage() {
     // Destroy existing action at field_A8
     if (field_A8 != 0) {
-        ((SpriteAction*)field_A8)->~SpriteAction();
-        FreeMemory((void*)field_A8);
+        delete (SpriteAction*)field_A8;
         field_A8 = 0;
     }
 
@@ -238,8 +223,7 @@ void SC_FireAlarm::SendResultMessage() {
     // Enqueue and destroy
     EnqueueSpriteAction((void*)field_A8);
     if (field_A8 != 0) {
-        ((SpriteAction*)field_A8)->~SpriteAction();
-        FreeMemory((void*)field_A8);
+        delete (SpriteAction*)field_A8;
         field_A8 = 0;
     }
 }

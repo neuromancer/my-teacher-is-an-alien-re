@@ -22,8 +22,7 @@ PodsEngine::PodsEngine()
 PodsEngine::~PodsEngine()
 {
     if (DAT_0046bf30 != 0) {
-        ((Palette*)DAT_0046bf30)->~Palette();
-        FreeMemory(DAT_0046bf30);
+        delete (Palette*)DAT_0046bf30;
         DAT_0046bf30 = 0;
     }
     if (bgSprite != 0) {

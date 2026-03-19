@@ -167,50 +167,43 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 
     ptr = field_AC;
     if (ptr != 0) {
-        ((Palette*)ptr)->~Palette();
-        free(ptr);
+        delete (Palette*)ptr;
         field_AC = 0;
     }
 
     ptr = field_B0;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_B0 = 0;
     }
 
     ptr = field_B4;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_B4 = 0;
     }
 
     ptr = field_C4;
     if (ptr != 0) {
-        ((VBuffer*)ptr)->~VBuffer();
-        free(ptr);
+        delete (VBuffer*)ptr;
         field_C4 = 0;
     }
 
     ptr = field_B8;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_B8 = 0;
     }
 
     ptr = field_BC;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_BC = 0;
     }
 
     ptr = field_C0;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_C0 = 0;
     }
 
@@ -221,8 +214,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 
     ptr = field_13C;
     if (ptr != 0) {
-        ((Sprite*)ptr)->~Sprite();
-        free(ptr);
+        delete (Sprite*)ptr;
         field_13C = 0;
     }
 
@@ -240,8 +232,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 
     ptr = field_114;
     if (ptr != 0) {
-        ((SoundList*)ptr)->~SoundList();
-        free(ptr);
+        delete (SoundList*)ptr;
         field_114 = 0;
     }
 
@@ -553,65 +544,35 @@ int SC_Wahoo::LBLParse(char* param_1) {
     }
     else if (strcmp(local_38, "DETECTION_MASK") == 0) {
         sscanf(param_1, "%s %s", local_38, local_b8);
-        void* mem = malloc(0x30);
-        void* obj = 0;
-        if (mem != 0) {
-            char* path = ResolveAssetPath(local_b8);
-            obj = FUN_00410fb0(mem, 0, path, 0);
-        }
-        field_C4 = obj;
+        field_C4 = new VBuffer(ResolveAssetPath(local_b8), 0);
     }
     else if (strcmp(local_38, "BACKGROUND_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_B0 = spr;
         Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "RESET_SWITCH_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_B4 = spr;
         Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "INNER_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_B8 = spr;
         Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "MIDDLE_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_BC = spr;
         Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "OUTER_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_C0 = spr;
         Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
     else if (strcmp(local_38, "CONSOLE_SPRITE") == 0) {
-        void* mem = malloc(0xf8);
-        void* spr = 0;
-        if (mem != 0) {
-            spr = new (mem) Sprite((char*)0);
-        }
+        Sprite* spr = new Sprite((char*)0);
         field_13C = spr;
         Parser::ProcessFile((Parser*)spr, this, (char*)0);
     }
