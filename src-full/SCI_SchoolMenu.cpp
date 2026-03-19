@@ -27,8 +27,6 @@ extern SpriteAction DAT_00472d20;
 class ZBufferManager;
 extern ZBufferManager* DAT_0046aa24;
 extern SpriteAction DAT_00472d58;
-extern int DAT_0046cb90;
-extern char* DAT_0046cb94;
 extern int DAT_00473334;
 extern int DAT_00473358;
 extern int DAT_004733e8;
@@ -205,14 +203,14 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
 
     // Select current character
     gs = DAT_0046aa30;
-    int charIdx = DAT_0046cb90;
+    int charIdx = g_PeriodStateIdx_0046cb90;
     gs->ValidateIndex(charIdx);
     int* stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
     int selChar = stateVals[charIdx];
     if (characters[selChar] != 0 && characters[i] != 0) {
         gs = DAT_0046aa30;
-        charIdx = DAT_0046cb90;
+        charIdx = g_PeriodStateIdx_0046cb90;
         gs->ValidateIndex(charIdx);
         stateVals = (int*)gs->stateValues;
         stateVals = (int*)*stateVals;
@@ -225,7 +223,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     }
 
     // Set cursor
-    charIdx = DAT_0046cb90;
+    charIdx = g_PeriodStateIdx_0046cb90;
     gs = DAT_0046aa30;
     gs->ValidateIndex(charIdx);
     stateVals = (int*)gs->stateValues;
@@ -579,7 +577,7 @@ void SCI_SchoolMenu::SetupOptions() {
     i = 0;
     T_MenuHotspot** optPtr = options;
     do {
-        charIdx = DAT_0046cb90;
+        charIdx = g_PeriodStateIdx_0046cb90;
         gs = DAT_0046aa30;
         if (charIdx < 0 || charIdx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", charIdx);
@@ -590,15 +588,15 @@ void SCI_SchoolMenu::SetupOptions() {
         char ch;
         if (charVal == -1) {
             // Use default character
-            charIdx = DAT_0046cb90;
+            charIdx = g_PeriodStateIdx_0046cb90;
             gs = DAT_0046aa30;
             if (charIdx < 0 || charIdx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", charIdx);
             }
             stateVals = gs->stateValues;
-            ch = DAT_0046cb94[stateVals[charIdx]];
+            ch = g_PeriodCharTable_0046cb94[stateVals[charIdx]];
         } else {
-            ch = DAT_0046cb94[charVal];
+            ch = g_PeriodCharTable_0046cb94[charVal];
         }
 
         i++;
@@ -657,13 +655,13 @@ void InitAllSchedule() {
             char ch;
             if (charIdx == -1) {
                 GameState* gs = DAT_0046aa30;
-                int periodIdx = DAT_0046cb90;
+                int periodIdx = g_PeriodStateIdx_0046cb90;
                 if (periodIdx < 0 || periodIdx > gs->maxStates - 1) {
                     ShowError("Invalid gamestate %d", periodIdx);
                 }
-                ch = DAT_0046cb94[gs->stateValues[periodIdx]];
+                ch = g_PeriodCharTable_0046cb94[gs->stateValues[periodIdx]];
             } else {
-                ch = DAT_0046cb94[charIdx];
+                ch = g_PeriodCharTable_0046cb94[charIdx];
             }
 
             sprintf(buf, "%cRM%d", (int)ch, i);
@@ -768,12 +766,12 @@ char_click:
         char ch;
         if (i == -1) {
             gs = DAT_0046aa30;
-            int charIdx = DAT_0046cb90;
+            int charIdx = g_PeriodStateIdx_0046cb90;
             gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
-            ch = DAT_0046cb94[stateVals[charIdx]];
+            ch = g_PeriodCharTable_0046cb94[stateVals[charIdx]];
         } else {
-            ch = DAT_0046cb94[i];
+            ch = g_PeriodCharTable_0046cb94[i];
         }
 
         sprintf(buf, "%c_IN_DETENTION", (int)ch);
@@ -785,12 +783,12 @@ char_click:
 
         if (i == -1) {
             gs = DAT_0046aa30;
-            int charIdx = DAT_0046cb90;
+            int charIdx = g_PeriodStateIdx_0046cb90;
             gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
-            ch = DAT_0046cb94[stateVals[charIdx]];
+            ch = g_PeriodCharTable_0046cb94[stateVals[charIdx]];
         } else {
-            ch = DAT_0046cb94[i];
+            ch = g_PeriodCharTable_0046cb94[i];
         }
         sprintf(buf, "%c_DETENTION_SUSPENSION", (int)ch);
         gs = DAT_0046aa30;
@@ -801,12 +799,12 @@ char_click:
 
         if (i == -1) {
             gs = DAT_0046aa30;
-            int charIdx = DAT_0046cb90;
+            int charIdx = g_PeriodStateIdx_0046cb90;
             gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
-            ch = DAT_0046cb94[stateVals[charIdx]];
+            ch = g_PeriodCharTable_0046cb94[stateVals[charIdx]];
         } else {
-            ch = DAT_0046cb94[i];
+            ch = g_PeriodCharTable_0046cb94[i];
         }
         sprintf(buf, "%c_CAPTURED", (int)ch);
         gs = DAT_0046aa30;
@@ -843,12 +841,12 @@ char_click:
 
         // Update global character selection
         gs = DAT_0046aa30;
-        hitResult = DAT_0046cb90;
+        hitResult = g_PeriodStateIdx_0046cb90;
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         stateVals[hitResult] = i;
 
-        hitResult = DAT_0046cb90;
+        hitResult = g_PeriodStateIdx_0046cb90;
         gs = DAT_0046aa30;
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
@@ -868,7 +866,7 @@ char_click:
         {
             T_MenuHotspot* selSpr = *selPtr;
             gs = DAT_0046aa30;
-            int periodIdx2 = DAT_0046cb90;
+            int periodIdx2 = g_PeriodStateIdx_0046cb90;
             int pIdx = gs->FindState("PERIOD");
             gs->ValidateIndex(pIdx);
             stateVals = gs->stateValues;
@@ -922,7 +920,7 @@ opt_click:
     {
         T_MenuHotspot* selOpt2 = *selPtr;
         gs = DAT_0046aa30;
-        int charStateIdx = DAT_0046cb90;
+        int charStateIdx = g_PeriodStateIdx_0046cb90;
         int pIdx = gs->FindState("PERIOD");
         gs->ValidateIndex(pIdx);
         stateVals = gs->stateValues;
@@ -978,24 +976,24 @@ check_go:
 
         if (period == 0x12) {
             gs = DAT_0046aa30;
-            int charIdx = DAT_0046cb90;
+            int charIdx = g_PeriodStateIdx_0046cb90;
             gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
-            if (DAT_0046cb94[stateVals[charIdx]] == 'D') {
+            if (g_PeriodCharTable_0046cb94[stateVals[charIdx]] == 'D') {
                 nextChar = 'P';
             } else {
                 gs = DAT_0046aa30;
-                charIdx = DAT_0046cb90;
+                charIdx = g_PeriodStateIdx_0046cb90;
                 gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
-                if (DAT_0046cb94[stateVals[charIdx]] == 'S') {
+                if (g_PeriodCharTable_0046cb94[stateVals[charIdx]] == 'S') {
                     nextChar = 'D';
                 } else {
                     gs = DAT_0046aa30;
-                    charIdx = DAT_0046cb90;
+                    charIdx = g_PeriodStateIdx_0046cb90;
                     gs->ValidateIndex(charIdx);
                     stateVals = gs->stateValues;
-                    if (DAT_0046cb94[stateVals[charIdx]] == 'P') {
+                    if (g_PeriodCharTable_0046cb94[stateVals[charIdx]] == 'P') {
                         nextChar = 'S';
                     }
                 }
@@ -1007,10 +1005,10 @@ check_go:
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
                 gs = DAT_0046aa30;
-                int charIdx = DAT_0046cb90;
+                int charIdx = g_PeriodStateIdx_0046cb90;
                 gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
-                if (DAT_0046cb94[stateVals[charIdx]] != 'D') {
+                if (g_PeriodCharTable_0046cb94[stateVals[charIdx]] != 'D') {
                     nextChar = 'D';
                     goto set_captured;
                 }
@@ -1022,10 +1020,10 @@ check_go:
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
                 gs = DAT_0046aa30;
-                int charIdx = DAT_0046cb90;
+                int charIdx = g_PeriodStateIdx_0046cb90;
                 gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
-                if (DAT_0046cb94[stateVals[charIdx]] != 'S') {
+                if (g_PeriodCharTable_0046cb94[stateVals[charIdx]] != 'S') {
                     nextChar = 'S';
                     goto set_captured;
                 }
@@ -1037,10 +1035,10 @@ check_go:
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
                 gs = DAT_0046aa30;
-                int charIdx = DAT_0046cb90;
+                int charIdx = g_PeriodStateIdx_0046cb90;
                 gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
-                if (DAT_0046cb94[stateVals[charIdx]] != 'P') {
+                if (g_PeriodCharTable_0046cb94[stateVals[charIdx]] != 'P') {
                     nextChar = 'P';
                 }
             }

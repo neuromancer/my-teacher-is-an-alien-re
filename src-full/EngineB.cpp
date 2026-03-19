@@ -15,7 +15,6 @@
 
 extern InputManager* DAT_0046aa08;
 extern "C" GameState* DAT_0046aa30;
-extern int DAT_0046cb90;
 extern "C" int DAT_00473e18;
 
 
@@ -187,10 +186,10 @@ void EngineB::OnProcessEnd() {
         p[6] = 0;
 
         gs = DAT_0046aa30;
-        if (DAT_0046cb90 < 0 || gs->maxStates - 1 < DAT_0046cb90) {
-            ShowError("Invalid gamestate %d", DAT_0046cb90);
+        if (g_PeriodStateIdx_0046cb90 < 0 || gs->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+            ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
         }
-        stateVal = gs->stateValues[DAT_0046cb90];
+        stateVal = gs->stateValues[g_PeriodStateIdx_0046cb90];
         switch (stateVal) {
         case 0:
             config[0] = 1;

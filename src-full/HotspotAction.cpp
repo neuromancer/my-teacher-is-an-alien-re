@@ -14,6 +14,7 @@
 #include "MouseControl.h"
 #include "string.h"
 #include "MouseControl.h"
+#include "globals.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -21,13 +22,6 @@ extern "C" void ShowError(const char* format, ...);
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
-extern "C" extern GameState* DAT_0046aa30;
-class MouseControl;
-extern MouseControl* DAT_0046aa18;
-extern void* DAT_0046aa34;
-extern GameState* DAT_0046aa38;
-extern int DAT_0046cb90;
-extern char* DAT_0046cb94;
 extern SpriteAction DAT_00472d90;
 
 
@@ -516,7 +510,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             queue100 = new LinkedList();
         }
         sa = new SpriteAction(
-            ((GameState*)DAT_0046aa34)->FindState(buf_C0),
+            g_StringTable_0046aa34->FindState(buf_C0),
             local_14, field_90, field_94, 4, 0, local_14, 0, 0, 0);
         list = queue100;
         list->ResetForSortedAdd(sa);
@@ -640,7 +634,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
         {
             GameState* gs = DAT_0046aa30;
-            int idx = DAT_0046cb90;
+            int idx = g_PeriodStateIdx_0046cb90;
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
@@ -650,9 +644,9 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 if (idx < 0 || gs->maxStates - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
-                c = DAT_0046cb94[gs->stateValues[idx]];
+                c = g_PeriodCharTable_0046cb94[gs->stateValues[idx]];
             } else {
-                c = DAT_0046cb94[val];
+                c = g_PeriodCharTable_0046cb94[val];
             }
             sprintf(local_40, "%c%s", (int)c, buf_C0);
         }

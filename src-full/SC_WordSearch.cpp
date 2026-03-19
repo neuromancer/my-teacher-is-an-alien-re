@@ -6,6 +6,7 @@
 #include "Sample.h"
 #include "Timer.h"
 #include "GameState.h"
+#include "globals.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,17 +20,6 @@ extern "C" void ShowError(const char* format, ...);
 
 #include "MouseControl.h"
 #include "VBuffer.h"
-
-extern char* DAT_0046bacc;
-extern int DAT_0046cb90;
-extern "C" extern GameState* DAT_0046aa30;
-class MouseControl;
-extern MouseControl* DAT_0046aa18;
-class InputManager;
-extern InputManager* DAT_0046aa08;
-class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
-extern "C" extern void* DAT_0046aa14;
 
 /* Function start: 0x435800 */
 SC_WordSearch::SC_WordSearch() {
@@ -56,7 +46,7 @@ void SC_WordSearch::Init(SC_Message* msg) {
         );
     }
     *(int*)((int)this + 0x81c) = 0;
-    int iVar2 = DAT_0046cb90;
+    int iVar2 = g_PeriodStateIdx_0046cb90;
     void* pvVar4 = DAT_0046aa30;
     if (iVar2 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < iVar2) {
         ShowError("Invalid gamestate %d", iVar2);
@@ -399,7 +389,7 @@ void SC_WordSearch::FUN_436790() {
 
 /* Function start: 0x4368F0 */
 void SC_WordSearch::FUN_4368F0() {
-    int iVar2 = DAT_0046cb90;
+    int iVar2 = g_PeriodStateIdx_0046cb90;
     void* pvVar3 = DAT_0046aa30;
     if (iVar2 < 0 || *(int*)((int)pvVar3 + 0x98) - 1 < iVar2) {
         ShowError("Invalid gamestate %d", iVar2);

@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "SpriteAction.h"
 #include "LinkedList.h"
+#include "globals.h"
 #include "GameState.h"
 #include <string.h>
 #include <stdio.h>
@@ -94,7 +95,6 @@ void T_MenuHotspot::Update()
 }
 
 extern "C" void ShowError(const char* format, ...);
-extern void* DAT_0046aa34;
 
 extern void ParseSpriteAction(void*, void*);
 extern void* __fastcall FUN_0040cf40(void*, int, void*);
@@ -182,8 +182,8 @@ int T_MenuHotspot::LBLParse(char* line) {
             field_1A0 = (int)new Queue();
         }
         {
-            int key1 = ((GameState*)DAT_0046aa34)->FindState((char*)local_70);
-            int key2 = ((GameState*)DAT_0046aa34)->FindState((char*)local_90);
+            int key1 = g_StringTable_0046aa34->FindState((char*)local_70);
+            int key2 = g_StringTable_0046aa34->FindState((char*)local_90);
             action = new SpriteAction(key1, local_18, key2, local_1c, 4, 0, 0, 0, 0, 0);
         }
         queue = (int*)field_1A0;

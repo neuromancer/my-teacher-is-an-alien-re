@@ -53,9 +53,7 @@ int* GetScreenHeight();
 void ParsePath(const char *, char *, char *, char *, char *);
 int ProcessMessages();
 
-// Bridge globals (extern "C" linkage)
-extern void* DAT_0046aa10;   // = g_GameConfig_00436970
-extern void* DAT_0046aa14;   // = g_WorkBuffer_00436974
+// Bridge globals (extern "C" linkage) — now in globals.h
 }
 
 // Bridge globals (C++ linkage, defined in stubs.cpp)

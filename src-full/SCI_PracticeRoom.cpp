@@ -1,4 +1,5 @@
 #include "SCI_PracticeRoom.h"
+#include "globals.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
 #include "Palette.h"
@@ -33,13 +34,6 @@ extern "C" void WriteToLog(const char* format, ...);
 // FUN_00429b60 = SC_PRHotSpot ctor — callers updated to use new
 // FUN_00420ce0 = T_MenuHotspot(int) ctor — callers updated to use new
 
-extern int DAT_0046cb90;
-extern "C" extern GameState* DAT_0046aa30;
-class MouseControl;
-extern MouseControl* DAT_0046aa18;
-class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
-extern int DAT_0046ad6c;
 
 
 #include "SlimeTable.h"
@@ -86,7 +80,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
         pBC++;
         iCount--;
     } while (iCount != 0);
-    int iGS = DAT_0046cb90;
+    int iGS = g_PeriodStateIdx_0046cb90;
     void* pvVar2 = DAT_0046aa30;
     if (iGS < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < iGS) {
         ShowError("Invalid gamestate %d", iGS);
@@ -283,7 +277,7 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
                 if (pSub != 0) {
                     ((Sprite*)pSub)->ResetAnimation(1, 0);
                 }
-                int iGS = DAT_0046cb90;
+                int iGS = g_PeriodStateIdx_0046cb90;
                 void* pvVar = DAT_0046aa30;
                 if (iGS < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGS) {
                     ShowError("Invalid gamestate %d", iGS);

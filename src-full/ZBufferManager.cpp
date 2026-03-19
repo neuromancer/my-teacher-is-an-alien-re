@@ -19,7 +19,7 @@
 
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
-extern "C" extern void* DAT_0046aa14;
+// DAT_0046aa14 now in globals.h
 
 
 

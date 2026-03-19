@@ -31,156 +31,19 @@
 #include "FlagArray.h"
 #include "LinkedList.h"
 
-extern "C" int DAT_0046a6ec;
 extern "C" void ShowLoadingScreen(void);
 extern "C" void SetVideoRes(int width, int height);
 extern "C" char* MakeAudioName(char* baseName);
 
 // ============================================================================
-// Global variables needed for linking
+// Global variables moved to globals.cpp
 // ============================================================================
 
-int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
-short _param_3 = 0; // Sound.obj ?_param_3@@3FA
-
-// Handler8 - message queue management
-struct MessageQueue;
-MessageQueue* g_MessageQueue = 0;
-
-// Graphics globals
-int DAT_0043748c = 0;     // HDC for text rendering
-int DAT_004374ae = 640;   // max X position for text
-int DAT_00437608[256];    // palette color table
-
-// EngineB globals
-void* DAT_00435f1c = 0;
-
-class EngineInfoParser;
-class Sprite;
-class Viewport;
-class TargetList;
-class CombatSprite;
-class Parser;
-class Weapon;
-class Palette;
-class SoundList;
-class ScoreDisplay;
-class mCNavigator;
-struct HotspotListData;
-
-extern "C" {
-    EngineInfoParser* DAT_0046ae4c = 0;
-    Sprite*           DAT_0046ae50 = 0;
-    Viewport*         DAT_0046ae54 = 0;
-    TargetList*       DAT_0046ae58 = 0;
-    CombatSprite*     DAT_0046ae5c = 0;
-    Weapon*           DAT_0046ae60 = 0;
-    Palette*          DAT_0046ae64 = 0;
-    SoundList*        DAT_0046ae68 = 0;
-    ScoreDisplay*     DAT_0046ae6c = 0;
-    mCNavigator*      DAT_0046ae70 = 0;
-    HotspotListData*  DAT_0046ae74 = 0;
-    int DAT_00473e18 = 0;
-}
-
-// Projectile globals
-int g_ProjectileHits_0043d150 = 0;
-
-// Parser globals
-int g_ParserCount = 0;              // DAT_00469288
-void* g_FilePosCache = 0;           // DAT_00469144
-int DAT_00469160 = 0;               // preprocessor variable substitution flag
-int DAT_00469148 = 0;
-int DAT_0046914c = 0;
-int DAT_00469150 = 0;
-int DAT_00469154 = 0;
-int DAT_00469158 = 0;
-int DAT_0046915c = 0;
-
-// SCI_Inventory globals — typed as their real classes
-ZBufferManager* DAT_0046aa24 = 0;    // was void*
-MouseControl* DAT_0046aa18 = 0;      // was void*
-void* DAT_0046a6e4 = 0;
-int DAT_00473334 = 0;
-int DAT_004733e8 = 0;
-InputManager* DAT_0046aa08 = 0;      // was void*
-// DAT_0046a6dc removed — same as g_MsgList in main.cpp
-char* DAT_0046aa00 = 0;
-
-// Full game globals — DAT_0046aa30 typed as GameState* (extern "C" definition below)
-extern "C" extern GameState* DAT_0046aa30;
-GameState* g_StringTable_0046aa34 = 0;
-char* DAT_0046aa2c = 0;
-GameState* DAT_0046aa3c = 0;
-
-// SpriteAction globals
-SpriteAction DAT_00472d58;
-SpriteAction DAT_00472d90;
-SpriteAction DAT_00472d20;
-
-// SCI_SchoolMenu globals
-extern "C" {
-    int DAT_0046a190 = 0;
-    void* DAT_0046af08 = 0;
-}
-int DAT_0046cb90 = 0;
-char* DAT_0046cb94 = 0;
-int DAT_00473358 = 0;
-int DAT_0047337c = 0;
-
-// SC_Cinematic + SC_SelectHotSpot globals
-#include "VBuffer.h"
-extern "C" {
-    int DAT_0046a6ec = 0;
-    void* DAT_0046aa10 = 0;
-    VBuffer* DAT_0046aa14 = 0;
-    GameState* DAT_0046aa30 = 0;
-    // DAT_0046ac04 = g_WaitForInputValue_004373bc in globals.cpp (last key pressed)
-    char DAT_00473400 = 0;
-    char DAT_00472c70[256] = {0};
-    char DAT_00472cb0[256] = {0};
-}
-
-// SC_Question globals
-class StringTable;
-StringTable* DAT_0046a6e0 = 0;
-FlagArray* DAT_0046a6e8 = 0;
-char DAT_00468108[32] = {0};
-char DAT_004690e4[32] = {0};
-GameState* DAT_0046aa38 = 0;
-
-// SC_Wahoo / SC_WordSearch / SCI_PracticeRoom globals
-int DAT_0046ad6c = 0;
-void* DAT_0046bbfc = 0;
-class Weapon;
-Weapon* DAT_00468ef0 = 0;
-char* DAT_0046bacc = 0;
-
-// SC_Detention globals
-int DAT_00468a18 = 0;
-extern "C" void* DAT_0046bf30 = 0;   // Pods palette pointer
+// SC_Detention stubs
 void __fastcall FUN_00447790(void*, int, int) {} // SC_SpaceShipNav::ShutDown
 void* __fastcall FUN_0044c660(void*, int, char*) { return 0; } // Sprite ctor wrapper
 int __cdecl FUN_00426ac0() { return 0; }
 void __fastcall FUN_00408ee0(void*, int, int) {}
-
-// SC_FireAlarm / SC_Pods globals
-int DAT_004685ac = 0;
-class SlimeTable;
-SlimeTable* DAT_0046bf28 = 0;
-int DAT_00472bd8 = 0;
-int DAT_004685a0 = 0;
-int DAT_00472bdc = 0;
-
-// Engine globals
-Sound* DAT_0046AA0C = 0;
-// DAT_0046AA24 removed — duplicate of DAT_0046aa24 (MSVC linker is case-insensitive)
-
-// HotspotAction globals
-void* DAT_0046aa34 = 0;
-
-// SCI_IconBarModule / SC_Detention globals
-int DAT_00468764 = 0;
 
 // ============================================================================
 // EngineB proxy class stubs
@@ -225,15 +88,7 @@ void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 // SoundTracker stubs and globals
 // ============================================================================
 #include "SoundTracker.h"
-struct SoundPool;
-SoundPool* DAT_00469134 = 0;
-int DAT_00469128 = 0;
-void* DAT_00469138 = 0;    // FilePosCache LRU node
-int DAT_0046912c = 0;      // FilePosCache hit counter
-int DAT_00469130 = 0;      // FilePosCache miss counter
-int DAT_00469140 = 0;
-int DAT_0046913c = 0;
-// SoundTracker string globals — replaced with inline strings
+// SoundTracker globals moved to globals.cpp
 
 // FUN_00455130 = remove() — callers updated
 // FUN_00425fa0 = FileExists — callers updated
@@ -250,9 +105,6 @@ int DAT_0046913c = 0;
 // FUN_004218c0 = Timer::Reset — callers updated
 // FUN_004218e0 = Timer::Update — callers updated
 // FUN_00412210 = FilePosCache::Store — callers updated
-
-// Parser globals
-char DAT_00469168[160] = {0};
 
 // ============================================================================
 // Implemented functions (with real code)
@@ -336,11 +188,7 @@ void __fastcall FUN_004459a0(void*, int, int) {}
 // FUN_00444a40 = SpriteAction::SpriteAction constructor in SpriteAction.cpp (callers updated to use placement new)
 // FUN_00426190 = ResolveAssetPath in CDData.cpp
 
-// Path resolution
-void* DAT_0046aa1c = 0;
-// DAT_0046b78c removed — duplicate of definition in main.cpp
-int DAT_0046b784 = 0;      // cache hit counter
-int DAT_0046b788 = 0;      // cache miss counter
+// Path resolution globals moved to globals.cpp
 // DAT_0046b790, DAT_00473440, DAT_00473444 defined in main.cpp
 // FUN_004341f0 = FileCacheLookup — moved to CDData.cpp
 // FUN_004342d0 = FileCacheRegister — moved to CDData.cpp
@@ -441,30 +289,17 @@ void __fastcall FUN_0042b0f0(void*) {}                           // SC_PRHotSpot
 
 // FUN_00425FC0 = GetFileSize (moved to string.cpp)
 
-// SC_DodgeOrville globals
-struct HitBounds { int minVal; int maxVal; };
-HitBounds g_HitBounds_00473260[3];
-struct BombData { int data[6]; };
-BombData g_BombData_00473278[6];
-int g_AnimStates_0046ac30[5];
-int g_LastBombDir_0046ac44;
-POINT g_CursorPos_00473308;
+// SC_DodgeOrville globals moved to globals.cpp
 // rand_00454920 = rand() — callers updated to use rand() directly
 // FUN_00433cb0 = GameState::SetFromAction — implemented in GameState.cpp, callers updated
 // FUN_00425620 = SlimeTable::LoadEntry — callers updated
 // FUN_004254a0 = SlimeTable::Allocate — callers updated
 // FUN_00445450 = ParseSpriteAction — callers updated
 // FUN_00449480 = SC_Combat::Update — callers updated to use SC_Combat::Update()
-int DAT_00472be0 = 0;
-int DAT_00472be4 = 0;
-int DAT_00472be8 = 0;
-int DAT_00472bec = 0;
 // FUN_004250e0 = Sample::~Sample — callers updated
-int DAT_0046bcd0[3] = {0};
 extern "C" {
 int __cdecl FUN_004260a0(char*) { return 0; }
 void FUN_00434520() {}
 void FUN_004345b0() {}
 }
-int DAT_004719c0 = 0;
 void __fastcall FUN_00427390(void*) {}

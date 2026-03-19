@@ -8,9 +8,7 @@
 #include "string.h"
 #include "GlyphRect.h"
 
-extern "C" extern void* DAT_0046aa14;
-class InputManager;
-extern InputManager* DAT_0046aa08;
+// DAT_0046aa14 and DAT_0046aa08 now in globals.h
 extern "C" void SetVideoRes(int width, int height);
 
 static int g_VBufferHandleTableInitialized = 0;

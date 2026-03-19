@@ -49,7 +49,6 @@ extern ZBufferManager* DAT_0046aa24;
 extern char* DAT_0046aa2c;
 extern GameState* DAT_0046aa3c;
 extern void* DAT_0046a6e4;
-extern int DAT_0046cb90;
 extern SpriteAction DAT_00472d58;
 extern SpriteAction DAT_00472d20;
 extern SpriteAction DAT_00472d90;
@@ -195,7 +194,7 @@ void IconBar::Init(SC_Message* msg) {
         spr->ResetAnimation(0, 0);
     }
 
-    idx = DAT_0046cb90;
+    idx = g_PeriodStateIdx_0046cb90;
     gs = DAT_0046aa30;
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);

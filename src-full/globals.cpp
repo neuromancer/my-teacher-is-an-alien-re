@@ -18,6 +18,7 @@
 #include "GameOutcome.h"
 #include "CursorState.h"
 #include "Target.h"
+#include "SpriteAction.h"
 
 // Pointers initialized to 0 to avoid crash
 // Sorted by address 0x00436960 - 0x004369A4
@@ -242,3 +243,152 @@ int g_DevelopFlag_00472de4 = 0;  // 1 = "Develop.___" file found
 // Detention/Period globals
 int g_PeriodStateIdx_0046cb90 = 0;
 char* g_PeriodCharTable_0046cb94 = 0;
+
+// ============================================================================
+// Globals moved from stubs.cpp (sorted by address)
+// ============================================================================
+
+int (*g_OutOfMemoryCallback)(unsigned int) = NULL;     // Memory callback
+short _param_3 = 0;                                     // Sound.obj ?_param_3@@3FA
+MessageQueue* g_MessageQueue = 0;                        // Handler8 message queue
+
+// EngineB globals
+void* DAT_00435f1c = 0;                                 // 0x00435f1c
+
+// Graphics globals
+int DAT_00437608[256];                                   // 0x00437608 palette color table
+
+// Projectile globals
+int g_ProjectileHits_0043d150 = 0;                       // 0x0043d150
+
+// SC_Question globals
+char DAT_00468108[32] = {0};                             // 0x00468108
+char DAT_004690e4[32] = {0};                             // 0x004690e4
+
+// SCI_IconBarModule / SC_Detention globals
+int DAT_00468764 = 0;                                    // 0x00468764
+
+// SC_Detention globals
+int DAT_00468a18 = 0;                                    // 0x00468a18
+
+// SC_FireAlarm / SC_Pods globals
+int DAT_004685a0 = 0;                                    // 0x004685a0
+int DAT_004685ac = 0;                                    // 0x004685ac
+
+// SC_Wahoo / SC_WordSearch / SCI_PracticeRoom globals
+Weapon* DAT_00468ef0 = 0;                                // 0x00468ef0
+
+// SoundTracker globals
+int DAT_00469128 = 0;                                    // 0x00469128
+int DAT_0046912c = 0;                                    // 0x0046912c FilePosCache hit counter
+int DAT_00469130 = 0;                                    // 0x00469130 FilePosCache miss counter
+SoundPool* DAT_00469134 = 0;                             // 0x00469134
+void* DAT_00469138 = 0;                                  // 0x00469138 FilePosCache LRU node
+int DAT_0046913c = 0;                                    // 0x0046913c
+int DAT_00469140 = 0;                                    // 0x00469140
+
+// Parser globals
+void* g_FilePosCache = 0;                                // 0x00469144 DAT_00469144
+int DAT_00469148 = 0;                                    // 0x00469148
+int DAT_0046914c = 0;                                    // 0x0046914c
+int DAT_00469150 = 0;                                    // 0x00469150
+int DAT_00469154 = 0;                                    // 0x00469154
+int DAT_00469158 = 0;                                    // 0x00469158
+int DAT_0046915c = 0;                                    // 0x0046915c
+int DAT_00469160 = 0;                                    // 0x00469160 preprocessor variable substitution flag
+char DAT_00469168[160] = {0};                            // 0x00469168 Parser buffer
+int g_ParserCount = 0;                                   // 0x00469288
+
+// SCI_SchoolMenu globals
+extern "C" {
+    int DAT_0046a190 = 0;                                // 0x0046a190
+    void* DAT_0046af08 = 0;                              // 0x0046af08
+}
+int DAT_00473358 = 0;                                    // 0x00473358
+int DAT_0047337c = 0;                                    // 0x0047337c
+
+// SC_Question globals
+StringTable* DAT_0046a6e0 = 0;                           // 0x0046a6e0
+FlagArray* DAT_0046a6e8 = 0;                             // 0x0046a6e8
+GameState* DAT_0046aa38 = 0;                             // 0x0046aa38
+
+// SCI_Inventory globals
+void* DAT_0046a6e4 = 0;                                  // 0x0046a6e4
+char* DAT_0046aa00 = 0;                                  // 0x0046aa00
+InputManager* DAT_0046aa08 = 0;                          // 0x0046aa08
+MouseControl* DAT_0046aa18 = 0;                          // 0x0046aa18
+ZBufferManager* DAT_0046aa24 = 0;                        // 0x0046aa24
+int DAT_00473334 = 0;                                    // 0x00473334
+int DAT_004733e8 = 0;                                    // 0x004733e8
+
+// Engine globals
+Sound* DAT_0046AA0C = 0;                                 // 0x0046aa0c
+
+// Full game globals
+GameState* g_StringTable_0046aa34 = 0;                   // 0x0046aa34
+char* DAT_0046aa2c = 0;                                  // 0x0046aa2c
+GameState* DAT_0046aa3c = 0;                             // 0x0046aa3c
+
+// SC_Cinematic + SC_SelectHotSpot globals
+extern "C" {
+    int DAT_0046a6ec = 0;                                // 0x0046a6ec
+    void* DAT_0046aa10 = 0;                              // 0x0046aa10
+    VBuffer* DAT_0046aa14 = 0;                           // 0x0046aa14
+    GameState* DAT_0046aa30 = 0;                         // 0x0046aa30
+    char DAT_00473400 = 0;                               // 0x00473400
+    char DAT_00472c70[256] = {0};                        // 0x00472c70
+    char DAT_00472cb0[256] = {0};                        // 0x00472cb0
+}
+
+// SC_Wahoo / SC_WordSearch / SCI_PracticeRoom globals
+int DAT_0046ad6c = 0;                                    // 0x0046ad6c
+void* DAT_0046bbfc = 0;                                  // 0x0046bbfc
+char* DAT_0046bacc = 0;                                  // 0x0046bacc
+
+// EngineB extern "C" globals
+extern "C" {
+    EngineInfoParser* DAT_0046ae4c = 0;                  // 0x0046ae4c
+    Sprite*           DAT_0046ae50 = 0;                  // 0x0046ae50
+    Viewport*         DAT_0046ae54 = 0;                  // 0x0046ae54
+    TargetList*       DAT_0046ae58 = 0;                  // 0x0046ae58
+    CombatSprite*     DAT_0046ae5c = 0;                  // 0x0046ae5c
+    Weapon*           DAT_0046ae60 = 0;                  // 0x0046ae60
+    Palette*          DAT_0046ae64 = 0;                  // 0x0046ae64
+    SoundList*        DAT_0046ae68 = 0;                  // 0x0046ae68
+    ScoreDisplay*     DAT_0046ae6c = 0;                  // 0x0046ae6c
+    mCNavigator*      DAT_0046ae70 = 0;                  // 0x0046ae70
+    HotspotListData*  DAT_0046ae74 = 0;                  // 0x0046ae74
+    int DAT_00473e18 = 0;                                // 0x00473e18
+}
+
+// Path resolution globals
+void* DAT_0046aa1c = 0;                                  // 0x0046aa1c
+int DAT_0046b784 = 0;                                    // 0x0046b784 cache hit counter
+int DAT_0046b788 = 0;                                    // 0x0046b788 cache miss counter
+
+// SC_Detention globals
+extern "C" void* DAT_0046bf30 = 0;                      // 0x0046bf30 Pods palette pointer
+
+// SC_FireAlarm / SC_Pods globals
+SlimeTable* DAT_0046bf28 = 0;                            // 0x0046bf28
+int DAT_00472bd8 = 0;                                    // 0x00472bd8
+int DAT_00472bdc = 0;                                    // 0x00472bdc
+
+// SpriteAction globals
+SpriteAction DAT_00472d20;                               // 0x00472d20
+SpriteAction DAT_00472d58;                               // 0x00472d58
+SpriteAction DAT_00472d90;                               // 0x00472d90
+
+// SC_DodgeOrville globals
+int g_AnimStates_0046ac30[5];                            // 0x0046ac30
+int g_LastBombDir_0046ac44;                              // 0x0046ac44
+HitBounds g_HitBounds_00473260[3];                       // 0x00473260
+BombData g_BombData_00473278[6];                         // 0x00473278
+POINT g_CursorPos_00473308;                              // 0x00473308
+int DAT_00472be0 = 0;                                    // 0x00472be0
+int DAT_00472be4 = 0;                                    // 0x00472be4
+int DAT_00472be8 = 0;                                    // 0x00472be8
+int DAT_00472bec = 0;                                    // 0x00472bec
+int DAT_0046bcd0[3] = {0};                              // 0x0046bcd0
+int DAT_004719c0 = 0;                                    // 0x004719c0
+

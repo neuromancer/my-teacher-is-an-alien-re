@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include "SlimeTable.h"
+#include "globals.h"
 
 extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
@@ -28,13 +29,7 @@ extern void __fastcall FUN_004061e0(void*);   // SoundEntry dtor
 #include "PodsEngine.h"
 
 extern int DAT_0046ae78;                      // active combat engine instance
-#include "ZBufferManager.h"
-extern ZBufferManager* DAT_0046aa24;
-extern "C" extern GameState* DAT_0046aa30;
-extern SlimeTable* DAT_0046bf28;               // g_SoundTable
 extern int DAT_004734a4;
-extern int DAT_0046cb90;                      // g_PeriodStateIdx
-extern char* DAT_0046cb94;                    // g_PeriodCharTable
 
 /* Function start: 0x4415E0 */
 SC_Pods::SC_Pods() {

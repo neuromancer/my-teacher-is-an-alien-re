@@ -7,16 +7,9 @@
 #include "T_Object.h"
 #include "TimeOut.h"
 #include "Animation.h"
+#include "globals.h"
 #include <stdio.h>
 #include <string.h>
-
-extern InputManager* DAT_0046aa08;
-extern MouseControl* DAT_0046aa18;
-extern void* DAT_0046a6e4;
-extern char* DAT_0046aa00;
-extern char* DAT_0046aa2c;
-extern "C" extern GameState* DAT_0046aa30;
-extern int DAT_00468764;
 
 // FUN_004459a0 = T_Hotspot::DoItem (thiscall, 2 stack params)
 #include "Hotspot.h"
@@ -27,13 +20,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" int FileExists(const char*);
 extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char*, ...);
-extern int DAT_0046cb90;
-extern char* DAT_0046cb94;
-extern int DAT_00473334;
-extern int DAT_004733e8;
-extern GameState* DAT_0046aa3c;
 #include "ZBufferManager.h"
-extern ZBufferManager* DAT_0046aa24;
 #include "Palette.h"
 #include "SpriteAction.h"
 
@@ -296,12 +283,12 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     }
 
     // Check character class
-    int charIdx = DAT_0046cb90;
+    int charIdx = g_PeriodStateIdx_0046cb90;
     if (charIdx < 0 || DAT_0046aa30->maxStates - 1 < charIdx) {
         ShowError("Invalid gamestate %d", charIdx);
     }
     char classLabel[8];
-    sprintf(classLabel, "%c_CLASS", (int)DAT_0046cb94[DAT_0046aa30->stateValues[charIdx]]);
+    sprintf(classLabel, "%c_CLASS", (int)g_PeriodCharTable_0046cb94[DAT_0046aa30->stateValues[charIdx]]);
     int classIdx = DAT_0046aa30->FindState(classLabel);
     if (classIdx < 0 || DAT_0046aa30->maxStates - 1 < classIdx) {
         ShowError("Invalid gamestate %d", classIdx);

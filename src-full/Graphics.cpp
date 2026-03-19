@@ -674,9 +674,9 @@ extern char g_TextAlignH_004374c0; // 0x46d0a8 in full game
 extern char g_TextAlignV_004374c1; // 0x46d0a9 in full game
 extern int DAT_0043749a;           // 0x46d082 in full game - font height
 extern int DAT_0043749e;           // 0x46d086 in full game - font descent
-extern int DAT_004374ae;           // 0x46d0ae in full game - max X
-extern int DAT_0043748c;           // 0x46d09c in full game - HDC
-extern int DAT_00437608[1];        // 0x46d308 in full game - palette color table
+// DAT_004374ae = g_PreviousPalette_004374ae in globals.h (same address 0x4374ae)
+// DAT_0043748c = g_Palette_0043748c in globals.h (same address 0x43748c)
+extern int DAT_00437608[256];        // palette color table
 
 /* Function start: 0x4524C2 */
 extern "C" void SetFontPosition(int x, int y) {
@@ -693,13 +693,13 @@ extern "C" void SetFontColor(int index) {
 
 /* Function start: 0x45329B */
 extern "C" int DrawFontText(char* text, int len) {
-    SetTextColor((HDC)DAT_0043748c, DAT_00437608[(unsigned char)DAT_00437490 + 1] & 0xffffff);
-    SetBkMode((HDC)DAT_0043748c, 1);
-    SetTextAlign((HDC)DAT_0043748c, 0);
+    SetTextColor((HDC)g_Palette_0043748c, DAT_00437608[(unsigned char)DAT_00437490 + 1] & 0xffffff);
+    SetBkMode((HDC)g_Palette_0043748c, 1);
+    SetTextAlign((HDC)g_Palette_0043748c, 0);
 
     if (g_TextAlignH_004374c0 >= 0) {
         SIZE sz;
-        GetTextExtentPointA((HDC)DAT_0043748c, text, len, &sz);
+        GetTextExtentPointA((HDC)g_Palette_0043748c, text, len, &sz);
         g_DrawPosX_004374c2 -= (unsigned int)((g_TextAlignH_004374c0 + 1) * sz.cx) >> 1;
     }
     if (g_TextAlignV_004374c1 >= 0) {
@@ -707,10 +707,10 @@ extern "C" int DrawFontText(char* text, int len) {
     }
     g_DrawPosY_004374ce -= DAT_0043749a;
 
-    int advance = TextOutA((HDC)DAT_0043748c, g_DrawPosX_004374c2, g_DrawPosY_004374ce, text, len);
+    int advance = TextOutA((HDC)g_Palette_0043748c, g_DrawPosX_004374c2, g_DrawPosY_004374ce, text, len);
     g_DrawPosX_004374c2 += advance;
-    if ((unsigned int)DAT_004374ae < (unsigned int)g_DrawPosX_004374c2) {
-        g_DrawPosX_004374c2 = DAT_004374ae;
+    if ((unsigned int)g_PreviousPalette_004374ae < (unsigned int)g_DrawPosX_004374c2) {
+        g_DrawPosX_004374c2 = (int)g_PreviousPalette_004374ae;
     }
     return 0;
 }

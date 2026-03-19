@@ -27,7 +27,17 @@ class TargetList;
 class GameOutcome;
 class CursorState;
 class Weapon;
+class Palette;
+class SoundList;
+class Viewport;
+class EngineInfoParser;
+class ScoreDisplay;
+class SlimeTable;
 struct MessageQueue;
+struct HotspotListData;
+struct SoundPool;
+struct HitBounds { int minVal; int maxVal; };
+struct BombData { int data[6]; };
 
 
 // extern IMAGE_DOS_HEADER IMAGE_DOS_HEADER_00400000; // { /* 128 bytes */ }
@@ -5964,5 +5974,99 @@ extern void* DAT_0043eff0;
 extern int DAT_0043bdf0; // File error code
 extern int g_CmdLineAudioMode_0043d558; // Command line audio mode
 extern char g_CmdLineInputMode_0043d560; // Command line input mode
+
+// Globals moved from stubs.cpp (sorted by address)
+extern int (*g_OutOfMemoryCallback)(unsigned int);        // Memory callback
+extern short _param_3;                                     // Sound.obj ?_param_3@@3FA
+extern void* DAT_00435f1c;                                // EngineB global
+extern int DAT_00437608[256];                              // palette color table
+extern char DAT_00468108[32];                              // SC_Question buffer
+extern int DAT_00468764;                                   // SCI_IconBarModule / SC_Detention
+extern int DAT_00468a18;                                   // SC_Detention
+extern int DAT_004685a0;                                   // SC_FireAlarm / SC_Pods
+extern int DAT_004685ac;                                   // SC_FireAlarm / SC_Pods
+extern char DAT_004690e4[32];                              // SC_Question buffer
+extern Weapon* DAT_00468ef0;                               // SC_Wahoo / SC_WordSearch
+extern int DAT_00469128;                                   // SoundTracker
+extern int DAT_0046912c;                                   // FilePosCache hit counter
+extern int DAT_00469130;                                   // FilePosCache miss counter
+extern SoundPool* DAT_00469134;                            // SoundTracker
+extern void* DAT_00469138;                                 // FilePosCache LRU node
+extern int DAT_0046913c;                                   // SoundTracker
+extern int DAT_00469140;                                   // SoundTracker
+extern void* g_FilePosCache;                               // DAT_00469144
+extern int DAT_00469148;                                   // Parser
+extern int DAT_0046914c;                                   // Parser
+extern int DAT_00469150;                                   // Parser
+extern int DAT_00469154;                                   // Parser
+extern int DAT_00469158;                                   // Parser
+extern int DAT_0046915c;                                   // Parser
+extern int DAT_00469160;                                   // preprocessor variable substitution flag
+extern char DAT_00469168[160];                             // Parser buffer
+extern int g_ParserCount;                                  // DAT_00469288
+extern "C" {
+    extern int DAT_0046a190;                               // SCI_SchoolMenu
+    extern void* DAT_0046af08;                             // SCI_SchoolMenu
+}
+extern StringTable* DAT_0046a6e0;                          // SC_Question
+extern void* DAT_0046a6e4;                                // SCI_Inventory
+extern FlagArray* DAT_0046a6e8;                            // SC_Question
+extern "C" {
+    extern int DAT_0046a6ec;                               // SC_Cinematic
+    extern void* DAT_0046aa10;                             // SC_SelectHotSpot
+    extern VBuffer* DAT_0046aa14;                          // SC_SelectHotSpot
+    extern GameState* DAT_0046aa30;                        // SC_Cinematic
+    extern char DAT_00473400;                              // SC_Cinematic
+    extern char DAT_00472c70[256];                         // SC_Cinematic
+    extern char DAT_00472cb0[256];                         // SC_Cinematic
+}
+extern char* DAT_0046aa00;                                 // SCI_Inventory
+extern InputManager* DAT_0046aa08;                         // SCI_Inventory
+extern Sound* DAT_0046AA0C;                                // Engine
+extern MouseControl* DAT_0046aa18;                         // SCI_Inventory
+extern void* DAT_0046aa1c;                                 // Path resolution
+extern ZBufferManager* DAT_0046aa24;                       // SCI_Inventory
+extern char* DAT_0046aa2c;                                 // Full game
+extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_Message
+extern GameState* DAT_0046aa38;                            // SC_Question
+extern GameState* DAT_0046aa3c;                            // Full game
+extern int g_AnimStates_0046ac30[5];                       // SC_DodgeOrville
+extern int g_LastBombDir_0046ac44;                         // SC_DodgeOrville
+extern int DAT_0046ad6c;                                   // SC_Wahoo
+extern "C" {
+    extern EngineInfoParser* DAT_0046ae4c;
+    extern Sprite*           DAT_0046ae50;
+    extern Viewport*         DAT_0046ae54;
+    extern TargetList*       DAT_0046ae58;
+    extern CombatSprite*     DAT_0046ae5c;
+    extern Weapon*           DAT_0046ae60;
+    extern Palette*          DAT_0046ae64;
+    extern SoundList*        DAT_0046ae68;
+    extern ScoreDisplay*     DAT_0046ae6c;
+    extern mCNavigator*      DAT_0046ae70;
+    extern HotspotListData*  DAT_0046ae74;
+    extern int DAT_00473e18;
+}
+extern char* DAT_0046bacc;                                 // SC_Wahoo / SCI_PracticeRoom
+extern void* DAT_0046bbfc;                                 // SC_Wahoo
+extern int DAT_0046b784;                                   // cache hit counter
+extern int DAT_0046b788;                                   // cache miss counter
+extern int DAT_0046bcd0[3];                                // SC_DodgeOrville
+extern SlimeTable* DAT_0046bf28;                           // SC_FireAlarm / SC_Pods
+extern "C" extern void* DAT_0046bf30;                      // Pods palette pointer
+extern int DAT_00472bd8;                                   // SC_FireAlarm / SC_Pods
+extern int DAT_00472bdc;                                   // SC_FireAlarm / SC_Pods
+extern int DAT_00472be0;                                   // SC_DodgeOrville
+extern int DAT_00472be4;                                   // SC_DodgeOrville
+extern int DAT_00472be8;                                   // SC_DodgeOrville
+extern int DAT_00472bec;                                   // SC_DodgeOrville
+extern int DAT_00473334;                                   // SCI_Inventory
+extern int DAT_00473358;                                   // SCI_SchoolMenu
+extern int DAT_0047337c;                                   // SCI_SchoolMenu
+extern int DAT_004733e8;                                   // SCI_Inventory
+extern int DAT_004719c0;                                   // SC_DodgeOrville
+extern HitBounds g_HitBounds_00473260[3];                  // SC_DodgeOrville
+extern BombData g_BombData_00473278[6];                    // SC_DodgeOrville
+extern POINT g_CursorPos_00473308;                         // SC_DodgeOrville
 
 #endif
