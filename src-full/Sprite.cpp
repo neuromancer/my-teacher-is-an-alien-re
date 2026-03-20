@@ -14,6 +14,7 @@
 
 #include "VBuffer.h"
 
+extern "C" void WriteToLog(const char* format, ...);
 extern "C" GameState* DAT_0046aa30;
 
 // Video buffer name table: 32 entries × 64 bytes at 0x4734B0
@@ -29,8 +30,8 @@ extern "C" char* GetVideoBufferNameSlot(int handle)
 Sprite::Sprite(char* filename)
 {
     // BaseObject::BaseObject_Init((undefined4 *)this);
-    num_states = 0;
-    field_0xb0 = 0;
+    loc_x = 0;
+    loc_y = 0;
     memset(&ranges, 0, 0x1A * 4);
     flags |= 0x20;
     if (filename != 0) {
@@ -159,17 +160,18 @@ void Sprite::CheckRanges1()
     }
 
     int i = 0;
-    if (0 < loc_x) {
+    if (0 < num_states) {
         do {
             int maxFrames = animation_data->smk->Frames;
             if (maxFrames < ranges[i].end) {
                 ranges[i].end = maxFrames;
             }
+            WriteToLog("CheckRanges1: %s range[%d].start=%d end=%d maxFrames=%d ranges=%p", sprite_filename, i, ranges[i].start, ranges[i].end, maxFrames, (void*)ranges);
             if (ranges[i].end < ranges[i].start) {
                 ShowError("bad range[%d].start = %d in %s", i, ranges[i].start, sprite_filename);
             }
             i++;
-        } while (i < loc_x);
+        } while (i < num_states);
     }
 }
 
@@ -363,11 +365,11 @@ int Sprite::LBLParse(char* param_1)
         val3 = sscanf(param_1, " %s %s", keyword, buf3);
         strcpy(sprite_filename, MakeSoundName((char*)buf3));
     } else if (strcmp(keyword, "HANDLE") == 0) {
-        sscanf(param_1, "%s %d", keyword, &loc_y);
+        sscanf(param_1, "%s %d", keyword, &handleValue);
     } else if (strcmp(keyword, "LOC") == 0) {
         sscanf(param_1, " %s %d %d", keyword, &val1, &val2);
-        num_states = val1;
-        field_0xb0 = val2;
+        loc_x = val1;
+        loc_y = val2;
     } else if (strcmp(keyword, "MAXLOGIC") == 0) {
         sscanf(param_1, "%s %d", keyword, &val1);
         InitLogic(val1);
@@ -409,14 +411,14 @@ int Sprite::LBLParse(char* param_1)
         flags |= 0x400;
     } else if (strcmp(keyword, "SET_DEFAULT_STATES") == 0) {
         int i = 0;
-        if (0 < loc_x) {
+        if (0 < num_states) {
             do {
                 i++;
                 ranges[i - 1].start = i;
                 ranges[i - 1].end = i;
                 ranges[i - 1].field_C = 0;
                 ranges[i - 1].field_8 = 0;
-            } while (i < loc_x);
+            } while (i < num_states);
         }
     } else if (strcmp(keyword, "SPR") == 0) {
         result = sscanf(param_1, " %s %s %d %d %d %s %s %d", keyword, buf3,
@@ -424,8 +426,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::LBLParse("Sprite");
         }
-        num_states = val1;
-        field_0xb0 = val2;
+        loc_x = val1;
+        loc_y = val2;
         if (4 < result) {
             priority = val5;
         }
@@ -438,8 +440,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::LBLParse("Sprite");
         }
-        num_states = val1;
-        field_0xb0 = val2;
+        loc_x = val1;
+        loc_y = val2;
         flags |= 0x40;
         if (4 < result) {
             priority = val5;
@@ -453,8 +455,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::LBLParse("Sprite");
         }
-        num_states = val1;
-        field_0xb0 = val2;
+        loc_x = val1;
+        loc_y = val2;
         flags |= 1;
         if (4 < result) {
             priority = val5;
@@ -468,8 +470,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::LBLParse("Sprite");
         }
-        num_states = val1;
-        field_0xb0 = val2;
+        loc_x = val1;
+        loc_y = val2;
         flags |= 0x41;
         if (4 < result) {
             priority = val5;
@@ -483,8 +485,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::LBLParse("Sprite");
         }
-        num_states = val1;
-        field_0xb0 = val2;
+        loc_x = val1;
+        loc_y = val2;
         flags |= 0x40;
         priority = 0x14;
         if (5 < result) {
@@ -515,9 +517,9 @@ void Sprite::ResetAnimation(int state, int offset) {
         InitAnimation();
     }
 
-    if (state < 0 || loc_x - 1 < state) {
+    if (state < 0 || num_states - 1 < state) {
         ShowError("Sprite::SetState - '%s' states are OutOfRange \nstate %d must be between 0 and %d",
-                  sprite_filename, state, loc_x);
+                  sprite_filename, state, num_states);
     }
 
     if (animation_data == 0) {
@@ -696,12 +698,13 @@ after_anim:
 
 /* Function start: 0x44D210 */
 void Sprite::ConfigRange(int state, int start, int count, int param_4) {
-    if (loc_x <= state) {
+    if (num_states <= state) {
         ShowError("Sprite::SetRange 1 %s %d", sprite_filename, state);
     }
     if (start < 1 || count < 1) {
         ShowError("Sprite::SetRange 2 %s %d range = %d, %d", sprite_filename, state, start, count);
     }
+    WriteToLog("ConfigRange: %s range[%d].start=%d end=%d", sprite_filename, state, start, count);
     ranges[state].start = start;
     ranges[state].end = count;
     ranges[state].field_C = param_4;
@@ -711,14 +714,14 @@ void Sprite::ConfigRange(int state, int start, int count, int param_4) {
 
 /* Function start: 0x44D2A0 */
 void Sprite::ConfigStates(int numStates) {
-    loc_x = numStates;
+    num_states = numStates;
 
     if (ranges != 0) {
         delete[] ranges;
         ranges = 0;
     }
 
-    int count = loc_x;
+    int count = num_states;
     Range* newRanges = 0;
     Range* mem = new Range[count];
     if (mem != 0) {
@@ -727,14 +730,15 @@ void Sprite::ConfigStates(int numStates) {
     ranges = newRanges;
 
     int i = 0;
-    if (0 < loc_x) {
+    if (0 < num_states) {
         do {
             ranges[i].start = 1;
             ranges[i].end = 5000;
             ranges[i].field_C = 0;
             ranges[i].field_8 = 0;
+            WriteToLog("ConfigStates: %s range[%d].start=1 count=%d ranges=%p", sprite_filename, i, num_states, (void*)ranges);
             i++;
-        } while (i < loc_x);
+        } while (i < num_states);
     }
     flags |= 0x20;
 }

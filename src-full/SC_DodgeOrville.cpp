@@ -194,8 +194,8 @@ void SC_DodgeOrville::ProcessTargets() {
 void SC_DodgeOrville::UpdateGame()
 {
     Sprite* spr108 = (Sprite*)bgSprite; // 0x108
-    spr108->Do(spr108->num_states, spr108->field_0xb0, 1.0);
-    if (spr108->Do(spr108->num_states, spr108->field_0xb0, 1.0) != 0) {
+    spr108->Do(spr108->loc_x, spr108->loc_y, 1.0);
+    if (spr108->Do(spr108->loc_x, spr108->loc_y, 1.0) != 0) {
         if (spr108->handle != 7) {
             SC_DodgeOrville::ThrowBomb();
         }
@@ -227,9 +227,9 @@ void SC_DodgeOrville::UpdateGame()
     SC_DodgeOrville::UpdateReticle();
 
     Sprite* spr130 = (Sprite*)field_130;
-    spr130->Do(spr130->num_states, spr130->field_0xb0, 1.0);
+    spr130->Do(spr130->loc_x, spr130->loc_y, 1.0);
     Sprite* spr12c = (Sprite*)field_12C;
-    spr12c->Do(spr12c->num_states, spr12c->field_0xb0, 1.0);
+    spr12c->Do(spr12c->loc_x, spr12c->loc_y, 1.0);
 
     spr130 = (Sprite*)field_130;
     int renderData = 0;

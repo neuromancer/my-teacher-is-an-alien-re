@@ -50,10 +50,10 @@ T_MenuHotspot::T_MenuHotspot(char* name, int* rect)
     if (name != 0) {
         Sprite* spr = new Sprite(name);
         cursor = spr;
-        spr->handle = 2;
+        spr->priority = 2;
         spr->loc_x = rect[0];
         spr->loc_y = rect[1];
-        spr->ResetAnimation(2, 0);
+        spr->ConfigStates(2);
         spr->flags |= 0x40;
         spr->ConfigRange(0, 1, 1, 1);
         spr->ConfigRange(1, 2, 2, 1);

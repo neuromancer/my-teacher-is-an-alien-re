@@ -67,7 +67,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
       BuildGlyphTable();
       iVar2 = IsCharSupported(0x41);
       if (iVar2 != 0) {
-        iVar2 = ComputeTextMetrics(g_EngineTypeCombat_00435ef4);
+        iVar2 = ComputeTextMetrics("A");
         iVar2 = (iVar2 * 2) / 3;
         spaceWidth = iVar2;
         tabWidth = iVar2 << 2;

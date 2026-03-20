@@ -89,7 +89,7 @@ void MMPlayer2::AddSprite(Sprite* spr)
     if (q->type == 1 || q->type == 2) {
         if (q->head != 0) {
             do {
-                if ((unsigned int)((Sprite*)q->current->data)->field_0xb0 < (unsigned int)spr->field_0xb0) {
+                if ((unsigned int)((Sprite*)q->current->data)->loc_y < (unsigned int)spr->loc_y) {
                     q->InsertNode(spr);
                     return;
                 }

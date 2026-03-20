@@ -109,7 +109,7 @@ void MMPlayer::AddSprite(Sprite* s)
     if (queue->type == 1 || queue->type == 2) {
         if (queue->head != 0) {
             do {
-                if (((Sprite*)queue->current->data)->field_0xb0 < s->field_0xb0) {
+                if (((Sprite*)queue->current->data)->loc_y < s->loc_y) {
                     queue->InsertNode(s);
                     return;
                 }

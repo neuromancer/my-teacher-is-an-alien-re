@@ -22,7 +22,7 @@ SCI_Dialog::SCI_Dialog() {
     // Zero 0x14 dwords (80 bytes) at offset 0x600
     memset(&field_600, 0, 0x14 * sizeof(int));
 
-    WriteToMessageLogIfEnabled("\"declaring DialogPlayer\"");
+    WriteToLog("\"declaring DialogPlayer\"");
 
     handlerId = 9;
 }
@@ -144,7 +144,7 @@ int SCI_Dialog::ShutDown(SC_Message* msg) {
     QueueNode* node;
     QueueNode* nextNode;
 
-    WriteToMessageLogIfEnabled("\"SCI_Dialog::ShutDown\"");
+    WriteToLog("\"SCI_Dialog::ShutDown\"");
 
     if (field_608 != 0) {
         field_608->StopAnimationSound();

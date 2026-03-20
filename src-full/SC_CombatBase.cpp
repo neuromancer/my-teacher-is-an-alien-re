@@ -120,8 +120,8 @@ void SC_CombatBase::RenderBackground()
 {
     if (DAT_0046ae50 != 0) {
         DAT_0046ae50->Do(
-            DAT_0046ae50->num_states,
-            DAT_0046ae50->field_0xb0, 1.0);
+            DAT_0046ae50->loc_x,
+            DAT_0046ae50->loc_y, 1.0);
     }
 }
 

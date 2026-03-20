@@ -259,7 +259,7 @@ void CommandType3::Execute(GlyphRect* rect)
 
 /* Function start: 0x403910 */
 ZBufferManager::ZBufferManager() {
-    WriteToMessageLogIfEnabled("declaring ZBuffer");
+    WriteToLog("declaring ZBuffer");
     memset(this, 0, 0x2b * 4);
 
     m_queueA0 = new ZBQueue(2);

@@ -392,7 +392,7 @@ void SC_Fan::State2Handler() {
     void* sample;
 
     sprite = (Sprite*)field_C8;
-    if (sprite->Do(sprite->num_states, sprite->field_0xb0, 1.0)) {
+    if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
         field_C8->ResetAnimation(5, 0);
     }
 
@@ -473,7 +473,7 @@ void SC_Fan::RenderFan() {
 
     if (state == 3) {
         if (field_CC != 0) {
-            if (field_CC->Do(field_CC->num_states, field_CC->field_0xb0, 1.0)) {
+            if (field_CC->Do(field_CC->loc_x, field_CC->loc_y, 1.0)) {
                 DisplaySprites(0);
                 SendGameMessage(4, field_1C4, handlerId, moduleParam, 0x13, 0x32, 0x3E8, 0, 0, 0);
             }
@@ -485,7 +485,7 @@ void SC_Fan::RenderFan() {
         i = 4;
         do {
             if (*sp != 0) {
-                (*sp)->Do((*sp)->num_states, (*sp)->field_0xb0, 1.0);
+                (*sp)->Do((*sp)->loc_x, (*sp)->loc_y, 1.0);
             }
             sp++;
             i--;
@@ -493,7 +493,7 @@ void SC_Fan::RenderFan() {
     }
 
     sprite = (Sprite*)field_C8;
-    if (sprite->Do(sprite->num_states, sprite->field_0xb0, 1.0)) {
+    if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
         if (state == 0) {
             DisplaySprites(1);
         } else if (state == 2) {
@@ -559,7 +559,7 @@ void SC_Fan::RenderFan() {
         }
 
         sprite = (Sprite*)field_C0;
-        if (sprite->Do(sprite->num_states, sprite->field_0xb0, 1.0)) {
+        if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
             frames = 0;
             p = *(void**)((int)DAT_0046aa08 + 0x1A0);
             if (p != 0) {

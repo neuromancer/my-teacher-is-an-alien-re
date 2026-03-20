@@ -4,8 +4,6 @@
 #include <stdlib.h>
 
 extern "C" {
-    extern char DAT_004371a8[];
-    extern char* PTR_s_Setup_cfg_00437454;
     int FileExists(const char* filename);
 }
 
@@ -18,7 +16,7 @@ GameConfig::GameConfig() {
     // Zero data section again (0x14 dwords = 80 bytes at offset 0x44)
     memset(&data, 0, 80);
     
-    if (FileExists(PTR_s_Setup_cfg_00437454) == 0) {
+    if (FileExists("Setup.cfg") == 0) {
         CreateDefaultConfig();
     }
     ReloadConfig();
@@ -37,7 +35,7 @@ GameConfig::~GameConfig() {
 
 /* Function start: 0x447EE0 */
 FILE* GameConfig::Open(char* mode) {
-    fp = fopen(PTR_s_Setup_cfg_00437454, mode);
+    fp = fopen("Setup.cfg", mode);
     return fp;
 }
 
@@ -64,7 +62,7 @@ void GameConfig::CreateDefaultConfig() {
 
 /* Function start: 0x447F50 */
 void GameConfig::LoadConfig() {
-    if (Open(DAT_004371a8)) {
+    if (Open("rb")) {
         fwrite(&data, 80, 1, fp);
         Close();
     }
@@ -72,7 +70,7 @@ void GameConfig::LoadConfig() {
 
 /* Function start: 0x447F80 */
 void GameConfig::ReloadConfig() {
-    if (Open(DAT_004371a8)) {
+    if (Open("rb")) {
         fread(&data, 0x50, 1, fp);
         Close();
     }

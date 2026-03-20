@@ -985,7 +985,7 @@ int SCI_Inventory::LBLParse(char* line) {
         sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
         putBackButton = new T_MenuHotspot(name, params);
     }
-    else if (strcmp(token, "USE") == 0) {
+    else if (strcmp(token, "OK") == 0) {
         sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
         useButton = new T_MenuHotspot(name, params);
     }
@@ -1006,7 +1006,7 @@ int SCI_Inventory::LBLParse(char* line) {
         panels[index].field_10 = params[4];
         panels[index].field_14 = DAT_0046aa30->FindState(name);
     }
-    else if (strcmp(token, "HITAREA") == 0) {
+    else if (strcmp(token, "SLOT") == 0) {
         sscanf(line, " %s %d %d %d %d %d", token, &index, &params[0], &params[1], &params[2], &params[3]);
         slots[index].left = params[0];
         slots[index].top = params[1];

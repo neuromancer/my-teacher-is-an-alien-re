@@ -4,8 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 
-extern "C" char DAT_004371a8[];
-char DAT_004371ac[] = "rb+";
+// "rb+" used inline below (was DAT_004371ac)
 
 // 0x4269E0 = fwrite, 0x425E70 = fclose (CRT functions)
 
@@ -85,7 +84,7 @@ void FlagArray::Open() {
         ShowError("double FlagArray::Open()");
     }
     
-    FILE* fp_temp = fopen(filename, DAT_004371ac);
+    FILE* fp_temp = fopen(filename, "rb+");
     fp = fp_temp;
     
     if (fp_temp == NULL) {

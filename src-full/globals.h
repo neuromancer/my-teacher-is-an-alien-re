@@ -396,8 +396,7 @@ struct SolutionEntry {
 
 extern SolutionEntry g_SolutionData_00435b88[9];
 extern SC_CombatBase* g_CombatEngine_00435eb0; // Combat engine (EngineA or EngineB)
-extern char g_EngineTypeExplore_00435ef0[4]; // Engine type "B" for EngineA (exploration)
-extern char g_EngineTypeCombat_00435ef4[4]; // Engine type "A" for EngineB (combat), also used for text metrics
+// Engine type strings "A"/"B" inlined at call sites
 extern char g_TextAlignH_004374c0; // Horizontal text alignment (-1 = none)
 extern char g_TextAlignV_004374c1; // Vertical text alignment (-1 = none)
 extern int g_DrawPosX_004374c2; // Current drawing X position
@@ -467,7 +466,7 @@ extern GameState* g_GameState3_0043699c; // DAT_0043699c
 // extern char DAT_0043704c[4]; // Inline keyword string "USE\0" for MouseControl parsing
 extern int g_DoubleClickTime_004373b8; // From GetDoubleClickTime()
 extern int g_WaitForInputValue_004373bc; // Keyboard event value
-// PTR_s_Setup_cfg_00437454 - Defined in globals.cpp as pointer to "Setup.cfg"
+// "Setup.cfg" and "rb" strings inlined at call sites
 // DAT_00437488 - Defined in globals.cpp as HDC (main device context)
 extern HPALETTE g_Palette_0043748c; // Main game palette
 // DAT_00437490 - Defined in globals.cpp as char (color value after palette lookup)

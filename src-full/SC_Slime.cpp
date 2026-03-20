@@ -198,7 +198,7 @@ void SC_Slime::ProcessSprite(Sprite* spr) {
         goto render_timer;
     }
 
-    if (spr->Do(spr->num_states, spr->field_0xb0, 1.0) == 0) {
+    if (spr->Do(spr->loc_x, spr->loc_y, 1.0) == 0) {
         goto render_timer;
     }
 
@@ -247,7 +247,7 @@ render_timer:
     if (sprite128 == 0) {
         return;
     }
-    if (sprite128->Do(sprite128->num_states, sprite128->field_0xb0, 1.0) == 0) {
+    if (sprite128->Do(sprite128->loc_x, sprite128->loc_y, 1.0) == 0) {
         return;
     }
     sprite128->ResetAnimation(-1, 0);
@@ -429,7 +429,7 @@ void SC_Slime::CheckTimerExpired(Sprite* spr)
         return;
     }
 
-    if (spr->Do(spr->num_states, spr->field_0xb0, 1.0) == 0) {
+    if (spr->Do(spr->loc_x, spr->loc_y, 1.0) == 0) {
         return;
     }
 

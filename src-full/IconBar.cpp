@@ -358,8 +358,8 @@ void IconBar::Update(int param1, int param2) {
     }
 
     ((Sprite*)g_IconBarSprite)->Do(
-        g_IconBarSprite->num_states,
-        g_IconBarSprite->field_0xb0, 1.0);
+        g_IconBarSprite->loc_x,
+        g_IconBarSprite->loc_y, 1.0);
 
     entry = g_IconBarEntries;
     do {
@@ -396,8 +396,8 @@ void IconBar::Update(int param1, int param2) {
                     }
                     if (gs->stateValues[0x3c] != 1) {
                         ((Sprite*)entry->sprite)->Do(
-                            entry->sprite->num_states,
-                            entry->sprite->field_0xb0, 1.0);
+                            entry->sprite->loc_x,
+                            entry->sprite->loc_y, 1.0);
                     }
                 }
             } else {
@@ -420,8 +420,8 @@ void IconBar::Update(int param1, int param2) {
 
                 if (entry->field_14 != 0) {
                     ((Sprite*)entry->sprite)->Do(
-                        entry->sprite->num_states,
-                        entry->sprite->field_0xb0, 1.0);
+                        entry->sprite->loc_x,
+                        entry->sprite->loc_y, 1.0);
                 }
             }
         }

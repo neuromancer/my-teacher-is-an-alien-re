@@ -192,20 +192,23 @@ extern "C" void AddToStringTable(char *param_1)
 }
 
 /* Function start: 0x425E40 */
-void WriteToMessageLogIfEnabled(const char *param_1, ...)
+extern "C" void WriteToLog(const char *param_1, ...)
 {
-    if ((g_messageLogEnabled & 1) != 0) {
-        FILE *_File;
-        va_list argptr;
+    FILE *_File;
+    va_list argptr;
 
-        _File = fsopen("message.log", "a+");
-        if (_File != NULL) {
-            va_start(argptr, param_1);
-            vfprintf(_File, param_1, argptr);
-            va_end(argptr);
-            fprintf(_File, "\n");
-            fclose(_File);
-        }
+    //MessageBoxA(0, param_1, "WriteToLog called", 0);
+    _File = fopen("message.log", "a");
+    if (_File == NULL) {
+        MessageBoxA(0, "WriteToLog: fopen failed for DATA\\message.log", "ERROR", 0);
+        return;
+    }
+    {
+        va_start(argptr, param_1);
+        vfprintf(_File, param_1, argptr);
+        va_end(argptr);
+        fprintf(_File, "\n");
+        fclose(_File);
     }
 }
 

@@ -146,7 +146,7 @@ void EngineB::RenderBackground() {
         DAT_0046ae50->ResetAnimation(mouseX / divisor + 5, 0);
     }
 
-    if (DAT_0046ae50->Do(DAT_0046ae50->num_states, DAT_0046ae50->field_0xb0, 1.0)) {
+    if (DAT_0046ae50->Do(DAT_0046ae50->loc_x, DAT_0046ae50->loc_y, 1.0)) {
         mouseX = 0;
         if (((int*)DAT_0046aa08)[0x68] != 0) {
             mouseX = *(int*)((int*)DAT_0046aa08)[0x68];

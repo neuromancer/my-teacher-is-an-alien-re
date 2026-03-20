@@ -51,10 +51,7 @@ int g_DoubleClickTime_004373b8 = 0;
 
 int g_WaitForInputValue_004373bc = 0;
 
-// String pointers for config files
-char s_Setup_cfg[] = "Setup.cfg";
-extern "C" char* PTR_s_Setup_cfg_00437454 = s_Setup_cfg;
-extern "C" char DAT_004371a8[] = "rb";
+// String constants (Setup.cfg, "rb", engine types) inlined at call sites
 
 // ...
 
@@ -65,8 +62,7 @@ int g_DebugFlag_0043d55c = 0;
 char g_CmdLineDataPath_0043d568[260] = {0}; 
 HWND DAT_0043de7c = 0;
 int DAT_0043bdf0 = 0; 
-char g_EngineTypeExplore_00435ef0[4] = "B"; // Engine type for EngineA (exploration)
-char g_EngineTypeCombat_00435ef4[4] = "A"; // Engine type for EngineB (combat), also used for text metrics
+// Engine type strings "A"/"B" inlined at call sites (were g_EngineTypeExplore/Combat)
 
 SolutionEntry g_SolutionData_00435b88[9] = {
     {{1, 4, 6}, 0},

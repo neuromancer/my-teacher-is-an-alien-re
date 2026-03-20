@@ -537,8 +537,8 @@ int SCI_IconBarModule::FindClickedIcon(int x, int y) {
     do {
         icon = *pIcon;
         if (icon != 0) {
-            if (x < icon->loc_x || icon->num_states < x ||
-                y < icon->loc_y || icon->field_0xb0 < y) {
+            if (x < icon->field_0xa4 || icon->loc_x < x ||
+                y < icon->num_logic_conditions || icon->loc_y < y) {
                 inRect = 0;
             } else {
                 inRect = 1;

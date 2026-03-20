@@ -110,7 +110,7 @@ void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 // Implemented functions (with real code)
 // ============================================================================
 
-extern "C" void WriteToLog(const char* format, ...) {}
+// WriteToLog — implemented in string.cpp (0x425E40)
 
 extern "C" {
 // FUN_0044e530 = GetSoundFilename in string.cpp (callers updated)

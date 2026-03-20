@@ -25,8 +25,8 @@ SC_DemoScreen::SC_DemoScreen() {
     field_AC = new Sprite("elements\\Demoscrn.smk");
     field_AC->priority &= ~2;
     field_AC->handle = 0;
-    field_AC->num_states = 0;
-    field_AC->field_0xb0 = 0;
+    field_AC->loc_x = 0;
+    field_AC->loc_y = 0;
 }
 
 /* Function start: 0x44E740 */
@@ -91,7 +91,7 @@ int SC_DemoScreen::Exit(SC_Message* msg) {
 void SC_DemoScreen::Update(int param1, int param2) {
     if (handlerId == param2) {
         Sprite* spr = (Sprite*)field_AC;
-        spr->Do(spr->num_states, spr->field_0xb0, 1.0);
+        spr->Do(spr->loc_x, spr->loc_y, 1.0);
         (DAT_0046aa18)->DrawCursor();
     }
 }

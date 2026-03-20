@@ -200,7 +200,7 @@ void SCI_Schedule::Update(int param1, int param2)
 
     IconBar::Update(param1, param2);
 
-    bgSprite->Do(bgSprite->num_states, bgSprite->field_0xb0, 1.0);
+    bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
 
     if (selectionState == 1) {
         selBox2->Do(renderX, renderY, 1.0);
@@ -213,7 +213,7 @@ void SCI_Schedule::Update(int param1, int param2)
     do {
         Sprite* s = *sprPtr;
         if (s != 0) {
-            s->Do(s->num_states, s->field_0xb0, 1.0);
+            s->Do(s->loc_x, s->loc_y, 1.0);
         }
         sprPtr++;
         count--;
