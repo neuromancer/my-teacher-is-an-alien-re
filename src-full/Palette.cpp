@@ -129,25 +129,6 @@ void Palette::Load(char* filename)
     LoadFile(filename);
 }
 
-/* Function start: 0x41EAC0 */ /* DEMO ONLY - no full game match */
-void Palette::OpenAndReadPaletteFile(char* filename)
-{
-    FILE* file = fsopen(filename, "rb");
-    if (file == 0) {
-        ShowError("Error! Could not open palette file '%s'", filename);
-    }
-
-    int len = strlen(filename);
-    if (len > 4 && strnicmp(filename + len - 4, ".col", 4) == 0) {
-        fseek(file, 8, 0);
-    } else {
-        fseek(file, 0xd, 0);
-    }
-
-    fread(m_data, m_size, 1, file);
-    fclose(file);
-}
-
 /* Function start: 0x41DE00 */
 void Palette::CopyEntries(int start, int count)
 {
@@ -190,36 +171,6 @@ int Palette::IsSimilar(void* data, int start, int count) {
         src++;
     }
     return 1;
-}
-
-/* Function start: 0x41EBB0 */ /* DEMO ONLY - no full game match */
-int Palette::IsPaletteUnchanged()
-{
-    Palette* tempPalette;
-    int result;
-
-    tempPalette = new Palette();
-    tempPalette->CopyEntries(0, 0x100);
-    result = Compare(tempPalette->m_data, 0x300);
-    if (tempPalette != 0) {
-        tempPalette->~Palette();
-        delete (void*)tempPalette;
-    }
-    return result;
-}
-
-/* Function start: 0x41EC60 */ /* DEMO ONLY - no full game match */
-int Palette::Compare(char* data, int size)
-{
-    if (data != 0 && m_data != 0) {
-        for (int i = 0; i < size; i++) {
-            if (data[i] != m_data[i]) {
-                return 0;
-            }
-        }
-        return 1;
-    }
-    return 0;
 }
 
 /* Function start: 0x425550 */

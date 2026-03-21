@@ -8,7 +8,7 @@
 #include "string.h"
 #include "GlyphRect.h"
 
-// DAT_0046aa14 and g_InputManager_0046aa08 now in globals.h
+// g_BackBuffer_0046aa14 and g_InputManager_0046aa08 now in globals.h
 extern "C" void SetVideoRes(int width, int height);
 
 static int g_VBufferHandleTableInitialized = 0;
@@ -123,11 +123,11 @@ extern "C" void SetVideoRes(int width, int height)
         }
         delete g_WorkBuffer_00436974;
         g_WorkBuffer_00436974 = 0;
-        DAT_0046aa14 = 0;
+        g_BackBuffer_0046aa14 = 0;
     }
 
     g_WorkBuffer_00436974 = new VBuffer(width, height);
-    DAT_0046aa14 = g_WorkBuffer_00436974;
+    g_BackBuffer_0046aa14 = g_WorkBuffer_00436974;
 
     if (g_WorkBuffer_00436974->handle != 0) {
         ShowError("workbuff must be first vb created '%d'", g_WorkBuffer_00436974->handle);

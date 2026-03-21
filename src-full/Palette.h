@@ -14,9 +14,7 @@ public:
     void Load(char* filename);
     void CopyEntries(int start, int count);
     void SetPalette(UINT start, UINT count);
-    int Compare(char* data, int size);
     int IsSimilar(void* data, int start, int count);
-    int IsPaletteUnchanged();
     void Cleanup();
     void CopyData(void* source);
     void CopyRGBData(int source, int startIdx, int count); // 0x41DC70
@@ -25,8 +23,6 @@ public:
 
     void LoadFile(char* filename);
 
-private:
-    void OpenAndReadPaletteFile(char* filename);
 };
 
 // CreatePaletteBuffer at 0x41EA50 is a placement new for Palette

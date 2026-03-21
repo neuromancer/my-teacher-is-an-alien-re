@@ -32,7 +32,7 @@ extern void __fastcall FUN_00427880(void*);
 extern int DAT_004685ac;
 class InputManager;
 extern InputManager* g_InputManager_0046aa08;
-extern "C" extern VBuffer* DAT_0046aa14;
+extern "C" extern VBuffer* g_BackBuffer_0046aa14;
 class MouseControl;
 extern MouseControl* g_Mouse_0046aa18;
 extern int DAT_004685a0;
@@ -251,7 +251,7 @@ int SC_FireAlarm::HandleClick(int* param) {
     int frameCount = *(int*)((char*)animBase + animIdx * 16 + 4);
     frameCount--;
 
-    int hitResult = DAT_0046aa14->CheckHit(coords[0], coords[1]);
+    int hitResult = g_BackBuffer_0046aa14->CheckHit(coords[0], coords[1]);
 
     if (dim_FC.field_0 <= hitResult && dim_FC.field_4 >= hitResult) {
         int y = coords[1] - 0x4B;

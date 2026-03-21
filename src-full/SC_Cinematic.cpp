@@ -27,7 +27,7 @@ extern MouseControl* g_Mouse_0046aa18;
 
 extern "C" {
     extern int g_GameEngine_0046a6ec;
-    extern VBuffer* DAT_0046aa14;
+    extern VBuffer* g_BackBuffer_0046aa14;
     extern char g_CinematicDebugStr_00473400;
 }
 extern int g_WaitForInputValue_0046ac04;
@@ -340,7 +340,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         Animation* smk = (Animation*)animation;
-        VBuffer* vp = DAT_0046aa14;
+        VBuffer* vp = g_BackBuffer_0046aa14;
         vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk->targetBuffer);
         (g_Mouse_0046aa18)->DrawCursor();
         return;
@@ -464,7 +464,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         Animation* anim4 = (Animation*)animation;
-        VBuffer* vp = DAT_0046aa14;
+        VBuffer* vp = g_BackBuffer_0046aa14;
         vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)anim4->targetBuffer);
     } else {
         Timer timer;

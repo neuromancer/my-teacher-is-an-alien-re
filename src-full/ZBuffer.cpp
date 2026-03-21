@@ -66,7 +66,7 @@ int ZBuffer::Exit(SC_Message* msg)
     return 0;
 }
 
-/* Function start: 0x4012D0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4143A0 */
 void ZBuffer::Update(int param_1, int param_2)
 {
     if (timer.Update() > 10000) {
@@ -77,7 +77,7 @@ void ZBuffer::Update(int param_1, int param_2)
     }
 }
 
-/* Function start: 0x401330 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x401330 */
 int ZBuffer::AddMessage(int param_1)
 {
     ((Handler*)this)->WriteMessageAddress((SC_Message*)param_1);
@@ -85,7 +85,7 @@ int ZBuffer::AddMessage(int param_1)
     return 1;
 }
 
-/* Function start: 0x401350 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x401350 */
 int ZBuffer::ProcessMessage(Message* msg)
 {
     if (msg->targetAddress != handlerId) {

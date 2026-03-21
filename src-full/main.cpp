@@ -389,7 +389,7 @@ void ShutdownGameSystems(void) {
   if (g_WorkBuffer_00436974 != 0) {
     delete g_WorkBuffer_00436974;
     g_WorkBuffer_00436974 = 0;
-    DAT_0046aa14 = 0;
+    g_BackBuffer_0046aa14 = 0;
   }
   if (g_Sound_0043696c != 0) {
     Sound* p = g_Sound_0043696c;

@@ -187,7 +187,7 @@ void SC_WordSearch::Update(int param1, int param2) {
     if (pvVar10 != 0) {
         ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
     } else {
-        ((VBuffer*)DAT_0046aa14)->ClearScreen(0);
+        ((VBuffer*)g_BackBuffer_0046aa14)->ClearScreen(0);
     }
 
     int* piVar13 = (int*)((int)this + 0x4d4);

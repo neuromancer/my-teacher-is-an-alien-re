@@ -19,7 +19,7 @@
 
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
-// DAT_0046aa14 now in globals.h
+// g_BackBuffer_0046aa14 now in globals.h
 
 
 
@@ -48,8 +48,7 @@ struct BlitCommand : public SoundCommand {
     int mode;              // 0x24
     double scale;          // 0x28
 
-    BlitCommand()
-        : priority(0), data(0), x(0), y(0), left(0), top(0), right(0), bottom(0), mode(0), scale(0) {}
+    BlitCommand() { memset(&priority, 0, 0x2c); }
 
     virtual void Execute(GlyphRect* rect);
 };
@@ -154,7 +153,7 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
     }
 }
 
-/* Function start: 0x41B5D0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x41B5D0 */
 void CommandType1::Execute(GlyphRect* rect)
 {
     VBuffer* vbuf;
@@ -186,7 +185,7 @@ void BlitCommand::Execute(GlyphRect* rect)
     int destY;
     VBuffer* vbuf;
 
-    vbuf = (VBuffer*)DAT_0046aa14;
+    vbuf = (VBuffer*)g_BackBuffer_0046aa14;
     switch (mode) {
     case 0:
         vbuf->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
@@ -222,7 +221,7 @@ void BlitCommand::Execute(GlyphRect* rect)
     }
 }
 
-/* Function start: 0x41B690 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x41B690 */
 void CommandType2::Execute(GlyphRect* rect)
 {
     SetDrawPosition(x, y);
@@ -232,7 +231,7 @@ void CommandType2::Execute(GlyphRect* rect)
     return;
 }
 
-/* Function start: 0x41B6D0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x41B6D0 */
 void CommandType3::Execute(GlyphRect* rect)
 {
     SetFillColor((unsigned char)field_1c);
@@ -382,7 +381,7 @@ void* ZBQueue::GetCurrentData()
     return LinkedList::GetCurrentData();
 }
 
-/* Function start: 0x41BE20 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x41BE20 */
 void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, int mode, double scale)
 {
     if (m_state != 0) {
@@ -431,32 +430,36 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
 void ZBufferManager::DrawVBufferRegion(void* data, int priority, int x, int y, int mode, double scale,
                                        int left, int top, int right, int bottom)
 {
-    BlitCommand temp;
-    BlitCommand* cmd;
-
     if (m_state == 0) {
         return;
     }
 
     if (m_state == 1) {
-        temp.data = data;
-        temp.priority = priority;
-        temp.x = x;
-        temp.y = y;
-        temp.left = left;
-        temp.top = top;
-        temp.right = right;
-        temp.bottom = bottom;
-        temp.mode = mode;
-        temp.scale = scale;
-        temp.Execute(0);
+        VBuffer* vbuf = g_BackBuffer_0046aa14;
+        switch (mode) {
+        case 0:
+            vbuf->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
+            break;
+        case 1:
+            vbuf->ClipAndPaste(left, right, top, bottom, x, y, (int)data);
+            break;
+        case 2:
+            vbuf->ClipAndBlitRegion(left, right, top, bottom, x, y, (int)data);
+            break;
+        case 3:
+            vbuf->ClipAndBlitReversed(left, right, top, bottom, x, y, (int)data);
+            break;
+        case 4:
+            DrawScaledSprite(x, y, data, scale);
+            break;
+        case 5:
+            vbuf->ScaleTCCopy(x, y, (VBuffer*)data, scale);
+            break;
+        }
         return;
     }
 
-    cmd = new BlitCommand();
-    if (cmd == 0) {
-        return;
-    }
+    BlitCommand* cmd = new BlitCommand();
 
     cmd->data = data;
     cmd->priority = priority;
@@ -477,7 +480,7 @@ void ZBufferManager::DrawVBufferRegion(void* data, int priority, int x, int y, i
     QueueCommand(cmd);
 }
 
-/* Function start: 0x41C000 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x41C000 */
 void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int flag)
 {
     CommandType2* cmd;
@@ -530,7 +533,7 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
         }
         else {
             SetFillColor(p6);
-            ((VBuffer*)DAT_0046aa14)->SetVideoMode();
+            ((VBuffer*)g_BackBuffer_0046aa14)->SetVideoMode();
             if (p1 < 0) {
                 p1 = 0;
             }
@@ -563,7 +566,7 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
     ZBQueue* queue;
     ZBQueueNode* node;
     ListNode* newNode;
-    VBuffer* vbuf = (VBuffer*)DAT_0046aa14;
+    VBuffer* vbuf = (VBuffer*)g_BackBuffer_0046aa14;
     int maxY = vbuf->height - 1;
     int maxX = vbuf->width - 1;
     GlyphRect rect(0, 0, maxX, maxY);
@@ -698,7 +701,7 @@ void ZBufferManager::ProcessRenderQueues()
         }
 
         {
-            VBuffer* vbuf = (VBuffer*)DAT_0046aa14;
+            VBuffer* vbuf = (VBuffer*)g_BackBuffer_0046aa14;
             GlyphRect rect(0, 0, vbuf->width - 1, vbuf->height - 1);
 
             while (m_queueA0->head != 0) {
@@ -820,8 +823,7 @@ void ZBufferManager::ProcessRenderQueues()
             }
 
             if (local_14 != 0) {
-                *(int*)local_14 = 0x46102c;
-                ((Rect*)((char*)local_14 + 4))->~Rect();
+                ((RenderEntry*)local_14)->~RenderEntry();
                 FreeMemory(local_14);
             }
         }
