@@ -1,6 +1,7 @@
 #include "Queue.h"
 #include "Memory.h"
 #include "string.h"
+extern "C" void WriteToLog(const char* format, ...);
 #include <memory.h>
 #include "TimedEvent.h"
 #include "Message.h"
@@ -313,6 +314,7 @@ SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
     memset(buffer, 0, sizeof(SpriteAction));
     buffer->CopyFrom(&localAction);
     completed |= 1;
+
 
     return buffer;
 }

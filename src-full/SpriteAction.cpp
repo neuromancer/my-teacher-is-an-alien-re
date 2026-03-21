@@ -1,5 +1,6 @@
 #include "SpriteAction.h"
 #include "GameEngine.h"
+extern "C" void WriteToLog(const char* format, ...);
 #include <string.h>
 #include <stdlib.h>
 #include <new.h>

@@ -308,11 +308,7 @@ int SelectHotspot::LBLParse(char* line) {
         char* path = ResolveAssetPath(name);
         smp->Load(path);
     } else if (strcmp(keyword, "MESSAGE") == 0) {
-        void* msgMem = AllocateMemory(0x38);
-        int* msgObj = 0;
-        if (msgMem != 0) {
-            msgObj = (int*)new (msgMem) SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        }
+        SpriteAction* msgObj = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         ParseSpriteAction(msgObj, this);
         if (SelectHotspot::messageList == 0) {
             LinkedList* newList = (LinkedList*)AllocateMemory(sizeof(LinkedList));
@@ -326,13 +322,9 @@ int SelectHotspot::LBLParse(char* line) {
         }
         ((Queue*)SelectHotspot::messageList)->Add(msgObj);
     } else if (strcmp(keyword, "RETURNMESSAGE") == 0) {
-        void* msgMem = AllocateMemory(0x38);
-        int* msgObj = 0;
-        if (msgMem != 0) {
-            msgObj = (int*)new (msgMem) SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        }
+        SpriteAction* msgObj = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         int* src = (int*)&DAT_00472d58;
-        int* dst = msgObj;
+        int* dst = (int*)msgObj;
         int i;
         for (i = 0x0E; i != 0; i--) {
             *dst = *src;
@@ -360,7 +352,7 @@ int SelectHotspot::LBLParse(char* line) {
             } else {
                 do {
                     int cur = (int)list->current;
-                    if (*(int*)(*(int*)(cur + 8)) < *msgObj) {
+                    if (*(int*)(*(int*)(cur + 8)) < *(int*)msgObj) {
                         ((Queue*)list)->InsertAtCurrent((void*)msgObj);
                         break;
                     }

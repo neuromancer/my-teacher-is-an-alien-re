@@ -200,7 +200,7 @@ int MMPlayer::LBLParse(char* param_1)
         Parser::ProcessFile(sprite, this, 0);
         AddSprite(sprite);
     }
-    else if (strncmp(local_34, "OVE", 3) == 0)
+    else if (strncmp(local_34, "SPR", 3) == 0)
     {
         if (sscanf(param_1, " %s %s ", local_34, local_b0) < 2) {
             Parser::LBLParse("MMPlayer");

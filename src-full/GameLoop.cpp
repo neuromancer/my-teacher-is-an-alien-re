@@ -1,6 +1,7 @@
 #include "GameLoop.h"
 #include "Handler.h"
 #include "SpriteAction.h"
+extern "C" void WriteToLog(const char* format, ...);
 #include "SC_Question.h"
 #include "Memory.h"
 #include "SC_Game.h"

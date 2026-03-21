@@ -25,13 +25,14 @@ public:
     int GetKey(char* line);
     int GetTokenType(char* line);              // 0x413810
     void HandleToken(int tokenType, char* line);  // 0x413120
-    void BeginComment(char* line, int flag);   // 0x412C00
+    void BeginComment(char* line);   // 0x412C00
     int EndComment();                          // 0x412FE0
     int DoCommentsMatch(char* line);           // 0x412C60
     void SubstituteVars(char* src, char* dst); // 0x4140F0
     void UpdateProcessingState();              // 0x4130E0
     void PushConditionalState(int value);      // 0x412EB0
     void HandleToken_IF(char* line, int prevResult); // 0x412D00
+    void ParseGosubParams(char* line); // 0x414040
     static Parser* ProcessFile(Parser* self, Parser* dst, char* key_format, ...);
 
 

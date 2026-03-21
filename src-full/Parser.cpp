@@ -6,6 +6,7 @@
 #include "TimedEvent.h"
 #include "SpriteAction.h"
 #include "GameState.h"
+#include "SC_Question.h"
 #include "string.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -89,6 +90,7 @@ int Parser::LBLParse(char *param_1) {
 
 /* Function start: 0x412A50 */
 void Parser::ReportUnknownLabel(char* name) {
+  WriteToLog("LBLParse error: handler=%s line='%s' file=%s", name, (char*)lineNumber, filename);
   ShowError("%s::LBLParse - Uknown Label\n'%s'\nfound in file %s",
             name, lineNumber, filename);
 }
@@ -218,7 +220,7 @@ int Parser::GetKey(char* line) {
     HandleToken(1, line);
     return 1;
   case 2:
-    BeginComment(line, 0);
+    HandleToken_IF(line, 0);
     return 1;
   case 3:
     HandleToken(3, line);
@@ -341,6 +343,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
 
     lineTimer.Reset();
     self->lineNumber = (int)line_buffer;
+    WriteToLog("LBLParse: file=%s line='%s'", self->filename, line_buffer);
     result = self->LBLParse(line_buffer);
     DAT_00469150 += lineTimer.Update();
     DAT_0046914c++;
@@ -355,7 +358,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
 // Duplicates removed — FUN_00426570, g_FilePosCache, g_GameState_0046aa30 declared at top of file
 
 /* Function start: 0x412C00 */
-void Parser::BeginComment(char* line, int flag) {
+void Parser::BeginComment(char* line) {
     char* start = FUN_00426570(line, "/*");
     char* end = strstr(line, "*/");
     int len = end - start;
@@ -486,7 +489,7 @@ int Parser::EndComment() {
 void Parser::HandleToken_IF(char* line, int prevResult) {
     int result;
 
-    if (isProcessingKey != 0) {
+    if (field_0x08 != 0) {
         goto push_result;
     }
 
@@ -509,21 +512,21 @@ void Parser::HandleToken_IF(char* line, int prevResult) {
 
         // Build SpriteAction with parsed values
         SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        Parser temp;
+        SC_Message msg(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        msg.targetAddress = (int)&action;
 
-        // Format: "ADDRESS\t\tGAMESTATE %s"
         char tempBuf[256];
         sprintf(tempBuf, "ADDRESS\t\tGAMESTATE %s", gsName);
-        temp.LBLParse(tempBuf);
+        msg.LBLParse(tempBuf);
 
         sprintf(tempBuf, "INSTRUCTION   %s", gsOp);
-        temp.LBLParse(tempBuf);
+        msg.LBLParse(tempBuf);
 
         sprintf(tempBuf, "EXTRA1        %d", gsValue);
-        temp.LBLParse(tempBuf);
+        msg.LBLParse(tempBuf);
 
         // Evaluate the condition
-        result = 0; // TODO: condition evaluation
+        prevResult = g_GameState_0046aa30->FUN_00433bb0((int*)&action);
     }
 
 push_result:
@@ -540,7 +543,6 @@ extern "C" extern GameState* g_GameState_0046aa30;
 extern GameState* DAT_0046aa38;
 extern MouseControl* g_Mouse_0046aa18;
 extern int DAT_00469160;
-extern void __stdcall ParseGosubParams(char* line);
 
 extern "C" char* FUN_00426570(char* s1, char* s2);
 extern "C" char* strstr(const char*, const char*);
@@ -552,7 +554,6 @@ void Parser::HandleToken(int tokenType, char* line) {
     char local_110[32];
     char local_f0[96];
     char local_90[24];
-    SpriteAction local_70;
     char* local_74;
     int local_6c;
     int local_60;
@@ -570,7 +571,7 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     switch (tokenType) {
     case 1:
-        BeginComment(line, 0);
+        BeginComment(line);
         PushConditionalState(0);
         isProcessingKey = 1;
         break;
@@ -627,15 +628,15 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
 
     case 8:
-        local_14 = strstr(line, "(");
-        pcVar6 = FUN_00426570(line, ")");
+        local_14 = strstr(line, "[");
+        pcVar6 = FUN_00426570(line, "]");
         iVar12 = (int)pcVar6 - (int)local_14;
         if (local_14 == 0 || pcVar6 == 0 || iVar12 < 1) {
             ShowError("Parser::HandleToken - Invalid GOTO statement. cannot find sub name '%s'");
         }
-        strncpy((char*)local_90, local_14, iVar12);
-        local_90[iVar12] = 0;
-        FindKey((unsigned char*)local_90);
+        strncpy(local_58, local_14, iVar12);
+        local_58[iVar12] = 0;
+        FindKey((unsigned char*)local_58);
         break;
 
     case 9:
@@ -644,22 +645,25 @@ void Parser::HandleToken(int tokenType, char* line) {
             if (local_14 == 0) {
                 pcVar6 = 0;
             } else {
-                memset(local_14, 0, 0x18);
+                *(int*)(local_14 + 0x08) = 0;
+                *(int*)(local_14 + 0x0c) = 0;
+                *(int*)(local_14 + 0x04) = 0;
+                *(int*)(local_14 + 0x00) = 0;
+                *(int*)(local_14 + 0x10) = 0;
                 *(int*)(local_14 + 0x14) = 10;
                 pcVar6 = local_14;
             }
             field_0x3c = (int)pcVar6;
         }
         {
-            int filePos[2];
-            filePos[0] = 0;
-            filePos[1] = 0;
-            fgetpos(pFile, (fpos_t*)filePos);
+            fpos_t filePos;
+            filePos = 0;
+            fgetpos(pFile, &filePos);
 
             int* pool = (int*)field_0x3c;
             int headVal = *pool;
-            local_18 = filePos[0];
-            local_14 = (char*)filePos[1];
+            local_18 = ((int*)&filePos)[0];
+            local_14 = (char*)((int*)&filePos)[1];
 
             if (pool[3] == 0) {
                 int* newBlock = (int*)operator new(pool[5] * 16 + 4);
@@ -693,8 +697,8 @@ void Parser::HandleToken(int tokenType, char* line) {
             }
             *pool = (int)node;
 
-            local_14 = strstr(line, "(");
-            local_74 = FUN_00426570(line, ")");
+            local_14 = strstr(line, "[");
+            local_74 = FUN_00426570(line, "]");
             iVar12 = (int)local_74 - (int)local_14;
             if (local_14 == 0 || local_74 == 0 || iVar12 < 1) {
                 ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot find sub name '%s'");
@@ -745,7 +749,12 @@ void Parser::HandleToken(int tokenType, char* line) {
             pool[2]--;
             local_18 = savedPos;
             local_14 = local_74;
-            fsetpos(pFile, (fpos_t*)&savedPos);
+            {
+                fpos_t restorePos;
+                ((int*)&restorePos)[0] = savedPos;
+                ((int*)&restorePos)[1] = (int)local_74;
+                fsetpos(pFile, &restorePos);
+            }
             DAT_00469160 = 0;
         }
         break;
@@ -804,7 +813,7 @@ void Parser::HandleToken(int tokenType, char* line) {
 extern char DAT_00469168[160];
 
 /* Function start: 0x414040 */
-void __stdcall ParseGosubParams(char* line) {
+void Parser::ParseGosubParams(char* line) {
     int done;
     char* start;
     int i;
@@ -838,20 +847,19 @@ void __stdcall ParseGosubParams(char* line) {
 /* Function start: 0x4140F0 */
 void Parser::SubstituteVars(char* src, char* dst) {
     char* pos;
-    int varIdx;
-    char* varStr;
-    int varLen;
 
     *dst = 0;
     while (1) {
         pos = strchr(src, '%');
         if (pos == 0) break;
-        strncat(dst, src, pos - src);
-        varIdx = *(pos + 1) - '1';
-        varStr = &DAT_00469168[varIdx * 0x20];
-        varLen = strlen(varStr);
-        strcat(dst, varStr);
-        src = pos + 2;
+        {
+            char* digit = pos + 1;
+            int varIdx = *digit - '1';
+            strncat(dst, src, pos - src);
+            varIdx <<= 5;
+            strcat(dst, &DAT_00469168[varIdx]);
+            src = digit + 1;
+        }
     }
-    strncat(dst, src, -1 - (int)src);
+    strncat(dst, src, pos - src);
 }

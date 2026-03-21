@@ -23,14 +23,15 @@ void Handler::CopyCommandData(SC_Message* msg) {
 /* Function start: 0x4309C0 */
 int Handler::WriteMessageAddress(SC_Message* msg) {
     //ShowMessage("WriteMessage mouseX=%d click=(%d,%d)", msg->mouseX, msg->clickX, msg->clickY);
-    if (msg == 0) {
+    int* pmsg = (int*)msg;
+    if (pmsg == 0) {
         return -1;
     }
-    msg->targetAddress = handlerId;
-    msg->sourceAddress = moduleParam;
-    msg->command = handlerId;
-    msg->data = moduleParam;
-    msg->priority = 0;
+    pmsg[0] = handlerId;
+    pmsg[1] = moduleParam;
+    pmsg[2] = handlerId;
+    pmsg[3] = moduleParam;
+    pmsg[4] = 0;
     return 0;
 }
 

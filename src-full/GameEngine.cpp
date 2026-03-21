@@ -102,7 +102,6 @@ void GameEngine::RunGameLoop() {
     if (m_exitFlag == 0) {
         do {
             ProcessInput();
-            if (m_exitFlag != 0) break;
             ProcessEvents();
             if (m_exitFlag != 0) break;
             UpdateHandlers();
@@ -232,6 +231,8 @@ int GameEngine::ProcessEvents() {
         count = count + 1;
     }
 
+    //if (count > 0) {
+    //}
     return count;
 }
 
@@ -242,6 +243,7 @@ void GameEngine::ProcessMessage(SC_Message* msg) {
 
     handled = 0;
     action = (SpriteAction*)msg;
+
 
     if (action->instruction == 4) {
         handled = 1;
@@ -625,7 +627,7 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
     i = 0;
     do {
         if (saPtr != 0) {
-            new ((void*)saPtr) SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            saPtr->SpriteAction::SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
         saPtr = (SpriteAction*)((char*)saPtr + sizeof(SpriteAction));
     } while (i-- != 0);
