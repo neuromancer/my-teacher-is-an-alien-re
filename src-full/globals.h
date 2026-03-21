@@ -382,12 +382,12 @@ struct BombData { int data[6]; };
 // extern char DAT_00435931; // { /* 1 bytes */ }
 // extern char DAT_00435932; // { /* 1 bytes */ }
 // extern char DAT_00435933; // { /* 1 bytes */ }
-extern StringTable* g_Strings_00435a70; // 00435a70
+extern StringTable* g_Strings_0046a6e0; // 0x0046a6e0
 extern Character* g_PeterCharacter_00435a74;
 extern Character* g_SusanCharacter_00435a78;
 extern Character* g_DuncanCharacter_00435a7c;
 extern Character* g_SelectedCharacter_00435a80;
-extern FlagArray* g_FlagManager_00435a84;
+extern FlagArray* g_FlagManager_0046a6e8; // 0x0046a6e8
 
 struct SolutionEntry {
     int buttonIndices[3];
@@ -440,7 +440,7 @@ extern "C" {
 }
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
 extern MessageQueue* g_MessageQueue; // Handler8 message queue
-extern char* g_StateString_00436994; // DAT_00436994 - string buffer used for game state strings
+extern char* g_StateString_0046aa2c; // 0x0046aa2c - string buffer used for game state strings
 extern GameState* g_GameState_00436998; // DAT_00436998  { /* 4 bytes */ }
 extern void* g_GameStruct2; // { /* 4 bytes */ }
 extern int g_DevModeFlag_0043d564; // 1 = running from dev directory, 0 = running from CD
@@ -6007,9 +6007,7 @@ extern "C" {
     extern int DAT_0046a190;                               // SCI_SchoolMenu
     extern void* DAT_0046af08;                             // SCI_SchoolMenu
 }
-extern StringTable* DAT_0046a6e0;                          // SC_Question
 extern void* DAT_0046a6e4;                                // SCI_Inventory
-extern FlagArray* DAT_0046a6e8;                            // SC_Question
 extern "C" {
     extern int DAT_0046a6ec;                               // SC_Cinematic
     extern void* DAT_0046aa10;                             // SC_SelectHotSpot
@@ -6025,7 +6023,6 @@ extern Sound* DAT_0046AA0C;                                // Engine
 extern MouseControl* DAT_0046aa18;                         // SCI_Inventory
 extern void* DAT_0046aa1c;                                 // Path resolution
 extern ZBufferManager* DAT_0046aa24;                       // SCI_Inventory
-extern char* DAT_0046aa2c;                                 // Full game
 extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_Message
 extern GameState* DAT_0046aa38;                            // SC_Question
 extern GameState* DAT_0046aa3c;                            // Full game

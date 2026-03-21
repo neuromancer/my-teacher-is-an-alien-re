@@ -114,14 +114,14 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     changed = 0;
     targetRoom = 0;
 
-    if (*DAT_0046aa2c != 0) {
-        targetRoom = DAT_0046aa3c->FindState(DAT_0046aa2c);
+    if (*g_StateString_0046aa2c != 0) {
+        targetRoom = DAT_0046aa3c->FindState(g_StateString_0046aa2c);
     }
 
     msgData = (int*)msg;
     if (msgData[5] != 0 && targetRoom != msgData[5]) {
         char* roomName = DAT_0046aa3c->GetState(msgData[5]);
-        strcpy(DAT_0046aa2c, roomName);
+        strcpy(g_StateString_0046aa2c, roomName);
         changed = 1;
         targetRoom = msgData[5];
     }
@@ -242,7 +242,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Parse static scene
         sprintf(key, "[SEARCHSCREEN%d_STATIC]", moduleParam);
-        ParseFile(this, DAT_0046aa2c, key);
+        ParseFile(this, g_StateString_0046aa2c, key);
 
         // Parse period-specific scene if no static override
         if (field_BC == 0) {
@@ -252,7 +252,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             }
             sprintf(key, "[SEARCHSCREEN%d_PERIOD%2.2d]", moduleParam,
                     DAT_0046aa30->stateValues[periodIdx]);
-            ParseFile(this, DAT_0046aa2c, key);
+            ParseFile(this, g_StateString_0046aa2c, key);
             field_BC = 0;
         }
 
@@ -618,7 +618,7 @@ void SCI_IconBarModule::Serialize(void* param) {
         id = handlerId;
         fwrite(&id, 4, 1, fp);
         fwrite("INVENTORY_INFO", strLen, 1, fp);
-        fwrite(DAT_0046aa2c, 0x40, 1, fp);
+        fwrite(g_StateString_0046aa2c, 0x40, 1, fp);
     } else {
         /* LOAD */
         *DAT_0046aa00 = 0;
@@ -627,6 +627,6 @@ void SCI_IconBarModule::Serialize(void* param) {
         if (strcmp(DAT_0046aa00, "INVENTORY_INFO") != 0) {
             ShowError("SCI_SearchScreen::Serialize() - Error Loading (Wrong ID '%s')", DAT_0046aa00);
         }
-        fread(DAT_0046aa2c, 0x40, 1, fp);
+        fread(g_StateString_0046aa2c, 0x40, 1, fp);
     }
 }

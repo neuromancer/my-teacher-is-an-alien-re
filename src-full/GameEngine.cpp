@@ -26,7 +26,7 @@ extern char* DAT_0046aa00;   // string buffer
 // GameState pointer
 extern "C" extern GameState* DAT_0046aa30;
 extern int g_WaitForInputValue_004373bc;
-extern char* DAT_0046aa2c;
+extern char* g_StateString_0046aa2c;
 extern GameState* DAT_0046aa3c;
 extern GameState* g_StringTable_0046aa34;
 
@@ -248,7 +248,7 @@ void GameEngine::ProcessMessage(SC_Message* msg) {
         if (msgData[0] != 1) {
             HandleSystemMessage(msg);
         } else {
-            strcpy(DAT_0046aa2c, DAT_0046aa3c->GetState(msgData[1]));
+            strcpy(g_StateString_0046aa2c, DAT_0046aa3c->GetState(msgData[1]));
         }
     } else if (msgData[0] == 0) {
         handled = 1;

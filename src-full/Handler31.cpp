@@ -18,7 +18,7 @@ extern "C" extern GameState* DAT_0046aa30;
 extern char* DAT_0046aa00;
 extern int DAT_00473334;
 extern int DAT_004733e8;
-extern FlagArray* DAT_0046a6e8;
+extern FlagArray* g_FlagManager_0046a6e8;
 
 extern void ResetSpriteStates();
 
@@ -100,14 +100,14 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
             field_C4 = new SC_Question(id, (SCI_Dialog*)this);
         }
 
-        DAT_0046a6e8->SetFlag(id, 4);
+        g_FlagManager_0046a6e8->SetFlag(id, 4);
 
         if (sscanfResult == 3) {
             if (strcmp(arg2, "CONSTANT") != 0) {
-                DAT_0046a6e8->SetFlag(id, 4);
+                g_FlagManager_0046a6e8->SetFlag(id, 4);
             }
             if (strcmp(arg2, "SINGLE_PLAY") != 0) {
-                DAT_0046a6e8->ClearFlag(id, 4);
+                g_FlagManager_0046a6e8->ClearFlag(id, 4);
             }
         }
 

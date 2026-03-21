@@ -29,12 +29,10 @@
 #include "globals.h"
 
 // Globals moved from globals.cpp to match layout
-StringTable* g_Strings_00435a70 = 0;
 Character* g_PeterCharacter_00435a74 = 0;
 Character* g_SusanCharacter_00435a78 = 0;
 Character* g_DuncanCharacter_00435a7c = 0;
 Character* g_SelectedCharacter_00435a80 = 0;
-FlagArray* g_FlagManager_00435a84 = 0;
 
 static char s_TeacherDemo[] = "Teacher v(0.950)";
 
@@ -158,25 +156,26 @@ void RunGame() {
     }
 
     g_Mouse_00436978 = new MouseControl();
+    DAT_0046aa18 = g_Mouse_00436978;
     ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
 
     // Linked list allocation
     g_MsgList = new MsgList();
 
-    g_StateString_00436994 = (char *)operator new(0x40);
-    *g_StateString_00436994 = 0;
+    g_StateString_0046aa2c = (char *)operator new(0x40);
+    *g_StateString_0046aa2c = 0;
 
     g_Timer_00436980 = new Timer();
 
-    g_FlagManager_00435a84 = new FlagArray("cfg\\question.dat", 10000);
-    g_FlagManager_00435a84->ClearAllFlags();
+    g_FlagManager_0046a6e8 = new FlagArray("cfg\\question.dat", 10000);
+    g_FlagManager_0046a6e8->ClearAllFlags();
 
     // Parse question init script (stack-allocated, immediately destroyed)
     {
         QuestionInit initQ("mis\\INIT_Q.mis");
     }
 
-    g_Strings_00435a70 = new StringTable("mis\\strings.mis", 1);
+    g_Strings_0046a6e0 = new StringTable("mis\\strings.mis", 1);
 
     // Check TEST_STRINGS in gamestate
     int testIdx = g_GameState_00436998->FindState("TEST_STRINGS");
@@ -188,7 +187,7 @@ void RunGame() {
         if (testIdx2 < 0 || testIdx2 > g_GameState_00436998->maxStates - 1) {
             ShowError("2. Invalid gamestate %d", testIdx2);
         }
-        g_Strings_00435a70->TestStrings(g_TextManager_00436990, g_GameState_00436998->stateValues[testIdx2]);
+        g_Strings_0046a6e0->TestStrings(g_TextManager_00436990, g_GameState_00436998->stateValues[testIdx2]);
     }
 
     g_TimedEventPool1_00436984 = new TimedEventPool();
@@ -244,11 +243,11 @@ void RunGame() {
         g_TimedEventPool1_00436984 = 0;
     }
 
-    if (g_Strings_00435a70 != 0) {
-        StringTable* p = g_Strings_00435a70;
+    if (g_Strings_0046a6e0 != 0) {
+        StringTable* p = g_Strings_0046a6e0;
         p->~StringTable();
         operator delete(p);
-        g_Strings_00435a70 = 0;
+        g_Strings_0046a6e0 = 0;
     }
 
     if (g_GameState4_004369a0 != 0) {
@@ -286,9 +285,9 @@ void RunGame() {
         g_Timer_00436980 = 0;
     }
 
-    if (g_StateString_00436994 != 0) {
-        operator delete(g_StateString_00436994);
-        g_StateString_00436994 = 0;
+    if (g_StateString_0046aa2c != 0) {
+        operator delete(g_StateString_0046aa2c);
+        g_StateString_0046aa2c = 0;
     }
 
     if (g_Mouse_00436978 != 0) {
@@ -298,11 +297,11 @@ void RunGame() {
         g_Mouse_00436978 = 0;
     }
 
-    if (g_FlagManager_00435a84 != 0) {
-        FlagArray* p = g_FlagManager_00435a84;
+    if (g_FlagManager_0046a6e8 != 0) {
+        FlagArray* p = g_FlagManager_0046a6e8;
         p->~FlagArray();
         operator delete(p);
-        g_FlagManager_00435a84 = 0;
+        g_FlagManager_0046a6e8 = 0;
     }
 
     if (g_GameLoopHelper != 0) {

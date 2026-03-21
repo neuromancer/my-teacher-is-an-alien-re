@@ -19,8 +19,8 @@
 // FUN_00413e10 = ParseFile in Parser.h
 
 
-extern StringTable* DAT_0046a6e0;
-extern FlagArray* DAT_0046a6e8;
+extern StringTable* g_Strings_0046a6e0;
+extern FlagArray* g_FlagManager_0046a6e8;
 extern "C" int DAT_0046a6ec;         // GameEngine instance
 extern "C" GameState* DAT_0046aa30;
 extern ZBufferManager* DAT_0046aa24;
@@ -41,7 +41,7 @@ SC_Question::SC_Question(int id, SCI_Dialog* dialog)
     state = 0;
     dialogPtr = dialog;
 
-    if (DAT_0046a6e0->GetString( id, label) == 0) {
+    if (g_Strings_0046a6e0->GetString( id, label) == 0) {
         ShowMessage("SC_Question::SC_Question missing label %d", id);
         sprintf(label, "Missing Label %d", questionId);
     }
@@ -56,9 +56,9 @@ SC_Question::SC_Question(int id, SCI_Dialog* dialog)
 
     ParseFile(this, questFile, "[QUESTION%d]", questionId);
 
-    if (DAT_0046a6e8->GetFlag( questionId, 2) != 0) {
+    if (g_FlagManager_0046a6e8->GetFlag( questionId, 2) != 0) {
         state = 2;
-    } else if (DAT_0046a6e8->GetFlag( questionId, 1) != 0) {
+    } else if (g_FlagManager_0046a6e8->GetFlag( questionId, 1) != 0) {
         state = 2;
     }
 }
@@ -228,8 +228,8 @@ void SC_Question::Finalize()
     void* msgData;
     int queueType;
 
-    if (DAT_0046a6e8->GetFlag( questionId, 4) == 0) {
-        DAT_0046a6e8->SetFlag( questionId, 2);
+    if (g_FlagManager_0046a6e8->GetFlag( questionId, 4) == 0) {
+        g_FlagManager_0046a6e8->SetFlag( questionId, 2);
     }
 
     state = 2;
@@ -352,7 +352,7 @@ int SC_Question::LBLParse(char* param_1)
     }
     else if (strcmp(keyword, "TEXT") == 0) {
         sscanf(param_1, " %s %d", keyword, &id);
-        result = DAT_0046a6e0->GetString( id, label);
+        result = g_Strings_0046a6e0->GetString( id, label);
         if (result == 0) {
             Parser::LBLParse("SC_Question");
         }
@@ -854,10 +854,10 @@ int SC_Question::LBLParse(char* param_1)
         }
     }
     else if (strcmp(keyword, "CONSTANT") == 0) {
-        DAT_0046a6e8->SetFlag( questionId, 4);
+        g_FlagManager_0046a6e8->SetFlag( questionId, 4);
     }
     else if (strcmp(keyword, "SINGLE_PLAY") == 0) {
-        DAT_0046a6e8->ClearFlag(questionId, 4);
+        g_FlagManager_0046a6e8->ClearFlag(questionId, 4);
     }
     else if (strcmp(keyword, "HOLD") == 0) {
         field_94 |= 8;

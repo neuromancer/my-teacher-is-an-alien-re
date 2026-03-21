@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-extern FlagArray* g_FlagManager_00435a84;
+extern FlagArray* g_FlagManager_0046a6e8;
 
 /* Function start: 0x422880 */
 QuestionInit::QuestionInit(const char* filename) {
@@ -19,7 +19,7 @@ int QuestionInit::LBLParse(char* line) {
 
     if (strcmp(keyword, "DISABLE") == 0) {
         sscanf(line, "%s %d", keyword, &index);
-        g_FlagManager_00435a84->SetFlag(index, 1);
+        g_FlagManager_0046a6e8->SetFlag(index, 1);
         return 0;
     } else if (strcmp(keyword, "END") == 0) {
         return 1;

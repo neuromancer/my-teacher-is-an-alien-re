@@ -38,7 +38,7 @@ TimedEventPool* g_TimedEventPool1_00436984 = 0;
 TimedEventPool* g_TimedEventPool2_00436988 = 0;
 ZBufferManager* g_ZBufferManager_0043698c = 0;
 AnimatedAsset* g_TextManager_00436990 = 0;
-char* g_StateString_00436994 = 0;
+char* g_StateString_0046aa2c = 0;
 GameState* g_GameState_00436998 = 0;
 GameState* g_GameState3_0043699c = 0;
 GameState* g_GameState4_004369a0 = 0;
@@ -304,8 +304,8 @@ int DAT_00473358 = 0;                                    // 0x00473358
 int DAT_0047337c = 0;                                    // 0x0047337c
 
 // SC_Question globals
-StringTable* DAT_0046a6e0 = 0;                           // 0x0046a6e0
-FlagArray* DAT_0046a6e8 = 0;                             // 0x0046a6e8
+StringTable* g_Strings_0046a6e0 = 0;                      // 0x0046a6e0
+FlagArray* g_FlagManager_0046a6e8 = 0;                   // 0x0046a6e8
 GameState* DAT_0046aa38 = 0;                             // 0x0046aa38
 
 // SCI_Inventory globals
@@ -322,7 +322,6 @@ Sound* DAT_0046AA0C = 0;                                 // 0x0046aa0c
 
 // Full game globals
 GameState* g_StringTable_0046aa34 = 0;                   // 0x0046aa34
-char* DAT_0046aa2c = 0;                                  // 0x0046aa2c
 GameState* DAT_0046aa3c = 0;                             // 0x0046aa3c
 
 // SC_Cinematic + SC_SelectHotSpot globals

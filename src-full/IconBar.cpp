@@ -46,7 +46,7 @@ class MouseControl;
 extern MouseControl* DAT_0046aa18;
 class ZBufferManager;
 extern ZBufferManager* DAT_0046aa24;
-extern char* DAT_0046aa2c;
+extern char* g_StateString_0046aa2c;
 extern GameState* DAT_0046aa3c;
 extern void* DAT_0046a6e4;
 extern SpriteAction DAT_00472d58;
@@ -305,7 +305,7 @@ int IconBar::AddMessage(SC_Message* msg) {
     if (buttonIndex == 2) {
         result = 0;
         if (handlerId == 0x20) {
-            result = ((GameState*)DAT_0046aa3c)->FindState((char*)DAT_0046aa2c);
+            result = ((GameState*)DAT_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
         }
         {
             SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
@@ -327,7 +327,7 @@ int IconBar::AddMessage(SC_Message* msg) {
     }
 
     if (buttonIndex == 1) {
-        result = ((GameState*)DAT_0046aa3c)->FindState((char*)DAT_0046aa2c);
+        result = ((GameState*)DAT_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
         if (handlerId == 0x20) {
             if (result == 5 || result == 0x12) {
                 SendGameMessage(4, 0x1b86, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
