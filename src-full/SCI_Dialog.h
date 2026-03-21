@@ -5,58 +5,46 @@
 #include "SC_Question.h"
 
 class SC_Message;
-class MMPlayer2;
-class MMPlayer;
 class Sprite;
-// Queue is now defined via LinkedList.h (included through SC_Question.h -> Queue.h)
+class Palette;
 
 // DialogQuestion is SC_Question (destructor 0x4067e0, Finalize 0x4069b0)
 typedef SC_Question DialogQuestion;
 
-// SCI_Dialog - DialogPlayer handler
-// Size: 0x650 bytes
-// vtable: 0x431170
-// Inherits from IconBar (0x600 bytes)
-// handlerId: 9 at offset 0x88
+// SCI_Dialog - Dialog handler layout for the full game
+// In the full game, Handler31 (handler 0x1F) is the actual class.
+// SCI_Dialog exists as a type alias for Handler31's layout, used by
+// SC_Question (which stores a SCI_Dialog* at 0x120) and by
+// GetDialogByIndex/FindDialogById methods.
 //
-// Layout:
-//   0x00-0x5FF: IconBar base class
-//   0x600: MMPlayer*
-//   0x604: SC_Dialog*
-//   0x608: Sprite* (button)
-//   0x60C: Sprite* (hilite)
-//   0x610: Queue* (dialog queue)
-//   0x614: DialogQuestion* (current dialog)
-//   0x618-0x63F: int[10] (ambient controllers state)
+// Layout must match Handler31 (extends IconBar = 0xA8 in full game):
+//   0xA8: field_A8
+//   0xAC: field_AC
+//   0xB0: field_B0
+//   0xB4: Palette*
+//   0xB8: Sprite* (button)
+//   0xBC: Sprite* (hilite)
+//   0xC0: SC_Question* (current question)
+//   0xC4: SC_Question* (secondary question)
+//   0xC8: LinkedList* (dialog queue)
+//   0xCC: field_CC
 class SCI_Dialog : public IconBar {
 public:
-    SCI_Dialog();
-    ~SCI_Dialog();
+    // Full game methods
+    DialogQuestion* GetDialogByIndex(int index);  // 0x417C80
+    DialogQuestion* FindDialogById(int id);       // 0x417E60
 
-    // Virtual method overrides
-    virtual void Init(SC_Message* msg);
-    virtual int AddMessage(SC_Message* msg);
-    virtual int ShutDown(SC_Message* msg);
-    virtual void Update(int param1, int param2);
-    virtual int Exit(SC_Message* msg);
-    virtual int LBLParse(char* line);
-
-    // SCI_Dialog-specific methods
-    DialogQuestion* GetDialogByIndex(int index);
-    DialogQuestion* FindDialogById(int id);
-
-    // Fields
-    MMPlayer* field_600;
-    MMPlayer2* field_604;
-    Sprite* field_608;
-    Sprite* field_60C;
-    Queue* field_610;
-    DialogQuestion* field_614;
-    int field_618[10];
-    int field_640;
-    int field_644;
-    int field_648;
-    int field_64C;
+    // Fields (matching Handler31 layout)
+    int field_A8;                   // 0xA8
+    int field_AC;                   // 0xAC
+    int field_B0;                   // 0xB0
+    Palette* field_B4;              // 0xB4
+    Sprite* field_B8;               // 0xB8 — button sprite
+    Sprite* field_BC;               // 0xBC — hilite sprite
+    DialogQuestion* field_C0;       // 0xC0 — current question
+    DialogQuestion* field_C4;       // 0xC4 — secondary question
+    Queue* field_C8;                // 0xC8 — dialog queue (was field_610 in demo)
+    int field_CC;                   // 0xCC — set by SC_Question
 };
 
 #endif

@@ -24,7 +24,7 @@ extern void InitMessageArray(int* param_1, int param_2);
 
 // Already implemented elsewhere:
 // - 0x411080: DrawEntry scalar deleting destructor (compiler-generated, base dtor inlined)
-extern "C" void InitWorkBuffer(int width, int height);  // 0x41A8C0 in VBuffer.cpp
+extern "C" void SetVideoRes(int width, int height);  // 0x41A8C0 in VBuffer.cpp
 
 
 /* Function start: 0x40EFB0 */
@@ -125,7 +125,7 @@ void SC_Combat1::Init(SC_Message* msg) {
         int sw = screenDim.x;
         savedScreen.x = w;
         savedScreen.y = h;
-        InitWorkBuffer(sw, screenDim.y);
+        SetVideoRes(sw, screenDim.y);
     }
 
     // Save and set clipping rect
@@ -181,7 +181,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     }
 
     // Restore work buffer to original size
-    InitWorkBuffer(savedScreen.x, savedScreen.y);
+    SetVideoRes(savedScreen.x, savedScreen.y);
 
     // Restore clipping rect
     {

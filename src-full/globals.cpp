@@ -54,6 +54,38 @@ int g_WaitForInputValue_0046ac04 = 0;
 
 // String constants (Setup.cfg, "rb", engine types) inlined at call sites
 
+// SC_CrystalPuzzle solution tables (0x46cc98-0x46cd28)
+// 9 solutions, each is {btn0, btn1, btn2, resultId} — 4 ints per entry
+int DAT_0046cc98[] = {
+    0, 3, 6,  0,   // solution 0
+    1, 4, 7,  0,   // solution 1
+    0, 4, 8,  0,   // solution 2
+    2, 4, 6,  0,   // solution 3
+    0, 1, 2,  0,   // solution 4
+    3, 4, 5,  0,   // solution 5
+    6, 7, 8,  0,   // solution 6
+    2, 3, 8,  0,   // solution 7 (placeholder)
+    1, 5, 6,  0,   // solution 8 (placeholder)
+};
+// Result floor indices for each solution
+int DAT_0046cca4[] = {
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+};
+
+// SC_CrystalPuzzle button hit-test rectangles (9 buttons)
+GlyphRect DAT_00473d30[9];
+
+// SC_CrystalPuzzle floor door hit-test rectangles (3 floors)
+GlyphRect DAT_00473dc8[3];
+
 // ...
 
 int g_BitmapHeaderSize_00437f4c = 0;  // Set at runtime by InitVideoSystem based on color depth

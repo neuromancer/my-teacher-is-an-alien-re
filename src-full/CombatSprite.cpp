@@ -15,7 +15,7 @@ int DAT_00436344 = 0;                   // sprite data entry counter
 
 // External declaration for Parser destructor helper
 extern void FUN_0041556a();
-extern void __fastcall FUN_00408ee0(void*, int, int); // MMPlayer2::Draw
+extern void __fastcall FUN_00408ee0(void*, int, int); // FUN_00408ee0 (standalone function in full game)
 
 /* Function start: 0x408F20 */
 void __cdecl CleanupSpriteHashArray(void** array, int count)

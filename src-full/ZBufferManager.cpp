@@ -434,50 +434,49 @@ void ZBufferManager::DrawVBufferRegion(void* data, int priority, int x, int y, i
         return;
     }
 
-    if (m_state == 1) {
-        VBuffer* vbuf = g_BackBuffer_0046aa14;
-        switch (mode) {
-        case 0:
-            vbuf->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
-            break;
-        case 1:
-            vbuf->ClipAndPaste(left, right, top, bottom, x, y, (int)data);
-            break;
-        case 2:
-            vbuf->ClipAndBlitRegion(left, right, top, bottom, x, y, (int)data);
-            break;
-        case 3:
-            vbuf->ClipAndBlitReversed(left, right, top, bottom, x, y, (int)data);
-            break;
-        case 4:
-            DrawScaledSprite(x, y, data, scale);
-            break;
-        case 5:
-            vbuf->ScaleTCCopy(x, y, (VBuffer*)data, scale);
-            break;
+    if (m_state != 1) {
+        BlitCommand* cmd = new BlitCommand();
+
+        cmd->data = data;
+        cmd->priority = priority;
+
+        if ((m_flags & 2) != 0) {
+            x = rand() % 5 - 2 + x;
+            y = rand() % 5 - 2 + y;
         }
+
+        cmd->x = x;
+        cmd->y = y;
+        cmd->left = left;
+        cmd->top = top;
+        cmd->right = right;
+        cmd->bottom = bottom;
+        cmd->mode = mode;
+        cmd->scale = scale;
+        QueueCommand(cmd);
         return;
     }
 
-    BlitCommand* cmd = new BlitCommand();
-
-    cmd->data = data;
-    cmd->priority = priority;
-
-    if ((m_flags & 2) != 0) {
-        x = rand() % 5 - 2 + x;
-        y = rand() % 5 - 2 + y;
+    switch (mode) {
+    case 0:
+        g_BackBuffer_0046aa14->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
+        break;
+    case 1:
+        g_BackBuffer_0046aa14->ClipAndPaste(left, right, top, bottom, x, y, (int)data);
+        break;
+    case 2:
+        g_BackBuffer_0046aa14->ClipAndBlitRegion(left, right, top, bottom, x, y, (int)data);
+        break;
+    case 3:
+        g_BackBuffer_0046aa14->ClipAndBlitReversed(left, right, top, bottom, x, y, (int)data);
+        break;
+    case 4:
+        DrawScaledSprite(x, y, data, scale);
+        break;
+    case 5:
+        g_BackBuffer_0046aa14->ScaleTCCopy(x, y, (VBuffer*)data, scale);
+        break;
     }
-
-    cmd->x = x;
-    cmd->y = y;
-    cmd->left = left;
-    cmd->top = top;
-    cmd->right = right;
-    cmd->bottom = bottom;
-    cmd->mode = mode;
-    cmd->scale = scale;
-    QueueCommand(cmd);
 }
 
 /* Function start: 0x41C000 */

@@ -106,12 +106,6 @@ extern "C" {
     void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
 }
 
-/* Function start: 0x41A8C0 */ /* DEMO ONLY - no full game match */
-extern "C" void InitWorkBuffer(int width, int height)
-{
-    SetVideoRes(width, height);
-}
-
 /* Function start: 0x425A90 */
 extern "C" void SetVideoRes(int width, int height)
 {
@@ -301,7 +295,6 @@ void* VBuffer::GetData()
     return data;
 }
 
-/* Function start: 0x41ac40 */ /* DEMO ONLY - no full game match */
 void VBuffer::Lock()
 {
 }

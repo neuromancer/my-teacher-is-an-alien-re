@@ -8,13 +8,6 @@
 #include <string.h>
 #include <stdio.h>
 
-extern "C" int FileExists(const char* filename);
-extern void SC_Message_Send(int, int, int, int, int, int, int, int, int, int);
-
-// Forward declarations
-void* __stdcall ExpandPool(void** pool, int capacity, int itemSize);
-void InitMessageArray(int* param_1, int param_2);
-
 // Message queue structures
 // Queue item is 0xc8 (200) bytes
 struct MessageQueueItem {
@@ -67,138 +60,7 @@ Handler8::~Handler8() {
     }
 }
 
-/* Function start: 0x406260 */ /* DEMO ONLY - no full game match */
-void Handler8::Init(SC_Message* msg) {
-    char filename[32];
-
-    CopyCommandData(msg);
-    if (msg != 0) {
-        moduleParam = msg->data;
-        sprintf(filename, "cine\\cine%4.4d.smk", moduleParam);
-        if (FileExists(filename)) {
-            Animation anim;
-            anim.Play(filename, 0);
-        } else {
-            WriteToMessageLog("missing cinematic %s", filename);
-        }
-        if (msg->userPtr != 0) {
-            Handler8::message = (SC_Message*)msg->userPtr;
-            msg->userPtr = 0;
-        }
-        ProcessMessage();
-    }
-}
-
-/* Function start: 0x406350 */ /* DEMO ONLY - no full game match */
-int Handler8::ShutDown(SC_Message* msg) {
-    return 0;
-}
-
-/* Function start: 0x406360 */ /* DEMO ONLY - no full game match */
-void Handler8::Update(int param1, int param2) {
-}
-
-/* Function start: 0x406370 */ /* DEMO ONLY - no full game match */
-int Handler8::AddMessage(SC_Message* msg) {
-    Handler8::WriteMessageAddress(msg);
-    if (msg->lastKey == 0x1b || msg->mouseY > 1) {
-        msg->targetAddress = savedCommand;
-        msg->priority = 5;
-        msg->sourceAddress = savedMsgData;
-    }
-    return 1;
-}
-
-/* Function start: 0x4063C0 */ /* DEMO ONLY - no full game match */
-int Handler8::Exit(SC_Message* msg) {
-    int prio;
-
-    if (handlerId != msg->targetAddress) {
-        return 0;
-    }
-    prio = msg->priority;
-    if (prio != 0) {
-        if (prio != 6) {
-            return 0;
-        }
-        ProcessMessage();
-    }
-    return 1;
-}
-
-/* Function start: 0x406400 */ /* DEMO ONLY - no full game match */
-void Handler8::ProcessMessage() {
-    SC_Message* msg;
-    MessageQueue* queue;
-    MessageQueueItem** tailPtr;
-    int tail;
-    MessageQueueItem* item;
-    int i;
-    char* poolResult;
-    MessageQueueItem** freeListPtr;
-
-    msg = Handler8::message;
-    if (msg != 0) {
-        queue = g_MessageQueue;
-        freeListPtr = &queue->freeList;
-        tailPtr = &queue->tail;
-        tail = (int)queue->tail;
-
-        if (*freeListPtr == 0) {
-            poolResult = (char*)ExpandPool(&queue->poolBase, queue->poolCapacity, 0xc8);
-            i = queue->poolCapacity;
-            i--;
-            item = (MessageQueueItem*)(poolResult + i * 0xc8 - 0xc4);
-            while (i >= 0) {
-                item->next = *freeListPtr;
-                *freeListPtr = item;
-                item = (MessageQueueItem*)((char*)item - 0xc8);
-                i--;
-            }
-        }
-
-        item = *freeListPtr;
-        *freeListPtr = item->next;
-        item->tailRef = tail;
-        item->next = 0;
-        queue->count++;
-
-        InitMessageArray((int*)&item->data, 1);
-        ((Parser*)&item->data)->CopyParserFields(msg);
-
-        item->targetAddress = msg->targetAddress;
-        item->sourceAddress = msg->sourceAddress;
-        item->command = msg->command;
-        item->msgData = msg->data;
-        item->priority = msg->priority;
-        item->param1 = msg->param1;
-        item->param2 = msg->param2;
-        item->clickX = msg->clickX;
-        item->clickY = msg->clickY;
-        item->mouseX = msg->mouseX;
-        item->mouseY = msg->mouseY;
-        item->field_bc = msg->lastKey;
-        item->field_c0 = msg->time;
-        item->userPtr = msg->userPtr;
-
-        if (*tailPtr != 0) {
-            (*tailPtr)->next = item;
-        } else {
-            queue->head = item;
-        }
-        *tailPtr = item;
-
-        msg = Handler8::message;
-        if (msg != 0) {
-            delete msg;
-            Handler8::message = 0;
-        }
-        return;
-    }
-    SC_Message_Send(savedCommand, savedMsgData, handlerId, moduleParam, 5, 0, 0, 0, 0, 0);
-}
-
-/* Function start: 0x4065E0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4065E0 */
 void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
 {
     void** block;
@@ -209,7 +71,7 @@ void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
     return block;
 }
 
-/* Function start: 0x406610 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x406610 */
 Parser* Parser::CopyParserFields(Parser* src)
 {
     unsigned int i;
@@ -236,7 +98,7 @@ Parser* Parser::CopyParserFields(Parser* src)
     return this;
 }
 
-/* Function start: 0x406670 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x406670 */
 void InitMessageArray(int* param_1, int param_2)
 {
     int* ptr;

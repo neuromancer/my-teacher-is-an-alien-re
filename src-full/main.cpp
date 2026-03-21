@@ -42,7 +42,7 @@ GameWindow g_GameWindow;
 extern "C" {
 void __fastcall CDData_ChangeToBaseDir(void *);
 void ClearMessageLog();
-void InitWorkBuffer(int, int);
+void SetVideoRes(int, int);
 void SetStateFlag(int, int);
 int SetCursorVisible(unsigned int);
 int FileExists(const char *);
@@ -106,7 +106,7 @@ int g_StartBlock = 0;                    // DAT_00472e2c
 /* Function start: 0x4236F0 */
 void RunGame() {
     InitGameSystems();
-    InitWorkBuffer(0x280, 0x1e0);
+    SetVideoRes(0x280, 0x1e0);
 
     // Play splash cinematic if exists
     const char *splashPath = CDData_ResolvePath("cine\\splash.smk");
@@ -369,7 +369,7 @@ void InitGameSystems(void) {
     CreateGameObject_1();
     ClearMessageLog();
     InitGameConfig();
-    InitWorkBuffer(0x280, 0x1e0);
+    SetVideoRes(0x280, 0x1e0);
     g_InputManager_0046aa08 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
     g_Sound_0043696c = new Sound(0x5622, 8, 1);
     g_TextManager_00436990 = new AnimatedAsset();
