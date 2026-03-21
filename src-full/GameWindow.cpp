@@ -8,6 +8,7 @@
 extern "C" {
 int GetColorBitDepth();
 void ShowMessage(const char *);
+int ShowMessageYesNo(char *, ...);
 void InitVideoSystem();
 void InitMouseSettings();
 int SetCursorVisible(unsigned int);
@@ -142,11 +143,14 @@ void __stdcall ParseCommandLine(char *param_1) {
   }
 }
 
-/* Function start: 0x4223F0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4204F0 */
 int GameWindow::InitGraphics(void) {
   if (GetColorBitDepth() != 8) {
-    ShowMessage(
-        "For Optimum performance, please set your display to 256 Colors");
+    int result = ShowMessageYesNo(
+        "For Optimum performance, Set your display to 256 Colors.\nWould you like to exit now to set your display?");
+    if (result == 6) {
+      return 0;
+    }
   }
   InitVideoSystem();
   InitMouseSettings();
@@ -199,14 +203,14 @@ int SetDeviceContext(HDC);
 HPALETTE CreateSystemPalette(void);
 int SelectAndRealizePalette(HPALETTE);
 
-/* Function start: 0x422590 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x420690 */
 LRESULT CALLBACK GameWindowProc(HWND param_1, UINT param_2, WPARAM param_3, unsigned int param_4) {
   switch (param_2) {
   case 1: // WM_CREATE
-    DAT_0043de80 = GetDC(param_1);
-    SetDeviceContext(DAT_0043de80);
-    DAT_0043de84 = CreateSystemPalette();
-    SelectAndRealizePalette(DAT_0043de84);
+    g_WindowDC_00472d00 = GetDC(param_1);
+    SetDeviceContext(g_WindowDC_00472d00);
+    g_WindowPalette_00472d04 = CreateSystemPalette();
+    SelectAndRealizePalette(g_WindowPalette_00472d04);
     return 0;
   case 2: // WM_DESTROY
     PostQuitMessage(0);
@@ -216,11 +220,11 @@ LRESULT CALLBACK GameWindowProc(HWND param_1, UINT param_2, WPARAM param_3, unsi
     *(unsigned int *)GetScreenHeight() = (unsigned short)((unsigned int)param_4 >> 0x10);
     return 0;
   case 7: // WM_SETFOCUS
-    SelectAndRealizePalette(DAT_0043de84);
+    SelectAndRealizePalette(g_WindowPalette_00472d04);
     InvalidateRect(param_1, (RECT *)0x0, 1);
     return 0;
   case 0x1c: // WM_ACTIVATEAPP
-    DAT_0043de94 = param_3;
+    g_ActivateAppState_00472d14 = param_3;
     return 0;
   default:
     return DefWindowProcA(param_1, param_2, param_3, param_4);

@@ -654,12 +654,12 @@ extern char g_CmdLineDataPath_0043d568[]; // Command line data path [260 bytes]
 // 0x0043d630: Defined above as g_SpriteFilenameTable_0043d630[0x4000]
 // 0x0043d670: Within g_SpriteFilenameTable_0043d630 at offset 0x40 (second filename slot)
 extern HWND DAT_0043de7c; // DAT_0043de7c  { /* 4 bytes */ }
-extern HDC DAT_0043de80; // Window DC
-extern HPALETTE DAT_0043de84; // Window palette
+extern HDC g_WindowDC_00472d00; // Window DC
+extern HPALETTE g_WindowPalette_00472d04; // Window palette
 extern int DAT_0043de88; // Window width
 extern int DAT_0043de8c; // Window height
 extern int DAT_0043de90; // Windowed mode flag
-extern int DAT_0043de94; // Activate app state
+extern int g_ActivateAppState_00472d14; // Activate app state
 // CRT library internal globals (0x0043de9c - 0x0043dfe4):
 // 0x0043de9c: Float output buffer pointer (__fltout result)
 // 0x0043dfa4: Exception filter func ptr (SetUnhandledExceptionFilter)

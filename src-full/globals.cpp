@@ -209,12 +209,12 @@ void* g_WinGBitBlt_00438434 = 0;
 void* g_WinGStretchBlt_00438438 = 0;
 
 // Window procedure globals
-HDC DAT_0043de80 = 0;       // Main window DC
-HPALETTE DAT_0043de84 = 0;  // Main window palette
+HDC g_WindowDC_00472d00 = 0;       // Main window DC
+HPALETTE g_WindowPalette_00472d04 = 0;  // Main window palette
 int DAT_0043de88;   // Window width (set at runtime in WM_SIZE)
 int DAT_0043de8c;   // Window height (set at runtime in WM_SIZE)
 int DAT_0043de90;   // Windowed mode flag (0=fullscreen, 1=windowed)
-int DAT_0043de94 = 0;       // Activate app state
+int g_ActivateAppState_00472d14 = 0;       // Activate app state
 
 // Video table globals (from VideoTable.cpp)
 int g_VideoBufferWidth_004374c6 = 0;

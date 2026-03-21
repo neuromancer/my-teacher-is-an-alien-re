@@ -149,6 +149,16 @@ void ShowMessage(char *param_1, ...)
     SetCursorVisible(0);
 }
 
+/* Function start: 0x425D00 */
+int ShowMessageYesNo(char *param_1, ...)
+{
+    char buffer[256];
+    vsprintf(buffer, param_1, (char*)(&param_1 + 1));
+    SetCursorVisible(1);
+    int result = MessageBoxA((HWND)GetGameWindowHandle(), buffer, "Message", 4);
+    SetCursorVisible(0);
+    return result;
+}
 
 /* Function start: 0x42D3D0 */
 void ClearMessageLog()
