@@ -8,7 +8,7 @@
 #include "string.h"
 #include "GlyphRect.h"
 
-// DAT_0046aa14 and DAT_0046aa08 now in globals.h
+// DAT_0046aa14 and g_InputManager_0046aa08 now in globals.h
 extern "C" void SetVideoRes(int width, int height);
 
 static int g_VBufferHandleTableInitialized = 0;
@@ -136,7 +136,7 @@ extern "C" void SetVideoRes(int width, int height)
     g_WorkBuffer_00436974->SetVideoMode();
     g_WorkBuffer_00436974->ClearScreen(0);
 
-    inputManager = (int*)DAT_0046aa08;
+    inputManager = (int*)g_InputManager_0046aa08;
     if (inputManager != 0) {
         inputManager[0x69] = 0;
         inputManager[0x6A] = 0;

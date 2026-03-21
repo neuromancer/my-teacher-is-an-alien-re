@@ -36,8 +36,8 @@ extern void* __fastcall FUN_00450b10(void*);
 
 // Scene data globals
 class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
-extern "C" GameState* DAT_0046aa30;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
+extern "C" GameState* g_GameState_0046aa30;
 
 /* Function start: 0x451700 */
 SC_Rats::SC_Rats() {
@@ -66,7 +66,7 @@ void SC_Rats::Init(SC_Message* msg) {
     if (!FileExists("CB_Rats")) {
         ShowLoadingScreen();
     }
-    int sceneData = (int)DAT_0046aa24;
+    int sceneData = (int)g_ZBufferManager_0046aa24;
     if (*(int*)(sceneData + 0x98) != 1) {
         *(int*)(sceneData + 0x98) = 1;
         int* list1 = *(int**)(sceneData + 0xA0);
@@ -247,7 +247,7 @@ void SC_Rats::ProcessState() {
         if (DAT_00473e18 == 4) {
             int* spriteData = (int*)field_A8;
             spriteData[8] = 2 - spriteData[8];
-            GameState* gs = DAT_0046aa30;
+            GameState* gs = g_GameState_0046aa30;
             idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
@@ -262,13 +262,13 @@ void SC_Rats::ProcessState() {
             Parser temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_");
         } else if (DAT_00473e18 == 2) {
-            GameState* gs = DAT_0046aa30;
+            GameState* gs = g_GameState_0046aa30;
             idx = ((GameState*)gs)->FindLabel("RAT_COMBAT_AVAILABLE");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] = 0;
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);

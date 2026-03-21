@@ -424,24 +424,24 @@ extern int g_SpriteTableInitialized_00436b9c; // Initialization flag for sprite 
 // g_CurrentSpriteIndex (0x43634c) - defined in CombatSprite.cpp
 // String table index (0x4366b4) - used inline in string.cpp
 // SC_Message keyword strings (0x4367dc-0x43684f) - inline strings in SC_Question.cpp
-extern char* g_Buffer_00436960; // DAT_00436960  { /* 4 bytes */ }
+extern char* g_Buffer_0046aa00; // DAT_00436960  { /* 4 bytes */ }
 extern char* g_Buffer_00436964; // Scale table buffer
-extern InputManager* g_InputManager_00436968; // DAT_00436968  { /* 4 bytes */ }
+extern InputManager* g_InputManager_0046aa08; // DAT_00436968  { /* 4 bytes */ }
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
-extern MouseControl* g_Mouse_00436978; // DAT_00436978
+extern MouseControl* g_Mouse_0046aa18; // DAT_00436978
 extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
 extern Timer* g_Timer_00436980; // DAT_00436980
 extern "C" {
     extern TimedEventPool* g_TimedEventPool1_00436984; // { /* 4 bytes */ }
     extern TimedEventPool* g_TimedEventPool2_00436988; // { /* 4 bytes */ }
-    extern ZBufferManager* g_ZBufferManager_0043698c; // { /* 4 bytes */ }
 }
+extern ZBufferManager* g_ZBufferManager_0046aa24; // 0x0046aa24
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
 extern MessageQueue* g_MessageQueue; // Handler8 message queue
 extern char* g_StateString_0046aa2c; // 0x0046aa2c - string buffer used for game state strings
-extern GameState* g_GameState_00436998; // DAT_00436998  { /* 4 bytes */ }
+extern "C" extern GameState* g_GameState_0046aa30; // 0x0046aa30
 extern void* g_GameStruct2; // { /* 4 bytes */ }
 extern int g_DevModeFlag_0043d564; // 1 = running from dev directory, 0 = running from CD
 extern int g_DevelopFlag_00472de4; // 1 = "Develop.___" file found (CDData::Setup)
@@ -457,7 +457,7 @@ extern void* g_AtExitTableEnd_0043f100; // Current end of atexit function pointe
 extern char g_ExitCode_0043be30; // Exit code
 extern int g_ExitInProgress_0043be34; // 1 = exit in progress
 extern GameState* g_GameState4_004369a0; // DAT_004369a0
-extern GameState* g_GameState2_004369a4; // DAT_004369a4
+extern GameState* g_GameState2_0046aa3c; // DAT_004369a4
 extern GameState* g_GameState3_0043699c; // DAT_0043699c
 // extern int DAT_00436a94; // Init flag for DAT_0043d5b0 array (similar to g_SpriteTableInitialized)
 // extern int DAT_00436b9c; // Already defined as g_SpriteTableInitialized_00436b9c
@@ -6012,20 +6012,14 @@ extern "C" {
     extern int DAT_0046a6ec;                               // SC_Cinematic
     extern void* DAT_0046aa10;                             // SC_SelectHotSpot
     extern VBuffer* DAT_0046aa14;                          // SC_SelectHotSpot
-    extern GameState* DAT_0046aa30;                        // SC_Cinematic
     extern char DAT_00473400;                              // SC_Cinematic
     extern char DAT_00472c70[256];                         // SC_Cinematic
     extern char DAT_00472cb0[256];                         // SC_Cinematic
 }
-extern char* DAT_0046aa00;                                 // SCI_Inventory
-extern InputManager* DAT_0046aa08;                         // SCI_Inventory
 extern Sound* DAT_0046AA0C;                                // Engine
-extern MouseControl* DAT_0046aa18;                         // SCI_Inventory
 extern void* DAT_0046aa1c;                                 // Path resolution
-extern ZBufferManager* DAT_0046aa24;                       // SCI_Inventory
 extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_Message
 extern GameState* DAT_0046aa38;                            // SC_Question
-extern GameState* DAT_0046aa3c;                            // Full game
 extern int g_AnimStates_0046ac30[5];                       // SC_DodgeOrville
 extern int g_LastBombDir_0046ac44;                         // SC_DodgeOrville
 extern int DAT_0046ad6c;                                   // SC_Wahoo

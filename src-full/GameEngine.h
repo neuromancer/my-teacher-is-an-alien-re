@@ -15,7 +15,7 @@ class SpriteAction;
 // Constructor: 0x430A00, Destructor: 0x430B90
 //
 // Drives the main game loop: processes timed events, dispatches messages
-// to handlers, renders via DAT_0046aa24 (ZBufferManager), frame timing.
+// to handlers, renders via g_ZBufferManager_0046aa24 (ZBufferManager), frame timing.
 // This is NOT a ZBufferManager — it's a separate 0x28-byte class.
 class GameEngine {
 public:

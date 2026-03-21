@@ -15,12 +15,12 @@ SoundItem::SoundItem(int sndId)
     soundId = sndId;
     timer.Reset();
 
-    sprintf(g_Buffer_00436960, "audio\\snd%4.4d.wav", soundId);
+    sprintf(g_Buffer_0046aa00, "audio\\snd%4.4d.wav", soundId);
 
     Sample* sample = new Sample();
     soundPtr = sample;
 
-    if (sample->Load(g_Buffer_00436960)) {
+    if (sample->Load(g_Buffer_0046aa00)) {
         if (soundPtr != 0) {
             soundPtr->Unload();
             operator delete(soundPtr);

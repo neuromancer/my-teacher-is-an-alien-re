@@ -63,14 +63,14 @@ extern "C" int FileExists(const char*);
 extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 
 extern void* DAT_0046bbfc;
-extern InputManager* DAT_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 class MouseControl;
-extern MouseControl* DAT_0046aa18;
-extern "C" extern GameState* DAT_0046aa30;
+extern MouseControl* g_Mouse_0046aa18;
+extern "C" extern GameState* g_GameState_0046aa30;
 
 /* Function start: 0x437830 */
 SC_Wahoo::SC_Wahoo() {
@@ -122,7 +122,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
 
     *(int*)((int)this + 0x94) = *(int*)((int)msg + 4);
 
-    void* pvVar4 = DAT_0046aa30;
+    void* pvVar4 = g_GameState_0046aa30;
     unsigned int uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
     if ((int)uVar3 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < (int)uVar3) {
         ShowError("Invalid gamestate %d", uVar3);
@@ -131,7 +131,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
 
     ParseFile(this, "mis\\cb_bridge.mis", (char*)0);
 
-    pvVar4 = DAT_0046aa30;
+    pvVar4 = g_GameState_0046aa30;
     uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
     if ((int)uVar3 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < (int)uVar3) {
         ShowError("Invalid gamestate %d", uVar3);
@@ -150,7 +150,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
 
     iVar7 = (int)field_AC;
     if (iVar7 != 0) {
-        int* piVar8 = (int*)((int)DAT_0046aa24 + 0xa8);
+        int* piVar8 = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
         if (*piVar8 != 0) {
             WriteToLog("ddouble palette");
         }
@@ -359,14 +359,14 @@ void SC_Wahoo::OnProcessEnd() {
 
     field_160 = 0x91;
 
-    if (DAT_0046aa08 != 0) {
-        (DAT_0046aa08)->Refresh(1);
+    if (g_InputManager_0046aa08 != 0) {
+        (g_InputManager_0046aa08)->Refresh(1);
     }
 
     if (field_13C != 0) {
         iVar1 = 0;
-        if (*(int*)((int)DAT_0046aa08 + 0x1A0) != 0) {
-            iVar1 = **(int**)((int)DAT_0046aa08 + 0x1A0);
+        if (*(int*)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
+            iVar1 = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
         field_13C->ResetAnimation(iVar1 / (field_134 / 5), 0);
     }
@@ -397,7 +397,7 @@ void SC_Wahoo::Update(int param1, int param2) {
             return;
         }
         int val = field_140;
-        void* gs = DAT_0046aa30;
+        void* gs = g_GameState_0046aa30;
         int idx = ((GameState*)gs)->FindLabel("COMBAT_BRIDGE_STATE");
         ((GameState*)gs)->ValidateIndex(idx);
         *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = val + 1;
@@ -447,7 +447,7 @@ void SC_Wahoo::Update(int param1, int param2) {
     }
 
     cursorY = 0;
-    cursorData = *(int**)((int)DAT_0046aa08 + 0x1A0);
+    cursorData = *(int**)((int)g_InputManager_0046aa08 + 0x1A0);
     if (cursorData != 0) {
         cursorY = cursorData[1];
     }
@@ -458,15 +458,15 @@ void SC_Wahoo::Update(int param1, int param2) {
 
     if (cursorX < field_CC || field_D4 < cursorX ||
         cursorY < field_D0 || field_D8 < cursorY) {
-        spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
         if (spr == 0) goto label_done;
         frame = 0xe;
     } else if (cursorData == 0 || cursorData[0] < 0xa0) {
-        spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
         if (spr == 0) goto label_done;
         frame = 0xa;
     } else {
-        spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
         if (spr == 0) goto label_done;
         frame = 0xb;
     }
@@ -480,8 +480,8 @@ label_done:
 
     if (*(int*)((int)DAT_0046bbfc + 0xA8) != 0) {
         cursorX = 0;
-        if (*(int**)((int)DAT_0046aa08 + 0x1A0) != 0) {
-            cursorX = **(int**)((int)DAT_0046aa08 + 0x1A0);
+        if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
+            cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
         field_13C->ResetAnimation(cursorX / (field_134 / 3) + 5, 0);
     }
@@ -489,8 +489,8 @@ label_done:
     spr = (Sprite*)field_13C;
     if (spr->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
         cursorX = 0;
-        if (*(int**)((int)DAT_0046aa08 + 0x1A0) != 0) {
-            cursorX = **(int**)((int)DAT_0046aa08 + 0x1A0);
+        if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
+            cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
         field_13C->ResetAnimation(cursorX / (field_134 / 5), 0);
     }
@@ -574,7 +574,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
     else if (strcmp(local_38, "SET_GAMESTATE") == 0) {
         sscanf(param_1, " %s %s %d ", local_38, local_b8, &local_18);
         int val = local_18;
-        void* gs = DAT_0046aa30;
+        void* gs = g_GameState_0046aa30;
         unsigned int idx = ((GameState*)gs)->FindLabel(local_b8);
         if ((int)idx < 0 || *(int*)((int)gs + 0x98) - 1 < (int)idx) {
             ShowError("Invalid gamestate %d");
@@ -803,7 +803,7 @@ LAB_00439160:
         }
     } else {
         if (*(int*)((int)field_B4 + 0x98) == 1) {
-            pvVar6 = DAT_0046aa30;
+            pvVar6 = g_GameState_0046aa30;
             {
             unsigned int uVar2 = ((GameState*)pvVar6)->FindLabel("NUM_ACTIONS");
             if ((int)uVar2 < 0 || *(int*)((int)pvVar6 + 0x98) - 1 < (int)uVar2) {

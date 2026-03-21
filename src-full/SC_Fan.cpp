@@ -26,10 +26,10 @@ extern char* __cdecl ResolveAssetPath(char* name);
 extern void __fastcall FUN_00427880(void*);  // Weapon::Render
 
 extern Weapon* DAT_00468ef0;                 // active weapon display
-extern ZBufferManager* DAT_0046aa24;
-extern "C" { extern GameState* DAT_0046aa30; }
-extern MouseControl* DAT_0046aa18;
-extern InputManager* DAT_0046aa08;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
+extern "C" { extern GameState* g_GameState_0046aa30; }
+extern MouseControl* g_Mouse_0046aa18;
+extern InputManager* g_InputManager_0046aa08;
 
 /* Function start: 0x40EFF0 */
 SC_Fan::SC_Fan()
@@ -76,7 +76,7 @@ void SC_Fan::Init(SC_Message* msg) {
 
     ptr = field_C4;
     if (ptr != 0) {
-        target = (int*)((int)DAT_0046aa24 + 0xA8);
+        target = (int*)((int)g_ZBufferManager_0046aa24 + 0xA8);
         if (*target != 0) {
             WriteToLog("ddouble palette");
         }
@@ -283,7 +283,7 @@ void SC_Fan::ProcessRound() {
             field_A8->mousePos.field_0 = 0x78;
             field_A8->mousePos.field_4 = 0;
 
-            void* gs = DAT_0046aa30;
+            void* gs = g_GameState_0046aa30;
             int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
@@ -303,14 +303,14 @@ void SC_Fan::ProcessRound() {
             }
             return;
         } else if (field_17C == 2) {
-            void* gs = DAT_0046aa30;
+            void* gs = g_GameState_0046aa30;
             int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
             *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x1E;
 
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             idx = ((GameState*)gs)->FindLabel("COMBAT_FAN_WON");
             if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
@@ -508,7 +508,7 @@ void SC_Fan::RenderFan() {
         int dimVal;
         dimVal = dim_168.field_4;
         if (dimVal != 0 && dim_168.field_0 >= dimVal) {
-            (DAT_0046aa24)->DrawVBufferRegion(
+            (g_ZBufferManager_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
                 invSlot_158.left, invSlot_158.top, invSlot_158.right, invSlot_158.bottom);
 
@@ -532,11 +532,11 @@ void SC_Fan::RenderFan() {
             }
             offset = offset * 4 + 0x12;
 
-            (DAT_0046aa24)->DrawVBufferRegion(
+            (g_ZBufferManager_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
                 invSlot_158.left, invSlot_158.top, offset, invSlot_158.bottom);
 
-            (DAT_0046aa24)->DrawVBufferRegion(
+            (g_ZBufferManager_0046aa24)->DrawVBufferRegion(
                 field_144, 0x7531, dim_170.field_0 + offset, dim_170.field_4, 2, 1.0,
                 offset, invSlot_148.top, invSlot_148.right, invSlot_148.bottom);
         }
@@ -546,12 +546,12 @@ void SC_Fan::RenderFan() {
         int frames;
         void* p;
 
-        (DAT_0046aa18)->DrawCursor();
+        (g_Mouse_0046aa18)->DrawCursor();
         FUN_00427880(DAT_00468ef0);
 
         if (DAT_00468ef0->m_clicked != 0) {
             frames = 0;
-            p = *(void**)((int)DAT_0046aa08 + 0x1A0);
+            p = *(void**)((int)g_InputManager_0046aa08 + 0x1A0);
             if (p != 0) {
                 frames = *(int*)p;
             }
@@ -561,7 +561,7 @@ void SC_Fan::RenderFan() {
         sprite = (Sprite*)field_C0;
         if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
             frames = 0;
-            p = *(void**)((int)DAT_0046aa08 + 0x1A0);
+            p = *(void**)((int)g_InputManager_0046aa08 + 0x1A0);
             if (p != 0) {
                 frames = *(int*)p;
             }
@@ -683,7 +683,7 @@ int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
     else if (strcmp(local_38, "SET_GAMESTATE") == 0) {
         sscanf(param_1, " %s %s %d ", local_38, local_b8, &local_18);
         int val = local_18;
-        void* gs = DAT_0046aa30;
+        void* gs = g_GameState_0046aa30;
         int idx = ((GameState*)gs)->FindLabel(local_b8);
         if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);

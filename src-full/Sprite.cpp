@@ -15,7 +15,7 @@
 #include "VBuffer.h"
 
 extern "C" void WriteToLog(const char* format, ...);
-extern "C" GameState* DAT_0046aa30;
+extern "C" GameState* g_GameState_0046aa30;
 
 // Video buffer name table: 32 entries × 64 bytes at 0x4734B0
 static char g_VideoBufferNameTable[32][64];
@@ -72,8 +72,8 @@ void Sprite::StopAnimationSound()
         sound_idx = anim->targetBuffer->handle;
     }
 
-    if (g_ZBufferManager_0043698c != 0 && anim != 0 && g_ZBufferManager_0043698c->m_state != 0) {
-        g_ZBufferManager_0043698c->QueueAnimationCleanup(anim);
+    if (g_ZBufferManager_0046aa24 != 0 && anim != 0 && g_ZBufferManager_0046aa24->m_state != 0) {
+        g_ZBufferManager_0046aa24->QueueAnimationCleanup(anim);
     } else if (anim != 0) {
         delete anim;
     }
@@ -189,61 +189,61 @@ int Sprite::CheckConditions()
     int i = 0;
     if (0 < num_logic_conditions) {
         do {
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int* cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 8) {
                 state_idx = cond[0];
-                if (state_idx < 0 || DAT_0046aa30->maxStates - 1 < state_idx) {
+                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] == 0) {
                     return 0;
                 }
             }
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 9) {
                 state_idx = cond[0];
-                if (state_idx < 0 || DAT_0046aa30->maxStates - 1 < state_idx) {
+                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] != 0) {
                     return 0;
                 }
             }
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 0xC) {
                 state_idx = cond[0];
-                if (state_idx < 0 || DAT_0046aa30->maxStates - 1 < state_idx) {
+                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] != *(int*)((char*)logic_conditions + offset + 8)) {
                     return 0;
                 }
             }
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 0xD) {
                 state_idx = cond[0];
-                if (state_idx < 0 || DAT_0046aa30->maxStates - 1 < state_idx) {
+                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] == *(int*)((char*)logic_conditions + offset + 8)) {
                     return 0;
                 }
             }
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 0x1C) {
                 state_idx = cond[0];
-                if (state_idx < 0 || DAT_0046aa30->maxStates - 1 < state_idx) {
+                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
-                GameState* gs2 = DAT_0046aa30;
+                GameState* gs2 = g_GameState_0046aa30;
                 if (gs->stateValues[state_idx] != handle) {
                     int idx2 = *(int*)((char*)logic_conditions + offset);
-                    if (idx2 < 0 || DAT_0046aa30->maxStates - 1 < idx2) {
+                    if (idx2 < 0 || g_GameState_0046aa30->maxStates - 1 < idx2) {
                         ShowError("Invalid gamestate %d", idx2);
                     }
                     ResetAnimation(gs2->stateValues[idx2], 0);
@@ -259,8 +259,8 @@ int Sprite::CheckConditions()
 
 /* Function start: 0x44D420 */
 void Sprite::SetSpriteLogic(char* gsName, char* condition, int value) {
-    int gsIdx = g_GameState_00436998->FindState(gsName);
-    if (gsIdx < 0 || g_GameState_00436998->maxStates - 1 < gsIdx) {
+    int gsIdx = g_GameState_0046aa30->FindState(gsName);
+    if (gsIdx < 0 || g_GameState_0046aa30->maxStates - 1 < gsIdx) {
         ShowError("Invalid gamestate %d", gsIdx);
     }
     if (strstr(condition, "FALSE") != 0) {
@@ -576,8 +576,8 @@ void Sprite::ResetAnimation(int state, int offset) {
     flags &= ~0x20;
 }
 
-extern ZBufferManager* DAT_0046aa24;
-extern "C" GameState* DAT_0046aa30;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
+extern "C" GameState* g_GameState_0046aa30;
 
 /* Function start: 0x44CCF0 */
 int Sprite::Do(int x, int y, double scale) {
@@ -688,7 +688,7 @@ after_anim:
         }
 
         VBuffer* vb = animation_data->targetBuffer;
-        DAT_0046aa24->DrawVBufferRegion(vb, priority, x, y, mode, scale,
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(vb, priority, x, y, mode, scale,
             vb->clip_x1, vb->clip_y1, vb->clip_x2, vb->clip_y2);
 
         return -((flags & 1) == 0) & done;

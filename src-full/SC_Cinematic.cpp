@@ -16,13 +16,13 @@
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetCinematicFilename(int id);
 
-extern "C" extern GameState* DAT_0046aa30;
-#define g_GameState_0046aa30 (DAT_0046aa30)
+extern "C" extern GameState* g_GameState_0046aa30;
+#define g_GameState_0046aa30 (g_GameState_0046aa30)
 #include "ZBufferManager.h"
-extern ZBufferManager* DAT_0046aa24;
-extern InputManager* DAT_0046aa08;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
+extern InputManager* g_InputManager_0046aa08;
 class MouseControl;
-extern MouseControl* DAT_0046aa18;
+extern MouseControl* g_Mouse_0046aa18;
 
 extern "C" {
     extern int DAT_0046a6ec;
@@ -151,7 +151,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
     flags = 0x10;
     savedRenderCtx = *(int*)(DAT_0046a6ec + 0x1c);
 
-    int iVar11 = (int)DAT_0046aa24;
+    int iVar11 = (int)g_ZBufferManager_0046aa24;
     if (iVar11 != 0) {
         int savedState = *(int*)(iVar11 + 0x98);
         if (savedState != 0) {
@@ -254,8 +254,8 @@ void SC_Cinematic::Init(SC_Message* msg) {
 /* Function start: 0x4300D0 */
 int SC_Cinematic::ShutDown(SC_Message* msg) {
     if (msg != 0) {
-        if (DAT_0046aa24 != 0) {
-            int iVar3 = (int)DAT_0046aa24;
+        if (g_ZBufferManager_0046aa24 != 0) {
+            int iVar3 = (int)g_ZBufferManager_0046aa24;
             if (*(int*)(iVar3 + 0x98) != savedZBState) {
                 *(int*)(iVar3 + 0x98) = savedZBState;
 
@@ -350,9 +350,9 @@ void SC_Cinematic::Update(int param1, int param2) {
     }
 
     if (waitForInput != 0) {
-        (DAT_0046aa08)->Refresh(1);
+        (g_InputManager_0046aa08)->Refresh(1);
 
-        int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+        int* mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
         int hasInput;
         if (mousePtr != 0 && (mousePtr[4] >= 1 || mousePtr[5] >= 1 || g_WaitForInputValue_004373bc != 0)) {
             hasInput = 1;
@@ -367,20 +367,20 @@ void SC_Cinematic::Update(int param1, int param2) {
         Animation* smk = (Animation*)animation;
         VBuffer* vp = (VBuffer*)DAT_0046aa14;
         vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk->targetBuffer);
-        (DAT_0046aa18)->DrawCursor();
+        (g_Mouse_0046aa18)->DrawCursor();
         return;
     }
 
     // SmackWait linked directly via smackw32.lib
 
     while (1) {
-        if ((DAT_0046aa08)->Refresh(1) != 0) {
+        if ((g_InputManager_0046aa08)->Refresh(1) != 0) {
             EndCinematic();
             return;
         }
 
         if (!(flags & 0x1)) {
-            int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+            int* mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
             int hasInput;
             if (mousePtr != 0) {
                 if (mousePtr[5] >= 2) {
@@ -464,12 +464,12 @@ void SC_Cinematic::Update(int param1, int param2) {
 
         *(int*)(DAT_0046a6ec + 0x1c) = savedRenderCtx;
 
-        if (DAT_0046aa24 != 0) {
+        if (g_ZBufferManager_0046aa24 != 0) {
             int newState = 1;
             if (savedZBState != 0) {
                 newState = savedZBState;
             }
-            int iVar2 = (int)DAT_0046aa24;
+            int iVar2 = (int)g_ZBufferManager_0046aa24;
             int* statePtr = (int*)(iVar2 + 0x98);
             if (*statePtr != newState) {
                 *statePtr = newState;

@@ -221,8 +221,8 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 create_message:
     if (msg->sourceAddress != 0) {
         if (g_Strings_0046a6e0 != 0) {
-            if (g_Strings_0046a6e0->GetString(msg->sourceAddress, g_Buffer_00436960)) {
-                newItem = new OnScreenMessage(g_Buffer_00436960, msg->param1);
+            if (g_Strings_0046a6e0->GetString(msg->sourceAddress, g_Buffer_0046aa00)) {
+                newItem = new OnScreenMessage(g_Buffer_0046aa00, msg->param1);
             }
         }
         goto check_newitem;

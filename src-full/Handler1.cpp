@@ -47,7 +47,7 @@ void Handler1::Init(SC_Message* msg) {
     Handler1::CopyCommandData(msg);
     pal = palette;
     if (pal != 0) {
-        palettePtr = &g_ZBufferManager_0043698c->m_palette;
+        palettePtr = &g_ZBufferManager_0046aa24->m_palette;
         if (*palettePtr != 0) {
             WriteToMessageLog("ddouble palette");
         }
@@ -95,7 +95,7 @@ int Handler1::Exit(SC_Message* msg) {
 void Handler1::Update(int param1, int param2) {
     if (handlerId == param2) {
         sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-        g_Mouse_00436978->DrawCursor();
+        g_Mouse_0046aa18->DrawCursor();
     }
 }
 

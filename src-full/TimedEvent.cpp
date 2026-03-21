@@ -35,9 +35,9 @@ void TimedEvent::SetType(int type)
 
 extern void FreeMemory(void*);
 
-extern char* DAT_0046aa00;
+extern char* g_Buffer_0046aa00;
 class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 /* Function start: 0x422AE0 */
 int TimedEvent::Update()
@@ -69,8 +69,8 @@ int TimedEvent::Update()
         return 0;
 
     case 2:
-        sprintf(DAT_0046aa00, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
-        DAT_0046aa24->ShowText(DAT_0046aa00, 0x208, 0x1c2, 10000, -1);
+        sprintf(g_Buffer_0046aa00, "%3.3d : %2.2d", remaining_time / 60000, (remaining_time / 1000) % 60);
+        g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x208, 0x1c2, 10000, -1);
         if (remaining_time > 0) {
             return 0;
         }

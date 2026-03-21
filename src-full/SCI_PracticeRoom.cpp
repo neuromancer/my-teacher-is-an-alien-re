@@ -57,7 +57,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     SetVideoRes(0x280, 0x1E0);
     SlimeTable* table = new SlimeTable();
     *(SlimeTable**)((int)this + 0xC8) = table;
-    void* pvVar = DAT_0046aa30;
+    void* pvVar = g_GameState_0046aa30;
     int iGameState = ((GameState*)pvVar)->FindLabel("FINAL_PRACTICEROOM");
     if (iGameState < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGameState) {
         ShowError("Invalid gamestate %d", iGameState);
@@ -81,7 +81,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
         iCount--;
     } while (iCount != 0);
     int iGS = g_PeriodStateIdx_0046cb90;
-    void* pvVar2 = DAT_0046aa30;
+    void* pvVar2 = g_GameState_0046aa30;
     if (iGS < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < iGS) {
         ShowError("Invalid gamestate %d", iGS);
     }
@@ -96,13 +96,13 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     }
     void* palette = *(void**)((int)this + 0xB4);
     if (palette != 0) {
-        int* pSlot = (int*)((int)DAT_0046aa24 + 0xA8);
+        int* pSlot = (int*)((int)g_ZBufferManager_0046aa24 + 0xA8);
         if (*pSlot != 0) {
             WriteToLog("ddouble palette");
         }
         *pSlot = (int)palette;
     }
-    void* pSprSub = *(void**)((int)DAT_0046aa18 + 0x94);
+    void* pSprSub = *(void**)((int)g_Mouse_0046aa18 + 0x94);
     if (pSprSub != 0) {
         ((Sprite*)pSprSub)->ResetAnimation(0, 0);
     }
@@ -231,7 +231,7 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
         pSprites++;
         iCount--;
     } while (iCount != 0);
-    (DAT_0046aa18)->DrawCursor();
+    (g_Mouse_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x42AE80 */
@@ -278,7 +278,7 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
                     ((Sprite*)pSub)->ResetAnimation(1, 0);
                 }
                 int iGS = g_PeriodStateIdx_0046cb90;
-                void* pvVar = DAT_0046aa30;
+                void* pvVar = g_GameState_0046aa30;
                 if (iGS < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGS) {
                     ShowError("Invalid gamestate %d", iGS);
                 }

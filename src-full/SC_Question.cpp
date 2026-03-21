@@ -22,9 +22,9 @@
 extern StringTable* g_Strings_0046a6e0;
 extern FlagArray* g_FlagManager_0046a6e8;
 extern "C" int DAT_0046a6ec;         // GameEngine instance
-extern "C" GameState* DAT_0046aa30;
-extern ZBufferManager* DAT_0046aa24;
-extern char* DAT_0046aa00;           // temp string buffer
+extern "C" GameState* g_GameState_0046aa30;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
+extern char* g_Buffer_0046aa00;           // temp string buffer
 extern char DAT_00468108[];          // GameState key (quest level)
 extern char DAT_004690e4[];          // format string for quest
 extern GameState* DAT_0046aa38;      // secondary GameState (string table)
@@ -46,13 +46,13 @@ SC_Question::SC_Question(int id, SCI_Dialog* dialog)
         sprintf(label, "Missing Label %d", questionId);
     }
 
-    gsIndex = (DAT_0046aa30)->FindState(DAT_00468108);
-    if (gsIndex < 0 || DAT_0046aa30->maxStates - 1 < gsIndex) {
+    gsIndex = (g_GameState_0046aa30)->FindState(DAT_00468108);
+    if (gsIndex < 0 || g_GameState_0046aa30->maxStates - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
     }
 
     sprintf(questFile, "mis\\quest%2.2d.mis",
-        DAT_0046aa30->stateValues[gsIndex]);
+        g_GameState_0046aa30->stateValues[gsIndex]);
 
     ParseFile(this, questFile, "[QUESTION%d]", questionId);
 
@@ -128,19 +128,19 @@ void SC_Question::Update(int x, int y)
 {
     GameState* gs;
 
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     if (gs->maxStates - 1 < 4) {
         ShowError("Invalid gamestate %d", 4);
     }
 
     if (gs->stateValues[4] == 1) {
-        sprintf(DAT_0046aa00, DAT_004690e4, questionId);
-        DAT_0046aa24->ShowText(DAT_0046aa00, 0x22b, y + 0x17, 10000, -1);
+        sprintf(g_Buffer_0046aa00, DAT_004690e4, questionId);
+        g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x22b, y + 0x17, 10000, -1);
     }
 
     switch (state) {
     case 0:
-        DAT_0046aa24->ShowText(label, x + 10, y + 0x17, 10000, -1);
+        g_ZBufferManager_0046aa24->ShowText(label, x + 10, y + 0x17, 10000, -1);
         return;
     case 1:
         if (mouseControl != 0) {
@@ -204,7 +204,7 @@ void SC_Question::InitState()
     for (i = 0; i < 3; i++) {
         val = actionIndex[i];
         if (val != 0) {
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             if (val < 0 || gs->maxStates - 1 < val) {
                 ShowError("Invalid gamestate %d", val);
             }
@@ -212,7 +212,7 @@ void SC_Question::InitState()
         }
     }
 
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     gsIndex = gs->FindState("NUM_ACTIONS");
     if (gsIndex < 0 || gs->maxStates - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
@@ -558,8 +558,8 @@ int SC_Question::LBLParse(char* param_1)
                 ShowError("Error in SCIdilog.cpp: Cannot disable more than three sprites per question");
             }
             if (actionIndex[result] == 0) {
-                sprintf(DAT_0046aa00, "SPRITE%d", id);
-                actionIndex[result] = (DAT_0046aa30)->FindState(DAT_0046aa00);
+                sprintf(g_Buffer_0046aa00, "SPRITE%d", id);
+                actionIndex[result] = (g_GameState_0046aa30)->FindState(g_Buffer_0046aa00);
                 break;
             }
             result = result + 1;
@@ -575,7 +575,7 @@ int SC_Question::LBLParse(char* param_1)
             int gsIdx1;
             int gsIdx2;
             gsIdx1 = DAT_0046aa38->FindState(buf2);
-            gsIdx2 = (DAT_0046aa30)->FindState(buf1);
+            gsIdx2 = (g_GameState_0046aa30)->FindState(buf1);
             action = new SpriteAction( 2, gsIdx2, 0, 0, gsIdx1, id, 0, 0, 0, 0);
         }
         if ((((SpriteAction*)action)->instruction == 0x11 || ((SpriteAction*)action)->instruction == 0x12) && result < 4) {

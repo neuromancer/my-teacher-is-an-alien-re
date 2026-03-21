@@ -20,7 +20,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 #include "SlimeTable.h"
 
 extern Sound* DAT_0046AA0C;              // Sound global
-extern ZBufferManager* DAT_0046aa24;     // ZBufferManager*
+extern ZBufferManager* g_ZBufferManager_0046aa24;     // ZBufferManager*
 
 // DrawEntry implementation (originally in same source file as Engine)
 DrawEntry::~DrawEntry() {
@@ -173,7 +173,7 @@ void Engine::OnProcessEnd() {
             4, 0, 0, 0, 0, 0);
     }
     if (Engine::field_0x104 != 0) {
-        int* target = (int*)((int)DAT_0046aa24 + 0xA8);
+        int* target = (int*)((int)g_ZBufferManager_0046aa24 + 0xA8);
         if (*target != 0) {
             WriteToLog("ddouble palette");
         }

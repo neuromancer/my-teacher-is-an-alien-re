@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include <string.h>
 
-extern InputManager* DAT_0046aa08;
-extern MouseControl* DAT_0046aa18;
-extern "C" extern GameState* DAT_0046aa30;
+extern InputManager* g_InputManager_0046aa08;
+extern MouseControl* g_Mouse_0046aa18;
+extern "C" extern GameState* g_GameState_0046aa30;
 extern int DAT_004733e8;
 
 /* Function start: 0x434C10 */
@@ -163,7 +163,7 @@ int SCI_Schedule::AddMessage(SC_Message* msg)
 
     if (msgData[9] >= 2) {
         int mouseX, mouseY;
-        InputState* mouse = DAT_0046aa08->pMouse;
+        InputState* mouse = g_InputManager_0046aa08->pMouse;
         mouseY = 0;
         if (mouse != 0) {
             mouseY = mouse->y;
@@ -220,7 +220,7 @@ void SCI_Schedule::Update(int param1, int param2)
     } while (count != 0);
 
     int mouseX, mouseY;
-    InputState* mouse = DAT_0046aa08->pMouse;
+    InputState* mouse = g_InputManager_0046aa08->pMouse;
     mouseY = 0;
     if (mouse != 0) {
         mouseY = mouse->y;
@@ -252,7 +252,7 @@ void SCI_Schedule::Update(int param1, int param2)
     scheduleSprite->Do(0x1BB, 0x190, 1.0);
 
     mapHotspot->Update();
-    DAT_0046aa18->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x4356E0 */

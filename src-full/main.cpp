@@ -55,9 +55,9 @@ int ProcessMessages();
 }
 
 // Bridge globals (C++ linkage, defined in stubs.cpp)
-extern char* DAT_0046aa00;   // = g_Buffer_00436960
-extern InputManager* DAT_0046aa08;   // = g_InputManager_00436968
-extern ZBufferManager* DAT_0046aa24;   // ZBufferManager* (rendering manager, 0xAC bytes)
+extern char* g_Buffer_0046aa00;   // = g_Buffer_0046aa00
+extern InputManager* g_InputManager_0046aa08;   // = g_InputManager_0046aa08
+extern ZBufferManager* g_ZBufferManager_0046aa24;   // ZBufferManager* (rendering manager, 0xAC bytes)
 
 // Forward declarations for functions defined in this file
 void InitGameSystems();
@@ -85,8 +85,8 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 
 #include "GameEngine.h"
 extern "C" int DAT_0046a6ec;
-extern "C" extern GameState* DAT_0046aa30;
-extern GameState* DAT_0046aa3c;
+extern "C" extern GameState* g_GameState_0046aa30;
+extern GameState* g_GameState2_0046aa3c;
 extern GameState* g_StringTable_0046aa34;
 extern GameState* DAT_0046aa38;
 
@@ -119,11 +119,9 @@ void RunGame() {
     g_SoundTracker = new SoundTracker(0xfa0);
 
     // Create 4 GameStates with inline ParseFile
-    g_GameState_00436998 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
-    DAT_0046aa30 = g_GameState_00436998;
+    g_GameState_0046aa30 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
 
-    g_GameState2_004369a4 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
-    DAT_0046aa3c = g_GameState2_004369a4;
+    g_GameState2_0046aa3c = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
 
     g_GameState3_0043699c = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
     g_StringTable_0046aa34 = g_GameState3_0043699c;
@@ -132,11 +130,11 @@ void RunGame() {
     DAT_0046aa38 = g_GameState4_004369a0;
 
     // Check CACHE_SIZE from gamestate
-    int cacheIdx = g_GameState_00436998->FindState("CACHE_SIZE");
-    if (cacheIdx < 0 || cacheIdx > g_GameState_00436998->maxStates - 1) {
+    int cacheIdx = g_GameState_0046aa30->FindState("CACHE_SIZE");
+    if (cacheIdx < 0 || cacheIdx > g_GameState_0046aa30->maxStates - 1) {
         ShowError("0. Invalid gamestate %d", cacheIdx);
     }
-    int cacheSize = g_GameState_00436998->stateValues[cacheIdx];
+    int cacheSize = g_GameState_0046aa30->stateValues[cacheIdx];
     if (cacheSize == 0) {
         cacheSize = 0xf;
     }
@@ -148,16 +146,15 @@ void RunGame() {
     InitMemoryCache(200, cacheSize, 50.0f);
 
     // Delete old mouse if exists, create new
-    if (g_Mouse_00436978 != 0) {
-        MouseControl* p = g_Mouse_00436978;
+    if (g_Mouse_0046aa18 != 0) {
+        MouseControl* p = g_Mouse_0046aa18;
         p->~MouseControl();
         operator delete(p);
-        g_Mouse_00436978 = 0;
+        g_Mouse_0046aa18 = 0;
     }
 
-    g_Mouse_00436978 = new MouseControl();
-    DAT_0046aa18 = g_Mouse_00436978;
-    ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
+    g_Mouse_0046aa18 = new MouseControl();
+    ParseFile(g_Mouse_0046aa18, "mis\\mouse1.mis", "[MICE]");
 
     // Linked list allocation
     g_MsgList = new MsgList();
@@ -178,29 +175,28 @@ void RunGame() {
     g_Strings_0046a6e0 = new StringTable("mis\\strings.mis", 1);
 
     // Check TEST_STRINGS in gamestate
-    int testIdx = g_GameState_00436998->FindState("TEST_STRINGS");
-    if (testIdx < 0 || testIdx > g_GameState_00436998->maxStates - 1) {
+    int testIdx = g_GameState_0046aa30->FindState("TEST_STRINGS");
+    if (testIdx < 0 || testIdx > g_GameState_0046aa30->maxStates - 1) {
         ShowError("1. Invalid gamestate %d", testIdx);
     }
-    if (g_GameState_00436998->stateValues[testIdx] != 0) {
-        int testIdx2 = g_GameState_00436998->FindState("TEST_STRINGS");
-        if (testIdx2 < 0 || testIdx2 > g_GameState_00436998->maxStates - 1) {
+    if (g_GameState_0046aa30->stateValues[testIdx] != 0) {
+        int testIdx2 = g_GameState_0046aa30->FindState("TEST_STRINGS");
+        if (testIdx2 < 0 || testIdx2 > g_GameState_0046aa30->maxStates - 1) {
             ShowError("2. Invalid gamestate %d", testIdx2);
         }
-        g_Strings_0046a6e0->TestStrings(g_TextManager_00436990, g_GameState_00436998->stateValues[testIdx2]);
+        g_Strings_0046a6e0->TestStrings(g_TextManager_00436990, g_GameState_0046aa30->stateValues[testIdx2]);
     }
 
     g_TimedEventPool1_00436984 = new TimedEventPool();
 
     // Original creates TWO objects (assembly lines 421-452 of FUN_4236F0):
-    // 1. DAT_0046aa24 = new ZBufferManager (0xAC bytes, constructor 0x403910) — rendering
+    // 1. g_ZBufferManager_0046aa24 = new ZBufferManager (0xAC bytes, constructor 0x403910) — rendering
     // 2. [0x0046a6ec] = new GameEngine (0x28 bytes, constructor 0x430A00) — game loop
-    DAT_0046aa24 = new ZBufferManager();
-    g_ZBufferManager_0043698c = DAT_0046aa24;
+    g_ZBufferManager_0046aa24 = new ZBufferManager();
     GameEngine* gameEngine = new GameEngine();
     DAT_0046a6ec = (int)gameEngine;
 
-    g_Mouse_00436978->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
     g_TextManager_00436990->char_adv.advance = 2;
     g_TextManager_00436990->spaceWidth = 5;
@@ -229,11 +225,10 @@ void RunGame() {
     }
 
     // Cleanup: ZBufferManager Cleanup + delete (assembly lines 515-528)
-    if (DAT_0046aa24 != 0) {
-        (DAT_0046aa24)->Cleanup();
-        operator delete(DAT_0046aa24);
-        DAT_0046aa24 = 0;
-        g_ZBufferManager_0043698c = 0;
+    if (g_ZBufferManager_0046aa24 != 0) {
+        (g_ZBufferManager_0046aa24)->Cleanup();
+        operator delete(g_ZBufferManager_0046aa24);
+        g_ZBufferManager_0046aa24 = 0;
     }
 
     if (g_TimedEventPool1_00436984 != 0) {
@@ -264,18 +259,18 @@ void RunGame() {
         g_GameState3_0043699c = 0;
     }
 
-    if (g_GameState2_004369a4 != 0) {
-        GameState* p = g_GameState2_004369a4;
+    if (g_GameState2_0046aa3c != 0) {
+        GameState* p = g_GameState2_0046aa3c;
         p->~GameState();
         operator delete(p);
-        g_GameState2_004369a4 = 0;
+        g_GameState2_0046aa3c = 0;
     }
 
-    if (g_GameState_00436998 != 0) {
-        GameState* p = g_GameState_00436998;
+    if (g_GameState_0046aa30 != 0) {
+        GameState* p = g_GameState_0046aa30;
         p->~GameState();
         operator delete(p);
-        g_GameState_00436998 = 0;
+        g_GameState_0046aa30 = 0;
     }
 
     if (g_Timer_00436980 != 0) {
@@ -290,11 +285,11 @@ void RunGame() {
         g_StateString_0046aa2c = 0;
     }
 
-    if (g_Mouse_00436978 != 0) {
-        MouseControl* p = g_Mouse_00436978;
+    if (g_Mouse_0046aa18 != 0) {
+        MouseControl* p = g_Mouse_0046aa18;
         p->~MouseControl();
         operator delete(p);
-        g_Mouse_00436978 = 0;
+        g_Mouse_0046aa18 = 0;
     }
 
     if (g_FlagManager_0046a6e8 != 0) {
@@ -369,15 +364,13 @@ extern "C" int FileExists(const char *filename) {
 
 /* Function start: 0x425720 */
 void InitGameSystems(void) {
-    g_Buffer_00436960 = new char[0x100];
-    DAT_0046aa00 = g_Buffer_00436960;
+    g_Buffer_0046aa00 = new char[0x100];
     g_Buffer_00436964 = new char[CalculateBufferSize(0x280, 0x1e0)];
     CreateGameObject_1();
     ClearMessageLog();
     InitGameConfig();
     InitWorkBuffer(0x280, 0x1e0);
-    g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
-    DAT_0046aa08 = g_InputManager_00436968;
+    g_InputManager_0046aa08 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
     g_Sound_0043696c = new Sound(0x5622, 8, 1);
     g_TextManager_00436990 = new AnimatedAsset();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
@@ -404,10 +397,9 @@ void ShutdownGameSystems(void) {
     operator delete(p);
     g_Sound_0043696c = 0;
   }
-  if (g_InputManager_00436968 != 0) {
-    delete g_InputManager_00436968;
-    g_InputManager_00436968 = 0;
-    DAT_0046aa08 = 0;
+  if (g_InputManager_0046aa08 != 0) {
+    delete g_InputManager_0046aa08;
+    g_InputManager_0046aa08 = 0;
   }
 
   if (g_CDData_0043697c != 0) {
@@ -426,10 +418,9 @@ void ShutdownGameSystems(void) {
     delete[] g_Buffer_00436964;
     g_Buffer_00436964 = 0;
   }
-  if (g_Buffer_00436960 != 0) {
-    delete g_Buffer_00436960;
-    g_Buffer_00436960 = 0;
-    DAT_0046aa00 = 0;
+  if (g_Buffer_0046aa00 != 0) {
+    delete g_Buffer_0046aa00;
+    g_Buffer_0046aa00 = 0;
   }
 }
 

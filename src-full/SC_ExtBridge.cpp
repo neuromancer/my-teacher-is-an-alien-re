@@ -20,7 +20,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 // FUN_00404b80 = LinkedList::GetCurrentData — callers updated
 // FUN_00404d70 = ListNode sdtor — callers updated to use delete
 extern int DAT_0046ae78;
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 /* Function start: 0x4399E0 */
 SC_ExtBridge::SC_ExtBridge() {
@@ -74,7 +74,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 
     SetVideoRes(dim.field_0, dim.field_4);
 
-    int iVar2 = (int)DAT_0046aa24;
+    int iVar2 = (int)g_ZBufferManager_0046aa24;
     int* pState = (int*)(iVar2 + 0x98);
     if (*pState != 2) {
         *pState = 2;
@@ -161,7 +161,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 
     // Palette handling
     if (palette != 0) {
-        int* palSlot = (int*)((int)DAT_0046aa24 + 0xa8);
+        int* palSlot = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
         if (*palSlot != 0) {
             WriteToLog("ddouble palette");
         }
@@ -201,8 +201,8 @@ int SC_ExtBridge::ShutDown(SC_Message* msg)
 extern int DAT_0046bcd0[];
 #include "MouseControl.h"
 #include "InputManager.h"
-extern MouseControl* DAT_0046aa18;
-extern InputManager* DAT_0046aa08;
+extern MouseControl* g_Mouse_0046aa18;
+extern InputManager* g_InputManager_0046aa08;
 
 /* Function start: 0x43A030 */
 void SC_ExtBridge::Update(int p1, int p2)
@@ -213,9 +213,9 @@ void SC_ExtBridge::Update(int p1, int p2)
 
     if (handlerId == p2) {
         if (DAT_0046ae70->Update() == 0) {
-            spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+            spr = *(Sprite**)((char*)g_Mouse_0046aa18 + 0x94);
             if (spr != 0 && *(int*)((char*)spr + 0x98) != -1) {
-                int* pMouse = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+                int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
                 if (pMouse == 0) {
                     mouseVal = 0;
                 } else {
@@ -230,7 +230,7 @@ void SC_ExtBridge::Update(int p1, int p2)
                 if (spr != 0) {
                     spr->ResetAnimation(DAT_0046bcd0[idx], 0);
                 }
-                DAT_0046aa18->DrawCursor();
+                g_Mouse_0046aa18->DrawCursor();
             }
         }
     }

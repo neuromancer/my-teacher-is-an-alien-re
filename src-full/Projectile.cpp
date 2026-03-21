@@ -55,7 +55,7 @@ void Projectile::Launch() {
     Projectile::startX = 0xa0;
     Projectile::startY = 0xb4;
 
-    pMouse = g_InputManager_00436968->pMouse;
+    pMouse = g_InputManager_0046aa08->pMouse;
 
     mouseY = 0;
     if (pMouse != 0) {

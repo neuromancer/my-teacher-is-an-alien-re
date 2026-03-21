@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 extern GameState* g_StringTable_0046aa34;
-extern "C" extern GameState* DAT_0046aa30;
-#define g_GameState_0046aa30 (DAT_0046aa30)
+extern "C" extern GameState* g_GameState_0046aa30;
+#define g_GameState_0046aa30 (g_GameState_0046aa30)
 
 SC_Message::~SC_Message() {}
 

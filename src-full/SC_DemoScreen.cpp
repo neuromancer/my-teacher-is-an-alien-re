@@ -8,9 +8,9 @@ extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 
 class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 class MouseControl;
-extern MouseControl* DAT_0046aa18;
+extern MouseControl* g_Mouse_0046aa18;
 
 /* Function start: 0x44E5C0 */
 SC_DemoScreen::SC_DemoScreen() {
@@ -46,7 +46,7 @@ void SC_DemoScreen::Init(SC_Message* msg) {
     CopyCommandData(msg);
     Palette* pal = (Palette*)field_A8;
     if (pal != 0) {
-        int* palSlot = (int*)((char*)DAT_0046aa24 + 0xa8);
+        int* palSlot = (int*)((char*)g_ZBufferManager_0046aa24 + 0xa8);
         if (*palSlot != 0) {
             WriteToLog("ddouble palette");
         }
@@ -92,6 +92,6 @@ void SC_DemoScreen::Update(int param1, int param2) {
     if (handlerId == param2) {
         Sprite* spr = (Sprite*)field_AC;
         spr->Do(spr->loc_x, spr->loc_y, 1.0);
-        (DAT_0046aa18)->DrawCursor();
+        (g_Mouse_0046aa18)->DrawCursor();
     }
 }

@@ -6,8 +6,8 @@
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" char* GetSoundFilename(int handle);
-extern "C" extern GameState* DAT_0046aa30;
-#define g_GameState_0046aa30 (DAT_0046aa30)
+extern "C" extern GameState* g_GameState_0046aa30;
+#define g_GameState_0046aa30 (g_GameState_0046aa30)
 extern "C" extern void* DAT_0046aa10;
 extern "C" extern int DAT_0046a6ec;
 

@@ -128,7 +128,7 @@ void MouseControl::DrawCursor()
     Sprite* sprite;
     InputState* pMouse;
 
-    pMouse = g_InputManager_00436968->pMouse;
+    pMouse = g_InputManager_0046aa08->pMouse;
     int final_x = 0;
     if (pMouse != 0) {
         final_x = pMouse->x;

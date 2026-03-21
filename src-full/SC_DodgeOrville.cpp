@@ -12,7 +12,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" void ShowError(const char* format, ...);
 #include "SoundList.h"
 #include "ZBufferManager.h"
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern int g_AnimStates_0046ac30[5];
 extern int g_LastBombDir_0046ac44;
 
@@ -36,7 +36,7 @@ int CheckCursorRange(int range);
 
 // SC_Combat base class calls — now using proper inheritance
 
-extern "C" { extern GameState* DAT_0046aa30; }
+extern "C" { extern GameState* g_GameState_0046aa30; }
 
 // Parser-derived class used for MIS file action parsing
 // vtable 0x461100 in original binary
@@ -112,14 +112,14 @@ void SC_DodgeOrville::ProcessTargets() {
                 pendingAction->fromValue = savedMsgData;
                 pendingAction->extra1 = 6;
 
-                void* gs = DAT_0046aa30;
+                void* gs = g_GameState_0046aa30;
                 int idx = ((GameState*)gs)->FindLabel("DODGE_COMBAT_AVAILABLE");
                 if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 0;
 
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
                 if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
@@ -237,7 +237,7 @@ void SC_DodgeOrville::UpdateGame()
         renderData = *(int*)((int)spr130->animation_data + 0x18);
     }
 
-    DAT_0046aa24->DrawVBufferRegion(0, 0x7531, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, dim_134.field_4, dim_13C.field_0, dim_13C.field_4);
+    g_ZBufferManager_0046aa24->DrawVBufferRegion(0, 0x7531, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, dim_134.field_4, dim_13C.field_0, dim_13C.field_4);
 
     if (dim_144.field_4 != 0 && dim_144.field_0 >= dim_144.field_4) {
         spr12c = (Sprite*)field_12C;
@@ -247,7 +247,7 @@ void SC_DodgeOrville::UpdateGame()
         }
         int w = *(int*)(renderData2 + 0x24);
         int h = *(int*)(renderData2 + 0x2c);
-        DAT_0046aa24->DrawVBufferRegion(0, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, 0, w, 0, h);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(0, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, 0, w, 0, h);
     } else {
         int hits = dim_144.field_0;
         int maxHits = dim_144.field_4;
@@ -261,7 +261,7 @@ void SC_DodgeOrville::UpdateGame()
         if ((int)spr12c->animation_data != 0) {
             rd3 = *(int*)((int)spr12c->animation_data + 0x18);
         }
-        DAT_0046aa24->DrawVBufferRegion(0, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, fillHeight, dim_134.field_4, dim_13C.field_4);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(0, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, fillHeight, dim_134.field_4, dim_13C.field_4);
     }
 }
 
@@ -388,7 +388,7 @@ void SC_DodgeOrville::InitGameState()
     dim_14C.field_0 = 0x46;
     dim_14C.field_4 = 0x1e;
 
-    GameState* gs = DAT_0046aa30;
+    GameState* gs = g_GameState_0046aa30;
     int idx = gs->FindLabel("MAX_HITS_BY_STINK_BOMBS");
     if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);

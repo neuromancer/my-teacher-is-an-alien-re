@@ -11,7 +11,7 @@ struct SoundCommand;
 
 // ZBufferManager class
 // Size: 0xAC (172 bytes)
-// Global: g_ZBufferManager_0043698c (also known as g_ZBufferManager_0043698c)
+// Global: g_ZBufferManager_0046aa24 (also known as g_ZBufferManager_0046aa24)
 // Manages ZBuffer rendering, object lists, and animation/sound command queuing
 // Contains Timer at offset 0x84
 //
@@ -53,7 +53,7 @@ public:
 };
 
 // Global pointer - this is the single global instance
-// Previously had two names (g_ZBufferManager_0043698c, g_ZBufferManager_0043698c) but they point to the same object
-//extern ZBufferManager* g_ZBufferManager_0043698c;
+// Previously had two names (g_ZBufferManager_0046aa24, g_ZBufferManager_0046aa24) but they point to the same object
+//extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 #endif // ZBUFFERMANAGER_H

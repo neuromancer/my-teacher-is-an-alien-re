@@ -42,7 +42,7 @@ Weapon::~Weapon() {}
 // are DEMO ONLY — full game versions are in CombatDisplay.cpp
 
 #include "InputManager.h"
-extern InputManager* DAT_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 extern int g_ProjectileHits_0043d150;
 #include "Projectile.h"
 extern void __fastcall FUN_00427390(void*);  // Projectile::Update (full game)
@@ -60,13 +60,13 @@ void Weapon::UpdateProjectiles() {
     int mouseBtn;
     int fire;
 
-    if (*(int*)((char*)DAT_0046aa08 + 0x1B4) == 0) {
+    if (*(int*)((char*)g_InputManager_0046aa08 + 0x1B4) == 0) {
         goto updateAll;
     }
 
     DrawCrosshairs();
 
-    pMouse = DAT_0046aa08->pMouse;
+    pMouse = g_InputManager_0046aa08->pMouse;
     if (pMouse != 0) {
         mouseBtn = pMouse->buttons & 1;
     } else {

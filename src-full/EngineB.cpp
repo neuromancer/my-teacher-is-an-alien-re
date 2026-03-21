@@ -13,8 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern InputManager* DAT_0046aa08;
-extern "C" GameState* DAT_0046aa30;
+extern InputManager* g_InputManager_0046aa08;
+extern "C" GameState* g_GameState_0046aa30;
 extern "C" int DAT_00473e18;
 
 
@@ -139,8 +139,8 @@ void EngineB::RenderBackground() {
 
     if (((int*)DAT_0046ae60)[0x2A] != 0) {
         mouseX = 0;
-        if (((int*)DAT_0046aa08)[0x68] != 0) {
-            mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
+        if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
+            mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
         }
         divisor = ((int*)DAT_0046ae4c)[0x26] / 3;
         DAT_0046ae50->ResetAnimation(mouseX / divisor + 5, 0);
@@ -148,8 +148,8 @@ void EngineB::RenderBackground() {
 
     if (DAT_0046ae50->Do(DAT_0046ae50->loc_x, DAT_0046ae50->loc_y, 1.0)) {
         mouseX = 0;
-        if (((int*)DAT_0046aa08)[0x68] != 0) {
-            mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
+        if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
+            mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
         }
         divisor = ((int*)DAT_0046ae4c)[0x26] / 5;
         DAT_0046ae50->ResetAnimation(mouseX / divisor, 0);
@@ -185,7 +185,7 @@ void EngineB::OnProcessEnd() {
         *(short*)(p + 4) = 0;
         p[6] = 0;
 
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         if (g_PeriodStateIdx_0046cb90 < 0 || gs->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
             ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
         }
@@ -209,14 +209,14 @@ void EngineB::OnProcessEnd() {
     }
     EngineB::m_targetConfig = config;
 
-    if (DAT_0046aa08 != 0) {
-        ((InputManager*)DAT_0046aa08)->Refresh(1);
+    if (g_InputManager_0046aa08 != 0) {
+        ((InputManager*)g_InputManager_0046aa08)->Refresh(1);
     }
 
     if (DAT_0046ae50 != 0) {
         mouseX = 0;
-        if (((int*)DAT_0046aa08)[0x68] != 0) {
-            mouseX = *(int*)((int*)DAT_0046aa08)[0x68];
+        if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
+            mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
         }
         divisor = ((int*)DAT_0046ae4c)[0x26] / 5;
         DAT_0046ae50->ResetAnimation(mouseX / divisor, 0);
@@ -240,7 +240,7 @@ void EngineB::OnProcessEnd() {
     EngineB::m_meterEmptyRect.top = 0;
     EngineB::m_meterEmptyRect.bottom = 0x13;
 
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     idx = gs->FindState("MAX_NOISE_ALLOWED_RATS");
 
     EngineB::m_meterFullRect.right = 0x10D;

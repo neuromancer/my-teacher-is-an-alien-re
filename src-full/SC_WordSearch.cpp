@@ -47,7 +47,7 @@ void SC_WordSearch::Init(SC_Message* msg) {
     }
     *(int*)((int)this + 0x81c) = 0;
     int iVar2 = g_PeriodStateIdx_0046cb90;
-    void* pvVar4 = DAT_0046aa30;
+    void* pvVar4 = g_GameState_0046aa30;
     if (iVar2 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < iVar2) {
         ShowError("Invalid gamestate %d", iVar2);
     }
@@ -139,7 +139,7 @@ void SC_WordSearch::Update(int param1, int param2) {
     int iVar5, iVar9;
     int iVar8;
 
-    spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+    spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
     if (spr != 0) {
         spr->ResetAnimation(0, 0);
     }
@@ -157,8 +157,8 @@ void SC_WordSearch::Update(int param1, int param2) {
         ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
         pvVar10 = *(void**)((int)this + 0x82c);
         ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
-        (DAT_0046aa18)->DrawCursor();
-        piVar1 = *(int**)((int)DAT_0046aa08 + 0x1a0);
+        (g_Mouse_0046aa18)->DrawCursor();
+        piVar1 = *(int**)((int)g_InputManager_0046aa08 + 0x1a0);
         iVar9 = 0;
         if (piVar1 != 0) {
             iVar9 = piVar1[1];
@@ -172,11 +172,11 @@ void SC_WordSearch::Update(int param1, int param2) {
         if (*(int*)((int)this + 0x70c) < iVar5) return;
         if (iVar9 < *(int*)((int)this + 0x708)) return;
         if (*(int*)((int)this + 0x710) < iVar9) return;
-        spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
         if (spr != 0) {
             spr->ResetAnimation(0xf, 0);
         }
-        DAT_0046aa24->DrawRect(
+        g_ZBufferManager_0046aa24->DrawRect(
             *(int*)((int)this + 0x704), *(int*)((int)this + 0x708),
             *(int*)((int)this + 0x70c), *(int*)((int)this + 0x710),
             10000, 0xfc, 2);
@@ -197,7 +197,7 @@ void SC_WordSearch::Update(int param1, int param2) {
     do {
         if (*pcVar12 != '\0') {
             iVar9 = 0;
-            piVar1 = *(int**)((int)DAT_0046aa08 + 0x1a0);
+            piVar1 = *(int**)((int)g_InputManager_0046aa08 + 0x1a0);
             if (piVar1 != 0) {
                 iVar9 = piVar1[1];
             }
@@ -213,22 +213,22 @@ void SC_WordSearch::Update(int param1, int param2) {
             } else {
                 iVar8 = 0xFD;
             }
-            DAT_0046aa24->ShowText(pcVar12, *piVar11 + 10, iVar5, 10000, iVar8);
+            g_ZBufferManager_0046aa24->ShowText(pcVar12, *piVar11 + 10, iVar5, 10000, iVar8);
         }
         piVar11 = piVar11 + 4;
         pcVar12 = pcVar12 + 0x20;
         local_4 = local_4 - 1;
     } while (local_4 != 0);
 
-    int* puVar2 = *(int**)((int)DAT_0046aa08 + 0x1a0);
+    int* puVar2 = *(int**)((int)g_InputManager_0046aa08 + 0x1a0);
     if (puVar2 == 0 || (uVar4 = *puVar2, (int)uVar4 < 0x22)) {
-        spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
         if (spr != 0) {
             spr->ResetAnimation(10, 0);
         }
     } else {
         if (0x23f < (int)uVar4) {
-            spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+            spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
             if (spr != 0) {
                 spr->ResetAnimation(0xb, 0);
             }
@@ -272,7 +272,7 @@ void SC_WordSearch::Update(int param1, int param2) {
                     do {
                         if (*pcVar12 != '\0') {
                             iVar5 = 0;
-                            piVar11 = *(int**)((int)DAT_0046aa08 + 0x1a0);
+                            piVar11 = *(int**)((int)g_InputManager_0046aa08 + 0x1a0);
                             if (piVar11 != 0) {
                                 iVar5 = piVar11[1];
                             }
@@ -284,8 +284,8 @@ void SC_WordSearch::Update(int param1, int param2) {
                             if (*piVar13 <= iVar8 && iVar8 <= piVar13[2] &&
                                 piVar13[1] <= iVar5 &&
                                 iVar5 <= piVar13[3] &&
-                                *(Sprite**)((int)DAT_0046aa18 + 0x94) != 0) {
-                                (*(Sprite**)((int)DAT_0046aa18 + 0x94))->ResetAnimation(0xf, 0);
+                                *(Sprite**)((int)g_Mouse_0046aa18 + 0x94) != 0) {
+                                (*(Sprite**)((int)g_Mouse_0046aa18 + 0x94))->ResetAnimation(0xf, 0);
                             }
                         }
                         piVar13 = piVar13 + 4;
@@ -293,31 +293,31 @@ void SC_WordSearch::Update(int param1, int param2) {
                         iVar9 = iVar9 - 1;
                     } while (iVar9 != 0);
                 } else {
-                    spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+                    spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
                     if (spr != 0) {
                         spr->ResetAnimation(0xf, 0);
                     }
-                    DAT_0046aa24->DrawRect(
+                    g_ZBufferManager_0046aa24->DrawRect(
                         *(int*)((int)this + 0x6f4), *(int*)((int)this + 0x6f8),
                         *(int*)((int)this + 0x6fc), *(int*)((int)this + 0x700),
                         10000, 0xfc, 2);
                 }
             } else {
-                spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+                spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
                 if (spr != 0) {
                     spr->ResetAnimation(0xf, 0);
                 }
-                DAT_0046aa24->DrawRect(
+                g_ZBufferManager_0046aa24->DrawRect(
                     *(int*)((int)this + 0x6e4), *(int*)((int)this + 0x6e8),
                     *(int*)((int)this + 0x6ec), *(int*)((int)this + 0x6f0),
                     10000, 0xfc, 2);
             }
         } else {
-            spr = *(Sprite**)((int)DAT_0046aa18 + 0x94);
+            spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
             if (spr != 0) {
                 spr->ResetAnimation(0xf, 0);
             }
-            DAT_0046aa24->DrawRect(
+            g_ZBufferManager_0046aa24->DrawRect(
                 *(int*)((int)this + 0x6d4), *(int*)((int)this + 0x6d8),
                 *(int*)((int)this + 0x6dc), *(int*)((int)this + 0x6e0),
                 10000, 0xfc, 2);
@@ -341,8 +341,8 @@ void SC_WordSearch::Update(int param1, int param2) {
             ((Sprite*)*(void**)((int)this + 0x824))->ResetAnimation(-1, 0);
         }
     }
-    DAT_0046aa24->ShowText((char*)((int)this + 0x718), 0x49, 0xdc, 10000, 0);
-    (DAT_0046aa18)->DrawCursor();
+    g_ZBufferManager_0046aa24->ShowText((char*)((int)this + 0x718), 0x49, 0xdc, 10000, 0);
+    (g_Mouse_0046aa18)->DrawCursor();
     pvVar10 = *(void**)((int)this + 0x82c);
     ((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0);
 }
@@ -353,7 +353,7 @@ void SC_WordSearch::FUN_436790() {
     int uVar3;
 
     if (*(int*)((int)this + 0x98) != 0x2B) {
-        pvVar2 = DAT_0046aa30;
+        pvVar2 = g_GameState_0046aa30;
         if (*(unsigned char*)((int)this + 0x81c) & 1) {
             uVar3 = ((GameState*)pvVar2)->FindLabel("PUZ_WAHOO_WON");
             if (uVar3 < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < uVar3) {
@@ -390,7 +390,7 @@ void SC_WordSearch::FUN_436790() {
 /* Function start: 0x4368F0 */
 void SC_WordSearch::FUN_4368F0() {
     int iVar2 = g_PeriodStateIdx_0046cb90;
-    void* pvVar3 = DAT_0046aa30;
+    void* pvVar3 = g_GameState_0046aa30;
     if (iVar2 < 0 || *(int*)((int)pvVar3 + 0x98) - 1 < iVar2) {
         ShowError("Invalid gamestate %d", iVar2);
     }

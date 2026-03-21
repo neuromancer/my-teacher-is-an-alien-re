@@ -93,7 +93,7 @@ void Handler6::Init(SC_Message* msg) {
 
     // Set palette if needed
     if (palette != 0) {
-        Palette** palettePtr = &g_ZBufferManager_0043698c->m_palette;
+        Palette** palettePtr = &g_ZBufferManager_0046aa24->m_palette;
         if (*palettePtr != 0) {
             WriteToMessageLog("ddouble palette");
         }
@@ -190,7 +190,7 @@ void Handler6::Update(int param1, int param2) {
     if (activeHotspots != 0) {
         // Has active hotspots - check for clicked hotspot
         int clickedIndex = FindClickedHotspot();
-        Sprite* sprite = g_Mouse_00436978->m_sprite;
+        Sprite* sprite = g_Mouse_0046aa18->m_sprite;
 
         if (clickedIndex == -1) {
             if (sprite != 0) {
@@ -201,13 +201,13 @@ void Handler6::Update(int param1, int param2) {
                 sprite->ResetAnimation(1, 0);
             }
         }
-        g_Mouse_00436978->DrawCursor();
+        g_Mouse_0046aa18->DrawCursor();
         return;
     }
     
     // No active hotspots - increment counter
     counter++;
-    g_Mouse_00436978->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
     if (counter != 0x3c) {
         return;
     }
@@ -223,7 +223,7 @@ int Handler6::FindClickedHotspot() {
     do {
         Hotspot* hotspot = *ptr;
         if (hotspot != 0) {
-            InputState* pMouse = g_InputManager_00436968->pMouse;
+            InputState* pMouse = g_InputManager_0046aa08->pMouse;
             int mouseY = 0;
 
             if (pMouse != 0) {

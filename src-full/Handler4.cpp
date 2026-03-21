@@ -168,7 +168,7 @@ void Handler4::Init(SC_Message* msg) {
 
     Palette* pal = palette;
     if (pal != 0) {
-        Palette** pPal = &g_ZBufferManager_0043698c->m_palette;
+        Palette** pPal = &g_ZBufferManager_0046aa24->m_palette;
         if (*pPal != 0) {
             WriteToMessageLog("ddouble palette");
         }
@@ -225,7 +225,7 @@ int Handler4::AddMessage(SC_Message* msg) {
     }
 
     if (msg->mouseX >= 2) {
-        InputState* pMouse = g_InputManager_00436968->pMouse;
+        InputState* pMouse = g_InputManager_0046aa08->pMouse;
         int mouseY = 0;
         if (pMouse != 0) {
             mouseY = pMouse->y;
@@ -244,7 +244,7 @@ int Handler4::AddMessage(SC_Message* msg) {
 
         do {
             if (*pFloorState != 0) {
-                InputState* pM = g_InputManager_00436968->pMouse;
+                InputState* pM = g_InputManager_0046aa08->pMouse;
                 int curY = 0;
                 if (pM != 0) {
                     curY = pM->y;
@@ -332,7 +332,7 @@ void Handler4::Update(int param1, int param2) {
         DisplayThisFloorRow();
     }
 
-    g_Mouse_00436978->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x40F310 */ /* DEMO ONLY - no full game match */

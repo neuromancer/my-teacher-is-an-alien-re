@@ -7,11 +7,11 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" extern GameState* DAT_0046aa30;
-extern char* DAT_0046aa00;
-extern ZBufferManager* DAT_0046aa24;
+extern "C" extern GameState* g_GameState_0046aa30;
+extern char* g_Buffer_0046aa00;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 class MouseControl;
-extern MouseControl* DAT_0046aa18;
+extern MouseControl* g_Mouse_0046aa18;
 #include "MouseControl.h"
 
 /* Function start: 0x431D20 */
@@ -36,7 +36,7 @@ SC_Game::SC_Game() {
 
     sprite = new Sprite("elements\\gamestat.smk");
     sprite->priority = 0;
-    field_F4 = DAT_0046aa30;
+    field_F4 = g_GameState_0046aa30;
 }
 
 /* Function start: 0x431F30 */
@@ -80,9 +80,9 @@ void SC_Game::Update(int param1, int param2) {
             int stateName = (int)field_F4->GetState(row);
             if (stateName != 0) {
                 stateName = (int)field_F4->GetState(row);
-                sprintf(DAT_0046aa00, "%s", stateName);
-                (DAT_0046aa24)->ShowSubtitle(
-                    DAT_0046aa00, textX,
+                sprintf(g_Buffer_0046aa00, "%s", stateName);
+                (g_ZBufferManager_0046aa24)->ShowSubtitle(
+                    g_Buffer_0046aa00, textX,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
 
@@ -90,15 +90,15 @@ void SC_Game::Update(int param1, int param2) {
                 if (row < 0 || *(int*)(gs + 0x98) - 1 < row) {
                     ShowError("Invalid gamestate %d", row);
                 }
-                sprintf(DAT_0046aa00, "%d", *(int*)(*(int*)(gs + 0x90) + row * 4));
-                (DAT_0046aa24)->ShowSubtitle(
-                    DAT_0046aa00, textX + 0x15e,
+                sprintf(g_Buffer_0046aa00, "%d", *(int*)(*(int*)(gs + 0x90) + row * 4));
+                (g_ZBufferManager_0046aa24)->ShowSubtitle(
+                    g_Buffer_0046aa00, textX + 0x15e,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
             } else {
-                sprintf(DAT_0046aa00, "**NOLABEL**");
-                (DAT_0046aa24)->ShowSubtitle(
-                    DAT_0046aa00, textX,
+                sprintf(g_Buffer_0046aa00, "**NOLABEL**");
+                (g_ZBufferManager_0046aa24)->ShowSubtitle(
+                    g_Buffer_0046aa00, textX,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
             }
@@ -110,7 +110,7 @@ void SC_Game::Update(int param1, int param2) {
             localRect.top = top;
             localRect.bottom = bottom;
             if (selectedRow == row) {
-                (DAT_0046aa24)->DrawRect(
+                (g_ZBufferManager_0046aa24)->DrawRect(
                     0, top, 0x27f, bottom, 0x28, 0xfb, 2);
             }
 
@@ -118,7 +118,7 @@ void SC_Game::Update(int param1, int param2) {
         } while (row < scrollOffset + 0xe);
     }
 
-    (DAT_0046aa18)->DrawCursor();
+    (g_Mouse_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4322D0 */

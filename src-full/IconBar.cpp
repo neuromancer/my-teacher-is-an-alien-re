@@ -40,14 +40,14 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" void SetVideoRes(int, int);         // 0x425A90 - in VBuffer.cpp
 
 class InputManager;
-extern InputManager* DAT_0046aa08;
-extern "C" extern GameState* DAT_0046aa30;
+extern InputManager* g_InputManager_0046aa08;
+extern "C" extern GameState* g_GameState_0046aa30;
 class MouseControl;
-extern MouseControl* DAT_0046aa18;
+extern MouseControl* g_Mouse_0046aa18;
 class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern char* g_StateString_0046aa2c;
-extern GameState* DAT_0046aa3c;
+extern GameState* g_GameState2_0046aa3c;
 extern void* DAT_0046a6e4;
 extern SpriteAction DAT_00472d58;
 extern SpriteAction DAT_00472d20;
@@ -118,7 +118,7 @@ void IconBar::Init(SC_Message* msg) {
     CopyCommandData(msg);
     SetVideoRes(0x280, 0x1e0);
 
-    iVar3 = (int)DAT_0046aa24;
+    iVar3 = (int)g_ZBufferManager_0046aa24;
     if (*(int*)(iVar3 + 0x98) != 2) {
         *(int*)(iVar3 + 0x98) = 2;
 
@@ -189,13 +189,13 @@ void IconBar::Init(SC_Message* msg) {
 
     UpdateAllSlots();
 
-    spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+    spr = *(Sprite**)((char*)g_Mouse_0046aa18 + 0x94);
     if (spr != 0) {
         spr->ResetAnimation(0, 0);
     }
 
     idx = g_PeriodStateIdx_0046cb90;
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
@@ -305,14 +305,14 @@ int IconBar::AddMessage(SC_Message* msg) {
     if (buttonIndex == 2) {
         result = 0;
         if (handlerId == 0x20) {
-            result = ((GameState*)DAT_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
+            result = ((GameState*)g_GameState2_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
         }
         {
             SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, result, 0, 0, 0, 0);
             DAT_00472d90.CopyFrom(&temp);
         }
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         {
         int idx = gs->FindState("PERIOD");
         if (idx < 0 || gs->maxStates - 1 < idx) {
@@ -327,7 +327,7 @@ int IconBar::AddMessage(SC_Message* msg) {
     }
 
     if (buttonIndex == 1) {
-        result = ((GameState*)DAT_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
+        result = ((GameState*)g_GameState2_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
         if (handlerId == 0x20) {
             if (result == 5 || result == 0x12) {
                 SendGameMessage(4, 0x1b86, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
@@ -365,14 +365,14 @@ void IconBar::Update(int param1, int param2) {
     do {
         if (entry->sprite != 0) {
             if (entry == &g_IconBarEntries[2]) {
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 if (gs->maxStates - 1 < 0x44) {
                     ShowError("Invalid gamestate %d", 0x44);
                 }
                 if (*(int*)(*(int*)((char*)gs + 0x90) + 0x110) != 0) {
                     entry->sprite->ResetAnimation(2, 0);
                 } else {
-                    mousePos = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+                    mousePos = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
                     mouseY = 0;
                     if (mousePos != 0) {
                         mouseY = mousePos[1];
@@ -390,7 +390,7 @@ void IconBar::Update(int param1, int param2) {
                     }
                 }
                 if (entry->field_14 != 0) {
-                    gs = DAT_0046aa30;
+                    gs = g_GameState_0046aa30;
                     if (gs->maxStates - 1 < 0x3c) {
                         ShowError("Invalid gamestate %d", 0x3c);
                     }
@@ -401,7 +401,7 @@ void IconBar::Update(int param1, int param2) {
                     }
                 }
             } else {
-                mousePos = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+                mousePos = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
                 mouseY = 0;
                 if (mousePos != 0) {
                     mouseY = mousePos[1];
@@ -493,7 +493,7 @@ void IconBar::UpdateAllSlots() {
         entry = entry + 1;
     } while (entry < &g_IconBarEntries[6]);
 
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     idx = gs->FindState("PERIOD");
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);

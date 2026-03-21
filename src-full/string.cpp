@@ -65,7 +65,7 @@ char* MakeAudioName(char* baseName)
     }
 
     if (suffixValue > 4999) {
-        gameState = g_GameState_00436998;
+        gameState = g_GameState_0046aa30;
         if (g_PeriodStateIdx_0046cb90 < 0 || gameState->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
             ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
         }
@@ -83,7 +83,7 @@ extern "C" char* GetSoundFilename(int handle)
 {
     if (handle >= 0x1388) {
         int idx = g_PeriodStateIdx_0046cb90;
-        GameState* gs = g_GameState_00436998;
+        GameState* gs = g_GameState_0046aa30;
         if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
@@ -491,7 +491,7 @@ int DeleteFile_Wrapper(const char* filename)
     return 0;
 }
 
-extern "C" GameState* DAT_0046aa30;
+extern "C" GameState* g_GameState_0046aa30;
 static char g_AnimNameBuf[64];  // DAT_00473cf0
 static char g_CineNameBuf[64]; // DAT_00473cb0
 
@@ -507,7 +507,7 @@ char* MakeSoundName(char* baseName) {
     }
     if (4999 < index) {
         int gsIdx = g_PeriodStateIdx_0046cb90;
-        GameState* gs = DAT_0046aa30;
+        GameState* gs = g_GameState_0046aa30;
         if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
             ShowError("Invalid gamestate %d", gsIdx);
         }
@@ -523,7 +523,7 @@ char* MakeSoundName(char* baseName) {
 char* MakeAnimName(int index) {
     if (4999 < index) {
         int gsIdx = g_PeriodStateIdx_0046cb90;
-        GameState* gs = DAT_0046aa30;
+        GameState* gs = g_GameState_0046aa30;
         if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
             ShowError("Invalid gamestate %d", gsIdx);
         }

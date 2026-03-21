@@ -18,14 +18,14 @@
 
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
-    extern GameState* DAT_0046aa30;
+    extern GameState* g_GameState_0046aa30;
     extern int DAT_0046a190;
     extern void* DAT_0046af08;
 }
 // extern globals - C++ linkage (matching stubs.cpp)
 extern SpriteAction DAT_00472d20;
 class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern SpriteAction DAT_00472d58;
 extern int DAT_00473334;
 extern int DAT_00473358;
@@ -143,7 +143,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     DAT_00473334 = 0;
     DAT_00473358 = 0;
 
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     periodIdx = gs->FindState("PERIOD");
     gs->ValidateIndex(periodIdx);
     periodVal = gs->stateValues[periodIdx];
@@ -157,7 +157,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     ParseFile(this, "mis\\skool.mis", "[ROOMAVALIBLITY_PERIOD%d]", periodVal);
 
     if (palette != 0) {
-        ZBufferManager* zbm = DAT_0046aa24;
+        ZBufferManager* zbm = g_ZBufferManager_0046aa24;
         if (zbm->m_palette != 0) {
             WriteToLog("ddouble palette");
         }
@@ -202,14 +202,14 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     } while (i < 3);
 
     // Select current character
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     int charIdx = g_PeriodStateIdx_0046cb90;
     gs->ValidateIndex(charIdx);
     int* stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
     int selChar = stateVals[charIdx];
     if (characters[selChar] != 0 && characters[i] != 0) {
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         charIdx = g_PeriodStateIdx_0046cb90;
         gs->ValidateIndex(charIdx);
         stateVals = (int*)gs->stateValues;
@@ -224,7 +224,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
 
     // Set cursor
     charIdx = g_PeriodStateIdx_0046cb90;
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     gs->ValidateIndex(charIdx);
     stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
@@ -233,35 +233,35 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     SetupOptions();
 
     // Check AWARE_TEACHER state
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     int awareIdx = gs->FindState("AWARE_TEACHER");
     gs->ValidateIndex(awareIdx);
     stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
     if (stateVals[awareIdx] == 0) {
         // Check TEACHER_ALIEN state
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         int alienIdx = gs->FindState("TEACHER_ALIEN");
         gs->ValidateIndex(alienIdx);
         stateVals = (int*)gs->stateValues;
         stateVals = (int*)*stateVals;
         if (stateVals[alienIdx] == 1) {
             // Check 2_NOTALIEN
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int na2Idx = gs->FindState("2_NOTALIEN");
             gs->ValidateIndex(na2Idx);
             stateVals = (int*)gs->stateValues;
             stateVals = (int*)*stateVals;
             if (stateVals[na2Idx] != 0) {
                 // Check 3_NOTALIEN
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 int na3Idx = gs->FindState("3_NOTALIEN");
                 gs->ValidateIndex(na3Idx);
                 stateVals = (int*)gs->stateValues;
                 stateVals = (int*)*stateVals;
                 if (stateVals[na3Idx] != 0) {
                     // Set AWARE_TEACHER = 1
-                    gs = DAT_0046aa30;
+                    gs = g_GameState_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
                     gs->ValidateIndex(awareIdx);
                     stateVals = (int*)gs->stateValues;
@@ -272,19 +272,19 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             }
         } else if (stateVals[alienIdx] == 2) {
             // Check 1_NOTALIEN
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int na1Idx = gs->FindState("1_NOTALIEN");
             gs->ValidateIndex(na1Idx);
             stateVals = (int*)gs->stateValues;
             stateVals = (int*)*stateVals;
             if (stateVals[na1Idx] != 0) {
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 int na3Idx = gs->FindState("3_NOTALIEN");
                 gs->ValidateIndex(na3Idx);
                 stateVals = (int*)gs->stateValues;
                 stateVals = (int*)*stateVals;
                 if (stateVals[na3Idx] != 0) {
-                    gs = DAT_0046aa30;
+                    gs = g_GameState_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
                     gs->ValidateIndex(awareIdx);
                     stateVals = (int*)gs->stateValues;
@@ -295,7 +295,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             }
         } else if (stateVals[alienIdx] == 3) {
             // Check 1_NOTALIEN with bounds check
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int na1Idx = gs->FindState("1_NOTALIEN");
             if (na1Idx < 0 || na1Idx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", na1Idx);
@@ -304,7 +304,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             stateVals = (int*)*stateVals;
             if (stateVals[na1Idx] != 0) {
                 // Check 2_NOTALIEN with bounds check
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 int na2Idx = gs->FindState("2_NOTALIEN");
                 if (na2Idx < 0 || na2Idx > gs->maxStates - 1) {
                     ShowError("Invalid gamestate %d", na2Idx);
@@ -312,7 +312,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 stateVals = (int*)gs->stateValues;
                 stateVals = (int*)*stateVals;
                 if (stateVals[na2Idx] != 0) {
-                    gs = DAT_0046aa30;
+                    gs = g_GameState_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
                     gs->ValidateIndex(awareIdx);
                     stateVals = (int*)gs->stateValues;
@@ -328,7 +328,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     SendGameMessage(5, bgSoundId, 0, 0, 0x1b, 0, 0, 0, 0, 0);
 
     // Set PREVIOUSROOM state
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     int prevIdx = gs->FindState("PREVIOUSROOM");
     gs->ValidateIndex(prevIdx);
     stateVals = (int*)gs->stateValues;
@@ -336,7 +336,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     stateVals[prevIdx] = 0x62;
 
     // Check P_IN_DETENTION
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     int pDetIdx = gs->FindState("P_IN_DETENTION");
     if (pDetIdx < 0 || pDetIdx > gs->maxStates - 1) {
         ShowError("Invalid gamestate %d", pDetIdx);
@@ -345,7 +345,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     stateVals = (int*)*stateVals;
     if (stateVals[pDetIdx] != 0) {
         // Check S_IN_DETENTION
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         int sDetIdx = gs->FindState("S_IN_DETENTION");
         if (sDetIdx < 0 || sDetIdx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", sDetIdx);
@@ -354,7 +354,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
         stateVals = (int*)*stateVals;
         if (stateVals[sDetIdx] != 0) {
             // Check D_IN_DETENTION
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int dDetIdx = gs->FindState("D_IN_DETENTION");
             if (dDetIdx < 0 || dDetIdx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", dDetIdx);
@@ -369,7 +369,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 DAT_00472d58.CopyFrom(&action);
 
                 // Clear MUST_SAVEGAME
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 int saveIdx = gs->FindState("MUST_SAVEGAME");
                 gs->ValidateIndex(saveIdx);
                 stateVals = (int*)gs->stateValues;
@@ -392,7 +392,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     DAT_0046a190 = 0;
 
     // Clean up ZBufferManager queues
-    ZBufferManager* zbm = DAT_0046aa24;
+    ZBufferManager* zbm = g_ZBufferManager_0046aa24;
     ZBQueue* queue;
 
     queue = zbm->m_queueA0;
@@ -547,7 +547,7 @@ void SCI_SchoolMenu::SetupOptions() {
     int stIdx;
     char buf[8];
 
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     periodIdx = gs->FindState("PERIOD");
     if (periodIdx < 0 || periodIdx > gs->maxStates - 1) {
         ShowError("Invalid gamestate %d", periodIdx);
@@ -578,7 +578,7 @@ void SCI_SchoolMenu::SetupOptions() {
     T_MenuHotspot** optPtr = options;
     do {
         charIdx = g_PeriodStateIdx_0046cb90;
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         if (charIdx < 0 || charIdx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", charIdx);
         }
@@ -589,7 +589,7 @@ void SCI_SchoolMenu::SetupOptions() {
         if (charVal == -1) {
             // Use default character
             charIdx = g_PeriodStateIdx_0046cb90;
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             if (charIdx < 0 || charIdx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", charIdx);
             }
@@ -606,7 +606,7 @@ void SCI_SchoolMenu::SetupOptions() {
             goto next_option;
         }
 
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         stIdx = gs->FindState(buf);
         if (stIdx < 0 || stIdx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", stIdx);
@@ -618,7 +618,7 @@ void SCI_SchoolMenu::SetupOptions() {
         stateVals = gs->stateValues;
         stVal = stateVals[stIdx];
 
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         stIdx = gs->FindState(buf);
         if (stIdx < 0 || stIdx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", stIdx);
@@ -654,7 +654,7 @@ void InitAllSchedule() {
         for (i = 1; i <= 0x12; i++) {
             char ch;
             if (charIdx == -1) {
-                GameState* gs = DAT_0046aa30;
+                GameState* gs = g_GameState_0046aa30;
                 int periodIdx = g_PeriodStateIdx_0046cb90;
                 if (periodIdx < 0 || periodIdx > gs->maxStates - 1) {
                     ShowError("Invalid gamestate %d", periodIdx);
@@ -666,7 +666,7 @@ void InitAllSchedule() {
 
             sprintf(buf, "%cRM%d", (int)ch, i);
 
-            GameState* gs = DAT_0046aa30;
+            GameState* gs = g_GameState_0046aa30;
             int stIdx = gs->FindState(buf);
             if (stIdx < 0 || stIdx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", stIdx);
@@ -700,7 +700,7 @@ int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
     if (action->button1 < 2) goto done;
 
     // Check NUM_ACTIONS state
-    gs = DAT_0046aa30;
+    gs = g_GameState_0046aa30;
     i = gs->FindState("NUM_ACTIONS");
     gs->ValidateIndex(i);
     stateVals = gs->stateValues;
@@ -765,7 +765,7 @@ char_click:
     {
         char ch;
         if (i == -1) {
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int charIdx = g_PeriodStateIdx_0046cb90;
             gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
@@ -775,14 +775,14 @@ char_click:
         }
 
         sprintf(buf, "%c_IN_DETENTION", (int)ch);
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         hitResult = gs->FindState(buf);
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         if (stateVals[hitResult] != 0) goto check_options;
 
         if (i == -1) {
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int charIdx = g_PeriodStateIdx_0046cb90;
             gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
@@ -791,14 +791,14 @@ char_click:
             ch = g_PeriodCharTable_0046cb94[i];
         }
         sprintf(buf, "%c_DETENTION_SUSPENSION", (int)ch);
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         hitResult = gs->FindState(buf);
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         if (stateVals[hitResult] > 2) goto check_options;
 
         if (i == -1) {
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int charIdx = g_PeriodStateIdx_0046cb90;
             gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
@@ -807,7 +807,7 @@ char_click:
             ch = g_PeriodCharTable_0046cb94[i];
         }
         sprintf(buf, "%c_CAPTURED", (int)ch);
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         hitResult = gs->FindState(buf);
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
@@ -840,14 +840,14 @@ char_click:
         }
 
         // Update global character selection
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         hitResult = g_PeriodStateIdx_0046cb90;
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         stateVals[hitResult] = i;
 
         hitResult = g_PeriodStateIdx_0046cb90;
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         ((Sprite*)DAT_0046af08)->ResetAnimation(stateVals[hitResult] + 1, 0);
@@ -865,13 +865,13 @@ char_click:
         // Load character-specific sound
         {
             T_MenuHotspot* selSpr = *selPtr;
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int periodIdx2 = g_PeriodStateIdx_0046cb90;
             int pIdx = gs->FindState("PERIOD");
             gs->ValidateIndex(pIdx);
             stateVals = gs->stateValues;
             int period = stateVals[pIdx];
-            int offset = (DAT_0046aa30)->GetStateValue(periodIdx2);
+            int offset = (g_GameState_0046aa30)->GetStateValue(periodIdx2);
             int fullIdx = period * 3 + offset;
             char* sndFile = GetSoundFilename(((int*)selSpr)[0x28 + fullIdx]);
             menuSound->Load(sndFile);
@@ -919,13 +919,13 @@ opt_click:
     // Load option sound
     {
         T_MenuHotspot* selOpt2 = *selPtr;
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         int charStateIdx = g_PeriodStateIdx_0046cb90;
         int pIdx = gs->FindState("PERIOD");
         gs->ValidateIndex(pIdx);
         stateVals = gs->stateValues;
         int period = stateVals[pIdx];
-        int offset = (DAT_0046aa30)->GetStateValue(charStateIdx);
+        int offset = (g_GameState_0046aa30)->GetStateValue(charStateIdx);
         int fullIdx = period * 3 + offset;
         char* sndFile = GetSoundFilename(((int*)selOpt2)[0x28 + fullIdx]);
         menuSound->Load(sndFile);
@@ -957,7 +957,7 @@ check_go:
     }
     if (hitResult != 0) {
         // Go button clicked - increment NUM_ACTIONS
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         i = gs->FindState("NUM_ACTIONS");
         gs->ValidateIndex(i);
         stateVals = gs->stateValues;
@@ -967,7 +967,7 @@ check_go:
         ProcessSpriteActions((void*)options[selectedOption]);
 
         // Determine next character
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         i = gs->FindState("PERIOD");
         nextChar = 0;
         gs->ValidateIndex(i);
@@ -975,21 +975,21 @@ check_go:
         int period = stateVals[i];
 
         if (period == 0x12) {
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             int charIdx = g_PeriodStateIdx_0046cb90;
             gs->ValidateIndex(charIdx);
             stateVals = gs->stateValues;
             if (g_PeriodCharTable_0046cb94[stateVals[charIdx]] == 'D') {
                 nextChar = 'P';
             } else {
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 charIdx = g_PeriodStateIdx_0046cb90;
                 gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
                 if (g_PeriodCharTable_0046cb94[stateVals[charIdx]] == 'S') {
                     nextChar = 'D';
                 } else {
-                    gs = DAT_0046aa30;
+                    gs = g_GameState_0046aa30;
                     charIdx = g_PeriodStateIdx_0046cb90;
                     gs->ValidateIndex(charIdx);
                     stateVals = gs->stateValues;
@@ -999,12 +999,12 @@ check_go:
                 }
             }
         } else if (period == 0x13) {
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             i = gs->FindState("D_CAPTURED");
             gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 int charIdx = g_PeriodStateIdx_0046cb90;
                 gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
@@ -1014,12 +1014,12 @@ check_go:
                 }
             }
 
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             i = gs->FindState("S_CAPTURED");
             gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 int charIdx = g_PeriodStateIdx_0046cb90;
                 gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
@@ -1029,12 +1029,12 @@ check_go:
                 }
             }
 
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             i = gs->FindState("P_CAPTURED");
             gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             if (stateVals[i] == 0) {
-                gs = DAT_0046aa30;
+                gs = g_GameState_0046aa30;
                 int charIdx = g_PeriodStateIdx_0046cb90;
                 gs->ValidateIndex(charIdx);
                 stateVals = gs->stateValues;
@@ -1047,14 +1047,14 @@ check_go:
 set_captured:
         if (nextChar != 0) {
             sprintf(capBuf, "%c_CAPTURED", (int)nextChar);
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             i = gs->FindState(capBuf);
             gs->ValidateIndex(i);
             stateVals = gs->stateValues;
             stateVals[i] = 1;
 
             sprintf(capBuf, "%c_IN_DETENTION", (int)nextChar);
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             i = gs->FindState(capBuf);
             gs->ValidateIndex(i);
             stateVals = gs->stateValues;
@@ -1124,7 +1124,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         if (count < 3 || period > 0x14 || period < 1) {
             ReportUnknownLabel("SCI_SchoolMenu");
         }
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         idx = gs->FindState("PERIOD");
         if (idx < 0 || idx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", idx);
@@ -1135,7 +1135,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             if (count > 0) {
                 char* p = buf1;
                 do {
-                    gs = DAT_0046aa30;
+                    gs = g_GameState_0046aa30;
                     idx = gs->FindState(p);
                     if (idx < 0 || idx > gs->maxStates - 1) {
                         ShowError("Invalid gamestate %d", idx);
@@ -1218,7 +1218,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         Parser::ProcessFile((Parser*)obj, this, 0);
 
         // Check if NUM_ACTIONS is 0 - if so, destroy back button
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         idx = gs->FindState("NUM_ACTIONS");
         if (idx < 0 || idx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", idx);
@@ -1237,14 +1237,14 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         if (count < 4 || period > 0x14 || period < 1) {
             ReportUnknownLabel("SCI_SchoolMenu");
         }
-        gs = DAT_0046aa30;
+        gs = g_GameState_0046aa30;
         idx = gs->FindState("PERIOD");
         if (idx < 0 || idx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", idx);
         }
         stateVals = gs->stateValues;
         if (stateVals[idx] == period) {
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             idx = gs->FindState(buf4);
             if (idx < 0 || idx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", idx);
@@ -1252,7 +1252,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             stateVals = gs->stateValues;
             stateVals[idx] = val1;
 
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             idx = gs->FindState(buf5);
             if (idx < 0 || idx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", idx);
@@ -1260,7 +1260,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
             stateVals = gs->stateValues;
             stateVals[idx] = val2;
 
-            gs = DAT_0046aa30;
+            gs = g_GameState_0046aa30;
             idx = gs->FindState(buf6);
             if (idx < 0 || idx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", idx);

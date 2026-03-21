@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <new>
 
-extern InputManager* DAT_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 
 /* Function start: 0x420CE0 */
 T_MenuHotspot::T_MenuHotspot(int param) : Parser()
@@ -73,7 +73,7 @@ void T_MenuHotspot::Update()
     }
 
     int mouseX = 0;
-    int* pMouse = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+    int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
     if (pMouse != 0) {
         mouseX = pMouse[1];
     }

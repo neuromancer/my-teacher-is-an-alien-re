@@ -31,10 +31,10 @@ extern void __fastcall FUN_00427880(void*);
 
 extern int DAT_004685ac;
 class InputManager;
-extern InputManager* DAT_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 extern "C" extern VBuffer* DAT_0046aa14;
 class MouseControl;
-extern MouseControl* DAT_0046aa18;
+extern MouseControl* g_Mouse_0046aa18;
 extern int DAT_004685a0;
 extern int DAT_00472bd8;
 extern int DAT_00472bdc;
@@ -546,13 +546,13 @@ void SC_FireAlarm::ProcessFrame() {
     field_10C->Do(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 1.0);
 
     if ((field_AC & 0xF) == 0) {
-        (DAT_0046aa18)->DrawCursor();
+        (g_Mouse_0046aa18)->DrawCursor();
         FUN_00427880((void*)DAT_004685ac);
 
         int bcRender = field_BC->Do(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 1.0);
         if (bcRender != 0) {
             int mouseVal = 0;
-            int* mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+            int* mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
             if (mousePtr != 0) {
                 mouseVal = *mousePtr;
             }
@@ -561,7 +561,7 @@ void SC_FireAlarm::ProcessFrame() {
 
         if (*(int*)(DAT_004685ac + 0xA8) != 0) {
             int mouseVal2 = 0;
-            int* mousePtr2 = *(int**)((char*)DAT_0046aa08 + 0x1A0);
+            int* mousePtr2 = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
             if (mousePtr2 != 0) {
                 mouseVal2 = *mousePtr2;
             }

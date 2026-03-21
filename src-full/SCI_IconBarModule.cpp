@@ -115,12 +115,12 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     targetRoom = 0;
 
     if (*g_StateString_0046aa2c != 0) {
-        targetRoom = DAT_0046aa3c->FindState(g_StateString_0046aa2c);
+        targetRoom = g_GameState2_0046aa3c->FindState(g_StateString_0046aa2c);
     }
 
     msgData = (int*)msg;
     if (msgData[5] != 0 && targetRoom != msgData[5]) {
-        char* roomName = DAT_0046aa3c->GetState(msgData[5]);
+        char* roomName = g_GameState2_0046aa3c->GetState(msgData[5]);
         strcpy(g_StateString_0046aa2c, roomName);
         changed = 1;
         targetRoom = msgData[5];
@@ -133,40 +133,40 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     }
 
     // Check PERIOD change
-    periodIdx = DAT_0046aa30->FindState("PERIOD");
-    if (periodIdx < 0 || DAT_0046aa30->maxStates - 1 < periodIdx) {
+    periodIdx = g_GameState_0046aa30->FindState("PERIOD");
+    if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
         ShowError("Invalid gamestate %d", periodIdx);
     }
-    if (DAT_0046aa30->stateValues[periodIdx] != field_B4) {
+    if (g_GameState_0046aa30->stateValues[periodIdx] != field_B4) {
         changed = 1;
-        periodIdx = DAT_0046aa30->FindState("PERIOD");
-        if (periodIdx < 0 || DAT_0046aa30->maxStates - 1 < periodIdx) {
+        periodIdx = g_GameState_0046aa30->FindState("PERIOD");
+        if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
             ShowError("Invalid gamestate %d", periodIdx);
         }
-        field_B4 = DAT_0046aa30->stateValues[periodIdx];
+        field_B4 = g_GameState_0046aa30->stateValues[periodIdx];
     }
 
     // Check room change
     if (targetRoom != field_B0) {
         changed = 1;
 
-        int prevIdx = DAT_0046aa30->FindState("PREVIOUSROOM");
-        if (prevIdx < 0 || DAT_0046aa30->maxStates - 1 < prevIdx) {
+        int prevIdx = g_GameState_0046aa30->FindState("PREVIOUSROOM");
+        if (prevIdx < 0 || g_GameState_0046aa30->maxStates - 1 < prevIdx) {
             ShowError("Invalid gamestate %d", prevIdx);
         }
-        DAT_0046aa30->stateValues[prevIdx] = field_B0;
+        g_GameState_0046aa30->stateValues[prevIdx] = field_B0;
 
-        int prevInstIdx = DAT_0046aa30->FindState("PREVIOUSROOMINSTANCE");
-        if (prevInstIdx < 0 || DAT_0046aa30->maxStates - 1 < prevInstIdx) {
+        int prevInstIdx = g_GameState_0046aa30->FindState("PREVIOUSROOMINSTANCE");
+        if (prevInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < prevInstIdx) {
             ShowError("Invalid gamestate %d", prevInstIdx);
         }
-        DAT_0046aa30->stateValues[prevInstIdx] = moduleParam;
+        g_GameState_0046aa30->stateValues[prevInstIdx] = moduleParam;
 
-        int roomInstIdx = DAT_0046aa30->FindState("ROOMINSTANCE");
-        if (roomInstIdx < 0 || DAT_0046aa30->maxStates - 1 < roomInstIdx) {
+        int roomInstIdx = g_GameState_0046aa30->FindState("ROOMINSTANCE");
+        if (roomInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < roomInstIdx) {
             ShowError("Invalid gamestate %d", roomInstIdx);
         }
-        DAT_0046aa30->stateValues[roomInstIdx] = targetRoom;
+        g_GameState_0046aa30->stateValues[roomInstIdx] = targetRoom;
         field_B0 = targetRoom;
 
         char roomPath[60];
@@ -181,11 +181,11 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     if (moduleParam != newInstance) {
         moduleParam = newInstance;
         changed = 1;
-        int roomInstIdx = DAT_0046aa30->FindState("ROOMINSTANCE");
-        if (roomInstIdx < 0 || DAT_0046aa30->maxStates - 1 < roomInstIdx) {
+        int roomInstIdx = g_GameState_0046aa30->FindState("ROOMINSTANCE");
+        if (roomInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < roomInstIdx) {
             ShowError("Invalid gamestate %d", roomInstIdx);
         }
-        DAT_0046aa30->stateValues[roomInstIdx] = newInstance;
+        g_GameState_0046aa30->stateValues[roomInstIdx] = newInstance;
     }
 
     if (changed != 0 || field_C0 == 0) {
@@ -246,12 +246,12 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Parse period-specific scene if no static override
         if (field_BC == 0) {
-            periodIdx = DAT_0046aa30->FindState("PERIOD");
-            if (periodIdx < 0 || DAT_0046aa30->maxStates - 1 < periodIdx) {
+            periodIdx = g_GameState_0046aa30->FindState("PERIOD");
+            if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
                 ShowError("Invalid gamestate %d", periodIdx);
             }
             sprintf(key, "[SEARCHSCREEN%d_PERIOD%2.2d]", moduleParam,
-                    DAT_0046aa30->stateValues[periodIdx]);
+                    g_GameState_0046aa30->stateValues[periodIdx]);
             ParseFile(this, g_StateString_0046aa2c, key);
             field_BC = 0;
         }
@@ -284,21 +284,21 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
     // Check character class
     int charIdx = g_PeriodStateIdx_0046cb90;
-    if (charIdx < 0 || DAT_0046aa30->maxStates - 1 < charIdx) {
+    if (charIdx < 0 || g_GameState_0046aa30->maxStates - 1 < charIdx) {
         ShowError("Invalid gamestate %d", charIdx);
     }
     char classLabel[8];
-    sprintf(classLabel, "%c_CLASS", (int)g_PeriodCharTable_0046cb94[DAT_0046aa30->stateValues[charIdx]]);
-    int classIdx = DAT_0046aa30->FindState(classLabel);
-    if (classIdx < 0 || DAT_0046aa30->maxStates - 1 < classIdx) {
+    sprintf(classLabel, "%c_CLASS", (int)g_PeriodCharTable_0046cb94[g_GameState_0046aa30->stateValues[charIdx]]);
+    int classIdx = g_GameState_0046aa30->FindState(classLabel);
+    if (classIdx < 0 || g_GameState_0046aa30->maxStates - 1 < classIdx) {
         ShowError("Invalid gamestate %d", classIdx);
     }
-    if (DAT_0046aa30->stateValues[classIdx] == targetRoom) {
-        int wentIdx = DAT_0046aa30->FindState("WENT_TO_CLASS");
-        if (wentIdx < 0 || DAT_0046aa30->maxStates - 1 < wentIdx) {
+    if (g_GameState_0046aa30->stateValues[classIdx] == targetRoom) {
+        int wentIdx = g_GameState_0046aa30->FindState("WENT_TO_CLASS");
+        if (wentIdx < 0 || g_GameState_0046aa30->maxStates - 1 < wentIdx) {
             ShowError("Invalid gamestate %d", wentIdx);
         }
-        DAT_0046aa30->stateValues[wentIdx] = 1;
+        g_GameState_0046aa30->stateValues[wentIdx] = 1;
     }
 
     // Call IconBar::Init
@@ -325,10 +325,10 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
         SetVideoRes(field_C8.field_0, field_C8.field_4);
 
         // ZBufferManager queue cleanup
-        if (DAT_0046aa24->m_state != 2) {
-            DAT_0046aa24->m_state = 2;
+        if (g_ZBufferManager_0046aa24->m_state != 2) {
+            g_ZBufferManager_0046aa24->m_state = 2;
 
-            ZBQueue* queue = DAT_0046aa24->m_queueA0;
+            ZBQueue* queue = g_ZBufferManager_0046aa24->m_queueA0;
             if (queue->head != 0) {
                 queue->current = queue->head;
                 while (queue->head != 0) {
@@ -340,7 +340,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                 }
             }
 
-            queue = DAT_0046aa24->m_queueA4;
+            queue = g_ZBufferManager_0046aa24->m_queueA4;
             if (queue->head != 0) {
                 queue->current = queue->head;
                 while (queue->head != 0) {
@@ -352,12 +352,12 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                 }
             }
 
-            DAT_0046aa24->m_queue9c->ClearList();
-            DAT_0046aa24->m_palette = 0;
+            g_ZBufferManager_0046aa24->m_queue9c->ClearList();
+            g_ZBufferManager_0046aa24->m_palette = 0;
         }
 
-        if (DAT_0046aa18->m_sprite != 0) {
-            DAT_0046aa18->m_sprite->ResetAnimation(0, 0);
+        if (g_Mouse_0046aa18->m_sprite != 0) {
+            g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
         }
     }
 
@@ -366,10 +366,10 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
     // Apply palette if set
     if (field_E4 != 0) {
-        if (DAT_0046aa24->m_palette != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
             WriteToLog("ddouble palette");
         }
-        DAT_0046aa24->m_palette = (Palette*)field_E4;
+        g_ZBufferManager_0046aa24->m_palette = (Palette*)field_E4;
     }
 }
 
@@ -403,11 +403,11 @@ skip_cursor:
         i = i - 1;
     } while (i != 0);
 
-    if (DAT_0046aa18->m_sprite != 0) {
-        DAT_0046aa18->m_sprite->ResetAnimation(0, 0);
+    if (g_Mouse_0046aa18->m_sprite != 0) {
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
     }
 
-    DAT_0046aa18->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
 
     if (mode == 0) {
         IconBar::ShutDown(msg);
@@ -489,11 +489,11 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
             }
 
             if (skipActionsCount == 0) {
-                idx = DAT_0046aa30->FindLabel("NUM_ACTIONS");
-                if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+                idx = g_GameState_0046aa30->FindLabel("NUM_ACTIONS");
+                if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
-                DAT_0046aa30->stateValues[idx]++;
+                g_GameState_0046aa30->stateValues[idx]++;
             }
 
             Exit(msg);
@@ -515,11 +515,11 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
             }
         }
     } else if (((int*)msg)[10] >= 2) {
-        idx = DAT_0046aa30->FindLabel("NUM_ACTIONS");
-        if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+        idx = g_GameState_0046aa30->FindLabel("NUM_ACTIONS");
+        if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
-        DAT_0046aa30->stateValues[idx]++;
+        g_GameState_0046aa30->stateValues[idx]++;
     }
 
     return 1;
@@ -562,7 +562,7 @@ void SCI_IconBarModule::UpdateCursor() {
     int iconIdx;
     int hotspot;
 
-    InputState* pMouse = DAT_0046aa08->pMouse;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
     mouseY = 0;
     if (pMouse != 0) {
         mouseY = pMouse->y;
@@ -577,10 +577,10 @@ void SCI_IconBarModule::UpdateCursor() {
 
     if (DAT_0046a6e4 != 0) {
         hotspot = ((T_Object*)DAT_0046a6e4)->itemId + 0x1d;
-        if (DAT_0046aa18->m_sprite == 0) {
+        if (g_Mouse_0046aa18->m_sprite == 0) {
             goto done;
         }
-        DAT_0046aa18->m_sprite->ResetAnimation(hotspot, 0);
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(hotspot, 0);
     } else if (iconIdx != -1) {
         Sprite* icon = icons[iconIdx];
         int state = 0;
@@ -589,19 +589,19 @@ void SCI_IconBarModule::UpdateCursor() {
         if (anim != 0) {
             state = *(int*)((char*)anim + 0xb0);
         }
-        if (DAT_0046aa18->m_sprite == 0) {
+        if (g_Mouse_0046aa18->m_sprite == 0) {
             goto done;
         }
-        DAT_0046aa18->m_sprite->ResetAnimation(state, 0);
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(state, 0);
     } else {
-        if (DAT_0046aa18->m_sprite == 0) {
+        if (g_Mouse_0046aa18->m_sprite == 0) {
             goto done;
         }
-        DAT_0046aa18->m_sprite->ResetAnimation(0, 0);
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
     }
 
 done:
-    DAT_0046aa18->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x4021C0 */
@@ -621,11 +621,11 @@ void SCI_IconBarModule::Serialize(void* param) {
         fwrite(g_StateString_0046aa2c, 0x40, 1, fp);
     } else {
         /* LOAD */
-        *DAT_0046aa00 = 0;
-        fread(DAT_0046aa00, strLen, 1, fp);
+        *g_Buffer_0046aa00 = 0;
+        fread(g_Buffer_0046aa00, strLen, 1, fp);
 
-        if (strcmp(DAT_0046aa00, "INVENTORY_INFO") != 0) {
-            ShowError("SCI_SearchScreen::Serialize() - Error Loading (Wrong ID '%s')", DAT_0046aa00);
+        if (strcmp(g_Buffer_0046aa00, "INVENTORY_INFO") != 0) {
+            ShowError("SCI_SearchScreen::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
         }
         fread(g_StateString_0046aa2c, 0x40, 1, fp);
     }

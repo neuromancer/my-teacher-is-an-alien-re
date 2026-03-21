@@ -99,13 +99,13 @@ void RockThrower::UpdateProjectiles() {
     int i;
 
     do {
-        if (g_InputManager_00436968->mouseValid == 0) {
+        if (g_InputManager_0046aa08->mouseValid == 0) {
             break;
         }
 
         DrawCrosshairs();
 
-        pMouse = g_InputManager_00436968->pMouse;
+        pMouse = g_InputManager_0046aa08->pMouse;
         buttonState = 0;
         if (pMouse != 0) {
             buttonState = pMouse->buttons & 1;

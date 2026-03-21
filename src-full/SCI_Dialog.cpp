@@ -9,7 +9,7 @@
 #include "Parser.h"
 #include "SC_Question.h"
 #include "GameState.h"
-extern "C" extern GameState* DAT_0046aa30;
+extern "C" extern GameState* g_GameState_0046aa30;
 #include "Message.h"
 #include "globals.h"
 #include "InputManager.h"
@@ -211,7 +211,7 @@ int SCI_Dialog::AddMessage(SC_Message* msg) {
     } else {
         if (msg->mouseX >= 2) {
             msg->targetAddress = 9;
-            pMouse = g_InputManager_00436968->pMouse;
+            pMouse = g_InputManager_0046aa08->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
                 msg->sourceAddress = -1;
             } else {
@@ -362,7 +362,7 @@ void SCI_Dialog::Update(int param1, int param2) {
 
     IconBar::Update(param1, param2);
     if (field_600 != 0) field_600->Draw();
-    g_Mouse_00436978->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
 
     if (field_614 != 0) {
         field_614->Update(18, 10);
@@ -383,8 +383,8 @@ void SCI_Dialog::Update(int param1, int param2) {
     if (field_604 != 0) field_604->Draw();
 
     mouseIndex = -1;
-    if (g_InputManager_00436968->pMouse != 0 && g_InputManager_00436968->pMouse->y >= 10) {
-        mouseIndex = (g_InputManager_00436968->pMouse->y - 10) / 34;
+    if (g_InputManager_0046aa08->pMouse != 0 && g_InputManager_0046aa08->pMouse->y >= 10) {
+        mouseIndex = (g_InputManager_0046aa08->pMouse->y - 10) / 34;
     }
 
     field_610->current = field_610->head;
@@ -537,7 +537,7 @@ void ResetSpriteStates()
     *(int*)(name + 4) = *(int*)(g_SpriteString + 4);
 
     do {
-        GameState* gs = DAT_0046aa30;
+        GameState* gs = g_GameState_0046aa30;
         name[6] = digit;
         int idx = gs->FindState(name);
         digit++;

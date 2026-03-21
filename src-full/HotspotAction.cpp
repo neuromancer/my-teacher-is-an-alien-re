@@ -213,7 +213,7 @@ int HotspotAction::CheckConditions() {
                 data = 0;
             }
             if (data[0] != 2) goto notType2;
-            result = (DAT_0046aa30)->FUN_00433bb0(data);
+            result = (g_GameState_0046aa30)->FUN_00433bb0(data);
             goto afterCheck;
 notType2:
             ShowError("illegal message 15");
@@ -324,7 +324,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "ROLLOVER") == 0) {
         sscanf(line, " %s %s", label, buf_C0);
-        local_14 = ((GameState*)DAT_0046aa18)->FUN_00432e20(buf_C0);
+        local_14 = ((GameState*)g_Mouse_0046aa18)->FUN_00432e20(buf_C0);
         field_B0 = local_14;
         ExtractQuotedString(line, field_B4, 0x40);
     }
@@ -348,7 +348,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->addressType = 2;
-        sa->addressValue = (DAT_0046aa30)->FindState("PERIOD");
+        sa->addressValue = (g_GameState_0046aa30)->FindState("PERIOD");
         sa->fromType = 0x24;
         sa->fromValue = hotspotId;
         sa->instruction = 0x11;
@@ -633,7 +633,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             local_14 = 0;
         }
         {
-            GameState* gs = DAT_0046aa30;
+            GameState* gs = g_GameState_0046aa30;
             int idx = g_PeriodStateIdx_0046cb90;
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
@@ -654,7 +654,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             queue108 = new LinkedList();
         }
         sa = new SpriteAction(2,
-            (DAT_0046aa30)->FindState(local_40),
+            (g_GameState_0046aa30)->FindState(local_40),
             field_90, field_94,
             DAT_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
@@ -691,7 +691,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             queue108 = new LinkedList();
         }
         sa = new SpriteAction(2,
-            (DAT_0046aa30)->FindState(buf_C0),
+            (g_GameState_0046aa30)->FindState(buf_C0),
             0, 0,
             DAT_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
@@ -728,7 +728,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             queue100 = new LinkedList();
         }
         sa = new SpriteAction(2,
-            (DAT_0046aa30)->FindState(buf_C0),
+            (g_GameState_0046aa30)->FindState(buf_C0),
             0, 0,
             DAT_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
@@ -800,7 +800,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             queue100 = new LinkedList();
         }
         sa = new SpriteAction(2,
-            (DAT_0046aa30)->FindState("NUM_ACTIONS"),
+            (g_GameState_0046aa30)->FindState("NUM_ACTIONS"),
             field_90, field_94, 0x11, 0, 0, 0, 0, 0);
         list = queue100;
         list->ResetForSortedAdd(sa);

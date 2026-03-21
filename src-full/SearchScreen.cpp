@@ -101,22 +101,22 @@ void SearchScreen::Update(int param1, int param2) {
         spr->Do(spr->loc_x, spr->loc_y, 1.0);
     }
     for (idx = scrollOffset; idx < scrollOffset + 0xe; idx++) {
-        stateStr = g_GameState_00436998->GetState(idx);
+        stateStr = g_GameState_0046aa30->GetState(idx);
         if (stateStr != 0) {
-            stateStr = g_GameState_00436998->GetState(idx);
-            sprintf(g_Buffer_00436960, "%s", stateStr);
+            stateStr = g_GameState_0046aa30->GetState(idx);
+            sprintf(g_Buffer_0046aa00, "%s", stateStr);
         } else {
-            sprintf(g_Buffer_00436960, "\"NOLABEL\"");
+            sprintf(g_Buffer_0046aa00, "\"NOLABEL\"");
         }
         y = (idx - scrollOffset + 1) * rowHeight + textY;
-        g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX, y, 10000, 8);
+        g_ZBufferManager_0046aa24->ShowSubtitle(g_Buffer_0046aa00, textX, y, 10000, 8);
 
-        pGameState = g_GameState_00436998;
+        pGameState = g_GameState_0046aa30;
         if (idx > 0 && pGameState->maxStates <= idx) {
             ShowError("GameState Error  #%d", 1);
         }
-        sprintf(g_Buffer_00436960, "%d", pGameState->stateValues[idx]);
-        g_ZBufferManager_0043698c->ShowSubtitle(g_Buffer_00436960, textX + 0x15e, y, 10000, 8);
+        sprintf(g_Buffer_0046aa00, "%d", pGameState->stateValues[idx]);
+        g_ZBufferManager_0046aa24->ShowSubtitle(g_Buffer_0046aa00, textX + 0x15e, y, 10000, 8);
 
         rowIdx = idx - scrollOffset;
         localRect.left = 0;
@@ -126,10 +126,10 @@ void SearchScreen::Update(int param1, int param2) {
 
         if (selectedRow != idx) {
         } else {
-            g_ZBufferManager_0043698c->DrawRect(0, localRect.top, 0x27f, localRect.bottom, 0x28, 8, 1);
+            g_ZBufferManager_0046aa24->DrawRect(0, localRect.top, 0x27f, localRect.bottom, 0x28, 8, 1);
         }
     }
-    g_Mouse_00436978->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x4100E0 */ /* DEMO ONLY - no full game match */
@@ -146,7 +146,7 @@ int SearchScreen::AddMessage(SC_Message* msg) {
         switch (msg->lastKey) {
         case 0x44:
             stateIdx = selectedRow;
-            pGameState = g_GameState_00436998;
+            pGameState = g_GameState_0046aa30;
             if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
                 ShowError("GameState Error  #%d", 1);
             }
@@ -154,7 +154,7 @@ int SearchScreen::AddMessage(SC_Message* msg) {
             return 1;
         case 0x49:
             stateIdx = selectedRow;
-            pGameState = g_GameState_00436998;
+            pGameState = g_GameState_0046aa30;
             if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
                 ShowError("GameState Error  #%d", 1);
             }
@@ -205,7 +205,7 @@ int SearchScreen::AddMessage(SC_Message* msg) {
         selectedRow = selectedRow + scrollOffset;
         return 1;
     }
-    if (scrollOffset + 0xe < g_GameState_00436998->maxStates - 1) {
+    if (scrollOffset + 0xe < g_GameState_0046aa30->maxStates - 1) {
         scrollOffset = scrollOffset + 1;
     }
     if (selectedRow < scrollOffset) {
@@ -235,7 +235,7 @@ int SearchScreen::Exit(SC_Message* msg) {
         return 1;
     case 0xd:
         stateIdx = msg->sourceAddress;
-        pGameState = g_GameState_00436998;
+        pGameState = g_GameState_0046aa30;
         if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
@@ -256,7 +256,7 @@ int SearchScreen::Exit(SC_Message* msg) {
         return 1;
     case 0xe:
         stateIdx = msg->sourceAddress;
-        pGameState = g_GameState_00436998;
+        pGameState = g_GameState_0046aa30;
         if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
@@ -264,7 +264,7 @@ int SearchScreen::Exit(SC_Message* msg) {
         return 1;
     case 0xf:
         stateIdx = msg->sourceAddress;
-        pGameState = g_GameState_00436998;
+        pGameState = g_GameState_0046aa30;
         if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
@@ -272,7 +272,7 @@ int SearchScreen::Exit(SC_Message* msg) {
         return 1;
     case 0x10:
         stateIdx = msg->sourceAddress;
-        pGameState = g_GameState_00436998;
+        pGameState = g_GameState_0046aa30;
         if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
@@ -280,7 +280,7 @@ int SearchScreen::Exit(SC_Message* msg) {
         return 1;
     case 0x11:
         stateIdx = msg->sourceAddress;
-        pGameState = g_GameState_00436998;
+        pGameState = g_GameState_0046aa30;
         if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
         }
@@ -288,7 +288,7 @@ int SearchScreen::Exit(SC_Message* msg) {
         return 1;
     case 0x12:
         param1 = msg->param1;
-        pGameState = g_GameState_00436998;
+        pGameState = g_GameState_0046aa30;
         stateIdx = msg->sourceAddress;
         if (stateIdx > 0 && pGameState->maxStates <= stateIdx) {
             ShowError("GameState Error  #%d", 1);
@@ -299,10 +299,10 @@ int SearchScreen::Exit(SC_Message* msg) {
         SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
         return 1;
     case 0x1c:
-        { int mode = 1; g_GameState_00436998->Serialize(&mode); }
+        { int mode = 1; g_GameState_0046aa30->Serialize(&mode); }
         return 1;
     case 0x1d:
-        { int mode = 2; g_GameState_00436998->Serialize(&mode); }
+        { int mode = 2; g_GameState_0046aa30->Serialize(&mode); }
         return 1;
     default:
         return 0;

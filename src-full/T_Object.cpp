@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" extern GameState* DAT_0046aa30;
-extern char* DAT_0046aa00;
+extern "C" extern GameState* g_GameState_0046aa30;
+extern char* g_Buffer_0046aa00;
 
 
 /* Function start: 0x40C630 */
@@ -75,10 +75,10 @@ void T_Object::Display(int x, int y, int visible)
 void T_Object::Reset()
 {
     field_90 |= 2;
-    sprintf(DAT_0046aa00, "OBJ%3.3d", itemId);
+    sprintf(g_Buffer_0046aa00, "OBJ%3.3d", itemId);
 
-    GameState* gs = DAT_0046aa30;
-    int idx = gs->FindState(DAT_0046aa00);
+    GameState* gs = g_GameState_0046aa30;
+    int idx = gs->FindState(g_Buffer_0046aa00);
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }

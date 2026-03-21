@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "ZBufferManager.h"
 #include "SC_CombatBase.h"
 #include "GameState.h"
 #include "InputManager.h"
@@ -24,25 +25,25 @@
 // Sorted by address 0x00436960 - 0x004369A4
 
 SC_CombatBase* g_CombatEngine_00435eb0 = 0; // Combat engine (EngineA or EngineB)
-char* g_Buffer_00436960 = 0;
+char* g_Buffer_0046aa00 = 0;
 char* g_Buffer_00436964 = 0;
-InputManager* g_InputManager_00436968 = 0;
+InputManager* g_InputManager_0046aa08 = 0;
 Sound* g_Sound_0043696c = 0;
 #include "GameConfig.h"
 GameConfig* g_GameConfig_00436970 = 0;
 VBuffer* g_WorkBuffer_00436974 = 0;
-MouseControl* g_Mouse_00436978 = 0;
+MouseControl* g_Mouse_0046aa18 = 0;
 CDData* g_CDData_0043697c = 0;
 Timer* g_Timer_00436980 = 0;
 TimedEventPool* g_TimedEventPool1_00436984 = 0;
 TimedEventPool* g_TimedEventPool2_00436988 = 0;
-ZBufferManager* g_ZBufferManager_0043698c = 0;
+ZBufferManager* g_ZBufferManager_0046aa24 = 0;
 AnimatedAsset* g_TextManager_00436990 = 0;
 char* g_StateString_0046aa2c = 0;
-GameState* g_GameState_00436998 = 0;
+extern "C" GameState* g_GameState_0046aa30 = 0;
 GameState* g_GameState3_0043699c = 0;
 GameState* g_GameState4_004369a0 = 0;
-GameState* g_GameState2_004369a4 = 0;
+GameState* g_GameState2_0046aa3c = 0;
 
 // Sprite* g_Sprite_004360a0 = 0; // Moved/Removed to match address 0x4360A0 (EngineB/mCNavigator)
 
@@ -310,10 +311,6 @@ GameState* DAT_0046aa38 = 0;                             // 0x0046aa38
 
 // SCI_Inventory globals
 void* DAT_0046a6e4 = 0;                                  // 0x0046a6e4
-char* DAT_0046aa00 = 0;                                  // 0x0046aa00
-InputManager* DAT_0046aa08 = 0;                          // 0x0046aa08
-MouseControl* DAT_0046aa18 = 0;                          // 0x0046aa18
-ZBufferManager* DAT_0046aa24 = 0;                        // 0x0046aa24
 int DAT_00473334 = 0;                                    // 0x00473334
 int DAT_004733e8 = 0;                                    // 0x004733e8
 
@@ -322,14 +319,12 @@ Sound* DAT_0046AA0C = 0;                                 // 0x0046aa0c
 
 // Full game globals
 GameState* g_StringTable_0046aa34 = 0;                   // 0x0046aa34
-GameState* DAT_0046aa3c = 0;                             // 0x0046aa3c
 
 // SC_Cinematic + SC_SelectHotSpot globals
 extern "C" {
     int DAT_0046a6ec = 0;                                // 0x0046a6ec
     void* DAT_0046aa10 = 0;                              // 0x0046aa10
     VBuffer* DAT_0046aa14 = 0;                           // 0x0046aa14
-    GameState* DAT_0046aa30 = 0;                         // 0x0046aa30
     char DAT_00473400 = 0;                               // 0x00473400
     char DAT_00472c70[256] = {0};                        // 0x00472c70
     char DAT_00472cb0[256] = {0};                        // 0x00472cb0

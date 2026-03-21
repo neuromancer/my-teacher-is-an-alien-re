@@ -28,14 +28,14 @@ extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, un
 extern "C" {
     extern int DAT_0046a6ec;        // Timer manager pointer
     extern void* DAT_0046aa10;      // GameConfig pointer
-    extern GameState* DAT_0046aa30;      // Game state pointer
+    extern GameState* g_GameState_0046aa30;      // Game state pointer
     extern int g_WaitForInputValue_004373bc;        // WaitForInput flag
     extern char DAT_00472c70[];     // Animation filename buffer
     extern char DAT_00472cb0[];     // Animation filename buffer 2
 }
 
 // C++ linkage globals
-extern InputManager* DAT_0046aa08;          // InputManager pointer
+extern InputManager* g_InputManager_0046aa08;          // InputManager pointer
 
 #include "GameLoopHelper.h"
 
@@ -266,8 +266,8 @@ void Animation::Play(char *filename, unsigned int flags) {
     BlankScreen();
   }
 
-  if (DAT_0046aa30 != 0) {
-    int* gs = (int*)DAT_0046aa30;
+  if (g_GameState_0046aa30 != 0) {
+    int* gs = (int*)g_GameState_0046aa30;
     if (gs[0x98/4] - 1 < 4) {
       ShowError("Invalid gamestate %d", gs[0x98/4] - 1);
     }
@@ -314,10 +314,10 @@ void Animation::MainLoop() {
       }
 
       while (1) {
-        if ((DAT_0046aa08)->Refresh(1)) goto end_loop;
+        if ((g_InputManager_0046aa08)->Refresh(1)) goto end_loop;
 
         if (!(flags & 4)) {
-          InputState *pMouse = (DAT_0046aa08)->pMouse;
+          InputState *pMouse = (g_InputManager_0046aa08)->pMouse;
           int hasButton = 0;
           if (pMouse != 0) {
             hasButton = (pMouse->ext2 >= 2) ? 1 : 0;

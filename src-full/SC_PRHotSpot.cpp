@@ -10,7 +10,7 @@
 extern "C" void ShowError(const char* format, ...);
 extern void __fastcall FUN_0042b0f0(void*);
 
-extern InputManager* DAT_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 
 /* Function start: 0x429B60 */
 SC_PRHotSpot::SC_PRHotSpot(int param_1, int param_2) : Parser()
@@ -77,7 +77,7 @@ void SC_PRHotSpot::Update()
 
     if (state == 1 || state == 2) {
         int mouseY = 0;
-        InputState* pMouse = DAT_0046aa08->pMouse;
+        InputState* pMouse = g_InputManager_0046aa08->pMouse;
         if (pMouse != 0) {
             mouseY = pMouse->y;
         }

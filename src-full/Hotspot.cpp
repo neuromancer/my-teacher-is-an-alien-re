@@ -18,7 +18,7 @@ extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 
 extern void FreeMemory(void*);
 
-extern "C" GameState* DAT_0046aa30;
+extern "C" GameState* g_GameState_0046aa30;
 
 #include "HotspotAction.h"
 #include "GameState.h"
@@ -322,7 +322,7 @@ int T_Hotspot::LBLParse(char* param_1)
         }
 
         // Look up ROOMINSTANCE gamestate
-        int* gs = (int*)DAT_0046aa30;
+        int* gs = (int*)g_GameState_0046aa30;
         int gsIdx = ((GameState*)gs)->FindState("ROOMINSTANCE");
         if (gsIdx < 0 || gs[0x98 / 4] - 1 < gsIdx) {
             ShowError("Invalid gamestate %d", gsIdx);

@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 extern "C" void WriteToLog(const char*, ...);
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
@@ -99,7 +99,7 @@ void SC_Combat::OnProcessEnd() {
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }
     if (field_0x104 != 0) {
-        ZBufferManager* mgr = (ZBufferManager*)DAT_0046aa24;
+        ZBufferManager* mgr = (ZBufferManager*)g_ZBufferManager_0046aa24;
         if (*(int*)((char*)mgr + 0xA8) != 0) {
             WriteToLog("double palette");
         }

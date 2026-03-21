@@ -94,12 +94,12 @@ int ZBuffer::ProcessMessage(Message* msg)
     timer.Reset();
     switch (msg->priority) {
     case 3:
-        g_ZBufferManager_0043698c->m_flags |= 2;
-        g_ZBufferManager_0043698c->timer.Reset();
+        g_ZBufferManager_0046aa24->m_flags |= 2;
+        g_ZBufferManager_0046aa24->timer.Reset();
         return 1;
     case 0xe:
     {
-        ZBufferManager* mgr = g_ZBufferManager_0043698c;
+        ZBufferManager* mgr = g_ZBufferManager_0046aa24;
         mgr->m_state = 2;
         ZBQueue* queue = mgr->m_queueA0;
         if (queue->head != 0) {
@@ -137,7 +137,7 @@ int ZBuffer::ProcessMessage(Message* msg)
     }
     case 0xf:
     {
-        ZBufferManager* mgr = g_ZBufferManager_0043698c;
+        ZBufferManager* mgr = g_ZBufferManager_0046aa24;
         mgr->m_state = 1;
         ZBQueue* queue = mgr->m_queueA0;
         if (queue->head != 0) {

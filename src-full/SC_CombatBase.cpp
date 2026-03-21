@@ -17,8 +17,8 @@
 #include <string.h>
 
 class InputManager;
-extern InputManager* DAT_0046aa08;
-extern "C" extern GameState* DAT_0046aa30;
+extern InputManager* g_InputManager_0046aa08;
+extern "C" extern GameState* g_GameState_0046aa30;
 
 #include "CombatSprite.h"
 #include "mCNavigator.h"
@@ -64,7 +64,7 @@ int SC_CombatBase::StopAndCleanup()
 
     ProcessFrame();
 
-    GameState* gs = DAT_0046aa30;
+    GameState* gs = g_GameState_0046aa30;
     if (gs->maxStates - 1 < 4) {
         ShowError("Invalid gamestate %d", 4);
     }
@@ -86,7 +86,7 @@ void SC_CombatBase::ProcessFrame()
     int* vtbl60 = (int*)*obj60;
     ((void (__fastcall *)(int*, int))vtbl60[5])(obj60, 0);
 
-    int* pMouse = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+    int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
     if (pMouse == 0) {
         ((int*)DAT_0046ae60)[0x2a] = 0;
     } else {
@@ -238,7 +238,7 @@ int SC_CombatBase::LBLParse(char* line)
         Parser::ProcessFile((Parser*)DAT_0046ae70, this, (char*)0);
     } else if (strcmp(token, "SET_GAMESTATE") == 0) {
         sscanf(line, " %s %s %d", token, arg, &value);
-        GameState* gs = DAT_0046aa30;
+        GameState* gs = g_GameState_0046aa30;
         int idx = gs->FindState(arg);
         if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);

@@ -9,10 +9,10 @@
 #include "Memory.h"
 #include <string.h>
 
-extern "C" extern GameState* DAT_0046aa30;
+extern "C" extern GameState* g_GameState_0046aa30;
 #include "Timer.h"
-extern char* DAT_0046aa00;
-extern void* DAT_0046aa18;
+extern char* g_Buffer_0046aa00;
+extern void* g_Mouse_0046aa18;
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
@@ -20,8 +20,8 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 NavCrystal::NavCrystal(int id) {
     memset(&crystalId, 0, 0x114 * 4);
     crystalId = id;
-    sprintf(DAT_0046aa00, "puz\\navcrystal\\crytls_%d.smk", id + 1);
-    sprite = new Sprite(DAT_0046aa00);
+    sprintf(g_Buffer_0046aa00, "puz\\navcrystal\\crytls_%d.smk", id + 1);
+    sprite = new Sprite(g_Buffer_0046aa00);
     sprite->flags |= 0x40;
     sprite->priority = 1;
     sprite->ConfigStates(4);

@@ -53,7 +53,7 @@ void SC_Pods::Init(SC_Message* msg) {
         ShowLoadingScreen();
     }
 
-    ZBufferManager* zbm = DAT_0046aa24;
+    ZBufferManager* zbm = g_ZBufferManager_0046aa24;
     if (zbm->m_state != 1) {
         zbm->m_state = 1;
 
@@ -100,25 +100,25 @@ void SC_Pods::Init(SC_Message* msg) {
 
     // Practice mode setup
     if (savedCommand == 0x2b) {
-        int idx = DAT_0046aa30->FindState("OBJ011");
-        if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+        int idx = g_GameState_0046aa30->FindState("OBJ011");
+        if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
-        DAT_0046aa30->stateValues[idx] = 1;
+        g_GameState_0046aa30->stateValues[idx] = 1;
 
-        int kidIdx = DAT_0046aa30->FindState("KID");
-        if (kidIdx < 0 || DAT_0046aa30->maxStates - 1 < kidIdx) {
+        int kidIdx = g_GameState_0046aa30->FindState("KID");
+        if (kidIdx < 0 || g_GameState_0046aa30->maxStates - 1 < kidIdx) {
             ShowError("Invalid gamestate %d", kidIdx);
         }
 
-        int kidVal = DAT_0046aa30->stateValues[kidIdx];
+        int kidVal = g_GameState_0046aa30->stateValues[kidIdx];
         int periodVal = (kidVal == 1) ? 0x0e : 0x10;
 
-        int periodIdx = DAT_0046aa30->FindState("PERIOD");
-        if (periodIdx < 0 || DAT_0046aa30->maxStates - 1 < periodIdx) {
+        int periodIdx = g_GameState_0046aa30->FindState("PERIOD");
+        if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
             ShowError("Invalid gamestate %d", periodIdx);
         }
-        DAT_0046aa30->stateValues[periodIdx] = periodVal;
+        g_GameState_0046aa30->stateValues[periodIdx] = periodVal;
     }
 
     // Create sound table

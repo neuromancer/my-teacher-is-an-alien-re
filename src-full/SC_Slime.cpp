@@ -11,13 +11,13 @@
 #include <new.h>
 #include <string.h>
 #include "GameState.h"
-extern "C" extern GameState* DAT_0046aa30;
+extern "C" extern GameState* g_GameState_0046aa30;
 
 extern "C" void SetVideoRes(int, int);
 #include "string.h"
 extern "C" void WriteToLog(const char* format, ...);
 class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern int DAT_00468bbc;
 
 #include "SlimeTable.h"
@@ -81,7 +81,7 @@ void SC_Slime::Init(SC_Message* msg)
     }
 
     if (palette != 0) {
-        int* palSlot = (int*)((int)DAT_0046aa24 + 0xa8);
+        int* palSlot = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
         if (*palSlot != 0) {
             WriteToLog("ddouble palette");
         }
@@ -307,15 +307,15 @@ void SC_Slime::ResetSprites()
     invSlot3.right = 0xfb;
     invSlot3.bottom = 0xb9;
 
-    extern InputManager* DAT_0046aa08;
-    if (DAT_0046aa08 != 0) {
-        (DAT_0046aa08)->Refresh(1);
+    extern InputManager* g_InputManager_0046aa08;
+    if (g_InputManager_0046aa08 != 0) {
+        (g_InputManager_0046aa08)->Refresh(1);
     }
 
     if (spriteBC != 0) {
-        extern InputManager* DAT_0046aa08;
+        extern InputManager* g_InputManager_0046aa08;
         int mouseX = 0;
-        int* pMouse = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+        int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
         if (pMouse != 0) {
             mouseX = *pMouse;
         }
@@ -365,19 +365,19 @@ void SC_Slime::SendResultMessage() {
             // Alternate win — send room switch + add 30 to NUM_ACTIONS
             ((int*)field_A8)[0] = 0x20;
             ((int*)field_A8)[1] = 2;
-            idx = DAT_0046aa30->FindState("NUM_ACTIONS");
-            if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+            idx = g_GameState_0046aa30->FindState("NUM_ACTIONS");
+            if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
-            DAT_0046aa30->stateValues[idx] += 0x14;
+            g_GameState_0046aa30->stateValues[idx] += 0x14;
             goto enqueue;
         }
         // Lost — add 30 to NUM_ACTIONS
-        idx = DAT_0046aa30->FindState("NUM_ACTIONS");
-        if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+        idx = g_GameState_0046aa30->FindState("NUM_ACTIONS");
+        if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
-        DAT_0046aa30->stateValues[idx] += 0x1E;
+        g_GameState_0046aa30->stateValues[idx] += 0x1E;
 
     enqueue:
         EnqueueSpriteAction((void*)field_A8);

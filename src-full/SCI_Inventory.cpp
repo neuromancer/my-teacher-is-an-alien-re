@@ -16,18 +16,18 @@ extern "C" char* GetSoundFilename(int handle);
 extern MsgList* g_MsgList; // DAT_0046a6dc
 #define g_InventoryList ((LinkedList*)g_MsgList)
 #include "ZBufferManager.h"
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 class MouseControl;
-extern MouseControl* DAT_0046aa18;
+extern MouseControl* g_Mouse_0046aa18;
 extern void* DAT_0046a6e4;
 extern int DAT_00473334;
 extern int DAT_004733e8;
 
 #include "MouseControl.h"
 #include "T_MenuHotspot.h"
-extern InputManager* DAT_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 // DAT_0046a6dc is g_MsgList — use g_MsgList directly
-extern char* DAT_0046aa00;
+extern char* g_Buffer_0046aa00;
 // FUN_004407c0 = RemoveCurrent COMDAT — callers updated
 
 // T_Object — now implemented in T_Object.cpp
@@ -93,10 +93,10 @@ void SCI_Inventory::Init(SC_Message* msg) {
 
     
     // Use typed ZBufferManager palette field
-    if (DAT_0046aa24->m_palette != 0) {
+    if (g_ZBufferManager_0046aa24->m_palette != 0) {
         ShowError("double palette");
     }
-    DAT_0046aa24->m_palette = palette;
+    g_ZBufferManager_0046aa24->m_palette = palette;
     selectedSlot = -1;
     DisplayPanels(0);
 }
@@ -113,12 +113,12 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
     ProcessInventory();
 
     
-    spr = DAT_0046aa18->m_sprite;
+    spr = g_Mouse_0046aa18->m_sprite;
     if (spr != 0) {
         spr->ResetAnimation(0, 0);
     }
 
-    (DAT_0046aa18)->DrawCursor();
+    (g_Mouse_0046aa18)->DrawCursor();
 
     DAT_004733e8 = 1;
     IconBar::CleanupIconBar(msg);
@@ -298,7 +298,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
         {
             void* invItem = DAT_0046a6e4;
-            Sprite* spr = DAT_0046aa18->m_sprite;
+            Sprite* spr = g_Mouse_0046aa18->m_sprite;
             int yOffset = ((T_Object*)invItem)->itemId + 0x1D;
             if (spr != 0) {
                 spr->ResetAnimation(0, yOffset);
@@ -326,7 +326,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         }
         SendGameMessage(0x1E, ((T_Object*)DAT_0046a6e4)->itemId, 0x1E, 0, 0x17, 0, 0, 0, 0, 0);
         {
-            Sprite* spr = DAT_0046aa18->m_sprite;
+            Sprite* spr = g_Mouse_0046aa18->m_sprite;
             if (spr != 0) {
                 spr->ResetAnimation(0, 0);
             }
@@ -403,7 +403,7 @@ void SCI_Inventory::Update(int param1, int param2) {
             curNode = nextNode;
 
             if (data != 0) {
-                int* mouseObj = (int*)DAT_0046aa08->pMouse;
+                int* mouseObj = (int*)g_InputManager_0046aa08->pMouse;
                 int mouseY = 0;
                 if (mouseObj != 0) {
                     mouseY = mouseObj[1];
@@ -431,7 +431,7 @@ void SCI_Inventory::Update(int param1, int param2) {
     {
         int selectedIdx = selectedSlot;
         if (selectedIdx != -1) {
-            DAT_0046aa24->DrawRect(
+            g_ZBufferManager_0046aa24->DrawRect(
                 slots[selectedIdx].left,
                 slots[selectedIdx].top,
                 slots[selectedIdx].right,
@@ -442,18 +442,18 @@ void SCI_Inventory::Update(int param1, int param2) {
 
     if (DAT_0046a6e4 != 0) {
         int yOffset = ((T_Object*)DAT_0046a6e4)->itemId + 0x1D;
-        spr = DAT_0046aa18->m_sprite;
+        spr = g_Mouse_0046aa18->m_sprite;
         if (spr != 0) {
             spr->ResetAnimation(yOffset, 0);
         }
     } else {
-        spr = DAT_0046aa18->m_sprite;
+        spr = g_Mouse_0046aa18->m_sprite;
         if (spr != 0) {
             spr->ResetAnimation(0, 0);
         }
     }
 
-    (DAT_0046aa18)->DrawCursor();
+    (g_Mouse_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x43EFD0 */
@@ -506,7 +506,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
             SendGameMessage(0x1e, ((T_Object*)DAT_0046a6e4)->itemId, 0x1e, 0, 0x17, 0, 0, 0, 0, 0);
             {
 
-                Sprite* spr = DAT_0046aa18->m_sprite;
+                Sprite* spr = g_Mouse_0046aa18->m_sprite;
                 if (spr != 0) {
                     goto do_reset;
                 }
@@ -599,7 +599,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
 
         if (DAT_0046a6e4 != 0) {
             if (((T_Object*)DAT_0046a6e4)->itemId == (int)msgData) {
-                Sprite* spr = DAT_0046aa18->m_sprite;
+                Sprite* spr = g_Mouse_0046aa18->m_sprite;
                 if (spr != 0) {
                     spr->ResetAnimation(0, 0);
                 }
@@ -703,11 +703,11 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         if (DAT_0046a6e4 == 0) break;
         if (((T_Object*)DAT_0046a6e4)->itemId != msgData[1]) break;
         {
-            Sprite* spr = DAT_0046aa18->m_sprite;
+            Sprite* spr = g_Mouse_0046aa18->m_sprite;
             if (spr == 0) goto do_clear;
         }
     do_reset:
-        (DAT_0046aa18->m_sprite)->ResetAnimation(0, 0);
+        (g_Mouse_0046aa18->m_sprite)->ResetAnimation(0, 0);
     do_clear:
         DAT_0046a6e4 = 0;
         break;
@@ -758,11 +758,11 @@ void SCI_Inventory::Serialize(void* param) {
     }
 
     /* LOAD PATH */
-    DAT_0046aa00[0] = 0;
-    fread(DAT_0046aa00, strLen, 1, (FILE*)fp);
+    g_Buffer_0046aa00[0] = 0;
+    fread(g_Buffer_0046aa00, strLen, 1, (FILE*)fp);
 
-    if (strcmp(DAT_0046aa00, "INVENTORY_INFO") != 0) {
-        ShowError("SCI_Inventory::Serialize() - Error Loading (Wrong ID '%s')", DAT_0046aa00);
+    if (strcmp(g_Buffer_0046aa00, "INVENTORY_INFO") != 0) {
+        ShowError("SCI_Inventory::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
     }
 
     DAT_0046a6e4 = 0;
@@ -890,7 +890,7 @@ Rect::~Rect() {}
 #include "Palette.h"
 #include "GameState.h"
 #include <new.h>
-extern "C" GameState* DAT_0046aa30;
+extern "C" GameState* g_GameState_0046aa30;
 
 /* Function start: 0x43FDD0 */
 int SCI_Inventory::LBLParse(char* line) {
@@ -1004,7 +1004,7 @@ int SCI_Inventory::LBLParse(char* line) {
         panels[index].field_8 = params[2];
         panels[index].field_C = params[3];
         panels[index].field_10 = params[4];
-        panels[index].field_14 = DAT_0046aa30->FindState(name);
+        panels[index].field_14 = g_GameState_0046aa30->FindState(name);
     }
     else if (strcmp(token, "SLOT") == 0) {
         sscanf(line, " %s %d %d %d %d %d", token, &index, &params[0], &params[1], &params[2], &params[3]);
@@ -1047,7 +1047,7 @@ check_items:
             if (found == 0) goto next_panel;
         }
         {
-            GameState* gs = DAT_0046aa30;
+            GameState* gs = g_GameState_0046aa30;
             int gsIdx = panelPtr[5];
             if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
                 ShowError("Invalid gamestate %d", gsIdx);

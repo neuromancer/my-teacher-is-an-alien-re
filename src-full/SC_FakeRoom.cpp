@@ -9,9 +9,9 @@
 #include "Memory.h"
 #include <string.h>
 
-extern InputManager* DAT_0046aa08;
-extern MouseControl* DAT_0046aa18;
-extern "C" extern GameState* DAT_0046aa30;
+extern InputManager* g_InputManager_0046aa08;
+extern MouseControl* g_Mouse_0046aa18;
+extern "C" extern GameState* g_GameState_0046aa30;
 
 // ActionParser is SC_Message — vtable 0x461100, LBLParse at 0x444E60
 // SC_Message::targetAddress (0x90) stores the SpriteAction* to fill
@@ -85,7 +85,7 @@ void SC_FakeRoom::RenderFrame()
         *statusPtr = 1;
     }
 
-    InputState* pMouse = DAT_0046aa08->pMouse;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
 
     if ((*(char*)&stateFlags & 1) != 0) {
         int state;
@@ -96,11 +96,11 @@ void SC_FakeRoom::RenderFrame()
         } else {
             state = 0;
         }
-        Sprite* cursor = DAT_0046aa18->m_sprite;
+        Sprite* cursor = g_Mouse_0046aa18->m_sprite;
         if (cursor != 0) {
             cursor->ResetAnimation(state, 0);
         }
-        DAT_0046aa18->DrawCursor();
+        g_Mouse_0046aa18->DrawCursor();
         return;
     }
 
@@ -120,11 +120,11 @@ void SC_FakeRoom::RenderFrame()
     } else {
         state = 0x14;
     }
-    Sprite* cursor = DAT_0046aa18->m_sprite;
+    Sprite* cursor = g_Mouse_0046aa18->m_sprite;
     if (cursor != 0) {
         cursor->ResetAnimation(state, 0);
     }
-    DAT_0046aa18->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x4447B0 */
@@ -182,7 +182,7 @@ void SC_FakeRoom::ProcessLose()
             pendingAction->fromValue = savedMsgData;
         }
 
-        GameState* gs = DAT_0046aa30;
+        GameState* gs = g_GameState_0046aa30;
         int idx = gs->FindState("NUM_ACTIONS");
         if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);

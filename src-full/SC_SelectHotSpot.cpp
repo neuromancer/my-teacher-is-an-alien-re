@@ -18,11 +18,11 @@ extern "C" char* GetSoundFilename(int handle);
 extern "C" int __stdcall AIL_sample_status(void*);
 
 class ZBufferManager;
-extern ZBufferManager* DAT_0046aa24;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 class MouseControl;
-extern MouseControl* DAT_0046aa18;
+extern MouseControl* g_Mouse_0046aa18;
 class InputManager;
-extern InputManager* DAT_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 extern SpriteAction DAT_00472d58;
 
 
@@ -122,7 +122,7 @@ void SelectHotspot::Update() {
     case 0:
         break;
     case 1:
-        mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+        mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
         mouseY = 0;
         if (mousePtr != 0) {
             mouseY = mousePtr[1];
@@ -149,7 +149,7 @@ void SelectHotspot::Update() {
         }
         break;
     case 2:
-        mousePtr = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+        mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
         mouseY = 0;
         if (mousePtr != 0) {
             mouseY = mousePtr[1];
@@ -453,7 +453,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
     InitFromMessage(msg);
     SetVideoRes(0x280, 0x1e0);
 
-    int iVar2 = (int)DAT_0046aa24;
+    int iVar2 = (int)g_ZBufferManager_0046aa24;
     if (*(int*)(iVar2 + 0x98) != 2) {
         *(int*)(iVar2 + 0x98) = 2;
 
@@ -529,14 +529,14 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
 
     int palVal = (int)SC_SelectHotSpot::palette;
     if (palVal != 0) {
-        int* palSlot = (int*)((int)DAT_0046aa24 + 0xa8);
+        int* palSlot = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
         if (*palSlot != 0) {
             WriteToLog("ddouble palette");
         }
         *palSlot = palVal;
     }
 
-    Sprite* spr = *(Sprite**)((char*)DAT_0046aa18 + 0x94);
+    Sprite* spr = *(Sprite**)((char*)g_Mouse_0046aa18 + 0x94);
     if (spr != 0) {
         spr->ResetAnimation(0, 0);
     }
@@ -617,7 +617,7 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
             }
         }
     }
-    (DAT_0046aa18)->DrawCursor();
+    (g_Mouse_0046aa18)->DrawCursor();
 }
 
 /* Function start: 0x4063A0 */

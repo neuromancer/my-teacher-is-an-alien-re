@@ -12,10 +12,10 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 #include "MouseControl.h"
 #include "GameState.h"
 #include "FlagArray.h"
-extern InputManager* DAT_0046aa08;
-extern MouseControl* DAT_0046aa18;
-extern "C" extern GameState* DAT_0046aa30;
-extern char* DAT_0046aa00;
+extern InputManager* g_InputManager_0046aa08;
+extern MouseControl* g_Mouse_0046aa18;
+extern "C" extern GameState* g_GameState_0046aa30;
+extern char* g_Buffer_0046aa00;
 extern int DAT_00473334;
 extern int DAT_004733e8;
 extern FlagArray* g_FlagManager_0046a6e8;
@@ -306,9 +306,9 @@ void Handler31::Update(int param1, int param2) {
     if (field_CC != 0) {
         i = 1;
         do {
-            sprintf(DAT_0046aa00, "SPRITE%d", i);
-            GameState* gs = DAT_0046aa30;
-            int idx = gs->FindState(DAT_0046aa00);
+            sprintf(g_Buffer_0046aa00, "SPRITE%d", i);
+            GameState* gs = g_GameState_0046aa30;
+            int idx = gs->FindState(g_Buffer_0046aa00);
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
@@ -335,7 +335,7 @@ void Handler31::Update(int param1, int param2) {
     } else {
         list = field_C8;
         if (list != 0 && list->head != 0) {
-            pMouse = DAT_0046aa08->pMouse;
+            pMouse = g_InputManager_0046aa08->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
                 buttonIdx = -1;
             } else if (pMouse == 0) {
@@ -378,7 +378,7 @@ void Handler31::Update(int param1, int param2) {
         }
     }
 
-    DAT_0046aa18->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x417750 */
@@ -406,7 +406,7 @@ int Handler31::AddMessage(SC_Message* msg) {
     } else {
         if (msgData[9] >= 2) {
             msgData[0] = 0x1F;
-            pMouse = DAT_0046aa08->pMouse;
+            pMouse = g_InputManager_0046aa08->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
                 msgData[1] = -1;
             } else if (pMouse == 0) {

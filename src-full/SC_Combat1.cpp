@@ -82,7 +82,7 @@ void SC_Combat1::Init(SC_Message* msg) {
     WriteToMessageLog("ENTER COMBAT1");
     CopyCommandData(msg);
 
-    pZBuf = g_ZBufferManager_0043698c;
+    pZBuf = g_ZBufferManager_0046aa24;
     savedRendererState = pZBuf->m_state;
     pZBuf->m_state = 1;
 
@@ -133,7 +133,7 @@ void SC_Combat1::Init(SC_Message* msg) {
         int* pBounds;
         int b, r, t, l;
 
-        pBounds = (int*)&g_InputManager_00436968->bounds;
+        pBounds = (int*)&g_InputManager_0046aa08->bounds;
         b = pBounds[3];
         r = pBounds[2];
         t = pBounds[1];
@@ -188,7 +188,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
         GlyphRect* pBounds;
         int b, r, t, l;
 
-        pInput = g_InputManager_00436968;
+        pInput = g_InputManager_0046aa08;
         pBounds = &pInput->bounds;
         b = DAT_0043d13c;
         r = DAT_0043d138;
@@ -202,7 +202,7 @@ int SC_Combat1::ShutDown(SC_Message* msg) {
     }
 
     // Restore ZBuffer state
-    pZBuf = g_ZBufferManager_0043698c;
+    pZBuf = g_ZBufferManager_0046aa24;
     pZBuf->m_state = savedRendererState;
 
     // Clear queue at 0xa0

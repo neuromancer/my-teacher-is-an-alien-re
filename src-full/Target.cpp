@@ -214,7 +214,7 @@ int Target::CheckTimeInRange()
     int y;
     int result;
 
-    mouse = g_InputManager_00436968->pMouse;
+    mouse = g_InputManager_0046aa08->pMouse;
     y = 0;
     if (mouse != 0) {
         y = mouse->y;

@@ -4,7 +4,7 @@
 #include <string.h>
 
 class InputManager;
-extern InputManager* DAT_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 #include "Target.h"
 /* Function start: 0x40BBF0 */
 EngineC::EngineC()
@@ -48,7 +48,7 @@ void EngineC::method10()
     int* vtbl60 = (int*)*obj60;
     ((void (__fastcall *)(int*, int))vtbl60[5])(obj60, 0);
 
-    int* pMouse = *(int**)((char*)DAT_0046aa08 + 0x1a0);
+    int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
     int buttonDown;
     if (pMouse == 0) {
         buttonDown = 0;

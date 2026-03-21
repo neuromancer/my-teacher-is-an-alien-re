@@ -14,8 +14,8 @@
 
 extern int g_ParserCount;          // DAT_00469288
 extern void* g_FilePosCache;
-extern "C" extern GameState* DAT_0046aa30;       // DAT_00469144
-extern char* DAT_0046aa00;        // global string buffer
+extern "C" extern GameState* g_GameState_0046aa30;       // DAT_00469144
+extern char* g_Buffer_0046aa00;        // global string buffer
 
 // FUN_004128f0 = TimedEventPool destructor wrapper (inlined below)
 
@@ -138,8 +138,8 @@ void Parser::FindKey(unsigned char *param_1) {
     if (internal_ReadLine(local_100, 255, pFile) == NULL) {
       ShowError("Parser::FindKey - Unable to find key '%s' in file '%s'", param_1, filename);
     }
-    sscanf(local_100, " %s ", DAT_0046aa00);
-    if (strcmp(DAT_0046aa00, (char*)param_1) == 0) {
+    sscanf(local_100, " %s ", g_Buffer_0046aa00);
+    if (strcmp(g_Buffer_0046aa00, (char*)param_1) == 0) {
       break;
     }
   }
@@ -170,9 +170,9 @@ int Parser::GetTokenType(char* line) {
         return 0;
     }
 
-    strncpy(DAT_0046aa00, openTag, len);
-    DAT_0046aa00[len] = '\0';
-    sscanf(DAT_0046aa00, " %s ", local_40);
+    strncpy(g_Buffer_0046aa00, openTag, len);
+    g_Buffer_0046aa00[len] = '\0';
+    sscanf(g_Buffer_0046aa00, " %s ", local_40);
 
     if (strcmp(local_40, "_IF_") == 0) return 2;
     if (strcmp(local_40, "_ELSEIF_") == 0) return 3;
@@ -352,7 +352,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
   return (Parser*)result;
 }
 
-// Duplicates removed — FUN_00426570, g_FilePosCache, DAT_0046aa30 declared at top of file
+// Duplicates removed — FUN_00426570, g_FilePosCache, g_GameState_0046aa30 declared at top of file
 
 /* Function start: 0x412C00 */
 void Parser::BeginComment(char* line, int flag) {
@@ -536,9 +536,9 @@ push_result:
 /* Function start: 0x413120 */
 #include "Sprite.h"
 
-extern "C" extern GameState* DAT_0046aa30;
+extern "C" extern GameState* g_GameState_0046aa30;
 extern GameState* DAT_0046aa38;
-extern MouseControl* DAT_0046aa18;
+extern MouseControl* g_Mouse_0046aa18;
 extern int DAT_00469160;
 extern void __stdcall ParseGosubParams(char* line);
 
@@ -605,10 +605,10 @@ void Parser::HandleToken(int tokenType, char* line) {
         }
         {
             SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            local_6c = DAT_0046aa30->FindState(local_38);
+            local_6c = g_GameState_0046aa30->FindState(local_38);
             local_60 = DAT_0046aa38->FindState(local_90);
             local_5c = local_14;
-            DAT_0046aa30->SetFromAction((int*)&action);
+            g_GameState_0046aa30->SetFromAction((int*)&action);
         }
         break;
 
@@ -621,8 +621,8 @@ void Parser::HandleToken(int tokenType, char* line) {
         if (pcVar6 != (char*)1) {
             ShowError("Parser::HandleToken - Invalid SET_MOUSE statement '%s'");
         }
-        if (DAT_0046aa18 != 0 && *(void**)((char*)DAT_0046aa18 + 0x94) != 0) {
-            ((Sprite*)*(void**)((char*)DAT_0046aa18 + 0x94))->ResetAnimation((int)local_14, 0);
+        if (g_Mouse_0046aa18 != 0 && *(void**)((char*)g_Mouse_0046aa18 + 0x94) != 0) {
+            ((Sprite*)*(void**)((char*)g_Mouse_0046aa18 + 0x94))->ResetAnimation((int)local_14, 0);
         }
         break;
 
@@ -781,12 +781,12 @@ void Parser::HandleToken(int tokenType, char* line) {
             ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'");
         }
         if (strcmp((char*)local_110, "INT") == 0) {
-            local_74 = (char*)DAT_0046aa30;
-            int idx = DAT_0046aa30->FindState((char*)local_58);
-            if (idx < 0 || DAT_0046aa30->maxStates - 1 < idx) {
+            local_74 = (char*)g_GameState_0046aa30;
+            int idx = g_GameState_0046aa30->FindState((char*)local_58);
+            if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
-            pcVar7 = (char*)DAT_0046aa30->stateValues[idx];
+            pcVar7 = (char*)g_GameState_0046aa30->stateValues[idx];
         } else {
             ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'");
             pcVar7 = local_14;
