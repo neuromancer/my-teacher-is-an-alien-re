@@ -122,20 +122,20 @@ void GameEngine::RunGameLoop() {
                 }
             }
 
-            int* gs = (int*)g_GameState_0046aa30;
-            if (gs[0x98 / 4] - 1 < 4) {
+            GameState* gs = g_GameState_0046aa30;
+            if (gs->maxStates - 1 < 4) {
                 ShowError("Invalid gamestate %d", 4);
             }
 
-            if (*(int*)(gs[0x90 / 4] + 0x10) != 0) {
+            if (gs->stateValues[4] != 0) {
                 int mouseX = 0;
                 int mouseY = 0;
-                int* device = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
-                if (device != 0) {
-                    mouseY = device[1];
+                InputState* mouse = g_InputManager_0046aa08->pMouse;
+                if (mouse != 0) {
+                    mouseY = mouse->y;
                 }
-                if (device != 0) {
-                    mouseX = device[0];
+                if (mouse != 0) {
+                    mouseX = mouse->x;
                 } else {
                     mouseX = 0;
                 }
@@ -206,8 +206,8 @@ void GameEngine::ProcessInput() {
 
     mouse = *pMouse;
     if (mouse != 0 && (mouse->ext1 >= 2 || mouse->ext2 >= 2)) {
-        if (*(void**)((char*)g_Mouse_0046aa18 + 0xa4) != 0) {
-            ((Sample*)*(void**)((char*)g_Mouse_0046aa18 + 0xa4))->Play(100, 1);
+        if (g_Mouse_0046aa18->m_audio != 0) {
+            g_Mouse_0046aa18->m_audio->Play(100, 1);
         }
     }
 
@@ -238,21 +238,21 @@ int GameEngine::ProcessEvents() {
 /* Function start: 0x431030 */
 void GameEngine::ProcessMessage(SC_Message* msg) {
     int handled;
-    int* msgData;
+    SpriteAction* action;
 
     handled = 0;
-    msgData = (int*)msg;
+    action = (SpriteAction*)msg;
 
-    if (msgData[4] == 4) {
+    if (action->instruction == 4) {
         handled = 1;
-        if (msgData[0] != 1) {
+        if (action->addressType != 1) {
             HandleSystemMessage(msg);
         } else {
-            strcpy(g_StateString_0046aa2c, g_GameState2_0046aa3c->GetState(msgData[1]));
+            strcpy(g_StateString_0046aa2c, g_GameState2_0046aa3c->GetState(action->addressValue));
         }
-    } else if (msgData[0] == 0) {
+    } else if (action->addressType == 0) {
         handled = 1;
-    } else if (msgData[0] == 1) {
+    } else if (action->addressType == 1) {
         handled = 1;
         ProcessControlMessage(msg);
     } else {
@@ -287,33 +287,33 @@ void GameEngine::ProcessMessage(SC_Message* msg) {
     }
 
     if (handled == 0) {
-        GetOrCreateHandler(msgData[0])->Exit(msg);
+        GetOrCreateHandler(action->addressType)->Exit(msg);
     }
 }
 
 /* Function start: 0x431160 */
 int GameEngine::ProcessControlMessage(SC_Message* msg) {
-    int* msgData;
+    SpriteAction* action;
 
-    msgData = (int*)msg;
-    if (msgData[0] != 1) {
+    action = (SpriteAction*)msg;
+    if (action->addressType != 1) {
         return 0;
     }
 
-    switch (msgData[4]) {
+    switch (action->instruction) {
     case 5:
         m_exitFlag = 1;
         return 1;
     case 0x13:
         m_frameTimeCopy = m_frameTime;
         m_smackHandle = 0;
-        m_frameTime = msgData[1];
+        m_frameTime = action->addressValue;
         return 1;
     case 0x17:
-        GetOrCreateHandler(msgData[1]);
+        GetOrCreateHandler(action->addressValue);
         return 1;
     case 0x18:
-        RemoveHandler(msgData[1]);
+        RemoveHandler(action->addressValue);
         return 1;
     default:
         return 0;
@@ -348,13 +348,13 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
     Handler* foundHandler;
     ZBufferManager* manager;
     ZBQueue* queue;
-    int* msgData;
+    SpriteAction* action;
 
     if (msg == 0) {
         return;
     }
 
-    msgData = (int*)msg;
+    action = (SpriteAction*)msg;
     if (g_InputManager_0046aa08 != 0) {
         (g_InputManager_0046aa08)->ResetClickState();
     }
@@ -396,9 +396,9 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
         manager->m_palette = 0;
     }
 
-    foundHandler = FindHandlerInList(msgData[0]);
+    foundHandler = FindHandlerInList(action->addressType);
     if (foundHandler == 0) {
-        handler = GetOrCreateHandler(msgData[0]);
+        handler = GetOrCreateHandler(action->addressType);
         m_activeHandler = handler;
     } else {
         LinkedList* list;
@@ -452,7 +452,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
 
     handler = (Handler*)m_activeHandler;
     if (handler == 0) {
-        ShowError("missing modual %d", msgData[0]);
+        ShowError("missing modual %d", action->addressType);
         return;
     }
 
