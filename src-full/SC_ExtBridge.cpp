@@ -173,14 +173,14 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 }
 
 #include "GameEngine.h"
-extern "C" extern int DAT_0046a6ec;                       // GameEngine instance
+extern "C" extern int g_GameEngine_0046a6ec;                       // GameEngine instance
 extern SpriteAction DAT_00472d58;                          // global SpriteAction
 
 /* Function start: 0x439F30 */
 int SC_ExtBridge::ShutDown(SC_Message* msg)
 {
     SpriteAction* action = new SpriteAction(5, 0x458, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
-    ((GameEngine*)DAT_0046a6ec)->ProcessMessage((SC_Message*)action);
+    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         FreeMemory(action);

@@ -21,7 +21,7 @@
 
 extern StringTable* g_Strings_0046a6e0;
 extern FlagArray* g_FlagManager_0046a6e8;
-extern "C" int DAT_0046a6ec;         // GameEngine instance
+extern "C" int g_GameEngine_0046a6ec;         // GameEngine instance
 extern "C" GameState* g_GameState_0046aa30;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern char* g_Buffer_0046aa00;           // temp string buffer

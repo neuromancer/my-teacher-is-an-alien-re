@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <new.h>
 
-extern "C" int DAT_0046a6ec;
+extern "C" int g_GameEngine_0046a6ec;
 
 /* Function start: 0x401120 */
 SlimeDim::~SlimeDim() {}
@@ -84,19 +84,19 @@ SpriteAction::~SpriteAction() {
 /* Function start: 0x444D90 */
 extern "C" void SendGameMessage(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
     SpriteAction action(a, b, c, d, e, f, g, h, i, j);
-    if (DAT_0046a6ec != 0) {
+    if (g_GameEngine_0046a6ec != 0) {
         EnqueueSpriteAction((void*)&action);
     }
 }
 
 /* Function start: 0x444E20 */
 void EnqueueSpriteAction(void* action) {
-    ((GameEngine*)DAT_0046a6ec)->EnqueueAction((SpriteAction*)action);
+    ((GameEngine*)g_GameEngine_0046a6ec)->EnqueueAction((SpriteAction*)action);
     ((SpriteAction*)action)->childAction = 0;
 }
 
 /* Function start: 0x444E40 */
 void EnqueueSpriteAction(SpriteAction* action) {
-    ((GameEngine*)DAT_0046a6ec)->EnqueueAction(action);
+    ((GameEngine*)g_GameEngine_0046a6ec)->EnqueueAction(action);
     action->childAction = 0;
 }

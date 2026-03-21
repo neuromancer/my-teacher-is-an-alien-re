@@ -84,7 +84,7 @@ extern void __cdecl FileCacheEntryCleanup(void*, int);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "GameEngine.h"
-extern "C" int DAT_0046a6ec;
+extern "C" int g_GameEngine_0046a6ec;
 extern "C" extern GameState* g_GameState_0046aa30;
 extern GameState* g_GameState2_0046aa3c;
 extern GameState* g_StringTable_0046aa34;
@@ -194,7 +194,7 @@ void RunGame() {
     // 2. [0x0046a6ec] = new GameEngine (0x28 bytes, constructor 0x430A00) — game loop
     g_ZBufferManager_0046aa24 = new ZBufferManager();
     GameEngine* gameEngine = new GameEngine();
-    DAT_0046a6ec = (int)gameEngine;
+    g_GameEngine_0046a6ec = (int)gameEngine;
 
     g_Mouse_0046aa18->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");

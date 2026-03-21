@@ -7,6 +7,9 @@
 #include <smack.h>
 #include "InputManager.h"
 #include "Memory.h"
+#include "GameState.h"
+#include "GameConfig.h"
+#include "GameEngine.h"
 #include <windows.h>
 #include <new>
 
@@ -26,16 +29,15 @@ extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, un
 
 // Full game globals (extern "C" linkage)
 extern "C" {
-    extern int DAT_0046a6ec;        // Timer manager pointer
-    extern void* DAT_0046aa10;      // GameConfig pointer
-    extern GameState* g_GameState_0046aa30;      // Game state pointer
-    extern int g_WaitForInputValue_004373bc;        // WaitForInput flag
-    extern char DAT_00472c70[];     // Animation filename buffer
-    extern char DAT_00472cb0[];     // Animation filename buffer 2
+    extern int g_GameEngine_0046a6ec;        // GameEngine* (cast to int)
+    extern GameState* g_GameState_0046aa30;
+    extern int g_WaitForInputValue_004373bc;
+    extern char g_AnimFilename_00472c70[];     // Animation filename buffer
+    extern char g_AnimFilename2_00472cb0[];     // Animation filename buffer 2
 }
 
-// C++ linkage globals
-extern InputManager* g_InputManager_0046aa08;          // InputManager pointer
+extern GameConfig* g_GameConfig_00436970;
+extern InputManager* g_InputManager_0046aa08;
 
 #include "GameLoopHelper.h"
 
@@ -73,15 +75,16 @@ Animation::~Animation() {
 /* Function start: 0x41AB60 */
 void Animation::CloseSmackerFile() {
   if (smk != 0) {
-    if (DAT_0046a6ec != 0) {
-      if (*(int*)(DAT_0046a6ec + 0x24) == (int)smk) {
+    GameEngine* engine = (GameEngine*)g_GameEngine_0046a6ec;
+    if (engine != 0) {
+      if (engine->m_smackHandle == (void*)smk) {
         WriteToLog("Animation Close - restoring framerate to %dms",
-                     *(int*)(DAT_0046a6ec + 0x20));
-        *(int*)(DAT_0046a6ec + 0x24) = 0;
-        *(int*)(DAT_0046a6ec + 0x1c) = *(int*)(DAT_0046a6ec + 0x20);
+                     engine->m_frameTimeCopy);
+        engine->m_smackHandle = 0;
+        engine->m_frameTime = engine->m_frameTimeCopy;
       }
     }
-    if (*(char*)((int)DAT_0046aa10 + 0x46) == '\x02') {
+    if (g_GameConfig_00436970->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 0);
     }
     if (g_GameLoopHelper != 0) {
@@ -159,11 +162,11 @@ void Animation::NextFrame() {
 /* Function start: 0x41ADB0 */
 void Animation::GotoFrame(int frame) {
   if (smk != 0) {
-    if (*(char*)((int)DAT_0046aa10 + 0x46) == '\x02') {
+    if (g_GameConfig_00436970->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 0);
     }
     SmackGoto(smk, frame);
-    if (*(char*)((int)DAT_0046aa10 + 0x46) == '\x02') {
+    if (g_GameConfig_00436970->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 1);
     }
   }
@@ -175,7 +178,7 @@ int Animation::Open(char *filename, int param_2, int param_3) {
     return 1;
   }
 
-  if (*(char*)((int)DAT_0046aa10 + 0x46) != '\x02') {
+  if (g_GameConfig_00436970->data.rawData[2] != 2) {
     param_2 = param_2 & 0xfff01fff;
   }
   param_2 = param_2 | 0x400;
@@ -189,7 +192,7 @@ int Animation::Open(char *filename, int param_2, int param_3) {
   if (g_GameLoopHelper != 0) {
     g_GameLoopHelper->AddAnimation(filename, (int)smk);
   }
-  strcpy(DAT_00472c70, filename);
+  strcpy(g_AnimFilename_00472c70, filename);
 
   return 1;
 }
@@ -245,10 +248,10 @@ void Animation::ToBufferVB(VBuffer *buffer) {
   }
 
   targetBuffer = buffer;
-  unsigned int uVar3 = *(unsigned char*)smack_buffer;
-  void *uVar1 = buffer->GetData();
-  SmackToBuffer(smk, 0, 0, smk->Width, smk->Height, uVar1,
-                uVar3);
+  unsigned int bufferType = smack_buffer->SurfaceType;
+  void *data = buffer->GetData();
+  SmackToBuffer(smk, 0, 0, smk->Width, smk->Height, data,
+                bufferType);
 }
 
 /* Function start: 0x41B060 */
@@ -267,14 +270,13 @@ void Animation::Play(char *filename, unsigned int flags) {
   }
 
   if (g_GameState_0046aa30 != 0) {
-    int* gs = (int*)g_GameState_0046aa30;
-    if (gs[0x98/4] - 1 < 4) {
-      ShowError("Invalid gamestate %d", gs[0x98/4] - 1);
+    GameState* gs = g_GameState_0046aa30;
+    if (gs->maxStates - 1 < 4) {
+      ShowError("Invalid gamestate %d", gs->maxStates - 1);
     }
-    int* stateArray = (int*)gs[0x90/4];
-    if (stateArray[0x10/4] != 0) {
+    if (gs->stateValues[4] != 0) {
       Animation::flags |= 0x100;
-      strcpy(DAT_00472cb0, filename);
+      strcpy(g_AnimFilename2_00472cb0, filename);
     }
   }
 
@@ -310,7 +312,7 @@ void Animation::MainLoop() {
       if (flags & 0x100) {
         SetFontColor(0xfa);
         SetFontPosition(0x14, 0x14);
-        DrawFontText(DAT_00472cb0, strlen(DAT_00472cb0));
+        DrawFontText(g_AnimFilename2_00472cb0, strlen(g_AnimFilename2_00472cb0));
       }
 
       while (1) {

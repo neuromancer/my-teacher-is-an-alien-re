@@ -1,6 +1,7 @@
 #include "SC_BgSnd.h"
 #include "Sample.h"
 #include "GameState.h"
+#include "GameEngine.h"
 #include <mss.h>
 #include "string.h"
 
@@ -9,7 +10,7 @@ extern "C" char* GetSoundFilename(int handle);
 extern "C" extern GameState* g_GameState_0046aa30;
 #define g_GameState_0046aa30 (g_GameState_0046aa30)
 extern "C" extern void* DAT_0046aa10;
-extern "C" extern int DAT_0046a6ec;
+extern "C" extern int g_GameEngine_0046a6ec;
 
 /* Function start: 0x4392E0 */
 SC_BgSnd::SC_BgSnd() {
@@ -134,8 +135,8 @@ void SC_BgSnd::SetVolume(int volume, int duration) {
                         int currentVol = AIL_sample_volume(snd->m_sample);
                         targetVol = volume;
                         int timerDiv;
-                        if (DAT_0046a6ec != 0) {
-                            timerDiv = *(int *)(DAT_0046a6ec + 0x1c);
+                        if (g_GameEngine_0046a6ec != 0) {
+                            timerDiv = *(int *)(g_GameEngine_0046a6ec + 0x1c);
                             if (timerDiv != 0) goto calc;
                         }
                         timerDiv = 0x54;

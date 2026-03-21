@@ -11,7 +11,7 @@ extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 extern "C" extern GameState* g_GameState_0046aa30;
-extern "C" extern int DAT_0046a6ec;
+extern "C" extern int g_GameEngine_0046a6ec;
 extern char* g_Buffer_0046aa00;
 extern int DAT_00468764;
 extern SpriteAction DAT_00472d58;
@@ -339,7 +339,7 @@ void SC_Detention::ResetAnimations() {
 
     {
         SpriteAction action(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
-        ((GameEngine*)DAT_0046a6ec)->EnqueueAction(&action);
+        ((GameEngine*)g_GameEngine_0046a6ec)->EnqueueAction(&action);
     }
 
     ParseFile(this, "mis\\detention.mis", "[MOVE_TO_NEXT_PERIOD]");

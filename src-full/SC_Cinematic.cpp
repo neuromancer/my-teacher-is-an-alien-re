@@ -22,10 +22,11 @@ extern "C" extern GameState* g_GameState_0046aa30;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern InputManager* g_InputManager_0046aa08;
 class MouseControl;
+#include "GameEngine.h"
 extern MouseControl* g_Mouse_0046aa18;
 
 extern "C" {
-    extern int DAT_0046a6ec;
+    extern int g_GameEngine_0046a6ec;
     extern void* DAT_0046aa14;
     extern char DAT_00473400;
 }
@@ -149,7 +150,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
 
     memset(&palette, 0, 12 * 4);
     flags = 0x10;
-    savedRenderCtx = *(int*)(DAT_0046a6ec + 0x1c);
+    savedRenderCtx = ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime;
 
     int iVar11 = (int)g_ZBufferManager_0046aa24;
     if (iVar11 != 0) {
@@ -227,7 +228,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
 
         animation = (int)new Animation(moviePath);
 
-        *(int*)(DAT_0046a6ec + 0x1c) = 0;
+        ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = 0;
 
         startX = pmsg[9];
         startY = pmsg[10];
@@ -300,7 +301,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
             }
         }
 
-        *(int*)(DAT_0046a6ec + 0x1c) = savedRenderCtx;
+        ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = savedRenderCtx;
 
         if (flags & 0x20) {
             SendGameMessage(5, 0, handlerId, moduleParam, 0x13, volume, soundParam, 0, 0, 0);
@@ -462,7 +463,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         int* smkSurface = (int*)(int)smk->targetBuffer;
         SetVideoRes(smkSurface[5], smkSurface[6]);
 
-        *(int*)(DAT_0046a6ec + 0x1c) = savedRenderCtx;
+        ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = savedRenderCtx;
 
         if (g_ZBufferManager_0046aa24 != 0) {
             int newState = 1;

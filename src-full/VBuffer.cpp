@@ -31,16 +31,16 @@ void InitVBufferHandleTable(void)
 
 // GetVideoBufferNameSlot(handle) = 0x4734B0 + handle * 64
 extern "C" char* GetVideoBufferNameSlot(int handle);  // 0x44C650
-extern "C" extern char DAT_00472c70[];                 // pending filename buffer
+extern "C" extern char g_AnimFilename_00472c70[];                 // pending filename buffer
 
 /* Function start: 0x410ED0 */
 void RegisterVBufferHandle(int handle)
 {
     g_VBufferHandleTable[handle] = handle;
     char* name = GetVideoBufferNameSlot(handle);
-    if (name[0] == '\0' && DAT_00472c70[0] != '\0') {
-        strcpy(name, DAT_00472c70);
-        DAT_00472c70[0] = '\0';
+    if (name[0] == '\0' && g_AnimFilename_00472c70[0] != '\0') {
+        strcpy(name, g_AnimFilename_00472c70);
+        g_AnimFilename_00472c70[0] = '\0';
     }
 }
 

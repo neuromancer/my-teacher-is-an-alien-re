@@ -6009,12 +6009,12 @@ extern "C" {
 }
 extern void* DAT_0046a6e4;                                // SCI_Inventory
 extern "C" {
-    extern int DAT_0046a6ec;                               // SC_Cinematic
+    extern int g_GameEngine_0046a6ec;                               // SC_Cinematic
     extern void* DAT_0046aa10;                             // SC_SelectHotSpot
     extern VBuffer* DAT_0046aa14;                          // SC_SelectHotSpot
     extern char DAT_00473400;                              // SC_Cinematic
-    extern char DAT_00472c70[256];                         // SC_Cinematic
-    extern char DAT_00472cb0[256];                         // SC_Cinematic
+    extern char g_AnimFilename_00472c70[256];                         // SC_Cinematic
+    extern char g_AnimFilename2_00472cb0[256];                         // SC_Cinematic
 }
 extern Sound* DAT_0046AA0C;                                // Engine
 extern void* DAT_0046aa1c;                                 // Path resolution

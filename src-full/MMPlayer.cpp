@@ -2,11 +2,12 @@
 #include "Memory.h"
 #include "Sprite.h"
 #include "string.h"
+#include "GameEngine.h"
 #include <new.h>
 #include <string.h>
 #include <stdio.h>
 
-extern "C" int DAT_0046a6ec;
+extern "C" int g_GameEngine_0046a6ec;
 
 /* Function start: 0x4438A0 */
 MMPlayer::MMPlayer()
@@ -18,7 +19,7 @@ MMPlayer::MMPlayer()
     ptr[3] = 0;
     field_0x90 = 1;
     m_queue = new ZBQueue(2);
-    field_0x88 = *(int*)(DAT_0046a6ec + 0x1c);
+    field_0x88 = ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime;
 }
 
 /* Function start: 0x443990 */

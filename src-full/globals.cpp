@@ -322,12 +322,12 @@ GameState* g_StringTable_0046aa34 = 0;                   // 0x0046aa34
 
 // SC_Cinematic + SC_SelectHotSpot globals
 extern "C" {
-    int DAT_0046a6ec = 0;                                // 0x0046a6ec
+    int g_GameEngine_0046a6ec = 0;                                // 0x0046a6ec
     void* DAT_0046aa10 = 0;                              // 0x0046aa10
     VBuffer* DAT_0046aa14 = 0;                           // 0x0046aa14
     char DAT_00473400 = 0;                               // 0x00473400
-    char DAT_00472c70[256] = {0};                        // 0x00472c70
-    char DAT_00472cb0[256] = {0};                        // 0x00472cb0
+    char g_AnimFilename_00472c70[256] = {0};                        // 0x00472c70
+    char g_AnimFilename2_00472cb0[256] = {0};                        // 0x00472cb0
 }
 
 // SC_Wahoo / SC_WordSearch / SCI_PracticeRoom globals
