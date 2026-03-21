@@ -54,36 +54,15 @@ int g_WaitForInputValue_0046ac04 = 0;
 
 // String constants (Setup.cfg, "rb", engine types) inlined at call sites
 
-// SC_CrystalPuzzle solution tables (0x46cc98-0x46cd28)
-// 9 solutions, each is {btn0, btn1, btn2, resultId} — 4 ints per entry
-int DAT_0046cc98[] = {
-    0, 3, 6,  0,   // solution 0
-    1, 4, 7,  0,   // solution 1
-    0, 4, 8,  0,   // solution 2
-    2, 4, 6,  0,   // solution 3
-    0, 1, 2,  0,   // solution 4
-    3, 4, 5,  0,   // solution 5
-    6, 7, 8,  0,   // solution 6
-    2, 3, 8,  0,   // solution 7 (placeholder)
-    1, 5, 6,  0,   // solution 8 (placeholder)
-};
-// Result floor indices for each solution
-int DAT_0046cca4[] = {
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-};
-
-// SC_CrystalPuzzle button hit-test rectangles (9 buttons)
+// SC_CrystalPuzzle data tables
+// TODO: Extract actual values from original binary .data section
+// DAT_0046cc98 (0x46cc98-0x46cd28): 9 puzzle solutions, 4 ints each {btn0,btn1,btn2,pad}
+// DAT_0046cca4 (0x46cca4): result indices per solution
+// DAT_00473d30 (0x473d30): 9 button hit-test GlyphRects
+// DAT_00473dc8 (0x473dc8): 3 floor door hit-test GlyphRects
+int DAT_0046cc98[36] = {0};
+int DAT_0046cca4[36] = {0};
 GlyphRect DAT_00473d30[9];
-
-// SC_CrystalPuzzle floor door hit-test rectangles (3 floors)
 GlyphRect DAT_00473dc8[3];
 
 // ...
