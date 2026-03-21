@@ -30,7 +30,7 @@ extern "C" {
     extern VBuffer* DAT_0046aa14;
     extern char g_CinematicDebugStr_00473400;
 }
-extern int g_WaitForInputValue_004373bc;
+extern int g_WaitForInputValue_0046ac04;
 
 // Engine list operations
 
@@ -329,7 +329,7 @@ void SC_Cinematic::Update(int param1, int param2) {
 
         InputState* mouse = g_InputManager_0046aa08->pMouse;
         int hasInput;
-        if (mouse != 0 && (mouse->ext1 >= 1 || mouse->ext2 >= 1 || g_WaitForInputValue_004373bc != 0)) {
+        if (mouse != 0 && (mouse->ext1 >= 1 || mouse->ext2 >= 1 || g_WaitForInputValue_0046ac04 != 0)) {
             hasInput = 1;
         } else {
             hasInput = 0;
@@ -373,7 +373,7 @@ void SC_Cinematic::Update(int param1, int param2) {
             }
 
             hasInput = 0;
-            if (g_WaitForInputValue_004373bc != 0) {
+            if (g_WaitForInputValue_0046ac04 != 0) {
                 int key = WaitForInput();
                 hasInput = (key == 0x1b);
             }

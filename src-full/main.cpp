@@ -342,7 +342,7 @@ extern "C" int ProcessMessages() {
         if (local_1c.wParam > 0x7f) {
           wParam = wParam & 0x2f;
         }
-        g_WaitForInputValue_004373bc = wParam;
+        g_WaitForInputValue_0046ac04 = wParam;
       }
       DispatchMessageA(&local_1c);
       iVar1 = PeekMessageA(&local_1c, NULL, 0, 0, PM_REMOVE);
@@ -451,11 +451,11 @@ void InitGameConfig() {
 
 /* Function start: 0x426AC0 */
 int WaitForInput() {
-  while (g_WaitForInputValue_004373bc == 0) {
+  while (g_WaitForInputValue_0046ac04 == 0) {
     ProcessMessages();
   }
-  int iVar1 = g_WaitForInputValue_004373bc;
-  g_WaitForInputValue_004373bc = 0;
+  int iVar1 = g_WaitForInputValue_0046ac04;
+  g_WaitForInputValue_0046ac04 = 0;
   return iVar1;
 }
 

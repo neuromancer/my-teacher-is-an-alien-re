@@ -48,9 +48,9 @@ GameState* g_GameState2_0046aa3c = 0;
 // Sprite* g_Sprite_004360a0 = 0; // Moved/Removed to match address 0x4360A0 (EngineB/mCNavigator)
 
 // Other globals (Timer globals defined in InputManager.cpp)
-int g_DoubleClickTime_004373b8 = 0;
+int g_DoubleClickTime_0046ac00 = 0;
 
-int g_WaitForInputValue_004373bc = 0;
+int g_WaitForInputValue_0046ac04 = 0;
 
 // String constants (Setup.cfg, "rb", engine types) inlined at call sites
 

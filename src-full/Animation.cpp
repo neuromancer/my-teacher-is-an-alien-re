@@ -31,7 +31,7 @@ extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, un
 extern "C" {
     extern int g_GameEngine_0046a6ec;        // GameEngine* (cast to int)
     extern GameState* g_GameState_0046aa30;
-    extern int g_WaitForInputValue_004373bc;
+    extern int g_WaitForInputValue_0046ac04;
     extern char g_AnimFilename_00472c70[];     // Animation filename buffer
     extern char g_AnimFilename2_00472cb0[];     // Animation filename buffer 2
 }
@@ -331,7 +331,7 @@ void Animation::MainLoop() {
           }
 
           escaped = 0;
-          if (g_WaitForInputValue_004373bc != 0) {
+          if (g_WaitForInputValue_0046ac04 != 0) {
             escaped = (WaitForInput() == 0x1b);
           }
           if (escaped) {

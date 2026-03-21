@@ -29,8 +29,6 @@ public:
     InputManager(int param_1);
     ~InputManager();
     void InitDevices(int param_1); // FUN_00421890
-    int PollEvents(int); // Was CheckInput / FUN_00421d10
-    
 // private:
     // Helper functions
     int Refresh(int);                   // FUN_00426CE0

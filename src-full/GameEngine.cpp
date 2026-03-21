@@ -25,7 +25,7 @@ extern char* g_Buffer_0046aa00;   // string buffer
 
 // GameState pointer
 extern "C" extern GameState* g_GameState_0046aa30;
-extern int g_WaitForInputValue_004373bc;
+extern int g_WaitForInputValue_0046ac04;
 extern char* g_StateString_0046aa2c;
 extern GameState* g_GameState2_0046aa3c;
 extern GameState* g_StringTable_0046aa34;
@@ -163,7 +163,7 @@ void GameEngine::ProcessInput() {
     }
 
     mouse = (g_InputManager_0046aa08)->pMouse;
-    if (mouse != 0 && (mouse->ext1 >= 1 || mouse->ext2 >= 1 || g_WaitForInputValue_004373bc != 0)) {
+    if (mouse != 0 && (mouse->ext1 >= 1 || mouse->ext2 >= 1 || g_WaitForInputValue_0046ac04 != 0)) {
         hasInput = 1;
     } else {
         hasInput = 0;
@@ -175,7 +175,7 @@ void GameEngine::ProcessInput() {
     SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     action.fromType = 1;
 
-    if (g_WaitForInputValue_004373bc != 0) {
+    if (g_WaitForInputValue_0046ac04 != 0) {
         action.lastKey = WaitForInput();
     }
 

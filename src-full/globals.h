@@ -464,8 +464,8 @@ extern GameState* g_GameState3_0043699c; // DAT_0043699c
 // extern char DAT_00436d28[4]; // Inline keyword string "POS\0" for sprite parsing (before "FNAME" at 0x436d2c)
 // extern int DAT_00436fe4; // Inline cursor action string (8 bytes before "PICKUP"), used in MouseControl ctor
 // extern char DAT_0043704c[4]; // Inline keyword string "USE\0" for MouseControl parsing
-extern int g_DoubleClickTime_004373b8; // From GetDoubleClickTime()
-extern int g_WaitForInputValue_004373bc; // Keyboard event value
+extern int g_DoubleClickTime_0046ac00; // From GetDoubleClickTime()
+extern int g_WaitForInputValue_0046ac04; // Keyboard event value
 // "Setup.cfg" and "rb" strings inlined at call sites
 // DAT_00437488 - Defined in globals.cpp as HDC (main device context)
 extern HPALETTE g_Palette_0043748c; // Main game palette

@@ -9,7 +9,6 @@ extern "C" int* GetWindowWidth();  // FUN_004224e0
 extern "C" int* GetScreenHeight(); // FUN_004224f0
 // Forward declarations for functions implemented below
 void InitClickTimers();      // 0x421AC0
-int GetJoystickCount();      // 0x421AE0
 int MapJoystickValue(int value, int min, int max, int range); // 0x421CE0
 extern "C" int GetMousePosition(int*, int*); // 0x4239E4 - in Graphics.cpp
 
@@ -54,7 +53,7 @@ void InputManager::InitDevices(int param_1) {
     bounds.right = screenWidth;
     bounds.bottom = screenHeight;
 
-    g_DoubleClickTime_004373b8 = GetDoubleClickTime();
+    g_DoubleClickTime_0046ac00 = GetDoubleClickTime();
 
     pState = pMouseLocal;
     if (pState != 0) {
@@ -74,7 +73,7 @@ void InputManager::InitDevices(int param_1) {
         pJoystick = 0;
     }
 
-    if (GetJoystickCount() >= 1 && joyGetPos(0, &joyInfo) == 0) {
+    if (joyGetNumDevs() >= 1 && joyGetPos(0, &joyInfo) == 0) {
         pState = new InputState();
         pJoystick = pState;
         if (param_1 == 1) {
@@ -93,12 +92,6 @@ void InitClickTimers()
 {
     g_leftClickTimer.Reset();
     g_rightClickTimer.Reset();
-}
-
-/* Function start: 0x421AE0 */ /* DEMO ONLY - no full game match */
-int GetJoystickCount()
-{
-    return joyGetNumDevs();
 }
 
 /* Function start: 0x426AF0 */ /* ~90% match */
@@ -207,74 +200,6 @@ int MapJoystickValue(int value, int min, int max, int range)
     return result;
 }
 
-/* Function start: 0x421d10 */ /* DEMO ONLY - no full game match */
-int InputManager::PollEvents(int param) {
-    int iVar1;
-    unsigned int uVar2;
-    InputState* pState;
-
-    iVar1 = ProcessMessages();
-    if (iVar1 != 0) {
-        return 1;
-    }
-
-    PollMouse(pMouseLocal);
-    PollJoystick(pJoystick);
-
-    pMouse->ext2 = 0;
-    pMouse->ext1 = pMouse->ext2;
-
-    pState = pMouse;
-    uVar2 = 0;
-    if (pState != 0) {
-        uVar2 = pState->buttons & 1;
-    }
-    if (uVar2 != 0) {
-        pState->ext1 = 1;
-    }
-    else {
-        uVar2 = 0;
-        if (pState != 0) {
-            uVar2 = pState->buttons & 1;
-        }
-        if ((uVar2 == 0) && ((pState->prevButtons & 1) != 0)) {
-            uVar2 = g_leftClickTimer.Update();
-            if (uVar2 < (unsigned int)g_DoubleClickTime_004373b8) {
-                pMouse->ext1 = 3;
-            }
-            else {
-                pMouse->ext1 = 2;
-            }
-            g_leftClickTimer.Reset();
-        }
-    }
-
-    pState = pMouse;
-    uVar2 = 0;
-    if (pState != 0) {
-        uVar2 = pState->buttons & 2;
-    }
-    if (uVar2 != 0) {
-        pState->ext2 = 1;
-        return 0;
-    }
-    uVar2 = 0;
-    if (pState != 0) {
-        uVar2 = pState->buttons & 2;
-    }
-    if ((uVar2 == 0) && ((pState->prevButtons & 2) != 0)) {
-        uVar2 = g_rightClickTimer.Update();
-        if (uVar2 < (unsigned int)g_DoubleClickTime_004373b8) {
-            pMouse->ext2 = 3;
-        }
-        else {
-            pMouse->ext2 = 2;
-        }
-        g_rightClickTimer.Reset();
-    }
-    return 0;
-}
-
 /* Function start: 0x426570 */
 extern "C" char* FUN_00426570(char* s1, char* s2) {
     char* p = strstr(s1, s2);
@@ -320,7 +245,7 @@ int InputManager::Refresh(int) {
         }
         if (buttons == 0 && (mouse->prevButtons & 1) != 0) {
             buttons = g_leftClickTimer.Update();
-            if (buttons < (unsigned int)g_DoubleClickTime_004373b8) {
+            if (buttons < (unsigned int)g_DoubleClickTime_0046ac00) {
                 pMouse->ext1 = 3;
             } else {
                 pMouse->ext1 = 2;
@@ -346,7 +271,7 @@ int InputManager::Refresh(int) {
     }
     if (buttons == 0 && (mouse->prevButtons & 2) != 0) {
         buttons = g_rightClickTimer.Update();
-        if (buttons < (unsigned int)g_DoubleClickTime_004373b8) {
+        if (buttons < (unsigned int)g_DoubleClickTime_0046ac00) {
             pMouse->ext2 = 3;
         } else {
             pMouse->ext2 = 2;
