@@ -27,8 +27,8 @@ extern MouseControl* g_Mouse_0046aa18;
 
 extern "C" {
     extern int g_GameEngine_0046a6ec;
-    extern void* DAT_0046aa14;
-    extern char DAT_00473400;
+    extern VBuffer* DAT_0046aa14;
+    extern char g_CinematicDebugStr_00473400;
 }
 extern int g_WaitForInputValue_004373bc;
 
@@ -144,7 +144,7 @@ SC_Cinematic::~SC_Cinematic() {
 
 /* Function start: 0x42FCF0 */
 void SC_Cinematic::Init(SC_Message* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
 
     CopyCommandData(msg);
 
@@ -152,29 +152,28 @@ void SC_Cinematic::Init(SC_Message* msg) {
     flags = 0x10;
     savedRenderCtx = ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime;
 
-    int iVar11 = (int)g_ZBufferManager_0046aa24;
-    if (iVar11 != 0) {
-        int savedState = *(int*)(iVar11 + 0x98);
+    ZBufferManager* zbm = g_ZBufferManager_0046aa24;
+    if (zbm != 0) {
+        int savedState = zbm->m_state;
         if (savedState != 0) {
-            *(int*)(iVar11 + 0x98) = 0;
+            zbm->m_state = 0;
 
-            int* piVar5 = *(int**)(iVar11 + 0xa0);
-            if (*piVar5 != 0) {
-                piVar5[2] = *piVar5;
-                while (*piVar5 != 0) {
-                    void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
+            ZBQueue* q1 = zbm->m_queueA0;
+            if (q1->head != 0) {
+                q1->current = q1->head;
+                while (q1->head != 0) {
+                    void* obj = ((LinkedList*)q1)->RemoveCurrent();
                     if (obj != 0) {
-                        // vtable reset before free (no-op)
                         FreeMemory(obj);
                     }
                 }
             }
 
-            int* piVar6 = *(int**)(iVar11 + 0xa4);
-            if (*piVar6 != 0) {
-                piVar6[2] = *piVar6;
-                while (*piVar6 != 0) {
-                    void* obj = ((LinkedList*)piVar6)->RemoveCurrent();
+            ZBQueue* q2 = zbm->m_queueA4;
+            if (q2->head != 0) {
+                q2->current = q2->head;
+                while (q2->head != 0) {
+                    void* obj = ((LinkedList*)q2)->RemoveCurrent();
                     if (obj != 0) {
                         ((ZBuffer*)obj)->CleanUpVBuffer();
                         FreeMemory(obj);
@@ -182,30 +181,29 @@ void SC_Cinematic::Init(SC_Message* msg) {
                 }
             }
 
-            LinkedList* list3 = *(LinkedList**)(iVar11 + 0x9c);
-            if (list3->head != 0) {
-                list3->current = list3->head;
-                while (list3->head != 0) {
-                    void* obj = list3->RemoveCurrent();
+            ZBQueue* q3 = zbm->m_queue9c;
+            if (q3->head != 0) {
+                q3->current = q3->head;
+                while (q3->head != 0) {
+                    void* obj = ((LinkedList*)q3)->RemoveCurrent();
                     if (obj != 0) {
-                        // vtable reset before free (no-op)
                         ((Rect*)((char*)obj + 4))->~Rect();
                         FreeMemory(obj);
                     }
                 }
             }
 
-            *(int*)(iVar11 + 0xa8) = 0;
+            zbm->m_palette = 0;
         }
         savedZBState = savedState;
     }
 
-    moduleParam = pmsg[1];
-    flags |= pmsg[5];
+    moduleParam = action->addressValue;
+    flags |= action->extra1;
 
-    if (pmsg[13] != 0) {
-        pendingAction = pmsg[13];
-        pmsg[13] = 0;
+    if ((int)action->childAction != 0) {
+        pendingAction = (int)action->childAction;
+        action->childAction = 0;
     }
 
     char* movieName = GetCinematicFilename(moduleParam);
@@ -222,7 +220,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
             }
             if (gs->stateValues[4] != 0) {
                 flags |= 0x100;
-                strcpy(&DAT_00473400, moviePath);
+                strcpy(&g_CinematicDebugStr_00473400, moviePath);
             }
         }
 
@@ -230,16 +228,16 @@ void SC_Cinematic::Init(SC_Message* msg) {
 
         ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = 0;
 
-        startX = pmsg[9];
-        startY = pmsg[10];
+        startX = action->button1;
+        startY = action->button2;
 
-        if (pmsg[7] != 0) {
-            volume = pmsg[7];
+        if (action->mousePos.field_0 != 0) {
+            volume = action->mousePos.field_0;
         } else {
             volume = 100;
         }
 
-        soundParam = pmsg[8];
+        soundParam = action->mousePos.field_4;
 
         Animation* smk = (Animation*)animation;
         if ((flags & 0x2) != 0 || smk->SetPalette(0, 0x100) == 0) {
@@ -256,27 +254,26 @@ void SC_Cinematic::Init(SC_Message* msg) {
 int SC_Cinematic::ShutDown(SC_Message* msg) {
     if (msg != 0) {
         if (g_ZBufferManager_0046aa24 != 0) {
-            int iVar3 = (int)g_ZBufferManager_0046aa24;
-            if (*(int*)(iVar3 + 0x98) != savedZBState) {
-                *(int*)(iVar3 + 0x98) = savedZBState;
+            ZBufferManager* zbm = g_ZBufferManager_0046aa24;
+            if (zbm->m_state != savedZBState) {
+                zbm->m_state = savedZBState;
 
-                int* piVar5 = *(int**)(iVar3 + 0xa0);
-                if (*piVar5 != 0) {
-                    piVar5[2] = *piVar5;
-                    while (*piVar5 != 0) {
-                        void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
+                ZBQueue* q1 = zbm->m_queueA0;
+                if (q1->head != 0) {
+                    q1->current = q1->head;
+                    while (q1->head != 0) {
+                        void* obj = ((LinkedList*)q1)->RemoveCurrent();
                         if (obj != 0) {
-                            // vtable reset before free (no-op)
                             FreeMemory(obj);
                         }
                     }
                 }
 
-                int* piVar6 = *(int**)(iVar3 + 0xa4);
-                if (*piVar6 != 0) {
-                    piVar6[2] = *piVar6;
-                    while (*piVar6 != 0) {
-                        void* obj = ((LinkedList*)piVar6)->RemoveCurrent();
+                ZBQueue* q2 = zbm->m_queueA4;
+                if (q2->head != 0) {
+                    q2->current = q2->head;
+                    while (q2->head != 0) {
+                        void* obj = ((LinkedList*)q2)->RemoveCurrent();
                         if (obj != 0) {
                             ((ZBuffer*)obj)->CleanUpVBuffer();
                             FreeMemory(obj);
@@ -284,20 +281,19 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                     }
                 }
 
-                int* list3 = *(int**)(iVar3 + 0x9c);
-                if (*list3 != 0) {
-                    list3[2] = *list3;
-                    while (*list3 != 0) {
-                        void* obj = ((LinkedList*)list3)->RemoveCurrent();
+                ZBQueue* q3 = zbm->m_queue9c;
+                if (q3->head != 0) {
+                    q3->current = q3->head;
+                    while (q3->head != 0) {
+                        void* obj = ((LinkedList*)q3)->RemoveCurrent();
                         if (obj != 0) {
-                            // vtable reset before free (no-op)
                             ((Rect*)((char*)obj + 4))->~Rect();
                             FreeMemory(obj);
                         }
                     }
                 }
 
-                *(int*)(iVar3 + 0xa8) = 0;
+                zbm->m_palette = 0;
             }
         }
 
@@ -353,9 +349,9 @@ void SC_Cinematic::Update(int param1, int param2) {
     if (waitForInput != 0) {
         (g_InputManager_0046aa08)->Refresh(1);
 
-        int* mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
+        InputState* mouse = g_InputManager_0046aa08->pMouse;
         int hasInput;
-        if (mousePtr != 0 && (mousePtr[4] >= 1 || mousePtr[5] >= 1 || g_WaitForInputValue_004373bc != 0)) {
+        if (mouse != 0 && (mouse->ext1 >= 1 || mouse->ext2 >= 1 || g_WaitForInputValue_004373bc != 0)) {
             hasInput = 1;
         } else {
             hasInput = 0;
@@ -366,7 +362,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         Animation* smk = (Animation*)animation;
-        VBuffer* vp = (VBuffer*)DAT_0046aa14;
+        VBuffer* vp = DAT_0046aa14;
         vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk->targetBuffer);
         (g_Mouse_0046aa18)->DrawCursor();
         return;
@@ -381,10 +377,10 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         if (!(flags & 0x1)) {
-            int* mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
+            InputState* mouse = g_InputManager_0046aa08->pMouse;
             int hasInput;
-            if (mousePtr != 0) {
-                if (mousePtr[5] >= 2) {
+            if (mouse != 0) {
+                if (mouse->ext2 >= 2) {
                     hasInput = 1;
                 } else {
                     hasInput = 0;
@@ -417,10 +413,9 @@ void SC_Cinematic::Update(int param1, int param2) {
 
     /* Frame ready - play it */
     {
-        Animation* smk = (Animation*)animation;
-        int* smkData = (int*)(int)smk->smk;
-        if (*(int*)((char*)smkData + 0x68) != 0) {
-            smk->UpdatePalette(0, 0x100);
+        Animation* anim = (Animation*)animation;
+        if (anim->smk->NewPalette != 0) {
+            anim->UpdatePalette(0, 0x100);
         }
     }
 
@@ -440,17 +435,16 @@ void SC_Cinematic::Update(int param1, int param2) {
     if (flags & 0x100) {
         SetFontColor(0xfa);
         SetFontPosition(0x14, 0x14);
-        int len = strlen(&DAT_00473400);
-        DrawFontText(&DAT_00473400, len);
+        int len = strlen(&g_CinematicDebugStr_00473400);
+        DrawFontText(&g_CinematicDebugStr_00473400, len);
     }
 
     {
-        Animation* smk = (Animation*)animation;
-        int* smkData = (int*)(int)smk->smk;
-        int totalFrames = *(int*)((char*)smkData + 0xc);
-        int skipped = *(int*)((char*)smkData + 0x374);
-        if (totalFrames - skipped != 1) {
-            smk->NextFrame();
+        Animation* anim2 = (Animation*)animation;
+        int totalFrames = anim2->smk->Frames;
+        int currentFrame = anim2->smk->FrameNum;
+        if (totalFrames - currentFrame != 1) {
+            anim2->NextFrame();
             return;
         }
     }
@@ -459,9 +453,9 @@ void SC_Cinematic::Update(int param1, int param2) {
     if (flags & 0x200) {
         waitForInput = 1;
 
-        Animation* smk = (Animation*)animation;
-        int* smkSurface = (int*)(int)smk->targetBuffer;
-        SetVideoRes(smkSurface[5], smkSurface[6]);
+        Animation* anim3 = (Animation*)animation;
+        VBuffer* tb = anim3->targetBuffer;
+        SetVideoRes(tb->width, tb->height);
 
         ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = savedRenderCtx;
 
@@ -470,31 +464,30 @@ void SC_Cinematic::Update(int param1, int param2) {
             if (savedZBState != 0) {
                 newState = savedZBState;
             }
-            int iVar2 = (int)g_ZBufferManager_0046aa24;
-            int* statePtr = (int*)(iVar2 + 0x98);
-            if (*statePtr != newState) {
-                *statePtr = newState;
+            ZBufferManager* zbm = g_ZBufferManager_0046aa24;
+            if (zbm->m_state != newState) {
+                zbm->m_state = newState;
 
-                int* list1 = *(int**)(iVar2 + 0xa0);
-                if (*list1 != 0) {
-                    list1[2] = *list1;
-                    while (*list1 != 0) {
-                        void* obj = ((LinkedList*)list1)->RemoveCurrent();
+                ZBQueue* q1 = zbm->m_queueA0;
+                if (q1->head != 0) {
+                    q1->current = q1->head;
+                    while (q1->head != 0) {
+                        void* obj = ((LinkedList*)q1)->RemoveCurrent();
                         if (obj != 0) {
                             delete (SoundCommand*)obj;
                         }
                     }
                 }
 
-                ClearActionList((LinkedList*)*(void**)(iVar2 + 0xa4));
-                ((ZBQueue*)*(void**)(iVar2 + 0x9c))->ClearList();
-                *(int*)(iVar2 + 0xa8) = 0;
+                ClearActionList((LinkedList*)zbm->m_queueA4);
+                zbm->m_queue9c->ClearList();
+                zbm->m_palette = 0;
             }
         }
 
-        Animation* smk2 = (Animation*)animation;
-        VBuffer* vp = (VBuffer*)DAT_0046aa14;
-        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk2->targetBuffer);
+        Animation* anim4 = (Animation*)animation;
+        VBuffer* vp = DAT_0046aa14;
+        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)anim4->targetBuffer);
     } else {
         Timer timer;
         timer.Wait(0x96);
@@ -504,11 +497,11 @@ void SC_Cinematic::Update(int param1, int param2) {
 
 /* Function start: 0x4306A0 */
 int SC_Cinematic::AddMessage(SC_Message* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
     WriteMessageAddress(msg);
 
-    if (pmsg[11] == 0x1b || pmsg[10] > 1) {
-        pmsg[4] = 0;
+    if (action->lastKey == 0x1b || action->button2 > 1) {
+        action->instruction = 0;
         EndCinematic();
     }
 
