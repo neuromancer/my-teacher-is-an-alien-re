@@ -162,9 +162,9 @@ void SC_Cinematic::Init(SC_Message* msg) {
             if (q1->head != 0) {
                 q1->current = q1->head;
                 while (q1->head != 0) {
-                    void* obj = ((LinkedList*)q1)->RemoveCurrent();
+                    void* obj = q1->Pop();
                     if (obj != 0) {
-                        FreeMemory(obj);
+                        delete (SoundCommand*)obj;
                     }
                 }
             }
@@ -173,7 +173,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
             if (q2->head != 0) {
                 q2->current = q2->head;
                 while (q2->head != 0) {
-                    void* obj = ((LinkedList*)q2)->RemoveCurrent();
+                    void* obj = q2->Pop();
                     if (obj != 0) {
                         ((ZBuffer*)obj)->CleanUpVBuffer();
                         FreeMemory(obj);
@@ -181,18 +181,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
                 }
             }
 
-            ZBQueue* q3 = zbm->m_queue9c;
-            if (q3->head != 0) {
-                q3->current = q3->head;
-                while (q3->head != 0) {
-                    void* obj = ((LinkedList*)q3)->RemoveCurrent();
-                    if (obj != 0) {
-                        ((Rect*)((char*)obj + 4))->~Rect();
-                        FreeMemory(obj);
-                    }
-                }
-            }
-
+            zbm->m_queue9c->ClearList();
             zbm->m_palette = 0;
         }
         savedZBState = savedState;
@@ -262,9 +251,9 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                 if (q1->head != 0) {
                     q1->current = q1->head;
                     while (q1->head != 0) {
-                        void* obj = ((LinkedList*)q1)->RemoveCurrent();
+                        void* obj = q1->Pop();
                         if (obj != 0) {
-                            FreeMemory(obj);
+                            delete (SoundCommand*)obj;
                         }
                     }
                 }
@@ -273,7 +262,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                 if (q2->head != 0) {
                     q2->current = q2->head;
                     while (q2->head != 0) {
-                        void* obj = ((LinkedList*)q2)->RemoveCurrent();
+                        void* obj = q2->Pop();
                         if (obj != 0) {
                             ((ZBuffer*)obj)->CleanUpVBuffer();
                             FreeMemory(obj);
@@ -281,18 +270,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                     }
                 }
 
-                ZBQueue* q3 = zbm->m_queue9c;
-                if (q3->head != 0) {
-                    q3->current = q3->head;
-                    while (q3->head != 0) {
-                        void* obj = ((LinkedList*)q3)->RemoveCurrent();
-                        if (obj != 0) {
-                            ((Rect*)((char*)obj + 4))->~Rect();
-                            FreeMemory(obj);
-                        }
-                    }
-                }
-
+                zbm->m_queue9c->ClearList();
                 zbm->m_palette = 0;
             }
         }

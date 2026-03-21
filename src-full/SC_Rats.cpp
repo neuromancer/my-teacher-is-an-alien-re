@@ -75,7 +75,7 @@ void SC_Rats::Init(SC_Message* msg) {
             while (*list1 != 0) {
                 int* item = (int*)((LinkedList*)list1)->RemoveCurrent();
                 if (item != 0) {
-                    *item = 0x461030;
+                    
                     FreeMemory(item);
                 }
             }

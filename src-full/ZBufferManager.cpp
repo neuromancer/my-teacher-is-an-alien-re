@@ -571,7 +571,7 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
     case 1:
         cmd->Execute(&rect);
         if (cmd != 0) {
-            *(int*)cmd = 0x461030;
+            
             FreeMemory(cmd);
         }
         break;
@@ -721,7 +721,7 @@ void ZBufferManager::ProcessRenderQueues()
                     ((SoundCommand*)data)->Execute(&rect);
 
                     if (data != 0) {
-                        *(int*)data = 0x461030;
+                        
                         FreeMemory(data);
                     }
                 }

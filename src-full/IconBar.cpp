@@ -129,7 +129,7 @@ void IconBar::Init(SC_Message* msg) {
             while (*piVar1 != 0) {
                 int* item = (int*)((LinkedList*)piVar1)->RemoveCurrent();
                 if (item != 0) {
-                    *item = 0x461030;
+                    
                     FreeMemory(item);
                 }
             }

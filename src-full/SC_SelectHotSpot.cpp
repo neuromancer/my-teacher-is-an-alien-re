@@ -463,7 +463,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
             while (*piVar5 != 0) {
                 void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
                 if (obj != 0) {
-                    *(int*)obj = 0x461030;
+                    
                     FreeMemory(obj);
                 }
             }

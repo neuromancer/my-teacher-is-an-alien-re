@@ -334,7 +334,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                 while (queue->head != 0) {
                     void* item = queue->RemoveCurrent();
                     if (item != 0) {
-                        *(int*)item = 0x461030;
+                        
                         FreeMemory(item);
                     }
                 }

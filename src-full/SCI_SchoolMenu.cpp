@@ -401,7 +401,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         while (queue->head != 0) {
             void* item = ((LinkedList*)queue)->RemoveCurrent();
             if (item != 0) {
-                *(int*)item = 0x461030;
+                
                 free(item);
             }
         }

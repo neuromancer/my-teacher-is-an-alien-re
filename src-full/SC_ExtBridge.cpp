@@ -86,7 +86,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
             while (*list1 != 0) {
                 void* obj = ((LinkedList*)list1)->RemoveCurrent();
                 if (obj != 0) {
-                    *(int*)obj = 0x461030;
+                    
                     free(obj);
                 }
             }
