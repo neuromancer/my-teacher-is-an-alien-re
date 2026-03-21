@@ -65,7 +65,7 @@ void ShutdownGameSystems();
 void CreateGameObject_1();
 void InitGameConfig();
 int GetFileAttributes_Wrapper(const char *param_1, char param_2);
-int IsAppDeactivated();
+int IsAppReady();
 
 // Full-game-only functions (not in demo)
 const char* __cdecl CDData_ResolvePath(const char *format, ...);
@@ -347,7 +347,7 @@ extern "C" int ProcessMessages() {
       DispatchMessageA(&local_1c);
       iVar1 = PeekMessageA(&local_1c, NULL, 0, 0, PM_REMOVE);
     }
-    iVar1 = IsAppDeactivated();
+    iVar1 = IsAppReady();
     if (iVar1 != 0) {
       return 0;
     }
@@ -459,13 +459,9 @@ int WaitForInput() {
   return iVar1;
 }
 
-/* Function start: 0x453CC8 */
-// Original returns [0x472d14] - a .data initialized global (always 1).
-// ProcessMessages loops until this returns non-zero, making it non-blocking.
-static int g_AppReady_00472d14 = 1; // DAT_00472d14
-
-int IsAppDeactivated() {
-  return g_AppReady_00472d14;
+/* Function start: 0x420610 */
+int IsAppReady() {
+  return g_ActivateAppState_00472d14;
 }
 
 /* Function start: 0x420620 */

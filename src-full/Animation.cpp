@@ -15,8 +15,8 @@
 
 extern "C" {
 void *GetGameWindowHandle();
-int *GetWindowHeight();
-int *GetWindowWidth();
+int *GetScreenHeight();
+int *GetScreenWidth();
 }
 
 // BlankScreen moved to Graphics.cpp (0x419390)
@@ -345,7 +345,7 @@ void Animation::MainLoop() {
 
       VBuffer *vb = targetBuffer;
       vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0,
-                       *GetWindowWidth() - 1, 0, *GetWindowHeight() - 1);
+                       *GetScreenWidth() - 1, 0, *GetScreenHeight() - 1);
 
       if ((int)smk->Frames - 1 <= frame) break;
       frame++;

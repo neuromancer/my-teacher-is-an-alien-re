@@ -17,11 +17,7 @@ int InvalidateVideoMode();
 int CleanupVideoSystem();
 }
 
-static int s_WindowHeight = 480;
 static int s_WindowedMode = 0;
-
-/* Function start: 0x4224F0 */
-extern "C" int* GetWindowHeight() { return &s_WindowHeight; }
 
 extern "C" int* GetWindowedModeFlag() { return &s_WindowedMode; }
 
@@ -65,12 +61,12 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
       local_30.hCursor = LoadCursorA((HINSTANCE)0x0, (LPCSTR)0x7f00);
       local_30.hbrBackground = (HBRUSH)0x0;
       local_30.lpszMenuName = (LPCSTR)0x0;
-      local_30.lpszClassName = "Teacher Demo";
+      local_30.lpszClassName = "Teacher v(0.950)";
       local_30.hIconSm = local_30.hIcon;
       RegisterClassExA(&local_30);
     }
     SmackSetSystemRes(2);
-    hWnd = CreateWindowExA(8, "Teacher Demo", "Teacher Demo",
+    hWnd = CreateWindowExA(8, "Teacher v(0.950)", "Teacher v(0.950)",
                                  0x80000000, 0, 0, 0x280, 0x1e0,
                                  (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
   } else {
@@ -85,20 +81,20 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
       local_30.hCursor = LoadCursorA((HINSTANCE)0x0, (LPCSTR)0x7f00);
       local_30.hbrBackground = (HBRUSH)0x0;
       local_30.lpszMenuName = (LPCSTR)0x0;
-      local_30.lpszClassName = "Teacher Demo";
+      local_30.lpszClassName = "Teacher v(0.950)";
       local_30.hIconSm = local_30.hIcon;
       RegisterClassExA(&local_30);
     }
     int iVar2 = (GetSystemMetrics(0) - 0x280) / 2;
     int iVar3 = (GetSystemMetrics(1) - 0x1e0) / 2;
-    hWnd = CreateWindowExA(0, "Teacher Demo", "Teacher Demo",
+    hWnd = CreateWindowExA(0, "Teacher v(0.950)", "Teacher v(0.950)",
                                  0x80000000, iVar2, iVar3, 0x280, 0x1e0,
                                  (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
   }
   ShowWindow(hWnd, param_4);
 }
 
-/* Function start: 0x422250 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x420300 */
 void __stdcall ParseCommandLine(char *param_1) {
   int iVar1;
   int *piVar2;
@@ -175,14 +171,14 @@ void GameWindow::Shutdown() {
     SetActiveWindow(savedActiveWindow);
 }
 
-/* Function start: 0x420610 */
+/* Function start: 0x4205D0 */
 extern "C" void* GetGameWindowHandle() {
   return g_GameWindow.hWnd;
 }
 
 /* Function start: 0x420600 */
 extern "C" int* GetWindowWidth() {
-  return &DAT_0043de88;
+  return &g_WindowWidth_00472d10;
 }
 
 // Full game globals for screen dimensions (initialized in .data section)

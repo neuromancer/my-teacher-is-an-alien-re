@@ -6,7 +6,7 @@
 #include "globals.h" // For globals like DAT_004373bc
 
 extern "C" int* GetWindowWidth();  // FUN_004224e0
-extern "C" int* GetWindowHeight(); // FUN_004224f0
+extern "C" int* GetScreenHeight(); // FUN_004224f0
 // Forward declarations for functions implemented below
 void InitClickTimers();      // 0x421AC0
 int GetJoystickCount();      // 0x421AE0
@@ -44,7 +44,7 @@ void InputManager::InitDevices(int param_1) {
 
     memset(this, 0, 0x6e * 4);
 
-    screenHeight = *GetWindowHeight();
+    screenHeight = *GetScreenHeight();
     screenWidth = *GetWindowWidth();
     screenHeight = screenHeight - 1;
     screenWidth = screenWidth - 1;

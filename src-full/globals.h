@@ -656,7 +656,7 @@ extern char g_CmdLineDataPath_0043d568[]; // Command line data path [260 bytes]
 extern HWND DAT_0043de7c; // DAT_0043de7c  { /* 4 bytes */ }
 extern HDC g_WindowDC_00472d00; // Window DC
 extern HPALETTE g_WindowPalette_00472d04; // Window palette
-extern int DAT_0043de88; // Window width
+extern int g_WindowWidth_00472d10; // Window width
 extern int DAT_0043de8c; // Window height
 extern int DAT_0043de90; // Windowed mode flag
 extern int g_ActivateAppState_00472d14; // Activate app state
