@@ -6,6 +6,7 @@
 
 extern "C" {
     char* strstr_custom(const char* haystack, const char* needle);
+    char* FindAfterSubstring(char* s1, char* s2); // 0x426570 - strstr + skip past match
     void ExecuteFunctionArray(void** param_1, void** param_2);
     void ShowError(const char* format, ...);
     void exitWithError_(unsigned int param_1);

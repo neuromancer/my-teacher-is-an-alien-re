@@ -18,7 +18,6 @@ public:
     void CloseFile();
     void Open(char *param_1);
     void Copy(Parser* other);
-    Parser* CopyParserFields(Parser* src);  // 0x406610
     void SaveFilePosition();
     void RestoreFilePosition();
     void FindKey(unsigned char*);

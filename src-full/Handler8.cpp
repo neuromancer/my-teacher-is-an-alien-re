@@ -71,52 +71,7 @@ void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
     return block;
 }
 
-/* Function start: 0x406610 */
-Parser* Parser::CopyParserFields(Parser* src)
-{
-    unsigned int i;
-    int* dstPtr;
-    int* srcPtr;
-    int tmp1, tmp2;
-
-    Parser::m_subObject = src->m_subObject;
-    Parser::isProcessingKey = src->isProcessingKey;
-    for (i = 0; i < sizeof(currentKey); i++) {
-        Parser::currentKey[i] = src->currentKey[i];
-    }
-    Parser::lineNumber = src->lineNumber;
-    dstPtr = &savedFilePos;
-    srcPtr = &src->savedFilePos;
-    tmp1 = srcPtr[0];
-    tmp2 = srcPtr[1];
-    dstPtr[0] = tmp1;
-    dstPtr[1] = tmp2;
-    for (i = 0; i < sizeof(filename); i++) {
-        Parser::filename[i] = src->filename[i];
-    }
-    Parser::pFile = src->pFile;
-    return this;
-}
-
-/* Function start: 0x406670 */
-void InitMessageArray(int* param_1, int param_2)
-{
-    int* ptr;
-    int count;
-
-    ptr = param_1;
-    memset(ptr, 0, param_2 * sizeof(SC_Message));
-
-    count = param_2;
-    param_2 = count - 1;
-    if (count != 0) {
-        do {
-            if (param_1 != 0) {
-                ((SC_Message*)param_1)->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            }
-            param_1 = param_1 + sizeof(SC_Message) / sizeof(int);
-            count = param_2;
-            param_2--;
-        } while (count != 0);
-    }
-}
+/* DEMO ONLY: CopyParserFields (0x406610) and InitMessageArray (0x406670) removed
+   - Neither exists in the full game binary
+   - CopyParserFields: declared in Parser.h but never called
+   - InitMessageArray: zero references */

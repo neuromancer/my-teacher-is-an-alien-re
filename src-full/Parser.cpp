@@ -149,7 +149,7 @@ void Parser::FindKey(unsigned char *param_1) {
   }
 }
 
-extern "C" char* FindAfterSubstring(char*, char*); // case-insensitive strstr (0x426570)
+// FindAfterSubstring declared in string.h (0x426570)
 
 /* Function start: 0x413810 */
 int Parser::GetTokenType(char* line) {
@@ -434,14 +434,17 @@ void Parser::PushConditionalState(int value) {
     }
 
     int* node = (int*)*freeList;
+    int n = 0;
     *freeList = node[0];
-    node[1] = 0;
+    node[1] = n;
     node[0] = headVal;
     pool[2]++;
-    node[2] = 0;
-
-    { volatile int n = 0; while (n-- != 0); }
-
+    node[2] = n;
+    do {
+        int prev = n;
+        n--;
+        if (prev == 0) break;
+    } while (1);
     node[2] = value;
 
     if (pool[0] != 0) {
@@ -546,7 +549,6 @@ extern GameState* DAT_0046aa38;
 extern MouseControl* g_Mouse_0046aa18;
 extern int DAT_00469160;
 
-extern "C" char* FindAfterSubstring(char* s1, char* s2);
 extern "C" char* strstr(const char*, const char*);
 
 /* Function start: 0x413120 */
@@ -597,7 +599,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         pcVar7 = FindAfterSubstring(line, "SET_GAMESTATE_");
         pcVar6 = local_14;
         if (pcVar7 != 0) {
-            pcVar6 = (char*)sscanf(pcVar7, " %s %s %d", local_38, local_90, &local_14);
+            pcVar6 = (char*)sscanf(pcVar7, " %s %s %d ", local_38, local_90, &local_14);
         }
         if (pcVar6 != (char*)3) {
             ShowError("Parser::HandleToken - Invalid SET_GAMESTATE statement '%s'", line);
@@ -768,11 +770,11 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 0xD:
         iVar12 = 0;
-        local_14 = FindAfterSubstring(line, "=");
+        local_14 = FindAfterSubstring(line, "V_>>");
         if (local_14 == 0) {
             pcVar6 = 0;
         } else {
-            pcVar6 = strstr(local_14, "(");
+            pcVar6 = strstr(local_14, "<<");
             if (pcVar6 != 0) {
                 local_1c = FindAfterSubstring(pcVar6, ">>");
                 if (local_1c != 0) {
@@ -787,7 +789,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         if (iVar12 != 2) {
             ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'", line);
         }
-        if (strcmp((char*)local_110, "INT") == 0) {
+        if (strcmp((char*)local_110, "GS") == 0) {
             local_74 = (char*)g_GameState_0046aa30;
             int idx = g_GameState_0046aa30->FindState((char*)local_58);
             if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
