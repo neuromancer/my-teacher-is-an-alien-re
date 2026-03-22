@@ -6,6 +6,8 @@
 #include "Memory.h"
 #include "LinkedList.h"
 
+struct SoundEntry;
+
 // SC_OnScreenMessage - Handler class with ID 4 (full game)
 // Size: 0xC0 bytes
 // vtable: 0x461a60
@@ -24,6 +26,7 @@ public:
     virtual int Exit(SC_Message* msg);
 
     void Copy(SC_OnScreenMessage* other);
+    SoundEntry* FindOrCreateSoundEntry(int soundId);
 
     // Fields starting at 0xA8 (Handler base is 0xA8 in full game)
     Timer timer;                // 0xA8 - 0xBB (size 0x14)

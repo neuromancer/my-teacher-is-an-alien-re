@@ -12,13 +12,9 @@ public:
   char field_190[0x110];       // offset 0x190
 
   CDData(char *param_1, const char *param_2, const char *param_3);
-  CDData(char *param_1, char *param_2);
   ~CDData();
 
   void Setup(char *param_1, const char *param_2, const char *param_3); // 0x432FD0
-  int CheckFileOnDrive(int drive_letter);
-  int ChangeToDriveDirectory(int drive_letter);
-  int ChangeDirectory(unsigned char *path);
   int ResolvePath(char* param_1);
 };
 

@@ -16,8 +16,6 @@ extern "C" {
 }
 
 // FUN_00448140 = SoundEntry::SoundUpdate — implemented below
-extern SoundEntry* __fastcall FUN_00448c60(SC_OnScreenMessage* self, int dummy, int soundId);
-extern void* __fastcall FUN_00449050(MessageList* list);
 
 /* Function start: 0x4482F0 */
 SC_OnScreenMessage::SC_OnScreenMessage() {
@@ -197,7 +195,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
     switch (msgData[4]) {
     case 2:
     {
-        item = FUN_00448c60(this, 0, msgData[1]);
+        item = FindOrCreateSoundEntry(msgData[1]);
         snd = item->sample;
         if (snd == 0) break;
         int loop = 1;
@@ -222,7 +220,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
         if (pList->head != 0) {
             pList->current = pList->head;
             while (pList->head != 0) {
-                data = (SoundEntry*)FUN_00449050(pList);
+                data = (SoundEntry*)pList->PopCurrent();
                 if (data != 0) {
                     delete data;
                 }
@@ -233,7 +231,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     case 0x11:
     {
-        item = FUN_00448c60(this, 0, msgData[1]);
+        item = FindOrCreateSoundEntry(msgData[1]);
         snd = item->sample;
         if (snd == 0) break;
         int vol = AIL_sample_volume(snd->m_sample);
@@ -243,7 +241,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     case 0x12:
     {
-        item = FUN_00448c60(this, 0, msgData[1]);
+        item = FindOrCreateSoundEntry(msgData[1]);
         snd = item->sample;
         if (snd == 0) break;
         int vol = AIL_sample_volume(snd->m_sample);
@@ -253,14 +251,14 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     case 0x13:
     {
-        FUN_00448c60(this, 0, msgData[1]);
-        item = FUN_00448c60(this, 0, msgData[1]);
+        FindOrCreateSoundEntry(msgData[1]);
+        item = FindOrCreateSoundEntry(msgData[1]);
         item->FadeVolume(msgData[5], msgData[6]);
         break;
     }
 
     case 0x17:
-        FUN_00448c60(this, 0, msgData[1]);
+        FindOrCreateSoundEntry(msgData[1]);
         break;
 
     case 0x18:
@@ -300,8 +298,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
                             nd->next->prev = nd->prev;
                         }
 
-                        extern void* __fastcall FUN_00448c50(MessageList*);
-                        data = (SoundEntry*)FUN_00448c50(pList);
+                        data = (SoundEntry*)pList->GetCurrentData();
 
                         nd = (MessageNode*)pList->current;
                         if (nd != 0) {
@@ -332,7 +329,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     case 0x1b:
     {
-        item = FUN_00448c60(this, 0, msgData[1]);
+        item = FindOrCreateSoundEntry(msgData[1]);
         snd = item->sample;
         if (snd == 0) break;
         int dur = 100;
@@ -354,44 +351,13 @@ int SC_OnScreenMessage::AddMessage(SC_Message* msg) { return 1; }
 int SC_OnScreenMessage::ShutDown(SC_Message* msg) { return 0; }
 
 /* Function start: 0x448C50 */
-void* __fastcall FUN_00448c50(MessageList* list) {
-    MessageNode* node = (MessageNode*)list->current;
+void* MessageList::GetCurrentData() {
+    MessageNode* node = (MessageNode*)current;
     if (node == 0) return 0;
     return node->data;
 }
 
-/* Function start: 0x449050 */
-void* __fastcall FUN_00449050(MessageList* list) {
-    MessageNode* node = (MessageNode*)list->current;
-    if (node == 0) return 0;
-
-    if (list->head == node) {
-        list->head = node->next;
-    }
-    if (list->tail == node) {
-        list->tail = node->prev;
-    }
-    if (node->prev != 0) {
-        node->prev->next = node->next;
-    }
-    if (node->next != 0) {
-        node->next->prev = node->prev;
-    }
-
-    void* data = 0;
-    if (node != 0) {
-        data = node->data;
-    }
-    if (node != 0) {
-        node->data = 0;
-        node->prev = 0;
-        node->next = 0;
-        FreeMemory(node);
-        list->current = 0;
-    }
-    list->current = list->head;
-    return data;
-}
+// FUN_00449050 = MessageList::PopCurrent — COMDAT of 0x431B60, defined in MessageList.cpp
 
 /* Function start: 0x447FF0 */
 SoundEntry::SoundEntry(int id) {
@@ -475,8 +441,8 @@ void SoundEntry::FadeVolume(int volume, unsigned int duration) {
 }
 
 /* Function start: 0x448C60 */
-SoundEntry* __fastcall FUN_00448c60(SC_OnScreenMessage* self, int dummy, int soundId) {
-    MessageList* list = self->m_messageList;
+SoundEntry* SC_OnScreenMessage::FindOrCreateSoundEntry(int soundId) {
+    MessageList* list = m_messageList;
     MessageNode* node;
 
     // Search for existing entry with this soundId

@@ -545,7 +545,7 @@ push_result:
 #include "Sprite.h"
 
 extern "C" extern GameState* g_GameState_0046aa30;
-extern GameState* DAT_0046aa38;
+extern GameState* g_StringState_0046aa38;
 extern MouseControl* g_Mouse_0046aa18;
 extern int DAT_00469160;
 
@@ -607,7 +607,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         {
             SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             action.addressValue = g_GameState_0046aa30->FindState(local_38);
-            action.instruction = DAT_0046aa38->FindState(local_90);
+            action.instruction = g_StringState_0046aa38->FindState(local_90);
             action.extra1 = (int)local_14;
             g_GameState_0046aa30->SetFromAction((int*)&action);
         }

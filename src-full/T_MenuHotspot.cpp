@@ -96,7 +96,7 @@ void T_MenuHotspot::Update()
 extern "C" void ShowError(const char* format, ...);
 
 extern void ParseSpriteAction(void*, void*);
-extern void* __fastcall FUN_0040cf40(void*, int, void*);
+// FUN_0040cf40 = ListNode::Init — constructor in LinkedList.h
 
 /* Function start: 0x421080 */
 int T_MenuHotspot::LBLParse(char* line) {

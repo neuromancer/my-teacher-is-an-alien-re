@@ -36,8 +36,8 @@ extern int DAT_0047337c;
 
 // FUN_00421020 = ProcessSpriteActions - implemented below
 void __fastcall ProcessSpriteActions(void* obj);
-extern void __fastcall FUN_00421880(void*);
-extern void __fastcall FUN_004218b0(void*);
+// FUN_00421880 = Timer::Timer — implemented in Timer.cpp
+// FUN_004218b0 = Timer::~Timer — implemented in Timer.cpp
 // FUN_0041dbe0 = InitPalette (Palette.h)
 
 // T_MenuHotspot is the 0x1A8-byte menu button widget

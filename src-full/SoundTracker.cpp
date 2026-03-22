@@ -24,7 +24,7 @@ struct SoundPool {
 };
 
 extern int DAT_00469128;
-extern SoundPool* DAT_00469134;
+extern SoundPool* g_SoundPool_00469134;
 extern int DAT_0046912c;
 extern int DAT_00469130;
 extern void* DAT_00469138;
@@ -36,8 +36,8 @@ extern "C" char* internal_ReadLine(char*, int, FILE*);
 extern void EncryptAndWrite(char*, FILE*);
 // sscanf from stdio.h
 // _findfirst/_findnext from io.h
-extern "C" int FUN_00454510(char*, ...);
-extern "C" int FUN_0044e470(char*);
+// FUN_00454510 = sprintf — CRT function
+// FUN_0044e470 = MakeAudioName — implemented in string.cpp
 
 #include "Timer.h"
 #include "FilePosCache.h"
@@ -47,7 +47,7 @@ extern void* g_FilePosCache;
 SoundTracker::SoundTracker(int param) {
     field_0 = 0;
     DAT_00469128 = param;
-    DAT_00469134 = new SoundPool(param);
+    g_SoundPool_00469134 = new SoundPool(param);
     Init();
 }
 
@@ -60,8 +60,8 @@ SoundTracker::~SoundTracker() {
     int i;
 
     Cleanup();
-    if (DAT_00469134 != 0) {
-        p = DAT_00469134;
+    if (g_SoundPool_00469134 != 0) {
+        p = g_SoundPool_00469134;
         node = p->head;
         while (node != 0) {
             data = (int*)(node + 2);
@@ -90,7 +90,7 @@ SoundTracker::~SoundTracker() {
         }
         p->blockList = 0;
         operator delete(p);
-        DAT_00469134 = 0;
+        g_SoundPool_00469134 = 0;
     }
 }
 
@@ -102,7 +102,7 @@ void SoundTracker::ClearPool() {
     int i;
     int* next;
 
-    p = DAT_00469134;
+    p = g_SoundPool_00469134;
     node = p->head;
     while (node != 0) {
         data = node + 2;
@@ -214,7 +214,7 @@ void SoundTracker::Cleanup() {
     int* data;
 
     FILE* fp = _fsopen("cfg\\miscache.dat", "w", 0x40);
-    node = DAT_00469134->head;
+    node = g_SoundPool_00469134->head;
     while (node != 0) {
         int* next = (int*)node[0];
         data = node + 2;

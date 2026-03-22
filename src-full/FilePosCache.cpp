@@ -4,7 +4,7 @@
 #include <string.h>
 
 struct SoundPool;
-extern SoundPool* DAT_00469134;  // cache pool
+extern SoundPool* g_SoundPool_00469134;  // cache pool
 extern void* DAT_00469138;       // LRU tracking node
 extern int DAT_00469128;         // max cache size
 extern int DAT_0046912c;         // hit counter
@@ -14,7 +14,7 @@ FilePosCache* g_FilePosCache_46928c = 0;  // DAT_0046928c
 
 /* Function start: 0x412130 */
 __int64 FilePosCache::Lookup(char* fname, char* keyName) {
-    int* pool = (int*)DAT_00469134;
+    int* pool = (int*)g_SoundPool_00469134;
     int* node = (int*)pool[0];  // head
     DAT_00469138 = (void*)node;
 
@@ -53,7 +53,7 @@ not_found:
 
 /* Function start: 0x412210 */
 void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
-    int* pool = (int*)DAT_00469134;
+    int* pool = (int*)g_SoundPool_00469134;
 
     // If pool is full, evict LRU entry
     if (pool[2] == DAT_00469128) {
@@ -61,7 +61,7 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
 
         // Evict node at DAT_00469138
         int* evictNode = (int*)DAT_00469138;
-        int* poolPtr = (int*)DAT_00469134;
+        int* poolPtr = (int*)g_SoundPool_00469134;
 
         // Unlink from list
         if ((int*)poolPtr[0] == evictNode) {
@@ -94,7 +94,7 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
         } while (edi != 0);
 
         // Return node to free list
-        int* reloadPool = (int*)DAT_00469134;
+        int* reloadPool = (int*)g_SoundPool_00469134;
         evictNode[0] = reloadPool[3];
         reloadPool[3] = (int)evictNode;
         reloadPool[2]--;
@@ -111,7 +111,7 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
     }
 
     // Push to pool
-    int* pool2 = (int*)DAT_00469134;
+    int* pool2 = (int*)g_SoundPool_00469134;
     int* tailPtr = &pool2[1];
     int* freeList = &pool2[3];
     int tail = *tailPtr;

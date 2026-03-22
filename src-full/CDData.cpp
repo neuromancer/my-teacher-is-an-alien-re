@@ -13,10 +13,8 @@
 extern "C" {
 void ParsePath(const char *, char *, char *, char *, char *);
 char* __cdecl CDData_FormatPath(char* format, ...);  // 0x4195C0
-char* __cdecl CDData_SetResolvedPath(const char* path); // 0x419620
 int __cdecl FileExists(const char* path);           // 0x4195A0
 int __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
-int __cdecl FUN_00430310(const char* path, int param_2); // 0x430310
 }
 void ShowError(const char* format, ...);
 
@@ -29,11 +27,6 @@ extern "C" char* __cdecl CDData_FormatPath(char* param_1, ...)
     vsprintf(local_104, param_1, args);
     sprintf(g_CDData_0043697c->cdIdentifier + 5, "%s%s", g_CDData_0043697c->cdIdentifier, local_104);
     return g_CDData_0043697c->cdIdentifier + 5;
-}
-
-/* Function start: 0x419620 */ /* DEMO ONLY - no full game match */
-extern "C" char* __cdecl CDData_SetResolvedPath(const char* path) {
-    return strcpy(g_CDData_0043697c->field_190 + 0x45, path);
 }
 
 /* Function start: 0x432EC0 */
@@ -96,66 +89,6 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
     }
   }
   ShowError(param_3);
-}
-
-/* Function start: 0x421E40 */ /* DEMO ONLY - no full game match */
-CDData::CDData(char *param_1, char *param_2) {
-  memset(&baseDir, 0, 0x1e5);
-  GetCurrentDir(baseDir, 0x80);
-  if (param_1 != 0) {
-    strncpy(cdFolder, param_1, 0x40);
-  }
-  if (param_2 != 0) {
-    strncpy(field_190 + 0x35, param_2, 0x20);
-  }
-}
-
-/* Function start: 0x421EA0 */ /* DEMO ONLY - no full game match */
-extern "C" void __fastcall CDData_ChangeToBaseDir(void *cdData) {
-  chdir(((CDData*)cdData)->baseDir);
-}
-
-/* Function start: 0x421EB0 */ /* DEMO ONLY - no full game match */
-int CDData::CheckFileOnDrive(int drive_letter) {
-  char local_40[64];
-  sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
-          cdFolder, field_190 + 0x35);
-  return FileExists(local_40);
-}
-
-/* Function start: 0x421EF0 */ /* DEMO ONLY - no full game match */
-int CDData::ChangeDirectory(unsigned char *path) {
-  if (path != 0 && *path != 0) {
-    if (chdir((char *)path) != 0) {
-      return 1;
-    }
-    ParsePath((char *)path, cdIdentifier, 0, 0, 0);
-  }
-  return 0;
-}
-
-/* Function start: 0x421F40 */ /* DEMO ONLY - no full game match */
-int CDData::ChangeToDriveDirectory(int drive_letter) {
-  char local_40[64];
-
-  sprintf(local_40, "%c:\\%s\\%s", drive_letter + 0x40,
-          cdFolder, field_190 + 0x35);
-  int result = ChangeDirectory((unsigned char *)local_40);
-  return result != 0;
-}
-
-/* Function start: 0x430310 */ /* DEMO ONLY - no full game match */
-extern "C" int __cdecl FUN_00430310(const char* path, int param_2) {
-    DWORD attr = GetFileAttributesA(path);
-    if (attr == 0xFFFFFFFF) {
-        return -1;
-    }
-    
-    if ((attr & FILE_ATTRIBUTE_READONLY) && (param_2 & 2)) {
-        return -1;
-    }
-    
-    return 0;
 }
 
 extern void* DAT_0046aa1c; // CDData* for path resolution

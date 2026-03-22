@@ -44,7 +44,6 @@ public:
         m_pool_size = ps;
     }
     ~TimedEventPool();
-    PooledEvent* Create(void* callback, void* data);
     SC_Message* Pop(SC_Message* buffer);
     SC_Message* PopSafe(SC_Message* buffer);
     SpriteAction* Pop(SpriteAction* buffer);
@@ -76,9 +75,7 @@ public:
 //   0x08: embedded SC_Message data (192 bytes)
 class PooledEvent {
 public:
-    PooledEvent* CopyFrom(const PooledEvent* other);
-
-    // Get pointer to embedded event data at offset 0x08 (for CopyFrom)
+    // Get pointer to embedded event data at offset 0x08
     PooledEvent* GetEmbeddedEvent() { return (PooledEvent*)&field_0x8; }
 
     // Get pointer to embedded SC_Message at offset 0x08 (for constructor/destructor calls)

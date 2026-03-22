@@ -27,7 +27,7 @@ extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern char* g_Buffer_0046aa00;           // temp string buffer
 extern char DAT_00468108[];          // GameState key (quest level)
 extern char DAT_004690e4[];          // format string for quest
-extern GameState* DAT_0046aa38;      // secondary GameState (string table)
+extern GameState* g_StringState_0046aa38;      // secondary GameState (string table)
 
 /* Function start: 0x414780 */
 SC_Question::SC_Question(int id, SCI_Dialog* dialog)
@@ -574,7 +574,7 @@ int SC_Question::LBLParse(char* param_1)
         {
             int gsIdx1;
             int gsIdx2;
-            gsIdx1 = DAT_0046aa38->FindState(buf2);
+            gsIdx1 = g_StringState_0046aa38->FindState(buf2);
             gsIdx2 = (g_GameState_0046aa30)->FindState(buf1);
             action = new SpriteAction( 2, gsIdx2, 0, 0, gsIdx1, id, 0, 0, 0, 0);
         }

@@ -54,7 +54,7 @@ int SC_CombatBase::StopAndCleanup()
         return 1;
     }
 
-    if (DAT_0046ae70->Update() != 0) {
+    if (g_Navigator_0046ae70->Update() != 0) {
         return 1;
     }
 
@@ -80,23 +80,23 @@ int SC_CombatBase::StopAndCleanup()
 /* Function start: 0x42BFC0 */
 void SC_CombatBase::ProcessFrame()
 {
-    void* target = DAT_0046ae58->ProcessTargets();
+    void* target = g_TargetList_0046ae58->ProcessTargets();
 
-    int* obj60 = (int*)DAT_0046ae60;
+    int* obj60 = (int*)g_CombatWeapon_0046ae60;
     int* vtbl60 = (int*)*obj60;
     ((void (__fastcall *)(int*, int))vtbl60[5])(obj60, 0);
 
     int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
     if (pMouse == 0) {
-        ((int*)DAT_0046ae60)[0x2a] = 0;
+        ((int*)g_CombatWeapon_0046ae60)[0x2a] = 0;
     } else {
         int clicked = (*(int*)(pMouse + 4) >= 2) ? 1 : 0;
-        ((int*)DAT_0046ae60)[0x2a] = clicked;
+        ((int*)g_CombatWeapon_0046ae60)[0x2a] = clicked;
     }
 
-    if (((int*)DAT_0046ae60)[0x2a] != 0) {
-        int* vtbl60b = (int*)*(int*)DAT_0046ae60;
-        ((void (__fastcall *)(int*, int))vtbl60b[4])((int*)DAT_0046ae60, 0);
+    if (((int*)g_CombatWeapon_0046ae60)[0x2a] != 0) {
+        int* vtbl60b = (int*)*(int*)g_CombatWeapon_0046ae60;
+        ((void (__fastcall *)(int*, int))vtbl60b[4])((int*)g_CombatWeapon_0046ae60, 0);
         if (target != 0) {
             ((Target*)target)->UpdateProgress(1);
         }
@@ -118,8 +118,8 @@ int SC_CombatBase::UpdateSprites()
 /* Function start: 0x42C120 */
 void SC_CombatBase::RenderBackground()
 {
-    if (DAT_0046ae50 != 0) {
-        Sprite* spr = DAT_0046ae50;
+    if (g_BgSprite_0046ae50 != 0) {
+        Sprite* spr = g_BgSprite_0046ae50;
         spr->Do(spr->loc_x, spr->loc_y, 1.0);
     }
 }
@@ -127,14 +127,14 @@ void SC_CombatBase::RenderBackground()
 /* Function start: 0x42C8A0 */
 void SC_CombatBase::SetupViewport()
 {
-    DAT_0046ae50 = bgSprite;
-    DAT_0046ae60 = combatDisplay;
+    g_BgSprite_0046ae50 = bgSprite;
+    g_CombatWeapon_0046ae60 = combatDisplay;
     DAT_0046ae68 = soundList;
-    DAT_0046ae4c = weaponParser;
-    DAT_0046ae70 = navigator;
+    g_WeaponParser_0046ae4c = weaponParser;
+    g_Navigator_0046ae70 = navigator;
     DAT_0046ae64 = palette;
     DAT_0046ae5c = combatSprite;
-    DAT_0046ae58 = targetList;
+    g_TargetList_0046ae58 = targetList;
     DAT_0046ae6c = scoreDisplay;
     DAT_0046ae54 = viewport;
     DAT_0046ae74 = hotspotPool;
@@ -225,16 +225,16 @@ int SC_CombatBase::LBLParse(char* line)
     sscanf(line, "%s", token);
 
     if (strcmp(token, "ENGINE_INFO") == 0) {
-        Parser::ProcessFile((Parser*)DAT_0046ae4c, this, (char*)0);
+        Parser::ProcessFile((Parser*)g_WeaponParser_0046ae4c, this, (char*)0);
     } else if (strcmp(token, "UPDATE_DIRS") == 0) {
         extern void* DAT_0046aa1c;
         Parser::ProcessFile((Parser*)DAT_0046aa1c, this, (char*)0);
     } else if (strcmp(token, "TARGETS") == 0) {
-        Parser::ProcessFile((Parser*)DAT_0046ae58, this, (char*)0);
+        Parser::ProcessFile((Parser*)g_TargetList_0046ae58, this, (char*)0);
     } else if (strcmp(token, "SPRITELIST") == 0) {
         Parser::ProcessFile((Parser*)DAT_0046ae5c, this, (char*)0);
     } else if (strcmp(token, "NAVIGATION") == 0) {
-        Parser::ProcessFile((Parser*)DAT_0046ae70, this, (char*)0);
+        Parser::ProcessFile((Parser*)g_Navigator_0046ae70, this, (char*)0);
     } else if (strcmp(token, "SET_GAMESTATE") == 0) {
         sscanf(line, " %s %s %d", token, arg, &value);
         GameState* gs = g_GameState_0046aa30;
@@ -252,18 +252,18 @@ int SC_CombatBase::LBLParse(char* line)
             }
             if (strcmp(arg, "ROCKTHROWER") == 0) {
                 combatDisplay = new RockThrower(this);
-                DAT_0046ae60 = combatDisplay;
+                g_CombatWeapon_0046ae60 = combatDisplay;
             } else if (strcmp(arg, "RAY_GUN") == 0) {
                 combatDisplay = new WeaponDisplay();
-                DAT_0046ae60 = combatDisplay;
+                g_CombatWeapon_0046ae60 = combatDisplay;
             } else if (strcmp(arg, "NONE") == 0) {
                 combatDisplay = new Weapon();
-                DAT_0046ae60 = combatDisplay;
+                g_CombatWeapon_0046ae60 = combatDisplay;
             }
         }
     } else if (strcmp(token, "CONSOLE") == 0) {
         bgSprite = new Sprite((char*)0);
-        DAT_0046ae50 = bgSprite;
+        g_BgSprite_0046ae50 = bgSprite;
         Parser::ProcessFile(bgSprite, this, (char*)0);
     } else if (strcmp(token, "END") == 0) {
         return 1;

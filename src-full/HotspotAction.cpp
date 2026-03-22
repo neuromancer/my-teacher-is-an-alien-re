@@ -327,7 +327,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "ROLLOVER") == 0) {
         sscanf(line, " %s %s", label, buf_C0);
-        local_14 = ((GameState*)g_Mouse_0046aa18)->FUN_00432e20(buf_C0);
+        local_14 = ((GameState*)g_Mouse_0046aa18)->FindStateByName(buf_C0);
         field_B0 = local_14;
         ExtractQuotedString(line, field_B4, 0x40);
     }
@@ -659,7 +659,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(local_40),
             field_90, field_94,
-            DAT_0046aa38->FindState(buf_140),
+            g_StringState_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
         list = queue108;
         list->ResetForSortedAdd(sa);
@@ -696,7 +696,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(buf_C0),
             0, 0,
-            DAT_0046aa38->FindState(buf_140),
+            g_StringState_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
         list = queue108;
         list->ResetForSortedAdd(sa);
@@ -733,7 +733,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(buf_C0),
             0, 0,
-            DAT_0046aa38->FindState(buf_140),
+            g_StringState_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
         if ((sa->instruction == 0x11 || sa->instruction == 0x12) && result < 4) {
             sa->extra1 = 1;
@@ -835,7 +835,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             queue100 = new Queue();
         }
         sa = new SpriteAction(0x1e, local_14, field_90, field_94,
-            DAT_0046aa38->FindState(buf_C0),
+            g_StringState_0046aa38->FindState(buf_C0),
             0, 0, 0, 0, 0);
         list = queue100;
         list->ResetForSortedAdd(sa);

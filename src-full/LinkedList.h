@@ -170,7 +170,8 @@ struct MessageList : public LinkedList {
     // MessageList methods (0x40ABD0, 0x40C430, 0x40C500)
     void InsertNode(void* data);
     void InsertBeforeCurrent(void* data);
-    void* PopCurrent();
+    void* PopCurrent();       // 0x449050
+    void* GetCurrentData();   // 0x448C50
 };
 
 struct ZBQueue : public LinkedList {

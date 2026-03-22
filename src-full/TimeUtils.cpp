@@ -3,25 +3,6 @@
 
 extern "C" {
 
-// Forward declaration
-int DateTimeToTimestamp(int year, int month, int day, int hour, int minute, int second);
-
-/* Function start: 0x424FC0 */ /* DEMO ONLY - no full game match */
-void SetTimeSeed(int param_1) {
-    DAT_0043bc88 = param_1;
-}
-
-/* Function start: 0x425000 */ /* DEMO ONLY - no full game match */
-int GetCurrentTimestamp(int* param_1) {
-    SYSTEMTIME st;
-    GetLocalTime(&st);
-    int result = DateTimeToTimestamp(st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
-    if (param_1 != 0) {
-        *param_1 = result;
-    }
-    return result;
-}
-
 /* Function start: 0x42a840 */ /* DEMO ONLY - no full game match */
 // DateTimeToTimestamp - converts date/time to Unix timestamp
 // NOTE: Stub approximation. Original uses DAT_0043cc6c month-day table,

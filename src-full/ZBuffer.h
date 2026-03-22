@@ -4,26 +4,23 @@
 #include "Timer.h"
 #include "Handler.h"
 
-class Message;
 #include "LinkedList.h"
 
-// ZBuffer extends Handler in the full game (same layout as SC_ZBuffer).
-// Demo code used "ZBuffer" but error strings confirm the real name is "SC_ZBuffer".
-// Handler base provides: handlerId (0x90), moduleParam (0x94), etc.
+// ZBuffer extends Handler in the full game.
+// Demo used "ZBuffer" as a handler class but the full game uses SC_ZBuffer instead.
+// This class is kept for utility methods (CleanUpVBuffer, ResetItems, Exit)
+// and field layout compatibility.
 class ZBuffer : public Handler {
 public:
     ~ZBuffer(); // 0x427710
 
-    Timer timer;        // 0xA8 (demo uses this, full game repurposes some fields)
-    int itemCount;      // 0xB0 - number of items in array (overlaps Timer.m_startTime)
-    void** items;       // 0xB4 - array of item pointers (overlaps Timer.m_currentTime)
+    Timer timer;        // 0xA8
+    int itemCount;      // 0xB0
+    void** items;       // 0xB4
 
-    int Exit(SC_Message* msg);
-    void Update(int, int);
-    int AddMessage(int);
-    int ProcessMessage(Message* msg);
-    void CleanUpVBuffer();
-    void ResetItems();
+    int Exit(SC_Message* msg);  // 0x44B5A0
+    void CleanUpVBuffer();      // 0x401C80
+    void ResetItems();          // 0x4279A0
 };
 
 #endif // ZBUFFER_H

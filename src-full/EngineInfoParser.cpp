@@ -5,7 +5,7 @@
 #include "string.h"
 #include "SoundList.h"
 
-extern int DAT_0046ae78;
+extern int g_CombatEngine_0046ae78;
 #include "string.h"
 
 #include "Palette.h"
@@ -72,11 +72,11 @@ int EngineInfoParser::LBLParse(char* line) {
 /* Function start: 0x434A00 */
 void EngineInfoParser::ParseOffset(char *line, int arg2) {
   if ((char)arg2 == '1') {
-    sscanf(line, "%d %d", (int*)(DAT_0046ae78 + 0xD0),
-           (int*)(DAT_0046ae78 + 0xD8));
+    sscanf(line, "%d %d", (int*)(g_CombatEngine_0046ae78 + 0xD0),
+           (int*)(g_CombatEngine_0046ae78 + 0xD8));
   } else {
-    sscanf(line, "%d %d", (int*)(DAT_0046ae78 + 0xC0),
-           (int*)(DAT_0046ae78 + 0xC8));
+    sscanf(line, "%d %d", (int*)(g_CombatEngine_0046ae78 + 0xC0),
+           (int*)(g_CombatEngine_0046ae78 + 0xC8));
   }
 }
 
@@ -100,22 +100,22 @@ void EngineInfoParser::ParseSound(char *line, int index) {
 
   switch (index) {
   case 0:
-    *(int*)(DAT_0046ae78 + 0xEC) = sound;
+    *(int*)(g_CombatEngine_0046ae78 + 0xEC) = sound;
     break;
   case 1:
-    *(int*)((char*)DAT_0046ae60 + 0xAC) = sound;
+    *(int*)((char*)g_CombatWeapon_0046ae60 + 0xAC) = sound;
     break;
   case 2:
-    *(int*)((char*)DAT_0046ae58 + 0x1BC) = sound;
+    *(int*)((char*)g_TargetList_0046ae58 + 0x1BC) = sound;
     break;
   case 3:
-    *(int*)((char*)DAT_0046ae58 + 0x1C0) = sound;
+    *(int*)((char*)g_TargetList_0046ae58 + 0x1C0) = sound;
     break;
   case 4:
-    *(int*)((char*)DAT_0046ae58 + 0x1C4) = sound;
+    *(int*)((char*)g_TargetList_0046ae58 + 0x1C4) = sound;
     break;
   case 5:
-    *(int*)((char*)DAT_0046ae58 + 0x1C8) = sound;
+    *(int*)((char*)g_TargetList_0046ae58 + 0x1C8) = sound;
     break;
   default:
     ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);

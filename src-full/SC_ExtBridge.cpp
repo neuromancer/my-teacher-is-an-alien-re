@@ -19,7 +19,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 // FUN_0040b760 = VBuffer sdtor — callers updated
 // FUN_00404b80 = LinkedList::GetCurrentData — callers updated
 // FUN_00404d70 = ListNode sdtor — callers updated to use delete
-extern int DAT_0046ae78;
+extern int g_CombatEngine_0046ae78;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 /* Function start: 0x4399E0 */
@@ -61,15 +61,15 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     if (engine == 0) {
         EngineA* eng = new EngineA();
         engine = (int)eng;
-        DAT_0046ae78 = engine;
+        g_CombatEngine_0046ae78 = engine;
         ParseFile(this, "mis\\cb_ducts.mis", (char*)0);
     }
 
-    DAT_0046ae78 = engine;
+    g_CombatEngine_0046ae78 = engine;
     ((SC_CombatBase*)engine)->SetupViewport();
 
     if (msg != 0 && action->extra1 == 1) {
-        DAT_0046ae70->SetNavParams(action->mousePos.field_0, action->mousePos.field_4);
+        g_Navigator_0046ae70->SetNavParams(action->mousePos.field_0, action->mousePos.field_4);
     }
 
     SetVideoRes(dim.field_0, dim.field_4);
@@ -184,13 +184,13 @@ int SC_ExtBridge::ShutDown(SC_Message* msg)
         FreeMemory(action);
     }
 
-    if (DAT_0046ae78 != 0) {
-        if (DAT_0046ae70 != 0 && DAT_0046ae70->sprite != 0) {
-            DAT_0046ae70->sprite->StopAnimationSound();
+    if (g_CombatEngine_0046ae78 != 0) {
+        if (g_Navigator_0046ae70 != 0 && g_Navigator_0046ae70->sprite != 0) {
+            g_Navigator_0046ae70->sprite->StopAnimationSound();
         }
-        int* vtbl = *(int**)DAT_0046ae78;
-        ((void (__fastcall*)(int*, int))vtbl[16])((int*)DAT_0046ae78, 0);
-        DAT_0046ae78 = 0;
+        int* vtbl = *(int**)g_CombatEngine_0046ae78;
+        ((void (__fastcall*)(int*, int))vtbl[16])((int*)g_CombatEngine_0046ae78, 0);
+        g_CombatEngine_0046ae78 = 0;
     }
     return 0;
 }
@@ -208,7 +208,7 @@ void SC_ExtBridge::Update(int p1, int p2)
     if (handlerId != p2) {
         return;
     }
-    if (DAT_0046ae70->Update() != 0) {
+    if (g_Navigator_0046ae70->Update() != 0) {
         return;
     }
     Sprite* spr = g_Mouse_0046aa18->m_sprite;
@@ -258,7 +258,7 @@ int SC_ExtBridge::AddMessage(SC_Message* msg)
             int hid = handlerId;
             SpriteAction local(
                 hid, mp, hid, mp, 4, 1, 0, 0,
-                DAT_0046ae70->startingNode, DAT_0046ae70->bearing);
+                g_Navigator_0046ae70->startingNode, g_Navigator_0046ae70->bearing);
             DAT_00472d58.CopyFrom(&local);
         }
         SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
@@ -314,7 +314,7 @@ int SC_ExtBridge::LBLParse(char* line)
         palette = new Palette();
         palette->Load(name);
     } else if (strcmp(label, "NAVIGATION") == 0) {
-        Parser::ProcessFile((Parser*)DAT_0046ae70, this, (char*)0);
+        Parser::ProcessFile((Parser*)g_Navigator_0046ae70, this, (char*)0);
     } else if (strcmp(label, "SET_WORKBUFF") == 0) {
         sscanf(line, " %s %d %d", label, &dim.field_0, &dim.field_4);
     } else if (strcmp(label, "BG_SOUND") == 0) {

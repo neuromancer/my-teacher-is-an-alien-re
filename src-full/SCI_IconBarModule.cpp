@@ -483,8 +483,8 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
                 ((int*)msg)[4] = 3;
             }
 
-            if (DAT_0046a6e4 != 0) {
-                ((int*)msg)[6] = ((T_Object*)DAT_0046a6e4)->itemId;
+            if (g_SelectedItem_0046a6e4 != 0) {
+                ((int*)msg)[6] = ((T_Object*)g_SelectedItem_0046a6e4)->itemId;
             } else {
                 ((int*)msg)[6] = 0;
             }
@@ -576,8 +576,8 @@ void SCI_IconBarModule::UpdateCursor() {
 
     iconIdx = FindClickedIcon(mouseX, mouseY);
 
-    if (DAT_0046a6e4 != 0) {
-        hotspot = ((T_Object*)DAT_0046a6e4)->itemId + 0x1d;
+    if (g_SelectedItem_0046a6e4 != 0) {
+        hotspot = ((T_Object*)g_SelectedItem_0046a6e4)->itemId + 0x1d;
         if (g_Mouse_0046aa18->m_sprite == 0) {
             goto done;
         }

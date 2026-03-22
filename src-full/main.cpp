@@ -33,7 +33,6 @@ GameWindow g_GameWindow;
 
 
 extern "C" {
-void __fastcall CDData_ChangeToBaseDir(void *);
 void ClearMessageLog();
 void SetVideoRes(int, int);
 void SetStateFlag(int, int);
@@ -81,7 +80,7 @@ extern "C" int g_GameEngine_0046a6ec;
 extern "C" extern GameState* g_GameState_0046aa30;
 extern GameState* g_GameState2_0046aa3c;
 extern GameState* g_StringTable_0046aa34;
-extern GameState* DAT_0046aa38;
+extern GameState* g_StringState_0046aa38;
 
 static float g_PercentScale = 0.01f;
 int DAT_00473440 = 0;
@@ -120,7 +119,7 @@ void RunGame() {
     g_StringTable_0046aa34 = g_GameState3_0043699c;
 
     g_GameState4_004369a0 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
-    DAT_0046aa38 = g_GameState4_004369a0;
+    g_StringState_0046aa38 = g_GameState4_004369a0;
 
     // Check CACHE_SIZE from gamestate
     int cacheIdx = g_GameState_0046aa30->FindState("CACHE_SIZE");

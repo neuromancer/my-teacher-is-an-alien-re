@@ -2,7 +2,7 @@
 #define FILPOSCACHE_H
 
 // FilePosCache — file position cache for Parser::FindKey optimization
-// Pool stored at DAT_00469134 (SoundPool*)
+// Pool stored at g_SoundPool_00469134 (SoundPool*)
 // Entries are 0x50 bytes each
 
 struct FilePosEntry {

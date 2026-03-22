@@ -48,7 +48,7 @@ class ZBufferManager;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern char* g_StateString_0046aa2c;
 extern GameState* g_GameState2_0046aa3c;
-extern void* DAT_0046a6e4;
+extern void* g_SelectedItem_0046a6e4;
 extern SpriteAction DAT_00472d58;
 extern SpriteAction DAT_00472d20;
 extern SpriteAction DAT_00472d90;
@@ -261,8 +261,8 @@ int IconBar::AddMessage(SC_Message* msg) {
         return 1;
     }
 
-    if (DAT_0046a6e4 != 0) {
-        SendGameMessage(0x1e, *(int*)((char*)DAT_0046a6e4 + 0x94),
+    if (g_SelectedItem_0046a6e4 != 0) {
+        SendGameMessage(0x1e, *(int*)((char*)g_SelectedItem_0046a6e4 + 0x94),
                      handlerId, moduleParam, 0x17, 0, 0, 0, 0, 0);
     }
 

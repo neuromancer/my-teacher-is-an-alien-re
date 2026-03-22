@@ -65,7 +65,7 @@ mCNavNode::~mCNavNode()
 /* Function start: 0x44B7E0 */
 void mCNavNode::CallActivateNeighbor()
 {
-    int dir = DAT_0046ae70->bearing;
+    int dir = g_Navigator_0046ae70->bearing;
     mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
     if (neighbor == 0) {
         ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));
@@ -76,7 +76,7 @@ void mCNavNode::CallActivateNeighbor()
 /* Function start: 0x44B830 */
 int mCNavNode::CallActivate()
 {
-    int dir = DAT_0046ae70->bearing;
+    int dir = g_Navigator_0046ae70->bearing;
     mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
     if (neighbor == 0) {
         ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));
@@ -87,7 +87,7 @@ int mCNavNode::CallActivate()
 /* Function start: 0x44B880 */
 int mCNavNode::CallGetNextNode()
 {
-    int dir = DAT_0046ae70->bearing;
+    int dir = g_Navigator_0046ae70->bearing;
     mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
     if (neighbor == 0) {
         ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));

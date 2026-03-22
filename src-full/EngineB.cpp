@@ -78,7 +78,7 @@ int EngineB::LBLParse(char* line) {
 
 /* Function start: 0x451180 */
 void EngineB::ProcessFrame() {
-    ((TargetList*)DAT_0046ae58)->ProcessTargets();
+    ((TargetList*)g_TargetList_0046ae58)->ProcessTargets();
     if (DAT_00473e18 == 1) {
         ((Weapon*)EngineB::m_weaponParser)->UpdateProjectiles();
         RenderBackground();
@@ -96,14 +96,14 @@ void EngineB::RenderBackground() {
     int mouseX;
     int divisor;
 
-    if (DAT_0046ae50 == 0) {
+    if (g_BgSprite_0046ae50 == 0) {
         return;
     }
 
     hitCount = ((int*)DAT_0046ae6c)[5];
     if (EngineB::m_prevHitCount != hitCount) {
         EngineB::m_prevHitCount = hitCount;
-        DAT_0046ae50->ResetAnimation(8, 0);
+        g_BgSprite_0046ae50->ResetAnimation(8, 0);
         EngineB::m_progress.start += EngineB::m_targetConfig[1];
         r = rand() % 3;
         snd = (&m_hitSound1)[r];
@@ -115,7 +115,7 @@ void EngineB::RenderBackground() {
         missCount = ((int*)DAT_0046ae6c)[3];
         if (EngineB::m_prevMissCount != missCount) {
             EngineB::m_prevMissCount = missCount;
-            DAT_0046ae50->ResetAnimation(9, 0);
+            g_BgSprite_0046ae50->ResetAnimation(9, 0);
             r = rand() % 2;
             snd = (&m_tauntSound1)[r];
             if (snd != 0) {
@@ -137,22 +137,22 @@ void EngineB::RenderBackground() {
         }
     }
 
-    if (((int*)DAT_0046ae60)[0x2A] != 0) {
+    if (((int*)g_CombatWeapon_0046ae60)[0x2A] != 0) {
         mouseX = 0;
         if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
             mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
         }
-        divisor = ((int*)DAT_0046ae4c)[0x26] / 3;
-        DAT_0046ae50->ResetAnimation(mouseX / divisor + 5, 0);
+        divisor = ((int*)g_WeaponParser_0046ae4c)[0x26] / 3;
+        g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor + 5, 0);
     }
 
-    if (DAT_0046ae50->Do(DAT_0046ae50->loc_x, DAT_0046ae50->loc_y, 1.0)) {
+    if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc_x, g_BgSprite_0046ae50->loc_y, 1.0)) {
         mouseX = 0;
         if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
             mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
         }
-        divisor = ((int*)DAT_0046ae4c)[0x26] / 5;
-        DAT_0046ae50->ResetAnimation(mouseX / divisor, 0);
+        divisor = ((int*)g_WeaponParser_0046ae4c)[0x26] / 5;
+        g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor, 0);
     }
 }
 
@@ -213,18 +213,18 @@ void EngineB::OnProcessEnd() {
         ((InputManager*)g_InputManager_0046aa08)->Refresh(1);
     }
 
-    if (DAT_0046ae50 != 0) {
+    if (g_BgSprite_0046ae50 != 0) {
         mouseX = 0;
         if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
             mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
         }
-        divisor = ((int*)DAT_0046ae4c)[0x26] / 5;
-        DAT_0046ae50->ResetAnimation(mouseX / divisor, 0);
+        divisor = ((int*)g_WeaponParser_0046ae4c)[0x26] / 5;
+        g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor, 0);
     }
 
-    EngineB::m_weaponParser = (int)DAT_0046ae60;
-    for (i = 0; i < ((int*)DAT_0046ae58)[0x24]; i++) {
-        int* target = (int*)*(int*)((char*)DAT_0046ae58 + 0x94 + i * 4);
+    EngineB::m_weaponParser = (int)g_CombatWeapon_0046ae60;
+    for (i = 0; i < ((int*)g_TargetList_0046ae58)[0x24]; i++) {
+        int* target = (int*)*(int*)((char*)g_TargetList_0046ae58 + 0x94 + i * 4);
         target[0x4A] = EngineB::m_targetConfig[0];
     }
 

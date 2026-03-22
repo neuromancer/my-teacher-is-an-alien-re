@@ -592,7 +592,7 @@ static void DrawEllipseScanline(int y, int left_x, int right_x) {
 }
 
 /* Function start: 0x453E4C */
-extern "C" int __cdecl FUN_00424176(int param_1, int param_2) {
+extern "C" int __cdecl DrawEllipse(int param_1, int param_2) {
     if ((signed char)g_CurrentVideoBuffer_00437f54 < 0) return 0;
     if (param_1 <= 0 || param_2 <= 0) return 0;
 
@@ -717,6 +717,6 @@ extern "C" int DrawFontText(char* text, int len) {
 
 /* Function start: 0x453C87 */ /* ~90% match */
 extern "C" int __cdecl DrawCircle(int param_1) {
-    FUN_00424176(param_1, param_1);
+    DrawEllipse(param_1, param_1);
     return 0;
 }

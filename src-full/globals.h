@@ -5984,7 +5984,7 @@ extern Weapon* DAT_00468ef0;                               // SC_Wahoo / SC_Word
 extern int DAT_00469128;                                   // SoundTracker
 extern int DAT_0046912c;                                   // FilePosCache hit counter
 extern int DAT_00469130;                                   // FilePosCache miss counter
-extern SoundPool* DAT_00469134;                            // SoundTracker
+extern SoundPool* g_SoundPool_00469134;                            // SoundTracker
 extern void* DAT_00469138;                                 // FilePosCache LRU node
 extern int DAT_0046913c;                                   // SoundTracker
 extern int DAT_00469140;                                   // SoundTracker
@@ -6002,7 +6002,7 @@ extern "C" {
     extern int DAT_0046a190;                               // SCI_SchoolMenu
     extern void* DAT_0046af08;                             // SCI_SchoolMenu
 }
-extern void* DAT_0046a6e4;                                // SCI_Inventory
+extern void* g_SelectedItem_0046a6e4;                                // SCI_Inventory
 extern "C" {
     extern int g_GameEngine_0046a6ec;                               // SC_Cinematic
     extern void* DAT_0046aa10;                             // SC_SelectHotSpot
@@ -6014,21 +6014,21 @@ extern "C" {
 extern Sound* DAT_0046AA0C;                                // Engine
 extern void* DAT_0046aa1c;                                 // Path resolution
 extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_Message
-extern GameState* DAT_0046aa38;                            // SC_Question
+extern GameState* g_StringState_0046aa38;                            // SC_Question
 extern int g_AnimStates_0046ac30[5];                       // SC_DodgeOrville
 extern int g_LastBombDir_0046ac44;                         // SC_DodgeOrville
 extern int DAT_0046ad6c;                                   // SC_Wahoo
 extern "C" {
-    extern EngineInfoParser* DAT_0046ae4c;
-    extern Sprite*           DAT_0046ae50;
+    extern EngineInfoParser* g_WeaponParser_0046ae4c;
+    extern Sprite*           g_BgSprite_0046ae50;
     extern Viewport*         DAT_0046ae54;
-    extern TargetList*       DAT_0046ae58;
+    extern TargetList*       g_TargetList_0046ae58;
     extern CombatSprite*     DAT_0046ae5c;
-    extern Weapon*           DAT_0046ae60;
+    extern Weapon*           g_CombatWeapon_0046ae60;
     extern Palette*          DAT_0046ae64;
     extern SoundList*        DAT_0046ae68;
     extern ScoreDisplay*     DAT_0046ae6c;
-    extern mCNavigator*      DAT_0046ae70;
+    extern mCNavigator*      g_Navigator_0046ae70;
     extern HotspotListData*  DAT_0046ae74;
     extern int DAT_00473e18;
 }

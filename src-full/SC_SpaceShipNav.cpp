@@ -4,7 +4,7 @@
 #include "Sprite.h"
 #include "mCNavigator.h"
 
-extern int DAT_0046ae78;
+extern int g_CombatEngine_0046ae78;
 
 /* Function start: 0x447520 */
 SC_SpaceShipNav::SC_SpaceShipNav() {
@@ -24,15 +24,15 @@ SC_SpaceShipNav::~SC_SpaceShipNav() {
 
 /* Function start: 0x447790 */
 int SC_SpaceShipNav::ShutDown(SC_Message* msg) {
-    if (DAT_0046ae78 != 0) {
-        if (DAT_0046ae70 != 0) {
-            Sprite* spr = ((mCNavigator*)DAT_0046ae70)->sprite;
+    if (g_CombatEngine_0046ae78 != 0) {
+        if (g_Navigator_0046ae70 != 0) {
+            Sprite* spr = ((mCNavigator*)g_Navigator_0046ae70)->sprite;
             if (spr != 0) {
                 spr->StopAnimationSound();
             }
         }
-        ((SC_CombatBase*)DAT_0046ae78)->RenderState();
-        DAT_0046ae78 = 0;
+        ((SC_CombatBase*)g_CombatEngine_0046ae78)->RenderState();
+        g_CombatEngine_0046ae78 = 0;
     }
     return SC_Combat::ShutDown(msg);
 }

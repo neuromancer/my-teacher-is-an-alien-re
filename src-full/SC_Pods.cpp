@@ -29,7 +29,7 @@ void __fastcall InitCombatScreen(void* self);
 #include "RenderEntry.h"
 #include "PodsEngine.h"
 
-extern int DAT_0046ae78;                      // active combat engine instance
+extern int g_CombatEngine_0046ae78;                      // active combat engine instance
 extern int DAT_004734a4;
 
 /* Function start: 0x4415E0 */
@@ -128,7 +128,7 @@ void SC_Pods::Init(SC_Message* msg) {
     soundTable->Allocate(5);
 
     ParseFile(this, "mis\\cb_Pods.mis", (char*)0);
-    InitCombatScreen((void*)DAT_0046ae78);
+    InitCombatScreen((void*)g_CombatEngine_0046ae78);
 
     // Create result action
     if (resultAction == 0) {
@@ -146,7 +146,7 @@ int SC_Pods::ShutDown(SC_Message* msg) {
             delete (Engine*)combatEngine;
             combatEngine = 0;
         }
-        DAT_0046ae78 = 0;
+        g_CombatEngine_0046ae78 = 0;
     }
 
     if (resultAction != 0) {
@@ -174,7 +174,7 @@ int SC_Pods::AddMessage(SC_Message* msg) {
     msg->data = moduleParam;
 
     if (msg->mouseX == 0x1b && savedCommand == 0x2b) {
-        ((SC_CombatBase*)DAT_0046ae78)->combatFlags |= 4;
+        ((SC_CombatBase*)g_CombatEngine_0046ae78)->combatFlags |= 4;
     }
 
     return 1;
@@ -191,7 +191,7 @@ int SC_Pods::LBLParse(char* line) {
     if (strcmp(label, "DERIVED_ENGINE_INFO") == 0) {
         PodsEngine* eng = new PodsEngine();
         combatEngine = (int)eng;
-        DAT_0046ae78 = (int)eng;
+        g_CombatEngine_0046ae78 = (int)eng;
         Parser::ProcessFile((Parser*)eng, this, (char*)0);
     } else if (strcmp(label, "BGSOUND") == 0) {
         sscanf(line, " %s %d ", label, &soundId);
@@ -215,11 +215,11 @@ void __fastcall InitCombatScreen(void* self)
     engine->combatFlags = 0;
 
     DAT_0046ae54->SetDimensions(
-        *(int*)((char*)DAT_0046ae4c + 0x98),
-        *(int*)((char*)DAT_0046ae4c + 0x9c));
+        *(int*)((char*)g_WeaponParser_0046ae4c + 0x98),
+        *(int*)((char*)g_WeaponParser_0046ae4c + 0x9c));
 
     {
-        Sprite* navSpr = *(Sprite**)((char*)DAT_0046ae70 + 0xa0);
+        Sprite* navSpr = *(Sprite**)((char*)g_Navigator_0046ae70 + 0xa0);
         Animation* anim = navSpr->animation_data;
         int fh = 0;
         if (anim != 0) {
@@ -235,8 +235,8 @@ void __fastcall InitCombatScreen(void* self)
     }
     DAT_0046ae54->SetCenter();
     DAT_0046ae54->SetAnchor(
-        *(int*)((char*)DAT_0046ae4c + 0x90),
-        *(int*)((char*)DAT_0046ae4c + 0x94));
+        *(int*)((char*)g_WeaponParser_0046ae4c + 0x90),
+        *(int*)((char*)g_WeaponParser_0046ae4c + 0x94));
 
     *(int*)((int)DAT_0046ae6c + 4) = 100;
     engine->spriteFrameCount = 1;
@@ -244,8 +244,8 @@ void __fastcall InitCombatScreen(void* self)
     BlankScreen();
 
     {
-        unsigned int palStart = *(unsigned int*)((char*)DAT_0046ae4c + 0xa0);
-        int palEnd = *(int*)((char*)DAT_0046ae4c + 0xa4);
+        unsigned int palStart = *(unsigned int*)((char*)g_WeaponParser_0046ae4c + 0xa0);
+        int palEnd = *(int*)((char*)g_WeaponParser_0046ae4c + 0xa4);
         DAT_0046ae64->SetPalette(palStart, palEnd - palStart + 1);
     }
 

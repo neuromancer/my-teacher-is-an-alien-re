@@ -33,7 +33,7 @@ extern int g_PeriodStateIdx_0046cb90;
 extern int DAT_0046cc98[];
 extern int DAT_0046cca4[];
 extern GlyphRect DAT_00473d30[];
-extern GlyphRect DAT_00473dc8[];
+extern GlyphRect g_DoorRects_00473dc8[];
 
 /* Function start: 0x44EBA0 */
 SC_CrystalPuzzle::SC_CrystalPuzzle() {
@@ -398,8 +398,8 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
                 mouseX = mouse->x;
             }
 
-            if (DAT_00473dc8[0].left <= mouseX && mouseX <= DAT_00473dc8[0].right &&
-                mouseY >= DAT_00473dc8[0].top && mouseY <= DAT_00473dc8[0].bottom) {
+            if (g_DoorRects_00473dc8[0].left <= mouseX && mouseX <= g_DoorRects_00473dc8[0].right &&
+                mouseY >= g_DoorRects_00473dc8[0].top && mouseY <= g_DoorRects_00473dc8[0].bottom) {
 
                 GameState* gs = g_GameState_0046aa30;
                 int idx = gs->FindLabel("LINSEY_ALIEN");
@@ -434,8 +434,8 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
                 mouseX = mouse->x;
             }
 
-            if (DAT_00473dc8[1].left <= mouseX && mouseX <= DAT_00473dc8[1].right &&
-                DAT_00473dc8[1].top <= mouseY && mouseY <= DAT_00473dc8[1].bottom) {
+            if (g_DoorRects_00473dc8[1].left <= mouseX && mouseX <= g_DoorRects_00473dc8[1].right &&
+                g_DoorRects_00473dc8[1].top <= mouseY && mouseY <= g_DoorRects_00473dc8[1].bottom) {
 
                 GameState* gs = g_GameState_0046aa30;
                 int idx = gs->FindLabel("STACY_ALIEN");
@@ -470,8 +470,8 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
                 mouseX = mouse->x;
             }
 
-            if (DAT_00473dc8[2].left <= mouseX && mouseX <= DAT_00473dc8[2].right &&
-                DAT_00473dc8[2].top <= mouseY && mouseY <= DAT_00473dc8[2].bottom) {
+            if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
+                g_DoorRects_00473dc8[2].top <= mouseY && mouseY <= g_DoorRects_00473dc8[2].bottom) {
                 field_1BC |= 2;
                 Exit(msg);
             }
@@ -557,8 +557,8 @@ sound_done:
             mouseX = mouse->x;
         }
 
-        if (DAT_00473dc8[0].left <= mouseX && mouseX <= DAT_00473dc8[0].right &&
-            DAT_00473dc8[0].top <= mouseY && mouseY <= DAT_00473dc8[0].bottom) {
+        if (g_DoorRects_00473dc8[0].left <= mouseX && mouseX <= g_DoorRects_00473dc8[0].right &&
+            g_DoorRects_00473dc8[0].top <= mouseY && mouseY <= g_DoorRects_00473dc8[0].bottom) {
             goto set_cursor_20;
         }
     }
@@ -573,8 +573,8 @@ sound_done:
             mouseX = mouse->x;
         }
 
-        if (DAT_00473dc8[1].left <= mouseX && mouseX <= DAT_00473dc8[1].right &&
-            DAT_00473dc8[1].top <= mouseY && mouseY <= DAT_00473dc8[1].bottom) {
+        if (g_DoorRects_00473dc8[1].left <= mouseX && mouseX <= g_DoorRects_00473dc8[1].right &&
+            g_DoorRects_00473dc8[1].top <= mouseY && mouseY <= g_DoorRects_00473dc8[1].bottom) {
             goto set_cursor_20;
         }
     }
@@ -589,8 +589,8 @@ sound_done:
             mouseX = mouse->x;
         }
 
-        if (DAT_00473dc8[2].left <= mouseX && mouseX <= DAT_00473dc8[2].right &&
-            DAT_00473dc8[2].top <= mouseY && mouseY <= DAT_00473dc8[2].bottom) {
+        if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
+            g_DoorRects_00473dc8[2].top <= mouseY && mouseY <= g_DoorRects_00473dc8[2].bottom) {
             goto set_cursor_20;
         }
     }
@@ -780,7 +780,7 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
                 inside = (rect1.left <= x && x <= rect1.right &&
                           rect1.top <= y && rect1.bottom >= y);
                 if (inside) {
-                    GlyphRect* r = DAT_00473dc8;
+                    GlyphRect* r = g_DoorRects_00473dc8;
                     do {
                         inside = (r->left <= clickPos.field_0 && clickPos.field_0 <= r->right &&
                                   r->top <= clickPos.field_4 && r->bottom >= clickPos.field_4);
@@ -788,7 +788,7 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
                             ResetPuzzle(1, 1);
                         }
                         r++;
-                    } while (r < &DAT_00473dc8[3]);
+                    } while (r < &g_DoorRects_00473dc8[3]);
 
                     inside = (rect4.left <= clickPos.field_0 && clickPos.field_0 <= rect4.right &&
                               rect4.top <= clickPos.field_4 && rect4.bottom >= clickPos.field_4);

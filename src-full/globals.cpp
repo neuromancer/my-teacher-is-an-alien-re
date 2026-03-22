@@ -59,11 +59,11 @@ int g_WaitForInputValue_0046ac04 = 0;
 // DAT_0046cc98 (0x46cc98-0x46cd28): 9 puzzle solutions, 4 ints each {btn0,btn1,btn2,pad}
 // DAT_0046cca4 (0x46cca4): result indices per solution
 // DAT_00473d30 (0x473d30): 9 button hit-test GlyphRects
-// DAT_00473dc8 (0x473dc8): 3 floor door hit-test GlyphRects
+// g_DoorRects_00473dc8 (0x473dc8): 3 floor door hit-test GlyphRects
 int DAT_0046cc98[36] = {0};
 int DAT_0046cca4[36] = {0};
 GlyphRect DAT_00473d30[9];
-GlyphRect DAT_00473dc8[3];
+GlyphRect g_DoorRects_00473dc8[3];
 
 // ...
 
@@ -290,7 +290,7 @@ Weapon* DAT_00468ef0 = 0;                                // 0x00468ef0
 int DAT_00469128 = 0;                                    // 0x00469128
 int DAT_0046912c = 0;                                    // 0x0046912c FilePosCache hit counter
 int DAT_00469130 = 0;                                    // 0x00469130 FilePosCache miss counter
-SoundPool* DAT_00469134 = 0;                             // 0x00469134
+SoundPool* g_SoundPool_00469134 = 0;                             // 0x00469134
 void* DAT_00469138 = 0;                                  // 0x00469138 FilePosCache LRU node
 int DAT_0046913c = 0;                                    // 0x0046913c
 int DAT_00469140 = 0;                                    // 0x00469140
@@ -318,10 +318,10 @@ int DAT_0047337c = 0;                                    // 0x0047337c
 // SC_Question globals
 StringTable* g_Strings_0046a6e0 = 0;                      // 0x0046a6e0
 FlagArray* g_FlagManager_0046a6e8 = 0;                   // 0x0046a6e8
-GameState* DAT_0046aa38 = 0;                             // 0x0046aa38
+GameState* g_StringState_0046aa38 = 0;                             // 0x0046aa38
 
 // SCI_Inventory globals
-void* DAT_0046a6e4 = 0;                                  // 0x0046a6e4
+void* g_SelectedItem_0046a6e4 = 0;                                  // 0x0046a6e4
 int DAT_00473334 = 0;                                    // 0x00473334
 int DAT_004733e8 = 0;                                    // 0x004733e8
 
@@ -348,16 +348,16 @@ char* DAT_0046bacc = 0;                                  // 0x0046bacc
 
 // EngineB extern "C" globals
 extern "C" {
-    EngineInfoParser* DAT_0046ae4c = 0;                  // 0x0046ae4c
-    Sprite*           DAT_0046ae50 = 0;                  // 0x0046ae50
+    EngineInfoParser* g_WeaponParser_0046ae4c = 0;                  // 0x0046ae4c
+    Sprite*           g_BgSprite_0046ae50 = 0;                  // 0x0046ae50
     Viewport*         DAT_0046ae54 = 0;                  // 0x0046ae54
-    TargetList*       DAT_0046ae58 = 0;                  // 0x0046ae58
+    TargetList*       g_TargetList_0046ae58 = 0;                  // 0x0046ae58
     CombatSprite*     DAT_0046ae5c = 0;                  // 0x0046ae5c
-    Weapon*           DAT_0046ae60 = 0;                  // 0x0046ae60
+    Weapon*           g_CombatWeapon_0046ae60 = 0;                  // 0x0046ae60
     Palette*          DAT_0046ae64 = 0;                  // 0x0046ae64
     SoundList*        DAT_0046ae68 = 0;                  // 0x0046ae68
     ScoreDisplay*     DAT_0046ae6c = 0;                  // 0x0046ae6c
-    mCNavigator*      DAT_0046ae70 = 0;                  // 0x0046ae70
+    mCNavigator*      g_Navigator_0046ae70 = 0;                  // 0x0046ae70
     HotspotListData*  DAT_0046ae74 = 0;                  // 0x0046ae74
     int DAT_00473e18 = 0;                                // 0x00473e18
 }

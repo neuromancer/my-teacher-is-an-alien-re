@@ -42,9 +42,9 @@ EngineC::~EngineC()
 /* Function start: 0x40C0D0 */
 void EngineC::method10()
 {
-    void* target = DAT_0046ae58->ProcessTargets();
+    void* target = g_TargetList_0046ae58->ProcessTargets();
 
-    int* obj60 = (int*)DAT_0046ae60;
+    int* obj60 = (int*)g_CombatWeapon_0046ae60;
     int* vtbl60 = (int*)*obj60;
     ((void (__fastcall *)(int*, int))vtbl60[5])(obj60, 0);
 
@@ -57,23 +57,23 @@ void EngineC::method10()
     }
 
     mouseReleased |= (buttonDown == 0) ? 1 : 0;
-    ((int*)DAT_0046ae60)[0x2a] = 0;
+    ((int*)g_CombatWeapon_0046ae60)[0x2a] = 0;
 
-    if (DAT_0046ae50->handle < 5) {
+    if (g_BgSprite_0046ae50->handle < 5) {
         if (pMouse == 0) {
             buttonDown = 0;
         } else {
             buttonDown = *(int*)((char*)pMouse + 0x8) & 1;
         }
         if (buttonDown != 0 && mouseReleased != 0) {
-            ((int*)DAT_0046ae60)[0x2a] = 1;
+            ((int*)g_CombatWeapon_0046ae60)[0x2a] = 1;
             mouseReleased = 0;
         }
     }
 
-    if (((int*)DAT_0046ae60)[0x2a] != 0) {
-        int* vtbl60b = (int*)*(int*)DAT_0046ae60;
-        ((void (__fastcall *)(int*, int))vtbl60b[4])((int*)DAT_0046ae60, 0);
+    if (((int*)g_CombatWeapon_0046ae60)[0x2a] != 0) {
+        int* vtbl60b = (int*)*(int*)g_CombatWeapon_0046ae60;
+        ((void (__fastcall *)(int*, int))vtbl60b[4])((int*)g_CombatWeapon_0046ae60, 0);
         if (target != 0) {
             ((Target*)target)->UpdateProgress(1);
         }

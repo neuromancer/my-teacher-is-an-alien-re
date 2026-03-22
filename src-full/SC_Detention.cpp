@@ -682,7 +682,7 @@ void SC_Detention::Serialize(void* param) {
 
 extern int DAT_00468a18;
 extern int WaitForInput();
-extern int DAT_0046ae78;
+extern int g_CombatEngine_0046ae78;
 
 /* Function start: 0x40B9E0 */
 void UpdateCombatEngine()
@@ -691,7 +691,7 @@ void UpdateCombatEngine()
         int key = WaitForInput();
         DAT_00468a18 = (key != 0x54) ? 1 : 0;
     }
-    int* engine = (int*)DAT_0046ae78;
+    int* engine = (int*)g_CombatEngine_0046ae78;
     int* vtbl = (int*)*engine;
     ((void (__fastcall *)(int*, int))vtbl[14])(engine, 0);
 }

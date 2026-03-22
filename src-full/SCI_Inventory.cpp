@@ -20,7 +20,7 @@ extern MsgList* g_MsgList; // DAT_0046a6dc
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 class MouseControl;
 extern MouseControl* g_Mouse_0046aa18;
-extern void* DAT_0046a6e4;
+extern void* g_SelectedItem_0046a6e4;
 extern int DAT_00473334;
 extern int DAT_004733e8;
 
@@ -356,7 +356,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
             goto done;
         }
 
-        DAT_0046a6e4 = ((QueueNode*)node)->data;
+        g_SelectedItem_0046a6e4 = ((QueueNode*)node)->data;
 
         nextNode = (int*)((QueueNode*)node)->next;
         listPtr = (int*)itemPool;
@@ -390,7 +390,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         listPtr[2]--;
 
         {
-            void* invItem = DAT_0046a6e4;
+            void* invItem = g_SelectedItem_0046a6e4;
             Sprite* spr = g_Mouse_0046aa18->m_sprite;
             int yOffset = ((T_Object*)invItem)->itemId + 0x1D;
             if (spr != 0) {
@@ -414,24 +414,24 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         }
     }
     if (hitResult) {
-        if (DAT_0046a6e4 == 0) {
+        if (g_SelectedItem_0046a6e4 == 0) {
             goto handle_item_click;
         }
-        SendGameMessage(0x1E, ((T_Object*)DAT_0046a6e4)->itemId, 0x1E, 0, 0x17, 0, 0, 0, 0, 0);
+        SendGameMessage(0x1E, ((T_Object*)g_SelectedItem_0046a6e4)->itemId, 0x1E, 0, 0x17, 0, 0, 0, 0, 0);
         {
             Sprite* spr = g_Mouse_0046aa18->m_sprite;
             if (spr != 0) {
                 spr->ResetAnimation(0, 0);
             }
         }
-        DAT_0046a6e4 = 0;
+        g_SelectedItem_0046a6e4 = 0;
         goto handle_item_click;
     }
 
     msgData[4] = 2;
     msgData[0] = 0x1E;
-    if (DAT_0046a6e4 != 0) {
-        msgData[5] = ((T_Object*)DAT_0046a6e4)->itemId;
+    if (g_SelectedItem_0046a6e4 != 0) {
+        msgData[5] = ((T_Object*)g_SelectedItem_0046a6e4)->itemId;
     }
     goto done;
 
@@ -533,8 +533,8 @@ void SCI_Inventory::Update(int param1, int param2) {
         }
     }
 
-    if (DAT_0046a6e4 != 0) {
-        int yOffset = ((T_Object*)DAT_0046a6e4)->itemId + 0x1D;
+    if (g_SelectedItem_0046a6e4 != 0) {
+        int yOffset = ((T_Object*)g_SelectedItem_0046a6e4)->itemId + 0x1D;
         spr = g_Mouse_0046aa18->m_sprite;
         if (spr != 0) {
             spr->ResetAnimation(yOffset, 0);
@@ -595,8 +595,8 @@ int SCI_Inventory::Exit(SC_Message* msg) {
             break;
         }
 
-        if (DAT_0046a6e4 != 0) {
-            SendGameMessage(0x1e, ((T_Object*)DAT_0046a6e4)->itemId, 0x1e, 0, 0x17, 0, 0, 0, 0, 0);
+        if (g_SelectedItem_0046a6e4 != 0) {
+            SendGameMessage(0x1e, ((T_Object*)g_SelectedItem_0046a6e4)->itemId, 0x1e, 0, 0x17, 0, 0, 0, 0, 0);
             {
 
                 Sprite* spr = g_Mouse_0046aa18->m_sprite;
@@ -690,13 +690,13 @@ int SCI_Inventory::Exit(SC_Message* msg) {
 
         if (FindItemInList((int)msgData) != 0) break;
 
-        if (DAT_0046a6e4 != 0) {
-            if (((T_Object*)DAT_0046a6e4)->itemId == (int)msgData) {
+        if (g_SelectedItem_0046a6e4 != 0) {
+            if (((T_Object*)g_SelectedItem_0046a6e4)->itemId == (int)msgData) {
                 Sprite* spr = g_Mouse_0046aa18->m_sprite;
                 if (spr != 0) {
                     spr->ResetAnimation(0, 0);
                 }
-                DAT_0046a6e4 = 0;
+                g_SelectedItem_0046a6e4 = 0;
             }
         }
 
@@ -793,8 +793,8 @@ int SCI_Inventory::Exit(SC_Message* msg) {
             break;
         }
 
-        if (DAT_0046a6e4 == 0) break;
-        if (((T_Object*)DAT_0046a6e4)->itemId != msgData[1]) break;
+        if (g_SelectedItem_0046a6e4 == 0) break;
+        if (((T_Object*)g_SelectedItem_0046a6e4)->itemId != msgData[1]) break;
         {
             Sprite* spr = g_Mouse_0046aa18->m_sprite;
             if (spr == 0) goto do_clear;
@@ -802,7 +802,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
     do_reset:
         (g_Mouse_0046aa18->m_sprite)->ResetAnimation(0, 0);
     do_clear:
-        DAT_0046a6e4 = 0;
+        g_SelectedItem_0046a6e4 = 0;
         break;
     }
     }
@@ -841,9 +841,9 @@ void SCI_Inventory::Serialize(void* param) {
         handle = 999;
         fwrite(&handle, 4, 1, (FILE*)fp);
 
-        if (DAT_0046a6e4 != 0) {
-            fwrite((char*)&((T_Object*)DAT_0046a6e4)->itemId, 4, 1, (FILE*)fp);
-            fwrite((char*)&((T_Object*)DAT_0046a6e4)->field_90, 4, 1, (FILE*)fp);
+        if (g_SelectedItem_0046a6e4 != 0) {
+            fwrite((char*)&((T_Object*)g_SelectedItem_0046a6e4)->itemId, 4, 1, (FILE*)fp);
+            fwrite((char*)&((T_Object*)g_SelectedItem_0046a6e4)->field_90, 4, 1, (FILE*)fp);
         } else {
             fwrite(&handle, 4, 1, (FILE*)fp);
         }
@@ -858,7 +858,7 @@ void SCI_Inventory::Serialize(void* param) {
         ShowError("SCI_Inventory::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
     }
 
-    DAT_0046a6e4 = 0;
+    g_SelectedItem_0046a6e4 = 0;
 
     /* Free old inventory list */
     TimedEventPool* pool = (TimedEventPool*)((SCI_Inventory*)self)->itemPool;
@@ -974,8 +974,8 @@ void SCI_Inventory::Serialize(void* param) {
     fread(&handle, 4, 1, (FILE*)fp);
     if (handle == 999) return;
 
-    DAT_0046a6e4 = ((SCI_Inventory*)self)->FindItem(handle);
-    fread((char*)&((T_Object*)DAT_0046a6e4)->field_90, 4, 1, (FILE*)fp);
+    g_SelectedItem_0046a6e4 = ((SCI_Inventory*)self)->FindItem(handle);
+    fread((char*)&((T_Object*)g_SelectedItem_0046a6e4)->field_90, 4, 1, (FILE*)fp);
 }
 
 // Stubs (moved from stubs.cpp)

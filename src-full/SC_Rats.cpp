@@ -21,7 +21,7 @@ int DAT_00473e14 = 0;
 int DAT_00473e18 = 0;
 int DAT_00473e1c = 0;
 int DAT_00473e20 = 0;
-int DAT_0046ae78 = 0;
+int g_CombatEngine_0046ae78 = 0;
 
 // Extern functions
 extern "C" int FileExists(const char*);
@@ -141,7 +141,7 @@ void SC_Rats::Init(SC_Message* msg) {
         *(int*)(sceneData + 0xA8) = 0;
     }
     ParseFile(this, "mis\\cb_rats.mis", (char*)0);
-    InitCombatScreen((void*)DAT_0046ae78);
+    InitCombatScreen((void*)g_CombatEngine_0046ae78);
     if (field_A8 == 0) {
         SpriteAction* sprite = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
@@ -160,7 +160,7 @@ int SC_Rats::ShutDown(SC_Message* msg) {
             delete (Handler*)field_AC;
             field_AC = 0;
         }
-        DAT_0046ae78 = 0;
+        g_CombatEngine_0046ae78 = 0;
     }
     if (field_A8 != 0) {
         delete (SpriteAction*)field_A8;
@@ -287,7 +287,7 @@ void SC_Rats::ProcessState() {
 
 /* Function start: 0x4520E0 */
 void SC_Rats::State0Handler() {
-    int engineObj = DAT_0046ae78;
+    int engineObj = g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x118);
 
     State1Handler();
@@ -314,19 +314,19 @@ done:
     if (DAT_00473e14 == 2) {
         DAT_00473e14 = 3;
         DAT_00473e18 = 1;
-        DAT_0046ae70->SetNavParams(1, 0);
+        g_Navigator_0046ae70->SetNavParams(1, 0);
     }
 }
 
 /* Function start: 0x4521B0 */
 void SC_Rats::State1Handler() {
-    void* obj = (void*)DAT_0046ae78;
+    void* obj = (void*)g_CombatEngine_0046ae78;
     (*(void (__fastcall **)(void*))(*(int*)obj + 0x38))(obj);
 }
 
 /* Function start: 0x4521C0 */
 void SC_Rats::State2Handler() {
-    int engineObj = DAT_0046ae78;
+    int engineObj = g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x110);
 
     if (DAT_00473e20 == 0) {
@@ -356,7 +356,7 @@ done:
 
 /* Function start: 0x452250 */
 void SC_Rats::State3Handler() {
-    int engineObj = DAT_0046ae78;
+    int engineObj = g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x10C);
 
     if (DAT_00473e1c == 0) {
@@ -386,7 +386,7 @@ done:
 
 /* Function start: 0x4522E0 */
 void SC_Rats::State4Handler() {
-    int engineObj = DAT_0046ae78;
+    int engineObj = g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x114);
 
     if (DAT_00473df8 == 0) {
@@ -426,7 +426,7 @@ int SC_Rats::LBLParse(char* param) {
             obj = new (mem) EngineB();
         }
         field_AC = (int)obj;
-        DAT_0046ae78 = (int)obj;
+        g_CombatEngine_0046ae78 = (int)obj;
         Parser::ProcessFile((Parser*)obj, this, (char*)0);
         return 0;
     }

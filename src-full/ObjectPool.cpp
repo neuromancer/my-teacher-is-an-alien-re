@@ -2,8 +2,6 @@
 #include "Memory.h"
 #include <string.h>
 
-extern void FUN_00433f10();
-
 /* Function start: 0x433F10 */
 ObjectPool::~ObjectPool()
 {

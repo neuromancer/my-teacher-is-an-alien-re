@@ -124,7 +124,7 @@ void GameState::SetFromAction(int* action) {
 }
 
 /* Function start: 0x432E20 */
-int GameState::FUN_00432e20(char* name) {
+int GameState::FindStateByName(char* name) {
     int i;
 
     i = 0;

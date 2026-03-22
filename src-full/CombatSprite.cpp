@@ -13,8 +13,6 @@ SpriteHashTable* g_CurrentSprite = 0;   // 0x436348
 int g_CurrentSpriteIndex = 0;           // 0x43634c
 int DAT_00436344 = 0;                   // sprite data entry counter
 
-// External declaration for Parser destructor helper
-extern void FUN_0041556a();
 extern void __cdecl FreeArrayItems(void** array, int count); // 0x408EE0
 
 /* Function start: 0x408F20 */

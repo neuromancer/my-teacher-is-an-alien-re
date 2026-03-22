@@ -14,7 +14,7 @@ SC_Message::~SC_Message() {}
 /* Function start: 0x444E60 */
 int SC_Message::LBLParse(char* param_1)
 {
-    extern GameState* DAT_0046aa38;
+    extern GameState* g_StringState_0046aa38;
     char local_30[32];
     char local_54[32];
     char local_74[32];
@@ -72,8 +72,8 @@ int SC_Message::LBLParse(char* param_1)
         }
     } else if (strcmp(local_30, "INSTRUCTION") == 0) {
         sscanf(param_1, "%s %s", local_30, local_54);
-        if (DAT_0046aa38 != 0) {
-            idx = ((GameState*)DAT_0046aa38)->FindState(local_54);
+        if (g_StringState_0046aa38 != 0) {
+            idx = ((GameState*)g_StringState_0046aa38)->FindState(local_54);
         } else {
             sscanf(local_54, "%d", &idx);
         }
