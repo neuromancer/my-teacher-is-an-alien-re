@@ -556,33 +556,47 @@ Handler* GameEngine::GetOrCreateHandler(int command) {
 
 /* Function start: 0x4318B0 */
 Handler* GameEngine::FindHandlerInList(int command) {
-    if (m_handlerList == 0) {
+    LinkedList* list;
+    ListNode* node;
+
+    list = m_handlerList;
+    if (list == 0) {
         return 0;
     }
 
-    m_handlerList->current = m_handlerList->head;
-    if (m_handlerList->head == 0) {
+    list->current = list->head;
+    list = m_handlerList;
+    if (list->head == 0) {
         return 0;
     }
 
     do {
-        Handler* handler;
-
-        handler = (Handler*)m_handlerList->GetCurrentData();
-        if (handler->handlerId == command) {
-            if (m_handlerList->current == 0) {
-                return 0;
+        list = m_handlerList;
+        node = list->current;
+        if (node != 0) {
+            if (((Handler*)node->data)->handlerId == command) {
+                goto found;
             }
-            return (Handler*)m_handlerList->current->data;
+        } else {
+            if (command == *(int*)0x90) {
+found:
+                list = m_handlerList;
+                node = list->current;
+                if (node == 0) {
+                    return 0;
+                }
+                return (Handler*)node->data;
+            }
         }
 
-        if (m_handlerList->tail == m_handlerList->current) {
+        if (list->tail == node) {
             break;
         }
-        if (m_handlerList->current != 0) {
-            m_handlerList->current = m_handlerList->current->next;
+        if (node != 0) {
+            list->current = node->next;
         }
-    } while (m_handlerList->head != 0);
+        list = m_handlerList;
+    } while (list->head != 0);
 
     return 0;
 }

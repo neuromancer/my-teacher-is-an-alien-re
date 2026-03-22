@@ -16,58 +16,57 @@ extern "C" extern GameState* g_GameState_0046aa30;
 #include <string.h>
 #include <stdio.h>
 
-/* Function start: 0x417C80 */ /* ~95% match */
+/* Function start: 0x417C80 */
 DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
     int counter;
-    QueueNode* node;
-    QueueNode* tmp;
-    DialogQuestion* result;
+    void* data;
     Queue* queue;
 
     counter = 0;
     queue = field_C8;
     if (queue == 0) goto LAB_ret_zero;
     queue->current = queue->head;
-    queue = field_C8;
-    if (queue->current == 0) goto LAB_ret_zero;
+    if (field_C8->head == 0) goto LAB_ret_zero;
 
     do {
+        queue = field_C8;
         if (counter == index) {
-            node = (QueueNode*)queue->current;
-            result = 0;
-            if (node != 0) {
-                result = (DialogQuestion*)node->data;
-            }
-            return result;
+            data = queue->RemoveCurrent();
+            return (DialogQuestion*)data;
+        }
+        if (queue->tail == queue->current) goto LAB_ret_zero;
+        if (queue->current != 0) {
+            queue->current = queue->current->next;
         }
         counter++;
-        tmp = (QueueNode*)queue->current;
-        if (queue->tail == tmp) goto LAB_ret_zero;
-        if (tmp != 0) {
-            queue->current = tmp->next;
-        }
-    } while (queue->current != 0);
+        if (field_C8->head == 0) goto LAB_ret_zero;
+    } while (1);
 
 LAB_ret_zero:
     return 0;
 }
 
-/* Function start: 0x417E60 */ /* ~89% match */
+/* Function start: 0x417E60 */
 DialogQuestion* SCI_Dialog::FindDialogById(int id) {
-    DialogQuestion* searchQuestion = new SC_Question(id, this);
+    DialogQuestion* searchQuestion;
     Queue* queue;
     QueueNode* node;
-    QueueNode* tmp;
     DialogQuestion* nodeData;
-    DialogQuestion* result;
+
+    searchQuestion = new SC_Question(id, this);
 
     queue = field_C8;
     if (queue == 0) goto not_found;
+
+    if (searchQuestion == 0) {
+        ShowError("queue fault 0103");
+    }
+
     queue->current = queue->head;
-    if (field_C8->current == 0) goto not_found;
+    if (queue->current == 0) goto not_found;
 
     do {
-        node = (QueueNode*)field_C8->current;
+        node = queue->current;
         nodeData = 0;
         if (node != 0) {
             nodeData = (DialogQuestion*)node->data;
@@ -75,21 +74,27 @@ DialogQuestion* SCI_Dialog::FindDialogById(int id) {
 
         if (nodeData->questionId == searchQuestion->questionId) {
             if (searchQuestion != 0) {
-                delete searchQuestion;
+                searchQuestion->~SC_Question();
+                FreeMemory(searchQuestion);
             }
-            return nodeData;
+
+            {
+                Queue* q = field_C8;
+                void* data = q->RemoveCurrent();
+                return (DialogQuestion*)data;
+            }
         }
 
-        tmp = (QueueNode*)field_C8->current;
-        if (field_C8->tail == tmp) goto not_found;
-        if (tmp != 0) {
-            field_C8->current = tmp->next;
+        if (queue->tail == queue->current) goto not_found;
+        if (queue->current != 0) {
+            queue->current = queue->current->next;
         }
-    } while (field_C8->current != 0);
+    } while (queue->current != 0);
 
 not_found:
     if (searchQuestion != 0) {
-        delete searchQuestion;
+        searchQuestion->~SC_Question();
+        FreeMemory(searchQuestion);
     }
     return 0;
 }

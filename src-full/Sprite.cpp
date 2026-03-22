@@ -166,7 +166,6 @@ void Sprite::CheckRanges1()
             if (maxFrames < ranges[i].end) {
                 ranges[i].end = maxFrames;
             }
-            WriteToLog("CheckRanges1: %s range[%d].start=%d end=%d maxFrames=%d ranges=%p", sprite_filename, i, ranges[i].start, ranges[i].end, maxFrames, (void*)ranges);
             if (ranges[i].end < ranges[i].start) {
                 ShowError("bad range[%d].start = %d in %s", i, ranges[i].start, sprite_filename);
             }
@@ -704,7 +703,6 @@ void Sprite::ConfigRange(int state, int start, int count, int param_4) {
     if (start < 1 || count < 1) {
         ShowError("Sprite::SetRange 2 %s %d range = %d, %d", sprite_filename, state, start, count);
     }
-    WriteToLog("ConfigRange: %s range[%d].start=%d end=%d", sprite_filename, state, start, count);
     ranges[state].start = start;
     ranges[state].end = count;
     ranges[state].field_C = param_4;
@@ -721,24 +719,21 @@ void Sprite::ConfigStates(int numStates) {
         ranges = 0;
     }
 
-    int count = num_states;
-    Range* newRanges = 0;
-    Range* mem = new Range[count];
-    if (mem != 0) {
-        newRanges = mem;
-    }
-    ranges = newRanges;
+    Range* mem = new Range[num_states];
+    ranges = mem;
 
     int i = 0;
-    if (0 < num_states) {
+    if (num_states > 0) {
+        int offset = 0;
         do {
-            ranges[i].start = 1;
-            ranges[i].end = 5000;
-            ranges[i].field_C = 0;
-            ranges[i].field_8 = 0;
-            WriteToLog("ConfigStates: %s range[%d].start=1 count=%d ranges=%p", sprite_filename, i, num_states, (void*)ranges);
+            Range* r = (Range*)((char*)ranges + offset);
             i++;
-        } while (i < num_states);
+            offset += sizeof(Range);
+            r->start = 1;
+            r->end = 5000;
+            r->field_C = 0;
+            r->field_8 = 0;
+        } while (num_states > i);
     }
     flags |= 0x20;
 }

@@ -84,7 +84,6 @@ void T_Object::Reset()
     }
     gs->stateValues[idx] = 1;
 
-    // Enqueue all actions from the action list
     LinkedList* list = actionList;
     if (list == 0) {
         return;
@@ -93,20 +92,28 @@ void T_Object::Reset()
         return;
     }
 
-    list->current = list->head;
-    while (list->head != 0) {
-        void* data = 0;
-        if (list->current != 0) {
-            data = list->current->data;
+    do {
+        list = actionList;
+        SpriteAction* data = 0;
+        int listType = list->type;
+        if (listType == 1 || listType == 4) {
+            list->current = list->head;
+        } else if (listType == 2 || listType == 0) {
+            list->current = list->tail;
+        } else {
+            ShowError("Bad list type %d", listType);
+            goto skip_remove;
         }
+        list->current = list->head;
+
+    skip_remove:
+        data = (SpriteAction*)list->RemoveCurrent();
         EnqueueSpriteAction(data);
-        if (list->tail == list->current) {
-            return;
+        if (data != 0) {
+            data->~SpriteAction();
+            FreeMemory(data);
         }
-        if (list->current != 0) {
-            list->current = list->current->next;
-        }
-    }
+    } while (actionList->head != 0);
 }
 
 /* Function start: 0x40C9E0 */

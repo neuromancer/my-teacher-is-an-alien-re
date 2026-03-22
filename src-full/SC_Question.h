@@ -41,8 +41,6 @@ void ParseSpriteAction(void* param_1, void* param_2);
 class SC_Question : public Parser
 {
 public:
-    int field_88;               // 0x88
-    int field_8C;               // 0x8C
     Queue* messageQueue;        // 0x90
     int field_94;               // 0x94 (flags, bit 8 used)
     int state;                  // 0x98 - 0=new, 1=active, 2=answered

@@ -71,7 +71,7 @@ public:
   virtual void VirtCleanup(int flag);         // [6] 0x449320
   virtual void ProcessActions(int p1, int p2);// [7] 0x449480
   virtual int HandleInput(int* param);        // [8] 0x449410
-  virtual int CheckNavState(int* param);      // [9] 0x405D60
+  virtual void CheckNavState(int* param);      // [9] 0x405D60
   virtual void fn10(int param);               // [10] 0x401160
   virtual void ProcessTargets();              // [11] 0x4494E0
   virtual void fn12(int index, int* action);  // [12] 0x4491B0

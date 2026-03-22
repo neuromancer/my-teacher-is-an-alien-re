@@ -48,18 +48,9 @@ SpriteAction* SpriteAction::CopyFrom(SpriteAction* other) {
 
 /* Function start: 0x444A40 */
 SpriteAction::SpriteAction(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10) {
-    int i;
-    int* pData;
-    int* pMouse;
-
-    pData = (int*)this;
-    pMouse = pData + 7;
-    pMouse[0] = 0;
-    pMouse[1] = 0;
-    for (i = 0xe; i != 0; i = i - 1) {
-        *pData = 0;
-        pData = pData + 1;
-    }
+    mousePos.field_0 = 0;
+    mousePos.field_4 = 0;
+    memset(this, 0, sizeof(SpriteAction));
     addressType = p1;
     addressValue = p2;
     fromType = p3;
@@ -68,16 +59,14 @@ SpriteAction::SpriteAction(int p1, int p2, int p3, int p4, int p5, int p6, int p
     extra1 = p6;
     extra2 = p7;
     childAction = (SpriteAction*)p8;
-    pMouse[0] = p9;
-    pMouse[1] = p10;
+    mousePos.field_0 = p9;
+    mousePos.field_4 = p10;
 }
 
 /* Function start: 0x444AF0 */
 SpriteAction::~SpriteAction() {
-    SpriteAction* p = childAction;
-    if (p != 0) {
-        p->~SpriteAction();
-        ::operator delete(p);
+    if (childAction != 0) {
+        delete childAction;
         childAction = 0;
     }
 }

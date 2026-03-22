@@ -187,37 +187,53 @@ Handler31::Handler31() {
 
 /* Function start: 0x416FC0 */
 Handler31::~Handler31() {
-    if (sprite1 != 0) {
-        delete sprite1;
+    Sprite* spr;
+    SC_Question* question;
+    Palette* pal;
+
+    spr = sprite1;
+    if (spr != 0) {
+        spr->~Sprite();
+        FreeMemory(spr);
         sprite1 = 0;
     }
 
-    if (sprite2 != 0) {
-        delete sprite2;
+    spr = sprite2;
+    if (spr != 0) {
+        spr->~Sprite();
+        FreeMemory(spr);
         sprite2 = 0;
     }
 
     if (field_C8 != 0) {
-        if (field_C8->head != 0) {
-            field_C8->current = field_C8->head;
-            while (field_C8->head != 0) {
-                void* item = field_C8->RemoveCurrent();
-                if (item != 0) {
-                    delete (SC_Question*)item;
-                }
+        Queue* list = field_C8;
+        if (list->head != 0) {
+            list->current = list->head;
+            if (list->head != 0) {
+                do {
+                    question = (SC_Question*)list->Pop();
+                    if (question != 0) {
+                        question->~SC_Question();
+                        FreeMemory(question);
+                    }
+                } while (list->head != 0);
             }
         }
-        operator delete(field_C8);
+        FreeMemory(list);
         field_C8 = 0;
     }
 
-    if (field_C4 != 0) {
-        delete field_C4;
+    question = field_C4;
+    if (question != 0) {
+        question->~SC_Question();
+        FreeMemory(question);
         field_C4 = 0;
     }
 
-    if (field_B4 != 0) {
-        delete field_B4;
+    pal = field_B4;
+    if (pal != 0) {
+        pal->~Palette();
+        FreeMemory(pal);
         field_B4 = 0;
     }
 }
@@ -225,7 +241,6 @@ Handler31::~Handler31() {
 /* Function start: 0x4173D0 */
 int Handler31::ShutDown(SC_Message* msg) {
     SC_Question* question;
-    void* item;
 
     if (sprite1 != 0) {
         sprite1->StopAnimationSound();
@@ -245,28 +260,37 @@ int Handler31::ShutDown(SC_Message* msg) {
     }
 
     if (field_C8 != 0) {
-        LinkedList* list = field_C8;
+        Queue* list = field_C8;
         if (list->head != 0) {
             list->current = list->head;
-            while (list->head != 0) {
-                item = list->RemoveCurrent();
-                if (item != 0) {
-                    delete (SC_Question*)item;
-                }
+            if (list->head != 0) {
+                do {
+                    question = (SC_Question*)list->Pop();
+                    if (question != 0) {
+                        question->~SC_Question();
+                        FreeMemory(question);
+                    }
+                } while (list->head != 0);
             }
         }
         FreeMemory(list);
         field_C8 = 0;
     }
 
-    if (field_C4 != 0) {
-        delete field_C4;
+    question = field_C4;
+    if (question != 0) {
+        question->~SC_Question();
+        FreeMemory(question);
         field_C4 = 0;
     }
 
-    if (field_B4 != 0) {
-        delete field_B4;
-        field_B4 = 0;
+    {
+        Palette* pal = field_B4;
+        if (pal != 0) {
+            pal->~Palette();
+            FreeMemory(pal);
+            field_B4 = 0;
+        }
     }
 
     ResetSpriteStates();

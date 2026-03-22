@@ -2,7 +2,7 @@
 #define HOTSPOTACTION_H
 
 #include "Parser.h"
-#include "LinkedList.h"
+#include "Queue.h"
 
 class MMPlayer;
 
@@ -32,10 +32,10 @@ public:
     char field_B4[64];      // 0xB4
     MMPlayer* field_F4;           // 0xF4
     MMPlayer* field_F8;           // 0xF8
-    LinkedList* queueFC;    // 0xFC
-    LinkedList* queue100;   // 0x100
-    LinkedList* queue104;   // 0x104
-    LinkedList* queue108;   // 0x108
+    Queue* queueFC;         // 0xFC
+    Queue* queue100;        // 0x100
+    Queue* queue104;        // 0x104
+    Queue* queue108;        // 0x108
     int field_10C;          // 0x10C
 };
 

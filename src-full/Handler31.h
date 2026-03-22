@@ -8,6 +8,7 @@ class Sprite;
 class Palette;
 class SC_Question;
 struct LinkedList;
+struct Queue;
 
 // Handler31 - Handler case 31 (0x1F)
 // Size: 0xD0 bytes
@@ -47,7 +48,7 @@ public:
     Sprite* sprite2;    // 0xBC
     SC_Question* field_C0;       // 0xC0
     SC_Question* field_C4;       // 0xC4
-    LinkedList* field_C8;       // 0xC8
+    Queue* field_C8;       // 0xC8
     int field_CC;       // 0xCC
 };
 

@@ -1,6 +1,7 @@
 #include "SC_Timer.h"
 #include "Memory.h"
 #include "Message.h"
+#include "SpriteAction.h"
 #include "Queue.h"
 #include "TimedEvent.h"
 #include "Timer.h"
@@ -48,7 +49,7 @@ void SC_Timer::Update(int param_1, int param_2) {
   void *pData;
 
   if ((timer1.Update() > 10000) && (m_eventList->head == 0)) {
-    SC_Message_Send(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0,
+    SendGameMessage(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0,
                     0, 0);
   }
 
@@ -202,7 +203,7 @@ int SC_Timer::Exit(SC_Message* param_1) {
     break;
   case 0x1b:
     if (m_eventList->head == 0) {
-      SC_Message_Send(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0,
+      SendGameMessage(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0,
                       0, 0);
     }
     break;

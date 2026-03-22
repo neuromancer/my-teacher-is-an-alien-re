@@ -3,7 +3,7 @@
 #include "Palette.h"
 #include "Memory.h"
 
-extern "C" int SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 
@@ -64,7 +64,8 @@ int SC_DemoScreen::ShutDown(SC_Message* msg) {
         delete (Palette*)field_A8;
         field_A8 = 0;
     }
-    return SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+    SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+    return 0;
 }
 
 /* Function start: 0x44E8B0 */

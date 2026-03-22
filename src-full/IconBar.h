@@ -2,6 +2,7 @@
 #define ICONBAR_H
 
 #include "Handler.h"
+#include "InvSlotItem.h"
 
 class SC_Message;
 class Sprite;
@@ -12,10 +13,7 @@ class SpriteAction;
 // Constructor: 0x42E330
 struct IconBarEntry {
     Sprite* sprite;        // 0x00
-    int left;              // 0x04
-    int top;               // 0x08
-    int right;             // 0x0C
-    int bottom;            // 0x10
+    Rect bounds;           // 0x04-0x13 (left, top, right, bottom)
     int field_14;          // 0x14
     int field_18;           // 0x18
     SpriteAction* slot0;   // 0x1C

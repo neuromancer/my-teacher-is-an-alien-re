@@ -88,8 +88,7 @@ int Engine::CleanupSubsystems(int* param) {
 }
 
 /* Function start: 0x405D60 */
-int Engine::CheckNavState(int* param) {
-    return 0;
+void Engine::CheckNavState(int* param) {
 }
 
 /* Function start: 0x4494E0 */

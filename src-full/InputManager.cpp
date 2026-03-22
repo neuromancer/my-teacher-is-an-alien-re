@@ -150,7 +150,7 @@ int InputManager::PollMouse(InputState* state) {
     return 1;
 }
 
-/* Function start: 0x4285B3 */
+/* SEH funclet at 0x4285B3 — not a standalone function */
 MousePoint::~MousePoint() {
 }
 

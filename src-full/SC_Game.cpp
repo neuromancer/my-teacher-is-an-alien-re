@@ -61,7 +61,7 @@ void SC_Game::Update(int param1, int param2) {
 
     unsigned int elapsed = timer.Update();
     if (elapsed > 30000) {
-        SC_Message_Send(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
     if (handlerId != param2) {

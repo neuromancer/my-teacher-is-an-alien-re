@@ -7,32 +7,28 @@
 
 // SoundItem class - represents a sound being played
 // Size: 0x20 bytes
-// vtable: 0x431238
-// Layout:
-//   0x00: vtable pointer (implicit, from virtual destructor)
-//   0x04-0x17: Timer (size 0x14)
-//   0x18: soundId
-//   0x1C: Sample* soundPtr
+// All method implementations are demo-only
+// Class layout kept for SC_Sound field compatibility
 class SoundItem {
 public:
     Timer timer;            // 0x04 - 0x17
     int soundId;            // 0x18
     Sample* soundPtr;       // 0x1C
 
-    SoundItem(int sndId);           // 0x40B5D0
-    virtual void LogSomething();    // 0x40B6E0 - vtable[0]
-    ~SoundItem() {                  // 0x40B7E0? - NON VIRTUAL INLINE
+    SoundItem(int sndId);
+    ~SoundItem() {
         if (soundPtr != 0) {
             soundPtr->Unload();
             operator delete(soundPtr);
             soundPtr = 0;
         }
     }
-    int IsFinished();               // 0x40B700
-    void Resume();                  // 0x40B750 - Play without loop
-    void Start();                   // 0x40B770 - Play with loop
-    void AdjustVolume(int delta);   // 0x40B790
-    void SetVolume(int volume);     // 0x40B7C0
+
+    // Demo-only methods - kept as declarations for SC_Sound demo code
+    void Start();
+    void Resume();
+    void AdjustVolume(int delta);
+    void SetVolume(int volume);
 };
 
 #endif // SOUNDITEM_H

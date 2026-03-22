@@ -79,28 +79,19 @@ int SC_Roach::ShutDown(SC_Message* msg) {
         } while (i != 0);
     }
 
-    i = 0;
-    int** crystalArr = (int**)&crystals[0];
-    do {
-        crystal = (NavCrystal*)*crystalArr;
+    for (i = 0; i < 8; i++) {
+        crystal = (NavCrystal*)crystals[i];
         if (crystal != 0) {
-            *(int*)crystal = 0x461320;
-            spr = crystal->sprite;
-            if (spr != 0) {
-                delete (Sprite*)spr;
-                crystal->sprite = 0;
-            }
+            crystal->~NavCrystal();
             FreeMemory(crystal);
-            *crystalArr = 0;
+            crystals[i] = 0;
         }
-        crystalArr++;
-        i++;
-    } while (i < 8);
+    }
 
     currentPiece = 0;
 
     if (msg != 0) {
-        SendGameMessage(0, 0, 0, 0, 0x1B, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
     return 0;
@@ -347,23 +338,37 @@ int SC_Roach::PickFromSource(int* msg)
 /* Function start: 0x419D70 */
 void SC_Roach::OnProcessEnd()
 {
+    int* cell;
+    int row;
+    int col;
+    int cellH;
+    int cellW;
+    int* gridPtr;
+    int startY;
+    int startX;
+
     SC_Combat::OnProcessEnd();
 
-    int row = 0;
-    int cellW = 0x2a;
-    int cellH = 0x2a;
-    int startX = 0xce;
-    int startY = 0x40;
-    int* gridPtr = (int*)((char*)this + 0x288);
+    row = 0;
+    cellW = 0x2a;
+    cellH = 0x2a;
+    startX = 0xce;
+    startY = 0x40;
+    gridPtr = (int*)((char*)this + 0x288);
 
     do {
-        int col = 0;
-        int* cell = gridPtr;
+        col = 0;
+        cell = gridPtr;
         do {
-            cell[0] = col * cellW + startX;
-            cell[1] = row * cellH + startY;
-            cell[2] = cell[0] + cellW;
-            cell[3] = cell[1] + cellH;
+            {
+                SlimeDim sd;
+                sd.field_0 = col * cellW + startX;
+                sd.field_4 = row * cellH + startY;
+                cell[0] = sd.field_0;
+                cell[1] = sd.field_4;
+                cell[2] = sd.field_0 + cellW;
+                cell[3] = sd.field_4 + cellH;
+            }
             cell += 8;
             col++;
         } while (col < 6);

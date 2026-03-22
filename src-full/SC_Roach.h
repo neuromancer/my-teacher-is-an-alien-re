@@ -14,6 +14,12 @@ class Sprite;
 class NavCrystal : public Parser {
 public:
     NavCrystal(int id);
+    ~NavCrystal() {
+        if (sprite != 0) {
+            delete sprite;
+            sprite = 0;
+        }
+    }
 
     int crystalId;               // 0x90
     int field_94;                // 0x94

@@ -382,8 +382,8 @@ void IconBar::Update(int param1, int param2) {
                     } else {
                         mouseX = 0;
                     }
-                    if (entry->left <= mouseX && entry->right >= mouseX &&
-                        entry->top <= mouseY && entry->bottom >= mouseY) {
+                    if (entry->bounds.left <= mouseX && entry->bounds.right >= mouseX &&
+                        entry->bounds.top <= mouseY && entry->bounds.bottom >= mouseY) {
                         entry->sprite->ResetAnimation(1, 0);
                     } else {
                         entry->sprite->ResetAnimation(0, 0);
@@ -411,8 +411,8 @@ void IconBar::Update(int param1, int param2) {
                 } else {
                     mouseX = 0;
                 }
-                if (entry->left <= mouseX && entry->right >= mouseX &&
-                    entry->top <= mouseY && entry->bottom >= mouseY) {
+                if (entry->bounds.left <= mouseX && entry->bounds.right >= mouseX &&
+                    entry->bounds.top <= mouseY && entry->bounds.bottom >= mouseY) {
                     entry->sprite->ResetAnimation(1, 0);
                 } else {
                     entry->sprite->ResetAnimation(0, 0);
@@ -441,9 +441,9 @@ int IconBar::FindClickedEntry(int* param) {
     do {
         if (entry->field_14 != 0) {
             x = param[7];
-            if (entry->left <= x && entry->right >= x) {
+            if (entry->bounds.left <= x && entry->bounds.right >= x) {
                 y = param[8];
-                if (entry->top <= y && entry->bottom >= y) {
+                if (entry->bounds.top <= y && entry->bounds.bottom >= y) {
                     found = 1;
                 } else {
                     found = 0;
@@ -534,10 +534,10 @@ int IconBar::LBLParse(char* param) {
         g_IconBarEntries[index].field_18 = value;
     } else if (strcmp(label, "RECT") == 0) {
         sscanf(param, " %s  %d %d %d %d %d", label, &index, &value, &p2, &p3, &p4);
-        g_IconBarEntries[index].left = value;
-        g_IconBarEntries[index].top = p2;
-        g_IconBarEntries[index].right = p3;
-        g_IconBarEntries[index].bottom = p4;
+        g_IconBarEntries[index].bounds.left = value;
+        g_IconBarEntries[index].bounds.top = p2;
+        g_IconBarEntries[index].bounds.right = p3;
+        g_IconBarEntries[index].bounds.bottom = p4;
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
@@ -548,10 +548,6 @@ int IconBar::LBLParse(char* param) {
 
 /* Function start: 0x42E330 */
 IconBarEntry::IconBarEntry() {
-    left = 0;
-    top = 0;
-    right = 0;
-    bottom = 0;
     memset(this, 0, 9 * 4);
 }
 

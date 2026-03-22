@@ -3,6 +3,7 @@
 #include "string.h"
 extern "C" void WriteToLog(const char* format, ...);
 #include <memory.h>
+#include <new.h>
 #include "TimedEvent.h"
 #include "Message.h"
 #include "SC_Question.h"
@@ -287,34 +288,48 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 /* Function start: 0x42D1A0 */
 SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
 {
-    int completed;
-    int* headNode;
-    SpriteAction localAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    volatile int completed;
+    PooledEvent* headNode;
+    SpriteAction localAction;
 
     completed = 0;
-    headNode = (int*)list.head;
-    localAction.CopyFrom((SpriteAction*)(headNode + 2));
+    headNode = list.head;
+    localAction.CopyFrom((SpriteAction*)((int*)headNode + 2));
 
-    list.head = (PooledEvent*)headNode[0];
-    if (list.head == 0) {
+    PooledEvent* nextNode = headNode->next;
+    list.head = nextNode;
+    if (nextNode == 0) {
         list.tail = 0;
     }
     else {
-        ((int*)list.head)[1] = 0;
+        nextNode->prev = 0;
     }
 
-    ((SpriteAction*)(headNode + 2))->~SpriteAction();
-    headNode[0] = (int)m_free_list;
-    m_free_list = (PooledEvent*)headNode;
-    m_count = m_count - 1;
+    int counter = 0;
+    SpriteAction* ebx = (SpriteAction*)((int*)headNode + 2);
+    do {
+        ebx->~SpriteAction();
+        ebx = (SpriteAction*)((char*)ebx + 0x38);
+        int tmp = counter;
+        counter--;
+        if (tmp == 0) break;
+    } while (1);
 
-    completed = 3;
+    headNode->next = m_free_list;
+    m_free_list = headNode;
+    m_count--;
+
     buffer->mousePos.field_0 = 0;
     buffer->mousePos.field_4 = 0;
     memset(buffer, 0, sizeof(SpriteAction));
     buffer->CopyFrom(&localAction);
     completed |= 1;
 
-
     return buffer;
+}
+
+/* Function start: 0x4406F0 */
+void PriorityQueue::AddAfterCurrent(void* data)
+{
+    LinkedList::InsertNode(data);
 }

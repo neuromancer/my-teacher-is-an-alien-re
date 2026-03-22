@@ -38,10 +38,8 @@ Parser::Parser() {
 /* Function start: 0x4127E0 */
 Parser::~Parser() {
   CloseFile();
-  if (field_0x3c) {
-    ConfigData* p = (ConfigData*)field_0x3c;
-    p->~ConfigData();
-    FreeMemory((void*)p);
+  if (field_0x3c != 0) {
+    delete (ConfigData*)field_0x3c;
     field_0x3c = 0;
   }
   g_ParserCount--;
@@ -90,7 +88,6 @@ int Parser::LBLParse(char *param_1) {
 
 /* Function start: 0x412A50 */
 void Parser::ReportUnknownLabel(char* name) {
-  WriteToLog("LBLParse error: handler=%s line='%s' file=%s", name, (char*)lineNumber, filename);
   ShowError("%s::LBLParse - Uknown Label\n'%s'\nfound in file %s",
             name, lineNumber, filename);
 }
@@ -343,7 +340,6 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
 
     lineTimer.Reset();
     self->lineNumber = (int)line_buffer;
-    WriteToLog("LBLParse: file=%s line='%s'", self->filename, line_buffer);
     result = self->LBLParse(line_buffer);
     DAT_00469150 += lineTimer.Update();
     DAT_0046914c++;
@@ -359,14 +355,18 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
 
 /* Function start: 0x412C00 */
 void Parser::BeginComment(char* line) {
-    char* start = FUN_00426570(line, "/*");
-    char* end = strstr(line, "*/");
-    int len = end - start;
+    char* start;
+    char* end;
+    int len;
+
+    start = FUN_00426570(line, "/*");
+    end = strstr(line, "*/");
+    len = end - start;
     if (start == 0 || end == 0 || len <= 0) {
         ShowError("Parser::SaveComment - %s", line);
     }
-    memcpy(&isProcessingKey + 2, start, len); // offset +0x10 = commentBuffer
-    ((char*)(&isProcessingKey + 2))[len] = '\0';
+    memcpy((char*)this + 0x10, start, len);
+    *((char*)this + 0x10 + len) = '\0';
 }
 
 /* Function start: 0x412C60 */
@@ -388,14 +388,13 @@ int Parser::DoCommentsMatch(char* line) {
 
 /* Function start: 0x4130E0 */
 void Parser::UpdateProcessingState() {
-    isProcessingKey = 0;
-    int* cache = (int*)g_FilePosCache;
-    int* node = (int*)cache[0]; // head
+    field_0x08 = 0;
+    volatile int node = ((int*)g_FilePosCache)[0];
     while (node != 0) {
-        if (node[2] & 1) {
-            node = (int*)node[0]; // next
-        } else {
-            isProcessingKey = 1;
+        int* pNode = (int*)node;
+        node = pNode[0];
+        if (!(pNode[2] & 1)) {
+            field_0x08 = 1;
             return;
         }
     }
@@ -403,49 +402,54 @@ void Parser::UpdateProcessingState() {
 
 /* Function start: 0x412EB0 */
 void Parser::PushConditionalState(int value) {
+    int* pool;
+    int* freeList;
+    int headVal;
+
     // Ensure g_FilePosCache exists
     if (g_FilePosCache == 0) {
         g_FilePosCache = (void*)new TimedEventPool(10);
     }
 
-    // Allocate node from pool
-    TimedEventPool* pool = (TimedEventPool*)g_FilePosCache;
-    int* freeList = (int*)&pool->m_free_list;
+    pool = (int*)g_FilePosCache;
+    headVal = pool[0];
+    freeList = &pool[3];
     if (*freeList == 0) {
-        // Grow pool
-        int growBy = pool->m_pool_size;
-        int* block = (int*)AllocateMemory(growBy * 12 + 4);
-        *block = (int)pool->m_pool;
-        pool->m_pool = (PooledEvent*)block;
-        int i = growBy - 1;
-        int* p = (int*)((char*)block + growBy * 12 - 8);
-        while (i >= 0) {
-            *p = *freeList;
-            *freeList = (int)p;
-            p -= 3;
-            i--;
+        int growBy = pool[5];
+        int* block = (int*)new char[growBy * 12 + 4];
+        *block = pool[4];
+        pool[4] = (int)block;
+        int cnt = pool[5];
+        int stride = cnt * 3;
+        cnt--;
+        int* p = (int*)((char*)block + stride * 4 - 8);
+        if (cnt >= 0) {
+            do {
+                *p = *freeList;
+                *freeList = (int)p;
+                p = (int*)((char*)p - 12);
+                cnt--;
+            } while (cnt >= 0);
         }
     }
 
     int* node = (int*)*freeList;
     *freeList = node[0];
     node[1] = 0;
-    node[0] = (int)pool->list.head;
-    pool->m_count++;
+    node[0] = headVal;
+    pool[2]++;
     node[2] = 0;
 
-    // Zero loop (matches assembly volatile pattern)
     { volatile int n = 0; while (n-- != 0); }
 
     node[2] = value;
 
-    // Link to head
-    if (pool->list.head != 0) {
-        ((int*)pool->list.head)[1] = (int)node;
+    if (pool[0] != 0) {
+        ((int*)pool[0])[1] = (int)node;
     } else {
-        pool->list.tail = (PooledEvent*)node;
+        pool[1] = (int)node;
     }
-    pool->list.head = (PooledEvent*)node;
+    pool[0] = (int)node;
 
     UpdateProcessingState();
 }
@@ -457,29 +461,27 @@ int Parser::EndComment() {
         g_FilePosCache = (void*)new TimedEventPool(10);
     }
 
-    TimedEventPool* pool = (TimedEventPool*)g_FilePosCache;
-    if (pool->m_count == 0) {
+    int* pool = (int*)g_FilePosCache;
+    if (pool[2] == 0) {
         ShowError("Parser::Pop - IF/ELSEIF ordering Error in %s", filename);
     }
 
     // Pop head node
-    int* head = (int*)pool->list.head;
+    int* head = (int*)pool[0];
     int result = head[2]; // saved value
     int* next = (int*)head[0];
-    pool->list.head = (PooledEvent*)next;
+    pool[0] = (int)next;
     if (next != 0) {
         next[1] = 0;
     } else {
-        pool->list.tail = 0;
+        pool[1] = 0;
     }
 
-    // Zero loop (matches assembly volatile pattern)
     { volatile int n = 0; while (n-- != 0); }
 
-    // Return to free list
-    head[0] = (int)pool->m_free_list;
-    pool->m_free_list = (PooledEvent*)head;
-    pool->m_count--;
+    head[0] = pool[3];
+    pool[3] = (int)head;
+    pool[2]--;
 
     UpdateProcessingState();
     return result;
@@ -494,7 +496,7 @@ void Parser::HandleToken_IF(char* line, int prevResult) {
     }
 
     {
-        char gsName[128];
+        char gsName[32];
         char gsOp[32];
         int gsValue;
         result = 0;
@@ -512,10 +514,10 @@ void Parser::HandleToken_IF(char* line, int prevResult) {
 
         // Build SpriteAction with parsed values
         SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        SC_Message msg(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        SC_Message msg;
         msg.targetAddress = (int)&action;
 
-        char tempBuf[256];
+        char tempBuf[128];
         sprintf(tempBuf, "ADDRESS\t\tGAMESTATE %s", gsName);
         msg.LBLParse(tempBuf);
 
@@ -555,12 +557,8 @@ void Parser::HandleToken(int tokenType, char* line) {
     char local_f0[96];
     char local_90[24];
     char* local_74;
-    int local_6c;
-    int local_60;
-    char* local_5c;
     char local_58[32];
     char local_38[24];
-    int local_20;
     char* local_1c;
     int local_18;
     char* local_14;
@@ -578,10 +576,10 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 3:
         result = EndComment();
-        if ((result & 2) == 0) {
-            HandleToken_IF(line, result);
-        } else {
+        if (result & 2) {
             PushConditionalState(result & 0xFFFFFFFE);
+        } else {
+            HandleToken_IF(line, result);
         }
         break;
 
@@ -602,13 +600,13 @@ void Parser::HandleToken(int tokenType, char* line) {
             pcVar6 = (char*)sscanf(pcVar7, " %s %s %d", local_38, local_90, &local_14);
         }
         if (pcVar6 != (char*)3) {
-            ShowError("Parser::HandleToken - Invalid SET_GAMESTATE statement '%s'");
+            ShowError("Parser::HandleToken - Invalid SET_GAMESTATE statement '%s'", line);
         }
         {
             SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            local_6c = g_GameState_0046aa30->FindState(local_38);
-            local_60 = DAT_0046aa38->FindState(local_90);
-            local_5c = local_14;
+            action.addressValue = g_GameState_0046aa30->FindState(local_38);
+            action.instruction = DAT_0046aa38->FindState(local_90);
+            action.extra1 = (int)local_14;
             g_GameState_0046aa30->SetFromAction((int*)&action);
         }
         break;
@@ -620,7 +618,7 @@ void Parser::HandleToken(int tokenType, char* line) {
             pcVar6 = (char*)sscanf(pcVar7, " %d", &local_14);
         }
         if (pcVar6 != (char*)1) {
-            ShowError("Parser::HandleToken - Invalid SET_MOUSE statement '%s'");
+            ShowError("Parser::HandleToken - Invalid SET_MOUSE statement '%s'", line);
         }
         if (g_Mouse_0046aa18 != 0 && *(void**)((char*)g_Mouse_0046aa18 + 0x94) != 0) {
             ((Sprite*)*(void**)((char*)g_Mouse_0046aa18 + 0x94))->ResetAnimation((int)local_14, 0);
@@ -632,7 +630,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         pcVar6 = FUN_00426570(line, "]");
         iVar12 = (int)pcVar6 - (int)local_14;
         if (local_14 == 0 || pcVar6 == 0 || iVar12 < 1) {
-            ShowError("Parser::HandleToken - Invalid GOTO statement. cannot find sub name '%s'");
+            ShowError("Parser::HandleToken - Invalid GOTO statement. needs [LABEL] '%s'", line);
         }
         strncpy(local_58, local_14, iVar12);
         local_58[iVar12] = 0;
@@ -701,7 +699,7 @@ void Parser::HandleToken(int tokenType, char* line) {
             local_74 = FUN_00426570(line, "]");
             iVar12 = (int)local_74 - (int)local_14;
             if (local_14 == 0 || local_74 == 0 || iVar12 < 1) {
-                ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot find sub name '%s'");
+                ShowError("Parser::HandleToken - Invalid GOSUB statement. needs [LABEL] '%s'", line);
             }
             strncpy((char*)local_58, local_14, iVar12);
             local_58[iVar12] = 0;
@@ -713,7 +711,7 @@ void Parser::HandleToken(int tokenType, char* line) {
             iVar12 = (int)local_74 - (int)local_14;
             if (local_14 != 0 && local_74 != 0 && iVar12 > 0) {
                 if (DAT_00469160 != 0) {
-                    ShowError("Parser::HandleToken - Invalid GOSUB statement. Nested sub not allowed '%s'");
+                    ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot nest variable lists '%s'", line);
                 }
                 DAT_00469160 = 1;
                 strncpy(local_f0, local_14, iVar12);
@@ -760,12 +758,12 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
 
     case 0xB:
-        FUN_00426570(line, "HALT_");
-        pcVar6 = strstr(line, "\0");
+        pcVar7 = FUN_00426570(line, "HALT_");
+        pcVar6 = strstr(line, ">>");
         if (pcVar6 != 0) {
             *pcVar6 = 0;
         }
-        ShowError(" %s %s");
+        ShowError("%s \n%s", filename, pcVar7);
         break;
 
     case 0xD:
@@ -776,10 +774,10 @@ void Parser::HandleToken(int tokenType, char* line) {
         } else {
             pcVar6 = strstr(local_14, "(");
             if (pcVar6 != 0) {
-                local_1c = FUN_00426570(pcVar6, ")");
+                local_1c = FUN_00426570(pcVar6, ">>");
                 if (local_1c != 0) {
                     iVar12 = sscanf(pcVar6 + 2, "%s %s", local_110, local_58);
-                    pcVar7 = strstr((char*)local_58, ")");
+                    pcVar7 = strstr((char*)local_58, ">>");
                     if (pcVar7 != 0) {
                         *pcVar7 = 0;
                     }
@@ -787,7 +785,7 @@ void Parser::HandleToken(int tokenType, char* line) {
             }
         }
         if (iVar12 != 2) {
-            ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'");
+            ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'", line);
         }
         if (strcmp((char*)local_110, "INT") == 0) {
             local_74 = (char*)g_GameState_0046aa30;
@@ -797,14 +795,14 @@ void Parser::HandleToken(int tokenType, char* line) {
             }
             pcVar7 = (char*)g_GameState_0046aa30->stateValues[idx];
         } else {
-            ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'");
+            ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'", line);
             pcVar7 = local_14;
         }
         iVar12 = (int)pcVar6 - (int)local_14;
         strncpy(local_190, local_14, iVar12);
         pcVar6 = local_1c;
         local_190[iVar12] = 0;
-        sprintf(local_210, "%s_%d_%s", local_190, pcVar7, pcVar6);
+        sprintf(local_210, "%s %d %s", local_190, pcVar7, pcVar6);
         strcpy(line, local_210);
         break;
     }

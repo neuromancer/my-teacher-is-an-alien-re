@@ -235,12 +235,12 @@ void SCI_Schedule::Update(int param1, int param2)
     if (hs->sprite != 0) {
         if (hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
             hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
-            hs->field_94 = 1;
+            hs->bounds.left = 1;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(1, 0);
             }
         } else {
-            hs->field_94 = 0;
+            hs->bounds.left = 0;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(0, 0);
             }

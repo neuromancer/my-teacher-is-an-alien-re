@@ -1,12 +1,16 @@
 #ifndef SPRITEACTION_H
 #define SPRITEACTION_H
 
+#include <string.h>
+
 // SlimeDim - generic 8-byte coordinate/dimension pair, destructor at 0x401120.
 // The name is legacy; the type is also used for mouse coordinates.
 // Inline constructor triggers SEH in containing class constructors.
 struct SlimeDim {
     int field_0;
     int field_4;
+    SlimeDim() { field_0 = 0; field_4 = 0; }
+    ~SlimeDim();
 };
 
 // SpriteAction - chainable action/message payload.
@@ -31,7 +35,7 @@ public:
     int time;                  // 0x30
     SpriteAction* childAction; // 0x34 - owned nested SpriteAction*
 
-    SpriteAction() {}
+    SpriteAction() { mousePos.field_0 = 0; mousePos.field_4 = 0; memset(this, 0, sizeof(SpriteAction)); }
     SpriteAction(int, int, int, int, int, int, int, int, int, int);
     ~SpriteAction();
     SpriteAction* CopyFrom(SpriteAction*);  // 0x444920

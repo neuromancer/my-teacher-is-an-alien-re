@@ -10,6 +10,7 @@
 #include "Timer.h"
 #include "LinkedList.h"
 #include "ZBuffer.h"
+#include "RenderEntry.h"
 #include <string.h>
 #include <smack.h>
 
@@ -90,7 +91,7 @@ static char g_CinematicPath_00473cb0[256];
 static char g_AnimNameBuf_00473cf0[64];
 
 /* Function start: 0x44E320 */
-extern "C" char* MakeAnimName(char* baseName)
+extern "C" char* MakeSoundName_Cine(char* baseName)
 {
     int len = strlen(baseName);
     if (len < 4) {
@@ -152,8 +153,8 @@ void SC_Cinematic::Init(SC_Message* msg) {
     flags = 0x10;
     savedRenderCtx = ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime;
 
-    ZBufferManager* zbm = g_ZBufferManager_0046aa24;
-    if (zbm != 0) {
+    if (g_ZBufferManager_0046aa24 != 0) {
+        ZBufferManager* zbm = g_ZBufferManager_0046aa24;
         int savedState = zbm->m_state;
         if (savedState != 0) {
             zbm->m_state = 0;
@@ -181,7 +182,17 @@ void SC_Cinematic::Init(SC_Message* msg) {
                 }
             }
 
-            zbm->m_queue9c->ClearList();
+            ZBQueue* q3 = zbm->m_queue9c;
+            if (q3->head != 0) {
+                q3->current = q3->head;
+                while (q3->head != 0) {
+                    RenderEntry* entry = (RenderEntry*)((LinkedList*)q3)->RemoveCurrent();
+                    if (entry != 0) {
+                        entry->~RenderEntry();
+                        FreeMemory(entry);
+                    }
+                }
+            }
             zbm->m_palette = 0;
         }
         savedZBState = savedState;
@@ -198,10 +209,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
     char* movieName = GetCinematicFilename(moduleParam);
     char* moviePath = FormatAssetPath(movieName);
 
-    if (FileExists(moviePath) == 0) {
-        WriteToLog("missing cinematic %s", moviePath);
-        EndCinematic();
-    } else {
+    if (FileExists(moviePath) != 0) {
         if (g_GameState_0046aa30 != 0) {
             GameState* gs = g_GameState_0046aa30;
             if (gs->maxStates - 1 < 4) {
@@ -236,6 +244,9 @@ void SC_Cinematic::Init(SC_Message* msg) {
         if (flags & 0x10) {
             SendGameMessage(5, 0, handlerId, moduleParam, 0x13, startX, startY, 0, 0, 0);
         }
+    } else {
+        WriteToLog("missing cinematic %s", moviePath);
+        EndCinematic();
     }
 }
 
@@ -270,7 +281,17 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                     }
                 }
 
-                zbm->m_queue9c->ClearList();
+                ZBQueue* q3 = zbm->m_queue9c;
+                if (q3->head != 0) {
+                    q3->current = q3->head;
+                    while (q3->head != 0) {
+                        RenderEntry* entry = (RenderEntry*)q3->Pop();
+                        if (entry != 0) {
+                            entry->~RenderEntry();
+                            FreeMemory(entry);
+                        }
+                    }
+                }
                 zbm->m_palette = 0;
             }
         }
@@ -304,14 +325,16 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
     }
 
     if (palette != 0) {
-        void* pal = (void*)palette;
-        delete (Palette*)pal;
+        Palette* pal = (Palette*)palette;
+        pal->~Palette();
+        FreeMemory(pal);
         palette = 0;
     }
 
     if (pendingAction != 0) {
-        void* spr = (void*)pendingAction;
-        delete (SpriteAction*)spr;
+        SpriteAction* spr = (SpriteAction*)pendingAction;
+        spr->~SpriteAction();
+        FreeMemory(spr);
         pendingAction = 0;
     }
 
@@ -341,7 +364,7 @@ void SC_Cinematic::Update(int param1, int param2) {
 
         Animation* smk = (Animation*)animation;
         VBuffer* vp = g_BackBuffer_0046aa14;
-        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)smk->targetBuffer);
+        vp->CallBlitter(vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_x2, (int)smk->targetBuffer);
         (g_Mouse_0046aa18)->DrawCursor();
         return;
     }
@@ -450,9 +473,9 @@ void SC_Cinematic::Update(int param1, int param2) {
                 if (q1->head != 0) {
                     q1->current = q1->head;
                     while (q1->head != 0) {
-                        void* obj = ((LinkedList*)q1)->RemoveCurrent();
+                        SoundCommand* obj = (SoundCommand*)q1->Pop();
                         if (obj != 0) {
-                            delete (SoundCommand*)obj;
+                            delete obj;
                         }
                     }
                 }
@@ -465,7 +488,7 @@ void SC_Cinematic::Update(int param1, int param2) {
 
         Animation* anim4 = (Animation*)animation;
         VBuffer* vp = g_BackBuffer_0046aa14;
-        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)anim4->targetBuffer);
+        vp->CallBlitter(vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_x2, (int)anim4->targetBuffer);
     } else {
         Timer timer;
         timer.Wait(0x96);

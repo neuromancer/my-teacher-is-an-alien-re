@@ -20,7 +20,6 @@ class FlagArray;
 class TimedEventPool;
 class Engine;
 class SC_CombatBase;
-class Character;
 class mCNavigator;
 class CombatSprite;
 class TargetList;
@@ -383,10 +382,6 @@ struct BombData { int data[6]; };
 // extern char DAT_00435932; // { /* 1 bytes */ }
 // extern char DAT_00435933; // { /* 1 bytes */ }
 extern StringTable* g_Strings_0046a6e0; // 0x0046a6e0
-extern Character* g_PeterCharacter_00435a74;
-extern Character* g_SusanCharacter_00435a78;
-extern Character* g_DuncanCharacter_00435a7c;
-extern Character* g_SelectedCharacter_00435a80;
 extern FlagArray* g_FlagManager_0046a6e8; // 0x0046a6e8
 
 struct SolutionEntry {

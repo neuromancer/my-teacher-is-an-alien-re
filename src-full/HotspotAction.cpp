@@ -33,19 +33,18 @@ HotspotAction::HotspotAction(int id) {
 
 /* Function start: 0x41B3A0 */
 HotspotAction::~HotspotAction() {
-    void* ptr;
-    void* item;
-    LinkedList* list;
+    SpriteAction* item;
+    Queue* list;
 
-    ptr = (void*)field_F4;
-    if (ptr != 0) {
-        delete (MMPlayer*)ptr;
+    if (field_F4 != 0) {
+        field_F4->~MMPlayer();
+        FreeMemory(field_F4);
         field_F4 = 0;
     }
 
-    ptr = (void*)field_F8;
-    if (ptr != 0) {
-        delete (MMPlayer*)ptr;
+    if (field_F8 != 0) {
+        field_F8->~MMPlayer();
+        FreeMemory(field_F8);
         field_F8 = 0;
     }
 
@@ -54,9 +53,10 @@ HotspotAction::~HotspotAction() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = list->RemoveCurrent();
+                item = (SpriteAction*)list->Pop();
                 if (item != 0) {
-                    delete (SpriteAction*)item;
+                    item->~SpriteAction();
+                    FreeMemory(item);
                 }
             }
         }
@@ -69,9 +69,10 @@ HotspotAction::~HotspotAction() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = list->RemoveCurrent();
+                item = (SpriteAction*)list->Pop();
                 if (item != 0) {
-                    delete (SpriteAction*)item;
+                    item->~SpriteAction();
+                    FreeMemory(item);
                 }
             }
         }
@@ -84,9 +85,10 @@ HotspotAction::~HotspotAction() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = list->RemoveCurrent();
+                item = (SpriteAction*)list->Pop();
                 if (item != 0) {
-                    delete (SpriteAction*)item;
+                    item->~SpriteAction();
+                    FreeMemory(item);
                 }
             }
         }
@@ -99,9 +101,10 @@ HotspotAction::~HotspotAction() {
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
-                item = list->RemoveCurrent();
+                item = (SpriteAction*)list->Pop();
                 if (item != 0) {
-                    delete (SpriteAction*)item;
+                    item->~SpriteAction();
+                    FreeMemory(item);
                 }
             }
         }
@@ -311,7 +314,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     int local_38;
     int result;
     SpriteAction* sa;
-    LinkedList* list;
+    Queue* list;
 
     buf_C0[0] = 0;
     buf_140[0] = 0;
@@ -344,7 +347,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "INC_ACTIONS") == 0) {
         if (queueFC == 0) {
-            queueFC = new LinkedList();
+            queueFC = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->addressType = 2;
@@ -378,7 +381,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "MESSAGE") == 0) {
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->fromType = 0x24;
@@ -410,7 +413,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "INCORRECTMESSAGE") == 0) {
         if (queue104 == 0) {
-            queue104 = new LinkedList();
+            queue104 = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->fromType = 0x24;
@@ -442,7 +445,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "ACTIONS") == 0) {
         if (queueFC == 0) {
-            queueFC = new LinkedList();
+            queueFC = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->fromType = 0x24;
@@ -474,7 +477,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "CHECKMSG") == 0) {
         if (queue108 == 0) {
-            queue108 = new LinkedList();
+            queue108 = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->fromType = 0x24;
@@ -507,7 +510,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     else if (strcmp(label, "SWITCHFOCUS") == 0) {
         sscanf(line, " %s %s %d", label, buf_C0, &local_14);
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction(
             g_StringTable_0046aa34->FindState(buf_C0),
@@ -538,7 +541,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "SWITCHPREVIOUSROOM") == 0) {
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction();
         memset(sa, 0, sizeof(SpriteAction));
@@ -570,7 +573,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     else if (strcmp(label, "PLAYSOUND") == 0) {
         sscanf(line, " %s %d", label, &local_14);
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction(4, local_14, field_90, field_94, 2, local_14, 0, 0, 0, 0);
         list = queue100;
@@ -600,7 +603,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     else if (strcmp(label, "PLAYCINEMATIC") == 0) {
         sscanf(line, " %s %d", label, &local_14);
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction(3, local_14, field_90, field_94, 4, local_14, 0, 0, 0, 0);
         list = queue100;
@@ -651,7 +654,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             sprintf(local_40, "%c%s", (int)c, buf_C0);
         }
         if (queue108 == 0) {
-            queue108 = new LinkedList();
+            queue108 = new Queue();
         }
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(local_40),
@@ -688,7 +691,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             local_14 = 0;
         }
         if (queue108 == 0) {
-            queue108 = new LinkedList();
+            queue108 = new Queue();
         }
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(buf_C0),
@@ -725,7 +728,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     else if (strcmp(label, "GAMESTATE") == 0) {
         result = sscanf(line, " %s %s %s %d", label, buf_C0, buf_140, &local_14);
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(buf_C0),
@@ -768,7 +771,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             ShowError("Error in ThotsLvl.cpp %s in parameter", line);
         }
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction(0x20, local_38, field_90, field_94, 4, local_14, 0, 0, 0, 0);
         list = queue100;
@@ -797,7 +800,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "ACTION") == 0) {
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState("NUM_ACTIONS"),
@@ -829,7 +832,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     else if (strcmp(label, "OBJECT") == 0) {
         sscanf(line, " %s %d %s", label, &local_14, buf_C0);
         if (queue100 == 0) {
-            queue100 = new LinkedList();
+            queue100 = new Queue();
         }
         sa = new SpriteAction(0x1e, local_14, field_90, field_94,
             DAT_0046aa38->FindState(buf_C0),

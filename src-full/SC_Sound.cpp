@@ -1,6 +1,7 @@
 #include "SC_Sound.h"
 #include "Memory.h"
 #include "Message.h"
+#include "SpriteAction.h"
 #include "globals.h"
 #include "string.h"
 #include "SC_OnScreenMessage.h"
@@ -184,7 +185,7 @@ int SC_Sound::Exit(SC_Message* msg) {
     }
 
     case 27:
-        SC_Message_Send(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
+        SendGameMessage(3, handlerId, handlerId, moduleParam, 20, 0, 0, 0, 0, 0);
         break;
 
     default:

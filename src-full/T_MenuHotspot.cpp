@@ -15,7 +15,30 @@ extern InputManager* g_InputManager_0046aa08;
 T_MenuHotspot::T_MenuHotspot(int param) : Parser()
 {
     memset(&sprite, 0, 0x46 * 4);
-    field_98 = param;
+    sprite = (Sprite*)1;
+    field_1A4 = param;
+}
+
+/* Function start: 0x421A50 */
+T_MenuHotspot::T_MenuHotspot(char* name, int* rect)
+{
+    memset(this, 0, 0x2a * 4);
+
+    if (name != 0) {
+        sprite = new Sprite(name);
+        sprite->priority = 2;
+        sprite->loc_x = rect[0];
+        sprite->loc_y = rect[1];
+        sprite->ConfigStates(2);
+        sprite->flags |= 0x40;
+        sprite->ConfigRange(0, 1, 1, 1);
+        sprite->ConfigRange(1, 2, 2, 1);
+    }
+
+    bounds.left = rect[0];
+    bounds.top = rect[1];
+    bounds.right = rect[2];
+    bounds.bottom = rect[3];
 }
 
 /* Function start: 0x420D90 */
@@ -39,30 +62,6 @@ T_MenuHotspot::~T_MenuHotspot()
         operator delete((void*)field_1A0);
         field_1A0 = 0;
     }
-}
-
-/* Function start: 0x421A50 */
-T_MenuHotspot::T_MenuHotspot(char* name, int* rect)
-    : bounds(0, 0, 0, 0)
-{
-    memset(&sprite, 0, 42 * 4);
-
-    if (name != 0) {
-        Sprite* spr = new Sprite(name);
-        cursor = spr;
-        spr->priority = 2;
-        spr->loc_x = rect[0];
-        spr->loc_y = rect[1];
-        spr->ConfigStates(2);
-        spr->flags |= 0x40;
-        spr->ConfigRange(0, 1, 1, 1);
-        spr->ConfigRange(1, 2, 2, 1);
-    }
-
-    bounds.left = rect[0];
-    bounds.top = rect[1];
-    bounds.right = rect[2];
-    bounds.bottom = rect[3];
 }
 
 /* Function start: 0x421BC0 */
@@ -128,13 +127,13 @@ int T_MenuHotspot::LBLParse(char* line) {
         sscanf(line, " %s %d %d %d %d", local_50, &local_30, &local_2c, &local_28, &local_tmp);
         bounds.left = local_30;
         bounds.top = local_2c;
-        bounds.right = local_28;
-        bounds.bottom = local_tmp;
+        bounds.left = local_28;
+        bounds.top = local_tmp;
     } else if (strcmp(local_50, "SPRITE") == 0) {
         cursor = new Sprite((char*)0);
         Parser::ProcessFile(cursor, this, (char*)0);
     } else if (strcmp(local_50, "MOUSE") == 0) {
-        sscanf(line, " %s %d", local_50, &field_98);
+        sscanf(line, " %s %d", local_50, &bounds.top);
     } else if (strcmp(local_50, "HSOUND") == 0) {
         sscanf(line, " %s %d %d %d %d", local_50, &local_18, &local_1c, &local_24, &local_20);
         *(int*)((char*)this + local_18 * 0xC + 0xB4) = local_1c;

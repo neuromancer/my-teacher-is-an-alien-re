@@ -32,8 +32,4 @@ struct Message {
     //Message(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9); // 0x4198C0
 };
 
-void SC_Message_Send(int targetAddress, int sourceAddress, int command, int data,
-    int priority, int param1, int param2, int userPtr,
-    int param9, int param10);
-
 #endif // MESSAGE_H

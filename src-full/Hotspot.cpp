@@ -23,15 +23,6 @@ extern "C" GameState* g_GameState_0046aa30;
 #include "HotspotAction.h"
 #include "GameState.h"
 
-T_Hotspot::T_Hotspot()
-{
-    memset(&sprite, 0, 0x2e * 4);
-    enabled = 1;
-    state = 1;
-    dialogParseFileNumber = -1;
-    parseFileIndex = -1;
-}
-
 /* Function start: 0x445830 */
 T_Hotspot::T_Hotspot(int param_1) : Parser()
 {
@@ -120,19 +111,6 @@ void T_Hotspot::StopAll()
         i--;
     } while (i != 0);
 }
-
-// =========================================================================
-// Hotspot class — DEMO ONLY (used by Handler6.cpp, no full game equivalent)
-// =========================================================================
-
-Hotspot::Hotspot() { memset(&hotspot, 0, 104); field_D0 = 1; state = 1; }
-Hotspot::~Hotspot() {}
-int Hotspot::Do() { return 0; }
-int Hotspot::LBLParse(char*) { return 0; }
-
-// Demo stubs needed by linker
-void T_Hotspot::Exit() {}
-int T_Hotspot::Update(int, int, int) { return 0; }
 
 /* Function start: 0x445A30 */
 int T_Hotspot::LBLParse(char* param_1)

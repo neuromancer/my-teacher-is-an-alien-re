@@ -2,6 +2,7 @@
 #define RANGE_H
 
 #include <string.h>
+#include "SpriteAction.h"
 
 struct Range {
     int start;   // 0x00

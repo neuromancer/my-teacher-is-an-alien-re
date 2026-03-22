@@ -373,7 +373,7 @@ void SC_Combat1::ProcessMessage()
         }
         return;
     }
-    SC_Message_Send(SC_Combat1::savedCommand, SC_Combat1::savedMsgData, SC_Combat1::handlerId, SC_Combat1::moduleParam, 5, 0, 0, 0, 0, 0);
+    SendGameMessage(SC_Combat1::savedCommand, SC_Combat1::savedMsgData, SC_Combat1::handlerId, SC_Combat1::moduleParam, 5, 0, 0, 0, 0, 0);
 }
 
 int SC_Combat1::LBLParse(char* line) {

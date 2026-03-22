@@ -191,7 +191,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     do {
         T_MenuHotspot* chr = *charSprite;
         if (chr != 0) {
-            chr->field_94 = 0;
+            chr->bounds.left = 0;
             Sprite* animCtrl = chr->cursor;
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(0, 0);
@@ -215,7 +215,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
         stateVals = (int*)gs->stateValues;
         stateVals = (int*)*stateVals;
         T_MenuHotspot* chrPtr = characters[stateVals[charIdx]];
-        chrPtr->field_94 = 1;
+        chrPtr->bounds.left = 1;
         Sprite* animCtrl = chrPtr->cursor;
         if (animCtrl != 0) {
             ((Sprite*)animCtrl)->ResetAnimation(1, 0);
@@ -382,115 +382,125 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
 
 /* Function start: 0x41E950 */
 int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
-    void* ptr;
-    T_MenuHotspot** base;
-    int count;
+    ZBufferManager* zbm;
+    ZBQueue* queue;
+    void* item;
+    int i;
 
     if (DAT_0046a190 == 0) {
         return 0;
     }
     DAT_0046a190 = 0;
 
-    // Clean up ZBufferManager queues
-    ZBufferManager* zbm = g_ZBufferManager_0046aa24;
-    ZBQueue* queue;
+    zbm = g_ZBufferManager_0046aa24;
 
+    // Clean up queue at 0xA0 (SoundCommand queue)
     queue = zbm->m_queueA0;
     if (queue->head != 0) {
         queue->current = queue->head;
         while (queue->head != 0) {
-            void* item = ((LinkedList*)queue)->RemoveCurrent();
+            item = queue->Pop();
             if (item != 0) {
-                
-                free(item);
+                *(int*)item = 0x461030;
+                FreeMemory(item);
             }
         }
     }
 
+    // Clean up queue at 0xA4 (ZBuffer queue)
     queue = zbm->m_queueA4;
     if (queue->head != 0) {
         queue->current = queue->head;
         while (queue->head != 0) {
-            void* item = ((LinkedList*)queue)->RemoveCurrent();
+            item = queue->Pop();
             if (item != 0) {
                 ((ZBuffer*)item)->CleanUpVBuffer();
-                free(item);
+                FreeMemory(item);
             }
         }
     }
 
-    ZBQueue* queue9c = zbm->m_queue9c;
-    if (queue9c->head != 0) {
-        queue9c->current = queue9c->head;
-        while (queue9c->head != 0) {
-            RenderEntry* item = (RenderEntry*)((LinkedList*)queue9c)->RemoveCurrent();
-            if (item != 0) {
-                item->RenderEntry::~RenderEntry();
-                free(item);
+    // Clean up queue at 0x9C (RenderEntry queue)
+    queue = zbm->m_queue9c;
+    if (queue->head != 0) {
+        queue->current = queue->head;
+        while (queue->head != 0) {
+            RenderEntry* entry = (RenderEntry*)queue->Pop();
+            if (entry != 0) {
+                entry->RenderEntry::~RenderEntry();
+                FreeMemory(entry);
             }
         }
     }
 
     zbm->m_palette = 0;
 
-    // Clean up own fields
+    // Clean up palette
     if (palette != 0) {
-        delete palette;
+        palette->~Palette();
+        FreeMemory(palette);
         palette = 0;
     }
 
-    ptr = background;
-    if (ptr != 0) {
-        delete (MMPlayer*)ptr;
+    // Clean up background
+    if (background != 0) {
+        background->~MMPlayer();
+        FreeMemory(background);
         background = 0;
     }
 
-    ptr = okayButton;
-    if (ptr != 0) {
-        delete (T_MenuHotspot*)ptr;
-        free(ptr);
+    // Clean up okayButton
+    if (okayButton != 0) {
+        okayButton->~T_MenuHotspot();
+        FreeMemory(okayButton);
         okayButton = 0;
     }
 
-    ptr = cancelButton;
-    if (ptr != 0) {
-        delete (T_MenuHotspot*)ptr;
-        free(ptr);
+    // Clean up cancelButton
+    if (cancelButton != 0) {
+        cancelButton->~T_MenuHotspot();
+        FreeMemory(cancelButton);
         cancelButton = 0;
     }
 
-    ptr = menuSound;
-    if (ptr != 0) {
+    // Clean up menuSound
+    if (menuSound != 0) {
         menuSound->Unload();
-        free(ptr);
+        FreeMemory(menuSound);
         menuSound = 0;
     }
 
-    base = characters;
-    count = 3;
-    do {
-        ptr = (void*)*base;
-        if (ptr != 0) {
-            delete (T_MenuHotspot*)ptr;
-            free(ptr);
-            *base = 0;
-        }
-        base++;
-        count--;
-    } while (count != 0);
+    // Clean up characters[3]
+    {
+        T_MenuHotspot** base = characters;
+        i = 3;
+        do {
+            T_MenuHotspot* ptr = *base;
+            if (ptr != 0) {
+                ptr->~T_MenuHotspot();
+                FreeMemory(ptr);
+                *base = 0;
+            }
+            base++;
+            i--;
+        } while (i != 0);
+    }
 
-    base = options;
-    count = 9;
-    do {
-        ptr = (void*)*base;
-        if (ptr != 0) {
-            delete (T_MenuHotspot*)ptr;
-            free(ptr);
-            *base = 0;
-        }
-        base++;
-        count--;
-    } while (count != 0);
+    // Clean up options[9]
+    {
+        T_MenuHotspot** base = options;
+        i = 9;
+        do {
+            T_MenuHotspot* ptr = *base;
+            if (ptr != 0) {
+                ptr->~T_MenuHotspot();
+                FreeMemory(ptr);
+                *base = 0;
+            }
+            base++;
+            i--;
+        } while (i != 0);
+    }
 
     IconBar::CleanupIconBar(msg);
     return 0;
@@ -524,7 +534,7 @@ int SCI_SchoolMenu::IsCharacterActive() {
     do {
         T_MenuHotspot* chr = *p;
         if (chr != 0) {
-            int state = chr->field_94;
+            int state = chr->bounds.left;
             if (state == 1 || state == 2) {
                 return 1;
             }
@@ -562,7 +572,7 @@ void SCI_SchoolMenu::SetupOptions() {
         do {
             T_MenuHotspot* opt = *p;
             if (opt != 0) {
-                opt->field_94 = 0;
+                opt->bounds.left = 0;
                 Sprite* animCtrl = opt->cursor;
                 if (animCtrl != 0) {
                     ((Sprite*)animCtrl)->ResetAnimation(0, 0);
@@ -626,13 +636,13 @@ void SCI_SchoolMenu::SetupOptions() {
         stateVals = gs->stateValues;
 
         if (stateVals[stIdx] == 0) {
-            opt->field_94 = -1;
+            opt->bounds.left = -1;
             Sprite* animCtrl = opt->cursor;
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(-1, 0);
             }
         } else {
-            opt->field_94 = 0;
+            opt->bounds.left = 0;
             Sprite* animCtrl = opt->cursor;
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(0, 0);
@@ -819,7 +829,7 @@ char_click:
             int count = 3;
             do {
                 T_MenuHotspot* chr = *basePtr;
-                chr->field_94 = 0;
+                chr->bounds.left = 0;
                 Sprite* animCtrl = chr->cursor;
                 if (animCtrl != 0) {
                     ((Sprite*)animCtrl)->ResetAnimation(0, 0);
@@ -832,7 +842,7 @@ char_click:
         selPtr = &characters[i];
         {
             T_MenuHotspot* selChr = *selPtr;
-            selChr->field_94 = 1;
+            selChr->bounds.left = 1;
             Sprite* animCtrl = selChr->cursor;
             if (animCtrl != 0) {
                 ((Sprite*)animCtrl)->ResetAnimation(1, 0);
@@ -895,7 +905,7 @@ opt_click:
         do {
             T_MenuHotspot* opt = *baseOpts;
             if (opt != 0) {
-                opt->field_94 = 0;
+                opt->bounds.left = 0;
                 Sprite* animCtrl = opt->cursor;
                 if (animCtrl != 0) {
                     ((Sprite*)animCtrl)->ResetAnimation(0, 0);
@@ -909,7 +919,7 @@ opt_click:
     selPtr = &options[i];
     {
         T_MenuHotspot* selOpt = *selPtr;
-        selOpt->field_94 = 1;
+        selOpt->bounds.left = 1;
         Sprite* animCtrl = selOpt->cursor;
         if (animCtrl != 0) {
             ((Sprite*)animCtrl)->ResetAnimation(1, 0);

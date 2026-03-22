@@ -1,6 +1,7 @@
 #include "Handler13.h"
 #include "Memory.h"
 #include "Message.h"
+#include "SpriteAction.h"
 #include "globals.h"
 #include "string.h"
 #include "TimedEvent.h"
@@ -64,7 +65,7 @@ void Handler13::Update(int param1, int param2) {
 
     uVar3 = timer1.Update();
     if ((uVar3 > 10000) && (list->head == 0)) {
-        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+        SendGameMessage(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
     }
 
     timer1.Reset();
@@ -100,14 +101,12 @@ void Handler13::Update(int param1, int param2) {
     }
 }
 
-/* Function start: 0x401F90 */ /* DEMO ONLY - no full game match */
 int Handler13::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
-    ShowError("SC_Timer::AddMessage");
     return 1;
 }
 
-/* Function start: 0x401FB0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x423060 */
 int Handler13::Exit(SC_Message* msg) {
     TimedEvent* pTimedEvent;
     TimedEvent* eventData;
@@ -216,7 +215,7 @@ int Handler13::Exit(SC_Message* msg) {
 
     case 0x1b:
         if (list->head == 0) {
-            SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+            SendGameMessage(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
         }
         break;
 

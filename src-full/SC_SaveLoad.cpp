@@ -41,20 +41,42 @@ SC_SaveLoad::SC_SaveLoad()
 /* Function start: 0x421F80 */
 SC_SaveLoad::~SC_SaveLoad()
 {
-    if (sprite != 0) {
-        delete sprite;
-        sprite = 0;
+    {
+        Sprite* spr = sprite;
+        if (spr != 0) {
+            spr->~Sprite();
+            FreeMemory(spr);
+            sprite = 0;
+        }
     }
     if (btnYes != 0) {
-        delete btnYes;
+        Sprite* spr = btnYes->sprite;
+        if (spr != 0) {
+            spr->~Sprite();
+            FreeMemory(spr);
+            btnYes->sprite = 0;
+        }
+        FreeMemory(btnYes);
         btnYes = 0;
     }
     if (btnNo != 0) {
-        delete btnNo;
+        Sprite* spr = btnNo->sprite;
+        if (spr != 0) {
+            spr->~Sprite();
+            FreeMemory(spr);
+            btnNo->sprite = 0;
+        }
+        FreeMemory(btnNo);
         btnNo = 0;
     }
     if (btnCancel != 0) {
-        delete btnCancel;
+        Sprite* spr = btnCancel->sprite;
+        if (spr != 0) {
+            spr->~Sprite();
+            FreeMemory(spr);
+            btnCancel->sprite = 0;
+        }
+        FreeMemory(btnCancel);
         btnCancel = 0;
     }
 }

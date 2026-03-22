@@ -6,6 +6,7 @@
 #include "LinkedList.h"
 #include "Sprite.h"
 #include "Sample.h"
+#include "Palette.h"
 #include "InputManager.h"
 
 extern "C" void ShowError(const char* format, ...);
@@ -72,8 +73,100 @@ SCI_Inventory::SCI_Inventory() {
     ParseFile(this, "mis\\inventor.mis", "[INVENTORY]");
 }
 
+extern void __fastcall FreePoolBlocks(void* blocks); // FUN_0043e900
+
 /* Function start: 0x43E5B0 */
 SCI_Inventory::~SCI_Inventory() {
+    Sprite* spr;
+    Palette* pal;
+    int* pool;
+
+    spr = bgSprite;
+    if (spr != 0) {
+        spr->~Sprite();
+        FreeMemory(spr);
+        bgSprite = 0;
+    }
+
+    pal = palette;
+    if (pal != 0) {
+        pal->~Palette();
+        FreeMemory(pal);
+        palette = 0;
+    }
+
+    pool = (int*)itemPool;
+    if (pool != 0) {
+        {
+            int* node = (int*)*pool;
+            while (node != 0) {
+                int counter = 0;
+                do {
+                    int tmp = counter;
+                    counter--;
+                    if (tmp == 0) break;
+                } while (1);
+                node = (int*)*node;
+            }
+        }
+        pool[2] = 0;
+        pool[3] = 0;
+        pool[1] = 0;
+        pool[0] = 0;
+        FreePoolBlocks((void*)pool[4]);
+        pool[4] = 0;
+        FreeMemory(pool);
+        itemPool = 0;
+    }
+
+    if (putBackButton != 0) {
+        if (putBackButton->sprite != 0) {
+            delete putBackButton->sprite;
+            putBackButton->sprite = 0;
+        }
+        putBackButton->~T_MenuHotspot();
+        FreeMemory(putBackButton);
+        putBackButton = 0;
+    }
+
+    if (useButton != 0) {
+        if (useButton->sprite != 0) {
+            delete useButton->sprite;
+            useButton->sprite = 0;
+        }
+        useButton->~T_MenuHotspot();
+        FreeMemory(useButton);
+        useButton = 0;
+    }
+
+    if (scrollDownBtn != 0) {
+        if (scrollDownBtn->sprite != 0) {
+            delete scrollDownBtn->sprite;
+            scrollDownBtn->sprite = 0;
+        }
+        scrollDownBtn->~T_MenuHotspot();
+        FreeMemory(scrollDownBtn);
+        scrollDownBtn = 0;
+    }
+
+    if (scrollUpBtn != 0) {
+        if (scrollUpBtn->sprite != 0) {
+            delete scrollUpBtn->sprite;
+            scrollUpBtn->sprite = 0;
+        }
+        scrollUpBtn->~T_MenuHotspot();
+        FreeMemory(scrollUpBtn);
+        scrollUpBtn = 0;
+    }
+
+    {
+        Sample* snd = clickSound;
+        if (snd != 0) {
+            snd->~Sample();
+            FreeMemory(snd);
+            clickSound = 0;
+        }
+    }
 }
 
 /* Function start: 0x43E920 */
@@ -188,9 +281,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
     {
         SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
         rect = (int*)scrollDownBtn;
-        if (((T_MenuHotspot*)rect)->field_94 <= pos.field_0 &&
+        if (((T_MenuHotspot*)rect)->bounds.left <= pos.field_0 &&
             ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->field_98 <= pos.field_4 &&
+            ((T_MenuHotspot*)rect)->bounds.top <= pos.field_4 &&
             ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
             hitResult = 1;
         } else {
@@ -206,9 +299,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
     {
         SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
         rect = (int*)scrollUpBtn;
-        if (((T_MenuHotspot*)rect)->field_94 <= pos.field_0 &&
+        if (((T_MenuHotspot*)rect)->bounds.left <= pos.field_0 &&
             ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->field_98 <= pos.field_4 &&
+            ((T_MenuHotspot*)rect)->bounds.top <= pos.field_4 &&
             ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
             hitResult = 1;
         } else {
@@ -224,9 +317,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
     {
         SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
         rect = (int*)useButton;
-        if (((T_MenuHotspot*)rect)->field_94 <= pos.field_0 &&
+        if (((T_MenuHotspot*)rect)->bounds.left <= pos.field_0 &&
             ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->field_98 <= pos.field_4 &&
+            ((T_MenuHotspot*)rect)->bounds.top <= pos.field_4 &&
             ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
             hitResult = 1;
         } else {
@@ -311,9 +404,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
     {
         SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
         rect = (int*)putBackButton;
-        if (((T_MenuHotspot*)rect)->field_94 <= pos.field_0 &&
+        if (((T_MenuHotspot*)rect)->bounds.left <= pos.field_0 &&
             ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->field_98 <= pos.field_4 &&
+            ((T_MenuHotspot*)rect)->bounds.top <= pos.field_4 &&
             ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
             hitResult = 1;
         } else {

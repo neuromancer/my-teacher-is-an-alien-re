@@ -16,7 +16,6 @@
 #include "ZBufferManager.h"
 #include "GameLoop.h"
 #include "AssetList.h"
-#include "Character.h"
 #include "Message.h"
 #include "TimedEvent.h"
 #include "string.h"
@@ -27,12 +26,6 @@
 #include "GameConfig.h"
 
 #include "globals.h"
-
-// Globals moved from globals.cpp to match layout
-Character* g_PeterCharacter_00435a74 = 0;
-Character* g_SusanCharacter_00435a78 = 0;
-Character* g_DuncanCharacter_00435a7c = 0;
-Character* g_SelectedCharacter_00435a80 = 0;
 
 static char s_TeacherDemo[] = "Teacher v(0.950)";
 
@@ -324,7 +317,7 @@ void PlayIntroCinematic(void) {
   ShutdownGameSystems();
 }
 
-/* Function start: 0x411325 */
+/* SEH funclet at 0x411325 — not a standalone function */
 void CleanupCinematic(void) {}
 
 

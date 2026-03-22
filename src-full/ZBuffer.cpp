@@ -1,5 +1,6 @@
 #include "ZBuffer.h"
 #include "SpriteAction.h"
+#include "Sprite.h"
 #include "globals.h"
 #include "Message.h"
 
@@ -49,7 +50,8 @@ ZBuffer::~ZBuffer()
             sd = (SlimeDim*)((char*)item + 0xfc);
             sd->~SlimeDim();
 
-            delete (Sprite*)item;
+            ((Sprite*)item)->~Sprite();
+            FreeMemory(item);
 
             ZBuffer::items[ZBuffer::itemCount] = 0;
         }
@@ -70,7 +72,7 @@ int ZBuffer::Exit(SC_Message* msg)
 void ZBuffer::Update(int param_1, int param_2)
 {
     if (timer.Update() > 10000) {
-        SC_Message_Send(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+        SendGameMessage(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
     }
     if (handlerId == param_2) {
         ShowError("SC_ZBuffer::Update");

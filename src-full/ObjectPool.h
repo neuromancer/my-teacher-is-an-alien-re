@@ -22,6 +22,8 @@ public:
         objectSize = objSz;
     }
 
+    ~ObjectPool();
+
 public:
     void* Allocate();
     void* Allocate_2();

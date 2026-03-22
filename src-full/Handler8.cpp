@@ -60,7 +60,7 @@ Handler8::~Handler8() {
     }
 }
 
-/* Function start: 0x4065E0 */
+/* DEMO ONLY - ExpandPool does not exist as standalone function in full game */
 void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
 {
     void** block;

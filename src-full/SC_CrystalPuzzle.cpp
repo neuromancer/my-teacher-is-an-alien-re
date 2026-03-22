@@ -1015,7 +1015,7 @@ void SC_CrystalPuzzle::DisplayThisFloorRow() {
     }
 }
 
-/* Function start: 0x450B10 */
+/* address unknown — 0x450B10 is EngineB ctor */
 void SC_CrystalPuzzle::PlayPuzzleSound(int idx, int loop) {
 }
 

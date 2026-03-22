@@ -16,7 +16,6 @@
 #include "SCI_SearchScreen.h"
 #include "InputManager.h"
 #include "MouseControl.h"
-#include "Character.h"
 #include "smack.h"
 #include "mss.h"
 #include "SoundItem.h"
@@ -303,3 +302,11 @@ void FUN_00434520() {}
 void FUN_004345b0() {}
 }
 void __fastcall FUN_00427390(void*) {}
+void __fastcall FreePoolBlocks(void* blocks) {
+    int* block = (int*)blocks;
+    while (block != 0) {
+        int* next = (int*)*block;
+        FreeMemory(block);
+        block = next;
+    }
+}

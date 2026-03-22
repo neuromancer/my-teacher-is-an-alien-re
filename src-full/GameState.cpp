@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
+extern char* g_Buffer_0046aa00;
+
 // Hash table entry for GameState label storage
 struct GSHashEntry {
     GSHashEntry* next;  // 0x00
@@ -142,19 +144,13 @@ int GameState::FUN_00432e20(char* name) {
 GameState::~GameState()
 {
     if (stateValues != 0) {
-        delete stateValues;
+        FreeMemory(stateValues);
         stateValues = 0;
     }
 
-    for (int i = 0; i < maxStates; i++) {
-        if (stateLabels[i] != 0) {
-            delete (void*)stateLabels[i];
-            stateLabels[i] = 0;
-        }
-    }
-
     if (stateLabels != 0) {
-        delete stateLabels;
+        ((ObjectPool*)stateLabels)->~ObjectPool();
+        FreeMemory(stateLabels);
         stateLabels = 0;
     }
 }
@@ -162,44 +158,37 @@ GameState::~GameState()
 /* Function start: 0x433480 */
 void GameState::Serialize(void* param)
 {
-    unsigned int* header = (unsigned int*)operator new(0x110);
-    char filename[28];
+    int* header;
     FILE* file;
-    int mode;
 
     file = *(FILE**)((char*)param + 0x44);
-    strcpy(filename, "gamestat.sav");
-    mode = *(int*)param;
+    header = (int*)operator new(0x110);
+    int len = strlen("GAMESTATE_INFO") + 1;
 
-    switch (mode) {
-    case 1:
-        file = fsopen(filename, "wb");
-        if (file == NULL) {
-            ShowError("GameState::Serialize unable to open %s ", filename);
-        }
+    if (*(int*)param != 0) {
+        fwrite("GAMESTATE_INFO", len, 1, file);
         header[0] = maxStates;
         header[1] = 0x110;
         header[2] = 1;
         header[3] = maxStates * 4 + 0x110;
         fwrite(header, 0x110, 1, file);
         fwrite(stateValues, 4, header[0], file);
-        break;
-    case 2:
-        file = fsopen(filename, "rb");
-        if (file == NULL) {
-            ShowError("GameState::Serialize unable to open %s ", filename);
+    } else {
+        *g_Buffer_0046aa00 = 0;
+        fread(g_Buffer_0046aa00, len, 1, file);
+        if (strcmp(g_Buffer_0046aa00, "GAMESTATE_INFO") != 0) {
+            ShowError("GameState::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
         }
         fread(header, 0x110, 1, file);
-        if (header[0] != maxStates || header[2] != 1) {
+        if (maxStates != (unsigned int)header[0] || header[2] != 1) {
             ShowError("GameState::Serialize incompatible file");
         }
-        fread(stateValues, 0x110, maxStates, file);
-        break;
-    default:
-        ShowError("illegal in GameState::Serialize(%d)", mode);
-        break;
+        fread(stateValues, 4, header[0], file);
     }
-    fclose(file);
+
+    if (header != 0) {
+        FreeMemory(header);
+    }
 }
 
 /* Function start: 0x4335D0 */

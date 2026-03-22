@@ -227,37 +227,39 @@ void __cdecl FileCacheCleanup() {
 
 /* Function start: 0x4341F0 */
 int __cdecl FileCacheLookup(char* name) {
+    int* current;
     int* node;
+    char* entryName;
 
     if (DAT_0046b78c == 0) {
         return 0;
     }
-    node = (int*)((int*)DAT_0046b78c)[0];
-    while (node != 0) {
-        int* next = (int*)node[0];
-        char* entryName = (char*)node[2];
+    current = (int*)((int*)DAT_0046b78c)[0];
+
+    while (current != 0) {
+        node = current;
+        entryName = (char*)current[2];
+        current = (int*)current[0];
         if (strcmp(entryName, name) == 0) {
             DAT_0046b784++;
-            *(int*)((char*)entryName + 0x24) += 1;
-            *(int*)((char*)entryName + 0x28) = GetTickCount();
+            *(int*)(entryName + 0x24) += 1;
+            *(int*)(entryName + 0x28) = GetTickCount();
             // Move to front of LRU
-            if (((int*)DAT_0046b78c)[0] != (int)node) {
-                int* prev = (int*)node[1];
-                int* nxt = (int*)node[0];
-                prev[0] = (int)nxt;
-                if (nxt != 0) {
-                    nxt[1] = (int)prev;
+            int* cache = (int*)DAT_0046b78c;
+            if (cache[0] != (int)node) {
+                *(int*)node[1] = node[0];
+                if (node[0] != 0) {
+                    *(int*)(node[0] + 4) = node[1];
                 } else {
-                    ((int*)DAT_0046b78c)[1] = (int)prev;
+                    cache[1] = node[1];
                 }
-                node[0] = ((int*)DAT_0046b78c)[0];
-                *(int*)(((int*)DAT_0046b78c)[0] + 4) = (int)node;
-                ((int*)DAT_0046b78c)[0] = (int)node;
+                node[0] = cache[0];
+                *(int*)(cache[0] + 4) = (int)node;
+                cache[0] = (int)node;
                 node[1] = 0;
             }
             return 1;
         }
-        node = next;
     }
     DAT_0046b788++;
     return 0;
@@ -283,7 +285,8 @@ void __cdecl FileCacheRegister(char* name, int size) {
             DAT_00473440 -= entrySize;
             if (DAT_00473440 <= 0) DAT_00473440 = 0;
 
-            // Remove from tail
+            // Remove tail node
+            cache = (int*)DAT_0046b78c;
             int* prev = (int*)node[1];
             cache[1] = (int)prev;
             if (prev != 0) {
@@ -292,7 +295,7 @@ void __cdecl FileCacheRegister(char* name, int size) {
                 cache[0] = 0;
             }
 
-            FileCacheEntryCleanup(entry, 1);
+            FileCacheEntryCleanup((void*)(node + 2), 1);
 
             // Return node to free list
             node[0] = cache[3];

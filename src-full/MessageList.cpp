@@ -55,14 +55,27 @@ void* MessageList::PopCurrent()
 
 
 
-/* Function start: 0x40C580 */ /* DEMO ONLY - no full game match */
-// ListNode scalar deleting destructor (compiler-generated)
-
-/* Function start: 0x40C5B0 */ /* DEMO ONLY - no full game match */
-MessageNode* MessageNode::Init(void* nodeData)
-{
-    MessageNode::prev = 0;
-    MessageNode::next = 0;
-    MessageNode::data = nodeData;
-    return this;
+/* Function start: 0x4233A0 */
+void MessageList::InsertNode(void* data) {
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+    MessageNode* newNode = new MessageNode(data);
+    if (current == 0) {
+        current = head;
+    }
+    if (head == 0) {
+        head = newNode;
+        tail = newNode;
+        current = newNode;
+    } else {
+        newNode->next = (MessageNode*)current;
+        newNode->prev = ((MessageNode*)current)->prev;
+        if (((MessageNode*)current)->prev == 0) {
+            head = newNode;
+        } else {
+            ((MessageNode*)current)->prev->next = newNode;
+        }
+        ((MessageNode*)current)->prev = newNode;
+    }
 }

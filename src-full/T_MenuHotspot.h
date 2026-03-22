@@ -27,14 +27,10 @@ public:
     void Cleanup();                 // 0x420EF0
 
     // Fields (full game layout, after Parser 0x90 base)
-    // +0x90: Sprite* in (char*,int*) ctor, or enabled=1 in (int) ctor
     Sprite* sprite;                 // 0x90
-    // +0x94-0xA0: rect set by (char*,int*) ctor
-    // +0x9C-0xA8: bounds GlyphRect used by (int) ctor / SCI_SchoolMenu
-    int field_94;                   // 0x94 — rect.left in (char*,int*), state in (int)
-    int field_98;                   // 0x98
-    GlyphRect bounds;               // 0x9C (16 bytes)
-    int data[59];                   // 0xAC-0x19B (0xEC bytes)
+    GlyphRect bounds;               // 0x94 (16 bytes: left, top, right, bottom)
+    int field_A4;                   // 0xA4
+    int data[58];                   // 0xA8-0x198
     Sprite* cursor;                 // 0x19C
     int field_1A0;                  // 0x1A0
     int field_1A4;                  // 0x1A4

@@ -2,6 +2,58 @@
 #include "Memory.h"
 #include <string.h>
 
+extern void FUN_00433f10();
+
+/* Function start: 0x433F10 */
+ObjectPool::~ObjectPool()
+{
+    unsigned int i;
+    int* node;
+    int* nextNode;
+
+    if (memory != 0 && size > 0) {
+        for (i = 0; i < size; i++) {
+            node = (int*)((int*)memory)[i];
+            while (node != 0) {
+                volatile int countdown = 0;
+                do {
+                    int prev = countdown;
+                    countdown--;
+                    if (prev == 0) break;
+                } while (1);
+
+                int* dataPtr = (int*)(node + 2);
+                volatile int counter = 0;
+                do {
+                    if (*dataPtr != 0) {
+                        FreeMemory((void*)*dataPtr);
+                        *dataPtr = 0;
+                    }
+                    dataPtr++;
+                    int prev = counter;
+                    counter--;
+                    if (prev == 0) break;
+                } while (1);
+
+                node = (int*)*node;
+            }
+        }
+    }
+
+    FreeMemory(memory);
+    memory = 0;
+    allocatedCount = 0;
+    freeList = 0;
+
+    int* block = (int*)memoryBlock;
+    while (block != 0) {
+        nextNode = (int*)*block;
+        FreeMemory(block);
+        block = nextNode;
+    }
+    memoryBlock = 0;
+}
+
 /* Function start: 0x413cf0 */ /* DEMO ONLY - no full game match */
 void ObjectPool::MemoryPool_Allocate(unsigned int param_1, int param_2)
 {
