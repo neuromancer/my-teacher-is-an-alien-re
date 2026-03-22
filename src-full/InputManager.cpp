@@ -201,7 +201,7 @@ int MapJoystickValue(int value, int min, int max, int range)
 }
 
 /* Function start: 0x426570 */
-extern "C" char* FUN_00426570(char* s1, char* s2) {
+extern "C" char* FindAfterSubstring(char* s1, char* s2) {
     char* p = strstr(s1, s2);
     if (p != 0) {
         p += strlen(s2);

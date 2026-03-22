@@ -92,22 +92,20 @@ extern "C" char* FormatAssetPath(char*, ...);
 /* Function start: 0x44C880 */
 void Sprite::InitAnimation()
 {
-    if (animation_data != 0 && animation_data->targetBuffer != 0) {
+    Animation* anim;
+
+    anim = animation_data;
+    if (anim != 0 && anim->targetBuffer != 0) {
         return;
     }
 
+    anim = 0;
     if (animation_data == 0) {
-        void* mem = malloc(0x2c);
-        Animation* anim = 0;
-        if (mem != 0) {
-            char* path;
-            if ((flags & 0x400) == 0) {
-                path = ResolveAssetPath(sprite_filename);
-            } else {
-                path = FormatAssetPath(sprite_filename);
-            }
-            anim = new (mem) Animation(path);
-        }
+        anim = new Animation(
+            (flags & 0x400) != 0
+                ? FormatAssetPath(sprite_filename)
+                : ResolveAssetPath(sprite_filename)
+        );
         animation_data = anim;
     }
 

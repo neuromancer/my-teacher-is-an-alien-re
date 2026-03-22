@@ -25,7 +25,8 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 void __fastcall InitCombatScreen(void* self);
 
 
-extern void __fastcall FUN_004061e0(void*);   // SoundEntry dtor
+// FUN_004061e0 = RenderEntry::~RenderEntry — callers updated
+#include "RenderEntry.h"
 #include "PodsEngine.h"
 
 extern int DAT_0046ae78;                      // active combat engine instance
@@ -89,7 +90,7 @@ void SC_Pods::Init(SC_Message* msg) {
             while (*list3 != 0) {
                 void* item = ((LinkedList*)list3)->RemoveCurrent();
                 if (item != 0) {
-                    FUN_004061e0(item);
+                    ((RenderEntry*)item)->~RenderEntry();
                     free(item);
                 }
             }
@@ -210,37 +211,43 @@ extern void BlankScreen();
 void __fastcall InitCombatScreen(void* self)
 {
     SC_CombatBase* engine = (SC_CombatBase*)self;
-    Viewport* vp = DAT_0046ae54;
-    int* wpData = (int*)DAT_0046ae4c;  // WeaponParser sprite data
 
     engine->combatFlags = 0;
 
-    // wpData offsets: +0x90=x, +0x94=y, +0x98=width, +0x9c=height, +0xa0=palStart, +0xa4=palEnd
-    vp->SetDimensions(*(int*)((char*)wpData + 0x98), *(int*)((char*)wpData + 0x9c));
+    DAT_0046ae54->SetDimensions(
+        *(int*)((char*)DAT_0046ae4c + 0x98),
+        *(int*)((char*)DAT_0046ae4c + 0x9c));
 
-    Sprite* navSprite = *(Sprite**)((char*)DAT_0046ae70 + 0xa0);
-    Animation* anim = navSprite->animation_data;
-    int frameHeight = 0;
-    if (anim != 0) {
-        frameHeight = anim->targetBuffer->height;
+    {
+        Sprite* navSpr = *(Sprite**)((char*)DAT_0046ae70 + 0xa0);
+        Animation* anim = navSpr->animation_data;
+        int fh = 0;
+        if (anim != 0) {
+            fh = anim->targetBuffer->height;
+        }
+        int fw = 0;
+        if (anim != 0) {
+            fw = anim->targetBuffer->width;
+        }
+        fh -= DAT_0046ae54->dim.b;
+        fw -= DAT_0046ae54->dim.a;
+        DAT_0046ae54->SetDimensions2(fw, fh);
     }
-    int frameWidth = 0;
-    if (anim != 0) {
-        frameWidth = anim->targetBuffer->width;
-    }
-
-    vp->SetDimensions2(frameWidth - vp->dim.a, frameHeight - vp->dim.b);
-    vp->SetCenter();
-    vp->SetAnchor(*(int*)((char*)wpData + 0x90), *(int*)((char*)wpData + 0x94));
+    DAT_0046ae54->SetCenter();
+    DAT_0046ae54->SetAnchor(
+        *(int*)((char*)DAT_0046ae4c + 0x90),
+        *(int*)((char*)DAT_0046ae4c + 0x94));
 
     *(int*)((int)DAT_0046ae6c + 4) = 100;
     engine->spriteFrameCount = 1;
     engine->frameCount = 1;
     BlankScreen();
 
-    DAT_0046ae64->SetPalette(
-        *(unsigned int*)((char*)wpData + 0xa0),
-        *(int*)((char*)wpData + 0xa4) - *(int*)((char*)wpData + 0xa0) + 1);
+    {
+        unsigned int palStart = *(unsigned int*)((char*)DAT_0046ae4c + 0xa0);
+        int palEnd = *(int*)((char*)DAT_0046ae4c + 0xa4);
+        DAT_0046ae64->SetPalette(palStart, palEnd - palStart + 1);
+    }
 
     if (engine->backgroundSound != 0) {
         engine->backgroundSound->Play(100, 0);

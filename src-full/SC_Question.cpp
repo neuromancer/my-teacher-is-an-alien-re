@@ -383,7 +383,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -421,7 +421,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -459,7 +459,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -497,7 +497,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -535,7 +535,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -600,7 +600,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -635,7 +635,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -670,7 +670,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -705,7 +705,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -743,7 +743,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -771,7 +771,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -806,7 +806,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
@@ -841,7 +841,7 @@ int SC_Question::LBLParse(char* param_1)
                         break;
                     }
                     if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
+                        ((LinkedList*)queue)->PushNode(action);
                         break;
                     }
                     if (cur != 0) {

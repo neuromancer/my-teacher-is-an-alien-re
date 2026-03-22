@@ -29,26 +29,28 @@ extern "C" FILE* fsopen(const char*, const char*);
 
 /* Function start: 0x424F00 */
 int Sample::Load(char *filename) {
+  FILE* file;
+
   if (g_Sound_0043696c->digital_driver == 0) {
     return 1;
   }
-  if (m_data != 0) {
-    Unload();
+  if (Sample::m_data != 0) {
+    Sample::Unload();
   }
   ResolveAssetPath(filename);
-  m_field8 = GetFileSize(filename);
-  if (m_field8 == 0) {
+  Sample::m_field8 = GetFileSize(filename);
+  if (Sample::m_field8 == 0) {
     return 1;
   }
-  FILE* file = fsopen(filename, "rb");
+  file = fsopen(filename, "rb");
   if (file == 0) {
     return 1;
   }
-  m_data = (char *)AIL_mem_alloc_lock(m_field8);
-  if (m_data == 0) {
+  Sample::m_data = (char *)AIL_mem_alloc_lock(Sample::m_field8);
+  if (Sample::m_data == 0) {
     return 1;
   }
-  fread(m_data, m_field8, 1, file);
+  fread(Sample::m_data, Sample::m_field8, 1, file);
   fclose(file);
   return 0;
 }

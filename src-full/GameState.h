@@ -29,7 +29,7 @@ public:
     void SetFromAction(int* action);  // 0x433CB0
     int GetStateValue(int);           // get state value by index
     int FindLabel(char* name);        // find label index (0x433AE0)
-    int FUN_00433bb0(int*);           // state check (0x433BB0)
+    int CheckCondition(int*);         // state check (0x433BB0)
     int FUN_00432e20(char*);          // lookup by name (0x432E20)
 
     int* stateValues;      // 0x90 - array of state values (saved/loaded in Serialize)

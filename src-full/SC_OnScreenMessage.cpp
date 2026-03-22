@@ -8,13 +8,14 @@
 #include "OnScreenMessage.h"
 #include "SC_Question.h"
 #include "Sample.h"
+#include "mss.h"
 
 extern "C" {
     void ShowError(const char*, ...);
     void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 }
 
-extern int __fastcall FUN_00448140(SoundEntry* entry);
+// FUN_00448140 = SoundEntry::SoundUpdate — implemented below
 extern SoundEntry* __fastcall FUN_00448c60(SC_OnScreenMessage* self, int dummy, int soundId);
 extern void* __fastcall FUN_00449050(MessageList* list);
 
@@ -35,7 +36,7 @@ SC_OnScreenMessage::SC_OnScreenMessage() {
 SC_OnScreenMessage::~SC_OnScreenMessage() {
     MessageList* pList;
     MessageNode* node;
-    OnScreenMessage* data;
+    SoundEntry* data;
 
     pList = m_messageList;
     if (pList != 0) {
@@ -68,7 +69,7 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
                     node = (MessageNode*)pList->current;
                     data = 0;
                     if (node != 0) {
-                        data = (OnScreenMessage*)node->data;
+                        data = (SoundEntry*)node->data;
                     }
                     if (node != 0) {
                         node->data = 0;
@@ -404,9 +405,66 @@ SoundEntry::SoundEntry(int id) {
     }
 }
 
+/* Function start: 0x4481A0 */
+void __fastcall ProcessSoundFade(SoundEntry* entry) {
+    Sample* snd;
+    int currentVol;
+    int targetVol;
+    int step;
+
+    snd = entry->sample;
+    if (snd == 0) return;
+    if (snd->m_sample == 0) return;
+    if (snd->m_size != *(int*)((char*)snd->m_sample + 0xC)) return;
+    if (AIL_sample_status(snd->m_sample) != 4) return;
+    if (!(entry->field_04 & 1)) return;
+
+    currentVol = AIL_sample_volume(entry->sample->m_sample);
+    targetVol = entry->targetVolume;
+    if (currentVol == targetVol) {
+        if (currentVol == 0) {
+            entry->sample->~Sample();
+        }
+        entry->field_04 &= ~1;
+        return;
+    }
+    step = entry->volumeStep;
+    currentVol += step;
+    if (currentVol < 0 || currentVol > 100) {
+        currentVol = targetVol;
+    }
+    if (step > 0) {
+        if (currentVol >= targetVol) {
+            currentVol = targetVol;
+        }
+    } else {
+        if (currentVol <= targetVol) {
+            currentVol = targetVol;
+        }
+    }
+    entry->sample->Fade(currentVol, 0);
+}
+
 /* Function start: 0x448140 */
 int SoundEntry::SoundUpdate() {
-    return 0;
+    if (sample != 0) {
+        if (timer.Update() <= 60000) {
+            Sample* snd = sample;
+            HSAMPLE hs = snd->m_sample;
+            if (hs != 0) {
+                if (snd->m_size == *(int*)((char*)hs + 0xC)) {
+                    if (AIL_sample_status(hs) == 4) {
+                        if (field_04 & 1) {
+                            ProcessSoundFade(this);
+                        }
+                        timer.Reset();
+                    }
+                }
+            }
+            return 0;
+        }
+    }
+    return 1;
 }
 
 /* Function start: 0x448220 */

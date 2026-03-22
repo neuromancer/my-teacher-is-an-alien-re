@@ -119,9 +119,8 @@ int SC_CombatBase::UpdateSprites()
 void SC_CombatBase::RenderBackground()
 {
     if (DAT_0046ae50 != 0) {
-        DAT_0046ae50->Do(
-            DAT_0046ae50->loc_x,
-            DAT_0046ae50->loc_y, 1.0);
+        Sprite* spr = DAT_0046ae50;
+        spr->Do(spr->loc_x, spr->loc_y, 1.0);
     }
 }
 
@@ -254,8 +253,11 @@ int SC_CombatBase::LBLParse(char* line)
             if (strcmp(arg, "ROCKTHROWER") == 0) {
                 combatDisplay = new RockThrower(this);
                 DAT_0046ae60 = combatDisplay;
-            } else {
+            } else if (strcmp(arg, "RAY_GUN") == 0) {
                 combatDisplay = new WeaponDisplay();
+                DAT_0046ae60 = combatDisplay;
+            } else if (strcmp(arg, "NONE") == 0) {
+                combatDisplay = new Weapon();
                 DAT_0046ae60 = combatDisplay;
             }
         }

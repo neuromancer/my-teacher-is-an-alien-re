@@ -23,7 +23,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" int FileExists(const char*);
 extern "C" void WriteToLog(const char* format, ...);
 extern char* __cdecl ResolveAssetPath(char* name);
-extern void __fastcall FUN_00427880(void*);  // Weapon::Render
+// FUN_00427880 = Weapon::UpdateProjectiles — callers updated
 
 extern Weapon* DAT_00468ef0;                 // active weapon display
 extern ZBufferManager* g_ZBufferManager_0046aa24;
@@ -547,7 +547,7 @@ void SC_Fan::RenderFan() {
         void* p;
 
         (g_Mouse_0046aa18)->DrawCursor();
-        FUN_00427880(DAT_00468ef0);
+        DAT_00468ef0->UpdateProjectiles();
 
         if (DAT_00468ef0->m_clicked != 0) {
             frames = 0;

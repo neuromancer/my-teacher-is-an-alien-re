@@ -987,21 +987,15 @@ extern "C" GameState* g_GameState_0046aa30;
 
 /* Function start: 0x43FDD0 */
 int SCI_Inventory::LBLParse(char* line) {
-    char token[32];
-    char name[32];
-    int params[5];
+    int params[4];
     int index;
-    void* mem;
-    void* obj;
+    char name[32];
+    char token[32];
 
-    params[0] = 0;
-    params[1] = 0;
-    params[2] = 0;
-    params[3] = 0;
-    params[4] = 0;
-    token[0] = 0;
-    name[0] = 0;
+    memset(params, 0, sizeof(params));
     index = 0;
+    name[0] = 0;
+    token[0] = 0;
 
     sscanf(line, "%s", token);
 
@@ -1012,6 +1006,8 @@ int SCI_Inventory::LBLParse(char* line) {
         Parser::ProcessFile(bgSprite, this, (char*)0);
     }
     else if (strcmp(token, "OBJECT") == 0) {
+        void* mem;
+        void* obj;
         sscanf(line, " %s %d", token, &index);
         obj = new T_Object(index);
         int* queue = (int*)g_MsgList;
@@ -1072,7 +1068,7 @@ int SCI_Inventory::LBLParse(char* line) {
     else if (strcmp(token, "PALETTE") == 0) {
         sscanf(line, " %s %s", token, name);
         palette = new Palette();
-        palette->Load(name);
+        palette->LoadFile(name);
     }
     else if (strcmp(token, "CANCEL") == 0) {
         sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
@@ -1091,13 +1087,16 @@ int SCI_Inventory::LBLParse(char* line) {
         scrollUpBtn = new T_MenuHotspot(name, params);
     }
     else if (strcmp(token, "AUTOCOMBINE") == 0) {
-        sscanf(line, " %s %d %d %d %d %d %d %s", token, &index, &params[0], &params[1], &params[2], &params[3], &params[4], name);
-        panels[index].field_0 = params[0];
-        panels[index].field_4 = params[1];
-        panels[index].field_8 = params[2];
-        panels[index].field_C = params[3];
-        panels[index].field_10 = params[4];
-        panels[index].field_14 = g_GameState_0046aa30->FindState(name);
+        {
+        int panelIdx;
+        sscanf(line, " %s %d %d %d %d %d %d %s", token, &panelIdx, &params[0], &params[1], &params[2], &params[3], &index, name);
+        panels[panelIdx].field_0 = params[0];
+        panels[panelIdx].field_4 = params[1];
+        panels[panelIdx].field_8 = params[2];
+        panels[panelIdx].field_C = params[3];
+        panels[panelIdx].field_10 = index;
+        panels[panelIdx].field_14 = g_GameState_0046aa30->FindState(name);
+        }
     }
     else if (strcmp(token, "SLOT") == 0) {
         sscanf(line, " %s %d %d %d %d %d", token, &index, &params[0], &params[1], &params[2], &params[3]);

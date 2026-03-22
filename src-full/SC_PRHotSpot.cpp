@@ -8,7 +8,7 @@
 
 #include "InputManager.h"
 extern "C" void ShowError(const char* format, ...);
-extern void __fastcall FUN_0042b0f0(void*);
+extern void __fastcall PracticeRoomNotify(void*);
 
 extern InputManager* g_InputManager_0046aa08;
 
@@ -186,7 +186,7 @@ int SC_PRHotSpot::CheckCollision(void* param_1)
             if (state != 0) {
                 if (msg[9] > 1) {
                     if (hotspotId >= 0x14 && hotspotId <= 0x16) {
-                        FUN_0042b0f0((void*)owner);
+                        PracticeRoomNotify((void*)owner);
                     }
 
                     state = 3;

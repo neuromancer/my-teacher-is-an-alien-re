@@ -33,7 +33,7 @@ Projectile::Projectile() : Sprite(0) {
     pVelocity[0] = 0;
     pVelocity[1] = 0;
     Projectile::active = 0;
-    Projectile::field_0x104 = 0;
+    Projectile::currentX = 0;
     memset(&startX, 0, 12 * 4);
 }
 
@@ -84,6 +84,54 @@ void Projectile::Launch() {
     Projectile::halfHeight = height / 2;
     Projectile::velocityX = (float)(mouseX - 0xa0) / (float)frameCount;
     Projectile::velocityY = (float)(mouseY - 0xb4) / (float)frameCount;
+}
+
+/* Function start: 0x427390 */
+void Projectile::UpdateFull() {
+    int isExploding;
+    int frameNum;
+
+    if (Projectile::active == 0) {
+        return;
+    }
+
+    isExploding = (Projectile::handle == 1);
+
+    if (isExploding) {
+        Projectile::nextX = Projectile::currentX;
+        Projectile::nextY = Projectile::currentY;
+    } else {
+        if (Projectile::animation_data != 0) {
+            frameNum = *(int*)(*(int*)((int)Projectile::animation_data + 0xc) + 0x374) + 1;
+        } else {
+            frameNum = 1;
+        }
+
+        Projectile::nextX = Projectile::startX + (int)(Projectile::velocityX * (float)frameNum);
+        Projectile::nextY = Projectile::startY + (int)(Projectile::velocityY * (float)frameNum);
+
+        {
+            int* pObj = (int*)Projectile::field_0xF8;
+            int* vtbl = (int*)*pObj;
+            if (((int (__fastcall*)(int*, int, Projectile*))vtbl[6])(pObj, 0, this) != 0) {
+                Projectile::currentX = Projectile::nextX;
+                Projectile::currentY = Projectile::nextY;
+                Projectile::ResetAnimation(1, 0);
+            }
+        }
+    }
+
+    if (Projectile::Do(
+            Projectile::nextX - Projectile::halfWidth,
+            Projectile::nextY - Projectile::halfHeight,
+            1.0)) {
+        if (isExploding) {
+            Projectile::active = 0;
+            return;
+        }
+        g_ProjectileHits_0043d150++;
+        Projectile::ResetAnimation(1, 0);
+    }
 }
 
 /* Function start: 0x4163E0 */ /* DEMO ONLY - no full game match */

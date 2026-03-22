@@ -366,6 +366,7 @@ extern "C" {
 void* DAT_0046aa1c = 0;                                  // 0x0046aa1c
 int DAT_0046b784 = 0;                                    // 0x0046b784 cache hit counter
 int DAT_0046b788 = 0;                                    // 0x0046b788 cache miss counter
+int DAT_0046b794 = 0;                                    // 0x0046b794 preload time ms
 
 // SC_Detention globals
 extern "C" void* DAT_0046bf30 = 0;                      // 0x0046bf30 Pods palette pointer

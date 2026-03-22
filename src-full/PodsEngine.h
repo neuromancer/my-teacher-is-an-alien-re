@@ -2,6 +2,7 @@
 #define PODSENGINE_H
 
 #include "SC_CombatBase.h"
+#include "SpriteAction.h"
 
 class Sprite;
 
@@ -17,8 +18,7 @@ public:
 
     // Fields from 0xF0 to 0x117 (10 ints)
     Sprite* bgSprite;     // 0xF0 — background sprite (deleted in dtor)
-    int field_0xF4;       // 0xF4 — zeroed, then set to 0
-    int field_0xF8;       // 0xF8 — set to 3
+    SlimeDim field_0xF4;  // 0xF4-0xFB — pair zeroed then field_0xF4.field_4 set to 3
     int field_0xFC;       // 0xFC
     int field_0x100;      // 0x100
     int field_0x104;      // 0x104

@@ -14,6 +14,8 @@ public:
     SC_SpaceShipNav();
     ~SC_SpaceShipNav();
 
+    int ShutDown(SC_Message* msg);  // 0x447790
+
     int field_118[2];   // 0x118-0x11F (0x08 bytes)
 };
 

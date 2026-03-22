@@ -10,6 +10,13 @@ extern "C" int g_GameEngine_0046a6ec;
 /* Function start: 0x401120 */
 SlimeDim::~SlimeDim() {}
 
+/* Function start: 0x444B70 */
+void SpriteAction::Print(int param) {
+    WriteToLog("SpriteAction: %d %d %d %d %d %d %d",
+        addressType, addressValue, fromType, fromValue,
+        instruction, extra1, extra2);
+}
+
 /* Function start: 0x444920 */
 SpriteAction* SpriteAction::CopyFrom(SpriteAction* other) {
     if (this != other) {

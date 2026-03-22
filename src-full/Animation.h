@@ -11,7 +11,7 @@ public:
   int field_4;              // 0x4 - unused/reserved
   VBuffer *vbuffer;         // 0x8 - internal frame buffer
   HSMACK smk;               // 0xc - smacker file handle
-  Range range_10;           // 0x10 - previously field_10/14
+  IntPair range_10;          // 0x10 - previously field_10/14
   VBuffer *targetBuffer;    // 0x18 - render target buffer
   unsigned int flags;       // 0x1c - playback flags
   unsigned int playStatus;  // 0x20 - status (bit 0: user cancelled)

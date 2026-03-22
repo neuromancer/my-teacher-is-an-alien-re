@@ -193,18 +193,14 @@ void SC_DodgeOrville::ProcessTargets() {
 /* Function start: 0x429110 */
 void SC_DodgeOrville::UpdateGame()
 {
-    Sprite* spr108 = (Sprite*)bgSprite; // 0x108
-    spr108->Do(spr108->loc_x, spr108->loc_y, 1.0);
-    if (spr108->Do(spr108->loc_x, spr108->loc_y, 1.0) != 0) {
-        if (spr108->handle != 7) {
-            SC_DodgeOrville::ThrowBomb();
+    if (((Sprite*)bgSprite)->Do(((Sprite*)bgSprite)->loc_x, ((Sprite*)bgSprite)->loc_y, 1.0) != 0) {
+        if (((Sprite*)bgSprite)->handle != 7) {
+            ThrowBomb();
         }
     }
 
-    Sprite* spr10c = (Sprite*)field_0x10C; // 0x10c
-    spr108 = (Sprite*)bgSprite; // 0x108
-    int state = spr10c->handle;
-    int f0val = (int)spr108->animation_data;
+    int state = ((Sprite*)field_0x10C)->handle;
+    int f0val = (int)((Sprite*)bgSprite)->animation_data;
     int frameVal = 0;
     if (f0val != 0) {
         frameVal = *(int*)(*(int*)(f0val + 0xc) + 0x374);
@@ -214,9 +210,9 @@ void SC_DodgeOrville::UpdateGame()
         if (g_HitBounds_00473260[state].minVal <= frameVal && g_HitBounds_00473260[state].maxVal >= frameVal) {
             g_HitBounds_00473260[state].minVal = 0;
             g_HitBounds_00473260[state].maxVal = 0;
-            spr10c->ResetAnimation(state + 7, 0);
-            SC_DodgeOrville::dim_144.field_0++;
-            bgSound->Play(2); // 0x110
+            ((Sprite*)field_0x10C)->ResetAnimation(state + 7, 0);
+            dim_144.field_0++;
+            bgSound->Play(2);
             bgSound->Play(field_154[0] + 5);
             if (field_154[0] < 2) {
                 field_154[0]++;
@@ -224,30 +220,26 @@ void SC_DodgeOrville::UpdateGame()
         }
     }
 
-    SC_DodgeOrville::UpdateReticle();
+    UpdateReticle();
 
-    Sprite* spr130 = (Sprite*)field_130;
-    spr130->Do(spr130->loc_x, spr130->loc_y, 1.0);
-    Sprite* spr12c = (Sprite*)field_12C;
-    spr12c->Do(spr12c->loc_x, spr12c->loc_y, 1.0);
+    ((Sprite*)field_130)->Do(((Sprite*)field_130)->loc_x, ((Sprite*)field_130)->loc_y, 1.0);
+    ((Sprite*)field_12C)->Do(((Sprite*)field_12C)->loc_x, ((Sprite*)field_12C)->loc_y, 1.0);
 
-    spr130 = (Sprite*)field_130;
     int renderData = 0;
-    if ((int)spr130->animation_data != 0) {
-        renderData = *(int*)((int)spr130->animation_data + 0x18);
+    if ((int)((Sprite*)field_130)->animation_data != 0) {
+        renderData = *(int*)((int)((Sprite*)field_130)->animation_data + 0x18);
     }
 
-    g_ZBufferManager_0046aa24->DrawVBufferRegion(0, 0x7531, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, dim_134.field_4, dim_13C.field_0, dim_13C.field_4);
+    g_ZBufferManager_0046aa24->DrawVBufferRegion((void*)renderData, 0x7531, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, dim_134.field_4, dim_13C.field_0, dim_13C.field_4);
 
     if (dim_144.field_4 != 0 && dim_144.field_0 >= dim_144.field_4) {
-        spr12c = (Sprite*)field_12C;
         int renderData2 = 0;
-        if ((int)spr12c->animation_data != 0) {
-            renderData2 = *(int*)((int)spr12c->animation_data + 0x18);
+        if ((int)((Sprite*)field_12C)->animation_data != 0) {
+            renderData2 = *(int*)((int)((Sprite*)field_12C)->animation_data + 0x18);
         }
         int w = *(int*)(renderData2 + 0x24);
         int h = *(int*)(renderData2 + 0x2c);
-        g_ZBufferManager_0046aa24->DrawVBufferRegion(0, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, 0, w, 0, h);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion((void*)renderData2, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, 0, w, 0, h);
     } else {
         int hits = dim_144.field_0;
         int maxHits = dim_144.field_4;
@@ -256,12 +248,14 @@ void SC_DodgeOrville::UpdateGame()
             fillHeight = dim_13C.field_0;
         }
 
-        spr12c = (Sprite*)field_12C;
-        int rd3 = 0;
-        if ((int)spr12c->animation_data != 0) {
-            rd3 = *(int*)((int)spr12c->animation_data + 0x18);
+        void* rd3;
+        int animData = (int)((Sprite*)field_12C)->animation_data;
+        if (animData != 0) {
+            rd3 = (void*)*(int*)(animData + 0x18);
+        } else {
+            rd3 = 0;
         }
-        g_ZBufferManager_0046aa24->DrawVBufferRegion(0, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, fillHeight, dim_134.field_4, dim_13C.field_4);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(rd3, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, fillHeight, dim_134.field_4, dim_13C.field_4);
     }
 }
 

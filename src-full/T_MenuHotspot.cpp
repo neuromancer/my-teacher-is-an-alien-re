@@ -119,7 +119,7 @@ int T_MenuHotspot::LBLParse(char* line) {
     local_20 = 0;
     sscanf(line, " %s ", local_50);
 
-    if (strcmp(local_50, "HOTSPOT") == 0) {
+    if (strcmp(local_50, "RECT") == 0) {
         local_30 = 0;
         local_2c = 0;
         local_28 = 0;

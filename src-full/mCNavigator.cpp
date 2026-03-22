@@ -66,7 +66,7 @@ mCNavigator::mCNavigator()
     bearing = 0;
 }
 
-/* Function start: 0x44B950 */ /* ~90% match */
+/* Function start: 0x44B950 */
 mCNavigator::~mCNavigator()
 {
     unsigned int i;
@@ -79,10 +79,11 @@ mCNavigator::~mCNavigator()
     if (pool != 0) {
         if (pool->memory != 0) {
             i = 0;
-            if (pool->size != 0) {
+            if (pool->size > 0) {
                 do {
                     NavNode* node = ((NavNode**)pool->memory)[i];
                     while (node) {
+                        CleanupNavNodes(&node->value, 1);
                         n = 0;
                         while (n--)
                             ;
@@ -93,7 +94,7 @@ mCNavigator::~mCNavigator()
             }
         }
 
-        delete pool->memory;
+        operator delete(pool->memory);
         pool->memory = 0;
         pool->allocatedCount = 0;
         pool->freeList = 0;
@@ -101,12 +102,12 @@ mCNavigator::~mCNavigator()
         block = pool->memoryBlock;
         while (block) {
             next = *(void**)block;
-            delete block;
+            operator delete(block);
             block = next;
         }
         pool->memoryBlock = 0;
 
-        delete pool;
+        operator delete(pool);
         navNodePool = 0;
     }
 
@@ -166,6 +167,7 @@ void* mCNavigator::FindNodeInPool(unsigned int nodeId)
 
 search_loop:
     if (node == 0) {
+        node = 0;
         goto search_done;
     }
     if (node->key == nodeId) {

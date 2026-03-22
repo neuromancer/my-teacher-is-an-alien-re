@@ -681,14 +681,14 @@ void SC_Detention::Serialize(void* param) {
 }
 
 extern int DAT_00468a18;
-extern int __cdecl FUN_00426ac0();
+extern int WaitForInput();
 extern int DAT_0046ae78;
 
 /* Function start: 0x40B9E0 */
 void UpdateCombatEngine()
 {
     if (DAT_00468a18 != 0) {
-        int key = FUN_00426ac0();
+        int key = WaitForInput();
         DAT_00468a18 = (key != 0x54) ? 1 : 0;
     }
     int* engine = (int*)DAT_0046ae78;

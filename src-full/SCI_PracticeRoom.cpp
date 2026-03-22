@@ -7,6 +7,7 @@
 #include "LinkedList.h"
 #include "MMPlayer.h"
 #include "GameState.h"
+#include "Memory.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,9 +20,12 @@ extern "C" void SetVideoRes(int, int);
 
 
 // FUN_00429c10 = SC_PRHotSpot::~SC_PRHotSpot — callers updated
-extern void* __fastcall FUN_0042bc50(void*);
-extern void __fastcall FUN_0042b270(void*);
-extern void __fastcall FUN_0042b100(void*);
+// FUN_0042bc50 = LinkedList::RemoveCurrent COMDAT — callers updated to use RemoveCurrent()
+
+static char* g_PracticeSavePath = "cfg\\practice.sav";
+extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode); // 0x426050
+void SavePracticeState();   // 0x42B100
+void LoadPracticeState();   // 0x42B270
 // FUN_00429df0 = SC_PRHotSpot::Update — callers updated
 // FUN_00420f00 = T_MenuHotspot::Update — callers updated
 #include "SC_PRHotSpot.h"
@@ -54,7 +58,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     *(int*)((int)this + 0xA8) = 0;
     moduleParam = iVar;
     if (*(int*)((int)msg + 8) == 0x2D) {
-        FUN_0042b100(this);
+        SavePracticeState();
     }
     SetVideoRes(0x280, 0x1E0);
     SlimeTable* table = new SlimeTable();
@@ -134,7 +138,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
         if (*piVar != 0) {
             piVar[2] = *piVar;
             while (*piVar != 0) {
-                pVar = FUN_0042bc50(piVar);
+                pVar = ((LinkedList*)piVar)->RemoveCurrent();
                 if (pVar != 0) {
                     ((SC_PRHotSpot*)pVar)->~SC_PRHotSpot();
                     free(pVar);
@@ -168,7 +172,7 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
     } while (iVar != 0);
     if ((int)msg != 0) {
         if (*(int*)msg == 0x2D) {
-            FUN_0042b270(this);
+            LoadPracticeState();
         }
         if ((int)msg != 0) {
             SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
@@ -345,6 +349,103 @@ int SCI_PracticeRoom::Exit(SC_Message* msg) {
         return 0;
     }
     return 1;
+}
+
+/* Function start: 0x42B100 */
+void SavePracticeState() {
+    int* saveData;
+    FILE* fp;
+
+    saveData = (int*)operator new(0x48);
+    if (saveData != 0) {
+        memset(saveData, 0, 0x48);
+        strcpy((char*)(saveData + 1), g_PracticeSavePath);
+    } else {
+        saveData = 0;
+    }
+
+    fp = *(FILE**)((char*)saveData + 0x44);
+    if (fp != 0) {
+        fclose(fp);
+        *(FILE**)((char*)saveData + 0x44) = 0;
+    }
+
+    fp = OpenSaveFile((char*)(saveData + 1), "w");
+    *(FILE**)((char*)saveData + 0x44) = fp;
+    if (fp == 0) {
+        ShowError("FileArchive::Open() - Unable to open file '%s' for mode '%s'",
+            (char*)(saveData + 1), "w");
+    }
+
+    *saveData = 1;
+    g_GameState_0046aa30->Serialize(saveData);
+
+    fp = *(FILE**)((char*)saveData + 0x44);
+    if (fp != 0) {
+        fclose(fp);
+        *(FILE**)((char*)saveData + 0x44) = 0;
+    }
+
+    if (saveData != 0) {
+        fp = *(FILE**)((char*)saveData + 0x44);
+        if (fp != 0) {
+            fclose(fp);
+            *(FILE**)((char*)saveData + 0x44) = 0;
+        }
+        FreeMemory(saveData);
+    }
+
+    GameState* gs = g_GameState_0046aa30;
+    int gsIdx = gs->FindLabel("IN_PRACTICEROOM");
+    if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
+        ShowError("Invalid gamestate %d", gsIdx);
+    }
+    gs->stateValues[gsIdx] = 1;
+}
+
+/* Function start: 0x42B270 */
+void LoadPracticeState() {
+    int* saveData;
+    FILE* fp;
+
+    saveData = (int*)operator new(0x48);
+    if (saveData != 0) {
+        memset(saveData, 0, 0x48);
+        strcpy((char*)(saveData + 1), g_PracticeSavePath);
+    } else {
+        saveData = 0;
+    }
+
+    fp = *(FILE**)((char*)saveData + 0x44);
+    if (fp != 0) {
+        fclose(fp);
+        *(FILE**)((char*)saveData + 0x44) = 0;
+    }
+
+    fp = OpenSaveFile((char*)(saveData + 1), "r");
+    *(FILE**)((char*)saveData + 0x44) = fp;
+    if (fp == 0) {
+        ShowError("FileArchive::Open() - Unable to open file '%s' for mode '%s'",
+            (char*)(saveData + 1), "r");
+    }
+
+    *saveData = 0;
+    g_GameState_0046aa30->Serialize(saveData);
+
+    fp = *(FILE**)((char*)saveData + 0x44);
+    if (fp != 0) {
+        fclose(fp);
+        *(FILE**)((char*)saveData + 0x44) = 0;
+    }
+
+    if (saveData != 0) {
+        fp = *(FILE**)((char*)saveData + 0x44);
+        if (fp != 0) {
+            fclose(fp);
+            *(FILE**)((char*)saveData + 0x44) = 0;
+        }
+        FreeMemory(saveData);
+    }
 }
 
 /* Function start: 0x42B3B0 */

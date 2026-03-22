@@ -3,7 +3,7 @@
 
 struct ViewportPair {
     int a, b;
-    ViewportPair() { a = 0; b = 0; }
+    ViewportPair() { ViewportPair::a = 0; ViewportPair::b = 0; }
     ~ViewportPair();
 };
 

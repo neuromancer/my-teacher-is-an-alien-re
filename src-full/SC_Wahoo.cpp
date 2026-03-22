@@ -26,6 +26,7 @@
 #include "MouseControl.h"
 #include "main.h"
 #include "MouseControl.h"
+#include "SC_Question.h"
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
@@ -495,7 +496,7 @@ void SC_Wahoo::ProcessState() {
         }
         field_A8 = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         {
-            Parser temp;
+            SC_Message temp;
             ParseFile(&temp, "mis\\cb_bridge.mis", "_WIN_LBL_PR_");
         }
     }

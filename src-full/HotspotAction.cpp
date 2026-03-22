@@ -216,7 +216,7 @@ int HotspotAction::CheckConditions() {
                 data = 0;
             }
             if (data[0] != 2) goto notType2;
-            result = (g_GameState_0046aa30)->FUN_00433bb0(data);
+            result = (g_GameState_0046aa30)->CheckCondition(data);
             goto afterCheck;
 notType2:
             ShowError("illegal message 15");

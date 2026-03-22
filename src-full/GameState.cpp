@@ -2,6 +2,7 @@
 #include "ObjectPool.h"
 #include "string.h"
 #include "Memory.h"
+#include "SpriteAction.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -438,7 +439,7 @@ void GameState::ClearStates()
 }
 
 /* Function start: 0x433BB0 */
-int GameState::FUN_00433bb0(int* param_1) {
+int GameState::CheckCondition(int* param_1) {
     int idx;
     unsigned int val;
 
@@ -446,6 +447,7 @@ int GameState::FUN_00433bb0(int* param_1) {
         ShowError("illegal message13");
     }
     if (param_1[0] != 2) {
+        ((SpriteAction*)param_1)->Print(0);
         ShowError("illegal message12");
     }
     idx = param_1[1];
@@ -459,13 +461,25 @@ int GameState::FUN_00433bb0(int* param_1) {
     case 9:
         return val == 0;
     case 10:
-        return val < (unsigned int)param_1[5];
+        if ((unsigned int)param_1[5] > val) {
+            return 1;
+        }
+        return 0;
     case 11:
-        return (unsigned int)param_1[5] < val;
+        if ((unsigned int)param_1[5] < val) {
+            return 1;
+        }
+        return 0;
     case 12:
-        return (unsigned int)param_1[5] == val;
+        if ((unsigned int)param_1[5] == val) {
+            return 1;
+        }
+        return 0;
     case 13:
-        return (unsigned int)param_1[5] != val;
+        if ((unsigned int)param_1[5] != val) {
+            return 1;
+        }
+        return 0;
     default:
         ShowError("illegal message12b");
     }

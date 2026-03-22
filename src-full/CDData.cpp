@@ -172,9 +172,9 @@ extern int DAT_0046b790;   // cache eviction threshold
 extern int DAT_00473440;   // total cached size
 extern int DAT_00473444;   // cache size limit
 
-extern "C" int __cdecl FUN_004260a0(char*);  // delete file + rmdir parent
-extern "C" void FUN_00434520();              // cache error handler 1
-extern "C" void FUN_004345b0();              // cache error handler 2
+extern "C" int __cdecl DeleteFileAndDir(char*);  // delete file + rmdir parent
+extern "C" void LogCacheStats();             // cache stats logger (0x434520)
+extern "C" void LogCacheEntries();           // cache entries logger (0x4345B0)
 extern int DAT_004719c0;
 
 /* Function start: 0x434030 */
@@ -188,9 +188,9 @@ void __cdecl FileCacheEntryCleanup(void* entries, int count) {
         count--;
         name = (char*)*ptr;
         if (name != 0) {
-            if (FUN_004260a0(name) == -1) {
-                FUN_00434520();
-                FUN_004345b0();
+            if (DeleteFileAndDir(name) == -1) {
+                LogCacheStats();
+                LogCacheEntries();
                 WriteToLog("HDCache::Unable to delete '%s' (%d)", name, DAT_004719c0);
             }
             FreeMemory(name);

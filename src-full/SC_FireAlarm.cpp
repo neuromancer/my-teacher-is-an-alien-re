@@ -7,6 +7,7 @@
 #include "Palette.h"
 #include "ZBuffer.h"
 #include "SlimeTable.h"
+#include "RockThrower.h"
 #include "main.h"
 #include <string.h>
 #include <stdlib.h>
@@ -21,7 +22,7 @@ extern "C" char* FormatAssetPath(char*, ...);
 extern "C" void SetVideoRes(int, int);
 extern "C" void ShowError(const char* format, ...);
 // FUN_004279a0 = ZBuffer::ResetItems (ZBuffer.h)
-extern void __fastcall FUN_00427880(void*);
+// FUN_00427880 = Weapon::UpdateProjectiles — callers updated
 #include "MouseControl.h"
 
 // Thiscall wrapper classes for sprite/palette methods
@@ -547,7 +548,7 @@ void SC_FireAlarm::ProcessFrame() {
 
     if ((field_AC & 0xF) == 0) {
         (g_Mouse_0046aa18)->DrawCursor();
-        FUN_00427880((void*)DAT_004685ac);
+        ((Weapon*)DAT_004685ac)->UpdateProjectiles();
 
         int bcRender = field_BC->Do(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 1.0);
         if (bcRender != 0) {

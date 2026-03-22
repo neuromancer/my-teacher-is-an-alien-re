@@ -39,6 +39,33 @@ extern GlyphRect DAT_00473dc8[];
 SC_CrystalPuzzle::SC_CrystalPuzzle() {
     memset(&field_A8, 0, 0x46 * 4);
 
+    rect1.left = 0;
+    rect1.top = 0;
+    handlerId = 0x26;
+    needsUpdate = 1;
+    rect1.right = 0x197;
+    rect1.bottom = 0x1aa;
+
+    rect2.left = 0x1d7;
+    rect2.top = 0x3b;
+    rect2.right = 0x25c;
+    rect2.bottom = 0xbb;
+
+    rect3.left = 0x1de;
+    rect3.top = 0xf1;
+    rect3.right = 0x25b;
+    rect3.bottom = 0x16d;
+
+    rect4.left = 0x73;
+    rect4.top = 0x11d;
+    rect4.right = 0x12f;
+    rect4.bottom = 0x149;
+
+    rect5.left = 0x32;
+    rect5.top = 0x14a;
+    rect5.right = 0x172;
+    rect5.bottom = 0x192;
+
     palette = new Palette();
     palette->Load(CDData_FormatPath("puz\\ForceField\\Puzztest.col"));
 
@@ -145,40 +172,23 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     }
 
     {
-        int i = 0;
-        if (0 < 9) {
-            do {
-                enabledButtons[i] = 1;
-                i++;
-            } while (i < 9);
+        int* p = enabledButtons;
+        int i;
+        for (i = 9; i != 0; i--) {
+            *p = 1;
+            p++;
         }
     }
 
-    handlerId = 0x26;
-    needsUpdate = 1;
+    rect6.left = 0;
+    rect6.top = 0x1a9;
+    rect6.right = 0x280;
+    rect6.bottom = 0x1e0;
 
-    rect1.right = 0x197;
-    rect1.bottom = 0x1aa;
-
-    rect2.left = 0x1d7;
-    rect2.top = 0x3b;
-    rect2.right = 0x25c;
-    rect2.bottom = 0xbb;
-
-    rect3.left = 0x1de;
-    rect3.top = 0xf1;
-    rect3.right = 0x25b;
-    rect3.bottom = 0x16d;
-
-    rect4.left = 0x73;
-    rect4.top = 0x11d;
-    rect4.right = 0x12f;
-    rect4.bottom = 0x149;
-
-    rect5.left = 0x32;
-    rect5.top = 0x14a;
-    rect5.right = 0x172;
-    rect5.bottom = 0x192;
+    rect7.left = 0;
+    rect7.top = 0x155;
+    rect7.right = 0x1b2;
+    rect7.bottom = 0x1e0;
 }
 
 /* Function start: 0x44F4D0 */
@@ -737,7 +747,7 @@ int SC_CrystalPuzzle::Exit(SC_Message* msg) {
 /* Function start: 0x450400 */
 void SC_CrystalPuzzle::OnClick(int x, int y) {
     SlimeDim clickPos;
-    int i;
+    int inside;
 
     clickPos.field_0 = x;
     clickPos.field_4 = y;
@@ -746,40 +756,50 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
         field_144 = 1;
         ResetPuzzle(0, 1);
     } else {
-        if (rect3.left <= x && x <= rect3.right &&
-            rect3.top <= y && y <= rect3.bottom) {
-            i = 0;
-            while (i < 9) {
-                if (DAT_00473d30[i].left <= clickPos.field_0 &&
-                    clickPos.field_0 <= DAT_00473d30[i].right &&
-                    DAT_00473d30[i].top <= clickPos.field_4 &&
-                    clickPos.field_4 <= DAT_00473d30[i].bottom) {
+        inside = (rect3.left <= x && x <= rect3.right &&
+                  rect3.top <= y && rect3.bottom >= y);
+        if (inside) {
+            int i = 0;
+            GlyphRect* r = DAT_00473d30;
+            do {
+                inside = (r->left <= clickPos.field_0 && clickPos.field_0 <= r->right &&
+                          r->top <= clickPos.field_4 && r->bottom >= clickPos.field_4);
+                if (inside) {
                     OnButtonClick(i);
                 }
+                r++;
                 i++;
-            }
+            } while (r < &DAT_00473d30[9]);
             CheckSolution();
-        } else if (rect2.left <= x && x <= rect2.right &&
-                   rect2.top <= y && y <= rect2.bottom) {
-            ResetPuzzle(3, 1);
-        } else if (rect1.left <= x && x <= rect1.right &&
-                   rect1.top <= y && y <= rect1.bottom) {
-            i = 0;
-            while (i < 3) {
-                if (DAT_00473dc8[i].left <= clickPos.field_0 &&
-                    clickPos.field_0 <= DAT_00473dc8[i].right &&
-                    DAT_00473dc8[i].top <= clickPos.field_4 &&
-                    clickPos.field_4 <= DAT_00473dc8[i].bottom) {
-                    ResetPuzzle(1, 1);
-                }
-                i++;
-            }
+        } else {
+            inside = (rect2.left <= x && x <= rect2.right &&
+                      rect2.top <= y && rect2.bottom >= y);
+            if (inside) {
+                ResetPuzzle(3, 1);
+            } else {
+                inside = (rect1.left <= x && x <= rect1.right &&
+                          rect1.top <= y && rect1.bottom >= y);
+                if (inside) {
+                    GlyphRect* r = DAT_00473dc8;
+                    do {
+                        inside = (r->left <= clickPos.field_0 && clickPos.field_0 <= r->right &&
+                                  r->top <= clickPos.field_4 && r->bottom >= clickPos.field_4);
+                        if (inside) {
+                            ResetPuzzle(1, 1);
+                        }
+                        r++;
+                    } while (r < &DAT_00473dc8[3]);
 
-            if ((rect4.left <= clickPos.field_0 && clickPos.field_0 <= rect4.right &&
-                 rect4.top <= clickPos.field_4 && clickPos.field_4 <= rect4.bottom) ||
-                (rect5.left <= clickPos.field_0 && clickPos.field_0 <= rect5.right &&
-                 rect5.top <= clickPos.field_4 && clickPos.field_4 <= rect5.bottom)) {
-                ResetPuzzle(0, 1);
+                    inside = (rect4.left <= clickPos.field_0 && clickPos.field_0 <= rect4.right &&
+                              rect4.top <= clickPos.field_4 && rect4.bottom >= clickPos.field_4);
+                    if (!inside) {
+                        inside = (rect5.left <= clickPos.field_0 && clickPos.field_0 <= rect5.right &&
+                                  rect5.top <= clickPos.field_4 && rect5.bottom >= clickPos.field_4);
+                    }
+                    if (inside) {
+                        ResetPuzzle(0, 1);
+                    }
+                }
             }
         }
     }

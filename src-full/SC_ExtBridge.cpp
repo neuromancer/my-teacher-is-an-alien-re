@@ -66,7 +66,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     }
 
     DAT_0046ae78 = engine;
-    ((Engine*)engine)->CopyToGlobals();
+    ((SC_CombatBase*)engine)->SetupViewport();
 
     if (msg != 0 && action->extra1 == 1) {
         DAT_0046ae70->SetNavParams(action->mousePos.field_0, action->mousePos.field_4);
@@ -74,73 +74,71 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 
     SetVideoRes(dim.field_0, dim.field_4);
 
-    int iVar2 = (int)g_ZBufferManager_0046aa24;
-    int* pState = (int*)(iVar2 + 0x98);
-    if (*pState != 2) {
-        *pState = 2;
+    ZBufferManager* zbm = g_ZBufferManager_0046aa24;
+    if (zbm->m_state != 2) {
+        zbm->m_state = 2;
 
         // First list cleanup (offset 0xA0)
-        int* list1 = *(int**)(iVar2 + 0xa0);
-        if (*list1 != 0) {
-            list1[2] = *list1;
-            while (*list1 != 0) {
-                void* obj = ((LinkedList*)list1)->RemoveCurrent();
+        ZBQueue* list1 = zbm->m_queueA0;
+        if (list1->head != 0) {
+            list1->current = list1->head;
+            while (list1->head != 0) {
+                void* obj = list1->Pop();
                 if (obj != 0) {
-                    
-                    free(obj);
+                    *(int*)obj = 0x461030;
+                    FreeMemory(obj);
                 }
             }
         }
 
         // Second list cleanup (offset 0xA4)
-        int* list2 = *(int**)(iVar2 + 0xa4);
-        if (*list2 != 0) {
-            list2[2] = *list2;
-            while (*list2 != 0) {
-                int* item = (int*)((LinkedList*)list2)->RemoveCurrent();
+        ZBQueue* list2 = zbm->m_queueA4;
+        if (list2->head != 0) {
+            list2->current = list2->head;
+            while (list2->head != 0) {
+                int* item = (int*)list2->Pop();
                 if (item != 0) {
-                    if (*(int*)((int)item + 4) != 0) {
-                        delete (VBuffer*)*(int*)((int)item + 4);
-                        *(int*)((int)item + 4) = 0;
+                    if (item[1] != 0) {
+                        delete (VBuffer*)item[1];
+                        item[1] = 0;
                     }
-                    if (*(int*)((int)item + 8) != 0) {
-                        void* sub = (void*)*(int*)((int)item + 8);
+                    if (item[2] != 0) {
+                        void* sub = (void*)item[2];
                         (*(void (__fastcall **)(void*, int, int))(*(int*)sub))(sub, 0, 1);
-                        *(int*)((int)item + 8) = 0;
+                        item[2] = 0;
                     }
-                    free(item);
+                    FreeMemory(item);
                 }
             }
         }
 
         // Third list cleanup (offset 0x9C)
-        int* list3 = *(int**)(iVar2 + 0x9c);
-        if (*list3 != 0) {
-            list3[2] = *list3;
-            while (*list3 != 0) {
-                int* current = (int*)list3[2];
+        ZBQueue* list3 = zbm->m_queue9c;
+        if (list3->head != 0) {
+            list3->current = list3->head;
+            while (list3->head != 0) {
                 void* data;
-                if (current == 0) {
+                if (list3->current == 0) {
                     data = 0;
                 } else {
-                    if (*list3 == (int)current) {
-                        *list3 = current[1];
+                    if (list3->head == list3->current) {
+                        list3->head = list3->current->next;
                     }
-                    if (list3[1] == (int)current) {
-                        list3[1] = *current;
+                    if (list3->tail == list3->current) {
+                        list3->tail = list3->current->prev;
                     }
-                    if (*current != 0) {
-                        ((int*)*current)[1] = current[1];
+                    if (list3->current->prev != 0) {
+                        list3->current->prev->next = list3->current->next;
                     }
-                    if (current[1] != 0) {
-                        *(int*)current[1] = *current;
+                    if (list3->current->next != 0) {
+                        list3->current->next->prev = list3->current->prev;
                     }
-                    data = ((LinkedList*)list3)->GetCurrentData();
-                    if ((void*)list3[2] != 0) {
-                        delete (ListNode*)list3[2];
-                        list3[2] = 0;
+                    data = list3->GetCurrentData();
+                    if (list3->current != 0) {
+                        delete list3->current;
+                        list3->current = 0;
                     }
-                    list3[2] = *list3;
+                    list3->current = list3->head;
                 }
                 if (data != 0) {
                     *(int*)data = 0x46102c;
@@ -150,7 +148,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
             }
         }
 
-        *(int*)(iVar2 + 0xa8) = 0;
+        zbm->m_palette = 0;
     }
 
     // Create SpriteAction
@@ -161,7 +159,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 
     // Palette handling
     if (palette != 0) {
-        int* palSlot = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
+        int* palSlot = (int*)&g_ZBufferManager_0046aa24->m_palette;
         if (*palSlot != 0) {
             WriteToLog("ddouble palette");
         }
@@ -245,20 +243,24 @@ void SC_ExtBridge::Update(int p1, int p2)
 /* Function start: 0x43A0C0 */
 int SC_ExtBridge::AddMessage(SC_Message* msg)
 {
-    SpriteAction* action = (SpriteAction*)msg;
-    action->fromType = handlerId;
-    action->instruction = 0;
-    action->fromValue = moduleParam;
+    int* m = (int*)msg;
+    m[2] = handlerId;
+    m[4] = 0;
+    m[3] = moduleParam;
 
     if (savedCommand == 0x2b) {
-        if (action->lastKey == 0x1b) {
+        if (m[0xb] == 0x1b) {
             ProcessEscape();
         }
-    } else if (action->lastKey == 0x77) {
-        SpriteAction local(
-            handlerId, moduleParam, handlerId, moduleParam, 4, 1, 0, 0,
-            DAT_0046ae70->bearing, DAT_0046ae70->startingNode);
-        DAT_00472d58.CopyFrom(&local);
+    } else if (m[0xb] == 0x77) {
+        {
+            int mp = moduleParam;
+            int hid = handlerId;
+            SpriteAction local(
+                hid, mp, hid, mp, 4, 1, 0, 0,
+                DAT_0046ae70->startingNode, DAT_0046ae70->bearing);
+            DAT_00472d58.CopyFrom(&local);
+        }
         SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }
 

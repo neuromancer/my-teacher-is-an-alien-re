@@ -12,6 +12,7 @@
 #include "main.h"
 #include <string.h>
 #include <stdio.h>
+#include <new.h>
 
 // Globals for SC_Rats state machine
 int DAT_00473df8 = 0;
@@ -27,7 +28,8 @@ extern "C" int FileExists(const char*);
 extern void __fastcall InitCombatScreen(void*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
-extern void* __fastcall FUN_00450b10(void*);
+// FUN_00450b10 = EngineB::EngineB — callers updated to use placement new
+#include "EngineB.h"
 // FUN_0044bac0 = mCNavigator::SetNavParams
 #include "mCNavigator.h"
 // FUN_00412a50 is Parser::ReportUnknownLabel (thiscall, declared in Parser.h)
@@ -419,9 +421,9 @@ int SC_Rats::LBLParse(char* param) {
     sscanf(param, "%s", buf);
     if (strcmp(buf, "DERIVED_ENGINE_INFO") == 0) {
         void* mem = AllocateMemory(0x178);
-        void* obj = 0;
+        EngineB* obj = 0;
         if (mem != 0) {
-            obj = FUN_00450b10(mem);
+            obj = new (mem) EngineB();
         }
         field_AC = (int)obj;
         DAT_0046ae78 = (int)obj;

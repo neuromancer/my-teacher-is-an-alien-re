@@ -43,7 +43,8 @@ extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 
-extern void __fastcall FUN_004061e0(void* obj);
+// FUN_004061e0 = RenderEntry::~RenderEntry — callers updated
+#include "RenderEntry.h"
 
 // Queue operations (thiscall via fastcall + dummy EDX)
 // FUN_00406cc0 = Queue::Add in LinkedList.h
@@ -479,7 +480,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
             while (*piVar5 != 0) {
                 void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
                 if (obj != 0) {
-                    FUN_004061e0(obj);
+                    ((RenderEntry*)obj)->~RenderEntry();
                     FreeMemory(obj);
                 }
             }

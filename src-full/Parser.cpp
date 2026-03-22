@@ -149,7 +149,7 @@ void Parser::FindKey(unsigned char *param_1) {
   }
 }
 
-extern "C" char* FUN_00426570(char*, char*); // case-insensitive strstr (0x426570)
+extern "C" char* FindAfterSubstring(char*, char*); // case-insensitive strstr (0x426570)
 
 /* Function start: 0x413810 */
 int Parser::GetTokenType(char* line) {
@@ -158,7 +158,7 @@ int Parser::GetTokenType(char* line) {
     char* closeTag;
     int len;
 
-    openTag = FUN_00426570(line, "<<");
+    openTag = FindAfterSubstring(line, "<<");
     if (openTag == 0) {
         return 0;
     }
@@ -351,7 +351,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
   return (Parser*)result;
 }
 
-// Duplicates removed — FUN_00426570, g_FilePosCache, g_GameState_0046aa30 declared at top of file
+// Duplicates removed — FindAfterSubstring, g_FilePosCache, g_GameState_0046aa30 declared at top of file
 
 /* Function start: 0x412C00 */
 void Parser::BeginComment(char* line) {
@@ -359,7 +359,7 @@ void Parser::BeginComment(char* line) {
     char* end;
     int len;
 
-    start = FUN_00426570(line, "/*");
+    start = FindAfterSubstring(line, "/*");
     end = strstr(line, "*/");
     len = end - start;
     if (start == 0 || end == 0 || len <= 0) {
@@ -372,7 +372,7 @@ void Parser::BeginComment(char* line) {
 /* Function start: 0x412C60 */
 int Parser::DoCommentsMatch(char* line) {
     char localBuf[32];
-    char* start = FUN_00426570(line, "/*");
+    char* start = FindAfterSubstring(line, "/*");
     char* end = strstr(line, "*/");
     int len = end - start;
     if (start == 0 || end == 0 || len <= 0) {
@@ -461,27 +461,27 @@ int Parser::EndComment() {
         g_FilePosCache = (void*)new TimedEventPool(10);
     }
 
-    int* pool = (int*)g_FilePosCache;
-    if (pool[2] == 0) {
+    if (((int*)g_FilePosCache)[2] == 0) {
         ShowError("Parser::Pop - IF/ELSEIF ordering Error in %s", filename);
     }
 
     // Pop head node
-    int* head = (int*)pool[0];
+    int* ecxPool = (int*)g_FilePosCache;
+    int* head = (int*)ecxPool[0];
     int result = head[2]; // saved value
     int* next = (int*)head[0];
-    pool[0] = (int)next;
+    ecxPool[0] = (int)next;
     if (next != 0) {
         next[1] = 0;
     } else {
-        pool[1] = 0;
+        ecxPool[1] = 0;
     }
 
-    { volatile int n = 0; while (n-- != 0); }
+    { int n = 0; do { int tmp = n; n--; if (tmp == 0) break; } while (1); }
 
-    head[0] = pool[3];
-    pool[3] = (int)head;
-    pool[2]--;
+    head[0] = ecxPool[3];
+    ecxPool[3] = (int)head;
+    ecxPool[2]--;
 
     UpdateProcessingState();
     return result;
@@ -501,7 +501,7 @@ void Parser::HandleToken_IF(char* line, int prevResult) {
         int gsValue;
         result = 0;
 
-        char* ifPos = FUN_00426570(line, "GAMESTATE");
+        char* ifPos = FindAfterSubstring(line, "GAMESTATE");
         if (ifPos == 0) {
             goto check_params;
         }
@@ -528,7 +528,7 @@ void Parser::HandleToken_IF(char* line, int prevResult) {
         msg.LBLParse(tempBuf);
 
         // Evaluate the condition
-        prevResult = g_GameState_0046aa30->FUN_00433bb0((int*)&action);
+        prevResult = g_GameState_0046aa30->CheckCondition((int*)&action);
     }
 
 push_result:
@@ -546,7 +546,7 @@ extern GameState* DAT_0046aa38;
 extern MouseControl* g_Mouse_0046aa18;
 extern int DAT_00469160;
 
-extern "C" char* FUN_00426570(char* s1, char* s2);
+extern "C" char* FindAfterSubstring(char* s1, char* s2);
 extern "C" char* strstr(const char*, const char*);
 
 /* Function start: 0x413120 */
@@ -594,7 +594,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
 
     case 6:
-        pcVar7 = FUN_00426570(line, "SET_GAMESTATE_");
+        pcVar7 = FindAfterSubstring(line, "SET_GAMESTATE_");
         pcVar6 = local_14;
         if (pcVar7 != 0) {
             pcVar6 = (char*)sscanf(pcVar7, " %s %s %d", local_38, local_90, &local_14);
@@ -612,7 +612,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
 
     case 7:
-        pcVar7 = FUN_00426570(line, "SET_MOUSE_");
+        pcVar7 = FindAfterSubstring(line, "SET_MOUSE_");
         pcVar6 = local_14;
         if (pcVar7 != 0) {
             pcVar6 = (char*)sscanf(pcVar7, " %d", &local_14);
@@ -627,7 +627,7 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 8:
         local_14 = strstr(line, "[");
-        pcVar6 = FUN_00426570(line, "]");
+        pcVar6 = FindAfterSubstring(line, "]");
         iVar12 = (int)pcVar6 - (int)local_14;
         if (local_14 == 0 || pcVar6 == 0 || iVar12 < 1) {
             ShowError("Parser::HandleToken - Invalid GOTO statement. needs [LABEL] '%s'", line);
@@ -696,7 +696,7 @@ void Parser::HandleToken(int tokenType, char* line) {
             *pool = (int)node;
 
             local_14 = strstr(line, "[");
-            local_74 = FUN_00426570(line, "]");
+            local_74 = FindAfterSubstring(line, "]");
             iVar12 = (int)local_74 - (int)local_14;
             if (local_14 == 0 || local_74 == 0 || iVar12 < 1) {
                 ShowError("Parser::HandleToken - Invalid GOSUB statement. needs [LABEL] '%s'", line);
@@ -706,7 +706,7 @@ void Parser::HandleToken(int tokenType, char* line) {
 
             local_14 = strstr(local_74, "(");
             if (local_14 != 0) {
-                local_74 = FUN_00426570(local_14, ")");
+                local_74 = FindAfterSubstring(local_14, ")");
             }
             iVar12 = (int)local_74 - (int)local_14;
             if (local_14 != 0 && local_74 != 0 && iVar12 > 0) {
@@ -758,7 +758,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
 
     case 0xB:
-        pcVar7 = FUN_00426570(line, "HALT_");
+        pcVar7 = FindAfterSubstring(line, "HALT_");
         pcVar6 = strstr(line, ">>");
         if (pcVar6 != 0) {
             *pcVar6 = 0;
@@ -768,13 +768,13 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 0xD:
         iVar12 = 0;
-        local_14 = FUN_00426570(line, "=");
+        local_14 = FindAfterSubstring(line, "=");
         if (local_14 == 0) {
             pcVar6 = 0;
         } else {
             pcVar6 = strstr(local_14, "(");
             if (pcVar6 != 0) {
-                local_1c = FUN_00426570(pcVar6, ">>");
+                local_1c = FindAfterSubstring(pcVar6, ">>");
                 if (local_1c != 0) {
                     iVar12 = sscanf(pcVar6 + 2, "%s %s", local_110, local_58);
                     pcVar7 = strstr((char*)local_58, ">>");

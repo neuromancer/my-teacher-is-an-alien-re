@@ -163,41 +163,39 @@ int SC_Roach::AddMessage(SC_Message* msg) {
 /* Function start: 0x4198B0 */
 int SC_Roach::TryPlacePiece(int* msg)
 {
-    int* cellPtr = (int*)((char*)this + 0x288);
     int found = -1;
+    int* cellPtr = (int*)((char*)this + 0x288);
     int idx = 0;
     int mouseX = msg[7] + 10;
 
     do {
-        if (cellPtr[0] <= mouseX && mouseX <= cellPtr[2]) {
+        if (cellPtr[0] <= mouseX && cellPtr[2] >= mouseX) {
             int mouseY = msg[8] + 10;
-            if (cellPtr[1] <= mouseY && mouseY <= cellPtr[3]) {
+            if (cellPtr[1] <= mouseY && cellPtr[3] >= mouseY) {
                 found = idx;
-                break;
+                goto found_cell;
             }
         }
         cellPtr += 8;
         idx++;
-        found = -1;
     } while (idx < 0x24);
 
+found_cell:
     if (found == -1) {
         return 0;
     }
 
-    int crystalId = *(int*)(*(int*)((char*)this + 0x6f8) + 0x94);
-    int stride = crystalId * 0x100;
-    int* checkPtr = (int*)(stride + 0x98 + *(int*)((char*)this + 0x6f8));
-    unsigned int row = 0;
+    int* crystal = *(int**)((char*)this + 0x6f8);
+    int row = 0;
+    int stride = *(int*)((char*)crystal + 0x94);
+    stride = stride << 8;
+    int checkOfs = (int)crystal + stride + 0x98;
 
     do {
         int col = 0;
-        unsigned int urow = row;
-        unsigned int sign = (int)urow >> 31;
-        int* patternPtr = (int*)(((((urow ^ sign) - sign) & 3 ^ sign) - sign +
-                          ((int)(urow + (sign & 3)) >> 2) * 6 + found) * 0x20 +
-                          0x278 + (int)this);
-        int* cp = checkPtr;
+        int patternIdx = row % 4 + (row / 4) * 6 + found;
+        int* patternPtr = (int*)(patternIdx * 0x20 + 0x278 + (int)this);
+        int* cp = (int*)checkOfs;
         do {
             if (*cp != 0 && *patternPtr != -2) {
                 return 0;
@@ -206,58 +204,58 @@ int SC_Roach::TryPlacePiece(int* msg)
             cp++;
             col++;
         } while (col < 4);
-        checkPtr += 4;
+        checkOfs += 16;
         row++;
-        if ((int)row > 0xf) {
-            int placeStride = stride;
-            row = 0;
-            do {
-                sign = (int)row >> 31;
-                int count = 4;
-                int* dest = (int*)(((((row ^ sign) - sign) & 3 ^ sign) - sign +
-                             ((int)(row + (sign & 3)) >> 2) * 6 + found) * 0x20 +
-                             0x278 + (int)this);
-                do {
-                    if (*(int*)(*(int*)((char*)this + 0x6f8) + 0x98 + placeStride) != 0) {
-                        *dest = *(int*)(*(int*)((char*)this + 0x6f8) + 0x90);
-                    }
-                    dest++;
-                    placeStride += 4;
-                    count--;
-                } while (count != 0);
-                row++;
-            } while ((int)row < 0x10);
-            *(int*)((char*)this + 0x6f8) = 0;
-            return 1;
-        }
-    } while (1);
+    } while (row < 0x10);
+
+    row = 0;
+    do {
+        int patternIdx = row % 4 + (row / 4) * 6 + found;
+        int count = 4;
+        int* dest = (int*)(patternIdx * 0x20 + 0x278 + (int)this);
+        int zero = 0;
+        do {
+            int* crys = *(int**)((char*)this + 0x6f8);
+            if (*(int*)((int)crys + stride + 0x98) != zero) {
+                *dest = *(int*)((int)crys + 0x90);
+            }
+            dest++;
+            stride += 4;
+            count--;
+        } while (count != 0);
+        row++;
+    } while (row < 0x10);
+    *(int*)((char*)this + 0x6f8) = 0;
+    return 1;
 }
 
 /* Function start: 0x419A10 */
 int SC_Roach::TryDropOnSource(int* msg)
 {
     int* crystal = *(int**)((char*)this + 0x6f8);
-    int id = *(int*)(crystal + 0x90 / 4);
+    int id = *(int*)((char*)crystal + 0x90);
+    int ofs = id * 0x2c;
+    int* hitPtr = (int*)(ofs + (int)this);
     int mouseX = msg[7];
-
-    if (mouseX < *(int*)((char*)this + id * 0x2c + 0x118) ||
-        *(int*)((char*)this + id * 0x2c + 0x120) < mouseX ||
-        msg[8] < *(int*)((char*)this + id * 0x2c + 0x11c) ||
-        *(int*)((char*)this + id * 0x2c + 0x124) < msg[8]) {
-        bgSound->Play(9);
-        return 0;
+    int hitTest = (*(int*)((char*)hitPtr + 0x118) <= mouseX &&
+        *(int*)((char*)hitPtr + 0x120) >= mouseX &&
+        *(int*)((char*)hitPtr + 0x11c) <= msg[8] &&
+        *(int*)((char*)hitPtr + 0x124) >= msg[8]);
+    if (hitTest != 0) {
+        *(int*)((char*)crystal + 0x94) = 0;
+        Sprite* spr = *(Sprite**)((char*)crystal + 0x4d8);
+        if (spr != 0) {
+            spr->ResetAnimation(0, 0);
+        }
+        int* crys2 = *(int**)((char*)this + 0x6f8);
+        int id2 = *(int*)((char*)crys2 + 0x90);
+        *(int*)(id2 * 0x2c + (int)this + 0x140) = (int)crys2;
+        *(int*)((char*)this + 0x6f8) = 0;
+        bgSound->Play(7);
+        return 1;
     }
-
-    *(int*)(crystal + 0x94 / 4) = 0;
-    if (*(void**)(crystal + 0x4d8 / 4) != 0) {
-        ((Sprite*)*(void**)(crystal + 0x4d8 / 4))->ResetAnimation(0, 0);
-    }
-    *(int*)(*(int*)((char*)this + 0x6f8) + 0x90) * 0x2c;
-    *(int*)((char*)this + *(int*)(*(int*)((char*)this + 0x6f8) + 0x90) * 0x2c + 0x140) =
-        *(int*)((char*)this + 0x6f8);
-    *(int*)((char*)this + 0x6f8) = 0;
-    bgSound->Play(7);
-    return 1;
+    bgSound->Play(9);
+    return 0;
 }
 
 /* Function start: 0x419AE0 */
@@ -316,19 +314,26 @@ int SC_Roach::PickFromSource(int* msg)
 {
     int* srcPtr = (int*)((char*)this + 0x128);
     int idx = 0;
+    int mouseX = msg[7];
 
-    while (1) {
-        if (msg[7] >= srcPtr[0] && srcPtr[2] >= msg[7] &&
-            msg[8] >= srcPtr[1] && srcPtr[3] >= msg[8]) {
-            break;
+    do {
+        int hit;
+        if (srcPtr[0] <= mouseX && srcPtr[2] >= mouseX &&
+            srcPtr[1] <= msg[8] && srcPtr[3] >= msg[8]) {
+            hit = 1;
+        } else {
+            hit = 0;
         }
-        srcPtr += 0xb;
+        if (hit != 0) {
+            goto found;
+        }
+        srcPtr = (int*)((char*)srcPtr + 0x2c);
         idx++;
-        if (idx > 7) {
-            return 0;
-        }
-    }
+    } while (idx < 8);
 
+    return 0;
+
+found:
     int* assignPtr = (int*)((char*)this + idx * 0x2c + 0x140);
     *(int*)((char*)this + 0x6f8) = *assignPtr;
     *assignPtr = 0;

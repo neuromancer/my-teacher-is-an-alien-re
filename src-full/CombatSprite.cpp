@@ -15,7 +15,7 @@ int DAT_00436344 = 0;                   // sprite data entry counter
 
 // External declaration for Parser destructor helper
 extern void FUN_0041556a();
-extern void __fastcall FUN_00408ee0(void*, int, int); // FUN_00408ee0 (standalone function in full game)
+extern void __cdecl FreeArrayItems(void** array, int count); // 0x408EE0
 
 /* Function start: 0x408F20 */
 void __cdecl CleanupSpriteHashArray(void** array, int count)
@@ -26,7 +26,7 @@ void __cdecl CleanupSpriteHashArray(void** array, int count)
         if (table != 0) {
             int* node = (int*)*table;
             while (node != 0) {
-                FUN_00408ee0(node + 2, 0, 1);
+                FreeArrayItems((void**)(node + 2), 1);
                 node = (int*)*node;
             }
             table[2] = 0;

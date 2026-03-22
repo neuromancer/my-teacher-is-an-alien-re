@@ -11,6 +11,7 @@
 #include <new.h>
 #include <string.h>
 #include "GameState.h"
+#include "SC_Question.h"
 extern "C" extern GameState* g_GameState_0046aa30;
 
 extern "C" void SetVideoRes(int, int);
@@ -362,22 +363,28 @@ void SC_Slime::SendResultMessage() {
             goto enqueue;
         }
         if (gameResult[2] != 0) {
-            // Alternate win — send room switch + add 30 to NUM_ACTIONS
+            // Alternate win — send room switch + add 20 to NUM_ACTIONS
             ((int*)field_A8)[0] = 0x20;
             ((int*)field_A8)[1] = 2;
-            idx = g_GameState_0046aa30->FindState("NUM_ACTIONS");
-            if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
-                ShowError("Invalid gamestate %d", idx);
+            {
+                GameState* gs = g_GameState_0046aa30;
+                idx = gs->FindState("NUM_ACTIONS");
+                if (idx < 0 || gs->maxStates - 1 < idx) {
+                    ShowError("Invalid gamestate %d", idx);
+                }
+                gs->stateValues[idx] += 0x14;
             }
-            g_GameState_0046aa30->stateValues[idx] += 0x14;
             goto enqueue;
         }
         // Lost — add 30 to NUM_ACTIONS
-        idx = g_GameState_0046aa30->FindState("NUM_ACTIONS");
-        if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
-            ShowError("Invalid gamestate %d", idx);
+        {
+            GameState* gs = g_GameState_0046aa30;
+            idx = gs->FindState("NUM_ACTIONS");
+            if (idx < 0 || gs->maxStates - 1 < idx) {
+                ShowError("Invalid gamestate %d", idx);
+            }
+            gs->stateValues[idx] += 0x1E;
         }
-        g_GameState_0046aa30->stateValues[idx] += 0x1E;
 
     enqueue:
         EnqueueSpriteAction((void*)field_A8);
@@ -398,7 +405,7 @@ void SC_Slime::SendResultMessage() {
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         field_A8 = action;
-        Parser temp;
+        SC_Message temp;
         ParseFile(&temp, "mis\\cb_slime.mis", "[WIN_LBL_PR]");
         goto enqueue;
     }
@@ -411,7 +418,7 @@ void SC_Slime::SendResultMessage() {
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         field_A8 = action;
-        Parser temp;
+        SC_Message temp;
         ParseFile(&temp, "mis\\cb_slime.mis", "[LOSE_LBL_PR]");
         goto enqueue;
     }

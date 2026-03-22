@@ -1,5 +1,6 @@
 #include "Viewport.h"
 #include "SC_CombatBase.h"
+#include <string.h>
 
 ViewportPair::~ViewportPair()
 {
@@ -8,8 +9,8 @@ ViewportPair::~ViewportPair()
 /* Function start: 0x4454F0 */
 Viewport::Viewport()
 {
-    scrollX = 0;
-    scrollY = 0;
+    Viewport::scrollX = 0;
+    Viewport::scrollY = 0;
 }
 
 /* Function start: 0x445590 */

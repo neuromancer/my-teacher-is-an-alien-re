@@ -144,11 +144,20 @@ void SC_FakeRoom::RenderFrame()
 /* Function start: 0x4447B0 */
 void SC_FakeRoom::ProcessAction(int action, int* data)
 {
+    if (action > 4) {
+        ShowError("SC_FakeRoom::Process_Action - invalid Action=%d, value=%d", action, *data);
+        return;
+    }
+
     switch (action) {
     case 0:
+        ((SC_Combat*)this)->ProcessLose();
+        return;
     case 1:
+        ((SC_Combat*)this)->ProcessLose();
+        return;
     case 2:
-        ProcessLose();
+        ((SC_Combat*)this)->ProcessLose();
         return;
     case 3:
         *data = 0;
@@ -157,9 +166,6 @@ void SC_FakeRoom::ProcessAction(int action, int* data)
         return;
     case 4:
         RenderFrame();
-        return;
-    default:
-        ShowError("SC_FakeRoom::Process_Action - invalid Action=%d, value=%d", action, *data);
         return;
     }
 }

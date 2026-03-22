@@ -45,7 +45,7 @@ Weapon::~Weapon() {}
 extern InputManager* g_InputManager_0046aa08;
 extern int g_ProjectileHits_0043d150;
 #include "Projectile.h"
-extern void __fastcall FUN_00427390(void*);  // Projectile::Update (full game)
+// FUN_00427390 = Projectile::UpdateFull — callers updated
 
 // Access Weapon fields at +0xB0..+0xC0 by offset (not declared in class to avoid layout shift)
 #define W_PROJ_COUNT   (*(int*)((char*)this + 0xB0))
@@ -117,7 +117,7 @@ updateAll:
     {
         int i = 0;
         while (i < W_PROJ_COUNT) {
-            FUN_00427390((void*)W_PROJ_ARRAY[i]);
+            ((Projectile*)W_PROJ_ARRAY[i])->UpdateFull();
             i++;
         }
     }

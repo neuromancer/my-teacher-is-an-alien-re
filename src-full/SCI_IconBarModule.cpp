@@ -11,9 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 
-// FUN_004459a0 = T_Hotspot::DoItem (thiscall, 2 stack params)
+// FUN_004459a0 = T_Hotspot::DoItem — callers updated
 #include "Hotspot.h"
-extern void __fastcall FUN_004459a0(void*, int, int);
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
@@ -74,19 +73,21 @@ SCI_IconBarModule::~SCI_IconBarModule() {
         }
     }
 
-    list = (LinkedList*)field_128;
-    if (list != 0) {
-        if (list->head != 0) {
-            list->current = list->head;
-            while (list->head != 0) {
-                data = list->RemoveCurrent();
-                if (data != 0) {
-                    delete (SpriteAction*)data;
+    {
+        Queue* qlist = (Queue*)field_128;
+        if (qlist != 0) {
+            if (qlist->head != 0) {
+                qlist->current = qlist->head;
+                while (qlist->head != 0) {
+                    data = qlist->Pop();
+                    if (data != 0) {
+                        delete (SpriteAction*)data;
+                    }
                 }
             }
+            FreeMemory(qlist);
+            field_128 = 0;
         }
-        FreeMemory(list);
-        field_128 = 0;
     }
 
     if (timeout != 0) {
@@ -444,7 +445,7 @@ void SCI_IconBarModule::Update(int param1, int param2) {
     i = 15;
     do {
         if (*pIcon != 0) {
-            FUN_004459a0(*pIcon, 0, spriteParam);
+            ((T_Hotspot*)*pIcon)->DoItem(spriteParam);
         }
         pIcon = pIcon + 1;
         i = i - 1;
