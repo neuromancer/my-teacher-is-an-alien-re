@@ -43,43 +43,43 @@ public:
     void UpdateArmSprites();     // 0x40E070
     void CheckTimerExpired(Sprite* spr); // 0x40DEB0
 
-    SpriteAction* field_A8;       // 0xA8 - action/message object pointer
+    SpriteAction* spriteAction;    // 0xA8 - action/message object pointer
     int field_AC;       // 0xAC
-    SlimeDim dimB0;     // 0xB0-0xB7 (width/height)
-    TimeOut* field_B8;       // 0xB8 - TimeOut*
-    Sprite* spriteBC;   // 0xBC - slime meter sprite
-    Palette* palette;   // 0xC0 - palette
-    Sprite* spriteC4;   // 0xC4 - sprite
-    Sprite* spriteC8;   // 0xC8 - sprite
-    Sprite* spriteCC;   // 0xCC - sprite
-    int field_D0;       // 0xD0
-    int field_D4;       // 0xD4
-    Rect invSlots[2];  // 0xD8-0xF7 (2 x 16 bytes)
-    SlotPair pairs1[2];       // 0xF8-0x107 (2 x 8 bytes)
-    SlotPair pairs2[2];       // 0x108-0x117 (2 x 8 bytes)
-    Sprite* sprite118;  // 0x118
-    Sprite* sprite11C;  // 0x11C
-    Sprite* sprite120;  // 0x120
-    Sprite* sprite124;  // 0x124
-    Sprite* sprite128;  // 0x128
-    Sprite* sprite12C;  // 0x12C
-    int field_130;      // 0x130
-    int field_134;      // 0x134
-    int field_138;      // 0x138
-    int field_13C;      // 0x13C
-    Rect invSlot3;     // 0x140-0x14F (16 bytes)
-    SoundList* field_150;      // 0x150 - object pointer
-    int field_154;      // 0x154
-    int field_158;      // 0x158
-    int field_15C;      // 0x15C
-    int field_160;      // 0x160
-    int field_164;      // 0x164
-    Sample* field_168;      // 0x168
-    SlimeTable* field_16C;      // 0x16C - object pointer
-    int* field_170;     // 0x170 - dynamic array (7 elements)
-    int field_174;      // 0x174
-    int field_178;      // 0x178
-    int field_17C;      // 0x17C - array size (7)
+    SlimeDim screenSize;     // 0xB0-0xB7 (width/height)
+    TimeOut* timer;          // 0xB8 - TimeOut*
+    Sprite* consoleSprite;   // 0xBC - CONSOLE_SPRITE
+    Palette* palette;        // 0xC0 - PALETTE
+    Sprite* bgSprite;        // 0xC4 - BACKGROUND_SPRITE
+    Sprite* leftSwitchSprite;  // 0xC8 - LEFT_SWITCH_SPRITE
+    Sprite* rightSwitchSprite; // 0xCC - RIGHT_SWITCH_SPRITE
+    int leftSwitchActive;    // 0xD0 - left switch active sprite (alias)
+    int rightSwitchActive;   // 0xD4 - right switch active sprite (alias)
+    Rect invSlots[2];        // 0xD8-0xF7 (2 x 16 bytes)
+    SlotPair closedShots[2]; // 0xF8-0x107 (2 x 8 bytes) - CLOSED_SHOTS_NEEDED
+    SlotPair openedShots[2]; // 0x108-0x117 (2 x 8 bytes) - OPENED_SHOTS_NEEDED
+    Sprite* leftArmSprite;   // 0x118 - LEFT_ARM_SPRITE
+    Sprite* rightArmSprite;  // 0x11C - RIGHT_ARM_SPRITE
+    Sprite* leftArmActive;   // 0x120 - left arm active (alias from LEFT_ARM_SPRITE)
+    Sprite* rightArmActive;  // 0x124 - right arm active (alias from RIGHT_ARM_SPRITE)
+    Sprite* armMaskSprite;   // 0x128 - ARM_MASK_SPRITE
+    Sprite* slimeMeterSprite;// 0x12C - SLIME_METER_SPRITE
+    int hitCount;            // 0x130 - current hit count
+    int maxHits;             // 0x134 - STUDENT_HITS_ALLOWED
+    int field_138;           // 0x138
+    int tentacleShotsNeeded; // 0x13C - TENTACLE_SHOTS_NEEDED
+    Rect targetRect;         // 0x140-0x14F (16 bytes)
+    SoundList* soundList;    // 0x150 - sound list object
+    int field_154;           // 0x154
+    int sound1;              // 0x158 - SOUND id=1 sample
+    int sound2;              // 0x15C - SOUND id=2 sample
+    int sound3;              // 0x160 - SOUND id=3 sample
+    int sound4;              // 0x164 - SOUND id=4 sample
+    Sample* sound5;          // 0x168 - SOUND id=5 sample
+    SlimeTable* slimeTable;  // 0x16C - slime sound table
+    int* gameResult;         // 0x170 - dynamic array (7 elements)
+    int field_174;           // 0x174
+    int field_178;           // 0x178
+    int gameResultSize;      // 0x17C - array size (7)
 };
 
 #endif // SC_SLIME_H

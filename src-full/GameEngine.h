@@ -36,6 +36,7 @@ public:
     Handler* GetOrCreateHandler(int command);      // 0x431880
     Handler* FindHandlerInList(int command);       // 0x4318B0
     void EnqueueAction(SpriteAction* action);      // 0x431A90
+    void Serialize(void* param);                   // 0x431930
 
     int m_exitFlag;                 // 0x00 - non-zero to exit game loop
     int field_0x04;                 // 0x04

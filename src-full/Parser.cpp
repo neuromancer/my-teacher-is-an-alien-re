@@ -657,7 +657,8 @@ void Parser::HandleToken(int tokenType, char* line) {
         }
         {
             fpos_t filePos;
-            filePos = 0;
+            ((int*)&filePos)[0] = 0;
+            ((int*)&filePos)[1] = 0;
             fgetpos(pFile, &filePos);
 
             int* pool = (int*)field_0x3c;

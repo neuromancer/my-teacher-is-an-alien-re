@@ -22,13 +22,13 @@ struct Queue;
 //   0xA8: field_A8
 //   0xAC: field_AC
 //   0xB0: field_B0
-//   0xB4: int field_B4     (pointer, cleaned with FUN_0041DC10)
-//   0xB8: Sprite* sprite1  (elements\option2.smk)
-//   0xBC: Sprite* sprite2  (elements\option2h.smk)
-//   0xC0: field_C0
-//   0xC4: int field_C4     (pointer, cleaned with FUN_004148F0)
-//   0xC8: int field_C8     (linked list pointer)
-//   0xCC: field_CC
+//   0xB4: Palette* palette
+//   0xB8: Sprite* optionSprite   (elements\option2.smk)
+//   0xBC: Sprite* optionHiSprite (elements\option2h.smk)
+//   0xC0: SC_Question* activeQuestion
+//   0xC4: SC_Question* placeholder
+//   0xC8: Queue* questionQueue
+//   0xCC: int resetSprites
 class Handler31 : public IconBar {
 public:
     Handler31();
@@ -40,16 +40,16 @@ public:
     virtual void Update(int param1, int param2); // 0x417500
     int CheckDuplicateQuestion(int param);     // 0x417D50
 
-    int field_A8;       // 0xA8
-    int field_AC;       // 0xAC
-    int field_B0;       // 0xB0
-    Palette* field_B4;       // 0xB4
-    Sprite* sprite1;    // 0xB8
-    Sprite* sprite2;    // 0xBC
-    SC_Question* field_C0;       // 0xC0
-    SC_Question* field_C4;       // 0xC4
-    Queue* field_C8;       // 0xC8
-    int field_CC;       // 0xCC
+    int field_A8;           // 0xA8
+    int field_AC;           // 0xAC
+    int field_B0;           // 0xB0
+    Palette* palette;       // 0xB4 - PALETTE
+    Sprite* optionSprite;   // 0xB8 - elements\option2.smk
+    Sprite* optionHiSprite; // 0xBC - elements\option2h.smk (highlight)
+    SC_Question* activeQuestion;  // 0xC0 - currently active question
+    SC_Question* placeholder;     // 0xC4 - PLACEHOLDER question
+    Queue* questionQueue;         // 0xC8 - queue of SC_Question*
+    int resetSprites;       // 0xCC - flag to reset sprite states
 };
 
 #endif // HANDLER31_H

@@ -2,31 +2,40 @@
 #define SC_DUCTNAV_H
 
 #include "Handler.h"
+#include "Timer.h"
 
-// SC_DuctNav - Duct navigation handler (case 46/0x2E)
+// SC_DuctNav - Duct navigation / save/load handler (case 46/0x2E)
 // Constructor: 0x43AF10
 // Size: 0x258
 // Vtable: 0x461850
 // References: "SC_DuctNav", "DUCT_SWITCH", "SaveGame__.sav"
 class Sprite;
 class Palette;
+class T_MenuHotspot;
 
 class SC_DuctNav : public Handler {
 public:
-    int field_0xA8[53];        // 0xA8-0x17B
-    int slotRects[10 * 4];    // 0x17C-0x21B (save slot hitbox rects)
-    void* cancelBtn;           // 0x21C
-    void* field_0x220;         // 0x220
-    void* field_0x224;         // 0x224
-    void* field_0x228;         // 0x228
-    void* deleteBtn;           // 0x22C
-    void* scrollUpBtn;         // 0x230
-    void* scrollDownBtn;       // 0x234
-    Sprite* editFocusSprite;   // 0x238
-    Sprite* choiceFocusSprite; // 0x23C
-    Palette* fontPalette;      // 0x240
-    Sprite* menuSprite;        // 0x244
-    int field_0x248[4];        // 0x248-0x257
+    Timer timer;                   // 0xA8 (0x14 bytes)
+    int scrollOffset;              // 0xBC
+    int selectedRow;               // 0xC0
+    char searchPattern[128];       // 0xC4-0x143 (save file search pattern)
+    char saveFilename[56];         // 0x144-0x17B (current save filename)
+    int slotRects[10 * 4];        // 0x17C-0x21B (save slot hitbox rects, 160 bytes)
+    T_MenuHotspot* cancelBtn;      // 0x21C
+    T_MenuHotspot* saveBtn;        // 0x220
+    T_MenuHotspot* loadBtn;        // 0x224
+    T_MenuHotspot* overwriteBtn;   // 0x228
+    T_MenuHotspot* deleteBtn;      // 0x22C
+    T_MenuHotspot* scrollUpBtn;    // 0x230
+    T_MenuHotspot* scrollDownBtn;  // 0x234
+    Sprite* editFocusSprite;       // 0x238
+    Sprite* choiceFocusSprite;     // 0x23C
+    Palette* fontPalette;          // 0x240
+    Sprite* menuSprite;            // 0x244
+    void* saveFileList;            // 0x248 (linked list pool for save file entries)
+    int field_0x24C;               // 0x24C
+    void* fileArchive;             // 0x250 (FileArchive* - 0x48 byte struct)
+    int field_0x254;               // 0x254
 
     SC_DuctNav();                                  // 0x43AF10
     virtual ~SC_DuctNav();                         // 0x43B030 (sdtor)
@@ -38,6 +47,10 @@ public:
     virtual int ShutDown(SC_Message* msg);         // [6] 0x43B2C0
     virtual void Update(int p1, int p2);           // [7] 0x43B7E0
     virtual int Exit(SC_Message* msg);             // [8] 0x43C100
+
+    void ReadSaveFiles(char* pattern);             // 0x43C5D0
+    void WriteSaveFile();                          // 0x43C8B0
+    void LoadSaveFile();                           // 0x43CA50
 };
 
 #endif // SC_DUCTNAV_H

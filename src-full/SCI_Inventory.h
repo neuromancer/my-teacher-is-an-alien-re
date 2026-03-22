@@ -11,12 +11,12 @@ class T_MenuHotspot;
 
 // 24-byte embedded object, ctor 0x43E560, dtor 0x43E580
 struct InvPanel {
-    int field_0;
-    int field_4;
-    int field_8;
-    int field_C;
-    int field_10;
-    int field_14;
+    int item1;          // +0x00 — first required item ID
+    int item2;          // +0x04 — second required item ID
+    int item3;          // +0x08 — third required item ID
+    int resultItem;     // +0x0C — combined result item ID
+    int actionId;       // +0x10 — action to trigger on combine
+    int gameStateIdx;   // +0x14 — game state index to check
     InvPanel();
     ~InvPanel();
 };

@@ -16,7 +16,7 @@ T_MenuHotspot::T_MenuHotspot(int param) : Parser()
 {
     memset(&sprite, 0, 0x46 * 4);
     sprite = (Sprite*)1;
-    field_1A4 = param;
+    hotspotParam = param;
 }
 
 /* Function start: 0x421A50 */
@@ -48,8 +48,8 @@ T_MenuHotspot::~T_MenuHotspot()
         delete cursor;
         cursor = 0;
     }
-    if (field_1A0 != 0) {
-        LinkedList* list = (LinkedList*)field_1A0;
+    if (messageQueue != 0) {
+        LinkedList* list = (LinkedList*)messageQueue;
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
@@ -59,8 +59,8 @@ T_MenuHotspot::~T_MenuHotspot()
                 }
             }
         }
-        operator delete((void*)field_1A0);
-        field_1A0 = 0;
+        operator delete((void*)messageQueue);
+        messageQueue = 0;
     }
 }
 
@@ -136,16 +136,16 @@ int T_MenuHotspot::LBLParse(char* line) {
         sscanf(line, "%s %d", local_50, &bounds.top);
     } else if (strcmp(local_50, "HSOUND") == 0) {
         sscanf(line, "%s %d %d %d %d", local_50, &local_18, &local_1c, &local_24, &local_20);
-        *(int*)((char*)this + local_18 * 0xC + 0xB4) = local_1c;
-        *(int*)((char*)this + local_18 * 0xC + 0xB0) = local_24;
-        *(int*)((char*)this + local_18 * 0xC + 0xAC) = local_20;
+        soundEntries[local_18 * 3 + 2] = local_1c;
+        soundEntries[local_18 * 3 + 1] = local_24;
+        soundEntries[local_18 * 3] = local_20;
     } else if (strcmp(local_50, "MESSAGE") == 0) {
-        if (field_1A0 == 0) {
-            field_1A0 = (int)new Queue();
+        if (messageQueue == 0) {
+            messageQueue = (int)new Queue();
         }
         action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         ParseSpriteAction(action, this);
-        queue = (int*)field_1A0;
+        queue = (int*)messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
@@ -177,15 +177,15 @@ int T_MenuHotspot::LBLParse(char* line) {
         if (result != 4) {
             ShowError("Error in ThotsMen.cpp: %s - in parse file is missing parameters", line);
         }
-        if (field_1A0 == 0) {
-            field_1A0 = (int)new Queue();
+        if (messageQueue == 0) {
+            messageQueue = (int)new Queue();
         }
         action = new SpriteAction(
             g_StringTable_0046aa34->FindState((char*)local_70),
             local_18,
             g_StringTable_0046aa34->FindState((char*)local_90),
             local_1c, 4, 0, 0, 0, 0, 0);
-        queue = (int*)field_1A0;
+        queue = (int*)messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }

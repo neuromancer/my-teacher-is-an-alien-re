@@ -47,7 +47,8 @@ extern int g_ProjectileHits_0043d150;
 #include "Projectile.h"
 // FUN_00427390 = Projectile::UpdateFull — callers updated
 
-// Access Weapon fields at +0xB0..+0xC0 by offset (not declared in class to avoid layout shift)
+// Access RockThrower fields via offset (base class accesses derived class layout)
+// Maps to: m_itemCount(0xB0), m_items(0xB4), m_hitCount(0xB8), m_holdState(0xBC), m_hitCountFull(0xC0)
 #define W_PROJ_COUNT   (*(int*)((char*)this + 0xB0))
 #define W_PROJ_ARRAY   (*(int**)((char*)this + 0xB4))
 #define W_FLAGS        (*(int*)((char*)this + 0xB8))

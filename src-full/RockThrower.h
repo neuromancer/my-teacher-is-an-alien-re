@@ -53,9 +53,9 @@ class RockThrower : public Weapon {
 public:
     int m_itemCount;     // demo 0xA8, full 0xB0 — number of projectiles (default 3)
     Projectile** m_items; // demo 0xAC, full 0xB4 — array of projectile objects
-    int field_2;         // demo 0xB0, full 0xB8
-    int field_3;         // demo 0xB4, full 0xBC
-    int field_4;         // full 0xC0 (full game only)
+    int m_hitCount;      // demo 0xB0, full 0xB8 — projectile hit count / weapon flags
+    int m_holdState;     // demo 0xB4, full 0xBC — mouse hold state
+    int m_hitCountFull;  // full 0xC0 (full game only) — full game hit count
     int field_5;         // full 0xC4 (full game only)
 
     RockThrower(Parser* parent);    // full game ctor: 0x4274C0

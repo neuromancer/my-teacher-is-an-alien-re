@@ -39,18 +39,18 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
         sscanf(line, " %s %d", token, &moduleParam);
     } else if (strcmp(token, "PALETTE") == 0) {
         sscanf(line, "%s %s", token, arg2);
-        if (field_B4 != 0) {
-            delete field_B4;
-            field_B4 = 0;
+        if (palette != 0) {
+            delete palette;
+            palette = 0;
         }
-        field_B4 = new Palette();
-        field_B4->Load(arg2);
+        palette = new Palette();
+        palette->Load(arg2);
     } else if (strcmp(token, "QUESTION") == 0) {
         sscanf(line, " %s %d ", token, &id);
         question = new SC_Question(id, (SCI_Dialog*)this);
 
         if (question->state != 2) {
-            list = field_C8;
+            list = questionQueue;
             count = 0;
             node = list->head;
             list->current = node;
@@ -64,7 +64,7 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
             }
 
             if (count < 0xD) {
-                list = field_C8;
+                list = questionQueue;
                 if (question == 0) {
                     ShowError("queue fault 0112");
                 }
@@ -96,8 +96,8 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
     } else if (strcmp(token, "PLACEHOLDER") == 0) {
         sscanfResult = sscanf(line, " %s %d %s", token, &id, arg2);
 
-        if ((field_C8)->head == 0) {
-            field_C4 = new SC_Question(id, (SCI_Dialog*)this);
+        if ((questionQueue)->head == 0) {
+            placeholder = new SC_Question(id, (SCI_Dialog*)this);
         }
 
         g_FlagManager_0046a6e8->SetFlag(id, 4);
@@ -111,11 +111,11 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
             }
         }
 
-        question = field_C4;
+        question = placeholder;
         if (question != 0 && question->state == 2 && question != 0) {
             question->~SC_Question();
             FreeMemory(question);
-            field_C4 = 0;
+            placeholder = 0;
         }
     } else if (strcmp(token, "END") == 0) {
         return 1;
@@ -135,7 +135,7 @@ int Handler31::CheckDuplicateQuestion(int param) {
 
     question = new SC_Question(param, (SCI_Dialog*)this);
 
-    list = field_C8;
+    list = questionQueue;
     if (list != 0) {
         if (question == 0) {
             ShowError("queue fault 0103");
@@ -176,13 +176,13 @@ Handler31::Handler31() {
     memset(&field_A8, 0, 40);
     handlerId = 0x1F;
 
-    sprite1 = new Sprite("\"elements\\option2.smk\"");
-    sprite1->priority = 0x3E9;
-    sprite1->flags |= 0x40;
+    optionSprite = new Sprite("\"elements\\option2.smk\"");
+    optionSprite->priority = 0x3E9;
+    optionSprite->flags |= 0x40;
 
-    sprite2 = new Sprite("\"elements\\option2h.smk\"");
-    sprite2->priority = 0x3E9;
-    sprite2->flags |= 0x40;
+    optionHiSprite = new Sprite("\"elements\\option2h.smk\"");
+    optionHiSprite->priority = 0x3E9;
+    optionHiSprite->flags |= 0x40;
 }
 
 /* Function start: 0x416FC0 */
@@ -191,22 +191,22 @@ Handler31::~Handler31() {
     SC_Question* question;
     Palette* pal;
 
-    spr = sprite1;
+    spr = optionSprite;
     if (spr != 0) {
         spr->~Sprite();
         FreeMemory(spr);
-        sprite1 = 0;
+        optionSprite = 0;
     }
 
-    spr = sprite2;
+    spr = optionHiSprite;
     if (spr != 0) {
         spr->~Sprite();
         FreeMemory(spr);
-        sprite2 = 0;
+        optionHiSprite = 0;
     }
 
-    if (field_C8 != 0) {
-        Queue* list = field_C8;
+    if (questionQueue != 0) {
+        Queue* list = questionQueue;
         if (list->head != 0) {
             list->current = list->head;
             if (list->head != 0) {
@@ -220,21 +220,21 @@ Handler31::~Handler31() {
             }
         }
         FreeMemory(list);
-        field_C8 = 0;
+        questionQueue = 0;
     }
 
-    question = field_C4;
+    question = placeholder;
     if (question != 0) {
         question->~SC_Question();
         FreeMemory(question);
-        field_C4 = 0;
+        placeholder = 0;
     }
 
-    pal = field_B4;
+    pal = palette;
     if (pal != 0) {
         pal->~Palette();
         FreeMemory(pal);
-        field_B4 = 0;
+        palette = 0;
     }
 }
 
@@ -242,25 +242,25 @@ Handler31::~Handler31() {
 int Handler31::ShutDown(SC_Message* msg) {
     SC_Question* question;
 
-    if (sprite1 != 0) {
-        sprite1->StopAnimationSound();
+    if (optionSprite != 0) {
+        optionSprite->StopAnimationSound();
     }
-    if (sprite2 != 0) {
-        sprite2->StopAnimationSound();
+    if (optionHiSprite != 0) {
+        optionHiSprite->StopAnimationSound();
     }
 
-    if (field_C0 != 0) {
-        field_C0->Finalize();
-        question = field_C0;
+    if (activeQuestion != 0) {
+        activeQuestion->Finalize();
+        question = activeQuestion;
         if (question != 0) {
             question->~SC_Question();
             FreeMemory(question);
-            field_C0 = 0;
+            activeQuestion = 0;
         }
     }
 
-    if (field_C8 != 0) {
-        Queue* list = field_C8;
+    if (questionQueue != 0) {
+        Queue* list = questionQueue;
         if (list->head != 0) {
             list->current = list->head;
             if (list->head != 0) {
@@ -274,22 +274,22 @@ int Handler31::ShutDown(SC_Message* msg) {
             }
         }
         FreeMemory(list);
-        field_C8 = 0;
+        questionQueue = 0;
     }
 
-    question = field_C4;
+    question = placeholder;
     if (question != 0) {
         question->~SC_Question();
         FreeMemory(question);
-        field_C4 = 0;
+        placeholder = 0;
     }
 
     {
-        Palette* pal = field_B4;
+        Palette* pal = palette;
         if (pal != 0) {
             pal->~Palette();
             FreeMemory(pal);
-            field_B4 = 0;
+            palette = 0;
         }
     }
 
@@ -327,7 +327,7 @@ void Handler31::Update(int param1, int param2) {
 
     IconBar::Update(param1, param2);
 
-    if (field_CC != 0) {
+    if (resetSprites != 0) {
         i = 1;
         do {
             sprintf(g_Buffer_0046aa00, "SPRITE%d", i);
@@ -339,25 +339,25 @@ void Handler31::Update(int param1, int param2) {
             gs->stateValues[idx] = 0;
             i++;
         } while (i < 6);
-        field_CC = 0;
+        resetSprites = 0;
     }
 
-    if (field_C0 == 0 && field_C8 != 0 && (field_C8)->head == 0 && field_C4 != 0) {
-        field_C0 = field_C4;
-        field_C0->InitState();
-        field_C4 = 0;
+    if (activeQuestion == 0 && questionQueue != 0 && (questionQueue)->head == 0 && placeholder != 0) {
+        activeQuestion = placeholder;
+        activeQuestion->InitState();
+        placeholder = 0;
     }
 
-    if (field_C0 != 0) {
-        field_C0->Update(0x12, 0xA);
-        question = field_C0;
+    if (activeQuestion != 0) {
+        activeQuestion->Update(0x12, 0xA);
+        question = activeQuestion;
         if (question->state == 2 && question != 0) {
             question->~SC_Question();
             FreeMemory(question);
-            field_C0 = 0;
+            activeQuestion = 0;
         }
     } else {
-        list = field_C8;
+        list = questionQueue;
         if (list != 0 && list->head != 0) {
             pMouse = g_InputManager_0046aa08->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
@@ -381,9 +381,9 @@ void Handler31::Update(int param1, int param2) {
                     nodeData->Update(0x12, yPos);
 
                     if (count == buttonIdx) {
-                        sprite2->Do(0x12, yPos, 1.0);
+                        optionHiSprite->Do(0x12, yPos, 1.0);
                     } else {
-                        sprite1->Do(0x12, yPos, 1.0);
+                        optionSprite->Do(0x12, yPos, 1.0);
                     }
 
                     count++;
@@ -416,15 +416,15 @@ int Handler31::AddMessage(SC_Message* msg) {
         return 1;
     }
 
-    if (field_C0 != 0) {
+    if (activeQuestion != 0) {
         msgData[0] = savedCommand;
         msgData[1] = savedCommand;
-        field_C0->OnInput((SC_Message*)msgData);
-        question = field_C0;
+        activeQuestion->OnInput((SC_Message*)msgData);
+        question = activeQuestion;
         if (question->state == 2 && question != 0) {
             question->~SC_Question();
             FreeMemory(question);
-            field_C0 = 0;
+            activeQuestion = 0;
             return 1;
         }
     } else {

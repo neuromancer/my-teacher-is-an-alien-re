@@ -1090,12 +1090,12 @@ int SCI_Inventory::LBLParse(char* line) {
         {
         int panelIdx;
         sscanf(line, " %s %d %d %d %d %d %d %s", token, &panelIdx, &params[0], &params[1], &params[2], &params[3], &index, name);
-        panels[panelIdx].field_0 = params[0];
-        panels[panelIdx].field_4 = params[1];
-        panels[panelIdx].field_8 = params[2];
-        panels[panelIdx].field_C = params[3];
-        panels[panelIdx].field_10 = index;
-        panels[panelIdx].field_14 = g_GameState_0046aa30->FindState(name);
+        panels[panelIdx].item1 = params[0];
+        panels[panelIdx].item2 = params[1];
+        panels[panelIdx].item3 = params[2];
+        panels[panelIdx].resultItem = params[3];
+        panels[panelIdx].actionId = index;
+        panels[panelIdx].gameStateIdx = g_GameState_0046aa30->FindState(name);
         }
     }
     else if (strcmp(token, "SLOT") == 0) {

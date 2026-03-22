@@ -29,33 +29,33 @@ public:
     void Render();                  // 0x407E50
     void ProcessFrame();            // 0x407EE0
 
-    SpriteAction* field_A8;           // 0xA8 - SpriteAction*
-    int field_AC;           // 0xAC
-    int field_B0;           // 0xB0
-    SlimeDim dim_B4;        // 0xB4-0xBB
-    Sprite* field_BC;           // 0xBC
-    int field_C0;           // 0xC0
-    Sprite* field_C4;           // 0xC4
-    Sprite* field_C8;           // 0xC8
-    Rect slot_CC;    // 0xCC-0xDB
-    Sprite* field_DC;           // 0xDC
-    SlimeDim dim_E0;        // 0xE0-0xE7
-    SlimeDim dim_E8;        // 0xE8-0xEF
-    SlimeDim dim_F0;        // 0xF0-0xF7
-    Sprite* field_F8;           // 0xF8
-    SlimeDim dim_FC;        // 0xFC-0x103
-    SlimeDim dim_104;       // 0x104-0x10B
-    Sprite* field_10C;          // 0x10C
-    Sprite* field_110;          // 0x110
-    SlimeDim dim_114;       // 0x114-0x11B
-    Rect slot_11C;   // 0x11C-0x12B
-    SlimeDim dim_12C;       // 0x12C-0x133
-    int field_134;          // 0x134
-    SlimeDim dim_138;       // 0x138-0x13F
-    int field_140;          // 0x140
-    int field_144;          // 0x144
-    int field_148;               // 0x148 - SlimeTable*/Palette* (shared sound object)
-    int field_14C;          // 0x14C
+    SpriteAction* spriteAction;       // 0xA8 - SpriteAction*
+    int stateFlags;                   // 0xAC - bit flags: 1=animating, 2=alarm_pulled, 4=caught, 8=intro
+    int gamePhase;                    // 0xB0 - 0=idle, 1=playing, 2=alarm_win, 3=caught_lose, 4=escape
+    SlimeDim screenSize;              // 0xB4-0xBB - screen dimensions (320x240)
+    Sprite* consoleSprite;            // 0xBC - CONSOLE_SPRITE
+    int paletteDummy;                 // 0xC0 - Palette* (allocated as Palette, cleaned in ShutDown)
+    Sprite* bgSprite;                 // 0xC4 - BACKGROUND_SPRITE
+    Sprite* alarmSprite;              // 0xC8 - ALARM_SPRITE
+    Rect alarmSlotRect;               // 0xCC-0xDB - alarm pull area rectangle
+    Sprite* handSprite;               // 0xDC - HAND_SPRITE
+    SlimeDim handIdleDelay;           // 0xE0-0xE7 - hand idle counter/target
+    SlimeDim waterHitRange;           // 0xE8-0xEF - water hit color range
+    SlimeDim waterHitCounter;         // 0xF0-0xF7 - water hit count/max
+    Sprite* planeSprite;              // 0xF8 - PLANE_SPRITE
+    SlimeDim planeClickRange;         // 0xFC-0x103 - plane click color range
+    SlimeDim planeHomePos;            // 0x104-0x10B - plane home position (initial loc_x/loc_y)
+    Sprite* caughtsSprite;            // 0x10C - CAUGHTS_SPRITE
+    Sprite* teacherSprite;            // 0x110 - TEACHER_SPRITE
+    SlimeDim bellHitRange;            // 0x114-0x11B - bell hit color range
+    Rect bellSlotRect;                // 0x11C-0x12B - unused slot rect
+    SlimeDim teacherHomePos;          // 0x12C-0x133 - teacher home position (initial loc_x/loc_y)
+    int animDistance;                 // 0x134 - animation frame distance
+    SlimeDim timerCounter;            // 0x138-0x13F - timer counter/target
+    int roundCount;                   // 0x140 - number of rounds completed
+    int maxRounds;                    // 0x144 - max rounds (STUDENT_HITS_ALLOWED)
+    int soundTable;                   // 0x148 - SlimeTable* (sound table)
+    int bgSoundId;                    // 0x14C - BG_SOUND id
 };
 
 #endif // SC_FIREALARM_H

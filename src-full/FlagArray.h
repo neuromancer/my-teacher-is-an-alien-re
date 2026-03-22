@@ -24,6 +24,7 @@ public:
     void SetFlag(int index, unsigned int mask);
     void ClearFlag(int index, unsigned int mask);
     void ClearAllFlags();
+    void Serialize(void* param);   // 0x420B80
 };
 
 #endif // FLAGARRAY_H

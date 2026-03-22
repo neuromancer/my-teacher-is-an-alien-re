@@ -120,11 +120,11 @@ void RockThrower::UpdateProjectiles() {
     } while (0);
     i = 0;
     g_ProjectileHits_0043d150 = 0;
-    RockThrower::field_2 = 0;
+    RockThrower::m_hitCount = 0;
 
     for (i = 0; i < RockThrower::m_itemCount; i++) {
         RockThrower::m_items[i]->Update();
     }
 
-    RockThrower::field_2 = g_ProjectileHits_0043d150;
+    RockThrower::m_hitCount = g_ProjectileHits_0043d150;
 }

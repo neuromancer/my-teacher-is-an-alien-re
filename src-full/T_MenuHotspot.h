@@ -14,7 +14,7 @@
 //   0x94: state        — selection state (0=normal, 1=selected, 2=active, -1=disabled)
 //   0x98: field_98
 //   0x9C: bounds       — GlyphRect hit-test rectangle {left, top, right, bottom}
-//   0xAC-0x198: internal data (sounds, animations, etc.)
+//   0xAC-0x19B: soundEntries[60] — sound data (20 entries of 3 ints each)
 //   0x19C: cursor      — Sprite* for rollover cursor animation
 class T_MenuHotspot : public Parser {
 public:
@@ -31,10 +31,10 @@ public:
     GlyphRect bounds;               // 0x94 (16 bytes: left, top, right, bottom)
     int field_A4;                   // 0xA4
     int field_A8;                   // 0xA8
-    int data[60];                   // 0xAC-0x19B
+    int soundEntries[60];           // 0xAC-0x19B — sound data (20 entries * 3 ints each, stride 0xC)
     Sprite* cursor;                 // 0x19C
-    int field_1A0;                  // 0x1A0
-    int field_1A4;                  // 0x1A4
+    int messageQueue;               // 0x1A0 — Queue* for SpriteAction messages
+    int hotspotParam;               // 0x1A4 — constructor parameter (hotspot index/id)
 };
 
 #endif // T_MENUHOTSPOT_H

@@ -23,7 +23,7 @@ public:
     }
 
     int crystalId;               // 0x90
-    int field_94;                // 0x94
+    int rotation;                // 0x94 — current rotation state (used as pad_98 offset)
     int pad_98[0x100];           // 0x98-0x497
     SlimeDim dimArray1[4];       // 0x498-0x4B7
     SlimeDim dimArray2[4];       // 0x4B8-0x4D7
@@ -39,9 +39,9 @@ struct CrystalSource {
     int pickupTop;    // +0x14
     int pickupRight;  // +0x18
     int pickupBottom; // +0x1C
-    int field_0x20;   // +0x20
-    int field_0x24;   // +0x24
-    int crystalPtr;   // +0x28 — assigned crystal object
+    int sourceX;      // +0x20 — source display X position
+    int sourceY;      // +0x24 — source display Y position
+    int crystalPtr;   // +0x28 — assigned crystal object (NavCrystal*)
     CrystalSource();
     ~CrystalSource();
 };
@@ -73,19 +73,17 @@ struct GridCell {
 class SC_Roach : public SC_Combat {
 public:
     CrystalSource sources[8];    // 0x118-0x277 (8 * 0x2C = 0x160)
-    int gridValues[4 * 36];      // 0x278-0x397 (pattern grid data)
-    GridCell gridHitboxes[36];   // 0x398 — WRONG, let me recalc...
-    // Grid: 6x6=36 cells, each cell 0x20 bytes:
-    //   +0x00..+0x0F: 4 pattern values
+    // Grid: 6x6=36 cells, each cell 0x20 bytes (8 ints):
+    //   +0x00..+0x0F: 4 pattern values (crystal IDs, -1=occupied, -2=empty)
     //   +0x10..+0x1F: hitbox (left, top, right, bottom)
     int grid[36 * 8];            // 0x278-0x6F7 (36 cells * 32 bytes = 0x480)
-    int* currentPiece;           // 0x6F8
-    int* crystals[8];            // 0x6FC-0x71B
-    void* progressObj;           // 0x71C
+    int* currentPiece;           // 0x6F8 — currently held NavCrystal*
+    int* crystals[8];            // 0x6FC-0x71B — NavCrystal* array
+    void* progressObj;           // 0x71C — Timer* progress tracker
     Sprite* circleSprite;        // 0x720
     Sprite* barSprite;           // 0x724
-    int field_0x728;             // 0x728
-    int field_0x72C;             // 0x72C
+    int rotatePending;           // 0x728 — flag: rotation pending
+    int rotateIndex;             // 0x72C — current rotation index (0-3)
 
     SC_Roach();                                    // 0x418C20
     virtual ~SC_Roach();                           // 0x418EF0 (sdtor)

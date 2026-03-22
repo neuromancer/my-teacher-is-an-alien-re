@@ -27,7 +27,7 @@ extern SpriteAction DAT_00472d90;
 
 /* Function start: 0x41B320 */
 HotspotAction::HotspotAction(int id) {
-    memset(&field_90, 0, 0x80);
+    memset(&parentHandlerId, 0, 0x80);
     hotspotId = id;
 }
 
@@ -36,19 +36,19 @@ HotspotAction::~HotspotAction() {
     SpriteAction* item;
     Queue* list;
 
-    if (field_F4 != 0) {
-        field_F4->~MMPlayer();
-        FreeMemory(field_F4);
-        field_F4 = 0;
+    if (correctPlayer != 0) {
+        correctPlayer->~MMPlayer();
+        FreeMemory(correctPlayer);
+        correctPlayer = 0;
     }
 
-    if (field_F8 != 0) {
-        field_F8->~MMPlayer();
-        FreeMemory(field_F8);
-        field_F8 = 0;
+    if (incorrectPlayer != 0) {
+        incorrectPlayer->~MMPlayer();
+        FreeMemory(incorrectPlayer);
+        incorrectPlayer = 0;
     }
 
-    list = queue100;
+    list = messagesQueue;
     if (list != 0) {
         if (list->head != 0) {
             list->current = list->head;
@@ -61,10 +61,10 @@ HotspotAction::~HotspotAction() {
             }
         }
         FreeMemory(list);
-        queue100 = 0;
+        messagesQueue = 0;
     }
 
-    list = queueFC;
+    list = actionsQueue;
     if (list != 0) {
         if (list->head != 0) {
             list->current = list->head;
@@ -77,10 +77,10 @@ HotspotAction::~HotspotAction() {
             }
         }
         FreeMemory(list);
-        queueFC = 0;
+        actionsQueue = 0;
     }
 
-    list = queue104;
+    list = incorrectQueue;
     if (list != 0) {
         if (list->head != 0) {
             list->current = list->head;
@@ -93,10 +93,10 @@ HotspotAction::~HotspotAction() {
             }
         }
         FreeMemory(list);
-        queue104 = 0;
+        incorrectQueue = 0;
     }
 
-    list = queue108;
+    list = conditionsQueue;
     if (list != 0) {
         if (list->head != 0) {
             list->current = list->head;
@@ -109,19 +109,19 @@ HotspotAction::~HotspotAction() {
             }
         }
         FreeMemory(list);
-        queue108 = 0;
+        conditionsQueue = 0;
     }
 }
 
 /* Function start: 0x41B5A0 */
 void HotspotAction::Reset() {
-    field_A8 = 0;
+    currentSpriteId = 0;
     state = 0;
-    if (field_F4 != 0) {
-        field_F4->StopAll();
+    if (correctPlayer != 0) {
+        correctPlayer->StopAll();
     }
-    if (field_F8 != 0) {
-        field_F8->StopAll();
+    if (incorrectPlayer != 0) {
+        incorrectPlayer->StopAll();
     }
 }
 
@@ -137,10 +137,10 @@ int HotspotAction::HandleMessage(int* msg) {
     switch (val) {
     case 2:
         val = msg[6];
-        field_A8 = val;
-        if (field_AC == val) {
+        currentSpriteId = val;
+        if (checkObjectId == val) {
             ProcessQueueFC();
-            if (field_F4 != 0) {
+            if (correctPlayer != 0) {
                 state = 2;
                 return 1;
             }
@@ -154,7 +154,7 @@ int HotspotAction::HandleMessage(int* msg) {
             return 1;
         }
         ProcessQueue104();
-        if (field_F8 != 0) {
+        if (incorrectPlayer != 0) {
             state = 3;
             return 1;
         }
@@ -172,10 +172,10 @@ int HotspotAction::HandleMessage(int* msg) {
 int HotspotAction::Update(int param) {
     switch (state) {
     case 2:
-        if (field_F4 == 0) {
+        if (correctPlayer == 0) {
             ShowError("illegal player in hotspot %d", hotspotId);
         }
-        if (field_F4->Draw() == 0) {
+        if (correctPlayer->Draw() == 0) {
             state = 0;
             ProcessQueue100();
             Reset();
@@ -183,10 +183,10 @@ int HotspotAction::Update(int param) {
         }
         break;
     case 3:
-        if (field_F8 == 0) {
+        if (incorrectPlayer == 0) {
             ShowError("illegal player in hotspot %d", hotspotId);
         }
-        if (field_F8->Draw() == 0) {
+        if (incorrectPlayer->Draw() == 0) {
             state = 0;
             Reset();
         }
@@ -206,10 +206,10 @@ int HotspotAction::CheckConditions() {
     }
 
     result = 1;
-    if (queue108 != 0) {
-        queue108->current = queue108->head;
-        while (queue108->head != 0) {
-            node = queue108->current;
+    if (conditionsQueue != 0) {
+        conditionsQueue->current = conditionsQueue->head;
+        while (conditionsQueue->head != 0) {
+            node = conditionsQueue->current;
             if (node != 0) {
                 data = (int*)node->data;
             } else {
@@ -224,11 +224,11 @@ afterCheck:
             if (result == 0) {
                 return 0;
             }
-            if (queue108->tail == queue108->current) {
+            if (conditionsQueue->tail == conditionsQueue->current) {
                 return 1;
             }
-            if (queue108->current != 0) {
-                queue108->current = queue108->current->next;
+            if (conditionsQueue->current != 0) {
+                conditionsQueue->current = conditionsQueue->current->next;
             }
         }
     }
@@ -239,20 +239,20 @@ afterCheck:
 void HotspotAction::ProcessQueue100() {
     void* data;
 
-    if (queue100 != 0) {
-        queue100->current = queue100->head;
-        while (*(int*)queue100 != 0) {
-            if (queue100->current == 0) {
+    if (messagesQueue != 0) {
+        messagesQueue->current = messagesQueue->head;
+        while (*(int*)messagesQueue != 0) {
+            if (messagesQueue->current == 0) {
                 data = 0;
             } else {
-                data = queue100->current->data;
+                data = messagesQueue->current->data;
             }
             EnqueueSpriteAction(data);
-            if (queue100->tail == queue100->current) {
+            if (messagesQueue->tail == messagesQueue->current) {
                 return;
             }
-            if (queue100->current != 0) {
-                queue100->current = queue100->current->next;
+            if (messagesQueue->current != 0) {
+                messagesQueue->current = messagesQueue->current->next;
             }
         }
     }
@@ -262,20 +262,20 @@ void HotspotAction::ProcessQueue100() {
 void HotspotAction::ProcessQueue104() {
     void* data;
 
-    if (queue104 != 0) {
-        queue104->current = queue104->head;
-        while (*(int*)queue104 != 0) {
-            if (queue104->current == 0) {
+    if (incorrectQueue != 0) {
+        incorrectQueue->current = incorrectQueue->head;
+        while (*(int*)incorrectQueue != 0) {
+            if (incorrectQueue->current == 0) {
                 data = 0;
             } else {
-                data = queue104->current->data;
+                data = incorrectQueue->current->data;
             }
             EnqueueSpriteAction(data);
-            if (queue104->tail == queue104->current) {
+            if (incorrectQueue->tail == incorrectQueue->current) {
                 return;
             }
-            if (queue104->current != 0) {
-                queue104->current = queue104->current->next;
+            if (incorrectQueue->current != 0) {
+                incorrectQueue->current = incorrectQueue->current->next;
             }
         }
     }
@@ -285,20 +285,20 @@ void HotspotAction::ProcessQueue104() {
 void HotspotAction::ProcessQueueFC() {
     void* data;
 
-    if (queueFC != 0) {
-        queueFC->current = queueFC->head;
-        while (*(int*)queueFC != 0) {
-            if (queueFC->current == 0) {
+    if (actionsQueue != 0) {
+        actionsQueue->current = actionsQueue->head;
+        while (*(int*)actionsQueue != 0) {
+            if (actionsQueue->current == 0) {
                 data = 0;
             } else {
-                data = queueFC->current->data;
+                data = actionsQueue->current->data;
             }
             EnqueueSpriteAction(data);
-            if (queueFC->tail == queueFC->current) {
+            if (actionsQueue->tail == actionsQueue->current) {
                 return;
             }
-            if (queueFC->current != 0) {
-                queueFC->current = queueFC->current->next;
+            if (actionsQueue->current != 0) {
+                actionsQueue->current = actionsQueue->current->next;
             }
         }
     }
@@ -328,26 +328,26 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     else if (strcmp(label, "ROLLOVER") == 0) {
         sscanf(line, " %s %s", label, buf_C0);
         local_14 = ((GameState*)g_Mouse_0046aa18)->FindStateByName(buf_C0);
-        field_B0 = local_14;
-        ExtractQuotedString(line, field_B4, 0x40);
+        rolloverStateIdx = local_14;
+        ExtractQuotedString(line, rolloverText, 0x40);
     }
     else if (strcmp(label, "CORRECT") == 0) {
         sscanf(line, " %s ", label);
-        if (field_F4 == 0) {
-            field_F4 = new MMPlayer();
+        if (correctPlayer == 0) {
+            correctPlayer = new MMPlayer();
         }
-        Parser::ProcessFile(field_F4, this, 0);
+        Parser::ProcessFile(correctPlayer, this, 0);
     }
     else if (strcmp(label, "INCORRECT") == 0) {
         sscanf(line, " %s ", label);
-        if (field_F8 == 0) {
-            field_F8 = new MMPlayer();
+        if (incorrectPlayer == 0) {
+            incorrectPlayer = new MMPlayer();
         }
-        Parser::ProcessFile(field_F8, this, 0);
+        Parser::ProcessFile(incorrectPlayer, this, 0);
     }
     else if (strcmp(label, "INC_ACTIONS") == 0) {
-        if (queueFC == 0) {
-            queueFC = new Queue();
+        if (actionsQueue == 0) {
+            actionsQueue = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->addressType = 2;
@@ -355,7 +355,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         sa->fromType = 0x24;
         sa->fromValue = hotspotId;
         sa->instruction = 0x11;
-        list = queueFC;
+        list = actionsQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -380,14 +380,14 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
     }
     else if (strcmp(label, "MESSAGE") == 0) {
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->fromType = 0x24;
         sa->fromValue = hotspotId;
         ParseSpriteAction(sa, this);
-        list = queue100;
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -412,14 +412,14 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
     }
     else if (strcmp(label, "INCORRECTMESSAGE") == 0) {
-        if (queue104 == 0) {
-            queue104 = new Queue();
+        if (incorrectQueue == 0) {
+            incorrectQueue = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->fromType = 0x24;
         sa->fromValue = hotspotId;
         ParseSpriteAction(sa, this);
-        list = queue104;
+        list = incorrectQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -444,14 +444,14 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
     }
     else if (strcmp(label, "ACTIONS") == 0) {
-        if (queueFC == 0) {
-            queueFC = new Queue();
+        if (actionsQueue == 0) {
+            actionsQueue = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->fromType = 0x24;
         sa->fromValue = hotspotId;
         ParseSpriteAction(sa, this);
-        list = queueFC;
+        list = actionsQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -476,14 +476,14 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
     }
     else if (strcmp(label, "CHECKMSG") == 0) {
-        if (queue108 == 0) {
-            queue108 = new Queue();
+        if (conditionsQueue == 0) {
+            conditionsQueue = new Queue();
         }
         sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         sa->fromType = 0x24;
         sa->fromValue = hotspotId;
         ParseSpriteAction(sa, this);
-        list = queue108;
+        list = conditionsQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -509,13 +509,13 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "SWITCHFOCUS") == 0) {
         sscanf(line, " %s %s %d", label, buf_C0, &local_14);
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
         sa = new SpriteAction(
             g_StringTable_0046aa34->FindState(buf_C0),
-            local_14, field_90, field_94, 4, 0, local_14, 0, 0, 0);
-        list = queue100;
+            local_14, parentHandlerId, parentModuleParam, 4, 0, local_14, 0, 0, 0);
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -540,13 +540,13 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
     }
     else if (strcmp(label, "SWITCHPREVIOUSROOM") == 0) {
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
         sa = new SpriteAction();
         memset(sa, 0, sizeof(SpriteAction));
         sa->CopyFrom(&DAT_00472d90);
-        list = queue100;
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -572,11 +572,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "PLAYSOUND") == 0) {
         sscanf(line, " %s %d", label, &local_14);
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
-        sa = new SpriteAction(4, local_14, field_90, field_94, 2, local_14, 0, 0, 0, 0);
-        list = queue100;
+        sa = new SpriteAction(4, local_14, parentHandlerId, parentModuleParam, 2, local_14, 0, 0, 0, 0);
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -602,11 +602,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "PLAYCINEMATIC") == 0) {
         sscanf(line, " %s %d", label, &local_14);
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
-        sa = new SpriteAction(3, local_14, field_90, field_94, 4, local_14, 0, 0, 0, 0);
-        list = queue100;
+        sa = new SpriteAction(3, local_14, parentHandlerId, parentModuleParam, 4, local_14, 0, 0, 0, 0);
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -653,15 +653,15 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             }
             sprintf(local_40, "%c%s", (int)c, buf_C0);
         }
-        if (queue108 == 0) {
-            queue108 = new Queue();
+        if (conditionsQueue == 0) {
+            conditionsQueue = new Queue();
         }
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(local_40),
-            field_90, field_94,
+            parentHandlerId, parentModuleParam,
             g_StringState_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
-        list = queue108;
+        list = conditionsQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -690,15 +690,15 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         if (result < 4) {
             local_14 = 0;
         }
-        if (queue108 == 0) {
-            queue108 = new Queue();
+        if (conditionsQueue == 0) {
+            conditionsQueue = new Queue();
         }
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(buf_C0),
             0, 0,
             g_StringState_0046aa38->FindState(buf_140),
             local_14, 0, 0, 0, 0);
-        list = queue108;
+        list = conditionsQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -723,12 +723,12 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
     }
     else if (strcmp(label, "CHECKOBJECT") == 0) {
-        sscanf(line, " %s %d", label, &field_AC);
+        sscanf(line, " %s %d", label, &checkObjectId);
     }
     else if (strcmp(label, "GAMESTATE") == 0) {
         result = sscanf(line, " %s %s %s %d", label, buf_C0, buf_140, &local_14);
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState(buf_C0),
@@ -741,7 +741,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         if (sa->instruction == 0x11 && result < 4) {
             ReportUnknownLabel("HotspotAction");
         }
-        list = queue100;
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -770,11 +770,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         if (result != 3) {
             ShowError("Error in ThotsLvl.cpp %s in parameter", line);
         }
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
-        sa = new SpriteAction(0x20, local_38, field_90, field_94, 4, local_14, 0, 0, 0, 0);
-        list = queue100;
+        sa = new SpriteAction(0x20, local_38, parentHandlerId, parentModuleParam, 4, local_14, 0, 0, 0, 0);
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -799,13 +799,13 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
     }
     else if (strcmp(label, "ACTION") == 0) {
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
         sa = new SpriteAction(2,
             (g_GameState_0046aa30)->FindState("NUM_ACTIONS"),
-            field_90, field_94, 0x11, 0, 0, 0, 0, 0);
-        list = queue100;
+            parentHandlerId, parentModuleParam, 0x11, 0, 0, 0, 0, 0);
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
@@ -831,13 +831,13 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "OBJECT") == 0) {
         sscanf(line, " %s %d %s", label, &local_14, buf_C0);
-        if (queue100 == 0) {
-            queue100 = new Queue();
+        if (messagesQueue == 0) {
+            messagesQueue = new Queue();
         }
-        sa = new SpriteAction(0x1e, local_14, field_90, field_94,
+        sa = new SpriteAction(0x1e, local_14, parentHandlerId, parentModuleParam,
             g_StringState_0046aa38->FindState(buf_C0),
             0, 0, 0, 0, 0);
-        list = queue100;
+        list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {

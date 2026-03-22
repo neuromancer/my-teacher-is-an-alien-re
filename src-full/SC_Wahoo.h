@@ -36,31 +36,31 @@ public:
     void ProcessState();                      // 0x4382F0
     void OnProcessEnd();                      // 0x438470
 
-    SpriteAction* field_A8;      // 0xA8 - SpriteAction*
-    Palette* field_AC;      // 0xAC - Palette*
-    Sprite* field_B0;      // 0xB0 - Sprite*
-    Sprite* field_B4;      // 0xB4 - Sprite*
-    Sprite* field_B8;      // 0xB8 - Sprite*
-    Sprite* field_BC;      // 0xBC - Sprite*
-    Sprite* field_C0;      // 0xC0 - Sprite*
-    VBuffer* field_C4;      // 0xC4 - unknown object (dtor 0x410fd0)
-    TimeOut* field_C8;      // 0xC8 - TimeOut*
-    Rect hitbox_CC;      // 0xCC-0xDB (Rect: left, top, right, bottom)
-    void* field_DC[14];  // 0xDC-0x110 - Sample* array
-    SoundList* field_114;     // 0x114 - SoundList*
-    int field_118;       // 0x118
-    int field_11C;       // 0x11C
-    Sample* field_120;     // 0x120
-    Sample* field_124;     // 0x124
-    Sample* field_128;     // 0x128
-    int field_12C;       // 0x12C
-    int field_130;       // 0x130
-    SlimeDim dim_134;    // 0x134-0x13B (SlimeDim: field_0=width, field_4=height)
-    Sprite* field_13C;     // 0x13C - Sprite*
-    int field_140;       // 0x140 - gamestate value
-    Rect hitbox_144;     // 0x144-0x153 (Rect)
-    Rect hitbox_154;     // 0x154-0x163 (Rect)
-    int field_164;       // 0x164 - flags
+    SpriteAction* spriteAction;   // 0xA8 - SpriteAction*
+    Palette* palette;             // 0xAC - PALETTE
+    Sprite* bgSprite;             // 0xB0 - BACKGROUND_SPRITE
+    Sprite* resetSwitchSprite;    // 0xB4 - RESET_SWITCH_SPRITE
+    Sprite* innerSprite;          // 0xB8 - INNER_SPRITE
+    Sprite* middleSprite;         // 0xBC - MIDDLE_SPRITE
+    Sprite* outerSprite;          // 0xC0 - OUTER_SPRITE
+    VBuffer* detectionMask;       // 0xC4 - DETECTION_MASK
+    TimeOut* timer;               // 0xC8 - TimeOut*
+    Rect cursorHitbox;            // 0xCC-0xDB (Rect: left, top, right, bottom)
+    void* sampleSlots[14];        // 0xDC-0x110 - Sample* array (slots 7-13)
+    SoundList* soundList;         // 0x114 - SoundList*
+    int field_118;                // 0x118
+    int sound1;                   // 0x11C - SOUND id=1 sample
+    Sample* missSound;            // 0x120 - SOUND id=2 (miss/incorrect)
+    Sample* resetSound;           // 0x124 - SOUND id=3 (reset click)
+    Sample* startSound;           // 0x128 - SOUND id=4 (start/intro)
+    int matchSound;               // 0x12C - SOUND id=5 (match)
+    int winSound;                 // 0x130 - SOUND id=6 (win)
+    SlimeDim screenSize;          // 0x134-0x13B (width/height)
+    Sprite* consoleSprite;        // 0x13C - CONSOLE_SPRITE
+    int playRightBridge;          // 0x140 - PLAY_RIGHT_BRIDGE gamestate value
+    Rect switchHitbox;            // 0x144-0x153 (switch area Rect)
+    Rect playAreaHitbox;          // 0x154-0x163 (play area Rect)
+    int gameFlags;                // 0x164 - flags (bit 0=won, bit 1=clicked)
 };
 
 #endif // SC_WAHOO_H

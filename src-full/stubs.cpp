@@ -412,3 +412,12 @@ void __fastcall FreePoolBlocks(void* blocks) {
         block = next;
     }
 }
+
+// Save/load system stubs
+int* __cdecl FUN_0043e2a0(int* buf, int count, int mode) { return buf; }
+void __cdecl FUN_0043e320(void* buf, int count) {}
+void SpriteAction::Serialize(void* file) {}
+#include "GameEngine.h"
+#include "FlagArray.h"
+void GameEngine::Serialize(void* file) {}
+void FlagArray::Serialize(void* file) {}

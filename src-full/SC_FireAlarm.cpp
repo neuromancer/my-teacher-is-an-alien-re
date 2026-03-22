@@ -42,7 +42,7 @@ extern int DAT_00472bdc;
 
 /* Function start: 0x407290 */
 SC_FireAlarm::SC_FireAlarm() {
-    memset(&field_A8, 0, 0x2A * 4);
+    memset(&spriteAction, 0, 0x2A * 4);
     handlerId = 0x40;
 }
 
@@ -61,21 +61,21 @@ void SC_FireAlarm::Init(SC_Message* msg) {
         ShowLoadingScreen();
     }
 
-    dim_B4.field_0 = 0x140;
-    dim_B4.field_4 = 0xF0;
+    screenSize.field_0 = 0x140;
+    screenSize.field_4 = 0xF0;
 
     SetVideoRes(0x140, 0xF0);
 
     moduleParam = pmsg[1];
 
-    field_148 = (int)new SlimeTable();
+    soundTable = (int)new SlimeTable();
 
     ParseFile(this, "mis\\CB_FireAlarm.mis", (char*)0);
 
-    if (field_A8 == 0) {
+    if (spriteAction == 0) {
         SpriteAction* sprite = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        field_A8 = sprite;
+        spriteAction = sprite;
     }
 }
 
@@ -83,16 +83,16 @@ void SC_FireAlarm::Init(SC_Message* msg) {
 int SC_FireAlarm::ShutDown(SC_Message* msg) {
     void* p;
 
-    p = (void*)field_C0;
+    p = (void*)paletteDummy;
     if (p != 0) {
         delete (Palette*)p;
-        field_C0 = 0;
+        paletteDummy = 0;
     }
 
-    p = (void*)field_C4;
+    p = (void*)bgSprite;
     if (p != 0) {
         delete (Sprite*)p;
-        field_C4 = 0;
+        bgSprite = 0;
     }
 
     if (DAT_004685ac != 0) {
@@ -102,52 +102,52 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
         DAT_004685ac = 0;
     }
 
-    p = (void*)field_BC;
+    p = (void*)consoleSprite;
     if (p != 0) {
         delete (Sprite*)p;
-        field_BC = 0;
+        consoleSprite = 0;
     }
 
-    p = (void*)field_F8;
+    p = (void*)planeSprite;
     if (p != 0) {
         delete (Sprite*)p;
-        field_F8 = 0;
+        planeSprite = 0;
     }
 
-    p = (void*)field_DC;
+    p = (void*)handSprite;
     if (p != 0) {
         delete (Sprite*)p;
-        field_DC = 0;
+        handSprite = 0;
     }
 
-    p = (void*)field_110;
+    p = (void*)teacherSprite;
     if (p != 0) {
         delete (Sprite*)p;
-        field_110 = 0;
+        teacherSprite = 0;
     }
 
-    p = (void*)field_10C;
+    p = (void*)caughtsSprite;
     if (p != 0) {
         delete (Sprite*)p;
-        field_10C = 0;
+        caughtsSprite = 0;
     }
 
-    p = (void*)field_C8;
+    p = (void*)alarmSprite;
     if (p != 0) {
         delete (Sprite*)p;
-        field_C8 = 0;
+        alarmSprite = 0;
     }
 
-    p = (void*)field_A8;
+    p = (void*)spriteAction;
     if (p != 0) {
         delete (SpriteAction*)p;
-        field_A8 = 0;
+        spriteAction = 0;
     }
 
-    p = (void*)field_148;
+    p = (void*)soundTable;
     if (p != 0) {
         delete (SlimeTable*)p;
-        field_148 = 0;
+        soundTable = 0;
     }
 
     if (msg != 0) {
@@ -164,7 +164,7 @@ int SC_FireAlarm::AddMessage(SC_Message* msg) {
     Handler::AddMessage(msg);
 
     if (pmsg[11] == 0x1b && savedCommand == 0x2b) {
-        field_B0 = 4;
+        gamePhase = 4;
     }
 
     return 1;
@@ -196,19 +196,19 @@ int SC_FireAlarm::Exit(SC_Message* msg) {
 
 /* Function start: 0x4079E0 */
 void SC_FireAlarm::SendResultMessage() {
-    // Destroy existing action at field_A8
-    if (field_A8 != 0) {
-        delete (SpriteAction*)field_A8;
-        field_A8 = 0;
+    // Destroy existing action at spriteAction
+    if (spriteAction != 0) {
+        delete (SpriteAction*)spriteAction;
+        spriteAction = 0;
     }
 
     // Create new SpriteAction
     SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    field_A8 = action;
+    spriteAction = action;
 
     // Parse win or lose message from CB_FireAlarm.mis
     Parser temp;
-    if (field_AC & 2) {
+    if (stateFlags & 2) {
         ParseFile(&temp, "mis\\CB_FireAlarm.mis", "[WIN_MESSAGE]");
     } else {
         ParseFile(&temp, "mis\\CB_FireAlarm.mis", "[LOSE_MESSAGE]");
@@ -216,32 +216,32 @@ void SC_FireAlarm::SendResultMessage() {
 
     // Copy handler IDs if this is SCI_PracticeRoom (0x2B)
     if (savedCommand == 0x2B) {
-        ((int*)field_A8)[2] = savedCommand;
-        ((int*)field_A8)[3] = savedMsgData;
+        ((int*)spriteAction)[2] = savedCommand;
+        ((int*)spriteAction)[3] = savedMsgData;
     }
 
     // Enqueue and destroy
-    EnqueueSpriteAction((void*)field_A8);
-    if (field_A8 != 0) {
-        delete (SpriteAction*)field_A8;
-        field_A8 = 0;
+    EnqueueSpriteAction((void*)spriteAction);
+    if (spriteAction != 0) {
+        delete (SpriteAction*)spriteAction;
+        spriteAction = 0;
     }
 }
 
 /* Function start: 0x407BB0 */
 void SC_FireAlarm::ResetState() {
-    field_B0 = 0;
-    field_AC = 0;
-    if (field_10C != 0) {
-        field_10C->ResetAnimation(-1, 0);
+    gamePhase = 0;
+    stateFlags = 0;
+    if (caughtsSprite != 0) {
+        caughtsSprite->ResetAnimation(-1, 0);
     }
-    if (field_C8 != 0) {
-        field_C8->ResetAnimation(-1, 0);
+    if (alarmSprite != 0) {
+        alarmSprite->ResetAnimation(-1, 0);
     }
-    if (field_140 == 0) {
-        ((Palette*)field_148)->PlaySound(9);
+    if (roundCount == 0) {
+        ((Palette*)soundTable)->PlaySound(9);
     }
-    field_AC |= 8;
+    stateFlags |= 8;
 }
 
 /* Function start: 0x407C20 */
@@ -254,13 +254,13 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     int hitResult = g_BackBuffer_0046aa14->CheckHit(coords[0], coords[1]);
 
-    if (dim_FC.field_0 <= hitResult && dim_FC.field_4 >= hitResult) {
+    if (planeClickRange.field_0 <= hitResult && planeClickRange.field_4 >= hitResult) {
         int y = coords[1] - 0x4B;
         int x = coords[0] - 0xA1;
-        *(int*)(field_F8 + 0xAC) = x;
-        *(int*)(field_F8 + 0xB0) = y;
-        field_F8->ResetAnimation(2, 0);
-        ((Palette*)field_148)->PlaySound(2);
+        planeSprite->loc_x = x;
+        planeSprite->loc_y = y;
+        planeSprite->ResetAnimation(2, 0);
+        ((Palette*)soundTable)->PlaySound(2);
         return 1;
     }
 
@@ -277,46 +277,46 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     int soundId;
 
-    if (dim_E8.field_0 <= hitResult && dim_E8.field_4 >= hitResult) {
-        dim_F0.field_0++;
-        dim_138.field_0 += DAT_004685a0;
+    if (waterHitRange.field_0 <= hitResult && waterHitRange.field_4 >= hitResult) {
+        waterHitCounter.field_0++;
+        timerCounter.field_0 += DAT_004685a0;
         int done;
-        if (dim_F0.field_4 == 0) {
+        if (waterHitCounter.field_4 == 0) {
             done = 0;
-        } else if (dim_F0.field_0 >= dim_F0.field_4) {
+        } else if (waterHitCounter.field_0 >= waterHitCounter.field_4) {
             done = 1;
         } else {
             done = 0;
         }
         if (done) {
-            ((Palette*)field_148)->PlaySound(0xF);
-            dim_F0.field_0 = 0;
+            ((Palette*)soundTable)->PlaySound(0xF);
+            waterHitCounter.field_0 = 0;
             goto returnOne;
         }
         soundId = 3;
         goto playSound;
     }
 
-    if (dim_114.field_0 <= hitResult && dim_114.field_4 >= hitResult) {
+    if (bellHitRange.field_0 <= hitResult && bellHitRange.field_4 >= hitResult) {
         soundId = 0xA;
-        dim_138.field_0 += DAT_00472bd8;
+        timerCounter.field_0 += DAT_00472bd8;
         goto playSound;
     }
 
     {
         int inSlot;
-        if (slot_CC.left > coords[0] || slot_CC.right < coords[0] ||
-            slot_CC.top > coords[1] || slot_CC.bottom < coords[1]) {
+        if (alarmSlotRect.left > coords[0] || alarmSlotRect.right < coords[0] ||
+            alarmSlotRect.top > coords[1] || alarmSlotRect.bottom < coords[1]) {
             inSlot = 0;
         } else {
             inSlot = 1;
         }
 
         if (inSlot) {
-            field_C8->ResetAnimation(*(int*)(field_C8 + 0x98) + 1, 0);
+            alarmSprite->ResetAnimation(alarmSprite->handle + 1, 0);
 
             {
-                int curFrame = *(int*)(field_C8 + 0x98);
+                int curFrame = alarmSprite->handle;
                 if (curFrame >= 0 && curFrame <= 2) {
                     soundId = curFrame + 4;
                     goto callSound;
@@ -324,17 +324,17 @@ int SC_FireAlarm::HandleClick(int* param) {
                 if (curFrame != 4) goto afterSound;
                 soundId = 7;
 callSound:
-                ((Palette*)field_148)->PlaySound(soundId);
+                ((Palette*)soundTable)->PlaySound(soundId);
 afterSound:;
             }
 
-            if (*(int*)(field_C8 + 0x98) == 4) {
-                field_AC |= 2;
+            if (alarmSprite->handle == 4) {
+                stateFlags |= 2;
                 goto returnOne;
             }
 
-            if (*(int*)(field_DC + 0x98) == 0) {
-                field_DC->ResetAnimation(1, 0);
+            if (handSprite->handle == 0) {
+                handSprite->ResetAnimation(1, 0);
             }
             goto returnOne;
         }
@@ -342,19 +342,19 @@ afterSound:;
 
     soundId = 8;
 playSound:
-    ((Palette*)field_148)->PlaySound(soundId);
+    ((Palette*)soundTable)->PlaySound(soundId);
 returnOne:
     return 1;
 }
 
 /* Function start: 0x407E50 */
 void SC_FireAlarm::Render() {
-    field_C4->Do(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 1.0);
-    field_110->Do(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 1.0);
-    field_DC->Do(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 1.0);
-    if (((Palette*)field_148)->CheckSound(9) == 0) {
-        field_B0 = 1;
-        field_AC &= ~8;
+    bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
+    teacherSprite->Do(teacherSprite->loc_x, teacherSprite->loc_y, 1.0);
+    handSprite->Do(handSprite->loc_x, handSprite->loc_y, 1.0);
+    if (((Palette*)soundTable)->CheckSound(9) == 0) {
+        gamePhase = 1;
+        stateFlags &= ~8;
     }
 }
 
@@ -363,57 +363,57 @@ void SC_FireAlarm::ProcessFrame() {
     Sprite* spr110;
     int iVar4;
 
-    if ((field_AC & 0xF) == 0 && dim_138.field_4 != 0 && dim_138.field_0 >= dim_138.field_4) {
-        dim_138.field_0 = 0;
-        spr110 = field_110;
-        int animRes = *(int*)(spr110 + 0xF0);
+    if ((stateFlags & 0xF) == 0 && timerCounter.field_4 != 0 && timerCounter.field_0 >= timerCounter.field_4) {
+        timerCounter.field_0 = 0;
+        spr110 = teacherSprite;
+        int animRes = (int)spr110->animation_data;
         int dataPtr = *(int*)(animRes + 0xC);
-        int curFrame = *(int*)(spr110 + 0x98);
+        int curFrame = spr110->handle;
         int totalFrames = *(int*)(dataPtr + 0x374);
-        int frameBase = *(int*)(spr110 + 0x90);
+        int frameBase = (int)spr110->ranges;
         int distance = totalFrames - *(int*)(curFrame * 16 + frameBase) + 1;
-        field_134 = distance;
+        animDistance = distance;
 
         if (distance >= 0x3D && distance <= 0x55) {
-            int y = dim_12C.field_4;
-            int x = dim_12C.field_0 - 0x19;
-            *(int*)(spr110 + 0xAC) = x;
-            *(int*)(spr110 + 0xB0) = y;
+            int y = teacherHomePos.field_4;
+            int x = teacherHomePos.field_0 - 0x19;
+            spr110->loc_x = x;
+            spr110->loc_y = y;
         } else if (distance >= 0x15 && distance <= 0x32) {
-            int y = dim_12C.field_4;
-            int x = dim_12C.field_0 + 0x19;
-            *(int*)(spr110 + 0xAC) = x;
-            *(int*)(spr110 + 0xB0) = y;
+            int y = teacherHomePos.field_4;
+            int x = teacherHomePos.field_0 + 0x19;
+            spr110->loc_x = x;
+            spr110->loc_y = y;
         }
 
-        field_DC->ResetAnimation(0, 0);
+        handSprite->ResetAnimation(0, 0);
 
-        if (*(int*)(field_F8 + 0x98) == 0) {
-            field_F8->ResetAnimation(-1, 0);
+        if (planeSprite->handle == 0) {
+            planeSprite->ResetAnimation(-1, 0);
         }
 
-        field_10C->ResetAnimation(*(int*)(field_10C + 0x98) + 1, 0);
+        caughtsSprite->ResetAnimation(caughtsSprite->handle + 1, 0);
 
-        iVar4 = *(int*)(field_10C + 0x98);
+        iVar4 = caughtsSprite->handle;
         if (iVar4 == 2) {
-            field_AC |= 4;
+            stateFlags |= 4;
         }
 
         ((ZBuffer*)DAT_004685ac)->ResetItems();
 
-        field_110->ResetAnimation(iVar4 + 1, 0);
+        teacherSprite->ResetAnimation(iVar4 + 1, 0);
 
-        ((Palette*)field_148)->PlaySound(iVar4 + 0xC);
+        ((Palette*)soundTable)->PlaySound(iVar4 + 0xC);
 
-        field_AC |= 1;
+        stateFlags |= 1;
     }
 
-    field_C4->Do(*(int*)(field_C4 + 0xAC), *(int*)(field_C4 + 0xB0), 1.0);
+    bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
 
-    int renderResult = field_110->Do(*(int*)(field_110 + 0xAC), *(int*)(field_110 + 0xB0), 1.0);
+    int renderResult = teacherSprite->Do(teacherSprite->loc_x, teacherSprite->loc_y, 1.0);
 
-    if ((field_AC & 0xF) == 0) {
-        int animData = *(int*)(field_110 + 0xF0);
+    if ((stateFlags & 0xF) == 0) {
+        int animData = (int)teacherSprite->animation_data;
         int frameCount;
         if (animData != 0) {
             frameCount = *(int*)(*(int*)(animData + 0xC) + 0x374);
@@ -422,40 +422,40 @@ void SC_FireAlarm::ProcessFrame() {
         }
 
         if (frameCount == 0x28) {
-            field_F8->ResetAnimation(0, 0);
+            planeSprite->ResetAnimation(0, 0);
         } else if (frameCount == 0x50) {
-            if (*(int*)(field_DC + 0x98) == 0) {
-                field_DC->ResetAnimation(1, 0);
+            if (handSprite->handle == 0) {
+                handSprite->ResetAnimation(1, 0);
             }
         }
     }
 
     if (renderResult != 0) {
-        int* spr = (int*)field_110;
+        int* spr = (int*)teacherSprite;
         int frame = spr[0x98/4];
         if (frame >= 1 && frame <= 3) {
             {
-                SlimeDim temp(dim_12C);
+                SlimeDim temp(teacherHomePos);
                 spr[0xAC/4] = temp.field_0;
                 spr[0xB0/4] = temp.field_4;
             }
 
-            field_110->ResetAnimation(0, field_134);
+            teacherSprite->ResetAnimation(0, animDistance);
 
-            int ac = field_AC & ~1;
-            field_AC = ac;
+            int ac = stateFlags & ~1;
+            stateFlags = ac;
             if (ac & 4) {
-                field_140++;
+                roundCount++;
                 int done;
-                if (field_144 == 0) {
+                if (maxRounds == 0) {
                     done = 0;
-                } else if (field_140 >= field_144) {
+                } else if (roundCount >= maxRounds) {
                     done = 1;
                 } else {
                     done = 0;
                 }
                 if (done) {
-                    field_B0 = 3;
+                    gamePhase = 3;
                 } else {
                     char* name = GetCinematicFilename(0x13A6);
                     char* path = FormatAssetPath(name);
@@ -470,94 +470,94 @@ void SC_FireAlarm::ProcessFrame() {
     }
 
     {
-        int dcRender = field_DC->Do(*(int*)(field_DC + 0xAC), *(int*)(field_DC + 0xB0), 1.0);
+        int dcRender = handSprite->Do(handSprite->loc_x, handSprite->loc_y, 1.0);
         if (dcRender != 0) {
-            int dcFrame = *(int*)(field_DC + 0x98);
+            int dcFrame = handSprite->handle;
             switch (dcFrame) {
             case 1:
-                field_DC->ResetAnimation(2, 0);
+                handSprite->ResetAnimation(2, 0);
                 {
                     int r = rand();
-                    dim_E0.field_0 = 0;
-                    dim_E0.field_4 = r % 0x14 + 0x14;
+                    handIdleDelay.field_0 = 0;
+                    handIdleDelay.field_4 = r % 0x14 + 0x14;
                 }
                 break;
             case 2:
                 {
-                    dim_E0.field_0++;
+                    handIdleDelay.field_0++;
                     int done2;
-                    if (dim_E0.field_4 == 0) {
+                    if (handIdleDelay.field_4 == 0) {
                         done2 = 0;
-                    } else if (dim_E0.field_0 >= dim_E0.field_4) {
+                    } else if (handIdleDelay.field_0 >= handIdleDelay.field_4) {
                         done2 = 1;
                     } else {
                         done2 = 0;
                     }
                     if (!done2) break;
                 }
-                field_DC->ResetAnimation(3, 0);
+                handSprite->ResetAnimation(3, 0);
                 break;
             case 3:
-                field_DC->ResetAnimation(0, 0);
+                handSprite->ResetAnimation(0, 0);
                 break;
             }
         }
     }
 
     {
-        int f8Render = field_F8->Do(*(int*)(field_F8 + 0xAC), *(int*)(field_F8 + 0xB0), 1.0);
+        int f8Render = planeSprite->Do(planeSprite->loc_x, planeSprite->loc_y, 1.0);
         if (f8Render != 0) {
-            int f8Frame = *(int*)(field_F8 + 0x98);
+            int f8Frame = planeSprite->handle;
             switch (f8Frame) {
             case 0:
-                field_F8->ResetAnimation(1, 0);
-                dim_138.field_0 += DAT_00472bdc;
-                ((Palette*)field_148)->PlaySound(0xB);
+                planeSprite->ResetAnimation(1, 0);
+                timerCounter.field_0 += DAT_00472bdc;
+                ((Palette*)soundTable)->PlaySound(0xB);
                 break;
             case 1:
-                field_F8->ResetAnimation(-1, 0);
+                planeSprite->ResetAnimation(-1, 0);
                 break;
             case 2:
                 {
-                    SlimeDim temp2(dim_104);
-                    *(int*)(field_F8 + 0xAC) = temp2.field_0;
-                    *(int*)(field_F8 + 0xB0) = temp2.field_4;
+                    SlimeDim temp2(planeHomePos);
+                    planeSprite->loc_x = temp2.field_0;
+                    planeSprite->loc_y = temp2.field_4;
                 }
-                field_F8->ResetAnimation(-1, 0);
+                planeSprite->ResetAnimation(-1, 0);
                 break;
             }
         }
     }
 
     {
-        int c8Render = field_C8->Do(*(int*)(field_C8 + 0xAC), *(int*)(field_C8 + 0xB0), 1.0);
+        int c8Render = alarmSprite->Do(alarmSprite->loc_x, alarmSprite->loc_y, 1.0);
         if (c8Render != 0) {
-            int c8Frame = *(int*)(field_C8 + 0x98);
+            int c8Frame = alarmSprite->handle;
             switch (c8Frame) {
             case 2:
-                field_C8->ResetAnimation(3, 0);
+                alarmSprite->ResetAnimation(3, 0);
                 break;
             case 4:
-                field_B0 = 2;
+                gamePhase = 2;
                 break;
             }
         }
     }
 
-    field_10C->Do(*(int*)(field_10C + 0xAC), *(int*)(field_10C + 0xB0), 1.0);
+    caughtsSprite->Do(caughtsSprite->loc_x, caughtsSprite->loc_y, 1.0);
 
-    if ((field_AC & 0xF) == 0) {
+    if ((stateFlags & 0xF) == 0) {
         (g_Mouse_0046aa18)->DrawCursor();
         ((Weapon*)DAT_004685ac)->UpdateProjectiles();
 
-        int bcRender = field_BC->Do(*(int*)(field_BC + 0xAC), *(int*)(field_BC + 0xB0), 1.0);
+        int bcRender = consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0);
         if (bcRender != 0) {
             int mouseVal = 0;
             int* mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
             if (mousePtr != 0) {
                 mouseVal = *mousePtr;
             }
-            field_BC->ResetAnimation(mouseVal / (dim_B4.field_0 / 5), 0);
+            consoleSprite->ResetAnimation(mouseVal / (screenSize.field_0 / 5), 0);
         }
 
         if (*(int*)(DAT_004685ac + 0xA8) != 0) {
@@ -566,7 +566,7 @@ void SC_FireAlarm::ProcessFrame() {
             if (mousePtr2 != 0) {
                 mouseVal2 = *mousePtr2;
             }
-            field_BC->ResetAnimation(mouseVal2 / (dim_B4.field_0 / 3) + 5, 0);
+            consoleSprite->ResetAnimation(mouseVal2 / (screenSize.field_0 / 3) + 5, 0);
         }
     }
 }

@@ -71,7 +71,7 @@ int SC_Roach::ShutDown(SC_Message* msg) {
     }
 
     {
-        int* srcPtr = (int*)((char*)this + 0x140);
+        int* srcPtr = &sources[0].crystalPtr;
         i = 8;
         do {
             *srcPtr = 0;
@@ -113,7 +113,7 @@ int SC_Roach::AddMessage(SC_Message* msg) {
 
     if (msgData[0xB] == 0x1B) {
         if (savedCommand == 0x2B) {
-            *(int*)(*(int*)((char*)this + 0xA8) + 8) = 1;
+            ((int*)statusPtr)[2] = 1;
         }
     } else if (msgData[9] >= 2) {
         if (currentPiece == 0) {
@@ -126,24 +126,24 @@ int SC_Roach::AddMessage(SC_Message* msg) {
             if (result == 0) {
                 result = TryDropOnSource(msgData);
                 if (result == 0) {
-                    ((Palette*)*(int*)((char*)this + 0x110))->PlaySound(8);
+                    bgSound->Play(8);
                 }
             }
         }
     } else if (msgData[0xA] >= 2) {
         if (currentPiece != 0) {
-            ((Palette*)*(int*)((char*)this + 0x110))->PlaySound(7);
-            field_0x728 = 1;
-            field_0x72C = (field_0x72C + 1) % 4;
-            Sprite* spr = (Sprite*)*(int*)((char*)currentPiece + 0x4D8);
+            bgSound->Play(7);
+            rotatePending = 1;
+            rotateIndex = (rotateIndex + 1) % 4;
+            Sprite* spr = ((NavCrystal*)currentPiece)->sprite;
             if (spr != 0) {
-                spr->ResetAnimation(field_0x72C, 0);
+                spr->ResetAnimation(rotateIndex, 0);
             }
         }
     }
 
     count = 0;
-    srcPtr = (int*)((char*)this + 0x140);
+    srcPtr = &sources[0].crystalPtr;
     i = 8;
     do {
         if (*srcPtr != 0) {
@@ -154,7 +154,7 @@ int SC_Roach::AddMessage(SC_Message* msg) {
     } while (i != 0);
 
     if (currentPiece == 0 && count == 0) {
-        *(int*)(*(int*)((char*)this + 0xA8) + 4) = 1;
+        ((int*)statusPtr)[1] = 1;
     }
 
     return 1;
@@ -164,7 +164,7 @@ int SC_Roach::AddMessage(SC_Message* msg) {
 int SC_Roach::TryPlacePiece(int* msg)
 {
     int found = -1;
-    int* cellPtr = (int*)((char*)this + 0x288);
+    int* cellPtr = &grid[4];
     int idx = 0;
     int mouseX = msg[7] + 10;
 
@@ -185,16 +185,16 @@ found_cell:
         return 0;
     }
 
-    int* crystal = *(int**)((char*)this + 0x6f8);
+    int* crystal = (int*)currentPiece;
     int row = 0;
-    int stride = *(int*)((char*)crystal + 0x94);
+    int stride = ((NavCrystal*)crystal)->rotation;
     stride = stride << 8;
     int checkOfs = (int)crystal + stride + 0x98;
 
     do {
         int col = 0;
         int patternIdx = row % 4 + (row / 4) * 6 + found;
-        int* patternPtr = (int*)(patternIdx * 0x20 + 0x278 + (int)this);
+        int* patternPtr = &grid[patternIdx * 8];
         int* cp = (int*)checkOfs;
         do {
             if (*cp != 0 && *patternPtr != -2) {
@@ -212,10 +212,10 @@ found_cell:
     do {
         int patternIdx = row % 4 + (row / 4) * 6 + found;
         int count = 4;
-        int* dest = (int*)(patternIdx * 0x20 + 0x278 + (int)this);
+        int* dest = &grid[patternIdx * 8];
         int zero = 0;
         do {
-            int* crys = *(int**)((char*)this + 0x6f8);
+            int* crys = (int*)currentPiece;
             if (*(int*)((int)crys + stride + 0x98) != zero) {
                 *dest = *(int*)((int)crys + 0x90);
             }
@@ -225,15 +225,15 @@ found_cell:
         } while (count != 0);
         row++;
     } while (row < 0x10);
-    *(int*)((char*)this + 0x6f8) = 0;
+    currentPiece = 0;
     return 1;
 }
 
 /* Function start: 0x419A10 */
 int SC_Roach::TryDropOnSource(int* msg)
 {
-    int* crystal = *(int**)((char*)this + 0x6f8);
-    int id = *(int*)((char*)crystal + 0x90);
+    int* crystal = (int*)currentPiece;
+    int id = ((NavCrystal*)crystal)->crystalId;
     int ofs = id * 0x2c;
     int* hitPtr = (int*)(ofs + (int)this);
     int mouseX = msg[7];
@@ -242,15 +242,15 @@ int SC_Roach::TryDropOnSource(int* msg)
         *(int*)((char*)hitPtr + 0x11c) <= msg[8] &&
         *(int*)((char*)hitPtr + 0x124) >= msg[8]);
     if (hitTest != 0) {
-        *(int*)((char*)crystal + 0x94) = 0;
-        Sprite* spr = *(Sprite**)((char*)crystal + 0x4d8);
+        ((NavCrystal*)crystal)->rotation = 0;
+        Sprite* spr = ((NavCrystal*)crystal)->sprite;
         if (spr != 0) {
             spr->ResetAnimation(0, 0);
         }
-        int* crys2 = *(int**)((char*)this + 0x6f8);
-        int id2 = *(int*)((char*)crys2 + 0x90);
-        *(int*)(id2 * 0x2c + (int)this + 0x140) = (int)crys2;
-        *(int*)((char*)this + 0x6f8) = 0;
+        int* crys2 = (int*)currentPiece;
+        int id2 = ((NavCrystal*)crys2)->crystalId;
+        sources[id2].crystalPtr = (int)crys2;
+        currentPiece = 0;
         bgSound->Play(7);
         return 1;
     }
@@ -262,7 +262,7 @@ int SC_Roach::TryDropOnSource(int* msg)
 int SC_Roach::PickFromGrid(int* msg)
 {
     int idx = 0;
-    int* cellPtr = (int*)((char*)this + 0x288);
+    int* cellPtr = &grid[4];
     int mouseX = msg[7];
 
     while (1) {
@@ -278,24 +278,24 @@ int SC_Roach::PickFromGrid(int* msg)
     }
 
     int orient = 0;
-    if (mouseX - *(int*)((char*)this + idx * 0x20 + 0x288) <=
-        msg[8] - *(int*)((char*)this + idx * 0x20 + 0x28c)) {
+    if (mouseX - grid[idx * 8 + 4] <=
+        msg[8] - grid[idx * 8 + 5]) {
         orient = 3;
     }
 
-    int crystalId = *(int*)((char*)this + (orient + idx * 8) * 4 + 0x278);
+    int crystalId = grid[orient + idx * 8];
     if (crystalId < 0) {
         return 0;
     }
 
-    int* gridPtr = (int*)((char*)this + 0x278);
-    *(int*)((char*)this + 0x6f8) = *(int*)((char*)this + crystalId * 4 + 0x6fc);
+    int* gridPtr = grid;
+    currentPiece = crystals[crystalId];
     int count = 0x24;
     do {
         int i = 4;
         int* cell = gridPtr;
         do {
-            if (*(int*)(*(int*)((char*)this + 0x6f8) + 0x90) == *cell) {
+            if (((NavCrystal*)currentPiece)->crystalId == *cell) {
                 *cell = -2;
             }
             cell++;
@@ -312,7 +312,7 @@ int SC_Roach::PickFromGrid(int* msg)
 /* Function start: 0x419BC0 */
 int SC_Roach::PickFromSource(int* msg)
 {
-    int* srcPtr = (int*)((char*)this + 0x128);
+    int* srcPtr = (int*)&sources[0].pickupLeft;
     int idx = 0;
     int mouseX = msg[7];
 
@@ -334,9 +334,8 @@ int SC_Roach::PickFromSource(int* msg)
     return 0;
 
 found:
-    int* assignPtr = (int*)((char*)this + idx * 0x2c + 0x140);
-    *(int*)((char*)this + 0x6f8) = *assignPtr;
-    *assignPtr = 0;
+    currentPiece = (int*)sources[idx].crystalPtr;
+    sources[idx].crystalPtr = 0;
     bgSound->Play(6);
     return 1;
 }
@@ -360,7 +359,7 @@ void SC_Roach::OnProcessEnd()
     cellH = 0x2a;
     startX = 0xce;
     startY = 0x40;
-    gridPtr = (int*)((char*)this + 0x288);
+    gridPtr = &grid[4];
 
     do {
         col = 0;
@@ -395,8 +394,8 @@ void SC_Roach::OnProcessEnd()
 
     progressObj = new Timer();
 
-    SendGameMessage(5, *(int*)((char*)this + 0x114),
-        *(int*)((char*)this + 0x90), *(int*)((char*)this + 0x94),
+    SendGameMessage(5, field_0x114,
+        handlerId, moduleParam,
         0x1b, 0, 0, 0, 0, 0);
 }
 
@@ -441,45 +440,45 @@ int SC_Roach::LBLParse(char* line)
                 sources[idx].hitboxRight = rc.right;
                 sources[idx].hitboxBottom = rc.bottom;
             }
-            sources[idx].field_0x20 = wh.field_0;
-            sources[idx].field_0x24 = wh.field_4;
+            sources[idx].sourceX = wh.field_0;
+            sources[idx].sourceY = wh.field_4;
         }
     } else if (strcmp(label, "PATTERN") == 0) {
         int idx;
         char p0[8], p1[8], p2[8], p3[8], p4[8], p5[8];
         sscanf(line, " %s %d %s %s %s %s %s %s", label, &idx, p0, p1, p2, p3, p4, p5);
 
-        int* dest = (int*)((char*)this + idx * 0xC0 + 0x278);
+        int* dest = &grid[idx * 48];
         if (p0[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p0[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p0[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p0[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)((char*)this + idx * 0xC0 + 0x298);
+        dest = &grid[idx * 48 + 8];
         if (p1[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p1[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p1[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p1[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)((char*)this + idx * 0xC0 + 0x2B8);
+        dest = &grid[idx * 48 + 16];
         if (p2[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p2[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p2[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p2[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)((char*)this + idx * 0xC0 + 0x2D8);
+        dest = &grid[idx * 48 + 24];
         if (p3[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p3[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p3[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p3[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)((char*)this + idx * 0xC0 + 0x2F8);
+        dest = &grid[idx * 48 + 32];
         if (p4[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p4[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p4[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p4[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)((char*)this + idx * 0xC0 + 0x318);
+        dest = &grid[idx * 48 + 40];
         if (p5[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p5[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p5[2] == '1') dest[2] = -1; else dest[2] = -2;
