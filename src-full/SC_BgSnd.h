@@ -16,6 +16,7 @@ public:
     SC_BgSnd();
     ~SC_BgSnd();
 
+    int Exit(SC_Message* msg);                // 0x439540
     void OnProcessEnd();                      // 0x439690
     void AddMessage(int soundHandle);         // 0x439740
     void SetVolume(int volume, int duration); // 0x4398C0

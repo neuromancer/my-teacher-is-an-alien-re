@@ -1,5 +1,6 @@
 #include "SC_BgSnd.h"
 #include "Sample.h"
+#include "SpriteAction.h"
 #include "GameState.h"
 #include "GameEngine.h"
 #include <mss.h>
@@ -28,6 +29,49 @@ SC_BgSnd::~SC_BgSnd() {
         snd = 0;
         sndId = 0;
     }
+}
+
+/* Function start: 0x439540 */
+int SC_BgSnd::Exit(SC_Message* msg) {
+    SpriteAction* action;
+
+    action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
+        return 0;
+    }
+
+    timer.Reset();
+
+    switch (action->instruction) {
+    case 7:
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        return 1;
+    default:
+        return 0;
+    case 0x10:
+        SetVolume(0, 0);
+        return 1;
+    case 0x11:
+        if (snd != 0) {
+            int vol = AIL_sample_volume(snd->m_sample);
+            snd->Fade(vol + 10, 0);
+            return 1;
+        }
+        break;
+    case 0x12:
+        if (snd != 0) {
+            int vol = AIL_sample_volume(snd->m_sample);
+            snd->Fade(vol - 10, 0);
+            return 1;
+        }
+        break;
+    case 0x13:
+        SetVolume(action->extra1, action->extra2);
+        return 1;
+    case 0x1b:
+        AddMessage(action->addressValue);
+    }
+    return 1;
 }
 
 /* Function start: 0x439690 */
