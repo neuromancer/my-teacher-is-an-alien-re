@@ -60,18 +60,3 @@ Handler8::~Handler8() {
     }
 }
 
-/* DEMO ONLY - ExpandPool does not exist as standalone function in full game */
-void* __stdcall ExpandPool(void** pool, int capacity, int itemSize)
-{
-    void** block;
-
-    block = (void**)new char[capacity * itemSize + 4];
-    *block = *pool;
-    *pool = block;
-    return block;
-}
-
-/* DEMO ONLY: CopyParserFields (0x406610) and InitMessageArray (0x406670) removed
-   - Neither exists in the full game binary
-   - CopyParserFields: declared in Parser.h but never called
-   - InitMessageArray: zero references */

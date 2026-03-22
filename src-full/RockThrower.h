@@ -58,7 +58,6 @@ public:
     int field_4;         // full 0xC0 (full game only)
     int field_5;         // full 0xC4 (full game only)
 
-    RockThrower();
     RockThrower(Parser* parent);    // full game ctor: 0x4274C0
     virtual ~RockThrower();
 
