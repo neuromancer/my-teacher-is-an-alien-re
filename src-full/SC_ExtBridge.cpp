@@ -207,33 +207,39 @@ extern InputManager* g_InputManager_0046aa08;
 /* Function start: 0x43A030 */
 void SC_ExtBridge::Update(int p1, int p2)
 {
-    Sprite* spr;
-    int mouseVal;
-    int idx;
-
-    if (handlerId == p2) {
-        if (DAT_0046ae70->Update() == 0) {
-            spr = *(Sprite**)((char*)g_Mouse_0046aa18 + 0x94);
-            if (spr != 0 && *(int*)((char*)spr + 0x98) != -1) {
-                int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
-                if (pMouse == 0) {
-                    mouseVal = 0;
-                } else {
-                    mouseVal = *pMouse * 3;
-                }
-                idx = mouseVal / *(int*)((char*)this + 0xB4);
-                if (idx < 0) {
-                    idx = 0;
-                } else if (idx > 2) {
-                    idx = 2;
-                }
-                if (spr != 0) {
-                    spr->ResetAnimation(DAT_0046bcd0[idx], 0);
-                }
-                g_Mouse_0046aa18->DrawCursor();
-            }
-        }
+    if (handlerId != p2) {
+        return;
     }
+    if (DAT_0046ae70->Update() != 0) {
+        return;
+    }
+    Sprite* spr = g_Mouse_0046aa18->m_sprite;
+    if (spr == 0) {
+        return;
+    }
+    if (spr->handle == -1) {
+        return;
+    }
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    int mouseVal;
+    if (pMouse != 0) {
+        mouseVal = pMouse->x * 3;
+    } else {
+        mouseVal = 0;
+    }
+    int idx = mouseVal / dim.field_0;
+    if (idx >= 0) {
+        if (idx > 2) {
+            idx = 2;
+        }
+    } else {
+        idx = 0;
+    }
+    int anim = DAT_0046bcd0[idx];
+    if (spr != 0) {
+        spr->ResetAnimation(anim, 0);
+    }
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x43A0C0 */
@@ -263,14 +269,14 @@ int SC_ExtBridge::AddMessage(SC_Message* msg)
 int SC_ExtBridge::Exit(SC_Message* msg)
 {
     int* msgData = (int*)msg;
-    if (msgData[0] != handlerId) {
+    if (handlerId != msgData[0]) {
         return 0;
     }
     int cmd = msgData[4];
-    if (cmd == 0) {
-        return 1;
-    }
-    if (cmd == 0x17) {
+    if (cmd != 0) {
+        if (cmd != 0x17) {
+            return 0;
+        }
         ShowError("SCMI_INSERT");
     }
     return 1;

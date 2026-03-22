@@ -19,6 +19,12 @@ extern "C" extern GameState* g_GameState_0046aa30;
 /* Function start: 0x4441E0 */
 SC_FakeRoom::SC_FakeRoom()
 {
+    hitboxLeft = 0;
+    hitboxTop = 0;
+    hitboxRight = 0;
+    hitboxBottom = 0;
+    memset(&stateFlags, 0, 6 * 4);
+    handlerId = 0x49;
 }
 
 /* Function start: 0x444380 */
@@ -47,15 +53,15 @@ int SC_FakeRoom::AddMessage(SC_Message* msg)
         }
     } else if (action->button1 > 1) {
         int mouseX = action->mousePos.field_0;
-        if ((stateFlags & 1) == 0) {
-            if (hitboxLeft <= mouseX && mouseX <= hitboxRight &&
-                hitboxTop <= action->mousePos.field_4 && action->mousePos.field_4 <= hitboxBottom) {
-                statusPtr[1] = 1;
+        if (stateFlags & 1) {
+            if (mouseX < 100 || mouseX > 0x21c) {
+                stateFlags = stateFlags & ~1;
+                bgSprite->ResetAnimation(1, 0);
+                return 1;
             }
-        } else if (mouseX < 100 || mouseX > 0x21c) {
-            stateFlags = stateFlags & ~1;
-            bgSprite->ResetAnimation(1, 0);
-            return 1;
+        } else if (hitboxLeft <= mouseX && hitboxRight >= mouseX &&
+                   hitboxTop <= action->mousePos.field_4 && hitboxBottom >= action->mousePos.field_4) {
+            statusPtr[1] = 1;
         }
     }
 
@@ -85,44 +91,52 @@ void SC_FakeRoom::RenderFrame()
         *statusPtr = 1;
     }
 
-    InputState* pMouse = g_InputManager_0046aa08->pMouse;
-
-    if ((*(char*)&stateFlags & 1) != 0) {
-        int state;
+    if ((stateFlags & 1) != 0) {
+        InputState* pMouse = g_InputManager_0046aa08->pMouse;
         if (pMouse == 0 || pMouse->x < 100) {
-            state = 4;
-        } else if (pMouse->x > 0x21c) {
-            state = 3;
+            Sprite* cursor = g_Mouse_0046aa18->m_sprite;
+            if (cursor != 0) {
+                cursor->ResetAnimation(4, 0);
+            }
+        } else if (pMouse == 0 || pMouse->x <= 0x21c) {
+            Sprite* cursor = g_Mouse_0046aa18->m_sprite;
+            if (cursor != 0) {
+                cursor->ResetAnimation(0, 0);
+            }
         } else {
-            state = 0;
-        }
-        Sprite* cursor = g_Mouse_0046aa18->m_sprite;
-        if (cursor != 0) {
-            cursor->ResetAnimation(state, 0);
+            Sprite* cursor = g_Mouse_0046aa18->m_sprite;
+            if (cursor != 0) {
+                cursor->ResetAnimation(3, 0);
+            }
         }
         g_Mouse_0046aa18->DrawCursor();
         return;
     }
 
-    int mouseX = 0;
-    int mouseY;
-    if (pMouse == 0) {
-        mouseY = 0;
-    } else {
-        mouseX = pMouse->y;
-        mouseY = pMouse->x;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    int mouseY = 0;
+    if (pMouse != 0) {
+        mouseY = pMouse->y;
     }
 
-    int state;
-    if (mouseY < hitboxLeft || hitboxRight < mouseY ||
-        mouseX < hitboxTop || hitboxBottom < mouseX) {
-        state = 0;
+    int mouseX;
+    if (pMouse != 0) {
+        mouseX = pMouse->x;
     } else {
-        state = 0x14;
+        mouseX = 0;
     }
-    Sprite* cursor = g_Mouse_0046aa18->m_sprite;
-    if (cursor != 0) {
-        cursor->ResetAnimation(state, 0);
+
+    if (hitboxLeft <= mouseX && mouseX <= hitboxRight &&
+        hitboxTop <= mouseY && mouseY <= hitboxBottom) {
+        Sprite* cursor = g_Mouse_0046aa18->m_sprite;
+        if (cursor != 0) {
+            cursor->ResetAnimation(0x14, 0);
+        }
+    } else {
+        Sprite* cursor = g_Mouse_0046aa18->m_sprite;
+        if (cursor != 0) {
+            cursor->ResetAnimation(0, 0);
+        }
     }
     g_Mouse_0046aa18->DrawCursor();
 }

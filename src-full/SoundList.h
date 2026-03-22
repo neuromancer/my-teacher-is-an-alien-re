@@ -11,10 +11,10 @@ public:
   int Play(int index);              // 0x425550
   void *Register(char *filename);
 
-private:
-  char **m_sounds;
+public:
   int m_count;
   Sample **m_field8;
+  char **m_sounds;
   short m_fieldc;
   short m_pad;
 };

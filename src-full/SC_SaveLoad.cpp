@@ -9,16 +9,17 @@
 /* Function start: 0x421C40 */
 SC_SaveLoad::SC_SaveLoad()
 {
-    memset(&timer, 0, 0x30);
+    int rect[4];
+
+    memset(&timer, 0, 0xC * 4);
     handlerId = 0x2F;
     timer.Reset();
 
     sprite = new Sprite("mainmenu\\save_yn.smk");
-    sprite->handle = 0;
+    sprite->priority = 0;
 
     palette = new Palette("mainmenu\\menu.col");
 
-    int rect[4];
     rect[0] = 0x9B;
     rect[1] = 0xFB;
     rect[2] = 0xEA;

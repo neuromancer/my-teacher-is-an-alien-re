@@ -3,8 +3,8 @@
 
 #include "SC_Combat.h"
 #include "SpriteAction.h"
-
-class Sprite;
+#include "Memory.h"
+#include "Sprite.h"
 
 // NavCrystal - Crystal piece for SC_Roach puzzle
 // Constructor: 0x418690, LBLParse: 0x418850
@@ -16,7 +16,8 @@ public:
     NavCrystal(int id);
     ~NavCrystal() {
         if (sprite != 0) {
-            delete sprite;
+            sprite->~Sprite();
+            FreeMemory(sprite);
             sprite = 0;
         }
     }

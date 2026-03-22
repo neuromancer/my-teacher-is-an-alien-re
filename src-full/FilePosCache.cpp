@@ -61,33 +61,43 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
 
         // Evict node at DAT_00469138
         int* evictNode = (int*)DAT_00469138;
-        FilePosEntry* evictEntry = (FilePosEntry*)evictNode[2];
+        int* poolPtr = (int*)DAT_00469134;
 
         // Unlink from list
-        if ((int*)pool[0] == evictNode) {
-            pool[0] = evictNode[0];
+        if ((int*)poolPtr[0] == evictNode) {
+            poolPtr[0] = evictNode[0];
         } else {
             int* prev = (int*)evictNode[1];
             prev[0] = evictNode[0];
         }
-        if ((int*)pool[1] == evictNode) {
-            pool[1] = evictNode[1];
+
+        int* evictPrev = (int*)evictNode[1];
+        if ((int*)poolPtr[1] == evictNode) {
+            poolPtr[1] = (int)evictPrev;
         } else {
             int* next = (int*)evictNode[0];
-            next[1] = evictNode[1];
+            next[1] = (int)evictPrev;
         }
 
         // Free entry data
-        if (evictEntry != 0) {
-            FreeMemory(evictEntry);
-            evictNode[2] = 0;
-        }
-        { volatile int n = 0; while (n-- != 0); }
+        int* entrySlot = &evictNode[2];
+        int edi = 0;
+        do {
+            int* entryData = (int*)*entrySlot;
+            if (entryData != 0) {
+                FreeMemory(entryData);
+                *entrySlot = 0;
+            }
+            entrySlot++;
+            int tmp = edi;
+            edi--;
+        } while (edi != 0);
 
         // Return node to free list
-        evictNode[0] = pool[3];
-        pool[3] = (int)evictNode;
-        pool[2]--;
+        int* reloadPool = (int*)DAT_00469134;
+        evictNode[0] = reloadPool[3];
+        reloadPool[3] = (int)evictNode;
+        reloadPool[2]--;
     }
 
     // Allocate new entry
@@ -101,14 +111,21 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
     }
 
     // Push to pool
-    int* freeList = &pool[3];
+    int* pool2 = (int*)DAT_00469134;
+    int* tailPtr = &pool2[1];
+    int* freeList = &pool2[3];
+    int tail = *tailPtr;
+
     if (*freeList == 0) {
-        int growBy = pool[5];
-        int* block = (int*)AllocateMemory(growBy * 12 + 4);
-        block[0] = pool[4];
-        pool[4] = (int)block;
-        int i = growBy - 1;
-        int* p = (int*)((char*)block + growBy * 12 - 8);
+        int* growPtr = &pool2[5];
+        int growBy = *growPtr;
+        int allocSize = growBy * 12 + 4;
+        int* block = (int*)AllocateMemory(allocSize);
+        block[0] = pool2[4];
+        pool2[4] = (int)block;
+        int i = *growPtr;
+        i--;
+        int* p = (int*)((char*)block + *growPtr * 12 - 8);
         while (i >= 0) {
             *p = *freeList;
             *freeList = (int)p;
@@ -118,19 +135,18 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
     }
 
     int* node = (int*)*freeList;
-    int* tail = (int*)pool[1];
     *freeList = node[0];
-    node[1] = (int)tail;
+    node[1] = tail;
     node[0] = 0;
-    pool[2]++;
+    pool2[2]++;
     node[2] = 0;
     { volatile int n = 0; while (n-- != 0); }
     node[2] = (int)newEntry;
 
-    if (tail != 0) {
-        tail[0] = (int)node;
+    if ((int*)tail != 0) {
+        *(int*)tail = (int)node;
     } else {
-        pool[0] = (int)node;
+        pool2[0] = (int)node;
     }
-    pool[1] = (int)node;
+    *tailPtr = (int)node;
 }

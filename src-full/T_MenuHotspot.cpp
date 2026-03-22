@@ -123,19 +123,19 @@ int T_MenuHotspot::LBLParse(char* line) {
         local_30 = 0;
         local_2c = 0;
         local_28 = 0;
-        int local_tmp = 0;
-        sscanf(line, " %s %d %d %d %d", local_50, &local_30, &local_2c, &local_28, &local_tmp);
-        bounds.left = local_30;
-        bounds.top = local_2c;
-        bounds.left = local_28;
-        bounds.top = local_tmp;
+        local_24 = 0;
+        sscanf(line, " %s %d %d %d %d", local_50, &local_30, &local_2c, &local_28, &local_24);
+        bounds.right = local_30;
+        bounds.bottom = local_2c;
+        field_A4 = local_28;
+        field_A8 = local_24;
     } else if (strcmp(local_50, "SPRITE") == 0) {
         cursor = new Sprite((char*)0);
         Parser::ProcessFile(cursor, this, (char*)0);
     } else if (strcmp(local_50, "MOUSE") == 0) {
-        sscanf(line, " %s %d", local_50, &bounds.top);
+        sscanf(line, "%s %d", local_50, &bounds.top);
     } else if (strcmp(local_50, "HSOUND") == 0) {
-        sscanf(line, " %s %d %d %d %d", local_50, &local_18, &local_1c, &local_24, &local_20);
+        sscanf(line, "%s %d %d %d %d", local_50, &local_18, &local_1c, &local_24, &local_20);
         *(int*)((char*)this + local_18 * 0xC + 0xB4) = local_1c;
         *(int*)((char*)this + local_18 * 0xC + 0xB0) = local_24;
         *(int*)((char*)this + local_18 * 0xC + 0xAC) = local_20;
@@ -173,18 +173,18 @@ int T_MenuHotspot::LBLParse(char* line) {
             ((Queue*)queue)->InsertAtCurrent(action);
         }
     } else if (strcmp(local_50, "SWITCHFOCUS") == 0) {
-        int result = sscanf(line, " %s %s %d %s %d", local_50, local_70, &local_18, local_90, &local_1c);
+        int result = sscanf(line, " %s %s %d %s", local_50, local_70, &local_18, local_90, &local_1c);
         if (result != 4) {
-            ShowError("Error in ThotsMen.cpp: %s in parse file is incomplete");
+            ShowError("Error in ThotsMen.cpp: %s - in parse file is missing parameters", line);
         }
         if (field_1A0 == 0) {
             field_1A0 = (int)new Queue();
         }
-        {
-            int key1 = g_StringTable_0046aa34->FindState((char*)local_70);
-            int key2 = g_StringTable_0046aa34->FindState((char*)local_90);
-            action = new SpriteAction(key1, local_18, key2, local_1c, 4, 0, 0, 0, 0, 0);
-        }
+        action = new SpriteAction(
+            g_StringTable_0046aa34->FindState((char*)local_70),
+            local_18,
+            g_StringTable_0046aa34->FindState((char*)local_90),
+            local_1c, 4, 0, 0, 0, 0, 0);
         queue = (int*)field_1A0;
         if (action == 0) {
             ShowError("queue fault 0101");

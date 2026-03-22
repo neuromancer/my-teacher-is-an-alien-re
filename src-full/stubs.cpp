@@ -114,6 +114,15 @@ void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 extern "C" {
 // FUN_0044e530 = GetSoundFilename in string.cpp (callers updated)
 // FUN_004265a0 = ShowLoadingScreen — all callers already use the proper name
+
+/* Function start: 0x449B60 */
+static char* g_DirectionChars = "NSEWUD";
+char GetDirectionChar(int dir) {
+    if (dir < 0 || dir > 5) {
+        ShowError("Invalid direction %d", dir);
+    }
+    return g_DirectionChars[dir];
+}
 } // extern "C"
 
 // ============================================================================

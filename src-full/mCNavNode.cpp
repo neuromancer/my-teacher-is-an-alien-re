@@ -15,6 +15,9 @@
 // Direction characters (shared with mCNavigator)
 extern char* g_DirectionChars;
 
+// FUN_449B60 - GetDirectionChar: returns direction character for bearing index
+extern "C" char GetDirectionChar(int dir);
+
 // Demo version of FindCharIndex (takes char*) — used by demo SetNavLink
 int FindCharIndex(char* param_1)
 {
@@ -62,11 +65,10 @@ mCNavNode::~mCNavNode()
 /* Function start: 0x44B7E0 */
 void mCNavNode::CallActivateNeighbor()
 {
-    int* gs = (int*)DAT_0046ae70;
-    int dir = gs[0x90 / 4];
+    int dir = DAT_0046ae70->bearing;
     mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
     if (neighbor == 0) {
-        ShowError("Need Node Info for %s bearing %c", nodeName, g_DirectionChars[dir]);
+        ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));
     }
     neighbor->virtual7();
 }
@@ -74,11 +76,10 @@ void mCNavNode::CallActivateNeighbor()
 /* Function start: 0x44B830 */
 int mCNavNode::CallActivate()
 {
-    int* gs = (int*)DAT_0046ae70;
-    int dir = gs[0x90 / 4];
+    int dir = DAT_0046ae70->bearing;
     mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
     if (neighbor == 0) {
-        ShowError("Need Node Info for %s bearing %c", nodeName, g_DirectionChars[dir]);
+        ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));
     }
     return neighbor->Activate();
 }
@@ -86,11 +87,10 @@ int mCNavNode::CallActivate()
 /* Function start: 0x44B880 */
 int mCNavNode::CallGetNextNode()
 {
-    int* gs = (int*)DAT_0046ae70;
-    int dir = gs[0x90 / 4];
+    int dir = DAT_0046ae70->bearing;
     mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
     if (neighbor == 0) {
-        ShowError("Need Node Info for %s bearing %c", nodeName, g_DirectionChars[dir]);
+        ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));
     }
     return neighbor->GetNextNode();
 }

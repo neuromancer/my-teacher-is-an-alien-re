@@ -8,7 +8,7 @@
 struct FilePosEntry {
     int accessCount;    // +0x00
     char filename[32];  // +0x04
-    char key[32];       // +0x24
+    char key[36];       // +0x24
     int posLo;          // +0x48
     int posHi;          // +0x4C
 };

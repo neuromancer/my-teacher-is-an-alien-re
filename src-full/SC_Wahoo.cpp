@@ -74,20 +74,7 @@ extern "C" extern GameState* g_GameState_0046aa30;
 
 /* Function start: 0x437830 */
 SC_Wahoo::SC_Wahoo() {
-    field_CC = 0;
-    field_D0 = 0;
-    field_D4 = 0;
-    field_D8 = 0;
-    field_134 = 0;
-    field_138 = 0;
-    field_144 = 0;
-    field_148 = 0;
-    field_14C = 0;
-    field_150 = 0;
-    field_154 = 0;
-    field_158 = 0;
-    field_15C = 0;
-    field_160 = 0;
+    // Rect/SlimeDim constructors zero their fields automatically via SEH
     memset(&field_A8, 0, 0xC0);
     handlerId = 0x3D;
 }
@@ -276,8 +263,8 @@ int SC_Wahoo::AddMessage(SC_Message* msg) {
     m[4] = 0;
 
     if (m[9] >= 1) {
-        if (m[7] < field_CC || field_D4 < m[7] ||
-            m[8] < field_D0 || field_D8 < m[8]) {
+        if (m[7] < hitbox_CC.left || hitbox_CC.right < m[7] ||
+            m[8] < hitbox_CC.top || hitbox_CC.bottom < m[8]) {
             *(int*)((int)DAT_0046bbfc + 0xB8) = *(int*)((int)DAT_0046bbfc + 0xB8) & 0xFFFFFFFE;
         } else {
             *(int*)((int)DAT_0046bbfc + 0xB8) = *(int*)((int)DAT_0046bbfc + 0xB8) | 1;
@@ -321,10 +308,10 @@ int SC_Wahoo::Exit(SC_Message* msg) {
 void SC_Wahoo::OnProcessEnd() {
     int iVar1;
 
-    field_CC = 0;
-    field_D0 = 200;
-    field_D4 = 0x140;
-    field_D8 = 0xF0;
+    hitbox_CC.left = 0;
+    hitbox_CC.top = 200;
+    hitbox_CC.right = 0x140;
+    hitbox_CC.bottom = 0xF0;
 
     if (field_B4 != 0) {
         field_B4->ResetAnimation(0, 0);
@@ -340,24 +327,24 @@ void SC_Wahoo::OnProcessEnd() {
     field_C0->ResetAnimation(1, 0);
 
     if (field_140 != 0) {
-        field_144 = 0x116;
-        field_148 = 0x40;
-        field_14C = 0x121;
-        field_150 = 0x4B;
-        field_154 = 0x11;
-        field_158 = 0x15;
-        field_15C = 0x79;
+        hitbox_144.left = 0x116;
+        hitbox_144.top = 0x40;
+        hitbox_144.right = 0x121;
+        hitbox_144.bottom = 0x4B;
+        hitbox_154.left = 0x11;
+        hitbox_154.top = 0x15;
+        hitbox_154.right = 0x79;
     } else {
-        field_144 = 0x1F;
-        field_148 = 0x40;
-        field_14C = 0x2A;
-        field_150 = 0x4B;
-        field_154 = 0xBB;
-        field_158 = 0x15;
-        field_15C = 0x12F;
+        hitbox_144.left = 0x1F;
+        hitbox_144.top = 0x40;
+        hitbox_144.right = 0x2A;
+        hitbox_144.bottom = 0x4B;
+        hitbox_154.left = 0xBB;
+        hitbox_154.top = 0x15;
+        hitbox_154.right = 0x12F;
     }
 
-    field_160 = 0x91;
+    hitbox_154.bottom = 0x91;
 
     if (g_InputManager_0046aa08 != 0) {
         (g_InputManager_0046aa08)->Refresh(1);
@@ -368,7 +355,7 @@ void SC_Wahoo::OnProcessEnd() {
         if (*(int*)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
             iVar1 = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
-        field_13C->ResetAnimation(iVar1 / (field_134 / 5), 0);
+        field_13C->ResetAnimation(iVar1 / (dim_134.field_0 / 5), 0);
     }
 
     if (field_128 != 0) {
@@ -456,8 +443,8 @@ void SC_Wahoo::Update(int param1, int param2) {
         cursorX = cursorData[0];
     }
 
-    if (cursorX < field_CC || field_D4 < cursorX ||
-        cursorY < field_D0 || field_D8 < cursorY) {
+    if (cursorX < hitbox_CC.left || hitbox_CC.right < cursorX ||
+        cursorY < hitbox_CC.top || hitbox_CC.bottom < cursorY) {
         spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
         if (spr == 0) goto label_done;
         frame = 0xe;
@@ -483,7 +470,7 @@ label_done:
         if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
             cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
-        field_13C->ResetAnimation(cursorX / (field_134 / 3) + 5, 0);
+        field_13C->ResetAnimation(cursorX / (dim_134.field_0 / 3) + 5, 0);
     }
 
     spr = (Sprite*)field_13C;
@@ -492,7 +479,7 @@ label_done:
         if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
             cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
-        field_13C->ResetAnimation(cursorX / (field_134 / 5), 0);
+        field_13C->ResetAnimation(cursorX / (dim_134.field_0 / 5), 0);
     }
 }
 
@@ -668,16 +655,16 @@ int SC_Wahoo::FUN_438F10(int param_1) {
 
     iVar7 = *(int*)(param_1 + 0x120);
     int bVar1;
-    if (iVar7 < field_144 || field_14C < iVar7 ||
-        *(int*)(param_1 + 0x124) < field_148 || field_150 < *(int*)(param_1 + 0x124)) {
+    if (iVar7 < hitbox_144.left || hitbox_144.right < iVar7 ||
+        *(int*)(param_1 + 0x124) < hitbox_144.top || hitbox_144.bottom < *(int*)(param_1 + 0x124)) {
         bVar1 = 0;
     } else {
         bVar1 = 1;
     }
 
     if (!bVar1) {
-        if (iVar7 < field_154 || field_15C < iVar7 ||
-            *(int*)(param_1 + 0x124) < field_158 || field_160 < *(int*)(param_1 + 0x124)) {
+        if (iVar7 < hitbox_154.left || hitbox_154.right < iVar7 ||
+            *(int*)(param_1 + 0x124) < hitbox_154.top || hitbox_154.bottom < *(int*)(param_1 + 0x124)) {
             bVar1 = 0;
         } else {
             bVar1 = 1;
@@ -686,8 +673,8 @@ int SC_Wahoo::FUN_438F10(int param_1) {
 
         {
         unsigned int uVar2 = field_C4->CheckHit(
-            iVar7 - field_154,
-            *(int*)(param_1 + 0x124) - field_158);
+            iVar7 - hitbox_154.left,
+            *(int*)(param_1 + 0x124) - hitbox_154.top);
 
         if ((int)uVar2 < 1 || 3 < (int)uVar2 ||
             (pvVar6 = *(void**)((int)this + uVar2 * 4 + 0xb4),

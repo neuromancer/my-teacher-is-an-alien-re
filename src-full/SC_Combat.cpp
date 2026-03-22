@@ -177,15 +177,13 @@ int SC_Combat::Exit(SC_Message* msg) {
     if (msgData[0] != handlerId) {
         return 0;
     }
-    int cmd = msgData[4];
-    if (cmd == 0) {
+    switch (msgData[4]) {
+    case 0:
         return 1;
-    }
-    if (cmd == 7) {
+    case 7:
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         return 1;
-    }
-    if (cmd == 0x17) {
+    case 0x17:
         ShowError("SCMI_INSERT");
         return 1;
     }

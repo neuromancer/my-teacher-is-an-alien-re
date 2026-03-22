@@ -2,6 +2,7 @@
 #include <new.h>
 #include "SC_Question.h"
 #include "SpriteAction.h"
+#include "InvSlotItem.h"
 #include "Sprite.h"
 #include "Palette.h"
 #include "SoundList.h"
@@ -414,62 +415,69 @@ int SC_Roach::LBLParse(char* line)
         barSprite = new Sprite((char*)0);
         Parser::ProcessFile(barSprite, this, (char*)0);
     } else if (strcmp(label, "SOURCEPICKUP") == 0) {
-        int idx, left, top, right, bottom;
-        left = 0; top = 0; right = 0; bottom = 0;
-        sscanf(line, " %s %d %d %d %d %d", label, &idx, &left, &top, &right, &bottom);
-        sources[idx].pickupLeft = left;
-        sources[idx].pickupTop = top;
-        sources[idx].pickupRight = right;
-        sources[idx].pickupBottom = bottom;
+        int idx;
+        {
+            Rect rc;
+            sscanf(line, " %s %d %d %d %d %d", label, &idx, &rc.left, &rc.top, &rc.right, &rc.bottom);
+            sources[idx].pickupLeft = rc.left;
+            sources[idx].pickupTop = rc.top;
+            sources[idx].pickupRight = rc.right;
+            sources[idx].pickupBottom = rc.bottom;
+        }
     } else if (strcmp(label, "SOURCE") == 0) {
         int idx;
-        int left = 0, top = 0, right = 0, bottom = 0;
-        int w = 0, h = 0;
-        sscanf(line, " %s %d %d %d %d %d %d %d", label, &idx, &left, &top, &right, &bottom, &w, &h);
-        sources[idx].hitboxLeft = left;
-        sources[idx].hitboxTop = top;
-        sources[idx].hitboxRight = right;
-        sources[idx].hitboxBottom = bottom;
-        sources[idx].field_0x20 = w;
-        sources[idx].field_0x24 = h;
+        {
+            SlimeDim wh;
+            {
+                Rect rc;
+                sscanf(line, " %s %d %d %d %d %d %d %d", label, &idx, &rc.left, &rc.top, &rc.right, &rc.bottom, &wh.field_0, &wh.field_4);
+                sources[idx].hitboxLeft = rc.left;
+                sources[idx].hitboxTop = rc.top;
+                sources[idx].hitboxRight = rc.right;
+                sources[idx].hitboxBottom = rc.bottom;
+            }
+            sources[idx].field_0x20 = wh.field_0;
+            sources[idx].field_0x24 = wh.field_4;
+        }
     } else if (strcmp(label, "PATTERN") == 0) {
         int idx;
         char p0[8], p1[8], p2[8], p3[8], p4[8], p5[8];
         sscanf(line, " %s %d %s %s %s %s %s %s", label, &idx, p0, p1, p2, p3, p4, p5);
+
         int* dest = (int*)((char*)this + idx * 0xC0 + 0x278);
-        dest[0] = (p0[0] == '1') ? -1 : -2;
-        dest[1] = (p0[1] == '1') ? -1 : -2;
-        dest[2] = (p0[2] == '1') ? -1 : -2;
-        dest[3] = (p0[3] == '1') ? -1 : -2;
+        if (p0[0] == '1') dest[0] = -1; else dest[0] = -2;
+        if (p0[1] == '1') dest[1] = -1; else dest[1] = -2;
+        if (p0[2] == '1') dest[2] = -1; else dest[2] = -2;
+        if (p0[3] == '1') dest[3] = -1; else dest[3] = -2;
 
         dest = (int*)((char*)this + idx * 0xC0 + 0x298);
-        dest[0] = (p1[0] == '1') ? -1 : -2;
-        dest[1] = (p1[1] == '1') ? -1 : -2;
-        dest[2] = (p1[2] == '1') ? -1 : -2;
-        dest[3] = (p1[3] == '1') ? -1 : -2;
+        if (p1[0] == '1') dest[0] = -1; else dest[0] = -2;
+        if (p1[1] == '1') dest[1] = -1; else dest[1] = -2;
+        if (p1[2] == '1') dest[2] = -1; else dest[2] = -2;
+        if (p1[3] == '1') dest[3] = -1; else dest[3] = -2;
 
         dest = (int*)((char*)this + idx * 0xC0 + 0x2B8);
-        dest[0] = (p2[0] == '1') ? -1 : -2;
-        dest[1] = (p2[1] == '1') ? -1 : -2;
-        dest[2] = (p2[2] == '1') ? -1 : -2;
-        dest[3] = (p2[3] == '1') ? -1 : -2;
+        if (p2[0] == '1') dest[0] = -1; else dest[0] = -2;
+        if (p2[1] == '1') dest[1] = -1; else dest[1] = -2;
+        if (p2[2] == '1') dest[2] = -1; else dest[2] = -2;
+        if (p2[3] == '1') dest[3] = -1; else dest[3] = -2;
 
         dest = (int*)((char*)this + idx * 0xC0 + 0x2D8);
-        dest[0] = (p3[0] == '1') ? -1 : -2;
-        dest[1] = (p3[1] == '1') ? -1 : -2;
-        dest[2] = (p3[2] == '1') ? -1 : -2;
-        dest[3] = (p3[3] == '1') ? -1 : -2;
+        if (p3[0] == '1') dest[0] = -1; else dest[0] = -2;
+        if (p3[1] == '1') dest[1] = -1; else dest[1] = -2;
+        if (p3[2] == '1') dest[2] = -1; else dest[2] = -2;
+        if (p3[3] == '1') dest[3] = -1; else dest[3] = -2;
 
         dest = (int*)((char*)this + idx * 0xC0 + 0x2F8);
-        dest[0] = (p4[0] == '1') ? -1 : -2;
-        dest[1] = (p4[1] == '1') ? -1 : -2;
-        dest[2] = (p4[2] == '1') ? -1 : -2;
-        dest[3] = (p4[3] == '1') ? -1 : -2;
+        if (p4[0] == '1') dest[0] = -1; else dest[0] = -2;
+        if (p4[1] == '1') dest[1] = -1; else dest[1] = -2;
+        if (p4[2] == '1') dest[2] = -1; else dest[2] = -2;
+        if (p4[3] == '1') dest[3] = -1; else dest[3] = -2;
 
         dest = (int*)((char*)this + idx * 0xC0 + 0x318);
-        dest[0] = (p5[0] == '1') ? -1 : -2;
-        dest[1] = (p5[1] == '1') ? -1 : -2;
-        dest[2] = (p5[2] == '1') ? -1 : -2;
+        if (p5[0] == '1') dest[0] = -1; else dest[0] = -2;
+        if (p5[1] == '1') dest[1] = -1; else dest[1] = -2;
+        if (p5[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p5[3] == '1') {
             dest[3] = -1;
         } else {
@@ -478,18 +486,12 @@ int SC_Roach::LBLParse(char* line)
     } else if (strcmp(label, "CRYSTAL") == 0) {
         int idx;
         sscanf(line, " %s %d", label, &idx);
-        // Destroy old crystal if it exists
-        if (crystals[idx] != 0) {
-            *(int*)crystals[idx] = 0x461320;  // set vtable
-            Sprite* spr = *(Sprite**)((char*)crystals[idx] + 0x4d8);
-            if (spr != 0) {
-                delete (Sprite*)spr;
-                *(int*)((char*)crystals[idx] + 0x4d8) = 0;
-            }
-            FreeMemory(crystals[idx]);
+        NavCrystal* crystal = (NavCrystal*)crystals[idx];
+        if (crystal != 0) {
+            crystal->~NavCrystal();
+            FreeMemory(crystal);
             crystals[idx] = 0;
         }
-        // Allocate new crystal (0x4E0 bytes)
         void* mem = operator new(0x4E0);
         NavCrystal* obj = 0;
         if (mem != 0) {

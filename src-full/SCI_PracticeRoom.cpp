@@ -40,6 +40,8 @@ extern "C" void WriteToLog(const char* format, ...);
 
 /* Function start: 0x42A8D0 */
 SCI_PracticeRoom::SCI_PracticeRoom() {
+    memset(field_A8, 0, 10 * 4);
+    handlerId = 0x2B;
 }
 
 SCI_PracticeRoom::~SCI_PracticeRoom() {

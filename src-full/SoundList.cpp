@@ -58,24 +58,22 @@ SoundList::~SoundList() {
 /* Function start: 0x425550 */
 int SoundList::Play(int index) {
     int i;
-    int* soundIds;
-    int* samples;
 
-    if (index < 0 || index > m_count - 1) {
+    if (index < 0 || m_count - 1 < index) {
         return 0;
     }
-    soundIds = (int*)m_field8;
-    samples = (int*)m_sounds;
-    if (soundIds[index] != 0) {
+    if (m_sounds[index] != 0) {
         i = 0;
-        while (i < m_count) {
-            if (soundIds[i] == soundIds[index] && samples[i] != 0) {
-                ((Sample*)samples[i])->~Sample();
-            }
-            i++;
+        if (m_count > 0) {
+            do {
+                if (m_sounds[i] == m_sounds[index] && m_field8[i] != 0) {
+                    m_field8[i]->~Sample();
+                }
+                i++;
+            } while (m_count > i);
         }
     }
-    Sample* smp = (Sample*)samples[index];
+    Sample* smp = m_field8[index];
     if (smp != 0) {
         smp->Play(100, 1);
     }

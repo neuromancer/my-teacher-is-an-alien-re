@@ -16,11 +16,12 @@ struct GSHashEntry {
 };
 
 // Hash function for label strings (from original binary)
-static unsigned int HashLabel(char* str) {
+static __inline unsigned int HashLabel(char* str) {
     unsigned int hash = 0;
-    while (*str) {
-        hash = hash * 33 + (unsigned char)*str;
-        str++;
+    char* p = str;
+    while (*p) {
+        hash = hash * 33 + *p;
+        p++;
     }
     return hash;
 }
@@ -237,18 +238,24 @@ int GameState::LBLParse(char* line)
     } else if (strcmp(keyword, "LABEL") == 0) {
         numParsed = sscanf(line, "%s %d %s %d", keyword, &index, labelName, &defaultValue);
 
-        // Allocate and copy label string
-        char* newLabel = new char[strlen(labelName) + 1];
+        // Get pool and allocate+copy label string
+        int* pool = (int*)stateLabels;
+        char* newLabel = (char*)AllocateMemory(strlen(labelName) + 1);
         strcpy(newLabel, labelName);
 
-        // Hash the label string and insert into ObjectPool hash table
-        ObjectPool* pool = (ObjectPool*)stateLabels;
-        unsigned int h = HashLabel(newLabel) % pool->size;
+        // Inline hash computation (MOVSX pattern)
+        char* p = newLabel;
+        unsigned int hash = 0;
+        while (*p) {
+            hash = hash * 33 + *p;
+            p++;
+        }
+        unsigned int h = hash % (unsigned int)pool[1];
 
         // Search for existing entry with same label
         GSHashEntry* entry = 0;
-        if (pool->memory != 0) {
-            entry = ((GSHashEntry**)pool->memory)[h];
+        if ((int*)pool[0] != 0) {
+            entry = ((GSHashEntry**)pool[0])[h];
             while (entry != 0) {
                 if (strcmp(entry->label, newLabel) == 0) break;
                 entry = entry->next;
@@ -256,16 +263,51 @@ int GameState::LBLParse(char* line)
         }
 
         if (entry == 0) {
-            // Not found - allocate new entry
-            if (pool->memory == 0) {
-                pool->MemoryPool_Allocate(pool->size, 1);
+            // Not found - allocate bucket array if needed
+            if ((int*)pool[0] == 0) {
+                int numBuckets = pool[1];
+                int* buckets = (int*)AllocateMemory(numBuckets * 4);
+                int cnt = numBuckets * 4;
+                cnt >>= 2;
+                memset(buckets, 0, numBuckets * 4);
+                pool[0] = (int)buckets;
+                pool[1] = numBuckets;
             }
-            entry = (GSHashEntry*)pool->Allocate_2();
+
+            // Allocate from free list, grow if needed
+            if (pool[3] == 0) {
+                int growBy = pool[5];
+                int* block = (int*)AllocateMemory(growBy * 16 + 4);
+                block[0] = pool[4];
+                pool[4] = (int)block;
+                int cnt = growBy;
+                int stride = cnt;
+                cnt--;
+                int* ptr = (int*)((char*)block + stride * 16 - 12);
+                while (cnt >= 0) {
+                    ptr[0] = pool[3];
+                    pool[3] = (int)ptr;
+                    ptr -= 4;
+                    cnt--;
+                }
+            }
+
+            // Pop entry from free list
+            entry = (GSHashEntry*)pool[3];
+            pool[3] = (int)entry->next;
+            pool[2]++;
+            entry->label = 0;
+            { volatile int n = 0; while (n-- != 0); }
+            entry->stateIndex = 0;
+            { volatile int n = 0; while (n-- != 0); }
             entry->bucketIndex = h;
-            entry->next = ((GSHashEntry**)pool->memory)[h];
-            ((GSHashEntry**)pool->memory)[h] = entry;
+            entry->label = newLabel;
+            int* buckets = (int*)pool[0];
+            entry->next = (GSHashEntry*)buckets[h];
+            buckets = (int*)pool[0];
+            buckets[h] = (int)entry;
         }
-        entry->label = newLabel;
+
         entry->stateIndex = index;
 
         if (numParsed > 3) {
@@ -359,31 +401,32 @@ int GameState::FindState(char* stateName)
 
 /* Function start: 0x433AE0 */
 int GameState::FindLabel(char* name) {
-    ObjectPool* pool = (ObjectPool*)stateLabels;
+    int* pool = (int*)stateLabels;
 
-    // Inline hash: hash = hash * 33 + char
-    unsigned int hash = 0;
+    // Inline hash: hash = hash * 33 + char (MOVSX pattern)
     char* p = name;
+    unsigned int hash = 0;
     while (*p) {
-        hash = hash * 33 + (unsigned char)*p;
+        hash = hash * 33 + *p;
         p++;
     }
 
-    unsigned int h = hash % pool->size;
+    int h;
+    h = hash % (unsigned int)pool[1];
 
-    GSHashEntry* entry = 0;
-    if (pool->memory != 0) {
-        entry = ((GSHashEntry**)pool->memory)[h];
+    int* entry = 0;
+    if ((int*)pool[0] != 0) {
+        entry = (int*)((int*)pool[0])[h];
         while (entry != 0) {
-            if (strcmp(entry->label, name) == 0) break;
-            entry = entry->next;
+            if (strcmp((char*)entry[2], name) == 0) break;
+            entry = (int*)entry[0];
         }
     }
 
     if (entry == 0) {
         ShowError("GameState::StateIndex()-Invalid gamestate = '%s'", name);
     } else {
-        h = entry->stateIndex;
+        h = entry[3];
     }
     return h;
 }

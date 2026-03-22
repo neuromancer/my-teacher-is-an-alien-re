@@ -3,9 +3,21 @@
 
 #include <string.h>
 
-// SlimeDim - generic 8-byte coordinate/dimension pair, destructor at 0x401120.
-// The name is legacy; the type is also used for mouse coordinates.
-// Inline constructor triggers SEH in containing class constructors.
+// SlimeDim - generic 8-byte coordinate/dimension pair.
+// Destructor: 0x401120 (empty/trivial, only reached via SEH unwind funclets).
+// Constructor: inline, zeros both fields.
+//
+// IMPORTANT - DO NOT CHANGE constructor/destructor presence:
+// Evidence from original binary:
+//   - SEH funclets (e.g. 0x444B5B, 0x407503) JMP to 0x401120 with ECX=this+SlimeDim_offset
+//   - SpriteAction constructor (0x444A40) has 1 SEH state for mousePos (SlimeDim at +0x1C)
+//   - Classes with multiple SlimeDim members (SC_FireAlarm, EngineInfoParser) have
+//     incrementing SEH states per member, proving each is constructed individually
+//   - 0x401120 is never CALLed directly, only via SEH unwind — body is likely just RET
+//
+// Both constructor AND destructor must exist to generate correct SEH frames.
+// Removing either breaks similarity for: SpriteAction, EngineInfoParser, SC_FireAlarm,
+// SC_Roach, and any class containing SlimeDim members.
 struct SlimeDim {
     int field_0;
     int field_4;

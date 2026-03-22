@@ -581,12 +581,13 @@ extern "C" GameState* g_GameState_0046aa30;
 /* Function start: 0x44CCF0 */
 int Sprite::Do(int x, int y, double scale) {
     int done;
+    int skipAnim;
     Range* cur;
 
     if (handle == -1) {
         return 1;
     }
-    int skipAnim = 0;
+    skipAnim = 0;
     done = 0;
     if (CheckConditions() == 0) {
         return 1;
@@ -599,48 +600,50 @@ int Sprite::Do(int x, int y, double scale) {
     cur = &ranges[handle];
 
     if (cur->start == cur->end) {
-        if ((flags & 4) == 0) {
+        if ((flags & 4) != 0) {
+            skipAnim = 0;
+            flags &= ~4;
+        } else {
+            int hasLimit;
             skipAnim = 1;
-            int counter = cur->field_8;
-            cur->field_8 = counter + 1;
-            int hasLimit = 1;
-            if (cur->field_C == 0 || counter + 1 < cur->field_C) {
+            cur->field_8 = cur->field_8 + skipAnim;
+            if (cur->field_C == 0 || cur->field_8 < cur->field_C) {
                 hasLimit = 0;
+            } else {
+                hasLimit = skipAnim;
             }
             if (hasLimit) {
                 cur->field_8 = 0;
                 done = 1;
             }
-        } else {
-            skipAnim = 0;
-            flags &= ~4;
         }
     }
 
     if (!skipAnim) {
         animation_data->DoFrame();
-        if (animation_data == 0) {
-            if (cur->end != 1) {
+        if (animation_data != 0) {
+            if (animation_data->smk->FrameNum - cur->end != -1) {
                 goto do_nextframe;
             }
         } else {
-            if (animation_data->smk->FrameNum - cur->end != -1) {
+            if (cur->end != 1) {
                 goto do_nextframe;
             }
         }
         {
-            int counter = cur->field_8;
-            cur->field_8 = counter + 1;
-            int hasLimit = 1;
-            if (cur->field_C == 0 || counter + 1 < cur->field_C) {
+            int hasLimit;
+            cur->field_8 = cur->field_8 + 1;
+            if (cur->field_C == 0 || cur->field_8 < cur->field_C) {
                 hasLimit = 0;
+            } else {
+                hasLimit = 1;
             }
             if (hasLimit) {
                 cur->field_8 = 0;
-                if ((flags & 1) == 0) {
-                    animation_data->GotoFrame(cur->start);
-                } else {
+                if ((flags & 0x100) != 0) {
                     animation_data->NextFrame();
+                } else {
+                    animation_data->GotoFrame(cur->start);
                 }
                 if ((flags & 1) == 0) {
                     done = 1;
@@ -656,43 +659,50 @@ after_anim:
         ;
     }
 
-    if ((flags & 0x80) == 0) {
-        if ((flags & 2) == 0) {
-            if ((flags & 8) == 0) {
-                if (animation_data == 0) {
-                    y = y - 1;
-                } else {
-                    y = y + animation_data->targetBuffer->height - 1;
-                }
-            } else {
-                if (animation_data == 0) {
-                    y = y + (int)(-scale);
-                } else {
-                    y = y + (int)((animation_data->targetBuffer->height - 1) * scale);
-                }
-            }
-        }
+    if ((flags & 0x80) != 0) {
+        return done;
+    }
 
-        int mode = 0;
-        if ((flags & 8) == 0) {
-            if ((flags & 0x40) == 0) {
-                if ((flags & 0x200) != 0) {
-                    mode = 1;
-                }
+    if ((flags & 2) == 0) {
+        if ((flags & 8) != 0) {
+            if (animation_data != 0) {
+                y = y + (int)((animation_data->targetBuffer->height - 1) * scale);
             } else {
-                mode = 3 - ((flags & 0x200) == 0);
+                y = y + (int)(-scale);
             }
         } else {
-            mode = 5 - ((flags & 0x40) == 0);
+            if (animation_data != 0) {
+                y = y + animation_data->targetBuffer->height - 1;
+            } else {
+                y = y - 1;
+            }
+        }
+    }
+
+    {
+        int mode = 0;
+        if ((flags & 8) != 0) {
+            if (flags & 0x40) {
+                mode = 5;
+            } else {
+                mode = 4;
+            }
+        } else if ((flags & 0x40) != 0) {
+            if (flags & 0x200) {
+                mode = 3;
+            } else {
+                mode = 2;
+            }
+        } else if ((flags & 0x200) != 0) {
+            mode = 1;
         }
 
         VBuffer* vb = animation_data->targetBuffer;
         g_ZBufferManager_0046aa24->DrawVBufferRegion(vb, priority, x, y, mode, scale,
             vb->clip_x1, vb->clip_y1, vb->clip_x2, vb->clip_y2);
 
-        return -((flags & 1) == 0) & done;
+        return ((flags & 1) != 1) & done;
     }
-    return done;
 }
 
 /* Function start: 0x44D210 */

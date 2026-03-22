@@ -30,7 +30,8 @@ public:
     Sprite* sprite;                 // 0x90
     GlyphRect bounds;               // 0x94 (16 bytes: left, top, right, bottom)
     int field_A4;                   // 0xA4
-    int data[58];                   // 0xA8-0x198
+    int field_A8;                   // 0xA8
+    int data[60];                   // 0xAC-0x19B
     Sprite* cursor;                 // 0x19C
     int field_1A0;                  // 0x1A0
     int field_1A4;                  // 0x1A4

@@ -2,8 +2,9 @@
 #define SC_WAHOO_H
 
 #include "Handler.h"
+#include "InvSlotItem.h"
+#include "SpriteAction.h"
 
-class SpriteAction;
 class Palette;
 class Sprite;
 class VBuffer;
@@ -44,10 +45,7 @@ public:
     Sprite* field_C0;      // 0xC0 - Sprite*
     VBuffer* field_C4;      // 0xC4 - unknown object (dtor 0x410fd0)
     TimeOut* field_C8;      // 0xC8 - TimeOut*
-    int field_CC;        // 0xCC
-    int field_D0;        // 0xD0
-    int field_D4;        // 0xD4
-    int field_D8;        // 0xD8
+    Rect hitbox_CC;      // 0xCC-0xDB (Rect: left, top, right, bottom)
     void* field_DC[14];  // 0xDC-0x110 - Sample* array
     SoundList* field_114;     // 0x114 - SoundList*
     int field_118;       // 0x118
@@ -57,18 +55,11 @@ public:
     Sample* field_128;     // 0x128
     int field_12C;       // 0x12C
     int field_130;       // 0x130
-    int field_134;       // 0x134 - width (0x140)
-    int field_138;       // 0x138 - height (0xF0)
+    SlimeDim dim_134;    // 0x134-0x13B (SlimeDim: field_0=width, field_4=height)
     Sprite* field_13C;     // 0x13C - Sprite*
     int field_140;       // 0x140 - gamestate value
-    int field_144;       // 0x144
-    int field_148;       // 0x148
-    int field_14C;       // 0x14C
-    int field_150;       // 0x150
-    int field_154;       // 0x154
-    int field_158;       // 0x158
-    int field_15C;       // 0x15C
-    int field_160;       // 0x160
+    Rect hitbox_144;     // 0x144-0x153 (Rect)
+    Rect hitbox_154;     // 0x154-0x163 (Rect)
     int field_164;       // 0x164 - flags
 };
 
