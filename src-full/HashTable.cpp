@@ -3,7 +3,51 @@
 #include <string.h>
 
 
+/* Function start: 0x442230 */
 HashTable::~HashTable() {
+    if (buckets != 0 && numBuckets != 0) {
+        unsigned int i = 0;
+        int offset = 0;
+        do {
+            HashNode* node = *(HashNode**)((char*)buckets + offset);
+            while (node != 0) {
+                char** field = (char**)&node->reserved;
+                int j = 0;
+                do {
+                    if (*field != 0) {
+                        FreeMemory(*field);
+                        *field = 0;
+                    }
+                    field++;
+                    int old = j;
+                    j--;
+                    if (old == 0) break;
+                } while (1);
+                int k = 0;
+                do {
+                    int old = k;
+                    k--;
+                    if (old == 0) break;
+                } while (1);
+                node = node->next;
+            }
+            offset += 4;
+            i++;
+        } while ((unsigned int)numBuckets > i);
+    }
+
+    FreeMemory(buckets);
+    buckets = 0;
+    count = 0;
+    freeList = 0;
+
+    void* pool = nodePool;
+    while (pool != 0) {
+        void* next = *(void**)pool;
+        FreeMemory(pool);
+        pool = next;
+    }
+    nodePool = 0;
 }
 
 /* Function start: 0x4437D0 */

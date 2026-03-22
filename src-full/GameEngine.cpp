@@ -480,6 +480,7 @@ int GameEngine::AddHandler(Handler* handler) {
 
         currentHandler = (Handler*)list->GetCurrentData();
         if (currentHandler->handlerId == handler->handlerId) {
+            WriteToLog("illegal modual insertion double id=%d", handler->handlerId);
             ShowError("illegal modual insertion double");
             return 0;
         }

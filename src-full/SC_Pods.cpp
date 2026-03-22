@@ -180,6 +180,148 @@ int SC_Pods::AddMessage(SC_Message* msg) {
     return 1;
 }
 
+/* Function start: 0x441B60 */
+void SC_Pods::HandleResult() {
+    int flags = ((SC_CombatBase*)g_CombatEngine_0046ae78)->combatFlags;
+
+    if (savedCommand == 0x2b) {
+        if (flags & 1) {
+            // WIN in practice mode
+            if (resultAction != 0) {
+                ((SpriteAction*)resultAction)->~SpriteAction();
+                FreeMemory((void*)resultAction);
+                resultAction = 0;
+            }
+
+            SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            resultAction = (int)newAction;
+
+            {
+                SC_Message temp;
+                temp.targetAddress = (int)newAction;
+                ParseFile(&temp, "mis\\cb_Pods.mis", "[WIN_LBL_PR]");
+            }
+        } else if (flags & 2) {
+            // LOSE in practice mode
+            if (resultAction != 0) {
+                ((SpriteAction*)resultAction)->~SpriteAction();
+                FreeMemory((void*)resultAction);
+                resultAction = 0;
+            }
+
+            SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            resultAction = (int)newAction;
+
+            {
+                SC_Message temp;
+                temp.targetAddress = (int)newAction;
+                ParseFile(&temp, "mis\\cb_Pods.mis", "[LOSE_LBL_PR]");
+            }
+        }
+    } else {
+        if (flags & 2) {
+            // LOSE in normal mode
+            GameState* gs = g_GameState_0046aa30;
+            int periodIdx = gs->FindLabel("PERIOD");
+            gs->ValidateIndex(periodIdx);
+
+            if (gs->stateValues[periodIdx] == 2) {
+                int periodStateIdx = g_PeriodStateIdx_0046cb90;
+                GameState* gs2 = g_GameState_0046aa30;
+                if (periodStateIdx < 0 || gs2->maxStates - 1 < periodStateIdx) {
+                    ShowError("Invalid gamestate %d", periodStateIdx);
+                }
+
+                char buf[28];
+                sprintf(buf, "%c_AWARE_MIKE", (char)g_PeriodCharTable_0046cb94[gs2->stateValues[periodStateIdx]]);
+
+                gs = g_GameState_0046aa30;
+                int idx = gs->FindLabel(buf);
+                gs->ValidateIndex(idx);
+                gs->stateValues[idx] = 1;
+
+                GameState* gs3 = g_GameState_0046aa30;
+                int periodStateIdx2 = g_PeriodStateIdx_0046cb90;
+                if (periodStateIdx2 < 0 || gs3->maxStates - 1 < periodStateIdx2) {
+                    ShowError("Invalid gamestate %d", periodStateIdx2);
+                }
+
+                sprintf(buf, "%c_SAW_MIKE_CAPTURED", (char)g_PeriodCharTable_0046cb94[gs3->stateValues[periodStateIdx2]]);
+
+                gs3 = g_GameState_0046aa30;
+                idx = gs3->FindLabel(buf);
+                gs3->ValidateIndex(idx);
+                gs3->stateValues[idx] = 1;
+            }
+
+            ((SpriteAction*)resultAction)->addressType = 0x2c;
+            ((SpriteAction*)resultAction)->addressValue = 1;
+            ((SpriteAction*)resultAction)->instruction = 4;
+        } else if (flags & 1) {
+            // WIN in normal mode
+            GameState* gs = g_GameState_0046aa30;
+            int periodIdx = gs->FindLabel("PERIOD");
+            gs->ValidateIndex(periodIdx);
+            int periodVal = gs->stateValues[periodIdx];
+
+            if (periodVal == 7) {
+                gs = g_GameState_0046aa30;
+                int idx = gs->FindLabel("WENDY_ALIEN");
+                gs->ValidateIndex(idx);
+                gs->stateValues[idx] = 0;
+            } else if (periodVal == 0xb) {
+                gs = g_GameState_0046aa30;
+                int idx = gs->FindLabel("JACK_ALIEN");
+                gs->ValidateIndex(idx);
+                gs->stateValues[idx] = 0;
+            } else if (periodVal == 0xe) {
+                gs = g_GameState_0046aa30;
+                int idx = gs->FindLabel("STACY_ALIEN");
+                gs->ValidateIndex(idx);
+                gs->stateValues[idx] = 0;
+            } else if (periodVal == 0x10) {
+                gs = g_GameState_0046aa30;
+                int idx = gs->FindLabel("ORVILLE_ALIEN");
+                gs->ValidateIndex(idx);
+                gs->stateValues[idx] = 0;
+            }
+
+            gs = g_GameState_0046aa30;
+            int numActIdx = gs->FindLabel("NUM_ACTIONS");
+            gs->ValidateIndex(numActIdx);
+            gs->stateValues[numActIdx] += 0x1e;
+
+            ((SpriteAction*)resultAction)->addressType = 3;
+            ((SpriteAction*)resultAction)->addressValue = DAT_004734a4;
+            ((SpriteAction*)resultAction)->fromType = savedCommand;
+            ((SpriteAction*)resultAction)->fromValue = 1;
+            ((SpriteAction*)resultAction)->instruction = 4;
+
+            gs = g_GameState_0046aa30;
+            int rescIdx = gs->FindLabel("COMBAT_POD_RESCUED");
+            if (rescIdx < 0 || gs->maxStates - 1 < rescIdx) {
+                ShowError("Invalid gamestate %d", rescIdx);
+            }
+            gs->stateValues[rescIdx] = 1;
+        }
+
+        {
+            GameState* gs = g_GameState_0046aa30;
+            int availIdx = gs->FindLabel("COMBAT_POD_AVAILABLE");
+            gs->ValidateIndex(availIdx);
+            gs->stateValues[availIdx] = 0;
+        }
+    }
+
+    EnqueueSpriteAction((SpriteAction*)resultAction);
+
+    if (resultAction != 0) {
+        ((SpriteAction*)resultAction)->~SpriteAction();
+        FreeMemory((void*)resultAction);
+        resultAction = 0;
+    }
+}
+
 /* Function start: 0x442090 */
 int SC_Pods::LBLParse(char* line) {
     char label[32];

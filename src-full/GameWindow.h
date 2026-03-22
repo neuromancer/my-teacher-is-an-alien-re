@@ -6,6 +6,7 @@ class GameWindow
 {
 public:
     GameWindow();
+    ~GameWindow();
     void CreateGameWindow(HINSTANCE, int, char*, int);
     int InitGraphics();
     void Shutdown();

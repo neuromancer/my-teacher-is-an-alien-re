@@ -394,3 +394,4 @@ int DAT_00472bec = 0;                                    // 0x00472bec
 int DAT_0046bcd0[3] = {0};                              // 0x0046bcd0
 int DAT_004719c0 = 0;                                    // 0x004719c0
 
+int DAT_004734a4 = 0;

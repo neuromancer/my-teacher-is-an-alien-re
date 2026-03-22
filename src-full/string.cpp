@@ -338,6 +338,7 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
         }
         DecryptLine(buffer);
         result = sscanf(buffer, " %s ", local_buf);
+        { fpos_t _tp; fgetpos(stream, &_tp); WriteToLog("  iRL: fgets pos=%d result=%d buf[0]=0x%02X '%.*s'", ((int*)&_tp)[0], result, (unsigned char)local_buf[0], 40, buffer); }
     } while (result < 1 || local_buf[0] == ';' || local_buf[0] == '\r');
 
     semi = strchr(buffer, ';');

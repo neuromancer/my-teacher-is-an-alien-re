@@ -53,7 +53,7 @@ Parser::~Parser() {
 void Parser::Open(char *param_1) {
   CloseFile();
   strcpy(filename, param_1);
-  pFile = fsopen(filename, "r");
+  pFile = fsopen(filename, "rb");
   m_subObject = 1;
   if (pFile == NULL) {
     ShowError("Parser::Open - Unable to open file '%s' ", filename);
@@ -333,6 +333,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
       }
 
       DAT_00469154 += lineTimer.Update();
+      { fpos_t _p; fgetpos(self->pFile, &_p); WriteToLog("ProcessFile read line pos=%d: '%.60s'", ((int*)&_p)[0], line_buffer); }
       result = self->GetKey(line_buffer);
     } while (result == 1);
 
@@ -504,7 +505,7 @@ void Parser::HandleToken_IF(char* line, int prevResult) {
         int gsValue;
         result = 0;
 
-        char* ifPos = FindAfterSubstring(line, "GAMESTATE");
+        char* ifPos = FindAfterSubstring(line, "IF_");
         if (ifPos == 0) {
             goto check_params;
         }
@@ -660,6 +661,7 @@ void Parser::HandleToken(int tokenType, char* line) {
             ((int*)&filePos)[0] = 0;
             ((int*)&filePos)[1] = 0;
             fgetpos(pFile, &filePos);
+            WriteToLog("GOSUB fgetpos: pos=%d,%d file=%s", ((int*)&filePos)[0], ((int*)&filePos)[1], filename);
 
             int* pool = (int*)field_0x3c;
             int headVal = *pool;
@@ -754,6 +756,7 @@ void Parser::HandleToken(int tokenType, char* line) {
                 fpos_t restorePos;
                 ((int*)&restorePos)[0] = savedPos;
                 ((int*)&restorePos)[1] = (int)local_74;
+                WriteToLog("RETURN fsetpos: pos=%d,%d file=%s", savedPos, (int)local_74, filename);
                 fsetpos(pFile, &restorePos);
             }
             DAT_00469160 = 0;

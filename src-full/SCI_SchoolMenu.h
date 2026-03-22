@@ -24,6 +24,7 @@ public:
     void Init(SC_Message* msg);
     int AddMessage(SC_Message* msg);
     int ShutDown(SC_Message* msg);
+    void Update(int param1, int param2);
     int LBLParse(char* line);
 
     int IsCharacterActive();

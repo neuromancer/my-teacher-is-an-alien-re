@@ -15,6 +15,7 @@
 #include "MMPlayer.h"
 #include "main.h"
 #include "ZBuffer.h"
+#include "MouseControl.h"
 
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
@@ -504,6 +505,71 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
 
     IconBar::CleanupIconBar(msg);
     return 0;
+}
+
+/* Function start: 0x41EBD0 */
+void SCI_SchoolMenu::Update(int param1, int param2) {
+    T_MenuHotspot** charPtr;
+    int i;
+
+    if (handlerId != param2) {
+        return;
+    }
+    if (DAT_0046a190 == 0) {
+        return;
+    }
+
+    IconBar::Update(param1, param2);
+
+    if (background != 0) {
+        background->Draw();
+    }
+
+    if (cancelButton != 0) {
+        cancelButton->Update();
+    }
+
+    if (okayButton != 0 && selectedOption > -1 && IsCharacterActive() != 0) {
+        T_MenuHotspot* ok = okayButton;
+        ok->bounds.left = 1;
+        Sprite* spr = ok->cursor;
+        if (spr != 0) {
+            spr->ResetAnimation(1, 0);
+        }
+    } else {
+        T_MenuHotspot* ok = okayButton;
+        ok->bounds.left = 0;
+        Sprite* spr = ok->cursor;
+        if (spr != 0) {
+            spr->ResetAnimation(0, 0);
+        }
+    }
+
+    if (okayButton != 0) {
+        okayButton->Update();
+    }
+
+    charPtr = characters;
+    i = 3;
+    do {
+        if (*charPtr != 0) {
+            (*charPtr)->Update();
+        }
+        charPtr++;
+        i--;
+    } while (i != 0);
+
+    charPtr = options;
+    i = 9;
+    do {
+        if (*charPtr != 0) {
+            (*charPtr)->Update();
+        }
+        charPtr++;
+        i--;
+    } while (i != 0);
+
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x41F610 */

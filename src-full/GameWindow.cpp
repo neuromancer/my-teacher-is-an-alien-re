@@ -41,6 +41,11 @@ GameWindow::GameWindow() {
     savedActiveWindow = GetActiveWindow();
 }
 
+/* Function start: 0x420140 */
+GameWindow::~GameWindow() {
+    Shutdown();
+}
+
 /* Function start: 0x420150 */
 void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
                                   int param_4) {
