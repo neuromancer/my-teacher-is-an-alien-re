@@ -4,6 +4,7 @@
 #include "InputManager.h"
 #include "Message.h"
 #include "RenderEntry.h"
+#include "DrawEntry.h"
 #include "Sample.h"
 #include "SoundCommand.h"
 #include "SpriteAction.h"
@@ -389,7 +390,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
 
                 data = queue->Pop();
                 if (data != 0) {
-                    delete (RenderEntry*)data;
+                    delete (DrawEntry*)data;
                 }
             }
         }
