@@ -1,8 +1,13 @@
 #include "SC_DuctNav.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "T_MenuHotspot.h"
+#include "CombatSprite.h"
+#include "MouseControl.h"
 #include "Memory.h"
 #include "SpriteAction.h"
+
+extern MouseControl* g_Mouse_0046aa18;
 #include "GameState.h"
 #include "GameEngine.h"
 #include "FlagArray.h"
@@ -136,14 +141,108 @@ int SC_DuctNav::LBLParse(char* line)
     return 0;
 }
 
+/* Function start: 0x43B2C0 */
 SC_DuctNav::~SC_DuctNav()
 {
+    // Destroy CombatSprite
+    if (*(void**)((int)this + 0x248) != 0) {
+        ((CombatSprite*)*(void**)((int)this + 0x248))->~CombatSprite();
+        FreeMemory(*(void**)((int)this + 0x248));
+        *(void**)((int)this + 0x248) = 0;
+    }
+    // Destroy text object at 0x24C
+    if (*(void**)((int)this + 0x24C) != 0) {
+        // Call destructor for text/font object
+        FreeMemory(*(void**)((int)this + 0x24C));
+        *(void**)((int)this + 0x24C) = 0;
+    }
+    // Destroy menuSprite
+    if (menuSprite != 0) {
+        menuSprite->~Sprite();
+        FreeMemory(menuSprite);
+        menuSprite = 0;
+    }
+    // Destroy fontPalette
+    if (fontPalette != 0) {
+        fontPalette->~Palette();
+        FreeMemory(fontPalette);
+        fontPalette = 0;
+    }
+    // Destroy edit/choice sprites
+    if (editFocusSprite != 0) {
+        editFocusSprite->~Sprite();
+        FreeMemory(editFocusSprite);
+        editFocusSprite = 0;
+    }
+    if (choiceFocusSprite != 0) {
+        choiceFocusSprite->~Sprite();
+        FreeMemory(choiceFocusSprite);
+        choiceFocusSprite = 0;
+    }
+    // Destroy T_MenuHotspot buttons
+    if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
+    if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
+    if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
+    if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
+    if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
+    if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
+    if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
 }
 
 void SC_DuctNav::Init(SC_Message* msg) {}
 int SC_DuctNav::AddMessage(SC_Message* msg) { return 0; }
 int SC_DuctNav::ShutDown(SC_Message* msg) { return 0; }
-void SC_DuctNav::Update(int p1, int p2) {}
+
+/* Function start: 0x43B7E0 */
+void SC_DuctNav::Update(int p1, int p2) {
+    unsigned int elapsed = timer.Update();
+    if (elapsed > 60000) {
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+    }
+    if (handlerId != p2) {
+        return;
+    }
+    timer.Reset();
+
+    // Draw menu sprite
+    if (menuSprite != 0) {
+        menuSprite->Do(menuSprite->loc_x, menuSprite->loc_y, 1.0);
+    }
+
+    // Draw file list entries
+    int scrollIdx = scrollOffset;
+    int listCount = *(int*)(*(int*)((int)this + 0x248) + 8);
+    if (scrollIdx < listCount && scrollIdx >= 0) {
+        // Get list node at scrollOffset
+        void* node = *(void**)*(int*)((int)this + 0x248);
+        for (int i = scrollIdx; i > 0; i--) {
+            node = *(void**)node;
+        }
+
+        int slotIdx = 0;
+        int* rects = slotRects;
+        do {
+            if (node == 0) break;
+            char* name = (char*)((int*)node + 7);
+            // Render filename text at slot position
+            rects += 4;
+            node = *(void**)node;
+            slotIdx++;
+        } while (slotIdx < 10);
+    }
+
+    // Update buttons
+    if (cancelBtn != 0) cancelBtn->Update();
+    if (saveBtn != 0) saveBtn->Update();
+    if (loadBtn != 0) loadBtn->Update();
+    if (overwriteBtn != 0) overwriteBtn->Update();
+    if (deleteBtn != 0) deleteBtn->Update();
+    if (scrollUpBtn != 0) scrollUpBtn->Update();
+    if (scrollDownBtn != 0) scrollDownBtn->Update();
+
+    // Draw cursor
+    g_Mouse_0046aa18->DrawCursor();
+}
 
 /* Function start: 0x43C100 */
 int SC_DuctNav::Exit(SC_Message* msg)

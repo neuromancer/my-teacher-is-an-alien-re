@@ -103,3 +103,4 @@ int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, in
 }
 
 }
+

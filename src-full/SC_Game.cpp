@@ -4,9 +4,16 @@
 #include "ZBufferManager.h"
 #include "GameState.h"
 #include "GlyphRect.h"
+#include "Palette.h"
+#include "Sprite.h"
+#include "Sample.h"
+#include "Memory.h"
+#include "Parser.h"
 #include <stdio.h>
 #include <string.h>
 
+extern "C" char* MakeAudioName(char*);
+extern Palette* __fastcall InitPalette(Palette*);
 extern "C" extern GameState* g_GameState_0046aa30;
 extern char* g_Buffer_0046aa00;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
@@ -301,4 +308,73 @@ int SC_Game::AddMessage(SC_Message* msg) {
     }
 
     return 1;
+}
+
+extern "C" void ShowError(const char*, ...);
+
+/* Function start: 0x437120 */
+int SC_Game::LBLParse(char* line) {
+    char keyword[32];
+    char buffer[128];
+    int val;
+
+    keyword[0] = 0;
+    buffer[0] = 0;
+    sscanf(line, "%s", keyword);
+
+    if (strcmp(keyword, "SET_GAMESTATE") == 0) {
+        sscanf(line, "%s %s %d", keyword, buffer, &val);
+        GameState* gs = g_GameState_0046aa30;
+        int idx = gs->FindState(buffer);
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        gs->stateValues[idx] = val;
+    } else if (strcmp(keyword, "PALETTE") == 0) {
+        sscanf(line, "%s %s", keyword, buffer);
+        if (*(void**)((int)this + 0xBC) != 0) {
+            ((Palette*)*(void**)((int)this + 0xBC))->~Palette();
+            FreeMemory(*(void**)((int)this + 0xBC));
+            *(void**)((int)this + 0xBC) = 0;
+        }
+        Palette* pal = InitPalette((Palette*)AllocateMemory(8));
+        *(Palette**)((int)this + 0xBC) = pal;
+        pal->Load(buffer);
+    } else if (strcmp(keyword, "BACKGROUND_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        *(Sprite**)((int)this + 0xC0) = spr;
+        spr->flags &= ~2;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "HINT_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        *(Sprite**)((int)this + 0xC4) = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "KIDFACE_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        *(Sprite**)((int)this + 0xC8) = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "WEBVAL_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        *(Sprite**)((int)this + 0xCC) = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "WEBINVAL_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        *(Sprite**)((int)this + 0xD0) = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "SOUND") == 0) {
+        sscanf(line, "%s %d %s", keyword, &val, buffer);
+        char* path = MakeAudioName(buffer);
+        Sample* snd = new Sample();
+        if (snd->Load(path) != 0) {
+            snd->Unload();
+            operator delete(snd);
+            snd = 0;
+        }
+        *(Sample**)((int)this + 0xD4 + val * 4) = snd;
+    } else if (strcmp(keyword, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SC_Game");
+    }
+    return 0;
 }

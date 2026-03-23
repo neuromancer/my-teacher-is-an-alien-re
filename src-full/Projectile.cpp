@@ -237,3 +237,15 @@ int Projectile::CheckCollision() {
         }
     } while (1);
 }
+
+/* Function start: 0x427150 */
+Projectile::Projectile(int owner) : Sprite(0)
+{
+    int* p = (int*)&field_0xF8;
+    int i;
+    for (i = 0xC; i != 0; i--) {
+        *p = 0;
+        p++;
+    }
+    field_0xF8 = owner;
+}

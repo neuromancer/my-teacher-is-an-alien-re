@@ -146,6 +146,38 @@ extern "C" void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int s
   SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
 }
 
+/* Function start: 0x41DE60 */
+void Palette::FadeTo(int targetR, int targetG, int targetB, float fraction, int start, int count)
+{
+    unsigned char* ptr = (unsigned char*)m_data + start * 3;
+    if (count > 0) {
+        do {
+            unsigned char r = ptr[0];
+            ptr[0] = (unsigned char)(int)((targetR - r) * fraction + r);
+            unsigned char g = ptr[1];
+            ptr[1] = (unsigned char)(int)((targetG - g) * fraction + g);
+            unsigned char b = ptr[2];
+            ptr[2] = (unsigned char)(int)((targetB - b) * fraction + b);
+            ptr += 3;
+            count--;
+        } while (count != 0);
+    }
+}
+
+extern "C" void FlipScreen();
+
+/* Function start: 0x41DF10 */
+void Palette::SetAndApply(unsigned int start, unsigned int count)
+{
+    int result = IsSimilar(m_data, start, count);
+    if (result == 0) {
+        if (count == 0x100) {
+            FlipScreen();
+        }
+        SetPalette(start, count);
+    }
+}
+
 /* Function start: 0x41DC70 */
 void Palette::CopyRGBData(int source, int startIdx, int count) {
     char* src = (char*)(source + startIdx * 3);

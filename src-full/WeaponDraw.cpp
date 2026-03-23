@@ -24,7 +24,7 @@ void Weapon::DrawCrosshairs() {
     DrawLine(0xce, 9);
     DrawLine(0xc8, 9);
 
-    if (g_TargetList_00435f0c->field_0x1ac != 0) {
+    if (g_TargetList_00435f0c->field_1B4 != 0) {
         SetDrawPosition(Weapon::m_crosshairX, Weapon::m_crosshairY);
         DrawCircle(4);
         DrawCircle(8);

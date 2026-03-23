@@ -15,6 +15,8 @@ public:
     ~SC_SpaceShipNav();
 
     int ShutDown(SC_Message* msg);  // 0x447790
+    void UpdateCursor();            // 0x447950
+    int LBLParse(char* line);       // 0x447B60
 
     int field_118[2];   // 0x118-0x11F (0x08 bytes)
 };

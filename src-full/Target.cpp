@@ -296,53 +296,59 @@ void Target::UpdateProgress(int delta)
     }
 }
 
-/* Function start: 0x414410 */ /* DEMO ONLY - no full game match */
+extern int g_CombatEngine_0046ae78;
+extern void FUN_004427c0(int);
+extern void FUN_0040c600(void*, int);
+
+/* Function start: 0x4429A0 */
 int Target::Update()
 {
-    if (Target::active == 0) {
+    if (active == 0) {
         return 1;
     }
 
-    switch (Target::pendingAction) {
-    case 1:
-        if (Target::handle == Target::animRange.end) {
-            g_ScoreManager_00435f20->score -= Target::hitMissPoints.end;
-            Target::Deactivate();
+    if (pendingAction == 1) {
+        if (handle == animRange.end) {
+            *(int*)DAT_0046ae6c -= hitMissPoints.end;
+            FUN_004427c0((int)this);
             return 1;
         }
-        Sprite::ResetAnimation(Target::handle + 1, 0);
-        break;
-    case 3:
-        Target::active = 3;
-        Sprite::ResetAnimation(Target::hitRange.start + Target::handle, 0);
-        if ((Target::targetFlags & 1) != 0) {
-            Range temp = *(Range*)&hitOffset;
-            Target::loc_y = temp.end;
-            Target::loc_x = temp.start;
+        Sprite::ResetAnimation(handle + 1, 0);
+    } else if (pendingAction == 3) {
+        active = 3;
+        Sprite::ResetAnimation(hitRange.start + handle, 0);
+        if ((targetFlags & 1) != 0) {
+            int mouseY = 0;
+            int mouseX = 0;
+            InputState* pMouse = g_InputManager_0046aa08->pMouse;
+            if (pMouse != 0) {
+                mouseY = pMouse->y;
+                mouseX = pMouse->x;
+            }
+            loc_x = mouseX - hitOffset.start;
+            loc_y = mouseY - hitOffset.end;
         }
-        if (Target::stopSound != 0) {
-            Target::stopSound->~Sample();
+        if (stopSound != 0) {
+            stopSound->~Sample();
         }
-        if (Target::hitSound != 0) {
-            Target::hitSound->Play(100, 1);
+        if (hitSound != 0) {
+            hitSound->Play(100, 1);
         }
-        g_ScoreManager_00435f20->missCount++;
-        g_ScoreManager_00435f20->score += Target::hitMissPoints.start;
-        ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(Target::scoreWeight.start);
-        *(int*)&g_CombatEngine_00435eb0->navigator += Target::combatBonus.start;
-        g_CombatEngine_00435eb0->combatBonus += Target::combatBonus2.val;
-        break;
+        ((int*)DAT_0046ae6c)[3]++;
+        *(int*)DAT_0046ae6c += hitMissPoints.start;
+        FUN_0040c600((void*)DAT_0046ae6c, scoreWeight.start);
+        *(int*)(g_CombatEngine_0046ae78 + 0xBC) += combatBonus.start;
+        *(int*)(g_CombatEngine_0046ae78 + 0xCC) += combatBonus2.val;
     }
 
-    int y = Target::loc_y;
-    int x = Target::loc_x;
-    Target::pendingAction = 0;
-    if (Sprite::Do(x, y, 1.0)) {
-        if (Target::active == 3) {
-            Target::Deactivate();
-        } else {
-            Target::pendingAction = Target::active;
+    pendingAction = 0;
+    int done = Sprite::Do(loc_x, loc_y, 1.0);
+    if (done != 0) {
+        if (active == 3) {
+            FUN_004427c0((int)this);
+            return 0;
         }
+        pendingAction = active;
     }
     return 0;
 }
@@ -393,7 +399,7 @@ void Target::ParseSound(char* line)
     }
 }
 
-/* Function start: 0x414730 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x442B20 */
 void Target::OnProcessStart()
 {
     char buffer[128];
@@ -423,7 +429,7 @@ void Target::OnProcessStart()
     sound3        = tl->defaultSound;
 }
 
-/* Function start: 0x4147F0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x442BD0 */
 void Target::OnProcessEnd()
 {
     extern int g_TargetBearingValue_004362c8;
@@ -473,7 +479,7 @@ void Target::OnProcessEnd()
 extern int DAT_004362cc;
 extern int g_TargetBearingValue_004362c8;
 
-/* Function start: 0x414930 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x442BD0 */
 int Target::LBLParse(char* line)
 {
     char label[64];

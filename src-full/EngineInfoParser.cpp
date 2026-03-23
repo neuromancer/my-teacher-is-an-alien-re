@@ -129,3 +129,22 @@ void EngineInfoParser::ParsePalette(char *line) {
   sscanf(line, "%s", buffer);
   ((Palette*)DAT_0046ae64)->LoadFile(buffer);
 }
+
+/* Function start: 0x42F570 */
+void __fastcall InitCombatGrid(int param_1) {
+    int row = 6;
+    int* ptr = (int*)(param_1 + 0x13C);
+    do {
+        int col = 6;
+        do {
+            *ptr = 0;
+            ptr += 7;
+            col--;
+        } while (col != 0);
+        row--;
+    } while (row != 0);
+    *(int*)(param_1 + 0x1C8) = 1;
+    *(int*)(param_1 + 0x120) = 5;
+    *(int*)(param_1 + 0x4A0) = 1;
+    *(int*)(param_1 + 0x124) = 0;
+}

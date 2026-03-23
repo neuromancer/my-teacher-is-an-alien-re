@@ -1,6 +1,7 @@
 #include "HashTable.h"
 #include "Memory.h"
 #include <string.h>
+#include <stdio.h>
 
 
 /* Function start: 0x442230 */
@@ -101,4 +102,58 @@ HashNode* HashTable::AllocateNode() {
         if (prev == 0) break;
     } while (1);
     return result;
+}
+
+extern "C" void ShowMessage(char*, ...);
+
+/* Function start: 0x44C480 */
+void HashTable::CopyStrings(void* dest, int maxLen) {
+    int overflow = 0;
+    int* iter = (int*)((*(int*)(*(int*)((int)this + 8) + 8) == 0) - 1);
+    do {
+        if (iter == 0) {
+            if (overflow) {
+                ShowMessage("One or more strings in %s is too long");
+            }
+            return;
+        }
+        int* table = *(int**)((int)this + 8);
+        if (iter == (int*)-1) {
+            unsigned int idx = 0;
+            if (table[1] != 0) {
+                int* buckets = (int*)table[0];
+                do {
+                    iter = (int*)buckets[idx];
+                    if (iter != 0) break;
+                    idx++;
+                } while (idx < (unsigned int)table[1]);
+            }
+        }
+        int* nextIter = (int*)iter[0];
+        if (nextIter == 0) {
+            unsigned int idx = iter[1] + 1;
+            if (idx < (unsigned int)table[1]) {
+                int* buckets = (int*)(idx * 4 + table[0]);
+                do {
+                    nextIter = (int*)*buckets;
+                    if (nextIter != 0) break;
+                    buckets++;
+                    idx++;
+                } while (idx < (unsigned int)table[1]);
+            }
+        }
+        char* str = (char*)iter[3];
+        iter = nextIter;
+        if (str != 0) {
+            char buf[256];
+            sprintf(buf, "%s\n", str);
+            int len = strlen(buf);
+            if (maxLen < len) {
+                overflow = 1;
+            } else {
+                strcat((char*)dest, buf);
+                maxLen -= len;
+            }
+        }
+    } while (1);
 }

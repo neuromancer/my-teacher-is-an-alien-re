@@ -411,8 +411,130 @@ void __fastcall FreePoolBlocks(void* blocks) {
 }
 
 // Save/load system stubs
-int* __cdecl FUN_0043e2a0(int* buf, int count, int mode) { return buf; }
-void __cdecl FUN_0043e320(void* buf, int count) {}
+/* Function start: 0x43E2A0 */
+int* __cdecl FUN_0043e2a0(int* pool, int prev, int next) {
+    // Grow pool if free list empty
+    if (pool[3] == 0) {
+        int* block = (int*)AllocateMemory(pool[5] * 0x120 + 4);
+        *block = pool[4];
+        pool[4] = (int)block;
+        int count = pool[5];
+        int* entry = block + count * 0x48 - 0x47;
+        while (count-- >= 0) {
+            *entry = pool[3];
+            pool[3] = (int)entry;
+            entry -= 0x48;
+        }
+    }
+    // Take from free list
+    int* node = (int*)pool[3];
+    pool[3] = *node;
+    node[1] = prev;
+    *node = next;
+    pool[2]++;
+    // Zero payload (0x46 dwords)
+    int* payload = node + 2;
+    int i;
+    for (i = 0x46; i != 0; i--) {
+        *payload = 0;
+        payload++;
+    }
+    return node;
+}
+/* Function start: 0x43E320 */
+void __cdecl FUN_0043e320(void* buf, int count) {
+    unsigned int dwords = (unsigned int)(count * 0x118) >> 2;
+    int* p = (int*)buf;
+    for (; dwords != 0; dwords--) {
+        *p = 0;
+        p++;
+    }
+}
 // SpriteAction::Serialize moved to SpriteAction.cpp
 // GameEngine::Serialize moved to GameEngine.cpp
 // FlagArray::Serialize moved to FlagArray.cpp
+
+/* Function start: 0x443830 */
+void __fastcall PoolAllocate16(int* pool) {
+    if (pool[3] == 0) {
+        int* block = (int*)AllocateMemory(pool[5] * 0x10 + 4);
+        *block = pool[4];
+        pool[4] = (int)block;
+        int count = pool[5];
+        int* entry = block + count * 4 - 3;
+        while (count-- >= 0) {
+            *entry = pool[3];
+            pool[3] = (int)entry;
+            entry -= 4;
+        }
+    }
+    int* node = (int*)pool[3];
+    pool[3] = *node;
+    pool[2]++;
+    node[2] = 0;
+    int i = 0;
+    do { i--; } while (i != 0);
+}
+
+/* Function start: 0x445680 */
+void* __fastcall StringEntry_Init(void* thisPtr, char* name, int nameLen, int param3, int param4) {
+    int* self = (int*)thisPtr;
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    self[3] = 0;
+    self[4] = 0;
+    self[1] = (int)name;
+    self[2] = nameLen;
+    char* buf = (char*)AllocateMemory(nameLen + 1);
+    self[0] = (int)buf;
+    strcpy(buf, name);
+    self[3] = param3;
+    self[4] = param4;
+    return thisPtr;
+}
+
+extern int FUN_0043ad50(void*, char*);
+
+/* Function start: 0x445710 */
+int __fastcall TextInput_ProcessKey(void* thisPtr, int key) {
+    int* self = (int*)thisPtr;
+    char* editBuf = (char*)self[1];
+    int editLen = strlen(editBuf);
+
+    if (key == 8) {
+        // Backspace
+        int pos = editLen - 1;
+        if (pos < 0) pos = 0;
+        editBuf[pos] = 0;
+        return 0;
+    }
+    if (key == 0xD) {
+        // Enter - copy edit to display
+        strcpy((char*)self[0], editBuf);
+        return 1;
+    }
+    if (key == 0x1B) {
+        // Escape - copy display to edit (revert)
+        strcpy(editBuf, (char*)self[0]);
+        return 1;
+    }
+    // Typing
+    if (key == 0x2D) key = 0x5F; // '-' → '_'
+    if ((key > 0x40 && key < 0x5B) || (key > 0x2F && key < 0x3A) ||
+        key == 0x5F || key == 0x20) {
+        editBuf[editLen - 1] = (char)key;
+        int width = FUN_0043ad50((void*)self[3], editBuf);
+        if (self[4] < width) {
+            editBuf[editLen - 1] = 0;
+            return 0;
+        }
+        unsigned int maxLen = (unsigned int)self[2] - 1;
+        if (maxLen < (unsigned int)editLen) {
+            editLen = maxLen;
+        }
+        editBuf[editLen] = 0;
+        return 0;
+    }
+    return 0;
+}

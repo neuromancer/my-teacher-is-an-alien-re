@@ -395,3 +395,5 @@ void __fastcall InitCombatScreen(void* self)
         engine->backgroundSound->Play(100, 0);
     }
 }
+
+extern void* FUN_00440860(void*);

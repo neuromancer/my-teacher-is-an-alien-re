@@ -128,3 +128,60 @@ void RockThrower::UpdateProjectiles() {
 
     RockThrower::m_hitCount = g_ProjectileHits_0043d150;
 }
+
+extern TargetList* g_TargetList_0046ae58;
+extern int FUN_004428a0(void* target, int* hitbox);
+extern void FUN_00442940(void* target, int activate);
+
+/* Function start: 0x427A30 */
+int CheckAllTargetHits(int param_1) {
+    if (g_TargetList_0046ae58 == 0) return 0;
+
+    int* hashTable = *(int**)((int)g_TargetList_0046ae58 + 0x1B8);
+    if (hashTable == 0) return 0;
+
+    // Get first entry from hash table
+    int* entry = (int*)((hashTable[2] == 0) - 1);
+
+    while (entry != 0) {
+        if (entry == (int*)-1) {
+            // Find first non-null bucket
+            unsigned int idx = 0;
+            if (hashTable[1] != 0) {
+                int* buckets = (int*)hashTable[0];
+                do {
+                    entry = (int*)buckets[idx];
+                    if (entry != 0) break;
+                    idx++;
+                } while (idx < (unsigned int)hashTable[1]);
+            }
+        }
+
+        // Get next entry
+        int* nextEntry = (int*)entry[0];
+        if (nextEntry == 0) {
+            unsigned int idx = entry[1] + 1;
+            if (idx < (unsigned int)hashTable[1]) {
+                int* buckets = (int*)(idx * 4 + hashTable[0]);
+                do {
+                    nextEntry = (int*)*buckets;
+                    if (nextEntry != 0) break;
+                    buckets++;
+                    idx++;
+                } while (idx < (unsigned int)hashTable[1]);
+            }
+        }
+
+        void* target = (void*)entry[3];
+        entry = nextEntry;
+
+        if (target != 0) {
+            int hit = FUN_004428a0(target, (int*)(param_1 + 0x120));
+            if (hit != 0) {
+                FUN_00442940(target, 1);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}

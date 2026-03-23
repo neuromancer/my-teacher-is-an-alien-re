@@ -22,6 +22,7 @@ public:
     int nextY;         // 0x124
 
     Projectile();          // 0x4161B0
+    Projectile(int owner); // 0x427150
     void Launch();         // 0x4162C0
     void Update();         // 0x4163E0 (demo)
     void UpdateFull();     // 0x427390 (full game)

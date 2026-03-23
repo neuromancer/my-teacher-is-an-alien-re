@@ -177,4 +177,45 @@ void FlagArray::ClearAllFlags() {
     Close();
 }
 
-void FlagArray::Serialize(void* file) {}
+/* Function start: 0x420B80 */
+void FlagArray::Serialize(void* file) {
+    int* ar = (int*)file;
+    char local_4[4];
+
+    Open();
+    Seek(0);
+
+    int headerLen = strlen("FLAGARRAY_INFO");
+
+    if (ar[0] == 0) {
+        // Read mode
+        *g_Buffer_0046aa00 = 0;
+        fread(g_Buffer_0046aa00, headerLen + 1, 1, (FILE*)ar[0x11]);
+        if (strcmp(g_Buffer_0046aa00, "FLAGARRAY_INFO") != 0) {
+            ShowError("FlagArray::Serialize() - Error Loading Game - flag arrays don't match");
+        }
+        int i = 0;
+        fread((char*)this + 0x38, 0x94, 1, (FILE*)ar[0x11]);
+        if (max_states > 0) {
+            do {
+                i++;
+                fread(local_4, 4, 1, (FILE*)ar[0x11]);
+                fwrite(local_4, 4, 1, fp);
+            } while (i < max_states);
+        }
+    } else {
+        // Write mode
+        fwrite("FLAGARRAY_INFO", headerLen + 1, 1, (FILE*)ar[0x11]);
+        int i = 0;
+        fwrite((char*)this + 0x38, 0x94, 1, (FILE*)ar[0x11]);
+        if (max_states > 0) {
+            do {
+                i++;
+                fread(local_4, 4, 1, fp);
+                fwrite(local_4, 4, 1, (FILE*)ar[0x11]);
+            } while (i < max_states);
+        }
+    }
+
+    Close();
+}

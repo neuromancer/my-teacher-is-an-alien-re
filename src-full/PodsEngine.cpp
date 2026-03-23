@@ -36,3 +36,11 @@ PodsEngine::~PodsEngine()
         field_0x108 = 0;
     }
 }
+
+/* Function start: 0x440F30 */
+void StartScheduleTimer() {
+    SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    action.instruction = 0x37;
+    action.extra1 = 1;
+    EnqueueSpriteAction(&action);
+}

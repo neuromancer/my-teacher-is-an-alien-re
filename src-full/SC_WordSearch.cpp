@@ -4,8 +4,11 @@
 #include "Sprite.h"
 #include "Palette.h"
 #include "Sample.h"
+#include "SoundList.h"
 #include "Timer.h"
 #include "GameState.h"
+#include "InputManager.h"
+#include "MouseControl.h"
 #include "globals.h"
 #include <string.h>
 #include <stdio.h>
@@ -469,3 +472,291 @@ int SC_WordSearch::Exit(SC_Message* msg) {
 
 int SC_WordSearch::AddMessage(SC_Message*) { return 0; }
 int SC_WordSearch::LBLParse(char*) { return 0; }
+
+extern void __fastcall FUN_00449520(int);
+extern void __fastcall InitCombatGrid(int);
+
+/* Function start: 0x42F800 */
+void SC_WordSearch::OnProcessEnd() {
+    int startX = 0x9B;
+    FUN_00449520((int)this);
+    int* ptr = (int*)((int)this + 0x148);
+    do {
+        int cellX = 0x48;
+        int* cell = ptr;
+        do {
+            cell[0] = startX;
+            cell[1] = cellX;
+            cell[2] = startX + 0x45;
+            cell[3] = cellX + 0x32;
+            ptr = cell + 7;
+            cellX += 0x33;
+            cell = ptr;
+        } while (cellX < 0x17A);
+        startX += 0x46;
+    } while (startX < 0x23F);
+
+    // Set initial grid cell states
+    *(int*)((int)this + 0x178) = 1;
+    *(int*)((int)this + 0x2AC) = 1;
+    *(int*)((int)this + 0x354) = 1;
+    *(int*)((int)this + 0x3FC) = 1;
+    *(int*)((int)this + 0x434) = 1;
+    *(int*)((int)this + 0x2C8) = 1;
+    *(int*)((int)this + 0x2E4) = 1;
+    *(int*)((int)this + 0x3C4) = 1;
+
+    // Set game parameters
+    *(int*)((int)this + 0x128) = 10;
+    *(int*)((int)this + 0x12C) = 0x14;
+    *(int*)((int)this + 0x130) = 0x5A;
+    *(int*)((int)this + 0x134) = 0xDC;
+    *(int*)((int)this + 0x548) = 6;
+    *(int*)((int)this + 0x4FC) = 1;
+    *(int*)((int)this + 0x54C) = 0x197;
+    *(int*)((int)this + 0x550) = 0x5F;
+    *(int*)((int)this + 0x554) = 0x1D6;
+
+    InitCombatGrid((int)this);
+
+    if (*(int*)((int)this + 0x114) != 0) {
+        SendGameMessage(5, *(int*)((int)this + 0x114), handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
+    }
+}
+
+extern void __fastcall FUN_0042e4b0(int*);
+extern int FUN_004256d0(void*, int);
+
+/* Function start: 0x42EFC0 */
+void SC_WordSearch::Render() {
+    Sprite* bgSpr = (Sprite*)*(int*)((int)this + 0x108);
+    bgSpr->Do(bgSpr->loc_x, bgSpr->loc_y, 1.0);
+
+    if (*(int*)((int)this + 0x124) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
+    }
+    FUN_0042e4b0((int*)((int)this + 0x120));
+    if (*(int*)((int)this + 0x124) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
+    }
+
+    int mouseY = 0;
+    int mouseX = 0;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    if (pMouse != 0) {
+        mouseY = pMouse->y;
+        mouseX = pMouse->x;
+    }
+
+    // Check exit button hover
+    if (*(int*)((int)this + 0x548) <= mouseX && mouseX <= *(int*)((int)this + 0x550) &&
+        *(int*)((int)this + 0x54C) <= mouseY && mouseY <= *(int*)((int)this + 0x554) &&
+        g_Mouse_0046aa18->m_sprite != 0) {
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(0x13, 0);
+    }
+
+    int local_8 = 0x82;
+    int local_4 = 0;
+    int* gridCell = (int*)((int)this + 0x13C);
+    Sprite** spriteSlot = (Sprite**)((int)this + 0x52C);
+
+    do {
+        int cellY = 0x2F;
+        int* cell = gridCell;
+        Sprite** slot = spriteSlot;
+        do {
+            pMouse = g_InputManager_0046aa08->pMouse;
+            int mx = 0, my = 0;
+            if (pMouse != 0) { my = pMouse->y; mx = pMouse->x; }
+
+            if (cell[3] <= mx && mx <= cell[5] && cell[4] <= my && my <= cell[6]) {
+                Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
+                if (cell[1] == 0) {
+                    if (mouseSpr != 0) {
+                        int anim = (*(int*)((int)this + 0x124) == 0) ? 0 : 0xC;
+                        mouseSpr->ResetAnimation(anim, 0);
+                    }
+                } else {
+                    if (mouseSpr != 0) {
+                        int anim = (*(int*)((int)this + 0x124) == 0) ? 0 : 0xD;
+                        mouseSpr->ResetAnimation(anim, 0);
+                    }
+                }
+            }
+
+            if (*cell != 0) {
+                Sprite* spr = *slot;
+                slot++;
+                spr->ResetAnimation(*cell - 1, 0);
+                spr->Do(local_8, cellY, 1.0);
+                local_4++;
+                int* statusPtr = (int*)(*(int*)((int)this + 0xA8) + 4);
+                if (*statusPtr == 0 && cell[2] != 0 && *cell > 5) {
+                    *statusPtr = 1;
+                }
+            }
+
+            cell += 7;
+            cellY += 0x33;
+        } while (cellY < 0x161);
+
+        local_8 += 0x46;
+        if (local_8 > 0x225) {
+            g_Mouse_0046aa18->DrawCursor();
+
+            if (*(int*)((int)this + 0x120) < 1) {
+                int sndDone = FUN_004256d0(*(void**)((int)this + 0x110), 1);
+                if (sndDone == 0) {
+                    int* status = *(int**)((int)this + 0xA8);
+                    if (status[1] == 0) {
+                        int count = *(int*)((int)this + 0x118) + 1;
+                        *(int*)((int)this + 0x118) = count;
+                        if (*(int*)((int)this + 0x11C) == count) {
+                            status[0] = 1;
+                            return;
+                        }
+                        status[4] = 1;
+                    }
+                }
+            }
+            return;
+        }
+        gridCell += 0x2A;
+        spriteSlot += 6;
+    } while (1);
+}
+
+/* Function start: 0x42F220 */
+void SC_WordSearch::PlaceWord(int param_1, int param_2) {
+    int minRow = param_1 - 2;
+    int maxRow = param_1 + 2;
+    int maxCol = param_2 + 2;
+    int minCol = param_2 - 2;
+    int total = 0;
+
+    if (minRow < 0) minRow = 0;
+    if (minCol < 0) minCol = 0;
+    if (maxRow > 5) maxRow = 5;
+    if (maxCol > 5) maxCol = 5;
+
+    int hasUpLeft = (param_1 - 1 >= 0);
+    int hasDownLeft = (param_2 - 1 >= 0);
+    int hasUpRight = (param_1 + 1 < 6);
+    int hasDownRight = (param_2 + 1 < 6);
+
+    // Scan right from current position
+    if (param_2 < maxCol) {
+        int* cell = (int*)((int)this + (param_2 + param_1 * 6) * 0x1C + 0x140);
+        int c = param_2;
+        do {
+            if (*cell != 0) maxCol = c;
+            cell += 7;
+            c++;
+        } while (c < maxCol);
+    }
+    // Scan left
+    if (minCol < param_2) {
+        int* cell = (int*)((int)this + (param_2 + param_1 * 6) * 0x1C + 0x140);
+        int c = param_2;
+        do {
+            if (*cell != 0) minCol = c;
+            cell -= 7;
+            c--;
+        } while (minCol < c);
+    }
+    // Scan down
+    if (param_1 < maxRow) {
+        int* cell = (int*)((int)this + (param_2 + param_1 * 6) * 0x1C + 0x140);
+        int r = param_1;
+        do {
+            if (*cell != 0) maxRow = r;
+            cell += 0x2A;
+            r++;
+        } while (r < maxRow);
+    }
+    // Scan up
+    if (minRow < param_1) {
+        int* cell = (int*)((int)this + (param_2 + param_1 * 6) * 0x1C + 0x140);
+        int r = param_1;
+        do {
+            if (*cell != 0) minRow = r;
+            cell -= 0x2A;
+            r--;
+        } while (minRow < r);
+    }
+
+    int idx = param_2 + param_1 * 6;
+    int diagUL = *(int*)((int)this + idx * 0x1C + 0x7C);
+    int diagDR = *(int*)((int)this + idx * 0x1C + 0x1CC);
+    int diagUR = *(int*)((int)this + idx * 0x1C + 0xB4);
+    int diagDL = *(int*)((int)this + idx * 0x1C + 0x204);
+
+    // Clear horizontal span
+    if (minCol <= maxCol) {
+        int count = maxCol - minCol + 1;
+        int* cell = (int*)((int)this + (param_1 * 6 + minCol) * 0x1C + 0x13C);
+        do {
+            total += *cell;
+            *cell = 0;
+            cell += 7;
+            count--;
+        } while (count != 0);
+    }
+    // Clear vertical span
+    if (minRow <= maxRow) {
+        int count = maxRow - minRow + 1;
+        int* cell = (int*)((int)this + (param_2 + minRow * 6) * 0x1C + 0x13C);
+        do {
+            total += *cell;
+            *cell = 0;
+            cell += 0x2A;
+            count--;
+        } while (count != 0);
+    }
+    // Clear diagonals
+    if (diagUL == 0 && hasDownLeft && hasUpLeft) {
+        int val = *(int*)((int)this + idx * 0x1C + 0x78);
+        if (val != 0) {
+            *(int*)((int)this + idx * 0x1C + 0x78) = 0;
+            total += val;
+        }
+    }
+    if (diagDR == 0 && hasUpRight && hasDownLeft) {
+        int val = *(int*)((int)this + idx * 0x1C + 0x1C8);
+        if (val != 0) {
+            *(int*)((int)this + idx * 0x1C + 0x1C8) = 0;
+            total += val;
+        }
+    }
+    if (diagUR == 0 && hasDownRight && hasUpLeft) {
+        int val = *(int*)((int)this + idx * 0x1C + 0xB0);
+        if (val != 0) {
+            *(int*)((int)this + idx * 0x1C + 0xB0) = 0;
+            total += val;
+        }
+    }
+    if (diagDL == 0 && hasDownRight && hasUpRight) {
+        int val = *(int*)((int)this + idx * 0x1C + 0x200);
+        if (val != 0) {
+            *(int*)((int)this + idx * 0x1C + 0x200) = 0;
+            total += val;
+        }
+    }
+
+    int snd;
+    if (total == 0) {
+        snd = 0;
+    } else {
+        ((SoundList*)*(int*)((int)this + 0x110))->Play(1);
+        snd = 4 - *(int*)((int)this + 0x120);
+        if (snd < 0 || snd > 2) goto skip_sound;
+        snd = 9 - *(int*)((int)this + 0x120);
+    }
+    ((SoundList*)*(int*)((int)this + 0x110))->Play(snd);
+skip_sound:
+    *(int*)((int)this + idx * 0x1C + 0x13C) = total;
+    if (*(int*)((int)this + 0x120) == 1) {
+        *(int*)((int)this + 0x120) = 0;
+    }
+    *(int*)((int)this + 0x124) = 0;
+}

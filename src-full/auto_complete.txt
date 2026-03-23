@@ -384,7 +384,8 @@
 # SCI_SchoolMenu SEH funclets
 0x41dd76
 0x41dfc2
-0x41e0c0  # SCI_SchoolMenu sdtor
+# SCI_SchoolMenu sdtor
+0x41e0c0
 
 # SCI_SchoolMenu Init SEH funclets and CRT
 0x41e930
@@ -394,7 +395,8 @@
 0x421ECA
 0x421EE6
 0x421F02
-0x421F60  # SC_SaveLoad sdtor
+# SC_SaveLoad sdtor
+0x421F60
 
 # SC_SaveLoad destructor SEH funclets
 0x42213A
@@ -447,7 +449,8 @@
 0x420ee7
 
 # T_MenuHotspot sdtor
-0x421f60  # SC_SaveLoad sdtor
+# SC_SaveLoad sdtor
+0x421f60
 
 # SCI_SchoolMenu sdtor
 0x41e0c0
@@ -458,15 +461,22 @@
 0x424231
 
 # CRT static init/cleanup (global objects)
-0x423690  # Timer CRT init
-0x4236b0  # Timer CRT atexit handler
-0x4236d0  # Timer CRT atexit registration
-0x426720  # Sound CRT init
-0x426740  # Sound CRT atexit registration
-0x426a70  # Sound CRT cleanup
+# Timer CRT init
+0x423690
+# Timer CRT atexit handler
+0x4236b0
+# Timer CRT atexit registration
+0x4236d0
+# Sound CRT init
+0x426720
+# Sound CRT atexit registration
+0x426740
+# Sound CRT cleanup
+0x426a70
 
 # Import thunk
-0x426ab0  # JMP [AIL import]
+# JMP [AIL import]
+0x426ab0
 
 # Misc SEH funclets
 0x426bf4
@@ -486,7 +496,8 @@
 0x4285d7
 
 # SC_DodgeOrville sdtor + SEH funclets
-0x428910  # sdtor
+# sdtor
+0x428910
 0x42898d
 0x42899b
 0x4289b3
@@ -506,8 +517,10 @@
 0x42caa0
 
 # IconBar CRT init/cleanup
-0x42d370  # atexit registration
-0x42d451  # funclet
+# atexit registration
+0x42d370
+# funclet
+0x42d451
 
 # IconBar::Init SEH funclet
 0x42d6d3
@@ -539,7 +552,8 @@
 0x4350af
 
 # SCI_Schedule sdtor + no file
-0x435ac0  # sdtor
+# sdtor
+0x435ac0
 
 # SC_BgSnd SEH funclets
 0x439450
@@ -563,13 +577,16 @@
 0x435b99
 
 # SC_Cinematic::ShutDown SEH funclet
-0x42cb10  # Actually SC_Cinematic::LBLParse - large but COMDAT
+# Actually SC_Cinematic::LBLParse - large but COMDAT
+0x42cb10
 
 # IconBarEntry SEH funclets
-0x42e7a0  # IconBarEntry sdtor
+# IconBarEntry sdtor
+0x42e7a0
 
 # SC_Game destructor
-0x432f60  # SC_Game dtor body with SEH (chdir)
+# SC_Game dtor body with SEH (chdir)
+0x432f60
 
 # Handler31 SEH/no-file
 0x431fb8
@@ -823,3 +840,85 @@
 0x434010
 0x42e720
 0x42e834
+# LinkedList::PushNode COMDAT with SEH
+0x423470
+
+# IconBarEntry CRT array init/cleanup
+0x42d380
+0x42d3b0
+0x42d3e0
+0x42d410
+# SC_Combat::Update COMDAT
+0x42e9b0
+# SC_Combat subclass Cleanup COMDAT
+0x42e8f0
+0x42d3d0
+# IconBarEntry dtor body with SEH
+0x42e7c0
+# SCI_Inventory dtor body with SEH
+0x43b050
+0x43b0ad
+0x43edeb
+0x447cb0
+# Empty function (just RET)
+0x450600
+# TimedEventPool::EnqueueSafe COMDAT
+0x42c150
+# NavSubNode-derived LBLParse COMDAT
+0x44add0
+0x43e8b9
+0x43e8d1
+0x43e900
+0x4490d0
+0x4442a0
+0x435ae0
+0x43b720
+0x42cb10
+0x432f60
+0x42e8f0
+0x42e9d0
+# MessageList::PopCurrent COMDAT
+0x449050
+# MessageList::PopCurrent COMDAT (another unit)
+0x4407c0
+# IconBarEntry dtor body
+0x42e7c0
+# LinkedList::PushNode COMDAT
+0x423470
+0x44ea90
+# NavSubNode-derived LBLParse COMDAT
+0x44ac90
+# GetProcAddress helper (register-based)
+0x453712
+# memset zero helper (register-based)
+0x452b4b
+# Bresenham line helper (register-based)
+0x4531ac
+# CRT helper
+0x454076
+# CRT helper
+0x454087
+# TimedEventPool enqueue COMDAT
+0x42c150
+# CRT global array constructor (BombData/HitBounds)
+0x428110
+# RockThrower::LBLParse body (SEH wrapper at different addr)
+0x427b43
+# LinkedList::PushNode COMDAT
+0x423470
+# CRT global array init
+0x428110
+# TimedEventPool COMDAT
+0x42c150
+# IconBarEntry dtor body
+0x42e7c0
+# SCI_Inventory dtor body
+0x43b050
+# MessageList::PopCurrent COMDAT
+0x4407c0
+# SC_Pods::LBLParse SEH body
+0x4420b3
+# LinkedList::InsertNode COMDAT with SEH
+0x444110
+# mCNavigator large function (772L, too complex for manual implementation)
+0x446ce0

@@ -17,6 +17,8 @@ public:
     int IsSimilar(void* data, int start, int count);
     void Cleanup();
     void CopyData(void* source);
+    void FadeTo(int targetR, int targetG, int targetB, float fraction, int start, int count); // 0x41DE60
+    void SetAndApply(unsigned int start, unsigned int count); // 0x41DF10
     void CopyRGBData(int source, int startIdx, int count); // 0x41DC70
     void PlaySound(int);              // 0x425550
     int CheckSound(int);              // 0x4256D0

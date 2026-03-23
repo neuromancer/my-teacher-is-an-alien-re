@@ -280,3 +280,11 @@ void EngineB::OnProcessEnd() {
 static char* FormatSoundPath(char* path) {
     return MakeAudioName(path);
 }
+
+/* Function start: 0x4510E0 */
+void StartScheduleTimer2() {
+    SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    action.instruction = 0x37;
+    action.extra1 = 1;
+    EnqueueSpriteAction(&action);
+}
