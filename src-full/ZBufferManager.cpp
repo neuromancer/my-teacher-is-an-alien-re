@@ -194,7 +194,7 @@ void BlitCommand::Execute(GlyphRect* rect)
         vbuf->ClipAndPaste(left, right, top, bottom, x, y, (int)data);
         return;
     case 2:
-        vbuf->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
+        vbuf->ClipAndBlitRegion(left, right, top, bottom, x, y, (int)data);
         return;
     case 3:
         clipRect.left = vbuf->clip_x1;
