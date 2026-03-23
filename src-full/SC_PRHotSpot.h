@@ -17,6 +17,7 @@ public:
     SC_PRHotSpot(int hotspotId, int owner); // 0x429B60
     ~SC_PRHotSpot();                        // 0x429C10
 
+    int LBLParse(char* param_1);            // 0x42A0C0
     void Update();                          // 0x429DF0
     int CheckCollision(void* msg);          // 0x42A010
 

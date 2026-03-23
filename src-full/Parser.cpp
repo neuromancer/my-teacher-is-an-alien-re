@@ -360,8 +360,8 @@ void Parser::BeginComment(char* line) {
     char* end;
     int len;
 
-    start = FindAfterSubstring(line, "/*");
-    end = strstr(line, "*/");
+    start = FindAfterSubstring(line, "<<");
+    end = strstr(line, ">>");
     len = end - start;
     if (start == 0 || end == 0 || len <= 0) {
         ShowError("Parser::SaveComment - %s", line);
@@ -373,15 +373,15 @@ void Parser::BeginComment(char* line) {
 /* Function start: 0x412C60 */
 int Parser::DoCommentsMatch(char* line) {
     char localBuf[32];
-    char* start = FindAfterSubstring(line, "/*");
-    char* end = strstr(line, "*/");
+    char* start = FindAfterSubstring(line, "<<");
+    char* end = strstr(line, ">>");
     int len = end - start;
     if (start == 0 || end == 0 || len <= 0) {
         ShowError("Parser::DoCommentsMatch - %s", line);
     }
     memcpy(localBuf, start, len);
     localBuf[len] = '\0';
-    if (strcmp(localBuf, (char*)(&isProcessingKey + 2)) == 0) {
+    if (strcmp(localBuf, currentKey) == 0) {
         return 1;
     }
     return 0;

@@ -103,6 +103,7 @@ void GameEngine::RunGameLoop() {
     if (m_exitFlag == 0) {
         do {
             ProcessInput();
+            if (m_exitFlag != 0) break;
             ProcessEvents();
             if (m_exitFlag != 0) break;
             UpdateHandlers();

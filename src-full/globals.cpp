@@ -249,8 +249,9 @@ int g_TargetBearingValue_004362c8 = 0;
 int g_DevelopFlag_00472de4 = 0;  // 1 = "Develop.___" file found
 
 // Detention/Period globals
-int g_PeriodStateIdx_0046cb90 = 0;
-char* g_PeriodCharTable_0046cb94 = 0;
+int g_PeriodStateIdx_0046cb90 = 60;
+static char s_PeriodChars[] = " DSP";
+char* g_PeriodCharTable_0046cb94 = s_PeriodChars;
 
 // ============================================================================
 // Globals moved from stubs.cpp (sorted by address)

@@ -4,11 +4,17 @@
 #include "Sample.h"
 #include "LinkedList.h"
 #include "Memory.h"
+#include "GameState.h"
 #include <string.h>
+#include <stdio.h>
 
 #include "InputManager.h"
 extern "C" void ShowError(const char* format, ...);
+extern "C" char* GetSoundFilename(int handle);
 extern void __fastcall PracticeRoomNotify(void*);
+extern void ParseSpriteAction(void* param_1, void* param_2);
+extern "C" GameState* g_GameState_0046aa30;
+extern GameState* g_GameState2_0046aa3c;
 
 extern InputManager* g_InputManager_0046aa08;
 
@@ -61,6 +67,151 @@ SC_PRHotSpot::~SC_PRHotSpot()
         FreeMemory(actionList);
         actionList = 0;
     }
+}
+
+/* Function start: 0x42A0C0 */
+int SC_PRHotSpot::LBLParse(char* param_1) {
+    char local_bc[128];
+    char local_3c[32];
+    int local_18;
+    int local_1c;
+
+    local_18 = 0;
+    local_1c = 0;
+    local_bc[0] = 0;
+    local_3c[0] = 0;
+
+    sscanf(param_1, "%s", local_3c);
+
+    if (strcmp(local_3c, "SPRITE") == 0) {
+        if (sprite != 0) {
+            delete sprite;
+            sprite = 0;
+        }
+        Sprite* newSprite = new Sprite(0);
+        sprite = newSprite;
+        Parser::ProcessFile(sprite, this, 0);
+    } else if (strcmp(local_3c, "LOC") == 0) {
+        sscanf(param_1, "%s %d %d %d %d", local_3c, &boundsLeft, &boundsTop, &boundsRight, &boundsBottom);
+    } else if (strcmp(local_3c, "ROLLON") == 0) {
+        sscanf(param_1, "%s %d", local_3c, &local_18);
+        char* filename = GetSoundFilename(local_18);
+        if (hoverSound != 0) {
+            hoverSound->Unload();
+            operator delete(hoverSound);
+            hoverSound = 0;
+        }
+        Sample* snd = new Sample();
+        hoverSound = snd;
+        snd->Load(filename);
+    } else if (strcmp(local_3c, "ROLLOFF") == 0) {
+        sscanf(param_1, "%s %d", local_3c, &local_18);
+        char* filename = GetSoundFilename(local_18);
+        if (exitSound != 0) {
+            exitSound->Unload();
+            operator delete(exitSound);
+            exitSound = 0;
+        }
+        Sample* snd = new Sample();
+        exitSound = snd;
+        snd->Load(filename);
+    } else if (strcmp(local_3c, "SELECTED") == 0) {
+        sscanf(param_1, "%s %d", local_3c, &local_18);
+        char* filename = GetSoundFilename(local_18);
+        if (clickSound != 0) {
+            clickSound->Unload();
+            operator delete(clickSound);
+            clickSound = 0;
+        }
+        Sample* snd = new Sample();
+        clickSound = snd;
+        snd->Load(filename);
+    } else if (strcmp(local_3c, "MESSAGE") == 0) {
+        SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        ParseSpriteAction(action, this);
+        if (actionList == 0) {
+            LinkedList* newList = new LinkedList();
+            actionList = newList;
+        }
+        if (action == 0) {
+            ShowError("queue fault 0101");
+        }
+        actionList->current = actionList->head;
+        if (actionList->type == 1 || actionList->type == 2) {
+            if (actionList->head == 0) {
+                actionList->InsertNode(action);
+            } else {
+                do {
+                    int cur = (int)actionList->current;
+                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
+                        actionList->InsertNode(action);
+                        break;
+                    }
+                    if ((int)actionList->tail == cur) {
+                        actionList->PushNode(action);
+                        break;
+                    }
+                    if (cur != 0) {
+                        actionList->current = (ListNode*)*(int*)(cur + 4);
+                    }
+                } while (actionList->current != 0);
+            }
+        } else {
+            actionList->InsertNode(action);
+        }
+    } else if (strcmp(local_3c, "GAMESTATE") == 0) {
+        char local_13c[128];
+        int result;
+        result = sscanf(param_1, "%s %s %s %d", local_3c, local_bc, local_13c, &local_1c);
+        if (actionList == 0) {
+            LinkedList* newList = new LinkedList();
+            actionList = newList;
+        }
+        SpriteAction* action = new SpriteAction(
+            2,
+            g_GameState_0046aa30->FindState(local_bc),
+            0, 0,
+            g_GameState2_0046aa3c->FindState(local_13c),
+            local_1c, 0, 0, 0, 0);
+        if ((action->instruction == 0x11 || action->instruction == 0x12) && result < 4) {
+            action->extra1 = 1;
+        }
+        if (action->instruction == 0x11 && result < 4) {
+            Parser::LBLParse("SC_PRHotSpot");
+        }
+        if (action == 0) {
+            ShowError("queue fault 0101");
+        }
+        actionList->current = actionList->head;
+        if (actionList->type == 1 || actionList->type == 2) {
+            if (actionList->head == 0) {
+                actionList->InsertNode(action);
+            } else {
+                do {
+                    int cur = (int)actionList->current;
+                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
+                        actionList->InsertNode(action);
+                        break;
+                    }
+                    if ((int)actionList->tail == cur) {
+                        actionList->PushNode(action);
+                        break;
+                    }
+                    if (cur != 0) {
+                        actionList->current = (ListNode*)*(int*)(cur + 4);
+                    }
+                } while (actionList->current != 0);
+            }
+        } else {
+            actionList->InsertNode(action);
+        }
+    } else if (strcmp(local_3c, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SC_PRHotSpot");
+    }
+
+    return 0;
 }
 
 /* Function start: 0x429DF0 */
