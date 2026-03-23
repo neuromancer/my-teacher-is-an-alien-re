@@ -45,7 +45,8 @@ extern "C" { extern GameState* g_GameState_0046aa30; }
 
 /* Function start: 0x428840 */
 SC_DodgeOrville::SC_DodgeOrville() {
-    memset(field_118, 0, 0x50);
+    memset(&reticlePos, 0, 0x50);
+
     handlerId = 0x43;
 }
 
@@ -57,16 +58,16 @@ SC_DodgeOrville::~SC_DodgeOrville() {
 void SC_DodgeOrville::Cleanup(int flag) {
     void* ptr;
 
-    ptr = (void*)field_12C;
+    ptr = (void*)barFillSprite;
     if (ptr != 0) {
         delete (Sprite*)ptr;
-        field_12C = 0;
+        barFillSprite = 0;
     }
 
-    ptr = (void*)field_130;
+    ptr = (void*)barBgSprite;
     if (ptr != 0) {
         delete (Sprite*)ptr;
-        field_130 = 0;
+        barBgSprite = 0;
     }
 
     SC_Combat::ShutDown((SC_Message*)flag);
@@ -84,7 +85,7 @@ int SC_DodgeOrville::AddMessage(SC_Message* msg) {
     if (ret != 0) {
         return 1;
     }
-    if (*((int*)msg + 0xB) == 0x1B) {
+    if (((SpriteAction*)msg)->lastKey == 0x1B) {
         statusPtr[2] = 1;
     }
     return 1;
@@ -112,19 +113,19 @@ void SC_DodgeOrville::ProcessTargets() {
                 pendingAction->fromValue = savedMsgData;
                 pendingAction->extra1 = 6;
 
-                void* gs = g_GameState_0046aa30;
-                int idx = ((GameState*)gs)->FindLabel("DODGE_COMBAT_AVAILABLE");
-                if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+                GameState* gs = g_GameState_0046aa30;
+                int idx = gs->FindLabel("DODGE_COMBAT_AVAILABLE");
+                if (idx < 0 || gs->maxStates - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
-                *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 0;
+                gs->stateValues[idx] = 0;
 
                 gs = g_GameState_0046aa30;
-                idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
-                if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+                idx = gs->FindLabel("NUM_ACTIONS");
+                if (idx < 0 || gs->maxStates - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
-                *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x1E;
+                gs->stateValues[idx] += 0x1E;
             }
         }
         else if (statusPtr[0] != 0) {
@@ -200,10 +201,10 @@ void SC_DodgeOrville::UpdateGame()
     }
 
     int state = ((Sprite*)field_0x10C)->handle;
-    int f0val = (int)((Sprite*)bgSprite)->animation_data;
+    Animation* anim = ((Sprite*)bgSprite)->animation_data;
     int frameVal = 0;
-    if (f0val != 0) {
-        frameVal = *(int*)(*(int*)(f0val + 0xc) + 0x374);
+    if (anim != 0) {
+        frameVal = anim->smk->FrameNum;
     }
 
     if (frameVal != 0 && state >= 0 && state <= 2) {
@@ -211,84 +212,81 @@ void SC_DodgeOrville::UpdateGame()
             g_HitBounds_00473260[state].minVal = 0;
             g_HitBounds_00473260[state].maxVal = 0;
             ((Sprite*)field_0x10C)->ResetAnimation(state + 7, 0);
-            dim_144.field_0++;
+            hitCount.field_0++;
             bgSound->Play(2);
-            bgSound->Play(field_154[0] + 5);
-            if (field_154[0] < 2) {
-                field_154[0]++;
+            bgSound->Play(hitSoundIdx + 5);
+            if (hitSoundIdx < 2) {
+                hitSoundIdx++;
             }
         }
     }
 
     UpdateReticle();
 
-    ((Sprite*)field_130)->Do(((Sprite*)field_130)->loc_x, ((Sprite*)field_130)->loc_y, 1.0);
-    ((Sprite*)field_12C)->Do(((Sprite*)field_12C)->loc_x, ((Sprite*)field_12C)->loc_y, 1.0);
+    barBgSprite->Do(barBgSprite->loc_x, barBgSprite->loc_y, 1.0);
+    barFillSprite->Do(barFillSprite->loc_x, barFillSprite->loc_y, 1.0);
 
-    int renderData = 0;
-    if ((int)((Sprite*)field_130)->animation_data != 0) {
-        renderData = *(int*)((int)((Sprite*)field_130)->animation_data + 0x18);
+    VBuffer* vb = 0;
+    if (barBgSprite->animation_data != 0) {
+        vb = barBgSprite->animation_data->targetBuffer;
     }
 
-    g_ZBufferManager_0046aa24->DrawVBufferRegion((void*)renderData, 0x7531, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, dim_134.field_4, dim_13C.field_0, dim_13C.field_4);
+    g_ZBufferManager_0046aa24->DrawVBufferRegion(vb, 0x7531, barPos.field_0, barPos.field_4, 2, 1.0, clipStart.field_0, clipStart.field_4, clipEnd.field_0, clipEnd.field_4);
 
-    if (dim_144.field_4 != 0 && dim_144.field_0 >= dim_144.field_4) {
-        int renderData2 = 0;
-        if ((int)((Sprite*)field_12C)->animation_data != 0) {
-            renderData2 = *(int*)((int)((Sprite*)field_12C)->animation_data + 0x18);
+    if (hitCount.field_4 != 0 && hitCount.field_0 >= hitCount.field_4) {
+        VBuffer* vb2 = 0;
+        if (barFillSprite->animation_data != 0) {
+            vb2 = barFillSprite->animation_data->targetBuffer;
         }
-        int w = *(int*)(renderData2 + 0x24);
-        int h = *(int*)(renderData2 + 0x2c);
-        g_ZBufferManager_0046aa24->DrawVBufferRegion((void*)renderData2, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, 0, w, 0, h);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(vb2, 0x7532, barPos.field_0, barPos.field_4, 2, 1.0, 0, vb2->clip_y2, 0, vb2->clip_x2);
     } else {
-        int hits = dim_144.field_0;
-        int maxHits = dim_144.field_4;
+        int hits = hitCount.field_0;
+        int maxHits = hitCount.field_4;
         int fillHeight = (hits * 0x7c) / maxHits + 0x1e;
-        if (fillHeight >= dim_13C.field_0) {
-            fillHeight = dim_13C.field_0;
+        if (fillHeight >= clipEnd.field_0) {
+            fillHeight = clipEnd.field_0;
         }
 
-        void* rd3;
-        int animData = (int)((Sprite*)field_12C)->animation_data;
+        VBuffer* rd3;
+        Animation* animData = barFillSprite->animation_data;
         if (animData != 0) {
-            rd3 = (void*)*(int*)(animData + 0x18);
+            rd3 = animData->targetBuffer;
         } else {
             rd3 = 0;
         }
-        g_ZBufferManager_0046aa24->DrawVBufferRegion(rd3, 0x7532, dim_14C.field_0, dim_14C.field_4, 2, 1.0, dim_134.field_0, fillHeight, dim_134.field_4, dim_13C.field_4);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(rd3, 0x7532, barPos.field_0, barPos.field_4, 2, 1.0, clipStart.field_0, fillHeight, clipStart.field_4, clipEnd.field_4);
     }
 }
 
 /* Function start: 0x429380 */
 void SC_DodgeOrville::UpdateReticle()
 {
-    Sprite* spr10c = (Sprite*)field_0x10C; // 0x10c
-    if (spr10c->Do(spr10c->loc_x, spr10c->loc_y, 1.0) == 0) {
+    if (((Sprite*)field_0x10C)->Do(((Sprite*)field_0x10C)->loc_x, ((Sprite*)field_0x10C)->loc_y, 1.0) == 0) {
         return;
     }
 
-    int state = field_118[0];
+    int state = reticlePos;
     if (state != 1 && state != 3) {
-        field_118[1] = CheckCursorRange(0x32);
+        cursorDir = CheckCursorRange(0x32);
     }
 
-    int dir = field_118[1];
-    int newState = field_118[0] + dir;
-    field_118[0] = newState;
+    int dir = cursorDir;
+    int newState = reticlePos + dir;
+    reticlePos = newState;
     if (newState < 0) {
-        field_118[0] = 0;
+        reticlePos = 0;
     } else if (newState > 4) {
-        field_118[0] = 4;
+        reticlePos = 4;
     }
 
-    int animState = g_AnimStates_0046ac30[field_118[0]];
+    int animState = g_AnimStates_0046ac30[reticlePos];
     if (dir < 0) {
         if (animState == 3 || animState == 5) {
             animState++;
         }
     }
 
-    spr10c->ResetAnimation(animState, 0);
+    ((Sprite*)field_0x10C)->ResetAnimation(animState, 0);
 }
 
 /* Function start: 0x429430 */
@@ -319,20 +317,20 @@ int CompareRange(int center, int pos, int range)
 /* Function start: 0x4294A0 */
 void SC_DodgeOrville::ThrowBomb()
 {
-    if (dim_144.field_4 != 0 && dim_144.field_0 >= dim_144.field_4) {
+    if (hitCount.field_4 != 0 && hitCount.field_0 >= hitCount.field_4) {
         statusPtr[0] = 1;
         return;
     }
 
-    int throwCount = field_118[2] + 1; // 0x124
-    field_118[2] = throwCount;
-    int maxThrows = dim_124.field_0; // 0x128 (via field_118[3] alias)
+    int tc = throwState.field_0 + 1;
+    throwState.field_0 = tc;
+    int maxThrows = throwState.field_4;
 
     int atLimit;
     if (maxThrows == 0) {
         atLimit = 0;
     } else {
-        atLimit = (maxThrows <= throwCount) ? 1 : 0;
+        atLimit = (maxThrows <= tc) ? 1 : 0;
     }
 
     if (atLimit != 0) {
@@ -348,20 +346,21 @@ void SC_DodgeOrville::ThrowBomb()
     g_LastBombDir_0046ac44 = dir;
     ((Sprite*)bgSprite)->ResetAnimation(dir + 1, 0); // 0x108
 
-    // Copy bomb data to hit bounds
+    // Copy bomb data to hit bounds (3 entries)
     int* src = (int*)&g_BombData_00473278[dir];
     int* dst = (int*)&g_HitBounds_00473260[0];
+    int* end = (int*)&g_BombData_00473278[0];
     do {
         dst[0] = src[0];
         dst[1] = src[1];
         src += 2;
         dst += 2;
-    } while ((unsigned int)dst < 0x473278);
+    } while (dst < end);
 
     bgSound->Play(3); // 0x110
 
     int r = rand();
-    int maxTh = dim_124.field_0;
+    int maxTh = throwState.field_4;
     int rem = r % maxTh;
     if (maxTh / 0x14 > rem) {
         bgSound->Play(8);
@@ -375,20 +374,20 @@ void SC_DodgeOrville::ThrowBomb()
 /* Function start: 0x4297D0 */
 void SC_DodgeOrville::InitGameState()
 {
-    dim_134.field_0 = 0;
-    dim_134.field_4 = 0;
-    dim_13C.field_0 = 0xb3;
-    dim_13C.field_4 = 0x13;
-    dim_14C.field_0 = 0x46;
-    dim_14C.field_4 = 0x1e;
+    clipStart.field_0 = 0;
+    clipStart.field_4 = 0;
+    clipEnd.field_0 = 0xb3;
+    clipEnd.field_4 = 0x13;
+    barPos.field_0 = 0x46;
+    barPos.field_4 = 0x1e;
 
     GameState* gs = g_GameState_0046aa30;
     int idx = gs->FindLabel("MAX_HITS_BY_STINK_BOMBS");
-    if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
-    dim_144.field_0 = 0;
-    dim_144.field_4 = *(int*)(*(int*)((int)gs + 0x90) + idx * 4);
+    hitCount.field_0 = 0;
+    hitCount.field_4 = gs->stateValues[idx];
 }
 
 /* Function start: 0x429860 */
@@ -396,7 +395,7 @@ void SC_DodgeOrville::InitReset()
 {
     SC_Combat::OnProcessEnd();
     CheckCursorRange(0);
-    field_118[2] = 0; // 0x120
-    field_118[0] = 2; // 0x118
-    field_118[1] = 0; // 0x11c
+    field_120 = 0; // 0x120
+    reticlePos = 2; // 0x118
+    cursorDir = 0; // 0x11c
 }

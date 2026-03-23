@@ -35,23 +35,22 @@ SC_PRHotSpot::SC_PRHotSpot(int param_1, int param_2) : Parser()
 SC_PRHotSpot::~SC_PRHotSpot()
 {
     if (sprite != 0) {
-        sprite->~Sprite();
-        FreeMemory(sprite);
+        delete sprite;
         sprite = 0;
     }
     if (hoverSound != 0) {
-        hoverSound->~Sample();
-        FreeMemory(hoverSound);
+        hoverSound->Unload();
+        operator delete(hoverSound);
         hoverSound = 0;
     }
     if (clickSound != 0) {
-        clickSound->~Sample();
-        FreeMemory(clickSound);
+        clickSound->Unload();
+        operator delete(clickSound);
         clickSound = 0;
     }
     if (exitSound != 0) {
-        exitSound->~Sample();
-        FreeMemory(exitSound);
+        exitSound->Unload();
+        operator delete(exitSound);
         exitSound = 0;
     }
     if (actionList != 0) {
@@ -60,11 +59,12 @@ SC_PRHotSpot::~SC_PRHotSpot()
             while (actionList->head != 0) {
                 void* data = actionList->RemoveCurrent();
                 if (data != 0) {
-                    delete (SpriteAction*)data;
+                    ((SpriteAction*)data)->~SpriteAction();
+                    operator delete(data);
                 }
             }
         }
-        FreeMemory(actionList);
+        operator delete(actionList);
         actionList = 0;
     }
 }
@@ -214,55 +214,31 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
     return 0;
 }
 
+extern int __stdcall AIL_sample_status(void*);
+
 /* Function start: 0x429DF0 */
 void SC_PRHotSpot::Update()
 {
-    if (state > 3) {
-        ShowError("SC_PRHotSpot::Update()");
-        return;
-    }
+    int mouseX;
+    int mouseY;
+    InputState* pMouse;
 
-    if (state == 0) {
+    switch (state) {
+    case 0:
         return;
-    }
-
-    if (state == 1 || state == 2) {
-        int mouseY = 0;
-        InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    case 1:
+        pMouse = g_InputManager_0046aa08->pMouse;
+        mouseY = 0;
         if (pMouse != 0) {
             mouseY = pMouse->y;
         }
-        int mouseX;
         if (pMouse != 0) {
             mouseX = pMouse->x;
         } else {
             mouseX = 0;
         }
-
-        if (state == 2) {
-            // Hovering: check if still inside bounds
-            if (boundsLeft <= mouseX && boundsRight >= mouseX &&
-                boundsTop <= mouseY && boundsBottom >= mouseY) {
-                if (sprite != 0) {
-                    sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-                }
-                return;
-            }
-            // Moved outside — back to idle
-            state = 1;
-            if (sprite != 0) {
-                sprite->ResetAnimation(1, 0);
-            }
-            if (exitSound != 0) {
-                exitSound->Play(100, 1);
-            }
-        } else {
-            // Idle: check if cursor entered bounds
-            if (boundsLeft > mouseX || boundsRight < mouseX ||
-                boundsTop > mouseY || boundsBottom < mouseY) {
-                goto do_animate;
-            }
-            // Entered — transition to hover
+        if (boundsLeft <= mouseX && boundsRight >= mouseX &&
+            boundsTop <= mouseY && boundsBottom >= mouseY) {
             state = 2;
             if (sprite != 0) {
                 sprite->ResetAnimation(2, 0);
@@ -271,56 +247,67 @@ void SC_PRHotSpot::Update()
                 hoverSound->Play(100, 1);
             }
         }
-
-    do_animate:
+        if (sprite != 0) {
+            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        }
+        return;
+    case 2:
+        pMouse = g_InputManager_0046aa08->pMouse;
+        mouseY = 0;
+        if (pMouse != 0) {
+            mouseY = pMouse->y;
+        }
+        if (pMouse != 0) {
+            mouseX = pMouse->x;
+        } else {
+            mouseX = 0;
+        }
+        if (boundsLeft > mouseX || boundsRight < mouseX ||
+            boundsTop > mouseY || boundsBottom < mouseY) {
+            state = 1;
+            if (sprite != 0) {
+                sprite->ResetAnimation(1, 0);
+            }
+            if (exitSound != 0) {
+                exitSound->Play(100, 1);
+            }
+        }
+        if (sprite != 0) {
+            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        }
+        return;
+    case 3: {
+        HSAMPLE hsamp;
+        if (clickSound != 0 && (hsamp = clickSound->m_sample) != 0 &&
+            clickSound->m_size == *(int*)((char*)hsamp + 0xc) &&
+            AIL_sample_status(hsamp) == 4) {
+            goto do_sprite;
+        }
+        if (actionList != 0) {
+            actionList->current = actionList->head;
+            if (actionList->head != 0) {
+                do {
+                    void* nodeData = 0;
+                    if (actionList->current != 0) {
+                        nodeData = actionList->current->data;
+                    }
+                    EnqueueSpriteAction(nodeData);
+                    if (actionList->tail == actionList->current) break;
+                    if (actionList->current != 0) {
+                        actionList->current = actionList->current->next;
+                    }
+                } while (actionList->head != 0);
+            }
+        }
+        state = 1;
+    do_sprite:
         if (sprite != 0) {
             sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
         }
         return;
     }
-
-    // State 3: clicked — check audio completion
-    if (state == 3) {
-        if (clickSound != 0) {
-            int sampleHandle = (int)clickSound->m_sample;
-            if (sampleHandle != 0) {
-                int status = *(int*)(sampleHandle + 0xc);
-                if (clickSound->m_size == status) {
-                    // Audio finished
-                }
-            }
-        }
-
-        // Execute action list
-        if (actionList != 0) {
-            actionList->current = actionList->head;
-            if (actionList->head != 0) {
-                while (1) {
-                    void* nodeData;
-                    if (actionList->current == 0) {
-                        nodeData = 0;
-                    } else {
-                        nodeData = (void*)actionList->current->data;
-                    }
-                    EnqueueSpriteAction(nodeData);
-
-                    if (actionList->tail == actionList->current) {
-                        break;
-                    }
-                    if (actionList->current != 0) {
-                        actionList->current = actionList->current->next;
-                    }
-                    if (actionList->head == 0) {
-                        break;
-                    }
-                }
-            }
-            state = 1;
-        }
-
-        if (sprite != 0) {
-            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-        }
+    default:
+        ShowError("SC_PRHotSpot::Update()");
         return;
     }
 }
@@ -339,7 +326,6 @@ int SC_PRHotSpot::CheckCollision(void* param_1)
                     if (hotspotId >= 0x14 && hotspotId <= 0x16) {
                         PracticeRoomNotify((void*)owner);
                     }
-
                     state = 3;
                     if (sprite != 0) {
                         sprite->ResetAnimation(3, 0);

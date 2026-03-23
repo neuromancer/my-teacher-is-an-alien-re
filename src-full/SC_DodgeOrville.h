@@ -32,15 +32,21 @@ public:
     void InitGameState();              // 0x4297D0
     void InitReset();                  // 0x429860
 
-    int field_118[3];     // 0x118-0x123 (12 bytes)
-    SlimeDim dim_124;     // 0x124-0x12B (8 bytes, non-trivial dtor)
-    int field_12C;        // 0x12C - Sprite/SpriteAction pointer
-    int field_130;        // 0x130 - Sprite/SpriteAction pointer
-    SlimeDim dim_134;     // 0x134-0x13B (8 bytes, non-trivial dtor)
-    DodgeDim dim_13C;     // 0x13C-0x143 (8 bytes, trivial dtor)
-    DodgeDim dim_144;     // 0x144-0x14B (8 bytes, trivial dtor)
-    DodgeDim dim_14C;     // 0x14C-0x153 (8 bytes, trivial dtor)
-    int field_154[5];     // 0x154-0x167 (20 bytes)
+    int reticlePos;       // 0x118 - reticle position (0-4, 2=center)
+    int cursorDir;        // 0x11C - cursor movement direction (-1, 0, 1)
+    int field_120;        // 0x120 - reset to 0 each round
+    SlimeDim throwState;  // 0x124-0x12B (field_0 = throwCount, field_4 = maxThrows)
+    Sprite* barFillSprite;// 0x12C - stink bar fill level sprite
+    Sprite* barBgSprite;  // 0x130 - stink bar background sprite
+    SlimeDim clipStart;   // 0x134-0x13B (x1=0, y1=0 clip region start)
+    DodgeDim clipEnd;     // 0x13C-0x143 (x2, y2 clip region end)
+    DodgeDim hitCount;    // 0x144-0x14B (field_0=current hits, field_4=max hits)
+    DodgeDim barPos;      // 0x14C-0x153 (x, y position of stink bar)
+    int hitSoundIdx;      // 0x154 - escalating hit sound index
+    int field_158;        // 0x158
+    int field_15C;        // 0x15C
+    int field_160;        // 0x160
+    int field_164;        // 0x164
 };
 
 #endif // SC_DODGEORVILLE_H
