@@ -657,3 +657,6 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
     }
     pool[1] = (int)node;
 }
+
+/* Function start: 0x431930 */
+void GameEngine::Serialize(void* param) {}

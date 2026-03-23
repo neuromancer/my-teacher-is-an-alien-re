@@ -38,13 +38,16 @@ extern "C" void WriteToLog(const char* format, ...);
 // FUN_00429b60 = SC_PRHotSpot ctor — callers updated to use new
 // FUN_00420ce0 = T_MenuHotspot(int) ctor — callers updated to use new
 
+/* Function start: 0x42B0F0 */
+void __fastcall PracticeRoomNotify(void*) {}  // empty no-op, called on SC_PRHotSpot for hotspots 0x14-0x16
+
 
 
 #include "SlimeTable.h"
 
 /* Function start: 0x42A8D0 */
 SCI_PracticeRoom::SCI_PracticeRoom() {
-    memset(field_A8, 0, 10 * 4);
+    memset(&introPlayed, 0, 10 * 4);
     handlerId = 0x2B;
 }
 
@@ -53,128 +56,120 @@ SCI_PracticeRoom::~SCI_PracticeRoom() {
 
 /* Function start: 0x42A9F0 */
 void SCI_PracticeRoom::Init(SC_Message* msg) {
-    CopyCommandData((SC_Message*)msg);
-    int iVar = *(int*)((int)msg + 4);
-    *(int*)((int)this + 0xA8) = 0;
-    moduleParam = iVar;
-    if (*(int*)((int)msg + 8) == 0x2D) {
+    SpriteAction* action = (SpriteAction*)msg;
+    CopyCommandData(msg);
+    introPlayed = 0;
+    moduleParam = action->addressValue;
+    if (action->fromType == 0x2D) {
         SavePracticeState();
     }
     SetVideoRes(0x280, 0x1E0);
-    SlimeTable* table = new SlimeTable();
-    *(SlimeTable**)((int)this + 0xC8) = table;
-    void* pvVar = g_GameState_0046aa30;
-    int iGameState = ((GameState*)pvVar)->FindLabel("FINAL_PRACTICEROOM");
-    if (iGameState < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGameState) {
+    slimeTable = new SlimeTable();
+    GameState* gs = g_GameState_0046aa30;
+    int iGameState = gs->FindLabel("FINAL_PRACTICEROOM");
+    if (iGameState < 0 || gs->maxStates - 1 < iGameState) {
         ShowError("Invalid gamestate %d", iGameState);
     }
     ParseFile(this,
-        *(int*)(*(int*)((int)pvVar + 0x90) + iGameState * 4) != 0
+        gs->stateValues[iGameState] != 0
             ? "mis\\practice.mis" : "mis\\practice_old.mis",
         (char*)0);
-    int* pBC = (int*)((int)this + 0xBC);
+    T_MenuHotspot** pBC = periodSprites;
     int iCount = 3;
     do {
-        int sprite = *pBC;
-        if (sprite != 0) {
-            *(int*)(sprite + 0x94) = 0;
-            void* pSub = *(void**)(sprite + 0x19C);
-            if (pSub != 0) {
-                ((Sprite*)pSub)->ResetAnimation(0, 0);
+        T_MenuHotspot* spr = *pBC;
+        if (spr != 0) {
+            spr->field_A4 = 0;
+            if (spr->cursor != 0) {
+                ((Sprite*)spr->cursor)->ResetAnimation(0, 0);
             }
         }
         pBC++;
         iCount--;
     } while (iCount != 0);
     int iGS = g_PeriodStateIdx_0046cb90;
-    void* pvVar2 = g_GameState_0046aa30;
-    if (iGS < 0 || *(int*)((int)pvVar2 + 0x98) - 1 < iGS) {
+    gs = g_GameState_0046aa30;
+    if (iGS < 0 || gs->maxStates - 1 < iGS) {
         ShowError("Invalid gamestate %d", iGS);
     }
-    int gsIdx = *(int*)(*(int*)((int)pvVar2 + 0x90) + iGS * 4);
-    int selSprite = *(int*)((int)this + gsIdx * 4 + 0xBC);
+    int gsIdx = gs->stateValues[iGS];
+    T_MenuHotspot* selSprite = periodSprites[gsIdx];
     if (selSprite != 0) {
-        *(int*)(selSprite + 0x94) = 1;
-        void* pSub = *(void**)(selSprite + 0x19C);
-        if (pSub != 0) {
-            ((Sprite*)pSub)->ResetAnimation(1, 0);
+        selSprite->field_A4 = 1;
+        if (selSprite->cursor != 0) {
+            ((Sprite*)selSprite->cursor)->ResetAnimation(1, 0);
         }
     }
-    void* palette = *(void**)((int)this + 0xB4);
     if (palette != 0) {
-        int* pSlot = (int*)((int)g_ZBufferManager_0046aa24 + 0xA8);
-        if (*pSlot != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
             WriteToLog("ddouble palette");
         }
-        *pSlot = (int)palette;
+        g_ZBufferManager_0046aa24->m_palette = palette;
     }
-    void* pSprSub = *(void**)((int)g_Mouse_0046aa18 + 0x94);
-    if (pSprSub != 0) {
-        ((Sprite*)pSprSub)->ResetAnimation(0, 0);
+    Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
+    if (mouseSpr != 0) {
+        mouseSpr->ResetAnimation(0, 0);
     }
-    SendGameMessage(5, *(int*)((int)this + 0xCC), handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
-    if (*(int*)((int)this + 0x98) == 0x2D) {
-        (*(SlimeTable**)((int)this + 0xC8))->Init(DAT_0046ad6c == 0);
+    SendGameMessage(5, bgSoundHandle, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
+    if (savedCommand == 0x2D) {
+        slimeTable->Init(DAT_0046ad6c == 0);
         DAT_0046ad6c = 0;
     }
 }
 
 /* Function start: 0x42AC20 */
 int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
-    void* pVar;
-
-    pVar = *(void**)((int)this + 0xAC);
-    if (pVar != 0) {
-        delete (MMPlayer*)pVar;
-        *(void**)((int)this + 0xAC) = 0;
+    if (ambient != 0) {
+        ambient->~MMPlayer();
+        operator delete(ambient);
+        ambient = 0;
     }
-    pVar = *(void**)((int)this + 0xB0);
-    if (pVar != 0) {
-        delete (Sprite*)pVar;
-        *(void**)((int)this + 0xB0) = 0;
+    if (introSprite != 0) {
+        introSprite->~Sprite();
+        operator delete(introSprite);
+        introSprite = 0;
     }
-    int* piVar = *(int**)((int)this + 0xB8);
-    if (piVar != 0) {
-        if (*piVar != 0) {
-            piVar[2] = *piVar;
-            while (*piVar != 0) {
-                pVar = ((LinkedList*)piVar)->RemoveCurrent();
-                if (pVar != 0) {
-                    ((SC_PRHotSpot*)pVar)->~SC_PRHotSpot();
-                    free(pVar);
+    if (hotspotList != 0) {
+        if (hotspotList->head != 0) {
+            hotspotList->current = hotspotList->head;
+            while (hotspotList->head != 0) {
+                void* data = ((EventList*)hotspotList)->RemoveCurrent();
+                if (data != 0) {
+                    ((SC_PRHotSpot*)data)->~SC_PRHotSpot();
+                    operator delete(data);
                 }
             }
         }
-        free(piVar);
-        *(void**)((int)this + 0xB8) = 0;
+        operator delete(hotspotList);
+        hotspotList = 0;
     }
-    pVar = *(void**)((int)this + 0xB4);
-    if (pVar != 0) {
-        delete (Palette*)pVar;
-        *(void**)((int)this + 0xB4) = 0;
+    if (palette != 0) {
+        palette->~Palette();
+        operator delete(palette);
+        palette = 0;
     }
-    pVar = *(void**)((int)this + 0xC8);
-    if (pVar != 0) {
-        delete (SlimeTable*)pVar;
-        *(void**)((int)this + 0xC8) = 0;
+    if (slimeTable != 0) {
+        slimeTable->~SlimeTable();
+        operator delete(slimeTable);
+        slimeTable = 0;
     }
-    int* pBC = (int*)((int)this + 0xBC);
+    T_MenuHotspot** pBC = &periodSprites[0];
     int iVar = 3;
     do {
-        void* pSprite = (void*)*pBC;
-        if (pSprite != 0) {
-            delete (T_MenuHotspot*)pSprite;
-            free(pSprite);
+        T_MenuHotspot* spr = *pBC;
+        if (spr != 0) {
+            spr->~T_MenuHotspot();
+            operator delete(spr);
             *pBC = 0;
         }
         pBC++;
         iVar--;
     } while (iVar != 0);
-    if ((int)msg != 0) {
-        if (*(int*)msg == 0x2D) {
+    if (msg != 0) {
+        if (((SpriteAction*)msg)->addressType == 0x2D) {
             LoadPracticeState();
         }
-        if ((int)msg != 0) {
+        if (msg != 0) {
             SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         }
     }
@@ -186,53 +181,42 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
-    if (*(int*)((int)this + 0xA8) == 0) {
-        void* pVar = *(void**)((int)this + 0xB0);
-        if (pVar != 0) {
-            *(int*)((int)this + 0xA8) = ((Sprite*)pVar)->Do(
-                *(int*)((int)pVar + 0xAC), *(int*)((int)pVar + 0xB0), 1.0);
-            if (*(int*)((int)this + 0xA8) == 0) {
+    if (introPlayed == 0) {
+        if (introSprite != 0) {
+            introPlayed = introSprite->Do(introSprite->loc_x, introSprite->loc_y, 1.0);
+            if (introPlayed == 0) {
                 return;
             }
-            ((Sprite*)*(void**)((int)this + 0xB0))->StopAnimationSound();
+            introSprite->StopAnimationSound();
             return;
         }
-        *(int*)((int)this + 0xA8) = 1;
+        introPlayed = 1;
     }
-    void* pAC = *(void**)((int)this + 0xAC);
-    if (pAC != 0) {
-        ((MMPlayer*)pAC)->Draw();
+    if (ambient != 0) {
+        ((MMPlayer*)ambient)->Draw();
     }
-    int* pList = *(int**)((int)this + 0xB8);
-    if (pList != 0) {
-        int iHead = *pList;
-        pList[2] = iHead;
-        int* pList2 = *(int**)((int)this + 0xB8);
-        if (*pList2 != 0) {
+    if (hotspotList != 0) {
+        hotspotList->current = hotspotList->head;
+        if (hotspotList->head != 0) {
             do {
-                int* pListR = *(int**)((int)this + 0xB8);
-                void* pNode = 0;
-                int* pCur = (int*)pListR[2];
-                if (pCur != 0) {
-                    pNode = (void*)pCur[2];
+                SC_PRHotSpot* hs = 0;
+                ListNode* node = hotspotList->current;
+                if (node != 0) {
+                    hs = (SC_PRHotSpot*)node->data;
                 }
-                ((SC_PRHotSpot*)pNode)->Update();
-                pListR = *(int**)((int)this + 0xB8);
-                int* pCurNode = (int*)pListR[2];
-                if (pListR[1] == (int)pCurNode) {
-                    break;
+                hs->Update();
+                if (hotspotList->tail == hotspotList->current) break;
+                if (hotspotList->current != 0) {
+                    hotspotList->current = hotspotList->current->next;
                 }
-                if (pCurNode != 0) {
-                    pListR[2] = pCurNode[1];
-                }
-            } while (**(int**)((int)this + 0xB8) != 0);
+            } while (hotspotList->head != 0);
         }
     }
-    int* pSprites = (int*)((int)this + 0xBC);
+    T_MenuHotspot** pSprites = periodSprites;
     int iCount = 3;
     do {
         if (*pSprites != 0) {
-            ((T_MenuHotspot*)*pSprites)->Update();
+            (*pSprites)->Update();
         }
         pSprites++;
         iCount--;
@@ -246,20 +230,20 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
 
     if (action->button1 >= 2) {
         int local_14 = 0;
-        int* pBC = (int*)((int)this + 0xBC);
-        int* local_28 = pBC;
+        T_MenuHotspot** pBC = periodSprites;
+        T_MenuHotspot** local_28 = pBC;
         do {
             int bHit;
             {
                 SlimeDim pt;
                 pt.field_0 = action->mousePos.field_0;
                 pt.field_4 = action->mousePos.field_4;
-                int sprite = *local_28;
-                if (*(int*)(sprite + 0x90) == 0 ||
-                    *(int*)(sprite + 0x9C) > pt.field_0 ||
-                    *(int*)(sprite + 0xA4) < pt.field_0 ||
-                    *(int*)(sprite + 0xA0) > pt.field_4 ||
-                    *(int*)(sprite + 0xA8) < pt.field_4) {
+                T_MenuHotspot* hs = *local_28;
+                if (hs->sprite == 0 ||
+                    hs->bounds.right > pt.field_0 ||
+                    hs->field_A4 < pt.field_0 ||
+                    hs->bounds.bottom > pt.field_4 ||
+                    hs->field_A8 < pt.field_4) {
                     bHit = 0;
                 } else {
                     bHit = 1;
@@ -268,37 +252,35 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
             if (bHit) {
                 int iCount = 3;
                 do {
-                    int sprite = *pBC;
-                    *(int*)(sprite + 0x94) = 0;
-                    void* pSub = *(void**)(sprite + 0x19C);
-                    if (pSub != 0) {
-                        ((Sprite*)pSub)->ResetAnimation(0, 0);
+                    T_MenuHotspot* spr = *pBC;
+                    spr->field_A4 = 0;
+                    if (spr->cursor != 0) {
+                        ((Sprite*)spr->cursor)->ResetAnimation(0, 0);
                     }
                     pBC++;
                     iCount--;
                 } while (iCount != 0);
-                int selSprite = *(int*)((int)this + local_14 * 4 + 0xBC);
-                *(int*)(selSprite + 0x94) = 1;
-                void* pSub = *(void**)(selSprite + 0x19C);
-                if (pSub != 0) {
-                    ((Sprite*)pSub)->ResetAnimation(1, 0);
+                T_MenuHotspot* sel = periodSprites[local_14];
+                sel->field_A4 = 1;
+                if (sel->cursor != 0) {
+                    ((Sprite*)sel->cursor)->ResetAnimation(1, 0);
                 }
                 int iGS = g_PeriodStateIdx_0046cb90;
-                void* pvVar = g_GameState_0046aa30;
-                if (iGS < 0 || *(int*)((int)pvVar + 0x98) - 1 < iGS) {
+                GameState* gs = g_GameState_0046aa30;
+                if (iGS < 0 || gs->maxStates - 1 < iGS) {
                     ShowError("Invalid gamestate %d", iGS);
                 }
-                *(int*)(*(int*)((int)pvVar + 0x90) + iGS * 4) = local_14;
-                *(int*)((int)msg + 0x10) = 0;
+                gs->stateValues[iGS] = local_14;
+                action->instruction = 0;
                 goto done;
             }
             local_28++;
             local_14++;
         } while (local_14 < 3);
     }
-    if (*(int*)((int)msg + 0x24) == 2) {
-        *(int*)((int)msg + 0x10) = 2;
-        *(int*)msg = handlerId;
+    if (action->button1 == 2) {
+        action->instruction = 2;
+        action->addressType = handlerId;
     }
 done:
     return 1;
@@ -306,40 +288,29 @@ done:
 
 /* Function start: 0x42B030 */
 int SCI_PracticeRoom::Exit(SC_Message* msg) {
-    if (*(int*)msg != handlerId) {
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
         return 0;
     }
-    switch (*(int*)((int)msg + 0x10)) {
+    switch (action->instruction) {
     case 2: {
-        int* pList = *(int**)((int)this + 0xB8);
-        if (pList == 0) {
-            break;
-        }
-        int iHead = *pList;
-        pList[2] = iHead;
-        int* pList2 = *(int**)((int)this + 0xB8);
-        if (*pList2 == 0) {
-            break;
-        }
+        if (hotspotList == 0) break;
+        hotspotList->current = hotspotList->head;
+        if (hotspotList->head == 0) break;
         do {
-            int* pListR = *(int**)((int)this + 0xB8);
-            void* pNode = 0;
-            int* pCur = (int*)pListR[2];
-            if (pCur != 0) {
-                pNode = (void*)pCur[2];
+            SC_PRHotSpot* hs = 0;
+            ListNode* node = hotspotList->current;
+            if (node != 0) {
+                hs = (SC_PRHotSpot*)node->data;
             }
-            if (((SC_PRHotSpot*)pNode)->CheckCollision(msg) != 0) {
+            if (hs->CheckCollision(msg) != 0) {
                 break;
             }
-            pListR = *(int**)((int)this + 0xB8);
-            int* pCurNode = (int*)pListR[2];
-            if (pListR[1] == (int)pCurNode) {
-                break;
+            if (hotspotList->tail == hotspotList->current) break;
+            if (hotspotList->current != 0) {
+                hotspotList->current = hotspotList->current->next;
             }
-            if (pCurNode != 0) {
-                pListR[2] = pCurNode[1];
-            }
-        } while (**(int**)((int)this + 0xB8) != 0);
+        } while (hotspotList->head != 0);
         return 1;
     }
     case 7:
@@ -351,48 +322,50 @@ int SCI_PracticeRoom::Exit(SC_Message* msg) {
     return 1;
 }
 
+// FileArchive - simple save/load wrapper (0x48 bytes)
+struct FileArchive {
+    int mode;           // 0x00 - 0=read, 1=write
+    char filename[64];  // 0x04-0x43
+    FILE* fp;           // 0x44
+};
+
 /* Function start: 0x42B100 */
 void SavePracticeState() {
-    int* saveData;
-    FILE* fp;
+    FileArchive* ar;
 
-    saveData = (int*)operator new(0x48);
-    if (saveData != 0) {
-        memset(saveData, 0, 0x48);
-        strcpy((char*)(saveData + 1), g_PracticeSavePath);
+    ar = (FileArchive*)operator new(0x48);
+    if (ar != 0) {
+        memset(ar, 0, 0x48);
+        strcpy(ar->filename, g_PracticeSavePath);
     } else {
-        saveData = 0;
+        ar = 0;
     }
 
-    fp = *(FILE**)((char*)saveData + 0x44);
-    if (fp != 0) {
-        fclose(fp);
-        *(FILE**)((char*)saveData + 0x44) = 0;
+    if (ar->fp != 0) {
+        fclose(ar->fp);
+        ar->fp = 0;
     }
 
-    fp = OpenSaveFile((char*)(saveData + 1), "w");
-    *(FILE**)((char*)saveData + 0x44) = fp;
-    if (fp == 0) {
+    ar->fp = OpenSaveFile(ar->filename, "w");
+    if (ar->fp == 0) {
         ShowError("FileArchive::Open() - Unable to open file '%s' for mode '%s'",
-            (char*)(saveData + 1), "w");
+            ar->filename, "w");
     }
 
-    *saveData = 1;
-    g_GameState_0046aa30->Serialize(saveData);
+    ar->mode = 1;
+    g_GameState_0046aa30->Serialize(ar);
 
-    fp = *(FILE**)((char*)saveData + 0x44);
-    if (fp != 0) {
-        fclose(fp);
-        *(FILE**)((char*)saveData + 0x44) = 0;
+    if (ar->fp != 0) {
+        fclose(ar->fp);
+        ar->fp = 0;
     }
 
-    if (saveData != 0) {
-        fp = *(FILE**)((char*)saveData + 0x44);
-        if (fp != 0) {
-            fclose(fp);
-            *(FILE**)((char*)saveData + 0x44) = 0;
+    if (ar != 0) {
+        if (ar->fp != 0) {
+            fclose(ar->fp);
+            ar->fp = 0;
         }
-        FreeMemory(saveData);
+        FreeMemory(ar);
     }
 
     GameState* gs = g_GameState_0046aa30;
@@ -405,46 +378,41 @@ void SavePracticeState() {
 
 /* Function start: 0x42B270 */
 void LoadPracticeState() {
-    int* saveData;
-    FILE* fp;
+    FileArchive* ar;
 
-    saveData = (int*)operator new(0x48);
-    if (saveData != 0) {
-        memset(saveData, 0, 0x48);
-        strcpy((char*)(saveData + 1), g_PracticeSavePath);
+    ar = (FileArchive*)operator new(0x48);
+    if (ar != 0) {
+        memset(ar, 0, 0x48);
+        strcpy(ar->filename, g_PracticeSavePath);
     } else {
-        saveData = 0;
+        ar = 0;
     }
 
-    fp = *(FILE**)((char*)saveData + 0x44);
-    if (fp != 0) {
-        fclose(fp);
-        *(FILE**)((char*)saveData + 0x44) = 0;
+    if (ar->fp != 0) {
+        fclose(ar->fp);
+        ar->fp = 0;
     }
 
-    fp = OpenSaveFile((char*)(saveData + 1), "r");
-    *(FILE**)((char*)saveData + 0x44) = fp;
-    if (fp == 0) {
+    ar->fp = OpenSaveFile(ar->filename, "r");
+    if (ar->fp == 0) {
         ShowError("FileArchive::Open() - Unable to open file '%s' for mode '%s'",
-            (char*)(saveData + 1), "r");
+            ar->filename, "r");
     }
 
-    *saveData = 0;
-    g_GameState_0046aa30->Serialize(saveData);
+    ar->mode = 0;
+    g_GameState_0046aa30->Serialize(ar);
 
-    fp = *(FILE**)((char*)saveData + 0x44);
-    if (fp != 0) {
-        fclose(fp);
-        *(FILE**)((char*)saveData + 0x44) = 0;
+    if (ar->fp != 0) {
+        fclose(ar->fp);
+        ar->fp = 0;
     }
 
-    if (saveData != 0) {
-        fp = *(FILE**)((char*)saveData + 0x44);
-        if (fp != 0) {
-            fclose(fp);
-            *(FILE**)((char*)saveData + 0x44) = 0;
+    if (ar != 0) {
+        if (ar->fp != 0) {
+            fclose(ar->fp);
+            ar->fp = 0;
         }
-        FreeMemory(saveData);
+        FreeMemory(ar);
     }
 }
 
@@ -460,30 +428,28 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
     sscanf(param_1, " %s ", local_3c);
 
     if (strcmp(local_3c, "HANDLE") == 0) {
-        sscanf(param_1, "%s %d", local_3c, (int)this + 0x94);
+        sscanf(param_1, "%s %d", local_3c, &moduleParam);
     } else if (strcmp(local_3c, "PALETTE") == 0) {
         sscanf(param_1, "%s %s", local_3c, local_bc);
-        void* pal = *(void**)((int)this + 0xB4);
-        if (pal != 0) {
-            delete (Palette*)pal;
-            *(void**)((int)this + 0xB4) = 0;
+        if (palette != 0) {
+            delete palette;
+            palette = 0;
         }
         void* mem = malloc(8);
-        void* newPal = 0;
+        Palette* newPal = 0;
         if (mem != 0) {
             newPal = InitPalette((Palette*)mem);
         }
-        *(void**)((int)this + 0xB4) = newPal;
-        ((Palette*)newPal)->Load(local_bc);
+        palette = newPal;
+        newPal->Load(local_bc);
     } else if (strcmp(local_3c, "HOTSPOT") == 0) {
         sscanf(param_1, "%s %d ", local_3c, &local_18);
-        if (*(int*)((int)this + 0xB8) == 0) {
-            LinkedList* newList = new LinkedList();
-            *(LinkedList**)((int)this + 0xB8) = newList;
+        if (hotspotList == 0) {
+            hotspotList = new LinkedList();
         }
         SC_PRHotSpot* piVar6 = new SC_PRHotSpot(local_18, (int)this);
         Parser::ProcessFile((Parser*)piVar6, this, 0);
-        LinkedList* list = *(LinkedList**)((int)this + 0xB8);
+        LinkedList* list = hotspotList;
         if (piVar6 == 0) {
             ShowError("queue fault 0101");
         }
@@ -493,17 +459,17 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
                 list->InsertNode(piVar6);
             } else {
                 do {
-                    int cur = (int)list->current;
-                    if (*(unsigned int*)(*(int*)(cur + 8) + 0xA4) < *(unsigned int*)((int)piVar6 + 0xA4)) {
+                    ListNode* cur = list->current;
+                    if (((SC_PRHotSpot*)cur->data)->hotspotId < piVar6->hotspotId) {
                         list->InsertNode(piVar6);
                         break;
                     }
-                    if ((int)list->tail == cur) {
+                    if (list->tail == cur) {
                         list->PushNode(piVar6);
                         break;
                     }
                     if (cur != 0) {
-                        list->current = (ListNode*)*(int*)(cur + 4);
+                        list->current = cur->next;
                     }
                 } while (list->current != 0);
             }
@@ -513,30 +479,28 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
     } else if (strcmp(local_3c, "CHAR") == 0) {
         sscanf(param_1, "%s %d", local_3c, &local_18);
         T_MenuHotspot* piVar6 = new T_MenuHotspot(local_18);
-        *(void**)((int)this + local_18 * 4 + 0xBC) = piVar6;
+        periodSprites[local_18] = piVar6;
         Parser::ProcessFile((Parser*)piVar6, this, 0);
     } else if (strcmp(local_3c, "AMBIENT") == 0) {
-        if (*(int*)((int)this + 0xAC) == 0) {
-            MMPlayer* amb = new MMPlayer();
-            *(void**)((int)this + 0xAC) = amb;
+        if (ambient == 0) {
+            ambient = new MMPlayer();
         }
-        Parser::ProcessFile((Parser*)*(void**)((int)this + 0xAC), this, 0);
+        Parser::ProcessFile((Parser*)ambient, this, 0);
     } else if (strcmp(local_3c, "INTRO") == 0) {
-        if (*(int*)((int)this + 0xB0) == 0) {
-            Sprite* spr = new Sprite((char*)0);
-            *(void**)((int)this + 0xB0) = spr;
+        if (introSprite == 0) {
+            introSprite = new Sprite((char*)0);
         }
-        Parser::ProcessFile((Parser*)*(void**)((int)this + 0xB0), this, 0);
+        Parser::ProcessFile((Parser*)introSprite, this, 0);
     } else if (strcmp(local_3c, "BG_SOUND") == 0) {
-        sscanf(param_1, " %s %d ", local_3c, (int)this + 0xCC);
+        sscanf(param_1, " %s %d ", local_3c, &bgSoundHandle);
     } else if (strcmp(local_3c, "MAX_SOUNDS") == 0) {
         sscanf(param_1, " %s %d ", local_3c, &local_18);
-        (*(SlimeTable**)((int)this + 0xC8))->Allocate(local_18);
+        slimeTable->Allocate(local_18);
     } else {
         if (strcmp(local_3c, "SOUND") == 0) {
             sscanf(param_1, " %s %d %s %d ", local_3c, &local_18, local_bc, &local_1c);
-            if (local_18 >= 0 && local_18 <= *(*(int**)((int)this + 0xC8)) - 1) {
-                (*(SlimeTable**)((int)this + 0xC8))->LoadEntry(local_18, local_bc, local_1c);
+            if (local_18 >= 0 && local_18 <= *(int*)slimeTable - 1) {
+                slimeTable->LoadEntry(local_18, local_bc, local_1c);
                 goto lbl_done;
             }
         } else if (strcmp(local_3c, "END") == 0) {

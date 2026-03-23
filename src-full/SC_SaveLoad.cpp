@@ -2,9 +2,20 @@
 #include "T_MenuHotspot.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "SpriteAction.h"
+#include "GameState.h"
+#include "ZBufferManager.h"
+#include "MouseControl.h"
 #include "Memory.h"
 #include <string.h>
 #include <new>
+
+extern "C" void ShowError(const char* format, ...);
+extern "C" void WriteToLog(const char* format, ...);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+extern "C" GameState* g_GameState_0046aa30;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
+extern MouseControl* g_Mouse_0046aa18;
 
 /* Function start: 0x421C40 */
 SC_SaveLoad::SC_SaveLoad()
@@ -80,4 +91,186 @@ SC_SaveLoad::~SC_SaveLoad()
         FreeMemory(btnCancel);
         btnCancel = 0;
     }
+}
+
+/* Function start: 0x4221A0 */
+void SC_SaveLoad::Init(SC_Message* msg) {
+    SpriteAction* action = (SpriteAction*)msg;
+    CopyCommandData(msg);
+    if (action != 0) {
+        field_BC = action->extra1;
+        field_C0 = action->extra2;
+        moduleParam = action->addressValue;
+        GameState* gs = g_GameState_0046aa30;
+        int idx = gs->FindState("MUST_SAVEGAME");
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        if (gs->stateValues[idx] == 0) {
+            SendGameMessage(handlerId, moduleParam, 0, 0, 2, 2, 0, 0, 0, 0);
+        }
+    }
+    if (palette != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
+            WriteToLog("ddouble palette");
+        }
+        g_ZBufferManager_0046aa24->m_palette = palette;
+    }
+    if (g_Mouse_0046aa18->m_sprite != 0) {
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
+    }
+}
+
+/* Function start: 0x4222F0 */
+void SC_SaveLoad::Update(int param1, int param2) {
+    unsigned int elapsed = timer.Update();
+    if (elapsed > 30000) {
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+    }
+    if (handlerId == param2) {
+        timer.Reset();
+        if (sprite != 0) {
+            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        }
+        btnYes->Update();
+        btnNo->Update();
+        btnCancel->Update();
+        g_Mouse_0046aa18->DrawCursor();
+    }
+}
+
+/* Function start: 0x4223F0 */
+int SC_SaveLoad::AddMessage(SC_Message* msg) {
+    SpriteAction* action = (SpriteAction*)msg;
+    WriteMessageAddress(msg);
+    timer.Reset();
+    if (action->lastKey != 0) {
+        switch (action->lastKey) {
+        case 0x59: // 'Y'
+        case 0x79: // 'y'
+            action->instruction = 2;
+            action->extra1 = 1;
+            return 1;
+        case 0x4E: // 'N'
+        case 0x6E: // 'n'
+            action->instruction = 2;
+            action->extra1 = 0;
+            return 1;
+        case 0x1B: // ESC
+            action->instruction = 2;
+            action->extra1 = 2;
+            return 1;
+        }
+    } else {
+        if (action->button1 < 2) goto done;
+        {
+            SlimeDim pt;
+            pt.field_0 = action->mousePos.field_0;
+            pt.field_4 = action->mousePos.field_4;
+            T_MenuHotspot* btn = btnYes;
+            int bHit;
+            if (btn->bounds.left > pt.field_0 ||
+                btn->bounds.right < pt.field_0 ||
+                btn->bounds.top > pt.field_4 ||
+                btn->bounds.bottom < pt.field_4) {
+                bHit = 0;
+            } else {
+                bHit = 1;
+            }
+            if (bHit) {
+                action->instruction = 2;
+                action->extra1 = 1;
+                return 1;
+            }
+        }
+        {
+            SlimeDim pt;
+            pt.field_0 = action->mousePos.field_0;
+            pt.field_4 = action->mousePos.field_4;
+            T_MenuHotspot* btn = btnNo;
+            int bHit;
+            if (btn->bounds.left > pt.field_0 ||
+                btn->bounds.right < pt.field_0 ||
+                btn->bounds.top > pt.field_4 ||
+                btn->bounds.bottom < pt.field_4) {
+                bHit = 0;
+            } else {
+                bHit = 1;
+            }
+            if (bHit) {
+                action->instruction = 2;
+                action->extra1 = 0;
+                return 1;
+            }
+        }
+        {
+            SlimeDim pt;
+            pt.field_0 = action->mousePos.field_0;
+            pt.field_4 = action->mousePos.field_4;
+            T_MenuHotspot* btn = btnCancel;
+            int bHit;
+            if (btn->bounds.left > pt.field_0 ||
+                btn->bounds.right < pt.field_0 ||
+                btn->bounds.top > pt.field_4 ||
+                btn->bounds.bottom < pt.field_4) {
+                bHit = 0;
+            } else {
+                bHit = 1;
+            }
+            if (bHit) {
+                action->instruction = 2;
+                action->extra1 = 2;
+                return 1;
+            }
+        }
+    }
+done:
+    action->instruction = 0;
+    return 1;
+}
+
+/* Function start: 0x4226C0 */
+int SC_SaveLoad::Exit(SC_Message* msg) {
+    SpriteAction* action = (SpriteAction*)msg;
+    if (handlerId != action->addressType) {
+        return 0;
+    }
+    timer.Reset();
+    if (action->instruction != 2) {
+        if (action->instruction != 7) {
+            return 1;
+        }
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        return 1;
+    }
+    int choice = action->extra1;
+    if (choice == 0) {
+        SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+        return 1;
+    }
+    if (choice != 1) {
+        if (choice != 2) {
+            return 1;
+        }
+        {
+            GameState* gs = g_GameState_0046aa30;
+            int idx = gs->FindState("MUST_SAVEGAME");
+            if (idx < 0 || gs->maxStates - 1 < idx) {
+                ShowError("Invalid gamestate %d", idx);
+            }
+            gs->stateValues[idx] = 0;
+        }
+        SendGameMessage(field_BC, field_C0, savedCommand, savedMsgData, 4, 0, 0, 0, 0, 0);
+        return 1;
+    }
+    {
+        GameState* gs = g_GameState_0046aa30;
+        int idx = gs->FindState("MUST_SAVEGAME");
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        gs->stateValues[idx] = 0;
+    }
+    SendGameMessage(0x2E, 0, field_BC, field_C0, 4, 0, 0, 0, 0, 0);
+    return 1;
 }

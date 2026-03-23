@@ -92,6 +92,9 @@ void EnqueueSpriteAction(void* action) {
     ((SpriteAction*)action)->childAction = 0;
 }
 
+/* Function start: 0x444CD0 */
+void SpriteAction::Serialize(void* file) {}
+
 /* Function start: 0x444E40 */
 void EnqueueSpriteAction(SpriteAction* action) {
     ((GameEngine*)g_GameEngine_0046a6ec)->EnqueueAction(action);

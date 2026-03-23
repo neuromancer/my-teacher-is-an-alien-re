@@ -71,13 +71,11 @@ int SC_Roach::ShutDown(SC_Message* msg) {
     }
 
     {
-        int* srcPtr = &sources[0].crystalPtr;
-        i = 8;
+        i = 0;
         do {
-            *srcPtr = 0;
-            srcPtr = (int*)((char*)srcPtr + 0x2C);
-            i--;
-        } while (i != 0);
+            sources[i].crystalPtr = 0;
+            i++;
+        } while (i < 8);
     }
 
     for (i = 0; i < 8; i++) {
@@ -143,15 +141,13 @@ int SC_Roach::AddMessage(SC_Message* msg) {
     }
 
     count = 0;
-    srcPtr = &sources[0].crystalPtr;
-    i = 8;
+    i = 0;
     do {
-        if (*srcPtr != 0) {
+        if (sources[i].crystalPtr != 0) {
             count++;
         }
-        srcPtr = (int*)((char*)srcPtr + 0x2C);
-        i--;
-    } while (i != 0);
+        i++;
+    } while (i < 8);
 
     if (currentPiece == 0 && count == 0) {
         ((int*)statusPtr)[1] = 1;
@@ -189,7 +185,7 @@ found_cell:
     int row = 0;
     int stride = ((NavCrystal*)crystal)->rotation;
     stride = stride << 8;
-    int checkOfs = (int)crystal + stride + 0x98;
+    int checkOfs = (int)((NavCrystal*)crystal)->patternData + stride;
 
     do {
         int col = 0;
@@ -215,9 +211,9 @@ found_cell:
         int* dest = &grid[patternIdx * 8];
         int zero = 0;
         do {
-            int* crys = (int*)currentPiece;
-            if (*(int*)((int)crys + stride + 0x98) != zero) {
-                *dest = *(int*)((int)crys + 0x90);
+            NavCrystal* crys = (NavCrystal*)currentPiece;
+            if (*(int*)((int)crys->patternData + stride) != zero) {
+                *dest = crys->crystalId;
             }
             dest++;
             stride += 4;
@@ -232,18 +228,17 @@ found_cell:
 /* Function start: 0x419A10 */
 int SC_Roach::TryDropOnSource(int* msg)
 {
-    int* crystal = (int*)currentPiece;
-    int id = ((NavCrystal*)crystal)->crystalId;
-    int ofs = id * 0x2c;
-    int* hitPtr = (int*)(ofs + (int)this);
+    NavCrystal* crystal = (NavCrystal*)currentPiece;
+    int id = crystal->crystalId;
+    CrystalSource* src = &sources[id];
     int mouseX = msg[7];
-    int hitTest = (*(int*)((char*)hitPtr + 0x118) <= mouseX &&
-        *(int*)((char*)hitPtr + 0x120) >= mouseX &&
-        *(int*)((char*)hitPtr + 0x11c) <= msg[8] &&
-        *(int*)((char*)hitPtr + 0x124) >= msg[8]);
+    int hitTest = (src->hitboxLeft <= mouseX &&
+        src->hitboxRight >= mouseX &&
+        src->hitboxTop <= msg[8] &&
+        src->hitboxBottom >= msg[8]);
     if (hitTest != 0) {
-        ((NavCrystal*)crystal)->rotation = 0;
-        Sprite* spr = ((NavCrystal*)crystal)->sprite;
+        crystal->rotation = 0;
+        Sprite* spr = crystal->sprite;
         if (spr != 0) {
             spr->ResetAnimation(0, 0);
         }
@@ -312,14 +307,14 @@ int SC_Roach::PickFromGrid(int* msg)
 /* Function start: 0x419BC0 */
 int SC_Roach::PickFromSource(int* msg)
 {
-    int* srcPtr = (int*)&sources[0].pickupLeft;
     int idx = 0;
     int mouseX = msg[7];
 
     do {
         int hit;
-        if (srcPtr[0] <= mouseX && srcPtr[2] >= mouseX &&
-            srcPtr[1] <= msg[8] && srcPtr[3] >= msg[8]) {
+        CrystalSource* src = &sources[idx];
+        if (src->pickupLeft <= mouseX && src->pickupRight >= mouseX &&
+            src->pickupTop <= msg[8] && src->pickupBottom >= msg[8]) {
             hit = 1;
         } else {
             hit = 0;
@@ -327,7 +322,6 @@ int SC_Roach::PickFromSource(int* msg)
         if (hit != 0) {
             goto found;
         }
-        srcPtr = (int*)((char*)srcPtr + 0x2c);
         idx++;
     } while (idx < 8);
 
@@ -343,27 +337,18 @@ found:
 /* Function start: 0x419D70 */
 void SC_Roach::OnProcessEnd()
 {
-    int* cell;
-    int row;
-    int col;
-    int cellH;
-    int cellW;
-    int* gridPtr;
-    int startY;
-    int startX;
-
     SC_Combat::OnProcessEnd();
 
-    row = 0;
-    cellW = 0x2a;
-    cellH = 0x2a;
-    startX = 0xce;
-    startY = 0x40;
-    gridPtr = &grid[4];
+    int row = 0;
+    int cellW = 0x2a;
+    int cellH = cellW;
+    int startX = 0xce;
+    int startY = 0x40;
+    int* gridPtr = &grid[4];
 
     do {
-        col = 0;
-        cell = gridPtr;
+        int col = 0;
+        int* cell = gridPtr;
         do {
             {
                 SlimeDim sd;
@@ -381,7 +366,6 @@ void SC_Roach::OnProcessEnd()
         row++;
     } while (row < 6);
 
-    // Copy initial crystal assignments to source slots
     sources[0].crystalPtr = (int)crystals[0];
     sources[1].crystalPtr = (int)crystals[1];
     sources[2].crystalPtr = (int)crystals[2];

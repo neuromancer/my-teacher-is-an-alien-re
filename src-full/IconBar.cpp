@@ -1,30 +1,20 @@
 #include "IconBar.h"
 #include "MouseControl.h"
+#include "InputManager.h"
 #include "InvSlotItem.h"
-#include "MouseControl.h"
 #include <string.h>
 #include "LinkedList.h"
-#include "MouseControl.h"
 #include "Sprite.h"
-#include "MouseControl.h"
 #include "SpriteAction.h"
-#include "MouseControl.h"
 #include "Memory.h"
-#include "MouseControl.h"
 #include "Parser.h"
-#include "MouseControl.h"
 #include "globals.h"
-#include "MouseControl.h"
 #include "SC_Question.h"
-#include "MouseControl.h"
 #include "GameState.h"
-#include "MouseControl.h"
 #include "DrawEntry.h"
-#include "MouseControl.h"
 #include "Animation.h"
-#include "MouseControl.h"
 #include "VBuffer.h"
-#include "MouseControl.h"
+#include "ZBufferManager.h"
 
 // Static data
 static int g_IconBarLeft;                       // 0x473310
@@ -118,78 +108,46 @@ void IconBar::Init(SC_Message* msg) {
     CopyCommandData(msg);
     SetVideoRes(0x280, 0x1e0);
 
-    iVar3 = (int)g_ZBufferManager_0046aa24;
-    if (*(int*)(iVar3 + 0x98) != 2) {
-        *(int*)(iVar3 + 0x98) = 2;
+    {
+        ZBufferManager* zbm = g_ZBufferManager_0046aa24;
+        if (zbm->m_state != 2) {
+            zbm->m_state = 2;
 
-        // Loop 1: cleanup list at offset 0xA0
-        piVar1 = *(int**)(iVar3 + 0xa0);
-        if (*piVar1 != 0) {
-            piVar1[2] = *piVar1;
-            while (*piVar1 != 0) {
-                int* item = (int*)((LinkedList*)piVar1)->RemoveCurrent();
-                if (item != 0) {
-                    
-                    FreeMemory(item);
+            // Cleanup sound command queue
+            ZBQueue* q0 = zbm->m_queueA0;
+            if (q0->head != 0) {
+                q0->current = q0->head;
+                while (q0->head != 0) {
+                    void* item = q0->Pop();
+                    if (item != 0) {
+                        FreeMemory(item);
+                    }
                 }
             }
-        }
 
-        // Loop 2: cleanup list at offset 0xA4
-        piVar1 = *(int**)(iVar3 + 0xa4);
-        if (*piVar1 != 0) {
-            piVar1[2] = *piVar1;
-            while (*piVar1 != 0) {
-                DrawEntry* item = (DrawEntry*)((LinkedList*)piVar1)->RemoveCurrent();
-                if (item != 0) {
-                    item->~DrawEntry();
-                    FreeMemory(item);
+            // Cleanup draw entry queue
+            ZBQueue* q4 = zbm->m_queueA4;
+            if (q4->head != 0) {
+                q4->current = q4->head;
+                while (q4->head != 0) {
+                    DrawEntry* item = (DrawEntry*)q4->Pop();
+                    if (item != 0) {
+                        item->~DrawEntry();
+                        FreeMemory(item);
+                    }
                 }
             }
-        }
 
-        // Loop 3: cleanup list at offset 0x9C (inline RemoveCurrent)
-        piVar1 = *(int**)(iVar3 + 0x9c);
-        if (*piVar1 != 0) {
-            piVar1[2] = *piVar1;
-            while (*piVar1 != 0) {
-                int* current = (int*)piVar1[2];
-                if (current == 0) {
-                    data = 0;
-                } else {
-                    if (*piVar1 == (int)current) {
-                        *piVar1 = current[1];
-                    }
-                    if (piVar1[1] == (int)current) {
-                        piVar1[1] = *current;
-                    }
-                    if (*current != 0) {
-                        ((int*)*current)[1] = current[1];
-                    }
-                    if (current[1] != 0) {
-                        *(int*)current[1] = *current;
-                    }
-                    data = ((LinkedList*)piVar1)->GetCurrentData();
-                    if ((void*)piVar1[2] != 0) {
-                        delete (ListNode*)piVar1[2];
-                        piVar1[2] = 0;
-                    }
-                    piVar1[2] = *piVar1;
-                }
-                if (data != 0) {
-                    *(int*)data = 0x46102c;
-                    ((Rect*)((int)data + 4))->~Rect();
-                    FreeMemory(data);
-                }
-            }
-        }
+            // Cleanup render queue
+            zbm->m_queue9c->ClearList();
 
-        *(int*)(iVar3 + 0xa8) = 0;
+            zbm->m_palette = 0;
+        }
     }
 
     UpdateAllSlots();
 
-    spr = *(Sprite**)((char*)g_Mouse_0046aa18 + 0x94);
+    spr = g_Mouse_0046aa18->m_sprite;
     if (spr != 0) {
         spr->ResetAnimation(0, 0);
     }
@@ -262,7 +220,7 @@ int IconBar::AddMessage(SC_Message* msg) {
     }
 
     if (g_SelectedItem_0046a6e4 != 0) {
-        SendGameMessage(0x1e, *(int*)((char*)g_SelectedItem_0046a6e4 + 0x94),
+        SendGameMessage(0x1e, ((Handler*)g_SelectedItem_0046a6e4)->moduleParam,
                      handlerId, moduleParam, 0x17, 0, 0, 0, 0, 0);
     }
 
@@ -369,10 +327,10 @@ void IconBar::Update(int param1, int param2) {
                 if (gs->maxStates - 1 < 0x44) {
                     ShowError("Invalid gamestate %d", 0x44);
                 }
-                if (*(int*)(*(int*)((char*)gs + 0x90) + 0x110) != 0) {
+                if (gs->stateValues[0x44] != 0) {
                     entry->sprite->ResetAnimation(2, 0);
                 } else {
-                    mousePos = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
+                    mousePos = (int*)g_InputManager_0046aa08->pMouse;
                     mouseY = 0;
                     if (mousePos != 0) {
                         mouseY = mousePos[1];
@@ -401,7 +359,7 @@ void IconBar::Update(int param1, int param2) {
                     }
                 }
             } else {
-                mousePos = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
+                mousePos = (int*)g_InputManager_0046aa08->pMouse;
                 mouseY = 0;
                 if (mousePos != 0) {
                     mouseY = mousePos[1];

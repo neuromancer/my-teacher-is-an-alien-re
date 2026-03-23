@@ -176,3 +176,5 @@ void FlagArray::ClearAllFlags() {
     }
     Close();
 }
+
+void FlagArray::Serialize(void* file) {}

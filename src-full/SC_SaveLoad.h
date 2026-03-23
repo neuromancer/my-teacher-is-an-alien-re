@@ -17,6 +17,11 @@ public:
     SC_SaveLoad();
     ~SC_SaveLoad();
 
+    void Init(SC_Message* msg);              // 0x4221A0
+    void Update(int param1, int param2);     // 0x4222F0
+    int AddMessage(SC_Message* msg);         // 0x4223F0
+    int Exit(SC_Message* msg);               // 0x4226C0
+
     Timer timer;                // 0xA8 (0x14 bytes)
     int field_BC;               // 0xBC
     int field_C0;               // 0xC0

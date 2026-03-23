@@ -292,16 +292,13 @@ extern "C" {
 
 // Hotspot/T_Hotspot stubs moved to Hotspot.cpp
 
-// EventList stub
-#include "EventList.h"
-void EventList::InsertNode(void* data) { LinkedList::InsertNode(data); }
+// EventList::InsertNode moved to EventList.cpp
 
 // External function stubs (still referenced by other .cpp files)
 // Extern stubs still referenced by callers using raw __fastcall convention
 // FUN_0044c740 = Sprite::~Sprite — callers updated to use delete/dtor
 // FUN_00444af0 = SpriteAction::~SpriteAction — callers updated to use delete/dtor
-/* Function start: 0x42B0F0 */
-void __fastcall PracticeRoomNotify(void*) {}                     // empty no-op, called on SCI_PracticeRoom owner for hotspots 0x14-0x16
+// PracticeRoomNotify moved to SCI_PracticeRoom.cpp
 // FUN_00409730 = CombatSprite::ProcessFrame — callers updated
 // FUN_0044be70 = mCNavigator::Update — callers updated
 // FUN_00443360 = TargetList dtor — callers updated to use delete
@@ -416,8 +413,6 @@ void __fastcall FreePoolBlocks(void* blocks) {
 // Save/load system stubs
 int* __cdecl FUN_0043e2a0(int* buf, int count, int mode) { return buf; }
 void __cdecl FUN_0043e320(void* buf, int count) {}
-void SpriteAction::Serialize(void* file) {}
-#include "GameEngine.h"
-#include "FlagArray.h"
-void GameEngine::Serialize(void* file) {}
-void FlagArray::Serialize(void* file) {}
+// SpriteAction::Serialize moved to SpriteAction.cpp
+// GameEngine::Serialize moved to GameEngine.cpp
+// FlagArray::Serialize moved to FlagArray.cpp

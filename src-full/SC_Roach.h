@@ -23,8 +23,8 @@ public:
     }
 
     int crystalId;               // 0x90
-    int rotation;                // 0x94 — current rotation state (used as pad_98 offset)
-    int pad_98[0x100];           // 0x98-0x497
+    int rotation;                // 0x94 — current rotation (0-3), selects 64-int block in patternData
+    int patternData[0x100];      // 0x98-0x497 — 4 rotations × 64 ints (4 cols × 16 rows each)
     SlimeDim dimArray1[4];       // 0x498-0x4B7
     SlimeDim dimArray2[4];       // 0x4B8-0x4D7
     Sprite* sprite;              // 0x4D8
