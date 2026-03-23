@@ -108,3 +108,14 @@ int Sound::OpenDigitalDriver(int rate, unsigned short bits,
   }
   return (int)driver;
 }
+
+/* Function start: 0x424E10 */
+void Sound::EndAllSamples() {
+    short i = 0;
+    if (i < num_samples) {
+        do {
+            AIL_end_sample(samples[i]);
+            i++;
+        } while (i < num_samples);
+    }
+}

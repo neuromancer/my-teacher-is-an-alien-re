@@ -8,6 +8,7 @@ public:
   SoundList(int count);
   ~SoundList();
   void StopAll();
+  void StopPlaying();               // 0x4255D0
   int Play(int index);              // 0x425550
   void *Register(char *filename);
 

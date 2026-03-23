@@ -94,6 +94,23 @@ SC_SaveLoad::~SC_SaveLoad()
 }
 
 /* Function start: 0x4221A0 */
+/* Function start: 0x422280 */
+void SC_SaveLoad::StopSounds() {
+    if (sprite != 0) {
+        sprite->StopAnimationSound();
+    }
+    if (btnYes != 0 && btnYes->sprite != 0) {
+        btnYes->sprite->StopAnimationSound();
+    }
+    if (btnNo != 0 && btnNo->sprite != 0) {
+        btnNo->sprite->StopAnimationSound();
+    }
+    if (btnCancel != 0 && btnCancel->sprite != 0) {
+        btnCancel->sprite->StopAnimationSound();
+    }
+}
+
+/* Function start: 0x4221A0 */
 void SC_SaveLoad::Init(SC_Message* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     CopyCommandData(msg);

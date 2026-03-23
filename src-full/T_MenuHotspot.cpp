@@ -64,33 +64,88 @@ T_MenuHotspot::~T_MenuHotspot()
     }
 }
 
-/* Function start: 0x421BC0 */
+/* Function start: 0x420F00 */
 void T_MenuHotspot::Update()
+{
+    if (sprite == 0) {
+        return;
+    }
+    int mouseY = 0;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    int mouseX;
+    if (pMouse == 0) {
+        mouseX = 0;
+    } else {
+        mouseY = pMouse->y;
+        mouseX = pMouse->x;
+    }
+
+    int newState;
+    if (sprite == 0 ||
+        mouseX < bounds.right || field_A4 < mouseX ||
+        mouseY < bounds.bottom || field_A8 < mouseY) {
+        // Outside bounds
+        int st = field_A4;
+        if (st == 0 || st == 3) {
+            field_A4 = 0;
+            if (cursor == 0) goto do_draw;
+            newState = 0;
+        } else if (st == 1 || st == 2) {
+            field_A4 = 1;
+            if (cursor == 0) goto do_draw;
+            newState = 1;
+        } else {
+            return;
+        }
+    } else {
+        // Inside bounds
+        int st = field_A4;
+        if (st == 0 || st == 3) {
+            field_A4 = 3;
+            if (cursor == 0) goto do_draw;
+            newState = 3;
+        } else if (st == 1 || st == 2) {
+            field_A4 = 2;
+            if (cursor == 0) goto do_draw;
+            newState = 2;
+        } else {
+            return;
+        }
+    }
+    ((Sprite*)cursor)->ResetAnimation(newState, 0);
+do_draw:
+    if (cursor != 0) {
+        ((Sprite*)cursor)->Do(((Sprite*)cursor)->loc_x, ((Sprite*)cursor)->loc_y, 1.0);
+    }
+}
+
+/* Function start: 0x421BC0 */
+void T_MenuHotspot::SimpleUpdate()
 {
     if (cursor == 0) {
         return;
     }
 
-    int mouseX = 0;
-    int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
+    int mouseY = 0;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    int mouseX;
     if (pMouse != 0) {
-        mouseX = pMouse[1];
+        mouseY = pMouse->y;
     }
-    int mouseY;
     if (pMouse != 0) {
-        mouseY = pMouse[0];
+        mouseX = pMouse->x;
     } else {
-        mouseY = 0;
+        mouseX = 0;
     }
 
-    if (bounds.left <= mouseY && bounds.right >= mouseY &&
-        bounds.top <= mouseX && bounds.bottom >= mouseX) {
-        cursor->ResetAnimation(1, 0);
+    if (bounds.left <= mouseX && bounds.right >= mouseX &&
+        bounds.top <= mouseY && bounds.bottom >= mouseY) {
+        ((Sprite*)cursor)->ResetAnimation(1, 0);
     } else {
-        cursor->ResetAnimation(0, 0);
+        ((Sprite*)cursor)->ResetAnimation(0, 0);
     }
 
-    cursor->Do(cursor->loc_x, cursor->loc_y, 1.0);
+    ((Sprite*)cursor)->Do(((Sprite*)cursor)->loc_x, ((Sprite*)cursor)->loc_y, 1.0);
 }
 
 extern "C" void ShowError(const char* format, ...);
@@ -222,4 +277,11 @@ int T_MenuHotspot::LBLParse(char* line) {
 }
 
 void T_MenuHotspot::Cleanup() {}
+
+/* Function start: 0x420EF0 */
+void T_MenuHotspot::StopCursorSound() {
+    if (cursor != 0) {
+        ((Sprite*)cursor)->StopAnimationSound();
+    }
+}
 

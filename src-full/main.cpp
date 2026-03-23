@@ -354,6 +354,19 @@ extern "C" int FileExists(const char *filename) {
 }
 
 
+/* Function start: 0x425FF0 */
+extern "C" void TouchFileTimestamp(const char* filename) {
+    SYSTEMTIME sysTime;
+    FILETIME fileTime;
+    GetSystemTime(&sysTime);
+    SystemTimeToFileTime(&sysTime, &fileTime);
+    HANDLE hFile = CreateFileA(filename, 0xC0000000, 1, 0, 3, 0x80, 0);
+    if (hFile != (HANDLE)0xFFFFFFFF) {
+        SetFileTime(hFile, 0, 0, &fileTime);
+        CloseHandle(hFile);
+    }
+}
+
 /* Function start: 0x425720 */
 void InitGameSystems(void) {
     g_Buffer_0046aa00 = new char[0x100];

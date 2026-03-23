@@ -13,7 +13,10 @@
 extern "C" extern GameState* g_GameState_0046aa30;
 #include "Timer.h"
 extern char* g_Buffer_0046aa00;
-extern void* g_Mouse_0046aa18;
+#include "MouseControl.h"
+#include "InputManager.h"
+extern MouseControl* g_Mouse_0046aa18;
+extern InputManager* g_InputManager_0046aa08;
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
@@ -154,6 +157,126 @@ int SC_Roach::AddMessage(SC_Message* msg) {
     }
 
     return 1;
+}
+
+/* Function start: 0x4195D0 */
+void SC_Roach::UpdateProgress()
+{
+    unsigned int elapsed = ((Timer*)progressObj)->Update();
+    int seconds = elapsed / 1000;
+    int phase = seconds / 24;
+    int frame = (seconds / 2) % 24;
+
+    if (rotateIndex != phase) {
+        int snd;
+        if (phase == 1 && rotatePending == 0) {
+            snd = 10;
+        } else if (phase == 3) {
+            snd = 3;
+        } else if (phase == 5) {
+            snd = 4;
+        } else if (phase == 8) {
+            snd = 5;
+        } else {
+            goto skip_sound;
+        }
+        bgSound->Play(snd);
+    }
+skip_sound:
+    rotateIndex = phase;
+    if (phase == 10) {
+        circleSprite->ResetAnimation(frame, 0);
+        statusPtr[0] = 1;
+        return;
+    }
+    if (phase < 10) {
+        barSprite->ResetAnimation(phase, 0);
+        circleSprite->ResetAnimation(frame, 0);
+    }
+}
+
+/* Function start: 0x419690 */
+void SC_Roach::RenderBoard()
+{
+    // Draw background sprite
+    if (bgSprite != 0) {
+        ((Sprite*)bgSprite)->Do(((Sprite*)bgSprite)->loc_x, ((Sprite*)bgSprite)->loc_y, 1.0);
+    }
+
+    // Draw held piece following cursor, or draw cursor if no piece held
+    if (currentPiece == 0) {
+        g_Mouse_0046aa18->DrawCursor();
+    } else {
+        NavCrystal* crys = (NavCrystal*)currentPiece;
+        if (crys->sprite != 0) {
+            InputState* pMouse = g_InputManager_0046aa08->pMouse;
+            int mouseY = 0;
+            if (pMouse != 0) {
+                mouseY = pMouse->y;
+            }
+            int mouseX = 0;
+            if (pMouse != 0) {
+                mouseX = pMouse->x;
+            }
+            crys->sprite->Do(
+                mouseX - crys->dimArray1[crys->rotation].field_0,
+                mouseY - crys->dimArray1[crys->rotation].field_4,
+                1.0);
+        }
+    }
+
+    // Draw crystals in source slots
+    int drawn[8];
+    {
+        int* p = drawn;
+        int n = 8;
+        do { *p = 0; p++; n--; } while (n != 0);
+    }
+
+    int i = 0;
+    CrystalSource* src = &sources[0];
+    do {
+        if (src->crystalPtr != 0) {
+            SlimeDim pos;
+            pos.field_0 = src->sourceX;
+            pos.field_4 = src->sourceY;
+            NavCrystal* crys = (NavCrystal*)src->crystalPtr;
+            if (crys->sprite != 0) {
+                crys->sprite->Do(pos.field_0, pos.field_4, 1.0);
+            }
+        }
+        src = (CrystalSource*)((char*)src + 0x2c);
+        i++;
+    } while (i < 8);
+
+    // Draw crystals placed on grid
+    int cellCount = 0x24;
+    int* cellPtr = &grid[0];
+    do {
+        int col = 4;
+        int* cell = cellPtr;
+        do {
+            int id = *cell;
+            if (id >= 0 && id < 8 && drawn[id] == 0) {
+                drawn[id] = 1;
+                NavCrystal* crys = (NavCrystal*)crystals[id];
+                if (crys != 0 && crys->sprite != 0) {
+                    crys->sprite->Do(
+                        cellPtr[4] - crys->dimArray2[crys->rotation].field_0,
+                        cellPtr[5] - crys->dimArray2[crys->rotation].field_4,
+                        1.0);
+                }
+            }
+            cell++;
+            col--;
+        } while (col != 0);
+        cellPtr += 8;
+        cellCount--;
+    } while (cellCount != 0);
+
+    // Draw progress sprites
+    circleSprite->Do(circleSprite->loc_x, circleSprite->loc_y, 1.0);
+    barSprite->Do(barSprite->loc_x, barSprite->loc_y, 1.0);
 }
 
 /* Function start: 0x4198B0 */

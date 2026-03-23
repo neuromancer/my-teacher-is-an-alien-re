@@ -48,3 +48,14 @@ void Timer::Wait(unsigned int delay)
     } while (m_elapsedTime < delay);
 }
 
+/* Function start: 0x421930 */
+void __fastcall DestroyTimerField(int* obj)
+{
+    Timer* t = (Timer*)obj[2];  // offset 8 from obj
+    if (t != 0) {
+        t->~Timer();
+        FreeMemory(t);
+        obj[2] = 0;
+    }
+}
+

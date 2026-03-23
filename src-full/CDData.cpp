@@ -400,6 +400,25 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
     return 0;
 }
 
-// FUN_00421F90 = CDData::ResolvePath (DEMO ONLY) — replaced by 0x433230 full game version above
+extern "C" char* FormatFilePath(char*);
+
+/* Function start: 0x426330 */
+extern "C" void __cdecl DeleteMatchingFiles(char* pattern, ...) {
+    char resolved[260];
+    char dir[64];
+    char fullpath[64];
+    struct _finddata_t findData;
+
+    vsprintf(resolved, pattern, (char*)(&pattern + 1));
+    char* formatted = FormatFilePath(resolved);
+    int handle = _findfirst(formatted, &findData);
+    if (handle != -1) {
+        _splitpath(resolved, 0, dir, 0, 0);
+        do {
+            sprintf(fullpath, "%s%s", dir, findData.name);
+            ResolveAssetPath(fullpath);
+        } while (_findnext(handle, &findData) == 0);
+    }
+}
 
 CDData::~CDData() {}

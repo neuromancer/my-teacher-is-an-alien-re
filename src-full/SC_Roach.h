@@ -98,6 +98,8 @@ public:
     virtual void ProcessLose();                    // [11] 0x419380
     virtual void ProcessAction(int action, int* data); // [12] 0x419C40
 
+    void UpdateProgress();                         // 0x4195D0
+    void RenderBoard();                            // 0x419690
     int TryPlacePiece(int* msg);                   // 0x4198B0
     int TryDropOnSource(int* msg);                 // 0x419A10
     int PickFromGrid(int* msg);                    // 0x419AE0

@@ -21,6 +21,8 @@ public:
     SCI_SearchScreen();                         // 0x40B420
     ~SCI_SearchScreen();                        // 0x40B4B0
 
+    int ShutDown(SC_Message* msg);              // 0x40B780
+    int AddMessage(SC_Message* msg);            // 0x40B7E0
     virtual int LBLParse(char* line);           // 0x40B25E (body), 0x40B240 (SEH entry)
 };
 

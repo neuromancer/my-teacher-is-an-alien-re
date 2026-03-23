@@ -89,6 +89,23 @@ void SoundList::StopAll() {
   }
 }
 
+/* Function start: 0x4255D0 */
+void SoundList::StopPlaying() {
+    int i = 0;
+    if (m_count > 0) {
+        do {
+            Sample* smp = m_field8[i];
+            if (smp != 0 && smp->m_sample != 0 &&
+                smp->m_size == *(int*)((char*)smp->m_sample + 0xc)) {
+                if (AIL_sample_status(smp->m_sample) == 4) {
+                    smp->~Sample();
+                }
+            }
+            i++;
+        } while (i < m_count);
+    }
+}
+
 /* Function start: 0x4252F0 */ /* ~98% match */
 void *SoundList::Register(char *filename) {
   char local_54[64];

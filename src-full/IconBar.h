@@ -19,6 +19,7 @@ struct IconBarEntry {
     SpriteAction* slot0;   // 0x1C
     SpriteAction* slot1;   // 0x20
 
+    void Render();                                     // 0x42E4B0
     IconBarEntry();                                    // 0x42E330
     ~IconBarEntry();
     void RegisterSlot(SpriteAction* obj);              // 0x42E450

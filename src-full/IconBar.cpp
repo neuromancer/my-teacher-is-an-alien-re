@@ -504,6 +504,31 @@ int IconBar::LBLParse(char* param) {
     return 0;
 }
 
+/* Function start: 0x42E4B0 */
+void IconBarEntry::Render() {
+    if (field_14 > 1) {
+        sprite->ResetAnimation(field_14 - 2, 0);
+        sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+    }
+    int mouseX = 0;
+    int mouseY = 0;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    if (pMouse != 0) {
+        mouseY = pMouse->y;
+        mouseX = pMouse->x;
+    }
+    int hover;
+    if (bounds.left > mouseX || bounds.right < mouseX ||
+        bounds.top > mouseY || bounds.bottom < mouseY) {
+        hover = 0;
+    } else {
+        hover = 1;
+    }
+    if (g_Mouse_0046aa18->m_sprite != 0) {
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(hover, 0);
+    }
+}
+
 /* Function start: 0x42E330 */
 IconBarEntry::IconBarEntry() {
     memset(this, 0, 9 * 4);

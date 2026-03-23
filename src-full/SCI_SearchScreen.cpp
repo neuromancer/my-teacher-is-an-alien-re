@@ -22,6 +22,35 @@ SCI_SearchScreen::~SCI_SearchScreen()
     ShutDown(0);
 }
 
+extern int g_CombatEngine_0046ae78;
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+
+/* Function start: 0x40B780 */
+int SCI_SearchScreen::ShutDown(SC_Message* msg) {
+    if (g_CombatEngine_0046ae78 != 0) {
+        int* engine = (int*)g_CombatEngine_0046ae78;
+        int* vtable = *(int**)engine;
+        // Call scalar deleting destructor (vtable[3]) with flag=1
+        ((void (*)(int))(vtable[3]))(1);
+        g_CombatEngine_0046ae78 = 0;
+    }
+    SC_Combat::ShutDown(msg);
+    return 0;
+}
+
+/* Function start: 0x40B7E0 */
+int SCI_SearchScreen::AddMessage(SC_Message* msg) {
+    int ret = SC_Combat::AddMessage(msg);
+    if (ret != 0) {
+        return 1;
+    }
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->lastKey == 0x1B && savedCommand == 0x2B) {
+        statusPtr[2] = 1;
+    }
+    return 1;
+}
+
 /* Function start: 0x40B25E */
 int SCI_SearchScreen::LBLParse(char* line) {
     char token[32];

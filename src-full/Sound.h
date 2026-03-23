@@ -9,6 +9,7 @@ public:
     void AllocateSampleHandles();
     HSAMPLE FindFreeSampleHandle();
     void StopAllSamples();
+    void EndAllSamples();                 // 0x424E10
     int OpenDigitalDriver(int rate, unsigned short bits, unsigned short channels);
 
     short num_samples;        // 0x00

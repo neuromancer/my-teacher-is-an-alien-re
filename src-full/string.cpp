@@ -39,7 +39,7 @@ static char g_formatBuffer[64];
 static char g_audioNameBuffer[260];
 static char g_soundFileBuffer[260];  // 0x473D10
 
-/* Function start: 0x40D200 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x44E3E0 */
 char* FormatStringVA(char* format, ...)
 {
     vsprintf(g_formatBuffer, format, (char*)(&format + 1));
@@ -160,10 +160,10 @@ int ShowMessageYesNo(char *param_1, ...)
     return result;
 }
 
-/* Function start: 0x42D3D0 */
+/* Function start: 0x425D60 */
 void ClearMessageLog()
 {
-    DeleteFile_Wrapper("message.log");
+    remove("cfg\\message.log");
 }
 
 /* Function start: 0x425D70 */
@@ -230,85 +230,7 @@ char* FormatFilePath(char* path);
 void* AllocateMemory_Wrapper(int size);
 }
 
-/* Function start: 0x419420 */ /* DEMO ONLY - no full game match */
-FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, unsigned int* out_size)
-{
-    FILE* fp;
-    char* entry_buf;
-    int found;
-    long offset;
-    char fname[12];
-    char ext[8];
-    char key[16];
-    int stat_buf[5];
 
-    if (out_size != NULL) {
-        *out_size = 0;
-    }
-
-    if (archive_path == NULL) {
-        fp = fsopen(filename, mode);
-        if (fp != NULL && out_size != NULL) {
-            FileStat((const unsigned char*)filename, stat_buf);
-            *out_size = stat_buf[5];
-        }
-        return fp;
-    }
-
-    stat_buf[0] = 0;
-    offset = 0;
-    ParsePath(filename, NULL, NULL, fname, ext);
-    sprintf(key, "%s%s", fname, ext);
-
-    fp = fsopen(archive_path, mode);
-    if (fp == NULL) {
-        char* formatted = FormatFilePath(archive_path);
-        fp = fsopen(formatted, mode);
-        if (fp == NULL) {
-            goto not_found;
-        }
-    }
-
-    found = 1;
-    entry_buf = (char*)AllocateMemory_Wrapper(0x18);
-
-    do {
-        while (found) {
-            fread(entry_buf, 0x18, 1, fp);
-            if (*entry_buf != (char)0xff) {
-                break;
-            }
-            if (*(int*)(entry_buf + 0xc) == 0) {
-                found = 0;
-            } else {
-                fseek(fp, *(long*)(entry_buf + 0xc), 0);
-            }
-        }
-        if (!found) break;
-    } while (_strnicmp(entry_buf, key, 0xc) != 0);
-
-    if (found) {
-        offset = *(long*)(entry_buf + 0xc);
-        stat_buf[0] = 1;
-        if (out_size != NULL) {
-            *out_size = *(unsigned int*)(entry_buf + 0x10);
-        }
-    }
-
-    FreeFromGlobalHeap(entry_buf);
-
-not_found:
-    if (stat_buf[0] != 0) {
-        fseek(fp, offset, 0);
-        return fp;
-    }
-
-    if (fp != NULL) {
-        fclose(fp);
-        fp = NULL;
-    }
-    return fp;
-}
 
 /* Function start: 0x4263E0 */
 void DecryptLine(char* buffer)
@@ -412,47 +334,10 @@ void ExecuteFunctionArray(void** param_1, void** param_2)
     } while (param_2 > param_1);
 }
 
-/* Function start: 0x425E50 */ /* DEMO ONLY - no full game match */
-// Wrapper for _fsopen with _SH_DENYNO (0x40) share mode
+/* Function start: 0x455110 */
 FILE* fsopen(const char* filename, const char* mode)
 {
     return _fsopen(filename, mode, _SH_DENYNO);
-}
-
-// NOTE: strstr_custom address unknown; 0x425FD0 is actually strncpy in the original binary
-char* strstr_custom(const char* haystack, const char* needle) {
-
-    const char* haystack_base = haystack;
-    const char* needle_base = needle;
-
-    if (*needle_base == '\0') {
-        return (char*)haystack;
-    }
-
-loop_start:
-    if (*haystack == '\0') {
-        return NULL;
-    }
-
-    if (*haystack == *needle) {
-        // A character matches. Advance both pointers.
-        haystack++;
-        needle++;
-        if (*needle == '\0') {
-            // We've reached the end of the needle, so we have a full match.
-            return (char*)haystack_base;
-        }
-        // This is the key part: jump back to the top to re-evaluate the loop conditions
-        // for the next character, rather than using a nested loop.
-        goto loop_start;
-    } else {
-        // The characters do not match.
-        // Advance the base haystack pointer and reset the other pointers.
-        haystack_base++;
-        haystack = haystack_base;
-        needle = needle_base;
-        goto loop_start;
-    }
 }
 
 /* Function start 0x426030 */
@@ -482,24 +367,6 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
     if (param_3 == 0) {
         ExitProcess(param_1);
     }
-}
-
-/* Function start: 0x426110 */ /* DEMO ONLY - no full game match */
-int DeleteFile_Wrapper(const char* filename)
-{
-    unsigned int error;
-
-    error = DeleteFileA(filename);
-    if (error == 0) {
-        error = GetLastError();
-    } else {
-        error = 0;
-    }
-    if (error != 0) {
-        SetErrorCode(error);
-        return -1;
-    }
-    return 0;
 }
 
 extern "C" GameState* g_GameState_0046aa30;
