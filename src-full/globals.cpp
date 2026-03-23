@@ -222,8 +222,8 @@ void* g_WinGStretchBlt_00438438 = 0;
 // Window procedure globals
 HDC g_WindowDC_00472d00 = 0;       // Main window DC
 HPALETTE g_WindowPalette_00472d04 = 0;  // Main window palette
-int g_WindowWidth_00472d10;   // Window width (set at runtime in WM_SIZE)
-int DAT_0043de8c;   // Window height (set at runtime in WM_SIZE)
+int g_WindowWidth_00472d10 = 640;   // Window width (set at runtime in WM_SIZE)
+int DAT_0043de8c = 480;   // Window height (set at runtime in WM_SIZE)
 int DAT_0043de90;   // Windowed mode flag (0=fullscreen, 1=windowed)
 int g_ActivateAppState_00472d14 = 1;       // Activate app state (1 = app active/ready)
 

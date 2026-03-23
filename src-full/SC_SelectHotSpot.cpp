@@ -21,7 +21,7 @@ class ZBufferManager;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 class MouseControl;
 extern MouseControl* g_Mouse_0046aa18;
-class InputManager;
+#include "InputManager.h"
 extern InputManager* g_InputManager_0046aa08;
 extern SpriteAction DAT_00472d58;
 
@@ -117,19 +117,19 @@ void SelectHotspot::Draw() {
 void SelectHotspot::Update() {
     int mouseX;
     int mouseY;
-    int* mousePtr;
+    InputState* pMouse;
 
     switch (SelectHotspot::state) {
     case 0:
         break;
     case 1:
-        mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
+        pMouse = g_InputManager_0046aa08->pMouse;
         mouseY = 0;
-        if (mousePtr != 0) {
-            mouseY = mousePtr[1];
+        if (pMouse != 0) {
+            mouseY = pMouse->y;
         }
-        if (mousePtr != 0) {
-            mouseX = mousePtr[0];
+        if (pMouse != 0) {
+            mouseX = pMouse->x;
         } else {
             mouseX = 0;
         }
@@ -150,13 +150,13 @@ void SelectHotspot::Update() {
         }
         break;
     case 2:
-        mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
+        pMouse = g_InputManager_0046aa08->pMouse;
         mouseY = 0;
-        if (mousePtr != 0) {
-            mouseY = mousePtr[1];
+        if (pMouse != 0) {
+            mouseY = pMouse->y;
         }
-        if (mousePtr != 0) {
-            mouseX = mousePtr[0];
+        if (pMouse != 0) {
+            mouseX = pMouse->x;
         } else {
             mouseX = 0;
         }

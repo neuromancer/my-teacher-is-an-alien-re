@@ -5,6 +5,7 @@
 
 #include "string.h"
 
+
 // Externs for globals
 extern HDC DAT_00437488;
 extern HDC DAT_004374b4;
