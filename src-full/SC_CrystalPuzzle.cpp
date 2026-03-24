@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <new.h>
 
-extern "C" char* CDData_FormatPath(char*, ...);
 extern "C" void SetVideoRes(int, int);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void ShowError(const char* format, ...);
@@ -67,7 +66,7 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     rect5.bottom = 0x192;
 
     palette = new Palette();
-    palette->Load(CDData_FormatPath("puz\\ForceField\\Puzztest.col"));
+    palette->Load("puz\\ForceField\\Puzztest.col");
 
     buttons1 = new Sprite("puz\\ForceField\\buttons1.smk");
     buttons1->loc_x = 0x1dc;

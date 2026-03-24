@@ -80,13 +80,6 @@ HSAMPLE Sound::FindFreeSampleHandle() {
   return 0;
 }
 
-/* Function start: 0x41E3A0 */ /* DEMO ONLY - no full game match */
-void Sound::StopAllSamples() {
-  for (short i = 0; i < Sound::num_samples; i++) {
-    AIL_end_sample(Sound::samples[(int)i]);
-  }
-}
-
 /* Function start: 0x424E40 */
 int Sound::OpenDigitalDriver(int rate, unsigned short bits,
                       unsigned short channels) {
@@ -110,7 +103,7 @@ int Sound::OpenDigitalDriver(int rate, unsigned short bits,
 }
 
 /* Function start: 0x424E10 */
-void Sound::EndAllSamples() {
+void Sound::StopAllSamples() {
     short i = 0;
     if (i < num_samples) {
         do {

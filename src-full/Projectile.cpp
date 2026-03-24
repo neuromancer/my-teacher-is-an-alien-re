@@ -13,7 +13,7 @@ extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
 extern "C" int __cdecl DrawCircle(int param_1);
 extern "C" int __cdecl DrawLine(int param_1, int param_2);
 
-/* Function start: 0x434660 */ /* ~85% match */
+/* Function start: 0x434660 */
 Projectile::Projectile() : Sprite(0) {
     int* pCurrent = &currentX;
     int* pNext = &nextX;
@@ -37,7 +37,7 @@ Projectile::Projectile() : Sprite(0) {
     memset(&startX, 0, 12 * 4);
 }
 
-/* Function start: 0x427270 */ /* ~83% match */
+/* Function start: 0x427270 */
 void Projectile::Launch() {
     int frameCount;
     int mouseY;
@@ -87,7 +87,7 @@ void Projectile::Launch() {
 }
 
 /* Function start: 0x427390 */
-void Projectile::UpdateFull() {
+void Projectile::Update() {
     int isExploding;
     int frameNum;
 
@@ -132,110 +132,6 @@ void Projectile::UpdateFull() {
         g_ProjectileHits_0043d150++;
         Projectile::ResetAnimation(1, 0);
     }
-}
-
-/* Function start: 0x4163E0 */ /* DEMO ONLY - no full game match */
-void Projectile::Update() {
-    int isExploding;
-    int frameNum;
-
-    if (Projectile::active == 0) {
-        return;
-    }
-
-    isExploding = (Projectile::handle == 1);
-
-    if (isExploding) {
-        Projectile::nextX = Projectile::currentX;
-        Projectile::nextY = Projectile::currentY;
-    } else {
-        if (Projectile::animation_data != 0) {
-            frameNum = Projectile::animation_data->smk->FrameNum + 1;
-        } else {
-            frameNum = 1;
-        }
-
-        Projectile::nextX = Projectile::startX + (int)(Projectile::velocityX * (float)frameNum);
-        Projectile::nextY = Projectile::startY + (int)(Projectile::velocityY * (float)frameNum);
-
-        if (Projectile::CheckCollision()) {
-            Projectile::currentX = Projectile::nextX;
-            Projectile::currentY = Projectile::nextY;
-            Projectile::ResetAnimation(1, 0);
-        }
-    }
-
-    if (Projectile::Do(
-            Projectile::nextX - Projectile::halfWidth,
-            Projectile::nextY - Projectile::halfHeight,
-            1.0)) {
-        if (isExploding) {
-            Projectile::active = 0;
-            return;
-        }
-        g_ProjectileHits_0043d150++;
-        Projectile::ResetAnimation(1, 0);
-    }
-}
-
-/* Function start: 0x416500 */ /* DEMO ONLY - no full game match */
-int Projectile::CheckCollision() {
-    HashTable* hashTable;
-    HashNode* current;
-    HashNode* next;
-    unsigned int bucketIdx;
-    Target* target;
-    int* bucket;
-
-    hashTable = g_TargetList_00435f0c->hashTable;
-    if (hashTable == 0) {
-        return 0;
-    }
-
-    current = (HashNode*)(((unsigned int)hashTable->count < 1u) - 1);
-
-    do {
-        if (current == 0) {
-            return 0;
-        }
-
-        if (current == (HashNode*)-1) {
-            bucketIdx = 0;
-            if ((unsigned int)hashTable->numBuckets != 0) {
-                bucket = hashTable->buckets;
-                do {
-                    current = (HashNode*)*bucket;
-                    if (current != 0) break;
-                    bucket++;
-                    bucketIdx++;
-                } while (bucketIdx < (unsigned int)hashTable->numBuckets);
-            }
-        }
-
-        next = current->next;
-        if (next == 0) {
-            bucketIdx = current->bucketIndex + 1;
-            if (bucketIdx < (unsigned int)hashTable->numBuckets) {
-                bucket = (int*)(bucketIdx * 4 + (int)hashTable->buckets);
-                do {
-                    next = (HashNode*)*bucket;
-                    if (next != 0) break;
-                    bucket++;
-                    bucketIdx++;
-                } while (bucketIdx < (unsigned int)hashTable->numBuckets);
-            }
-        }
-
-        target = (Target*)current->reserved;
-        current = next;
-
-        if (target != 0) {
-            if (target->CheckTimeInRangeParam((int*)((char*)this + 0xe8))) {
-                target->UpdateProgress(1);
-                return 1;
-            }
-        }
-    } while (1);
 }
 
 /* Function start: 0x427150 */

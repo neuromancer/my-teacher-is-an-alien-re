@@ -14,10 +14,14 @@ Sample::Sample() {
   m_sample = 0;
 }
 
+Sample::~Sample() {
+  Stop();
+}
+
 /* Function start: 0x424EE0 */
 void Sample::Unload() {
   if (m_data != 0) {
-    Sample::~Sample();
+    Sample::Stop();
     AIL_mem_free_lock(m_data);
     m_data = 0;
   }
@@ -108,18 +112,9 @@ set_final:
 }
 
 /* Function start: 0x4250E0 */
-Sample::~Sample() {
-  if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
-    AIL_end_sample(m_sample);
-  }
-}
-
-/* Function start: 0x41E690 */ /* DEMO ONLY - no full game match */
 void Sample::Stop() {
   if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
-    while (AIL_sample_status(m_sample) == SMP_PLAYING) {
-    }
-    AIL_stop_sample(m_sample);
+    AIL_end_sample(m_sample);
   }
 }
 

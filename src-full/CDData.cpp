@@ -12,22 +12,10 @@
 
 extern "C" {
 void ParsePath(const char *, char *, char *, char *, char *);
-char* __cdecl CDData_FormatPath(char* format, ...);  // 0x4195C0
 int __cdecl FileExists(const char* path);           // 0x4195A0
 int __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
 }
 void ShowError(const char* format, ...);
-
-/* Function start: 0x4195C0 */ /* DEMO ONLY - no full game match */
-extern "C" char* __cdecl CDData_FormatPath(char* param_1, ...)
-{
-    char local_104[260];
-    char* args = (char*)(&param_1 + 1);
-    
-    vsprintf(local_104, param_1, args);
-    sprintf(g_CDData_0043697c->cdIdentifier + 5, "%s%s", g_CDData_0043697c->cdIdentifier, local_104);
-    return g_CDData_0043697c->cdIdentifier + 5;
-}
 
 /* Function start: 0x432EC0 */
 CDData::CDData(char *param_1, const char *param_2, const char *param_3) {
@@ -400,7 +388,7 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
     return 0;
 }
 
-extern "C" char* FormatFilePath(char*);
+#include "FileSystem.h"
 
 /* Function start: 0x426330 */
 extern "C" void __cdecl DeleteMatchingFiles(char* pattern, ...) {

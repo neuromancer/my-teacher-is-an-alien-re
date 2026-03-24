@@ -44,12 +44,11 @@ int SC_SpaceShipNav::ShutDown(SC_Message* msg) {
     return SC_Combat::ShutDown(msg);
 }
 
-extern int FUN_0044be70(void*);
-extern int DAT_0046c3f0[];
+int DAT_0046c3f0[3] = {0, 0, 0};
 
 /* Function start: 0x447950 */
 void SC_SpaceShipNav::UpdateCursor() {
-    int iVar1 = FUN_0044be70(g_Navigator_0046ae70);
+    int iVar1 = ((mCNavigator*)g_Navigator_0046ae70)->Update();
     if (iVar1 == 0 && g_Mouse_0046aa18->m_sprite != 0 &&
         g_Mouse_0046aa18->m_sprite->handle != -1) {
         int mouseX = 0;

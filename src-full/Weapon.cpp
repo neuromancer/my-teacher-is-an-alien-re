@@ -1,51 +1,12 @@
 #include "RockThrower.h"
-#include "Sample.h"
 #include "globals.h"
-#include "Animation.h"
-#include "EngineSubsystems.h"
-#include "CursorState.h"
-#include <string.h>
-
-extern "C" int __cdecl SetFillColor(unsigned char param_1);
-extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
-extern "C" int __cdecl DrawCircle(int param_1);
-extern "C" int __cdecl DrawLine(int param_1, int param_2);
-
-class CombatResult {
-public:
-    int state; // 0x00
-
-    void PlayResult();   // 0x415D40
-};
-
-/* Function start: 0x415D40 */ /* DEMO ONLY - no full game match */
-void CombatResult::PlayResult() {
-    switch (CombatResult::state) {
-    case 1:
-        {
-            Animation anim;
-            anim.Play("rat1\\lose.smk", 0x20);
-        }
-        break;
-    case 2:
-        {
-            Animation anim;
-            anim.Play("rat1\\win.smk", 0x20);
-        }
-        break;
-    }
-}
-
-Weapon::~Weapon() {}
-
-// Weapon::OnHit (0x415E00) and Weapon::DrawExplosion (0x415F10)
-// are DEMO ONLY — full game versions are in CombatDisplay.cpp
-
 #include "InputManager.h"
+#include "Projectile.h"
+
 extern InputManager* g_InputManager_0046aa08;
 extern int g_ProjectileHits_0043d150;
-#include "Projectile.h"
-// FUN_00427390 = Projectile::UpdateFull — callers updated
+
+Weapon::~Weapon() {}
 
 // Access RockThrower fields via offset (base class accesses derived class layout)
 // Maps to: m_itemCount(0xB0), m_items(0xB4), m_hitCount(0xB8), m_holdState(0xBC), m_hitCountFull(0xC0)
@@ -61,7 +22,7 @@ void Weapon::UpdateProjectiles() {
     int mouseBtn;
     int fire;
 
-    if (*(int*)((char*)g_InputManager_0046aa08 + 0x1B4) == 0) {
+    if (g_InputManager_0046aa08->mouseValid == 0) {
         goto updateAll;
     }
 
@@ -74,23 +35,23 @@ void Weapon::UpdateProjectiles() {
         mouseBtn = 0;
     }
 
-    W_HOLD = (mouseBtn == 1) ? 1 : W_HOLD;
+    W_HOLD = (mouseBtn < 1) | W_HOLD;
 
     if (!(W_FLAGS & 1)) {
+        pMouse = g_InputManager_0046aa08->pMouse;
         if (pMouse != 0) {
             mouseBtn = pMouse->buttons & 1;
         } else {
             mouseBtn = 0;
         }
         if (mouseBtn != 0 && W_HOLD != 0) {
-            fire = 1;
+            m_clicked = 1;
         } else {
-            fire = 0;
+            m_clicked = 0;
         }
     } else {
-        fire = 0;
+        m_clicked = 0;
     }
-    m_clicked = fire;
 
     if (m_clicked == 0) {
         goto updateAll;
@@ -118,7 +79,7 @@ updateAll:
     {
         int i = 0;
         while (i < W_PROJ_COUNT) {
-            ((Projectile*)W_PROJ_ARRAY[i])->UpdateFull();
+            ((Projectile*)W_PROJ_ARRAY[i])->Update();
             i++;
         }
     }

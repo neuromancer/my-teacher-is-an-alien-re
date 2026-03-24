@@ -10,6 +10,7 @@ public:
   void StopAll();
   void StopPlaying();               // 0x4255D0
   int Play(int index);              // 0x425550
+  int IsSamplePlaying(int index);  // 0x4256D0
   void *Register(char *filename);
 
 public:

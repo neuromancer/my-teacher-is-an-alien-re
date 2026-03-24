@@ -149,3 +149,15 @@ void *SoundList::Register(char *filename) {
 
   return 0;
 }
+
+/* Function start: 0x4256D0 */
+int SoundList::IsSamplePlaying(int index) {
+    if (index < 0) return 0;
+    if (m_count - 1 < index) return 0;
+    Sample* entry = m_field8[index];
+    if (entry == 0) return 0;
+    if (entry->m_sample == 0) return 0;
+    if (entry->m_size != *(int*)((char*)entry->m_sample + 0xc)) return 0;
+    if (AIL_sample_status(entry->m_sample) == 4) return 1;
+    return 0;
+}

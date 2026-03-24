@@ -19,7 +19,7 @@
 class T_MenuHotspot : public Parser {
 public:
     T_MenuHotspot(int param);       // 0x420CE0 (full game)
-    T_MenuHotspot(char* name, int* rect); // demo constructor
+    T_MenuHotspot(char* name, int* rect); // 0x421A50
     ~T_MenuHotspot();               // 0x420D90
     virtual int LBLParse(char* param); // 0x421080
 

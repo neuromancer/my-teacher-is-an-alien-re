@@ -68,11 +68,6 @@ int ZBuffer::Exit(SC_Message* msg)
     return 0;
 }
 
-/* DEMO ONLY removed:
-   - ZBuffer::Update (0x4143A0) — duplicate, belongs to SC_ZBuffer in SC_ZBuffer.cpp
-   - ZBuffer::AddMessage (0x401330) — demo-only, full game uses SC_ZBuffer
-   - ZBuffer::ProcessMessage (0x401350) — demo-only, full game uses SC_ZBuffer */
-
 /* Function start: 0x401C80 */
 void ZBuffer::CleanUpVBuffer()
 {

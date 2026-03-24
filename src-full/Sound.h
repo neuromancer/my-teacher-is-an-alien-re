@@ -8,8 +8,7 @@ public:
     Sound(int param_1, short param_2, int param_3);
     void AllocateSampleHandles();
     HSAMPLE FindFreeSampleHandle();
-    void StopAllSamples();
-    void EndAllSamples();                 // 0x424E10
+    void StopAllSamples();                // 0x424E10
     int OpenDigitalDriver(int rate, unsigned short bits, unsigned short channels);
 
     short num_samples;        // 0x00

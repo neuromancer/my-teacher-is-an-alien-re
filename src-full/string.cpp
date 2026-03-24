@@ -225,8 +225,6 @@ extern "C" void WriteToLog(const char *param_1, ...)
 extern "C" {
 FILE *fsopen(const char* filename, const char* mode);
 void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
-int FileStat(const unsigned char* filename, int* stat_buf);
-char* FormatFilePath(char* path);
 void* AllocateMemory_Wrapper(int size);
 }
 

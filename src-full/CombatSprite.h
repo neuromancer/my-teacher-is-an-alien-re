@@ -32,39 +32,34 @@ public:
         growSize = 10;
     }
 
-    // Methods - thiscall convention
-    void Clear();                           // 0x415220
-    void AllocateBuckets(int size, int flag);  // 0x415270
-    void* AllocateNode();                   // 0x4152D0
-    void* Lookup(volatile int index, int* outSlot);  // 0x415c10
-    void Resize(int size, int flag);        // 0x415c50
-    void* AllocEntry();                     // 0x415cb0
+    // Methods
+    void Clear();                              // 0x43E250
+    void AllocateBuckets(int size, int flag);  // 0x44C580
+    void* AllocateNode();                      // 0x4422E0
+    void* Lookup(volatile int index, int* outSlot);  // 0x4097B0
+    void Resize(int size, int flag);           // 0x4097F0
+    void* AllocEntry();                        // 0x44BF30
 };
 
 // CombatSprite - Manages combat sprite definitions
-// Size: 0x98 bytes (Parser + 16 bytes)
-// vtable: 0x4314a8
-//
-// Layout:
-//   0x00-0x87: Parser base class
-//   0x88: SpriteHashTable* spriteTable
-//   0x8c-0x94: reserved fields
+// Full game vtable: 0x461138
+// Size: 0xA0 bytes (Parser(0x90) + 0x10)
 class CombatSprite : public Parser {
 public:
-    CombatSprite();      // 0x415410
-    virtual ~CombatSprite();  // 0x415480
+    CombatSprite();           // 0x408FB0
+    virtual ~CombatSprite();  // 0x409020
 
-    virtual int LBLParse(char* line);
-    void* FindSprite(unsigned int param_1); // 0x415580
-    int PlayById(unsigned int param_1);  // 0x4155E0
-    int ProcessFrame(int frame);         // 0x415B90
-    void ParseSpriteData(char* line);  // 0x415960
+    virtual int LBLParse(char* line);          // 0x40923E
+    void* FindSprite(unsigned int param_1);    // 0x409120
+    int PlayById(unsigned int param_1);        // 0x409180
+    int ProcessFrame(int frame);               // 0x409730
+    void ParseSpriteData(char* line);          // 0x409500
 
-    // Member variables
-    SpriteHashTable* spriteTable;  // 0x88
-    int field_0x8c;                // 0x8c
-    int field_0x90;                // 0x90
-    int field_0x94;                // 0x94
+    // Member variables (after Parser 0x90 base)
+    SpriteHashTable* spriteTable;  // 0x90
+    int currentEntry;              // 0x94 — current SpriteDataEntry*
+    int currentNode;               // 0x98 — current linked list node
+    int entryList;                 // 0x9C — entry list pointer from hash lookup
 };
 
 // Global variables used by CombatSprite parsing
@@ -72,7 +67,7 @@ extern SpriteHashTable* g_CurrentSprite;   // 0x436348
 extern int g_CurrentSpriteIndex;           // 0x43634c
 
 // Helper functions for hash table cleanup
-void FreePointerArray(void** arr, int count);         // 0x415340
-void FreeNestedHashTables(void** arr, int count);     // 0x415380
+void __cdecl CleanupSpriteHashArray(void** array, int count);  // 0x408F20
+void FreePointerArray(void** arr, int count);                  // 0x41A6F0
 
 #endif // COMBATSPRITE_H

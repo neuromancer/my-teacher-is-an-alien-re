@@ -24,6 +24,38 @@ extern "C" void ShowError(const char* format, ...);
 #include "MouseControl.h"
 #include "VBuffer.h"
 
+/* Function start: 0x42E4B0 */
+void __fastcall UpdateWordSearchCursor(int* self) {
+    int state = self[0];
+    if (state > 1) {
+        ((Sprite*)self[6])->ResetAnimation(state - 2, 0);
+        ((Sprite*)self[6])->Do(((Sprite*)self[6])->loc_x, ((Sprite*)self[6])->loc_y, 1.0);
+    }
+
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    int mouseY = 0;
+    if (pMouse != 0) {
+        mouseY = pMouse->y;
+    }
+    int mouseX = 0;
+    if (pMouse != 0) {
+        mouseX = pMouse->x;
+    }
+
+    int inside;
+    if (self[2] <= mouseX && self[4] >= mouseX &&
+        self[3] <= mouseY && self[5] >= mouseY) {
+        inside = 1;
+    } else {
+        inside = 0;
+    }
+
+    Sprite* cursor = g_Mouse_0046aa18->m_sprite;
+    if (cursor != 0) {
+        cursor->ResetAnimation((inside == 0) ? 1 : 0, 0);
+    }
+}
+
 /* Function start: 0x435800 */
 SC_WordSearch::SC_WordSearch() {
 }
@@ -473,13 +505,13 @@ int SC_WordSearch::Exit(SC_Message* msg) {
 int SC_WordSearch::AddMessage(SC_Message*) { return 0; }
 int SC_WordSearch::LBLParse(char*) { return 0; }
 
-extern void __fastcall FUN_00449520(int);
 extern void __fastcall InitCombatGrid(int);
+extern void __fastcall Handler_OnProcessEnd(int);
 
 /* Function start: 0x42F800 */
 void SC_WordSearch::OnProcessEnd() {
     int startX = 0x9B;
-    FUN_00449520((int)this);
+    Handler_OnProcessEnd((int)this);
     int* ptr = (int*)((int)this + 0x148);
     do {
         int cellX = 0x48;
@@ -524,8 +556,8 @@ void SC_WordSearch::OnProcessEnd() {
     }
 }
 
-extern void __fastcall FUN_0042e4b0(int*);
-extern int FUN_004256d0(void*, int);
+extern void __fastcall UpdateWordSearchCursor(int*);
+#include "SoundList.h"
 
 /* Function start: 0x42EFC0 */
 void SC_WordSearch::Render() {
@@ -535,7 +567,7 @@ void SC_WordSearch::Render() {
     if (*(int*)((int)this + 0x124) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
     }
-    FUN_0042e4b0((int*)((int)this + 0x120));
+    UpdateWordSearchCursor((int*)((int)this + 0x120));
     if (*(int*)((int)this + 0x124) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
     }
@@ -605,7 +637,7 @@ void SC_WordSearch::Render() {
             g_Mouse_0046aa18->DrawCursor();
 
             if (*(int*)((int)this + 0x120) < 1) {
-                int sndDone = FUN_004256d0(*(void**)((int)this + 0x110), 1);
+                int sndDone = ((SoundList*)*(void**)((int)this + 0x110))->IsSamplePlaying(1);
                 if (sndDone == 0) {
                     int* status = *(int**)((int)this + 0xA8);
                     if (status[1] == 0) {

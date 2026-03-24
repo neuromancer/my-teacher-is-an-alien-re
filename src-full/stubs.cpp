@@ -19,7 +19,6 @@
 #include "MouseControl.h"
 #include "smack.h"
 #include "mss.h"
-#include "SoundItem.h"
 #include "Parser.h"
 #include "Engine.h"
 #include "Timer.h"
@@ -494,7 +493,7 @@ void* __fastcall StringEntry_Init(void* thisPtr, char* name, int nameLen, int pa
     return thisPtr;
 }
 
-extern int FUN_0043ad50(void*, char*);
+extern int GlyphFont_GetTextWidth(void*, char*);
 
 /* Function start: 0x445710 */
 int __fastcall TextInput_ProcessKey(void* thisPtr, int key) {
@@ -524,7 +523,7 @@ int __fastcall TextInput_ProcessKey(void* thisPtr, int key) {
     if ((key > 0x40 && key < 0x5B) || (key > 0x2F && key < 0x3A) ||
         key == 0x5F || key == 0x20) {
         editBuf[editLen - 1] = (char)key;
-        int width = FUN_0043ad50((void*)self[3], editBuf);
+        int width = GlyphFont_GetTextWidth((void*)self[3], editBuf);
         if (self[4] < width) {
             editBuf[editLen - 1] = 0;
             return 0;
@@ -537,4 +536,38 @@ int __fastcall TextInput_ProcessKey(void* thisPtr, int key) {
         return 0;
     }
     return 0;
+}
+
+// FUN_004256d0 = SoundList::IsSamplePlaying — moved to SoundList.cpp
+// FUN_0040c600 = ScoreDisplay::AdjustScore — moved to ScoreDisplay.h (inline)
+// FUN_004427c0 = Target::Deactivate — already in Target.cpp
+// FUN_0042e4b0 = UpdateWordSearchCursor — moved to SC_WordSearch.cpp
+// FUN_00449520 = Engine::OnProcessEnd — wrapper for cross-hierarchy calls
+#include "Engine.h"
+void __fastcall Handler_OnProcessEnd(int thisPtr) {
+    ((Engine*)thisPtr)->OnProcessEnd();
+}
+
+/* Function start: 0x43AD50 */
+int GlyphFont_GetTextWidth(void* thisPtr, char* str) {
+    int width = 0;
+    int* self = (int*)thisPtr;
+
+    if (str == 0) return 0;
+
+    while (*str != 0) {
+        int ch = (int)(signed char)*str;
+        if (ch == 0x20) {
+            width = width + self[9]; // offset 0x24 = spaceWidth
+        } else if (ch == 0x9) {
+            width = width + self[10]; // offset 0x28 = tabWidth
+        } else {
+            int glyphIdx = ch - self[1]; // offset 0x04 = firstChar
+            int* glyphData = (int*)(self[5] + glyphIdx * 16); // offset 0x14 = glyph table
+            width = width - glyphData[0] + glyphData[2];
+        }
+        str++;
+        width = width + self[12]; // offset 0x30 = letterSpacing
+    }
+    return width;
 }

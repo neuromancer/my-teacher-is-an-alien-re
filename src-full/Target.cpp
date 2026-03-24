@@ -297,8 +297,7 @@ void Target::UpdateProgress(int delta)
 }
 
 extern int g_CombatEngine_0046ae78;
-extern void FUN_004427c0(int);
-extern void FUN_0040c600(void*, int);
+#include "ScoreDisplay.h"
 
 /* Function start: 0x4429A0 */
 int Target::Update()
@@ -310,7 +309,7 @@ int Target::Update()
     if (pendingAction == 1) {
         if (handle == animRange.end) {
             *(int*)DAT_0046ae6c -= hitMissPoints.end;
-            FUN_004427c0((int)this);
+            Target::Deactivate();
             return 1;
         }
         Sprite::ResetAnimation(handle + 1, 0);
@@ -336,7 +335,7 @@ int Target::Update()
         }
         ((int*)DAT_0046ae6c)[3]++;
         *(int*)DAT_0046ae6c += hitMissPoints.start;
-        FUN_0040c600((void*)DAT_0046ae6c, scoreWeight.start);
+        DAT_0046ae6c->AdjustScore(scoreWeight.start);
         *(int*)(g_CombatEngine_0046ae78 + 0xBC) += combatBonus.start;
         *(int*)(g_CombatEngine_0046ae78 + 0xCC) += combatBonus2.val;
     }
@@ -345,7 +344,7 @@ int Target::Update()
     int done = Sprite::Do(loc_x, loc_y, 1.0);
     if (done != 0) {
         if (active == 3) {
-            FUN_004427c0((int)this);
+            Target::Deactivate();
             return 0;
         }
         pendingAction = active;

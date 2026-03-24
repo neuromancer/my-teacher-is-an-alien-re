@@ -52,21 +52,17 @@ ObjectPool::~ObjectPool()
     memoryBlock = 0;
 }
 
-/* Function start: 0x413cf0 */ /* DEMO ONLY - no full game match */
-void ObjectPool::MemoryPool_Allocate(unsigned int param_1, int param_2)
-{
+/* Function start: 0x44C580 */
+void ObjectPool::AllocateBuckets(unsigned int newSize, int flag) {
     if (memory != 0) {
         delete memory;
         memory = 0;
     }
-    if (param_2 != 0) {
-        memory = new int[param_1];
-        memset(memory, 0, param_1 * 4);
-        size = param_1;
+    if (flag != 0) {
+        memory = new int[newSize];
+        memset(memory, 0, newSize * 4);
     }
-    else {
-        size = param_1;
-    }
+    size = newSize;
 }
 
 /* Function start: 0x409850 */

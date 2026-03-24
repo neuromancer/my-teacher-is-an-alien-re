@@ -7,24 +7,21 @@
 class Projectile;
 
 // Weapon - Base class for weapon displays
-// Demo vtable: 0x4313A8, Full game vtable: 0x4614B0
-// Size: Parser + 0x20 (8 dword fields)
-// Demo: 0xA8, Full game: 0xB0
-// vtable layout (6 entries):
+// Full game vtable: 0x4614B0 (6 entries)
+// Size: Parser(0x90) + 0x20 = 0xB0
+// vtable layout:
 //   [0] LBLParse  [1] OnProcessStart  [2] OnProcessEnd
 //   [3] destructor  [4] OnHit  [5] DrawCrosshairs
 class Weapon : public Parser {
 public:
-    int m_posX;         // demo 0x88, full 0x90 — X position (default 100)
-    int m_posY;         // demo 0x8C, full 0x94 — Y position (default 220)
-    int m_posZ;         // demo 0x90, full 0x98 — Z/right (default 199)
-    int m_height;       // demo 0x94, full 0x9C
-    int m_crosshairX;   // demo 0x98, full 0xA0
-    int m_crosshairY;   // demo 0x9C, full 0xA4
-    int m_clicked;      // demo 0xA0, full 0xA8 — clicked/fire flag
-    int m_sound;        // demo 0xA4, full 0xAC — Sample* sound
-    // Fields at +0xB0..+0xC0 accessed by offset in UpdateProjectiles
-    // DO NOT add them here — it shifts derived class layouts
+    int m_posX;         // 0x90 — X position (default 100)
+    int m_posY;         // 0x94 — Y position (default 220)
+    int m_posZ;         // 0x98 — Z/right (default 199)
+    int m_height;       // 0x9C
+    int m_crosshairX;   // 0xA0
+    int m_crosshairY;   // 0xA4
+    int m_clicked;      // 0xA8 — clicked/fire flag
+    int m_sound;        // 0xAC — Sample* sound
 
     Weapon() {
         m_crosshairX = 0;
@@ -38,32 +35,30 @@ public:
         m_posZ = 0xc7;
     }
     virtual ~Weapon();
-    virtual void OnHit();           // vtable[4]
-    virtual void DrawCrosshairs();  // vtable[5]
-    void DrawExplosion();           // non-virtual
-    void UpdateProjectiles();       // 0x427880
+    virtual void OnHit();              // vtable[4]
+    virtual void DrawCrosshairs();     // vtable[5]
+    void UpdateProjectiles();          // 0x427880
 };
 
 // RockThrower - Rock throwing weapon
-// Demo vtable: 0x4314D0, Full game vtable: 0x461490
-// Size: Weapon + 0x18 (full game) / 0x10 (demo)
-// Demo: 0xB8, Full game: 0xC8
-// vtable adds [6] UpdateProjectiles
+// Full game vtable: 0x461490
+// Size: Weapon(0xB0) + 0x18 = 0xC8
+// vtable adds [6] CheckTargetHit
 class RockThrower : public Weapon {
 public:
-    int m_itemCount;     // demo 0xA8, full 0xB0 — number of projectiles (default 3)
-    Projectile** m_items; // demo 0xAC, full 0xB4 — array of projectile objects
-    int m_hitCount;      // demo 0xB0, full 0xB8 — projectile hit count / weapon flags
-    int m_holdState;     // demo 0xB4, full 0xBC — mouse hold state
-    int m_hitCountFull;  // full 0xC0 (full game only) — full game hit count
-    int field_5;         // full 0xC4 (full game only)
+    int m_itemCount;     // 0xB0 — number of projectiles (default 3)
+    Projectile** m_items; // 0xB4 — array of projectile objects
+    int m_hitCount;      // 0xB8 — projectile hit count / weapon flags
+    int m_holdState;     // 0xBC — mouse hold state
+    int m_hitCountFull;  // 0xC0 — hit count (full game)
+    int field_5;         // 0xC4
 
-    RockThrower(Parser* parent);    // full game ctor: 0x4274C0
-    virtual ~RockThrower();
+    RockThrower(Parser* parent);    // 0x4274C0
+    virtual ~RockThrower();         // 0x427710
 
-    virtual void DrawCrosshairs();  // override
-    virtual int LBLParse(char* line);
-    virtual void UpdateProjectiles(); // vtable[6]
+    virtual int LBLParse(char* line);      // 0x427B20 (override)
+    virtual int CheckTargetHit(int);       // 0x427A30 (override)
+    void ResetProjectiles();               // 0x4279A0
 };
 
 #endif // ROCKTHROWER_H

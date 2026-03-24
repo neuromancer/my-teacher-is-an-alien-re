@@ -10,34 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-// Globals
-
-// Direction characters (shared with mCNavigator)
-extern char* g_DirectionChars;
-
-// FUN_449B60 - GetDirectionChar: returns direction character for bearing index
 extern "C" char GetDirectionChar(int dir);
-
-// Demo version of FindCharIndex (takes char*) — used by demo SetNavLink
-int FindCharIndex(char* param_1)
-{
-    int index = 0;
-    char* dirChars = g_DirectionChars;
-    if (*dirChars != '\0') {
-        do {
-            if (*dirChars == *param_1) {
-                return index;
-            }
-            dirChars++;
-            index++;
-        } while (*dirChars != '\0');
-    }
-    return index;
-}
-
-// =========================================================================
-// Full game methods
-// =========================================================================
 
 /* Function start: 0x44AE10 */
 mCNavNode::mCNavNode(char* param_1) : Parser()
@@ -95,36 +68,10 @@ int mCNavNode::CallGetNextNode()
     return neighbor->GetNextNode();
 }
 
-// Stub virtual methods — full game implementations at different addresses
+// Stub virtual methods
 void mCNavNode::virtual3() {}
 int mCNavNode::virtual4() { return 0; }
-int mCNavNode::Activate() { return 0; }    // full game: 0x44A9A0
-int mCNavNode::GetNextNode() { return 0; } // full game: 0x44ADA0
+int mCNavNode::Activate() { return 0; }
+int mCNavNode::GetNextNode() { return 0; }
 void mCNavNode::virtual7() {}
-
-// =========================================================================
-// Demo constructor (needed for demo code compatibility)
-// =========================================================================
-
-mCNavNode::mCNavNode() : Parser()
-{
-    memset(&neighborNodes, 0, 0x10 * 4);
-    strcpy(nodeName, "NONAME");
-}
-
-// =========================================================================
-// Demo-only methods (kept for linking demo code)
-// =========================================================================
-
-void mCNavNode::SetNavLink(char* direction, int nodeId)
-{
-    int dirIndex = FindCharIndex(direction);
-    if (dirIndex >= 6) {
-        ShowError("mCNavNode::SetNavLink() - node %d : Undefined direction '%s' %d", nodeHandle, direction, dirIndex);
-    }
-    neighborNodes[dirIndex] = (void*)nodeId;
-}
-
-void mCNavNode::AddSpriteList(char* name, int id) {}
-
 int mCNavNode::LBLParse(char*) { return 0; }

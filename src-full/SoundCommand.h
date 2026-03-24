@@ -5,12 +5,11 @@ struct GlyphRect;
 
 // Base class for sound/render commands
 // Objects derived from this are queued in ZBufferManager
-// vtable at 0x461030 (full game), 0x431050 (demo)
-// sdtor at 0x430980 (full game)
+// Full game vtable: 0x461030, sdtor: 0x430980
 struct SoundCommand {
-    /* Function start: 0x401540 */ /* DEMO ONLY - no full game match */
+    /* Function start: 0x401CC0 */
     virtual void Execute(GlyphRect* rect) {}
-    /* Function start: 0x401550 */ /* DEMO ONLY - no full game match */
+    /* Function start: 0x403720 */
     virtual void Release(int flag) {}
     ~SoundCommand() {}
 };

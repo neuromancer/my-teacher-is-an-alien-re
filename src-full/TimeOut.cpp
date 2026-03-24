@@ -1,7 +1,14 @@
 #include "TimeOut.h"
 #include "string.h"
 
-/* Function start: 0x418F60 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x421920 */
+TimeOut* __fastcall InitTimeOut(TimeOut* buffer)
+{
+    buffer->TimeOut::TimeOut();
+    return buffer;
+}
+
+/* Function start: 0x421930 */
 TimeOut::~TimeOut()
 {
     if (m_timer != 0)
@@ -9,13 +16,6 @@ TimeOut::~TimeOut()
         delete m_timer;
         m_timer = 0;
     }
-}
-
-/* Function start: 0x421920 */
-TimeOut* __fastcall InitTimeOut(TimeOut* buffer)
-{
-    buffer->TimeOut::TimeOut();
-    return buffer;
 }
 
 /* Function start: 0x421960 */
