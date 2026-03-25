@@ -634,7 +634,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
 }
 
 /* Function start: 0x438F10 */
-int SC_Wahoo::FUN_438F10(int param_1) {
+int SC_Wahoo::ProcessClick(int param_1) {
     void* pvVar6;
     int iVar3;
     int iVar5;

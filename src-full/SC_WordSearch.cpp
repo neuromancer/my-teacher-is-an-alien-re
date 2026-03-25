@@ -68,7 +68,7 @@ void SC_WordSearch::Init(SC_Message* msg) {
     CopyCommandData((SC_Message*)msg);
     if (msg != 0) {
         *(int*)((int)this + 0x94) = *(int*)((int)msg + 4);
-        SC_WordSearch::FUN_4368F0();
+        SC_WordSearch::InitWordList();
     }
     ParseFile(this, DAT_0046bacc, (char*)0);
     if (*(int*)((int)this + 0x830) == 0) {
@@ -366,13 +366,13 @@ void SC_WordSearch::Update(int param1, int param2) {
         if (*(int*)(*(int*)((int)this + 0x820) + 0x98) == 0) {
             ((Sprite*)*(void**)((int)this + 0x820))->ResetAnimation(-1, 0);
             *(int*)((int)this + 0x81c) = *(int*)((int)this + 0x81c) | 1;
-            SC_WordSearch::FUN_436790();
+            SC_WordSearch::DispatchResult();
         }
     }
     pvVar10 = *(void**)((int)this + 0x824);
     if (((Sprite*)pvVar10)->Do(*(int*)((int)pvVar10 + 0xac), *(int*)((int)pvVar10 + 0xb0), 1.0) != 0) {
         if (*(int*)(*(int*)((int)this + 0x824) + 0x98) == 0) {
-            SC_WordSearch::FUN_4368F0();
+            SC_WordSearch::InitWordList();
             ((Sprite*)*(void**)((int)this + 0x824))->ResetAnimation(-1, 0);
         }
     }
@@ -383,7 +383,7 @@ void SC_WordSearch::Update(int param1, int param2) {
 }
 
 /* Function start: 0x436790 */
-void SC_WordSearch::FUN_436790() {
+void SC_WordSearch::DispatchResult() {
     void* pvVar2;
     int uVar3;
 
@@ -423,7 +423,7 @@ void SC_WordSearch::FUN_436790() {
 }
 
 /* Function start: 0x4368F0 */
-void SC_WordSearch::FUN_4368F0() {
+void SC_WordSearch::InitWordList() {
     int iVar2 = g_PeriodStateIdx_0046cb90;
     void* pvVar3 = g_GameState_0046aa30;
     if (iVar2 < 0 || *(int*)((int)pvVar3 + 0x98) - 1 < iVar2) {

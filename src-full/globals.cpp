@@ -397,5 +397,6 @@ int DAT_004719c0 = 0;                                    // 0x004719c0
 
 int DAT_004734a4 = 0;
 void* DAT_0046aa28 = 0;
+char DAT_0046bd74 = 'A';
 char* DAT_0046bd78 = 0;
 int DAT_0046bd7c = 0;

@@ -179,10 +179,120 @@ int SC_DuctNav::LBLParse(char* line)
 }
 
 extern "C" void WriteToLog(const char* format, ...);
-// GlyphFont::LoadFont stub (not yet implemented)
-void __fastcall FUN_0043a830(void*, int, char*) {}
-// SC_DuctNav helper stub (not yet implemented)
-void __fastcall FUN_0043cd50(void*) {}
+// GlyphFont::LoadFont now in GlyphFont.cpp
+extern void ShowError(const char* format, ...);
+
+/* Function start: 0x43D170 */
+int GetRandomTeacher() {
+    int teacher = 0;
+    int counter = 3;
+
+    FILE* fp = OpenSaveFile("cfg\\031568.dat", "r");
+    if (fp != 0) {
+        fscanf(fp, "%d %d", &teacher, &counter);
+        fclose(fp);
+    }
+
+    if (counter != 3) {
+        teacher = teacher % 3 + 1;
+    } else {
+        int count = rand() % 10 + 1;
+        if (count > 0) {
+            do {
+                teacher = rand() % 3 + 1;
+                count--;
+            } while (count != 0);
+        }
+    }
+
+    fp = OpenSaveFile("cfg\\031568.dat", "w");
+    if (fp != 0) {
+        fprintf(fp, "%d %d", teacher, counter % 3 + 1);
+        fclose(fp);
+    }
+
+    return teacher;
+}
+
+/* Function start: 0x43CD50 */
+void InitNewGame() {
+    SpriteAction* action;
+
+    action = new SpriteAction(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
+    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    if (action != 0) {
+        action->~SpriteAction();
+        free(action);
+    }
+
+    action = new SpriteAction(1, 0x1e, 0, 0, 0x18, 0, 0, 0, 0, 0);
+    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    if (action != 0) {
+        action->~SpriteAction();
+        free(action);
+    }
+
+    action = new SpriteAction(1, 0x2c, 0, 0, 0x18, 0, 0, 0, 0, 0);
+    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    if (action != 0) {
+        action->~SpriteAction();
+        free(action);
+    }
+
+    if (g_GameState_0046aa30 != 0) {
+        g_GameState_0046aa30->~GameState();
+        free(g_GameState_0046aa30);
+        g_GameState_0046aa30 = 0;
+    }
+
+    g_GameState_0046aa30 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+
+    if (g_FlagManager_0046a6e8 != 0) {
+        g_FlagManager_0046a6e8->~FlagArray();
+        free(g_FlagManager_0046a6e8);
+        g_FlagManager_0046a6e8 = 0;
+    }
+
+    g_FlagManager_0046a6e8 = new FlagArray("cfg\\question.dat", 10000);
+    g_FlagManager_0046a6e8->ClearAllFlags();
+
+    {
+        QuestionInit qi("mis\\INIT_Q.mis");
+    }
+
+    DAT_00472d58.addressType = 0x25;
+    DAT_00472d58.addressValue = 1;
+
+    int teacherVal = GetRandomTeacher();
+
+    GameState* gs = g_GameState_0046aa30;
+    int idx = gs->FindLabel("TEACHER_ALIEN");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    gs->stateValues[idx] = teacherVal;
+
+    gs = g_GameState_0046aa30;
+    idx = gs->FindLabel("NO_RESUME_NO_SAVE");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    gs->stateValues[idx] = 0;
+
+    gs = g_GameState_0046aa30;
+    idx = gs->FindLabel("MUST_SAVEGAME");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    gs->stateValues[idx] = 1;
+
+    action = new SpriteAction(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
+    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    if (action != 0) {
+        action->~SpriteAction();
+        free(action);
+    }
+}
 extern void* DAT_0046aa28;
 extern char* DAT_0046bd78;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
@@ -249,7 +359,7 @@ void SC_DuctNav::Init(SC_Message* msg) {
         } else if (mode == 1) {
             ParseFile(this, "mis\\menu.mis", " LOADGAME ");
         } else if (mode == 2) {
-            FUN_0043cd50(this);
+            InitNewGame();
             SendGameMessage(3, 10, DAT_00472d58.addressType, DAT_00472d58.addressValue, 4, 0, 0, 0, 0, 0);
             return;
         }
@@ -286,7 +396,7 @@ void SC_DuctNav::Init(SC_Message* msg) {
         field_0x24C = 0;
     }
 
-    FUN_0043a830(DAT_0046aa28, 0, "cfg\\Teacher.pal");
+    ((GlyphFont*)DAT_0046aa28)->LoadFont("cfg\\Teacher.pal");
 
     field_0x24C = (int)new TextInput(saveFilename, 0x36, DAT_0046aa28, DAT_0046bd78);
 }

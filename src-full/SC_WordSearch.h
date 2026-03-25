@@ -27,8 +27,8 @@ public:
 
     void Render();                           // 0x42EFC0
     void PlaceWord(int row, int col);        // 0x42F220
-    void FUN_436790();                        // 0x436790
-    void FUN_4368F0();                        // 0x4368F0
+    void DispatchResult();                        // 0x436790
+    void InitWordList();                        // 0x4368F0
 
     int field_A8[484];  // 0xA8-0x837 (0x790 bytes)
 };

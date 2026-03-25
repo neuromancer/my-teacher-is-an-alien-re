@@ -26,6 +26,8 @@ public:
     int field_34;        // 0x34
     char fontName[64];   // 0x38 - font filename (0x40 bytes to 0x78)
 
+    void LoadFont(char* param);   // 0x43A830
+    void InitGlyphTable();        // 0x43AA20
     int IsValidChar(int ch);      // 0x43ABA0
     int GetTextWidth(char* str);  // 0x43AD50
 };

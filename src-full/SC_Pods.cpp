@@ -396,4 +396,4 @@ void __fastcall InitCombatScreen(void* self)
     }
 }
 
-extern void* FUN_00440860(void*);
+// FUN_00440860 = PodsEngine::PodsEngine — implemented in PodsEngine.cpp
