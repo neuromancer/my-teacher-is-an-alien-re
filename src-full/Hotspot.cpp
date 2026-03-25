@@ -26,25 +26,25 @@ extern "C" GameState* g_GameState_0046aa30;
 /* Function start: 0x445830 */
 T_Hotspot::T_Hotspot(int param_1) : Parser()
 {
-    dim_A4.field_0 = 0;
-    dim_A4.field_4 = 0;
-    field_AC = 0;
-    field_B0 = 0;
-    memset(&field_90, 0, 0x12 * 4);
-    field_98 = param_1;
+    hotspotPos.x = 0;
+    hotspotPos.y = 0;
+    hotspotRight = 0;
+    hotspotBottom = 0;
+    memset(&parentHandlerId, 0, 0x12 * 4);
+    hotspotHandle = param_1;
 }
 
 /* Function start: 0x4458D0 */
 T_Hotspot::~T_Hotspot()
 {
-    void* ptr;
+    HotspotAction* ptr;
     int i;
-    void** p = &items[0];
+    HotspotAction** p = &items[0];
 
     for (i = 0; i < 8; i++) {
         ptr = *p;
         if (ptr != 0) {
-            delete (HotspotAction*)ptr;
+            delete ptr;
             *p = 0;
         }
         p++;
@@ -56,9 +56,9 @@ T_Hotspot::~T_Hotspot()
 void T_Hotspot::DoItem(int param)
 {
     T_Hotspot::SelectItem();
-    void* item = T_Hotspot::items[T_Hotspot::currentIndex];
+    HotspotAction* item = items[currentIndex];
     if (item != 0) {
-        ((HotspotAction*)item)->Update(param);
+        item->Update(param);
     }
 }
 
@@ -66,12 +66,12 @@ void T_Hotspot::DoItem(int param)
 void T_Hotspot::SelectItem()
 {
     int i;
-    void** p;
+    HotspotAction** p;
 
     p = &items[0];
     for (i = 0; i < 8; i++) {
         if (*p != 0) {
-            int status = ((HotspotAction*)*p)->state;
+            int status = (*p)->state;
             if (status != 0 && status == 1) {
                 goto done;
             }
@@ -82,7 +82,7 @@ void T_Hotspot::SelectItem()
     p = &items[0];
     for (i = 0; i < 8; i++) {
         if (*p != 0) {
-            if (((HotspotAction*)*p)->CheckConditions() != 0) {
+            if ((*p)->CheckConditions() != 0) {
                 break;
             }
         }
@@ -101,11 +101,11 @@ done:
 /* Function start: 0x445970 */
 void T_Hotspot::StopAll()
 {
-    void** p = &items[0];
+    HotspotAction** p = &items[0];
     int i = 8;
     do {
         if (*p != 0) {
-            ((HotspotAction*)*p)->Reset();
+            (*p)->Reset();
         }
         p++;
         i--;
@@ -116,7 +116,7 @@ void T_Hotspot::StopAll()
 int T_Hotspot::LBLParse(char* param_1)
 {
     int iVar5;
-    void* action;
+    HotspotAction* action;
     int* list;
     SpriteAction* msg;
     char value[32];
@@ -130,7 +130,7 @@ int T_Hotspot::LBLParse(char* param_1)
     sscanf(param_1, " %s ", token);
 
     if (strcmp(token, "HANDLE") == 0) {
-        sscanf(param_1, " %s %d", token, &field_98);
+        sscanf(param_1, " %s %d", token, &hotspotHandle);
     }
     else if (strcmp(token, "HOTSPOT") == 0) {
         iVar5 = sscanf(param_1, "%s %s %d", token, value, &param);
@@ -138,40 +138,39 @@ int T_Hotspot::LBLParse(char* param_1)
             ShowError("Error in Thotspot.cpp : %s - missing parameters in parse file", param_1);
         }
 
-        action = (void*)new HotspotAction(field_98);
-        field_D4 = (int)action;
-        *(int*)((int)action + 0x90) = field_90;
-        *(int*)(*(int*)((int)this + 0xD0 + 0x60) + 0x94) = field_94;
+        action = new HotspotAction(hotspotHandle);
+        currentAction = action;
+        action->parentHandlerId = parentHandlerId;
+        currentAction->parentModuleParam = parentModuleParam;
 
         if (strstr(value, "LEFT") != 0) {
-            dim_A4.field_0 = 0;
-            dim_A4.field_4 = 100;
-            field_AC = 0x4B;
-            field_B0 = 300;
-            *(int*)(*(int*)((int)this + 0xD0 + 0x60) + 0xB0) = 4;
+            hotspotPos.x = 0;
+            hotspotPos.y = 100;
+            hotspotRight = 0x4B;
+            hotspotBottom = 300;
+            currentAction->rolloverStateIdx = 4;
         } else if (strstr(value, "RIGHT") != 0) {
-            dim_A4.field_0 = 0x234;
-            dim_A4.field_4 = 100;
-            field_AC = 0x27F;
-            field_B0 = 300;
-            *(int*)(*(int*)((int)this + 0xD0 + 0x60) + 0xB0) = 3;
+            hotspotPos.x = 0x234;
+            hotspotPos.y = 100;
+            hotspotRight = 0x27F;
+            hotspotBottom = 300;
+            currentAction->rolloverStateIdx = 3;
         }
 
-        // Ensure action list exists at [action + 0x100]
-        action = (void*)field_D4;
-        if (*(int*)((int)action + 0x100) == 0) {
-            LinkedList* newList = new LinkedList();
-            *(LinkedList**)((int)action + 0x100) = newList;
+        // Ensure action list exists
+        action = currentAction;
+        if (action->messagesQueue == 0) {
+            action->messagesQueue = (Queue*)new LinkedList();
         }
 
         // Create SpriteAction
-        msg = new SpriteAction(field_90, param, field_90, field_94, 4, 0, 0, 0, 0, 0);
+        msg = new SpriteAction(parentHandlerId, param, parentHandlerId, parentModuleParam, 4, 0, 0, 0, 0, 0);
         if (msg == 0) {
             ShowError("queue fault 0101");
         }
 
         // Sorted insert into action list
-        list = *(int**)((int)field_D4 + 0x100);
+        list = (int*)currentAction->messagesQueue;
         list[2] = list[0];
         if (list[3] == 1 || list[3] == 2) {
             if (list[0] == 0) {
@@ -202,22 +201,22 @@ int T_Hotspot::LBLParse(char* param_1)
             ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete", param_1);
         }
 
-        action = (void*)new HotspotAction(field_98);
-        field_D4 = (int)action;
-        *(int*)((int)action + 0x90) = field_90;
-        *(int*)((int)field_D4 + 0x94) = field_94;
-        *(int*)((int)field_D4 + 0xB0) = 2;
+        action = new HotspotAction(hotspotHandle);
+        currentAction = action;
+        action->parentHandlerId = parentHandlerId;
+        currentAction->parentModuleParam = parentModuleParam;
+        currentAction->rolloverStateIdx = 2;
 
-        if (*(int*)((int)field_D4 + 0x100) == 0) {
-            *(LinkedList**)((int)field_D4 + 0x100) = new LinkedList();
+        if (currentAction->messagesQueue == 0) {
+            currentAction->messagesQueue = (Queue*)new LinkedList();
         }
 
-        msg = new SpriteAction(4, param, field_90, field_94, 2, 0, 0, 0, 0, 0);
+        msg = new SpriteAction(4, param, parentHandlerId, parentModuleParam, 2, 0, 0, 0, 0, 0);
         if (msg == 0) {
             ShowError("queue fault 0101");
         }
 
-        list = *(int**)((int)field_D4 + 0x100);
+        list = (int*)currentAction->messagesQueue;
         list[2] = list[0];
         if (list[3] == 1 || list[3] == 2) {
             if (list[0] == 0) {
@@ -247,22 +246,22 @@ int T_Hotspot::LBLParse(char* param_1)
             ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete", param_1);
         }
 
-        action = (void*)new HotspotAction(field_98);
-        field_D4 = (int)action;
-        *(int*)((int)action + 0x90) = field_90;
-        *(int*)((int)field_D4 + 0x94) = field_94;
-        *(int*)((int)field_D4 + 0xB0) = 2;
+        action = new HotspotAction(hotspotHandle);
+        currentAction = action;
+        action->parentHandlerId = parentHandlerId;
+        currentAction->parentModuleParam = parentModuleParam;
+        currentAction->rolloverStateIdx = 2;
 
-        if (*(int*)((int)field_D4 + 0x100) == 0) {
-            *(LinkedList**)((int)field_D4 + 0x100) = new LinkedList();
+        if (currentAction->messagesQueue == 0) {
+            currentAction->messagesQueue = (Queue*)new LinkedList();
         }
 
-        msg = new SpriteAction(0x20, param2, field_90, field_94, 4, param, 0, 0, 0, 0);
+        msg = new SpriteAction(0x20, param2, parentHandlerId, parentModuleParam, 4, param, 0, 0, 0, 0);
         if (msg == 0) {
             ShowError("queue fault 0101");
         }
 
-        list = *(int**)((int)field_D4 + 0x100);
+        list = (int*)currentAction->messagesQueue;
         list[2] = list[0];
         if (list[3] == 1 || list[3] == 2) {
             if (list[0] == 0) {
@@ -289,30 +288,30 @@ int T_Hotspot::LBLParse(char* param_1)
     else if (strcmp(token, "DIALOG") == 0) {
         sscanf(param_1, " %s %d", token, &param);
 
-        action = (void*)new HotspotAction(field_98);
-        field_D4 = (int)action;
-        *(int*)((int)action + 0x90) = field_90;
-        *(int*)((int)field_D4 + 0x94) = field_94;
-        *(int*)((int)field_D4 + 0xB0) = 6;
+        action = new HotspotAction(hotspotHandle);
+        currentAction = action;
+        action->parentHandlerId = parentHandlerId;
+        currentAction->parentModuleParam = parentModuleParam;
+        currentAction->rolloverStateIdx = 6;
 
-        if (*(int*)((int)field_D4 + 0x100) == 0) {
-            *(LinkedList**)((int)field_D4 + 0x100) = new LinkedList();
+        if (currentAction->messagesQueue == 0) {
+            currentAction->messagesQueue = (Queue*)new LinkedList();
         }
 
         // Look up ROOMINSTANCE gamestate
-        int* gs = (int*)g_GameState_0046aa30;
-        int gsIdx = ((GameState*)gs)->FindState("ROOMINSTANCE");
-        if (gsIdx < 0 || gs[0x98 / 4] - 1 < gsIdx) {
+        GameState* gs = (GameState*)g_GameState_0046aa30;
+        int gsIdx = gs->FindState("ROOMINSTANCE");
+        if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
             ShowError("Invalid gamestate %d", gsIdx);
         }
-        int roomInstance = ((int*)gs[0x90 / 4])[gsIdx];
+        int roomInstance = gs->stateValues[gsIdx];
 
-        msg = new SpriteAction(0x1F, roomInstance, field_90, field_94, 4, param, 0, 0, 0, 0);
+        msg = new SpriteAction(0x1F, roomInstance, parentHandlerId, parentModuleParam, 4, param, 0, 0, 0, 0);
         if (msg == 0) {
             ShowError("queue fault 0101");
         }
 
-        list = *(int**)((int)field_D4 + 0x100);
+        list = (int*)currentAction->messagesQueue;
         list[2] = list[0];
         if (list[3] == 1 || list[3] == 2) {
             if (list[0] == 0) {
@@ -340,25 +339,25 @@ int T_Hotspot::LBLParse(char* param_1)
         int l, t, r, b;
         l = 0; t = 0; r = 0; b = 0;
         sscanf(param_1, " %s %d %d %d %d", token, &l, &t, &r, &b);
-        dim_A4.field_0 = l;
-        dim_A4.field_4 = t;
-        field_AC = r;
-        field_B0 = b;
+        hotspotPos.x = l;
+        hotspotPos.y = t;
+        hotspotRight = r;
+        hotspotBottom = b;
     }
     else if (strcmp(token, "CONTROLCAPTUREOFF") == 0) {
-        field_A0 |= 2;
+        flags |= 2;
     }
     else if (strcmp(token, "TUCKER") == 0) {
-        field_A0 |= 4;
-        field_A0 |= 8;
+        flags |= 4;
+        flags |= 8;
     }
     else if (strcmp(token, "MARSH") == 0) {
-        field_A0 |= 4;
-        field_A0 |= 0x10;
+        flags |= 4;
+        flags |= 0x10;
     }
     else if (strcmp(token, "DANIELS") == 0) {
-        field_A0 |= 4;
-        field_A0 |= 0x20;
+        flags |= 4;
+        flags |= 0x20;
     }
     else if (strcmp(token, "LEVEL") == 0) {
         sscanf(param_1, " %s %d", token, &currentIndex);
@@ -366,10 +365,10 @@ int T_Hotspot::LBLParse(char* param_1)
             ShowError("illegal index %d %s", currentIndex, param_1);
         }
 
-        action = (void*)new HotspotAction(field_98);
+        action = new HotspotAction(hotspotHandle);
         items[currentIndex] = action;
-        *(int*)(*(int*)((int)this + currentIndex * 4 + 0xB4) + 0x90) = field_90;
-        *(int*)(*(int*)((int)this + currentIndex * 4 + 0xB4) + 0x94) = field_94;
+        items[currentIndex]->parentHandlerId = parentHandlerId;
+        items[currentIndex]->parentModuleParam = parentModuleParam;
         Parser::ProcessFile((Parser*)items[currentIndex], this, (char*)0);
     }
     else if (strcmp(token, "END") == 0) {

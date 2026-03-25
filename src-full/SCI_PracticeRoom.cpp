@@ -236,14 +236,14 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
             int bHit;
             {
                 SlimeDim pt;
-                pt.field_0 = action->mousePos.field_0;
-                pt.field_4 = action->mousePos.field_4;
+                pt.x = action->mousePos.x;
+                pt.y = action->mousePos.y;
                 T_MenuHotspot* hs = *local_28;
                 if (hs->sprite == 0 ||
-                    hs->bounds.right > pt.field_0 ||
-                    hs->field_A4 < pt.field_0 ||
-                    hs->bounds.bottom > pt.field_4 ||
-                    hs->field_A8 < pt.field_4) {
+                    hs->bounds.right > pt.x ||
+                    hs->field_A4 < pt.x ||
+                    hs->bounds.bottom > pt.y ||
+                    hs->field_A8 < pt.y) {
                     bHit = 0;
                 } else {
                     bHit = 1;

@@ -785,17 +785,17 @@ int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
     charBase = characters;
     charPtr = characters;
     i = 0;
-    msgMouse = &action->mousePos.field_0;
+    msgMouse = &action->mousePos.x;
 
 char_loop:
     {
         SlimeDim mouseCoords = *(SlimeDim*)msgMouse;
         T_MenuHotspot* chr = *charPtr;
         if (chr->sprite != 0) {
-            if (chr->bounds.left > mouseCoords.field_0 ||
-                chr->bounds.right < mouseCoords.field_0 ||
-                chr->bounds.top > mouseCoords.field_4 ||
-                chr->bounds.bottom < mouseCoords.field_4) {
+            if (chr->bounds.left > mouseCoords.x ||
+                chr->bounds.right < mouseCoords.x ||
+                chr->bounds.top > mouseCoords.y ||
+                chr->bounds.bottom < mouseCoords.y) {
                 hitChar = 0;
             } else {
                 hitChar = 1;
@@ -823,7 +823,7 @@ opt_loop:
         {
             SlimeDim optCoords = action->mousePos;
             if (opt->sprite == 0) goto opt_miss;
-            if (opt->bounds.HitTest(optCoords.field_0, optCoords.field_4)) {
+            if (opt->bounds.HitTest(optCoords.x, optCoords.y)) {
                 hitOpt = 1;
                 goto opt_done;
             }
@@ -1017,12 +1017,12 @@ check_go:
     // Check go button hit
     {
         SlimeDim goCoords;
-        int* goMouse = &action->mousePos.field_0;
-        goCoords.field_0 = goMouse[0];
-        goCoords.field_4 = goMouse[1];
+        int* goMouse = &action->mousePos.x;
+        goCoords.x = goMouse[0];
+        goCoords.y = goMouse[1];
         T_MenuHotspot* goSpr = okayButton;
         if (goSpr->sprite != 0) {
-            if (goSpr->bounds.HitTest(goCoords.field_0, goCoords.field_4)) {
+            if (goSpr->bounds.HitTest(goCoords.x, goCoords.y)) {
                 hitResult = 1;
             } else {
                 hitResult = 0;
@@ -1142,11 +1142,11 @@ check_back:
     if (cancelButton == 0) goto done;
     {
         SlimeDim backCoords;
-        backCoords.field_0 = ((int*)msg)[7];
-        backCoords.field_4 = ((int*)msg)[8];
+        backCoords.x = ((int*)msg)[7];
+        backCoords.y = ((int*)msg)[8];
         T_MenuHotspot* backSpr = cancelButton;
         if (backSpr->sprite != 0) {
-            if (backSpr->bounds.HitTest(backCoords.field_0, backCoords.field_4)) {
+            if (backSpr->bounds.HitTest(backCoords.x, backCoords.y)) {
                 hitResult = 1;
             } else {
                 hitResult = 0;

@@ -212,7 +212,7 @@ void SC_DodgeOrville::UpdateGame()
             g_HitBounds_00473260[state].minVal = 0;
             g_HitBounds_00473260[state].maxVal = 0;
             ((Sprite*)field_0x10C)->ResetAnimation(state + 7, 0);
-            hitCount.field_0++;
+            hitCount.x++;
             bgSound->Play(2);
             bgSound->Play(hitSoundIdx + 5);
             if (hitSoundIdx < 2) {
@@ -231,20 +231,20 @@ void SC_DodgeOrville::UpdateGame()
         vb = barBgSprite->animation_data->targetBuffer;
     }
 
-    g_ZBufferManager_0046aa24->DrawVBufferRegion(vb, 0x7531, barPos.field_0, barPos.field_4, 2, 1.0, clipStart.field_0, clipStart.field_4, clipEnd.field_0, clipEnd.field_4);
+    g_ZBufferManager_0046aa24->DrawVBufferRegion(vb, 0x7531, barPos.x, barPos.y, 2, 1.0, clipStart.x, clipStart.y, clipEnd.x, clipEnd.y);
 
-    if (hitCount.field_4 != 0 && hitCount.field_0 >= hitCount.field_4) {
+    if (hitCount.y != 0 && hitCount.x >= hitCount.y) {
         VBuffer* vb2 = 0;
         if (barFillSprite->animation_data != 0) {
             vb2 = barFillSprite->animation_data->targetBuffer;
         }
-        g_ZBufferManager_0046aa24->DrawVBufferRegion(vb2, 0x7532, barPos.field_0, barPos.field_4, 2, 1.0, 0, vb2->clip_y2, 0, vb2->clip_x2);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(vb2, 0x7532, barPos.x, barPos.y, 2, 1.0, 0, vb2->clip_y2, 0, vb2->clip_x2);
     } else {
-        int hits = hitCount.field_0;
-        int maxHits = hitCount.field_4;
+        int hits = hitCount.x;
+        int maxHits = hitCount.y;
         int fillHeight = (hits * 0x7c) / maxHits + 0x1e;
-        if (fillHeight >= clipEnd.field_0) {
-            fillHeight = clipEnd.field_0;
+        if (fillHeight >= clipEnd.x) {
+            fillHeight = clipEnd.x;
         }
 
         VBuffer* rd3;
@@ -254,7 +254,7 @@ void SC_DodgeOrville::UpdateGame()
         } else {
             rd3 = 0;
         }
-        g_ZBufferManager_0046aa24->DrawVBufferRegion(rd3, 0x7532, barPos.field_0, barPos.field_4, 2, 1.0, clipStart.field_0, fillHeight, clipStart.field_4, clipEnd.field_4);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(rd3, 0x7532, barPos.x, barPos.y, 2, 1.0, clipStart.x, fillHeight, clipStart.y, clipEnd.y);
     }
 }
 
@@ -317,14 +317,14 @@ int CompareRange(int center, int pos, int range)
 /* Function start: 0x4294A0 */
 void SC_DodgeOrville::ThrowBomb()
 {
-    if (hitCount.field_4 != 0 && hitCount.field_0 >= hitCount.field_4) {
+    if (hitCount.y != 0 && hitCount.x >= hitCount.y) {
         statusPtr[0] = 1;
         return;
     }
 
-    int tc = throwState.field_0 + 1;
-    throwState.field_0 = tc;
-    int maxThrows = throwState.field_4;
+    int tc = throwState.x + 1;
+    throwState.x = tc;
+    int maxThrows = throwState.y;
 
     int atLimit;
     if (maxThrows == 0) {
@@ -360,7 +360,7 @@ void SC_DodgeOrville::ThrowBomb()
     bgSound->Play(3); // 0x110
 
     int r = rand();
-    int maxTh = throwState.field_4;
+    int maxTh = throwState.y;
     int rem = r % maxTh;
     if (maxTh / 0x14 > rem) {
         bgSound->Play(8);
@@ -374,20 +374,20 @@ void SC_DodgeOrville::ThrowBomb()
 /* Function start: 0x4297D0 */
 void SC_DodgeOrville::InitGameState()
 {
-    clipStart.field_0 = 0;
-    clipStart.field_4 = 0;
-    clipEnd.field_0 = 0xb3;
-    clipEnd.field_4 = 0x13;
-    barPos.field_0 = 0x46;
-    barPos.field_4 = 0x1e;
+    clipStart.x = 0;
+    clipStart.y = 0;
+    clipEnd.x = 0xb3;
+    clipEnd.y = 0x13;
+    barPos.x = 0x46;
+    barPos.y = 0x1e;
 
     GameState* gs = g_GameState_0046aa30;
     int idx = gs->FindLabel("MAX_HITS_BY_STINK_BOMBS");
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
-    hitCount.field_0 = 0;
-    hitCount.field_4 = gs->stateValues[idx];
+    hitCount.x = 0;
+    hitCount.y = gs->stateValues[idx];
 }
 
 /* Function start: 0x429860 */

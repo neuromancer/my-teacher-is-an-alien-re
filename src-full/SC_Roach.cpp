@@ -219,8 +219,8 @@ void SC_Roach::RenderBoard()
                 mouseX = pMouse->x;
             }
             crys->sprite->Do(
-                mouseX - crys->dimArray1[crys->rotation].field_0,
-                mouseY - crys->dimArray1[crys->rotation].field_4,
+                mouseX - crys->dimArray1[crys->rotation].x,
+                mouseY - crys->dimArray1[crys->rotation].y,
                 1.0);
         }
     }
@@ -238,11 +238,11 @@ void SC_Roach::RenderBoard()
     do {
         if (src->crystalPtr != 0) {
             SlimeDim pos;
-            pos.field_0 = src->sourceX;
-            pos.field_4 = src->sourceY;
+            pos.x = src->sourceX;
+            pos.y = src->sourceY;
             NavCrystal* crys = (NavCrystal*)src->crystalPtr;
             if (crys->sprite != 0) {
-                crys->sprite->Do(pos.field_0, pos.field_4, 1.0);
+                crys->sprite->Do(pos.x, pos.y, 1.0);
             }
         }
         src = (CrystalSource*)((char*)src + 0x2c);
@@ -262,8 +262,8 @@ void SC_Roach::RenderBoard()
                 NavCrystal* crys = (NavCrystal*)crystals[id];
                 if (crys != 0 && crys->sprite != 0) {
                     crys->sprite->Do(
-                        cellPtr[4] - crys->dimArray2[crys->rotation].field_0,
-                        cellPtr[5] - crys->dimArray2[crys->rotation].field_4,
+                        cellPtr[4] - crys->dimArray2[crys->rotation].x,
+                        cellPtr[5] - crys->dimArray2[crys->rotation].y,
                         1.0);
                 }
             }
@@ -475,12 +475,12 @@ void SC_Roach::OnProcessEnd()
         do {
             {
                 SlimeDim sd;
-                sd.field_0 = col * cellW + startX;
-                sd.field_4 = row * cellH + startY;
-                cell[0] = sd.field_0;
-                cell[1] = sd.field_4;
-                cell[2] = sd.field_0 + cellW;
-                cell[3] = sd.field_4 + cellH;
+                sd.x = col * cellW + startX;
+                sd.y = row * cellH + startY;
+                cell[0] = sd.x;
+                cell[1] = sd.y;
+                cell[2] = sd.x + cellW;
+                cell[3] = sd.y + cellH;
             }
             cell += 8;
             col++;
@@ -541,14 +541,14 @@ int SC_Roach::LBLParse(char* line)
             SlimeDim wh;
             {
                 Rect rc;
-                sscanf(line, " %s %d %d %d %d %d %d %d", label, &idx, &rc.left, &rc.top, &rc.right, &rc.bottom, &wh.field_0, &wh.field_4);
+                sscanf(line, " %s %d %d %d %d %d %d %d", label, &idx, &rc.left, &rc.top, &rc.right, &rc.bottom, &wh.x, &wh.y);
                 sources[idx].hitboxLeft = rc.left;
                 sources[idx].hitboxTop = rc.top;
                 sources[idx].hitboxRight = rc.right;
                 sources[idx].hitboxBottom = rc.bottom;
             }
-            sources[idx].sourceX = wh.field_0;
-            sources[idx].sourceY = wh.field_4;
+            sources[idx].sourceX = wh.x;
+            sources[idx].sourceY = wh.y;
         }
     } else if (strcmp(label, "PATTERN") == 0) {
         int idx;

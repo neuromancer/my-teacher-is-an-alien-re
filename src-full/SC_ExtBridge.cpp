@@ -69,10 +69,10 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     ((SC_CombatBase*)engine)->SetupViewport();
 
     if (msg != 0 && action->extra1 == 1) {
-        g_Navigator_0046ae70->SetNavParams(action->mousePos.field_0, action->mousePos.field_4);
+        g_Navigator_0046ae70->SetNavParams(action->mousePos.x, action->mousePos.y);
     }
 
-    SetVideoRes(dim.field_0, dim.field_4);
+    SetVideoRes(dim.x, dim.y);
 
     ZBufferManager* zbm = g_ZBufferManager_0046aa24;
     if (zbm->m_state != 2) {
@@ -225,7 +225,7 @@ void SC_ExtBridge::Update(int p1, int p2)
     } else {
         mouseVal = 0;
     }
-    int idx = mouseVal / dim.field_0;
+    int idx = mouseVal / dim.x;
     if (idx >= 0) {
         if (idx > 2) {
             idx = 2;
@@ -316,7 +316,7 @@ int SC_ExtBridge::LBLParse(char* line)
     } else if (strcmp(label, "NAVIGATION") == 0) {
         Parser::ProcessFile((Parser*)g_Navigator_0046ae70, this, (char*)0);
     } else if (strcmp(label, "SET_WORKBUFF") == 0) {
-        sscanf(line, " %s %d %d", label, &dim.field_0, &dim.field_4);
+        sscanf(line, " %s %d %d", label, &dim.x, &dim.y);
     } else if (strcmp(label, "BG_SOUND") == 0) {
         sscanf(line, " %s %d", label, &bgSoundId);
     } else if (strcmp(label, "END") == 0) {

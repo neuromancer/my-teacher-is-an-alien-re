@@ -82,7 +82,7 @@ int SC_Combat::LBLParse(char* line) {
         }
     } else if (strcmp(local_3c, "ACTION") == 0) {
         sscanf(line, " %s %d %d", local_3c, &local_14, &local_1c);
-        *(int*)((int)statusPtr + local_14 * 4) = local_1c;
+        statusPtr[local_14] = local_1c;
     } else if (strcmp(local_3c, "END") == 0) {
         return 1;
     } else {
@@ -164,7 +164,7 @@ void SC_Combat::Update(int p1, int p2) {
     if (field_0xAC[2] <= 0) return;
     do {
         int idx = field_0xAC[0];
-        int* entry = (int*)((int)statusPtr + idx * 4);
+        int* entry = &statusPtr[idx];
         if (*entry != 0) {
             ProcessAction(idx, entry);
         }

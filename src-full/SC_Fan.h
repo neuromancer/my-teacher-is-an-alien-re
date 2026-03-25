@@ -12,9 +12,9 @@ class VBuffer;
 
 // 8-byte embedded object with inline ctor, trivial dtor (no SEH cleanup needed)
 struct FanDim {
-    int field_0;
-    int field_4;
-    FanDim() { field_0 = 0; field_4 = 0; }
+    int x;
+    int y;
+    FanDim() { x = 0; y = 0; }
 };
 
 // SC_Fan - Fan puzzle handler (case 62/0x3E)

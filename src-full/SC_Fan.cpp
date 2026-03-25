@@ -61,8 +61,8 @@ void SC_Fan::Init(SC_Message* msg) {
     Handler::Init(msg);
 
     field_B0 = 0;
-    dim_B4.field_0 = 0x140;
-    dim_B4.field_4 = 0xF0;
+    dim_B4.x = 0x140;
+    dim_B4.y = 0xF0;
 
     SetVideoRes(0x140, 0xF0);
 
@@ -76,7 +76,7 @@ void SC_Fan::Init(SC_Message* msg) {
 
     ptr = field_C4;
     if (ptr != 0) {
-        target = (int*)((int)g_ZBufferManager_0046aa24 + 0xA8);
+        target = (int*)&g_ZBufferManager_0046aa24->m_palette;
         if (*target != 0) {
             WriteToLog("ddouble palette");
         }
@@ -280,15 +280,15 @@ void SC_Fan::ProcessRound() {
 
         if (field_17C == 4) {
             field_A8->extra1 = 1;
-            field_A8->mousePos.field_0 = 0x78;
-            field_A8->mousePos.field_4 = 0;
+            field_A8->mousePos.x = 0x78;
+            field_A8->mousePos.y = 0;
 
-            void* gs = g_GameState_0046aa30;
-            int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
-            if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+            GameState* gs = g_GameState_0046aa30;
+            int idx = gs->FindLabel("NUM_ACTIONS");
+            if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
-            *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x14;
+            gs->stateValues[idx] += 0x14;
         } else if (field_17C == 3) {
             EnqueueSpriteAction(field_AC);
             ptr = field_AC;
@@ -303,23 +303,23 @@ void SC_Fan::ProcessRound() {
             }
             return;
         } else if (field_17C == 2) {
-            void* gs = g_GameState_0046aa30;
-            int idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
-            if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+            GameState* gs = g_GameState_0046aa30;
+            int idx = gs->FindLabel("NUM_ACTIONS");
+            if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
-            *(int*)(*(int*)((int)gs + 0x90) + idx * 4) += 0x1E;
+            gs->stateValues[idx] += 0x1E;
 
             gs = g_GameState_0046aa30;
-            idx = ((GameState*)gs)->FindLabel("COMBAT_FAN_WON");
-            if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+            idx = gs->FindLabel("COMBAT_FAN_WON");
+            if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
-            *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = 1;
+            gs->stateValues[idx] = 1;
 
             field_A8->extra1 = 1;
-            field_A8->mousePos.field_0 = 0x78;
-            field_A8->mousePos.field_4 = 0;
+            field_A8->mousePos.x = 0x78;
+            field_A8->mousePos.y = 0;
         }
     }
 
@@ -372,9 +372,9 @@ void SC_Fan::State0Handler() {
     if (field_180 == 1) {
         sample = field_198[1];
         if (sample != 0) {
-            if (*(int*)((int)sample + 0xC) != 0) {
-                if (*(int*)((int)sample + 4) == *(int*)(*(int*)((int)sample + 0xC) + 0xC)) {
-                    if (AIL_sample_status(*(HSAMPLE*)((int)sample + 0xC)) == 4) {
+            if ((int)((Sample*)sample)->m_sample != 0) {
+                if (((Sample*)sample)->m_size == *(int*)((int)((Sample*)sample)->m_sample + 0xC)) {
+                    if (AIL_sample_status(((Sample*)sample)->m_sample) == 4) {
                         return;
                     }
                 }
@@ -398,9 +398,9 @@ void SC_Fan::State2Handler() {
 
     sample = field_198[8];
     if (sample != 0) {
-        if (*(int*)((int)sample + 0xC) != 0) {
-            if (*(int*)((int)sample + 4) == *(int*)(*(int*)((int)sample + 0xC) + 0xC)) {
-                if (AIL_sample_status(*(HSAMPLE*)((int)sample + 0xC)) == 4) {
+        if ((int)((Sample*)sample)->m_sample != 0) {
+            if (((Sample*)sample)->m_size == *(int*)((int)((Sample*)sample)->m_sample + 0xC)) {
+                if (AIL_sample_status(((Sample*)sample)->m_sample) == 4) {
                     return;
                 }
             }
@@ -441,9 +441,9 @@ void SC_Fan::State4Handler() {
     if (field_190 == 1) {
         sample = field_198[10];
         if (sample != 0) {
-            if (*(int*)((int)sample + 0xC) != 0) {
-                if (*(int*)((int)sample + 4) == *(int*)(*(int*)((int)sample + 0xC) + 0xC)) {
-                    if (AIL_sample_status(*(HSAMPLE*)((int)sample + 0xC)) == 4) {
+            if ((int)((Sample*)sample)->m_sample != 0) {
+                if (((Sample*)sample)->m_size == *(int*)((int)((Sample*)sample)->m_sample + 0xC)) {
+                    if (AIL_sample_status(((Sample*)sample)->m_sample) == 4) {
                         goto end;
                     }
                 }
@@ -469,7 +469,7 @@ void SC_Fan::RenderFan() {
         return;
     }
 
-    state = *(int*)((int)sprite + 0x98);
+    state = sprite->handle;
 
     if (state == 3) {
         if (field_CC != 0) {
@@ -506,10 +506,10 @@ void SC_Fan::RenderFan() {
 
     if (field_144 != 0) {
         int dimVal;
-        dimVal = dim_168.field_4;
-        if (dimVal != 0 && dim_168.field_0 >= dimVal) {
+        dimVal = dim_168.y;
+        if (dimVal != 0 && dim_168.x >= dimVal) {
             (g_ZBufferManager_0046aa24)->DrawVBufferRegion(
-                field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
+                field_144, 0x7531, dim_170.x, dim_170.y, 2, 1.0,
                 invSlot_158.left, invSlot_158.top, invSlot_158.right, invSlot_158.bottom);
 
             if (*(int*)field_BC == 1) {
@@ -522,7 +522,7 @@ void SC_Fan::RenderFan() {
         } else {
             int offset;
             int rnd;
-            offset = dim_168.field_0 * 0x36 / dimVal;
+            offset = dim_168.x * 0x36 / dimVal;
             rnd = rand();
             offset = offset - rnd % 3 + 1;
             if (offset < 0) {
@@ -533,11 +533,11 @@ void SC_Fan::RenderFan() {
             offset = offset * 4 + 0x12;
 
             (g_ZBufferManager_0046aa24)->DrawVBufferRegion(
-                field_144, 0x7531, dim_170.field_0, dim_170.field_4, 2, 1.0,
+                field_144, 0x7531, dim_170.x, dim_170.y, 2, 1.0,
                 invSlot_158.left, invSlot_158.top, offset, invSlot_158.bottom);
 
             (g_ZBufferManager_0046aa24)->DrawVBufferRegion(
-                field_144, 0x7531, dim_170.field_0 + offset, dim_170.field_4, 2, 1.0,
+                field_144, 0x7531, dim_170.x + offset, dim_170.y, 2, 1.0,
                 offset, invSlot_148.top, invSlot_148.right, invSlot_148.bottom);
         }
     }
@@ -555,7 +555,7 @@ void SC_Fan::RenderFan() {
             if (p != 0) {
                 frames = *(int*)p;
             }
-            field_C0->ResetAnimation(frames / (dim_B4.field_0 / 3) + 5, 0);
+            field_C0->ResetAnimation(frames / (dim_B4.x / 3) + 5, 0);
         }
 
         sprite = (Sprite*)field_C0;
@@ -565,7 +565,7 @@ void SC_Fan::RenderFan() {
             if (p != 0) {
                 frames = *(int*)p;
             }
-            sprite->ResetAnimation(frames / (dim_B4.field_0 / 5), 0);
+            sprite->ResetAnimation(frames / (dim_B4.x / 5), 0);
         }
     }
 }
@@ -607,7 +607,7 @@ void SC_Fan::OnProcessEnd()
     field_FC = 0;
     field_F8 = 0;
     field_140 = 0;
-    dim_168.field_0 = 0;
+    dim_168.x = 0;
     field_178 = 0;
     field_17C = 0;
 }
@@ -666,7 +666,7 @@ int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
     }
     else if (strcmp(local_38, "NOISE_METER_VBUFFER") == 0) {
         sscanf(param_1, " %s %s %d %d %d ", local_38, local_b8,
-               &dim_170.field_0, &dim_170.field_4, &dim_168.field_4);
+               &dim_170.x, &dim_170.y, &dim_168.y);
         field_144 = new VBuffer(ResolveAssetPath(local_b8), 0);
         invSlot_148.right = 0x10D;
         invSlot_148.left = 0;
@@ -683,12 +683,12 @@ int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
     else if (strcmp(local_38, "SET_GAMESTATE") == 0) {
         sscanf(param_1, " %s %s %d ", local_38, local_b8, &local_18);
         int val = local_18;
-        void* gs = g_GameState_0046aa30;
-        int idx = ((GameState*)gs)->FindLabel(local_b8);
-        if (idx < 0 || *(int*)((int)gs + 0x98) - 1 < idx) {
+        GameState* gs = g_GameState_0046aa30;
+        int idx = gs->FindLabel(local_b8);
+        if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
-        *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = val;
+        gs->stateValues[idx] = val;
     }
     else if (strcmp(local_38, "SOUND") == 0) {
         int ret = sscanf(param_1, " %s %d %s ", local_38, &local_18, local_b8);

@@ -8,6 +8,9 @@
 #include "GameState.h"
 #include "Engine.h"
 #include "LinkedList.h"
+#include "DrawEntry.h"
+#include "VBuffer.h"
+#include "SoundCommand.h"
 #include "mss.h"
 #include "main.h"
 #include <string.h>
@@ -86,16 +89,16 @@ void SC_Rats::Init(SC_Message* msg) {
         if (*list2 != 0) {
             list2[2] = *list2;
             while (*list2 != 0) {
-                int* item = (int*)((LinkedList*)list2)->RemoveCurrent();
+                DrawEntry* item = (DrawEntry*)((LinkedList*)list2)->RemoveCurrent();
                 if (item != 0) {
-                    if (*(int*)((int)item + 4) != 0) {
-                        delete (VBuffer*)*(int*)((int)item + 4);
-                        *(int*)((int)item + 4) = 0;
+                    if (item->m_videoBuffer != 0) {
+                        delete item->m_videoBuffer;
+                        item->m_videoBuffer = 0;
                     }
-                    if (*(int*)((int)item + 8) != 0) {
-                        void* sub = (void*)*(int*)((int)item + 8);
+                    if (item->m_childObject != 0) {
+                        SoundCommand* sub = item->m_childObject;
                         (*(void (__fastcall **)(void*, int, int))(*(int*)sub))(sub, 0, 1);
-                        *(int*)((int)item + 8) = 0;
+                        item->m_childObject = 0;
                     }
                     FreeMemory(item);
                 }
@@ -147,8 +150,8 @@ void SC_Rats::Init(SC_Message* msg) {
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
         field_A8 = sprite;
         sprite->extra1 = ((int*)msg)[5];
-        sprite->mousePos.field_0 = ((int*)msg)[7];
-        sprite->mousePos.field_4 = ((int*)msg)[8];
+        sprite->mousePos.x = ((int*)msg)[7];
+        sprite->mousePos.y = ((int*)msg)[8];
     }
 }
 

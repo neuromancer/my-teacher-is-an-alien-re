@@ -91,7 +91,7 @@ int SC_Message::LBLParse(char* param_1)
         target->childAction = child;
         ParseSpriteAction(child, this);
     } else if (strcmp(local_30, "MOUSE") == 0) {
-        sscanf(param_1, "%s %d %d", local_30, &target->mousePos.field_0, &target->mousePos.field_4);
+        sscanf(param_1, "%s %d %d", local_30, &target->mousePos.x, &target->mousePos.y);
     } else if (strcmp(local_30, "BUTTON1") == 0) {
         sscanf(param_1, "%s %d", local_30, &target->button1);
     } else if (strcmp(local_30, "BUTTON2") == 0) {

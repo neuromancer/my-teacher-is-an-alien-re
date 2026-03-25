@@ -182,14 +182,14 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
         if (action->button1 < 2) goto done;
         {
             SlimeDim pt;
-            pt.field_0 = action->mousePos.field_0;
-            pt.field_4 = action->mousePos.field_4;
+            pt.x = action->mousePos.x;
+            pt.y = action->mousePos.y;
             T_MenuHotspot* btn = btnYes;
             int bHit;
-            if (btn->bounds.left > pt.field_0 ||
-                btn->bounds.right < pt.field_0 ||
-                btn->bounds.top > pt.field_4 ||
-                btn->bounds.bottom < pt.field_4) {
+            if (btn->bounds.left > pt.x ||
+                btn->bounds.right < pt.x ||
+                btn->bounds.top > pt.y ||
+                btn->bounds.bottom < pt.y) {
                 bHit = 0;
             } else {
                 bHit = 1;
@@ -202,14 +202,14 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
         }
         {
             SlimeDim pt;
-            pt.field_0 = action->mousePos.field_0;
-            pt.field_4 = action->mousePos.field_4;
+            pt.x = action->mousePos.x;
+            pt.y = action->mousePos.y;
             T_MenuHotspot* btn = btnNo;
             int bHit;
-            if (btn->bounds.left > pt.field_0 ||
-                btn->bounds.right < pt.field_0 ||
-                btn->bounds.top > pt.field_4 ||
-                btn->bounds.bottom < pt.field_4) {
+            if (btn->bounds.left > pt.x ||
+                btn->bounds.right < pt.x ||
+                btn->bounds.top > pt.y ||
+                btn->bounds.bottom < pt.y) {
                 bHit = 0;
             } else {
                 bHit = 1;
@@ -222,14 +222,14 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
         }
         {
             SlimeDim pt;
-            pt.field_0 = action->mousePos.field_0;
-            pt.field_4 = action->mousePos.field_4;
+            pt.x = action->mousePos.x;
+            pt.y = action->mousePos.y;
             T_MenuHotspot* btn = btnCancel;
             int bHit;
-            if (btn->bounds.left > pt.field_0 ||
-                btn->bounds.right < pt.field_0 ||
-                btn->bounds.top > pt.field_4 ||
-                btn->bounds.bottom < pt.field_4) {
+            if (btn->bounds.left > pt.x ||
+                btn->bounds.right < pt.x ||
+                btn->bounds.top > pt.y ||
+                btn->bounds.bottom < pt.y) {
                 bHit = 0;
             } else {
                 bHit = 1;

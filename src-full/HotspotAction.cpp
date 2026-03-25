@@ -128,15 +128,16 @@ void HotspotAction::Reset() {
 /* Function start: 0x41B5E0 */
 int HotspotAction::HandleMessage(int* msg) {
     int val;
+    SpriteAction* action = (SpriteAction*)msg;
 
-    if (msg[0] != 0x24) {
+    if (action->addressType != 0x24) {
         return 0;
     }
 
-    val = msg[4];
+    val = action->instruction;
     switch (val) {
     case 2:
-        val = msg[6];
+        val = action->extra2;
         currentSpriteId = val;
         if (checkObjectId == val) {
             ProcessQueueFC();
@@ -198,7 +199,7 @@ int HotspotAction::Update(int param) {
 /* Function start: 0x41B790 */
 int HotspotAction::CheckConditions() {
     int result;
-    int* data;
+    SpriteAction* data;
     ListNode* node;
 
     if (state != 0 && state != 1) {
@@ -211,12 +212,12 @@ int HotspotAction::CheckConditions() {
         while (conditionsQueue->head != 0) {
             node = conditionsQueue->current;
             if (node != 0) {
-                data = (int*)node->data;
+                data = (SpriteAction*)node->data;
             } else {
                 data = 0;
             }
-            if (data[0] != 2) goto notType2;
-            result = (g_GameState_0046aa30)->CheckCondition(data);
+            if (data->addressType != 2) goto notType2;
+            result = (g_GameState_0046aa30)->CheckCondition((int*)data);
             goto afterCheck;
 notType2:
             ShowError("illegal message 15");

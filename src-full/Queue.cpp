@@ -233,8 +233,8 @@ SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
     m_free_list = headNode;
     m_count--;
 
-    buffer->mousePos.field_0 = 0;
-    buffer->mousePos.field_4 = 0;
+    buffer->mousePos.x = 0;
+    buffer->mousePos.y = 0;
     memset(buffer, 0, sizeof(SpriteAction));
     buffer->CopyFrom(&localAction);
     completed |= 1;

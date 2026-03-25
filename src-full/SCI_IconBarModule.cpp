@@ -238,8 +238,8 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         field_BC = 0;
         mode = 0;
-        field_C8.field_0 = 0x280;
-        field_C8.field_4 = 0x1E0;
+        field_C8.x = 0x280;
+        field_C8.y = 0x1E0;
 
         // Parse static scene
         sprintf(key, "[SEARCHSCREEN%d_STATIC]", moduleParam);
@@ -323,7 +323,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             arr = arr + 9;
         } while ((unsigned int)arr < (unsigned int)&DAT_004733e8);
 
-        SetVideoRes(field_C8.field_0, field_C8.field_4);
+        SetVideoRes(field_C8.x, field_C8.y);
 
         // ZBufferManager queue cleanup
         if (g_ZBufferManager_0046aa24->m_state != 2) {

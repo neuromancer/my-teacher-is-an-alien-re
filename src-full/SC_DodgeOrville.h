@@ -6,9 +6,9 @@
 
 // 8-byte embedded object with inline ctor, trivial dtor (no SEH cleanup needed)
 struct DodgeDim {
-    int field_0;
-    int field_4;
-    DodgeDim() { field_0 = 0; field_4 = 0; }
+    int x;
+    int y;
+    DodgeDim() { x = 0; y = 0; }
 };
 
 // SC_DodgeOrville - Dodge Orville stink bomb mini-game (case 67/0x43)

@@ -52,7 +52,7 @@ int SC_FakeRoom::AddMessage(SC_Message* msg)
             return 1;
         }
     } else if (action->button1 > 1) {
-        int mouseX = action->mousePos.field_0;
+        int mouseX = action->mousePos.x;
         if (stateFlags & 1) {
             if (mouseX < 100 || mouseX > 0x21c) {
                 stateFlags = stateFlags & ~1;
@@ -60,7 +60,7 @@ int SC_FakeRoom::AddMessage(SC_Message* msg)
                 return 1;
             }
         } else if (hitboxLeft <= mouseX && hitboxRight >= mouseX &&
-                   hitboxTop <= action->mousePos.field_4 && hitboxBottom >= action->mousePos.field_4) {
+                   hitboxTop <= action->mousePos.y && hitboxBottom >= action->mousePos.y) {
             statusPtr[1] = 1;
         }
     }

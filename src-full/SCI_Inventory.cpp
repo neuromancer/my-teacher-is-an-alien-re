@@ -287,12 +287,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     /* Test against scrollDownBtn rectangle */
     {
-        SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
+        SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)scrollDownBtn;
-        if (((T_MenuHotspot*)rect)->bounds.left <= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->bounds.top <= pos.field_4 &&
-            ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
+        if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.left >= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
+            ((T_MenuHotspot*)rect)->bounds.top >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -305,12 +305,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     /* Test against scrollUpBtn rectangle */
     {
-        SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
+        SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)scrollUpBtn;
-        if (((T_MenuHotspot*)rect)->bounds.left <= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->bounds.top <= pos.field_4 &&
-            ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
+        if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.left >= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
+            ((T_MenuHotspot*)rect)->bounds.top >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -323,12 +323,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     /* Test against useButton rectangle */
     {
-        SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
+        SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)useButton;
-        if (((T_MenuHotspot*)rect)->bounds.left <= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->bounds.top <= pos.field_4 &&
-            ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
+        if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.left >= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
+            ((T_MenuHotspot*)rect)->bounds.top >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -410,12 +410,12 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
 
     /* Test against putBackButton rectangle */
     {
-        SlimeDim pos; pos.field_0 = cursorPtr[0]; pos.field_4 = cursorPtr[1];
+        SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)putBackButton;
-        if (((T_MenuHotspot*)rect)->bounds.left <= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->bounds.left >= pos.field_0 &&
-            ((T_MenuHotspot*)rect)->bounds.top <= pos.field_4 &&
-            ((T_MenuHotspot*)rect)->bounds.top >= pos.field_4) {
+        if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.left >= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
+            ((T_MenuHotspot*)rect)->bounds.top >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;

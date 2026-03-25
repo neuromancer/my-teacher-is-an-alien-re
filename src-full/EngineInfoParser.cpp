@@ -27,7 +27,7 @@ EngineInfoParser::~EngineInfoParser() {
 
 /* Function start: 0x434800 */
 void EngineInfoParser::SetupDimensions() {
-    SetVideoRes(EngineInfoParser::dimensions.field_0, EngineInfoParser::dimensions.field_4);
+    SetVideoRes(EngineInfoParser::dimensions.x, EngineInfoParser::dimensions.y);
 }
 
 /* Function start: 0x434820 */
@@ -53,9 +53,9 @@ int EngineInfoParser::LBLParse(char* line) {
   } else if (firstChar == 'O') {
     ParseOffset(line + 3, secondChar);
   } else if (firstChar == 'P') {
-    sscanf(line + 3, "%d %d", &paletteStart.field_0, &paletteStart.field_4);
+    sscanf(line + 3, "%d %d", &paletteStart.x, &paletteStart.y);
   } else if (firstChar == 'Q') {
-    sscanf(line + 3, "%d %d", &paletteEnd.field_0, &paletteEnd.field_4);
+    sscanf(line + 3, "%d %d", &paletteEnd.x, &paletteEnd.y);
   } else if (firstChar == 'R') {
     ParsePalette(line + 3);
   } else if (firstChar == 'S') {
@@ -82,12 +82,12 @@ void EngineInfoParser::ParseOffset(char *line, int arg2) {
 
 /* Function start: 0x434A60 */
 void EngineInfoParser::ParseAnchor(char *line) {
-  sscanf(line, "%d %d", &anchor.field_0, &anchor.field_4);
+  sscanf(line, "%d %d", &anchor.x, &anchor.y);
 }
 
 /* Function start: 0x434A90 */
 void EngineInfoParser::ParseDimensions(char *line) {
-  sscanf(line, "%d %d", &dimensions.field_0, &dimensions.field_4);
+  sscanf(line, "%d %d", &dimensions.x, &dimensions.y);
 }
 
 /* Function start: 0x434AC0 */

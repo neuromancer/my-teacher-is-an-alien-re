@@ -53,8 +53,8 @@ void SC_Slime::Init(SC_Message* msg)
 
     CopyCommandData(msg);
 
-    screenSize.field_0 = 0x140;
-    screenSize.field_4 = 0xf0;
+    screenSize.x = 0x140;
+    screenSize.y = 0xf0;
     field_AC = 0;
 
     SetVideoRes(0x140, 0xf0);
@@ -320,7 +320,7 @@ void SC_Slime::ResetSprites()
         if (pMouse != 0) {
             mouseX = *pMouse;
         }
-        int div = screenSize.field_0 / 5;
+        int div = screenSize.x / 5;
         consoleSprite->ResetAnimation(mouseX / div, 0);
     }
 }

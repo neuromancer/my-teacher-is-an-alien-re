@@ -228,13 +228,13 @@ void SC_Cinematic::Init(SC_Message* msg) {
         startX = action->button1;
         startY = action->button2;
 
-        if (action->mousePos.field_0 != 0) {
-            volume = action->mousePos.field_0;
+        if (action->mousePos.x != 0) {
+            volume = action->mousePos.x;
         } else {
             volume = 100;
         }
 
-        soundParam = action->mousePos.field_4;
+        soundParam = action->mousePos.y;
 
         Animation* smk = (Animation*)animation;
         if ((flags & 0x2) != 0 || smk->SetPalette(0, 0x100) == 0) {

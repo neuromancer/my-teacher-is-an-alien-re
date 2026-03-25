@@ -488,10 +488,10 @@ void SC_CrystalPuzzle::Update(int p1, int p2) {
 
     if (sound1 != 0) {
         Sample* snd = sound1;
-        int m_sample = *(int*)((int)snd + 0xc);
+        int m_sample = (int)snd->m_sample;
         if (m_sample != 0) {
             int fileSize = *(int*)(m_sample + 0xc);
-            if (*(int*)((int)snd + 0x4) == fileSize) {
+            if (snd->m_size == fileSize) {
                 if (AIL_sample_status((void*)m_sample) == 4) {
                     goto sound_done;
                 }
@@ -748,8 +748,8 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
     SlimeDim clickPos;
     int inside;
 
-    clickPos.field_0 = x;
-    clickPos.field_4 = y;
+    clickPos.x = x;
+    clickPos.y = y;
 
     if (field_144 == 0) {
         field_144 = 1;
@@ -761,8 +761,8 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
             int i = 0;
             GlyphRect* r = DAT_00473d30;
             do {
-                inside = (r->left <= clickPos.field_0 && clickPos.field_0 <= r->right &&
-                          r->top <= clickPos.field_4 && r->bottom >= clickPos.field_4);
+                inside = (r->left <= clickPos.x && clickPos.x <= r->right &&
+                          r->top <= clickPos.y && r->bottom >= clickPos.y);
                 if (inside) {
                     OnButtonClick(i);
                 }
@@ -781,19 +781,19 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
                 if (inside) {
                     GlyphRect* r = g_DoorRects_00473dc8;
                     do {
-                        inside = (r->left <= clickPos.field_0 && clickPos.field_0 <= r->right &&
-                                  r->top <= clickPos.field_4 && r->bottom >= clickPos.field_4);
+                        inside = (r->left <= clickPos.x && clickPos.x <= r->right &&
+                                  r->top <= clickPos.y && r->bottom >= clickPos.y);
                         if (inside) {
                             ResetPuzzle(1, 1);
                         }
                         r++;
                     } while (r < &g_DoorRects_00473dc8[3]);
 
-                    inside = (rect4.left <= clickPos.field_0 && clickPos.field_0 <= rect4.right &&
-                              rect4.top <= clickPos.field_4 && rect4.bottom >= clickPos.field_4);
+                    inside = (rect4.left <= clickPos.x && clickPos.x <= rect4.right &&
+                              rect4.top <= clickPos.y && rect4.bottom >= clickPos.y);
                     if (!inside) {
-                        inside = (rect5.left <= clickPos.field_0 && clickPos.field_0 <= rect5.right &&
-                                  rect5.top <= clickPos.field_4 && rect5.bottom >= clickPos.field_4);
+                        inside = (rect5.left <= clickPos.x && clickPos.x <= rect5.right &&
+                                  rect5.top <= clickPos.y && rect5.bottom >= clickPos.y);
                     }
                     if (inside) {
                         ResetPuzzle(0, 1);

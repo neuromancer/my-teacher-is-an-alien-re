@@ -61,8 +61,8 @@ void SC_FireAlarm::Init(SC_Message* msg) {
         ShowLoadingScreen();
     }
 
-    screenSize.field_0 = 0x140;
-    screenSize.field_4 = 0xF0;
+    screenSize.x = 0x140;
+    screenSize.y = 0xF0;
 
     SetVideoRes(0x140, 0xF0);
 
@@ -254,7 +254,7 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     int hitResult = g_BackBuffer_0046aa14->CheckHit(coords[0], coords[1]);
 
-    if (planeClickRange.field_0 <= hitResult && planeClickRange.field_4 >= hitResult) {
+    if (planeClickRange.x <= hitResult && planeClickRange.y >= hitResult) {
         int y = coords[1] - 0x4B;
         int x = coords[0] - 0xA1;
         planeSprite->loc_x = x;
@@ -277,29 +277,29 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     int soundId;
 
-    if (waterHitRange.field_0 <= hitResult && waterHitRange.field_4 >= hitResult) {
-        waterHitCounter.field_0++;
-        timerCounter.field_0 += DAT_004685a0;
+    if (waterHitRange.x <= hitResult && waterHitRange.y >= hitResult) {
+        waterHitCounter.x++;
+        timerCounter.x += DAT_004685a0;
         int done;
-        if (waterHitCounter.field_4 == 0) {
+        if (waterHitCounter.y == 0) {
             done = 0;
-        } else if (waterHitCounter.field_0 >= waterHitCounter.field_4) {
+        } else if (waterHitCounter.x >= waterHitCounter.y) {
             done = 1;
         } else {
             done = 0;
         }
         if (done) {
             ((Palette*)soundTable)->PlaySound(0xF);
-            waterHitCounter.field_0 = 0;
+            waterHitCounter.x = 0;
             goto returnOne;
         }
         soundId = 3;
         goto playSound;
     }
 
-    if (bellHitRange.field_0 <= hitResult && bellHitRange.field_4 >= hitResult) {
+    if (bellHitRange.x <= hitResult && bellHitRange.y >= hitResult) {
         soundId = 0xA;
-        timerCounter.field_0 += DAT_00472bd8;
+        timerCounter.x += DAT_00472bd8;
         goto playSound;
     }
 
@@ -363,8 +363,8 @@ void SC_FireAlarm::ProcessFrame() {
     Sprite* spr110;
     int iVar4;
 
-    if ((stateFlags & 0xF) == 0 && timerCounter.field_4 != 0 && timerCounter.field_0 >= timerCounter.field_4) {
-        timerCounter.field_0 = 0;
+    if ((stateFlags & 0xF) == 0 && timerCounter.y != 0 && timerCounter.x >= timerCounter.y) {
+        timerCounter.x = 0;
         spr110 = teacherSprite;
         int animRes = (int)spr110->animation_data;
         int dataPtr = *(int*)(animRes + 0xC);
@@ -375,13 +375,13 @@ void SC_FireAlarm::ProcessFrame() {
         animDistance = distance;
 
         if (distance >= 0x3D && distance <= 0x55) {
-            int y = teacherHomePos.field_4;
-            int x = teacherHomePos.field_0 - 0x19;
+            int y = teacherHomePos.y;
+            int x = teacherHomePos.x - 0x19;
             spr110->loc_x = x;
             spr110->loc_y = y;
         } else if (distance >= 0x15 && distance <= 0x32) {
-            int y = teacherHomePos.field_4;
-            int x = teacherHomePos.field_0 + 0x19;
+            int y = teacherHomePos.y;
+            int x = teacherHomePos.x + 0x19;
             spr110->loc_x = x;
             spr110->loc_y = y;
         }
@@ -436,8 +436,8 @@ void SC_FireAlarm::ProcessFrame() {
         if (frame >= 1 && frame <= 3) {
             {
                 SlimeDim temp(teacherHomePos);
-                spr[0xAC/4] = temp.field_0;
-                spr[0xB0/4] = temp.field_4;
+                spr[0xAC/4] = temp.x;
+                spr[0xB0/4] = temp.y;
             }
 
             teacherSprite->ResetAnimation(0, animDistance);
@@ -478,17 +478,17 @@ void SC_FireAlarm::ProcessFrame() {
                 handSprite->ResetAnimation(2, 0);
                 {
                     int r = rand();
-                    handIdleDelay.field_0 = 0;
-                    handIdleDelay.field_4 = r % 0x14 + 0x14;
+                    handIdleDelay.x = 0;
+                    handIdleDelay.y = r % 0x14 + 0x14;
                 }
                 break;
             case 2:
                 {
-                    handIdleDelay.field_0++;
+                    handIdleDelay.x++;
                     int done2;
-                    if (handIdleDelay.field_4 == 0) {
+                    if (handIdleDelay.y == 0) {
                         done2 = 0;
-                    } else if (handIdleDelay.field_0 >= handIdleDelay.field_4) {
+                    } else if (handIdleDelay.x >= handIdleDelay.y) {
                         done2 = 1;
                     } else {
                         done2 = 0;
@@ -511,7 +511,7 @@ void SC_FireAlarm::ProcessFrame() {
             switch (f8Frame) {
             case 0:
                 planeSprite->ResetAnimation(1, 0);
-                timerCounter.field_0 += DAT_00472bdc;
+                timerCounter.x += DAT_00472bdc;
                 ((Palette*)soundTable)->PlaySound(0xB);
                 break;
             case 1:
@@ -520,8 +520,8 @@ void SC_FireAlarm::ProcessFrame() {
             case 2:
                 {
                     SlimeDim temp2(planeHomePos);
-                    planeSprite->loc_x = temp2.field_0;
-                    planeSprite->loc_y = temp2.field_4;
+                    planeSprite->loc_x = temp2.x;
+                    planeSprite->loc_y = temp2.y;
                 }
                 planeSprite->ResetAnimation(-1, 0);
                 break;
@@ -557,7 +557,7 @@ void SC_FireAlarm::ProcessFrame() {
             if (mousePtr != 0) {
                 mouseVal = *mousePtr;
             }
-            consoleSprite->ResetAnimation(mouseVal / (screenSize.field_0 / 5), 0);
+            consoleSprite->ResetAnimation(mouseVal / (screenSize.x / 5), 0);
         }
 
         if (*(int*)(DAT_004685ac + 0xA8) != 0) {
@@ -566,7 +566,7 @@ void SC_FireAlarm::ProcessFrame() {
             if (mousePtr2 != 0) {
                 mouseVal2 = *mousePtr2;
             }
-            consoleSprite->ResetAnimation(mouseVal2 / (screenSize.field_0 / 3) + 5, 0);
+            consoleSprite->ResetAnimation(mouseVal2 / (screenSize.x / 3) + 5, 0);
         }
     }
 }

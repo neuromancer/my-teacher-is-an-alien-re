@@ -171,8 +171,8 @@ int Engine::LBLParse(char* line) {
         consoleSprite = new Sprite(0);
         Parser::ProcessFile((Parser*)consoleSprite, this, 0);
     } else if (strcmp(label, "VIDEO_RES") == 0) {
-        sscanf(line, " %s %d %d ", label, &videoDimensions.field_0, &videoDimensions.field_4);
-        SetVideoRes(videoDimensions.field_0, videoDimensions.field_4);
+        sscanf(line, " %s %d %d ", label, &videoDimensions.x, &videoDimensions.y);
+        SetVideoRes(videoDimensions.x, videoDimensions.y);
     } else if (strcmp(label, "BG_SOUND") == 0) {
         sscanf(line, " %s %d ", label, &bgSoundHandle);
     } else if (strcmp(label, "MAX_SOUNDS") == 0) {

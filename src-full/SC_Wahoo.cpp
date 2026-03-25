@@ -87,14 +87,14 @@ SC_Wahoo::~SC_Wahoo() {
 
 /* Function start: 0x437A40 */
 void SC_Wahoo::Init(SC_Message* msg) {
-    int uVar1 = *(int*)((int)this + 0x90);
-    int* puVar6 = (int*)((int)this + 0xa8);
+    int uVar1 = handlerId;
+    int* puVar6 = (int*)&spriteAction;
     int iVar7;
     for (iVar7 = 0x30; iVar7 != 0; iVar7--) {
         *puVar6 = 0;
         puVar6++;
     }
-    *(int*)((int)this + 0x90) = uVar1;
+    handlerId = uVar1;
 
     CopyCommandData((SC_Message*)msg);
 
@@ -104,27 +104,27 @@ void SC_Wahoo::Init(SC_Message* msg) {
         ShowLoadingScreen();
     }
 
-    screenSize.field_0 = 0x140;
-    screenSize.field_4 = 0xf0;
+    screenSize.x = 0x140;
+    screenSize.y = 0xf0;
     SetVideoRes(0x140, 0xf0);
 
-    moduleParam = *(int*)((int)msg + 4);
+    moduleParam = ((SpriteAction*)msg)->addressValue;
 
     void* pvVar4 = g_GameState_0046aa30;
     unsigned int uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
-    if ((int)uVar3 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < (int)uVar3) {
+    if ((int)uVar3 < 0 || ((GameState*)pvVar4)->maxStates - 1 < (int)uVar3) {
         ShowError("Invalid gamestate %d", uVar3);
     }
-    playRightBridge = *(int*)(*(int*)((int)pvVar4 + 0x90) + uVar3 * 4);
+    playRightBridge = ((GameState*)pvVar4)->stateValues[uVar3];
 
     ParseFile(this, "mis\\cb_bridge.mis", (char*)0);
 
     pvVar4 = g_GameState_0046aa30;
     uVar3 = ((GameState*)pvVar4)->FindLabel("PLAY_RIGHT_BRIDGE");
-    if ((int)uVar3 < 0 || *(int*)((int)pvVar4 + 0x98) - 1 < (int)uVar3) {
+    if ((int)uVar3 < 0 || ((GameState*)pvVar4)->maxStates - 1 < (int)uVar3) {
         ShowError("Invalid gamestate %d", uVar3);
     }
-    playRightBridge = *(int*)(*(int*)((int)pvVar4 + 0x90) + uVar3 * 4);
+    playRightBridge = ((GameState*)pvVar4)->stateValues[uVar3];
 
     if (spriteAction == 0) {
         spriteAction = new SpriteAction(
@@ -356,7 +356,7 @@ void SC_Wahoo::OnProcessEnd() {
         if (*(int*)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
             iVar1 = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
-        consoleSprite->ResetAnimation(iVar1 / (screenSize.field_0 / 5), 0);
+        consoleSprite->ResetAnimation(iVar1 / (screenSize.x / 5), 0);
     }
 
     if (startSound != 0) {
@@ -380,7 +380,7 @@ void SC_Wahoo::Update(int param1, int param2) {
         return;
     }
 
-    if (*(int*)((int)timer) == 1) {
+    if (*(int*)(timer) == 1) {
         if (timer->IsTimeOut() == 0) {
             return;
         }
@@ -388,7 +388,7 @@ void SC_Wahoo::Update(int param1, int param2) {
         void* gs = g_GameState_0046aa30;
         int idx = ((GameState*)gs)->FindLabel("COMBAT_BRIDGE_STATE");
         ((GameState*)gs)->ValidateIndex(idx);
-        *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = val + 1;
+        ((GameState*)gs)->stateValues[idx] = val + 1;
         ProcessState();
         return;
     }
@@ -471,7 +471,7 @@ label_done:
         if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
             cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
-        consoleSprite->ResetAnimation(cursorX / (screenSize.field_0 / 3) + 5, 0);
+        consoleSprite->ResetAnimation(cursorX / (screenSize.x / 3) + 5, 0);
     }
 
     spr = (Sprite*)consoleSprite;
@@ -480,7 +480,7 @@ label_done:
         if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
             cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
         }
-        consoleSprite->ResetAnimation(cursorX / (screenSize.field_0 / 5), 0);
+        consoleSprite->ResetAnimation(cursorX / (screenSize.x / 5), 0);
     }
 }
 
@@ -564,10 +564,10 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
         int val = local_18;
         void* gs = g_GameState_0046aa30;
         unsigned int idx = ((GameState*)gs)->FindLabel(local_b8);
-        if ((int)idx < 0 || *(int*)((int)gs + 0x98) - 1 < (int)idx) {
+        if ((int)idx < 0 || ((GameState*)gs)->maxStates - 1 < (int)idx) {
             ShowError("Invalid gamestate %d");
         }
-        *(int*)(*(int*)((int)gs + 0x90) + idx * 4) = val;
+        ((GameState*)gs)->stateValues[idx] = val;
     }
     else if (strcmp(local_38, "SOUND") == 0) {
         sscanf(param_1, " %s %d %s ", local_38, &local_18, local_b8);
@@ -644,13 +644,13 @@ int SC_Wahoo::ProcessClick(int param_1) {
     int uVar10;
     int local_c[3];
 
-    iVar7 = *(int*)(*(int*)(param_1 + 0x98) * 0x10 + 4 + *(int*)(param_1 + 0x90)) - 1;
-    if (*(int*)(param_1 + 0xf0) == 0) {
+    iVar7 = ((Sprite*)param_1)->ranges[((Sprite*)param_1)->handle].end - 1;
+    if (((Sprite*)param_1)->animation_data == 0) {
         if (iVar7 != 0) {
             return 0;
         }
     }
-    else if (*(int*)(*(int*)(*(int*)(param_1 + 0xf0) + 0xc) + 0x374) != iVar7) {
+    else if (*(int*)((int)((Sprite*)param_1)->animation_data->smk + 0x374) != iVar7) {
         return 0;
     }
 
@@ -678,18 +678,18 @@ int SC_Wahoo::ProcessClick(int param_1) {
             *(int*)(param_1 + 0x124) - playAreaHitbox.top);
 
         if ((int)uVar2 < 1 || 3 < (int)uVar2 ||
-            (pvVar6 = *(void**)((int)this + uVar2 * 4 + 0xb4),
-             *(int*)((int)pvVar6 + 0x98) != 0)) {
+            (pvVar6 = (&resetSwitchSprite)[uVar2],
+             ((Sprite*)pvVar6)->handle != 0)) {
             if (missSound != 0) {
                 missSound->Play(100, 1);
             }
             return 1;
         }
 
-        if (*(int*)((int)pvVar6 + 0xf0) == 0) {
+        if (((Sprite*)pvVar6)->animation_data == 0) {
             iVar7 = 0;
         } else {
-            iVar7 = *(int*)(*(int*)(*(int*)((int)pvVar6 + 0xf0) + 0xc) + 0x374);
+            iVar7 = *(int*)((int)((Sprite*)pvVar6)->animation_data->smk + 0x374);
         }
 
         if (uVar2 != 2) {
@@ -708,17 +708,17 @@ int SC_Wahoo::ProcessClick(int param_1) {
 
         ((Sprite*)pvVar6)->ResetAnimation(iVar3, 0);
 
-        if (*(void**)((int)this + 0x12c) != 0) {
-            ((Sample*)*(void**)((int)this + 0x12c))->Play(100, 1);
+        if (matchSound != 0) {
+            ((Sample*)matchSound)->Play(100, 1);
         }
 
         iVar3 = 0;
         piVar8 = local_c;
-        piVar4 = (int*)((int)this + 0xb8);
+        piVar4 = (int*)&innerSprite;
         iVar7 = 3;
         do {
-            if (*(int*)(*piVar4 + 0x98) != 0) {
-                *piVar8 = *(int*)(*piVar4 + 0x98);
+            if (((Sprite*)*piVar4)->handle != 0) {
+                *piVar8 = ((Sprite*)*piVar4)->handle;
                 piVar8 = piVar8 + 1;
                 iVar3 = iVar3 + 1;
             }
@@ -748,11 +748,11 @@ int SC_Wahoo::ProcessClick(int param_1) {
             } while (iVar5 != 0);
         }
 
-        if (*(int*)((int)resetSwitchSprite + 0x98) == 0 && 1 < iVar3) {
+        if (resetSwitchSprite->handle == 0 && 1 < iVar3) {
             if (iVar7 == 3) {
-                *(unsigned int*)((int)this + 0x164) = *(unsigned int*)((int)this + 0x164) | 1;
+                gameFlags = gameFlags | 1;
                 bgSprite->ResetAnimation(1, 0);
-                pvVar6 = *(void**)((int)this + 0x130);
+                pvVar6 = (void*)winSound;
                 if (pvVar6 != 0) {
                     uVar10 = 1;
                     goto LAB_00439160;
@@ -770,7 +770,7 @@ LAB_00439160:
         }
 
         local_c[0] = 0xe;
-        piVar4 = (int*)((int)this + 0xdc);
+        piVar4 = (int*)sampleSlots;
         do {
             if (*piVar4 != 0) {
                 ((Sample*)*piVar4)->Stop();
@@ -780,24 +780,24 @@ LAB_00439160:
         } while (local_c[0] != 0);
 
         if (iVar7 == iVar3) {
-            pvVar6 = *(void**)((int)this + iVar3 * 4 + 0x104);
+            pvVar6 = sampleSlots[iVar3 + 10];
             if (pvVar6 != 0) {
                 ((Sample*)pvVar6)->Play(100, 1);
             }
         }
-        else if (*(void**)((int)this + 0x104) != 0) {
-            ((Sample*)*(void**)((int)this + 0x104))->Play(100, 1);
+        else if (sampleSlots[10] != 0) {
+            ((Sample*)sampleSlots[10])->Play(100, 1);
         }
         }
     } else {
-        if (*(int*)((int)resetSwitchSprite + 0x98) == 1) {
+        if (resetSwitchSprite->handle == 1) {
             pvVar6 = g_GameState_0046aa30;
             {
             unsigned int uVar2 = ((GameState*)pvVar6)->FindLabel("NUM_ACTIONS");
-            if ((int)uVar2 < 0 || *(int*)((int)pvVar6 + 0x98) - 1 < (int)uVar2) {
+            if ((int)uVar2 < 0 || ((GameState*)pvVar6)->maxStates - 1 < (int)uVar2) {
                 ShowError("Invalid gamestate %d", uVar2);
             }
-            piVar4 = (int*)(*(int*)((int)pvVar6 + 0x90) + uVar2 * 4);
+            piVar4 = &((GameState*)pvVar6)->stateValues[uVar2];
             }
             *piVar4 = *piVar4 + 5;
             resetSwitchSprite->ResetAnimation(0, 0);
@@ -805,10 +805,10 @@ LAB_00439160:
                 startSound->Stop();
             }
             {
-            void** puVar9 = (void**)((int)this + 0xb8);
+            void** puVar9 = (void**)&innerSprite;
             iVar7 = 3;
             do {
-                if (*(int*)((int)*puVar9 + 0x98) != 0) {
+                if (((Sprite*)*puVar9)->handle != 0) {
                     ((Sprite*)*puVar9)->ResetAnimation(0, 0);
                     iVar3 = (int)resetSound;
                     if (iVar3 != 0) {

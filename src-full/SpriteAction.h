@@ -19,9 +19,9 @@
 // Removing either breaks similarity for: SpriteAction, EngineInfoParser, SC_FireAlarm,
 // SC_Roach, and any class containing SlimeDim members.
 struct SlimeDim {
-    int field_0;
-    int field_4;
-    SlimeDim() { field_0 = 0; field_4 = 0; }
+    int x;
+    int y;
+    SlimeDim() { x = 0; y = 0; }
     ~SlimeDim();
 };
 
@@ -47,7 +47,7 @@ public:
     int time;                  // 0x30
     SpriteAction* childAction; // 0x34 - owned nested SpriteAction*
 
-    SpriteAction() { mousePos.field_0 = 0; mousePos.field_4 = 0; memset(this, 0, sizeof(SpriteAction)); }
+    SpriteAction() { mousePos.x = 0; mousePos.y = 0; memset(this, 0, sizeof(SpriteAction)); }
     SpriteAction(int, int, int, int, int, int, int, int, int, int);
     ~SpriteAction();
     SpriteAction* CopyFrom(SpriteAction*);  // 0x444920

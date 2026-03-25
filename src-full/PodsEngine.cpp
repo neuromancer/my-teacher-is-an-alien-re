@@ -12,8 +12,8 @@ PodsEngine::PodsEngine()
     field_0xFC = 0;
     field_0x100 = 0;
     memset(&bgSprite, 0, 10 * sizeof(int));
-    field_0xF4.field_0 = 0;
-    field_0xF4.field_4 = 3;
+    field_0xF4.x = 0;
+    field_0xF4.y = 3;
 }
 
 /* Function start: 0x440950 */

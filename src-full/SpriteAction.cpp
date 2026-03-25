@@ -36,8 +36,8 @@ SpriteAction* SpriteAction::CopyFrom(SpriteAction* other) {
         instruction = other->instruction;
         extra1 = other->extra1;
         extra2 = other->extra2;
-        mousePos.field_0 = other->mousePos.field_0;
-        mousePos.field_4 = other->mousePos.field_4;
+        mousePos.x = other->mousePos.x;
+        mousePos.y = other->mousePos.y;
         button1 = other->button1;
         button2 = other->button2;
         lastKey = other->lastKey;
@@ -55,8 +55,8 @@ SpriteAction* SpriteAction::CopyFrom(SpriteAction* other) {
 
 /* Function start: 0x444A40 */
 SpriteAction::SpriteAction(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10) {
-    mousePos.field_0 = 0;
-    mousePos.field_4 = 0;
+    mousePos.x = 0;
+    mousePos.y = 0;
     memset(this, 0, sizeof(SpriteAction));
     addressType = p1;
     addressValue = p2;
@@ -66,8 +66,8 @@ SpriteAction::SpriteAction(int p1, int p2, int p3, int p4, int p5, int p6, int p
     extra1 = p6;
     extra2 = p7;
     childAction = (SpriteAction*)p8;
-    mousePos.field_0 = p9;
-    mousePos.field_4 = p10;
+    mousePos.x = p9;
+    mousePos.y = p10;
 }
 
 /* Function start: 0x444AF0 */

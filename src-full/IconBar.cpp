@@ -204,8 +204,8 @@ int IconBar::AddMessage(SC_Message* msg) {
 
     {
         int inBounds;
-        if (g_IconBarLeft <= act->mousePos.field_0 && g_IconBarRight >= act->mousePos.field_0 &&
-            g_IconBarTop <= act->mousePos.field_4 && g_IconBarBottom >= act->mousePos.field_4) {
+        if (g_IconBarLeft <= act->mousePos.x && g_IconBarRight >= act->mousePos.x &&
+            g_IconBarTop <= act->mousePos.y && g_IconBarBottom >= act->mousePos.y) {
             inBounds = 1;
         } else {
             inBounds = 0;

@@ -202,8 +202,8 @@ void GameEngine::ProcessInput() {
     } else {
         mouseX = 0;
     }
-    action.mousePos.field_0 = mouseX;
-    action.mousePos.field_4 = mouseY;
+    action.mousePos.x = mouseX;
+    action.mousePos.y = mouseY;
 
     mouse = *pMouse;
     if (mouse != 0 && (mouse->ext1 >= 2 || mouse->ext2 >= 2)) {
