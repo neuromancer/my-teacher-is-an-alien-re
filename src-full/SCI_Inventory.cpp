@@ -73,7 +73,15 @@ SCI_Inventory::SCI_Inventory() {
     ParseFile(this, "mis\\inventor.mis", "[INVENTORY]");
 }
 
-extern void __fastcall FreePoolBlocks(void* blocks); // FUN_0043e900
+/* Function start: 0x43E900 */
+void __fastcall FreePoolBlocks(void* blocks) {
+    int* block = (int*)blocks;
+    while (block != 0) {
+        int* next = (int*)*block;
+        FreeMemory(block);
+        block = next;
+    }
+}
 
 /* Function start: 0x43E5B0 */
 SCI_Inventory::~SCI_Inventory() {

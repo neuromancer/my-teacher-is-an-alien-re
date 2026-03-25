@@ -506,7 +506,11 @@ int SC_WordSearch::AddMessage(SC_Message*) { return 0; }
 int SC_WordSearch::LBLParse(char*) { return 0; }
 
 extern void __fastcall InitCombatGrid(int);
-extern void __fastcall Handler_OnProcessEnd(int);
+// Engine::OnProcessEnd wrapper for cross-hierarchy __fastcall calls
+#include "Engine.h"
+void __fastcall Handler_OnProcessEnd(int thisPtr) {
+    ((Engine*)thisPtr)->OnProcessEnd();
+}
 
 /* Function start: 0x42F800 */
 void SC_WordSearch::OnProcessEnd() {

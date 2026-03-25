@@ -13,7 +13,23 @@ SpriteHashTable* g_CurrentSprite = 0;   // 0x436348
 int g_CurrentSpriteIndex = 0;           // 0x43634c
 int DAT_00436344 = 0;                   // sprite data entry counter
 
-extern void __cdecl FreeArrayItems(void** array, int count); // 0x408EE0
+/* Function start: 0x408EE0 */
+void __cdecl FreeArrayItems(void** array, int count) {
+    int remaining = count;
+    count--;
+    if (remaining == 0) {
+        return;
+    }
+    do {
+        if (*array != 0) {
+            FreeMemory(*array);
+            *array = 0;
+        }
+        array++;
+        remaining = count;
+        count--;
+    } while (remaining != 0);
+}
 
 /* Function start: 0x408F20 */
 void __cdecl CleanupSpriteHashArray(void** array, int count)

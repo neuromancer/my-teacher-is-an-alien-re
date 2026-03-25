@@ -1,9 +1,9 @@
 #include "AssetList.h"
 #include "Memory.h"
 
-// External functions
-extern "C" void __fastcall AssetCleanup(void* thisPtr);
-extern "C" void __fastcall AssetNodeDelete(void* thisPtr, int param);
+// Asset callback stubs (no-op in this build)
+extern "C" void __fastcall AssetCleanup(void* thisPtr) {}
+extern "C" void __fastcall AssetNodeDelete(void* thisPtr, int param) {}
 
 // Node structure for the linked list
 struct AssetNode {

@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <direct.h>
 #include <io.h>
+#include <share.h>
 #include "string.h"
 #include "FileSystem.h"
 #include "globals.h"
@@ -93,9 +94,13 @@ extern int DAT_0046b790;   // cache eviction threshold
 extern int DAT_00473440;   // total cached size
 extern int DAT_00473444;   // cache size limit
 
-extern "C" int __cdecl DeleteFileAndDir(char*);  // delete file + rmdir parent
-extern "C" void LogCacheStats();             // cache stats logger (0x434520)
-extern "C" void LogCacheEntries();           // cache entries logger (0x4345B0)
+extern int DAT_0046b780;
+extern int DAT_0046b794;
+
+// Forward declarations (defined below)
+extern "C" int __cdecl DeleteFileAndDir(char*);
+extern "C" void LogCacheStats();
+extern "C" void LogCacheEntries();
 extern int DAT_004719c0;
 
 /* Function start: 0x434030 */
@@ -144,6 +149,50 @@ void __cdecl FileCacheCleanup() {
     cache[4] = 0;
     DAT_0046b788 = 0;
     DAT_0046b784 = 0;
+}
+
+/* Function start: 0x434520 */
+extern "C" void LogCacheStats() {
+    if (DAT_0046b78c == 0) {
+        WriteToMessageLog("HDCache::LogStats() - HDCache not initialized");
+        return;
+    }
+    WriteToMessageLog("***********************");
+    WriteToMessageLog("HD File Cache");
+    WriteToMessageLog("PreLoading Cache  = %d ms", DAT_0046b794);
+    WriteToMessageLog("Cache Entries  = %d of %d (%d of %d Bytes)",
+        DAT_0046b78c->field_8, DAT_0046b780, DAT_00473440, DAT_00473444);
+    WriteToMessageLog("Hits=%d Misses = %d", DAT_0046b784, DAT_0046b788);
+}
+
+/* Function start: 0x4345B0 */
+extern "C" void LogCacheEntries() {
+    int* node;
+    int idx;
+
+    if (DAT_0046b78c == 0) {
+        WriteToMessageLog("HDCache::LogCache() - HDCache not initialized");
+        return;
+    }
+    idx = 1;
+    node = (int*)((int*)DAT_0046b78c)[0];
+    if (node != 0) {
+        WriteToMessageLog("     %-20.20s %6.6s %10.10s %4.4s",
+            "FILE", "FSIZE", "BSIZE", "HITS");
+    } else {
+        WriteToMessageLog("HDCache::LogCache() - No items in Cache");
+    }
+    if (node != 0) {
+        do {
+            int* entry = (int*)node[2];
+            node = (int*)node[0];
+            WriteToMessageLog("%4d %-20.20s %6.6lu %10lu %4.4d",
+                idx, entry, *(unsigned long*)((char*)entry + 0x20),
+                *(unsigned long*)((char*)entry + 0x28),
+                *(int*)((char*)entry + 0x24));
+            idx++;
+        } while (node != 0);
+    }
 }
 
 /* Function start: 0x4341F0 */
@@ -295,6 +344,33 @@ int CDData::ResolvePath(char* name) {
     }
     CopyFileContent(name, (char*)((int)this + 0x195));
     return 1;
+}
+
+/* Function start: 0x426050 */
+extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode) {
+    char dir[64];
+    dir[0] = 0;
+    _splitpath(path, 0, dir, 0, 0);
+    if (dir[0] != 0) {
+        _mkdir(dir);
+    }
+    return _fsopen(path, mode, _SH_DENYNO);
+}
+
+/* Function start: 0x4260A0 */
+extern "C" int __cdecl DeleteFileAndDir(char* path) {
+    char dir[64];
+    int result;
+
+    result = remove(path);
+    if (result == 0) {
+        dir[0] = 0;
+        _splitpath(path, 0, dir, 0, 0);
+        if (dir[0] != 0) {
+            _rmdir(dir);
+        }
+    }
+    return result;
 }
 
 /* Function start: 0x4260F0 */

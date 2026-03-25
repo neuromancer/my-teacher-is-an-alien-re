@@ -1,5 +1,6 @@
 #include "SC_DuctNav.h"
 #include "Sprite.h"
+#include "ZBufferManager.h"
 #include "Palette.h"
 #include "T_MenuHotspot.h"
 #include "CombatSprite.h"
@@ -28,8 +29,57 @@ extern SpriteAction DAT_00472d58;
 extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode);
 extern "C" int __cdecl DeleteFileAndDir(char* path);
 
-extern void FUN_0043e320(void* ptr, int count);
-extern int* FUN_0043e2a0(int* pool, int prev, int next);
+/* Function start: 0x43E2A0 */
+int* __cdecl SavePoolAllocNode(int* pool, int prev, int next) {
+    if (pool[3] == 0) {
+        int* block = (int*)AllocateMemory(pool[5] * 0x120 + 4);
+        *block = pool[4];
+        pool[4] = (int)block;
+        int count = pool[5];
+        int* entry = block + count * 0x48 - 0x47;
+        while (count-- >= 0) {
+            *entry = pool[3];
+            pool[3] = (int)entry;
+            entry -= 0x48;
+        }
+    }
+    int* node = (int*)pool[3];
+    pool[3] = *node;
+    node[1] = prev;
+    *node = next;
+    pool[2]++;
+    int* payload = node + 2;
+    int i;
+    for (i = 0x46; i != 0; i--) {
+        *payload = 0;
+        payload++;
+    }
+    return node;
+}
+
+/* Function start: 0x43E320 */
+void __cdecl ClearSaveEntries(void* buf, int count) {
+    unsigned int dwords = (unsigned int)(count * 0x118) >> 2;
+    int* p = (int*)buf;
+    for (; dwords != 0; dwords--) {
+        *p = 0;
+        p++;
+    }
+}
+
+#include "TextInput.h"
+
+// FileArchive - simple file handle wrapper (0x48 bytes)
+// Constructor evidence: 0x43C8B0 (new + memset + strcpy pattern with SEH)
+struct FileArchive {
+    int mode;           // 0x00
+    char filename[64];  // 0x04
+    FILE* fp;           // 0x44
+    FileArchive(char* path) {
+        memset(this, 0, 0x48);
+        strcpy(filename, path);
+    }
+};
 
 // Forward declarations
 char* MakeSavePath(char* param);
@@ -38,27 +88,14 @@ int ReadConfigFile();
 /* Function start: 0x43AF10 */
 SC_DuctNav::SC_DuctNav()
 {
+    handlerId = 0x2E;
+    timer.Reset();
+    strcpy(searchPattern, "SaveGame__*.sav");
 }
-
-#define DESTROY_BUTTON(slot) \
-    { \
-        int* _btn = (int*)(slot); \
-        if (_btn != 0) { \
-            _btn[0] = 0x4613D0; \
-            void* _spr = (void*)_btn[0x24]; \
-            if (_spr != 0) { \
-                ((Sprite*)_spr)->~Sprite(); \
-                FreeMemory(_spr); \
-                _btn[0x24] = 0; \
-            } \
-            FreeMemory(_btn); \
-            (slot) = 0; \
-        } \
-    }
 
 #define CREATE_BUTTON(slot, _name, _params) \
     { \
-        T_MenuHotspot* _obj = new T_MenuHotspot(_name, _params); \
+        T_MenuButton* _obj = new T_MenuButton(_name, _params); \
         (slot) = _obj; \
         ((Sprite*)_obj->sprite)->ConfigRange(1, 2, 10, 1); \
     }
@@ -93,31 +130,31 @@ int SC_DuctNav::LBLParse(char* line)
         Parser::ProcessFile(menuSprite, this, (char*)0);
     } else if (strcmp(label, "CANCEL") == 0) {
         sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
-        DESTROY_BUTTON(cancelBtn)
+        if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
         CREATE_BUTTON(cancelBtn, name, params)
     } else if (strcmp(label, "SAVE") == 0) {
         sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
-        DESTROY_BUTTON(saveBtn)
+        if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
         CREATE_BUTTON(saveBtn, name, params)
     } else if (strcmp(label, "LOAD") == 0) {
         sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
-        DESTROY_BUTTON(loadBtn)
+        if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
         CREATE_BUTTON(loadBtn, name, params)
     } else if (strcmp(label, "OVERWRITE") == 0) {
         sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
-        DESTROY_BUTTON(overwriteBtn)
+        if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
         CREATE_BUTTON(overwriteBtn, name, params)
     } else if (strcmp(label, "DELETE") == 0) {
         sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
-        DESTROY_BUTTON(deleteBtn)
+        if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
         CREATE_BUTTON(deleteBtn, name, params)
     } else if (strcmp(label, "SCROLLUP") == 0) {
         sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
-        DESTROY_BUTTON(scrollUpBtn)
+        if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
         CREATE_BUTTON(scrollUpBtn, name, params)
     } else if (strcmp(label, "SCROLLDOWN") == 0) {
         sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
-        DESTROY_BUTTON(scrollDownBtn)
+        if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
         CREATE_BUTTON(scrollDownBtn, name, params)
     } else if (strcmp(label, "EDIT_FOCUS_SPRITE") == 0) {
         editFocusSprite = new Sprite((char*)0);
@@ -141,57 +178,280 @@ int SC_DuctNav::LBLParse(char* line)
     return 0;
 }
 
-/* Function start: 0x43B2C0 */
+extern "C" void WriteToLog(const char* format, ...);
+// GlyphFont::LoadFont stub (not yet implemented)
+void __fastcall FUN_0043a830(void*, int, char*) {}
+// SC_DuctNav helper stub (not yet implemented)
+void __fastcall FUN_0043cd50(void*) {}
+extern void* DAT_0046aa28;
+extern char* DAT_0046bd78;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 SC_DuctNav::~SC_DuctNav()
 {
-    // Destroy CombatSprite
-    if (*(void**)((int)this + 0x248) != 0) {
-        ((CombatSprite*)*(void**)((int)this + 0x248))->~CombatSprite();
-        FreeMemory(*(void**)((int)this + 0x248));
-        *(void**)((int)this + 0x248) = 0;
+    ShutDown(0);
+}
+
+/* Function start: 0x43B2C0 */
+int SC_DuctNav::ShutDown(SC_Message* msg)
+{
+    {
+        void* list = saveFileList;
+        if (list != 0) {
+            ((SpriteHashTable*)list)->Clear();
+            FreeMemory(list);
+            saveFileList = 0;
+        }
     }
-    // Destroy text object at 0x24C
-    if (*(void**)((int)this + 0x24C) != 0) {
-        // Call destructor for text/font object
-        FreeMemory(*(void**)((int)this + 0x24C));
-        *(void**)((int)this + 0x24C) = 0;
+    {
+        TextInput* ti = (TextInput*)field_0x24C;
+        if (ti != 0) {
+            ti->~TextInput();
+            FreeMemory(ti);
+            field_0x24C = 0;
+        }
     }
-    // Destroy menuSprite
     if (menuSprite != 0) {
-        menuSprite->~Sprite();
-        FreeMemory(menuSprite);
+        delete menuSprite;
         menuSprite = 0;
     }
-    // Destroy fontPalette
     if (fontPalette != 0) {
-        fontPalette->~Palette();
-        FreeMemory(fontPalette);
+        delete fontPalette;
         fontPalette = 0;
     }
-    // Destroy edit/choice sprites
     if (editFocusSprite != 0) {
-        editFocusSprite->~Sprite();
-        FreeMemory(editFocusSprite);
+        delete editFocusSprite;
         editFocusSprite = 0;
     }
     if (choiceFocusSprite != 0) {
-        choiceFocusSprite->~Sprite();
-        FreeMemory(choiceFocusSprite);
+        delete choiceFocusSprite;
         choiceFocusSprite = 0;
     }
-    // Destroy T_MenuHotspot buttons
     if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
     if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
     if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
     if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
-    if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
     if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
+    if (scrollUpBtn != 0) { scrollUpBtn->~T_MenuButton(); FreeMemory(scrollUpBtn); scrollUpBtn = 0; }
     if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
+    return 0;
 }
 
-void SC_DuctNav::Init(SC_Message* msg) {}
-int SC_DuctNav::AddMessage(SC_Message* msg) { return 0; }
-int SC_DuctNav::ShutDown(SC_Message* msg) { return 0; }
+/* Function start: 0x43B0F0 */
+void SC_DuctNav::Init(SC_Message* msg) {
+    int* param = (int*)msg;
+
+    ((Handler*)this)->CopyCommandData(msg);
+    if (param != 0) {
+        int mode = param[1];
+        moduleParam = mode;
+        if (mode == 0) {
+            ParseFile(this, "mis\\menu.mis", " SAVEGAME ");
+        } else if (mode == 1) {
+            ParseFile(this, "mis\\menu.mis", " LOADGAME ");
+        } else if (mode == 2) {
+            FUN_0043cd50(this);
+            SendGameMessage(3, 10, DAT_00472d58.addressType, DAT_00472d58.addressValue, 4, 0, 0, 0, 0, 0);
+            return;
+        }
+    }
+
+    ReadSaveFiles(searchPattern);
+    saveFilename[0] = 0;
+    selectedRow = -1;
+    scrollOffset = 0;
+
+    // Copy first save name to saveFilename
+    int* list = (int*)saveFileList;
+    if (list[2] != 0) {
+        int* node = (int*)list[0];
+        strcpy(saveFilename, (char*)(node + 7));
+    }
+
+    // Set palette
+    if (fontPalette != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
+            WriteToLog("ddouble palette");
+        }
+        g_ZBufferManager_0046aa24->m_palette = fontPalette;
+    }
+
+    if (moduleParam != 0) {
+        return;
+    }
+
+    // Save mode: destroy and recreate text input object
+    if (field_0x24C != 0) {
+        ((TextInput*)field_0x24C)->~TextInput();
+        FreeMemory((void*)field_0x24C);
+        field_0x24C = 0;
+    }
+
+    FUN_0043a830(DAT_0046aa28, 0, "cfg\\Teacher.pal");
+
+    field_0x24C = (int)new TextInput(saveFilename, 0x36, DAT_0046aa28, DAT_0046bd78);
+}
+
+// TextInput::ProcessKey is thiscall (declared in TextInput class above)
+
+#define HOTSPOT_HIT(btn, mx, my) \
+    ((btn)->bounds.left <= (mx) && (btn)->bounds.right >= (mx) && \
+     (btn)->bounds.top <= (my) && (btn)->bounds.bottom >= (my))
+
+/* Function start: 0x43BB10 */
+int SC_DuctNav::AddMessage(SC_Message* msg) {
+    int* param = (int*)msg;
+
+    ((Handler*)this)->WriteMessageAddress(msg);
+    timer.Reset();
+
+    if (param[0xb] != 0) {
+        // Keyboard input
+        if (field_0x24C != 0) {
+            if (param != 0) {
+                int result = ((TextInput*)field_0x24C)->ProcessKey(param[0xb]);
+                if (result != 0) {
+                    SendGameMessage(4, 0x498, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                    if (field_0x24C != 0) {
+                        ((TextInput*)field_0x24C)->~TextInput();
+                        FreeMemory((void*)field_0x24C);
+                        field_0x24C = 0;
+                    }
+                    param[4] = 2;
+                    param[0xb] = 0xd;
+                    goto set_clear_return;
+                }
+            }
+            param[4] = 0;
+        } else {
+            param[4] = 2;
+        }
+        return 1;
+    }
+
+    // Mouse click
+    if (param[9] <= 1) return 1;
+
+    if (moduleParam == 0) {
+        // Save mode: check overwriteBtn
+        int mx = param[7];
+        int my = param[8];
+        SlimeDim coords;
+        if (HOTSPOT_HIT(overwriteBtn, mx, my)) {
+            selectedRow = -1;
+            param[4] = 0;
+            if (field_0x24C == 0) {
+                field_0x24C = (int)new TextInput(saveFilename, 0x36, DAT_0046aa28, DAT_0046bd78);
+            }
+            return 1;
+        }
+    }
+
+    {
+        // Check cancelBtn
+        int mx = param[7];
+        int my = param[8];
+        SlimeDim coords;
+        if (HOTSPOT_HIT(cancelBtn, mx, my)) {
+            param[4] = 2;
+            param[0xb] = 0x1b;
+            goto set_clear_return;
+        }
+    }
+
+    if (moduleParam == 0) {
+        // Check saveBtn
+        int mx = param[7];
+        int my = param[8];
+        SlimeDim coords;
+        if (HOTSPOT_HIT(saveBtn, mx, my)) {
+            param[4] = 2;
+            param[0xb] = 0xd;
+            goto set_clear_return;
+        }
+    }
+
+    if (moduleParam == 1) {
+        // Check loadBtn
+        int mx = param[7];
+        int my = param[8];
+        SlimeDim coords;
+        if (HOTSPOT_HIT(loadBtn, mx, my)) {
+            param[4] = 2;
+            param[0xb] = 0xd;
+            goto set_clear_return;
+        }
+    }
+
+    {
+        // Check deleteBtn
+        int mx = param[7];
+        int my = param[8];
+        SlimeDim coords;
+        if (HOTSPOT_HIT(deleteBtn, mx, my)) {
+            param[4] = 2;
+            param[0xb] = 0x2e;
+            goto set_clear_return;
+        }
+    }
+
+    {
+        // Check scrollUpBtn
+        int mx = param[7];
+        int my = param[8];
+        SlimeDim coords;
+        if (HOTSPOT_HIT(scrollUpBtn, mx, my)) {
+            param[4] = 2;
+            param[0xb] = 0x26;
+            goto set_clear_return;
+        }
+    }
+
+    {
+        // Check scrollDownBtn
+        int mx = param[7];
+        int my = param[8];
+        SlimeDim coords;
+        if (HOTSPOT_HIT(scrollDownBtn, mx, my)) {
+            param[4] = 2;
+            param[0xb] = 0x28;
+            goto set_clear_return;
+        }
+    }
+
+    {
+        // Check slot rects
+        int row = 0;
+        int* rect = slotRects;
+        int mx = param[7];
+        do {
+            if (rect[0] <= mx && rect[2] >= mx &&
+                rect[1] <= param[8] && rect[3] >= param[8]) {
+                break;
+            }
+            rect += 4;
+            row++;
+        } while (row < 10);
+
+        if (row < 10) {
+            selectedRow = row;
+            if (field_0x24C != 0) {
+                ((TextInput*)field_0x24C)->~TextInput();
+                FreeMemory((void*)field_0x24C);
+                field_0x24C = 0;
+            }
+            SendGameMessage(4, 0x498, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+        }
+        param[4] = 0;
+        return 1;
+    }
+
+set_clear_return:
+    param[9] = 0;
+    return 1;
+}
+
+extern int DAT_0046bd7c;
+#include "GlyphFont.h"
 
 /* Function start: 0x43B7E0 */
 void SC_DuctNav::Update(int p1, int p2) {
@@ -204,43 +464,106 @@ void SC_DuctNav::Update(int p1, int p2) {
     }
     timer.Reset();
 
-    // Draw menu sprite
     if (menuSprite != 0) {
         menuSprite->Do(menuSprite->loc_x, menuSprite->loc_y, 1.0);
     }
 
-    // Draw file list entries
-    int scrollIdx = scrollOffset;
-    int listCount = *(int*)(*(int*)((int)this + 0x248) + 8);
-    if (scrollIdx < listCount && scrollIdx >= 0) {
-        // Get list node at scrollOffset
-        void* node = *(void**)*(int*)((int)this + 0x248);
-        for (int i = scrollIdx; i > 0; i--) {
-            node = *(void**)node;
+    int* list = (int*)saveFileList;
+    int listCount = list[2];
+    int idx = scrollOffset;
+    if (idx < listCount && idx >= 0) {
+        int* node;
+        if (idx < listCount) {
+            node = (int*)*list;
+            for (; idx != 0; idx--) {
+                node = (int*)*node;
+            }
+        } else {
+            node = 0;
         }
 
         int slotIdx = 0;
-        int* rects = slotRects;
+        int* rects = &slotRects[3];
         do {
             if (node == 0) break;
-            char* name = (char*)((int*)node + 7);
-            // Render filename text at slot position
-            rects += 4;
-            node = *(void**)node;
+            char* name = (char*)(node + 7);
+            int* nextNode = (int*)*node;
             slotIdx++;
-        } while (slotIdx < 10);
+            g_ZBufferManager_0046aa24->ShowText(name, rects[-3], rects[0], 10000, -1);
+            rects += 4;
+            node = nextNode;
+        } while (slotIdx <= 9);
     }
 
-    // Update buttons
-    if (cancelBtn != 0) cancelBtn->Update();
-    if (saveBtn != 0) saveBtn->Update();
-    if (loadBtn != 0) loadBtn->Update();
-    if (overwriteBtn != 0) overwriteBtn->Update();
-    if (deleteBtn != 0) deleteBtn->Update();
-    if (scrollUpBtn != 0) scrollUpBtn->Update();
-    if (scrollDownBtn != 0) scrollDownBtn->Update();
+    if (selectedRow != -1) {
+        int absIdx = scrollOffset + selectedRow;
+        int count = ((int*)saveFileList)[2];
+        if (absIdx < count && absIdx >= 0) {
+            int* node;
+            if (absIdx < count) {
+                node = (int*)*(int*)saveFileList;
+                for (; absIdx != 0; absIdx--) {
+                    node = (int*)*node;
+                }
+            } else {
+                node = 0;
+            }
+            strcpy(saveFilename, (char*)(node + 7));
+        } else {
+            saveFilename[0] = 0;
+        }
+    }
 
-    // Draw cursor
+    if (field_0x24C != 0) {
+        if (moduleParam == 0 && editFocusSprite != 0) {
+            editFocusSprite->Do(editFocusSprite->loc_x, editFocusSprite->loc_y, 1.0);
+        }
+    } else {
+        if (selectedRow != -1 && choiceFocusSprite != 0) {
+            int row = selectedRow;
+            int* rowData = &slotRects[row * 4];
+            choiceFocusSprite->loc_x = rowData[0] - 7;
+            choiceFocusSprite->loc_y = rowData[1] - 6;
+            choiceFocusSprite->Do(choiceFocusSprite->loc_x, choiceFocusSprite->loc_y, 1.0);
+        }
+    }
+
+    cancelBtn->SimpleUpdate();
+    if (moduleParam == 0) {
+        saveBtn->SimpleUpdate();
+        overwriteBtn->SimpleUpdate();
+    }
+    if (moduleParam == 1) {
+        loadBtn->SimpleUpdate();
+    }
+    deleteBtn->SimpleUpdate();
+    scrollUpBtn->SimpleUpdate();
+    scrollDownBtn->SimpleUpdate();
+
+    sprintf(g_Buffer_0046aa00, "%s", saveFilename);
+
+    if (field_0x24C != 0) {
+        int textWidth = ((GlyphFont*)DAT_0046aa28)->GetTextWidth(g_Buffer_0046aa00);
+        if (textWidth <= (int)DAT_0046bd78) {
+            int blink = DAT_0046bd7c;
+            DAT_0046bd7c++;
+            int val = blink % 8;
+            if (val < 4) {
+                if (moduleParam == 0) {
+                    g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x13a, 0x64, 10000, -1);
+                } else {
+                    g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x15c, 0x64, 10000, -1);
+                }
+                goto done_text;
+            }
+        }
+    }
+    if (moduleParam == 0) {
+        g_ZBufferManager_0046aa24->ShowText(saveFilename, 0x13a, 0x64, 10000, -1);
+    } else {
+        g_ZBufferManager_0046aa24->ShowText(saveFilename, 0x15c, 0x64, 10000, -1);
+    }
+done_text:
     g_Mouse_0046aa18->DrawCursor();
 }
 
@@ -260,14 +583,16 @@ int SC_DuctNav::Exit(SC_Message* msg)
     if (param[4] == 1) {
         SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
         return 1;
-    }
-    if (param[4] != 2) {
-        if (param[4] == 7) {
-            SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
-            return 1;
-        }
+    } else if (param[4] == 2) {
+        goto case_2;
+    } else if (param[4] == 7) {
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        return 1;
+    } else {
         return 1;
     }
+
+    case_2:
 
     {
         int numFiles;
@@ -539,7 +864,7 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
                 entry[1] = (int)prevNode;
                 entry[0] = 0;
                 pool[2]++;
-                FUN_0043e320((void*)(entry + 2), 1);
+                ClearSaveEntries((void*)(entry + 2), 1);
                 memcpy((char*)(entry) + 8, &findData, 0x118);
                 if ((int*)pool[1] != 0) {
                     *(int*)pool[1] = (int)entry;
@@ -551,7 +876,7 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
             }
         } else if (node == 0) {
             /* This branch never happens, but keep for structure */
-            int* newNode = FUN_0043e2a0(pool, 0, pool[0]);
+            int* newNode = SavePoolAllocNode(pool, 0, pool[0]);
             memcpy((char*)(newNode) + 8, &findData, 0x118);
             if (pool[0] == 0) {
                 pool[1] = (int)newNode;
@@ -561,7 +886,7 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
                 pool[0] = (int)newNode;
             }
         } else {
-            int* newNode = FUN_0043e2a0(pool, node[1], (int)node);
+            int* newNode = SavePoolAllocNode(pool, node[1], (int)node);
             memcpy((char*)(newNode) + 8, &findData, 0x118);
             {
                 int* prevPtr = (int*)node[1];
@@ -578,52 +903,46 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
 /* Function start: 0x43C8B0 */
 void SC_DuctNav::WriteSaveFile()
 {
-    int* saveData;
+    FileArchive* fa;
 
-    saveData = (int*)operator new(0x48);
-    if (saveData != 0) {
-        memset(saveData, 0, 0x48);
-        strcpy((char*)(saveData + 1), MakeSavePath(saveFilename));
-    } else {
-        saveData = 0;
-    }
+    fa = new FileArchive(MakeSavePath(saveFilename));
 
-    fileArchive = saveData;
+    fileArchive = fa;
 
-    if (*(FILE**)((char*)saveData + 0x44) != 0) {
-        fclose(*(FILE**)((char*)saveData + 0x44));
-        *(FILE**)((char*)saveData + 0x44) = 0;
+    if (fa->fp != 0) {
+        fclose(fa->fp);
+        fa->fp = 0;
     }
 
     {
         FILE* fp;
-        fp = OpenSaveFile((char*)(saveData + 1), "wb");
-        *(FILE**)((char*)saveData + 0x44) = fp;
+        fp = OpenSaveFile(fa->filename, "wb");
+        fa->fp = fp;
         if (fp == 0) {
             ShowError("FileArchive::Open() - Unable to open file '%s' for mode '%s'",
-                (char*)(saveData + 1), "wb");
+                fa->filename, "wb");
         }
     }
 
-    saveData[0] = 1;
-    g_GameState_0046aa30->Serialize(saveData);
-    g_FlagManager_0046a6e8->Serialize(saveData);
-    ((GameEngine*)g_GameEngine_0046a6ec)->Serialize(saveData);
-    DAT_00472d58.Serialize(saveData);
+    fa->mode = 1;
+    g_GameState_0046aa30->Serialize(fa);
+    g_FlagManager_0046a6e8->Serialize(fa);
+    ((GameEngine*)g_GameEngine_0046a6ec)->Serialize(fa);
+    DAT_00472d58.Serialize(fa);
 
     {
-        int* sd = (int*)fileArchive;
-        if (*(FILE**)((char*)sd + 0x44) != 0) {
-            fclose(*(FILE**)((char*)sd + 0x44));
-            *(FILE**)((char*)sd + 0x44) = 0;
+        FileArchive* sd = (FileArchive*)fileArchive;
+        if (sd->fp != 0) {
+            fclose(sd->fp);
+            sd->fp = 0;
         }
     }
     {
-        int* sd = (int*)fileArchive;
+        FileArchive* sd = (FileArchive*)fileArchive;
         if (sd != 0) {
-            if (*(FILE**)((char*)sd + 0x44) != 0) {
-                fclose(*(FILE**)((char*)sd + 0x44));
-                *(FILE**)((char*)sd + 0x44) = 0;
+            if (sd->fp != 0) {
+                fclose(sd->fp);
+                sd->fp = 0;
             }
             operator delete(sd);
             fileArchive = 0;
@@ -635,7 +954,6 @@ void SC_DuctNav::WriteSaveFile()
 void SC_DuctNav::LoadSaveFile()
 {
     SpriteAction* action;
-    int* saveData;
 
     /* Send screen transition 0x20 */
     action = new SpriteAction(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
@@ -665,50 +983,45 @@ void SC_DuctNav::LoadSaveFile()
     DeleteFileAndDir(MakeSavePath(saveFilename));
 
     /* Allocate and init FileArchive */
-    saveData = (int*)operator new(0x48);
-    if (saveData != 0) {
-        memset(saveData, 0, 0x48);
-        strcpy((char*)(saveData + 1), MakeSavePath(saveFilename));
-    } else {
-        saveData = 0;
-    }
+    FileArchive* fa;
+    fa = new FileArchive(MakeSavePath(saveFilename));
 
-    fileArchive = saveData;
+    fileArchive = fa;
 
-    if (*(FILE**)((char*)saveData + 0x44) != 0) {
-        fclose(*(FILE**)((char*)saveData + 0x44));
-        *(FILE**)((char*)saveData + 0x44) = 0;
+    if (fa->fp != 0) {
+        fclose(fa->fp);
+        fa->fp = 0;
     }
 
     {
         FILE* fp;
-        fp = OpenSaveFile((char*)(saveData + 1), "rb");
-        *(FILE**)((char*)saveData + 0x44) = fp;
+        fp = OpenSaveFile(fa->filename, "rb");
+        fa->fp = fp;
         if (fp == 0) {
             ShowError("FileArchive::Open() - Unable to open file '%s' for mode '%s'",
-                (char*)(saveData + 1), "rb");
+                fa->filename, "rb");
         }
     }
 
-    saveData[0] = 0;
-    g_GameState_0046aa30->Serialize(saveData);
-    g_FlagManager_0046a6e8->Serialize(saveData);
-    ((GameEngine*)g_GameEngine_0046a6ec)->Serialize(saveData);
-    DAT_00472d58.Serialize(saveData);
+    fa->mode = 0;
+    g_GameState_0046aa30->Serialize(fa);
+    g_FlagManager_0046a6e8->Serialize(fa);
+    ((GameEngine*)g_GameEngine_0046a6ec)->Serialize(fa);
+    DAT_00472d58.Serialize(fa);
 
     {
-        int* sd = (int*)fileArchive;
-        if (*(FILE**)((char*)sd + 0x44) != 0) {
-            fclose(*(FILE**)((char*)sd + 0x44));
-            *(FILE**)((char*)sd + 0x44) = 0;
+        FileArchive* sd = (FileArchive*)fileArchive;
+        if (sd->fp != 0) {
+            fclose(sd->fp);
+            sd->fp = 0;
         }
     }
     {
-        int* sd = (int*)fileArchive;
+        FileArchive* sd = (FileArchive*)fileArchive;
         if (sd != 0) {
-            if (*(FILE**)((char*)sd + 0x44) != 0) {
-                fclose(*(FILE**)((char*)sd + 0x44));
-                *(FILE**)((char*)sd + 0x44) = 0;
+            if (sd->fp != 0) {
+                fclose(sd->fp);
+                sd->fp = 0;
             }
             operator delete(sd);
             fileArchive = 0;
@@ -857,101 +1170,13 @@ int ReadConfigFile()
 /* Function start: 0x43D250 */
 void SC_DuctNav::OnProcessStart()
 {
-    /* Destroy menuSprite (0x244) */
-    if (menuSprite != 0) {
-        menuSprite->~Sprite();
-        FreeMemory(menuSprite);
-        menuSprite = 0;
-    }
-
-    /* Destroy fontPalette (0x240) */
-    if (fontPalette != 0) {
-        fontPalette->~Palette();
-        FreeMemory(fontPalette);
-        fontPalette = 0;
-    }
-
-    /* Destroy cancelBtn (0x21C) */
-    if (cancelBtn != 0) {
-        *(int*)cancelBtn = 0x4613D0;
-        {
-            Sprite* spr = (Sprite*)((int*)cancelBtn)[0x24];
-            if (spr != 0) {
-                delete spr;
-                ((int*)cancelBtn)[0x24] = 0;
-            }
-        }
-        FreeMemory(cancelBtn);
-        cancelBtn = 0;
-    }
-
-    /* Destroy saveBtn (0x220) */
-    if (saveBtn != 0) {
-        *(int*)saveBtn = 0x4613D0;
-        {
-            Sprite* spr = (Sprite*)((int*)saveBtn)[0x24];
-            if (spr != 0) {
-                delete spr;
-                ((int*)saveBtn)[0x24] = 0;
-            }
-        }
-        FreeMemory(saveBtn);
-        saveBtn = 0;
-    }
-
-    /* Destroy loadBtn (0x224) */
-    if (loadBtn != 0) {
-        *(int*)loadBtn = 0x4613D0;
-        {
-            Sprite* spr = (Sprite*)((int*)loadBtn)[0x24];
-            if (spr != 0) {
-                delete spr;
-                ((int*)loadBtn)[0x24] = 0;
-            }
-        }
-        FreeMemory(loadBtn);
-        loadBtn = 0;
-    }
-
-    /* Destroy overwriteBtn (0x228) */
-    if (overwriteBtn != 0) {
-        overwriteBtn->~T_MenuHotspot();
-        FreeMemory(overwriteBtn);
-        overwriteBtn = 0;
-    }
-
-    /* Destroy deleteBtn (0x22C) */
-    if (deleteBtn != 0) {
-        *(int*)deleteBtn = 0x4613D0;
-        {
-            Sprite* spr = (Sprite*)((int*)deleteBtn)[0x24];
-            if (spr != 0) {
-                delete spr;
-                ((int*)deleteBtn)[0x24] = 0;
-            }
-        }
-        FreeMemory(deleteBtn);
-        deleteBtn = 0;
-    }
-
-    /* Destroy scrollUpBtn (0x230) */
-    if (scrollUpBtn != 0) {
-        scrollUpBtn->~T_MenuHotspot();
-        FreeMemory(scrollUpBtn);
-        scrollUpBtn = 0;
-    }
-
-    /* Destroy scrollDownBtn (0x234) */
-    if (scrollDownBtn != 0) {
-        *(int*)scrollDownBtn = 0x4613D0;
-        {
-            Sprite* spr = (Sprite*)((int*)scrollDownBtn)[0x24];
-            if (spr != 0) {
-                delete spr;
-                ((int*)scrollDownBtn)[0x24] = 0;
-            }
-        }
-        FreeMemory(scrollDownBtn);
-        scrollDownBtn = 0;
-    }
+    if (menuSprite != 0) { delete menuSprite; menuSprite = 0; }
+    if (fontPalette != 0) { delete fontPalette; fontPalette = 0; }
+    if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
+    if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
+    if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
+    if (overwriteBtn != 0) { overwriteBtn->~T_MenuButton(); FreeMemory(overwriteBtn); overwriteBtn = 0; }
+    if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
+    if (scrollUpBtn != 0) { scrollUpBtn->~T_MenuButton(); FreeMemory(scrollUpBtn); scrollUpBtn = 0; }
+    if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
 }

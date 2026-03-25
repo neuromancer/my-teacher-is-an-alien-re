@@ -58,6 +58,14 @@ int FindCharIndex(char ch)
     return i;
 }
 
+/* Function start: 0x449B60 */
+extern "C" char GetDirectionChar(int dir) {
+    if (dir < 0 || dir > 5) {
+        ShowError("Invalid direction %d", dir);
+    }
+    return g_DirectionChars[dir];
+}
+
 /* Function start: 0x44B8D0 */
 mCNavigator::mCNavigator()
 {

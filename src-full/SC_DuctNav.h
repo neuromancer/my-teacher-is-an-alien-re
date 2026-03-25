@@ -11,7 +11,7 @@
 // References: "SC_DuctNav", "DUCT_SWITCH", "SaveGame__.sav"
 class Sprite;
 class Palette;
-class T_MenuHotspot;
+class T_MenuButton;
 
 class SC_DuctNav : public Handler {
 public:
@@ -21,13 +21,13 @@ public:
     char searchPattern[128];       // 0xC4-0x143 (save file search pattern)
     char saveFilename[56];         // 0x144-0x17B (current save filename)
     int slotRects[10 * 4];        // 0x17C-0x21B (save slot hitbox rects, 160 bytes)
-    T_MenuHotspot* cancelBtn;      // 0x21C
-    T_MenuHotspot* saveBtn;        // 0x220
-    T_MenuHotspot* loadBtn;        // 0x224
-    T_MenuHotspot* overwriteBtn;   // 0x228
-    T_MenuHotspot* deleteBtn;      // 0x22C
-    T_MenuHotspot* scrollUpBtn;    // 0x230
-    T_MenuHotspot* scrollDownBtn;  // 0x234
+    T_MenuButton* cancelBtn;       // 0x21C
+    T_MenuButton* saveBtn;         // 0x220
+    T_MenuButton* loadBtn;         // 0x224
+    T_MenuButton* overwriteBtn;    // 0x228
+    T_MenuButton* deleteBtn;       // 0x22C
+    T_MenuButton* scrollUpBtn;     // 0x230
+    T_MenuButton* scrollDownBtn;   // 0x234
     Sprite* editFocusSprite;       // 0x238
     Sprite* choiceFocusSprite;     // 0x23C
     Palette* fontPalette;          // 0x240

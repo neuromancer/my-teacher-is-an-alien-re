@@ -12,7 +12,7 @@
 extern InputManager* g_InputManager_0046aa08;
 
 /* Function start: 0x420CE0 */
-T_MenuHotspot::T_MenuHotspot(int param) : Parser()
+T_MenuHotspot::T_MenuHotspot(int param)
 {
     memset(&sprite, 0, 0x46 * 4);
     sprite = (Sprite*)1;
@@ -20,7 +20,7 @@ T_MenuHotspot::T_MenuHotspot(int param) : Parser()
 }
 
 /* Function start: 0x421A50 */
-T_MenuHotspot::T_MenuHotspot(char* name, int* rect)
+T_MenuButton::T_MenuButton(char* name, int* rect)
 {
     memset(this, 0, 0x2a * 4);
 
@@ -65,7 +65,7 @@ T_MenuHotspot::~T_MenuHotspot()
 }
 
 /* Function start: 0x420F00 */
-void T_MenuHotspot::Update()
+void T_MenuButton::Update()
 {
     if (sprite == 0) {
         return;
@@ -120,7 +120,7 @@ do_draw:
 }
 
 /* Function start: 0x421BC0 */
-void T_MenuHotspot::SimpleUpdate()
+void T_MenuButton::SimpleUpdate()
 {
     if (cursor == 0) {
         return;
@@ -154,7 +154,7 @@ extern void ParseSpriteAction(void*, void*);
 // FUN_0040cf40 = ListNode::Init — constructor in LinkedList.h
 
 /* Function start: 0x421080 */
-int T_MenuHotspot::LBLParse(char* line) {
+int T_MenuButton::LBLParse(char* line) {
     char local_90[32];
     char local_70[32];
     char local_50[32];
@@ -276,12 +276,11 @@ int T_MenuHotspot::LBLParse(char* line) {
     return 0;
 }
 
-void T_MenuHotspot::Cleanup() {}
+void T_MenuButton::Cleanup() {}
 
 /* Function start: 0x420EF0 */
-void T_MenuHotspot::StopCursorSound() {
+void T_MenuButton::StopCursorSound() {
     if (cursor != 0) {
         ((Sprite*)cursor)->StopAnimationSound();
     }
 }
-
