@@ -8,6 +8,7 @@
 #include "GlyphRect.h"
 #include "RenderEntry.h"
 #include "SoundCommand.h"
+#include "GlyphFont.h"
 #include "string.h"
 #include "globals.h"
 #include <string.h>
@@ -554,9 +555,37 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
     }
 }
 
+extern "C" void SetFontPosition(int, int);
+extern void* DAT_0046aa28;
+
+// TextRenderEntry: 0x64-byte entry for queued text rendering (vtable 0x461040)
+struct TextRenderEntry {
+    int field_00;       // 0x00 (vtable set by new)
+    int priority;       // 0x04
+    char text[80];      // 0x08-0x57
+    int posX;           // 0x58
+    int posY;           // 0x5C
+    int color;          // 0x60
+    virtual ~TextRenderEntry() {}
+};
+
 /* Function start: 0x404230 */
 void ZBufferManager::ShowText(char* text, int x, int y, int priority, int color) {
-    // TODO: implement text rendering to ZBuffer
+    if (m_state == 0) return;
+
+    if (m_state == 1) {
+        SetFontPosition(x, y);
+        ((GlyphFont*)DAT_0046aa28)->RenderText(text, color);
+        return;
+    }
+
+    TextRenderEntry* entry = new TextRenderEntry();
+    strcpy(entry->text, text);
+    entry->priority = priority;
+    entry->posX = x;
+    entry->posY = y;
+    entry->color = color;
+    QueueCommand((SoundCommand*)entry);
 }
 
 /* Function start: 0x4044E0 */

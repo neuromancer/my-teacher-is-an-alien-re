@@ -161,11 +161,11 @@ void Sprite::CheckRanges1()
     if (0 < num_states) {
         do {
             int maxFrames = animation_data->smk->Frames;
-            if (maxFrames < ranges[i].end) {
-                ranges[i].end = maxFrames;
+            if (maxFrames < ranges[i].dim.y) {
+                ranges[i].dim.y = maxFrames;
             }
-            if (ranges[i].end < ranges[i].start) {
-                ShowError("bad range[%d].start = %d in %s", i, ranges[i].start, sprite_filename);
+            if (ranges[i].dim.y < ranges[i].dim.x) {
+                ShowError("bad range[%d].start = %d in %s", i, ranges[i].dim.x, sprite_filename);
             }
             i++;
         } while (i < num_states);
@@ -411,8 +411,8 @@ int Sprite::LBLParse(char* param_1)
         if (0 < num_states) {
             do {
                 i++;
-                ranges[i - 1].start = i;
-                ranges[i - 1].end = i;
+                ranges[i - 1].dim.x = i;
+                ranges[i - 1].dim.y = i;
                 ranges[i - 1].field_C = 0;
                 ranges[i - 1].field_8 = 0;
             } while (i < num_states);
@@ -527,8 +527,8 @@ void Sprite::ResetAnimation(int state, int offset) {
         if (ranges == 0) {
             ShowError("range error");
             inRange = 0;
-        } else if (frameNum < ranges[state].start ||
-                   ranges[state].end < frameNum) {
+        } else if (frameNum < ranges[state].dim.x ||
+                   ranges[state].dim.y < frameNum) {
             inRange = 0;
         } else {
             inRange = 1;
@@ -544,17 +544,17 @@ void Sprite::ResetAnimation(int state, int offset) {
     }
 
     if ((flags & 0x10) != 0) {
-        offset = animation_data->smk->FrameNum - ranges[handle].start + 1;
+        offset = animation_data->smk->FrameNum - ranges[handle].dim.x + 1;
     }
 
     if (offset != 0) {
-        rangeStart = ranges[state].start;
+        rangeStart = ranges[state].dim.x;
         targetFrame = offset + rangeStart;
         if (animation_data == 0 || ranges == 0) {
             ShowError("range error");
             inRange = 0;
         } else if (targetFrame < rangeStart ||
-                   ranges[state].end < targetFrame) {
+                   ranges[state].dim.y < targetFrame) {
             inRange = 0;
         } else {
             inRange = 1;
@@ -565,9 +565,9 @@ void Sprite::ResetAnimation(int state, int offset) {
     }
 
     handle = state;
-    animation_data->GotoFrame(ranges[state].start + offset);
+    animation_data->GotoFrame(ranges[state].dim.x + offset);
     ranges[handle].field_8 = 0;
-    if (ranges[handle].end == ranges[handle].start) {
+    if (ranges[handle].dim.y == ranges[handle].dim.x) {
         flags |= 4;
     }
     flags &= ~0x20;
@@ -597,7 +597,7 @@ int Sprite::Do(int x, int y, double scale) {
 
     cur = &ranges[handle];
 
-    if (cur->start == cur->end) {
+    if (cur->dim.x == cur->dim.y) {
         if ((flags & 4) != 0) {
             skipAnim = 0;
             flags &= ~4;
@@ -620,11 +620,11 @@ int Sprite::Do(int x, int y, double scale) {
     if (!skipAnim) {
         animation_data->DoFrame();
         if (animation_data != 0) {
-            if (animation_data->smk->FrameNum - cur->end != -1) {
+            if (animation_data->smk->FrameNum - cur->dim.y != -1) {
                 goto do_nextframe;
             }
         } else {
-            if (cur->end != 1) {
+            if (cur->dim.y != 1) {
                 goto do_nextframe;
             }
         }
@@ -641,13 +641,13 @@ int Sprite::Do(int x, int y, double scale) {
                 if ((flags & 0x100) != 0) {
                     animation_data->NextFrame();
                 } else {
-                    animation_data->GotoFrame(cur->start);
+                    animation_data->GotoFrame(cur->dim.x);
                 }
                 if ((flags & 1) == 0) {
                     done = 1;
                 }
             } else {
-                animation_data->GotoFrame(cur->start);
+                animation_data->GotoFrame(cur->dim.x);
             }
         }
         goto after_anim;
@@ -711,8 +711,8 @@ void Sprite::ConfigRange(int state, int start, int count, int param_4) {
     if (start < 1 || count < 1) {
         ShowError("Sprite::SetRange 2 %s %d range = %d, %d", sprite_filename, state, start, count);
     }
-    ranges[state].start = start;
-    ranges[state].end = count;
+    ranges[state].dim.x = start;
+    ranges[state].dim.y = count;
     ranges[state].field_C = param_4;
     ranges[state].field_8 = 0;
     flags |= 0x20;
@@ -737,8 +737,8 @@ void Sprite::ConfigStates(int numStates) {
             Range* r = (Range*)((char*)ranges + offset);
             i++;
             offset += sizeof(Range);
-            r->start = 1;
-            r->end = 5000;
+            r->dim.x = 1;
+            r->dim.y = 5000;
             r->field_C = 0;
             r->field_8 = 0;
         } while (num_states > i);

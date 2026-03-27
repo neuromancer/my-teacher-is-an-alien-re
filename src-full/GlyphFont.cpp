@@ -64,6 +64,11 @@ void GlyphFont::InitGlyphTable() {
     // TODO: implement
 }
 
+/* Function start: 0x43AEB0 */
+void GlyphFont::RenderText(char* text, int color) {
+    // TODO: implement
+}
+
 /* Function start: 0x43AD50 */
 int GlyphFont::GetTextWidth(char* str) {
     int width = 0;

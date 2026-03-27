@@ -658,5 +658,53 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
     pool[1] = (int)node;
 }
 
+extern char* g_Buffer_0046aa00;
+extern void ShowError(const char* format, ...);
+
 /* Function start: 0x431930 */
-void GameEngine::Serialize(void* param) {}
+void GameEngine::Serialize(void* param) {
+    int headerLen = strlen("GAME_INFO") + 1;
+    FILE* fp = *(FILE**)((char*)param + 0x44);
+
+    if (*(int*)param != 0) {
+        fwrite("GAME_INFO", headerLen, 1, fp);
+
+        LinkedList* list = m_handlerList;
+        list->current = list->head;
+        while (list->head != 0) {
+            ListNode* node = list->current;
+            if (node != 0) {
+                Handler* h = (Handler*)node->data;
+                if (h != 0) {
+                    h->Serialize(param);
+                }
+            }
+            if (list->tail == list->current) break;
+            if (list->current != 0) {
+                list->current = list->current->next;
+            }
+        }
+
+        int sentinel = 0x270f;
+        fwrite(&sentinel, 4, 1, fp);
+        return;
+    }
+
+    g_Buffer_0046aa00[0] = 0;
+    fread(g_Buffer_0046aa00, headerLen, 1, fp);
+    if (strcmp(g_Buffer_0046aa00, "GAME_INFO") != 0) {
+        ShowError("SC_Game::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
+    }
+
+    int sentinel = 0x270f;
+    while (1) {
+        int handlerId;
+        fread(&handlerId, 4, 1, fp);
+        if (handlerId == sentinel) break;
+        Handler* h = FindHandlerInList(handlerId);
+        if (h == 0) {
+            h = GetOrCreateHandler(handlerId);
+        }
+        h->Serialize(param);
+    }
+}

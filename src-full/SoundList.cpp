@@ -152,12 +152,19 @@ void *SoundList::Register(char *filename) {
 
 /* Function start: 0x4256D0 */
 int SoundList::IsSamplePlaying(int index) {
-    if (index < 0) return 0;
-    if (m_count - 1 < index) return 0;
-    Sample* entry = m_field8[index];
-    if (entry == 0) return 0;
-    if (entry->m_sample == 0) return 0;
-    if (entry->m_size != *(int*)((char*)entry->m_sample + 0xc)) return 0;
-    if (AIL_sample_status(entry->m_sample) == 4) return 1;
+    Sample* entry;
+
+    if (index < 0 || m_count - 1 < index) goto bounds_fail;
+    entry = m_field8[index];
+    if (entry == 0) goto fail;
+    if (entry->m_sample == 0) goto fail;
+    if (entry->m_size != *(int*)((char*)entry->m_sample + 0xc)) goto fail;
+    if (AIL_sample_status(entry->m_sample) != 4) goto fail;
+    return 1;
+
+fail:
+    return 0;
+
+bounds_fail:
     return 0;
 }

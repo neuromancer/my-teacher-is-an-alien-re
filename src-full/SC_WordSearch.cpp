@@ -56,8 +56,58 @@ void __fastcall UpdateWordSearchCursor(int* self) {
     }
 }
 
+// CRT array constructor helper (0x454AD0) — constructs 'count' objects of 'elemSize'
+extern "C" void __cdecl ArrayConstruct(void* arr, int elemSize, int count, void* ctor, void* dtor) {}
+
 /* Function start: 0x435800 */
 SC_WordSearch::SC_WordSearch() {
+    ArrayConstruct(gameData + (0x4D4 - 0xD4), 0x10, 0x20, (void*)0x40d0c0, (void*)0x401130);
+
+    memset(&palette, 0, 0x790);
+    handlerId = 0x51;
+    timer.Reset();
+
+    int* entry = (int*)(gameData + (0x4D4 - 0xD4));
+    int i;
+    for (i = 0; i < 0x20; i++) {
+        int idx = i;
+        int sign;
+        // abs(i) % 4 with sign preservation
+        if (idx < 0) { sign = -1; idx = -idx; } else { sign = 1; }
+        int mod = idx % 4;
+        if (sign < 0) mod = -mod;
+        int col = mod;
+        int x = col + col * 12;
+        x = x + x * 8 + 0x26;
+        entry[0] = x;
+
+        int row = i;
+        int rowSign;
+        if (row < 0) { rowSign = (row & 3); row = (row + rowSign) >> 2; } else { row = row >> 2; }
+        int y = row * 16 + row + 0xf5;
+        entry[1] = y;
+        entry[2] = x + 0x74;
+        entry[3] = y + 0x10;
+        entry += 4;
+    }
+
+    int* data = (int*)(gameData + (0x6D4 - 0xD4));
+    data[0] = 0x184;  // 0x6D4
+    data[1] = 0xCC;   // 0x6D8
+    data[2] = 0x1BC;  // 0x6DC
+    data[3] = 0xDE;   // 0x6E0
+    data[4] = 0x1C0;  // 0x6E4
+    data[5] = 0xCC;   // 0x6E8
+    data[6] = 0x1F8;  // 0x6EC
+    data[7] = 0xDE;   // 0x6F0
+    data[8] = 0x1A1;  // 0x6F4
+    data[9] = 0xE1;   // 0x6F8
+    data[10] = 0x1DA; // 0x6FC
+    data[11] = 0xF3;  // 0x700
+    data[12] = 0x107; // 0x704
+    data[13] = 0x13F; // 0x708
+    data[14] = 0x13F; // 0x70C
+    data[15] = 0x151; // 0x710
 }
 
 SC_WordSearch::~SC_WordSearch() {

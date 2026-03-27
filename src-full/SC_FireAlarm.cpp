@@ -7,6 +7,7 @@
 #include "Palette.h"
 #include "ZBuffer.h"
 #include "SlimeTable.h"
+#include "SoundList.h"
 #include "RockThrower.h"
 #include "main.h"
 #include <string.h>
@@ -68,7 +69,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
 
     moduleParam = pmsg[1];
 
-    soundTable = (int)new SlimeTable();
+    soundList = (SoundList*)new SlimeTable();
 
     ParseFile(this, "mis\\CB_FireAlarm.mis", (char*)0);
 
@@ -144,10 +145,10 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
         spriteAction = 0;
     }
 
-    p = (void*)soundTable;
+    p = (void*)soundList;
     if (p != 0) {
-        delete (SlimeTable*)p;
-        soundTable = 0;
+        delete (SlimeTable*)(void*)soundList;
+        soundList = 0;
     }
 
     if (msg != 0) {
@@ -239,7 +240,7 @@ void SC_FireAlarm::ResetState() {
         alarmSprite->ResetAnimation(-1, 0);
     }
     if (roundCount == 0) {
-        ((Palette*)soundTable)->PlaySound(9);
+        soundList->Play(9);
     }
     stateFlags |= 8;
 }
@@ -260,7 +261,7 @@ int SC_FireAlarm::HandleClick(int* param) {
         planeSprite->loc_x = x;
         planeSprite->loc_y = y;
         planeSprite->ResetAnimation(2, 0);
-        ((Palette*)soundTable)->PlaySound(2);
+        soundList->Play(2);
         return 1;
     }
 
@@ -289,7 +290,7 @@ int SC_FireAlarm::HandleClick(int* param) {
             done = 0;
         }
         if (done) {
-            ((Palette*)soundTable)->PlaySound(0xF);
+            soundList->Play(0xF);
             waterHitCounter.x = 0;
             goto returnOne;
         }
@@ -324,7 +325,7 @@ int SC_FireAlarm::HandleClick(int* param) {
                 if (curFrame != 4) goto afterSound;
                 soundId = 7;
 callSound:
-                ((Palette*)soundTable)->PlaySound(soundId);
+                soundList->Play(soundId);
 afterSound:;
             }
 
@@ -342,7 +343,7 @@ afterSound:;
 
     soundId = 8;
 playSound:
-    ((Palette*)soundTable)->PlaySound(soundId);
+    soundList->Play(soundId);
 returnOne:
     return 1;
 }
@@ -352,7 +353,7 @@ void SC_FireAlarm::Render() {
     bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
     teacherSprite->Do(teacherSprite->loc_x, teacherSprite->loc_y, 1.0);
     handSprite->Do(handSprite->loc_x, handSprite->loc_y, 1.0);
-    if (((Palette*)soundTable)->CheckSound(9) == 0) {
+    if (soundList->IsSamplePlaying(9) == 0) {
         gamePhase = 1;
         stateFlags &= ~8;
     }
@@ -403,7 +404,7 @@ void SC_FireAlarm::ProcessFrame() {
 
         teacherSprite->ResetAnimation(iVar4 + 1, 0);
 
-        ((Palette*)soundTable)->PlaySound(iVar4 + 0xC);
+        soundList->Play(iVar4 + 0xC);
 
         stateFlags |= 1;
     }
@@ -512,7 +513,7 @@ void SC_FireAlarm::ProcessFrame() {
             case 0:
                 planeSprite->ResetAnimation(1, 0);
                 timerCounter.x += DAT_00472bdc;
-                ((Palette*)soundTable)->PlaySound(0xB);
+                soundList->Play(0xB);
                 break;
             case 1:
                 planeSprite->ResetAnimation(-1, 0);

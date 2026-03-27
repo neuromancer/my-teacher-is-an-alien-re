@@ -30,6 +30,7 @@ public:
     void InitGlyphTable();        // 0x43AA20
     int IsValidChar(int ch);      // 0x43ABA0
     int GetTextWidth(char* str);  // 0x43AD50
+    void RenderText(char* text, int color); // 0x43AEB0
 };
 
 #endif // GLYPHFONT_H

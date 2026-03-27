@@ -99,8 +99,8 @@ void ScoreManager::AdjustScore(int value) {
 void Target::Spawn()
 {
     Target::Activate();
-    Target::animation_data->SetPalette(Target::timeRange.start,
-        (Target::timeRange.end - Target::timeRange.start) + 1);
+    Target::animation_data->SetPalette(Target::timeRange.dim.x,
+        (Target::timeRange.dim.y - Target::timeRange.dim.x) + 1);
     if (Target::stopSound != 0) {
         Target::stopSound->Play(100, 1);
     }
@@ -157,12 +157,12 @@ void Target::Activate()
 
         Target::progressRange.start = 0;
         Target::active = 1;
-        Sprite::ResetAnimation(Target::animRange.start, 0);
+        Sprite::ResetAnimation(Target::animRange.dim.x, 0);
 
         {
             Range temp = *(Range*)&animParam;
-            Target::loc_x = temp.start;
-            Target::loc_y = temp.end;
+            Target::loc_x = temp.dim.x;
+            Target::loc_y = temp.dim.y;
         }
 
         Target::pendingAction = 0;
@@ -225,7 +225,7 @@ int Target::CheckTimeInRange()
         x = 0;
     }
     result = GetPixelAt(x, y);
-    if (Target::timeRange.start <= result && result <= Target::timeRange.end) {
+    if (Target::timeRange.dim.x <= result && result <= Target::timeRange.dim.y) {
         return 1;
     }
     return 0;
@@ -237,7 +237,7 @@ int Target::CheckTimeInRangeParam(int* coords)
     int result;
 
     result = GetPixelAt(coords[0], coords[1]);
-    if (Target::timeRange.start <= result && result <= Target::timeRange.end) {
+    if (Target::timeRange.dim.x <= result && result <= Target::timeRange.dim.y) {
         return 1;
     }
     return 0;
@@ -307,7 +307,7 @@ int Target::Update()
     }
 
     if (pendingAction == 1) {
-        if (handle == animRange.end) {
+        if (handle == animRange.dim.y) {
             *(int*)DAT_0046ae6c -= hitMissPoints.end;
             Target::Deactivate();
             return 1;
@@ -315,7 +315,7 @@ int Target::Update()
         Sprite::ResetAnimation(handle + 1, 0);
     } else if (pendingAction == 3) {
         active = 3;
-        Sprite::ResetAnimation(hitRange.start + handle, 0);
+        Sprite::ResetAnimation(hitRange.dim.x + handle, 0);
         if ((targetFlags & 1) != 0) {
             int mouseY = 0;
             int mouseX = 0;
@@ -398,7 +398,6 @@ void Target::ParseSound(char* line)
     }
 }
 
-/* Function start: 0x442B20 */
 void Target::OnProcessStart()
 {
     char buffer[128];
@@ -428,7 +427,6 @@ void Target::OnProcessStart()
     sound3        = tl->defaultSound;
 }
 
-/* Function start: 0x442BD0 */
 void Target::OnProcessEnd()
 {
     extern int g_TargetBearingValue_004362c8;
@@ -478,7 +476,6 @@ void Target::OnProcessEnd()
 extern int DAT_004362cc;
 extern int g_TargetBearingValue_004362c8;
 
-/* Function start: 0x442BD0 */
 int Target::LBLParse(char* line)
 {
     char label[64];
@@ -503,7 +500,7 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
             ConfigRange(DAT_004362cc, value1, value2, 1);
-            animRange.end = DAT_004362cc;
+            animRange.dim.y = DAT_004362cc;
             g_TargetBearingValue_004362c8 = value2;
             DAT_004362cc++;
         }
@@ -572,10 +569,10 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
             ConfigRange(DAT_004362cc, value1, value2, 1);
-            if (hitRange.start == 0) {
-                hitRange.start = DAT_004362cc;
+            if (hitRange.dim.x == 0) {
+                hitRange.dim.x = DAT_004362cc;
             }
-            hitRange.end = DAT_004362cc;
+            hitRange.dim.y = DAT_004362cc;
             DAT_004362cc++;
         }
     }
@@ -584,7 +581,7 @@ int Target::LBLParse(char* line)
         targetFlags |= 1;
     }
     else if (firstChar == 'P') {
-        sscanf(line + 3, "%d %d", &timeRange.start, &timeRange.end);
+        sscanf(line + 3, "%d %d", &timeRange.dim.x, &timeRange.dim.y);
     }
     else if (firstChar == 'S') {
         ParseSound(line);

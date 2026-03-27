@@ -93,7 +93,6 @@ SC_SaveLoad::~SC_SaveLoad()
     }
 }
 
-/* Function start: 0x4221A0 */
 /* Function start: 0x422280 */
 void SC_SaveLoad::StopSounds() {
     if (sprite != 0) {
@@ -216,7 +215,7 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
             }
             if (bHit) {
                 action->instruction = 2;
-                action->extra1 = 0;
+                action->extra1 = 2;
                 return 1;
             }
         }
@@ -236,7 +235,7 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
             }
             if (bHit) {
                 action->instruction = 2;
-                action->extra1 = 2;
+                action->extra1 = 0;
                 return 1;
             }
         }

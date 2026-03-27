@@ -39,7 +39,7 @@ static char g_formatBuffer[64];
 static char g_audioNameBuffer[260];
 static char g_soundFileBuffer[260];  // 0x473D10
 
-/* Function start: 0x44E3E0 */
+// FormatStringVA - address unknown (NOT 0x44E3E0, that's MakeAnimName)
 char* FormatStringVA(char* format, ...)
 {
     vsprintf(g_formatBuffer, format, (char*)(&format + 1));
@@ -129,12 +129,9 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
 void ShowError(const char* format, ...)
 {
     char buffer[256];
-    char buffer2[300];
-    unsigned int caller = *((unsigned int*)&format - 1);
     vsprintf(buffer, format, (char*)(&format + 1));
-    sprintf(buffer2, "%s\n[caller: 0x%08X]", buffer, caller);
     SetCursorVisible(1);
-    MessageBoxA((HWND)GetGameWindowHandle(), buffer2, "Error", 0x10);
+    MessageBoxA((HWND)GetGameWindowHandle(), buffer, "Error", 0x10);
     ShutdownGameSystems();
     exitWithError_(-1);
 }
@@ -201,25 +198,19 @@ extern "C" void AddToStringTable(char *param_1)
     }
 }
 
+extern char g_LogEnabled_00472e28;
+
 /* Function start: 0x425E40 */
 extern "C" void WriteToLog(const char *param_1, ...)
 {
-    FILE *_File;
-    va_list argptr;
+    if (!(g_LogEnabled_00472e28 & 1)) return;
 
-    //MessageBoxA(0, param_1, "WriteToLog called", 0);
-    _File = fopen("message.log", "a");
-    if (_File == NULL) {
-        MessageBoxA(0, "WriteToLog: fopen failed for DATA\\message.log", "ERROR", 0);
-        return;
-    }
-    {
-        va_start(argptr, param_1);
-        vfprintf(_File, param_1, argptr);
-        va_end(argptr);
-        fprintf(_File, "\n");
-        fclose(_File);
-    }
+    FILE* fp = _fsopen("cfg\\message.log", "a", _SH_DENYNO);
+    if (fp == 0) return;
+
+    vfprintf(fp, param_1, (char*)(&param_1 + 1));
+    fprintf(fp, "\n");
+    fclose(fp);
 }
 
 extern "C" {
@@ -258,7 +249,6 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
         }
         DecryptLine(buffer);
         result = sscanf(buffer, " %s ", local_buf);
-        { fpos_t _tp; fgetpos(stream, &_tp); WriteToLog("  iRL: fgets pos=%d result=%d buf[0]=0x%02X '%.*s'", ((int*)&_tp)[0], result, (unsigned char)local_buf[0], 40, buffer); }
     } while (result < 1 || local_buf[0] == ';' || local_buf[0] == '\r');
 
     semi = strchr(buffer, ';');

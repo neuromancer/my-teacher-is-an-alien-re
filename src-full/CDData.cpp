@@ -474,7 +474,7 @@ extern "C" void __cdecl DeleteMatchingFiles(char* pattern, ...) {
     struct _finddata_t findData;
 
     vsprintf(resolved, pattern, (char*)(&pattern + 1));
-    char* formatted = FormatFilePath(resolved);
+    char* formatted = FormatAssetPath(resolved);
     int handle = _findfirst(formatted, &findData);
     if (handle != -1) {
         _splitpath(resolved, 0, dir, 0, 0);

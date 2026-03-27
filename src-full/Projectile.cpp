@@ -49,8 +49,8 @@ void Projectile::Launch() {
     Projectile::active = 1;
     Projectile::ResetAnimation(0, 0);
 
-    frameCount = Projectile::ranges[Projectile::handle].end
-               - Projectile::ranges[Projectile::handle].start + 1;
+    frameCount = Projectile::ranges[Projectile::handle].dim.y
+               - Projectile::ranges[Projectile::handle].dim.x + 1;
 
     Projectile::startX = 0xa0;
     Projectile::startY = 0xb4;

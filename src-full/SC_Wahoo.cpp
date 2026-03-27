@@ -644,7 +644,7 @@ int SC_Wahoo::ProcessClick(int param_1) {
     int uVar10;
     int local_c[3];
 
-    iVar7 = ((Sprite*)param_1)->ranges[((Sprite*)param_1)->handle].end - 1;
+    iVar7 = ((Sprite*)param_1)->ranges[((Sprite*)param_1)->handle].dim.y - 1;
     if (((Sprite*)param_1)->animation_data == 0) {
         if (iVar7 != 0) {
             return 0;

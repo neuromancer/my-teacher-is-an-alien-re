@@ -359,16 +359,34 @@ void* MessageList::GetCurrentData() {
 
 // FUN_00449050 = MessageList::PopCurrent — COMDAT of 0x431B60, defined in MessageList.cpp
 
+extern "C" char* GetSoundFilename(int handle);
+extern "C" GameState* g_GameState_0046aa30;
+extern int g_PeriodStateIdx_0046cb90;
+
 /* Function start: 0x447FF0 */
 SoundEntry::SoundEntry(int id) {
-    memset(this, 0, sizeof(SoundEntry));
-    soundId = id;
-    sample = new Sample();
-    if (sample != 0) {
-        char buf[260];
-        sprintf(buf, "audio\\snd%4.4d.wav", id);
-        sample->Load(buf);
+    int i;
+    int* p = (int*)this;
+    for (i = 0xc; i != 0; i--) {
+        *p = 0;
+        p++;
     }
+    soundId = id;
+    timer.Reset();
+    sample = new Sample();
+    char* filename = GetSoundFilename(soundId);
+    int loadResult = sample->Load(filename);
+    if (loadResult != 0 && sample != 0) {
+        sample->Unload();
+        free(sample);
+        sample = 0;
+    }
+    int gsIdx = g_PeriodStateIdx_0046cb90;
+    GameState* gs = g_GameState_0046aa30;
+    if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
+        ShowError("Invalid gamestate %d", gsIdx);
+    }
+    gameStateVal = gs->stateValues[gsIdx];
 }
 
 /* Function start: 0x4481A0 */
@@ -433,11 +451,52 @@ int SoundEntry::SoundUpdate() {
     return 1;
 }
 
+extern "C" int g_GameEngine_0046a6ec;
+extern "C" int __stdcall AIL_sample_volume(void*);
+
 /* Function start: 0x448220 */
 void SoundEntry::FadeVolume(int volume, unsigned int duration) {
-    if (sample != 0) {
-        sample->Fade(volume, duration);
+    if (sample == 0) return;
+    if (sample->m_sample == 0) return;
+    if (sample->m_size != *(int*)((char*)sample->m_sample + 0xc)) return;
+    if (AIL_sample_status(sample->m_sample) != 4) return;
+    if (field_04 & 1) return;
+
+    if (duration == 0) goto simple_fade;
+
+    {
+    int currentVolume = AIL_sample_volume(sample->m_sample);
+    targetVolume = volume;
+
+    unsigned int frameTime;
+    if (g_GameEngine_0046a6ec == 0) {
+        frameTime = 0x54;
+    } else {
+        frameTime = *(unsigned int*)(g_GameEngine_0046a6ec + 0x1c);
+        if (frameTime == 0) {
+            frameTime = 0x54;
+        }
     }
+
+    unsigned int numFrames = duration / frameTime;
+    int delta = volume - currentVolume;
+    volumeStep = delta / (int)numFrames;
+
+    if (volumeStep == 0) {
+        if (volume >= currentVolume) {
+            volumeStep = 1;
+        } else {
+            volumeStep = -1;
+        }
+    }
+
+    field_04 |= 1;
+    return;
+    }
+
+simple_fade:
+    targetVolume = volume;
+    sample->Fade(volume, 0);
 }
 
 /* Function start: 0x448C60 */

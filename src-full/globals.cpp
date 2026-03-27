@@ -400,3 +400,4 @@ void* DAT_0046aa28 = 0;
 char DAT_0046bd74 = 'A';
 char* DAT_0046bd78 = 0;
 int DAT_0046bd7c = 0;
+char g_LogEnabled_00472e28 = 0;

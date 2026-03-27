@@ -88,13 +88,10 @@ int Sound::OpenDigitalDriver(int rate, unsigned short bits,
   g_pcm.wf.nChannels = channels;
   g_pcm.wf.wFormatTag = 1;
   g_pcm.wf.nBlockAlign = channels * (bits >> 3);
-
   int avgBytesPerSec = (unsigned int)channels * (unsigned int)(unsigned short)(bits >> 3);
-  avgBytesPerSec = avgBytesPerSec * rate;
-
   g_pcm.wBitsPerSample = bits;
   g_pcm.wf.nSamplesPerSec = rate;
-  g_pcm.wf.nAvgBytesPerSec = avgBytesPerSec;
+  g_pcm.wf.nAvgBytesPerSec = avgBytesPerSec * rate;
 
   if (AIL_waveOutOpen(&driver, 0, -1, &g_pcm)) {
     return 0;

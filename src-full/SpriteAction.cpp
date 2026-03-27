@@ -1,6 +1,9 @@
 #include "SpriteAction.h"
 #include "GameEngine.h"
+#include "GameState.h"
+#include "globals.h"
 extern "C" void WriteToLog(const char* format, ...);
+#include "string.h"
 #include <string.h>
 #include <stdlib.h>
 #include <new.h>
@@ -12,9 +15,48 @@ SlimeDim::~SlimeDim() {}
 
 /* Function start: 0x444B70 */
 void SpriteAction::Print(int param) {
-    WriteToLog("SpriteAction: %d %d %d %d %d %d %d",
-        addressType, addressValue, fromType, fromValue,
-        instruction, extra1, extra2);
+    if (addressType == 2) {
+        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %s",
+            g_StringTable_0046aa34->GetState(addressType),
+            g_GameState_0046aa30->GetState(addressValue));
+    } else {
+        WriteToMessageLog("\t\t\tADDRESS\t\t%s  %d",
+            g_StringTable_0046aa34->GetState(addressType), addressValue);
+    }
+
+    if (fromType == 2) {
+        WriteToMessageLog("\t\t\tFROM\t\t%s  %s",
+            g_StringTable_0046aa34->GetState(fromType),
+            g_GameState_0046aa30->GetState(fromValue));
+    } else {
+        WriteToMessageLog("\t\t\tFROM\t\t%s  %d",
+            g_StringTable_0046aa34->GetState(fromType), fromValue);
+    }
+
+    WriteToMessageLog("\t\t\tINSTRUCTION\t%s",
+        g_StringState_0046aa38->GetState(instruction));
+
+    WriteToMessageLog("\t\t\tMOUSE\t\t%d\t%d", mousePos.x, mousePos.y);
+
+    if (button1 != 0) {
+        WriteToMessageLog("\t\t\tBUTTON1\t\t%d", button1);
+    }
+    if (button2 != 0) {
+        WriteToMessageLog("\t\t\tBUTTON2\t\t%d", button2);
+    }
+    if (lastKey != 0) {
+        WriteToMessageLog("\t\t\tLASTKEY\t\t%d", lastKey);
+    }
+    if (time != 0) {
+        WriteToMessageLog("\t\t\tTIME\t\t%lu", time);
+    }
+    if (extra1 != 0) {
+        WriteToMessageLog("\t\t\tEXTRA1\t\t%lu", extra1);
+    }
+    if (extra2 != 0) {
+        WriteToMessageLog("\t\t\tEXTRA2\t\t%lu", extra2);
+    }
+    WriteToMessageLog("\t\tEND\t\t//message");
 }
 
 /* Function start: 0x444920 */
@@ -92,8 +134,27 @@ void EnqueueSpriteAction(void* action) {
     ((SpriteAction*)action)->childAction = 0;
 }
 
+extern char* g_Buffer_0046aa00;
+extern void ShowError(const char* format, ...);
+
 /* Function start: 0x444CD0 */
-void SpriteAction::Serialize(void* file) {}
+void SpriteAction::Serialize(void* param) {
+    int headerLen = strlen("MESSAGE_INFO") + 1;
+    FILE* fp = *(FILE**)((char*)param + 0x44);
+
+    if (*(int*)param != 0) {
+        fwrite("MESSAGE_INFO", headerLen, 1, fp);
+        fwrite(this, 0x38, 1, fp);
+        return;
+    }
+
+    g_Buffer_0046aa00[0] = 0;
+    fread(g_Buffer_0046aa00, headerLen, 1, fp);
+    if (strcmp(g_Buffer_0046aa00, "MESSAGE_INFO") != 0) {
+        ShowError("SC_Message::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
+    }
+    fread(this, 0x38, 1, fp);
+}
 
 /* Function start: 0x444E40 */
 void EnqueueSpriteAction(SpriteAction* action) {

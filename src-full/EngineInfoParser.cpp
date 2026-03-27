@@ -16,7 +16,7 @@ public:
 };
 extern "C" void SetVideoRes(int, int);
 
-/* Function start: 0x434660 */
+// 0x434660 = Projectile::Projectile (COMDAT)
 EngineInfoParser::EngineInfoParser() : Parser() {
   memset(&anchor, 0, 0xc * 4);
 }

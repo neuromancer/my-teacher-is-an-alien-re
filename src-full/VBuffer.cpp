@@ -111,24 +111,22 @@ extern "C" void SetVideoRes(int width, int height)
 {
     int* inputManager;
 
-    if (g_WorkBuffer_00436974 != 0) {
-        if (g_WorkBuffer_00436974->width == width && g_WorkBuffer_00436974->height == height) {
+    if (g_BackBuffer_0046aa14 != 0) {
+        if (g_BackBuffer_0046aa14->width == width && g_BackBuffer_0046aa14->height == height) {
             return;
         }
-        delete g_WorkBuffer_00436974;
-        g_WorkBuffer_00436974 = 0;
+        delete g_BackBuffer_0046aa14;
         g_BackBuffer_0046aa14 = 0;
     }
 
-    g_WorkBuffer_00436974 = new VBuffer(width, height);
-    g_BackBuffer_0046aa14 = g_WorkBuffer_00436974;
+    g_BackBuffer_0046aa14 = new VBuffer(width, height);
 
-    if (g_WorkBuffer_00436974->handle != 0) {
-        ShowError("workbuff must be first vb created '%d'", g_WorkBuffer_00436974->handle);
+    if (g_BackBuffer_0046aa14->handle != 0) {
+        ShowError("workbuff must be first vb created '%d'", g_BackBuffer_0046aa14->handle);
     }
 
-    g_WorkBuffer_00436974->SetVideoMode();
-    g_WorkBuffer_00436974->ClearScreen(0);
+    g_BackBuffer_0046aa14->SetVideoMode();
+    g_BackBuffer_0046aa14->ClearScreen(0);
 
     inputManager = (int*)g_InputManager_0046aa08;
     if (inputManager != 0) {
@@ -188,8 +186,7 @@ int VBuffer::CheckHit(int x, int y) {
         return -1;
     }
 
-    Lock();
-    unsigned char pixel = ((unsigned char*)data)[offset];
+    unsigned char pixel = ((unsigned char*)GetData())[offset];
     return (int)pixel;
 }
 

@@ -31,7 +31,7 @@ AnimatedAsset::~AnimatedAsset()
     }
 }
 
-/* Function start: 0x43A830 */
+// 0x43A830 = GlyphFont::LoadFont — in GlyphFont.cpp
 void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 {
   int iVar2;
@@ -76,7 +76,7 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
   }
 }
 
-/* Function start: 0x43AA20 */
+// 0x43AA20 = GlyphFont::InitGlyphTable — in GlyphFont.cpp
 void AnimatedAsset::BuildGlyphTable()
 {
     GlyphRect* table = new GlyphRect[glyphCount];
@@ -139,7 +139,7 @@ BUILT:
     buffer->Lock();
 }
 
-/* Function start: 0x43ABA0 */
+// 0x43ABA0 = GlyphFont::IsValidChar — in GlyphFont.cpp
 int AnimatedAsset::IsCharSupported(int ch)
 {
     if (ch != 0x20 && ch != 9) {
@@ -197,7 +197,7 @@ int AnimatedAsset::DrawChar(int x, int y, int ch)
     return width;
 }
 
-/* Function start: 0x43AD50 */ /* ~81% match */
+// 0x43AD50 = GlyphFont::GetTextWidth — in GlyphFont.cpp
 int AnimatedAsset::ComputeTextMetrics(char* text)
 {
     int total = 0;

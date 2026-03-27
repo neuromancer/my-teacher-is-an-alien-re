@@ -54,7 +54,7 @@ SC_Game::~SC_Game() {
     }
 }
 
-/* Function start: 0x432000 */
+// 0x432000 = SC_Timer::Init (COMDAT)
 void SC_Game::Init(SC_Message* msg) {
     CopyCommandData(msg);
     if (msg != 0) {

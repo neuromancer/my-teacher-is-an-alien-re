@@ -59,14 +59,48 @@ extern "C" void __stdcall SmackSummary(void*, void*) {}
 /* Function start: 0x4307B0 */
 extern "C" void ShowSmackSummary(unsigned int handle)
 {
-    int summary[19];
+    unsigned int summary[21];
     char buffer[1036];
 
     SmackSummary((void*)handle, summary);
 
+    unsigned int fps = (summary[3] * 100) / summary[0];
+    unsigned int ms100 = (summary[3] * 100) / summary[1];
+    unsigned int decompPct = (summary[8] * 100) / summary[0];
+    unsigned int blitPct = (summary[6] * 1000) / summary[0];
+
     sprintf(buffer,
-        "total time = %lu MS/100 per frame = %lu",
-        summary[0], (unsigned int)(summary[1] * 1000) / summary[0]);
+        "total time = %lu \nMS*100 per frame (100000/MS100PerFrame=Frames/Sec) = %lu "
+        "\nTime to open and prepare for decompression = %lu "
+        "\nTotal Frames displayed = %lu "
+        "\nTotal number of skipped frames = %lu "
+        "\nTotal number of sound skips = %lu "
+        "\nTotal time spent blitting = %lu "
+        "\nTotal time spent reading  = %lu "
+        "\nTotal time spent decompressing = %lu "
+        "\nTotal time spent reading in background = %lu "
+        "\nTotal io speed (bytes/second) = %lu "
+        "\nSlowest single frame time = %lu "
+        "\nSecond slowest single frame time = %lu "
+        "\nSlowest single frame number = %lu "
+        "\nSecond slowest single frame number = %lu "
+        "\nAverage size of the frame = %lu "
+        "\nHighest 1 sec data rate = %lu "
+        "\nHighest 1 sec data rate starting frame = %lu "
+        "\nHighest amount of memory allocated = %lu "
+        "\nTotal extra memory allocated = %lu "
+        "\nHighest extra memory actually used = %lu "
+        "\nfps: %i\t\t\t"
+        "\ndecomp %%: %i\t\t"
+        "\nblit %%: %i\t\t"
+        "\nread %%: %i\t\t\n",
+        summary[0], summary[1], summary[2], summary[3],
+        summary[4], summary[5], summary[6], summary[7],
+        summary[8], summary[9], summary[10], summary[11],
+        summary[12], summary[13], summary[14], summary[15],
+        summary[16], summary[17], summary[18], summary[19],
+        summary[20],
+        fps, decompPct, blitPct, ms100);
 
     MessageBoxA(0, buffer, "Summary", 0);
 }

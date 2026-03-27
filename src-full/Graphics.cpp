@@ -4,7 +4,9 @@
 #include <string.h>
 
 #include "string.h"
+#include "VBuffer.h"
 
+extern "C" extern VBuffer* g_BackBuffer_0046aa14;
 
 // Externs for globals
 extern HDC DAT_00437488;
@@ -210,21 +212,12 @@ void BlankScreen() {
 
 /* Function start: 0x425F60 */
 extern "C" void FlipScreen() {
-    //ShowMessage("FlipScreen called");
-    VBuffer* vb;
-    int* piVar1;
-    int iVar2;
-    int iVar3;
-    
-    if (g_WorkBuffer_00436974 == 0) {
+    if (g_BackBuffer_0046aa14 == 0) {
         return;
     }
-    vb = g_WorkBuffer_00436974;
-    piVar1 = GetScreenHeight();
-    iVar2 = *piVar1 - 1;
-    iVar3 = 0;
-    piVar1 = GetScreenWidth();
-    vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0, *piVar1 - 1, iVar3, iVar2);
+    VBuffer* vb = g_BackBuffer_0046aa14;
+    vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2,
+        0, *GetScreenWidth() - 1, 0, *GetScreenHeight() - 1);
 }
 
 /* Function start: 0x452C91 */

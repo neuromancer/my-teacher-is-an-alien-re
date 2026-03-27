@@ -27,7 +27,7 @@ RockThrower::RockThrower(Parser* parent) {
     Parser::ProcessFile(this, parent, 0);
 }
 
-/* Function start: 0x427710 */
+// 0x427710 = ZBuffer::~ZBuffer (COMDAT)
 RockThrower::~RockThrower() {
     while (m_itemCount != 0) {
         m_itemCount = m_itemCount - 1;
@@ -43,7 +43,7 @@ RockThrower::~RockThrower() {
     }
 }
 
-/* Function start: 0x4279A0 */
+// 0x4279A0 = ZBuffer::ResetItems (COMDAT)
 void RockThrower::ResetProjectiles() {
     int i = 0;
     if (m_itemCount > 0) {

@@ -492,7 +492,7 @@ int __cdecl CalculateBufferSize(int width, unsigned int height) {
   return (((width + 3) & ~3U) * height) + g_BitmapHeaderSize_00437f4c;
 }
 
-/* Function start: 0x4260F0 */
+// 0x4260F0 = FormatAssetPath — in CDData.cpp
 const char* __cdecl CDData_ResolvePath(const char *format, ...) {
     char local_104[260];
     char *args = (char *)(&format + 1);

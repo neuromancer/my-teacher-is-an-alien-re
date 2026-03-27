@@ -1,6 +1,6 @@
 #include "Handler6.h"
 
-/* Function start: 0x4327C0 */
+// 0x4327C0 = MouseControl::MouseControl (COMDAT)
 Handler6::Handler6() {
 }
 

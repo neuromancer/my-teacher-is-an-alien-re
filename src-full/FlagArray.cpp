@@ -178,41 +178,41 @@ void FlagArray::ClearAllFlags() {
 }
 
 /* Function start: 0x420B80 */
-void FlagArray::Serialize(void* file) {
-    int* ar = (int*)file;
+void FlagArray::Serialize(void* param) {
     char local_4[4];
 
     Open();
     Seek(0);
 
-    int headerLen = strlen("FLAGARRAY_INFO");
+    int headerLen = strlen("FLAGARRAY_INFO") + 1;
+    FILE* saveFp = *(FILE**)((char*)param + 0x44);
 
-    if (ar[0] == 0) {
-        // Read mode
-        *g_Buffer_0046aa00 = 0;
-        fread(g_Buffer_0046aa00, headerLen + 1, 1, (FILE*)ar[0x11]);
-        if (strcmp(g_Buffer_0046aa00, "FLAGARRAY_INFO") != 0) {
-            ShowError("FlagArray::Serialize() - Error Loading Game - flag arrays don't match");
-        }
+    if (*(int*)param != 0) {
+        // Write mode
+        fwrite("FLAGARRAY_INFO", headerLen, 1, saveFp);
+        fwrite((char*)this + 0x38, 0x94, 1, saveFp);
         int i = 0;
-        fread((char*)this + 0x38, 0x94, 1, (FILE*)ar[0x11]);
         if (max_states > 0) {
             do {
+                fread(local_4, 4, 1, fp);
                 i++;
-                fread(local_4, 4, 1, (FILE*)ar[0x11]);
-                fwrite(local_4, 4, 1, fp);
+                fwrite(local_4, 4, 1, saveFp);
             } while (i < max_states);
         }
     } else {
-        // Write mode
-        fwrite("FLAGARRAY_INFO", headerLen + 1, 1, (FILE*)ar[0x11]);
+        // Read mode
+        g_Buffer_0046aa00[0] = 0;
+        fread(g_Buffer_0046aa00, headerLen, 1, saveFp);
+        if (strcmp(g_Buffer_0046aa00, "FLAGARRAY_INFO") != 0) {
+            ShowError("FlagArray::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
+        }
+        fread((char*)this + 0x38, 0x94, 1, saveFp);
         int i = 0;
-        fwrite((char*)this + 0x38, 0x94, 1, (FILE*)ar[0x11]);
         if (max_states > 0) {
             do {
+                fread(local_4, 4, 1, saveFp);
                 i++;
-                fread(local_4, 4, 1, fp);
-                fwrite(local_4, 4, 1, (FILE*)ar[0x11]);
+                fwrite(local_4, 4, 1, fp);
             } while (i < max_states);
         }
     }
