@@ -11,6 +11,7 @@
 #include "DrawEntry.h"
 #include "VBuffer.h"
 #include "SoundCommand.h"
+#include "RenderEntry.h"
 #include "mss.h"
 #include "main.h"
 #include <string.h>
@@ -135,9 +136,7 @@ void SC_Rats::Init(SC_Message* msg) {
                     list3[2] = *list3;
                 }
                 if (removed != 0) {
-                    *removed = 0x46102C;
-                    ((Rect*)((int)removed + 4))->~Rect();
-                    FreeMemory(removed);
+                    delete (RenderEntry*)removed;
                 }
             }
         }

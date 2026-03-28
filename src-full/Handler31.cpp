@@ -90,8 +90,7 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
         }
 
         if (question != 0) {
-            question->~SC_Question();
-            FreeMemory(question);
+            delete question;
         }
     } else if (strcmp(token, "PLACEHOLDER") == 0) {
         sscanfResult = sscanf(line, " %s %d %s", token, &id, arg2);
@@ -113,8 +112,7 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
 
         question = placeholder;
         if (question != 0 && question->state == 2 && question != 0) {
-            question->~SC_Question();
-            FreeMemory(question);
+            delete question;
             placeholder = 0;
         }
     } else if (strcmp(token, "END") == 0) {
@@ -151,8 +149,7 @@ int Handler31::CheckDuplicateQuestion(int param) {
                 }
                 if (nodeData->questionId == question->questionId) {
                     if (question != 0) {
-                        question->~SC_Question();
-                        FreeMemory(question);
+                        delete question;
                     }
                     return 0;
                 }
@@ -165,8 +162,7 @@ int Handler31::CheckDuplicateQuestion(int param) {
     }
 
     if (question != 0) {
-        question->~SC_Question();
-        FreeMemory(question);
+        delete question;
     }
     return 1;
 }
@@ -193,15 +189,13 @@ Handler31::~Handler31() {
 
     spr = optionSprite;
     if (spr != 0) {
-        spr->~Sprite();
-        FreeMemory(spr);
+        delete spr;
         optionSprite = 0;
     }
 
     spr = optionHiSprite;
     if (spr != 0) {
-        spr->~Sprite();
-        FreeMemory(spr);
+        delete spr;
         optionHiSprite = 0;
     }
 
@@ -213,27 +207,24 @@ Handler31::~Handler31() {
                 do {
                     question = (SC_Question*)list->Pop();
                     if (question != 0) {
-                        question->~SC_Question();
-                        FreeMemory(question);
+                        delete question;
                     }
                 } while (list->head != 0);
             }
         }
-        FreeMemory(list);
+        delete list;
         questionQueue = 0;
     }
 
     question = placeholder;
     if (question != 0) {
-        question->~SC_Question();
-        FreeMemory(question);
+        delete question;
         placeholder = 0;
     }
 
     pal = palette;
     if (pal != 0) {
-        pal->~Palette();
-        FreeMemory(pal);
+        delete pal;
         palette = 0;
     }
 }
@@ -253,8 +244,7 @@ int Handler31::ShutDown(SC_Message* msg) {
         activeQuestion->Finalize();
         question = activeQuestion;
         if (question != 0) {
-            question->~SC_Question();
-            FreeMemory(question);
+            delete question;
             activeQuestion = 0;
         }
     }
@@ -267,28 +257,25 @@ int Handler31::ShutDown(SC_Message* msg) {
                 do {
                     question = (SC_Question*)list->Pop();
                     if (question != 0) {
-                        question->~SC_Question();
-                        FreeMemory(question);
+                        delete question;
                     }
                 } while (list->head != 0);
             }
         }
-        FreeMemory(list);
+        delete list;
         questionQueue = 0;
     }
 
     question = placeholder;
     if (question != 0) {
-        question->~SC_Question();
-        FreeMemory(question);
+        delete question;
         placeholder = 0;
     }
 
     {
         Palette* pal = palette;
         if (pal != 0) {
-            pal->~Palette();
-            FreeMemory(pal);
+            delete pal;
             palette = 0;
         }
     }
@@ -352,8 +339,7 @@ void Handler31::Update(int param1, int param2) {
         activeQuestion->Update(0x12, 0xA);
         question = activeQuestion;
         if (question->state == 2 && question != 0) {
-            question->~SC_Question();
-            FreeMemory(question);
+            delete question;
             activeQuestion = 0;
         }
     } else {
@@ -422,8 +408,7 @@ int Handler31::AddMessage(SC_Message* msg) {
         activeQuestion->OnInput((SC_Message*)msgData);
         question = activeQuestion;
         if (question->state == 2 && question != 0) {
-            question->~SC_Question();
-            FreeMemory(question);
+            delete question;
             activeQuestion = 0;
             return 1;
         }

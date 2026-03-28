@@ -15,13 +15,14 @@
 #include "MMPlayer.h"
 #include "main.h"
 #include "ZBuffer.h"
+#include "SoundCommand.h"
 #include "MouseControl.h"
 
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
     extern GameState* g_GameState_0046aa30;
     extern int DAT_0046a190;
-    extern void* DAT_0046af08;
+    extern Sprite* DAT_0046af08;
 }
 // extern globals - C++ linkage (matching stubs.cpp)
 extern SpriteAction DAT_00472d20;
@@ -70,34 +71,30 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
     int i;
 
     if (palette != 0) {
-        palette->~Palette();
-        free(palette);
+        delete palette;
         palette = 0;
     }
 
     if (background != 0) {
-        background->~MMPlayer();
-        free(background);
+        delete background;
         background = 0;
     }
 
     ptr = okayButton;
     if (ptr != 0) {
         delete (T_MenuHotspot*)ptr;
-        free(ptr);
         okayButton = 0;
     }
 
     ptr = cancelButton;
     if (ptr != 0) {
         delete (T_MenuHotspot*)ptr;
-        free(ptr);
         cancelButton = 0;
     }
 
     if (menuSound != 0) {
         menuSound->Unload();
-        free(menuSound);
+        delete menuSound;
         menuSound = 0;
     }
 
@@ -105,7 +102,6 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
         ptr = characters[3 - i];
         if (ptr != 0) {
             delete (T_MenuHotspot*)ptr;
-            free(ptr);
             characters[3 - i] = 0;
         }
     }
@@ -114,7 +110,6 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
         ptr = options[9 - i];
         if (ptr != 0) {
             delete (T_MenuHotspot*)ptr;
-            free(ptr);
             options[9 - i] = 0;
         }
     }
@@ -169,18 +164,12 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     ptr = menuSound;
     if (ptr != 0) {
         menuSound->Unload();
-        free(ptr);
+        delete menuSound;
         menuSound = 0;
     }
 
     // Allocate new sound object
-    void* sndMem = malloc(0x10);
-    void* sndObj = 0;
-    if (sndMem != 0) {
-        new (sndMem) Sample();
-        sndObj = sndMem;
-    }
-    menuSound = (Sample*)sndObj;
+    menuSound = new Sample();
     selectedOption = -1;
 
     // Send initial message
@@ -195,7 +184,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             chr->bounds.left = 0;
             Sprite* animCtrl = chr->cursor;
             if (animCtrl != 0) {
-                ((Sprite*)animCtrl)->ResetAnimation(0, 0);
+                animCtrl->ResetAnimation(0, 0);
             }
         }
         charSprite++;
@@ -219,7 +208,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
         chrPtr->bounds.left = 1;
         Sprite* animCtrl = chrPtr->cursor;
         if (animCtrl != 0) {
-            ((Sprite*)animCtrl)->ResetAnimation(1, 0);
+            animCtrl->ResetAnimation(1, 0);
         }
     }
 
@@ -229,7 +218,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     gs->ValidateIndex(charIdx);
     stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
-    ((Sprite*)DAT_0046af08)->ResetAnimation(stateVals[charIdx] + 1, 0);
+    DAT_0046af08->ResetAnimation(stateVals[charIdx] + 1, 0);
 
     SetupOptions();
 
@@ -402,8 +391,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         while (queue->head != 0) {
             item = queue->Pop();
             if (item != 0) {
-                *(int*)item = 0x461030;
-                FreeMemory(item);
+                delete (SoundCommand*)item;
             }
         }
     }
@@ -416,7 +404,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
             item = queue->Pop();
             if (item != 0) {
                 ((ZBuffer*)item)->CleanUpVBuffer();
-                FreeMemory(item);
+                delete (ZBuffer*)item;
             }
         }
     }
@@ -428,8 +416,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         while (queue->head != 0) {
             RenderEntry* entry = (RenderEntry*)queue->Pop();
             if (entry != 0) {
-                entry->RenderEntry::~RenderEntry();
-                FreeMemory(entry);
+                delete entry;
             }
         }
     }
@@ -438,36 +425,32 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
 
     // Clean up palette
     if (palette != 0) {
-        palette->~Palette();
-        FreeMemory(palette);
+        delete palette;
         palette = 0;
     }
 
     // Clean up background
     if (background != 0) {
-        background->~MMPlayer();
-        FreeMemory(background);
+        delete background;
         background = 0;
     }
 
     // Clean up okayButton
     if (okayButton != 0) {
-        okayButton->~T_MenuHotspot();
-        FreeMemory(okayButton);
+        delete okayButton;
         okayButton = 0;
     }
 
     // Clean up cancelButton
     if (cancelButton != 0) {
-        cancelButton->~T_MenuHotspot();
-        FreeMemory(cancelButton);
+        delete cancelButton;
         cancelButton = 0;
     }
 
     // Clean up menuSound
     if (menuSound != 0) {
         menuSound->Unload();
-        FreeMemory(menuSound);
+        delete menuSound;
         menuSound = 0;
     }
 
@@ -478,8 +461,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         do {
             T_MenuHotspot* ptr = *base;
             if (ptr != 0) {
-                ptr->~T_MenuHotspot();
-                FreeMemory(ptr);
+                delete ptr;
                 *base = 0;
             }
             base++;
@@ -494,8 +476,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         do {
             T_MenuHotspot* ptr = *base;
             if (ptr != 0) {
-                ptr->~T_MenuHotspot();
-                FreeMemory(ptr);
+                delete ptr;
                 *base = 0;
             }
             base++;
@@ -590,7 +571,7 @@ int GameState::GetStateValue(int index) {
 
 /* Function start: 0x41F6A0 */
 void SCI_SchoolMenu::PlayMenuSound() {
-    EnqueueSpriteAction((void*)&DAT_00472d20);
+    EnqueueSpriteAction(&DAT_00472d20);
 }
 
 /* Function start: 0x41F6B0 */
@@ -641,7 +622,7 @@ void SCI_SchoolMenu::SetupOptions() {
                 opt->bounds.left = 0;
                 Sprite* animCtrl = opt->cursor;
                 if (animCtrl != 0) {
-                    ((Sprite*)animCtrl)->ResetAnimation(0, 0);
+                    animCtrl->ResetAnimation(0, 0);
                 }
             }
             p++;
@@ -705,13 +686,13 @@ void SCI_SchoolMenu::SetupOptions() {
             opt->bounds.left = -1;
             Sprite* animCtrl = opt->cursor;
             if (animCtrl != 0) {
-                ((Sprite*)animCtrl)->ResetAnimation(-1, 0);
+                animCtrl->ResetAnimation(-1, 0);
             }
         } else {
             opt->bounds.left = 0;
             Sprite* animCtrl = opt->cursor;
             if (animCtrl != 0) {
-                ((Sprite*)animCtrl)->ResetAnimation(0, 0);
+                animCtrl->ResetAnimation(0, 0);
             }
         }
 
@@ -898,7 +879,7 @@ char_click:
                 chr->bounds.left = 0;
                 Sprite* animCtrl = chr->cursor;
                 if (animCtrl != 0) {
-                    ((Sprite*)animCtrl)->ResetAnimation(0, 0);
+                    animCtrl->ResetAnimation(0, 0);
                 }
                 basePtr++;
                 count--;
@@ -911,7 +892,7 @@ char_click:
             selChr->bounds.left = 1;
             Sprite* animCtrl = selChr->cursor;
             if (animCtrl != 0) {
-                ((Sprite*)animCtrl)->ResetAnimation(1, 0);
+                animCtrl->ResetAnimation(1, 0);
             }
         }
 
@@ -926,7 +907,7 @@ char_click:
         gs = g_GameState_0046aa30;
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
-        ((Sprite*)DAT_0046af08)->ResetAnimation(stateVals[hitResult] + 1, 0);
+        DAT_0046af08->ResetAnimation(stateVals[hitResult] + 1, 0);
 
         SetupOptions();
         selectedOption = -1;
@@ -974,7 +955,7 @@ opt_click:
                 opt->bounds.left = 0;
                 Sprite* animCtrl = opt->cursor;
                 if (animCtrl != 0) {
-                    ((Sprite*)animCtrl)->ResetAnimation(0, 0);
+                    animCtrl->ResetAnimation(0, 0);
                 }
             }
             baseOpts++;
@@ -988,7 +969,7 @@ opt_click:
         selOpt->bounds.left = 1;
         Sprite* animCtrl = selOpt->cursor;
         if (animCtrl != 0) {
-            ((Sprite*)animCtrl)->ResetAnimation(1, 0);
+            animCtrl->ResetAnimation(1, 0);
         }
     }
 
@@ -1040,7 +1021,7 @@ check_go:
         stateVals[i]++;
 
         // Execute option action
-        ProcessSpriteActions((void*)options[selectedOption]);
+        ProcessSpriteActions(options[selectedOption]);
 
         // Determine next character
         gs = g_GameState_0046aa30;
@@ -1142,8 +1123,8 @@ check_back:
     if (cancelButton == 0) goto done;
     {
         SlimeDim backCoords;
-        backCoords.x = ((int*)msg)[7];
-        backCoords.y = ((int*)msg)[8];
+        backCoords.x = ((SpriteAction*)msg)->mousePos.x;
+        backCoords.y = ((SpriteAction*)msg)->mousePos.y;
         T_MenuHotspot* backSpr = cancelButton;
         if (backSpr->sprite != 0) {
             if (backSpr->bounds.HitTest(backCoords.x, backCoords.y)) {
@@ -1184,14 +1165,8 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     sscanf(line, "%s", label);
 
     if (strcmp(label, "BACK") == 0) {
-        void* mem = malloc(0xa0);
-        void* obj = 0;
-        if (mem != 0) {
-            new (mem) MMPlayer();
-            obj = mem;
-        }
-        background = (MMPlayer*)obj;
-        Parser::ProcessFile((Parser*)obj, this, 0);
+        background = new MMPlayer();
+        Parser::ProcessFile((Parser*)background, this, 0);
         return 0;
     }
 
@@ -1229,13 +1204,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     if (strcmp(label, "PALE") == 0) {
         char filename[64];
         sscanf(line, "%s %s", label, filename);
-        void* mem = malloc(8);
-        void* obj = 0;
-        if (mem != 0) {
-            InitPalette((Palette*)mem);
-            obj = mem;
-        }
-        palette = (Palette*)obj;
+        palette = new Palette();
         palette->Load(filename);
         return 0;
     }
@@ -1247,51 +1216,29 @@ int SCI_SchoolMenu::LBLParse(char* line) {
 
     if (strcmp(label, "CHAR") == 0) {
         sscanf(line, "%s %d", label, &period);
-        void* mem = malloc(0x1a8);
-        void* obj = 0;
-        if (mem != 0) {
-            new (mem) T_MenuHotspot(period);
-            obj = mem;
-        }
-        characters[period] = (T_MenuHotspot*)obj;
-        Parser::ProcessFile((Parser*)obj, this, 0);
+        T_MenuHotspot* hotspot = new T_MenuHotspot(period);
+        characters[period] = hotspot;
+        Parser::ProcessFile((Parser*)hotspot, this, 0);
         return 0;
     }
 
     if (strstr(label, "OPTION") != 0) {
         sscanf(line, "%s %d", label, &period);
-        void* mem = malloc(0x1a8);
-        void* obj = 0;
-        if (mem != 0) {
-            new (mem) T_MenuHotspot(period);
-            obj = mem;
-        }
-        options[period] = (T_MenuHotspot*)obj;
-        Parser::ProcessFile((Parser*)obj, this, 0);
+        T_MenuHotspot* hotspot = new T_MenuHotspot(period);
+        options[period] = hotspot;
+        Parser::ProcessFile((Parser*)hotspot, this, 0);
         return 0;
     }
 
     if (strcmp(label, "OKAY") == 0) {
-        void* mem = malloc(0x1a8);
-        void* obj = 0;
-        if (mem != 0) {
-            new (mem) T_MenuHotspot(0);
-            obj = mem;
-        }
-        okayButton = (T_MenuHotspot*)obj;
-        Parser::ProcessFile((Parser*)obj, this, 0);
+        okayButton = new T_MenuHotspot(0);
+        Parser::ProcessFile((Parser*)okayButton, this, 0);
         return 0;
     }
 
     if (strcmp(label, "CANCEL") == 0) {
-        void* mem = malloc(0x1a8);
-        void* obj = 0;
-        if (mem != 0) {
-            new (mem) T_MenuHotspot(0);
-            obj = mem;
-        }
-        cancelButton = (T_MenuHotspot*)obj;
-        Parser::ProcessFile((Parser*)obj, this, 0);
+        cancelButton = new T_MenuHotspot(0);
+        Parser::ProcessFile((Parser*)cancelButton, this, 0);
 
         // Check if NUM_ACTIONS is 0 - if so, destroy back button
         gs = g_GameState_0046aa30;
@@ -1301,8 +1248,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         }
         stateVals = gs->stateValues;
         if (stateVals[idx] == 0 && cancelButton != 0) {
-            delete (T_MenuHotspot*)cancelButton;
-            free(cancelButton);
+            delete cancelButton;
             cancelButton = 0;
         }
         return 0;
