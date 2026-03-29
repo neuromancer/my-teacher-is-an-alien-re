@@ -19,7 +19,10 @@ class ZBufferManager;
 class FlagArray;
 class TimedEventPool;
 class Engine;
+class GameEngine;
 class SC_CombatBase;
+class GlyphFont;
+class T_Object;
 class mCNavigator;
 class CombatSprite;
 class TargetList;
@@ -423,7 +426,7 @@ extern int g_SpriteTableInitialized_00436b9c; // Initialization flag for sprite 
 extern char* g_Buffer_0046aa00; // DAT_00436960  { /* 4 bytes */ }
 extern char* g_Buffer_00436964; // Scale table buffer
 extern InputManager* g_InputManager_0046aa08; // DAT_00436968  { /* 4 bytes */ }
-extern void* g_GlyphFont_0046aa28;                         // GlyphFont* for text rendering
+extern GlyphFont* g_GlyphFont_0046aa28;                     // GlyphFont* for text rendering
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
@@ -5989,7 +5992,7 @@ extern SoundPool* g_SoundPool_00469134;                            // SoundTrack
 extern void* g_CacheLRUNode_00469138;                                 // FilePosCache LRU node
 extern int g_SoundTrackerField2_0046913c;                                   // SoundTracker
 extern int g_SoundTrackerField3_00469140;                                   // SoundTracker
-extern void* g_FilePosCache;                               // DAT_00469144
+extern TimedEventPool* g_FilePosCache;                     // DAT_00469144
 extern int g_ProcessFileCount_00469148;                                   // Parser
 extern int g_LBLParseCount_0046914c;                                   // Parser
 extern int g_LBLParseTime_00469150;                                   // Parser
@@ -6002,16 +6005,16 @@ extern int g_ParserCount;                                  // DAT_00469288
 
     extern int g_SchoolMenuActive_0046a190;                               // SCI_SchoolMenu
     extern Sprite* g_SchoolMenuSprite_0046af08;                           // SCI_SchoolMenu
-extern void* g_SelectedItem_0046a6e4;                                // SCI_Inventory
+extern T_Object* g_SelectedItem_0046a6e4;                            // SCI_Inventory
 
-    extern int g_GameEngine_0046a6ec;                               // SC_Cinematic
-    extern void* g_BackBuffer2_0046aa10;                             // SC_SelectHotSpot
+    extern GameEngine* g_GameEngine_0046a6ec;                        // SC_Cinematic
+    extern VBuffer* g_BackBuffer2_0046aa10;                          // SC_SelectHotSpot
     extern VBuffer* g_BackBuffer_0046aa14;                          // SC_SelectHotSpot
     extern char g_CinematicDebugStr_00473400;                              // SC_Cinematic
     extern char g_AnimFilename_00472c70[256];                         // SC_Cinematic
     extern char g_AnimFilename2_00472cb0[256];                         // SC_Cinematic
 extern Sound* g_EngineSound_0046aa0c;                                // Engine
-extern void* g_PathResolver_0046aa1c;                                 // Path resolution
+extern CDData* g_PathResolver_0046aa1c;                               // Path resolution
 extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_Message
 extern GameState* g_StringState_0046aa38;                            // SC_Question
 extern int g_AnimStates_0046ac30[5];                       // SC_DodgeOrville
@@ -6029,7 +6032,7 @@ extern int g_SlimeTableInit_0046ad6c;                                   // SC_Wa
     extern ScoreDisplay*     g_ScoreDisplay_0046ae6c;
     extern mCNavigator*      g_Navigator_0046ae70;
     extern HotspotListData*  g_HotspotPool_0046ae74;
-    extern int g_CombatEngine_0046ae78;                    // SC_CombatBase* active combat engine
+    extern SC_CombatBase* g_CombatEngine_0046ae78;         // SC_CombatBase* active combat engine
     extern int g_RatsState_00473e18;                                // 0x00473e18 - SC_Rats main state
     extern int g_State0Phase_00473e14;                              // 0x00473e14
     extern int g_State2Phase_00473e20;                              // 0x00473e20
@@ -6049,12 +6052,12 @@ extern Sprite* g_NavCursorSprite_004360a0;                 // mCNavigator cursor
 extern unsigned int g_TimerCount_00436b94;                 // Timer active count
 extern int g_SpaceNavStates_0046c3f0[3];                   // SC_SpaceShipNav state array
 extern char* g_MissionFilePath_0046bacc;                                 // SC_Wahoo / SCI_PracticeRoom
-extern void* g_WahooEngine_0046bbfc;                                 // SC_Wahoo
+extern SC_CombatBase* g_WahooEngine_0046bbfc;                        // SC_Wahoo
 extern int g_PathCacheHits_0046b784;                                   // cache hit counter
 extern int g_PathCacheMisses_0046b788;                                   // cache miss counter
 extern int g_DodgeAnimStates_0046bcd0[3];                                // SC_DodgeOrville
 extern SlimeTable* g_SlimeTable_0046bf28;                           // SC_FireAlarm / SC_Pods
-extern void* g_PodsPalette_0046bf30;                      // Pods palette pointer
+extern Palette* g_PodsPalette_0046bf30;                   // Pods palette pointer
 extern int g_FireAlarmField1_00472bd8;                                   // SC_FireAlarm / SC_Pods
 extern int g_FireAlarmField2_00472bdc;                                   // SC_FireAlarm / SC_Pods
 extern int g_FanField1_00472be0;                                   // SC_DodgeOrville

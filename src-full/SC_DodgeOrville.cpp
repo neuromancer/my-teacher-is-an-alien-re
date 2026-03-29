@@ -183,7 +183,7 @@ void SC_DodgeOrville::UpdateGame()
         }
     }
 
-    int state = ((Sprite*)field_0x10C)->handle;
+    int state = field_0x10C->handle;
     Animation* anim = ((Sprite*)bgSprite)->animation_data;
     int frameVal = 0;
     if (anim != 0) {
@@ -194,7 +194,7 @@ void SC_DodgeOrville::UpdateGame()
         if (g_HitBounds_00473260[state].minVal <= frameVal && g_HitBounds_00473260[state].maxVal >= frameVal) {
             g_HitBounds_00473260[state].minVal = 0;
             g_HitBounds_00473260[state].maxVal = 0;
-            ((Sprite*)field_0x10C)->ResetAnimation(state + 7, 0);
+            field_0x10C->ResetAnimation(state + 7, 0);
             hitCount.x++;
             bgSound->Play(2);
             bgSound->Play(hitSoundIdx + 5);
@@ -244,7 +244,7 @@ void SC_DodgeOrville::UpdateGame()
 /* Function start: 0x429380 */
 void SC_DodgeOrville::UpdateReticle()
 {
-    if (((Sprite*)field_0x10C)->Do(((Sprite*)field_0x10C)->loc_x, ((Sprite*)field_0x10C)->loc_y, 1.0) == 0) {
+    if (field_0x10C->Do(field_0x10C->loc_x, field_0x10C->loc_y, 1.0) == 0) {
         return;
     }
 
@@ -269,7 +269,7 @@ void SC_DodgeOrville::UpdateReticle()
         }
     }
 
-    ((Sprite*)field_0x10C)->ResetAnimation(animState, 0);
+    field_0x10C->ResetAnimation(animState, 0);
 }
 
 /* Function start: 0x429430 */

@@ -8,6 +8,7 @@ class Sprite;
 class Palette;
 class Sample;
 class SC_Message;
+class SpriteAction;
 
 // SC_CrystalPuzzle - Force field crystal puzzle (case 38/0x26)
 // Constructor: 0x44EBA0
@@ -44,7 +45,7 @@ public:
     void PlayPuzzleSound(int idx, int loop);    // 0x450B10
 
     // Fields (0xA8-0x1BF, verified from constructor + method assembly)
-    int field_A8;               // 0xA8
+    SpriteAction* field_A8;     // 0xA8
     Palette* palette;           // 0xAC
     Sprite* puzztest;           // 0xB0
     Sprite* litdoors;           // 0xB4

@@ -35,7 +35,7 @@ int SC_SpaceShipNav::ShutDown(SC_Message* msg) {
                 spr->StopAnimationSound();
             }
         }
-        ((SC_CombatBase*)g_CombatEngine_0046ae78)->RenderState();
+        g_CombatEngine_0046ae78->RenderState();
         g_CombatEngine_0046ae78 = 0;
     }
     return SC_Combat::ShutDown(msg);

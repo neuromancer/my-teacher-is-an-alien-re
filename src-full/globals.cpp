@@ -25,6 +25,10 @@
 #include "Target.h"
 #include "SpriteAction.h"
 #include "GameConfig.h"
+#include "GameEngine.h"
+#include "GlyphFont.h"
+#include "T_Object.h"
+#include "Palette.h"
 
 // ============================================================================
 // Global variables sorted by address
@@ -224,7 +228,7 @@ SoundPool* g_SoundPool_00469134 = 0;                         // 0x00469134
 void* g_CacheLRUNode_00469138 = 0;                           // 0x00469138
 int g_SoundTrackerField2_0046913c = 0;                       // 0x0046913c
 int g_SoundTrackerField3_00469140 = 0;                       // 0x00469140
-void* g_FilePosCache = 0;                                    // 0x00469144
+TimedEventPool* g_FilePosCache = 0;                          // 0x00469144
 int g_ProcessFileCount_00469148 = 0;                         // 0x00469148
 int g_LBLParseCount_0046914c = 0;                            // 0x0046914c
 int g_LBLParseTime_00469150 = 0;                             // 0x00469150
@@ -241,18 +245,18 @@ SoundTracker* g_SoundTracker_0046928c = 0;                   // 0x0046928c (same
 int g_SchoolMenuActive_0046a190 = 0;                         // 0x0046a190
 Sprite* g_SchoolMenuSprite_0046af08 = 0;                     // 0x0046af08
 StringTable* g_Strings_0046a6e0 = 0;                         // 0x0046a6e0
-void* g_SelectedItem_0046a6e4 = 0;                           // 0x0046a6e4
+T_Object* g_SelectedItem_0046a6e4 = 0;                       // 0x0046a6e4
 FlagArray* g_FlagManager_0046a6e8 = 0;                       // 0x0046a6e8
-int g_GameEngine_0046a6ec = 0;                    // 0x0046a6ec
+GameEngine* g_GameEngine_0046a6ec = 0;             // 0x0046a6ec
 GameLoopHelper* g_GameLoopHelper_0046a6f0 = 0;               // 0x0046a6f0
 InputManager* g_InputManager_0046aa08 = 0;                   // 0x0046aa08
 Sound* g_EngineSound_0046aa0c = 0;                           // 0x0046aa0c
-void* g_BackBuffer2_0046aa10 = 0;                 // 0x0046aa10
+VBuffer* g_BackBuffer2_0046aa10 = 0;              // 0x0046aa10
 VBuffer* g_BackBuffer_0046aa14 = 0;               // 0x0046aa14
 MouseControl* g_Mouse_0046aa18 = 0;                          // 0x0046aa18
-void* g_PathResolver_0046aa1c = 0;                           // 0x0046aa1c
+CDData* g_PathResolver_0046aa1c = 0;                         // 0x0046aa1c
 ZBufferManager* g_ZBufferManager_0046aa24 = 0;               // 0x0046aa24
-void* g_GlyphFont_0046aa28 = 0;                              // 0x0046aa28
+GlyphFont* g_GlyphFont_0046aa28 = 0;                         // 0x0046aa28
 char* g_StateString_0046aa2c = 0;                            // 0x0046aa2c
 GameState* g_GameState_0046aa30 = 0;              // 0x0046aa30
 GameState* g_StringTable_0046aa34 = 0;                       // 0x0046aa34
@@ -275,7 +279,7 @@ SoundList*        g_SoundList_0046ae68 = 0;                  // 0x0046ae68
 ScoreDisplay*     g_ScoreDisplay_0046ae6c = 0;               // 0x0046ae6c
 mCNavigator*      g_Navigator_0046ae70 = 0;                  // 0x0046ae70
 HotspotListData*  g_HotspotPool_0046ae74 = 0;               // 0x0046ae74
-int g_CombatEngine_0046ae78 = 0;                             // 0x0046ae78
+SC_CombatBase* g_CombatEngine_0046ae78 = 0;                  // 0x0046ae78
 int g_DodgeAnimStates_0046bcd0[3] = {0};                     // 0x0046bcd0
 int g_PathCacheHits_0046b784 = 0;                            // 0x0046b784
 int g_PathCacheMisses_0046b788 = 0;                          // 0x0046b788
@@ -284,12 +288,12 @@ MemoryCache* g_FileCache_0046b78c = 0;                       // 0x0046b78c
 int g_CacheEvictThreshold_0046b790 = 0;                      // 0x0046b790
 int g_CachePreloadTime_0046b794 = 0;                         // 0x0046b794
 char* g_MissionFilePath_0046bacc = 0;                        // 0x0046bacc
-void* g_WahooEngine_0046bbfc = 0;                            // 0x0046bbfc
+SC_CombatBase* g_WahooEngine_0046bbfc = 0;                    // 0x0046bbfc
 char g_CDDriveLetter_0046bd74 = 'A';                         // 0x0046bd74
 char* g_FontFilename_0046bd78 = 0;                           // 0x0046bd78
 int g_FontField_0046bd7c = 0;                                // 0x0046bd7c
 SlimeTable* g_SlimeTable_0046bf28 = 0;                       // 0x0046bf28
-void* g_PodsPalette_0046bf30 = 0;                // 0x0046bf30
+Palette* g_PodsPalette_0046bf30 = 0;              // 0x0046bf30
 int g_SpaceNavStates_0046c3f0[3] = {0, 0, 0};               // 0x0046c3f0
 int g_PeriodStateIdx_0046cb90 = 60;                          // 0x0046cb90
 static char s_PeriodChars[] = " DSP";

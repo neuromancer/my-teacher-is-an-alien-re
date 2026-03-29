@@ -2,6 +2,7 @@
 #include "Memory.h"
 #include "Message.h"
 #include "globals.h"
+#include "GameEngine.h"
 #include "string.h"
 #include "GameState.h"
 #include "StringTable.h"
@@ -469,7 +470,7 @@ void SoundEntry::FadeVolume(int volume, unsigned int duration) {
     if (g_GameEngine_0046a6ec == 0) {
         frameTime = 0x54;
     } else {
-        frameTime = *(unsigned int*)(g_GameEngine_0046a6ec + 0x1c);
+        frameTime = g_GameEngine_0046a6ec->m_frameTime;
         if (frameTime == 0) {
             frameTime = 0x54;
         }

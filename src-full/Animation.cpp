@@ -64,12 +64,12 @@ Animation::~Animation() {
 /* Function start: 0x41AB60 */
 void Animation::CloseSmackerFile() {
   if (smk != 0) {
-    if (((GameEngine*)g_GameEngine_0046a6ec) != 0) {
-      if (((GameEngine*)g_GameEngine_0046a6ec)->m_smackHandle == (void*)smk) {
+    if (g_GameEngine_0046a6ec != 0) {
+      if (g_GameEngine_0046a6ec->m_smackHandle == (void*)smk) {
         WriteToLog("Animation Close - restoring framerate to %dms",
-                     ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTimeCopy);
-        ((GameEngine*)g_GameEngine_0046a6ec)->m_smackHandle = 0;
-        ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTimeCopy;
+                     g_GameEngine_0046a6ec->m_frameTimeCopy);
+        g_GameEngine_0046a6ec->m_smackHandle = 0;
+        g_GameEngine_0046a6ec->m_frameTime = g_GameEngine_0046a6ec->m_frameTimeCopy;
       }
     }
     if (g_GameConfig_00436970->data.rawData[2] == 2) {

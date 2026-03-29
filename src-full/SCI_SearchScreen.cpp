@@ -27,7 +27,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 /* Function start: 0x40B780 */
 int SCI_SearchScreen::ShutDown(SC_Message* msg) {
     if (g_CombatEngine_0046ae78 != 0) {
-        delete (SC_CombatBase*)g_CombatEngine_0046ae78;
+        delete g_CombatEngine_0046ae78;
         g_CombatEngine_0046ae78 = 0;
     }
     return SC_Combat::ShutDown(msg);

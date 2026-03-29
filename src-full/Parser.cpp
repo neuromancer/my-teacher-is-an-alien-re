@@ -30,7 +30,7 @@ Parser::~Parser() {
   }
   g_ParserCount--;
   if (g_ParserCount == 0 && g_FilePosCache != 0) {
-    delete (TimedEventPool*)g_FilePosCache;
+    delete g_FilePosCache;
     g_FilePosCache = 0;
   }
 }
@@ -395,7 +395,7 @@ void Parser::PushConditionalState(int value) {
 
     // Ensure g_FilePosCache exists
     if (g_FilePosCache == 0) {
-        g_FilePosCache = (void*)new TimedEventPool(10);
+        g_FilePosCache = new TimedEventPool(10);
     }
 
     pool = (int*)g_FilePosCache;
@@ -448,7 +448,7 @@ void Parser::PushConditionalState(int value) {
 int Parser::EndComment() {
     // Ensure g_FilePosCache exists
     if (g_FilePosCache == 0) {
-        g_FilePosCache = (void*)new TimedEventPool(10);
+        g_FilePosCache = new TimedEventPool(10);
     }
 
     if (((int*)g_FilePosCache)[2] == 0) {

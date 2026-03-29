@@ -173,7 +173,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
 
     memset(&palette, 0, 12 * 4);
     flags = 0x10;
-    savedRenderCtx = ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime;
+    savedRenderCtx = g_GameEngine_0046a6ec->m_frameTime;
 
     if (g_ZBufferManager_0046aa24 != 0) {
         ZBufferManager* zbm = g_ZBufferManager_0046aa24;
@@ -245,7 +245,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
 
         animation = (int)new Animation(moviePath);
 
-        ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = 0;
+        g_GameEngine_0046a6ec->m_frameTime = 0;
 
         startX = action->button1;
         startY = action->button2;
@@ -318,7 +318,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
             }
         }
 
-        ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = savedRenderCtx;
+        g_GameEngine_0046a6ec->m_frameTime = savedRenderCtx;
 
         if (flags & 0x20) {
             SendGameMessage(5, 0, handlerId, moduleParam, 0x13, volume, soundParam, 0, 0, 0);
@@ -478,7 +478,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         VBuffer* tb = anim3->targetBuffer;
         SetVideoRes(tb->width, tb->height);
 
-        ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime = savedRenderCtx;
+        g_GameEngine_0046a6ec->m_frameTime = savedRenderCtx;
 
         if (g_ZBufferManager_0046aa24 != 0) {
             int newState = 1;

@@ -128,7 +128,7 @@ extern "C" void SendGameMessage(int a, int b, int c, int d, int e, int f, int g,
 
 /* Function start: 0x444E20 */
 void EnqueueSpriteAction(void* action) {
-    ((GameEngine*)g_GameEngine_0046a6ec)->EnqueueAction((SpriteAction*)action);
+    g_GameEngine_0046a6ec->EnqueueAction((SpriteAction*)action);
     ((SpriteAction*)action)->childAction = 0;
 }
 
@@ -155,6 +155,6 @@ void SpriteAction::Serialize(void* param) {
 
 /* Function start: 0x444E40 */
 void EnqueueSpriteAction(SpriteAction* action) {
-    ((GameEngine*)g_GameEngine_0046a6ec)->EnqueueAction(action);
+    g_GameEngine_0046a6ec->EnqueueAction(action);
     action->childAction = 0;
 }

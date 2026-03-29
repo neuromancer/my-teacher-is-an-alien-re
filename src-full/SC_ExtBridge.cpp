@@ -44,7 +44,7 @@ SC_ExtBridge::~SC_ExtBridge() {
     }
 
     if (engine != 0) {
-        delete (SC_CombatBase*)engine;
+        delete engine;
         engine = 0;
     }
 }
@@ -60,14 +60,13 @@ void SC_ExtBridge::Init(SC_Message* msg) {
     }
 
     if (engine == 0) {
-        EngineA* eng = new EngineA();
-        engine = (int)eng;
+        engine = new EngineA();
         g_CombatEngine_0046ae78 = engine;
         ParseFile(this, "mis\\cb_ducts.mis", (char*)0);
     }
 
     g_CombatEngine_0046ae78 = engine;
-    ((SC_CombatBase*)engine)->SetupViewport();
+    engine->SetupViewport();
 
     if (msg != 0 && action->extra1 == 1) {
         g_Navigator_0046ae70->SetNavParams(action->mousePos.x, action->mousePos.y);
@@ -176,7 +175,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 int SC_ExtBridge::ShutDown(SC_Message* msg)
 {
     SpriteAction* action = new SpriteAction(5, 0x458, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
-    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         delete action;
     }

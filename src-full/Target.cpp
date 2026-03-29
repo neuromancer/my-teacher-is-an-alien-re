@@ -359,8 +359,8 @@ case_hit:
     ((int*)g_ScoreDisplay_0046ae6c)[3]++;
     *(int*)g_ScoreDisplay_0046ae6c += hitMissPoints.start;
     g_ScoreDisplay_0046ae6c->AdjustScore(scoreWeight.start);
-    *(int*)(g_CombatEngine_0046ae78 + 0xBC) += combatBonus.start;
-    *(int*)(g_CombatEngine_0046ae78 + 0xCC) += combatBonus2.val;
+    g_CombatEngine_0046ae78->hotspotX += combatBonus.start;
+    *(int*)&g_CombatEngine_0046ae78->field_0xCC += combatBonus2.val;
 
 done_action:
     pendingAction = 0;

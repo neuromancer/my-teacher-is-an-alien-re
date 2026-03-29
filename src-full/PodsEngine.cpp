@@ -20,7 +20,7 @@ PodsEngine::PodsEngine()
 PodsEngine::~PodsEngine()
 {
     if (g_PodsPalette_0046bf30 != 0) {
-        delete (Palette*)g_PodsPalette_0046bf30;
+        delete g_PodsPalette_0046bf30;
         g_PodsPalette_0046bf30 = 0;
     }
     if (podsBgSprite != 0) {

@@ -71,11 +71,11 @@ int EngineInfoParser::LBLParse(char* line) {
 /* Function start: 0x434A00 */
 void EngineInfoParser::ParseOffset(char *line, int arg2) {
   if ((char)arg2 == '1') {
-    sscanf(line, "%d %d", (int*)(g_CombatEngine_0046ae78 + 0xD0),
-           (int*)(g_CombatEngine_0046ae78 + 0xD8));
+    sscanf(line, "%d %d", (int*)&g_CombatEngine_0046ae78->field_0xD0,
+           &g_CombatEngine_0046ae78->field_0xD8);
   } else {
-    sscanf(line, "%d %d", (int*)(g_CombatEngine_0046ae78 + 0xC0),
-           (int*)(g_CombatEngine_0046ae78 + 0xC8));
+    sscanf(line, "%d %d", &g_CombatEngine_0046ae78->hotspotY,
+           (int*)&g_CombatEngine_0046ae78->field_0xC8);
   }
 }
 
@@ -99,7 +99,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
 
   switch (index) {
   case 0:
-    *(int*)(g_CombatEngine_0046ae78 + 0xEC) = sound;
+    *(int*)&g_CombatEngine_0046ae78->backgroundSound = sound;
     break;
   case 1:
     *(int*)((char*)g_CombatWeapon_0046ae60 + 0xAC) = sound;

@@ -370,16 +370,16 @@ extern "C" char* FormatAssetPath(char* format, ...)
     vsprintf(localPath, format, (char*)&format + 4);
 
     if (FileExists(localPath) != 0) {
-        strcpy((char*)g_PathResolver_0046aa1c + 0x195, localPath);
+        strcpy(g_PathResolver_0046aa1c->field_190 + 5, localPath);
     } else {
-        sprintf((char*)g_PathResolver_0046aa1c + 0x195, "%s%s", (char*)g_PathResolver_0046aa1c + 0x190, localPath);
+        sprintf(g_PathResolver_0046aa1c->field_190 + 5, "%s%s", g_PathResolver_0046aa1c->field_190, localPath);
     }
-    return (char*)g_PathResolver_0046aa1c + 0x195;
+    return g_PathResolver_0046aa1c->field_190 + 5;
 }
 
 /* Function start: 0x426190 */
 char* ResolveAssetPath(char* name) {
-    char* basePath = (char*)((int)g_PathResolver_0046aa1c + 0x21a);
+    char* basePath = g_PathResolver_0046aa1c->field_190 + 0x8a;
     sprintf(basePath, "%s", name);
 
     if (FileCacheLookup(basePath) != 0) {
@@ -397,7 +397,7 @@ char* ResolveAssetPath(char* name) {
         return basePath;
     }
     FileCacheRegister(basePath, size);
-    ((CDData*)g_PathResolver_0046aa1c)->ResolvePath(basePath);
+    g_PathResolver_0046aa1c->ResolvePath(basePath);
     return basePath;
 }
 

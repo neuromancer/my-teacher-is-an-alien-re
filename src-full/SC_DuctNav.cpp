@@ -214,21 +214,21 @@ void InitNewGame() {
     SpriteAction* action;
 
     action = new SpriteAction(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         free(action);
     }
 
     action = new SpriteAction(1, 0x1e, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         free(action);
     }
 
     action = new SpriteAction(1, 0x2c, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         free(action);
@@ -282,7 +282,7 @@ void InitNewGame() {
     gs->stateValues[idx] = 1;
 
     action = new SpriteAction(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
-    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         free(action);
@@ -388,7 +388,7 @@ void SC_DuctNav::Init(SC_Message* msg) {
         field_0x24C = 0;
     }
 
-    ((GlyphFont*)g_GlyphFont_0046aa28)->LoadFont("cfg\\Teacher.pal");
+    g_GlyphFont_0046aa28->LoadFont("cfg\\Teacher.pal");
 
     field_0x24C = (int)new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
 }
@@ -644,7 +644,7 @@ void SC_DuctNav::Update(int p1, int p2) {
     sprintf(g_Buffer_0046aa00, "%s", saveFilename);
 
     if (field_0x24C != 0) {
-        int textWidth = ((GlyphFont*)g_GlyphFont_0046aa28)->GetTextWidth(g_Buffer_0046aa00);
+        int textWidth = g_GlyphFont_0046aa28->GetTextWidth(g_Buffer_0046aa00);
         if (textWidth <= (int)g_FontFilename_0046bd78) {
             int blink = g_FontField_0046bd7c;
             g_FontField_0046bd7c++;
@@ -1028,7 +1028,7 @@ void SC_DuctNav::WriteSaveFile()
     fa->mode = 1;
     g_GameState_0046aa30->Serialize(fa);
     g_FlagManager_0046a6e8->Serialize(fa);
-    ((GameEngine*)g_GameEngine_0046a6ec)->Serialize(fa);
+    g_GameEngine_0046a6ec->Serialize(fa);
     g_PendingAction_00472d58.Serialize(fa);
 
     {
@@ -1058,7 +1058,7 @@ void SC_DuctNav::LoadSaveFile()
 
     /* Send screen transition 0x20 */
     action = new SpriteAction(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
@@ -1066,7 +1066,7 @@ void SC_DuctNav::LoadSaveFile()
 
     /* Send screen transition 0x1e */
     action = new SpriteAction(1, 0x1e, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
@@ -1074,7 +1074,7 @@ void SC_DuctNav::LoadSaveFile()
 
     /* Send screen transition 0x2c */
     action = new SpriteAction(1, 0x2c, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
@@ -1107,7 +1107,7 @@ void SC_DuctNav::LoadSaveFile()
     fa->mode = 0;
     g_GameState_0046aa30->Serialize(fa);
     g_FlagManager_0046a6e8->Serialize(fa);
-    ((GameEngine*)g_GameEngine_0046a6ec)->Serialize(fa);
+    g_GameEngine_0046a6ec->Serialize(fa);
     g_PendingAction_00472d58.Serialize(fa);
 
     {

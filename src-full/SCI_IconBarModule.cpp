@@ -42,7 +42,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
     void* data;
 
     if (field_E4 != 0) {
-        delete (Palette*)field_E4;
+        delete field_E4;
         field_E4 = 0;
     }
 
@@ -62,11 +62,10 @@ SCI_IconBarModule::~SCI_IconBarModule() {
         i--;
     } while (i != 0);
 
-    LinkedList* list = (LinkedList*)field_128;
-    if (list != 0 && list->head != 0) {
-        list->current = list->head;
-        while (list->head != 0) {
-            data = list->RemoveCurrent();
+    if (field_128 != 0 && field_128->head != 0) {
+        field_128->current = field_128->head;
+        while (field_128->head != 0) {
+            data = field_128->RemoveCurrent();
             if (data != 0) {
                 delete (SpriteAction*)data;
             }
@@ -74,7 +73,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
     }
 
     {
-        Queue* qlist = (Queue*)field_128;
+        Queue* qlist = field_128;
         if (qlist != 0) {
             if (qlist->head != 0) {
                 qlist->current = qlist->head;
@@ -197,7 +196,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Cleanup Palette
         if (field_E4 != 0) {
-            delete (Palette*)field_E4;
+            delete field_E4;
             field_E4 = 0;
         }
 
@@ -221,17 +220,16 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Cleanup action list
         if (field_128 != 0) {
-            LinkedList* list = (LinkedList*)field_128;
-            if (list->head != 0) {
-                list->current = list->head;
-                while (list->head != 0) {
-                    void* data = list->RemoveCurrent();
+            if (field_128->head != 0) {
+                field_128->current = field_128->head;
+                while (field_128->head != 0) {
+                    void* data = field_128->RemoveCurrent();
                     if (data != 0) {
                         delete (SpriteAction*)data;
                     }
                 }
             }
-            FreeMemory(list);
+            FreeMemory(field_128);
             field_128 = 0;
         }
 
@@ -258,13 +256,12 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Dispatch queued actions
         if (field_128 != 0) {
-            LinkedList* list = (LinkedList*)field_128;
-            list->current = list->head;
-            if (list->head != 0) {
+            field_128->current = field_128->head;
+            if (field_128->head != 0) {
                 do {
                     void* nodeData = 0;
-                    if (list->current != 0) {
-                        nodeData = list->current->data;
+                    if (field_128->current != 0) {
+                        nodeData = field_128->current->data;
                     }
                     int* actionData = (int*)nodeData;
                     if (actionData[2] == 0 ||
@@ -273,11 +270,11 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                           (actionData[2] == msgData[2] && msgData[3] == actionData[3])))) {
                         EnqueueSpriteAction((void*)actionData[0xD]);
                     }
-                    if (list->tail == list->current) break;
-                    if (list->current != 0) {
-                        list->current = list->current->next;
+                    if (field_128->tail == field_128->current) break;
+                    if (field_128->current != 0) {
+                        field_128->current = field_128->current->next;
                     }
-                } while (list->head != 0);
+                } while (field_128->head != 0);
             }
         }
     }
@@ -369,7 +366,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
             WriteToLog("ddouble palette");
         }
-        g_ZBufferManager_0046aa24->m_palette = (Palette*)field_E4;
+        g_ZBufferManager_0046aa24->m_palette = field_E4;
     }
 }
 
@@ -483,7 +480,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
             }
 
             if (g_SelectedItem_0046a6e4 != 0) {
-                ((int*)msg)[6] = ((T_Object*)g_SelectedItem_0046a6e4)->itemId;
+                ((int*)msg)[6] = g_SelectedItem_0046a6e4->itemId;
             } else {
                 ((int*)msg)[6] = 0;
             }
@@ -576,7 +573,7 @@ void SCI_IconBarModule::UpdateCursor() {
     iconIdx = FindClickedIcon(mouseX, mouseY);
 
     if (g_SelectedItem_0046a6e4 != 0) {
-        hotspot = ((T_Object*)g_SelectedItem_0046a6e4)->itemId + 0x1d;
+        hotspot = g_SelectedItem_0046a6e4->itemId + 0x1d;
         if (g_Mouse_0046aa18->m_sprite == 0) {
             goto done;
         }

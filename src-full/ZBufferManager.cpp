@@ -573,7 +573,7 @@ void ZBufferManager::ShowText(char* text, int x, int y, int priority, int color)
 
     if (m_state == 1) {
         SetFontPosition(x, y);
-        ((GlyphFont*)g_GlyphFont_0046aa28)->RenderText(text, color);
+        g_GlyphFont_0046aa28->RenderText(text, color);
         return;
     }
 

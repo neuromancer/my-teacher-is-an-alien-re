@@ -39,14 +39,14 @@ int SC_Combat::LBLParse(char* line) {
 
     if (strcmp(local_3c, "PALETTE") == 0) {
         sscanf(line, "%s %s", local_3c, local_bc);
-        field_0x104 = (int)new Palette();
-        ((Palette*)field_0x104)->Load(local_bc);
+        field_0x104 = new Palette();
+        field_0x104->Load(local_bc);
     } else if (strcmp(local_3c, "BACKGROUND_SPRITE") == 0) {
         bgSprite = new Sprite((char*)0);
         Parser::ProcessFile(bgSprite, this, (char*)0);
     } else if (strcmp(local_3c, "CONSOLE_SPRITE") == 0) {
-        field_0x10C = (int)new Sprite((char*)0);
-        Parser::ProcessFile((Parser*)field_0x10C, this, (char*)0);
+        field_0x10C = new Sprite((char*)0);
+        Parser::ProcessFile(field_0x10C, this, (char*)0);
     } else if (strcmp(local_3c, "VIDEO_RES") == 0) {
         sscanf(line, " %s %d %d", local_3c, &field_0xAC[4], &field_0xAC[5]);
         SetVideoRes(field_0xAC[4], field_0xAC[5]);
@@ -103,7 +103,7 @@ void SC_Combat::OnProcessEnd() {
         if (*(int*)((char*)mgr + 0xA8) != 0) {
             WriteToLog("double palette");
         }
-        *(int*)((char*)mgr + 0xA8) = field_0x104;
+        mgr->m_palette = field_0x104;
     }
 }
 
@@ -131,7 +131,7 @@ int SC_Combat::AddMessage(SC_Message* msg) {
 /* Function start: 0x449320 */
 int SC_Combat::ShutDown(SC_Message* msg) {
     if (field_0x104 != 0) {
-        delete (Palette*)field_0x104;
+        delete field_0x104;
         field_0x104 = 0;
     }
     if (bgSprite != 0) {
@@ -139,7 +139,7 @@ int SC_Combat::ShutDown(SC_Message* msg) {
         bgSprite = 0;
     }
     if (field_0x10C != 0) {
-        delete (Sprite*)field_0x10C;
+        delete field_0x10C;
         field_0x10C = 0;
     }
     if (pendingAction != 0) {

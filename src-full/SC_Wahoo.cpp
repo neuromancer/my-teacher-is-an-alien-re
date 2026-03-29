@@ -39,6 +39,7 @@ extern char* __cdecl ResolveAssetPath(char* name);
 
 // FUN_00410fb0 = VBuffer ctor — callers updated to use new
 #include "RockThrower.h"
+#include "SC_CombatBase.h"
 
 
 // FUN_00426ce0 is thiscall with 1 param (not fastcall)
@@ -189,7 +190,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
     }
 
     if (g_WahooEngine_0046bbfc != 0) {
-        (*(void (**)(int))(*((int*)g_WahooEngine_0046bbfc) + 0xC))(1);
+        delete g_WahooEngine_0046bbfc;
         g_WahooEngine_0046bbfc = 0;
     }
 
@@ -259,9 +260,9 @@ int SC_Wahoo::AddMessage(SC_Message* msg) {
     if (m[9] >= 1) {
         if (m[7] < cursorHitbox.left || cursorHitbox.right < m[7] ||
             m[8] < cursorHitbox.top || cursorHitbox.bottom < m[8]) {
-            *(int*)((int)g_WahooEngine_0046bbfc + 0xB8) = *(int*)((int)g_WahooEngine_0046bbfc + 0xB8) & 0xFFFFFFFE;
+            *(int*)&g_WahooEngine_0046bbfc->hotspotPool = *(int*)&g_WahooEngine_0046bbfc->hotspotPool & 0xFFFFFFFE;
         } else {
-            *(int*)((int)g_WahooEngine_0046bbfc + 0xB8) = *(int*)((int)g_WahooEngine_0046bbfc + 0xB8) | 1;
+            *(int*)&g_WahooEngine_0046bbfc->hotspotPool = *(int*)&g_WahooEngine_0046bbfc->hotspotPool | 1;
             if (m[9] > 1) {
                 gameFlags = gameFlags | 2;
                 ProcessState();
@@ -459,7 +460,7 @@ label_done:
 
     ((DetectionObj*)g_WahooEngine_0046bbfc)->Render();
 
-    if (*(int*)((int)g_WahooEngine_0046bbfc + 0xA8) != 0) {
+    if (g_WahooEngine_0046bbfc->palette != 0) {
         cursorX = 0;
         if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
             cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
@@ -612,7 +613,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
         int ret = sscanf(param_1, " %s %s ", local_38, local_b8);
         if (ret == 2) {
             if (strcmp(local_b8, "ROCKTHROWER2") == 0) {
-                g_WahooEngine_0046bbfc = new RockThrower(this);
+                g_WahooEngine_0046bbfc = (SC_CombatBase*)new RockThrower(this);
             }
         }
     }

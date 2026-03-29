@@ -9,6 +9,8 @@
 class SC_Message;
 class TimeOut;
 class MMPlayer;
+class Palette;
+struct Queue;
 
 // SCI_IconBarModule - Icon bar module handler (case 32/0x20)
 // Constructor: 0x401000
@@ -38,10 +40,10 @@ public:
     SlimeDim field_C8;          // 0xC8 — SlimeDim sub-object
     Rect boundRect;             // 0xD0 — boundary rect
     TimeOut* timeout;           // 0xE0 — inactivity timeout
-    int field_E4;               // 0xE4
+    Palette* field_E4;          // 0xE4
     MMPlayer* mmPlayer;         // 0xE8 — background animation/cursor
     Sprite* icons[15];          // 0xEC-0x127 — icon sprite pointers
-    int field_128;              // 0x128
+    Queue* field_128;           // 0x128
     int field_12C;              // 0x12C
 };
 

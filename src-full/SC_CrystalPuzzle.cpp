@@ -225,7 +225,7 @@ SC_CrystalPuzzle::~SC_CrystalPuzzle() {
     }
 
     if (field_A8 != 0) {
-        delete (SpriteAction*)field_A8;
+        delete field_A8;
         field_A8 = 0;
     }
 }
@@ -276,7 +276,7 @@ void SC_CrystalPuzzle::Init(SC_Message* msg) {
 
     field_1BC = 0;
     if (field_A8 == 0) {
-        field_A8 = (int)new SpriteAction(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+        field_A8 = new SpriteAction(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }
 
     int stateIdx = g_PeriodStateIdx_0046cb90;
@@ -328,9 +328,8 @@ int SC_CrystalPuzzle::ShutDown(SC_Message* msg) {
         sound1 = 0;
     }
 
-    SpriteAction* act = (SpriteAction*)field_A8;
-    if (act != 0) {
-        delete act;
+    if (field_A8 != 0) {
+        delete field_A8;
         field_A8 = 0;
     }
 
@@ -643,21 +642,21 @@ int SC_CrystalPuzzle::Exit(SC_Message* msg) {
 
     if (savedCommand == 0x2b) {
         if (field_E8 != 0) {
-            act = (SpriteAction*)field_A8;
+            act = field_A8;
             act->addressType = 3;
-            act = (SpriteAction*)field_A8;
+            act = field_A8;
             act->addressValue = field_E8;
-            act = (SpriteAction*)field_A8;
+            act = field_A8;
             act->fromType = 0x2b;
-            act = (SpriteAction*)field_A8;
+            act = field_A8;
             act->fromValue = 1;
         }
     } else if ((field_1BC & 1) != 0) {
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->addressType = 0x20;
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->addressValue = 2;
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->extra1 = 0x16;
 
         gs = g_GameState_0046aa30;
@@ -674,11 +673,11 @@ int SC_CrystalPuzzle::Exit(SC_Message* msg) {
         }
         gs->stateValues[idx] = 1;
 
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->addressType = 0x20;
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->addressValue = 1;
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->extra1 = 0x1b;
 
         gs = g_GameState_0046aa30;
@@ -695,22 +694,22 @@ int SC_CrystalPuzzle::Exit(SC_Message* msg) {
         }
         gs->stateValues[idx] = 1;
 
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->addressType = 3;
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->addressValue = field_E8;
 
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         SpriteAction* child = act->childAction;
         if (child != 0) {
             delete child;
-            act = (SpriteAction*)field_A8;
+            act = field_A8;
             act->childAction = 0;
         }
 
         SpriteAction* newAction = new SpriteAction(0x20, 2, handlerId, moduleParam, 4, 0x18, 0, 0, 0, 0);
 
-        act = (SpriteAction*)field_A8;
+        act = field_A8;
         act->childAction = newAction;
 
         gs = g_GameState_0046aa30;
@@ -721,11 +720,10 @@ int SC_CrystalPuzzle::Exit(SC_Message* msg) {
         gs->stateValues[idx] += 0x1e;
     }
 
-    EnqueueSpriteAction((SpriteAction*)field_A8);
+    EnqueueSpriteAction(field_A8);
 
-    act = (SpriteAction*)field_A8;
-    if (act != 0) {
-        delete act;
+    if (field_A8 != 0) {
+        delete field_A8;
         field_A8 = 0;
     }
 

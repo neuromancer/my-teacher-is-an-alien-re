@@ -178,7 +178,7 @@ void SC_BgSnd::SetVolume(int volume, int duration) {
                         targetVol = volume;
                         int timerDiv;
                         if (g_GameEngine_0046a6ec != 0) {
-                            timerDiv = *(int *)(g_GameEngine_0046a6ec + 0x1c);
+                            timerDiv = g_GameEngine_0046a6ec->m_frameTime;
                             if (timerDiv != 0) goto calc;
                         }
                         timerDiv = 0x54;

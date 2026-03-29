@@ -10,11 +10,12 @@
 // Vtable: 0x4617D8
 class SpriteAction;
 class Palette;
+class SC_CombatBase;
 
 class SC_ExtBridge : public Handler {
 public:
     SpriteAction* actionMsg;  // 0xA8
-    int engine;               // 0xAC — EngineA* (virtual delete)
+    SC_CombatBase* engine;    // 0xAC
     Palette* palette;         // 0xB0
     SlimeDim dim;             // 0xB4 (8 bytes)
     int bgSoundId;            // 0xBC

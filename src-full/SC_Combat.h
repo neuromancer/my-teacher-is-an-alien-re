@@ -5,6 +5,7 @@
 
 class SpriteAction;
 class Sprite;
+class Palette;
 class SoundList;
 
 // SC_Combat - Base class for combat/mini-game handlers
@@ -20,9 +21,9 @@ public:
     int* statusPtr;            // 0xA8 — pointer to game status flags
     int field_0xAC[21];        // 0xAC-0xFF
     SpriteAction* pendingAction; // 0x100 — pending action message
-    int field_0x104;           // 0x104
+    Palette* field_0x104;      // 0x104
     Sprite* bgSprite;          // 0x108 — background/animation sprite
-    int field_0x10C;           // 0x10C
+    Sprite* field_0x10C;       // 0x10C
     SoundList* bgSound;        // 0x110 — background sound list
     int field_0x114;           // 0x114
 

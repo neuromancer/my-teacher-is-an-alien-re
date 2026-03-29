@@ -115,7 +115,7 @@ void SC_Rats::Init(SC_Message* msg) {
         zbm->m_palette = 0;
     }
     ParseFile(this, "mis\\cb_rats.mis", (char*)0);
-    InitCombatScreen((void*)g_CombatEngine_0046ae78);
+    InitCombatScreen(g_CombatEngine_0046ae78);
     if (p[0] == 0) {
         SpriteAction* sprite = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
@@ -261,7 +261,7 @@ void SC_Rats::ProcessState() {
 
 /* Function start: 0x4520E0 */
 void SC_Rats::State0Handler() {
-    int engineObj = g_CombatEngine_0046ae78;
+    int engineObj = (int)g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x118);
 
     State1Handler();
@@ -294,12 +294,12 @@ done:
 
 /* Function start: 0x4521B0 */
 void SC_Rats::State1Handler() {
-    ((SC_CombatBase*)g_CombatEngine_0046ae78)->StopAndCleanup();
+    g_CombatEngine_0046ae78->StopAndCleanup();
 }
 
 /* Function start: 0x4521C0 */
 void SC_Rats::State2Handler() {
-    int engineObj = g_CombatEngine_0046ae78;
+    int engineObj = (int)g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x110);
 
     if (g_State2Phase_00473e20 == 0) {
@@ -329,7 +329,7 @@ done:
 
 /* Function start: 0x452250 */
 void SC_Rats::State3Handler() {
-    int engineObj = g_CombatEngine_0046ae78;
+    int engineObj = (int)g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x10C);
 
     if (g_State3Phase_00473e1c == 0) {
@@ -359,7 +359,7 @@ done:
 
 /* Function start: 0x4522E0 */
 void SC_Rats::State4Handler() {
-    int engineObj = g_CombatEngine_0046ae78;
+    int engineObj = (int)g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x114);
 
     if (g_State4Phase_00473df8 == 0) {
@@ -395,7 +395,7 @@ int SC_Rats::LBLParse(char* param) {
     if (strcmp(buf, "DERIVED_ENGINE_INFO") == 0) {
         EngineB* obj = new EngineB();
         combatEngine = (int)obj;
-        g_CombatEngine_0046ae78 = (int)obj;
+        g_CombatEngine_0046ae78 = obj;
         Parser::ProcessFile((Parser*)obj, this, (char*)0);
         return 0;
     }

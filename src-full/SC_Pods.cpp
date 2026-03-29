@@ -125,7 +125,7 @@ void SC_Pods::Init(SC_Message* msg) {
     soundTable->Allocate(5);
 
     ParseFile(this, "mis\\cb_Pods.mis", (char*)0);
-    InitCombatScreen((void*)g_CombatEngine_0046ae78);
+    InitCombatScreen(g_CombatEngine_0046ae78);
 
     // Create result action
     if (resultAction == 0) {
@@ -171,7 +171,7 @@ int SC_Pods::AddMessage(SC_Message* msg) {
     msg->data = moduleParam;
 
     if (msg->mouseX == 0x1b && savedCommand == 0x2b) {
-        ((SC_CombatBase*)g_CombatEngine_0046ae78)->combatFlags |= 4;
+        g_CombatEngine_0046ae78->combatFlags |= 4;
     }
 
     return 1;
@@ -179,7 +179,7 @@ int SC_Pods::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x441B60 */
 void SC_Pods::HandleResult() {
-    int flags = ((SC_CombatBase*)g_CombatEngine_0046ae78)->combatFlags;
+    int flags = g_CombatEngine_0046ae78->combatFlags;
 
     if (savedCommand == 0x2b) {
         if (flags & 1) {
@@ -330,7 +330,7 @@ int SC_Pods::LBLParse(char* line) {
     if (strcmp(label, "DERIVED_ENGINE_INFO") == 0) {
         PodsEngine* eng = new PodsEngine();
         combatEngine = (int)eng;
-        g_CombatEngine_0046ae78 = (int)eng;
+        g_CombatEngine_0046ae78 = eng;
         Parser::ProcessFile((Parser*)eng, this, (char*)0);
     } else if (strcmp(label, "BGSOUND") == 0) {
         sscanf(line, " %s %d ", label, &soundId);

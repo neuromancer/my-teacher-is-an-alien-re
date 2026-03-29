@@ -174,7 +174,7 @@ void RunGame() {
     // 2. [0x0046a6ec] = new GameEngine (0x28 bytes, constructor 0x430A00) — game loop
     g_ZBufferManager_0046aa24 = new ZBufferManager();
     GameEngine* gameEngine = new GameEngine();
-    g_GameEngine_0046a6ec = (int)gameEngine;
+    g_GameEngine_0046a6ec = gameEngine;
 
     g_Mouse_0046aa18->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
@@ -371,7 +371,7 @@ void InitGameSystems(void) {
     SetCursorVisible(0);
 }
 
-extern void* g_PathResolver_0046aa1c;
+// g_PathResolver_0046aa1c declared in globals.h
 
 /* Function start: 0x4258C0 */ /* ~97% match */
 void ShutdownGameSystems(void) {
@@ -428,7 +428,7 @@ void CreateGameObject_1() {
 /* Function start: 0x4259E0 */
 void InitGameConfig() {
   GameConfig* cfg = new GameConfig();
-  g_BackBuffer2_0046aa10 = cfg;
+  g_BackBuffer2_0046aa10 = (VBuffer*)cfg;
   g_GameConfig_00436970 = cfg;
 
   if (g_CmdLineAudioMode_0043d558 != 0) {

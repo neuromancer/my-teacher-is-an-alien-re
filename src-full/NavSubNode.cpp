@@ -4,6 +4,7 @@
 #include "CombatSprite.h"
 #include "Sprite.h"
 #include "globals.h"
+#include "SC_CombatBase.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -170,7 +171,7 @@ int BG_SubNode::Activate()
 
     state = 1;
     g_NavSprite_004360a4->ResetAnimation(spriteHandle, 0);
-    *(int*)(g_CombatEngine_0046ae78 + 0xe8) = 1;
+    g_CombatEngine_0046ae78->spriteFrameCount = 1;
     frameCounter = 0;
 
     if (spritePool != 0) {
@@ -222,10 +223,10 @@ do_sprite:
     }
 
     if (g_NavSprite_004360a4->animation_data == 0) {
-        *(int*)(g_CombatEngine_0046ae78 + 0xe4) = 0;
+        g_CombatEngine_0046ae78->field_0xE4 = 0;
     } else {
         int* smk = (int*)g_NavSprite_004360a4->animation_data->smk;
-        *(int*)(g_CombatEngine_0046ae78 + 0xe4) = *(int*)((char*)smk + 0x374);
+        g_CombatEngine_0046ae78->field_0xE4 = *(int*)((char*)smk + 0x374);
     }
     return 0;
 }
