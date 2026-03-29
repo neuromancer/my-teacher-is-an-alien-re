@@ -88,7 +88,7 @@ int g_FontExtLeading_0043749e = 0;                           // 0x0043749e
 int g_FontAvgWidth_004374a2 = 0;                             // 0x004374a2
 HPALETTE g_PreviousPalette_004374ae = 0;                     // 0x004374ae
 HPALETTE g_Palette_0043748c = 0;                             // 0x0043748c
-extern "C" unsigned short g_StateFlags_004374b2 = 0;         // 0x004374b2
+unsigned short g_StateFlags_004374b2 = 0;         // 0x004374b2
 HDC g_SecondaryDC_004374b4 = 0;                              // 0x004374b4
 char g_TextAlignH_004374c0 = 0;                              // 0x004374c0
 char g_TextAlignV_004374c1 = 0;                              // 0x004374c1
@@ -113,7 +113,7 @@ int g_GfxInitFlag_00437514 = 0;                              // 0x00437514
 int g_GfxField1_00437518 = 0;                                // 0x00437518
 int g_GfxField2_0043751c = 0;                                // 0x0043751c
 char g_PaletteMap_00437520[256] = {0};                       // 0x00437520 — Palette identity map
-extern "C" unsigned char g_PaletteData_00437620[256] = {0};  // 0x00437620 — Palette data / state flags
+unsigned char g_PaletteData_00437620[256] = {0};  // 0x00437620 — Palette data / state flags
 // LOGPALETTE: palVersion=0x0300, palNumEntries=0x0100
 char g_LogPalette_00437720[1028] = {0x00, 0x03, 0x00, 0x01}; // 0x00437720
 char g_BgrPalette_00437b48[1028];                            // 0x00437b48
@@ -238,25 +238,23 @@ FilePosCache* g_FilePosCache_0046928c = 0;                   // 0x0046928c
 SoundTracker* g_SoundTracker_0046928c = 0;                   // 0x0046928c (same address, different purpose?)
 
 // --- 0x0046axxx (main game objects) ---
-extern "C" {
-    int g_SchoolMenuActive_0046a190 = 0;                     // 0x0046a190
-    Sprite* g_SchoolMenuSprite_0046af08 = 0;                 // 0x0046af08
-}
+int g_SchoolMenuActive_0046a190 = 0;                         // 0x0046a190
+Sprite* g_SchoolMenuSprite_0046af08 = 0;                     // 0x0046af08
 StringTable* g_Strings_0046a6e0 = 0;                         // 0x0046a6e0
 void* g_SelectedItem_0046a6e4 = 0;                           // 0x0046a6e4
 FlagArray* g_FlagManager_0046a6e8 = 0;                       // 0x0046a6e8
-extern "C" int g_GameEngine_0046a6ec = 0;                    // 0x0046a6ec
+int g_GameEngine_0046a6ec = 0;                    // 0x0046a6ec
 GameLoopHelper* g_GameLoopHelper_0046a6f0 = 0;               // 0x0046a6f0
 InputManager* g_InputManager_0046aa08 = 0;                   // 0x0046aa08
 Sound* g_EngineSound_0046aa0c = 0;                           // 0x0046aa0c
-extern "C" void* g_BackBuffer2_0046aa10 = 0;                 // 0x0046aa10
-extern "C" VBuffer* g_BackBuffer_0046aa14 = 0;               // 0x0046aa14
+void* g_BackBuffer2_0046aa10 = 0;                 // 0x0046aa10
+VBuffer* g_BackBuffer_0046aa14 = 0;               // 0x0046aa14
 MouseControl* g_Mouse_0046aa18 = 0;                          // 0x0046aa18
 void* g_PathResolver_0046aa1c = 0;                           // 0x0046aa1c
 ZBufferManager* g_ZBufferManager_0046aa24 = 0;               // 0x0046aa24
 void* g_GlyphFont_0046aa28 = 0;                              // 0x0046aa28
 char* g_StateString_0046aa2c = 0;                            // 0x0046aa2c
-extern "C" GameState* g_GameState_0046aa30 = 0;              // 0x0046aa30
+GameState* g_GameState_0046aa30 = 0;              // 0x0046aa30
 GameState* g_StringTable_0046aa34 = 0;                       // 0x0046aa34
 GameState* g_StringState_0046aa38 = 0;                       // 0x0046aa38
 GameState* g_GameState2_0046aa3c = 0;                        // 0x0046aa3c
@@ -266,20 +264,18 @@ int g_SlimeTableInit_0046ad6c = 0;                           // 0x0046ad6c
 MsgList* g_MsgList_0046a6dc = 0;                             // 0x0046a6dc
 
 // --- 0x0046bxxx - 0x0046cxxx (combat / engine) ---
-extern "C" {
-    EngineInfoParser* g_WeaponParser_0046ae4c = 0;           // 0x0046ae4c
-    Sprite*           g_BgSprite_0046ae50 = 0;               // 0x0046ae50
-    Viewport*         g_Viewport_0046ae54 = 0;               // 0x0046ae54
-    TargetList*       g_TargetList_0046ae58 = 0;             // 0x0046ae58
-    CombatSprite*     g_CombatSprite_0046ae5c = 0;           // 0x0046ae5c
-    Weapon*           g_CombatWeapon_0046ae60 = 0;           // 0x0046ae60
-    Palette*          g_Palette_0046ae64 = 0;                // 0x0046ae64
-    SoundList*        g_SoundList_0046ae68 = 0;              // 0x0046ae68
-    ScoreDisplay*     g_ScoreDisplay_0046ae6c = 0;           // 0x0046ae6c
-    mCNavigator*      g_Navigator_0046ae70 = 0;              // 0x0046ae70
-    HotspotListData*  g_HotspotPool_0046ae74 = 0;           // 0x0046ae74
-    int g_CombatEngine_0046ae78 = 0;                         // 0x0046ae78
-}
+EngineInfoParser* g_WeaponParser_0046ae4c = 0;               // 0x0046ae4c
+Sprite*           g_BgSprite_0046ae50 = 0;                   // 0x0046ae50
+Viewport*         g_Viewport_0046ae54 = 0;                   // 0x0046ae54
+TargetList*       g_TargetList_0046ae58 = 0;                 // 0x0046ae58
+CombatSprite*     g_CombatSprite_0046ae5c = 0;               // 0x0046ae5c
+Weapon*           g_CombatWeapon_0046ae60 = 0;               // 0x0046ae60
+Palette*          g_Palette_0046ae64 = 0;                    // 0x0046ae64
+SoundList*        g_SoundList_0046ae68 = 0;                  // 0x0046ae68
+ScoreDisplay*     g_ScoreDisplay_0046ae6c = 0;               // 0x0046ae6c
+mCNavigator*      g_Navigator_0046ae70 = 0;                  // 0x0046ae70
+HotspotListData*  g_HotspotPool_0046ae74 = 0;               // 0x0046ae74
+int g_CombatEngine_0046ae78 = 0;                             // 0x0046ae78
 int g_DodgeAnimStates_0046bcd0[3] = {0};                     // 0x0046bcd0
 int g_PathCacheHits_0046b784 = 0;                            // 0x0046b784
 int g_PathCacheMisses_0046b788 = 0;                          // 0x0046b788
@@ -293,7 +289,7 @@ char g_CDDriveLetter_0046bd74 = 'A';                         // 0x0046bd74
 char* g_FontFilename_0046bd78 = 0;                           // 0x0046bd78
 int g_FontField_0046bd7c = 0;                                // 0x0046bd7c
 SlimeTable* g_SlimeTable_0046bf28 = 0;                       // 0x0046bf28
-extern "C" void* g_PodsPalette_0046bf30 = 0;                // 0x0046bf30
+void* g_PodsPalette_0046bf30 = 0;                // 0x0046bf30
 int g_SpaceNavStates_0046c3f0[3] = {0, 0, 0};               // 0x0046c3f0
 int g_PeriodStateIdx_0046cb90 = 60;                          // 0x0046cb90
 static char s_PeriodChars[] = " DSP";
@@ -309,10 +305,8 @@ int g_FanField1_00472be0 = 0;                                // 0x00472be0
 int g_FanField2_00472be4 = 0;                                // 0x00472be4
 int g_FanField3_00472be8 = 0;                                // 0x00472be8
 int g_FanField4_00472bec = 0;                                // 0x00472bec
-extern "C" {
-    char g_AnimFilename_00472c70[256] = {0};                 // 0x00472c70
-    char g_AnimFilename2_00472cb0[256] = {0};                // 0x00472cb0
-}
+char g_AnimFilename_00472c70[256] = {0};                     // 0x00472c70
+char g_AnimFilename2_00472cb0[256] = {0};                    // 0x00472cb0
 HDC g_WindowDC_00472d00 = 0;                                 // 0x00472d00
 HPALETTE g_WindowPalette_00472d04 = 0;                       // 0x00472d04
 int g_ScreenWidth_00472d08 = 640;                            // 0x00472d08
@@ -332,20 +326,18 @@ int g_SchoolMenuField2_0047337c = 0;                         // 0x0047337c
 HitBounds g_HitBounds_00473260[3];                           // 0x00473260
 BombData g_BombData_00473278[6];                             // 0x00473278
 POINT g_CursorPos_00473308;                                  // 0x00473308
-extern "C" char g_CinematicDebugStr_00473400 = 0;           // 0x00473400
+char g_CinematicDebugStr_00473400 = 0;           // 0x00473400
 int g_CacheTotalSize_00473440 = 0;                           // 0x00473440
 int g_CacheSizeLimit_00473444 = 0;                           // 0x00473444
 int g_AnimStates_0046ac30[5];                                // 0x0046ac30
 int g_LastBombDir_0046ac44;                                  // 0x0046ac44
 GlyphRect g_DoorRects_00473dc8[3];                           // 0x00473dc8
-extern "C" {
-    int g_State4Phase_00473df8 = 0;                          // 0x00473df8
-    int g_RatsField_00473e00 = 0;                            // 0x00473e00
-    int g_State0Phase_00473e14 = 0;                          // 0x00473e14
-    int g_RatsState_00473e18 = 0;                            // 0x00473e18
-    int g_State3Phase_00473e1c = 0;                          // 0x00473e1c
-    int g_State2Phase_00473e20 = 0;                          // 0x00473e20
-}
+int g_State4Phase_00473df8 = 0;                              // 0x00473df8
+int g_RatsField_00473e00 = 0;                                // 0x00473e00
+int g_State0Phase_00473e14 = 0;                              // 0x00473e14
+int g_RatsState_00473e18 = 0;                                // 0x00473e18
+int g_State3Phase_00473e1c = 0;                              // 0x00473e1c
+int g_State2Phase_00473e20 = 0;                              // 0x00473e20
 int g_InventoryState_004733e8 = 0;                           // 0x004733e8
 int g_GameField_004734a4 = 0;                                // 0x004734a4
 

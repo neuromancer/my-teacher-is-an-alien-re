@@ -430,15 +430,14 @@ extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
 extern MouseControl* g_Mouse_0046aa18; // DAT_00436978
 extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
 extern Timer* g_Timer_00436980; // DAT_00436980
-extern "C" {
+
     extern TimedEventPool* g_TimedEventPool1_00436984; // { /* 4 bytes */ }
     extern TimedEventPool* g_TimedEventPool2_00436988; // { /* 4 bytes */ }
-}
 extern ZBufferManager* g_ZBufferManager_0046aa24; // 0x0046aa24
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
 extern MessageQueue* g_MessageQueue; // Handler8 message queue
 extern char* g_StateString_0046aa2c; // 0x0046aa2c - string buffer used for game state strings
-extern "C" extern GameState* g_GameState_0046aa30; // 0x0046aa30
+extern GameState* g_GameState_0046aa30; // 0x0046aa30
 extern void* g_GameStruct2; // { /* 4 bytes */ }
 extern int g_DevModeFlag_0043d564; // 1 = running from dev directory, 0 = running from CD
 extern int g_DevelopFlag_00472de4; // 1 = "Develop.___" file found (CDData::Setup)
@@ -489,10 +488,9 @@ extern char g_SystemDirPath_00438446[256];                 // system directory p
 extern char g_CursorVisible_00437506; // 1 = cursor visible
 extern char g_CursorState_00437507; // Cursor state tracking
 // g_PaletteMap_00437520[256] - Defined in globals.cpp as palette identity map array
-extern "C" {
+
     extern unsigned char g_PaletteData_00437620[256]; // State flags / Palette data
     extern unsigned short g_StateFlags_004374b2; // State flags bitfield
-}
 extern char g_LogPalette_00437720[1028]; // LOGPALETTE: 4-byte header + 256 PALETTEENTRY
 extern char g_BgrPalette_00437b48[1028]; // BGR palette: 4-byte header + 256 RGBQUAD
 // 0x437724-0x43772a, 0x437744-0x43774e: Offsets inside g_LogPalette_00437720 (palette entries)
@@ -6001,19 +5999,17 @@ extern int g_TotalProcessTime_0046915c;                                   // Par
 extern int g_VarSubstFlag_00469160;                                   // preprocessor variable substitution flag
 extern char g_VarSubstBuffer_00469168[160];                             // Parser buffer
 extern int g_ParserCount;                                  // DAT_00469288
-extern "C" {
+
     extern int g_SchoolMenuActive_0046a190;                               // SCI_SchoolMenu
     extern Sprite* g_SchoolMenuSprite_0046af08;                           // SCI_SchoolMenu
-}
 extern void* g_SelectedItem_0046a6e4;                                // SCI_Inventory
-extern "C" {
+
     extern int g_GameEngine_0046a6ec;                               // SC_Cinematic
     extern void* g_BackBuffer2_0046aa10;                             // SC_SelectHotSpot
     extern VBuffer* g_BackBuffer_0046aa14;                          // SC_SelectHotSpot
     extern char g_CinematicDebugStr_00473400;                              // SC_Cinematic
     extern char g_AnimFilename_00472c70[256];                         // SC_Cinematic
     extern char g_AnimFilename2_00472cb0[256];                         // SC_Cinematic
-}
 extern Sound* g_EngineSound_0046aa0c;                                // Engine
 extern void* g_PathResolver_0046aa1c;                                 // Path resolution
 extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_Message
@@ -6021,7 +6017,7 @@ extern GameState* g_StringState_0046aa38;                            // SC_Quest
 extern int g_AnimStates_0046ac30[5];                       // SC_DodgeOrville
 extern int g_LastBombDir_0046ac44;                         // SC_DodgeOrville
 extern int g_SlimeTableInit_0046ad6c;                                   // SC_Wahoo
-extern "C" {
+
     extern EngineInfoParser* g_WeaponParser_0046ae4c;
     extern Sprite*           g_BgSprite_0046ae50;
     extern Viewport*         g_Viewport_0046ae54;
@@ -6040,7 +6036,6 @@ extern "C" {
     extern int g_State3Phase_00473e1c;                              // 0x00473e1c
     extern int g_State4Phase_00473df8;                              // 0x00473df8
     extern int g_RatsField_00473e00;                       // 0x00473e00
-}
 extern int g_CurrentSpriteIndex_0043634c;                  // CombatSprite current index
 extern int g_SpriteEntryCount_00436344;                    // CombatSprite entry counter
 extern int g_ScreenWidth_00472d08;                         // GameWindow
@@ -6059,7 +6054,7 @@ extern int g_PathCacheHits_0046b784;                                   // cache 
 extern int g_PathCacheMisses_0046b788;                                   // cache miss counter
 extern int g_DodgeAnimStates_0046bcd0[3];                                // SC_DodgeOrville
 extern SlimeTable* g_SlimeTable_0046bf28;                           // SC_FireAlarm / SC_Pods
-extern "C" extern void* g_PodsPalette_0046bf30;                      // Pods palette pointer
+extern void* g_PodsPalette_0046bf30;                      // Pods palette pointer
 extern int g_FireAlarmField1_00472bd8;                                   // SC_FireAlarm / SC_Pods
 extern int g_FireAlarmField2_00472bdc;                                   // SC_FireAlarm / SC_Pods
 extern int g_FanField1_00472be0;                                   // SC_DodgeOrville

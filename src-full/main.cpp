@@ -76,10 +76,7 @@ extern void __cdecl FileCacheEntryCleanup(void*, int);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "GameEngine.h"
-extern "C" int g_GameEngine_0046a6ec;
-extern "C" extern GameState* g_GameState_0046aa30;
-extern GameState* g_GameState2_0046aa3c;
-extern GameState* g_StringTable_0046aa34;
+// g_GameEngine_0046a6ec, g_GameState_0046aa30 etc. — declared in globals.h
 extern GameState* g_StringState_0046aa38;
 
 static float g_PercentScale = 0.01f;

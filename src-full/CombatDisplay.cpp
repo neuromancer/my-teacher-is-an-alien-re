@@ -1,5 +1,6 @@
 #include "CombatDisplay.h"
 #include "SC_CombatBase.h"
+#include "globals.h"
 #include "Sample.h"
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);

@@ -1,5 +1,6 @@
 #include "Viewport.h"
 #include "SC_CombatBase.h"
+#include "globals.h"
 #include <string.h>
 
 ViewportPair::~ViewportPair()
