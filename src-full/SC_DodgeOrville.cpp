@@ -177,14 +177,14 @@ void SC_DodgeOrville::ProcessTargets() {
 /* Function start: 0x429110 */
 void SC_DodgeOrville::UpdateGame()
 {
-    if (((Sprite*)bgSprite)->Do(((Sprite*)bgSprite)->loc_x, ((Sprite*)bgSprite)->loc_y, 1.0) != 0) {
-        if (((Sprite*)bgSprite)->handle != 7) {
+    if (bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0) != 0) {
+        if (bgSprite->handle != 7) {
             ThrowBomb();
         }
     }
 
     int state = field_0x10C->handle;
-    Animation* anim = ((Sprite*)bgSprite)->animation_data;
+    Animation* anim = bgSprite->animation_data;
     int frameVal = 0;
     if (anim != 0) {
         frameVal = anim->smk->FrameNum;
@@ -327,7 +327,7 @@ void SC_DodgeOrville::ThrowBomb()
     } while (dir == g_LastBombDir_0046ac44);
 
     g_LastBombDir_0046ac44 = dir;
-    ((Sprite*)bgSprite)->ResetAnimation(dir + 1, 0); // 0x108
+    bgSprite->ResetAnimation(dir + 1, 0); // 0x108
 
     // Copy bomb data to hit bounds (3 entries)
     int* src = (int*)&g_BombData_00473278[dir];

@@ -129,15 +129,15 @@ void SC_Rats::Init(SC_Message* msg) {
 /* Function start: 0x451B30 */
 int SC_Rats::ShutDown(SC_Message* msg) {
     if (combatEngine != 0) {
-        ((Engine*)combatEngine)->StopAndCleanup();
+        combatEngine->StopAndCleanup();
         if (combatEngine != 0) {
-            delete (Handler*)combatEngine;
+            delete combatEngine;
             combatEngine = 0;
         }
         g_CombatEngine_0046ae78 = 0;
     }
     if (actionData != 0) {
-        delete (SpriteAction*)actionData;
+        delete actionData;
         actionData = 0;
     }
     if (msg != 0) {
@@ -204,7 +204,7 @@ void SC_Rats::ProcessState() {
     if (savedCommand == 0x2B) {
         if (g_RatsState_00473e18 == 2) {
             if (actionData != 0) {
-                delete (SpriteAction*)actionData;
+                delete actionData;
                 actionData = 0;
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -212,7 +212,7 @@ void SC_Rats::ProcessState() {
             ParseFile(&temp, "mis\\cb_rats.mis", "_WIN_LBL_PR_");
         } else if (g_RatsState_00473e18 == 3) {
             if (actionData != 0) {
-                delete (SpriteAction*)actionData;
+                delete actionData;
                 actionData = 0;
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -231,7 +231,7 @@ void SC_Rats::ProcessState() {
             gs->stateValues[idx] += 0x14;
         } else if (g_RatsState_00473e18 == 3) {
             if (actionData != 0) {
-                delete (SpriteAction*)actionData;
+                delete actionData;
                 actionData = 0;
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -254,7 +254,7 @@ void SC_Rats::ProcessState() {
     }
     EnqueueSpriteAction((void*)actionData);
     if (actionData != 0) {
-        delete (SpriteAction*)actionData;
+        delete actionData;
         actionData = 0;
     }
 }
@@ -394,7 +394,7 @@ int SC_Rats::LBLParse(char* param) {
     sscanf(param, "%s", buf);
     if (strcmp(buf, "DERIVED_ENGINE_INFO") == 0) {
         EngineB* obj = new EngineB();
-        combatEngine = (int)obj;
+        combatEngine = obj;
         g_CombatEngine_0046ae78 = obj;
         Parser::ProcessFile((Parser*)obj, this, (char*)0);
         return 0;

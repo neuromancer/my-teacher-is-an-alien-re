@@ -162,7 +162,7 @@ void SC_CombatBase::Initialize()
 void SC_CombatBase::CleanupAll()
 {
     if (bgSprite != 0) {
-        delete (Sprite*)bgSprite;
+        delete bgSprite;
         bgSprite = 0;
     }
     if (navigator != 0) {

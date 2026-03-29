@@ -153,7 +153,7 @@ int IconBar::ShutDown(SC_Message* msg) {
             IconBarEntry* entry = g_IconBarEntries;
             do {
                 if (entry->sprite != 0) {
-                    ((Sprite*)entry->sprite)->StopAnimationSound();
+                    entry->sprite->StopAnimationSound();
                 }
                 entry = entry + 1;
             } while (entry < &g_IconBarEntries[6]);
@@ -301,7 +301,7 @@ void IconBar::Update(int param1, int param2) {
         return;
     }
 
-    ((Sprite*)g_IconBarSprite)->Do(
+    g_IconBarSprite->Do(
         g_IconBarSprite->loc_x,
         g_IconBarSprite->loc_y, 1.0);
 
@@ -339,7 +339,7 @@ void IconBar::Update(int param1, int param2) {
                         ShowError("Invalid gamestate %d", 0x3c);
                     }
                     if (gs->stateValues[0x3c] != 1) {
-                        ((Sprite*)entry->sprite)->Do(
+                        entry->sprite->Do(
                             entry->sprite->loc_x,
                             entry->sprite->loc_y, 1.0);
                     }
@@ -363,7 +363,7 @@ void IconBar::Update(int param1, int param2) {
                 }
 
                 if (entry->field_14 != 0) {
-                    ((Sprite*)entry->sprite)->Do(
+                    entry->sprite->Do(
                         entry->sprite->loc_x,
                         entry->sprite->loc_y, 1.0);
                 }
@@ -468,9 +468,9 @@ int IconBar::LBLParse(char* param) {
         Sprite* spr = new Sprite(0);
         g_IconBarEntries[index].sprite = spr;
         spr->flags &= ~2;
-        ((Sprite*)g_IconBarEntries[index].sprite)->ConfigStates(2);
-        ((Sprite*)g_IconBarEntries[index].sprite)->ConfigRange(0, 1, 1, 1);
-        ((Sprite*)g_IconBarEntries[index].sprite)->ConfigRange(1, 2, 2, 1);
+        g_IconBarEntries[index].sprite->ConfigStates(2);
+        g_IconBarEntries[index].sprite->ConfigRange(0, 1, 1, 1);
+        g_IconBarEntries[index].sprite->ConfigRange(1, 2, 2, 1);
         g_IconBarEntries[index].sprite->handle = 0x3e9;
         Parser::ProcessFile(g_IconBarEntries[index].sprite, this, (char*)0);
     } else if (strcmp(label, "ICON_SOUND") == 0) {

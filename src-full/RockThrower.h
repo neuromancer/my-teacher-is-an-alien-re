@@ -5,6 +5,7 @@
 #include <string.h>
 
 class Projectile;
+class Sample;
 
 // Weapon - Base class for weapon displays
 // Full game vtable: 0x4614B0 (6 entries)
@@ -21,7 +22,7 @@ public:
     int m_crosshairX;   // 0xA0
     int m_crosshairY;   // 0xA4
     int m_clicked;      // 0xA8 — clicked/fire flag
-    int m_sound;        // 0xAC — Sample* sound
+    Sample* m_sound;    // 0xAC — Sample* sound
 
     Weapon() {
         m_crosshairX = 0;

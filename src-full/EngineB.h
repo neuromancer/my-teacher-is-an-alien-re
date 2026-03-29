@@ -8,6 +8,7 @@
 class Animation;
 class Sample;
 class SoundList;
+class VBuffer;
 
 struct MeterPos {
   int x;
@@ -63,12 +64,12 @@ public:
   Sample* m_tauntSound2;          // 0x134 - "cb_rats\\snd5008" (idle taunt, rand%2)
   Sample* m_milestoneSound;       // 0x138 - "cb_rats\\snd5002" (progress milestone)
   Animation* m_meterAnimation;    // 0x13C - "combats\\nmeter.smk"
-  int m_meterBuffer;              // 0x140 - VBuffer* for meter blitting
+  VBuffer* m_meterBuffer;         // 0x140 - VBuffer* for meter blitting
   GlyphRect m_meterEmptyRect;     // 0x144-0x153 - source rect for empty meter
   GlyphRect m_meterFullRect;      // 0x154-0x163 - source rect for full meter
   IntPair m_progress;             // 0x164-0x16B - {current, max}
   MeterPos m_meterPosition;       // 0x16C-0x173 - {x, y} destination
-  int m_weaponParser;             // 0x174 - weapon/parser pointer
+  Weapon* m_weaponParser;         // 0x174 - weapon/parser pointer
 
   EngineB();
   virtual ~EngineB();

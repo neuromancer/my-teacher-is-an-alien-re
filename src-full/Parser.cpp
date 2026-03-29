@@ -635,7 +635,7 @@ void Parser::HandleToken(int tokenType, char* line) {
                 *(int*)(local_14 + 0x14) = 10;
                 pcVar6 = local_14;
             }
-            field_0x3c = (int)pcVar6;
+            field_0x3c = pcVar6;
         }
         {
             fpos_t filePos;
@@ -709,7 +709,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
 
     case 10:
-        if (field_0x3c == 0 || *(int*)(field_0x3c + 8) == 0) {
+        if (field_0x3c == 0 || ((int*)field_0x3c)[2] == 0) {
             ShowError("Parser::HandleToken - Invalid <<_RETURN_>>");
         }
         {

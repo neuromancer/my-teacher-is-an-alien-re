@@ -25,8 +25,8 @@ public:
     int AddMessage(SC_Message* msg);    // 0x4306A0
     void EndCinematic();                // 0x430730
 
-    int palette;        // 0xA8 — Palette*
-    int animation;      // 0xAC — Animation*
+    Palette* palette;   // 0xA8
+    Animation* animation; // 0xAC
     int savedZBState;   // 0xB0 — saved ZBufferManager state
     int savedRenderCtx; // 0xB4 — saved render context from GameEngine
     int flags;          // 0xB8 — playback flags (bit0=no-skip, bit1=no-palette, bit2=blank-after, etc.)
@@ -35,7 +35,7 @@ public:
     int volume;         // 0xC4 — audio volume (default 100)
     int soundParam;     // 0xC8 — sound parameter
     int waitForInput;   // 0xCC — 1 = waiting for click after last frame
-    int pendingAction;  // 0xD0 — SpriteAction* to execute on end
+    SpriteAction* pendingAction; // 0xD0 — action to execute on end
     int field_D4;       // 0xD4
 };
 

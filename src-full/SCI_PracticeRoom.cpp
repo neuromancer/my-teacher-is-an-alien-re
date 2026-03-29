@@ -81,7 +81,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
         if (spr != 0) {
             spr->field_A4 = 0;
             if (spr->cursor != 0) {
-                ((Sprite*)spr->cursor)->ResetAnimation(0, 0);
+                spr->cursor->ResetAnimation(0, 0);
             }
         }
         pBC++;
@@ -97,7 +97,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     if (selSprite != 0) {
         selSprite->field_A4 = 1;
         if (selSprite->cursor != 0) {
-            ((Sprite*)selSprite->cursor)->ResetAnimation(1, 0);
+            selSprite->cursor->ResetAnimation(1, 0);
         }
     }
     if (palette != 0) {
@@ -255,7 +255,7 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
                     T_MenuHotspot* spr = *pBC;
                     spr->field_A4 = 0;
                     if (spr->cursor != 0) {
-                        ((Sprite*)spr->cursor)->ResetAnimation(0, 0);
+                        spr->cursor->ResetAnimation(0, 0);
                     }
                     pBC++;
                     iCount--;
@@ -263,7 +263,7 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
                 T_MenuHotspot* sel = periodSprites[local_14];
                 sel->field_A4 = 1;
                 if (sel->cursor != 0) {
-                    ((Sprite*)sel->cursor)->ResetAnimation(1, 0);
+                    sel->cursor->ResetAnimation(1, 0);
                 }
                 int iGS = g_PeriodStateIdx_0046cb90;
                 GameState* gs = g_GameState_0046aa30;

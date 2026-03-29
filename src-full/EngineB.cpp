@@ -79,7 +79,7 @@ int EngineB::LBLParse(char* line) {
 void EngineB::ProcessFrame() {
     ((TargetList*)g_TargetList_0046ae58)->ProcessTargets();
     if (g_RatsState_00473e18 == 1) {
-        ((Weapon*)EngineB::m_weaponParser)->UpdateProjectiles();
+        EngineB::m_weaponParser->UpdateProjectiles();
         RenderBackground();
         PostRender();
     }
@@ -123,7 +123,7 @@ void EngineB::RenderBackground() {
         }
     }
 
-    weaponHit = ((int*)EngineB::m_weaponParser)[0x30];
+    weaponHit = ((int*)m_weaponParser)[0x30];
     if (weaponHit != 0) {
         EngineB::m_progress.start += weaponHit;
         if (EngineB::m_missSound != 0) {
@@ -221,7 +221,7 @@ void EngineB::OnProcessEnd() {
         g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor, 0);
     }
 
-    EngineB::m_weaponParser = (int)g_CombatWeapon_0046ae60;
+    EngineB::m_weaponParser = g_CombatWeapon_0046ae60;
     for (i = 0; i < ((int*)g_TargetList_0046ae58)[0x24]; i++) {
         int* target = (int*)*(int*)((char*)g_TargetList_0046ae58 + 0x94 + i * 4);
         target[0x4A] = EngineB::m_targetConfig[0];
@@ -233,7 +233,7 @@ void EngineB::OnProcessEnd() {
     EngineB::m_meterAnimation = anim;
     anim->DoFrame();
 
-    EngineB::m_meterBuffer = (int)EngineB::m_meterAnimation->targetBuffer;
+    EngineB::m_meterBuffer = EngineB::m_meterAnimation->targetBuffer;
     EngineB::m_meterEmptyRect.right = 0x10D;
     EngineB::m_meterEmptyRect.left = 0;
     EngineB::m_meterEmptyRect.top = 0;

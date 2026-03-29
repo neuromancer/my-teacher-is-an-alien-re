@@ -305,10 +305,9 @@ int SC_DuctNav::ShutDown(SC_Message* msg)
         }
     }
     {
-        TextInput* ti = (TextInput*)field_0x24C;
-        if (ti != 0) {
-            ti->~TextInput();
-            FreeMemory(ti);
+        if (field_0x24C != 0) {
+            field_0x24C->~TextInput();
+            FreeMemory(field_0x24C);
             field_0x24C = 0;
         }
     }
@@ -383,14 +382,14 @@ void SC_DuctNav::Init(SC_Message* msg) {
 
     // Save mode: destroy and recreate text input object
     if (field_0x24C != 0) {
-        ((TextInput*)field_0x24C)->~TextInput();
-        FreeMemory((void*)field_0x24C);
+        field_0x24C->~TextInput();
+        FreeMemory(field_0x24C);
         field_0x24C = 0;
     }
 
     g_GlyphFont_0046aa28->LoadFont("cfg\\Teacher.pal");
 
-    field_0x24C = (int)new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
+    field_0x24C = new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
 }
 
 // TextInput::ProcessKey is thiscall (declared in TextInput class above)
@@ -410,12 +409,12 @@ int SC_DuctNav::AddMessage(SC_Message* msg) {
         // Keyboard input
         if (field_0x24C != 0) {
             if (param != 0) {
-                int result = ((TextInput*)field_0x24C)->ProcessKey(param[0xb]);
+                int result = field_0x24C->ProcessKey(param[0xb]);
                 if (result != 0) {
                     SendGameMessage(4, 0x498, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                     if (field_0x24C != 0) {
-                        ((TextInput*)field_0x24C)->~TextInput();
-                        FreeMemory((void*)field_0x24C);
+                        field_0x24C->~TextInput();
+                        FreeMemory(field_0x24C);
                         field_0x24C = 0;
                     }
                     param[4] = 2;
@@ -442,7 +441,7 @@ int SC_DuctNav::AddMessage(SC_Message* msg) {
             selectedRow = -1;
             param[4] = 0;
             if (field_0x24C == 0) {
-                field_0x24C = (int)new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
+                field_0x24C = new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
             }
             return 1;
         }
@@ -537,8 +536,8 @@ int SC_DuctNav::AddMessage(SC_Message* msg) {
         if (row < 10) {
             selectedRow = row;
             if (field_0x24C != 0) {
-                ((TextInput*)field_0x24C)->~TextInput();
-                FreeMemory((void*)field_0x24C);
+                field_0x24C->~TextInput();
+                FreeMemory(field_0x24C);
                 field_0x24C = 0;
             }
             SendGameMessage(4, 0x498, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);

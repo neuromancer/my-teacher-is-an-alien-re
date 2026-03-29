@@ -387,16 +387,16 @@ void SC_Wahoo::Update(int param1, int param2) {
         return;
     }
 
-    spr = (Sprite*)bgSprite;
+    spr = bgSprite;
     if ((*(char*)((int)&gameFlags) & 1) != 0) {
-        if (((Sprite*)spr)->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
+        if (spr->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
             timer->Start(2000);
         }
-        spr = (Sprite*)innerSprite;
+        spr = innerSprite;
         if (spr != 0) {
             spr->Do(spr->loc_x, spr->loc_y, 1.0);
         }
-        spr = (Sprite*)middleSprite;
+        spr = middleSprite;
         if (spr != 0) {
             spr->Do(spr->loc_x, spr->loc_y, 1.0);
         }

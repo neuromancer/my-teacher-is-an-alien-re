@@ -4,6 +4,7 @@
 #include "Handler.h"
 
 class SpriteAction;
+class SC_CombatBase;
 
 // SC_Rats - Rats scene handler (case 66/0x42)
 // Constructor: 0x451700
@@ -30,7 +31,7 @@ public:
     void State4Handler();
 
     SpriteAction* actionData;  // 0xA8 - sprite action for combat state transitions
-    int combatEngine;          // 0xAC - EngineB* for the rats combat engine
+    SC_CombatBase* combatEngine; // 0xAC - EngineB* for the rats combat engine
 };
 
 #endif // SC_RATS_H

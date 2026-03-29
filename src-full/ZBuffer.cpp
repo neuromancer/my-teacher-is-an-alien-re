@@ -31,7 +31,7 @@ ZBuffer::~ZBuffer()
     while (ZBuffer::itemCount != 0) {
         int idx = ZBuffer::itemCount - 1;
         ZBuffer::itemCount = idx;
-        void* item = ZBuffer::items[idx];
+        Sprite* item = ZBuffer::items[idx];
         if (item != 0) {
             SlimeDim* sd;
 
@@ -50,7 +50,7 @@ ZBuffer::~ZBuffer()
             sd = (SlimeDim*)((char*)item + 0xfc);
             sd->~SlimeDim();
 
-            ((Sprite*)item)->~Sprite();
+            item->~Sprite();
             FreeMemory(item);
 
             ZBuffer::items[ZBuffer::itemCount] = 0;

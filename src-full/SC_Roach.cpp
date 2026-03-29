@@ -197,7 +197,7 @@ void SC_Roach::RenderBoard()
 {
     // Draw background sprite
     if (bgSprite != 0) {
-        ((Sprite*)bgSprite)->Do(((Sprite*)bgSprite)->loc_x, ((Sprite*)bgSprite)->loc_y, 1.0);
+        bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
     }
 
     // Draw held piece following cursor, or draw cursor if no piece held

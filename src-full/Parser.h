@@ -43,7 +43,7 @@ public:
     int savedFilePos;       // 0x30 (fpos_t is int in MSVC 4.2)
     int field_0x34;         // 0x34
     int field_0x38;         // 0x38 - flags (bit 0 = has file position cache)
-    int field_0x3c;         // 0x3C - object pointer (destroyed in dtor)
+    void* field_0x3c;       // 0x3C - object pointer (destroyed in dtor)
     int m_subObject;        // 0x40 - open-file flag (was at 0x08 in demo)
     int lineNumber;         // 0x44 (was at 0x30 in demo)
     char filename[64];      // 0x48 - 0x87 (was at 0x40 in demo)

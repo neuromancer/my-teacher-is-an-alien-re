@@ -14,7 +14,7 @@ void Weapon::OnHit()
         ((int*)g_ScoreDisplay_0046ae6c)[6]++;
     }
     if (m_sound != 0) {
-        ((Sample*)m_sound)->Play(100, 1);
+        m_sound->Play(100, 1);
     }
 }
 

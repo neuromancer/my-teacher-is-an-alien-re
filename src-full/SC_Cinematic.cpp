@@ -223,8 +223,8 @@ void SC_Cinematic::Init(SC_Message* msg) {
     moduleParam = action->addressValue;
     flags |= action->extra1;
 
-    if ((int)action->childAction != 0) {
-        pendingAction = (int)action->childAction;
+    if (action->childAction != 0) {
+        pendingAction = action->childAction;
         action->childAction = 0;
     }
 
@@ -243,7 +243,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
             }
         }
 
-        animation = (int)new Animation(moviePath);
+        animation = new Animation(moviePath);
 
         g_GameEngine_0046a6ec->m_frameTime = 0;
 
@@ -258,8 +258,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
 
         soundParam = action->mousePos.y;
 
-        Animation* smk = (Animation*)animation;
-        if ((flags & 0x2) != 0 || smk->SetPalette(0, 0x100) == 0) {
+        if ((flags & 0x2) != 0 || animation->SetPalette(0, 0x100) == 0) {
             BlankScreen();
         }
 
@@ -335,26 +334,24 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                 ShowError("Invalid gamestate %d", idx);
             }
             if (gs->stateValues[idx] != 0) {
-                int handle = (int)((Animation*)animation)->smk;
+                int handle = (int)animation->smk;
                 ShowSmackSummary(handle);
             }
         }
     }
 
     if (animation != 0) {
-        delete (Animation*)animation;
+        delete animation;
         animation = 0;
     }
 
     if (palette != 0) {
-        Palette* pal = (Palette*)palette;
-        delete pal;
+        delete palette;
         palette = 0;
     }
 
     if (pendingAction != 0) {
-        SpriteAction* spr = (SpriteAction*)pendingAction;
-        delete spr;
+        delete pendingAction;
         pendingAction = 0;
     }
 
@@ -382,9 +379,8 @@ void SC_Cinematic::Update(int param1, int param2) {
             EndCinematic();
         }
 
-        Animation* smk = (Animation*)animation;
         VBuffer* vp = g_BackBuffer_0046aa14;
-        vp->CallBlitter(vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_x2, (int)smk->targetBuffer);
+        vp->CallBlitter(vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_x2, (int)animation->targetBuffer);
         (g_Mouse_0046aa18)->DrawCursor();
         return;
     }
@@ -426,25 +422,20 @@ void SC_Cinematic::Update(int param1, int param2) {
             }
         }
 
-        Animation* smk = (Animation*)animation;
-        if (SmackWait(smk->smk) == 0) {
+        if (SmackWait(animation->smk) == 0) {
             break;
         }
     }
 
     /* Frame ready - play it */
-    {
-        Animation* anim = (Animation*)animation;
-        if (anim->smk->NewPalette != 0) {
-            anim->UpdatePalette(0, 0x100);
-        }
+    if (animation->smk->NewPalette != 0) {
+        animation->UpdatePalette(0, 0x100);
     }
 
-    ((Animation*)animation)->DoFrame();
+    animation->DoFrame();
 
     {
-        Animation* smk = (Animation*)animation;
-        VBuffer* surface = (VBuffer*)(int)smk->targetBuffer;
+        VBuffer* surface = animation->targetBuffer;
         int* screenH = GetScreenHeight();
         int h = *screenH - 1;
         int* screenW = GetScreenWidth();
@@ -461,11 +452,10 @@ void SC_Cinematic::Update(int param1, int param2) {
     }
 
     {
-        Animation* anim2 = (Animation*)animation;
-        int totalFrames = anim2->smk->Frames;
-        int currentFrame = anim2->smk->FrameNum;
+        int totalFrames = animation->smk->Frames;
+        int currentFrame = animation->smk->FrameNum;
         if (totalFrames - currentFrame != 1) {
-            anim2->NextFrame();
+            animation->NextFrame();
             return;
         }
     }
@@ -474,8 +464,7 @@ void SC_Cinematic::Update(int param1, int param2) {
     if (flags & 0x200) {
         waitForInput = 1;
 
-        Animation* anim3 = (Animation*)animation;
-        VBuffer* tb = anim3->targetBuffer;
+        VBuffer* tb = animation->targetBuffer;
         SetVideoRes(tb->width, tb->height);
 
         g_GameEngine_0046a6ec->m_frameTime = savedRenderCtx;
@@ -506,9 +495,8 @@ void SC_Cinematic::Update(int param1, int param2) {
             }
         }
 
-        Animation* anim4 = (Animation*)animation;
         VBuffer* vp = g_BackBuffer_0046aa14;
-        vp->CallBlitter(vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_x2, (int)anim4->targetBuffer);
+        vp->CallBlitter(vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_x2, (int)animation->targetBuffer);
     } else {
         Timer timer;
         timer.Wait(0x96);
@@ -532,10 +520,9 @@ int SC_Cinematic::AddMessage(SC_Message* msg) {
 /* Function start: 0x430730 */
 void SC_Cinematic::EndCinematic() {
     if (pendingAction != 0) {
-        EnqueueSpriteAction((void*)pendingAction);
-        void* spr = (void*)pendingAction;
-        if (spr != 0) {
-            delete (SpriteAction*)spr;
+        EnqueueSpriteAction(pendingAction);
+        if (pendingAction != 0) {
+            delete pendingAction;
             pendingAction = 0;
         }
     } else {
