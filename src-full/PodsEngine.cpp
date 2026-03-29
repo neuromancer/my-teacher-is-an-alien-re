@@ -2,6 +2,7 @@
 #include "Sprite.h"
 #include "Palette.h"
 #include "Memory.h"
+#include "HashTable.h"
 #include <string.h>
 
 extern "C" extern void* DAT_0046bf30;  // Palette* for pods
@@ -11,9 +12,9 @@ PodsEngine::PodsEngine()
 {
     field_0xFC = 0;
     field_0x100 = 0;
-    memset(&bgSprite, 0, 10 * sizeof(int));
-    field_0xF4.x = 0;
-    field_0xF4.y = 3;
+    memset(&podsBgSprite, 0, 10 * sizeof(int));
+    podState.x = 0;
+    podState.y = 3;
 }
 
 /* Function start: 0x440950 */
@@ -23,17 +24,13 @@ PodsEngine::~PodsEngine()
         delete (Palette*)DAT_0046bf30;
         DAT_0046bf30 = 0;
     }
-    if (bgSprite != 0) {
-        bgSprite->~Sprite();
-        FreeMemory(bgSprite);
-        bgSprite = 0;
+    if (podsBgSprite != 0) {
+        delete podsBgSprite;
+        podsBgSprite = 0;
     }
-    if (field_0x108 != 0) {
-        // Object at field_0x108 has some destructor called via funclet
-        // Using generic cleanup pattern
-        void* obj = (void*)field_0x108;
-        FreeMemory(obj);
-        field_0x108 = 0;
+    if (hashTable != 0) {
+        delete (HashTable*)hashTable;
+        hashTable = 0;
     }
 }
 

@@ -29,8 +29,8 @@ public:
     void State3Handler();
     void State4Handler();
 
-    SpriteAction* field_A8;    // 0xA8 - sprite data pointer
-    int field_AC;    // 0xAC - engine info object pointer
+    SpriteAction* actionData;  // 0xA8 - sprite action for combat state transitions
+    int combatEngine;          // 0xAC - EngineB* for the rats combat engine
 };
 
 #endif // SC_RATS_H

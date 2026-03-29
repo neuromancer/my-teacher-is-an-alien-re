@@ -15,11 +15,7 @@ extern TargetList* g_TargetList_0046ae58;
 
 /* Function start: 0x4274C0 */
 RockThrower::RockThrower(Parser* parent) {
-    int* p = &m_itemCount;
-    for (int i = 6; i != 0; i--) {
-        *p = 0;
-        p++;
-    }
+    memset(&m_itemCount, 0, 6 * sizeof(int));
     m_itemCount = 3;
     m_posY = 0xa0;
     m_posX = 0xa0;

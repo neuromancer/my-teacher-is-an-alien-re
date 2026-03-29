@@ -6000,7 +6000,7 @@ extern char DAT_00469168[160];                             // Parser buffer
 extern int g_ParserCount;                                  // DAT_00469288
 extern "C" {
     extern int DAT_0046a190;                               // SCI_SchoolMenu
-    extern void* DAT_0046af08;                             // SCI_SchoolMenu
+    extern Sprite* DAT_0046af08;                           // SCI_SchoolMenu
 }
 extern void* g_SelectedItem_0046a6e4;                                // SCI_Inventory
 extern "C" {
@@ -6030,7 +6030,7 @@ extern "C" {
     extern ScoreDisplay*     DAT_0046ae6c;
     extern mCNavigator*      g_Navigator_0046ae70;
     extern HotspotListData*  DAT_0046ae74;
-    extern int DAT_00473e18;
+    extern int g_RatsState;  // DAT_00473e18 - SC_Rats main state
 }
 extern char* DAT_0046bacc;                                 // SC_Wahoo / SCI_PracticeRoom
 extern void* DAT_0046bbfc;                                 // SC_Wahoo

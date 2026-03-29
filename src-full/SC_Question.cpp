@@ -73,8 +73,7 @@ SC_Question::~SC_Question()
 
     mc = mouseControl;
     if (mc != 0) {
-        mc->~MMPlayer();
-        free(mc);
+        delete mc;
         mouseControl = 0;
     }
 

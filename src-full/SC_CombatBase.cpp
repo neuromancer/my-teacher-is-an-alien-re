@@ -16,7 +16,7 @@
 #include "WeaponDisplay.h"
 #include <string.h>
 
-class InputManager;
+#include "InputManager.h"
 extern InputManager* g_InputManager_0046aa08;
 extern "C" extern GameState* g_GameState_0046aa30;
 
@@ -80,25 +80,22 @@ int SC_CombatBase::StopAndCleanup()
 /* Function start: 0x42BFC0 */
 void SC_CombatBase::ProcessFrame()
 {
-    void* target = g_TargetList_0046ae58->ProcessTargets();
+    Target* target = (Target*)g_TargetList_0046ae58->ProcessTargets();
 
-    int* obj60 = (int*)g_CombatWeapon_0046ae60;
-    int* vtbl60 = (int*)*obj60;
-    ((void (__fastcall *)(int*, int))vtbl60[5])(obj60, 0);
+    g_CombatWeapon_0046ae60->DrawCrosshairs();
 
-    int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
-    if (pMouse == 0) {
-        ((int*)g_CombatWeapon_0046ae60)[0x2a] = 0;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    if (pMouse != 0) {
+        int clicked = (pMouse->ext1 >= 2) ? 1 : 0;
+        g_CombatWeapon_0046ae60->m_clicked = clicked;
     } else {
-        int clicked = (*(int*)(pMouse + 4) >= 2) ? 1 : 0;
-        ((int*)g_CombatWeapon_0046ae60)[0x2a] = clicked;
+        g_CombatWeapon_0046ae60->m_clicked = 0;
     }
 
-    if (((int*)g_CombatWeapon_0046ae60)[0x2a] != 0) {
-        int* vtbl60b = (int*)*(int*)g_CombatWeapon_0046ae60;
-        ((void (__fastcall *)(int*, int))vtbl60b[4])((int*)g_CombatWeapon_0046ae60, 0);
+    if (g_CombatWeapon_0046ae60->m_clicked != 0) {
+        g_CombatWeapon_0046ae60->OnHit();
         if (target != 0) {
-            ((Target*)target)->UpdateProgress(1);
+            target->UpdateProgress(1);
         }
     }
 
@@ -206,8 +203,7 @@ void SC_CombatBase::CleanupAll()
         combatDisplay = 0;
     }
     if (hotspotPool != 0) {
-        hotspotPool->~HotspotListData();
-        FreeMemory(hotspotPool);
+        delete hotspotPool;
         hotspotPool = 0;
     }
 
@@ -277,22 +273,19 @@ int SC_CombatBase::LBLParse(char* line)
 int SC_CombatBase::ProcessEvents()
 {
     SpriteAction localEvent(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    SpriteAction tempEvent;
+    int tempBuf[14];
 
     int result = 0;
-    HotspotListData* pool = DAT_0046ae74;
 
-    if (pool->count != 0) {
-        int* vtbl = *(int**)this;
-        int (__fastcall *handleAction)(void*, int, SpriteAction*) =
-            (int (__fastcall *)(void*, int, SpriteAction*))vtbl[13];
+    if (DAT_0046ae74->count != 0) {
+        int handleAction = ((int*)(*(int*)this))[13];
 
         do {
-            ((TimedEventPool*)pool)->Pop(&tempEvent);
-            localEvent.CopyFrom(&tempEvent);
-            tempEvent.~SpriteAction();
-            result |= handleAction(this, 0, &localEvent);
-        } while (pool->count != 0);
+            SpriteAction* popped = ((TimedEventPool*)DAT_0046ae74)->Pop((SpriteAction*)tempBuf);
+            localEvent.CopyFrom(popped);
+            popped->~SpriteAction();
+            result |= ((int (__fastcall *)(SC_CombatBase*, int, SpriteAction*))handleAction)(this, 0, &localEvent);
+        } while (DAT_0046ae74->count != 0);
     }
 
     return result;

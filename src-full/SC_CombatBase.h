@@ -71,7 +71,7 @@ public:
     SoundList* soundList;            // 0xAC (0x10 bytes)
     ScoreDisplay* scoreDisplay;      // 0xB0 (0x24 bytes)
     mCNavigator* navigator;          // 0xB4 (0xA8 bytes)
-    HotspotListData* hotspotPool;    // 0xB8 (0x18 bytes)
+    HotspotListData* hotspotPool;    // 0xB8 (0x20 bytes)
 
     // State fields (zeroed in pairs in constructor)
     int hotspotX;         // 0xBC — x coordinate for hotspot creation

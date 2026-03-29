@@ -19,7 +19,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 // FUN_0040b760 = VBuffer sdtor — callers updated
 // FUN_00404b80 = LinkedList::GetCurrentData — callers updated
 // FUN_00404d70 = ListNode sdtor — callers updated to use delete
-extern int g_CombatEngine_0046ae78;
+extern "C" int g_CombatEngine_0046ae78;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 /* Function start: 0x4399E0 */
@@ -30,20 +30,22 @@ SC_ExtBridge::SC_ExtBridge() {
 
 /* Function start: 0x439AC0 */
 SC_ExtBridge::~SC_ExtBridge() {
-    if (actionMsg != 0) {
-        actionMsg->~SpriteAction();
-        FreeMemory(actionMsg);
+    SpriteAction* am = actionMsg;
+    if (am != 0) {
+        am->~SpriteAction();
+        FreeMemory(am);
         actionMsg = 0;
     }
 
-    if (palette != 0) {
-        palette->~Palette();
-        FreeMemory(palette);
+    Palette* pal = palette;
+    if (pal != 0) {
+        pal->~Palette();
+        FreeMemory(pal);
         palette = 0;
     }
 
     if (engine != 0) {
-        delete (Parser*)engine;
+        delete (SC_CombatBase*)engine;
         engine = 0;
     }
 }
@@ -180,8 +182,7 @@ int SC_ExtBridge::ShutDown(SC_Message* msg)
     SpriteAction* action = new SpriteAction(5, 0x458, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
     ((GameEngine*)g_GameEngine_0046a6ec)->ProcessMessage((SC_Message*)action);
     if (action != 0) {
-        action->~SpriteAction();
-        FreeMemory(action);
+        delete action;
     }
 
     if (g_CombatEngine_0046ae78 != 0) {
@@ -290,8 +291,7 @@ void SC_ExtBridge::ProcessEscape()
     if (actionMsg != 0) {
         EnqueueSpriteAction(actionMsg);
         if (actionMsg != 0) {
-            actionMsg->~SpriteAction();
-            FreeMemory(actionMsg);
+            delete actionMsg;
             actionMsg = 0;
         }
         return;

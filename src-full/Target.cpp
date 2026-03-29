@@ -13,6 +13,7 @@
 #include <stdio.h>
 
 extern CDData* g_CDData_0043697c;
+extern "C" TargetList* g_TargetList_0046ae58;
 
 // ============================================================================
 // Target implementation
@@ -74,44 +75,23 @@ Target::~Target()
 
 extern "C" int __cdecl GetPixelAt(int x, int y);
 
-class ScoreManager {
-public:
-    int field_0;
-    int score;    // field_4
-    void AdjustScore(int value); // 0x416ba0
-};
-
-// ScoreManager::AdjustScore - adds value to field_4, clamps between 0 and 200
-/* Function start: 0x40C600 */
-void ScoreManager::AdjustScore(int value) {
-    int newVal = ScoreManager::score + value;
-    ScoreManager::score = newVal;
-    if (newVal < 0) {
-        ScoreManager::score = 0;
-        return;
-    }
-    if (newVal > 0xc8) {
-        ScoreManager::score = 0xc8;
-    }
-}
-
 /* Function start: 0x4425F0 */ /* ~81% match */
 void Target::Spawn()
 {
     Target::Activate();
-    Target::animation_data->SetPalette(Target::timeRange.dim.x,
-        (Target::timeRange.dim.y - Target::timeRange.dim.x) + 1);
+    Target::animation_data->SetPalette(Target::timeRange.x,
+        (Target::timeRange.y - Target::timeRange.x) + 1);
     if (Target::stopSound != 0) {
         Target::stopSound->Play(100, 1);
     }
     g_ScoreManager_00435f20->completionCount++;
 }
 
-/* Function start: 0x442640 */ /* ~86% match */
+/* Function start: 0x442640 */
 void Target::Activate()
 {
     if (Target::active == 0) {
-        TargetList* targetList = g_TargetList_00435f0c;
+        TargetList* targetList = g_TargetList_0046ae58;
         HashTable* hashTable = targetList->hashTable;
         if (hashTable != 0) {
             unsigned int id = (unsigned int)Target::id;
@@ -157,12 +137,12 @@ void Target::Activate()
 
         Target::progressRange.start = 0;
         Target::active = 1;
-        Sprite::ResetAnimation(Target::animRange.dim.x, 0);
+        Sprite::ResetAnimation(Target::animRange.x, 0);
 
         {
-            Range temp = *(Range*)&animParam;
-            Target::loc_x = temp.dim.x;
-            Target::loc_y = temp.dim.y;
+            SlimeDim temp = *(SlimeDim*)&animParam;
+            Target::loc_x = temp.x;
+            Target::loc_y = temp.y;
         }
 
         Target::pendingAction = 0;
@@ -173,7 +153,7 @@ void Target::Activate()
 void Target::Deactivate()
 {
     if (Target::active != 0) {
-        TargetList* targetList = g_TargetList_00435f0c;
+        TargetList* targetList = g_TargetList_0046ae58;
         HashTable* hashTable = targetList->hashTable;
         if (hashTable != 0 && hashTable->buckets != 0) {
             unsigned int id = (unsigned int)Target::id;
@@ -225,7 +205,7 @@ int Target::CheckTimeInRange()
         x = 0;
     }
     result = GetPixelAt(x, y);
-    if (Target::timeRange.dim.x <= result && result <= Target::timeRange.dim.y) {
+    if (Target::timeRange.x <= result && result <= Target::timeRange.y) {
         return 1;
     }
     return 0;
@@ -237,7 +217,7 @@ int Target::CheckTimeInRangeParam(int* coords)
     int result;
 
     result = GetPixelAt(coords[0], coords[1]);
-    if (Target::timeRange.dim.x <= result && result <= Target::timeRange.dim.y) {
+    if (Target::timeRange.x <= result && result <= Target::timeRange.y) {
         return 1;
     }
     return 0;
@@ -264,7 +244,7 @@ advance:
             } else {
                 list->currentId = -1;
             }
-            (g_TargetList_00435f0c)->currentTarget = this;
+            (g_TargetList_0046ae58)->currentTarget = this;
             return 1;
         }
     }
@@ -306,43 +286,54 @@ int Target::Update()
         return 1;
     }
 
-    if (pendingAction == 1) {
-        if (handle == animRange.dim.y) {
-            *(int*)DAT_0046ae6c -= hitMissPoints.end;
-            Target::Deactivate();
-            return 1;
-        }
-        Sprite::ResetAnimation(handle + 1, 0);
-    } else if (pendingAction == 3) {
-        active = 3;
-        Sprite::ResetAnimation(hitRange.dim.x + handle, 0);
-        if ((targetFlags & 1) != 0) {
-            int mouseY = 0;
-            int mouseX = 0;
-            InputState* pMouse = g_InputManager_0046aa08->pMouse;
-            if (pMouse != 0) {
-                mouseY = pMouse->y;
-                mouseX = pMouse->x;
-            }
-            loc_x = mouseX - hitOffset.start;
-            loc_y = mouseY - hitOffset.end;
-        }
-        if (stopSound != 0) {
-            stopSound->~Sample();
-        }
-        if (hitSound != 0) {
-            hitSound->Play(100, 1);
-        }
-        ((int*)DAT_0046ae6c)[3]++;
-        *(int*)DAT_0046ae6c += hitMissPoints.start;
-        DAT_0046ae6c->AdjustScore(scoreWeight.start);
-        *(int*)(g_CombatEngine_0046ae78 + 0xBC) += combatBonus.start;
-        *(int*)(g_CombatEngine_0046ae78 + 0xCC) += combatBonus2.val;
-    }
+    if (pendingAction == 1) goto case_miss;
+    if (pendingAction == 3) goto case_hit;
+    goto done_action;
 
+case_miss:
+    if (handle == animRange.y) {
+        *(int*)DAT_0046ae6c -= hitMissPoints.end;
+        Target::Deactivate();
+        return 1;
+    }
+    Sprite::ResetAnimation(handle + 1, 0);
+    goto done_action;
+
+case_hit:
+    active = pendingAction;
+    Sprite::ResetAnimation(hitRange.x + handle, 0);
+    if ((targetFlags & 1) != 0) {
+        InputState* pMouse;
+        int mouseY;
+        int mouseX;
+        pMouse = g_InputManager_0046aa08->pMouse;
+        mouseY = 0;
+        if (pMouse != 0) {
+            mouseY = pMouse->y;
+        }
+        if (pMouse != 0) {
+            mouseX = pMouse->x;
+        } else {
+            mouseX = 0;
+        }
+        loc_x = mouseX - hitOffset.start;
+        loc_y = mouseY - hitOffset.end;
+    }
+    if (stopSound != 0) {
+        stopSound->Stop();
+    }
+    if (hitSound != 0) {
+        hitSound->Play(100, 1);
+    }
+    ((int*)DAT_0046ae6c)[3]++;
+    *(int*)DAT_0046ae6c += hitMissPoints.start;
+    DAT_0046ae6c->AdjustScore(scoreWeight.start);
+    *(int*)(g_CombatEngine_0046ae78 + 0xBC) += combatBonus.start;
+    *(int*)(g_CombatEngine_0046ae78 + 0xCC) += combatBonus2.val;
+
+done_action:
     pendingAction = 0;
-    int done = Sprite::Do(loc_x, loc_y, 1.0);
-    if (done != 0) {
+    if (Sprite::Do(loc_x, loc_y, 1.0) != 0) {
         if (active == 3) {
             Target::Deactivate();
             return 0;
@@ -398,38 +389,42 @@ void Target::ParseSound(char* line)
     }
 }
 
+extern "C" {
+    extern int DAT_004362cc;
+    extern int g_TargetBearingValue_004362c8;
+}
+
 void Target::OnProcessStart()
 {
     char buffer[128];
-    extern int DAT_004362cc;
-    extern int g_TargetBearingValue_004362c8;
 
     g_TargetBearingValue_004362c8 = 0;
     DAT_004362cc = 0;
-    
+
     sprintf(buffer, "FNAME %s", animFilename);
     Sprite::LBLParse(buffer);
     Sprite::ConfigStates(40);
-    
+
     flags = flags | 0x40;
     flags = flags & ~2;
     flags = flags | 0x200;
-    
+
     InitAnimation();
-    
-    TargetList* tl = g_TargetList_00435f0c;
+
+    TargetList* tl = g_TargetList_0046ae58;
     stopSound     = tl->defaultStopSound;
-    tl = g_TargetList_00435f0c;
+    tl = g_TargetList_0046ae58;
     progressSound = tl->defaultProgressSound;
-    tl = g_TargetList_00435f0c;
+    tl = g_TargetList_0046ae58;
     hitSound      = tl->defaultHitSound;
-    tl = g_TargetList_00435f0c;
+    tl = g_TargetList_0046ae58;
+    progressRange.end = 1;
+    progressRange.start = 0;
     sound3        = tl->defaultSound;
 }
 
 void Target::OnProcessEnd()
 {
-    extern int g_TargetBearingValue_004362c8;
     if (hotspotList == 0 && g_TargetBearingValue_004362c8 != 0) {
         HotspotListData* list = new HotspotListData;
         hotspotList = list;
@@ -473,9 +468,6 @@ void Target::OnProcessEnd()
     }
 }
 
-extern int DAT_004362cc;
-extern int g_TargetBearingValue_004362c8;
-
 int Target::LBLParse(char* line)
 {
     char label[64];
@@ -500,7 +492,7 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
             ConfigRange(DAT_004362cc, value1, value2, 1);
-            animRange.dim.y = DAT_004362cc;
+            animRange.y = DAT_004362cc;
             g_TargetBearingValue_004362c8 = value2;
             DAT_004362cc++;
         }
@@ -569,10 +561,10 @@ int Target::LBLParse(char* line)
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
             ConfigRange(DAT_004362cc, value1, value2, 1);
-            if (hitRange.dim.x == 0) {
-                hitRange.dim.x = DAT_004362cc;
+            if (hitRange.x == 0) {
+                hitRange.x = DAT_004362cc;
             }
-            hitRange.dim.y = DAT_004362cc;
+            hitRange.y = DAT_004362cc;
             DAT_004362cc++;
         }
     }
@@ -581,7 +573,7 @@ int Target::LBLParse(char* line)
         targetFlags |= 1;
     }
     else if (firstChar == 'P') {
-        sscanf(line + 3, "%d %d", &timeRange.dim.x, &timeRange.dim.y);
+        sscanf(line + 3, "%d %d", &timeRange.x, &timeRange.y);
     }
     else if (firstChar == 'S') {
         ParseSound(line);

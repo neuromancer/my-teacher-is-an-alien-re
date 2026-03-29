@@ -8,14 +8,20 @@
 #include "GameState.h"
 #include "globals.h"
 #include "Target.h"
+#include "InputManager.h"
+#include "EngineSubsystems.h"
+#include "RockThrower.h"
 #include "string.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-extern InputManager* g_InputManager_0046aa08;
-extern "C" GameState* g_GameState_0046aa30;
-extern "C" int DAT_00473e18;
+extern "C" {
+    InputManager* g_InputManager_0046aa08;
+    GameState* g_GameState_0046aa30;
+    int g_RatsState;
+    int g_PeriodStateIdx_0046cb90;
+}
 
 
 #include "string.h"
@@ -79,7 +85,7 @@ int EngineB::LBLParse(char* line) {
 /* Function start: 0x451180 */
 void EngineB::ProcessFrame() {
     ((TargetList*)g_TargetList_0046ae58)->ProcessTargets();
-    if (DAT_00473e18 == 1) {
+    if (g_RatsState == 1) {
         ((Weapon*)EngineB::m_weaponParser)->UpdateProjectiles();
         RenderBackground();
         PostRender();
@@ -137,21 +143,21 @@ void EngineB::RenderBackground() {
         }
     }
 
-    if (((int*)g_CombatWeapon_0046ae60)[0x2A] != 0) {
+    if (g_CombatWeapon_0046ae60->m_clicked != 0) {
         mouseX = 0;
-        if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
-            mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
         }
-        divisor = ((int*)g_WeaponParser_0046ae4c)[0x26] / 3;
+        divisor = g_WeaponParser_0046ae4c->dimensions.x / 3;
         g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor + 5, 0);
     }
 
     if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc_x, g_BgSprite_0046ae50->loc_y, 1.0)) {
         mouseX = 0;
-        if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
-            mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
         }
-        divisor = ((int*)g_WeaponParser_0046ae4c)[0x26] / 5;
+        divisor = g_WeaponParser_0046ae4c->dimensions.x / 5;
         g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor, 0);
     }
 }
@@ -215,10 +221,10 @@ void EngineB::OnProcessEnd() {
 
     if (g_BgSprite_0046ae50 != 0) {
         mouseX = 0;
-        if (((int*)g_InputManager_0046aa08)[0x68] != 0) {
-            mouseX = *(int*)((int*)g_InputManager_0046aa08)[0x68];
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
         }
-        divisor = ((int*)g_WeaponParser_0046ae4c)[0x26] / 5;
+        divisor = g_WeaponParser_0046ae4c->dimensions.x / 5;
         g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor, 0);
     }
 
@@ -273,7 +279,7 @@ void EngineB::OnProcessEnd() {
         EngineB::field_0x110 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5010"));
     }
 
-    DAT_00473e18 = 0;
+    g_RatsState = 0;
 }
 
 /* Function start: 0x451680 */

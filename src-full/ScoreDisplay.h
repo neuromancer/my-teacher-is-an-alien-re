@@ -14,17 +14,7 @@ public:
         }
     }
 
-    /* Function start: 0x40C600 */
-    void AdjustScore(int value) {
-        fields[1] = fields[1] + value;
-        if (fields[1] < 0) {
-            fields[1] = 0;
-            return;
-        }
-        if (fields[1] > 0xc8) {
-            fields[1] = 0xc8;
-        }
-    }
+    void AdjustScore(int value); // 0x40C600
 };
 
 #endif // SCOREDISPLAY_H

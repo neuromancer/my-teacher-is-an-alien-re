@@ -203,8 +203,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Cleanup MMPlayer
         if (mmPlayer != 0) {
-            mmPlayer->~MMPlayer();
-            FreeMemory(mmPlayer);
+            delete mmPlayer;
             mmPlayer = 0;
         }
 

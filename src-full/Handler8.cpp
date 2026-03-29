@@ -42,21 +42,22 @@ struct MessageQueue {
 /* Function start: 0x4415E0 */ /* ~92% match */
 Handler8::Handler8() {
     int* ptr = &handlerId;
-    int* pA0 = (int*)&message;
+    int* pA0 = &field_A0;
 
-    // Set handler-specific fields at 0xa0 and 0xa4
+    // Set handler-specific fields at 0xA0 and 0xA4
     pA0[0] = 0;
     pA0[1] = 0;
 
-    // Set handlerId at 0x88
+    // Set handlerId
     *ptr = 8;
 }
 
 /* Function start: 0x44A900 */
 Handler8::~Handler8() {
-    if (message != 0) {
-        delete message;
-        message = 0;
+    SC_Message* msg = (SC_Message*)field_A0;
+    if (msg != 0) {
+        delete msg;
+        field_A0 = 0;
     }
 }
 

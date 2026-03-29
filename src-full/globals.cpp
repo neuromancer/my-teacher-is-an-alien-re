@@ -311,7 +311,7 @@ int g_ParserCount = 0;                                   // 0x00469288
 // SCI_SchoolMenu globals
 extern "C" {
     int DAT_0046a190 = 0;                                // 0x0046a190
-    void* DAT_0046af08 = 0;                              // 0x0046af08
+    Sprite* DAT_0046af08 = 0;                             // 0x0046af08
 }
 int DAT_00473358 = 0;                                    // 0x00473358
 int DAT_0047337c = 0;                                    // 0x0047337c
@@ -360,7 +360,7 @@ extern "C" {
     ScoreDisplay*     DAT_0046ae6c = 0;                  // 0x0046ae6c
     mCNavigator*      g_Navigator_0046ae70 = 0;                  // 0x0046ae70
     HotspotListData*  DAT_0046ae74 = 0;                  // 0x0046ae74
-    int DAT_00473e18 = 0;                                // 0x00473e18
+    // DAT_00473e18 moved to SC_Rats.cpp as g_RatsState
 }
 
 // Path resolution globals

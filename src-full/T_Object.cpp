@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" extern GameState* g_GameState_0046aa30;
-extern char* g_Buffer_0046aa00;
+extern "C" {
+    extern GameState* g_GameState_0046aa30;
+    extern char* g_Buffer_0046aa00;
+}
 
 
 /* Function start: 0x40C630 */
@@ -25,8 +27,7 @@ T_Object::T_Object(int id) : Parser()
 T_Object::~T_Object()
 {
     if (sprite != 0) {
-        sprite->~Sprite();
-        FreeMemory(sprite);
+        delete sprite;
         sprite = 0;
     }
 
@@ -41,7 +42,7 @@ T_Object::~T_Object()
                 }
             }
         }
-        FreeMemory(list);
+        delete list;
         actionList = 0;
     }
 }
@@ -110,8 +111,7 @@ void T_Object::Reset()
         data = (SpriteAction*)list->RemoveCurrent();
         EnqueueSpriteAction(data);
         if (data != 0) {
-            data->~SpriteAction();
-            FreeMemory(data);
+            delete data;
         }
     } while (actionList->head != 0);
 }

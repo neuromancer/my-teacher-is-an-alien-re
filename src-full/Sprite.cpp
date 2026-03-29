@@ -306,19 +306,16 @@ void Sprite::InitLogic(int param_1)
     }
 
     num_logic_conditions = param_1;
-    LogicCondition* newConds = 0;
-    LogicCondition* mem = new LogicCondition[param_1];
-    if (mem != 0) {
-        newConds = mem;
-    }
-    logic_conditions = newConds;
+    logic_conditions = new LogicCondition[param_1];
 
     int i = 0;
+    int offset = 0;
     if (0 < num_logic_conditions) {
         do {
             logic_conditions[i].state_index = 0;
             logic_conditions[i].type = 0;
             logic_conditions[i].field_8 = 0;
+            offset += 0xC;
             i++;
         } while (i < num_logic_conditions);
     }
@@ -501,12 +498,10 @@ int Sprite::LBLParse(char* param_1)
 /* Function start: 0x44CB40 */
 void Sprite::ResetAnimation(int state, int offset) {
     int frameNum;
-    int rangeStart;
-    int targetFrame;
     int inRange;
 
     if (state == -1) {
-        handle = -1;
+        handle = state;
         return;
     }
 
@@ -516,23 +511,21 @@ void Sprite::ResetAnimation(int state, int offset) {
 
     if (state < 0 || num_states - 1 < state) {
         ShowError("Sprite::SetState - '%s' states are OutOfRange \nstate %d must be between 0 and %d",
-                  sprite_filename, state, num_states);
+                  sprite_filename, state, num_states - 1);
     }
 
-    if (animation_data == 0) {
+    frameNum = 0;
+    if (animation_data != 0) {
+        frameNum = animation_data->smk->FrameNum;
+    }
+
+    if (animation_data == 0 || ranges == 0) {
         ShowError("range error");
         inRange = 0;
+    } else if (ranges[state].dim.x > frameNum || ranges[state].dim.y < frameNum) {
+        inRange = 0;
     } else {
-        frameNum = animation_data->smk->FrameNum;
-        if (ranges == 0) {
-            ShowError("range error");
-            inRange = 0;
-        } else if (frameNum < ranges[state].dim.x ||
-                   ranges[state].dim.y < frameNum) {
-            inRange = 0;
-        } else {
-            inRange = 1;
-        }
+        inRange = 1;
     }
 
     if (!inRange) {
@@ -548,13 +541,14 @@ void Sprite::ResetAnimation(int state, int offset) {
     }
 
     if (offset != 0) {
+        int targetFrame;
+        int rangeStart;
         rangeStart = ranges[state].dim.x;
         targetFrame = offset + rangeStart;
         if (animation_data == 0 || ranges == 0) {
             ShowError("range error");
             inRange = 0;
-        } else if (targetFrame < rangeStart ||
-                   ranges[state].dim.y < targetFrame) {
+        } else if (rangeStart > targetFrame || ranges[state].dim.y < targetFrame) {
             inRange = 0;
         } else {
             inRange = 1;

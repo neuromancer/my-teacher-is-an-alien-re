@@ -37,14 +37,12 @@ HotspotAction::~HotspotAction() {
     Queue* list;
 
     if (correctPlayer != 0) {
-        correctPlayer->~MMPlayer();
-        FreeMemory(correctPlayer);
+        delete correctPlayer;
         correctPlayer = 0;
     }
 
     if (incorrectPlayer != 0) {
-        incorrectPlayer->~MMPlayer();
-        FreeMemory(incorrectPlayer);
+        delete incorrectPlayer;
         incorrectPlayer = 0;
     }
 
@@ -55,8 +53,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = (SpriteAction*)list->Pop();
                 if (item != 0) {
-                    item->~SpriteAction();
-                    FreeMemory(item);
+                    delete item;
                 }
             }
         }
@@ -71,8 +68,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = (SpriteAction*)list->Pop();
                 if (item != 0) {
-                    item->~SpriteAction();
-                    FreeMemory(item);
+                    delete item;
                 }
             }
         }
@@ -87,8 +83,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = (SpriteAction*)list->Pop();
                 if (item != 0) {
-                    item->~SpriteAction();
-                    FreeMemory(item);
+                    delete item;
                 }
             }
         }
@@ -103,8 +98,7 @@ HotspotAction::~HotspotAction() {
             while (list->head != 0) {
                 item = (SpriteAction*)list->Pop();
                 if (item != 0) {
-                    item->~SpriteAction();
-                    FreeMemory(item);
+                    delete item;
                 }
             }
         }

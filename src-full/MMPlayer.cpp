@@ -12,14 +12,14 @@ extern "C" int g_GameEngine_0046a6ec;
 /* Function start: 0x4438A0 */
 MMPlayer::MMPlayer()
 {
-    int* ptr = &field_0x88;
+    int* ptr = &m_frameTime;
     ptr[0] = 0;
     ptr[1] = 0;
     ptr[2] = 0;
     ptr[3] = 0;
-    field_0x90 = 1;
+    m_drawResult = 1;
     m_queue = new ZBQueue(2);
-    field_0x88 = ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime;
+    m_frameTime = ((GameEngine*)g_GameEngine_0046a6ec)->m_frameTime;
 }
 
 /* Function start: 0x443990 */
@@ -66,7 +66,7 @@ void MMPlayer::StopAll()
             }
         } while (m_queue->head != 0);
     }
-    field_0x8c = field_0x8c & ~0x2000;
+    m_flags = m_flags & ~0x2000;
 }
 
 /* Function start: 0x443B20 */
@@ -91,8 +91,8 @@ void MMPlayer::Init()
             }
         } while (m_queue->head != 0);
     }
-    field_0x90 = 1;
-    field_0x8c = field_0x8c | 0x2000;
+    m_drawResult = 1;
+    m_flags = m_flags | 0x2000;
 }
 
 /* Function start: 0x443B90 */
@@ -135,8 +135,8 @@ int MMPlayer::Draw()
 {
     Sprite* sprite;
 
-    field_0x90 = 1;
-    if ((field_0x8c & 0x2000) == 0) {
+    m_drawResult = 1;
+    if ((m_flags & 0x2000) == 0) {
         Init();
     }
     m_queue->current = m_queue->head;
@@ -147,7 +147,7 @@ int MMPlayer::Draw()
                 sprite = (Sprite*)m_queue->current->data;
             }
             if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0) != 0) {
-                field_0x90 = 0;
+                m_drawResult = 0;
             }
 
             if (m_queue->tail == m_queue->current) {
@@ -158,7 +158,7 @@ int MMPlayer::Draw()
             }
         } while (m_queue->head != 0);
     }
-    return field_0x90;
+    return m_drawResult;
 }
 
 /* Function start: 0x443ED0 */

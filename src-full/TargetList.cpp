@@ -3,17 +3,13 @@
 #include "globals.h"
 #include "Sample.h"
 #include "CursorState.h"
+#include "ScoreDisplay.h"
+#include "SC_CombatBase.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-// ScoreManager - g_ScoreManager_00435f20 points to this
-class ScoreManager {
-public:
-  int field_0;
-  int score;    // field_4
-  void AdjustScore(int value); // 0x416ba0
-};
+extern "C" TargetList* g_TargetList_0046ae58;
 
 /* Function start: 0x4432F0 */
 TargetList::TargetList() : Parser() {
@@ -119,7 +115,7 @@ Target* TargetList::ProcessTargets() {
 
   fallbackTarget = 0;
   currentTarget = 0;
-  ht = g_TargetList_00435f0c->hashTable;
+  ht = g_TargetList_0046ae58->hashTable;
   if (ht == 0) {
     return 0;
   }
@@ -156,10 +152,10 @@ Target* TargetList::ProcessTargets() {
       if (target != 0 && target->Update() == 0) {
         if (target->AdvanceHotspot() != 0) {
           currentTarget = target;
-          g_ScoreManager_00435f20->hitCount = g_ScoreManager_00435f20->hitCount + 1;
-          ((ScoreManager*)g_ScoreManager_00435f20)->AdjustScore(-target->scoreWeight.end);
-          if (defaultSound != 0) {
-            defaultSound->Play(100, 1);
+          ((int*)DAT_0046ae6c)[5]++;
+          DAT_0046ae6c->AdjustScore(-(int)target->scoreWeight.end);
+          if (target->sound3 != 0) {
+            target->sound3->Play(100, 1);
           }
         }
         if (fallbackTarget == 0 && target->CheckTimeInRange() != 0) {

@@ -10,10 +10,12 @@
 #include <stdio.h>
 #include <string.h>
 
-extern InputManager* g_InputManager_0046aa08;
-extern MouseControl* g_Mouse_0046aa18;
-extern "C" extern GameState* g_GameState_0046aa30;
-extern int DAT_004733e8;
+extern "C" {
+    extern InputManager* g_InputManager_0046aa08;
+    extern MouseControl* g_Mouse_0046aa18;
+    extern GameState* g_GameState_0046aa30;
+    extern int DAT_004733e8;
+}
 
 /* Function start: 0x434C10 */
 SCI_Schedule::SCI_Schedule()
@@ -79,14 +81,12 @@ SCI_Schedule::SCI_Schedule()
 SCI_Schedule::~SCI_Schedule()
 {
     if (palette != 0) {
-        palette->~Palette();
-        FreeMemory(palette);
+        delete palette;
         palette = 0;
     }
 
     if (bgSprite != 0) {
-        bgSprite->~Sprite();
-        FreeMemory(bgSprite);
+        delete bgSprite;
         bgSprite = 0;
     }
 
@@ -95,8 +95,7 @@ SCI_Schedule::~SCI_Schedule()
     do {
         Sprite* s = *ptr;
         if (s != 0) {
-            s->~Sprite();
-            FreeMemory(s);
+            delete s;
             *ptr = 0;
         }
         ptr++;
@@ -104,8 +103,7 @@ SCI_Schedule::~SCI_Schedule()
     } while (i != 0);
 
     if (mapHotspot != 0) {
-        mapHotspot->~T_MenuHotspot();
-        FreeMemory(mapHotspot);
+        delete mapHotspot;
         mapHotspot = 0;
     }
 }
@@ -137,9 +135,7 @@ int SCI_Schedule::ShutDown(SC_Message* msg)
     IconBar::ShutDown(msg);
 
     if (mapHotspot != 0) {
-        if (mapHotspot->cursor != 0) {
-            mapHotspot->cursor->StopAnimationSound();
-        }
+        mapHotspot->StopCursorSound();
     }
 
     return 0;

@@ -48,8 +48,8 @@ public:
 };
 
 // Target - Full game layout (extends Sprite at 0xF8)
-// Constructor: 0x4428E0
-// Vtable: 0x461270
+// Constructor: 0x442350
+// Vtable: 0x461948
 // Size: 0x178
 class Target : public Sprite {
 public:
@@ -59,9 +59,9 @@ public:
     char* animFilename;   // 0x100 - animation filename from INIT
     char* identifier;     // 0x104 - identifier string from 'I' label
     int id;               // 0x108
-    Range animRange;      // 0x10C-0x113 (start, end)
-    Range hitRange;       // 0x114-0x11B (start, end)
-    Range timeRange;      // 0x11C-0x123 (start, end)
+    SlimeDim animRange;   // 0x10C-0x113 (start, end frame)
+    SlimeDim hitRange;    // 0x114-0x11B (start, end frame)
+    SlimeDim timeRange;   // 0x11C-0x123 (min, max color value)
     IntPair progressRange; // 0x124-0x12B
     IntPair scoreWeight;  // 0x12C-0x133 - score index and weight
     IntPair hitMissPoints; // 0x134-0x13B - hit points and miss penalty
@@ -78,7 +78,7 @@ public:
     int pendingAction;    // 0x170 - pending action (0=none, 1=miss, 3=hit)
     int field_174;        // 0x174
 
-    Target();                                   // 0x4428E0
+    Target();                                   // 0x442350
     virtual ~Target();                          // 0x442A70
     virtual int LBLParse(char* line);           // 0x442BD0
     virtual void OnProcessStart();              // 0x442B20
@@ -89,7 +89,7 @@ public:
     void Deactivate();                          // 0x4427C0
     int CheckTimeInRange();
     int CheckTimeInRangeParam(int* coords);
-    int AdvanceHotspot();                       // 0x4428A0
+    int AdvanceHotspot();                       // 0x4428E0
     void UpdateProgress(int delta);             // 0x442940
     int Update();                               // 0x4429A0
 

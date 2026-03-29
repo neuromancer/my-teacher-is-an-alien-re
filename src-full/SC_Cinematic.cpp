@@ -360,15 +360,13 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
 
     if (palette != 0) {
         Palette* pal = (Palette*)palette;
-        pal->~Palette();
-        FreeMemory(pal);
+        delete pal;
         palette = 0;
     }
 
     if (pendingAction != 0) {
         SpriteAction* spr = (SpriteAction*)pendingAction;
-        spr->~SpriteAction();
-        FreeMemory(spr);
+        delete spr;
         pendingAction = 0;
     }
 

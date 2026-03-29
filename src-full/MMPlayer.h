@@ -14,7 +14,7 @@ class Sprite;
  * - m_queue holds sprites representing clickable areas/buttons
  * - Destructor properly cleans up all queued sprites
  *
- * Size: 0x98 (152 bytes)
+ * Size: 0xA0 (160 bytes)
  * Functions: 0x4438A0, 0x443990, 0x443AB0, 0x443B20, 0x443B90, 0x443E30, 0x443ED0, 0x443F40
  *
  * NOTE: This is DIFFERENT from MouseControl (0x1C0 / 448 bytes), which manages
@@ -32,10 +32,10 @@ public:
     void AddSprite(Sprite* s);  // 0x443B90
     void ResetAnimations(int param_1);  // 0x443ED0
 
-    int field_0x88;           // 0x88
-    int field_0x8c;           // 0x8c - flags (byte at 0x8d is accessed as (field_0x8c >> 8) & 0xff)
-    int field_0x90;           // 0x90 - done/result flag
-    ZBQueue* m_queue;           // 0x94
+    int m_frameTime;          // 0x90 - frame time snapshot from GameEngine
+    int m_flags;              // 0x94 - flags (bit 0x2000 = animations initialized)
+    int m_drawResult;         // 0x98 - draw result (1=all done, 0=still animating)
+    ZBQueue* m_queue;         // 0x9C
 };
 
 // SpriteList is the same class as MMPlayer

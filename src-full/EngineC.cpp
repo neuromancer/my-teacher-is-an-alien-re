@@ -1,20 +1,25 @@
 #include "EngineC.h"
 #include "Sprite.h"
 #include "Memory.h"
+#include "InputManager.h"
+#include "RockThrower.h"
+#include "Target.h"
 #include <string.h>
 
-class InputManager;
-extern InputManager* g_InputManager_0046aa08;
-#include "Target.h"
+extern "C" InputManager* g_InputManager_0046aa08;
 /* Function start: 0x40BBF0 */
 EngineC::EngineC()
 {
-    field_0xF4 = 0;
-    field_0xF8 = 0;
-    field_0xFC = 0;
-    field_0x100 = 0;
-    field_0x108 = 0;
-    field_0x10C = 0;
+    int* p;
+    p = &field_0xF4;
+    p[0] = 0;
+    p[1] = 0;
+    p = &field_0xFC;
+    p[0] = 0;
+    p[1] = 0;
+    p = &field_0x108;
+    p[0] = 0;
+    p[1] = 0;
     memset(&mouseReleased, 0, 0xC * 4);
 }
 
@@ -42,40 +47,37 @@ EngineC::~EngineC()
 /* Function start: 0x40C0D0 */
 void EngineC::method10()
 {
-    void* target = g_TargetList_0046ae58->ProcessTargets();
+    Target* target = (Target*)g_TargetList_0046ae58->ProcessTargets();
 
-    int* obj60 = (int*)g_CombatWeapon_0046ae60;
-    int* vtbl60 = (int*)*obj60;
-    ((void (__fastcall *)(int*, int))vtbl60[5])(obj60, 0);
+    g_CombatWeapon_0046ae60->DrawCrosshairs();
 
-    int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
     int buttonDown;
     if (pMouse == 0) {
         buttonDown = 0;
     } else {
-        buttonDown = *(int*)((char*)pMouse + 0x8) & 1;
+        buttonDown = pMouse->buttons & 1;
     }
 
     mouseReleased |= (buttonDown == 0) ? 1 : 0;
-    ((int*)g_CombatWeapon_0046ae60)[0x2a] = 0;
+    g_CombatWeapon_0046ae60->m_clicked = 0;
 
-    if (g_BgSprite_0046ae50->handle < 5) {
+    if (g_BgSprite_0046ae50->handle <= 4) {
         if (pMouse == 0) {
             buttonDown = 0;
         } else {
-            buttonDown = *(int*)((char*)pMouse + 0x8) & 1;
+            buttonDown = pMouse->buttons & 1;
         }
         if (buttonDown != 0 && mouseReleased != 0) {
-            ((int*)g_CombatWeapon_0046ae60)[0x2a] = 1;
+            g_CombatWeapon_0046ae60->m_clicked = 1;
             mouseReleased = 0;
         }
     }
 
-    if (((int*)g_CombatWeapon_0046ae60)[0x2a] != 0) {
-        int* vtbl60b = (int*)*(int*)g_CombatWeapon_0046ae60;
-        ((void (__fastcall *)(int*, int))vtbl60b[4])((int*)g_CombatWeapon_0046ae60, 0);
+    if (g_CombatWeapon_0046ae60->m_clicked != 0) {
+        g_CombatWeapon_0046ae60->OnHit();
         if (target != 0) {
-            ((Target*)target)->UpdateProgress(1);
+            target->UpdateProgress(1);
         }
     }
 
