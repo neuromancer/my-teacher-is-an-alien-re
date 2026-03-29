@@ -10,12 +10,10 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" {
-    extern InputManager* g_InputManager_0046aa08;
-    extern MouseControl* g_Mouse_0046aa18;
-    extern GameState* g_GameState_0046aa30;
-    extern int DAT_004733e8;
-}
+extern InputManager* g_InputManager_0046aa08;
+extern MouseControl* g_Mouse_0046aa18;
+extern "C" extern GameState* g_GameState_0046aa30;
+extern int DAT_004733e8;
 
 /* Function start: 0x434C10 */
 SCI_Schedule::SCI_Schedule()

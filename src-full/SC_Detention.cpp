@@ -682,7 +682,7 @@ void SC_Detention::Serialize(void* param) {
 
 extern int DAT_00468a18;
 extern int WaitForInput();
-extern int g_CombatEngine_0046ae78;
+extern "C" int g_CombatEngine_0046ae78;
 
 /* Function start: 0x40B9E0 */
 void UpdateCombatEngine()

@@ -17,6 +17,8 @@
 #include "ZBuffer.h"
 #include "SoundCommand.h"
 #include "MouseControl.h"
+#include "DrawEntry.h"
+#include "VBuffer.h"
 
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
@@ -26,9 +28,8 @@ extern "C" {
 }
 // extern globals - C++ linkage (matching stubs.cpp)
 extern SpriteAction DAT_00472d20;
-class ZBufferManager;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern SpriteAction DAT_00472d58;
+extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern int DAT_00473334;
 extern int DAT_00473358;
 extern int DAT_004733e8;

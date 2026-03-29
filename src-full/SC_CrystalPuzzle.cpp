@@ -164,8 +164,8 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
                 i++;
                 mapSprite->ranges[i - 1].dim.x = i;
                 mapSprite->ranges[i - 1].dim.y = i;
-                mapSprite->ranges[i - 1].field_C = 0;
-                mapSprite->ranges[i - 1].field_8 = 0;
+                mapSprite->ranges[i - 1].repeatLimit = 0;
+                mapSprite->ranges[i - 1].frameCounter = 0;
             } while (i < mapSprite->num_states);
         }
     }

@@ -6,7 +6,7 @@
 #include "Target.h"
 #include <string.h>
 
-extern "C" InputManager* g_InputManager_0046aa08;
+extern InputManager* g_InputManager_0046aa08;
 /* Function start: 0x40BBF0 */
 EngineC::EngineC()
 {

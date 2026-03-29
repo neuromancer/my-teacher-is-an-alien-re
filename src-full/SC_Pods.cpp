@@ -29,7 +29,7 @@ void __fastcall InitCombatScreen(void* self);
 #include "RenderEntry.h"
 #include "PodsEngine.h"
 
-extern int g_CombatEngine_0046ae78;                      // active combat engine instance
+extern "C" int g_CombatEngine_0046ae78;                      // active combat engine instance
 extern int DAT_004734a4;
 
 /* Function start: 0x4415E0 */

@@ -5,7 +5,7 @@
 #include "string.h"
 #include "SoundList.h"
 
-extern int g_CombatEngine_0046ae78;
+extern "C" int g_CombatEngine_0046ae78;
 #include "string.h"
 
 #include "Palette.h"

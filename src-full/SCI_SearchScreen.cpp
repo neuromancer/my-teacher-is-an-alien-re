@@ -22,20 +22,17 @@ SCI_SearchScreen::~SCI_SearchScreen()
     ShutDown(0);
 }
 
-extern int g_CombatEngine_0046ae78;
+extern "C" int g_CombatEngine_0046ae78;
+#include "SC_CombatBase.h"
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x40B780 */
 int SCI_SearchScreen::ShutDown(SC_Message* msg) {
     if (g_CombatEngine_0046ae78 != 0) {
-        int* engine = (int*)g_CombatEngine_0046ae78;
-        int* vtable = *(int**)engine;
-        // Call scalar deleting destructor (vtable[3]) with flag=1
-        ((void (*)(int))(vtable[3]))(1);
+        delete (SC_CombatBase*)g_CombatEngine_0046ae78;
         g_CombatEngine_0046ae78 = 0;
     }
-    SC_Combat::ShutDown(msg);
-    return 0;
+    return SC_Combat::ShutDown(msg);
 }
 
 /* Function start: 0x40B7E0 */

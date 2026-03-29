@@ -11,7 +11,7 @@
 extern MouseControl* g_Mouse_0046aa18;
 extern InputManager* g_InputManager_0046aa08;
 
-extern int g_CombatEngine_0046ae78;
+extern "C" int g_CombatEngine_0046ae78;
 
 /* Function start: 0x447520 */
 SC_SpaceShipNav::SC_SpaceShipNav() {

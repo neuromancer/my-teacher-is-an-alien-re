@@ -410,8 +410,8 @@ int Sprite::LBLParse(char* param_1)
                 i++;
                 ranges[i - 1].dim.x = i;
                 ranges[i - 1].dim.y = i;
-                ranges[i - 1].field_C = 0;
-                ranges[i - 1].field_8 = 0;
+                ranges[i - 1].repeatLimit = 0;
+                ranges[i - 1].frameCounter = 0;
             } while (i < num_states);
         }
     } else if (strcmp(keyword, "SPR") == 0) {
@@ -560,7 +560,7 @@ void Sprite::ResetAnimation(int state, int offset) {
 
     handle = state;
     animation_data->GotoFrame(ranges[state].dim.x + offset);
-    ranges[handle].field_8 = 0;
+    ranges[handle].frameCounter = 0;
     if (ranges[handle].dim.y == ranges[handle].dim.x) {
         flags |= 4;
     }
@@ -598,14 +598,14 @@ int Sprite::Do(int x, int y, double scale) {
         } else {
             int hasLimit;
             skipAnim = 1;
-            cur->field_8 = cur->field_8 + skipAnim;
-            if (cur->field_C == 0 || cur->field_8 < cur->field_C) {
+            cur->frameCounter = cur->frameCounter + skipAnim;
+            if (cur->repeatLimit == 0 || cur->frameCounter < cur->repeatLimit) {
                 hasLimit = 0;
             } else {
                 hasLimit = skipAnim;
             }
             if (hasLimit) {
-                cur->field_8 = 0;
+                cur->frameCounter = 0;
                 done = 1;
             }
         }
@@ -624,14 +624,14 @@ int Sprite::Do(int x, int y, double scale) {
         }
         {
             int hasLimit;
-            cur->field_8 = cur->field_8 + 1;
-            if (cur->field_C == 0 || cur->field_8 < cur->field_C) {
+            cur->frameCounter = cur->frameCounter + 1;
+            if (cur->repeatLimit == 0 || cur->frameCounter < cur->repeatLimit) {
                 hasLimit = 0;
             } else {
                 hasLimit = 1;
             }
             if (hasLimit) {
-                cur->field_8 = 0;
+                cur->frameCounter = 0;
                 if ((flags & 0x100) != 0) {
                     animation_data->NextFrame();
                 } else {
@@ -707,8 +707,8 @@ void Sprite::ConfigRange(int state, int start, int count, int param_4) {
     }
     ranges[state].dim.x = start;
     ranges[state].dim.y = count;
-    ranges[state].field_C = param_4;
-    ranges[state].field_8 = 0;
+    ranges[state].repeatLimit = param_4;
+    ranges[state].frameCounter = 0;
     flags |= 0x20;
 }
 
@@ -721,8 +721,7 @@ void Sprite::ConfigStates(int numStates) {
         ranges = 0;
     }
 
-    Range* mem = new Range[num_states];
-    ranges = mem;
+    ranges = new Range[num_states];
 
     int i = 0;
     if (num_states > 0) {
@@ -733,8 +732,8 @@ void Sprite::ConfigStates(int numStates) {
             offset += sizeof(Range);
             r->dim.x = 1;
             r->dim.y = 5000;
-            r->field_C = 0;
-            r->field_8 = 0;
+            r->repeatLimit = 0;
+            r->frameCounter = 0;
         } while (num_states > i);
     }
     flags |= 0x20;

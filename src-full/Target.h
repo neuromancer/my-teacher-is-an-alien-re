@@ -7,9 +7,11 @@
 #include "Sample.h"
 
 struct HotspotNode {
-    HotspotNode* next;  // 0x0
-    HotspotNode* prev;  // 0x4
-    int id;             // 0x8
+    HotspotNode* next;  // 0x00
+    HotspotNode* prev;  // 0x04
+    int id;             // 0x08
+    int field_0C;       // 0x0C
+    // total size: 0x10 (16 bytes per node in pool allocation)
 
     HotspotNode() : next(0), prev(0), id(0) {}
 };
@@ -37,6 +39,7 @@ public:
         currentId = -1;
     }
     ~HotspotListData();
+    HotspotNode* AllocateNode(); // 0x443830
 };
 
 class TargetMember {

@@ -44,6 +44,41 @@ HotspotListData::~HotspotListData()
     nodePool = 0;
 }
 
+/* Function start: 0x443830 */
+HotspotNode* HotspotListData::AllocateNode()
+{
+    if (freeList == 0) {
+        char* mem = (char*)AllocateMemory(growthRate * 16 + 4);
+        *(void**)mem = nodePool;
+        int n = growthRate;
+        nodePool = mem;
+        HotspotNode* node = (HotspotNode*)(mem + n * 16 - 12);
+        n--;
+        if (n >= 0) {
+            do {
+                node->next = freeList;
+                freeList = node;
+                node = (HotspotNode*)((char*)node - 16);
+            } while (--n >= 0);
+        }
+    }
+
+    HotspotNode* node = freeList;
+    freeList = node->next;
+    count++;
+    node->id = 0;
+
+    int i = 0;
+    do {} while (i-- != 0);
+
+    node->field_0C = 0;
+
+    i = 0;
+    do {} while (i-- != 0);
+
+    return node;
+}
+
 /* Function start: 0x442350 */ /* ~80% match */
 Target::Target() : Sprite(0)
 {
@@ -276,7 +311,7 @@ void Target::UpdateProgress(int delta)
     }
 }
 
-extern int g_CombatEngine_0046ae78;
+extern "C" int g_CombatEngine_0046ae78;
 #include "ScoreDisplay.h"
 
 /* Function start: 0x4429A0 */
@@ -389,10 +424,8 @@ void Target::ParseSound(char* line)
     }
 }
 
-extern "C" {
-    extern int DAT_004362cc;
-    extern int g_TargetBearingValue_004362c8;
-}
+extern int DAT_004362cc;
+extern int g_TargetBearingValue_004362c8;
 
 void Target::OnProcessStart()
 {

@@ -10,7 +10,7 @@
 
 extern void ShowError(const char* message, ...);
 extern char* g_DirectionChars;
-extern int g_CombatEngine_0046ae78;
+extern "C" int g_CombatEngine_0046ae78;
 extern int FindCharIndex(char ch);
 
 // Global: stick direction characters (5 directions)

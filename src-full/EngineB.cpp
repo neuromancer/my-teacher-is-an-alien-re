@@ -16,12 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern "C" {
-    InputManager* g_InputManager_0046aa08;
-    GameState* g_GameState_0046aa30;
-    int g_RatsState;
-    int g_PeriodStateIdx_0046cb90;
-}
+extern InputManager* g_InputManager_0046aa08;
+extern "C" GameState* g_GameState_0046aa30;
+extern "C" int g_RatsState;
+extern int g_PeriodStateIdx_0046cb90;
 
 
 #include "string.h"

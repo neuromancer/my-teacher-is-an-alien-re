@@ -5,16 +5,12 @@
 #include "SpriteAction.h"
 
 struct Range {
-    SlimeDim dim;    // 0x00-0x07 — triggers SEH in destructor
-    int field_8;     // 0x08
-    int field_C;     // 0x0C
+    SlimeDim dim;        // 0x00-0x07 — start/end frame pair (triggers SEH in destructor)
+    int frameCounter;    // 0x08 — current frame count within cycle
+    int repeatLimit;     // 0x0C — max repeats before cycle ends (0 = infinite)
     Range() { memset(this, 0, sizeof(Range)); }
     ~Range();    // 0x44C830
 };
-
-// Accessor macros for Range dim fields (was .start/.end, now .dim.x/.dim.y)
-#define RANGE_START(r) ((r).dim.x)
-#define RANGE_END(r) ((r).dim.y)
 
 struct IntPair {
     int start;   // 0x00
