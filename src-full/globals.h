@@ -6075,4 +6075,79 @@ extern HitBounds g_HitBounds_00473260[3];                  // SC_DodgeOrville
 extern BombData g_BombData_00473278[6];                    // SC_DodgeOrville
 extern POINT g_CursorPos_00473308;                         // SC_DodgeOrville
 
+// Cache globals (moved from main.cpp)
+class MemoryCache;
+extern int g_CacheTotalSize_00473440;                      // total cached size
+extern int g_CacheSizeLimit_00473444;                      // max cache size
+extern int g_CacheEntryCount_0046b780;                     // cache entry count
+extern int g_CacheEvictThreshold_0046b790;                 // eviction threshold
+extern MemoryCache* g_FileCache_0046b78c;                  // file cache object
+
+// FilePosCache globals
+class FilePosCache;
+extern FilePosCache* g_FilePosCache_0046928c;              // file position cache
+
+// Main game globals (moved from main.cpp)
+class SoundTracker;
+class GameLoopHelper;
+class MsgList;
+extern SoundTracker* g_SoundTracker_0046928c;              // sound tracker
+extern GameLoopHelper* g_GameLoopHelper_0046a6f0;          // game loop helper
+extern MsgList* g_MsgList_0046a6dc;                        // message list
+extern int g_StartBlock_00472e2c;                          // start block
+
+// String table
+extern char g_StringTable_0043d158[16384];                 // string lookup table
+
+// Graphics system (from Graphics.cpp)
+extern HDC g_MainDC_00437488;
+extern HDC g_SecondaryDC_004374b4;
+extern int g_DblClickCX_00437508;
+extern int g_DblClickCY_0043750c;
+extern int g_WindowWord_00437510;
+extern HGDIOBJ g_StockFont_00437496;
+extern int g_FontHeight_0043749a;
+extern int g_FontExtLeading_0043749e;
+extern int g_FontAvgWidth_004374a2;
+extern char g_TextMetric_00439446[256];
+extern int g_GfxField1_00437518;
+extern int g_GfxField2_0043751c;
+extern int g_GfxField3_004383ec;
+extern int g_GfxField4_004383f4;
+extern int g_GfxField5_00438404;
+extern int g_GfxField6_0043840c;
+extern int g_GfxInitFlag_00437514;
+extern int g_VBufField1_00437f56;
+extern int g_VBufField2_00437f5a;
+extern char g_PaletteMap_00437520[256];
+extern char g_BgrPaletteData_00437b4c[];
+extern char* g_SysDirPtr_0043843c;
+extern short g_SegmentReg_00438440;
+extern int g_WinGBufSize_00438442;
+extern char DAT_00437afc[];
+
+// SpriteAction globals
+class SpriteAction;
+extern SpriteAction g_IconBarAction_00472d20;
+extern SpriteAction g_PendingAction_00472d58;
+extern SpriteAction g_HotspotAction_00472d90;
+
+// SC_CrystalPuzzle
+extern int g_PuzzleSolutions_0046cc98[];
+extern int g_PuzzleResultIdx_0046cca4[];
+extern GlyphRect g_PuzzleButtonRects_00473d30[];
+extern GlyphRect g_DoorRects_00473dc8[];
+
+// Misc globals
+class GameWindow;
+extern GameWindow g_GameWindow;
+extern char g_CDDriveLetter_0046bd74;
+extern char* g_FontFilename_0046bd78;
+extern int g_FontField_0046bd7c;
+extern int g_CachePreloadTime_0046b794;
+extern int g_GameField_004734a4;
+extern char g_QuestionBuffer_00469b28[];
+extern char g_LogEnabled_00472e28;
+extern char* g_DirectionChars;
+
 #endif

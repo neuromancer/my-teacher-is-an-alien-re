@@ -6,11 +6,7 @@
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
-
-class ZBufferManager;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-class MouseControl;
-extern MouseControl* g_Mouse_0046aa18;
+#include "globals.h"
 
 /* Function start: 0x44E5C0 */
 SC_DemoScreen::SC_DemoScreen() {

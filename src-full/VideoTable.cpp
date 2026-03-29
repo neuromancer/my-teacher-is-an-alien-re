@@ -5,12 +5,6 @@
 extern "C" void ShowMessage(char *param_1, ...);
 extern "C" void WriteToMessageLog(const char *msg, ...);
 
-// g_WinGDC_0043841c is already declared in globals.h
-extern HDC g_MainDC_00437488;
-extern int g_VideoBufferHeightM1_004374ca;
-extern void* g_WinGStretchBlt_00438438;
-extern void* g_WinGBitBlt_00438434;
-
 /* Function start: 0x4524C2 */
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
 {
@@ -146,16 +140,7 @@ extern "C" int ClearVideoBuffer(void) {
     return 0;
 }
 
-// Video table globals (defined in globals.cpp)
-extern int g_VideoBufferWidth_004374c6;
-extern int g_VideoBufferStride_00437f5e;
-extern int g_VideoBufferHeight_004374d2;
-extern int g_LineWidthH_004374d6;  // Line width horizontal
-extern int g_LineWidthV_004374da;  // Line width vertical
-extern int g_ClipLeft_004374de;
-extern int g_ClipRight_004374e2;
-extern int g_ClipTop_004374e6;
-extern int g_ClipBottom_004374ea;
+// Video table globals (defined in globals.cpp, declared in globals.h)
 
 /* Function start: 0x452BAE */
 extern "C" int __cdecl SelectVideoBuffer(int param_1) {

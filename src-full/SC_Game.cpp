@@ -14,12 +14,8 @@
 
 extern "C" char* MakeAudioName(char*);
 extern Palette* __fastcall InitPalette(Palette*);
-extern "C" extern GameState* g_GameState_0046aa30;
-extern char* g_Buffer_0046aa00;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-class MouseControl;
-extern MouseControl* g_Mouse_0046aa18;
 #include "MouseControl.h"
+#include "globals.h"
 
 /* Function start: 0x431D20 */
 SC_Game::SC_Game() {

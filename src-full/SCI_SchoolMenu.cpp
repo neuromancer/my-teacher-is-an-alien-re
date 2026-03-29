@@ -20,21 +20,6 @@
 #include "DrawEntry.h"
 #include "VBuffer.h"
 
-// extern globals - C linkage (matching stubs.cpp)
-extern "C" {
-    extern GameState* g_GameState_0046aa30;
-    extern int g_SchoolMenuActive_0046a190;
-    extern Sprite* g_SchoolMenuSprite_0046af08;
-}
-// extern globals - C++ linkage (matching stubs.cpp)
-extern SpriteAction g_IconBarAction_00472d20;
-extern SpriteAction g_PendingAction_00472d58;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern int g_IconBarState_00473334;
-extern int g_SchoolMenuField1_00473358;
-extern int g_InventoryState_004733e8;
-extern int g_SchoolMenuField2_0047337c;
-
 // extern functions (single-param __fastcall == thiscall with 0 stack params)
 
 // FUN_00421020 = ProcessSpriteActions - implemented below

@@ -13,21 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int g_ParserCount;          // DAT_00469288
-extern void* g_FilePosCache;
-extern "C" extern GameState* g_GameState_0046aa30;       // DAT_00469144
-extern char* g_Buffer_0046aa00;        // global string buffer
-
 // FUN_004128f0 = TimedEventPool destructor wrapper (inlined below)
-
-extern int g_VarSubstFlag_00469160;  // preprocessor variable substitution flag
-
-extern int g_ProcessFileCount_00469148;  // process file count
-extern int g_LBLParseCount_0046914c;  // LBLParse call count
-extern int g_LBLParseTime_00469150;  // LBLParse time
-extern int g_ReadLineTime_00469154;  // ReadLine time
-extern int g_FindKeyTime_00469158;  // FindKey time
-extern int g_TotalProcessTime_0046915c;  // total process time
 
 /* Function start: 0x4127C0 */
 Parser::Parser() {
@@ -124,7 +110,7 @@ void Parser::FindKey(unsigned char *param_1) {
   }
 
   if (field_0x38 & 1) {
-    *(__int64*)pos = g_FilePosCache_46928c->Lookup(filename, (char*)param_1);
+    *(__int64*)pos = g_FilePosCache_0046928c->Lookup(filename, (char*)param_1);
     if (pos[1] != -1 || pos[0] != -1) {
       fsetpos(pFile, (fpos_t*)pos);
       return;
@@ -145,7 +131,7 @@ void Parser::FindKey(unsigned char *param_1) {
 
   if (field_0x38 & 1) {
     fgetpos(pFile, (fpos_t*)pos);
-    g_FilePosCache_46928c->Store(filename, (char*)param_1, pos[0], pos[1]);
+    g_FilePosCache_0046928c->Store(filename, (char*)param_1, pos[0], pos[1]);
   }
 }
 
@@ -295,7 +281,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
   char key_buffer[60];
   int result;
 
-  if (g_FilePosCache_46928c != 0) {
+  if (g_FilePosCache_0046928c != 0) {
     self->field_0x38 |= 1;
   }
 
@@ -544,11 +530,6 @@ push_result:
 
 /* Function start: 0x413120 */
 #include "Sprite.h"
-
-extern "C" extern GameState* g_GameState_0046aa30;
-extern GameState* g_StringState_0046aa38;
-extern MouseControl* g_Mouse_0046aa18;
-extern int g_VarSubstFlag_00469160;
 
 extern "C" char* strstr(const char*, const char*);
 
@@ -813,8 +794,6 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
     }
 }
-
-extern char g_VarSubstBuffer_00469168[160];
 
 /* Function start: 0x414040 */
 void Parser::ParseGosubParams(char* line) {

@@ -23,17 +23,6 @@ extern "C" void WriteToLog(const char* format, ...);
 extern "C" char* MakeAudioName(char* baseName);
 extern int __stdcall AIL_sample_status(void*);
 
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern InputManager* g_InputManager_0046aa08;
-extern "C" { extern GameState* g_GameState_0046aa30; }
-extern MouseControl* g_Mouse_0046aa18;
-extern int g_PeriodStateIdx_0046cb90;
-
-extern int g_PuzzleSolutions_0046cc98[];
-extern int g_PuzzleResultIdx_0046cca4[];
-extern GlyphRect g_PuzzleButtonRects_00473d30[];
-extern GlyphRect g_DoorRects_00473dc8[];
-
 /* Function start: 0x44EBA0 */
 SC_CrystalPuzzle::SC_CrystalPuzzle() {
     memset(&field_A8, 0, 0x46 * 4);

@@ -23,7 +23,6 @@ extern "C" int* GetWindowedModeFlag() { return &s_WindowedMode; }
 
 LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
-extern GameWindow g_GameWindow;
 void __stdcall ParseCommandLine(char *);
 int ParseCommandLineArgs(char *, char **, int);
 

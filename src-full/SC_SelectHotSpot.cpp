@@ -17,13 +17,8 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" char* GetSoundFilename(int handle);
 extern "C" int __stdcall AIL_sample_status(void*);
 
-class ZBufferManager;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-class MouseControl;
-extern MouseControl* g_Mouse_0046aa18;
+#include "globals.h"
 #include "InputManager.h"
-extern InputManager* g_InputManager_0046aa08;
-extern SpriteAction g_PendingAction_00472d58;
 
 
 

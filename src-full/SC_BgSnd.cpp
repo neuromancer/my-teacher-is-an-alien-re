@@ -3,15 +3,13 @@
 #include "SpriteAction.h"
 #include "GameState.h"
 #include "GameEngine.h"
+#include "globals.h"
 #include <mss.h>
 #include "string.h"
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" char* GetSoundFilename(int handle);
-extern "C" extern GameState* g_GameState_0046aa30;
 #define g_GameState_0046aa30 (g_GameState_0046aa30)
-extern "C" extern void* g_BackBuffer2_0046aa10;
-extern "C" extern int g_GameEngine_0046a6ec;
 
 /* Function start: 0x4392E0 */
 SC_BgSnd::SC_BgSnd() {

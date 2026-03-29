@@ -31,15 +31,7 @@ extern "C" void ShowError(const char* format, ...);
 
 
 
-extern int g_FireAlarmEngine_004685ac;
-class InputManager;
-extern InputManager* g_InputManager_0046aa08;
-extern "C" extern VBuffer* g_BackBuffer_0046aa14;
-class MouseControl;
-extern MouseControl* g_Mouse_0046aa18;
-extern int g_FireAlarmTimer_004685a0;
-extern int g_FireAlarmField1_00472bd8;
-extern int g_FireAlarmField2_00472bdc;
+#include "globals.h"
 
 /* Function start: 0x407290 */
 SC_FireAlarm::SC_FireAlarm() {

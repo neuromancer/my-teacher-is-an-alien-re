@@ -5,8 +5,7 @@ extern "C" void WriteToLog(const char* format, ...);
 #include <string.h>
 #include <stdio.h>
 
-extern GameState* g_StringTable_0046aa34;
-extern "C" extern GameState* g_GameState_0046aa30;
+#include "globals.h"
 #define g_GameState_0046aa30 (g_GameState_0046aa30)
 
 SC_Message::~SC_Message() {}

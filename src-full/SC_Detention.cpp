@@ -10,11 +10,6 @@
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
-extern "C" extern GameState* g_GameState_0046aa30;
-extern "C" extern int g_GameEngine_0046a6ec;
-extern char* g_Buffer_0046aa00;
-extern int g_DetentionFlag_00468764;
-extern SpriteAction g_PendingAction_00472d58;
 
 
 /* Function start: 0x4098C0 */
@@ -666,7 +661,6 @@ void SC_Detention::Serialize(void* param) {
         fwrite(&field_160, 1, 4, fp);
     } else {
         /* LOAD */
-        extern char* g_Buffer_0046aa00;
         *g_Buffer_0046aa00 = 0;
         fread(g_Buffer_0046aa00, strLen, 1, fp);
 
@@ -680,7 +674,6 @@ void SC_Detention::Serialize(void* param) {
     }
 }
 
-extern int g_DetentionKeyState_00468a18;
 extern int WaitForInput();
 
 /* Function start: 0x40B9E0 */

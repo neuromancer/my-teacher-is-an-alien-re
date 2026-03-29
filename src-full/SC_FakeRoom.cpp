@@ -9,9 +9,7 @@
 #include "Memory.h"
 #include <string.h>
 
-extern InputManager* g_InputManager_0046aa08;
-extern MouseControl* g_Mouse_0046aa18;
-extern "C" extern GameState* g_GameState_0046aa30;
+#include "globals.h"
 
 // ActionParser is SC_Message — vtable 0x461100, LBLParse at 0x444E60
 // SC_Message::targetAddress (0x90) stores the SpriteAction* to fill

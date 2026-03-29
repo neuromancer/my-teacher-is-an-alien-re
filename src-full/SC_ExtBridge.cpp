@@ -20,7 +20,6 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 // FUN_00404b80 = LinkedList::GetCurrentData — callers updated
 // FUN_00404d70 = ListNode sdtor — callers updated to use delete
 #include "globals.h"
-extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 /* Function start: 0x4399E0 */
 SC_ExtBridge::SC_ExtBridge() {
@@ -173,9 +172,6 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 }
 
 #include "GameEngine.h"
-extern "C" extern int g_GameEngine_0046a6ec;                       // GameEngine instance
-extern SpriteAction g_PendingAction_00472d58;                          // global SpriteAction
-
 /* Function start: 0x439F30 */
 int SC_ExtBridge::ShutDown(SC_Message* msg)
 {
@@ -197,11 +193,8 @@ int SC_ExtBridge::ShutDown(SC_Message* msg)
 }
 
 #include "mCNavigator.h"
-extern int g_DodgeAnimStates_0046bcd0[];
 #include "MouseControl.h"
 #include "InputManager.h"
-extern MouseControl* g_Mouse_0046aa18;
-extern InputManager* g_InputManager_0046aa08;
 
 /* Function start: 0x43A030 */
 void SC_ExtBridge::Update(int p1, int p2)

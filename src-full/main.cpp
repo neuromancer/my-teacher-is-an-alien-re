@@ -83,17 +83,8 @@ extern GameState* g_StringTable_0046aa34;
 extern GameState* g_StringState_0046aa38;
 
 static float g_PercentScale = 0.01f;
-int g_CacheTotalSize_00473440 = 0;
-int g_CacheSizeLimit_00473444 = 0;
-int g_CacheEntryCount_0046b780 = 0;
-int g_CacheEvictThreshold_0046b790 = 0;
-MemoryCache* g_FileCache_0046b78c = 0;
+// Cache, SoundTracker, GameLoopHelper, MsgList, g_StartBlock_00472e2c — defined in globals.cpp
 Timer DAT_00473448;
-
-SoundTracker* g_SoundTracker = 0;       // DAT_0046928c
-GameLoopHelper* g_GameLoopHelper = 0;   // DAT_0046a6f0
-MsgList* g_MsgList = 0;                 // DAT_0046a6dc
-int g_StartBlock = 0;                    // DAT_00472e2c
 
 /* Function start: 0x4236F0 */
 void RunGame() {
@@ -108,7 +99,7 @@ void RunGame() {
     }
 
     // Pre-GameState manager allocation
-    g_SoundTracker = new SoundTracker(0xfa0);
+    g_SoundTracker_0046928c = new SoundTracker(0xfa0);
 
     // Create 4 GameStates with inline ParseFile
     g_GameState_0046aa30 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
@@ -149,7 +140,7 @@ void RunGame() {
     ParseFile(g_Mouse_0046aa18, "mis\\mouse1.mis", "[MICE]");
 
     // Linked list allocation
-    g_MsgList = new MsgList();
+    g_MsgList_0046a6dc = new MsgList();
 
     g_StateString_0046aa2c = (char *)operator new(0x40);
     *g_StateString_0046aa2c = 0;
@@ -200,11 +191,11 @@ void RunGame() {
 
     // GameLoop (stack-allocated)
     GameLoop gameLoop;
-    ParseFile(&gameLoop, "mis\\start.mis", "[BLOCK%4.4d]", g_StartBlock);
+    ParseFile(&gameLoop, "mis\\start.mis", "[BLOCK%4.4d]", g_StartBlock_00472e2c);
 
     // Post-GameLoop
-    if (g_GameLoopHelper != 0) {
-        g_GameLoopHelper->PostProcess();
+    if (g_GameLoopHelper_0046a6f0 != 0) {
+        g_GameLoopHelper_0046a6f0->PostProcess();
     }
 
     // Game loop — GameEngine::RunGameLoop (0x430CD0)
@@ -291,18 +282,18 @@ void RunGame() {
         g_FlagManager_0046a6e8 = 0;
     }
 
-    if (g_GameLoopHelper != 0) {
-        GameLoopHelper* p = g_GameLoopHelper;
+    if (g_GameLoopHelper_0046a6f0 != 0) {
+        GameLoopHelper* p = g_GameLoopHelper_0046a6f0;
         p->~GameLoopHelper();
         operator delete(p);
-        g_GameLoopHelper = 0;
+        g_GameLoopHelper_0046a6f0 = 0;
     }
 
-    if (g_SoundTracker != 0) {
-        SoundTracker* p = g_SoundTracker;
+    if (g_SoundTracker_0046928c != 0) {
+        SoundTracker* p = g_SoundTracker_0046928c;
         p->~SoundTracker();
         operator delete(p);
-        g_SoundTracker = 0;
+        g_SoundTracker_0046928c = 0;
     }
 
     CleanupMemoryCache();

@@ -22,7 +22,6 @@ extern "C" void ShowError(const char* format, ...);
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
-extern SpriteAction g_HotspotAction_00472d90;
 
 
 /* Function start: 0x41B320 */

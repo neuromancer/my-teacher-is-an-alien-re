@@ -12,31 +12,14 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" void ShowError(const char* format, ...);
 #include "SoundList.h"
 #include "ZBufferManager.h"
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern int g_AnimStates_0046ac30[5];
-extern int g_LastBombDir_0046ac44;
+#include "globals.h"
 
-struct HitBounds {
-    int minVal;
-    int maxVal;
-};
-extern HitBounds g_HitBounds_00473260[3];
-
-struct BombData {
-    int data[6];
-};
-extern BombData g_BombData_00473278[6];
-
-extern POINT g_CursorPos_00473308;
-
-
+// HitBounds, BombData — defined in globals.h
 
 int CompareRange(int center, int pos, int range);
 int CheckCursorRange(int range);
 
 // SC_Combat base class calls — now using proper inheritance
-
-extern "C" { extern GameState* g_GameState_0046aa30; }
 
 // Parser-derived class used for MIS file action parsing
 // vtable 0x461100 in original binary

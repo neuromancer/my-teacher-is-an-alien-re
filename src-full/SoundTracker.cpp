@@ -23,13 +23,7 @@ struct SoundPool {
     ~SoundPool();
 };
 
-extern int g_SoundTrackerField1_00469128;
-extern SoundPool* g_SoundPool_00469134;
-extern int g_CacheHitCount_0046912c;
-extern int g_CacheMissCount_00469130;
-extern void* g_CacheLRUNode_00469138;
-extern int g_SoundTrackerField3_00469140;
-extern int g_SoundTrackerField2_0046913c;
+#include "globals.h"
 
 extern "C" int FileExists(const char*);
 extern "C" char* internal_ReadLine(char*, int, FILE*);
@@ -41,7 +35,6 @@ extern void EncryptAndWrite(char*, FILE*);
 
 #include "Timer.h"
 #include "FilePosCache.h"
-extern void* g_FilePosCache;
 
 /* Function start: 0x412000 */
 SoundTracker::SoundTracker(int param) {

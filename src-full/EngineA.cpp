@@ -1,11 +1,11 @@
 #include "EngineA.h"
 #include "GameState.h"
+#include "globals.h"
 #include <stdio.h>
 #include <string.h>
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" GameState* g_GameState_0046aa30;
 
 /* Function start: 0x43A4C0 */
 EngineA::EngineA() {

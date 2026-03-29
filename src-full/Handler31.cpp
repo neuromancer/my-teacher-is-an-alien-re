@@ -4,6 +4,7 @@
 #include "Palette.h"
 #include "SC_Question.h"
 #include "LinkedList.h"
+#include "globals.h"
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
@@ -12,13 +13,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 #include "MouseControl.h"
 #include "GameState.h"
 #include "FlagArray.h"
-extern InputManager* g_InputManager_0046aa08;
-extern MouseControl* g_Mouse_0046aa18;
-extern "C" extern GameState* g_GameState_0046aa30;
-extern char* g_Buffer_0046aa00;
-extern int g_IconBarState_00473334;
-extern int g_InventoryState_004733e8;
-extern FlagArray* g_FlagManager_0046a6e8;
+
 
 extern void ResetSpriteStates();
 
@@ -293,8 +288,6 @@ int Handler31::ShutDown(SC_Message* msg) {
 
     return 0;
 }
-
-extern char g_QuestionBuffer_00469b28[];
 
 /* Function start: 0x417500 */
 void Handler31::Update(int param1, int param2) {

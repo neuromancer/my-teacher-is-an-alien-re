@@ -10,13 +10,10 @@
 #include "Memory.h"
 #include <string.h>
 
-extern "C" extern GameState* g_GameState_0046aa30;
+#include "globals.h"
 #include "Timer.h"
-extern char* g_Buffer_0046aa00;
 #include "MouseControl.h"
 #include "InputManager.h"
-extern MouseControl* g_Mouse_0046aa18;
-extern InputManager* g_InputManager_0046aa08;
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 

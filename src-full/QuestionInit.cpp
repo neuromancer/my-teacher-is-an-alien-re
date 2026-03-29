@@ -1,9 +1,8 @@
 #include "QuestionInit.h"
 #include "FlagArray.h"
+#include "globals.h"
 #include <string.h>
 #include <stdio.h>
-
-extern FlagArray* g_FlagManager_0046a6e8;
 
 /* Function start: 0x422880 */
 QuestionInit::QuestionInit(const char* filename) {

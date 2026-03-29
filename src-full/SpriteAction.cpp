@@ -8,8 +8,6 @@ extern "C" void WriteToLog(const char* format, ...);
 #include <stdlib.h>
 #include <new.h>
 
-extern "C" int g_GameEngine_0046a6ec;
-
 /* Function start: 0x401120 */
 SlimeDim::~SlimeDim() {}
 
@@ -134,7 +132,6 @@ void EnqueueSpriteAction(void* action) {
     ((SpriteAction*)action)->childAction = 0;
 }
 
-extern char* g_Buffer_0046aa00;
 extern void ShowError(const char* format, ...);
 
 /* Function start: 0x444CD0 */

@@ -80,28 +80,17 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
   ShowError(param_3);
 }
 
-extern void* g_PathResolver_0046aa1c; // CDData* for path resolution
 extern int __cdecl GetFileSize(char*);
 extern "C" int FileExists(const char*);
 extern "C" void WriteToLog(const char*, ...);
 
 // FileCache globals
 #include "MemoryCache.h"
-extern MemoryCache* g_FileCache_0046b78c;  // cache pointer
-extern int g_PathCacheHits_0046b784;   // cache hit counter
-extern int g_PathCacheMisses_0046b788;   // cache miss counter
-extern int g_CacheEvictThreshold_0046b790;   // cache eviction threshold
-extern int g_CacheTotalSize_00473440;   // total cached size
-extern int g_CacheSizeLimit_00473444;   // cache size limit
-
-extern int g_CacheEntryCount_0046b780;
-extern int g_CachePreloadTime_0046b794;
 
 // Forward declarations (defined below)
 extern "C" int __cdecl DeleteFileAndDir(char*);
 extern "C" void LogCacheStats();
 extern "C" void LogCacheEntries();
-extern int g_FileDeleteError_004719c0;
 
 /* Function start: 0x434030 */
 void __cdecl FileCacheEntryCleanup(void* entries, int count) {

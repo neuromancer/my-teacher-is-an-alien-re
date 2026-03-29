@@ -17,8 +17,7 @@
 #include <string.h>
 
 #include "InputManager.h"
-extern InputManager* g_InputManager_0046aa08;
-extern "C" extern GameState* g_GameState_0046aa30;
+#include "globals.h"
 
 #include "CombatSprite.h"
 #include "mCNavigator.h"
@@ -223,7 +222,6 @@ int SC_CombatBase::LBLParse(char* line)
     if (strcmp(token, "ENGINE_INFO") == 0) {
         Parser::ProcessFile((Parser*)g_WeaponParser_0046ae4c, this, (char*)0);
     } else if (strcmp(token, "UPDATE_DIRS") == 0) {
-        extern void* g_PathResolver_0046aa1c;
         Parser::ProcessFile((Parser*)g_PathResolver_0046aa1c, this, (char*)0);
     } else if (strcmp(token, "TARGETS") == 0) {
         Parser::ProcessFile((Parser*)g_TargetList_0046ae58, this, (char*)0);

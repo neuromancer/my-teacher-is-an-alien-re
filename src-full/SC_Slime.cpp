@@ -13,13 +13,9 @@
 #include <string.h>
 #include "GameState.h"
 #include "SC_Question.h"
-extern "C" extern GameState* g_GameState_0046aa30;
-
 extern "C" void SetVideoRes(int, int);
 #include "string.h"
 extern "C" void WriteToLog(const char* format, ...);
-class ZBufferManager;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
 // g_SlimeField_00468bbc — declared in globals.h
 
 #include "SlimeTable.h"

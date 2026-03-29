@@ -3,8 +3,6 @@
 #include "InputManager.h"
 #include "Projectile.h"
 
-extern InputManager* g_InputManager_0046aa08;
-extern int g_ProjectileHits_0043d150;
 
 Weapon::~Weapon() {}
 

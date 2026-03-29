@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern int g_SaveState0_0043d130;
-
 extern void ParseSpriteAction(void*, void*);
 extern void EnqueueSpriteAction(void*);
 

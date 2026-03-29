@@ -11,27 +11,17 @@
 #include "LinkedList.h"
 #include "ZBuffer.h"
 #include "RenderEntry.h"
+#include "globals.h"
 #include <string.h>
 #include <smack.h>
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetCinematicFilename(int id);
 
-extern "C" extern GameState* g_GameState_0046aa30;
 #define g_GameState_0046aa30 (g_GameState_0046aa30)
 #include "ZBufferManager.h"
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern InputManager* g_InputManager_0046aa08;
 class MouseControl;
 #include "GameEngine.h"
-extern MouseControl* g_Mouse_0046aa18;
-
-extern "C" {
-    extern int g_GameEngine_0046a6ec;
-    extern VBuffer* g_BackBuffer_0046aa14;
-    extern char g_CinematicDebugStr_00473400;
-}
-extern int g_WaitForInputValue_0046ac04;
 
 // Engine list operations
 
@@ -118,8 +108,6 @@ extern "C" void DrawFontText(char* text, int len);   // 0x45329B - renders text 
 // CinematicAction = SoundCommand (vtable 0x461030, sdtor 0x430980)
 #include "SoundCommand.h"
 
-extern int g_PeriodStateIdx_0046cb90;
-extern char* g_PeriodCharTable_0046cb94;
 static char g_CinematicPath_00473cb0[256];
 
 static char g_AnimNameBuf_00473cf0[64];

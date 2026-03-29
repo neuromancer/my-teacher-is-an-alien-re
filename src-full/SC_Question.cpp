@@ -19,16 +19,6 @@
 // FUN_00413e10 = ParseFile in Parser.h
 
 
-extern StringTable* g_Strings_0046a6e0;
-extern FlagArray* g_FlagManager_0046a6e8;
-extern "C" int g_GameEngine_0046a6ec;         // GameEngine instance
-extern "C" GameState* g_GameState_0046aa30;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern char* g_Buffer_0046aa00;           // temp string buffer
-extern char g_QuestLevelKey_00468108[];          // GameState key (quest level)
-extern char g_QuestFormatStr_004690e4[];          // format string for quest
-extern GameState* g_StringState_0046aa38;      // secondary GameState (string table)
-
 /* Function start: 0x414780 */
 SC_Question::SC_Question(int id, SCI_Dialog* dialog)
 {

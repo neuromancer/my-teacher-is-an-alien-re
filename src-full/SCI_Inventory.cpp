@@ -1,5 +1,6 @@
 #include "SCI_Inventory.h"
 #include "T_Object.h"
+#include "globals.h"
 #include <string.h>
 #include <stdio.h>
 #include "Memory.h"
@@ -14,21 +15,12 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" char* GetSoundFilename(int handle);
 
 #include "MsgList.h"
-extern MsgList* g_MsgList; // DAT_0046a6dc
-#define g_InventoryList ((LinkedList*)g_MsgList)
+#define g_InventoryList ((LinkedList*)g_MsgList_0046a6dc)
 #include "ZBufferManager.h"
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-class MouseControl;
-extern MouseControl* g_Mouse_0046aa18;
-extern void* g_SelectedItem_0046a6e4;
-extern int g_IconBarState_00473334;
-extern int g_InventoryState_004733e8;
 
 #include "MouseControl.h"
 #include "T_MenuHotspot.h"
-extern InputManager* g_InputManager_0046aa08;
-// DAT_0046a6dc is g_MsgList — use g_MsgList directly
-extern char* g_Buffer_0046aa00;
+// DAT_0046a6dc is g_MsgList_0046a6dc — use g_MsgList_0046a6dc via globals.h
 // FUN_004407c0 = RemoveCurrent COMDAT — callers updated
 
 // T_Object — now implemented in T_Object.cpp
@@ -905,8 +897,8 @@ void SCI_Inventory::Serialize(void* param) {
     ((SCI_Inventory*)self)->itemPool = new TimedEventPool(10);
 
     /* Clean up global queue */
-    if (g_MsgList != 0) {
-        esi_ptr = (int*)g_MsgList;
+    if (g_MsgList_0046a6dc != 0) {
+        esi_ptr = (int*)g_MsgList_0046a6dc;
         if (esi_ptr[0] != 0) {
             esi_ptr[2] = esi_ptr[0];
             while (esi_ptr[0] != 0) {
@@ -917,12 +909,12 @@ void SCI_Inventory::Serialize(void* param) {
             }
         }
         FreeMemory(esi_ptr);
-        g_MsgList = 0;
+        g_MsgList_0046a6dc = 0;
     }
 
     /* Allocate new global queue */
     esi_ptr = (int*)(new LinkedList());
-    g_MsgList = (MsgList*)esi_ptr;
+    g_MsgList_0046a6dc = (MsgList*)esi_ptr;
 
     /* Read items loop */
     for (;;) {
@@ -991,7 +983,6 @@ Rect::~Rect() {}
 #include "Palette.h"
 #include "GameState.h"
 #include <new.h>
-extern "C" GameState* g_GameState_0046aa30;
 
 /* Function start: 0x43FDD0 */
 int SCI_Inventory::LBLParse(char* line) {
@@ -1018,7 +1009,7 @@ int SCI_Inventory::LBLParse(char* line) {
         void* obj;
         sscanf(line, " %s %d", token, &index);
         obj = new T_Object(index);
-        int* queue = (int*)g_MsgList;
+        int* queue = (int*)g_MsgList_0046a6dc;
         if (obj == 0) {
             ShowError("queue fault 0101");
         }
@@ -1172,7 +1163,7 @@ next_panel:
 }
 /* Function start: 0x43F420 */
 void SCI_Inventory::ProcessInventory() {
-    LinkedList* list = (LinkedList*)g_MsgList;
+    LinkedList* list = (LinkedList*)g_MsgList_0046a6dc;
     if (list != 0 && list->head != 0) {
         list->current = list->head;
         while (1) {

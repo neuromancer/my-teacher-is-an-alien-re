@@ -4,8 +4,9 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "globals.h"
+
 extern char* ResolveAssetPath(char* path);
-extern char g_CDDriveLetter_0046bd74;
 
 /* Function start: 0x43A830 */
 void GlyphFont::LoadFont(char* param) {

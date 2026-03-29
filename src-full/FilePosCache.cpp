@@ -1,16 +1,11 @@
 #include "FilePosCache.h"
 #include "Memory.h"
 #include "SC_Question.h"
+#include "globals.h"
 #include <string.h>
 
-struct SoundPool;
-extern SoundPool* g_SoundPool_00469134;  // cache pool
-extern void* g_CacheLRUNode_00469138;       // LRU tracking node
-extern int g_SoundTrackerField1_00469128;         // max cache size
-extern int g_CacheHitCount_0046912c;         // hit counter
-extern int g_CacheMissCount_00469130;         // miss counter
 
-FilePosCache* g_FilePosCache_46928c = 0;  // DAT_0046928c
+// g_FilePosCache_0046928c — defined in globals.cpp
 
 /* Function start: 0x412130 */
 __int64 FilePosCache::Lookup(char* fname, char* keyName) {

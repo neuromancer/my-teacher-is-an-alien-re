@@ -27,17 +27,6 @@ extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, un
 
 // Smack functions are linked via smackw32.lib (IAT entries in original binary at 0x004765xx)
 
-// Full game globals (extern "C" linkage)
-extern "C" {
-    extern int g_GameEngine_0046a6ec;        // GameEngine* (cast to int)
-    extern GameState* g_GameState_0046aa30;
-    extern int g_WaitForInputValue_0046ac04;
-    extern char g_AnimFilename_00472c70[];     // Animation filename buffer
-    extern char g_AnimFilename2_00472cb0[];     // Animation filename buffer 2
-}
-
-extern GameConfig* g_GameConfig_00436970;
-extern InputManager* g_InputManager_0046aa08;
 
 #include "GameLoopHelper.h"
 
@@ -86,8 +75,8 @@ void Animation::CloseSmackerFile() {
     if (g_GameConfig_00436970->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 0);
     }
-    if (g_GameLoopHelper != 0) {
-      g_GameLoopHelper->RemoveAnimation((int)smk);
+    if (g_GameLoopHelper_0046a6f0 != 0) {
+      g_GameLoopHelper_0046a6f0->RemoveAnimation((int)smk);
     }
     SmackClose(smk);
     smk = 0;
@@ -188,8 +177,8 @@ int Animation::Open(char *filename, int param_2, int param_3) {
     return 0;
   }
 
-  if (g_GameLoopHelper != 0) {
-    g_GameLoopHelper->AddAnimation(filename, (int)smk);
+  if (g_GameLoopHelper_0046a6f0 != 0) {
+    g_GameLoopHelper_0046a6f0->AddAnimation(filename, (int)smk);
   }
   strcpy(g_AnimFilename_00472c70, filename);
 

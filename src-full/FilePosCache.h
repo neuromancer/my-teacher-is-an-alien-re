@@ -19,6 +19,6 @@ public:
     void Store(char* filename, char* key, int posLo, int posHi);  // 0x412210
 };
 
-extern FilePosCache* g_FilePosCache_46928c;  // DAT_0046928c
+// g_FilePosCache_0046928c — declared in globals.h
 
 #endif // FILPOSCACHE_H

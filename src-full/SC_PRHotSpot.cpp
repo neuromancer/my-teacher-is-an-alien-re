@@ -13,10 +13,7 @@ extern "C" void ShowError(const char* format, ...);
 extern "C" char* GetSoundFilename(int handle);
 extern void __fastcall PracticeRoomNotify(void*);
 extern void ParseSpriteAction(void* param_1, void* param_2);
-extern "C" GameState* g_GameState_0046aa30;
-extern GameState* g_GameState2_0046aa3c;
-
-extern InputManager* g_InputManager_0046aa08;
+#include "globals.h"
 
 /* Function start: 0x429B60 */
 SC_PRHotSpot::SC_PRHotSpot(int param_1, int param_2) : Parser()

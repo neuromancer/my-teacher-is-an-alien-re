@@ -20,6 +20,6 @@ public:
     void RemoveAnimation(int handle);            // 0x41a8d0
 };
 
-extern GameLoopHelper* g_GameLoopHelper;  // DAT_0046a6f0
+// g_GameLoopHelper_0046a6f0 — declared in globals.h
 
 #endif // GAMELOOPHELPER_H

@@ -35,10 +35,6 @@ void TimedEvent::SetType(int type)
 
 extern void FreeMemory(void*);
 
-extern char* g_Buffer_0046aa00;
-class ZBufferManager;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-
 /* Function start: 0x422AE0 */
 int TimedEvent::Update()
 {

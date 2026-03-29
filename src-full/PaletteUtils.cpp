@@ -3,9 +3,6 @@
 #include "string.h"
 
 // Color setup globals
-extern char g_TextColor_00437490;      // Color value after lookup
-extern char g_PaletteMap_00437520[];    // Palette identity map (256 bytes)
-extern char g_BgrPalette_00437b48[];    // BGR palette buffer
 static char g_ColorIndex_00437495 = 0;  // Current color index
 
 extern "C" {

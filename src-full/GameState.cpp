@@ -3,10 +3,10 @@
 #include "string.h"
 #include "Memory.h"
 #include "SpriteAction.h"
+#include "globals.h"
 #include <stdio.h>
 #include <string.h>
 
-extern char* g_Buffer_0046aa00;
 
 // Hash table entry for GameState label storage
 struct GSHashEntry {

@@ -12,9 +12,6 @@
 #include <string.h>
 #include <stdio.h>
 
-extern CDData* g_CDData_0043697c;
-extern "C" TargetList* g_TargetList_0046ae58;
-
 // ============================================================================
 // Target implementation
 // ============================================================================
@@ -422,9 +419,6 @@ void Target::ParseSound(char* line)
         break;
     }
 }
-
-extern int g_TargetRangeCounter_004362cc;
-extern int g_TargetBearingValue_004362c8;
 
 void Target::OnProcessStart()
 {

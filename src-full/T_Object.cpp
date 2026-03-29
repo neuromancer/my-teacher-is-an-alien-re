@@ -6,8 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" extern GameState* g_GameState_0046aa30;
-extern char* g_Buffer_0046aa00;
+#include "globals.h"
 
 
 /* Function start: 0x40C630 */

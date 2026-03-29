@@ -8,9 +8,6 @@
 #include "InputManager.h"
 #include "SoundList.h"
 
-extern MouseControl* g_Mouse_0046aa18;
-extern InputManager* g_InputManager_0046aa08;
-
 #include "globals.h"
 
 /* Function start: 0x447520 */

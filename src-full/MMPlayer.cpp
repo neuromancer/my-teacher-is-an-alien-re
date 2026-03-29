@@ -3,11 +3,10 @@
 #include "Sprite.h"
 #include "string.h"
 #include "GameEngine.h"
+#include "globals.h"
 #include <new.h>
 #include <string.h>
 #include <stdio.h>
-
-extern "C" int g_GameEngine_0046a6ec;
 
 /* Function start: 0x4438A0 */
 MMPlayer::MMPlayer()

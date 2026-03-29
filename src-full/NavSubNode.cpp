@@ -9,7 +9,6 @@
 #include <string.h>
 
 extern void ShowError(const char* message, ...);
-extern char* g_DirectionChars;
 extern int FindCharIndex(char ch);
 
 // Global: stick direction characters (5 directions)

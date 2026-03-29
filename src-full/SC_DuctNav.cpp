@@ -8,7 +8,6 @@
 #include "Memory.h"
 #include "SpriteAction.h"
 
-extern MouseControl* g_Mouse_0046aa18;
 #include "GameState.h"
 #include "GameEngine.h"
 #include "FlagArray.h"
@@ -20,12 +19,8 @@ extern MouseControl* g_Mouse_0046aa18;
 #include <io.h>
 
 #include "T_MenuHotspot.h"
+#include "globals.h"
 
-extern "C" extern GameState* g_GameState_0046aa30;
-extern "C" extern int g_GameEngine_0046a6ec;
-extern FlagArray* g_FlagManager_0046a6e8;
-extern char* g_Buffer_0046aa00;
-extern SpriteAction g_PendingAction_00472d58;
 extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode);
 extern "C" int __cdecl DeleteFileAndDir(char* path);
 
@@ -293,9 +288,6 @@ void InitNewGame() {
         free(action);
     }
 }
-extern void* g_GlyphFont_0046aa28;
-extern char* g_FontFilename_0046bd78;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
 SC_DuctNav::~SC_DuctNav()
 {
     ShutDown(0);
@@ -560,7 +552,6 @@ set_clear_return:
     return 1;
 }
 
-extern int g_FontField_0046bd7c;
 #include "GlyphFont.h"
 
 /* Function start: 0x43B7E0 */

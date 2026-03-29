@@ -18,8 +18,6 @@ extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 
 extern void FreeMemory(void*);
 
-extern "C" GameState* g_GameState_0046aa30;
-
 #include "HotspotAction.h"
 #include "GameState.h"
 

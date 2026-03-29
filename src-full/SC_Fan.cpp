@@ -25,11 +25,7 @@ extern "C" void WriteToLog(const char* format, ...);
 extern char* __cdecl ResolveAssetPath(char* name);
 // FUN_00427880 = Weapon::UpdateProjectiles — callers updated
 
-extern Weapon* g_ActiveWeapon_00468ef0;                 // active weapon display
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern "C" { extern GameState* g_GameState_0046aa30; }
-extern MouseControl* g_Mouse_0046aa18;
-extern InputManager* g_InputManager_0046aa08;
+#include "globals.h"
 
 /* Function start: 0x40EFF0 */
 SC_Fan::SC_Fan()
@@ -569,11 +565,6 @@ void SC_Fan::RenderFan() {
         }
     }
 }
-
-extern int g_FanField1_00472be0;
-extern int g_FanField2_00472be4;
-extern int g_FanField3_00472be8;
-extern int g_FanField4_00472bec;
 
 /* Function start: 0x410390 */
 void SC_Fan::OnProcessEnd()

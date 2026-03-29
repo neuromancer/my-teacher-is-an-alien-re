@@ -10,12 +10,10 @@
 #include <string.h>
 #include <new>
 
+#include "globals.h"
 extern "C" void ShowError(const char* format, ...);
 extern "C" void WriteToLog(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" GameState* g_GameState_0046aa30;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern MouseControl* g_Mouse_0046aa18;
 
 /* Function start: 0x421C40 */
 SC_SaveLoad::SC_SaveLoad()

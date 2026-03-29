@@ -19,14 +19,6 @@ extern void* GetGameWindowHandle();
 
 extern void ShutdownGameSystems();
 extern void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
-extern int g_ExitInProgress_0043be34;
-extern char g_ExitCode_0043be30;
-extern void* g_AtExitTableStart_0043f104;
-extern void* g_AtExitTableEnd_0043f100;
-extern int DAT_00435030;
-extern int DAT_00435038;
-extern int DAT_0043503c;
-extern int DAT_00435040;
 
 int DeleteFile_Wrapper(const char* filename);
 
@@ -180,7 +172,7 @@ void WriteToMessageLog(const char *msg,...)
 }
 
 // g_StringTableCount_004366b4 — defined in globals.cpp
-char g_stringTable[16384] = {0}; // 0x43d158
+// g_StringTable_0043d158 — defined in globals.cpp
 
 /* Function start: 0x425DC0 */
 extern "C" void AddToStringTable(char *param_1)
@@ -192,13 +184,11 @@ extern "C" void AddToStringTable(char *param_1)
     iVar2 = sscanf(param_1, " %s ", local_20);
     if (iVar2 == 1) {
         if (strlen(local_20) != 0) {
-            strcpy(&g_stringTable[g_StringTableCount_004366b4 * 0x20], local_20);
+            strcpy(&g_StringTable_0043d158[g_StringTableCount_004366b4 * 0x20], local_20);
             g_StringTableCount_004366b4++;
         }
     }
 }
-
-extern char g_LogEnabled_00472e28;
 
 /* Function start: 0x425E40 */
 extern "C" void WriteToLog(const char *param_1, ...)
@@ -357,7 +347,6 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
     }
 }
 
-extern "C" GameState* g_GameState_0046aa30;
 static char g_AnimNameBuf[64];  // DAT_00473cf0
 static char g_CineNameBuf[64]; // DAT_00473cb0
 

@@ -16,10 +16,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern InputManager* g_InputManager_0046aa08;
-extern "C" GameState* g_GameState_0046aa30;
-extern int g_PeriodStateIdx_0046cb90;
-
 
 #include "string.h"
 static char* FormatSoundPath(char* path);

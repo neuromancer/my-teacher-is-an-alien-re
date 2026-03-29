@@ -16,9 +16,6 @@ extern "C" {
 
 extern void ShowError(const char* message, ...);
 
-// Global for game outcome state
-extern GameOutcome* g_GameOutcome_00435f28;
-
 // Direction characters for navigation (6 directions: N, E, S, W, U, D)
 char* g_DirectionChars = "NESWUD";
 

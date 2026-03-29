@@ -5,71 +5,7 @@
 
 #include "string.h"
 #include "VBuffer.h"
-
-extern "C" extern VBuffer* g_BackBuffer_0046aa14;
-
-// Externs for globals
-extern HDC g_MainDC_00437488;
-extern HDC g_SecondaryDC_004374b4;
-extern char g_CursorVisible_00437506;
-extern char g_CursorState_00437507;
-extern int g_DblClickCX_00437508;
-extern int g_DblClickCY_0043750c;
-extern int g_WindowWord_00437510;
-extern int g_BitmapHeaderSize_00437f4c;
-extern int g_DibModeFlag_00437f50;
-
-extern HGDIOBJ g_StockFont_00437496;
-extern int g_FontHeight_0043749a;
-extern int g_FontExtLeading_0043749e;
-extern int g_FontAvgWidth_004374a2;
-extern char g_TextMetric_00439446[256]; // TEXTMETRIC struct buffer
-
-extern char g_TextColor_00437490;
-extern "C" unsigned short g_StateFlags_004374b2;  // C linkage (defined in globals.cpp)
-extern int g_FillColorDword_00437491;
-extern int g_GfxField1_00437518;
-extern int g_GfxField2_0043751c;
-extern int g_GfxField3_004383ec;
-extern int g_GfxField4_004383f4;
-extern int g_GfxField5_00438404;
-extern int g_GfxField6_0043840c;
-extern int g_DrawPosX_004374c2;
-extern int g_DrawPosY_004374ce;
-extern int g_LineWidthH_004374d6;
-extern int g_LineWidthV_004374da;
-extern int g_GfxInitFlag_00437514;
-extern char g_TextAlignH_004374c0;
-extern char g_TextAlignV_004374c1;
-extern char g_CurrentVideoBuffer_00437f54;
-extern int g_VBufField1_00437f56;
-extern int g_VBufField2_00437f5a;
-extern HDC g_WinGDC_0043841c;
-extern HGDIOBJ g_WinGBitmap_00438424;
-
-extern char g_PaletteMap_00437520[256];  // Palette identity map
-extern "C" unsigned char g_PaletteData_00437620[256];  // Palette data / State flags (C linkage)
-extern int g_VBufDataPtrs_0043826c[32];  // Video buffer data pointers
-extern char g_LogPalette_00437720[];     // LOGPALETTE buffer
-extern char DAT_00437afc[];     // inside g_LogPalette_00437720
-extern char g_BgrPaletteData_00437b4c[];     // inside g_BgrPalette_00437b48 typically
-extern char g_BgrPalette_00437b48[];     // BGR palette buffer
-
-
-// Far pointer storage for WinG
-extern char* g_SysDirPtr_0043843c;
-extern char g_SystemDirPath_00438446[256];
-extern int g_WinGBufSize_00438442;
-extern short g_SegmentReg_00438440;
-extern HANDLE g_WinGFileHandle_004374ee;
-extern HMODULE g_WinGModule_00438420;
-
-// WinG function pointers
-extern void* g_WinGCreateDIB_00438428;
-extern void* g_WinGSetDIBColorTable_0043842c;
-extern void* g_WinGRecommendDIBFormat_00438430;
-extern void* g_WinGBitBlt_00438434;
-extern void* g_WinGStretchBlt_00438438;
+#include "globals.h"
 
 // External functions
 extern "C" void* GetGameWindowHandle();
@@ -88,9 +24,6 @@ extern "C" int InitVideoSystem(void);
 
 
 
-// Additional globals for palette functions
-extern HPALETTE g_Palette_0043748c;
-extern HPALETTE g_PreviousPalette_004374ae;
 
 
 
@@ -194,7 +127,6 @@ static const unsigned char g_DefaultPaletteHi_00423e98[708] = {
 
 
 #include "VBuffer.h"
-extern VBuffer* g_WorkBuffer_00436974;
 extern "C" int* GetScreenWidth();
 extern "C" int* GetScreenHeight();
 
@@ -230,10 +162,6 @@ extern "C" int InvalidateVideoMode() {
 extern "C" int GetCurrentVideoMode() {
     return (signed char)g_CurrentVideoBuffer_00437f54;
 }
-
-// Extern declarations for coordinate scaling
-extern int g_VideoBufferWidth_004374c6;  // Video buffer width
-extern int g_VideoBufferHeight_004374d2;  // Video buffer height
 
 /* Function start: 0x453DFE */
 extern "C" int ScaleClientToBufferX(int x)
@@ -556,14 +484,6 @@ int InitStockFont(int param_1)
 // Too complex to reimplement exactly due to inline assembly and segment registers
 extern "C" int __cdecl DrawLine(int param_1, int param_2) { return 0; }
 
-// Externs for video buffer access
-extern int g_VideoBufferHeightM1_004374ca;  // buffer height - 1
-extern int g_VideoBufferStride_00437f5e;  // buffer stride
-extern int g_VideoBufferBase_00437f66;  // buffer base
-extern int g_ClipLeft_004374de;  // clip left
-extern int g_ClipRight_004374e2;  // clip right
-extern int g_ClipTop_004374e6;  // clip top
-extern int g_ClipBottom_004374ea;  // clip bottom
 static void DrawEllipseScanline(int y, int left_x, int right_x) {
     if (y < g_ClipTop_004374e6 || y > g_ClipBottom_004374ea) return;
     if (right_x < g_ClipLeft_004374de) return;
@@ -661,16 +581,8 @@ extern "C" int __cdecl DrawEllipse(int param_1, int param_2) {
     return 0;
 }
 
-// Font rendering globals (full game addresses)
-extern int g_DrawPosX_004374c2;    // 0x46d0aa in full game - cursor X
-extern int g_DrawPosY_004374ce;    // 0x46d0b6 in full game - cursor Y
-extern char g_TextAlignH_004374c0; // 0x46d0a8 in full game
-extern char g_TextAlignV_004374c1; // 0x46d0a9 in full game
-extern int g_FontHeight_0043749a;           // 0x46d082 in full game - font height
-extern int g_FontExtLeading_0043749e;           // 0x46d086 in full game - font descent
 // DAT_004374ae = g_PreviousPalette_004374ae in globals.h (same address 0x4374ae)
 // DAT_0043748c = g_Palette_0043748c in globals.h (same address 0x43748c)
-extern int g_PaletteColorTable_00437608[256];        // palette color table
 
 /* Function start: 0x4524C2 */
 extern "C" void SetFontPosition(int x, int y) {

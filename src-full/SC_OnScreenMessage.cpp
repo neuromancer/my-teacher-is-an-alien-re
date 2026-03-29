@@ -360,8 +360,6 @@ void* MessageList::GetCurrentData() {
 // FUN_00449050 = MessageList::PopCurrent — COMDAT of 0x431B60, defined in MessageList.cpp
 
 extern "C" char* GetSoundFilename(int handle);
-extern "C" GameState* g_GameState_0046aa30;
-extern int g_PeriodStateIdx_0046cb90;
 
 /* Function start: 0x447FF0 */
 SoundEntry::SoundEntry(int id) {
@@ -451,7 +449,6 @@ int SoundEntry::SoundUpdate() {
     return 1;
 }
 
-extern "C" int g_GameEngine_0046a6ec;
 extern "C" int __stdcall AIL_sample_volume(void*);
 
 /* Function start: 0x448220 */

@@ -29,8 +29,6 @@ void __fastcall InitCombatScreen(void* self);
 #include "RenderEntry.h"
 #include "PodsEngine.h"
 
-extern int g_GameField_004734a4;
-
 /* Function start: 0x4415E0 */
 SC_Pods::SC_Pods() {
     memset(&handlerId, 0, 24);

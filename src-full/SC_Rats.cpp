@@ -36,10 +36,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 
 // IAT entries
 
-// Scene data globals
-class ZBufferManager;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern "C" GameState* g_GameState_0046aa30;
+// Scene data globals (in globals.h)
 
 /* Function start: 0x451700 */
 SC_Rats::SC_Rats() {

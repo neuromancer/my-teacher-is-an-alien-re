@@ -3,9 +3,8 @@
 #include "Palette.h"
 #include "Memory.h"
 #include "HashTable.h"
+#include "globals.h"
 #include <string.h>
-
-extern "C" extern void* g_PodsPalette_0046bf30;  // Palette* for pods
 
 /* Function start: 0x440860 */
 PodsEngine::PodsEngine()

@@ -9,8 +9,6 @@
 #include <stdio.h>
 #include <new>
 
-extern InputManager* g_InputManager_0046aa08;
-
 /* Function start: 0x420CE0 */
 T_MenuHotspot::T_MenuHotspot(int param)
 {

@@ -31,7 +31,6 @@ void InitVBufferHandleTable(void)
 
 // GetVideoBufferNameSlot(handle) = 0x4734B0 + handle * 64
 extern "C" char* GetVideoBufferNameSlot(int handle);  // 0x44C650
-extern "C" extern char g_AnimFilename_00472c70[];                 // pending filename buffer
 
 /* Function start: 0x410ED0 */
 void RegisterVBufferHandle(int handle)
@@ -150,8 +149,6 @@ VBuffer::VBuffer(char* filename, int param_2)
     InitFields();
     LoadFromFile(filename, param_2);
 }
-
-extern "C" extern void* g_BackBuffer2_0046aa10;
 
 /* Function start: 0x411270 */
 void VBuffer::LoadFromFile(char* filename, int param_2)

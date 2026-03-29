@@ -9,8 +9,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern "C" TargetList* g_TargetList_0046ae58;
-
 /* Function start: 0x4432F0 */
 TargetList::TargetList() : Parser() {
   memset(&count, 0, 80 * sizeof(void*));

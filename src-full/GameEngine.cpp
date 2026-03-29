@@ -11,25 +11,12 @@
 #include "ZBufferManager.h"
 #include "MouseControl.h"
 #include "GameLoop.h"
+#include "globals.h"
 #include "smack.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <new.h>
-
-// External globals (C++ linkage - defined in stubs.cpp without extern "C")
-extern ZBufferManager* g_ZBufferManager_0046aa24;   // ZBufferManager*
-extern InputManager* g_InputManager_0046aa08;   // InputManager*
-class MouseControl;
-extern MouseControl* g_Mouse_0046aa18;
-extern char* g_Buffer_0046aa00;   // string buffer
-
-// GameState pointer
-extern "C" extern GameState* g_GameState_0046aa30;
-extern int g_WaitForInputValue_0046ac04;
-extern char* g_StateString_0046aa2c;
-extern GameState* g_GameState2_0046aa3c;
-extern GameState* g_StringTable_0046aa34;
 
 // External functions
 #include "GameLoopHelper.h"
@@ -438,7 +425,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
         }
     }
 
-    if (g_GameLoopHelper != 0) {
+    if (g_GameLoopHelper_0046a6f0 != 0) {
         GameState* gs;
 
         gs = g_GameState_0046aa30;
@@ -449,7 +436,7 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
             handler = (Handler*)m_activeHandler;
             if (handler != 0) {
                 WriteToLog("Switching to modual %s", g_StringTable_0046aa34->GetState(handler->handlerId));
-                g_GameLoopHelper->PostProcess();
+                g_GameLoopHelper_0046a6f0->PostProcess();
             }
         }
     }
@@ -658,7 +645,6 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
     pool[1] = (int)node;
 }
 
-extern char* g_Buffer_0046aa00;
 extern void ShowError(const char* format, ...);
 
 /* Function start: 0x431930 */

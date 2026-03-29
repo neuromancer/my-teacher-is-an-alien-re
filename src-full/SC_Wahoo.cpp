@@ -60,18 +60,11 @@ void DetectionObj::Render() {}
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 // FUN_00413e10 = ParseFile in Parser.h
 
+#include "globals.h"
+
 extern "C" int FileExists(const char*);
 extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
-class ZBufferManager;
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-
-
-extern void* g_WahooEngine_0046bbfc;
-extern InputManager* g_InputManager_0046aa08;
-class MouseControl;
-extern MouseControl* g_Mouse_0046aa18;
-extern "C" extern GameState* g_GameState_0046aa30;
 
 /* Function start: 0x437830 */
 SC_Wahoo::SC_Wahoo() {

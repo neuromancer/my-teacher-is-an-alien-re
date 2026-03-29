@@ -7,11 +7,6 @@
 #include <string.h>
 #include <stdio.h>
 
-extern "C" extern GameState* g_GameState_0046aa30;
-extern int g_PeriodStateIdx_0046cb90;
-extern char* g_PeriodCharTable_0046cb94;
-
-extern TargetList* g_TargetList_0046ae58;
 
 /* Function start: 0x4274C0 */
 RockThrower::RockThrower(Parser* parent) {

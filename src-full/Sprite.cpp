@@ -15,7 +15,6 @@
 #include "VBuffer.h"
 
 extern "C" void WriteToLog(const char* format, ...);
-extern "C" GameState* g_GameState_0046aa30;
 
 // Video buffer name table: 32 entries × 64 bytes at 0x4734B0
 static char g_VideoBufferNameTable[32][64];
@@ -566,9 +565,6 @@ void Sprite::ResetAnimation(int state, int offset) {
     }
     flags &= ~0x20;
 }
-
-extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern "C" GameState* g_GameState_0046aa30;
 
 /* Function start: 0x44CCF0 */
 int Sprite::Do(int x, int y, double scale) {

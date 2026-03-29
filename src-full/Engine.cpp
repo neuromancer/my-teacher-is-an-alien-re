@@ -9,6 +9,7 @@
 #include "ZBufferManager.h"
 #include "Handler.h"
 #include "main.h"
+#include "globals.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -18,9 +19,6 @@ extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "SlimeTable.h"
-
-extern Sound* g_EngineSound_0046aa0c;              // Sound global
-extern ZBufferManager* g_ZBufferManager_0046aa24;     // ZBufferManager*
 
 // DrawEntry implementation (originally in same source file as Engine)
 DrawEntry::~DrawEntry() {

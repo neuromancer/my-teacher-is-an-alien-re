@@ -8,7 +8,6 @@
 #include "Parser.h"
 #include "SC_Question.h"
 #include "GameState.h"
-extern "C" extern GameState* g_GameState_0046aa30;
 #include "Message.h"
 #include "globals.h"
 #include "InputManager.h"

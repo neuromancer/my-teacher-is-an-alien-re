@@ -5,11 +5,11 @@
 #include "SlimeTable.h"
 #include "SpriteAction.h"
 #include "ZBufferManager.h"
+#include "globals.h"
 #include <string.h>
 #include <stdio.h>
 
 extern "C" void WriteToLog(const char*, ...);
-extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
