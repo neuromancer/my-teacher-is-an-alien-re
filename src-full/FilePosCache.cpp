@@ -5,10 +5,10 @@
 
 struct SoundPool;
 extern SoundPool* g_SoundPool_00469134;  // cache pool
-extern void* DAT_00469138;       // LRU tracking node
-extern int DAT_00469128;         // max cache size
-extern int DAT_0046912c;         // hit counter
-extern int DAT_00469130;         // miss counter
+extern void* g_CacheLRUNode_00469138;       // LRU tracking node
+extern int g_SoundTrackerField1_00469128;         // max cache size
+extern int g_CacheHitCount_0046912c;         // hit counter
+extern int g_CacheMissCount_00469130;         // miss counter
 
 FilePosCache* g_FilePosCache_46928c = 0;  // DAT_0046928c
 
@@ -16,7 +16,7 @@ FilePosCache* g_FilePosCache_46928c = 0;  // DAT_0046928c
 __int64 FilePosCache::Lookup(char* fname, char* keyName) {
     int* pool = (int*)g_SoundPool_00469134;
     int* node = (int*)pool[0];  // head
-    DAT_00469138 = (void*)node;
+    g_CacheLRUNode_00469138 = (void*)node;
 
     if (node == 0) {
         goto not_found;
@@ -31,7 +31,7 @@ __int64 FilePosCache::Lookup(char* fname, char* keyName) {
             // Compare key
             if (strcmp(entry->key, keyName) == 0) {
                 // Hit
-                DAT_0046912c++;
+                g_CacheHitCount_0046912c++;
                 entry->accessCount++;
                 __int64 result;
                 ((int*)&result)[0] = entry->posLo;
@@ -41,13 +41,13 @@ __int64 FilePosCache::Lookup(char* fname, char* keyName) {
         }
 
         if (entry->accessCount < 0x2710) {
-            DAT_00469138 = (void*)node;
+            g_CacheLRUNode_00469138 = (void*)node;
         }
         node = next;
     }
 
 not_found:
-    DAT_00469130++;
+    g_CacheMissCount_00469130++;
     return -1;
 }
 
@@ -56,11 +56,11 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
     int* pool = (int*)g_SoundPool_00469134;
 
     // If pool is full, evict LRU entry
-    if (pool[2] == DAT_00469128) {
-        ShowError("FilePosCache::Set - Error \nMore than %d labels found in .mis files \nIncrease Cache size", DAT_00469128);
+    if (pool[2] == g_SoundTrackerField1_00469128) {
+        ShowError("FilePosCache::Set - Error \nMore than %d labels found in .mis files \nIncrease Cache size", g_SoundTrackerField1_00469128);
 
-        // Evict node at DAT_00469138
-        int* evictNode = (int*)DAT_00469138;
+        // Evict node at g_CacheLRUNode_00469138
+        int* evictNode = (int*)g_CacheLRUNode_00469138;
         int* poolPtr = (int*)g_SoundPool_00469134;
 
         // Unlink from list

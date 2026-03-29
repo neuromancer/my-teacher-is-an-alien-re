@@ -11,7 +11,7 @@
 extern MouseControl* g_Mouse_0046aa18;
 extern InputManager* g_InputManager_0046aa08;
 
-extern "C" int g_CombatEngine_0046ae78;
+#include "globals.h"
 
 /* Function start: 0x447520 */
 SC_SpaceShipNav::SC_SpaceShipNav() {
@@ -44,7 +44,7 @@ int SC_SpaceShipNav::ShutDown(SC_Message* msg) {
     return SC_Combat::ShutDown(msg);
 }
 
-int DAT_0046c3f0[3] = {0, 0, 0};
+// g_SpaceNavStates_0046c3f0 — defined in globals.cpp
 
 /* Function start: 0x447950 */
 void SC_SpaceShipNav::UpdateCursor() {
@@ -59,7 +59,7 @@ void SC_SpaceShipNav::UpdateCursor() {
         if (iVar1 < 0) iVar1 = 0;
         else if (iVar1 > 2) iVar1 = 2;
         if (g_Mouse_0046aa18->m_sprite != 0) {
-            g_Mouse_0046aa18->m_sprite->ResetAnimation(DAT_0046c3f0[iVar1], 0);
+            g_Mouse_0046aa18->m_sprite->ResetAnimation(g_SpaceNavStates_0046c3f0[iVar1], 0);
         }
         g_Mouse_0046aa18->DrawCursor();
     }

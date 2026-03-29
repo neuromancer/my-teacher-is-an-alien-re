@@ -5,7 +5,7 @@
 #include "HashTable.h"
 #include <string.h>
 
-extern "C" extern void* DAT_0046bf30;  // Palette* for pods
+extern "C" extern void* g_PodsPalette_0046bf30;  // Palette* for pods
 
 /* Function start: 0x440860 */
 PodsEngine::PodsEngine()
@@ -20,9 +20,9 @@ PodsEngine::PodsEngine()
 /* Function start: 0x440950 */
 PodsEngine::~PodsEngine()
 {
-    if (DAT_0046bf30 != 0) {
-        delete (Palette*)DAT_0046bf30;
-        DAT_0046bf30 = 0;
+    if (g_PodsPalette_0046bf30 != 0) {
+        delete (Palette*)g_PodsPalette_0046bf30;
+        g_PodsPalette_0046bf30 = 0;
     }
     if (podsBgSprite != 0) {
         delete podsBgSprite;

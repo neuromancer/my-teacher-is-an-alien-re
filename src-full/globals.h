@@ -410,9 +410,10 @@ extern mCNavigator* g_Navigator_00435f24;  // NAVIGATION parser
 extern GameOutcome* g_GameOutcome_00435f28; // Game outcome state
 // Direction chars "NESWUD" at 0x436094 - defined inline in mCNavigator.cpp
 // Pointer to direction chars at 0x43609c - defined inline in mCNavigator.cpp
-extern Sprite* g_Sprite_004360a0; // DAT_004360a0  { /* 4 bytes */ }
+// g_NavCursorSprite_004360a0 — declared below with other moved globals
 // mCNavNode keyword strings (0x4361c8-0x4361df) - inline in mCNavNode.cpp: "BG", "NAME", "LOOP", "IAM"
 extern int g_TargetBearingValue_004362c8; // Last bearing value from Target parsing
+extern int g_TargetRangeCounter_004362cc;                  // Target range counter for sprite parsing
 extern char g_SpriteFilenameTable_0043d630[0x4000]; // Table of 256 sprite filenames (64 chars each)
 extern int g_SpriteTableInitialized_00436b9c; // Initialization flag for sprite filename table
 // g_CurrentSprite (0x436348) - defined in CombatSprite.cpp
@@ -422,6 +423,7 @@ extern int g_SpriteTableInitialized_00436b9c; // Initialization flag for sprite 
 extern char* g_Buffer_0046aa00; // DAT_00436960  { /* 4 bytes */ }
 extern char* g_Buffer_00436964; // Scale table buffer
 extern InputManager* g_InputManager_0046aa08; // DAT_00436968  { /* 4 bytes */ }
+extern void* g_GlyphFont_0046aa28;                         // GlyphFont* for text rendering
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
@@ -462,13 +464,13 @@ extern GameState* g_GameState3_0043699c; // DAT_0043699c
 extern int g_DoubleClickTime_0046ac00; // From GetDoubleClickTime()
 extern int g_WaitForInputValue_0046ac04; // Keyboard event value
 // "Setup.cfg" and "rb" strings inlined at call sites
-// DAT_00437488 - Defined in globals.cpp as HDC (main device context)
+// g_MainDC_00437488 - Defined in globals.cpp as HDC (main device context)
 extern HPALETTE g_Palette_0043748c; // Main game palette
-// DAT_00437490 - Defined in globals.cpp as char (color value after palette lookup)
+extern char g_TextColor_00437490;                          // current text color index
 extern int g_FillColorDword_00437491; // DWORD fill color (4 copies of color byte)
-// DAT_0043749a - Defined in globals.cpp as int (text height + external leading)
+// g_FontHeight_0043749a - Defined in globals.cpp as int (text height + external leading)
 extern HPALETTE g_PreviousPalette_004374ae; // Previously selected palette
-// DAT_004374b4 - Defined in globals.cpp as HDC (secondary device context)
+// g_SecondaryDC_004374b4 - Defined in globals.cpp as HDC (secondary device context)
 // DAT_004374c0 - Already defined as g_TextAlignH_004374c0
 // DAT_004374c1 - Already defined as g_TextAlignV_004374c1
 // DAT_004374c2 - Already defined as g_DrawPosX_004374c2
@@ -482,13 +484,14 @@ extern int g_ClipLeft_004374de;
 extern int g_ClipRight_004374e2;
 extern int g_ClipTop_004374e6;
 extern int g_ClipBottom_004374ea;
-// DAT_004374ee - Defined in globals.cpp as HANDLE (WinG DLL file check)
+extern HANDLE g_WinGFileHandle_004374ee;                   // WinG DLL file check handle
+extern char g_SystemDirPath_00438446[256];                 // system directory path buffer
 extern char g_CursorVisible_00437506; // 1 = cursor visible
 extern char g_CursorState_00437507; // Cursor state tracking
-// DAT_00437520[256] - Defined in globals.cpp as palette identity map array
+// g_PaletteMap_00437520[256] - Defined in globals.cpp as palette identity map array
 extern "C" {
-    extern unsigned char DAT_00437620[256]; // State flags / Palette data
-    extern unsigned short DAT_004374b2; // State flags bitfield
+    extern unsigned char g_PaletteData_00437620[256]; // State flags / Palette data
+    extern unsigned short g_StateFlags_004374b2; // State flags bitfield
 }
 extern char g_LogPalette_00437720[1028]; // LOGPALETTE: 4-byte header + 256 PALETTEENTRY
 extern char g_BgrPalette_00437b48[1028]; // BGR palette: 4-byte header + 256 RGBQUAD
@@ -516,15 +519,15 @@ extern short g_VideoBufferDS_00437f6a;  // Data segment (legacy 16-bit)
 // 0x00438270: String constant "mCNavigator::LoadNodes() - %s ha..." in mCNavigator.obj
 extern HDC g_WinGDC_0043841c; // DAT_0043841c  { /* 4 bytes */ }
 extern HMODULE g_WinGModule_00438420;  // WinG DLL handle
-extern HGDIOBJ DAT_00438424; // DAT_00438424  { /* 4 bytes */ }
+extern HGDIOBJ g_WinGBitmap_00438424; // g_WinGBitmap_00438424  { /* 4 bytes */ }
 // 0x00438428: Defined above as g_WinGCreateDIB_00438428
 // WinG function pointers (defined in globals.cpp, used in Graphics.cpp/VideoTable.cpp/PaletteUtils.cpp)
 extern void* g_WinGSetDIBColorTable_0043842c;   // ordinal 6
 extern void* g_WinGRecommendDIBFormat_00438430; // ordinal 3
 extern void* g_WinGBitBlt_00438434;             // ordinal 1
 extern void* g_WinGStretchBlt_00438438;         // ordinal 10
-// 0x0043843c, 0x00438440: Defined in globals.cpp (PTR_DAT_0043843c, DAT_00438440) - WinG far pointer storage
-// 0x00439446: Defined as DAT_00439446[256] TEXTMETRIC buffer in globals.cpp
+// 0x0043843c, 0x00438440: Defined in globals.cpp (g_SysDirPtr_0043843c, g_SegmentReg_00438440) - WinG far pointer storage
+// 0x00439446: Defined as g_TextMetric_00439446[256] TEXTMETRIC buffer in globals.cpp
 // 0x00439456, 0x0043945a: Offsets within TEXTMETRIC buffer (tmExternalLeading, tmAveCharWidth)
 // 0x0043bc4c - 0x0043bc64: CRT exception/FPU state (__fpmath, exception handling)
 // extern void* PTR___fpmath_0043bc68; // (void*)0x00424B90
@@ -534,7 +537,7 @@ extern void* g_WinGStretchBlt_00438438;         // ordinal 10
 // extern void* PTR___exit_0043bc7c; // (void*)0x00426050
 // extern int DAT_0043bc80; // { /* 4 bytes */ }
 // extern int DAT_0043bc84; // { /* 4 bytes */ }
-extern int DAT_0043bc88; // Time seed
+extern int g_RandomSeed_0043bc88; // Time seed
 // 0x0043bcee - 0x0043bdea: MSVC CRT floating-point division helper switch table
 // Jump targets for FUN_00425177 (__fprem or similar FPU division operations)
 // These are compiler-generated and do not need to be defined as globals
@@ -603,7 +606,7 @@ extern unsigned int DAT_0043c760[];  // CRT error code mapping table [90 entries
 // extern void* PTR_DAT_0043c8e0; // (void*)0x0043DFF0
 // extern int DAT_0043c8f0; // { /* 4 bytes */ }
 // extern int DAT_0043c910; // { /* 4 bytes */ }
-extern int DAT_0043cb64; // { /* 4 bytes */ }
+extern int g_TimeSeed_0043cb64; // { /* 4 bytes */ }
 // extern int DAT_0043cba0; // { /* 4 bytes */ }
 // extern int DAT_0043cbb0; // { /* 4 bytes */ }
 // extern int DAT_0043cbb4; // { /* 4 bytes */ }
@@ -631,12 +634,12 @@ extern int DAT_0043cb64; // { /* 4 bytes */ }
 // Used by library functions FUN_42D570 (signal handling) and FUN_42F560 (FPU state setup)
 // Pattern: {int, short, char} repeated - FPU control word/status structures
 extern GlyphRect g_PuzzleRects1_0043d068[9];
-extern char DAT_0043d0f8;
+extern char g_PuzzleState_0043d0f8;
 extern GlyphRect g_PuzzleRects2_0043d100[3];
-extern int DAT_0043d130; // Game state save area
-extern int DAT_0043d134; // Game state save area
-extern int DAT_0043d138; // Game state save area
-extern int DAT_0043d13c; // Game state save area
+extern int g_SaveState0_0043d130; // Game state save area
+extern int g_SaveState1_0043d134; // Game state save area
+extern int g_SaveState2_0043d138; // Game state save area
+extern int g_SaveState3_0043d13c; // Game state save area
 // 0x0043d140: g_TimeOut_0043d140 (TimeOut struct) defined in EngineB.cpp
 // 0x0043d148: Part of TimeOut struct at 0x0043d140 (offset 8)
 extern int g_ProjectileHits_0043d150;  // Hit counter for projectiles (combat minigame)
@@ -648,12 +651,12 @@ extern char g_CmdLineDataPath_0043d568[]; // Command line data path [260 bytes]
 // 0x0043d5b4: Element [1] of DAT_0043d5b0 array
 // 0x0043d630: Defined above as g_SpriteFilenameTable_0043d630[0x4000]
 // 0x0043d670: Within g_SpriteFilenameTable_0043d630 at offset 0x40 (second filename slot)
-extern HWND DAT_0043de7c; // DAT_0043de7c  { /* 4 bytes */ }
+extern HWND g_GameHWnd_0043de7c; // g_GameHWnd_0043de7c  { /* 4 bytes */ }
 extern HDC g_WindowDC_00472d00; // Window DC
 extern HPALETTE g_WindowPalette_00472d04; // Window palette
 extern int g_WindowWidth_00472d10; // Window width
-extern int DAT_0043de8c; // Window height
-extern int DAT_0043de90; // Windowed mode flag
+extern int g_WindowHeight_0043de8c; // Window height
+extern int g_WindowedModeFlag_0043de90; // Windowed mode flag
 extern int g_ActivateAppState_00472d14; // Activate app state
 // CRT library internal globals (0x0043de9c - 0x0043dfe4):
 // 0x0043de9c: Float output buffer pointer (__fltout result)
@@ -665,7 +668,7 @@ extern int g_ActivateAppState_00472d14; // Activate app state
 // 0x0043eff0: Process heap handle (GetProcessHeap) - used by Memory.cpp
 // 0x0043eff4: CRT _nhandle (file handle count)
 // 0x0043f000/f004: CRT _pioinfo file info array pointers
-extern void* DAT_0043eff0;
+extern void* g_ProcessHeap_0043eff0;
 // extern int DAT_0043f100; // Already defined as g_AtExitTableEnd_0043f100
 // extern int DAT_0043f104; // Already defined as g_AtExitTableStart_0043f104
 // extern int DAT_0043f108; // { /* 4 bytes */ }
@@ -5965,91 +5968,109 @@ extern void* DAT_0043eff0;
 // extern word DAT_004446a0; // 0x3D00
 // extern word DAT_004446a2; // 0x0
 
-extern int DAT_0043bdf0; // File error code
+extern int g_CrtField_0043bdf0; // File error code
 extern int g_CmdLineAudioMode_0043d558; // Command line audio mode
 extern char g_CmdLineInputMode_0043d560; // Command line input mode
 
 // Globals moved from stubs.cpp (sorted by address)
 extern int (*g_OutOfMemoryCallback)(unsigned int);        // Memory callback
 extern short _param_3;                                     // Sound.obj ?_param_3@@3FA
-extern void* DAT_00435f1c;                                // EngineB global
-extern int DAT_00437608[256];                              // palette color table
-extern char DAT_00468108[32];                              // SC_Question buffer
-extern int DAT_00468764;                                   // SCI_IconBarModule / SC_Detention
-extern int DAT_00468a18;                                   // SC_Detention
-extern int DAT_004685a0;                                   // SC_FireAlarm / SC_Pods
-extern int DAT_004685ac;                                   // SC_FireAlarm / SC_Pods
-extern char DAT_004690e4[32];                              // SC_Question buffer
-extern Weapon* DAT_00468ef0;                               // SC_Wahoo / SC_WordSearch
-extern int DAT_00469128;                                   // SoundTracker
-extern int DAT_0046912c;                                   // FilePosCache hit counter
-extern int DAT_00469130;                                   // FilePosCache miss counter
+extern void* g_EngineSound_00435f1c;                                // EngineB global
+extern int g_PaletteColorTable_00437608[256];                              // palette color table
+extern char g_QuestLevelKey_00468108[32];                              // SC_Question buffer
+extern int g_DetentionFlag_00468764;                                   // SCI_IconBarModule / SC_Detention
+extern int g_DetentionKeyState_00468a18;                                   // SC_Detention
+extern int g_FireAlarmTimer_004685a0;                                   // SC_FireAlarm / SC_Pods
+extern int g_FireAlarmEngine_004685ac;                                   // SC_FireAlarm / SC_Pods
+extern char g_QuestFormatStr_004690e4[32];                              // SC_Question buffer
+extern Weapon* g_ActiveWeapon_00468ef0;                               // SC_Wahoo / SC_WordSearch
+extern int g_SoundTrackerField1_00469128;                                   // SoundTracker
+extern int g_CacheHitCount_0046912c;                                   // FilePosCache hit counter
+extern int g_CacheMissCount_00469130;                                   // FilePosCache miss counter
 extern SoundPool* g_SoundPool_00469134;                            // SoundTracker
-extern void* DAT_00469138;                                 // FilePosCache LRU node
-extern int DAT_0046913c;                                   // SoundTracker
-extern int DAT_00469140;                                   // SoundTracker
+extern void* g_CacheLRUNode_00469138;                                 // FilePosCache LRU node
+extern int g_SoundTrackerField2_0046913c;                                   // SoundTracker
+extern int g_SoundTrackerField3_00469140;                                   // SoundTracker
 extern void* g_FilePosCache;                               // DAT_00469144
-extern int DAT_00469148;                                   // Parser
-extern int DAT_0046914c;                                   // Parser
-extern int DAT_00469150;                                   // Parser
-extern int DAT_00469154;                                   // Parser
-extern int DAT_00469158;                                   // Parser
-extern int DAT_0046915c;                                   // Parser
-extern int DAT_00469160;                                   // preprocessor variable substitution flag
-extern char DAT_00469168[160];                             // Parser buffer
+extern int g_ProcessFileCount_00469148;                                   // Parser
+extern int g_LBLParseCount_0046914c;                                   // Parser
+extern int g_LBLParseTime_00469150;                                   // Parser
+extern int g_ReadLineTime_00469154;                                   // Parser
+extern int g_FindKeyTime_00469158;                                   // Parser
+extern int g_TotalProcessTime_0046915c;                                   // Parser
+extern int g_VarSubstFlag_00469160;                                   // preprocessor variable substitution flag
+extern char g_VarSubstBuffer_00469168[160];                             // Parser buffer
 extern int g_ParserCount;                                  // DAT_00469288
 extern "C" {
-    extern int DAT_0046a190;                               // SCI_SchoolMenu
-    extern Sprite* DAT_0046af08;                           // SCI_SchoolMenu
+    extern int g_SchoolMenuActive_0046a190;                               // SCI_SchoolMenu
+    extern Sprite* g_SchoolMenuSprite_0046af08;                           // SCI_SchoolMenu
 }
 extern void* g_SelectedItem_0046a6e4;                                // SCI_Inventory
 extern "C" {
     extern int g_GameEngine_0046a6ec;                               // SC_Cinematic
-    extern void* DAT_0046aa10;                             // SC_SelectHotSpot
+    extern void* g_BackBuffer2_0046aa10;                             // SC_SelectHotSpot
     extern VBuffer* g_BackBuffer_0046aa14;                          // SC_SelectHotSpot
     extern char g_CinematicDebugStr_00473400;                              // SC_Cinematic
     extern char g_AnimFilename_00472c70[256];                         // SC_Cinematic
     extern char g_AnimFilename2_00472cb0[256];                         // SC_Cinematic
 }
-extern Sound* DAT_0046AA0C;                                // Engine
-extern void* DAT_0046aa1c;                                 // Path resolution
+extern Sound* g_EngineSound_0046aa0c;                                // Engine
+extern void* g_PathResolver_0046aa1c;                                 // Path resolution
 extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_Message
 extern GameState* g_StringState_0046aa38;                            // SC_Question
 extern int g_AnimStates_0046ac30[5];                       // SC_DodgeOrville
 extern int g_LastBombDir_0046ac44;                         // SC_DodgeOrville
-extern int DAT_0046ad6c;                                   // SC_Wahoo
+extern int g_SlimeTableInit_0046ad6c;                                   // SC_Wahoo
 extern "C" {
     extern EngineInfoParser* g_WeaponParser_0046ae4c;
     extern Sprite*           g_BgSprite_0046ae50;
-    extern Viewport*         DAT_0046ae54;
+    extern Viewport*         g_Viewport_0046ae54;
     extern TargetList*       g_TargetList_0046ae58;
-    extern CombatSprite*     DAT_0046ae5c;
+    extern CombatSprite*     g_CombatSprite_0046ae5c;
     extern Weapon*           g_CombatWeapon_0046ae60;
-    extern Palette*          DAT_0046ae64;
-    extern SoundList*        DAT_0046ae68;
-    extern ScoreDisplay*     DAT_0046ae6c;
+    extern Palette*          g_Palette_0046ae64;
+    extern SoundList*        g_SoundList_0046ae68;
+    extern ScoreDisplay*     g_ScoreDisplay_0046ae6c;
     extern mCNavigator*      g_Navigator_0046ae70;
-    extern HotspotListData*  DAT_0046ae74;
-    extern int g_RatsState;  // DAT_00473e18 - SC_Rats main state
+    extern HotspotListData*  g_HotspotPool_0046ae74;
+    extern int g_CombatEngine_0046ae78;                    // SC_CombatBase* active combat engine
+    extern int g_RatsState_00473e18;                                // 0x00473e18 - SC_Rats main state
+    extern int g_State0Phase_00473e14;                              // 0x00473e14
+    extern int g_State2Phase_00473e20;                              // 0x00473e20
+    extern int g_State3Phase_00473e1c;                              // 0x00473e1c
+    extern int g_State4Phase_00473df8;                              // 0x00473df8
+    extern int g_RatsField_00473e00;                       // 0x00473e00
 }
-extern char* DAT_0046bacc;                                 // SC_Wahoo / SCI_PracticeRoom
-extern void* DAT_0046bbfc;                                 // SC_Wahoo
-extern int DAT_0046b784;                                   // cache hit counter
-extern int DAT_0046b788;                                   // cache miss counter
-extern int DAT_0046bcd0[3];                                // SC_DodgeOrville
-extern SlimeTable* DAT_0046bf28;                           // SC_FireAlarm / SC_Pods
-extern "C" extern void* DAT_0046bf30;                      // Pods palette pointer
-extern int DAT_00472bd8;                                   // SC_FireAlarm / SC_Pods
-extern int DAT_00472bdc;                                   // SC_FireAlarm / SC_Pods
-extern int DAT_00472be0;                                   // SC_DodgeOrville
-extern int DAT_00472be4;                                   // SC_DodgeOrville
-extern int DAT_00472be8;                                   // SC_DodgeOrville
-extern int DAT_00472bec;                                   // SC_DodgeOrville
-extern int DAT_00473334;                                   // SCI_Inventory
-extern int DAT_00473358;                                   // SCI_SchoolMenu
-extern int DAT_0047337c;                                   // SCI_SchoolMenu
-extern int DAT_004733e8;                                   // SCI_Inventory
-extern int DAT_004719c0;                                   // SC_DodgeOrville
+extern int g_CurrentSpriteIndex_0043634c;                  // CombatSprite current index
+extern int g_SpriteEntryCount_00436344;                    // CombatSprite entry counter
+extern int g_ScreenWidth_00472d08;                         // GameWindow
+extern int g_ScreenHeight_00472d0c;                        // GameWindow
+extern int g_StringTableCount_004366b4;                    // string table count
+extern int g_SlimeField_00468bbc;                          // SC_Slime
+class SpriteHashTable;
+extern SpriteHashTable* g_CurrentSprite_00436348;          // CombatSprite current sprite table
+extern Sprite* g_NavSprite_004360a4;                       // NavSubNode navigation sprite
+extern Sprite* g_NavCursorSprite_004360a0;                 // mCNavigator cursor sprite
+extern unsigned int g_TimerCount_00436b94;                 // Timer active count
+extern int g_SpaceNavStates_0046c3f0[3];                   // SC_SpaceShipNav state array
+extern char* g_MissionFilePath_0046bacc;                                 // SC_Wahoo / SCI_PracticeRoom
+extern void* g_WahooEngine_0046bbfc;                                 // SC_Wahoo
+extern int g_PathCacheHits_0046b784;                                   // cache hit counter
+extern int g_PathCacheMisses_0046b788;                                   // cache miss counter
+extern int g_DodgeAnimStates_0046bcd0[3];                                // SC_DodgeOrville
+extern SlimeTable* g_SlimeTable_0046bf28;                           // SC_FireAlarm / SC_Pods
+extern "C" extern void* g_PodsPalette_0046bf30;                      // Pods palette pointer
+extern int g_FireAlarmField1_00472bd8;                                   // SC_FireAlarm / SC_Pods
+extern int g_FireAlarmField2_00472bdc;                                   // SC_FireAlarm / SC_Pods
+extern int g_FanField1_00472be0;                                   // SC_DodgeOrville
+extern int g_FanField2_00472be4;                                   // SC_DodgeOrville
+extern int g_FanField3_00472be8;                                   // SC_DodgeOrville
+extern int g_FanField4_00472bec;                                   // SC_DodgeOrville
+extern int g_IconBarState_00473334;                                   // SCI_Inventory
+extern int g_SchoolMenuField1_00473358;                                   // SCI_SchoolMenu
+extern int g_SchoolMenuField2_0047337c;                                   // SCI_SchoolMenu
+extern int g_InventoryState_004733e8;                                   // SCI_Inventory
+extern int g_FileDeleteError_004719c0;                                   // SC_DodgeOrville
 extern HitBounds g_HitBounds_00473260[3];                  // SC_DodgeOrville
 extern BombData g_BombData_00473278[6];                    // SC_DodgeOrville
 extern POINT g_CursorPos_00473308;                         // SC_DodgeOrville

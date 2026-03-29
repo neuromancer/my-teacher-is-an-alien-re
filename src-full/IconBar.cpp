@@ -39,9 +39,9 @@ extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern char* g_StateString_0046aa2c;
 extern GameState* g_GameState2_0046aa3c;
 extern void* g_SelectedItem_0046a6e4;
-extern SpriteAction DAT_00472d58;
-extern SpriteAction DAT_00472d20;
-extern SpriteAction DAT_00472d90;
+extern SpriteAction g_PendingAction_00472d58;
+extern SpriteAction g_IconBarAction_00472d20;
+extern SpriteAction g_HotspotAction_00472d90;
 
 // FUN_0044ccf0 is a thiscall Sprite method (4 stack params)
 
@@ -196,7 +196,7 @@ int IconBar::AddMessage(SC_Message* msg) {
         {
             SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, 0, 0, 0, 0, 0);
-            DAT_00472d58.CopyFrom(&temp);
+            g_PendingAction_00472d58.CopyFrom(&temp);
         }
         SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
         return 1;
@@ -234,7 +234,7 @@ int IconBar::AddMessage(SC_Message* msg) {
         {
             SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, 0, 0, 0, 0, 0);
-            DAT_00472d58.CopyFrom(&temp);
+            g_PendingAction_00472d58.CopyFrom(&temp);
         }
         PlayButtonSound(buttonIndex);
         return 1;
@@ -244,7 +244,7 @@ int IconBar::AddMessage(SC_Message* msg) {
         {
             SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, 0, 0, 0, 0, 0);
-            DAT_00472d58.CopyFrom(&temp);
+            g_PendingAction_00472d58.CopyFrom(&temp);
         }
         PlayButtonSound(buttonIndex);
         return 1;
@@ -254,7 +254,7 @@ int IconBar::AddMessage(SC_Message* msg) {
         {
             SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, 0, 0, 0, 0, 0);
-            DAT_00472d20.CopyFrom(&temp);
+            g_IconBarAction_00472d20.CopyFrom(&temp);
         }
         PlayButtonSound(buttonIndex);
         return 1;
@@ -268,7 +268,7 @@ int IconBar::AddMessage(SC_Message* msg) {
         {
             SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
                              4, result, 0, 0, 0, 0);
-            DAT_00472d90.CopyFrom(&temp);
+            g_HotspotAction_00472d90.CopyFrom(&temp);
         }
         gs = g_GameState_0046aa30;
         {

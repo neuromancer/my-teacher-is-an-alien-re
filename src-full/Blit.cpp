@@ -52,7 +52,7 @@ int __cdecl BlitBufferOpaque(int srcX1, int srcX2, int srcY1, int srcY2, int des
 int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, unsigned int srcHandle, unsigned int destHandle)
 {
     unsigned char localTable[256];
-    memcpy(localTable, DAT_00437620, 256);
+    memcpy(localTable, g_PaletteData_00437620, 256);
     
     int srcIdx = (srcHandle & 0x1f);
     int destIdx = (destHandle & 0x1f);

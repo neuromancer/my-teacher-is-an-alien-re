@@ -22,7 +22,7 @@ extern "C" void ShowError(const char* format, ...);
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
-extern SpriteAction DAT_00472d90;
+extern SpriteAction g_HotspotAction_00472d90;
 
 
 /* Function start: 0x41B320 */
@@ -540,7 +540,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         }
         sa = new SpriteAction();
         memset(sa, 0, sizeof(SpriteAction));
-        sa->CopyFrom(&DAT_00472d90);
+        sa->CopyFrom(&g_HotspotAction_00472d90);
         list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {

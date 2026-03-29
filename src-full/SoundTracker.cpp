@@ -23,13 +23,13 @@ struct SoundPool {
     ~SoundPool();
 };
 
-extern int DAT_00469128;
+extern int g_SoundTrackerField1_00469128;
 extern SoundPool* g_SoundPool_00469134;
-extern int DAT_0046912c;
-extern int DAT_00469130;
-extern void* DAT_00469138;
-extern int DAT_00469140;
-extern int DAT_0046913c;
+extern int g_CacheHitCount_0046912c;
+extern int g_CacheMissCount_00469130;
+extern void* g_CacheLRUNode_00469138;
+extern int g_SoundTrackerField3_00469140;
+extern int g_SoundTrackerField2_0046913c;
 
 extern "C" int FileExists(const char*);
 extern "C" char* internal_ReadLine(char*, int, FILE*);
@@ -46,7 +46,7 @@ extern void* g_FilePosCache;
 /* Function start: 0x412000 */
 SoundTracker::SoundTracker(int param) {
     field_0 = 0;
-    DAT_00469128 = param;
+    g_SoundTrackerField1_00469128 = param;
     g_SoundPool_00469134 = new SoundPool(param);
     Init();
 }
@@ -130,9 +130,9 @@ void SoundTracker::ClearPool() {
         next = tmp;
     }
     p->blockList = 0;
-    DAT_00469130 = 0;
-    DAT_0046912c = 0;
-    DAT_00469138 = 0;
+    g_CacheMissCount_00469130 = 0;
+    g_CacheHitCount_0046912c = 0;
+    g_CacheLRUNode_00469138 = 0;
 }
 
 /* Function start: 0x412480 */
@@ -148,7 +148,7 @@ void SoundTracker::Init() {
     int filePos[2];
 
     maxTime = 0;
-    DAT_00469140 = 0;
+    g_SoundTrackerField3_00469140 = 0;
     ClearPool();
     timer.Reset();
 
@@ -195,7 +195,7 @@ void SoundTracker::Init() {
                         fgetpos(fp, (fpos_t*)&filePos[0]);
                         ((FilePosCache*)g_FilePosCache)->Store(misPath, sectionBuf, filePos[0], filePos[1]);
                     }
-                    DAT_00469140++;
+                    g_SoundTrackerField3_00469140++;
                     result = internal_ReadLine(lineBuf, 0xff, fp);
                 }
                 fclose(fp);
@@ -204,7 +204,7 @@ void SoundTracker::Init() {
         }
     }
 
-    DAT_0046913c = timer.Update();
+    g_SoundTrackerField2_0046913c = timer.Update();
 }
 
 /* Function start: 0x412730 */

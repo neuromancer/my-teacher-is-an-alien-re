@@ -1,9 +1,9 @@
 #include <windows.h>
 #include "Timer.h"
 #include "Memory.h"
+#include "globals.h"
 
-// Global variable - timer instance counter
-unsigned int g_timer_count = 0;
+// g_TimerCount_00436b94 — defined in globals.cpp
 
 /* Function start: 0x421880 */
 Timer::Timer()
@@ -13,14 +13,14 @@ Timer::Timer()
     m_startTime = 0;
     m_currentTime = 0;
     m_elapsedTime = 0;
-    g_timer_count++;
+    g_TimerCount_00436b94++;
     Reset();
 }
 
 /* Function start: 0x4218B0 */
 Timer::~Timer()
 {
-    g_timer_count--;
+    g_TimerCount_00436b94--;
 }
 
 

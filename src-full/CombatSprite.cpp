@@ -9,9 +9,7 @@
 #include <string.h>
 
 // Global variables
-SpriteHashTable* g_CurrentSprite = 0;   // 0x436348
-int g_CurrentSpriteIndex = 0;           // 0x43634c
-int DAT_00436344 = 0;                   // sprite data entry counter
+// g_CurrentSprite_00436348_00436348 — defined in globals.cpp
 
 /* Function start: 0x408EE0 */
 void __cdecl FreeArrayItems(void** array, int count) {
@@ -401,9 +399,9 @@ int CombatSprite::LBLParse(char* line) {
             spriteTable = new SpriteHashTable(0x11);
         }
 
-        if (g_CurrentSprite != 0) {
-            currentSprite = g_CurrentSprite;
-            currentIndex = g_CurrentSpriteIndex;
+        if (g_CurrentSprite_00436348 != 0) {
+            currentSprite = g_CurrentSprite_00436348;
+            currentIndex = g_CurrentSpriteIndex_0043634c;
             SpriteHashTable* table = spriteTable;
 
             void* entry = table->Lookup(currentIndex, &slot);
@@ -418,12 +416,12 @@ int CombatSprite::LBLParse(char* line) {
                 ((int*)table->buckets)[slot] = (int)entry;
             }
             ((int*)entry)[3] = (int)currentSprite;
-            g_CurrentSprite = 0;
+            g_CurrentSprite_00436348 = 0;
         }
 
-        g_CurrentSprite = new SpriteHashTable();
+        g_CurrentSprite_00436348 = new SpriteHashTable();
 
-        sscanf(line, " %s %d ", token, &g_CurrentSpriteIndex);
+        sscanf(line, " %s %d ", token, &g_CurrentSpriteIndex_0043634c);
 
         ParseSpriteData(line + 3);
 
@@ -431,9 +429,9 @@ int CombatSprite::LBLParse(char* line) {
     }
     else {
         if (_stricmp(token, "END") == 0) {
-            if (g_CurrentSprite != 0) {
-                currentSprite = g_CurrentSprite;
-                currentIndex = g_CurrentSpriteIndex;
+            if (g_CurrentSprite_00436348 != 0) {
+                currentSprite = g_CurrentSprite_00436348;
+                currentIndex = g_CurrentSpriteIndex_0043634c;
                 SpriteHashTable* table = spriteTable;
 
                 void* entry = table->Lookup(currentIndex, &slot);
@@ -448,15 +446,15 @@ int CombatSprite::LBLParse(char* line) {
                     ((int*)table->buckets)[slot] = (int)entry;
                 }
                 ((int*)entry)[3] = (int)currentSprite;
-                g_CurrentSprite = 0;
+                g_CurrentSprite_00436348 = 0;
             }
             return 1;
         }
 
         if (_stricmp(token, "S") == 0) {
-            if (g_CurrentSprite != 0) {
-                currentSprite = g_CurrentSprite;
-                currentIndex = g_CurrentSpriteIndex;
+            if (g_CurrentSprite_00436348 != 0) {
+                currentSprite = g_CurrentSprite_00436348;
+                currentIndex = g_CurrentSpriteIndex_0043634c;
                 SpriteHashTable* table = spriteTable;
 
                 void* entry = table->Lookup(currentIndex, &slot);
@@ -471,12 +469,12 @@ int CombatSprite::LBLParse(char* line) {
                     ((int*)table->buckets)[slot] = (int)entry;
                 }
                 ((int*)entry)[3] = (int)currentSprite;
-                g_CurrentSprite = 0;
+                g_CurrentSprite_00436348 = 0;
             }
             return 0;
         }
 
-        if (g_CurrentSprite != 0) {
+        if (g_CurrentSprite_00436348 != 0) {
             ParseSpriteData(line);
         }
         else {
@@ -488,11 +486,11 @@ int CombatSprite::LBLParse(char* line) {
 }
 
 // Struct for sprite data entry (8 bytes)
-extern int DAT_00436344;
+extern int g_SpriteEntryCount_00436344;
 struct SpriteDataEntry {
     int index;      // 0x0 - frame index
     int spriteIdx;  // 0x4 - sprite array index
-    SpriteDataEntry(int idx, int spr) : index(idx), spriteIdx(spr) { DAT_00436344++; }
+    SpriteDataEntry(int idx, int spr) : index(idx), spriteIdx(spr) { g_SpriteEntryCount_00436344++; }
     ~SpriteDataEntry();
 };
 
@@ -552,8 +550,8 @@ parseLoop:
         spriteIdx = spriteIdx + 1;
     }
 
-    if (g_CurrentSprite != 0 && g_CurrentSprite->head != 0) {
-        SpriteDataEntry* lastEntry = *(SpriteDataEntry**)(g_CurrentSprite->maxSize + 8);
+    if (g_CurrentSprite_00436348 != 0 && g_CurrentSprite_00436348->head != 0) {
+        SpriteDataEntry* lastEntry = *(SpriteDataEntry**)(g_CurrentSprite_00436348->maxSize + 8);
         if (frameIndex < lastEntry->index) {
             ShowError("Error! sprite out of sequence %s", token);
         }
@@ -561,7 +559,7 @@ parseLoop:
 
     entryData = new SpriteDataEntry(frameIndex, spriteIdx);
 
-    spriteTable = g_CurrentSprite;
+    spriteTable = g_CurrentSprite_00436348;
     headPtr = (int*)spriteTable + 1;
     tailPtr = (int*)&spriteTable->tail;
     prevTail = *headPtr;

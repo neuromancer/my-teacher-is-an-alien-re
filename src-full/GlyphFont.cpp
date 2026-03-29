@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 extern char* ResolveAssetPath(char* path);
-extern char DAT_0046bd74;
+extern char g_CDDriveLetter_0046bd74;
 
 /* Function start: 0x43A830 */
 void GlyphFont::LoadFont(char* param) {
@@ -52,7 +52,7 @@ void GlyphFont::LoadFont(char* param) {
     InitGlyphTable();
 
     if (IsValidChar(0x41)) {
-        int w = GetTextWidth(&DAT_0046bd74);
+        int w = GetTextWidth(&g_CDDriveLetter_0046bd74);
         w = (w * 2) / 3;
         spaceWidth = w;
         tabWidth = w << 2;

@@ -67,7 +67,7 @@ class ZBufferManager;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 
-extern void* DAT_0046bbfc;
+extern void* g_WahooEngine_0046bbfc;
 extern InputManager* g_InputManager_0046aa08;
 class MouseControl;
 extern MouseControl* g_Mouse_0046aa18;
@@ -195,9 +195,9 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
         outerSprite = 0;
     }
 
-    if (DAT_0046bbfc != 0) {
-        (*(void (**)(int))(*((int*)DAT_0046bbfc) + 0xC))(1);
-        DAT_0046bbfc = 0;
+    if (g_WahooEngine_0046bbfc != 0) {
+        (*(void (**)(int))(*((int*)g_WahooEngine_0046bbfc) + 0xC))(1);
+        g_WahooEngine_0046bbfc = 0;
     }
 
     ptr = consoleSprite;
@@ -266,9 +266,9 @@ int SC_Wahoo::AddMessage(SC_Message* msg) {
     if (m[9] >= 1) {
         if (m[7] < cursorHitbox.left || cursorHitbox.right < m[7] ||
             m[8] < cursorHitbox.top || cursorHitbox.bottom < m[8]) {
-            *(int*)((int)DAT_0046bbfc + 0xB8) = *(int*)((int)DAT_0046bbfc + 0xB8) & 0xFFFFFFFE;
+            *(int*)((int)g_WahooEngine_0046bbfc + 0xB8) = *(int*)((int)g_WahooEngine_0046bbfc + 0xB8) & 0xFFFFFFFE;
         } else {
-            *(int*)((int)DAT_0046bbfc + 0xB8) = *(int*)((int)DAT_0046bbfc + 0xB8) | 1;
+            *(int*)((int)g_WahooEngine_0046bbfc + 0xB8) = *(int*)((int)g_WahooEngine_0046bbfc + 0xB8) | 1;
             if (m[9] > 1) {
                 gameFlags = gameFlags | 2;
                 ProcessState();
@@ -461,12 +461,12 @@ void SC_Wahoo::Update(int param1, int param2) {
     spr->ResetAnimation(frame, 0);
 
 label_done:
-    if (DAT_0046bbfc == 0) return;
+    if (g_WahooEngine_0046bbfc == 0) return;
     if (consoleSprite == 0) return;
 
-    ((DetectionObj*)DAT_0046bbfc)->Render();
+    ((DetectionObj*)g_WahooEngine_0046bbfc)->Render();
 
-    if (*(int*)((int)DAT_0046bbfc + 0xA8) != 0) {
+    if (*(int*)((int)g_WahooEngine_0046bbfc + 0xA8) != 0) {
         cursorX = 0;
         if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
             cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
@@ -619,7 +619,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
         int ret = sscanf(param_1, " %s %s ", local_38, local_b8);
         if (ret == 2) {
             if (strcmp(local_b8, "ROCKTHROWER2") == 0) {
-                DAT_0046bbfc = new RockThrower(this);
+                g_WahooEngine_0046bbfc = new RockThrower(this);
             }
         }
     }

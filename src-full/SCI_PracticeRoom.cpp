@@ -112,8 +112,8 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
     }
     SendGameMessage(5, bgSoundHandle, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
     if (savedCommand == 0x2D) {
-        slimeTable->Init(DAT_0046ad6c == 0);
-        DAT_0046ad6c = 0;
+        slimeTable->Init(g_SlimeTableInit_0046ad6c == 0);
+        g_SlimeTableInit_0046ad6c = 0;
     }
 }
 

@@ -80,28 +80,28 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
   ShowError(param_3);
 }
 
-extern void* DAT_0046aa1c; // CDData* for path resolution
+extern void* g_PathResolver_0046aa1c; // CDData* for path resolution
 extern int __cdecl GetFileSize(char*);
 extern "C" int FileExists(const char*);
 extern "C" void WriteToLog(const char*, ...);
 
 // FileCache globals
 #include "MemoryCache.h"
-extern MemoryCache* DAT_0046b78c;  // cache pointer
-extern int DAT_0046b784;   // cache hit counter
-extern int DAT_0046b788;   // cache miss counter
-extern int DAT_0046b790;   // cache eviction threshold
-extern int DAT_00473440;   // total cached size
-extern int DAT_00473444;   // cache size limit
+extern MemoryCache* g_FileCache_0046b78c;  // cache pointer
+extern int g_PathCacheHits_0046b784;   // cache hit counter
+extern int g_PathCacheMisses_0046b788;   // cache miss counter
+extern int g_CacheEvictThreshold_0046b790;   // cache eviction threshold
+extern int g_CacheTotalSize_00473440;   // total cached size
+extern int g_CacheSizeLimit_00473444;   // cache size limit
 
-extern int DAT_0046b780;
-extern int DAT_0046b794;
+extern int g_CacheEntryCount_0046b780;
+extern int g_CachePreloadTime_0046b794;
 
 // Forward declarations (defined below)
 extern "C" int __cdecl DeleteFileAndDir(char*);
 extern "C" void LogCacheStats();
 extern "C" void LogCacheEntries();
-extern int DAT_004719c0;
+extern int g_FileDeleteError_004719c0;
 
 /* Function start: 0x434030 */
 void __cdecl FileCacheEntryCleanup(void* entries, int count) {
@@ -117,7 +117,7 @@ void __cdecl FileCacheEntryCleanup(void* entries, int count) {
             if (DeleteFileAndDir(name) == -1) {
                 LogCacheStats();
                 LogCacheEntries();
-                WriteToLog("HDCache::Unable to delete '%s' (%d)", name, DAT_004719c0);
+                WriteToLog("HDCache::Unable to delete '%s' (%d)", name, g_FileDeleteError_004719c0);
             }
             FreeMemory(name);
             *ptr = 0;
@@ -128,7 +128,7 @@ void __cdecl FileCacheEntryCleanup(void* entries, int count) {
 
 /* Function start: 0x4344B0 */
 void __cdecl FileCacheCleanup() {
-    int* cache = (int*)DAT_0046b78c;
+    int* cache = (int*)g_FileCache_0046b78c;
     if (cache == 0) return;
 
     int* node = (int*)cache[0];
@@ -147,22 +147,22 @@ void __cdecl FileCacheCleanup() {
         block = next;
     }
     cache[4] = 0;
-    DAT_0046b788 = 0;
-    DAT_0046b784 = 0;
+    g_PathCacheMisses_0046b788 = 0;
+    g_PathCacheHits_0046b784 = 0;
 }
 
 /* Function start: 0x434520 */
 extern "C" void LogCacheStats() {
-    if (DAT_0046b78c == 0) {
+    if (g_FileCache_0046b78c == 0) {
         WriteToMessageLog("HDCache::LogStats() - HDCache not initialized");
         return;
     }
     WriteToMessageLog("***********************");
     WriteToMessageLog("HD File Cache");
-    WriteToMessageLog("PreLoading Cache  = %d ms", DAT_0046b794);
+    WriteToMessageLog("PreLoading Cache  = %d ms", g_CachePreloadTime_0046b794);
     WriteToMessageLog("Cache Entries  = %d of %d (%d of %d Bytes)",
-        DAT_0046b78c->field_8, DAT_0046b780, DAT_00473440, DAT_00473444);
-    WriteToMessageLog("Hits=%d Misses = %d", DAT_0046b784, DAT_0046b788);
+        g_FileCache_0046b78c->field_8, g_CacheEntryCount_0046b780, g_CacheTotalSize_00473440, g_CacheSizeLimit_00473444);
+    WriteToMessageLog("Hits=%d Misses = %d", g_PathCacheHits_0046b784, g_PathCacheMisses_0046b788);
 }
 
 /* Function start: 0x4345B0 */
@@ -170,12 +170,12 @@ extern "C" void LogCacheEntries() {
     int* node;
     int idx;
 
-    if (DAT_0046b78c == 0) {
+    if (g_FileCache_0046b78c == 0) {
         WriteToMessageLog("HDCache::LogCache() - HDCache not initialized");
         return;
     }
     idx = 1;
-    node = (int*)((int*)DAT_0046b78c)[0];
+    node = (int*)((int*)g_FileCache_0046b78c)[0];
     if (node != 0) {
         WriteToMessageLog("     %-20.20s %6.6s %10.10s %4.4s",
             "FILE", "FSIZE", "BSIZE", "HITS");
@@ -201,21 +201,21 @@ int __cdecl FileCacheLookup(char* name) {
     int* node;
     char* entryName;
 
-    if (DAT_0046b78c == 0) {
+    if (g_FileCache_0046b78c == 0) {
         return 0;
     }
-    current = (int*)((int*)DAT_0046b78c)[0];
+    current = (int*)((int*)g_FileCache_0046b78c)[0];
 
     while (current != 0) {
         node = current;
         entryName = (char*)current[2];
         current = (int*)current[0];
         if (strcmp(entryName, name) == 0) {
-            DAT_0046b784++;
+            g_PathCacheHits_0046b784++;
             *(int*)(entryName + 0x24) += 1;
             *(int*)(entryName + 0x28) = GetTickCount();
             // Move to front of LRU
-            int* cache = (int*)DAT_0046b78c;
+            int* cache = (int*)g_FileCache_0046b78c;
             if (cache[0] != (int)node) {
                 *(int*)node[1] = node[0];
                 if (node[0] != 0) {
@@ -231,7 +231,7 @@ int __cdecl FileCacheLookup(char* name) {
             return 1;
         }
     }
-    DAT_0046b788++;
+    g_PathCacheMisses_0046b788++;
     return 0;
 }
 
@@ -241,22 +241,22 @@ void __cdecl FileCacheRegister(char* name, int size) {
     int* node;
     char* entry;
 
-    if (DAT_0046b78c == 0) return;
+    if (g_FileCache_0046b78c == 0) return;
 
-    DAT_00473440 += size;
+    g_CacheTotalSize_00473440 += size;
 
     // Evict if over limit
-    if (DAT_00473444 != 0 && DAT_00473444 <= DAT_00473440) {
+    if (g_CacheSizeLimit_00473444 != 0 && g_CacheSizeLimit_00473444 <= g_CacheTotalSize_00473440) {
         do {
-            cache = (int*)DAT_0046b78c;
+            cache = (int*)g_FileCache_0046b78c;
             node = (int*)cache[1]; // tail
             entry = (char*)node[2];
             int entrySize = *(int*)(entry + 0x20);
-            DAT_00473440 -= entrySize;
-            if (DAT_00473440 <= 0) DAT_00473440 = 0;
+            g_CacheTotalSize_00473440 -= entrySize;
+            if (g_CacheTotalSize_00473440 <= 0) g_CacheTotalSize_00473440 = 0;
 
             // Remove tail node
-            cache = (int*)DAT_0046b78c;
+            cache = (int*)g_FileCache_0046b78c;
             int* prev = (int*)node[1];
             cache[1] = (int)prev;
             if (prev != 0) {
@@ -271,7 +271,7 @@ void __cdecl FileCacheRegister(char* name, int size) {
             node[0] = cache[3];
             cache[3] = (int)node;
             cache[2]--;
-        } while (cache[2] > 0 && DAT_0046b790 < DAT_00473440);
+        } while (cache[2] > 0 && g_CacheEvictThreshold_0046b790 < g_CacheTotalSize_00473440);
     }
 
     // Allocate new entry (0x2C bytes)
@@ -284,7 +284,7 @@ void __cdecl FileCacheRegister(char* name, int size) {
     }
 
     // Get a free node from pool
-    cache = (int*)DAT_0046b78c;
+    cache = (int*)g_FileCache_0046b78c;
     if (cache[3] == 0) {
         // Allocate new block of nodes
         int blockSize = cache[5];
@@ -381,16 +381,16 @@ extern "C" char* FormatAssetPath(char* format, ...)
     vsprintf(localPath, format, (char*)&format + 4);
 
     if (FileExists(localPath) != 0) {
-        strcpy((char*)DAT_0046aa1c + 0x195, localPath);
+        strcpy((char*)g_PathResolver_0046aa1c + 0x195, localPath);
     } else {
-        sprintf((char*)DAT_0046aa1c + 0x195, "%s%s", (char*)DAT_0046aa1c + 0x190, localPath);
+        sprintf((char*)g_PathResolver_0046aa1c + 0x195, "%s%s", (char*)g_PathResolver_0046aa1c + 0x190, localPath);
     }
-    return (char*)DAT_0046aa1c + 0x195;
+    return (char*)g_PathResolver_0046aa1c + 0x195;
 }
 
 /* Function start: 0x426190 */
 char* ResolveAssetPath(char* name) {
-    char* basePath = (char*)((int)DAT_0046aa1c + 0x21a);
+    char* basePath = (char*)((int)g_PathResolver_0046aa1c + 0x21a);
     sprintf(basePath, "%s", name);
 
     if (FileCacheLookup(basePath) != 0) {
@@ -408,7 +408,7 @@ char* ResolveAssetPath(char* name) {
         return basePath;
     }
     FileCacheRegister(basePath, size);
-    ((CDData*)DAT_0046aa1c)->ResolvePath(basePath);
+    ((CDData*)g_PathResolver_0046aa1c)->ResolvePath(basePath);
     return basePath;
 }
 

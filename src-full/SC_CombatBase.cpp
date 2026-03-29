@@ -106,8 +106,8 @@ void SC_CombatBase::ProcessFrame()
 /* Function start: 0x42C050 */
 int SC_CombatBase::UpdateSprites()
 {
-    if (DAT_0046ae5c != 0) {
-        DAT_0046ae5c->ProcessFrame(spriteFrameCount);
+    if (g_CombatSprite_0046ae5c != 0) {
+        g_CombatSprite_0046ae5c->ProcessFrame(spriteFrameCount);
     }
     return 0;
 }
@@ -126,15 +126,15 @@ void SC_CombatBase::SetupViewport()
 {
     g_BgSprite_0046ae50 = bgSprite;
     g_CombatWeapon_0046ae60 = combatDisplay;
-    DAT_0046ae68 = soundList;
+    g_SoundList_0046ae68 = soundList;
     g_WeaponParser_0046ae4c = weaponParser;
     g_Navigator_0046ae70 = navigator;
-    DAT_0046ae64 = palette;
-    DAT_0046ae5c = combatSprite;
+    g_Palette_0046ae64 = palette;
+    g_CombatSprite_0046ae5c = combatSprite;
     g_TargetList_0046ae58 = targetList;
-    DAT_0046ae6c = scoreDisplay;
-    DAT_0046ae54 = viewport;
-    DAT_0046ae74 = hotspotPool;
+    g_ScoreDisplay_0046ae6c = scoreDisplay;
+    g_Viewport_0046ae54 = viewport;
+    g_HotspotPool_0046ae74 = hotspotPool;
 }
 
 /* Function start: 0x42C240 */
@@ -223,12 +223,12 @@ int SC_CombatBase::LBLParse(char* line)
     if (strcmp(token, "ENGINE_INFO") == 0) {
         Parser::ProcessFile((Parser*)g_WeaponParser_0046ae4c, this, (char*)0);
     } else if (strcmp(token, "UPDATE_DIRS") == 0) {
-        extern void* DAT_0046aa1c;
-        Parser::ProcessFile((Parser*)DAT_0046aa1c, this, (char*)0);
+        extern void* g_PathResolver_0046aa1c;
+        Parser::ProcessFile((Parser*)g_PathResolver_0046aa1c, this, (char*)0);
     } else if (strcmp(token, "TARGETS") == 0) {
         Parser::ProcessFile((Parser*)g_TargetList_0046ae58, this, (char*)0);
     } else if (strcmp(token, "SPRITELIST") == 0) {
-        Parser::ProcessFile((Parser*)DAT_0046ae5c, this, (char*)0);
+        Parser::ProcessFile((Parser*)g_CombatSprite_0046ae5c, this, (char*)0);
     } else if (strcmp(token, "NAVIGATION") == 0) {
         Parser::ProcessFile((Parser*)g_Navigator_0046ae70, this, (char*)0);
     } else if (strcmp(token, "SET_GAMESTATE") == 0) {
@@ -277,15 +277,15 @@ int SC_CombatBase::ProcessEvents()
 
     int result = 0;
 
-    if (DAT_0046ae74->count != 0) {
+    if (g_HotspotPool_0046ae74->count != 0) {
         int handleAction = ((int*)(*(int*)this))[13];
 
         do {
-            SpriteAction* popped = ((TimedEventPool*)DAT_0046ae74)->Pop((SpriteAction*)tempBuf);
+            SpriteAction* popped = ((TimedEventPool*)g_HotspotPool_0046ae74)->Pop((SpriteAction*)tempBuf);
             localEvent.CopyFrom(popped);
             popped->~SpriteAction();
             result |= ((int (__fastcall *)(SC_CombatBase*, int, SpriteAction*))handleAction)(this, 0, &localEvent);
-        } while (DAT_0046ae74->count != 0);
+        } while (g_HotspotPool_0046ae74->count != 0);
     }
 
     return result;

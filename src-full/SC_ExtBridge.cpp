@@ -19,7 +19,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 // FUN_0040b760 = VBuffer sdtor — callers updated
 // FUN_00404b80 = LinkedList::GetCurrentData — callers updated
 // FUN_00404d70 = ListNode sdtor — callers updated to use delete
-extern "C" int g_CombatEngine_0046ae78;
+#include "globals.h"
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 /* Function start: 0x4399E0 */
@@ -174,7 +174,7 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 
 #include "GameEngine.h"
 extern "C" extern int g_GameEngine_0046a6ec;                       // GameEngine instance
-extern SpriteAction DAT_00472d58;                          // global SpriteAction
+extern SpriteAction g_PendingAction_00472d58;                          // global SpriteAction
 
 /* Function start: 0x439F30 */
 int SC_ExtBridge::ShutDown(SC_Message* msg)
@@ -197,7 +197,7 @@ int SC_ExtBridge::ShutDown(SC_Message* msg)
 }
 
 #include "mCNavigator.h"
-extern int DAT_0046bcd0[];
+extern int g_DodgeAnimStates_0046bcd0[];
 #include "MouseControl.h"
 #include "InputManager.h"
 extern MouseControl* g_Mouse_0046aa18;
@@ -234,7 +234,7 @@ void SC_ExtBridge::Update(int p1, int p2)
     } else {
         idx = 0;
     }
-    int anim = DAT_0046bcd0[idx];
+    int anim = g_DodgeAnimStates_0046bcd0[idx];
     if (spr != 0) {
         spr->ResetAnimation(anim, 0);
     }
@@ -260,7 +260,7 @@ int SC_ExtBridge::AddMessage(SC_Message* msg)
             SpriteAction local(
                 hid, mp, hid, mp, 4, 1, 0, 0,
                 g_Navigator_0046ae70->startingNode, g_Navigator_0046ae70->bearing);
-            DAT_00472d58.CopyFrom(&local);
+            g_PendingAction_00472d58.CopyFrom(&local);
         }
         SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }

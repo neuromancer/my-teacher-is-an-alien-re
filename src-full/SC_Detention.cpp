@@ -13,8 +13,8 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 extern "C" extern GameState* g_GameState_0046aa30;
 extern "C" extern int g_GameEngine_0046a6ec;
 extern char* g_Buffer_0046aa00;
-extern int DAT_00468764;
-extern SpriteAction DAT_00472d58;
+extern int g_DetentionFlag_00468764;
+extern SpriteAction g_PendingAction_00472d58;
 
 
 /* Function start: 0x4098C0 */
@@ -335,7 +335,7 @@ void SC_Detention::ResetAnimations() {
     char sectionBuf[64];
 
     field_160 = 0;
-    DAT_00468764 = 0;
+    g_DetentionFlag_00468764 = 0;
 
     {
         SpriteAction action(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
@@ -481,7 +481,7 @@ void SC_Detention::SendPeriodAction(int param) {
 
     {
         SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        DAT_00472d58.CopyFrom(&action);
+        g_PendingAction_00472d58.CopyFrom(&action);
     }
 
     gs = g_GameState_0046aa30;
@@ -618,7 +618,7 @@ int SC_Detention::LBLParse(char* line) { // prologue at 0x40B240
 /* Function start: 0x40AB90 */
 void SC_Detention::HandleCombat() {
     SpriteAction temp(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
-    DAT_00472d58.CopyFrom(&temp);
+    g_PendingAction_00472d58.CopyFrom(&temp);
 
     SendGameMessage(3, 0xC7, 0x2D, 1, 4, 0, 0, 0, 0, 0);
 
@@ -634,7 +634,7 @@ void SC_Detention::HandlePractice() {
     int idx;
 
     SpriteAction temp(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
-    DAT_00472d58.CopyFrom(&temp);
+    g_PendingAction_00472d58.CopyFrom(&temp);
 
     SendGameMessage(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
 
@@ -680,16 +680,15 @@ void SC_Detention::Serialize(void* param) {
     }
 }
 
-extern int DAT_00468a18;
+extern int g_DetentionKeyState_00468a18;
 extern int WaitForInput();
-extern "C" int g_CombatEngine_0046ae78;
 
 /* Function start: 0x40B9E0 */
 void UpdateCombatEngine()
 {
-    if (DAT_00468a18 != 0) {
+    if (g_DetentionKeyState_00468a18 != 0) {
         int key = WaitForInput();
-        DAT_00468a18 = (key != 0x54) ? 1 : 0;
+        g_DetentionKeyState_00468a18 = (key != 0x54) ? 1 : 0;
     }
     int* engine = (int*)g_CombatEngine_0046ae78;
     int* vtbl = (int*)*engine;

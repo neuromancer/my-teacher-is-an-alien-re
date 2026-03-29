@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <stdlib.h>
 
-extern HANDLE DAT_0043eff0;
+extern HANDLE g_ProcessHeap_0043eff0;
 extern int (*g_OutOfMemoryCallback)(unsigned int);
 
 // Global operator new/delete - full game uses CRT malloc/free (0x454500/0x454400)
@@ -31,14 +31,14 @@ void* AllocateMemory(unsigned int size)
 void FreeFromGlobalHeap(void* ptr)
 {
     if (ptr != 0) {
-        HeapFree(DAT_0043eff0, 0, ptr);
+        HeapFree(g_ProcessHeap_0043eff0, 0, ptr);
     }
 }
 
 /* Function start: 0x428440 */ /* DEMO ONLY - no full game match */
 void* CrtMalloc(unsigned int size)
 {
-    return AllocateMemoryInternal(size, DAT_0043cb64);
+    return AllocateMemoryInternal(size, g_TimeSeed_0043cb64);
 }
 
 /* Function start: 0x428460 */ /* DEMO ONLY - no full game match */
@@ -66,10 +66,10 @@ void* AllocateMemoryInternal(unsigned int size, int flag)
 /* Function start: 0x4284A0 */ /* DEMO ONLY - no full game match */
 void* HeapAllocWrapper(unsigned int size)
 {
-    if (DAT_0043eff0 == 0) {
-        DAT_0043eff0 = GetProcessHeap();
+    if (g_ProcessHeap_0043eff0 == 0) {
+        g_ProcessHeap_0043eff0 = GetProcessHeap();
     }
-    return HeapAlloc(DAT_0043eff0, 0, size);
+    return HeapAlloc(g_ProcessHeap_0043eff0, 0, size);
 }
 
 /* Function start: 0x42C5C0 */ /* DEMO ONLY - no full game match */

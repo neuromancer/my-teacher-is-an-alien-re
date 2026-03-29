@@ -10,7 +10,7 @@ extern "C" void ShowError(const char* format, ...);
 extern "C" char* GetSoundFilename(int handle);
 extern "C" extern GameState* g_GameState_0046aa30;
 #define g_GameState_0046aa30 (g_GameState_0046aa30)
-extern "C" extern void* DAT_0046aa10;
+extern "C" extern void* g_BackBuffer2_0046aa10;
 extern "C" extern int g_GameEngine_0046a6ec;
 
 /* Function start: 0x4392E0 */
@@ -112,7 +112,7 @@ void SC_BgSnd::OnProcessEnd() {
 
 /* Function start: 0x439740 */
 void SC_BgSnd::AddMessage(int soundHandle) {
-    if (((char*)DAT_0046aa10)[0x46] != 2) return;
+    if (((char*)g_BackBuffer2_0046aa10)[0x46] != 2) return;
 
     GameState* gs = g_GameState_0046aa30;
     int idx = gs->FindState("GS_MUSICOFF");

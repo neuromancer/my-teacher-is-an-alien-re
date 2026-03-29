@@ -3,10 +3,10 @@
 #include "string.h"
 
 // Color setup globals
-extern char DAT_00437490;      // Color value after lookup
-extern char DAT_00437520[];    // Palette identity map (256 bytes)
+extern char g_TextColor_00437490;      // Color value after lookup
+extern char g_PaletteMap_00437520[];    // Palette identity map (256 bytes)
 extern char g_BgrPalette_00437b48[];    // BGR palette buffer
-static char DAT_00437495 = 0;  // Current color index
+static char g_ColorIndex_00437495 = 0;  // Current color index
 
 extern "C" {
 
@@ -17,9 +17,9 @@ int __cdecl SetFillColor(unsigned char param_1)
     unsigned int eax;
     unsigned int edx;
 
-    DAT_00437495 = param_1;
-    al = DAT_00437520[param_1];
-    DAT_00437490 = al;
+    g_ColorIndex_00437495 = param_1;
+    al = g_PaletteMap_00437520[param_1];
+    g_TextColor_00437490 = al;
     eax = al | (al << 8);
     edx = eax << 16;
     eax = eax | edx;

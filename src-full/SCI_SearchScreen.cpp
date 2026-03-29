@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern int DAT_0043d130;
+extern int g_SaveState0_0043d130;
 
 extern void ParseSpriteAction(void*, void*);
 extern void EnqueueSpriteAction(void*);
@@ -22,7 +22,7 @@ SCI_SearchScreen::~SCI_SearchScreen()
     ShutDown(0);
 }
 
-extern "C" int g_CombatEngine_0046ae78;
+#include "globals.h"
 #include "SC_CombatBase.h"
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
@@ -77,7 +77,7 @@ int SCI_SearchScreen::LBLParse(char* line) {
 
 /* Function start: 0x40EFB0 */
 extern "C" void ClearGameStateSave() {
-    memset(&DAT_0043d130, 0, 16);
+    memset(&g_SaveState0_0043d130, 0, 16);
 }
 
 static int g_SearchScreenRects[36];

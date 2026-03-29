@@ -29,9 +29,9 @@ extern "C" { extern GameState* g_GameState_0046aa30; }
 extern MouseControl* g_Mouse_0046aa18;
 extern int g_PeriodStateIdx_0046cb90;
 
-extern int DAT_0046cc98[];
-extern int DAT_0046cca4[];
-extern GlyphRect DAT_00473d30[];
+extern int g_PuzzleSolutions_0046cc98[];
+extern int g_PuzzleResultIdx_0046cca4[];
+extern GlyphRect g_PuzzleButtonRects_00473d30[];
 extern GlyphRect g_DoorRects_00473dc8[];
 
 /* Function start: 0x44EBA0 */
@@ -759,7 +759,7 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
                   rect3.top <= y && rect3.bottom >= y);
         if (inside) {
             int i = 0;
-            GlyphRect* r = DAT_00473d30;
+            GlyphRect* r = g_PuzzleButtonRects_00473d30;
             do {
                 inside = (r->left <= clickPos.x && clickPos.x <= r->right &&
                           r->top <= clickPos.y && r->bottom >= clickPos.y);
@@ -768,7 +768,7 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
                 }
                 r++;
                 i++;
-            } while (r < &DAT_00473d30[9]);
+            } while (r < &g_PuzzleButtonRects_00473d30[9]);
             CheckSolution();
         } else {
             inside = (rect2.left <= x && x <= rect2.right &&
@@ -832,7 +832,7 @@ int SC_CrystalPuzzle::CheckSolution() {
     int floorIdx;
 
     solutionIdx = 0;
-    solutionPtr = DAT_0046cc98;
+    solutionPtr = g_PuzzleSolutions_0046cc98;
     floorStates[0] = 0;
     floorStates[1] = 0;
     floorStates[2] = 0;
@@ -879,7 +879,7 @@ int SC_CrystalPuzzle::CheckSolution() {
     }
 
     ResetPuzzle(resetIdx, 1);
-    return DAT_0046cca4[solutionIdx * 4];
+    return g_PuzzleResultIdx_0046cca4[solutionIdx * 4];
 }
 
 /* Function start: 0x450760 */

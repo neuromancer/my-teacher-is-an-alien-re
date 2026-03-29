@@ -25,8 +25,8 @@ extern "C" int g_GameEngine_0046a6ec;         // GameEngine instance
 extern "C" GameState* g_GameState_0046aa30;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern char* g_Buffer_0046aa00;           // temp string buffer
-extern char DAT_00468108[];          // GameState key (quest level)
-extern char DAT_004690e4[];          // format string for quest
+extern char g_QuestLevelKey_00468108[];          // GameState key (quest level)
+extern char g_QuestFormatStr_004690e4[];          // format string for quest
 extern GameState* g_StringState_0046aa38;      // secondary GameState (string table)
 
 /* Function start: 0x414780 */
@@ -46,7 +46,7 @@ SC_Question::SC_Question(int id, SCI_Dialog* dialog)
         sprintf(label, "Missing Label %d", questionId);
     }
 
-    gsIndex = (g_GameState_0046aa30)->FindState(DAT_00468108);
+    gsIndex = (g_GameState_0046aa30)->FindState(g_QuestLevelKey_00468108);
     if (gsIndex < 0 || g_GameState_0046aa30->maxStates - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
     }
@@ -133,7 +133,7 @@ void SC_Question::Update(int x, int y)
     }
 
     if (gs->stateValues[4] == 1) {
-        sprintf(g_Buffer_0046aa00, DAT_004690e4, questionId);
+        sprintf(g_Buffer_0046aa00, g_QuestFormatStr_004690e4, questionId);
         g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x22b, y + 0x17, 10000, -1);
     }
 

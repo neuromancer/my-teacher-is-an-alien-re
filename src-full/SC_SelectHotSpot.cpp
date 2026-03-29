@@ -23,7 +23,7 @@ class MouseControl;
 extern MouseControl* g_Mouse_0046aa18;
 #include "InputManager.h"
 extern InputManager* g_InputManager_0046aa08;
-extern SpriteAction DAT_00472d58;
+extern SpriteAction g_PendingAction_00472d58;
 
 
 
@@ -326,7 +326,7 @@ int SelectHotspot::LBLParse(char* line) {
         ((Queue*)SelectHotspot::messageList)->Add(msgObj);
     } else if (strcmp(keyword, "RETURNMESSAGE") == 0) {
         SpriteAction* msgObj = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        int* src = (int*)&DAT_00472d58;
+        int* src = (int*)&g_PendingAction_00472d58;
         int* dst = (int*)msgObj;
         int i;
         for (i = 0x0E; i != 0; i--) {

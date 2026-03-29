@@ -10,14 +10,12 @@
 
 extern void ShowError(const char* message, ...);
 extern char* g_DirectionChars;
-extern "C" int g_CombatEngine_0046ae78;
 extern int FindCharIndex(char ch);
 
 // Global: stick direction characters (5 directions)
 char* g_StickDirChars = "FBLRU";
 
-// Global: cached navigation sprite
-Sprite* g_NavSprite = 0;
+// g_NavSprite_004360a4_004360a4 — defined in globals.cpp
 
 // =========================================================================
 // Free functions
@@ -152,7 +150,7 @@ BG_SubNode::~BG_SubNode()
 void BG_SubNode::virtual7()
 {
     state = 0;
-    g_NavSprite = g_Navigator_0046ae70->sprite;
+    g_NavSprite_004360a4 = g_Navigator_0046ae70->sprite;
 }
 
 /* Function start: 0x44A1F0 */
@@ -160,7 +158,7 @@ int BG_SubNode::Activate()
 {
     volatile int local;
 
-    g_NavSprite = g_Navigator_0046ae70->sprite;
+    g_NavSprite_004360a4 = g_Navigator_0046ae70->sprite;
 
     if (state == 2) {
         state = 0;
@@ -172,7 +170,7 @@ int BG_SubNode::Activate()
     }
 
     state = 1;
-    g_NavSprite->ResetAnimation(spriteHandle, 0);
+    g_NavSprite_004360a4->ResetAnimation(spriteHandle, 0);
     *(int*)(g_CombatEngine_0046ae78 + 0xe8) = 1;
     frameCounter = 0;
 
@@ -200,14 +198,14 @@ found:
                 ShowError("BG_SubNode::DoAction() - Invalid Sprite Id S%d of %s", (int)local, ((mCNavNode*)parentNode)->nodeName);
             } else {
                 local = (int)node->value;
-                DAT_0046ae5c->PlayById((int)local);
+                g_CombatSprite_0046ae5c->PlayById((int)local);
             }
         }
     }
 
 do_sprite:
     ;
-    int done = g_NavSprite->Do(g_NavSprite->loc_x, g_NavSprite->loc_y, 1.0);
+    int done = g_NavSprite_004360a4->Do(g_NavSprite_004360a4->loc_x, g_NavSprite_004360a4->loc_y, 1.0);
     if (done != 0) {
         int count = frameCounter + 1;
         int isDone;
@@ -224,10 +222,10 @@ do_sprite:
         }
     }
 
-    if (g_NavSprite->animation_data == 0) {
+    if (g_NavSprite_004360a4->animation_data == 0) {
         *(int*)(g_CombatEngine_0046ae78 + 0xe4) = 0;
     } else {
-        int* smk = (int*)g_NavSprite->animation_data->smk;
+        int* smk = (int*)g_NavSprite_004360a4->animation_data->smk;
         *(int*)(g_CombatEngine_0046ae78 + 0xe4) = *(int*)((char*)smk + 0x374);
     }
     return 0;
@@ -239,7 +237,7 @@ void BG_SubNode::AddSpriteList(unsigned int param_1)
     volatile int local_10;
     NavNode* node;
 
-    if (DAT_0046ae5c == 0 || DAT_0046ae5c->FindSprite(param_1) == 0) {
+    if (g_CombatSprite_0046ae5c == 0 || g_CombatSprite_0046ae5c->FindSprite(param_1) == 0) {
         ShowError("BG_SubNode::AddSpriteList() - Undefined sprite list S%d", param_1);
     }
 

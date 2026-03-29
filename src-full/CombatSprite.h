@@ -63,8 +63,8 @@ public:
 };
 
 // Global variables used by CombatSprite parsing
-extern SpriteHashTable* g_CurrentSprite;   // 0x436348
-extern int g_CurrentSpriteIndex;           // 0x43634c
+// g_CurrentSprite_00436348 — declared in globals.h
+// g_CurrentSpriteIndex_0043634c, g_CurrentSprite_00436348 — declared in globals.h
 
 // Helper functions for hash table cleanup
 void __cdecl CleanupSpriteHashArray(void** array, int count);  // 0x408F20

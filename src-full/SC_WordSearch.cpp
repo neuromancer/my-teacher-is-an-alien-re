@@ -120,7 +120,7 @@ void SC_WordSearch::Init(SC_Message* msg) {
         moduleParam = ((SpriteAction*)msg)->addressValue;
         SC_WordSearch::InitWordList();
     }
-    ParseFile(this, DAT_0046bacc, (char*)0);
+    ParseFile(this, g_MissionFilePath_0046bacc, (char*)0);
     if (resultAction == 0) {
         resultAction = new SpriteAction(
             savedCommand,

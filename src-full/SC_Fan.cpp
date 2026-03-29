@@ -25,7 +25,7 @@ extern "C" void WriteToLog(const char* format, ...);
 extern char* __cdecl ResolveAssetPath(char* name);
 // FUN_00427880 = Weapon::UpdateProjectiles — callers updated
 
-extern Weapon* DAT_00468ef0;                 // active weapon display
+extern Weapon* g_ActiveWeapon_00468ef0;                 // active weapon display
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 extern "C" { extern GameState* g_GameState_0046aa30; }
 extern MouseControl* g_Mouse_0046aa18;
@@ -133,9 +133,9 @@ void SC_Fan::Cleanup(int flag) {
         brSprite = 0;
     }
 
-    if (DAT_00468ef0 != 0) {
-        delete DAT_00468ef0;
-        DAT_00468ef0 = 0;
+    if (g_ActiveWeapon_00468ef0 != 0) {
+        delete g_ActiveWeapon_00468ef0;
+        g_ActiveWeapon_00468ef0 = 0;
     }
 
     ptr = consoleSprite;
@@ -547,9 +547,9 @@ void SC_Fan::RenderFan() {
         InputState* p;
 
         (g_Mouse_0046aa18)->DrawCursor();
-        DAT_00468ef0->UpdateProjectiles();
+        g_ActiveWeapon_00468ef0->UpdateProjectiles();
 
-        if (DAT_00468ef0->m_clicked != 0) {
+        if (g_ActiveWeapon_00468ef0->m_clicked != 0) {
             frames = 0;
             p = g_InputManager_0046aa08->pMouse;
             if (p != 0) {
@@ -570,10 +570,10 @@ void SC_Fan::RenderFan() {
     }
 }
 
-extern int DAT_00472be0;
-extern int DAT_00472be4;
-extern int DAT_00472be8;
-extern int DAT_00472bec;
+extern int g_FanField1_00472be0;
+extern int g_FanField2_00472be4;
+extern int g_FanField3_00472be8;
+extern int g_FanField4_00472bec;
 
 /* Function start: 0x410390 */
 void SC_Fan::OnProcessEnd()
@@ -582,10 +582,10 @@ void SC_Fan::OnProcessEnd()
     invSlot_D0.top = 0xBA;
     invSlot_D0.right = 0xEC;
     invSlot_D0.bottom = 0xC7;
-    DAT_00472be0 = 0x90;
-    DAT_00472be4 = 0x18;
-    DAT_00472be8 = 0xF0;
-    DAT_00472bec = 0x64;
+    g_FanField1_00472be0 = 0x90;
+    g_FanField2_00472be4 = 0x18;
+    g_FanField3_00472be8 = 0xF0;
+    g_FanField4_00472bec = 0x64;
     invSlots_100[0].left = 0x99;
     invSlots_100[0].right = 0x9C;
     invSlots_100[1].left = 0x99;
@@ -719,7 +719,7 @@ int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
         int ret = sscanf(param_1, " %s %s ", local_38, local_b8);
         if (ret == 2) {
             if (strcmp(local_b8, "ROCKTHROWER2") == 0) {
-                DAT_00468ef0 = new RockThrower(this);
+                g_ActiveWeapon_00468ef0 = new RockThrower(this);
             } else {
                 ReportUnknownLabel("SC_Fan");
             }

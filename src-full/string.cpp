@@ -179,7 +179,7 @@ void WriteToMessageLog(const char *msg,...)
     }
 }
 
-int g_stringTableCount = 0; // 0x4366b4
+// g_StringTableCount_004366b4 — defined in globals.cpp
 char g_stringTable[16384] = {0}; // 0x43d158
 
 /* Function start: 0x425DC0 */
@@ -192,8 +192,8 @@ extern "C" void AddToStringTable(char *param_1)
     iVar2 = sscanf(param_1, " %s ", local_20);
     if (iVar2 == 1) {
         if (strlen(local_20) != 0) {
-            strcpy(&g_stringTable[g_stringTableCount * 0x20], local_20);
-            g_stringTableCount++;
+            strcpy(&g_stringTable[g_StringTableCount_004366b4 * 0x20], local_20);
+            g_StringTableCount_004366b4++;
         }
     }
 }

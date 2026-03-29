@@ -6,7 +6,7 @@ extern "C" void ShowMessage(char *param_1, ...);
 extern "C" void WriteToMessageLog(const char *msg, ...);
 
 // g_WinGDC_0043841c is already declared in globals.h
-extern HDC DAT_00437488;
+extern HDC g_MainDC_00437488;
 extern int g_VideoBufferHeightM1_004374ca;
 extern void* g_WinGStretchBlt_00438438;
 extern void* g_WinGBitBlt_00438434;
@@ -115,8 +115,8 @@ extern "C" int __cdecl CreateTable(int width, int height) {
             return -2;
         }
         HGDIOBJ oldObj = SelectObject(g_WinGDC_0043841c, hDib);
-        if (DAT_00438424 == 0) {
-            DAT_00438424 = oldObj;
+        if (g_WinGBitmap_00438424 == 0) {
+            g_WinGBitmap_00438424 = oldObj;
         }
         // FUN_00423076 - Clear the newly created DIB buffer
         // This function reads from caller's EBP frame, so we inline it here
@@ -224,13 +224,13 @@ extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int p
         if (g_WinGDC_0043841c == 0) {
             // Use SetDIBitsToDevice
             int bitmapInfo = g_VideoBufferBase_00437f66 - g_BitmapHeaderSize_00437f4c;
-            SetDIBitsToDevice(DAT_00437488, param_5, iVar1, w, h, param_1, param_3, 0, g_VideoBufferHeight_004374d2,
+            SetDIBitsToDevice(g_MainDC_00437488, param_5, iVar1, w, h, param_1, param_3, 0, g_VideoBufferHeight_004374d2,
                               (void*)(bitmapInfo + g_BitmapHeaderSize_00437f4c),
                               (BITMAPINFO*)bitmapInfo,
                               g_DibModeFlag_00437f50);
         } else {
             // Use WinG BitBlt via function pointer
-            ((WinGBitBltFunc)g_WinGBitBlt_00438434)(DAT_00437488, param_5, iVar1, w, h, g_WinGDC_0043841c, param_1, param_3);
+            ((WinGBitBltFunc)g_WinGBitBlt_00438434)(g_MainDC_00437488, param_5, iVar1, w, h, g_WinGDC_0043841c, param_1, param_3);
         }
     }
     return 0;
@@ -262,11 +262,11 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
         srcHeight = (newY2 - srcY1) + 1;
 
         if (wingDC != 0) {
-            ((WinGStretchBltFunc)g_WinGStretchBlt_00438438)(DAT_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
+            ((WinGStretchBltFunc)g_WinGStretchBlt_00438438)(g_MainDC_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
         }
         else {
             int bitmapInfo = g_VideoBufferBase_00437f66 - g_BitmapHeaderSize_00437f4c;
-            StretchDIBits(DAT_00437488, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
+            StretchDIBits(g_MainDC_00437488, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
                           (void*)(bitmapInfo + g_BitmapHeaderSize_00437f4c),
                           (BITMAPINFO*)bitmapInfo,
                           g_DibModeFlag_00437f50, 0xcc0020);

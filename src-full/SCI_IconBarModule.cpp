@@ -106,7 +106,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
     timeout->Start(2000);
 
-    if (DAT_00468764 != 0) {
+    if (g_DetentionFlag_00468764 != 0) {
         SendGameMessage(0x2c, 0, 0, 0, 0x3b, 0, 0, 0, 0, 0);
         timeout->Start(1);
         return;
@@ -129,7 +129,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
     if (targetRoom < 1 || targetRoom > 0x1E) {
         SendGameMessage(0x25, 0, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        DAT_00468764 = 0;
+        g_DetentionFlag_00468764 = 0;
         return;
     }
 
@@ -306,21 +306,21 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
     // Setup icon bar entries
     if (mode == 0) {
-        int* arr = &DAT_00473334;
+        int* arr = &g_IconBarState_00473334;
         do {
             *arr = 1;
             arr = arr + 9;
-        } while ((unsigned int)arr < (unsigned int)&DAT_004733e8);
+        } while ((unsigned int)arr < (unsigned int)&g_InventoryState_004733e8);
         if (hasBoundaryRect != 0 || (targetRoom > 0x13 && targetRoom < 0x1E)) {
-            DAT_00473334 = 0;
+            g_IconBarState_00473334 = 0;
         }
         CopyCommandData(msg);
     } else {
-        int* arr = &DAT_00473334;
+        int* arr = &g_IconBarState_00473334;
         do {
             *arr = 0;
             arr = arr + 9;
-        } while ((unsigned int)arr < (unsigned int)&DAT_004733e8);
+        } while ((unsigned int)arr < (unsigned int)&g_InventoryState_004733e8);
 
         SetVideoRes(field_C8.x, field_C8.y);
 
@@ -428,7 +428,7 @@ void SCI_IconBarModule::Update(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
-    if (DAT_00468764 != 0) {
+    if (g_DetentionFlag_00468764 != 0) {
         if (timeout->IsTimeOut() != 0) {
             SendGameMessage(0x2c, 0, 0, 0, 0x3b, 0, 0, 0, 0, 0);
             return;

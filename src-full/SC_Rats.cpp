@@ -1,5 +1,6 @@
 #include "SC_Rats.h"
 #include "SC_CombatBase.h"
+#include "globals.h"
 #include "SC_Question.h"
 #include "ZBufferManager.h"
 #include "SpriteAction.h"
@@ -20,16 +21,7 @@
 #include <stdio.h>
 #include <new.h>
 
-// Globals for SC_Rats state machine
-extern "C" {
-    int g_State4Phase = 0;       // g_State4Phase - State4Handler sub-phase
-    int g_RatsField_00473e00 = 0; // g_RatsField_00473e00 - unused/reserved
-    int g_State0Phase = 0;       // g_State0Phase - State0Handler sub-phase
-    int g_RatsState = 0;         // g_RatsState - main state machine state (0-4)
-    int g_State3Phase = 0;       // g_State3Phase - State3Handler sub-phase
-    int g_State2Phase = 0;       // g_State2Phase - State2Handler sub-phase
-    int g_CombatEngine_0046ae78 = 0;
-}
+// SC_Rats globals — defined in globals.cpp
 
 // Extern functions
 extern "C" int FileExists(const char*);
@@ -69,12 +61,12 @@ void SC_Rats::Init(SC_Message* msg) {
     p[0] = 0;
     p[1] = 0;
     handlerId = savedId;
-    g_State4Phase = 0;
-    g_State3Phase = 0;
-    g_State2Phase = 0;
+    g_State4Phase_00473df8 = 0;
+    g_State3Phase_00473e1c = 0;
+    g_State2Phase_00473e20 = 0;
     g_RatsField_00473e00 = 0;
-    g_State0Phase = 0;
-    g_RatsState = 0;
+    g_State0Phase_00473e14 = 0;
+    g_RatsState_00473e18 = 0;
     CopyCommandData(msg);
     moduleParam = ((int*)msg)[1];
     if (!FileExists("CB_Rats")) {
@@ -162,7 +154,7 @@ void SC_Rats::Update(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
-    switch (g_RatsState) {
+    switch (g_RatsState_00473e18) {
         case 0:
             State0Handler();
             break;
@@ -187,7 +179,7 @@ int SC_Rats::AddMessage(SC_Message* msg) {
     ((int*)msg)[3] = moduleParam;
     ((int*)msg)[4] = 0;
     if (((int*)msg)[11] == 0x1B) {
-        g_RatsState = 4;
+        g_RatsState_00473e18 = 4;
     }
     return 1;
 }
@@ -213,7 +205,7 @@ void SC_Rats::ProcessState() {
     int idx;
 
     if (savedCommand == 0x2B) {
-        if (g_RatsState == 2) {
+        if (g_RatsState_00473e18 == 2) {
             if (actionData != 0) {
                 delete (SpriteAction*)actionData;
                 actionData = 0;
@@ -221,7 +213,7 @@ void SC_Rats::ProcessState() {
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             SC_Message temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_WIN_LBL_PR_");
-        } else if (g_RatsState == 3) {
+        } else if (g_RatsState_00473e18 == 3) {
             if (actionData != 0) {
                 delete (SpriteAction*)actionData;
                 actionData = 0;
@@ -231,7 +223,7 @@ void SC_Rats::ProcessState() {
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_PR_");
         }
     } else {
-        if (g_RatsState == 4) {
+        if (g_RatsState_00473e18 == 4) {
             int* spriteData = (int*)actionData;
             spriteData[8] = 2 - spriteData[8];
             GameState* gs = g_GameState_0046aa30;
@@ -240,7 +232,7 @@ void SC_Rats::ProcessState() {
                 ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] += 0x14;
-        } else if (g_RatsState == 3) {
+        } else if (g_RatsState_00473e18 == 3) {
             if (actionData != 0) {
                 delete (SpriteAction*)actionData;
                 actionData = 0;
@@ -248,7 +240,7 @@ void SC_Rats::ProcessState() {
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             SC_Message temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_");
-        } else if (g_RatsState == 2) {
+        } else if (g_RatsState_00473e18 == 2) {
             GameState* gs = g_GameState_0046aa30;
             idx = ((GameState*)gs)->FindLabel("RAT_COMBAT_AVAILABLE");
             if (idx < 0 || gs->maxStates - 1 < idx) {
@@ -277,8 +269,8 @@ void SC_Rats::State0Handler() {
 
     State1Handler();
 
-    if (g_State0Phase == 0) {
-        g_State0Phase++;
+    if (g_State0Phase_00473e14 == 0) {
+        g_State0Phase_00473e14++;
         if (*(int*)(engineObj + 0x100) != 0) {
             ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
@@ -288,17 +280,17 @@ void SC_Rats::State0Handler() {
             goto done;
         }
     } else {
-        if (g_State0Phase != 1) goto done;
+        if (g_State0Phase_00473e14 != 1) goto done;
         if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
             if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
-    g_State0Phase++;
+    g_State0Phase_00473e14++;
 
 done:
-    if (g_State0Phase == 2) {
-        g_State0Phase = 3;
-        g_RatsState = 1;
+    if (g_State0Phase_00473e14 == 2) {
+        g_State0Phase_00473e14 = 3;
+        g_RatsState_00473e18 = 1;
         g_Navigator_0046ae70->SetNavParams(1, 0);
     }
 }
@@ -313,8 +305,8 @@ void SC_Rats::State2Handler() {
     int engineObj = g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x110);
 
-    if (g_State2Phase == 0) {
-        g_State2Phase = 1;
+    if (g_State2Phase_00473e20 == 0) {
+        g_State2Phase_00473e20 = 1;
         if (*(int*)(engineObj + 0x100) != 0) {
             ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
@@ -323,16 +315,16 @@ void SC_Rats::State2Handler() {
             goto done;
         }
     } else {
-        if (g_State2Phase != 1) goto done;
+        if (g_State2Phase_00473e20 != 1) goto done;
         if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
             if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
-    g_State2Phase++;
+    g_State2Phase_00473e20++;
 
 done:
-    if (g_State2Phase == 2) {
-        g_State2Phase = 3;
+    if (g_State2Phase_00473e20 == 2) {
+        g_State2Phase_00473e20 = 3;
         ProcessState();
     }
     State1Handler();
@@ -343,8 +335,8 @@ void SC_Rats::State3Handler() {
     int engineObj = g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x10C);
 
-    if (g_State3Phase == 0) {
-        g_State3Phase = 1;
+    if (g_State3Phase_00473e1c == 0) {
+        g_State3Phase_00473e1c = 1;
         if (*(int*)(engineObj + 0x100) != 0) {
             ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
@@ -353,16 +345,16 @@ void SC_Rats::State3Handler() {
             goto done;
         }
     } else {
-        if (g_State3Phase != 1) goto done;
+        if (g_State3Phase_00473e1c != 1) goto done;
         if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
             if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
-    g_State3Phase++;
+    g_State3Phase_00473e1c++;
 
 done:
-    if (g_State3Phase == 2) {
-        g_State3Phase = 3;
+    if (g_State3Phase_00473e1c == 2) {
+        g_State3Phase_00473e1c = 3;
         ProcessState();
     }
     State1Handler();
@@ -373,8 +365,8 @@ void SC_Rats::State4Handler() {
     int engineObj = g_CombatEngine_0046ae78;
     Sample* snd = (Sample*)*(int*)(engineObj + 0x114);
 
-    if (g_State4Phase == 0) {
-        g_State4Phase = 1;
+    if (g_State4Phase_00473df8 == 0) {
+        g_State4Phase_00473df8 = 1;
         if (*(int*)(engineObj + 0x100) != 0) {
             ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
         }
@@ -383,16 +375,16 @@ void SC_Rats::State4Handler() {
             goto done;
         }
     } else {
-        if (g_State4Phase != 1) goto done;
+        if (g_State4Phase_00473df8 != 1) goto done;
         if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
             if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
-    g_State4Phase++;
+    g_State4Phase_00473df8++;
 
 done:
-    if (g_State4Phase == 2) {
-        g_State4Phase = 3;
+    if (g_State4Phase_00473df8 == 2) {
+        g_State4Phase_00473df8 = 3;
         ProcessState();
     }
     State1Handler();

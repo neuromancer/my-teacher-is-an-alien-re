@@ -1,4 +1,5 @@
 #include "SC_Slime.h"
+#include "globals.h"
 #include "InputManager.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
@@ -19,7 +20,7 @@ extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
 class ZBufferManager;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern int DAT_00468bbc;
+// g_SlimeField_00468bbc — declared in globals.h
 
 #include "SlimeTable.h"
 
@@ -113,12 +114,12 @@ int SC_Slime::ShutDown(SC_Message* msg)
         bgSprite = 0;
     }
 
-    if (DAT_00468bbc != 0) {
-        int* obj = (int*)DAT_00468bbc;
+    if (g_SlimeField_00468bbc != 0) {
+        int* obj = (int*)g_SlimeField_00468bbc;
         int* vtbl = (int*)*obj;
         void (__fastcall *fn)(int*, int, int) = (void (__fastcall *)(int*, int, int))vtbl[3];
         fn(obj, 0, 1);
-        DAT_00468bbc = 0;
+        g_SlimeField_00468bbc = 0;
     }
 
     if (consoleSprite != 0) {
@@ -459,7 +460,7 @@ void SC_Slime::CheckTimerExpired(Sprite* spr)
 /* Function start: 0x40D0D0 */
 SlotPair::SlotPair() { field_0 = 0; field_4 = 0; }
 
-int DAT_00468bbc = 0;
+// g_SlimeField_00468bbc — defined in globals.cpp
 
 /* Function start: 0x425480 */
 SlimeTable::SlimeTable()

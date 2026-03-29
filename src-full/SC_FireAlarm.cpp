@@ -31,15 +31,15 @@ extern "C" void ShowError(const char* format, ...);
 
 
 
-extern int DAT_004685ac;
+extern int g_FireAlarmEngine_004685ac;
 class InputManager;
 extern InputManager* g_InputManager_0046aa08;
 extern "C" extern VBuffer* g_BackBuffer_0046aa14;
 class MouseControl;
 extern MouseControl* g_Mouse_0046aa18;
-extern int DAT_004685a0;
-extern int DAT_00472bd8;
-extern int DAT_00472bdc;
+extern int g_FireAlarmTimer_004685a0;
+extern int g_FireAlarmField1_00472bd8;
+extern int g_FireAlarmField2_00472bdc;
 
 /* Function start: 0x407290 */
 SC_FireAlarm::SC_FireAlarm() {
@@ -96,11 +96,11 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
         bgSprite = 0;
     }
 
-    if (DAT_004685ac != 0) {
-        int* obj = (int*)DAT_004685ac;
+    if (g_FireAlarmEngine_004685ac != 0) {
+        int* obj = (int*)g_FireAlarmEngine_004685ac;
         int* vtbl = (int*)*obj;
         ((void (__fastcall*)(int*, int, int))vtbl[3])(obj, 0, 1);
-        DAT_004685ac = 0;
+        g_FireAlarmEngine_004685ac = 0;
     }
 
     p = (void*)consoleSprite;
@@ -280,7 +280,7 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     if (waterHitRange.x <= hitResult && waterHitRange.y >= hitResult) {
         waterHitCounter.x++;
-        timerCounter.x += DAT_004685a0;
+        timerCounter.x += g_FireAlarmTimer_004685a0;
         int done;
         if (waterHitCounter.y == 0) {
             done = 0;
@@ -300,7 +300,7 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     if (bellHitRange.x <= hitResult && bellHitRange.y >= hitResult) {
         soundId = 0xA;
-        timerCounter.x += DAT_00472bd8;
+        timerCounter.x += g_FireAlarmField1_00472bd8;
         goto playSound;
     }
 
@@ -400,7 +400,7 @@ void SC_FireAlarm::ProcessFrame() {
             stateFlags |= 4;
         }
 
-        ((ZBuffer*)DAT_004685ac)->ResetItems();
+        ((ZBuffer*)g_FireAlarmEngine_004685ac)->ResetItems();
 
         teacherSprite->ResetAnimation(iVar4 + 1, 0);
 
@@ -512,7 +512,7 @@ void SC_FireAlarm::ProcessFrame() {
             switch (f8Frame) {
             case 0:
                 planeSprite->ResetAnimation(1, 0);
-                timerCounter.x += DAT_00472bdc;
+                timerCounter.x += g_FireAlarmField2_00472bdc;
                 soundList->Play(0xB);
                 break;
             case 1:
@@ -549,7 +549,7 @@ void SC_FireAlarm::ProcessFrame() {
 
     if ((stateFlags & 0xF) == 0) {
         (g_Mouse_0046aa18)->DrawCursor();
-        ((Weapon*)DAT_004685ac)->UpdateProjectiles();
+        ((Weapon*)g_FireAlarmEngine_004685ac)->UpdateProjectiles();
 
         int bcRender = consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0);
         if (bcRender != 0) {
@@ -561,7 +561,7 @@ void SC_FireAlarm::ProcessFrame() {
             consoleSprite->ResetAnimation(mouseVal / (screenSize.x / 5), 0);
         }
 
-        if (*(int*)(DAT_004685ac + 0xA8) != 0) {
+        if (*(int*)(g_FireAlarmEngine_004685ac + 0xA8) != 0) {
             int mouseVal2 = 0;
             int* mousePtr2 = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
             if (mousePtr2 != 0) {

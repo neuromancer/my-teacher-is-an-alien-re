@@ -9,8 +9,8 @@ extern "C" int __cdecl DrawLine(int param_1, int param_2);
 /* Function start: 0x426E00 */
 void Weapon::OnHit()
 {
-    if (DAT_0046ae6c != 0) {
-        ((int*)DAT_0046ae6c)[6]++;
+    if (g_ScoreDisplay_0046ae6c != 0) {
+        ((int*)g_ScoreDisplay_0046ae6c)[6]++;
     }
     if (m_sound != 0) {
         ((Sample*)m_sound)->Play(100, 1);

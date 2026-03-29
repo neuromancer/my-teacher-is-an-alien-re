@@ -16,8 +16,8 @@ extern InputManager* g_InputManager_0046aa08;
 extern MouseControl* g_Mouse_0046aa18;
 extern "C" extern GameState* g_GameState_0046aa30;
 extern char* g_Buffer_0046aa00;
-extern int DAT_00473334;
-extern int DAT_004733e8;
+extern int g_IconBarState_00473334;
+extern int g_InventoryState_004733e8;
 extern FlagArray* g_FlagManager_0046a6e8;
 
 extern void ResetSpriteStates();
@@ -282,19 +282,19 @@ int Handler31::ShutDown(SC_Message* msg) {
 
     ResetSpriteStates();
 
-    int* arr = &DAT_00473334;
+    int* arr = &g_IconBarState_00473334;
     do {
         *arr = 1;
         arr = arr + 9;
-    } while ((unsigned int)arr < (unsigned int)&DAT_004733e8);
-    DAT_004733e8 = 1;
+    } while ((unsigned int)arr < (unsigned int)&g_InventoryState_004733e8);
+    g_InventoryState_004733e8 = 1;
 
     IconBar::ShutDown(msg);
 
     return 0;
 }
 
-extern char DAT_00469b28[];
+extern char g_QuestionBuffer_00469b28[];
 
 /* Function start: 0x417500 */
 void Handler31::Update(int param1, int param2) {

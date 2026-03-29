@@ -18,7 +18,6 @@
 
 extern InputManager* g_InputManager_0046aa08;
 extern "C" GameState* g_GameState_0046aa30;
-extern "C" int g_RatsState;
 extern int g_PeriodStateIdx_0046cb90;
 
 
@@ -83,7 +82,7 @@ int EngineB::LBLParse(char* line) {
 /* Function start: 0x451180 */
 void EngineB::ProcessFrame() {
     ((TargetList*)g_TargetList_0046ae58)->ProcessTargets();
-    if (g_RatsState == 1) {
+    if (g_RatsState_00473e18 == 1) {
         ((Weapon*)EngineB::m_weaponParser)->UpdateProjectiles();
         RenderBackground();
         PostRender();
@@ -104,7 +103,7 @@ void EngineB::RenderBackground() {
         return;
     }
 
-    hitCount = ((int*)DAT_0046ae6c)[5];
+    hitCount = ((int*)g_ScoreDisplay_0046ae6c)[5];
     if (EngineB::m_prevHitCount != hitCount) {
         EngineB::m_prevHitCount = hitCount;
         g_BgSprite_0046ae50->ResetAnimation(8, 0);
@@ -116,7 +115,7 @@ void EngineB::RenderBackground() {
             snd->Play(100, 1);
         }
     } else {
-        missCount = ((int*)DAT_0046ae6c)[3];
+        missCount = ((int*)g_ScoreDisplay_0046ae6c)[3];
         if (EngineB::m_prevMissCount != missCount) {
             EngineB::m_prevMissCount = missCount;
             g_BgSprite_0046ae50->ResetAnimation(9, 0);
@@ -260,7 +259,7 @@ void EngineB::OnProcessEnd() {
     EngineB::m_meterPosition.y = 0x16;
     EngineB::m_progress.end = gs->stateValues[idx];
 
-    if (DAT_0046ae68 != 0) {
+    if (g_SoundList_0046ae68 != 0) {
         EngineB::m_missSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd3012"));
         EngineB::m_completionSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5009"));
     }
@@ -277,7 +276,7 @@ void EngineB::OnProcessEnd() {
         EngineB::field_0x110 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5010"));
     }
 
-    g_RatsState = 0;
+    g_RatsState_00473e18 = 0;
 }
 
 /* Function start: 0x451680 */

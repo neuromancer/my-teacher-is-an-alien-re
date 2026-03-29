@@ -151,7 +151,7 @@ VBuffer::VBuffer(char* filename, int param_2)
     LoadFromFile(filename, param_2);
 }
 
-extern "C" extern void* DAT_0046aa10;
+extern "C" extern void* g_BackBuffer2_0046aa10;
 
 /* Function start: 0x411270 */
 void VBuffer::LoadFromFile(char* filename, int param_2)
@@ -162,7 +162,7 @@ void VBuffer::LoadFromFile(char* filename, int param_2)
     Animation anim;
     anim.Open(filename, 0xFE000, -1);
 
-    if (*(char*)((int)DAT_0046aa10 + 0x46) == 2) {
+    if (*(char*)((int)g_BackBuffer2_0046aa10 + 0x46) == 2) {
         SmackBufferClose((SmackBuf*)anim.vbuffer);
     }
 

@@ -9,8 +9,7 @@ class Sprite;
 // Stick direction chars global (5 directions)
 extern char* g_StickDirChars;
 
-// Cached navigation sprite pointer (set from mCNavigator->sprite)
-extern Sprite* g_NavSprite;
+// g_NavSprite_004360a4 — declared in globals.h
 
 // Free functions
 int FindStickDirIndex(char ch);

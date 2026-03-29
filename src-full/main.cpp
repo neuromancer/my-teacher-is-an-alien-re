@@ -83,11 +83,11 @@ extern GameState* g_StringTable_0046aa34;
 extern GameState* g_StringState_0046aa38;
 
 static float g_PercentScale = 0.01f;
-int DAT_00473440 = 0;
-int DAT_00473444 = 0;
-int DAT_0046b780 = 0;
-int DAT_0046b790 = 0;
-MemoryCache* DAT_0046b78c = 0;
+int g_CacheTotalSize_00473440 = 0;
+int g_CacheSizeLimit_00473444 = 0;
+int g_CacheEntryCount_0046b780 = 0;
+int g_CacheEvictThreshold_0046b790 = 0;
+MemoryCache* g_FileCache_0046b78c = 0;
 Timer DAT_00473448;
 
 SoundTracker* g_SoundTracker = 0;       // DAT_0046928c
@@ -383,7 +383,7 @@ void InitGameSystems(void) {
     SetCursorVisible(0);
 }
 
-extern void* DAT_0046aa1c;
+extern void* g_PathResolver_0046aa1c;
 
 /* Function start: 0x4258C0 */ /* ~97% match */
 void ShutdownGameSystems(void) {
@@ -412,12 +412,12 @@ void ShutdownGameSystems(void) {
     p->~CDData();
     operator delete(p);
     g_CDData_0043697c = 0;
-    DAT_0046aa1c = 0;
+    g_PathResolver_0046aa1c = 0;
   }
   if (g_GameConfig_00436970 != 0) {
      delete g_GameConfig_00436970;
      g_GameConfig_00436970 = 0;
-     DAT_0046aa10 = 0;
+     g_BackBuffer2_0046aa10 = 0;
   }
   if (g_Buffer_00436964 != 0) {
     delete[] g_Buffer_00436964;
@@ -433,25 +433,25 @@ void ShutdownGameSystems(void) {
 void CreateGameObject_1() {
   static char s_pathBuffer[260]; // DAT_00472de8
   CDData* cd = new CDData(s_pathBuffer, "teacher.id", "Missing the Teacher CD ROM");
-  DAT_0046aa1c = cd;
+  g_PathResolver_0046aa1c = cd;
   g_CDData_0043697c = cd;
 }
 
 /* Function start: 0x4259E0 */
 void InitGameConfig() {
   GameConfig* cfg = new GameConfig();
-  DAT_0046aa10 = cfg;
+  g_BackBuffer2_0046aa10 = cfg;
   g_GameConfig_00436970 = cfg;
 
   if (g_CmdLineAudioMode_0043d558 != 0) {
-      ((GameConfig*)DAT_0046aa10)->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
+      ((GameConfig*)g_BackBuffer2_0046aa10)->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
   }
 
   if (g_CmdLineInputMode_0043d560 != 0) {
-      ((GameConfig*)DAT_0046aa10)->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
+      ((GameConfig*)g_BackBuffer2_0046aa10)->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
   }
 
-  ((GameConfig*)DAT_0046aa10)->LoadConfig();
+  ((GameConfig*)g_BackBuffer2_0046aa10)->LoadConfig();
 }
 
 /* Function start: 0x426AC0 */
@@ -553,20 +553,20 @@ int __cdecl GetFreeDiskSpaceMB(int param_1) {
 /* Function start: 0x4340A0 */
 void __cdecl InitMemoryCache(int param_1, int param_2, float param_3) {
     CleanupMemoryCache();
-    DAT_00473440 = 0;
-    DAT_00473444 = param_2 << 20;
-    DAT_0046b780 = param_1;
-    DAT_0046b790 = DAT_00473444 - (int)((float)DAT_00473444 * param_3 * g_PercentScale);
-    MemoryCache* ptr = new MemoryCache(DAT_0046b780);
-    DAT_0046b78c = ptr;
+    g_CacheTotalSize_00473440 = 0;
+    g_CacheSizeLimit_00473444 = param_2 << 20;
+    g_CacheEntryCount_0046b780 = param_1;
+    g_CacheEvictThreshold_0046b790 = g_CacheSizeLimit_00473444 - (int)((float)g_CacheSizeLimit_00473444 * param_3 * g_PercentScale);
+    MemoryCache* ptr = new MemoryCache(g_CacheEntryCount_0046b780);
+    g_FileCache_0046b78c = ptr;
     DAT_00473448.Reset();
 }
 
 /* Function start: 0x434170 */
 void CleanupMemoryCache() {
     FileCacheCleanup();
-    if (DAT_0046b78c != 0) {
-        MemoryCache* cache = DAT_0046b78c;
+    if (g_FileCache_0046b78c != 0) {
+        MemoryCache* cache = g_FileCache_0046b78c;
         int* node = (int*)cache->field_0;
         while (node != 0) {
             FileCacheEntryCleanup((void*)&node[2], 1);
@@ -584,7 +584,7 @@ void CleanupMemoryCache() {
         }
         cache->field_10 = 0;
         free(cache);
-        DAT_0046b78c = 0;
+        g_FileCache_0046b78c = 0;
     }
 }
 
@@ -687,21 +687,21 @@ void SetErrorCode(unsigned int errorCode) {
   puVar2 = DAT_0043c760;
   do {
     if (*puVar2 == errorCode) {
-      DAT_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
+      g_CrtField_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
       return;
     }
     puVar2 = puVar2 + 2;
     iVar1 = iVar1 + 1;
   } while ((unsigned int)puVar2 < 0x43c8c8);
   if (errorCode >= 0x13 && errorCode <= 0x24) {
-    DAT_0043bdf0 = 0xd;
+    g_CrtField_0043bdf0 = 0xd;
     return;
   }
   if (errorCode >= 0xbc && errorCode <= 0xca) {
-    DAT_0043bdf0 = 8;
+    g_CrtField_0043bdf0 = 8;
     return;
   }
-  DAT_0043bdf0 = 0x16;
+  g_CrtField_0043bdf0 = 0x16;
   return;
 }
 
@@ -716,7 +716,7 @@ int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
     return -1;
   }
   if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
-    DAT_0043bdf0 = 0xd;
+    g_CrtField_0043bdf0 = 0xd;
     g_ErrorCode_0043bdf4 = 5;
     return -1;
   }

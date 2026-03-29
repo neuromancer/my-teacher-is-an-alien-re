@@ -19,7 +19,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 
 #include "SlimeTable.h"
 
-extern Sound* DAT_0046AA0C;              // Sound global
+extern Sound* g_EngineSound_0046aa0c;              // Sound global
 extern ZBufferManager* g_ZBufferManager_0046aa24;     // ZBufferManager*
 
 // DrawEntry implementation (originally in same source file as Engine)
@@ -80,7 +80,7 @@ void Engine::ProcessTargets() {
 
 /* Function start: 0x42BF00 */
 void Engine::StopAndCleanup() {
-    DAT_0046AA0C->StopAllSamples();
+    g_EngineSound_0046aa0c->StopAllSamples();
     ShutDown(0);
 }
 

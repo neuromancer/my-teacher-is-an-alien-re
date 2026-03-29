@@ -5,7 +5,6 @@
 #include "string.h"
 #include "SoundList.h"
 
-extern "C" int g_CombatEngine_0046ae78;
 #include "string.h"
 
 #include "Palette.h"
@@ -96,7 +95,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
   sscanf(line, "%s", buffer);
   char* path = MakeAudioName(buffer);
   char* formatted = FormatStringVA(path);
-  int sound = (int)DAT_0046ae68->Register(formatted);
+  int sound = (int)g_SoundList_0046ae68->Register(formatted);
 
   switch (index) {
   case 0:
@@ -127,7 +126,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
 void EngineInfoParser::ParsePalette(char *line) {
   char buffer[128];
   sscanf(line, "%s", buffer);
-  ((Palette*)DAT_0046ae64)->LoadFile(buffer);
+  ((Palette*)g_Palette_0046ae64)->LoadFile(buffer);
 }
 
 /* Function start: 0x42F570 */

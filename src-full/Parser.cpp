@@ -20,14 +20,14 @@ extern char* g_Buffer_0046aa00;        // global string buffer
 
 // FUN_004128f0 = TimedEventPool destructor wrapper (inlined below)
 
-extern int DAT_00469160;  // preprocessor variable substitution flag
+extern int g_VarSubstFlag_00469160;  // preprocessor variable substitution flag
 
-extern int DAT_00469148;  // process file count
-extern int DAT_0046914c;  // LBLParse call count
-extern int DAT_00469150;  // LBLParse time
-extern int DAT_00469154;  // ReadLine time
-extern int DAT_00469158;  // FindKey time
-extern int DAT_0046915c;  // total process time
+extern int g_ProcessFileCount_00469148;  // process file count
+extern int g_LBLParseCount_0046914c;  // LBLParse call count
+extern int g_LBLParseTime_00469150;  // LBLParse time
+extern int g_ReadLineTime_00469154;  // ReadLine time
+extern int g_FindKeyTime_00469158;  // FindKey time
+extern int g_TotalProcessTime_0046915c;  // total process time
 
 /* Function start: 0x4127C0 */
 Parser::Parser() {
@@ -196,7 +196,7 @@ int Parser::GetKey(char* line) {
   char local_100[256];
   int result;
 
-  if (DAT_00469160 != 0 && field_0x08 == 0) {
+  if (g_VarSubstFlag_00469160 != 0 && field_0x08 == 0) {
     strcpy(local_100, line);
     SubstituteVars(local_100, line);
   }
@@ -299,7 +299,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
     self->field_0x38 |= 1;
   }
 
-  DAT_00469148++;
+  g_ProcessFileCount_00469148++;
   self->Copy(dst);
 
   Timer totalTimer;
@@ -311,7 +311,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
     vsprintf(key_buffer, key_format, args);
     va_end(args);
     self->FindKey((unsigned char*)key_buffer);
-    DAT_00469158 += lineTimer.Update();
+    g_FindKeyTime_00469158 += lineTimer.Update();
   }
 
   self->OnProcessStart();
@@ -332,7 +332,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
         }
       }
 
-      DAT_00469154 += lineTimer.Update();
+      g_ReadLineTime_00469154 += lineTimer.Update();
       { fpos_t _p; fgetpos(self->pFile, &_p); WriteToLog("ProcessFile read line pos=%d: '%.60s'", ((int*)&_p)[0], line_buffer); }
       result = self->GetKey(line_buffer);
     } while (result == 1);
@@ -342,11 +342,11 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
     lineTimer.Reset();
     self->lineNumber = (int)line_buffer;
     result = self->LBLParse(line_buffer);
-    DAT_00469150 += lineTimer.Update();
-    DAT_0046914c++;
+    g_LBLParseTime_00469150 += lineTimer.Update();
+    g_LBLParseCount_0046914c++;
   } while (result == 0);
 
-  DAT_0046915c += totalTimer.Update();
+  g_TotalProcessTime_0046915c += totalTimer.Update();
   self->OnProcessEnd();
 
   return (Parser*)result;
@@ -548,7 +548,7 @@ push_result:
 extern "C" extern GameState* g_GameState_0046aa30;
 extern GameState* g_StringState_0046aa38;
 extern MouseControl* g_Mouse_0046aa18;
-extern int DAT_00469160;
+extern int g_VarSubstFlag_00469160;
 
 extern "C" char* strstr(const char*, const char*);
 
@@ -715,10 +715,10 @@ void Parser::HandleToken(int tokenType, char* line) {
             }
             iVar12 = (int)local_74 - (int)local_14;
             if (local_14 != 0 && local_74 != 0 && iVar12 > 0) {
-                if (DAT_00469160 != 0) {
+                if (g_VarSubstFlag_00469160 != 0) {
                     ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot nest variable lists '%s'", line);
                 }
-                DAT_00469160 = 1;
+                g_VarSubstFlag_00469160 = 1;
                 strncpy(local_f0, local_14, iVar12);
                 local_f0[iVar12] = 0;
                 ParseGosubParams(local_f0);
@@ -759,7 +759,7 @@ void Parser::HandleToken(int tokenType, char* line) {
                 WriteToLog("RETURN fsetpos: pos=%d,%d file=%s", savedPos, (int)local_74, filename);
                 fsetpos(pFile, &restorePos);
             }
-            DAT_00469160 = 0;
+            g_VarSubstFlag_00469160 = 0;
         }
         break;
 
@@ -814,7 +814,7 @@ void Parser::HandleToken(int tokenType, char* line) {
     }
 }
 
-extern char DAT_00469168[160];
+extern char g_VarSubstBuffer_00469168[160];
 
 /* Function start: 0x414040 */
 void Parser::ParseGosubParams(char* line) {
@@ -840,8 +840,8 @@ void Parser::ParseGosubParams(char* line) {
             if (start == 0 || line == 0 || len <= 0) {
                 ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot fill variable list '%s'", line);
             }
-            strncpy(&DAT_00469168[i], start, len);
-            DAT_00469168[i + len] = 0;
+            strncpy(&g_VarSubstBuffer_00469168[i], start, len);
+            g_VarSubstBuffer_00469168[i + len] = 0;
             i += 0x20;
         }
         if (start == 0 || done != 0) break;
@@ -861,7 +861,7 @@ void Parser::SubstituteVars(char* src, char* dst) {
             int varIdx = *digit - '1';
             strncat(dst, src, pos - src);
             varIdx <<= 5;
-            strcat(dst, &DAT_00469168[varIdx]);
+            strcat(dst, &g_VarSubstBuffer_00469168[varIdx]);
             src = digit + 1;
         }
     }

@@ -186,9 +186,7 @@ extern "C" int* GetWindowWidth() {
   return &g_WindowWidth_00472d10;
 }
 
-// Full game globals for screen dimensions (initialized in .data section)
-int g_ScreenWidth_00472d08 = 640;   // DAT_00472d08
-int g_ScreenHeight_00472d0c = 480;  // DAT_00472d0c
+// g_ScreenWidth_00472d08, g_ScreenHeight_00472d0c — defined in globals.cpp
 
 /* Function start: 0x4205E0 */
 extern "C" int* GetScreenWidth() {

@@ -22,7 +22,7 @@ extern GameOutcome* g_GameOutcome_00435f28;
 // Direction characters for navigation (6 directions: N, E, S, W, U, D)
 char* g_DirectionChars = "NESWUD";
 
-Sprite* g_Sprite_004360a0 = 0;
+// g_NavCursorSprite_004360a0 — defined in globals.cpp
 
 #include "mCNavNode.h"
 

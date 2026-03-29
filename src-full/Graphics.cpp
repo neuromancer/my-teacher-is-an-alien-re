@@ -9,59 +9,59 @@
 extern "C" extern VBuffer* g_BackBuffer_0046aa14;
 
 // Externs for globals
-extern HDC DAT_00437488;
-extern HDC DAT_004374b4;
+extern HDC g_MainDC_00437488;
+extern HDC g_SecondaryDC_004374b4;
 extern char g_CursorVisible_00437506;
 extern char g_CursorState_00437507;
-extern int DAT_00437508;
-extern int DAT_0043750c;
-extern int DAT_00437510;
+extern int g_DblClickCX_00437508;
+extern int g_DblClickCY_0043750c;
+extern int g_WindowWord_00437510;
 extern int g_BitmapHeaderSize_00437f4c;
 extern int g_DibModeFlag_00437f50;
 
-extern HGDIOBJ DAT_00437496;
-extern int DAT_0043749a;
-extern int DAT_0043749e;
-extern int DAT_004374a2;
-extern char DAT_00439446[256]; // TEXTMETRIC struct buffer
+extern HGDIOBJ g_StockFont_00437496;
+extern int g_FontHeight_0043749a;
+extern int g_FontExtLeading_0043749e;
+extern int g_FontAvgWidth_004374a2;
+extern char g_TextMetric_00439446[256]; // TEXTMETRIC struct buffer
 
-extern char DAT_00437490;
-extern "C" unsigned short DAT_004374b2;  // C linkage (defined in globals.cpp)
+extern char g_TextColor_00437490;
+extern "C" unsigned short g_StateFlags_004374b2;  // C linkage (defined in globals.cpp)
 extern int g_FillColorDword_00437491;
-extern int DAT_00437518;
-extern int DAT_0043751c;
-extern int DAT_004383ec;
-extern int DAT_004383f4;
-extern int DAT_00438404;
-extern int DAT_0043840c;
+extern int g_GfxField1_00437518;
+extern int g_GfxField2_0043751c;
+extern int g_GfxField3_004383ec;
+extern int g_GfxField4_004383f4;
+extern int g_GfxField5_00438404;
+extern int g_GfxField6_0043840c;
 extern int g_DrawPosX_004374c2;
 extern int g_DrawPosY_004374ce;
 extern int g_LineWidthH_004374d6;
 extern int g_LineWidthV_004374da;
-extern int DAT_00437514;
+extern int g_GfxInitFlag_00437514;
 extern char g_TextAlignH_004374c0;
 extern char g_TextAlignV_004374c1;
 extern char g_CurrentVideoBuffer_00437f54;
-extern int DAT_00437f56;
-extern int DAT_00437f5a;
+extern int g_VBufField1_00437f56;
+extern int g_VBufField2_00437f5a;
 extern HDC g_WinGDC_0043841c;
-extern HGDIOBJ DAT_00438424;
+extern HGDIOBJ g_WinGBitmap_00438424;
 
-extern char DAT_00437520[256];  // Palette identity map
-extern "C" unsigned char DAT_00437620[256];  // Palette data / State flags (C linkage)
+extern char g_PaletteMap_00437520[256];  // Palette identity map
+extern "C" unsigned char g_PaletteData_00437620[256];  // Palette data / State flags (C linkage)
 extern int g_VBufDataPtrs_0043826c[32];  // Video buffer data pointers
 extern char g_LogPalette_00437720[];     // LOGPALETTE buffer
 extern char DAT_00437afc[];     // inside g_LogPalette_00437720
-extern char DAT_00437b4c[];     // inside g_BgrPalette_00437b48 typically
+extern char g_BgrPaletteData_00437b4c[];     // inside g_BgrPalette_00437b48 typically
 extern char g_BgrPalette_00437b48[];     // BGR palette buffer
 
 
 // Far pointer storage for WinG
-extern char* PTR_DAT_0043843c;
-extern char DAT_00438446[256];
-extern int DAT_00438442;
-extern short DAT_00438440;
-extern HANDLE DAT_004374ee;
+extern char* g_SysDirPtr_0043843c;
+extern char g_SystemDirPath_00438446[256];
+extern int g_WinGBufSize_00438442;
+extern short g_SegmentReg_00438440;
+extern HANDLE g_WinGFileHandle_004374ee;
 extern HMODULE g_WinGModule_00438420;
 
 // WinG function pointers
@@ -94,8 +94,8 @@ extern HPALETTE g_PreviousPalette_004374ae;
 
 
 
-// DAT_00423e92 - palette data for <8 bit depth (240 RGB triplets = 720 bytes)
-static const unsigned char DAT_00423e92[720] = {
+// g_DefaultPaletteLo_00423e92 - palette data for <8 bit depth (240 RGB triplets = 720 bytes)
+static const unsigned char g_DefaultPaletteLo_00423e92[720] = {
     0xc0, 0xdc, 0xc0, 0xa6, 0xca, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0xaa, 0x00, 0xaa, 0x00, 0x00,
     0xaa, 0xaa, 0xaa, 0x00, 0x00, 0xaa, 0x00, 0xaa, 0xaa, 0x55, 0x00, 0xaa, 0xaa, 0xaa, 0x55, 0x55,
     0x55, 0x55, 0x55, 0xff, 0x55, 0xff, 0x55, 0x55, 0xff, 0xff, 0xff, 0x55, 0x55, 0xff, 0x55, 0xff,
@@ -143,8 +143,8 @@ static const unsigned char DAT_00423e92[720] = {
     0x40, 0x2c, 0x3c, 0x40, 0x2c, 0x34, 0x40, 0x2c, 0x30, 0x40, 0xff, 0xfb, 0xf0, 0xa0, 0xa0, 0xa4
 };
 
-// DAT_00423e98 - palette data for >=8 bit depth (236 RGB triplets = 708 bytes)
-static const unsigned char DAT_00423e98[708] = {
+// g_DefaultPaletteHi_00423e98 - palette data for >=8 bit depth (236 RGB triplets = 708 bytes)
+static const unsigned char g_DefaultPaletteHi_00423e98[708] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0xaa, 0x00, 0xaa, 0x00, 0x00, 0xaa, 0xaa, 0xaa, 0x00, 0x00, 0xaa,
     0x00, 0xaa, 0xaa, 0x55, 0x00, 0xaa, 0xaa, 0xaa, 0x55, 0x55, 0x55, 0x55, 0x55, 0xff, 0x55, 0xff,
     0x55, 0x55, 0xff, 0xff, 0xff, 0x55, 0x55, 0xff, 0x55, 0xff, 0xff, 0xff, 0x55, 0xff, 0xff, 0xff,
@@ -290,11 +290,11 @@ int InitMouseSettings(void)
     int iVar2;
     
     hWnd = GetActiveWindow();
-    DAT_00437510 = GetWindowWord(hWnd, -6);
+    g_WindowWord_00437510 = GetWindowWord(hWnd, -6);
     iVar2 = GetSystemMetrics(0x13);  // SM_SWAPBUTTON
     if (iVar2 != 0) {
-        DAT_00437508 = GetSystemMetrics(0xd); // SM_CXDOUBLECLK
-        DAT_0043750c = GetSystemMetrics(0xe); // SM_CYDOUBLECLK
+        g_DblClickCX_00437508 = GetSystemMetrics(0xd); // SM_CXDOUBLECLK
+        g_DblClickCY_0043750c = GetSystemMetrics(0xe); // SM_CYDOUBLECLK
         g_CursorVisible_00437506 = 1;
         g_CursorState_00437507 = 1;
         return 1;
@@ -319,9 +319,9 @@ int InitVideoSystem(void)
     int bVar10;
     int lVar11;
     
-    PTR_DAT_0043843c = DAT_00438446;
-    DAT_00438442 = 0x1000;
-    // DAT_00438440 = DS; // Segment register - skip
+    g_SysDirPtr_0043843c = g_SystemDirPath_00438446;
+    g_WinGBufSize_00438442 = 0x1000;
+    // g_SegmentReg_00438440 = DS; // Segment register - skip
     
     InitStockFont(10);  // OEM_FIXED_FONT
     
@@ -331,12 +331,12 @@ int InitVideoSystem(void)
         *puVar7 = 0;
         puVar7 = puVar7 + 1;
     }
-    puVar7 = (int*)DAT_00437620;
+    puVar7 = (int*)g_PaletteData_00437620;
     for (iVar5 = 0x40; iVar5 != 0; iVar5 = iVar5 - 1) {
         *puVar7 = 0;
         puVar7 = puVar7 + 1;
     }
-    pcVar8 = DAT_00437520;
+    pcVar8 = g_PaletteMap_00437520;
     for (iVar5 = 0x100; iVar5 != 0; iVar5--) {
         *pcVar8 = cVar1;
         cVar1 = cVar1 + 1;
@@ -352,48 +352,48 @@ int InitVideoSystem(void)
     g_DibModeFlag_00437f50 = bVar10;
     g_BitmapHeaderSize_00437f4c = uVar9;
     
-    DAT_00437490 = 0;
-    DAT_004374b2 = 0;
+    g_TextColor_00437490 = 0;
+    g_StateFlags_004374b2 = 0;
     g_FillColorDword_00437491 = 0;
-    DAT_00437518 = 0;
-    DAT_0043751c = 0;
-    DAT_004383ec = 0;
-    DAT_004383f4 = 0;
-    DAT_00438404 = 0;
-    DAT_0043840c = 0;
+    g_GfxField1_00437518 = 0;
+    g_GfxField2_0043751c = 0;
+    g_GfxField3_004383ec = 0;
+    g_GfxField4_004383f4 = 0;
+    g_GfxField5_00438404 = 0;
+    g_GfxField6_0043840c = 0;
     g_DrawPosX_004374c2 = 0;
     g_DrawPosY_004374ce = 0;
     g_LineWidthH_004374d6 = 1;
     g_LineWidthV_004374da = 1;
-    DAT_00437514 = 1;
+    g_GfxInitFlag_00437514 = 1;
     g_TextAlignH_004374c0 = (char)0xff;
     g_TextAlignV_004374c1 = (char)0xff;
     g_CurrentVideoBuffer_00437f54 = (char)0xff;
-    DAT_00437f56 = -1;
-    DAT_00437f5a = -1;
+    g_VBufField1_00437f56 = -1;
+    g_VBufField2_00437f5a = -1;
     g_WinGDC_0043841c = 0;
-    DAT_00438424 = 0;
+    g_WinGBitmap_00438424 = 0;
     
     DVar2 = GetVersion();
     if (((unsigned short)DVar2 & 0xaff) == 0xa03) {
         // Windows 3.x with Win32s - try to load WING32.DLL
-        DAT_004374ee = CreateFileA("WING32.DLL", 0x80000000, 1, (LPSECURITY_ATTRIBUTES)0x0, 3, 0, (HANDLE)0x0);
-        if (DAT_004374ee == (HANDLE)-1) {
-            UVar3 = GetSystemDirectoryA(DAT_00438446, 0x100);
-            DAT_00438446[UVar3] = '\\';
+        g_WinGFileHandle_004374ee = CreateFileA("WING32.DLL", 0x80000000, 1, (LPSECURITY_ATTRIBUTES)0x0, 3, 0, (HANDLE)0x0);
+        if (g_WinGFileHandle_004374ee == (HANDLE)-1) {
+            UVar3 = GetSystemDirectoryA(g_SystemDirPath_00438446, 0x100);
+            g_SystemDirPath_00438446[UVar3] = '\\';
             pcVar6 = "WING32.DLL";
-            pcVar8 = &DAT_00438446[UVar3 + 1];
+            pcVar8 = &g_SystemDirPath_00438446[UVar3 + 1];
             for (iVar5 = 0xb; iVar5 != 0; iVar5 = iVar5 - 1) {
                 *pcVar8 = *pcVar6;
                 pcVar6 = pcVar6 + 1;
                 pcVar8 = pcVar8 + 1;
             }
-            DAT_004374ee = CreateFileA(DAT_00438446, 0x80000000, 1, (LPSECURITY_ATTRIBUTES)0x0, 3, 0, (HANDLE)0x0);
-            if (DAT_004374ee == (HANDLE)-1) {
+            g_WinGFileHandle_004374ee = CreateFileA(g_SystemDirPath_00438446, 0x80000000, 1, (LPSECURITY_ATTRIBUTES)0x0, 3, 0, (HANDLE)0x0);
+            if (g_WinGFileHandle_004374ee == (HANDLE)-1) {
                 return 0;
             }
         }
-        CloseHandle(DAT_004374ee);
+        CloseHandle(g_WinGFileHandle_004374ee);
         pHVar4 = LoadLibraryA("WING32.DLL");
         if (pHVar4 != (HMODULE)0x0) {
             g_WinGModule_00438420 = pHVar4;
@@ -422,8 +422,8 @@ int GetColorBitDepth(void)
     unsigned int uVar1;
     unsigned int uVar2;
     
-    uVar1 = GetDeviceCaps(DAT_00437488, 0xc);  // BITSPIXEL
-    uVar2 = GetDeviceCaps(DAT_00437488, 0xe);  // PLANES
+    uVar1 = GetDeviceCaps(g_MainDC_00437488, 0xc);  // BITSPIXEL
+    uVar2 = GetDeviceCaps(g_MainDC_00437488, 0xe);  // PLANES
     return uVar2 * uVar1;
 }
 
@@ -443,12 +443,12 @@ extern "C" int CleanupVideoSystem() {
     if (iVar1 == 0) {
         g_CurrentVideoBuffer_00437f54 = (char)0xff;
         if (g_PreviousPalette_004374ae != (HPALETTE)0) {
-            SelectPalette(DAT_00437488, g_PreviousPalette_004374ae, 0);
+            SelectPalette(g_MainDC_00437488, g_PreviousPalette_004374ae, 0);
         }
         if (g_WinGDC_0043841c != 0) {
             DeleteDC((HDC)g_WinGDC_0043841c);
             g_WinGDC_0043841c = 0;
-            DAT_00438424 = 0;
+            g_WinGBitmap_00438424 = 0;
             FreeLibrary(g_WinGModule_00438420);
         }
     }
@@ -461,8 +461,8 @@ int SelectAndRealizePalette(HPALETTE param_1)
     HPALETTE pHVar1;
     
     g_Palette_0043748c = param_1;
-    pHVar1 = SelectPalette(DAT_00437488, param_1, 0);
-    RealizePalette(DAT_00437488);
+    pHVar1 = SelectPalette(g_MainDC_00437488, param_1, 0);
+    RealizePalette(g_MainDC_00437488);
     if (g_PreviousPalette_004374ae == (HPALETTE)0x0) {
         g_PreviousPalette_004374ae = pHVar1;
     }
@@ -487,7 +487,7 @@ HPALETTE CreateSystemPalette(void)
     GetSystemPaletteEntries(hdc, 8, 8, (PALETTEENTRY*)(pEntries + 0x3e0));
     ReleaseDC((HWND)0x0, hdc);
     dest = (unsigned char*)g_LogPalette_00437720 + 0x24;
-    src = (unsigned char*)DAT_00423e92;
+    src = (unsigned char*)g_DefaultPaletteLo_00423e92;
     count = 0xf0;
   }
   else {
@@ -495,7 +495,7 @@ HPALETTE CreateSystemPalette(void)
     GetSystemPaletteEntries(hdc, 246, 10, (PALETTEENTRY*)(pEntries + 0x3d8));
     ReleaseDC((HWND)0x0, hdc);
     dest = (unsigned char*)g_LogPalette_00437720 + 0x2c;
-    src = (unsigned char*)DAT_00423e98;
+    src = (unsigned char*)g_DefaultPaletteHi_00423e98;
     count = 0xec;
   }
   
@@ -510,7 +510,7 @@ HPALETTE CreateSystemPalette(void)
     count = count - 1;
   } while (count != 0);
   
-  // Second loop: Create BGR reordered copy at DAT_00437b4c
+  // Second loop: Create BGR reordered copy at g_BgrPaletteData_00437b4c
   pEntries = (unsigned char*)g_LogPalette_00437720 + 4;
   pBgrDest = (unsigned char*)g_BgrPalette_00437b48 + 4;
   count = 0x100;
@@ -532,8 +532,8 @@ HPALETTE CreateSystemPalette(void)
 /* Function start: 0x453BAA */
 int SetDeviceContext(HDC param_1)
 {
-    DAT_00437488 = param_1;
-    DAT_004374b4 = param_1;
+    g_MainDC_00437488 = param_1;
+    g_SecondaryDC_004374b4 = param_1;
     return 0;
 }
 
@@ -542,13 +542,13 @@ int InitStockFont(int param_1)
 {
     TEXTMETRICA *pTextMetric;
     
-    DAT_00437496 = GetStockObject(param_1);
-    SelectObject(DAT_004374b4, DAT_00437496);
-    pTextMetric = (TEXTMETRICA *)DAT_00439446;
-    GetTextMetricsA(DAT_004374b4, pTextMetric);
-    DAT_0043749a = pTextMetric->tmHeight + pTextMetric->tmExternalLeading;
-    DAT_0043749e = pTextMetric->tmExternalLeading;
-    DAT_004374a2 = pTextMetric->tmAveCharWidth;
+    g_StockFont_00437496 = GetStockObject(param_1);
+    SelectObject(g_SecondaryDC_004374b4, g_StockFont_00437496);
+    pTextMetric = (TEXTMETRICA *)g_TextMetric_00439446;
+    GetTextMetricsA(g_SecondaryDC_004374b4, pTextMetric);
+    g_FontHeight_0043749a = pTextMetric->tmHeight + pTextMetric->tmExternalLeading;
+    g_FontExtLeading_0043749e = pTextMetric->tmExternalLeading;
+    g_FontAvgWidth_004374a2 = pTextMetric->tmAveCharWidth;
     return 0;
 }
 
@@ -575,7 +575,7 @@ static void DrawEllipseScanline(int y, int left_x, int right_x) {
 
     int row = g_VideoBufferHeightM1_004374ca - y;
     unsigned char* base = (unsigned char*)(row * g_VideoBufferStride_00437f5e + g_VideoBufferBase_00437f66);
-    unsigned char color = (unsigned char)DAT_00437490;
+    unsigned char color = (unsigned char)g_TextColor_00437490;
 
     if (!(flags & 2)) {
         base[left_x] = color;
@@ -666,11 +666,11 @@ extern int g_DrawPosX_004374c2;    // 0x46d0aa in full game - cursor X
 extern int g_DrawPosY_004374ce;    // 0x46d0b6 in full game - cursor Y
 extern char g_TextAlignH_004374c0; // 0x46d0a8 in full game
 extern char g_TextAlignV_004374c1; // 0x46d0a9 in full game
-extern int DAT_0043749a;           // 0x46d082 in full game - font height
-extern int DAT_0043749e;           // 0x46d086 in full game - font descent
+extern int g_FontHeight_0043749a;           // 0x46d082 in full game - font height
+extern int g_FontExtLeading_0043749e;           // 0x46d086 in full game - font descent
 // DAT_004374ae = g_PreviousPalette_004374ae in globals.h (same address 0x4374ae)
 // DAT_0043748c = g_Palette_0043748c in globals.h (same address 0x43748c)
-extern int DAT_00437608[256];        // palette color table
+extern int g_PaletteColorTable_00437608[256];        // palette color table
 
 /* Function start: 0x4524C2 */
 extern "C" void SetFontPosition(int x, int y) {
@@ -687,7 +687,7 @@ extern "C" void SetFontColor(int index) {
 
 /* Function start: 0x45329B */
 extern "C" int DrawFontText(char* text, int len) {
-    SetTextColor((HDC)g_Palette_0043748c, DAT_00437608[(unsigned char)DAT_00437490 + 1] & 0xffffff);
+    SetTextColor((HDC)g_Palette_0043748c, g_PaletteColorTable_00437608[(unsigned char)g_TextColor_00437490 + 1] & 0xffffff);
     SetBkMode((HDC)g_Palette_0043748c, 1);
     SetTextAlign((HDC)g_Palette_0043748c, 0);
 
@@ -697,9 +697,9 @@ extern "C" int DrawFontText(char* text, int len) {
         g_DrawPosX_004374c2 -= (unsigned int)((g_TextAlignH_004374c0 + 1) * sz.cx) >> 1;
     }
     if (g_TextAlignV_004374c1 >= 0) {
-        g_DrawPosY_004374ce += (unsigned int)((g_TextAlignV_004374c1 + 1) * (DAT_0043749a - DAT_0043749e)) >> 1;
+        g_DrawPosY_004374ce += (unsigned int)((g_TextAlignV_004374c1 + 1) * (g_FontHeight_0043749a - g_FontExtLeading_0043749e)) >> 1;
     }
-    g_DrawPosY_004374ce -= DAT_0043749a;
+    g_DrawPosY_004374ce -= g_FontHeight_0043749a;
 
     int advance = TextOutA((HDC)g_Palette_0043748c, g_DrawPosX_004374c2, g_DrawPosY_004374ce, text, len);
     g_DrawPosX_004374c2 += advance;

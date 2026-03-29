@@ -21,8 +21,8 @@ extern ZBufferManager* g_ZBufferManager_0046aa24;
 class MouseControl;
 extern MouseControl* g_Mouse_0046aa18;
 extern void* g_SelectedItem_0046a6e4;
-extern int DAT_00473334;
-extern int DAT_004733e8;
+extern int g_IconBarState_00473334;
+extern int g_InventoryState_004733e8;
 
 #include "MouseControl.h"
 #include "T_MenuHotspot.h"
@@ -185,12 +185,12 @@ void SCI_Inventory::Init(SC_Message* msg) {
 
     IconBar::InitIconBar(msg);
 
-    ptr = &DAT_00473334;
+    ptr = &g_IconBarState_00473334;
     do {
         *ptr = 0;
         ptr = (int*)((char*)ptr + 0x24);
-    } while ((unsigned int)ptr < (unsigned int)&DAT_004733e8);
-    DAT_004733e8 = 0;
+    } while ((unsigned int)ptr < (unsigned int)&g_InventoryState_004733e8);
+    g_InventoryState_004733e8 = 0;
 
     
     // Use typed ZBufferManager palette field
@@ -221,7 +221,7 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
 
     (g_Mouse_0046aa18)->DrawCursor();
 
-    DAT_004733e8 = 1;
+    g_InventoryState_004733e8 = 1;
     IconBar::CleanupIconBar(msg);
 
     spr = putBackButton->sprite;

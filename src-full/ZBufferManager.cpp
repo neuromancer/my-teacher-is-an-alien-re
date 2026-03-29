@@ -556,7 +556,7 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
 }
 
 extern "C" void SetFontPosition(int, int);
-extern void* DAT_0046aa28;
+extern void* g_GlyphFont_0046aa28;
 
 // TextRenderEntry: 0x64-byte entry for queued text rendering (vtable 0x461040)
 struct TextRenderEntry {
@@ -575,7 +575,7 @@ void ZBufferManager::ShowText(char* text, int x, int y, int priority, int color)
 
     if (m_state == 1) {
         SetFontPosition(x, y);
-        ((GlyphFont*)DAT_0046aa28)->RenderText(text, color);
+        ((GlyphFont*)g_GlyphFont_0046aa28)->RenderText(text, color);
         return;
     }
 

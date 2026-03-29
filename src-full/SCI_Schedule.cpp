@@ -13,7 +13,7 @@
 extern InputManager* g_InputManager_0046aa08;
 extern MouseControl* g_Mouse_0046aa18;
 extern "C" extern GameState* g_GameState_0046aa30;
-extern int DAT_004733e8;
+extern int g_InventoryState_004733e8;
 
 /* Function start: 0x434C10 */
 SCI_Schedule::SCI_Schedule()
@@ -129,7 +129,7 @@ int SCI_Schedule::ShutDown(SC_Message* msg)
         bgSprite->StopAnimationSound();
     }
 
-    DAT_004733e8 = 1;
+    g_InventoryState_004733e8 = 1;
     IconBar::ShutDown(msg);
 
     if (mapHotspot != 0) {

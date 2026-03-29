@@ -23,17 +23,17 @@
 // extern globals - C linkage (matching stubs.cpp)
 extern "C" {
     extern GameState* g_GameState_0046aa30;
-    extern int DAT_0046a190;
-    extern Sprite* DAT_0046af08;
+    extern int g_SchoolMenuActive_0046a190;
+    extern Sprite* g_SchoolMenuSprite_0046af08;
 }
 // extern globals - C++ linkage (matching stubs.cpp)
-extern SpriteAction DAT_00472d20;
-extern SpriteAction DAT_00472d58;
+extern SpriteAction g_IconBarAction_00472d20;
+extern SpriteAction g_PendingAction_00472d58;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
-extern int DAT_00473334;
-extern int DAT_00473358;
-extern int DAT_004733e8;
-extern int DAT_0047337c;
+extern int g_IconBarState_00473334;
+extern int g_SchoolMenuField1_00473358;
+extern int g_InventoryState_004733e8;
+extern int g_SchoolMenuField2_0047337c;
 
 // extern functions (single-param __fastcall == thiscall with 0 stack params)
 
@@ -125,29 +125,29 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     GameState* gs;
     int i;
 
-    if (DAT_0046a190 != 0) {
+    if (g_SchoolMenuActive_0046a190 != 0) {
         return;
     }
-    DAT_0046a190 = 1;
+    g_SchoolMenuActive_0046a190 = 1;
 
     IconBar::InitIconBar(msg);
 
-    int* arr = &DAT_00473334;
+    int* arr = &g_IconBarState_00473334;
     do {
         *arr = 1;
         arr = arr + 9;
-    } while ((unsigned int)arr < (unsigned int)&DAT_004733e8);
-    DAT_00473334 = 0;
-    DAT_00473358 = 0;
+    } while ((unsigned int)arr < (unsigned int)&g_InventoryState_004733e8);
+    g_IconBarState_00473334 = 0;
+    g_SchoolMenuField1_00473358 = 0;
 
     gs = g_GameState_0046aa30;
     periodIdx = gs->FindState("PERIOD");
     gs->ValidateIndex(periodIdx);
     periodVal = gs->stateValues[periodIdx];
     if (periodVal == 1) {
-        DAT_0047337c = 0;
+        g_SchoolMenuField2_0047337c = 0;
     } else if (periodVal > 1) {
-        DAT_0047337c = 1;
+        g_SchoolMenuField2_0047337c = 1;
     }
 
     ParseFile(this, "mis\\skool.mis", "[DURINGSCHOOLMENU]");
@@ -219,7 +219,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     gs->ValidateIndex(charIdx);
     stateVals = (int*)gs->stateValues;
     stateVals = (int*)*stateVals;
-    DAT_0046af08->ResetAnimation(stateVals[charIdx] + 1, 0);
+    g_SchoolMenuSprite_0046af08->ResetAnimation(stateVals[charIdx] + 1, 0);
 
     SetupOptions();
 
@@ -357,7 +357,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 SendGameMessage(3, 0x1202, 0x2d, 1, 4, 0, 0, 0, 0, 0);
                 // Create and push empty SpriteAction
                 SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                DAT_00472d58.CopyFrom(&action);
+                g_PendingAction_00472d58.CopyFrom(&action);
 
                 // Clear MUST_SAVEGAME
                 gs = g_GameState_0046aa30;
@@ -378,10 +378,10 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     void* item;
     int i;
 
-    if (DAT_0046a190 == 0) {
+    if (g_SchoolMenuActive_0046a190 == 0) {
         return 0;
     }
-    DAT_0046a190 = 0;
+    g_SchoolMenuActive_0046a190 = 0;
 
     zbm = g_ZBufferManager_0046aa24;
 
@@ -497,7 +497,7 @@ void SCI_SchoolMenu::Update(int param1, int param2) {
     if (handlerId != param2) {
         return;
     }
-    if (DAT_0046a190 == 0) {
+    if (g_SchoolMenuActive_0046a190 == 0) {
         return;
     }
 
@@ -572,7 +572,7 @@ int GameState::GetStateValue(int index) {
 
 /* Function start: 0x41F6A0 */
 void SCI_SchoolMenu::PlayMenuSound() {
-    EnqueueSpriteAction(&DAT_00472d20);
+    EnqueueSpriteAction(&g_IconBarAction_00472d20);
 }
 
 /* Function start: 0x41F6B0 */
@@ -908,7 +908,7 @@ char_click:
         gs = g_GameState_0046aa30;
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
-        DAT_0046af08->ResetAnimation(stateVals[hitResult] + 1, 0);
+        g_SchoolMenuSprite_0046af08->ResetAnimation(stateVals[hitResult] + 1, 0);
 
         SetupOptions();
         selectedOption = -1;

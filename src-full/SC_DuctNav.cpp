@@ -25,7 +25,7 @@ extern "C" extern GameState* g_GameState_0046aa30;
 extern "C" extern int g_GameEngine_0046a6ec;
 extern FlagArray* g_FlagManager_0046a6e8;
 extern char* g_Buffer_0046aa00;
-extern SpriteAction DAT_00472d58;
+extern SpriteAction g_PendingAction_00472d58;
 extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode);
 extern "C" int __cdecl DeleteFileAndDir(char* path);
 
@@ -260,8 +260,8 @@ void InitNewGame() {
         QuestionInit qi("mis\\INIT_Q.mis");
     }
 
-    DAT_00472d58.addressType = 0x25;
-    DAT_00472d58.addressValue = 1;
+    g_PendingAction_00472d58.addressType = 0x25;
+    g_PendingAction_00472d58.addressValue = 1;
 
     int teacherVal = GetRandomTeacher();
 
@@ -293,8 +293,8 @@ void InitNewGame() {
         free(action);
     }
 }
-extern void* DAT_0046aa28;
-extern char* DAT_0046bd78;
+extern void* g_GlyphFont_0046aa28;
+extern char* g_FontFilename_0046bd78;
 extern ZBufferManager* g_ZBufferManager_0046aa24;
 SC_DuctNav::~SC_DuctNav()
 {
@@ -360,7 +360,7 @@ void SC_DuctNav::Init(SC_Message* msg) {
             ParseFile(this, "mis\\menu.mis", " LOADGAME ");
         } else if (mode == 2) {
             InitNewGame();
-            SendGameMessage(3, 10, DAT_00472d58.addressType, DAT_00472d58.addressValue, 4, 0, 0, 0, 0, 0);
+            SendGameMessage(3, 10, g_PendingAction_00472d58.addressType, g_PendingAction_00472d58.addressValue, 4, 0, 0, 0, 0, 0);
             return;
         }
     }
@@ -396,9 +396,9 @@ void SC_DuctNav::Init(SC_Message* msg) {
         field_0x24C = 0;
     }
 
-    ((GlyphFont*)DAT_0046aa28)->LoadFont("cfg\\Teacher.pal");
+    ((GlyphFont*)g_GlyphFont_0046aa28)->LoadFont("cfg\\Teacher.pal");
 
-    field_0x24C = (int)new TextInput(saveFilename, 0x36, DAT_0046aa28, DAT_0046bd78);
+    field_0x24C = (int)new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
 }
 
 // TextInput::ProcessKey is thiscall (declared in TextInput class above)
@@ -450,7 +450,7 @@ int SC_DuctNav::AddMessage(SC_Message* msg) {
             selectedRow = -1;
             param[4] = 0;
             if (field_0x24C == 0) {
-                field_0x24C = (int)new TextInput(saveFilename, 0x36, DAT_0046aa28, DAT_0046bd78);
+                field_0x24C = (int)new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
             }
             return 1;
         }
@@ -560,7 +560,7 @@ set_clear_return:
     return 1;
 }
 
-extern int DAT_0046bd7c;
+extern int g_FontField_0046bd7c;
 #include "GlyphFont.h"
 
 /* Function start: 0x43B7E0 */
@@ -653,10 +653,10 @@ void SC_DuctNav::Update(int p1, int p2) {
     sprintf(g_Buffer_0046aa00, "%s", saveFilename);
 
     if (field_0x24C != 0) {
-        int textWidth = ((GlyphFont*)DAT_0046aa28)->GetTextWidth(g_Buffer_0046aa00);
-        if (textWidth <= (int)DAT_0046bd78) {
-            int blink = DAT_0046bd7c;
-            DAT_0046bd7c++;
+        int textWidth = ((GlyphFont*)g_GlyphFont_0046aa28)->GetTextWidth(g_Buffer_0046aa00);
+        if (textWidth <= (int)g_FontFilename_0046bd78) {
+            int blink = g_FontField_0046bd7c;
+            g_FontField_0046bd7c++;
             int val = blink % 8;
             if (val < 4) {
                 if (moduleParam == 0) {
@@ -758,7 +758,7 @@ int SC_DuctNav::Exit(SC_Message* msg)
                     }
                     gs->stateValues[idx] = 1;
                 }
-                EnqueueSpriteAction((void*)&DAT_00472d58);
+                EnqueueSpriteAction((void*)&g_PendingAction_00472d58);
             }
 
             selectedRow = -1;
@@ -1038,7 +1038,7 @@ void SC_DuctNav::WriteSaveFile()
     g_GameState_0046aa30->Serialize(fa);
     g_FlagManager_0046a6e8->Serialize(fa);
     ((GameEngine*)g_GameEngine_0046a6ec)->Serialize(fa);
-    DAT_00472d58.Serialize(fa);
+    g_PendingAction_00472d58.Serialize(fa);
 
     {
         FileArchive* sd = (FileArchive*)fileArchive;
@@ -1117,7 +1117,7 @@ void SC_DuctNav::LoadSaveFile()
     g_GameState_0046aa30->Serialize(fa);
     g_FlagManager_0046a6e8->Serialize(fa);
     ((GameEngine*)g_GameEngine_0046a6ec)->Serialize(fa);
-    DAT_00472d58.Serialize(fa);
+    g_PendingAction_00472d58.Serialize(fa);
 
     {
         FileArchive* sd = (FileArchive*)fileArchive;

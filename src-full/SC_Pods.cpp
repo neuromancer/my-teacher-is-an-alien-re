@@ -29,8 +29,7 @@ void __fastcall InitCombatScreen(void* self);
 #include "RenderEntry.h"
 #include "PodsEngine.h"
 
-extern "C" int g_CombatEngine_0046ae78;                      // active combat engine instance
-extern int DAT_004734a4;
+extern int g_GameField_004734a4;
 
 /* Function start: 0x4415E0 */
 SC_Pods::SC_Pods() {
@@ -124,7 +123,7 @@ void SC_Pods::Init(SC_Message* msg) {
 
     // Create sound table
     SlimeTable* soundTable = new SlimeTable();
-    DAT_0046bf28 = soundTable;
+    g_SlimeTable_0046bf28 = soundTable;
     soundTable->Allocate(5);
 
     ParseFile(this, "mis\\cb_Pods.mis", (char*)0);
@@ -154,10 +153,10 @@ int SC_Pods::ShutDown(SC_Message* msg) {
         resultAction = 0;
     }
 
-    if (DAT_0046bf28 != 0) {
-        DAT_0046bf28->~SlimeTable();
-        FreeMemory(DAT_0046bf28);
-        DAT_0046bf28 = 0;
+    if (g_SlimeTable_0046bf28 != 0) {
+        g_SlimeTable_0046bf28->~SlimeTable();
+        FreeMemory(g_SlimeTable_0046bf28);
+        g_SlimeTable_0046bf28 = 0;
     }
 
     if (msg != 0) {
@@ -292,7 +291,7 @@ void SC_Pods::HandleResult() {
             gs->stateValues[numActIdx] += 0x1e;
 
             ((SpriteAction*)resultAction)->addressType = 3;
-            ((SpriteAction*)resultAction)->addressValue = DAT_004734a4;
+            ((SpriteAction*)resultAction)->addressValue = g_GameField_004734a4;
             ((SpriteAction*)resultAction)->fromType = savedCommand;
             ((SpriteAction*)resultAction)->fromValue = 1;
             ((SpriteAction*)resultAction)->instruction = 4;
@@ -356,7 +355,7 @@ void __fastcall InitCombatScreen(void* self)
 
     engine->combatFlags = 0;
 
-    DAT_0046ae54->SetDimensions(
+    g_Viewport_0046ae54->SetDimensions(
         *(int*)((char*)g_WeaponParser_0046ae4c + 0x98),
         *(int*)((char*)g_WeaponParser_0046ae4c + 0x9c));
 
@@ -371,16 +370,16 @@ void __fastcall InitCombatScreen(void* self)
         if (anim != 0) {
             fw = anim->targetBuffer->width;
         }
-        fh -= DAT_0046ae54->dim.b;
-        fw -= DAT_0046ae54->dim.a;
-        DAT_0046ae54->SetDimensions2(fw, fh);
+        fh -= g_Viewport_0046ae54->dim.b;
+        fw -= g_Viewport_0046ae54->dim.a;
+        g_Viewport_0046ae54->SetDimensions2(fw, fh);
     }
-    DAT_0046ae54->SetCenter();
-    DAT_0046ae54->SetAnchor(
+    g_Viewport_0046ae54->SetCenter();
+    g_Viewport_0046ae54->SetAnchor(
         *(int*)((char*)g_WeaponParser_0046ae4c + 0x90),
         *(int*)((char*)g_WeaponParser_0046ae4c + 0x94));
 
-    *(int*)((int)DAT_0046ae6c + 4) = 100;
+    *(int*)((int)g_ScoreDisplay_0046ae6c + 4) = 100;
     engine->spriteFrameCount = 1;
     engine->frameCount = 1;
     BlankScreen();
@@ -388,7 +387,7 @@ void __fastcall InitCombatScreen(void* self)
     {
         unsigned int palStart = *(unsigned int*)((char*)g_WeaponParser_0046ae4c + 0xa0);
         int palEnd = *(int*)((char*)g_WeaponParser_0046ae4c + 0xa4);
-        DAT_0046ae64->SetPalette(palStart, palEnd - palStart + 1);
+        g_Palette_0046ae64->SetPalette(palStart, palEnd - palStart + 1);
     }
 
     if (engine->backgroundSound != 0) {

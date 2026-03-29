@@ -20,15 +20,15 @@ struct HotspotListData;
 extern "C" {
     extern EngineInfoParser* g_WeaponParser_0046ae4c;  // g_WeaponParser
     extern Sprite*           g_BgSprite_0046ae50;  // g_BgSprite
-    extern Viewport*         DAT_0046ae54;  // g_Viewport
+    extern Viewport*         g_Viewport_0046ae54;  // g_Viewport
     extern TargetList*       g_TargetList_0046ae58;  // g_TargetList
-    extern CombatSprite*     DAT_0046ae5c;  // g_CombatSprite
+    extern CombatSprite*     g_CombatSprite_0046ae5c;  // g_CombatSprite
     extern Weapon*           g_CombatWeapon_0046ae60;  // g_CombatDisplay
-    extern Palette*          DAT_0046ae64;  // g_Palette
-    extern SoundList*        DAT_0046ae68;  // g_SoundList
-    extern ScoreDisplay*     DAT_0046ae6c;  // g_ScoreDisplay
+    extern Palette*          g_Palette_0046ae64;  // g_Palette
+    extern SoundList*        g_SoundList_0046ae68;  // g_SoundList
+    extern ScoreDisplay*     g_ScoreDisplay_0046ae6c;  // g_ScoreDisplay
     extern mCNavigator*      g_Navigator_0046ae70;  // g_Navigator
-    extern HotspotListData*  DAT_0046ae74;  // g_HotspotPool
+    extern HotspotListData*  g_HotspotPool_0046ae74;  // g_HotspotPool
 }
 
 // SC_CombatBase - Base class for combat/exploration engines
