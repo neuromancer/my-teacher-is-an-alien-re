@@ -641,6 +641,7 @@ void SCI_SchoolMenu::SetupOptions() {
         opt = *optPtr;
         stateVals = gs->stateValues;
         stVal = stateVals[stIdx];
+        opt->sprite = (Sprite*)stVal;
 
         gs = g_GameState_0046aa30;
         stIdx = gs->FindState(buf);
@@ -1113,18 +1114,17 @@ done:
 
 /* Function start: 0x41F9D0 */
 int SCI_SchoolMenu::LBLParse(char* line) {
-    char label[32];
-    char buf1[32];
-    char buf2[32];
-    char buf3[32];
-    char buf4[32];
-    char buf5[32];
-    char buf6[28];
-    int period;
-    int val1;
-    int val2;
-    int val3;
     int count;
+    int period;
+    char label[32];
+    int val3;
+    int val2;
+    int val1;
+    char buf6[32];
+    char buf5[32];
+    char buf4[32];
+    char bufs[96];
+    char filename[64];
     GameState* gs;
     int* stateVals;
     int idx;
@@ -1138,7 +1138,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     }
 
     if (strcmp(label, "AVAILABILITY") == 0) {
-        count = sscanf(line, "%s %d %s %s %s", label, &period, buf1, buf2, buf3);
+        count = sscanf(line, "%s %d %s %s %s", label, &period, bufs, bufs + 0x20, bufs + 0x40);
         if (count < 3 || period > 0x14 || period < 1) {
             ReportUnknownLabel("SCI_SchoolMenu");
         }
@@ -1151,7 +1151,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
         if (stateVals[idx] == period) {
             count = count - 2;
             if (count > 0) {
-                char* p = buf1;
+                char* p = bufs;
                 do {
                     gs = g_GameState_0046aa30;
                     idx = gs->FindState(p);
@@ -1169,7 +1169,6 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     }
 
     if (strcmp(label, "PALE") == 0) {
-        char filename[64];
         sscanf(line, "%s %s", label, filename);
         palette = new Palette();
         palette->Load(filename);

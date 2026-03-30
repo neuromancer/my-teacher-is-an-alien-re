@@ -489,7 +489,7 @@ int IconBar::LBLParse(char* param) {
         g_IconBarEntries_00473320[index].sprite->ConfigStates(2);
         g_IconBarEntries_00473320[index].sprite->ConfigRange(0, 1, 1, 1);
         g_IconBarEntries_00473320[index].sprite->ConfigRange(1, 2, 2, 1);
-        g_IconBarEntries_00473320[index].sprite->handle = 0x3e9;
+        g_IconBarEntries_00473320[index].sprite->priority = 0x3e9;
         Parser::ProcessFile(g_IconBarEntries_00473320[index].sprite, this, (char*)0);
     } else if (strcmp(label, "ICON_SOUND") == 0) {
         sscanf(param, " %s  %d %d", label, &index, &value);
