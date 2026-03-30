@@ -26,6 +26,7 @@ public:
     int ShutDown(SC_Message* msg);
     void Update(int param1, int param2);
     int LBLParse(char* line);
+    void OnProcessStart();
 
     int IsCharacterActive();
     void SetupOptions();

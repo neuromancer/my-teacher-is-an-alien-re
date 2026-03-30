@@ -670,7 +670,7 @@ next_option:
 }
 
 /* Function start: 0x41F900 */
-void InitAllSchedule() {
+void SCI_SchoolMenu::OnProcessStart() {
     int charIdx;
     int i;
     char buf[16];
@@ -741,10 +741,10 @@ char_loop:
         SlimeDim mouseCoords = *(SlimeDim*)msgMouse;
         T_MenuHotspot* chr = *charPtr;
         if (chr->sprite != 0) {
-            if (chr->bounds.left > mouseCoords.x ||
-                chr->bounds.right < mouseCoords.x ||
-                chr->bounds.top > mouseCoords.y ||
-                chr->bounds.bottom < mouseCoords.y) {
+            if (chr->bounds.right > mouseCoords.x ||
+                chr->activeRight < mouseCoords.x ||
+                chr->bounds.bottom > mouseCoords.y ||
+                chr->activeBottom < mouseCoords.y) {
                 hitChar = 0;
             } else {
                 hitChar = 1;
@@ -772,7 +772,7 @@ opt_loop:
         {
             SlimeDim optCoords = action->mousePos;
             if (opt->sprite == 0) goto opt_miss;
-            if (opt->bounds.HitTest(optCoords.x, optCoords.y)) {
+            if (((GlyphRect*)&opt->bounds.right)->HitTest(optCoords.x, optCoords.y)) {
                 hitOpt = 1;
                 goto opt_done;
             }
@@ -971,7 +971,7 @@ check_go:
         goCoords.y = goMouse[1];
         T_MenuHotspot* goSpr = okayButton;
         if (goSpr->sprite != 0) {
-            if (goSpr->bounds.HitTest(goCoords.x, goCoords.y)) {
+            if (((GlyphRect*)&goSpr->bounds.right)->HitTest(goCoords.x, goCoords.y)) {
                 hitResult = 1;
             } else {
                 hitResult = 0;
@@ -1095,7 +1095,7 @@ check_back:
         backCoords.y = ((SpriteAction*)msg)->mousePos.y;
         T_MenuHotspot* backSpr = cancelButton;
         if (backSpr->sprite != 0) {
-            if (backSpr->bounds.HitTest(backCoords.x, backCoords.y)) {
+            if (((GlyphRect*)&backSpr->bounds.right)->HitTest(backCoords.x, backCoords.y)) {
                 hitResult = 1;
             } else {
                 hitResult = 0;
