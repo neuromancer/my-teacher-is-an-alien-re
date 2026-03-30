@@ -172,10 +172,32 @@ SC_FakeRoom::~SC_FakeRoom()
 {
 }
 
+/* Function start: 0x444840 */
 void SC_FakeRoom::OnProcessEnd() {}
-void SC_FakeRoom::Init(SC_Message* msg) {}
-void SC_FakeRoom::Update(int p1, int p2) {}
-int SC_FakeRoom::Exit(SC_Message* msg) { return 0; }
+
+/* Function start: 0x444320 */
+void SC_FakeRoom::Init(SC_Message* msg) {
+    memset(&stateFlags, 0, 6 * sizeof(int));
+    SC_Combat::Init(msg);
+    strcpy((char*)(combatParams + 4), "mis\\CB_FakeRoom.mis");
+    ParseFile(this, (char*)(combatParams + 4), (char*)0);
+}
+
+/* Function start: 0x4443C0 */
+void SC_FakeRoom::Update(int p1, int p2) {
+    if (handlerId == p2) {
+        SC_Combat::Update(p1, p2);
+    }
+}
+
+/* Function start: 0x4444B0 */
+int SC_FakeRoom::Exit(SC_Message* msg) {
+    if (handlerId != ((SpriteAction*)msg)->addressType) {
+        return 0;
+    }
+    SC_Combat::Exit(msg);
+    return 1;
+}
 
 /* Function start: 0x4444E0 */
 void SC_FakeRoom::ProcessLose()
