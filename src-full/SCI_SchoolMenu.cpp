@@ -181,15 +181,13 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     gs = g_GameState_0046aa30;
     int charIdx = g_PeriodStateIdx_0046cb90;
     gs->ValidateIndex(charIdx);
-    int* stateVals = (int*)gs->stateValues;
-    stateVals = (int*)*stateVals;
+    int* stateVals = gs->stateValues;
     int selChar = stateVals[charIdx];
     if (characters[selChar] != 0 && characters[i] != 0) {
         gs = g_GameState_0046aa30;
         charIdx = g_PeriodStateIdx_0046cb90;
         gs->ValidateIndex(charIdx);
-        stateVals = (int*)gs->stateValues;
-        stateVals = (int*)*stateVals;
+        stateVals = gs->stateValues;
         T_MenuHotspot* chrPtr = characters[stateVals[charIdx]];
         chrPtr->bounds.left = 1;
         Sprite* animCtrl = chrPtr->cursor;
@@ -202,8 +200,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     charIdx = g_PeriodStateIdx_0046cb90;
     gs = g_GameState_0046aa30;
     gs->ValidateIndex(charIdx);
-    stateVals = (int*)gs->stateValues;
-    stateVals = (int*)*stateVals;
+    stateVals = gs->stateValues;
     g_SchoolMenuSprite_0046af08->ResetAnimation(stateVals[charIdx] + 1, 0);
 
     SetupOptions();
@@ -212,36 +209,31 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     gs = g_GameState_0046aa30;
     int awareIdx = gs->FindState("AWARE_TEACHER");
     gs->ValidateIndex(awareIdx);
-    stateVals = (int*)gs->stateValues;
-    stateVals = (int*)*stateVals;
+    stateVals = gs->stateValues;
     if (stateVals[awareIdx] == 0) {
         // Check TEACHER_ALIEN state
         gs = g_GameState_0046aa30;
         int alienIdx = gs->FindState("TEACHER_ALIEN");
         gs->ValidateIndex(alienIdx);
-        stateVals = (int*)gs->stateValues;
-        stateVals = (int*)*stateVals;
+        stateVals = gs->stateValues;
         if (stateVals[alienIdx] == 1) {
             // Check 2_NOTALIEN
             gs = g_GameState_0046aa30;
             int na2Idx = gs->FindState("2_NOTALIEN");
             gs->ValidateIndex(na2Idx);
-            stateVals = (int*)gs->stateValues;
-            stateVals = (int*)*stateVals;
+            stateVals = gs->stateValues;
             if (stateVals[na2Idx] != 0) {
                 // Check 3_NOTALIEN
                 gs = g_GameState_0046aa30;
                 int na3Idx = gs->FindState("3_NOTALIEN");
                 gs->ValidateIndex(na3Idx);
-                stateVals = (int*)gs->stateValues;
-                stateVals = (int*)*stateVals;
+                stateVals = gs->stateValues;
                 if (stateVals[na3Idx] != 0) {
                     // Set AWARE_TEACHER = 1
                     gs = g_GameState_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
                     gs->ValidateIndex(awareIdx);
-                    stateVals = (int*)gs->stateValues;
-                    stateVals = (int*)*stateVals;
+                    stateVals = gs->stateValues;
                     stateVals[awareIdx] = 1;
                     SendGameMessage(4, 0x1e87, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                 }
@@ -251,20 +243,17 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             gs = g_GameState_0046aa30;
             int na1Idx = gs->FindState("1_NOTALIEN");
             gs->ValidateIndex(na1Idx);
-            stateVals = (int*)gs->stateValues;
-            stateVals = (int*)*stateVals;
+            stateVals = gs->stateValues;
             if (stateVals[na1Idx] != 0) {
                 gs = g_GameState_0046aa30;
                 int na3Idx = gs->FindState("3_NOTALIEN");
                 gs->ValidateIndex(na3Idx);
-                stateVals = (int*)gs->stateValues;
-                stateVals = (int*)*stateVals;
+                stateVals = gs->stateValues;
                 if (stateVals[na3Idx] != 0) {
                     gs = g_GameState_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
                     gs->ValidateIndex(awareIdx);
-                    stateVals = (int*)gs->stateValues;
-                    stateVals = (int*)*stateVals;
+                    stateVals = gs->stateValues;
                     stateVals[awareIdx] = 2;
                     SendGameMessage(4, 0x1e89, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                 }
@@ -276,8 +265,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             if (na1Idx < 0 || na1Idx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", na1Idx);
             }
-            stateVals = (int*)gs->stateValues;
-            stateVals = (int*)*stateVals;
+            stateVals = gs->stateValues;
             if (stateVals[na1Idx] != 0) {
                 // Check 2_NOTALIEN with bounds check
                 gs = g_GameState_0046aa30;
@@ -285,14 +273,12 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 if (na2Idx < 0 || na2Idx > gs->maxStates - 1) {
                     ShowError("Invalid gamestate %d", na2Idx);
                 }
-                stateVals = (int*)gs->stateValues;
-                stateVals = (int*)*stateVals;
+                stateVals = gs->stateValues;
                 if (stateVals[na2Idx] != 0) {
                     gs = g_GameState_0046aa30;
                     awareIdx = gs->FindState("AWARE_TEACHER");
                     gs->ValidateIndex(awareIdx);
-                    stateVals = (int*)gs->stateValues;
-                    stateVals = (int*)*stateVals;
+                    stateVals = gs->stateValues;
                     stateVals[awareIdx] = 3;
                     SendGameMessage(4, 0x1e88, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                 }
@@ -307,8 +293,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     gs = g_GameState_0046aa30;
     int prevIdx = gs->FindState("PREVIOUSROOM");
     gs->ValidateIndex(prevIdx);
-    stateVals = (int*)gs->stateValues;
-    stateVals = (int*)*stateVals;
+    stateVals = gs->stateValues;
     stateVals[prevIdx] = 0x62;
 
     // Check P_IN_DETENTION
@@ -317,8 +302,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     if (pDetIdx < 0 || pDetIdx > gs->maxStates - 1) {
         ShowError("Invalid gamestate %d", pDetIdx);
     }
-    stateVals = (int*)gs->stateValues;
-    stateVals = (int*)*stateVals;
+    stateVals = gs->stateValues;
     if (stateVals[pDetIdx] != 0) {
         // Check S_IN_DETENTION
         gs = g_GameState_0046aa30;
@@ -326,8 +310,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
         if (sDetIdx < 0 || sDetIdx > gs->maxStates - 1) {
             ShowError("Invalid gamestate %d", sDetIdx);
         }
-        stateVals = (int*)gs->stateValues;
-        stateVals = (int*)*stateVals;
+        stateVals = gs->stateValues;
         if (stateVals[sDetIdx] != 0) {
             // Check D_IN_DETENTION
             gs = g_GameState_0046aa30;
@@ -335,8 +318,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
             if (dDetIdx < 0 || dDetIdx > gs->maxStates - 1) {
                 ShowError("Invalid gamestate %d", dDetIdx);
             }
-            stateVals = (int*)gs->stateValues;
-            stateVals = (int*)*stateVals;
+            stateVals = gs->stateValues;
             if (stateVals[dDetIdx] != 0) {
                 // All 3 in detention - send detention message
                 SendGameMessage(3, 0x1202, 0x2d, 1, 4, 0, 0, 0, 0, 0);
@@ -348,8 +330,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
                 gs = g_GameState_0046aa30;
                 int saveIdx = gs->FindState("MUST_SAVEGAME");
                 gs->ValidateIndex(saveIdx);
-                stateVals = (int*)gs->stateValues;
-                stateVals = (int*)*stateVals;
+                stateVals = gs->stateValues;
                 stateVals[saveIdx] = 0;
             }
         }
@@ -377,7 +358,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         while (queue->head != 0) {
             item = queue->Pop();
             if (item != 0) {
-                delete (SoundCommand*)item;
+                FreeMemory(item);
             }
         }
     }
@@ -916,7 +897,7 @@ char_click:
             int period = stateVals[pIdx];
             int offset = (g_GameState_0046aa30)->GetStateValue(periodIdx2);
             int fullIdx = period * 3 + offset;
-            char* sndFile = GetSoundFilename(((int*)selSpr)[0x28 + fullIdx]);
+            char* sndFile = GetSoundFilename(selSpr->soundEntries[fullIdx - 3]);
             menuSound->Load(sndFile);
             menuSound->Play(100, 1);
         }
@@ -970,7 +951,7 @@ opt_click:
         int period = stateVals[pIdx];
         int offset = (g_GameState_0046aa30)->GetStateValue(charStateIdx);
         int fullIdx = period * 3 + offset;
-        char* sndFile = GetSoundFilename(((int*)selOpt2)[0x28 + fullIdx]);
+        char* sndFile = GetSoundFilename(selOpt2->soundEntries[fullIdx - 3]);
         menuSound->Load(sndFile);
         menuSound->Play(100, 1);
     }
@@ -1291,28 +1272,27 @@ int SCI_SchoolMenu::LBLParse(char* line) {
 /* Function start: 0x421020 */
 void __fastcall ProcessSpriteActions(void* obj)
 {
-    int param_1 = (int)obj;
-    int* list = *(int**)(param_1 + 0x1a0);
+    T_MenuHotspot* hotspot = (T_MenuHotspot*)obj;
+    LinkedList* list = (LinkedList*)hotspot->messageQueue;
     if (list != 0) {
-        list[2] = *list;
-        if (**(int**)(param_1 + 0x1a0) == 0) return;
+        list->current = list->head;
+        if (list->head == 0) return;
         do {
-            int cur = *(int*)(*(int*)(param_1 + 0x1a0) + 8);
+            ListNode* cur = list->current;
             void* data;
             if (cur == 0) {
                 data = 0;
             } else {
-                data = *(void**)(cur + 8);
+                data = cur->data;
             }
             EnqueueSpriteAction(data);
-            int listPtr = *(int*)(param_1 + 0x1a0);
-            int curNode = *(int*)(listPtr + 8);
-            if (*(int*)(listPtr + 4) == curNode) {
+            ListNode* curNode = list->current;
+            if (list->tail == curNode) {
                 return;
             }
             if (curNode != 0) {
-                *(int*)(listPtr + 8) = *(int*)(curNode + 4);
+                list->current = curNode->next;
             }
-        } while (**(int**)(param_1 + 0x1a0) != 0);
+        } while (list->head != 0);
     }
 }

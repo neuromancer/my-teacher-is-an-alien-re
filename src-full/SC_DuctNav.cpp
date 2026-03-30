@@ -83,6 +83,7 @@ int ReadConfigFile();
 /* Function start: 0x43AF10 */
 SC_DuctNav::SC_DuctNav()
 {
+    memset(&timer, 0, 0x6C * sizeof(int));
     handlerId = 0x2E;
     timer.Reset();
     strcpy(searchPattern, "SaveGame__*.sav");

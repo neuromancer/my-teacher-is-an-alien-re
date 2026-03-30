@@ -6148,4 +6148,13 @@ extern char g_QuestionBuffer_00469b28[];
 extern char g_LogEnabled_00472e28;
 extern char* g_DirectionChars;
 
+// IconBar globals
+#include "IconBar.h"
+extern int g_IconBarLeft_00473310;
+extern int g_IconBarTop_00473314;
+extern int g_IconBarRight_00473318;
+extern int g_IconBarBottom_0047331c;
+extern IconBarEntry g_IconBarEntries_00473320[6];
+extern int g_IconBarRefCount_0046af0c;
+
 #endif

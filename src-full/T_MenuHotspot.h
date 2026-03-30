@@ -25,12 +25,10 @@ public:
     T_MenuButton() {}
     T_MenuButton(char* name, int* rect); // 0x421A50
 
-    ~T_MenuButton() {
-        if (sprite != 0) {
-            delete sprite;
-            sprite = 0;
-        }
-    }
+    // Destructor is empty — sprite cleanup is done EXTERNALLY by the owner
+    // (SC_SaveLoad manually destroys sprite, SC_DuctNav calls 0x43B720)
+    // T_MenuHotspot(int) sets sprite=(Sprite*)1 as sentinel, so deleting it would crash
+    ~T_MenuButton() {}
 
     virtual int LBLParse(char* param); // 0x421080
 

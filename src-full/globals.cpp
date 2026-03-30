@@ -24,6 +24,7 @@
 #include "CursorState.h"
 #include "Target.h"
 #include "SpriteAction.h"
+#include "IconBar.h"
 #include "GameConfig.h"
 #include "GameEngine.h"
 #include "GlyphFont.h"
@@ -295,8 +296,8 @@ int g_FontField_0046bd7c = 0;                                // 0x0046bd7c
 SlimeTable* g_SlimeTable_0046bf28 = 0;                       // 0x0046bf28
 Palette* g_PodsPalette_0046bf30 = 0;              // 0x0046bf30
 int g_SpaceNavStates_0046c3f0[3] = {0, 0, 0};               // 0x0046c3f0
-int g_PeriodStateIdx_0046cb90 = 60;                          // 0x0046cb90
-static char s_PeriodChars[] = " DSP";
+int g_PeriodStateIdx_0046cb90 = 99;                          // 0x0046cb90
+static char s_PeriodChars[] = "PSD";
 char* g_PeriodCharTable_0046cb94 = s_PeriodChars;            // 0x0046cb94
 int g_PuzzleSolutions_0046cc98[36] = {0};                    // 0x0046cc98
 int g_PuzzleResultIdx_0046cca4[36] = {0};                    // 0x0046cca4
@@ -323,6 +324,13 @@ SpriteAction g_HotspotAction_00472d90;                       // 0x00472d90
 int g_DevelopFlag_00472de4 = 0;                              // 0x00472de4
 char g_LogEnabled_00472e28 = 0;                              // 0x00472e28
 int g_StartBlock_00472e2c = 0;                               // 0x00472e2c
+// IconBar globals
+int g_IconBarLeft_00473310 = 0;                              // 0x00473310
+int g_IconBarTop_00473314 = 0;                               // 0x00473314
+int g_IconBarRight_00473318 = 0;                             // 0x00473318
+int g_IconBarBottom_0047331c = 0;                            // 0x0047331C
+IconBarEntry g_IconBarEntries_00473320[6];                   // 0x00473320-0x4733F8
+int g_IconBarRefCount_0046af0c = 0;                          // 0x0046af0c
 GlyphRect g_PuzzleButtonRects_00473d30[9];                   // 0x00473d30
 int g_IconBarState_00473334 = 0;                             // 0x00473334
 int g_SchoolMenuField1_00473358 = 0;                         // 0x00473358
