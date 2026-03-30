@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "GameConfig.h"
 #include "VBuffer.h"
 #include "VideoTable.h"
 #include "Animation.h"
@@ -159,7 +160,7 @@ void VBuffer::LoadFromFile(char* filename, int param_2)
     Animation anim;
     anim.Open(filename, 0xFE000, -1);
 
-    if (*(char*)((int)g_BackBuffer2_0046aa10 + 0x46) == 2) {
+    if (g_GameConfig2_0046aa10->data.rawData[2] == 2) {
         SmackBufferClose((SmackBuf*)anim.vbuffer);
     }
 

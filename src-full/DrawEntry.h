@@ -12,7 +12,7 @@ struct SoundCommand;
 // Used by ZBufferManager for managing render queue entries
 class DrawEntry {
 public:
-    int field_0;                     // 0x00
+    int priority;                    // 0x00
     VBuffer* m_videoBuffer;          // 0x04 - pointer to video buffer data
     SoundCommand* m_childObject;     // 0x08 - pointer to child render/sound command
     ~DrawEntry();

@@ -19,7 +19,7 @@ class SoundList;
 class SC_Combat : public Handler {
 public:
     int* statusPtr;            // 0xA8 — pointer to game status flags
-    int field_0xAC[21];        // 0xAC-0xFF
+    int combatParams[21];        // 0xAC-0xFF
     SpriteAction* pendingAction; // 0x100 — pending action message
     Palette* field_0x104;      // 0x104
     Sprite* bgSprite;          // 0x108 — background/animation sprite

@@ -46,17 +46,17 @@ public:
   // EngineB-specific fields (SC_CombatBase ends at 0xF0)
   int* m_targetConfig;            // 0xF0 - allocated config object [0]=base, [1]=points
   int m_prevHitCount;             // 0xF4 - tracks score manager hit count
-  int field_0xF8;                 // 0xF8
+  int prevTargetHit;                 // 0xF8
   int m_prevMissCount;            // 0xFC - tracks score manager miss count
   SoundList* m_localSoundList;    // 0x100 - local SoundList for combat sounds
   Sample* m_missSound;            // 0x104 - "cb_rats\\snd3012"
-  int field_0x108;                // 0x108
-  int field_0x10C;                // 0x10C
-  Sample* field_0x110;            // 0x110 - "cb_rats\\snd5010"
+  int reserved_0x108;                // 0x108
+  int reserved_0x10C;                // 0x10C
+  Sample* m_ambientSound2;         // 0x110 - "cb_rats\\snd5010"
   Sample* m_completionSound;      // 0x114 - "cb_rats\\snd5009"
   Sample* m_ambientSound;         // 0x118 - "cb_rats\\snd5001"
-  int field_0x11C;                // 0x11C
-  int field_0x120;                // 0x120
+  int reserved_0x11C;                // 0x11C
+  int reserved_0x120;                // 0x120
   Sample* m_hitSound1;            // 0x124 - "cb_rats\\snd5004" (hit reaction, rand%3)
   Sample* m_hitSound2;            // 0x128 - "cb_rats\\snd5005" (hit reaction, rand%3)
   Sample* m_hitSound3;            // 0x12C - "cb_rats\\snd5006" (hit reaction, rand%3)

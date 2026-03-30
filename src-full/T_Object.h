@@ -24,9 +24,9 @@ public:
     int HandleMsg(int* msg);                   // 0x40C9E0
 
     // Fields (after Parser 0x90 base, 0x38 bytes = 14 dwords)
-    int field_90;           // 0x90 — flags
+    int objectFlags;        // 0x90 — flags
     int itemId;             // 0x94 — object handle/ID
-    int field_98;           // 0x98 — secondary ID or state
+    int soundHandle;        // 0x98 — sound handle ID
     char description[32];   // 0x9C — description text (parsed from DISCRIPTION)
     int field_BC;           // 0xBC
     Sprite* sprite;         // 0xC0 — inventory sprite (parsed from INVENTORYSPR)

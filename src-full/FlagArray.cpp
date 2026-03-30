@@ -28,7 +28,7 @@ FlagArray::FlagArray(char* f, int numStates) {
     fp = fp_temp;
 
     if (fp_temp != 0) {
-        fread(&field_0x38, 0x94, 1, fp_temp);
+        fread(&dataSize, 0x94, 1, fp_temp);
         if (max_states != numStates) {
             if (fp != 0) {
                 fclose(fp);
@@ -43,10 +43,10 @@ FlagArray::FlagArray(char* f, int numStates) {
 
         if (fp_temp != 0) {
             max_states = numStates;
-            field_0x38 = numStates * 4 + 0x94;
-            field_0x3c = 0x94;
-            field_0x44 = 4;
-            fwrite(&field_0x38, 0x94, 1, fp_temp);
+            dataSize = numStates * 4 + 0x94;
+            headerSize = 0x94;
+            entrySize = 4;
+            fwrite(&dataSize, 0x94, 1, fp_temp);
             i = 0;
             if (max_states > 0) {
                 do {
@@ -92,7 +92,7 @@ void FlagArray::Open() {
     }
     
     // Read header back
-    fread(&field_0x38, 0x94, 1, fp);
+    fread(&dataSize, 0x94, 1, fp);
 }
 
 /* Function start: 0x420960 */
@@ -112,7 +112,7 @@ void FlagArray::Seek(int index) {
         WriteToMessageLog("FlagArray::Seek");
     }
     
-    int offset = field_0x44 * index + field_0x3c;
+    int offset = entrySize * index + headerSize;
     
     if (index < 0 || index >= max_states) {
         ShowError("Error in flagaray.cpp - Seek: Invalid index number! %d", index);
@@ -120,9 +120,9 @@ void FlagArray::Seek(int index) {
     
     // Check if offset is within file bounds logic
     // Decompiled: if ((*(int *)((int)this + 0x38) - *(int *)((int)this + 0x44)) + 1 < iVar1) 
-    // offset > field_0x38 - field_0x44 + 1 ??
+    // offset > dataSize - entrySize + 1 ??
     // iVar1 is offset.
-    if ((field_0x38 - field_0x44) + 1 < offset) {
+    if ((dataSize - entrySize) + 1 < offset) {
         ShowError("Error in flagaray.cpp - Seek: Attempt to read past end of file");
     }
     
@@ -134,7 +134,7 @@ unsigned int FlagArray::GetFlag(int index, unsigned int mask) {
     unsigned int val;
     Open();
     Seek(index);
-    fread(&val, field_0x44, 1, fp);
+    fread(&val, entrySize, 1, fp);
     mask = val & mask;
     Close();
     return mask;
@@ -145,10 +145,10 @@ void FlagArray::SetFlag(int index, unsigned int mask) {
     unsigned int val;
     Open();
     Seek(index);
-    fread(&val, field_0x44, 1, fp);
+    fread(&val, entrySize, 1, fp);
     val |= mask;
     Seek(index); // Go back
-    fwrite(&val, field_0x44, 1, fp);
+    fwrite(&val, entrySize, 1, fp);
     Close();
 }
 
@@ -157,10 +157,10 @@ void FlagArray::ClearFlag(int index, unsigned int mask) {
     unsigned int val;
     Open();
     Seek(index);
-    fread(&val, field_0x44, 1, fp);
+    fread(&val, entrySize, 1, fp);
     val &= ~mask;
     Seek(index);
-    fwrite(&val, field_0x44, 1, fp);
+    fwrite(&val, entrySize, 1, fp);
     Close();
 }
 

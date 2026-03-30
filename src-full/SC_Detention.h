@@ -38,16 +38,16 @@ public:
 
     int field_A8[18];     // 0xA8-0xEF
     int field_F0[22];     // 0xF0-0x147
-    int field_148;        // 0x148 - actions count for current period
-    int field_14C;        // 0x14C - PLAYED_ANNOUNCEMENT state index
-    int field_150;        // 0x150
-    int field_154;        // 0x154 - NUM_ACTIONS state index
-    int field_158;        // 0x158 - IN_PRACTICEROOM state index
-    int field_15C;        // 0x15C - COMBAT_POD_AVAILABLE state index
-    int field_160;        // 0x160
+    int actionsCount;     // 0x148 - actions count for current period
+    int announcementStateIdx; // 0x14C - PLAYED_ANNOUNCEMENT state index
+    int detentionSaved;   // 0x150
+    int numActionsStateIdx; // 0x154 - NUM_ACTIONS state index
+    int practiceRoomStateIdx; // 0x158 - IN_PRACTICEROOM state index
+    int combatPodStateIdx; // 0x15C - COMBAT_POD_AVAILABLE state index
+    int detentionActive;  // 0x160
     char field_164[32];   // 0x164-0x183 - "%c_DETENTION_SUSPENSION"
     char field_184[32];   // 0x184-0x1A3 - "%c_TATTLES"
-    char field_1A4[32];   // 0x1A4-0x1C3 - "%c_LATE_CUT"
+    char lateCutLabel[32];   // 0x1A4-0x1C3 - "%c_LATE_CUT"
     char field_1C4[36];   // 0x1C4-0x1E7 - "%c_IN_DETENTION"
 };
 

@@ -33,7 +33,7 @@ SC_CombatBase::SC_CombatBase()
     field_0xCC = 0;
     field_0xD0 = 0;
     field_0xD4 = 0;
-    field_0xD8 = 0;
+    reserved_0xD8 = 0;
     memset((void*)&targetList, 0, 0x18 * 4);
     Initialize();
 }

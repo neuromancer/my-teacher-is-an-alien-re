@@ -22,8 +22,8 @@ public:
   SlimeDim dimensions;      // 0x98-0x9F: parsed by 'V' (width, height)
   SlimeDim paletteStart;    // 0xA0-0xA7: parsed by 'P' (start x, y)
   SlimeDim paletteEnd;      // 0xA8-0xAF: parsed by 'Q' (end x, y)
-  int field_0xB0;           // 0xB0: parsed by 'C'
-  int field_0xB4;           // 0xB4: parsed by 'D'
+  int scrollSpeed;          // 0xB0: parsed by 'C'
+  int animSpeed;            // 0xB4: parsed by 'D'
   int field_0xB8;           // 0xB8
   int field_0xBC;           // 0xBC
 

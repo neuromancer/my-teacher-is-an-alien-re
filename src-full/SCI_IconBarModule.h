@@ -29,15 +29,15 @@ public:
     void UpdateCursor();                   // 0x402100
     void Serialize(void* param);           // 0x4021C0
 
-    int field_A8;               // 0xA8
+    int exitTarget;               // 0xA8
     int mode;                   // 0xAC — 0=normal icon bar, nonzero=alternate mode
-    int field_B0;               // 0xB0
+    int currentRoom;            // 0xB0
     int field_B4;               // 0xB4
     int hasBoundaryRect;        // 0xB8 — enables boundary rect hit test
-    int field_BC;               // 0xBC
-    int field_C0;               // 0xC0
+    int staticSceneFound;               // 0xBC
+    int roomInitialized;        // 0xC0
     int skipActionsCount;       // 0xC4 — if nonzero, skip NUM_ACTIONS increment
-    SlimeDim field_C8;          // 0xC8 — SlimeDim sub-object
+    SlimeDim videoDim;          // 0xC8 — screen dimensions for SetVideoRes
     Rect boundRect;             // 0xD0 — boundary rect
     TimeOut* timeout;           // 0xE0 — inactivity timeout
     Palette* field_E4;          // 0xE4

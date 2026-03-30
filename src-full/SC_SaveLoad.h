@@ -24,8 +24,8 @@ public:
     int Exit(SC_Message* msg);               // 0x4226C0
 
     Timer timer;                // 0xA8 (0x14 bytes)
-    int field_BC;               // 0xBC
-    int field_C0;               // 0xC0
+    int returnCommand;               // 0xBC
+    int returnData;               // 0xC0
     Palette* palette;           // 0xC4
     Sprite* sprite;             // 0xC8
     T_MenuHotspot* btnYes;      // 0xCC

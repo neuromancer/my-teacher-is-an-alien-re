@@ -34,9 +34,9 @@ GameWindow::GameWindow() {
         *p = 0;
         p++;
     }
-    field_24 = 0;
-    field_28 = 1;
-    field_20 = 1;
+    startupParam = 0;
+    initialized = 1;
+    fullscreenMode = 1;
     savedActiveWindow = GetActiveWindow();
 }
 
@@ -51,10 +51,10 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
   WNDCLASSEXA local_30;
 
   hInstance = param_1;
-  field_8 = param_2;
+  displayMode = param_2;
   ParseCommandLine(param_3);
-  if (field_20 != 0) {
-    if (field_8 == 0) {
+  if (fullscreenMode != 0) {
+    if (displayMode == 0) {
       local_30.cbClsExtra = 0;
       local_30.cbWndExtra = 0;
       local_30.hInstance = hInstance;
@@ -160,11 +160,11 @@ int GameWindow::InitGraphics(void) {
 
 /* Function start: 0x420530 */
 void GameWindow::Shutdown() {
-    if (field_28 == 0) {
+    if (initialized == 0) {
         return;
     }
-    field_28 = 0;
-    if (field_20 != 0) {
+    initialized = 0;
+    if (fullscreenMode != 0) {
         SmackSetSystemRes(0);
     }
     SetCursorVisible(1);

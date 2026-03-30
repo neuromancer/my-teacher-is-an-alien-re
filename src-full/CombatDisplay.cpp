@@ -1,6 +1,7 @@
 #include "CombatDisplay.h"
 #include "SC_CombatBase.h"
 #include "globals.h"
+#include "ScoreDisplay.h"
 #include "Sample.h"
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
@@ -11,7 +12,7 @@ extern "C" int __cdecl DrawLine(int param_1, int param_2);
 void Weapon::OnHit()
 {
     if (g_ScoreDisplay_0046ae6c != 0) {
-        ((int*)g_ScoreDisplay_0046ae6c)[6]++;
+        g_ScoreDisplay_0046ae6c->shotsFired++;
     }
     if (m_sound != 0) {
         m_sound->Play(100, 1);

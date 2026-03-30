@@ -55,7 +55,7 @@ public:
     void OnProcessStart();              // 0x4064A0
     int LBLParse(char* line);           // 0x4065E0
 
-    int field_A8;           // 0xA8 - intro animation played flag
+    int introPlayed;           // 0xA8 - intro animation played flag
     void* ambient;          // 0xAC - Ambient*
     void* introSprite;      // 0xB0 - Sprite*
     void* currentHotspot;   // 0xB4 - temp SelectHotspot* during parsing

@@ -46,7 +46,7 @@ int SC_FakeRoom::AddMessage(SC_Message* msg)
     SpriteAction* action = (SpriteAction*)msg;
     if (action->lastKey == 0x1b) {
         if (savedCommand == 0x2b) {
-            statusPtr[2] = 1;
+            statusPtr[2] = 1;  // [2] = escape/win
             return 1;
         }
     } else if (action->button1 > 1) {
@@ -59,7 +59,7 @@ int SC_FakeRoom::AddMessage(SC_Message* msg)
             }
         } else if (hitboxLeft <= mouseX && hitboxRight >= mouseX &&
                    hitboxTop <= action->mousePos.y && hitboxBottom >= action->mousePos.y) {
-            statusPtr[1] = 1;
+            statusPtr[1] = 1;  // [1] = hitbox clicked
         }
     }
 
@@ -86,7 +86,7 @@ void SC_FakeRoom::RenderFrame()
 {
     int done = bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
     if (done != 0) {
-        *statusPtr = 1;
+        statusPtr[0] = 1;  // [0] = bgAnim done
     }
 
     if ((stateFlags & 1) != 0) {
@@ -180,12 +180,11 @@ int SC_FakeRoom::Exit(SC_Message* msg) { return 0; }
 /* Function start: 0x4444E0 */
 void SC_FakeRoom::ProcessLose()
 {
-    if (*statusPtr != 0) {
-        statusPtr[4] = 0;
+    if (statusPtr[0] != 0) {  // [0] = bgAnim done
+        statusPtr[4] = 0;     // [4] = lose state
 
         if (pendingAction != 0) {
-            pendingAction->~SpriteAction();
-            operator delete(pendingAction);
+            delete pendingAction;
             pendingAction = 0;
         }
 

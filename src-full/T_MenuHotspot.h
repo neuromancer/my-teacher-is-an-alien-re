@@ -14,8 +14,8 @@
 // Full game field layout (Parser base = 0x90):
 //   0x90: sprite       — Sprite* for button visual
 //   0x94: bounds       — GlyphRect hit-test rectangle {left, top, right, bottom}
-//   0xA4: field_A4
-//   0xA8: field_A8
+//   0xA4: activeRight
+//   0xA8: activeBottom
 //   0xAC-0x19B: soundEntries[60] — sound data (20 entries of 3 ints each)
 //   0x19C: cursor      — Sprite* for rollover cursor animation
 //   0x1A0: messageQueue — Queue* for SpriteAction messages
@@ -42,8 +42,8 @@ public:
     // Fields (full game layout, after Parser 0x90 base)
     Sprite* sprite;                 // 0x90
     GlyphRect bounds;               // 0x94 (16 bytes: left, top, right, bottom)
-    int field_A4;                   // 0xA4
-    int field_A8;                   // 0xA8
+    int activeRight;                 // 0xA4
+    int activeBottom;                // 0xA8
     int soundEntries[60];           // 0xAC-0x19B — sound data (20 entries * 3 ints each, stride 0xC)
     Sprite* cursor;                 // 0x19C
     int messageQueue;               // 0x1A0 — Queue* for SpriteAction messages

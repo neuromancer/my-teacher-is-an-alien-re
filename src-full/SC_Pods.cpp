@@ -45,7 +45,7 @@ SC_Pods::~SC_Pods() {
 /* Function start: 0x441700 */
 void SC_Pods::Init(SC_Message* msg) {
     CopyCommandData(msg);
-    moduleParam = ((int*)msg)[1];
+    moduleParam = ((SpriteAction*)msg)->addressValue;
 
     if (FileExists("CB_Pods") == 0) {
         ShowLoadingScreen();

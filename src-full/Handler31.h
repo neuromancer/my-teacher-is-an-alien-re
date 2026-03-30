@@ -19,9 +19,9 @@ struct Queue;
 //
 // Layout:
 //   0x00-0xA7: IconBar base class (= Handler = Parser + 6 handler fields)
-//   0xA8: field_A8
-//   0xAC: field_AC
-//   0xB0: field_B0
+//   0xA8: questionCount
+//   0xAC: questionIndex
+//   0xB0: maxQuestions
 //   0xB4: Palette* palette
 //   0xB8: Sprite* optionSprite   (elements\option2.smk)
 //   0xBC: Sprite* optionHiSprite (elements\option2h.smk)
@@ -40,9 +40,9 @@ public:
     virtual void Update(int param1, int param2); // 0x417500
     int CheckDuplicateQuestion(int param);     // 0x417D50
 
-    int field_A8;           // 0xA8
-    int field_AC;           // 0xAC
-    int field_B0;           // 0xB0
+    int questionCount;           // 0xA8
+    int questionIndex;           // 0xAC
+    int maxQuestions;           // 0xB0
     Palette* palette;       // 0xB4 - PALETTE
     Sprite* optionSprite;   // 0xB8 - elements\option2.smk
     Sprite* optionHiSprite; // 0xBC - elements\option2h.smk (highlight)

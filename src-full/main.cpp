@@ -405,7 +405,7 @@ void ShutdownGameSystems(void) {
   if (g_GameConfig_00436970 != 0) {
      delete g_GameConfig_00436970;
      g_GameConfig_00436970 = 0;
-     g_BackBuffer2_0046aa10 = 0;
+     g_GameConfig2_0046aa10 = 0;
   }
   if (g_Buffer_00436964 != 0) {
     delete[] g_Buffer_00436964;
@@ -428,18 +428,18 @@ void CreateGameObject_1() {
 /* Function start: 0x4259E0 */
 void InitGameConfig() {
   GameConfig* cfg = new GameConfig();
-  g_BackBuffer2_0046aa10 = (VBuffer*)cfg;
+  g_GameConfig2_0046aa10 = cfg;
   g_GameConfig_00436970 = cfg;
 
   if (g_CmdLineAudioMode_0043d558 != 0) {
-      ((GameConfig*)g_BackBuffer2_0046aa10)->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
+      g_GameConfig2_0046aa10->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
   }
 
   if (g_CmdLineInputMode_0043d560 != 0) {
-      ((GameConfig*)g_BackBuffer2_0046aa10)->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
+      g_GameConfig2_0046aa10->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
   }
 
-  ((GameConfig*)g_BackBuffer2_0046aa10)->LoadConfig();
+  g_GameConfig2_0046aa10->LoadConfig();
 }
 
 /* Function start: 0x426AC0 */
@@ -487,12 +487,12 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...) {
 
     vsprintf(local_104, format, args);
     if (FileExists(local_104)) {
-        strcpy(g_CDData_0043697c->field_190 + 5, local_104);
+        strcpy(g_CDData_0043697c->cdPath + 5, local_104);
     } else {
-        sprintf(g_CDData_0043697c->field_190 + 5, "%s\\%s",
-                g_CDData_0043697c->field_190, local_104);
+        sprintf(g_CDData_0043697c->cdPath + 5, "%s\\%s",
+                g_CDData_0043697c->cdPath, local_104);
     }
-    return g_CDData_0043697c->field_190 + 5;
+    return g_CDData_0043697c->cdPath + 5;
 }
 
 /* Function start: 0x4265A0 */

@@ -109,7 +109,7 @@ void Projectile::Update() {
         Projectile::nextY = Projectile::startY + (int)(Projectile::velocityY * (float)frameNum);
 
         {
-            int* pObj = (int*)Projectile::field_0xF8;
+            int* pObj = (int*)Projectile::owner;
             int* vtbl = (int*)*pObj;
             if (((int (__fastcall*)(int*, int, Projectile*))vtbl[6])(pObj, 0, this) != 0) {
                 Projectile::currentX = Projectile::nextX;
@@ -133,13 +133,14 @@ void Projectile::Update() {
 }
 
 /* Function start: 0x427150 */
-Projectile::Projectile(int owner) : Sprite(0)
+Projectile::Projectile(int ownerParam) : Sprite(0)
 {
-    int* p = (int*)&field_0xF8;
+    int* p = (int*)&owner;
     int i;
     for (i = 0xC; i != 0; i--) {
         *p = 0;
         p++;
     }
-    field_0xF8 = owner;
+    Projectile::owner = ownerParam;
 }
+

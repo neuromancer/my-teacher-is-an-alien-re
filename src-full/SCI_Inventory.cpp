@@ -249,7 +249,7 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
 
 /* Function start: 0x43EA60 */
 int SCI_Inventory::AddMessage(SC_Message* msg) {
-    int* msgData;
+    SpriteAction* action;
     int hitResult;
     int* cursorPtr;
     int* rect;
@@ -259,23 +259,23 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
     int* prevNode;
     int* nextNode;
 
-    msgData = (int*)msg;
+    action = (SpriteAction*)msg;
 
     if (CheckButtonClick(msg) != 0) {
         goto done;
     }
 
-    if (msgData[0xB] == 0x1B) {
+    if (action->lastKey == 0x1B) {
         goto handle_item_click;
     }
-    if (msgData[0xA] > 1) {
+    if (action->button2 > 1) {
         goto handle_item_click;
     }
-    if (msgData[9] < 2) {
+    if (action->button1 < 2) {
         goto done;
     }
 
-    cursorPtr = &msgData[7];
+    cursorPtr = &action->mousePos.x;
 
     /* Test against scrollDownBtn rectangle */
     {
@@ -291,7 +291,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         }
     }
     if (hitResult) {
-        msgData[4] = 0x12;
+        action->instruction = 0x12;
         goto done;
     }
 
@@ -309,7 +309,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         }
     }
     if (hitResult) {
-        msgData[4] = 0x11;
+        action->instruction = 0x11;
         goto done;
     }
 
@@ -327,9 +327,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         }
     }
     if (hitResult) {
-        msgData[0] = savedCommand;
-        msgData[4] = 4;
-        msgData[1] = savedMsgData;
+        action->addressType = savedCommand;
+        action->instruction = 4;
+        action->addressValue = savedMsgData;
 
         if (selectedSlot == -1) {
             goto done;
@@ -428,17 +428,17 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         goto handle_item_click;
     }
 
-    msgData[4] = 2;
-    msgData[0] = 0x1E;
+    action->instruction = 2;
+    action->addressType = 0x1E;
     if (g_SelectedItem_0046a6e4 != 0) {
-        msgData[5] = g_SelectedItem_0046a6e4->itemId;
+        action->extra1 = g_SelectedItem_0046a6e4->itemId;
     }
     goto done;
 
 handle_item_click:
-    msgData[0] = savedCommand;
-    msgData[4] = 4;
-    msgData[1] = savedMsgData;
+    action->addressType = savedCommand;
+    action->instruction = 4;
+    action->addressValue = savedMsgData;
 done:
     return 1;
 }
@@ -551,15 +551,15 @@ void SCI_Inventory::Update(int param1, int param2) {
 
 /* Function start: 0x43EFD0 */
 int SCI_Inventory::Exit(SC_Message* msg) {
-    int* msgData;
+    SpriteAction* action;
 
-    msgData = (int*)msg;
+    action = (SpriteAction*)msg;
 
-    if (handlerId != msgData[0]) {
+    if (handlerId != action->addressType) {
         return 0;
     }
 
-    switch (msgData[4]) {
+    switch (action->instruction) {
     default:
         return 0;
     case 0:
@@ -576,10 +576,10 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         slot = &slots[0];
         selectedSlot = -1;
         do {
-            if (slot->left <= msgData[7] &&
-                slot->right >= msgData[7] &&
-                slot->top <= msgData[8] &&
-                slot->bottom >= msgData[8]) {
+            if (slot->left <= action->mousePos.x &&
+                slot->right >= action->mousePos.x &&
+                slot->top <= action->mousePos.y &&
+                slot->bottom >= action->mousePos.y) {
                 hit = 1;
             } else {
                 hit = 0;
@@ -645,7 +645,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
             {
                 Sample* newSample = new Sample();
                 clickSound = newSample;
-                char* soundFile = GetSoundFilename(((T_Object*)((QueueNode*)node)->data)->field_98);
+                char* soundFile = GetSoundFilename(((T_Object*)((QueueNode*)node)->data)->soundHandle);
                 newSample->Load(soundFile);
                 (clickSound)->Play(0x64, 1);
             }
@@ -655,11 +655,11 @@ int SCI_Inventory::Exit(SC_Message* msg) {
     case 6:
     case 0x35:
     case 0x36: {
-        void* item = FindItem(msgData[1]);
+        void* item = FindItem(action->addressValue);
         if (item == 0) {
             break;
         }
-        ((T_Object*)item)->HandleMsg(msgData);
+        ((T_Object*)item)->HandleMsg((int*)action);
         break;
     }
     case 0x11:
@@ -684,8 +684,9 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         int* ebx;
         void* item;
         int* head;
+        int* msgData;
 
-        msgData = (int*)msgData[1];
+        msgData = (int*)action->addressValue;
         if (msgData == 0) break;
 
         if (FindItemInList((int)msgData) != 0) break;
@@ -758,9 +759,9 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         int* node;
         int* listPtr;
 
-        if (msgData[1] == 0) break;
+        if (action->addressValue == 0) break;
 
-        node = (int*)FindItemInList(msgData[1]);
+        node = (int*)FindItemInList(action->addressValue);
         if (node != 0) {
             listPtr = (int*)itemPool;
             {
@@ -794,7 +795,7 @@ int SCI_Inventory::Exit(SC_Message* msg) {
         }
 
         if (g_SelectedItem_0046a6e4 == 0) break;
-        if (g_SelectedItem_0046a6e4->itemId != msgData[1]) break;
+        if (g_SelectedItem_0046a6e4->itemId != action->addressValue) break;
         {
             Sprite* spr = g_Mouse_0046aa18->m_sprite;
             if (spr == 0) goto do_clear;
@@ -833,7 +834,7 @@ void SCI_Inventory::Serialize(void* param) {
                 T_Object* item = (T_Object*)curNode->data;
                 self = (int)nextNode;
                 fwrite(&item->itemId, 4, 1, (FILE*)fp);
-                fwrite(&item->field_90, 4, 1, (FILE*)fp);
+                fwrite(&item->objectFlags, 4, 1, (FILE*)fp);
                 curNode = nextNode;
             } while (self != 0);
         }}
@@ -843,7 +844,7 @@ void SCI_Inventory::Serialize(void* param) {
 
         if (g_SelectedItem_0046a6e4 != 0) {
             fwrite((char*)&g_SelectedItem_0046a6e4->itemId, 4, 1, (FILE*)fp);
-            fwrite((char*)&g_SelectedItem_0046a6e4->field_90, 4, 1, (FILE*)fp);
+            fwrite((char*)&g_SelectedItem_0046a6e4->objectFlags, 4, 1, (FILE*)fp);
         } else {
             fwrite(&handle, 4, 1, (FILE*)fp);
         }
@@ -922,7 +923,7 @@ void SCI_Inventory::Serialize(void* param) {
         if (handle == 999) break;
 
         T_Object* item = (T_Object*)((SCI_Inventory*)self)->FindItem(handle);
-        fread(&item->field_90, 4, 1, (FILE*)fp);
+        fread(&item->objectFlags, 4, 1, (FILE*)fp);
 
         {
             int* listPtr = (int*)((SCI_Inventory*)self)->itemPool;
@@ -975,7 +976,7 @@ void SCI_Inventory::Serialize(void* param) {
     if (handle == 999) return;
 
     g_SelectedItem_0046a6e4 = (T_Object*)((SCI_Inventory*)self)->FindItem(handle);
-    fread((char*)&g_SelectedItem_0046a6e4->field_90, 4, 1, (FILE*)fp);
+    fread((char*)&g_SelectedItem_0046a6e4->objectFlags, 4, 1, (FILE*)fp);
 }
 
 // Stubs (moved from stubs.cpp)

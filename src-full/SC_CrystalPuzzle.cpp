@@ -274,7 +274,7 @@ void SC_CrystalPuzzle::Init(SC_Message* msg) {
         g_ZBufferManager_0046aa24->m_palette = palette;
     }
 
-    field_1BC = 0;
+    puzzleFlags = 0;
     if (field_A8 == 0) {
         field_A8 = new SpriteAction(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }
@@ -345,7 +345,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
     }
 
     if (pmsg[0xb] == 0x1b) {
-        field_1BC |= 1;
+        puzzleFlags |= 1;
         Exit(msg);
         return 1;
     }
@@ -369,7 +369,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
              rect6.top <= clickY && clickY <= rect6.bottom) ||
             (rect7.left <= clickX && clickX <= rect7.right &&
              rect7.top <= clickY && clickY <= rect7.bottom)) {
-            field_1BC |= 1;
+            puzzleFlags |= 1;
             Exit(msg);
             return 1;
         }
@@ -396,7 +396,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
                 if (gs->stateValues[idx] != 0) {
                     field_E8 = 0x21fc;
                 } else {
-                    field_1BC |= 2;
+                    puzzleFlags |= 2;
                 }
 
                 gs = g_GameState_0046aa30;
@@ -432,7 +432,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
                 if (gs->stateValues[idx] != 0) {
                     field_E8 = 0x2200;
                 } else {
-                    field_1BC |= 2;
+                    puzzleFlags |= 2;
                 }
 
                 gs = g_GameState_0046aa30;
@@ -459,7 +459,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
 
             if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
                 g_DoorRects_00473dc8[2].top <= mouseY && mouseY <= g_DoorRects_00473dc8[2].bottom) {
-                field_1BC |= 2;
+                puzzleFlags |= 2;
                 Exit(msg);
             }
         }
@@ -651,7 +651,7 @@ int SC_CrystalPuzzle::Exit(SC_Message* msg) {
             act = field_A8;
             act->fromValue = 1;
         }
-    } else if ((field_1BC & 1) != 0) {
+    } else if ((puzzleFlags & 1) != 0) {
         act = field_A8;
         act->addressType = 0x20;
         act = field_A8;
@@ -665,7 +665,7 @@ int SC_CrystalPuzzle::Exit(SC_Message* msg) {
             ShowError("Invalid gamestate %d", idx);
         }
         gs->stateValues[idx] += 0xa;
-    } else if ((field_1BC & 2) != 0) {
+    } else if ((puzzleFlags & 2) != 0) {
         gs = g_GameState_0046aa30;
         idx = gs->FindLabel("ATTEMPTED_RESCUE");
         if (idx < 0 || gs->maxStates - 1 < idx) {

@@ -1,6 +1,7 @@
 #include "SC_OnScreenMessage.h"
 #include "Memory.h"
 #include "Message.h"
+#include "SpriteAction.h"
 #include "globals.h"
 #include "GameEngine.h"
 #include "string.h"
@@ -180,32 +181,32 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
 
 /* Function start: 0x448830 */
 int SC_OnScreenMessage::Exit(SC_Message* msg) {
-    int* msgData;
+    SpriteAction* action;
     MessageList* pList;
     SoundEntry* data;
     SoundEntry* item;
     Sample* snd;
 
-    msgData = (int*)msg;
-    if (msgData[0] != handlerId) {
+    action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
         return 0;
     }
 
     timer.Reset();
 
-    switch (msgData[4]) {
+    switch (action->instruction) {
     case 2:
     {
-        item = FindOrCreateSoundEntry(msgData[1]);
+        item = FindOrCreateSoundEntry(action->addressValue);
         snd = item->sample;
         if (snd == 0) break;
         int loop = 1;
-        if (msgData[6] != 0) {
-            loop = msgData[6];
+        if (action->extra2 != 0) {
+            loop = action->extra2;
         }
         int dur = 100;
-        if (msgData[5] != 0) {
-            dur = msgData[5];
+        if (action->extra1 != 0) {
+            dur = action->extra1;
         }
         snd->Play(dur, loop);
         break;
@@ -232,7 +233,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     case 0x11:
     {
-        item = FindOrCreateSoundEntry(msgData[1]);
+        item = FindOrCreateSoundEntry(action->addressValue);
         snd = item->sample;
         if (snd == 0) break;
         int vol = AIL_sample_volume(snd->m_sample);
@@ -242,7 +243,7 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     case 0x12:
     {
-        item = FindOrCreateSoundEntry(msgData[1]);
+        item = FindOrCreateSoundEntry(action->addressValue);
         snd = item->sample;
         if (snd == 0) break;
         int vol = AIL_sample_volume(snd->m_sample);
@@ -252,14 +253,14 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     case 0x13:
     {
-        FindOrCreateSoundEntry(msgData[1]);
-        item = FindOrCreateSoundEntry(msgData[1]);
-        item->FadeVolume(msgData[5], msgData[6]);
+        FindOrCreateSoundEntry(action->addressValue);
+        item = FindOrCreateSoundEntry(action->addressValue);
+        item->FadeVolume(action->extra1, action->extra2);
         break;
     }
 
     case 0x17:
-        FindOrCreateSoundEntry(msgData[1]);
+        FindOrCreateSoundEntry(action->addressValue);
         break;
 
     case 0x18:
@@ -274,10 +275,10 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
                     nd = (MessageNode*)pList->current;
                     if (nd == 0) {
                         ent = (SoundEntry*)*(int*)0x24;
-                        if (msgData[1] != (int)ent) goto no_match;
+                        if (action->addressValue != (int)ent) goto no_match;
                     } else {
                         ent = (SoundEntry*)nd->data;
-                        if (ent->soundId != msgData[1]) goto no_match;
+                        if (ent->soundId != action->addressValue) goto no_match;
                     }
 
                     // match found
@@ -330,12 +331,12 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
 
     case 0x1b:
     {
-        item = FindOrCreateSoundEntry(msgData[1]);
+        item = FindOrCreateSoundEntry(action->addressValue);
         snd = item->sample;
         if (snd == 0) break;
         int dur = 100;
-        if (msgData[5] != 0) {
-            dur = msgData[5];
+        if (action->extra1 != 0) {
+            dur = action->extra1;
         }
         snd->Play(dur, 0);
         break;
@@ -400,7 +401,7 @@ void __fastcall ProcessSoundFade(SoundEntry* entry) {
     if (snd->m_sample == 0) return;
     if (snd->m_size != *(int*)((char*)snd->m_sample + 0xC)) return;
     if (AIL_sample_status(snd->m_sample) != 4) return;
-    if (!(entry->field_04 & 1)) return;
+    if (!(entry->activeFlags & 1)) return;
 
     currentVol = AIL_sample_volume(entry->sample->m_sample);
     targetVol = entry->targetVolume;
@@ -408,7 +409,7 @@ void __fastcall ProcessSoundFade(SoundEntry* entry) {
         if (currentVol == 0) {
             entry->sample->~Sample();
         }
-        entry->field_04 &= ~1;
+        entry->activeFlags &= ~1;
         return;
     }
     step = entry->volumeStep;
@@ -437,7 +438,7 @@ int SoundEntry::SoundUpdate() {
             if (hs != 0) {
                 if (snd->m_size == *(int*)((char*)hs + 0xC)) {
                     if (AIL_sample_status(hs) == 4) {
-                        if (field_04 & 1) {
+                        if (activeFlags & 1) {
                             ProcessSoundFade(this);
                         }
                         timer.Reset();
@@ -458,7 +459,7 @@ void SoundEntry::FadeVolume(int volume, unsigned int duration) {
     if (sample->m_sample == 0) return;
     if (sample->m_size != *(int*)((char*)sample->m_sample + 0xc)) return;
     if (AIL_sample_status(sample->m_sample) != 4) return;
-    if (field_04 & 1) return;
+    if (activeFlags & 1) return;
 
     if (duration == 0) goto simple_fade;
 
@@ -488,7 +489,7 @@ void SoundEntry::FadeVolume(int volume, unsigned int duration) {
         }
     }
 
-    field_04 |= 1;
+    activeFlags |= 1;
     return;
     }
 

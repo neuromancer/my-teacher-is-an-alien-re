@@ -9,8 +9,8 @@
 /* Function start: 0x440860 */
 PodsEngine::PodsEngine()
 {
-    field_0xFC = 0;
-    field_0x100 = 0;
+    reserved_0xFC = 0;
+    reserved_0x100 = 0;
     memset(&podsBgSprite, 0, 10 * sizeof(int));
     podState.x = 0;
     podState.y = 3;

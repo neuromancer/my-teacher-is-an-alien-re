@@ -75,7 +75,7 @@ public:
     GlyphRect rect5;            // 0x18C — (0x32,0x14a,0x172,0x192)
     GlyphRect rect6;            // 0x19C — exit rect 1
     GlyphRect rect7;            // 0x1AC — exit rect 2
-    int field_1BC;              // 0x1BC — flags
+    int puzzleFlags;              // 0x1BC — flags
 };
 
 #endif // SC_CRYSTALPUZZLE_H

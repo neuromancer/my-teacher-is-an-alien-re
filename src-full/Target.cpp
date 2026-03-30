@@ -68,7 +68,7 @@ HotspotNode* HotspotListData::AllocateNode()
     int i = 0;
     do {} while (i-- != 0);
 
-    node->field_0C = 0;
+    node->reserved = 0;
 
     i = 0;
     do {} while (i-- != 0);
@@ -356,7 +356,7 @@ case_hit:
     if (hitSound != 0) {
         hitSound->Play(100, 1);
     }
-    ((int*)g_ScoreDisplay_0046ae6c)[3]++;
+    g_ScoreDisplay_0046ae6c->missCount++;
     *(int*)g_ScoreDisplay_0046ae6c += hitMissPoints.start;
     g_ScoreDisplay_0046ae6c->AdjustScore(scoreWeight.start);
     g_CombatEngine_0046ae78->hotspotX += combatBonus.start;
@@ -383,8 +383,8 @@ void Target::Init(char* line)
         if (stricmp(buffer, "INIT") != 0) {
             g_CDData_0043697c->ResolvePath(buffer);
 
-            Target::animFilename = new char[strlen(g_CDData_0043697c->field_190 + 5) + 1];
-            strcpy(Target::animFilename, g_CDData_0043697c->field_190 + 5);
+            Target::animFilename = new char[strlen(g_CDData_0043697c->cdPath + 5) + 1];
+            strcpy(Target::animFilename, g_CDData_0043697c->cdPath + 5);
         }
     }
 }

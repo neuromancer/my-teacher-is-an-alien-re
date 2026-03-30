@@ -2,13 +2,13 @@
 
 /* Function start: 0x40C600 */
 void ScoreDisplay::AdjustScore(int value) {
-    int newVal = ScoreDisplay::fields[1] + value;
-    ScoreDisplay::fields[1] = newVal;
+    int newVal = ScoreDisplay::scoreInitial + value;
+    ScoreDisplay::scoreInitial = newVal;
     if (newVal < 0) {
-        ScoreDisplay::fields[1] = 0;
+        ScoreDisplay::scoreInitial = 0;
         return;
     }
     if (newVal > 0xc8) {
-        ScoreDisplay::fields[1] = 0xc8;
+        ScoreDisplay::scoreInitial = 0xc8;
     }
 }

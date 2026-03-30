@@ -22,13 +22,13 @@ DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
     Queue* queue;
 
     counter = 0;
-    queue = field_C8;
+    queue = dialogQueue;
     if (queue == 0) goto LAB_ret_zero;
     queue->current = queue->head;
-    if (field_C8->head == 0) goto LAB_ret_zero;
+    if (dialogQueue->head == 0) goto LAB_ret_zero;
 
     do {
-        queue = field_C8;
+        queue = dialogQueue;
         if (counter == index) {
             data = queue->RemoveCurrent();
             return (DialogQuestion*)data;
@@ -38,7 +38,7 @@ DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
             queue->current = queue->current->next;
         }
         counter++;
-        if (field_C8->head == 0) goto LAB_ret_zero;
+        if (dialogQueue->head == 0) goto LAB_ret_zero;
     } while (1);
 
 LAB_ret_zero:
@@ -54,7 +54,7 @@ DialogQuestion* SCI_Dialog::FindDialogById(int id) {
 
     searchQuestion = new SC_Question(id, this);
 
-    queue = field_C8;
+    queue = dialogQueue;
     if (queue == 0) goto not_found;
 
     if (searchQuestion == 0) {
@@ -78,7 +78,7 @@ DialogQuestion* SCI_Dialog::FindDialogById(int id) {
             }
 
             {
-                Queue* q = field_C8;
+                Queue* q = dialogQueue;
                 void* data = q->RemoveCurrent();
                 return (DialogQuestion*)data;
             }

@@ -236,16 +236,16 @@ void SC_ExtBridge::Update(int p1, int p2)
 /* Function start: 0x43A0C0 */
 int SC_ExtBridge::AddMessage(SC_Message* msg)
 {
-    int* m = (int*)msg;
-    m[2] = handlerId;
-    m[4] = 0;
-    m[3] = moduleParam;
+    SpriteAction* action = (SpriteAction*)msg;
+    action->fromType = handlerId;
+    action->instruction = 0;
+    action->fromValue = moduleParam;
 
     if (savedCommand == 0x2b) {
-        if (m[0xb] == 0x1b) {
+        if (action->lastKey == 0x1b) {
             ProcessEscape();
         }
-    } else if (m[0xb] == 0x77) {
+    } else if (action->lastKey == 0x77) {
         {
             int mp = moduleParam;
             int hid = handlerId;
@@ -263,11 +263,11 @@ int SC_ExtBridge::AddMessage(SC_Message* msg)
 /* Function start: 0x43A1D0 */
 int SC_ExtBridge::Exit(SC_Message* msg)
 {
-    int* msgData = (int*)msg;
-    if (handlerId != msgData[0]) {
+    SpriteAction* action = (SpriteAction*)msg;
+    if (handlerId != action->addressType) {
         return 0;
     }
-    int cmd = msgData[4];
+    int cmd = action->instruction;
     if (cmd != 0) {
         if (cmd != 0x17) {
             return 0;

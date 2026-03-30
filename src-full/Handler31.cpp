@@ -2,6 +2,7 @@
 #include <string.h>
 #include "Sprite.h"
 #include "Palette.h"
+#include "SpriteAction.h"
 #include "SC_Question.h"
 #include "LinkedList.h"
 #include "globals.h"
@@ -164,7 +165,7 @@ int Handler31::CheckDuplicateQuestion(int param) {
 
 /* Function start: 0x416E70 */
 Handler31::Handler31() {
-    memset(&field_A8, 0, 40);
+    memset(&questionCount, 0, 40);
     handlerId = 0x1F;
 
     optionSprite = new Sprite("\"elements\\option2.smk\"");
@@ -386,19 +387,19 @@ void Handler31::Update(int param1, int param2) {
 
 /* Function start: 0x417750 */
 int Handler31::AddMessage(SC_Message* msg) {
-    int* msgData;
+    SpriteAction* action;
     SC_Question* question;
     InputState* pMouse;
 
-    msgData = (int*)msg;
+    action = (SpriteAction*)msg;
     if (IconBar::AddMessage(msg) != 0) {
         return 1;
     }
 
     if (activeQuestion != 0) {
-        msgData[0] = savedCommand;
-        msgData[1] = savedCommand;
-        activeQuestion->OnInput((SC_Message*)msgData);
+        action->addressType = savedCommand;
+        action->addressValue = savedCommand;
+        activeQuestion->OnInput((SC_Message*)action);
         question = activeQuestion;
         if (question->state == 2 && question != 0) {
             delete question;
@@ -406,20 +407,20 @@ int Handler31::AddMessage(SC_Message* msg) {
             return 1;
         }
     } else {
-        if (msgData[9] >= 2) {
-            msgData[0] = 0x1F;
+        if (action->button1 >= 2) {
+            action->addressType = 0x1F;
             pMouse = g_InputManager_0046aa08->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
-                msgData[1] = -1;
+                action->addressValue = -1;
             } else if (pMouse == 0) {
-                msgData[1] = 0;
+                action->addressValue = 0;
             } else {
-                msgData[1] = (pMouse->y - 10) / 0x22;
+                action->addressValue = (pMouse->y - 10) / 0x22;
             }
-            msgData[4] = 2;
+            action->instruction = 2;
             return 1;
         }
-        if (msgData[0xB] == 0x1B || msgData[0xB] == 0x77 || msgData[0xA] == 2) {
+        if (action->lastKey == 0x1B || action->lastKey == 0x77 || action->button2 == 2) {
             SendGameMessage(savedCommand, savedMsgData, 0x1F, moduleParam, 4, 0, 0, 0, 0, 0);
         }
     }

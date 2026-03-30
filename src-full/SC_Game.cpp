@@ -1,5 +1,6 @@
 #include "SC_Game.h"
 #include "Message.h"
+#include "SpriteAction.h"
 #include "string.h"
 #include "ZBufferManager.h"
 #include "GameState.h"
@@ -39,7 +40,7 @@ SC_Game::SC_Game() {
 
     sprite = new Sprite("elements\\gamestat.smk");
     sprite->priority = 0;
-    field_F4 = g_GameState_0046aa30;
+    gameState = g_GameState_0046aa30;
 }
 
 /* Function start: 0x431F30 */
@@ -54,7 +55,7 @@ SC_Game::~SC_Game() {
 void SC_Game::Init(SC_Message* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
-        moduleParam = ((int*)msg)[1];
+        moduleParam = ((SpriteAction*)msg)->addressValue;
     }
 }
 
@@ -80,16 +81,16 @@ void SC_Game::Update(int param1, int param2) {
     int row = scrollOffset;
     if (row < scrollOffset + 0xe) {
         do {
-            int stateName = (int)field_F4->GetState(row);
+            int stateName = (int)gameState->GetState(row);
             if (stateName != 0) {
-                stateName = (int)field_F4->GetState(row);
+                stateName = (int)gameState->GetState(row);
                 sprintf(g_Buffer_0046aa00, "%s", stateName);
                 (g_ZBufferManager_0046aa24)->ShowSubtitle(
                     g_Buffer_0046aa00, textX,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
 
-                GameState* gs = field_F4;
+                GameState* gs = gameState;
                 if (row < 0 || *(int*)(gs + 0x98) - 1 < row) {
                     ShowError("Invalid gamestate %d", row);
                 }
@@ -126,19 +127,19 @@ void SC_Game::Update(int param1, int param2) {
 
 /* Function start: 0x4322D0 */
 int SC_Game::AddMessage(SC_Message* msg) {
-    int* msgData = (int*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
 
     WriteMessageAddress(msg);
     timer.Reset();
 
-    GameState* gs = (GameState*)field_F4;
+    GameState* gs = (GameState*)gameState;
     int maxStates = gs->maxStates;
     int maxVisible = maxStates - 0xe;
 
-    if (msgData[0xb] != 0) {
-        switch (msgData[0xb]) {
+    if (action->lastKey != 0) {
+        switch (action->lastKey) {
         case 0x1b:
-            msgData[4] = 1;
+            action->instruction = 1;
             return 1;
 
         case 0x21:
@@ -250,9 +251,9 @@ int SC_Game::AddMessage(SC_Message* msg) {
             break;
         }
     } else {
-        if (msgData[9] > 1) {
-            int clickX = msgData[7];
-            int clickY = msgData[8];
+        if (action->button1 > 1) {
+            int clickX = action->mousePos.x;
+            int clickY = action->mousePos.y;
             int inUpScroll;
             if (upScroll.left > clickX || upScroll.right < clickX ||
                 upScroll.top > clickY || upScroll.bottom < clickY) {
@@ -297,8 +298,8 @@ int SC_Game::AddMessage(SC_Message* msg) {
                 }
             }
         } else {
-            if (1 < msgData[10]) {
-                msgData[4] = 1;
+            if (1 < action->button2) {
+                action->instruction = 1;
             }
         }
     }

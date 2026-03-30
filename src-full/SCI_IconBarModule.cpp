@@ -25,7 +25,7 @@ extern "C" void WriteToLog(const char*, ...);
 
 /* Function start: 0x401000 */
 SCI_IconBarModule::SCI_IconBarModule() {
-    memset(&field_A8, 0, 0x22 * 4);
+    memset(&exitTarget, 0, 0x22 * 4);
     boundRect.left = 0;
     boundRect.top = 0;
     boundRect.right = 0;
@@ -99,7 +99,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
 void SCI_IconBarModule::Init(SC_Message* msg) {
     int changed;
     int targetRoom;
-    int* msgData;
+    SpriteAction* action;
     int periodIdx;
     char key[28];
 
@@ -118,12 +118,12 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
         targetRoom = g_GameState2_0046aa3c->FindState(g_StateString_0046aa2c);
     }
 
-    msgData = (int*)msg;
-    if (msgData[5] != 0 && targetRoom != msgData[5]) {
-        char* roomName = g_GameState2_0046aa3c->GetState(msgData[5]);
+    action = (SpriteAction*)msg;
+    if (action->extra1 != 0 && targetRoom != action->extra1) {
+        char* roomName = g_GameState2_0046aa3c->GetState(action->extra1);
         strcpy(g_StateString_0046aa2c, roomName);
         changed = 1;
-        targetRoom = msgData[5];
+        targetRoom = action->extra1;
     }
 
     if (targetRoom < 1 || targetRoom > 0x1E) {
@@ -147,14 +147,14 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     }
 
     // Check room change
-    if (targetRoom != field_B0) {
+    if (targetRoom != currentRoom) {
         changed = 1;
 
         int prevIdx = g_GameState_0046aa30->FindState("PREVIOUSROOM");
         if (prevIdx < 0 || g_GameState_0046aa30->maxStates - 1 < prevIdx) {
             ShowError("Invalid gamestate %d", prevIdx);
         }
-        g_GameState_0046aa30->stateValues[prevIdx] = field_B0;
+        g_GameState_0046aa30->stateValues[prevIdx] = currentRoom;
 
         int prevInstIdx = g_GameState_0046aa30->FindState("PREVIOUSROOMINSTANCE");
         if (prevInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < prevInstIdx) {
@@ -167,7 +167,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             ShowError("Invalid gamestate %d", roomInstIdx);
         }
         g_GameState_0046aa30->stateValues[roomInstIdx] = targetRoom;
-        field_B0 = targetRoom;
+        currentRoom = targetRoom;
 
         char roomPath[60];
         sprintf(roomPath, "room%d", targetRoom);
@@ -177,7 +177,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     }
 
     // Check moduleParam change
-    int newInstance = msgData[1];
+    int newInstance = action->addressValue;
     if (moduleParam != newInstance) {
         moduleParam = newInstance;
         changed = 1;
@@ -188,11 +188,11 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
         g_GameState_0046aa30->stateValues[roomInstIdx] = newInstance;
     }
 
-    if (changed != 0 || field_C0 == 0) {
-        field_A8 = 0;
+    if (changed != 0 || roomInitialized == 0) {
+        exitTarget = 0;
         hasBoundaryRect = 0;
         skipActionsCount = 0;
-        field_C0 = 1;
+        roomInitialized = 1;
 
         // Cleanup Palette
         if (field_E4 != 0) {
@@ -233,17 +233,17 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             field_128 = 0;
         }
 
-        field_BC = 0;
+        staticSceneFound = 0;
         mode = 0;
-        field_C8.x = 0x280;
-        field_C8.y = 0x1E0;
+        videoDim.x = 0x280;
+        videoDim.y = 0x1E0;
 
         // Parse static scene
         sprintf(key, "[SEARCHSCREEN%d_STATIC]", moduleParam);
         ParseFile(this, g_StateString_0046aa2c, key);
 
         // Parse period-specific scene if no static override
-        if (field_BC == 0) {
+        if (staticSceneFound == 0) {
             periodIdx = g_GameState_0046aa30->FindState("PERIOD");
             if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
                 ShowError("Invalid gamestate %d", periodIdx);
@@ -251,7 +251,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             sprintf(key, "[SEARCHSCREEN%d_PERIOD%2.2d]", moduleParam,
                     g_GameState_0046aa30->stateValues[periodIdx]);
             ParseFile(this, g_StateString_0046aa2c, key);
-            field_BC = 0;
+            staticSceneFound = 0;
         }
 
         // Dispatch queued actions
@@ -265,9 +265,9 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                     }
                     int* actionData = (int*)nodeData;
                     if (actionData[2] == 0 ||
-                        (actionData[2] == msgData[2] &&
+                        (actionData[2] == action->fromType &&
                          (actionData[3] == 0 ||
-                          (actionData[2] == msgData[2] && msgData[3] == actionData[3])))) {
+                          (actionData[2] == action->fromType && action->fromValue == actionData[3])))) {
                         EnqueueSpriteAction((void*)actionData[0xD]);
                     }
                     if (field_128->tail == field_128->current) break;
@@ -319,7 +319,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             arr = arr + 9;
         } while ((unsigned int)arr < (unsigned int)&g_InventoryState_004733e8);
 
-        SetVideoRes(field_C8.x, field_C8.y);
+        SetVideoRes(videoDim.x, videoDim.y);
 
         // ZBufferManager queue cleanup
         if (g_ZBufferManager_0046aa24->m_state != 2) {
@@ -359,7 +359,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     }
 
     // Send background sound message
-    SendGameMessage(5, field_A8, 0, 0, 0x1b, 0, 0, 0, 0, 0);
+    SendGameMessage(5, exitTarget, 0, 0, 0x1b, 0, 0, 0, 0, 0);
 
     // Apply palette if set
     if (field_E4 != 0) {
@@ -381,7 +381,7 @@ int SCI_IconBarModule::ShutDown(SC_Message* msg) {
             mmPlayer->StopAll();
         }
     } else {
-        if (*(int*)msg == 0x1f) {
+        if (((SpriteAction*)msg)->addressType == 0x1f) {
             goto skip_cursor;
         }
         if (mmPlayer != 0) {
@@ -465,24 +465,24 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
         IconBar::CheckButtonClick(msg);
     }
 
-    if (((int*)msg)[0xb] != 0) {
+    if (((SpriteAction*)msg)->lastKey != 0) {
         return 1;
     }
 
-    if (((int*)msg)[9] >= 2) {
-        iconIdx = FindClickedIcon(((int*)msg)[7], ((int*)msg)[8]);
+    if (((SpriteAction*)msg)->button1 >= 2) {
+        iconIdx = FindClickedIcon(((SpriteAction*)msg)->mousePos.x, ((SpriteAction*)msg)->mousePos.y);
         if (iconIdx != -1) {
-            ((int*)msg)[5] = iconIdx;
-            if (((int*)msg)[9] == 2) {
-                ((int*)msg)[4] = 2;
-            } else if (((int*)msg)[9] == 3) {
-                ((int*)msg)[4] = 3;
+            ((SpriteAction*)msg)->extra1 = iconIdx;
+            if (((SpriteAction*)msg)->button1 == 2) {
+                ((SpriteAction*)msg)->instruction = 2;
+            } else if (((SpriteAction*)msg)->button1 == 3) {
+                ((SpriteAction*)msg)->instruction = 3;
             }
 
             if (g_SelectedItem_0046a6e4 != 0) {
-                ((int*)msg)[6] = g_SelectedItem_0046a6e4->itemId;
+                ((SpriteAction*)msg)->extra2 = g_SelectedItem_0046a6e4->itemId;
             } else {
-                ((int*)msg)[6] = 0;
+                ((SpriteAction*)msg)->extra2 = 0;
             }
 
             if (skipActionsCount == 0) {
@@ -495,12 +495,12 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
 
             Exit(msg);
 
-            *(int*)msg = 0;
+            ((SpriteAction*)msg)->addressType = 0;
         }
 
         if (hasBoundaryRect != 0) {
-            int mx = ((int*)msg)[7];
-            int my = ((int*)msg)[8];
+            int mx = ((SpriteAction*)msg)->mousePos.x;
+            int my = ((SpriteAction*)msg)->mousePos.y;
             int inRect;
             if (boundRect.left > mx || boundRect.right < mx || boundRect.top > my || boundRect.bottom < my) {
                 inRect = 0;
@@ -511,7 +511,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
                 SendGameMessage(0x2c, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
             }
         }
-    } else if (((int*)msg)[10] >= 2) {
+    } else if (((SpriteAction*)msg)->button2 >= 2) {
         idx = g_GameState_0046aa30->FindLabel("NUM_ACTIONS");
         if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
@@ -534,7 +534,7 @@ int SCI_IconBarModule::FindClickedIcon(int x, int y) {
     do {
         icon = *pIcon;
         if (icon != 0) {
-            if (x < icon->field_0xa4 || icon->loc_x < x ||
+            if (x < icon->rightBound || icon->loc_x < x ||
                 y < icon->num_logic_conditions || icon->loc_y < y) {
                 inRect = 0;
             } else {

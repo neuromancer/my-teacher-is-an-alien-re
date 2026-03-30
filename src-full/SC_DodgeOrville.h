@@ -34,7 +34,7 @@ public:
 
     int reticlePos;       // 0x118 - reticle position (0-4, 2=center)
     int cursorDir;        // 0x11C - cursor movement direction (-1, 0, 1)
-    int field_120;        // 0x120 - reset to 0 each round
+    int roundReset;        // 0x120 - reset to 0 each round
     SlimeDim throwState;  // 0x124-0x12B (field_0 = throwCount, field_4 = maxThrows)
     Sprite* barFillSprite;// 0x12C - stink bar fill level sprite
     Sprite* barBgSprite;  // 0x130 - stink bar background sprite
@@ -43,10 +43,8 @@ public:
     DodgeDim hitCount;    // 0x144-0x14B (field_0=current hits, field_4=max hits)
     DodgeDim barPos;      // 0x14C-0x153 (x, y position of stink bar)
     int hitSoundIdx;      // 0x154 - escalating hit sound index
-    int field_158;        // 0x158
-    int field_15C;        // 0x15C
-    int field_160;        // 0x160
-    int field_164;        // 0x164
+    int cineIds[3];       // 0x158-0x163 — cinematic animation IDs (indexed 0-2)
+    int field_164;        // 0x164 — unused (zeroed by memset)
 };
 
 #endif // SC_DODGEORVILLE_H

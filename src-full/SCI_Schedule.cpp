@@ -1,6 +1,7 @@
 #include "SCI_Schedule.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "SpriteAction.h"
 #include "T_MenuHotspot.h"
 #include "Memory.h"
 #include "SC_Question.h"
@@ -139,20 +140,20 @@ int SCI_Schedule::ShutDown(SC_Message* msg)
 /* Function start: 0x435440 */
 int SCI_Schedule::AddMessage(SC_Message* msg)
 {
-    int* msgData = (int*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
 
     if (IconBar::AddMessage(msg) != 0) {
         return 1;
     }
 
-    if (msgData[0xB] == 0x1B) {
-        msgData[0] = savedCommand;
-        msgData[4] = 4;
-        msgData[1] = savedMsgData;
+    if (action->lastKey == 0x1B) {
+        action->addressType = savedCommand;
+        action->instruction = 4;
+        action->addressValue = savedMsgData;
         return 1;
     }
 
-    if (msgData[9] >= 2) {
+    if (action->button1 >= 2) {
         int mouseX, mouseY;
         InputState* mouse = g_InputManager_0046aa08->pMouse;
         mouseY = 0;
@@ -168,9 +169,9 @@ int SCI_Schedule::AddMessage(SC_Message* msg)
         if (hs->sprite != 0 &&
             hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
             hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
-            msgData[0] = savedCommand;
-            msgData[4] = 4;
-            msgData[1] = savedMsgData;
+            action->addressType = savedCommand;
+            action->instruction = 4;
+            action->addressValue = savedMsgData;
         }
     }
 
@@ -179,7 +180,7 @@ int SCI_Schedule::AddMessage(SC_Message* msg)
 
 /* Function start: 0x435500 */
 int SCI_Schedule::Exit(SC_Message* msg) {
-    return handlerId == ((int*)msg)[0];
+    return handlerId == ((SpriteAction*)msg)->addressType;
 }
 
 /* Function start: 0x435520 */

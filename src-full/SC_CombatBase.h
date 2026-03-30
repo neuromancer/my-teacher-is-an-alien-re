@@ -68,12 +68,12 @@ public:
     Sprite* field_0xCC;   // 0xCC — PodsEngine effect sprite 1
     Sprite* field_0xD0;   // 0xD0 — PodsEngine effect sprite 2
     Sprite* field_0xD4;   // 0xD4 — PodsEngine effect sprite 3
-    int field_0xD8;       // 0xD8
+    int reserved_0xD8;    // 0xD8 — zeroed in constructor, no clear purpose yet
 
     // Runtime state
     int combatFlags;      // 0xDC — combat state flags (bitwise OR'd)
     int frameCount;       // 0xE0 — frame counter (incremented in StopAndCleanup)
-    int field_0xE4;       // 0xE4
+    int currentFrame;     // 0xE4
     int spriteFrameCount; // 0xE8 — sprite frame counter (passed to CombatSprite::ProcessFrame)
     Sample* backgroundSound; // 0xEC — background sound
 

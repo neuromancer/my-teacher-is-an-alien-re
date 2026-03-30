@@ -25,7 +25,7 @@ extern "C" void WriteToLog(const char* format, ...);
 
 /* Function start: 0x40CF60 */
 SC_Slime::SC_Slime()
-    : hitCount(0), maxHits(0), field_138(0), tentacleShotsNeeded(0)
+    : hitCount(0), maxHits(0), slimeRound(0), tentacleShotsNeeded(0)
 {
     memset(&spriteAction, 0, 0xD8);
     handlerId = 0x3F;
@@ -52,7 +52,7 @@ void SC_Slime::Init(SC_Message* msg)
 
     screenSize.x = 0x140;
     screenSize.y = 0xf0;
-    field_AC = 0;
+    gamePhase = 0;
 
     SetVideoRes(0x140, 0xf0);
 
@@ -69,7 +69,7 @@ void SC_Slime::Init(SC_Message* msg)
     slimeTable = table;
     table->Init(0xC);
 
-    moduleParam = ((int*)msg)[1];
+    moduleParam = ((SpriteAction*)msg)->addressValue;
     ParseFile(this, "mis\\cb_slime.mis", (char*)0);
 
     if (spriteAction == 0) {
@@ -454,7 +454,7 @@ void SC_Slime::CheckTimerExpired(Sprite* spr)
 }
 
 /* Function start: 0x40D0D0 */
-SlotPair::SlotPair() { field_0 = 0; field_4 = 0; }
+SlotPair::SlotPair() { count = 0; max = 0; }
 
 // g_SlimeField_00468bbc — defined in globals.cpp
 

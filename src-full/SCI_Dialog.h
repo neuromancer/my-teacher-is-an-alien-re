@@ -20,13 +20,13 @@ typedef SC_Question DialogQuestion;
 // Layout must match Handler31 (extends IconBar = 0xA8 in full game):
 //   0xA8: field_A8
 //   0xAC: field_AC
-//   0xB0: field_B0
+//   0xB0: maxQuestions
 //   0xB4: Palette*
 //   0xB8: Sprite* (button)
 //   0xBC: Sprite* (hilite)
-//   0xC0: SC_Question* (current question)
+//   0xC0: SC_Question* currentQuestion
 //   0xC4: SC_Question* (secondary question)
-//   0xC8: LinkedList* (dialog queue)
+//   0xC8: LinkedList* dialogQueue
 //   0xCC: field_CC
 class SCI_Dialog : public IconBar {
 public:
@@ -37,13 +37,13 @@ public:
     // Fields (matching Handler31 layout)
     int field_A8;                   // 0xA8
     int field_AC;                   // 0xAC
-    int field_B0;                   // 0xB0
+    int maxQuestions;                // 0xB0
     Palette* field_B4;              // 0xB4
     Sprite* field_B8;               // 0xB8 — button sprite
     Sprite* field_BC;               // 0xBC — hilite sprite
-    DialogQuestion* field_C0;       // 0xC0 — current question
+    DialogQuestion* currentQuestion; // 0xC0 — current question
     DialogQuestion* field_C4;       // 0xC4 — secondary question
-    Queue* field_C8;                // 0xC8 — dialog queue (was field_610 in demo)
+    Queue* dialogQueue;             // 0xC8 — dialog queue (was field_610 in demo)
     int field_CC;                   // 0xCC — set by SC_Question
 };
 

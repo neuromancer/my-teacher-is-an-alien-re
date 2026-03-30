@@ -12,7 +12,7 @@
 /* Function start: 0x40C630 */
 T_Object::T_Object(int id) : Parser()
 {
-    memset(&field_90, 0, 0xE * 4);
+    memset(&objectFlags, 0, 0xE * 4);
     itemId = id;
     if (id == 0) {
         ShowError("illegal handle");
@@ -72,7 +72,7 @@ void T_Object::Display(int x, int y, int visible)
 /* Function start: 0x40C890 */
 void T_Object::Reset()
 {
-    field_90 |= 2;
+    objectFlags |= 2;
     sprintf(g_Buffer_0046aa00, "OBJ%3.3d", itemId);
 
     GameState* gs = g_GameState_0046aa30;
@@ -119,7 +119,7 @@ int T_Object::HandleMsg(int* msg)
     if (msg[4] != 6) {
         return 0;
     }
-    SendGameMessage(4, field_98, 0, 0, 2, 0, 0, 0, 0, 0);
+    SendGameMessage(4, soundHandle, 0, 0, 2, 0, 0, 0, 0, 0);
     return 1;
 }
 
@@ -144,7 +144,7 @@ int T_Object::LBLParse(char* param_1)
         sscanf(param_1, " %s %d", token, &description);
     }
     else if (strcmp(token, "ILLEGAL") == 0) {
-        sscanf(param_1, " %s %d", token, &field_98);
+        sscanf(param_1, " %s %d", token, &soundHandle);
     }
     else if (strcmp(token, "MESSAGE") == 0) {
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);

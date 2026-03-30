@@ -112,8 +112,8 @@ void SC_SaveLoad::Init(SC_Message* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     CopyCommandData(msg);
     if (action != 0) {
-        field_BC = action->extra1;
-        field_C0 = action->extra2;
+        returnCommand = action->extra1;
+        returnData = action->extra2;
         moduleParam = action->addressValue;
         GameState* gs = g_GameState_0046aa30;
         int idx = gs->FindState("MUST_SAVEGAME");
@@ -274,7 +274,7 @@ int SC_SaveLoad::Exit(SC_Message* msg) {
             }
             gs->stateValues[idx] = 0;
         }
-        SendGameMessage(field_BC, field_C0, savedCommand, savedMsgData, 4, 0, 0, 0, 0, 0);
+        SendGameMessage(returnCommand, returnData, savedCommand, savedMsgData, 4, 0, 0, 0, 0, 0);
         return 1;
     }
     {
@@ -285,6 +285,6 @@ int SC_SaveLoad::Exit(SC_Message* msg) {
         }
         gs->stateValues[idx] = 0;
     }
-    SendGameMessage(0x2E, 0, field_BC, field_C0, 4, 0, 0, 0, 0, 0);
+    SendGameMessage(0x2E, 0, returnCommand, returnData, 4, 0, 0, 0, 0, 0);
     return 1;
 }

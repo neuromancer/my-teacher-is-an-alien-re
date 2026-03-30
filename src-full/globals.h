@@ -6008,7 +6008,7 @@ extern int g_ParserCount;                                  // DAT_00469288
 extern T_Object* g_SelectedItem_0046a6e4;                            // SCI_Inventory
 
     extern GameEngine* g_GameEngine_0046a6ec;                        // SC_Cinematic
-    extern VBuffer* g_BackBuffer2_0046aa10;                          // SC_SelectHotSpot
+    extern GameConfig* g_GameConfig2_0046aa10;                       // actually GameConfig*
     extern VBuffer* g_BackBuffer_0046aa14;                          // SC_SelectHotSpot
     extern char g_CinematicDebugStr_00473400;                              // SC_Cinematic
     extern char g_AnimFilename_00472c70[256];                         // SC_Cinematic

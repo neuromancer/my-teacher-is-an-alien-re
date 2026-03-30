@@ -1,4 +1,5 @@
 #include "SC_ZBuffer.h"
+#include "SpriteAction.h"
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
@@ -14,7 +15,7 @@ SC_ZBuffer::~SC_ZBuffer() {
 void SC_ZBuffer::Init(SC_Message* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
-        moduleParam = ((int*)msg)[1];
+        moduleParam = ((SpriteAction*)msg)->addressValue;
     }
 }
 

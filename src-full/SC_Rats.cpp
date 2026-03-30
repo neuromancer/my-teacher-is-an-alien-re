@@ -65,7 +65,7 @@ void SC_Rats::Init(SC_Message* msg) {
     g_State0Phase_00473e14 = 0;
     g_RatsState_00473e18 = 0;
     CopyCommandData(msg);
-    moduleParam = ((int*)msg)[1];
+    moduleParam = ((SpriteAction*)msg)->addressValue;
     if (!FileExists("CB_Rats")) {
         ShowLoadingScreen();
     }
@@ -120,9 +120,9 @@ void SC_Rats::Init(SC_Message* msg) {
         SpriteAction* sprite = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
         p[0] = (int)sprite;
-        sprite->extra1 = ((int*)msg)[5];
-        sprite->mousePos.x = ((int*)msg)[7];
-        sprite->mousePos.y = ((int*)msg)[8];
+        sprite->extra1 = ((SpriteAction*)msg)->extra1;
+        sprite->mousePos.x = ((SpriteAction*)msg)->mousePos.x;
+        sprite->mousePos.y = ((SpriteAction*)msg)->mousePos.y;
     }
 }
 
@@ -172,10 +172,10 @@ void SC_Rats::Update(int param1, int param2) {
 
 /* Function start: 0x451C20 */
 int SC_Rats::AddMessage(SC_Message* msg) {
-    ((int*)msg)[2] = handlerId;
-    ((int*)msg)[3] = moduleParam;
-    ((int*)msg)[4] = 0;
-    if (((int*)msg)[11] == 0x1B) {
+    ((SpriteAction*)msg)->fromType = handlerId;
+    ((SpriteAction*)msg)->fromValue = moduleParam;
+    ((SpriteAction*)msg)->instruction = 0;
+    if (((SpriteAction*)msg)->lastKey == 0x1B) {
         g_RatsState_00473e18 = 4;
     }
     return 1;
@@ -183,10 +183,10 @@ int SC_Rats::AddMessage(SC_Message* msg) {
 
 /* Function start: 0x451C60 */
 int SC_Rats::Exit(SC_Message* msg) {
-    if (handlerId != ((int*)msg)[0]) {
+    if (handlerId != ((SpriteAction*)msg)->addressType) {
         return 0;
     }
-    int cmd = ((int*)msg)[4];
+    int cmd = ((SpriteAction*)msg)->instruction;
     if (cmd != 0) {
         if (cmd != 0x17) {
             return 0;

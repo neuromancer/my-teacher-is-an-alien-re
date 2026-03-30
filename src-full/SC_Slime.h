@@ -15,8 +15,8 @@ class SC_Message;
 
 // 8-byte embedded object, ctor 0x40D0D0 (zeros 2 fields), no dtor
 struct SlotPair {
-    int field_0;
-    int field_4;
+    int count;
+    int max;
     SlotPair();
 };
 
@@ -44,7 +44,7 @@ public:
     void CheckTimerExpired(Sprite* spr); // 0x40DEB0
 
     SpriteAction* spriteAction;    // 0xA8 - action/message object pointer
-    int field_AC;       // 0xAC
+    int gamePhase;      // 0xAC
     SlimeDim screenSize;     // 0xB0-0xB7 (width/height)
     TimeOut* timer;          // 0xB8 - TimeOut*
     Sprite* consoleSprite;   // 0xBC - CONSOLE_SPRITE
@@ -65,7 +65,7 @@ public:
     Sprite* slimeMeterSprite;// 0x12C - SLIME_METER_SPRITE
     int hitCount;            // 0x130 - current hit count
     int maxHits;             // 0x134 - STUDENT_HITS_ALLOWED
-    int field_138;           // 0x138
+    int slimeRound;          // 0x138
     int tentacleShotsNeeded; // 0x13C - TENTACLE_SHOTS_NEEDED
     Rect targetRect;         // 0x140-0x14F (16 bytes)
     SoundList* soundList;    // 0x150 - sound list object

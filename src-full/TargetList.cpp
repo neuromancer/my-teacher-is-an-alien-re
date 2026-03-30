@@ -150,7 +150,7 @@ Target* TargetList::ProcessTargets() {
       if (target != 0 && target->Update() == 0) {
         if (target->AdvanceHotspot() != 0) {
           currentTarget = target;
-          ((int*)g_ScoreDisplay_0046ae6c)[5]++;
+          g_ScoreDisplay_0046ae6c->hitCount++;
           g_ScoreDisplay_0046ae6c->AdjustScore(-(int)target->scoreWeight.end);
           if (target->sound3 != 0) {
             target->sound3->Play(100, 1);

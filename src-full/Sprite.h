@@ -23,7 +23,7 @@ public:
     int handle;   // 0x98 — also current range state (set by ResetAnimation)
     int priority; // 0x9c
     LogicCondition* logic_conditions; // 0xa0
-    int field_0xa4; // 0xa4
+    int rightBound; // 0xa4
     int num_logic_conditions;   // 0xa8
     int loc_x; // 0xac — position X (set by LOC keyword, ProcessSprite reads this)
     int loc_y; // 0xb0 — position Y (set by LOC keyword, ProcessSprite reads this)

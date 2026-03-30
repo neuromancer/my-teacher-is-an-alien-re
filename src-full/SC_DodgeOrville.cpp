@@ -378,7 +378,7 @@ void SC_DodgeOrville::InitReset()
 {
     SC_Combat::OnProcessEnd();
     CheckCursorRange(0);
-    field_120 = 0; // 0x120
+    roundReset = 0; // 0x120
     reticlePos = 2; // 0x118
     cursorDir = 0; // 0x11c
 }

@@ -46,9 +46,9 @@ int EngineInfoParser::LBLParse(char* line) {
   if (firstChar == 'A') {
     ParseAnchor(line + 3);
   } else if (firstChar == 'C') {
-    sscanf(line + 3, "%d", &field_0xB0);
+    sscanf(line + 3, "%d", &scrollSpeed);
   } else if (firstChar == 'D') {
-    sscanf(line + 3, "%d", &field_0xB4);
+    sscanf(line + 3, "%d", &animSpeed);
   } else if (firstChar == 'O') {
     ParseOffset(line + 3, secondChar);
   } else if (firstChar == 'P') {
@@ -72,7 +72,7 @@ int EngineInfoParser::LBLParse(char* line) {
 void EngineInfoParser::ParseOffset(char *line, int arg2) {
   if ((char)arg2 == '1') {
     sscanf(line, "%d %d", (int*)&g_CombatEngine_0046ae78->field_0xD0,
-           &g_CombatEngine_0046ae78->field_0xD8);
+           &g_CombatEngine_0046ae78->reserved_0xD8);
   } else {
     sscanf(line, "%d %d", &g_CombatEngine_0046ae78->hotspotY,
            (int*)&g_CombatEngine_0046ae78->field_0xC8);

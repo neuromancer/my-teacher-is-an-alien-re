@@ -23,7 +23,7 @@ public:
     int Exit(SC_Message* msg);
 
     Palette* field_A8;    // 0xA8 - Palette*
-    Sprite* field_AC;    // 0xAC - Sprite*
+    Sprite* demoSprite;    // 0xAC - Sprite*
 };
 
 #endif // SC_DEMOSCREEN_H

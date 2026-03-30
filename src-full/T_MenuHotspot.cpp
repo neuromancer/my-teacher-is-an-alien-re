@@ -68,28 +68,30 @@ void T_MenuButton::Update()
     if (sprite == 0) {
         return;
     }
-    int mouseY = 0;
     InputState* pMouse = g_InputManager_0046aa08->pMouse;
-    int mouseX;
-    if (pMouse == 0) {
-        mouseX = 0;
-    } else {
+    int mouseY = 0;
+    if (pMouse != 0) {
         mouseY = pMouse->y;
+    }
+    int mouseX;
+    if (pMouse != 0) {
         mouseX = pMouse->x;
+    } else {
+        mouseX = 0;
     }
 
     int newState;
     if (sprite == 0 ||
-        mouseX < bounds.right || field_A4 < mouseX ||
-        mouseY < bounds.bottom || field_A8 < mouseY) {
+        bounds.right > mouseX || activeRight < mouseX ||
+        bounds.bottom > mouseY || activeBottom < mouseY) {
         // Outside bounds
-        int st = field_A4;
+        int st = bounds.left;
         if (st == 0 || st == 3) {
-            field_A4 = 0;
+            bounds.left = 0;
             if (cursor == 0) goto do_draw;
             newState = 0;
         } else if (st == 1 || st == 2) {
-            field_A4 = 1;
+            bounds.left = 1;
             if (cursor == 0) goto do_draw;
             newState = 1;
         } else {
@@ -97,13 +99,13 @@ void T_MenuButton::Update()
         }
     } else {
         // Inside bounds
-        int st = field_A4;
+        int st = bounds.left;
         if (st == 0 || st == 3) {
-            field_A4 = 3;
+            bounds.left = 3;
             if (cursor == 0) goto do_draw;
             newState = 3;
         } else if (st == 1 || st == 2) {
-            field_A4 = 2;
+            bounds.left = 2;
             if (cursor == 0) goto do_draw;
             newState = 2;
         } else {
@@ -180,8 +182,8 @@ int T_MenuButton::LBLParse(char* line) {
         sscanf(line, " %s %d %d %d %d", local_50, &local_30, &local_2c, &local_28, &local_24);
         bounds.right = local_30;
         bounds.bottom = local_2c;
-        field_A4 = local_28;
-        field_A8 = local_24;
+        activeRight = local_28;
+        activeBottom = local_24;
     } else if (strcmp(local_50, "SPRITE") == 0) {
         cursor = new Sprite((char*)0);
         Parser::ProcessFile(cursor, this, (char*)0);

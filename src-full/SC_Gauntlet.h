@@ -17,23 +17,39 @@ struct GauntletEntry {
 // Extends SC_Combat (0x118)
 class SC_Gauntlet : public SC_Combat {
 public:
-    SC_Gauntlet();
-    ~SC_Gauntlet();
+    SC_Gauntlet();                                  // 0x42E540
+    ~SC_Gauntlet();                                 // 0x42E7C0
 
-    int field_118[2];              // 0x118-0x11F
-    int field_120[2];              // 0x120-0x127
-    int field_128;                 // 0x128
-    int field_12C;                 // 0x12C
-    int field_130;                 // 0x130
-    int field_134;                 // 0x134
-    int field_138;                 // 0x138
+    virtual int LBLParse(char* line);                // 0x42F910
+    virtual void OnProcessEnd();                    // 0x42F800
+    virtual void Init(SC_Message* msg);             // 0x42E870
+    virtual int ShutDown(SC_Message* msg);          // 0x42E8F0
+    virtual void Update(int p1, int p2);            // 0x42E9B0
+    virtual int AddMessage(SC_Message* msg);        // 0x42E9D0
+    virtual int Exit(SC_Message* msg);              // 0x42EB70
+
+    // ProcessLose inherited from SC_Combat (0x4494E0)
+    virtual void ProcessAction(int action, int* data); // 0x42EBA0
+    virtual void ProcessWin(int action, int* data);    // 0x42F5E0
+
+    void ProcessGrid(int row, int col);             // 0x42F220
+    void ResetGrid();                               // 0x42F570
+    void RenderGrid();                              // 0x42EFC0
+
+    int moveState[2];              // 0x118-0x11F
+    int crystalState[2];              // 0x120-0x127
+    int boardLeft;                 // 0x128
+    int boardTop;                 // 0x12C
+    int boardRight;                 // 0x130
+    int boardBottom;                 // 0x134
+    Sprite* fgSprite;             // 0x138
     GauntletEntry entries[36];     // 0x13C-0x52B (36 * 0x1C = 0x3F0)
-    int field_52C[7];              // 0x52C-0x547
-    int field_548;                 // 0x548
-    int field_54C;                 // 0x54C
-    int field_550;                 // 0x550
-    int field_554;                 // 0x554
-    int field_558;                 // 0x558
+    Sprite* cellSprites[7];          // 0x52C-0x547
+    int exitLeft;                 // 0x548
+    int exitTop;                 // 0x54C
+    int exitRight;                 // 0x550
+    int exitBottom;                 // 0x554
+    Sprite* exitSprite;             // 0x558
     int field_55C;                 // 0x55C
 };
 

@@ -11,25 +11,25 @@ extern "C" void WriteToLog(const char* format, ...);
 /* Function start: 0x44E5C0 */
 SC_DemoScreen::SC_DemoScreen() {
     field_A8 = 0;
-    field_AC = 0;
+    demoSprite = 0;
     handlerId = 0x29;
     moduleParam = 1;
 
     field_A8 = new Palette();
     field_A8->Load("elements\\Demoscrn.col");
 
-    field_AC = new Sprite("elements\\Demoscrn.smk");
-    field_AC->priority &= ~2;
-    field_AC->handle = 0;
-    field_AC->loc_x = 0;
-    field_AC->loc_y = 0;
+    demoSprite = new Sprite("elements\\Demoscrn.smk");
+    demoSprite->priority &= ~2;
+    demoSprite->handle = 0;
+    demoSprite->loc_x = 0;
+    demoSprite->loc_y = 0;
 }
 
 /* Function start: 0x44E740 */
 SC_DemoScreen::~SC_DemoScreen() {
-    if (field_AC != 0) {
-        delete (Sprite*)field_AC;
-        field_AC = 0;
+    if (demoSprite != 0) {
+        delete (Sprite*)demoSprite;
+        demoSprite = 0;
     }
     if (field_A8 != 0) {
         delete (Palette*)field_A8;
@@ -52,9 +52,9 @@ void SC_DemoScreen::Init(SC_Message* msg) {
 
 /* Function start: 0x44E830 */
 int SC_DemoScreen::ShutDown(SC_Message* msg) {
-    if (field_AC != 0) {
-        delete (Sprite*)field_AC;
-        field_AC = 0;
+    if (demoSprite != 0) {
+        delete (Sprite*)demoSprite;
+        demoSprite = 0;
     }
     if (field_A8 != 0) {
         delete (Palette*)field_A8;
@@ -87,7 +87,7 @@ int SC_DemoScreen::Exit(SC_Message* msg) {
 /* Function start: 0x44E910 */
 void SC_DemoScreen::Update(int param1, int param2) {
     if (handlerId == param2) {
-        Sprite* spr = (Sprite*)field_AC;
+        Sprite* spr = (Sprite*)demoSprite;
         spr->Do(spr->loc_x, spr->loc_y, 1.0);
         (g_Mouse_0046aa18)->DrawCursor();
     }

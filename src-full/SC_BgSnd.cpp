@@ -4,12 +4,13 @@
 #include "GameState.h"
 #include "GameEngine.h"
 #include "globals.h"
+#include "GameConfig.h"
+#include "Memory.h"
 #include <mss.h>
 #include "string.h"
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" char* GetSoundFilename(int handle);
-#define g_GameState_0046aa30 (g_GameState_0046aa30)
 
 /* Function start: 0x4392E0 */
 SC_BgSnd::SC_BgSnd() {
@@ -23,7 +24,7 @@ SC_BgSnd::~SC_BgSnd() {
     Sample* s = snd;
     if (s != 0) {
         s->Unload();
-        operator delete(s);
+        FreeMemory(s);
         snd = 0;
         sndId = 0;
     }
@@ -85,7 +86,7 @@ void SC_BgSnd::OnProcessEnd() {
     int currentVol = AIL_sample_volume(snd->m_sample);
     if (targetVol == currentVol) {
         if (currentVol == 0) {
-            snd->~Sample();
+            snd->Stop();
             sndId = 0;
         }
         flags &= ~1;
@@ -110,7 +111,7 @@ void SC_BgSnd::OnProcessEnd() {
 
 /* Function start: 0x439740 */
 void SC_BgSnd::AddMessage(int soundHandle) {
-    if (((char*)g_BackBuffer2_0046aa10)[0x46] != 2) return;
+    if (g_GameConfig2_0046aa10->data.rawData[2] != 2) return;
 
     GameState* gs = g_GameState_0046aa30;
     int idx = gs->FindState("GS_MUSICOFF");
@@ -132,7 +133,7 @@ void SC_BgSnd::AddMessage(int soundHandle) {
                 Sample* old = snd;
                 if (old != 0) {
                     old->Unload();
-                    operator delete(old);
+                    FreeMemory(old);
                     snd = 0;
                 }
             }
@@ -146,7 +147,7 @@ void SC_BgSnd::AddMessage(int soundHandle) {
     }
     if (newSnd != 0) {
         newSnd->Unload();
-        operator delete(newSnd);
+        FreeMemory(newSnd);
     }
     SetVolume(0, 0);
 }
@@ -157,7 +158,7 @@ void SC_BgSnd::SetVolume(int volume, int duration) {
         Sample* s = snd;
         if (volume == 0) {
             if (s != 0) {
-                s->~Sample();
+                s->Stop();
             }
             sndId = 0;
             return;
@@ -203,7 +204,7 @@ void SC_BgSnd::SetVolume(int volume, int duration) {
         }
     }
     if (snd != 0) {
-        snd->~Sample();
+        snd->Stop();
     }
     sndId = 0;
 }

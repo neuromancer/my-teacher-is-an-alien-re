@@ -7,6 +7,7 @@
 #include "LinkedList.h"
 
 class Sprite;
+class Projectile;
 
 // ZBuffer extends Handler in the full game.
 // Demo used "ZBuffer" as a handler class but the full game uses SC_ZBuffer instead.
@@ -17,8 +18,8 @@ public:
     ~ZBuffer(); // 0x427710
 
     Timer timer;        // 0xA8
-    int itemCount;      // 0xB0
-    Sprite** items;     // 0xB4
+    int itemCount;         // 0xB0
+    Projectile** items;    // 0xB4
 
     int Exit(SC_Message* msg);  // 0x44B5A0
     void CleanUpVBuffer();      // 0x401C80

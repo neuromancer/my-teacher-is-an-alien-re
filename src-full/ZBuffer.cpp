@@ -1,6 +1,8 @@
 #include "ZBuffer.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
+#include "Projectile.h"
+#include "RockThrower.h"
 #include "globals.h"
 #include "Message.h"
 
@@ -31,27 +33,9 @@ ZBuffer::~ZBuffer()
     while (ZBuffer::itemCount != 0) {
         int idx = ZBuffer::itemCount - 1;
         ZBuffer::itemCount = idx;
-        Sprite* item = ZBuffer::items[idx];
+        Projectile* item = ZBuffer::items[idx];
         if (item != 0) {
-            SlimeDim* sd;
-
-            sd = (SlimeDim*)((char*)item + 0x120);
-            sd->~SlimeDim();
-
-            sd = (SlimeDim*)((char*)item + 0x114);
-            sd->~SlimeDim();
-
-            sd = (SlimeDim*)((char*)item + 0x10c);
-            sd->~SlimeDim();
-
-            sd = (SlimeDim*)((char*)item + 0x104);
-            sd->~SlimeDim();
-
-            sd = (SlimeDim*)((char*)item + 0xfc);
-            sd->~SlimeDim();
-
-            item->~Sprite();
-            FreeMemory(item);
+            delete (Sprite*)item;
 
             ZBuffer::items[ZBuffer::itemCount] = 0;
         }

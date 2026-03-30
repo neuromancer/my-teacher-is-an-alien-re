@@ -19,13 +19,13 @@ public:
     // Fields from 0xF0 to 0x117 (10 ints)
     Sprite* podsBgSprite; // 0xF0 — background sprite (deleted in dtor)
     SlimeDim podState;    // 0xF4-0xFB — state pair (x=0, y=3 initially)
-    int field_0xFC;       // 0xFC
-    int field_0x100;      // 0x100
-    int field_0x104;      // 0x104
+    int reserved_0xFC;       // 0xFC
+    int reserved_0x100;      // 0x100
+    int reserved_0x104;      // 0x104
     int hashTable;        // 0x108 — HashTable* (deleted in dtor)
     int field_0x10C;      // 0x10C
     int field_0x110;      // 0x110
-    int field_0x114;      // 0x114
+    int reserved_0x114;      // 0x114
 };
 
 #endif // PODSENGINE_H

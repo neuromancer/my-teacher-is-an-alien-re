@@ -376,7 +376,7 @@ int SelectHotspot::LBLParse(char* line) {
 
 /* Function start: 0x405C30 */
 SC_SelectHotSpot::SC_SelectHotSpot() {
-    memset(&field_A8, 0, 24);
+    memset(&introPlayed, 0, 24);
     handlerId = 0x2D;
 }
 
@@ -433,7 +433,7 @@ SC_SelectHotSpot::~SC_SelectHotSpot() {
         delete (Palette*)SC_SelectHotSpot::palette;
         SC_SelectHotSpot::palette = 0;
     }
-    SC_SelectHotSpot::field_A8 = 0;
+    SC_SelectHotSpot::introPlayed = 0;
 }
 
 /* Function start: 0x405FB0 */
@@ -539,7 +539,7 @@ int SC_SelectHotSpot::ShutDown(SC_Message* msg) {
     if (SC_SelectHotSpot::ambient != 0) {
         ((MMPlayer*)SC_SelectHotSpot::ambient)->StopAll();
     }
-    SC_SelectHotSpot::field_A8 = 0;
+    SC_SelectHotSpot::introPlayed = 0;
     LinkedList* list = SC_SelectHotSpot::hotspotList;
     if (list != 0) {
         list->current = list->head;
@@ -569,19 +569,19 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
     if (SC_SelectHotSpot::handlerId != param2) {
         return;
     }
-    if (SC_SelectHotSpot::field_A8 == 0) {
+    if (SC_SelectHotSpot::introPlayed == 0) {
         void* intro = SC_SelectHotSpot::introSprite;
         if (intro != 0) {
             Sprite* spr = (Sprite*)intro;
             int result = spr->Do(spr->loc_x, spr->loc_y, 1.0);
-            SC_SelectHotSpot::field_A8 = result;
+            SC_SelectHotSpot::introPlayed = result;
             if (result == 0) {
                 return;
             }
             ((Sprite*)SC_SelectHotSpot::introSprite)->StopAnimationSound();
             return;
         }
-        SC_SelectHotSpot::field_A8 = 1;
+        SC_SelectHotSpot::introPlayed = 1;
     }
     if (SC_SelectHotSpot::ambient != 0) {
         ((MMPlayer*)SC_SelectHotSpot::ambient)->Draw();
@@ -613,13 +613,13 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
 /* Function start: 0x4063A0 */
 int SC_SelectHotSpot::AddMessage(SC_Message* msg) {
     CopyCommandData(msg);
-    ((int*)msg)[0] = 0x2D;
-    if (((int*)msg)[0xB] == 0x1B) {
-        ((int*)msg)[1] = 1;
-        ((int*)msg)[4] = 4;
+    ((SpriteAction*)msg)->addressType = 0x2D;
+    if (((SpriteAction*)msg)->lastKey == 0x1B) {
+        ((SpriteAction*)msg)->addressValue = 1;
+        ((SpriteAction*)msg)->instruction = 4;
         return 1;
     }
-    ((int*)msg)[4] = 2;
+    ((SpriteAction*)msg)->instruction = 2;
     return 1;
 }
 
@@ -715,7 +715,7 @@ void SC_SelectHotSpot::OnProcessStart() {
         delete (Palette*)SC_SelectHotSpot::palette;
         SC_SelectHotSpot::palette = 0;
     }
-    SC_SelectHotSpot::field_A8 = 0;
+    SC_SelectHotSpot::introPlayed = 0;
 }
 
 /* Function start: 0x4065E0 */

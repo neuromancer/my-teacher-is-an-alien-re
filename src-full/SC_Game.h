@@ -32,7 +32,7 @@ public:
     int textX;              // 0xE8
     int textY;              // 0xEC
     int rowHeight;          // 0xF0
-    GameState* field_F4;           // 0xF4
+    GameState* gameState;          // 0xF4
 };
 
 #endif // SC_GAME_H

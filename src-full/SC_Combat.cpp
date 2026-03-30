@@ -48,8 +48,8 @@ int SC_Combat::LBLParse(char* line) {
         field_0x10C = new Sprite((char*)0);
         Parser::ProcessFile(field_0x10C, this, (char*)0);
     } else if (strcmp(local_3c, "VIDEO_RES") == 0) {
-        sscanf(line, " %s %d %d", local_3c, &field_0xAC[4], &field_0xAC[5]);
-        SetVideoRes(field_0xAC[4], field_0xAC[5]);
+        sscanf(line, " %s %d %d", local_3c, &combatParams[4], &combatParams[5]);
+        SetVideoRes(combatParams[4], combatParams[5]);
     } else if (strcmp(local_3c, "BG_SOUND") == 0) {
         sscanf(line, " %s %d", local_3c, &field_0x114);
     } else if (strcmp(local_3c, "MAX_SOUNDS") == 0) {
@@ -69,11 +69,11 @@ int SC_Combat::LBLParse(char* line) {
             FreeMemory(statusPtr);
             statusPtr = 0;
         }
-        field_0xAC[2] = count;
+        combatParams[2] = count;
         int* arr = (int*)operator new(count * 4);
         statusPtr = arr;
         {
-            unsigned int n = field_0xAC[2] & 0x3FFFFFFF;
+            unsigned int n = combatParams[2] & 0x3FFFFFFF;
             while (n != 0) {
                 *arr = 0;
                 arr++;
@@ -109,17 +109,17 @@ void SC_Combat::OnProcessEnd() {
 
 /* Function start: 0x449260 */
 void SC_Combat::Init(SC_Message* msg) {
-    int* msgData;
+    SpriteAction* action;
 
     memset(&statusPtr, 0, 0x1C * 4);
     bgSound = (SoundList*)new SlimeTable();
-    msgData = (int*)msg;
-    if (msgData[0xD] != 0) {
-        pendingAction = (SpriteAction*)msgData[0xD];
-        msgData[0xD] = 0;
+    action = (SpriteAction*)msg;
+    if (action->childAction != 0) {
+        pendingAction = action->childAction;
+        action->childAction = 0;
     }
     CopyCommandData(msg);
-    moduleParam = msgData[1];
+    moduleParam = action->addressValue;
 }
 
 /* Function start: 0x449400 */
@@ -160,24 +160,24 @@ int SC_Combat::ShutDown(SC_Message* msg) {
 /* Function start: 0x449480 */
 void SC_Combat::Update(int p1, int p2) {
     if (handlerId != p2) return;
-    field_0xAC[0] = 0;
-    if (field_0xAC[2] <= 0) return;
+    combatParams[0] = 0;
+    if (combatParams[2] <= 0) return;
     do {
-        int idx = field_0xAC[0];
+        int idx = combatParams[0];
         int* entry = &statusPtr[idx];
         if (*entry != 0) {
             ProcessAction(idx, entry);
         }
-        field_0xAC[0]++;
-    } while (field_0xAC[2] > field_0xAC[0]);
+        combatParams[0]++;
+    } while (combatParams[2] > combatParams[0]);
 }
 /* Function start: 0x449410 */
 int SC_Combat::Exit(SC_Message* msg) {
-    int* msgData = (int*)msg;
-    if (msgData[0] != handlerId) {
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
         return 0;
     }
-    switch (msgData[4]) {
+    switch (action->instruction) {
     case 0:
         return 1;
     case 7:

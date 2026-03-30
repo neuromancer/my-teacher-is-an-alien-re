@@ -9,7 +9,7 @@
 // Size: 0x128 bytes (Sprite 0xF8 + 0x30)
 class Projectile : public Sprite {
 public:
-    int field_0xF8;    // 0xF8 — owner pointer
+    int owner;         // 0xF8 — owner pointer
     int startX;        // 0xFC
     int startY;        // 0x100
     int currentX;      // 0x104

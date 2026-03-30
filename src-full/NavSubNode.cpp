@@ -223,10 +223,10 @@ do_sprite:
     }
 
     if (g_NavSprite_004360a4->animation_data == 0) {
-        g_CombatEngine_0046ae78->field_0xE4 = 0;
+        g_CombatEngine_0046ae78->currentFrame = 0;
     } else {
         int* smk = (int*)g_NavSprite_004360a4->animation_data->smk;
-        g_CombatEngine_0046ae78->field_0xE4 = *(int*)((char*)smk + 0x374);
+        g_CombatEngine_0046ae78->currentFrame = *(int*)((char*)smk + 0x374);
     }
     return 0;
 }

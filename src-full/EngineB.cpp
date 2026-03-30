@@ -11,6 +11,7 @@
 #include "InputManager.h"
 #include "EngineSubsystems.h"
 #include "RockThrower.h"
+#include "ScoreDisplay.h"
 #include "string.h"
 #include <string.h>
 #include <stdio.h>
@@ -49,12 +50,12 @@ EngineB::~EngineB() {
 
     EngineB::m_meterBuffer = 0;
     EngineB::m_missSound = 0;
-    EngineB::field_0x108 = 0;
-    EngineB::field_0x10C = 0;
-    EngineB::field_0x110 = 0;
+    EngineB::reserved_0x108 = 0;
+    EngineB::reserved_0x10C = 0;
+    EngineB::m_ambientSound2 = 0;
     EngineB::m_completionSound = 0;
-    EngineB::field_0x120 = 0;
-    EngineB::field_0x11C = 0;
+    EngineB::reserved_0x120 = 0;
+    EngineB::reserved_0x11C = 0;
     EngineB::m_ambientSound = 0;
     EngineB::m_hitSound3 = 0;
     EngineB::m_hitSound2 = 0;
@@ -99,7 +100,7 @@ void EngineB::RenderBackground() {
         return;
     }
 
-    hitCount = ((int*)g_ScoreDisplay_0046ae6c)[5];
+    hitCount = g_ScoreDisplay_0046ae6c->hitCount;
     if (EngineB::m_prevHitCount != hitCount) {
         EngineB::m_prevHitCount = hitCount;
         g_BgSprite_0046ae50->ResetAnimation(8, 0);
@@ -111,7 +112,7 @@ void EngineB::RenderBackground() {
             snd->Play(100, 1);
         }
     } else {
-        missCount = ((int*)g_ScoreDisplay_0046ae6c)[3];
+        missCount = g_ScoreDisplay_0046ae6c->missCount;
         if (EngineB::m_prevMissCount != missCount) {
             EngineB::m_prevMissCount = missCount;
             g_BgSprite_0046ae50->ResetAnimation(9, 0);
@@ -123,7 +124,7 @@ void EngineB::RenderBackground() {
         }
     }
 
-    weaponHit = ((int*)m_weaponParser)[0x30];
+    weaponHit = ((RockThrower*)m_weaponParser)->m_hitCountFull;
     if (weaponHit != 0) {
         EngineB::m_progress.start += weaponHit;
         if (EngineB::m_missSound != 0) {
@@ -222,7 +223,7 @@ void EngineB::OnProcessEnd() {
     }
 
     EngineB::m_weaponParser = g_CombatWeapon_0046ae60;
-    for (i = 0; i < ((int*)g_TargetList_0046ae58)[0x24]; i++) {
+    for (i = 0; i < g_TargetList_0046ae58->count; i++) {
         int* target = (int*)*(int*)((char*)g_TargetList_0046ae58 + 0x94 + i * 4);
         target[0x4A] = EngineB::m_targetConfig[0];
     }
@@ -269,7 +270,7 @@ void EngineB::OnProcessEnd() {
         EngineB::m_hitSound3 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5006"));
         EngineB::m_milestoneSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5002"));
         EngineB::m_ambientSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5001"));
-        EngineB::field_0x110 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5010"));
+        EngineB::m_ambientSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5010"));
     }
 
     g_RatsState_00473e18 = 0;

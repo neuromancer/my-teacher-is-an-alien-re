@@ -98,37 +98,37 @@ int SC_Roach::ShutDown(SC_Message* msg) {
 
 /* Function start: 0x419220 */
 int SC_Roach::AddMessage(SC_Message* msg) {
-    int* msgData;
+    SpriteAction* action;
     int i;
     int count;
     int* srcPtr;
     int result;
 
-    msgData = (int*)msg;
+    action = (SpriteAction*)msg;
     if (SC_Combat::AddMessage(msg) != 0) {
         return 1;
     }
 
-    if (msgData[0xB] == 0x1B) {
+    if (action->lastKey == 0x1B) {
         if (savedCommand == 0x2B) {
             ((int*)statusPtr)[2] = 1;
         }
-    } else if (msgData[9] >= 2) {
+    } else if (action->button1 >= 2) {
         if (currentPiece == 0) {
-            result = PickFromGrid(msgData);
+            result = PickFromGrid((int*)action);
             if (result == 0) {
-                PickFromSource(msgData);
+                PickFromSource((int*)action);
             }
         } else {
-            result = TryPlacePiece(msgData);
+            result = TryPlacePiece((int*)action);
             if (result == 0) {
-                result = TryDropOnSource(msgData);
+                result = TryDropOnSource((int*)action);
                 if (result == 0) {
                     bgSound->Play(8);
                 }
             }
         }
-    } else if (msgData[0xA] >= 2) {
+    } else if (action->button2 >= 2) {
         if (currentPiece != 0) {
             bgSound->Play(7);
             rotatePending = 1;

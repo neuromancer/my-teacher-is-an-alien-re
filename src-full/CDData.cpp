@@ -45,7 +45,7 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
     }
     sprintf(local_80, "%s\\CDDATA\\DATA", cdFolder);
     chdir(local_80);
-    ParsePath(local_80, field_190, 0, 0, 0);
+    ParsePath(local_80, cdPath, 0, 0, 0);
     sprintf(local_80, "%s\\DATA", baseDir);
     if (chdir(local_80) == 0) {
       return;
@@ -56,14 +56,14 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
     do {
       sprintf(local_80, "%c:\\%s", iVar4 + 0x40, cdIdentifier);
       if (FileExists(local_80) != 0) {
-        ParsePath(local_80, field_190, 0, 0, 0);
-        if (field_190[0] == baseDir[0]) {
+        ParsePath(local_80, cdPath, 0, 0, 0);
+        if (cdPath[0] == baseDir[0]) {
           ShowError("Please run Setup.exe");
         }
-        sprintf(local_80, "%s\\CDDATA\\DATA", field_190);
+        sprintf(local_80, "%s\\CDDATA\\DATA", cdPath);
         if (chdir(local_80) != 0) {
           ShowError("%s\nInvalid CD in Drive-'%s'\nCan't find subdir '%s'",
-                    param_3, field_190, local_80);
+                    param_3, cdPath, local_80);
         }
         sprintf(local_80, "%s\\DATA", baseDir);
         if (chdir(local_80) != 0) {
@@ -318,7 +318,7 @@ int CDData::ResolvePath(char* name) {
     char pathBuf[260];
 
     FormatAssetPath(name);
-    if (field_190[0] == 0) {
+    if (cdPath[0] == 0) {
         return 0;
     }
     if (FileExists(name) != 0) {
@@ -370,16 +370,16 @@ extern "C" char* FormatAssetPath(char* format, ...)
     vsprintf(localPath, format, (char*)&format + 4);
 
     if (FileExists(localPath) != 0) {
-        strcpy(g_PathResolver_0046aa1c->field_190 + 5, localPath);
+        strcpy(g_PathResolver_0046aa1c->cdPath + 5, localPath);
     } else {
-        sprintf(g_PathResolver_0046aa1c->field_190 + 5, "%s%s", g_PathResolver_0046aa1c->field_190, localPath);
+        sprintf(g_PathResolver_0046aa1c->cdPath + 5, "%s%s", g_PathResolver_0046aa1c->cdPath, localPath);
     }
-    return g_PathResolver_0046aa1c->field_190 + 5;
+    return g_PathResolver_0046aa1c->cdPath + 5;
 }
 
 /* Function start: 0x426190 */
 char* ResolveAssetPath(char* name) {
-    char* basePath = g_PathResolver_0046aa1c->field_190 + 0x8a;
+    char* basePath = g_PathResolver_0046aa1c->cdPath + 0x8a;
     sprintf(basePath, "%s", name);
 
     if (FileCacheLookup(basePath) != 0) {

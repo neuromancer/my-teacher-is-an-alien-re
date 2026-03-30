@@ -10,7 +10,7 @@ struct HotspotNode {
     HotspotNode* next;  // 0x00
     HotspotNode* prev;  // 0x04
     int id;             // 0x08
-    int field_0C;       // 0x0C
+    int reserved;       // 0x0C
     // total size: 0x10 (16 bytes per node in pool allocation)
 
     HotspotNode() : next(0), prev(0), id(0) {}
@@ -70,7 +70,7 @@ public:
     IntPair hitMissPoints; // 0x134-0x13B - hit points and miss penalty
     IntPair combatBonus;  // 0x13C-0x143 - bonus1 and bonus2
     TargetMember combatBonus2; // 0x144
-    TargetMember field_148; // 0x148
+    TargetMember missBonus; // 0x148
     HotspotListData* hotspotList; // 0x14C
     Sample* stopSound;    // 0x150 - sound stopped on hit
     Sample* progressSound; // 0x154 - sound played on progress
