@@ -167,11 +167,12 @@ def run(map_directory, src_directory, code_directory, library_ranges, auto_compl
 
     print_ranges(all_functions, implemented_no_lib, library_functions)
 
+    all_functions_set = set(all_functions)
     total_functions = len(all_functions)
-    total_library = len(library_functions)
+    # Only count functions that are actually in the map
+    total_library = len(library_functions.intersection(all_functions_set))
     total_counted = total_functions - total_library
-
-    total_implemented = len(implemented_no_lib)
+    total_implemented = len(implemented_no_lib.intersection(all_functions_set))
     total_auto_complete = len(auto_complete_in_map)
 
     if total_functions > 0:
