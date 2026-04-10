@@ -177,7 +177,7 @@ void RunGame() {
     g_GameEngine_0046a6ec = gameEngine;
 
     g_Mouse_0046aa18->DrawCursor();
-    g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
+    g_TextManager_00436990->LoadFont("elements\\text1.smk");
     g_TextManager_00436990->char_adv.advance = 2;
     g_TextManager_00436990->spaceWidth = 5;
     g_TextManager_00436990->tabWidth = 0x14;
@@ -366,7 +366,7 @@ void InitGameSystems(void) {
     g_InputManager_0046aa08 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
     g_Sound_0043696c = new Sound(0x5622, 8, 1);
     g_TextManager_00436990 = new AnimatedAsset();
-    g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
+    g_TextManager_00436990->LoadFont("elements\\barrel06.smk");
     SetStateFlag(0, 1);
     SetCursorVisible(0);
 }

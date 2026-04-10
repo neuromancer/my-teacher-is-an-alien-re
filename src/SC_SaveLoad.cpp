@@ -137,20 +137,20 @@ void SC_SaveLoad::Init(SC_Message* msg) {
 
 /* Function start: 0x4222F0 */
 void SC_SaveLoad::Update(int param1, int param2) {
+    GlyphRect rect;
     unsigned int elapsed = timer.Update();
     if (elapsed > 30000) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
-    if (handlerId == param2) {
-        timer.Reset();
-        if (sprite != 0) {
-            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
-        }
-        btnYes->Update();
-        btnNo->Update();
-        btnCancel->Update();
-        g_Mouse_0046aa18->DrawCursor();
+    if (handlerId != param2) return;
+    timer.Reset();
+    if (sprite != 0) {
+        sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
     }
+    btnYes->SimpleUpdate();
+    btnNo->SimpleUpdate();
+    btnCancel->SimpleUpdate();
+    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x4223F0 */
@@ -159,30 +159,27 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
     WriteMessageAddress(msg);
     timer.Reset();
     if (action->lastKey != 0) {
-        switch (action->lastKey) {
-        case 0x59: // 'Y'
-        case 0x79: // 'y'
+        if (action->lastKey == 0xD || action->lastKey == 0x59 || action->lastKey == 0x79) {
             action->instruction = 2;
             action->extra1 = 1;
             return 1;
-        case 0x4E: // 'N'
-        case 0x6E: // 'n'
+        }
+        if (action->lastKey == 0x4E || action->lastKey == 0x6E) {
             action->instruction = 2;
             action->extra1 = 0;
             return 1;
-        case 0x1B: // ESC
+        }
+        if (action->lastKey == 0x1B) {
             action->instruction = 2;
             action->extra1 = 2;
             return 1;
         }
     } else {
-        if (action->button1 < 2) goto done;
+        if (action->button1 <= 1) return 1;
+        int bHit;
         {
-            SlimeDim pt;
-            pt.x = action->mousePos.x;
-            pt.y = action->mousePos.y;
+            SlimeDim pt = action->mousePos;
             T_MenuHotspot* btn = btnYes;
-            int bHit;
             if (btn->bounds.left > pt.x ||
                 btn->bounds.right < pt.x ||
                 btn->bounds.top > pt.y ||
@@ -191,18 +188,15 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
             } else {
                 bHit = 1;
             }
-            if (bHit) {
-                action->instruction = 2;
-                action->extra1 = 1;
-                return 1;
-            }
+        }
+        if (bHit) {
+            action->instruction = 2;
+            action->extra1 = 1;
+            return 1;
         }
         {
-            SlimeDim pt;
-            pt.x = action->mousePos.x;
-            pt.y = action->mousePos.y;
+            SlimeDim pt = action->mousePos;
             T_MenuHotspot* btn = btnNo;
-            int bHit;
             if (btn->bounds.left > pt.x ||
                 btn->bounds.right < pt.x ||
                 btn->bounds.top > pt.y ||
@@ -210,19 +204,16 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
                 bHit = 0;
             } else {
                 bHit = 1;
-            }
-            if (bHit) {
-                action->instruction = 2;
-                action->extra1 = 2;
-                return 1;
             }
         }
+        if (bHit) {
+            action->instruction = 2;
+            action->extra1 = 2;
+            return 1;
+        }
         {
-            SlimeDim pt;
-            pt.x = action->mousePos.x;
-            pt.y = action->mousePos.y;
+            SlimeDim pt = action->mousePos;
             T_MenuHotspot* btn = btnCancel;
-            int bHit;
             if (btn->bounds.left > pt.x ||
                 btn->bounds.right < pt.x ||
                 btn->bounds.top > pt.y ||
@@ -231,15 +222,13 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
             } else {
                 bHit = 1;
             }
-            if (bHit) {
-                action->instruction = 2;
-                action->extra1 = 0;
-                return 1;
-            }
+        }
+        if (bHit) {
+            action->instruction = 2;
+            action->extra1 = 0;
+            return 1;
         }
     }
-done:
-    action->instruction = 0;
     return 1;
 }
 
@@ -250,41 +239,38 @@ int SC_SaveLoad::Exit(SC_Message* msg) {
         return 0;
     }
     timer.Reset();
-    if (action->instruction != 2) {
-        if (action->instruction != 7) {
+    switch (action->instruction) {
+    case 2: {
+        switch (action->extra1) {
+        case 0:
+            SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
             return 1;
-        }
-        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
-        return 1;
-    }
-    int choice = action->extra1;
-    if (choice == 0) {
-        SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        return 1;
-    }
-    if (choice != 1) {
-        if (choice != 2) {
-            return 1;
-        }
-        {
+        case 1: {
             GameState* gs = g_GameState_0046aa30;
             int idx = gs->FindState("MUST_SAVEGAME");
             if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
             gs->stateValues[idx] = 0;
+            SendGameMessage(0x2E, 0, returnCommand, returnData, 4, 0, 0, 0, 0, 0);
+            return 1;
         }
-        SendGameMessage(returnCommand, returnData, savedCommand, savedMsgData, 4, 0, 0, 0, 0, 0);
+        case 2: {
+            GameState* gs = g_GameState_0046aa30;
+            int idx = gs->FindState("MUST_SAVEGAME");
+            if (idx < 0 || gs->maxStates - 1 < idx) {
+                ShowError("Invalid gamestate %d", idx);
+            }
+            gs->stateValues[idx] = 0;
+            SendGameMessage(returnCommand, returnData, savedCommand, savedMsgData, 4, 0, 0, 0, 0, 0);
+            return 1;
+        }
+        }
         return 1;
     }
-    {
-        GameState* gs = g_GameState_0046aa30;
-        int idx = gs->FindState("MUST_SAVEGAME");
-        if (idx < 0 || gs->maxStates - 1 < idx) {
-            ShowError("Invalid gamestate %d", idx);
-        }
-        gs->stateValues[idx] = 0;
+    case 7:
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        return 1;
     }
-    SendGameMessage(0x2E, 0, returnCommand, returnData, 4, 0, 0, 0, 0, 0);
     return 1;
 }

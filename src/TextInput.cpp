@@ -13,7 +13,7 @@ TextInput::TextInput(char* str, int len, void* fnt, void* wid) {
     maxLen = len;
     origBuf = (char*)malloc(len + 1);
     strcpy(origBuf, editBuf);
-    font = (GlyphFont*)fnt;
+    font = (AnimatedAsset*)fnt;
     maxWidth = (int)wid;
 }
 

@@ -8,7 +8,7 @@
 #include "GlyphRect.h"
 #include "RenderEntry.h"
 #include "SoundCommand.h"
-#include "GlyphFont.h"
+#include "AnimatedAsset.h"
 #include "string.h"
 #include "globals.h"
 #include <string.h>

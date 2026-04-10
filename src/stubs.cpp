@@ -22,5 +22,5 @@
 // SmackSummary — in SC_Cinematic.cpp
 // TextInput::TextInput (0x445680) — in TextInput.cpp
 // TextInput::~TextInput (0x4456F0) — in TextInput.cpp
-// GlyphFont::GetTextWidth (0x43AD50) — in GlyphFont.cpp
-// GlyphFont::IsValidChar (0x43ABA0) — in GlyphFont.cpp
+// AnimatedAsset::GetTextWidth (0x43AD50) — in AnimatedAsset.cpp
+// AnimatedAsset::IsValidChar (0x43ABA0) — in AnimatedAsset.cpp

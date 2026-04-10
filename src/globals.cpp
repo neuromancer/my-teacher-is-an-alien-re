@@ -27,7 +27,7 @@
 #include "IconBar.h"
 #include "GameConfig.h"
 #include "GameEngine.h"
-#include "GlyphFont.h"
+#include "AnimatedAsset.h"
 #include "T_Object.h"
 #include "Palette.h"
 
@@ -257,7 +257,7 @@ VBuffer* g_BackBuffer_0046aa14 = 0;               // 0x0046aa14
 MouseControl* g_Mouse_0046aa18 = 0;                          // 0x0046aa18
 CDData* g_PathResolver_0046aa1c = 0;                         // 0x0046aa1c
 ZBufferManager* g_ZBufferManager_0046aa24 = 0;               // 0x0046aa24
-GlyphFont* g_GlyphFont_0046aa28 = 0;                         // 0x0046aa28
+AnimatedAsset* g_GlyphFont_0046aa28 = 0;                     // 0x0046aa28
 char* g_StateString_0046aa2c = 0;                            // 0x0046aa2c
 GameState* g_GameState_0046aa30 = 0;              // 0x0046aa30
 GameState* g_StringTable_0046aa34 = 0;                       // 0x0046aa34

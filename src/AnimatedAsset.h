@@ -41,13 +41,13 @@ public:
 
     AnimatedAsset();
     AnimatedAsset* Init();
-    void LoadAnimatedAsset(char* param_1);
-    void BuildGlyphTable();
-    int IsCharSupported(int ch);
-    int ComputeTextMetrics(char* text);
-    void PrepareText(char* text);
-    void RenderText(char* text, int param_2);
-    int DrawChar(int, int, int);
+    void LoadFont(char* param_1);       // 0x43A830
+    void InitGlyphTable();              // 0x43AA20
+    int IsValidChar(int ch);            // 0x43ABA0
+    int DrawChar(int, int, int);        // 0x43ABD0
+    int GetTextWidth(char* text);       // 0x43AD50
+    void PrepareText(char* text);       // 0x43AE30
+    void RenderText(char* text, int param_2); // 0x43AEB0
 
     ~AnimatedAsset();
 };

@@ -13,6 +13,7 @@
 #include "Sample.h"
 #include "main.h"
 #include "ZBuffer.h"
+#include "ZBufferManager.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,9 +32,9 @@ void __fastcall InitCombatScreen(void* self);
 
 /* Function start: 0x4415E0 */
 SC_Pods::SC_Pods() {
-    memset(&handlerId, 0, 24);
-    resultAction = 0;
-    combatEngine = 0;
+    int* p = &resultAction;
+    p[0] = 0;
+    p[1] = 0;
     handlerId = 0x44;
 }
 
@@ -55,40 +56,38 @@ void SC_Pods::Init(SC_Message* msg) {
     if (zbm->m_state != 1) {
         zbm->m_state = 1;
 
-        // Clear command queue
-        int* list1 = (int*)zbm->m_queueA0;
-        if (*list1 != 0) {
-            list1[2] = *list1;
-            while (*list1 != 0) {
-                void* obj = ((LinkedList*)list1)->RemoveCurrent();
+        ZBQueue* list1 = zbm->m_queueA0;
+        if (list1->head != 0) {
+            list1->current = list1->head;
+            while (list1->head != 0) {
+                void* obj = list1->Pop();
                 if (obj != 0) {
-                    free(obj);
+                    *(int*)obj = 0x461030;
+                    FreeMemory(obj);
                 }
             }
         }
 
-        // Clear draw entry queue
-        int* list2 = (int*)zbm->m_queueA4;
-        if (*list2 != 0) {
-            list2[2] = *list2;
-            while (*list2 != 0) {
-                void* item = ((LinkedList*)list2)->RemoveCurrent();
+        ZBQueue* list2 = zbm->m_queueA4;
+        if (list2->head != 0) {
+            list2->current = list2->head;
+            while (list2->head != 0) {
+                void* item = list2->Pop();
                 if (item != 0) {
                     ((ZBuffer*)item)->CleanUpVBuffer();
-                    free(item);
+                    FreeMemory(item);
                 }
             }
         }
 
-        // Clear sound queue
-        int* list3 = (int*)zbm->m_queue9c;
-        if (*list3 != 0) {
-            list3[2] = *list3;
-            while (*list3 != 0) {
-                void* item = ((LinkedList*)list3)->RemoveCurrent();
+        ZBQueue* list3 = zbm->m_queue9c;
+        if (list3->head != 0) {
+            list3->current = list3->head;
+            while (list3->head != 0) {
+                void* item = list3->Pop();
                 if (item != 0) {
                     ((RenderEntry*)item)->~RenderEntry();
-                    free(item);
+                    FreeMemory(item);
                 }
             }
         }
@@ -152,8 +151,9 @@ int SC_Pods::ShutDown(SC_Message* msg) {
     }
 
     if (g_SlimeTable_0046bf28 != 0) {
-        g_SlimeTable_0046bf28->~SlimeTable();
-        FreeMemory(g_SlimeTable_0046bf28);
+        SlimeTable* st = g_SlimeTable_0046bf28;
+        st->~SlimeTable();
+        FreeMemory(st);
         g_SlimeTable_0046bf28 = 0;
     }
 
@@ -166,11 +166,12 @@ int SC_Pods::ShutDown(SC_Message* msg) {
 
 /* Function start: 0x441AE0 */
 int SC_Pods::AddMessage(SC_Message* msg) {
-    msg->command = handlerId;
-    msg->priority = 0;
-    msg->data = moduleParam;
+    SpriteAction* action = (SpriteAction*)msg;
+    action->fromType = handlerId;
+    action->fromValue = moduleParam;
+    action->instruction = 0;
 
-    if (msg->mouseX == 0x1b && savedCommand == 0x2b) {
+    if (action->lastKey == 0x1b && savedCommand == 0x2b) {
         g_CombatEngine_0046ae78->combatFlags |= 4;
     }
 
@@ -184,9 +185,10 @@ void SC_Pods::HandleResult() {
     if (savedCommand == 0x2b) {
         if (flags & 1) {
             // WIN in practice mode
-            if (resultAction != 0) {
-                ((SpriteAction*)resultAction)->~SpriteAction();
-                FreeMemory((void*)resultAction);
+            SpriteAction* ra = (SpriteAction*)resultAction;
+            if (ra != 0) {
+                ra->~SpriteAction();
+                FreeMemory(ra);
                 resultAction = 0;
             }
 
@@ -200,9 +202,10 @@ void SC_Pods::HandleResult() {
             }
         } else if (flags & 2) {
             // LOSE in practice mode
-            if (resultAction != 0) {
-                ((SpriteAction*)resultAction)->~SpriteAction();
-                FreeMemory((void*)resultAction);
+            SpriteAction* ra = (SpriteAction*)resultAction;
+            if (ra != 0) {
+                ra->~SpriteAction();
+                FreeMemory(ra);
                 resultAction = 0;
             }
 
@@ -312,14 +315,17 @@ void SC_Pods::HandleResult() {
 
     EnqueueSpriteAction((SpriteAction*)resultAction);
 
-    if (resultAction != 0) {
-        ((SpriteAction*)resultAction)->~SpriteAction();
-        FreeMemory((void*)resultAction);
-        resultAction = 0;
+    {
+        SpriteAction* ra = (SpriteAction*)resultAction;
+        if (ra != 0) {
+            ra->~SpriteAction();
+            FreeMemory(ra);
+            resultAction = 0;
+        }
     }
 }
 
-/* Function start: 0x442090 */
+/* Function start: 0x4420B3 */
 int SC_Pods::LBLParse(char* line) {
     char label[32];
     int soundId = 0;
@@ -342,55 +348,6 @@ int SC_Pods::LBLParse(char* line) {
     }
 
     return 0;
-}
-
-extern void BlankScreen();
-
-/* Function start: 0x42BE00 */
-void __fastcall InitCombatScreen(void* self)
-{
-    SC_CombatBase* engine = (SC_CombatBase*)self;
-
-    engine->combatFlags = 0;
-
-    g_Viewport_0046ae54->SetDimensions(
-        *(int*)((char*)g_WeaponParser_0046ae4c + 0x98),
-        *(int*)((char*)g_WeaponParser_0046ae4c + 0x9c));
-
-    {
-        Sprite* navSpr = *(Sprite**)((char*)g_Navigator_0046ae70 + 0xa0);
-        Animation* anim = navSpr->animation_data;
-        int fh = 0;
-        if (anim != 0) {
-            fh = anim->targetBuffer->height;
-        }
-        int fw = 0;
-        if (anim != 0) {
-            fw = anim->targetBuffer->width;
-        }
-        fh -= g_Viewport_0046ae54->dim.b;
-        fw -= g_Viewport_0046ae54->dim.a;
-        g_Viewport_0046ae54->SetDimensions2(fw, fh);
-    }
-    g_Viewport_0046ae54->SetCenter();
-    g_Viewport_0046ae54->SetAnchor(
-        *(int*)((char*)g_WeaponParser_0046ae4c + 0x90),
-        *(int*)((char*)g_WeaponParser_0046ae4c + 0x94));
-
-    *(int*)((int)g_ScoreDisplay_0046ae6c + 4) = 100;
-    engine->spriteFrameCount = 1;
-    engine->frameCount = 1;
-    BlankScreen();
-
-    {
-        unsigned int palStart = *(unsigned int*)((char*)g_WeaponParser_0046ae4c + 0xa0);
-        int palEnd = *(int*)((char*)g_WeaponParser_0046ae4c + 0xa4);
-        g_Palette_0046ae64->SetPalette(palStart, palEnd - palStart + 1);
-    }
-
-    if (engine->backgroundSound != 0) {
-        engine->backgroundSound->Play(100, 0);
-    }
 }
 
 // FUN_00440860 = PodsEngine::PodsEngine — implemented in PodsEngine.cpp

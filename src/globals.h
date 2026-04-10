@@ -21,7 +21,7 @@ class TimedEventPool;
 class Engine;
 class GameEngine;
 class SC_CombatBase;
-class GlyphFont;
+class AnimatedAsset;
 class T_Object;
 class mCNavigator;
 class CombatSprite;
@@ -426,7 +426,7 @@ extern int g_SpriteTableInitialized_00436b9c; // Initialization flag for sprite 
 extern char* g_Buffer_0046aa00; // DAT_00436960  { /* 4 bytes */ }
 extern char* g_Buffer_00436964; // Scale table buffer
 extern InputManager* g_InputManager_0046aa08; // DAT_00436968  { /* 4 bytes */ }
-extern GlyphFont* g_GlyphFont_0046aa28;                     // GlyphFont* for text rendering
+extern AnimatedAsset* g_GlyphFont_0046aa28;                  // AnimatedAsset* for text rendering
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }

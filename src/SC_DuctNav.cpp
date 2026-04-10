@@ -175,7 +175,7 @@ int SC_DuctNav::LBLParse(char* line)
 }
 
 extern "C" void WriteToLog(const char* format, ...);
-// GlyphFont::LoadFont now in GlyphFont.cpp
+// AnimatedAsset::LoadFont now in AnimatedAsset.cpp
 extern void ShowError(const char* format, ...);
 
 /* Function start: 0x43D170 */
@@ -552,7 +552,7 @@ set_clear_return:
     return 1;
 }
 
-#include "GlyphFont.h"
+#include "AnimatedAsset.h"
 
 /* Function start: 0x43B7E0 */
 void SC_DuctNav::Update(int p1, int p2) {

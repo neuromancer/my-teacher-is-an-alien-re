@@ -31,8 +31,8 @@ AnimatedAsset::~AnimatedAsset()
     }
 }
 
-// 0x43A830 = GlyphFont::LoadFont — in GlyphFont.cpp
-void AnimatedAsset::LoadAnimatedAsset(char *param_1)
+/* Function start: 0x43A830 */
+void AnimatedAsset::LoadFont(char *param_1)
 {
   int iVar2;
   Animation *anim;
@@ -64,10 +64,10 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
       if (anim != 0) {
         delete anim;
       }
-      BuildGlyphTable();
-      iVar2 = IsCharSupported(0x41);
+      InitGlyphTable();
+      iVar2 = IsValidChar(0x41);
       if (iVar2 != 0) {
-        iVar2 = ComputeTextMetrics("A");
+        iVar2 = GetTextWidth("A");
         iVar2 = (iVar2 * 2) / 3;
         spaceWidth = iVar2;
         tabWidth = iVar2 << 2;
@@ -76,8 +76,8 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
   }
 }
 
-// 0x43AA20 = GlyphFont::InitGlyphTable — in GlyphFont.cpp
-void AnimatedAsset::BuildGlyphTable()
+/* Function start: 0x43AA20 */
+void AnimatedAsset::InitGlyphTable()
 {
     GlyphRect* table = new GlyphRect[glyphCount];
 
@@ -139,8 +139,8 @@ BUILT:
     buffer->Lock();
 }
 
-// 0x43ABA0 = GlyphFont::IsValidChar — in GlyphFont.cpp
-int AnimatedAsset::IsCharSupported(int ch)
+/* Function start: 0x43ABA0 */
+int AnimatedAsset::IsValidChar(int ch)
 {
     if (ch != 0x20 && ch != 9) {
         int delta = ch - firstChar;
@@ -197,8 +197,8 @@ int AnimatedAsset::DrawChar(int x, int y, int ch)
     return width;
 }
 
-// 0x43AD50 = GlyphFont::GetTextWidth — in GlyphFont.cpp
-int AnimatedAsset::ComputeTextMetrics(char* text)
+/* Function start: 0x43AD50 */
+int AnimatedAsset::GetTextWidth(char* text)
 {
     int total = 0;
 
@@ -235,12 +235,12 @@ void AnimatedAsset::PrepareText(char* text)
 
     switch (GetGlobalTextAlign()) {
     case 0:
-        w = ComputeTextMetrics(text);
+        w = GetTextWidth(text);
         w = w / 2;
         text_pos.x -= w;
         break;
     case 1:
-        w = ComputeTextMetrics(text);
+        w = GetTextWidth(text);
         text_pos.x -= w;
         break;
     }
