@@ -19,7 +19,7 @@ void Weapon::OnHit()
     }
 }
 
-/* Function start: 0x426E30 */
+/* Function start: 0x426E30 */ /* No assembly extracted */
 void CombatDisplay::DrawCrosshairs()
 {
 }

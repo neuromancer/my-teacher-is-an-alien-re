@@ -8,7 +8,7 @@
 extern "C" int FileExists(const char*);
 extern "C" {
 
-/* Function start: 0x432E60 */
+/* Function start: 0x432E60 */ /* No assembly extracted */
 void __cdecl GetCurrentDir(char *buffer, int size)
 {
     GetCurrentDirectoryA(size, buffer);

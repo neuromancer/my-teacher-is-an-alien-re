@@ -86,6 +86,8 @@ def main():
                     lines = f.readlines()
 
                 for i, line in enumerate(lines):
+                    if "No assembly extracted" in line:
+                        continue
                     match = re.search(r"/\* Function start: 0x([0-9a-fA-F]+) \*/", line)
                     if match:
                         address = match.group(1).upper()

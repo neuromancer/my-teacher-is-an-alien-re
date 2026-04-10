@@ -15,19 +15,19 @@ void operator delete(void* ptr) {
     free(ptr);
 }
 
-/* Function start: 0x424940 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x424940 */ /* DEMO ONLY - no full game match */ /* No assembly extracted */
 void FreeMemory(void* ptr)
 {
     FreeFromGlobalHeap(ptr);
 }
 
-/* Function start: 0x4249C0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4249C0 */ /* DEMO ONLY - no full game match */ /* No assembly extracted */
 void* AllocateMemory(unsigned int size)
 {
     return AllocateMemoryInternal(size, 1);
 }
 
-/* Function start: 0x4277E0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4277E0 */ /* DEMO ONLY - no full game match */ /* No assembly extracted */
 void FreeFromGlobalHeap(void* ptr)
 {
     if (ptr != 0) {
@@ -35,13 +35,13 @@ void FreeFromGlobalHeap(void* ptr)
     }
 }
 
-/* Function start: 0x428440 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x428440 */ /* DEMO ONLY - no full game match */ /* No assembly extracted */
 void* CrtMalloc(unsigned int size)
 {
     return AllocateMemoryInternal(size, g_TimeSeed_0043cb64);
 }
 
-/* Function start: 0x428460 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x428460 */ /* DEMO ONLY - no full game match */ /* No assembly extracted */
 void* AllocateMemoryInternal(unsigned int size, int flag)
 {
     void* mem;
@@ -63,7 +63,7 @@ void* AllocateMemoryInternal(unsigned int size, int flag)
     return mem;
 }
 
-/* Function start: 0x4284A0 */ /* DEMO ONLY - no full game match */
+/* Function start: 0x4284A0 */ /* DEMO ONLY - no full game match */ /* No assembly extracted */
 void* HeapAllocWrapper(unsigned int size)
 {
     if (g_ProcessHeap_0043eff0 == 0) {

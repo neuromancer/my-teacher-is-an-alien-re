@@ -87,7 +87,7 @@ void Engine::LogHandler(int param) {
     WriteToLog("hIam %d", handlerId);
 }
 
-/* Function start: 0x4491B0 */
+/* Function start: 0x4491B0 */ /* No assembly extracted */
 void Engine::ProcessAction(int index, int* action) {}
 
 /* Function start: 0x449410 */

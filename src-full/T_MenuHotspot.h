@@ -36,6 +36,7 @@ public:
     void Cleanup();                 // 0x420EF0
     void StopCursorSound();         // 0x420EF0
     void SimpleUpdate();            // 0x421BC0 - simple hover check
+    void ProcessSpriteActions();    // 0x421020
 
     // Fields (full game layout, after Parser 0x90 base)
     Sprite* sprite;                 // 0x90

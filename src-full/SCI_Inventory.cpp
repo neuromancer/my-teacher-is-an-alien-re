@@ -169,7 +169,7 @@ SCI_Inventory::~SCI_Inventory() {
     }
 }
 
-/* Function start: 0x43E920 */
+/* Function start: 0x43E920 */ /* No assembly extracted */
 void SCI_Inventory::Init(SC_Message* msg) {
     
     int* palSlot;

@@ -22,8 +22,7 @@
 
 // extern functions (single-param __fastcall == thiscall with 0 stack params)
 
-// FUN_00421020 = ProcessSpriteActions - implemented below
-void __fastcall ProcessSpriteActions(void* obj);
+// FUN_00421020 = T_MenuButton::ProcessSpriteActions - implemented in T_MenuHotspot.cpp
 // FUN_00421880 = Timer::Timer — implemented in Timer.cpp
 // FUN_004218b0 = Timer::~Timer — implemented in Timer.cpp
 // FUN_0041dbe0 = InitPalette (Palette.h)
@@ -703,21 +702,21 @@ void SCI_SchoolMenu::OnProcessStart() {
 
 /* Function start: 0x41ECE0 */
 int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
-    SpriteAction* action;
+    T_MenuHotspot** charBase;
+    int i;
+    T_MenuHotspot** selPtr;
     GameState* gs;
     int* stateVals;
-    int i;
-    int hitResult;
-    T_MenuHotspot** charBase;
-    T_MenuHotspot** charPtr;
     int* msgMouse;
+    SpriteAction* action;
+    T_MenuHotspot** charPtr;
     int hitChar;
     char buf[28];
+    char capBuf[28];
+    int hitResult;
     T_MenuHotspot** optBase;
     T_MenuHotspot** optPtr;
     int hitOpt;
-    T_MenuHotspot** selPtr;
-    char capBuf[28];
     char nextChar;
 
     action = (SpriteAction*)msg;
@@ -989,7 +988,7 @@ check_go:
         stateVals[i]++;
 
         // Execute option action
-        ProcessSpriteActions(options[selectedOption]);
+        options[selectedOption]->ProcessSpriteActions();
 
         // Determine next character
         gs = g_GameState_0046aa30;
@@ -1268,30 +1267,3 @@ int SCI_SchoolMenu::LBLParse(char* line) {
 }
 
 
-/* Function start: 0x421020 */
-void __fastcall ProcessSpriteActions(void* obj)
-{
-    T_MenuHotspot* hotspot = (T_MenuHotspot*)obj;
-    LinkedList* list = (LinkedList*)hotspot->messageQueue;
-    if (list != 0) {
-        list->current = list->head;
-        if (list->head == 0) return;
-        do {
-            ListNode* cur = list->current;
-            void* data;
-            if (cur == 0) {
-                data = 0;
-            } else {
-                data = cur->data;
-            }
-            EnqueueSpriteAction(data);
-            ListNode* curNode = list->current;
-            if (list->tail == curNode) {
-                return;
-            }
-            if (curNode != 0) {
-                list->current = curNode->next;
-            }
-        } while (list->head != 0);
-    }
-}

@@ -37,7 +37,7 @@ SCI_IconBarModule::SCI_IconBarModule() {
 
 /* Function start: 0x4011A0 */
 SCI_IconBarModule::~SCI_IconBarModule() {
-    Sprite** p;
+    T_Hotspot** p;
     int i;
     void* data;
 
@@ -55,7 +55,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
     p = icons;
     do {
         if (*p != 0) {
-            delete (T_Hotspot*)*p;
+            delete *p;
             *p = 0;
         }
         p++;
@@ -208,10 +208,10 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Cleanup icons
         int count = 15;
-        Sprite** p = icons;
+        T_Hotspot** p = icons;
         do {
             if (*p != 0) {
-                delete (T_Hotspot*)*p;
+                delete *p;
                 *p = 0;
             }
             p++;
@@ -373,7 +373,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
 /* Function start: 0x401CF0 */
 int SCI_IconBarModule::ShutDown(SC_Message* msg) {
-    Sprite** pIcon;
+    T_Hotspot** pIcon;
     int i;
 
     if (msg == 0) {
@@ -394,7 +394,7 @@ skip_cursor:
     i = 15;
     do {
         if (*pIcon != 0) {
-            ((T_Hotspot*)*pIcon)->StopAll();
+            (*pIcon)->StopAll();
         }
         pIcon = pIcon + 1;
         i = i - 1;
@@ -415,7 +415,7 @@ skip_cursor:
 
 /* Function start: 0x401D80 */
 void SCI_IconBarModule::Update(int param1, int param2) {
-    Sprite** pIcon;
+    T_Hotspot** pIcon;
     int i;
     int spriteParam;
 
@@ -441,7 +441,7 @@ void SCI_IconBarModule::Update(int param1, int param2) {
     i = 15;
     do {
         if (*pIcon != 0) {
-            ((T_Hotspot*)*pIcon)->DoItem(spriteParam);
+            (*pIcon)->DoItem(spriteParam);
         }
         pIcon = pIcon + 1;
         i = i - 1;
@@ -525,8 +525,8 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
 /* Function start: 0x4020A0 */
 int SCI_IconBarModule::FindClickedIcon(int x, int y) {
     int i;
-    Sprite** pIcon;
-    Sprite* icon;
+    T_Hotspot** pIcon;
+    T_Hotspot* icon;
     int inRect;
 
     i = 0;
@@ -534,8 +534,8 @@ int SCI_IconBarModule::FindClickedIcon(int x, int y) {
     do {
         icon = *pIcon;
         if (icon != 0) {
-            if (x < icon->rightBound || icon->loc_x < x ||
-                y < icon->num_logic_conditions || icon->loc_y < y) {
+            if (x < icon->hotspotPos.x || icon->hotspotRight < x ||
+                y < icon->hotspotPos.y || icon->hotspotBottom < y) {
                 inRect = 0;
             } else {
                 inRect = 1;
@@ -579,7 +579,7 @@ void SCI_IconBarModule::UpdateCursor() {
         }
         g_Mouse_0046aa18->m_sprite->ResetAnimation(hotspot, 0);
     } else if (iconIdx != -1) {
-        Sprite* icon = icons[iconIdx];
+        Sprite* icon = (Sprite*)icons[iconIdx];
         int state = 0;
         int frameIdx = icon->handle;
         Animation* anim = *(Animation**)((char*)icon + 0xb4 + frameIdx * 4);
@@ -626,4 +626,237 @@ void SCI_IconBarModule::Serialize(void* param) {
         }
         fread(g_StateString_0046aa2c, 0x40, 1, fp);
     }
+}
+
+/* Function start: 0x4022B0 */
+int SCI_IconBarModule::LBLParse(char* line) {
+    char formatted[128];
+    int avail_p4;
+    int sound;
+    char label[32];
+    int rectLeft;
+    int rectTop;
+    int rectRight;
+    int rectBottom;
+    int room;
+    int hotspotIdx;
+
+    sscanf(line, "%s", label);
+
+    if (strcmp(label, "PALE") == 0) {
+        sscanf(line, "%s %s", label, formatted);
+        if (field_E4 != 0) {
+            field_E4->~Palette();
+            FreeMemory(field_E4);
+            field_E4 = 0;
+        }
+        field_E4 = new Palette(formatted);
+    } else if (strcmp(label, "AMBIENT") == 0) {
+        if (mmPlayer == 0) {
+            mmPlayer = new MMPlayer();
+        }
+        Parser::ProcessFile((Parser*)mmPlayer, this, 0);
+    } else if (strcmp(label, "HOTSPOT") == 0) {
+        sscanf(line, "%s %d", label, &hotspotIdx);
+        if (hotspotIdx >= 15) {
+            ShowError("Error in SCIsrcSc.cpp - LBLParse: Too many hotspots");
+        }
+        if (icons[hotspotIdx] != 0) {
+            ShowError("repeat use of hotspot %d");
+        }
+        T_Hotspot* hs = new T_Hotspot(0);
+        icons[hotspotIdx] = hs;
+        hs->parentHandlerId = handlerId;
+        hs->parentModuleParam = moduleParam;
+        hs->hotspotHandle = hotspotIdx;
+        Parser::ProcessFile(hs, this, 0);
+    } else if (strcmp(label, "DELETE_HOTSPOT") == 0) {
+        int ret = sscanf(line, "%s %d", label, &hotspotIdx);
+        if (ret < 2) {
+            ReportUnknownLabel("SCI_SearchScreen --> DELETE_HOTSPOT");
+        }
+        T_Hotspot* hs = icons[hotspotIdx];
+        if (hs != 0) {
+            hs->~T_Hotspot();
+            FreeMemory(hs);
+            icons[hotspotIdx] = 0;
+        }
+    } else if (strcmp(label, "DLG_HOTSPOT") == 0) {
+        int ret = sscanf(line, "%s %d %d %d %d %d", label, &room, &rectLeft, &rectTop, &rectRight, &rectBottom);
+        if (ret < 6) {
+            ReportUnknownLabel("SCI_SearchScreen --> DLG_HOTSPOT");
+        }
+        if (icons[hotspotIdx] != 0) {
+            ShowError("repeat use of hotspot %d");
+        }
+        T_Hotspot* hs = new T_Hotspot(0);
+        icons[room] = hs;
+        hs->parentHandlerId = handlerId;
+        hs->parentModuleParam = moduleParam;
+        hs->hotspotHandle = room;
+        hs->hotspotPos.x = rectLeft;
+        hs->hotspotPos.y = rectTop;
+        hs->hotspotRight = rectRight;
+        hs->hotspotBottom = rectBottom;
+        sprintf(formatted, "DIALOG %d", hotspotIdx);
+        hs->LBLParse(formatted);
+        if (room >= 15) {
+            ShowError("Error in SCIsrcSc.cpp - LBLParse: Too many hotspots");
+        }
+    } else if (strcmp(label, "AVAILABLE_HOTSPOT") == 0) {
+        int ret = sscanf(line, "%s %d %d %d %d %d %d %d %d", label, &hotspotIdx, &rectRight, &rectTop, &rectLeft, &avail_p4, &room, &rectBottom, &sound);
+        if (ret < 8) {
+            ReportUnknownLabel("SCI_SearchScreen --> AVAILABLE_HOTSPOT");
+        }
+        if (icons[hotspotIdx] != 0) {
+            ShowError("repeat use of hotspot %d");
+        }
+        T_Hotspot* hs = new T_Hotspot(0);
+        icons[hotspotIdx] = hs;
+        hs->parentHandlerId = handlerId;
+        hs->parentModuleParam = moduleParam;
+        hs->hotspotHandle = hotspotIdx;
+        hs->hotspotPos.x = rectRight;
+        hs->hotspotPos.y = rectTop;
+        hs->hotspotRight = rectLeft;
+        hs->hotspotBottom = avail_p4;
+
+        int iGS = g_PeriodStateIdx_0046cb90;
+        GameState* gs = g_GameState_0046aa30;
+        if (iGS < 0 || gs->maxStates - 1 < iGS) {
+            ShowError("Invalid gamestate %d", iGS);
+        }
+        int iGS2 = g_PeriodStateIdx_0046cb90;
+        GameState* gs2 = g_GameState_0046aa30;
+        int periodVal = gs->stateValues[iGS];
+        char ch;
+        if (periodVal == -1) {
+            if (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+                ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+            }
+            ch = g_PeriodCharTable_0046cb94[gs2->stateValues[iGS2]];
+        } else {
+            ch = g_PeriodCharTable_0046cb94[periodVal];
+        }
+        sprintf(formatted, "%cRM%d", (int)ch, room);
+        gs = g_GameState_0046aa30;
+        int stateIdx = g_GameState_0046aa30->FindLabel(formatted);
+        if (stateIdx < 0 || gs->maxStates - 1 < stateIdx) {
+            ShowError("Invalid gamestate %d", stateIdx);
+        }
+        if (gs->stateValues[stateIdx] != 0) {
+            sprintf(formatted, "SWITCHROOM %d %d", room, rectBottom);
+            hs->LBLParse(formatted);
+        } else {
+            sprintf(formatted, "PLAYSOUND %d", sound);
+            hs->LBLParse(formatted);
+        }
+    } else if (strcmp(label, "MESSAGE") == 0) {
+        if (field_128 == 0) {
+            field_128 = new Queue(4);
+        }
+        SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        action->fromType = handlerId;
+        action->fromValue = moduleParam;
+        ParseSpriteAction(action, this);
+        field_128->PushNode(action);
+    } else if (strcmp(label, "INTRO_HOTSPOT") == 0) {
+        sscanf(line, "%s %d", label, &hotspotIdx);
+        if (icons[hotspotIdx] != 0) {
+            ShowError("repeat use of hotspot %d");
+        }
+        T_Hotspot* hs = new T_Hotspot(0);
+        icons[hotspotIdx] = hs;
+        hs->parentHandlerId = handlerId;
+        hs->parentModuleParam = moduleParam;
+        hs->hotspotHandle = hotspotIdx;
+        hs->hotspotPos.x = -1;
+        hs->hotspotPos.y = -1;
+        hs->hotspotRight = -50;
+        hs->hotspotBottom = -50;
+        hs->LBLParse("DIALOG 10");
+
+        if (field_128 == 0) {
+            field_128 = new Queue(4);
+        }
+        SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        SpriteAction* childAction = new SpriteAction(0x20, 1, 0, 0, 2, hotspotIdx, 0, 0, 0, 0);
+        action->childAction = childAction;
+        field_128->PushNode(action);
+    } else if (strcmp(label, "LATE_HOTSPOT") == 0) {
+        sscanf(line, "%s %d", label, &hotspotIdx);
+        GameState* gs = g_GameState_0046aa30;
+        int wentIdx = g_GameState_0046aa30->FindLabel("WENT_TO_CLASS");
+        if (wentIdx < 0 || gs->maxStates - 1 < wentIdx) {
+            ShowError("Invalid gamestate %d", wentIdx);
+        }
+        GameState* gs2 = g_GameState_0046aa30;
+        if (gs->stateValues[wentIdx] == 0) {
+            int actIdx = g_GameState_0046aa30->FindLabel("NUM_ACTIONS");
+            if (actIdx < 0 || gs2->maxStates - 1 < actIdx) {
+                ShowError("Invalid gamestate %d", actIdx);
+            }
+            if (gs2->stateValues[actIdx] > 10) {
+                if (icons[hotspotIdx] != 0) {
+                    ShowError("repeat use of hotspot %d");
+                }
+                T_Hotspot* hs = new T_Hotspot(0);
+                icons[hotspotIdx] = hs;
+                hs->parentHandlerId = handlerId;
+                hs->parentModuleParam = moduleParam;
+                hs->hotspotHandle = hotspotIdx;
+                hs->hotspotPos.x = -1;
+                hs->hotspotPos.y = -1;
+                hs->hotspotRight = -50;
+                hs->hotspotBottom = -50;
+                hs->LBLParse("DIALOG 10");
+
+                if (field_128 == 0) {
+                    field_128 = new Queue(4);
+                }
+                SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                SpriteAction* childAction = new SpriteAction(0x20, 1, 0, 0, 2, hotspotIdx, 0, 0, 0, 0);
+                action->childAction = childAction;
+                field_128->PushNode(action);
+            }
+        }
+    } else if (strcmp(label, "BACKGROUNDSND") == 0) {
+        sscanf(line, "%s %d", label, &exitTarget);
+    } else if (strcmp(label, "SKIP_PERIOD_PARSE") == 0) {
+        staticSceneFound = 1;
+    } else if (strcmp(label, "FORCE_PARSE") == 0) {
+        roomInitialized = 0;
+    } else if (strcmp(label, "NOICONBAR") == 0) {
+        mode = 1;
+    } else if (strcmp(label, "NOACTIONINC") == 0) {
+        skipActionsCount = 1;
+    } else if (strcmp(label, "MERCYBUTTON") == 0) {
+        hasBoundaryRect = 1;
+        Sprite* spr = new Sprite("elements\\study.smk");
+        boundRect.left = 0x203;
+        boundRect.right = 0x267;
+        boundRect.bottom = 0x34;
+        boundRect.top = 10;
+        spr->loc_x = 0x12;
+        spr->loc_y = 10;
+        spr->flags |= 0x40;
+        spr->priority = 1000;
+        if (mmPlayer == 0) {
+            mmPlayer = new MMPlayer();
+        }
+        mmPlayer->AddSprite(spr);
+    } else if (strcmp(label, "NO_CHOICEMENU") == 0) {
+        hasBoundaryRect = 1;
+        boundRect.left = -1;
+        boundRect.top = -1;
+        boundRect.right = -1;
+        boundRect.bottom = -1;
+    } else if (strcmp(label, "VIDEO_RES") == 0) {
+        sscanf(line, " %s %d %d ", label, &videoDim.x, &videoDim.y);
+    } else if (strcmp(label, "END") == 0) {
+        return 1;
+    } else {
+        ReportUnknownLabel("SCI_SearchScreen");
+    }
+    return 0;
 }

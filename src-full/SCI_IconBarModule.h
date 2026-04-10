@@ -10,6 +10,7 @@ class SC_Message;
 class TimeOut;
 class MMPlayer;
 class Palette;
+class T_Hotspot;
 struct Queue;
 
 // SCI_IconBarModule - Icon bar module handler (case 32/0x20)
@@ -27,6 +28,7 @@ public:
     int AddMessage(SC_Message* msg);       // 0x401E40
     int FindClickedIcon(int x, int y);     // 0x4020A0
     void UpdateCursor();                   // 0x402100
+    int LBLParse(char* line);              // 0x4022B0
     void Serialize(void* param);           // 0x4021C0
 
     int exitTarget;               // 0xA8
@@ -42,7 +44,7 @@ public:
     TimeOut* timeout;           // 0xE0 — inactivity timeout
     Palette* field_E4;          // 0xE4
     MMPlayer* mmPlayer;         // 0xE8 — background animation/cursor
-    Sprite* icons[15];          // 0xEC-0x127 — icon sprite pointers
+    T_Hotspot* icons[15];       // 0xEC-0x127 — hotspot pointers
     Queue* field_128;           // 0x128
     int field_12C;              // 0x12C
 };

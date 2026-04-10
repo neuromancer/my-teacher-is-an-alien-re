@@ -278,6 +278,32 @@ int T_MenuButton::LBLParse(char* line) {
 
 void T_MenuButton::Cleanup() {}
 
+/* Function start: 0x421020 */
+void T_MenuButton::ProcessSpriteActions() {
+    LinkedList* list = (LinkedList*)messageQueue;
+    if (list != 0) {
+        list->current = list->head;
+        if (list->head == 0) return;
+        do {
+            ListNode* cur = list->current;
+            SpriteAction* data;
+            if (cur == 0) {
+                data = 0;
+            } else {
+                data = (SpriteAction*)cur->data;
+            }
+            EnqueueSpriteAction(data);
+            ListNode* curNode = list->current;
+            if (list->tail == curNode) {
+                return;
+            }
+            if (curNode != 0) {
+                list->current = curNode->next;
+            }
+        } while (list->head != 0);
+    }
+}
+
 /* Function start: 0x420EF0 */
 void T_MenuButton::StopCursorSound() {
     if (cursor != 0) {

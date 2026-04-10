@@ -8,7 +8,7 @@ extern "C" void WriteToLog(const char* format, ...);
 #include <stdlib.h>
 #include <new.h>
 
-/* Function start: 0x401120 */
+/* Function start: 0x401120 */ /* No assembly extracted */
 SlimeDim::~SlimeDim() {}
 
 /* Function start: 0x444B70 */

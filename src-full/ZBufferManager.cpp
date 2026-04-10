@@ -153,7 +153,7 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
     }
 }
 
-/* Function start: 0x41B5D0 */
+/* Function start: 0x41B5D0 */ /* No assembly extracted */
 void CommandType1::Execute(GlyphRect* rect)
 {
     VBuffer* vbuf;
@@ -221,7 +221,7 @@ void BlitCommand::Execute(GlyphRect* rect)
     }
 }
 
-/* Function start: 0x41B690 */
+/* Function start: 0x41B690 */ /* No assembly extracted */
 void CommandType2::Execute(GlyphRect* rect)
 {
     SetDrawPosition(x, y);
@@ -231,7 +231,7 @@ void CommandType2::Execute(GlyphRect* rect)
     return;
 }
 
-/* Function start: 0x41B6D0 */
+/* Function start: 0x41B6D0 */ /* No assembly extracted */
 void CommandType3::Execute(GlyphRect* rect)
 {
     SetFillColor((unsigned char)field_1c);
@@ -381,7 +381,7 @@ void* ZBQueue::GetCurrentData()
     return LinkedList::GetCurrentData();
 }
 
-/* Function start: 0x41BE20 */
+/* Function start: 0x41BE20 */ /* No assembly extracted */
 void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, int mode, double scale)
 {
     if (m_state != 0) {
@@ -479,7 +479,7 @@ void ZBufferManager::DrawVBufferRegion(void* data, int priority, int x, int y, i
     }
 }
 
-/* Function start: 0x41C000 */
+/* Function start: 0x41C000 */ /* No assembly extracted */
 void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int flag)
 {
     CommandType2* cmd;

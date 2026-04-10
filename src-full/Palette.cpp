@@ -101,7 +101,7 @@ void Palette::LoadFile(char* filename)
     }
 }
 
-/* Function start: 0x41EA50 - CreatePaletteBuffer is effectively a placement new for Palette */
+/* Function start: 0x41EA50 - CreatePaletteBuffer is effectively a placement new for Palette */ /* No assembly extracted */
 Palette* __fastcall CreatePaletteBuffer(Palette* buffer)
 {
     if (buffer != 0) {

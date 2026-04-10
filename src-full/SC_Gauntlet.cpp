@@ -169,7 +169,7 @@ int SC_Gauntlet::AddMessage(SC_Message* msg) {
     return 1;
 }
 
-/* Function start: 0x42EB70 */
+/* Function start: 0x42EB70 */ /* No assembly extracted */
 int SC_Gauntlet::Exit(SC_Message* msg) {
     return 0;
 }

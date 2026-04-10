@@ -197,5 +197,5 @@ void SC_Combat::ProcessLose() {
         pendingAction = 0;
     }
 }
-/* Function start: 0x4491B0 */
+/* Function start: 0x4491B0 */ /* No assembly extracted */
 void SC_Combat::ProcessAction(int action, int* data) {}

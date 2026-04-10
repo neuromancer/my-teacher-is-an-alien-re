@@ -172,7 +172,7 @@ SC_FakeRoom::~SC_FakeRoom()
 {
 }
 
-/* Function start: 0x444840 */
+/* Function start: 0x444840 */ /* No assembly extracted */
 void SC_FakeRoom::OnProcessEnd() {}
 
 /* Function start: 0x444320 */
