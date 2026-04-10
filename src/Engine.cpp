@@ -1,42 +1,24 @@
 #include "Engine.h"
 #include "DrawEntry.h"
 #include "Animation.h"
-#include "AnimatedAsset.h"
-#include "globals.h"
-#include "SoundCommand.h"
 #include "VBuffer.h"
 #include "Memory.h"
 #include "Sprite.h"
-#include "SoundList.h"
-#include "mCNavigator.h"
 #include "Palette.h"
-#include "EngineSubsystems.h"
-#include "CombatSprite.h"
-#include "Viewport.h"
-#include "CursorState.h"
-#include "GameOutcome.h"
 #include "Sound.h"
-#include "RockThrower.h"
-#include "Sample.h"
-#include "InputManager.h"
-#include "Target.h"
+#include "ZBufferManager.h"
+#include "Handler.h"
+#include "main.h"
+#include "globals.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-#include "VideoTable.h"
+extern "C" void WriteToLog(const char* format, ...);
+extern "C" void ShowError(const char* format, ...);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
-extern "C" {
-int GetCurrentTimestamp(int*);  // 0x425000 - returns timestamp, optionally stores in *param
-void SetTimeSeed(int);          // 0x424FC0 - sets global time seed (DAT_0043bc88)
-}
-void BlankScreen();             // 0x419390
-
-// Globals for sub-parsers
-// (Now declared in globals.h)
-
-// Empty virtual function overrides (0x4010E0, 0x4010F0)
-void Engine::OnProcessStart() {}
-void Engine::OnProcessEnd() {}
+#include "SlimeTable.h"
 
 // DrawEntry implementation (originally in same source file as Engine)
 DrawEntry::~DrawEntry() {
@@ -57,349 +39,162 @@ DrawEntry::~DrawEntry() {
     }
 }
 
-/* Function start: 0x4110D0 */
-Engine::Engine() {
-  int* p;
-  p = (int*)&m_combatBonus1;
-  p[0] = 0;
-  p[1] = 0;
+void Engine::OnProcessStart() {}
 
-  p = (int*)&field_0xbc;
-  p[0] = 0;
-  p[1] = 0;
-
-  p = (int*)&m_combatBonus2;
-  p[0] = 0;
-  p[1] = 0;
-
-  p = (int*)&field_0xcc;
-  p[0] = 0;
-  p[1] = 0;
-
-  memset(&m_targetList, 0, 0x60);
-
-  int result = GetCurrentTimestamp(0);
-  SetTimeSeed(result);
-  Engine::Initialize();
+/* Function start: 0x449100 */
+Engine::Engine() : handlerId(0), moduleParam(0), savedCommand(0), savedMsgData(0), field_A0(0), field_A4(0) {
+    memset(&actionArray, 0, 112);
 }
 
-/* Function start: 0x4111D0 */
+/* Function start: 0x4491E0 */
 Engine::~Engine() {
-  CleanupSubsystems();
+    ShutDown(0);
 }
 
-/* Function start: 0x411230 */
-void Engine::SetupViewport() {
-  int height;
-  int width;
-  Animation* anim;
-
-  g_EngineViewport_00435f08->SetDimensions(g_EngineInfoParser_00435f00->anchorRect.right, g_EngineInfoParser_00435f00->anchorRect.bottom);
-  
-  anim = ((mCNavigator*)g_Navigator_00435f24)->sprite->animation_data;
-  height = 0;
-  if (anim != 0) {
-    height = anim->targetBuffer->height;
-  }
-  width = 0;
-  if (anim != 0) {
-    width = anim->targetBuffer->width;
-  }
-  
-  g_EngineViewport_00435f08->SetDimensions2(width - g_EngineViewport_00435f08->dim.a, height - g_EngineViewport_00435f08->dim.b);
-  g_EngineViewport_00435f08->SetCenter();
-  g_EngineViewport_00435f08->SetAnchor(g_EngineInfoParser_00435f00->anchorRect.left, g_EngineInfoParser_00435f00->anchorRect.top);
-  
-  g_ScoreManager_00435f20->scoreInitial = 100;
-  m_framesL = 1;
-  m_framesA = 1;
-  
-  BlankScreen();
-  
-  g_EnginePalette_00435f18->SetPalette(g_EngineInfoParser_00435f00->paletteRect.left, (g_EngineInfoParser_00435f00->paletteRect.top - g_EngineInfoParser_00435f00->paletteRect.left) + 1);
-  
-  if (m_backgroundSample != 0) {
-    m_backgroundSample->Play(100, 0);
-  }
+/* Function start: 0x449320 */
+void Engine::ShutDown(int flag) {
+    if (palette != 0) { delete palette; palette = 0; }
+    if (bgSprite != 0) { delete bgSprite; bgSprite = 0; }
+    if (consoleSprite != 0) { delete consoleSprite; consoleSprite = 0; }
+    if (pendingAction != 0) { delete pendingAction; pendingAction = 0; }
+    if (soundTable != 0) { delete soundTable; soundTable = 0; }
+    if (actionArray != 0) { FreeMemory(actionArray); actionArray = 0; }
 }
 
-/* Function start: 0x411320 */
-void Engine::StopAndCleanup() {
-  g_Sound_0043696c->StopAllSamples();
-  VirtCleanup();
+/* Function start: 0x449400 */
+int Engine::AddMessage(int* param) {
+    ((Handler*)this)->WriteMessageAddress((SC_Message*)param);
+    return 0;
 }
 
-/* Function start: 0x411340 */
-int Engine::UpdateAndCheck() {
-  int result;
+/* Function start: 0x405D60 */
+void Engine::CheckNavState(int* param) {}
 
-  result = CheckNavState();
-  if (result != 0) {
-    return 1;
-  }
-
-  UpdateCrosshair();
-
-  result = ((mCNavigator*)g_Navigator_00435f24)->Update();
-  if (result != 0) {
-    return 1;
-  }
-
-  result = UpdateSpriteFrame();
-  if (result != 0) {
-    return 1;
-  }
-
-  ProcessTargets();
-
-  Engine::m_framesA++;
-  Engine::m_framesL++;
-
-  return 0;
-}
-
-/* Function start: 0x4113A0 */
+/* Function start: 0x4494E0 */
 void Engine::ProcessTargets() {
-  Target* target;
-  InputState* mouse;
-  int buttonDown;
+    EnqueueSpriteAction(pendingAction);
+    if (pendingAction != 0) { delete pendingAction; pendingAction = 0; }
+}
 
-  target = g_TargetList_00435f0c->ProcessTargets();
-  g_Weapon_00435f14->DrawCrosshairs();
+/* Function start: 0x42BF00 */
+void Engine::StopAndCleanup() {
+    g_EngineSound_0046aa0c->StopAllSamples();
+    ShutDown(0);
+}
 
-  mouse = g_InputManager_00436968->pMouse;
-  buttonDown = 0;
-  if (mouse != 0) {
-    buttonDown = mouse->buttons & 1;
-  }
-  if (buttonDown == 0 && (mouse->prevButtons & 1) != 0) {
-    g_Weapon_00435f14->field_0xa0 = 1;
-  } else {
-    g_Weapon_00435f14->field_0xa0 = 0;
-  }
+/* Function start: 0x401160 */
+void Engine::LogHandler(int param) {
+    WriteToLog("hIam %d", handlerId);
+}
 
-  if (g_Weapon_00435f14->field_0xa0 != 0) {
-    g_Weapon_00435f14->OnHit();
-    if (target != 0) {
-      target->UpdateProgress(1);
+/* Function start: 0x4491B0 */ /* No assembly extracted */
+void Engine::ProcessAction(int index, int* action) {}
+
+/* Function start: 0x449410 */
+int Engine::Exit(int* param) {
+    if (*param != handlerId) return 0;
+    switch (param[4]) {
+    case 0: return 1;
+    case 7:
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        return 1;
+    case 0x17:
+        ShowError("SCMI_INSERT");
+        return 1;
     }
-  }
-
-  Engine::Draw();
-  Engine::UpdateMeter();
-}
-/* Function start: 0x411440 */
-int Engine::UpdateSpriteFrame() {
-  if (g_SpriteList_00435f10 != 0) {
-    g_SpriteList_00435f10->ProcessFrame(Engine::m_framesL);
-  }
-  return 0;
+    return 0;
 }
 
-/* Function start: 0x411460 */
-void Engine::UpdateCrosshair() {
-  InputState* mouse;
+/* Function start: 0x449480 */
+void Engine::Update(int p1, int p2) {
+    if (handlerId != p2) return;
+    actionIndex = 0;
+    if (actionCount <= 0) return;
+    do {
+        int* action = &actionArray[actionIndex];
+        if (*action != 0) {
+            ProcessAction(actionIndex, action);
+        }
+        actionIndex++;
+    } while (actionCount > actionIndex);
+}
 
-  mouse = g_InputManager_00436968->pMouse;
-  if (mouse != 0) {
-    g_Weapon_00435f14->m_crosshairX = mouse->x;
-  } else {
-    g_Weapon_00435f14->m_crosshairX = 0;
-  }
-
-  mouse = g_InputManager_00436968->pMouse;
-  if (mouse != 0) {
-    g_Weapon_00435f14->m_crosshairY = mouse->y;
-  } else {
-    g_Weapon_00435f14->m_crosshairY = 0;
-  }
-
-  mouse = g_InputManager_00436968->pMouse;
-  if (mouse != 0) {
-    if (mouse->x > 0xAA) {
-      g_EngineViewport_00435f08->SetCenterX(g_EngineViewport_00435f08->scrollX + 4);
-      return;
+/* Function start: 0x449260 */
+void Engine::Init(int* param) {
+    memset(&actionArray, 0, 112);
+    soundTable = new SlimeTable();
+    if (param[13] != 0) {
+        pendingAction = (SpriteAction*)param[13];
+        param[13] = 0;
     }
-  }
-  if (mouse != 0 && mouse->x >= 0x96) {
-    return;
-  }
-  g_EngineViewport_00435f08->SetCenterX(g_EngineViewport_00435f08->scrollX - 4);
+    ((Handler*)this)->CopyCommandData((SC_Message*)param);
+    moduleParam = param[1];
 }
 
-/* Function start: 0x411510 */
-void Engine::Draw() {
-  Sprite* console;
-
-  if (g_ConsoleSprite_00435f04 != 0) {
-    console = g_ConsoleSprite_00435f04;
-    console->Do(console->loc_x, console->loc_y, 1.0);
-  }
-}
-void Engine::UpdateMeter() {}
-/* Function start: 0x411540 */
-void Engine::VirtCleanup() {
-  g_GameOutcome_00435f28->PlayOutcomeVideo();
-}
-
-/* Function start: 0x411550 */
-void Engine::Initialize() {
-  Engine::m_weapon = new Weapon();
-  Engine::m_soundList = new SoundList(0x32);
-  Engine::m_engineInfoParser = new EngineInfoParser();
-  Engine::m_navigator = new mCNavigator();
-  Engine::m_timerManager = new Palette();
-  Engine::m_combatSprite = new CombatSprite();
-  Engine::m_targetList = new TargetList();
-  Engine::m_cursorState = new CursorState();
-  Engine::m_viewport = new Viewport();
-  Engine::m_gameOutcome = new GameOutcome();
-
-  CopyToGlobals();
+/* Function start: 0x449520 */
+void Engine::OnProcessEnd() {
+    if (pendingAction == 0) {
+        pendingAction = new SpriteAction(
+            savedCommand, savedMsgData,
+            handlerId, moduleParam,
+            4, 0, 0, 0, 0, 0);
+    }
+    if (palette != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
+            WriteToLog("ddouble palette");
+        }
+        g_ZBufferManager_0046aa24->m_palette = palette;
+    }
 }
 
-/* Function start: 0x411A40 */
-void Engine::CleanupSubsystems() {
-  if (Engine::m_consoleSprite != 0) {
-    delete Engine::m_consoleSprite;
-    Engine::m_consoleSprite = 0;
-  }
-  if (Engine::m_gameOutcome != 0) {
-    delete Engine::m_gameOutcome;
-    Engine::m_gameOutcome = 0;
-  }
-  if (Engine::m_navigator != 0) {
-    delete Engine::m_navigator;
-    Engine::m_navigator = 0;
-  }
-  if (Engine::m_timerManager != 0) {
-    delete Engine::m_timerManager;
-    Engine::m_timerManager = 0;
-  }
-  if (Engine::m_cursorState != 0) {
-    delete Engine::m_cursorState;
-    Engine::m_cursorState = 0;
-  }
-  if (Engine::m_targetList != 0) {
-    delete Engine::m_targetList;
-    Engine::m_targetList = 0;
-  }
-  if (Engine::m_engineInfoParser != 0) {
-    delete Engine::m_engineInfoParser;
-    Engine::m_engineInfoParser = 0;
-  }
-  if (Engine::m_combatSprite != 0) {
-    delete Engine::m_combatSprite;
-    Engine::m_combatSprite = 0;
-  }
-  if (Engine::m_viewport != 0) {
-    delete Engine::m_viewport;
-    Engine::m_viewport = 0;
-  }
-  if (Engine::m_soundList != 0) {
-    delete Engine::m_soundList;
-    Engine::m_soundList = 0;
-  }
-  if (Engine::m_weapon != 0) {
-    delete Engine::m_weapon;
-    Engine::m_weapon = 0;
-  }
-  Engine::ClearGlobals();
-}
-
-/* Function start: 0x411CA0 */
-void Engine::CopyToGlobals() {
-  g_ConsoleSprite_00435f04 = Engine::m_consoleSprite;
-  g_Weapon_00435f14 = Engine::m_weapon;
-  g_SoundList_00435f1c = Engine::m_soundList;
-  g_EngineInfoParser_00435f00 = Engine::m_engineInfoParser;
-  g_Navigator_00435f24 = Engine::m_navigator;
-  g_EnginePalette_00435f18 = Engine::m_timerManager;
-  g_SpriteList_00435f10 = Engine::m_combatSprite;
-  g_TargetList_00435f0c = Engine::m_targetList;
-  g_ScoreManager_00435f20 = Engine::m_cursorState;
-  g_EngineViewport_00435f08 = Engine::m_viewport;
-  g_GameOutcome_00435f28 = Engine::m_gameOutcome;
-}
-
-/* Function start: 0x411D20 */
-void Engine::ClearGlobals() {
-  g_ConsoleSprite_00435f04 = 0;
-  g_Weapon_00435f14 = 0;
-  g_SoundList_00435f1c = 0;
-  g_EngineInfoParser_00435f00 = 0;
-  g_Navigator_00435f24 = 0;
-  g_EnginePalette_00435f18 = 0;
-  g_SpriteList_00435f10 = 0;
-  g_TargetList_00435f0c = 0;
-  g_ScoreManager_00435f20 = 0;
-  g_EngineViewport_00435f08 = 0;
-  g_GameOutcome_00435f28 = 0;
-}
-void Engine::PlayCompletionSound() {}
-/* Function start: 0x411D60 */
-void Engine::DisplayFrameRate() {
-  char local_80[128];
-
-  SetDrawColors(0xff, 0xff);
-  SetDrawPosition(0, 199);
-  sprintf(local_80, "frames: a=%d l=%d", m_framesA, m_framesL);
-  if (g_TextManager_00436990 != 0) {
-    g_TextManager_00436990->RenderText(local_80, -1);
-  }
-}
-
-/* Function start: 0x411DD0 */
-int Engine::CheckNavState() {
-  return (unsigned int)g_GameOutcome_00435f28->outcome >= 1;
-}
-/* Function start: 0x411DE0 */
+/* Function start: 0x449600 */
 int Engine::LBLParse(char* line) {
-  char local_54[32];
-  char local_34[32];
-  RockThrower* weaponVar;
-  Sprite* spriteVar;
+    int local_14 = 0;
+    int local_1c = 0;
+    char filename[128];
+    char label[32];
 
-  sscanf(line, "%s", local_34);
+    filename[0] = 0;
+    label[0] = 0;
+    sscanf(line, " %s", label);
 
-  if (strcmp(local_34, "[ENGINE_INFO]") == 0) {
-    Parser::ProcessFile(g_EngineInfoParser_00435f00, this, 0);
-  }
-  else if (strcmp(local_34, "[TARGETS]") == 0) {
-    Parser::ProcessFile(g_TargetList_00435f0c, this, 0);
-  }
-  else if (strcmp(local_34, "[SPRITELIST]") == 0) {
-    Parser::ProcessFile(g_SpriteList_00435f10, this, 0);
-  }
-  else if (strcmp(local_34, "[NAVIGATION]") == 0) {
-    Parser::ProcessFile(g_Navigator_00435f24, this, 0);
-  }
-  else if (strcmp(local_34, "WEAPON") == 0) {
-    int iVar3 = sscanf(line, " %s %s ", local_34, local_54);
-    if (iVar3 == 2) {
-      if (Engine::m_weapon != 0) {
-        delete Engine::m_weapon;
-        Engine::m_weapon = 0;
-      }
-      if (strcmp(local_54, "ROCKTHROWER") == 0) {
-        weaponVar = new RockThrower();
-        Engine::m_weapon = weaponVar;
-        g_Weapon_00435f14 = weaponVar;
-      }
+    if (strcmp(label, "PALETTE") == 0) {
+        sscanf(line, "%s %s", label, filename);
+        palette = new Palette();
+        palette->Load(filename);
+    } else if (strcmp(label, "BACKGROUND_SPRITE") == 0) {
+        bgSprite = new Sprite(0);
+        Parser::ProcessFile((Parser*)bgSprite, this, 0);
+    } else if (strcmp(label, "CONSOLE_SPRITE") == 0) {
+        consoleSprite = new Sprite(0);
+        Parser::ProcessFile((Parser*)consoleSprite, this, 0);
+    } else if (strcmp(label, "VIDEO_RES") == 0) {
+        sscanf(line, " %s %d %d ", label, &videoDimensions.x, &videoDimensions.y);
+        SetVideoRes(videoDimensions.x, videoDimensions.y);
+    } else if (strcmp(label, "BG_SOUND") == 0) {
+        sscanf(line, " %s %d ", label, &bgSoundHandle);
+    } else if (strcmp(label, "MAX_SOUNDS") == 0) {
+        sscanf(line, " %s %d ", label, &local_14);
+        soundTable->Allocate(local_14);
+    } else if (strcmp(label, "SOUND") == 0) {
+        sscanf(line, " %s %d %s %d ", label, &local_14, filename, &local_1c);
+        if (local_14 < 0) goto lbl_error;
+        if (*((int*)soundTable) - 1 < local_14) goto lbl_error;
+        soundTable->LoadEntry(local_14, filename, local_1c);
+    } else if (strcmp(label, "MAX_ACTIONS") == 0) {
+        sscanf(line, " %s %d ", label, &local_14);
+        if (actionArray != 0) { FreeMemory(actionArray); actionArray = 0; }
+        actionCount = local_14;
+        actionArray = (int*)malloc(local_14 * 4);
+        memset(actionArray, 0, actionCount * 4);
+    } else if (strcmp(label, "ACTION") == 0) {
+        sscanf(line, " %s %d %d ", label, &local_14, &local_1c);
+        actionArray[local_14] = local_1c;
+    } else if (strcmp(label, "END") == 0) {
+        return 1;
+    } else {
+lbl_error:
+        ReportUnknownLabel("SC_Combat");
     }
-  }
-  else if (strcmp(local_34, "CONSOLE") == 0) {
-    spriteVar = new Sprite(0);
-    g_ConsoleSprite_00435f04 = spriteVar;
-    Parser::ProcessFile(spriteVar, this, 0);
-  }
-  else if (strcmp(local_34, "END") == 0) {
-    return 1;
-  }
-  else {
-    Parser::LBLParse("Engine");
-  }
-  return 0;
+    return 0;
 }
-
-

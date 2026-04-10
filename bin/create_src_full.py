@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create src-full/ directory from src/ with addresses remapped to the full game binary.
+Create src/ directory from src-demo/ with addresses remapped to the full game binary.
 
 Uses the matching logic from match_functions.py to map demo addresses to full-game
 addresses, then copies all source files with the address comments updated.
@@ -23,8 +23,8 @@ from match_functions import (
     DEMO_LIBRARY_RANGES, FULL_LIBRARY_RANGES
 )
 
-SRC_DIR = "src"
-DST_DIR = "src-full"
+SRC_DIR = "src-demo"
+DST_DIR = "src"
 FULL_CODE_DIR = "code-full"
 
 FUNC_COMMENT_RE = re.compile(

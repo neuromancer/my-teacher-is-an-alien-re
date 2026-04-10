@@ -5,13 +5,11 @@ struct GlyphRect;
 
 // Base class for sound/render commands
 // Objects derived from this are queued in ZBufferManager
-// vtable at 0x431050 (base), 0x431528 (CommandType3), etc.
-// Note: No virtual destructor - Execute is at vtable[0]
-// Non-virtual destructor sets vtable back to base class before delete
+// Full game vtable: 0x461030, sdtor: 0x430980
 struct SoundCommand {
-    /* Function start: 0x401540 */
+    /* Function start: 0x401CC0 */
     virtual void Execute(GlyphRect* rect) {}
-    /* Function start: 0x401550 */
+    /* Function start: 0x403720 */
     virtual void Release(int flag) {}
     ~SoundCommand() {}
 };

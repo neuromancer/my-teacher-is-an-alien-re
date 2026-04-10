@@ -1,134 +1,158 @@
 #include "RockThrower.h"
 #include "globals.h"
-#include "Engine.h"
 #include "Projectile.h"
-#include "InputManager.h"
+#include "GameState.h"
+#include "Target.h"
+#include "HashTable.h"
 #include <string.h>
+#include <stdio.h>
 
-extern int g_ProjectileHits_0043d150;
-extern Engine* g_CombatEngine_00435eb0;
 
-extern "C" int __cdecl SetFillColor(unsigned char param_1);
-extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
-extern "C" int __cdecl DrawCircle(int param_1);
-
-/* Function start: 0x4165D0 */
-RockThrower::RockThrower() {
-    int* pItemCount = &m_itemCount;
-
-    pItemCount[0] = 0;
-    pItemCount[1] = 0;
-    pItemCount[2] = 0;
-    pItemCount[3] = 0;
-
-    RockThrower::m_posY = 0xa0;
-    RockThrower::m_posX = 0xa0;
-    RockThrower::m_posZ = 0xa6;
-
-    pItemCount[0] = 3;
-
-    Parser::ProcessFile(this, g_CombatEngine_00435eb0, 0);
+/* Function start: 0x4274C0 */
+RockThrower::RockThrower(Parser* parent) {
+    memset(&m_itemCount, 0, 6 * sizeof(int));
+    m_itemCount = 3;
+    m_posY = 0xa0;
+    m_posX = 0xa0;
+    m_posZ = 0xa6;
+    Parser::ProcessFile(this, parent, 0);
 }
 
-RockThrower::~RockThrower() {}
-
-/* Function start: 0x416880 */
-void RockThrower::UpdateProjectiles() {
-    InputState* pMouse;
-    int buttonState;
-    int prevButtons;
-    Projectile** projectiles;
-    int i;
-
-    do {
-        if (g_InputManager_00436968->mouseValid == 0) {
-            break;
+// 0x427710 = ZBuffer::~ZBuffer (COMDAT)
+RockThrower::~RockThrower() {
+    while (m_itemCount != 0) {
+        m_itemCount = m_itemCount - 1;
+        Projectile* p = m_items[m_itemCount];
+        if (p != 0) {
+            delete p;
+            m_items[m_itemCount] = 0;
         }
+    }
+    if (m_items != 0) {
+        FreeMemory(m_items);
+        m_items = 0;
+    }
+}
 
-        DrawCrosshairs();
+// 0x4279A0 = ZBuffer::ResetItems (COMDAT)
+void RockThrower::ResetProjectiles() {
+    int i = 0;
+    if (m_itemCount > 0) {
+        int offset = 0;
+        do {
+            offset = offset + 4;
+            i = i + 1;
+            m_items[i - 1]->active = 0;
+        } while (i < m_itemCount);
+    }
+}
 
-        pMouse = g_InputManager_00436968->pMouse;
-        buttonState = 0;
-        if (pMouse != 0) {
-            buttonState = pMouse->buttons & 1;
-        }
+/* Function start: 0x427A30 */
+int RockThrower::CheckTargetHit(int param_1) {
+    int* entry;
+    Target* target;
 
-        if (buttonState == 0 && (pMouse->prevButtons & 1) != 0) {
-            RockThrower::field_0xa0 = 1;
-        } else {
-            RockThrower::field_0xa0 = 0;
-        }
+    if (g_TargetList_0046ae58 == 0) return 0;
 
-        i = 0;
-        if (RockThrower::field_0xa0 == 0) {
-            break;
-        }
+    HashTable* ht = g_TargetList_0046ae58->hashTable;
+    if (ht == 0) return 0;
 
-        OnHit();
+    entry = (int*)(((unsigned int)ht->count < 1) - 1);
 
-        if (RockThrower::m_itemCount <= 0) {
-            break;
-        }
-
-        projectiles = RockThrower::m_items;
-        for (; i < RockThrower::m_itemCount; i++) {
-            if (projectiles[i]->active == 0) {
-                RockThrower::m_items[i]->Launch();
-                break;
+    while (entry != 0) {
+        int* edx = entry;
+        if (edx == (int*)-1) {
+            unsigned int idx = 0;
+            unsigned int numBuckets = ht->numBuckets;
+            if (numBuckets != 0) {
+                int* buckets = ht->buckets;
+                do {
+                    edx = (int*)buckets[idx];
+                    if (edx != 0) break;
+                    idx++;
+                } while (numBuckets > idx);
             }
         }
-    } while (0);
-    i = 0;
-    g_ProjectileHits_0043d150 = 0;
-    RockThrower::field_0xb0 = 0;
 
-    for (i = 0; i < RockThrower::m_itemCount; i++) {
-        RockThrower::m_items[i]->Update();
-    }
+        int* nextEntry = (int*)edx[0];
+        if (nextEntry == 0) {
+            unsigned int idx = edx[1] + 1;
+            unsigned int numBuckets = ht->numBuckets;
+            if (idx < numBuckets) {
+                int* buckets = (int*)(idx * 4 + (int)ht->buckets);
+                do {
+                    nextEntry = (int*)*buckets;
+                    if (nextEntry != 0) break;
+                    buckets++;
+                    idx++;
+                } while (idx < numBuckets);
+            }
+        }
 
-    RockThrower::field_0xb0 = g_ProjectileHits_0043d150;
-}
-/* Function start: 0x416960 */
-void RockThrower::DrawCrosshairs() {
-    SetFillColor(0xfa);
-    SetDrawPosition(RockThrower::m_crosshairX, RockThrower::m_crosshairY);
-    DrawCircle(7);
-}
+        target = (Target*)edx[3];
+        entry = nextEntry;
 
-/* Function start: 0x4169A0 */
-int RockThrower::LBLParse(char* line) {
-    char token[32];
-    int count;
-
-    if (sscanf(line, "%s", token) != 1) {
-        return 0;
-    }
-
-    if (strcmp(token, "MAXROCKS") == 0) {
-        if (sscanf(line, "%s %d", token, &count) == 2) {
-            m_itemCount = count;
-            m_items = new Projectile*[m_itemCount];
-            for (int i = 0; i < m_itemCount; i++) {
-                m_items[i] = new Projectile();
+        if (target != 0) {
+            if (target->CheckTimeInRangeParam((int*)(param_1 + 0x120)) != 0) {
+                target->UpdateProgress(1);
+                return 1;
             }
         }
     }
-    else if (strcmp(token, "SPRITE") == 0) {
-        SaveFilePosition();
-        if (m_itemCount > 0) {
-            for (int i = 0; i < m_itemCount; i++) {
-                RestoreFilePosition();
-                Parser::ProcessFile(m_items[i], this, 0);
-            }
-        }
-    }
-    else if (strcmp(token, "END") == 0) {
-        return 1;
-    }
-    else {
-        Parser::LBLParse("RockThrower");
-    }
-
     return 0;
 }
 
+/* Function start: 0x427B20 */
+int RockThrower::LBLParse(char* line) {
+    char token[32];
+    int count = 0;
+    GameState* gs;
+
+    token[0] = 0;
+    sscanf(line, " %s", token);
+
+    if (strcmp(token, "MAXROCKS") == 0) {
+        sscanf(line, "%s %d", token, &m_itemCount);
+        count = 0;
+        m_items = new Projectile*[m_itemCount];
+        if (m_itemCount > 0) {
+            int offset = 0;
+            do {
+                Projectile* p = new Projectile((int)this);
+                offset = offset + 4;
+                count = count + 1;
+                m_items[count - 1] = p;
+            } while (count < m_itemCount);
+        }
+    } else if (strcmp(token, "SPRITE") == 0) {
+        SaveFilePosition();
+        count = 0;
+        if (m_itemCount > 0) {
+            int offset = 0;
+            do {
+                RestoreFilePosition();
+                Parser::ProcessFile(m_items[count], this, 0);
+                int periodIdx = g_PeriodStateIdx_0046cb90;
+                gs = g_GameState_0046aa30;
+                if (periodIdx < 0 || gs->maxStates - 1 < periodIdx) {
+                    ShowError("Invalid gamestate %d", periodIdx);
+                }
+                sprintf(token, "AMMO_SPEED_%c",
+                        (char)g_PeriodCharTable_0046cb94[gs->stateValues[periodIdx]]);
+                gs = g_GameState_0046aa30;
+                int speedIdx = gs->FindLabel(token);
+                if (speedIdx < 0 || gs->maxStates - 1 < speedIdx) {
+                    ShowError("Invalid gamestate %d", speedIdx);
+                }
+                offset = offset + 4;
+                m_items[count]->ConfigRange(0, 1, gs->stateValues[speedIdx], 1);
+                count = count + 1;
+            } while (count < m_itemCount);
+        }
+    } else if (strcmp(token, "END") == 0) {
+        return 1;
+    } else {
+        ReportUnknownLabel("RockThrower");
+    }
+    return 0;
+}

@@ -3,27 +3,27 @@
 
 struct ViewportPair {
     int a, b;
-    ViewportPair() { a = 0; b = 0; }
+    ViewportPair() { ViewportPair::a = 0; ViewportPair::b = 0; }
     ~ViewportPair();
 };
 
 class Viewport {
 public:
-    ViewportPair dim;       // 0x00 (a=x1, b=y1)
-    ViewportPair anchor;    // 0x08 (a=x2, b=y2)
-    ViewportPair size;      // 0x10 (a=width, b=height)
+    ViewportPair dim;       // 0x00 (a=width, b=height)
+    ViewportPair anchor;    // 0x08 (a=anchorX, b=anchorY)
+    ViewportPair size;      // 0x10 (a=sizeW, b=sizeH)
     ViewportPair center;    // 0x18 (a=centerX, b=centerY)
     int scrollX;            // 0x20
     int scrollY;            // 0x24
     int anchorOffsetY;      // 0x28
 
-    Viewport();                       // 0x412B50
-    void SetDimensions(int w, int h); // 0x412C30
-    void SetAnchor(int x, int y);     // 0x412C50
-    void SetDimensions2(int w, int h); // 0x412C90
-    void SetCenter();                 // 0x412CB0
-    void SetCenterX(int x);           // 0x412CE0
-    void SetCenterY(int y);           // 0x412D00
+    Viewport();                       // 0x4454F0
+    void SetDimensions(int w, int h); // 0x445590
+    void SetAnchor(int x, int y);     // 0x4455B0
+    void SetDimensions2(int w, int h); // 0x4455F0
+    void SetCenter();                 // 0x445610
+    void SetCenterX(int x);           // 0x445640
+    void SetCenterY(int y);           // 0x445660
 };
 
 #endif // VIEWPORT_H

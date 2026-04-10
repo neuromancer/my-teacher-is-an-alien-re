@@ -5,38 +5,15 @@
 
 class SC_Message;
 
-// Handler8 - Command 8 Handler (Cinematic Player)
-// Size: 0xa8 bytes
-// vtable: 0x431138
-// Inherits from Handler (which inherits from Parser)
-// Layout:
-//   0x00-0x87: Parser base class (size 0x88)
-//   0x88: targetAddress
-//   0x8C: sourceAddress
-//   0x90: command
-//   0x94: data
-//   0x98: field_98
-//   0x9C: field_9C
-//   0xA0: message - SC_Message* (deleted in destructor)
-//   0xA4: field_A4
+// Handler8 - Command 8 Handler
+// Not instantiated in the full game (no case in CreateHandler).
+// Constructor/destructor exist in the binary as COMDATs.
+// Size: 0xA8 (same as Handler — no additional fields)
+// Uses Handler::field_A0 as SC_Message* and Handler::field_A4 directly.
 class Handler8 : public Handler {
 public:
     Handler8();
     ~Handler8();
-
-    // Virtual method overrides
-    virtual void Init(SC_Message* msg);
-    virtual int AddMessage(SC_Message* msg);
-    virtual int ShutDown(SC_Message* msg);
-    virtual void Update(int param1, int param2);
-    virtual int Exit(SC_Message* msg);
-
-    // Helper method
-    void ProcessMessage();
-
-    // Handler8-specific fields (field_98 and field_9C are inherited from Handler)
-    SC_Message* message;    // 0xA0
-    int field_A4;           // 0xA4
 };
 
 #endif // HANDLER8_H

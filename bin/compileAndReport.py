@@ -53,17 +53,17 @@ def run_comparison(function_name, address):
 def main():
     import sys
 
-    full_mode = '--full' in sys.argv
-    if full_mode:
-        src_dir = "src-full"
-        code_dir = "code-full"
-        out_dir = "out-full"
-        clean_target = "clean-full"
-        build_target = "full"
-        map_skip = "src-full/map"
+    demo_mode = '--demo' in sys.argv
+    if demo_mode:
+        src_dir = "src-demo"
+        code_dir = "code"
+        out_dir = "out-demo"
+        clean_target = "clean-demo"
+        build_target = "demo"
+        map_skip = "src-demo/map"
     else:
         src_dir = "src"
-        code_dir = "code"
+        code_dir = "code-full"
         out_dir = "out"
         clean_target = "clean"
         build_target = "all"

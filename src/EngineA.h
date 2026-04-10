@@ -1,22 +1,23 @@
 #ifndef ENGINEA_H
 #define ENGINEA_H
 
-#include "Engine.h"
+#include "SC_CombatBase.h"
 
-// EngineA inherits from Engine (vtable 0x431410, size 0xe8)
-// Used for exploration/ductwork scenes (DUCTWORK.MIS)
-// Same size as Engine - no additional fields
+// EngineA (EngineNavigateDucts) - Duct navigation engine
+// Constructor: 0x43A4C0, Destructor: 0x43A540
+// Scalar deleting destructor: 0x43A520
+// Vtable: 0x461808 (18 entries, inherits most from SC_CombatBase)
+// Size: 0xF0 (no additional fields beyond SC_CombatBase)
 //
-// Overrides from Engine:
-//   [0] LBLParse: 0x00412ae0
-//   [3] destructor: 0x00412a70
-class EngineA : public Engine {
+// Overrides from SC_CombatBase:
+//   [3]  destructor:    0x43A520 (sdtor) / 0x43A540 (body)
+//   [13] HandleAction:  0x43A590
+class EngineA : public SC_CombatBase {
 public:
-  EngineA();
-  virtual ~EngineA();
+    EngineA();
+    virtual ~EngineA();
 
-  // Virtual method overrides
-  virtual int LBLParse(char* line);  // vtable[0] 0x412ae0
+    virtual int HandleAction(int* param);  // vtable[13] 0x43A590
 };
 
 #endif // ENGINEA_H

@@ -62,7 +62,7 @@ def load_auto_complete_functions(filepath):
 LIBRARY_RANGES = [ (0x424540, 0x4304E0) ]  # CRT/library range: EH, FDIV workarounds, stdio, FP, locale, IAT thunks
 
 # Path to auto-complete functions file (relative to script location)
-AUTO_COMPLETE_FILE = os.path.join(os.path.dirname(__file__), '..', 'src', 'auto_complete.txt')
+AUTO_COMPLETE_FILE = os.path.join(os.path.dirname(__file__), '..', 'src-demo', 'auto_complete.txt')
 
 
 def get_library_functions(code_dir):
@@ -192,9 +192,9 @@ def run(map_directory, src_directory, code_directory, library_ranges, auto_compl
 if __name__ == "__main__":
     import sys
 
-    if '--full' in sys.argv:
-        FULL_LIBRARY_RANGES = [(0x454100, 0x460480)]
-        auto_complete_full = os.path.join(os.path.dirname(__file__), '..', 'src-full', 'auto_complete.txt')
-        run("src-full/map", "src-full", "code-full", FULL_LIBRARY_RANGES, auto_complete_full)
+    if '--demo' in sys.argv:
+        run("src-demo/map", "src-demo", "code", LIBRARY_RANGES, AUTO_COMPLETE_FILE)
     else:
-        run("src/map", "src", "code", LIBRARY_RANGES, AUTO_COMPLETE_FILE)
+        FULL_LIBRARY_RANGES = [(0x454100, 0x460480)]
+        auto_complete_full = os.path.join(os.path.dirname(__file__), '..', 'src', 'auto_complete.txt')
+        run("src/map", "src", "code-full", FULL_LIBRARY_RANGES, auto_complete_full)

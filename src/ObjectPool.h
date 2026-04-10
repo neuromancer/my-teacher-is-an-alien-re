@@ -22,10 +22,12 @@ public:
         objectSize = objSz;
     }
 
+    ~ObjectPool();
+
 public:
     void* Allocate();
     void* Allocate_2();
-    void MemoryPool_Allocate(unsigned int param_1, int param_2);
+    void AllocateBuckets(unsigned int size, int flag);
 };
 
 #endif // OBJECTPOOL_H

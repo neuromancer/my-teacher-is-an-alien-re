@@ -66,8 +66,8 @@ def check_directory(directory):
     return issues
 
 def main():
-    # Get directory (default to 'src')
-    directory = 'src'
+    # Get directory (default to 'src-demo')
+    directory = 'src-demo'
     for arg in sys.argv[1:]:
         if not arg.startswith('--'):
             directory = arg

@@ -48,7 +48,7 @@ def parse_pe_text_section(filename):
 
 
 def get_all_functions_from_map(map_dir):
-    """Get all known function addresses from src/map/*.cpp files"""
+    """Get all known function addresses from src-demo/map/*.cpp files"""
     addresses = []
     for filename in os.listdir(map_dir):
         if filename.endswith(".cpp"):
@@ -63,7 +63,7 @@ def get_all_functions_from_map(map_dir):
 
 
 def get_implemented_functions(src_dir):
-    """Get function addresses that have been implemented in src/*.cpp"""
+    """Get function addresses that have been implemented in src-demo/*.cpp"""
     addresses = set()
     for root, dirs, files in os.walk(src_dir):
         if 'map' in dirs:
@@ -148,8 +148,8 @@ def main():
     parser = argparse.ArgumentParser(description='Compare function addresses between original and reconstructed EXE')
     parser.add_argument('--orig', default='data/demo/TEACHER.EXE', help='Original EXE path')
     parser.add_argument('--new', default='TEACHER-DEMO.EXE', help='Reconstructed EXE path (optional)')
-    parser.add_argument('--map-dir', default='src/map', help='Map directory with function addresses')
-    parser.add_argument('--src-dir', default='src', help='Source directory')
+    parser.add_argument('--map-dir', default='src-demo/map', help='Map directory with function addresses')
+    parser.add_argument('--src-dir', default='src-demo', help='Source directory')
     parser.add_argument('--code-dir', default='code', help='Code directory with decompiled files')
     args = parser.parse_args()
     

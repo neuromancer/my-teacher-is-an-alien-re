@@ -14,7 +14,7 @@ You are working with a disassembled Windows 95 release of "My Teacher is an Alie
 
 IMPORTANT: The assembly output and the extracted strings are the *only* source of truth. Decompiled code can be a good hint, but is NOT authoritative.
 
-The demo assembly is in `code` and the full game assembly is in `code-full`. For the reimplemented code, `src` is the demo and `src-full` is the full game.
+The demo assembly is in `code` and the full game assembly is in `code-full`. For the reimplemented code, `src` is the full game (primary) and `src-demo` is the demo.
 
 ---
 
@@ -64,7 +64,7 @@ grep -r -i 418C70 code-full
 
 Always use -i to ensure case-insensitive matches.
 
-IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use the python scripts to compare them. Same with the TEACHER-FULL.map file, this is *only* for the reimplemented code, not the original assembly.
+IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use the python scripts to compare them. Same with the TEACHER.map file, this is *only* for the reimplemented code, not the original assembly.
 
 ### Compiling & Comparing Assembly
 
@@ -76,7 +76,7 @@ This shows compiler errors or the generated assembly diff.
 
 ## Required Files & Documentation
 
-- src-full/map  
+- src/map  
   Sorted address lists showing which functions are adjacent in the binary.
 
 - code-full/strings.txt  

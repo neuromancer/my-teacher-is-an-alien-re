@@ -5,57 +5,85 @@
 #include "VBuffer.h"
 #include "string.h"
 #include <smack.h>
-#include "GameConfig.h"
 #include "InputManager.h"
-
 #include "Memory.h"
+#include "GameState.h"
+#include "GameConfig.h"
+#include "GameEngine.h"
 #include <windows.h>
 #include <new>
 
 extern "C" {
 void *GetGameWindowHandle();
-int *GetWindowHeight();
-int *GetWindowWidth();
+int *GetScreenHeight();
+int *GetScreenWidth();
 }
 
 // BlankScreen moved to Graphics.cpp (0x419390)
 void BlankScreen();
 
-// SetPaletteEntriesAnimation moved to Palette.cpp (0x41EB90)
+// SetPaletteEntriesAnimation moved to Palette.cpp (0x41DE40)
 extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count);
 
-/* Function start: 0x41FA50 */
+// Smack functions are linked via smackw32.lib (IAT entries in original binary at 0x004765xx)
+
+
+#include "GameLoopHelper.h"
+
+// Font display functions
+extern "C" void SetFontPosition(int, int);
+extern "C" void SetFontColor(int);
+extern "C" void DrawFontText(char*, int);
+
+// WriteToLog (C++ linkage to match stubs.cpp)
+extern "C" void WriteToLog(const char* format, ...);
+
+/* Function start: 0x41A9D0 */
 Animation::Animation() {
   CleanArray10();
 }
 
-/* Function start: 0x41FAE0 */
+/* Function start: 0x41AA60 */
 Animation::Animation(char *filename) {
   CleanArray10();
   OpenAndConvertToBuffer(filename);
 }
 
-/* Function start: 0x41FB60 */
+/* Function start: 0x41AAE0 */
 void Animation::CleanArray10() {
   memset(&field_4, 0, 40);
 }
 
-/* Function start: 0x41FB70 */
+/* Function start: 0x41AAF0 */
 Animation::~Animation() {
   FreeVBuffer();
   CloseSmackerBuffer();
   CloseSmackerFile();
 }
 
-/* Function start: 0x41FBE0 */
+/* Function start: 0x41AB60 */
 void Animation::CloseSmackerFile() {
   if (smk != 0) {
+    if (g_GameEngine_0046a6ec != 0) {
+      if (g_GameEngine_0046a6ec->m_smackHandle == (void*)smk) {
+        WriteToLog("Animation Close - restoring framerate to %dms",
+                     g_GameEngine_0046a6ec->m_frameTimeCopy);
+        g_GameEngine_0046a6ec->m_smackHandle = 0;
+        g_GameEngine_0046a6ec->m_frameTime = g_GameEngine_0046a6ec->m_frameTimeCopy;
+      }
+    }
+    if (g_GameConfig_00436970->data.rawData[2] == 2) {
+      SmackSoundOnOff(smk, 0);
+    }
+    if (g_GameLoopHelper_0046a6f0 != 0) {
+      g_GameLoopHelper_0046a6f0->RemoveAnimation((int)smk);
+    }
     SmackClose(smk);
     smk = 0;
   }
 }
 
-/* Function start: 0x41FC00 */
+/* Function start: 0x41ABF0 */
 void Animation::CloseSmackerBuffer() {
   if (smack_buffer != 0) {
       SmackBufferClose(smack_buffer);
@@ -63,69 +91,101 @@ void Animation::CloseSmackerBuffer() {
   }
 }
 
-/* Function start: 0x41FC20 */
+/* Function start: 0x41AC10 */
 int Animation::SetPalette(unsigned int param_1, unsigned int param_2) {
-  if (smk != 0 && smack_buffer != 0) {
-    targetBuffer->SetCurrentVideoMode(targetBuffer->handle);
-    if (smk->NewPalette != 0) {
-      SmackBufferNewPalette(smack_buffer, smk->Palette, 0);
-      SmackColorRemap(smk, smack_buffer->Palette,
-                      smack_buffer->PalColorsInUse,
-                      smack_buffer->Unk43C);
+  int result;
+
+  if (smk->NewPalette != 0) {
+    SmackBufferNewPalette(smack_buffer, &smk->Palette, 0);
+    if (smack_buffer->StartPalColor < 0x100) {
+      SmackColorRemap(smk, &smack_buffer->Palette, smack_buffer->PalColorsInUse,
+                   smack_buffer->Unk43C);
     }
-    SetPaletteEntriesAnimation((char *)smk->Palette, param_1, param_2);
-    targetBuffer->InvalidateVideoMode();
-    return 0;
+  }
+
+  Palette pal;
+  pal.CopyEntries(0, 0x100);
+  result = pal.IsSimilar(&smk->Palette, 0, 0x100);
+  if (result) {
+    return 1;
   }
   return 0;
 }
 
-/* Function start: 0x41FCA0 */
+/* Function start: 0x41ACF0 */
+int Animation::ApplyPalette(unsigned int start, unsigned int count) {
+  targetBuffer->SetCurrentVideoMode(targetBuffer->handle);
+  SetPaletteEntriesAnimation((char*)&smk->Palette, start, count);
+  targetBuffer->InvalidateVideoMode();
+  return count;
+}
+
+/* Function start: 0x41AD30 */
+int Animation::UpdatePalette(unsigned int start, unsigned int count) {
+  if (smk->NewPalette != 0) {
+    SmackBufferNewPalette(smack_buffer, &smk->Palette, 0);
+    if (smack_buffer->StartPalColor < 0x100) {
+      SmackColorRemap(smk, &smack_buffer->Palette, smack_buffer->PalColorsInUse,
+                   smack_buffer->Unk43C);
+    }
+  }
+  ApplyPalette(start, count);
+  return count;
+}
+
+/* Function start: 0x41AD90 */
 void Animation::DoFrame() {
   if (smk != 0) {
     SmackDoFrame(smk);
   }
 }
 
-/* Function start: 0x41FCB0 */
+/* Function start: 0x41ADA0 */
 void Animation::NextFrame() {
   if (smk != 0) {
     SmackNextFrame(smk);
   }
 }
 
-/* Function start: 0x41FCC0 */
+/* Function start: 0x41ADB0 */
 void Animation::GotoFrame(int frame) {
   if (smk != 0) {
-    if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
+    if (g_GameConfig_00436970->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 0);
     }
     SmackGoto(smk, frame);
-    if (g_GameConfig_00436970->data.rawData[2] == '\x02') {
+    if (g_GameConfig_00436970->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 1);
     }
   }
 }
 
-/* Function start: 0x41FD20 */
+/* Function start: 0x41AE10 */
 int Animation::Open(char *filename, int param_2, int param_3) {
   if (smk != 0) {
     return 1;
   }
 
-  if (g_GameConfig_00436970->data.rawData[2] != '\x02') {
+  if (g_GameConfig_00436970->data.rawData[2] != 2) {
     param_2 = param_2 & 0xfff01fff;
   }
+  param_2 = param_2 | 0x400;
 
   smk = SmackOpen(filename, param_2, param_3);
   if (smk == 0) {
-    ShowError("Animation::Open - Cannot open file %s", filename);
+    ShowError("Animation::Open - Cannot open file '%s'", filename);
     return 0;
   }
+
+  if (g_GameLoopHelper_0046a6f0 != 0) {
+    g_GameLoopHelper_0046a6f0->AddAnimation(filename, (int)smk);
+  }
+  strcpy(g_AnimFilename_00472c70, filename);
+
   return 1;
 }
 
-/* Function start: 0x41FD80 */
+/* Function start: 0x41AEB0 */
 void Animation::VBInit() {
   if (vbuffer != 0) {
     ShowError("Animation::VBInit() - Virtual Buffer already defined");
@@ -134,7 +194,7 @@ void Animation::VBInit() {
   vbuffer = new VBuffer(smk->Width, smk->Height);
 }
 
-/* Function start: 0x41FE20 */
+/* Function start: 0x41AF50 */
 void Animation::FreeVBuffer() {
   if (vbuffer != 0) {
     delete vbuffer;
@@ -143,13 +203,13 @@ void Animation::FreeVBuffer() {
   targetBuffer = 0;
 }
 
-/* Function start: 0x41FE50 */
+/* Function start: 0x41AF80 */
 void Animation::OpenAndConvertToBuffer(char *filename) {
   Open(filename, 0xfe000, -1);
   ToBuffer();
 }
 
-/* Function start: 0x41FE70 */
+/* Function start: 0x41AFA0 */
 void Animation::ToBuffer() {
   if (smk == 0) {
     ShowError("Animation::ToBuffer() - No smk defined");
@@ -158,7 +218,7 @@ void Animation::ToBuffer() {
   ToBufferVB(vbuffer);
 }
 
-/* Function start: 0x41FEA0 */
+/* Function start: 0x41AFD0 */
 void Animation::ToBufferVB(VBuffer *buffer) {
   if (smk == 0) {
     ShowError("Animation::ToBuffer() - No smk defined");
@@ -176,13 +236,13 @@ void Animation::ToBufferVB(VBuffer *buffer) {
   }
 
   targetBuffer = buffer;
-  unsigned int uVar3 = *(unsigned char*)smack_buffer;
-  void *uVar1 = buffer->GetData();
-  SmackToBuffer(smk, 0, 0, smk->Width, smk->Height, uVar1,
-                uVar3);
+  unsigned int bufferType = smack_buffer->SurfaceType;
+  void *data = buffer->GetData();
+  SmackToBuffer(smk, 0, 0, smk->Width, smk->Height, data,
+                bufferType);
 }
 
-/* Function start: 0x41FF30 */
+/* Function start: 0x41B060 */
 void Animation::Play(char *filename, unsigned int flags) {
   Animation::flags = flags;
   Palette *palette = 0;
@@ -197,6 +257,17 @@ void Animation::Play(char *filename, unsigned int flags) {
     BlankScreen();
   }
 
+  if (g_GameState_0046aa30 != 0) {
+    GameState* gs = g_GameState_0046aa30;
+    if (gs->maxStates - 1 < 4) {
+      ShowError("Invalid gamestate %d", gs->maxStates - 1);
+    }
+    if (gs->stateValues[4] != 0) {
+      Animation::flags |= 0x100;
+      strcpy(g_AnimFilename2_00472cb0, filename);
+    }
+  }
+
   Open(filename, 0xfe000, -1);
   ToBuffer();
   MainLoop();
@@ -209,38 +280,46 @@ void Animation::Play(char *filename, unsigned int flags) {
   }
 }
 
-/* Function start: 0x420020 */
+/* Function start: 0x41B1C0 */
 void Animation::MainLoop() {
+  int frame;
+  int escaped;
+
   if (!smk) return;
 
   targetBuffer->SetCurrentVideoMode(targetBuffer->handle);
-  int frame = 1;
-  int skipFlag = 4;
+  frame = 1;
 
-  if ((int)smk->Frames >= frame) {
+  if (smk->Frames >= (unsigned int)frame) {
     do {
-      if (smk->NewPalette) {
-        SetPalette(0, 0x100);
+      if (smk->NewPalette != 0) {
+        UpdatePalette(0, 0x100);
       }
       DoFrame();
 
-      while (true) {
-        if (g_InputManager_00436968->PollEvents(1)) goto end_loop;
+      if (flags & 0x100) {
+        SetFontColor(0xfa);
+        SetFontPosition(0x14, 0x14);
+        DrawFontText(g_AnimFilename2_00472cb0, strlen(g_AnimFilename2_00472cb0));
+      }
 
-        if (!(flags & skipFlag)) {
-          InputState *pMouse = g_InputManager_00436968->pMouse;
-          int buttons = 0;
-          if (pMouse) buttons = pMouse->buttons & 2;
+      while (1) {
+        if ((g_InputManager_0046aa08)->Refresh(1)) goto end_loop;
 
-          if (!buttons) {
-            if (pMouse->prevButtons & 2) {
-              playStatus |= 1;
-              goto end_loop;
-            }
+        if (!(flags & 4)) {
+          InputState *pMouse = (g_InputManager_0046aa08)->pMouse;
+          int hasButton = 0;
+          if (pMouse != 0) {
+            hasButton = (pMouse->ext2 >= 2) ? 1 : 0;
           }
 
-          int escaped = 0;
-          if (g_WaitForInputValue_004373bc) {
+          if (hasButton) {
+            playStatus |= 1;
+            goto end_loop;
+          }
+
+          escaped = 0;
+          if (g_WaitForInputValue_0046ac04 != 0) {
             escaped = (WaitForInput() == 0x1b);
           }
           if (escaped) {
@@ -254,7 +333,7 @@ void Animation::MainLoop() {
 
       VBuffer *vb = targetBuffer;
       vb->CallBlitter5(vb->clip_x1, vb->clip_x2, vb->clip_y1, vb->clip_y2, 0,
-                       *GetWindowWidth() - 1, 0, *GetWindowHeight() - 1);
+                       *GetScreenWidth() - 1, 0, *GetScreenHeight() - 1);
 
       if ((int)smk->Frames - 1 <= frame) break;
       frame++;
@@ -265,4 +344,3 @@ void Animation::MainLoop() {
 end_loop:
   targetBuffer->InvalidateVideoMode();
 }
-

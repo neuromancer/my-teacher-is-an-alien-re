@@ -1,226 +1,220 @@
 #include "SC_Timer.h"
 #include "Memory.h"
 #include "Message.h"
-#include "Queue.h"
-#include "TimedEvent.h"
-#include "Timer.h"
-#include "SC_Question.h"
+#include "SpriteAction.h"
+#include "globals.h"
 #include "string.h"
+#include "TimedEvent.h"
+#include "Queue.h"
+#include "SC_Question.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-/* Function start: 0x401B60 */
+/* Function start: 0x422C20 */
 SC_Timer::SC_Timer() {
-  m_messageId = 0xd;
-  timer1.Reset();
-
-  m_eventList = new Queue();
+    handlerId = 0xd;
+    timer1.Reset();
+    list = new MessageList();
 }
 
-/* Function start: 0x401CA0 */
+/* Function start: 0x422D60 */
 SC_Timer::~SC_Timer() {
-  Queue *pQueue;
-  void *pData;
+    MessageList* pList;
+    TimedEvent* data;
 
-  pQueue = m_eventList;
-  if (pQueue != 0) {
-    if (pQueue->head != 0) {
-      pQueue->current = pQueue->head;
-      while (pQueue->head != 0) {
-        pData = pQueue->RemoveCurrent();
-        if (pData != 0) {
-          delete (TimedEvent *)pData;
+    pList = list;
+    if (pList != 0) {
+        if (pList->head != 0) {
+            pList->current = pList->head;
+            while (pList->head != 0) {
+                data = (TimedEvent*)pList->Pop();
+                if (data != 0) {
+                    delete data;
+                }
+            }
         }
-      }
+        delete pList;
+        list = 0;
     }
-    delete pQueue;
-    m_eventList = 0;
-  }
 }
 
-/* Function start: 0x401DF0 */
+/* Function start: 0x432000 */
 void SC_Timer::Init(SC_Message* msg) {
-  Handler::Init(msg);
-  if (msg != 0) {
-    sourceAddress = msg->sourceAddress;
-  }
+    CopyCommandData(msg);
+    if (msg != 0) {
+        moduleParam = msg->data;
+    }
 }
 
-/* Function start: 0x401E20 */
 int SC_Timer::ShutDown(SC_Message* msg) {
-  return 0;
+    return 0;
 }
 
-/* Function start: 0x401E30 */
-void SC_Timer::Update(int param_1, int param_2) {
-  Queue *pQueue;
-  QueueNode *pNode;
-  void *pData;
+/* Function start: 0x422EE0 */
+void SC_Timer::Update(int param1, int param2) {
+    MessageNode* node;
+    unsigned int uVar3;
+    int iVar4;
+    TimedEvent* timedEvent;
+    void* pvVar6;
 
-  if ((timer1.Update() > 10000) && (m_eventList->head == 0)) {
-    SC_Message_Send(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0,
-                    0, 0);
-  }
+    uVar3 = timer1.Update();
+    if ((uVar3 > 10000) && (list->head == 0)) {
+        SendGameMessage(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+    }
 
-  timer1.Reset();
+    timer1.Reset();
 
-  pQueue = m_eventList;
-  pQueue->current = pQueue->head;
+    list->current = list->head;
+    iVar4 = (int)list->head;
 
-  if (pQueue->head != 0) {
-    do {
-      pQueue = m_eventList;
-      pNode = (QueueNode *)pQueue->current;
-      TimedEvent *pEvent = 0;
-      if (pNode != 0) {
-        pEvent = (TimedEvent *)pNode->data;
-      }
-      if (pEvent->Update()) {
-        pQueue = m_eventList;
-        pData = pQueue->RemoveCurrent();
-        if (pData != 0) {
-          delete (TimedEvent *)pData;
+    while (iVar4 != 0) {
+        timedEvent = 0;
+        node = (MessageNode*)list->current;
+        if (node != 0) {
+            timedEvent = (TimedEvent*)node->data;
         }
-      }
-      pQueue = m_eventList;
-      pNode = (QueueNode *)pQueue->current;
-      if (pQueue->tail == pNode) {
-        break;
-      }
-      if (pNode != 0) {
-        pQueue->current = pNode->next;
-      }
+        iVar4 = timedEvent->Update();
+        if (iVar4 != 0) {
+            pvVar6 = list->Pop();
+            if (pvVar6 != 0) {
+                delete (TimedEvent*)pvVar6;
+            }
+        }
+        node = (MessageNode*)list->current;
+        if (list->tail == node) {
+            break;
+        }
+        if (node != 0) {
+            list->current = node->next;
+        }
+        iVar4 = (int)list->head;
+    }
 
-      pQueue = m_eventList;
-    } while (pQueue->head != 0);
-  }
-
-  if (m_messageId == param_2) {
-    ShowError("SC_Timer::Update - Timeout waiting for event");
-  }
+    if (handlerId == param2) {
+        ShowError("SC_Timer::Update");
+    }
 }
 
-/* Function start: 0x401F90 */
 int SC_Timer::AddMessage(SC_Message* msg) {
-  Handler::AddMessage(msg);
-  ShowError("SC_Timer::AddMessage");
-  return 1;
+    WriteMessageAddress(msg);
+    return 1;
 }
 
-/* Function start: 0x401FB0 */
-int SC_Timer::Exit(SC_Message* param_1) {
-  Queue *pQueue;
-  QueueNode *pNode;
-  void *pData;
-  TimedEvent *pNewEvent;
+/* Function start: 0x423060 */
+int SC_Timer::Exit(SC_Message* msg) {
+    TimedEvent* pTimedEvent;
+    TimedEvent* eventData;
+    TimedEvent* timedEvent;
+    MessageNode* node;
+    MessageList* pList;
 
-  Message *msg = (Message *)param_1;
-
-  if (msg->targetAddress != m_messageId) {
-    return 0;
-  }
-
-  timer1.Reset();
-
-  switch (msg->priority) {
-  case 0xe:
-    break;
-  case 0xf:
-    pQueue = m_eventList;
-    if (pQueue->head != 0) {
-      pQueue->current = pQueue->head;
-      pNode = (QueueNode *)pQueue->head;
-      while (pNode != 0) {
-        pData = pQueue->RemoveCurrent();
-        if (pData != 0) {
-          delete (TimedEvent *)pData;
-        }
-        pNode = (QueueNode *)pQueue->head;
-      }
+    int* p = (int*)msg;
+    if (p[0] != handlerId) {
+        return 0;
     }
-    break;
-  case 0x13:
-    if (msg->userPtr != 0) {
-      pNewEvent = new TimedEvent();
-      pNewEvent->m_duration = msg->field_0xb8;
-      pNewEvent->m_sourceAddress = msg->sourceAddress;
-      pNewEvent->m_eventData = (SC_Message*)msg->userPtr;
-      msg->userPtr = 0;
-      pNewEvent->SetType(msg->param1);
-      pQueue = m_eventList;
-      if (pNewEvent == 0) {
-        ShowError("queue fault 0101");
-      }
-      pQueue->current = pQueue->head;
-      if ((pQueue->type == 1) || (pQueue->type == 2)) {
-        if (pQueue->head == 0) {
-          pQueue->Insert(pNewEvent);
+
+    timer1.Reset();
+
+    switch (p[4]) {
+    case 0x7:
+        break;
+
+    case 0x8:
+        pList = list;
+        if (pList->head != 0) {
+            pList->current = pList->head;
+            while (pList->head != 0) {
+                eventData = (TimedEvent*)pList->Pop();
+                if (eventData != 0) {
+                    delete eventData;
+                }
+            }
+        }
+        break;
+
+    case 0xc:
+        if (p[13] != 0) {
+            pTimedEvent = new TimedEvent();
+            pTimedEvent->m_duration = p[12];
+            pTimedEvent->m_sourceAddress = p[1];
+            pTimedEvent->m_eventData = (SC_Message*)p[13];
+            p[13] = 0;
+            pTimedEvent->SetType(p[5]);
+            pList = list;
+            if (pTimedEvent == 0) {
+                ShowError("queue fault 0101");
+            }
+            node = (MessageNode*)pList->head;
+            pList->current = node;
+            if ((pList->type == 1) || (pList->type == 2)) {
+                if (node == 0) {
+                    ((Queue*)pList)->Insert(pTimedEvent);
+                } else {
+                    do {
+                        node = (MessageNode*)pList->current;
+                        timedEvent = (TimedEvent*)node->data;
+                        if ((unsigned int)timedEvent->m_duration < (unsigned int)pTimedEvent->m_duration) {
+                            ((Queue*)pList)->Insert(pTimedEvent);
+                            break;
+                        }
+                        if (pList->tail == node) {
+                            ((Queue*)pList)->Push(pTimedEvent);
+                            break;
+                        }
+                        if (node != 0) {
+                            pList->current = node->next;
+                        }
+                    } while (pList->current != 0);
+                }
+            } else {
+                ((Queue*)pList)->Insert(pTimedEvent);
+            }
         } else {
-          do {
-            pNode = (QueueNode *)pQueue->current;
-            if (((TimedEvent *)pNode->data)->m_duration <
-                (unsigned int)pNewEvent->m_duration) {
-              pQueue->Insert(pNewEvent);
-              break;
-            }
-            if (pQueue->tail == pNode) {
-              pQueue->Push(pNewEvent);
-              break;
-            }
-            if (pNode != 0) {
-              pQueue->current = pNode->next;
-            }
-          } while (pQueue->current != 0);
-        }
-      } else {
-        pQueue->Insert(pNewEvent);
-      }
-    } else {
-      ((SC_Message *)msg)->Dump(0);
-      ShowError("SC_Timer::Input");
-    }
-    break;
-  case 0x14:
-    pNewEvent = new TimedEvent();
-    pNewEvent->m_sourceAddress = msg->sourceAddress;
-    pQueue = m_eventList;
-    if (pNewEvent == 0) {
-      ShowError("queue fault 0103");
-    }
-    pNode = (QueueNode *)pQueue->head;
-    pQueue->current = pNode;
-    while (pNode != 0) {
-      pNode = (QueueNode *)pQueue->current;
-      TimedEvent *pListEvent = 0;
-      if (pNode != 0) {
-        pListEvent = (TimedEvent *)pNode->data;
-      }
-      if (pListEvent->m_duration == pNewEvent->m_duration) {
-        pData = m_eventList->Pop();
-        if (pData != 0) {
-          delete (TimedEvent *)pData;
+            ((SpriteAction*)msg)->Print(0);
+            ShowError("SC_Timer::Input");
         }
         break;
-      }
-      if (pQueue->tail == pNode)
-        break;
-      if (pNode != 0) {
-        pQueue->current = pNode->next;
-      }
-      pNode = (QueueNode *)pQueue->current;
-    }
-    break;
-  case 0x1b:
-    if (m_eventList->head == 0) {
-      SC_Message_Send(3, m_messageId, m_messageId, m_messageData, 0x14, 0, 0, 0,
-                      0, 0);
-    }
-    break;
-  default:
-    return 0;
-  }
 
-  return 1;
+    case 0xd:
+        pTimedEvent = new TimedEvent();
+        pTimedEvent->m_sourceAddress = p[1];
+        pList = list;
+        if (pTimedEvent == 0) {
+            ShowError("queue fault 0103");
+        }
+        pList->current = pList->head;
+        if (pList->head != 0) {
+            do {
+                node = (MessageNode*)pList->current;
+                timedEvent = 0;
+                if (node != 0) {
+                    timedEvent = (TimedEvent*)node->data;
+                }
+                if (timedEvent->m_duration == pTimedEvent->m_duration) {
+                    eventData = (TimedEvent*)((Queue*)pList)->Pop();
+                    if (eventData != 0) {
+                        delete eventData;
+                    }
+                    break;
+                }
+                if (pList->tail == node) {
+                    break;
+                }
+                if (node != 0) {
+                    pList->current = node->next;
+                }
+            } while (pList->current != 0);
+        }
+        break;
+
+    case 0x18:
+        if (list->head == 0) {
+            SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        }
+        break;
+
+    default:
+        return 0;
+    }
+
+    return 1;
 }

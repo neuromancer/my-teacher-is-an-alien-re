@@ -2,78 +2,63 @@
 #define ICONBAR_H
 
 #include "Handler.h"
-#include "SC_Question.h"
-#include "GlyphRect.h"
+#include "InvSlotItem.h"
 
+class SC_Message;
 class Sprite;
-class SoundList;
-class Sample;
+class SpriteAction;
 
-// Simple rect struct for icon bar bounds (no destructor)
-struct Rect {
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-    Rect() { x1 = 0; y1 = 0; x2 = 0; y2 = 0; }
+// IconBarEntry - 0x24 byte (36 byte) struct for icon bar button entries
+// Static array at 0x473320 (6 entries)
+// Constructor: 0x42E330
+struct IconBarEntry {
+    Sprite* sprite;        // 0x00
+    Rect bounds;           // 0x04-0x13 (left, top, right, bottom)
+    int field_14;          // 0x14
+    int field_18;           // 0x18
+    SpriteAction* slot0;   // 0x1C
+    SpriteAction* slot1;   // 0x20
+
+    void Render();                                     // 0x42E4B0
+    IconBarEntry();                                    // 0x42E330
+    ~IconBarEntry();
+    void RegisterSlot(SpriteAction* obj);              // 0x42E450
+    void SetSlotProperties(int p1, int p2);            // 0x42E480
+    void CreateAction(int p1, int p2, int p3);         // 0x42E3A0
 };
 
-// IconBarButton - Individual button on the icon bar
-// Size: 0xE0 bytes
-// Contains embedded SC_Message at offset 0x08 for message template
-class IconBarButton {
-public:
-    IconBarButton();   // 0x402CD0
-    ~IconBarButton();  // 0x402D60
-
-    Sprite* sprite;         // 0x00 - SMK animation sprite
-    int field_04;           // 0x04
-    SC_Message message;     // 0x08 - embedded SC_Message (0xC0 bytes)
-    GlyphRect bounds;       // 0xC8 - button bounds (uses GlyphRect for proper destructor)
-    int enabled;            // 0xD8 - button is enabled/active
-    Sample* clickSound;     // 0xDC - click sound sample
-};
-
-// IconBar - Base class for handlers with icon bar UI
-// Size: 0x600 bytes
-// vtable: 0x431088
-// Inherits from Handler
-// Layout:
-//   0x00-0x9F: Handler base class (Parser + Handler fields)
-//   0xA0-0xAF: Icon bar rect bounds
-//   0xB0: Sprite* iconbarSprite (elements\iconbar.smk)
-//   0xB4: int field_B4
-//   0xB8: IconBarButton buttons[6] (0xE0 * 6 = 0x540)
-//   0x5F8: SoundList* soundList
-//   0x5FC: int field_5FC (unused/padding)
+// IconBar - Base class for handlers with icon bar UI (full game)
+// Size: 0xA8 (same as Handler - no additional member fields in full game)
+// vtable: 0x4615D0
+// Constructor: 0x42D460
+// In the full game, icon bar data is stored in static/global variables
 class IconBar : public Handler {
 public:
     IconBar();
     virtual ~IconBar();
 
-    // Virtual method overrides (from Handler)
-    void Init(SC_Message* msg);
-    int AddMessage(SC_Message* msg);
-    int ShutDown(SC_Message* msg);
-    virtual void Update(int param1, int param2);
-    int Exit(SC_Message* msg);
+    // Virtual overrides
+    virtual int LBLParse(char* param);             // 0x42E010
+    virtual void Init(SC_Message* msg);            // 0x42D6E0
+    virtual int AddMessage(SC_Message* msg);       // 0x42D9A0
+    virtual int ShutDown(SC_Message* msg);         // 0x42D920
+    virtual void Update(int param1, int param2);   // 0x42DD40
+    virtual int Exit(SC_Message* msg);             // 0x42DD30
 
-    // Non-virtual methods
-    void PlayButtonSound(int buttonIndex);  // 0x403300
-
-    // Icon bar rect (0xA0-0xAF)
-    GlyphRect barBounds;     // 0xA0 - icon bar bounds
-
-    // Icon bar sprite (0xB0)
-    Sprite* iconbarSprite;  // 0xB0
-    int field_B4;           // 0xB4
-
-    // Button array (0xB8 - 0x5F7, size 0x540 = 6 * 0xE0)
-    IconBarButton buttons[6];
-
-    // Sound list (0x5F8)
-    SoundList* soundList;   // 0x5F8
-    int field_5FC;          // 0x5FC
+    // Non-virtual aliases used by derived classes to call IconBar base
+    // implementation directly (bypassing virtual dispatch).
+    // Always inlined at call sites in the original binary — no separate
+    // function body exists. Confirmed by assembly in callers:
+    //   SCI_SchoolMenu::Init  → CALL 0x42D6E0 (IconBar::Init)
+    //   SCI_Inventory::ShutDown → CALL 0x42D920 (IconBar::ShutDown)
+    //   SCI_SchoolMenu::AddMessage → CALL 0x42D9A0 (IconBar::AddMessage)
+    void InitIconBar(SC_Message* msg) { IconBar::Init(msg); }
+    void CleanupIconBar(SC_Message* msg) { IconBar::ShutDown(msg); }
+    int CheckButtonClick(SC_Message* msg) { return IconBar::AddMessage(msg); }
+    void SetIconBarRect();                         // 0x42D340
+    int FindClickedEntry(int* param);              // 0x42DEC0
+    void PlayButtonSound(int buttonIndex);         // 0x42DF10
+    void UpdateAllSlots();                         // 0x42DFA0
 };
 
 #endif // ICONBAR_H

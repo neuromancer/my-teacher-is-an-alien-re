@@ -4,31 +4,46 @@
 #include "Parser.h"
 #include "ObjectPool.h"
 
-// mCNavNode class
-// Size: 0x100 bytes
-// Used by mCNavigator for navigation nodes
+// mCNavNode - Navigation node for mCNavigator
+// Full game: Size 0xD0, vtable 0x461B50 (parsing) → 0x461B30 (runtime, 8 entries)
+// Constructor: 0x44AE10
+//
+// Full game vtable layout (0x461B30, set after parsing):
+//   +0x00: LBLParse        (0x44A9C0 / 0x44AF40)
+//   +0x04: OnProcessStart  (inherited)
+//   +0x08: OnProcessEnd    (inherited)
+//   +0x0C: virtual3        (0x44A980)
+//   +0x10: virtual4        (0x44AB40)
+//   +0x14: Activate        (0x44A9A0)
+//   +0x18: GetNextNode     (0x44ADA0)
+//   +0x1C: virtual7        (0x449CE0)
+//
+// Full game field layout (Parser base = 0x90):
+//   0x90-0xA7: neighborNodes[6] (indexed by bearing direction)
+//   0xA8: nodeHandle
+//   0xAC: nodeName[36]
 class mCNavNode : public Parser {
 public:
-    mCNavNode(); // 0x412d80
-    ~mCNavNode(); // 0x412e50
-    int active;             // 0x88 - activation state (0=inactive, 1=active)
-    int flags;              // 0x8c - flags (bit 0: animation, bit 1: sound, bit 2: counter, bit 4: ?, bit 8: random, bit 0x10: terminate)
-    int nextNodeId;         // 0x90 - result node ID to return
-    int counterLimit;       // 0x94 - max counter value
-    int counter;            // 0x98 - current counter
-    int animationState;     // 0x9c - animation state for Sprite::SetState2
-    char soundName[32];     // 0xa0 - sound name buffer (32 bytes)
-    ObjectPool* randomPool; // 0xc0 - pool for random sound selection
-    int neighborNodes[6];   // 0xc4 - array of 6 neighbor node IDs (24 bytes, ends at 0xdc)
-    int nodeHandle;         // 0xdc - this node's handle/ID
-    char nodeName[32];      // 0xe0 - node name (32 bytes, ends at 0x100)
+    mCNavNode(char* line);          // 0x44AE10
+    ~mCNavNode();                   // 0x44AEC0
 
-    int Activate();
-    int Update();
-    int GetNextNode();
-    void SetNavLink(char* direction, int nodeId);
-    virtual int LBLParse(char*);
-    void AddSpriteList(char* name, int id);
+    // Virtual methods (8 entries total)
+    virtual void virtual3();        // +0x0C
+    virtual int virtual4();         // +0x10
+    virtual int Activate();         // +0x14
+    virtual int GetNextNode();      // +0x18
+    virtual void virtual7();        // +0x1C
+    virtual int LBLParse(char*);    // +0x00 (override)
+
+    // Non-virtual wrappers: look up neighbor by bearing and dispatch
+    void CallActivateNeighbor();    // 0x44B7E0
+    int CallActivate();             // 0x44B830
+    int CallGetNextNode();          // 0x44B880
+
+    // Fields (after Parser 0x90 base)
+    void* neighborNodes[6];         // 0x90 - neighbor node pointers indexed by bearing
+    int nodeHandle;                 // 0xA8 - this node's handle/ID
+    char nodeName[36];              // 0xAC - node name (up to 0xCF)
 };
 
 #endif // MCNAVNODE_H

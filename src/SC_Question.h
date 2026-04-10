@@ -3,60 +3,62 @@
 
 #include "Parser.h"
 #include "Queue.h"
-#include "InputManager.h"  // for MousePoint
-
 class MMPlayer;
+class SCI_Dialog;
 
 class SC_Message : public Parser {
 public:
-    int targetAddress;  // 0x88 - destination handler address
-    int sourceAddress;  // 0x8c - source/from address
-    int command;        // 0x90 - message type/command code
-    int data;           // 0x94 - associated data
-    int priority;       // 0x98 - queue priority
-    int param1;         // 0x9c
-    int param2;         // 0xa0
-    MousePoint clickPos; // 0xa4-0xa8 - click position (MousePoint has empty destructor for SEH)
-    int mouseX;         // 0xac - current mouse X
-    int mouseY;         // 0xb0 - current mouse Y
-    int lastKey;        // 0xb4 - last key pressed
-    int time;           // 0xb8 - time value
-    int userPtr;        // 0xbc - user pointer (param8)
+    int targetAddress;  // 0x90 - destination handler address / SpriteAction*
+    int sourceAddress;  // 0x94 - source/from address
+    int command;        // 0x98 - message type/command code
+    int data;           // 0x9c - associated data
+    int priority;       // 0xa0 - queue priority
+    int param1;         // 0xa4
+    int param2;         // 0xa8
+    int clickX;         // 0xac - click position X
+    int clickY;         // 0xb0 - click position Y
+    int mouseX;         // 0xb4 - current mouse X
+    int mouseY;         // 0xb8 - current mouse Y
+    int lastKey;        // 0xbc - last key pressed
+    int time;           // 0xc0 - time value
+    int userPtr;        // 0xc4 - user pointer (param8)
 
-    SC_Message(int targetAddress, int sourceAddress, int command, int data, int priority, int param1, int param2, int userPtr, int clickX, int clickY);
+    SC_Message() {}
+    SC_Message(int, int, int, int, int, int, int, int, int, int) {}
     ~SC_Message();
 
-    /* Function start: 0x419A10 */
     virtual int LBLParse(char* param_1);
 
-    /* Function start: 0x419FD0 */
     void Dump(int unused);
 };
 
+void ParseSpriteAction(void* param_1, void* param_2);
+
+// SC_Question - Question/dialog system (full game)
+// Constructor: 0x414780, Destructor: 0x4148F0
+// Vtable: 0x4612D8
+// Extends Parser directly
 class SC_Question : public Parser
 {
 public:
-    MMPlayer* mouseControl; // 0x88
-    Queue* messageQueue;        // 0x8c
-    unsigned int questionId;    // 0x90 - question ID passed to constructor
-    int field_94;
-    int state;                  // 0x98 - 0=new, 2=already answered
-    char label[128];            // 0x9c
+    Queue* messageQueue;        // 0x90
+    int field_94;               // 0x94 (flags, bit 8 used)
+    int state;                  // 0x98 - 0=new, 1=active, 2=answered
+    char label[128];            // 0x9C-0x11B
+    MMPlayer* mouseControl;     // 0x11C
+    SCI_Dialog* dialogPtr;      // 0x120
+    int actionIndex[3];         // 0x124, 0x128, 0x12C
+    unsigned int questionId;    // 0x130
+    int field_134;              // 0x134
 
-    SC_Question(int id);
+    SC_Question(int id, SCI_Dialog* dialog);
     ~SC_Question();
-    
-    /* Function start: 0x406930 */
+
     void Update(int x, int y);
-    
-    /* Function start: 0x4069B0 */
     void Finalize();
-    
-    /* Function start: 0x406AF0 */
+    void InitState();
+    int OnInput(SC_Message* msg);
     virtual int LBLParse(char* line);
-    
-    /* Function start: 0x406F50 */
-    void DumpMessageQueue(int unused);
 };
 
 #endif

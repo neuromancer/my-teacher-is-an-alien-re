@@ -7,22 +7,19 @@ class Sample;
 
 /**
  * MouseControl - Cursor Rendering and Appearance
- * 
- * This class manages the visual cursor (pointer) display:
- * - Cursor sprite graphics (m_sprite, m_sprite2)
- * - Per-state hotspot offsets (m_hotspots) - where the "click point" is for each cursor state
- * - Cursor state labels (m_labels) - e.g., "POINTER", "EXAMINE", "PICKUP"
- * - Associated audio (m_audio)
- * 
- * Size: 0x1C0 (448 bytes)
- * Functions: 0x41ECA0-0x41F200, 0x422D98
- * 
- * NOTE: This is DIFFERENT from MMPlayer (0x98 bytes), which manages
- * clickable interaction areas via a Queue of Sprite objects. Do not merge.
- * The similarity in names is due to the string "MouseControl" being used
- * in MouseControl::LBLParse for unknown command delegation.
+ *
+ * Full game version: dynamically allocated arrays sized by MAXMICE command.
+ * Size: 0xA8 (168 bytes)
+ * Functions: 0x4327C0-0x432DA0
  */
 extern "C" int SetCursorVisible(unsigned int);
+
+struct Point {
+    Point() {}
+    ~Point() {}
+    int x;
+    int y;
+};
 
 class MouseControl : public Parser {
 public:
@@ -31,16 +28,11 @@ public:
     int LBLParse(char* line);
     void DrawCursor();
 
-    char* m_labels[25];        // 0x88
-    Sprite* m_sprite;          // 0xEC
-    Sprite* m_sprite2;         // 0xF0
-    struct Point {
-        Point() {}
-        ~Point() {}
-        int x;
-        int y;
-    };
-    Point m_hotspots[25];      // 0xF4
-    Sample* m_audio;          // 0x1BC
+    char** m_labels;           // 0x90
+    Sprite* m_sprite;          // 0x94
+    Sprite* m_sprite2;         // 0x98
+    Point* m_hotspots;         // 0x9C
+    int m_maxMice;             // 0xA0
+    Sample* m_audio;           // 0xA4
 };
-#endif // MOUSE_H
+#endif // MOUSECONTROL_H

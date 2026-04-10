@@ -50,7 +50,7 @@ def load_auto_complete_functions(filepath):
                 pass
     return addresses
 
-AUTO_COMPLETE_FILE = os.path.join(os.path.dirname(__file__), '..', 'src', 'auto_complete.txt')
+AUTO_COMPLETE_FILE = os.path.join(os.path.dirname(__file__), '..', 'src-demo', 'auto_complete.txt')
 LIBRARY_RANGES = [(0x424540, 0x4304E0)]
 
 def is_library(addr):
@@ -59,8 +59,8 @@ def is_library(addr):
             return True
     return False
 
-all_funcs = get_all_functions_from_map('src/map')
-implemented_funcs = get_implemented_functions('src')
+all_funcs = get_all_functions_from_map('src-demo/map')
+implemented_funcs = get_implemented_functions('src-demo')
 auto_complete = load_auto_complete_functions(AUTO_COMPLETE_FILE)
 unimplemented_funcs = all_funcs - implemented_funcs - auto_complete
 developer_funcs = sorted([addr for addr in unimplemented_funcs if not is_library(addr)])

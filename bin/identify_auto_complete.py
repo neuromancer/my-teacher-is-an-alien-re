@@ -8,7 +8,7 @@ import os
 import re
 
 def get_all_functions_from_map(map_dir):
-    """Get all function addresses from src/map."""
+    """Get all function addresses from src-demo/map."""
     addresses = []
     for filename in os.listdir(map_dir):
         if filename.endswith(".cpp"):
@@ -21,7 +21,7 @@ def get_all_functions_from_map(map_dir):
     return set(addresses)
 
 def get_implemented_functions(src_dir):
-    """Get implemented function addresses from src/."""
+    """Get implemented function addresses from src-demo/."""
     addresses = set()
     for root, dirs, files in os.walk(src_dir):
         if 'map' in dirs:
@@ -78,8 +78,8 @@ def categorize_function(filepath):
     return 'other'
 
 def main():
-    map_dir = 'src/map'
-    src_dir = 'src'
+    map_dir = 'src-demo/map'
+    src_dir = 'src-demo'
     code_dir = 'code'
     
     all_funcs = get_all_functions_from_map(map_dir)

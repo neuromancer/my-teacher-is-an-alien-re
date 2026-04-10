@@ -1,34 +1,42 @@
-/* Function start: 0x42E0A0 */
+/* Function start: 0x42E3A0 */
 
-/* Function start: 0x42E2D0 */
+/* Function start: 0x42E450 */
 
-/* Function start: 0x42E300 */
+/* Function start: 0x42E480 */
 
-/* Function start: 0x42E360 */
+/* Function start: 0x42E4B0 */
 
-/* Function start: 0x42E650 */
+/* Function start: 0x42E540 */
 
-/* Function start: 0x42E680 */
+/* Function start: 0x42E711 */
 
-/* Function start: 0x42E8D0 */
+/* Function start: 0x42E720 */
 
-/* Function start: 0x42E930 */
+/* Function start: 0x42E78B */
 
-/* Function start: 0x42E9B0 */
+/* Function start: 0x42E7A0 */
 
-/* Function start: 0x42EB40 */
+/* Function start: 0x42E7C0 */
 
-/* Function start: 0x42EB80 */
+/* Function start: 0x42E826 */
 
-/* Function start: 0x42EC00 */
+/* Function start: 0x42E834 */
 
-/* Function start: 0x42EC30 */
+/* Function start: 0x42E84C */
 
-/* Function start: 0x42ECA0 */
+/* Function start: 0x42E864 */
 
-/* Function start: 0x42ECE0 */
+/* Function start: 0x42E8F0 */
 
-/* Function start: 0x42ED20 */
+/* Function start: 0x42E9D0 */
 
-/* Function start: 0x42EE10 */
+/* Function start: 0x42ECC6 */
+
+/* Function start: 0x42EDA7 */
+
+/* Function start: 0x42EEA4 */
+
+/* Function start: 0x42EF97 */
+
+/* Function start: 0x42EFC0 */
 

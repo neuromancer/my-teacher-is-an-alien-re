@@ -1,23 +1,28 @@
 #include "SC_OnScreenMessage.h"
 #include "Memory.h"
 #include "Message.h"
+#include "SpriteAction.h"
 #include "globals.h"
+#include "GameEngine.h"
 #include "string.h"
 #include "GameState.h"
 #include "StringTable.h"
 #include "OnScreenMessage.h"
 #include "SC_Question.h"
+#include "Sample.h"
+#include "mss.h"
 
 extern "C" {
     void ShowError(const char*, ...);
+    void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 }
 
-/* Function start: 0x40A2E0 */
-SC_OnScreenMessage::SC_OnScreenMessage() {
-    // Set targetAddress to 15
-    targetAddress = 15;
+// FUN_00448140 = SoundEntry::SoundUpdate — implemented below
 
-    // Initialize timer
+/* Function start: 0x4482F0 */
+SC_OnScreenMessage::SC_OnScreenMessage() {
+    memset(&timer, 0, 24);
+    handlerId = 4;
     timer.Reset();
 
     // Allocate and initialize list header structure
@@ -27,11 +32,11 @@ SC_OnScreenMessage::SC_OnScreenMessage() {
     }
 }
 
-/* Function start: 0x40A410 */
+/* Function start: 0x448420 */
 SC_OnScreenMessage::~SC_OnScreenMessage() {
     MessageList* pList;
     MessageNode* node;
-    OnScreenMessage* data;
+    SoundEntry* data;
 
     pList = m_messageList;
     if (pList != 0) {
@@ -64,7 +69,7 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
                     node = (MessageNode*)pList->current;
                     data = 0;
                     if (node != 0) {
-                        data = (OnScreenMessage*)node->data;
+                        data = (SoundEntry*)node->data;
                     }
                     if (node != 0) {
                         node->data = 0;
@@ -86,307 +91,445 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
     }
 }
 
-/* Function start: 0x40A5A0 */
+/* Function start: 0x4485E0 */
 void SC_OnScreenMessage::Init(SC_Message* msg) {
-    Handler::Init(msg);
+    CopyCommandData(msg);
     if (msg != 0) {
-        sourceAddress = msg->sourceAddress;
+        moduleParam = msg->sourceAddress;
     }
 }
 
-/* Function start: 0x40A5D0 */
-int SC_OnScreenMessage::ShutDown(SC_Message* msg) {
-    return 0;
-}
-
-/* Function start: 0x40A5E0 */
+/* Function start: 0x448610 */
 void SC_OnScreenMessage::Update(int param1, int param2) {
     MessageNode* node;
-    unsigned int uVar3;
-    int iVar4;
-    OnScreenMessage* msgItem;
-    OnScreenMessage* pvVar6;
+    SoundEntry* data;
     MessageList* pList;
-    int counter;
 
-    pList = m_messageList;
-    pList->current = pList->head;
-    counter = 0;
-
-    if (pList->head != 0) {
-    do {
-        msgItem = 0;
-        pList = m_messageList;
-        node = (MessageNode*)pList->current;
-        if (node != 0) {
-            msgItem = (OnScreenMessage*)node->data;
+    if (timer.Update() > 60000) {
+        if (m_messageList->head == 0) {
+            SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         }
-
-        iVar4 = msgItem->Update(counter);
-        if (iVar4 != 0) {
-            pList = m_messageList;
-            node = (MessageNode*)pList->current;
-            if (node == 0) {
-                pvVar6 = 0;
-            } else {
-                // Unlink node from head
-                if (pList->head == node) {
-                    pList->head = node->next;
-                }
-                // Unlink node from tail
-                if (pList->tail == pList->current) {
-                    pList->tail = ((MessageNode*)pList->current)->prev;
-                }
-                // Update next node's prev pointer
-                node = (MessageNode*)pList->current;
-                if (node->prev != 0) {
-                    node->prev->next = node->next;
-                }
-                // Update prev node's next pointer
-                node = (MessageNode*)pList->current;
-                if (node->next != 0) {
-                    node->next->prev = node->prev;
-                }
-                // Get data from node
-                node = (MessageNode*)pList->current;
-                pvVar6 = 0;
-                if (node != 0) {
-                    pvVar6 = (OnScreenMessage*)node->data;
-                }
-                // Free node
-                if (node != 0) {
-                    node->data = 0;
-                    node->prev = 0;
-                    node->next = 0;
-                    delete node;
-                    pList->current = 0;
-                }
-                pList->current = pList->head;
-            }
-            // Cleanup data object
-            if (pvVar6 != 0) {
-                delete pvVar6;
-            }
-        }
-
-        counter++;
-        pList = m_messageList;
-        node = (MessageNode*)pList->current;
-        if (pList->tail == node) {
-            break;
-        }
-        if (counter > 10) {
-            break;
-        }
-        if (node != 0) {
-            pList->current = node->next;
-        }
-        pList = m_messageList;
-    } while (pList->head != 0);
     }
 
-    uVar3 = timer.Update();
-    if (uVar3 > 60000) {
-        SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 0x14, 0, 0, 0, 0, 0);
+    if (m_messageList != 0) {
+        m_messageList->current = m_messageList->head;
+        if (m_messageList->head != 0) {
+            do {
+                SoundEntry* entry = 0;
+                node = (MessageNode*)m_messageList->current;
+                if (node != 0) {
+                    entry = (SoundEntry*)node->data;
+                }
+
+                if (entry->SoundUpdate() != 0) {
+                    pList = m_messageList;
+                    // Inline RemoveCurrent
+                    node = (MessageNode*)pList->current;
+                    if (node == 0) {
+                        data = 0;
+                    } else {
+                        if (pList->head == node) {
+                            pList->head = node->next;
+                        }
+                        if (pList->tail == pList->current) {
+                            pList->tail = ((MessageNode*)pList->current)->prev;
+                        }
+                        node = (MessageNode*)pList->current;
+                        if (node->prev != 0) {
+                            node->prev->next = node->next;
+                        }
+                        node = (MessageNode*)pList->current;
+                        if (node->next != 0) {
+                            node->next->prev = node->prev;
+                        }
+                        node = (MessageNode*)pList->current;
+                        data = 0;
+                        if (node != 0) {
+                            data = (SoundEntry*)node->data;
+                        }
+                        if (node != 0) {
+                            node->data = 0;
+                            node->prev = 0;
+                            node->next = 0;
+                            ::operator delete(node);
+                            pList->current = 0;
+                        }
+                        pList->current = pList->head;
+                    }
+
+                    if (data != 0) {
+                        delete data;
+                    }
+                }
+
+                // Advance to next
+                {
+                    MessageList* lst = m_messageList;
+                    if (lst->tail == lst->current) break;
+                    if (lst->current != 0) {
+                        lst->current = ((MessageNode*)lst->current)->next;
+                    }
+                }
+            } while (m_messageList->head != 0);
+        }
     }
 
-    if (targetAddress == param2) {
-        ShowError("SC_OnScreenMessage::Update");
+    if (handlerId == param2) {
+        ShowError("SC_Sound::Update");
     }
 }
 
-/* Function start: 0x40A7C0 */
-int SC_OnScreenMessage::AddMessage(SC_Message* msg) {
-    Handler::AddMessage(msg);
-    ShowError("SC_OnScreenMessage::AddMessage");
-    return 1;
-}
-
-/* Function start: 0x40A7E0 */
+/* Function start: 0x448830 */
 int SC_OnScreenMessage::Exit(SC_Message* msg) {
-    OnScreenMessage* newItem;
-    MessageList* list;
+    SpriteAction* action;
+    MessageList* pList;
+    SoundEntry* data;
+    SoundEntry* item;
+    Sample* snd;
 
-    newItem = 0;
-
-    if (msg->targetAddress != targetAddress) {
+    action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
         return 0;
     }
 
     timer.Reset();
 
-    if (msg->priority == 0xF) goto send_remove_msg;
-    if (msg->priority == 0x13) goto create_message;
-    if (msg->priority == 0x1B) goto send_remove_msg;
-    return 0;
+    switch (action->instruction) {
+    case 2:
+    {
+        item = FindOrCreateSoundEntry(action->addressValue);
+        snd = item->sample;
+        if (snd == 0) break;
+        int loop = 1;
+        if (action->extra2 != 0) {
+            loop = action->extra2;
+        }
+        int dur = 100;
+        if (action->extra1 != 0) {
+            dur = action->extra1;
+        }
+        snd->Play(dur, loop);
+        break;
+    }
 
-create_message:
-    if (msg->sourceAddress != 0) {
-        if (g_Strings_00435a70 != 0) {
-            if (g_Strings_00435a70->GetString(msg->sourceAddress, g_Buffer_00436960)) {
-                newItem = new OnScreenMessage(g_Buffer_00436960, msg->param1);
+    case 7:
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        break;
+
+    case 0x10:
+    {
+        pList = m_messageList;
+        if (pList->head != 0) {
+            pList->current = pList->head;
+            while (pList->head != 0) {
+                data = (SoundEntry*)pList->PopCurrent();
+                if (data != 0) {
+                    delete data;
+                }
             }
         }
-        goto check_newitem;
-    }
-    if (msg->userPtr != 0) {
-        newItem = new OnScreenMessage((char*)msg->userPtr, msg->param1);
-        msg->userPtr = 0;
+        break;
     }
 
-check_newitem:
-    if (newItem == 0) {
-        goto count_loop_start;
-    }
-
-    list = m_messageList;
-    list->current = list->head;
-    if (list->type == 1) goto insertion_loop;
-    if (list->type == 2) goto insertion_loop;
-
-call_insert:
-    list->InsertNode(newItem);
-
-count_loop_start:
+    case 0x11:
     {
-        int count;
-        list = m_messageList;
-        count = 0;
-        list->current = list->head;
-        if (list->current != 0) {
+        item = FindOrCreateSoundEntry(action->addressValue);
+        snd = item->sample;
+        if (snd == 0) break;
+        int vol = AIL_sample_volume(snd->m_sample);
+        snd->Fade(vol + 10, 0);
+        break;
+    }
+
+    case 0x12:
+    {
+        item = FindOrCreateSoundEntry(action->addressValue);
+        snd = item->sample;
+        if (snd == 0) break;
+        int vol = AIL_sample_volume(snd->m_sample);
+        snd->Fade(vol - 10, 0);
+        break;
+    }
+
+    case 0x13:
+    {
+        FindOrCreateSoundEntry(action->addressValue);
+        item = FindOrCreateSoundEntry(action->addressValue);
+        item->FadeVolume(action->extra1, action->extra2);
+        break;
+    }
+
+    case 0x17:
+        FindOrCreateSoundEntry(action->addressValue);
+        break;
+
+    case 0x18:
+    {
+        m_messageList->current = m_messageList->head;
+        if (m_messageList->head != 0) {
             do {
-                count++;
-                if (list->current == list->tail) break;
-                if (list->current != 0) {
-                    list->current = ((MessageNode*)list->current)->next;
+                {
+                    MessageNode* nd;
+                    SoundEntry* ent;
+                    pList = m_messageList;
+                    nd = (MessageNode*)pList->current;
+                    if (nd == 0) {
+                        ent = (SoundEntry*)*(int*)0x24;
+                        if (action->addressValue != (int)ent) goto no_match;
+                    } else {
+                        ent = (SoundEntry*)nd->data;
+                        if (ent->soundId != action->addressValue) goto no_match;
+                    }
+
+                    // match found
+                    if (nd == 0) {
+                        data = 0;
+                    } else {
+                        if (pList->head == nd) {
+                            pList->head = nd->next;
+                        }
+                        if (pList->tail == pList->current) {
+                            pList->tail = ((MessageNode*)pList->current)->prev;
+                        }
+                        nd = (MessageNode*)pList->current;
+                        if (nd->prev != 0) {
+                            nd->prev->next = nd->next;
+                        }
+                        nd = (MessageNode*)pList->current;
+                        if (nd->next != 0) {
+                            nd->next->prev = nd->prev;
+                        }
+
+                        data = (SoundEntry*)pList->GetCurrentData();
+
+                        nd = (MessageNode*)pList->current;
+                        if (nd != 0) {
+                            delete nd;
+                            pList->current = 0;
+                        }
+                        pList->current = pList->head;
+                    }
+
+                    if (data != 0) {
+                        delete data;
+                    }
                 }
-            } while (list->current != 0);
-        }
 
-        if (count <= 10) {
-            return 1;
-        }
-    }
-
-    {
-        OnScreenMessage* deletedItem;
-        MessageNode* node;
-
-        deletedItem = 0;
-        list = m_messageList;
-        if (list->type == 1 || list->type == 4) {
-            list->current = list->head;
-        } else if (list->type == 2 || list->type == 0) {
-            list->current = list->tail;
-        } else {
-            ShowError("bad queue type %lu", list->type);
-        }
-
-        node = (MessageNode*)list->current;
-        if (node != 0) {
-            if (list->head == node) {
-                list->head = node->next;
-            }
-            if (list->tail == (MessageNode*)list->current) {
-                list->tail = ((MessageNode*)list->current)->prev;
-            }
-            node = (MessageNode*)list->current;
-            if (node->prev != 0) {
-                node->prev->next = node->next;
-            }
-            node = (MessageNode*)list->current;
-            if (node->next != 0) {
-                node->next->prev = node->prev;
-            }
-            node = (MessageNode*)list->current;
-            if (node == 0) {
-                deletedItem = 0;
-            } else {
-                deletedItem = (OnScreenMessage*)node->data;
-            }
-            if (node != 0) {
-                node->data = 0;
-                node->prev = 0;
-                node->next = 0;
-                delete node;
-                list->current = 0;
-            }
-            list->current = list->head;
-        }
-
-        if (deletedItem != 0) {
-            delete deletedItem;
-        }
-    }
-    goto count_loop_start;
-
-insertion_loop:
-    if (((OnScreenMessage*)((MessageNode*)list->current)->data)->timer.Update() < newItem->timer.Update()) {
-        goto call_insert;
-    }
-    if (list->tail == list->current) {
-        goto push_to_tail;
-    }
-    if (list->current != 0) {
-        list->current = ((MessageNode*)list->current)->next;
-    }
-    if (list->current != 0) {
-        goto insertion_loop;
-    }
-    goto count_loop_start;
-
-push_to_tail:
-    if (newItem == 0) ShowError("queue fault 0112");
-    {
-        MessageNode* newNode = new MessageNode(newItem);
-        if (newNode != 0) {
-            if (list->current == 0) {
-                list->current = list->tail;
-            }
-            if (list->head == 0) {
-                list->head = newNode;
-                list->tail = newNode;
-                list->current = newNode;
-            } else {
-                if (list->tail == 0 || ((MessageNode*)list->tail)->next != 0) {
-                    ShowError("queue fault 0113");
+            no_match:
+                // Advance
+                {
+                    MessageList* lst = m_messageList;
+                    if (lst->tail == lst->current) break;
+                    if (lst->current != 0) {
+                        lst->current = ((MessageNode*)lst->current)->next;
+                    }
                 }
-                newNode->next = 0;
-                newNode->prev = (MessageNode*)list->tail;
-                ((MessageNode*)list->tail)->next = newNode;
-                list->tail = newNode;
-            }
+            } while (m_messageList->head != 0);
         }
+        break;
     }
-    goto count_loop_start;
 
-send_remove_msg:
-    SC_Message_Send(3, targetAddress, targetAddress, sourceAddress, 20, 0, 0, 0, 0, 0);
+    case 0x1b:
+    {
+        item = FindOrCreateSoundEntry(action->addressValue);
+        snd = item->sample;
+        if (snd == 0) break;
+        int dur = 100;
+        if (action->extra1 != 0) {
+            dur = action->extra1;
+        }
+        snd->Play(dur, 0);
+        break;
+    }
+
+    default:
+        return 0;
+    }
+
     return 1;
 }
 
-/* Function start: 0x40ABD0 */
-void MessageList::InsertNode(void* data) {
-    if (data == 0) {
-        ShowError("queue fault 0102");
-    }
-    MessageNode* newNode = new MessageNode(data);
-    if (current == 0) {
-        current = head;
-    }
-    if (head == 0) {
-        head = newNode;
-        tail = newNode;
-        current = newNode;
-    } else {
-        newNode->next = (MessageNode*)current;
-        newNode->prev = ((MessageNode*)current)->prev;
-        if (((MessageNode*)current)->prev == 0) {
-            head = newNode;
-        } else {
-            ((MessageNode*)current)->prev->next = newNode;
-        }
-        ((MessageNode*)current)->prev = newNode;
-    }
+int SC_OnScreenMessage::AddMessage(SC_Message* msg) { return 1; }
+int SC_OnScreenMessage::ShutDown(SC_Message* msg) { return 0; }
+
+/* Function start: 0x448C50 */
+void* MessageList::GetCurrentData() {
+    MessageNode* node = (MessageNode*)current;
+    if (node == 0) return 0;
+    return node->data;
 }
 
+// FUN_00449050 = MessageList::PopCurrent — COMDAT of 0x431B60, defined in MessageList.cpp
+
+extern "C" char* GetSoundFilename(int handle);
+
+/* Function start: 0x447FF0 */
+SoundEntry::SoundEntry(int id) {
+    int i;
+    int* p = (int*)this;
+    for (i = 0xc; i != 0; i--) {
+        *p = 0;
+        p++;
+    }
+    soundId = id;
+    timer.Reset();
+    sample = new Sample();
+    char* filename = GetSoundFilename(soundId);
+    int loadResult = sample->Load(filename);
+    if (loadResult != 0 && sample != 0) {
+        sample->Unload();
+        free(sample);
+        sample = 0;
+    }
+    int gsIdx = g_PeriodStateIdx_0046cb90;
+    GameState* gs = g_GameState_0046aa30;
+    if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
+        ShowError("Invalid gamestate %d", gsIdx);
+    }
+    gameStateVal = gs->stateValues[gsIdx];
+}
+
+/* Function start: 0x4481A0 */
+void __fastcall ProcessSoundFade(SoundEntry* entry) {
+    Sample* snd;
+    int currentVol;
+    int targetVol;
+    int step;
+
+    snd = entry->sample;
+    if (snd == 0) return;
+    if (snd->m_sample == 0) return;
+    if (snd->m_size != *(int*)((char*)snd->m_sample + 0xC)) return;
+    if (AIL_sample_status(snd->m_sample) != 4) return;
+    if (!(entry->activeFlags & 1)) return;
+
+    currentVol = AIL_sample_volume(entry->sample->m_sample);
+    targetVol = entry->targetVolume;
+    if (currentVol == targetVol) {
+        if (currentVol == 0) {
+            entry->sample->~Sample();
+        }
+        entry->activeFlags &= ~1;
+        return;
+    }
+    step = entry->volumeStep;
+    currentVol += step;
+    if (currentVol < 0 || currentVol > 100) {
+        currentVol = targetVol;
+    }
+    if (step > 0) {
+        if (currentVol >= targetVol) {
+            currentVol = targetVol;
+        }
+    } else {
+        if (currentVol <= targetVol) {
+            currentVol = targetVol;
+        }
+    }
+    entry->sample->Fade(currentVol, 0);
+}
+
+/* Function start: 0x448140 */
+int SoundEntry::SoundUpdate() {
+    if (sample != 0) {
+        if (timer.Update() <= 60000) {
+            Sample* snd = sample;
+            HSAMPLE hs = snd->m_sample;
+            if (hs != 0) {
+                if (snd->m_size == *(int*)((char*)hs + 0xC)) {
+                    if (AIL_sample_status(hs) == 4) {
+                        if (activeFlags & 1) {
+                            ProcessSoundFade(this);
+                        }
+                        timer.Reset();
+                    }
+                }
+            }
+            return 0;
+        }
+    }
+    return 1;
+}
+
+extern "C" int __stdcall AIL_sample_volume(void*);
+
+/* Function start: 0x448220 */
+void SoundEntry::FadeVolume(int volume, unsigned int duration) {
+    if (sample == 0) return;
+    if (sample->m_sample == 0) return;
+    if (sample->m_size != *(int*)((char*)sample->m_sample + 0xc)) return;
+    if (AIL_sample_status(sample->m_sample) != 4) return;
+    if (activeFlags & 1) return;
+
+    if (duration == 0) goto simple_fade;
+
+    {
+    int currentVolume = AIL_sample_volume(sample->m_sample);
+    targetVolume = volume;
+
+    unsigned int frameTime;
+    if (g_GameEngine_0046a6ec == 0) {
+        frameTime = 0x54;
+    } else {
+        frameTime = g_GameEngine_0046a6ec->m_frameTime;
+        if (frameTime == 0) {
+            frameTime = 0x54;
+        }
+    }
+
+    unsigned int numFrames = duration / frameTime;
+    int delta = volume - currentVolume;
+    volumeStep = delta / (int)numFrames;
+
+    if (volumeStep == 0) {
+        if (volume >= currentVolume) {
+            volumeStep = 1;
+        } else {
+            volumeStep = -1;
+        }
+    }
+
+    activeFlags |= 1;
+    return;
+    }
+
+simple_fade:
+    targetVolume = volume;
+    sample->Fade(volume, 0);
+}
+
+/* Function start: 0x448C60 */
+SoundEntry* SC_OnScreenMessage::FindOrCreateSoundEntry(int soundId) {
+    MessageList* list = m_messageList;
+    MessageNode* node;
+
+    // Search for existing entry with this soundId
+    list->current = list->head;
+    if (list->head != 0) {
+        do {
+            node = (MessageNode*)list->current;
+            if (node != 0) {
+                SoundEntry* entry = (SoundEntry*)node->data;
+                if (entry->soundId == soundId) {
+                    return entry;
+                }
+            }
+            if (list->tail == list->current) break;
+            if (list->current != 0) {
+                list->current = ((MessageNode*)list->current)->next;
+            }
+        } while (list->current != 0);
+    }
+
+    // Not found - create new entry
+    SoundEntry* newEntry = new SoundEntry(soundId);
+
+    // Insert into list
+    if (newEntry == 0) {
+        ShowError("queue fault 0101");
+    }
+    list->current = list->head;
+    list->InsertNode(newEntry);
+
+    return newEntry;
+}

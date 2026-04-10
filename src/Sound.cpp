@@ -12,7 +12,7 @@ extern short _param_3;
 
 PCMWAVEFORMAT g_pcm;
 
-/* Function start: 0x41E1F0 */
+/* Function start: 0x424C50 */
 Sound::Sound(int param_1, short param_2, int param_3) {
   int *puVar4 = (int *)this;
   for (int i = 0; i < 15; i++) {
@@ -56,7 +56,7 @@ Sound::Sound(int param_1, short param_2, int param_3) {
   }
 }
 
-/* Function start: 0x41E320 */
+/* Function start: 0x424D90 */
 void Sound::AllocateSampleHandles() {
   short sVar2;
   HSAMPLE *slot;
@@ -70,7 +70,7 @@ void Sound::AllocateSampleHandles() {
   num_samples = sVar2;
 }
 
-/* Function start: 0x41E360 */
+/* Function start: 0x424DD0 */
 HSAMPLE Sound::FindFreeSampleHandle() {
   for (short i = 0; i < num_samples; i++) {
     if (AIL_sample_status(samples[i]) == 2) {
@@ -80,30 +80,32 @@ HSAMPLE Sound::FindFreeSampleHandle() {
   return 0;
 }
 
-/* Function start: 0x41E3A0 */
-void Sound::StopAllSamples() {
-  for (short i = 0; i < Sound::num_samples; i++) {
-    AIL_end_sample(Sound::samples[(int)i]);
-  }
-}
-
-/* Function start: 0x41E3D0 */
+/* Function start: 0x424E40 */
 int Sound::OpenDigitalDriver(int rate, unsigned short bits,
                       unsigned short channels) {
   HDIGDRIVER driver;
 
-  unsigned short bytesPerSample;
-
   g_pcm.wf.nChannels = channels;
-  bytesPerSample = bits >> 3;
   g_pcm.wf.wFormatTag = 1;
-  g_pcm.wf.nBlockAlign = channels * bytesPerSample;
+  g_pcm.wf.nBlockAlign = channels * (bits >> 3);
+  int avgBytesPerSec = (unsigned int)channels * (unsigned int)(unsigned short)(bits >> 3);
   g_pcm.wBitsPerSample = bits;
   g_pcm.wf.nSamplesPerSec = rate;
-  g_pcm.wf.nAvgBytesPerSec = (unsigned int)channels * (unsigned int)bytesPerSample * rate;
+  g_pcm.wf.nAvgBytesPerSec = avgBytesPerSec * rate;
 
   if (AIL_waveOutOpen(&driver, 0, -1, &g_pcm)) {
     return 0;
   }
   return (int)driver;
+}
+
+/* Function start: 0x424E10 */
+void Sound::StopAllSamples() {
+    short i = 0;
+    if (i < num_samples) {
+        do {
+            AIL_end_sample(samples[i]);
+            i++;
+        } while (i < num_samples);
+    }
 }

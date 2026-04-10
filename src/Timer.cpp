@@ -1,11 +1,11 @@
 #include <windows.h>
 #include "Timer.h"
 #include "Memory.h"
+#include "globals.h"
 
-// Global variable - timer instance counter
-unsigned int g_timer_count = 0;
+// g_TimerCount_00436b94 — defined in globals.cpp
 
-/* Function start: 0x418EB0 */
+/* Function start: 0x421880 */
 Timer::Timer()
 {
     m_pauseDuration = 0;
@@ -13,25 +13,25 @@ Timer::Timer()
     m_startTime = 0;
     m_currentTime = 0;
     m_elapsedTime = 0;
-    g_timer_count++;
+    g_TimerCount_00436b94++;
     Reset();
 }
 
-/* Function start: 0x418EE0 */
+/* Function start: 0x4218B0 */
 Timer::~Timer()
 {
-    g_timer_count--;
+    g_TimerCount_00436b94--;
 }
 
 
-/* Function start: 0x418EF0 */
+/* Function start: 0x4218C0 */
 void Timer::Reset()
 {
     m_startTime = timeGetTime();
     m_pauseDuration = 0;
 }
 
-/* Function start: 0x418F10 */
+/* Function start: 0x4218E0 */
 unsigned int Timer::Update()
 {
     m_currentTime = timeGetTime();
@@ -39,12 +39,23 @@ unsigned int Timer::Update()
     return m_elapsedTime;
 }
 
-/* Function start: 0x418F30 */
+/* Function start: 0x421900 */
 void Timer::Wait(unsigned int delay)
 {
     Reset();
     do {
         Update();
     } while (m_elapsedTime < delay);
+}
+
+/* Function start: 0x421930 */
+void __fastcall DestroyTimerField(int* obj)
+{
+    Timer* t = (Timer*)obj[2];  // offset 8 from obj
+    if (t != 0) {
+        t->~Timer();
+        FreeMemory(t);
+        obj[2] = 0;
+    }
 }
 

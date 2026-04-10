@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <share.h>
+#include <sys/stat.h>
 #include <ctype.h>
 #include <windows.h>
 #include "string.h"
 #include "Memory.h"
+#include "globals.h"
+#include "GameState.h"
 #include <mbstring.h>
 
 extern "C" {
@@ -15,14 +19,6 @@ extern void* GetGameWindowHandle();
 
 extern void ShutdownGameSystems();
 extern void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
-extern int g_ExitInProgress_0043be34;
-extern char g_ExitCode_0043be30;
-extern void* g_AtExitTableStart_0043f104;
-extern void* g_AtExitTableEnd_0043f100;
-extern int DAT_00435030;
-extern int DAT_00435038;
-extern int DAT_0043503c;
-extern int DAT_00435040;
 
 int DeleteFile_Wrapper(const char* filename);
 
@@ -32,8 +28,10 @@ static char g_messageLogEnabled = 1;
 
 // Static buffer for FormatStringVA at address 0x43cfe8
 static char g_formatBuffer[64];
+static char g_audioNameBuffer[260];
+static char g_soundFileBuffer[260];  // 0x473D10
 
-/* Function start: 0x40D200 */
+// FormatStringVA - address unknown (NOT 0x44E3E0, that's MakeAnimName)
 char* FormatStringVA(char* format, ...)
 {
     vsprintf(g_formatBuffer, format, (char*)(&format + 1));
@@ -41,7 +39,56 @@ char* FormatStringVA(char* format, ...)
     return g_formatBuffer;
 }
 
-/* Function start: 0x419080 */
+/* Function start: 0x44E470 */
+char* MakeAudioName(char* baseName)
+{
+    int nameLength;
+    int suffixValue;
+    GameState* gameState;
+
+    nameLength = strlen(baseName);
+    if (nameLength < 4) {
+        ShowError("MakeAudioName - invalid base name = '%s'", baseName);
+    }
+
+    suffixValue = atoi(baseName + nameLength - 4);
+    if (suffixValue == 0) {
+        return baseName;
+    }
+
+    if (suffixValue > 4999) {
+        gameState = g_GameState_0046aa30;
+        if (g_PeriodStateIdx_0046cb90 < 0 || gameState->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+            ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+        }
+        sprintf(g_audioNameBuffer, "%s%c.wav", baseName,
+                g_PeriodCharTable_0046cb94[gameState->stateValues[g_PeriodStateIdx_0046cb90]]);
+        return g_audioNameBuffer;
+    }
+
+    sprintf(g_audioNameBuffer, "%s.wav", baseName);
+    return g_audioNameBuffer;
+}
+
+/* Function start: 0x44E530 */
+extern "C" char* GetSoundFilename(int handle)
+{
+    if (handle >= 0x1388) {
+        int idx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = g_GameState_0046aa30;
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        char ch = g_PeriodCharTable_0046cb94[gs->stateValues[idx]];
+        sprintf(g_soundFileBuffer, "audio\\snd%4.4d%c.wav", handle, (int)ch);
+        return g_soundFileBuffer;
+    }
+
+    sprintf(g_soundFileBuffer, "audio\\snd%4.4d.wav", handle);
+    return g_soundFileBuffer;
+}
+
+/* Function start: 0x425BC0 */
 void ExtractQuotedString(char *param_1,char *param_2,int param_3)
 {
     char *pcVar1;
@@ -70,7 +117,7 @@ void ExtractQuotedString(char *param_1,char *param_2,int param_3)
     return;
 }
 
-/* Function start: 0x419110 */
+/* Function start: 0x425C50 */
 void ShowError(const char* format, ...)
 {
     char buffer[256];
@@ -81,7 +128,7 @@ void ShowError(const char* format, ...)
     exitWithError_(-1);
 }
 
-/* Function start: 0x419170 */
+/* Function start: 0x425CB0 */
 void ShowMessage(char *param_1, ...)
 {
     char buffer[256];
@@ -91,14 +138,24 @@ void ShowMessage(char *param_1, ...)
     SetCursorVisible(0);
 }
 
-
-/* Function start: 0x4191C0 */
-void ClearMessageLog()
+/* Function start: 0x425D00 */
+int ShowMessageYesNo(char *param_1, ...)
 {
-    DeleteFile_Wrapper("message.log");
+    char buffer[256];
+    vsprintf(buffer, param_1, (char*)(&param_1 + 1));
+    SetCursorVisible(1);
+    int result = MessageBoxA((HWND)GetGameWindowHandle(), buffer, "Message", 4);
+    SetCursorVisible(0);
+    return result;
 }
 
-/* Function start: 0x4191D0 */
+/* Function start: 0x425D60 */
+void ClearMessageLog()
+{
+    remove("cfg\\message.log");
+}
+
+/* Function start: 0x425D70 */
 void WriteToMessageLog(const char *msg,...)
 {
     FILE *_File;
@@ -114,10 +171,10 @@ void WriteToMessageLog(const char *msg,...)
     }
 }
 
-int g_stringTableCount = 0; // 0x4366b4
-char g_stringTable[16384] = {0}; // 0x43d158
+// g_StringTableCount_004366b4 — defined in globals.cpp
+// g_StringTable_0043d158 — defined in globals.cpp
 
-/* Function start: 0x419220 */
+/* Function start: 0x425DC0 */
 extern "C" void AddToStringTable(char *param_1)
 {
     char local_20[32];
@@ -127,144 +184,88 @@ extern "C" void AddToStringTable(char *param_1)
     iVar2 = sscanf(param_1, " %s ", local_20);
     if (iVar2 == 1) {
         if (strlen(local_20) != 0) {
-            strcpy(&g_stringTable[g_stringTableCount * 0x20], local_20);
-            g_stringTableCount++;
+            strcpy(&g_StringTable_0043d158[g_StringTableCount_004366b4 * 0x20], local_20);
+            g_StringTableCount_004366b4++;
         }
     }
 }
 
-/* Function start: 0x4192A0 */
-void WriteToMessageLogIfEnabled(const char *param_1, ...)
+/* Function start: 0x425E40 */
+extern "C" void WriteToLog(const char *param_1, ...)
 {
-    if ((g_messageLogEnabled & 1) != 0) {
-        FILE *_File;
-        va_list argptr;
+    if (!(g_LogEnabled_00472e28 & 1)) return;
 
-        _File = fsopen("message.log", "a+");
-        if (_File != NULL) {
-            va_start(argptr, param_1);
-            vfprintf(_File, param_1, argptr);
-            va_end(argptr);
-            fprintf(_File, "\n");
-            fclose(_File);
-        }
-    }
+    FILE* fp = _fsopen("cfg\\message.log", "a", _SH_DENYNO);
+    if (fp == 0) return;
+
+    vfprintf(fp, param_1, (char*)(&param_1 + 1));
+    fprintf(fp, "\n");
+    fclose(fp);
 }
 
 extern "C" {
 FILE *fsopen(const char* filename, const char* mode);
 void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
-int FileStat(const unsigned char* filename, int* stat_buf);
-char* FormatFilePath(char* path);
 void* AllocateMemory_Wrapper(int size);
 }
 
-/* Function start: 0x419420 */
-FILE* OpenFileAndFindKey(char* archive_path, char* filename, const char* mode, unsigned int* out_size)
+
+
+/* Function start: 0x4263E0 */
+void DecryptLine(char* buffer)
 {
-    FILE* fp;
-    char* entry_buf;
-    int found;
-    long offset;
-    char fname[12];
-    char ext[8];
-    char key[16];
-    int stat_buf[5];
-
-    if (out_size != NULL) {
-        *out_size = 0;
+    int i = 0;
+    if (buffer[0] == '\n') {
+        return;
     }
-
-    if (archive_path == NULL) {
-        fp = fsopen(filename, mode);
-        if (fp != NULL && out_size != NULL) {
-            FileStat((const unsigned char*)filename, stat_buf);
-            *out_size = stat_buf[5];
-        }
-        return fp;
-    }
-
-    stat_buf[0] = 0;
-    offset = 0;
-    ParsePath(filename, NULL, NULL, fname, ext);
-    sprintf(key, "%s%s", fname, ext);
-
-    fp = fsopen(archive_path, mode);
-    if (fp == NULL) {
-        char* formatted = FormatFilePath(archive_path);
-        fp = fsopen(formatted, mode);
-        if (fp == NULL) {
-            goto not_found;
-        }
-    }
-
-    found = 1;
-    entry_buf = (char*)AllocateMemory_Wrapper(0x18);
-
     do {
-        while (found) {
-            fread(entry_buf, 0x18, 1, fp);
-            if (*entry_buf != (char)0xff) {
-                break;
-            }
-            if (*(int*)(entry_buf + 0xc) == 0) {
-                found = 0;
-            } else {
-                fseek(fp, *(long*)(entry_buf + 0xc), 0);
-            }
-        }
-        if (!found) break;
-    } while (_strnicmp(entry_buf, key, 0xc) != 0);
-
-    if (found) {
-        offset = *(long*)(entry_buf + 0xc);
-        stat_buf[0] = 1;
-        if (out_size != NULL) {
-            *out_size = *(unsigned int*)(entry_buf + 0x10);
-        }
-    }
-
-    FreeFromGlobalHeap(entry_buf);
-
-not_found:
-    if (stat_buf[0] != 0) {
-        fseek(fp, offset, 0);
-        return fp;
-    }
-
-    if (fp != NULL) {
-        fclose(fp);
-        fp = NULL;
-    }
-    return fp;
+        buffer[i] ^= 0xFE;
+        i++;
+    } while (buffer[i] != '\n');
 }
 
-/* Function start: 0x419770 */
-void internal_ReadLine_placeholder(void)
-{
-    return;
-}
-
-/* Function start: 0x419780 */
+/* Function start: 0x426400 */
 char* internal_ReadLine(char* buffer, int size, FILE* stream)
 {
     char local_buf[128];
     int result;
     char* line;
+    char* semi;
 
     do {
         line = fgets(buffer, size, stream);
         if (line == NULL) {
             return NULL;
         }
-        internal_ReadLine_placeholder();
+        DecryptLine(buffer);
         result = sscanf(buffer, " %s ", local_buf);
     } while (result < 1 || local_buf[0] == ';' || local_buf[0] == '\r');
+
+    semi = strchr(buffer, ';');
+    if (semi != NULL) {
+        *semi = '\0';
+    }
 
     return buffer;
 }
 
-/* Function start: 0x419800 */
+/* Function start: 0x425FC0 */
+int GetFileSize(char* path) {
+    struct _stat statbuf;
+    if (_stat(path, &statbuf) != 0) {
+        return -1;
+    }
+    return statbuf.st_size;
+}
+
+/* Function start: 0x426490 */
+void EncryptAndWrite(char* buffer, FILE* file)
+{
+    DecryptLine(buffer);
+    fputs(buffer, file);
+}
+
+/* Function start: 0x4264B0 */
 int ParseCommandLineArgs(char *param_1, char **param_2, int param_3)
 {
     int iVar1;
@@ -300,47 +301,21 @@ int ParseCommandLineArgs(char *param_1, char **param_2, int param_3)
     return iVar1;
 }
 
-/* Function start: 0x425E50 */
-// Wrapper for _fsopen with _SH_DENYNO (0x40) share mode
+void ExecuteFunctionArray(void** param_1, void** param_2)
+{
+    if (param_2 <= param_1) return;
+    do {
+        if (*param_1 != 0) {
+            ((void (*)(void)) *param_1)();
+        }
+        param_1 = param_1 + 1;
+    } while (param_2 > param_1);
+}
+
+/* Function start: 0x455110 */
 FILE* fsopen(const char* filename, const char* mode)
 {
     return _fsopen(filename, mode, _SH_DENYNO);
-}
-
-// NOTE: strstr_custom address unknown; 0x425FD0 is actually strncpy in the original binary
-char* strstr_custom(const char* haystack, const char* needle) {
-
-    const char* haystack_base = haystack;
-    const char* needle_base = needle;
-
-    if (*needle_base == '\0') {
-        return (char*)haystack;
-    }
-
-loop_start:
-    if (*haystack == '\0') {
-        return NULL;
-    }
-
-    if (*haystack == *needle) {
-        // A character matches. Advance both pointers.
-        haystack++;
-        needle++;
-        if (*needle == '\0') {
-            // We've reached the end of the needle, so we have a full match.
-            return (char*)haystack_base;
-        }
-        // This is the key part: jump back to the top to re-evaluate the loop conditions
-        // for the next character, rather than using a nested loop.
-        goto loop_start;
-    } else {
-        // The characters do not match.
-        // Advance the base haystack pointer and reset the other pointers.
-        haystack_base++;
-        haystack = haystack_base;
-        needle = needle_base;
-        goto loop_start;
-    }
 }
 
 /* Function start 0x426030 */
@@ -372,32 +347,45 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
     }
 }
 
-/* Function start: 0x4260F0 */
-void ExecuteFunctionArray(void** param_1, void** param_2)
-{
-    if (param_2 <= param_1) return;
-    do {
-        if (*param_1 != 0) {
-            ((void (*)(void)) *param_1)();
+static char g_AnimNameBuf[64];  // DAT_00473cf0
+static char g_CineNameBuf[64]; // DAT_00473cb0
+
+/* Function start: 0x44E320 */
+char* MakeSoundName(char* baseName) {
+    int len = strlen(baseName);
+    if (len < 4) {
+        ShowError("MakeAnimName - invalid base name = '%s'", baseName);
+    }
+    int index = atoi(baseName + (len - 4));
+    if (index == 0) {
+        return baseName;
+    }
+    if (4999 < index) {
+        int gsIdx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = g_GameState_0046aa30;
+        if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
+            ShowError("Invalid gamestate %d", gsIdx);
         }
-        param_1 = param_1 + 1;
-    } while (param_2 > param_1);
+        sprintf(g_AnimNameBuf, "%s%c.smk", baseName,
+                (int)(char)g_PeriodCharTable_0046cb94[gs->stateValues[gsIdx]]);
+        return g_AnimNameBuf;
+    }
+    sprintf(g_AnimNameBuf, "%s.smk", baseName);
+    return g_AnimNameBuf;
 }
 
-/* Function start: 0x426110 */
-int DeleteFile_Wrapper(const char* filename)
-{
-    unsigned int error;
-
-    error = DeleteFileA(filename);
-    if (error == 0) {
-        error = GetLastError();
-    } else {
-        error = 0;
+/* Function start: 0x44E3E0 */
+char* MakeAnimName(int index) {
+    if (4999 < index) {
+        int gsIdx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = g_GameState_0046aa30;
+        if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
+            ShowError("Invalid gamestate %d", gsIdx);
+        }
+        sprintf(g_CineNameBuf, "cine\\cin%4.4d%c.smk", index,
+                (int)(char)g_PeriodCharTable_0046cb94[gs->stateValues[gsIdx]]);
+        return g_CineNameBuf;
     }
-    if (error != 0) {
-        SetErrorCode(error);
-        return -1;
-    }
-    return 0;
+    sprintf(g_CineNameBuf, "cine\\cin%4.4d.smk", index);
+    return g_CineNameBuf;
 }

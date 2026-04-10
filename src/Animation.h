@@ -11,7 +11,7 @@ public:
   int field_4;              // 0x4 - unused/reserved
   VBuffer *vbuffer;         // 0x8 - internal frame buffer
   HSMACK smk;               // 0xc - smacker file handle
-  Range range_10;           // 0x10 - previously field_10/14
+  SlimeDim range_10;          // 0x10 - previously field_10/14 (SlimeDim triggers SEH)
   VBuffer *targetBuffer;    // 0x18 - render target buffer
   unsigned int flags;       // 0x1c - playback flags
   unsigned int playStatus;  // 0x20 - status (bit 0: user cancelled)
@@ -21,7 +21,6 @@ public:
   Animation();
   Animation(char *filename);
   virtual ~Animation();
-  void AnimationInit();
   int Open(char *, int, int);
   void ToBuffer();
   void ToBufferVB(VBuffer *buffer);
@@ -33,9 +32,10 @@ public:
   void GotoFrame(int frame);
   void NextFrame();
   int SetPalette(unsigned int, unsigned int);
+  int ApplyPalette(unsigned int start, unsigned int count);
+  int UpdatePalette(unsigned int start, unsigned int count);
   void CloseSmackerBuffer();
   void CloseSmackerFile();
-  
   void DoFrame();
 
 private:

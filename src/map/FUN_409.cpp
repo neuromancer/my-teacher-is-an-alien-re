@@ -1,40 +1,34 @@
-/* Function start: 0x409030 */
+/* Function start: 0x409020 */
 
-/* Function start: 0x409160 */
+/* Function start: 0x40910A */
 
-/* Function start: 0x409230 */
+/* Function start: 0x409120 */
 
-/* Function start: 0x4092E0 */
+/* Function start: 0x409180 */
 
-/* Function start: 0x4093D4 */
+/* Function start: 0x40923E */
 
-/* Function start: 0x4093EC */
+/* Function start: 0x409500 */
 
-/* Function start: 0x409400 */
+/* Function start: 0x409730 */
 
-/* Function start: 0x409440 */
+/* Function start: 0x4097B0 */
 
-/* Function start: 0x409470 */
+/* Function start: 0x4097F0 */
 
-/* Function start: 0x4094A0 */
+/* Function start: 0x409850 */
 
-/* Function start: 0x4094F0 */
+/* Function start: 0x4098C0 */
 
-/* Function start: 0x409620 */
+/* Function start: 0x409A60 */
 
-/* Function start: 0x409940 */
+/* Function start: 0x409A80 */
 
-/* Function start: 0x409BF0 */
+/* Function start: 0x409AC7 */
 
-/* Function start: 0x409CC2 */
+/* Function start: 0x409AD0 */
 
-/* Function start: 0x409CD0 */
+/* Function start: 0x409F20 */
 
-/* Function start: 0x409D50 */
-
-/* Function start: 0x409F00 */
-
-/* Function start: 0x409F40 */
-
-/* Function start: 0x409FB0 */
+/* Function start: 0x409F70 */
 

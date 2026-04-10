@@ -7,8 +7,8 @@ import Levenshtein
 
 # Compile just the two files
 COMPILE_CMD = "env INCLUDE='compilers\\msvc420\\include;compilers\\msvc420\\mfc\\include' ./wibo compilers/msvc420/bin/CL.EXE /nologo /c /O2 /GX /I msvc420\\\\include /I 3rdparty\\\\miles\\\\include /I 3rdparty\\\\smack\\\\include"
-os.system(f"{COMPILE_CMD} src/mCNavNode.cpp /Foout/mCNavNode.obj /Faout/mCNavNode.asm > out/mCNavNode.stdout 2>&1")
-os.system(f"{COMPILE_CMD} src/mCNavigator.cpp /Foout/mCNavigator.obj /Faout/mCNavigator.asm > out/mCNavigator.stdout 2>&1")
+os.system(f"{COMPILE_CMD} src-demo/mCNavNode.cpp /Foout/mCNavNode.obj /Faout/mCNavNode.asm > out/mCNavNode.stdout 2>&1")
+os.system(f"{COMPILE_CMD} src-demo/mCNavigator.cpp /Foout/mCNavigator.obj /Faout/mCNavigator.asm > out/mCNavigator.stdout 2>&1")
 
 def compare_fn(fn, dis, asm_file):
     with open(asm_file, 'r') as f:

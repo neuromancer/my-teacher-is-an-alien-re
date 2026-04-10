@@ -1,80 +1,60 @@
-/* Function start: 0x422060 */
+/* Function start: 0x42213A */
 
-/* Function start: 0x422090 */ /* compiler-generated: thunk to GameWindow::Shutdown */
+/* Function start: 0x422148 */
 
-/* Function start: 0x4220A0 */
+/* Function start: 0x422150 */
 
-/* Function start: 0x422250 */
+/* Function start: 0x42215E */
 
-/* Function start: 0x4223F0 */
+/* Function start: 0x422166 */
 
-/* Function start: 0x422430 */
+/* Function start: 0x422174 */
 
-/* Function start: 0x4224A0 */ /* compiler-generated: global init thunk for g_GameWindow */
+/* Function start: 0x42217C */
 
-/* Function start: 0x4224B0 */ /* compiler-generated: atexit registration for g_GameWindow */
+/* Function start: 0x422194 */
 
-/* Function start: 0x4224C0 */ /* compiler-generated: global shutdown thunk for g_GameWindow */
+/* Function start: 0x4221A0 */
 
-/* Function start: 0x4224D0 */
+/* Function start: 0x422280 */
 
-/* Function start: 0x4224E0 */
+/* Function start: 0x4223E3 */
 
-/* Function start: 0x4224F0 */
+/* Function start: 0x4225FD */
 
-/* Function start: 0x422500 */
+/* Function start: 0x422605 */
 
-/* Function start: 0x422510 */
+/* Function start: 0x422617 */
 
-/* Function start: 0x422520 */
+/* Function start: 0x4226C0 */
 
-/* Function start: 0x422690 */
+/* Function start: 0x422880 */
 
-/* Function start: 0x422750 */
+/* Function start: 0x4228F0 */
 
-/* Function start: 0x422791 */
+/* Function start: 0x4229D0 */
 
-/* Function start: 0x4227A0 */
+/* Function start: 0x422A50 */
 
-/* Function start: 0x4227ED */ /* compiler-generated: SEH unwind funclet for ConfigData::~ConfigData */
+/* Function start: 0x422ABB */
 
-/* Function start: 0x422800 */
+/* Function start: 0x422AD0 */
 
-/* Function start: 0x422820 */
+/* Function start: 0x422AE0 */
 
-/* Function start: 0x422840 */
+/* Function start: 0x422C20 */
 
-/* Function start: 0x422870 */
+/* Function start: 0x422D40 */
 
-/* Function start: 0x4228A0 */
+/* Function start: 0x422D60 */
 
-/* Function start: 0x4228E0 */
+/* Function start: 0x422E7D */
 
-/* Function start: 0x422901 */
+/* Function start: 0x422E8B */
 
-/* Function start: 0x4229EA */
+/* Function start: 0x422EA3 */
 
-/* Function start: 0x422A01 */
+/* Function start: 0x422EB0 */
 
-/* Function start: 0x422A2F */
-
-/* Function start: 0x422A46 */
-
-/* Function start: 0x422AAF */
-
-/* Function start: 0x422AC3 */
-
-/* Function start: 0x422D98 */
-
-/* Function start: 0x422DC1 */
-
-/* Function start: 0x422E02 */
-
-/* Function start: 0x422E1A */
-
-/* Function start: 0x422E71 */
-
-/* Function start: 0x422E8F */
-
-/* Function start: 0x422F00 */
+/* Function start: 0x422EE0 */
 

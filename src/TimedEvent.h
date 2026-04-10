@@ -7,6 +7,7 @@
 class TimedEvent;
 class PooledEvent;
 class SC_Message;
+class SpriteAction;
 
 struct TimedEventList {
     TimedEvent* head;
@@ -34,10 +35,19 @@ public:
         m_pool = 0;
         m_pool_size = 0x32;
     }
+    TimedEventPool(int ps) {
+        m_count = 0;
+        m_free_list = 0;
+        list.tail = 0;
+        list.head = 0;
+        m_pool = 0;
+        m_pool_size = ps;
+    }
     ~TimedEventPool();
-    PooledEvent* Create(void* callback, void* data);
     SC_Message* Pop(SC_Message* buffer);
     SC_Message* PopSafe(SC_Message* buffer);
+    SpriteAction* Pop(SpriteAction* buffer);
+    SpriteAction* PopSafe(SpriteAction* buffer);
 };
 
 // TimedEvent: 40 bytes (0x28)
@@ -65,9 +75,7 @@ public:
 //   0x08: embedded SC_Message data (192 bytes)
 class PooledEvent {
 public:
-    PooledEvent* CopyFrom(const PooledEvent* other);
-
-    // Get pointer to embedded event data at offset 0x08 (for CopyFrom)
+    // Get pointer to embedded event data at offset 0x08
     PooledEvent* GetEmbeddedEvent() { return (PooledEvent*)&field_0x8; }
 
     // Get pointer to embedded SC_Message at offset 0x08 (for constructor/destructor calls)

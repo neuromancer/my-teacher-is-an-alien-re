@@ -5,13 +5,7 @@
 extern "C" void ShowMessage(char *param_1, ...);
 extern "C" void WriteToMessageLog(const char *msg, ...);
 
-// g_WinGDC_0043841c is already declared in globals.h
-extern HDC DAT_00437488;
-extern int g_VideoBufferHeightM1_004374ca;
-extern void* g_WinGStretchBlt_00438438;
-extern void* g_WinGBitBlt_00438434;
-
-/* Function start: 0x4229EA */
+/* Function start: 0x4524C2 */
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
 {
     g_DrawPosX_004374c2 = param_1;
@@ -19,7 +13,7 @@ extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
     return 0;
 }
 
-/* Function start: 0x422A2F */
+/* Function start: 0x453C9B */
 extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_2)
 {
     g_TextAlignH_004374c0 = param_1;
@@ -27,7 +21,7 @@ extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_
     return 0;
 }
 
-/* Function start: 0x422A46 */
+/* Function start: 0x453CCE */
 extern "C" int __cdecl GetPixelAt(int x, int y)
 {
     if (*(signed char*)&g_CurrentVideoBuffer_00437f54 < 0) {
@@ -41,7 +35,7 @@ extern "C" int __cdecl GetPixelAt(int x, int y)
     return *(unsigned char*)(x + rowOffset + g_VideoBufferBase_00437f66);
 }
 
-/* Function start: 0x422E1A */
+/* Function start: 0x4528EF */
 extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
 {
     HGLOBAL hMem;
@@ -63,7 +57,7 @@ extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
     return 0;
 }
 
-/* Function start: 0x422E71 */
+/* Function start: 0x452946 */
 extern "C" int __cdecl GetVideoBufferData(unsigned int handle)
 {
     if (handle > 0x1f) {
@@ -72,7 +66,7 @@ extern "C" int __cdecl GetVideoBufferData(unsigned int handle)
     return ((int*)&g_VBufDataPtrs_0043826c)[handle];
 }
 
-/* Function start: 0x422F00 */
+/* Function start: 0x4529D5 */
 extern "C" int __cdecl CreateTable(int width, int height) {
     int i = 0;
     while (i < 32 && ((int*)&g_VBufDataPtrs_0043826c)[i] != 0) {
@@ -115,8 +109,8 @@ extern "C" int __cdecl CreateTable(int width, int height) {
             return -2;
         }
         HGDIOBJ oldObj = SelectObject(g_WinGDC_0043841c, hDib);
-        if (DAT_00438424 == 0) {
-            DAT_00438424 = oldObj;
+        if (g_WinGBitmap_00438424 == 0) {
+            g_WinGBitmap_00438424 = oldObj;
         }
         // FUN_00423076 - Clear the newly created DIB buffer
         // This function reads from caller's EBP frame, so we inline it here
@@ -138,7 +132,7 @@ extern "C" int __cdecl CreateTable(int width, int height) {
     return i;
 }
 
-/* Function start: 0x423099 */
+/* Function start: 0x452B6E */
 extern "C" int ClearVideoBuffer(void) {
     if (*(char*)&g_CurrentVideoBuffer_00437f54 >= 0) {
         memset((char*)g_VideoBufferBase_00437f66, g_FillColorDword_00437491, g_VideoBufferSize_00437f62);
@@ -146,18 +140,9 @@ extern "C" int ClearVideoBuffer(void) {
     return 0;
 }
 
-// Video table globals (defined in globals.cpp)
-extern int g_VideoBufferWidth_004374c6;
-extern int g_VideoBufferStride_00437f5e;
-extern int g_VideoBufferHeight_004374d2;
-extern int g_LineWidthH_004374d6;  // Line width horizontal
-extern int g_LineWidthV_004374da;  // Line width vertical
-extern int g_ClipLeft_004374de;
-extern int g_ClipRight_004374e2;
-extern int g_ClipTop_004374e6;
-extern int g_ClipBottom_004374ea;
+// Video table globals (defined in globals.cpp, declared in globals.h)
 
-/* Function start: 0x4230D9 */
+/* Function start: 0x452BAE */
 extern "C" int __cdecl SelectVideoBuffer(int param_1) {
     if (param_1 < 0x20) {
         if (g_VBufDataPtrs_0043826c[param_1] == 0) {
@@ -202,7 +187,7 @@ extern "C" int __cdecl SelectVideoBuffer(int param_1) {
 typedef int (__stdcall *WinGBitBltFunc)(HDC, int, int, int, int, HDC, int, int);
 typedef int (__stdcall *WinGStretchBltFunc)(HDC, int, int, int, int, HDC, int, int, int, int);
 
-/* Function start: 0x423296 */
+/* Function start: 0x452D6B */
 extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
 {
     int iVar1;
@@ -224,19 +209,19 @@ extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int p
         if (g_WinGDC_0043841c == 0) {
             // Use SetDIBitsToDevice
             int bitmapInfo = g_VideoBufferBase_00437f66 - g_BitmapHeaderSize_00437f4c;
-            SetDIBitsToDevice(DAT_00437488, param_5, iVar1, w, h, param_1, param_3, 0, g_VideoBufferHeight_004374d2,
+            SetDIBitsToDevice(g_MainDC_00437488, param_5, iVar1, w, h, param_1, param_3, 0, g_VideoBufferHeight_004374d2,
                               (void*)(bitmapInfo + g_BitmapHeaderSize_00437f4c),
                               (BITMAPINFO*)bitmapInfo,
                               g_DibModeFlag_00437f50);
         } else {
             // Use WinG BitBlt via function pointer
-            ((WinGBitBltFunc)g_WinGBitBlt_00438434)(DAT_00437488, param_5, iVar1, w, h, g_WinGDC_0043841c, param_1, param_3);
+            ((WinGBitBltFunc)g_WinGBitBlt_00438434)(g_MainDC_00437488, param_5, iVar1, w, h, g_WinGDC_0043841c, param_1, param_3);
         }
     }
     return 0;
 }
 
-/* Function start: 0x42333A */
+/* Function start: 0x452E0F */
 extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int srcY2, int destX1, int destX2, int destY1, int destY2)
 {
     int srcWidth;
@@ -262,11 +247,11 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
         srcHeight = (newY2 - srcY1) + 1;
 
         if (wingDC != 0) {
-            ((WinGStretchBltFunc)g_WinGStretchBlt_00438438)(DAT_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
+            ((WinGStretchBltFunc)g_WinGStretchBlt_00438438)(g_MainDC_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
         }
         else {
             int bitmapInfo = g_VideoBufferBase_00437f66 - g_BitmapHeaderSize_00437f4c;
-            StretchDIBits(DAT_00437488, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
+            StretchDIBits(g_MainDC_00437488, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
                           (void*)(bitmapInfo + g_BitmapHeaderSize_00437f4c),
                           (BITMAPINFO*)bitmapInfo,
                           g_DibModeFlag_00437f50, 0xcc0020);
@@ -275,7 +260,7 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
     return 0;
 }
 
-/* Function start: 0x4234D5 */
+/* Function start: 0x452FAA */
 extern "C" void __cdecl ReleaseBufferEntry(unsigned int param_1)
 {
     int* arr;
@@ -295,7 +280,7 @@ extern "C" void __cdecl ReleaseBufferEntry(unsigned int param_1)
 // Forward declaration
 extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4);
 
-/* Function start: 0x423703 */
+/* Function start: 0x4531D8 */
 extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 {
     int* ptr;
@@ -336,7 +321,7 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
     return -1;
 }
 
-/* Function start: 0x4237C6 */
+/* Function start: 0x4524D9 */
 extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4)
 {
     int iVar1;
@@ -381,7 +366,7 @@ extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int 
 // Forward declaration for ClipAndVideoFillRect
 extern "C" int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4);
 
-/* Function start: 0x423843 */
+/* Function start: 0x452556 */
 extern "C" int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, int param_4)
 {
     int iVar1;
@@ -420,7 +405,7 @@ extern "C" int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, in
     return 0;
 }
 
-/* Function start: 0x424423 */
+/* Function start: 0x453D37 */
 extern "C" int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4)
 {
     if (param_1 <= g_ClipRight_004374e2) {

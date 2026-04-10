@@ -6,14 +6,12 @@
 #include "VBuffer.h"
 #include <string.h>
 
-extern int g_ProjectileHits_0043d150;
-
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
 extern "C" int __cdecl DrawCircle(int param_1);
 extern "C" int __cdecl DrawLine(int param_1, int param_2);
 
-/* Function start: 0x4161B0 */
+/* Function start: 0x434660 */
 Projectile::Projectile() : Sprite(0) {
     int* pCurrent = &currentX;
     int* pNext = &nextX;
@@ -33,11 +31,11 @@ Projectile::Projectile() : Sprite(0) {
     pVelocity[0] = 0;
     pVelocity[1] = 0;
     Projectile::active = 0;
-    Projectile::field_0x104 = 0;
+    Projectile::currentX = 0;
     memset(&startX, 0, 12 * 4);
 }
 
-/* Function start: 0x4162C0 */
+/* Function start: 0x427270 */
 void Projectile::Launch() {
     int frameCount;
     int mouseY;
@@ -47,15 +45,15 @@ void Projectile::Launch() {
     InputState* pMouse;
 
     Projectile::active = 1;
-    Projectile::SetState2(0);
+    Projectile::ResetAnimation(0, 0);
 
-    frameCount = Projectile::ranges[Projectile::current_state].end
-               - Projectile::ranges[Projectile::current_state].start + 1;
+    frameCount = Projectile::ranges[Projectile::handle].dim.y
+               - Projectile::ranges[Projectile::handle].dim.x + 1;
 
     Projectile::startX = 0xa0;
     Projectile::startY = 0xb4;
 
-    pMouse = g_InputManager_00436968->pMouse;
+    pMouse = g_InputManager_0046aa08->pMouse;
 
     mouseY = 0;
     if (pMouse != 0) {
@@ -86,7 +84,7 @@ void Projectile::Launch() {
     Projectile::velocityY = (float)(mouseY - 0xb4) / (float)frameCount;
 }
 
-/* Function start: 0x4163E0 */
+/* Function start: 0x427390 */
 void Projectile::Update() {
     int isExploding;
     int frameNum;
@@ -95,14 +93,14 @@ void Projectile::Update() {
         return;
     }
 
-    isExploding = (Projectile::current_state == 1);
+    isExploding = (Projectile::handle == 1);
 
     if (isExploding) {
         Projectile::nextX = Projectile::currentX;
         Projectile::nextY = Projectile::currentY;
     } else {
         if (Projectile::animation_data != 0) {
-            frameNum = Projectile::animation_data->smk->FrameNum + 1;
+            frameNum = *(int*)(*(int*)((int)Projectile::animation_data + 0xc) + 0x374) + 1;
         } else {
             frameNum = 1;
         }
@@ -110,10 +108,14 @@ void Projectile::Update() {
         Projectile::nextX = Projectile::startX + (int)(Projectile::velocityX * (float)frameNum);
         Projectile::nextY = Projectile::startY + (int)(Projectile::velocityY * (float)frameNum);
 
-        if (Projectile::CheckCollision()) {
-            Projectile::currentX = Projectile::nextX;
-            Projectile::currentY = Projectile::nextY;
-            Projectile::SetState2(1);
+        {
+            int* pObj = (int*)Projectile::owner;
+            int* vtbl = (int*)*pObj;
+            if (((int (__fastcall*)(int*, int, Projectile*))vtbl[6])(pObj, 0, this) != 0) {
+                Projectile::currentX = Projectile::nextX;
+                Projectile::currentY = Projectile::nextY;
+                Projectile::ResetAnimation(1, 0);
+            }
         }
     }
 
@@ -126,66 +128,19 @@ void Projectile::Update() {
             return;
         }
         g_ProjectileHits_0043d150++;
-        Projectile::SetState2(1);
+        Projectile::ResetAnimation(1, 0);
     }
 }
 
-/* Function start: 0x416500 */
-int Projectile::CheckCollision() {
-    HashTable* hashTable;
-    HashNode* current;
-    HashNode* next;
-    unsigned int bucketIdx;
-    Target* target;
-    int* bucket;
-
-    hashTable = g_TargetList_00435f0c->hashTable;
-    if (hashTable == 0) {
-        return 0;
+/* Function start: 0x427150 */
+Projectile::Projectile(int ownerParam) : Sprite(0)
+{
+    int* p = (int*)&owner;
+    int i;
+    for (i = 0xC; i != 0; i--) {
+        *p = 0;
+        p++;
     }
-
-    current = (HashNode*)(((unsigned int)hashTable->count < 1u) - 1);
-
-    do {
-        if (current == 0) {
-            return 0;
-        }
-
-        if (current == (HashNode*)-1) {
-            bucketIdx = 0;
-            if ((unsigned int)hashTable->numBuckets != 0) {
-                bucket = hashTable->buckets;
-                do {
-                    current = (HashNode*)*bucket;
-                    if (current != 0) break;
-                    bucket++;
-                    bucketIdx++;
-                } while (bucketIdx < (unsigned int)hashTable->numBuckets);
-            }
-        }
-
-        next = current->next;
-        if (next == 0) {
-            bucketIdx = current->bucketIndex + 1;
-            if (bucketIdx < (unsigned int)hashTable->numBuckets) {
-                bucket = (int*)(bucketIdx * 4 + (int)hashTable->buckets);
-                do {
-                    next = (HashNode*)*bucket;
-                    if (next != 0) break;
-                    bucket++;
-                    bucketIdx++;
-                } while (bucketIdx < (unsigned int)hashTable->numBuckets);
-            }
-        }
-
-        target = (Target*)current->reserved;
-        current = next;
-
-        if (target != 0) {
-            if (target->CheckTimeInRangeParam((int*)((char*)this + 0xe8))) {
-                target->UpdateProgress(1);
-                return 1;
-            }
-        }
-    } while (1);
+    Projectile::owner = ownerParam;
 }
+

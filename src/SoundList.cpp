@@ -8,7 +8,7 @@
 #include <mss.h>
 #include <string.h>
 
-/* Function start: 0x41E740 */
+/* Function start: 0x425170 */ /* ~98% match */
 SoundList::SoundList(int count) {
   m_sounds = 0;
   m_count = 0;
@@ -27,7 +27,7 @@ SoundList::SoundList(int count) {
   }
 }
 
-/* Function start: 0x41E7D0 */
+/* Function start: 0x425200 */
 SoundList::~SoundList() {
   while (m_fieldc > 0) {
     m_fieldc--;
@@ -53,7 +53,34 @@ SoundList::~SoundList() {
   }
 }
 
-/* Function start: 0x41E870 */
+#include "Sample.h"
+
+/* Function start: 0x425550 */
+int SoundList::Play(int index) {
+    int i;
+
+    if (index < 0 || m_count - 1 < index) {
+        return 0;
+    }
+    if (m_sounds[index] != 0) {
+        i = 0;
+        if (m_count > 0) {
+            do {
+                if (m_sounds[i] == m_sounds[index] && m_field8[i] != 0) {
+                    m_field8[i]->~Sample();
+                }
+                i++;
+            } while (m_count > i);
+        }
+    }
+    Sample* smp = m_field8[index];
+    if (smp != 0) {
+        smp->Play(100, 1);
+    }
+    return smp != 0;
+}
+
+/* Function start: 0x4252A0 */
 void SoundList::StopAll() {
   for (short i = 0; i < m_fieldc; i++) {
     if (AIL_sample_status(m_field8[i]->m_sample) == SMP_PLAYING) {
@@ -62,7 +89,24 @@ void SoundList::StopAll() {
   }
 }
 
-/* Function start: 0x41E8C0 */
+/* Function start: 0x4255D0 */
+void SoundList::StopPlaying() {
+    int i = 0;
+    if (m_count > 0) {
+        do {
+            Sample* smp = m_field8[i];
+            if (smp != 0 && smp->m_sample != 0 &&
+                smp->m_size == *(int*)((char*)smp->m_sample + 0xc)) {
+                if (AIL_sample_status(smp->m_sample) == 4) {
+                    smp->~Sample();
+                }
+            }
+            i++;
+        } while (i < m_count);
+    }
+}
+
+/* Function start: 0x4252F0 */ /* ~98% match */
 void *SoundList::Register(char *filename) {
   char local_54[64];
   short sVar9;
@@ -104,4 +148,23 @@ void *SoundList::Register(char *filename) {
   }
 
   return 0;
+}
+
+/* Function start: 0x4256D0 */
+int SoundList::IsSamplePlaying(int index) {
+    Sample* entry;
+
+    if (index < 0 || m_count - 1 < index) goto bounds_fail;
+    entry = m_field8[index];
+    if (entry == 0) goto fail;
+    if (entry->m_sample == 0) goto fail;
+    if (entry->m_size != *(int*)((char*)entry->m_sample + 0xc)) goto fail;
+    if (AIL_sample_status(entry->m_sample) != 4) goto fail;
+    return 1;
+
+fail:
+    return 0;
+
+bounds_fail:
+    return 0;
 }

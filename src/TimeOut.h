@@ -17,4 +17,7 @@ public:
     Timer *m_timer;
 };
 
+// InitTimeOut at 0x421920 - constructs TimeOut via default constructor
+TimeOut* __fastcall InitTimeOut(TimeOut* buffer);
+
 #endif // TIMEOUT_H

@@ -3,28 +3,29 @@
 
 #include "Sprite.h"
 
-// Projectile - Combat projectile (vtable 0x4314b8)
-// Extends Sprite with position tracking and velocity
-// Size: 0x108 bytes (Sprite 0xD8 + 0x30)
+// Projectile - Combat projectile
+// Full game vtable: 0x461478
+// Extends Sprite (0xF8) with position tracking and velocity
+// Size: 0x128 bytes (Sprite 0xF8 + 0x30)
 class Projectile : public Sprite {
 public:
-    int startX;        // 0xD8
-    int startY;        // 0xDC
-    int currentX;      // 0xE0
-    int currentY;      // 0xE4
-    int nextX;         // 0xE8
-    int nextY;         // 0xEC
-    int halfWidth;     // 0xF0
-    int halfHeight;    // 0xF4
-    float velocityX;   // 0xF8
-    float velocityY;   // 0xFC
-    int active;        // 0x100
-    int field_0x104;   // 0x104
+    int owner;         // 0xF8 — owner pointer
+    int startX;        // 0xFC
+    int startY;        // 0x100
+    int currentX;      // 0x104
+    int currentY;      // 0x108
+    int halfWidth;     // 0x10C
+    int halfHeight;    // 0x110
+    float velocityX;   // 0x114
+    float velocityY;   // 0x118
+    int active;        // 0x11C
+    int nextX;         // 0x120
+    int nextY;         // 0x124
 
-    Projectile();          // 0x4161B0
-    void Launch();         // 0x4162C0
-    void Update();         // 0x4163E0
-    int CheckCollision();  // 0x416500
+    Projectile();          // 0x434660
+    Projectile(int owner); // 0x427150
+    void Launch();         // 0x427270
+    void Update();         // 0x427390
 };
 
 #endif // PROJECTILE_H

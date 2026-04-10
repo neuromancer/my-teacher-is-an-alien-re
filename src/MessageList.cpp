@@ -1,16 +1,15 @@
 #include "SC_OnScreenMessage.h"
-#include "SoundItem.h"
 #include "Memory.h"
 #include "string.h"
 
 
-/* Function start: 0x40C430 */
+/* Function start: 0x448F80 */
 void MessageList::InsertBeforeCurrent(void* data)
 {
     LinkedList::InsertNode(data);
 }
 
-/* Function start: 0x40C500 */
+/* Function start: 0x431B60 */
 void* MessageList::PopCurrent()
 {
     MessageNode* node;
@@ -55,14 +54,27 @@ void* MessageList::PopCurrent()
 
 
 
-/* Function start: 0x40C580 */
-// ListNode scalar deleting destructor (compiler-generated)
-
-/* Function start: 0x40C5B0 */
-MessageNode* MessageNode::Init(void* nodeData)
-{
-    MessageNode::prev = 0;
-    MessageNode::next = 0;
-    MessageNode::data = nodeData;
-    return this;
+/* Function start: 0x4233A0 */
+void MessageList::InsertNode(void* data) {
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+    MessageNode* newNode = new MessageNode(data);
+    if (current == 0) {
+        current = head;
+    }
+    if (head == 0) {
+        head = newNode;
+        tail = newNode;
+        current = newNode;
+    } else {
+        newNode->next = (MessageNode*)current;
+        newNode->prev = ((MessageNode*)current)->prev;
+        if (((MessageNode*)current)->prev == 0) {
+            head = newNode;
+        } else {
+            ((MessageNode*)current)->prev->next = newNode;
+        }
+        ((MessageNode*)current)->prev = newNode;
+    }
 }

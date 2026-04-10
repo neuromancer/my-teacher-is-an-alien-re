@@ -106,7 +106,7 @@ def read_bytes_at_va(filename, sections, va, size):
 # --- Function address loading ---
 
 def get_all_original_functions(map_dir):
-    """Load all known function addresses from src/map/*.cpp."""
+    """Load all known function addresses from src-demo/map/*.cpp."""
     addresses = []
     for filename in os.listdir(map_dir):
         if filename.endswith('.cpp'):
@@ -810,11 +810,11 @@ def main():
                         help='Recompiled executable')
     parser.add_argument('-m', '--map', default='TEACHER-DEMO.map',
                         help='Linker map file (default: TEACHER-DEMO.map)')
-    parser.add_argument('--map-dir', default='src/map',
+    parser.add_argument('--map-dir', default='src-demo/map',
                         help='Map directory with original function addresses')
-    parser.add_argument('--src-dir', default='src',
+    parser.add_argument('--src-dir', default='src-demo',
                         help='Source directory with .cpp files')
-    parser.add_argument('--globals', default='src/globals.cpp',
+    parser.add_argument('--globals', default='src-demo/globals.cpp',
                         help='Path to globals.cpp for data annotation')
     parser.add_argument('--summary', action='store_true',
                         help='Show only section-level summary')

@@ -1,122 +1,68 @@
 #include "Queue.h"
 #include "Memory.h"
 #include "string.h"
+extern "C" void WriteToLog(const char* format, ...);
 #include <memory.h>
+#include <new.h>
 #include "TimedEvent.h"
 #include "Message.h"
 #include "SC_Question.h"
+#include "SpriteAction.h"
 
-/* Function start: 0x402310 */
-PooledEvent* PooledEvent::CopyFrom(const PooledEvent* other)
-{
-    unsigned int i;
-
-    field_0x8 = other->field_0x8;
-    m_duration = other->m_duration;
-    for (i = 0; i < 0x20; i++) {
-        data_0x10[i] = other->data_0x10[i];
-    }
-
-    field_0x30 = other->field_0x30;
-
-    int* srcPair = (int*)&other->field_0x38;
-    int* dstPair = (int*)&field_0x38;
-    dstPair[0] = srcPair[0];
-    dstPair[1] = srcPair[1];
-
-    for (i = 0; i < 0x40; i++) {
-        m_data_0x40[i] = other->m_data_0x40[i];
-    }
-
-    field_0x80 = other->field_0x80;
-    targetAddress = other->targetAddress;
-    sourceAddress = other->sourceAddress;
-    command = other->command;
-    data = other->data;
-    priority = other->priority;
-    param1 = other->param1;
-    param2 = other->param2;
-    clickPos.x = other->clickPos.x;
-    clickPos.y = other->clickPos.y;
-    mouseX = other->mouseX;
-    mouseY = other->mouseY;
-    field_0xb4 = other->field_0xb4;
-    field_0xb8 = other->field_0xb8;
-    userPtr = other->userPtr;
-    return this;
-}
-
-/* Function start: 0x402420 */
-PooledEvent* TimedEventPool::Create(void* callback, void* data)
-{
-    if (m_free_list == 0) {
-        int* new_pool = (int*)new char[m_pool_size * 200 + 4];
-        *new_pool = (int)m_pool;
-        int count = m_pool_size;
-        m_pool = (PooledEvent*)new_pool;
-
-        int* current = new_pool + count * 50 - 49;
-        count--;
-        if (count >= 0) {
-            do {
-                count--;
-                *current = (int)m_free_list;
-                m_free_list = (PooledEvent*)current;
-                current = current - 50;
-            } while (count >= 0);
-        }
-    }
-
-    PooledEvent* esi = m_free_list;
-    void* ecx_param = callback;
-    void* edx_param = data;
-    PooledEvent* eax = esi->next;
-    SC_Message* ebx = esi->GetEmbeddedSCMessage();
-    m_free_list = eax;
-    esi->prev = (PooledEvent*)ecx_param;
-    esi->next = (PooledEvent*)edx_param;
-    m_count++;
-    memset(ebx, 0, 0xC0);
-
-    int edi = 0;
-loop:
-    if (ebx == 0) goto done;
-    ebx->SC_Message::SC_Message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-done:
-    ebx = (SC_Message*)((char*)ebx + 0xc0);
-    {
-        int tmp = edi;
-        edi--;
-        if (tmp != 0) goto loop;
-    }
-    return esi;
-}
-
-/* Function start: 0x4024D0 */
+/* Function start: 0x404E70 */
 void Queue::Insert(void* data)
 {
     LinkedList::InsertNode(data);
 }
 
-/* Function start: 0x4025A0 */
+/* Function start: 0x406CC0 */
+void Queue::Add(void* data)
+{
+    if (data == 0) ShowError("queue fault 0101");
+    current = head;
+    if (type == 1 || type == 2) {
+        if (head != 0) {
+            do {
+                ListNode* cur = current;
+                if (*(int*)(cur->data) < *(int*)data) {
+                    InsertNode(data);
+                    return;
+                }
+                if (tail == cur) {
+                    PushNode(data);
+                    return;
+                }
+                if (cur != 0) {
+                    current = cur->next;
+                }
+            } while (current != 0);
+            return;
+        }
+        InsertNode(data);
+    } else {
+        InsertNode(data);
+    }
+}
+
+/* Function start: 0x4070A0 */
 void Queue::Push(void* data)
 {
     LinkedList::PushNode(data);
 }
 
-/* Function start: 0x402680 */
+/* Function start: 0x423550 */
 void* Queue::Pop()
 {
     return LinkedList::RemoveCurrent();
 }
 
-/* Function start: 0x408790 */
+/* Function start: 0x406FD0 */
 void Queue::InsertAtCurrent(void* data)
 {
     InsertNode(data);
 }
 
-/* Function start: 0x40D2A0 */
+/* Function start: 0x42D2D0 */ /* ~98% match */
 TimedEventPool::~TimedEventPool()
 {
     int counter;
@@ -154,19 +100,30 @@ TimedEventPool::~TimedEventPool()
     m_pool = 0;
 }
 
-/* Function start: 0x417680 */
+/* Function start: 0x448C50 */
 void* Queue::GetCurrentData()
 {
     return LinkedList::GetCurrentData();
 }
 
-/* Function start: 0x417C50 */
+/* Function start: 0x42CAB0 */ /* ~95% match */
 SC_Message* TimedEventPool::PopSafe(SC_Message* buffer)
 {
     MousePoint completed;
     completed.x = 0;
     Pop(buffer);
     completed.x |= 1;
+    return buffer;
+}
+
+/* Function start: 0x42CAB0 */
+SpriteAction* TimedEventPool::PopSafe(SpriteAction* buffer)
+{
+    int completed;
+
+    completed = 0;
+    Pop(buffer);
+    completed |= 1;
     return buffer;
 }
 
@@ -227,8 +184,8 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     buffer->param1 = local_msg.param1;
     buffer->param2 = local_msg.param2;
 
-    int* srcClick = (int*)&local_msg.clickPos;
-    int* dstClick = (int*)&buffer->clickPos;
+    int* srcClick = &local_msg.clickX;
+    int* dstClick = &buffer->clickX;
     dstClick[0] = srcClick[0];
     dstClick[1] = srcClick[1];
 
@@ -240,4 +197,53 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     buffer->userPtr = local_msg.userPtr;
 
     return buffer;
+}
+
+/* Function start: 0x42D1A0 */
+SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
+{
+    volatile int completed;
+    PooledEvent* headNode;
+    SpriteAction localAction;
+
+    completed = 0;
+    headNode = list.head;
+    localAction.CopyFrom((SpriteAction*)((int*)headNode + 2));
+
+    PooledEvent* nextNode = headNode->next;
+    list.head = nextNode;
+    if (nextNode == 0) {
+        list.tail = 0;
+    }
+    else {
+        nextNode->prev = 0;
+    }
+
+    int counter = 0;
+    SpriteAction* ebx = (SpriteAction*)((int*)headNode + 2);
+    do {
+        ebx->~SpriteAction();
+        ebx = (SpriteAction*)((char*)ebx + 0x38);
+        int tmp = counter;
+        counter--;
+        if (tmp == 0) break;
+    } while (1);
+
+    headNode->next = m_free_list;
+    m_free_list = headNode;
+    m_count--;
+
+    buffer->mousePos.x = 0;
+    buffer->mousePos.y = 0;
+    memset(buffer, 0, sizeof(SpriteAction));
+    buffer->CopyFrom(&localAction);
+    completed |= 1;
+
+    return buffer;
+}
+
+/* Function start: 0x4406F0 */
+void PriorityQueue::AddAfterCurrent(void* data)
+{
+    LinkedList::InsertNode(data);
 }

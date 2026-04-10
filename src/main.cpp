@@ -16,7 +16,6 @@
 #include "ZBufferManager.h"
 #include "GameLoop.h"
 #include "AssetList.h"
-#include "Character.h"
 #include "Message.h"
 #include "TimedEvent.h"
 #include "string.h"
@@ -26,221 +25,290 @@
 #include <windows.h>
 #include "GameConfig.h"
 
-
-
-
-
-
-
 #include "globals.h"
 
-// Globals moved from globals.cpp to match layout
-StringTable* g_Strings_00435a70 = 0;
-Character* g_PeterCharacter_00435a74 = 0;
-Character* g_SusanCharacter_00435a78 = 0;
-Character* g_DuncanCharacter_00435a7c = 0;
-Character* g_SelectedCharacter_00435a80 = 0;
-FlagArray* g_FlagManager_00435a84 = 0;
-
-static char s_TeacherDemo[] = "Teacher Demo"; 
+static char s_TeacherDemo[] = "Teacher v(0.950)";
 
 GameWindow g_GameWindow;
 
 
 extern "C" {
-void __fastcall CDData_ChangeToBaseDir(void *);
 void ClearMessageLog();
-void InitWorkBuffer(int, int);
+void SetVideoRes(int, int);
 void SetStateFlag(int, int);
 int SetCursorVisible(unsigned int);
 int FileExists(const char *);
+int* GetScreenWidth();
+int* GetScreenHeight();
 void ParsePath(const char *, char *, char *, char *, char *);
 int ProcessMessages();
+
+// Bridge globals (extern "C" linkage) — now in globals.h
 }
+
+// Bridge globals (C++ linkage, defined in stubs.cpp)
+extern char* g_Buffer_0046aa00;   // = g_Buffer_0046aa00
+extern InputManager* g_InputManager_0046aa08;   // = g_InputManager_0046aa08
+extern ZBufferManager* g_ZBufferManager_0046aa24;   // ZBufferManager* (rendering manager, 0xAC bytes)
 
 // Forward declarations for functions defined in this file
 void InitGameSystems();
 void ShutdownGameSystems();
-void CheckDebug();
 void CreateGameObject_1();
+void InitGameConfig();
 int GetFileAttributes_Wrapper(const char *param_1, char param_2);
-int IsAppDeactivated();
+int IsAppReady();
 
+// Full-game-only functions (not in demo)
+const char* __cdecl CDData_ResolvePath(const char *format, ...);
+int __cdecl GetFreeDiskSpaceMB(int drive);
+void __cdecl InitMemoryCache(int param_1, int param_2, float param_3);
+void CleanupMemoryCache();
 
+#include "MemoryCache.h"
+#include "QuestionInit.h"
+#include "SoundTracker.h"
+#include "GameLoopHelper.h"
+#include "MsgList.h"
 
+extern void __cdecl FileCacheCleanup();
+extern void __cdecl FileCacheEntryCleanup(void*, int);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
+#include "GameEngine.h"
+// g_GameEngine_0046a6ec, g_GameState_0046aa30 etc. — declared in globals.h
+extern GameState* g_StringState_0046aa38;
 
+static float g_PercentScale = 0.01f;
+// Cache, SoundTracker, GameLoopHelper, MsgList, g_StartBlock_00472e2c — defined in globals.cpp
+Timer DAT_00473448;
 
-
-
-
-
-
-
-
-
-
-
-
-
-/* Function start: 0x40C5D0 */
+/* Function start: 0x4236F0 */
 void RunGame() {
     InitGameSystems();
-    if (g_WorkBuffer_00436974 == 0) {
-      ShowError("missing workbuff");
-    }
-    g_WorkBuffer_00436974->SetVideoMode(); 
-    g_WorkBuffer_00436974->ClearScreen(0);
+    SetVideoRes(0x280, 0x1e0);
 
-
-    if (g_Mouse_00436978 != 0) {
-        delete g_Mouse_00436978;
-        g_Mouse_00436978 = 0;
+    // Play splash cinematic if exists
+    const char *splashPath = CDData_ResolvePath("cine\\splash.smk");
+    if (FileExists(splashPath)) {
+        Animation anim;
+        anim.Play((char *)splashPath, 3);
     }
 
-    g_Mouse_00436978 = new MouseControl();
-    ParseFile(g_Mouse_00436978, "mis\\mouse1.mis", "[MICE]");
-    
-    g_StateString_00436994 = new char[0x40];
+    // Pre-GameState manager allocation
+    g_SoundTracker_0046928c = new SoundTracker(0xfa0);
+
+    // Create 4 GameStates with inline ParseFile
+    g_GameState_0046aa30 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+
+    g_GameState2_0046aa3c = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
+
+    g_GameState3_0043699c = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+    g_StringTable_0046aa34 = g_GameState3_0043699c;
+
+    g_GameState4_004369a0 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
+    g_StringState_0046aa38 = g_GameState4_004369a0;
+
+    // Check CACHE_SIZE from gamestate
+    int cacheIdx = g_GameState_0046aa30->FindState("CACHE_SIZE");
+    if (cacheIdx < 0 || cacheIdx > g_GameState_0046aa30->maxStates - 1) {
+        ShowError("0. Invalid gamestate %d", cacheIdx);
+    }
+    int cacheSize = g_GameState_0046aa30->stateValues[cacheIdx];
+    if (cacheSize == 0) {
+        cacheSize = 0xf;
+    }
+
+    int diskSpace = GetFreeDiskSpaceMB(0);
+    if (diskSpace != -1 && (diskSpace / 1048576) < cacheSize) {
+        ShowError("This game requires %lu MBytes of free disk space.\nPlease free up some disk space and try again.", diskSpace, cacheSize);
+    }
+    InitMemoryCache(200, cacheSize, 50.0f);
+
+    // Delete old mouse if exists, create new
+    if (g_Mouse_0046aa18 != 0) {
+        MouseControl* p = g_Mouse_0046aa18;
+        p->~MouseControl();
+        operator delete(p);
+        g_Mouse_0046aa18 = 0;
+    }
+
+    g_Mouse_0046aa18 = new MouseControl();
+    ParseFile(g_Mouse_0046aa18, "mis\\mouse1.mis", "[MICE]");
+
+    // Linked list allocation
+    g_MsgList_0046a6dc = new MsgList();
+
+    g_StateString_0046aa2c = (char *)operator new(0x40);
+    *g_StateString_0046aa2c = 0;
 
     g_Timer_00436980 = new Timer();
 
-    g_FlagManager_00435a84 = new FlagArray("question.sav", 1000);
-    g_FlagManager_00435a84->ClearAllFlags();
+    g_FlagManager_0046a6e8 = new FlagArray("cfg\\question.dat", 10000);
+    g_FlagManager_0046a6e8->ClearAllFlags();
 
-    g_GameState_00436998 = new GameState();
-    ParseFile(g_GameState_00436998, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+    // Parse question init script (stack-allocated, immediately destroyed)
+    {
+        QuestionInit initQ("mis\\INIT_Q.mis");
+    }
 
-    g_GameState2_004369a4 = new GameState();
-    ParseFile(g_GameState2_004369a4, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
+    g_Strings_0046a6e0 = new StringTable("mis\\strings.mis", 1);
 
-    g_GameState3_0043699c = new GameState();
-    ParseFile(g_GameState3_0043699c, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+    // Check TEST_STRINGS in gamestate
+    int testIdx = g_GameState_0046aa30->FindState("TEST_STRINGS");
+    if (testIdx < 0 || testIdx > g_GameState_0046aa30->maxStates - 1) {
+        ShowError("1. Invalid gamestate %d", testIdx);
+    }
+    if (g_GameState_0046aa30->stateValues[testIdx] != 0) {
+        int testIdx2 = g_GameState_0046aa30->FindState("TEST_STRINGS");
+        if (testIdx2 < 0 || testIdx2 > g_GameState_0046aa30->maxStates - 1) {
+            ShowError("2. Invalid gamestate %d", testIdx2);
+        }
+        g_Strings_0046a6e0->TestStrings(g_TextManager_00436990, g_GameState_0046aa30->stateValues[testIdx2]);
+    }
 
-    g_GameState4_004369a0 = new GameState();
-    ParseFile(g_GameState4_004369a0, "mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
-
-    g_Strings_00435a70 = new StringTable("mis\\strings.mis", 1);
-    
     g_TimedEventPool1_00436984 = new TimedEventPool();
-    g_TimedEventPool2_00436988 = new TimedEventPool();
 
-    ZBufferManager* pZBuffer = new ZBufferManager();
-    g_ZBufferManager_0043698c = pZBuffer;
+    // Original creates TWO objects (assembly lines 421-452 of FUN_4236F0):
+    // 1. g_ZBufferManager_0046aa24 = new ZBufferManager (0xAC bytes, constructor 0x403910) — rendering
+    // 2. [0x0046a6ec] = new GameEngine (0x28 bytes, constructor 0x430A00) — game loop
+    g_ZBufferManager_0046aa24 = new ZBufferManager();
+    GameEngine* gameEngine = new GameEngine();
+    g_GameEngine_0046a6ec = gameEngine;
 
-    GameLoop* pGameLoop = new GameLoop();
-
-    g_Mouse_00436978->DrawCursor();
+    g_Mouse_0046aa18->DrawCursor();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\text1.smk");
     g_TextManager_00436990->char_adv.advance = 2;
+    g_TextManager_00436990->spaceWidth = 5;
+    g_TextManager_00436990->tabWidth = 0x14;
     g_Timer_00436980->Reset();
 
-    SC_Message_Send(8, 1, 1, 1, 5, 0, 0, 0, 0, 0);
+    SendGameMessage(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
+    SendGameMessage(1, 0x1e, 0, 0, 0x17, 0, 0, 0, 0, 0);
 
-    pGameLoop->Run();
-    if (pGameLoop != 0) {
-        pGameLoop->Cleanup();
-        operator delete(pGameLoop);
+    // GameLoop (stack-allocated)
+    GameLoop gameLoop;
+    ParseFile(&gameLoop, "mis\\start.mis", "[BLOCK%4.4d]", g_StartBlock_00472e2c);
+
+    // Post-GameLoop
+    if (g_GameLoopHelper_0046a6f0 != 0) {
+        g_GameLoopHelper_0046a6f0->PostProcess();
     }
 
-    if (g_ZBufferManager_0043698c != 0) {
-        g_ZBufferManager_0043698c->Cleanup();
-        operator delete(g_ZBufferManager_0043698c);
-        g_ZBufferManager_0043698c = 0;
+    // Game loop — GameEngine::RunGameLoop (0x430CD0)
+    gameEngine->RunGameLoop();
+
+    // Cleanup: GameEngine destructor + delete (assembly lines 509-514)
+    if (gameEngine != 0) {
+        gameEngine->~GameEngine();
+        operator delete(gameEngine);
     }
 
-    if (g_TimedEventPool2_00436988 != 0) {
-        delete g_TimedEventPool2_00436988;
-        g_TimedEventPool2_00436988 = 0;
+    // Cleanup: ZBufferManager Cleanup + delete (assembly lines 515-528)
+    if (g_ZBufferManager_0046aa24 != 0) {
+        (g_ZBufferManager_0046aa24)->Cleanup();
+        operator delete(g_ZBufferManager_0046aa24);
+        g_ZBufferManager_0046aa24 = 0;
     }
 
     if (g_TimedEventPool1_00436984 != 0) {
-        delete g_TimedEventPool1_00436984;
+        TimedEventPool* p = g_TimedEventPool1_00436984;
+        p->~TimedEventPool();
+        operator delete(p);
         g_TimedEventPool1_00436984 = 0;
     }
 
-    if (g_Strings_00435a70 != 0) {
-        delete g_Strings_00435a70;
-        g_Strings_00435a70 = 0;
+    if (g_Strings_0046a6e0 != 0) {
+        StringTable* p = g_Strings_0046a6e0;
+        p->~StringTable();
+        operator delete(p);
+        g_Strings_0046a6e0 = 0;
     }
 
     if (g_GameState4_004369a0 != 0) {
-        delete g_GameState4_004369a0;
+        GameState* p = g_GameState4_004369a0;
+        p->~GameState();
+        operator delete(p);
         g_GameState4_004369a0 = 0;
     }
-    
+
     if (g_GameState3_0043699c != 0) {
-        delete g_GameState3_0043699c;
+        GameState* p = g_GameState3_0043699c;
+        p->~GameState();
+        operator delete(p);
         g_GameState3_0043699c = 0;
     }
 
-    if (g_GameState2_004369a4 != 0) {
-        delete g_GameState2_004369a4;
-        g_GameState2_004369a4 = 0;
+    if (g_GameState2_0046aa3c != 0) {
+        GameState* p = g_GameState2_0046aa3c;
+        p->~GameState();
+        operator delete(p);
+        g_GameState2_0046aa3c = 0;
     }
 
-    if (g_GameState_00436998 != 0) {
-        delete g_GameState_00436998;
-        g_GameState_00436998 = 0;
+    if (g_GameState_0046aa30 != 0) {
+        GameState* p = g_GameState_0046aa30;
+        p->~GameState();
+        operator delete(p);
+        g_GameState_0046aa30 = 0;
     }
 
     if (g_Timer_00436980 != 0) {
-        delete g_Timer_00436980;
+        Timer* p = g_Timer_00436980;
+        p->~Timer();
+        operator delete(p);
         g_Timer_00436980 = 0;
     }
 
-    if (g_StateString_00436994 != 0) {
-        delete g_StateString_00436994;
-        g_StateString_00436994 = 0;
+    if (g_StateString_0046aa2c != 0) {
+        operator delete(g_StateString_0046aa2c);
+        g_StateString_0046aa2c = 0;
     }
 
-    if (g_Mouse_00436978 != 0) {
-        delete g_Mouse_00436978;
-        g_Mouse_00436978 = 0;
+    if (g_Mouse_0046aa18 != 0) {
+        MouseControl* p = g_Mouse_0046aa18;
+        p->~MouseControl();
+        operator delete(p);
+        g_Mouse_0046aa18 = 0;
     }
 
-    if (g_PeterCharacter_00435a74 != 0) {
-        ((AssetList*)g_PeterCharacter_00435a74)->Cleanup();
-        operator delete(g_PeterCharacter_00435a74);
-        g_PeterCharacter_00435a74 = 0;
-    }
-    if (g_SusanCharacter_00435a78 != 0) {
-        ((AssetList*)g_SusanCharacter_00435a78)->Cleanup();
-        operator delete(g_SusanCharacter_00435a78);
-        g_SusanCharacter_00435a78 = 0;
-    }
-    if (g_DuncanCharacter_00435a7c != 0) {
-        ((AssetList*)g_DuncanCharacter_00435a7c)->Cleanup();
-        operator delete(g_DuncanCharacter_00435a7c);
-        g_DuncanCharacter_00435a7c = 0;
+    if (g_FlagManager_0046a6e8 != 0) {
+        FlagArray* p = g_FlagManager_0046a6e8;
+        p->~FlagArray();
+        operator delete(p);
+        g_FlagManager_0046a6e8 = 0;
     }
 
-    if (g_FlagManager_00435a84 != 0) {
-        g_FlagManager_00435a84->SafeClose();
-        operator delete(g_FlagManager_00435a84);
-        g_FlagManager_00435a84 = 0;
+    if (g_GameLoopHelper_0046a6f0 != 0) {
+        GameLoopHelper* p = g_GameLoopHelper_0046a6f0;
+        p->~GameLoopHelper();
+        operator delete(p);
+        g_GameLoopHelper_0046a6f0 = 0;
     }
 
+    if (g_SoundTracker_0046928c != 0) {
+        SoundTracker* p = g_SoundTracker_0046928c;
+        p->~SoundTracker();
+        operator delete(p);
+        g_SoundTracker_0046928c = 0;
+    }
+
+    CleanupMemoryCache();
     ShutdownGameSystems();
-
-  //} __except (EXCEPTION_EXECUTE_HANDLER) {
-  //}
 }
 
 
-/* Function start: 0x40d230 */
+/* Function start: 0x424C40 */
 void PlayIntroCinematic(void) {
   InitGameSystems();
-  Animation anim;
-  anim.Play("cine\\cine0001.smk", 0x20);
   ShutdownGameSystems();
 }
 
-/* Function start: 0x40d28c */
+/* SEH funclet at 0x411325 — not a standalone function */
 void CleanupCinematic(void) {}
 
 
-/* Function start: 0x4192F0 */
+/* Function start: 0x425E90 */
 extern "C" int ProcessMessages() {
   MSG local_1c;
   int iVar1;
@@ -254,37 +322,48 @@ extern "C" int ProcessMessages() {
         if (local_1c.wParam > 0x7f) {
           wParam = wParam & 0x2f;
         }
-        g_WaitForInputValue_004373bc = wParam;
-        if (local_1c.wParam == VK_F12) {
-          return 1;
-        }
+        g_WaitForInputValue_0046ac04 = wParam;
       }
       DispatchMessageA(&local_1c);
       iVar1 = PeekMessageA(&local_1c, NULL, 0, 0, PM_REMOVE);
     }
-    iVar1 = IsAppDeactivated();
+    iVar1 = IsAppReady();
     if (iVar1 != 0) {
       return 0;
     }
   } while (1);
 }
 
-/* Function start: 0x4195A0 */
+/* Function start: 0x425FA0 */
 extern "C" int FileExists(const char *filename) {
   int iVar1;
   iVar1 = GetFileAttributes_Wrapper(filename, 0);
   return iVar1 == 0;
 }
 
-/* Function start: 0x41A3D0 */
+
+/* Function start: 0x425FF0 */
+extern "C" void TouchFileTimestamp(const char* filename) {
+    SYSTEMTIME sysTime;
+    FILETIME fileTime;
+    GetSystemTime(&sysTime);
+    SystemTimeToFileTime(&sysTime, &fileTime);
+    HANDLE hFile = CreateFileA(filename, 0xC0000000, 1, 0, 3, 0x80, 0);
+    if (hFile != (HANDLE)0xFFFFFFFF) {
+        SetFileTime(hFile, 0, 0, &fileTime);
+        CloseHandle(hFile);
+    }
+}
+
+/* Function start: 0x425720 */
 void InitGameSystems(void) {
-    g_Buffer_00436960 = new char[0x100];
+    g_Buffer_0046aa00 = new char[0x100];
     g_Buffer_00436964 = new char[CalculateBufferSize(0x280, 0x1e0)];
-    CheckDebug();
-    ClearMessageLog();
     CreateGameObject_1();
-    InitWorkBuffer(0x280, 0x1e0);
-    g_InputManager_00436968 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
+    ClearMessageLog();
+    InitGameConfig();
+    SetVideoRes(0x280, 0x1e0);
+    g_InputManager_0046aa08 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
     g_Sound_0043696c = new Sound(0x5622, 8, 1);
     g_TextManager_00436990 = new AnimatedAsset();
     g_TextManager_00436990->LoadAnimatedAsset("elements\\barrel06.smk");
@@ -292,7 +371,9 @@ void InitGameSystems(void) {
     SetCursorVisible(0);
 }
 
-/* Function start: 0x41A550 */
+// g_PathResolver_0046aa1c declared in globals.h
+
+/* Function start: 0x4258C0 */ /* ~97% match */
 void ShutdownGameSystems(void) {
   if (g_TextManager_00436990 != 0) {
     delete g_TextManager_00436990;
@@ -301,112 +382,82 @@ void ShutdownGameSystems(void) {
   if (g_WorkBuffer_00436974 != 0) {
     delete g_WorkBuffer_00436974;
     g_WorkBuffer_00436974 = 0;
+    g_BackBuffer_0046aa14 = 0;
   }
   if (g_Sound_0043696c != 0) {
-    AIL_shutdown();
-    delete g_Sound_0043696c;
+    Sound* p = g_Sound_0043696c;
+    p->~Sound();
+    operator delete(p);
     g_Sound_0043696c = 0;
   }
-  if (g_InputManager_00436968 != 0) {
-    delete g_InputManager_00436968;
-    g_InputManager_00436968 = 0;
+  if (g_InputManager_0046aa08 != 0) {
+    delete g_InputManager_0046aa08;
+    g_InputManager_0046aa08 = 0;
   }
 
   if (g_CDData_0043697c != 0) {
-    CDData_ChangeToBaseDir(g_CDData_0043697c);
-    delete g_CDData_0043697c;
+    CDData* p = g_CDData_0043697c;
+    p->~CDData();
+    operator delete(p);
     g_CDData_0043697c = 0;
+    g_PathResolver_0046aa1c = 0;
   }
   if (g_GameConfig_00436970 != 0) {
      delete g_GameConfig_00436970;
      g_GameConfig_00436970 = 0;
+     g_GameConfig2_0046aa10 = 0;
   }
   if (g_Buffer_00436964 != 0) {
     delete[] g_Buffer_00436964;
     g_Buffer_00436964 = 0;
   }
-  if (g_Buffer_00436960 != 0) {
-    delete g_Buffer_00436960;
-    g_Buffer_00436960 = 0;
+  if (g_Buffer_0046aa00 != 0) {
+    delete g_Buffer_0046aa00;
+    g_Buffer_0046aa00 = 0;
   }
 }
 
-/* Function start: 0x41A670 */
-void CheckDebug(void) {
-  char local_94[128];
-  CDData *pvVar2;
-
-  //__try {
-    pvVar2 = g_CDData_0043697c;
-    if (g_CDData_0043697c == 0) {
-      pvVar2 = new CDData("cddata", "DATA");
-    }
-    g_CDData_0043697c = pvVar2;
-    if (g_CmdLineDataPath_0043d568[0] != '\0') {
-      sprintf(local_94, "%s\\%s", g_CmdLineDataPath_0043d568, pvVar2->dataFolder);
-      if (FileExists(local_94)) {
-        g_CDData_0043697c->ChangeDirectory((unsigned char *)local_94);
-      } else {
-        ShowError("Invalid CD path specified on command line '%s'", local_94);
-      }
-    } else {
-      if (FileExists(pvVar2->dataFolder) ||
-          FileExists("Develop.___")) {
-        g_DevModeFlag_0043d564 = 1;
-        if (g_CDData_0043697c->ChangeDirectory(
-                (unsigned char *)g_CDData_0043697c->dataFolder)) {
-          ShowError("Invalid Development directory '%s'", g_CDData_0043697c->dataFolder);
-        }
-      } else {
-        int i = 3;
-        for (; i < 0x1a; i++) {
-          if (g_CDData_0043697c->CheckFileOnDrive(i)) {
-            if (g_CDData_0043697c->ChangeToDriveDirectory(i)) {
-              ShowError("Invalid CD directory");
-            }
-            break;
-          }
-        }
-        if (i >= 0x19) {
-          //ShowError("Missing the Teacher CD ROM");
-        }
-      }
-    }
-  //} __except (EXCEPTION_EXECUTE_HANDLER) {
-  //}
+/* Function start: 0x424BB0 */
+void CreateGameObject_1() {
+  static char s_pathBuffer[260]; // DAT_00472de8
+  CDData* cd = new CDData(s_pathBuffer, "teacher.id", "Missing the Teacher CD ROM");
+  g_PathResolver_0046aa1c = cd;
+  g_CDData_0043697c = cd;
 }
 
-/* Function start: 0x41A810 */
-void CreateGameObject_1() {
-  g_GameConfig_00436970 = new GameConfig();
+/* Function start: 0x4259E0 */
+void InitGameConfig() {
+  GameConfig* cfg = new GameConfig();
+  g_GameConfig2_0046aa10 = cfg;
+  g_GameConfig_00436970 = cfg;
 
   if (g_CmdLineAudioMode_0043d558 != 0) {
-      g_GameConfig_00436970->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
+      g_GameConfig2_0046aa10->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
   }
 
   if (g_CmdLineInputMode_0043d560 != 0) {
-      g_GameConfig_00436970->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
+      g_GameConfig2_0046aa10->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
   }
 
-  g_GameConfig_00436970->LoadConfig();
+  g_GameConfig2_0046aa10->LoadConfig();
 }
 
-/* Function start: 0x421AF0 */
+/* Function start: 0x426AC0 */
 int WaitForInput() {
-  while (g_WaitForInputValue_004373bc == 0) {
+  while (g_WaitForInputValue_0046ac04 == 0) {
     ProcessMessages();
   }
-  int iVar1 = g_WaitForInputValue_004373bc;
-  g_WaitForInputValue_004373bc = 0;
+  int iVar1 = g_WaitForInputValue_0046ac04;
+  g_WaitForInputValue_0046ac04 = 0;
   return iVar1;
 }
 
-/* Function start: 0x422510 */
-int IsAppDeactivated() {
-  return DAT_0043de94;
+/* Function start: 0x420610 */
+int IsAppReady() {
+  return g_ActivateAppState_00472d14;
 }
 
-/* Function start: 0x422520 */
+/* Function start: 0x420620 */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
                    int nCmdShow) {
   int uStack_14;
@@ -424,12 +475,108 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   return uStack_14;
 }
 
-/* Function start: 0x422E02 */
+/* Function start: 0x453BFF */
 int __cdecl CalculateBufferSize(int width, unsigned int height) {
   return (((width + 3) & ~3U) * height) + g_BitmapHeaderSize_00437f4c;
 }
 
-/* Function start: 0x4261C0 */
+// 0x4260F0 = FormatAssetPath — in CDData.cpp
+const char* __cdecl CDData_ResolvePath(const char *format, ...) {
+    char local_104[260];
+    char *args = (char *)(&format + 1);
+
+    vsprintf(local_104, format, args);
+    if (FileExists(local_104)) {
+        strcpy(g_CDData_0043697c->cdPath + 5, local_104);
+    } else {
+        sprintf(g_CDData_0043697c->cdPath + 5, "%s\\%s",
+                g_CDData_0043697c->cdPath, local_104);
+    }
+    return g_CDData_0043697c->cdPath + 5;
+}
+
+/* Function start: 0x4265A0 */
+extern "C" void ShowLoadingScreen(void) {
+    const char* path;
+    VBuffer* buffer;
+    int x;
+    int* screen;
+
+    path = CDData_ResolvePath("elements\\loading.smk");
+    if (FileExists(path) != 0) {
+        buffer = new VBuffer((char*)path, 0);
+        screen = GetScreenWidth();
+        x = (*screen - buffer->width) / 2;
+        screen = GetScreenHeight();
+        buffer->CallBlitter4(buffer->clip_x1, buffer->clip_x2, buffer->clip_y1,
+                             buffer->clip_y2, x,
+                             (*screen - buffer->height) / 2 + buffer->height);
+        delete buffer;
+    }
+}
+
+/* Function start: 0x426690 */
+int __cdecl GetFreeDiskSpaceMB(int param_1) {
+    DWORD local_18;
+    DWORD local_14;
+    DWORD local_10;
+    DWORD local_c;
+    char local_8[8];
+    int result;
+
+    result = -1;
+    if (param_1 != 0) {
+        sprintf(local_8, "%c:\\", param_1 + 0x40);
+        if (GetDiskFreeSpaceA(local_8, &local_10, &local_14, &local_18, &local_c) != 0) {
+            result = local_18 * local_14 * local_10;
+        }
+    } else {
+        if (GetDiskFreeSpaceA(0, &local_10, &local_14, &local_18, &local_c) != 0) {
+            result = local_18 * local_14 * local_10;
+        }
+    }
+    return result;
+}
+
+/* Function start: 0x4340A0 */
+void __cdecl InitMemoryCache(int param_1, int param_2, float param_3) {
+    CleanupMemoryCache();
+    g_CacheTotalSize_00473440 = 0;
+    g_CacheSizeLimit_00473444 = param_2 << 20;
+    g_CacheEntryCount_0046b780 = param_1;
+    g_CacheEvictThreshold_0046b790 = g_CacheSizeLimit_00473444 - (int)((float)g_CacheSizeLimit_00473444 * param_3 * g_PercentScale);
+    MemoryCache* ptr = new MemoryCache(g_CacheEntryCount_0046b780);
+    g_FileCache_0046b78c = ptr;
+    DAT_00473448.Reset();
+}
+
+/* Function start: 0x434170 */
+void CleanupMemoryCache() {
+    FileCacheCleanup();
+    if (g_FileCache_0046b78c != 0) {
+        MemoryCache* cache = g_FileCache_0046b78c;
+        int* node = (int*)cache->field_0;
+        while (node != 0) {
+            FileCacheEntryCleanup((void*)&node[2], 1);
+            node = (int*)node[0];
+        }
+        cache->field_8 = 0;
+        cache->field_c = 0;
+        cache->field_4 = 0;
+        cache->field_0 = 0;
+        int* freeNode = (int*)cache->field_10;
+        while (freeNode != 0) {
+            int* next = (int*)freeNode[0];
+            free(freeNode);
+            freeNode = next;
+        }
+        cache->field_10 = 0;
+        free(cache);
+        g_FileCache_0046b78c = 0;
+    }
+}
+
+// ParsePath is a CRT library function in the full game (0x4560F0, in library range)
 extern "C" void ParsePath(const char *fullPath, char *drive, char *dir, char *fname,
                char *ext) {
   unsigned char *lastSlash;
@@ -518,7 +665,7 @@ extern "C" void ParsePath(const char *fullPath, char *drive, char *dir, char *fn
   }
 }
 
-/* Function start: 0x42B300 */
+// SetErrorCode is a CRT library function in the full game (0x45A860, in library range)
 void SetErrorCode(unsigned int errorCode) {
   int iVar1;
   unsigned int *puVar2;
@@ -528,25 +675,25 @@ void SetErrorCode(unsigned int errorCode) {
   puVar2 = DAT_0043c760;
   do {
     if (*puVar2 == errorCode) {
-      DAT_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
+      g_CrtField_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
       return;
     }
     puVar2 = puVar2 + 2;
     iVar1 = iVar1 + 1;
   } while ((unsigned int)puVar2 < 0x43c8c8);
   if (errorCode >= 0x13 && errorCode <= 0x24) {
-    DAT_0043bdf0 = 0xd;
+    g_CrtField_0043bdf0 = 0xd;
     return;
   }
   if (errorCode >= 0xbc && errorCode <= 0xca) {
-    DAT_0043bdf0 = 8;
+    g_CrtField_0043bdf0 = 8;
     return;
   }
-  DAT_0043bdf0 = 0x16;
+  g_CrtField_0043bdf0 = 0x16;
   return;
 }
 
-/* Function start: 0x430310 */
+// GetFileAttributes_Wrapper is a CRT library function in the full game (0x456440, in library range)
 int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
   int DVar1;
 
@@ -557,10 +704,9 @@ int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
     return -1;
   }
   if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
-    DAT_0043bdf0 = 0xd;
+    g_CrtField_0043bdf0 = 0xd;
     g_ErrorCode_0043bdf4 = 5;
     return -1;
   }
   return 0;
 }
-

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <windows.h>
 
-/* Function start: 0x4209e0 */
+/* Function start: 0x44BFA0 */
 StringTable::StringTable(char* f, int loadNow) {
     fp = 0;
     filename = 0;
@@ -23,7 +23,7 @@ StringTable::StringTable(char* f, int loadNow) {
     }
 }
 
-/* Function start: 0x420a50 */
+/* Function start: 0x44C010 */ /* ~81% match */
 StringTable::~StringTable() {
     Unload();
 
@@ -87,14 +87,14 @@ StringTable::~StringTable() {
     }
 }
 
-/* Function start: 0x420b00 */
+/* Function start: 0x44C0C0 */
 FILE* StringTable::Open() {
     Unload();
     fp = fopen(filename, "r");
     return fp;
 }
 
-/* Function start: 0x420b20 */
+/* Function start: 0x4456F0 */
 void StringTable::Unload() {
     if (fp) {
         fclose(fp);
@@ -102,7 +102,7 @@ void StringTable::Unload() {
     }
 }
 
-/* Function start: 0x420b40 */
+/* Function start: 0x44C100 */ /* ~98% match */
 void StringTable::Load() {
     char buffer[300];
     fpos_t filePos;
@@ -221,7 +221,7 @@ void StringTable::Load() {
     }
 }
 
-/* Function start: 0x420d90 */
+/* Function start: 0x44C350 */ /* ~90% match */
 int StringTable::GetString(unsigned int id, char* outBuffer)
 {
     char buffer[300];
@@ -291,3 +291,5 @@ done:
     }
     return found;
 }
+
+void StringTable::TestStrings(void* textMgr, int count) {}

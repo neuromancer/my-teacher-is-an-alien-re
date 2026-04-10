@@ -1,89 +1,85 @@
 #include "RockThrower.h"
-#include "Sample.h"
 #include "globals.h"
-#include "Animation.h"
-#include "EngineSubsystems.h"
-#include "CursorState.h"
-#include <string.h>
+#include "InputManager.h"
+#include "Projectile.h"
 
-extern "C" int __cdecl SetFillColor(unsigned char param_1);
-extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
-extern "C" int __cdecl DrawCircle(int param_1);
-extern "C" int __cdecl DrawLine(int param_1, int param_2);
-
-class CombatResult {
-public:
-    int state; // 0x00
-
-    void PlayResult();   // 0x415D40
-};
-
-/* Function start: 0x415D40 */
-void CombatResult::PlayResult() {
-    switch (CombatResult::state) {
-    case 1:
-        {
-            Animation anim;
-            anim.Play("rat1\\lose.smk", 0x20);
-        }
-        break;
-    case 2:
-        {
-            Animation anim;
-            anim.Play("rat1\\win.smk", 0x20);
-        }
-        break;
-    }
-}
 
 Weapon::~Weapon() {}
 
-/* Function start: 0x415E00 */
-void Weapon::OnHit() {
-    g_ScoreManager_00435f20->shotsFired++;
-    if (Weapon::field_0xa4 != 0) {
-        ((Sample*)Weapon::field_0xa4)->Play(100, 1);
+// Access RockThrower fields via offset (base class accesses derived class layout)
+// Maps to: m_itemCount(0xB0), m_items(0xB4), m_hitCount(0xB8), m_holdState(0xBC), m_hitCountFull(0xC0)
+#define W_PROJ_COUNT   (*(int*)((char*)this + 0xB0))
+#define W_PROJ_ARRAY   (*(int**)((char*)this + 0xB4))
+#define W_FLAGS        (*(int*)((char*)this + 0xB8))
+#define W_HOLD         (*(int*)((char*)this + 0xBC))
+#define W_HITS         (*(int*)((char*)this + 0xC0))
+
+/* Function start: 0x427880 */
+void Weapon::UpdateProjectiles() {
+    InputState* pMouse;
+    int mouseBtn;
+    int fire;
+
+    if (g_InputManager_0046aa08->mouseValid == 0) {
+        goto updateAll;
     }
-}
 
-/* Function start: 0x415F10 */
-void Weapon::DrawExplosion() {
-    Weapon::OnHit();
-    SetFillColor(0xfd);
+    DrawCrosshairs();
 
-    SetDrawPosition(Weapon::m_posX - 4, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posX - 3, Weapon::m_posZ);
+    pMouse = g_InputManager_0046aa08->pMouse;
+    if (pMouse != 0) {
+        mouseBtn = pMouse->buttons & 1;
+    } else {
+        mouseBtn = 0;
+    }
 
-    SetDrawPosition(Weapon::m_posX - 2, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posX - 1, Weapon::m_posZ);
+    W_HOLD = (mouseBtn < 1) | W_HOLD;
 
-    SetDrawPosition(Weapon::m_posX + 4, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posX + 3, Weapon::m_posZ);
+    if (!(W_FLAGS & 1)) {
+        pMouse = g_InputManager_0046aa08->pMouse;
+        if (pMouse != 0) {
+            mouseBtn = pMouse->buttons & 1;
+        } else {
+            mouseBtn = 0;
+        }
+        if (mouseBtn != 0 && W_HOLD != 0) {
+            m_clicked = 1;
+        } else {
+            m_clicked = 0;
+        }
+    } else {
+        m_clicked = 0;
+    }
 
-    SetDrawPosition(Weapon::m_posX + 2, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posX + 1, Weapon::m_posZ);
+    if (m_clicked == 0) {
+        goto updateAll;
+    }
 
-    SetDrawPosition(Weapon::m_posY - 4, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posY - 3, Weapon::m_posZ);
+    W_HOLD = 0;
+    OnHit();
 
-    SetDrawPosition(Weapon::m_posY - 2, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posY - 1, Weapon::m_posZ);
+    {
+        int i = 0;
+        int* arr = W_PROJ_ARRAY;
+        while (i < W_PROJ_COUNT) {
+            if (*(int*)(*arr + 0x11C) == 0) {
+                ((Projectile*)W_PROJ_ARRAY[i])->Launch();
+                break;
+            }
+            arr++;
+            i++;
+        }
+    }
 
-    SetDrawPosition(Weapon::m_posY + 4, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posY + 3, Weapon::m_posZ);
-
-    SetDrawPosition(Weapon::m_posY + 2, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posY + 1, Weapon::m_posZ);
-
-    SetDrawPosition(Weapon::m_posX, Weapon::m_posZ);
-    DrawLine(Weapon::m_crosshairX, Weapon::m_crosshairY);
-    DrawLine(Weapon::m_posY, Weapon::m_posZ);
+updateAll:
+    g_ProjectileHits_0043d150 = 0;
+    W_HITS = 0;
+    {
+        int i = 0;
+        while (i < W_PROJ_COUNT) {
+            ((Projectile*)W_PROJ_ARRAY[i])->Update();
+            i++;
+        }
+    }
+    W_HITS = g_ProjectileHits_0043d150;
 }

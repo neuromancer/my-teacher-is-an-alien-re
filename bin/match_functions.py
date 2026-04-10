@@ -19,7 +19,7 @@ from collections import defaultdict
 
 DEMO_DIR = "code"
 FULL_DIR = "code-full"
-SRC_DIR = "src"
+SRC_DIR = "src-demo"
 
 # CRT/library address ranges (start, end) — functions in these ranges are excluded
 DEMO_LIBRARY_RANGES = [(0x424540, 0x4304E0)]
@@ -147,7 +147,7 @@ def similarity(norm_a, norm_b):
 
 
 def find_implemented_functions():
-    """Scan src/*.cpp files for implemented function addresses."""
+    """Scan src-demo/*.cpp files for implemented function addresses."""
     implemented = {}  # addr -> src_file
     for cpp in glob.glob(os.path.join(SRC_DIR, '*.cpp')):
         basename = os.path.splitext(os.path.basename(cpp))[0]
@@ -209,7 +209,7 @@ def main():
     full_funcs, full_lib = load_functions(FULL_DIR, FULL_LIBRARY_RANGES)
     print(f"  Loaded {len(full_funcs)} game functions, {len(full_lib)} library (excluded)")
 
-    print("Loading implemented functions from src/...")
+    print("Loading implemented functions from src-demo/...")
     implemented = find_implemented_functions()
     print(f"  Found {len(implemented)} implemented functions")
 
@@ -339,7 +339,7 @@ def main():
     print(f"New full-game-only functions:  {len(full_funcs) - len(matched_full)}")
     print()
     print(f"Of matched functions:")
-    print(f"  Already implemented in src/: {stats['implemented']}")
+    print(f"  Already implemented in src-demo/: {stats['implemented']}")
     print(f"  Not yet implemented:         {stats['not_implemented']}")
 
     # Show unmatched demo functions

@@ -1,24 +1,32 @@
-/* Function start: 0x41D040 */
+/* Function start: 0x41DBE0 */
 
-/* Function start: 0x41D0C0 */
+/* Function start: 0x41DBF0 */
 
-/* Function start: 0x41D160 */
+/* Function start: 0x41DC10 */
 
-/* Function start: 0x41D190 */
+/* Function start: 0x41DC40 */
 
-/* Function start: 0x41D300 */
+/* Function start: 0x41DC70 */
 
-/* Function start: 0x41D500 */
+/* Function start: 0x41DCA0 */
 
-/* Function start: 0x41D590 */
+/* Function start: 0x41DCC0 */
 
-/* Function start: 0x41D6D0 */
+/* Function start: 0x41DD76 */
 
-/* Function start: 0x41D740 */
+/* Function start: 0x41DE00 */
 
-/* Function start: 0x41D860 */
+/* Function start: 0x41DE20 */
 
-/* Function start: 0x41D8D0 */
+/* Function start: 0x41DE40 */
 
-/* Function start: 0x41D9D0 */
+/* Function start: 0x41DE60 */
+
+/* Function start: 0x41DF10 */
+
+/* Function start: 0x41DF50 */
+
+/* Function start: 0x41DFC2 */
+
+/* Function start: 0x41DFE0 */
 

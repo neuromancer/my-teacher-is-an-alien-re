@@ -75,7 +75,7 @@ This shows compiler errors or the generated assembly diff.
 
 ## Required Files & Documentation
 
-- src/map  
+- src-demo/map  
   Sorted address lists showing which functions are adjacent in the binary.
 
 - code/strings.txt  

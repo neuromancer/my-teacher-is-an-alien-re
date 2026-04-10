@@ -6,7 +6,7 @@ extern "C" {
     void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
 }
 
-/* Function start: 0x41B0A0 */
+/* Function start: 0x4119D0 */
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale)
 {
     VBuffer* buf = (VBuffer*)data;

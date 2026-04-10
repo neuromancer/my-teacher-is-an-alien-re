@@ -8,6 +8,7 @@
 extern "C" {
 int GetColorBitDepth();
 void ShowMessage(const char *);
+int ShowMessageYesNo(char *, ...);
 void InitVideoSystem();
 void InitMouseSettings();
 int SetCursorVisible(unsigned int);
@@ -16,13 +17,16 @@ int InvalidateVideoMode();
 int CleanupVideoSystem();
 }
 
-extern "C" int* GetWindowedModeFlag();
+static int s_WindowedMode = 0;
+
+extern "C" int* GetWindowedModeFlag() { return &s_WindowedMode; }
+
 LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
 void __stdcall ParseCommandLine(char *);
 int ParseCommandLineArgs(char *, char **, int);
 
-/* Function start: 0x422060 */
+/* Function start: 0x420110 */
 GameWindow::GameWindow() {
     // Zero entire object (0xb dwords = 44 bytes = 0x2c)
     int* p = (int*)this;
@@ -30,25 +34,27 @@ GameWindow::GameWindow() {
         *p = 0;
         p++;
     }
-    field_24 = 0;
-    field_28 = 1;
-    field_20 = 1;
+    startupParam = 0;
+    initialized = 1;
+    fullscreenMode = 1;
     savedActiveWindow = GetActiveWindow();
 }
 
-/* Function start: 0x4220A0 */
+/* Function start: 0x420140 */
+GameWindow::~GameWindow() {
+    Shutdown();
+}
+
+/* Function start: 0x420150 */
 void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
                                   int param_4) {
-  int iVar2;
-  int iVar3;
   WNDCLASSEXA local_30;
-  DWORD dwExStyle;
 
   hInstance = param_1;
-  field_8 = param_2;
+  displayMode = param_2;
   ParseCommandLine(param_3);
-  if (field_20 != 0) {
-    if (field_8 == 0) {
+  if (fullscreenMode != 0) {
+    if (displayMode == 0) {
       local_30.cbClsExtra = 0;
       local_30.cbWndExtra = 0;
       local_30.hInstance = hInstance;
@@ -59,14 +65,14 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
       local_30.hCursor = LoadCursorA((HINSTANCE)0x0, (LPCSTR)0x7f00);
       local_30.hbrBackground = (HBRUSH)0x0;
       local_30.lpszMenuName = (LPCSTR)0x0;
-      local_30.lpszClassName = "Teacher Demo";
+      local_30.lpszClassName = "Teacher v(0.950)";
       local_30.hIconSm = local_30.hIcon;
       RegisterClassExA(&local_30);
     }
     SmackSetSystemRes(2);
-    dwExStyle = 8;
-    iVar2 = 0;
-    iVar3 = 0;
+    hWnd = CreateWindowExA(8, "Teacher v(0.950)", "Teacher v(0.950)",
+                                 0x80000000, 0, 0, 0x280, 0x1e0,
+                                 (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
   } else {
     if (param_2 == 0) {
       local_30.cbClsExtra = 0;
@@ -79,23 +85,20 @@ void GameWindow::CreateGameWindow(HINSTANCE param_1, int param_2, char *param_3,
       local_30.hCursor = LoadCursorA((HINSTANCE)0x0, (LPCSTR)0x7f00);
       local_30.hbrBackground = (HBRUSH)0x0;
       local_30.lpszMenuName = (LPCSTR)0x0;
-      local_30.lpszClassName = "Teacher Demo";
+      local_30.lpszClassName = "Teacher v(0.950)";
       local_30.hIconSm = local_30.hIcon;
       RegisterClassExA(&local_30);
     }
-    iVar2 = GetSystemMetrics(0);
-    iVar2 = (iVar2 + -0x280) / 2;
-    iVar3 = GetSystemMetrics(1);
-    iVar3 = (iVar3 + -0x1e0) / 2;
-    dwExStyle = 0;
+    int iVar2 = (GetSystemMetrics(0) - 0x280) / 2;
+    int iVar3 = (GetSystemMetrics(1) - 0x1e0) / 2;
+    hWnd = CreateWindowExA(0, "Teacher v(0.950)", "Teacher v(0.950)",
+                                 0x80000000, iVar2, iVar3, 0x280, 0x1e0,
+                                 (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
   }
-  hWnd = CreateWindowExA(dwExStyle, "Teacher Demo", "Teacher Demo",
-                               0x80000000, iVar2, iVar3, 0x280, 0x1e0,
-                               (HWND)0x0, (HMENU)0x0, param_1, (LPVOID)0x0);
   ShowWindow(hWnd, param_4);
 }
 
-/* Function start: 0x422250 */
+/* Function start: 0x420300 */
 void __stdcall ParseCommandLine(char *param_1) {
   int iVar1;
   int *piVar2;
@@ -110,7 +113,7 @@ void __stdcall ParseCommandLine(char *param_1) {
   }
   for (piVar3 = local_50; iVar1 > 0; iVar1--) {
     if (_strnicmp(*piVar3, "-mis", 4) == 0) {
-      strcpy(g_CmdLineDataPath_0043d568, *piVar3 + 4);
+      strcpy(g_GameWindow.baseDir, *piVar3 + 4);
     }
     else if (_strcmpi(*piVar3, "-w") == 0) {
       *GetWindowedModeFlag() = 1;
@@ -140,11 +143,14 @@ void __stdcall ParseCommandLine(char *param_1) {
   }
 }
 
-/* Function start: 0x4223F0 */
+/* Function start: 0x4204F0 */
 int GameWindow::InitGraphics(void) {
   if (GetColorBitDepth() != 8) {
-    ShowMessage(
-        "For Optimum performance, please set your display to 256 Colors");
+    int result = ShowMessageYesNo(
+        "For Optimum performance, Set your display to 256 Colors.\nWould you like to exit now to set your display?");
+    if (result == 6) {
+      return 0;
+    }
   }
   InitVideoSystem();
   InitMouseSettings();
@@ -152,13 +158,13 @@ int GameWindow::InitGraphics(void) {
   return 1;
 }
 
-/* Function start: 0x422430 */
+/* Function start: 0x420530 */
 void GameWindow::Shutdown() {
-    if (field_28 == 0) {
+    if (initialized == 0) {
         return;
     }
-    field_28 = 0;
-    if (field_20 != 0) {
+    initialized = 0;
+    if (fullscreenMode != 0) {
         SmackSetSystemRes(0);
     }
     SetCursorVisible(1);
@@ -169,54 +175,54 @@ void GameWindow::Shutdown() {
     SetActiveWindow(savedActiveWindow);
 }
 
-extern GameWindow g_GameWindow;
-
-/* Function start: 0x4224D0 */
+/* Function start: 0x4205D0 */
 extern "C" void* GetGameWindowHandle() {
   return g_GameWindow.hWnd;
 }
 
-/* Function start: 0x4224E0 */
+/* Function start: 0x420600 */
 extern "C" int* GetWindowWidth() {
-  return &DAT_0043de88;
+  return &g_WindowWidth_00472d10;
 }
 
-/* Function start: 0x4224F0 */
-extern "C" int* GetWindowHeight() {
-  return &DAT_0043de8c;
+// g_ScreenWidth_00472d08, g_ScreenHeight_00472d0c — defined in globals.cpp
+
+/* Function start: 0x4205E0 */
+extern "C" int* GetScreenWidth() {
+  return &g_ScreenWidth_00472d08;
 }
 
-/* Function start: 0x422500 */
-extern "C" int* GetWindowedModeFlag() {
-  return &DAT_0043de90;
+/* Function start: 0x4205F0 */
+extern "C" int* GetScreenHeight() {
+  return &g_ScreenHeight_00472d0c;
 }
 
 int SetDeviceContext(HDC);
 HPALETTE CreateSystemPalette(void);
 int SelectAndRealizePalette(HPALETTE);
 
-/* Function start: 0x422590 */
+/* Function start: 0x420690 */
 LRESULT CALLBACK GameWindowProc(HWND param_1, UINT param_2, WPARAM param_3, unsigned int param_4) {
   switch (param_2) {
   case 1: // WM_CREATE
-    DAT_0043de80 = GetDC(param_1);
-    SetDeviceContext(DAT_0043de80);
-    DAT_0043de84 = CreateSystemPalette();
-    SelectAndRealizePalette(DAT_0043de84);
+    g_WindowDC_00472d00 = GetDC(param_1);
+    SetDeviceContext(g_WindowDC_00472d00);
+    g_WindowPalette_00472d04 = CreateSystemPalette();
+    SelectAndRealizePalette(g_WindowPalette_00472d04);
     return 0;
   case 2: // WM_DESTROY
     PostQuitMessage(0);
     return 0;
   case 5: // WM_SIZE
-    *(unsigned int *)GetWindowWidth() = (unsigned short)param_4;
-    *(unsigned int *)GetWindowHeight() = (unsigned short)((unsigned int)param_4 >> 0x10);
+    *(unsigned int *)GetScreenWidth() = (unsigned short)param_4;
+    *(unsigned int *)GetScreenHeight() = (unsigned short)((unsigned int)param_4 >> 0x10);
     return 0;
   case 7: // WM_SETFOCUS
-    SelectAndRealizePalette(DAT_0043de84);
+    SelectAndRealizePalette(g_WindowPalette_00472d04);
     InvalidateRect(param_1, (RECT *)0x0, 1);
     return 0;
   case 0x1c: // WM_ACTIVATEAPP
-    DAT_0043de94 = param_3;
+    g_ActivateAppState_00472d14 = param_3;
     return 0;
   default:
     return DefWindowProcA(param_1, param_2, param_3, param_4);

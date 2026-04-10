@@ -152,6 +152,7 @@ struct Queue : public LinkedList {
     void* Pop();                     // 0x402680
     void* GetCurrentData();          // 0x417680
     void InsertAtCurrent(void* data);
+    void Add(void* data);            // 0x406CC0
 };
 
 struct EventList : public LinkedList {
@@ -160,6 +161,7 @@ struct EventList : public LinkedList {
 
     // Non-inline to force CALL (generates COMDAT per compilation unit)
     void InsertNode(void* data);
+    void* RemoveCurrent();
 };
 
 struct MessageList : public LinkedList {
@@ -168,7 +170,8 @@ struct MessageList : public LinkedList {
     // MessageList methods (0x40ABD0, 0x40C430, 0x40C500)
     void InsertNode(void* data);
     void InsertBeforeCurrent(void* data);
-    void* PopCurrent();
+    void* PopCurrent();       // 0x449050
+    void* GetCurrentData();   // 0x448C50
 };
 
 struct ZBQueue : public LinkedList {

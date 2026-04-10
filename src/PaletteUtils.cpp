@@ -3,23 +3,20 @@
 #include "string.h"
 
 // Color setup globals
-extern char DAT_00437490;      // Color value after lookup
-extern char DAT_00437520[];    // Palette identity map (256 bytes)
-extern char g_BgrPalette_00437b48[];    // BGR palette buffer
-static char DAT_00437495 = 0;  // Current color index
+static char g_ColorIndex_00437495 = 0;  // Current color index
 
 extern "C" {
 
-/* Function start: 0x422A01 */
+/* Function start: 0x4525EC */
 int __cdecl SetFillColor(unsigned char param_1)
 {
     unsigned char al;
     unsigned int eax;
     unsigned int edx;
 
-    DAT_00437495 = param_1;
-    al = DAT_00437520[param_1];
-    DAT_00437490 = al;
+    g_ColorIndex_00437495 = param_1;
+    al = g_PaletteMap_00437520[param_1];
+    g_TextColor_00437490 = al;
     eax = al | (al << 8);
     edx = eax << 16;
     eax = eax | edx;
@@ -27,7 +24,7 @@ int __cdecl SetFillColor(unsigned char param_1)
     return 0;
 }
 
-/* Function start: 0x422E8F */
+/* Function start: 0x452964 */
 int __cdecl ApplyVideoPalette(void)
 {
     if ((signed char)g_CurrentVideoBuffer_00437f54 >= 0) {
@@ -56,7 +53,7 @@ int __cdecl ApplyVideoPalette(void)
 
 extern "C" {
 
-/* Function start: 0x4238D9 */
+/* Function start: 0x453384 */
 int __cdecl CopyPaletteData(int index, int count, unsigned char* dest)
 {
     if (count != 0) {
@@ -73,7 +70,7 @@ int __cdecl CopyPaletteData(int index, int count, unsigned char* dest)
     return 0;
 }
 
-/* Function start: 0x423905 */
+/* Function start: 0x4533B0 */
 int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned char* data)
 {
     unsigned int i;
@@ -121,25 +118,25 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
     return 0;
 }
 
-/* Function start: 0x4239C8 */
+/* Function start: 0x452C9B */
 int __cdecl GetGlobalVertAlign()
 {
     return (int)(signed char)g_TextAlignV_004374c1;
 }
 
-/* Function start: 0x4239D0 */
+/* Function start: 0x453CBA */
 int __cdecl GetGlobalTextAlign()
 {
     return (int)(signed char)g_TextAlignH_004374c0;
 }
 
-/* Function start: 0x4239D8 */
+/* Function start: 0x453CC2 */
 int __cdecl GetGlobalTextY()
 {
     return g_DrawPosY_004374ce;
 }
 
-/* Function start: 0x4239DE */
+/* Function start: 0x4205D0 */
 int __cdecl GetGlobalTextX()
 {
     return g_DrawPosX_004374c2;

@@ -2,24 +2,70 @@
 #include "Memory.h"
 #include <string.h>
 
-/* Function start: 0x413cf0 */
-void ObjectPool::MemoryPool_Allocate(unsigned int param_1, int param_2)
+/* Function start: 0x433F10 */
+ObjectPool::~ObjectPool()
 {
+    unsigned int i;
+    int* node;
+    int* nextNode;
+
+    if (memory != 0 && size > 0) {
+        for (i = 0; i < size; i++) {
+            node = (int*)((int*)memory)[i];
+            while (node != 0) {
+                volatile int countdown = 0;
+                do {
+                    int prev = countdown;
+                    countdown--;
+                    if (prev == 0) break;
+                } while (1);
+
+                int* dataPtr = (int*)(node + 2);
+                volatile int counter = 0;
+                do {
+                    if (*dataPtr != 0) {
+                        FreeMemory((void*)*dataPtr);
+                        *dataPtr = 0;
+                    }
+                    dataPtr++;
+                    int prev = counter;
+                    counter--;
+                    if (prev == 0) break;
+                } while (1);
+
+                node = (int*)*node;
+            }
+        }
+    }
+
+    FreeMemory(memory);
+    memory = 0;
+    allocatedCount = 0;
+    freeList = 0;
+
+    int* block = (int*)memoryBlock;
+    while (block != 0) {
+        nextNode = (int*)*block;
+        FreeMemory(block);
+        block = nextNode;
+    }
+    memoryBlock = 0;
+}
+
+/* Function start: 0x44C580 */
+void ObjectPool::AllocateBuckets(unsigned int newSize, int flag) {
     if (memory != 0) {
         delete memory;
         memory = 0;
     }
-    if (param_2 != 0) {
-        memory = new int[param_1];
-        memset(memory, 0, param_1 * 4);
-        size = param_1;
+    if (flag != 0) {
+        memory = new int[newSize];
+        memset(memory, 0, newSize * 4);
     }
-    else {
-        size = param_1;
-    }
+    size = newSize;
 }
 
-/* Function start: 0x413d50 */
+/* Function start: 0x409850 */
 void* ObjectPool::Allocate()
 {
     if (freeList == 0) {

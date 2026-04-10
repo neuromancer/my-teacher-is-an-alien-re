@@ -3,10 +3,9 @@
 
 #include <windows.h>
 
-extern "C" {
-    extern BYTE DAT_00437620[];
-    extern USHORT DAT_004374b2;
+// g_PaletteData_00437620, g_StateFlags_004374b2 — declared in globals.h
 
+extern "C" {
     int __cdecl SetStateFlag(BYTE param_1, int param_2);
 }
 

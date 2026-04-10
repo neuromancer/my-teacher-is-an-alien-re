@@ -11,7 +11,7 @@ struct SoundCommand;
 
 // ZBufferManager class
 // Size: 0xAC (172 bytes)
-// Global: g_ZBufferManager_0043698c (also known as g_ZBufferManager_0043698c)
+// Global: g_ZBufferManager_0046aa24 (also known as g_ZBufferManager_0046aa24)
 // Manages ZBuffer rendering, object lists, and animation/sound command queuing
 // Contains Timer at offset 0x84
 //
@@ -27,8 +27,11 @@ public:
     void UpdateScreen();          // 0x41C960
     void ShowSubtitle(char* text, int x, int y, int duration, int font); // 0x41C000
     void DrawRect(int, int, int, int, int, int, int); // 0x41C130
+    void ShowText(char* text, int x, int y, int priority, int color); // 0x404230
 
     // Methods previously attributed to "SoundManager"
+    void DrawVBufferRegion(void* data, int priority, int x, int y, int mode, double scale,
+                           int left, int top, int right, int bottom); // 0x403FD0
     void PlayAnimationSound(void* data, int priority, int x, int y, int mode, double scale); // 0x41BE20
     void QueueCommand(SoundCommand* cmd); // 0x41C2C0
     void QueueAnimationCleanup(void* anim); // 0x41BB20
@@ -50,7 +53,7 @@ public:
 };
 
 // Global pointer - this is the single global instance
-// Previously had two names (g_ZBufferManager_0043698c, g_ZBufferManager_0043698c) but they point to the same object
-//extern ZBufferManager* g_ZBufferManager_0043698c;
+// Previously had two names (g_ZBufferManager_0046aa24, g_ZBufferManager_0046aa24) but they point to the same object
+//extern ZBufferManager* g_ZBufferManager_0046aa24;
 
 #endif // ZBUFFERMANAGER_H

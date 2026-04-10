@@ -1,55 +1,29 @@
 #ifndef SCI_SEARCHSCREEN_H
 #define SCI_SEARCHSCREEN_H
 
-#include "IconBar.h"
-#include "Palette.h"
-#include "MMPlayer.h"
-#include "MMPlayer2.h"
-#include "Hotspot.h"
-#include "Sample.h"
+#include "SC_Combat.h"
 
 class SC_Message;
 
-// SCI_SearchScreen - Script/Scene handler
-// Size: 0x648 bytes
-// vtable: 0x431210
-// Inherits from IconBar (0x600 bytes)
-// targetAddress: 11 (0xb) at offset 0x88
+// SCI_SearchScreen - Search screen handler (full game: case 72/0x48)
+// Constructor: 0x40B420
+// Vtable: 0x461178
+// Size: 0x118 (same as SC_Combat, no additional fields)
+// Extends SC_Combat (0x118 bytes)
 //
-// Layout:
-//   0x00-0x5FF: IconBar base class
-//   0x600: Palette* (destructor 0x41ea80)
-//   0x604: MMPlayer* (destructor 0x41f360)
-//   0x608: MMPlayer2* (destructor 0x408a40)
-//   0x60C-0x633: DialogControl* array[10] (destructor 0x4092e0)
-//   0x634-0x647: remaining fields (12 bytes)
-class SCI_SearchScreen : public IconBar {
+// NOTE: In the demo, this was case 11/0x0B extending IconBar (0x648 bytes).
+//       The full game completely redesigned this class.
+//
+// field_A8[0..N] used by ANNOUNCE labels (indexed stores)
+// field_A8[20..N] used by ENDPERIODANNOUNCE labels (offset 0xF8 = 0xA8 + 0x50)
+class SCI_SearchScreen : public SC_Combat {
 public:
-    SCI_SearchScreen();
-    ~SCI_SearchScreen();
+    SCI_SearchScreen();                         // 0x40B420
+    ~SCI_SearchScreen();                        // 0x40B4B0
 
-    // Virtual method overrides
-    virtual int LBLParse(char* line);
-    virtual void Init(SC_Message* msg);
-    virtual int AddMessage(SC_Message* msg);
-    virtual int ShutDown(SC_Message* msg);
-    virtual void Update(int param1, int param2);
-    virtual int Exit(SC_Message* msg);
-
-private:
-    int FindControlAtMouse();       // 0x40B230
-    int GetActiveControlCount();    // 0x40B2B0
-
-public:
-    Palette* field_600;              // 0x600
-    MMPlayer* background;           // 0x604
-    MMPlayer2* ambients;             // 0x608
-    DialogControl* field_60C[10];    // 0x60C-0x633
-    DialogControl* field_634;        // 0x634
-    Sample* field_638;               // 0x638
-    int field_63C;      // 0x63C
-    int field_640;      // 0x640
-    int field_644;      // 0x644
+    int ShutDown(SC_Message* msg);              // 0x40B780
+    int AddMessage(SC_Message* msg);            // 0x40B7E0
+    virtual int LBLParse(char* line);           // 0x40B25E (body), 0x40B240 (SEH entry)
 };
 
 #endif // SCI_SEARCHSCREEN_H

@@ -7,15 +7,17 @@
 #include <string.h>
 #include <windows.h>
 
-/* Function start: 0x420F80 */
+extern char* __cdecl ResolveAssetPath(char* name);
+
+/* Function start: 0x43A6E0 */
 AnimatedAsset::AnimatedAsset()
 {
-    ZeroMemory(this, 56);
+    ZeroMemory(this, 120);
     color = 2;
     glyphValue = 1;
 }
 
-/* Function start: 0x421010 */
+/* Function start: 0x43A770 */ /* ~95% match */
 AnimatedAsset::~AnimatedAsset()
 {
     if (buffer) {
@@ -29,7 +31,7 @@ AnimatedAsset::~AnimatedAsset()
     }
 }
 
-/* Function start: 0x4210D0 */
+// 0x43A830 = GlyphFont::LoadFont — in GlyphFont.cpp
 void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 {
   int iVar2;
@@ -39,37 +41,42 @@ void AnimatedAsset::LoadAnimatedAsset(char *param_1)
 
   if (param_1 != 0) {
     iVar2 = sscanf(param_1, "%s %d %d", local_9c, &firstChar, &local_18);
-    if (iVar2 <= 2) {
-      local_18 = 0x7e;
-    }
-    if (iVar2 <= 1) {
-      firstChar = 0x21;
-    }
-    glyphCount = (local_18 - firstChar) + 1;
-    delete buffer;
-    buffer = 0;
+    if (strcmp(cachedFilename, local_9c) != 0) {
+      strcpy(cachedFilename, local_9c);
+      if (iVar2 <= 2) {
+        local_18 = 0x7e;
+      }
+      if (iVar2 <= 1) {
+        firstChar = 0x21;
+      }
+      glyphCount = (local_18 - firstChar) + 1;
+      if (buffer != 0) {
+        delete buffer;
+        buffer = 0;
+      }
 
-    anim = new Animation();
-    anim->Open(local_9c,0xfe000,0xffffffff);
+      anim = new Animation();
+      anim->Open(ResolveAssetPath(local_9c), 0xfe000, 0xffffffff);
 
-    buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
-    anim->ToBufferVB(buffer);
-    anim->DoFrame();
-    if (anim != 0) {
+      buffer = new VBuffer(anim->smk->Width, anim->smk->Height);
+      anim->ToBufferVB(buffer);
+      anim->DoFrame();
+      if (anim != 0) {
         delete anim;
-    }
-    BuildGlyphTable();
-    iVar2 = IsCharSupported(0x41);
-    if (iVar2 != 0) {
-      iVar2 = ComputeTextMetrics(g_EngineTypeCombat_00435ef4);
-      iVar2 = (iVar2 * 2) / 3;
-      spaceWidth = iVar2;
-      tabWidth = iVar2 << 2;
+      }
+      BuildGlyphTable();
+      iVar2 = IsCharSupported(0x41);
+      if (iVar2 != 0) {
+        iVar2 = ComputeTextMetrics("A");
+        iVar2 = (iVar2 * 2) / 3;
+        spaceWidth = iVar2;
+        tabWidth = iVar2 << 2;
+      }
     }
   }
 }
 
-/* Function start: 0x421260 */
+// 0x43AA20 = GlyphFont::InitGlyphTable — in GlyphFont.cpp
 void AnimatedAsset::BuildGlyphTable()
 {
     GlyphRect* table = new GlyphRect[glyphCount];
@@ -132,7 +139,7 @@ BUILT:
     buffer->Lock();
 }
 
-/* Function start: 0x4213F0 */
+// 0x43ABA0 = GlyphFont::IsValidChar — in GlyphFont.cpp
 int AnimatedAsset::IsCharSupported(int ch)
 {
     if (ch != 0x20 && ch != 9) {
@@ -145,7 +152,7 @@ int AnimatedAsset::IsCharSupported(int ch)
     return 1;
 }
 
-/* Function start: 0x421420 */
+/* Function start: 0x43ABD0 */
 int AnimatedAsset::DrawChar(int x, int y, int ch)
 {
     int width;
@@ -190,7 +197,7 @@ int AnimatedAsset::DrawChar(int x, int y, int ch)
     return width;
 }
 
-/* Function start: 0x4215A0 */
+// 0x43AD50 = GlyphFont::GetTextWidth — in GlyphFont.cpp
 int AnimatedAsset::ComputeTextMetrics(char* text)
 {
     int total = 0;
@@ -208,7 +215,7 @@ int AnimatedAsset::ComputeTextMetrics(char* text)
             total = total + tabWidth;
         }
         else {
-            GlyphRect* piVar3 = &glyphTable[iVar2];
+            GlyphRect* piVar3 = &glyphTable[iVar2 - firstChar];
             GlyphRect local = *piVar3;
             total = (total - local.left) + local.right;
         }
@@ -218,7 +225,7 @@ int AnimatedAsset::ComputeTextMetrics(char* text)
     return total;
 }
 
-/* Function start: 0x421680 */
+/* Function start: 0x43AE30 */
 void AnimatedAsset::PrepareText(char* text)
 {
     int w;
@@ -248,7 +255,7 @@ void AnimatedAsset::PrepareText(char* text)
     }
 }
 
-/* Function start: 0x421700 */
+/* Function start: 0x43AEB0 */
 void AnimatedAsset::RenderText(char* text, int color_param)
 {
     if (text != 0) {

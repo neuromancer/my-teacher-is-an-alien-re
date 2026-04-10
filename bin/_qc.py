@@ -10,8 +10,8 @@ OUT = '/tmp/navout'
 def compile():
     os.makedirs(OUT, exist_ok=True)
     CC = "env INCLUDE='compilers\\msvc420\\include;compilers\\msvc420\\mfc\\include' ./wibo compilers/msvc420/bin/CL.EXE /nologo /c /O2 /GX /I msvc420\\\\include /I 3rdparty\\\\miles\\\\include /I 3rdparty\\\\smack\\\\include"
-    r1 = os.system(f"{CC} src/mCNavNode.cpp /Fo{OUT}/mCNavNode.obj /Fa{OUT}/mCNavNode.asm > {OUT}/mCNavNode.stdout 2>&1")
-    r2 = os.system(f"{CC} src/mCNavigator.cpp /Fo{OUT}/mCNavigator.obj /Fa{OUT}/mCNavigator.asm > {OUT}/mCNavigator.stdout 2>&1")
+    r1 = os.system(f"{CC} src-demo/mCNavNode.cpp /Fo{OUT}/mCNavNode.obj /Fa{OUT}/mCNavNode.asm > {OUT}/mCNavNode.stdout 2>&1")
+    r2 = os.system(f"{CC} src-demo/mCNavigator.cpp /Fo{OUT}/mCNavigator.obj /Fa{OUT}/mCNavigator.asm > {OUT}/mCNavigator.stdout 2>&1")
     if r1 != 0:
         print("mCNavNode.cpp compilation failed!")
         with open(f"{OUT}/mCNavNode.stdout") as f: print(f.read())

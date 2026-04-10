@@ -1,7 +1,14 @@
 #include "TimeOut.h"
 #include "string.h"
 
-/* Function start: 0x418F60 */
+/* Function start: 0x421920 */
+TimeOut* __fastcall InitTimeOut(TimeOut* buffer)
+{
+    buffer->TimeOut::TimeOut();
+    return buffer;
+}
+
+/* Function start: 0x421930 */
 TimeOut::~TimeOut()
 {
     if (m_timer != 0)
@@ -11,20 +18,20 @@ TimeOut::~TimeOut()
     }
 }
 
-/* Function start: 0x418F90 */
+/* Function start: 0x421960 */
 TimeOut::TimeOut()
 {
     m_timer = new Timer();
     Stop();
 }
 
-/* Function start: 0x419010 */
+/* Function start: 0x4219E0 */
 void TimeOut::Stop()
 {
     m_isActive = 0;
 }
 
-/* Function start: 0x419020 */
+/* Function start: 0x4219F0 */ /* ~94% match */
 void TimeOut::Start(int timeout)
 {
     if (timeout != 0)
@@ -41,7 +48,7 @@ void TimeOut::Start(int timeout)
     m_timer->Reset();
 }
 
-/* Function start: 0x419060 */
+/* Function start: 0x421A30 */
 int TimeOut::IsTimeOut()
 {
     if (m_isActive == 1)

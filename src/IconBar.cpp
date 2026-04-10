@@ -1,325 +1,586 @@
 #include "IconBar.h"
-#include <string.h>
-#include <stdio.h>
-#include "Sprite.h"
+#include "MouseControl.h"
 #include "InputManager.h"
-#include "SoundList.h"
-#include "Sample.h"
+#include "InvSlotItem.h"
+#include <string.h>
+#include "LinkedList.h"
+#include "Sprite.h"
+#include "SpriteAction.h"
 #include "Memory.h"
 #include "Parser.h"
 #include "globals.h"
-#include "string.h"
 #include "SC_Question.h"
-#include "Character.h"
+#include "GameState.h"
+#include "DrawEntry.h"
+#include "Animation.h"
+#include "VBuffer.h"
+#include "ZBufferManager.h"
+#include "RenderEntry.h"
+
+// Globals defined in globals.cpp, declared in globals.h
 
 // External functions
-//extern "C" void __cdecl WriteToMessageLog(const char*);
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+extern "C" void SetVideoRes(int, int);         // 0x425A90 - in VBuffer.cpp
 
-/* Function start: 0x402730 */
+// FUN_0044ccf0 is a thiscall Sprite method (4 stack params)
+
+
+/* Function start: 0x42D340 */
+void IconBar::SetIconBarRect() {
+    g_IconBarLeft_00473310 = 0;
+    g_IconBarTop_00473314 = 0x1AB;
+    g_IconBarRight_00473318 = 0x27F;
+    g_IconBarBottom_0047331c = 0x1E0;
+}
+
+/* Function start: 0x42D460 */
 IconBar::IconBar() {
-    // The implicit call to Handler constructor handles memset(&targetAddress, 0, 24)
-
-    // Zero from barBounds (0xA0) to the end of the class (0x600)
-    // 0x600 - 0xA0 = 0x560
-    memset(&barBounds, 0, 0x560);
-
-    targetAddress = 0;
-
-    // Set icon bar bounds
-    barBounds.left = 0;
-    barBounds.top = 0x1ab;
-    barBounds.right = 0x280;
-    barBounds.bottom = 0x1e0;
-
-    // Create iconbar sprite
-    iconbarSprite = new Sprite("elements\\iconbar.smk");
-    iconbarSprite->flags &= ~2;
-    iconbarSprite->loc_x = 0;
-    iconbarSprite->loc_y = 0x1ab;
-    iconbarSprite->SetState(4);
-    iconbarSprite->SetRange(0, 1, 1);
-    iconbarSprite->SetRange(1, 2, 2);
-    iconbarSprite->SetRange(2, 3, 3);
-    iconbarSprite->SetRange(3, 4, 4);
-    iconbarSprite->priority = 1000;
-
-    // Create sprites for buttons
-    buttons[0].sprite = new Sprite("elements\\choice.smk");
-    buttons[0].sprite->loc_x = 0x5e;
-    buttons[0].sprite->loc_y = 0x1b5;
-
-    buttons[1].sprite = new Sprite("elements\\backpack.smk");
-    buttons[1].sprite->loc_x = 0xad;
-    buttons[1].sprite->loc_y = 0x1b5;
-
-    buttons[2].sprite = new Sprite("elements\\aliencom.smk");
-    buttons[2].sprite->loc_x = 0x115;
-    buttons[2].sprite->loc_y = 0x1b4;
-
-    buttons[3].sprite = new Sprite("elements\\schedule.smk");
-    buttons[3].sprite->loc_x = 0x165;
-    buttons[3].sprite->loc_y = 0x1b5;
-
-    buttons[4].sprite = new Sprite("elements\\mainmenu.smk");
-    buttons[4].sprite->loc_x = 0x1d1;
-    buttons[4].sprite->loc_y = 0x1b6;
-
-    buttons[5].sprite = new Sprite("elements\\quit.smk");
-    buttons[5].sprite->loc_x = 0x22a;
-    buttons[5].sprite->loc_y = 0x1b6;
-
-    // Configure all 6 buttons using common settings
-    {
-        IconBarButton* pBtn = buttons;
-        for (int count = 6; count != 0; count--) {
-            Sprite* btn = pBtn->sprite;
-            btn->flags &= ~2;
-            btn->SetState(2);
-            btn->SetRange(0, 1, 1);
-            btn->SetRange(1, 2, 2);
-            btn->priority = 1001;
-            pBtn++;
-        }
+    if (g_SchoolMenuSprite_0046af08 == 0) {
+        ParseFile(this, "mis\\iconbar.mis", "[ICONBAR]");
+        g_IconBarEntries_00473320[0].CreateAction(0x25, 1, 4);
+        g_IconBarEntries_00473320[1].CreateAction(0x1E, 1, 4);
+        g_IconBarEntries_00473320[2].CreateAction(1, 0x10, 4);
+        g_IconBarEntries_00473320[2].CreateAction(0x20, 1, 4);
+        g_IconBarEntries_00473320[3].CreateAction(0x27, 1, 4);
+        g_IconBarEntries_00473320[4].CreateAction(0x2D, 1, 4);
+        SpriteAction* exitAction = new SpriteAction(0x2F, 0, 0x2D, 1, 0x2C, 2, 0, 0, 0, 0);
+        g_IconBarEntries_00473320[5].RegisterSlot(exitAction);
+        g_InventoryState_004733e8 = 1;
     }
-
-    // Set button bounds in the order they appear in assembly
-    buttons[0].bounds.left = 0x5e;
-    buttons[0].bounds.right = 0x9f;
-    buttons[0].bounds.top = 0x1b5;
-    buttons[1].bounds.top = 0x1b5;
-    buttons[0].bounds.bottom = 0x1d3;
-    buttons[1].bounds.left = 0xad;
-    buttons[1].bounds.right = 0xf9;
-    buttons[1].bounds.bottom = 0x1d6;
-    buttons[2].bounds.bottom = 0x1d6;
-    buttons[2].bounds.left = 0x115;
-    buttons[2].bounds.top = 0x1b4;
-    buttons[2].bounds.right = 0x155;
-    buttons[3].bounds.top = 0x1b5;
-    buttons[4].bounds.top = 0x1b6;
-    buttons[5].bounds.top = 0x1b6;
-    buttons[3].bounds.left = 0x165;
-    buttons[3].bounds.bottom = 0x1d2;
-    buttons[4].bounds.bottom = 0x1d2;
-    buttons[3].bounds.right = 0x1ae;
-    buttons[4].bounds.left = 0x1d1;
-    buttons[4].bounds.right = 0x207;
-    buttons[5].bounds.left = 0x22a;
-    buttons[5].bounds.right = 0x270;
-    buttons[5].bounds.bottom = 0x1d5;
-
-    // Message templates
-    buttons[0].message.targetAddress = 10;
-    buttons[0].message.sourceAddress = 1;
-    buttons[0].message.command = 6;
-    buttons[0].message.priority = 5;
-
-    buttons[4].message.targetAddress = 10;
-    buttons[4].message.sourceAddress = 1;
-    buttons[4].message.command = 6;
-    buttons[4].message.priority = 5;
-
-    buttons[5].message.targetAddress = 2;
-    buttons[5].message.priority = 5;
+    handlerId = 0;
+    g_IconBarRefCount_0046af0c++;
 }
 
+
+/* Function start: 0x42D5F0 */
 IconBar::~IconBar() {
-    // Destructor - cleanup handled by ShutDown
+    Sprite* spr;
+    SpriteAction* act;
+    int j;
+
+    g_IconBarRefCount_0046af0c = g_IconBarRefCount_0046af0c - 1;
+    if (g_IconBarRefCount_0046af0c == 0) {
+        IconBarEntry* entry = g_IconBarEntries_00473320;
+        do {
+            spr = entry->sprite;
+            if (spr != 0) {
+                delete (Sprite*)spr;
+                entry->sprite = 0;
+            }
+            j = 2;
+            SpriteAction** pSlot = &entry->slot0;
+            do {
+                act = *pSlot;
+                if (act != 0) {
+                    delete (SpriteAction*)act;
+                    *pSlot = 0;
+                }
+                pSlot = pSlot + 1;
+                j = j - 1;
+            } while (j != 0);
+            entry = entry + 1;
+        } while (entry < &g_IconBarEntries_00473320[6]);
+        if (g_SchoolMenuSprite_0046af08 != 0) {
+            spr = g_SchoolMenuSprite_0046af08;
+            delete (Sprite*)spr;
+            g_SchoolMenuSprite_0046af08 = 0;
+        }
+    }
 }
 
-/* Function start: 0x402CD0 */
-IconBarButton::IconBarButton()
-    : message(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-{
-}
-
-/* Function start: 0x402D60 */
-IconBarButton::~IconBarButton() {
-}
-
-/* Function start: 0x402ED0 */
+/* Function start: 0x42D6E0 */
 void IconBar::Init(SC_Message* msg) {
-    int i;
+    int iVar3;
+    int* piVar1;
+    void* data;
+    Sprite* spr;
+    GameState* gs;
+    int idx;
 
-    // Call parent Init (CopyCommandData)
-    Handler::Init(msg);
+    CopyCommandData(msg);
+    SetVideoRes(0x280, 0x1e0);
 
-    // Check selected character and set iconbar state
-    if (g_SelectedCharacter_00435a80 != 0) {
-        iconbarSprite->SetState2(g_SelectedCharacter_00435a80->characterType + 1);
-    }
+    {
+        ZBufferManager* zbm = g_ZBufferManager_0046aa24;
+        if (zbm->m_state != 2) {
+            zbm->m_state = 2;
 
-    // Enable all buttons
-    for (i = 0; i < 6; i++) {
-        buttons[i].enabled = 1;
-    }
+            // Cleanup sound command queue
+            ZBQueue* q0 = zbm->m_queueA0;
+            if (q0->head != 0) {
+                q0->current = q0->head;
+                while (q0->head != 0) {
+                    void* item = q0->Pop();
+                    if (item != 0) {
+                        FreeMemory(item);
+                    }
+                }
+            }
 
-    // Create sound list
-    soundList = new SoundList(0x32);
+            // Cleanup draw entry queue
+            ZBQueue* q4 = zbm->m_queueA4;
+            if (q4->head != 0) {
+                q4->current = q4->head;
+                while (q4->head != 0) {
+                    DrawEntry* item = (DrawEntry*)q4->Pop();
+                    if (item != 0) {
+                        item->~DrawEntry();
+                        FreeMemory(item);
+                    }
+                }
+            }
 
-    // Register sounds
-    if (soundList != 0) {
-        // Store sound handles at specific offsets
-        buttons[1].clickSound = (Sample*)soundList->Register("audio\\Snd0023.wav");
-        buttons[2].clickSound = (Sample*)soundList->Register("audio\\Snd0024.wav");
-        buttons[3].clickSound = (Sample*)soundList->Register("audio\\Snd0025.wav");
-    }
-}
+            // Cleanup render queue (RenderEntry items)
+            {
+                ZBQueue* q9c = zbm->m_queue9c;
+                if (q9c->head != 0) {
+                    q9c->current = q9c->head;
+                    while (q9c->head != 0) {
+                        void* data = q9c->RemoveCurrent();
+                        if (data != 0) {
+                            delete (RenderEntry*)data;
+                        }
+                    }
+                }
+            }
 
-/* Function start: 0x402FD0 */
-int IconBar::ShutDown(SC_Message* msg) {
-    int i;
-
-    // Stop iconbar sprite animation
-    if (iconbarSprite != 0) {
-        iconbarSprite->StopAnimationSound();
-    }
-
-    // Stop all button sprite animations
-    for (i = 0; i < 6; i++) {
-        if (buttons[i].sprite != 0) {
-            buttons[i].sprite->StopAnimationSound();
+            zbm->m_palette = 0;
         }
     }
 
-    // Stop and destroy sound list
-    if (soundList != 0) {
-        soundList->StopAll();
+    UpdateAllSlots();
+
+    spr = g_Mouse_0046aa18->m_sprite;
+    if (spr != 0) {
+        spr->ResetAnimation(0, 0);
     }
 
-    if (soundList != 0) {
-        delete soundList;
-        soundList = 0;
+    idx = g_PeriodStateIdx_0046cb90;
+    gs = g_GameState_0046aa30;
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    g_SchoolMenuSprite_0046af08->ResetAnimation(gs->stateValues[idx] + 1, 0);
+}
+
+/* Function start: 0x42D920 */
+int IconBar::ShutDown(SC_Message* msg) {
+    if (msg != 0) {
+        if ((unsigned int)(*(int*)msg - 0x1e) > 9) {
+            IconBarEntry* entry = g_IconBarEntries_00473320;
+            do {
+                if (entry->sprite != 0) {
+                    entry->sprite->StopAnimationSound();
+                }
+                entry = entry + 1;
+            } while (entry < &g_IconBarEntries_00473320[6]);
+            if (g_SchoolMenuSprite_0046af08 != 0) {
+                g_SchoolMenuSprite_0046af08->StopAnimationSound();
+            }
+        }
     }
     return 0;
 }
 
-/* Function start: 0x403040 */
+/* Function start: 0x42D9A0 */
 int IconBar::AddMessage(SC_Message* msg) {
-    unsigned int j;
-    int i;
-    int ok;
+    int buttonIndex;
+    SpriteAction* act;
+    GameState* gs;
+    int result;
 
-    Handler::AddMessage(msg);
+    act = (SpriteAction*)msg;
+    WriteMessageAddress(msg);
 
-    // Initial bar bounds check
-    ok = (barBounds.left <= msg->clickPos.x && barBounds.right >= msg->clickPos.x &&
-          barBounds.top <= msg->clickPos.y && barBounds.bottom >= msg->clickPos.y);
-    if (!ok) return 0;
+    if (act->lastKey == 0x77) {
+        if (g_IconBarEntries_00473320[4].field_14 == 0) {
+            return 0;
+        }
+        {
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
+                             4, 0, 0, 0, 0, 0);
+            g_PendingAction_00472d58.CopyFrom(&temp);
+        }
+        SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+        return 1;
+    }
 
-    // Only proceed for specific mouse states
-    if (msg->mouseX >= 2) {
-        // Loop through buttons
-        for (i = 0; i < 6; i++) {
-            if (buttons[i].enabled) {
-                // Button bounds check
-                ok = (buttons[i].bounds.left <= msg->clickPos.x && buttons[i].bounds.right >= msg->clickPos.x &&
-                      buttons[i].bounds.top <= msg->clickPos.y && buttons[i].bounds.bottom >= msg->clickPos.y);
+    {
+        int inBounds;
+        if (g_IconBarLeft_00473310 <= act->mousePos.x && g_IconBarRight_00473318 >= act->mousePos.x &&
+            g_IconBarTop_00473314 <= act->mousePos.y && g_IconBarBottom_0047331c >= act->mousePos.y) {
+            inBounds = 1;
+        } else {
+            inBounds = 0;
+        }
+        if (inBounds == 0) {
+            return 0;
+        }
+    }
 
-                if (ok) {
-                    PlayButtonSound(i);
+    if (act->button1 < 2) {
+        return 1;
+    }
 
-                    SC_Message* pSrc = &buttons[i].message;
+    if (g_SelectedItem_0046a6e4 != 0) {
+        SendGameMessage(0x1e, ((Handler*)g_SelectedItem_0046a6e4)->moduleParam,
+                     handlerId, moduleParam, 0x17, 0, 0, 0, 0, 0);
+    }
 
-                    // Copy button template message to target message
-                    msg->m_subObject = pSrc->m_subObject;
-                    msg->isProcessingKey = pSrc->isProcessingKey;
+    buttonIndex = FindClickedEntry((int*)msg);
 
-                    for (j = 0; j < 32; j++) {
-                        msg->currentKey[j] = pSrc->currentKey[j];
-                    }
+    if (buttonIndex == -1) {
+        return 1;
+    }
 
-                    msg->lineNumber = pSrc->lineNumber;
+    if (buttonIndex == 4) {
+        {
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
+                             4, 0, 0, 0, 0, 0);
+            g_PendingAction_00472d58.CopyFrom(&temp);
+        }
+        PlayButtonSound(buttonIndex);
+        return 1;
+    }
 
-                    int* pMsg38 = &msg->savedFilePos;
-                    pMsg38[0] = pSrc->savedFilePos;
-                    pMsg38[1] = pSrc->field_0x3c;
+    if (buttonIndex == 5) {
+        {
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
+                             4, 0, 0, 0, 0, 0);
+            g_PendingAction_00472d58.CopyFrom(&temp);
+        }
+        PlayButtonSound(buttonIndex);
+        return 1;
+    }
 
-                    for (j = 0; j < 64; j++) {
-                        msg->filename[j] = pSrc->filename[j];
-                    }
+    if (buttonIndex == 0) {
+        {
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
+                             4, 0, 0, 0, 0, 0);
+            g_IconBarAction_00472d20.CopyFrom(&temp);
+        }
+        PlayButtonSound(buttonIndex);
+        return 1;
+    }
 
-                    msg->pFile = pSrc->pFile;
-                    msg->targetAddress = pSrc->targetAddress;
-                    msg->sourceAddress = pSrc->sourceAddress;
-                    msg->command = pSrc->command;
-                    msg->data = pSrc->data;
-                    msg->priority = pSrc->priority;
-                    msg->param1 = pSrc->param1;
-                    msg->param2 = pSrc->param2;
-                    msg->clickPos.x = pSrc->clickPos.x;
-                    msg->clickPos.y = pSrc->clickPos.y;
-                    msg->mouseX = pSrc->mouseX;
-                    msg->mouseY = pSrc->mouseY;
-                    msg->lastKey = pSrc->lastKey;
-                    msg->time = pSrc->time;
-                    msg->userPtr = pSrc->userPtr;
-                    break;
-                }
+    if (buttonIndex == 2) {
+        result = 0;
+        if (handlerId == 0x20) {
+            result = ((GameState*)g_GameState2_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
+        }
+        {
+            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
+                             4, result, 0, 0, 0, 0);
+            g_HotspotAction_00472d90.CopyFrom(&temp);
+        }
+        gs = g_GameState_0046aa30;
+        {
+        int idx = gs->FindState("PERIOD");
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        if (gs->stateValues[idx] == 1) {
+            return 1;
+        }
+        PlayButtonSound(buttonIndex);
+        return 1;
+        }
+    }
+
+    if (buttonIndex == 1) {
+        result = ((GameState*)g_GameState2_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
+        if (handlerId == 0x20) {
+            if (result == 5 || result == 0x12) {
+                SendGameMessage(4, 0x1b86, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                return 1;
             }
         }
     }
 
+    PlayButtonSound(buttonIndex);
     return 1;
 }
 
-/* Function start: 0x403220 */
+/* Function start: 0x42DD30 */
 int IconBar::Exit(SC_Message* msg) {
     return 0;
 }
 
-/* Function start: 0x403230 */
+/* Function start: 0x42DD40 */
 void IconBar::Update(int param1, int param2) {
-    int i;
+    IconBarEntry* entry;
     int mouseX;
     int mouseY;
-    IconBarButton* pBtn;
+    int* mousePos;
+    GameState* gs;
 
-    if (targetAddress != param2) {
+    if (handlerId != param2) {
         return;
     }
 
-    iconbarSprite->Do(iconbarSprite->loc_x, iconbarSprite->loc_y, 1.0);
+    g_SchoolMenuSprite_0046af08->Do(
+        g_SchoolMenuSprite_0046af08->loc_x,
+        g_SchoolMenuSprite_0046af08->loc_y, 1.0);
 
-    pBtn = buttons;
-    for (i = 6; i > 0; i--) {
-        if (pBtn->sprite != 0) {
-            mouseY = 0;
-            if (g_InputManager_00436968->pMouse != 0) {
-                mouseY = g_InputManager_00436968->pMouse->y;
-            }
-
-            if (g_InputManager_00436968->pMouse != 0) {
-                mouseX = g_InputManager_00436968->pMouse->x;
+    entry = g_IconBarEntries_00473320;
+    do {
+        if (entry->sprite != 0) {
+            if (entry == &g_IconBarEntries_00473320[2]) {
+                gs = g_GameState_0046aa30;
+                if (gs->maxStates - 1 < 0x44) {
+                    ShowError("Invalid gamestate %d", 0x44);
+                }
+                if (gs->stateValues[0x44] != 0) {
+                    entry->sprite->ResetAnimation(2, 0);
+                } else {
+                    mousePos = (int*)g_InputManager_0046aa08->pMouse;
+                    mouseY = 0;
+                    if (mousePos != 0) {
+                        mouseY = mousePos[1];
+                    }
+                    if (mousePos != 0) {
+                        mouseX = mousePos[0];
+                    } else {
+                        mouseX = 0;
+                    }
+                    if (entry->bounds.left <= mouseX && entry->bounds.right >= mouseX &&
+                        entry->bounds.top <= mouseY && entry->bounds.bottom >= mouseY) {
+                        entry->sprite->ResetAnimation(1, 0);
+                    } else {
+                        entry->sprite->ResetAnimation(0, 0);
+                    }
+                }
+                if (entry->field_14 != 0) {
+                    gs = g_GameState_0046aa30;
+                    if (gs->maxStates - 1 < 0x3c) {
+                        ShowError("Invalid gamestate %d", 0x3c);
+                    }
+                    if (gs->stateValues[0x3c] != 1) {
+                        entry->sprite->Do(
+                            entry->sprite->loc_x,
+                            entry->sprite->loc_y, 1.0);
+                    }
+                }
             } else {
-                mouseX = 0;
-            }
+                mousePos = (int*)g_InputManager_0046aa08->pMouse;
+                mouseY = 0;
+                if (mousePos != 0) {
+                    mouseY = mousePos[1];
+                }
+                if (mousePos != 0) {
+                    mouseX = mousePos[0];
+                } else {
+                    mouseX = 0;
+                }
+                if (entry->bounds.left <= mouseX && entry->bounds.right >= mouseX &&
+                    entry->bounds.top <= mouseY && entry->bounds.bottom >= mouseY) {
+                    entry->sprite->ResetAnimation(1, 0);
+                } else {
+                    entry->sprite->ResetAnimation(0, 0);
+                }
 
-            if (pBtn->bounds.left <= mouseX && pBtn->bounds.right >= mouseX &&
-                pBtn->bounds.top <= mouseY && pBtn->bounds.bottom >= mouseY) {
-                pBtn->sprite->SetState2(1);
-            } else {
-                pBtn->sprite->SetState2(0);
-            }
-
-            if (pBtn->enabled != 0) {
-                pBtn->sprite->Do(pBtn->sprite->loc_x, pBtn->sprite->loc_y, 1.0);
+                if (entry->field_14 != 0) {
+                    entry->sprite->Do(
+                        entry->sprite->loc_x,
+                        entry->sprite->loc_y, 1.0);
+                }
             }
         }
-        pBtn++;
+        entry = entry + 1;
+    } while (entry < &g_IconBarEntries_00473320[6]);
+}
+
+/* Function start: 0x42DEC0 */
+int IconBar::FindClickedEntry(int* param) {
+    int i;
+    int x;
+    int y;
+    int found;
+
+    i = 0;
+    IconBarEntry* entry = g_IconBarEntries_00473320;
+    do {
+        if (entry->field_14 != 0) {
+            x = param[7];
+            if (entry->bounds.left <= x && entry->bounds.right >= x) {
+                y = param[8];
+                if (entry->bounds.top <= y && entry->bounds.bottom >= y) {
+                    found = 1;
+                } else {
+                    found = 0;
+                }
+                if (found != 0) {
+                    return i;
+                }
+            }
+        }
+        entry = entry + 1;
+        i = i + 1;
+    } while (entry < &g_IconBarEntries_00473320[6]);
+    return -1;
+}
+
+/* Function start: 0x42DF10 */
+void IconBar::PlayButtonSound(int buttonIndex) {
+    int i;
+    SpriteAction** pSlot;
+
+    if (buttonIndex < 0 || buttonIndex > 6) {
+        ShowError("Error in SC_IconBr.cpp: Invalid array index");
+    } else {
+        i = 2;
+        pSlot = &g_IconBarEntries_00473320[buttonIndex].slot0;
+        do {
+            if (*pSlot != 0) {
+                EnqueueSpriteAction(*pSlot);
+            }
+            pSlot = pSlot + 1;
+            i = i - 1;
+        } while (i != 0);
+    }
+    SendGameMessage(4, g_IconBarEntries_00473320[buttonIndex].field_14,
+                 handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+}
+
+/* Function start: 0x42DFA0 */
+void IconBar::UpdateAllSlots() {
+    IconBarEntry* entry;
+    GameState* gs;
+    int idx;
+
+    entry = g_IconBarEntries_00473320;
+    do {
+        entry->SetSlotProperties(handlerId, moduleParam);
+        entry = entry + 1;
+    } while (entry < &g_IconBarEntries_00473320[6]);
+
+    gs = g_GameState_0046aa30;
+    idx = gs->FindState("PERIOD");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    g_IconBarEntries_00473320[0].slot0->addressType = 0x25;
+}
+
+/* Function start: 0x42E010 */
+int IconBar::LBLParse(char* param) {
+    int index;
+    int value;
+    void* newSpr;
+    int p2;
+    int p3;
+    int p4;
+    char label[32];
+
+    index = -1;
+    label[0] = 0;
+    sscanf(param, " %s ", label);
+
+    if (strcmp(label, "ICONBAR_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        g_SchoolMenuSprite_0046af08 = spr;
+        Parser::ProcessFile(spr, this, (char*)0);
+    } else if (strcmp(label, "ICON_SPRITE") == 0) {
+        sscanf(param, " %s  %d ", label, &index);
+        Sprite* spr = new Sprite(0);
+        g_IconBarEntries_00473320[index].sprite = spr;
+        spr->flags &= ~2;
+        g_IconBarEntries_00473320[index].sprite->ConfigStates(2);
+        g_IconBarEntries_00473320[index].sprite->ConfigRange(0, 1, 1, 1);
+        g_IconBarEntries_00473320[index].sprite->ConfigRange(1, 2, 2, 1);
+        g_IconBarEntries_00473320[index].sprite->priority = 0x3e9;
+        Parser::ProcessFile(g_IconBarEntries_00473320[index].sprite, this, (char*)0);
+    } else if (strcmp(label, "ICON_SOUND") == 0) {
+        sscanf(param, " %s  %d %d", label, &index, &value);
+        g_IconBarEntries_00473320[index].field_18 = value;
+    } else if (strcmp(label, "RECT") == 0) {
+        sscanf(param, " %s  %d %d %d %d %d", label, &index, &value, &p2, &p3, &p4);
+        g_IconBarEntries_00473320[index].bounds.left = value;
+        g_IconBarEntries_00473320[index].bounds.top = p2;
+        g_IconBarEntries_00473320[index].bounds.right = p3;
+        g_IconBarEntries_00473320[index].bounds.bottom = p4;
+    } else if (strcmp(label, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SC_IconBarModule");
+    }
+    return 0;
+}
+
+/* Function start: 0x42E4B0 */
+void IconBarEntry::Render() {
+    if (field_14 > 1) {
+        sprite->ResetAnimation(field_14 - 2, 0);
+        sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+    }
+    int mouseX = 0;
+    int mouseY = 0;
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    if (pMouse != 0) {
+        mouseY = pMouse->y;
+        mouseX = pMouse->x;
+    }
+    int hover;
+    if (bounds.left > mouseX || bounds.right < mouseX ||
+        bounds.top > mouseY || bounds.bottom < mouseY) {
+        hover = 0;
+    } else {
+        hover = 1;
+    }
+    if (g_Mouse_0046aa18->m_sprite != 0) {
+        g_Mouse_0046aa18->m_sprite->ResetAnimation(hover, 0);
     }
 }
 
-/* Function start: 0x403300 */
-void IconBar::PlayButtonSound(int buttonIndex) {
-    Sample* sound;
+/* Function start: 0x42E330 */
+IconBarEntry::IconBarEntry() {
+    memset(this, 0, 9 * 4);
+}
 
-    soundList->StopAll();
+// IconBarEntry::~IconBarEntry defined in IconBarEntry.cpp (separate TU forces SEH in ctor)
 
-    if (buttonIndex != -1) {
-        sound = IconBar::buttons[buttonIndex].clickSound;
-        if (sound != 0) {
-            sound->Play(100, 1);
+/* Function start: 0x42E3A0 */
+void IconBarEntry::CreateAction(int p1, int p2, int p3) {
+    SpriteAction* action;
+
+    action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    action->addressType = p1;
+    action->addressValue = p2;
+    action->instruction = p3;
+    RegisterSlot(action);
+}
+
+/* Function start: 0x42E450 */
+void IconBarEntry::RegisterSlot(SpriteAction* obj) {
+    int i;
+    SpriteAction** pSlot;
+
+    i = 0;
+    pSlot = &slot0;
+    do {
+        if (*pSlot == 0) {
+            *pSlot = obj;
+            return;
         }
-    }
+        pSlot = pSlot + 1;
+        i = i + 1;
+    } while (i < 2);
+}
+
+/* Function start: 0x42E480 */
+void IconBarEntry::SetSlotProperties(int p1, int p2) {
+    int i;
+    SpriteAction** pSlot;
+
+    i = 2;
+    pSlot = &slot0;
+    do {
+        if (*pSlot != 0) {
+            (*pSlot)->fromType = p1;
+            (*pSlot)->fromValue = p2;
+        }
+        pSlot = pSlot + 1;
+        i = i - 1;
+    } while (i != 0);
 }

@@ -8,9 +8,9 @@ class Sample {
 public:
     Sample();
     ~Sample();
+    void Stop();                              // 0x4250E0
     void Init(int volume);
     void Fade(int volume, unsigned int duration);
-    void Stop();
     int Play(int volume, int loop_count);
     int Load(char* filename);
     void Unload();

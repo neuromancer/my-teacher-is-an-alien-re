@@ -4,12 +4,11 @@
 #include <string.h>
 #include <stdio.h>
 
-extern "C" char DAT_004371a8[];
-char DAT_004371ac[] = "rb+";
+// "rb+" used inline below (was DAT_004371ac)
 
 // 0x4269E0 = fwrite, 0x425E70 = fclose (CRT functions)
 
-/* Function start: 0x420140 */
+/* Function start: 0x420790 */
 FlagArray::FlagArray(char* f, int numStates) {
     int buffer;
     int i;
@@ -25,28 +24,45 @@ FlagArray::FlagArray(char* f, int numStates) {
     fname = filename;
     strcpy(fname, f);
 
-    fp = fsopen(fname, DAT_004371ac);
+    fp_temp = fsopen(fname, "rb+");
+    fp = fp_temp;
+
+    if (fp_temp != 0) {
+        fread(&dataSize, 0x94, 1, fp_temp);
+        if (max_states != numStates) {
+            if (fp != 0) {
+                fclose(fp);
+                fp = 0;
+            }
+        }
+    }
 
     if (fp == 0) {
-        fp_temp = fsopen(fname, DAT_004371a8);
+        fp_temp = fsopen(fname, "wb");
         fp = fp_temp;
 
         if (fp_temp != 0) {
             max_states = numStates;
-            field_0x38 = numStates * 4 + 0x94;
-            field_0x3c = 0x94;
-            field_0x44 = 4;
-            fwrite(&field_0x38, 0x94, 1, fp_temp);
-            for (i = 0; i < max_states; i++) {
-                fwrite(&buffer, 4, 1, fp);
+            dataSize = numStates * 4 + 0x94;
+            headerSize = 0x94;
+            entrySize = 4;
+            fwrite(&dataSize, 0x94, 1, fp_temp);
+            i = 0;
+            if (max_states > 0) {
+                do {
+                    fwrite(&buffer, 4, 1, fp);
+                    i++;
+                } while (i < max_states);
             }
         } else {
             ShowError("Error in flagaray.cpp - Create:  Cannot create %s", f);
         }
     }
 
-    fclose(fp);
-    fp = 0;
+    if (fp != 0) {
+        fclose(fp);
+        fp = 0;
+    }
 }
 
 FlagArray::~FlagArray()
@@ -54,21 +70,21 @@ FlagArray::~FlagArray()
     SafeClose();
 }
 
-/* Function start: 0x420250 */
+/* Function start: 0x4208E0 */
 void FlagArray::SafeClose() {
-    if (fp != NULL) {
+    if (fp != 0) {
         fclose(fp);
+        fp = 0;
     }
-    fp = 0;
 }
 
-/* Function start: 0x420270 */
+/* Function start: 0x420900 */
 void FlagArray::Open() {
     if (fp != 0) {
         ShowError("double FlagArray::Open()");
     }
     
-    FILE* fp_temp = fopen(filename, DAT_004371ac);
+    FILE* fp_temp = fopen(filename, "rb+");
     fp = fp_temp;
     
     if (fp_temp == NULL) {
@@ -76,25 +92,27 @@ void FlagArray::Open() {
     }
     
     // Read header back
-    fread(&field_0x38, 0x94, 1, fp);
+    fread(&dataSize, 0x94, 1, fp);
 }
 
-/* Function start: 0x4202D0 */
+/* Function start: 0x420960 */
 void FlagArray::Close() {
     if (fp == 0) {
         ShowError("FlagArray::Close() - attempt to close NULL fp");
     }
-    fclose(fp);
-    fp = 0;
+    if (fp != 0) {
+        fclose(fp);
+        fp = 0;
+    }
 }
 
-/* Function start: 0x420300 */
+/* Function start: 0x420990 */
 void FlagArray::Seek(int index) {
     if (fp == 0) {
         WriteToMessageLog("FlagArray::Seek");
     }
     
-    int offset = field_0x44 * index + field_0x3c;
+    int offset = entrySize * index + headerSize;
     
     if (index < 0 || index >= max_states) {
         ShowError("Error in flagaray.cpp - Seek: Invalid index number! %d", index);
@@ -102,39 +120,51 @@ void FlagArray::Seek(int index) {
     
     // Check if offset is within file bounds logic
     // Decompiled: if ((*(int *)((int)this + 0x38) - *(int *)((int)this + 0x44)) + 1 < iVar1) 
-    // offset > field_0x38 - field_0x44 + 1 ??
+    // offset > dataSize - entrySize + 1 ??
     // iVar1 is offset.
-    if ((field_0x38 - field_0x44) + 1 < offset) {
+    if ((dataSize - entrySize) + 1 < offset) {
         ShowError("Error in flagaray.cpp - Seek: Attempt to read past end of file");
     }
     
     fseek(fp, offset, 0); // SEEK_SET
 }
 
-/* Function start: 0x420370 */
+/* Function start: 0x420A00 */
 unsigned int FlagArray::GetFlag(int index, unsigned int mask) {
     unsigned int val;
     Open();
     Seek(index);
-    fread(&val, field_0x44, 1, fp);
+    fread(&val, entrySize, 1, fp);
     mask = val & mask;
     Close();
     return mask;
 }
 
-/* Function start: 0x4203C0 */
+/* Function start: 0x420A50 */
 void FlagArray::SetFlag(int index, unsigned int mask) {
     unsigned int val;
     Open();
     Seek(index);
-    fread(&val, field_0x44, 1, fp);
+    fread(&val, entrySize, 1, fp);
     val |= mask;
     Seek(index); // Go back
-    fwrite(&val, field_0x44, 1, fp);
+    fwrite(&val, entrySize, 1, fp);
     Close();
 }
 
-/* Function start: 0x420430 */
+/* Function start: 0x420AC0 */
+void FlagArray::ClearFlag(int index, unsigned int mask) {
+    unsigned int val;
+    Open();
+    Seek(index);
+    fread(&val, entrySize, 1, fp);
+    val &= ~mask;
+    Seek(index);
+    fwrite(&val, entrySize, 1, fp);
+    Close();
+}
+
+/* Function start: 0x420B30 */
 void FlagArray::ClearAllFlags() {
     int i;
     int buffer = 0;
@@ -144,5 +174,48 @@ void FlagArray::ClearAllFlags() {
     for (i = 0; i < max_states; i++) {
         fwrite(&buffer, 4, 1, fp);
     }
+    Close();
+}
+
+/* Function start: 0x420B80 */
+void FlagArray::Serialize(void* param) {
+    char local_4[4];
+
+    Open();
+    Seek(0);
+
+    int headerLen = strlen("FLAGARRAY_INFO") + 1;
+    FILE* saveFp = *(FILE**)((char*)param + 0x44);
+
+    if (*(int*)param != 0) {
+        // Write mode
+        fwrite("FLAGARRAY_INFO", headerLen, 1, saveFp);
+        fwrite((char*)this + 0x38, 0x94, 1, saveFp);
+        int i = 0;
+        if (max_states > 0) {
+            do {
+                fread(local_4, 4, 1, fp);
+                i++;
+                fwrite(local_4, 4, 1, saveFp);
+            } while (i < max_states);
+        }
+    } else {
+        // Read mode
+        g_Buffer_0046aa00[0] = 0;
+        fread(g_Buffer_0046aa00, headerLen, 1, saveFp);
+        if (strcmp(g_Buffer_0046aa00, "FLAGARRAY_INFO") != 0) {
+            ShowError("FlagArray::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
+        }
+        fread((char*)this + 0x38, 0x94, 1, saveFp);
+        int i = 0;
+        if (max_states > 0) {
+            do {
+                fread(local_4, 4, 1, saveFp);
+                i++;
+                fwrite(local_4, 4, 1, fp);
+            } while (i < max_states);
+        }
+    }
+
     Close();
 }

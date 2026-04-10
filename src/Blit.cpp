@@ -3,7 +3,7 @@
 
 extern "C" {
 
-/* Function start: 0x4231CE */
+/* Function start: 0x452CA3 */
 int __cdecl BlitBufferOpaque(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, unsigned int srcHandle, unsigned int destHandle)
 {
     int srcIdx = (srcHandle & 0x1f);
@@ -48,11 +48,11 @@ int __cdecl BlitBufferOpaque(int srcX1, int srcX2, int srcY1, int srcY2, int des
     return 0;
 }
 
-/* Function start: 0x4233E8 */
+/* Function start: 0x452EBD */
 int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, unsigned int srcHandle, unsigned int destHandle)
 {
     unsigned char localTable[256];
-    memcpy(localTable, DAT_00437620, 256);
+    memcpy(localTable, g_PaletteData_00437620, 256);
     
     int srcIdx = (srcHandle & 0x1f);
     int destIdx = (destHandle & 0x1f);
@@ -103,3 +103,4 @@ int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, in
 }
 
 }
+

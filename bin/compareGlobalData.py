@@ -374,8 +374,8 @@ def main():
                         help='Recompiled executable (default: TEACHER-DEMO.EXE)')
     parser.add_argument('-m', '--map', default='TEACHER-DEMO.map',
                         help='Map file for symbol resolution (default: TEACHER-DEMO.map)')
-    parser.add_argument('-g', '--globals', default='src/globals.cpp',
-                        help='Path to globals.cpp (default: src/globals.cpp)')
+    parser.add_argument('-g', '--globals', default='src-demo/globals.cpp',
+                        help='Path to globals.cpp (default: src-demo/globals.cpp)')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='Show all data, not just mismatches')
     parser.add_argument('-a', '--address', type=str,

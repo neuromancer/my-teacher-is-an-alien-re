@@ -3,9 +3,65 @@
 #include "string.h"
 #include <string.h>
 
-// Handler::~Handler() defined in ZBuffer.cpp (same compilation unit in original binary)
-// Handler::Init (0x417180) and Handler::AddMessage (0x4171B0) defined in ScriptHandler.cpp
-// Handler::ShutDown (0x401150), Handler::Exit (0x401160), Handler::OnInput (0x401170) defined in ZBuffer.cpp
+// Handler base class destructor
+Handler::~Handler() {
+}
+
+/* Function start: 0x4309A0 */
+// CopyCommandData - saves FROM fields from SpriteAction message
+// Original reads msg+0x08 (field_08) and msg+0x0C (field_0C)
+void Handler::CopyCommandData(SC_Message* msg) {
+    int* pmsg = (int*)msg;
+    if (pmsg != 0) {
+        savedCommand = pmsg[2];  // offset 0x08
+        savedMsgData = pmsg[3];  // offset 0x0C
+    }
+}
+
+// Default WriteMessageAddress implementation
+// Corresponds to FUN_004171B0
+/* Function start: 0x4309C0 */
+int Handler::WriteMessageAddress(SC_Message* msg) {
+    //ShowMessage("WriteMessage mouseX=%d click=(%d,%d)", msg->mouseX, msg->clickX, msg->clickY);
+    int* pmsg = (int*)msg;
+    if (pmsg == 0) {
+        return -1;
+    }
+    pmsg[0] = handlerId;
+    pmsg[1] = moduleParam;
+    pmsg[2] = handlerId;
+    pmsg[3] = moduleParam;
+    pmsg[4] = 0;
+    return 0;
+}
+
+// Default virtual method implementations - do nothing
+// Derived handlers override these
+
+void Handler::Init(SC_Message* msg) {
+    CopyCommandData(msg);
+}
+
+int Handler::AddMessage(SC_Message* msg) {
+    return 1; // Handled
+}
+
+int Handler::ShutDown(SC_Message* msg) {
+    return 0;
+}
 
 void Handler::Update(int param1, int param2) {
 }
+
+int Handler::Exit(SC_Message* msg) {
+    return 0;
+}
+
+/* Function start: 0x405D60 */
+void Handler::Serialize(void* param) {
+}
+
+void Handler::OnInput(void* param) {
+}
+
+void Handler::InitFromMessage(SC_Message*) {}

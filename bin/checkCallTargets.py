@@ -194,7 +194,7 @@ def canonicalize(name):
 
 def build_address_to_name_map():
     addr_map = dict(KNOWN_CRT)
-    for cpp_file in glob.glob("src/*.cpp"):
+    for cpp_file in glob.glob("src-demo/*.cpp"):
         try:
             with open(cpp_file, 'r') as f:
                 lines = f.readlines()
@@ -382,7 +382,7 @@ def main():
     addr_map = build_address_to_name_map()
 
     functions = []
-    for cpp_file in sorted(glob.glob("src/*.cpp")):
+    for cpp_file in sorted(glob.glob("src-demo/*.cpp")):
         try:
             with open(cpp_file, 'r') as f:
                 lines = f.readlines()

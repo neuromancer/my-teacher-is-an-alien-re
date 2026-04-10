@@ -5,60 +5,61 @@
 #include <string.h>
 
 class Projectile;
+class Sample;
 
-// Weapon - Base class for weapons (vtable 0x4313a8)
-// Intermediate class between Parser and RockThrower
-// Size: 0xa8 (168 bytes)
+// Weapon - Base class for weapon displays
+// Full game vtable: 0x4614B0 (6 entries)
+// Size: Parser(0x90) + 0x20 = 0xB0
 // vtable layout:
 //   [0] LBLParse  [1] OnProcessStart  [2] OnProcessEnd
 //   [3] destructor  [4] OnHit  [5] DrawCrosshairs
 class Weapon : public Parser {
 public:
-    // Fields from 0x88 to 0xa8 (32 bytes, 8 dwords)
-    int m_posX;         // 0x88 - X position
-    int m_posY;         // 0x8c - Y position
-    int m_posZ;         // 0x90 - Z position or height
-    int field_0x94;     // 0x94
-    int m_crosshairX;   // 0x98 - crosshair X position
-    int m_crosshairY;   // 0x9c - crosshair Y position
-    int field_0xa0;     // 0xa0
-    int field_0xa4;     // 0xa4
+    int m_posX;         // 0x90 — X position (default 100)
+    int m_posY;         // 0x94 — Y position (default 220)
+    int m_posZ;         // 0x98 — Z/right (default 199)
+    int m_height;       // 0x9C
+    int m_crosshairX;   // 0xA0
+    int m_crosshairY;   // 0xA4
+    int m_clicked;      // 0xA8 — clicked/fire flag
+    Sample* m_sound;    // 0xAC — Sample* sound
 
     Weapon() {
         m_crosshairX = 0;
         m_crosshairY = 0;
         memset(&m_posX, 0, 8 * 4);
-        field_0x94 = 0;
-        field_0xa4 = 0;
+        m_height = 0;
+        m_sound = 0;
         m_posX = 0x64;
-        field_0xa0 = 0;
+        m_clicked = 0;
         m_posY = 0xdc;
         m_posZ = 0xc7;
     }
     virtual ~Weapon();
-    virtual void OnHit();           // 0x415E00 - vtable[4]
-    virtual void DrawCrosshairs();  // vtable[5] - base: 0x411930
-    void DrawExplosion();           // 0x415F10 - non-virtual
+    virtual void OnHit();              // vtable[4]
+    virtual void DrawCrosshairs();     // vtable[5]
+    void UpdateProjectiles();          // 0x427880
 };
 
-// RockThrower - Rock throwing weapon (vtable 0x4314d0)
-// Used in combat engine for throwing rocks
-// Size: 0xb8 (184 bytes)
+// RockThrower - Rock throwing weapon
+// Full game vtable: 0x461490
+// Size: Weapon(0xB0) + 0x18 = 0xC8
+// vtable adds [6] CheckTargetHit
 class RockThrower : public Weapon {
 public:
-    // Fields from 0xa8 to 0xb8 (16 bytes, 4 dwords)
-    int m_itemCount;    // 0xa8 - number of items/projectiles
-    Projectile** m_items; // 0xac - pointer to array of projectile objects
-    int field_0xb0;     // 0xb0
-    int field_0xb4;     // 0xb4
+    int m_itemCount;     // 0xB0 — number of projectiles (default 3)
+    Projectile** m_items; // 0xB4 — array of projectile objects
+    int m_hitCount;      // 0xB8 — projectile hit count / weapon flags
+    int m_holdState;     // 0xBC — mouse hold state
+    int m_hitCountFull;  // 0xC0 — hit count (full game)
+    int field_5;         // 0xC4
 
-    RockThrower();
-    virtual ~RockThrower();
+    RockThrower(Parser* parent);    // 0x4274C0
+    virtual ~RockThrower();         // 0x427710
 
-    void UpdateProjectiles(); // 0x416880
-    virtual void DrawCrosshairs();  // 0x416960 - override
-
-    virtual int LBLParse(char* line);
+    virtual int LBLParse(char* line);      // 0x427B20 (override)
+    virtual int CheckTargetHit(int);       // 0x427A30 (override)
+    void ResetProjectiles();               // 0x4279A0
 };
 
 #endif // ROCKTHROWER_H
