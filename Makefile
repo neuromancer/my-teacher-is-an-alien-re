@@ -188,9 +188,19 @@ data/demo/CDDATA:
 	@curl -L -o data/teacher-demo.zip $(DEMO_DATA_URL)
 	@unzip -o data/teacher-demo.zip -d data/demo
 	@rm -f data/teacher-demo.zip
+	@mv data/demo/CDDATA/TEACHER.EXE data/demo/CDDATA/TEACHER.ORIGINAL.EXE
 
 run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA
 	cp TEACHER-DEMO.EXE data/demo/CDDATA/TEACHER.EXE
-	cd data/demo/CDDATA && $(DREAMM) -launch TEACHER.EXE
+	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.EXE
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions run-demo
+run-demo-original: | data/demo/CDDATA
+	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.ORIGINAL.EXE
+
+run: TEACHER.EXE
+	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
+	@mkdir -p data/full/hd
+	cp TEACHER.EXE data/full/TEACHER.EXE
+	cd data/full && $(DREAMM) -mount rw:C=hd -mount d=teacher.iso -launch TEACHER.EXE
+
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions run-demo run-demo-original run

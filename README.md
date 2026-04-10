@@ -33,7 +33,7 @@ The project uses a combination of manual reverse engineering and LLM-assisted it
 3. **Comparison**: The reimplemented code is compiled with the original MSVC 4.20 compiler and the generated assembly is compared instruction-by-instruction against the original using Levenshtein distance.
 4. **Iteration**: The code is refined until similarity reaches >= 90%, often 100%.
 
-LLMs ([Claude](https://claude.ai/) and [Gemini](https://gemini.google.com/)) are used to accelerate step 2 and 4, making the process scalable to hundreds of functions. The workflow is described in the `CLAUDE.md` file.
+LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/index/codex/)) are used to accelerate step 2 and 4, making the process scalable to hundreds of functions. The workflow is described in the `CLAUDE.md` file.
 
 ### Key tools
 
@@ -70,6 +70,7 @@ make
 | Demo | `make demo` | Compile demo sources (`src-demo/` -> `out-demo/`) |
 | Link full game | `make TEACHER.EXE` | Link the full game executable |
 | Link demo | `make TEACHER-DEMO.EXE` | Link the demo executable |
+| Run full game | `make run` | Build and run the full game in DREAMM (requires `data/full/teacher.iso`) |
 | Run demo | `make run-demo` | Build, download data if needed, and run the demo in DREAMM |
 | Full game progress | `make progress` | Show function coverage for the full game |
 | Demo progress | `make progress-demo` | Show function coverage for the demo |
@@ -93,6 +94,7 @@ This compiles the project, extracts the named function's assembly from the `.asm
 
 | Version | SHA256 |
 |---------|--------|
+| Full game (English) | `75e691050b7a92a7874318fed6be7069b49c4e1755a3ac03764e0a85a71c9e96` |
 | Demo | `5c618148696472e4715031de408b5e206e0680662866284851d5a7929cb153e2` |
 
 ## Acknowledgments

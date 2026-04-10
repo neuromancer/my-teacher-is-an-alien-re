@@ -13,6 +13,7 @@ wibo
 
 # Downloaded game data
 data/demo/CDDATA/
+data/full
 data/*.zip
 
 # Wine
@@ -22,3 +23,5 @@ data/*.zip
 __pycache__/
 *.py[codz]
 *$py.class
+
+.DS_Store
