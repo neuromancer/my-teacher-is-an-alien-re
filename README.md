@@ -1,68 +1,100 @@
-#  My Teacher is an Alien (1997) source code reconstruction using LLMs
+# My Teacher is an Alien (1997) -- Source Code Reconstruction
 
-This is a work in progress project to reconstruct the source code for the Windows version of the 7th Level/Byron Preiss Multimedia  game ["My Teacher is an Alien"](https://adventuregamers.com/games/my-teacher-is-an-alien). The original game was written in C++ and compiled with the Microsoft Visual C++ 4.x.
+A source code reconstruction of the Windows 95 point-and-click adventure game *My Teacher is an Alien*, developed by 7th Level / Byron Preiss Multimedia (1997). The original game was written in C++ and compiled with Microsoft Visual C++ 4.20.
 
-The reconstruction aims to be bug-for-bug faithful, and the C++ routines yield code that's identical to the original at the CPU instruction level (when compiled with the same compiler with appropriate flags), while allowing for layout differences in the executables.
+The reconstruction is bug-for-bug faithful: the reimplemented C++ routines produce code identical to the original at the CPU instruction level when compiled with the same compiler and flags, while allowing for layout differences in the executables.
 
-This is just the reconstruction project; porting to a modern OS, potential improvements and bugfixes will be targeted by a separate project in the future.
+This is a reconstruction-only project. Porting to a modern OS, improvements, and bugfixes will be handled by a separate project in the future.
 
-This repository contains no game assets, executables or other copyrighted material (except for the demo executable and some sample game scripts for reference). This is a clean rewrite of the game's source code based on the analysis of the game binaries obtained from the CD-ROM disks, for preservation and historical research purposes, and as such should fall under the interoperability exemption of the DMCA.
+## Legal
 
-The general idea of doing a source code reconstruction were based on [the excelent F-15 Strike Eagle 2 reconstruction](https://github.com/neuviemeporte/f15se2-re). Very recommended to take a look there if you want to see a professional (and advanced!) reconstruction project.
+This repository contains no game assets, executables, or other copyrighted material. It is a clean rewrite of the game's source code based on analysis of the game binaries obtained from the original CD-ROM discs, for preservation and historical research purposes, and as such should fall under the interoperability exemption of the DMCA.
 
-The main difference betweeh the f15se2-re project and this reconstruction is the experimentation using LLMs to iterate on the C+ code to make the process scalable.
+## Status
 
-# Executable
+Both the demo and full game binaries are being reconstructed. The full game (`src/`) is the primary target; the demo (`src-demo/`) serves as a secondary reference.
 
-The game executables has the following sha256 signatures:
+### Demo
 
-* `5c618148696472e4715031de408b5e206e0680662866284851d5a7929cb153e2  exe/demo/TEACHER.EXE`
-
-# Status
-
-Both the demo and full game binaries are being reconstructed. The demo is the primary target, with the full game build derived from it.
-
-## Demo
-
-**Progress: 831 / 876 (94.86%)** — 265 library functions excluded — 178 auto-complete functions marked
-
-The intro video and the first screen from the demo are starting to run:
+**Progress: 817 / 876 (93.26%)** -- 265 library functions excluded, 178 auto-complete
 
 <img width="640" height="479" alt="image" src="https://github.com/user-attachments/assets/e92594ef-183c-472e-8bd6-101ee6b517a4" />
 
-## Full Game
+### Full Game
 
-**Progress: 792 / 1273 (62.22%)** — 133 library functions excluded — 132 auto-complete functions marked
+**Progress: 1406 / 1406 (100.00%)** -- 583 auto-complete functions marked
 
-The full game build (`src-full/`) is derived from the demo sources with addresses remapped to match the full game binary. Both the demo and full game EXEs compile and link successfully.
+## Methodology
 
-# Building
+The project uses a combination of manual reverse engineering and LLM-assisted iteration:
 
-Prerequisites:
+1. **Disassembly**: Functions are extracted from the original binary using Ghidra, producing both disassembly and decompiled output.
+2. **Implementation**: Each function is reimplemented in C++ guided by the disassembly (the only source of truth -- decompiled output is treated as a hint, not authoritative).
+3. **Comparison**: The reimplemented code is compiled with the original MSVC 4.20 compiler and the generated assembly is compared instruction-by-instruction against the original using Levenshtein distance.
+4. **Iteration**: The code is refined until similarity reaches >= 90%, often 100%.
 
-* `wibo` (already included as a submodule)
+LLMs ([Claude](https://claude.ai/) and [Gemini](https://gemini.google.com/)) are used to accelerate step 2 and 4, making the process scalable to hundreds of functions. The workflow is described in the `CLAUDE.md` file.
 
-Optionally, if you want to compute the similarity/progress reports:
+### Key tools
 
-* relatively recent (3.8-ish) Python installed
-* [Levenshtein](https://pypi.org/project/Levenshtein/)
+| Tool | Purpose |
+|------|---------|
+| `bin/compileAndCompare.py` | Compile a single function and diff its assembly against the original |
+| `bin/compileAndReport.py` | Build everything and produce a per-function similarity report |
+| `bin/showProgress.py` | Show overall function coverage |
+| `bin/compareExe.py` | Compare rebuilt and original executables |
+| `bin/compareGlobalData.py` | Compare global/static data sections |
 
-Clone the project and run `make` inside. If you want to see the LLM workflow in action, you need:
+## Building
 
-* [cline](https://cline.bot/) or Copilot.
-* Some LLM API (Claude Opus recommended)
+### Prerequisites
 
-## Build targets
+- [wibo](https://github.com/decompals/wibo) -- Win32 PE loader for running MSVC on Linux/macOS (included as a submodule)
+- [MSVC 4.20](https://github.com/itsmattkc/MSVC420) -- the original compiler (included as a submodule)
+- Python 3.8+ and [python-Levenshtein](https://pypi.org/project/Levenshtein/) (for similarity reports only)
+
+### Setup
+
+```bash
+git clone --recursive <repo-url>
+cd my-teacher-is-an-alien-re
+make
+```
+
+### Build targets
 
 | Target | Command | Description |
 |--------|---------|-------------|
-| Compile demo | `make` | Compiles all demo sources (`src/` -> `out/`) |
-| Compile full game | `make full` | Compiles all full game sources (`src-full/` -> `out-full/`) |
-| Link demo EXE | `make TEACHER-DEMO.EXE` | Links the demo executable |
-| Link full game EXE | `make TEACHER-FULL.EXE` | Links the full game executable |
-| Demo progress | `make progress` | Shows function coverage for the demo |
-| Full game progress | `make progress-full` | Shows function coverage for the full game |
-| Clean demo | `make clean` | Removes demo build artifacts |
-| Clean full game | `make clean-full` | Removes full game build artifacts |
+| Full game (default) | `make` | Compile full game sources (`src/` -> `out/`) |
+| Demo | `make demo` | Compile demo sources (`src-demo/` -> `out-demo/`) |
+| Link full game | `make TEACHER.EXE` | Link the full game executable |
+| Link demo | `make TEACHER-DEMO.EXE` | Link the demo executable |
+| Full game progress | `make progress` | Show function coverage for the full game |
+| Demo progress | `make progress-demo` | Show function coverage for the demo |
+| Full game report | `make report` | Per-function similarity report for the full game |
+| Demo report | `make report-demo` | Per-function similarity report for the demo |
+| Compare executables | `make compare` | Byte-level comparison of original vs rebuilt demo |
+| Compare functions | `make compare-functions` | Function-level comparison of original vs rebuilt demo |
+| Compare globals | `make globals` | Compare global data sections |
+| Clean full game | `make clean` | Remove full game build artifacts |
+| Clean demo | `make clean-demo` | Remove demo build artifacts |
 
-Check the [src folder](./src) to see examples of reconstructed functions. All the reconstructed source code was producing using [Gemini 2.5](https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/) and Claude Opus.
+### Comparing a single function
+
+```bash
+python3 bin/compileAndCompare.py ClassName::MethodName code-full/FUN_XXXXXX.disassembled.txt
+```
+
+This compiles the project, extracts the named function's assembly from the `.asm` output, and shows a side-by-side diff against the original disassembly with a similarity percentage.
+
+## Target binary
+
+| Version | SHA256 |
+|---------|--------|
+| Demo | `5c618148696472e4715031de408b5e206e0680662866284851d5a7929cb153e2` |
+
+## Acknowledgments
+
+- [F-15 Strike Eagle II reconstruction](https://github.com/neuviemeporte/f15se2-re) -- the inspiration for this project
+- [decompals/wibo](https://github.com/decompals/wibo) -- Win32 PE loader
+- [itsmattkc/MSVC420](https://github.com/itsmattkc/MSVC420) -- archived compiler
