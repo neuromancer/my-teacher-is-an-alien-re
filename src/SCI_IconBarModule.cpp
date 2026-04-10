@@ -273,14 +273,6 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                         (actionData[2] == action->fromType &&
                          (actionData[3] == 0 ||
                           (actionData[2] == action->fromType && action->fromValue == actionData[3])))) {
-                        SpriteAction* child = (SpriteAction*)actionData[0xD];
-                        if (child != 0) {
-                            char buf[128];
-                            sprintf(buf, "Init dispatch child: type=%d inst=%d val=%d from=%d\nCondition: data.from=%d msg.from=%d",
-                                child->addressType, child->instruction, child->addressValue, child->fromType,
-                                actionData[2], action->fromType);
-                            MessageBoxA(0, buf, "Init Dispatch", 0);
-                        }
                         EnqueueSpriteAction((void*)actionData[0xD]);
                     }
                     if (field_128->tail == field_128->current) break;
@@ -474,7 +466,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
             return 1;
         }
     } else {
-        IconBar::CheckButtonClick(msg);
+        WriteMessageAddress(msg);
     }
 
     if (((SpriteAction*)msg)->lastKey != 0) {
@@ -591,12 +583,12 @@ void SCI_IconBarModule::UpdateCursor() {
         }
         g_Mouse_0046aa18->m_sprite->ResetAnimation(hotspot, 0);
     } else if (iconIdx != -1) {
-        Sprite* icon = (Sprite*)icons[iconIdx];
+        T_Hotspot* hs = icons[iconIdx];
         int state = 0;
-        int frameIdx = icon->handle;
-        Animation* anim = *(Animation**)((char*)icon + 0xb4 + frameIdx * 4);
+        int frameIdx = *(int*)((char*)hs + 0x9c);
+        int anim = *(int*)((char*)hs + 0xb4 + frameIdx * 4);
         if (anim != 0) {
-            state = *(int*)((char*)anim + 0xb0);
+            state = *(int*)(anim + 0xb0);
         }
         if (g_Mouse_0046aa18->m_sprite == 0) {
             goto done;
@@ -794,7 +786,10 @@ int SCI_IconBarModule::LBLParse(char* line) {
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         action->fromType = handlerId;
         action->fromValue = moduleParam;
-        ParseSpriteAction(action, this);
+        {
+            SpriteAction* childAction = new SpriteAction(0x20, 1, 0, 0, 2, hotspotIdx, 0, 0, 0, 0);
+            action->childAction = childAction;
+        }
         field_128->PushNode(action);
     } else if (strcmp(label, "LATE_HOTSPOT") == 0) {
         sscanf(line, "%s %d", label, &hotspotIdx);
@@ -830,7 +825,10 @@ int SCI_IconBarModule::LBLParse(char* line) {
                 SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 action->fromType = handlerId;
                 action->fromValue = moduleParam;
-                ParseSpriteAction(action, this);
+                {
+                    SpriteAction* childAction = new SpriteAction(0x20, 1, 0, 0, 2, hotspotIdx, 0, 0, 0, 0);
+                    action->childAction = childAction;
+                }
                 field_128->PushNode(action);
             }
         }
