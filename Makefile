@@ -203,4 +203,12 @@ run: TEACHER.EXE
 	cp TEACHER.EXE data/full/TEACHER.EXE
 	cd data/full && $(DREAMM) -mount rw:C=hd -mount d=teacher.iso -launch TEACHER.EXE
 
+debug: TEACHER.EXE
+	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
+	@mkdir -p data/full/hd
+	cp TEACHER.EXE data/full/TEACHER.EXE
+	cd data/full && $(DREAMM) -mount rw:C=hd -mount d=teacher.iso -debug -launch TEACHER.EXE
+
+
+
 .PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions run-demo run-demo-original run

@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <new.h>
+#include <windows.h>
 
 // External functions
 #include "GameLoopHelper.h"
@@ -483,7 +484,7 @@ int GameEngine::AddHandler(Handler* handler) {
 
     list = m_handlerList;
     if (handler == 0) {
-        ShowError("queue fault 0102");
+        ShowError("queue fault 0101");
     }
     list->current = list->head;
     if (list->type != 1 && list->type != 2) {

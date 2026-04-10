@@ -17,9 +17,12 @@
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" int FileExists(const char*);
+extern "C" void __cdecl DeleteMatchingFiles(char* pattern, ...);
 extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char*, ...);
 #include "ZBufferManager.h"
+#include "ZBuffer.h"
+#include "SoundCommand.h"
 #include "Palette.h"
 #include "SpriteAction.h"
 
@@ -162,17 +165,19 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
         }
         g_GameState_0046aa30->stateValues[prevInstIdx] = moduleParam;
 
-        int roomInstIdx = g_GameState_0046aa30->FindState("ROOMINSTANCE");
-        if (roomInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < roomInstIdx) {
-            ShowError("Invalid gamestate %d", roomInstIdx);
+        int roomIdx = g_GameState_0046aa30->FindState("ROOM");
+        if (roomIdx < 0 || g_GameState_0046aa30->maxStates - 1 < roomIdx) {
+            ShowError("Invalid gamestate %d", roomIdx);
         }
-        g_GameState_0046aa30->stateValues[roomInstIdx] = targetRoom;
+        g_GameState_0046aa30->stateValues[roomIdx] = targetRoom;
         currentRoom = targetRoom;
 
         char roomPath[60];
         sprintf(roomPath, "room%d", targetRoom);
         if (FileExists(roomPath) == 0) {
-            // CDData asset pre-cache (FUN_00426330)
+            DeleteMatchingFiles("%s\\*.smk", roomPath);
+            DeleteMatchingFiles("%s\\*.col", roomPath);
+            DeleteMatchingFiles("%s\\*.wav", roomPath);
         }
     }
 
@@ -194,38 +199,38 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
         skipActionsCount = 0;
         roomInitialized = 1;
 
-        // Cleanup Palette
         if (field_E4 != 0) {
-            delete field_E4;
+            field_E4->~Palette();
+            FreeMemory(field_E4);
             field_E4 = 0;
         }
 
-        // Cleanup MMPlayer
         if (mmPlayer != 0) {
-            delete mmPlayer;
+            mmPlayer->~MMPlayer();
+            FreeMemory(mmPlayer);
             mmPlayer = 0;
         }
 
-        // Cleanup icons
         int count = 15;
         T_Hotspot** p = icons;
         do {
             if (*p != 0) {
-                delete *p;
+                (*p)->~T_Hotspot();
+                FreeMemory(*p);
                 *p = 0;
             }
             p++;
             count--;
         } while (count != 0);
 
-        // Cleanup action list
         if (field_128 != 0) {
             if (field_128->head != 0) {
                 field_128->current = field_128->head;
                 while (field_128->head != 0) {
-                    void* data = field_128->RemoveCurrent();
+                    SpriteAction* data = (SpriteAction*)((Queue*)field_128)->Pop();
                     if (data != 0) {
-                        delete (SpriteAction*)data;
+                        data->~SpriteAction();
+                        FreeMemory(data);
                     }
                 }
             }
@@ -268,6 +273,14 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                         (actionData[2] == action->fromType &&
                          (actionData[3] == 0 ||
                           (actionData[2] == action->fromType && action->fromValue == actionData[3])))) {
+                        SpriteAction* child = (SpriteAction*)actionData[0xD];
+                        if (child != 0) {
+                            char buf[128];
+                            sprintf(buf, "Init dispatch child: type=%d inst=%d val=%d from=%d\nCondition: data.from=%d msg.from=%d",
+                                child->addressType, child->instruction, child->addressValue, child->fromType,
+                                actionData[2], action->fromType);
+                            MessageBoxA(0, buf, "Init Dispatch", 0);
+                        }
                         EnqueueSpriteAction((void*)actionData[0xD]);
                     }
                     if (field_128->tail == field_128->current) break;
@@ -329,10 +342,9 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             if (queue->head != 0) {
                 queue->current = queue->head;
                 while (queue->head != 0) {
-                    void* item = queue->RemoveCurrent();
+                    void* item = queue->Pop();
                     if (item != 0) {
-                        
-                        FreeMemory(item);
+                        delete (SoundCommand*)item;
                     }
                 }
             }
@@ -341,9 +353,9 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             if (queue->head != 0) {
                 queue->current = queue->head;
                 while (queue->head != 0) {
-                    void* item = queue->RemoveCurrent();
+                    void* item = queue->Pop();
                     if (item != 0) {
-                        // DrawEntry cleanup
+                        ((ZBuffer*)item)->CleanUpVBuffer();
                         FreeMemory(item);
                     }
                 }
@@ -780,8 +792,9 @@ int SCI_IconBarModule::LBLParse(char* line) {
             field_128 = new Queue(4);
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        SpriteAction* childAction = new SpriteAction(0x20, 1, 0, 0, 2, hotspotIdx, 0, 0, 0, 0);
-        action->childAction = childAction;
+        action->fromType = handlerId;
+        action->fromValue = moduleParam;
+        ParseSpriteAction(action, this);
         field_128->PushNode(action);
     } else if (strcmp(label, "LATE_HOTSPOT") == 0) {
         sscanf(line, "%s %d", label, &hotspotIdx);
@@ -815,8 +828,9 @@ int SCI_IconBarModule::LBLParse(char* line) {
                     field_128 = new Queue(4);
                 }
                 SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                SpriteAction* childAction = new SpriteAction(0x20, 1, 0, 0, 2, hotspotIdx, 0, 0, 0, 0);
-                action->childAction = childAction;
+                action->fromType = handlerId;
+                action->fromValue = moduleParam;
+                ParseSpriteAction(action, this);
                 field_128->PushNode(action);
             }
         }

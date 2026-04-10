@@ -344,25 +344,23 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     int i;
 
     if (g_SchoolMenuActive_0046a190 == 0) {
-        return 0;
+        goto done;
     }
     g_SchoolMenuActive_0046a190 = 0;
 
     zbm = g_ZBufferManager_0046aa24;
 
-    // Clean up queue at 0xA0 (SoundCommand queue)
     queue = zbm->m_queueA0;
     if (queue->head != 0) {
         queue->current = queue->head;
         while (queue->head != 0) {
             item = queue->Pop();
             if (item != 0) {
-                FreeMemory(item);
+                delete (SoundCommand*)item;
             }
         }
     }
 
-    // Clean up queue at 0xA4 (ZBuffer queue)
     queue = zbm->m_queueA4;
     if (queue->head != 0) {
         queue->current = queue->head;
@@ -370,64 +368,63 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
             item = queue->Pop();
             if (item != 0) {
                 ((ZBuffer*)item)->CleanUpVBuffer();
-                delete (ZBuffer*)item;
+                FreeMemory(item);
             }
         }
     }
 
-    // Clean up queue at 0x9C (RenderEntry queue)
     queue = zbm->m_queue9c;
     if (queue->head != 0) {
         queue->current = queue->head;
         while (queue->head != 0) {
-            RenderEntry* entry = (RenderEntry*)queue->Pop();
-            if (entry != 0) {
-                delete entry;
+            item = queue->Pop();
+            if (item != 0) {
+                ((RenderEntry*)item)->~RenderEntry();
+                FreeMemory(item);
             }
         }
     }
 
     zbm->m_palette = 0;
 
-    // Clean up palette
     if (palette != 0) {
-        delete palette;
+        palette->~Palette();
+        FreeMemory(palette);
         palette = 0;
     }
 
-    // Clean up background
     if (background != 0) {
-        delete background;
+        background->~MMPlayer();
+        FreeMemory(background);
         background = 0;
     }
 
-    // Clean up okayButton
     if (okayButton != 0) {
-        delete okayButton;
+        okayButton->~T_MenuHotspot();
+        FreeMemory(okayButton);
         okayButton = 0;
     }
 
-    // Clean up cancelButton
     if (cancelButton != 0) {
-        delete cancelButton;
+        cancelButton->~T_MenuHotspot();
+        FreeMemory(cancelButton);
         cancelButton = 0;
     }
 
-    // Clean up menuSound
     if (menuSound != 0) {
         menuSound->Unload();
-        delete menuSound;
+        FreeMemory(menuSound);
         menuSound = 0;
     }
 
-    // Clean up characters[3]
     {
         T_MenuHotspot** base = characters;
         i = 3;
         do {
             T_MenuHotspot* ptr = *base;
             if (ptr != 0) {
-                delete ptr;
+                ptr->~T_MenuHotspot();
+                FreeMemory(ptr);
                 *base = 0;
             }
             base++;
@@ -435,14 +432,14 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         } while (i != 0);
     }
 
-    // Clean up options[9]
     {
         T_MenuHotspot** base = options;
         i = 9;
         do {
             T_MenuHotspot* ptr = *base;
             if (ptr != 0) {
-                delete ptr;
+                ptr->~T_MenuHotspot();
+                FreeMemory(ptr);
                 *base = 0;
             }
             base++;
@@ -451,6 +448,8 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
     }
 
     IconBar::CleanupIconBar(msg);
+
+done:
     return 0;
 }
 

@@ -62,8 +62,7 @@ void SC_Pods::Init(SC_Message* msg) {
             while (list1->head != 0) {
                 void* obj = list1->Pop();
                 if (obj != 0) {
-                    *(int*)obj = 0x461030;
-                    FreeMemory(obj);
+                    delete (SoundCommand*)obj;
                 }
             }
         }
