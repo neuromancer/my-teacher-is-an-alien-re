@@ -1,34 +1,24 @@
-TEACHER.EXE
+# Build artifacts
+out/
+out-demo/
+*.obj
+*.asm
+*.map
+
+# Executables
+*.EXE
+
+# wibo binary
 wibo
-out
+
+# Downloaded game data
+data/demo/CDDATA/
+data/*.zip
+
+# Wine
 .wine
 
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[codz]
 *$py.class
-
-# C extensions
-*.so
-
-# Visual Studio Code
-#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
-#  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
-#  you could uncomment the following to ignore the entire vscode folder
-# .vscode/
-
-# Ruff stuff:
-.ruff_cache/
-
-# PyPI configuration file
-.pypirc
-
-# Marimo
-marimo/_static/
-marimo/_lsp/
-__marimo__/
-
-# Streamlit
-.streamlit/secrets.toml
-

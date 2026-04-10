@@ -52,6 +52,7 @@ LLMs ([Claude](https://claude.ai/) and [Gemini](https://gemini.google.com/)) are
 - [wibo](https://github.com/decompals/wibo) -- Win32 PE loader for running MSVC on Linux/macOS (included as a submodule)
 - [MSVC 4.20](https://github.com/itsmattkc/MSVC420) -- the original compiler (included as a submodule)
 - Python 3.8+ and [python-Levenshtein](https://pypi.org/project/Levenshtein/) (for similarity reports only)
+- [DREAMM](https://dreamm.aarongiles.com/) -- Windows 95/98 compatibility layer for running the rebuilt executable (for `make run-demo` only)
 
 ### Setup
 
@@ -69,6 +70,7 @@ make
 | Demo | `make demo` | Compile demo sources (`src-demo/` -> `out-demo/`) |
 | Link full game | `make TEACHER.EXE` | Link the full game executable |
 | Link demo | `make TEACHER-DEMO.EXE` | Link the demo executable |
+| Run demo | `make run-demo` | Build, download data if needed, and run the demo in DREAMM |
 | Full game progress | `make progress` | Show function coverage for the full game |
 | Demo progress | `make progress-demo` | Show function coverage for the demo |
 | Full game report | `make report` | Per-function similarity report for the full game |

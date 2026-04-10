@@ -11,6 +11,8 @@ MSVC_INC = compilers\msvc420\include;compilers\msvc420\mfc\include
 MSVC_LIB = compilers\msvc420\lib;compilers\msvc420\mfc\lib
 
 CFLAGS = /nologo /c /Og /Oi /Ot /Oy /Ob1 /Gs /Gf /GX /I msvc420\\include /I 3rdparty\\miles\\include /I 3rdparty\\smack\\include
+DREAMM = /Applications/DREAMM.app/Contents/MacOS/dreamm
+DEMO_DATA_URL = https://downloads.scummvm.org/frs/demos/hypno/teacher-windows-demo-en.zip
 OUT_DIR = out
 
 # Full game build (primary)
@@ -181,4 +183,14 @@ compare:
 compare-functions:
 	@python3 bin/compareExe.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE --functions
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions
+data/demo/CDDATA:
+	@echo "Downloading demo data..."
+	@curl -L -o data/teacher-demo.zip $(DEMO_DATA_URL)
+	@unzip -o data/teacher-demo.zip -d data/demo
+	@rm -f data/teacher-demo.zip
+
+run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA
+	cp TEACHER-DEMO.EXE data/demo/CDDATA/TEACHER.EXE
+	cd data/demo/CDDATA && $(DREAMM) -launch TEACHER.EXE
+
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions run-demo
