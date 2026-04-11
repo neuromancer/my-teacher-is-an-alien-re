@@ -208,10 +208,35 @@ void SC_Cinematic::Init(SC_Message* msg) {
             if (q3->head != 0) {
                 q3->current = q3->head;
                 while (q3->head != 0) {
-                    RenderEntry* entry = (RenderEntry*)((LinkedList*)q3)->RemoveCurrent();
-                    if (entry != 0) {
-                        entry->~RenderEntry();
-                        FreeMemory(entry);
+                    ListNode* node = q3->current;
+                    void* data;
+                    if (node == 0) {
+                        data = 0;
+                    } else {
+                        if (q3->head == node) {
+                            q3->head = node->next;
+                        }
+                        if (q3->tail == q3->current) {
+                            q3->tail = q3->current->prev;
+                        }
+                        node = q3->current;
+                        if (node->prev != 0) {
+                            node->prev->next = node->next;
+                        }
+                        node = q3->current;
+                        if (node->next != 0) {
+                            node->next->prev = node->prev;
+                        }
+                        data = q3->GetCurrentData();
+                        if (q3->current != 0) {
+                            delete q3->current;
+                            q3->current = 0;
+                        }
+                        q3->current = q3->head;
+                    }
+                    if (data != 0) {
+                        ((RenderEntry*)data)->RenderEntry::~RenderEntry();
+                        FreeMemory(data);
                     }
                 }
             }
@@ -308,7 +333,7 @@ int SC_Cinematic::ShutDown(SC_Message* msg) {
                     while (q3->head != 0) {
                         RenderEntry* entry = (RenderEntry*)q3->Pop();
                         if (entry != 0) {
-                            entry->~RenderEntry();
+                            entry->RenderEntry::~RenderEntry();
                             FreeMemory(entry);
                         }
                     }

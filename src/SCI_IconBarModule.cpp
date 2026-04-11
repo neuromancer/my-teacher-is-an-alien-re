@@ -8,6 +8,7 @@
 #include "TimeOut.h"
 #include "Animation.h"
 #include "globals.h"
+#include "RenderEntry.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -353,7 +354,18 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
                 }
             }
 
-            g_ZBufferManager_0046aa24->m_queue9c->ClearList();
+            queue = g_ZBufferManager_0046aa24->m_queue9c;
+            if (queue->head != 0) {
+                queue->current = queue->head;
+                while (queue->head != 0) {
+                    void* item = queue->Pop();
+                    if (item != 0) {
+                        ((RenderEntry*)item)->RenderEntry::~RenderEntry();
+                        FreeMemory(item);
+                    }
+                }
+            }
+
             g_ZBufferManager_0046aa24->m_palette = 0;
         }
 

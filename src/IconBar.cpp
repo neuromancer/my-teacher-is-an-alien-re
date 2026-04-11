@@ -16,6 +16,8 @@
 #include "VBuffer.h"
 #include "ZBufferManager.h"
 #include "RenderEntry.h"
+#include "SoundCommand.h"
+#include "ZBuffer.h"
 
 // Globals defined in globals.cpp, declared in globals.h
 
@@ -113,19 +115,19 @@ void IconBar::Init(SC_Message* msg) {
                 while (q0->head != 0) {
                     void* item = q0->Pop();
                     if (item != 0) {
-                        FreeMemory(item);
+                        delete (SoundCommand*)item;
                     }
                 }
             }
 
-            // Cleanup draw entry queue
+            // Cleanup ZBuffer queue
             ZBQueue* q4 = zbm->m_queueA4;
             if (q4->head != 0) {
                 q4->current = q4->head;
                 while (q4->head != 0) {
-                    DrawEntry* item = (DrawEntry*)q4->Pop();
+                    void* item = q4->Pop();
                     if (item != 0) {
-                        item->~DrawEntry();
+                        ((ZBuffer*)item)->CleanUpVBuffer();
                         FreeMemory(item);
                     }
                 }
@@ -137,9 +139,35 @@ void IconBar::Init(SC_Message* msg) {
                 if (q9c->head != 0) {
                     q9c->current = q9c->head;
                     while (q9c->head != 0) {
-                        void* data = q9c->RemoveCurrent();
+                        ListNode* node = q9c->current;
+                        void* data;
+                        if (node == 0) {
+                            data = 0;
+                        } else {
+                            if (q9c->head == node) {
+                                q9c->head = node->next;
+                            }
+                            if (q9c->tail == q9c->current) {
+                                q9c->tail = q9c->current->prev;
+                            }
+                            node = q9c->current;
+                            if (node->prev != 0) {
+                                node->prev->next = node->next;
+                            }
+                            node = q9c->current;
+                            if (node->next != 0) {
+                                node->next->prev = node->prev;
+                            }
+                            data = q9c->GetCurrentData();
+                            if (q9c->current != 0) {
+                                delete q9c->current;
+                                q9c->current = 0;
+                            }
+                            q9c->current = q9c->head;
+                        }
                         if (data != 0) {
-                            delete (RenderEntry*)data;
+                            ((RenderEntry*)data)->RenderEntry::~RenderEntry();
+                            FreeMemory(data);
                         }
                     }
                 }

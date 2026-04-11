@@ -14,7 +14,7 @@ struct ListNode {
 
     ListNode() : prev(0), next(0), data(0) {}
     ListNode(void* d) { data = d; prev = 0; next = 0; }
-    ~ListNode() {}
+    ~ListNode() { data = 0; prev = 0; next = 0; }
 
     ListNode* Init(void* nodeData);   // 0x40C5B0
 };

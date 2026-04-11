@@ -8,6 +8,8 @@
 #include "MMPlayer.h"
 #include "SC_Question.h"
 #include "ZBuffer.h"
+#include "ZBufferManager.h"
+#include "SoundCommand.h"
 #include <stdio.h>
 #include <string.h>
 #include <new.h>
@@ -443,27 +445,28 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
     InitFromMessage(msg);
     SetVideoRes(0x280, 0x1e0);
 
-    int iVar2 = (int)g_ZBufferManager_0046aa24;
-    if (*(int*)(iVar2 + 0x98) != 2) {
-        *(int*)(iVar2 + 0x98) = 2;
+    ZBufferManager* zbm = g_ZBufferManager_0046aa24;
+    if (zbm->m_state != 2) {
+        zbm->m_state = 2;
 
-        int* piVar5 = *(int**)(iVar2 + 0xa0);
-        if (*piVar5 != 0) {
-            piVar5[2] = *piVar5;
-            while (*piVar5 != 0) {
-                void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
+        ZBQueue* queue;
+
+        queue = zbm->m_queueA0;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                void* obj = queue->Pop();
                 if (obj != 0) {
-                    
-                    FreeMemory(obj);
+                    delete (SoundCommand*)obj;
                 }
             }
         }
 
-        piVar5 = *(int**)(iVar2 + 0xa4);
-        if (*piVar5 != 0) {
-            piVar5[2] = *piVar5;
-            while (*piVar5 != 0) {
-                void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
+        queue = zbm->m_queueA4;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                void* obj = queue->Pop();
                 if (obj != 0) {
                     ((ZBuffer*)obj)->CleanUpVBuffer();
                     FreeMemory(obj);
@@ -471,11 +474,11 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
             }
         }
 
-        piVar5 = *(int**)(iVar2 + 0x9c);
-        if (*piVar5 != 0) {
-            piVar5[2] = *piVar5;
-            while (*piVar5 != 0) {
-                void* obj = ((LinkedList*)piVar5)->RemoveCurrent();
+        queue = zbm->m_queue9c;
+        if (queue->head != 0) {
+            queue->current = queue->head;
+            while (queue->head != 0) {
+                void* obj = queue->Pop();
                 if (obj != 0) {
                     ((RenderEntry*)obj)->~RenderEntry();
                     FreeMemory(obj);
@@ -483,7 +486,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
             }
         }
 
-        *(int*)(iVar2 + 0xa8) = 0;
+        zbm->m_palette = 0;
     }
 
     if (pmsg != 0) {
@@ -499,7 +502,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
             if (hsList->head != 0) {
                 hsList->current = hsList->head;
                 while (hsList->head != 0) {
-                    void* data = ((LinkedList*)hsList)->RemoveCurrent();
+                    void* data = ((Queue*)hsList)->Pop();
                     if (data != 0) {
                         delete (SelectHotspot*)data;
                     }

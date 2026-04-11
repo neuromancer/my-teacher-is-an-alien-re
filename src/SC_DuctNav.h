@@ -3,6 +3,7 @@
 
 #include "Handler.h"
 #include "Timer.h"
+#include "GlyphRect.h"
 
 // SC_DuctNav - Duct navigation / save/load handler (case 46/0x2E)
 // Constructor: 0x43AF10
@@ -21,7 +22,7 @@ public:
     int selectedRow;               // 0xC0
     char searchPattern[128];       // 0xC4-0x143 (save file search pattern)
     char saveFilename[56];         // 0x144-0x17B (current save filename)
-    int slotRects[10 * 4];        // 0x17C-0x21B (save slot hitbox rects, 160 bytes)
+    GlyphRect slotRects[10];       // 0x17C-0x21B (save slot hitbox rects, 160 bytes)
     T_MenuButton* cancelBtn;       // 0x21C
     T_MenuButton* saveBtn;         // 0x220
     T_MenuButton* loadBtn;         // 0x224

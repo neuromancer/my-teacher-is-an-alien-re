@@ -12,6 +12,8 @@
 #include "Memory.h"
 #include "ZBuffer.h"
 #include "SoundCommand.h"
+#include "RenderEntry.h"
+#include "LinkedList.h"
 #include <string.h>
 #include <stdio.h>
 #include <new.h>
@@ -263,7 +265,43 @@ void SC_CrystalPuzzle::Init(SC_Message* msg) {
             }
         }
 
-        zbm->m_queue9c->ClearList();
+        ZBQueue* q3 = zbm->m_queue9c;
+        if (q3->head != 0) {
+            q3->current = q3->head;
+            while (q3->head != 0) {
+                ListNode* node = q3->current;
+                void* data;
+                if (node == 0) {
+                    data = 0;
+                } else {
+                    if (q3->head == node) {
+                        q3->head = node->next;
+                    }
+                    if (q3->tail == q3->current) {
+                        q3->tail = q3->current->prev;
+                    }
+                    node = q3->current;
+                    if (node->prev != 0) {
+                        node->prev->next = node->next;
+                    }
+                    node = q3->current;
+                    if (node->next != 0) {
+                        node->next->prev = node->prev;
+                    }
+                    data = q3->GetCurrentData();
+                    if (q3->current != 0) {
+                        delete q3->current;
+                        q3->current = 0;
+                    }
+                    q3->current = q3->head;
+                }
+                if (data != 0) {
+                    ((RenderEntry*)data)->RenderEntry::~RenderEntry();
+                    FreeMemory(data);
+                }
+            }
+        }
+
         zbm->m_palette = 0;
     }
 

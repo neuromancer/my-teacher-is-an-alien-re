@@ -379,7 +379,7 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
         while (queue->head != 0) {
             item = queue->Pop();
             if (item != 0) {
-                ((RenderEntry*)item)->~RenderEntry();
+                ((RenderEntry*)item)->RenderEntry::~RenderEntry();
                 FreeMemory(item);
             }
         }
