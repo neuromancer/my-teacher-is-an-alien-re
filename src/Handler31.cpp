@@ -101,14 +101,14 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
             placeholder = new SC_Question(id, (SCI_Dialog*)this);
         }
 
-        g_FlagManager_0046a6e8->SetFlag(id, 4);
+        g_FlagManager_0046a6e8->ClearFlag(id, 4);
 
         if (sscanfResult == 3) {
             if (strcmp(arg2, "CONSTANT") != 0) {
-                g_FlagManager_0046a6e8->SetFlag(id, 4);
+                g_FlagManager_0046a6e8->ClearFlag(id, 4);
             }
             if (strcmp(arg2, "SINGLE_PLAY") != 0) {
-                g_FlagManager_0046a6e8->ClearFlag(id, 4);
+                g_FlagManager_0046a6e8->SetFlag(id, 4);
             }
         }
 
@@ -744,9 +744,15 @@ void Handler31::Init(SC_Message* msg) {
         ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
     }
 
-    ParseFile(this, dialogFile, "[PERIOD%2.2dSS%d_DIALOG%d_%c]",
-              periodVal, gs->stateValues[roomInstIdx],
-              ((SpriteAction*)msg)->extra1, g_PeriodCharTable_0046cb94[g_GameState_0046aa30->stateValues[g_PeriodStateIdx_0046cb90]]);
+    {
+        int _charIdx = g_GameState_0046aa30->stateValues[g_PeriodStateIdx_0046cb90];
+        char _ch = g_PeriodCharTable_0046cb94[_charIdx];
+        int _extra1 = ((SpriteAction*)msg)->extra1;
+        int _roomInst = gs->stateValues[roomInstIdx];
+        FILE* _f=fopen("debug.log","a"); if(_f){fprintf(_f,"Handler31::Init: file=%s period=%d roomInst=%d extra1=%d charIdx=%d char=%c\n",dialogFile,periodVal,_roomInst,_extra1,_charIdx,_ch);fclose(_f);}
+        ParseFile(this, dialogFile, "[PERIOD%2.2dSS%d_DIALOG%d_%c]",
+                  periodVal, _roomInst, _extra1, (int)_ch);
+    }
 
     if (palette != 0) {
         g_ZBufferManager_0046aa24->m_palette = palette;

@@ -214,7 +214,7 @@ void* g_SmackSoundCheck_0044053c = 0;                        // 0x0044053c
 // --- 0x00446xxx (SC_Wahoo / SC_Detention / SC_FireAlarm / SC_Question) ---
 int g_FireAlarmTimer_004685a0 = 0;                           // 0x004685a0
 int g_FireAlarmEngine_004685ac = 0;                          // 0x004685ac
-char g_QuestLevelKey_00468108[32] = {0};                     // 0x00468108
+char g_QuestLevelKey_00468108[32] = "ROOM";                   // 0x00468108
 int g_DetentionFlag_00468764 = 0;                            // 0x00468764
 int g_DetentionKeyState_00468a18 = 0;                        // 0x00468a18
 int g_SlimeField_00468bbc = 0;                               // 0x00468bbc

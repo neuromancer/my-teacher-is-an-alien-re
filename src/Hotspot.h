@@ -26,13 +26,14 @@ public:
     SlimeDim hotspotPos;            // 0xA4 - top-left (left, top)
     int hotspotRight;               // 0xAC
     int hotspotBottom;              // 0xB0
-    HotspotAction* items[8];        // 0xB4-0xD3
-    HotspotAction* currentAction;   // 0xD4
+    HotspotAction* items[7];        // 0xB4-0xCF
+    HotspotAction* currentAction;   // 0xD0 - also accessible as items[7] via pointer math
 
     int LBLParse(char* line);       // 0x445A30
     void StopAll();                 // 0x445970
     void SelectItem();              // 0x4459D0
     void DoItem(int param);         // 0x4459A0
+    int HandleClick(int* msg);      // 0x446CE0
 };
 
 #endif // HOTSPOT_H

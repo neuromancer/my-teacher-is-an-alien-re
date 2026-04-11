@@ -80,7 +80,7 @@ void T_Hotspot::SelectItem()
     p = &items[0];
     for (i = 0; i < 8; i++) {
         if (*p != 0) {
-            if ((*p)->CheckConditions() != 0) {
+            if ((*p)->CheckConditions() == 0) {
                 break;
             }
         }
@@ -108,6 +108,229 @@ void T_Hotspot::StopAll()
         p++;
         i--;
     } while (i != 0);
+}
+
+/* Function start: 0x446CE0 */
+int T_Hotspot::HandleClick(int* msg) {
+    int teacherType;
+    SpriteAction* action = (SpriteAction*)msg;
+    HotspotAction* item;
+
+    if (msg[0] != 0x24) {
+        return 0;
+    }
+
+    /* Determine teacher type from extra2 (msg[6]) */
+    teacherType = -1;
+    if (action->extra2 == 0x16) {
+        teacherType = 0;
+    } else if (action->extra2 == 0x12) {
+        teacherType = 1;
+    } else if (action->extra2 == 0x13) {
+        teacherType = 2;
+    } else if (action->extra2 == 0xD) {
+        GameState* gs = g_GameState_0046aa30;
+        int idx = gs->FindState("WATER_TEST_AVAILABLE");
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        if (gs->stateValues[idx] != 0) {
+            teacherType = 3;
+        }
+    }
+
+    if (teacherType < 0 || (flags & 4) == 0) {
+        /* Normal path: SelectItem + HandleMessage on selected item */
+        SelectItem();
+        item = items[currentIndex];
+        if (item == 0) {
+            return 0;
+        }
+        return item->HandleMessage(msg);
+    }
+
+    /* Teacher test path — check AWARE_TEACHER */
+    {
+        int teacherCharIdx = 0;
+        if (flags & 8) {
+            teacherCharIdx = 1;
+        } else if (flags & 0x10) {
+            teacherCharIdx = 2;
+        } else if (flags & 0x20) {
+            teacherCharIdx = 3;
+        }
+
+        if (teacherCharIdx == 0) {
+            return 1;
+        }
+
+        GameState* gs = g_GameState_0046aa30;
+        int awareIdx = gs->FindState("AWARE_TEACHER");
+        if (awareIdx < 0 || gs->maxStates - 1 < awareIdx) {
+            ShowError("Invalid gamestate %d", awareIdx);
+        }
+        if (gs->stateValues[awareIdx] != 0) {
+            SendGameMessage(4, 0x1e50, 0, 0, 2, 0, 0, 0, 0, 0);
+            return 1;
+        }
+
+        /* Full teacher test logic */
+        gs = g_GameState_0046aa30;
+        int alienIdx = gs->FindState("TEACHER_ALIEN");
+        if (alienIdx < 0 || gs->maxStates - 1 < alienIdx) {
+            ShowError("Invalid gamestate %d", alienIdx);
+        }
+        int teacherAlien = gs->stateValues[alienIdx];
+
+        gs = g_GameState_0046aa30;
+        int questIdx = gs->FindState(g_QuestLevelKey_00468108);
+        if (questIdx < 0 || gs->maxStates - 1 < questIdx) {
+            ShowError("Invalid gamestate %d", questIdx);
+        }
+        int isLevel4 = (gs->stateValues[questIdx] == 4) ? 1 : 0;
+        int isCorrect = (teacherCharIdx == teacherAlien) ? 1 : 0;
+
+        int periodCharIdx = g_PeriodStateIdx_0046cb90;
+        gs = g_GameState_0046aa30;
+        if (periodCharIdx < 0 || gs->maxStates - 1 < periodCharIdx) {
+            ShowError("Invalid gamestate %d", periodCharIdx);
+        }
+        int charVal = gs->stateValues[periodCharIdx] + 1;
+
+        int isAlienFound = 0;
+        int loungeFlag = 0;
+        int returnHandler;
+        int returnParam;
+
+        SendGameMessage(4, (teacherType << 2 | charVal) + 0xCE4, 0, 0, 2, 0, 0, 0, 0, 0);
+
+        gs = g_GameState_0046aa30;
+        int testedIdx = gs->FindState("TESTED_A_TEACHER");
+        if (testedIdx < 0 || gs->maxStates - 1 < testedIdx) {
+            ShowError("Invalid gamestate %d", testedIdx);
+        }
+        gs->stateValues[testedIdx] = 1;
+
+        if (isCorrect != 0) {
+            isAlienFound = 1;
+            gs = g_GameState_0046aa30;
+            awareIdx = gs->FindState("AWARE_TEACHER");
+            if (awareIdx < 0 || gs->maxStates - 1 < awareIdx) {
+                ShowError("Invalid gamestate %d", awareIdx);
+            }
+            gs->stateValues[awareIdx] = teacherCharIdx;
+
+            gs = g_GameState_0046aa30;
+            int loungeIdx = gs->FindState("LOUNGE_ALIEN_CINEMATIC");
+            if (loungeIdx < 0 || gs->maxStates - 1 < loungeIdx) {
+                ShowError("Invalid gamestate %d", loungeIdx);
+            }
+            gs->stateValues[loungeIdx] = 1;
+        } else {
+            char buf[28];
+            sprintf(buf, "%d_NOTALIEN", teacherCharIdx);
+            gs = g_GameState_0046aa30;
+            int notAlienIdx = gs->FindState(buf);
+            if (notAlienIdx < 0 || gs->maxStates - 1 < notAlienIdx) {
+                ShowError("Invalid gamestate %d", notAlienIdx);
+            }
+            gs->stateValues[notAlienIdx] = 1;
+
+            int count = 0;
+            gs = g_GameState_0046aa30;
+            int na1 = gs->FindState("1_NOTALIEN");
+            if (na1 < 0 || gs->maxStates - 1 < na1) ShowError("Invalid gamestate %d", na1);
+            if (gs->stateValues[na1] != 0) count++;
+
+            gs = g_GameState_0046aa30;
+            int na2 = gs->FindState("2_NOTALIEN");
+            if (na2 < 0 || gs->maxStates - 1 < na2) ShowError("Invalid gamestate %d", na2);
+            if (gs->stateValues[na2] != 0) count++;
+
+            gs = g_GameState_0046aa30;
+            int na3 = gs->FindState("3_NOTALIEN");
+            if (na3 < 0 || gs->maxStates - 1 < na3) ShowError("Invalid gamestate %d", na3);
+            if (gs->stateValues[na3] != 0) count++;
+
+            if (count == 2) {
+                loungeFlag = 1;
+                gs = g_GameState_0046aa30;
+                awareIdx = gs->FindState("AWARE_TEACHER");
+                if (awareIdx < 0 || gs->maxStates - 1 < awareIdx) ShowError("Invalid gamestate %d", awareIdx);
+                gs->stateValues[awareIdx] = teacherAlien;
+
+                gs = g_GameState_0046aa30;
+                int loungeIdx = gs->FindState("LOUNGE_ALIEN_CINEMATIC");
+                if (loungeIdx < 0 || gs->maxStates - 1 < loungeIdx) ShowError("Invalid gamestate %d", loungeIdx);
+                gs->stateValues[loungeIdx] = 1;
+            }
+        }
+
+        if (teacherType == 0) {
+            returnHandler = 0x2C;
+            returnParam = isAlienFound ? 1 : 0;
+        } else if (teacherType == 1) {
+            if (isAlienFound == 0) {
+                returnHandler = parentHandlerId;
+                returnParam = parentModuleParam;
+                SendGameMessage(0x1E, action->extra2, 0, 0, 0x17, 0, 0, 0, 0, 0);
+            } else {
+                returnHandler = 0x2C;
+                returnParam = 1;
+                SendGameMessage(0x1E, action->extra2, 0, 0, 0x18, 0, 0, 0, 0, 0);
+            }
+        } else if (teacherType == 2) {
+            if (isAlienFound != 0) {
+                returnHandler = parentHandlerId;
+                returnParam = parentModuleParam;
+            } else {
+                returnHandler = 0x2C;
+                returnParam = 0;
+            }
+            SendGameMessage(0x1E, action->extra2, 0, 0, 0x18, 0, 0, 0, 0, 0);
+        } else {
+            returnHandler = 0x2C;
+            returnParam = isAlienFound ? 1 : 0;
+            SendGameMessage(0x1E, action->extra2, 0, 0, 0x18, 0, 0, 0, 0, 0);
+            SendGameMessage(0x1E, 10, 0, 0, 0x17, 0, 0, 0, 0, 0);
+        }
+
+        {
+            int idx1 = (isLevel4 << 2 | teacherType) << 4 | teacherCharIdx;
+            SpriteAction* a1 = new SpriteAction(3, idx1 * 4 + 400, 0, 0, 4, 0, 0, 0, 0, 0);
+
+            int idx2;
+            if (teacherType == 0) {
+                idx2 = charVal * 16 + 1000;
+            } else if (isLevel4 == 0) {
+                idx2 = (charVal << 2 | teacherCharIdx) * 4 + 1000;
+            } else {
+                idx2 = (isLevel4 << 4 | charVal) * 16 + 1000;
+            }
+            SpriteAction* a2 = new SpriteAction(3, idx2, 0, 0, 4, 0, 0, 0, 0, 0);
+            a1->childAction = a2;
+
+            int idx3 = (idx1 << 2 | isCorrect) + 0x640;
+            SpriteAction* a3 = new SpriteAction(3, idx3, 0, 0, 4, 0, 0, 0, 0, 0);
+            a2->childAction = a3;
+
+            int idx4;
+            if (loungeFlag != 0) {
+                idx4 = ((charVal << 2 | teacherAlien) * 2 | loungeFlag) * 2 | 1;
+            } else {
+                idx4 = (charVal << 2 | teacherCharIdx) << 2 | isCorrect;
+            }
+            SpriteAction* a4 = new SpriteAction(3, idx4 + 0x898, returnHandler, returnParam, 4, 0, 0, 0, 0, 0);
+            a3->childAction = a4;
+
+            EnqueueSpriteAction((void*)a1);
+            if (a1 != 0) {
+                delete a1;
+            }
+        }
+
+        return 1;
+    }
 }
 
 /* Function start: 0x445A30 */

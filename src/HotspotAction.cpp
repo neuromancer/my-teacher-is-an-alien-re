@@ -196,6 +196,7 @@ int HotspotAction::CheckConditions() {
     ListNode* node;
 
     if (state != 0 && state != 1) {
+        { FILE* _f=fopen("debug.log","a"); if(_f){fprintf(_f,"CheckCond: state=%d FAIL (not 0 or 1)\n",state);fclose(_f);} }
         return 0;
     }
 
@@ -216,6 +217,7 @@ notType2:
             ShowError("illegal message 15");
 afterCheck:
             if (result == 0) {
+                { FILE* _f=fopen("debug.log","a"); if(_f){fprintf(_f,"CheckCond: condition FAIL addr=%d val=%d inst=%d\n",data->addressType,data->addressValue,data->instruction);fclose(_f);} }
                 return 0;
             }
             if (conditionsQueue->tail == conditionsQueue->current) {

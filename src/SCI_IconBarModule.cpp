@@ -246,6 +246,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Parse static scene
         sprintf(key, "[SEARCHSCREEN%d_STATIC]", moduleParam);
+        { FILE* _f=fopen("debug.log","a"); if(_f){fprintf(_f,"IconBarInit: room=%s key=%s targetRoom=%d moduleParam=%d\n",g_StateString_0046aa2c,key,currentRoom,moduleParam);fclose(_f);} }
         ParseFile(this, g_StateString_0046aa2c, key);
 
         // Parse period-specific scene if no static override
@@ -256,9 +257,11 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
             }
             sprintf(key, "[SEARCHSCREEN%d_PERIOD%2.2d]", moduleParam,
                     g_GameState_0046aa30->stateValues[periodIdx]);
+            { FILE* _f=fopen("debug.log","a"); if(_f){fprintf(_f,"IconBarInit: period key=%s period=%d\n",key,g_GameState_0046aa30->stateValues[periodIdx]);fclose(_f);} }
             ParseFile(this, g_StateString_0046aa2c, key);
             staticSceneFound = 0;
         }
+        { int ic=0; for(int _i=0;_i<15;_i++) if(icons[_i]!=0) ic++; FILE* _f=fopen("debug.log","a"); if(_f){fprintf(_f,"IconBarInit: loaded %d icons, mode=%d\n",ic,mode);fclose(_f);} }
 
         // Dispatch queued actions
         if (field_128 != 0) {
@@ -487,6 +490,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
 
     if (((SpriteAction*)msg)->button1 >= 2) {
         iconIdx = FindClickedIcon(((SpriteAction*)msg)->mousePos.x, ((SpriteAction*)msg)->mousePos.y);
+        { FILE* _f=fopen("debug.log","a"); if(_f){fprintf(_f,"AddMsg: btn=%d pos=(%d,%d) iconIdx=%d mode=%d\n",((SpriteAction*)msg)->button1,((SpriteAction*)msg)->mousePos.x,((SpriteAction*)msg)->mousePos.y,iconIdx,mode);fclose(_f);} }
         if (iconIdx != -1) {
             ((SpriteAction*)msg)->extra1 = iconIdx;
             if (((SpriteAction*)msg)->button1 == 2) {
@@ -535,6 +539,29 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
         g_GameState_0046aa30->stateValues[idx]++;
     }
 
+    return 1;
+}
+
+/* Function start: 0x401FF0 */
+int SCI_IconBarModule::Exit(SC_Message* msg) {
+    SpriteAction* action = (SpriteAction*)msg;
+    if (handlerId != action->addressType) {
+        return 0;
+    }
+    switch (action->instruction) {
+    case 0:
+    case 3:
+        break;
+    case 2:
+        action->addressType = 0x24;
+        icons[action->extra1]->HandleClick((int*)msg);
+        return 1;
+    case 0x37:
+        currentRoom = action->extra1;
+        break;
+    default:
+        return 0;
+    }
     return 1;
 }
 
@@ -587,6 +614,15 @@ void SCI_IconBarModule::UpdateCursor() {
     }
 
     iconIdx = FindClickedIcon(mouseX, mouseY);
+
+    { static int _cnt=0; if(iconIdx!=-1 || (_cnt++%60==0)) { FILE* _f=fopen("debug.log","a"); if(_f){
+        if(iconIdx!=-1) {
+            T_Hotspot* _hs=icons[iconIdx]; int _fi=*(int*)((char*)_hs+0x9c); int _anim=*(int*)((char*)_hs+0xb4+_fi*4); int _st=0; if(_anim) _st=*(int*)(_anim+0xb0);
+            fprintf(_f,"Cursor: pos=(%d,%d) iconIdx=%d frameIdx=%d anim=%d state=%d sprite=%d\n",mouseX,mouseY,iconIdx,_fi,_anim,_st,g_Mouse_0046aa18->m_sprite!=0);
+        } else {
+            fprintf(_f,"Cursor: pos=(%d,%d) iconIdx=-1\n",mouseX,mouseY);
+        }
+        fclose(_f);}} }
 
     if (g_SelectedItem_0046a6e4 != 0) {
         hotspot = g_SelectedItem_0046a6e4->itemId + 0x1d;
