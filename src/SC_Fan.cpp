@@ -207,7 +207,7 @@ void SC_Fan::Update(int param1, int param2) {
 
 /* Function start: 0x40F6C0 */
 int SC_Fan::AddMessage(SC_Message* msg) {
-    Handler::AddMessage(msg);
+    WriteMessageAddress(msg);
 
     if (((SpriteAction*)msg)->lastKey == 0x1B) {
         state = 4;

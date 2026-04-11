@@ -518,6 +518,11 @@ void SCI_SchoolMenu::Update(int param1, int param2) {
     g_Mouse_0046aa18->DrawCursor();
 }
 
+/* Function start: 0x41F680 */
+int SCI_SchoolMenu::Exit(SC_Message* msg) {
+    return handlerId == ((SpriteAction*)msg)->addressType;
+}
+
 /* Function start: 0x41F610 */
 int GlyphRect::HitTest(int x, int y) {
     if (left > x || right < x || top > y || bottom < y) {

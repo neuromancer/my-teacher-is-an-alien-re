@@ -25,6 +25,7 @@ public:
     int AddMessage(SC_Message* msg);
     int ShutDown(SC_Message* msg);
     void Update(int param1, int param2);
+    int Exit(SC_Message* msg);
     int LBLParse(char* line);
     void OnProcessStart();
 

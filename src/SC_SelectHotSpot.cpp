@@ -615,7 +615,7 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
 
 /* Function start: 0x4063A0 */
 int SC_SelectHotSpot::AddMessage(SC_Message* msg) {
-    CopyCommandData(msg);
+    WriteMessageAddress(msg);
     ((SpriteAction*)msg)->addressType = 0x2D;
     if (((SpriteAction*)msg)->lastKey == 0x1B) {
         ((SpriteAction*)msg)->addressValue = 1;

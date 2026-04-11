@@ -154,7 +154,7 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
 int SC_FireAlarm::AddMessage(SC_Message* msg) {
     int* pmsg = (int*)msg;
 
-    Handler::AddMessage(msg);
+    WriteMessageAddress(msg);
 
     if (pmsg[11] == 0x1b && savedCommand == 0x2b) {
         gamePhase = 4;
