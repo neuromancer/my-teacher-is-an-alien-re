@@ -749,8 +749,7 @@ void Handler31::Init(SC_Message* msg) {
         char _ch = g_PeriodCharTable_0046cb94[_charIdx];
         int _extra1 = ((SpriteAction*)msg)->extra1;
         int _roomInst = gs->stateValues[roomInstIdx];
-        FILE* _f=fopen("debug.log","a"); if(_f){fprintf(_f,"Handler31::Init: file=%s period=%d roomInst=%d extra1=%d charIdx=%d char=%c\n",dialogFile,periodVal,_roomInst,_extra1,_charIdx,_ch);fclose(_f);}
-        ParseFile(this, dialogFile, "[PERIOD%2.2dSS%d_DIALOG%d_%c]",
+        ParseFile(this, dialogFile, "[PERIOD%2.2d_SS%d_DIALOG%d_%c]",
                   periodVal, _roomInst, _extra1, (int)_ch);
     }
 

@@ -16,7 +16,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
 #include <new.h>
 #include <windows.h>
 
@@ -24,17 +23,7 @@
 #include "GameLoopHelper.h"
 extern "C" void WriteToLog(const char* format, ...);
 
-static void DebugLog(const char* format, ...) {
-    FILE* f = fopen("debug.log", "a");
-    if (f) {
-        va_list args;
-        va_start(args, format);
-        vfprintf(f, format, args);
-        fprintf(f, "\n");
-        va_end(args);
-        fclose(f);
-    }
-}
+
 
 /* Function start: 0x430A00 */
 GameEngine::GameEngine() {
@@ -213,22 +202,11 @@ void GameEngine::ProcessInput() {
         }
     }
 
-    if (action.button1 >= 2) {
-        if (m_activeHandler != 0) {
-            DebugLog("CLICK btn1=%d handler=%d pos=(%d,%d) key=%d",
-                action.button1, ((Handler*)m_activeHandler)->handlerId,
-                action.mousePos.x, action.mousePos.y, action.lastKey);
-        } else {
-            DebugLog("CLICK btn1=%d NO HANDLER", action.button1);
-        }
-    }
-
     if (m_activeHandler != 0) {
         ((Handler*)m_activeHandler)->AddMessage((SC_Message*)&action);
     }
 
     if (action.addressType != 0 && action.instruction != 0) {
-        DebugLog("ENQUEUE addr=%d inst=%d val=%d", action.addressType, action.instruction, action.addressValue);
         EnqueueSpriteAction((void*)&action);
     }
 }
@@ -257,10 +235,6 @@ void GameEngine::ProcessMessage(SC_Message* msg) {
 
     handled = 0;
     action = (SpriteAction*)msg;
-
-    DebugLog("ProcessMsg: addr=%d val=%d from=%d inst=%d extra1=%d",
-        action->addressType, action->addressValue, action->fromType,
-        action->instruction, action->extra1);
 
     if (action->instruction == 4) {
         handled = 1;
@@ -474,10 +448,6 @@ void GameEngine::HandleSystemMessage(SC_Message* msg) {
         ShowError("missing modual %d", action->addressType);
         return;
     }
-
-    DebugLog("HandleSysMsg: loading handler %d (addr=%d val=%d inst=%d extra1=%d)",
-        handler->handlerId, action->addressType, action->addressValue,
-        action->instruction, action->extra1);
 
     handler->Init(msg);
 }
