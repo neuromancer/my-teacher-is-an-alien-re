@@ -647,6 +647,7 @@ extern int g_ProjectileHits_0043d150;  // Hit counter for projectiles (combat mi
 extern int g_CmdLineAudioMode_0043d558;   // Command line -A/-S audio mode (1=A, 2=S)
 extern int g_DebugFlag_0043d55c;          // Debug/init flag checked in main
 extern char g_CmdLineInputMode_0043d560;  // Command line -J/-K input mode (1=J, 2=K)
+extern int g_DirectSoundFlag_0046a87c;    // DirectSound flag, cleared by /nods
 extern char g_CmdLineDataPath_0043d568[]; // Command line data path [260 bytes]
 // 0x0043d5b0: Sprite index tracking array (not yet implemented, used in FUN_41A9D0/FUN_41A9E0)
 // 0x0043d5b4: Element [1] of DAT_0043d5b0 array

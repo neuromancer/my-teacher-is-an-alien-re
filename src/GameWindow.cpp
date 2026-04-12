@@ -107,7 +107,7 @@ void __stdcall ParseCommandLine(char *param_1) {
   
   iVar1 = ParseCommandLineArgs(param_1, local_50, 20);
   piVar2 = &g_CmdLineAudioMode_0043d558;
-  for (int iVar4 = 0x15; iVar4 != 0; iVar4 = iVar4 - 1) {
+  for (int iVar4 = 0x16; iVar4 != 0; iVar4 = iVar4 - 1) {
     *piVar2 = 0;
     piVar2 = piVar2 + 1;
   }
@@ -121,11 +121,17 @@ void __stdcall ParseCommandLine(char *param_1) {
     else if (_strcmpi(*piVar3, "-dd") == 0) {
       g_CmdLineInputMode_0043d560 = 1;
     }
+    else if (_strnicmp(*piVar3, "-lq", 3) == 0) {
+      AddToStringTable(*piVar3 + 3);
+    }
+    else if (_strnicmp(*piVar3, "/mis=", 5) == 0) {
+      g_StartBlock_00472e2c = atoi(*piVar3 + 5);
+    }
     else if (_strcmpi(*piVar3, "-dd3") == 0) {
       g_CmdLineInputMode_0043d560 = 2;
     }
-    else if (_strnicmp(*piVar3, "-lq", 3) == 0) {
-      AddToStringTable(*piVar3 + 3);
+    else if (_strcmpi(*piVar3, "/nods") == 0) {
+      g_DirectSoundFlag_0046a87c = 0;
     }
     else if (_strcmpi(*piVar3, "-db") == 0) {
       *(char *)&g_CmdLineAudioMode_0043d558 = 1;

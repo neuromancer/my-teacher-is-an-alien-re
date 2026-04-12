@@ -195,6 +195,7 @@ char g_StringTable_0043d158[16384] = {0};                    // 0x0043d158 — s
 int g_DebugFlag_0043d55c = 0;                                // 0x0043d55c
 int g_CmdLineAudioMode_0043d558 = 0;                        // 0x0043d558
 char g_CmdLineInputMode_0043d560 = 0;                       // 0x0043d560
+int g_DirectSoundFlag_0046a87c = 0;                          // 0x0046a87c
 int g_DevModeFlag_0043d564 = 0;                              // 0x0043d564
 char g_CmdLineDataPath_0043d568[260] = {0};                  // 0x0043d568
 char g_SpriteFilenameTable_0043d630[0x4000] = {0};           // 0x0043d630

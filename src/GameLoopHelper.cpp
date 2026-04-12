@@ -6,9 +6,7 @@ extern void FreeMemory(void*);
 
 /* Function start: 0x41A6D0 */
 int __cdecl CompareNodePriority(void* a, void* b) {
-    int diff = *(int*)(*(int*)b + 0x40) - *(int*)(*(int*)a + 0x40);
-    if (diff >= 1) return 0;
-    return 1;
+    return *(unsigned int*)(*(int*)b + 0x40) - *(unsigned int*)(*(int*)a + 0x40) < 1;
 }
 
 /* Function start: 0x41A6F0 */

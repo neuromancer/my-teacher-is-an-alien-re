@@ -29,6 +29,8 @@ AnimatedAsset::~AnimatedAsset()
         delete[] glyphTable;
         glyphTable = 0;
     }
+
+    cachedFilename[0] = 0;
 }
 
 /* Function start: 0x43A830 */

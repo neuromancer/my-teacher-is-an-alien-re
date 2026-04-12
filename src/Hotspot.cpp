@@ -70,7 +70,7 @@ void T_Hotspot::SelectItem()
     for (i = 0; i < 8; i++) {
         if (*p != 0) {
             int status = (*p)->state;
-            if (status != 0 && status == 1) {
+            if (status != 0 && status != 1) {
                 goto done;
             }
         }

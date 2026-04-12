@@ -236,7 +236,7 @@ void Animation::ToBufferVB(VBuffer *buffer) {
   }
 
   targetBuffer = buffer;
-  unsigned int bufferType = smack_buffer->SurfaceType;
+  unsigned int bufferType = *(unsigned char*)smack_buffer;
   void *data = buffer->GetData();
   SmackToBuffer(smk, 0, 0, smk->Width, smk->Height, data,
                 bufferType);
