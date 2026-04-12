@@ -415,7 +415,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             delete palette;
             palette = 0;
         }
-        void* mem = malloc(8);
+        void* mem = operator new(8);
         Palette* newPal = 0;
         if (mem != 0) {
             newPal = InitPalette((Palette*)mem);

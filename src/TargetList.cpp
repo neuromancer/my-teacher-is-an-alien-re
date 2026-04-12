@@ -44,7 +44,7 @@ TargetList::~TargetList() {
         }
         buckets++;
       }
-      free(ht->buckets);
+      operator delete(ht->buckets);
     }
     ht->buckets = 0;
     ht->count = 0;
@@ -53,12 +53,12 @@ TargetList::~TargetList() {
     if (pool) {
       do {
         HashNode* next = pool->next;
-        free(pool);
+        operator delete(pool);
         pool = next;
       } while (pool);
     }
     ht->nodePool = 0;
-    free(ht);
+    operator delete(ht);
     self->hashTable = 0;
   }
 }

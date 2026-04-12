@@ -334,7 +334,7 @@ void SC_Detention::ResetAnimations() {
 
     {
         SpriteAction action(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
-        g_GameEngine_0046a6ec->EnqueueAction(&action);
+        g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)&action);
     }
 
     ParseFile(this, "mis\\detention.mis", "[MOVE_TO_NEXT_PERIOD]");

@@ -3,6 +3,7 @@
 #include "Sprite.h"
 #include "Sample.h"
 #include "LinkedList.h"
+#include "Queue.h"
 #include "Memory.h"
 #include "GameState.h"
 #include <string.h>
@@ -130,22 +131,19 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
             LinkedList* newList = new LinkedList();
             actionList = newList;
         }
-        if (action == 0) {
-            ShowError("queue fault 0101");
-        }
         actionList->current = actionList->head;
         if (actionList->type == 1 || actionList->type == 2) {
             if (actionList->head == 0) {
-                actionList->InsertNode(action);
+                ((Queue*)actionList)->InsertAtCurrent(action);
             } else {
                 do {
                     int cur = (int)actionList->current;
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        actionList->InsertNode(action);
+                        ((Queue*)actionList)->InsertAtCurrent(action);
                         break;
                     }
                     if ((int)actionList->tail == cur) {
-                        actionList->PushNode(action);
+                        ((Queue*)actionList)->Push(action);
                         break;
                     }
                     if (cur != 0) {
@@ -154,7 +152,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
                 } while (actionList->current != 0);
             }
         } else {
-            actionList->InsertNode(action);
+            ((Queue*)actionList)->InsertAtCurrent(action);
         }
     } else if (strcmp(local_3c, "GAMESTATE") == 0) {
         char local_13c[128];
@@ -176,22 +174,19 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
         if (action->instruction == 0x11 && result < 4) {
             Parser::LBLParse("SC_PRHotSpot");
         }
-        if (action == 0) {
-            ShowError("queue fault 0101");
-        }
         actionList->current = actionList->head;
         if (actionList->type == 1 || actionList->type == 2) {
             if (actionList->head == 0) {
-                actionList->InsertNode(action);
+                ((Queue*)actionList)->InsertAtCurrent(action);
             } else {
                 do {
                     int cur = (int)actionList->current;
                     if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        actionList->InsertNode(action);
+                        ((Queue*)actionList)->InsertAtCurrent(action);
                         break;
                     }
                     if ((int)actionList->tail == cur) {
-                        actionList->PushNode(action);
+                        ((Queue*)actionList)->InsertAtCurrent(action);
                         break;
                     }
                     if (cur != 0) {
@@ -200,7 +195,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
                 } while (actionList->current != 0);
             }
         } else {
-            actionList->InsertNode(action);
+            ((Queue*)actionList)->InsertAtCurrent(action);
         }
     } else if (strcmp(local_3c, "END") == 0) {
         return 1;

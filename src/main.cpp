@@ -567,11 +567,11 @@ void CleanupMemoryCache() {
         int* freeNode = (int*)cache->field_10;
         while (freeNode != 0) {
             int* next = (int*)freeNode[0];
-            free(freeNode);
+            operator delete(freeNode);
             freeNode = next;
         }
         cache->field_10 = 0;
-        free(cache);
+        operator delete(cache);
         g_FileCache_0046b78c = 0;
     }
 }

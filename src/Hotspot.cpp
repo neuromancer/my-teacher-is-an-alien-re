@@ -386,9 +386,6 @@ int T_Hotspot::LBLParse(char* param_1)
 
         // Create SpriteAction
         msg = new SpriteAction(parentHandlerId, param, parentHandlerId, parentModuleParam, 4, 0, 0, 0, 0, 0);
-        if (msg == 0) {
-            ShowError("queue fault 0101");
-        }
 
         // Sorted insert into action list
         list = (int*)currentAction->messagesQueue;

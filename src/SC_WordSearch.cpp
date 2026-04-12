@@ -159,22 +159,22 @@ int SC_WordSearch::ShutDown(SC_Message* msg) {
     }
     if (startSound != 0) {
         startSound->Unload();
-        free(startSound);
+        operator delete(startSound);
         startSound = 0;
     }
     if (correctSound != 0) {
         correctSound->Unload();
-        free(correctSound);
+        operator delete(correctSound);
         correctSound = 0;
     }
     if (incorrectSound != 0) {
         incorrectSound->Unload();
-        free(incorrectSound);
+        operator delete(incorrectSound);
         incorrectSound = 0;
     }
     if (introSound != 0) {
         introSound->Unload();
-        free(introSound);
+        operator delete(introSound);
         introSound = 0;
     }
     if (resultAction != 0) {

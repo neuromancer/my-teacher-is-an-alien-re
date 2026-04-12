@@ -111,7 +111,7 @@ extern "C" int __cdecl GetPixelAt(int x, int y);
 void Target::Spawn()
 {
     Target::Activate();
-    Target::animation_data->SetPalette(Target::timeRange.x,
+    Target::animation_data->UpdatePalette(Target::timeRange.x,
         (Target::timeRange.y - Target::timeRange.x) + 1);
     if (Target::stopSound != 0) {
         Target::stopSound->Play(100, 1);

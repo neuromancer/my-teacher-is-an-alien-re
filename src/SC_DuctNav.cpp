@@ -23,6 +23,7 @@
 
 extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode);
 extern "C" int __cdecl DeleteFileAndDir(char* path);
+extern "C" void TouchFileTimestamp(const char* filename);
 
 struct SaveFilePool {
     int* head;     // 0x00
@@ -228,26 +229,26 @@ void InitNewGame() {
     g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
-        free(action);
+        operator delete(action);
     }
 
     action = new SpriteAction(1, 0x1e, 0, 0, 0x18, 0, 0, 0, 0, 0);
     g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
-        free(action);
+        operator delete(action);
     }
 
     action = new SpriteAction(1, 0x2c, 0, 0, 0x18, 0, 0, 0, 0, 0);
     g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
-        free(action);
+        operator delete(action);
     }
 
     if (g_GameState_0046aa30 != 0) {
         g_GameState_0046aa30->~GameState();
-        free(g_GameState_0046aa30);
+        operator delete(g_GameState_0046aa30);
         g_GameState_0046aa30 = 0;
     }
 
@@ -255,7 +256,7 @@ void InitNewGame() {
 
     if (g_FlagManager_0046a6e8 != 0) {
         g_FlagManager_0046a6e8->~FlagArray();
-        free(g_FlagManager_0046a6e8);
+        operator delete(g_FlagManager_0046a6e8);
         g_FlagManager_0046a6e8 = 0;
     }
 
@@ -296,7 +297,7 @@ void InitNewGame() {
     g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
     if (action != 0) {
         action->~SpriteAction();
-        free(action);
+        operator delete(action);
     }
 }
 SC_DuctNav::~SC_DuctNav()
@@ -1079,8 +1080,8 @@ void SC_DuctNav::LoadSaveFile()
         operator delete(action);
     }
 
-    /* Delete the save file */
-    DeleteFileAndDir(MakeSavePath(saveFilename));
+    /* Touch the save file timestamp */
+    TouchFileTimestamp(MakeSavePath(saveFilename));
 
     /* Allocate and init FileArchive */
     FileArchive* fa;

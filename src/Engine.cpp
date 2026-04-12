@@ -185,7 +185,7 @@ int Engine::LBLParse(char* line) {
         sscanf(line, " %s %d ", label, &local_14);
         if (actionArray != 0) { FreeMemory(actionArray); actionArray = 0; }
         actionCount = local_14;
-        actionArray = (int*)malloc(local_14 * 4);
+        actionArray = (int*)operator new(local_14 * 4);
         memset(actionArray, 0, actionCount * 4);
     } else if (strcmp(label, "ACTION") == 0) {
         sscanf(line, " %s %d %d ", label, &local_14, &local_1c);

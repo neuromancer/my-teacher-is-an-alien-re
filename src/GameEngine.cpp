@@ -607,7 +607,7 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
         int count;
         int* entry;
 
-        block = (int*)malloc(pool[5] * 0x40 + 4);
+        block = (int*)operator new(pool[5] * 0x40 + 4);
         *block = pool[4];
         pool[4] = (int)block;
         count = pool[5];

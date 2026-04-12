@@ -94,7 +94,7 @@ SC_Question::~SC_Question()
                         current->data = 0;
                         current->prev = 0;
                         current->next = 0;
-                        free(current);
+                        operator delete(current);
                         queue->current = 0;
                     }
                     queue->current = queue->head;
@@ -106,7 +106,7 @@ SC_Question::~SC_Question()
                 }
             }
         }
-        free(queue);
+        operator delete(queue);
         messageQueue = 0;
     }
     dialogPtr = 0;
@@ -268,7 +268,7 @@ void SC_Question::Finalize()
                 current->data = 0;
                 current->prev = 0;
                 current->next = 0;
-                free(current);
+                operator delete(current);
                 queue->current = 0;
             }
             queue->current = queue->head;

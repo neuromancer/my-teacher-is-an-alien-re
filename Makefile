@@ -207,7 +207,7 @@ debug: TEACHER.EXE
 	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
 	@mkdir -p data/full/hd
 	cp TEACHER.EXE data/full/TEACHER.EXE
-	cd data/full && $(DREAMM) -mount rw:C=hd -mount d=teacher.iso -debug -launch TEACHER.EXE
+	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -debug -launch TEACHER.EXE
 
 
 

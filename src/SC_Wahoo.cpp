@@ -229,7 +229,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
         ptr = sampleSlots[0xe - i];
         if (ptr != 0) {
             ((Sample*)ptr)->Unload();
-            free(ptr);
+            operator delete(ptr);
             sampleSlots[0xe - i] = 0;
         }
     }
@@ -458,7 +458,7 @@ label_done:
     if (g_WahooEngine_0046bbfc == 0) return;
     if (consoleSprite == 0) return;
 
-    ((DetectionObj*)g_WahooEngine_0046bbfc)->Render();
+    ((Weapon*)g_WahooEngine_0046bbfc)->UpdateProjectiles();
 
     if (g_WahooEngine_0046bbfc->palette != 0) {
         cursorX = 0;
@@ -601,7 +601,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
             int err = smp->Load(path);
             if (err != 0 && sampleSlots[local_18] != 0) {
                 ((Sample*)sampleSlots[local_18])->Unload();
-                free(sampleSlots[local_18]);
+                operator delete(sampleSlots[local_18]);
                 sampleSlots[local_18] = 0;
             }
         }

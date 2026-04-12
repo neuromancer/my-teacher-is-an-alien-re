@@ -378,7 +378,7 @@ SoundEntry::SoundEntry(int id) {
     int loadResult = sample->Load(filename);
     if (loadResult != 0 && sample != 0) {
         sample->Unload();
-        free(sample);
+        operator delete(sample);
         sample = 0;
     }
     int gsIdx = g_PeriodStateIdx_0046cb90;

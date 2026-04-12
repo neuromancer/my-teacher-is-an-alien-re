@@ -11,7 +11,7 @@ TextInput::TextInput(char* str, int len, void* fnt, void* wid) {
     maxWidth = 0;
     editBuf = str;
     maxLen = len;
-    origBuf = (char*)malloc(len + 1);
+    origBuf = (char*)operator new(len + 1);
     strcpy(origBuf, editBuf);
     font = (AnimatedAsset*)fnt;
     maxWidth = (int)wid;
@@ -20,7 +20,7 @@ TextInput::TextInput(char* str, int len, void* fnt, void* wid) {
 /* Function start: 0x4456F0 */
 TextInput::~TextInput() {
     if (origBuf != 0) {
-        free(origBuf);
+        operator delete(origBuf);
         origBuf = 0;
     }
 }

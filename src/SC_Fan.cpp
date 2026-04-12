@@ -168,7 +168,7 @@ void SC_Fan::Cleanup(int flag) {
         ptr = samples[0xb - i];
         if (ptr != 0) {
             samples[0xb - i]->Unload();
-            delete samples[0xb - i];
+            operator delete(samples[0xb - i]);
             samples[0xb - i] = 0;
         }
     }
@@ -701,7 +701,7 @@ int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
             int err = smp->Load(path);
             if (err != 0 && samples[local_18] != 0) {
                 samples[local_18]->Unload();
-                delete samples[local_18];
+                operator delete(samples[local_18]);
                 samples[local_18] = 0;
             }
         }

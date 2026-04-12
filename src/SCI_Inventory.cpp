@@ -1017,12 +1017,12 @@ int SCI_Inventory::LBLParse(char* line) {
         queue[2] = queue[0];
         if (queue[3] == 1 || queue[3] == 2) {
             if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(obj);
+                ((LinkedList*)queue)->InsertNode(obj);
             } else {
                 do {
                     int cur = queue[2];
                     if ((unsigned int)((T_Object*)((QueueNode*)cur)->data)->itemId < (unsigned int)((T_Object*)obj)->itemId) {
-                        ((Queue*)queue)->InsertAtCurrent(obj);
+                        ((LinkedList*)queue)->InsertNode(obj);
                         break;
                     }
                     if (queue[1] == cur) {
@@ -1062,7 +1062,7 @@ int SCI_Inventory::LBLParse(char* line) {
                 } while (queue[2] != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(obj);
+            ((LinkedList*)queue)->InsertNode(obj);
         }
     }
     else if (strcmp(token, "PALETTE") == 0) {

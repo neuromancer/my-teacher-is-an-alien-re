@@ -15,6 +15,7 @@
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void ShowMessage(char *param_1, ...);
+extern "C" void WriteToMessageLog(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "InputManager.h"
@@ -759,7 +760,7 @@ void Handler31::Init(SC_Message* msg) {
 
     if (palette != 0) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            ShowMessage("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         g_ZBufferManager_0046aa24->m_palette = palette;
     }
