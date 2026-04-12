@@ -14,6 +14,7 @@
 #include "AnimatedAsset.h"
 
 extern "C" void ShowError(const char* format, ...);
+extern "C" void ShowMessage(char *param_1, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "InputManager.h"
@@ -308,6 +309,9 @@ void Handler31::Update(int param1, int param2) {
     int yPos;
     int count;
 
+    yPos = 0xA;
+    count = 0;
+
     if (handlerId != param2) {
         return;
     }
@@ -348,16 +352,14 @@ void Handler31::Update(int param1, int param2) {
             pMouse = g_InputManager_0046aa08->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
                 buttonIdx = -1;
-            } else if (pMouse == 0) {
-                buttonIdx = 0;
-            } else {
+            } else if (pMouse != 0) {
                 buttonIdx = (pMouse->y - 10) / 0x22;
+            } else {
+                buttonIdx = 0;
             }
 
             list->current = list->head;
             if (list->head != 0) {
-                yPos = 0xA;
-                count = 0;
                 do {
                     node = list->current;
                     nodeData = 0;
@@ -706,14 +708,16 @@ void Handler31::Init(SC_Message* msg) {
     sprintf(dialogFile, "mis\\dialog%2.2d.mis", gs->stateValues[periodIdx]);
 
     if (questionQueue != 0) {
-        LinkedList* list = questionQueue;
+        Queue* list = questionQueue;
         if (list->head != 0) {
             list->current = list->head;
-            while (list->head != 0) {
-                question = (SC_Question*)list->Pop();
-                if (question != 0) {
-                    delete question;
-                }
+            if (list->head != 0) {
+                do {
+                    question = (SC_Question*)list->Pop();
+                    if (question != 0) {
+                        delete question;
+                    }
+                } while (list->head != 0);
             }
         }
         FreeMemory(questionQueue);
@@ -754,6 +758,9 @@ void Handler31::Init(SC_Message* msg) {
     }
 
     if (palette != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
+            ShowMessage("ddouble palette");
+        }
         g_ZBufferManager_0046aa24->m_palette = palette;
     }
 

@@ -120,13 +120,11 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
 /* Function start: 0x42AC20 */
 int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
     if (ambient != 0) {
-        ambient->~MMPlayer();
-        operator delete(ambient);
+        delete ambient;
         ambient = 0;
     }
     if (introSprite != 0) {
-        introSprite->~Sprite();
-        operator delete(introSprite);
+        delete introSprite;
         introSprite = 0;
     }
     if (hotspotList != 0) {
@@ -144,13 +142,11 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
         hotspotList = 0;
     }
     if (palette != 0) {
-        palette->~Palette();
-        operator delete(palette);
+        delete palette;
         palette = 0;
     }
     if (slimeTable != 0) {
-        slimeTable->~SlimeTable();
-        operator delete(slimeTable);
+        delete slimeTable;
         slimeTable = 0;
     }
     T_MenuHotspot** pBC = &periodSprites[0];
@@ -323,23 +319,27 @@ int SCI_PracticeRoom::Exit(SC_Message* msg) {
 }
 
 // FileArchive - simple save/load wrapper (0x48 bytes)
-struct FileArchive {
+class FileArchive {
+public:
     int mode;           // 0x00 - 0=read, 1=write
     char filename[64];  // 0x04-0x43
     FILE* fp;           // 0x44
+
+    FileArchive() {
+        memset(this, 0, 0x48);
+        strcpy(filename, g_PracticeSavePath);
+    }
+    ~FileArchive() {
+        if (fp != 0) {
+            fclose(fp);
+            fp = 0;
+        }
+    }
 };
 
 /* Function start: 0x42B100 */
 void SavePracticeState() {
-    FileArchive* ar;
-
-    ar = (FileArchive*)operator new(0x48);
-    if (ar != 0) {
-        memset(ar, 0, 0x48);
-        strcpy(ar->filename, g_PracticeSavePath);
-    } else {
-        ar = 0;
-    }
+    FileArchive* ar = new FileArchive();
 
     if (ar->fp != 0) {
         fclose(ar->fp);
@@ -360,13 +360,7 @@ void SavePracticeState() {
         ar->fp = 0;
     }
 
-    if (ar != 0) {
-        if (ar->fp != 0) {
-            fclose(ar->fp);
-            ar->fp = 0;
-        }
-        FreeMemory(ar);
-    }
+    delete ar;
 
     GameState* gs = g_GameState_0046aa30;
     int gsIdx = gs->FindLabel("IN_PRACTICEROOM");
@@ -378,15 +372,7 @@ void SavePracticeState() {
 
 /* Function start: 0x42B270 */
 void LoadPracticeState() {
-    FileArchive* ar;
-
-    ar = (FileArchive*)operator new(0x48);
-    if (ar != 0) {
-        memset(ar, 0, 0x48);
-        strcpy(ar->filename, g_PracticeSavePath);
-    } else {
-        ar = 0;
-    }
+    FileArchive* ar = new FileArchive();
 
     if (ar->fp != 0) {
         fclose(ar->fp);
@@ -407,13 +393,7 @@ void LoadPracticeState() {
         ar->fp = 0;
     }
 
-    if (ar != 0) {
-        if (ar->fp != 0) {
-            fclose(ar->fp);
-            ar->fp = 0;
-        }
-        FreeMemory(ar);
-    }
+    delete ar;
 }
 
 /* Function start: 0x42B3B0 */
