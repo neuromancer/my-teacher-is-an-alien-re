@@ -292,8 +292,9 @@ read_loop:
         if (endQuote == 0) goto read_loop;
         if (len <= 0) goto read_loop;
 
-        found = 1;
         strncpy(outBuffer, startQuote, len);
+        outBuffer[len] = '\0';
+        found = 1;
 done:
         Close();
     }

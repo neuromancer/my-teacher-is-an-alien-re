@@ -36,20 +36,29 @@ SC_PRHotSpot::~SC_PRHotSpot()
         delete sprite;
         sprite = 0;
     }
-    if (hoverSound != 0) {
-        hoverSound->Unload();
-        operator delete(hoverSound);
-        hoverSound = 0;
+    {
+        Sample* snd = hoverSound;
+        if (snd != 0) {
+            snd->Unload();
+            operator delete(snd);
+            hoverSound = 0;
+        }
     }
-    if (clickSound != 0) {
-        clickSound->Unload();
-        operator delete(clickSound);
-        clickSound = 0;
+    {
+        Sample* snd = clickSound;
+        if (snd != 0) {
+            snd->Unload();
+            operator delete(snd);
+            clickSound = 0;
+        }
     }
-    if (exitSound != 0) {
-        exitSound->Unload();
-        operator delete(exitSound);
-        exitSound = 0;
+    {
+        Sample* snd = exitSound;
+        if (snd != 0) {
+            snd->Unload();
+            operator delete(snd);
+            exitSound = 0;
+        }
     }
     if (actionList != 0) {
         if (actionList->head != 0) {
@@ -94,10 +103,13 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
     } else if (strcmp(local_3c, "ROLLON") == 0) {
         sscanf(param_1, "%s %d", local_3c, &local_18);
         char* filename = GetSoundFilename(local_18);
-        if (hoverSound != 0) {
-            hoverSound->Unload();
-            operator delete(hoverSound);
-            hoverSound = 0;
+        {
+            Sample* old = hoverSound;
+            if (old != 0) {
+                old->Unload();
+                operator delete(old);
+                hoverSound = 0;
+            }
         }
         Sample* snd = new Sample();
         hoverSound = snd;
@@ -105,10 +117,13 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
     } else if (strcmp(local_3c, "ROLLOFF") == 0) {
         sscanf(param_1, "%s %d", local_3c, &local_18);
         char* filename = GetSoundFilename(local_18);
-        if (exitSound != 0) {
-            exitSound->Unload();
-            operator delete(exitSound);
-            exitSound = 0;
+        {
+            Sample* old = exitSound;
+            if (old != 0) {
+                old->Unload();
+                operator delete(old);
+                exitSound = 0;
+            }
         }
         Sample* snd = new Sample();
         exitSound = snd;
@@ -116,10 +131,13 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
     } else if (strcmp(local_3c, "SELECTED") == 0) {
         sscanf(param_1, "%s %d", local_3c, &local_18);
         char* filename = GetSoundFilename(local_18);
-        if (clickSound != 0) {
-            clickSound->Unload();
-            operator delete(clickSound);
-            clickSound = 0;
+        {
+            Sample* old = clickSound;
+            if (old != 0) {
+                old->Unload();
+                operator delete(old);
+                clickSound = 0;
+            }
         }
         Sample* snd = new Sample();
         clickSound = snd;
@@ -131,28 +149,31 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
             LinkedList* newList = new LinkedList();
             actionList = newList;
         }
-        actionList->ResetForSortedAdd(action);
-        if (actionList->type == 1 || actionList->type == 2) {
-            if (actionList->head == 0) {
-                ((LinkedList*)actionList)->InsertNode(action);
+        {
+            LinkedList* list = actionList;
+            list->ResetForSortedAdd(action);
+            if (list->type == 1 || list->type == 2) {
+                if (list->head == 0) {
+                    ((Queue*)list)->InsertAtCurrent(action);
+                } else {
+                    do {
+                        int cur = (int)list->current;
+                        if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
+                            ((Queue*)list)->InsertAtCurrent(action);
+                            break;
+                        }
+                        if ((int)list->tail == cur) {
+                            ((Queue*)list)->Push(action);
+                            break;
+                        }
+                        if (cur != 0) {
+                            list->current = (ListNode*)*(int*)(cur + 4);
+                        }
+                    } while (list->current != 0);
+                }
             } else {
-                do {
-                    int cur = (int)actionList->current;
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)actionList)->InsertAtCurrent(action);
-                        break;
-                    }
-                    if ((int)actionList->tail == cur) {
-                        ((Queue*)actionList)->Push(action);
-                        break;
-                    }
-                    if (cur != 0) {
-                        actionList->current = (ListNode*)*(int*)(cur + 4);
-                    }
-                } while (actionList->current != 0);
+                ((Queue*)list)->InsertAtCurrent(action);
             }
-        } else {
-            ((Queue*)actionList)->InsertAtCurrent(action);
         }
     } else if (strcmp(local_3c, "GAMESTATE") == 0) {
         char local_13c[128];
@@ -166,7 +187,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
             2,
             g_GameState_0046aa30->FindState(local_bc),
             0, 0,
-            g_GameState2_0046aa3c->FindState(local_13c),
+            g_StringState_0046aa38->FindState(local_13c),
             local_1c, 0, 0, 0, 0);
         if ((action->instruction == 0x11 || action->instruction == 0x12) && result < 4) {
             action->extra1 = 1;
@@ -174,28 +195,31 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
         if (action->instruction == 0x11 && result < 4) {
             Parser::LBLParse("SC_PRHotSpot");
         }
-        actionList->ResetForSortedAdd(action);
-        if (actionList->type == 1 || actionList->type == 2) {
-            if (actionList->head == 0) {
-                ((Queue*)actionList)->InsertAtCurrent(action);
+        {
+            LinkedList* list = actionList;
+            list->ResetForSortedAdd(action);
+            if (list->type == 1 || list->type == 2) {
+                if (list->head == 0) {
+                    ((Queue*)list)->InsertAtCurrent(action);
+                } else {
+                    do {
+                        int cur = (int)list->current;
+                        if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
+                            ((Queue*)list)->InsertAtCurrent(action);
+                            break;
+                        }
+                        if ((int)list->tail == cur) {
+                            list->PushNode(action);
+                            break;
+                        }
+                        if (cur != 0) {
+                            list->current = (ListNode*)*(int*)(cur + 4);
+                        }
+                    } while (list->current != 0);
+                }
             } else {
-                do {
-                    int cur = (int)actionList->current;
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)actionList)->InsertAtCurrent(action);
-                        break;
-                    }
-                    if ((int)actionList->tail == cur) {
-                        ((Queue*)actionList)->InsertAtCurrent(action);
-                        break;
-                    }
-                    if (cur != 0) {
-                        actionList->current = (ListNode*)*(int*)(cur + 4);
-                    }
-                } while (actionList->current != 0);
+                ((Queue*)list)->InsertAtCurrent(action);
             }
-        } else {
-            ((Queue*)actionList)->InsertAtCurrent(action);
         }
     } else if (strcmp(local_3c, "END") == 0) {
         return 1;
