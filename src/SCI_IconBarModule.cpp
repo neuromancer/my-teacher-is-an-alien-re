@@ -30,10 +30,6 @@ extern "C" void WriteToLog(const char*, ...);
 /* Function start: 0x401000 */
 SCI_IconBarModule::SCI_IconBarModule() {
     memset(&exitTarget, 0, 0x22 * 4);
-    boundRect.left = 0;
-    boundRect.top = 0;
-    boundRect.right = 0;
-    boundRect.bottom = 0;
     handlerId = 0x20;
     field_B4 = -1;
     timeout = new TimeOut();
@@ -105,6 +101,8 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     int targetRoom;
     SpriteAction* action;
     int periodIdx;
+    int classIdx;
+    GameState* gs;
     char key[28];
 
     timeout->Start(2000);
@@ -137,40 +135,51 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     }
 
     // Check PERIOD change
-    periodIdx = g_GameState_0046aa30->FindState("PERIOD");
-    if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
+    gs = g_GameState_0046aa30;
+    periodIdx = gs->FindState("PERIOD");
+    if (periodIdx < 0 || gs->maxStates - 1 < periodIdx) {
         ShowError("Invalid gamestate %d", periodIdx);
     }
-    if (g_GameState_0046aa30->stateValues[periodIdx] != field_B4) {
+    if (gs->stateValues[periodIdx] != field_B4) {
         changed = 1;
-        periodIdx = g_GameState_0046aa30->FindState("PERIOD");
-        if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
+        gs = g_GameState_0046aa30;
+        periodIdx = gs->FindState("PERIOD");
+        if (periodIdx < 0 || gs->maxStates - 1 < periodIdx) {
             ShowError("Invalid gamestate %d", periodIdx);
         }
-        field_B4 = g_GameState_0046aa30->stateValues[periodIdx];
+        field_B4 = gs->stateValues[periodIdx];
     }
 
     // Check room change
     if (targetRoom != currentRoom) {
         changed = 1;
 
-        int prevIdx = g_GameState_0046aa30->FindState("PREVIOUSROOM");
-        if (prevIdx < 0 || g_GameState_0046aa30->maxStates - 1 < prevIdx) {
+        gs = g_GameState_0046aa30;
+        {
+        int prevIdx = gs->FindState("PREVIOUSROOM");
+        if (prevIdx < 0 || gs->maxStates - 1 < prevIdx) {
             ShowError("Invalid gamestate %d", prevIdx);
         }
-        g_GameState_0046aa30->stateValues[prevIdx] = currentRoom;
+        gs->stateValues[prevIdx] = currentRoom;
+        }
 
-        int prevInstIdx = g_GameState_0046aa30->FindState("PREVIOUSROOMINSTANCE");
-        if (prevInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < prevInstIdx) {
+        gs = g_GameState_0046aa30;
+        {
+        int prevInstIdx = gs->FindState("PREVIOUSROOMINSTANCE");
+        if (prevInstIdx < 0 || gs->maxStates - 1 < prevInstIdx) {
             ShowError("Invalid gamestate %d", prevInstIdx);
         }
-        g_GameState_0046aa30->stateValues[prevInstIdx] = moduleParam;
+        gs->stateValues[prevInstIdx] = moduleParam;
+        }
 
-        int roomIdx = g_GameState_0046aa30->FindState("ROOM");
-        if (roomIdx < 0 || g_GameState_0046aa30->maxStates - 1 < roomIdx) {
+        gs = g_GameState_0046aa30;
+        {
+        int roomIdx = gs->FindState("ROOM");
+        if (roomIdx < 0 || gs->maxStates - 1 < roomIdx) {
             ShowError("Invalid gamestate %d", roomIdx);
         }
-        g_GameState_0046aa30->stateValues[roomIdx] = targetRoom;
+        gs->stateValues[roomIdx] = targetRoom;
+        }
         currentRoom = targetRoom;
 
         char roomPath[60];
@@ -187,11 +196,14 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
     if (moduleParam != newInstance) {
         moduleParam = newInstance;
         changed = 1;
-        int roomInstIdx = g_GameState_0046aa30->FindState("ROOMINSTANCE");
-        if (roomInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < roomInstIdx) {
+        gs = g_GameState_0046aa30;
+        {
+        int roomInstIdx = gs->FindState("ROOMINSTANCE");
+        if (roomInstIdx < 0 || gs->maxStates - 1 < roomInstIdx) {
             ShowError("Invalid gamestate %d", roomInstIdx);
         }
-        g_GameState_0046aa30->stateValues[roomInstIdx] = newInstance;
+        gs->stateValues[roomInstIdx] = newInstance;
+        }
     }
 
     if (changed != 0 || roomInitialized == 0) {
@@ -250,12 +262,13 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
         // Parse period-specific scene if no static override
         if (staticSceneFound == 0) {
-            periodIdx = g_GameState_0046aa30->FindState("PERIOD");
-            if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
+            gs = g_GameState_0046aa30;
+            periodIdx = gs->FindState("PERIOD");
+            if (periodIdx < 0 || gs->maxStates - 1 < periodIdx) {
                 ShowError("Invalid gamestate %d", periodIdx);
             }
             sprintf(key, "[SEARCHSCREEN%d_PERIOD%2.2d]", moduleParam,
-                    g_GameState_0046aa30->stateValues[periodIdx]);
+                    gs->stateValues[periodIdx]);
             ParseFile(this, g_StateString_0046aa2c, key);
             staticSceneFound = 0;
         }
@@ -287,21 +300,22 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
     // Check character class
     int charIdx = g_PeriodStateIdx_0046cb90;
-    if (charIdx < 0 || g_GameState_0046aa30->maxStates - 1 < charIdx) {
+    gs = g_GameState_0046aa30;
+    if (charIdx < 0 || gs->maxStates - 1 < charIdx) {
         ShowError("Invalid gamestate %d", charIdx);
     }
     char classLabel[8];
-    sprintf(classLabel, "%c_CLASS", (int)g_PeriodCharTable_0046cb94[g_GameState_0046aa30->stateValues[charIdx]]);
-    int classIdx = g_GameState_0046aa30->FindState(classLabel);
-    if (classIdx < 0 || g_GameState_0046aa30->maxStates - 1 < classIdx) {
+    sprintf(classLabel, "%c_CLASS", (int)g_PeriodCharTable_0046cb94[gs->stateValues[charIdx]]);
+    classIdx = gs->FindState(classLabel);
+    if (classIdx < 0 || gs->maxStates - 1 < classIdx) {
         ShowError("Invalid gamestate %d", classIdx);
     }
-    if (g_GameState_0046aa30->stateValues[classIdx] == targetRoom) {
-        int wentIdx = g_GameState_0046aa30->FindState("WENT_TO_CLASS");
-        if (wentIdx < 0 || g_GameState_0046aa30->maxStates - 1 < wentIdx) {
+    if (gs->stateValues[classIdx] == targetRoom) {
+        int wentIdx = gs->FindState("WENT_TO_CLASS");
+        if (wentIdx < 0 || gs->maxStates - 1 < wentIdx) {
             ShowError("Invalid gamestate %d", wentIdx);
         }
-        g_GameState_0046aa30->stateValues[wentIdx] = 1;
+        gs->stateValues[wentIdx] = 1;
     }
 
     // Call IconBar::Init
@@ -470,6 +484,7 @@ void SCI_IconBarModule::Update(int param1, int param2) {
 int SCI_IconBarModule::AddMessage(SC_Message* msg) {
     int idx;
     int iconIdx;
+    GameState* gs;
 
     timeout->Start(2000);
 
@@ -502,11 +517,12 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
             }
 
             if (skipActionsCount == 0) {
-                idx = g_GameState_0046aa30->FindLabel("NUM_ACTIONS");
-                if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
+                gs = g_GameState_0046aa30;
+                idx = gs->FindLabel("NUM_ACTIONS");
+                if (idx < 0 || gs->maxStates - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
-                g_GameState_0046aa30->stateValues[idx]++;
+                gs->stateValues[idx]++;
             }
 
             Exit(msg);
@@ -516,9 +532,10 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
 
         if (hasBoundaryRect != 0) {
             int mx = ((SpriteAction*)msg)->mousePos.x;
-            int my = ((SpriteAction*)msg)->mousePos.y;
             int inRect;
-            if (boundRect.left > mx || boundRect.right < mx || boundRect.top > my || boundRect.bottom < my) {
+            if (boundRect.left > mx || boundRect.right < mx ||
+                boundRect.top > ((SpriteAction*)msg)->mousePos.y ||
+                boundRect.bottom < ((SpriteAction*)msg)->mousePos.y) {
                 inRect = 0;
             } else {
                 inRect = 1;
@@ -528,11 +545,12 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
             }
         }
     } else if (((SpriteAction*)msg)->button2 >= 2) {
-        idx = g_GameState_0046aa30->FindLabel("NUM_ACTIONS");
-        if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
+        gs = g_GameState_0046aa30;
+        idx = gs->FindLabel("NUM_ACTIONS");
+        if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
-        g_GameState_0046aa30->stateValues[idx]++;
+        gs->stateValues[idx]++;
     }
 
     return 1;

@@ -35,6 +35,11 @@ def get_function_name(line):
 
 def main():
     demo_mode = '--demo' in sys.argv
+    file_filter = None
+    if '--filter' in sys.argv:
+        idx = sys.argv.index('--filter')
+        if idx + 1 < len(sys.argv):
+            file_filter = sys.argv[idx + 1]
     if demo_mode:
         src_dir = "src-demo"
         code_dir = "code"
@@ -67,6 +72,8 @@ def main():
 
         for file in sorted(files):
             if not file.endswith(".cpp"):
+                continue
+            if file_filter and file_filter not in file:
                 continue
             filepath = os.path.join(root, file)
             with open(filepath, "r") as f:

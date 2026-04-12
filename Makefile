@@ -157,7 +157,7 @@ sort:
 	@python3 bin/sortByAddress.py
 
 report:
-	@python3 bin/compileAndReport.py
+	@python3 bin/compileAndReport.py $(if $(FILTER),--filter $(FILTER))
 
 progress:
 	@python3 bin/showProgress.py
