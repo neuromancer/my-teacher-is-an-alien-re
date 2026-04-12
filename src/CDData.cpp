@@ -329,7 +329,7 @@ int CDData::ResolvePath(char* name) {
     if (_chdir(pathBuf) != 0) {
         _mkdir(drive);
     } else {
-        _chdir("C:\\");
+        _chdir("..");
     }
     CopyFileContent(name, (char*)((int)this + 0x195));
     return 1;

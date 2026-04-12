@@ -80,42 +80,44 @@ void T_MenuButton::Update()
         mouseX = 0;
     }
 
-    int newState;
-    if (sprite == 0 ||
-        bounds.right > mouseX || activeRight < mouseX ||
-        bounds.bottom > mouseY || activeBottom < mouseY) {
-        // Outside bounds
-        int st = bounds.left;
-        if (st == 0 || st == 3) {
-            bounds.left = 0;
-            if (cursor == 0) goto do_draw;
-            newState = 0;
-        } else if (st == 1 || st == 2) {
-            bounds.left = 1;
-            if (cursor == 0) goto do_draw;
-            newState = 1;
-        } else {
-            return;
-        }
-    } else {
+    if (sprite != 0 &&
+        bounds.right <= mouseX && activeRight >= mouseX &&
+        bounds.bottom <= mouseY && activeBottom >= mouseY) {
         // Inside bounds
         int st = bounds.left;
         if (st == 0 || st == 3) {
             bounds.left = 3;
-            if (cursor == 0) goto do_draw;
-            newState = 3;
+            if (cursor != 0) {
+                cursor->ResetAnimation(3, 0);
+            }
         } else if (st == 1 || st == 2) {
             bounds.left = 2;
-            if (cursor == 0) goto do_draw;
-            newState = 2;
+            if (cursor != 0) {
+                cursor->ResetAnimation(2, 0);
+            }
+        } else {
+            return;
+        }
+    } else {
+        // Outside bounds
+        int st = bounds.left;
+        if (st == 0 || st == 3) {
+            bounds.left = 0;
+            if (cursor != 0) {
+                cursor->ResetAnimation(0, 0);
+            }
+        } else if (st == 1 || st == 2) {
+            bounds.left = 1;
+            if (cursor != 0) {
+                cursor->ResetAnimation(1, 0);
+            }
         } else {
             return;
         }
     }
-    ((Sprite*)cursor)->ResetAnimation(newState, 0);
-do_draw:
+
     if (cursor != 0) {
-        ((Sprite*)cursor)->Do(((Sprite*)cursor)->loc_x, ((Sprite*)cursor)->loc_y, 1.0);
+        cursor->Do(cursor->loc_x, cursor->loc_y, 1.0);
     }
 }
 
@@ -165,7 +167,6 @@ int T_MenuButton::LBLParse(char* line) {
     int local_20;
     int local_1c;
     int local_18;
-    int* queue;
     SpriteAction* action;
 
     local_18 = 0;
@@ -200,32 +201,31 @@ int T_MenuButton::LBLParse(char* line) {
         }
         action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         ParseSpriteAction(action, this);
-        queue = (int*)messageQueue;
-        if (action == 0) {
-            ShowError("queue fault 0101");
-        }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        {
+            LinkedList* q = (LinkedList*)messageQueue;
+            q->ResetForSortedAdd(action);
+            if (q->type == 1 || q->type == 2) {
+                if (q->head == 0) {
+                    ((Queue*)q)->InsertAtCurrent(action);
+                } else {
+                    do {
+                        ListNode* cur = q->current;
+                        if (*(int*)(cur->data) < *(int*)action) {
+                            q->InsertNode(action);
+                            break;
+                        }
+                        if (q->tail == cur) {
+                            q->PushNode(action);
+                            break;
+                        }
+                        if (cur != 0) {
+                            q->current = cur->next;
+                        }
+                    } while (q->current != 0);
+                }
             } else {
-                do {
-                    int cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
-                        break;
-                    }
-                    if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
-                        break;
-                    }
-                    if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
-                    }
-                } while (queue[2] != 0);
+                ((Queue*)q)->InsertAtCurrent(action);
             }
-        } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
         }
     } else if (strcmp(local_50, "SWITCHFOCUS") == 0) {
         int result = sscanf(line, " %s %s %d %s", local_50, local_70, &local_18, local_90, &local_1c);
@@ -240,32 +240,31 @@ int T_MenuButton::LBLParse(char* line) {
             local_18,
             g_StringTable_0046aa34->FindState((char*)local_90),
             local_1c, 4, 0, 0, 0, 0, 0);
-        queue = (int*)messageQueue;
-        if (action == 0) {
-            ShowError("queue fault 0101");
-        }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        {
+            LinkedList* q = (LinkedList*)messageQueue;
+            q->ResetForSortedAdd(action);
+            if (q->type == 1 || q->type == 2) {
+                if (q->head == 0) {
+                    ((Queue*)q)->InsertAtCurrent(action);
+                } else {
+                    do {
+                        ListNode* cur = q->current;
+                        if (*(int*)(cur->data) < *(int*)action) {
+                            q->InsertNode(action);
+                            break;
+                        }
+                        if (q->tail == cur) {
+                            q->PushNode(action);
+                            break;
+                        }
+                        if (cur != 0) {
+                            q->current = cur->next;
+                        }
+                    } while (q->current != 0);
+                }
             } else {
-                do {
-                    int cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
-                        break;
-                    }
-                    if (queue[1] == cur) {
-                        ((Queue*)queue)->Push(action);
-                        break;
-                    }
-                    if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
-                    }
-                } while (queue[2] != 0);
+                ((Queue*)q)->InsertAtCurrent(action);
             }
-        } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
         }
     } else if (strcmp(local_50, "END") == 0) {
         return 1;
@@ -280,28 +279,29 @@ void T_MenuButton::Cleanup() {}
 
 /* Function start: 0x421020 */
 void T_MenuButton::ProcessSpriteActions() {
-    LinkedList* list = (LinkedList*)messageQueue;
-    if (list != 0) {
-        list->current = list->head;
-        if (list->head == 0) return;
-        do {
-            ListNode* cur = list->current;
-            SpriteAction* data;
-            if (cur == 0) {
-                data = 0;
-            } else {
-                data = (SpriteAction*)cur->data;
-            }
-            EnqueueSpriteAction(data);
-            ListNode* curNode = list->current;
-            if (list->tail == curNode) {
-                return;
-            }
-            if (curNode != 0) {
-                list->current = curNode->next;
-            }
-        } while (list->head != 0);
-    }
+    if (messageQueue == 0) return;
+
+    ((LinkedList*)messageQueue)->current = ((LinkedList*)messageQueue)->head;
+
+    if (((LinkedList*)messageQueue)->head == 0) return;
+
+    do {
+        ListNode* cur = ((LinkedList*)messageQueue)->current;
+        SpriteAction* data;
+        if (cur == 0) {
+            data = 0;
+        } else {
+            data = (SpriteAction*)cur->data;
+        }
+        EnqueueSpriteAction(data);
+        ListNode* curNode = ((LinkedList*)messageQueue)->current;
+        if (((LinkedList*)messageQueue)->tail == curNode) {
+            return;
+        }
+        if (curNode != 0) {
+            ((LinkedList*)messageQueue)->current = curNode->next;
+        }
+    } while (((LinkedList*)messageQueue)->head != 0);
 }
 
 /* Function start: 0x420EF0 */
