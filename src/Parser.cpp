@@ -96,8 +96,8 @@ void Parser::RestoreFilePosition() {
   }
 }
 
-// FilePosCache moved to FilePosCache.cpp
-#include "FilePosCache.h"
+// SoundTracker provides Lookup/Store for file position caching
+#include "SoundTracker.h"
 
 
 /* Function start: 0x412AD0 */
@@ -110,7 +110,7 @@ void Parser::FindKey(unsigned char *param_1) {
   }
 
   if (field_0x38 & 1) {
-    *(__int64*)pos = g_FilePosCache_0046928c->Lookup(filename, (char*)param_1);
+    *(__int64*)pos = g_SoundTracker_0046928c->Lookup(filename, (char*)param_1);
     if (pos[1] != -1 || pos[0] != -1) {
       fsetpos(pFile, (fpos_t*)pos);
       return;
@@ -131,7 +131,7 @@ void Parser::FindKey(unsigned char *param_1) {
 
   if (field_0x38 & 1) {
     fgetpos(pFile, (fpos_t*)pos);
-    g_FilePosCache_0046928c->Store(filename, (char*)param_1, pos[0], pos[1]);
+    g_SoundTracker_0046928c->Store(filename, (char*)param_1, pos[0], pos[1]);
   }
 }
 
@@ -281,7 +281,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
   char key_buffer[60];
   int result;
 
-  if (g_FilePosCache_0046928c != 0) {
+  if (g_SoundTracker_0046928c != 0) {
     self->field_0x38 |= 1;
   }
 

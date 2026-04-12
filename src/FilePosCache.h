@@ -19,6 +19,6 @@ public:
     void Store(char* filename, char* key, int posLo, int posHi);  // 0x412210
 };
 
-// g_FilePosCache_0046928c — declared in globals.h
+// Lookup and Store are SoundTracker methods (0x412130, 0x412210)
 
 #endif // FILPOSCACHE_H

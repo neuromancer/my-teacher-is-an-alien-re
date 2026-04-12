@@ -13,7 +13,6 @@
 #include "Parser.h"
 #include "Timer.h"
 #include "MemoryCache.h"
-#include "FilePosCache.h"
 #include "SoundTracker.h"
 #include "GameLoopHelper.h"
 #include "MsgList.h"
@@ -53,7 +52,7 @@ TargetList* g_TargetList_00435f0c = 0;                       // 0x00435f0c — T
 CombatSprite* g_SpriteList_00435f10 = 0;                     // 0x00435f10 — SPRITELIST parser
 Weapon* g_Weapon_00435f14 = 0;                               // 0x00435f14 — Weapon parser (RockThrower)
 Palette* g_EnginePalette_00435f18 = 0;                       // 0x00435f18
-void* g_EngineSound_00435f1c = 0;                            // 0x00435f1c
+SoundList* g_SoundList_00435f1c = 0;                          // 0x00435f1c
 CursorState* g_ScoreManager_00435f20 = 0;                    // 0x00435f20
 mCNavigator* g_Navigator_00435f24 = 0;                       // 0x00435f24 — NAVIGATION parser
 GameOutcome* g_GameOutcome_00435f28 = 0;                     // 0x00435f28 — Game outcome state
@@ -239,8 +238,7 @@ int g_TotalProcessTime_0046915c = 0;                         // 0x0046915c
 int g_VarSubstFlag_00469160 = 0;                             // 0x00469160
 char g_VarSubstBuffer_00469168[160] = {0};                   // 0x00469168
 int g_ParserCount = 0;                                       // 0x00469288
-FilePosCache* g_FilePosCache_0046928c = 0;                   // 0x0046928c
-SoundTracker* g_SoundTracker_0046928c = 0;                   // 0x0046928c (same address, different purpose?)
+SoundTracker* g_SoundTracker_0046928c = 0;                   // 0x0046928c
 
 // --- 0x0046axxx (main game objects) ---
 int g_SchoolMenuActive_0046a190 = 0;                         // 0x0046a190

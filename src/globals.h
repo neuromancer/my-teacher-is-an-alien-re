@@ -5976,7 +5976,6 @@ extern char g_CmdLineInputMode_0043d560; // Command line input mode
 // Globals moved from stubs.cpp (sorted by address)
 extern int (*g_OutOfMemoryCallback)(unsigned int);        // Memory callback
 extern short _param_3;                                     // Sound.obj ?_param_3@@3FA
-extern void* g_EngineSound_00435f1c;                                // EngineB global
 extern int g_PaletteColorTable_00437608[256];                              // palette color table
 extern char g_QuestLevelKey_00468108[32];                              // SC_Question buffer
 extern int g_DetentionFlag_00468764;                                   // SCI_IconBarModule / SC_Detention
@@ -6080,10 +6079,6 @@ extern int g_CacheSizeLimit_00473444;                      // max cache size
 extern int g_CacheEntryCount_0046b780;                     // cache entry count
 extern int g_CacheEvictThreshold_0046b790;                 // eviction threshold
 extern MemoryCache* g_FileCache_0046b78c;                  // file cache object
-
-// FilePosCache globals
-class FilePosCache;
-extern FilePosCache* g_FilePosCache_0046928c;              // file position cache
 
 // Main game globals (moved from main.cpp)
 class SoundTracker;
