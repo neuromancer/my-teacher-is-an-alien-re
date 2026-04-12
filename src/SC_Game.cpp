@@ -330,8 +330,7 @@ int SC_Game::LBLParse(char* line) {
     } else if (strcmp(keyword, "PALETTE") == 0) {
         sscanf(line, "%s %s", keyword, buffer);
         if (*(void**)((int)this + 0xBC) != 0) {
-            ((Palette*)*(void**)((int)this + 0xBC))->~Palette();
-            FreeMemory(*(void**)((int)this + 0xBC));
+            operator delete(*(void**)((int)this + 0xBC));
             *(void**)((int)this + 0xBC) = 0;
         }
         Palette* pal = InitPalette((Palette*)AllocateMemory(8));

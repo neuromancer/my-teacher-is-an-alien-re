@@ -134,7 +134,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
         actionList->current = actionList->head;
         if (actionList->type == 1 || actionList->type == 2) {
             if (actionList->head == 0) {
-                ((Queue*)actionList)->InsertAtCurrent(action);
+                ((LinkedList*)actionList)->InsertNode(action);
             } else {
                 do {
                     int cur = (int)actionList->current;

@@ -6,6 +6,8 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 
 /* Function start: 0x414220 */
 SC_ZBuffer::SC_ZBuffer() {
+    handlerId = 0x22;
+    timer.Reset();
 }
 
 SC_ZBuffer::~SC_ZBuffer() {

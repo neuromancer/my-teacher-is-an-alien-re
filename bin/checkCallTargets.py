@@ -158,6 +158,8 @@ KNOWN_CRT_FULL = {
     0x460220: "_strnicmp",
     0x460340: "_filelength",
     0x4603D0: "_chdir",
+    0x454960: "strstr",
+    0x456090: "strchr",
     # SEH/EH runtime
     0x454410: "__global_unwind2",
     0x454452: "__local_unwind2",

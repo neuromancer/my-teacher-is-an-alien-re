@@ -205,7 +205,7 @@ int MMPlayer::LBLParse(char* param_1)
             Parser::LBLParse("MMPlayer");
         }
         sprite = new Sprite(local_b0);
-        sprite->LBLParse(param_1);
+        sprite->Sprite::LBLParse(param_1);
         AddSprite(sprite);
     }
     else if (strcmp(local_34, "END") == 0)

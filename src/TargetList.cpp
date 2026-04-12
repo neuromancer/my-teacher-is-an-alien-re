@@ -21,7 +21,8 @@ TargetList::~TargetList() {
     self->count--;
     Target* t = self->targets[self->count];
     if (t) {
-      delete t;
+      t->Target::~Target();
+      operator delete(t);
       self->targets[self->count] = 0;
     }
     self->targets[self->count] = 0;

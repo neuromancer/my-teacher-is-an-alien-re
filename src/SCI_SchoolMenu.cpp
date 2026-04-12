@@ -149,7 +149,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     ptr = menuSound;
     if (ptr != 0) {
         menuSound->Unload();
-        delete menuSound;
+        operator delete(menuSound);
         menuSound = 0;
     }
 

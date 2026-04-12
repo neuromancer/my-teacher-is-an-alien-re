@@ -65,7 +65,7 @@ void AnimatedAsset::LoadFont(char *param_1)
         delete anim;
       }
       InitGlyphTable();
-      iVar2 = IsValidChar(0x41);
+      iVar2 = AnimatedAsset::IsValidChar(0x41);
       if (iVar2 != 0) {
         iVar2 = GetTextWidth("A");
         iVar2 = (iVar2 * 2) / 3;

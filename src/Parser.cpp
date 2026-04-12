@@ -319,7 +319,6 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
       }
 
       g_ReadLineTime_00469154 += lineTimer.Update();
-      { fpos_t _p; fgetpos(self->pFile, &_p); WriteToLog("ProcessFile read line pos=%d: '%.60s'", ((int*)&_p)[0], line_buffer); }
       result = self->GetKey(line_buffer);
     } while (result == 1);
 
@@ -352,7 +351,7 @@ void Parser::BeginComment(char* line) {
     if (start == 0 || end == 0 || len <= 0) {
         ShowError("Parser::SaveComment - %s", line);
     }
-    memcpy((char*)this + 0x10, start, len);
+    strncpy((char*)this + 0x10, start, len);
     *((char*)this + 0x10 + len) = '\0';
 }
 
@@ -365,7 +364,7 @@ int Parser::DoCommentsMatch(char* line) {
     if (start == 0 || end == 0 || len <= 0) {
         ShowError("Parser::DoCommentsMatch - %s", line);
     }
-    memcpy(localBuf, start, len);
+    strncpy(localBuf, start, len);
     localBuf[len] = '\0';
     if (strcmp(localBuf, currentKey) == 0) {
         return 1;
@@ -642,7 +641,6 @@ void Parser::HandleToken(int tokenType, char* line) {
             ((int*)&filePos)[0] = 0;
             ((int*)&filePos)[1] = 0;
             fgetpos(pFile, &filePos);
-            WriteToLog("GOSUB fgetpos: pos=%d,%d file=%s", ((int*)&filePos)[0], ((int*)&filePos)[1], filename);
 
             int* pool = (int*)field_0x3c;
             int headVal = *pool;
@@ -737,7 +735,6 @@ void Parser::HandleToken(int tokenType, char* line) {
                 fpos_t restorePos;
                 ((int*)&restorePos)[0] = savedPos;
                 ((int*)&restorePos)[1] = (int)local_74;
-                WriteToLog("RETURN fsetpos: pos=%d,%d file=%s", savedPos, (int)local_74, filename);
                 fsetpos(pFile, &restorePos);
             }
             g_VarSubstFlag_00469160 = 0;

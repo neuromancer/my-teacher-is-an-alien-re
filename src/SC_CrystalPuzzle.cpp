@@ -384,7 +384,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
 
     if (pmsg[0xb] == 0x1b) {
         puzzleFlags |= 1;
-        Exit(msg);
+        SC_CrystalPuzzle::Exit(msg);
         return 1;
     }
 
@@ -408,7 +408,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
             (rect7.left <= clickX && clickX <= rect7.right &&
              rect7.top <= clickY && clickY <= rect7.bottom)) {
             puzzleFlags |= 1;
-            Exit(msg);
+            SC_CrystalPuzzle::Exit(msg);
             return 1;
         }
 
@@ -443,7 +443,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 gs->stateValues[idx] = 0;
-                Exit(msg);
+                SC_CrystalPuzzle::Exit(msg);
                 return 1;
             }
         }
@@ -479,7 +479,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 gs->stateValues[idx] = 0;
-                Exit(msg);
+                SC_CrystalPuzzle::Exit(msg);
                 return 1;
             }
         }
@@ -498,7 +498,7 @@ int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
             if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
                 g_DoorRects_00473dc8[2].top <= mouseY && mouseY <= g_DoorRects_00473dc8[2].bottom) {
                 puzzleFlags |= 2;
-                Exit(msg);
+                SC_CrystalPuzzle::Exit(msg);
             }
         }
     }

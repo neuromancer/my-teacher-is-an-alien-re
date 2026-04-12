@@ -25,8 +25,6 @@ int SC_Message::LBLParse(char* param_1)
     local_30[0] = '\0';
     sscanf(param_1, "%s", local_30);
 
-    WriteToLog("SC_Message::LBLParse token='%s' line='%.80s'", local_30, param_1);
-
     if (strcmp(local_30, "ADDRESS") == 0) {
         sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
         if (g_StringTable_0046aa34 != 0) {

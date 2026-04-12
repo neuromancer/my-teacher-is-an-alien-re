@@ -57,7 +57,7 @@ void ZBuffer::CleanUpVBuffer()
 {
     VBuffer* vb = m_vbuffer;
     if (vb != 0) {
-        vb->~VBuffer();
+        vb->VBuffer::~VBuffer();
         FreeFromGlobalHeap(vb);
         m_vbuffer = 0;
     }

@@ -129,7 +129,7 @@ void SC_Rats::Init(SC_Message* msg) {
 /* Function start: 0x451B30 */
 int SC_Rats::ShutDown(SC_Message* msg) {
     if (combatEngine != 0) {
-        combatEngine->StopAndCleanup();
+        combatEngine->SC_CombatBase::StopAndCleanup();
         if (combatEngine != 0) {
             delete combatEngine;
             combatEngine = 0;

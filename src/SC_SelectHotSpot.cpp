@@ -252,8 +252,6 @@ int SelectHotspot::LBLParse(char* line) {
     keyword[0] = 0;
     sscanf(line, "%s", keyword);
 
-    WriteToLog("SelectHotspot::LBLParse keyword='%s'", keyword);
-
     if (strcmp(keyword, "SPRITE") == 0) {
         void* tmp = SelectHotspot::sprite;
         if (tmp != 0) {

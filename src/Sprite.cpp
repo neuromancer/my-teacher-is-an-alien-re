@@ -609,14 +609,8 @@ int Sprite::Do(int x, int y, double scale) {
 
     if (!skipAnim) {
         animation_data->DoFrame();
-        if (animation_data != 0) {
-            if (animation_data->smk->FrameNum - cur->dim.y != -1) {
-                goto do_nextframe;
-            }
-        } else {
-            if (cur->dim.y != 1) {
-                goto do_nextframe;
-            }
+        if (animation_data->smk->FrameNum - cur->dim.y != -1) {
+            goto do_nextframe;
         }
         {
             int hasLimit;

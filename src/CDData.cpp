@@ -378,9 +378,9 @@ extern "C" char* FormatAssetPath(char* format, ...)
 }
 
 /* Function start: 0x426190 */
-char* ResolveAssetPath(char* name) {
+char* __cdecl ResolveAssetPath(char* name, ...) {
     char* basePath = g_PathResolver_0046aa1c->cdPath + 0x8a;
-    sprintf(basePath, "%s", name);
+    vsprintf(basePath, name, (char*)&name + 4);
 
     if (FileCacheLookup(basePath) != 0) {
         return basePath;
