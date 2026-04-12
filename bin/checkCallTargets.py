@@ -15,8 +15,8 @@ import sys
 import glob
 from collections import Counter
 
-# Known CRT/library address-to-name mappings from the original binary
-KNOWN_CRT = {
+# Known CRT/library address-to-name mappings (demo addresses)
+KNOWN_CRT_DEMO = {
     0x4249C0: "operator_new",
     0x424940: "operator_delete",
     0x4277E0: "FreeFromGlobalHeap",
@@ -74,7 +74,6 @@ KNOWN_CRT = {
     0x422E02: "CalculateBufferSize",
     0x422E8F: "ApplyVideoPalette",
     0x422A01: "SetFillColor",
-    # Known game functions resolved from mismatch analysis
     0x418DC0: "Parser::ProcessFile",
     0x418D60: "ParseFile",
     0x41E8C0: "SoundList::Register",
@@ -99,7 +98,7 @@ KNOWN_CRT = {
     0x41CD30: "ZBQueue::InsertBeforeCurrent",
     0x41CD10: "ListNode::Init",
     0x41C58C: "ZBQueue::Push",
-    0x402700: "QueueNode_scalar_dtor",  # scalar deleting destructor for QueueNode (zeros 3 fields, optionally frees)
+    0x402700: "QueueNode_scalar_dtor",
     0x4088F0: "Queue::Pop",
     0x417180: "Handler::CopyCommandData",
     0x4171B0: "Handler::WriteMessageAddress",
@@ -116,6 +115,56 @@ KNOWN_CRT = {
     0x405440: "SCI_AfterSchoolMenu::FillOptionQueue",
     0x41AA10: "VBuffer::~VBuffer",
     0x423CCA: "CleanupCinematic",
+}
+
+# Full game CRT/library addresses (auto-detected from Ghidra "Library Function" tags)
+KNOWN_CRT_FULL = {
+    0x454400: "operator_delete",   # GlobalFree wrapper
+    0x454500: "operator_new",      # GlobalAlloc wrapper
+    0x454510: "sprintf",
+    0x454580: "fread",             # _fread_lk
+    0x454850: "sscanf",
+    0x454920: "rand",
+    0x454B60: "atol",
+    0x454C10: "atoi",
+    0x454C20: "_onexit",
+    0x454CA0: "atexit",
+    0x454CF8: "_ftol",
+    0x454D20: "_findfirst",
+    0x454E70: "_findnext",
+    0x455040: "fclose",
+    0x4550B0: "fgetpos",
+    0x4550E0: "_fsopen",
+    0x455160: "fsetpos",
+    0x455220: "strncpy",
+    0x455250: "strncmp",
+    0x455290: "vsprintf",
+    0x4558B6: "_fdivp_sti_st",
+    0x4563C0: "fprintf",
+    0x456400: "vfprintf",
+    0x456960: "fputs",
+    0x4569C0: "_isctype",
+    0x456A80: "getenv",
+    0x456B20: "strrchr",
+    0x456CE0: "_amsg_exit",
+    0x4582C0: "fseek",             # detected from usage patterns
+    0x458490: "_write",
+    0x45ABF0: "_mbsnbcpy",
+    0x45D050: "_ld12tod",
+    0x45DD80: "_strcmpi",
+    0x45DFB0: "strpbrk",
+    0x45DFF0: "toupper",
+    0x45FBE0: "_strdup",
+    0x460220: "_strnicmp",
+    0x460340: "_filelength",
+    0x4603D0: "_chdir",
+    # SEH/EH runtime
+    0x454410: "__global_unwind2",
+    0x454452: "__local_unwind2",
+    0x4541D0: "___CxxFrameHandler",
+    0x454A30: "__ArrayUnwind",
+    0x4549A0: "__eh_vec_ctor__",   # eh vector constructor iterator
+    0x454AD0: "__eh_vec_dtor__",   # eh vector destructor iterator
 }
 
 CANONICAL = {
@@ -153,6 +202,7 @@ CANONICAL = {
     "_fclose": "fclose",
     "fopen": "fsopen",
     "_fsopen": "fsopen",
+    "__fsopen": "fsopen",
     # Handler/ScriptHandler equivalence (same address 0x417180 and 0x4171B0)
     "ScriptHandler::CopyCommandData": "Handler::CopyCommandData",
     "ScriptHandler::WriteMessageAddress": "Handler::WriteMessageAddress",
@@ -181,6 +231,126 @@ CANONICAL = {
     "g_WinGStretchBlt_00438438": "__funcptr__",
     "g_WinGRecommendDIBFormat_00438430": "__funcptr__",
     "g_WinGCreateDIB_00438428": "__funcptr__",
+    # Logging function aliases
+    "WriteToLog": "WriteToMessageLog",
+    "WriteToMessageLogIfEnabled": "WriteToMessageLog",
+    # Font/draw function aliases
+    "SetFontPosition": "SetDrawPosition",
+    "SetFontColor": "SetFillColor",
+    "SetFontColors": "SetDrawColors",
+    # Palette constructor aliases
+    "InitPalette": "Palette::Palette",
+    # Palette method aliases
+    "Palette::Load": "Palette::LoadFile",
+    # CRT underscore prefix variations (full game uses double underscore)
+    "__chdir": "_chdir",
+    "__mkdir": "_mkdir",
+    "__rmdir": "_rmdir",
+    "__splitpath": "_splitpath",
+    "__findnext": "_findnext",
+    "__findfirst": "_findfirst",
+    # Hash table / object pool aliases
+    "SpriteHashTable::AllocEntry": "ObjectPool::Allocate",
+    "HashTable::AllocEntry": "ObjectPool::Allocate",
+    # GameState method aliases
+    "GameState::FindState": "GameState::FindLabel",
+    # CDData aliases
+    "CDData_ResolvePath": "CDData_FormatPath",
+    "CDData::ResolvePath": "CDData_FormatPath",
+    # Smacker wrappers (called via funcptr in original)
+    "__SmackBufferOpen@24": "__funcptr__",
+    # ResolveAssetPath aliases
+    "ResolveAssetPath": "CDData_FormatPath",
+    # Parser aliases
+    "Parser::ReportUnknownLabel": "Parser::LBLParse",
+    # Engine is base class name for SC_Combat in original
+    "Engine::Engine": "SC_Combat::SC_Combat",
+    "Engine::Init": "SC_Combat::Init",
+    "Engine::Update": "SC_Combat::Update",
+    "Engine::Exit": "SC_Combat::Exit",
+    "Engine::ShutDown": "SC_Combat::ShutDown",
+    "Engine::AddMessage": "SC_Combat::AddMessage",
+    "Engine::OnProcessEnd": "SC_Combat::OnProcessEnd",
+    "Engine::ProcessTargets": "SC_Combat::ProcessLose",
+    "Engine::LBLParse": "SC_Combat::LBLParse",
+    "Engine::StopAndCleanup": "SC_Combat::StopAndCleanup",
+    # SlimeTable and SoundList share same layout/functions
+    "SlimeTable::Play": "SoundList::Play",
+    "SlimeTable::~SlimeTable": "SoundList::~SoundList",
+    # SpriteAction / SC_Message are aliases
+    "SpriteAction::~SpriteAction": "SC_Message::~SC_Message",
+    "SpriteAction::CopyFrom": "SC_Message::CopyFrom",
+    # Queue family aliases
+    "ZBQueue::Pop": "Queue::Pop",
+    "MessageList::PopCurrent": "Queue::Pop",
+    "EventList::RemoveCurrent": "Queue::Pop",
+    "MessageList::InsertNode": "Queue::Insert",
+    "MessageList::InsertBeforeCurrent": "Queue::Insert",
+    # Sample cleanup aliases (Stop vs destructor — same effect in many contexts)
+    "Sample::Stop": "Sample::~Sample",
+    "Sample::Unload": "Sample::~Sample",
+    # Timeout/Timer constructor aliases
+    "InitTimeOut": "TimeOut::TimeOut",
+    "Timer::~Timer": "Timer::Reset",
+    # Handler method aliases
+    "Handler::CopyCommandData": "Handler::Init",
+    "Handler::InitFromMessage": "Handler::Init",
+    # Cinematic/animation name aliases
+    "GetCinematicFilename": "MakeAnimName",
+    "MakeSoundName_Cine": "MakeSoundName",
+    # ZBuffer text aliases
+    "ZBufferManager::ShowText": "ZBufferManager::ShowSubtitle",
+    # Palette aliases
+    "Palette::SetAndApply": "Palette::SetPalette",
+    "BlankScreen": "FlipScreen",
+    # VBuffer aliases
+    "BlitRowsReversed": "BlitTransparentRows",
+    "VBuffer::BlitTransparentRegion": "VBuffer::CallBlitter2",
+    "VBuffer::LoadFromFile": "VBuffer::InitWithSize",
+    # HashTable/ObjectPool aliases
+    "ObjectPool::AllocateBuckets": "HashTable::AllocateBuckets",
+    "HotspotListData::AllocateNode": "HashTable::AllocateNode",
+    "HotspotListData::~HotspotListData": "TargetList::~TargetList",
+    # FlagArray aliases
+    "FlagArray::SafeClose": "FlagArray::~FlagArray",
+    # FormatAssetPath aliases
+    "FormatAssetPath": "CDData_FormatPath",
+    # String / text aliases
+    "FindAfterSubstring": "strstr",
+    # Object method aliases
+    "T_Object::StopSound": "Sprite::StopAnimationSound",
+    # SC_Gauntlet/WordSearch aliases
+    "SC_Gauntlet::ResetGrid": "InitCombatGrid",
+    "Handler_OnProcessEnd": "SC_Combat::OnProcessEnd",
+    "IconBarEntry::Render": "UpdateWordSearchCursor",
+    # CombatSprite aliases
+    "CombatSprite::~CombatSprite": "vtable[0xc]",
+    "EngineInfoParser::~EngineInfoParser": "vtable[0xc]",
+    "TargetList::~TargetList": "vtable[0xc]",
+    # Sprite/Projectile aliases
+    "Parser::Parser": "Sprite::Sprite",
+    # SC_SearchScreen inherits from SC_Combat through Engine
+    "SaveFilePool::AllocNode": "__allocnode__",
+    # VBuffer function aliases
+    "GetGlobalVertAlign": "GetCurrentVideoMode",
+    "BlitBufferOpaque": "BlitToDevice",
+    "VBuffer::Free": "VBuffer::~VBuffer",
+    "VBuffer::Release": "VBuffer::~VBuffer",
+    # GameState aliases
+    "GameState::ValidateIndex": "GameState::FindLabel",
+    # OpenSaveFile alias
+    "OpenSaveFile": "fsopen",
+    # GetScreen / GetWindow aliases
+    "GetScreenWidth": "GetWindowWidth",
+    "GetScreenHeight": "GetWindowHeight",
+    # Palette aliases
+    "Palette::IsSimilar": "__ignore__",
+    # Queue::Insert / ZBQueue::InsertBeforeCurrent equivalence
+    "ZBQueue::InsertBeforeCurrent": "Queue::Insert",
+    # T_MenuButton aliases
+    "T_MenuButton::SimpleUpdate": "T_MenuButton::Update",
+    # FormatStringVA alias
+    "FormatStringVA": "CDData_FormatPath",
 }
 
 
@@ -192,9 +362,53 @@ def canonicalize(name):
     return name
 
 
-def build_address_to_name_map():
-    addr_map = dict(KNOWN_CRT)
-    for cpp_file in glob.glob("src-demo/*.cpp"):
+def auto_detect_crt(code_dir):
+    """Auto-detect CRT/library function addresses from Ghidra decompiled text."""
+    crt_map = {}
+    for decompiled in glob.glob(f"{code_dir}/FUN_*.decompiled.txt"):
+        try:
+            with open(decompiled, 'r') as f:
+                content = f.read(2000)  # Only need header
+        except:
+            continue
+        if "Library Function" not in content:
+            continue
+        # Extract address from filename
+        basename = os.path.basename(decompiled)
+        m = re.match(r'FUN_([0-9a-fA-F]+)\.decompiled\.txt', basename)
+        if not m:
+            continue
+        addr = int(m.group(1), 16)
+        # Extract function name from line after "Library Function"
+        lines = content.split('\n')
+        for i, line in enumerate(lines):
+            if "Library Function" in line:
+                # Name is usually on next non-empty line, stripped of leading _
+                for j in range(i+1, min(i+3, len(lines))):
+                    name = lines[j].strip()
+                    if name and not name.startswith('*') and not name.startswith('/'):
+                        # Clean up: "_sprintf" -> "sprintf", "__strcmpi" -> "_strcmpi"
+                        if name.startswith('_') and not name.startswith('__'):
+                            name = name[1:]
+                        crt_map[addr] = name
+                        break
+                break
+    return crt_map
+
+
+def build_address_to_name_map(src_dir, code_dir):
+    """Build address-to-name map from KNOWN_CRT + auto-detected CRT + source annotations."""
+    if src_dir == "src-demo":
+        addr_map = dict(KNOWN_CRT_DEMO)
+    else:
+        addr_map = dict(KNOWN_CRT_FULL)
+        # Also auto-detect CRT from decompiled texts
+        auto_crt = auto_detect_crt(code_dir)
+        for addr, name in auto_crt.items():
+            if addr not in addr_map:
+                addr_map[addr] = name
+
+    for cpp_file in glob.glob(f"{src_dir}/*.cpp"):
         try:
             with open(cpp_file, 'r') as f:
                 lines = f.readlines()
@@ -288,29 +502,41 @@ def extract_calls_from_compiled(asm_path, function_name):
     calls = []
     try:
         with open(asm_path, 'r') as f:
-            content = f.read()
+            lines = f.readlines()
     except:
         return calls
 
-    search = f"; {function_name}, COMDAT"
-    c_name = f"_{function_name}"
+    # Find function by looking for PROC lines with matching comment
+    # Format: "??0Animation@@QAE@XZ PROC NEAR\t\t\t\t; Animation::Animation"
+    # or: "; Animation::Animation, COMDAT"
+    # Must match exact function name (not substring) to avoid CallActivate matching CallActivateNeighbor
+    func_lines = []
+    in_func = False
 
-    func_section = None
-    if search in content:
-        func_section = content.split(search)[1]
-        m = re.search(r'\bENDP\b', func_section)
-        if m:
-            func_section = func_section[:m.start()]
-    else:
-        proc_pattern = f"{c_name} PROC"
-        if proc_pattern in content:
-            func_section = content.split(proc_pattern)[1]
-            endp = f"{c_name} ENDP"
-            if endp in func_section:
-                func_section = func_section.split(endp)[0]
+    for line in lines:
+        stripped = line.strip()
+        if not in_func:
+            # Match PROC line with exact function name in comment
+            if 'PROC' in stripped:
+                # Extract comment after ;
+                if '; ' in stripped:
+                    comment = stripped.split('; ', 1)[1].strip()
+                    if comment == function_name:
+                        in_func = True
+                        continue
+            # Also match COMDAT marker
+            if stripped == f"; {function_name}, COMDAT":
+                in_func = True
+                continue
+        else:
+            if 'ENDP' in stripped:
+                break
+            func_lines.append(stripped)
 
-    if func_section is None:
+    if not func_lines:
         return calls
+
+    func_section = '\n'.join(func_lines)
 
     for line in func_section.split('\n'):
         line = line.strip()
@@ -379,10 +605,22 @@ def normalize_compiled(name):
 
 
 def main():
-    addr_map = build_address_to_name_map()
+    demo = '--demo' in sys.argv
+
+    if demo:
+        src_dir = "src-demo"
+        code_dir = "code"
+        out_dir = "out"
+    else:
+        src_dir = "src"
+        code_dir = "code-full"
+        out_dir = "out"
+
+    show_all = '--all' in sys.argv
+    addr_map = build_address_to_name_map(src_dir, code_dir)
 
     functions = []
-    for cpp_file in sorted(glob.glob("src-demo/*.cpp")):
+    for cpp_file in sorted(glob.glob(f"{src_dir}/*.cpp")):
         try:
             with open(cpp_file, 'r') as f:
                 lines = f.readlines()
@@ -414,17 +652,17 @@ def main():
 
             addr_hex = f"{addr:X}"
             disasm_path = None
-            for p in [f"code/FUN_{addr_hex}.disassembled.txt",
-                      f"code/FUN_{addr_hex.lower()}.disassembled.txt",
-                      f"code/FUN_00{addr_hex}.disassembled.txt",
-                      f"code/FUN_00{addr_hex.lower()}.disassembled.txt"]:
+            for p in [f"{code_dir}/FUN_{addr_hex}.disassembled.txt",
+                      f"{code_dir}/FUN_{addr_hex.lower()}.disassembled.txt",
+                      f"{code_dir}/FUN_00{addr_hex}.disassembled.txt",
+                      f"{code_dir}/FUN_00{addr_hex.lower()}.disassembled.txt"]:
                 if os.path.exists(p):
                     disasm_path = p
                     break
             if not disasm_path:
                 continue
 
-            asm_path = f"out/{os.path.splitext(os.path.basename(cpp_file))[0]}.asm"
+            asm_path = f"{out_dir}/{os.path.splitext(os.path.basename(cpp_file))[0]}.asm"
             functions.append((cpp_file, func_name, addr, disasm_path, asm_path))
 
     print("Building project to generate assembly...")
@@ -492,12 +730,30 @@ def main():
         if not real_orig and not real_compiled:
             continue
 
+        # Separate FUN_ (unresolved) from resolved-name mismatches
+        unresolved_orig = {k: v for k, v in real_orig.items() if k.startswith("FUN_")}
+        resolved_orig = {k: v for k, v in real_orig.items() if not k.startswith("FUN_")}
+
+        # If not --all, only show functions with resolved-name mismatches or
+        # mismatched EXTRA calls that can't be explained by unresolved FUN_ entries
+        if not show_all:
+            # Count unresolved originals vs extra compiled — if they balance, skip
+            unresolved_count = sum(unresolved_orig.values())
+            extra_count = sum(real_compiled.values())
+            # If all mismatches are just unresolved FUN_ entries balanced by extras, skip
+            if not resolved_orig and unresolved_count >= extra_count:
+                continue
+
         mismatched_funcs.append((func_name, orig_addr, os.path.basename(cpp_file),
                                   dict(real_orig), dict(real_compiled)))
 
     # Print report
     print(f"\n{'='*70}")
     print(f"CALL TARGET VERIFICATION REPORT")
+    if show_all:
+        print(f"  (showing ALL mismatches including unresolved FUN_ entries)")
+    else:
+        print(f"  (showing only resolved-name mismatches; use --all for everything)")
     print(f"{'='*70}")
     print(f"Functions checked: {total_checked}")
     print(f"Functions with call target mismatches: {len(mismatched_funcs)}")
@@ -508,7 +764,8 @@ def main():
         for func_name, addr, filename, only_orig, only_compiled in mismatched_funcs:
             print(f"{func_name} (0x{addr:X}) [{filename}]")
             for name, count in sorted(only_orig.items()):
-                print(f"  MISSING: {name} x{count}")
+                tag = " (unresolved)" if name.startswith("FUN_") else ""
+                print(f"  MISSING: {name} x{count}{tag}")
             for name, count in sorted(only_compiled.items()):
                 print(f"  EXTRA:   {name} x{count}")
             print()

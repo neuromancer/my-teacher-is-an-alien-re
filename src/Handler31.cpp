@@ -102,14 +102,14 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
             placeholder = new SC_Question(id, (SCI_Dialog*)this);
         }
 
-        g_FlagManager_0046a6e8->ClearFlag(id, 4);
+        g_FlagManager_0046a6e8->SetFlag(id, 4);
 
         if (sscanfResult == 3) {
             if (strcmp(arg2, "CONSTANT") != 0) {
-                g_FlagManager_0046a6e8->ClearFlag(id, 4);
+                g_FlagManager_0046a6e8->SetFlag(id, 4);
             }
             if (strcmp(arg2, "SINGLE_PLAY") != 0) {
-                g_FlagManager_0046a6e8->SetFlag(id, 4);
+                g_FlagManager_0046a6e8->ClearFlag(id, 4);
             }
         }
 

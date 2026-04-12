@@ -6,7 +6,7 @@ class SlimeTable {
 public:
     SlimeTable();
     ~SlimeTable();
-    void Init(int);
+    int Play(int);      // 0x425550
     void LoadEntry(int, char*, int);
     void Cleanup();     // 0x4254F0
     void Allocate(int); // 0x4254A0

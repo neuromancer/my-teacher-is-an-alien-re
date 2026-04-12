@@ -67,7 +67,7 @@ void SC_Slime::Init(SC_Message* msg)
 
     SlimeTable* table = new SlimeTable();
     slimeTable = table;
-    table->Init(0xC);
+    table->Allocate(0xC);
 
     moduleParam = ((SpriteAction*)msg)->addressValue;
     ParseFile(this, "mis\\cb_slime.mis", (char*)0);
@@ -472,9 +472,28 @@ SlimeTable::~SlimeTable()
     Cleanup();
 }
 
-void SlimeTable::Init(int count)
+/* Function start: 0x425550 */
+int SlimeTable::Play(int index)
 {
-    Allocate(count);
+    if (index < 0 || fields[0] - 1 < index) {
+        return 0;
+    }
+    if (((int*)fields[2])[index] != 0) {
+        int i = 0;
+        if (fields[0] > 0) {
+            do {
+                if (((int*)fields[2])[i] == ((int*)fields[2])[index] && ((Sample**)fields[1])[i] != 0) {
+                    ((Sample**)fields[1])[i]->Stop();
+                }
+                i++;
+            } while (fields[0] > i);
+        }
+    }
+    Sample* smp = ((Sample**)fields[1])[index];
+    if (smp != 0) {
+        smp->Play(100, 1);
+    }
+    return smp != 0;
 }
 
 /* Function start: 0x425620 */
