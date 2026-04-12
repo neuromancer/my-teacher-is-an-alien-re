@@ -8,7 +8,7 @@
 #include "Memory.h"
 #include "Animation.h"
 
-extern char* __cdecl ResolveAssetPath(char* name);
+extern char* __cdecl ResolveAssetPath(char* name, ...);
 extern "C" int FileExists(const char*);
 
 /* Function start: 0x41DBE0 */

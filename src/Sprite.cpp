@@ -85,7 +85,7 @@ void Sprite::StopAnimationSound()
     flags |= 0x20;
 }
 
-extern char* ResolveAssetPath(char*);
+extern char* __cdecl ResolveAssetPath(char*, ...);
 extern "C" char* FormatAssetPath(char*, ...);
 
 /* Function start: 0x44C880 */
@@ -176,7 +176,6 @@ void Sprite::CheckRanges1()
 int Sprite::CheckConditions()
 {
     int state_idx;
-    GameState* gs;
 
     if ((num_logic_conditions == 0) || (logic_conditions == 0)) {
         return 1;
@@ -185,64 +184,63 @@ int Sprite::CheckConditions()
     int i = 0;
     if (0 < num_logic_conditions) {
         do {
-            gs = g_GameState_0046aa30;
             int* cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 8) {
                 state_idx = cond[0];
-                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
+                GameState* gs = g_GameState_0046aa30;
+                if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] == 0) {
                     return 0;
                 }
             }
-            gs = g_GameState_0046aa30;
             cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 9) {
                 state_idx = cond[0];
-                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
+                GameState* gs = g_GameState_0046aa30;
+                if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] != 0) {
                     return 0;
                 }
             }
-            gs = g_GameState_0046aa30;
             cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 0xC) {
                 state_idx = cond[0];
-                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
+                GameState* gs = g_GameState_0046aa30;
+                if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] != *(int*)((char*)logic_conditions + offset + 8)) {
                     return 0;
                 }
             }
-            gs = g_GameState_0046aa30;
             cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 0xD) {
                 state_idx = cond[0];
-                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
+                GameState* gs = g_GameState_0046aa30;
+                if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] == *(int*)((char*)logic_conditions + offset + 8)) {
                     return 0;
                 }
             }
-            gs = g_GameState_0046aa30;
             cond = (int*)((char*)logic_conditions + offset);
             if (cond[1] == 0x1C) {
                 state_idx = cond[0];
-                if (state_idx < 0 || g_GameState_0046aa30->maxStates - 1 < state_idx) {
+                GameState* gs = g_GameState_0046aa30;
+                if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
-                GameState* gs2 = g_GameState_0046aa30;
                 if (gs->stateValues[state_idx] != handle) {
                     int idx2 = *(int*)((char*)logic_conditions + offset);
                     if (idx2 < 0 || g_GameState_0046aa30->maxStates - 1 < idx2) {
                         ShowError("Invalid gamestate %d", idx2);
                     }
-                    ResetAnimation(gs2->stateValues[idx2], 0);
+                    ResetAnimation(g_GameState_0046aa30->stateValues[idx2], 0);
                 }
             }
             offset += 0xC;
@@ -322,7 +320,7 @@ void Sprite::InitLogic(int param_1)
 
 extern char* MakeAnimName(int);
 extern char* MakeSoundName(char*);
-extern char* ResolveAssetPath(char*);
+extern char* __cdecl ResolveAssetPath(char*, ...);
 
 /* Function start: 0x44D6E0 */
 void Sprite::OnProcessEnd() {

@@ -7,7 +7,7 @@
 #include <string.h>
 #include <windows.h>
 
-extern char* __cdecl ResolveAssetPath(char* name);
+extern char* __cdecl ResolveAssetPath(char* name, ...);
 
 /* Function start: 0x43A6E0 */
 AnimatedAsset::AnimatedAsset()

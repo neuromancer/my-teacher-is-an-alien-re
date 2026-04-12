@@ -34,7 +34,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 
 extern "C" void ShowError(const char* format, ...);
 // FUN_00412a50 = Parser::LBLParse in Parser.h
-extern char* __cdecl ResolveAssetPath(char* name);
+extern char* __cdecl ResolveAssetPath(char* name, ...);
 #include "string.h"
 
 // FUN_00410fb0 = VBuffer ctor — callers updated to use new

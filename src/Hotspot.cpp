@@ -483,7 +483,7 @@ int T_Hotspot::LBLParse(char* param_1)
         list[2] = list[0];
         if (list[3] == 1 || list[3] == 2) {
             if (list[0] == 0) {
-                ((LinkedList*)list)->InsertNode(msg);
+                ((Queue*)list)->InsertAtCurrent((void*)msg);
             } else {
                 while (list[2] != 0) {
                     if (*(int*)(*(int*)(list[2] + 8)) < *(int*)msg) {

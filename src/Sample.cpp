@@ -27,7 +27,7 @@ void Sample::Unload() {
   }
 }
 
-extern char* __cdecl ResolveAssetPath(char*);
+extern char* __cdecl ResolveAssetPath(char*, ...);
 extern int __cdecl GetFileSize(char*);
 extern "C" FILE* fsopen(const char*, const char*);
 

@@ -756,7 +756,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
         hs->hotspotRight = rectRight;
         hs->hotspotBottom = rectBottom;
         sprintf(formatted, "DIALOG %d", hotspotIdx);
-        hs->T_Hotspot::LBLParse(formatted);
+        hs->LBLParse(formatted);
         if (room >= 15) {
             ShowError("Error in SCIsrcSc.cpp - LBLParse: Too many hotspots");
         }
@@ -803,10 +803,10 @@ int SCI_IconBarModule::LBLParse(char* line) {
         }
         if (gs->stateValues[stateIdx] != 0) {
             sprintf(formatted, "SWITCHROOM %d %d", room, rectBottom);
-            hs->T_Hotspot::LBLParse(formatted);
+            hs->LBLParse(formatted);
         } else {
             sprintf(formatted, "PLAYSOUND %d", sound);
-            hs->T_Hotspot::LBLParse(formatted);
+            hs->LBLParse(formatted);
         }
     } else if (strcmp(label, "MESSAGE") == 0) {
         if (field_128 == 0) {
@@ -831,7 +831,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
         hs->hotspotPos.y = -1;
         hs->hotspotRight = -50;
         hs->hotspotBottom = -50;
-        hs->T_Hotspot::LBLParse("DIALOG 10");
+        hs->LBLParse("DIALOG 10");
 
         if (field_128 == 0) {
             field_128 = new Queue(4);
@@ -870,7 +870,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
                 hs->hotspotPos.y = -1;
                 hs->hotspotRight = -50;
                 hs->hotspotBottom = -50;
-                hs->T_Hotspot::LBLParse("DIALOG 10");
+                hs->LBLParse("DIALOG 10");
 
                 if (field_128 == 0) {
                     field_128 = new Queue(4);

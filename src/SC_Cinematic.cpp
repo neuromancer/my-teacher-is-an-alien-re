@@ -11,6 +11,7 @@
 #include "LinkedList.h"
 #include "ZBuffer.h"
 #include "RenderEntry.h"
+#include "DrawEntry.h"
 #include "globals.h"
 #include <string.h>
 #include <smack.h>
@@ -561,19 +562,19 @@ void __fastcall ClearActionList(LinkedList* list)
     if (list->head != 0) {
         list->current = list->head;
         do {
-            void* data = list->RemoveCurrent();
-            if (data != 0) {
-                void* ptr = *(void**)((int)data + 4);
-                if (ptr != 0) {
-                    delete (VBuffer*)ptr;
-                    *(void**)((int)data + 4) = 0;
+            DrawEntry* entry = (DrawEntry*)list->RemoveCurrent();
+            if (entry != 0) {
+                VBuffer* vb = entry->m_videoBuffer;
+                if (vb != 0) {
+                    delete vb;
+                    entry->m_videoBuffer = 0;
                 }
-                Handler* obj = *(Handler**)((int)data + 8);
+                RenderEntry* obj = (RenderEntry*)entry->m_childObject;
                 if (obj != 0) {
                     delete obj;
-                    *(void**)((int)data + 8) = 0;
+                    entry->m_childObject = 0;
                 }
-                FreeMemory(data);
+                FreeMemory(entry);
             }
         } while (list->head != 0);
     }

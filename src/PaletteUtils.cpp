@@ -136,4 +136,10 @@ int __cdecl GetGlobalTextY()
     return g_DrawPosY_004374ce;
 }
 
+/* Function start: 0x453CC8 */
+int __cdecl GetGlobalTextX()
+{
+    return g_DrawPosX_004374c2;
+}
+
 } // extern "C"

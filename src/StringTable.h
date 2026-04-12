@@ -16,6 +16,7 @@ public:
     // Internal helpers
     void Load();
     void Unload();
+    void Close();
     FILE* Open();
     int GetString(unsigned int id, char* outBuffer);
     void TestStrings(void* textMgr, int count);  // 0x44C480

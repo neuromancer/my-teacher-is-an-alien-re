@@ -28,7 +28,7 @@ extern "C" int __stdcall AIL_sample_status(void*);
 #include "Palette.h"
 
 // Sound table
-extern char* __cdecl ResolveAssetPath(char* name);
+extern char* __cdecl ResolveAssetPath(char* name, ...);
 
 // Parser operations
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp

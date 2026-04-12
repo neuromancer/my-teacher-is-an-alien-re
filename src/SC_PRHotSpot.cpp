@@ -131,7 +131,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
             LinkedList* newList = new LinkedList();
             actionList = newList;
         }
-        actionList->current = actionList->head;
+        actionList->ResetForSortedAdd(action);
         if (actionList->type == 1 || actionList->type == 2) {
             if (actionList->head == 0) {
                 ((LinkedList*)actionList)->InsertNode(action);
@@ -174,7 +174,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
         if (action->instruction == 0x11 && result < 4) {
             Parser::LBLParse("SC_PRHotSpot");
         }
-        actionList->current = actionList->head;
+        actionList->ResetForSortedAdd(action);
         if (actionList->type == 1 || actionList->type == 2) {
             if (actionList->head == 0) {
                 ((Queue*)actionList)->InsertAtCurrent(action);
@@ -310,25 +310,22 @@ int SC_PRHotSpot::CheckCollision(void* param_1)
     int* msg = (int*)param_1;
     int mx = msg[7];
 
-    if (boundsLeft <= mx && boundsRight >= mx) {
-        int my = msg[8];
-        if (boundsTop <= my && boundsBottom >= my) {
-            if (state != 0) {
-                if (msg[9] > 1) {
-                    if (hotspotId >= 0x14 && hotspotId <= 0x16) {
-                        PracticeRoomNotify((void*)owner);
-                    }
-                    state = 3;
-                    if (sprite != 0) {
-                        sprite->ResetAnimation(3, 0);
-                    }
-                    if (clickSound != 0) {
-                        clickSound->Play(100, 1);
-                    }
-                }
-                return 1;
-            }
+    int inBounds = (boundsLeft <= mx && boundsRight >= mx &&
+                    boundsTop <= msg[8] && boundsBottom >= msg[8]);
+    if (inBounds == 0 || state == 0) {
+        return 0;
+    }
+    if (msg[9] > 1) {
+        if ((unsigned int)hotspotId >= 0x14 && (unsigned int)hotspotId <= 0x16) {
+            PracticeRoomNotify((void*)owner);
+        }
+        state = 3;
+        if (sprite != 0) {
+            sprite->ResetAnimation(3, 0);
+        }
+        if (clickSound != 0) {
+            clickSound->Play(100, 1);
         }
     }
-    return 0;
+    return 1;
 }

@@ -25,7 +25,7 @@ StringTable::StringTable(char* f, int loadNow) {
 
 /* Function start: 0x44C010 */ /* ~81% match */
 StringTable::~StringTable() {
-    Unload();
+    Close();
 
     if (filename != 0) {
         delete filename;
@@ -82,22 +82,30 @@ StringTable::~StringTable() {
         ht->nodePool = 0;
 
         // Free the hash table itself
-        delete ht;
+        operator delete(ht);
         hashTable = 0;
     }
 }
 
 /* Function start: 0x44C0C0 */
 FILE* StringTable::Open() {
-    Unload();
+    Close();
     fp = fopen(filename, "r");
     return fp;
+}
+
+/* Function start: 0x44C0E0 */
+void StringTable::Close() {
+    if (fp) {
+        fclose(fp);
+        fp = 0;
+    }
 }
 
 /* Function start: 0x4456F0 */
 void StringTable::Unload() {
     if (fp) {
-        fclose(fp);
+        FreeMemory(fp);
         fp = 0;
     }
 }
@@ -217,7 +225,7 @@ void StringTable::Load() {
                 }
             } while (1);
         }
-        Unload();
+        Close();
     }
 }
 
@@ -287,7 +295,7 @@ read_loop:
         found = 1;
         strncpy(outBuffer, startQuote, len);
 done:
-        Unload();
+        Close();
     }
     return found;
 }

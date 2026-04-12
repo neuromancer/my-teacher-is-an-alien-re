@@ -227,6 +227,12 @@ CANONICAL = {
     "`eh vector destructor iterator'": "__eh_vec_dtor__",
     "Array_Iterate": "__eh_vec_ctor__",
     "`eh vector constructor iterator'": "__eh_vec_ctor__",
+    "ArrayConstruct": "__eh_vec_ctor__",
+    # COMDAT-folded constructors (identical bodies merged by linker)
+    "EngineInfoParser::EngineInfoParser": "Projectile::Projectile",
+    "ScoreDisplay::ScoreDisplay": "CursorState::CursorState",
+    # StringTable::TestStrings is same function as HashTable::CopyStrings (0x44C480)
+    "StringTable::TestStrings": "HashTable::CopyStrings",
     # Global function pointers (called via register in original, via global in ours)
     "g_WinGSetDIBColorTable_0043842c": "__funcptr__",
     "g_WinGBitBlt_00438434": "__funcptr__",

@@ -27,11 +27,7 @@ int SC_Message::LBLParse(char* param_1)
 
     if (strcmp(local_30, "ADDRESS") == 0) {
         sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
-        if (g_StringTable_0046aa34 != 0) {
-            idx = g_StringTable_0046aa34->FindState(local_54);
-        } else {
-            sscanf(local_54, "%d", &idx);
-        }
+        idx = g_StringTable_0046aa34->FindState(local_54);
         target->addressType = idx;
         if (target->addressType < 0) {
             ShowError("SC_MessageParser::ADDRESS illegal index %s %s", local_54, param_1);
@@ -49,11 +45,7 @@ int SC_Message::LBLParse(char* param_1)
         }
     } else if (strcmp(local_30, "FROM") == 0) {
         sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
-        if (g_StringTable_0046aa34 != 0) {
-            idx = g_StringTable_0046aa34->FindState(local_54);
-        } else {
-            sscanf(local_54, "%d", &idx);
-        }
+        idx = g_StringTable_0046aa34->FindState(local_54);
         target->fromType = idx;
         if (target->fromType < 0) {
             ShowError("FROM illegal index %s %s", local_54, param_1);
@@ -71,11 +63,7 @@ int SC_Message::LBLParse(char* param_1)
         }
     } else if (strcmp(local_30, "INSTRUCTION") == 0) {
         sscanf(param_1, "%s %s", local_30, local_54);
-        if (g_StringState_0046aa38 != 0) {
-            idx = ((GameState*)g_StringState_0046aa38)->FindState(local_54);
-        } else {
-            sscanf(local_54, "%d", &idx);
-        }
+        idx = ((GameState*)g_StringState_0046aa38)->FindState(local_54);
         target->instruction = idx;
         if (target->instruction < 0) {
             ShowError("INSTRUCTION illegal index %d %s", idx, param_1);

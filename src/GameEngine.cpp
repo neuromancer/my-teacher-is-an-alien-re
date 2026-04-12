@@ -243,39 +243,45 @@ void GameEngine::ProcessMessage(SC_Message* msg) {
         } else {
             strcpy(g_StateString_0046aa2c, g_GameState2_0046aa3c->GetState(action->addressValue));
         }
-    } else if (action->addressType == 0) {
-        handled = 1;
-    } else if (action->addressType == 1) {
-        handled = 1;
-        ProcessControlMessage(msg);
     } else {
-        if (m_activeHandler != 0) {
-            handled = ((Handler*)m_activeHandler)->Exit(msg);
-        }
-        if (handled == 0) {
-            m_handlerList->current = m_handlerList->head;
-            if (m_handlerList->current != 0) {
-                do {
-                    void* data;
-
-                    data = m_handlerList->current->data;
-                    if (data == 0) {
-                        break;
-                    }
-
-                    handled = ((Handler*)m_handlerList->GetCurrentData())->Exit(msg);
-                    if (handled != 0) {
-                        break;
-                    }
-
-                    if (m_handlerList->tail == m_handlerList->current) {
-                        break;
-                    }
-                    if (m_handlerList->current != 0) {
-                        m_handlerList->current = m_handlerList->current->next;
-                    }
-                } while (m_handlerList->current != 0);
+        switch (action->addressType) {
+        case 0:
+            handled = 1;
+            break;
+        case 1:
+            handled = 1;
+            ProcessControlMessage(msg);
+            break;
+        default:
+            if (m_activeHandler != 0) {
+                handled = ((Handler*)m_activeHandler)->Exit(msg);
             }
+            if (handled == 0) {
+                m_handlerList->current = m_handlerList->head;
+                if (m_handlerList->current != 0) {
+                    do {
+                        void* data;
+
+                        data = m_handlerList->current->data;
+                        if (data == 0) {
+                            break;
+                        }
+
+                        handled = ((Handler*)m_handlerList->GetCurrentData())->Exit(msg);
+                        if (handled != 0) {
+                            break;
+                        }
+
+                        if (m_handlerList->tail == m_handlerList->current) {
+                            break;
+                        }
+                        if (m_handlerList->current != 0) {
+                            m_handlerList->current = m_handlerList->current->next;
+                        }
+                    } while (m_handlerList->current != 0);
+                }
+            }
+            break;
         }
     }
 
