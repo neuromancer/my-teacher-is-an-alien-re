@@ -38,7 +38,25 @@ void SC_BgSnd::Init(SC_MessageParser* msg) {
 
 /* Function start: 0x4394A0 */
 void SC_BgSnd::Update(int p1, int p2) {
-    TODO("SC_BgSnd::Update");
+    unsigned int elapsed = timer.Update();
+    if (elapsed > 60000) {
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+    }
+
+    Sample* s = snd;
+    if (s != 0) {
+        HSAMPLE hsamp = s->m_sample;
+        if (hsamp != 0) {
+            if (s->m_size == *(int*)((char*)hsamp + 0x0C)) {
+                if (AIL_sample_status(hsamp) == 4) {
+                    if (flags & 1) {
+                        SC_BgSnd::OnProcessEnd();
+                    }
+                    timer.Reset();
+                }
+            }
+        }
+    }
 }
 
 /* Function start: 0x439520 */

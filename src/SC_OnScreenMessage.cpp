@@ -349,7 +349,9 @@ int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
     return 1;
 }
 
+/* Function start: 0x448810 */
 int SC_OnScreenMessage::AddMessage(SC_MessageParser* msg) { return 1; }
+/* Function start: 0x448600 */
 int SC_OnScreenMessage::ShutDown(SC_MessageParser* msg) { return 0; }
 
 /* Function start: 0x448C50 */
@@ -363,6 +365,7 @@ void* MessageList::GetCurrentData() {
 
 extern "C" char* GetSoundFilename(int handle);
 
+/* Function start: 0x448120 */ /* SoundEntry sdtor (COMDAT, compiler-generated) */
 /* Function start: 0x447FF0 */
 SoundEntry::SoundEntry(int id) {
     int i;

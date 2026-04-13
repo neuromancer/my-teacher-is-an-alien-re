@@ -5982,6 +5982,7 @@ extern char g_QuestLevelKey_00468108[32];                              // SC_Que
 extern int g_DetentionFlag_00468764;                                   // SCI_IconBarModule / SC_Detention
 extern int g_DetentionKeyState_00468a18;                                   // SC_Detention
 extern int g_FireAlarmTimer_004685a0;                                   // SC_FireAlarm / SC_Pods
+extern int g_FireAlarmFlag_004685a8;                                    // SC_FireAlarm
 extern int g_FireAlarmEngine_004685ac;                                   // SC_FireAlarm / SC_Pods
 extern char g_QuestFormatStr_004690e4[32];                              // SC_Question buffer
 extern Weapon* g_ActiveWeapon_00468ef0;                               // SC_Wahoo / SC_WordSearch

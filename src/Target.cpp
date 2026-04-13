@@ -420,6 +420,7 @@ void Target::ParseSound(char* line)
     }
 }
 
+/* Function start: 0x442C70 */
 void Target::OnProcessStart()
 {
     char buffer[128];
@@ -449,6 +450,7 @@ void Target::OnProcessStart()
     sound3        = tl->defaultSound;
 }
 
+/* Function start: 0x442D50 */
 void Target::OnProcessEnd()
 {
     if (hotspotList == 0 && g_TargetBearingValue_004362c8 != 0) {
@@ -494,6 +496,7 @@ void Target::OnProcessEnd()
     }
 }
 
+/* Function start: 0x442E90 */
 int Target::LBLParse(char* line)
 {
     char label[64];

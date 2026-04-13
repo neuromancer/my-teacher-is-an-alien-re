@@ -546,8 +546,15 @@ int SC_Cinematic::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x4306E0 */
 int SC_Cinematic::Exit(SC_MessageParser* msg) {
-    TODO("SC_Cinematic::Exit");
-    return 0;
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
+        return 0;
+    }
+    if (action->instruction != 7) {
+        return 0;
+    }
+    SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+    return 1;
 }
 
 /* Function start: 0x430730 */

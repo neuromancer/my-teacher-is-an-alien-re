@@ -506,6 +506,10 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
     return 1;
 }
 
+/* Function start: 0x44FE20 */
+/* SC_CrystalPuzzle vtable Exit: return handlerId == ((int*)msg)[0]; */
+/* NOTE: existing Exit at 0x450110 is a non-virtual helper called directly by AddMessage */
+
 /* Function start: 0x44FE40 */
 void SC_CrystalPuzzle::Update(int p1, int p2) {
     if (handlerId != p2) {

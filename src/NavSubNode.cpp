@@ -327,6 +327,7 @@ int NavSubNode::GetNextNode()
     return nodeHandle;
 }
 
+/* Function start: 0x449EE0 */
 /* Function start: 0x44ADD0 */
 int NavSubNode::LBLParse(char* line) {
     TODO("NavSubNode::LBLParse");
@@ -336,4 +337,5 @@ int NavSubNode::LBLParse(char* line) {
 void NavSubNode::virtual7() {}
 
 // BG_SubNode::LBLParse stub (actual implementation at 0x44A4D0, not yet reimplemented)
+/* Function start: 0x44A4D0 */
 int BG_SubNode::LBLParse(char* param_1) { return 0; }

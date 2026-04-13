@@ -26,6 +26,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 
 extern void ResetSpriteStates();
 
+/* Function start: 0x418060 */
 /* Function start: 0x418086 */
 int Handler31::LBLParse(char* line) { // prologue at 0x418060
     char token[32];

@@ -517,13 +517,19 @@ void SC_Roach::Init(SC_MessageParser* msg) {
 
 /* Function start: 0x419200 */
 void SC_Roach::Update(int p1, int p2) {
-    TODO("SC_Roach::Update");
+    if (handlerId == p2) {
+        SC_Combat::Update(p1, p2);
+    }
 }
 
 /* Function start: 0x419350 */
 int SC_Roach::Exit(SC_MessageParser* msg) {
-    TODO("SC_Roach::Exit");
-    return 0;
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
+        return 0;
+    }
+    SC_Combat::Exit(msg);
+    return 1;
 }
 
 /* Function start: 0x419380 */

@@ -504,6 +504,7 @@ void SC_Wahoo::ProcessState() {
     }
 }
 
+/* Function start: 0x438630 */
 /* Function start: 0x438660 */
 int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
     char local_b8[128];

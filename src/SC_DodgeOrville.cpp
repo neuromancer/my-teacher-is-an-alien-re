@@ -8,7 +8,12 @@
 #include <stdlib.h>
 #include <windows.h>
 
+#include "main.h"
+#include "Animation.h"
+
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+extern char* MakeAnimName(int);
+extern "C" char* FormatAssetPath(char*, ...);
 // FUN_00413e10 = ParseFile in Parser.h
 extern "C" void ShowError(const char* format, ...);
 #include "SoundList.h"
@@ -35,16 +40,24 @@ SC_DodgeOrville::SC_DodgeOrville() {
 }
 
 SC_DodgeOrville::~SC_DodgeOrville() {
-    Cleanup(0);
+    ShutDown(0);
 }
 
 /* Function start: 0x4289C0 */
 void SC_DodgeOrville::Init(SC_MessageParser* msg) {
-    TODO("SC_DodgeOrville::Init");
+    memset(&reticlePos, 0, 0x50);
+
+    if (FileExists("CB_DGOrv") == 0) {
+        ShowLoadingScreen();
+    }
+
+    SC_Combat::Init(msg);
+    strcpy((char*)(combatParams + 5), "mis\\cb_DOrville.mis");
+    ParseFile(this, (char*)(combatParams + 5), (char*)0);
 }
 
 /* Function start: 0x428A40 */
-void SC_DodgeOrville::Cleanup(int flag) {
+int SC_DodgeOrville::ShutDown(SC_MessageParser* msg) {
     void* ptr;
 
     ptr = (void*)barFillSprite;
@@ -59,16 +72,19 @@ void SC_DodgeOrville::Cleanup(int flag) {
         barBgSprite = 0;
     }
 
-    SC_Combat::ShutDown((SC_MessageParser*)flag);
+    SC_Combat::ShutDown(msg);
 
-    if (flag != 0) {
+    if (msg != 0) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
+    return 0;
 }
 
 /* Function start: 0x428AD0 */
 void SC_DodgeOrville::Update(int p1, int p2) {
-    TODO("SC_DodgeOrville::Update");
+    if (handlerId == p2) {
+        SC_Combat::Update(p1, p2);
+    }
 }
 
 /* Function start: 0x428AF0 */
@@ -87,12 +103,16 @@ int SC_DodgeOrville::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x428B30 */
 int SC_DodgeOrville::Exit(SC_MessageParser* msg) {
-    TODO("SC_DodgeOrville::Exit");
-    return 0;
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
+        return 0;
+    }
+    SC_Combat::Exit(msg);
+    return 1;
 }
 
 /* Function start: 0x428B60 */
-void SC_DodgeOrville::ProcessTargets() {
+void SC_DodgeOrville::ProcessLose() {
     void* ptr;
 
     if (savedCommand != 0x2B) {
@@ -373,11 +393,59 @@ void SC_DodgeOrville::ThrowBomb()
 
 /* Function start: 0x4295C0 */
 void SC_DodgeOrville::ProcessAction(int action, int* data) {
-    TODO("SC_DodgeOrville::ProcessAction");
+    switch (action) {
+    case 0:
+        ProcessLose();
+        break;
+    case 1:
+        ProcessLose();
+        break;
+    case 2:
+        if (*data == 1) {
+            *data = 2;
+            bgSound->StopPlaying();
+            bgSound->Play(1);
+            bgSprite->ResetAnimation(7, 0);
+            statusPtr[3] = 0;
+        }
+        if (bgSound->IsSamplePlaying(1) == 0) {
+            *data = 0;
+            ProcessLose();
+        }
+        break;
+    case 3:
+        if (*data == 1) {
+            *data = 2;
+            if (cineIds[0] != 0) {
+                char* name = MakeAnimName(cineIds[0]);
+                char* path = FormatAssetPath(name);
+                if (FileExists(path) != 0) {
+                    Animation anim;
+                    anim.Play(path, 0);
+                }
+            }
+            bgSound->Play(0);
+            if (field_0x114 != 0) {
+                SendGameMessage(5, field_0x114, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+            }
+            bgSprite->ResetAnimation(7, 0);
+        }
+        if (bgSound->IsSamplePlaying(0) == 0) {
+            *data = 0;
+            bgSprite->ResetAnimation(0, 0);
+        }
+        break;
+    case 4:
+        UpdateGame();
+        break;
+    default:
+        ShowError("SC_DodgeOrville::Process_Action - invalid Action=%d, value=%d", action, *data);
+        break;
+    }
 }
 
 /* Function start: 0x4297D0 */
-void SC_DodgeOrville::InitGameState()
+void SC_DodgeOrville::OnProcessStart()
 {
     clipStart.x = 0;
     clipStart.y = 0;
@@ -396,7 +464,7 @@ void SC_DodgeOrville::InitGameState()
 }
 
 /* Function start: 0x429860 */
-void SC_DodgeOrville::InitReset()
+void SC_DodgeOrville::OnProcessEnd()
 {
     SC_Combat::OnProcessEnd();
     CheckCursorRange(0);
@@ -407,6 +475,36 @@ void SC_DodgeOrville::InitReset()
 
 /* Function start: 0x4298A0 */
 int SC_DodgeOrville::LBLParse(char* line) {
-    TODO("SC_DodgeOrville::LBLParse");
+    int index = 0;
+    int value = 0;
+    char label[32];
+
+    label[0] = '\0';
+    sscanf(line, " %s ", label);
+
+    if (strcmp(label, "NUMBER_OF_THROWS") == 0) {
+        sscanf(line, " %s %d ", label, &throwState.y);
+    } else if (strcmp(label, "MAX_HITS_BY_STINK_BOMBS") == 0) {
+        sscanf(line, " %s %d ", label, &hitCount.y);
+    } else if (strcmp(label, "STINK_METER_BASE_SPRITE") == 0) {
+        Sprite* spr = new Sprite((char*)0);
+        barBgSprite = spr;
+        Parser::ProcessFile(spr, this, (char*)0);
+    } else if (strcmp(label, "STINK_METER_SPRITE") == 0) {
+        Sprite* spr = new Sprite((char*)0);
+        barFillSprite = spr;
+        Parser::ProcessFile(spr, this, (char*)0);
+    } else if (strcmp(label, "ANIM") == 0) {
+        int result = sscanf(line, " %s %d %d", label, &index, &value);
+        if (result != 3 || index < 0 || index > 2) {
+            ReportUnknownLabel("SC_DodgeOrville");
+        }
+        cineIds[index] = value;
+    } else if (strcmp(label, "END") == 0) {
+        return 1;
+    } else {
+        SC_Combat::LBLParse(line);
+    }
+
     return 0;
 }

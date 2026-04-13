@@ -272,7 +272,18 @@ void SC_Slime::UpdateArmSprites()
 
 /* Function start: 0x40D6C0 */
 void SC_Slime::Update(int param1, int param2) {
-    TODO("SC_Slime::Update");
+    if (handlerId == param2) {
+        field_174 = 0;
+        if (gameResultSize > 0) {
+            do {
+                int* ptr = gameResult + field_174;
+                if (*ptr != 0) {
+                    ProcessAction(field_174, ptr);
+                }
+                field_174++;
+            } while (gameResultSize > field_174);
+        }
+    }
 }
 
 /* Function start: 0x40D720 */

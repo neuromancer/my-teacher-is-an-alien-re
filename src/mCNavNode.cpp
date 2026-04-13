@@ -75,7 +75,14 @@ int mCNavNode::virtual4() { return 0; }
 int mCNavNode::Activate() { return 0; }
 int mCNavNode::GetNextNode() { return 0; }
 void mCNavNode::virtual7() {}
+/* Function start: 0x44AF40 */
 int mCNavNode::LBLParse(char*) { return 0; }
+
+// mCNavNode_Runtime vtable (0x461B30) overrides — set after parsing
+// These are real implementations used at runtime, replacing the base stubs above.
+/* Function start: 0x44A9A0 */ /* mCNavNode_Runtime [5] Activate — TODO: not yet reimplemented */
+/* Function start: 0x44A9C0 */ /* mCNavNode_Runtime [0] LBLParse — TODO: not yet reimplemented */
+/* Function start: 0x44AB40 */ /* mCNavNode_Runtime [4] virtual4 — TODO: not yet reimplemented */
 
 // mCNavNode_TypeA stubs
 

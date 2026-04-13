@@ -614,6 +614,7 @@ void SC_Fan::OnProcessEnd()
     state = 0;
 }
 
+/* Function start: 0x4104B0 */
 /* Function start: 0x4104E0 */
 int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
     char local_b8[128];

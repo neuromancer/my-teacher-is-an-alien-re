@@ -16,26 +16,26 @@ struct DodgeDim {
 // Size: 0x168
 // Vtable: 0x4614C8
 // Extends SC_Combat (0x118)
-// Engine vtable mapping: [5]=AddMessage, [6]=Cleanup, [11]=ProcessTargets
+// Engine vtable mapping: [1]=OnProcessStart, [2]=OnProcessEnd, [5]=AddMessage, [6]=ShutDown, [11]=ProcessLose
 class SC_DodgeOrville : public SC_Combat {
 public:
     SC_DodgeOrville();
     ~SC_DodgeOrville();
 
     virtual int LBLParse(char* line);              // [0]  0x4298A0
+    virtual void OnProcessStart();                 // [1]  0x4297D0 - overrides Parser::OnProcessStart
+    virtual void OnProcessEnd();                   // [2]  0x429860 - overrides Parser::OnProcessEnd
     virtual void Init(SC_MessageParser* msg);            // [4]  0x4289C0
-    void Cleanup(int flag);            // 0x428A40 - overrides Engine::VirtCleanup [6]
-    int AddMessage(SC_MessageParser* msg);   // 0x428AF0 - overrides Engine::CleanupSubsystems [5]
+    int AddMessage(SC_MessageParser* msg);   // [5]  0x428AF0
+    int ShutDown(SC_MessageParser* msg);     // [6]  0x428A40 - overrides Handler::ShutDown
     virtual void Update(int p1, int p2);           // [7]  0x428AD0
     virtual int Exit(SC_MessageParser* msg);             // [8]  0x428B30
-    void ProcessTargets();             // 0x428B60 - overrides Engine::ProcessTargets [11]
+    virtual void ProcessLose();        // [11] 0x428B60 - overrides SC_Combat::ProcessLose
     virtual void ProcessAction(int action, int* data); // [12] 0x4295C0
 
     void UpdateGame();                 // 0x429110
     void UpdateReticle();              // 0x429380
     void ThrowBomb();                  // 0x4294A0
-    void InitGameState();              // 0x4297D0
-    void InitReset();                  // 0x429860
 
     int reticlePos;       // 0x118 - reticle position (0-4, 2=center)
     int cursorDir;        // 0x11C - cursor movement direction (-1, 0, 1)

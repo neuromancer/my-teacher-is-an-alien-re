@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+extern "C" void ShowError(const char* format, ...);
+
 #include "SlimeTable.h"
 #include "globals.h"
 
@@ -166,7 +168,12 @@ int SC_Pods::ShutDown(SC_MessageParser* msg) {
 
 /* Function start: 0x441AA0 */
 void SC_Pods::Update(int p1, int p2) {
-    TODO("SC_Pods::Update");
+    if (handlerId == p2) {
+        int result = g_CombatEngine_0046ae78->StopAndCleanup();
+        if (result || g_CombatEngine_0046ae78->combatFlags) {
+            HandleResult();
+        }
+    }
 }
 
 /* Function start: 0x441AE0 */
@@ -185,8 +192,20 @@ int SC_Pods::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x441B20 */
 int SC_Pods::Exit(SC_MessageParser* msg) {
-    TODO("SC_Pods::Exit");
-    return 0;
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
+        return 0;
+    }
+    switch (action->instruction) {
+    case 0:
+        break;
+    case 0x17:
+        ShowError("SCMI_INSERT");
+        break;
+    default:
+        return 0;
+    }
+    return 1;
 }
 
 /* Function start: 0x441B60 */
@@ -336,6 +355,7 @@ void SC_Pods::HandleResult() {
     }
 }
 
+/* Function start: 0x442090 */
 /* Function start: 0x4420B3 */
 int SC_Pods::LBLParse(char* line) {
     char label[32];

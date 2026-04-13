@@ -49,7 +49,9 @@ int SC_SpaceShipNav::ShutDown(SC_MessageParser* msg) {
 
 /* Function start: 0x4477F0 */
 void SC_SpaceShipNav::Update(int p1, int p2) {
-    TODO("SC_SpaceShipNav::Update");
+    if (handlerId == p2) {
+        SC_Combat::Update(p1, p2);
+    }
 }
 
 /* Function start: 0x447810 */
@@ -60,8 +62,12 @@ int SC_SpaceShipNav::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x447910 */
 int SC_SpaceShipNav::Exit(SC_MessageParser* msg) {
-    TODO("SC_SpaceShipNav::Exit");
-    return 0;
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
+        return 0;
+    }
+    SC_Combat::Exit(msg);
+    return 1;
 }
 
 /* Function start: 0x447940 */

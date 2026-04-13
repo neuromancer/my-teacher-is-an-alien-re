@@ -1,5 +1,6 @@
 #include "SC_FireAlarm.h"
 #include "stubs.h"
+#include "InputManager.h"
 #include "SpriteAction.h"
 #include "Memory.h"
 #include "Engine.h"
@@ -190,7 +191,29 @@ int SC_FireAlarm::Exit(SC_MessageParser* msg) {
 
 /* Function start: 0x4078A0 */
 void SC_FireAlarm::Update(int p1, int p2) {
-    TODO("SC_FireAlarm::Update");
+    if (handlerId == p2) {
+        if (g_FireAlarmFlag_004685a8 != 0) {
+            int result = WaitForInput() - 0x54;
+            g_FireAlarmFlag_004685a8 = (result != 0);
+        }
+        switch (gamePhase) {
+        case 0:
+            Render();
+            return;
+        case 2:
+            SendResultMessage();
+            return;
+        case 3:
+            SendResultMessage();
+            return;
+        case 4:
+            SendResultMessage();
+            return;
+        default:
+            ProcessFrame();
+            return;
+        }
+    }
 }
 
 /* Function start: 0x4079E0 */

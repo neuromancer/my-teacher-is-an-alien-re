@@ -54,6 +54,7 @@ void Animation::CleanArray10() {
   memset(&field_4, 0, 40);
 }
 
+/* Function start: 0x41AA40 */ /* Animation sdtor (COMDAT, compiler-generated) */
 /* Function start: 0x41AAF0 */
 Animation::~Animation() {
   FreeVBuffer();

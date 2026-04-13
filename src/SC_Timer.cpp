@@ -36,6 +36,7 @@ SC_Timer::~SC_Timer() {
     }
 }
 
+/* Function start: 0x422EB0 */
 /* Function start: 0x432000 */
 void SC_Timer::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
@@ -94,6 +95,7 @@ void SC_Timer::Update(int param1, int param2) {
     }
 }
 
+/* Function start: 0x423040 */
 int SC_Timer::AddMessage(SC_MessageParser* msg) {
     WriteMessageAddress(msg);
     return 1;

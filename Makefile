@@ -203,6 +203,11 @@ run: TEACHER.EXE
 	cp TEACHER.EXE data/full/TEACHER.EXE
 	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.EXE
 
+run-original: | data/full/CDDATA
+	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
+	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.ORI.EXE
+
+
 debug: TEACHER.EXE
 	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
 	@mkdir -p data/full/hd

@@ -7,6 +7,9 @@
 #include "SpriteAction.h"
 #include "SC_Question.h"
 #include "globals.h"
+#include "VBuffer.h"
+#include "ZBufferManager.h"
+#include "MouseControl.h"
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
@@ -107,7 +110,92 @@ int SC_Detention::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x409C50 */
 void SC_Detention::Update(int p1, int p2) {
-    TODO("SC_Detention::Update");
+    GameState* gs;
+    int idx;
+    int periodVal;
+
+    if (p2 == 0x20) {
+        idx = announcementStateIdx;
+        gs = g_GameState_0046aa30;
+        if (idx < 0 || idx >= gs->maxStates - 1) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        if (gs->stateValues[idx] == 0) {
+            idx = numActionsStateIdx;
+            gs = g_GameState_0046aa30;
+            if (idx < 0 || idx >= gs->maxStates - 1) {
+                ShowError("Invalid gamestate %d", idx);
+            }
+            if (gs->stateValues[idx] >= 2) {
+                idx = combatPodStateIdx;
+                gs = g_GameState_0046aa30;
+                if (idx < 0 || idx >= gs->maxStates - 1) {
+                    ShowError("Invalid gamestate %d", idx);
+                }
+                if (gs->stateValues[idx] != 0) {
+                    gs = g_GameState_0046aa30;
+                    idx = gs->FindLabel("PERIOD");
+                    gs->ValidateIndex(idx);
+                    periodVal = gs->stateValues[idx];
+                    SendGameMessage(4, field_A8[periodVal - 1], 0, 0, 2, 0, 0, 0, 0, 0);
+
+                    idx = announcementStateIdx;
+                    gs = g_GameState_0046aa30;
+                    if (idx < 0 || idx >= gs->maxStates - 1) {
+                        ShowError("Invalid gamestate %d", idx);
+                    }
+                    gs->stateValues[idx] = 1;
+
+                    gs = g_GameState_0046aa30;
+                    idx = gs->FindLabel("PERIOD");
+                    gs->ValidateIndex(idx);
+                    if (gs->stateValues[idx] == 2) {
+                        gs = g_GameState_0046aa30;
+                        idx = gs->FindLabel("PRM5");
+                        gs->ValidateIndex(idx);
+                        gs->stateValues[idx] = 1;
+
+                        gs = g_GameState_0046aa30;
+                        idx = gs->FindLabel("DRM5");
+                        gs->ValidateIndex(idx);
+                        gs->stateValues[idx] = 1;
+
+                        gs = g_GameState_0046aa30;
+                        idx = gs->FindLabel("SRM5");
+                        gs->ValidateIndex(idx);
+                        gs->stateValues[idx] = 1;
+
+                        gs = g_GameState_0046aa30;
+                        idx = gs->FindLabel("PERIOD2_GYM_HACK");
+                        gs->ValidateIndex(idx);
+                        gs->stateValues[idx] = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    idx = practiceRoomStateIdx;
+    gs = g_GameState_0046aa30;
+    if (idx < 0 || idx >= gs->maxStates - 1) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    if (gs->stateValues[idx] == 0) {
+        idx = numActionsStateIdx;
+        gs = g_GameState_0046aa30;
+        if (idx < 0 || idx >= gs->maxStates - 1) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        if (gs->stateValues[idx] >= actionsCount) {
+            g_DetentionFlag_00468764 = 1;
+        }
+    }
+
+    if (handlerId == p2) {
+        g_BackBuffer_0046aa14->ClearScreen(0);
+        g_ZBufferManager_0046aa24->ShowText("SC_Detention::Update ERROR", 0x64, 0xF0, 0x2710, -1);
+        g_Mouse_0046aa18->DrawCursor();
+    }
 }
 
 /* Function start: 0x409F70 */

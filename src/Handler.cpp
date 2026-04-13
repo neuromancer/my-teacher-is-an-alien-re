@@ -46,13 +46,16 @@ int Handler::AddMessage(SC_MessageParser* msg) {
     return 1; // Handled
 }
 
+/* Function start: 0x405D40 */
 int Handler::ShutDown(SC_MessageParser* msg) {
     return 0;
 }
 
+/* Function start: 0x454950 */
 void Handler::Update(int param1, int param2) {
 }
 
+/* Function start: 0x405D50 */
 int Handler::Exit(SC_MessageParser* msg) {
     return 0;
 }

@@ -213,6 +213,7 @@ void* g_SmackSoundCheck_0044053c = 0;                        // 0x0044053c
 
 // --- 0x00446xxx (SC_Wahoo / SC_Detention / SC_FireAlarm / SC_Question) ---
 int g_FireAlarmTimer_004685a0 = 0;                           // 0x004685a0
+int g_FireAlarmFlag_004685a8 = 0;                            // 0x004685a8
 int g_FireAlarmEngine_004685ac = 0;                          // 0x004685ac
 char g_QuestLevelKey_00468108[32] = "ROOM";                   // 0x00468108
 int g_DetentionFlag_00468764 = 0;                            // 0x00468764
@@ -335,13 +336,20 @@ int g_IconBarState_00473334 = 0;                             // 0x00473334
 int g_SchoolMenuField1_00473358 = 0;                         // 0x00473358
 int g_SchoolMenuField2_0047337c = 0;                         // 0x0047337c
 HitBounds g_HitBounds_00473260[3];                           // 0x00473260
-BombData g_BombData_00473278[6];                             // 0x00473278
+BombData g_BombData_00473278[6] = {                          // 0x00473278 — initialized by FUN_428110
+    {{0x23, 0x28, 0x00, 0x00, 0x27, 0x2c}},
+    {{0x00, 0x00, 0x40, 0x45, 0x43, 0x48}},
+    {{0x60, 0x65, 0x5c, 0x61, 0x00, 0x00}},
+    {{0x79, 0x7e, 0x7f, 0x82, 0x00, 0x00}},
+    {{0x96, 0x9b, 0x9a, 0x9f, 0x00, 0x00}},
+    {{0xb8, 0xbd, 0x00, 0x00, 0xb3, 0xb8}}
+};
 POINT g_CursorPos_00473308;                                  // 0x00473308
 char g_CinematicDebugStr_00473400 = 0;           // 0x00473400
 int g_CacheTotalSize_00473440 = 0;                           // 0x00473440
 int g_CacheSizeLimit_00473444 = 0;                           // 0x00473444
-int g_AnimStates_0046ac30[5];                                // 0x0046ac30
-int g_LastBombDir_0046ac44;                                  // 0x0046ac44
+int g_AnimStates_0046ac30[5] = {0, 3, 1, 5, 2};             // 0x0046ac30
+int g_LastBombDir_0046ac44 = -1;                             // 0x0046ac44
 GlyphRect g_DoorRects_00473dc8[3];                           // 0x00473dc8
 int g_State4Phase_00473df8 = 0;                              // 0x00473df8
 int g_RatsField_00473e00 = 0;                                // 0x00473e00

@@ -41,7 +41,9 @@ int SCI_SearchScreen::ShutDown(SC_MessageParser* msg) {
 
 /* Function start: 0x40B7C0 */
 void SCI_SearchScreen::Update(int p1, int p2) {
-    TODO("SCI_SearchScreen::Update");
+    if (handlerId == p2) {
+        SC_Combat::Update(p1, p2);
+    }
 }
 
 /* Function start: 0x40B7E0 */
@@ -59,8 +61,12 @@ int SCI_SearchScreen::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x40B830 */
 int SCI_SearchScreen::Exit(SC_MessageParser* msg) {
-    TODO("SCI_SearchScreen::Exit");
-    return 0;
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
+        return 0;
+    }
+    SC_Combat::Exit(msg);
+    return 1;
 }
 
 /* Function start: 0x40B860 */
@@ -78,6 +84,7 @@ void SCI_SearchScreen::OnProcessEnd() {
     TODO("SCI_SearchScreen::OnProcessEnd");
 }
 
+/* Function start: 0x40BAD0 */
 /* Function start: 0x40B25E */
 int SCI_SearchScreen::LBLParse(char* line) {
     char token[32];

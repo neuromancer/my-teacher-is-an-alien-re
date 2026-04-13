@@ -315,8 +315,26 @@ int SC_Game::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x432700 */
 int SC_Game::Exit(SC_MessageParser* msg) {
-    TODO("SC_Game::Exit");
-    return 0;
+    SpriteAction* action = (SpriteAction*)msg;
+    if (action->addressType != handlerId) {
+        return 0;
+    }
+    timer.Reset();
+
+    switch (action->instruction) {
+    case 0:
+        break;
+    case 1:
+        SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+        return 1;
+    case 7:
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        break;
+    default:
+        g_GameState_0046aa30->SetFromAction((int*)action);
+        return 1;
+    }
+    return 1;
 }
 
 extern "C" void ShowError(const char*, ...);

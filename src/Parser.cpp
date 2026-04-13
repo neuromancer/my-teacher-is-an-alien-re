@@ -67,6 +67,7 @@ void Parser::CloseFile() {
   }
 }
 
+/* Function start: 0x405CD0 */
 int Parser::LBLParse(char *param_1) {
   ReportUnknownLabel(param_1);
   return 0;
@@ -78,8 +79,10 @@ void Parser::ReportUnknownLabel(char* name) {
             name, lineNumber, filename);
 }
 
+/* Function start: 0x401150 */
 void Parser::OnProcessEnd() {}
 
+/* Function start: 0x401140 */
 void Parser::OnProcessStart() {}
 
 /* Function start: 0x412A70 */
