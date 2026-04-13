@@ -195,7 +195,7 @@ char g_StringTable_0043d158[16384] = {0};                    // 0x0043d158 — s
 int g_DebugFlag_0043d55c = 0;                                // 0x0043d55c
 int g_CmdLineAudioMode_0043d558 = 0;                        // 0x0043d558
 char g_CmdLineInputMode_0043d560 = 0;                       // 0x0043d560
-int g_DirectSoundFlag_0046a87c = 0;                          // 0x0046a87c
+int g_DirectSoundFlag_0046a87c = 1;                          // 0x0046a87c
 int g_DevModeFlag_0043d564 = 0;                              // 0x0043d564
 char g_CmdLineDataPath_0043d568[260] = {0};                  // 0x0043d568
 char g_SpriteFilenameTable_0043d630[0x4000] = {0};           // 0x0043d630
@@ -212,7 +212,7 @@ void* g_AtExitTableStart_0043f104 = 0;                       // 0x0043f104
 void* g_SmackSoundCheck_0044053c = 0;                        // 0x0044053c
 
 // --- 0x00446xxx (SC_Wahoo / SC_Detention / SC_FireAlarm / SC_Question) ---
-int g_FireAlarmTimer_004685a0 = 0;                           // 0x004685a0
+int g_FireAlarmTimer_004685a0 = 5;                           // 0x004685a0
 int g_FireAlarmFlag_004685a8 = 0;                            // 0x004685a8
 int g_FireAlarmEngine_004685ac = 0;                          // 0x004685ac
 char g_QuestLevelKey_00468108[32] = "ROOM";                   // 0x00468108
@@ -281,7 +281,7 @@ ScoreDisplay*     g_ScoreDisplay_0046ae6c = 0;               // 0x0046ae6c
 mCNavigator*      g_Navigator_0046ae70 = 0;                  // 0x0046ae70
 HotspotListData*  g_HotspotPool_0046ae74 = 0;               // 0x0046ae74
 SC_CombatBase* g_CombatEngine_0046ae78 = 0;                  // 0x0046ae78
-int g_DodgeAnimStates_0046bcd0[3] = {0};                     // 0x0046bcd0
+int g_DodgeAnimStates_0046bcd0[3] = {4, 5, 3};               // 0x0046bcd0
 int g_PathCacheHits_0046b784 = 0;                            // 0x0046b784
 int g_PathCacheMisses_0046b788 = 0;                          // 0x0046b788
 int g_CacheEntryCount_0046b780 = 0;                          // 0x0046b780
@@ -295,12 +295,16 @@ char* g_FontFilename_0046bd78 = 0;                           // 0x0046bd78
 int g_FontField_0046bd7c = 0;                                // 0x0046bd7c
 SlimeTable* g_SlimeTable_0046bf28 = 0;                       // 0x0046bf28
 Palette* g_PodsPalette_0046bf30 = 0;              // 0x0046bf30
-int g_SpaceNavStates_0046c3f0[3] = {0, 0, 0};               // 0x0046c3f0
+int g_SpaceNavStates_0046c3f0[3] = {4, 5, 3};               // 0x0046c3f0
 int g_PeriodStateIdx_0046cb90 = 99;                          // 0x0046cb90
 static char s_PeriodChars[] = "PSD";
 char* g_PeriodCharTable_0046cb94 = s_PeriodChars;            // 0x0046cb94
-int g_PuzzleSolutions_0046cc98[36] = {0};                    // 0x0046cc98
-int g_PuzzleResultIdx_0046cca4[36] = {0};                    // 0x0046cca4
+int g_PuzzleSolutions_0046cc98[36] = {                        // 0x0046cc98
+    1,4,6,0, 2,4,6,0, 0,5,8,1, 1,3,8,1, 2,3,8,1, 0,4,0,2, 0,4,6,2, 0,4,7,2, 0,4,8,2
+};
+int g_PuzzleResultIdx_0046cca4[36] = {                        // 0x0046cca4
+    0,2,4,6, 0,0,5,8, 1,1,3,8, 1,2,3,8, 1,0,4,0, 2,0,4,6, 2,0,4,7, 2,0,4,8, 2,0,0,0
+};
 
 // --- 0x00471xxx - 0x00473xxx ---
 int g_FileDeleteError_004719c0 = 0;                          // 0x004719c0
@@ -316,7 +320,7 @@ HDC g_WindowDC_00472d00 = 0;                                 // 0x00472d00
 HPALETTE g_WindowPalette_00472d04 = 0;                       // 0x00472d04
 int g_ScreenWidth_00472d08 = 640;                            // 0x00472d08
 int g_ScreenHeight_00472d0c = 480;                           // 0x00472d0c
-int g_WindowWidth_00472d10 = 640;                            // 0x00472d10
+int g_WindowWidth_00472d10 = 0;                              // 0x00472d10 (windowed mode flag: 0=fullscreen, 1=windowed)
 int g_ActivateAppState_00472d14 = 1;                         // 0x00472d14
 SpriteAction g_IconBarAction_00472d20;                       // 0x00472d20
 SpriteAction g_PendingAction_00472d58;                       // 0x00472d58

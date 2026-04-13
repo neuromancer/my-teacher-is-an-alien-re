@@ -5,8 +5,8 @@
 #include "Memory.h"
 #include "globals.h" // For globals like DAT_004373bc
 
-extern "C" int* GetWindowWidth();  // FUN_004224e0
-extern "C" int* GetScreenHeight(); // FUN_004224f0
+extern "C" int* GetScreenWidth();  // 0x4205E0
+extern "C" int* GetScreenHeight(); // 0x4205F0
 // Forward declarations for functions implemented below
 void InitClickTimers();      // 0x421AC0
 int MapJoystickValue(int value, int min, int max, int range); // 0x421CE0
@@ -44,7 +44,7 @@ void InputManager::InitDevices(int param_1) {
     memset(this, 0, 0x6e * 4);
 
     screenHeight = *GetScreenHeight();
-    screenWidth = *GetWindowWidth();
+    screenWidth = *GetScreenWidth();
     screenHeight = screenHeight - 1;
     screenWidth = screenWidth - 1;
 
