@@ -335,7 +335,7 @@ GlyphRect g_PuzzleButtonRects_00473d30[9];                   // 0x00473d30
 int g_IconBarState_00473334 = 0;                             // 0x00473334
 int g_SchoolMenuField1_00473358 = 0;                         // 0x00473358
 int g_SchoolMenuField2_0047337c = 0;                         // 0x0047337c
-HitBounds g_HitBounds_00473260[3];                           // 0x00473260
+HitBounds g_HitBounds_00473260[3] = {{0, 0}, {0, 0}, {0, 0}}; // 0x00473260
 BombData g_BombData_00473278[6] = {                          // 0x00473278 — initialized by FUN_428110
     {{0x23, 0x28, 0x00, 0x00, 0x27, 0x2c}},
     {{0x00, 0x00, 0x40, 0x45, 0x43, 0x48}},

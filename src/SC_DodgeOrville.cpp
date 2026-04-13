@@ -258,7 +258,7 @@ void SC_DodgeOrville::UpdateGame()
         if (barFillSprite->animation_data != 0) {
             vb2 = barFillSprite->animation_data->targetBuffer;
         }
-        g_ZBufferManager_0046aa24->DrawVBufferRegion(vb2, 0x7532, barPos.x, barPos.y, 2, 1.0, 0, vb2->clip_y2, 0, vb2->clip_x2);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(vb2, 0x7532, barPos.x, barPos.y, 2, 1.0, 0, 0, vb2->clip_x2, vb2->clip_y2);
     } else {
         int hits = hitCount.x;
         int maxHits = hitCount.y;
@@ -274,7 +274,7 @@ void SC_DodgeOrville::UpdateGame()
         } else {
             rd3 = 0;
         }
-        g_ZBufferManager_0046aa24->DrawVBufferRegion(rd3, 0x7532, barPos.x, barPos.y, 2, 1.0, clipStart.x, fillHeight, clipStart.y, clipEnd.y);
+        g_ZBufferManager_0046aa24->DrawVBufferRegion(rd3, 0x7532, barPos.x, barPos.y, 2, 1.0, clipStart.x, clipStart.y, fillHeight, clipEnd.y);
     }
 }
 
