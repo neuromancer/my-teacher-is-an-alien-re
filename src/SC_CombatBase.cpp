@@ -15,6 +15,7 @@
 #include "CombatDisplay.h"
 #include "WeaponDisplay.h"
 #include <string.h>
+#include <new>
 
 #include "InputManager.h"
 #include "globals.h"
@@ -118,6 +119,71 @@ void SC_CombatBase::RenderBackground()
         Sprite* spr = g_BgSprite_0046ae50;
         spr->Do(spr->loc_x, spr->loc_y, 1.0);
     }
+}
+
+/* Function start: 0x42C150 */
+void __stdcall EnqueueHotspotAction(SpriteAction* param)
+{
+    int* pool;
+    int* tailPtr;
+    int* freePtr;
+    int oldTail;
+    int* node;
+    SpriteAction* dataPtr;
+
+    pool = (int*)g_HotspotPool_0046ae74;
+    tailPtr = pool + 1;
+    freePtr = pool + 3;
+    oldTail = *tailPtr;
+
+    if (*freePtr == 0) {
+        int* sizePtr = pool + 5;
+        int sz = *sizePtr;
+        int* block = (int*)AllocateMemory(sz * 0x40 + 4);
+        block[0] = pool[4];
+        pool[4] = (int)block;
+        {
+            int count = *sizePtr;
+            int* nodeAddr = (int*)((char*)block + count * 0x40 - 0x3C);
+            count--;
+            if (count >= 0) {
+                do {
+                    int old = *freePtr;
+                    count--;
+                    nodeAddr[0] = old;
+                    *freePtr = (int)nodeAddr;
+                    nodeAddr = (int*)((char*)nodeAddr - 0x40);
+                } while (count >= 0);
+            }
+        }
+    }
+
+    node = (int*)*freePtr;
+    dataPtr = (SpriteAction*)(node + 2);
+    *freePtr = node[0];
+    node[1] = oldTail;
+    node[0] = 0;
+    pool[2]++;
+    memset(node + 2, 0, 14 * 4);
+
+    {
+        int i = 0;
+        do {
+            if (dataPtr != 0) {
+                new (dataPtr) SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            }
+            dataPtr = (SpriteAction*)((char*)dataPtr + 0x38);
+        } while (i-- != 0);
+    }
+
+    ((SpriteAction*)(node + 2))->CopyFrom(param);
+
+    if (*tailPtr != 0) {
+        ((int*)*tailPtr)[0] = (int)node;
+    } else {
+        pool[0] = (int)node;
+    }
+    *tailPtr = (int)node;
 }
 
 /* Function start: 0x42C8A0 */

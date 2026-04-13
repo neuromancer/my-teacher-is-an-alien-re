@@ -104,7 +104,7 @@ static char g_SpriteString[] = "SPRITE0";
 void ResetSpriteStates()
 {
     char name[8];
-    char digit;
+    int digit;
     int i;
 
     digit = '1';

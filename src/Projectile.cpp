@@ -11,29 +11,8 @@ extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
 extern "C" int __cdecl DrawCircle(int param_1);
 extern "C" int __cdecl DrawLine(int param_1, int param_2);
 
-/* Function start: 0x434660 */
-Projectile::Projectile() : Sprite(0) {
-    int* pCurrent = &currentX;
-    int* pNext = &nextX;
-
-    Projectile::startX = 0;
-    Projectile::startY = 0;
-    pCurrent[0] = 0;
-    pCurrent[1] = 0;
-    pNext[0] = 0;
-
-    int* pVelocity = (int*)&velocityX;
-    int* pHalf = &halfWidth;
-
-    pNext[1] = 0;
-    pHalf[0] = 0;
-    pHalf[1] = 0;
-    pVelocity[0] = 0;
-    pVelocity[1] = 0;
-    Projectile::active = 0;
-    Projectile::currentX = 0;
-    memset(&startX, 0, 12 * 4);
-}
+// NOTE: 0x434660 is EngineInfoParser::EngineInfoParser (COMDAT),
+// not Projectile. See EngineInfoParser.cpp for the correct implementation.
 
 /* Function start: 0x427270 */
 void Projectile::Launch() {
@@ -50,8 +29,8 @@ void Projectile::Launch() {
     frameCount = Projectile::ranges[Projectile::handle].dim.y
                - Projectile::ranges[Projectile::handle].dim.x + 1;
 
-    Projectile::startX = 0xa0;
-    Projectile::startY = 0xb4;
+    Projectile::startPos.x = 0xa0;
+    Projectile::startPos.y = 0xb4;
 
     pMouse = g_InputManager_0046aa08->pMouse;
 
@@ -65,8 +44,8 @@ void Projectile::Launch() {
         mouseX = pMouse->x;
     }
 
-    Projectile::currentX = mouseX;
-    Projectile::currentY = mouseY;
+    Projectile::currentPos.x = mouseX;
+    Projectile::currentPos.y = mouseY;
 
     height = 0;
     if (Projectile::animation_data != 0) {
@@ -78,10 +57,10 @@ void Projectile::Launch() {
         width = Projectile::animation_data->targetBuffer->width;
     }
 
-    Projectile::halfWidth = width / 2;
-    Projectile::halfHeight = height / 2;
-    Projectile::velocityX = (float)(mouseX - 0xa0) / (float)frameCount;
-    Projectile::velocityY = (float)(mouseY - 0xb4) / (float)frameCount;
+    Projectile::halfDim.x = width / 2;
+    Projectile::halfDim.y = height / 2;
+    *(float*)&Projectile::velocity.x = (float)(mouseX - 0xa0) / (float)frameCount;
+    *(float*)&Projectile::velocity.y = (float)(mouseY - 0xb4) / (float)frameCount;
 }
 
 /* Function start: 0x427390 */
@@ -96,8 +75,8 @@ void Projectile::Update() {
     isExploding = (Projectile::handle == 1);
 
     if (isExploding) {
-        Projectile::nextX = Projectile::currentX;
-        Projectile::nextY = Projectile::currentY;
+        Projectile::nextPos.x = Projectile::currentPos.x;
+        Projectile::nextPos.y = Projectile::currentPos.y;
     } else {
         if (Projectile::animation_data != 0) {
             frameNum = *(int*)(*(int*)((int)Projectile::animation_data + 0xc) + 0x374) + 1;
@@ -105,23 +84,23 @@ void Projectile::Update() {
             frameNum = 1;
         }
 
-        Projectile::nextX = Projectile::startX + (int)(Projectile::velocityX * (float)frameNum);
-        Projectile::nextY = Projectile::startY + (int)(Projectile::velocityY * (float)frameNum);
+        Projectile::nextPos.x = Projectile::startPos.x + (int)(*(float*)&Projectile::velocity.x * (float)frameNum);
+        Projectile::nextPos.y = Projectile::startPos.y + (int)(*(float*)&Projectile::velocity.y * (float)frameNum);
 
         {
             int* pObj = (int*)Projectile::owner;
             int* vtbl = (int*)*pObj;
             if (((int (__fastcall*)(int*, int, Projectile*))vtbl[6])(pObj, 0, this) != 0) {
-                Projectile::currentX = Projectile::nextX;
-                Projectile::currentY = Projectile::nextY;
+                Projectile::currentPos.x = Projectile::nextPos.x;
+                Projectile::currentPos.y = Projectile::nextPos.y;
                 Projectile::ResetAnimation(1, 0);
             }
         }
     }
 
     if (Projectile::Do(
-            Projectile::nextX - Projectile::halfWidth,
-            Projectile::nextY - Projectile::halfHeight,
+            Projectile::nextPos.x - Projectile::halfDim.x,
+            Projectile::nextPos.y - Projectile::halfDim.y,
             1.0)) {
         if (isExploding) {
             Projectile::active = 0;
@@ -135,12 +114,7 @@ void Projectile::Update() {
 /* Function start: 0x427150 */
 Projectile::Projectile(int ownerParam) : Sprite(0)
 {
-    int* p = (int*)&owner;
-    int i;
-    for (i = 0xC; i != 0; i--) {
-        *p = 0;
-        p++;
-    }
+    memset(&owner, 0, 0xC * 4);
     Projectile::owner = ownerParam;
 }
 

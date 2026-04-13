@@ -5,6 +5,7 @@
 // This file is kept for reference only.
 // ============================================================================
 
+// EnqueueHotspotAction — in SC_CombatBase.cpp
 // FUN_00447790 = SC_SpaceShipNav::ShutDown — in SC_SpaceShipNav.cpp
 // FUN_0044c660 = Sprite::Sprite(char*) — in Sprite.cpp
 // FUN_00426ac0 = WaitForInput — in main.cpp

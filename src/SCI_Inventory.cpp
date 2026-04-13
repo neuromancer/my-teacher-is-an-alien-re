@@ -282,9 +282,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)scrollDownBtn;
         if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.left >= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.right >= pos.x &&
             ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
-            ((T_MenuHotspot*)rect)->bounds.top >= pos.y) {
+            ((T_MenuHotspot*)rect)->bounds.bottom >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -300,9 +300,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)scrollUpBtn;
         if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.left >= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.right >= pos.x &&
             ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
-            ((T_MenuHotspot*)rect)->bounds.top >= pos.y) {
+            ((T_MenuHotspot*)rect)->bounds.bottom >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -318,9 +318,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)useButton;
         if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.left >= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.right >= pos.x &&
             ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
-            ((T_MenuHotspot*)rect)->bounds.top >= pos.y) {
+            ((T_MenuHotspot*)rect)->bounds.bottom >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -394,7 +394,7 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
             Sprite* spr = g_Mouse_0046aa18->m_sprite;
             int yOffset = ((T_Object*)invItem)->itemId + 0x1D;
             if (spr != 0) {
-                spr->ResetAnimation(0, yOffset);
+                spr->ResetAnimation(yOffset, 0);
             }
         }
         goto done;
@@ -405,9 +405,9 @@ int SCI_Inventory::AddMessage(SC_Message* msg) {
         SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)putBackButton;
         if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.left >= pos.x &&
+            ((T_MenuHotspot*)rect)->bounds.right >= pos.x &&
             ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
-            ((T_MenuHotspot*)rect)->bounds.top >= pos.y) {
+            ((T_MenuHotspot*)rect)->bounds.bottom >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -830,7 +830,7 @@ void SCI_Inventory::Serialize(void* param) {
         self = (int)curNode;
         if (curNode != 0) {
             do {
-                QueueNode* nextNode = curNode->next;
+                QueueNode* nextNode = curNode->prev;
                 T_Object* item = (T_Object*)curNode->data;
                 self = (int)nextNode;
                 fwrite(&item->itemId, 4, 1, (FILE*)fp);
@@ -1164,19 +1164,17 @@ next_panel:
 }
 /* Function start: 0x43F420 */
 void SCI_Inventory::ProcessInventory() {
-    LinkedList* list = (LinkedList*)g_MsgList_0046a6dc;
-    if (list != 0 && list->head != 0) {
-        list->current = list->head;
-        while (1) {
-            QueueNode* node = (QueueNode*)list->current;
-            if (node != 0 && node->data != 0) {
-                ((T_Object*)node->data)->StopSound();
-            }
-            QueueNode* cur = (QueueNode*)list->current;
-            if (list->tail == cur) break;
-            if (cur != 0) {
-                list->current = cur->next;
-            }
+    if (g_MsgList_0046a6dc == 0) return;
+    if (((LinkedList*)g_MsgList_0046a6dc)->head == 0) return;
+    ((LinkedList*)g_MsgList_0046a6dc)->current = ((LinkedList*)g_MsgList_0046a6dc)->head;
+    while (1) {
+        QueueNode* node = (QueueNode*)((LinkedList*)g_MsgList_0046a6dc)->current;
+        if (node != 0 && node->data != 0) {
+            ((T_Object*)node->data)->StopSound();
+        }
+        if (((LinkedList*)g_MsgList_0046a6dc)->tail == ((LinkedList*)g_MsgList_0046a6dc)->current) break;
+        if (((LinkedList*)g_MsgList_0046a6dc)->current != 0) {
+            ((LinkedList*)g_MsgList_0046a6dc)->current = ((LinkedList*)g_MsgList_0046a6dc)->current->next;
         }
     }
 }
@@ -1191,7 +1189,7 @@ int* SCI_Inventory::FindItemInList(int itemID) {
         if (((T_Object*)node->data)->itemId == itemID) {
             return (int*)node;
         }
-        node = node->next;
+        node = node->prev;
     } while (node != 0);
     return 0;
 }

@@ -52,7 +52,7 @@ void __fastcall UpdateWordSearchCursor(int* self) {
 
     Sprite* cursor = g_Mouse_0046aa18->m_sprite;
     if (cursor != 0) {
-        cursor->ResetAnimation((inside == 0) ? 1 : 0, 0);
+        cursor->ResetAnimation((inside != 0) ? 1 : 0, 0);
     }
 }
 

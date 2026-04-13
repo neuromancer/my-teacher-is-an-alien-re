@@ -16,6 +16,7 @@ extern "C" int FileExists(const char*);
 extern "C" void ShowLoadingScreen();
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" void ShowError(const char* format, ...);
+extern void __fastcall UpdateWordSearchCursor(int*);
 extern char* MakeAnimName(int);
 extern "C" char* FormatAssetPath(char*, ...);
 
@@ -252,7 +253,7 @@ void SC_Gauntlet::RenderGrid() {
         }
     }
 
-    ((IconBarEntry*)&crystalState[0])->Render();
+    UpdateWordSearchCursor(crystalState);
 
     if (crystalState[1] != 0) {
         if (g_Mouse_0046aa18->m_sprite != 0) {
