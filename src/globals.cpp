@@ -265,7 +265,7 @@ GameState* g_StringState_0046aa38 = 0;                       // 0x0046aa38
 GameState* g_GameState2_0046aa3c = 0;                        // 0x0046aa3c
 int g_DoubleClickTime_0046ac00 = 0;                          // 0x0046ac00
 int g_WaitForInputValue_0046ac04 = 0;                        // 0x0046ac04
-int g_SlimeTableInit_0046ad6c = 0;                           // 0x0046ad6c
+int g_SlimeTableInit_0046ad6c = 1;                           // 0x0046ad6c
 MsgList* g_MsgList_0046a6dc = 0;                             // 0x0046a6dc
 
 // --- 0x0046bxxx - 0x0046cxxx (combat / engine) ---
