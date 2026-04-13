@@ -61,10 +61,10 @@ void ZBuffer::CleanUpVBuffer()
         FreeFromGlobalHeap(vb);
         m_vbuffer = 0;
     }
-    Animation* ptr = (Animation*)m_subObject;
+    Animation* ptr = (Animation*)field_0x08;
     if (ptr != 0) {
         delete ptr;
-        m_subObject = 0;
+        field_0x08 = 0;
     }
 }
 
