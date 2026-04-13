@@ -3,7 +3,7 @@
 
 #include "IconBar.h"
 
-class SC_Message;
+class SC_MessageParser;
 class Palette;
 class MMPlayer;
 class Sample;
@@ -21,11 +21,11 @@ public:
     SCI_SchoolMenu();
     ~SCI_SchoolMenu();
 
-    void Init(SC_Message* msg);
-    int AddMessage(SC_Message* msg);
-    int ShutDown(SC_Message* msg);
+    void Init(SC_MessageParser* msg);
+    int AddMessage(SC_MessageParser* msg);
+    int ShutDown(SC_MessageParser* msg);
     void Update(int param1, int param2);
-    int Exit(SC_Message* msg);
+    int Exit(SC_MessageParser* msg);
     int LBLParse(char* line);
     void OnProcessStart();
 

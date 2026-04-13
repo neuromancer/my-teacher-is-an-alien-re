@@ -3,7 +3,7 @@
 
 #include "Handler.h"
 
-class SC_Message;
+class SC_MessageParser;
 
 // SC_Detention - Detention scene handler (case 44/0x2C)
 // Constructor: 0x4098C0, Destructor: 0x409A60
@@ -18,8 +18,9 @@ public:
     ~SC_Detention();
 
     virtual int LBLParse(char* line);          // 0x40B240 (shared with SCI_SearchScreen)
-    virtual int AddMessage(SC_Message* msg);  // 0x409AD0
-    virtual int Exit(SC_Message* msg);        // 0x409F70
+    virtual int AddMessage(SC_MessageParser* msg);  // 0x409AD0
+    virtual void Update(int p1, int p2);           // 0x409C50
+    virtual int Exit(SC_MessageParser* msg);        // 0x409F70
 
     void InitDetention();           // 0x40A9B0
     void GoToClass();               // 0x40A700

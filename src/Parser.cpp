@@ -503,7 +503,7 @@ void Parser::HandleToken_IF(char* line, int prevResult) {
 
         // Build SpriteAction with parsed values
         SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        SC_Message msg;
+        SC_MessageParser msg;
         msg.targetAddress = (int)&action;
 
         char tempBuf[128];

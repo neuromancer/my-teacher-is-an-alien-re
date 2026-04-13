@@ -157,7 +157,7 @@ void SC_Question::Update(int x, int y)
 }
 
 /* Function start: 0x414B70 */
-int SC_Question::OnInput(SC_Message* msg)
+int SC_Question::OnInput(SC_MessageParser* msg)
 {
     int edx;
     int key;

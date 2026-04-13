@@ -1,4 +1,5 @@
 #include "CombatSprite.h"
+#include "stubs.h"
 #include "Memory.h"
 #include "string.h"
 #include "EngineSubsystems.h"
@@ -385,6 +386,12 @@ found:
     return 0;
 }
 
+/* Function start: 0x409210 */
+void CombatSprite::OnProcessStart() {
+    TODO("CombatSprite::OnProcessStart");
+}
+
+/* Function start: 0x409220 */
 /* Function start: 0x40923E */ /* ~98% match */
 int CombatSprite::LBLParse(char* line) {
     char token[32];

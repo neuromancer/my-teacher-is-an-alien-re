@@ -6,7 +6,7 @@
 #include "SpriteAction.h"
 #include "InvSlotItem.h"
 
-class SC_Message;
+class SC_MessageParser;
 class TimeOut;
 class MMPlayer;
 class Palette;
@@ -22,11 +22,11 @@ public:
     SCI_IconBarModule();
     ~SCI_IconBarModule();
 
-    void Init(SC_Message* msg);            // 0x4013E0
-    int ShutDown(SC_Message* msg);         // 0x401CF0
+    void Init(SC_MessageParser* msg);            // 0x4013E0
+    int ShutDown(SC_MessageParser* msg);         // 0x401CF0
     void Update(int param1, int param2);   // 0x401D80
-    int Exit(SC_Message* msg);             // 0x401FF0
-    int AddMessage(SC_Message* msg);       // 0x401E40
+    int Exit(SC_MessageParser* msg);             // 0x401FF0
+    int AddMessage(SC_MessageParser* msg);       // 0x401E40
     int FindClickedIcon(int x, int y);     // 0x4020A0
     void UpdateCursor();                   // 0x402100
     int LBLParse(char* line);              // 0x4022B0

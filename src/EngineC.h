@@ -15,6 +15,10 @@ public:
     EngineC();
     ~EngineC();
 
+    virtual int LBLParse(char* line);   // [0] 0x40C270
+    virtual void OnProcessEnd();        // [2] 0x40C200
+    virtual void RenderBackground();    // [11] 0x40BDC0
+    virtual int HandleAction(int* param); // [13] 0x40C1B0
     virtual void method10();    // override at 0x40C0D0
 
     // Fields from 0xF0 to 0x11F (12 ints)

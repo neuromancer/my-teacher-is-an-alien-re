@@ -20,6 +20,12 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 
 
 extern "C" void ShowError(const char* format, ...);
+extern "C" char* MakeAudioName(char*);
+extern Palette* __fastcall InitPalette(Palette*);
+extern "C" void WriteToLog(const char* format, ...);
+
+#include "Memory.h"
+#include "AnimatedAsset.h"
 
 #include "MouseControl.h"
 #include "VBuffer.h"
@@ -114,8 +120,8 @@ SC_WordSearch::~SC_WordSearch() {
 }
 
 /* Function start: 0x435BE0 */
-void SC_WordSearch::Init(SC_Message* msg) {
-    CopyCommandData((SC_Message*)msg);
+void SC_WordSearch::Init(SC_MessageParser* msg) {
+    CopyCommandData((SC_MessageParser*)msg);
     if (msg != 0) {
         moduleParam = ((SpriteAction*)msg)->addressValue;
         SC_WordSearch::InitWordList();
@@ -148,7 +154,7 @@ void SC_WordSearch::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x435D40 */
-int SC_WordSearch::ShutDown(SC_Message* msg) {
+int SC_WordSearch::ShutDown(SC_MessageParser* msg) {
     if (bgSprite != 0) {
         delete bgSprite;
         bgSprite = 0;
@@ -523,7 +529,7 @@ void SC_WordSearch::InitWordList() {
 }
 
 /* Function start: 0x437080 */
-int SC_WordSearch::Exit(SC_Message* msg) {
+int SC_WordSearch::Exit(SC_MessageParser* msg) {
     if (((SpriteAction*)msg)->addressType != handlerId) {
         return 0;
     }
@@ -538,8 +544,108 @@ int SC_WordSearch::Exit(SC_Message* msg) {
     return 1;
 }
 
-int SC_WordSearch::AddMessage(SC_Message*) { return 0; }
-int SC_WordSearch::LBLParse(char*) { return 0; }
+int SC_WordSearch::AddMessage(SC_MessageParser*) { return 0; }
+/* Function start: 0x4370F0 */
+int SC_WordSearch::LBLParse(char* line) {
+    char keyword[32];
+    char buffer[128];
+    int val;
+
+    sscanf(line, "%s", keyword);
+
+    if (strcmp(keyword, "SET_GAMESTATE") == 0) {
+        sscanf(line, "%s %s %d", keyword, buffer, &val);
+        GameState* gs = g_GameState_0046aa30;
+        int idx = gs->FindState(buffer);
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+        gs->stateValues[idx] = val;
+    } else if (strcmp(keyword, "PALETTE") == 0) {
+        sscanf(line, "%s %s", keyword, buffer);
+        Palette* pal = InitPalette((Palette*)AllocateMemory(8));
+        palette = pal;
+        pal->Load(buffer);
+        if (palette != 0) {
+            int* palSlot = (int*)((char*)g_ZBufferManager_0046aa24 + 0xa8);
+            if (*palSlot != 0) {
+                WriteToLog("ddouble palette");
+            }
+            *palSlot = (int)palette;
+        }
+    } else if (strcmp(keyword, "BACKGROUND_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        bgSprite = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "HINT_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        timerSprite = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "KIDFACE_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        scoreSprite = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "WEBVAL_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        puzzleSprite1 = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "WEBINVAL_SPRITE") == 0) {
+        Sprite* spr = new Sprite(0);
+        puzzleSprite2 = spr;
+        Parser::ProcessFile(spr, this, 0);
+    } else if (strcmp(keyword, "FONT") == 0) {
+        sscanf(line, "%s %s", keyword, buffer);
+        if (g_GlyphFont_0046aa28 != 0) {
+            g_GlyphFont_0046aa28->LoadFont(buffer);
+        }
+    } else if (strcmp(keyword, "SOUND") == 0) {
+        sscanf(line, "%s %d %s", keyword, &val, buffer);
+        if (val == 0) {
+            SendGameMessage(5, atoi(buffer), handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+        } else {
+            char* path = MakeAudioName(buffer);
+            switch (val) {
+            case 1: {
+                Sample* s = new Sample();
+                correctSound = s;
+                if (s != 0) {
+                    s->Load(path);
+                }
+                break;
+            }
+            case 2: {
+                Sample* s = new Sample();
+                incorrectSound = s;
+                if (s != 0) {
+                    s->Load(path);
+                }
+                break;
+            }
+            case 3: {
+                Sample* s = new Sample();
+                startSound = s;
+                if (s != 0) {
+                    s->Load(path);
+                }
+                break;
+            }
+            case 4: {
+                Sample* s = new Sample();
+                introSound = s;
+                if (s != 0) {
+                    startSound->Load(path);
+                }
+                break;
+            }
+            }
+        }
+    } else if (strcmp(keyword, "END") == 0) {
+        return 1;
+    } else {
+        Parser::LBLParse("SC_Wahoo");
+    }
+    return 0;
+}
 
 extern void __fastcall InitCombatGrid(int);
 // Engine::OnProcessEnd wrapper for cross-hierarchy __fastcall calls

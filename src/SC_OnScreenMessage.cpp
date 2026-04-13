@@ -92,10 +92,10 @@ SC_OnScreenMessage::~SC_OnScreenMessage() {
 }
 
 /* Function start: 0x4485E0 */
-void SC_OnScreenMessage::Init(SC_Message* msg) {
+void SC_OnScreenMessage::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
-        moduleParam = msg->sourceAddress;
+        moduleParam = ((SpriteAction*)msg)->addressValue;
     }
 }
 
@@ -180,7 +180,7 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
 }
 
 /* Function start: 0x448830 */
-int SC_OnScreenMessage::Exit(SC_Message* msg) {
+int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
     SpriteAction* action;
     MessageList* pList;
     SoundEntry* data;
@@ -349,8 +349,8 @@ int SC_OnScreenMessage::Exit(SC_Message* msg) {
     return 1;
 }
 
-int SC_OnScreenMessage::AddMessage(SC_Message* msg) { return 1; }
-int SC_OnScreenMessage::ShutDown(SC_Message* msg) { return 0; }
+int SC_OnScreenMessage::AddMessage(SC_MessageParser* msg) { return 1; }
+int SC_OnScreenMessage::ShutDown(SC_MessageParser* msg) { return 0; }
 
 /* Function start: 0x448C50 */
 void* MessageList::GetCurrentData() {

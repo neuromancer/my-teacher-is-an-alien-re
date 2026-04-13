@@ -19,10 +19,11 @@ public:
     SC_Cinematic();
     ~SC_Cinematic();
 
-    void Init(SC_Message* msg);         // 0x42FCF0
-    int ShutDown(SC_Message* msg);      // 0x4300D0
+    void Init(SC_MessageParser* msg);         // 0x42FCF0
+    int ShutDown(SC_MessageParser* msg);      // 0x4300D0
     void Update(int param1, int param2);// 0x430350
-    int AddMessage(SC_Message* msg);    // 0x4306A0
+    int AddMessage(SC_MessageParser* msg);    // 0x4306A0
+    int Exit(SC_MessageParser* msg);          // 0x4306E0
     void EndCinematic();                // 0x430730
 
     Palette* palette;   // 0xA8

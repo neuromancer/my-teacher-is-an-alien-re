@@ -32,11 +32,11 @@ public:
 
     virtual int LBLParse(char* line);          // [0]  0x449600
     virtual void OnProcessEnd();               // [2]  0x449520
-    virtual void Init(SC_Message* msg);        // [4]  0x449260
-    virtual int AddMessage(SC_Message* msg);   // [5]  0x449400
-    virtual int ShutDown(SC_Message* msg);     // [6]  0x449320
+    virtual void Init(SC_MessageParser* msg);        // [4]  0x449260
+    virtual int AddMessage(SC_MessageParser* msg);   // [5]  0x449400
+    virtual int ShutDown(SC_MessageParser* msg);     // [6]  0x449320
     virtual void Update(int p1, int p2);       // [7]  0x449480
-    virtual int Exit(SC_Message* msg);         // [8]  0x449410
+    virtual int Exit(SC_MessageParser* msg);         // [8]  0x449410
     virtual void ProcessLose();                // [11] 0x4494E0
     virtual void ProcessAction(int action, int* data); // [12] 0x4491B0
 };

@@ -1,4 +1,5 @@
 #include "SC_BgSnd.h"
+#include "stubs.h"
 #include "Sample.h"
 #include "SpriteAction.h"
 #include "GameState.h"
@@ -30,8 +31,24 @@ SC_BgSnd::~SC_BgSnd() {
     }
 }
 
+/* Function start: 0x439470 */
+void SC_BgSnd::Init(SC_MessageParser* msg) {
+    TODO("SC_BgSnd::Init");
+}
+
+/* Function start: 0x4394A0 */
+void SC_BgSnd::Update(int p1, int p2) {
+    TODO("SC_BgSnd::Update");
+}
+
+/* Function start: 0x439520 */
+int SC_BgSnd::AddMessage(SC_MessageParser* msg) {
+    TODO("SC_BgSnd::AddMessage");
+    return 0;
+}
+
 /* Function start: 0x439540 */
-int SC_BgSnd::Exit(SC_Message* msg) {
+int SC_BgSnd::Exit(SC_MessageParser* msg) {
     SpriteAction* action;
 
     action = (SpriteAction*)msg;
@@ -50,20 +67,22 @@ int SC_BgSnd::Exit(SC_Message* msg) {
     case 0x10:
         SetVolume(0, 0);
         return 1;
-    case 0x11:
-        if (snd != 0) {
-            int vol = AIL_sample_volume(snd->m_sample);
-            snd->Fade(vol + 10, 0);
+    case 0x11: {
+        Sample* s = snd;
+        if (s != 0) {
+            s->Fade(AIL_sample_volume(s->m_sample) + 10, 0);
             return 1;
         }
         break;
-    case 0x12:
-        if (snd != 0) {
-            int vol = AIL_sample_volume(snd->m_sample);
-            snd->Fade(vol - 10, 0);
+    }
+    case 0x12: {
+        Sample* s = snd;
+        if (s != 0) {
+            s->Fade(AIL_sample_volume(s->m_sample) - 10, 0);
             return 1;
         }
         break;
+    }
     case 0x13:
         SetVolume(action->extra1, action->extra2);
         return 1;

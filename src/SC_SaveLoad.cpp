@@ -108,7 +108,7 @@ void SC_SaveLoad::StopSounds() {
 }
 
 /* Function start: 0x4221A0 */
-void SC_SaveLoad::Init(SC_Message* msg) {
+void SC_SaveLoad::Init(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     CopyCommandData(msg);
     if (action != 0) {
@@ -154,7 +154,7 @@ void SC_SaveLoad::Update(int param1, int param2) {
 }
 
 /* Function start: 0x4223F0 */
-int SC_SaveLoad::AddMessage(SC_Message* msg) {
+int SC_SaveLoad::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     WriteMessageAddress(msg);
     timer.Reset();
@@ -233,7 +233,7 @@ int SC_SaveLoad::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x4226C0 */
-int SC_SaveLoad::Exit(SC_Message* msg) {
+int SC_SaveLoad::Exit(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     if (handlerId != action->addressType) {
         return 0;

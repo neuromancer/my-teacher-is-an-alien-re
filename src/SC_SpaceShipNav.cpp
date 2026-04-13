@@ -1,4 +1,5 @@
 #include "SC_SpaceShipNav.h"
+#include "stubs.h"
 #include "SC_CombatBase.h"
 #include "Memory.h"
 #include "Sprite.h"
@@ -26,8 +27,13 @@ SC_SpaceShipNav::~SC_SpaceShipNav() {
     }
 }
 
+/* Function start: 0x447630 */
+void SC_SpaceShipNav::Init(SC_MessageParser* msg) {
+    TODO("SC_SpaceShipNav::Init");
+}
+
 /* Function start: 0x447790 */
-int SC_SpaceShipNav::ShutDown(SC_Message* msg) {
+int SC_SpaceShipNav::ShutDown(SC_MessageParser* msg) {
     if (g_CombatEngine_0046ae78 != 0) {
         if (g_Navigator_0046ae70 != 0) {
             Sprite* spr = ((mCNavigator*)g_Navigator_0046ae70)->sprite;
@@ -39,6 +45,28 @@ int SC_SpaceShipNav::ShutDown(SC_Message* msg) {
         g_CombatEngine_0046ae78 = 0;
     }
     return SC_Combat::ShutDown(msg);
+}
+
+/* Function start: 0x4477F0 */
+void SC_SpaceShipNav::Update(int p1, int p2) {
+    TODO("SC_SpaceShipNav::Update");
+}
+
+/* Function start: 0x447810 */
+int SC_SpaceShipNav::AddMessage(SC_MessageParser* msg) {
+    TODO("SC_SpaceShipNav::AddMessage");
+    return 0;
+}
+
+/* Function start: 0x447910 */
+int SC_SpaceShipNav::Exit(SC_MessageParser* msg) {
+    TODO("SC_SpaceShipNav::Exit");
+    return 0;
+}
+
+/* Function start: 0x447940 */
+void SC_SpaceShipNav::ProcessLose() {
+    TODO("SC_SpaceShipNav::ProcessLose");
 }
 
 // g_SpaceNavStates_0046c3f0 — defined in globals.cpp
@@ -78,6 +106,16 @@ void SC_SpaceShipNav::UpdateCursor() {
             return;
         }
     }
+}
+
+/* Function start: 0x447AD0 */
+void SC_SpaceShipNav::ProcessAction(int action, int* data) {
+    TODO("SC_SpaceShipNav::ProcessAction");
+}
+
+/* Function start: 0x447B50 */
+void SC_SpaceShipNav::OnProcessEnd() {
+    TODO("SC_SpaceShipNav::OnProcessEnd");
 }
 
 /* Function start: 0x447B60 */

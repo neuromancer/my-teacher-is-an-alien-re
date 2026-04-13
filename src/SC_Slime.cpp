@@ -1,4 +1,5 @@
 #include "SC_Slime.h"
+#include "stubs.h"
 #include "globals.h"
 #include "InputManager.h"
 #include "SpriteAction.h"
@@ -38,7 +39,7 @@ SC_Slime::~SC_Slime()
 }
 
 /* Function start: 0x40D1B0 */
-void SC_Slime::Init(SC_Message* msg)
+void SC_Slime::Init(SC_MessageParser* msg)
 {
     int savedId = handlerId;
     memset(&spriteAction, 0, 0xD8);
@@ -99,7 +100,7 @@ void SC_Slime::Init(SC_Message* msg)
 }
 
 /* Function start: 0x40D430 */
-int SC_Slime::ShutDown(SC_Message* msg)
+int SC_Slime::ShutDown(SC_MessageParser* msg)
 {
     if (palette != 0) {
         delete palette;
@@ -269,8 +270,13 @@ void SC_Slime::UpdateArmSprites()
     armMaskSprite->ResetAnimation(-1, 0);
 }
 
+/* Function start: 0x40D6C0 */
+void SC_Slime::Update(int param1, int param2) {
+    TODO("SC_Slime::Update");
+}
+
 /* Function start: 0x40D720 */
-int SC_Slime::AddMessage(SC_Message* msg)
+int SC_Slime::AddMessage(SC_MessageParser* msg)
 {
     WriteMessageAddress(msg);
     if (*(int*)((char*)msg + 0x2c) == 0x1b) {
@@ -322,8 +328,19 @@ void SC_Slime::ResetSprites()
     }
 }
 
+/* Function start: 0x40E1E0 */
+int SC_Slime::LBLParse(char* line) {
+    TODO("SC_Slime::LBLParse");
+    return 0;
+}
+
+/* Function start: 0x40EB60 */
+void SC_Slime::ProcessAction(int action, int* data) {
+    TODO("SC_Slime::ProcessAction");
+}
+
 /* Function start: 0x40D750 */
-int SC_Slime::Exit(SC_Message* msg)
+int SC_Slime::Exit(SC_MessageParser* msg)
 {
     int id = handlerId;
     if (*(int*)msg != id) {
@@ -402,7 +419,7 @@ void SC_Slime::SendResultMessage() {
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         spriteAction = action;
-        SC_Message temp;
+        SC_MessageParser temp;
         ParseFile(&temp, "mis\\cb_slime.mis", "[WIN_LBL_PR]");
         goto enqueue;
     }
@@ -415,7 +432,7 @@ void SC_Slime::SendResultMessage() {
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         spriteAction = action;
-        SC_Message temp;
+        SC_MessageParser temp;
         ParseFile(&temp, "mis\\cb_slime.mis", "[LOSE_LBL_PR]");
         goto enqueue;
     }
@@ -423,8 +440,16 @@ void SC_Slime::SendResultMessage() {
     goto enqueue;
 }
 
-// Stubs (moved from stubs.cpp)
-void SC_Slime::Update(int, int) {}
+/* Function start: 0x40DB00 */
+void SC_Slime::ProcessHit() {
+    TODO("SC_Slime::ProcessHit");
+}
+
+/* Function start: 0x40DB20 */
+int SC_Slime::HandleInput(Sprite* spr) {
+    TODO("SC_Slime::HandleInput");
+    return 0;
+}
 
 /* Function start: 0x40DEB0 */
 void SC_Slime::CheckTimerExpired(Sprite* spr)

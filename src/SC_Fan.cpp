@@ -1,4 +1,5 @@
 #include "SC_Fan.h"
+#include "stubs.h"
 #include "Sprite.h"
 #include "SpriteAction.h"
 #include "Palette.h"
@@ -40,7 +41,7 @@ SC_Fan::~SC_Fan() {
 }
 
 /* Function start: 0x40F290 */
-void SC_Fan::Init(SC_Message* msg) {
+void SC_Fan::Init(SC_MessageParser* msg) {
     int savedId;
     void* mem;
     void* ptr;
@@ -206,7 +207,7 @@ void SC_Fan::Update(int param1, int param2) {
 }
 
 /* Function start: 0x40F6C0 */
-int SC_Fan::AddMessage(SC_Message* msg) {
+int SC_Fan::AddMessage(SC_MessageParser* msg) {
     WriteMessageAddress(msg);
 
     if (((SpriteAction*)msg)->lastKey == 0x1B) {
@@ -217,7 +218,7 @@ int SC_Fan::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x40F6F0 */
-int SC_Fan::Exit(SC_Message* msg) {
+int SC_Fan::Exit(SC_MessageParser* msg) {
     SpriteAction* p;
 
     p = (SpriteAction*)msg;
@@ -346,6 +347,16 @@ void SC_Fan::DisplaySprites(int frame) {
         ptr++;
         i--;
     } while (i != 0);
+}
+
+/* Function start: 0x40FC30 */
+void SC_Fan::ProcessHit() {
+    TODO("SC_Fan::ProcessHit");
+}
+
+/* Function start: 0x40FC50 */
+void SC_Fan::HandleInput() {
+    TODO("SC_Fan::HandleInput");
 }
 
 /* Function start: 0x40FEA0 */

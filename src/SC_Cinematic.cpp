@@ -1,4 +1,5 @@
 #include "SC_Cinematic.h"
+#include "stubs.h"
 #include "SpriteAction.h"
 #include "InvSlotItem.h"
 #include "Animation.h"
@@ -167,7 +168,7 @@ SC_Cinematic::~SC_Cinematic() {
 }
 
 /* Function start: 0x42FCF0 */
-void SC_Cinematic::Init(SC_Message* msg) {
+void SC_Cinematic::Init(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
 
     CopyCommandData(msg);
@@ -298,7 +299,7 @@ void SC_Cinematic::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x4300D0 */
-int SC_Cinematic::ShutDown(SC_Message* msg) {
+int SC_Cinematic::ShutDown(SC_MessageParser* msg) {
     if (msg != 0) {
         if (g_ZBufferManager_0046aa24 != 0) {
             ZBufferManager* zbm = g_ZBufferManager_0046aa24;
@@ -531,7 +532,7 @@ void SC_Cinematic::Update(int param1, int param2) {
 }
 
 /* Function start: 0x4306A0 */
-int SC_Cinematic::AddMessage(SC_Message* msg) {
+int SC_Cinematic::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     WriteMessageAddress(msg);
 
@@ -541,6 +542,12 @@ int SC_Cinematic::AddMessage(SC_Message* msg) {
     }
 
     return 1;
+}
+
+/* Function start: 0x4306E0 */
+int SC_Cinematic::Exit(SC_MessageParser* msg) {
+    TODO("SC_Cinematic::Exit");
+    return 0;
 }
 
 /* Function start: 0x430730 */

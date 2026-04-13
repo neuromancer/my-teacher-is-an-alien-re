@@ -221,6 +221,7 @@ void BlitCommand::Execute(GlyphRect* rect)
     }
 }
 
+/* Function start: 0x403840 */
 /* Function start: 0x41B690 */ /* No assembly extracted */
 void CommandType2::Execute(GlyphRect* rect)
 {
@@ -231,6 +232,7 @@ void CommandType2::Execute(GlyphRect* rect)
     return;
 }
 
+/* Function start: 0x403880 */
 /* Function start: 0x41B6D0 */ /* No assembly extracted */
 void CommandType3::Execute(GlyphRect* rect)
 {

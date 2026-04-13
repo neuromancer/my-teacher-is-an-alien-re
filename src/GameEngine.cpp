@@ -203,7 +203,7 @@ void GameEngine::ProcessInput() {
     }
 
     if (m_activeHandler != 0) {
-        ((Handler*)m_activeHandler)->AddMessage((SC_Message*)&action);
+        ((Handler*)m_activeHandler)->AddMessage((SC_MessageParser*)&action);
     }
 
     if (action.addressType != 0 && action.instruction != 0) {
@@ -219,7 +219,7 @@ int GameEngine::ProcessEvents() {
     while (m_eventPool->m_count != 0) {
         SpriteAction action;
 
-        ProcessMessage((SC_Message*)m_eventPool->PopSafe(&action));
+        ProcessMessage((SC_MessageParser*)m_eventPool->PopSafe(&action));
         count = count + 1;
     }
 
@@ -229,7 +229,7 @@ int GameEngine::ProcessEvents() {
 }
 
 /* Function start: 0x431030 */
-void GameEngine::ProcessMessage(SC_Message* msg) {
+void GameEngine::ProcessMessage(SC_MessageParser* msg) {
     int handled;
     SpriteAction* action;
 
@@ -291,7 +291,7 @@ void GameEngine::ProcessMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x431160 */
-int GameEngine::ProcessControlMessage(SC_Message* msg) {
+int GameEngine::ProcessControlMessage(SC_MessageParser* msg) {
     SpriteAction* action;
 
     action = (SpriteAction*)msg;
@@ -342,7 +342,7 @@ void GameEngine::UpdateHandlers() {
 }
 
 /* Function start: 0x431290 */
-void GameEngine::HandleSystemMessage(SC_Message* msg) {
+void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
     Handler* handler;
     Handler* foundHandler;
     ZBufferManager* manager;

@@ -17,11 +17,11 @@ public:
     ~SC_Rats();
 
     int LBLParse(char* param);
-    void Init(SC_Message* msg);
-    int AddMessage(SC_Message* msg);
-    int ShutDown(SC_Message* msg);
+    void Init(SC_MessageParser* msg);
+    int AddMessage(SC_MessageParser* msg);
+    int ShutDown(SC_MessageParser* msg);
     void Update(int param1, int param2);
-    int Exit(SC_Message* msg);
+    int Exit(SC_MessageParser* msg);
 
     void ProcessState();
     void State0Handler();

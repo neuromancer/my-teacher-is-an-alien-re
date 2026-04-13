@@ -1,4 +1,5 @@
 #include "SC_Detention.h"
+#include "stubs.h"
 #include <string.h>
 #include <stdio.h>
 #include "GameState.h"
@@ -44,8 +45,9 @@ SC_Detention::SC_Detention() {
     announcementStateIdx = g_GameState_0046aa30->FindState("PLAYED_ANNOUNCEMENT");
 }
 
+/* Function start: 0x409F50 */
 /* Function start: 0x409AD0 */
-int SC_Detention::AddMessage(SC_Message* msg) {
+int SC_Detention::AddMessage(SC_MessageParser* msg) {
     GameState* gs;
     int idx;
 
@@ -103,8 +105,13 @@ int SC_Detention::AddMessage(SC_Message* msg) {
     return 0;
 }
 
+/* Function start: 0x409C50 */
+void SC_Detention::Update(int p1, int p2) {
+    TODO("SC_Detention::Update");
+}
+
 /* Function start: 0x409F70 */
-int SC_Detention::Exit(SC_Message* msg) {
+int SC_Detention::Exit(SC_MessageParser* msg) {
     GameState* gs;
     int idx;
     SpriteAction* action;
@@ -334,7 +341,7 @@ void SC_Detention::ResetAnimations() {
 
     {
         SpriteAction action(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
-        g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)&action);
+        g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)&action);
     }
 
     ParseFile(this, "mis\\detention.mis", "[MOVE_TO_NEXT_PERIOD]");
@@ -583,6 +590,7 @@ void SC_Detention::SetupDetentionState() {
     sprintf(field_1C4, "%c_IN_DETENTION", periodChar);
 }
 
+/* Function start: 0x40B240 */
 /* Function start: 0x40B25E */
 int SC_Detention::LBLParse(char* line) { // prologue at 0x40B240
     char token[32];

@@ -18,10 +18,11 @@ public:
     SC_Game();
     ~SC_Game();
 
-    void Init(SC_Message* msg);
-    int AddMessage(SC_Message* msg);
+    void Init(SC_MessageParser* msg);
+    int AddMessage(SC_MessageParser* msg);
+    int ShutDown(SC_MessageParser* msg);
     void Update(int param1, int param2);
-    int LBLParse(char* line);              // 0x437120
+    int Exit(SC_MessageParser* msg);
 
     Timer timer;            // 0xA8 (size 0x14)
     Sprite* sprite;         // 0xBC

@@ -1,4 +1,5 @@
 #include "SCI_SearchScreen.h"
+#include "stubs.h"
 #include "SpriteAction.h"
 #include "Parser.h"
 #include <string.h>
@@ -24,8 +25,13 @@ SCI_SearchScreen::~SCI_SearchScreen()
 #include "SC_CombatBase.h"
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
+/* Function start: 0x40B510 */
+void SCI_SearchScreen::Init(SC_MessageParser* msg) {
+    TODO("SCI_SearchScreen::Init");
+}
+
 /* Function start: 0x40B780 */
-int SCI_SearchScreen::ShutDown(SC_Message* msg) {
+int SCI_SearchScreen::ShutDown(SC_MessageParser* msg) {
     if (g_CombatEngine_0046ae78 != 0) {
         delete g_CombatEngine_0046ae78;
         g_CombatEngine_0046ae78 = 0;
@@ -33,8 +39,13 @@ int SCI_SearchScreen::ShutDown(SC_Message* msg) {
     return SC_Combat::ShutDown(msg);
 }
 
+/* Function start: 0x40B7C0 */
+void SCI_SearchScreen::Update(int p1, int p2) {
+    TODO("SCI_SearchScreen::Update");
+}
+
 /* Function start: 0x40B7E0 */
-int SCI_SearchScreen::AddMessage(SC_Message* msg) {
+int SCI_SearchScreen::AddMessage(SC_MessageParser* msg) {
     int ret = SC_Combat::AddMessage(msg);
     if (ret != 0) {
         return 1;
@@ -44,6 +55,27 @@ int SCI_SearchScreen::AddMessage(SC_Message* msg) {
         statusPtr[2] = 1;
     }
     return 1;
+}
+
+/* Function start: 0x40B830 */
+int SCI_SearchScreen::Exit(SC_MessageParser* msg) {
+    TODO("SCI_SearchScreen::Exit");
+    return 0;
+}
+
+/* Function start: 0x40B860 */
+void SCI_SearchScreen::ProcessLose() {
+    TODO("SCI_SearchScreen::ProcessLose");
+}
+
+/* Function start: 0x40BA10 */
+void SCI_SearchScreen::ProcessAction(int action, int* data) {
+    TODO("SCI_SearchScreen::ProcessAction");
+}
+
+/* Function start: 0x40BAC0 */
+void SCI_SearchScreen::OnProcessEnd() {
+    TODO("SCI_SearchScreen::OnProcessEnd");
 }
 
 /* Function start: 0x40B25E */

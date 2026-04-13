@@ -31,6 +31,8 @@ public:
     }
     virtual ~NavSubNode();              // 0x449C90, sdtor at 0x449CF0
 
+    virtual int LBLParse(char* line);   // [0] 0x44ADD0
+
     // Virtual methods (extending Parser's 3: LBLParse, OnProcessStart, OnProcessEnd)
     // +0x0C: virtual destructor (sdtor) -- automatic
     virtual int virtual4();             // +0x10
@@ -56,6 +58,8 @@ public:
     virtual ~OnDir_SubNode();           // 0x449D80, sdtor at 0x449D60
 
     virtual int LBLParse(char*);        // 0x449E70 (parses THEN_GOTO lines)
+    virtual int virtual4();             // [4] 0x44A000
+    virtual int Activate();             // [5] 0x449DD0
 
     // Fields (after NavSubNode at 0xA0)
     int field_A0;           // 0xA0
@@ -75,6 +79,7 @@ public:
     virtual ~BG_SubNode();              // 0x44A0E0, sdtor at 0x44A0C0
 
     virtual int LBLParse(char*);        // 0x44A4D0 (not in our address range)
+    virtual int virtual4();             // [4] 0x44A550
     virtual int Activate();             // +0x14 = 0x44A1F0 (DoAction)
     virtual void virtual7();            // +0x1C = 0x44A1D0 (Init)
 

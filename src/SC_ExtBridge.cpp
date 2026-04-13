@@ -50,7 +50,7 @@ SC_ExtBridge::~SC_ExtBridge() {
 }
 
 /* Function start: 0x439BB0 */
-void SC_ExtBridge::Init(SC_Message* msg) {
+void SC_ExtBridge::Init(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
 
     CopyCommandData(msg);
@@ -172,10 +172,10 @@ void SC_ExtBridge::Init(SC_Message* msg) {
 
 #include "GameEngine.h"
 /* Function start: 0x439F30 */
-int SC_ExtBridge::ShutDown(SC_Message* msg)
+int SC_ExtBridge::ShutDown(SC_MessageParser* msg)
 {
     SpriteAction* action = new SpriteAction(5, 0x458, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
     if (action != 0) {
         delete action;
     }
@@ -234,7 +234,7 @@ void SC_ExtBridge::Update(int p1, int p2)
 }
 
 /* Function start: 0x43A0C0 */
-int SC_ExtBridge::AddMessage(SC_Message* msg)
+int SC_ExtBridge::AddMessage(SC_MessageParser* msg)
 {
     SpriteAction* action = (SpriteAction*)msg;
     action->fromType = handlerId;
@@ -261,7 +261,7 @@ int SC_ExtBridge::AddMessage(SC_Message* msg)
 }
 
 /* Function start: 0x43A1D0 */
-int SC_ExtBridge::Exit(SC_Message* msg)
+int SC_ExtBridge::Exit(SC_MessageParser* msg)
 {
     SpriteAction* action = (SpriteAction*)msg;
     if (handlerId != action->addressType) {

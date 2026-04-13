@@ -1,4 +1,5 @@
 #include "SC_Game.h"
+#include "stubs.h"
 #include "Message.h"
 #include "SpriteAction.h"
 #include "string.h"
@@ -13,8 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" char* MakeAudioName(char*);
-extern Palette* __fastcall InitPalette(Palette*);
+extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 #include "globals.h"
 
@@ -52,11 +52,17 @@ SC_Game::~SC_Game() {
 }
 
 // 0x432000 = SC_Timer::Init (COMDAT)
-void SC_Game::Init(SC_Message* msg) {
+void SC_Game::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
         moduleParam = ((SpriteAction*)msg)->addressValue;
     }
+}
+
+/* Function start: 0x432020 */
+int SC_Game::ShutDown(SC_MessageParser* msg) {
+    TODO("SC_Game::ShutDown");
+    return 0;
 }
 
 /* Function start: 0x432040 */
@@ -126,7 +132,7 @@ void SC_Game::Update(int param1, int param2) {
 }
 
 /* Function start: 0x4322D0 */
-int SC_Game::AddMessage(SC_Message* msg) {
+int SC_Game::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
 
     WriteMessageAddress(msg);
@@ -307,70 +313,10 @@ int SC_Game::AddMessage(SC_Message* msg) {
     return 1;
 }
 
-extern "C" void ShowError(const char*, ...);
-
-/* Function start: 0x437120 */
-int SC_Game::LBLParse(char* line) {
-    char keyword[32];
-    char buffer[128];
-    int val;
-
-    keyword[0] = 0;
-    buffer[0] = 0;
-    sscanf(line, "%s", keyword);
-
-    if (strcmp(keyword, "SET_GAMESTATE") == 0) {
-        sscanf(line, "%s %s %d", keyword, buffer, &val);
-        GameState* gs = g_GameState_0046aa30;
-        int idx = gs->FindState(buffer);
-        if (idx < 0 || gs->maxStates - 1 < idx) {
-            ShowError("Invalid gamestate %d", idx);
-        }
-        gs->stateValues[idx] = val;
-    } else if (strcmp(keyword, "PALETTE") == 0) {
-        sscanf(line, "%s %s", keyword, buffer);
-        if (*(void**)((int)this + 0xBC) != 0) {
-            operator delete(*(void**)((int)this + 0xBC));
-            *(void**)((int)this + 0xBC) = 0;
-        }
-        Palette* pal = InitPalette((Palette*)AllocateMemory(8));
-        *(Palette**)((int)this + 0xBC) = pal;
-        pal->Load(buffer);
-    } else if (strcmp(keyword, "BACKGROUND_SPRITE") == 0) {
-        Sprite* spr = new Sprite(0);
-        *(Sprite**)((int)this + 0xC0) = spr;
-        spr->flags &= ~2;
-        Parser::ProcessFile(spr, this, 0);
-    } else if (strcmp(keyword, "HINT_SPRITE") == 0) {
-        Sprite* spr = new Sprite(0);
-        *(Sprite**)((int)this + 0xC4) = spr;
-        Parser::ProcessFile(spr, this, 0);
-    } else if (strcmp(keyword, "KIDFACE_SPRITE") == 0) {
-        Sprite* spr = new Sprite(0);
-        *(Sprite**)((int)this + 0xC8) = spr;
-        Parser::ProcessFile(spr, this, 0);
-    } else if (strcmp(keyword, "WEBVAL_SPRITE") == 0) {
-        Sprite* spr = new Sprite(0);
-        *(Sprite**)((int)this + 0xCC) = spr;
-        Parser::ProcessFile(spr, this, 0);
-    } else if (strcmp(keyword, "WEBINVAL_SPRITE") == 0) {
-        Sprite* spr = new Sprite(0);
-        *(Sprite**)((int)this + 0xD0) = spr;
-        Parser::ProcessFile(spr, this, 0);
-    } else if (strcmp(keyword, "SOUND") == 0) {
-        sscanf(line, "%s %d %s", keyword, &val, buffer);
-        char* path = MakeAudioName(buffer);
-        Sample* snd = new Sample();
-        if (snd->Load(path) != 0) {
-            snd->Unload();
-            operator delete(snd);
-            snd = 0;
-        }
-        *(Sample**)((int)this + 0xD4 + val * 4) = snd;
-    } else if (strcmp(keyword, "END") == 0) {
-        return 1;
-    } else {
-        Parser::LBLParse("SC_Game");
-    }
+/* Function start: 0x432700 */
+int SC_Game::Exit(SC_MessageParser* msg) {
+    TODO("SC_Game::Exit");
     return 0;
 }
+
+extern "C" void ShowError(const char*, ...);

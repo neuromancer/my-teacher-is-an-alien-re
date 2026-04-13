@@ -38,7 +38,7 @@ SC_DemoScreen::~SC_DemoScreen() {
 }
 
 /* Function start: 0x44E7F0 */
-void SC_DemoScreen::Init(SC_Message* msg) {
+void SC_DemoScreen::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
     Palette* pal = (Palette*)field_A8;
     if (pal != 0) {
@@ -51,7 +51,7 @@ void SC_DemoScreen::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x44E830 */
-int SC_DemoScreen::ShutDown(SC_Message* msg) {
+int SC_DemoScreen::ShutDown(SC_MessageParser* msg) {
     if (demoSprite != 0) {
         delete (Sprite*)demoSprite;
         demoSprite = 0;
@@ -65,7 +65,7 @@ int SC_DemoScreen::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x44E8B0 */
-int SC_DemoScreen::AddMessage(SC_Message* msg) {
+int SC_DemoScreen::AddMessage(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
     WriteMessageAddress(msg);
     if (pmsg[9] >= 2) {
@@ -79,7 +79,7 @@ int SC_DemoScreen::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x44E8F0 */
-int SC_DemoScreen::Exit(SC_Message* msg) {
+int SC_DemoScreen::Exit(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
     return (handlerId == pmsg[0]);
 }

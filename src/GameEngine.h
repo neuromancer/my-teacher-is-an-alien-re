@@ -6,7 +6,7 @@
 #include "TimedEvent.h"
 
 class Handler;
-class SC_Message;
+class SC_MessageParser;
 class SpriteAction;
 
 // GameEngine - Main game loop controller
@@ -27,10 +27,10 @@ public:
     void RunGameLoop();             // 0x430CD0
     void ProcessInput();            // 0x430E10
     int ProcessEvents();            // 0x430FA0
-    void ProcessMessage(SC_Message* msg);          // 0x431030
-    int ProcessControlMessage(SC_Message* msg);    // 0x431160
+    void ProcessMessage(SC_MessageParser* msg);          // 0x431030
+    int ProcessControlMessage(SC_MessageParser* msg);    // 0x431160
     void UpdateHandlers();          // 0x431210
-    void HandleSystemMessage(SC_Message* msg);     // 0x431290
+    void HandleSystemMessage(SC_MessageParser* msg);     // 0x431290
     int AddHandler(Handler* handler);              // 0x431560
     int RemoveHandler(int command);                // 0x4317C0
     Handler* GetOrCreateHandler(int command);      // 0x431880

@@ -16,6 +16,11 @@ public:
     PodsEngine();
     ~PodsEngine();
 
+    virtual int LBLParse(char* line);     // [0] 0x441140
+    virtual void OnProcessEnd();          // [2] 0x441000
+    virtual void ProcessFrame();          // [10] 0x440A50
+    virtual int HandleAction(int* param); // [13] 0x440FC0
+
     // Fields from 0xF0 to 0x117 (10 ints)
     Sprite* podsBgSprite; // 0xF0 — background sprite (deleted in dtor)
     SlimeDim podState;    // 0xF4-0xFB — state pair (x=0, y=3 initially)

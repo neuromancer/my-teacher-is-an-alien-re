@@ -1,4 +1,5 @@
 #include "mCNavNode.h"
+#include "stubs.h"
 #include "SC_CombatBase.h"
 #include "Sprite.h"
 #include "InputManager.h"
@@ -75,3 +76,97 @@ int mCNavNode::Activate() { return 0; }
 int mCNavNode::GetNextNode() { return 0; }
 void mCNavNode::virtual7() {}
 int mCNavNode::LBLParse(char*) { return 0; }
+
+// mCNavNode_TypeA stubs
+
+/* Function start: 0x44AB50 */
+int mCNavNode_TypeA::Activate() {
+    TODO("mCNavNode_TypeA::Activate");
+    return 0;
+}
+
+/* Function start: 0x44ABE0 */
+int mCNavNode_TypeA::LBLParse(char* line) {
+    TODO("mCNavNode_TypeA::LBLParse");
+    return 0;
+}
+
+/* Function start: 0x44AC30 */
+int mCNavNode_TypeA::virtual4() {
+    TODO("mCNavNode_TypeA::virtual4");
+    return 0;
+}
+
+// mCNavNode_TypeD stubs
+
+/* Function start: 0x44A560 */
+int mCNavNode_TypeD::Activate() {
+    TODO("mCNavNode_TypeD::Activate");
+    return 0;
+}
+
+/* Function start: 0x44A590 */
+int mCNavNode_TypeD::LBLParse(char* line) {
+    TODO("mCNavNode_TypeD::LBLParse");
+    return 0;
+}
+
+/* Function start: 0x44A6C0 */
+int mCNavNode_TypeD::virtual4() {
+    TODO("mCNavNode_TypeD::virtual4");
+    return 0;
+}
+
+// mCNavNode_TypeB stubs
+
+/* Function start: 0x44A6D0 */
+int mCNavNode_TypeB::Activate() {
+    TODO("mCNavNode_TypeB::Activate");
+    return 0;
+}
+
+/* Function start: 0x44A710 */
+int mCNavNode_TypeB::LBLParse(char* line) {
+    TODO("mCNavNode_TypeB::LBLParse");
+    return 0;
+}
+
+/* Function start: 0x44A8F0 */
+int mCNavNode_TypeB::virtual4() {
+    TODO("mCNavNode_TypeB::virtual4");
+    return 0;
+}
+
+// mCNavNode_TypeC stubs
+
+/* Function start: 0x44AC40 */
+int mCNavNode_TypeC::Activate() {
+    TODO("mCNavNode_TypeC::Activate");
+    return 0;
+}
+
+/* Function start: 0x44AC50 */
+int mCNavNode_TypeC::virtual4() {
+    TODO("mCNavNode_TypeC::virtual4");
+    return 0;
+}
+
+// mCNavNode_TypeE stubs
+
+/* Function start: 0x44AC60 */
+int mCNavNode_TypeE::Activate() {
+    TODO("mCNavNode_TypeE::Activate");
+    return 0;
+}
+
+/* Function start: 0x44AC90 */
+int mCNavNode_TypeE::LBLParse(char* line) {
+    TODO("mCNavNode_TypeE::LBLParse");
+    return 0;
+}
+
+/* Function start: 0x44AD80 */
+int mCNavNode_TypeE::virtual4() {
+    TODO("mCNavNode_TypeE::virtual4");
+    return 0;
+}

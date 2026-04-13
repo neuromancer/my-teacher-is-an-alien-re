@@ -6,26 +6,14 @@
 class MMPlayer;
 class SCI_Dialog;
 
-class SC_Message : public Parser {
+class SC_MessageParser : public Parser {
 public:
     int targetAddress;  // 0x90 - destination handler address / SpriteAction*
-    int sourceAddress;  // 0x94 - source/from address
-    int command;        // 0x98 - message type/command code
-    int data;           // 0x9c - associated data
-    int priority;       // 0xa0 - queue priority
-    int param1;         // 0xa4
-    int param2;         // 0xa8
-    int clickX;         // 0xac - click position X
-    int clickY;         // 0xb0 - click position Y
-    int mouseX;         // 0xb4 - current mouse X
-    int mouseY;         // 0xb8 - current mouse Y
-    int lastKey;        // 0xbc - last key pressed
-    int time;           // 0xc0 - time value
-    int userPtr;        // 0xc4 - user pointer (param8)
+    int field_94;       // 0x94
 
-    SC_Message() {}
-    SC_Message(int, int, int, int, int, int, int, int, int, int) {}
-    ~SC_Message();
+    SC_MessageParser() {}
+    SC_MessageParser(int addr) { targetAddress = addr; }
+    ~SC_MessageParser() {}
 
     virtual int LBLParse(char* param_1);
 
@@ -57,7 +45,7 @@ public:
     void Update(int x, int y);
     void Finalize();
     void InitState();
-    int OnInput(SC_Message* msg);
+    int OnInput(SC_MessageParser* msg);
     virtual int LBLParse(char* line);
 };
 

@@ -52,7 +52,7 @@ SC_Rats::~SC_Rats() {
 }
 
 /* Function start: 0x451820 */
-void SC_Rats::Init(SC_Message* msg) {
+void SC_Rats::Init(SC_MessageParser* msg) {
     int savedId = handlerId;
     int* p = (int*)&actionData;
     p[0] = 0;
@@ -127,7 +127,7 @@ void SC_Rats::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x451B30 */
-int SC_Rats::ShutDown(SC_Message* msg) {
+int SC_Rats::ShutDown(SC_MessageParser* msg) {
     if (combatEngine != 0) {
         ((Engine*)combatEngine)->StopAndCleanup();
         if (combatEngine != 0) {
@@ -171,7 +171,7 @@ void SC_Rats::Update(int param1, int param2) {
 }
 
 /* Function start: 0x451C20 */
-int SC_Rats::AddMessage(SC_Message* msg) {
+int SC_Rats::AddMessage(SC_MessageParser* msg) {
     ((SpriteAction*)msg)->fromType = handlerId;
     ((SpriteAction*)msg)->fromValue = moduleParam;
     ((SpriteAction*)msg)->instruction = 0;
@@ -182,7 +182,7 @@ int SC_Rats::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x451C60 */
-int SC_Rats::Exit(SC_Message* msg) {
+int SC_Rats::Exit(SC_MessageParser* msg) {
     if (handlerId != ((SpriteAction*)msg)->addressType) {
         return 0;
     }
@@ -208,7 +208,7 @@ void SC_Rats::ProcessState() {
                 actionData = 0;
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            SC_Message temp;
+            SC_MessageParser temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_WIN_LBL_PR_");
         } else if (g_RatsState_00473e18 == 3) {
             if (actionData != 0) {
@@ -216,7 +216,7 @@ void SC_Rats::ProcessState() {
                 actionData = 0;
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            SC_Message temp;
+            SC_MessageParser temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_PR_");
         }
     } else {
@@ -235,7 +235,7 @@ void SC_Rats::ProcessState() {
                 actionData = 0;
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            SC_Message temp;
+            SC_MessageParser temp;
             ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_");
         } else if (g_RatsState_00473e18 == 2) {
             GameState* gs = g_GameState_0046aa30;

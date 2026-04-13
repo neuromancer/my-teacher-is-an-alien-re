@@ -234,7 +234,7 @@ Handler31::~Handler31() {
 }
 
 /* Function start: 0x4173D0 */
-int Handler31::ShutDown(SC_Message* msg) {
+int Handler31::ShutDown(SC_MessageParser* msg) {
     SC_Question* question;
 
     if (optionSprite != 0) {
@@ -395,7 +395,7 @@ void Handler31::Update(int param1, int param2) {
 }
 
 /* Function start: 0x417750 */
-int Handler31::AddMessage(SC_Message* msg) {
+int Handler31::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action;
     SC_Question* question;
     InputState* pMouse;
@@ -408,7 +408,7 @@ int Handler31::AddMessage(SC_Message* msg) {
     if (activeQuestion != 0) {
         action->addressType = savedCommand;
         action->addressValue = savedCommand;
-        activeQuestion->OnInput((SC_Message*)action);
+        activeQuestion->OnInput((SC_MessageParser*)action);
         question = activeQuestion;
         if (question->state == 2 && question != 0) {
             delete question;
@@ -438,7 +438,7 @@ int Handler31::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x417880 */
-int Handler31::Exit(SC_Message* msg) {
+int Handler31::Exit(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     SC_Question* question;
 
@@ -684,7 +684,7 @@ not_found:
 }
 
 /* Function start: 0x417120 */
-void Handler31::Init(SC_Message* msg) {
+void Handler31::Init(SC_MessageParser* msg) {
     SC_Question* question;
     char dialogFile[32];
     int periodIdx;

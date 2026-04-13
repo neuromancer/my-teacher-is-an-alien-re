@@ -11,8 +11,8 @@
 
 #include "globals.h"
 
-// ActionParser is SC_Message — vtable 0x461100, LBLParse at 0x444E60
-// SC_Message::targetAddress (0x90) stores the SpriteAction* to fill
+// ActionParser is SC_MessageParser — vtable 0x461100, LBLParse at 0x444E60
+// SC_MessageParser::targetAddress (0x90) stores the SpriteAction* to fill
 
 /* Function start: 0x4441E0 */
 SC_FakeRoom::SC_FakeRoom()
@@ -26,7 +26,7 @@ SC_FakeRoom::SC_FakeRoom()
 }
 
 /* Function start: 0x444380 */
-int SC_FakeRoom::ShutDown(SC_Message* msg)
+int SC_FakeRoom::ShutDown(SC_MessageParser* msg)
 {
     SC_Combat::ShutDown(msg);
     if (msg != 0) {
@@ -37,7 +37,7 @@ int SC_FakeRoom::ShutDown(SC_Message* msg)
 }
 
 /* Function start: 0x4443E0 */
-int SC_FakeRoom::AddMessage(SC_Message* msg)
+int SC_FakeRoom::AddMessage(SC_MessageParser* msg)
 {
     if (SC_Combat::AddMessage(msg) != 0) {
         return 1;
@@ -176,7 +176,7 @@ SC_FakeRoom::~SC_FakeRoom()
 void SC_FakeRoom::OnProcessEnd() {}
 
 /* Function start: 0x444320 */
-void SC_FakeRoom::Init(SC_Message* msg) {
+void SC_FakeRoom::Init(SC_MessageParser* msg) {
     memset(&stateFlags, 0, 6 * sizeof(int));
     SC_Combat::Init(msg);
     strcpy((char*)(combatParams + 4), "mis\\CB_FakeRoom.mis");
@@ -191,7 +191,7 @@ void SC_FakeRoom::Update(int p1, int p2) {
 }
 
 /* Function start: 0x4444B0 */
-int SC_FakeRoom::Exit(SC_Message* msg) {
+int SC_FakeRoom::Exit(SC_MessageParser* msg) {
     if (handlerId != ((SpriteAction*)msg)->addressType) {
         return 0;
     }
@@ -212,7 +212,7 @@ void SC_FakeRoom::ProcessLose()
 
         pendingAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        SC_Message temp;
+        SC_MessageParser temp;
         temp.targetAddress = (int)pendingAction;
         ParseFile(&temp, "mis\\CB_FakeRoom.mis", "LOSE_MESSAGE");
 

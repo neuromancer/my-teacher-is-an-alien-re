@@ -422,7 +422,7 @@ extern int g_SpriteTableInitialized_00436b9c; // Initialization flag for sprite 
 // g_CurrentSprite (0x436348) - defined in CombatSprite.cpp
 // g_CurrentSpriteIndex (0x43634c) - defined in CombatSprite.cpp
 // String table index (0x4366b4) - used inline in string.cpp
-// SC_Message keyword strings (0x4367dc-0x43684f) - inline strings in SC_Question.cpp
+// SC_MessageParser keyword strings (0x4367dc-0x43684f) - inline strings in SC_Question.cpp
 extern char* g_Buffer_0046aa00; // DAT_00436960  { /* 4 bytes */ }
 extern char* g_Buffer_00436964; // Scale table buffer
 extern InputManager* g_InputManager_0046aa08; // DAT_00436968  { /* 4 bytes */ }
@@ -6015,7 +6015,7 @@ extern T_Object* g_SelectedItem_0046a6e4;                            // SCI_Inve
     extern char g_AnimFilename2_00472cb0[256];                         // SC_Cinematic
 extern Sound* g_EngineSound_0046aa0c;                                // Engine
 extern CDData* g_PathResolver_0046aa1c;                               // Path resolution
-extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_Message
+extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_MessageParser
 extern GameState* g_StringState_0046aa38;                            // SC_Question
 extern int g_AnimStates_0046ac30[5];                       // SC_DodgeOrville
 extern int g_LastBombDir_0046ac44;                         // SC_DodgeOrville

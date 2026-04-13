@@ -54,7 +54,7 @@ Handler8::Handler8() {
 
 /* Function start: 0x44A900 */
 Handler8::~Handler8() {
-    SC_Message* msg = (SC_Message*)field_A0;
+    SC_MessageParser* msg = (SC_MessageParser*)field_A0;
     if (msg != 0) {
         delete msg;
         field_A0 = 0;

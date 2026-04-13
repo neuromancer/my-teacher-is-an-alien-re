@@ -3,7 +3,7 @@
 
 #include "SC_Combat.h"
 
-class SC_Message;
+class SC_MessageParser;
 
 // SCI_SearchScreen - Search screen handler (full game: case 72/0x48)
 // Constructor: 0x40B420
@@ -21,9 +21,15 @@ public:
     SCI_SearchScreen();                         // 0x40B420
     ~SCI_SearchScreen();                        // 0x40B4B0
 
-    int ShutDown(SC_Message* msg);              // 0x40B780
-    int AddMessage(SC_Message* msg);            // 0x40B7E0
-    virtual int LBLParse(char* line);           // 0x40B25E (body), 0x40B240 (SEH entry)
+    virtual int LBLParse(char* line);           // [0]  0x40BAD0
+    virtual void OnProcessEnd();               // [2]  0x40BAC0
+    virtual void Init(SC_MessageParser* msg);        // [4]  0x40B510
+    int ShutDown(SC_MessageParser* msg);              // 0x40B780
+    int AddMessage(SC_MessageParser* msg);            // 0x40B7E0
+    virtual void Update(int p1, int p2);       // [7]  0x40B7C0
+    virtual int Exit(SC_MessageParser* msg);         // [8]  0x40B830
+    virtual void ProcessLose();                // [11] 0x40B860
+    virtual void ProcessAction(int action, int* data); // [12] 0x40BA10
 };
 
 #endif // SCI_SEARCHSCREEN_H

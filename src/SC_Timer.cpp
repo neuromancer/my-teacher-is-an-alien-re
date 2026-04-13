@@ -37,14 +37,14 @@ SC_Timer::~SC_Timer() {
 }
 
 /* Function start: 0x432000 */
-void SC_Timer::Init(SC_Message* msg) {
+void SC_Timer::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
     if (msg != 0) {
-        moduleParam = msg->data;
+        moduleParam = ((SpriteAction*)msg)->addressValue;
     }
 }
 
-int SC_Timer::ShutDown(SC_Message* msg) {
+int SC_Timer::ShutDown(SC_MessageParser* msg) {
     return 0;
 }
 
@@ -94,13 +94,13 @@ void SC_Timer::Update(int param1, int param2) {
     }
 }
 
-int SC_Timer::AddMessage(SC_Message* msg) {
+int SC_Timer::AddMessage(SC_MessageParser* msg) {
     WriteMessageAddress(msg);
     return 1;
 }
 
 /* Function start: 0x423060 */
-int SC_Timer::Exit(SC_Message* msg) {
+int SC_Timer::Exit(SC_MessageParser* msg) {
     TimedEvent* pTimedEvent;
     TimedEvent* eventData;
     TimedEvent* timedEvent;
@@ -136,7 +136,7 @@ int SC_Timer::Exit(SC_Message* msg) {
             pTimedEvent = new TimedEvent();
             pTimedEvent->m_duration = p[12];
             pTimedEvent->m_sourceAddress = p[1];
-            pTimedEvent->m_eventData = (SC_Message*)p[13];
+            pTimedEvent->m_eventData = (SC_MessageParser*)p[13];
             p[13] = 0;
             pTimedEvent->SetType(p[5]);
             pList = list;

@@ -4,7 +4,7 @@
 #include "IconBar.h"
 #include "SC_Question.h"
 
-class SC_Message;
+class SC_MessageParser;
 class Sprite;
 class Palette;
 

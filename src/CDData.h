@@ -14,6 +14,8 @@ public:
   CDData(char *param_1, const char *param_2, const char *param_3);
   ~CDData();
 
+  int LBLParse(char* line);             // 0x4332E0
+
   void Setup(char *param_1, const char *param_2, const char *param_3); // 0x432FD0
   int ResolvePath(char* param_1);
 };

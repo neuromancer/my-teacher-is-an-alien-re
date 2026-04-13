@@ -1,4 +1,5 @@
 #include "SC_FireAlarm.h"
+#include "stubs.h"
 #include "SpriteAction.h"
 #include "Memory.h"
 #include "Engine.h"
@@ -41,11 +42,11 @@ SC_FireAlarm::SC_FireAlarm() {
 
 /* Function start: 0x407470 */
 SC_FireAlarm::~SC_FireAlarm() {
-    SC_FireAlarm::ShutDown((SC_Message*)0);
+    SC_FireAlarm::ShutDown((SC_MessageParser*)0);
 }
 
 /* Function start: 0x407590 */
-void SC_FireAlarm::Init(SC_Message* msg) {
+void SC_FireAlarm::Init(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
 
     Handler::Init(msg);
@@ -73,7 +74,7 @@ void SC_FireAlarm::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x4076E0 */
-int SC_FireAlarm::ShutDown(SC_Message* msg) {
+int SC_FireAlarm::ShutDown(SC_MessageParser* msg) {
     void* p;
 
     p = (void*)paletteDummy;
@@ -151,7 +152,7 @@ int SC_FireAlarm::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x407930 */
-int SC_FireAlarm::AddMessage(SC_Message* msg) {
+int SC_FireAlarm::AddMessage(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
 
     WriteMessageAddress(msg);
@@ -164,7 +165,7 @@ int SC_FireAlarm::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x407970 */
-int SC_FireAlarm::Exit(SC_Message* msg) {
+int SC_FireAlarm::Exit(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
 
     if (pmsg[0] != handlerId) {
@@ -185,6 +186,11 @@ int SC_FireAlarm::Exit(SC_Message* msg) {
     }
 
     return 1;
+}
+
+/* Function start: 0x4078A0 */
+void SC_FireAlarm::Update(int p1, int p2) {
+    TODO("SC_FireAlarm::Update");
 }
 
 /* Function start: 0x4079E0 */
@@ -235,6 +241,11 @@ void SC_FireAlarm::ResetState() {
         soundList->Play(9);
     }
     stateFlags |= 8;
+}
+
+/* Function start: 0x407C10 */
+void SC_FireAlarm::ProcessClick() {
+    TODO("SC_FireAlarm::ProcessClick");
 }
 
 /* Function start: 0x407C20 */
@@ -562,4 +573,15 @@ void SC_FireAlarm::ProcessFrame() {
             consoleSprite->ResetAnimation(mouseVal2 / (screenSize.x / 3) + 5, 0);
         }
     }
+}
+
+/* Function start: 0x408530 */
+void SC_FireAlarm::OnProcessEnd() {
+    TODO("SC_FireAlarm::OnProcessEnd");
+}
+
+/* Function start: 0x4086B0 */
+int SC_FireAlarm::LBLParse(char* line) {
+    TODO("SC_FireAlarm::LBLParse");
+    return 0;
 }

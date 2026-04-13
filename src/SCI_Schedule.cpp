@@ -105,16 +105,16 @@ SCI_Schedule::~SCI_Schedule()
 }
 
 /* Function start: 0x4350C0 */ /* No assembly extracted */
-void SCI_Schedule::Init(SC_Message* msg)
+void SCI_Schedule::Init(SC_MessageParser* msg)
 {
     IconBar::Init(msg);
 }
 
 /* Function start: 0x4353E0 */
-int SCI_Schedule::ShutDown(SC_Message* msg)
+int SCI_Schedule::ShutDown(SC_MessageParser* msg)
 {
-    Sprite** ptr = &selBox1;
     int i = 6;
+    Sprite** ptr = &selBox1;
     do {
         if (*ptr != 0) {
             (*ptr)->StopAnimationSound();
@@ -138,7 +138,7 @@ int SCI_Schedule::ShutDown(SC_Message* msg)
 }
 
 /* Function start: 0x435440 */
-int SCI_Schedule::AddMessage(SC_Message* msg)
+int SCI_Schedule::AddMessage(SC_MessageParser* msg)
 {
     SpriteAction* action = (SpriteAction*)msg;
 
@@ -148,8 +148,8 @@ int SCI_Schedule::AddMessage(SC_Message* msg)
 
     if (action->lastKey == 0x1B) {
         action->addressType = savedCommand;
-        action->instruction = 4;
         action->addressValue = savedMsgData;
+        action->instruction = 4;
         return 1;
     }
 
@@ -167,8 +167,8 @@ int SCI_Schedule::AddMessage(SC_Message* msg)
 
         T_MenuHotspot* hs = mapHotspot;
         if (hs->sprite != 0 &&
-            hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
-            hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
+            hs->bounds.right <= mouseX && hs->activeRight >= mouseX &&
+            hs->bounds.bottom <= mouseY && hs->activeBottom >= mouseY) {
             action->addressType = savedCommand;
             action->instruction = 4;
             action->addressValue = savedMsgData;
@@ -179,7 +179,7 @@ int SCI_Schedule::AddMessage(SC_Message* msg)
 }
 
 /* Function start: 0x435500 */
-int SCI_Schedule::Exit(SC_Message* msg) {
+int SCI_Schedule::Exit(SC_MessageParser* msg) {
     return handlerId == ((SpriteAction*)msg)->addressType;
 }
 
@@ -225,8 +225,8 @@ void SCI_Schedule::Update(int param1, int param2)
 
     T_MenuHotspot* hs = mapHotspot;
     if (hs->sprite != 0) {
-        if (hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
-            hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
+        if (hs->bounds.right <= mouseX && hs->activeRight >= mouseX &&
+            hs->bounds.bottom <= mouseY && hs->activeBottom >= mouseY) {
             hs->bounds.left = 1;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(1, 0);
@@ -252,7 +252,6 @@ int SCI_Schedule::LBLParse(char* param_1)
 {
     char token[32];
 
-    token[0] = '\0';
     sscanf(param_1, " %s ", token);
 
     if (strcmp(token, "HOTSPOT") == 0) {

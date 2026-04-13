@@ -52,9 +52,6 @@ SCI_SchoolMenu::SCI_SchoolMenu() {
 
 /* Function start: 0x41E0E0 */
 SCI_SchoolMenu::~SCI_SchoolMenu() {
-    void* ptr;
-    int i;
-
     if (palette != 0) {
         delete palette;
         palette = 0;
@@ -65,47 +62,61 @@ SCI_SchoolMenu::~SCI_SchoolMenu() {
         background = 0;
     }
 
-    ptr = okayButton;
-    if (ptr != 0) {
-        delete (T_MenuHotspot*)ptr;
+    if (okayButton != 0) {
+        delete okayButton;
         okayButton = 0;
     }
 
-    ptr = cancelButton;
-    if (ptr != 0) {
-        delete (T_MenuHotspot*)ptr;
+    if (cancelButton != 0) {
+        delete cancelButton;
         cancelButton = 0;
     }
 
-    if (menuSound != 0) {
-        menuSound->Unload();
-        delete menuSound;
-        menuSound = 0;
-    }
-
-    for (i = 3; i != 0; i--) {
-        ptr = characters[3 - i];
-        if (ptr != 0) {
-            delete (T_MenuHotspot*)ptr;
-            characters[3 - i] = 0;
+    {
+        Sample* p = menuSound;
+        if (p != 0) {
+            p->Unload();
+            FreeMemory(p);
+            menuSound = 0;
         }
     }
 
-    for (i = 9; i != 0; i--) {
-        ptr = options[9 - i];
-        if (ptr != 0) {
-            delete (T_MenuHotspot*)ptr;
-            options[9 - i] = 0;
-        }
+    {
+        int count = 3;
+        T_MenuHotspot** base = characters;
+        do {
+            T_MenuHotspot* p = *base;
+            if (p != 0) {
+                p->~T_MenuHotspot();
+                FreeMemory(p);
+                *base = 0;
+            }
+            base++;
+            count--;
+        } while (count != 0);
+    }
+
+    {
+        int count = 9;
+        T_MenuHotspot** base = options;
+        do {
+            T_MenuHotspot* p = *base;
+            if (p != 0) {
+                p->~T_MenuHotspot();
+                FreeMemory(p);
+                *base = 0;
+            }
+            base++;
+            count--;
+        } while (count != 0);
     }
 }
 
 /* Function start: 0x41E270 */
-void SCI_SchoolMenu::Init(SC_Message* msg) {
+void SCI_SchoolMenu::Init(SC_MessageParser* msg) {
     int periodIdx;
     int periodVal;
     T_MenuHotspot** charSprite;
-    void* ptr;
     GameState* gs;
     int i;
 
@@ -137,19 +148,20 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
     ParseFile(this, "mis\\skool.mis", "[DURINGSCHOOLMENU]");
     ParseFile(this, "mis\\skool.mis", "[ROOMAVALIBLITY_PERIOD%d]", periodVal);
 
-    if (palette != 0) {
-        ZBufferManager* zbm = g_ZBufferManager_0046aa24;
-        if (zbm->m_palette != 0) {
+    Palette* pal = palette;
+    if (pal != 0) {
+        Palette** pDest = &g_ZBufferManager_0046aa24->m_palette;
+        if (*pDest != 0) {
             WriteToLog("ddouble palette");
         }
-        zbm->m_palette = palette;
+        *pDest = pal;
     }
 
     // Clean up existing sound
-    ptr = menuSound;
-    if (ptr != 0) {
-        menuSound->Unload();
-        operator delete(menuSound);
+    Sample* snd = menuSound;
+    if (snd != 0) {
+        snd->Unload();
+        FreeMemory(snd);
         menuSound = 0;
     }
 
@@ -337,7 +349,7 @@ void SCI_SchoolMenu::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x41E950 */
-int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
+int SCI_SchoolMenu::ShutDown(SC_MessageParser* msg) {
     ZBufferManager* zbm;
     ZBQueue* queue;
     void* item;
@@ -387,39 +399,54 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
 
     zbm->m_palette = 0;
 
-    if (palette != 0) {
-        palette->~Palette();
-        FreeMemory(palette);
-        palette = 0;
-    }
-
-    if (background != 0) {
-        background->~MMPlayer();
-        FreeMemory(background);
-        background = 0;
-    }
-
-    if (okayButton != 0) {
-        okayButton->~T_MenuHotspot();
-        FreeMemory(okayButton);
-        okayButton = 0;
-    }
-
-    if (cancelButton != 0) {
-        cancelButton->~T_MenuHotspot();
-        FreeMemory(cancelButton);
-        cancelButton = 0;
-    }
-
-    if (menuSound != 0) {
-        menuSound->Unload();
-        FreeMemory(menuSound);
-        menuSound = 0;
+    {
+        Palette* p = palette;
+        if (p != 0) {
+            p->~Palette();
+            FreeMemory(p);
+            palette = 0;
+        }
     }
 
     {
+        MMPlayer* p = background;
+        if (p != 0) {
+            p->~MMPlayer();
+            FreeMemory(p);
+            background = 0;
+        }
+    }
+
+    {
+        T_MenuHotspot* p = okayButton;
+        if (p != 0) {
+            p->~T_MenuHotspot();
+            FreeMemory(p);
+            okayButton = 0;
+        }
+    }
+
+    {
+        T_MenuHotspot* p = cancelButton;
+        if (p != 0) {
+            p->~T_MenuHotspot();
+            FreeMemory(p);
+            cancelButton = 0;
+        }
+    }
+
+    {
+        Sample* p = menuSound;
+        if (p != 0) {
+            p->Unload();
+            FreeMemory(p);
+            menuSound = 0;
+        }
+    }
+
+    {
+        int count = 3;
         T_MenuHotspot** base = characters;
-        i = 3;
         do {
             T_MenuHotspot* ptr = *base;
             if (ptr != 0) {
@@ -428,13 +455,13 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
                 *base = 0;
             }
             base++;
-            i--;
-        } while (i != 0);
+            count--;
+        } while (count != 0);
     }
 
     {
+        int count = 9;
         T_MenuHotspot** base = options;
-        i = 9;
         do {
             T_MenuHotspot* ptr = *base;
             if (ptr != 0) {
@@ -443,8 +470,8 @@ int SCI_SchoolMenu::ShutDown(SC_Message* msg) {
                 *base = 0;
             }
             base++;
-            i--;
-        } while (i != 0);
+            count--;
+        } while (count != 0);
     }
 
     IconBar::CleanupIconBar(msg);
@@ -519,7 +546,7 @@ void SCI_SchoolMenu::Update(int param1, int param2) {
 }
 
 /* Function start: 0x41F680 */
-int SCI_SchoolMenu::Exit(SC_Message* msg) {
+int SCI_SchoolMenu::Exit(SC_MessageParser* msg) {
     return handlerId == ((SpriteAction*)msg)->addressType;
 }
 
@@ -705,7 +732,7 @@ void SCI_SchoolMenu::OnProcessStart() {
 }
 
 /* Function start: 0x41ECE0 */
-int SCI_SchoolMenu::AddMessage(SC_Message* msg) {
+int SCI_SchoolMenu::AddMessage(SC_MessageParser* msg) {
     T_MenuHotspot** charBase;
     int i;
     T_MenuHotspot** selPtr;
@@ -973,12 +1000,9 @@ check_go:
         goCoords.x = goMouse[0];
         goCoords.y = goMouse[1];
         T_MenuHotspot* goSpr = okayButton;
-        if (goSpr->sprite != 0) {
-            if (((GlyphRect*)&goSpr->bounds.right)->HitTest(goCoords.x, goCoords.y)) {
-                hitResult = 1;
-            } else {
-                hitResult = 0;
-            }
+        if (goSpr->sprite != 0 &&
+            ((GlyphRect*)&goSpr->bounds.right)->HitTest(goCoords.x, goCoords.y) != 0) {
+            hitResult = 1;
         } else {
             hitResult = 0;
         }
@@ -1097,12 +1121,9 @@ check_back:
         backCoords.x = ((SpriteAction*)msg)->mousePos.x;
         backCoords.y = ((SpriteAction*)msg)->mousePos.y;
         T_MenuHotspot* backSpr = cancelButton;
-        if (backSpr->sprite != 0) {
-            if (((GlyphRect*)&backSpr->bounds.right)->HitTest(backCoords.x, backCoords.y)) {
-                hitResult = 1;
-            } else {
-                hitResult = 0;
-            }
+        if (backSpr->sprite != 0 &&
+            ((GlyphRect*)&backSpr->bounds.right)->HitTest(backCoords.x, backCoords.y) != 0) {
+            hitResult = 1;
         } else {
             hitResult = 0;
         }

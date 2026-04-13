@@ -19,11 +19,11 @@ public:
     virtual ~SC_OnScreenMessage();
 
     // Virtual method overrides from Handler
-    virtual void Init(SC_Message* msg);
-    virtual int AddMessage(SC_Message* msg);
-    virtual int ShutDown(SC_Message* msg);
+    virtual void Init(SC_MessageParser* msg);
+    virtual int AddMessage(SC_MessageParser* msg);
+    virtual int ShutDown(SC_MessageParser* msg);
     virtual void Update(int param1, int param2);
-    virtual int Exit(SC_Message* msg);
+    virtual int Exit(SC_MessageParser* msg);
 
     void Copy(SC_OnScreenMessage* other);
     SoundEntry* FindOrCreateSoundEntry(int soundId);

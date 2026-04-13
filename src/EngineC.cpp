@@ -1,4 +1,5 @@
 #include "EngineC.h"
+#include "stubs.h"
 #include "Sprite.h"
 #include "Memory.h"
 #include "InputManager.h"
@@ -44,6 +45,11 @@ EngineC::~EngineC()
     }
 }
 
+/* Function start: 0x40BDC0 */
+void EngineC::RenderBackground() {
+    TODO("EngineC::RenderBackground");
+}
+
 /* Function start: 0x40C0D0 */
 void EngineC::method10()
 {
@@ -82,4 +88,21 @@ void EngineC::method10()
     }
 
     RenderBackground();
+}
+
+/* Function start: 0x40C1B0 */
+int EngineC::HandleAction(int* param) {
+    TODO("EngineC::HandleAction");
+    return 0;
+}
+
+/* Function start: 0x40C200 */
+void EngineC::OnProcessEnd() {
+    TODO("EngineC::OnProcessEnd");
+}
+
+/* Function start: 0x40C270 */
+int EngineC::LBLParse(char* line) {
+    TODO("EngineC::LBLParse");
+    return 0;
 }

@@ -4,7 +4,7 @@
 #include "Parser.h"
 #include <string.h>
 
-class SC_Message;
+class SC_MessageParser;
 
 // Handler - Base class for all game handlers (modules)
 // Handlers are scene/screen managers that process messages and render content
@@ -34,22 +34,22 @@ public:
 
     // Virtual methods - these form the handler interface
     // Override in derived classes to implement handler behavior
-    virtual void Init(SC_Message* msg);
-    virtual int AddMessage(SC_Message* msg);
-    virtual int ShutDown(SC_Message* msg);
+    virtual void Init(SC_MessageParser* msg);
+    virtual int AddMessage(SC_MessageParser* msg);
+    virtual int ShutDown(SC_MessageParser* msg);
     virtual void Update(int param1, int param2);
-    virtual int Exit(SC_Message* msg);
+    virtual int Exit(SC_MessageParser* msg);
     virtual void Serialize(void* param);
     virtual void OnInput(void* param);
 
     // Save return data from incoming message
-    void InitFromMessage(SC_Message* msg);
+    void InitFromMessage(SC_MessageParser* msg);
 
     // Copy command/data from message to handler fields
-    void CopyCommandData(SC_Message* msg);
+    void CopyCommandData(SC_MessageParser* msg);
 
     // Write handler address to message
-    int WriteMessageAddress(SC_Message* msg);
+    int WriteMessageAddress(SC_MessageParser* msg);
 
     // Common handler fields
     int handlerId;      // 0x90 - handler type identifier

@@ -1,4 +1,5 @@
 #include "NavSubNode.h"
+#include "stubs.h"
 #include "mCNavigator.h"
 #include "mCNavNode.h"
 #include "CombatSprite.h"
@@ -74,6 +75,12 @@ OnDir_SubNode::~OnDir_SubNode()
 {
 }
 
+/* Function start: 0x449DD0 */
+int OnDir_SubNode::Activate() {
+    TODO("OnDir_SubNode::Activate");
+    return 0;
+}
+
 /* Function start: 0x449E70 */
 int OnDir_SubNode::LBLParse(char* param_1)
 {
@@ -88,6 +95,12 @@ int OnDir_SubNode::LBLParse(char* param_1)
     int stickDir = FindStickDirIndex(stickStr[0]);
     destNode[stickDir] = destNodeId;
     bearingForDir[stickDir] = FindCharIndex(bearingStr[0]);
+    return 0;
+}
+
+/* Function start: 0x44A000 */
+int OnDir_SubNode::virtual4() {
+    TODO("OnDir_SubNode::virtual4");
     return 0;
 }
 
@@ -292,6 +305,12 @@ found2:
     node->value = (void*)param_1;
 }
 
+/* Function start: 0x44A550 */
+int BG_SubNode::virtual4() {
+    TODO("BG_SubNode::virtual4");
+    return 0;
+}
+
 // =========================================================================
 // NavSubNode virtual method stubs
 // =========================================================================
@@ -306,6 +325,12 @@ int NavSubNode::GetNextNode()
         g_Navigator_0046ae70->SetMode(bearing);
     }
     return nodeHandle;
+}
+
+/* Function start: 0x44ADD0 */
+int NavSubNode::LBLParse(char* line) {
+    TODO("NavSubNode::LBLParse");
+    return 0;
 }
 
 void NavSubNode::virtual7() {}

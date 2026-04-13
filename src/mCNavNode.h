@@ -46,4 +46,53 @@ public:
     char nodeName[36];              // 0xAC - node name (up to 0xCF)
 };
 
+// mCNavNode_TypeA - Navigation node type A
+// Vtable: 0x461B60
+class mCNavNode_TypeA : public mCNavNode {
+public:
+    mCNavNode_TypeA(char* line) : mCNavNode(line) {}
+    virtual int LBLParse(char* line);
+    virtual int virtual4();
+    virtual int Activate();
+};
+
+// mCNavNode_TypeB - Navigation node type B
+// Vtable: 0x461B80
+class mCNavNode_TypeB : public mCNavNode {
+public:
+    mCNavNode_TypeB(char* line) : mCNavNode(line) {}
+    virtual int LBLParse(char* line);
+    virtual int virtual4();
+    virtual int Activate();
+};
+
+// mCNavNode_TypeC - Navigation node type C
+// Vtable: 0x461BA0
+class mCNavNode_TypeC : public mCNavNode {
+public:
+    mCNavNode_TypeC(char* line) : mCNavNode(line) {}
+    virtual int virtual4();
+    virtual int Activate();
+};
+
+// mCNavNode_TypeD - Navigation node type D
+// Vtable: 0x461BC0
+class mCNavNode_TypeD : public mCNavNode {
+public:
+    mCNavNode_TypeD(char* line) : mCNavNode(line) {}
+    virtual int LBLParse(char* line);
+    virtual int virtual4();
+    virtual int Activate();
+};
+
+// mCNavNode_TypeE - Navigation node type E
+// Vtable: 0x461BE0
+class mCNavNode_TypeE : public mCNavNode {
+public:
+    mCNavNode_TypeE(char* line) : mCNavNode(line) {}
+    virtual int LBLParse(char* line);
+    virtual int virtual4();
+    virtual int Activate();
+};
+
 #endif // MCNAVNODE_H

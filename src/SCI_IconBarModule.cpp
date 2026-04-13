@@ -96,7 +96,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
 }
 
 /* Function start: 0x4013E0 */
-void SCI_IconBarModule::Init(SC_Message* msg) {
+void SCI_IconBarModule::Init(SC_MessageParser* msg) {
     int changed;
     int targetRoom;
     SpriteAction* action;
@@ -402,7 +402,7 @@ void SCI_IconBarModule::Init(SC_Message* msg) {
 
 
 /* Function start: 0x401CF0 */
-int SCI_IconBarModule::ShutDown(SC_Message* msg) {
+int SCI_IconBarModule::ShutDown(SC_MessageParser* msg) {
     T_Hotspot** pIcon;
     int i;
 
@@ -481,7 +481,7 @@ void SCI_IconBarModule::Update(int param1, int param2) {
 }
 
 /* Function start: 0x401E40 */
-int SCI_IconBarModule::AddMessage(SC_Message* msg) {
+int SCI_IconBarModule::AddMessage(SC_MessageParser* msg) {
     int idx;
     int iconIdx;
     GameState* gs;
@@ -557,7 +557,7 @@ int SCI_IconBarModule::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x401FF0 */
-int SCI_IconBarModule::Exit(SC_Message* msg) {
+int SCI_IconBarModule::Exit(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     if (handlerId != action->addressType) {
         return 0;

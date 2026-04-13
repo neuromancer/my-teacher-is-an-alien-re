@@ -31,10 +31,12 @@ public:
 
     virtual int LBLParse(char* line);          // [0] 0x4104B0
     virtual void OnProcessEnd();               // [2] 0x410390
-    virtual void Init(SC_Message* msg);        // [4] 0x40F290
-    virtual int AddMessage(SC_Message* msg);   // [5] 0x40F6C0
+    virtual void Init(SC_MessageParser* msg);        // [4] 0x40F290
+    virtual int AddMessage(SC_MessageParser* msg);   // [5] 0x40F6C0
     virtual void Update(int param1, int param2); // [7] 0x40F660
-    virtual int Exit(SC_Message* msg);         // [8] 0x40F6F0
+    virtual int Exit(SC_MessageParser* msg);         // [8] 0x40F6F0
+    virtual void HandleInput();                // [11] 0x40FC50
+    virtual void ProcessHit();                 // [12] 0x40FC30
 
     void Cleanup(int flag);            // [6] 0x40F420 (vtable ShutDown slot)
 

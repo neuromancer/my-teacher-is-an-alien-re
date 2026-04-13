@@ -23,15 +23,16 @@ public:
     ~SC_Wahoo();
 
     // Virtual overrides
-    virtual void Init(SC_Message* msg);       // 0x437A40 (+0x10)
-    virtual int AddMessage(SC_Message* msg);  // 0x4381E0 (+0x14)
-    virtual int ShutDown(SC_Message* msg);    // 0x437C60 (+0x18)
+    virtual void Init(SC_MessageParser* msg);       // 0x437A40 (+0x10)
+    virtual int AddMessage(SC_MessageParser* msg);  // 0x4381E0 (+0x14)
+    virtual int ShutDown(SC_MessageParser* msg);    // 0x437C60 (+0x18)
     virtual void Update(int param1, int param2); // 0x437EA0 (+0x1C)
-    virtual int Exit(SC_Message* msg);        // 0x438280 (+0x20)
+    virtual int Exit(SC_MessageParser* msg);        // 0x438280 (+0x20)
 
     virtual int LBLParse(char* param_1);      // 0x438630 (+0x00)
 
     int ProcessClick(int param_1);              // 0x438F10 (+0x2C)
+    virtual int OnCombatResult();               // 0x438EF0 (+0x30)
 
     void ProcessState();                      // 0x4382F0
     void OnProcessEnd();                      // 0x438470

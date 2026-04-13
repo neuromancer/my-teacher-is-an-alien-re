@@ -276,6 +276,7 @@ void SC_CombatBase::CleanupAll()
 }
 
 
+/* Function start: 0x42CB10 */
 /* Function start: 0x42CB2E */
 int SC_CombatBase::LBLParse(char* line)
 {
@@ -355,10 +356,14 @@ int SC_CombatBase::ProcessEvents()
     return result;
 }
 
+/* Function start: 0x42C230 */
 void SC_CombatBase::ResetState() {}
+/* Function start: 0x42C960 */
 void SC_CombatBase::ProcessInput() {}
+/* Function start: 0x42C070 */
 void SC_CombatBase::BeginFrame() {}
 int SC_CombatBase::PostRender() { return 0; }
 int SC_CombatBase::HandleAction(int*) { return 0; }
+/* Function start: 0x42C920 */
 void SC_CombatBase::RenderState() {}
 int SC_CombatBase::UpdateAndCheck() { return 0; }

@@ -4,7 +4,7 @@
 #include "Handler.h"
 #include "InvSlotItem.h"
 
-class SC_Message;
+class SC_MessageParser;
 class Sprite;
 class SpriteAction;
 
@@ -38,11 +38,11 @@ public:
 
     // Virtual overrides
     virtual int LBLParse(char* param);             // 0x42E010
-    virtual void Init(SC_Message* msg);            // 0x42D6E0
-    virtual int AddMessage(SC_Message* msg);       // 0x42D9A0
-    virtual int ShutDown(SC_Message* msg);         // 0x42D920
+    virtual void Init(SC_MessageParser* msg);            // 0x42D6E0
+    virtual int AddMessage(SC_MessageParser* msg);       // 0x42D9A0
+    virtual int ShutDown(SC_MessageParser* msg);         // 0x42D920
     virtual void Update(int param1, int param2);   // 0x42DD40
-    virtual int Exit(SC_Message* msg);             // 0x42DD30
+    virtual int Exit(SC_MessageParser* msg);             // 0x42DD30
 
     // Non-virtual aliases used by derived classes to call IconBar base
     // implementation directly (bypassing virtual dispatch).
@@ -51,9 +51,9 @@ public:
     //   SCI_SchoolMenu::Init  → CALL 0x42D6E0 (IconBar::Init)
     //   SCI_Inventory::ShutDown → CALL 0x42D920 (IconBar::ShutDown)
     //   SCI_SchoolMenu::AddMessage → CALL 0x42D9A0 (IconBar::AddMessage)
-    void InitIconBar(SC_Message* msg) { IconBar::Init(msg); }
-    void CleanupIconBar(SC_Message* msg) { IconBar::ShutDown(msg); }
-    int CheckButtonClick(SC_Message* msg) { return IconBar::AddMessage(msg); }
+    void InitIconBar(SC_MessageParser* msg) { IconBar::Init(msg); }
+    void CleanupIconBar(SC_MessageParser* msg) { IconBar::ShutDown(msg); }
+    int CheckButtonClick(SC_MessageParser* msg) { return IconBar::AddMessage(msg); }
     void SetIconBarRect();                         // 0x42D340
     int FindClickedEntry(int* param);              // 0x42DEC0
     void PlayButtonSound(int buttonIndex);         // 0x42DF10

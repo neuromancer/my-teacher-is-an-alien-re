@@ -17,9 +17,11 @@ public:
     ~SC_Pods();
 
     virtual int LBLParse(char* line);       // 0x4420B3
-    virtual void Init(SC_Message* msg);     // 0x441700
-    virtual int AddMessage(SC_Message* msg); // 0x441AE0
-    virtual int ShutDown(SC_Message* msg);  // 0x4419E0
+    virtual void Init(SC_MessageParser* msg);     // 0x441700
+    virtual int AddMessage(SC_MessageParser* msg); // 0x441AE0
+    virtual int ShutDown(SC_MessageParser* msg);  // 0x4419E0
+    virtual void Update(int p1, int p2);          // 0x441AA0
+    virtual int Exit(SC_MessageParser* msg);      // 0x441B20
 
     void HandleResult();                    // 0x441B60
 

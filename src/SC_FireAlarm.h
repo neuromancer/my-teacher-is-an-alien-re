@@ -19,13 +19,18 @@ public:
     SC_FireAlarm();
     ~SC_FireAlarm();
 
-    void Init(SC_Message* msg);
-    int AddMessage(SC_Message* msg);
-    int ShutDown(SC_Message* msg);
-    int Exit(SC_Message* msg);
+    virtual int LBLParse(char* line);              // [0]  0x4086B0
+    virtual void OnProcessEnd();                   // [2]  0x408530
+    void Init(SC_MessageParser* msg);
+    int AddMessage(SC_MessageParser* msg);
+    int ShutDown(SC_MessageParser* msg);
+    virtual void Update(int p1, int p2);           // [7]  0x4078A0
+    int Exit(SC_MessageParser* msg);
+    virtual int HandleClick(int* param);           // [11] 0x407C20
+    virtual void ProcessClick();                   // [12] 0x407C10
+
     void SendResultMessage();       // 0x4079E0
     void ResetState();              // 0x407BB0
-    int HandleClick(int* param);    // 0x407C20
     void Render();                  // 0x407E50
     void ProcessFrame();            // 0x407EE0
 

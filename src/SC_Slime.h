@@ -11,7 +11,7 @@ class SoundList;
 class SlimeTable;
 class Sample;
 class Palette;
-class SC_Message;
+class SC_MessageParser;
 
 // 8-byte embedded object, ctor 0x40D0D0 (zeros 2 fields), no dtor
 struct SlotPair {
@@ -31,11 +31,15 @@ public:
     SC_Slime();
     ~SC_Slime();
 
-    virtual void Init(SC_Message* msg);
-    virtual int AddMessage(SC_Message* msg);
-    virtual int ShutDown(SC_Message* msg);
-    virtual void Update(int param1, int param2);
-    virtual int Exit(SC_Message* msg);
+    virtual int LBLParse(char* line);              // [0]  0x40E1E0
+    virtual void Init(SC_MessageParser* msg);
+    virtual int AddMessage(SC_MessageParser* msg);
+    virtual int ShutDown(SC_MessageParser* msg);
+    virtual void Update(int param1, int param2);   // [7]  0x40D6C0
+    virtual int Exit(SC_MessageParser* msg);
+    virtual int HandleInput(Sprite* spr);          // [11] 0x40DB20
+    virtual void ProcessHit();                     // [12] 0x40DB00
+    virtual void ProcessAction(int action, int* data); // [13] 0x40EB60
 
     void ProcessSprite(Sprite* spr); // 0x40DF30
     void SendResultMessage();    // 0x40D7C0

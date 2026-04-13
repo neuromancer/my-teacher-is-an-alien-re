@@ -170,7 +170,7 @@ SCI_Inventory::~SCI_Inventory() {
 }
 
 /* Function start: 0x43E920 */ /* No assembly extracted */
-void SCI_Inventory::Init(SC_Message* msg) {
+void SCI_Inventory::Init(SC_MessageParser* msg) {
     
     int* palSlot;
     int* ptr;
@@ -195,7 +195,7 @@ void SCI_Inventory::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x43E990 */
-int SCI_Inventory::ShutDown(SC_Message* msg) {
+int SCI_Inventory::ShutDown(SC_MessageParser* msg) {
     Sprite* spr;
     void* obj;
 
@@ -248,7 +248,7 @@ int SCI_Inventory::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x43EA60 */
-int SCI_Inventory::AddMessage(SC_Message* msg) {
+int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action;
     int hitResult;
     int* cursorPtr;
@@ -550,7 +550,7 @@ void SCI_Inventory::Update(int param1, int param2) {
 }
 
 /* Function start: 0x43EFD0 */
-int SCI_Inventory::Exit(SC_Message* msg) {
+int SCI_Inventory::Exit(SC_MessageParser* msg) {
     SpriteAction* action;
 
     action = (SpriteAction*)msg;

@@ -63,7 +63,7 @@ void Engine::ShutDown(int flag) {
 
 /* Function start: 0x449400 */
 int Engine::AddMessage(int* param) {
-    ((Handler*)this)->WriteMessageAddress((SC_Message*)param);
+    ((Handler*)this)->WriteMessageAddress((SC_MessageParser*)param);
     return 0;
 }
 
@@ -127,7 +127,7 @@ void Engine::Init(int* param) {
         pendingAction = (SpriteAction*)param[13];
         param[13] = 0;
     }
-    ((Handler*)this)->CopyCommandData((SC_Message*)param);
+    ((Handler*)this)->CopyCommandData((SC_MessageParser*)param);
     moduleParam = param[1];
 }
 

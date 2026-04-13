@@ -15,8 +15,10 @@ public:
     SC_ZBuffer();
     ~SC_ZBuffer();
 
-    void Init(SC_Message* msg);           // 0x414370
+    void Init(SC_MessageParser* msg);           // 0x414370
+    int AddMessage(SC_MessageParser* msg);     // 0x414400
     void Update(int param1, int param2);  // 0x4143A0
+    int Exit(SC_MessageParser* msg);           // 0x414420
 
     Timer timer;        // 0xA8
     int field_BC;       // 0xBC

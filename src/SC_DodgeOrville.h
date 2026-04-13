@@ -22,9 +22,14 @@ public:
     SC_DodgeOrville();
     ~SC_DodgeOrville();
 
+    virtual int LBLParse(char* line);              // [0]  0x4298A0
+    virtual void Init(SC_MessageParser* msg);            // [4]  0x4289C0
     void Cleanup(int flag);            // 0x428A40 - overrides Engine::VirtCleanup [6]
-    int AddMessage(SC_Message* msg);   // 0x428AF0 - overrides Engine::CleanupSubsystems [5]
+    int AddMessage(SC_MessageParser* msg);   // 0x428AF0 - overrides Engine::CleanupSubsystems [5]
+    virtual void Update(int p1, int p2);           // [7]  0x428AD0
+    virtual int Exit(SC_MessageParser* msg);             // [8]  0x428B30
     void ProcessTargets();             // 0x428B60 - overrides Engine::ProcessTargets [11]
+    virtual void ProcessAction(int action, int* data); // [12] 0x4295C0
 
     void UpdateGame();                 // 0x429110
     void UpdateReticle();              // 0x429380

@@ -233,7 +233,7 @@ SC_CrystalPuzzle::~SC_CrystalPuzzle() {
 }
 
 /* Function start: 0x44F710 */
-void SC_CrystalPuzzle::Init(SC_Message* msg) {
+void SC_CrystalPuzzle::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
 
     SetVideoRes(0x280, 0x1e0);
@@ -334,7 +334,7 @@ void SC_CrystalPuzzle::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x44FA20 */
-int SC_CrystalPuzzle::ShutDown(SC_Message* msg) {
+int SC_CrystalPuzzle::ShutDown(SC_MessageParser* msg) {
     if (puzztest != 0) {
         puzztest->StopAnimationSound();
     }
@@ -375,7 +375,7 @@ int SC_CrystalPuzzle::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x44FAE0 */
-int SC_CrystalPuzzle::AddMessage(SC_Message* msg) {
+int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
 
     if (WriteMessageAddress(msg) != 0) {
@@ -672,7 +672,7 @@ draw_cursor:
 }
 
 /* Function start: 0x450110 */
-int SC_CrystalPuzzle::Exit(SC_Message* msg) {
+int SC_CrystalPuzzle::Exit(SC_MessageParser* msg) {
     SpriteAction* act;
     int idx;
     void* mem;

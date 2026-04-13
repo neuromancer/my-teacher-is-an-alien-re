@@ -7,7 +7,7 @@
 class Sprite;
 class Palette;
 class Sample;
-class SC_Message;
+class SC_MessageParser;
 class SpriteAction;
 
 // SC_CrystalPuzzle - Force field crystal puzzle (case 38/0x26)
@@ -27,11 +27,11 @@ public:
     ~SC_CrystalPuzzle();                        // 0x44F4D0
 
     // Virtual overrides
-    virtual void Init(SC_Message* msg);         // 0x44F710
-    virtual int AddMessage(SC_Message* msg);    // 0x44FAE0
-    virtual int ShutDown(SC_Message* msg);      // 0x44FA20
+    virtual void Init(SC_MessageParser* msg);         // 0x44F710
+    virtual int AddMessage(SC_MessageParser* msg);    // 0x44FAE0
+    virtual int ShutDown(SC_MessageParser* msg);      // 0x44FA20
     virtual void Update(int p1, int p2);        // 0x44FE40
-    virtual int Exit(SC_Message* msg);          // 0x450110
+    virtual int Exit(SC_MessageParser* msg);          // 0x450110
 
     // Puzzle methods
     void OnClick(int x, int y);                 // 0x450400

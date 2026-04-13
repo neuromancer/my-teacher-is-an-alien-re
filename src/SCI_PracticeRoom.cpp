@@ -55,11 +55,11 @@ SCI_PracticeRoom::~SCI_PracticeRoom() {
 }
 
 /* Function start: 0x42A9F0 */
-void SCI_PracticeRoom::Init(SC_Message* msg) {
+void SCI_PracticeRoom::Init(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     CopyCommandData(msg);
-    introPlayed = 0;
     moduleParam = action->addressValue;
+    introPlayed = 0;
     if (action->fromType == 0x2D) {
         SavePracticeState();
     }
@@ -100,11 +100,15 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
             selSprite->cursor->ResetAnimation(1, 0);
         }
     }
-    if (palette != 0) {
-        if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+    {
+        Palette* pal = palette;
+        if (pal != 0) {
+            Palette** pDest = &g_ZBufferManager_0046aa24->m_palette;
+            if (*pDest != 0) {
+                WriteToLog("ddouble palette");
+            }
+            *pDest = pal;
         }
-        g_ZBufferManager_0046aa24->m_palette = palette;
     }
     Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
     if (mouseSpr != 0) {
@@ -118,7 +122,7 @@ void SCI_PracticeRoom::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x42AC20 */
-int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
+int SCI_PracticeRoom::ShutDown(SC_MessageParser* msg) {
     if (ambient != 0) {
         delete ambient;
         ambient = 0;
@@ -127,19 +131,22 @@ int SCI_PracticeRoom::ShutDown(SC_Message* msg) {
         delete introSprite;
         introSprite = 0;
     }
-    if (hotspotList != 0) {
-        if (hotspotList->head != 0) {
-            hotspotList->current = hotspotList->head;
-            while (hotspotList->head != 0) {
-                void* data = ((EventList*)hotspotList)->RemoveCurrent();
-                if (data != 0) {
-                    ((SC_PRHotSpot*)data)->~SC_PRHotSpot();
-                    operator delete(data);
+    {
+        LinkedList* list = hotspotList;
+        if (list != 0) {
+            if (list->head != 0) {
+                list->current = list->head;
+                while (list->head != 0) {
+                    void* data = ((EventList*)list)->RemoveCurrent();
+                    if (data != 0) {
+                        ((SC_PRHotSpot*)data)->~SC_PRHotSpot();
+                        operator delete(data);
+                    }
                 }
             }
+            operator delete(list);
+            hotspotList = 0;
         }
-        operator delete(hotspotList);
-        hotspotList = 0;
     }
     if (palette != 0) {
         delete palette;
@@ -221,19 +228,20 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
 }
 
 /* Function start: 0x42AE80 */
-int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
+int SCI_PracticeRoom::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
 
     if (action->button1 >= 2) {
         int local_14 = 0;
         T_MenuHotspot** pBC = periodSprites;
         T_MenuHotspot** local_28 = pBC;
+        SlimeDim* pMouse = &action->mousePos;
         do {
             int bHit;
             {
                 SlimeDim pt;
-                pt.x = action->mousePos.x;
-                pt.y = action->mousePos.y;
+                pt.x = pMouse->x;
+                pt.y = pMouse->y;
                 T_MenuHotspot* hs = *local_28;
                 if (hs->sprite == 0 ||
                     hs->bounds.right > pt.x ||
@@ -246,14 +254,15 @@ int SCI_PracticeRoom::AddMessage(SC_Message* msg) {
                 }
             }
             if (bHit) {
+                T_MenuHotspot** resetPtr = pBC;
                 int iCount = 3;
                 do {
-                    T_MenuHotspot* spr = *pBC;
+                    T_MenuHotspot* spr = *resetPtr;
                     spr->bounds.left = 0;
                     if (spr->cursor != 0) {
                         spr->cursor->ResetAnimation(0, 0);
                     }
-                    pBC++;
+                    resetPtr++;
                     iCount--;
                 } while (iCount != 0);
                 T_MenuHotspot* sel = periodSprites[local_14];
@@ -283,7 +292,7 @@ done:
 }
 
 /* Function start: 0x42B030 */
-int SCI_PracticeRoom::Exit(SC_Message* msg) {
+int SCI_PracticeRoom::Exit(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     if (action->addressType != handlerId) {
         return 0;

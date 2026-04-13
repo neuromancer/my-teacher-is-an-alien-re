@@ -226,21 +226,21 @@ void InitNewGame() {
     SpriteAction* action;
 
     action = new SpriteAction(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
     }
 
     action = new SpriteAction(1, 0x1e, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
     }
 
     action = new SpriteAction(1, 0x2c, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
@@ -294,7 +294,7 @@ void InitNewGame() {
     gs->stateValues[idx] = 1;
 
     action = new SpriteAction(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
@@ -306,7 +306,7 @@ SC_DuctNav::~SC_DuctNav()
 }
 
 /* Function start: 0x43B2C0 */
-int SC_DuctNav::ShutDown(SC_Message* msg)
+int SC_DuctNav::ShutDown(SC_MessageParser* msg)
 {
     {
         void* list = saveFileList;
@@ -350,7 +350,7 @@ int SC_DuctNav::ShutDown(SC_Message* msg)
 }
 
 /* Function start: 0x43B0F0 */
-void SC_DuctNav::Init(SC_Message* msg) {
+void SC_DuctNav::Init(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
 
     CopyCommandData(msg);
@@ -411,7 +411,7 @@ void SC_DuctNav::Init(SC_Message* msg) {
      (btn)->bounds.top <= (my) && (btn)->bounds.bottom >= (my))
 
 /* Function start: 0x43BB10 */
-int SC_DuctNav::AddMessage(SC_Message* msg) {
+int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
 
     WriteMessageAddress(msg);
@@ -669,7 +669,7 @@ done_text:
 }
 
 /* Function start: 0x43C100 */
-int SC_DuctNav::Exit(SC_Message* msg)
+int SC_DuctNav::Exit(SC_MessageParser* msg)
 {
     SpriteAction* action;
     int* node;
@@ -1058,7 +1058,7 @@ void SC_DuctNav::LoadSaveFile()
 
     /* Send screen transition 0x20 */
     action = new SpriteAction(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
@@ -1066,7 +1066,7 @@ void SC_DuctNav::LoadSaveFile()
 
     /* Send screen transition 0x1e */
     action = new SpriteAction(1, 0x1e, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);
@@ -1074,7 +1074,7 @@ void SC_DuctNav::LoadSaveFile()
 
     /* Send screen transition 0x2c */
     action = new SpriteAction(1, 0x2c, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_Message*)action);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
     if (action != 0) {
         action->~SpriteAction();
         operator delete(action);

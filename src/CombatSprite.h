@@ -49,6 +49,7 @@ public:
     CombatSprite();           // 0x408FB0
     virtual ~CombatSprite();  // 0x409020
 
+    virtual void OnProcessStart();             // 0x409210
     virtual int LBLParse(char* line);          // 0x40923E
     void* FindSprite(unsigned int param_1);    // 0x409120
     int PlayById(unsigned int param_1);        // 0x409180

@@ -18,7 +18,7 @@ public:
     ~SelectHotspot();                   // 0x405060
     void Draw();                        // 0x405250
     void Update();                      // 0x405260
-    int OnClick(SC_Message* msg);       // 0x405490
+    int OnClick(SC_MessageParser* msg);       // 0x405490
     int LBLParse(char* line);           // 0x405530
 
     int state;              // 0x90 - 0=idle, 1=normal, 2=hover, 3=selected
@@ -47,11 +47,11 @@ public:
     SC_SelectHotSpot();
     ~SC_SelectHotSpot();
 
-    void Init(SC_Message* msg);         // 0x405FB0
-    int AddMessage(SC_Message* msg);    // 0x4063A0
-    int ShutDown(SC_Message* msg);      // 0x406240
+    void Init(SC_MessageParser* msg);         // 0x405FB0
+    int AddMessage(SC_MessageParser* msg);    // 0x4063A0
+    int ShutDown(SC_MessageParser* msg);      // 0x406240
     void Update(int param1, int param2);// 0x4062C0
-    int Exit(SC_Message* msg);          // 0x4063E0
+    int Exit(SC_MessageParser* msg);          // 0x4063E0
     void OnProcessStart();              // 0x4064A0
     int LBLParse(char* line);           // 0x4065E0
 

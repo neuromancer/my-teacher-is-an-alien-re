@@ -1,4 +1,5 @@
 #include "SC_DodgeOrville.h"
+#include "stubs.h"
 #include "SC_Question.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
@@ -23,7 +24,7 @@ int CheckCursorRange(int range);
 
 // Parser-derived class used for MIS file action parsing
 // vtable 0x461100 in original binary
-// ActionParser is SC_Message — vtable 0x461100
+// ActionParser is SC_MessageParser — vtable 0x461100
 
 
 /* Function start: 0x428840 */
@@ -35,6 +36,11 @@ SC_DodgeOrville::SC_DodgeOrville() {
 
 SC_DodgeOrville::~SC_DodgeOrville() {
     Cleanup(0);
+}
+
+/* Function start: 0x4289C0 */
+void SC_DodgeOrville::Init(SC_MessageParser* msg) {
+    TODO("SC_DodgeOrville::Init");
 }
 
 /* Function start: 0x428A40 */
@@ -53,15 +59,20 @@ void SC_DodgeOrville::Cleanup(int flag) {
         barBgSprite = 0;
     }
 
-    SC_Combat::ShutDown((SC_Message*)flag);
+    SC_Combat::ShutDown((SC_MessageParser*)flag);
 
     if (flag != 0) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 }
 
+/* Function start: 0x428AD0 */
+void SC_DodgeOrville::Update(int p1, int p2) {
+    TODO("SC_DodgeOrville::Update");
+}
+
 /* Function start: 0x428AF0 */
-int SC_DodgeOrville::AddMessage(SC_Message* msg) {
+int SC_DodgeOrville::AddMessage(SC_MessageParser* msg) {
     int ret;
 
     ret = SC_Combat::AddMessage(msg);
@@ -72,6 +83,12 @@ int SC_DodgeOrville::AddMessage(SC_Message* msg) {
         statusPtr[2] = 1;
     }
     return 1;
+}
+
+/* Function start: 0x428B30 */
+int SC_DodgeOrville::Exit(SC_MessageParser* msg) {
+    TODO("SC_DodgeOrville::Exit");
+    return 0;
 }
 
 /* Function start: 0x428B60 */
@@ -88,7 +105,7 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL]");
 
@@ -120,7 +137,7 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL]");
             }
@@ -134,7 +151,7 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[QUIT_LBL]");
             }
@@ -150,7 +167,7 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[WIN_LBL_PR]");
             }
@@ -164,7 +181,7 @@ void SC_DodgeOrville::ProcessTargets() {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_DOrville.mis", "[LOSE_LBL_PR]");
             }
@@ -354,6 +371,11 @@ void SC_DodgeOrville::ThrowBomb()
     }
 }
 
+/* Function start: 0x4295C0 */
+void SC_DodgeOrville::ProcessAction(int action, int* data) {
+    TODO("SC_DodgeOrville::ProcessAction");
+}
+
 /* Function start: 0x4297D0 */
 void SC_DodgeOrville::InitGameState()
 {
@@ -381,4 +403,10 @@ void SC_DodgeOrville::InitReset()
     roundReset = 0; // 0x120
     reticlePos = 2; // 0x118
     cursorDir = 0; // 0x11c
+}
+
+/* Function start: 0x4298A0 */
+int SC_DodgeOrville::LBLParse(char* line) {
+    TODO("SC_DodgeOrville::LBLParse");
+    return 0;
 }

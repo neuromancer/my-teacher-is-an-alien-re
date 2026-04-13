@@ -1,4 +1,5 @@
 #include "SC_Pods.h"
+#include "stubs.h"
 #include "SpriteAction.h"
 #include "Memory.h"
 #include "Engine.h"
@@ -40,11 +41,11 @@ SC_Pods::SC_Pods() {
 
 /* Function start: 0x4416A0 */
 SC_Pods::~SC_Pods() {
-    SC_Pods::ShutDown((SC_Message*)0);
+    SC_Pods::ShutDown((SC_MessageParser*)0);
 }
 
 /* Function start: 0x441700 */
-void SC_Pods::Init(SC_Message* msg) {
+void SC_Pods::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
     moduleParam = ((SpriteAction*)msg)->addressValue;
 
@@ -134,7 +135,7 @@ void SC_Pods::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x4419E0 */
-int SC_Pods::ShutDown(SC_Message* msg) {
+int SC_Pods::ShutDown(SC_MessageParser* msg) {
     if (combatEngine != 0) {
         ((Engine*)combatEngine)->StopAndCleanup();
         if (combatEngine != 0) {
@@ -163,8 +164,13 @@ int SC_Pods::ShutDown(SC_Message* msg) {
     return 0;
 }
 
+/* Function start: 0x441AA0 */
+void SC_Pods::Update(int p1, int p2) {
+    TODO("SC_Pods::Update");
+}
+
 /* Function start: 0x441AE0 */
-int SC_Pods::AddMessage(SC_Message* msg) {
+int SC_Pods::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     action->fromType = handlerId;
     action->fromValue = moduleParam;
@@ -175,6 +181,12 @@ int SC_Pods::AddMessage(SC_Message* msg) {
     }
 
     return 1;
+}
+
+/* Function start: 0x441B20 */
+int SC_Pods::Exit(SC_MessageParser* msg) {
+    TODO("SC_Pods::Exit");
+    return 0;
 }
 
 /* Function start: 0x441B60 */
@@ -195,7 +207,7 @@ void SC_Pods::HandleResult() {
             resultAction = (int)newAction;
 
             {
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_Pods.mis", "[WIN_LBL_PR]");
             }
@@ -212,7 +224,7 @@ void SC_Pods::HandleResult() {
             resultAction = (int)newAction;
 
             {
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, "mis\\cb_Pods.mis", "[LOSE_LBL_PR]");
             }

@@ -108,7 +108,7 @@ void SC_Combat::OnProcessEnd() {
 }
 
 /* Function start: 0x449260 */
-void SC_Combat::Init(SC_Message* msg) {
+void SC_Combat::Init(SC_MessageParser* msg) {
     SpriteAction* action;
 
     memset(&statusPtr, 0, 0x1C * 4);
@@ -123,13 +123,13 @@ void SC_Combat::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x449400 */
-int SC_Combat::AddMessage(SC_Message* msg) {
+int SC_Combat::AddMessage(SC_MessageParser* msg) {
     WriteMessageAddress(msg);
     return 0;
 }
 
 /* Function start: 0x449320 */
-int SC_Combat::ShutDown(SC_Message* msg) {
+int SC_Combat::ShutDown(SC_MessageParser* msg) {
     if (field_0x104 != 0) {
         delete field_0x104;
         field_0x104 = 0;
@@ -172,7 +172,7 @@ void SC_Combat::Update(int p1, int p2) {
     } while (combatParams[2] > combatParams[0]);
 }
 /* Function start: 0x449410 */
-int SC_Combat::Exit(SC_Message* msg) {
+int SC_Combat::Exit(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     if (action->addressType != handlerId) {
         return 0;

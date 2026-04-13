@@ -92,7 +92,7 @@ IconBar::~IconBar() {
 }
 
 /* Function start: 0x42D6E0 */
-void IconBar::Init(SC_Message* msg) {
+void IconBar::Init(SC_MessageParser* msg) {
     int iVar3;
     int* piVar1;
     void* data;
@@ -193,7 +193,7 @@ void IconBar::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x42D920 */
-int IconBar::ShutDown(SC_Message* msg) {
+int IconBar::ShutDown(SC_MessageParser* msg) {
     if (msg != 0) {
         if ((unsigned int)(*(int*)msg - 0x1e) > 9) {
             IconBarEntry* entry = g_IconBarEntries_00473320;
@@ -212,7 +212,7 @@ int IconBar::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x42D9A0 */
-int IconBar::AddMessage(SC_Message* msg) {
+int IconBar::AddMessage(SC_MessageParser* msg) {
     int buttonIndex;
     SpriteAction* act;
     GameState* gs;
@@ -331,7 +331,7 @@ int IconBar::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x42DD30 */
-int IconBar::Exit(SC_Message* msg) {
+int IconBar::Exit(SC_MessageParser* msg) {
     return 0;
 }
 

@@ -14,11 +14,11 @@ public:
     SC_Timer();
     ~SC_Timer();
 
-    void Init(SC_Message*);
-    int AddMessage(SC_Message*);
-    int ShutDown(SC_Message*);
+    void Init(SC_MessageParser*);
+    int AddMessage(SC_MessageParser*);
+    int ShutDown(SC_MessageParser*);
     void Update(int, int);
-    int Exit(SC_Message*);
+    int Exit(SC_MessageParser*);
 
     Timer timer1;           // 0xA0
     Timer timer2;           // 0xB4

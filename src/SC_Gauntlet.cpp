@@ -49,7 +49,7 @@ SC_Gauntlet::~SC_Gauntlet() {
 }
 
 /* Function start: 0x42E870 */
-void SC_Gauntlet::Init(SC_Message* msg) {
+void SC_Gauntlet::Init(SC_MessageParser* msg) {
     memset(moveState, 0, 0x112 * sizeof(int));
     SC_Combat::Init(msg);
     if (!FileExists("puz_roach")) {
@@ -60,7 +60,7 @@ void SC_Gauntlet::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x42E8F0 */
-int SC_Gauntlet::ShutDown(SC_Message* msg) {
+int SC_Gauntlet::ShutDown(SC_MessageParser* msg) {
     Sprite* spr;
     int i;
 
@@ -107,7 +107,7 @@ void SC_Gauntlet::Update(int param1, int param2) {
 }
 
 /* Function start: 0x42E9D0 */
-int SC_Gauntlet::AddMessage(SC_Message* msg) {
+int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
 
     if (SC_Combat::AddMessage(msg) != 0) {
@@ -171,7 +171,7 @@ int SC_Gauntlet::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x42EB70 */ /* No assembly extracted */
-int SC_Gauntlet::Exit(SC_Message* msg) {
+int SC_Gauntlet::Exit(SC_MessageParser* msg) {
     return 0;
 }
 
@@ -189,7 +189,7 @@ void SC_Gauntlet::ProcessAction(int action, int* data) {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, (char*)(combatParams + 5), "[WIN_LBL]");
             }
@@ -202,7 +202,7 @@ void SC_Gauntlet::ProcessAction(int action, int* data) {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, (char*)(combatParams + 5), "[LOSE_LBL]");
             }
@@ -217,7 +217,7 @@ void SC_Gauntlet::ProcessAction(int action, int* data) {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, (char*)(combatParams + 5), "[WIN_LBL_PR]");
             }
@@ -230,7 +230,7 @@ void SC_Gauntlet::ProcessAction(int action, int* data) {
             {
                 SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 pendingAction = newAction;
-                SC_Message temp;
+                SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
                 ParseFile(&temp, (char*)(combatParams + 5), "[LOSE_LBL_PR]");
             }

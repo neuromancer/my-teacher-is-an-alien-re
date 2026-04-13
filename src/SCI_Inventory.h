@@ -34,11 +34,11 @@ public:
 
     // Virtual overrides
     virtual int LBLParse(char* line);           // 0x43FDD0
-    virtual void Init(SC_Message* msg);         // 0x43E920
-    virtual int AddMessage(SC_Message* msg);    // 0x43EA60
-    virtual int ShutDown(SC_Message* msg);      // 0x43E990
+    virtual void Init(SC_MessageParser* msg);         // 0x43E920
+    virtual int AddMessage(SC_MessageParser* msg);    // 0x43EA60
+    virtual int ShutDown(SC_MessageParser* msg);      // 0x43E990
     virtual void Update(int param1, int param2); // 0x43EE20
-    virtual int Exit(SC_Message* msg);          // 0x43EFD0
+    virtual int Exit(SC_MessageParser* msg);          // 0x43EFD0
     virtual void Serialize(void* param);         // 0x43F9B0
 
     // Helper methods

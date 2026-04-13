@@ -8,10 +8,8 @@ extern "C" void WriteToLog(const char* format, ...);
 #include "globals.h"
 #define g_GameState_0046aa30 (g_GameState_0046aa30)
 
-SC_Message::~SC_Message() {}
-
 /* Function start: 0x444E60 */
-int SC_Message::LBLParse(char* param_1)
+int SC_MessageParser::LBLParse(char* param_1)
 {
     extern GameState* g_StringState_0046aa38;
     char local_30[32];
@@ -98,12 +96,11 @@ int SC_Message::LBLParse(char* param_1)
     return 0;
 }
 
-void SC_Message::Dump(int) {}
+void SC_MessageParser::Dump(int) {}
 
 /* Function start: 0x445450 */
 void ParseSpriteAction(void* param_1, void* param_2)
 {
-    SC_Message msg(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    msg.targetAddress = (int)param_1;
+    SC_MessageParser msg((int)param_1);
     Parser::ProcessFile(&msg, (Parser*)param_2, 0);
 }

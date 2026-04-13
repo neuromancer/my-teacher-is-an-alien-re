@@ -57,6 +57,7 @@ public:
     RockThrower(Parser* parent);    // 0x4274C0
     virtual ~RockThrower();         // 0x427710
 
+    virtual void DrawCrosshairs();         // 0x4279D0 (override)
     virtual int LBLParse(char* line);      // 0x427B20 (override)
     virtual int CheckTargetHit(int);       // 0x427A30 (override)
     void ResetProjectiles();               // 0x4279A0

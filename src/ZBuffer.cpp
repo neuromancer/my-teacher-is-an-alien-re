@@ -47,7 +47,7 @@ ZBuffer::~ZBuffer()
 }
 
 /* Function start: 0x44B5A0 */
-int ZBuffer::Exit(SC_Message* msg)
+int ZBuffer::Exit(SC_MessageParser* msg)
 {
     return 0;
 }

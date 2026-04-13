@@ -216,7 +216,7 @@ void SelectHotspot::Update() {
 }
 
 /* Function start: 0x405490 */
-int SelectHotspot::OnClick(SC_Message* msg) {
+int SelectHotspot::OnClick(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
     int hit;
 
@@ -437,7 +437,7 @@ SC_SelectHotSpot::~SC_SelectHotSpot() {
 }
 
 /* Function start: 0x405FB0 */
-void SC_SelectHotSpot::Init(SC_Message* msg) {
+void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
 
     InitFromMessage(msg);
@@ -536,7 +536,7 @@ void SC_SelectHotSpot::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x406240 */
-int SC_SelectHotSpot::ShutDown(SC_Message* msg) {
+int SC_SelectHotSpot::ShutDown(SC_MessageParser* msg) {
     if (SC_SelectHotSpot::ambient != 0) {
         ((MMPlayer*)SC_SelectHotSpot::ambient)->StopAll();
     }
@@ -612,7 +612,7 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
 }
 
 /* Function start: 0x4063A0 */
-int SC_SelectHotSpot::AddMessage(SC_Message* msg) {
+int SC_SelectHotSpot::AddMessage(SC_MessageParser* msg) {
     WriteMessageAddress(msg);
     ((SpriteAction*)msg)->addressType = 0x2D;
     if (((SpriteAction*)msg)->lastKey == 0x1B) {
@@ -625,7 +625,7 @@ int SC_SelectHotSpot::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x4063E0 */
-int SC_SelectHotSpot::Exit(SC_Message* msg) {
+int SC_SelectHotSpot::Exit(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
     if (pmsg[0] != SC_SelectHotSpot::handlerId) {
         return 0;

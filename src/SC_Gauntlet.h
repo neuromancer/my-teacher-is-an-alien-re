@@ -22,11 +22,11 @@ public:
 
     virtual int LBLParse(char* line);                // 0x42F910
     virtual void OnProcessEnd();                    // 0x42F800
-    virtual void Init(SC_Message* msg);             // 0x42E870
-    virtual int ShutDown(SC_Message* msg);          // 0x42E8F0
+    virtual void Init(SC_MessageParser* msg);             // 0x42E870
+    virtual int ShutDown(SC_MessageParser* msg);          // 0x42E8F0
     virtual void Update(int p1, int p2);            // 0x42E9B0
-    virtual int AddMessage(SC_Message* msg);        // 0x42E9D0
-    virtual int Exit(SC_Message* msg);              // 0x42EB70
+    virtual int AddMessage(SC_MessageParser* msg);        // 0x42E9D0
+    virtual int Exit(SC_MessageParser* msg);              // 0x42EB70
 
     // ProcessLose inherited from SC_Combat (0x4494E0)
     virtual void ProcessAction(int action, int* data); // 0x42EBA0

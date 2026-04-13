@@ -1,4 +1,5 @@
 #include "SC_Wahoo.h"
+#include "stubs.h"
 #include "MouseControl.h"
 #include "SpriteAction.h"
 #include "MouseControl.h"
@@ -80,7 +81,7 @@ SC_Wahoo::~SC_Wahoo() {
 }
 
 /* Function start: 0x437A40 */
-void SC_Wahoo::Init(SC_Message* msg) {
+void SC_Wahoo::Init(SC_MessageParser* msg) {
     int uVar1 = handlerId;
     int* puVar6 = (int*)&spriteAction;
     int iVar7;
@@ -90,7 +91,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
     }
     handlerId = uVar1;
 
-    CopyCommandData((SC_Message*)msg);
+    CopyCommandData((SC_MessageParser*)msg);
 
     gameFlags = 0;
 
@@ -143,7 +144,7 @@ void SC_Wahoo::Init(SC_Message* msg) {
 }
 
 /* Function start: 0x437C60 */
-int SC_Wahoo::ShutDown(SC_Message* msg) {
+int SC_Wahoo::ShutDown(SC_MessageParser* msg) {
     void* ptr;
     int i;
 
@@ -242,7 +243,7 @@ int SC_Wahoo::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x4381E0 */
-int SC_Wahoo::AddMessage(SC_Message* msg) {
+int SC_Wahoo::AddMessage(SC_MessageParser* msg) {
     int* m = (int*)msg;
 
     if (m[0xB] == 0x1b) {
@@ -275,7 +276,7 @@ int SC_Wahoo::AddMessage(SC_Message* msg) {
 }
 
 /* Function start: 0x438280 */
-int SC_Wahoo::Exit(SC_Message* msg) {
+int SC_Wahoo::Exit(SC_MessageParser* msg) {
     int* m = (int*)msg;
     int id = handlerId;
 
@@ -490,7 +491,7 @@ void SC_Wahoo::ProcessState() {
         }
         spriteAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         {
-            SC_Message temp;
+            SC_MessageParser temp;
             ParseFile(&temp, "mis\\cb_bridge.mis", "_WIN_LBL_PR_");
         }
     }
@@ -624,6 +625,12 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
         Parser::LBLParse("SC_Wahoo");
     }
 
+    return 0;
+}
+
+/* Function start: 0x438EF0 */
+int SC_Wahoo::OnCombatResult() {
+    TODO("SC_Wahoo::OnCombatResult");
     return 0;
 }
 

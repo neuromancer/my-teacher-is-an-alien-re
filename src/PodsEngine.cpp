@@ -1,4 +1,5 @@
 #include "PodsEngine.h"
+#include "stubs.h"
 #include "Sprite.h"
 #include "Palette.h"
 #include "Memory.h"
@@ -33,6 +34,11 @@ PodsEngine::~PodsEngine()
     }
 }
 
+/* Function start: 0x440A50 */
+void PodsEngine::ProcessFrame() {
+    TODO("PodsEngine::ProcessFrame");
+}
+
 extern void __stdcall EnqueueHotspotAction(SpriteAction*);
 
 /* Function start: 0x440F30 */
@@ -41,4 +47,21 @@ void StartScheduleTimer() {
     action.instruction = 0x37;
     action.extra1 = 1;
     EnqueueHotspotAction(&action);
+}
+
+/* Function start: 0x440FC0 */
+int PodsEngine::HandleAction(int* param) {
+    TODO("PodsEngine::HandleAction");
+    return 0;
+}
+
+/* Function start: 0x441000 */
+void PodsEngine::OnProcessEnd() {
+    TODO("PodsEngine::OnProcessEnd");
+}
+
+/* Function start: 0x441140 */
+int PodsEngine::LBLParse(char* line) {
+    TODO("PodsEngine::LBLParse");
+    return 0;
 }

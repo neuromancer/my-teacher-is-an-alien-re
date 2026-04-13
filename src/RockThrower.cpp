@@ -1,4 +1,5 @@
 #include "RockThrower.h"
+#include "stubs.h"
 #include "globals.h"
 #include "Projectile.h"
 #include "GameState.h"
@@ -45,6 +46,11 @@ void RockThrower::ResetProjectiles() {
             m_items[i - 1]->active = 0;
         } while (i < m_itemCount);
     }
+}
+
+/* Function start: 0x4279D0 */
+void RockThrower::DrawCrosshairs() {
+    TODO("RockThrower::DrawCrosshairs");
 }
 
 /* Function start: 0x427A30 */

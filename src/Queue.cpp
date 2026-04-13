@@ -66,19 +66,19 @@ void Queue::InsertAtCurrent(void* data)
 TimedEventPool::~TimedEventPool()
 {
     int counter;
-    SC_Message* msg;
+    SC_MessageParser* msg;
     int tmp;
 
     // Iterate through active events list (linked via next pointer)
     PooledEvent* node = list.head;
     while (node != 0) {
-        // Get embedded SC_Message at offset +8
+        // Get embedded SC_MessageParser at offset +8
         msg = node->GetEmbeddedSCMessage();
         counter = 0;
         do {
-            // Call SC_Message destructor
-            msg->~SC_Message();
-            msg = (SC_Message*)((char*)msg + 0xc0);
+            // Call SC_MessageParser destructor
+            msg->~SC_MessageParser();
+            msg = (SC_MessageParser*)((char*)msg + 0xc0);
             tmp = counter;
             counter--;
         } while (tmp != 0);
@@ -107,7 +107,7 @@ void* Queue::GetCurrentData()
 }
 
 /* Function start: 0x42CAB0 */ /* ~95% match */
-SC_Message* TimedEventPool::PopSafe(SC_Message* buffer)
+SC_MessageParser* TimedEventPool::PopSafe(SC_MessageParser* buffer)
 {
     MousePoint completed;
     completed.x = 0;
@@ -128,7 +128,7 @@ SpriteAction* TimedEventPool::PopSafe(SpriteAction* buffer)
 }
 
 /* Function start: 0x4185C0 */
-SC_Message* TimedEventPool::Pop(SC_Message* buffer)
+SC_MessageParser* TimedEventPool::Pop(SC_MessageParser* buffer)
 {
     TimedEventPool* pool;
     PooledEvent* headNode;
@@ -138,8 +138,8 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
     headNode = (PooledEvent*)list.head;
     completed = 0;
 
-    SC_Message* srcMsg = headNode->GetEmbeddedSCMessage();
-    SC_Message local_msg = *srcMsg;
+    SC_MessageParser* srcMsg = headNode->GetEmbeddedSCMessage();
+    SC_MessageParser local_msg = *srcMsg;
 
     PooledEvent* nextNode = headNode->next;
     pool->list.head = nextNode;
@@ -152,8 +152,8 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 
     int counter = 0;
     do {
-        srcMsg->~SC_Message();
-        srcMsg = (SC_Message*)((char*)srcMsg + 0xc0);
+        srcMsg->~SC_MessageParser();
+        srcMsg = (SC_MessageParser*)((char*)srcMsg + 0xc0);
         int tmp = counter;
         counter--;
         if (tmp == 0) break;
@@ -177,24 +177,24 @@ SC_Message* TimedEventPool::Pop(SC_Message* buffer)
 
     buffer->pFile = ((Parser*)&local_msg)->pFile;
     buffer->targetAddress = local_msg.targetAddress;
-    buffer->sourceAddress = local_msg.sourceAddress;
-    buffer->command = local_msg.command;
-    buffer->data = local_msg.data;
-    buffer->priority = local_msg.priority;
-    buffer->param1 = local_msg.param1;
-    buffer->param2 = local_msg.param2;
+    *(int*)((char*)buffer + 0x94) = *(int*)((char*)&local_msg + 0x94);
+    *(int*)((char*)buffer + 0x98) = *(int*)((char*)&local_msg + 0x98);
+    *(int*)((char*)buffer + 0x9c) = *(int*)((char*)&local_msg + 0x9c);
+    *(int*)((char*)buffer + 0xa0) = *(int*)((char*)&local_msg + 0xa0);
+    *(int*)((char*)buffer + 0xa4) = *(int*)((char*)&local_msg + 0xa4);
+    *(int*)((char*)buffer + 0xa8) = *(int*)((char*)&local_msg + 0xa8);
 
-    int* srcClick = &local_msg.clickX;
-    int* dstClick = &buffer->clickX;
+    int* srcClick = (int*)((char*)&local_msg + 0xac);
+    int* dstClick = (int*)((char*)buffer + 0xac);
     dstClick[0] = srcClick[0];
     dstClick[1] = srcClick[1];
 
-    buffer->mouseX = local_msg.mouseX;
-    buffer->mouseY = local_msg.mouseY;
-    buffer->lastKey = local_msg.lastKey;
+    *(int*)((char*)buffer + 0xb4) = *(int*)((char*)&local_msg + 0xb4);
+    *(int*)((char*)buffer + 0xb8) = *(int*)((char*)&local_msg + 0xb8);
+    *(int*)((char*)buffer + 0xbc) = *(int*)((char*)&local_msg + 0xbc);
     completed |= 1;
-    buffer->time = local_msg.time;
-    buffer->userPtr = local_msg.userPtr;
+    *(int*)((char*)buffer + 0xc0) = *(int*)((char*)&local_msg + 0xc0);
+    *(int*)((char*)buffer + 0xc4) = *(int*)((char*)&local_msg + 0xc4);
 
     return buffer;
 }

@@ -16,11 +16,11 @@ public:
     SC_DemoScreen();
     ~SC_DemoScreen();
 
-    void Init(SC_Message* msg);
-    int AddMessage(SC_Message* msg);
-    int ShutDown(SC_Message* msg);
+    void Init(SC_MessageParser* msg);
+    int AddMessage(SC_MessageParser* msg);
+    int ShutDown(SC_MessageParser* msg);
     void Update(int param1, int param2);
-    int Exit(SC_Message* msg);
+    int Exit(SC_MessageParser* msg);
 
     Palette* field_A8;    // 0xA8 - Palette*
     Sprite* demoSprite;    // 0xAC - Sprite*

@@ -1,5 +1,6 @@
 
 #include "CDData.h"
+#include "stubs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -307,6 +308,12 @@ void __cdecl FileCacheRegister(char* name, int size) {
         cache[1] = (int)node;
     }
     cache[0] = (int)node;
+}
+
+/* Function start: 0x4332E0 */
+int CDData::LBLParse(char* line) {
+    TODO("CDData::LBLParse");
+    return 0;
 }
 
 extern "C" char* FormatAssetPath(char* format, ...);

@@ -1,4 +1,5 @@
 #include "SC_Roach.h"
+#include "stubs.h"
 #include <new.h>
 #include "SC_Question.h"
 #include "SpriteAction.h"
@@ -32,6 +33,12 @@ NavCrystal::NavCrystal(int id) {
     sprite->ConfigRange(3, 0x1F, 0x1F, 1);
 }
 
+/* Function start: 0x418850 */
+int NavCrystal::LBLParse(char* line) {
+    TODO("NavCrystal::LBLParse");
+    return 0;
+}
+
 CrystalSource::CrystalSource() { memset(this, 0, sizeof(CrystalSource)); }
 GridCell::GridCell() { memset(this, 0, sizeof(GridCell)); }
 
@@ -48,7 +55,7 @@ SC_Roach::~SC_Roach() {
 }
 
 /* Function start: 0x419010 */
-int SC_Roach::ShutDown(SC_Message* msg) {
+int SC_Roach::ShutDown(SC_MessageParser* msg) {
     int i;
     Sprite* spr;
     NavCrystal* crystal;
@@ -97,7 +104,7 @@ int SC_Roach::ShutDown(SC_Message* msg) {
 }
 
 /* Function start: 0x419220 */
-int SC_Roach::AddMessage(SC_Message* msg) {
+int SC_Roach::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action;
     int i;
     int count;
@@ -503,11 +510,31 @@ void SC_Roach::OnProcessEnd()
         0x1b, 0, 0, 0, 0, 0);
 }
 
-void SC_Roach::Init(SC_Message* msg) {}
-void SC_Roach::Update(int p1, int p2) {}
-int SC_Roach::Exit(SC_Message* msg) { return 0; }
-void SC_Roach::ProcessLose() {}
-void SC_Roach::ProcessAction(int action, int* data) {}
+/* Function start: 0x418FB0 */
+void SC_Roach::Init(SC_MessageParser* msg) {
+    TODO("SC_Roach::Init");
+}
+
+/* Function start: 0x419200 */
+void SC_Roach::Update(int p1, int p2) {
+    TODO("SC_Roach::Update");
+}
+
+/* Function start: 0x419350 */
+int SC_Roach::Exit(SC_MessageParser* msg) {
+    TODO("SC_Roach::Exit");
+    return 0;
+}
+
+/* Function start: 0x419380 */
+void SC_Roach::ProcessLose() {
+    TODO("SC_Roach::ProcessLose");
+}
+
+/* Function start: 0x419C40 */
+void SC_Roach::ProcessAction(int action, int* data) {
+    TODO("SC_Roach::ProcessAction");
+}
 
 /* Function start: 0x419F50 */
 int SC_Roach::LBLParse(char* line)

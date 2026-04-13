@@ -20,7 +20,7 @@ TimedEvent::TimedEvent()
 /* Function start: 0x422A50 */
 TimedEvent::~TimedEvent()
 {
-    SC_Message* eventData = m_eventData;
+    SC_MessageParser* eventData = m_eventData;
     if (eventData) {
         delete eventData;
         m_eventData = 0;
