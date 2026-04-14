@@ -8,10 +8,14 @@
 #include "GameState.h"
 #include "MouseControl.h"
 #include "InputManager.h"
+#include "ZBufferManager.h"
 #include <stdio.h>
 #include <string.h>
 
 #include "globals.h"
+
+extern "C" void WriteToLog(const char*, ...);
+extern "C" void ShowError(const char* format, ...);
 
 /* Function start: 0x434C10 */
 SCI_Schedule::SCI_Schedule()
@@ -104,10 +108,110 @@ SCI_Schedule::~SCI_Schedule()
     }
 }
 
-/* Function start: 0x4350C0 */ /* No assembly extracted */
+/* Function start: 0x4350C0 */
 void SCI_Schedule::Init(SC_MessageParser* msg)
 {
+    int iVar8;
+    int iVar3;
+    char cVar4;
+    GameState* pvVar1;
+    GameState* pvVar2;
+    unsigned int uVar6;
+    char local_40[64];
+
     IconBar::Init(msg);
+
+    int* puVar5 = &g_IconBarState_00473334;
+    do {
+        *puVar5 = 0;
+        puVar5 = puVar5 + 9;
+    } while ((unsigned int)puVar5 < (unsigned int)&g_InventoryState_004733e8);
+    g_InventoryState_004733e8 = 0;
+
+    iVar8 = (int)palette;
+    if (iVar8 != 0) {
+        int* piVar7 = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
+        if (*piVar7 != 0) {
+            WriteToLog("ddouble palette");
+        }
+        *piVar7 = iVar8;
+    }
+
+    iVar8 = g_PeriodStateIdx_0046cb90;
+    pvVar1 = g_GameState_0046aa30;
+    if (iVar8 < 0 || g_GameState_0046aa30->maxStates - 1 < iVar8) {
+        ShowError("Invalid gamestate %d", iVar8);
+    }
+    bgSprite->ResetAnimation(pvVar1->stateValues[iVar8], 0);
+
+    pvVar1 = g_GameState_0046aa30;
+    uVar6 = pvVar1->FindState("PERIOD");
+    if ((int)uVar6 < 0 || pvVar1->maxStates - 1 < (int)uVar6) {
+        ShowError("Invalid gamestate %d", uVar6);
+    }
+    iVar8 = pvVar1->stateValues[uVar6];
+
+    if (iVar8 % 5 == 0) {
+        selectionState = -1;
+    } else {
+        selectionState = (unsigned int)((iVar8 + 2) % 5 == 0);
+    }
+
+    iVar8 = iVar8 + iVar8 / -5;
+    renderX = g_SchedulePositionTable_0046b940[iVar8 * 2];
+    renderY = g_SchedulePositionTable_0046b940[iVar8 * 2 + 1];
+
+    iVar8 = g_PeriodStateIdx_0046cb90;
+    pvVar1 = g_GameState_0046aa30;
+    if (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+        ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+    }
+    iVar3 = g_PeriodStateIdx_0046cb90;
+    pvVar2 = g_GameState_0046aa30;
+    iVar8 = pvVar1->stateValues[iVar8];
+    if (iVar8 == -1) {
+        if (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+            ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+        }
+        cVar4 = g_PeriodCharTable_0046cb94[pvVar2->stateValues[iVar3]];
+    } else {
+        cVar4 = g_PeriodCharTable_0046cb94[iVar8];
+    }
+
+    sprintf(local_40, "%c_LATE_CUT", (int)cVar4);
+    pvVar1 = g_GameState_0046aa30;
+    uVar6 = pvVar1->FindState(local_40);
+    if ((int)uVar6 < 0 || pvVar1->maxStates - 1 < (int)uVar6) {
+        ShowError("Invalid gamestate %d", uVar6);
+    }
+    iVar8 = pvVar1->stateValues[uVar6];
+    tardiesSprite->ResetAnimation(iVar8 % 3, 0);
+    cutsSprite->ResetAnimation(iVar8 / 3 % 3, 0);
+
+    iVar8 = g_PeriodStateIdx_0046cb90;
+    pvVar1 = g_GameState_0046aa30;
+    if (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+        ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+    }
+    iVar3 = g_PeriodStateIdx_0046cb90;
+    pvVar2 = g_GameState_0046aa30;
+    iVar8 = pvVar1->stateValues[iVar8];
+    if (iVar8 == -1) {
+        if (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+            ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+        }
+        cVar4 = g_PeriodCharTable_0046cb94[pvVar2->stateValues[iVar3]];
+    } else {
+        cVar4 = g_PeriodCharTable_0046cb94[iVar8];
+    }
+
+    sprintf(local_40, "%c_DETENTION_SUSPENSION", (int)cVar4);
+    pvVar1 = g_GameState_0046aa30;
+    uVar6 = pvVar1->FindState(local_40);
+    if ((int)uVar6 < 0 || pvVar1->maxStates - 1 < (int)uVar6) {
+        ShowError("Invalid gamestate %d", uVar6);
+    }
+    scheduleSprite->ResetAnimation(pvVar1->stateValues[uVar6] % 3, 0);
 }
 
 /* Function start: 0x4353E0 */

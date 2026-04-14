@@ -164,7 +164,7 @@ void RunGame() {
         if (testIdx2 < 0 || testIdx2 > g_GameState_0046aa30->maxStates - 1) {
             ShowError("Invalid gamestate %d", testIdx2);
         }
-        g_Strings_0046a6e0->TestStrings(g_TextManager_00436990, g_GameState_0046aa30->stateValues[testIdx2]);
+        g_Strings_0046a6e0->TestStrings(g_GlyphFont_0046aa28, g_GameState_0046aa30->stateValues[testIdx2]);
     }
 
     g_TimedEventPool1_00436984 = new TimedEventPool();
@@ -177,10 +177,10 @@ void RunGame() {
     g_GameEngine_0046a6ec = gameEngine;
 
     g_Mouse_0046aa18->DrawCursor();
-    g_TextManager_00436990->LoadFont("elements\\\\text1.smk");
-    g_TextManager_00436990->char_adv.advance = 2;
-    g_TextManager_00436990->spaceWidth = 5;
-    g_TextManager_00436990->tabWidth = 0x14;
+    g_GlyphFont_0046aa28->LoadFont("elements\\\\text1.smk");
+    g_GlyphFont_0046aa28->char_adv.advance = 2;
+    g_GlyphFont_0046aa28->spaceWidth = 5;
+    g_GlyphFont_0046aa28->tabWidth = 0x14;
     g_Timer_00436980->Reset();
 
     SendGameMessage(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
@@ -365,8 +365,8 @@ void InitGameSystems(void) {
     SetVideoRes(0x280, 0x1e0);
     g_InputManager_0046aa08 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
     g_Sound_0043696c = new Sound(0x5622, 8, 1);
-    g_TextManager_00436990 = new AnimatedAsset();
-    g_TextManager_00436990->LoadFont("elements\\barrel06.smk");
+    g_GlyphFont_0046aa28 = new AnimatedAsset();
+    g_GlyphFont_0046aa28->LoadFont("elements\\barrel06.smk");
     SetStateFlag(0, 1);
     SetCursorVisible(0);
 }
@@ -375,13 +375,13 @@ void InitGameSystems(void) {
 
 /* Function start: 0x4258C0 */ /* ~97% match */
 void ShutdownGameSystems(void) {
-  if (g_TextManager_00436990 != 0) {
-    delete g_TextManager_00436990;
-    g_TextManager_00436990 = 0;
+  if (g_GlyphFont_0046aa28 != 0) {
+    delete g_GlyphFont_0046aa28;
+    g_GlyphFont_0046aa28 = 0;
   }
-  if (g_WorkBuffer_00436974 != 0) {
-    delete g_WorkBuffer_00436974;
-    g_WorkBuffer_00436974 = 0;
+  if (g_BackBuffer_0046aa14 != 0) {
+    delete g_BackBuffer_0046aa14;
+    g_BackBuffer_0046aa14 = 0;
     g_BackBuffer_0046aa14 = 0;
   }
   if (g_Sound_0043696c != 0) {

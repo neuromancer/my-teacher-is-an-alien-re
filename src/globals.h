@@ -6051,6 +6051,7 @@ extern SpriteHashTable* g_CurrentSprite_00436348;          // CombatSprite curre
 extern Sprite* g_NavSprite_004360a4;                       // NavSubNode navigation sprite
 extern Sprite* g_NavCursorSprite_004360a0;                 // mCNavigator cursor sprite
 extern unsigned int g_TimerCount_00436b94;                 // Timer active count
+extern int g_SchedulePositionTable_0046b940[];             // SCI_Schedule position table (x,y pairs)
 extern int g_SpaceNavStates_0046c3f0[3];                   // SC_SpaceShipNav state array
 extern char* g_MissionFilePath_0046bacc;                                 // SC_Wahoo / SCI_PracticeRoom
 extern SC_CombatBase* g_WahooEngine_0046bbfc;                        // SC_Wahoo

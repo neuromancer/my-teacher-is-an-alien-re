@@ -132,9 +132,9 @@ extern "C" int* GetScreenHeight();
 
 /* Function start: 0x425F10 */
 void BlankScreen() {
-  if (g_WorkBuffer_00436974 != 0) {
-    g_WorkBuffer_00436974->ClearScreen(0);
-    VBuffer *vbuffer = g_WorkBuffer_00436974;
+  if (g_BackBuffer_0046aa14 != 0) {
+    g_BackBuffer_0046aa14->ClearScreen(0);
+    VBuffer *vbuffer = g_BackBuffer_0046aa14;
     vbuffer->CallBlitter5(
         vbuffer->clip_x1, vbuffer->clip_x2, vbuffer->clip_y1,
         vbuffer->clip_y2, 0, *GetScreenWidth() - 1, 0,

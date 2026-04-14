@@ -162,17 +162,17 @@ void CommandType1::Execute(GlyphRect* rect)
     switch(mode) {
     case 0:
         vbuf = (VBuffer*)data;
-        g_WorkBuffer_00436974->ClipAndBlit(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
+        g_BackBuffer_0046aa14->ClipAndBlit(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
         return;
     case 1:
         vbuf = (VBuffer*)data;
-        g_WorkBuffer_00436974->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
+        g_BackBuffer_0046aa14->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
         return;
     case 2:
         DrawScaledSprite(x, y, data, scale);
         return;
     case 3:
-        g_WorkBuffer_00436974->ScaleTCCopy(x, y, (VBuffer*)data, scale);
+        g_BackBuffer_0046aa14->ScaleTCCopy(x, y, (VBuffer*)data, scale);
     }
     return;
 }
@@ -226,8 +226,8 @@ void BlitCommand::Execute(GlyphRect* rect)
 void CommandType2::Execute(GlyphRect* rect)
 {
     SetDrawPosition(x, y);
-    if (g_TextManager_00436990 != 0) {
-        g_TextManager_00436990->RenderText(text, -1);
+    if (g_GlyphFont_0046aa28 != 0) {
+        g_GlyphFont_0046aa28->RenderText(text, -1);
     }
     return;
 }
@@ -237,7 +237,7 @@ void CommandType2::Execute(GlyphRect* rect)
 void CommandType3::Execute(GlyphRect* rect)
 {
     SetFillColor((unsigned char)field_1c);
-    g_WorkBuffer_00436974->SetVideoMode();
+    g_BackBuffer_0046aa14->SetVideoMode();
     if (left < 0) {
         left = 0;
     }
@@ -412,16 +412,16 @@ void ZBufferManager::PlayAnimationSound(void* data, int priority, int x, int y, 
             VBuffer* vbuf = (VBuffer*)data;
             switch(mode) {
                 case 0:
-                     g_WorkBuffer_00436974->ClipAndBlit(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
+                     g_BackBuffer_0046aa14->ClipAndBlit(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
                      break;
                 case 1:
-                     g_WorkBuffer_00436974->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
+                     g_BackBuffer_0046aa14->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
                      break;
                 case 2:
                      DrawScaledSprite(x, y, data, scale);
                      break;
                 case 3:
-                     g_WorkBuffer_00436974->ScaleTCCopy(x, y, vbuf, scale);
+                     g_BackBuffer_0046aa14->ScaleTCCopy(x, y, vbuf, scale);
                      break;
             }
         }
@@ -500,7 +500,7 @@ void ZBufferManager::ShowSubtitle(char* text, int x, int y, int duration, int fl
         return;
     }
     SetDrawPosition(x, y);
-    g_TextManager_00436990->RenderText(text, -1);
+    g_GlyphFont_0046aa28->RenderText(text, -1);
 }
 
 /* Function start: 0x404350 */
@@ -559,14 +559,18 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
 extern "C" void SetFontPosition(int, int);
 
 // TextRenderEntry: 0x64-byte entry for queued text rendering (vtable 0x461040)
-struct TextRenderEntry {
-    int field_00;       // 0x00 (vtable set by new)
+// Execute at vtable[0] = 0x403840
+struct TextRenderEntry : public SoundCommand {
     int priority;       // 0x04
     char text[80];      // 0x08-0x57
     int posX;           // 0x58
     int posY;           // 0x5C
     int color;          // 0x60
-    virtual ~TextRenderEntry() {}
+
+    virtual void Execute(GlyphRect* rect) {
+        SetFontPosition(posX, posY);
+        g_GlyphFont_0046aa28->RenderText(text, color);
+    }
 };
 
 /* Function start: 0x404230 */
@@ -945,8 +949,8 @@ void ZBufferManager::UpdateScreen() {
 
         {
             GlyphRect local_rect = local_10->rect;
-            if (g_WorkBuffer_00436974 != 0) {
-                g_WorkBuffer_00436974->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);
+            if (g_BackBuffer_0046aa14 != 0) {
+                g_BackBuffer_0046aa14->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);
             }
 
             if (local_10 != 0) {

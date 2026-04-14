@@ -300,6 +300,29 @@ char* g_FontFilename_0046bd78 = 0;                           // 0x0046bd78
 int g_FontField_0046bd7c = 0;                                // 0x0046bd7c
 SlimeTable* g_SlimeTable_0046bf28 = 0;                       // 0x0046bf28
 Palette* g_PodsPalette_0046bf30 = 0;              // 0x0046bf30
+int g_SchedulePositionTable_0046b940[42] = {                  // 0x0046b940 — x,y pairs, index 0 unused
+    0, 0,           // [0] unused
+    100, 108,       // [1]
+    100, 182,       // [2]
+    100, 257,       // [3]
+    100, 304,       // [4]
+    202, 108,       // [5]
+    202, 182,       // [6]
+    202, 257,       // [7]
+    202, 304,       // [8]
+    305, 108,       // [9]
+    305, 182,       // [10]
+    305, 257,       // [11]
+    305, 304,       // [12]
+    408, 108,       // [13]
+    408, 182,       // [14]
+    408, 257,       // [15]
+    408, 304,       // [16]
+    510, 108,       // [17]
+    510, 182,       // [18]
+    510, 257,       // [19]
+    510, 304        // [20]
+};
 int g_SpaceNavStates_0046c3f0[3] = {4, 5, 3};               // 0x0046c3f0
 int g_PeriodStateIdx_0046cb90 = 99;                          // 0x0046cb90
 static char s_PeriodChars[] = "PSD";

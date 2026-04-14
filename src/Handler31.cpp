@@ -766,5 +766,5 @@ void Handler31::Init(SC_MessageParser* msg) {
         g_ZBufferManager_0046aa24->m_palette = palette;
     }
 
-    g_TextManager_00436990->LoadFont("elements\\text1.smk");
+    g_GlyphFont_0046aa28->LoadFont("elements\\text1.smk");
 }

@@ -188,10 +188,10 @@ int AnimatedAsset::DrawChar(int x, int y, int ch)
         }
         else {
             if (useAttr != 0) {
-                g_WorkBuffer_00436974->CallBlitter3(local.left, local.right, local.top, local.bottom, x, y, buffer, color, attr);
+                g_BackBuffer_0046aa14->CallBlitter3(local.left, local.right, local.top, local.bottom, x, y, buffer, color, attr);
             }
             else {
-                g_WorkBuffer_00436974->CallBlitter2(local.left, local.right, local.top, local.bottom, x, y, buffer);
+                g_BackBuffer_0046aa14->CallBlitter2(local.left, local.right, local.top, local.bottom, x, y, buffer);
             }
         }
         width = local.right - local.left;
