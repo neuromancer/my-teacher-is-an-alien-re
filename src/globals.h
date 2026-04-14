@@ -5984,7 +5984,7 @@ extern int g_DetentionKeyState_00468a18;                                   // SC
 extern int g_FireAlarmTimer_004685a0;                                   // SC_FireAlarm / SC_Pods
 extern int g_FireAlarmFlag_004685a8;                                    // SC_FireAlarm
 extern int g_FireAlarmEngine_004685ac;                                   // SC_FireAlarm / SC_Pods
-extern char g_QuestFormatStr_004690e4[32];                              // SC_Question buffer
+extern char g_QuestFormatStr_004690e4[4];                               // SC_Question buffer
 extern Weapon* g_ActiveWeapon_00468ef0;                               // SC_Wahoo / SC_WordSearch
 extern int g_SoundTrackerField1_00469128;                                   // SoundTracker
 extern int g_CacheHitCount_0046912c;                                   // FilePosCache hit counter
@@ -6132,7 +6132,7 @@ extern SpriteAction g_HotspotAction_00472d90;
 
 // SC_CrystalPuzzle
 extern int g_PuzzleSolutions_0046cc98[];
-extern int g_PuzzleResultIdx_0046cca4[];
+#define g_PuzzleResultIdx_0046cca4 (&g_PuzzleSolutions_0046cc98[3])
 extern GlyphRect g_PuzzleButtonRects_00473d30[];
 extern GlyphRect g_DoorRects_00473dc8[];
 

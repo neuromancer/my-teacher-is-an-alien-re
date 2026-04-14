@@ -215,12 +215,17 @@ void* g_SmackSoundCheck_0044053c = 0;                        // 0x0044053c
 int g_FireAlarmTimer_004685a0 = 5;                           // 0x004685a0
 int g_FireAlarmFlag_004685a8 = 0;                            // 0x004685a8
 int g_FireAlarmEngine_004685ac = 0;                          // 0x004685ac
-char g_QuestLevelKey_00468108[32] = "ROOM";                   // 0x00468108
+char g_QuestLevelKey_00468108[32] = {                          // 0x00468108
+    'R','O','O','M', 0, 0, 0, 0,
+    'P','R','E','V','I','O','U','S',
+    'R','O','O','M','I','N','S','T',
+    'A','N','C','E', 0, 0, 0, 0
+};
 int g_DetentionFlag_00468764 = 0;                            // 0x00468764
 int g_DetentionKeyState_00468a18 = 0;                        // 0x00468a18
 int g_SlimeField_00468bbc = 0;                               // 0x00468bbc
 Weapon* g_ActiveWeapon_00468ef0 = 0;                         // 0x00468ef0
-char g_QuestFormatStr_004690e4[32] = {0};                    // 0x004690e4
+char g_QuestFormatStr_004690e4[4] = "%d";                     // 0x004690e4
 
 // --- 0x00469xxx (SoundTracker / FilePosCache / Parser) ---
 int g_SoundTrackerField1_00469128 = 0;                       // 0x00469128
@@ -302,9 +307,7 @@ char* g_PeriodCharTable_0046cb94 = s_PeriodChars;            // 0x0046cb94
 int g_PuzzleSolutions_0046cc98[36] = {                        // 0x0046cc98
     1,4,6,0, 2,4,6,0, 0,5,8,1, 1,3,8,1, 2,3,8,1, 0,4,0,2, 0,4,6,2, 0,4,7,2, 0,4,8,2
 };
-int g_PuzzleResultIdx_0046cca4[36] = {                        // 0x0046cca4
-    0,2,4,6, 0,0,5,8, 1,1,3,8, 1,2,3,8, 1,0,4,0, 2,0,4,6, 2,0,4,7, 2,0,4,8, 2,0,0,0
-};
+// g_PuzzleResultIdx_0046cca4 = &g_PuzzleSolutions_0046cc98[3] (overlap, now a macro in globals.h)
 
 // --- 0x00471xxx - 0x00473xxx ---
 int g_FileDeleteError_004719c0 = 0;                          // 0x004719c0
@@ -318,35 +321,28 @@ char g_AnimFilename_00472c70[256] = {0};                     // 0x00472c70
 char g_AnimFilename2_00472cb0[256] = {0};                    // 0x00472cb0
 HDC g_WindowDC_00472d00 = 0;                                 // 0x00472d00
 HPALETTE g_WindowPalette_00472d04 = 0;                       // 0x00472d04
-int g_ScreenWidth_00472d08 = 640;                            // 0x00472d08
-int g_ScreenHeight_00472d0c = 480;                           // 0x00472d0c
+int g_ScreenWidth_00472d08 = 0;                              // 0x00472d08 (set at runtime)
+int g_ScreenHeight_00472d0c = 0;                             // 0x00472d0c (set at runtime)
 int g_WindowWidth_00472d10 = 0;                              // 0x00472d10 (windowed mode flag: 0=fullscreen, 1=windowed)
-int g_ActivateAppState_00472d14 = 1;                         // 0x00472d14
+int g_ActivateAppState_00472d14 = 0;                         // 0x00472d14 (set at runtime)
 SpriteAction g_IconBarAction_00472d20;                       // 0x00472d20
 SpriteAction g_PendingAction_00472d58;                       // 0x00472d58
 SpriteAction g_HotspotAction_00472d90;                       // 0x00472d90
 int g_DevelopFlag_00472de4 = 0;                              // 0x00472de4
-char g_LogEnabled_00472e28 = 1;                              // 0x00472e28 (was 0, forced on for debugging)
+char g_LogEnabled_00472e28 = 0;                              // 0x00472e28
 int g_StartBlock_00472e2c = 0;                               // 0x00472e2c
 // IconBar globals
 int g_IconBarLeft_00473310 = 0;                              // 0x00473310
-int g_IconBarTop_00473314 = 0x1AB;                           // 0x00473314
-int g_IconBarRight_00473318 = 0x27F;                         // 0x00473318
-int g_IconBarBottom_0047331c = 0x1E0;                        // 0x0047331C
+int g_IconBarTop_00473314 = 0;                               // 0x00473314 (set by CRT init via SetIconBarRect)
+int g_IconBarRight_00473318 = 0;                             // 0x00473318 (set by CRT init via SetIconBarRect)
+int g_IconBarBottom_0047331c = 0;                            // 0x0047331C (set by CRT init via SetIconBarRect)
 IconBarEntry g_IconBarEntries_00473320[6];                   // 0x00473320-0x4733F8
 int g_IconBarRefCount_0046af0c = 0;                          // 0x0046af0c
 GlyphRect g_PuzzleButtonRects_00473d30[9];                   // 0x00473d30
 // g_IconBarState_00473334, g_SchoolMenuField1_00473358, g_SchoolMenuField2_0047337c
 // are now macros in globals.h — they alias IconBarEntry[0/1/2].field_14
 HitBounds g_HitBounds_00473260[3] = {{0, 0}, {0, 0}, {0, 0}}; // 0x00473260
-BombData g_BombData_00473278[6] = {                          // 0x00473278 — initialized by FUN_428110
-    {{0x23, 0x28, 0x00, 0x00, 0x27, 0x2c}},
-    {{0x00, 0x00, 0x40, 0x45, 0x43, 0x48}},
-    {{0x60, 0x65, 0x5c, 0x61, 0x00, 0x00}},
-    {{0x79, 0x7e, 0x7f, 0x82, 0x00, 0x00}},
-    {{0x96, 0x9b, 0x9a, 0x9f, 0x00, 0x00}},
-    {{0xb8, 0xbd, 0x00, 0x00, 0xb3, 0xb8}}
-};
+BombData g_BombData_00473278[6];                             // 0x00473278 (BSS, initialized at runtime)
 POINT g_CursorPos_00473308;                                  // 0x00473308
 char g_CinematicDebugStr_00473400 = 0;           // 0x00473400
 int g_CacheTotalSize_00473440 = 0;                           // 0x00473440

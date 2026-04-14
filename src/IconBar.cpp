@@ -19,7 +19,12 @@
 #include "SoundCommand.h"
 #include "ZBuffer.h"
 
-// Globals defined in globals.cpp, declared in globals.h
+// CRT init: original binary calls SetIconBarRect via _initterm table (0x468030)
+static void __cdecl _iconbar_crt_init(void) { IconBar::SetIconBarRect(); }
+typedef void (__cdecl *_PVFV)(void);
+#pragma data_seg(".CRT$XCU")
+static _PVFV _init_iconbar = _iconbar_crt_init;
+#pragma data_seg()
 
 // External functions
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
