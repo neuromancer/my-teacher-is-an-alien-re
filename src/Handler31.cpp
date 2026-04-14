@@ -465,19 +465,19 @@ int Handler31::Exit(SC_MessageParser* msg) {
         break;
 
     case 0xF:
-        g_FlagManager_0046a6e8->SetFlag(action->addressValue, 1);
+        g_FlagManager_0046a6e8->ClearFlag(action->addressValue, 1);
         break;
 
     case 0x10:
         question = RemoveQuestion(action->addressValue);
-        g_FlagManager_0046a6e8->ClearFlag(action->addressValue, 1);
+        g_FlagManager_0046a6e8->SetFlag(action->addressValue, 1);
         if (question != 0) {
             delete question;
         }
         break;
 
     case 0x13:
-        g_FlagManager_0046a6e8->SetFlag(action->addressValue, 1);
+        g_FlagManager_0046a6e8->ClearFlag(action->addressValue, 1);
         /* fall through */
 
     case 0x17:
@@ -522,7 +522,7 @@ int Handler31::Exit(SC_MessageParser* msg) {
 
     case 0x18:
         question = RemoveQuestion(action->addressValue);
-        g_FlagManager_0046a6e8->ClearFlag(action->addressValue, 2);
+        g_FlagManager_0046a6e8->SetFlag(action->addressValue, 2);
         if (question != 0) {
             delete question;
         }
