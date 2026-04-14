@@ -19,6 +19,7 @@
 
 
 #include "string.h"
+extern void __stdcall EnqueueHotspotAction(SpriteAction*);
 static char* FormatSoundPath(char* path);
 
 #include "Target.h"
@@ -286,5 +287,5 @@ void StartScheduleTimer2() {
     SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     action.instruction = 0x37;
     action.extra1 = 1;
-    EnqueueSpriteAction(&action);
+    EnqueueHotspotAction(&action);
 }

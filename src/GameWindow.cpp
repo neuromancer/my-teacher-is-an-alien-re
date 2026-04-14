@@ -17,9 +17,7 @@ int InvalidateVideoMode();
 int CleanupVideoSystem();
 }
 
-static int s_WindowedMode = 0;
-
-extern "C" int* GetWindowedModeFlag() { return &s_WindowedMode; }
+extern "C" int* GetWindowWidth();
 
 LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
@@ -116,7 +114,7 @@ void __stdcall ParseCommandLine(char *param_1) {
       strcpy(g_GameWindow.baseDir, *piVar3 + 4);
     }
     else if (_strcmpi(*piVar3, "-w") == 0) {
-      *GetWindowedModeFlag() = 1;
+      *GetWindowWidth() = 1;
     }
     else if (_strcmpi(*piVar3, "-dd") == 0) {
       g_CmdLineInputMode_0043d560 = 1;
@@ -143,7 +141,7 @@ void __stdcall ParseCommandLine(char *param_1) {
       g_DebugFlag_0043d55c = 1;
     }
     else if (_strcmpi(*piVar3, "-f") == 0) {
-      *GetWindowedModeFlag() = 0;
+      *GetWindowWidth() = 0;
     }
     piVar3 = piVar3 + 1;
   }
