@@ -31,16 +31,16 @@ SCI_Schedule::SCI_Schedule()
     spr->ConfigRange(0, 1, 1, 1);
     spr->ConfigRange(1, 2, 2, 1);
     spr->ConfigRange(2, 3, 3, 1);
-    bgSprite->handle = 0;
+    bgSprite->priority = 0;
 
     Sprite* spr2 = new Sprite("schedual\\\\shedbox1.smk");
     selBox1 = spr2;
-    selBox1->handle = 5;
+    selBox1->priority = 5;
     selBox1->flags |= 0x40;
 
     Sprite* spr3 = new Sprite("schedual\\\\shedbox2.smk");
     selBox2 = spr3;
-    selBox2->handle = 5;
+    selBox2->priority = 5;
     selBox2->flags |= 0x40;
 
     Sprite* spr4 = new Sprite("schedual\\\\tardies.smk");
@@ -66,7 +66,7 @@ SCI_Schedule::SCI_Schedule()
         (*ebx)->ConfigRange(0, 1, 1, 1);
         (*ebx)->ConfigRange(1, 2, 2, 1);
         (*ebx)->ConfigRange(2, 3, 3, 1);
-        (*ebx)->handle = 5;
+        (*ebx)->priority = 5;
         (*ebx)->flags |= 0x40;
         ebx++;
         count--;

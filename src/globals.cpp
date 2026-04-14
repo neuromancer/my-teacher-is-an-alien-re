@@ -330,15 +330,14 @@ char g_LogEnabled_00472e28 = 1;                              // 0x00472e28 (was 
 int g_StartBlock_00472e2c = 0;                               // 0x00472e2c
 // IconBar globals
 int g_IconBarLeft_00473310 = 0;                              // 0x00473310
-int g_IconBarTop_00473314 = 0;                               // 0x00473314
-int g_IconBarRight_00473318 = 0;                             // 0x00473318
-int g_IconBarBottom_0047331c = 0;                            // 0x0047331C
+int g_IconBarTop_00473314 = 0x1AB;                           // 0x00473314
+int g_IconBarRight_00473318 = 0x27F;                         // 0x00473318
+int g_IconBarBottom_0047331c = 0x1E0;                        // 0x0047331C
 IconBarEntry g_IconBarEntries_00473320[6];                   // 0x00473320-0x4733F8
 int g_IconBarRefCount_0046af0c = 0;                          // 0x0046af0c
 GlyphRect g_PuzzleButtonRects_00473d30[9];                   // 0x00473d30
-int g_IconBarState_00473334 = 0;                             // 0x00473334
-int g_SchoolMenuField1_00473358 = 0;                         // 0x00473358
-int g_SchoolMenuField2_0047337c = 0;                         // 0x0047337c
+// g_IconBarState_00473334, g_SchoolMenuField1_00473358, g_SchoolMenuField2_0047337c
+// are now macros in globals.h — they alias IconBarEntry[0/1/2].field_14
 HitBounds g_HitBounds_00473260[3] = {{0, 0}, {0, 0}, {0, 0}}; // 0x00473260
 BombData g_BombData_00473278[6] = {                          // 0x00473278 — initialized by FUN_428110
     {{0x23, 0x28, 0x00, 0x00, 0x27, 0x2c}},
@@ -361,7 +360,7 @@ int g_State0Phase_00473e14 = 0;                              // 0x00473e14
 int g_RatsState_00473e18 = 0;                                // 0x00473e18
 int g_State3Phase_00473e1c = 0;                              // 0x00473e1c
 int g_State2Phase_00473e20 = 0;                              // 0x00473e20
-int g_InventoryState_004733e8 = 0;                           // 0x004733e8
+// g_InventoryState_004733e8 is now a macro in globals.h — aliases IconBarEntry[5].field_14
 int g_GameField_004734a4 = 0;                                // 0x004734a4
 
 // --- Misc (not address-mapped or shared) ---

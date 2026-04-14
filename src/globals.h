@@ -6065,10 +6065,13 @@ extern int g_FanField1_00472be0;                                   // SC_DodgeOr
 extern int g_FanField2_00472be4;                                   // SC_DodgeOrville
 extern int g_FanField3_00472be8;                                   // SC_DodgeOrville
 extern int g_FanField4_00472bec;                                   // SC_DodgeOrville
-extern int g_IconBarState_00473334;                                   // SCI_Inventory
-extern int g_SchoolMenuField1_00473358;                                   // SCI_SchoolMenu
-extern int g_SchoolMenuField2_0047337c;                                   // SCI_SchoolMenu
-extern int g_InventoryState_004733e8;                                   // SCI_Inventory
+// These globals overlap with IconBarEntry array fields in the original binary:
+// entry[0].field_14 = 0x473334, entry[1].field_14 = 0x473358,
+// entry[2].field_14 = 0x47337c, entry[5].field_14 = 0x4733e8
+#define g_IconBarState_00473334 (g_IconBarEntries_00473320[0].field_14)
+#define g_SchoolMenuField1_00473358 (g_IconBarEntries_00473320[1].field_14)
+#define g_SchoolMenuField2_0047337c (g_IconBarEntries_00473320[2].field_14)
+#define g_InventoryState_004733e8 (g_IconBarEntries_00473320[5].field_14)
 extern int g_FileDeleteError_004719c0;                                   // SC_DodgeOrville
 extern HitBounds g_HitBounds_00473260[3];                  // SC_DodgeOrville
 extern BombData g_BombData_00473278[6];                    // SC_DodgeOrville
