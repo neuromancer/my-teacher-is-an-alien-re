@@ -353,7 +353,7 @@ int T_Hotspot::LBLParse(char* param_1)
     if (strcmp(token, "HANDLE") == 0) {
         sscanf(param_1, " %s %d", token, &hotspotHandle);
     }
-    else if (strcmp(token, "HOTSPOT") == 0) {
+    else if (strcmp(token, "EXIT") == 0) {
         iVar5 = sscanf(param_1, "%s %s %d", token, value, &param);
         if (iVar5 != 3) {
             ShowError("Error in Thotspot.cpp : %s - missing parameters in parse file", param_1);
@@ -593,7 +593,7 @@ int T_Hotspot::LBLParse(char* param_1)
         return 1;
     }
     else {
-        Parser::LBLParse("T_Hotspot");
+        ReportUnknownLabel("T_Hotspot");
     }
 
 done:

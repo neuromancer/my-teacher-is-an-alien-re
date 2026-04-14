@@ -7,6 +7,7 @@
 class Sprite;
 class Palette;
 class T_MenuHotspot;
+class T_MenuButton;
 
 // SC_SaveLoad - Save/load dialog handler (case 47/0x2F)
 // Constructor: 0x421C40
@@ -28,9 +29,9 @@ public:
     int returnData;               // 0xC0
     Palette* palette;           // 0xC4
     Sprite* sprite;             // 0xC8
-    T_MenuHotspot* btnYes;      // 0xCC
-    T_MenuHotspot* btnNo;       // 0xD0
-    T_MenuHotspot* btnCancel;   // 0xD4
+    T_MenuButton* btnYes;       // 0xCC
+    T_MenuButton* btnNo;        // 0xD0
+    T_MenuButton* btnCancel;    // 0xD4
 };
 
 #endif // SC_SAVELOAD_H

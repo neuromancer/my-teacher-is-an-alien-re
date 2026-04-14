@@ -21,7 +21,7 @@
 struct SlimeDim {
     int x;
     int y;
-    SlimeDim() {}
+    SlimeDim() { x = 0; y = 0; }
     ~SlimeDim();
 };
 

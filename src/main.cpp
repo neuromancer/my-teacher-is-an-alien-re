@@ -89,7 +89,7 @@ void RunGame() {
     SetVideoRes(0x280, 0x1e0);
 
     // Play splash cinematic if exists
-    const char *splashPath = CDData_ResolvePath("cine\\splash.smk");
+    const char *splashPath = CDData_ResolvePath("cine\\\\splash.smk");
     if (FileExists(splashPath)) {
         Animation anim;
         anim.Play((char *)splashPath, 3);
@@ -99,20 +99,20 @@ void RunGame() {
     g_SoundTracker_0046928c = new SoundTracker(0xfa0);
 
     // Create 4 GameStates with inline ParseFile
-    g_GameState_0046aa30 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+    g_GameState_0046aa30 = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
 
-    g_GameState2_0046aa3c = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
+    g_GameState2_0046aa3c = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
 
-    g_GameState3_0043699c = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+    g_GameState3_0043699c = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
     g_StringTable_0046aa34 = g_GameState3_0043699c;
 
-    g_GameState4_004369a0 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
+    g_GameState4_004369a0 = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
     g_StringState_0046aa38 = g_GameState4_004369a0;
 
     // Check CACHE_SIZE from gamestate
     int cacheIdx = g_GameState_0046aa30->FindState("CACHE_SIZE");
     if (cacheIdx < 0 || cacheIdx > g_GameState_0046aa30->maxStates - 1) {
-        ShowError("0. Invalid gamestate %d", cacheIdx);
+        ShowError("Invalid gamestate %d", cacheIdx);
     }
     int cacheSize = g_GameState_0046aa30->stateValues[cacheIdx];
     if (cacheSize == 0) {
@@ -121,7 +121,7 @@ void RunGame() {
 
     int diskSpace = GetFreeDiskSpaceMB(0);
     if (diskSpace != -1 && (diskSpace / 1048576) < cacheSize) {
-        ShowError("This game requires %lu MBytes of free disk space.\nPlease free up some disk space and try again.", diskSpace, cacheSize);
+        ShowError("This game requires %lu MBytes of free disk space.\nYou have approximately %lu MBytes free.\nPlease free some space and rerun.", diskSpace, cacheSize);
     }
     InitMemoryCache(200, cacheSize, 50.0f);
 
@@ -134,7 +134,7 @@ void RunGame() {
     }
 
     g_Mouse_0046aa18 = new MouseControl();
-    ParseFile(g_Mouse_0046aa18, "mis\\mouse1.mis", "[MICE]");
+    ParseFile(g_Mouse_0046aa18, "mis\\\\mouse1.mis", "[MICE]");
 
     // Linked list allocation
     g_MsgList_0046a6dc = new MsgList();
@@ -144,25 +144,25 @@ void RunGame() {
 
     g_Timer_00436980 = new Timer();
 
-    g_FlagManager_0046a6e8 = new FlagArray("cfg\\question.dat", 10000);
+    g_FlagManager_0046a6e8 = new FlagArray("cfg\\\\question.dat", 10000);
     g_FlagManager_0046a6e8->ClearAllFlags();
 
     // Parse question init script (stack-allocated, immediately destroyed)
     {
-        QuestionInit initQ("mis\\INIT_Q.mis");
+        QuestionInit initQ("mis\\\\INIT_Q.mis");
     }
 
-    g_Strings_0046a6e0 = new StringTable("mis\\strings.mis", 1);
+    g_Strings_0046a6e0 = new StringTable("mis\\\\strings.mis", 1);
 
     // Check TEST_STRINGS in gamestate
     int testIdx = g_GameState_0046aa30->FindState("TEST_STRINGS");
     if (testIdx < 0 || testIdx > g_GameState_0046aa30->maxStates - 1) {
-        ShowError("1. Invalid gamestate %d", testIdx);
+        ShowError("Invalid gamestate %d", testIdx);
     }
     if (g_GameState_0046aa30->stateValues[testIdx] != 0) {
         int testIdx2 = g_GameState_0046aa30->FindState("TEST_STRINGS");
         if (testIdx2 < 0 || testIdx2 > g_GameState_0046aa30->maxStates - 1) {
-            ShowError("2. Invalid gamestate %d", testIdx2);
+            ShowError("Invalid gamestate %d", testIdx2);
         }
         g_Strings_0046a6e0->TestStrings(g_TextManager_00436990, g_GameState_0046aa30->stateValues[testIdx2]);
     }
@@ -177,7 +177,7 @@ void RunGame() {
     g_GameEngine_0046a6ec = gameEngine;
 
     g_Mouse_0046aa18->DrawCursor();
-    g_TextManager_00436990->LoadFont("elements\\text1.smk");
+    g_TextManager_00436990->LoadFont("elements\\\\text1.smk");
     g_TextManager_00436990->char_adv.advance = 2;
     g_TextManager_00436990->spaceWidth = 5;
     g_TextManager_00436990->tabWidth = 0x14;
@@ -188,7 +188,7 @@ void RunGame() {
 
     // GameLoop (stack-allocated)
     GameLoop gameLoop;
-    ParseFile(&gameLoop, "mis\\start.mis", "[BLOCK%4.4d]", g_StartBlock_00472e2c);
+    ParseFile(&gameLoop, "mis\\\\start.mis", "[BLOCK%4.4d]", g_StartBlock_00472e2c);
 
     // Post-GameLoop
     if (g_GameLoopHelper_0046a6f0 != 0) {

@@ -124,7 +124,7 @@ SCI_Inventory::~SCI_Inventory() {
             delete putBackButton->sprite;
             putBackButton->sprite = 0;
         }
-        putBackButton->~T_MenuHotspot();
+        putBackButton->~T_MenuButton();
         FreeMemory(putBackButton);
         putBackButton = 0;
     }
@@ -134,7 +134,7 @@ SCI_Inventory::~SCI_Inventory() {
             delete useButton->sprite;
             useButton->sprite = 0;
         }
-        useButton->~T_MenuHotspot();
+        useButton->~T_MenuButton();
         FreeMemory(useButton);
         useButton = 0;
     }
@@ -144,7 +144,7 @@ SCI_Inventory::~SCI_Inventory() {
             delete scrollDownBtn->sprite;
             scrollDownBtn->sprite = 0;
         }
-        scrollDownBtn->~T_MenuHotspot();
+        scrollDownBtn->~T_MenuButton();
         FreeMemory(scrollDownBtn);
         scrollDownBtn = 0;
     }
@@ -154,7 +154,7 @@ SCI_Inventory::~SCI_Inventory() {
             delete scrollUpBtn->sprite;
             scrollUpBtn->sprite = 0;
         }
-        scrollUpBtn->~T_MenuHotspot();
+        scrollUpBtn->~T_MenuButton();
         FreeMemory(scrollUpBtn);
         scrollUpBtn = 0;
     }
@@ -1072,19 +1072,19 @@ int SCI_Inventory::LBLParse(char* line) {
     }
     else if (strcmp(token, "CANCEL") == 0) {
         sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
-        putBackButton = new T_MenuHotspot(name, params);
+        putBackButton = new T_MenuButton(name, params);
     }
     else if (strcmp(token, "OK") == 0) {
         sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
-        useButton = new T_MenuHotspot(name, params);
+        useButton = new T_MenuButton(name, params);
     }
     else if (strcmp(token, "SCROLLUP") == 0) {
         sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
-        scrollDownBtn = new T_MenuHotspot(name, params);
+        scrollDownBtn = new T_MenuButton(name, params);
     }
     else if (strcmp(token, "SCROLLDOWN") == 0) {
         sscanf(line, " %s %s %d %d %d %d", token, name, &params[0], &params[1], &params[2], &params[3]);
-        scrollUpBtn = new T_MenuHotspot(name, params);
+        scrollUpBtn = new T_MenuButton(name, params);
     }
     else if (strcmp(token, "AUTOCOMBINE") == 0) {
         {

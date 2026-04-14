@@ -209,7 +209,7 @@ void SC_Rats::ProcessState() {
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             SC_MessageParser temp;
-            ParseFile(&temp, "mis\\cb_rats.mis", "_WIN_LBL_PR_");
+            ParseFile(&temp, "mis\\cb_rats.mis", "[WIN_LBL_PR]");
         } else if (g_RatsState_00473e18 == 3) {
             if (actionData != 0) {
                 delete actionData;
@@ -217,7 +217,7 @@ void SC_Rats::ProcessState() {
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             SC_MessageParser temp;
-            ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_PR_");
+            ParseFile(&temp, "mis\\cb_rats.mis", "[LOSE_LBL_PR]");
         }
     } else {
         if (g_RatsState_00473e18 == 4) {
@@ -236,7 +236,7 @@ void SC_Rats::ProcessState() {
             }
             actionData = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             SC_MessageParser temp;
-            ParseFile(&temp, "mis\\cb_rats.mis", "_LOSE_LBL_");
+            ParseFile(&temp, "mis\\cb_rats.mis", "[LOSE_LBL]");
         } else if (g_RatsState_00473e18 == 2) {
             GameState* gs = g_GameState_0046aa30;
             idx = ((GameState*)gs)->FindLabel("RAT_COMBAT_AVAILABLE");

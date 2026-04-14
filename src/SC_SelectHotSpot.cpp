@@ -263,7 +263,7 @@ int SelectHotspot::LBLParse(char* line) {
         Parser::ProcessFile((Parser*)spr, this, 0);
         ((Sprite*)SelectHotspot::sprite)->ResetAnimation(SelectHotspot::state, 0);
     } else if (strcmp(keyword, "LOC") == 0) {
-        sscanf(line, "%s %d %d %d %d", keyword, &x1, &y1, &x2, &y2);
+        sscanf(line, " %s %d %d %d %d", keyword, &x1, &y1, &x2, &y2);
     } else if (strcmp(keyword, "KEY") == 0) {
         sscanf(line, "%s %d", keyword, &keyCode);
     } else if (strcmp(keyword, "ROLLON") == 0) {
@@ -813,7 +813,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         SC_SelectHotSpot::currentHotspot = 0;
         return 1;
     } else {
-        Parser::LBLParse("SC_SelectHotSpot");
+        Parser::LBLParse("SC_Select");
     }
     return 0;
 }

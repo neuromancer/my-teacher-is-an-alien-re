@@ -65,6 +65,7 @@ T_MenuHotspot::~T_MenuHotspot()
 /* Function start: 0x420F00 */
 void T_MenuButton::Update()
 {
+    T_MenuHotspot* hs = (T_MenuHotspot*)this;
     if (sprite == 0) {
         return;
     }
@@ -82,18 +83,18 @@ void T_MenuButton::Update()
 
     if (sprite != 0 &&
         bounds.right <= mouseX && activeRight >= mouseX &&
-        bounds.bottom <= mouseY && activeBottom >= mouseY) {
+        bounds.bottom <= mouseY && hs->activeBottom >= mouseY) {
         // Inside bounds
         int st = bounds.left;
         if (st == 0 || st == 3) {
             bounds.left = 3;
-            if (cursor != 0) {
-                cursor->ResetAnimation(3, 0);
+            if (hs->cursor != 0) {
+                hs->cursor->ResetAnimation(3, 0);
             }
         } else if (st == 1 || st == 2) {
             bounds.left = 2;
-            if (cursor != 0) {
-                cursor->ResetAnimation(2, 0);
+            if (hs->cursor != 0) {
+                hs->cursor->ResetAnimation(2, 0);
             }
         } else {
             return;
@@ -103,28 +104,28 @@ void T_MenuButton::Update()
         int st = bounds.left;
         if (st == 0 || st == 3) {
             bounds.left = 0;
-            if (cursor != 0) {
-                cursor->ResetAnimation(0, 0);
+            if (hs->cursor != 0) {
+                hs->cursor->ResetAnimation(0, 0);
             }
         } else if (st == 1 || st == 2) {
             bounds.left = 1;
-            if (cursor != 0) {
-                cursor->ResetAnimation(1, 0);
+            if (hs->cursor != 0) {
+                hs->cursor->ResetAnimation(1, 0);
             }
         } else {
             return;
         }
     }
 
-    if (cursor != 0) {
-        cursor->Do(cursor->loc_x, cursor->loc_y, 1.0);
+    if (hs->cursor != 0) {
+        hs->cursor->Do(hs->cursor->loc_x, hs->cursor->loc_y, 1.0);
     }
 }
 
 /* Function start: 0x421BC0 */
 void T_MenuButton::SimpleUpdate()
 {
-    if (cursor == 0) {
+    if (sprite == 0) {
         return;
     }
 
@@ -142,12 +143,12 @@ void T_MenuButton::SimpleUpdate()
 
     if (bounds.left <= mouseX && bounds.right >= mouseX &&
         bounds.top <= mouseY && bounds.bottom >= mouseY) {
-        ((Sprite*)cursor)->ResetAnimation(1, 0);
+        sprite->ResetAnimation(1, 0);
     } else {
-        ((Sprite*)cursor)->ResetAnimation(0, 0);
+        sprite->ResetAnimation(0, 0);
     }
 
-    ((Sprite*)cursor)->Do(((Sprite*)cursor)->loc_x, ((Sprite*)cursor)->loc_y, 1.0);
+    sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
 }
 
 extern "C" void ShowError(const char* format, ...);
@@ -156,7 +157,7 @@ extern void ParseSpriteAction(void*, void*);
 // FUN_0040cf40 = ListNode::Init — constructor in LinkedList.h
 
 /* Function start: 0x421080 */
-int T_MenuButton::LBLParse(char* line) {
+int T_MenuHotspot::LBLParse(char* line) {
     char local_90[32];
     char local_70[32];
     char local_50[32];
@@ -278,7 +279,7 @@ int T_MenuButton::LBLParse(char* line) {
 void T_MenuButton::Cleanup() {}
 
 /* Function start: 0x421020 */
-void T_MenuButton::ProcessSpriteActions() {
+void T_MenuHotspot::ProcessSpriteActions() {
     if (messageQueue == 0) return;
 
     ((LinkedList*)messageQueue)->current = ((LinkedList*)messageQueue)->head;
@@ -305,7 +306,7 @@ void T_MenuButton::ProcessSpriteActions() {
 }
 
 /* Function start: 0x420EF0 */
-void T_MenuButton::StopCursorSound() {
+void T_MenuHotspot::StopCursorSound() {
     if (cursor != 0) {
         ((Sprite*)cursor)->StopAnimationSound();
     }

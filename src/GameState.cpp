@@ -63,12 +63,12 @@ void GameState::SetFromAction(int* action) {
         if (idx < 0 || maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
-        if (stateValues[idx] == 0) {
-            ValidateIndex(idx);
-            stateValues[idx] = 1;
-        } else {
+        if (stateValues[idx] != 0) {
             ValidateIndex(idx);
             stateValues[idx] = 0;
+        } else {
+            ValidateIndex(idx);
+            stateValues[idx] = 1;
         }
         return;
     case 0xF:
@@ -118,7 +118,7 @@ void GameState::SetFromAction(int* action) {
         }
         return;
     default:
-        ShowError("GameState::SetState() - invalid instruction in action");
+        ShowError("GameState::SetState() - invalid instruction '%d'", action[4]);
         return;
     }
 }
@@ -138,7 +138,7 @@ int GameState::FindStateByName(char* name) {
         }
         i++;
     }
-    ShowError("GameState::FindState unable to find %s", name);
+    ShowError("%s not in instructionText", name);
     return -1;
 }
 

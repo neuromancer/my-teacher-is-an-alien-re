@@ -33,19 +33,19 @@ SC_SaveLoad::SC_SaveLoad()
     rect[1] = 0xFB;
     rect[2] = 0xEA;
     rect[3] = 0x11A;
-    btnYes = new T_MenuHotspot("mainmenu\\ansr_y.smk", rect);
+    btnYes = new T_MenuButton("mainmenu\\ansr_y.smk", rect);
 
     rect[0] = 0x11D;
     rect[1] = 0xFD;
     rect[2] = 0x16C;
     rect[3] = 0x11B;
-    btnNo = new T_MenuHotspot("mainmenu\\ansr_n.smk", rect);
+    btnNo = new T_MenuButton("mainmenu\\ansr_n.smk", rect);
 
     rect[0] = 0x19C;
     rect[1] = 0xFC;
     rect[2] = 0x1EB;
     rect[3] = 0x11B;
-    btnCancel = new T_MenuHotspot("mainmenu\\ansr_c.smk", rect);
+    btnCancel = new T_MenuButton("mainmenu\\ansr_c.smk", rect);
 }
 
 /* Function start: 0x421F80 */
@@ -179,7 +179,7 @@ int SC_SaveLoad::AddMessage(SC_MessageParser* msg) {
         int bHit;
         {
             SlimeDim pt = action->mousePos;
-            T_MenuHotspot* btn = btnYes;
+            T_MenuButton* btn = btnYes;
             if (btn->bounds.left > pt.x ||
                 btn->bounds.right < pt.x ||
                 btn->bounds.top > pt.y ||
@@ -196,7 +196,7 @@ int SC_SaveLoad::AddMessage(SC_MessageParser* msg) {
         }
         {
             SlimeDim pt = action->mousePos;
-            T_MenuHotspot* btn = btnNo;
+            T_MenuButton* btn = btnNo;
             if (btn->bounds.left > pt.x ||
                 btn->bounds.right < pt.x ||
                 btn->bounds.top > pt.y ||
@@ -213,7 +213,7 @@ int SC_SaveLoad::AddMessage(SC_MessageParser* msg) {
         }
         {
             SlimeDim pt = action->mousePos;
-            T_MenuHotspot* btn = btnCancel;
+            T_MenuButton* btn = btnCancel;
             if (btn->bounds.left > pt.x ||
                 btn->bounds.right < pt.x ||
                 btn->bounds.top > pt.y ||

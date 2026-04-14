@@ -99,7 +99,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
         sprite = newSprite;
         Parser::ProcessFile(sprite, this, 0);
     } else if (strcmp(local_3c, "LOC") == 0) {
-        sscanf(param_1, "%s %d %d %d %d", local_3c, &boundsLeft, &boundsTop, &boundsRight, &boundsBottom);
+        sscanf(param_1, " %s %d %d %d %d", local_3c, &boundsLeft, &boundsTop, &boundsRight, &boundsBottom);
     } else if (strcmp(local_3c, "ROLLON") == 0) {
         sscanf(param_1, "%s %d", local_3c, &local_18);
         char* filename = GetSoundFilename(local_18);
@@ -193,7 +193,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
             action->extra1 = 1;
         }
         if (action->instruction == 0x11 && result < 4) {
-            Parser::LBLParse("SC_PRHotSpot");
+            ReportUnknownLabel("SC_Simple_Hotspot in gamestate");
         }
         {
             LinkedList* list = actionList;
@@ -224,7 +224,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
     } else if (strcmp(local_3c, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SC_PRHotSpot");
+        ReportUnknownLabel("SC_PRHotSpot");
     }
 
     return 0;

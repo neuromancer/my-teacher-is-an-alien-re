@@ -146,7 +146,7 @@ void SpriteAction::Serialize(void* param) {
     g_Buffer_0046aa00[0] = 0;
     fread(g_Buffer_0046aa00, headerLen, 1, fp);
     if (strcmp(g_Buffer_0046aa00, "MESSAGE_INFO") != 0) {
-        ShowError("SC_MessageParser::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
+        ShowError("SC_Message::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
     }
     fread(this, 0x38, 1, fp);
 }

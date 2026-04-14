@@ -57,29 +57,29 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     rect5.bottom = 0x192;
 
     palette = new Palette();
-    palette->Load("puz\\ForceField\\Puzztest.col");
+    palette->Load("puz_ForceField\\\\Puzztest.col");
 
-    buttons1 = new Sprite("puz\\ForceField\\buttons1.smk");
+    buttons1 = new Sprite("puz_ForceField\\\\buttons1.smk");
     buttons1->loc_x = 0x1dc;
     buttons1->loc_y = 0x147;
 
-    buttons2 = new Sprite("puz\\ForceField\\buttons2.smk");
+    buttons2 = new Sprite("puz_ForceField\\\\buttons2.smk");
     buttons2->loc_x = 0x1dc;
     buttons2->loc_y = 0x11c;
 
-    buttons3 = new Sprite("puz\\ForceField\\buttons3.smk");
+    buttons3 = new Sprite("puz_ForceField\\\\buttons3.smk");
     buttons3->loc_x = 0x1dc;
     buttons3->loc_y = 0xf1;
 
-    paths1 = new Sprite("puz\\ForceField\\paths1.smk");
+    paths1 = new Sprite("puz_ForceField\\\\paths1.smk");
     paths1->loc_x = 0x1ee;
     paths1->loc_y = 0x8d;
 
-    paths2 = new Sprite("puz\\ForceField\\paths2.smk");
+    paths2 = new Sprite("puz_ForceField\\\\paths2.smk");
     paths2->loc_x = 0x1ee;
     paths2->loc_y = 0x70;
 
-    paths3 = new Sprite("puz\\ForceField\\paths3.smk");
+    paths3 = new Sprite("puz_ForceField\\\\paths3.smk");
     paths3->loc_x = 0x1ee;
     paths3->loc_y = 0x53;
 
@@ -101,13 +101,13 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
         }
     }
 
-    puzztest = new Sprite("puz\\ForceField\\puzztest.smk");
+    puzztest = new Sprite("puz_ForceField\\\\puzztest.smk");
     puzztest->flags &= ~2;
     puzztest->priority = 5;
     puzztest->loc_x = 0;
     puzztest->loc_y = 0;
 
-    litdoors = new Sprite("puz\\ForceField\\litdoors.smk");
+    litdoors = new Sprite("puz_ForceField\\\\litdoors.smk");
     litdoors->flags &= ~2;
     litdoors->priority = 10;
     litdoors->flags |= 0x40;
@@ -116,15 +116,15 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     litdoors->ConfigRange(1, 2, 2, 1);
     litdoors->ConfigRange(2, 3, 3, 1);
 
-    lowfloor = new Sprite("puz\\ForceField\\lowfloor.smk");
+    lowfloor = new Sprite("puz_ForceField\\\\lowfloor.smk");
     lowfloor->loc_x = 0x1d;
     lowfloor->loc_y = 0x150;
 
-    midfloor = new Sprite("puz\\ForceField\\midfloor.smk");
+    midfloor = new Sprite("puz_ForceField\\\\midfloor.smk");
     midfloor->loc_x = 0x2c;
     midfloor->loc_y = 0x130;
 
-    topfloor = new Sprite("puz\\ForceField\\topfloor.smk");
+    topfloor = new Sprite("puz_ForceField\\\\topfloor.smk");
     topfloor->loc_x = 0x5a;
     topfloor->loc_y = 0x11c;
 
@@ -141,7 +141,7 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
         }
     }
 
-    mapSprite = new Sprite("combats\\kidface.smk");
+    mapSprite = new Sprite("combats\\\\kidface.smk");
     mapSprite->flags &= ~2;
     mapSprite->priority = 10;
     mapSprite->flags |= 0x40;
@@ -934,12 +934,12 @@ void SC_CrystalPuzzle::ResetPuzzle(int idx, int val) {
 
     if (enabledButtons[idx] != 0) {
         if (idx <= 5) {
-            sndNum = idx + 0x139c;
-        } else {
             sndNum = idx + 0xbb4;
+        } else {
+            sndNum = idx + 0x139c;
         }
 
-        sprintf(buf, "puz_ForceField\\snd%4.4d", sndNum);
+        sprintf(buf, "puz_ForceField\\\\snd%4.4d", sndNum);
         enabledButtons[idx] = val;
 
         newSample = new Sample();

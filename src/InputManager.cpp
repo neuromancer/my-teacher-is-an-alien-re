@@ -211,10 +211,8 @@ extern "C" char* FindAfterSubstring(char* s1, char* s2) {
 
 /* Function start: 0x426A90 */
 void InputManager::ResetClickState() {
-    InputState* mouse;
-    mouse = pMouse;
-    mouse->ext2 = 0;
-    mouse->ext1 = mouse->ext2;
+    InputManager::pMouse->ext2 = 0;
+    InputManager::pMouse->ext1 = InputManager::pMouse->ext2;
 }
 
 /* Function start: 0x426CE0 */

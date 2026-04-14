@@ -10,7 +10,7 @@
 
 /* Function start: 0x422C20 */
 SC_Timer::SC_Timer() {
-    handlerId = 0xd;
+    handlerId = 0x6;
     timer1.Reset();
     list = new MessageList();
 }
@@ -59,7 +59,7 @@ void SC_Timer::Update(int param1, int param2) {
 
     uVar3 = timer1.Update();
     if ((uVar3 > 10000) && (list->head == 0)) {
-        SendGameMessage(3, handlerId, handlerId, moduleParam, 0x14, 0, 0, 0, 0, 0);
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
     timer1.Reset();

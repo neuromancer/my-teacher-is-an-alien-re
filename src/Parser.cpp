@@ -69,7 +69,7 @@ void Parser::CloseFile() {
 
 /* Function start: 0x405CD0 */
 int Parser::LBLParse(char *param_1) {
-  ReportUnknownLabel(param_1);
+  ShowError("Parser:: Must define an LBLParse func");
   return 0;
 }
 
@@ -88,14 +88,14 @@ void Parser::OnProcessStart() {}
 /* Function start: 0x412A70 */
 void Parser::SaveFilePosition() {
   if (fgetpos(pFile, (fpos_t *)&savedFilePos) != 0) {
-    ShowError("Parser::SaveFilePosition()...", filename);
+    ShowError("Parser::SaveFilePosition() - unable to save file pos in file %s", filename);
   }
 }
 
 /* Function start: 0x412AA0 */
 void Parser::RestoreFilePosition() {
   if (fsetpos(pFile, (fpos_t *)&savedFilePos) != 0) {
-    ShowError("Parser::RestoreFilePosition()...", filename);
+    ShowError("Parser::RestoreFilePosition() - unable to restore file pos in file %s", filename);
   }
 }
 

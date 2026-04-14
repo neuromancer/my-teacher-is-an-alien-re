@@ -214,7 +214,7 @@ void SC_FakeRoom::ProcessLose()
 
         SC_MessageParser temp;
         temp.targetAddress = (int)pendingAction;
-        ParseFile(&temp, "mis\\CB_FakeRoom.mis", "LOSE_MESSAGE");
+        ParseFile(&temp, "mis\\CB_FakeRoom.mis", "[LOSE_MESSAGE]");
 
         if (savedCommand == 0x2b) {
             pendingAction->fromType = 0x2b;

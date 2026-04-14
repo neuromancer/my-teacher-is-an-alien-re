@@ -328,7 +328,7 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
             *arr = 1;
             arr = arr + 9;
         } while ((unsigned int)arr < (unsigned int)&g_InventoryState_004733e8);
-        if (hasBoundaryRect != 0 || (targetRoom > 0x13 && targetRoom < 0x1E)) {
+        if (hasBoundaryRect != 0 || (targetRoom >= 0x14 && targetRoom <= 0x1d)) {
             g_IconBarState_00473334 = 0;
         }
         CopyCommandData(msg);
@@ -699,6 +699,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
     int hotspotIdx;
 
     sscanf(line, "%s", label);
+    WriteToLog("SCI_IconBarModule::LBLParse label='%s' file='%s'", label, filename);
 
     if (strcmp(label, "PALE") == 0) {
         sscanf(line, "%s %s", label, formatted);
@@ -837,8 +838,6 @@ int SCI_IconBarModule::LBLParse(char* line) {
             field_128 = new Queue(4);
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        action->fromType = handlerId;
-        action->fromValue = moduleParam;
         {
             SpriteAction* childAction = new SpriteAction(0x20, 1, 0, 0, 2, hotspotIdx, 0, 0, 0, 0);
             action->childAction = childAction;
@@ -876,8 +875,6 @@ int SCI_IconBarModule::LBLParse(char* line) {
                     field_128 = new Queue(4);
                 }
                 SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                action->fromType = handlerId;
-                action->fromValue = moduleParam;
                 {
                     SpriteAction* childAction = new SpriteAction(0x20, 1, 0, 0, 2, hotspotIdx, 0, 0, 0, 0);
                     action->childAction = childAction;

@@ -107,7 +107,7 @@ void __cdecl FileCacheEntryCleanup(void* entries, int count) {
             if (DeleteFileAndDir(name) == -1) {
                 LogCacheStats();
                 LogCacheEntries();
-                WriteToLog("HDCache::Unable to delete '%s' (%d)", name, g_FileDeleteError_004719c0);
+                WriteToLog("HDCache::Unable to delete '%s' (errno=%d)", name, g_FileDeleteError_004719c0);
             }
             FreeMemory(name);
             *ptr = 0;
@@ -321,7 +321,7 @@ extern "C" int __cdecl CopyFileContent(const char*, const char*);
 
 /* Function start: 0x433230 */
 int CDData::ResolvePath(char* name) {
-    char drive[260];
+    char drive[256];
     char pathBuf[260];
 
     FormatAssetPath(name);
@@ -332,13 +332,13 @@ int CDData::ResolvePath(char* name) {
         return 0;
     }
 
-    _splitpath(name, 0, pathBuf, 0, drive);
+    _splitpath(name, 0, pathBuf, drive, 0);
     if (_chdir(pathBuf) != 0) {
         _mkdir(drive);
     } else {
         _chdir("..");
     }
-    CopyFileContent(name, (char*)((int)this + 0x195));
+    CopyFileContent((char*)((int)this + 0x195), name);
     return 1;
 }
 
@@ -350,7 +350,7 @@ extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode) {
     if (dir[0] != 0) {
         _mkdir(dir);
     }
-    return _fsopen(path, mode, _SH_DENYNO);
+    return fsopen(path, mode);
 }
 
 /* Function start: 0x4260A0 */
@@ -400,7 +400,7 @@ char* __cdecl ResolveAssetPath(char* name, ...) {
     int size = GetFileSize(resolved);
     if (size == -1) {
         resolved = (char*)FormatAssetPath(basePath);
-        WriteToLog("missing file %s", resolved);
+        WriteToLog("HDFile:: - Unable to find file '%s'", resolved);
         return basePath;
     }
     FileCacheRegister(basePath, size);
@@ -421,12 +421,12 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
     totalRead = 0;
     hSrc = open(src, 0x8000, totalRead);
     if (hSrc < 0) {
-        ShowError("Error Reading CD ROM, searching for %s", src);
+        ShowError("CopyFile::Error Reading CD ROM, searching for %s", src);
     }
 
     hDest = open(dest, 0x8301, totalRead);
     if (hDest < 0) {
-        ShowError("Error writing temporary file. Please check disk space.%d", hDest);
+        ShowError("CopyFile::Error writing temporary file. Please check disk space.%d", hDest);
     }
 
     totalLen = filelength(hSrc);

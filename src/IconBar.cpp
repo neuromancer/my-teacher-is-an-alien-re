@@ -39,14 +39,14 @@ void IconBar::SetIconBarRect() {
 /* Function start: 0x42D460 */
 IconBar::IconBar() {
     if (g_SchoolMenuSprite_0046af08 == 0) {
-        ParseFile(this, "mis\\iconbar.mis", "[ICONBAR]");
+        ParseFile(this, "mis\\Iconbar.mis", "[ICONBAR]");
         g_IconBarEntries_00473320[0].CreateAction(0x25, 1, 4);
         g_IconBarEntries_00473320[1].CreateAction(0x1E, 1, 4);
         g_IconBarEntries_00473320[2].CreateAction(1, 0x10, 4);
         g_IconBarEntries_00473320[2].CreateAction(0x20, 1, 4);
         g_IconBarEntries_00473320[3].CreateAction(0x27, 1, 4);
         g_IconBarEntries_00473320[4].CreateAction(0x2D, 1, 4);
-        SpriteAction* exitAction = new SpriteAction(0x2F, 0, 0x2D, 1, 0x2C, 2, 0, 0, 0, 0);
+        SpriteAction* exitAction = new SpriteAction(0x2F, 0, 0x2D, 1, 4, 0x2C, 2, 0, 0, 0);
         g_IconBarEntries_00473320[5].RegisterSlot(exitAction);
         g_InventoryState_004733e8 = 1;
     }

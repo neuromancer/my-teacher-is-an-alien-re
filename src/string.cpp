@@ -161,7 +161,7 @@ void WriteToMessageLog(const char *msg,...)
     FILE *_File;
     va_list argptr;
 
-    _File = fsopen("message.log", "a+");
+    _File = fsopen("cfg\\message.log", "a+");
     if (_File != NULL) {
         va_start(argptr, msg);
         vfprintf(_File, msg, argptr);
@@ -195,7 +195,7 @@ extern "C" void WriteToLog(const char *param_1, ...)
 {
     if (!(g_LogEnabled_00472e28 & 1)) return;
 
-    FILE* fp = _fsopen("cfg\\message.log", "a", _SH_DENYNO);
+    FILE* fp = fsopen("cfg\\message.log", "a");
     if (fp == 0) return;
 
     vfprintf(fp, param_1, (char*)(&param_1 + 1));
@@ -360,7 +360,7 @@ char* MakeSoundName(char* baseName) {
     if (index == 0) {
         return baseName;
     }
-    if (4999 < index) {
+    if (index >= 5000) {
         int gsIdx = g_PeriodStateIdx_0046cb90;
         GameState* gs = g_GameState_0046aa30;
         if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
@@ -376,7 +376,7 @@ char* MakeSoundName(char* baseName) {
 
 /* Function start: 0x44E3E0 */
 char* MakeAnimName(int index) {
-    if (4999 < index) {
+    if (index >= 5000) {
         int gsIdx = g_PeriodStateIdx_0046cb90;
         GameState* gs = g_GameState_0046aa30;
         if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {

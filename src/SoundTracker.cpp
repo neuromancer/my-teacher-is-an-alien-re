@@ -29,6 +29,7 @@ extern "C" int FileExists(const char*);
 extern "C" char* internal_ReadLine(char*, int, FILE*);
 extern "C" void ShowError(const char* format, ...);
 extern void EncryptAndWrite(char*, FILE*);
+extern "C" FILE* fsopen(const char*, const char*);
 // sscanf from stdio.h
 // _findfirst/_findnext from io.h
 // FUN_00454510 = sprintf — CRT function
@@ -314,7 +315,7 @@ void SoundTracker::Init() {
     }
 
     if (FileExists("cfg\\miscache.dat") != 0) {
-        FILE* fp = _fsopen("cfg\\miscache.dat", "r", 0x40);
+        FILE* fp = fsopen("cfg\\miscache.dat", "r");
         char* result = internal_ReadLine(lineBuf, 0xff, fp);
         while (result != 0) {
             sscanf(lineBuf, " %s %s %lu %d", filePath, sectionBuf, &filePos[0], &filePos[1]);
@@ -330,7 +331,7 @@ void SoundTracker::Init() {
             do {
                 char misPath[64];
                 sprintf(misPath, "mis\\%s", findData.name);
-                FILE* fp = _fsopen(misPath, "r", 0x40);
+                FILE* fp = fsopen(misPath, "r");
                 char* result = internal_ReadLine(lineBuf, 0xff, fp);
                 while (result != 0) {
                     sscanf(lineBuf, " %s ", sectionBuf);
@@ -356,7 +357,7 @@ void SoundTracker::Cleanup() {
     int* node;
     int* data;
 
-    FILE* fp = _fsopen("cfg\\miscache.dat", "w", 0x40);
+    FILE* fp = fsopen("cfg\\miscache.dat", "w");
     node = g_SoundPool_00469134->head;
     while (node != 0) {
         int* next = (int*)node[0];

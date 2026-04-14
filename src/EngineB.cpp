@@ -230,7 +230,7 @@ void EngineB::OnProcessEnd() {
 
     EngineB::m_localSoundList = new SoundList(10);
 
-    anim = new Animation(FormatStringVA("combats\\nmeter.smk"));
+    anim = new Animation(FormatStringVA("combats\\\\nmeter.smk"));
     EngineB::m_meterAnimation = anim;
     anim->DoFrame();
 
@@ -257,20 +257,20 @@ void EngineB::OnProcessEnd() {
     EngineB::m_progress.end = gs->stateValues[idx];
 
     if (g_SoundList_0046ae68 != 0) {
-        EngineB::m_missSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd3012"));
-        EngineB::m_completionSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5009"));
+        EngineB::m_missSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd3012"));
+        EngineB::m_completionSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd5009"));
     }
 
     sList = EngineB::m_localSoundList;
     if (sList != 0) {
-        EngineB::m_tauntSound1 = (Sample*)sList->Register(FormatSoundPath("cb_rats\\snd5007"));
-        EngineB::m_tauntSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5008"));
-        EngineB::m_hitSound1 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5004"));
-        EngineB::m_hitSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5005"));
-        EngineB::m_hitSound3 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5006"));
-        EngineB::m_milestoneSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5002"));
-        EngineB::m_ambientSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5001"));
-        EngineB::m_ambientSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\snd5010"));
+        EngineB::m_tauntSound1 = (Sample*)sList->Register(FormatSoundPath("cb_rats\\\\snd5007"));
+        EngineB::m_tauntSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd5008"));
+        EngineB::m_hitSound1 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd5004"));
+        EngineB::m_hitSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd5005"));
+        EngineB::m_hitSound3 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd5006"));
+        EngineB::m_milestoneSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd5002"));
+        EngineB::m_ambientSound = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd5001"));
+        EngineB::m_ambientSound2 = (Sample*)EngineB::m_localSoundList->Register(FormatSoundPath("cb_rats\\\\snd5010"));
     }
 
     g_RatsState_00473e18 = 0;

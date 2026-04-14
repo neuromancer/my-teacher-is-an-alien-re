@@ -41,7 +41,7 @@ struct SoundEntry {
         }
     }
 
-    int SoundUpdate();
+    virtual int SoundUpdate();
     void FadeVolume(int volume, unsigned int duration);
 };
 

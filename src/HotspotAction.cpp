@@ -721,7 +721,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         sscanf(line, " %s %d", label, &checkObjectId);
     }
     else if (strcmp(label, "GAMESTATE") == 0) {
-        result = sscanf(line, " %s %s %s %d", label, buf_C0, buf_140, &local_14);
+        result = sscanf(line, "%s %s %s %d", label, buf_C0, buf_140, &local_14);
         if (messagesQueue == 0) {
             messagesQueue = new Queue();
         }
@@ -734,7 +734,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             sa->extra1 = 1;
         }
         if (sa->instruction == 0x11 && result < 4) {
-            ReportUnknownLabel("HotspotAction");
+            ReportUnknownLabel("T_Simple_Hotspot in gamestate");
         }
         list = messagesQueue;
         list->ResetForSortedAdd(sa);
@@ -763,7 +763,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     else if (strcmp(label, "SWITCHROOM") == 0) {
         result = sscanf(line, " %s %d %d", label, &local_14, &local_38);
         if (result != 3) {
-            ShowError("Error in ThotsLvl.cpp %s in parameter", line);
+            ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete", line);
         }
         if (messagesQueue == 0) {
             messagesQueue = new Queue();
@@ -860,7 +860,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         return 1;
     }
     else {
-        ReportUnknownLabel("HotspotAction");
+        ReportUnknownLabel("T_Simple_Hotspot");
     }
 
     return 0;

@@ -326,7 +326,7 @@ SpriteAction g_IconBarAction_00472d20;                       // 0x00472d20
 SpriteAction g_PendingAction_00472d58;                       // 0x00472d58
 SpriteAction g_HotspotAction_00472d90;                       // 0x00472d90
 int g_DevelopFlag_00472de4 = 0;                              // 0x00472de4
-char g_LogEnabled_00472e28 = 0;                              // 0x00472e28
+char g_LogEnabled_00472e28 = 1;                              // 0x00472e28 (was 0, forced on for debugging)
 int g_StartBlock_00472e2c = 0;                               // 0x00472e2c
 // IconBar globals
 int g_IconBarLeft_00473310 = 0;                              // 0x00473310

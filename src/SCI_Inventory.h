@@ -8,6 +8,7 @@ class Sprite;
 class Sample;
 class Palette;
 class T_MenuHotspot;
+class T_MenuButton;
 
 // 24-byte embedded object, ctor 0x43E560, dtor 0x43E580
 struct InvPanel {
@@ -55,10 +56,10 @@ public:
     Sample* clickSound;            // 0x17C — item click sound effect
     Palette* palette;              // 0x180 — inventory screen palette
     void* itemPool;                // 0x184 — TimedEventPool* (inlined ctor; accessed via raw int* throughout)
-    T_MenuHotspot* putBackButton;    // 0x188 — "put back" button (unknown class, has Sprite* at +0x90, rect at +0x94)
-    T_MenuHotspot* useButton;        // 0x18C — "use item" button
-    T_MenuHotspot* scrollDownBtn;    // 0x190 — scroll down button (msg 0x12)
-    T_MenuHotspot* scrollUpBtn;      // 0x194 — scroll up button (msg 0x11)
+    T_MenuButton* putBackButton;    // 0x188 — "put back" button (T_MenuButton, 0xA8)
+    T_MenuButton* useButton;        // 0x18C — "use item" button
+    T_MenuButton* scrollDownBtn;    // 0x190 — scroll down button (msg 0x12)
+    T_MenuButton* scrollUpBtn;      // 0x194 — scroll up button (msg 0x11)
 };
 
 #endif // SCI_INVENTORY_H

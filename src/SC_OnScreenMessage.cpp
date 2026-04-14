@@ -356,9 +356,10 @@ int SC_OnScreenMessage::ShutDown(SC_MessageParser* msg) { return 0; }
 
 /* Function start: 0x448C50 */
 void* MessageList::GetCurrentData() {
-    MessageNode* node = (MessageNode*)current;
-    if (node == 0) return 0;
-    return node->data;
+    if (MessageList::current != 0) {
+        return ((MessageNode*)MessageList::current)->data;
+    }
+    return 0;
 }
 
 // FUN_00449050 = MessageList::PopCurrent — COMDAT of 0x431B60, defined in MessageList.cpp

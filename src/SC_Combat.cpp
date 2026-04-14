@@ -56,7 +56,7 @@ int SC_Combat::LBLParse(char* line) {
         sscanf(line, " %s %d", local_3c, &local_14);
         ((SlimeTable*)bgSound)->Allocate(local_14);
     } else if (strcmp(local_3c, "SOUND") == 0) {
-        sscanf(line, " %s %d %s %d", local_3c, &local_14, local_bc, &local_1c);
+        sscanf(line, " %s %d %s %d ", local_3c, &local_14, local_bc, &local_1c);
         if (local_14 < 0 || *(int*)bgSound - 1 < local_14) {
             ReportUnknownLabel("SC_Combat");
         } else {
@@ -101,7 +101,7 @@ void SC_Combat::OnProcessEnd() {
     if (field_0x104 != 0) {
         ZBufferManager* mgr = (ZBufferManager*)g_ZBufferManager_0046aa24;
         if (*(int*)((char*)mgr + 0xA8) != 0) {
-            WriteToLog("double palette");
+            WriteToLog("ddouble palette");
         }
         mgr->m_palette = field_0x104;
     }

@@ -22,7 +22,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 NavCrystal::NavCrystal(int id) {
     memset(&crystalId, 0, 0x114 * 4);
     crystalId = id;
-    sprintf(g_Buffer_0046aa00, "puz\\navcrystal\\crytls_%d.smk", id + 1);
+    sprintf(g_Buffer_0046aa00, "puz_navcrystal\\crytls%d.smk", id + 1);
     sprite = new Sprite(g_Buffer_0046aa00);
     sprite->flags |= 0x40;
     sprite->priority = 1;

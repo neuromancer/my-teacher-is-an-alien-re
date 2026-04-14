@@ -19,13 +19,13 @@ SCI_Schedule::SCI_Schedule()
     memset(&palette, 0, 0xC * 4);
 
     handlerId = 0x27;
-    ParseFile(this, "mis\\schedule.mis", (char*)0);
+    ParseFile(this, "mis\\\\schedule.mis", (char*)0);
 
     Palette* pal = new Palette();
     palette = pal;
-    pal->Load("schedual\\schedule.col");
+    pal->Load("schedual\\\\schedule.col");
 
-    Sprite* spr = new Sprite("schedual\\schedule.smk");
+    Sprite* spr = new Sprite("schedual\\\\schedule.smk");
     bgSprite = spr;
     spr->ConfigStates(3);
     spr->ConfigRange(0, 1, 1, 1);
@@ -33,28 +33,28 @@ SCI_Schedule::SCI_Schedule()
     spr->ConfigRange(2, 3, 3, 1);
     bgSprite->handle = 0;
 
-    Sprite* spr2 = new Sprite("schedual\\shedbox1.smk");
+    Sprite* spr2 = new Sprite("schedual\\\\shedbox1.smk");
     selBox1 = spr2;
     selBox1->handle = 5;
     selBox1->flags |= 0x40;
 
-    Sprite* spr3 = new Sprite("schedual\\shedbox2.smk");
+    Sprite* spr3 = new Sprite("schedual\\\\shedbox2.smk");
     selBox2 = spr3;
     selBox2->handle = 5;
     selBox2->flags |= 0x40;
 
-    Sprite* spr4 = new Sprite("schedual\\tardies.smk");
+    Sprite* spr4 = new Sprite("schedual\\\\tardies.smk");
     Sprite** ebx = &tardiesSprite;
     *ebx = spr4;
     (*ebx)->loc_x = 0x54;
     (*ebx)->loc_y = 0x190;
 
-    Sprite* spr5 = new Sprite("schedual\\cuts.smk");
+    Sprite* spr5 = new Sprite("schedual\\\\cuts.smk");
     cutsSprite = spr5;
     cutsSprite->loc_x = 0x105;
     cutsSprite->loc_y = 0x190;
 
-    Sprite* spr6 = new Sprite("schedual\\schedule.smk");
+    Sprite* spr6 = new Sprite("schedual\\\\detents.smk");
     scheduleSprite = spr6;
     scheduleSprite->loc_x = 0x1BB;
     scheduleSprite->loc_y = 0x190;
@@ -254,7 +254,7 @@ int SCI_Schedule::LBLParse(char* param_1)
 
     sscanf(param_1, " %s ", token);
 
-    if (strcmp(token, "HOTSPOT") == 0) {
+    if (strcmp(token, "EXIT") == 0) {
         mapHotspot = new T_MenuHotspot(0);
         Parser::ProcessFile(mapHotspot, this, (char*)0);
     }
@@ -262,7 +262,7 @@ int SCI_Schedule::LBLParse(char* param_1)
         return 1;
     }
     else {
-        Parser::LBLParse("SCI_Schedule");
+        ReportUnknownLabel("SCI_Schedule");
     }
 
     return 0;

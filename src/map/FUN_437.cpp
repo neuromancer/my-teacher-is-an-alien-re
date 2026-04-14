@@ -1,5 +1,3 @@
-/* Function start: 0x437120 */
-
 /* Function start: 0x437830 */
 
 /* Function start: 0x437960 */

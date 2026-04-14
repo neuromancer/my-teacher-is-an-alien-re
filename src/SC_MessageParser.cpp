@@ -22,6 +22,7 @@ int SC_MessageParser::LBLParse(char* param_1)
     local_74[0] = '\0';
     local_30[0] = '\0';
     sscanf(param_1, "%s", local_30);
+    WriteToLog("SC_MessageParser::LBLParse token='%s' file='%s'", local_30, filename);
 
     if (strcmp(local_30, "ADDRESS") == 0) {
         sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
@@ -90,7 +91,7 @@ int SC_MessageParser::LBLParse(char* param_1)
     } else if (strcmp(local_30, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SC_Message");
+        ReportUnknownLabel("SC_Message");
     }
 
     return 0;
@@ -101,6 +102,12 @@ void SC_MessageParser::Dump(int) {}
 /* Function start: 0x445450 */
 void ParseSpriteAction(void* param_1, void* param_2)
 {
+    Parser* parent = (Parser*)param_2;
+    long pos = 0;
+    if (parent->pFile != 0) {
+        pos = ftell(parent->pFile);
+    }
+    WriteToLog("ParseSpriteAction called, parent file='%s' pos=%ld lastLine='%s'", parent->filename, pos, (char*)parent->lineNumber);
     SC_MessageParser msg((int)param_1);
     Parser::ProcessFile(&msg, (Parser*)param_2, 0);
 }

@@ -15,7 +15,7 @@ public:
 };
 extern "C" void SetVideoRes(int, int);
 
-// 0x434660 = Projectile::Projectile (COMDAT)
+/* Function start: 0x434660 */
 EngineInfoParser::EngineInfoParser() : Parser() {
   memset(&anchor, 0, 0xc * 4);
 }
@@ -143,7 +143,12 @@ void __fastcall InitCombatGrid(int param_1) {
         row--;
     } while (row != 0);
     *(int*)(param_1 + 0x1C8) = 1;
+    *(int*)(param_1 + 0x254) = 1;
+    *(int*)(param_1 + 0x21C) = 1;
+    *(int*)(param_1 + 0x36C) = 1;
+    *(int*)(param_1 + 0x414) = 1;
     *(int*)(param_1 + 0x120) = 5;
     *(int*)(param_1 + 0x4A0) = 1;
     *(int*)(param_1 + 0x124) = 0;
+    *(int*)(param_1 + 0x544) = 0;
 }

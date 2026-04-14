@@ -688,10 +688,10 @@ after_anim:
 /* Function start: 0x44D210 */
 void Sprite::ConfigRange(int state, int start, int count, int param_4) {
     if (num_states <= state) {
-        ShowError("Sprite::SetRange 1 %s %d", sprite_filename, state);
+        ShowError("Sprite::SetRange#1 %s %d", sprite_filename, state);
     }
     if (start < 1 || count < 1) {
-        ShowError("Sprite::SetRange 2 %s %d range = %d, %d", sprite_filename, state, start, count);
+        ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", sprite_filename, state, start, count);
     }
     ranges[state].dim.x = start;
     ranges[state].dim.y = count;

@@ -171,11 +171,11 @@ void InitDefaultSearchCoords()
     g_DefaultSearchCoords[4] = 0xB2;
     g_DefaultSearchCoords[5] = 0xAC;
     g_DefaultSearchCoords[6] = 0xEF;
-    g_DefaultSearchCoords[7] = 0xA1;
-    g_DefaultSearchCoords[9] = 0x137;
-    g_DefaultSearchCoords[8] = 0x118;
-    g_DefaultSearchCoords[10] = 0x15D;
-    g_DefaultSearchCoords[11] = 0x18F;
+    g_DefaultSearchCoords[9] = 0xA1;
+    g_DefaultSearchCoords[11] = 0x137;
+    g_DefaultSearchCoords[7] = 0x118;
+    g_DefaultSearchCoords[8] = 0x15D;
+    g_DefaultSearchCoords[10] = 0x18F;
 }
 
 static void AtExitHandler() {}

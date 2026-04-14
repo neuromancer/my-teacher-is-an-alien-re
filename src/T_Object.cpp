@@ -99,7 +99,7 @@ void T_Object::Reset()
         } else if (listType == 2 || listType == 0) {
             list->current = list->tail;
         } else {
-            ShowError("Bad list type %d", listType);
+            ShowError("bad queue type %lu", listType);
             goto skip_remove;
         }
         list->current = list->head;
@@ -141,10 +141,10 @@ int T_Object::LBLParse(char* param_1)
         Parser::ProcessFile(sprite, this, (char*)0);
     }
     else if (strcmp(token, "DISCRIPTION") == 0) {
-        sscanf(param_1, " %s %d", token, &description);
+        sscanf(param_1, " %s %d", value, &description);
     }
     else if (strcmp(token, "ILLEGAL") == 0) {
-        sscanf(param_1, " %s %d", token, &soundHandle);
+        sscanf(param_1, " %s %d", value, &soundHandle);
     }
     else if (strcmp(token, "MESSAGE") == 0) {
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);

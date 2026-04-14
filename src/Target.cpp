@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdio.h>
 
+extern char* __cdecl ResolveAssetPath(char*, ...);
+
 // ============================================================================
 // Target implementation
 // ============================================================================
@@ -381,10 +383,10 @@ void Target::Init(char* line)
 
     if (sscanf(line, "%s", buffer) == 1) {
         if (stricmp(buffer, "INIT") != 0) {
-            g_CDData_0043697c->ResolvePath(buffer);
+            ResolveAssetPath(buffer);
 
-            Target::animFilename = new char[strlen(g_CDData_0043697c->cdPath + 5) + 1];
-            strcpy(Target::animFilename, g_CDData_0043697c->cdPath + 5);
+            Target::animFilename = new char[strlen(g_PathResolver_0046aa1c->cdPath + 0x8a) + 1];
+            strcpy(Target::animFilename, g_PathResolver_0046aa1c->cdPath + 0x8a);
         }
     }
 }
@@ -434,7 +436,7 @@ void Target::OnProcessStart()
 
     flags = flags | 0x40;
     flags = flags & ~2;
-    flags = flags | 0x200;
+    flags = flags | 0x100;
 
     InitAnimation();
 
@@ -445,9 +447,9 @@ void Target::OnProcessStart()
     tl = g_TargetList_0046ae58;
     hitSound      = tl->defaultHitSound;
     tl = g_TargetList_0046ae58;
+    sound3        = tl->defaultSound;
     progressRange.end = 1;
     progressRange.start = 0;
-    sound3        = tl->defaultSound;
 }
 
 /* Function start: 0x442D50 */

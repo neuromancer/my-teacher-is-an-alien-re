@@ -492,7 +492,7 @@ void SC_Wahoo::ProcessState() {
         spriteAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         {
             SC_MessageParser temp;
-            ParseFile(&temp, "mis\\cb_bridge.mis", "_WIN_LBL_PR_");
+            ParseFile(&temp, "mis\\cb_bridge.mis", "[WIN_LBL_PR]");
         }
     }
 

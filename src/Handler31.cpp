@@ -42,7 +42,7 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
 
     if (strcmp(token, "HANDLE") == 0) {
         sscanf(line, " %s %d", token, &moduleParam);
-    } else if (strcmp(token, "PALETTE") == 0) {
+    } else if (strcmp(token, "PALE") == 0) {
         sscanf(line, "%s %s", token, arg2);
         if (palette != 0) {
             delete palette;
@@ -68,7 +68,7 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
                 node = list->current;
             }
 
-            if (count < 0xD) {
+            if (count < 0xC) {
                 list = questionQueue;
                 if (question == 0) {
                     ShowError("queue fault 0112");
@@ -177,11 +177,11 @@ Handler31::Handler31() {
     memset(&questionCount, 0, 40);
     handlerId = 0x1F;
 
-    optionSprite = new Sprite("\"elements\\option2.smk\"");
+    optionSprite = new Sprite("elements\\option2.smk");
     optionSprite->priority = 0x3E9;
     optionSprite->flags |= 0x40;
 
-    optionHiSprite = new Sprite("\"elements\\option2h.smk\"");
+    optionHiSprite = new Sprite("elements\\option2h.smk");
     optionHiSprite->priority = 0x3E9;
     optionHiSprite->flags |= 0x40;
 }

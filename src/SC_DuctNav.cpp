@@ -137,31 +137,31 @@ int SC_DuctNav::LBLParse(char* line)
         menuSprite = new Sprite((char*)0);
         Parser::ProcessFile(menuSprite, this, (char*)0);
     } else if (strcmp(label, "CANCEL") == 0) {
-        sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
         CREATE_BUTTON(cancelBtn, name, params)
     } else if (strcmp(label, "SAVE") == 0) {
-        sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
         CREATE_BUTTON(saveBtn, name, params)
     } else if (strcmp(label, "LOAD") == 0) {
-        sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
         CREATE_BUTTON(loadBtn, name, params)
     } else if (strcmp(label, "OVERWRITE") == 0) {
-        sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
         CREATE_BUTTON(overwriteBtn, name, params)
     } else if (strcmp(label, "DELETE") == 0) {
-        sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
         CREATE_BUTTON(deleteBtn, name, params)
     } else if (strcmp(label, "SCROLLUP") == 0) {
-        sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
         CREATE_BUTTON(scrollUpBtn, name, params)
     } else if (strcmp(label, "SCROLLDOWN") == 0) {
-        sscanf(line, " %s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
         CREATE_BUTTON(scrollDownBtn, name, params)
     } else if (strcmp(label, "EDIT_FOCUS_SPRITE") == 0) {
@@ -171,7 +171,7 @@ int SC_DuctNav::LBLParse(char* line)
         choiceFocusSprite = new Sprite((char*)0);
         Parser::ProcessFile(choiceFocusSprite, this, (char*)0);
     } else if (strcmp(label, "SLOT") == 0) {
-        sscanf(line, " %s %d %d %d %d %d", label, &slotIdx, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %d %d %d %d %d", label, &slotIdx, &params[0], &params[1], &params[2], &params[3]);
         slotRects[slotIdx].left = params[0];
         slotRects[slotIdx].top = params[1];
         slotRects[slotIdx].right = params[2];
@@ -358,9 +358,9 @@ void SC_DuctNav::Init(SC_MessageParser* msg) {
         int mode = action->addressValue;
         moduleParam = mode;
         if (mode == 0) {
-            ParseFile(this, "mis\\menu.mis", " SAVEGAME ");
+            ParseFile(this, "mis\\menu.mis", "[SAVEGAME]");
         } else if (mode == 1) {
-            ParseFile(this, "mis\\menu.mis", " LOADGAME ");
+            ParseFile(this, "mis\\menu.mis", "[LOADGAME]");
         } else if (mode == 2) {
             InitNewGame();
             SendGameMessage(3, 10, g_PendingAction_00472d58.addressType, g_PendingAction_00472d58.addressValue, 4, 0, 0, 0, 0, 0);
@@ -399,7 +399,7 @@ void SC_DuctNav::Init(SC_MessageParser* msg) {
         field_0x24C = 0;
     }
 
-    g_GlyphFont_0046aa28->LoadFont("cfg\\Teacher.pal");
+    g_GlyphFont_0046aa28->LoadFont("elements\\text1.smk");
 
     field_0x24C = new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
 }

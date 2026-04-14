@@ -23,7 +23,7 @@ int QuestionInit::LBLParse(char* line) {
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("QuestionInit");
+        Parser::LBLParse("InitFiFile");
     }
 
     return 0;

@@ -314,7 +314,7 @@ int SC_ExtBridge::LBLParse(char* line)
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SC_ExtBridge");
+        Parser::LBLParse("SC_DuctNav");
     }
 
     return 0;

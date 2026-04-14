@@ -547,6 +547,7 @@ int SC_WordSearch::Exit(SC_MessageParser* msg) {
 /* Function start: 0x436490 */
 int SC_WordSearch::AddMessage(SC_MessageParser*) { return 0; }
 /* Function start: 0x4370F0 */
+/* Function start: 0x437120 */
 int SC_WordSearch::LBLParse(char* line) {
     char keyword[32];
     char buffer[128];
