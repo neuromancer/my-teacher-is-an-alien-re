@@ -11,6 +11,9 @@ out-demo/
 # wibo binary
 wibo
 
+# DREAMM (auto-downloaded)
+.dreamm/
+
 # Downloaded game data
 data/demo/CDDATA/
 data/full

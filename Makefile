@@ -11,9 +11,30 @@ MSVC_INC = compilers\msvc420\include;compilers\msvc420\mfc\include
 MSVC_LIB = compilers\msvc420\lib;compilers\msvc420\mfc\lib
 
 CFLAGS = /nologo /c /Og /Oi /Ot /Oy /Ob1 /Gs /Gf /GX /I msvc420\\include /I 3rdparty\\miles\\include /I 3rdparty\\smack\\include
-DREAMM = /Applications/DREAMM.app/Contents/MacOS/dreamm
 DEMO_DATA_URL = https://downloads.scummvm.org/frs/demos/hypno/teacher-windows-demo-en.zip
 OUT_DIR = out
+
+# Platform detection
+UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
+
+# DREAMM setup - auto-downloaded to .dreamm/
+DREAMM_DIR = .dreamm
+DREAMM_VERSION = 4.0
+DREAMM_BASE_URL = https://dreamm.aarongiles.com/releases
+
+ifeq ($(UNAME_S),Darwin)
+    DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-macos.dmg
+    DREAMM_BIN = $(DREAMM_DIR)/DREAMM.app/Contents/MacOS/dreamm
+else
+    ifeq ($(UNAME_M),aarch64)
+        DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-linux-arm64.tgz
+    else
+        DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-linux-x64.tgz
+    endif
+    DREAMM_BIN = $(DREAMM_DIR)/dreamm
+endif
+DREAMM = $(CURDIR)/$(DREAMM_BIN)
 
 # Full game build (primary)
 # SRCS_ORDERED derived from demo order, remapped to src/
@@ -119,7 +140,6 @@ all: $(WIBO) $(OBJS) $(ASMS)
 
 demo: $(WIBO) $(OBJS_DEMO) $(ASMS_DEMO)
 
-UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
     WIBO_PRESET = release64-clang
     WIBO_BIN = wibo-src/build/release64-clang/wibo
@@ -131,6 +151,20 @@ endif
 $(WIBO):
 	cd wibo-src && cmake --preset $(WIBO_PRESET) && cmake --build --preset $(WIBO_PRESET)
 	ln -sf $(WIBO_BIN) $@
+
+$(DREAMM_BIN):
+	@mkdir -p $(DREAMM_DIR)
+	@echo "Downloading DREAMM $(DREAMM_VERSION)..."
+	@curl -L -o $(DREAMM_DIR)/$(DREAMM_ARCHIVE) $(DREAMM_BASE_URL)/$(DREAMM_ARCHIVE)
+ifeq ($(UNAME_S),Darwin)
+	@hdiutil attach $(DREAMM_DIR)/$(DREAMM_ARCHIVE) -mountpoint $(DREAMM_DIR)/mnt -nobrowse -quiet
+	@cp -R $(DREAMM_DIR)/mnt/DREAMM.app $(DREAMM_DIR)/
+	@hdiutil detach $(DREAMM_DIR)/mnt -quiet
+	@xattr -dr com.apple.quarantine $(DREAMM_DIR)/DREAMM.app
+else
+	@tar xzf $(DREAMM_DIR)/$(DREAMM_ARCHIVE) -C $(DREAMM_DIR) --strip-components=1
+endif
+	@rm $(DREAMM_DIR)/$(DREAMM_ARCHIVE)
 
 TEACHER.EXE: $(OBJS)
 	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /MAP:TEACHER.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
@@ -190,25 +224,25 @@ data/demo/CDDATA:
 	@rm -f data/teacher-demo.zip
 	@mv data/demo/CDDATA/TEACHER.EXE data/demo/CDDATA/TEACHER.ORIGINAL.EXE
 
-run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA
+run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA $(DREAMM_BIN)
 	cp TEACHER-DEMO.EXE data/demo/CDDATA/TEACHER.EXE
 	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.EXE
 
-run-demo-original: | data/demo/CDDATA
+run-demo-original: | data/demo/CDDATA $(DREAMM_BIN)
 	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.ORIGINAL.EXE
 
-run: TEACHER.EXE
+run: TEACHER.EXE | $(DREAMM_BIN)
 	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
 	@mkdir -p data/full/hd
 	cp TEACHER.EXE data/full/TEACHER.EXE
 	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.EXE
 
-run-original: | data/full/CDDATA
+run-original: | data/full/CDDATA $(DREAMM_BIN)
 	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
 	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.ORI.EXE
 
 
-debug: TEACHER.EXE
+debug: TEACHER.EXE | $(DREAMM_BIN)
 	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
 	@mkdir -p data/full/hd
 	cp TEACHER.EXE data/full/TEACHER.EXE
