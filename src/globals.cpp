@@ -212,6 +212,7 @@ void* g_AtExitTableStart_0043f104 = 0;                       // 0x0043f104
 void* g_SmackSoundCheck_0044053c = 0;                        // 0x0044053c
 
 // --- 0x00446xxx (SC_Wahoo / SC_Detention / SC_FireAlarm / SC_Question) ---
+int g_FireAlarmTimerTarget_0046859c;                          // 0x0046859c
 int g_FireAlarmTimer_004685a0 = 5;                           // 0x004685a0
 int g_FireAlarmFlag_004685a8 = 0;                            // 0x004685a8
 int g_FireAlarmEngine_004685ac = 0;                          // 0x004685ac

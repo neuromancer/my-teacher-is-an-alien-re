@@ -1,4 +1,5 @@
 #include "SoundList.h"
+#include "stubs.h"
 #include "Memory.h"
 #include "Sample.h"
 #include "Sound.h"
@@ -167,4 +168,46 @@ fail:
 
 bounds_fail:
     return 0;
+}
+
+/* Function start: 0x4254F0 */
+void SoundList::Cleanup() {
+    int i = 0;
+    if (m_count > 0) {
+        do {
+            Sample* entry = m_field8[i];
+            if (entry != 0) {
+                entry->Unload();
+                FreeMemory(entry);
+                m_field8[i] = 0;
+            }
+            i++;
+        } while (i < m_count);
+    }
+    if (m_field8 != 0) {
+        FreeMemory(m_field8);
+        m_field8 = 0;
+    }
+    m_count = 0;
+}
+
+/* Function start: 0x4254A0 */
+void SoundList::SetMaxSounds(int count) {
+    SoundList::Cleanup();
+    m_count = count;
+    m_field8 = (Sample**)AllocateMemory(m_count * sizeof(Sample*));
+    memset(m_field8, 0, m_count * sizeof(Sample*));
+    m_sounds = (char**)AllocateMemory(m_count * sizeof(char*));
+    memset(m_sounds, 0, m_count * sizeof(char*));
+}
+
+/* Function start: 0x425620 */
+void SoundList::AddSound(int index, char* name, int value) {
+    if (index < 0 || m_count - 1 < index) {
+        return;
+    }
+    Sample* sample = new Sample();
+    m_field8[index] = sample;
+    m_field8[index]->Load(MakeAudioName(name));
+    m_sounds[index] = (char*)value;
 }

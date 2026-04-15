@@ -18,7 +18,8 @@ public:
     ~SC_Detention();
 
     virtual int LBLParse(char* line);          // 0x40B240 (shared with SCI_SearchScreen)
-    virtual int AddMessage(SC_MessageParser* msg);  // 0x409AD0
+    virtual void Init(SC_MessageParser* msg);       // 0x409AD0
+    virtual int AddMessage(SC_MessageParser* msg);  // 0x409F50
     virtual void Update(int p1, int p2);           // 0x409C50
     virtual int Exit(SC_MessageParser* msg);        // 0x409F70
 

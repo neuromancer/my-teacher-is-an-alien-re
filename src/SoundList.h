@@ -12,6 +12,9 @@ public:
   int Play(int index);              // 0x425550
   int IsSamplePlaying(int index);  // 0x4256D0
   void *Register(char *filename);
+  void Cleanup();                   // 0x4254F0
+  void SetMaxSounds(int count);    // 0x4254A0
+  void AddSound(int index, char* name, int value);  // 0x425620
 
 public:
   int m_count;

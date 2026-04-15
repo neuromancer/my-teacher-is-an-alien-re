@@ -49,8 +49,13 @@ SC_Detention::SC_Detention() {
 }
 
 /* Function start: 0x409F50 */
-/* Function start: 0x409AD0 */
 int SC_Detention::AddMessage(SC_MessageParser* msg) {
+    WriteMessageAddress(msg);
+    return 1;
+}
+
+/* Function start: 0x409AD0 */
+void SC_Detention::Init(SC_MessageParser* msg) {
     GameState* gs;
     int idx;
 
@@ -104,8 +109,6 @@ int SC_Detention::AddMessage(SC_MessageParser* msg) {
     }
 
     actionsCount = gs->stateValues[idx];
-
-    return 0;
 }
 
 /* Function start: 0x409C50 */

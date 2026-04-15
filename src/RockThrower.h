@@ -2,6 +2,7 @@
 #define ROCKTHROWER_H
 
 #include "Parser.h"
+#include "SpriteAction.h"
 #include <string.h>
 
 class Projectile;
@@ -19,14 +20,11 @@ public:
     int m_posY;         // 0x94 — Y position (default 220)
     int m_posZ;         // 0x98 — Z/right (default 199)
     int m_height;       // 0x9C
-    int m_crosshairX;   // 0xA0
-    int m_crosshairY;   // 0xA4
+    SlimeDim m_crosshair; // 0xA0-0xA7 (x=crosshairX, y=crosshairY)
     int m_clicked;      // 0xA8 — clicked/fire flag
     Sample* m_sound;    // 0xAC — Sample* sound
 
     Weapon() {
-        m_crosshairX = 0;
-        m_crosshairY = 0;
         memset(&m_posX, 0, 8 * 4);
         m_height = 0;
         m_sound = 0;

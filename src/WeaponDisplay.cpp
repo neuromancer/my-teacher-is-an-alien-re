@@ -22,39 +22,39 @@ void WeaponDisplay::OnHit()
     m_posZ = 0xc7;
 
     SetDrawPosition(m_posX - 4, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posX - 3, m_posZ);
 
     SetDrawPosition(m_posX - 2, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posX - 1, m_posZ);
 
     SetDrawPosition(m_posX + 4, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posX + 3, m_posZ);
 
     SetDrawPosition(m_posX + 2, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posX + 1, m_posZ);
 
     SetDrawPosition(m_posY - 4, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posY - 3, m_posZ);
 
     SetDrawPosition(m_posY - 2, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posY - 1, m_posZ);
 
     SetDrawPosition(m_posY + 4, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posY + 3, m_posZ);
 
     SetDrawPosition(m_posY + 2, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posY + 1, m_posZ);
 
     SetDrawPosition(m_posX, m_posZ);
-    DrawLine(m_crosshairX, m_crosshairY);
+    DrawLine(m_crosshair.x, m_crosshair.y);
     DrawLine(m_posY, m_posZ);
 }
 

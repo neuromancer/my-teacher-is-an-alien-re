@@ -14,6 +14,7 @@
 #include "main.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 // FUN_00413e10 = ParseFile in Parser.h
 extern "C" int FileExists(const char*);
@@ -24,6 +25,7 @@ extern "C" char* FormatAssetPath(char*, ...);
 
 extern "C" void SetVideoRes(int, int);
 extern "C" void ShowError(const char* format, ...);
+extern "C" void WriteToMessageLog(const char* msg, ...);
 // FUN_004279a0 = ZBuffer::ResetItems (ZBuffer.h)
 // FUN_00427880 = Weapon::UpdateProjectiles — callers updated
 #include "MouseControl.h"
@@ -268,7 +270,7 @@ void SC_FireAlarm::ResetState() {
 
 /* Function start: 0x407C10 */
 void SC_FireAlarm::ProcessClick() {
-    TODO("SC_FireAlarm::ProcessClick");
+    soundList->Play(1);
 }
 
 /* Function start: 0x407C20 */
@@ -594,11 +596,119 @@ void SC_FireAlarm::ProcessFrame() {
 
 /* Function start: 0x408530 */
 void SC_FireAlarm::OnProcessEnd() {
-    TODO("SC_FireAlarm::OnProcessEnd");
+    int palVal = paletteDummy;
+    if (palVal != 0) {
+        int* palField = (int*)((char*)g_ZBufferManager_0046aa24 + 0xA8);
+        if (*palField != 0) {
+            WriteToMessageLog("ddouble_palette");
+        }
+        *palField = palVal;
+    }
+
+    bellHitRange.x = 0xC2;
+    bellHitRange.y = 0xCF;
+    waterHitRange.x = 0xB4;
+    waterHitRange.y = 0xC1;
+    planeClickRange.x = 0xD2;
+    alarmSlotRect.top = 0x5B;
+    alarmSlotRect.right = 0xEF;
+    alarmSlotRect.bottom = 0x6E;
+    bellSlotRect.left = 0x7B;
+    bellSlotRect.top = 0x28;
+    bellSlotRect.right = 0xEE;
+    bellSlotRect.bottom = 0xAB;
+    planeClickRange.y = 0xDF;
+    alarmSlotRect.left = 0xDF;
+    timerCounter.y = g_FireAlarmTimerTarget_0046859c;
+    timerCounter.x = 0;
+    roundCount = 0;
+    waterHitCounter.x = 0;
+    maxRounds = 7;
+    waterHitCounter.y = 2;
+
+    if (g_InputManager_0046aa08 != 0) {
+        g_InputManager_0046aa08->Refresh(1);
+    }
+
+    if (consoleSprite != 0) {
+        int mouseX = 0;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
+        }
+        consoleSprite->ResetAnimation(mouseX / (screenSize.x / 5), 0);
+    }
+
+    SC_FireAlarm::ResetState();
+    SendGameMessage(5, bgSoundId, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x4086B0 */
 int SC_FireAlarm::LBLParse(char* line) {
-    TODO("SC_FireAlarm::LBLParse");
+    int tempInt = 0;
+    int tempInt2 = 0;
+    char buffer[128];
+    char label[32];
+    buffer[0] = 0;
+    label[0] = 0;
+
+    sscanf(line, "%s", label);
+
+    if (strcmp(label, "PALETTE") == 0) {
+        sscanf(line, "%s %s", label, buffer);
+        Palette* pal = new Palette();
+        paletteDummy = (int)pal;
+        pal->Load(buffer);
+    } else if (strcmp(label, "BACKGROUND_SPRITE") == 0) {
+        bgSprite = new Sprite((char*)0);
+        Parser::ProcessFile(bgSprite, this, (char*)0);
+    } else if (strcmp(label, "CONSOLE_SPRITE") == 0) {
+        consoleSprite = new Sprite((char*)0);
+        Parser::ProcessFile(consoleSprite, this, (char*)0);
+    } else if (strcmp(label, "TEACHER_SPRITE") == 0) {
+        teacherSprite = new Sprite((char*)0);
+        Parser::ProcessFile(teacherSprite, this, (char*)0);
+        teacherHomePos.x = teacherSprite->loc_x;
+        teacherHomePos.y = teacherSprite->loc_y;
+    } else if (strcmp(label, "PLANE_SPRITE") == 0) {
+        planeSprite = new Sprite((char*)0);
+        Parser::ProcessFile(planeSprite, this, (char*)0);
+        planeHomePos.x = planeSprite->loc_x;
+        planeHomePos.y = planeSprite->loc_y;
+    } else if (strcmp(label, "HAND_SPRITE") == 0) {
+        handSprite = new Sprite((char*)0);
+        Parser::ProcessFile(handSprite, this, (char*)0);
+    } else if (strcmp(label, "ALARM_SPRITE") == 0) {
+        alarmSprite = new Sprite((char*)0);
+        Parser::ProcessFile(alarmSprite, this, (char*)0);
+    } else if (strcmp(label, "CAUGHTS_SPRITE") == 0) {
+        caughtsSprite = new Sprite((char*)0);
+        Parser::ProcessFile(caughtsSprite, this, (char*)0);
+    } else if (strcmp(label, "STUDENT_HITS_ALLOWED") == 0) {
+    } else if (strcmp(label, "BG_SOUND") == 0) {
+        sscanf(line, " %s %d ", label, &bgSoundId);
+    } else if (strcmp(label, "MAX_SOUNDS") == 0) {
+        sscanf(line, " %s %d ", label, &tempInt);
+        soundList->SetMaxSounds(tempInt);
+    } else if (strcmp(label, "SOUND") == 0) {
+        sscanf(line, " %s %d %s %d ", label, &tempInt, buffer, &tempInt2);
+        if (tempInt < 0 || soundList->m_count - 1 < tempInt) {
+            ReportUnknownLabel("SC_FireAlarm");
+        } else {
+            soundList->AddSound(tempInt, buffer, tempInt2);
+        }
+    } else if (strcmp(label, "WEAPON") == 0) {
+        if (sscanf(line, " %s %s ", label, buffer) == 2) {
+            if (strcmp(buffer, "ROCKTHROWER2") == 0) {
+                RockThrower* rt = new RockThrower(this);
+                g_FireAlarmEngine_004685ac = (int)rt;
+            } else {
+                ReportUnknownLabel("SC_FireAlarm");
+            }
+        }
+    } else if (strcmp(label, "END") == 0) {
+        return 1;
+    } else {
+        ReportUnknownLabel("SC_FireAlarm");
+    }
     return 0;
 }

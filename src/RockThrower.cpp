@@ -8,6 +8,9 @@
 #include <string.h>
 #include <stdio.h>
 
+extern "C" int __cdecl SetFillColor(unsigned char param_1);
+extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
+extern "C" int __cdecl DrawCircle(int param_1);
 
 /* Function start: 0x4274C0 */
 RockThrower::RockThrower(Parser* parent) {
@@ -50,58 +53,62 @@ void RockThrower::ResetProjectiles() {
 
 /* Function start: 0x4279D0 */
 void RockThrower::DrawCrosshairs() {
-    TODO("RockThrower::DrawCrosshairs");
+    SetFillColor(0xfa);
+    SetDrawPosition(m_crosshair.x, m_crosshair.y);
+    DrawCircle(7);
 }
 
 /* Function start: 0x427A30 */
 int RockThrower::CheckTargetHit(int param_1) {
-    int* entry;
-    Target* target;
+    int entry;
+    int target;
 
-    if (g_TargetList_0046ae58 == 0) return 0;
-
-    HashTable* ht = g_TargetList_0046ae58->hashTable;
-    if (ht == 0) return 0;
-
-    entry = (int*)(((unsigned int)ht->count < 1) - 1);
-
-    while (entry != 0) {
-        int* edx = entry;
-        if (edx == (int*)-1) {
-            unsigned int idx = 0;
-            unsigned int numBuckets = ht->numBuckets;
-            if (numBuckets != 0) {
-                int* buckets = ht->buckets;
-                do {
-                    edx = (int*)buckets[idx];
-                    if (edx != 0) break;
-                    idx++;
-                } while (numBuckets > idx);
-            }
+    if (g_TargetList_0046ae58 != 0) {
+        HashTable* ht = g_TargetList_0046ae58->hashTable;
+        if (ht == 0) {
+            return 0;
         }
 
-        int* nextEntry = (int*)edx[0];
-        if (nextEntry == 0) {
-            unsigned int idx = edx[1] + 1;
-            unsigned int numBuckets = ht->numBuckets;
-            if (idx < numBuckets) {
-                int* buckets = (int*)(idx * 4 + (int)ht->buckets);
-                do {
-                    nextEntry = (int*)*buckets;
-                    if (nextEntry != 0) break;
-                    buckets++;
-                    idx++;
-                } while (idx < numBuckets);
+        entry = ((unsigned int)ht->count < 1) - 1;
+
+        while (entry != 0) {
+            int* edx = (int*)entry;
+            if (entry == -1) {
+                unsigned int idx = 0;
+                unsigned int numBuckets = ht->numBuckets;
+                if (numBuckets != 0) {
+                    int* buckets = ht->buckets;
+                    do {
+                        edx = (int*)buckets[idx];
+                        if (edx != 0) break;
+                        idx++;
+                    } while (numBuckets > idx);
+                }
             }
-        }
 
-        target = (Target*)edx[3];
-        entry = nextEntry;
+            int* nextEntry = (int*)edx[0];
+            if (nextEntry == 0) {
+                unsigned int idx = edx[1] + 1;
+                unsigned int numBuckets = ht->numBuckets;
+                if (idx < numBuckets) {
+                    int* cursor = (int*)(idx * 4 + (int)ht->buckets);
+                    do {
+                        nextEntry = (int*)*cursor;
+                        if (nextEntry != 0) break;
+                        cursor++;
+                        idx++;
+                    } while (idx < numBuckets);
+                }
+            }
 
-        if (target != 0) {
-            if (target->CheckTimeInRangeParam((int*)(param_1 + 0x120)) != 0) {
-                target->UpdateProgress(1);
-                return 1;
+            target = edx[3];
+            entry = (int)nextEntry;
+
+            if (target != 0) {
+                if (((Target*)target)->CheckTimeInRangeParam((int*)(param_1 + 0x120)) != 0) {
+                    ((Target*)target)->UpdateProgress(1);
+                    return 1;
+                }
             }
         }
     }
