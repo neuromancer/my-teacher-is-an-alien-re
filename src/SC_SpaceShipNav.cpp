@@ -82,20 +82,27 @@ void SC_SpaceShipNav::UpdateCursor() {
     int iVar1 = ((mCNavigator*)g_Navigator_0046ae70)->Update();
     if (iVar1 == 0 && g_Mouse_0046aa18->m_sprite != 0 &&
         g_Mouse_0046aa18->m_sprite->handle != -1) {
-        int mouseX = 0;
+        int mouseX;
         if (g_InputManager_0046aa08->pMouse != 0) {
             mouseX = g_InputManager_0046aa08->pMouse->x * 3;
+        } else {
+            mouseX = 0;
         }
         iVar1 = mouseX / *(int*)((int)this + 0xB8);
-        if (iVar1 < 0) iVar1 = 0;
-        else if (iVar1 > 2) iVar1 = 2;
+        if (iVar1 >= 0) {
+            if (iVar1 > 2) iVar1 = 2;
+        } else {
+            iVar1 = 0;
+        }
+        int state = g_SpaceNavStates_0046c3f0[iVar1];
         if (g_Mouse_0046aa18->m_sprite != 0) {
-            g_Mouse_0046aa18->m_sprite->ResetAnimation(g_SpaceNavStates_0046c3f0[iVar1], 0);
+            g_Mouse_0046aa18->m_sprite->ResetAnimation(state, 0);
         }
         g_Mouse_0046aa18->DrawCursor();
     }
-    if (*(int*)((int)g_Navigator_0046ae70 + 0xA0) != 0) {
-        Animation* anim = *(Animation**)((int)g_Navigator_0046ae70 + 0xA0 + 0x50);
+    int* navObj = *(int**)((int)g_Navigator_0046ae70 + 0xA0);
+    if (navObj != 0) {
+        Animation* anim = *(Animation**)((char*)navObj + 0xF0);
         int frameNum = 0;
         if (anim != 0) {
             frameNum = anim->smk->FrameNum;
@@ -106,10 +113,10 @@ void SC_SpaceShipNav::UpdateCursor() {
         case 0xE9:
         case 299:
             bgSound->Play(0);
-            return;
+            break;
         case 0x122:
             bgSound->Play(1);
-            return;
+            break;
         }
     }
 }

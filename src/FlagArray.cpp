@@ -185,32 +185,31 @@ void FlagArray::Serialize(void* param) {
     Seek(0);
 
     int headerLen = strlen("FLAGARRAY_INFO") + 1;
-    FILE* saveFp = *(FILE**)((char*)param + 0x44);
 
     if (*(int*)param != 0) {
         // Write mode
-        fwrite("FLAGARRAY_INFO", headerLen, 1, saveFp);
-        fwrite((char*)this + 0x38, 0x94, 1, saveFp);
+        fwrite("FLAGARRAY_INFO", headerLen, 1, *(FILE**)((char*)param + 0x44));
+        fwrite((char*)this + 0x38, 0x94, 1, *(FILE**)((char*)param + 0x44));
         int i = 0;
         if (max_states > 0) {
             do {
                 fread(local_4, 4, 1, fp);
                 i++;
-                fwrite(local_4, 4, 1, saveFp);
+                fwrite(local_4, 4, 1, *(FILE**)((char*)param + 0x44));
             } while (i < max_states);
         }
     } else {
         // Read mode
         g_Buffer_0046aa00[0] = 0;
-        fread(g_Buffer_0046aa00, headerLen, 1, saveFp);
+        fread(g_Buffer_0046aa00, headerLen, 1, *(FILE**)((char*)param + 0x44));
         if (strcmp(g_Buffer_0046aa00, "FLAGARRAY_INFO") != 0) {
             ShowError("FlagArray::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
         }
-        fread((char*)this + 0x38, 0x94, 1, saveFp);
+        fread((char*)this + 0x38, 0x94, 1, *(FILE**)((char*)param + 0x44));
         int i = 0;
         if (max_states > 0) {
             do {
-                fread(local_4, 4, 1, saveFp);
+                fread(local_4, 4, 1, *(FILE**)((char*)param + 0x44));
                 i++;
                 fwrite(local_4, 4, 1, fp);
             } while (i < max_states);

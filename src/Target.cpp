@@ -294,10 +294,10 @@ void Target::UpdateProgress(int delta)
     if (Target::active != 1) {
         return;
     }
-    newValue = Target::progressRange.start + delta;
-    Target::progressRange.start = newValue;
-    if (Target::progressRange.end != 0) {
-        shouldTrigger = (Target::progressRange.end <= newValue) ? 1 : 0;
+    Target::progressRange.start += delta;
+    newValue = Target::progressRange.start;
+    if (Target::progressRange.end != 0 && Target::progressRange.end <= newValue) {
+        shouldTrigger = 1;
     } else {
         shouldTrigger = 0;
     }
@@ -336,16 +336,15 @@ case_hit:
     active = pendingAction;
     Sprite::ResetAnimation(hitRange.x + handle, 0);
     if ((targetFlags & 1) != 0) {
-        InputState* pMouse;
         int mouseY;
         int mouseX;
-        pMouse = g_InputManager_0046aa08->pMouse;
-        mouseY = 0;
-        if (pMouse != 0) {
-            mouseY = pMouse->y;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        if (pMouse != 0) {
-            mouseX = pMouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
         } else {
             mouseX = 0;
         }

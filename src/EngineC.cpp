@@ -57,22 +57,21 @@ void EngineC::method10()
 
     g_CombatWeapon_0046ae60->DrawCrosshairs();
 
-    InputState* pMouse = g_InputManager_0046aa08->pMouse;
     int buttonDown;
-    if (pMouse == 0) {
-        buttonDown = 0;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        buttonDown = g_InputManager_0046aa08->pMouse->buttons & 1;
     } else {
-        buttonDown = pMouse->buttons & 1;
+        buttonDown = 0;
     }
 
     mouseReleased |= (buttonDown == 0) ? 1 : 0;
     g_CombatWeapon_0046ae60->m_clicked = 0;
 
     if (g_BgSprite_0046ae50->handle <= 4) {
-        if (pMouse == 0) {
-            buttonDown = 0;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            buttonDown = g_InputManager_0046aa08->pMouse->buttons & 1;
         } else {
-            buttonDown = pMouse->buttons & 1;
+            buttonDown = 0;
         }
         if (buttonDown != 0 && mouseReleased != 0) {
             g_CombatWeapon_0046ae60->m_clicked = 1;

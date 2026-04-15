@@ -496,14 +496,17 @@ void SCI_Inventory::Update(int param1, int param2) {
             curNode = nextNode;
 
             if (data != 0) {
-                int* mouseObj = (int*)g_InputManager_0046aa08->pMouse;
-                int mouseY = 0;
-                if (mouseObj != 0) {
-                    mouseY = mouseObj[1];
+                int mouseY;
+                if (g_InputManager_0046aa08->pMouse != 0) {
+                    mouseY = ((int*)g_InputManager_0046aa08->pMouse)[1];
+                } else {
+                    mouseY = 0;
                 }
-                int mouseX = 0;
-                if (mouseObj != 0) {
-                    mouseX = mouseObj[0];
+                int mouseX;
+                if (g_InputManager_0046aa08->pMouse != 0) {
+                    mouseX = ((int*)g_InputManager_0046aa08->pMouse)[0];
+                } else {
+                    mouseX = 0;
                 }
 
                 if (mouseX >= slot->left &&

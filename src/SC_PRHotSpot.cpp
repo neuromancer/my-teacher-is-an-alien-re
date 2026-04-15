@@ -243,13 +243,13 @@ void SC_PRHotSpot::Update()
     case 0:
         return;
     case 1:
-        pMouse = g_InputManager_0046aa08->pMouse;
-        mouseY = 0;
-        if (pMouse != 0) {
-            mouseY = pMouse->y;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        if (pMouse != 0) {
-            mouseX = pMouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
         } else {
             mouseX = 0;
         }
@@ -268,13 +268,13 @@ void SC_PRHotSpot::Update()
         }
         return;
     case 2:
-        pMouse = g_InputManager_0046aa08->pMouse;
-        mouseY = 0;
-        if (pMouse != 0) {
-            mouseY = pMouse->y;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        if (pMouse != 0) {
-            mouseX = pMouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
         } else {
             mouseX = 0;
         }

@@ -308,9 +308,7 @@ int SC_FireAlarm::HandleClick(int* param) {
         waterHitCounter.x++;
         timerCounter.x += g_FireAlarmTimer_004685a0;
         int done;
-        if (waterHitCounter.y == 0) {
-            done = 0;
-        } else if (waterHitCounter.x >= waterHitCounter.y) {
+        if (waterHitCounter.y != 0 && waterHitCounter.x >= waterHitCounter.y) {
             done = 1;
         } else {
             done = 0;
@@ -474,9 +472,7 @@ void SC_FireAlarm::ProcessFrame() {
             if (ac & 4) {
                 roundCount++;
                 int done;
-                if (maxRounds == 0) {
-                    done = 0;
-                } else if (roundCount >= maxRounds) {
+                if (maxRounds != 0 && roundCount >= maxRounds) {
                     done = 1;
                 } else {
                     done = 0;
@@ -513,9 +509,7 @@ void SC_FireAlarm::ProcessFrame() {
                 {
                     handIdleDelay.x++;
                     int done2;
-                    if (handIdleDelay.y == 0) {
-                        done2 = 0;
-                    } else if (handIdleDelay.x >= handIdleDelay.y) {
+                    if (handIdleDelay.y != 0 && handIdleDelay.x >= handIdleDelay.y) {
                         done2 = 1;
                     } else {
                         done2 = 0;

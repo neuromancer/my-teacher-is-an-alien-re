@@ -316,13 +316,13 @@ void SCI_Schedule::Update(int param1, int param2)
     } while (count != 0);
 
     int mouseX, mouseY;
-    InputState* mouse = g_InputManager_0046aa08->pMouse;
-    mouseY = 0;
-    if (mouse != 0) {
-        mouseY = mouse->y;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
+    } else {
+        mouseY = 0;
     }
-    if (mouse != 0) {
-        mouseX = mouse->x;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseX = g_InputManager_0046aa08->pMouse->x;
     } else {
         mouseX = 0;
     }

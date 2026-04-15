@@ -111,15 +111,16 @@ void SC_FakeRoom::RenderFrame()
         return;
     }
 
-    InputState* pMouse = g_InputManager_0046aa08->pMouse;
-    int mouseY = 0;
-    if (pMouse != 0) {
-        mouseY = pMouse->y;
+    int mouseY;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
+    } else {
+        mouseY = 0;
     }
 
     int mouseX;
-    if (pMouse != 0) {
-        mouseX = pMouse->x;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseX = g_InputManager_0046aa08->pMouse->x;
     } else {
         mouseX = 0;
     }

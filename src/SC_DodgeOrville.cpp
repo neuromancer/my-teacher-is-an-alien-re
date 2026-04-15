@@ -293,10 +293,12 @@ void SC_DodgeOrville::UpdateReticle()
     int dir = cursorDir;
     int newState = reticlePos + dir;
     reticlePos = newState;
-    if (newState < 0) {
+    if (newState >= 0) {
+        if (newState > 4) {
+            reticlePos = 4;
+        }
+    } else {
         reticlePos = 0;
-    } else if (newState > 4) {
-        reticlePos = 4;
     }
 
     int animState = g_AnimStates_0046ac30[reticlePos];
@@ -347,10 +349,10 @@ void SC_DodgeOrville::ThrowBomb()
     int maxThrows = throwState.y;
 
     int atLimit;
-    if (maxThrows == 0) {
-        atLimit = 0;
+    if (maxThrows != 0 && maxThrows <= tc) {
+        atLimit = 1;
     } else {
-        atLimit = (maxThrows <= tc) ? 1 : 0;
+        atLimit = 0;
     }
 
     if (atLimit != 0) {

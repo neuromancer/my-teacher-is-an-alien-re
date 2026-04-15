@@ -119,14 +119,15 @@ void GameEngine::RunGameLoop() {
             }
 
             if (gs->stateValues[4] != 0) {
-                int mouseX = 0;
-                int mouseY = 0;
-                InputState* mouse = g_InputManager_0046aa08->pMouse;
-                if (mouse != 0) {
-                    mouseY = mouse->y;
+                int mouseX;
+                int mouseY;
+                if (g_InputManager_0046aa08->pMouse != 0) {
+                    mouseY = g_InputManager_0046aa08->pMouse->y;
+                } else {
+                    mouseY = 0;
                 }
-                if (mouse != 0) {
-                    mouseX = mouse->x;
+                if (g_InputManager_0046aa08->pMouse != 0) {
+                    mouseX = g_InputManager_0046aa08->pMouse->x;
                 } else {
                     mouseX = 0;
                 }

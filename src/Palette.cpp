@@ -2,6 +2,7 @@
 #include "PaletteUtils.h"
 #include "mss.h"
 #include "string.h"
+#include "stubs.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -167,15 +168,23 @@ void Palette::FadeTo(int targetR, int targetG, int targetB, float fraction, int 
 extern "C" void FlipScreen();
 
 /* Function start: 0x41DF10 */
-void Palette::SetAndApply(unsigned int start, unsigned int count)
+unsigned int Palette::SetAndApply(unsigned int start, unsigned int count)
 {
-    int result = IsSimilar(m_data, start, count);
+    int result = CheckSystemMatch(start, count);
     if (result == 0) {
         if (count == 0x100) {
             FlipScreen();
         }
         SetPalette(start, count);
+        return count;
     }
+    return 0;
+}
+
+/* Function start: 0x41DF50 */
+int Palette::CheckSystemMatch(unsigned int start, unsigned int count) {
+    TODO("Palette::CheckSystemMatch");
+    return 0;
 }
 
 /* Function start: 0x41DC70 */

@@ -389,14 +389,17 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
     }
 
     if (pmsg[9] >= 2) {
-        InputState* mouse = g_InputManager_0046aa08->pMouse;
-        int mouseY = 0;
-        if (mouse != 0) {
-            mouseY = mouse->y;
+        int mouseY;
+        int mouseX;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        int mouseX = 0;
-        if (mouse != 0) {
-            mouseX = mouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
+        } else {
+            mouseX = 0;
         }
 
         OnClick(mouseX, mouseY);
@@ -413,14 +416,15 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
         }
 
         if (floorStates[0] != 0) {
-            mouse = g_InputManager_0046aa08->pMouse;
-            mouseY = 0;
-            if (mouse != 0) {
-                mouseY = mouse->y;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseY = g_InputManager_0046aa08->pMouse->y;
+            } else {
+                mouseY = 0;
             }
-            mouseX = 0;
-            if (mouse != 0) {
-                mouseX = mouse->x;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseX = g_InputManager_0046aa08->pMouse->x;
+            } else {
+                mouseX = 0;
             }
 
             if (g_DoorRects_00473dc8[0].left <= mouseX && mouseX <= g_DoorRects_00473dc8[0].right &&
@@ -449,14 +453,15 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
         }
 
         if (floorStates[1] != 0) {
-            mouse = g_InputManager_0046aa08->pMouse;
-            mouseY = 0;
-            if (mouse != 0) {
-                mouseY = mouse->y;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseY = g_InputManager_0046aa08->pMouse->y;
+            } else {
+                mouseY = 0;
             }
-            mouseX = 0;
-            if (mouse != 0) {
-                mouseX = mouse->x;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseX = g_InputManager_0046aa08->pMouse->x;
+            } else {
+                mouseX = 0;
             }
 
             if (g_DoorRects_00473dc8[1].left <= mouseX && mouseX <= g_DoorRects_00473dc8[1].right &&
@@ -485,14 +490,15 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
         }
 
         if (floorStates[2] != 0) {
-            mouse = g_InputManager_0046aa08->pMouse;
-            mouseY = 0;
-            if (mouse != 0) {
-                mouseY = mouse->y;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseY = g_InputManager_0046aa08->pMouse->y;
+            } else {
+                mouseY = 0;
             }
-            mouseX = 0;
-            if (mouse != 0) {
-                mouseX = mouse->x;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseX = g_InputManager_0046aa08->pMouse->x;
+            } else {
+                mouseX = 0;
             }
 
             if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
@@ -556,14 +562,17 @@ sound_done:
 
     mapSprite->Do(mapSprite->loc_x, mapSprite->loc_y, 1.0);
 
-    InputState* mouse = g_InputManager_0046aa08->pMouse;
-    int mouseY = 0;
-    if (mouse != 0) {
-        mouseY = mouse->y;
+    int mouseY;
+    int mouseX;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
+    } else {
+        mouseY = 0;
     }
-    int mouseX = 0;
-    if (mouse != 0) {
-        mouseX = mouse->x;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseX = g_InputManager_0046aa08->pMouse->x;
+    } else {
+        mouseX = 0;
     }
 
     if (rect6.left <= mouseX && mouseX <= rect6.right &&
@@ -577,13 +586,15 @@ sound_done:
     }
 
     if (floorStates[0] != 0) {
-        mouseY = 0;
-        if (mouse != 0) {
-            mouseY = mouse->y;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        mouseX = 0;
-        if (mouse != 0) {
-            mouseX = mouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
+        } else {
+            mouseX = 0;
         }
 
         if (g_DoorRects_00473dc8[0].left <= mouseX && mouseX <= g_DoorRects_00473dc8[0].right &&
@@ -593,13 +604,15 @@ sound_done:
     }
 
     if (floorStates[1] != 0) {
-        mouseY = 0;
-        if (mouse != 0) {
-            mouseY = mouse->y;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        mouseX = 0;
-        if (mouse != 0) {
-            mouseX = mouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
+        } else {
+            mouseX = 0;
         }
 
         if (g_DoorRects_00473dc8[1].left <= mouseX && mouseX <= g_DoorRects_00473dc8[1].right &&
@@ -609,13 +622,15 @@ sound_done:
     }
 
     if (floorStates[2] != 0) {
-        mouseY = 0;
-        if (mouse != 0) {
-            mouseY = mouse->y;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        mouseX = 0;
-        if (mouse != 0) {
-            mouseX = mouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
+        } else {
+            mouseX = 0;
         }
 
         if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
@@ -625,13 +640,15 @@ sound_done:
     }
 
     if (field_144 != 0) {
-        mouseY = 0;
-        if (mouse != 0) {
-            mouseY = mouse->y;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        mouseX = 0;
-        if (mouse != 0) {
-            mouseX = mouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
+        } else {
+            mouseX = 0;
         }
 
         if (rect2.left <= mouseX && mouseX <= rect2.right &&

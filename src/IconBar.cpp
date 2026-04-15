@@ -367,13 +367,13 @@ void IconBar::Update(int param1, int param2) {
                 if (gs->stateValues[0x44] != 0) {
                     entry->sprite->ResetAnimation(2, 0);
                 } else {
-                    mousePos = (int*)g_InputManager_0046aa08->pMouse;
-                    mouseY = 0;
-                    if (mousePos != 0) {
-                        mouseY = mousePos[1];
+                    if (g_InputManager_0046aa08->pMouse != 0) {
+                        mouseY = ((int*)g_InputManager_0046aa08->pMouse)[1];
+                    } else {
+                        mouseY = 0;
                     }
-                    if (mousePos != 0) {
-                        mouseX = mousePos[0];
+                    if (g_InputManager_0046aa08->pMouse != 0) {
+                        mouseX = ((int*)g_InputManager_0046aa08->pMouse)[0];
                     } else {
                         mouseX = 0;
                     }
@@ -396,13 +396,13 @@ void IconBar::Update(int param1, int param2) {
                     }
                 }
             } else {
-                mousePos = (int*)g_InputManager_0046aa08->pMouse;
-                mouseY = 0;
-                if (mousePos != 0) {
-                    mouseY = mousePos[1];
+                if (g_InputManager_0046aa08->pMouse != 0) {
+                    mouseY = ((int*)g_InputManager_0046aa08->pMouse)[1];
+                } else {
+                    mouseY = 0;
                 }
-                if (mousePos != 0) {
-                    mouseX = mousePos[0];
+                if (g_InputManager_0046aa08->pMouse != 0) {
+                    mouseX = ((int*)g_InputManager_0046aa08->pMouse)[0];
                 } else {
                     mouseX = 0;
                 }

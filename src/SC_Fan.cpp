@@ -532,10 +532,12 @@ void SC_Fan::RenderFan() {
             offset = dim_168.x * 0x36 / dimVal;
             rnd = rand();
             offset = offset - rnd % 3 + 1;
-            if (offset < 0) {
+            if (offset >= 0) {
+                if (offset > 0x36) {
+                    offset = 0x36;
+                }
+            } else {
                 offset = 0;
-            } else if (offset > 0x36) {
-                offset = 0x36;
             }
             offset = offset * 4 + 0x12;
 

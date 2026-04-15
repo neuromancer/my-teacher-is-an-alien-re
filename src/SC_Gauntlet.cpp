@@ -263,14 +263,15 @@ void SC_Gauntlet::RenderGrid() {
 
     /* Check exit button hover */
     {
-        InputState* pMouse = g_InputManager_0046aa08->pMouse;
-        int mouseY = 0;
+        int mouseY;
         int mouseX;
-        if (pMouse != 0) {
-            mouseY = pMouse->y;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseY = g_InputManager_0046aa08->pMouse->y;
+        } else {
+            mouseY = 0;
         }
-        if (pMouse != 0) {
-            mouseX = pMouse->x;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
         } else {
             mouseX = 0;
         }
@@ -290,14 +291,15 @@ void SC_Gauntlet::RenderGrid() {
         int cellX = 0x2F;
         Sprite** sprPtr = &cellSprites[sprIdx];
         do {
-            InputState* pMouse = g_InputManager_0046aa08->pMouse;
-            int mouseY = 0;
+            int mouseY;
             int mouseX;
-            if (pMouse != 0) {
-                mouseY = pMouse->y;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseY = g_InputManager_0046aa08->pMouse->y;
+            } else {
+                mouseY = 0;
             }
-            if (pMouse != 0) {
-                mouseX = pMouse->x;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseX = g_InputManager_0046aa08->pMouse->x;
             } else {
                 mouseX = 0;
             }

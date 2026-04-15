@@ -415,19 +415,19 @@ int GameState::FindLabel(char* name) {
     int h;
     h = hash % (unsigned int)pool[1];
 
-    int* entry = 0;
+    GSHashEntry* entry = 0;
     if ((int*)pool[0] != 0) {
-        entry = (int*)((int*)pool[0])[h];
+        entry = ((GSHashEntry**)pool[0])[h];
         while (entry != 0) {
-            if (strcmp((char*)entry[2], name) == 0) break;
-            entry = (int*)entry[0];
+            if (strcmp(entry->label, name) == 0) break;
+            entry = entry->next;
         }
     }
 
     if (entry == 0) {
         ShowError("GameState::StateIndex()-Invalid gamestate = '%s'", name);
     } else {
-        h = entry[3];
+        h = entry->stateIndex;
     }
     return h;
 }
@@ -461,25 +461,17 @@ int GameState::CheckCondition(int* param_1) {
     case 9:
         return val == 0;
     case 10:
-        if ((unsigned int)param_1[5] > val) {
-            return 1;
-        }
-        return 0;
+        if ((unsigned int)param_1[5] <= val) break;
+        return 1;
     case 11:
-        if ((unsigned int)param_1[5] < val) {
-            return 1;
-        }
-        return 0;
+        if ((unsigned int)param_1[5] >= val) break;
+        return 1;
     case 12:
-        if ((unsigned int)param_1[5] == val) {
-            return 1;
-        }
-        return 0;
+        if ((unsigned int)param_1[5] != val) break;
+        return 1;
     case 13:
-        if ((unsigned int)param_1[5] != val) {
-            return 1;
-        }
-        return 0;
+        if ((unsigned int)param_1[5] == val) break;
+        return 1;
     default:
         ShowError("illegal message12b");
     }

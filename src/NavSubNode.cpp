@@ -223,9 +223,7 @@ do_sprite:
         int count = frameCounter + 1;
         int isDone;
         frameCounter = count;
-        if (maxFrames == 0) {
-            isDone = 0;
-        } else if (maxFrames <= count) {
+        if (maxFrames != 0 && maxFrames <= count) {
             isDone = 1;
         } else {
             isDone = 0;

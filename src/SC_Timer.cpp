@@ -117,10 +117,16 @@ int SC_Timer::Exit(SC_MessageParser* msg) {
     timer1.Reset();
 
     switch (p[4]) {
-    case 0x7:
+    case 7:
+        if (list->head == 0) {
+            SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        }
         break;
 
-    case 0x8:
+    case 0xf:
+        break;
+
+    case 0x10:
         pList = list;
         if (pList->head != 0) {
             pList->current = pList->head;
@@ -133,7 +139,7 @@ int SC_Timer::Exit(SC_MessageParser* msg) {
         }
         break;
 
-    case 0xc:
+    case 0x17:
         if (p[13] != 0) {
             pTimedEvent = new TimedEvent();
             pTimedEvent->m_duration = p[12];
@@ -176,7 +182,7 @@ int SC_Timer::Exit(SC_MessageParser* msg) {
         }
         break;
 
-    case 0xd:
+    case 0x18:
         pTimedEvent = new TimedEvent();
         pTimedEvent->m_sourceAddress = p[1];
         pList = list;
@@ -205,12 +211,6 @@ int SC_Timer::Exit(SC_MessageParser* msg) {
                     pList->current = node->next;
                 }
             } while (pList->current != 0);
-        }
-        break;
-
-    case 0x18:
-        if (list->head == 0) {
-            SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         }
         break;
 

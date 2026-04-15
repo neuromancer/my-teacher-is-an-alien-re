@@ -38,14 +38,17 @@ void __fastcall UpdateWordSearchCursor(int* self) {
         ((Sprite*)self[6])->Do(((Sprite*)self[6])->loc_x, ((Sprite*)self[6])->loc_y, 1.0);
     }
 
-    InputState* pMouse = g_InputManager_0046aa08->pMouse;
-    int mouseY = 0;
-    if (pMouse != 0) {
-        mouseY = pMouse->y;
+    int mouseY;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
+    } else {
+        mouseY = 0;
     }
-    int mouseX = 0;
-    if (pMouse != 0) {
-        mouseX = pMouse->x;
+    int mouseX;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseX = g_InputManager_0046aa08->pMouse->x;
+    } else {
+        mouseX = 0;
     }
 
     int inside;
@@ -720,12 +723,14 @@ void SC_WordSearch::Render() {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
     }
 
-    int mouseY = 0;
-    int mouseX = 0;
-    InputState* pMouse = g_InputManager_0046aa08->pMouse;
-    if (pMouse != 0) {
-        mouseY = pMouse->y;
-        mouseX = pMouse->x;
+    int mouseY;
+    int mouseX;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
+        mouseX = g_InputManager_0046aa08->pMouse->x;
+    } else {
+        mouseY = 0;
+        mouseX = 0;
     }
 
     // Check exit button hover
@@ -745,9 +750,11 @@ void SC_WordSearch::Render() {
         int* cell = gridCell;
         Sprite** slot = spriteSlot;
         do {
-            pMouse = g_InputManager_0046aa08->pMouse;
             int mx = 0, my = 0;
-            if (pMouse != 0) { my = pMouse->y; mx = pMouse->x; }
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                my = g_InputManager_0046aa08->pMouse->y;
+                mx = g_InputManager_0046aa08->pMouse->x;
+            }
 
             if (cell[3] <= mx && mx <= cell[5] && cell[4] <= my && my <= cell[6]) {
                 Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
