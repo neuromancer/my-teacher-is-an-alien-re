@@ -6061,6 +6061,22 @@ extern int g_PathCacheMisses_0046b788;                                   // cach
 extern int g_DodgeAnimStates_0046bcd0[3];                                // SC_DodgeOrville
 extern SlimeTable* g_SlimeTable_0046bf28;                           // SC_FireAlarm / SC_Pods
 extern Palette* g_PodsPalette_0046bf30;                   // Pods palette pointer
+extern int g_TargetBearingValue_0046bff0;                    // Target bearing value (full game)
+extern int g_TargetRangeCounter_0046bff4;                    // Target range counter (full game)
+
+// Full-game video buffer "current" globals (equiv. of demo 0x4374xx/0x437fxx)
+extern int g_VideoBufferHeightM1_0046d0b2;
+extern int g_VideoBufferWidth_0046d0ae;
+extern int g_VideoBufferHeight_0046d0ba;
+extern int g_ClipLeft_0046d0c6;
+extern int g_ClipRight_0046d0ca;
+extern int g_ClipTop_0046d0ce;
+extern int g_ClipBottom_0046d0d2;
+extern char g_CurrentVideoBuffer_0046db3c;
+extern int g_VideoBufferStride_0046db46;
+extern int g_VideoBufferBase_0046db4e;
+extern short g_VideoBufferDS_0046db52;
+
 extern int g_FireAlarmField1_00472bd8;                                   // SC_FireAlarm / SC_Pods
 extern int g_FireAlarmField2_00472bdc;                                   // SC_FireAlarm / SC_Pods
 extern int g_FanField1_00472be0;                                   // SC_DodgeOrville
@@ -6075,6 +6091,7 @@ extern int g_FanField4_00472bec;                                   // SC_DodgeOr
 #define g_SchoolMenuField2_0047337c (g_IconBarEntries_00473320[2].field_14)
 #define g_InventoryState_004733e8 (g_IconBarEntries_00473320[5].field_14)
 extern int g_FileDeleteError_004719c0;                                   // SC_DodgeOrville
+extern int g_ProjectileHits_0047325c;                        // Projectile hit counter (full game)
 extern HitBounds g_HitBounds_00473260[3];                  // SC_DodgeOrville
 extern BombData g_BombData_00473278[6];                    // SC_DodgeOrville
 extern POINT g_CursorPos_00473308;                         // SC_DodgeOrville

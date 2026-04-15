@@ -5,6 +5,8 @@
 #include "GameState.h"
 #include "Target.h"
 #include "HashTable.h"
+#include "MouseControl.h"
+#include "InputManager.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -53,8 +55,23 @@ void RockThrower::ResetProjectiles() {
 
 /* Function start: 0x4279D0 */
 void RockThrower::DrawCrosshairs() {
+    if (g_Mouse_0046aa18 != 0) {
+        g_Mouse_0046aa18->DrawCursor();
+        return;
+    }
     SetFillColor(0xfa);
-    SetDrawPosition(m_crosshair.x, m_crosshair.y);
+    InputState* pMouse = g_InputManager_0046aa08->pMouse;
+    int mouseY = 0;
+    if (pMouse != 0) {
+        mouseY = pMouse->y;
+    }
+    int mouseX;
+    if (pMouse != 0) {
+        mouseX = pMouse->x;
+    } else {
+        mouseX = 0;
+    }
+    SetDrawPosition(mouseX, mouseY);
     DrawCircle(7);
 }
 

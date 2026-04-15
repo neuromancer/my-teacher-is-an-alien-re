@@ -72,7 +72,7 @@ void Weapon::UpdateProjectiles() {
     }
 
 updateAll:
-    g_ProjectileHits_0043d150 = 0;
+    g_ProjectileHits_0047325c = 0;
     W_HITS = 0;
     {
         int i = 0;
@@ -81,5 +81,5 @@ updateAll:
             i++;
         }
     }
-    W_HITS = g_ProjectileHits_0043d150;
+    W_HITS = g_ProjectileHits_0047325c;
 }

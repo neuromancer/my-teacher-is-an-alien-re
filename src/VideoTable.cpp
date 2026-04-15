@@ -24,15 +24,15 @@ extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_
 /* Function start: 0x453CCE */
 extern "C" int __cdecl GetPixelAt(int x, int y)
 {
-    if (*(signed char*)&g_CurrentVideoBuffer_00437f54 < 0) {
+    if (*(signed char*)&g_CurrentVideoBuffer_0046db3c < 0) {
         return -1;
     }
-    if (x < g_ClipLeft_004374de || x > g_ClipRight_004374e2 ||
-        y < g_ClipTop_004374e6 || y > g_ClipBottom_004374ea) {
+    if (x < g_ClipLeft_0046d0c6 || x > g_ClipRight_0046d0ca ||
+        y < g_ClipTop_0046d0ce || y > g_ClipBottom_0046d0d2) {
         return -1;
     }
-    unsigned int rowOffset = (unsigned int)(g_VideoBufferHeightM1_004374ca - y) * (unsigned int)g_VideoBufferStride_00437f5e;
-    return *(unsigned char*)(x + rowOffset + g_VideoBufferBase_00437f66);
+    unsigned int rowOffset = (unsigned int)(g_VideoBufferHeightM1_0046d0b2 - y) * (unsigned int)g_VideoBufferStride_0046db46;
+    return *(unsigned char*)(x + rowOffset + g_VideoBufferBase_0046db4e);
 }
 
 /* Function start: 0x4528EF */
@@ -156,20 +156,30 @@ extern "C" int __cdecl SelectVideoBuffer(int param_1) {
             }
 
             *(char*)&g_CurrentVideoBuffer_00437f54 = (char)param_1;
+            g_CurrentVideoBuffer_0046db3c = (char)param_1;
             int width = g_VBufWidths_0043836c[param_1];
             g_VideoBufferWidth_004374c6 = width;
             g_VideoBufferStride_00437f5e = width;
+            g_VideoBufferWidth_0046d0ae = width;
+            g_VideoBufferStride_0046db46 = width;
 
             int height = g_VBufHeights_004382ec[param_1];
             g_VideoBufferHeight_004374d2 = height;
             g_VideoBufferHeightM1_004374ca = height - 1;
+            g_VideoBufferHeight_0046d0ba = height;
+            g_VideoBufferHeightM1_0046d0b2 = height - 1;
 
             g_ClipLeft_004374de = g_VBufClipLeft_0043816c[param_1];
             g_ClipRight_004374e2 = g_VBufMaxX_0043806c[param_1];
             g_ClipTop_004374e6 = g_VBufClipTop_004381ec[param_1];
             g_ClipBottom_004374ea = g_VBufMaxY_004380ec[param_1];
+            g_ClipLeft_0046d0c6 = g_VBufClipLeft_0043816c[param_1];
+            g_ClipRight_0046d0ca = g_VBufMaxX_0043806c[param_1];
+            g_ClipTop_0046d0ce = g_VBufClipTop_004381ec[param_1];
+            g_ClipBottom_0046d0d2 = g_VBufMaxY_004380ec[param_1];
 
             g_VideoBufferBase_00437f66 = g_VBufDataPtrs_0043826c[param_1];
+            g_VideoBufferBase_0046db4e = g_VBufDataPtrs_0043826c[param_1];
             
             // Replicating DS capture from assembly if possible, otherwise ignore
             // _asm { mov word ptr [DAT_00437f6a], ds }

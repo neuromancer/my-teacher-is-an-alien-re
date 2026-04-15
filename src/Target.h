@@ -114,6 +114,7 @@ public:
     Sample* defaultProgressSound;  // 0x1C0
     Sample* defaultHitSound;       // 0x1C4
     Sample* defaultSound;          // 0x1C8
+    int field_1CC;                 // 0x1CC
 
     TargetList();
     virtual ~TargetList();

@@ -301,6 +301,23 @@ char* g_FontFilename_0046bd78 = 0;                           // 0x0046bd78
 int g_FontField_0046bd7c = 0;                                // 0x0046bd7c
 SlimeTable* g_SlimeTable_0046bf28 = 0;                       // 0x0046bf28
 Palette* g_PodsPalette_0046bf30 = 0;              // 0x0046bf30
+int g_TargetBearingValue_0046bff0 = 0;                       // 0x0046bff0
+int g_TargetRangeCounter_0046bff4 = 0;                       // 0x0046bff4
+
+// --- 0x0046d0xx / 0x0046dbxx --- Full-game video buffer "current" globals
+// These are the full-game equivalents of the demo 0x4374xx/0x437fxx globals.
+// The original binary writes to these addresses; GetPixelAt reads from them.
+int g_VideoBufferHeightM1_0046d0b2 = 0;                      // 0x0046d0b2
+int g_VideoBufferWidth_0046d0ae = 0;                         // 0x0046d0ae
+int g_VideoBufferHeight_0046d0ba = 0;                        // 0x0046d0ba
+int g_ClipLeft_0046d0c6 = 0;                                 // 0x0046d0c6
+int g_ClipRight_0046d0ca = 0;                                // 0x0046d0ca
+int g_ClipTop_0046d0ce = 0;                                  // 0x0046d0ce
+int g_ClipBottom_0046d0d2 = 0;                               // 0x0046d0d2
+char g_CurrentVideoBuffer_0046db3c = (char)0xff;             // 0x0046db3c
+int g_VideoBufferStride_0046db46 = 0;                        // 0x0046db46
+int g_VideoBufferBase_0046db4e = 0;                          // 0x0046db4e
+short g_VideoBufferDS_0046db52 = 0;                          // 0x0046db52
 int g_SchedulePositionTable_0046b940[42] = {                  // 0x0046b940 — x,y pairs, index 0 unused
     0, 0,           // [0] unused
     100, 108,       // [1]
@@ -365,6 +382,7 @@ int g_IconBarRefCount_0046af0c = 0;                          // 0x0046af0c
 GlyphRect g_PuzzleButtonRects_00473d30[9];                   // 0x00473d30
 // g_IconBarState_00473334, g_SchoolMenuField1_00473358, g_SchoolMenuField2_0047337c
 // are now macros in globals.h — they alias IconBarEntry[0/1/2].field_14
+int g_ProjectileHits_0047325c = 0;                           // 0x0047325c
 HitBounds g_HitBounds_00473260[3] = {{0, 0}, {0, 0}, {0, 0}}; // 0x00473260
 BombData g_BombData_00473278[6];                             // 0x00473278 (BSS, initialized at runtime)
 POINT g_CursorPos_00473308;                                  // 0x00473308

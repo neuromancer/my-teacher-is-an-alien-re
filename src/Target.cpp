@@ -8,6 +8,7 @@
 #include "SC_CombatBase.h"
 #include "CDData.h"
 #include "CursorState.h"
+#include "ScoreDisplay.h"
 #include "string.h"
 #include <string.h>
 #include <stdio.h>
@@ -118,7 +119,7 @@ void Target::Spawn()
     if (Target::stopSound != 0) {
         Target::stopSound->Play(100, 1);
     }
-    g_ScoreManager_00435f20->completionCount++;
+    g_ScoreDisplay_0046ae6c->completionCount++;
 }
 
 /* Function start: 0x442640 */
@@ -426,8 +427,8 @@ void Target::OnProcessStart()
 {
     char buffer[128];
 
-    g_TargetBearingValue_004362c8 = 0;
-    g_TargetRangeCounter_004362cc = 0;
+    g_TargetBearingValue_0046bff0 = 0;
+    g_TargetRangeCounter_0046bff4 = 0;
 
     sprintf(buffer, "FNAME %s", animFilename);
     Sprite::LBLParse(buffer);
@@ -454,7 +455,8 @@ void Target::OnProcessStart()
 /* Function start: 0x442D50 */
 void Target::OnProcessEnd()
 {
-    if (hotspotList == 0 && g_TargetBearingValue_004362c8 != 0) {
+    Sprite::OnProcessEnd();
+    if (hotspotList == 0 && g_TargetBearingValue_0046bff0 != 0) {
         HotspotListData* list = new HotspotListData;
         hotspotList = list;
         
@@ -487,7 +489,7 @@ void Target::OnProcessEnd()
         int i = 0;
         do {} while (i--);
 
-        node->id = g_TargetBearingValue_004362c8;
+        node->id = g_TargetBearingValue_0046bff0;
         if (lastNode != 0) {
             lastNode->next = node;
         } else {
@@ -521,10 +523,10 @@ int Target::LBLParse(char* line)
     else if (firstChar == 'B') {
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
-            ConfigRange(g_TargetRangeCounter_004362cc, value1, value2, 1);
-            animRange.y = g_TargetRangeCounter_004362cc;
-            g_TargetBearingValue_004362c8 = value2;
-            g_TargetRangeCounter_004362cc++;
+            ConfigRange(g_TargetRangeCounter_0046bff4, value1, value2, 1);
+            animRange.y = g_TargetRangeCounter_0046bff4;
+            g_TargetBearingValue_0046bff0 = value2;
+            g_TargetRangeCounter_0046bff4++;
         }
     }
     else if (firstChar == 'C') {
@@ -590,12 +592,12 @@ int Target::LBLParse(char* line)
     else if (firstChar == 'K') {
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
         if (result == 2) {
-            ConfigRange(g_TargetRangeCounter_004362cc, value1, value2, 1);
+            ConfigRange(g_TargetRangeCounter_0046bff4, value1, value2, 1);
             if (hitRange.x == 0) {
-                hitRange.x = g_TargetRangeCounter_004362cc;
+                hitRange.x = g_TargetRangeCounter_0046bff4;
             }
-            hitRange.y = g_TargetRangeCounter_004362cc;
-            g_TargetRangeCounter_004362cc++;
+            hitRange.y = g_TargetRangeCounter_0046bff4;
+            g_TargetRangeCounter_0046bff4++;
         }
     }
     else if (firstChar == 'O') {

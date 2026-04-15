@@ -106,7 +106,7 @@ void Projectile::Update() {
             Projectile::active = 0;
             return;
         }
-        g_ProjectileHits_0043d150++;
+        g_ProjectileHits_0047325c++;
         Projectile::ResetAnimation(1, 0);
     }
 }
