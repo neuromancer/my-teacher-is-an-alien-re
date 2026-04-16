@@ -328,12 +328,28 @@ int NavSubNode::GetNextNode()
 /* Function start: 0x449EE0 */
 /* Function start: 0x44ADD0 */
 int NavSubNode::LBLParse(char* line) {
-    TODO("NavSubNode::LBLParse");
     return 0;
 }
 
 void NavSubNode::virtual7() {}
 
-// BG_SubNode::LBLParse stub (actual implementation at 0x44A4D0, not yet reimplemented)
 /* Function start: 0x44A4D0 */
-int BG_SubNode::LBLParse(char* param_1) { return 0; }
+int BG_SubNode::LBLParse(char* param_1)
+{
+    unsigned int spriteId;
+    char bearingStr[32];
+
+    spriteId = 0;
+    int result = sscanf(param_1, " %d %d S%d THEN_GOTO N%d BEARING %s ",
+        &spriteHandle, &maxFrames, &spriteId, &nodeHandle, bearingStr);
+
+    if (result >= 5) {
+        bearing = FindCharIndex(bearingStr[0]);
+    }
+
+    if (spriteId != 0) {
+        AddSpriteList(spriteId);
+    }
+
+    return 0;
+}

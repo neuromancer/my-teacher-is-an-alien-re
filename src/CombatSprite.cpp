@@ -388,7 +388,7 @@ found:
 
 /* Function start: 0x409210 */
 void CombatSprite::OnProcessStart() {
-    TODO("CombatSprite::OnProcessStart");
+    g_CurrentSprite_004686f8 = 0;
 }
 
 /* Function start: 0x409220 */

@@ -1,4 +1,5 @@
 #include "mCNavNode.h"
+#include "NavSubNode.h"
 #include "stubs.h"
 #include "SC_CombatBase.h"
 #include "Sprite.h"
@@ -12,6 +13,7 @@
 #include <string.h>
 
 extern "C" char GetDirectionChar(int dir);
+extern int FindCharIndex(char ch);
 
 /* Function start: 0x44AE10 */
 mCNavNode::mCNavNode(char* param_1) : Parser()
@@ -76,7 +78,69 @@ int mCNavNode::Activate() { return 0; }
 int mCNavNode::GetNextNode() { return 0; }
 void mCNavNode::virtual7() {}
 /* Function start: 0x44AF40 */
-int mCNavNode::LBLParse(char*) { return 0; }
+int mCNavNode::LBLParse(char* param_1)
+{
+    char token1[32];
+    char token2[64];
+    char token3[64];
+
+    token1[0] = 0;
+    sscanf(param_1, " %s %s %s ", token1, token2, token3);
+
+    if (stricmp(token1, "FOR_BEARING") == 0) {
+        int dir = FindCharIndex(token2[0]);
+        NavSubNode* node = 0;
+
+        if (stricmp(token3, "DO_NOTHING") == 0) {
+            node = new NavSubNode();
+        }
+        else if (stricmp(token3, "DO_EXIT") == 0) {
+            node = new NavSubNode();
+        }
+        else if (stricmp(token3, "DO_ANIM") == 0) {
+            node = new NavSubNode();
+        }
+        else if (stricmp(token3, "DO_POSTMESSAGE") == 0) {
+            node = new NavSubNode();
+        }
+        else if (stricmp(token3, "DO_CHECKMESSAGE") == 0) {
+            node = new NavSubNode();
+        }
+        else if (stricmp(token3, "DO_LOGICFNC") == 0) {
+            node = new NavSubNode();
+        }
+        else if (stricmp(token3, "DO_BG") == 0) {
+            node = new BG_SubNode();
+        }
+        else if (stricmp(token3, "DO_ONDIR") == 0) {
+            node = new OnDir_SubNode();
+        }
+        else if (stricmp(token3, "DO_MOUSE") == 0) {
+            node = new NavSubNode();
+        }
+        else {
+            ReportUnknownLabel("NavNode");
+        }
+
+        neighborNodes[dir] = node;
+        if (node != 0) {
+            node->parentNode = (int)this;
+            node->field_94 = dir;
+            char* pos = strstr(param_1, token3);
+            if (pos != 0) {
+                node->LBLParse(pos + strlen(token3));
+            }
+        }
+    }
+    else if (stricmp(token1, "END") == 0) {
+        return 1;
+    }
+    else {
+        ReportUnknownLabel("NavNode");
+    }
+
+    return 0;
+}
 
 // mCNavNode_Runtime vtable (0x461B30) overrides — set after parsing
 // These are real implementations used at runtime, replacing the base stubs above.
