@@ -114,7 +114,7 @@ int SCI_SearchScreen::LBLParse(char* line) {
 
 /* Function start: 0x40EFB0 */
 extern "C" void ClearGameStateSave() {
-    memset(&g_SaveState0_0043d130, 0, 16);
+    memset(&g_SaveState0_00472be0, 0, 16);
 }
 
 static int g_SearchScreenRects[36];

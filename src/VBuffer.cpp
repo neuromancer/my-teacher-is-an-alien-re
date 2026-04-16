@@ -470,7 +470,7 @@ void VBuffer::ScaleTCCopy(int param_1, int param_2, VBuffer* srcBuffer, double s
     int scaledHeight = (int)(srcBuffer->height * scale);
 
     if ((scaledWidth >= 1) && (scaledHeight >= 1)) {
-        int local_10 = CreateTableFromBuffer((int)g_Buffer_00436964, scaledWidth, scaledHeight);
+        int local_10 = CreateTableFromBuffer((int)g_Buffer_0046aa04, scaledWidth, scaledHeight);
         if (local_10 < 0) {
             ShowError("VBuffer::ScaleTCCopy");
         }

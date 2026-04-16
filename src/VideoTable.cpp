@@ -8,16 +8,16 @@ extern "C" void WriteToMessageLog(const char *msg, ...);
 /* Function start: 0x4524C2 */
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
 {
-    g_DrawPosX_004374c2 = param_1;
-    g_DrawPosY_004374ce = param_2;
+    g_DrawPosX_0046d0aa = param_1;
+    g_DrawPosY_0046d0b6 = param_2;
     return 0;
 }
 
 /* Function start: 0x453C9B */
 extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_2)
 {
-    g_TextAlignH_004374c0 = param_1;
-    g_TextAlignV_004374c1 = param_2;
+    g_TextAlignH_0046d0a8 = param_1;
+    g_TextAlignV_0046d0a9 = param_2;
     return 0;
 }
 
@@ -41,14 +41,15 @@ extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
     HGLOBAL hMem;
     int* puVar2;
     int iVar1;
-    
-    if (param_1 < 0x20 && (char)param_1 != *(char*)&g_CurrentVideoBuffer_00437f54) {
+
+    if (param_1 < 0x20 && (char)param_1 != g_CurrentVideoBuffer_0046db3c) {
         iVar1 = param_1 * 4;
-        g_VBufDataPtrs_0043826c[param_1] = 0;
-        puVar2 = g_VBufDibHandles_00437fec;
-        if (g_WinGDC_0043841c != 0) {
-            DeleteObject((HGDIOBJ)g_VBufDibHandles_00437fec[param_1]);
-            puVar2 = g_VBufMemHandles_00437f6c;
+        g_VBufDataPtrs_0046de54[param_1] = 0;
+        g_VBufDataPtrs_0046de54[param_1] = 0;
+        puVar2 = g_VBufDibHandles_0046dbd4;
+        if (g_WinGDC_0046e004 != 0) {
+            DeleteObject((HGDIOBJ)g_VBufDibHandles_0046dbd4[param_1]);
+            puVar2 = g_VBufMemHandles_0046db54;
         }
         hMem = (HGLOBAL)puVar2[param_1];
         GlobalUnlock(hMem);
@@ -63,13 +64,13 @@ extern "C" int __cdecl GetVideoBufferData(unsigned int handle)
     if (handle > 0x1f) {
         return 0;
     }
-    return ((int*)&g_VBufDataPtrs_0043826c)[handle];
+    return g_VBufDataPtrs_0046de54[handle];
 }
 
 /* Function start: 0x4529D5 */
 extern "C" int __cdecl CreateTable(int width, int height) {
     int i = 0;
-    while (i < 32 && ((int*)&g_VBufDataPtrs_0043826c)[i] != 0) {
+    while (i < 32 && g_VBufDataPtrs_0046de54[i] != 0) {
         i++;
     }
 
@@ -80,13 +81,13 @@ extern "C" int __cdecl CreateTable(int width, int height) {
     unsigned int aligned_width = (width + 3) & 0xFFFFFFFC;
     int image_size;
 
-    if (g_WinGDC_0043841c == 0) {
+    if (g_WinGDC_0046e004 == 0) {
         image_size = aligned_width * height;
     } else {
-        image_size = 1064 - g_BitmapHeaderSize_00437f4c;
+        image_size = 1064 - g_BitmapHeaderSize_0046db34;
     }
 
-    HGLOBAL hMem = GlobalAlloc(0x42, image_size + g_BitmapHeaderSize_00437f4c);
+    HGLOBAL hMem = GlobalAlloc(0x42, image_size + g_BitmapHeaderSize_0046db34);
     if (hMem == 0) {
         return -2;
     }
@@ -99,43 +100,52 @@ extern "C" int __cdecl CreateTable(int width, int height) {
     bmi->bmiHeader.biBitCount = 8;
 
     HGLOBAL hDib = hMem;
-    int data_offset = g_BitmapHeaderSize_00437f4c;
+    int data_offset = g_BitmapHeaderSize_0046db34;
 
-    if (g_WinGDC_0043841c != 0) {
-        hDib = ((HGLOBAL(*)(HDC, BITMAPINFO*, void**))g_WinGCreateDIB_00438428)(g_WinGDC_0043841c, bmi, (void**)&bmi);
+    if (g_WinGDC_0046e004 != 0) {
+        hDib = ((HGLOBAL(*)(HDC, BITMAPINFO*, void**))g_WinGCreateDIB_0046e010)(g_WinGDC_0046e004, bmi, (void**)&bmi);
         if (hDib == 0) {
             GlobalUnlock(hMem);
             GlobalFree(hMem);
             return -2;
         }
-        HGDIOBJ oldObj = SelectObject(g_WinGDC_0043841c, hDib);
-        if (g_WinGBitmap_00438424 == 0) {
-            g_WinGBitmap_00438424 = oldObj;
+        HGDIOBJ oldObj = SelectObject(g_WinGDC_0046e004, hDib);
+        if (g_WinGBitmap_0046e00c == 0) {
+            g_WinGBitmap_0046e00c = oldObj;
         }
-        // FUN_00423076 - Clear the newly created DIB buffer
-        // This function reads from caller's EBP frame, so we inline it here
         memset(bmi, 0, aligned_width * height);
-        SelectObject(g_WinGDC_0043841c, oldObj);
+        SelectObject(g_WinGDC_0046e004, oldObj);
         data_offset = 0;
     }
 
-    ((HGLOBAL*)&g_VBufDibHandles_00437fec)[i] = hDib;
-    ((HGLOBAL*)&g_VBufMemHandles_00437f6c)[i] = hMem;
-    ((void**)&g_VBufDataPtrs_0043826c)[i] = (void*)((char*)bmi + data_offset);
-    ((unsigned int*)&g_VBufWidths_0043836c)[i] = aligned_width;
-    ((int*)&g_VBufHeights_004382ec)[i] = height;
-    ((unsigned int*)&g_VBufMaxX_0043806c)[i] = aligned_width - 1;
-    ((int*)&g_VBufMaxY_004380ec)[i] = height - 1;
-    ((int*)&g_VBufClipLeft_0043816c)[i] = 0;
-    ((int*)&g_VBufClipTop_004381ec)[i] = 0;
+    g_VBufDibHandles_0046dbd4[i] = (int)hDib;
+    g_VBufMemHandles_0046db54[i] = (int)hMem;
+    g_VBufDataPtrs_0046de54[i] = (int)((char*)bmi + data_offset);
+    g_VBufWidths_0046df54[i] = aligned_width;
+    g_VBufHeights_0046ded4[i] = height;
+    g_VBufMaxX_0046dc54[i] = aligned_width - 1;
+    g_VBufMaxY_0046dcd4[i] = height - 1;
+    g_VBufClipLeft_0046dd54[i] = 0;
+    g_VBufClipTop_0046ddd4[i] = 0;
+
+    // Also write to demo arrays for compatibility
+    g_VBufDibHandles_00437fec[i] = (int)hDib;
+    g_VBufMemHandles_00437f6c[i] = (int)hMem;
+    g_VBufDataPtrs_0046de54[i] = (int)((char*)bmi + data_offset);
+    g_VBufWidths_0043836c[i] = aligned_width;
+    g_VBufHeights_004382ec[i] = height;
+    g_VBufMaxX_0043806c[i] = aligned_width - 1;
+    g_VBufMaxY_004380ec[i] = height - 1;
+    g_VBufClipLeft_0043816c[i] = 0;
+    g_VBufClipTop_004381ec[i] = 0;
 
     return i;
 }
 
 /* Function start: 0x452B6E */
 extern "C" int ClearVideoBuffer(void) {
-    if (*(char*)&g_CurrentVideoBuffer_00437f54 >= 0) {
-        memset((char*)g_VideoBufferBase_00437f66, g_FillColorDword_00437491, g_VideoBufferSize_00437f62);
+    if (g_CurrentVideoBuffer_0046db3c >= 0) {
+        memset((char*)g_VideoBufferBase_0046db4e, g_FillColorDword_0046d079, g_VideoBufferSize_0046db4a);
     }
     return 0;
 }
@@ -145,49 +155,45 @@ extern "C" int ClearVideoBuffer(void) {
 /* Function start: 0x452BAE */
 extern "C" int __cdecl SelectVideoBuffer(int param_1) {
     if (param_1 < 0x20) {
-        if (g_VBufDataPtrs_0043826c[param_1] == 0) {
-            // Buffer invalid/empty
+        if (g_VBufDataPtrs_0046de54[param_1] == 0) {
             return 0xfffffffe;
         } else {
-            // Set current video mode
-            if (g_WinGDC_0043841c != 0) {
-                // WinG or similar context selection
-                SelectObject(g_WinGDC_0043841c, (HGDIOBJ)g_VBufDibHandles_00437fec[param_1]);
+            if (g_WinGDC_0046e004 != 0) {
+                SelectObject(g_WinGDC_0046e004, (HGDIOBJ)g_VBufDibHandles_0046dbd4[param_1]);
             }
 
-            *(char*)&g_CurrentVideoBuffer_00437f54 = (char)param_1;
             g_CurrentVideoBuffer_0046db3c = (char)param_1;
-            int width = g_VBufWidths_0043836c[param_1];
-            g_VideoBufferWidth_004374c6 = width;
-            g_VideoBufferStride_00437f5e = width;
+            *(char*)&g_CurrentVideoBuffer_0046db3c = (char)param_1;
+
+            int width = g_VBufWidths_0046df54[param_1];
+            g_VideoBufferStride_0046db46 = width;
+            g_VideoBufferWidth_0046d0ae = width;
             g_VideoBufferWidth_0046d0ae = width;
             g_VideoBufferStride_0046db46 = width;
 
-            int height = g_VBufHeights_004382ec[param_1];
-            g_VideoBufferHeight_004374d2 = height;
-            g_VideoBufferHeightM1_004374ca = height - 1;
+            int height = g_VBufHeights_0046ded4[param_1];
+            g_VideoBufferHeight_0046d0ba = height;
             g_VideoBufferHeight_0046d0ba = height;
             g_VideoBufferHeightM1_0046d0b2 = height - 1;
+            g_VideoBufferHeightM1_0046d0b2 = height - 1;
 
-            g_ClipLeft_004374de = g_VBufClipLeft_0043816c[param_1];
-            g_ClipRight_004374e2 = g_VBufMaxX_0043806c[param_1];
-            g_ClipTop_004374e6 = g_VBufClipTop_004381ec[param_1];
-            g_ClipBottom_004374ea = g_VBufMaxY_004380ec[param_1];
-            g_ClipLeft_0046d0c6 = g_VBufClipLeft_0043816c[param_1];
-            g_ClipRight_0046d0ca = g_VBufMaxX_0043806c[param_1];
-            g_ClipTop_0046d0ce = g_VBufClipTop_004381ec[param_1];
-            g_ClipBottom_0046d0d2 = g_VBufMaxY_004380ec[param_1];
+            g_ClipLeft_0046d0c6 = g_VBufClipLeft_0046dd54[param_1];
+            g_ClipRight_0046d0ca = g_VBufMaxX_0046dc54[param_1];
+            g_ClipTop_0046d0ce = g_VBufClipTop_0046ddd4[param_1];
+            g_ClipBottom_0046d0d2 = g_VBufMaxY_0046dcd4[param_1];
+            g_ClipLeft_0046d0c6 = g_VBufClipLeft_0046dd54[param_1];
+            g_ClipRight_0046d0ca = g_VBufMaxX_0046dc54[param_1];
+            g_ClipTop_0046d0ce = g_VBufClipTop_0046ddd4[param_1];
+            g_ClipBottom_0046d0d2 = g_VBufMaxY_0046dcd4[param_1];
 
-            g_VideoBufferBase_00437f66 = g_VBufDataPtrs_0043826c[param_1];
-            g_VideoBufferBase_0046db4e = g_VBufDataPtrs_0043826c[param_1];
-            
-            // Replicating DS capture from assembly if possible, otherwise ignore
-            // _asm { mov word ptr [DAT_00437f6a], ds }
-             
+            g_VideoBufferBase_0046db4e = g_VBufDataPtrs_0046de54[param_1];
+            g_VideoBufferBase_0046db4e = g_VBufDataPtrs_0046de54[param_1];
+
             // Calculate size
-            unsigned int size = (unsigned int)g_VideoBufferWidth_004374c6 * (unsigned int)g_VideoBufferHeight_004374d2;
-            g_VideoBufferSize_00437f62 = (int)size; // Low 32 bits
-            
+            unsigned int size = (unsigned int)g_VideoBufferWidth_0046d0ae * (unsigned int)g_VideoBufferHeight_0046d0ba;
+            g_VideoBufferSize_0046db4a = (int)size;
+            g_VideoBufferSize_0046db4a = (int)size;
+
             return 0;
         }
     }
@@ -204,11 +210,11 @@ extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int p
     int w;
     int h;
 
-    if (*(char*)&g_CurrentVideoBuffer_00437f54 >= 0) {
-        if (g_WinGDC_0043841c == 0) {
+    if (*(char*)&g_CurrentVideoBuffer_0046db3c >= 0) {
+        if (g_WinGDC_0046e004 == 0) {
             // Non-WinG path: flip Y coordinates
-            iVar1 = g_VideoBufferHeightM1_004374ca - param_3;
-            param_3 = g_VideoBufferHeightM1_004374ca - param_4;
+            iVar1 = g_VideoBufferHeightM1_0046d0b2 - param_3;
+            param_3 = g_VideoBufferHeightM1_0046d0b2 - param_4;
             param_4 = iVar1;
         }
         
@@ -216,16 +222,16 @@ extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int p
         w = (param_2 - param_1) + 1;
         h = (param_4 - param_3) + 1;
         
-        if (g_WinGDC_0043841c == 0) {
+        if (g_WinGDC_0046e004 == 0) {
             // Use SetDIBitsToDevice
-            int bitmapInfo = g_VideoBufferBase_00437f66 - g_BitmapHeaderSize_00437f4c;
-            SetDIBitsToDevice(g_MainDC_00437488, param_5, iVar1, w, h, param_1, param_3, 0, g_VideoBufferHeight_004374d2,
-                              (void*)(bitmapInfo + g_BitmapHeaderSize_00437f4c),
+            int bitmapInfo = g_VideoBufferBase_0046db4e - g_BitmapHeaderSize_0046db34;
+            SetDIBitsToDevice(g_MainDC_0046d070, param_5, iVar1, w, h, param_1, param_3, 0, g_VideoBufferHeight_0046d0ba,
+                              (void*)(bitmapInfo + g_BitmapHeaderSize_0046db34),
                               (BITMAPINFO*)bitmapInfo,
-                              g_DibModeFlag_00437f50);
+                              g_DibModeFlag_0046db38);
         } else {
             // Use WinG BitBlt via function pointer
-            ((WinGBitBltFunc)g_WinGBitBlt_00438434)(g_MainDC_00437488, param_5, iVar1, w, h, g_WinGDC_0043841c, param_1, param_3);
+            ((WinGBitBltFunc)g_WinGBitBlt_0046e01c)(g_MainDC_0046d070, param_5, iVar1, w, h, g_WinGDC_0046e004, param_1, param_3);
         }
     }
     return 0;
@@ -241,14 +247,14 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
     int wingDC;
     int newY2;
 
-    if (*(char*)&g_CurrentVideoBuffer_00437f54 >= 0) {
-        wingDC = (int)g_WinGDC_0043841c;
+    if (*(char*)&g_CurrentVideoBuffer_0046db3c >= 0) {
+        wingDC = (int)g_WinGDC_0046e004;
         if (wingDC != 0) {
             newY2 = srcY2;
         }
         else {
-            newY2 = g_VideoBufferHeightM1_004374ca - srcY1;
-            srcY1 = g_VideoBufferHeightM1_004374ca - srcY2;
+            newY2 = g_VideoBufferHeightM1_0046d0b2 - srcY1;
+            srcY1 = g_VideoBufferHeightM1_0046d0b2 - srcY2;
         }
 
         srcWidth = (srcX2 - srcX1) + 1;
@@ -257,14 +263,14 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
         srcHeight = (newY2 - srcY1) + 1;
 
         if (wingDC != 0) {
-            ((WinGStretchBltFunc)g_WinGStretchBlt_00438438)(g_MainDC_00437488, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
+            ((WinGStretchBltFunc)g_WinGStretchBlt_0046e020)(g_MainDC_0046d070, destX1, destY1, destWidth, destHeight, (HDC)wingDC, srcX1, srcY1, srcWidth, srcHeight);
         }
         else {
-            int bitmapInfo = g_VideoBufferBase_00437f66 - g_BitmapHeaderSize_00437f4c;
-            StretchDIBits(g_MainDC_00437488, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
-                          (void*)(bitmapInfo + g_BitmapHeaderSize_00437f4c),
+            int bitmapInfo = g_VideoBufferBase_0046db4e - g_BitmapHeaderSize_0046db34;
+            StretchDIBits(g_MainDC_0046d070, destX1, destY1, destWidth, destHeight, srcX1, srcY1, srcWidth, srcHeight,
+                          (void*)(bitmapInfo + g_BitmapHeaderSize_0046db34),
                           (BITMAPINFO*)bitmapInfo,
-                          g_DibModeFlag_00437f50, 0xcc0020);
+                          g_DibModeFlag_0046db38, 0xcc0020);
         }
     }
     return 0;
@@ -273,18 +279,17 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
 /* Function start: 0x452FAA */
 extern "C" void __cdecl ReleaseBufferEntry(unsigned int param_1)
 {
-    int* arr;
     unsigned int idx;
 
     idx = param_1;
     if (idx > 0x1f) {
         return;
     }
-    if ((char)idx == *(char*)&g_CurrentVideoBuffer_00437f54) {
+    if ((char)idx == g_CurrentVideoBuffer_0046db3c) {
         return;
     }
-    arr = g_VBufDataPtrs_0043826c;
-    arr[idx] = 0;
+    g_VBufDataPtrs_0046de54[idx] = 0;
+    g_VBufDataPtrs_0046de54[idx] = 0;
 }
 
 // Forward declaration
@@ -298,8 +303,8 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
     int val;
 
     counter = 0x20;
-    ptr = g_VBufDataPtrs_0043826c;
-    if (g_WinGDC_0043841c == 0) {
+    ptr = g_VBufDataPtrs_0046de54;
+    if (g_WinGDC_0046e004 == 0) {
         do {
             val = *ptr;
             ptr++;
@@ -307,7 +312,7 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
         } while (counter != 0 && val != 0);
         if (val == 0) {
             int idx = 0x1f - counter;
-            ptr[-1] = buffer + g_BitmapHeaderSize_00437f4c;
+            ptr[-1] = buffer + g_BitmapHeaderSize_0046db34;
             int offset = idx * 4;
             int* dest = (int*)buffer;
             for (int j = 10; j != 0; j--) {
@@ -319,6 +324,15 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
             dest[-8] = height;
             *(short*)(dest - 7) = 1;
             *(short*)((char*)(dest - 7) + 2) = 8;
+            g_VBufWidths_0046df54[idx] = width;
+            g_VBufHeights_0046ded4[idx] = height;
+            g_VBufMaxX_0046dc54[idx] = width - 1;
+            g_VBufMaxY_0046dcd4[idx] = height - 1;
+            g_VBufClipLeft_0046dd54[idx] = 0;
+            g_VBufClipTop_0046ddd4[idx] = 0;
+
+            // Also write to demo arrays for compatibility
+            g_VBufDataPtrs_0046de54[idx] = ptr[-1];
             g_VBufWidths_0043836c[idx] = width;
             g_VBufHeights_004382ec[idx] = height;
             g_VBufMaxX_0043806c[idx] = width - 1;
@@ -339,31 +353,31 @@ extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int 
     int count;
     unsigned char* puVar1;
 
-    if ((signed char)g_CurrentVideoBuffer_00437f54 >= 0) {
-        iVar1 = g_VideoBufferHeightM1_004374ca - param_4;
-        iVar2 = g_VideoBufferHeightM1_004374ca - param_3;
+    if ((signed char)g_CurrentVideoBuffer_0046db3c >= 0) {
+        iVar1 = g_VideoBufferHeightM1_0046d0b2 - param_4;
+        iVar2 = g_VideoBufferHeightM1_0046d0b2 - param_3;
         count = (1 - iVar1) + iVar2;
         int rowWidth = (param_2 + 1) - param_1;
-        int stride = g_VideoBufferStride_00437f5e - rowWidth;
-        puVar1 = (unsigned char*)(param_1 + iVar1 * g_VideoBufferStride_00437f5e + g_VideoBufferBase_00437f66);
+        int stride = g_VideoBufferStride_0046db46 - rowWidth;
+        puVar1 = (unsigned char*)(param_1 + iVar1 * g_VideoBufferStride_0046db46 + g_VideoBufferBase_0046db4e);
 
         do {
             int remaining = rowWidth;
             // Fill by dwords first
             while (remaining >= 4) {
-                *(unsigned int*)puVar1 = g_FillColorDword_00437491;
+                *(unsigned int*)puVar1 = g_FillColorDword_0046d079;
                 puVar1 += 4;
                 remaining -= 4;
             }
             // Fill remaining word
             if (remaining >= 2) {
-                *(unsigned short*)puVar1 = (unsigned short)g_FillColorDword_00437491;
+                *(unsigned short*)puVar1 = (unsigned short)g_FillColorDword_0046d079;
                 puVar1 += 2;
                 remaining -= 2;
             }
             // Fill remaining byte
             if (remaining >= 1) {
-                *puVar1 = (unsigned char)g_FillColorDword_00437491;
+                *puVar1 = (unsigned char)g_FillColorDword_0046d079;
                 puVar1 += 1;
             }
             puVar1 += stride;
@@ -383,8 +397,8 @@ extern "C" int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, in
     int iVar2;
 
     // Top edge
-    iVar2 = g_LineWidthV_004374da;
-    iVar1 = param_3 + g_LineWidthV_004374da + -1;
+    iVar2 = g_LineWidthV_0046d0c2;
+    iVar1 = param_3 + g_LineWidthV_0046d0c2 + -1;
     if (param_4 < iVar1) {
         iVar1 = param_4;
     }
@@ -398,8 +412,8 @@ extern "C" int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, in
     ClipAndVideoFillRect(param_1, param_2, iVar2, param_4);
 
     // Left edge
-    iVar2 = g_LineWidthH_004374d6;
-    iVar1 = param_1 + g_LineWidthH_004374d6 + -1;
+    iVar2 = g_LineWidthH_0046d0be;
+    iVar1 = param_1 + g_LineWidthH_0046d0be + -1;
     if (param_2 < iVar1) {
         iVar1 = param_2;
     }
@@ -418,21 +432,21 @@ extern "C" int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, in
 /* Function start: 0x453D37 */
 extern "C" int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4)
 {
-    if (param_1 <= g_ClipRight_004374e2) {
-        if (param_1 < g_ClipLeft_004374de) {
-            param_1 = g_ClipLeft_004374de;
+    if (param_1 <= g_ClipRight_0046d0ca) {
+        if (param_1 < g_ClipLeft_0046d0c6) {
+            param_1 = g_ClipLeft_0046d0c6;
         }
-        if (g_ClipLeft_004374de <= param_2) {
-            if (g_ClipRight_004374e2 < param_2) {
-                param_2 = g_ClipRight_004374e2;
+        if (g_ClipLeft_0046d0c6 <= param_2) {
+            if (g_ClipRight_0046d0ca < param_2) {
+                param_2 = g_ClipRight_0046d0ca;
             }
-            if (param_3 <= g_ClipBottom_004374ea) {
-                if (param_3 < g_ClipTop_004374e6) {
-                    param_3 = g_ClipTop_004374e6;
+            if (param_3 <= g_ClipBottom_0046d0d2) {
+                if (param_3 < g_ClipTop_0046d0ce) {
+                    param_3 = g_ClipTop_0046d0ce;
                 }
-                if (g_ClipTop_004374e6 <= param_4) {
-                    if (g_ClipBottom_004374ea < param_4) {
-                        param_4 = g_ClipBottom_004374ea;
+                if (g_ClipTop_0046d0ce <= param_4) {
+                    if (g_ClipBottom_0046d0d2 < param_4) {
+                        param_4 = g_ClipBottom_0046d0d2;
                     }
                     VideoFillRect(param_1, param_2, param_3, param_4);
                 }

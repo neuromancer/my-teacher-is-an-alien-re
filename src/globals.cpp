@@ -59,76 +59,75 @@ GameOutcome* g_GameOutcome_00435f28 = 0;                     // 0x00435f28 — G
 
 // --- 0x00436xxx ---
 int g_SpriteEntryCount_00436344 = 0;                         // 0x00436344 — sprite data entry counter
-SpriteHashTable* g_CurrentSprite_00436348 = 0;               // 0x00436348 — current sprite hash table
-int g_CurrentSpriteIndex_0043634c = 0;                       // 0x0043634c — current sprite table index
+SpriteHashTable* g_CurrentSprite_004686f8 = 0;               // 0x004686f8 — current sprite hash table
+int g_CurrentSpriteIndex_004686fc = 0;                       // 0x004686fc — current sprite table index
 Sprite* g_NavCursorSprite_004360a0 = 0;                      // 0x004360a0 — navigator cursor sprite
 Sprite* g_NavSprite_004360a4 = 0;                            // 0x004360a4 — navigation sprite
 int g_TargetBearingValue_004362c8 = 0;                       // 0x004362c8
 int g_TargetRangeCounter_004362cc = 0;                       // 0x004362cc
-int g_StringTableCount_004366b4 = 0;                         // 0x004366b4
-char* g_Buffer_0046aa00 = 0;                                 // 0x00436960
-char* g_Buffer_00436964 = 0;                                 // 0x00436964
+int g_StringTableCount_0046aa80 = 0;                         // 0x004366b4
+char* g_Buffer_0046aa00 = 0;                                 // 0x0046aa00
+char* g_Buffer_0046aa04 = 0;                                 // 0x0046aa04
 Sound* g_Sound_0043696c = 0;                                 // 0x0043696c
 GameConfig* g_GameConfig_00436970 = 0;                       // 0x00436970
 VBuffer* g_WorkBuffer_00436974 = 0;                          // 0x00436974
-CDData* g_CDData_0043697c = 0;                               // 0x0043697c
-Timer* g_Timer_00436980 = 0;                                 // 0x00436980
+CDData* g_PathResolver_0046aa1c = 0;                               // 0x0043697c
+Timer* g_Timer_0046aa20 = 0;                                 // 0x00436980
 TimedEventPool* g_TimedEventPool1_00436984 = 0;              // 0x00436984
 TimedEventPool* g_TimedEventPool2_00436988 = 0;              // 0x00436988
 AnimatedAsset* g_TextManager_00436990 = 0;                   // 0x00436990
-GameState* g_GameState3_0043699c = 0;                        // 0x0043699c
-GameState* g_GameState4_004369a0 = 0;                        // 0x004369a0
-int g_SpriteTableInitialized_00436b9c = 0;                   // 0x00436b9c
+GameState* g_StringTable_0046aa34 = 0;                        // 0x0043699c
+GameState* g_StringState_0046aa38 = 0;                        // 0x004369a0
+int g_SpriteTableInitialized_0046c91c = 0;                   // 0x0046c91c
 unsigned int g_TimerCount_00436b94 = 0;                      // 0x00436b94 — active timer count
 
 // --- 0x00437xxx ---
 int g_PaletteColorTable_00437608[256];                       // 0x00437608
-HDC g_MainDC_00437488 = 0;                                   // 0x00437488
-char g_TextColor_00437490 = 0;                               // 0x00437490
-int g_FillColorDword_00437491 = 0;                           // 0x00437491
+HDC g_MainDC_0046d070 = 0;                                   // 0x0046d070
+char g_TextColor_0046d078 = 0;                               // 0x00437490
+int g_FillColorDword_0046d079 = 0;                           // 0x00437491
 HGDIOBJ g_StockFont_00437496 = 0;                            // 0x00437496
-int g_FontHeight_0043749a = 0;                               // 0x0043749a
+int g_FontHeight_0046d082 = 0;                               // 0x0043749a
 int g_FontExtLeading_0043749e = 0;                           // 0x0043749e
 int g_FontAvgWidth_004374a2 = 0;                             // 0x004374a2
-HPALETTE g_PreviousPalette_004374ae = 0;                     // 0x004374ae
-HPALETTE g_Palette_0043748c = 0;                             // 0x0043748c
+HPALETTE g_PreviousPalette_0046d096 = 0;                     // 0x004374ae
+HPALETTE g_Palette_0046d074 = 0;                             // 0x0043748c
 unsigned short g_StateFlags_004374b2 = 0;         // 0x004374b2
-HDC g_SecondaryDC_004374b4 = 0;                              // 0x004374b4
-char g_TextAlignH_004374c0 = 0;                              // 0x004374c0
-char g_TextAlignV_004374c1 = 0;                              // 0x004374c1
-int g_DrawPosX_004374c2 = 0;                                 // 0x004374c2
-int g_VideoBufferWidth_004374c6 = 0;                         // 0x004374c6
-int g_VideoBufferHeightM1_004374ca = 0;                      // 0x004374ca
-int g_DrawPosY_004374ce = 0;                                 // 0x004374ce
-int g_VideoBufferHeight_004374d2 = 0;                        // 0x004374d2
-int g_LineWidthH_004374d6 = 0;                               // 0x004374d6
-int g_LineWidthV_004374da = 0;                               // 0x004374da
-int g_ClipLeft_004374de = 0;                                 // 0x004374de
-int g_ClipRight_004374e2 = 0;                                // 0x004374e2
-int g_ClipTop_004374e6 = 0;                                  // 0x004374e6
-int g_ClipBottom_004374ea = 0;                               // 0x004374ea
-HANDLE g_WinGFileHandle_004374ee = 0;                        // 0x004374ee
-char g_CursorVisible_00437506 = 0;                           // 0x00437506
-char g_CursorState_00437507 = 0;                             // 0x00437507
+HDC g_SecondaryDC_0046d09c = 0;                              // 0x004374b4
+char g_TextAlignH_0046d0a8 = 0;                              // 0x004374c0
+char g_TextAlignV_0046d0a9 = 0;                              // 0x004374c1
+int g_DrawPosX_0046d0aa = 0;                                 // 0x004374c2
+int g_VideoBufferWidth_0046d0ae = 0;                         // 0x004374c6
+int g_VideoBufferHeightM1_0046d0b2 = 0;                      // 0x004374ca
+int g_DrawPosY_0046d0b6 = 0;                                 // 0x004374ce
+int g_VideoBufferHeight_0046d0ba = 0;                        // 0x004374d2
+int g_LineWidthH_0046d0be = 0;                               // 0x004374d6
+int g_LineWidthV_0046d0c2 = 0;                               // 0x004374da
+int g_ClipLeft_0046d0c6 = 0;                                 // 0x004374de
+int g_ClipRight_0046d0ca = 0;                                // 0x004374e2
+int g_ClipTop_0046d0ce = 0;                                  // 0x004374e6
+int g_ClipBottom_0046d0d2 = 0;                               // 0x004374ea
+HANDLE g_WinGFileHandle_0046d0d6 = 0;                        // 0x004374ee
+char g_CursorVisible_0046d0ee = 0;                           // 0x00437506
+char g_CursorState_0046d0ef = 0;                             // 0x00437507
 int g_DblClickCX_00437508 = 0;                               // 0x00437508
 int g_DblClickCY_0043750c = 0;                               // 0x0043750c
 int g_WindowWord_00437510 = 0;                               // 0x00437510
 int g_GfxInitFlag_00437514 = 0;                              // 0x00437514
 int g_GfxField1_00437518 = 0;                                // 0x00437518
 int g_GfxField2_0043751c = 0;                                // 0x0043751c
-char g_PaletteMap_00437520[256] = {0};                       // 0x00437520 — Palette identity map
-unsigned char g_PaletteData_00437620[256] = {0};  // 0x00437620 — Palette data / state flags
+char g_PaletteMap_0046d108[256] = {0};                       // 0x00437520 — Palette identity map
+unsigned char g_PaletteData_0046d208[256] = {0};  // 0x00437620 — Palette data / state flags
 // LOGPALETTE: palVersion=0x0300, palNumEntries=0x0100
 char g_LogPalette_00437720[1028] = {0x00, 0x03, 0x00, 0x01}; // 0x00437720
 char g_BgrPalette_00437b48[1028];                            // 0x00437b48
-int g_BitmapHeaderSize_00437f4c = 0;                         // 0x00437f4c
-int g_DibModeFlag_00437f50 = 0;                              // 0x00437f50
-char g_CurrentVideoBuffer_00437f54 = (char)0xff;             // 0x00437f54
+int g_BitmapHeaderSize_0046db34 = 0;                         // 0x00437f4c
+int g_DibModeFlag_0046db38 = 0;                              // 0x00437f50
 int g_VBufField1_00437f56 = 0;                               // 0x00437f56
 int g_VBufField2_00437f5a = 0;                               // 0x00437f5a
-int g_VideoBufferStride_00437f5e = 0;                        // 0x00437f5e
-int g_VideoBufferSize_00437f62 = 0;                          // 0x00437f62
-int g_VideoBufferBase_00437f66 = 0;                          // 0x00437f66
+int g_VideoBufferStride_0046db46 = 0;                        // 0x00437f5e
+int g_VideoBufferSize_0046db4a = 0;                          // 0x00437f62
+int g_VideoBufferBase_0046db4e = 0;                          // 0x00437f66
 short g_VideoBufferDS_00437f6a = 0;                          // 0x00437f6a
 int g_VBufMemHandles_00437f6c[32];                           // 0x00437f6c
 int g_VBufDibHandles_00437fec[32];                           // 0x00437fec
@@ -138,34 +137,34 @@ int g_VBufMaxX_0043806c[32];                                 // 0x0043806c
 int g_VBufMaxY_004380ec[32];                                 // 0x004380ec
 int g_VBufClipLeft_0043816c[32];                             // 0x0043816c
 int g_VBufClipTop_004381ec[32];                              // 0x004381ec
-int g_VBufDataPtrs_0043826c[32];                             // 0x0043826c
+int g_VBufDataPtrs_0046de54[32];                             // 0x0043826c
 int g_VBufHeights_004382ec[32];                              // 0x004382ec
 int g_VBufWidths_0043836c[32];                               // 0x0043836c
 int g_GfxField3_004383ec = 0;                                // 0x004383ec
 int g_GfxField4_004383f4 = 0;                                // 0x004383f4
 int g_GfxField5_00438404 = 0;                                // 0x00438404
 int g_GfxField6_0043840c = 0;                                // 0x0043840c
-HDC g_WinGDC_0043841c = 0;                                   // 0x0043841c
-HMODULE g_WinGModule_00438420 = 0;                           // 0x00438420
-HGDIOBJ g_WinGBitmap_00438424 = 0;                           // 0x00438424
-void* g_WinGCreateDIB_00438428 = 0;                          // 0x00438428
-void* g_WinGSetDIBColorTable_0043842c = 0;                   // 0x0043842c
-void* g_WinGRecommendDIBFormat_00438430 = 0;                 // 0x00438430
-void* g_WinGBitBlt_00438434 = 0;                             // 0x00438434
-void* g_WinGStretchBlt_00438438 = 0;                         // 0x00438438
-char* g_SysDirPtr_0043843c = g_SystemDirPath_00438446;       // 0x0043843c
-short g_SegmentReg_00438440 = 0;                             // 0x00438440
+HDC g_WinGDC_0046e004 = 0;                                   // 0x0043841c
+HMODULE g_WinGModule_0046e008 = 0;                           // 0x00438420
+HGDIOBJ g_WinGBitmap_0046e00c = 0;                           // 0x00438424
+void* g_WinGCreateDIB_0046e010 = 0;                          // 0x00438428
+void* g_WinGSetDIBColorTable_0046e014 = 0;                   // 0x0043842c
+void* g_WinGRecommendDIBFormat_0046e018 = 0;                 // 0x00438430
+void* g_WinGBitBlt_0046e01c = 0;                             // 0x00438434
+void* g_WinGStretchBlt_0046e020 = 0;                         // 0x00438438
+char* g_SysDirPtr_0046e024 = g_SystemDirPath_00438446;       // 0x0043843c
+short g_SegmentReg_0046e028 = 0;                             // 0x00438440
 int g_WinGBufSize_00438442 = 0x1000;                         // 0x00438442
 char g_SystemDirPath_00438446[256] = {0};                    // 0x00438446
-char g_TextMetric_00439446[256] = {0};                       // 0x00439446
+char g_TextMetric_0046f02e[256] = {0};                       // 0x00439446
 
 // --- 0x0043bxxx - 0x0043cxxx (CRT / misc) ---
 int g_RandomSeed_0043bc88 = 1;                               // 0x0043bc88
 char g_ExitCode_0043be30 = 0;                                // 0x0043be30
 int g_ExitInProgress_0043be34 = 0;                           // 0x0043be34
 int g_CrtField_0043bdf0 = 0;                                 // 0x0043bdf0
-int g_ErrorCode_0043bdf4 = 0;                                // 0x0043bdf4
-unsigned int DAT_0043c760[90] = {0};                         // 0x0043c760 — CRT error code mapping
+int g_ErrorCode_004719c4 = 0;                                // 0x0043bdf4
+unsigned int DAT_00471d38[90] = {0};                         // 0x0043c760 — CRT error code mapping
 int g_TimeSeed_0043cb64 = 1;                                 // 0x0043cb64
 
 // --- 0x0043dxxx ---
@@ -186,15 +185,15 @@ GlyphRect g_PuzzleRects2_0043d100[3] = {                     // 0x0043d100
     GlyphRect(0x0b2, 0x0ac, 0x0ef, 0x118),
     GlyphRect(0x15d, 0x0a1, 0x18f, 0x137),
 };
-int g_SaveState0_0043d130 = 0;                               // 0x0043d130
+int g_SaveState0_00472be0 = 0;                               // 0x0043d130
 int g_ProjectileHits_0043d150 = 0;                           // 0x0043d150
 int g_SaveState1_0043d134 = 0;                               // 0x0043d134
 int g_SaveState2_0043d138 = 0;                               // 0x0043d138
 int g_SaveState3_0043d13c = 0;                               // 0x0043d13c
 char g_StringTable_0043d158[16384] = {0};                    // 0x0043d158 — string lookup table
-int g_DebugFlag_0043d55c = 0;                                // 0x0043d55c
-int g_CmdLineAudioMode_0043d558 = 0;                        // 0x0043d558
-char g_CmdLineInputMode_0043d560 = 0;                       // 0x0043d560
+int g_DebugFlag_00472ddc = 0;                                // 0x0043d55c
+int g_CmdLineAudioMode_00472dd8 = 0;                        // 0x0043d558
+char g_CmdLineInputMode_00472de0 = 0;                       // 0x0043d560
 int g_DirectSoundFlag_0046a87c = 1;                          // 0x0046a87c
 int g_DevModeFlag_0043d564 = 0;                              // 0x0043d564
 char g_CmdLineDataPath_0043d568[260] = {0};                  // 0x0043d568
@@ -205,8 +204,8 @@ int g_WindowedModeFlag_0043de90;                             // 0x0043de90
 
 // --- 0x0043exxx - 0x0043fxxx ---
 void* g_ProcessHeap_0043eff0 = 0;                            // 0x0043eff0 — Process heap handle
-void* g_AtExitTableEnd_0043f100 = 0;                         // 0x0043f100
-void* g_AtExitTableStart_0043f104 = 0;                       // 0x0043f104
+void* g_AtExitTableEnd_00475084 = 0;                         // 0x0043f100
+void* g_AtExitTableStart_00475088 = 0;                       // 0x0043f104
 
 // --- 0x00440xxx (WinG entry point) ---
 void* g_SmackSoundCheck_0044053c = 0;                        // 0x0044053c
@@ -261,13 +260,10 @@ Sound* g_EngineSound_0046aa0c = 0;                           // 0x0046aa0c
 GameConfig* g_GameConfig2_0046aa10 = 0;            // 0x0046aa10 — actually GameConfig*
 VBuffer* g_BackBuffer_0046aa14 = 0;               // 0x0046aa14
 MouseControl* g_Mouse_0046aa18 = 0;                          // 0x0046aa18
-CDData* g_PathResolver_0046aa1c = 0;                         // 0x0046aa1c
 ZBufferManager* g_ZBufferManager_0046aa24 = 0;               // 0x0046aa24
 AnimatedAsset* g_GlyphFont_0046aa28 = 0;                     // 0x0046aa28
 char* g_StateString_0046aa2c = 0;                            // 0x0046aa2c
 GameState* g_GameState_0046aa30 = 0;              // 0x0046aa30
-GameState* g_StringTable_0046aa34 = 0;                       // 0x0046aa34
-GameState* g_StringState_0046aa38 = 0;                       // 0x0046aa38
 GameState* g_GameState2_0046aa3c = 0;                        // 0x0046aa3c
 int g_DoubleClickTime_0046ac00 = 0;                          // 0x0046ac00
 int g_WaitForInputValue_0046ac04 = 0;                        // 0x0046ac04
@@ -304,20 +300,18 @@ Palette* g_PodsPalette_0046bf30 = 0;              // 0x0046bf30
 int g_TargetBearingValue_0046bff0 = 0;                       // 0x0046bff0
 int g_TargetRangeCounter_0046bff4 = 0;                       // 0x0046bff4
 
-// --- 0x0046d0xx / 0x0046dbxx --- Full-game video buffer "current" globals
-// These are the full-game equivalents of the demo 0x4374xx/0x437fxx globals.
-// The original binary writes to these addresses; GetPixelAt reads from them.
-int g_VideoBufferHeightM1_0046d0b2 = 0;                      // 0x0046d0b2
-int g_VideoBufferWidth_0046d0ae = 0;                         // 0x0046d0ae
-int g_VideoBufferHeight_0046d0ba = 0;                        // 0x0046d0ba
-int g_ClipLeft_0046d0c6 = 0;                                 // 0x0046d0c6
-int g_ClipRight_0046d0ca = 0;                                // 0x0046d0ca
-int g_ClipTop_0046d0ce = 0;                                  // 0x0046d0ce
-int g_ClipBottom_0046d0d2 = 0;                               // 0x0046d0d2
+// --- Full-game video buffer globals (no demo equivalent) ---
 char g_CurrentVideoBuffer_0046db3c = (char)0xff;             // 0x0046db3c
-int g_VideoBufferStride_0046db46 = 0;                        // 0x0046db46
-int g_VideoBufferBase_0046db4e = 0;                          // 0x0046db4e
 short g_VideoBufferDS_0046db52 = 0;                          // 0x0046db52
+int g_VBufMemHandles_0046db54[32];                           // 0x0046db54
+int g_VBufDibHandles_0046dbd4[32];                           // 0x0046dbd4
+int g_VBufMaxX_0046dc54[32];                                 // 0x0046dc54
+int g_VBufMaxY_0046dcd4[32];                                 // 0x0046dcd4
+int g_VBufClipLeft_0046dd54[32];                             // 0x0046dd54
+int g_VBufClipTop_0046ddd4[32];                              // 0x0046ddd4
+int g_VBufHeights_0046ded4[32];                              // 0x0046ded4
+int g_VBufWidths_0046df54[32];                               // 0x0046df54
+
 int g_SchedulePositionTable_0046b940[42] = {                  // 0x0046b940 — x,y pairs, index 0 unused
     0, 0,           // [0] unused
     100, 108,       // [1]

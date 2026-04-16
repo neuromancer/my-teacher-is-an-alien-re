@@ -9,7 +9,7 @@ int __cdecl BlitBufferOpaque(int srcX1, int srcX2, int srcY1, int srcY2, int des
     int srcIdx = (srcHandle & 0x1f);
     int destIdx = (destHandle & 0x1f);
     
-    int srcData = g_VBufDataPtrs_0043826c[srcIdx];
+    int srcData = g_VBufDataPtrs_0046de54[srcIdx];
     if (srcData == 0) {
         return 0;
     }
@@ -17,7 +17,7 @@ int __cdecl BlitBufferOpaque(int srcX1, int srcX2, int srcY1, int srcY2, int des
     int srcWidth = g_VBufWidths_0043836c[srcIdx];
     int srcHeight = g_VBufHeights_004382ec[srcIdx];
     
-    int destData = g_VBufDataPtrs_0043826c[destIdx];
+    int destData = g_VBufDataPtrs_0046de54[destIdx];
     if (destData == 0) {
         return 0;
     }
@@ -52,12 +52,12 @@ int __cdecl BlitBufferOpaque(int srcX1, int srcX2, int srcY1, int srcY2, int des
 int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, unsigned int srcHandle, unsigned int destHandle)
 {
     unsigned char localTable[256];
-    memcpy(localTable, g_PaletteData_00437620, 256);
+    memcpy(localTable, g_PaletteData_0046d208, 256);
     
     int srcIdx = (srcHandle & 0x1f);
     int destIdx = (destHandle & 0x1f);
     
-    int srcData = g_VBufDataPtrs_0043826c[srcIdx];
+    int srcData = g_VBufDataPtrs_0046de54[srcIdx];
     if (srcData == 0) {
         return 0;
     }
@@ -65,7 +65,7 @@ int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, in
     int srcWidth = g_VBufWidths_0043836c[srcIdx];
     int srcHeight = g_VBufHeights_004382ec[srcIdx];
     
-    int destData = g_VBufDataPtrs_0043826c[destIdx];
+    int destData = g_VBufDataPtrs_0046de54[destIdx];
     if (destData == 0) {
         return 0;
     }

@@ -1,5 +1,6 @@
 #include "Target.h"
 #include "globals.h"
+extern "C" void WriteToMessageLog(const char* msg, ...);
 #include "Sprite.h"
 #include "Memory.h"
 #include "SoundList.h"
@@ -252,6 +253,7 @@ int Target::CheckTimeInRangeParam(int* coords)
     int result;
 
     result = GetPixelAt(coords[0], coords[1]);
+    WriteToMessageLog("HITDBG: pixel=%d at(%d,%d) range=[%d,%d] buf=%d", result, coords[0], coords[1], Target::timeRange.x, Target::timeRange.y, (int)(signed char)g_CurrentVideoBuffer_0046db3c);
     if (Target::timeRange.x <= result && result <= Target::timeRange.y) {
         return 1;
     }

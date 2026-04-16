@@ -73,7 +73,7 @@ void Animation::CloseSmackerFile() {
         g_GameEngine_0046a6ec->m_frameTime = g_GameEngine_0046a6ec->m_frameTimeCopy;
       }
     }
-    if (g_GameConfig_00436970->data.rawData[2] == 2) {
+    if (g_GameConfig2_0046aa10->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 0);
     }
     if (g_GameLoopHelper_0046a6f0 != 0) {
@@ -151,11 +151,11 @@ void Animation::NextFrame() {
 /* Function start: 0x41ADB0 */
 void Animation::GotoFrame(int frame) {
   if (smk != 0) {
-    if (g_GameConfig_00436970->data.rawData[2] == 2) {
+    if (g_GameConfig2_0046aa10->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 0);
     }
     SmackGoto(smk, frame);
-    if (g_GameConfig_00436970->data.rawData[2] == 2) {
+    if (g_GameConfig2_0046aa10->data.rawData[2] == 2) {
       SmackSoundOnOff(smk, 1);
     }
   }
@@ -167,7 +167,7 @@ int Animation::Open(char *filename, int param_2, int param_3) {
     return 1;
   }
 
-  if (g_GameConfig_00436970->data.rawData[2] != 2) {
+  if (g_GameConfig2_0046aa10->data.rawData[2] != 2) {
     param_2 = param_2 & 0xfff01fff;
   }
   param_2 = param_2 | 0x400;

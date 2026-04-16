@@ -64,8 +64,8 @@ public:
 };
 
 // Global variables used by CombatSprite parsing
-// g_CurrentSprite_00436348 — declared in globals.h
-// g_CurrentSpriteIndex_0043634c, g_CurrentSprite_00436348 — declared in globals.h
+// g_CurrentSprite_004686f8 — declared in globals.h
+// g_CurrentSpriteIndex_004686fc, g_CurrentSprite_004686f8 — declared in globals.h
 
 // Helper functions for hash table cleanup
 void __cdecl CleanupSpriteHashArray(void** array, int count);  // 0x408F20

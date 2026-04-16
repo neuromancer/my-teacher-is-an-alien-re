@@ -15,24 +15,24 @@ int __cdecl SetFillColor(unsigned char param_1)
     unsigned int edx;
 
     g_ColorIndex_00437495 = param_1;
-    al = g_PaletteMap_00437520[param_1];
-    g_TextColor_00437490 = al;
+    al = g_PaletteMap_0046d108[param_1];
+    g_TextColor_0046d078 = al;
     eax = al | (al << 8);
     edx = eax << 16;
     eax = eax | edx;
-    g_FillColorDword_00437491 = eax;
+    g_FillColorDword_0046d079 = eax;
     return 0;
 }
 
 /* Function start: 0x452964 */
 int __cdecl ApplyVideoPalette(void)
 {
-    if ((signed char)g_CurrentVideoBuffer_00437f54 >= 0) {
-        if (g_WinGDC_0043841c != (HDC)0) {
-            ((void (__cdecl *)(HDC, int, int, void*))g_WinGSetDIBColorTable_0043842c)(g_WinGDC_0043841c, 0, 0x100, &g_BgrPalette_00437b48[4]);
+    if ((signed char)g_CurrentVideoBuffer_0046db3c >= 0) {
+        if (g_WinGDC_0046e004 != (HDC)0) {
+            ((void (__cdecl *)(HDC, int, int, void*))g_WinGSetDIBColorTable_0046e014)(g_WinGDC_0046e004, 0, 0x100, &g_BgrPalette_00437b48[4]);
         } else {
-            if (g_DibModeFlag_00437f50 != 0) {
-                short* dst = (short*)(g_VideoBufferBase_00437f66 - 0x200);
+            if (g_DibModeFlag_0046db38 != 0) {
+                short* dst = (short*)(g_VideoBufferBase_0046db4e - 0x200);
                 short value = 0;
                 int count = 0x100;
                 do {
@@ -42,7 +42,7 @@ int __cdecl ApplyVideoPalette(void)
                     dst++;
                 } while (count != 0);
             } else {
-                memcpy((void*)(g_VideoBufferBase_00437f66 - 0x400), &g_BgrPalette_00437b48[4], 0x400);
+                memcpy((void*)(g_VideoBufferBase_0046db4e - 0x400), &g_BgrPalette_00437b48[4], 0x400);
             }
         }
     }
@@ -75,7 +75,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
 {
     unsigned int i;
 
-    if ((signed char)g_CurrentVideoBuffer_00437f54 >= 0 && count != 0) {
+    if ((signed char)g_CurrentVideoBuffer_0046db3c >= 0 && count != 0) {
         int offset = (start + 1) * 4;
         PALETTEENTRY* pe = (PALETTEENTRY*)&g_LogPalette_00437720[offset];
         unsigned char* src = data;
@@ -98,10 +98,10 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
             quad[i].rgbReserved = 0;
         }
 
-        if (g_WinGDC_0043841c == (HDC)0) {
-            if (g_DibModeFlag_00437f50 == 0) {
+        if (g_WinGDC_0046e004 == (HDC)0) {
+            if (g_DibModeFlag_0046db38 == 0) {
                 // Copy to video buffer
-                unsigned int* dst = (unsigned int*)(g_VideoBufferBase_00437f66 - 0x400);
+                unsigned int* dst = (unsigned int*)(g_VideoBufferBase_0046db4e - 0x400);
                 unsigned int* srcQuad = (unsigned int*)&g_BgrPalette_00437b48[4];
                 for (i = 0x100; i != 0; i--) {
                     *dst++ = *srcQuad++;
@@ -110,10 +110,10 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
         } else {
             // Use SetDIBColorTable via function pointer
             typedef void (__cdecl *SetDIBColorTableFunc)(HDC, unsigned int, unsigned int, RGBQUAD*);
-            ((SetDIBColorTableFunc)g_WinGSetDIBColorTable_0043842c)(g_WinGDC_0043841c, start, count, (RGBQUAD*)&g_BgrPalette_00437b48[offset]);
+            ((SetDIBColorTableFunc)g_WinGSetDIBColorTable_0046e014)(g_WinGDC_0046e004, start, count, (RGBQUAD*)&g_BgrPalette_00437b48[offset]);
         }
 
-        AnimatePalette(g_Palette_0043748c, start, count, pe);
+        AnimatePalette(g_Palette_0046d074, start, count, pe);
     }
     return 0;
 }
@@ -121,25 +121,25 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
 /* Function start: 0x452C9B */
 int __cdecl GetGlobalVertAlign()
 {
-    return (int)(signed char)g_TextAlignV_004374c1;
+    return (int)(signed char)g_TextAlignV_0046d0a9;
 }
 
 /* Function start: 0x453CBA */
 int __cdecl GetGlobalTextAlign()
 {
-    return (int)(signed char)g_TextAlignH_004374c0;
+    return (int)(signed char)g_TextAlignH_0046d0a8;
 }
 
 /* Function start: 0x453CC2 */
 int __cdecl GetGlobalTextY()
 {
-    return g_DrawPosY_004374ce;
+    return g_DrawPosY_0046d0b6;
 }
 
 /* Function start: 0x453CC8 */
 int __cdecl GetGlobalTextX()
 {
-    return g_DrawPosX_004374c2;
+    return g_DrawPosX_0046d0aa;
 }
 
 } // extern "C"

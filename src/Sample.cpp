@@ -35,7 +35,7 @@ extern "C" FILE* fsopen(const char*, const char*);
 int Sample::Load(char *filename) {
   FILE* file;
 
-  if (g_Sound_0043696c->digital_driver == 0) {
+  if (g_EngineSound_0046aa0c->digital_driver == 0) {
     return 1;
   }
   if (Sample::m_data != 0) {
@@ -123,7 +123,7 @@ int Sample::Play(int volume, int loop_count) {
   if (m_data == 0) {
     return 1;
   }
-  m_sample = g_Sound_0043696c->FindFreeSampleHandle();
+  m_sample = g_EngineSound_0046aa0c->FindFreeSampleHandle();
   if (m_sample != 0) {
     Init(volume);
     if (m_sample != 0) {

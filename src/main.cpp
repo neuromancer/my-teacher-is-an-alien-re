@@ -103,11 +103,11 @@ void RunGame() {
 
     g_GameState2_0046aa3c = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
 
-    g_GameState3_0043699c = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
-    g_StringTable_0046aa34 = g_GameState3_0043699c;
+    g_StringTable_0046aa34 = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
+    g_StringTable_0046aa34 = g_StringTable_0046aa34;
 
-    g_GameState4_004369a0 = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
-    g_StringState_0046aa38 = g_GameState4_004369a0;
+    g_StringState_0046aa38 = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
+    g_StringState_0046aa38 = g_StringState_0046aa38;
 
     // Check CACHE_SIZE from gamestate
     int cacheIdx = g_GameState_0046aa30->FindState("CACHE_SIZE");
@@ -142,7 +142,7 @@ void RunGame() {
     g_StateString_0046aa2c = (char *)operator new(0x40);
     *g_StateString_0046aa2c = 0;
 
-    g_Timer_00436980 = new Timer();
+    g_Timer_0046aa20 = new Timer();
 
     g_FlagManager_0046a6e8 = new FlagArray("cfg\\\\question.dat", 10000);
     g_FlagManager_0046a6e8->ClearAllFlags();
@@ -181,7 +181,7 @@ void RunGame() {
     g_GlyphFont_0046aa28->char_adv.advance = 2;
     g_GlyphFont_0046aa28->spaceWidth = 5;
     g_GlyphFont_0046aa28->tabWidth = 0x14;
-    g_Timer_00436980->Reset();
+    g_Timer_0046aa20->Reset();
 
     SendGameMessage(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
     SendGameMessage(1, 0x1e, 0, 0, 0x17, 0, 0, 0, 0, 0);
@@ -225,18 +225,18 @@ void RunGame() {
         g_Strings_0046a6e0 = 0;
     }
 
-    if (g_GameState4_004369a0 != 0) {
-        GameState* p = g_GameState4_004369a0;
+    if (g_StringState_0046aa38 != 0) {
+        GameState* p = g_StringState_0046aa38;
         p->~GameState();
         operator delete(p);
-        g_GameState4_004369a0 = 0;
+        g_StringState_0046aa38 = 0;
     }
 
-    if (g_GameState3_0043699c != 0) {
-        GameState* p = g_GameState3_0043699c;
+    if (g_StringTable_0046aa34 != 0) {
+        GameState* p = g_StringTable_0046aa34;
         p->~GameState();
         operator delete(p);
-        g_GameState3_0043699c = 0;
+        g_StringTable_0046aa34 = 0;
     }
 
     if (g_GameState2_0046aa3c != 0) {
@@ -253,11 +253,11 @@ void RunGame() {
         g_GameState_0046aa30 = 0;
     }
 
-    if (g_Timer_00436980 != 0) {
-        Timer* p = g_Timer_00436980;
+    if (g_Timer_0046aa20 != 0) {
+        Timer* p = g_Timer_0046aa20;
         p->~Timer();
         operator delete(p);
-        g_Timer_00436980 = 0;
+        g_Timer_0046aa20 = 0;
     }
 
     if (g_StateString_0046aa2c != 0) {
@@ -358,13 +358,13 @@ extern "C" void TouchFileTimestamp(const char* filename) {
 /* Function start: 0x425720 */
 void InitGameSystems(void) {
     g_Buffer_0046aa00 = new char[0x100];
-    g_Buffer_00436964 = new char[CalculateBufferSize(0x280, 0x1e0)];
+    g_Buffer_0046aa04 = new char[CalculateBufferSize(0x280, 0x1e0)];
     CreateGameObject_1();
     ClearMessageLog();
     InitGameConfig();
     SetVideoRes(0x280, 0x1e0);
-    g_InputManager_0046aa08 = new InputManager((unsigned int)g_GameConfig_00436970->data.rawData[0]);
-    g_Sound_0043696c = new Sound(0x5622, 8, 1);
+    g_InputManager_0046aa08 = new InputManager((unsigned int)g_GameConfig2_0046aa10->data.rawData[0]);
+    g_EngineSound_0046aa0c = new Sound(0x5622, 8, 1);
     g_GlyphFont_0046aa28 = new AnimatedAsset();
     g_GlyphFont_0046aa28->LoadFont("elements\\barrel06.smk");
     SetStateFlag(0, 1);
@@ -384,32 +384,31 @@ void ShutdownGameSystems(void) {
     g_BackBuffer_0046aa14 = 0;
     g_BackBuffer_0046aa14 = 0;
   }
-  if (g_Sound_0043696c != 0) {
-    Sound* p = g_Sound_0043696c;
+  if (g_EngineSound_0046aa0c != 0) {
+    Sound* p = g_EngineSound_0046aa0c;
     p->~Sound();
     operator delete(p);
-    g_Sound_0043696c = 0;
+    g_EngineSound_0046aa0c = 0;
   }
   if (g_InputManager_0046aa08 != 0) {
     delete g_InputManager_0046aa08;
     g_InputManager_0046aa08 = 0;
   }
 
-  if (g_CDData_0043697c != 0) {
-    CDData* p = g_CDData_0043697c;
+  if (g_PathResolver_0046aa1c != 0) {
+    CDData* p = g_PathResolver_0046aa1c;
     p->~CDData();
     operator delete(p);
-    g_CDData_0043697c = 0;
+    g_PathResolver_0046aa1c = 0;
     g_PathResolver_0046aa1c = 0;
   }
-  if (g_GameConfig_00436970 != 0) {
-     delete g_GameConfig_00436970;
-     g_GameConfig_00436970 = 0;
+  if (g_GameConfig2_0046aa10 != 0) {
+     delete g_GameConfig2_0046aa10;
      g_GameConfig2_0046aa10 = 0;
   }
-  if (g_Buffer_00436964 != 0) {
-    delete[] g_Buffer_00436964;
-    g_Buffer_00436964 = 0;
+  if (g_Buffer_0046aa04 != 0) {
+    delete[] g_Buffer_0046aa04;
+    g_Buffer_0046aa04 = 0;
   }
   if (g_Buffer_0046aa00 != 0) {
     delete g_Buffer_0046aa00;
@@ -422,21 +421,20 @@ void CreateGameObject_1() {
   static char s_pathBuffer[260]; // DAT_00472de8
   CDData* cd = new CDData(s_pathBuffer, "teacher.id", "Missing the Teacher CD ROM");
   g_PathResolver_0046aa1c = cd;
-  g_CDData_0043697c = cd;
+  g_PathResolver_0046aa1c = cd;
 }
 
 /* Function start: 0x4259E0 */
 void InitGameConfig() {
   GameConfig* cfg = new GameConfig();
   g_GameConfig2_0046aa10 = cfg;
-  g_GameConfig_00436970 = cfg;
 
-  if (g_CmdLineAudioMode_0043d558 != 0) {
-      g_GameConfig2_0046aa10->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_0043d558;
+  if (g_CmdLineAudioMode_00472dd8 != 0) {
+      g_GameConfig2_0046aa10->data.rawData[2] = (unsigned char)g_CmdLineAudioMode_00472dd8;
   }
 
-  if (g_CmdLineInputMode_0043d560 != 0) {
-      g_GameConfig2_0046aa10->data.rawData[0] = (unsigned char)g_CmdLineInputMode_0043d560;
+  if (g_CmdLineInputMode_00472de0 != 0) {
+      g_GameConfig2_0046aa10->data.rawData[0] = (unsigned char)g_CmdLineInputMode_00472de0;
   }
 
   g_GameConfig2_0046aa10->LoadConfig();
@@ -466,7 +464,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return 0;
   }
   UpdateWindow(g_GameWindow.hWnd);
-  if (g_DebugFlag_0043d55c == 0) {
+  if (g_DebugFlag_00472ddc == 0) {
     RunGame();
   } else {
     PlayIntroCinematic();
@@ -477,7 +475,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 /* Function start: 0x453BFF */
 int __cdecl CalculateBufferSize(int width, unsigned int height) {
-  return (((width + 3) & ~3U) * height) + g_BitmapHeaderSize_00437f4c;
+  return (((width + 3) & ~3U) * height) + g_BitmapHeaderSize_0046db34;
 }
 
 // 0x4260F0 = FormatAssetPath — in CDData.cpp
@@ -487,12 +485,12 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...) {
 
     vsprintf(local_104, format, args);
     if (FileExists(local_104)) {
-        strcpy(g_CDData_0043697c->cdPath + 5, local_104);
+        strcpy(g_PathResolver_0046aa1c->cdPath + 5, local_104);
     } else {
-        sprintf(g_CDData_0043697c->cdPath + 5, "%s\\%s",
-                g_CDData_0043697c->cdPath, local_104);
+        sprintf(g_PathResolver_0046aa1c->cdPath + 5, "%s\\%s",
+                g_PathResolver_0046aa1c->cdPath, local_104);
     }
-    return g_CDData_0043697c->cdPath + 5;
+    return g_PathResolver_0046aa1c->cdPath + 5;
 }
 
 /* Function start: 0x4265A0 */
@@ -670,9 +668,9 @@ void SetErrorCode(unsigned int errorCode) {
   int iVar1;
   unsigned int *puVar2;
 
-  g_ErrorCode_0043bdf4 = errorCode;
+  g_ErrorCode_004719c4 = errorCode;
   iVar1 = 0;
-  puVar2 = DAT_0043c760;
+  puVar2 = DAT_00471d38;
   do {
     if (*puVar2 == errorCode) {
       g_CrtField_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
@@ -705,7 +703,7 @@ int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
   }
   if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
     g_CrtField_0043bdf0 = 0xd;
-    g_ErrorCode_0043bdf4 = 5;
+    g_ErrorCode_004719c4 = 5;
     return -1;
   }
   return 0;

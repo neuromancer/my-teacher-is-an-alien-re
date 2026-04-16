@@ -3,7 +3,7 @@
 #include "InputManager.h"
 #include "Timer.h"
 #include "Memory.h"
-#include "globals.h" // For globals like DAT_004373bc
+#include "globals.h" // For globals like g_WaitForInputValue_0046ac04
 
 extern "C" int* GetScreenWidth();  // 0x4205E0
 extern "C" int* GetScreenHeight(); // 0x4205F0

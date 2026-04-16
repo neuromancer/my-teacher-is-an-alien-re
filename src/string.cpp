@@ -171,7 +171,7 @@ void WriteToMessageLog(const char *msg,...)
     }
 }
 
-// g_StringTableCount_004366b4 — defined in globals.cpp
+// g_StringTableCount_0046aa80 — defined in globals.cpp
 // g_StringTable_0043d158 — defined in globals.cpp
 
 /* Function start: 0x425DC0 */
@@ -184,8 +184,8 @@ extern "C" void AddToStringTable(char *param_1)
     iVar2 = sscanf(param_1, " %s ", local_20);
     if (iVar2 == 1) {
         if (strlen(local_20) != 0) {
-            strcpy(&g_StringTable_0043d158[g_StringTableCount_004366b4 * 0x20], local_20);
-            g_StringTableCount_004366b4++;
+            strcpy(&g_StringTable_0043d158[g_StringTableCount_0046aa80 * 0x20], local_20);
+            g_StringTableCount_0046aa80++;
         }
     }
 }
@@ -330,14 +330,14 @@ void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
     g_ExitInProgress_0043be34 = 1;
     g_ExitCode_0043be30 = (char)param_3;
     if (param_2 == 0) {
-        if ((g_AtExitTableStart_0043f104 != 0) && ((unsigned int)g_AtExitTableEnd_0043f100 - 4 >= (unsigned int)g_AtExitTableStart_0043f104)) {
-            void** puVar1 = (void**)((char*)g_AtExitTableEnd_0043f100 - 4);
+        if ((g_AtExitTableStart_00475088 != 0) && ((unsigned int)g_AtExitTableEnd_00475084 - 4 >= (unsigned int)g_AtExitTableStart_00475088)) {
+            void** puVar1 = (void**)((char*)g_AtExitTableEnd_00475084 - 4);
             do {
                 if (*puVar1 != 0) {
                     ((void (*)(void)) *puVar1)();
                 }
                 puVar1 = puVar1 - 1;
-            } while ((unsigned int)puVar1 >= (unsigned int)g_AtExitTableStart_0043f104);
+            } while ((unsigned int)puVar1 >= (unsigned int)g_AtExitTableStart_00475088);
         }
         ExecuteFunctionArray((void**)&DAT_00435030, (void**)&DAT_00435038);
     }

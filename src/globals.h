@@ -395,10 +395,10 @@ struct SolutionEntry {
 extern SolutionEntry g_SolutionData_00435b88[9];
 extern SC_CombatBase* g_CombatEngine_00435eb0; // Combat engine (EngineA or EngineB)
 // Engine type strings "A"/"B" inlined at call sites
-extern char g_TextAlignH_004374c0; // Horizontal text alignment (-1 = none)
-extern char g_TextAlignV_004374c1; // Vertical text alignment (-1 = none)
-extern int g_DrawPosX_004374c2; // Current drawing X position
-extern int g_DrawPosY_004374ce; // Current drawing Y position
+extern char g_TextAlignH_0046d0a8; // Horizontal text alignment (-1 = none)
+extern char g_TextAlignV_0046d0a9; // Vertical text alignment (-1 = none)
+extern int g_DrawPosX_0046d0aa; // Current drawing X position
+extern int g_DrawPosY_0046d0b6; // Current drawing Y position
 // Engine parser subsystem globals
 extern class EngineInfoParser* g_EngineInfoParser_00435f00;  // ENGINE_INFO parser
 extern Sprite* g_ConsoleSprite_00435f04; // Console sprite
@@ -418,21 +418,21 @@ extern GameOutcome* g_GameOutcome_00435f28; // Game outcome state
 extern int g_TargetBearingValue_004362c8; // Last bearing value from Target parsing
 extern int g_TargetRangeCounter_004362cc;                  // Target range counter for sprite parsing
 extern char g_SpriteFilenameTable_0043d630[0x4000]; // Table of 256 sprite filenames (64 chars each)
-extern int g_SpriteTableInitialized_00436b9c; // Initialization flag for sprite filename table
+extern int g_SpriteTableInitialized_0046c91c; // Initialization flag for sprite filename table
 // g_CurrentSprite (0x436348) - defined in CombatSprite.cpp
 // g_CurrentSpriteIndex (0x43634c) - defined in CombatSprite.cpp
 // String table index (0x4366b4) - used inline in string.cpp
 // SC_MessageParser keyword strings (0x4367dc-0x43684f) - inline strings in SC_Question.cpp
 extern char* g_Buffer_0046aa00; // DAT_00436960  { /* 4 bytes */ }
-extern char* g_Buffer_00436964; // Scale table buffer
+extern char* g_Buffer_0046aa04; // Scale table buffer
 extern InputManager* g_InputManager_0046aa08; // DAT_00436968  { /* 4 bytes */ }
 extern AnimatedAsset* g_GlyphFont_0046aa28;                  // AnimatedAsset* for text rendering
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
 extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
 extern MouseControl* g_Mouse_0046aa18; // DAT_00436978
-extern CDData* g_CDData_0043697c; // DAT_0043697c  { /* 4 bytes */ }
-extern Timer* g_Timer_00436980; // DAT_00436980
+extern CDData* g_PathResolver_0046aa1c; // DAT_0043697c  { /* 4 bytes */ }
+extern Timer* g_Timer_0046aa20; // DAT_00436980
 
     extern TimedEventPool* g_TimedEventPool1_00436984; // { /* 4 bytes */ }
     extern TimedEventPool* g_TimedEventPool2_00436988; // { /* 4 bytes */ }
@@ -451,60 +451,60 @@ extern int DAT_0043503c; // CRT terminator table start
 extern int DAT_00435040; // CRT terminator table end
 extern int DAT_00435030; // CRT initializer table start
 extern int DAT_00435038; // CRT initializer table end
-extern void* g_AtExitTableStart_0043f104; // Start of atexit function pointer array
-extern void* g_AtExitTableEnd_0043f100; // Current end of atexit function pointer array
+extern void* g_AtExitTableStart_00475088; // Start of atexit function pointer array
+extern void* g_AtExitTableEnd_00475084; // Current end of atexit function pointer array
 extern char g_ExitCode_0043be30; // Exit code
 extern int g_ExitInProgress_0043be34; // 1 = exit in progress
-extern GameState* g_GameState4_004369a0; // DAT_004369a0
+extern GameState* g_StringState_0046aa38; // DAT_004369a0
 extern GameState* g_GameState2_0046aa3c; // DAT_004369a4
-extern GameState* g_GameState3_0043699c; // DAT_0043699c
+extern GameState* g_StringTable_0046aa34; // DAT_0043699c
 // extern int DAT_00436a94; // Init flag for DAT_0043d5b0 array (similar to g_SpriteTableInitialized)
-// extern int DAT_00436b9c; // Already defined as g_SpriteTableInitialized_00436b9c
+// extern int DAT_00436b9c; // Already defined as g_SpriteTableInitialized_0046c91c
 // extern char DAT_00436d28[4]; // Inline keyword string "POS\0" for sprite parsing (before "FNAME" at 0x436d2c)
 // extern int DAT_00436fe4; // Inline cursor action string (8 bytes before "PICKUP"), used in MouseControl ctor
 // extern char DAT_0043704c[4]; // Inline keyword string "USE\0" for MouseControl parsing
 extern int g_DoubleClickTime_0046ac00; // From GetDoubleClickTime()
 extern int g_WaitForInputValue_0046ac04; // Keyboard event value
 // "Setup.cfg" and "rb" strings inlined at call sites
-// g_MainDC_00437488 - Defined in globals.cpp as HDC (main device context)
-extern HPALETTE g_Palette_0043748c; // Main game palette
-extern char g_TextColor_00437490;                          // current text color index
-extern int g_FillColorDword_00437491; // DWORD fill color (4 copies of color byte)
-// g_FontHeight_0043749a - Defined in globals.cpp as int (text height + external leading)
-extern HPALETTE g_PreviousPalette_004374ae; // Previously selected palette
-// g_SecondaryDC_004374b4 - Defined in globals.cpp as HDC (secondary device context)
-// DAT_004374c0 - Already defined as g_TextAlignH_004374c0
-// DAT_004374c1 - Already defined as g_TextAlignV_004374c1
-// DAT_004374c2 - Already defined as g_DrawPosX_004374c2
-extern int g_VideoBufferWidth_004374c6;
-extern int g_VideoBufferHeightM1_004374ca; // Height - 1
-// DAT_004374ce - Already defined as g_DrawPosY_004374ce
-extern int g_VideoBufferHeight_004374d2;
-extern int g_LineWidthH_004374d6; // Horizontal line width (drawing)
-extern int g_LineWidthV_004374da; // Vertical line width (drawing)
-extern int g_ClipLeft_004374de;
-extern int g_ClipRight_004374e2;
-extern int g_ClipTop_004374e6;
-extern int g_ClipBottom_004374ea;
-extern HANDLE g_WinGFileHandle_004374ee;                   // WinG DLL file check handle
+// g_MainDC_0046d070 - Defined in globals.cpp as HDC (main device context)
+extern HPALETTE g_Palette_0046d074; // Main game palette
+extern char g_TextColor_0046d078;                          // current text color index
+extern int g_FillColorDword_0046d079; // DWORD fill color (4 copies of color byte)
+// g_FontHeight_0046d082 - Defined in globals.cpp as int (text height + external leading)
+extern HPALETTE g_PreviousPalette_0046d096; // Previously selected palette
+// g_SecondaryDC_0046d09c - Defined in globals.cpp as HDC (secondary device context)
+// g_TextAlignH_0046d0a8 - Already defined as g_TextAlignH_0046d0a8
+// g_TextAlignV_0046d0a9 - Already defined as g_TextAlignV_0046d0a9
+// g_DrawPosX_0046d0aa - Already defined as g_DrawPosX_0046d0aa
+extern int g_VideoBufferWidth_0046d0ae;
+extern int g_VideoBufferHeightM1_0046d0b2; // Height - 1
+// g_DrawPosY_0046d0b6 - Already defined as g_DrawPosY_0046d0b6
+extern int g_VideoBufferHeight_0046d0ba;
+extern int g_LineWidthH_0046d0be; // Horizontal line width (drawing)
+extern int g_LineWidthV_0046d0c2; // Vertical line width (drawing)
+extern int g_ClipLeft_0046d0c6;
+extern int g_ClipRight_0046d0ca;
+extern int g_ClipTop_0046d0ce;
+extern int g_ClipBottom_0046d0d2;
+extern HANDLE g_WinGFileHandle_0046d0d6;                   // WinG DLL file check handle
 extern char g_SystemDirPath_00438446[256];                 // system directory path buffer
-extern char g_CursorVisible_00437506; // 1 = cursor visible
-extern char g_CursorState_00437507; // Cursor state tracking
-// g_PaletteMap_00437520[256] - Defined in globals.cpp as palette identity map array
+extern char g_CursorVisible_0046d0ee; // 1 = cursor visible
+extern char g_CursorState_0046d0ef; // Cursor state tracking
+// g_PaletteMap_0046d108[256] - Defined in globals.cpp as palette identity map array
 
-    extern unsigned char g_PaletteData_00437620[256]; // State flags / Palette data
+    extern unsigned char g_PaletteData_0046d208[256]; // State flags / Palette data
     extern unsigned short g_StateFlags_004374b2; // State flags bitfield
 extern char g_LogPalette_00437720[1028]; // LOGPALETTE: 4-byte header + 256 PALETTEENTRY
 extern char g_BgrPalette_00437b48[1028]; // BGR palette: 4-byte header + 256 RGBQUAD
 // 0x437724-0x43772a, 0x437744-0x43774e: Offsets inside g_LogPalette_00437720 (palette entries)
 // 0x437b4c, 0x437b50: Offsets inside g_BgrPalette_00437b48 (RGBQUAD entries at +4, +8)
-extern int g_BitmapHeaderSize_00437f4c; // Bitmap info header size / data offset
-extern int g_DibModeFlag_00437f50; // DIB mode flag (0 = WinG, non-zero = DIB)
-extern char g_CurrentVideoBuffer_00437f54; // Current video buffer index (0xff = no selection)
-extern int g_VideoBufferStride_00437f5e; // Video buffer stride/width
+extern int g_BitmapHeaderSize_0046db34; // Bitmap info header size / data offset
+extern int g_DibModeFlag_0046db38; // DIB mode flag (0 = WinG, non-zero = DIB)
+extern char g_CurrentVideoBuffer_0046db3c; // Current video buffer index (0xff = no selection)
+extern int g_VideoBufferStride_0046db46; // Video buffer stride/width
 // Video buffer slot tables (64 slots for video buffers, increased from original 32)
-extern int g_VBufDataPtrs_0043826c[32];   // Video buffer data pointers
-extern void* g_WinGCreateDIB_00438428;    // WinG CreateDIBSection function pointer
+extern int g_VBufDataPtrs_0046de54[32];   // Video buffer data pointers
+extern void* g_WinGCreateDIB_0046e010;    // WinG CreateDIBSection function pointer
 extern int g_VBufDibHandles_00437fec[32]; // Video buffer DIB handles
 extern int g_VBufMemHandles_00437f6c[32]; // Video buffer memory handles
 extern int g_VBufWidths_0043836c[32];     // Video buffer widths
@@ -513,22 +513,22 @@ extern int g_VBufMaxX_0043806c[32];       // Video buffer max X (width - 1)
 extern int g_VBufMaxY_004380ec[32];       // Video buffer max Y (height - 1)
 extern int g_VBufClipLeft_0043816c[32];   // Video buffer clip left
 extern int g_VBufClipTop_004381ec[32];    // Video buffer clip top
-extern int g_VideoBufferSize_00437f62;  // Video buffer size (width * height)
-extern int g_VideoBufferBase_00437f66;  // Current video buffer base pointer
+extern int g_VideoBufferSize_0046db4a;  // Video buffer size (width * height)
+extern int g_VideoBufferBase_0046db4e;  // Current video buffer base pointer
 extern short g_VideoBufferDS_00437f6a;  // Data segment (legacy 16-bit)
-// 0x0043826c: Defined above as g_VBufDataPtrs_0043826c[32]
+// 0x0043826c: Defined above as g_VBufDataPtrs_0046de54[32]
 // 0x00438270: String constant "mCNavigator::LoadNodes() - %s ha..." in mCNavigator.obj
-extern HDC g_WinGDC_0043841c; // DAT_0043841c  { /* 4 bytes */ }
-extern HMODULE g_WinGModule_00438420;  // WinG DLL handle
-extern HGDIOBJ g_WinGBitmap_00438424; // g_WinGBitmap_00438424  { /* 4 bytes */ }
-// 0x00438428: Defined above as g_WinGCreateDIB_00438428
+extern HDC g_WinGDC_0046e004; // g_WinGDC_0046e004  { /* 4 bytes */ }
+extern HMODULE g_WinGModule_0046e008;  // WinG DLL handle
+extern HGDIOBJ g_WinGBitmap_0046e00c; // g_WinGBitmap_0046e00c  { /* 4 bytes */ }
+// 0x00438428: Defined above as g_WinGCreateDIB_0046e010
 // WinG function pointers (defined in globals.cpp, used in Graphics.cpp/VideoTable.cpp/PaletteUtils.cpp)
-extern void* g_WinGSetDIBColorTable_0043842c;   // ordinal 6
-extern void* g_WinGRecommendDIBFormat_00438430; // ordinal 3
-extern void* g_WinGBitBlt_00438434;             // ordinal 1
-extern void* g_WinGStretchBlt_00438438;         // ordinal 10
-// 0x0043843c, 0x00438440: Defined in globals.cpp (g_SysDirPtr_0043843c, g_SegmentReg_00438440) - WinG far pointer storage
-// 0x00439446: Defined as g_TextMetric_00439446[256] TEXTMETRIC buffer in globals.cpp
+extern void* g_WinGSetDIBColorTable_0046e014;   // ordinal 6
+extern void* g_WinGRecommendDIBFormat_0046e018; // ordinal 3
+extern void* g_WinGBitBlt_0046e01c;             // ordinal 1
+extern void* g_WinGStretchBlt_0046e020;         // ordinal 10
+// 0x0043843c, 0x00438440: Defined in globals.cpp (g_SysDirPtr_0046e024, g_SegmentReg_0046e028) - WinG far pointer storage
+// 0x00439446: Defined as g_TextMetric_0046f02e[256] TEXTMETRIC buffer in globals.cpp
 // 0x00439456, 0x0043945a: Offsets within TEXTMETRIC buffer (tmExternalLeading, tmAveCharWidth)
 // 0x0043bc4c - 0x0043bc64: CRT exception/FPU state (__fpmath, exception handling)
 // extern void* PTR___fpmath_0043bc68; // (void*)0x00424B90
@@ -542,7 +542,7 @@ extern int g_RandomSeed_0043bc88; // Time seed
 // 0x0043bcee - 0x0043bdea: MSVC CRT floating-point division helper switch table
 // Jump targets for FUN_00425177 (__fprem or similar FPU division operations)
 // These are compiler-generated and do not need to be defined as globals
-extern int g_ErrorCode_0043bdf4;  // Error/status code (used in FileSystem, main)
+extern int g_ErrorCode_004719c4;  // Error/status code (used in FileSystem, main)
 // 0x0043bdf8, 0x0043bdfc: CRT internal (signal handling, FPU init) - library only
 // 0x0043be18, 0x0043be1c, 0x0043be20: CRT _environ/_wenviron pointers - library only
 // extern void* PTR_DAT_0043be60; // (void*)0x0043BE6A
@@ -600,9 +600,9 @@ extern int g_ErrorCode_0043bdf4;  // Error/status code (used in FileSystem, main
 // pointer PTR_s_R6009_-_not_enough_space_for_env_0043c684 = (void*)0x0043C5F0;
 // extern int DAT_0043c6f8; // { /* 4 bytes */ }
 // extern int DAT_0043c724; // { /* 4 bytes */ }
-extern unsigned int DAT_0043c760[];  // CRT error code mapping table [90 entries]
-// 0x0043c768, 0x0043c76c: Elements within DAT_0043c760 array (indices 2, 3)
-// 0x0043c8c8: End of DAT_0043c760 array - only used by CRT library (FUN_42B300/FUN_42B370)
+extern unsigned int DAT_00471d38[];  // CRT error code mapping table [90 entries]
+// 0x0043c768, 0x0043c76c: Elements within DAT_00471d38 array (indices 2, 3)
+// 0x0043c8c8: End of DAT_00471d38 array - only used by CRT library (FUN_42B300/FUN_42B370)
 // extern int DAT_0043c8d4; // { /* 4 bytes */ }
 // extern void* PTR_DAT_0043c8e0; // (void*)0x0043DFF0
 // extern int DAT_0043c8f0; // { /* 4 bytes */ }
@@ -637,16 +637,16 @@ extern int g_TimeSeed_0043cb64; // { /* 4 bytes */ }
 extern GlyphRect g_PuzzleRects1_0043d068[9];
 extern char g_PuzzleState_0043d0f8;
 extern GlyphRect g_PuzzleRects2_0043d100[3];
-extern int g_SaveState0_0043d130; // Game state save area
+extern int g_SaveState0_00472be0; // Game state save area
 extern int g_SaveState1_0043d134; // Game state save area
 extern int g_SaveState2_0043d138; // Game state save area
 extern int g_SaveState3_0043d13c; // Game state save area
 // 0x0043d140: g_TimeOut_0043d140 (TimeOut struct) defined in EngineB.cpp
 // 0x0043d148: Part of TimeOut struct at 0x0043d140 (offset 8)
 extern int g_ProjectileHits_0043d150;  // Hit counter for projectiles (combat minigame)
-extern int g_CmdLineAudioMode_0043d558;   // Command line -A/-S audio mode (1=A, 2=S)
-extern int g_DebugFlag_0043d55c;          // Debug/init flag checked in main
-extern char g_CmdLineInputMode_0043d560;  // Command line -J/-K input mode (1=J, 2=K)
+extern int g_CmdLineAudioMode_00472dd8;   // Command line -A/-S audio mode (1=A, 2=S)
+extern int g_DebugFlag_00472ddc;          // Debug/init flag checked in main
+extern char g_CmdLineInputMode_00472de0;  // Command line -J/-K input mode (1=J, 2=K)
 extern int g_DirectSoundFlag_0046a87c;    // DirectSound flag, cleared by /nods
 extern char g_CmdLineDataPath_0043d568[]; // Command line data path [260 bytes]
 // 0x0043d5b0: Sprite index tracking array (not yet implemented, used in FUN_41A9D0/FUN_41A9E0)
@@ -671,8 +671,8 @@ extern int g_ActivateAppState_00472d14; // Activate app state
 // 0x0043eff4: CRT _nhandle (file handle count)
 // 0x0043f000/f004: CRT _pioinfo file info array pointers
 extern void* g_ProcessHeap_0043eff0;
-// extern int DAT_0043f100; // Already defined as g_AtExitTableEnd_0043f100
-// extern int DAT_0043f104; // Already defined as g_AtExitTableStart_0043f104
+// extern int DAT_0043f100; // Already defined as g_AtExitTableEnd_00475084
+// extern int DAT_0043f104; // Already defined as g_AtExitTableStart_00475088
 // extern int DAT_0043f108; // { /* 4 bytes */ }
 // extern dword DWORD_00440000; // 0x4024C
 // extern dword DAT_00440004; // 0x0
@@ -5971,8 +5971,8 @@ extern void* g_ProcessHeap_0043eff0;
 // extern word DAT_004446a2; // 0x0
 
 extern int g_CrtField_0043bdf0; // File error code
-extern int g_CmdLineAudioMode_0043d558; // Command line audio mode
-extern char g_CmdLineInputMode_0043d560; // Command line input mode
+extern int g_CmdLineAudioMode_00472dd8; // Command line audio mode
+extern char g_CmdLineInputMode_00472de0; // Command line input mode
 
 // Globals moved from stubs.cpp (sorted by address)
 extern int (*g_OutOfMemoryCallback)(unsigned int);        // Memory callback
@@ -6041,14 +6041,14 @@ extern int g_SlimeTableInit_0046ad6c;                                   // SC_Wa
     extern int g_State3Phase_00473e1c;                              // 0x00473e1c
     extern int g_State4Phase_00473df8;                              // 0x00473df8
     extern int g_RatsField_00473e00;                       // 0x00473e00
-extern int g_CurrentSpriteIndex_0043634c;                  // CombatSprite current index
+extern int g_CurrentSpriteIndex_004686fc;                  // CombatSprite current index
 extern int g_SpriteEntryCount_00436344;                    // CombatSprite entry counter
 extern int g_ScreenWidth_00472d08;                         // GameWindow
 extern int g_ScreenHeight_00472d0c;                        // GameWindow
-extern int g_StringTableCount_004366b4;                    // string table count
+extern int g_StringTableCount_0046aa80;                    // string table count
 extern int g_SlimeField_00468bbc;                          // SC_Slime
 class SpriteHashTable;
-extern SpriteHashTable* g_CurrentSprite_00436348;          // CombatSprite current sprite table
+extern SpriteHashTable* g_CurrentSprite_004686f8;          // CombatSprite current sprite table
 extern Sprite* g_NavSprite_004360a4;                       // NavSubNode navigation sprite
 extern Sprite* g_NavCursorSprite_004360a0;                 // mCNavigator cursor sprite
 extern unsigned int g_TimerCount_00436b94;                 // Timer active count
@@ -6074,8 +6074,25 @@ extern int g_ClipTop_0046d0ce;
 extern int g_ClipBottom_0046d0d2;
 extern char g_CurrentVideoBuffer_0046db3c;
 extern int g_VideoBufferStride_0046db46;
+extern int g_VideoBufferSize_0046db4a;
 extern int g_VideoBufferBase_0046db4e;
 extern short g_VideoBufferDS_0046db52;
+extern int g_BitmapHeaderSize_0046db34;
+extern int g_DibModeFlag_0046db38;
+
+// Full-game video buffer per-buffer arrays (equiv. of demo 0x437fxx/0x438xxx)
+extern int g_VBufMemHandles_0046db54[32];
+extern int g_VBufDibHandles_0046dbd4[32];
+extern int g_VBufMaxX_0046dc54[32];
+extern int g_VBufMaxY_0046dcd4[32];
+extern int g_VBufClipLeft_0046dd54[32];
+extern int g_VBufClipTop_0046ddd4[32];
+extern int g_VBufDataPtrs_0046de54[32];
+extern int g_VBufHeights_0046ded4[32];
+extern int g_VBufWidths_0046df54[32];
+extern HDC g_WinGDC_0046e004;
+extern HGDIOBJ g_WinGBitmap_0046e00c;
+extern void* g_WinGCreateDIB_0046e010;
 
 extern int g_FireAlarmField1_00472bd8;                                   // SC_FireAlarm / SC_Pods
 extern int g_FireAlarmField2_00472bdc;                                   // SC_FireAlarm / SC_Pods
@@ -6117,16 +6134,16 @@ extern int g_StartBlock_00472e2c;                          // start block
 extern char g_StringTable_0043d158[16384];                 // string lookup table
 
 // Graphics system (from Graphics.cpp)
-extern HDC g_MainDC_00437488;
-extern HDC g_SecondaryDC_004374b4;
+extern HDC g_MainDC_0046d070;
+extern HDC g_SecondaryDC_0046d09c;
 extern int g_DblClickCX_00437508;
 extern int g_DblClickCY_0043750c;
 extern int g_WindowWord_00437510;
 extern HGDIOBJ g_StockFont_00437496;
-extern int g_FontHeight_0043749a;
+extern int g_FontHeight_0046d082;
 extern int g_FontExtLeading_0043749e;
 extern int g_FontAvgWidth_004374a2;
-extern char g_TextMetric_00439446[256];
+extern char g_TextMetric_0046f02e[256];
 extern int g_GfxField1_00437518;
 extern int g_GfxField2_0043751c;
 extern int g_GfxField3_004383ec;
@@ -6136,10 +6153,10 @@ extern int g_GfxField6_0043840c;
 extern int g_GfxInitFlag_00437514;
 extern int g_VBufField1_00437f56;
 extern int g_VBufField2_00437f5a;
-extern char g_PaletteMap_00437520[256];
-extern char g_BgrPaletteData_00437b4c[];
-extern char* g_SysDirPtr_0043843c;
-extern short g_SegmentReg_00438440;
+extern char g_PaletteMap_0046d108[256];
+extern char g_BgrPaletteData_0046d734[];
+extern char* g_SysDirPtr_0046e024;
+extern short g_SegmentReg_0046e028;
 extern int g_WinGBufSize_00438442;
 extern char DAT_00437afc[];
 

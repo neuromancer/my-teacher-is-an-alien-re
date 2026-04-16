@@ -436,7 +436,7 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
         chunk = totalLen;
     }
 
-    buf = g_Buffer_00436964;
+    buf = g_Buffer_0046aa04;
     if (totalLen != 0) {
         do {
             sz = totalLen - totalRead;

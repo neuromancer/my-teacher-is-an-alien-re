@@ -104,7 +104,7 @@ void __stdcall ParseCommandLine(char *param_1) {
   char *local_50[20];
   
   iVar1 = ParseCommandLineArgs(param_1, local_50, 20);
-  piVar2 = &g_CmdLineAudioMode_0043d558;
+  piVar2 = &g_CmdLineAudioMode_00472dd8;
   for (int iVar4 = 0x16; iVar4 != 0; iVar4 = iVar4 - 1) {
     *piVar2 = 0;
     piVar2 = piVar2 + 1;
@@ -117,7 +117,7 @@ void __stdcall ParseCommandLine(char *param_1) {
       *GetWindowWidth() = 1;
     }
     else if (_strcmpi(*piVar3, "-dd") == 0) {
-      g_CmdLineInputMode_0043d560 = 1;
+      g_CmdLineInputMode_00472de0 = 1;
     }
     else if (_strnicmp(*piVar3, "-lq", 3) == 0) {
       AddToStringTable(*piVar3 + 3);
@@ -126,19 +126,19 @@ void __stdcall ParseCommandLine(char *param_1) {
       g_StartBlock_00472e2c = atoi(*piVar3 + 5);
     }
     else if (_strcmpi(*piVar3, "-dd3") == 0) {
-      g_CmdLineInputMode_0043d560 = 2;
+      g_CmdLineInputMode_00472de0 = 2;
     }
     else if (_strcmpi(*piVar3, "/nods") == 0) {
       g_DirectSoundFlag_0046a87c = 0;
     }
     else if (_strcmpi(*piVar3, "-db") == 0) {
-      *(char *)&g_CmdLineAudioMode_0043d558 = 1;
+      *(char *)&g_CmdLineAudioMode_00472dd8 = 1;
     }
     else if (_strcmpi(*piVar3, "-ds") == 0) {
-      *(char *)&g_CmdLineAudioMode_0043d558 = 2;
+      *(char *)&g_CmdLineAudioMode_00472dd8 = 2;
     }
     else if (_strcmpi(*piVar3, "-test") == 0) {
-      g_DebugFlag_0043d55c = 1;
+      g_DebugFlag_00472ddc = 1;
     }
     else if (_strcmpi(*piVar3, "-f") == 0) {
       *GetWindowWidth() = 0;

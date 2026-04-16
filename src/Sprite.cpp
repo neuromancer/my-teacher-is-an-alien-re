@@ -113,13 +113,13 @@ void Sprite::InitAnimation()
     }
 
     if (animation_data->targetBuffer != 0) {
-        if (g_SpriteTableInitialized_00436b9c == 0) {
+        if (g_SpriteTableInitialized_0046c91c == 0) {
             char* ptr = (char*)g_VideoBufferNameTable;
             do {
                 *ptr = 0;
                 ptr += 0x40;
             } while (ptr < (char*)g_VideoBufferNameTable + 0x800);
-            g_SpriteTableInitialized_00436b9c = 1;
+            g_SpriteTableInitialized_0046c91c = 1;
         }
         strcpy(g_VideoBufferNameTable[animation_data->targetBuffer->handle], sprite_filename);
     }

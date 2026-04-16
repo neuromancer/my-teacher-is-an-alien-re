@@ -162,10 +162,10 @@ extern "C" int SetCursorVisible(unsigned int param_1);
 /* Function start: 0x453473 */
 int SetCursorVisible(unsigned int param_1)
 {
-    if (g_CursorVisible_00437506 != '\0') {
+    if (g_CursorVisible_0046d0ee != '\0') {
         unsigned int masked = param_1 & 1;
-        if ((char)masked != g_CursorState_00437507) {
-            g_CursorState_00437507 = (char)masked;
+        if ((char)masked != g_CursorState_0046d0ef) {
+            g_CursorState_0046d0ef = (char)masked;
             ShowCursor(masked);
         }
     }

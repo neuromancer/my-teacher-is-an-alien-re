@@ -13,7 +13,7 @@ void __stdcall DrawScaledSprite(int x, int y, void* data, double scale)
     int scaledWidth = (int)(buf->width * scale);
     int scaledHeight = (int)(buf->height * scale);
 
-    unsigned int tableHandle = CreateTableFromBuffer((int)g_Buffer_00436964, scaledWidth, scaledHeight);
+    unsigned int tableHandle = CreateTableFromBuffer((int)g_Buffer_0046aa04, scaledWidth, scaledHeight);
 
     void* destData = (void*)GetVideoBufferData(tableHandle);
 

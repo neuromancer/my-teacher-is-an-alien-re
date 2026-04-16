@@ -112,7 +112,7 @@ void *SoundList::Register(char *filename) {
   char local_54[64];
   short sVar9;
 
-  if (g_Sound_0043696c->digital_driver != 0) {
+  if (g_EngineSound_0046aa0c->digital_driver != 0) {
     local_54[0] = '\0';
     ParsePath(filename, 0, 0, local_54, 0);
     if (local_54[0] != '\0') {
