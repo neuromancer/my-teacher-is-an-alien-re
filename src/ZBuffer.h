@@ -1,7 +1,6 @@
 #ifndef ZBUFFER_H
 #define ZBUFFER_H
 
-#include "Timer.h"
 #include "Handler.h"
 
 #include "LinkedList.h"
@@ -17,7 +16,8 @@ class ZBuffer : public Handler {
 public:
     ~ZBuffer(); // 0x427710
 
-    Timer timer;        // 0xA8
+    int field_A8;          // 0xA8
+    int field_AC;          // 0xAC
     int itemCount;         // 0xB0
     Projectile** items;    // 0xB4
 

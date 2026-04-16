@@ -544,7 +544,7 @@ void Parser::HandleToken(int tokenType, char* line) {
     char local_90[24];
     char* local_74;
     char local_58[32];
-    char local_38[24];
+    char local_38[32];
     char* local_1c;
     int local_18;
     char* local_14;

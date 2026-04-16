@@ -11,6 +11,8 @@
 #include "SlimeTable.h"
 #include "SoundList.h"
 #include "RockThrower.h"
+#include "GameEngine.h"
+#include "SC_Question.h"
 #include "main.h"
 #include <string.h>
 #include <stdlib.h>
@@ -36,6 +38,17 @@ extern "C" void WriteToMessageLog(const char* msg, ...);
 
 
 #include "globals.h"
+
+// FireAlarmRockThrower — derived RockThrower with vtable 0x461118
+// Overrides CheckTargetHit and OnHit to redirect to active handler (SC_FireAlarm)
+// Functions at 0x408E40, 0x408E60; sdtor at 0x408E70
+class FireAlarmRockThrower : public RockThrower {
+public:
+    FireAlarmRockThrower(Parser* parent) : RockThrower(parent) {}
+    ~FireAlarmRockThrower();
+    void OnHit();
+    int CheckTargetHit(int param);
+};
 
 /* Function start: 0x407290 */
 SC_FireAlarm::SC_FireAlarm() {
@@ -231,7 +244,7 @@ void SC_FireAlarm::SendResultMessage() {
     spriteAction = action;
 
     // Parse win or lose message from CB_FireAlarm.mis
-    Parser temp;
+    SC_MessageParser temp((int)spriteAction);
     if (stateFlags & 2) {
         ParseFile(&temp, "mis\\CB_FireAlarm.mis", "[WIN_MESSAGE]");
     } else {
@@ -426,7 +439,7 @@ void SC_FireAlarm::ProcessFrame() {
             stateFlags |= 4;
         }
 
-        ((ZBuffer*)g_FireAlarmEngine_004685ac)->ResetItems();
+        ((RockThrower*)g_FireAlarmEngine_004685ac)->ResetProjectiles();
 
         teacherSprite->ResetAnimation(iVar4 + 1, 0);
 
@@ -699,7 +712,7 @@ int SC_FireAlarm::LBLParse(char* line) {
     } else if (strcmp(label, "WEAPON") == 0) {
         if (sscanf(line, " %s %s ", label, buffer) == 2) {
             if (strcmp(buffer, "ROCKTHROWER2") == 0) {
-                RockThrower* rt = new RockThrower(this);
+                RockThrower* rt = new FireAlarmRockThrower(this);
                 g_FireAlarmEngine_004685ac = (int)rt;
             } else {
                 ReportUnknownLabel("SC_FireAlarm");
@@ -711,4 +724,22 @@ int SC_FireAlarm::LBLParse(char* line) {
         ReportUnknownLabel("SC_FireAlarm");
     }
     return 0;
+}
+
+// =========================================================================
+// FireAlarmRockThrower overrides (vtable 0x461118)
+// =========================================================================
+
+/* Function start: 0x408E40 */
+int FireAlarmRockThrower::CheckTargetHit(int param) {
+    return ((SC_FireAlarm*)g_GameEngine_0046a6ec->m_activeHandler)->HandleClick((int*)param);
+}
+
+/* Function start: 0x408E60 */
+void FireAlarmRockThrower::OnHit() {
+    ((SC_FireAlarm*)g_GameEngine_0046a6ec->m_activeHandler)->ProcessClick();
+}
+
+/* Function start: 0x408E70 */
+FireAlarmRockThrower::~FireAlarmRockThrower() {
 }
