@@ -4,24 +4,6 @@
 extern "C" void WriteToLog(const char*, ...);
 extern void FreeMemory(void*);
 
-/* Function start: 0x41A6D0 */
-int __cdecl CompareNodePriority(void* a, void* b) {
-    return *(unsigned int*)(*(int*)b + 0x40) - *(unsigned int*)(*(int*)a + 0x40) < 1;
-}
-
-/* Function start: 0x41A6F0 */
-void __cdecl FreeNodeData(void* ptr, int count) {
-    int** data = (int**)ptr;
-    while (count != 0) {
-        count--;
-        if (*data != 0) {
-            FreeMemory(*data);
-            *data = 0;
-        }
-        data++;
-    }
-}
-
 struct AnimData {
     char name[64];    // 0x00 - 0x3F
     int handle;       // 0x40
@@ -34,6 +16,25 @@ struct AnimData {
     }
     ~AnimData();
 };
+
+/* Function start: 0x41A6D0 */
+int __cdecl CompareNodePriority(void* a, void* b) {
+    AnimData* pa = *(AnimData**)a;
+    AnimData* pb = *(AnimData**)b;
+    return (pb->handle - pa->handle) == 0;
+}
+
+/* Function start: 0x41A6F0 */
+void __cdecl FreeNodeData(void* ptr, int count) {
+    while (count-- != 0) {
+        AnimData** data = (AnimData**)ptr;
+        if (*data != 0) {
+            FreeMemory(*data);
+            *data = 0;
+        }
+        ptr = (char*)ptr + 4;
+    }
+}
 
 /* Function start: 0x41A730 */
 GameLoopHelper::~GameLoopHelper() {
@@ -154,18 +155,19 @@ found:
 
 /* Function start: 0x41A960 */
 void GameLoopHelper::PostProcess() {
-    int* node;
     int idx;
     char* data;
 
     WriteToLog("REPORT of in use animations");
     idx = 1;
-    node = pool->head;
-    while (node != 0) {
-        data = (char*)node[2];
-        node = (int*)node[0];
-        WriteToLog("  %2.2d. Name=%-32s. smk addr=%lu", idx, data, *(unsigned int*)(data + 0x40));
-        idx++;
+    int* node = pool->head;
+    if (node != 0) {
+        do {
+            data = (char*)node[2];
+            node = (int*)node[0];
+            WriteToLog("  %2.2d. Name=%-32s. smk addr=%lu", idx, data, *(unsigned int*)(data + 0x40));
+            idx++;
+        } while (node != 0);
     }
     WriteToLog("******* END REPORT ********");
 }

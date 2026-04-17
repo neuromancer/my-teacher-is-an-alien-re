@@ -62,36 +62,29 @@ void Queue::InsertAtCurrent(void* data)
     InsertNode(data);
 }
 
-/* Function start: 0x42D2D0 */ /* ~98% match */
+/* Function start: 0x42D2D0 */
 TimedEventPool::~TimedEventPool()
 {
-    int counter;
-    SC_MessageParser* msg;
-    int tmp;
-
-    // Iterate through active events list (linked via next pointer)
+    // Iterate active-events list; each node holds one embedded SpriteAction at +0x8
     PooledEvent* node = list.head;
     while (node != 0) {
-        // Get embedded SC_MessageParser at offset +8
-        msg = node->GetEmbeddedSCMessage();
-        counter = 0;
+        SpriteAction* action = (SpriteAction*)((char*)node + 0x8);
+        int counter = 0;
+        int tmp;
         do {
-            // Call SC_MessageParser destructor
-            msg->~SC_MessageParser();
-            msg = (SC_MessageParser*)((char*)msg + 0xc0);
+            action->~SpriteAction();
+            action = (SpriteAction*)((char*)action + 0x38);
             tmp = counter;
             counter--;
         } while (tmp != 0);
         node = node->next;
     }
 
-    // Clear pool state fields
     m_count = 0;
     m_free_list = 0;
     list.tail = 0;
     list.head = 0;
 
-    // Free pool memory blocks (linked via first dword as next pointer)
     for (PooledEvent* poolBlock = m_pool; poolBlock != 0; ) {
         PooledEvent* nextBlock = poolBlock->next;
         FreeMemory(poolBlock);
@@ -106,7 +99,7 @@ void* Queue::GetCurrentData()
     return LinkedList::GetCurrentData();
 }
 
-/* Function start: 0x42CAB0 */ /* ~95% match */
+/* Function start: 0x42CAB0 */
 SC_MessageParser* TimedEventPool::PopSafe(SC_MessageParser* buffer)
 {
     MousePoint completed;

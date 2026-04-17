@@ -34,12 +34,12 @@ SC_Gauntlet::SC_Gauntlet() {
     boardTop = 0;
     boardRight = 0;
     boardBottom = 0;
-    memset(crystalState, 0, 7 * 4);
+    memset(crystalState, 0, 7 * sizeof(int));
     exitLeft = 0;
     exitTop = 0;
     exitRight = 0;
     exitBottom = 0;
-    memset(moveState, 0, 0x112 * 4);
+    memset(moveState, 0, 0x112 * sizeof(int));
     handlerId = 0x50;
 }
 
@@ -176,7 +176,7 @@ int SC_Gauntlet::Exit(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x42EBA0 */
-void SC_Gauntlet::ProcessAction(int action, int* data) {
+void SC_Gauntlet::ProcessLose() {
     SpriteAction* ptr;
 
     if (savedCommand != 0x2B) {
@@ -597,7 +597,7 @@ void SC_Gauntlet::ResetGrid() {
 }
 
 /* Function start: 0x42F5E0 */
-void SC_Gauntlet::ProcessWin(int action, int* data) {
+void SC_Gauntlet::ProcessAction(int action, int* data) {
     switch (action) {
     case 0:
         ProcessLose();

@@ -1,5 +1,6 @@
 #include "SC_OnScreenMessage.h"
 #include "Memory.h"
+#include <new.h>
 #include "Message.h"
 #include "SpriteAction.h"
 #include "globals.h"
@@ -505,35 +506,79 @@ simple_fade:
 /* Function start: 0x448C60 */
 SoundEntry* SC_OnScreenMessage::FindOrCreateSoundEntry(int soundId) {
     MessageList* list = m_messageList;
-    MessageNode* node;
 
-    // Search for existing entry with this soundId
-    list->current = list->head;
     if (list->head != 0) {
-        do {
-            node = (MessageNode*)list->current;
+        list->current = list->head;
+        while (list->head != 0) {
+            MessageNode* node = (MessageNode*)list->current;
+            int entrySoundId;
             if (node != 0) {
-                SoundEntry* entry = (SoundEntry*)node->data;
-                if (entry->soundId == soundId) {
-                    return entry;
+                entrySoundId = ((SoundEntry*)node->data)->soundId;
+            } else {
+                entrySoundId = *(int*)0x24;
+            }
+            if (soundId == entrySoundId) {
+                GameState* gs = g_GameState_0046aa30;
+                int idx = g_PeriodStateIdx_0046cb90;
+                if (idx < 0 || gs->maxStates - 1 < idx) {
+                    ShowError("Invalid gamestate %d", idx);
+                }
+                MessageNode* curNode = (MessageNode*)list->current;
+                int entryGS;
+                if (curNode == 0) {
+                    entryGS = *(int*)0x2C;
+                } else {
+                    entryGS = ((SoundEntry*)curNode->data)->gameStateVal;
+                }
+                if (gs->stateValues[idx] == entryGS) {
+                    MessageNode* found = (MessageNode*)list->current;
+                    if (found != 0) {
+                        return (SoundEntry*)found->data;
+                    }
+                    return 0;
                 }
             }
             if (list->tail == list->current) break;
             if (list->current != 0) {
                 list->current = ((MessageNode*)list->current)->next;
             }
-        } while (list->current != 0);
+        }
     }
 
-    // Not found - create new entry
-    SoundEntry* newEntry = new SoundEntry(soundId);
+    void* mem = operator new(0x30);
+    SoundEntry* newEntry = 0;
+    if (mem != 0) {
+        newEntry = new(mem) SoundEntry(soundId);
+    }
 
-    // Insert into list
     if (newEntry == 0) {
         ShowError("queue fault 0101");
     }
+
     list->current = list->head;
-    list->InsertNode(newEntry);
+    if (list->type == 1 || list->type == 2) {
+        if (list->head == 0) {
+            list->InsertBeforeCurrent(newEntry);
+        } else {
+            while (1) {
+                MessageNode* cur = (MessageNode*)list->current;
+                if (((SoundEntry*)cur->data)->soundId < newEntry->soundId) {
+                    list->LinkedList::InsertNode(newEntry);
+                    break;
+                }
+                if (list->tail == cur) {
+                    list->PushNode(newEntry);
+                    break;
+                }
+                if (cur != 0) {
+                    list->current = cur->next;
+                }
+                if (list->current == 0) break;
+            }
+        }
+    } else {
+        list->InsertBeforeCurrent(newEntry);
+    }
 
     return newEntry;
 }

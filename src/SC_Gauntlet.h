@@ -2,6 +2,7 @@
 #define SC_GAUNTLET_H
 
 #include "SC_Combat.h"
+#include "InvSlotItem.h"  // for Rect
 
 // GauntletEntry — 0x1C byte element with ctor/dtor (ctor 0x42E660, dtor 0x42E6D0)
 struct GauntletEntry {
@@ -28,9 +29,8 @@ public:
     virtual int AddMessage(SC_MessageParser* msg);        // 0x42E9D0
     virtual int Exit(SC_MessageParser* msg);              // 0x42EB70
 
-    // ProcessLose inherited from SC_Combat (0x4494E0)
-    virtual void ProcessAction(int action, int* data); // 0x42EBA0
-    virtual void ProcessWin(int action, int* data);    // 0x42F5E0
+    virtual void ProcessLose();                         // [11] 0x42EBA0
+    virtual void ProcessAction(int action, int* data);  // [12] 0x42F5E0
 
     void ProcessGrid(int row, int col);             // 0x42F220
     void ResetGrid();                               // 0x42F570
@@ -39,17 +39,17 @@ public:
     int moveState[2];              // 0x118-0x11F
     int crystalState[2];              // 0x120-0x127
     int boardLeft;                 // 0x128
-    int boardTop;                 // 0x12C
-    int boardRight;                 // 0x130
-    int boardBottom;                 // 0x134
-    Sprite* fgSprite;             // 0x138
+    int boardTop;                  // 0x12C
+    int boardRight;                // 0x130
+    int boardBottom;               // 0x134
+    Sprite* fgSprite;              // 0x138
     GauntletEntry entries[36];     // 0x13C-0x52B (36 * 0x1C = 0x3F0)
-    Sprite* cellSprites[7];          // 0x52C-0x547
-    int exitLeft;                 // 0x548
-    int exitTop;                 // 0x54C
+    Sprite* cellSprites[7];        // 0x52C-0x547
+    int exitLeft;                  // 0x548
+    int exitTop;                   // 0x54C
     int exitRight;                 // 0x550
-    int exitBottom;                 // 0x554
-    Sprite* exitSprite;             // 0x558
+    int exitBottom;                // 0x554
+    Sprite* exitSprite;            // 0x558
     int field_55C;                 // 0x55C
 };
 

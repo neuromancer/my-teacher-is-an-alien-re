@@ -877,11 +877,12 @@ int SC_CrystalPuzzle::CheckSolution() {
     int i;
     int floorIdx;
 
+    int* floorStatesBase = &floorStates[0];
     solutionIdx = 0;
     solutionPtr = g_PuzzleSolutions_0046cc98;
-    floorStates[0] = 0;
-    floorStates[1] = 0;
-    floorStates[2] = 0;
+    floorStatesBase[0] = 0;
+    floorStatesBase[1] = 0;
+    floorStatesBase[2] = 0;
 
     while (1) {
         for (i = 0; i < 9; i++) {
@@ -1010,18 +1011,18 @@ void SC_CrystalPuzzle::DisplayLitDoors() {
 
             locX = 0;
             if (i != 0) {
-                if ((unsigned)(i - 1) > 1) {
-                    locX = 0x138;
-                } else {
+                if ((unsigned)(i - 1) < 1) {
                     locX = 0x92;
+                } else {
+                    locX = 0x138;
                 }
             }
 
             int locY;
-            if ((unsigned)(i - 1) > 1) {
-                locY = 0x60;
-            } else {
+            if ((unsigned)(i - 1) < 1) {
                 locY = 0x6e;
+            } else {
+                locY = 0x60;
             }
 
             litdoors->Do(locX, locY, 1.0);

@@ -403,8 +403,8 @@ int GameState::FindState(char* stateName)
 /* Function start: 0x433AE0 */
 int GameState::FindLabel(char* name) {
     int* pool = (int*)stateLabels;
+    int h;
 
-    // Inline hash: hash = hash * 33 + char (MOVSX pattern)
     char* p = name;
     unsigned int hash = 0;
     while (*p) {
@@ -412,7 +412,6 @@ int GameState::FindLabel(char* name) {
         p++;
     }
 
-    int h;
     h = hash % (unsigned int)pool[1];
 
     GSHashEntry* entry = 0;

@@ -25,9 +25,13 @@ extern "C" void WriteToLog(const char* format, ...);
 #include "TimeOut.h"
 
 /* Function start: 0x40CF60 */
-SC_Slime::SC_Slime()
-    : hitCount(0), maxHits(0), slimeRound(0), tentacleShotsNeeded(0)
-{
+SC_Slime::SC_Slime() {
+    int* p = &hitCount;
+    p[0] = 0;
+    p[1] = 0;
+    p = &slimeRound;
+    p[0] = 0;
+    p[1] = 0;
     memset(&spriteAction, 0, 0xD8);
     handlerId = 0x3F;
 }

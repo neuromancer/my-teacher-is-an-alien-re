@@ -61,7 +61,9 @@ void SC_Game::Init(SC_MessageParser* msg) {
 
 /* Function start: 0x432020 */
 int SC_Game::ShutDown(SC_MessageParser* msg) {
-    TODO("SC_Game::ShutDown");
+    if (sprite != 0) {
+        sprite->StopAnimationSound();
+    }
     return 0;
 }
 
