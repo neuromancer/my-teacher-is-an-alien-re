@@ -27,14 +27,19 @@
 /* Function start: 0x42BCD0 */
 SC_CombatBase::SC_CombatBase()
 {
-    hotspotX = 0;
-    hotspotY = 0;
-    combatBonus = 0;
-    field_0xC8 = 0;
-    field_0xCC = 0;
-    field_0xD0 = 0;
-    field_0xD4 = 0;
-    reserved_0xD8 = 0;
+    int* p;
+    p = &hotspotX;
+    p[0] = 0;
+    p[1] = 0;
+    p = &combatBonus;
+    p[0] = 0;
+    p[1] = 0;
+    p = (int*)&field_0xCC;
+    p[0] = 0;
+    p[1] = 0;
+    p = (int*)&field_0xD4;
+    p[0] = 0;
+    p[1] = 0;
     memset((void*)&targetList, 0, 0x18 * 4);
     Initialize();
 }

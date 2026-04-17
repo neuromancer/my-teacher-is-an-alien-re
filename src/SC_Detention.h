@@ -20,8 +20,10 @@ public:
     virtual int LBLParse(char* line);          // 0x40B240 (shared with SCI_SearchScreen)
     virtual void Init(SC_MessageParser* msg);       // 0x409AD0
     virtual int AddMessage(SC_MessageParser* msg);  // 0x409F50
+    virtual int ShutDown(SC_MessageParser* msg);    // 0x409C40
     virtual void Update(int p1, int p2);           // 0x409C50
     virtual int Exit(SC_MessageParser* msg);        // 0x409F70
+    virtual void Serialize(void* param);            // 0x40B0D0
 
     void InitDetention();           // 0x40A9B0
     void GoToClass();               // 0x40A700
@@ -32,7 +34,6 @@ public:
     void DrawDetention();           // 0x40AD50
     void HandleCombat();            // 0x40AB90
     void HandleInput40();           // 0x40AB30
-    void Serialize(void* param);    // 0x40B0D0
     void HandlePractice();          // 0x40AC70
     void ResetAnimations();         // 0x40A130
     void SendPeriodAction(int param);     // 0x40A620

@@ -113,7 +113,7 @@ void HashTable::CopyStrings(void* dest, int maxLen) {
     do {
         if (iter == 0) {
             if (overflow) {
-                ShowMessage("One or more strings in %s is too long");
+                ShowMessage("One or more strings in %s is too large. (see message.log)", dest);
             }
             return;
         }

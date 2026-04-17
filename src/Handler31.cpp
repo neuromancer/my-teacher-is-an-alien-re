@@ -129,6 +129,10 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
     return 0;
 }
 
+/* Function start: 0x418530 */
+void Handler31::OnInput(void* param) {
+}
+
 /* Function start: 0x417D50 */
 int Handler31::CheckDuplicateQuestion(int param) {
     SC_Question* question;
@@ -500,7 +504,7 @@ int Handler31::Exit(SC_MessageParser* msg) {
                         while (1) {
                             ListNode* cur = list->current;
                             if (((SC_Question*)cur->data)->questionId < question->questionId) {
-                                list->InsertAtCurrent(question);
+                                list->InsertNode(question);
                                 break;
                             }
                             if (list->tail == cur) {
@@ -537,66 +541,58 @@ int Handler31::Exit(SC_MessageParser* msg) {
 
 /* Function start: 0x417C80 */
 SC_Question* Handler31::SelectQuestion(int idx) {
-    int count;
-    LinkedList* list;
-    ListNode* node;
-    void* data;
-
-    count = 0;
-    list = questionQueue;
-    if (list == 0) {
-        return 0;
+    int count = 0;
+    LinkedList* list = questionQueue;
+    if (list != 0) {
+        list->current = list->head;
+        ListNode* node;
+        if (*(int*)questionQueue != 0) {
+            do {
+                list = questionQueue;
+                node = list->current;
+                if (count == idx) {
+                    if (node == 0) {
+                        return 0;
+                    }
+                    if (list->head == node) {
+                        list->head = node->next;
+                    }
+                    if (list->tail == list->current) {
+                        list->tail = list->current->prev;
+                    }
+                    node = list->current;
+                    if (node->prev != 0) {
+                        node->prev->next = node->next;
+                    }
+                    node = list->current;
+                    if (node->next != 0) {
+                        node->next->prev = node->prev;
+                    }
+                    node = list->current;
+                    void* data = 0;
+                    if (node != 0) {
+                        data = node->data;
+                    }
+                    if (node != 0) {
+                        node->data = 0;
+                        node->prev = 0;
+                        node->next = 0;
+                        FreeMemory(node);
+                        list->current = 0;
+                    }
+                    list->current = list->head;
+                    return (SC_Question*)data;
+                }
+                if (list->tail == node) {
+                    return 0;
+                }
+                if (node != 0) {
+                    list->current = node->next;
+                }
+                count++;
+            } while (*(int*)questionQueue != 0);
+        }
     }
-    list->current = list->head;
-    if (*(int*)questionQueue == 0) {
-        return 0;
-    }
-
-    do {
-        list = questionQueue;
-        node = list->current;
-        if (count == idx) {
-            if (node == 0) {
-                return 0;
-            }
-            if (list->head == node) {
-                list->head = node->next;
-            }
-            if (list->tail == list->current) {
-                list->tail = list->current->prev;
-            }
-            node = list->current;
-            if (node->prev != 0) {
-                node->prev->next = node->next;
-            }
-            node = list->current;
-            if (node->next != 0) {
-                node->next->prev = node->prev;
-            }
-            node = list->current;
-            data = 0;
-            if (node != 0) {
-                data = node->data;
-            }
-            if (node != 0) {
-                node->data = 0;
-                node->prev = 0;
-                node->next = 0;
-                FreeMemory(node);
-                list->current = 0;
-            }
-            list->current = list->head;
-            return (SC_Question*)data;
-        }
-        if (list->tail == node) {
-            return 0;
-        }
-        if (node != 0) {
-            list->current = node->next;
-        }
-        count++;
-    } while (*(int*)questionQueue != 0);
-
     return 0;
 }
 
@@ -728,24 +724,22 @@ void Handler31::Init(SC_MessageParser* msg) {
 
     questionQueue = new Queue(4);
 
-    gs = g_GameState_0046aa30;
-    periodIdx = gs->FindState("PERIOD");
-    if (periodIdx < 0 || gs->maxStates - 1 < periodIdx) {
+    periodIdx = g_GameState_0046aa30->FindState("PERIOD");
+    if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
         ShowError("Invalid gamestate %d", periodIdx);
     }
-    periodVal = gs->stateValues[periodIdx];
+    periodVal = g_GameState_0046aa30->stateValues[periodIdx];
 
-    gs = g_GameState_0046aa30;
-    roomInstIdx = gs->FindState("ROOMINSTANCE");
-    if (roomInstIdx < 0 || gs->maxStates - 1 < roomInstIdx) {
+    roomInstIdx = g_GameState_0046aa30->FindState("ROOMINSTANCE");
+    if (roomInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < roomInstIdx) {
         ShowError("Invalid gamestate %d", roomInstIdx);
     }
+    int _roomInst = g_GameState_0046aa30->stateValues[roomInstIdx];
 
-    gs = g_GameState_0046aa30;
-    if (g_PeriodStateIdx_0046cb90 < 0 || gs->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
+    if (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
         ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
     }
-    if (gs->stateValues[g_PeriodStateIdx_0046cb90] == -1 &&
+    if (g_GameState_0046aa30->stateValues[g_PeriodStateIdx_0046cb90] == -1 &&
         (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90)) {
         ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
     }
@@ -754,7 +748,6 @@ void Handler31::Init(SC_MessageParser* msg) {
         int _charIdx = g_GameState_0046aa30->stateValues[g_PeriodStateIdx_0046cb90];
         char _ch = g_PeriodCharTable_0046cb94[_charIdx];
         int _extra1 = ((SpriteAction*)msg)->extra1;
-        int _roomInst = gs->stateValues[roomInstIdx];
         ParseFile(this, dialogFile, "[PERIOD%2.2d_SS%d_DIALOG%d_%c]",
                   periodVal, _roomInst, _extra1, (int)_ch);
     }

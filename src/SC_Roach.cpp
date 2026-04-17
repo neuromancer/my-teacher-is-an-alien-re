@@ -35,7 +35,55 @@ NavCrystal::NavCrystal(int id) {
 
 /* Function start: 0x418850 */
 int NavCrystal::LBLParse(char* line) {
-    TODO("NavCrystal::LBLParse");
+    char label[32];
+    label[0] = 0;
+    sscanf(line, " %s", label);
+
+    if (strcmp(label, "LOC") == 0) {
+        int idx, x, y;
+        sscanf(line, " %s %d %d %d", label, &idx, &x, &y);
+        dimArray1[idx].x = x;
+        dimArray1[idx].y = y;
+        return 0;
+    }
+    if (strcmp(label, "DIM") == 0) {
+        int idx, x, y;
+        sscanf(line, " %s %d %d %d", label, &idx, &x, &y);
+        dimArray2[idx].x = x;
+        dimArray2[idx].y = y;
+        return 0;
+    }
+    if (strcmp(label, "PATTERN") == 0) {
+        int rot, base;
+        char p0[8], p1[8], p2[8], p3[8];
+        sscanf(line, " %s %d %d %s %s %s %s", label, &rot, &base, p0, p1, p2, p3);
+
+        base = base * 4;
+        if (p0[0] == '1') patternData[rot * 64 + base * 4 + 0] = 1;
+        if (p0[1] == '1') patternData[rot * 64 + base * 4 + 1] = 1;
+        if (p0[2] == '1') patternData[rot * 64 + base * 4 + 2] = 1;
+        if (p0[3] == '1') patternData[rot * 64 + base * 4 + 3] = 1;
+        int r = base + 1;
+        if (p1[0] == '1') patternData[rot * 64 + r * 4 + 0] = 1;
+        if (p1[1] == '1') patternData[rot * 64 + r * 4 + 1] = 1;
+        if (p1[2] == '1') patternData[rot * 64 + r * 4 + 2] = 1;
+        if (p1[3] == '1') patternData[rot * 64 + r * 4 + 3] = 1;
+        r = base + 2;
+        if (p2[0] == '1') patternData[rot * 64 + r * 4 + 0] = 1;
+        if (p2[1] == '1') patternData[rot * 64 + r * 4 + 1] = 1;
+        if (p2[2] == '1') patternData[rot * 64 + r * 4 + 2] = 1;
+        if (p2[3] == '1') patternData[rot * 64 + r * 4 + 3] = 1;
+        base = base + 3;
+        if (p3[0] == '1') patternData[rot * 64 + base * 4 + 0] = 1;
+        if (p3[1] == '1') patternData[rot * 64 + base * 4 + 1] = 1;
+        if (p3[2] == '1') patternData[rot * 64 + base * 4 + 2] = 1;
+        if (p3[3] == '1') patternData[rot * 64 + base * 4 + 3] = 1;
+        return 0;
+    }
+    if (strcmp(label, "END") == 0) {
+        return 1;
+    }
+    ReportUnknownLabel("Crystal_Piece");
     return 0;
 }
 
@@ -105,59 +153,57 @@ int SC_Roach::ShutDown(SC_MessageParser* msg) {
 
 /* Function start: 0x419220 */
 int SC_Roach::AddMessage(SC_MessageParser* msg) {
-    SpriteAction* action;
-    int i;
-    int count;
-    int* srcPtr;
-    int result;
-
-    action = (SpriteAction*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
     if (SC_Combat::AddMessage(msg) != 0) {
         return 1;
     }
 
     if (action->lastKey == 0x1B) {
         if (savedCommand == 0x2B) {
-            ((int*)statusPtr)[2] = 1;
+            statusPtr[2] = 1;
         }
-    } else if (action->button1 >= 2) {
-        if (currentPiece == 0) {
-            result = PickFromGrid((int*)action);
-            if (result == 0) {
-                PickFromSource((int*)action);
+    } else if (action->button1 > 1) {
+        if (currentPiece != 0) {
+            int result = TryPlacePiece((int*)action);
+            if (result != 0) {
+                bgSound->Play(7);
+            } else {
+                TryDropOnSource((int*)action);
             }
         } else {
-            result = TryPlacePiece((int*)action);
-            if (result == 0) {
-                result = TryDropOnSource((int*)action);
-                if (result == 0) {
-                    bgSound->Play(8);
-                }
+            if (PickFromGrid((int*)action) == 0) {
+                PickFromSource((int*)action);
             }
         }
-    } else if (action->button2 >= 2) {
+    } else if (action->button2 > 1) {
         if (currentPiece != 0) {
-            bgSound->Play(7);
             rotatePending = 1;
-            rotateIndex = (rotateIndex + 1) % 4;
-            Sprite* spr = ((NavCrystal*)currentPiece)->sprite;
+            bgSound->Play(8);
+            NavCrystal* crys = (NavCrystal*)currentPiece;
+            crys->rotation = crys->rotation + 1;
+            if (crys->rotation >= 4) {
+                crys->rotation = 0;
+            }
+            Sprite* spr = crys->sprite;
             if (spr != 0) {
-                spr->ResetAnimation(rotateIndex, 0);
+                spr->ResetAnimation(crys->rotation, 0);
             }
         }
     }
 
-    count = 0;
-    i = 0;
+    int count = 0;
+    CrystalSource* p = &sources[0];
+    int n = 8;
     do {
-        if (sources[i].crystalPtr != 0) {
+        if (p->crystalPtr != 0) {
             count++;
         }
-        i++;
-    } while (i < 8);
+        p = (CrystalSource*)((char*)p + 0x2c);
+        n--;
+    } while (n != 0);
 
     if (currentPiece == 0 && count == 0) {
-        ((int*)statusPtr)[1] = 1;
+        statusPtr[1] = 1;
     }
 
     return 1;
@@ -208,28 +254,25 @@ void SC_Roach::RenderBoard()
     }
 
     // Draw held piece following cursor, or draw cursor if no piece held
-    if (currentPiece == 0) {
-        g_Mouse_0046aa18->DrawCursor();
-    } else {
-        NavCrystal* crys = (NavCrystal*)currentPiece;
+    NavCrystal* crys = (NavCrystal*)currentPiece;
+    if (crys != 0) {
         if (crys->sprite != 0) {
-            int mouseY;
-            if (g_InputManager_0046aa08->pMouse != 0) {
-                mouseY = g_InputManager_0046aa08->pMouse->y;
-            } else {
-                mouseY = 0;
+            InputState* pm = g_InputManager_0046aa08->pMouse;
+            int mouseY = 0;
+            if (pm != 0) {
+                mouseY = pm->y;
             }
-            int mouseX;
-            if (g_InputManager_0046aa08->pMouse != 0) {
-                mouseX = g_InputManager_0046aa08->pMouse->x;
-            } else {
-                mouseX = 0;
+            int mouseX = 0;
+            if (pm != 0) {
+                mouseX = pm->x;
             }
             crys->sprite->Do(
                 mouseX - crys->dimArray1[crys->rotation].x,
                 mouseY - crys->dimArray1[crys->rotation].y,
                 1.0);
         }
+    } else {
+        g_Mouse_0046aa18->DrawCursor();
     }
 
     // Draw crystals in source slots
@@ -390,35 +433,47 @@ int SC_Roach::PickFromGrid(int* msg)
     int* cellPtr = &grid[4];
     int mouseX = msg[7];
 
-    while (1) {
-        if (mouseX >= cellPtr[0] && cellPtr[2] >= mouseX &&
-            msg[8] >= cellPtr[1] && cellPtr[3] >= msg[8]) {
-            break;
+    int hit;
+    do {
+        if (cellPtr[0] <= mouseX && cellPtr[2] >= mouseX &&
+            cellPtr[1] <= msg[8] && cellPtr[3] >= msg[8]) {
+            hit = 1;
+        } else {
+            hit = 0;
+        }
+        if (hit != 0) {
+            goto found;
         }
         cellPtr += 8;
         idx++;
-        if (idx > 0x23) {
+    } while (idx < 0x24);
+
+    return 0;
+
+found:
+    {
+        int xofs = mouseX - grid[idx * 8 + 4];
+        int yofs = msg[8] - grid[idx * 8 + 5];
+        int orient;
+        if (yofs < xofs) {
+            orient = 0;
+        } else {
+            orient = 3;
+        }
+
+        int crystalId = grid[orient + idx * 8];
+        if (crystalId < 0) {
             return 0;
         }
-    }
 
-    int orient = 0;
-    if (mouseX - grid[idx * 8 + 4] <=
-        msg[8] - grid[idx * 8 + 5]) {
-        orient = 3;
-    }
-
-    int crystalId = grid[orient + idx * 8];
-    if (crystalId < 0) {
-        return 0;
+        currentPiece = crystals[crystalId];
     }
 
     int* gridPtr = grid;
-    currentPiece = crystals[crystalId];
     int count = 0x24;
     do {
-        int i = 4;
         int* cell = gridPtr;
+        int i = 4;
         do {
             if (((NavCrystal*)currentPiece)->crystalId == *cell) {
                 *cell = -2;
@@ -470,8 +525,8 @@ void SC_Roach::OnProcessEnd()
     SC_Combat::OnProcessEnd();
 
     int row = 0;
+    int cellH = 0x2a;
     int cellW = 0x2a;
-    int cellH = cellW;
     int startX = 0xce;
     int startY = 0x40;
     int* gridPtr = &grid[4];
@@ -480,15 +535,13 @@ void SC_Roach::OnProcessEnd()
         int col = 0;
         int* cell = gridPtr;
         do {
-            {
-                SlimeDim sd;
-                sd.x = col * cellW + startX;
-                sd.y = row * cellH + startY;
-                cell[0] = sd.x;
-                cell[1] = sd.y;
-                cell[2] = sd.x + cellW;
-                cell[3] = sd.y + cellH;
-            }
+            SlimeDim sd;
+            sd.x = col * cellW + startX;
+            sd.y = row * cellH + startY;
+            cell[0] = sd.x;
+            cell[1] = sd.y;
+            cell[2] = cellW + sd.x;
+            cell[3] = cellH + sd.y;
             cell += 8;
             col++;
         } while (col < 6);
@@ -515,7 +568,10 @@ void SC_Roach::OnProcessEnd()
 
 /* Function start: 0x418FB0 */
 void SC_Roach::Init(SC_MessageParser* msg) {
-    TODO("SC_Roach::Init");
+    memset(&sources, 0, 0x186 * sizeof(int));
+    SC_Combat::Init(msg);
+    strcpy((char*)(combatParams + 5), "mis\\pz_crystal.mis");
+    ParseFile(this, (char*)(combatParams + 5), (char*)0);
 }
 
 /* Function start: 0x419200 */
@@ -537,12 +593,80 @@ int SC_Roach::Exit(SC_MessageParser* msg) {
 
 /* Function start: 0x419380 */
 void SC_Roach::ProcessLose() {
-    TODO("SC_Roach::ProcessLose");
+    if (statusPtr[1] != 0) {
+        if (pendingAction != 0) {
+            delete pendingAction;
+            pendingAction = 0;
+        }
+        SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        pendingAction = newAction;
+        SC_MessageParser temp;
+        temp.targetAddress = (int)newAction;
+        ParseFile(&temp, "mis\\pz_crystal.mis", "[WIN_MESSAGE]");
+    } else if (statusPtr[0] != 0) {
+        if (pendingAction != 0) {
+            delete pendingAction;
+            pendingAction = 0;
+        }
+        SpriteAction* newAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        pendingAction = newAction;
+        SC_MessageParser temp;
+        temp.targetAddress = (int)newAction;
+        ParseFile(&temp, "mis\\pz_crystal.mis", "[LOSE_MESSAGE]");
+    }
+
+    if (savedCommand == 0x2B) {
+        ((int*)pendingAction)[2] = 0x2B;
+        ((int*)pendingAction)[3] = savedMsgData;
+    }
+
+    SC_Combat::ProcessLose();
 }
 
 /* Function start: 0x419C40 */
 void SC_Roach::ProcessAction(int action, int* data) {
-    TODO("SC_Roach::ProcessAction");
+    switch (action) {
+    case 0:
+        if (*data == 1) {
+            bgSound->Play(2);
+            (*data)++;
+            statusPtr[4] = 0;
+        }
+        if (bgSound->IsSamplePlaying(2) == 0) {
+            ProcessLose();
+            return;
+        }
+        break;
+    case 1:
+        if (*data == 1) {
+            bgSound->Play(1);
+            (*data)++;
+            statusPtr[4] = 0;
+            bgSprite->ResetAnimation(1, 0);
+        }
+        if (bgSound->IsSamplePlaying(1) == 0) {
+            ProcessLose();
+            return;
+        }
+        break;
+    case 2:
+        ProcessLose();
+        return;
+    case 3:
+        *data = 0;
+        ((Timer*)progressObj)->Reset();
+        bgSound->Play(0);
+        return;
+    case 4:
+        UpdateProgress();
+        return;
+    case 5:
+        RenderBoard();
+        break;
+    default:
+        ShowError("SC_CrystalPuzzle::Process_Action - invalid Action=%d, value=%d", action, *data);
+        return;
+    }
 }
 
 /* Function start: 0x419F50 */

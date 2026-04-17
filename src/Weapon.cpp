@@ -58,17 +58,18 @@ void Weapon::UpdateProjectiles() {
     W_HOLD = 0;
     OnHit();
 
-    {
+    if (W_PROJ_COUNT > 0) {
         int i = 0;
-        int* arr = W_PROJ_ARRAY;
-        while (i < W_PROJ_COUNT) {
+        int* base = W_PROJ_ARRAY;
+        int* arr = base;
+        do {
             if (*(int*)(*arr + 0x11C) == 0) {
-                ((Projectile*)W_PROJ_ARRAY[i])->Launch();
-                break;
+                ((Projectile*)base[i])->Launch();
+                goto updateAll;
             }
             arr++;
             i++;
-        }
+        } while (i < W_PROJ_COUNT);
     }
 
 updateAll:

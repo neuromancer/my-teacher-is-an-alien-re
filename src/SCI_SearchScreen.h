@@ -22,10 +22,11 @@ public:
     ~SCI_SearchScreen();                        // 0x40B4B0
 
     virtual int LBLParse(char* line);           // [0]  0x40BAD0
+    virtual void OnProcessStart();             // [1]  0x40BAB0
     virtual void OnProcessEnd();               // [2]  0x40BAC0
     virtual void Init(SC_MessageParser* msg);        // [4]  0x40B510
-    int ShutDown(SC_MessageParser* msg);              // 0x40B780
-    int AddMessage(SC_MessageParser* msg);            // 0x40B7E0
+    virtual int ShutDown(SC_MessageParser* msg);     // [6]  0x40B780
+    virtual int AddMessage(SC_MessageParser* msg);   // [5]  0x40B7E0
     virtual void Update(int p1, int p2);       // [7]  0x40B7C0
     virtual int Exit(SC_MessageParser* msg);         // [8]  0x40B830
     virtual void ProcessLose();                // [11] 0x40B860

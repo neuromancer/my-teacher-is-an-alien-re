@@ -3,6 +3,7 @@
 
 #include "Handler.h"
 #include "Timer.h"
+#include "InvSlotItem.h"  // for Rect
 
 class Palette;
 class Sprite;
@@ -46,10 +47,21 @@ public:
     // Inline timer (0xC0-0xD3, 20 bytes)
     Timer timer;               // 0xC0
 
-    // Mixed-use area: word list during init, then grid cells/cursor/game data
-    // Words: 32 slots × 32 chars at 0xD4-0x4D3
-    // Grid cells, cursor hotspot, exit bounds, sprites etc. interspersed
-    char gameData[0x748];      // 0xD4-0x81B
+    // Word list — 32 words, 32 chars each
+    char words[32][32];        // 0xD4-0x4D3 (0x400 bytes)
+
+    // Hit-test bounds for each word slot
+    Rect wordBounds[32];       // 0x4D4-0x6D3 (32 × 16 bytes)
+
+    // UI button rects
+    Rect submitRect;            // 0x6D4 — "submit" button rectangle
+    Rect resetRect;             // 0x6E4 — "reset" button rectangle
+    Rect enterPlaceRect;        // 0x6F4 — enter placement mode rectangle
+    Rect placeModeRect;         // 0x704 — exit placement mode rectangle
+
+    int placementMode;          // 0x714 — flag: currently placing a word
+    char wordBuffer[256];       // 0x718-0x817 — accumulated words string
+    int selectedCount;          // 0x818 — number of words selected
 
     // End fields (0x81C-0x837)
     int gameFlags;             // 0x81C - bit flags (bit 0 = PUZ_WAHOO_WON check)

@@ -28,10 +28,7 @@ __int64 FilePosCache::Lookup(char* fname, char* keyName) {
                 // Hit
                 g_CacheHitCount_0046912c++;
                 entry->accessCount++;
-                __int64 result;
-                ((int*)&result)[0] = entry->posLo;
-                ((int*)&result)[1] = entry->posHi;
-                return result;
+                return *(__int64*)&entry->posLo;
             }
         }
 

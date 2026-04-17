@@ -20,9 +20,8 @@ TimedEvent::TimedEvent()
 /* Function start: 0x422A50 */
 TimedEvent::~TimedEvent()
 {
-    SC_MessageParser* eventData = m_eventData;
-    if (eventData) {
-        delete eventData;
+    if (m_eventData) {
+        delete (SpriteAction*)m_eventData;
         m_eventData = 0;
     }
 }

@@ -1185,14 +1185,13 @@ void* SCI_Inventory::FindItem(int itemID) { return 0; }
 /* Function start: 0x43F7F0 */
 int* SCI_Inventory::FindItemInList(int itemID) {
     QueueNode* node = ((LinkedList*)itemPool)->head;
-    if (node == 0) {
-        return 0;
+    if (node != 0) {
+        do {
+            if (((T_Object*)node->data)->itemId == itemID) {
+                return (int*)node;
+            }
+            node = node->prev;
+        } while (node != 0);
     }
-    do {
-        if (((T_Object*)node->data)->itemId == itemID) {
-            return (int*)node;
-        }
-        node = node->prev;
-    } while (node != 0);
     return 0;
 }

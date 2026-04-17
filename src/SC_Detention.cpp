@@ -111,6 +111,11 @@ void SC_Detention::Init(SC_MessageParser* msg) {
     actionsCount = gs->stateValues[idx];
 }
 
+/* Function start: 0x409C40 */
+int SC_Detention::ShutDown(SC_MessageParser* msg) {
+    return 0;
+}
+
 /* Function start: 0x409C50 */
 void SC_Detention::Update(int p1, int p2) {
     GameState* gs;
@@ -711,29 +716,31 @@ int SC_Detention::LBLParse(char* line) { // prologue at 0x40B240
 
 /* Function start: 0x40AB90 */
 void SC_Detention::HandleCombat() {
-    SpriteAction temp(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
-    g_PendingAction_00472d58.CopyFrom(&temp);
+    {
+        SpriteAction temp(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
+        g_PendingAction_00472d58.CopyFrom(&temp);
+    }
 
     SendGameMessage(3, 0xC7, 0x2D, 1, 4, 0, 0, 0, 0, 0);
 
-    int idx = g_GameState_0046aa30->FindState("MUST_SAVEGAME");
-    if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
+    GameState* gs = g_GameState_0046aa30;
+    int idx = gs->FindState("MUST_SAVEGAME");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
-    g_GameState_0046aa30->stateValues[idx] = 0;
+    gs->stateValues[idx] = 0;
 }
 /* Function start: 0x40AC70 */
 void SC_Detention::HandlePractice() {
-    GameState* gs;
-    int idx;
-
-    SpriteAction temp(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
-    g_PendingAction_00472d58.CopyFrom(&temp);
+    {
+        SpriteAction temp(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
+        g_PendingAction_00472d58.CopyFrom(&temp);
+    }
 
     SendGameMessage(0x2D, 1, 0x2D, 1, 4, 0, 0, 0, 0, 0);
 
-    gs = g_GameState_0046aa30;
-    idx = gs->FindState("MUST_SAVEGAME");
+    GameState* gs = g_GameState_0046aa30;
+    int idx = gs->FindState("MUST_SAVEGAME");
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }

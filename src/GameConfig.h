@@ -2,12 +2,12 @@
 #define GAMECONFIG_H
 
 #include <stdio.h>
-#include "Range.h"
+#include "SpriteAction.h"
 // Embedded object at offset 0x44 of GameConfig (80 bytes = 0x50)
 class ConfigData {
 public:
     unsigned char rawData[0x34];  // 0x00-0x33 (52 bytes)
-    Range range;                  // 0x34 (8 bytes)
+    SlimeDim range;               // 0x34 (8 bytes) — zeroed by SlimeDim ctor, SEH via ~SlimeDim
     unsigned char padding[0x14];  // 0x3C-0x4F (20 bytes)
 
     ~ConfigData();

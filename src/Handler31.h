@@ -40,6 +40,7 @@ public:
     virtual int ShutDown(SC_MessageParser* msg);     // 0x4173D0
     virtual void Update(int param1, int param2); // 0x417500
     virtual int Exit(SC_MessageParser* msg);          // 0x417880
+    virtual void OnInput(void* param);                // 0x418530
     int CheckDuplicateQuestion(int param);     // 0x417D50
     SC_Question* SelectQuestion(int idx);       // 0x417C80
     SC_Question* RemoveQuestion(int id);        // 0x417E60

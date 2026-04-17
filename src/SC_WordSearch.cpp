@@ -28,6 +28,22 @@ extern "C" void WriteToLog(const char* format, ...);
 #include "AnimatedAsset.h"
 
 #include "MouseControl.h"
+
+/* Game-state offsets within the words[] buffer.
+   After InitWordList runs, the same memory is reinterpreted as puzzle state:
+   pointers, counters, per-cell data, sprite array, and the exit-button rect.
+   The reuse is intentional (memory-saving in the original) — we document
+   the layout here rather than add substructures/unions. */
+#define GS_BG_SPRITE_OFS     0x34   /* Sprite*   — background sprite ref   */
+#define GS_SOUND_LIST_OFS    0x3C   /* SoundList* — puzzle sound effects   */
+#define GS_MSG_VALUE_OFS     0x40   /* int       — SendGameMessage payload */
+#define GS_COUNTER_OFS       0x44   /* int       — completion counter      */
+#define GS_TARGET_OFS        0x48   /* int       — counter target          */
+#define GS_CURSOR_STATE_OFS  0x4C   /* int       — cursor/selection state  */
+#define GS_MODE_FLAG_OFS     0x50   /* int       — input mode flag         */
+#define GS_CELLS_OFS         0x68   /* Cell[36]  — 7 ints per cell         */
+#define GS_CELL_SPRITES_OFS  0x458  /* Sprite*[36]                         */
+#define GS_EXIT_RECT_OFS     0x474  /* Rect      — exit button bounds      */
 #include "VBuffer.h"
 
 /* Function start: 0x42E4B0 */
@@ -70,53 +86,39 @@ extern "C" void __cdecl ArrayConstruct(void* arr, int elemSize, int count, void*
 
 /* Function start: 0x435800 */
 SC_WordSearch::SC_WordSearch() {
-    ArrayConstruct(gameData + (0x4D4 - 0xD4), 0x10, 0x20, (void*)0x40d0c0, (void*)0x401130);
-
     memset(&palette, 0, 0x790);
     handlerId = 0x51;
     timer.Reset();
 
-    int* entry = (int*)(gameData + (0x4D4 - 0xD4));
-    int i;
-    for (i = 0; i < 0x20; i++) {
-        int idx = i;
-        int sign;
-        // abs(i) % 4 with sign preservation
-        if (idx < 0) { sign = -1; idx = -idx; } else { sign = 1; }
-        int mod = idx % 4;
-        if (sign < 0) mod = -mod;
-        int col = mod;
+    for (int i = 0; i < 0x20; i++) {
+        int col = i % 4;
         int x = col + col * 12;
         x = x + x * 8 + 0x26;
-        entry[0] = x;
+        wordBounds[i].left = x;
 
-        int row = i;
-        int rowSign;
-        if (row < 0) { rowSign = (row & 3); row = (row + rowSign) >> 2; } else { row = row >> 2; }
+        int row = i / 4;
         int y = row * 16 + row + 0xf5;
-        entry[1] = y;
-        entry[2] = x + 0x74;
-        entry[3] = y + 0x10;
-        entry += 4;
+        wordBounds[i].top = y;
+        wordBounds[i].right = x + 0x74;
+        wordBounds[i].bottom = y + 0x10;
     }
 
-    int* data = (int*)(gameData + (0x6D4 - 0xD4));
-    data[0] = 0x184;  // 0x6D4
-    data[1] = 0xCC;   // 0x6D8
-    data[2] = 0x1BC;  // 0x6DC
-    data[3] = 0xDE;   // 0x6E0
-    data[4] = 0x1C0;  // 0x6E4
-    data[5] = 0xCC;   // 0x6E8
-    data[6] = 0x1F8;  // 0x6EC
-    data[7] = 0xDE;   // 0x6F0
-    data[8] = 0x1A1;  // 0x6F4
-    data[9] = 0xE1;   // 0x6F8
-    data[10] = 0x1DA; // 0x6FC
-    data[11] = 0xF3;  // 0x700
-    data[12] = 0x107; // 0x704
-    data[13] = 0x13F; // 0x708
-    data[14] = 0x13F; // 0x70C
-    data[15] = 0x151; // 0x710
+    submitRect.top = 0xCC;
+    submitRect.bottom = 0xDE;
+    submitRect.left = 0x184;
+    resetRect.top = 0xCC;
+    resetRect.bottom = 0xDE;
+    submitRect.right = 0x1BC;
+    resetRect.left = 0x1C0;
+    resetRect.right = 0x1F8;
+    enterPlaceRect.left = 0x1A1;
+    enterPlaceRect.top = 0xE1;
+    enterPlaceRect.right = 0x1DA;
+    enterPlaceRect.bottom = 0xF3;
+    placeModeRect.left = 0x107;
+    placeModeRect.bottom = 0x151;
+    placeModeRect.top = 0x13F;
+    placeModeRect.right = 0x13F;
 }
 
 SC_WordSearch::~SC_WordSearch() {
@@ -233,7 +235,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         return;
     }
 
-    if (*(int*)(gameData + 0x640) != 0) {
+    if (placementMode != 0) {
         pvVar10 = timerSprite;
         ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0);
         pvVar10 = scoreSprite;
@@ -249,17 +251,17 @@ void SC_WordSearch::Update(int param1, int param2) {
         } else {
             iVar5 = 0;
         }
-        if (iVar5 < *(int*)(gameData + 0x630)) return;
-        if (*(int*)(gameData + 0x638) < iVar5) return;
-        if (iVar9 < *(int*)(gameData + 0x634)) return;
-        if (*(int*)(gameData + 0x63C) < iVar9) return;
+        if (iVar5 < placeModeRect.left) return;
+        if (placeModeRect.right < iVar5) return;
+        if (iVar9 < placeModeRect.top) return;
+        if (placeModeRect.bottom < iVar9) return;
         spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
         if (spr != 0) {
             spr->ResetAnimation(0xf, 0);
         }
         g_ZBufferManager_0046aa24->DrawRect(
-            *(int*)(gameData + 0x630), *(int*)(gameData + 0x634),
-            *(int*)(gameData + 0x638), *(int*)(gameData + 0x63C),
+            placeModeRect.left, placeModeRect.top,
+            placeModeRect.right, placeModeRect.bottom,
             10000, 0xfc, 2);
         return;
     }
@@ -271,8 +273,8 @@ void SC_WordSearch::Update(int param1, int param2) {
         ((VBuffer*)g_BackBuffer_0046aa14)->ClearScreen(0);
     }
 
-    int* piVar13 = (int*)(gameData + 0x400);
-    char* pcVar12 = gameData;
+    int* piVar13 = (int*)((char*)wordBounds);
+    char* pcVar12 = (char*)words;
     int local_4 = 0x20;
     int* piVar11 = piVar13;
     do {
@@ -322,10 +324,10 @@ void SC_WordSearch::Update(int param1, int param2) {
         }
         unsigned int uVar6 = ((int)(puVar2 == 0) - 1) & uVar4;
 
-        if (*(int*)(gameData + 0x600) > (int)uVar6 ||
-            *(int*)(gameData + 0x608) < (int)uVar6 ||
-            *(int*)(gameData + 0x604) > (int)uVar7 ||
-            *(int*)(gameData + 0x60C) < (int)uVar7) {
+        if (submitRect.left > (int)uVar6 ||
+            submitRect.right < (int)uVar6 ||
+            submitRect.top > (int)uVar7 ||
+            submitRect.bottom < (int)uVar7) {
 
             uVar7 = 0;
             if (puVar2 != 0) {
@@ -333,10 +335,10 @@ void SC_WordSearch::Update(int param1, int param2) {
             }
             uVar6 = ((int)(puVar2 == 0) - 1) & uVar4;
 
-            if (*(int*)(gameData + 0x610) > (int)uVar6 ||
-                *(int*)(gameData + 0x618) < (int)uVar6 ||
-                *(int*)(gameData + 0x614) > (int)uVar7 ||
-                *(int*)(gameData + 0x61C) < (int)uVar7) {
+            if (resetRect.left > (int)uVar6 ||
+                resetRect.right < (int)uVar6 ||
+                resetRect.top > (int)uVar7 ||
+                resetRect.bottom < (int)uVar7) {
 
                 uVar7 = 0;
                 if (puVar2 != 0) {
@@ -344,11 +346,11 @@ void SC_WordSearch::Update(int param1, int param2) {
                 }
                 uVar4 = ((int)(puVar2 == 0) - 1) & uVar4;
 
-                if (*(int*)(gameData + 0x620) > (int)uVar4 ||
-                    *(int*)(gameData + 0x628) < (int)uVar4 ||
-                    *(int*)(gameData + 0x624) > (int)uVar7 ||
-                    *(int*)(gameData + 0x62C) < (int)uVar7) {
-                    pcVar12 = gameData;
+                if (enterPlaceRect.left > (int)uVar4 ||
+                    enterPlaceRect.right < (int)uVar4 ||
+                    enterPlaceRect.top > (int)uVar7 ||
+                    enterPlaceRect.bottom < (int)uVar7) {
+                    pcVar12 = (char*)words;
                     iVar9 = 0x20;
                     do {
                         if (*pcVar12 != '\0') {
@@ -379,8 +381,8 @@ void SC_WordSearch::Update(int param1, int param2) {
                         spr->ResetAnimation(0xf, 0);
                     }
                     g_ZBufferManager_0046aa24->DrawRect(
-                        *(int*)(gameData + 0x620), *(int*)(gameData + 0x624),
-                        *(int*)(gameData + 0x628), *(int*)(gameData + 0x62C),
+                        enterPlaceRect.left, enterPlaceRect.top,
+                        enterPlaceRect.right, enterPlaceRect.bottom,
                         10000, 0xfc, 2);
                 }
             } else {
@@ -389,8 +391,8 @@ void SC_WordSearch::Update(int param1, int param2) {
                     spr->ResetAnimation(0xf, 0);
                 }
                 g_ZBufferManager_0046aa24->DrawRect(
-                    *(int*)(gameData + 0x610), *(int*)(gameData + 0x614),
-                    *(int*)(gameData + 0x618), *(int*)(gameData + 0x61C),
+                    resetRect.left, resetRect.top,
+                    resetRect.right, resetRect.bottom,
                     10000, 0xfc, 2);
             }
         } else {
@@ -399,8 +401,8 @@ void SC_WordSearch::Update(int param1, int param2) {
                 spr->ResetAnimation(0xf, 0);
             }
             g_ZBufferManager_0046aa24->DrawRect(
-                *(int*)(gameData + 0x600), *(int*)(gameData + 0x604),
-                *(int*)(gameData + 0x608), *(int*)(gameData + 0x60C),
+                submitRect.left, submitRect.top,
+                submitRect.right, submitRect.bottom,
                 10000, 0xfc, 2);
         }
         }
@@ -422,7 +424,7 @@ void SC_WordSearch::Update(int param1, int param2) {
             puzzleSprite2->ResetAnimation(-1, 0);
         }
     }
-    g_ZBufferManager_0046aa24->ShowText((char*)(gameData + 0x644), 0x49, 0xdc, 10000, 0);
+    g_ZBufferManager_0046aa24->ShowText((char*)(wordBuffer), 0x49, 0xdc, 10000, 0);
     (g_Mouse_0046aa18)->DrawCursor();
     pvVar10 = scoreSprite;
     ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0);
@@ -476,59 +478,59 @@ void SC_WordSearch::InitWordList() {
     }
     int gsVal = ((GameState*)pvVar3)->stateValues[iVar2];
     if (gsVal == 0) {
-        memset(gameData, 0, 0x400);
-        strcpy(gameData, "Encounter");
-        strcpy(gameData + 0x20, "Eye");
-        strcpy(gameData + 0x40, "Spaceship");
-        strcpy(gameData + 0x60, "Wand");
-        strcpy(gameData + 0x80, "Roswell");
-        strcpy(gameData + 0xA0, "Two");
-        strcpy(gameData + 0xC0, "Abduction");
-        strcpy(gameData + 0xE0, "Believe");
-        strcpy(gameData + 0x100, "Sighting");
-        strcpy(gameData + 0x120, "Cover-up");
+        memset(words, 0, sizeof(words));
+        strcpy(words[0], "Encounter");
+        strcpy(words[1], "Eye");
+        strcpy(words[2], "Spaceship");
+        strcpy(words[3], "Wand");
+        strcpy(words[4], "Roswell");
+        strcpy(words[5], "Two");
+        strcpy(words[6], "Abduction");
+        strcpy(words[7], "Believe");
+        strcpy(words[8], "Sighting");
+        strcpy(words[9], "Cover-up");
     } else if (gsVal == 1) {
-        memset(gameData, 0, 0x400);
-        strcpy(gameData, "Encounter");
-        strcpy(gameData + 0x20, "Eye");
-        strcpy(gameData + 0x40, "Spaceship");
-        strcpy(gameData + 0x60, "Wand");
-        strcpy(gameData + 0x80, "Area 51");
-        strcpy(gameData + 0xA0, "Roswell");
-        strcpy(gameData + 0xC0, "Information");
-        strcpy(gameData + 0xE0, "Barca-Lounger");
-        strcpy(gameData + 0x100, "Two");
-        strcpy(gameData + 0x120, "UFO");
-        strcpy(gameData + 0x140, "Grey-men");
-        strcpy(gameData + 0x160, "Abduction");
-        strcpy(gameData + 0x180, "Sighting");
-        strcpy(gameData + 0x1A0, "Believe");
-        strcpy(gameData + 0x1C0, "Cover-up");
+        memset(words, 0, sizeof(words));
+        strcpy(words[0], "Encounter");
+        strcpy(words[1], "Eye");
+        strcpy(words[2], "Spaceship");
+        strcpy(words[3], "Wand");
+        strcpy(words[4], "Area 51");
+        strcpy(words[5], "Roswell");
+        strcpy(words[6], "Information");
+        strcpy(words[7], "Barca-Lounger");
+        strcpy(words[8], "Two");
+        strcpy(words[9], "UFO");
+        strcpy(words[10], "Grey-men");
+        strcpy(words[11], "Abduction");
+        strcpy(words[12], "Sighting");
+        strcpy(words[13], "Believe");
+        strcpy(words[14], "Cover-up");
     } else if (gsVal == 2) {
-        memset(gameData, 0, 0x400);
-        strcpy(gameData, "Encounter");
-        strcpy(gameData + 0x20, "Eye");
-        strcpy(gameData + 0x40, "Spaceship");
-        strcpy(gameData + 0x60, "Area 51");
-        strcpy(gameData + 0x80, "Wand");
-        strcpy(gameData + 0xA0, "Roswell");
-        strcpy(gameData + 0xC0, "Information");
-        strcpy(gameData + 0xE0, "Barca-Lounger");
-        strcpy(gameData + 0x100, "Two");
-        strcpy(gameData + 0x120, "Cow");
-        strcpy(gameData + 0x140, "UFO");
-        strcpy(gameData + 0x160, "Grey-men");
-        strcpy(gameData + 0x180, "Abduction");
-        strcpy(gameData + 0x1A0, "Believe");
-        strcpy(gameData + 0x1C0, "Bogie");
-        strcpy(gameData + 0x1E0, "Sighting");
-        strcpy(gameData + 0x200, "Conspiracy");
-        strcpy(gameData + 0x220, "Probe");
-        strcpy(gameData + 0x240, "Nuts");
-        strcpy(gameData + 0x260, "Cover-up");
+        memset(words, 0, sizeof(words));
+        strcpy(words[0], "Encounter");
+        strcpy(words[1], "Eye");
+        strcpy(words[2], "Spaceship");
+        strcpy(words[3], "Area 51");
+        strcpy(words[4], "Wand");
+        strcpy(words[5], "Roswell");
+        strcpy(words[6], "Information");
+        strcpy(words[7], "Barca-Lounger");
+        strcpy(words[8], "Two");
+        strcpy(words[9], "Cow");
+        strcpy(words[10], "UFO");
+        strcpy(words[11], "Grey-men");
+        strcpy(words[12], "Abduction");
+        strcpy(words[13], "Believe");
+        strcpy(words[14], "Bogie");
+        strcpy(words[15], "Sighting");
+        strcpy(words[16], "Conspiracy");
+        strcpy(words[17], "Probe");
+        strcpy(words[18], "Nuts");
+        strcpy(words[19], "Cover-up");
     }
-    *(char*)(gameData + 0x644) = 0;
-    *(int*)(gameData + 0x744) = 0;
+    wordBuffer[0] = 0;
+    selectedCount = 0;
 }
 
 /* Function start: 0x437080 */
@@ -548,7 +550,73 @@ int SC_WordSearch::Exit(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x436490 */
-int SC_WordSearch::AddMessage(SC_MessageParser*) { return 0; }
+int SC_WordSearch::AddMessage(SC_MessageParser* msg) {
+    SpriteAction* action = (SpriteAction*)msg;
+
+    if (WriteMessageAddress(msg) != 0) {
+        return 1;
+    }
+
+    if (action->lastKey == 0x1B && savedCommand == 0x2B) {
+        gameFlags |= 4;
+        DispatchResult();
+    }
+
+    if (action->button1 > 1) {
+        if (placementMode != 0) {
+            int mouseX = action->mousePos.x;
+            if (placeModeRect.left <= mouseX && mouseX <= placeModeRect.right &&
+                placeModeRect.top <= action->mousePos.y &&
+                action->mousePos.y <= placeModeRect.bottom) {
+                placementMode = 0;
+            }
+        } else {
+            int mouseX = action->mousePos.x;
+            if (mouseX < 0x22 || mouseX > 0x23f) {
+                gameFlags |= 4;
+                DispatchResult();
+            } else if (mouseX >= submitRect.left && mouseX <= submitRect.right &&
+                       action->mousePos.y >= submitRect.top && action->mousePos.y <= submitRect.bottom) {
+                if (strcmp(wordBuffer, " Eye Wand Two Believe") == 0) {
+                    puzzleSprite1->ResetAnimation(0, 0);
+                } else if (selectedCount != 0) {
+                    puzzleSprite2->ResetAnimation(0, 0);
+                }
+            } else if (mouseX >= resetRect.left && mouseX <= resetRect.right &&
+                       action->mousePos.y >= resetRect.top && action->mousePos.y <= resetRect.bottom) {
+                if (incorrectSound != 0) {
+                    incorrectSound->Play(100, 1);
+                }
+                InitWordList();
+            } else if (mouseX >= enterPlaceRect.left && mouseX <= enterPlaceRect.right &&
+                       action->mousePos.y >= enterPlaceRect.top && action->mousePos.y <= enterPlaceRect.bottom) {
+                placementMode = 1;
+            } else if (selectedCount < 4) {
+                Rect* bounds = &wordBounds[0];
+                char* word = &words[0][0];
+                int count = 0x20;
+                do {
+                    if (word[0] != 0 && word != 0 &&
+                        bounds->left <= action->mousePos.x && action->mousePos.x <= bounds->right &&
+                        bounds->top <= action->mousePos.y && action->mousePos.y <= bounds->bottom) {
+                        if (correctSound != 0) {
+                            correctSound->Play(100, 1);
+                        }
+                        strcat(wordBuffer, " ");
+                        strcat(wordBuffer, word);
+                        *word = 0;
+                        selectedCount++;
+                    }
+                    word += 0x20;
+                    bounds++;
+                    count--;
+                } while (count != 0);
+            }
+        }
+    }
+
+    return 1;
+}
 /* Function start: 0x4370F0 */
 /* Function start: 0x437120 */
 int SC_WordSearch::LBLParse(char* line) {
@@ -663,7 +731,7 @@ void __fastcall Handler_OnProcessEnd(int thisPtr) {
 void SC_WordSearch::OnProcessEnd() {
     int startX = 0x9B;
     Handler_OnProcessEnd((int)this);
-    int* ptr = (int*)(gameData + 0x74);
+    int* ptr = (int*)((char*)words + 0x74);
     do {
         int cellX = 0x48;
         int* cell = ptr;
@@ -680,30 +748,30 @@ void SC_WordSearch::OnProcessEnd() {
     } while (startX < 0x23F);
 
     // Set initial grid cell states
-    *(int*)(gameData + 0xA4) = 1;
-    *(int*)(gameData + 0x1D8) = 1;
-    *(int*)(gameData + 0x280) = 1;
-    *(int*)(gameData + 0x328) = 1;
-    *(int*)(gameData + 0x360) = 1;
-    *(int*)(gameData + 0x1F4) = 1;
-    *(int*)(gameData + 0x210) = 1;
-    *(int*)(gameData + 0x2F0) = 1;
+    *(int*)((char*)words + 0xA4) = 1;
+    *(int*)((char*)words + 0x1D8) = 1;
+    *(int*)((char*)words + 0x280) = 1;
+    *(int*)((char*)words + 0x328) = 1;
+    *(int*)((char*)words + 0x360) = 1;
+    *(int*)((char*)words + 0x1F4) = 1;
+    *(int*)((char*)words + 0x210) = 1;
+    *(int*)((char*)words + 0x2F0) = 1;
 
     // Set game parameters
-    *(int*)(gameData + 0x54) = 10;
-    *(int*)(gameData + 0x58) = 0x14;
-    *(int*)(gameData + 0x5C) = 0x5A;
-    *(int*)(gameData + 0x60) = 0xDC;
-    *(int*)(gameData + 0x474) = 6;
-    *(int*)(gameData + 0x428) = 1;
-    *(int*)(gameData + 0x478) = 0x197;
-    *(int*)(gameData + 0x47C) = 0x5F;
-    *(int*)(gameData + 0x480) = 0x1D6;
+    *(int*)((char*)words + 0x54) = 10;
+    *(int*)((char*)words + 0x58) = 0x14;
+    *(int*)((char*)words + 0x5C) = 0x5A;
+    *(int*)((char*)words + 0x60) = 0xDC;
+    *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x0) = 6;
+    *(int*)((char*)words + 0x428) = 1;
+    *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x4) = 0x197;
+    *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x8) = 0x5F;
+    *(int*)((char*)words + GS_EXIT_RECT_OFS + 0xC) = 0x1D6;
 
     InitCombatGrid((int)this);
 
-    if (*(int*)(gameData + 0x40) != 0) {
-        SendGameMessage(5, *(int*)(gameData + 0x40), handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
+    if (*(int*)((char*)words + GS_MSG_VALUE_OFS) != 0) {
+        SendGameMessage(5, *(int*)((char*)words + GS_MSG_VALUE_OFS), handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
     }
 }
 
@@ -712,14 +780,27 @@ extern void __fastcall UpdateWordSearchCursor(int*);
 
 /* Function start: 0x42EFC0 */
 void SC_WordSearch::Render() {
-    Sprite* bgSpr = (Sprite*)*(int*)(gameData + 0x34);
+    /* After InitWordList runs, the words[] buffer is repurposed as game state.
+       Layout by offset within (char*)words:
+         +0x34  Sprite*    bgSprite (local ref)
+         +0x3C  SoundList* soundList
+         +0x44  int        counter
+         +0x48  int        target
+         +0x4C  int        cursorState
+         +0x50  int        modeFlag
+         +0x68..+0x457    36 cells × 7 ints each (value, flag, markWin, l, t, r, b)
+         +0x458..+0x4E7   36 Sprite* cellSprites
+         +0x474..+0x483   Rect exitButton
+       No union/substructure is used because the project forbids them; explicit
+       casts preserve the memory reuse semantics of the original binary. */
+    Sprite* bgSpr = (Sprite*)*(int*)((char*)words + GS_BG_SPRITE_OFS);
     bgSpr->Do(bgSpr->loc_x, bgSpr->loc_y, 1.0);
 
-    if (*(int*)(gameData + 0x50) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+    if (*(int*)((char*)words + GS_MODE_FLAG_OFS) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
     }
-    UpdateWordSearchCursor((int*)(gameData + 0x4C));
-    if (*(int*)(gameData + 0x50) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+    UpdateWordSearchCursor((int*)((char*)words + 0x4C));
+    if (*(int*)((char*)words + GS_MODE_FLAG_OFS) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
     }
 
@@ -733,17 +814,17 @@ void SC_WordSearch::Render() {
         mouseX = 0;
     }
 
-    // Check exit button hover
-    if (*(int*)(gameData + 0x474) <= mouseX && mouseX <= *(int*)(gameData + 0x47C) &&
-        *(int*)(gameData + 0x478) <= mouseY && mouseY <= *(int*)(gameData + 0x480) &&
+    // Check exit button hover (game-state exit-rect at +0x474)
+    if (*(int*)((char*)words + GS_EXIT_RECT_OFS + 0x0) <= mouseX && mouseX <= *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x8) &&
+        *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x4) <= mouseY && mouseY <= *(int*)((char*)words + GS_EXIT_RECT_OFS + 0xC) &&
         g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0x13, 0);
     }
 
     int local_8 = 0x82;
     int local_4 = 0;
-    int* gridCell = (int*)(gameData + 0x68);
-    Sprite** spriteSlot = (Sprite**)(gameData + 0x458);
+    int* gridCell = (int*)((char*)words + GS_CELLS_OFS);
+    Sprite** spriteSlot = (Sprite**)((char*)words + GS_CELL_SPRITES_OFS);
 
     do {
         int cellY = 0x2F;
@@ -760,12 +841,12 @@ void SC_WordSearch::Render() {
                 Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
                 if (cell[1] == 0) {
                     if (mouseSpr != 0) {
-                        int anim = (*(int*)(gameData + 0x50) == 0) ? 0 : 0xC;
+                        int anim = (*(int*)((char*)words + GS_MODE_FLAG_OFS) == 0) ? 0 : 0xC;
                         mouseSpr->ResetAnimation(anim, 0);
                     }
                 } else {
                     if (mouseSpr != 0) {
-                        int anim = (*(int*)(gameData + 0x50) == 0) ? 0 : 0xD;
+                        int anim = (*(int*)((char*)words + GS_MODE_FLAG_OFS) == 0) ? 0 : 0xD;
                         mouseSpr->ResetAnimation(anim, 0);
                     }
                 }
@@ -791,14 +872,14 @@ void SC_WordSearch::Render() {
         if (local_8 > 0x225) {
             g_Mouse_0046aa18->DrawCursor();
 
-            if (*(int*)(gameData + 0x4C) < 1) {
-                int sndDone = ((SoundList*)*(void**)(gameData + 0x3C))->IsSamplePlaying(1);
+            if (*(int*)((char*)words + GS_CURSOR_STATE_OFS) < 1) {
+                int sndDone = ((SoundList*)*(void**)((char*)words + GS_SOUND_LIST_OFS))->IsSamplePlaying(1);
                 if (sndDone == 0) {
                     int* status = (int*)palette;
                     if (status[1] == 0) {
-                        int count = *(int*)(gameData + 0x44) + 1;
-                        *(int*)(gameData + 0x44) = count;
-                        if (*(int*)(gameData + 0x48) == count) {
+                        int count = *(int*)((char*)words + GS_COUNTER_OFS) + 1;
+                        *(int*)((char*)words + GS_COUNTER_OFS) = count;
+                        if (*(int*)((char*)words + GS_TARGET_OFS) == count) {
                             status[0] = 1;
                             return;
                         }
@@ -833,7 +914,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
 
     // Scan right from current position
     if (param_2 < maxCol) {
-        int* cell = (int*)(gameData + (param_2 + param_1 * 6) * 0x1C + 0x6C);
+        int* cell = (int*)((char*)words + (param_2 + param_1 * 6) * 0x1C + 0x6C);
         int c = param_2;
         do {
             if (*cell != 0) maxCol = c;
@@ -843,7 +924,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     }
     // Scan left
     if (minCol < param_2) {
-        int* cell = (int*)(gameData + (param_2 + param_1 * 6) * 0x1C + 0x6C);
+        int* cell = (int*)((char*)words + (param_2 + param_1 * 6) * 0x1C + 0x6C);
         int c = param_2;
         do {
             if (*cell != 0) minCol = c;
@@ -853,7 +934,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     }
     // Scan down
     if (param_1 < maxRow) {
-        int* cell = (int*)(gameData + (param_2 + param_1 * 6) * 0x1C + 0x6C);
+        int* cell = (int*)((char*)words + (param_2 + param_1 * 6) * 0x1C + 0x6C);
         int r = param_1;
         do {
             if (*cell != 0) maxRow = r;
@@ -863,7 +944,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     }
     // Scan up
     if (minRow < param_1) {
-        int* cell = (int*)(gameData + (param_2 + param_1 * 6) * 0x1C + 0x6C);
+        int* cell = (int*)((char*)words + (param_2 + param_1 * 6) * 0x1C + 0x6C);
         int r = param_1;
         do {
             if (*cell != 0) minRow = r;
@@ -873,15 +954,15 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     }
 
     int idx = param_2 + param_1 * 6;
-    int diagUL = *(int*)(gameData + idx * 0x1C - 0x58);
-    int diagDR = *(int*)(gameData + idx * 0x1C + 0xF8);
-    int diagUR = *(int*)(gameData + idx * 0x1C - 0x20);
-    int diagDL = *(int*)(gameData + idx * 0x1C + 0x130);
+    int diagUL = *(int*)((char*)words + idx * 0x1C - 0x58);
+    int diagDR = *(int*)((char*)words + idx * 0x1C + 0xF8);
+    int diagUR = *(int*)((char*)words + idx * 0x1C - 0x20);
+    int diagDL = *(int*)((char*)words + idx * 0x1C + 0x130);
 
     // Clear horizontal span
     if (minCol <= maxCol) {
         int count = maxCol - minCol + 1;
-        int* cell = (int*)(gameData + (param_1 * 6 + minCol) * 0x1C + 0x68);
+        int* cell = (int*)((char*)words + (param_1 * 6 + minCol) * 0x1C + 0x68);
         do {
             total += *cell;
             *cell = 0;
@@ -892,7 +973,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     // Clear vertical span
     if (minRow <= maxRow) {
         int count = maxRow - minRow + 1;
-        int* cell = (int*)(gameData + (param_2 + minRow * 6) * 0x1C + 0x68);
+        int* cell = (int*)((char*)words + (param_2 + minRow * 6) * 0x1C + 0x68);
         do {
             total += *cell;
             *cell = 0;
@@ -902,30 +983,30 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     }
     // Clear diagonals
     if (diagUL == 0 && hasDownLeft && hasUpLeft) {
-        int val = *(int*)(gameData + idx * 0x1C - 0x5C);
+        int val = *(int*)((char*)words + idx * 0x1C - 0x5C);
         if (val != 0) {
-            *(int*)(gameData + idx * 0x1C - 0x5C) = 0;
+            *(int*)((char*)words + idx * 0x1C - 0x5C) = 0;
             total += val;
         }
     }
     if (diagDR == 0 && hasUpRight && hasDownLeft) {
-        int val = *(int*)(gameData + idx * 0x1C + 0xF4);
+        int val = *(int*)((char*)words + idx * 0x1C + 0xF4);
         if (val != 0) {
-            *(int*)(gameData + idx * 0x1C + 0xF4) = 0;
+            *(int*)((char*)words + idx * 0x1C + 0xF4) = 0;
             total += val;
         }
     }
     if (diagUR == 0 && hasDownRight && hasUpLeft) {
-        int val = *(int*)(gameData + idx * 0x1C - 0x24);
+        int val = *(int*)((char*)words + idx * 0x1C - 0x24);
         if (val != 0) {
-            *(int*)(gameData + idx * 0x1C - 0x24) = 0;
+            *(int*)((char*)words + idx * 0x1C - 0x24) = 0;
             total += val;
         }
     }
     if (diagDL == 0 && hasDownRight && hasUpRight) {
-        int val = *(int*)(gameData + idx * 0x1C + 0x12C);
+        int val = *(int*)((char*)words + idx * 0x1C + 0x12C);
         if (val != 0) {
-            *(int*)(gameData + idx * 0x1C + 0x12C) = 0;
+            *(int*)((char*)words + idx * 0x1C + 0x12C) = 0;
             total += val;
         }
     }
@@ -934,16 +1015,16 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     if (total == 0) {
         snd = 0;
     } else {
-        ((SoundList*)*(int*)(gameData + 0x3C))->Play(1);
-        snd = 4 - *(int*)(gameData + 0x4C);
+        ((SoundList*)*(int*)((char*)words + GS_SOUND_LIST_OFS))->Play(1);
+        snd = 4 - *(int*)((char*)words + GS_CURSOR_STATE_OFS);
         if (snd < 0 || snd > 2) goto skip_sound;
-        snd = 9 - *(int*)(gameData + 0x4C);
+        snd = 9 - *(int*)((char*)words + GS_CURSOR_STATE_OFS);
     }
-    ((SoundList*)*(int*)(gameData + 0x3C))->Play(snd);
+    ((SoundList*)*(int*)((char*)words + GS_SOUND_LIST_OFS))->Play(snd);
 skip_sound:
-    *(int*)(gameData + idx * 0x1C + 0x68) = total;
-    if (*(int*)(gameData + 0x4C) == 1) {
-        *(int*)(gameData + 0x4C) = 0;
+    *(int*)((char*)words + idx * 0x1C + 0x68) = total;
+    if (*(int*)((char*)words + GS_CURSOR_STATE_OFS) == 1) {
+        *(int*)((char*)words + GS_CURSOR_STATE_OFS) = 0;
     }
-    *(int*)(gameData + 0x50) = 0;
+    *(int*)((char*)words + GS_MODE_FLAG_OFS) = 0;
 }
