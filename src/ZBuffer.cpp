@@ -123,6 +123,8 @@ void ZBuffer::ResetItems()
     }
 }
 
+/* Function start: 0x403520 */
+/* Function start: 0x403620 */
 /* Function start: 0x42BC50 */
 /* Function start: 0x4036A0 */
 /* Function start: 0x4035A0 */

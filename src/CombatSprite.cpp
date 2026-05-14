@@ -520,98 +520,98 @@ void CombatSprite::ParseSpriteData(char* line) {
 
     currentPos = line;
 
-parseLoop:
-    frameIndex = 0;
-    spriteName[0] = 0;
-
-    if (sscanf(currentPos, "%s", token) == 0) {
-        return;
-    }
-
-    if (sscanf(token, "%d,%s", &frameIndex, spriteName) != 2) {
-        return;
-    }
-
-    if (frameIndex == 0) {
-        return;
-    }
-
-    currentPos = strstr(currentPos, token);
-    if (currentPos == 0) {
-        return;
-    }
-    currentPos = currentPos + strlen(token);
-
-    spriteIdx = 0;
-    iVar = 0;
     while (1) {
-        if (g_TargetList_0046ae58->count == spriteIdx) {
-            ShowError("Error! Uknown sprite id=> %s", spriteName);
+        frameIndex = 0;
+        spriteName[0] = 0;
+
+        if (sscanf(currentPos, "%s", token) == 0) {
+            return;
         }
 
-        if (_stricmp(g_TargetList_0046ae58->targets[spriteIdx]->identifier, spriteName) == 0) {
-            break;
+        if (sscanf(token, "%d,%s", &frameIndex, spriteName) != 2) {
+            return;
         }
-        iVar = iVar + 4;
-        spriteIdx = spriteIdx + 1;
-    }
 
-    if (g_CurrentSprite_004686f8 != 0 && g_CurrentSprite_004686f8->head != 0) {
-        SpriteDataEntry* lastEntry = *(SpriteDataEntry**)(g_CurrentSprite_004686f8->maxSize + 8);
-        if (frameIndex < lastEntry->index) {
-            ShowError("Error! sprite out of sequence %s", token);
+        if (frameIndex == 0) {
+            return;
         }
-    }
 
-    entryData = new SpriteDataEntry(frameIndex, spriteIdx);
+        currentPos = strstr(currentPos, token);
+        if (currentPos == 0) {
+            return;
+        }
+        currentPos = currentPos + strlen(token);
 
-    spriteTable = g_CurrentSprite_004686f8;
-    headPtr = (int*)spriteTable + 1;
-    tailPtr = (int*)&spriteTable->tail;
-    prevTail = *headPtr;
+        spriteIdx = 0;
+        iVar = 0;
+        while (1) {
+            if (g_TargetList_0046ae58->count == spriteIdx) {
+                ShowError("Error! Uknown sprite id=> %s", spriteName);
+            }
 
-    if (*tailPtr == 0) {
-        growPtr = (int*)&spriteTable->growSize;
-        growCount = *growPtr;
-        newPool = (int*)new char[growCount * 12 + 4];
-        *newPool = spriteTable->count;
-        spriteTable->count = (int)newPool;
+            if (_stricmp(g_TargetList_0046ae58->targets[spriteIdx]->identifier, spriteName) == 0) {
+                break;
+            }
+            iVar = iVar + 4;
+            spriteIdx = spriteIdx + 1;
+        }
 
-        growCount = *growPtr;
-        node = (int*)((char*)newPool + growCount * 12 - 8);
-        growCount = growCount - 1;
-        while (growCount >= 0) {
+        if (g_CurrentSprite_004686f8 != 0 && g_CurrentSprite_004686f8->head != 0) {
+            SpriteDataEntry* lastEntry = *(SpriteDataEntry**)(g_CurrentSprite_004686f8->maxSize + 8);
+            if (frameIndex < lastEntry->index) {
+                ShowError("Error! sprite out of sequence %s", token);
+            }
+        }
+
+        entryData = new SpriteDataEntry(frameIndex, spriteIdx);
+
+        spriteTable = g_CurrentSprite_004686f8;
+        headPtr = (int*)spriteTable + 1;
+        tailPtr = (int*)&spriteTable->tail;
+        prevTail = *headPtr;
+
+        if (*tailPtr == 0) {
+            growPtr = (int*)&spriteTable->growSize;
+            growCount = *growPtr;
+            newPool = (int*)new char[growCount * 12 + 4];
+            *newPool = spriteTable->count;
+            spriteTable->count = (int)newPool;
+
+            growCount = *growPtr;
+            node = (int*)((char*)newPool + growCount * 12 - 8);
             growCount = growCount - 1;
-            *node = *tailPtr;
-            *tailPtr = (int)node;
-            node = node - 3;
+            while (growCount >= 0) {
+                growCount = growCount - 1;
+                *node = *tailPtr;
+                *tailPtr = (int)node;
+                node = node - 3;
+            }
         }
+
+        node = (int*)*tailPtr;
+        *tailPtr = *node;
+
+        node[1] = prevTail;
+        node[0] = 0;
+        (*(int*)&spriteTable->head)++;
+        node[2] = 0;
+
+        iVar = 0;
+        do {
+            int tmp = iVar;
+            iVar--;
+            if (tmp == 0) break;
+        } while (1);
+
+        node[2] = (int)entryData;
+
+        if ((int*)*headPtr != 0) {
+            *((int*)*headPtr) = (int)node;
+        } else {
+            *(int*)spriteTable = (int)node;
+        }
+        *headPtr = (int)node;
     }
-
-    node = (int*)*tailPtr;
-    *tailPtr = *node;
-
-    node[1] = prevTail;
-    node[0] = 0;
-    (*(int*)&spriteTable->head)++;
-    node[2] = 0;
-
-    iVar = 0;
-    do {
-        int tmp = iVar;
-        iVar--;
-        if (tmp == 0) break;
-    } while (1);
-
-    node[2] = (int)entryData;
-
-    if ((int*)*headPtr != 0) {
-        *((int*)*headPtr) = (int)node;
-    } else {
-        *(int*)spriteTable = (int)node;
-    }
-    *headPtr = (int)node;
-    goto parseLoop;
 }
 
 /* Function start: 0x409730 */ /* ~82% match */

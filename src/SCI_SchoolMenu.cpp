@@ -249,49 +249,61 @@ void SCI_SchoolMenu::Init(SC_MessageParser* msg) {
                     SendGameMessage(4, 0x1e87, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
                 }
             }
-        } else if (stateVals[alienIdx] == 2) {
-            // Check 1_NOTALIEN
+        } else {
             gs = g_GameState_0046aa30;
-            int na1Idx = gs->FindState("1_NOTALIEN");
-            gs->ValidateIndex(na1Idx);
+            alienIdx = gs->FindState("TEACHER_ALIEN");
+            gs->ValidateIndex(alienIdx);
             stateVals = gs->stateValues;
-            if (stateVals[na1Idx] != 0) {
+            if (stateVals[alienIdx] == 2) {
+                // Check 1_NOTALIEN
                 gs = g_GameState_0046aa30;
-                int na3Idx = gs->FindState("3_NOTALIEN");
-                gs->ValidateIndex(na3Idx);
+                int na1Idx = gs->FindState("1_NOTALIEN");
+                gs->ValidateIndex(na1Idx);
                 stateVals = gs->stateValues;
-                if (stateVals[na3Idx] != 0) {
+                if (stateVals[na1Idx] != 0) {
                     gs = g_GameState_0046aa30;
-                    awareIdx = gs->FindState("AWARE_TEACHER");
-                    gs->ValidateIndex(awareIdx);
+                    int na3Idx = gs->FindState("3_NOTALIEN");
+                    gs->ValidateIndex(na3Idx);
                     stateVals = gs->stateValues;
-                    stateVals[awareIdx] = 2;
-                    SendGameMessage(4, 0x1e89, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                    if (stateVals[na3Idx] != 0) {
+                        gs = g_GameState_0046aa30;
+                        awareIdx = gs->FindState("AWARE_TEACHER");
+                        gs->ValidateIndex(awareIdx);
+                        stateVals = gs->stateValues;
+                        stateVals[awareIdx] = 2;
+                        SendGameMessage(4, 0x1e89, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                    }
                 }
-            }
-        } else if (stateVals[alienIdx] == 3) {
-            // Check 1_NOTALIEN with bounds check
-            gs = g_GameState_0046aa30;
-            int na1Idx = gs->FindState("1_NOTALIEN");
-            if (na1Idx < 0 || na1Idx > gs->maxStates - 1) {
-                ShowError("Invalid gamestate %d", na1Idx);
-            }
-            stateVals = gs->stateValues;
-            if (stateVals[na1Idx] != 0) {
-                // Check 2_NOTALIEN with bounds check
+            } else {
                 gs = g_GameState_0046aa30;
-                int na2Idx = gs->FindState("2_NOTALIEN");
-                if (na2Idx < 0 || na2Idx > gs->maxStates - 1) {
-                    ShowError("Invalid gamestate %d", na2Idx);
-                }
+                alienIdx = gs->FindState("TEACHER_ALIEN");
+                gs->ValidateIndex(alienIdx);
                 stateVals = gs->stateValues;
-                if (stateVals[na2Idx] != 0) {
+                if (stateVals[alienIdx] == 3) {
+                    // Check 1_NOTALIEN with bounds check
                     gs = g_GameState_0046aa30;
-                    awareIdx = gs->FindState("AWARE_TEACHER");
-                    gs->ValidateIndex(awareIdx);
+                    int na1Idx = gs->FindState("1_NOTALIEN");
+                    if (na1Idx < 0 || na1Idx > gs->maxStates - 1) {
+                        ShowError("Invalid gamestate %d", na1Idx);
+                    }
                     stateVals = gs->stateValues;
-                    stateVals[awareIdx] = 3;
-                    SendGameMessage(4, 0x1e88, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                    if (stateVals[na1Idx] != 0) {
+                        // Check 2_NOTALIEN with bounds check
+                        gs = g_GameState_0046aa30;
+                        int na2Idx = gs->FindState("2_NOTALIEN");
+                        if (na2Idx < 0 || na2Idx > gs->maxStates - 1) {
+                            ShowError("Invalid gamestate %d", na2Idx);
+                        }
+                        stateVals = gs->stateValues;
+                        if (stateVals[na2Idx] != 0) {
+                            gs = g_GameState_0046aa30;
+                            awareIdx = gs->FindState("AWARE_TEACHER");
+                            gs->ValidateIndex(awareIdx);
+                            stateVals = gs->stateValues;
+                            stateVals[awareIdx] = 3;
+                            SendGameMessage(4, 0x1e88, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                        }
+                    }
                 }
             }
         }
@@ -1290,5 +1302,4 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     ReportUnknownLabel("SCI_SchoolMenu");
     return 0;
 }
-
 

@@ -248,7 +248,9 @@ int mCNavigator::LBLParse(char* param_1)
 
             if (node == 0) {
                 if (mem == 0) {
-                    pool->AllocateBuckets(poolSize, 1);
+                    pool->memory = new int[poolSize];
+                    memset(pool->memory, 0, poolSize * sizeof(int));
+                    pool->size = poolSize;
                 }
                 node = (NavNode*)pool->Allocate_2();
                 node->bucketIndex = h;

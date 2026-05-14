@@ -19,7 +19,12 @@ public:
     T_MenuButton() {}
     T_MenuButton(char* name, int* rect); // 0x421A50
 
-    ~T_MenuButton() {}
+    ~T_MenuButton() {
+        if (sprite != 0) {
+            delete sprite;
+            sprite = 0;
+        }
+    }
 
     void Update();                  // 0x420F00
     void Cleanup();                 // 0x420EF0

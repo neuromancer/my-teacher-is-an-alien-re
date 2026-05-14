@@ -3,7 +3,7 @@
 #include "SpriteAction.h"
 #include "ZBufferManager.h"
 #include "SoundCommand.h"
-#include "DrawEntry.h"
+#include "ZBuffer.h"
 #include "RenderEntry.h"
 #include "Memory.h"
 #include "globals.h"
@@ -87,9 +87,9 @@ int SC_ZBuffer::Exit(SC_MessageParser* msg) {
             if (q2->head != 0) {
                 q2->current = q2->head;
                 while (q2->head != 0) {
-                    DrawEntry* entry = (DrawEntry*)q2->Pop();
+                    ZBuffer* entry = (ZBuffer*)q2->Pop();
                     if (entry != 0) {
-                        entry->~DrawEntry();
+                        entry->CleanUpVBuffer();
                         FreeMemory(entry);
                     }
                 }
@@ -127,9 +127,9 @@ int SC_ZBuffer::Exit(SC_MessageParser* msg) {
             if (q2->head != 0) {
                 q2->current = q2->head;
                 while (q2->head != 0) {
-                    DrawEntry* entry = (DrawEntry*)q2->Pop();
+                    ZBuffer* entry = (ZBuffer*)q2->Pop();
                     if (entry != 0) {
-                        entry->~DrawEntry();
+                        entry->CleanUpVBuffer();
                         FreeMemory(entry);
                     }
                 }

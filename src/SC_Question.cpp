@@ -721,26 +721,22 @@ int SC_Question::LBLParse(char* param_1)
             ShowError("queue fault 0101");
         }
         queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
-            } else {
-                do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
-                        break;
-                    }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
-                        break;
-                    }
-                    if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
-                    }
-                } while (queue[2] != 0);
-            }
+        if ((queue[3] == 1 || queue[3] == 2) && queue[0] != 0) {
+            do {
+                cur = queue[2];
+                if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
+                    goto insertFirstSwitchRoomAction;
+                }
+                if (queue[1] == cur) {
+                    ((LinkedList*)queue)->PushNode(action);
+                    break;
+                }
+                if (cur != 0) {
+                    queue[2] = *(int*)(cur + 4);
+                }
+            } while (queue[2] != 0);
         } else {
+insertFirstSwitchRoomAction:
             ((Queue*)queue)->InsertAtCurrent(action);
         }
         action = new SpriteAction( 0x20, val, 0x1f, 0, 4, 0, 0, 0, 0, 0);
