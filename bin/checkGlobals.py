@@ -9,7 +9,7 @@ import sys
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from cppSourceParser import parse_source_functions
+from cppSourceParser import CPP_PARSER, node_text, parse_source_functions, sanitize_source, walk
 
 
 DEFAULT_EXE = "data/full/TEACHER.ORI.EXE"
@@ -194,160 +194,6 @@ def strip_comments(text: str) -> str:
     return text
 
 
-def line_for_offset(text: str, offset: int) -> int:
-    return text.count("\n", 0, offset) + 1
-
-
-def read_statement_after(text: str, start: int) -> Tuple[str, int, int]:
-    i = start
-    while i < len(text) and text[i].isspace():
-        i += 1
-    begin = i
-    brace_depth = 0
-    in_string = False
-    in_char = False
-    escape = False
-    while i < len(text):
-        ch = text[i]
-        if escape:
-            escape = False
-        elif ch == "\\" and (in_string or in_char):
-            escape = True
-        elif ch == '"' and not in_char:
-            in_string = not in_string
-        elif ch == "'" and not in_string:
-            in_char = not in_char
-        elif not in_string and not in_char:
-            if ch == "{":
-                brace_depth += 1
-            elif ch == "}":
-                brace_depth = max(0, brace_depth - 1)
-            elif ch == ";" and brace_depth == 0:
-                return text[begin:i + 1], begin, i + 1
-        i += 1
-    return text[begin:], begin, len(text)
-
-
-def read_trailing_comments(text: str, start: int) -> Tuple[str, int]:
-    i = start
-    comments: List[str] = []
-    while i < len(text):
-        while i < len(text) and text[i] in " \t\r":
-            i += 1
-        if text.startswith("//", i):
-            end = text.find("\n", i)
-            if end == -1:
-                end = len(text)
-            comments.append(text[i:end])
-            return "\n".join(comments), end
-        if text.startswith("/*", i):
-            end = text.find("*/", i + 2)
-            if end == -1:
-                end = len(text) - 2
-            comments.append(text[i:end + 2])
-            i = end + 2
-            continue
-        break
-    return "\n".join(comments), i
-
-
-def skip_leading_trivia(text: str, start: int) -> Tuple[int, str]:
-    i = start
-    trivia: List[str] = []
-    while i < len(text):
-        while i < len(text) and text[i].isspace():
-            i += 1
-        if text.startswith("//", i):
-            end = text.find("\n", i)
-            if end == -1:
-                end = len(text)
-            trivia.append(text[i:end])
-            i = end
-            continue
-        if text.startswith("/*", i):
-            end = text.find("*/", i + 2)
-            if end == -1:
-                end = len(text) - 2
-            trivia.append(text[i:end + 2])
-            i = end + 2
-            continue
-        if i < len(text) and text[i] == "#":
-            end = text.find("\n", i)
-            if end == -1:
-                end = len(text)
-            i = end
-            continue
-        break
-    return i, "\n".join(trivia)
-
-
-def iter_statements(text: str) -> Iterable[Tuple[str, int, int, str, str]]:
-    cursor = 0
-    while cursor < len(text):
-        cursor, leading = skip_leading_trivia(text, cursor)
-        if cursor >= len(text):
-            break
-        statement, stmt_start, stmt_end = read_statement_after(text, cursor)
-        if not statement.strip():
-            break
-        trailing, cursor = read_trailing_comments(text, stmt_end)
-        yield statement, stmt_start, stmt_end, leading, trailing
-
-
-def split_initializer(statement: str) -> Tuple[str, Optional[str]]:
-    brace_depth = 0
-    paren_depth = 0
-    in_string = False
-    in_char = False
-    escape = False
-    for i, ch in enumerate(statement):
-        if escape:
-            escape = False
-            continue
-        if ch == "\\" and (in_string or in_char):
-            escape = True
-            continue
-        if ch == '"' and not in_char:
-            in_string = not in_string
-            continue
-        if ch == "'" and not in_string:
-            in_char = not in_char
-            continue
-        if in_string or in_char:
-            continue
-        if ch == "{":
-            brace_depth += 1
-        elif ch == "}":
-            brace_depth = max(0, brace_depth - 1)
-        elif ch == "(":
-            paren_depth += 1
-        elif ch == ")":
-            paren_depth = max(0, paren_depth - 1)
-        elif ch == "=" and brace_depth == 0 and paren_depth == 0:
-            return statement[:i].strip(), statement[i + 1:].strip().rstrip(";").strip()
-    return statement.strip().rstrip(";").strip(), None
-
-
-def parse_name_and_type(declaration: str) -> Optional[Tuple[str, str, List[str]]]:
-    declaration = strip_comments(declaration).strip().rstrip(";").strip()
-    declaration = re.sub(r"\bextern\b", "", declaration).strip()
-    declaration = re.sub(r"\s+", " ", declaration)
-    fp = re.search(r"\(\s*\*\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)", declaration)
-    if fp:
-        name = fp.group(1)
-        type_text = declaration[:fp.start()].strip() + " *"
-        return name, type_text.strip(), []
-
-    m = re.search(r"([A-Za-z_][A-Za-z0-9_]*)(\s*(?:\[[^\]]*\]\s*)*)$", declaration)
-    if not m:
-        return None
-    name = m.group(1)
-    dims_text = m.group(2) or ""
-    type_text = declaration[:m.start(1)].strip()
-    dims = re.findall(r"\[([^\]]*)\]", dims_text)
-    return name, type_text, dims
-
-
 def address_from_encoded_suffix(name: str) -> Optional[int]:
     m = re.search(r"_([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6})$", name)
     if not m:
@@ -383,31 +229,221 @@ def has_no_address_annotation(text: str) -> bool:
                           text, flags=re.I))
 
 
-def is_non_variable_statement(statement: str) -> bool:
-    stripped = strip_comments(statement).strip()
-    if not stripped:
-        return True
-    return bool(re.match(r"^(typedef|struct|class|enum|using|namespace|template)\b", stripped))
+GLOBAL_DECLARATION_EXCLUDED_ANCESTORS = {
+    "function_definition",
+    "compound_statement",
+    "field_declaration_list",
+    "class_specifier",
+    "struct_specifier",
+    "enum_specifier",
+}
+
+
+def is_global_declaration_node(node) -> bool:
+    parent = node.parent
+    while parent is not None:
+        if parent.type in GLOBAL_DECLARATION_EXCLUDED_ANCESTORS:
+            return False
+        parent = parent.parent
+    return True
+
+
+def declaration_has_storage(source: bytes, node, storage: str) -> bool:
+    for child in node.children:
+        if child.type == "storage_class_specifier" and node_text(source, child).strip() == storage:
+            return True
+    return False
+
+
+def declaration_value_and_declarator(node):
+    declarator = node.child_by_field_name("declarator")
+    if declarator is None:
+        return None, None
+    if declarator.type == "init_declarator":
+        return declarator.child_by_field_name("value"), declarator.child_by_field_name("declarator")
+    return None, declarator
+
+
+def declarator_identifier_node(node):
+    if node is None:
+        return None
+    if node.type == "identifier":
+        return node
+
+    declarator = node.child_by_field_name("declarator")
+    if declarator is not None:
+        found = declarator_identifier_node(declarator)
+        if found is not None:
+            return found
+
+    for child in node.children:
+        if child.type in ("parameter_list", "argument_list"):
+            continue
+        found = declarator_identifier_node(child)
+        if found is not None:
+            return found
+    return None
+
+
+def declarator_pointer_depth(node) -> int:
+    if node is None:
+        return 0
+    depth = 1 if node.type == "pointer_declarator" else 0
+    for child in node.children:
+        if child.type in ("parameter_list", "argument_list"):
+            continue
+        depth += declarator_pointer_depth(child)
+    return depth
+
+
+def declarator_array_dims(source: bytes, node) -> List[str]:
+    if node is None:
+        return []
+    if node.type == "array_declarator":
+        dims = declarator_array_dims(source, node.child_by_field_name("declarator"))
+        size = node.child_by_field_name("size")
+        dims.append(node_text(source, size).strip() if size is not None else "")
+        return dims
+
+    declarator = node.child_by_field_name("declarator")
+    if declarator is not None:
+        return declarator_array_dims(source, declarator)
+    return []
+
+
+def declaration_base_type_text(source: bytes, node) -> str:
+    parts: List[str] = []
+    for i, child in enumerate(node.children):
+        if node.field_name_for_child(i) == "declarator":
+            break
+        if child.type == ";":
+            break
+        text = node_text(source, child).strip()
+        if text and text != "extern":
+            parts.append(text)
+    return " ".join(parts)
+
+
+def declaration_type_text(source: bytes, node, declarator) -> str:
+    base_type = declaration_base_type_text(source, node)
+    pointer_depth = declarator_pointer_depth(declarator)
+    if pointer_depth == 0:
+        return base_type
+    if declarator.type == "function_declarator":
+        return f"{base_type} {'*' * pointer_depth}"
+    return f"{base_type}{'*' * pointer_depth}"
+
+
+def is_plain_function_declaration(declarator) -> bool:
+    return (
+        declarator is not None
+        and declarator.type == "function_declarator"
+        and declarator_pointer_depth(declarator) == 0
+    )
+
+
+def line_start_before(source: bytes, index: int) -> int:
+    return source.rfind(b"\n", 0, index) + 1
+
+
+def line_end_after(source: bytes, index: int) -> int:
+    end = source.find(b"\n", index)
+    return len(source) if end < 0 else end
+
+
+def leading_comments_before(source: bytes, start: int) -> str:
+    comments: List[str] = []
+    cursor = start
+
+    while True:
+        while cursor > 0 and source[cursor - 1] in b" \t\r\n":
+            cursor -= 1
+        if cursor <= 0:
+            break
+
+        line_start = line_start_before(source, cursor - 1)
+        line = source[line_start:cursor]
+        if line.lstrip().startswith(b"#"):
+            cursor = line_start
+            continue
+
+        stripped = line.rstrip()
+        line_comment = stripped.rfind(b"//")
+        if line_comment >= 0:
+            comment_start = line_start + line_comment
+            if source[line_start:comment_start].strip():
+                break
+            comments.append(source[comment_start:cursor].decode("utf-8", errors="replace"))
+            cursor = line_start
+            continue
+
+        if cursor >= 2 and source[cursor - 2:cursor] == b"*/":
+            comment_start = source.rfind(b"/*", 0, cursor - 2)
+            if comment_start < 0:
+                break
+            if source[line_start_before(source, comment_start):comment_start].strip():
+                break
+            comments.append(source[comment_start:cursor].decode("utf-8", errors="replace"))
+            cursor = comment_start
+            continue
+
+        break
+
+    comments.reverse()
+    return "\n".join(comments)
+
+
+def trailing_comments_after(source: bytes, end: int) -> str:
+    comments: List[str] = []
+    cursor = end
+
+    while cursor < len(source):
+        while cursor < len(source) and source[cursor] in b" \t\r":
+            cursor += 1
+        if source.startswith(b"//", cursor):
+            comment_end = line_end_after(source, cursor)
+            comments.append(source[cursor:comment_end].decode("utf-8", errors="replace"))
+            return "\n".join(comments)
+        if source.startswith(b"/*", cursor):
+            comment_end = source.find(b"*/", cursor + 2)
+            if comment_end < 0:
+                comment_end = len(source) - 2
+            comments.append(source[cursor:comment_end + 2].decode("utf-8", errors="replace"))
+            cursor = comment_end + 2
+            continue
+        break
+    return "\n".join(comments)
 
 
 def parse_globals_file(path: str,
                        require_extern: bool,
                        address_warnings: Optional[List[AddressWarning]] = None) -> List[GlobalDecl]:
-    with open(path, "r", encoding="utf-8", errors="replace") as f:
-        text = f.read()
+    with open(path, "rb") as f:
+        source = f.read()
+    tree = CPP_PARSER.parse(sanitize_source(source))
     decls: List[GlobalDecl] = []
-    for statement, stmt_start, _stmt_end, leading, trailing in iter_statements(text):
-        if is_non_variable_statement(statement):
+    for node in walk(tree.root_node):
+        if node.type != "declaration" or not is_global_declaration_node(node):
             continue
-        before, initializer = split_initializer(statement)
-        if require_extern and "extern" not in before:
+
+        initializer_node, declarator = declaration_value_and_declarator(node)
+        if declarator is None or is_plain_function_declaration(declarator):
             continue
-        if not require_extern and re.search(r"\bextern\b", before) and initializer is None:
+
+        is_extern = declaration_has_storage(source, node, "extern")
+        if require_extern and not is_extern:
             continue
-        parsed = parse_name_and_type(before)
-        if parsed is None:
+        if not require_extern and is_extern and initializer_node is None:
             continue
-        name, type_text, dims = parsed
+
+        name_node = declarator_identifier_node(declarator)
+        if name_node is None:
+            continue
+
+        name = node_text(source, name_node).strip()
+        statement = node_text(source, node).strip()
+        leading = leading_comments_before(source, node.start_byte)
+        trailing = trailing_comments_after(source, node.end_byte)
         address = address_for_declaration(name, leading, statement, trailing)
         if address is None:
             if address_warnings is not None:
@@ -415,20 +451,21 @@ def parse_globals_file(path: str,
                 if not has_no_address_annotation(context):
                     address_warnings.append(AddressWarning(
                         path=path,
-                        line=line_for_offset(text, stmt_start),
+                        line=node.start_point.row + 1,
                         name=name,
-                        statement=statement.strip(),
+                        statement=statement,
                     ))
             continue
+
         decls.append(GlobalDecl(
             address=address,
             name=name,
-            statement=statement.strip(),
-            line=line_for_offset(text, stmt_start),
-            type_text=type_text,
-            dims=dims,
-            has_initializer=initializer is not None,
-            initializer=initializer,
+            statement=statement,
+            line=node.start_point.row + 1,
+            type_text=declaration_type_text(source, node, declarator),
+            dims=declarator_array_dims(source, declarator),
+            has_initializer=initializer_node is not None,
+            initializer=node_text(source, initializer_node).strip() if initializer_node is not None else None,
         ))
     return decls
 
