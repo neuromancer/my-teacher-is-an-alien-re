@@ -139,6 +139,7 @@ KNOWN_CRT_FULL = {
     0x4550B0: "fgetpos",
     0x4550E0: "_fsopen",
     0x455160: "fsetpos",
+    0x455180: "fseek",
     0x455220: "strncpy",
     0x455250: "strncmp",
     0x455290: "vsprintf",
@@ -147,14 +148,20 @@ KNOWN_CRT_FULL = {
     0x456400: "vfprintf",
     0x456960: "fputs",
     0x4569C0: "_isctype",
+    0x4560F0: "_splitpath",
     0x456A80: "getenv",
     0x456B20: "strrchr",
     0x456CE0: "_amsg_exit",
+    0x426AB0: "joyGetNumDevs",
     0x4582C0: "fseek",             # detected from usage patterns
     0x48AF4C: "_ftol",             # _ftol thunk (JMP to IAT entry)
     0x48AF60: "__chkstk",          # MSVC stack probe for large frames
     0x458490: "_write",
+    0x458690: "_read",
+    0x458900: "_write",
+    0x45A2E0: "_close",
     0x45ABF0: "_mbsnbcpy",
+    0x45D940: "_open",
     0x45D050: "_ld12tod",
     0x45DD80: "_strcmpi",
     0x45DFB0: "strpbrk",
@@ -163,6 +170,9 @@ KNOWN_CRT_FULL = {
     0x460220: "_strnicmp",
     0x460340: "_filelength",
     0x4603D0: "_chdir",
+    0x460164: "GlobalLock",
+    0x46016A: "GlobalAlloc",
+    0x4601AC: "SelectObject",
     0x454960: "strstr",
     0x456090: "strchr",
     # SEH/EH runtime
@@ -189,12 +199,16 @@ CANONICAL = {
     "__strnicmp": "_strnicmp",
     "strnicmp": "_strnicmp",
     "__strcmpi": "_strcmpi",
+    "strcmpi": "_strcmpi",
     "_stricmp": "_strcmpi",
     "stricmp": "_strcmpi",
     "__stricmp": "_strcmpi",
     "chdir": "_chdir",
     "mkdir": "_mkdir",
     "close": "_close",
+    "__close": "_close",
+    "__amsg_exit": "_amsg_exit",
+    "ParsePath": "_splitpath",
     "open": "_open",
     "read": "_read",
     "write": "_write",
@@ -203,6 +217,12 @@ CANONICAL = {
     "__mbsnbcpy": "_mbsnbcpy",
     "__isctype": "_isctype",
     "__ftol": "_ftol",
+    # Compiler floating-point workaround helpers; direct FPU ops are equivalent
+    "FUN_00455417": "__ignore__",
+    "__adj_fdivr_m16i": "__ignore__",
+    "__adj_fdivr_m32i": "__ignore__",
+    "__adj_fdivr_m32": "__ignore__",
+    "__adj_fdivr_m64": "__ignore__",
     "_strncpy": "strncpy",
     "_fwrite": "fwrite",
     "_fread": "fread",
@@ -290,6 +310,12 @@ CANONICAL = {
     # SlimeTable and SoundList share same layout/functions
     "SlimeTable::Play": "SoundList::Play",
     "SlimeTable::~SlimeTable": "SoundList::~SoundList",
+    "SlimeTable::Cleanup": "SoundList::Cleanup",
+    "SlimeTable::Allocate": "SoundList::SetMaxSounds",
+    "SlimeTable::LoadEntry": "SoundList::AddSound",
+    # File position cache bodies are shared with SoundTracker in this tree
+    "FilePosCache::Lookup": "SoundTracker::Lookup",
+    "FilePosCache::Store": "SoundTracker::Store",
     # SpriteAction / SC_Message are aliases
     "SpriteAction::~SpriteAction": "SC_Message::~SC_Message",
     "SpriteAction::CopyFrom": "SC_Message::CopyFrom",
@@ -343,7 +369,7 @@ CANONICAL = {
     # Sprite/Projectile aliases
     "Parser::Parser": "Sprite::Sprite",
     # SC_SearchScreen inherits from SC_Combat through Engine
-    "SaveFilePool::AllocNode": "__allocnode__",
+    "SaveFilePool::AllocNode": "__ignore__",
     # VBuffer function aliases
     "GetGlobalVertAlign": "GetCurrentVideoMode",
     "BlitBufferOpaque": "BlitToDevice",
@@ -404,6 +430,12 @@ def parse_source_function_name(line):
     if not candidate:
         return None
     if re.match(r'^(?:\w+::)?~?\w+$', candidate):
+        if candidate in ("TimedEventPool::Pop", "TimedEventPool::PopSafe"):
+            params = line.split('(', 1)[1].split(')', 1)[0] if '(' in line and ')' in line else ''
+            first_param = params.split(',', 1)[0].strip()
+            m = re.match(r'(?:const\s+)?(?:class\s+|struct\s+)?(\w+)\s*\*', first_param)
+            if m and m.group(1) in ("SC_MessageParser", "SpriteAction"):
+                return f"{candidate}({m.group(1)}*)"
         return candidate
     return None
 
@@ -498,6 +530,9 @@ def build_address_to_name_map(src_dir, code_dir):
 # or direct CRT thunks, so both sides are normalized to the import name.
 IAT_ADDRESSES = {}
 IAT_ADDRESS_RANGES = []
+ORDINAL_IMPORTS = {
+    ("SMACKW32.DLL", 20): "SmackSummary",
+}
 
 
 def normalize_import_name(name):
@@ -582,6 +617,7 @@ def parse_pe_iat_addresses(exe_path):
         if original_first_thunk == 0 and name_rva == 0 and first_thunk == 0:
             break
 
+        dll_name = parse_c_string(data, rva_to_offset(name_rva)).upper() if name_rva else ""
         thunk_rva = original_first_thunk or first_thunk
         index = 0
         while True:
@@ -589,7 +625,11 @@ def parse_pe_iat_addresses(exe_path):
             thunk = u32(thunk_offset)
             if thunk == 0:
                 break
-            if not (thunk & 0x80000000):
+            if thunk & 0x80000000:
+                import_name = ORDINAL_IMPORTS.get((dll_name, thunk & 0xFFFF))
+                if import_name:
+                    imports[image_base + first_thunk + (index * 4)] = import_name
+            else:
                 import_name_offset = rva_to_offset(thunk) + 2
                 import_name = normalize_import_name(parse_c_string(data, import_name_offset))
                 imports[image_base + first_thunk + (index * 4)] = import_name
@@ -828,6 +868,15 @@ def extract_calls_from_compiled(asm_path, function_name, occurrence_index=0):
             calls.append(m.group(1).split(';', 1)[0].strip())
             continue
 
+        # Prefer the decorated symbol when present; MSVC comments erase
+        # overload signatures that the decorated name still preserves.
+        target_symbol = full_target.split(';', 1)[0].strip()
+        if target_symbol.startswith('?') or target_symbol.startswith('@'):
+            normalized_symbol = normalize_compiled(target_symbol)
+            if normalized_symbol != target_symbol:
+                calls.append(normalized_symbol)
+                continue
+
         # Use comment if available
         if ';' in full_target:
             target = full_target.split(';')[1].strip()
@@ -841,6 +890,9 @@ def extract_calls_from_compiled(asm_path, function_name, occurrence_index=0):
 def normalize_compiled(name):
     """Normalize compiled name."""
     name = name.strip()
+    m = re.match(r'\?(PopSafe|Pop)@TimedEventPool@@QAEPAV(SC_MessageParser|SpriteAction)@@PAV2@@Z', name)
+    if m:
+        return f"TimedEventPool::{m.group(1)}({m.group(2)}*)"
     if name.startswith('??0') and '@@' in name:
         m = re.match(r'\?\?0(\w+)@@', name)
         if m: return f"{m.group(1)}::{m.group(1)}"

@@ -605,7 +605,13 @@ extern "C" int __cdecl SetFillColor(unsigned char);
 
 /* Function start: 0x4525EC */
 extern "C" void SetFontColor(int index) {
-    SetFillColor((unsigned char)index);
+    unsigned char color = (unsigned char)index;
+    unsigned char mapped = (unsigned char)g_PaletteMap_0046d108[color];
+    unsigned int word = mapped | (mapped << 8);
+
+    g_ColorIndex_0046d07d = color;
+    g_TextColor_0046d078 = mapped;
+    g_FillColorDword_0046d079 = word | (word << 16);
 }
 
 /* Function start: 0x45329B */

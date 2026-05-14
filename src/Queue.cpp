@@ -57,6 +57,7 @@ void* Queue::Pop()
 }
 
 /* Function start: 0x406FD0 */
+/* Function start: 0x4185C0 */
 void Queue::InsertAtCurrent(void* data)
 {
     InsertNode(data);
@@ -99,7 +100,6 @@ void* Queue::GetCurrentData()
     return LinkedList::GetCurrentData();
 }
 
-/* Function start: 0x42CAB0 */
 SC_MessageParser* TimedEventPool::PopSafe(SC_MessageParser* buffer)
 {
     MousePoint completed;
@@ -120,7 +120,6 @@ SpriteAction* TimedEventPool::PopSafe(SpriteAction* buffer)
     return buffer;
 }
 
-/* Function start: 0x4185C0 */
 SC_MessageParser* TimedEventPool::Pop(SC_MessageParser* buffer)
 {
     TimedEventPool* pool;

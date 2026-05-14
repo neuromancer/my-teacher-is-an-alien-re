@@ -16,6 +16,7 @@ extern "C" {
 void ParsePath(const char *, char *, char *, char *, char *);
 int __cdecl FileExists(const char* path);           // 0x4195A0
 int __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
+unsigned long __stdcall timeGetTime(void);
 }
 void ShowError(const char* format, ...);
 
@@ -195,7 +196,7 @@ int __cdecl FileCacheLookup(char* name) {
         if (strcmp(entry->name, name) == 0) {
             g_PathCacheHits_0046b784++;
             entry->hitCount++;
-            entry->tickTime = GetTickCount();
+            entry->tickTime = timeGetTime();
             // Move to front of LRU
             MemoryCache* cache = g_FileCache_0046b78c;
             if (cache->head != node) {
@@ -257,7 +258,7 @@ void __cdecl FileCacheRegister(char* name, int size) {
         strcpy(entry->name, name);
         entry->size = size;
         entry->hitCount = 0;
-        entry->tickTime = GetTickCount();
+        entry->tickTime = timeGetTime();
     }
 
     // Get a free node from the pool
@@ -442,7 +443,6 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
         } while (totalLen > totalRead);
     }
 
-    _flushall();
     close(hDest);
     close(hSrc);
     return 0;

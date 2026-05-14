@@ -3,6 +3,8 @@
 #include "string.h"
 #include <string.h>
 
+extern "C" void __cdecl _amsg_exit(int);
+
 // Handler base class destructor
 Handler::~Handler() {
 }
@@ -53,6 +55,7 @@ int Handler::ShutDown(SC_MessageParser* msg) {
 
 /* Function start: 0x454950 */
 void Handler::Update(int param1, int param2) {
+    _amsg_exit(0x19);
 }
 
 /* Function start: 0x405D50 */

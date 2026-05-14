@@ -2,9 +2,6 @@
 #include "globals.h"
 #include "string.h"
 
-// Color setup globals
-static char g_ColorIndex_00437495 = 0;  // Current color index
-
 extern "C" {
 
 /* Function start: 0x4525EC */
@@ -14,7 +11,7 @@ int __cdecl SetFillColor(unsigned char param_1)
     unsigned int eax;
     unsigned int edx;
 
-    g_ColorIndex_00437495 = param_1;
+    g_ColorIndex_0046d07d = param_1;
     al = g_PaletteMap_0046d108[param_1];
     g_TextColor_0046d078 = al;
     eax = al | (al << 8);

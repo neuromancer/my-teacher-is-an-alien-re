@@ -86,6 +86,7 @@ int g_PaletteColorTable_00437608[256];                       // 0x00437608
 HDC g_MainDC_0046d070 = 0;                                   // 0x0046d070
 char g_TextColor_0046d078 = 0;                               // 0x00437490
 int g_FillColorDword_0046d079 = 0;                           // 0x00437491
+char g_ColorIndex_0046d07d = 0;                              // 0x0046d07d
 HGDIOBJ g_StockFont_00437496 = 0;                            // 0x00437496
 int g_FontHeight_0046d082 = 0;                               // 0x0043749a
 int g_FontExtLeading_0043749e = 0;                           // 0x0043749e

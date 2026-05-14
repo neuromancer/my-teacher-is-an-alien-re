@@ -17,15 +17,6 @@ extern "C" int ProcessMessages(); // 0x4192F0 - Message pump loop
 Timer g_leftClickTimer;  // 0x43de40
 Timer g_rightClickTimer; // 0x43de58
 
-InputState::InputState() {
-    x = 0;
-    y = 0;
-    memset(this, 0, sizeof(InputState));
-}
-
-InputState::~InputState() {
-}
-
 /* Function start: 0x426770 */
 InputManager::InputManager(int param_1) {
     InitDevices(param_1);
@@ -87,7 +78,7 @@ void InputManager::InitDevices(int param_1) {
     InitClickTimers();
 }
 
-/* Function start: 0x426750 */
+/* Function start: 0x426A70 */
 void InitClickTimers()
 {
     g_leftClickTimer.Reset();

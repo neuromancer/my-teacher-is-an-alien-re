@@ -703,7 +703,6 @@ int SCI_IconBarModule::LBLParse(char* line) {
     int hotspotIdx;
 
     sscanf(line, "%s", label);
-    WriteToLog("SCI_IconBarModule::LBLParse label='%s' file='%s'", label, filename);
 
     if (strcmp(label, "PALE") == 0) {
         sscanf(line, "%s %s", label, formatted);

@@ -105,8 +105,6 @@ extern "C" int __cdecl CreateTable(int width, int height) {
     if (g_WinGDC_0046e004 != 0) {
         hDib = ((HGLOBAL(*)(HDC, BITMAPINFO*, void**))g_WinGCreateDIB_0046e010)(g_WinGDC_0046e004, bmi, (void**)&bmi);
         if (hDib == 0) {
-            GlobalUnlock(hMem);
-            GlobalFree(hMem);
             return -2;
         }
         HGDIOBJ oldObj = SelectObject(g_WinGDC_0046e004, hDib);

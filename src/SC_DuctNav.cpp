@@ -702,8 +702,6 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
             maxScroll = 0;
         }
 
-        SendGameMessage(4, 0x498, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
-
         switch (action->lastKey) {
         case 0xd:
             if (moduleParam == 0 && saveFilename[0] != 0) {

@@ -16,11 +16,7 @@ public:
     int field_0x1c;         // 0x1C
     int field_0x20;         // 0x20
 
-    ScoreDisplay() {
-        for (int i = 9; i != 0; i--) {
-            ((int*)this)[i - 1] = 0;
-        }
-    }
+    ScoreDisplay(); // 0x40C5E0
 
     void AdjustScore(int value); // 0x40C600
 };

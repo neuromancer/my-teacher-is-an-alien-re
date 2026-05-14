@@ -471,6 +471,7 @@ extern int g_WaitForInputValue_0046ac04; // Keyboard event value
 extern HPALETTE g_Palette_0046d074; // Main game palette
 extern char g_TextColor_0046d078;                          // current text color index
 extern int g_FillColorDword_0046d079; // DWORD fill color (4 copies of color byte)
+extern char g_ColorIndex_0046d07d;
 // g_FontHeight_0046d082 - Defined in globals.cpp as int (text height + external leading)
 extern HPALETTE g_PreviousPalette_0046d096; // Previously selected palette
 // g_SecondaryDC_0046d09c - Defined in globals.cpp as HDC (secondary device context)

@@ -18,6 +18,12 @@ struct FileArchive {
         memset(this, 0, 0x48);
         strcpy(filename, path);
     }
+    ~FileArchive() {
+        if (fp != 0) {
+            fclose(fp);
+            fp = 0;
+        }
+    }
 };
 
 #endif // FILEARCHIVE_H

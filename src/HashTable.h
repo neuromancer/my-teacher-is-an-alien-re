@@ -30,7 +30,6 @@ public:
     ~HashTable();
     void AllocateBuckets(int numBuckets, int allocateNow);
     HashNode* AllocateNode();
-    void CopyStrings(void* dest, int maxLen); // 0x44C480
 };
 
 #endif

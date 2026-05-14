@@ -40,7 +40,7 @@ struct MessageQueue {
     int poolCapacity;        // 0x14
 };
 
-/* Function start: 0x4415E0 */ /* ~92% match */
+/* Constructor not matched to a unique full-game function yet. */
 Handler8::Handler8() {
     int* ptr = &handlerId;
     int* pA0 = &field_A0;
@@ -62,4 +62,3 @@ Handler8::~Handler8() {
         field_A0 = 0;
     }
 }
-

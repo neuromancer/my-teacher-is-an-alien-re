@@ -496,11 +496,7 @@ int GameEngine::AddHandler(Handler* handler) {
         ShowError("queue fault 0101");
     }
     list->current = list->head;
-    if (list->type != 1 && list->type != 2) {
-        ((EventList*)list)->InsertNode(handler);
-    } else if (list->head == 0) {
-        ((EventList*)list)->InsertNode(handler);
-    } else {
+    if ((list->type == 1 || list->type == 2) && list->head != 0) {
         do {
             Handler* currentHandler;
 
@@ -517,6 +513,8 @@ int GameEngine::AddHandler(Handler* handler) {
                 list->current = list->current->next;
             }
         } while (list->current != 0);
+    } else {
+        ((EventList*)list)->InsertNode(handler);
     }
 
     return 1;

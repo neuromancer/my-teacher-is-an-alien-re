@@ -3,9 +3,11 @@
 #include "globals.h"
 #include "ScoreDisplay.h"
 #include "Sample.h"
+#include "Target.h"
 
 extern "C" int __cdecl SetFillColor(unsigned char param_1);
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
+extern "C" int __cdecl DrawCircle(int param_1);
 extern "C" int __cdecl DrawLine(int param_1, int param_2);
 
 /* Function start: 0x426E00 */
@@ -19,9 +21,18 @@ void Weapon::OnHit()
     }
 }
 
-/* Function start: 0x426E30 */ /* No assembly extracted */
+/* Function start: 0x426E30 */
 void CombatDisplay::DrawCrosshairs()
 {
+    SetFillColor(0xfa);
+    SetDrawPosition(m_crosshair.x, m_crosshair.y);
+    DrawCircle(6);
+
+    if (g_TargetList_0046ae58 != 0 && g_TargetList_0046ae58->field_1B4 != 0) {
+        SetDrawPosition(m_crosshair.x, m_crosshair.y);
+        DrawCircle(4);
+        DrawCircle(8);
+    }
 }
 
 /* Function start: 0x426EB0 */

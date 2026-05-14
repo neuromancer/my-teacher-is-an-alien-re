@@ -7,7 +7,7 @@ struct FileCacheEntry {
     char name[0x20];        // 0x00 — cached file path (copied from argument)
     int size;               // 0x20 — reported file size in bytes
     int hitCount;           // 0x24 — incremented on each FileCacheLookup hit
-    unsigned int tickTime;  // 0x28 — GetTickCount() at registration / last access
+    unsigned int tickTime;  // 0x28 — timeGetTime() at registration / last access
 };
 
 // CacheNode — 12-byte linked-list node used by MemoryCache. Pool-allocated

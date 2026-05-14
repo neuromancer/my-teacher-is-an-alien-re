@@ -42,10 +42,7 @@ extern "C" {
 /* Function start: 0x41DBF0 */
 Palette::Palette(char* filename)
 {
-    m_size = 0;
-    m_data = 0;
-    m_size = 0x300;
-    m_data = new char[0x300];
+    this->Palette::Palette();
     LoadFile(filename);
 }
 
@@ -217,4 +214,3 @@ int Palette::IsSimilar(void* data, int start, int count) {
 
 // 0x425550 = SoundList::Play — in SoundList.cpp
 // 0x4256D0 = SoundList::IsSamplePlaying — in SoundList.cpp
-

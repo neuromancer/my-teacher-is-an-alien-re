@@ -46,7 +46,7 @@ extern "C" int FileExists(const char*);
 extern "C" int* GetScreenWidth();
 extern "C" int* GetScreenHeight();
 
-extern "C" void __stdcall SmackSummary(void*, void*) {}
+extern "C" void __stdcall SmackSummary(void*, void*);
 
 /* Function start: 0x4307B0 */
 extern "C" void ShowSmackSummary(unsigned int handle)

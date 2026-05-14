@@ -520,18 +520,18 @@ int __cdecl GetFreeDiskSpaceMB(int param_1) {
     DWORD local_10;
     DWORD local_c;
     char local_8[8];
+    const char* path;
     int result;
 
     result = -1;
     if (param_1 != 0) {
         sprintf(local_8, "%c:\\", param_1 + 0x40);
-        if (GetDiskFreeSpaceA(local_8, &local_10, &local_14, &local_18, &local_c) != 0) {
-            result = local_18 * local_14 * local_10;
-        }
+        path = local_8;
     } else {
-        if (GetDiskFreeSpaceA(0, &local_10, &local_14, &local_18, &local_c) != 0) {
-            result = local_18 * local_14 * local_10;
-        }
+        path = 0;
+    }
+    if (GetDiskFreeSpaceA(path, &local_10, &local_14, &local_18, &local_c) != 0) {
+        result = local_18 * local_14 * local_10;
     }
     return result;
 }
