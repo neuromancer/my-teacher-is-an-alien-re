@@ -14,6 +14,7 @@
 #include "mCNavigator.h"
 #include "RockThrower.h"
 #include "InputManager.h"
+#include "GameState.h"
 #include "SlimeTable.h"
 #include "globals.h"
 #include "string.h"
@@ -208,13 +209,68 @@ void StartScheduleTimer() {
 
 /* Function start: 0x440FC0 */
 int PodsEngine::HandleAction(int* param) {
-    TODO("PodsEngine::HandleAction");
-    return 0;
+    switch (param[5]) {
+    case 1:
+        g_CombatEngine_0046ae78->combatFlags |= 2;
+        return 1;
+
+    case 2:
+        g_CombatEngine_0046ae78->combatFlags |= 1;
+        return 1;
+
+    default:
+        return 0;
+    }
 }
 
 /* Function start: 0x441000 */
 void PodsEngine::OnProcessEnd() {
-    TODO("PodsEngine::OnProcessEnd");
+    int mouseX;
+    int idx;
+    GameState* gs;
+    InputState* mouse;
+
+    if (g_InputManager_0046aa08 != 0) {
+        g_InputManager_0046aa08->Refresh(1);
+    }
+
+    if (g_BgSprite_0046ae50 != 0) {
+        mouse = g_InputManager_0046aa08->pMouse;
+        mouseX = (mouse == 0) ? 0 : mouse->x;
+        g_BgSprite_0046ae50->ResetAnimation(
+            mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5), 0);
+    }
+
+    reserved_0x104 = 0;
+    field_0x10C = 1;
+    field_0x110 = 0;
+
+    gs = g_GameState_0046aa30;
+    idx = gs->FindLabel("OBJ011");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+
+    if (gs->stateValues[idx] != 0) {
+        gs = g_GameState_0046aa30;
+        idx = gs->FindLabel("PERIOD");
+        if (idx < 0 || gs->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
+        }
+
+        if (gs->stateValues[idx] != 2) {
+            field_0x110 |= 1;
+            if (g_SlimeTable_0046bf28->Play(0) != 0) {
+                field_0x110 |= 4;
+            }
+            return;
+        }
+    }
+
+    field_0x110 &= ~1;
+    if (g_SlimeTable_0046bf28->Play(1) != 0) {
+        field_0x110 |= 4;
+    }
 }
 
 /* Function start: 0x441140 */

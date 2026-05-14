@@ -13,19 +13,28 @@ def get_function_name(line):
         return None
     if stripped.startswith('{') or stripped.startswith('}') or stripped == '':
         return None
+    if ';' in stripped and '{' not in stripped:
+        return None
+
+    # Calls in the function body and text in string literals are not function
+    # definitions. Removing strings avoids matching diagnostics like
+    # "HDCache::LogStats() - ...".
+    stripped = re.sub(r'\bextern\s+"C(?:\+\+)?"\s+', '', stripped)
+    stripped = re.sub(r'\b(?:static|inline|virtual|extern)\s+', '', stripped)
+    stripped = re.sub(r'"(?:\\.|[^"\\])*"', '""', stripped)
 
     # Class::Method or Class::~Method
-    match = re.search(r'\b([a-zA-Z0-9_]+::~?[a-zA-Z0-9_]+)\s*\(', line)
+    match = re.search(r'^\s*(?:[\w:<>,\*&\s]+\s+)?([a-zA-Z0-9_]+::~?[a-zA-Z0-9_]+)\s*\(', stripped)
     if match:
         return match.group(1)
 
     # __cdecl/__fastcall/__stdcall free functions
-    match = re.search(r'(?:__cdecl|__fastcall|__stdcall)\s+\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', line)
+    match = re.search(r'(?:__cdecl|__fastcall|__stdcall)\s+\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', stripped)
     if match:
         return match.group(1)
 
     # Regular free functions: returntype functionname(
-    match = re.search(r'^\s*(?:[\w\s\*]+)\s+\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', line)
+    match = re.search(r'^\s*(?:[\w:<>,\*&\s]+)\s+\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', stripped)
     if match:
         func_name = match.group(1)
         if func_name not in ('if', 'for', 'while', 'switch', 'return', 'else', 'extern', 'typedef'):
@@ -64,7 +73,16 @@ def main():
         sys.exit(1)
 
     report = []
-    totals = {"count": 0, "sum": 0.0, "at100": 0, "above90": 0, "below90": 0, "errors": 0}
+    missing_asm = []
+    totals = {
+        "count": 0,
+        "sum": 0.0,
+        "at100": 0,
+        "above90": 0,
+        "below90": 0,
+        "errors": 0,
+        "missing_asm": 0,
+    }
 
     for root, _, files in os.walk(src_dir):
         if map_skip in root:
@@ -99,7 +117,10 @@ def main():
 
                 disassembled_file = f"{code_dir}/FUN_{address}.disassembled.txt"
                 if not os.path.exists(disassembled_file):
-                    report.append((file, func_name, address, "N/A"))
+                    pct = "MISSING ASM"
+                    totals["missing_asm"] += 1
+                    missing_asm.append((file, func_name, address, disassembled_file))
+                    report.append((file, func_name, address, pct))
                     continue
 
                 try:
@@ -141,7 +162,13 @@ def main():
     print(f"  >=90%%: {totals['above90']}")
     print(f"  <90%%: {totals['below90']}")
     print(f"  Errors/NOT FOUND: {totals['errors']}")
+    print(f"  Missing Ghidra asm: {totals['missing_asm']}")
     print(f"  Average similarity: {avg:.2f}%")
+
+    if missing_asm:
+        print("\n--- Missing Ghidra assembly exports ---")
+        for file, func_name, address, disassembled_file in missing_asm:
+            print(f"  {file:30s} {func_name:45s} 0x{address}  {disassembled_file}")
 
 if __name__ == "__main__":
     main()

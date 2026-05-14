@@ -675,6 +675,9 @@ void SC_Slime::SendResultMessage() {
 
 /* Function start: 0x40DB00 */
 void SC_Slime::ProcessHit() {
+    if (sound1 != 0) {
+        sound1->Play(100, 1);
+    }
 }
 
 /* Function start: 0x40DB20 */

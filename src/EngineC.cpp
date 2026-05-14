@@ -10,9 +10,12 @@
 #include "EngineSubsystems.h"
 #include "VBuffer.h"
 #include "SC_Combat.h"
+#include "SpriteAction.h"
 #include "globals.h"
 #include <stdio.h>
 #include <string.h>
+
+extern "C" void ShowError(const char* format, ...);
 
 /* Function start: 0x40BBF0 */
 EngineC::EngineC()
@@ -194,13 +197,39 @@ void EngineC::ProcessFrame()
 
 /* Function start: 0x40C1B0 */
 int EngineC::HandleAction(int* param) {
-    TODO("EngineC::HandleAction");
-    return 0;
+    int result = 0;
+    SpriteAction* action = (SpriteAction*)param;
+
+    if (action->instruction != 0x37) {
+        ShowError("EngineGauntlet::OnLogicMessage - unsupported instruction %d",
+                  action->instruction);
+    }
+
+    if (action->extra1 == 1) {
+        g_ActiveCombat_00468a1c->statusPtr[0] = 1;
+        result = 1;
+    }
+
+    return result;
 }
 
 /* Function start: 0x40C200 */
 void EngineC::OnProcessEnd() {
-    TODO("EngineC::OnProcessEnd");
+    int mouseX;
+    InputState* mouse;
+
+    if (g_InputManager_0046aa08 != 0) {
+        g_InputManager_0046aa08->Refresh(1);
+    }
+
+    if (g_BgSprite_0046ae50 != 0) {
+        mouse = g_InputManager_0046aa08->pMouse;
+        mouseX = (mouse == 0) ? 0 : mouse->x;
+        g_BgSprite_0046ae50->ResetAnimation(
+            mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5), 0);
+    }
+
+    mouseReleased = 1;
 }
 
 /* Function start: 0x40C270 */

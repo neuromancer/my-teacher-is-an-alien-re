@@ -9,10 +9,24 @@ from os import system
 from time import sleep
 from argparse import ArgumentParser
 
+def extract_proc_block(assembly, symbol):
+    start_pattern = re.compile(rf'^{re.escape(symbol)}\s+PROC\s+NEAR\b.*$', re.MULTILINE)
+    start_match = start_pattern.search(assembly)
+    if not start_match:
+        return None
+
+    end_pattern = re.compile(rf'^{re.escape(symbol)}\s+ENDP\b', re.MULTILINE)
+    end_match = end_pattern.search(assembly, start_match.end())
+    if not end_match:
+        return None
+
+    return assembly[start_match.end():end_match.start()]
+
 def read_assembly(function_name, file_path):
     # Read the file with the assembly code
     with open(file_path, 'r') as file:
         assembly = file.read()
+    assembly_text = assembly
 
     mangled_name = function_name
     if '::' in function_name:
@@ -49,30 +63,31 @@ def read_assembly(function_name, file_path):
                 # Last resort: remove lines containing ENDP
                 lines = assembly.split("\n")
                 assembly = "\n".join([line for line in lines if "ENDP" not in line])
-    elif f"_{function_name} PROC NEAR" in assembly:
-        assembly = assembly.split(f"_{function_name} PROC NEAR")[1]
-        assembly = assembly.split(f"_{function_name} ENDP")[0]
     else:
-        # Try to find stdcall decoration _Name@N
-        match = re.search(f"_{function_name}@[0-9]+ PROC NEAR", assembly)
+        proc_block = extract_proc_block(assembly, f"_{function_name}")
+        if proc_block is not None:
+            assembly = proc_block
+        else:
+            assembly = None
+
+    if assembly is None:
+        # Try to find stdcall decoration _Name@N.
+        match = re.search(rf'^(_{re.escape(function_name)}@[0-9]+)\s+PROC\s+NEAR\b', assembly_text, re.MULTILINE)
         if match:
-            start_marker = match.group(0)
-            end_marker = start_marker.replace("PROC NEAR", "ENDP")
-            if start_marker in assembly and end_marker in assembly:
-                assembly = assembly.split(start_marker)[1]
-                assembly = assembly.split(end_marker)[0]
-            else:
+            proc_block = extract_proc_block(assembly_text, match.group(1))
+            if proc_block is None:
                 return None
+            assembly = proc_block
         else:
             # Try to find C++ mangled name via comment: ; Class::Method
-            proc_match = re.search(rf'\S+ PROC NEAR\s+;\s*{re.escape(function_name)}$', assembly, re.MULTILINE)
+            proc_match = re.search(rf'^\S+\s+PROC\s+NEAR\s+;\s*{re.escape(function_name)}$', assembly_text, re.MULTILINE)
             if proc_match:
                 # Extract the mangled name from the match
-                mangled = proc_match.group(0).split(' PROC NEAR')[0]
-                assembly = assembly.split(proc_match.group(0))[1]
-                endp_marker = f"{mangled} ENDP"
-                if endp_marker in assembly:
-                    assembly = assembly.split(endp_marker)[0]
+                mangled = proc_match.group(0).split(' PROC NEAR')[0].split()[0]
+                proc_block = extract_proc_block(assembly_text, mangled)
+                if proc_block is None:
+                    return None
+                assembly = proc_block
             else:
                 return None
 
