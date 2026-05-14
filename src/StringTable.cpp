@@ -40,12 +40,12 @@ StringTable::~StringTable() {
         // Check if buckets array exists and has entries
         if (ht->buckets != 0 && ht->numBuckets != 0) {
             int numBuckets = ht->numBuckets;
-            int* buckets = ht->buckets;
+            HashNode** buckets = ht->buckets;
 
             // Iterate through each bucket
             for (; numBuckets != 0; numBuckets--) {
                 // Walk the chain in this bucket
-                HashNode* node = (HashNode*)*buckets;
+                HashNode* node = *buckets;
                 while (node != 0) {
                     // These loops appear to be counting/checking something
                     // but effectively do nothing (original has two empty counting loops)
@@ -140,10 +140,10 @@ void StringTable::Load() {
             if (ht != 0) {
                 if (ht->buckets != 0 && ht->numBuckets != 0) {
                     int numBuckets = ht->numBuckets;
-                    int* buckets = ht->buckets;
+                    HashNode** buckets = ht->buckets;
 
                     for (; numBuckets != 0; numBuckets--) {
-                        HashNode* node = (HashNode*)*buckets;
+                        HashNode* node = *buckets;
                         while (node != 0) {
                             int i = 0;
                             do {
@@ -198,12 +198,12 @@ void StringTable::Load() {
                 unsigned int id = stringId;
                 if (scanResult == 1) {
                     HashTable* ht = hashTable;
-                    int* bucketsPtr = ht->buckets;
+                    HashNode** bucketsPtr = ht->buckets;
                     unsigned int bucketIdx = (stringId >> 4) % (unsigned int)ht->numBuckets;
 
                     HashNode* foundNode = 0;
                     if (bucketsPtr != 0) {
-                        HashNode* node = *(HashNode**)(bucketsPtr + bucketIdx);
+                        HashNode* node = bucketsPtr[bucketIdx];
                         while (node != 0) {
                             if (node->key == stringId) {
                                 foundNode = node;
@@ -220,8 +220,8 @@ void StringTable::Load() {
                         foundNode = ht->AllocateNode();
                         foundNode->bucketIndex = bucketIdx;
                         foundNode->key = id;
-                        foundNode->next = *(HashNode**)(ht->buckets + bucketIdx);
-                        *(HashNode**)(ht->buckets + bucketIdx) = foundNode;
+                        foundNode->next = ht->buckets[bucketIdx];
+                        ht->buckets[bucketIdx] = foundNode;
                     }
                     foundNode->filePosLow = (int)filePos;
                     foundNode->filePosHigh = (int)filePos2;
@@ -252,7 +252,7 @@ int StringTable::GetString(unsigned int id, char* outBuffer)
         if (StringTable::hashTable->buckets == 0) {
             goto no_node;
         }
-        node = *(HashNode**)(StringTable::hashTable->buckets + bucketIdx);
+        node = StringTable::hashTable->buckets[bucketIdx];
         goto hash_test;
 
     hash_next:
@@ -322,7 +322,7 @@ void StringTable::TestStrings(void* textMgr, int maxWidth)
         if (iter == (HashNode*)-1) {
             unsigned int idx = 0;
             if (table->numBuckets != 0) {
-                HashNode** bucket = (HashNode**)table->buckets;
+                HashNode** bucket = table->buckets;
                 do {
                     iter = bucket[idx];
                     if (iter != 0) break;
@@ -335,7 +335,7 @@ void StringTable::TestStrings(void* textMgr, int maxWidth)
         if (nextIter == 0) {
             unsigned int idx = iter->bucketIndex + 1;
             if (idx < (unsigned int)table->numBuckets) {
-                HashNode** bucket = (HashNode**)(idx * 4 + (int)table->buckets);
+                HashNode** bucket = &table->buckets[idx];
                 do {
                     nextIter = *bucket;
                     if (nextIter != 0) break;

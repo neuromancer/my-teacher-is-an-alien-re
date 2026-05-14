@@ -8,9 +8,8 @@
 HashTable::~HashTable() {
     if (buckets != 0 && numBuckets != 0) {
         unsigned int i = 0;
-        int offset = 0;
         do {
-            HashNode* node = *(HashNode**)((char*)buckets + offset);
+            HashNode* node = buckets[i];
             while (node != 0) {
                 char** field = (char**)&node->reserved;
                 int j = 0;
@@ -32,7 +31,6 @@ HashTable::~HashTable() {
                 } while (1);
                 node = node->next;
             }
-            offset += 4;
             i++;
         } while ((unsigned int)numBuckets > i);
     }
@@ -58,7 +56,7 @@ void HashTable::AllocateBuckets(int newNumBuckets, int allocateNow) {
         buckets = 0;
     }
     if (allocateNow != 0) {
-        int* newBuckets = (int*)AllocateMemory(newNumBuckets * 4);
+        HashNode** newBuckets = (HashNode**)AllocateMemory(newNumBuckets * 4);
         buckets = newBuckets;
         memset(newBuckets, 0, newNumBuckets * 4);
     }

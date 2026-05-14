@@ -94,7 +94,7 @@ int RockThrower::CheckTargetHit(int param_1) {
                 unsigned int idx = 0;
                 unsigned int numBuckets = ht->numBuckets;
                 if (numBuckets != 0) {
-                    int* buckets = ht->buckets;
+                    HashNode** buckets = ht->buckets;
                     do {
                         edx = (int*)buckets[idx];
                         if (edx != 0) break;
@@ -108,7 +108,7 @@ int RockThrower::CheckTargetHit(int param_1) {
                 unsigned int idx = edx[1] + 1;
                 unsigned int numBuckets = ht->numBuckets;
                 if (idx < numBuckets) {
-                    int* cursor = (int*)(idx * 4 + (int)ht->buckets);
+                    HashNode** cursor = &ht->buckets[idx];
                     do {
                         nextEntry = (int*)*cursor;
                         if (nextEntry != 0) break;

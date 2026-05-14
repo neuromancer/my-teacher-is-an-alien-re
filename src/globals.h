@@ -30,6 +30,7 @@ class TargetList;
 class GameOutcome;
 class CursorState;
 class Weapon;
+class CombatWeapon;
 class Palette;
 class SoundList;
 class Viewport;
@@ -6044,7 +6045,7 @@ extern int g_SpriteEntryCount_00436344;                    // CombatSprite entry
 extern int g_ScreenWidth_00472d08;                         // GameWindow
 extern int g_ScreenHeight_00472d0c;                        // GameWindow
 extern int g_StringTableCount_0046aa80;                    // string table count
-extern int g_SlimeField_00468bbc;                          // SC_Slime
+extern CombatWeapon* g_SlimeField_00468bbc;                // SC_Slime
 extern int g_SlimeHitTable_00468bc0[122];                  // SC_Slime hit mask table
 class SpriteHashTable;
 extern SpriteHashTable* g_CurrentSprite_004686f8;          // CombatSprite current sprite table

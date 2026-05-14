@@ -56,8 +56,8 @@ public:
     Sprite* bgSprite;        // 0xC4 - BACKGROUND_SPRITE
     Sprite* leftSwitchSprite;  // 0xC8 - LEFT_SWITCH_SPRITE
     Sprite* rightSwitchSprite; // 0xCC - RIGHT_SWITCH_SPRITE
-    int leftSwitchActive;    // 0xD0 - left switch active sprite (alias)
-    int rightSwitchActive;   // 0xD4 - right switch active sprite (alias)
+    Sprite* leftSwitchActive;  // 0xD0 - left switch active sprite (alias)
+    Sprite* rightSwitchActive; // 0xD4 - right switch active sprite (alias)
     Rect invSlots[2];        // 0xD8-0xF7 (2 x 16 bytes)
     SlotPair closedShots[2]; // 0xF8-0x107 (2 x 8 bytes) - CLOSED_SHOTS_NEEDED
     SlotPair openedShots[2]; // 0x108-0x117 (2 x 8 bytes) - OPENED_SHOTS_NEEDED
@@ -74,10 +74,10 @@ public:
     Rect targetRect;         // 0x140-0x14F (16 bytes)
     SoundList* soundList;    // 0x150 - sound list object
     int field_154;           // 0x154
-    int sound1;              // 0x158 - SOUND id=1 sample
-    int sound2;              // 0x15C - SOUND id=2 sample
-    int sound3;              // 0x160 - SOUND id=3 sample
-    int sound4;              // 0x164 - SOUND id=4 sample
+    Sample* sound1;          // 0x158 - SOUND id=1 sample
+    Sample* sound2;          // 0x15C - SOUND id=2 sample
+    Sample* sound3;          // 0x160 - SOUND id=3 sample
+    Sample* sound4;          // 0x164 - SOUND id=4 sample
     Sample* sound5;          // 0x168 - SOUND id=5 sample
     SlimeTable* slimeTable;  // 0x16C - slime sound table
     int* gameResult;         // 0x170 - dynamic array (7 elements)

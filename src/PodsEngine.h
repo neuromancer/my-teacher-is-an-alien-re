@@ -5,6 +5,7 @@
 #include "SpriteAction.h"
 
 class Sprite;
+class HashTable;
 
 // PodsEngine - Combat engine for SC_Pods (pod race mini-game)
 // Constructor: 0x440860, Destructor: 0x440950
@@ -28,7 +29,7 @@ public:
     int reserved_0xFC;       // 0xFC
     int reserved_0x100;      // 0x100
     int reserved_0x104;      // 0x104
-    int hashTable;        // 0x108 — HashTable* (deleted in dtor)
+    HashTable* hashTable; // 0x108 — HashTable* (deleted in dtor)
     int field_0x10C;      // 0x10C
     int field_0x110;      // 0x110
     int reserved_0x114;      // 0x114

@@ -134,10 +134,10 @@ void Target::Activate()
             int numBuckets = hashTable->numBuckets;
             int hash = (id >> 4) % (unsigned int)numBuckets;
 
-            void* buckets = hashTable->buckets;
+            HashNode** buckets = hashTable->buckets;
             HashNode* node;
             if (buckets != 0) {
-                node = ((HashNode**)buckets)[hash];
+                node = buckets[hash];
                 while (node != 0) {
                     if (node->key == id) break;
                     node = node->next;
@@ -153,8 +153,8 @@ void Target::Activate()
                 node = hashTable->AllocateNode();
                 node->bucketIndex = hash;
                 node->key = (unsigned int)Target::id;
-                node->next = ((HashNode**)hashTable->buckets)[hash];
-                ((HashNode**)hashTable->buckets)[hash] = node;
+                node->next = hashTable->buckets[hash];
+                hashTable->buckets[hash] = node;
             }
             node->reserved = (int)this;
         }
@@ -196,7 +196,7 @@ void Target::Deactivate()
             int numBuckets = hashTable->numBuckets;
             int hash = (id >> 4) % (unsigned int)numBuckets;
 
-            HashNode** pNext = (HashNode**)&hashTable->buckets[hash];
+            HashNode** pNext = &hashTable->buckets[hash];
             HashNode* node = *pNext;
 
             while (node != 0) {

@@ -46,7 +46,7 @@ PodsEngine::~PodsEngine()
         podsBgSprite = 0;
     }
     if (hashTable != 0) {
-        delete (HashTable*)hashTable;
+        delete hashTable;
         hashTable = 0;
     }
 }
@@ -233,8 +233,8 @@ int PodsEngine::LBLParse(char* line) {
     sscanf(line, " %s ", token);
 
     if (strcmp(token, "STUDENT_SPRITE") == 0) {
-        podsBgSprite = new Sprite((char*)0);
-        Parser::ProcessFile(podsBgSprite, this, (char*)0);
+        podsBgSprite = new Sprite(0);
+        Parser::ProcessFile(podsBgSprite, this, 0);
     } else if (strcmp(token, "STUDENT_PALETTE") == 0) {
         sscanf(line, " %s %d %d", token, &reserved_0xFC, &reserved_0x100);
     } else if (strcmp(token, "STUDENT_HITS_ALLOWED") == 0) {
@@ -242,17 +242,17 @@ int PodsEngine::LBLParse(char* line) {
     } else if (strcmp(token, "CINEMATIC") == 0) {
         int fields = sscanf(line, " %s %d %s", token, &key, buffer);
         if (hashTable == 0) {
-            hashTable = (int)new HashTable(10);
+            hashTable = new HashTable(10);
         }
         if (fields == 3) {
-            HashTable* table = (HashTable*)hashTable;
+            HashTable* table = hashTable;
             HashNode* node = 0;
             name = MakeSoundName(buffer);
             copy = (char*)operator new(strlen(name) + 1);
             strcpy(copy, name);
             unsigned int bucket = (key >> 4) % (unsigned int)table->numBuckets;
             if (table->buckets != 0) {
-                node = ((HashNode**)table->buckets)[bucket];
+                node = table->buckets[bucket];
                 while (node != 0) {
                     if (node->key == key) {
                         break;
@@ -262,14 +262,14 @@ int PodsEngine::LBLParse(char* line) {
             }
             if (node == 0) {
                 if (table->buckets == 0) {
-                    table->buckets = (int*)AllocateMemory(table->numBuckets * sizeof(int));
+                    table->buckets = (HashNode**)AllocateMemory(table->numBuckets * sizeof(HashNode*));
                     memset(table->buckets, 0, table->numBuckets * sizeof(int));
                 }
                 node = table->AllocateNode();
                 node->bucketIndex = bucket;
                 node->key = key;
-                node->next = ((HashNode**)table->buckets)[bucket];
-                ((HashNode**)table->buckets)[bucket] = node;
+                node->next = table->buckets[bucket];
+                table->buckets[bucket] = node;
             }
             node->reserved = (int)copy;
         }

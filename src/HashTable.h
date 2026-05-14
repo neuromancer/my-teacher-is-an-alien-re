@@ -12,7 +12,7 @@ struct HashNode {
 
 class HashTable {
 public:
-    int* buckets;        // 0x00
+    HashNode** buckets;  // 0x00
     int numBuckets;      // 0x04
     int count;           // 0x08
     HashNode* freeList;  // 0x0C

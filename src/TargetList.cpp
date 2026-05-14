@@ -31,9 +31,9 @@ TargetList::~TargetList() {
   HashTable* ht = self->hashTable;
   if (ht) {
     if (ht->buckets) {
-      int* buckets = ht->buckets;
+      HashNode** buckets = ht->buckets;
       for (int n = ht->numBuckets; n > 0; n--) {
-        HashNode* node = (HashNode*)*buckets;
+        HashNode* node = *buckets;
         if (node) {
           do {
             int i = 0;
@@ -109,7 +109,7 @@ Target* TargetList::ProcessTargets() {
   HashNode* entry;
   HashNode* nextEntry;
   unsigned int bucketIdx;
-  int* bucketPtr;
+  HashNode** bucketPtr;
   HashTable* ht;
 
   fallbackTarget = 0;
@@ -126,7 +126,7 @@ Target* TargetList::ProcessTargets() {
         if ((unsigned int)ht->numBuckets != 0) {
           bucketPtr = ht->buckets;
           do {
-            entry = (HashNode*)*bucketPtr;
+            entry = *bucketPtr;
             if (entry != 0) break;
             bucketPtr = bucketPtr + 1;
             bucketIdx = bucketIdx + 1;
@@ -137,9 +137,9 @@ Target* TargetList::ProcessTargets() {
       if (nextEntry == 0) {
         bucketIdx = entry->bucketIndex + 1;
         if (bucketIdx < (unsigned int)ht->numBuckets) {
-          bucketPtr = (int*)(bucketIdx * 4 + (int)ht->buckets);
+          bucketPtr = &ht->buckets[bucketIdx];
           do {
-            nextEntry = (HashNode*)*bucketPtr;
+            nextEntry = *bucketPtr;
             if (nextEntry != 0) break;
             bucketPtr = bucketPtr + 1;
             bucketIdx = bucketIdx + 1;

@@ -228,7 +228,7 @@ char g_QuestLevelKey_00468108[32] = {                          // 0x00468108
 };
 int g_DetentionFlag_00468764 = 0;                            // 0x00468764
 int g_DetentionKeyState_00468a18 = 0;                        // 0x00468a18
-int g_SlimeField_00468bbc = 0;                               // 0x00468bbc
+CombatWeapon* g_SlimeField_00468bbc = 0;                     // 0x00468bbc
 int g_SlimeHitTable_00468bc0[122] = {                        // 0x00468bc0-0x00468da4
     0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1,
