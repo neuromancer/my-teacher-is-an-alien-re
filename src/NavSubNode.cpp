@@ -12,6 +12,7 @@
 
 extern void ShowError(const char* message, ...);
 extern int FindCharIndex(char ch);
+extern "C" char* FindAfterSubstring(char* s1, char* s2);
 
 // Global: stick direction characters (5 directions)
 char* g_StickDirChars = "FBLRU";
@@ -82,7 +83,7 @@ int OnDir_SubNode::Activate() {
 }
 
 /* Function start: 0x449E70 */
-int OnDir_SubNode::LBLParse(char* param_1)
+int OnDir_SubNode::ParseThenGoto(char* param_1)
 {
     int destNodeId;
     char stickStr[32];
@@ -95,6 +96,37 @@ int OnDir_SubNode::LBLParse(char* param_1)
     int stickDir = FindStickDirIndex(stickStr[0]);
     destNode[stickDir] = destNodeId;
     bearingForDir[stickDir] = FindCharIndex(bearingStr[0]);
+    return 0;
+}
+
+/* Function start: 0x449EE0 */
+int OnDir_SubNode::LBLParse(char* param_1)
+{
+    char token[32];
+
+    token[0] = 0;
+    sscanf(param_1, " %s ", token);
+
+    if (stricmp(token, "NO_WAIT:") == 0) {
+        Parser::ProcessFile(this, (Parser*)parentNode, 0);
+        return 1;
+    }
+    if (stricmp(token, "WAIT:") == 0) {
+        field_A0 = 1;
+        Parser::ProcessFile(this, (Parser*)parentNode, 0);
+        return 1;
+    }
+    if (stricmp(token, "AND_ON") == 0) {
+        char* thenGoto = FindAfterSubstring(param_1, "AND_ON");
+        if (ParseThenGoto(thenGoto) != 0) {
+            ReportUnknownLabel("OnDir_SubNode");
+        }
+        return 0;
+    }
+    if (stricmp(token, "END") == 0) {
+        return 1;
+    }
+    ReportUnknownLabel("OnDir_SubNode");
     return 0;
 }
 
@@ -313,8 +345,10 @@ int BG_SubNode::virtual4() {
 // NavSubNode virtual method stubs
 // =========================================================================
 
+/* Function start: 0x44AE00 */
 int NavSubNode::virtual4() { return 0; }
-int NavSubNode::Activate() { return 0; }
+/* Function start: 0x44AD90 */
+int NavSubNode::Activate() { return 1; }
 
 /* Function start: 0x44ADA0 */
 int NavSubNode::GetNextNode()
@@ -325,7 +359,6 @@ int NavSubNode::GetNextNode()
     return nodeHandle;
 }
 
-/* Function start: 0x449EE0 */
 /* Function start: 0x44ADD0 */
 int NavSubNode::LBLParse(char* line) {
     char local_20[32];
@@ -333,6 +366,7 @@ int NavSubNode::LBLParse(char* line) {
     return 0;
 }
 
+/* Function start: 0x449CE0 */
 void NavSubNode::virtual7() {}
 
 /* Function start: 0x44A4D0 */

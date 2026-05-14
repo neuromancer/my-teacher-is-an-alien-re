@@ -45,7 +45,9 @@ void SC_Timer::Init(SC_MessageParser* msg) {
     }
 }
 
+/* Function start: 0x422ED0 */
 int SC_Timer::ShutDown(SC_MessageParser* msg) {
+    (void)msg;
     return 0;
 }
 

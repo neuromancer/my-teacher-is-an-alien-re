@@ -384,7 +384,7 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
 
     if (pmsg[0xb] == 0x1b) {
         puzzleFlags |= 1;
-        SC_CrystalPuzzle::Exit(msg);
+        SC_CrystalPuzzle::FinalizeExit(msg);
         return 1;
     }
 
@@ -411,7 +411,7 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
             (rect7.left <= clickX && clickX <= rect7.right &&
              rect7.top <= clickY && clickY <= rect7.bottom)) {
             puzzleFlags |= 1;
-            SC_CrystalPuzzle::Exit(msg);
+            SC_CrystalPuzzle::FinalizeExit(msg);
             return 1;
         }
 
@@ -447,7 +447,7 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 gs->stateValues[idx] = 0;
-                SC_CrystalPuzzle::Exit(msg);
+                SC_CrystalPuzzle::FinalizeExit(msg);
                 return 1;
             }
         }
@@ -484,7 +484,7 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 gs->stateValues[idx] = 0;
-                SC_CrystalPuzzle::Exit(msg);
+                SC_CrystalPuzzle::FinalizeExit(msg);
                 return 1;
             }
         }
@@ -504,7 +504,7 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
             if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
                 g_DoorRects_00473dc8[2].top <= mouseY && mouseY <= g_DoorRects_00473dc8[2].bottom) {
                 puzzleFlags |= 2;
-                SC_CrystalPuzzle::Exit(msg);
+                SC_CrystalPuzzle::FinalizeExit(msg);
             }
         }
     }
@@ -513,8 +513,9 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x44FE20 */
-/* SC_CrystalPuzzle vtable Exit: return handlerId == ((int*)msg)[0]; */
-/* NOTE: existing Exit at 0x450110 is a non-virtual helper called directly by AddMessage */
+int SC_CrystalPuzzle::Exit(SC_MessageParser* msg) {
+    return handlerId == ((int*)msg)[0];
+}
 
 /* Function start: 0x44FE40 */
 void SC_CrystalPuzzle::Update(int p1, int p2) {
@@ -693,7 +694,7 @@ draw_cursor:
 }
 
 /* Function start: 0x450110 */
-int SC_CrystalPuzzle::Exit(SC_MessageParser* msg) {
+int SC_CrystalPuzzle::FinalizeExit(SC_MessageParser* msg) {
     SpriteAction* act;
     int idx;
     void* mem;
@@ -1084,4 +1085,3 @@ void SC_CrystalPuzzle::DisplayThisFloorRow() {
 /* address unknown — 0x450B10 is EngineB ctor */
 void SC_CrystalPuzzle::PlayPuzzleSound(int idx, int loop) {
 }
-

@@ -34,6 +34,12 @@ PodsEngine::~PodsEngine()
     }
 }
 
+/* Function start: 0x440920 */
+int PodsEngine::UpdateSprites()
+{
+    return 0;
+}
+
 /* Function start: 0x440A50 */
 void PodsEngine::ProcessFrame() {
     TODO("PodsEngine::ProcessFrame");

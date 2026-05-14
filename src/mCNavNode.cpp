@@ -115,7 +115,7 @@ int mCNavNode::LBLParse(char* param_1)
             node = new mCNavNode_TypeB(0);
         }
         else if (stricmp(token3, "DO_LOGICFNC") == 0) {
-            node = new mCNavNode_TypeD(0);
+            node = new mCNavNode_TypeLogic(0);
         }
         else if (stricmp(token3, "DO_BG") == 0) {
             node = new BG_SubNode();
@@ -149,12 +149,6 @@ int mCNavNode::LBLParse(char* param_1)
 
     return 0;
 }
-
-// mCNavNode_Runtime vtable (0x461B30) overrides — set after parsing
-// These are real implementations used at runtime, replacing the base stubs above.
-/* Function start: 0x44A9A0 */ /* mCNavNode_Runtime [5] Activate — TODO: not yet reimplemented */
-/* Function start: 0x44A9C0 */ /* mCNavNode_Runtime [0] LBLParse — TODO: not yet reimplemented */
-/* Function start: 0x44AB40 */ /* mCNavNode_Runtime [4] virtual4 — TODO: not yet reimplemented */
 
 // mCNavNode_TypeA stubs
 
@@ -225,6 +219,61 @@ int mCNavNode_TypeD::LBLParse(char* line) {
 int mCNavNode_TypeD::virtual4() {
     TODO("mCNavNode_TypeD::virtual4");
     return 0;
+}
+
+// mCNavNode_TypeLogic (DO_LOGICFNC)
+
+/* Function start: 0x44A900 */
+mCNavNode_TypeLogic::~mCNavNode_TypeLogic()
+{
+    if (action != 0) {
+        delete action;
+        action = 0;
+    }
+}
+
+/* Function start: 0x44A9A0 */
+int mCNavNode_TypeLogic::Activate()
+{
+    int handled = g_CombatEngine_0046ae78->HandleAction((int*)action);
+    return handled == 0 ? 1 : 2;
+}
+
+/* Function start: 0x44A9C0 */
+int mCNavNode_TypeLogic::LBLParse(char* line)
+{
+    char token[32];
+    char bearingText[32];
+
+    token[0] = 0;
+    sscanf(line, " %s ", token);
+
+    if (stricmp(token, "PARSE:") == 0) {
+        Parser::ProcessFile(this, (Parser*)parentNode, 0);
+        return 1;
+    }
+    if (stricmp(token, "MESSAGE") == 0) {
+        action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        ParseSpriteAction(action, (void*)parentNode);
+        return 0;
+    }
+    if (stricmp(token, "THEN_GOTO") == 0) {
+        if (sscanf(line, " THEN_GOTO N%d BEARING %s ", &nodeHandle, bearingText) > 1) {
+            bearing = FindCharIndex(bearingText[0]);
+        }
+        return 0;
+    }
+    if (stricmp(token, "END") == 0) {
+        return 1;
+    }
+    ReportUnknownLabel("LogicFnc_SubNode");
+    return 0;
+}
+
+/* Function start: 0x44AB40 */
+int mCNavNode_TypeLogic::virtual4()
+{
+    return NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeB stubs

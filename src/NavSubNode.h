@@ -57,9 +57,10 @@ public:
     OnDir_SubNode();                    // 0x449BD0
     virtual ~OnDir_SubNode();           // 0x449D80, sdtor at 0x449D60
 
-    virtual int LBLParse(char*);        // 0x449E70 (parses THEN_GOTO lines)
+    virtual int LBLParse(char*);        // [0] 0x449EE0
     virtual int virtual4();             // [4] 0x44A000
     virtual int Activate();             // [5] 0x449DD0
+    int ParseThenGoto(char* line);      // 0x449E70
 
     // Fields (after NavSubNode at 0xA0)
     int field_A0;           // 0xA0

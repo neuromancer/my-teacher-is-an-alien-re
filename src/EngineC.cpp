@@ -51,7 +51,7 @@ void EngineC::RenderBackground() {
 }
 
 /* Function start: 0x40C0D0 */
-void EngineC::method10()
+void EngineC::ProcessFrame()
 {
     Target* target = (Target*)g_TargetList_0046ae58->ProcessTargets();
 

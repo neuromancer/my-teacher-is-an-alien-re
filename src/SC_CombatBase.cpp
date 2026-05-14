@@ -367,8 +367,11 @@ void SC_CombatBase::ResetState() {}
 void SC_CombatBase::ProcessInput() {}
 /* Function start: 0x42C070 */
 void SC_CombatBase::BeginFrame() {}
+/* Function start: 0x40BC80 */
 int SC_CombatBase::PostRender() { return 0; }
+/* Function start: 0x42BD70 */
 int SC_CombatBase::HandleAction(int*) { return 0; }
 /* Function start: 0x42C920 */
 void SC_CombatBase::RenderState() {}
+/* Function start: 0x40BC90 */
 int SC_CombatBase::UpdateAndCheck() { return 0; }

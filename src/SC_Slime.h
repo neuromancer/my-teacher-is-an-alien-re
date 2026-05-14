@@ -32,6 +32,7 @@ public:
     ~SC_Slime();
 
     virtual int LBLParse(char* line);              // [0]  0x40E1E0
+    virtual void OnProcessEnd();                   // [2]  0x40E0D0
     virtual void Init(SC_MessageParser* msg);
     virtual int AddMessage(SC_MessageParser* msg);
     virtual int ShutDown(SC_MessageParser* msg);
@@ -43,7 +44,6 @@ public:
 
     void ProcessSprite(Sprite* spr); // 0x40DF30
     void SendResultMessage();    // 0x40D7C0
-    void ResetSprites();         // 0x40E0D0
     void UpdateArmSprites();     // 0x40E070
     void CheckTimerExpired(Sprite* spr); // 0x40DEB0
 

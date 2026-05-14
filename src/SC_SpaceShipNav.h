@@ -14,6 +14,7 @@ public:
     SC_SpaceShipNav();
     ~SC_SpaceShipNav();
 
+    virtual void OnProcessStart();              // [1]  0x447B40
     virtual void OnProcessEnd();               // [2]  0x447B50
     virtual void Init(SC_MessageParser* msg);        // [4]  0x447630
     virtual int AddMessage(SC_MessageParser* msg);   // [5]  0x447810

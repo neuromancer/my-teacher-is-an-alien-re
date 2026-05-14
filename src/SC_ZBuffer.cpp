@@ -28,6 +28,12 @@ void SC_ZBuffer::Init(SC_MessageParser* msg) {
     }
 }
 
+/* Function start: 0x414390 */
+int SC_ZBuffer::ShutDown(SC_MessageParser* msg) {
+    (void)msg;
+    return 0;
+}
+
 /* Function start: 0x4143A0 */
 void SC_ZBuffer::Update(int param1, int param2) {
   unsigned int elapsed;

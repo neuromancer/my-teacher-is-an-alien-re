@@ -53,7 +53,7 @@ Handler8::Handler8() {
     *ptr = 8;
 }
 
-/* Function start: 0x44A900 */
+// Full-game address is not identified here; 0x44A900 is mCNavNode_TypeLogic::~mCNavNode_TypeLogic.
 Handler8::~Handler8() {
     SpriteAction* action = (SpriteAction*)field_A0;
     if (action != 0) {

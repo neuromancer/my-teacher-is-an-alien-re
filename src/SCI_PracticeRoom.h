@@ -21,6 +21,7 @@ public:
     ~SCI_PracticeRoom();
 
     // Virtual overrides
+    /* Function start: 0x42B3A0 */
     void OnProcessStart() {}                 // 0x42B3A0 (empty override)
     void Init(SC_MessageParser* msg);              // 0x42A9F0
     int AddMessage(SC_MessageParser* msg);         // 0x42AE80

@@ -223,6 +223,9 @@ verify-globals:
 verify-calls:
 	@python3 bin/checkCallTargets.py
 
+verify-vtables:
+	@python3 bin/verifyVtables.py
+
 data/demo/CDDATA:
 	@echo "Downloading demo data..."
 	@curl -L -o data/teacher-demo.zip $(DEMO_DATA_URL)
@@ -256,4 +259,4 @@ debug: TEACHER.EXE | $(DREAMM_BIN)
 
 
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify-globals verify-calls run-demo run-demo-original run
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify-globals verify-calls verify-vtables run-demo run-demo-original run

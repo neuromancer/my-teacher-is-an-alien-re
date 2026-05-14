@@ -28,7 +28,7 @@ EngineInfoParser::~EngineInfoParser() {
 }
 
 /* Function start: 0x434800 */
-void EngineInfoParser::SetupDimensions() {
+void EngineInfoParser::OnProcessEnd() {
     SetVideoRes(EngineInfoParser::dimensions.x, EngineInfoParser::dimensions.y);
 }
 

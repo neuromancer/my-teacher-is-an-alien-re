@@ -39,6 +39,11 @@ SC_SpaceShipNav::~SC_SpaceShipNav() {
     }
 }
 
+/* Function start: 0x447B40 */
+void SC_SpaceShipNav::OnProcessStart()
+{
+}
+
 /* Function start: 0x447630 */
 void SC_SpaceShipNav::Init(SC_MessageParser* msg) {
     field_118[0] = 0;

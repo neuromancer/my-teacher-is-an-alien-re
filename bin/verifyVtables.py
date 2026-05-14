@@ -26,6 +26,114 @@ CODE_FULL_DIR = "code-full"
 RDATA_MIN = 0x461000
 RDATA_MAX = 0x468000
 
+# Intentional source-name aliases for shared COMDATs or local implementation
+# names that differ from the source-facing vtable class names.
+SLOT_SYMBOL_ALIASES = {
+    ('RenderCmd_DrawVBuf', 0): {('CommandType1', 'Execute')},
+    ('RenderCmd_DrawText', 0): {('CommandType2', 'Execute')},
+    ('RenderCmd_DrawRect', 0): {('CommandType3', 'Execute')},
+    ('Handler', 4): {('Handler', 'CopyCommandData')},
+    ('Handler', 5): {('Handler', 'WriteMessageAddress')},
+    ('Handler', 10): {('Engine', 'LogHandler')},
+}
+
+
+def strip_inline_comments(text):
+    text = re.sub(r'//.*', '', text)
+    text = re.sub(r'/\*.*?\*/', '', text)
+    return text
+
+
+def extract_slot_index(text):
+    m = re.search(r'\[(\d+)\]', text)
+    if m:
+        return int(m.group(1))
+    m = re.search(r'\bvtable\[(\d+)\]', text, re.IGNORECASE)
+    if m:
+        return int(m.group(1))
+    m = re.search(r'\+0x([0-9a-fA-F]+)', text)
+    if m:
+        return int(m.group(1), 16) // 4
+    return None
+
+
+def split_params(params):
+    parts = []
+    current = []
+    depth = 0
+    for ch in params:
+        if ch in '(<[':
+            depth += 1
+        elif ch in ')>]':
+            if depth > 0:
+                depth -= 1
+        if ch == ',' and depth == 0:
+            parts.append(''.join(current))
+            current = []
+            continue
+        current.append(ch)
+    if current:
+        parts.append(''.join(current))
+    return parts
+
+
+def normalize_param(param):
+    param = strip_inline_comments(param)
+    param = param.split('=')[0].strip()
+    if not param or param == 'void':
+        return ''
+    param = re.sub(r'\b(class|struct|const|volatile)\s+', '', param)
+    param = re.sub(r'\s+', ' ', param)
+    param = re.sub(r'\s*([*&])\s*', r'\1', param)
+    m = re.match(r'(.+[\s*&])([A-Za-z_]\w*)$', param)
+    if m:
+        param = m.group(1).strip()
+    return param
+
+
+def build_signature_key(method_name, params, is_const=False):
+    if method_name.startswith('~'):
+        return '__dtor__'
+    norm_params = [normalize_param(p) for p in split_params(params)]
+    norm_params = [p for p in norm_params if p]
+    key = f"{method_name}({','.join(norm_params)})"
+    if is_const:
+        key += " const"
+    return key
+
+
+def parse_method_declaration(decl, class_name):
+    original = decl
+    decl = strip_inline_comments(decl).strip()
+    if not decl:
+        return None
+    decl = re.sub(r'\s+', ' ', decl)
+    if '{' in decl:
+        decl = decl.split('{', 1)[0].strip()
+    if decl.endswith(';'):
+        decl = decl[:-1].strip()
+
+    m = re.match(
+        r'^(?P<virtual>virtual\s+)?(?P<prefix>.*?)(?P<name>~?\w+)\s*\((?P<params>[^()]*)\)\s*(?P<const>const\b)?(?:\s*=\s*0)?$',
+        decl
+    )
+    if not m:
+        return None
+
+    method_name = m.group('name')
+    params = m.group('params') or ''
+    is_virtual = bool(m.group('virtual'))
+    is_const = bool(m.group('const'))
+
+    return {
+        'class_name': class_name,
+        'method_name': method_name,
+        'signature_key': build_signature_key(method_name, params, is_const),
+        'is_virtual': is_virtual,
+        'slot_index': extract_slot_index(original),
+        'display_name': f"{class_name}::{method_name}",
+    }
+
 # ── PE parsing ──────────────────────────────────────────────────────────────
 
 def parse_pe(filename):
@@ -86,6 +194,9 @@ def classify_function(f, sections, addr):
     if not data:
         return 'unknown'
 
+    # JMP dword ptr [...] import/helper thunk
+    if data[0:2] == b'\xff\x25':
+        return 'thunk'
     # Pure RET
     if data[0] == 0xC3:
         return 'stub'
@@ -95,9 +206,30 @@ def classify_function(f, sections, addr):
     # XOR EAX,EAX; RET or RET imm
     if data[0:2] == b'\x33\xc0' and data[2] in (0xC3, 0xC2):
         return 'ret0'
+    if data[0:2] in (b'\x31\xc0', b'\x32\xc0', b'\x30\xc0') and data[2] in (0xC3, 0xC2):
+        return 'ret0'
+    if data[0] == 0xB0 and data[2] in (0xC3, 0xC2):
+        return 'retconst'
     # MOV EAX,1; RET
     if data[0:5] == b'\xb8\x01\x00\x00\x00' and data[5] in (0xC3, 0xC2):
         return 'ret1'
+    if data[0] == 0xB8 and data[5] in (0xC3, 0xC2):
+        return 'retconst'
+    # Simple `return this->field` helpers.
+    if data[0:3] == b'\x8b\x41\x08' and data[3] in (0xC3, 0xC2):
+        return 'fieldget'
+    if data[0] == 0x8B and data[1] == 0x41 and data[3] in (0xC3, 0xC2):
+        return 'fieldget'
+    if data[0] == 0x8B and data[1] == 0x81 and data[6] in (0xC3, 0xC2):
+        return 'fieldget'
+    if data[0:2] == b'\x8a\x41' and data[3] in (0xC3, 0xC2):
+        return 'fieldget'
+    if data[0:2] == b'\x8a\x81' and data[6] in (0xC3, 0xC2):
+        return 'fieldget'
+    if data[0:3] == b'\x66\x8b\x41' and data[4] in (0xC3, 0xC2):
+        return 'fieldget'
+    if data[0:3] == b'\x66\x8b\x81' and data[7] in (0xC3, 0xC2):
+        return 'fieldget'
     # PUSH string_addr; CALL ShowError pattern (error handler)
     if data[0] == 0x68 and data[5] == 0xE8:
         return 'error'
@@ -105,18 +237,24 @@ def classify_function(f, sections, addr):
     return 'real'
 
 
+def is_trivial_function_type(ftype):
+    return ftype in ('stub', 'ret0', 'ret1', 'retconst', 'fieldget', 'thunk')
+
+
 # ── Vtable address collection ──────────────────────────────────────────────
 
-def find_vtable_addrs_from_disasm(code_full_dir):
+def find_vtable_addrs_from_disasm(code_full_dir, rdata_min=RDATA_MIN, rdata_max=RDATA_MAX):
     """Find all vtable addresses from MOV patterns in disassembled constructors."""
-    pat = re.compile(r'MOV dword ptr \[E[A-Z]+\],0x(46[0-9a-fA-F]{4})', re.IGNORECASE)
+    pat = re.compile(r'MOV dword ptr \[E[A-Z]+\],0x([0-9a-fA-F]+)', re.IGNORECASE)
     addrs = set()
     for fn in glob.glob(os.path.join(code_full_dir, '*.disassembled.txt')):
         with open(fn, 'r') as fh:
             for line in fh:
                 m = pat.search(line)
                 if m:
-                    addrs.add(int(m.group(1), 16))
+                    addr = int(m.group(1), 16)
+                    if rdata_min <= addr < rdata_max:
+                        addrs.add(addr)
     return addrs
 
 
@@ -135,6 +273,235 @@ def find_vtable_addrs_from_headers(src_dir):
     return addrs
 
 
+# ── Header/source symbol parsing ───────────────────────────────────────────
+
+def parse_header_classes(src_dir):
+    class_pat = re.compile(r'^\s*(?:class|struct)\s+(\w+)(?:\s*:\s*public\s+(\w+))?')
+    vtable_pat = re.compile(r'\bvtable(?:\s+address)?(?:\s+at)?[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
+    class_methods = {}
+    hierarchy = {}
+    class_header = {}
+    explicit_vtables = {}
+
+    for hfile in sorted(glob.glob(os.path.join(src_dir, '*.h'))):
+        basename = os.path.basename(hfile)
+        with open(hfile, 'r') as f:
+            lines = f.readlines()
+
+        current_class = None
+        pending_class = None
+        pending_parent = None
+        class_depth = None
+        brace_depth = 0
+        pending_decl = None
+        pending_lineno = None
+        inline_body_depth = 0
+        previous_lines = []
+
+        for lineno, line in enumerate(lines, 1):
+            stripped = line.strip()
+            class_m = class_pat.match(line)
+            if class_m and ';' not in stripped.split('{', 1)[0]:
+                pending_class = class_m.group(1)
+                pending_parent = class_m.group(2)
+                comment_context = ' '.join(previous_lines[-5:] + [line])
+                vtable_m = vtable_pat.search(comment_context)
+                if vtable_m:
+                    explicit_vtables[pending_class] = int(vtable_m.group(1), 16)
+
+            if pending_class and '{' in line:
+                current_class = pending_class
+                if pending_parent:
+                    hierarchy[current_class] = pending_parent
+                class_header[current_class] = basename
+                class_methods.setdefault(current_class, [])
+                class_depth = brace_depth + line.count('{') - line.count('}')
+                pending_class = None
+                pending_parent = None
+                pending_decl = None
+                pending_lineno = None
+                inline_body_depth = 0
+
+            cleaned = strip_inline_comments(line).strip()
+
+            if current_class:
+                if inline_body_depth > 0:
+                    inline_body_depth += line.count('{') - line.count('}')
+                elif pending_decl is not None:
+                    if cleaned:
+                        pending_decl += ' ' + cleaned
+                    if cleaned.endswith(';') or '{' in cleaned:
+                        parsed = parse_method_declaration(pending_decl, current_class)
+                        if parsed:
+                            parsed['file'] = basename
+                            parsed['line_number'] = pending_lineno
+                            class_methods[current_class].append(parsed)
+                        if '{' in pending_decl and pending_decl.count('{') > pending_decl.count('}'):
+                            inline_body_depth = pending_decl.count('{') - pending_decl.count('}')
+                        pending_decl = None
+                        pending_lineno = None
+                elif '(' in cleaned and not cleaned.startswith(('if ', 'for ', 'while ', 'switch ', 'return ')):
+                    pending_decl = line.strip()
+                    pending_lineno = lineno
+                    if cleaned.endswith(';') or '{' in cleaned:
+                        parsed = parse_method_declaration(pending_decl, current_class)
+                        if parsed:
+                            parsed['file'] = basename
+                            parsed['line_number'] = pending_lineno
+                            class_methods[current_class].append(parsed)
+                        if '{' in pending_decl and pending_decl.count('{') > pending_decl.count('}'):
+                            inline_body_depth = pending_decl.count('{') - pending_decl.count('}')
+                        pending_decl = None
+                        pending_lineno = None
+
+            brace_depth += line.count('{')
+            brace_depth -= line.count('}')
+
+            if current_class and class_depth is not None and brace_depth < class_depth:
+                current_class = None
+                class_depth = None
+                pending_decl = None
+                pending_lineno = None
+                inline_body_depth = 0
+
+            previous_lines.append(line.strip())
+
+    return hierarchy, class_header, class_methods, explicit_vtables
+
+
+def build_expected_vtable_slots(class_name, classes, class_methods, cache):
+    if class_name in cache:
+        return cache[class_name]
+
+    parent = classes.get(class_name, {}).get('parent')
+    if parent:
+        slots = list(build_expected_vtable_slots(parent, classes, class_methods, cache))
+    else:
+        slots = []
+
+    slot_index = {}
+    for idx, slot in enumerate(slots):
+        if slot is not None:
+            slot_index[slot['signature_key']] = idx
+
+    for decl in class_methods.get(class_name, []):
+        method_name = decl['method_name']
+        if method_name == class_name:
+            continue
+
+        explicit_slot = decl.get('slot_index')
+        key = decl['signature_key']
+
+        if explicit_slot is not None:
+            while len(slots) <= explicit_slot:
+                slots.append(None)
+            slots[explicit_slot] = decl
+            slot_index[key] = explicit_slot
+        elif key in slot_index:
+            slots[slot_index[key]] = decl
+        elif decl['is_virtual']:
+            slot_index[key] = len(slots)
+            slots.append(decl)
+
+    cache[class_name] = slots
+    return slots
+
+
+def find_source_function_symbols(src_dir):
+    """
+    Parse source files and map Function start comments to the following symbol.
+    Returns dict: address -> list of {class_name, method_name, file, line_number}
+    """
+    func_pat = re.compile(r'/\*\s*Function start:\s*0x([0-9a-fA-F]+)')
+    class_pat = re.compile(r'^\s*(?:class|struct)\s+(\w+)\b')
+    qualified_pat = re.compile(r'(?:(\w+)::)(~?\w+)\s*\(')
+    function_symbols = {}
+
+    def record_symbol(address, class_name, method_name, basename, lineno):
+        new_info = {
+            'class_name': class_name,
+            'method_name': method_name,
+            'file': basename,
+            'line_number': lineno,
+        }
+        function_symbols.setdefault(address, [])
+        if new_info not in function_symbols[address]:
+            function_symbols[address].append(new_info)
+
+    for pattern in ['*.cpp', '*.h']:
+        for srcfile in sorted(glob.glob(os.path.join(src_dir, pattern))):
+            basename = os.path.basename(srcfile)
+            with open(srcfile, 'r') as f:
+                lines = f.readlines()
+
+            current_class = None
+            pending_class = None
+            class_depth = None
+            brace_depth = 0
+            pending_addrs = []
+            pending_gap = False
+
+            for lineno, line in enumerate(lines, 1):
+                stripped = line.strip()
+
+                def record_pending(class_name, method_name):
+                    nonlocal pending_gap
+                    for address in pending_addrs:
+                        record_symbol(address, class_name, method_name, basename, lineno)
+                    pending_addrs[:] = []
+                    pending_gap = False
+
+                if pending_addrs:
+                    m = qualified_pat.search(line)
+                    if m:
+                        record_pending(m.group(1), m.group(2))
+                    elif current_class:
+                        parsed = parse_method_declaration(line, current_class)
+                        if parsed:
+                            record_pending(parsed['class_name'], parsed['method_name'])
+                    elif stripped and not stripped.startswith(('/*', '*', '//', '#')):
+                        pending_addrs[:] = []
+                        pending_gap = False
+                    elif stripped and not func_pat.search(line):
+                        pending_gap = True
+
+                matches = list(func_pat.finditer(line))
+                if matches:
+                    if pending_addrs and pending_gap:
+                        pending_addrs[:] = []
+                        pending_gap = False
+                    for m in matches:
+                        pending_addrs.append(int(m.group(1), 16))
+                    if '*/' in line:
+                        after_comment = line.rsplit('*/', 1)[1]
+                        if after_comment.strip() and pending_addrs:
+                            m = qualified_pat.search(after_comment)
+                            if m:
+                                record_pending(m.group(1), m.group(2))
+                            elif current_class:
+                                parsed = parse_method_declaration(after_comment, current_class)
+                                if parsed:
+                                    record_pending(parsed['class_name'], parsed['method_name'])
+
+                class_m = class_pat.match(line)
+                if class_m and ';' not in stripped.split('{', 1)[0]:
+                    pending_class = class_m.group(1)
+
+                if pending_class and '{' in line:
+                    current_class = pending_class
+                    pending_class = None
+                    class_depth = brace_depth + line.count('{') - line.count('}')
+
+                brace_depth += line.count('{')
+                brace_depth -= line.count('}')
+
+                if current_class and class_depth is not None and brace_depth < class_depth:
+                    current_class = None
+                    class_depth = None
+
+    return function_symbols
+
+
 # ── Source parsing ──────────────────────────────────────────────────────────
 
 def parse_class_info(src_dir, code_full_dir):
@@ -147,7 +514,8 @@ def parse_class_info(src_dir, code_full_dir):
     vtable_pat = re.compile(r'[Vv]table[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
     class_pat = re.compile(r'class\s+(\w+)\s*:\s*public\s+(\w+)')
     ctor_pat = re.compile(r'Constructor[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
-    mov_pat = re.compile(r'MOV dword ptr \[E[A-Z]+\],0x(46[0-9a-fA-F]{4})', re.IGNORECASE)
+    this_mov_pat = re.compile(r'MOV (E[A-Z]+),ECX')
+    mov_pat = re.compile(r'MOV dword ptr \[(E[A-Z]+)\],0x([0-9a-fA-F]+)', re.IGNORECASE)
 
     for hfile in sorted(glob.glob(os.path.join(src_dir, '*.h'))):
         basename = os.path.basename(hfile)
@@ -180,13 +548,25 @@ def parse_class_info(src_dir, code_full_dir):
                 ctor_file = os.path.join(code_full_dir, f"FUN_{ctor_addr:X}.disassembled.txt")
                 if os.path.exists(ctor_file):
                     with open(ctor_file, 'r') as cf:
-                        last_vtable = None
+                        this_reg = None
+                        per_reg_vtables = {}
+                        any_vtable = None
                         for line in cf:
+                            tm = this_mov_pat.search(line)
+                            if tm and this_reg is None:
+                                this_reg = tm.group(1)
                             mm = mov_pat.search(line)
                             if mm:
-                                last_vtable = int(mm.group(1), 16)
-                        if last_vtable:
-                            vtable_addr = last_vtable
+                                reg = mm.group(1)
+                                addr = int(mm.group(2), 16)
+                                if RDATA_MIN <= addr < RDATA_MAX:
+                                    per_reg_vtables[reg] = addr
+                                    any_vtable = addr
+                        chosen_vtable = per_reg_vtables.get(this_reg) if this_reg else None
+                        if chosen_vtable is None:
+                            chosen_vtable = any_vtable
+                        if chosen_vtable:
+                            vtable_addr = chosen_vtable
 
             if vtable_addr:
                 classes[cls_name] = {
@@ -228,14 +608,12 @@ def parse_class_info(src_dir, code_full_dir):
         # SC_SpaceShipNav's internal combat engine
         ('SpaceShipEngine',   0x461A10, 'SC_CombatBase','(unknown)',          None),
         # mCNavNode sub-vtables (parsing and runtime variants, set in LBLParse 0x44AF40)
-        ('mCNavNode_Runtime',     0x461B30, 'Parser',   'mCNavNode.h',        0x44A900),
+        ('mCNavNode_TypeLogic',   0x461B30, 'NavSubNode','mCNavNode.h',       0x44A900),
         ('mCNavNode_TypeA',       0x461B60, 'Parser',   'mCNavNode.h',        None),
         ('mCNavNode_TypeB',       0x461B80, 'Parser',   'mCNavNode.h',        None),
         ('mCNavNode_TypeC',       0x461BA0, 'Parser',   'mCNavNode.h',        None),
         ('mCNavNode_TypeD',       0x461BC0, 'Parser',   'mCNavNode.h',        None),
         ('mCNavNode_TypeE',       0x461BE0, 'Parser',   'mCNavNode.h',        None),
-        # NavSubNode base (parsing-time vtable, overwritten by OnDir/BG constructors)
-        ('NavSubNode_Base',   0x461AC8, 'Parser',       'NavSubNode.h',       0x449BD0),
     ]
 
     for name, vtaddr, parent, header, ctor in manual:
@@ -251,6 +629,14 @@ def parse_class_info(src_dir, code_full_dir):
     if 'Handler6' in classes and 'MouseControl' in classes:
         if classes['Handler6']['vtable_addr'] == classes['MouseControl']['vtable_addr']:
             del classes['Handler6']
+
+    # NavSubNode's constructor is folded into derived constructors in the
+    # original binary. Prefer the explicit base vtable from the header over the
+    # last constructor vtable write, which belongs to OnDir_SubNode.
+    if 'NavSubNode' in classes:
+        classes['NavSubNode']['vtable_addr'] = 0x461AC8
+        classes['NavSubNode']['parent'] = 'Parser'
+        classes['NavSubNode']['header'] = 'NavSubNode.h'
 
     return classes
 
@@ -305,23 +691,44 @@ def main():
 
     _, sections = parse_pe(ORIG_EXE)
     text = sections['.text']
+    rdata = sections.get('.rdata')
     code_start, code_end = text['va_start'], text['va_end']
+    rdata_min = rdata['va_start'] if rdata else RDATA_MIN
+    rdata_max = rdata['va_end'] if rdata else RDATA_MAX
 
     # Collect all vtable boundary addresses
-    disasm_addrs = find_vtable_addrs_from_disasm(CODE_FULL_DIR)
+    disasm_addrs = find_vtable_addrs_from_disasm(CODE_FULL_DIR, rdata_min, rdata_max)
     hdr_addrs = find_vtable_addrs_from_headers(SRC_DIR)
     all_vtable_addrs = sorted(disasm_addrs | hdr_addrs)
 
     # Parse classes and implementations
     classes = parse_class_info(SRC_DIR, CODE_FULL_DIR)
+    invalid_parents = sorted(
+        (cls_name, info['parent'])
+        for cls_name, info in classes.items()
+        if info.get('parent') and info['parent'] not in classes
+    )
     implementations = find_implemented_functions(SRC_DIR)
+    function_symbols = find_source_function_symbols(SRC_DIR)
+    _, _, class_methods, _ = parse_header_classes(SRC_DIR)
+    expected_slots = {}
+    for cls_name in classes:
+        build_expected_vtable_slots(cls_name, classes, class_methods, expected_slots)
 
     print(f"Binary:  {ORIG_EXE}")
     print(f"Code:    0x{code_start:08X}..0x{code_end:08X}")
+    print(f"Rdata:   0x{rdata_min:08X}..0x{rdata_max:08X}")
     print(f"Vtables: {len(all_vtable_addrs)} unique addresses")
     print(f"Classes: {len(classes)} with vtable info")
+    print(f"Parents: {len(invalid_parents)} invalid references")
     print(f"Impls:   {len(implementations)} Function start comments")
     print()
+
+    if invalid_parents:
+        print("Invalid parent references:")
+        for cls_name, parent in invalid_parents:
+            print(f"  {cls_name} -> {parent}")
+        print()
 
     # Read vtables from binary
     vtables = {}
@@ -361,6 +768,7 @@ def main():
     total_sdtors = 0
     total_stubs = 0
     total_missing_real = 0
+    total_symbol_mismatch = 0
     missing_real = []
     missing_stubs = []
 
@@ -380,9 +788,9 @@ def main():
     )
 
     if not args.dump:
-        print("=" * 115)
-        print(f"{'Class':<22} {'Vtable':<14} {'Parent':<18} {'#':<4} {'Inh':<4} {'Ovr':<4} {'OK':<4} {'Stub':<5} {'Miss':<5} {'Status'}")
-        print("=" * 115)
+        print("=" * 124)
+        print(f"{'Class':<22} {'Vtable':<14} {'Parent':<18} {'#':<4} {'Inh':<4} {'Ovr':<4} {'OK':<4} {'Stub':<5} {'Miss':<5} {'Bad':<4} {'Status'}")
+        print("=" * 124)
 
     for cls_name in sorted_classes:
         info = classes[cls_name]
@@ -414,18 +822,62 @@ def main():
         n_sdtor = 0
         n_stub_missing = 0
         n_real_missing = 0
+        n_symbol_mismatch = 0
         cls_missing_real = []
         cls_missing_stubs = []
+        cls_symbol_mismatch = []
+        slot_expectations = expected_slots.get(cls_name, [])
+
+        def expected_for_slot(slot_idx):
+            if slot_idx < len(slot_expectations):
+                return slot_expectations[slot_idx]
+            return None
+
+        def slot_label(slot_idx):
+            expected = expected_for_slot(slot_idx)
+            if expected is not None:
+                return expected['method_name']
+            return slot_names.get(slot_idx, '')
+
+        def is_sdtor_slot(slot_idx):
+            expected = expected_for_slot(slot_idx)
+            if expected is not None and expected['signature_key'] == '__dtor__':
+                return True
+            return slot_idx == 3
+
+        def format_symbol_list(symbols):
+            if not symbols:
+                return "(unresolved)"
+            return ', '.join(f"{sym['class_name']}::{sym['method_name']}" for sym in symbols)
+
+        def matches_expected_symbol(slot_idx, expected, symbols):
+            if expected is None:
+                return True
+            aliases = SLOT_SYMBOL_ALIASES.get((cls_name, slot_idx), set())
+            for sym in symbols:
+                candidate = (sym['class_name'], sym['method_name'])
+                if candidate == (expected['class_name'], expected['method_name']):
+                    return True
+                if candidate in aliases:
+                    return True
+            return False
 
         for slot_idx, func_addr in overrides:
             is_impl = func_addr in implementations
             ftype = func_types.get(func_addr, 'unknown')
+            expected = expected_for_slot(slot_idx)
+            symbols = function_symbols.get(func_addr, [])
 
             if is_impl:
                 n_impl += 1
-            elif slot_idx == 3:
+                if expected is not None and expected['signature_key'] != '__dtor__' and not is_trivial_function_type(ftype):
+                    matches_expected = matches_expected_symbol(slot_idx, expected, symbols)
+                    if not matches_expected:
+                        n_symbol_mismatch += 1
+                        cls_symbol_mismatch.append((slot_idx, func_addr, expected, symbols))
+            elif is_sdtor_slot(slot_idx):
                 n_sdtor += 1  # sdtor, skip
-            elif ftype in ('stub', 'ret0', 'ret1'):
+            elif is_trivial_function_type(ftype):
                 n_stub_missing += 1
                 cls_missing_stubs.append((slot_idx, func_addr, ftype))
             else:
@@ -439,6 +891,7 @@ def main():
         total_sdtors += n_sdtor
         total_stubs += n_stub_missing
         total_missing_real += n_real_missing
+        total_symbol_mismatch += n_symbol_mismatch
 
         if args.dump:
             parent_str = info['parent'] or '(root)'
@@ -447,18 +900,36 @@ def main():
                 is_inherited = (i < len(parent_entries) and parent_entries[i] == func_addr)
                 is_impl = func_addr in implementations
                 ftype = func_types.get(func_addr, '?')
-                slot_name = slot_names.get(i, '')
+                slot_name = slot_label(i)
+                expected = expected_for_slot(i)
+                symbols = function_symbols.get(func_addr, [])
 
                 marker = " " if is_inherited else "*"
                 if is_inherited:
                     status = f"inherited ({parent_str})"
                 elif is_impl:
                     locs = implementations[func_addr]
-                    status = f"OK  <- {', '.join(f'{fl}:{ln}' for fl, ln in locs)}"
-                elif i == 3:
+                    matches_expected = True
+                    if expected is not None and expected['signature_key'] != '__dtor__' and not is_trivial_function_type(ftype):
+                        matches_expected = matches_expected_symbol(i, expected, symbols)
+                    if matches_expected:
+                        status = f"OK  <- {', '.join(f'{fl}:{ln}' for fl, ln in locs)}"
+                    else:
+                        status = (
+                            f"\033[31mMISMATCH\033[0m expected {expected['display_name']} "
+                            f"got {format_symbol_list(symbols)}"
+                        )
+                elif is_sdtor_slot(i):
                     status = "sdtor (compiler-generated)"
-                elif ftype in ('stub', 'ret0', 'ret1'):
-                    tag = {'stub': 'RET', 'ret0': 'return 0', 'ret1': 'return 1'}[ftype]
+                elif is_trivial_function_type(ftype):
+                    tag = {
+                        'stub': 'RET',
+                        'ret0': 'return 0',
+                        'ret1': 'return 1',
+                        'retconst': 'return constant',
+                        'fieldget': 'simple field getter',
+                        'thunk': 'jump thunk',
+                    }.get(ftype, ftype)
                     status = f"\033[33mMISSING ({tag})\033[0m"
                 elif ftype == 'error':
                     status = f"\033[33mMISSING (ShowError call)\033[0m"
@@ -468,9 +939,14 @@ def main():
                 name_str = f" {slot_name}" if slot_name else ""
                 print(f"  {marker} [{i:2d}]{name_str:<18} 0x{func_addr:08X}  {status}")
         else:
-            n_miss_total = n_real_missing + n_stub_missing
             if n_real_missing > 0:
                 status_str = f"\033[31m{n_real_missing} MISSING\033[0m"
+                if n_symbol_mismatch > 0:
+                    status_str += f" +{n_symbol_mismatch} bad slots"
+                if n_stub_missing > 0:
+                    status_str += f" +{n_stub_missing} stubs"
+            elif n_symbol_mismatch > 0:
+                status_str = f"\033[31m{n_symbol_mismatch} bad slots\033[0m"
                 if n_stub_missing > 0:
                     status_str += f" +{n_stub_missing} stubs"
             elif n_stub_missing > 0:
@@ -481,10 +957,10 @@ def main():
             parent_str = info['parent'] or '(root)'
             print(f"{cls_name:<22} 0x{info['vtable_addr']:08X}   {parent_str:<18} "
                   f"{len(entries):<4} {inherited:<4} {len(overrides):<4} {n_impl:<4} "
-                  f"{n_stub_missing:<5} {n_real_missing:<5} {status_str}")
+                  f"{n_stub_missing:<5} {n_real_missing:<5} {n_symbol_mismatch:<4} {status_str}")
 
             for slot_idx, func_addr, ftype in cls_missing_real:
-                slot_name = slot_names.get(slot_idx, '')
+                slot_name = slot_label(slot_idx)
                 disasm = os.path.exists(f"{CODE_FULL_DIR}/FUN_{func_addr:X}.disassembled.txt")
                 note = " (disasm)" if disasm else ""
                 name_str = f" {slot_name}" if slot_name else ""
@@ -492,14 +968,27 @@ def main():
                 print(f"    [{slot_idx:2d}]{name_str:<16} 0x{func_addr:08X}  [{ftype}]{note}")
 
             for slot_idx, func_addr, ftype in cls_missing_stubs:
-                slot_name = slot_names.get(slot_idx, '')
-                tag = {'stub': 'RET', 'ret0': 'return 0', 'ret1': 'return 1'}.get(ftype, ftype)
+                slot_name = slot_label(slot_idx)
+                tag = {
+                    'stub': 'RET',
+                    'ret0': 'return 0',
+                    'ret1': 'return 1',
+                    'retconst': 'return constant',
+                    'fieldget': 'simple field getter',
+                    'thunk': 'jump thunk',
+                }.get(ftype, ftype)
                 name_str = f" {slot_name}" if slot_name else ""
                 missing_stubs.append((cls_name, slot_idx, func_addr, info['header'], slot_name, tag))
                 print(f"    [{slot_idx:2d}]{name_str:<16} 0x{func_addr:08X}  \033[2m({tag})\033[0m")
 
+            for slot_idx, func_addr, expected, symbols in cls_symbol_mismatch:
+                print(
+                    f"    [{slot_idx:2d}] {slot_label(slot_idx):<15} 0x{func_addr:08X}  "
+                    f"expected {expected['display_name']} got {format_symbol_list(symbols)}"
+                )
+
     if not args.dump:
-        print("=" * 115)
+        print("=" * 124)
 
     print()
     print(f"{'Total vtable slots:':<30} {total_slots}")
@@ -507,8 +996,9 @@ def main():
     print(f"{'  Overrides:':<30} {total_overrides}")
     print(f"{'    Implemented:':<30} {total_implemented}")
     print(f"{'    Sdtors (compiler):':<30} {total_sdtors}")
-    print(f"{'    Stubs (RET/ret 0):':<30} \033[33m{total_stubs}\033[0m")
+    print(f"{'    Trivial helpers/thunks:':<30} \033[33m{total_stubs}\033[0m")
     print(f"{'    Missing (real code):':<30} \033[31m{total_missing_real}\033[0m")
+    print(f"{'    Implemented but wrong slot:':<30} \033[31m{total_symbol_mismatch}\033[0m")
 
     # Unmatched vtable addresses
     known_addrs = set(info['vtable_addr'] for info in classes.values())
@@ -517,6 +1007,9 @@ def main():
         print(f"\nVtable addresses not matched to any class ({len(unmatched)}):")
         for addr in unmatched:
             print(f"  0x{addr:08X}")
+
+    if invalid_parents or total_missing_real or total_symbol_mismatch:
+        sys.exit(1)
 
 
 if __name__ == '__main__':

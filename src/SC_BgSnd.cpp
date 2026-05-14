@@ -36,6 +36,12 @@ void SC_BgSnd::Init(SC_MessageParser* msg) {
     TODO("SC_BgSnd::Init");
 }
 
+/* Function start: 0x439490 */
+int SC_BgSnd::ShutDown(SC_MessageParser* msg) {
+    (void)msg;
+    return 0;
+}
+
 /* Function start: 0x4394A0 */
 void SC_BgSnd::Update(int p1, int p2) {
     unsigned int elapsed = timer.Update();

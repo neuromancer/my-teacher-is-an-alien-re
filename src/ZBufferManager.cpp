@@ -153,6 +153,7 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
     }
 }
 
+/* Function start: 0x403720 */
 /* Function start: 0x41B5D0 */ /* No assembly extracted */
 void CommandType1::Execute(GlyphRect* rect)
 {

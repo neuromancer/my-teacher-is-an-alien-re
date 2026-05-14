@@ -18,6 +18,7 @@ public:
 
     virtual int LBLParse(char* line);     // [0] 0x441140
     virtual void OnProcessEnd();          // [2] 0x441000
+    virtual int UpdateSprites();          // [9] 0x440920
     virtual void ProcessFrame();          // [10] 0x440A50
     virtual int HandleAction(int* param); // [13] 0x440FC0
 

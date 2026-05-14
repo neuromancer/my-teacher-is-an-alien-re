@@ -298,7 +298,7 @@ int SC_Slime::AddMessage(SC_MessageParser* msg)
 }
 
 /* Function start: 0x40E0D0 */
-void SC_Slime::ResetSprites()
+void SC_Slime::OnProcessEnd()
 {
     if (leftArmActive != 0) {
         leftArmActive->ResetAnimation(-1, 0);

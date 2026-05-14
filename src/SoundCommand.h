@@ -9,7 +9,7 @@ struct GlyphRect;
 struct SoundCommand {
     /* Function start: 0x401CC0 */
     virtual void Execute(GlyphRect* rect) {}
-    /* Function start: 0x403720 */
+    /* Function start: 0x401CD0 */
     virtual void Release(int flag) {}
     ~SoundCommand() {}
 };

@@ -29,9 +29,9 @@ public:
 
   EngineInfoParser();                       // 0x434660
   virtual ~EngineInfoParser();              // 0x434740
+  virtual void OnProcessEnd();              // 0x434800
   virtual int LBLParse(char* line);         // 0x434820
 
-  void SetupDimensions();                   // 0x434800
   void ParseOffset(char* line, int arg2);   // 0x434A00
   void ParseAnchor(char* line);             // 0x434A60
   void ParseDimensions(char* line);         // 0x434A90

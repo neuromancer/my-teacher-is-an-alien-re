@@ -5,6 +5,8 @@
 #include "ObjectPool.h"
 #include "NavSubNode.h"
 
+class SpriteAction;
+
 // mCNavNode - Navigation node for mCNavigator
 // Full game: Size 0xD0, vtable 0x461B50 (parsing) → 0x461B30 (runtime, 8 entries)
 // Constructor: 0x44AE10
@@ -102,6 +104,20 @@ public:
     int reservedA4;      // 0xA4
 
     mCNavNode_TypeD(char* line) { action = 0; reservedA4 = 0; }
+    virtual int LBLParse(char* line);
+    virtual int virtual4();
+    virtual int Activate();
+};
+
+// mCNavNode_TypeLogic (DO_LOGICFNC) - parses and dispatches a logic action
+// Vtable: 0x461B30, size 0xA8 = NavSubNode(0xA0) + 2 ints
+class mCNavNode_TypeLogic : public NavSubNode {
+public:
+    SpriteAction* action;  // 0xA0
+    int reservedA4;        // 0xA4
+
+    mCNavNode_TypeLogic(char* line) { action = 0; reservedA4 = 0; }
+    virtual ~mCNavNode_TypeLogic();
     virtual int LBLParse(char* line);
     virtual int virtual4();
     virtual int Activate();
