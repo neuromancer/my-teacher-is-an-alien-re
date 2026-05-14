@@ -21,6 +21,7 @@ class TimedEventPool;
 class Engine;
 class GameEngine;
 class SC_CombatBase;
+class SC_Combat;
 class AnimatedAsset;
 class T_Object;
 class mCNavigator;
@@ -6044,6 +6045,7 @@ extern int g_ScreenWidth_00472d08;                         // GameWindow
 extern int g_ScreenHeight_00472d0c;                        // GameWindow
 extern int g_StringTableCount_0046aa80;                    // string table count
 extern int g_SlimeField_00468bbc;                          // SC_Slime
+extern int g_SlimeHitTable_00468bc0[122];                  // SC_Slime hit mask table
 class SpriteHashTable;
 extern SpriteHashTable* g_CurrentSprite_004686f8;          // CombatSprite current sprite table
 extern Sprite* g_NavSprite_004360a4;                       // NavSubNode navigation sprite
@@ -6058,6 +6060,7 @@ extern int g_PathCacheMisses_0046b788;                                   // cach
 extern int g_DodgeAnimStates_0046bcd0[3];                                // SC_DodgeOrville
 extern SlimeTable* g_SlimeTable_0046bf28;                           // SC_FireAlarm / SC_Pods
 extern Palette* g_PodsPalette_0046bf30;                   // Pods palette pointer
+extern SC_Combat* g_ActiveCombat_00468a1c;                 // active SC_Combat handler
 extern int g_TargetBearingValue_0046bff0;                    // Target bearing value (full game)
 extern int g_TargetRangeCounter_0046bff4;                    // Target range counter (full game)
 
@@ -6176,7 +6179,10 @@ extern char g_CDDriveLetter_0046bd74;
 extern char* g_FontFilename_0046bd78;
 extern int g_FontField_0046bd7c;
 extern int g_CachePreloadTime_0046b794;
-extern int g_GameField_004734a4;
+extern int g_PodResults_004734a0[3];
+#define g_PodResult0_004734a0 (g_PodResults_004734a0[0])
+#define g_GameField_004734a4 (g_PodResults_004734a0[1])
+#define g_PodResult2_004734a8 (g_PodResults_004734a0[2])
 extern char g_QuestionBuffer_00469b28[];
 extern char g_LogEnabled_00472e28;
 extern char* g_DirectionChars;                             // no original address: defined in mCNavigator.cpp

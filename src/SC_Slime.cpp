@@ -15,6 +15,8 @@
 #include "GameState.h"
 #include "MouseControl.h"
 #include "RockThrower.h"
+#include "CombatWeapon.h"
+#include "Projectile.h"
 #include "SC_Question.h"
 extern "C" void SetVideoRes(int, int);
 #include "string.h"
@@ -341,7 +343,100 @@ void SC_Slime::OnProcessEnd()
 
 /* Function start: 0x40E1E0 */
 int SC_Slime::LBLParse(char* line) {
-    TODO("SC_Slime::LBLParse");
+    char buffer[128];
+    char token[32];
+    int index;
+    int value;
+
+    index = 0;
+    value = 0;
+    buffer[0] = 0;
+    token[0] = 0;
+    sscanf(line, " %s ", token);
+
+    if (strcmp(token, "PALETTE") == 0) {
+        sscanf(line, "%s %s", token, buffer);
+        palette = new Palette();
+        palette->Load(buffer);
+    } else if (strcmp(token, "BACKGROUND_SPRITE") == 0) {
+        bgSprite = new Sprite((char*)0);
+        Parser::ProcessFile(bgSprite, this, (char*)0);
+    } else if (strcmp(token, "CONSOLE_SPRITE") == 0) {
+        consoleSprite = new Sprite((char*)0);
+        Parser::ProcessFile(consoleSprite, this, (char*)0);
+    } else if (strcmp(token, "LEFT_ARM_SPRITE") == 0) {
+        leftArmSprite = new Sprite((char*)0);
+        leftArmActive = leftArmSprite;
+        Parser::ProcessFile(leftArmSprite, this, (char*)0);
+    } else if (strcmp(token, "RIGHT_ARM_SPRITE") == 0) {
+        rightArmSprite = new Sprite((char*)0);
+        rightArmActive = rightArmSprite;
+        Parser::ProcessFile(rightArmSprite, this, (char*)0);
+    } else if (strcmp(token, "LEFT_SWITCH_SPRITE") == 0) {
+        leftSwitchSprite = new Sprite((char*)0);
+        leftSwitchActive = (int)leftSwitchSprite;
+        Parser::ProcessFile(leftSwitchSprite, this, (char*)0);
+    } else if (strcmp(token, "RIGHT_SWITCH_SPRITE") == 0) {
+        rightSwitchSprite = new Sprite((char*)0);
+        rightSwitchActive = (int)rightSwitchSprite;
+        Parser::ProcessFile(rightSwitchSprite, this, (char*)0);
+    } else if (strcmp(token, "ARM_MASK_SPRITE") == 0) {
+        armMaskSprite = new Sprite((char*)0);
+        Parser::ProcessFile(armMaskSprite, this, (char*)0);
+    } else if (strcmp(token, "SLIME_METER_SPRITE") == 0) {
+        slimeMeterSprite = new Sprite((char*)0);
+        Parser::ProcessFile(slimeMeterSprite, this, (char*)0);
+    } else if (strcmp(token, "STUDENT_HITS_ALLOWED") == 0) {
+        sscanf(line, " %s %d", token, &maxHits);
+    } else if (strcmp(token, "CLOSED_SHOTS_NEEDED") == 0) {
+        sscanf(line, " %s %d", token, &index);
+        closedShots[1].max = index;
+        closedShots[0].max = index;
+    } else if (strcmp(token, "OPENED_SHOTS_NEEDED") == 0) {
+        sscanf(line, " %s %d", token, &index);
+        openedShots[1].max = index;
+        openedShots[0].max = index;
+    } else if (strcmp(token, "TENTACLE_SHOTS_NEEDED") == 0) {
+        sscanf(line, " %s %d", token, &tentacleShotsNeeded);
+    } else if (strcmp(token, "SOUND") == 0) {
+        int fields = sscanf(line, " %s %d %s %d ", token, &index, buffer, &value);
+        if (fields != 4) {
+            ReportUnknownLabel("SC_Slime");
+        }
+        if (soundList == 0) {
+            soundList = new SoundList(0xf);
+        }
+        if (index == 0) {
+            SendGameMessage(5, atoi(buffer), handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+        } else if (index >= 1 && index <= 5) {
+            Sample* sample = (Sample*)soundList->Register(MakeAudioName(buffer));
+            if (index == 1) {
+                sound1 = (int)sample;
+            } else if (index == 2) {
+                sound2 = (int)sample;
+            } else if (index == 3) {
+                sound3 = (int)sample;
+            } else if (index == 4) {
+                sound4 = (int)sample;
+            } else if (index == 5) {
+                sound5 = sample;
+            }
+        } else if (index >= 6 && index <= 0xb) {
+            slimeTable->LoadEntry(index, buffer, value);
+        } else {
+            ReportUnknownLabel("SC_Slime");
+        }
+    } else if (strcmp(token, "WEAPON") == 0) {
+        if (sscanf(line, " %s %s ", token, buffer) == 2) {
+            if (strcmp(buffer, "ROCKTHROWER2") == 0) {
+                g_SlimeField_00468bbc = (int)new CombatWeapon(this);
+            }
+        }
+    } else if (strcmp(token, "END") == 0) {
+        return 1;
+    } else {
+        ReportUnknownLabel("SC_Slime");
+    }
     return 0;
 }
 
@@ -583,12 +678,159 @@ void SC_Slime::SendResultMessage() {
 
 /* Function start: 0x40DB00 */
 void SC_Slime::ProcessHit() {
-    TODO("SC_Slime::ProcessHit");
 }
 
 /* Function start: 0x40DB20 */
 int SC_Slime::HandleInput(Sprite* spr) {
-    TODO("SC_Slime::HandleInput");
+    int* piVar1;
+    void* pvVar2;
+    bool bVar3;
+    unsigned int uVar4;
+    int* piVar5;
+    int iVar6;
+    int iVar7;
+    int iVar8;
+    unsigned int uVar9;
+
+    piVar1 = (int*)((char*)spr + 0x120);
+    iVar6 = *(int*)((char*)spr->ranges + spr->handle * 0x10 + 4) - 1;
+    iVar8 = piVar1[1];
+    if ((iVar8 <= 0x4f) || (*(int*)((char*)this + 0x128) == 0)) {
+        if (*(int*)((char*)spr + 0xf0) == 0) {
+            if (iVar6 != 0) goto LAB_0040dba1;
+        } else if (*(int*)(*(int*)(*(int*)((char*)spr + 0xf0) + 0xc) + 0x374) != iVar6) {
+            goto LAB_0040dba1;
+        }
+        if (*(int*)((char*)this + 0xc4) != 0) {
+            iVar7 = 0;
+            piVar5 = (int*)((char*)this + 0xd8);
+            do {
+                if ((((*piVar1 < *piVar5) || (piVar5[2] < *piVar1)) || (iVar8 < piVar5[1])) ||
+                    (bVar3 = true, piVar5[3] < iVar8)) {
+                    bVar3 = false;
+                }
+                if (bVar3) {
+                    iVar8 = *(int*)(*(int*)((char*)this + 0xc4) + 0xf0);
+                    if (iVar8 == 0) {
+                        iVar8 = *(int*)((char*)g_SlimeHitTable_00468bc0 + iVar7 * 0xf4);
+                    } else {
+                        iVar8 = *(int*)((char*)g_SlimeHitTable_00468bc0 +
+                            (*(int*)(*(int*)(iVar8 + 0xc) + 0x374) + iVar7 * 0x3d) * 4);
+                    }
+                    if (iVar8 != 0) {
+                        if (*(void**)((char*)this + 0x164) != 0) {
+                            ((Sample*)*(void**)((char*)this + 0x164))->Play(100, 1);
+                            return 1;
+                        }
+                        goto LAB_0040ddfc;
+                    }
+                    pvVar2 = *(void**)((char*)this + iVar7 * 4 + 0xc8);
+                    if (pvVar2 != 0) {
+                        iVar6 = *(int*)((char*)pvVar2 + 0x98);
+                        switch (iVar6) {
+                        case 0:
+                            iVar8 = *(int*)((char*)this + iVar7 * 8 + 0xf8) + 1;
+                            *(int*)((char*)this + iVar7 * 8 + 0xf8) = iVar8;
+                            iVar6 = *(int*)((char*)this + iVar7 * 8 + 0xfc);
+                            if ((iVar6 == 0) || (bVar3 = true, iVar8 < iVar6)) {
+                                bVar3 = false;
+                            }
+                            if (!bVar3) goto LAB_0040ddcf;
+                            iVar6 = 2;
+                            goto LAB_0040ddd7;
+                        case 1:
+                        case 3:
+                            break;
+                        case 2:
+                            iVar8 = *(int*)((char*)this + iVar7 * 8 + 0x108) + 1;
+                            *(int*)((char*)this + iVar7 * 8 + 0x108) = iVar8;
+                            iVar6 = *(int*)((char*)this + iVar7 * 8 + 0x10c);
+                            if ((iVar6 == 0) || (bVar3 = true, iVar8 < iVar6)) {
+                                bVar3 = false;
+                            }
+                            if (bVar3) {
+                                ((Sprite*)pvVar2)->ResetAnimation(4, 0);
+                                if (*(int*)(*(int*)((char*)this + iVar7 * -4 + 0xcc) + 0x98) == 4) {
+                                    UpdateArmSprites();
+                                }
+                                goto switchD_0040dd45_default;
+                            }
+LAB_0040ddcf:
+                            iVar6 = *(int*)((char*)pvVar2 + 0x98);
+                            break;
+                        default:
+                            goto switchD_0040dd45_default;
+                        }
+                        iVar6 = iVar6 + 1;
+LAB_0040ddd7:
+                        ((Sprite*)pvVar2)->ResetAnimation(iVar6, 0);
+switchD_0040dd45_default:
+                        if (*(void**)((char*)this + 0x160) != 0) {
+                            ((Sample*)*(void**)((char*)this + 0x160))->Play(100, 1);
+                        }
+                        ((SoundList*)*(void**)((char*)this + 0x16c))->Play(10);
+LAB_0040ddfc:
+                        return 1;
+                    }
+                    break;
+                }
+                piVar5 = piVar5 + 4;
+                iVar7 = iVar7 + 1;
+            } while (iVar7 < 2);
+        }
+    } else {
+        uVar9 = 1;
+        do {
+            pvVar2 = *(void**)((char*)this + uVar9 * 4 + 0x114);
+            if ((*(int*)((char*)pvVar2 + 0x98) == 0) &&
+                (uVar4 = ((VBuffer*)*(void**)(*(int*)((char*)*(void**)((char*)this + 0x128) + 0xf0) + 0x18))->CheckHit(
+                    *piVar1, piVar1[1] - 0x4f), uVar9 == uVar4)) {
+                iVar6 = *(int*)((char*)this + 0x138) + 1;
+                *(int*)((char*)this + 0x138) = iVar6;
+                if ((*(int*)((char*)this + 0x13c) == 0) ||
+                    (bVar3 = true, iVar6 < *(int*)((char*)this + 0x13c))) {
+                    bVar3 = false;
+                }
+                if (bVar3) {
+                    ((Sprite*)pvVar2)->ResetAnimation(2,
+                        *(int*)((char*)((Sprite*)pvVar2)->ranges + (*(int*)((char*)pvVar2 + 0x98) * 0x10) + 4) -
+                        *(int*)(*(int*)(*(int*)((char*)pvVar2 + 0xf0) + 0xc) + 0x374));
+                    ((Sprite*)*(void**)((char*)this + 0x128))->ResetAnimation(-1, 0);
+                }
+                if (*(void**)((char*)this + 0x164) != 0) {
+                    ((Sample*)*(void**)((char*)this + 0x164))->Play(100, 1);
+                }
+                return 1;
+            }
+            uVar9 = uVar9 + 1;
+        } while ((int)uVar9 <= 2);
+    }
+
+LAB_0040dba1:
+    if (*(int*)((char*)spr + 0xf0) == 0) {
+        if (iVar6 != 0) {
+            goto LAB_0040de8e;
+        }
+    } else if (*(int*)(*(int*)(*(int*)((char*)spr + 0xf0) + 0xc) + 0x374) != iVar6) {
+        goto LAB_0040de8e;
+    }
+    if ((((*piVar1 < *(int*)((char*)this + 0x140)) || (*(int*)((char*)this + 0x148) < *piVar1)) ||
+        (piVar1[1] < *(int*)((char*)this + 0x144))) ||
+        (bVar3 = true, *(int*)((char*)this + 0x14c) < piVar1[1])) {
+        bVar3 = false;
+    }
+    if (bVar3) {
+        if (*(void**)((char*)this + 0x164) != 0) {
+            ((Sample*)*(void**)((char*)this + 0x164))->Play(100, 1);
+            return 1;
+        }
+        goto LAB_0040de7f;
+    } else if (*(void**)((char*)this + 0x15c) != 0) {
+        ((Sample*)*(void**)((char*)this + 0x15c))->Play(100, 1);
+    }
+LAB_0040de7f:
+    return 1;
+LAB_0040de8e:
     return 0;
 }
 

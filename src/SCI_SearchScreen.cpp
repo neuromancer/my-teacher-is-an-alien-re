@@ -97,6 +97,7 @@ void SCI_SearchScreen::Init(SC_MessageParser* msg) {
 
     strcpy((char*)(combatParams + 5), "mis\\cb_Gauntlet.mis");
     ParseFile(this, (char*)(combatParams + 5), (char*)0);
+    g_ActiveCombat_00468a1c = this;
 }
 
 /* Function start: 0x40B780 */
@@ -104,6 +105,9 @@ int SCI_SearchScreen::ShutDown(SC_MessageParser* msg) {
     if (g_CombatEngine_0046ae78 != 0) {
         delete g_CombatEngine_0046ae78;
         g_CombatEngine_0046ae78 = 0;
+    }
+    if (g_ActiveCombat_00468a1c == this) {
+        g_ActiveCombat_00468a1c = 0;
     }
     return SC_Combat::ShutDown(msg);
 }

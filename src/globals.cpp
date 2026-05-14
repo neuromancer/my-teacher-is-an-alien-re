@@ -229,6 +229,17 @@ char g_QuestLevelKey_00468108[32] = {                          // 0x00468108
 int g_DetentionFlag_00468764 = 0;                            // 0x00468764
 int g_DetentionKeyState_00468a18 = 0;                        // 0x00468a18
 int g_SlimeField_00468bbc = 0;                               // 0x00468bbc
+int g_SlimeHitTable_00468bc0[122] = {                        // 0x00468bc0-0x00468da4
+    0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1,
+    1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 0, 0, 0, 0, 0, 0
+};
+SC_Combat* g_ActiveCombat_00468a1c = 0;                      // 0x00468a1c
 Weapon* g_ActiveWeapon_00468ef0 = 0;                         // 0x00468ef0
 char g_QuestFormatStr_004690e4[4] = "%d";                     // 0x004690e4
 
@@ -401,7 +412,7 @@ int g_RatsState_00473e18 = 0;                                // 0x00473e18
 int g_State3Phase_00473e1c = 0;                              // 0x00473e1c
 int g_State2Phase_00473e20 = 0;                              // 0x00473e20
 // g_InventoryState_004733e8 is now a macro in globals.h — aliases IconBarEntry[5].field_14
-int g_GameField_004734a4 = 0;                                // 0x004734a4
+int g_PodResults_004734a0[3] = {0, 0, 0};                    // 0x004734a0-0x004734a8
 
 // --- Misc (not address-mapped or shared) ---
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
