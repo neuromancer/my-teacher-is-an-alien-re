@@ -1,46 +1,9 @@
 #!/usr/bin/env python3
 
 import os
-import re
 import sys
 from compileAndCompare import get_similarity
-
-def get_function_name(line):
-    stripped = line.strip()
-    if stripped.startswith('//') or stripped.startswith('/*') or stripped.startswith('*'):
-        return None
-    if stripped.startswith('if') or stripped.startswith('for') or stripped.startswith('while'):
-        return None
-    if stripped.startswith('{') or stripped.startswith('}') or stripped == '':
-        return None
-    if ';' in stripped and '{' not in stripped:
-        return None
-
-    # Calls in the function body and text in string literals are not function
-    # definitions. Removing strings avoids matching diagnostics like
-    # "HDCache::LogStats() - ...".
-    stripped = re.sub(r'\bextern\s+"C(?:\+\+)?"\s+', '', stripped)
-    stripped = re.sub(r'\b(?:static|inline|virtual|extern)\s+', '', stripped)
-    stripped = re.sub(r'"(?:\\.|[^"\\])*"', '""', stripped)
-
-    # Class::Method or Class::~Method
-    match = re.search(r'^\s*(?:[\w:<>,\*&\s]+\s+)?([a-zA-Z0-9_]+::~?[a-zA-Z0-9_]+)\s*\(', stripped)
-    if match:
-        return match.group(1)
-
-    # __cdecl/__fastcall/__stdcall free functions
-    match = re.search(r'(?:__cdecl|__fastcall|__stdcall)\s+\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', stripped)
-    if match:
-        return match.group(1)
-
-    # Regular free functions: returntype functionname(
-    match = re.search(r'^\s*(?:[\w:<>,\*&\s]+)\s+\*?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', stripped)
-    if match:
-        func_name = match.group(1)
-        if func_name not in ('if', 'for', 'while', 'switch', 'return', 'else', 'extern', 'typedef'):
-            return func_name
-
-    return None
+from cppSourceParser import parse_source_functions
 
 def main():
     demo_mode = '--demo' in sys.argv
@@ -94,26 +57,9 @@ def main():
             if file_filter and file_filter not in file:
                 continue
             filepath = os.path.join(root, file)
-            with open(filepath, "r") as f:
-                lines = f.readlines()
-
-            for i, line in enumerate(lines):
-                if "No assembly extracted" in line:
-                    continue
-                match = re.search(r"/\* Function start: 0x([0-9a-fA-F]+)", line)
-                if not match:
-                    continue
-                address = match.group(1).upper()
-
-                # Find function name on next non-empty lines
-                func_name = None
-                for j in range(i + 1, min(i + 5, len(lines))):
-                    func_name = get_function_name(lines[j])
-                    if func_name:
-                        break
-
-                if not func_name:
-                    continue
+            for source_function in parse_source_functions(filepath):
+                address = source_function.address
+                func_name = source_function.name
 
                 disassembled_file = f"{code_dir}/FUN_{address}.disassembled.txt"
                 if not os.path.exists(disassembled_file):

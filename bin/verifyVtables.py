@@ -17,6 +17,15 @@ import os
 import sys
 import glob
 import argparse
+from cppSourceParser import (
+    CPP_PARSER,
+    find_function_declarator,
+    node_text,
+    parse_source_function_comments,
+    parse_source_function_markers,
+    sanitize_source,
+    walk,
+)
 
 ORIG_EXE = "data/full/TEACHER.ORI.EXE"
 SRC_DIR = "src"
@@ -133,6 +142,148 @@ def parse_method_declaration(decl, class_name):
         'slot_index': extract_slot_index(original),
         'display_name': f"{class_name}::{method_name}",
     }
+
+
+def parse_source_tree(path):
+    with open(path, 'rb') as f:
+        source = f.read()
+    return source, CPP_PARSER.parse(sanitize_source(source))
+
+
+def line_context(source, node):
+    lines = source.splitlines()
+    start = node.start_point.row
+    end = node.end_point.row
+    return ' '.join(
+        lines[i].decode('utf-8', errors='ignore')
+        for i in range(start, min(end + 1, len(lines)))
+    )
+
+
+def text_before_node_comments(source, tree, node, max_bytes=1500):
+    min_start = max(0, node.start_byte - max_bytes)
+    comments = []
+    for candidate in walk(tree.root_node):
+        if candidate.type != 'comment':
+            continue
+        if min_start <= candidate.start_byte < node.start_byte:
+            comments.append(node_text(source, candidate))
+    return ' '.join(comments)
+
+
+def first_child_of_type(node, type_name):
+    for child in node.children:
+        if child.type == type_name:
+            return child
+    return None
+
+
+def class_parent_from_node(source, class_node):
+    base_clause = first_child_of_type(class_node, 'base_class_clause')
+    if base_clause is None:
+        return None
+    for child in base_clause.children:
+        if child.type in ('type_identifier', 'qualified_identifier'):
+            return node_text(source, child).split('::')[-1].strip()
+    return None
+
+
+def parameter_list_text(source, function_declarator):
+    params = function_declarator.child_by_field_name('parameters')
+    if params is None:
+        params = first_child_of_type(function_declarator, 'parameter_list')
+    if params is None:
+        return ''
+    text = node_text(source, params).strip()
+    if text.startswith('(') and text.endswith(')'):
+        return text[1:-1]
+    return text
+
+
+def method_name_from_declarator(source, function_declarator):
+    name_node = function_declarator.child_by_field_name('declarator')
+    if name_node is None:
+        return None
+    name = node_text(source, name_node).strip()
+    if '::' in name:
+        name = name.split('::')[-1]
+    return name
+
+
+def parse_class_method_node(source, member_node, class_name, basename):
+    function_declarator = find_function_declarator(member_node)
+    if function_declarator is None:
+        return None
+
+    method_name = method_name_from_declarator(source, function_declarator)
+    if not method_name or not re.match(r'^~?[A-Za-z_]\w*$', method_name):
+        return None
+
+    member_text = node_text(source, member_node)
+    context = f"{member_text} {line_context(source, member_node)}"
+    is_virtual = any(child.type == 'virtual' for child in member_node.children)
+    is_const = bool(re.search(r'\)\s*const\b', member_text))
+    params = parameter_list_text(source, function_declarator)
+
+    return {
+        'class_name': class_name,
+        'method_name': method_name,
+        'signature_key': build_signature_key(method_name, params, is_const),
+        'is_virtual': is_virtual,
+        'slot_index': extract_slot_index(context),
+        'display_name': f"{class_name}::{method_name}",
+        'file': basename,
+        'line_number': member_node.start_point.row + 1,
+    }
+
+
+def iter_class_nodes(tree):
+    for node in walk(tree.root_node):
+        if node.type not in ('class_specifier', 'struct_specifier'):
+            continue
+        name_node = node.child_by_field_name('name')
+        body_node = node.child_by_field_name('body')
+        if name_node is None or body_node is None:
+            continue
+        yield node, name_node, body_node
+
+
+def parse_header_metadata(src_dir):
+    vtable_pat = re.compile(r'\bvtable(?:\s+address)?(?:\s+at)?[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
+    ctor_pat = re.compile(r'Constructor[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
+
+    hierarchy = {}
+    class_header = {}
+    class_methods = {}
+    explicit_vtables = {}
+    constructors = {}
+
+    for hfile in sorted(glob.glob(os.path.join(src_dir, '*.h'))):
+        basename = os.path.basename(hfile)
+        source, tree = parse_source_tree(hfile)
+
+        for class_node, name_node, body_node in iter_class_nodes(tree):
+            class_name = node_text(source, name_node).strip()
+            parent = class_parent_from_node(source, class_node)
+            if parent:
+                hierarchy[class_name] = parent
+            class_header[class_name] = basename
+            class_methods.setdefault(class_name, [])
+
+            comment_context = text_before_node_comments(source, tree, class_node)
+            for match in vtable_pat.finditer(comment_context):
+                explicit_vtables[class_name] = int(match.group(1), 16)
+            for match in ctor_pat.finditer(comment_context):
+                constructors[class_name] = int(match.group(1), 16)
+
+            for member_node in body_node.children:
+                if member_node.type not in ('field_declaration', 'declaration', 'function_definition'):
+                    continue
+                parsed = parse_class_method_node(source, member_node, class_name, basename)
+                if parsed:
+                    class_methods[class_name].append(parsed)
+
+    return hierarchy, class_header, class_methods, explicit_vtables, constructors
 
 # ── PE parsing ──────────────────────────────────────────────────────────────
 
@@ -260,112 +411,24 @@ def find_vtable_addrs_from_disasm(code_full_dir, rdata_min=RDATA_MIN, rdata_max=
 
 def find_vtable_addrs_from_headers(src_dir):
     """Find vtable addresses from header comments (full game only)."""
-    pat = re.compile(r'[Vv]table[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
+    pat = re.compile(r'\bvtable(?:\s+address)?(?:\s+at)?[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
     addrs = set()
     for hfile in glob.glob(os.path.join(src_dir, '*.h')):
-        with open(hfile, 'r') as f:
-            for line in f:
-                m = pat.search(line)
-                if m:
-                    addr = int(m.group(1), 16)
-                    if RDATA_MIN <= addr < RDATA_MAX:
-                        addrs.add(addr)
+        source, tree = parse_source_tree(hfile)
+        for node in walk(tree.root_node):
+            if node.type != 'comment':
+                continue
+            for match in pat.finditer(node_text(source, node)):
+                addr = int(match.group(1), 16)
+                if RDATA_MIN <= addr < RDATA_MAX:
+                    addrs.add(addr)
     return addrs
 
 
 # ── Header/source symbol parsing ───────────────────────────────────────────
 
 def parse_header_classes(src_dir):
-    class_pat = re.compile(r'^\s*(?:class|struct)\s+(\w+)(?:\s*:\s*public\s+(\w+))?')
-    vtable_pat = re.compile(r'\bvtable(?:\s+address)?(?:\s+at)?[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
-    class_methods = {}
-    hierarchy = {}
-    class_header = {}
-    explicit_vtables = {}
-
-    for hfile in sorted(glob.glob(os.path.join(src_dir, '*.h'))):
-        basename = os.path.basename(hfile)
-        with open(hfile, 'r') as f:
-            lines = f.readlines()
-
-        current_class = None
-        pending_class = None
-        pending_parent = None
-        class_depth = None
-        brace_depth = 0
-        pending_decl = None
-        pending_lineno = None
-        inline_body_depth = 0
-        previous_lines = []
-
-        for lineno, line in enumerate(lines, 1):
-            stripped = line.strip()
-            class_m = class_pat.match(line)
-            if class_m and ';' not in stripped.split('{', 1)[0]:
-                pending_class = class_m.group(1)
-                pending_parent = class_m.group(2)
-                comment_context = ' '.join(previous_lines[-5:] + [line])
-                vtable_m = vtable_pat.search(comment_context)
-                if vtable_m:
-                    explicit_vtables[pending_class] = int(vtable_m.group(1), 16)
-
-            if pending_class and '{' in line:
-                current_class = pending_class
-                if pending_parent:
-                    hierarchy[current_class] = pending_parent
-                class_header[current_class] = basename
-                class_methods.setdefault(current_class, [])
-                class_depth = brace_depth + line.count('{') - line.count('}')
-                pending_class = None
-                pending_parent = None
-                pending_decl = None
-                pending_lineno = None
-                inline_body_depth = 0
-
-            cleaned = strip_inline_comments(line).strip()
-
-            if current_class:
-                if inline_body_depth > 0:
-                    inline_body_depth += line.count('{') - line.count('}')
-                elif pending_decl is not None:
-                    if cleaned:
-                        pending_decl += ' ' + cleaned
-                    if cleaned.endswith(';') or '{' in cleaned:
-                        parsed = parse_method_declaration(pending_decl, current_class)
-                        if parsed:
-                            parsed['file'] = basename
-                            parsed['line_number'] = pending_lineno
-                            class_methods[current_class].append(parsed)
-                        if '{' in pending_decl and pending_decl.count('{') > pending_decl.count('}'):
-                            inline_body_depth = pending_decl.count('{') - pending_decl.count('}')
-                        pending_decl = None
-                        pending_lineno = None
-                elif '(' in cleaned and not cleaned.startswith(('if ', 'for ', 'while ', 'switch ', 'return ')):
-                    pending_decl = line.strip()
-                    pending_lineno = lineno
-                    if cleaned.endswith(';') or '{' in cleaned:
-                        parsed = parse_method_declaration(pending_decl, current_class)
-                        if parsed:
-                            parsed['file'] = basename
-                            parsed['line_number'] = pending_lineno
-                            class_methods[current_class].append(parsed)
-                        if '{' in pending_decl and pending_decl.count('{') > pending_decl.count('}'):
-                            inline_body_depth = pending_decl.count('{') - pending_decl.count('}')
-                        pending_decl = None
-                        pending_lineno = None
-
-            brace_depth += line.count('{')
-            brace_depth -= line.count('}')
-
-            if current_class and class_depth is not None and brace_depth < class_depth:
-                current_class = None
-                class_depth = None
-                pending_decl = None
-                pending_lineno = None
-                inline_body_depth = 0
-
-            previous_lines.append(line.strip())
-
+    hierarchy, class_header, class_methods, explicit_vtables, _ = parse_header_metadata(src_dir)
     return hierarchy, class_header, class_methods, explicit_vtables
 
 
@@ -412,9 +475,6 @@ def find_source_function_symbols(src_dir):
     Parse source files and map Function start comments to the following symbol.
     Returns dict: address -> list of {class_name, method_name, file, line_number}
     """
-    func_pat = re.compile(r'/\*\s*Function start:\s*0x([0-9a-fA-F]+)')
-    class_pat = re.compile(r'^\s*(?:class|struct)\s+(\w+)\b')
-    qualified_pat = re.compile(r'(?:(\w+)::)(~?\w+)\s*\(')
     function_symbols = {}
 
     def record_symbol(address, class_name, method_name, basename, lineno):
@@ -428,76 +488,30 @@ def find_source_function_symbols(src_dir):
         if new_info not in function_symbols[address]:
             function_symbols[address].append(new_info)
 
+    def split_symbol(name):
+        if '::' not in name:
+            return None, name
+        class_name, method_name = name.rsplit('::', 1)
+        return class_name, method_name
+
     for pattern in ['*.cpp', '*.h']:
         for srcfile in sorted(glob.glob(os.path.join(src_dir, pattern))):
             basename = os.path.basename(srcfile)
-            with open(srcfile, 'r') as f:
-                lines = f.readlines()
+            source, tree = parse_source_tree(srcfile)
+            class_ranges = []
+            for class_node, name_node, body_node in iter_class_nodes(tree):
+                class_ranges.append((body_node.start_byte, body_node.end_byte, node_text(source, name_node).strip()))
 
-            current_class = None
-            pending_class = None
-            class_depth = None
-            brace_depth = 0
-            pending_addrs = []
-            pending_gap = False
-
-            for lineno, line in enumerate(lines, 1):
-                stripped = line.strip()
-
-                def record_pending(class_name, method_name):
-                    nonlocal pending_gap
-                    for address in pending_addrs:
-                        record_symbol(address, class_name, method_name, basename, lineno)
-                    pending_addrs[:] = []
-                    pending_gap = False
-
-                if pending_addrs:
-                    m = qualified_pat.search(line)
-                    if m:
-                        record_pending(m.group(1), m.group(2))
-                    elif current_class:
-                        parsed = parse_method_declaration(line, current_class)
-                        if parsed:
-                            record_pending(parsed['class_name'], parsed['method_name'])
-                    elif stripped and not stripped.startswith(('/*', '*', '//', '#')):
-                        pending_addrs[:] = []
-                        pending_gap = False
-                    elif stripped and not func_pat.search(line):
-                        pending_gap = True
-
-                matches = list(func_pat.finditer(line))
-                if matches:
-                    if pending_addrs and pending_gap:
-                        pending_addrs[:] = []
-                        pending_gap = False
-                    for m in matches:
-                        pending_addrs.append(int(m.group(1), 16))
-                    if '*/' in line:
-                        after_comment = line.rsplit('*/', 1)[1]
-                        if after_comment.strip() and pending_addrs:
-                            m = qualified_pat.search(after_comment)
-                            if m:
-                                record_pending(m.group(1), m.group(2))
-                            elif current_class:
-                                parsed = parse_method_declaration(after_comment, current_class)
-                                if parsed:
-                                    record_pending(parsed['class_name'], parsed['method_name'])
-
-                class_m = class_pat.match(line)
-                if class_m and ';' not in stripped.split('{', 1)[0]:
-                    pending_class = class_m.group(1)
-
-                if pending_class and '{' in line:
-                    current_class = pending_class
-                    pending_class = None
-                    class_depth = brace_depth + line.count('{') - line.count('}')
-
-                brace_depth += line.count('{')
-                brace_depth -= line.count('}')
-
-                if current_class and class_depth is not None and brace_depth < class_depth:
-                    current_class = None
-                    class_depth = None
+            for marker in parse_source_function_markers(srcfile, include_no_assembly=True):
+                class_name, method_name = split_symbol(marker.name)
+                if class_name is None:
+                    for start, end, candidate_class in class_ranges:
+                        if start <= marker.function_start < end:
+                            class_name = candidate_class
+                            break
+                if class_name is None:
+                    continue
+                record_symbol(int(marker.address, 16), class_name, method_name, basename, marker.line)
 
     return function_symbols
 
@@ -511,70 +525,54 @@ def parse_class_info(src_dir, code_full_dir):
     """
     classes = {}
 
-    vtable_pat = re.compile(r'[Vv]table[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
-    class_pat = re.compile(r'class\s+(\w+)\s*:\s*public\s+(\w+)')
-    ctor_pat = re.compile(r'Constructor[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
     this_mov_pat = re.compile(r'MOV (E[A-Z]+),ECX')
     mov_pat = re.compile(r'MOV dword ptr \[(E[A-Z]+)\],0x([0-9a-fA-F]+)', re.IGNORECASE)
+    hierarchy, class_header, _, explicit_vtables, constructors = parse_header_metadata(src_dir)
 
-    for hfile in sorted(glob.glob(os.path.join(src_dir, '*.h'))):
-        basename = os.path.basename(hfile)
-        with open(hfile, 'r') as f:
-            content = f.read()
+    for cls_name, parent_name in hierarchy.items():
+        if cls_name in classes:
+            continue
 
-        for m in class_pat.finditer(content):
-            cls_name = m.group(1)
-            parent_name = m.group(2)
-            if cls_name in classes:
-                continue
-
-            pre_class = content[:m.start()]
-            search_area = pre_class[-1500:] if len(pre_class) > 1500 else pre_class
-
-            # Find vtable address from comments
+        # Find vtable address from comments
+        vtable_addr = explicit_vtables.get(cls_name)
+        if vtable_addr is not None and not (RDATA_MIN <= vtable_addr < RDATA_MAX):
             vtable_addr = None
-            for vm in vtable_pat.finditer(search_area):
-                addr = int(vm.group(1), 16)
-                if RDATA_MIN <= addr < RDATA_MAX:
-                    vtable_addr = addr
 
-            # Find constructor address
-            ctor_addr = None
-            for cm in ctor_pat.finditer(search_area):
-                ctor_addr = int(cm.group(1), 16)
+        # Find constructor address
+        ctor_addr = constructors.get(cls_name)
 
-            # Use constructor to find/verify vtable address
-            if ctor_addr:
-                ctor_file = os.path.join(code_full_dir, f"FUN_{ctor_addr:X}.disassembled.txt")
-                if os.path.exists(ctor_file):
-                    with open(ctor_file, 'r') as cf:
-                        this_reg = None
-                        per_reg_vtables = {}
-                        any_vtable = None
-                        for line in cf:
-                            tm = this_mov_pat.search(line)
-                            if tm and this_reg is None:
-                                this_reg = tm.group(1)
-                            mm = mov_pat.search(line)
-                            if mm:
-                                reg = mm.group(1)
-                                addr = int(mm.group(2), 16)
-                                if RDATA_MIN <= addr < RDATA_MAX:
-                                    per_reg_vtables[reg] = addr
-                                    any_vtable = addr
-                        chosen_vtable = per_reg_vtables.get(this_reg) if this_reg else None
-                        if chosen_vtable is None:
-                            chosen_vtable = any_vtable
-                        if chosen_vtable:
-                            vtable_addr = chosen_vtable
+        # Use constructor to find/verify vtable address
+        if ctor_addr:
+            ctor_file = os.path.join(code_full_dir, f"FUN_{ctor_addr:X}.disassembled.txt")
+            if os.path.exists(ctor_file):
+                with open(ctor_file, 'r') as cf:
+                    this_reg = None
+                    per_reg_vtables = {}
+                    any_vtable = None
+                    for line in cf:
+                        tm = this_mov_pat.search(line)
+                        if tm and this_reg is None:
+                            this_reg = tm.group(1)
+                        mm = mov_pat.search(line)
+                        if mm:
+                            reg = mm.group(1)
+                            addr = int(mm.group(2), 16)
+                            if RDATA_MIN <= addr < RDATA_MAX:
+                                per_reg_vtables[reg] = addr
+                                any_vtable = addr
+                    chosen_vtable = per_reg_vtables.get(this_reg) if this_reg else None
+                    if chosen_vtable is None:
+                        chosen_vtable = any_vtable
+                    if chosen_vtable:
+                        vtable_addr = chosen_vtable
 
-            if vtable_addr:
-                classes[cls_name] = {
-                    'vtable_addr': vtable_addr,
-                    'parent': parent_name,
-                    'header': basename,
-                    'constructor': ctor_addr,
-                }
+        if vtable_addr:
+            classes[cls_name] = {
+                'vtable_addr': vtable_addr,
+                'parent': parent_name,
+                'header': class_header.get(cls_name, '(unknown)'),
+                'constructor': ctor_addr,
+            }
 
     # ── Manual entries for classes not auto-detected ──
     # These either lack "class X : public Y" syntax, have no vtable comment,
@@ -646,20 +644,16 @@ def find_implemented_functions(src_dir):
     Scan .cpp and .h files for /* Function start: 0xXXXXXX */ comments.
     Returns dict: address -> list of (file, line_number)
     """
-    func_pat = re.compile(r'/\*\s*Function start:\s*0x([0-9a-fA-F]+)')
     implementations = {}
 
     for pattern in ['*.cpp', '*.h']:
         for srcfile in sorted(glob.glob(os.path.join(src_dir, pattern))):
             basename = os.path.basename(srcfile)
-            with open(srcfile, 'r') as f:
-                for lineno, line in enumerate(f, 1):
-                    m = func_pat.search(line)
-                    if m:
-                        addr = int(m.group(1), 16)
-                        if addr not in implementations:
-                            implementations[addr] = []
-                        implementations[addr].append((basename, lineno))
+            for marker in parse_source_function_comments(srcfile, include_no_assembly=True):
+                addr = int(marker.address, 16)
+                if addr not in implementations:
+                    implementations[addr] = []
+                implementations[addr].append((basename, marker.line))
 
     return implementations
 

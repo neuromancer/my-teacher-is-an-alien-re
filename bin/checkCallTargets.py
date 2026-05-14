@@ -17,6 +17,7 @@ import struct
 import subprocess
 import sys
 from collections import Counter
+from cppSourceParser import parse_source_function_groups
 
 # Known CRT/library address-to-name mappings (demo addresses)
 KNOWN_CRT_DEMO = {
@@ -454,70 +455,14 @@ def apply_call_count_allowances(func_name, only_orig, only_compiled):
                 only_compiled.pop(name, None)
 
 
-def parse_source_function_name(line):
-    prefix = line.strip().split('(', 1)[0].strip()
-    if not prefix:
-        return None
-
-    while True:
-        updated = prefix
-        for qualifier in ('extern "C" ', 'static ', 'virtual '):
-            if updated.startswith(qualifier):
-                updated = updated[len(qualifier):].lstrip()
-        if updated == prefix:
-            break
-        prefix = updated
-
-    tokens = prefix.split()
-    if not tokens:
-        return None
-
-    candidate = tokens[-1]
-    if candidate == 'const' and len(tokens) > 1:
-        candidate = tokens[-2]
-    if candidate in ('CALLBACK', 'WINAPI', '__cdecl', '__stdcall', '__thiscall') and len(tokens) > 1:
-        candidate = tokens[-2]
-
-    candidate = candidate.lstrip('*&')
-    if not candidate:
-        return None
-    if re.match(r'^(?:\w+::)?~?\w+$', candidate):
-        if candidate in ("TimedEventPool::Pop", "TimedEventPool::PopSafe"):
-            params = line.split('(', 1)[1].split(')', 1)[0] if '(' in line and ')' in line else ''
-            first_param = params.split(',', 1)[0].strip()
-            m = re.match(r'(?:const\s+)?(?:class\s+|struct\s+)?(\w+)\s*\*', first_param)
-            if m and m.group(1) in ("SC_MessageParser", "SpriteAction"):
-                return f"{candidate}({m.group(1)}*)"
-        return candidate
-    return None
-
-
-def iter_source_functions(cpp_file):
+def iter_source_functions(cpp_file, include_no_assembly=False):
     """Yield ([start_addrs], function_name) pairs from source annotations."""
-    try:
-        with open(cpp_file, 'r') as f:
-            lines = f.readlines()
-    except:
-        return
-
-    pending_addrs = []
-    for line in lines:
-        m = re.match(r'\s*/\*\s*Function start:\s*(0x[0-9a-fA-F]+)\s*\*/', line)
-        if m:
-            pending_addrs.append(int(m.group(1), 16))
-            continue
-
-        if not pending_addrs:
-            continue
-
-        stripped = line.strip()
-        if not stripped or stripped.startswith('//') or stripped.startswith('/*'):
-            continue
-
-        func_name = parse_source_function_name(stripped)
-        if func_name:
-            yield pending_addrs[:], func_name
-        pending_addrs = []
+    for group in parse_source_function_groups(
+        cpp_file,
+        include_no_assembly=include_no_assembly,
+        disambiguate_overloads=True,
+    ):
+        yield [int(address, 16) for address in group.addresses], group.name
 
 
 def auto_detect_crt(code_dir):
@@ -571,7 +516,7 @@ def build_address_to_name_map(src_dir, code_dir):
                 addr_map[addr] = name
 
     for cpp_file in glob.glob(f"{src_dir}/*.cpp"):
-        for addrs, func_name in iter_source_functions(cpp_file):
+        for addrs, func_name in iter_source_functions(cpp_file, include_no_assembly=True):
             for addr in addrs:
                 addr_map[addr] = func_name
     return addr_map

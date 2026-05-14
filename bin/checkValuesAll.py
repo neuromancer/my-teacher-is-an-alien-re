@@ -12,7 +12,7 @@ from checkValues import (
     parse_full_instructions, lcs_align, load_strings,
     extract_offset, extract_immediate, extract_string_name
 )
-from compileAndReport import get_function_name
+from cppSourceParser import parse_source_functions
 
 
 def normalize_string_for_cmp(s):
@@ -197,24 +197,9 @@ def main():
             if file_filter and file_filter not in file:
                 continue
             filepath = os.path.join(root, file)
-            with open(filepath, "r") as f:
-                lines = f.readlines()
-
-            for i, line in enumerate(lines):
-                if "No assembly extracted" in line:
-                    continue
-                match = re.search(r"/\* Function start: 0x([0-9a-fA-F]+)", line)
-                if not match:
-                    continue
-                address = match.group(1).upper()
-
-                func_name = None
-                for j in range(i + 1, min(i + 5, len(lines))):
-                    func_name = get_function_name(lines[j])
-                    if func_name:
-                        break
-                if not func_name:
-                    continue
+            for source_function in parse_source_functions(filepath):
+                address = source_function.address
+                func_name = source_function.name
 
                 disasm_file = f"{code_dir}/FUN_{address}.disassembled.txt"
                 if not os.path.exists(disasm_file):

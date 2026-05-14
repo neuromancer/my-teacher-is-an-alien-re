@@ -9,6 +9,8 @@ import sys
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Optional, Tuple
 
+from cppSourceParser import parse_source_functions
+
 
 DEFAULT_EXE = "data/full/TEACHER.ORI.EXE"
 DEFAULT_GLOBALS_SOURCE = "src/globals.cpp"
@@ -474,19 +476,8 @@ def parse_function_symbols(src_dir: str) -> Dict[str, int]:
             if not filename.endswith((".c", ".C", ".cpp")):
                 continue
             path = os.path.join(root, filename)
-            with open(path, "r", encoding="utf-8", errors="replace") as f:
-                text = f.read()
-            for match in re.finditer(r"/\*\s*Function start:\s*0x([0-9A-Fa-f]+)\s*\*/", text):
-                address = int(match.group(1), 16)
-                chunk = text[match.end():match.end() + 800]
-                chunk = "\n".join(
-                    line for line in chunk.splitlines()
-                    if not line.lstrip().startswith("#")
-                )
-                chunk = strip_comments(chunk)
-                fn = re.search(r"([A-Za-z_][A-Za-z0-9_:~]*)\s*\([^;{}]*\)\s*\{", chunk, re.S)
-                if fn:
-                    symbols[fn.group(1)] = address
+            for function in parse_source_functions(path):
+                symbols[function.name] = int(function.address, 16)
     return symbols
 
 
