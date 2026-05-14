@@ -137,7 +137,6 @@ int g_VBufMaxX_0043806c[32];                                 // 0x0043806c
 int g_VBufMaxY_004380ec[32];                                 // 0x004380ec
 int g_VBufClipLeft_0043816c[32];                             // 0x0043816c
 int g_VBufClipTop_004381ec[32];                              // 0x004381ec
-int g_VBufDataPtrs_0046de54[32];                             // 0x0043826c
 int g_VBufHeights_004382ec[32];                              // 0x004382ec
 int g_VBufWidths_0043836c[32];                               // 0x0043836c
 int g_GfxField3_004383ec = 0;                                // 0x004383ec
@@ -163,7 +162,17 @@ char g_ExitCode_0043be30 = 0;                                // 0x0043be30
 int g_ExitInProgress_0043be34 = 0;                           // 0x0043be34
 int g_CrtField_0043bdf0 = 0;                                 // 0x0043bdf0
 int g_ErrorCode_004719c4 = 0;                                // 0x0043bdf4
-unsigned int DAT_00471d38[90] = {0};                         // 0x0043c760 — CRT error code mapping
+unsigned int DAT_00471d38[90] = {                            // 0x00471d38 - CRT error code mapping
+    0x1, 0x16, 0x2, 0x2, 0x3, 0x2, 0x4, 0x18, 0x5, 0xd,
+    0x6, 0x9, 0x7, 0xc, 0x8, 0xc, 0x9, 0xc, 0xa, 0x7,
+    0xb, 0x8, 0xc, 0x16, 0xd, 0x16, 0xf, 0x2, 0x10, 0xd,
+    0x11, 0x12, 0x12, 0x2, 0x21, 0xd, 0x35, 0x2, 0x41, 0xd,
+    0x43, 0x2, 0x50, 0x11, 0x52, 0xd, 0x53, 0xd, 0x57, 0x16,
+    0x59, 0xb, 0x6c, 0xd, 0x6d, 0x20, 0x70, 0x1c, 0x72, 0x9,
+    0x6, 0x16, 0x80, 0xa, 0x81, 0xa, 0x82, 0x9, 0x83, 0x16,
+    0x84, 0xd, 0x91, 0x29, 0x9e, 0xd, 0xa1, 0x2, 0xa4, 0xb,
+    0xa7, 0xd, 0xb7, 0x11, 0xce, 0x2, 0xd7, 0xb, 0x718, 0xc
+};
 
 // --- 0x0043dxxx ---
 char g_PuzzleState_0043d0f8 = 0;                             // 0x0043d0f8
@@ -241,6 +250,7 @@ int g_VarSubstFlag_00469160 = 0;                             // 0x00469160
 char g_VarSubstBuffer_00469168[160] = {0};                   // 0x00469168
 int g_ParserCount = 0;                                       // 0x00469288
 SoundTracker* g_SoundTracker_0046928c = 0;                   // 0x0046928c
+char g_QuestionBuffer_00469b28[] = "SPRITE%d";               // 0x00469b28
 
 // --- 0x0046axxx (main game objects) ---
 int g_SchoolMenuActive_0046a190 = 0;                         // 0x0046a190
@@ -285,10 +295,11 @@ int g_CacheEntryCount_0046b780 = 0;                          // 0x0046b780
 MemoryCache* g_FileCache_0046b78c = 0;                       // 0x0046b78c
 int g_CacheEvictThreshold_0046b790 = 0;                      // 0x0046b790
 int g_CachePreloadTime_0046b794 = 0;                         // 0x0046b794
-char* g_MissionFilePath_0046bacc = 0;                        // 0x0046bacc
+char s_mis_pz_Wahoo_mis_0046bab8[] = "mis\\pz_Wahoo.mis";    // 0x0046bab8
+char* g_MissionFilePath_0046bacc = s_mis_pz_Wahoo_mis_0046bab8; // 0x0046bacc
 SC_CombatBase* g_WahooEngine_0046bbfc = 0;                    // 0x0046bbfc
 char g_CDDriveLetter_0046bd74 = 'A';                         // 0x0046bd74
-char* g_FontFilename_0046bd78 = 0;                           // 0x0046bd78
+char* g_FontFilename_0046bd78 = (char*)0xdc;                 // 0x0046bd78
 int g_FontField_0046bd7c = 0;                                // 0x0046bd7c
 SlimeTable* g_SlimeTable_0046bf28 = 0;                       // 0x0046bf28
 Palette* g_PodsPalette_0046bf30 = 0;              // 0x0046bf30
@@ -304,11 +315,12 @@ int g_VBufMaxX_0046dc54[32];                                 // 0x0046dc54
 int g_VBufMaxY_0046dcd4[32];                                 // 0x0046dcd4
 int g_VBufClipLeft_0046dd54[32];                             // 0x0046dd54
 int g_VBufClipTop_0046ddd4[32];                              // 0x0046ddd4
+int g_VBufDataPtrs_0046de54[32];                             // 0x0046de54
 int g_VBufHeights_0046ded4[32];                              // 0x0046ded4
 int g_VBufWidths_0046df54[32];                               // 0x0046df54
 
 int g_SchedulePositionTable_0046b940[42] = {                  // 0x0046b940 — x,y pairs, index 0 unused
-    0, 0,           // [0] unused
+    0x3e3d2065, 0x00732520, // [0] unused; overlaps prior string tail in original
     100, 108,       // [1]
     100, 182,       // [2]
     100, 257,       // [3]
@@ -332,7 +344,7 @@ int g_SchedulePositionTable_0046b940[42] = {                  // 0x0046b940 — 
 };
 int g_SpaceNavStates_0046c3f0[3] = {4, 5, 3};               // 0x0046c3f0
 int g_PeriodStateIdx_0046cb90 = 99;                          // 0x0046cb90
-static char s_PeriodChars[] = "PSD";
+static char s_PeriodChars[] = "PSD";                         // 0x0046cb8c
 char* g_PeriodCharTable_0046cb94 = s_PeriodChars;            // 0x0046cb94
 int g_PuzzleSolutions_0046cc98[36] = {                        // 0x0046cc98
     1,4,6,0, 2,4,6,0, 0,5,8,1, 1,3,8,1, 2,3,8,1, 0,4,0,2, 0,4,6,2, 0,4,7,2, 0,4,8,2
@@ -347,8 +359,8 @@ int g_FanField1_00472be0 = 0;                                // 0x00472be0
 int g_FanField2_00472be4 = 0;                                // 0x00472be4
 int g_FanField3_00472be8 = 0;                                // 0x00472be8
 int g_FanField4_00472bec = 0;                                // 0x00472bec
-char g_AnimFilename_00472c70[256] = {0};                     // 0x00472c70
-char g_AnimFilename2_00472cb0[256] = {0};                    // 0x00472cb0
+char g_AnimFilename_00472c70[64] = {0};                      // 0x00472c70
+char g_AnimFilename2_00472cb0[64] = {0};                     // 0x00472cb0
 HDC g_WindowDC_00472d00 = 0;                                 // 0x00472d00
 HPALETTE g_WindowPalette_00472d04 = 0;                       // 0x00472d04
 int g_ScreenWidth_00472d08 = 0;                              // 0x00472d08 (set at runtime)
@@ -361,6 +373,10 @@ SpriteAction g_HotspotAction_00472d90;                       // 0x00472d90
 int g_DevelopFlag_00472de4 = 0;                              // 0x00472de4
 char g_LogEnabled_00472e28 = 0;                              // 0x00472e28
 int g_StartBlock_00472e2c = 0;                               // 0x00472e2c
+int g_ProjectileHits_0047325c = 0;                           // 0x0047325c
+HitBounds g_HitBounds_00473260[3] = {{0, 0}, {0, 0}, {0, 0}}; // 0x00473260
+BombData g_BombData_00473278[6];                             // 0x00473278 (BSS, initialized at runtime)
+POINT g_CursorPos_00473308;                                  // 0x00473308
 // IconBar globals
 int g_IconBarLeft_00473310 = 0;                              // 0x00473310
 int g_IconBarTop_00473314 = 0;                               // 0x00473314 (set by CRT init via SetIconBarRect)
@@ -371,10 +387,6 @@ int g_IconBarRefCount_0046af0c = 0;                          // 0x0046af0c
 GlyphRect g_PuzzleButtonRects_00473d30[9];                   // 0x00473d30
 // g_IconBarState_00473334, g_SchoolMenuField1_00473358, g_SchoolMenuField2_0047337c
 // are now macros in globals.h — they alias IconBarEntry[0/1/2].field_14
-int g_ProjectileHits_0047325c = 0;                           // 0x0047325c
-HitBounds g_HitBounds_00473260[3] = {{0, 0}, {0, 0}, {0, 0}}; // 0x00473260
-BombData g_BombData_00473278[6];                             // 0x00473278 (BSS, initialized at runtime)
-POINT g_CursorPos_00473308;                                  // 0x00473308
 char g_CinematicDebugStr_00473400 = 0;           // 0x00473400
 int g_CacheTotalSize_00473440 = 0;                           // 0x00473440
 int g_CacheSizeLimit_00473444 = 0;                           // 0x00473444
@@ -392,6 +404,6 @@ int g_GameField_004734a4 = 0;                                // 0x004734a4
 
 // --- Misc (not address-mapped or shared) ---
 int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
-short _param_3 = 0;                                          // Sound.obj
-MessageQueue* g_MessageQueue = 0;                            // Handler8 message queue
-void* g_GameStruct2 = 0;
+short _param_3 = 0;                                          // no original address: Sound.obj shim
+MessageQueue* g_MessageQueue = 0;                            // no original address: Handler8 message queue
+void* g_GameStruct2 = 0;                                     // no original address: shared shim

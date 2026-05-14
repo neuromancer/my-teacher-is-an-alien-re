@@ -439,10 +439,10 @@ extern Timer* g_Timer_0046aa20; // DAT_00436980
     extern TimedEventPool* g_TimedEventPool2_00436988; // { /* 4 bytes */ }
 extern ZBufferManager* g_ZBufferManager_0046aa24; // 0x0046aa24
 extern AnimatedAsset* g_TextManager_00436990; // DAT_00436990  { /* 4 bytes */ }
-extern MessageQueue* g_MessageQueue; // Handler8 message queue
+extern MessageQueue* g_MessageQueue; // no original address: Handler8 message queue
 extern char* g_StateString_0046aa2c; // 0x0046aa2c - string buffer used for game state strings
 extern GameState* g_GameState_0046aa30; // 0x0046aa30
-extern void* g_GameStruct2; // { /* 4 bytes */ }
+extern void* g_GameStruct2; // no original address: shared shim
 extern int g_DevModeFlag_0043d564; // 1 = running from dev directory, 0 = running from CD
 extern int g_DevelopFlag_00472de4; // 1 = "Develop.___" file found (CDData::Setup)
 extern int g_PeriodStateIdx_0046cb90;   // DAT_0046cb90 - GameState index for period counter
@@ -5971,8 +5971,8 @@ extern int g_CmdLineAudioMode_00472dd8; // Command line audio mode
 extern char g_CmdLineInputMode_00472de0; // Command line input mode
 
 // Globals moved from stubs.cpp (sorted by address)
-extern int (*g_OutOfMemoryCallback)(unsigned int);        // Memory callback
-extern short _param_3;                                     // Sound.obj ?_param_3@@3FA
+extern int (*g_OutOfMemoryCallback)(unsigned int);        // no original address: Memory callback shim
+extern short _param_3;                                     // no original address: Sound.obj shim
 extern int g_PaletteColorTable_00437608[256];                              // palette color table
 extern char g_QuestLevelKey_00468108[32];                              // SC_Question buffer
 extern int g_DetentionFlag_00468764;                                   // SCI_IconBarModule / SC_Detention
@@ -6009,8 +6009,8 @@ extern T_Object* g_SelectedItem_0046a6e4;                            // SCI_Inve
     extern GameConfig* g_GameConfig2_0046aa10;                       // actually GameConfig*
     extern VBuffer* g_BackBuffer_0046aa14;                          // SC_SelectHotSpot
     extern char g_CinematicDebugStr_00473400;                              // SC_Cinematic
-    extern char g_AnimFilename_00472c70[256];                         // SC_Cinematic
-    extern char g_AnimFilename2_00472cb0[256];                         // SC_Cinematic
+    extern char g_AnimFilename_00472c70[64];                          // SC_Cinematic
+    extern char g_AnimFilename2_00472cb0[64];                          // SC_Cinematic
 extern Sound* g_EngineSound_0046aa0c;                                // Engine
 extern CDData* g_PathResolver_0046aa1c;                               // Path resolution
 extern GameState* g_StringTable_0046aa34;                  // HotspotAction / SC_MessageParser
@@ -6170,7 +6170,7 @@ extern GlyphRect g_DoorRects_00473dc8[];
 
 // Misc globals
 class GameWindow;
-extern GameWindow g_GameWindow;
+extern GameWindow g_GameWindow;                           // no original address: defined in main.cpp
 extern char g_CDDriveLetter_0046bd74;
 extern char* g_FontFilename_0046bd78;
 extern int g_FontField_0046bd7c;
@@ -6178,7 +6178,7 @@ extern int g_CachePreloadTime_0046b794;
 extern int g_GameField_004734a4;
 extern char g_QuestionBuffer_00469b28[];
 extern char g_LogEnabled_00472e28;
-extern char* g_DirectionChars;
+extern char* g_DirectionChars;                             // no original address: defined in mCNavigator.cpp
 
 // IconBar globals
 #include "IconBar.h"
