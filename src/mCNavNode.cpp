@@ -8,12 +8,20 @@
 #include "string.h"
 #include "Animation.h"
 #include "mCNavigator.h"
+#include "GameState.h"
+#include "SpriteAction.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-extern "C" char GetDirectionChar(int dir);
+extern char GetDirectionChar(int dir);
 extern int FindCharIndex(char ch);
+extern char* MakeAnimName(int index);
+extern "C" char* FormatAssetPath(char* format, ...);
+extern "C" int FileExists(const char* path);
+extern void EnqueueSpriteAction(void* action);
+extern void ParseSpriteAction(void* action, void* parent);
+extern void ReportUnknownLabel(const char* name);
 
 /* Function start: 0x44AE10 */
 mCNavNode::mCNavNode(char* param_1) : Parser()
@@ -95,19 +103,19 @@ int mCNavNode::LBLParse(char* param_1)
             node = new NavSubNode();
         }
         else if (stricmp(token3, "DO_EXIT") == 0) {
-            node = new NavSubNode();
+            node = new mCNavNode_TypeC(0);
         }
         else if (stricmp(token3, "DO_ANIM") == 0) {
-            node = new NavSubNode();
+            node = new mCNavNode_TypeA(0);
         }
         else if (stricmp(token3, "DO_POSTMESSAGE") == 0) {
-            node = new NavSubNode();
+            node = new mCNavNode_TypeD(0);
         }
         else if (stricmp(token3, "DO_CHECKMESSAGE") == 0) {
-            node = new NavSubNode();
+            node = new mCNavNode_TypeB(0);
         }
         else if (stricmp(token3, "DO_LOGICFNC") == 0) {
-            node = new NavSubNode();
+            node = new mCNavNode_TypeD(0);
         }
         else if (stricmp(token3, "DO_BG") == 0) {
             node = new BG_SubNode();
@@ -116,7 +124,7 @@ int mCNavNode::LBLParse(char* param_1)
             node = new OnDir_SubNode();
         }
         else if (stricmp(token3, "DO_MOUSE") == 0) {
-            node = new NavSubNode();
+            node = new mCNavNode_TypeE(0);
         }
         else {
             ReportUnknownLabel("NavNode");
@@ -152,13 +160,23 @@ int mCNavNode::LBLParse(char* param_1)
 
 /* Function start: 0x44AB50 */
 int mCNavNode_TypeA::Activate() {
-    TODO("mCNavNode_TypeA::Activate");
-    return 0;
+    char* name = MakeAnimName(animHandle);
+    char* path = FormatAssetPath(name);
+    if (FileExists(path)) {
+        Animation anim;
+        anim.Play(path, 0);
+    }
+    return 1;
 }
 
 /* Function start: 0x44ABE0 */
 int mCNavNode_TypeA::LBLParse(char* line) {
-    TODO("mCNavNode_TypeA::LBLParse");
+    char str[32];
+    int parsed = sscanf(line, " %d THEN_GOTO N%d BEARING %s ",
+                        &animHandle, &nodeHandle, str);
+    if (parsed >= 3) {
+        bearing = FindCharIndex(str[0]);
+    }
     return 0;
 }
 
@@ -172,13 +190,34 @@ int mCNavNode_TypeA::virtual4() {
 
 /* Function start: 0x44A560 */
 int mCNavNode_TypeD::Activate() {
-    TODO("mCNavNode_TypeD::Activate");
-    return 0;
+    int* act = action;
+    int result = 1;
+    if (act[4] == 4) {
+        result = 2;
+    }
+    EnqueueSpriteAction(act);
+    return result;
 }
 
 /* Function start: 0x44A590 */
 int mCNavNode_TypeD::LBLParse(char* line) {
-    TODO("mCNavNode_TypeD::LBLParse");
+    char token[32];
+    token[0] = 0;
+    sscanf(line, " %s ", token);
+    if (stricmp(token, "PARSE:") == 0) {
+        Parser::ProcessFile(this, (Parser*)parentNode, 0);
+        return 1;
+    }
+    if (stricmp(token, "MESSAGE") == 0) {
+        SpriteAction* sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        action = (int*)sa;
+        ParseSpriteAction(sa, (void*)parentNode);
+        return 0;
+    }
+    if (stricmp(token, "END") == 0) {
+        return 1;
+    }
+    ReportUnknownLabel("PostMessage_SubNode");
     return 0;
 }
 
@@ -192,13 +231,54 @@ int mCNavNode_TypeD::virtual4() {
 
 /* Function start: 0x44A6D0 */
 int mCNavNode_TypeB::Activate() {
-    TODO("mCNavNode_TypeB::Activate");
-    return 0;
+    int idx = g_GameState_0046aa30->CheckCondition(conditionPtr);
+    nodeHandle = destNode[idx];
+    bearing = destBearing[idx];
+    return 1;
 }
 
 /* Function start: 0x44A710 */
 int mCNavNode_TypeB::LBLParse(char* line) {
-    TODO("mCNavNode_TypeB::LBLParse");
+    char token[32];
+    char str1[32];
+    char str2[32];
+    int result_int;
+    int idx = 0;
+
+    token[0] = 0;
+    sscanf(line, " %s ", token);
+
+    if (stricmp(token, "PARSE:") == 0) {
+        Parser::ProcessFile(this, (Parser*)parentNode, 0);
+        return 1;
+    }
+    if (stricmp(token, "MESSAGE") == 0) {
+        SpriteAction* sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        conditionPtr = (int*)sa;
+        ParseSpriteAction(sa, (void*)parentNode);
+        return 0;
+    }
+    if (stricmp(token, "ON") == 0) {
+        int parsed = sscanf(line, " ON %s THEN_GOTO N%d BEARING %s ",
+                            str1, &result_int, str2);
+        if (parsed < 3) {
+            ReportUnknownLabel("CheckMessage_SubNode");
+        }
+        if (stricmp(str1, "FALSE") == 0) {
+            idx = 0;
+        } else if (stricmp(str1, "TRUE") == 0) {
+            idx = 1;
+        } else {
+            ReportUnknownLabel("CheckMessage_SubNode");
+        }
+        destNode[idx] = result_int;
+        destBearing[idx] = FindCharIndex(str2[0]);
+        return 0;
+    }
+    if (stricmp(token, "END") == 0) {
+        return 1;
+    }
+    ReportUnknownLabel("CheckMessage_SubNode");
     return 0;
 }
 
@@ -232,7 +312,22 @@ int mCNavNode_TypeE::Activate() {
 
 /* Function start: 0x44AC90 */
 int mCNavNode_TypeE::LBLParse(char* line) {
-    TODO("mCNavNode_TypeE::LBLParse");
+    char str1[32];
+    char str2[32];
+    int parsed = sscanf(line, " %s THEN_GOTO N%d BEARING %s ",
+                        str1, &nodeHandle, str2);
+    if (parsed >= 3) {
+        bearing = FindCharIndex(str2[0]);
+    }
+    if (strcmp(str1, "NO_MOUSE") == 0) {
+        stateValue = -1;
+        return 0;
+    }
+    if (strcmp(str1, "AUTO_MOUSE") == 0) {
+        stateValue = 0;
+        return 0;
+    }
+    stateValue = g_GameState_0046aa30->FindStateByName(str1);
     return 0;
 }
 

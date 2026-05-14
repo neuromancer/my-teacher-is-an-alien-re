@@ -553,22 +553,22 @@ void CleanupMemoryCache() {
     FileCacheCleanup();
     if (g_FileCache_0046b78c != 0) {
         MemoryCache* cache = g_FileCache_0046b78c;
-        int* node = (int*)cache->field_0;
+        CacheNode* node = cache->head;
         while (node != 0) {
-            FileCacheEntryCleanup((void*)&node[2], 1);
-            node = (int*)node[0];
+            FileCacheEntryCleanup((void*)&node->entry, 1);
+            node = node->next;
         }
-        cache->field_8 = 0;
-        cache->field_c = 0;
-        cache->field_4 = 0;
-        cache->field_0 = 0;
-        int* freeNode = (int*)cache->field_10;
+        cache->count = 0;
+        cache->freeList = 0;
+        cache->tail = 0;
+        cache->head = 0;
+        int* freeNode = cache->blockList;
         while (freeNode != 0) {
             int* next = (int*)freeNode[0];
             operator delete(freeNode);
             freeNode = next;
         }
-        cache->field_10 = 0;
+        cache->blockList = 0;
         operator delete(cache);
         g_FileCache_0046b78c = 0;
     }

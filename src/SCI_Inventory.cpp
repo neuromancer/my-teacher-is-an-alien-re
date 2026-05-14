@@ -1,5 +1,6 @@
 #include "SCI_Inventory.h"
 #include "T_Object.h"
+#include "FileArchive.h"
 #include "globals.h"
 #include <string.h>
 #include <stdio.h>
@@ -817,11 +818,12 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
 void SCI_Inventory::Serialize(void* param) {
     volatile int self = (int)this;
     int strLen = strlen("INVENTORY_INFO") + 1;
-    volatile int fp = (int)*(FILE**)((char*)param + 0x44);
+    FileArchive* ar = (FileArchive*)param;
+    volatile int fp = (int)ar->fp;
     int* esi_ptr;
     int handle;
 
-    if (*(int*)param != 0) {
+    if (ar->mode != 0) {
         /* SAVE PATH */
         int id = handlerId;
         fwrite(&id, 4, 1, (FILE*)fp);

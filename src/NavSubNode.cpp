@@ -328,6 +328,8 @@ int NavSubNode::GetNextNode()
 /* Function start: 0x449EE0 */
 /* Function start: 0x44ADD0 */
 int NavSubNode::LBLParse(char* line) {
+    char local_20[32];
+    sscanf(line, " %s N%d", local_20, &nodeHandle);
     return 0;
 }
 

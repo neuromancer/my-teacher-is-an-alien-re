@@ -327,28 +327,11 @@ int SCI_PracticeRoom::Exit(SC_MessageParser* msg) {
     return 1;
 }
 
-// FileArchive - simple save/load wrapper (0x48 bytes)
-class FileArchive {
-public:
-    int mode;           // 0x00 - 0=read, 1=write
-    char filename[64];  // 0x04-0x43
-    FILE* fp;           // 0x44
-
-    FileArchive() {
-        memset(this, 0, 0x48);
-        strcpy(filename, g_PracticeSavePath);
-    }
-    ~FileArchive() {
-        if (fp != 0) {
-            fclose(fp);
-            fp = 0;
-        }
-    }
-};
+#include "FileArchive.h"
 
 /* Function start: 0x42B100 */
 void SavePracticeState() {
-    FileArchive* ar = new FileArchive();
+    FileArchive* ar = new FileArchive(g_PracticeSavePath);
 
     if (ar->fp != 0) {
         fclose(ar->fp);
@@ -381,7 +364,7 @@ void SavePracticeState() {
 
 /* Function start: 0x42B270 */
 void LoadPracticeState() {
-    FileArchive* ar = new FileArchive();
+    FileArchive* ar = new FileArchive(g_PracticeSavePath);
 
     if (ar->fp != 0) {
         fclose(ar->fp);

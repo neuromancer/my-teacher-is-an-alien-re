@@ -107,8 +107,9 @@ def extract_string_name(op):
         s = s.replace('?$CF', '%').replace('?$CB', '!').replace('?$AA', '')
         s = s.replace('?$CC', ':').replace('?$CI', '(').replace('?$CJ', ')')
         s = s.replace('?5', ' ').replace('?3', ':').replace('?2', '\\')
-        s = s.replace('?1', '/').replace('?9', '-').replace('?8', '`')
-        s = s.replace('?4', '.').replace('?0', ',').replace('?7', "'")
+        s = s.replace('?1', '/').replace('?9', '-').replace('?8', "'")
+        s = s.replace('?4', '.').replace('?0', ',').replace('?7', '\t')
+        s = s.replace('?6', '\n')
         s = s.replace('?$FL', '[').replace('?$FN', ']')
         return s
     return None

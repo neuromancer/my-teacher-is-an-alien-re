@@ -30,8 +30,8 @@ int Handler::WriteMessageAddress(SC_MessageParser* msg) {
     pmsg[0] = handlerId;
     pmsg[1] = moduleParam;
     pmsg[2] = handlerId;
-    pmsg[3] = moduleParam;
     pmsg[4] = 0;
+    pmsg[3] = moduleParam;
     return 0;
 }
 
@@ -48,7 +48,7 @@ int Handler::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x405D40 */
 int Handler::ShutDown(SC_MessageParser* msg) {
-    return 0;
+    return 0;  // reached via path that doesn't set EAX explicitly in original
 }
 
 /* Function start: 0x454950 */

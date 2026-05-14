@@ -3,6 +3,7 @@
 #include "GameState.h"
 #include "InputManager.h"
 #include "Message.h"
+#include "FileArchive.h"
 #include "RenderEntry.h"
 #include "DrawEntry.h"
 #include "Sample.h"
@@ -659,9 +660,10 @@ extern void ShowError(const char* format, ...);
 /* Function start: 0x431930 */
 void GameEngine::Serialize(void* param) {
     int headerLen = strlen("GAME_INFO") + 1;
-    FILE* fp = *(FILE**)((char*)param + 0x44);
+    FileArchive* ar = (FileArchive*)param;
+    FILE* fp = ar->fp;
 
-    if (*(int*)param != 0) {
+    if (ar->mode != 0) {
         fwrite("GAME_INFO", headerLen, 1, fp);
 
         LinkedList* list = m_handlerList;

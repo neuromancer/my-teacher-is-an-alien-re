@@ -4,6 +4,7 @@
 #include "SpriteAction.h"
 #include "MouseControl.h"
 #include "Sprite.h"
+#include "Projectile.h"
 #include "MouseControl.h"
 #include "Palette.h"
 #include "MouseControl.h"
@@ -131,13 +132,11 @@ void SC_Wahoo::Init(SC_MessageParser* msg) {
         );
     }
 
-    iVar7 = (int)palette;
-    if (iVar7 != 0) {
-        int* piVar8 = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
-        if (*piVar8 != 0) {
+    if (palette != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
             WriteToLog("ddouble palette");
         }
-        *piVar8 = iVar7;
+        g_ZBufferManager_0046aa24->m_palette = palette;
     }
 
     timer = new TimeOut();
@@ -348,8 +347,8 @@ void SC_Wahoo::OnProcessEnd() {
 
     if (consoleSprite != 0) {
         iVar1 = 0;
-        if (*(int*)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
-            iVar1 = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            iVar1 = g_InputManager_0046aa08->pMouse->x;
         }
         consoleSprite->ResetAnimation(iVar1 / (screenSize.x / 5), 0);
     }
@@ -430,7 +429,7 @@ void SC_Wahoo::Update(int param1, int param2) {
     }
 
     cursorY = 0;
-    cursorData = *(int**)((int)g_InputManager_0046aa08 + 0x1A0);
+    cursorData = (int*)g_InputManager_0046aa08->pMouse;
     if (cursorData != 0) {
         cursorY = cursorData[1];
     }
@@ -441,15 +440,15 @@ void SC_Wahoo::Update(int param1, int param2) {
 
     if (cursorX < cursorHitbox.left || cursorHitbox.right < cursorX ||
         cursorY < cursorHitbox.top || cursorHitbox.bottom < cursorY) {
-        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+        spr = g_Mouse_0046aa18->m_sprite;
         if (spr == 0) goto label_done;
         frame = 0xe;
     } else if (cursorData == 0 || cursorData[0] < 0xa0) {
-        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+        spr = g_Mouse_0046aa18->m_sprite;
         if (spr == 0) goto label_done;
         frame = 0xa;
     } else {
-        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+        spr = g_Mouse_0046aa18->m_sprite;
         if (spr == 0) goto label_done;
         frame = 0xb;
     }
@@ -463,8 +462,8 @@ label_done:
 
     if (g_WahooEngine_0046bbfc->palette != 0) {
         cursorX = 0;
-        if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
-            cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            cursorX = g_InputManager_0046aa08->pMouse->x;
         }
         consoleSprite->ResetAnimation(cursorX / (screenSize.x / 3) + 5, 0);
     }
@@ -472,8 +471,8 @@ label_done:
     spr = (Sprite*)consoleSprite;
     if (spr->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
         cursorX = 0;
-        if (*(int**)((int)g_InputManager_0046aa08 + 0x1A0) != 0) {
-            cursorX = **(int**)((int)g_InputManager_0046aa08 + 0x1A0);
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            cursorX = g_InputManager_0046aa08->pMouse->x;
         }
         consoleSprite->ResetAnimation(cursorX / (screenSize.x / 5), 0);
     }
@@ -645,21 +644,22 @@ int SC_Wahoo::ProcessClick(int param_1) {
     int* piVar8;
     int uVar10;
     int local_c[3];
+    Projectile* proj = (Projectile*)param_1;
 
-    iVar7 = ((Sprite*)param_1)->ranges[((Sprite*)param_1)->handle].dim.y - 1;
-    if (((Sprite*)param_1)->animation_data == 0) {
+    iVar7 = proj->ranges[proj->handle].dim.y - 1;
+    if (proj->animation_data == 0) {
         if (iVar7 != 0) {
             return 0;
         }
     }
-    else if (*(int*)((int)((Sprite*)param_1)->animation_data->smk + 0x374) != iVar7) {
+    else if (*(int*)((char*)proj->animation_data->smk + 0x374) != iVar7) {
         return 0;
     }
 
-    iVar7 = *(int*)(param_1 + 0x120);
+    iVar7 = proj->nextPos.x;
     int bVar1;
     if (iVar7 < switchHitbox.left || switchHitbox.right < iVar7 ||
-        *(int*)(param_1 + 0x124) < switchHitbox.top || switchHitbox.bottom < *(int*)(param_1 + 0x124)) {
+        proj->nextPos.y < switchHitbox.top || switchHitbox.bottom < proj->nextPos.y) {
         bVar1 = 0;
     } else {
         bVar1 = 1;
@@ -667,7 +667,7 @@ int SC_Wahoo::ProcessClick(int param_1) {
 
     if (!bVar1) {
         if (iVar7 < playAreaHitbox.left || playAreaHitbox.right < iVar7 ||
-            *(int*)(param_1 + 0x124) < playAreaHitbox.top || playAreaHitbox.bottom < *(int*)(param_1 + 0x124)) {
+            proj->nextPos.y < playAreaHitbox.top || playAreaHitbox.bottom < proj->nextPos.y) {
             bVar1 = 0;
         } else {
             bVar1 = 1;
@@ -677,7 +677,7 @@ int SC_Wahoo::ProcessClick(int param_1) {
         {
         unsigned int uVar2 = detectionMask->CheckHit(
             iVar7 - playAreaHitbox.left,
-            *(int*)(param_1 + 0x124) - playAreaHitbox.top);
+            proj->nextPos.y - playAreaHitbox.top);
 
         if ((int)uVar2 < 1 || 3 < (int)uVar2 ||
             (pvVar6 = (&resetSwitchSprite)[uVar2],
@@ -728,11 +728,10 @@ int SC_Wahoo::ProcessClick(int param_1) {
             iVar7 = iVar7 - 1;
         } while (iVar7 != 0);
 
-        if (iVar3 == 3 && (iVar7 = (int)resetSound, iVar7 != 0) &&
-            (iVar5 = *(int*)(iVar7 + 0xc), iVar5 != 0) &&
-            *(int*)(iVar5 + 0xc) == *(int*)(iVar7 + 4)) {
-            iVar7 = AIL_sample_status((HSAMPLE)iVar5);
-            if (iVar7 == 4) {
+        if (iVar3 == 3 && resetSound != 0 &&
+            resetSound->m_sample != 0 &&
+            resetSound->m_size == *(int*)((char*)resetSound->m_sample + 0xc)) {
+            if (AIL_sample_status(resetSound->m_sample) == 4) {
                 resetSound->Stop();
             }
         }
@@ -812,12 +811,10 @@ LAB_00439160:
             do {
                 if (((Sprite*)*puVar9)->handle != 0) {
                     ((Sprite*)*puVar9)->ResetAnimation(0, 0);
-                    iVar3 = (int)resetSound;
-                    if (iVar3 != 0) {
-                        iVar5 = *(int*)(iVar3 + 0xc);
-                        if (iVar5 != 0 && *(int*)(iVar3 + 4) == *(int*)(iVar5 + 0xc)) {
-                            iVar3 = AIL_sample_status((HSAMPLE)iVar5);
-                            if (iVar3 == 4) goto LAB_004392aa;
+                    if (resetSound != 0) {
+                        if (resetSound->m_sample != 0 &&
+                            resetSound->m_size == *(int*)((char*)resetSound->m_sample + 0xc)) {
+                            if (AIL_sample_status(resetSound->m_sample) == 4) goto LAB_004392aa;
                         }
                         resetSound->Play(100, 0);
                     }

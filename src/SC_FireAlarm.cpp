@@ -13,6 +13,8 @@
 #include "RockThrower.h"
 #include "GameEngine.h"
 #include "SC_Question.h"
+#include "Projectile.h"
+#include "ZBufferManager.h"
 #include "main.h"
 #include <string.h>
 #include <stdlib.h>
@@ -288,17 +290,16 @@ void SC_FireAlarm::ProcessClick() {
 
 /* Function start: 0x407C20 */
 int SC_FireAlarm::HandleClick(int* param) {
-    int* coords = (int*)((char*)param + 0x120);
-    int animIdx = *(int*)((char*)param + 0x98);
-    int* animBase = *(int**)((char*)param + 0x90);
-    int frameCount = *(int*)((char*)animBase + animIdx * 16 + 4);
+    Projectile* p = (Projectile*)param;
+    int animIdx = p->handle;
+    int frameCount = p->ranges[animIdx].dim.y;
     frameCount--;
 
-    int hitResult = g_BackBuffer_0046aa14->CheckHit(coords[0], coords[1]);
+    int hitResult = g_BackBuffer_0046aa14->CheckHit(p->nextPos.x, p->nextPos.y);
 
     if (planeClickRange.x <= hitResult && planeClickRange.y >= hitResult) {
-        int y = coords[1] - 0x4B;
-        int x = coords[0] - 0xA1;
+        int y = p->nextPos.y - 0x4B;
+        int x = p->nextPos.x - 0xA1;
         planeSprite->loc_x = x;
         planeSprite->loc_y = y;
         planeSprite->ResetAnimation(2, 0);
@@ -306,13 +307,13 @@ int SC_FireAlarm::HandleClick(int* param) {
         return 1;
     }
 
-    int pf0 = *(int*)((char*)param + 0xF0);
-    if (pf0 == 0) {
+    Animation* anim = p->animation_data;
+    if (anim == 0) {
         if (frameCount != 0) {
             return 0;
         }
     } else {
-        if (*(int*)(*(int*)(pf0 + 0xC) + 0x374) != frameCount) {
+        if (*(int*)((char*)anim->smk + 0x374) != frameCount) {
             return 0;
         }
     }
@@ -345,8 +346,8 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     {
         int inSlot;
-        if (alarmSlotRect.left > coords[0] || alarmSlotRect.right < coords[0] ||
-            alarmSlotRect.top > coords[1] || alarmSlotRect.bottom < coords[1]) {
+        if (alarmSlotRect.left > p->nextPos.x || alarmSlotRect.right < p->nextPos.x ||
+            alarmSlotRect.top > p->nextPos.y || alarmSlotRect.bottom < p->nextPos.y) {
             inSlot = 0;
         } else {
             inSlot = 1;
@@ -406,12 +407,8 @@ void SC_FireAlarm::ProcessFrame() {
     if ((stateFlags & 0xF) == 0 && timerCounter.y != 0 && timerCounter.x >= timerCounter.y) {
         timerCounter.x = 0;
         spr110 = teacherSprite;
-        int animRes = (int)spr110->animation_data;
-        int dataPtr = *(int*)(animRes + 0xC);
-        int curFrame = spr110->handle;
-        int totalFrames = *(int*)(dataPtr + 0x374);
-        int frameBase = (int)spr110->ranges;
-        int distance = totalFrames - *(int*)(curFrame * 16 + frameBase) + 1;
+        int totalFrames = *(int*)((char*)spr110->animation_data->smk + 0x374);
+        int distance = totalFrames - spr110->ranges[spr110->handle].dim.x + 1;
         animDistance = distance;
 
         if (distance >= 0x3D && distance <= 0x55) {
@@ -453,10 +450,10 @@ void SC_FireAlarm::ProcessFrame() {
     int renderResult = teacherSprite->Do(teacherSprite->loc_x, teacherSprite->loc_y, 1.0);
 
     if ((stateFlags & 0xF) == 0) {
-        int animData = (int)teacherSprite->animation_data;
+        Animation* animData = teacherSprite->animation_data;
         int frameCount;
         if (animData != 0) {
-            frameCount = *(int*)(*(int*)(animData + 0xC) + 0x374);
+            frameCount = *(int*)((char*)animData->smk + 0x374);
         } else {
             frameCount = 0;
         }
@@ -584,23 +581,22 @@ void SC_FireAlarm::ProcessFrame() {
 
     if ((stateFlags & 0xF) == 0) {
         (g_Mouse_0046aa18)->DrawCursor();
-        ((Weapon*)g_FireAlarmEngine_004685ac)->UpdateProjectiles();
+        Weapon* engine = (Weapon*)g_FireAlarmEngine_004685ac;
+        engine->UpdateProjectiles();
 
         int bcRender = consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0);
         if (bcRender != 0) {
             int mouseVal = 0;
-            int* mousePtr = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
-            if (mousePtr != 0) {
-                mouseVal = *mousePtr;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseVal = g_InputManager_0046aa08->pMouse->x;
             }
             consoleSprite->ResetAnimation(mouseVal / (screenSize.x / 5), 0);
         }
 
-        if (*(int*)(g_FireAlarmEngine_004685ac + 0xA8) != 0) {
+        if (engine->m_clicked != 0) {
             int mouseVal2 = 0;
-            int* mousePtr2 = *(int**)((char*)g_InputManager_0046aa08 + 0x1A0);
-            if (mousePtr2 != 0) {
-                mouseVal2 = *mousePtr2;
+            if (g_InputManager_0046aa08->pMouse != 0) {
+                mouseVal2 = g_InputManager_0046aa08->pMouse->x;
             }
             consoleSprite->ResetAnimation(mouseVal2 / (screenSize.x / 3) + 5, 0);
         }
@@ -609,13 +605,11 @@ void SC_FireAlarm::ProcessFrame() {
 
 /* Function start: 0x408530 */
 void SC_FireAlarm::OnProcessEnd() {
-    int palVal = paletteDummy;
-    if (palVal != 0) {
-        int* palField = (int*)((char*)g_ZBufferManager_0046aa24 + 0xA8);
-        if (*palField != 0) {
-            WriteToMessageLog("ddouble_palette");
+    if (paletteDummy != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
+            WriteToMessageLog("ddouble palette");
         }
-        *palField = palVal;
+        g_ZBufferManager_0046aa24->m_palette = (Palette*)paletteDummy;
     }
 
     bellHitRange.x = 0xC2;

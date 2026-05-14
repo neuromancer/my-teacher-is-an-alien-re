@@ -8,11 +8,23 @@
 #include "MouseControl.h"
 #include "InputManager.h"
 #include "SoundList.h"
+#include "SpriteAction.h"
+#include "SpaceShipEngine.h"
+#include "Engine.h"
+#include "Parser.h"
+
+extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+extern "C" int FileExists(const char* path);
+extern "C" void ShowLoadingScreen();
+extern Parser* ParseFile(Parser* parser, char* filename, char* key_format, ...);
 
 #include "globals.h"
 
 /* Function start: 0x447520 */
 SC_SpaceShipNav::SC_SpaceShipNav() {
+    field_118[0] = 0;
+    field_118[1] = 0;
+    handlerId = 0x46;
 }
 
 /* Function start: 0x4475B0 */
@@ -29,7 +41,37 @@ SC_SpaceShipNav::~SC_SpaceShipNav() {
 
 /* Function start: 0x447630 */
 void SC_SpaceShipNav::Init(SC_MessageParser* msg) {
-    TODO("SC_SpaceShipNav::Init");
+    field_118[0] = 0;
+    field_118[1] = 0;
+
+    if (FileExists("CB_ShipNav") == 0) {
+        ShowLoadingScreen();
+    }
+
+    SC_Combat::Init(msg);
+
+    if (field_118[0] == 0) {
+        SpaceShipEngine* engine = new SpaceShipEngine();
+        field_118[0] = (int)engine;
+        g_CombatEngine_0046ae78 = (SC_CombatBase*)engine;
+
+        strcpy((char*)(combatParams + 5), "mis\\cb_SpaceNav.mis");
+        ParseFile((Parser*)this, (char*)(combatParams + 5), 0);
+    }
+
+    g_CombatEngine_0046ae78 = (SC_CombatBase*)field_118[0];
+    ((SC_CombatBase*)field_118[0])->SetupViewport();
+
+    if (msg != 0) {
+        SpriteAction* action = (SpriteAction*)msg;
+        if (action->extra1 == 1) {
+            g_Navigator_0046ae70->SetNavParams(action->mousePos.x, action->mousePos.y);
+        }
+    }
+
+    if (field_0x114 != 0) {
+        SendGameMessage(5, field_0x114, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+    }
 }
 
 /* Function start: 0x447790 */
@@ -56,8 +98,23 @@ void SC_SpaceShipNav::Update(int p1, int p2) {
 
 /* Function start: 0x447810 */
 int SC_SpaceShipNav::AddMessage(SC_MessageParser* msg) {
-    TODO("SC_SpaceShipNav::AddMessage");
-    return 0;
+    if (SC_Combat::AddMessage(msg) == 0) {
+        SpriteAction* action = (SpriteAction*)msg;
+        if (savedCommand == 0x2b) {
+            if (action->instruction == 0x1b) {
+                statusPtr[2] = 1;
+            }
+        } else if (action->instruction == 0x77) {
+            mCNavigator* nav = (mCNavigator*)g_Navigator_0046ae70;
+            {
+                SpriteAction temp(handlerId, moduleParam, handlerId, moduleParam,
+                                  4, 1, 0, 0, nav->startingNode, nav->bearing);
+                g_PendingAction_00472d58.CopyFrom(&temp);
+            }
+            SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+        }
+    }
+    return 1;
 }
 
 /* Function start: 0x447910 */
@@ -88,7 +145,7 @@ void SC_SpaceShipNav::UpdateCursor() {
         } else {
             mouseX = 0;
         }
-        iVar1 = mouseX / *(int*)((int)this + 0xB8);
+        iVar1 = mouseX / combatParams[3];
         if (iVar1 >= 0) {
             if (iVar1 > 2) iVar1 = 2;
         } else {
@@ -100,9 +157,9 @@ void SC_SpaceShipNav::UpdateCursor() {
         }
         g_Mouse_0046aa18->DrawCursor();
     }
-    int* navObj = *(int**)((int)g_Navigator_0046ae70 + 0xA0);
+    Sprite* navObj = g_Navigator_0046ae70->sprite;
     if (navObj != 0) {
-        Animation* anim = *(Animation**)((char*)navObj + 0xF0);
+        Animation* anim = navObj->animation_data;
         int frameNum = 0;
         if (anim != 0) {
             frameNum = anim->smk->FrameNum;

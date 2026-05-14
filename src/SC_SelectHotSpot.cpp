@@ -518,16 +518,14 @@ void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
         ParseFile(this, "mis\\menu.mis", "[MENU%4.4d]", SC_SelectHotSpot::moduleParam);
     }
 
-    int palVal = (int)SC_SelectHotSpot::palette;
-    if (palVal != 0) {
-        int* palSlot = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
-        if (*palSlot != 0) {
+    if (SC_SelectHotSpot::palette != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
             WriteToLog("ddouble palette");
         }
-        *palSlot = palVal;
+        g_ZBufferManager_0046aa24->m_palette = (Palette*)SC_SelectHotSpot::palette;
     }
 
-    Sprite* spr = *(Sprite**)((char*)g_Mouse_0046aa18 + 0x94);
+    Sprite* spr = g_Mouse_0046aa18->m_sprite;
     if (spr != 0) {
         spr->ResetAnimation(0, 0);
     }

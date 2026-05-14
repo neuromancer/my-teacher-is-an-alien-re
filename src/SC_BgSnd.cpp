@@ -61,7 +61,6 @@ void SC_BgSnd::Update(int p1, int p2) {
 
 /* Function start: 0x439520 */
 int SC_BgSnd::AddMessage(SC_MessageParser* msg) {
-    TODO("SC_BgSnd::AddMessage");
     return 0;
 }
 

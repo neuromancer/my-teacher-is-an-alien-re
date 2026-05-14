@@ -6,19 +6,11 @@
 
 Weapon::~Weapon() {}
 
-// Access RockThrower fields via offset (base class accesses derived class layout)
-// Maps to: m_itemCount(0xB0), m_items(0xB4), m_hitCount(0xB8), m_holdState(0xBC), m_hitCountFull(0xC0)
-#define W_PROJ_COUNT   (*(int*)((char*)this + 0xB0))
-#define W_PROJ_ARRAY   (*(int**)((char*)this + 0xB4))
-#define W_FLAGS        (*(int*)((char*)this + 0xB8))
-#define W_HOLD         (*(int*)((char*)this + 0xBC))
-#define W_HITS         (*(int*)((char*)this + 0xC0))
-
 /* Function start: 0x427880 */
 void Weapon::UpdateProjectiles() {
+    RockThrower* rt = (RockThrower*)this;
     InputState* pMouse;
     int mouseBtn;
-    int fire;
 
     if (g_InputManager_0046aa08->mouseValid == 0) {
         goto updateAll;
@@ -33,16 +25,16 @@ void Weapon::UpdateProjectiles() {
         mouseBtn = 0;
     }
 
-    W_HOLD = (mouseBtn < 1) | W_HOLD;
+    rt->m_holdState = (mouseBtn < 1) | rt->m_holdState;
 
-    if (!(W_FLAGS & 1)) {
+    if (!(rt->m_hitCount & 1)) {
         pMouse = g_InputManager_0046aa08->pMouse;
         if (pMouse != 0) {
             mouseBtn = pMouse->buttons & 1;
         } else {
             mouseBtn = 0;
         }
-        if (mouseBtn != 0 && W_HOLD != 0) {
+        if (mouseBtn != 0 && rt->m_holdState != 0) {
             m_clicked = 1;
         } else {
             m_clicked = 0;
@@ -55,32 +47,32 @@ void Weapon::UpdateProjectiles() {
         goto updateAll;
     }
 
-    W_HOLD = 0;
+    rt->m_holdState = 0;
     OnHit();
 
-    if (W_PROJ_COUNT > 0) {
+    if (rt->m_itemCount > 0) {
         int i = 0;
-        int* base = W_PROJ_ARRAY;
-        int* arr = base;
+        Projectile** base = rt->m_items;
+        Projectile** arr = base;
         do {
-            if (*(int*)(*arr + 0x11C) == 0) {
-                ((Projectile*)base[i])->Launch();
+            if ((*arr)->active == 0) {
+                base[i]->Launch();
                 goto updateAll;
             }
             arr++;
             i++;
-        } while (i < W_PROJ_COUNT);
+        } while (i < rt->m_itemCount);
     }
 
 updateAll:
     g_ProjectileHits_0047325c = 0;
-    W_HITS = 0;
+    rt->m_hitCountFull = 0;
     {
         int i = 0;
-        while (i < W_PROJ_COUNT) {
-            ((Projectile*)W_PROJ_ARRAY[i])->Update();
+        while (i < rt->m_itemCount) {
+            rt->m_items[i]->Update();
             i++;
         }
     }
-    W_HITS = g_ProjectileHits_0047325c;
+    rt->m_hitCountFull = g_ProjectileHits_0047325c;
 }

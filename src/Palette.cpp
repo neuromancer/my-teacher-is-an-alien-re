@@ -183,8 +183,9 @@ unsigned int Palette::SetAndApply(unsigned int start, unsigned int count)
 
 /* Function start: 0x41DF50 */
 int Palette::CheckSystemMatch(unsigned int start, unsigned int count) {
-    TODO("Palette::CheckSystemMatch");
-    return 0;
+    Palette temp;
+    temp.CopyEntries(0, 0x100);
+    return IsSimilar(temp.m_data, start, count);
 }
 
 /* Function start: 0x41DC70 */

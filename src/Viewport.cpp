@@ -1,5 +1,6 @@
 #include "Viewport.h"
 #include "SC_CombatBase.h"
+#include "EngineSubsystems.h"
 #include "globals.h"
 #include <string.h>
 
@@ -28,9 +29,9 @@ void Viewport::SetAnchor(int x, int y) {
     int iVar1;
     iVar1 = (y - Viewport::dim.b) + 1;
     if (iVar1 >= 0 && x >= 0 &&
-        *(int*)((int)g_WeaponParser_0046ae4c + 0x98) > x &&
+        g_WeaponParser_0046ae4c->dimensions.x > x &&
         y >= 0 &&
-        *(int*)((int)g_WeaponParser_0046ae4c + 0x9c) > y) {
+        g_WeaponParser_0046ae4c->dimensions.y > y) {
         Viewport::anchor.a = x;
         Viewport::anchor.b = y;
         Viewport::anchorOffsetY = iVar1;

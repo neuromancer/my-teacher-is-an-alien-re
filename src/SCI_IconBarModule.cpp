@@ -7,6 +7,9 @@
 #include "T_Object.h"
 #include "TimeOut.h"
 #include "Animation.h"
+#include "Hotspot.h"
+#include "HotspotAction.h"
+#include "FileArchive.h"
 #include "globals.h"
 #include "RenderEntry.h"
 #include <stdio.h>
@@ -638,10 +641,10 @@ void SCI_IconBarModule::UpdateCursor() {
     } else if (iconIdx != -1) {
         T_Hotspot* hs = icons[iconIdx];
         int state = 0;
-        int frameIdx = *(int*)((char*)hs + 0x9c);
-        int anim = *(int*)((char*)hs + 0xb4 + frameIdx * 4);
+        int frameIdx = hs->currentIndex;
+        HotspotAction* anim = hs->items[frameIdx];
         if (anim != 0) {
-            state = *(int*)(anim + 0xb0);
+            state = anim->rolloverStateIdx;
         }
         if (g_Mouse_0046aa18->m_sprite == 0) {
             goto done;
@@ -665,9 +668,10 @@ void SCI_IconBarModule::Serialize(void* param) {
     int id;
 
     strLen = strlen("INVENTORY_INFO") + 1;
-    fp = *(FILE**)((char*)param + 0x44);
+    FileArchive* ar = (FileArchive*)param;
+    fp = ar->fp;
 
-    if (*(int*)param != 0) {
+    if (ar->mode != 0) {
         /* SAVE */
         id = handlerId;
         fwrite(&id, 4, 1, fp);

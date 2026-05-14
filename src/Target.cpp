@@ -247,13 +247,12 @@ int Target::CheckTimeInRange()
     return 0;
 }
 
-/* Function start: 0x4428A0 */ /* ~89% match */
+/* Function start: 0x4428A0 */
 int Target::CheckTimeInRangeParam(int* coords)
 {
     int result;
 
     result = GetPixelAt(coords[0], coords[1]);
-    WriteToMessageLog("HITDBG: pixel=%d at(%d,%d) range=[%d,%d] buf=%d", result, coords[0], coords[1], Target::timeRange.x, Target::timeRange.y, (int)(signed char)g_CurrentVideoBuffer_0046db3c);
     if (Target::timeRange.x <= result && result <= Target::timeRange.y) {
         return 1;
     }

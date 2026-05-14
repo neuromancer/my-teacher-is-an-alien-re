@@ -261,15 +261,15 @@ void SC_Rats::ProcessState() {
 
 /* Function start: 0x4520E0 */
 void SC_Rats::State0Handler() {
-    int engineObj = (int)g_CombatEngine_0046ae78;
-    Sample* snd = (Sample*)*(int*)(engineObj + 0x118);
+    EngineB* engine = (EngineB*)g_CombatEngine_0046ae78;
+    Sample* snd = engine->m_ambientSound;
 
     State1Handler();
 
     if (g_State0Phase_00473e14 == 0) {
         g_State0Phase_00473e14++;
-        if (*(int*)(engineObj + 0x100) != 0) {
-            ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
+        if (engine->m_localSoundList != 0) {
+            engine->m_localSoundList->StopAll();
         }
         SendGameMessage(5, 0x3E9, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
         if (snd != 0) {
@@ -299,13 +299,13 @@ void SC_Rats::State1Handler() {
 
 /* Function start: 0x4521C0 */
 void SC_Rats::State2Handler() {
-    int engineObj = (int)g_CombatEngine_0046ae78;
-    Sample* snd = (Sample*)*(int*)(engineObj + 0x110);
+    EngineB* engine = (EngineB*)g_CombatEngine_0046ae78;
+    Sample* snd = engine->m_ambientSound2;
 
     if (g_State2Phase_00473e20 == 0) {
         g_State2Phase_00473e20 = 1;
-        if (*(int*)(engineObj + 0x100) != 0) {
-            ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
+        if (engine->m_localSoundList != 0) {
+            engine->m_localSoundList->StopAll();
         }
         if (snd != 0) {
             snd->Play(100, 1);
@@ -329,13 +329,13 @@ done:
 
 /* Function start: 0x452250 */
 void SC_Rats::State3Handler() {
-    int engineObj = (int)g_CombatEngine_0046ae78;
-    Sample* snd = (Sample*)*(int*)(engineObj + 0x10C);
+    EngineB* engine = (EngineB*)g_CombatEngine_0046ae78;
+    Sample* snd = (Sample*)engine->reserved_0x10C;
 
     if (g_State3Phase_00473e1c == 0) {
         g_State3Phase_00473e1c = 1;
-        if (*(int*)(engineObj + 0x100) != 0) {
-            ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
+        if (engine->m_localSoundList != 0) {
+            engine->m_localSoundList->StopAll();
         }
         if (snd != 0) {
             snd->Play(100, 1);
@@ -359,13 +359,13 @@ done:
 
 /* Function start: 0x4522E0 */
 void SC_Rats::State4Handler() {
-    int engineObj = (int)g_CombatEngine_0046ae78;
-    Sample* snd = (Sample*)*(int*)(engineObj + 0x114);
+    EngineB* engine = (EngineB*)g_CombatEngine_0046ae78;
+    Sample* snd = engine->m_completionSound;
 
     if (g_State4Phase_00473df8 == 0) {
         g_State4Phase_00473df8 = 1;
-        if (*(int*)(engineObj + 0x100) != 0) {
-            ((SoundList*)*(int*)(engineObj + 0x100))->StopAll();
+        if (engine->m_localSoundList != 0) {
+            engine->m_localSoundList->StopAll();
         }
         if (snd != 0) {
             snd->Play(100, 1);

@@ -4,6 +4,9 @@
 #include "Sprite.h"
 #include "Animation.h"
 #include "Sample.h"
+#include "EngineSubsystems.h"
+#include "mCNavigator.h"
+#include "ScoreDisplay.h"
 #include "globals.h"
 #include "VBuffer.h"
 
@@ -17,10 +20,10 @@ void __fastcall InitCombatScreen(void* self)
     engine->combatFlags = 0;
 
     g_Viewport_0046ae54->SetDimensions(
-        *(int*)((char*)g_WeaponParser_0046ae4c + 0x98),
-        *(int*)((char*)g_WeaponParser_0046ae4c + 0x9c));
+        g_WeaponParser_0046ae4c->dimensions.x,
+        g_WeaponParser_0046ae4c->dimensions.y);
 
-    Sprite* navSpr = *(Sprite**)((char*)g_Navigator_0046ae70 + 0xa0);
+    Sprite* navSpr = g_Navigator_0046ae70->sprite;
     Animation* anim = navSpr->animation_data;
     int fh = 0;
     if (anim != 0) {
@@ -36,17 +39,17 @@ void __fastcall InitCombatScreen(void* self)
 
     g_Viewport_0046ae54->SetCenter();
     g_Viewport_0046ae54->SetAnchor(
-        *(int*)((char*)g_WeaponParser_0046ae4c + 0x90),
-        *(int*)((char*)g_WeaponParser_0046ae4c + 0x94));
+        g_WeaponParser_0046ae4c->anchor.x,
+        g_WeaponParser_0046ae4c->anchor.y);
 
-    *(int*)((int)g_ScoreDisplay_0046ae6c + 4) = 100;
+    g_ScoreDisplay_0046ae6c->scoreInitial = 100;
     engine->spriteFrameCount = 1;
     engine->frameCount = 1;
     BlankScreen();
 
     {
-        unsigned int palStart = *(unsigned int*)((char*)g_WeaponParser_0046ae4c + 0xa0);
-        int palEnd = *(int*)((char*)g_WeaponParser_0046ae4c + 0xa4);
+        unsigned int palStart = g_WeaponParser_0046ae4c->paletteStart.x;
+        int palEnd = g_WeaponParser_0046ae4c->paletteStart.y;
         g_Palette_0046ae64->SetPalette(palStart, palEnd - palStart + 1);
     }
 

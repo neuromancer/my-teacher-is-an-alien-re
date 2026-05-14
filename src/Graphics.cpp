@@ -248,8 +248,8 @@ int InitVideoSystem(void)
     int bVar10;
     int lVar11;
     
-    g_SysDirPtr_0046e024 = g_SystemDirPath_00438446;
-    g_WinGBufSize_00438442 = 0x1000;
+    g_SysDirPtr_0046e024 = g_SystemDirPath_0046e02e;
+    g_WinGBufSize_0046e02a = 0x1000;
     // g_SegmentReg_0046e028 = DS; // Segment register - skip
     
     InitStockFont(10);  // OEM_FIXED_FONT
@@ -313,16 +313,16 @@ int InitVideoSystem(void)
         // Windows 3.x with Win32s - try to load WING32.DLL
         g_WinGFileHandle_0046d0d6 = CreateFileA("WING32.DLL", 0x80000000, 1, (LPSECURITY_ATTRIBUTES)0x0, 3, 0, (HANDLE)0x0);
         if (g_WinGFileHandle_0046d0d6 == (HANDLE)-1) {
-            UVar3 = GetSystemDirectoryA(g_SystemDirPath_00438446, 0x100);
-            g_SystemDirPath_00438446[UVar3] = '\\';
+            UVar3 = GetSystemDirectoryA(g_SystemDirPath_0046e02e, 0x100);
+            g_SystemDirPath_0046e02e[UVar3] = '\\';
             pcVar6 = "WING32.DLL";
-            pcVar8 = &g_SystemDirPath_00438446[UVar3 + 1];
+            pcVar8 = &g_SystemDirPath_0046e02e[UVar3 + 1];
             for (iVar5 = 0xb; iVar5 != 0; iVar5 = iVar5 - 1) {
                 *pcVar8 = *pcVar6;
                 pcVar6 = pcVar6 + 1;
                 pcVar8 = pcVar8 + 1;
             }
-            g_WinGFileHandle_0046d0d6 = CreateFileA(g_SystemDirPath_00438446, 0x80000000, 1, (LPSECURITY_ATTRIBUTES)0x0, 3, 0, (HANDLE)0x0);
+            g_WinGFileHandle_0046d0d6 = CreateFileA(g_SystemDirPath_0046e02e, 0x80000000, 1, (LPSECURITY_ATTRIBUTES)0x0, 3, 0, (HANDLE)0x0);
             if (g_WinGFileHandle_0046d0d6 == (HANDLE)-1) {
                 return 0;
             }
@@ -420,12 +420,12 @@ HPALETTE CreateSystemPalette(void)
   unsigned char r, g;
   
   hdc = GetDC((HWND)0x0);
-  pEntries = (unsigned char*)g_LogPalette_00437720 + 4;
+  pEntries = (unsigned char*)g_LogPalette_0046d308 + 4;
   if (GetColorBitDepth() < 8) {
     GetSystemPaletteEntries(hdc, 0, 8, (PALETTEENTRY*)pEntries);
     GetSystemPaletteEntries(hdc, 8, 8, (PALETTEENTRY*)(pEntries + 0x3e0));
     ReleaseDC((HWND)0x0, hdc);
-    dest = (unsigned char*)g_LogPalette_00437720 + 0x24;
+    dest = (unsigned char*)g_LogPalette_0046d308 + 0x24;
     src = (unsigned char*)g_DefaultPaletteLo_00423e92;
     count = 0xf0;
   }
@@ -433,7 +433,7 @@ HPALETTE CreateSystemPalette(void)
     GetSystemPaletteEntries(hdc, 0, 10, (PALETTEENTRY*)pEntries);
     GetSystemPaletteEntries(hdc, 246, 10, (PALETTEENTRY*)(pEntries + 0x3d8));
     ReleaseDC((HWND)0x0, hdc);
-    dest = (unsigned char*)g_LogPalette_00437720 + 0x2c;
+    dest = (unsigned char*)g_LogPalette_0046d308 + 0x2c;
     src = (unsigned char*)g_DefaultPaletteHi_00423e98;
     count = 0xec;
   }
@@ -450,7 +450,7 @@ HPALETTE CreateSystemPalette(void)
   } while (count != 0);
   
   // Second loop: Create BGR reordered copy at g_BgrPaletteData_0046d734
-  pEntries = (unsigned char*)g_LogPalette_00437720 + 4;
+  pEntries = (unsigned char*)g_LogPalette_0046d308 + 4;
   pBgrDest = (unsigned char*)g_BgrPalette_00437b48 + 4;
   count = 0x100;
   do {
@@ -465,7 +465,7 @@ HPALETTE CreateSystemPalette(void)
     count = count - 1;
   } while (count != 0);
   
-  return CreatePalette((LOGPALETTE *)g_LogPalette_00437720);
+  return CreatePalette((LOGPALETTE *)g_LogPalette_0046d308);
 }
 
 /* Function start: 0x453BAA */

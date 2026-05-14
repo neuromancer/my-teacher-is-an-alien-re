@@ -1,6 +1,9 @@
 #include "EngineSubsystems.h"
 #include "globals.h"
 #include "SC_CombatBase.h"
+#include "Target.h"
+#include "RockThrower.h"
+#include "SC_Gauntlet.h"
 #include <stdio.h>
 #include "string.h"
 #include "SoundList.h"
@@ -102,19 +105,19 @@ void EngineInfoParser::ParseSound(char *line, int index) {
     *(int*)&g_CombatEngine_0046ae78->backgroundSound = sound;
     break;
   case 1:
-    *(int*)((char*)g_CombatWeapon_0046ae60 + 0xAC) = sound;
+    g_CombatWeapon_0046ae60->m_sound = (Sample*)sound;
     break;
   case 2:
-    *(int*)((char*)g_TargetList_0046ae58 + 0x1BC) = sound;
+    g_TargetList_0046ae58->defaultStopSound = (Sample*)sound;
     break;
   case 3:
-    *(int*)((char*)g_TargetList_0046ae58 + 0x1C0) = sound;
+    g_TargetList_0046ae58->defaultProgressSound = (Sample*)sound;
     break;
   case 4:
-    *(int*)((char*)g_TargetList_0046ae58 + 0x1C4) = sound;
+    g_TargetList_0046ae58->defaultHitSound = (Sample*)sound;
     break;
   case 5:
-    *(int*)((char*)g_TargetList_0046ae58 + 0x1C8) = sound;
+    g_TargetList_0046ae58->defaultSound = (Sample*)sound;
     break;
   default:
     ShowError("MapScene::ParseSound() - Undefined sound type => %s", line);
@@ -131,24 +134,25 @@ void EngineInfoParser::ParsePalette(char *line) {
 
 /* Function start: 0x42F570 */
 void __fastcall InitCombatGrid(int param_1) {
+    SC_Gauntlet* gaunt = (SC_Gauntlet*)param_1;
     int row = 6;
-    int* ptr = (int*)(param_1 + 0x13C);
+    GauntletEntry* ge = gaunt->entries;
     do {
         int col = 6;
         do {
-            *ptr = 0;
-            ptr += 7;
+            ge->fields[0] = 0;
+            ge++;
             col--;
         } while (col != 0);
         row--;
     } while (row != 0);
-    *(int*)(param_1 + 0x1C8) = 1;
-    *(int*)(param_1 + 0x254) = 1;
-    *(int*)(param_1 + 0x21C) = 1;
-    *(int*)(param_1 + 0x36C) = 1;
-    *(int*)(param_1 + 0x414) = 1;
-    *(int*)(param_1 + 0x120) = 5;
-    *(int*)(param_1 + 0x4A0) = 1;
-    *(int*)(param_1 + 0x124) = 0;
-    *(int*)(param_1 + 0x544) = 0;
+    gaunt->entries[5].fields[0] = 1;
+    gaunt->entries[10].fields[0] = 1;
+    gaunt->entries[8].fields[0] = 1;
+    gaunt->entries[20].fields[0] = 1;
+    gaunt->entries[26].fields[0] = 1;
+    gaunt->crystalState[0] = 5;
+    gaunt->entries[31].fields[0] = 1;
+    gaunt->crystalState[1] = 0;
+    gaunt->cellSprites[6] = 0;
 }

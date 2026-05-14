@@ -68,12 +68,12 @@ TimedEventPool::~TimedEventPool()
     // Iterate active-events list; each node holds one embedded SpriteAction at +0x8
     PooledEvent* node = list.head;
     while (node != 0) {
-        SpriteAction* action = (SpriteAction*)((char*)node + 0x8);
+        SpriteAction* action = (SpriteAction*)&node->field_0x8;
         int counter = 0;
         int tmp;
         do {
             action->~SpriteAction();
-            action = (SpriteAction*)((char*)action + 0x38);
+            action = action + 1;
             tmp = counter;
             counter--;
         } while (tmp != 0);

@@ -222,7 +222,7 @@ void SC_WordSearch::Update(int param1, int param2) {
     int iVar5, iVar9;
     int iVar8;
 
-    spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+    spr = g_Mouse_0046aa18->m_sprite;
     if (spr != 0) {
         spr->ResetAnimation(0, 0);
     }
@@ -241,7 +241,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         pvVar10 = scoreSprite;
         ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0);
         (g_Mouse_0046aa18)->DrawCursor();
-        piVar1 = *(int**)((int)g_InputManager_0046aa08 + 0x1a0);
+        piVar1 = (int*)g_InputManager_0046aa08->pMouse;
         iVar9 = 0;
         if (piVar1 != 0) {
             iVar9 = piVar1[1];
@@ -255,7 +255,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         if (placeModeRect.right < iVar5) return;
         if (iVar9 < placeModeRect.top) return;
         if (placeModeRect.bottom < iVar9) return;
-        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+        spr = g_Mouse_0046aa18->m_sprite;
         if (spr != 0) {
             spr->ResetAnimation(0xf, 0);
         }
@@ -280,7 +280,7 @@ void SC_WordSearch::Update(int param1, int param2) {
     do {
         if (*pcVar12 != '\0') {
             iVar9 = 0;
-            piVar1 = *(int**)((int)g_InputManager_0046aa08 + 0x1a0);
+            piVar1 = (int*)g_InputManager_0046aa08->pMouse;
             if (piVar1 != 0) {
                 iVar9 = piVar1[1];
             }
@@ -303,15 +303,15 @@ void SC_WordSearch::Update(int param1, int param2) {
         local_4 = local_4 - 1;
     } while (local_4 != 0);
 
-    int* puVar2 = *(int**)((int)g_InputManager_0046aa08 + 0x1a0);
+    int* puVar2 = (int*)g_InputManager_0046aa08->pMouse;
     if (puVar2 == 0 || (uVar4 = *puVar2, (int)uVar4 < 0x22)) {
-        spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+        spr = g_Mouse_0046aa18->m_sprite;
         if (spr != 0) {
             spr->ResetAnimation(10, 0);
         }
     } else {
         if (0x23f < (int)uVar4) {
-            spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+            spr = g_Mouse_0046aa18->m_sprite;
             if (spr != 0) {
                 spr->ResetAnimation(0xb, 0);
             }
@@ -355,7 +355,7 @@ void SC_WordSearch::Update(int param1, int param2) {
                     do {
                         if (*pcVar12 != '\0') {
                             iVar5 = 0;
-                            piVar11 = *(int**)((int)g_InputManager_0046aa08 + 0x1a0);
+                            piVar11 = (int*)g_InputManager_0046aa08->pMouse;
                             if (piVar11 != 0) {
                                 iVar5 = piVar11[1];
                             }
@@ -367,8 +367,8 @@ void SC_WordSearch::Update(int param1, int param2) {
                             if (*piVar13 <= iVar8 && iVar8 <= piVar13[2] &&
                                 piVar13[1] <= iVar5 &&
                                 iVar5 <= piVar13[3] &&
-                                *(Sprite**)((int)g_Mouse_0046aa18 + 0x94) != 0) {
-                                (*(Sprite**)((int)g_Mouse_0046aa18 + 0x94))->ResetAnimation(0xf, 0);
+                                g_Mouse_0046aa18->m_sprite != 0) {
+                                (g_Mouse_0046aa18->m_sprite)->ResetAnimation(0xf, 0);
                             }
                         }
                         piVar13 = piVar13 + 4;
@@ -376,7 +376,7 @@ void SC_WordSearch::Update(int param1, int param2) {
                         iVar9 = iVar9 - 1;
                     } while (iVar9 != 0);
                 } else {
-                    spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+                    spr = g_Mouse_0046aa18->m_sprite;
                     if (spr != 0) {
                         spr->ResetAnimation(0xf, 0);
                     }
@@ -386,7 +386,7 @@ void SC_WordSearch::Update(int param1, int param2) {
                         10000, 0xfc, 2);
                 }
             } else {
-                spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+                spr = g_Mouse_0046aa18->m_sprite;
                 if (spr != 0) {
                     spr->ResetAnimation(0xf, 0);
                 }
@@ -396,7 +396,7 @@ void SC_WordSearch::Update(int param1, int param2) {
                     10000, 0xfc, 2);
             }
         } else {
-            spr = *(Sprite**)((int)g_Mouse_0046aa18 + 0x94);
+            spr = g_Mouse_0046aa18->m_sprite;
             if (spr != 0) {
                 spr->ResetAnimation(0xf, 0);
             }
@@ -640,11 +640,10 @@ int SC_WordSearch::LBLParse(char* line) {
         palette = pal;
         pal->Load(buffer);
         if (palette != 0) {
-            int* palSlot = (int*)((char*)g_ZBufferManager_0046aa24 + 0xa8);
-            if (*palSlot != 0) {
+            if (g_ZBufferManager_0046aa24->m_palette != 0) {
                 WriteToLog("ddouble palette");
             }
-            *palSlot = (int)palette;
+            g_ZBufferManager_0046aa24->m_palette = palette;
         }
     } else if (strcmp(keyword, "BACKGROUND_SPRITE") == 0) {
         Sprite* spr = new Sprite(0);
@@ -799,7 +798,7 @@ void SC_WordSearch::Render() {
     if (*(int*)((char*)words + GS_MODE_FLAG_OFS) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
     }
-    UpdateWordSearchCursor((int*)((char*)words + 0x4C));
+    UpdateWordSearchCursor((int*)((char*)words + GS_CURSOR_STATE_OFS));
     if (*(int*)((char*)words + GS_MODE_FLAG_OFS) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
     }

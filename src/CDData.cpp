@@ -87,6 +87,7 @@ extern "C" void WriteToLog(const char*, ...);
 
 // FileCache globals
 #include "MemoryCache.h"
+#include "Memory.h"
 
 // Forward declarations (defined below)
 extern "C" int __cdecl DeleteFileAndDir(char*);
@@ -95,48 +96,45 @@ extern "C" void LogCacheEntries();
 
 /* Function start: 0x434030 */
 void __cdecl FileCacheEntryCleanup(void* entries, int count) {
-    int* ptr;
-    char* name;
-
     if (count == 0) return;
-    ptr = (int*)entries;
+    FileCacheEntry** slot = (FileCacheEntry**)entries;
     do {
         count--;
-        name = (char*)*ptr;
-        if (name != 0) {
-            if (DeleteFileAndDir(name) == -1) {
+        FileCacheEntry* entry = *slot;
+        if (entry != 0) {
+            if (DeleteFileAndDir(entry->name) == -1) {
                 LogCacheStats();
                 LogCacheEntries();
-                WriteToLog("HDCache::Unable to delete '%s' (errno=%d)", name, g_FileDeleteError_004719c0);
+                WriteToLog("HDCache::Unable to delete '%s' (errno=%d)", entry->name, g_FileDeleteError_004719c0);
             }
-            FreeMemory(name);
-            *ptr = 0;
+            FreeMemory(entry);
+            *slot = 0;
         }
-        ptr++;
+        slot++;
     } while (count != 0);
 }
 
 /* Function start: 0x4344B0 */
 void __cdecl FileCacheCleanup() {
-    int* cache = (int*)g_FileCache_0046b78c;
+    MemoryCache* cache = g_FileCache_0046b78c;
     if (cache == 0) return;
 
-    int* node = (int*)cache[0];
+    CacheNode* node = cache->head;
     while (node != 0) {
-        FileCacheEntryCleanup((void*)(node + 2), 1);
-        node = (int*)node[0];
+        FileCacheEntryCleanup(&node->entry, 1);
+        node = node->next;
     }
-    cache[2] = 0;
-    cache[3] = 0;
-    cache[1] = 0;
-    cache[0] = 0;
-    int* block = (int*)cache[4];
+    cache->count = 0;
+    cache->freeList = 0;
+    cache->tail = 0;
+    cache->head = 0;
+    int* block = cache->blockList;
     while (block != 0) {
         int* next = (int*)block[0];
         FreeMemory(block);
         block = next;
     }
-    cache[4] = 0;
+    cache->blockList = 0;
     g_PathCacheMisses_0046b788 = 0;
     g_PathCacheHits_0046b784 = 0;
 }
@@ -151,21 +149,18 @@ extern "C" void LogCacheStats() {
     WriteToMessageLog("HD File Cache");
     WriteToMessageLog("PreLoading Cache  = %d ms", g_CachePreloadTime_0046b794);
     WriteToMessageLog("Cache Entries  = %d of %d (%d of %d Bytes)",
-        g_FileCache_0046b78c->field_8, g_CacheEntryCount_0046b780, g_CacheTotalSize_00473440, g_CacheSizeLimit_00473444);
+        g_FileCache_0046b78c->count, g_CacheEntryCount_0046b780, g_CacheTotalSize_00473440, g_CacheSizeLimit_00473444);
     WriteToMessageLog("Hits=%d Misses = %d", g_PathCacheHits_0046b784, g_PathCacheMisses_0046b788);
 }
 
 /* Function start: 0x4345B0 */
 extern "C" void LogCacheEntries() {
-    int* node;
-    int idx;
-
     if (g_FileCache_0046b78c == 0) {
         WriteToMessageLog("HDCache::LogCache() - HDCache not initialized");
         return;
     }
-    idx = 1;
-    node = (int*)((int*)g_FileCache_0046b78c)[0];
+    int idx = 1;
+    CacheNode* node = g_FileCache_0046b78c->head;
     if (node != 0) {
         WriteToMessageLog("     %-20.20s %6.6s %10.10s %4.4s",
             "FILE", "FSIZE", "BSIZE", "HITS");
@@ -174,12 +169,13 @@ extern "C" void LogCacheEntries() {
     }
     if (node != 0) {
         do {
-            int* entry = (int*)node[2];
-            node = (int*)node[0];
+            FileCacheEntry* entry = node->entry;
+            node = node->next;
             WriteToMessageLog("%4d %-20.20s %6.6lu %10lu %4.4d",
-                idx, entry, *(unsigned long*)((char*)entry + 0x20),
-                *(unsigned long*)((char*)entry + 0x28),
-                *(int*)((char*)entry + 0x24));
+                idx, entry->name,
+                (unsigned long)entry->size,
+                (unsigned long)entry->tickTime,
+                entry->hitCount);
             idx++;
         } while (node != 0);
     }
@@ -187,36 +183,32 @@ extern "C" void LogCacheEntries() {
 
 /* Function start: 0x4341F0 */
 int __cdecl FileCacheLookup(char* name) {
-    int* current;
-    int* node;
-    char* entryName;
-
     if (g_FileCache_0046b78c == 0) {
         return 0;
     }
-    current = (int*)((int*)g_FileCache_0046b78c)[0];
+    CacheNode* current = g_FileCache_0046b78c->head;
 
     while (current != 0) {
-        node = current;
-        entryName = (char*)current[2];
-        current = (int*)current[0];
-        if (strcmp(entryName, name) == 0) {
+        CacheNode* node = current;
+        FileCacheEntry* entry = current->entry;
+        current = current->next;
+        if (strcmp(entry->name, name) == 0) {
             g_PathCacheHits_0046b784++;
-            *(int*)(entryName + 0x24) += 1;
-            *(int*)(entryName + 0x28) = GetTickCount();
+            entry->hitCount++;
+            entry->tickTime = GetTickCount();
             // Move to front of LRU
-            int* cache = (int*)g_FileCache_0046b78c;
-            if (cache[0] != (int)node) {
-                *(int*)node[1] = node[0];
-                if (node[0] != 0) {
-                    *(int*)(node[0] + 4) = node[1];
+            MemoryCache* cache = g_FileCache_0046b78c;
+            if (cache->head != node) {
+                node->prev->next = node->next;
+                if (node->next != 0) {
+                    node->next->prev = node->prev;
                 } else {
-                    cache[1] = node[1];
+                    cache->tail = node->prev;
                 }
-                node[0] = cache[0];
-                *(int*)(cache[0] + 4) = (int)node;
-                cache[0] = (int)node;
-                node[1] = 0;
+                node->next = cache->head;
+                cache->head->prev = node;
+                cache->head = node;
+                node->prev = 0;
             }
             return 1;
         }
@@ -227,87 +219,83 @@ int __cdecl FileCacheLookup(char* name) {
 
 /* Function start: 0x4342D0 */
 void __cdecl FileCacheRegister(char* name, int size) {
-    int* cache;
-    int* node;
-    char* entry;
-
     if (g_FileCache_0046b78c == 0) return;
 
     g_CacheTotalSize_00473440 += size;
 
-    // Evict if over limit
+    // Evict LRU entries while over the size limit
+    MemoryCache* cache;
     if (g_CacheSizeLimit_00473444 != 0 && g_CacheSizeLimit_00473444 <= g_CacheTotalSize_00473440) {
         do {
-            cache = (int*)g_FileCache_0046b78c;
-            node = (int*)cache[1]; // tail
-            entry = (char*)node[2];
-            int entrySize = *(int*)(entry + 0x20);
-            g_CacheTotalSize_00473440 -= entrySize;
+            cache = g_FileCache_0046b78c;
+            CacheNode* evictNode = cache->tail;
+            FileCacheEntry* evictEntry = evictNode->entry;
+            g_CacheTotalSize_00473440 -= evictEntry->size;
             if (g_CacheTotalSize_00473440 <= 0) g_CacheTotalSize_00473440 = 0;
 
-            // Remove tail node
-            cache = (int*)g_FileCache_0046b78c;
-            int* prev = (int*)node[1];
-            cache[1] = (int)prev;
+            cache = g_FileCache_0046b78c;
+            CacheNode* prev = evictNode->prev;
+            cache->tail = prev;
             if (prev != 0) {
-                prev[0] = 0;
+                prev->next = 0;
             } else {
-                cache[0] = 0;
+                cache->head = 0;
             }
 
-            FileCacheEntryCleanup((void*)(node + 2), 1);
+            FileCacheEntryCleanup(&evictNode->entry, 1);
 
             // Return node to free list
-            node[0] = cache[3];
-            cache[3] = (int)node;
-            cache[2]--;
-        } while (cache[2] > 0 && g_CacheEvictThreshold_0046b790 < g_CacheTotalSize_00473440);
+            evictNode->next = cache->freeList;
+            cache->freeList = evictNode;
+            cache->count--;
+        } while (cache->count > 0 && g_CacheEvictThreshold_0046b790 < g_CacheTotalSize_00473440);
     }
 
-    // Allocate new entry (0x2C bytes)
-    entry = (char*)operator new(0x2C);
+    // Allocate new entry
+    FileCacheEntry* entry = (FileCacheEntry*)operator new(sizeof(FileCacheEntry));
     if (entry != 0) {
-        strcpy(entry, name);
-        *(int*)(entry + 0x20) = size;
-        *(int*)(entry + 0x24) = 0;
-        *(int*)(entry + 0x28) = GetTickCount();
+        strcpy(entry->name, name);
+        entry->size = size;
+        entry->hitCount = 0;
+        entry->tickTime = GetTickCount();
     }
 
-    // Get a free node from pool
-    cache = (int*)g_FileCache_0046b78c;
-    if (cache[3] == 0) {
-        // Allocate new block of nodes
-        int blockSize = cache[5];
-        int* block = (int*)operator new(blockSize * 12 + 4);
-        block[0] = cache[4];
-        cache[4] = (int)block;
+    // Get a free node from the pool
+    cache = g_FileCache_0046b78c;
+    if (cache->freeList == 0) {
+        // Allocate new block of nodes (first dword links to next block)
+        int blockSize = cache->poolCapacity;
+        int* block = (int*)operator new(blockSize * sizeof(CacheNode) + sizeof(int));
+        block[0] = (int)cache->blockList;
+        cache->blockList = block;
+        // Chain nodes onto the free list, last-first
         int cnt = blockSize - 1;
-        int* p = block + blockSize * 3 - 2;
+        CacheNode* p = (CacheNode*)(block + blockSize * 3 - 2);
         while (cnt >= 0) {
-            p[0] = cache[3];
-            cache[3] = (int)p;
-            p -= 3;
+            p->next = cache->freeList;
+            cache->freeList = p;
+            p = (CacheNode*)((char*)p - sizeof(CacheNode));
             cnt--;
         }
     }
-    node = (int*)cache[3];
-    cache[3] = node[0];
-    node[1] = 0;
-    node[0] = (int)(int*)cache[0]; // was head
-    cache[2]++;
-    node[2] = 0;
+    CacheNode* node = cache->freeList;
+    cache->freeList = node->next;
+    node->prev = 0;
+    node->next = cache->head;
+    cache->count++;
+    node->entry = 0;
     {
         int dummy = 0;
         do { int tmp = dummy; dummy--; if (tmp == 0) break; } while (1);
     }
-    node[2] = (int)entry;
+    node->entry = entry;
 
-    if (cache[0] != 0) {
-        *(int*)(cache[0] + 4) = (int)node;
+    if (cache->head != 0) {
+        cache->head->prev = node;
     } else {
-        cache[1] = (int)node;
+        cache->tail = node;
     }
-    cache[0] = (int)node;
+    cache->head = node;
 }
 
 /* Function start: 0x4332E0 */

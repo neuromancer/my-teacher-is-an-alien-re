@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "GameState.h"
+#include "FileArchive.h"
 #include "GameEngine.h"
 #include "SpriteAction.h"
 #include "SC_Question.h"
@@ -754,9 +755,10 @@ void SC_Detention::Serialize(void* param) {
     int id;
 
     strLen = strlen("DETENTION_INFO") + 1;
-    fp = *(FILE**)((char*)param + 0x44);
+    FileArchive* ar = (FileArchive*)param;
+    fp = ar->fp;
 
-    if (*(int*)param != 0) {
+    if (ar->mode != 0) {
         /* SAVE */
         id = handlerId;
         fwrite(&id, 4, 1, fp);

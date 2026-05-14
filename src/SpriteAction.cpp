@@ -1,6 +1,7 @@
 #include "SpriteAction.h"
 #include "GameEngine.h"
 #include "GameState.h"
+#include "FileArchive.h"
 #include "globals.h"
 extern "C" void WriteToLog(const char* format, ...);
 #include "string.h"
@@ -135,9 +136,10 @@ extern void ShowError(const char* format, ...);
 /* Function start: 0x444CD0 */
 void SpriteAction::Serialize(void* param) {
     int headerLen = strlen("MESSAGE_INFO") + 1;
-    FILE* fp = *(FILE**)((char*)param + 0x44);
+    FileArchive* ar = (FileArchive*)param;
+    FILE* fp = ar->fp;
 
-    if (*(int*)param != 0) {
+    if (ar->mode != 0) {
         fwrite("MESSAGE_INFO", headerLen, 1, fp);
         fwrite(this, 0x38, 1, fp);
         return;

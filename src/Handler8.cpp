@@ -1,5 +1,6 @@
 #include "Handler8.h"
 #include "SC_Question.h"
+#include "SpriteAction.h"
 #include "Animation.h"
 #include "Parser.h"
 #include "string.h"
@@ -54,9 +55,10 @@ Handler8::Handler8() {
 
 /* Function start: 0x44A900 */
 Handler8::~Handler8() {
-    SC_MessageParser* msg = (SC_MessageParser*)field_A0;
-    if (msg != 0) {
-        delete msg;
+    SpriteAction* action = (SpriteAction*)field_A0;
+    if (action != 0) {
+        action->~SpriteAction();
+        FreeMemory(action);
         field_A0 = 0;
     }
 }

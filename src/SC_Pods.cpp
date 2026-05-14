@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+extern void ReportUnknownLabel(const char* name);
+
 extern "C" void ShowError(const char* format, ...);
 
 #include "SlimeTable.h"
@@ -180,13 +182,11 @@ void SC_Pods::Update(int p1, int p2) {
 int SC_Pods::AddMessage(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
     action->fromType = handlerId;
-    action->fromValue = moduleParam;
     action->instruction = 0;
-
+    action->fromValue = moduleParam;
     if (action->lastKey == 0x1b && savedCommand == 0x2b) {
         g_CombatEngine_0046ae78->combatFlags |= 4;
     }
-
     return 1;
 }
 
@@ -367,7 +367,7 @@ int SC_Pods::LBLParse(char* line) {
     if (strcmp(label, "DERIVED_ENGINE_INFO") == 0) {
         PodsEngine* eng = new PodsEngine();
         combatEngine = (int)eng;
-        g_CombatEngine_0046ae78 = eng;
+        g_CombatEngine_0046ae78 = (SC_CombatBase*)eng;
         Parser::ProcessFile((Parser*)eng, this, (char*)0);
     } else if (strcmp(label, "BGSOUND") == 0) {
         sscanf(line, " %s %d ", label, &soundId);
@@ -375,7 +375,7 @@ int SC_Pods::LBLParse(char* line) {
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SC_Pods");
+        ReportUnknownLabel("SC_Pods");
     }
 
     return 0;

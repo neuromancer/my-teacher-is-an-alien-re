@@ -70,23 +70,18 @@ int* SaveFilePool::AllocNode(int prev, int next) {
 /* Function start: 0x43E320 */
 void __cdecl ClearSaveEntries(void* buf, int count) {
     memset(buf, 0, (unsigned int)(count * 0x118));
-    while (count-- != 0) {
+    int tmp = count;
+    count--;
+    if (tmp != 0) {
+        do {
+            tmp = count;
+            count--;
+        } while (tmp != 0);
     }
 }
 
 #include "TextInput.h"
-
-// FileArchive - simple file handle wrapper (0x48 bytes)
-// Constructor evidence: 0x43C8B0 (new + memset + strcpy pattern with SEH)
-struct FileArchive {
-    int mode;           // 0x00
-    char filename[64];  // 0x04
-    FILE* fp;           // 0x44
-    FileArchive(char* path) {
-        memset(this, 0, 0x48);
-        strcpy(filename, path);
-    }
-};
+#include "FileArchive.h"
 
 // Forward declarations
 char* MakeSavePath(char* param);
@@ -200,9 +195,7 @@ int GetRandomTeacher() {
         fclose(fp);
     }
 
-    if (counter != 3) {
-        teacher = teacher % 3 + 1;
-    } else {
+    if (counter == 3) {
         int count = rand() % 10 + 1;
         if (count > 0) {
             do {
@@ -210,6 +203,8 @@ int GetRandomTeacher() {
                 count--;
             } while (count != 0);
         }
+    } else {
+        teacher = teacher % 3 + 1;
     }
 
     fp = OpenSaveFile("cfg\\031568.dat", "w");

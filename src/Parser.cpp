@@ -3,6 +3,9 @@
 #include "GameConfig.h"
 #include "Memory.h"
 #include "Timer.h"
+#include "ObjectPool.h"
+#include "MouseControl.h"
+#include "Sprite.h"
 #include "TimedEvent.h"
 #include "SpriteAction.h"
 #include "GameState.h"
@@ -354,8 +357,8 @@ void Parser::BeginComment(char* line) {
     if (start == 0 || end == 0 || len <= 0) {
         ShowError("Parser::SaveComment - %s", line);
     }
-    strncpy((char*)this + 0x10, start, len);
-    *((char*)this + 0x10 + len) = '\0';
+    strncpy(currentKey, start, len);
+    currentKey[len] = '\0';
 }
 
 /* Function start: 0x412C60 */
@@ -606,8 +609,8 @@ void Parser::HandleToken(int tokenType, char* line) {
         if (pcVar6 != (char*)1) {
             ShowError("Parser::HandleToken - Invalid SET_MOUSE statement '%s'", line);
         }
-        if (g_Mouse_0046aa18 != 0 && *(void**)((char*)g_Mouse_0046aa18 + 0x94) != 0) {
-            ((Sprite*)*(void**)((char*)g_Mouse_0046aa18 + 0x94))->ResetAnimation((int)local_14, 0);
+        if (g_Mouse_0046aa18 != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+            g_Mouse_0046aa18->m_sprite->ResetAnimation((int)local_14, 0);
         }
         break;
 
@@ -625,19 +628,16 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 9:
         if (field_0x3c == 0) {
-            local_14 = (char*)operator new(0x18);
-            if (local_14 == 0) {
-                pcVar6 = 0;
-            } else {
-                *(int*)(local_14 + 0x08) = 0;
-                *(int*)(local_14 + 0x0c) = 0;
-                *(int*)(local_14 + 0x04) = 0;
-                *(int*)(local_14 + 0x00) = 0;
-                *(int*)(local_14 + 0x10) = 0;
-                *(int*)(local_14 + 0x14) = 10;
-                pcVar6 = local_14;
+            ObjectPool* pool = (ObjectPool*)operator new(0x18);
+            if (pool != 0) {
+                pool->allocatedCount = 0;
+                pool->freeList = 0;
+                pool->size = 0;
+                pool->memory = 0;
+                pool->memoryBlock = 0;
+                pool->objectSize = 10;
             }
-            field_0x3c = pcVar6;
+            field_0x3c = (char*)pool;
         }
         {
             fpos_t filePos;

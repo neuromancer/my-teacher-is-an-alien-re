@@ -99,10 +99,10 @@ void SC_Game::Update(int param1, int param2) {
                     10000, -1);
 
                 GameState* gs = gameState;
-                if (row < 0 || *(int*)(gs + 0x98) - 1 < row) {
+                if (row < 0 || gs->maxStates - 1 < row) {
                     ShowError("Invalid gamestate %d", row);
                 }
-                sprintf(g_Buffer_0046aa00, "%d", *(int*)(*(int*)(gs + 0x90) + row * 4));
+                sprintf(g_Buffer_0046aa00, "%d", gs->stateValues[row]);
                 (g_ZBufferManager_0046aa24)->ShowSubtitle(
                     g_Buffer_0046aa00, textX + 0x15e,
                     (row - scrollOffset + 1) * rowHeight + textY,

@@ -3,6 +3,7 @@
 
 #include "Parser.h"
 #include "ObjectPool.h"
+#include "NavSubNode.h"
 
 // mCNavNode - Navigation node for mCNavigator
 // Full game: Size 0xD0, vtable 0x461B50 (parsing) → 0x461B30 (runtime, 8 entries)
@@ -46,50 +47,74 @@ public:
     char nodeName[36];              // 0xAC - node name (up to 0xCF)
 };
 
-// mCNavNode_TypeA - Navigation node type A
-// Vtable: 0x461B60
-class mCNavNode_TypeA : public mCNavNode {
+// mCNavNode_TypeA (DO_ANIM) - plays an animation on activation
+// Vtable: 0x461B60, size 0xA8 = NavSubNode(0xA0) + 2 ints
+class mCNavNode_TypeA : public NavSubNode {
 public:
-    mCNavNode_TypeA(char* line) : mCNavNode(line) {}
+    int animHandle;     // 0xA0 - animation resource handle
+    int reservedA4;     // 0xA4
+
+    mCNavNode_TypeA(char* line) { animHandle = 0; reservedA4 = 0; }
     virtual int LBLParse(char* line);
     virtual int virtual4();
     virtual int Activate();
 };
 
-// mCNavNode_TypeB - Navigation node type B
-// Vtable: 0x461B80
-class mCNavNode_TypeB : public mCNavNode {
+// mCNavNode_TypeB (DO_CHECKMESSAGE) - 2-way branch based on game state condition
+// Vtable: 0x461B80, size 0xB8 = NavSubNode(0xA0) + 6 ints
+class mCNavNode_TypeB : public NavSubNode {
 public:
-    mCNavNode_TypeB(char* line) : mCNavNode(line) {}
+    int* conditionPtr;   // 0xA0 - pointer to condition checked by GameState::CheckCondition
+    int destNode[2];     // 0xA4 - destination node IDs [false, true]
+    int destBearing[2];  // 0xAC - destination bearings  [false, true]
+    int reservedB4;      // 0xB4
+
+    mCNavNode_TypeB(char* line) {
+        conditionPtr = 0;
+        destNode[0] = 0;
+        destNode[1] = 0;
+        destBearing[0] = 0;
+        destBearing[1] = 0;
+        reservedB4 = 0;
+    }
     virtual int LBLParse(char* line);
     virtual int virtual4();
     virtual int Activate();
 };
 
-// mCNavNode_TypeC - Navigation node type C
-// Vtable: 0x461BA0
-class mCNavNode_TypeC : public mCNavNode {
+// mCNavNode_TypeC (DO_EXIT) - exit navigation node, empty stubs
+// Vtable: 0x461BA0, size 0xA0 (no extra fields used)
+class mCNavNode_TypeC : public NavSubNode {
 public:
-    mCNavNode_TypeC(char* line) : mCNavNode(line) {}
+    int fieldA0;
+    int fieldA4;
+
+    mCNavNode_TypeC(char* line) { fieldA0 = 0; fieldA4 = 0; }
     virtual int virtual4();
     virtual int Activate();
 };
 
-// mCNavNode_TypeD - Navigation node type D
-// Vtable: 0x461BC0
-class mCNavNode_TypeD : public mCNavNode {
+// mCNavNode_TypeD (DO_POSTMESSAGE) - enqueues a SpriteAction on activation
+// Vtable: 0x461BC0, size 0xA8 = NavSubNode(0xA0) + 2 ints
+class mCNavNode_TypeD : public NavSubNode {
 public:
-    mCNavNode_TypeD(char* line) : mCNavNode(line) {}
+    int* action;         // 0xA0 - SpriteAction* to enqueue
+    int reservedA4;      // 0xA4
+
+    mCNavNode_TypeD(char* line) { action = 0; reservedA4 = 0; }
     virtual int LBLParse(char* line);
     virtual int virtual4();
     virtual int Activate();
 };
 
-// mCNavNode_TypeE - Navigation node type E
-// Vtable: 0x461BE0
-class mCNavNode_TypeE : public mCNavNode {
+// mCNavNode_TypeE (DO_MOUSE) - sets cursor mode from NO_MOUSE/AUTO_MOUSE/state name
+// Vtable: 0x461BE0, size 0xA8 = NavSubNode(0xA0) + 2 ints
+class mCNavNode_TypeE : public NavSubNode {
 public:
-    mCNavNode_TypeE(char* line) : mCNavNode(line) {}
+    int stateValue;      // 0xA0 - -1=NO_MOUSE, 0=AUTO_MOUSE, else GameState index
+    int reservedA4;      // 0xA4
+
+    mCNavNode_TypeE(char* line) { stateValue = 0; reservedA4 = 0; }
     virtual int LBLParse(char* line);
     virtual int virtual4();
     virtual int Activate();

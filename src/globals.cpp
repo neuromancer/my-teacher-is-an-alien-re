@@ -119,7 +119,7 @@ int g_GfxField2_0043751c = 0;                                // 0x0043751c
 char g_PaletteMap_0046d108[256] = {0};                       // 0x00437520 — Palette identity map
 unsigned char g_PaletteData_0046d208[256] = {0};  // 0x00437620 — Palette data / state flags
 // LOGPALETTE: palVersion=0x0300, palNumEntries=0x0100
-char g_LogPalette_00437720[1028] = {0x00, 0x03, 0x00, 0x01}; // 0x00437720
+char g_LogPalette_0046d308[1028] = {0x00, 0x03, 0x00, 0x01}; // 0x00437720
 char g_BgrPalette_00437b48[1028];                            // 0x00437b48
 int g_BitmapHeaderSize_0046db34 = 0;                         // 0x00437f4c
 int g_DibModeFlag_0046db38 = 0;                              // 0x00437f50
@@ -152,20 +152,18 @@ void* g_WinGSetDIBColorTable_0046e014 = 0;                   // 0x0043842c
 void* g_WinGRecommendDIBFormat_0046e018 = 0;                 // 0x00438430
 void* g_WinGBitBlt_0046e01c = 0;                             // 0x00438434
 void* g_WinGStretchBlt_0046e020 = 0;                         // 0x00438438
-char* g_SysDirPtr_0046e024 = g_SystemDirPath_00438446;       // 0x0043843c
+char* g_SysDirPtr_0046e024 = g_SystemDirPath_0046e02e;       // 0x0043843c
 short g_SegmentReg_0046e028 = 0;                             // 0x00438440
-int g_WinGBufSize_00438442 = 0x1000;                         // 0x00438442
-char g_SystemDirPath_00438446[256] = {0};                    // 0x00438446
+int g_WinGBufSize_0046e02a = 0x1000;                         // 0x00438442
+char g_SystemDirPath_0046e02e[256] = {0};                    // 0x00438446
 char g_TextMetric_0046f02e[256] = {0};                       // 0x00439446
 
 // --- 0x0043bxxx - 0x0043cxxx (CRT / misc) ---
-int g_RandomSeed_0043bc88 = 1;                               // 0x0043bc88
 char g_ExitCode_0043be30 = 0;                                // 0x0043be30
 int g_ExitInProgress_0043be34 = 0;                           // 0x0043be34
 int g_CrtField_0043bdf0 = 0;                                 // 0x0043bdf0
 int g_ErrorCode_004719c4 = 0;                                // 0x0043bdf4
 unsigned int DAT_00471d38[90] = {0};                         // 0x0043c760 — CRT error code mapping
-int g_TimeSeed_0043cb64 = 1;                                 // 0x0043cb64
 
 // --- 0x0043dxxx ---
 char g_PuzzleState_0043d0f8 = 0;                             // 0x0043d0f8
@@ -185,7 +183,6 @@ GlyphRect g_PuzzleRects2_0043d100[3] = {                     // 0x0043d100
     GlyphRect(0x0b2, 0x0ac, 0x0ef, 0x118),
     GlyphRect(0x15d, 0x0a1, 0x18f, 0x137),
 };
-int g_SaveState0_00472be0 = 0;                               // 0x0043d130
 int g_ProjectileHits_0043d150 = 0;                           // 0x0043d150
 int g_SaveState1_0043d134 = 0;                               // 0x0043d134
 int g_SaveState2_0043d138 = 0;                               // 0x0043d138
@@ -199,11 +196,9 @@ int g_DevModeFlag_0043d564 = 0;                              // 0x0043d564
 char g_CmdLineDataPath_0043d568[260] = {0};                  // 0x0043d568
 char g_SpriteFilenameTable_0043d630[0x4000] = {0};           // 0x0043d630
 HWND g_GameHWnd_0043de7c = 0;                                // 0x0043de7c
-int g_WindowHeight_0043de8c = 480;                           // 0x0043de8c
 int g_WindowedModeFlag_0043de90;                             // 0x0043de90
 
 // --- 0x0043exxx - 0x0043fxxx ---
-void* g_ProcessHeap_0043eff0 = 0;                            // 0x0043eff0 — Process heap handle
 void* g_AtExitTableEnd_00475084 = 0;                         // 0x0043f100
 void* g_AtExitTableStart_00475088 = 0;                       // 0x0043f104
 

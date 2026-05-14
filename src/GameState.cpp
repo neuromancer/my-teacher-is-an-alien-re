@@ -3,6 +3,7 @@
 #include "string.h"
 #include "Memory.h"
 #include "SpriteAction.h"
+#include "FileArchive.h"
 #include "globals.h"
 #include <stdio.h>
 #include <string.h>
@@ -161,13 +162,13 @@ GameState::~GameState()
 void GameState::Serialize(void* param)
 {
     int* header;
-    FILE* file;
+    FileArchive* ar = (FileArchive*)param;
+    FILE* file = ar->fp;
 
-    file = *(FILE**)((char*)param + 0x44);
     header = (int*)operator new(0x110);
     int len = strlen("GAMESTATE_INFO") + 1;
 
-    if (*(int*)param != 0) {
+    if (ar->mode != 0) {
         fwrite("GAMESTATE_INFO", len, 1, file);
         header[0] = maxStates;
         header[1] = 0x110;

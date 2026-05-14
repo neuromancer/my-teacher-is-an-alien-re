@@ -1,4 +1,5 @@
 #include "FlagArray.h"
+#include "FileArchive.h"
 #include "globals.h"
 #include "string.h"
 #include <string.h>
@@ -180,36 +181,37 @@ void FlagArray::ClearAllFlags() {
 /* Function start: 0x420B80 */
 void FlagArray::Serialize(void* param) {
     char local_4[4];
+    FileArchive* ar = (FileArchive*)param;
 
     Open();
     Seek(0);
 
     int headerLen = strlen("FLAGARRAY_INFO") + 1;
 
-    if (*(int*)param != 0) {
+    if (ar->mode != 0) {
         // Write mode
-        fwrite("FLAGARRAY_INFO", headerLen, 1, *(FILE**)((char*)param + 0x44));
-        fwrite((char*)this + 0x38, 0x94, 1, *(FILE**)((char*)param + 0x44));
+        fwrite("FLAGARRAY_INFO", headerLen, 1, ar->fp);
+        fwrite(&dataSize, 0x94, 1, ar->fp);
         int i = 0;
         if (max_states > 0) {
             do {
                 fread(local_4, 4, 1, fp);
                 i++;
-                fwrite(local_4, 4, 1, *(FILE**)((char*)param + 0x44));
+                fwrite(local_4, 4, 1, ar->fp);
             } while (i < max_states);
         }
     } else {
         // Read mode
         g_Buffer_0046aa00[0] = 0;
-        fread(g_Buffer_0046aa00, headerLen, 1, *(FILE**)((char*)param + 0x44));
+        fread(g_Buffer_0046aa00, headerLen, 1, ar->fp);
         if (strcmp(g_Buffer_0046aa00, "FLAGARRAY_INFO") != 0) {
             ShowError("FlagArray::Serialize() - Error Loading (Wrong ID '%s')", g_Buffer_0046aa00);
         }
-        fread((char*)this + 0x38, 0x94, 1, *(FILE**)((char*)param + 0x44));
+        fread(&dataSize, 0x94, 1, ar->fp);
         int i = 0;
         if (max_states > 0) {
             do {
-                fread(local_4, 4, 1, *(FILE**)((char*)param + 0x44));
+                fread(local_4, 4, 1, ar->fp);
                 i++;
                 fwrite(local_4, 4, 1, fp);
             } while (i < max_states);

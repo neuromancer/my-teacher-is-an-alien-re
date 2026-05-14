@@ -33,6 +33,7 @@ class Palette;
 class SoundList;
 class Viewport;
 class EngineInfoParser;
+class GameConfig;
 class ScoreDisplay;
 class SlimeTable;
 struct MessageQueue;
@@ -400,14 +401,14 @@ extern char g_TextAlignV_0046d0a9; // Vertical text alignment (-1 = none)
 extern int g_DrawPosX_0046d0aa; // Current drawing X position
 extern int g_DrawPosY_0046d0b6; // Current drawing Y position
 // Engine parser subsystem globals
-extern class EngineInfoParser* g_EngineInfoParser_00435f00;  // ENGINE_INFO parser
+extern EngineInfoParser* g_EngineInfoParser_00435f00;        // ENGINE_INFO parser
 extern Sprite* g_ConsoleSprite_00435f04; // Console sprite
-extern class Viewport* g_EngineViewport_00435f08;
+extern Viewport* g_EngineViewport_00435f08;
 extern TargetList* g_TargetList_00435f0c; // TARGETS parser
 extern CombatSprite* g_SpriteList_00435f10;  // SPRITELIST parser
 extern Weapon* g_Weapon_00435f14; // Weapon parser (RockThrower)
-extern class Palette* g_EnginePalette_00435f18;
-extern class SoundList* g_SoundList_00435f1c;
+extern Palette* g_EnginePalette_00435f18;
+extern SoundList* g_SoundList_00435f1c;
 extern CursorState* g_ScoreManager_00435f20;
 extern mCNavigator* g_Navigator_00435f24;  // NAVIGATION parser
 extern GameOutcome* g_GameOutcome_00435f28; // Game outcome state
@@ -428,7 +429,7 @@ extern char* g_Buffer_0046aa04; // Scale table buffer
 extern InputManager* g_InputManager_0046aa08; // DAT_00436968  { /* 4 bytes */ }
 extern AnimatedAsset* g_GlyphFont_0046aa28;                  // AnimatedAsset* for text rendering
 extern Sound* g_Sound_0043696c; // DAT_0043696c  { /* 4 bytes */ }
-extern class GameConfig* g_GameConfig_00436970; // DAT_00436970
+extern GameConfig* g_GameConfig_00436970;               // DAT_00436970
 extern VBuffer* g_WorkBuffer_00436974; // DAT_00436974  { /* 4 bytes */ }
 extern MouseControl* g_Mouse_0046aa18; // DAT_00436978
 extern CDData* g_PathResolver_0046aa1c; // DAT_0043697c  { /* 4 bytes */ }
@@ -487,16 +488,16 @@ extern int g_ClipRight_0046d0ca;
 extern int g_ClipTop_0046d0ce;
 extern int g_ClipBottom_0046d0d2;
 extern HANDLE g_WinGFileHandle_0046d0d6;                   // WinG DLL file check handle
-extern char g_SystemDirPath_00438446[256];                 // system directory path buffer
+extern char g_SystemDirPath_0046e02e[256];                 // system directory path buffer
 extern char g_CursorVisible_0046d0ee; // 1 = cursor visible
 extern char g_CursorState_0046d0ef; // Cursor state tracking
 // g_PaletteMap_0046d108[256] - Defined in globals.cpp as palette identity map array
 
     extern unsigned char g_PaletteData_0046d208[256]; // State flags / Palette data
     extern unsigned short g_StateFlags_004374b2; // State flags bitfield
-extern char g_LogPalette_00437720[1028]; // LOGPALETTE: 4-byte header + 256 PALETTEENTRY
+extern char g_LogPalette_0046d308[1028]; // LOGPALETTE: 4-byte header + 256 PALETTEENTRY
 extern char g_BgrPalette_00437b48[1028]; // BGR palette: 4-byte header + 256 RGBQUAD
-// 0x437724-0x43772a, 0x437744-0x43774e: Offsets inside g_LogPalette_00437720 (palette entries)
+// 0x437724-0x43772a, 0x437744-0x43774e: Offsets inside g_LogPalette_0046d308 (palette entries)
 // 0x437b4c, 0x437b50: Offsets inside g_BgrPalette_00437b48 (RGBQUAD entries at +4, +8)
 extern int g_BitmapHeaderSize_0046db34; // Bitmap info header size / data offset
 extern int g_DibModeFlag_0046db38; // DIB mode flag (0 = WinG, non-zero = DIB)
@@ -538,7 +539,6 @@ extern void* g_WinGStretchBlt_0046e020;         // ordinal 10
 // extern void* PTR___exit_0043bc7c; // (void*)0x00426050
 // extern int DAT_0043bc80; // { /* 4 bytes */ }
 // extern int DAT_0043bc84; // { /* 4 bytes */ }
-extern int g_RandomSeed_0043bc88; // Time seed
 // 0x0043bcee - 0x0043bdea: MSVC CRT floating-point division helper switch table
 // Jump targets for FUN_00425177 (__fprem or similar FPU division operations)
 // These are compiler-generated and do not need to be defined as globals
@@ -607,7 +607,6 @@ extern unsigned int DAT_00471d38[];  // CRT error code mapping table [90 entries
 // extern void* PTR_DAT_0043c8e0; // (void*)0x0043DFF0
 // extern int DAT_0043c8f0; // { /* 4 bytes */ }
 // extern int DAT_0043c910; // { /* 4 bytes */ }
-extern int g_TimeSeed_0043cb64; // { /* 4 bytes */ }
 // extern int DAT_0043cba0; // { /* 4 bytes */ }
 // extern int DAT_0043cbb0; // { /* 4 bytes */ }
 // extern int DAT_0043cbb4; // { /* 4 bytes */ }
@@ -637,7 +636,6 @@ extern int g_TimeSeed_0043cb64; // { /* 4 bytes */ }
 extern GlyphRect g_PuzzleRects1_0043d068[9];
 extern char g_PuzzleState_0043d0f8;
 extern GlyphRect g_PuzzleRects2_0043d100[3];
-extern int g_SaveState0_00472be0; // Game state save area
 extern int g_SaveState1_0043d134; // Game state save area
 extern int g_SaveState2_0043d138; // Game state save area
 extern int g_SaveState3_0043d13c; // Game state save area
@@ -657,7 +655,6 @@ extern HWND g_GameHWnd_0043de7c; // g_GameHWnd_0043de7c  { /* 4 bytes */ }
 extern HDC g_WindowDC_00472d00; // Window DC
 extern HPALETTE g_WindowPalette_00472d04; // Window palette
 extern int g_WindowWidth_00472d10; // Window width
-extern int g_WindowHeight_0043de8c; // Window height
 extern int g_WindowedModeFlag_0043de90; // Windowed mode flag
 extern int g_ActivateAppState_00472d14; // Activate app state
 // CRT library internal globals (0x0043de9c - 0x0043dfe4):
@@ -670,7 +667,6 @@ extern int g_ActivateAppState_00472d14; // Activate app state
 // 0x0043eff0: Process heap handle (GetProcessHeap) - used by Memory.cpp
 // 0x0043eff4: CRT _nhandle (file handle count)
 // 0x0043f000/f004: CRT _pioinfo file info array pointers
-extern void* g_ProcessHeap_0043eff0;
 // extern int DAT_0043f100; // Already defined as g_AtExitTableEnd_00475084
 // extern int DAT_0043f104; // Already defined as g_AtExitTableStart_00475088
 // extern int DAT_0043f108; // { /* 4 bytes */ }
@@ -6157,7 +6153,7 @@ extern char g_PaletteMap_0046d108[256];
 extern char g_BgrPaletteData_0046d734[];
 extern char* g_SysDirPtr_0046e024;
 extern short g_SegmentReg_0046e028;
-extern int g_WinGBufSize_00438442;
+extern int g_WinGBufSize_0046e02a;
 extern char DAT_00437afc[];
 
 // SpriteAction globals

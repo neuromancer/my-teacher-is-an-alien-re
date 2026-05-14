@@ -38,17 +38,11 @@ public:
 
     int moveState[2];              // 0x118-0x11F
     int crystalState[2];              // 0x120-0x127
-    int boardLeft;                 // 0x128
-    int boardTop;                  // 0x12C
-    int boardRight;                // 0x130
-    int boardBottom;               // 0x134
+    Rect boardBounds;              // 0x128-0x137 (boardLeft,Top,Right,Bottom)
     Sprite* fgSprite;              // 0x138
     GauntletEntry entries[36];     // 0x13C-0x52B (36 * 0x1C = 0x3F0)
     Sprite* cellSprites[7];        // 0x52C-0x547
-    int exitLeft;                  // 0x548
-    int exitTop;                   // 0x54C
-    int exitRight;                 // 0x550
-    int exitBottom;                // 0x554
+    Rect exitBounds;               // 0x548-0x557 (exitLeft,Top,Right,Bottom)
     Sprite* exitSprite;            // 0x558
     int field_55C;                 // 0x55C
 };

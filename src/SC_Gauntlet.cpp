@@ -30,15 +30,7 @@ GauntletEntry::GauntletEntry() {
 
 /* Function start: 0x42E540 */
 SC_Gauntlet::SC_Gauntlet() {
-    boardLeft = 0;
-    boardTop = 0;
-    boardRight = 0;
-    boardBottom = 0;
     memset(crystalState, 0, 7 * sizeof(int));
-    exitLeft = 0;
-    exitTop = 0;
-    exitRight = 0;
-    exitBottom = 0;
     memset(moveState, 0, 0x112 * sizeof(int));
     handlerId = 0x50;
 }
@@ -126,11 +118,11 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
             do {
                 int col = 0;
                 do {
-                    if (action->mousePos.x >= ge->fields[2] &&
-                        action->mousePos.x <= ge->fields[4] &&
-                        action->mousePos.y >= ge->fields[3] &&
-                        action->mousePos.y <= ge->fields[5] &&
-                        ge->fields[0] == 0) {
+                    if (action->mousePos.x >= ge->fields[3] &&
+                        action->mousePos.x <= ge->fields[5] &&
+                        action->mousePos.y >= ge->fields[4] &&
+                        action->mousePos.y <= ge->fields[6] &&
+                        ge->fields[1] == 0) {
                         Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
                         if (mouseSpr != 0 && mouseSpr->handle == 0xC) {
                             ProcessGrid(row, col);
@@ -142,10 +134,10 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
                 row++;
             } while (row < 6);
 
-            if (action->mousePos.x >= boardLeft &&
-                action->mousePos.x <= boardRight &&
-                action->mousePos.y >= boardTop &&
-                action->mousePos.y <= boardBottom &&
+            if (action->mousePos.x >= boardBounds.left &&
+                action->mousePos.x <= boardBounds.right &&
+                action->mousePos.y >= boardBounds.top &&
+                action->mousePos.y <= boardBounds.bottom &&
                 crystalState[1] == 0) {
                 Sprite* mouseSpr2 = g_Mouse_0046aa18->m_sprite;
                 if (mouseSpr2 != 0) {
@@ -156,10 +148,10 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
                     crystalState[0]--;
                 }
                 ((SoundList*)bgSound)->Play(2);
-            } else if (action->mousePos.x >= exitLeft &&
-                       action->mousePos.x <= exitRight &&
-                       action->mousePos.y >= exitTop &&
-                       action->mousePos.y <= exitBottom) {
+            } else if (action->mousePos.x >= exitBounds.left &&
+                       action->mousePos.x <= exitBounds.right &&
+                       action->mousePos.y >= exitBounds.top &&
+                       action->mousePos.y <= exitBounds.bottom) {
                 statusPtr[6] = 1;
             }
         } else {
@@ -245,7 +237,7 @@ void SC_Gauntlet::RenderGrid() {
     int sprIdx;
     int cellY;
 
-    field_0x10C->Do(field_0x10C->loc_x, field_0x10C->loc_y, 1.0);
+    bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
 
     if (crystalState[1] != 0) {
         if (g_Mouse_0046aa18->m_sprite != 0) {
@@ -275,8 +267,8 @@ void SC_Gauntlet::RenderGrid() {
         } else {
             mouseX = 0;
         }
-        if (exitLeft <= mouseX && exitRight >= mouseX &&
-            exitTop <= mouseY && exitBottom >= mouseY) {
+        if (exitBounds.left <= mouseX && exitBounds.right >= mouseX &&
+            exitBounds.top <= mouseY && exitBounds.bottom >= mouseY) {
             if (g_Mouse_0046aa18->m_sprite != 0) {
                 g_Mouse_0046aa18->m_sprite->ResetAnimation(0x13, 0);
             }
@@ -590,8 +582,8 @@ void SC_Gauntlet::ResetGrid() {
     entries[8].fields[0] = 1;
     entries[20].fields[0] = 1;
     entries[26].fields[0] = 1;
-    crystalState[0] = 5;
     entries[31].fields[0] = 1;
+    crystalState[0] = 5;
     crystalState[1] = 0;
     cellSprites[6] = 0;
 }
@@ -652,7 +644,7 @@ void SC_Gauntlet::ProcessAction(int action, int* data) {
         g_Mouse_0046aa18->DrawCursor();
         break;
     default:
-        ShowError("SC_Roach::Process_Action - invalid Action=%d, value=%d", action, data[0]);
+        ShowError("SC_Gauntlet::Process_Action - invalid Action=%d, value=%d", action, data[0]);
         break;
     }
 }
@@ -688,15 +680,15 @@ void SC_Gauntlet::OnProcessEnd() {
     entries[15].fields[1] = 1;
     entries[23].fields[1] = 1;
 
-    boardLeft = 0xA;
-    boardTop = 0x14;
-    boardRight = 0x5A;
-    boardBottom = 0xDC;
-    exitLeft = 6;
+    boardBounds.left = 0xA;
+    boardBounds.top = 0x14;
+    boardBounds.right = 0x5A;
+    boardBounds.bottom = 0xDC;
+    exitBounds.left = 6;
     entries[34].fields[2] = 1;
-    exitTop = 0x197;
-    exitRight = 0x5F;
-    exitBottom = 0x1D6;
+    exitBounds.top = 0x197;
+    exitBounds.right = 0x5F;
+    exitBounds.bottom = 0x1D6;
 
     ResetGrid();
 

@@ -57,7 +57,7 @@ extern "C" {
 int __cdecl CopyPaletteData(int index, int count, unsigned char* dest)
 {
     if (count != 0) {
-        unsigned char* src = (unsigned char*)&g_LogPalette_00437720[(index + 1) * 4];
+        unsigned char* src = (unsigned char*)&g_LogPalette_0046d308[(index + 1) * 4];
         do {
             dest[0] = src[0];
             dest[1] = src[1];
@@ -77,7 +77,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
 
     if ((signed char)g_CurrentVideoBuffer_0046db3c >= 0 && count != 0) {
         int offset = (start + 1) * 4;
-        PALETTEENTRY* pe = (PALETTEENTRY*)&g_LogPalette_00437720[offset];
+        PALETTEENTRY* pe = (PALETTEENTRY*)&g_LogPalette_0046d308[offset];
         unsigned char* src = data;
 
         // Copy RGB data to palette entries

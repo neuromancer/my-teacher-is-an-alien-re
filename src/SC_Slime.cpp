@@ -13,6 +13,8 @@
 #include <new.h>
 #include <string.h>
 #include "GameState.h"
+#include "MouseControl.h"
+#include "RockThrower.h"
 #include "SC_Question.h"
 extern "C" void SetVideoRes(int, int);
 #include "string.h"
@@ -84,11 +86,10 @@ void SC_Slime::Init(SC_MessageParser* msg)
     }
 
     if (palette != 0) {
-        int* palSlot = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
-        if (*palSlot != 0) {
+        if (g_ZBufferManager_0046aa24->m_palette != 0) {
             WriteToLog("ddouble palette");
         }
-        *palSlot = (int)palette;
+        g_ZBufferManager_0046aa24->m_palette = palette;
     }
 
     gameResult[0] = 0;
@@ -263,12 +264,8 @@ void SC_Slime::UpdateArmSprites()
     int status = spr->handle;
     if (status == 0 ||
         (spr = rightArmActive, status = spr->handle, status == 0)) {
-        int idx = status << 4;
-        int base = (int)spr->ranges;
-        int height = *(int*)(base + idx + 4);
-        int fdata = (int)spr->animation_data;
-        int subdata = *(int*)(fdata + 0xc);
-        height -= *(int*)(subdata + 0x374);
+        int height = spr->ranges[status].dim.y;
+        height -= *(int*)((char*)spr->animation_data->smk + 0x374);
         spr->ResetAnimation(2, height);
     }
     armMaskSprite->ResetAnimation(-1, 0);
@@ -294,7 +291,7 @@ void SC_Slime::Update(int param1, int param2) {
 int SC_Slime::AddMessage(SC_MessageParser* msg)
 {
     WriteMessageAddress(msg);
-    if (*(int*)((char*)msg + 0x2c) == 0x1b) {
+    if (((SpriteAction*)msg)->lastKey == 0x1b) {
         gameResult[2] = 1;
     }
     return 1;
@@ -334,9 +331,8 @@ void SC_Slime::ResetSprites()
     if (consoleSprite != 0) {
         extern InputManager* g_InputManager_0046aa08;
         int mouseX = 0;
-        int* pMouse = *(int**)((char*)g_InputManager_0046aa08 + 0x1a0);
-        if (pMouse != 0) {
-            mouseX = *pMouse;
+        if (g_InputManager_0046aa08->pMouse != 0) {
+            mouseX = g_InputManager_0046aa08->pMouse->x;
         }
         int div = screenSize.x / 5;
         consoleSprite->ResetAnimation(mouseX / div, 0);
@@ -351,18 +347,148 @@ int SC_Slime::LBLParse(char* line) {
 
 /* Function start: 0x40EB60 */
 void SC_Slime::ProcessAction(int action, int* data) {
-    TODO("SC_Slime::ProcessAction");
+    Sprite* spr = bgSprite;
+    int state = spr->handle;
+
+    if ((unsigned int)action > 6) {
+        ShowError("SC_Slime::Process_Action - invalid Action=%d, value=%d", action, *data);
+        return;
+    }
+
+    switch (action) {
+    case 0:
+        gameResult[1] = 0;
+        gameResult[2] = 0;
+        gameResult[3] = 0;
+        if (*data == 1) {
+            ((SoundList*)slimeTable)->Play(8);
+            (*data)++;
+            gameResult[6] = 0;
+        }
+        if (((SoundList*)slimeTable)->IsSamplePlaying(8) == 0) {
+            SendResultMessage();
+        }
+        return;
+
+    case 1:
+        gameResult[2] = 0;
+        gameResult[3] = 0;
+        if (*data == 1) {
+            ((SoundList*)slimeTable)->Play(0xB);
+            ((SoundList*)slimeTable)->Play(7);
+            (*data)++;
+            gameResult[6] = 0;
+            gameResult[5] = 0;
+        }
+        if (*data == 2 && ((SoundList*)slimeTable)->IsSamplePlaying(7) == 0) {
+            (*data)++;
+            gamePhase |= 1;
+        }
+        if (gamePhase == 3) {
+            GameState* gs = g_GameState_0046aa30;
+            int idx = gs->FindLabel("COMBAT_SLIME_WON");
+            if (idx < 0 || gs->maxStates - 1 < idx) {
+                ShowError("Invalid gamestate %d", idx);
+            }
+            gs->stateValues[idx] = 1;
+            SendResultMessage();
+            return;
+        }
+        return;
+
+    case 2:
+        gameResult[3] = 0;
+        if (*data == 1) {
+            ((SoundList*)slimeTable)->Play(9);
+            (*data)++;
+            gameResult[6] = 0;
+            UpdateArmSprites();
+        }
+        if (((SoundList*)slimeTable)->IsSamplePlaying(9) == 0) {
+            SendResultMessage();
+        }
+        return;
+
+    case 3:
+        if (*data == 1) {
+            ((SoundList*)slimeTable)->Play(6);
+            (*data)++;
+        }
+        if (((SoundList*)slimeTable)->IsSamplePlaying(6) == 0) {
+            *data = 0;
+            gameResult[6] = 1;
+        }
+        return;
+
+    case 4:
+        if (spr->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
+            if (state == 0) {
+                spr->ResetAnimation(1, 0);
+            } else if (state == 1) {
+                spr->ResetAnimation(0, 0);
+                int r = rand() & 1;
+                if (r < 2 && gameResult[6] != 0) {
+                    Sprite* arm = (&leftArmSprite)[r];
+                    if (arm != 0) {
+                        arm->ResetAnimation(0, 0);
+                        if (armMaskSprite != 0) {
+                            armMaskSprite->ResetAnimation(r, 0);
+                        }
+                    }
+                }
+            } else if (state == 2) {
+                gamePhase |= 2;
+                spr->ResetAnimation(3, 0);
+            }
+        }
+        return;
+
+    case 5:
+        CheckTimerExpired((Sprite*)leftSwitchActive);
+        CheckTimerExpired((Sprite*)rightSwitchActive);
+        ProcessSprite(leftArmActive);
+        ProcessSprite(rightArmActive);
+        return;
+
+    case 6:
+        if (g_Mouse_0046aa18 != 0) {
+            g_Mouse_0046aa18->DrawCursor();
+        }
+        {
+            Weapon* weapon = (Weapon*)g_SlimeField_00468bbc;
+            if (weapon != 0 && consoleSprite != 0) {
+                weapon->UpdateProjectiles();
+                if (((int*)weapon)[0x2A] != 0) {
+                    int val = 0;
+                    if (g_InputManager_0046aa08->pMouse != 0) {
+                        val = g_InputManager_0046aa08->pMouse->x;
+                    }
+                    consoleSprite->ResetAnimation(val / (screenSize.x / 3) + 5, 0);
+                }
+                if (consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0) != 0) {
+                    int val = 0;
+                    if (g_InputManager_0046aa08->pMouse != 0) {
+                        val = g_InputManager_0046aa08->pMouse->x;
+                    }
+                    consoleSprite->ResetAnimation(val / (screenSize.x / 5), 0);
+                }
+            }
+        }
+        slimeMeterSprite->Do(slimeMeterSprite->loc_x, slimeMeterSprite->loc_y, 1.0);
+        return;
+    }
 }
 
 /* Function start: 0x40D750 */
 int SC_Slime::Exit(SC_MessageParser* msg)
 {
     int id = handlerId;
-    if (*(int*)msg != id) {
+    SpriteAction* a = (SpriteAction*)msg;
+    if (a->addressType != id) {
         return 0;
     }
 
-    int action = *(int*)((char*)msg + 0x10);
+    int action = a->instruction;
     switch (action) {
     case 0:
         break;
