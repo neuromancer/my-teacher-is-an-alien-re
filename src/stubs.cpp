@@ -5,6 +5,16 @@
 // This file is kept for reference only.
 // ============================================================================
 
+// SmackSummary stub: present in original SMACKW32.DLL but absent from the
+// version of smackw32.lib bundled in this repo. Provide a minimal stub so the
+// EXE links; only the debug-only ShowSmackSummary code path uses it.
+extern "C" void __stdcall SmackSummary(void*, unsigned int* summary)
+{
+    for (int i = 0; i < 21; i++) {
+        summary[i] = 1;
+    }
+}
+
 // EnqueueHotspotAction — in SC_CombatBase.cpp
 // FUN_00447790 = SC_SpaceShipNav::ShutDown — in SC_SpaceShipNav.cpp
 // FUN_0044c660 = Sprite::Sprite(char*) — in Sprite.cpp

@@ -102,7 +102,7 @@ extern void FreeMemory(void*);
 /* Function start: 0x412130 */
 __int64 SoundTracker::Lookup(char* fname, char* keyName) {
     int* pool = (int*)g_SoundPool_00469134;
-    int* node = (int*)pool[0];  // head
+    int* volatile node = (int*)pool[0];  // head
     g_CacheLRUNode_00469138 = (void*)node;
 
     if (node == 0) {
@@ -351,7 +351,7 @@ void SoundTracker::Init() {
 /* Function start: 0x412730 */
 void SoundTracker::Cleanup() {
     char lineBuf[256];
-    int* node;
+    int* volatile node;
     int* data;
 
     FILE* fp = fsopen("cfg\\miscache.dat", "w");

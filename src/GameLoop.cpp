@@ -64,7 +64,7 @@ int GameLoop::LBLParse(char* param_1) {
         return 1;
     }
     else {
-        Parser::LBLParse("GameLoop");
+        Parser::ReportUnknownLabel("GameLoop");
     }
 
     return 0;

@@ -192,7 +192,7 @@ int T_Object::LBLParse(char* param_1)
         return 1;
     }
     else {
-        Parser::LBLParse("T_Object");
+        Parser::ReportUnknownLabel("T_Object");
     }
 
     return 0;

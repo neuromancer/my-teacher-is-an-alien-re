@@ -536,13 +536,13 @@ int IconBar::LBLParse(char* param) {
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SC_IconBarModule");
+        Parser::ReportUnknownLabel("SC_IconBarModule");
     }
     return 0;
 }
 
 /* Function start: 0x42E330 */
-IconBarEntry::IconBarEntry() {
+IconBarEntry::IconBarEntry() : bounds() {
     memset(this, 0, 9 * 4);
 }
 

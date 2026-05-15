@@ -154,8 +154,8 @@ void* mCNavigator::FindNodeInPool(unsigned int nodeId)
 {
     ObjectPool* pool;
     NavNode* node;
-    unsigned int h;
-    void* result;
+    volatile unsigned int h;
+    void* volatile result;
 
     pool = navNodePool;
     node = 0;
@@ -272,7 +272,7 @@ int mCNavigator::LBLParse(char* param_1)
         return 1;
     }
     else {
-        Parser::LBLParse("Navigator");
+        Parser::ReportUnknownLabel("Navigator");
     }
 
     return 0;

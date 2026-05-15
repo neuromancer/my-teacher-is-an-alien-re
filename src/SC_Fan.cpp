@@ -351,7 +351,10 @@ void SC_Fan::DisplaySprites(int frame) {
 
 /* Function start: 0x40FC30 */
 void SC_Fan::ProcessHit() {
-    TODO("SC_Fan::ProcessHit");
+    Sample* s = samples[2];
+    if (s != 0) {
+        s->Play(100, 1);
+    }
 }
 
 /* Function start: 0x40FC50 */

@@ -173,21 +173,23 @@ void GameEngine::ProcessInput() {
     }
 
     pMouse = &(g_InputManager_0046aa08)->pMouse;
-    if (*pMouse == 0) {
-        action.button1 = 0;
-    } else {
+    if (*pMouse != 0) {
         action.button1 = (*pMouse)->ext1;
-    }
-    if (*pMouse == 0) {
-        action.button2 = 0;
     } else {
+        action.button1 = 0;
+    }
+    if (*pMouse != 0) {
         action.button2 = (*pMouse)->ext2;
+    } else {
+        action.button2 = 0;
     }
     mouse = *pMouse;
-    int mouseY = 0;
+    int mouseY;
     int mouseX;
     if (mouse != 0) {
         mouseY = mouse->y;
+    } else {
+        mouseY = 0;
     }
     if (mouse != 0) {
         mouseX = mouse->x;
@@ -347,7 +349,6 @@ void GameEngine::UpdateHandlers() {
 void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
     Handler* handler;
     Handler* foundHandler;
-    ZBufferManager* manager;
     ZBQueue* queue;
     SpriteAction* action;
 
@@ -365,9 +366,8 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
         handler->ShutDown(msg);
     }
 
-    manager = g_ZBufferManager_0046aa24;
-    if (manager != 0) {
-        queue = manager->m_queueA0;
+    if (g_ZBufferManager_0046aa24 != 0) {
+        queue = g_ZBufferManager_0046aa24->m_queueA0;
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
@@ -380,7 +380,7 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
             }
         }
 
-        queue = manager->m_queueA4;
+        queue = g_ZBufferManager_0046aa24->m_queueA4;
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
@@ -393,8 +393,8 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
             }
         }
 
-        manager->m_queue9c->ClearList();
-        manager->m_palette = 0;
+        g_ZBufferManager_0046aa24->m_queue9c->ClearList();
+        g_ZBufferManager_0046aa24->m_palette = 0;
     }
 
     foundHandler = FindHandlerInList(action->addressType);
@@ -425,7 +425,22 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
                     break;
                 }
                 if (list->tail == list->current) {
-                    list->PushNode(handler);
+                    if (handler == 0) ShowError("queue fault 0112");
+                    ListNode* newNode = new ListNode(handler);
+                    if (list->current == 0) list->current = list->tail;
+                    if (list->head == 0) {
+                        list->head = newNode;
+                        list->tail = newNode;
+                        list->current = newNode;
+                    } else {
+                        if (list->tail == 0 || list->tail->next != 0) {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->next = 0;
+                        newNode->prev = list->tail;
+                        list->tail->next = newNode;
+                        list->tail = newNode;
+                    }
                     break;
                 }
                 if (list->current != 0) {
@@ -495,24 +510,57 @@ int GameEngine::AddHandler(Handler* handler) {
     if (handler == 0) {
         ShowError("queue fault 0101");
     }
-    list->current = list->head;
-    if ((list->type == 1 || list->type == 2) && list->head != 0) {
+    ListNode* head = list->head;
+    list->current = head;
+    if ((list->type == 1 || list->type == 2) && head != 0) {
         do {
-            Handler* currentHandler;
+                Handler* currentHandler;
 
-            currentHandler = (Handler*)list->current->data;
-            if (currentHandler->handlerId < handler->handlerId) {
-                list->InsertNode(handler);
-                return 1;
-            }
-            if (list->tail == list->current) {
-                list->PushNode(handler);
-                return 1;
-            }
-            if (list->current != 0) {
-                list->current = list->current->next;
-            }
-        } while (list->current != 0);
+                currentHandler = (Handler*)list->current->data;
+                if (currentHandler->handlerId < handler->handlerId) {
+                    if (handler == 0) ShowError("queue fault 0102");
+                    ListNode* newNode = new ListNode(handler);
+                    if (list->current == 0) list->current = list->head;
+                    if (list->head == 0) {
+                        list->head = newNode;
+                        list->tail = newNode;
+                        list->current = newNode;
+                    } else {
+                        newNode->next = list->current;
+                        newNode->prev = list->current->prev;
+                        if (list->current->prev != 0) {
+                            list->current->prev->next = newNode;
+                            list->current->prev = newNode;
+                        } else {
+                            list->head = newNode;
+                            list->current->prev = newNode;
+                        }
+                    }
+                    return 1;
+                }
+                if (list->tail == list->current) {
+                    if (handler == 0) ShowError("queue fault 0112");
+                    ListNode* newNode = new ListNode(handler);
+                    if (list->current == 0) list->current = list->tail;
+                    if (list->head == 0) {
+                        list->head = newNode;
+                        list->tail = newNode;
+                        list->current = newNode;
+                    } else {
+                        if (list->tail == 0 || list->tail->next != 0) {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->next = 0;
+                        newNode->prev = list->tail;
+                        list->tail->next = newNode;
+                        list->tail = newNode;
+                    }
+                    return 1;
+                }
+                if (list->current != 0) {
+                    list->current = list->current->next;
+                }
+            } while (list->current != 0);
     } else {
         ((EventList*)list)->InsertNode(handler);
     }
@@ -579,10 +627,10 @@ Handler* GameEngine::FindHandlerInList(int command) {
 found:
                 list = m_handlerList;
                 node = list->current;
-                if (node == 0) {
-                    return 0;
+                if (node != 0) {
+                    return (Handler*)node->data;
                 }
-                return (Handler*)node->data;
+                return 0;
             }
         }
 
@@ -666,18 +714,17 @@ void GameEngine::Serialize(void* param) {
 
         LinkedList* list = m_handlerList;
         list->current = list->head;
-        while (list->head != 0) {
-            ListNode* node = list->current;
-            if (node != 0) {
-                Handler* h = (Handler*)node->data;
-                if (h != 0) {
-                    h->Serialize(param);
+        if (m_handlerList->current != 0) {
+            do {
+                ListNode* current = m_handlerList->current;
+                Handler* h = (Handler*)current->data;
+                if (h == 0) break;
+                h->Serialize(param);
+                if (m_handlerList->tail == m_handlerList->current) break;
+                if (m_handlerList->current != 0) {
+                    m_handlerList->current = m_handlerList->current->next;
                 }
-            }
-            if (list->tail == list->current) break;
-            if (list->current != 0) {
-                list->current = list->current->next;
-            }
+            } while (m_handlerList->current != 0);
         }
 
         int sentinel = 0x270f;

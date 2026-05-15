@@ -26,25 +26,43 @@ from cppSourceParser import (
     sanitize_source,
     walk,
 )
+from projectConfig import (
+    ConfigError,
+    add_config_argument,
+    config_or_arg,
+    load_config,
+    mode_paths,
+    parse_int,
+    parse_range,
+    parse_slot_map,
+)
 
-ORIG_EXE = "data/full/TEACHER.ORI.EXE"
-SRC_DIR = "src"
-CODE_FULL_DIR = "code-full"
+SLOT_SYMBOL_ALIASES = {}
+VTABLE_MANUAL_CLASSES = []
+VTABLE_DUPLICATE_CLASS_DROPS = []
+VTABLE_CLASS_OVERRIDES = {}
+VTABLE_SLOT_NAME_SETS = []
 
-# .rdata address range for the full game binary (TEACHER.ORI.EXE)
-RDATA_MIN = 0x461000
-RDATA_MAX = 0x468000
 
-# Intentional source-name aliases for shared COMDATs or local implementation
-# names that differ from the source-facing vtable class names.
-SLOT_SYMBOL_ALIASES = {
-    ('RenderCmd_DrawVBuf', 0): {('CommandType1', 'Execute')},
-    ('RenderCmd_DrawText', 0): {('CommandType2', 'Execute')},
-    ('RenderCmd_DrawRect', 0): {('CommandType3', 'Execute')},
-    ('Handler', 4): {('Handler', 'CopyCommandData')},
-    ('Handler', 5): {('Handler', 'WriteMessageAddress')},
-    ('Handler', 10): {('Engine', 'LogHandler')},
-}
+def configure_vtable_checker(config):
+    global SLOT_SYMBOL_ALIASES, VTABLE_MANUAL_CLASSES, VTABLE_DUPLICATE_CLASS_DROPS
+    global VTABLE_CLASS_OVERRIDES, VTABLE_SLOT_NAME_SETS
+
+    vtables_config = config.get('vtables', {})
+    SLOT_SYMBOL_ALIASES = {
+        (item['class'], int(item['slot'])): {tuple(alias) for alias in item.get('aliases', [])}
+        for item in vtables_config.get('slot_symbol_aliases', [])
+    }
+    VTABLE_MANUAL_CLASSES = list(vtables_config.get('manual_classes', []))
+    VTABLE_DUPLICATE_CLASS_DROPS = list(vtables_config.get('duplicate_class_drops', []))
+    VTABLE_CLASS_OVERRIDES = dict(vtables_config.get('class_overrides', {}))
+    VTABLE_SLOT_NAME_SETS = [
+        {
+            'class_or_ancestor': item['class_or_ancestor'],
+            'slots': parse_slot_map(item.get('slots', {})),
+        }
+        for item in vtables_config.get('slot_name_sets', [])
+    ]
 
 
 def strip_inline_comments(text):
@@ -394,7 +412,7 @@ def is_trivial_function_type(ftype):
 
 # ── Vtable address collection ──────────────────────────────────────────────
 
-def find_vtable_addrs_from_disasm(code_full_dir, rdata_min=RDATA_MIN, rdata_max=RDATA_MAX):
+def find_vtable_addrs_from_disasm(code_full_dir, rdata_min, rdata_max):
     """Find all vtable addresses from MOV patterns in disassembled constructors."""
     pat = re.compile(r'MOV dword ptr \[E[A-Z]+\],0x([0-9a-fA-F]+)', re.IGNORECASE)
     addrs = set()
@@ -409,7 +427,7 @@ def find_vtable_addrs_from_disasm(code_full_dir, rdata_min=RDATA_MIN, rdata_max=
     return addrs
 
 
-def find_vtable_addrs_from_headers(src_dir):
+def find_vtable_addrs_from_headers(src_dir, rdata_min, rdata_max):
     """Find vtable addresses from header comments (full game only)."""
     pat = re.compile(r'\bvtable(?:\s+address)?(?:\s+at)?[:\s]+0x([0-9a-fA-F]+)', re.IGNORECASE)
     addrs = set()
@@ -420,7 +438,7 @@ def find_vtable_addrs_from_headers(src_dir):
                 continue
             for match in pat.finditer(node_text(source, node)):
                 addr = int(match.group(1), 16)
-                if RDATA_MIN <= addr < RDATA_MAX:
+                if rdata_min <= addr < rdata_max:
                     addrs.add(addr)
     return addrs
 
@@ -518,7 +536,7 @@ def find_source_function_symbols(src_dir):
 
 # ── Source parsing ──────────────────────────────────────────────────────────
 
-def parse_class_info(src_dir, code_full_dir):
+def parse_class_info(src_dir, code_full_dir, rdata_min, rdata_max):
     """
     Parse .h files for class hierarchy and vtable addresses.
     Uses constructor disassembly to fix incorrect/demo vtable addresses.
@@ -535,7 +553,7 @@ def parse_class_info(src_dir, code_full_dir):
 
         # Find vtable address from comments
         vtable_addr = explicit_vtables.get(cls_name)
-        if vtable_addr is not None and not (RDATA_MIN <= vtable_addr < RDATA_MAX):
+        if vtable_addr is not None and not (rdata_min <= vtable_addr < rdata_max):
             vtable_addr = None
 
         # Find constructor address
@@ -557,7 +575,7 @@ def parse_class_info(src_dir, code_full_dir):
                         if mm:
                             reg = mm.group(1)
                             addr = int(mm.group(2), 16)
-                            if RDATA_MIN <= addr < RDATA_MAX:
+                            if rdata_min <= addr < rdata_max:
                                 per_reg_vtables[reg] = addr
                                 any_vtable = addr
                     chosen_vtable = per_reg_vtables.get(this_reg) if this_reg else None
@@ -574,67 +592,31 @@ def parse_class_info(src_dir, code_full_dir):
                 'constructor': ctor_addr,
             }
 
-    # ── Manual entries for classes not auto-detected ──
-    # These either lack "class X : public Y" syntax, have no vtable comment,
-    # or are only identifiable from constructor/destructor disassembly.
-    manual = [
-        # Root classes
-        ('Parser',            0x461298, None,           'Parser.h',           0x4127C0),
-        ('Handler',           0x461098, 'Parser',       'Handler.h',          None),
-        # Classes whose headers lack full-game vtable comments
-        ('RenderEntry',       0x46102C, None,           'RenderEntry.h',      0x414710),
-        ('SoundCommand',      0x461030, None,           'SoundCommand.h',     None),
-        ('Animation',         0x461370, None,           'Animation.h',        0x41A9D0),
-        ('HotspotAction',     0x461378, 'Parser',       'HotspotAction.h',    0x41B320),
-        ('QuestionInit',      0x461418, 'Parser',       'QuestionInit.h',     0x422880),
-        ('GameLoop',          0x461458, 'Parser',       'GameLoop.h',         None),
-        ('GameState',         0x461468, 'Parser',       'GameState.h',        0x4333D0),
-        ('MouseControl',      0x4616B0, 'Parser',       'MouseControl.h',     0x4327C0),
-        ('CDData',            0x4616C8, 'Parser',       'CDData.h',           0x432EC0),
-        ('TargetList',        0x461960, 'Parser',       'Target.h',           0x4432F0),
-        ('MMPlayer',          0x461970, 'Parser',       'MMPlayer.h',         0x4438A0),
-        ('SoundEntry',        0x461A58, None,           'OnScreenMessage.h',  0x447FF0),
-        ('Sprite',            0x461C10, 'Parser',       'Sprite.h',           0x44C660),
-        # ZBufferManager render command subclasses (SoundCommand-derived, created in ZBufMgr methods)
-        ('RenderCmd_DrawVBuf',  0x461038, 'SoundCommand', 'ZBufferManager.h', None),
-        ('RenderCmd_DrawText',  0x461040, 'SoundCommand', 'ZBufferManager.h', None),
-        ('RenderCmd_DrawRect',  0x461048, 'SoundCommand', 'ZBufferManager.h', None),
-        # Handler6 (not instantiated in full game, COMDAT constructor)
-        ('Handler6',          0x4616B0, 'Handler',      'Handler6.h',         0x4327C0),
-        # Combat crosshair weapon (used by SC_FireAlarm, SC_Slime, SC_Fan, SC_Wahoo)
-        ('CombatWeapon',      0x461118, 'Weapon',       '(unknown)',          None),
-        # SC_SpaceShipNav's internal combat engine
-        ('SpaceShipEngine',   0x461A10, 'SC_CombatBase','(unknown)',          None),
-        # mCNavNode sub-vtables (parsing and runtime variants, set in LBLParse 0x44AF40)
-        ('mCNavNode_TypeLogic',   0x461B30, 'NavSubNode','mCNavNode.h',       0x44A900),
-        ('mCNavNode_TypeA',       0x461B60, 'Parser',   'mCNavNode.h',        None),
-        ('mCNavNode_TypeB',       0x461B80, 'Parser',   'mCNavNode.h',        None),
-        ('mCNavNode_TypeC',       0x461BA0, 'Parser',   'mCNavNode.h',        None),
-        ('mCNavNode_TypeD',       0x461BC0, 'Parser',   'mCNavNode.h',        None),
-        ('mCNavNode_TypeE',       0x461BE0, 'Parser',   'mCNavNode.h',        None),
-    ]
-
-    for name, vtaddr, parent, header, ctor in manual:
+    for item in VTABLE_MANUAL_CLASSES:
+        name = item['name']
         if name not in classes:
             classes[name] = {
-                'vtable_addr': vtaddr,
-                'parent': parent,
-                'header': header,
-                'constructor': ctor,
+                'vtable_addr': parse_int(item['vtable_addr']),
+                'parent': item.get('parent'),
+                'header': item.get('header', '(unknown)'),
+                'constructor': parse_int(item.get('constructor')),
             }
 
-    # MouseControl and Handler6 share 0x4327C0 (COMDAT) — keep MouseControl
-    if 'Handler6' in classes and 'MouseControl' in classes:
-        if classes['Handler6']['vtable_addr'] == classes['MouseControl']['vtable_addr']:
-            del classes['Handler6']
+    for item in VTABLE_DUPLICATE_CLASS_DROPS:
+        drop = item.get('drop')
+        keep = item.get('keep')
+        if drop in classes and keep in classes:
+            if not item.get('when_same_vtable') or classes[drop]['vtable_addr'] == classes[keep]['vtable_addr']:
+                del classes[drop]
 
-    # NavSubNode's constructor is folded into derived constructors in the
-    # original binary. Prefer the explicit base vtable from the header over the
-    # last constructor vtable write, which belongs to OnDir_SubNode.
-    if 'NavSubNode' in classes:
-        classes['NavSubNode']['vtable_addr'] = 0x461AC8
-        classes['NavSubNode']['parent'] = 'Parser'
-        classes['NavSubNode']['header'] = 'NavSubNode.h'
+    for class_name, override in VTABLE_CLASS_OVERRIDES.items():
+        if class_name in classes:
+            if 'vtable_addr' in override:
+                classes[class_name]['vtable_addr'] = parse_int(override['vtable_addr'])
+            if 'parent' in override:
+                classes[class_name]['parent'] = override['parent']
+            if 'header' in override:
+                classes[class_name]['header'] = override['header']
 
     return classes
 
@@ -675,41 +657,62 @@ def read_vtable_entries(f, sections, vtable_addr, code_start, code_end, max_addr
 
 def main():
     ap = argparse.ArgumentParser(description='Verify vtables against source')
+    add_config_argument(ap)
+    ap.add_argument('--exe', help='Original executable to read vtables from')
+    ap.add_argument('--src-dir', help='Source directory')
+    ap.add_argument('--code-dir', help='Ghidra export/disassembly directory')
+    ap.add_argument('--rdata-min', type=lambda value: int(value, 0), help='Fallback .rdata start address')
+    ap.add_argument('--rdata-max', type=lambda value: int(value, 0), help='Fallback .rdata end address')
     ap.add_argument('--dump', action='store_true', help='Show full vtable dump')
     ap.add_argument('--class', dest='filter_class', help='Filter to specific class')
     args = ap.parse_args()
 
-    if not os.path.exists(ORIG_EXE):
-        print(f"Error: {ORIG_EXE} not found")
+    try:
+        config = load_config(args.config)
+        configure_vtable_checker(config)
+        paths = mode_paths(config, demo=False)
+        vtables_config = config.get('vtables', {})
+        exe_path = config_or_arg(args.exe, paths, 'exe', 'paths.full.exe')
+        src_dir = config_or_arg(args.src_dir, paths, 'src_dir', 'paths.full.src_dir')
+        code_dir = config_or_arg(args.code_dir, paths, 'code_dir', 'paths.full.code_dir')
+        configured_rdata_min, configured_rdata_max = parse_range(vtables_config.get('rdata_range'), 'vtables.rdata_range')
+        fallback_rdata_min = args.rdata_min if args.rdata_min is not None else configured_rdata_min
+        fallback_rdata_max = args.rdata_max if args.rdata_max is not None else configured_rdata_max
+    except ConfigError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        sys.exit(2)
+
+    if not os.path.exists(exe_path):
+        print(f"Error: {exe_path} not found")
         sys.exit(1)
 
-    _, sections = parse_pe(ORIG_EXE)
+    _, sections = parse_pe(exe_path)
     text = sections['.text']
     rdata = sections.get('.rdata')
     code_start, code_end = text['va_start'], text['va_end']
-    rdata_min = rdata['va_start'] if rdata else RDATA_MIN
-    rdata_max = rdata['va_end'] if rdata else RDATA_MAX
+    rdata_min = rdata['va_start'] if rdata else fallback_rdata_min
+    rdata_max = rdata['va_end'] if rdata else fallback_rdata_max
 
     # Collect all vtable boundary addresses
-    disasm_addrs = find_vtable_addrs_from_disasm(CODE_FULL_DIR, rdata_min, rdata_max)
-    hdr_addrs = find_vtable_addrs_from_headers(SRC_DIR)
+    disasm_addrs = find_vtable_addrs_from_disasm(code_dir, rdata_min, rdata_max)
+    hdr_addrs = find_vtable_addrs_from_headers(src_dir, rdata_min, rdata_max)
     all_vtable_addrs = sorted(disasm_addrs | hdr_addrs)
 
     # Parse classes and implementations
-    classes = parse_class_info(SRC_DIR, CODE_FULL_DIR)
+    classes = parse_class_info(src_dir, code_dir, rdata_min, rdata_max)
     invalid_parents = sorted(
         (cls_name, info['parent'])
         for cls_name, info in classes.items()
         if info.get('parent') and info['parent'] not in classes
     )
-    implementations = find_implemented_functions(SRC_DIR)
-    function_symbols = find_source_function_symbols(SRC_DIR)
-    _, _, class_methods, _ = parse_header_classes(SRC_DIR)
+    implementations = find_implemented_functions(src_dir)
+    function_symbols = find_source_function_symbols(src_dir)
+    _, _, class_methods, _ = parse_header_classes(src_dir)
     expected_slots = {}
     for cls_name in classes:
         build_expected_vtable_slots(cls_name, classes, class_methods, expected_slots)
 
-    print(f"Binary:  {ORIG_EXE}")
+    print(f"Binary:  {exe_path}")
     print(f"Code:    0x{code_start:08X}..0x{code_end:08X}")
     print(f"Rdata:   0x{rdata_min:08X}..0x{rdata_max:08X}")
     print(f"Vtables: {len(all_vtable_addrs)} unique addresses")
@@ -728,7 +731,7 @@ def main():
     vtables = {}
     func_types = {}  # cache: addr -> stub/ret0/real/...
 
-    with open(ORIG_EXE, 'rb') as f:
+    with open(exe_path, 'rb') as f:
         for cls_name, info in classes.items():
             addr = info['vtable_addr']
             idx = all_vtable_addrs.index(addr) if addr in all_vtable_addrs else -1
@@ -766,16 +769,6 @@ def main():
     missing_real = []
     missing_stubs = []
 
-    # Slot name mapping for Handler-derived classes
-    HANDLER_SLOTS = {
-        0: 'LBLParse', 1: 'OnProcessStart', 2: 'OnProcessEnd', 3: '~sdtor',
-        4: 'Init', 5: 'AddMessage', 6: 'ShutDown', 7: 'Update',
-        8: 'Exit', 9: 'Serialize', 10: 'OnInput',
-    }
-    PARSER_SLOTS = {
-        0: 'LBLParse', 1: 'OnProcessStart', 2: 'OnProcessEnd', 3: '~sdtor',
-    }
-
     sorted_classes = sorted(
         [c for c in vtables if not args.filter_class or c == args.filter_class],
         key=lambda c: classes[c]['vtable_addr']
@@ -798,10 +791,10 @@ def main():
         while cur and cur in classes:
             parent_chain.append(cur)
             cur = classes[cur].get('parent')
-        if 'Handler' in parent_chain or cls_name == 'Handler':
-            slot_names = HANDLER_SLOTS
-        elif 'Parser' in parent_chain or cls_name == 'Parser':
-            slot_names = PARSER_SLOTS
+        for item in VTABLE_SLOT_NAME_SETS:
+            if item['class_or_ancestor'] in parent_chain:
+                slot_names = item['slots']
+                break
 
         inherited = 0
         overrides = []
@@ -955,7 +948,7 @@ def main():
 
             for slot_idx, func_addr, ftype in cls_missing_real:
                 slot_name = slot_label(slot_idx)
-                disasm = os.path.exists(f"{CODE_FULL_DIR}/FUN_{func_addr:X}.disassembled.txt")
+                disasm = os.path.exists(f"{code_dir}/FUN_{func_addr:X}.disassembled.txt")
                 note = " (disasm)" if disasm else ""
                 name_str = f" {slot_name}" if slot_name else ""
                 missing_real.append((cls_name, slot_idx, func_addr, info['header'], slot_name))

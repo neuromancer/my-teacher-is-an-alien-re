@@ -33,7 +33,11 @@ SC_BgSnd::~SC_BgSnd() {
 
 /* Function start: 0x439470 */
 void SC_BgSnd::Init(SC_MessageParser* msg) {
-    TODO("SC_BgSnd::Init");
+    SpriteAction* action = (SpriteAction*)msg;
+    CopyCommandData(msg);
+    if (action != 0) {
+        moduleParam = action->addressValue;
+    }
 }
 
 /* Function start: 0x439490 */
@@ -67,7 +71,9 @@ void SC_BgSnd::Update(int p1, int p2) {
 
 /* Function start: 0x439520 */
 int SC_BgSnd::AddMessage(SC_MessageParser* msg) {
-    return 0;
+    WriteMessageAddress(msg);
+    ShowError("\"SC_BgSnd::AddMessage\"");
+    return 1;
 }
 
 /* Function start: 0x439540 */

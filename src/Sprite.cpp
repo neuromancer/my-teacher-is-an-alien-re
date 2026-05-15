@@ -415,7 +415,7 @@ int Sprite::LBLParse(char* param_1)
         result = sscanf(param_1, " %s %s %d %d %d %s %s %d", keyword, buf3,
                         &val1, &val2, &val5, buf1, buf2, &val4);
         if (result < 4) {
-            Parser::LBLParse("Sprite");
+            Parser::ReportUnknownLabel("Sprite");
         }
         loc_x = val1;
         loc_y = val2;
@@ -429,7 +429,7 @@ int Sprite::LBLParse(char* param_1)
         result = sscanf(param_1, " %s %s %d %d %d %s %s %d", keyword, buf3,
                         &val1, &val2, &val5, buf1, buf2, &val4);
         if (result < 4) {
-            Parser::LBLParse("Sprite");
+            Parser::ReportUnknownLabel("Sprite");
         }
         loc_x = val1;
         loc_y = val2;
@@ -444,7 +444,7 @@ int Sprite::LBLParse(char* param_1)
         result = sscanf(param_1, " %s %s %d %d %d %s %s %d", keyword, buf3,
                         &val1, &val2, &val5, buf1, buf2, &val4);
         if (result < 4) {
-            Parser::LBLParse("Sprite");
+            Parser::ReportUnknownLabel("Sprite");
         }
         loc_x = val1;
         loc_y = val2;
@@ -459,7 +459,7 @@ int Sprite::LBLParse(char* param_1)
         result = sscanf(param_1, " %s %s %d %d %d %s %s %d", keyword, buf3,
                         &val1, &val2, &val5, buf1, buf2, &val4);
         if (result < 4) {
-            Parser::LBLParse("Sprite");
+            Parser::ReportUnknownLabel("Sprite");
         }
         loc_x = val1;
         loc_y = val2;
@@ -474,7 +474,7 @@ int Sprite::LBLParse(char* param_1)
         result = sscanf(param_1, " %s %s %d %d %s %s %d", keyword, buf3,
                         &val1, &val2, buf1, buf2, &val4);
         if (result < 4) {
-            Parser::LBLParse("Sprite");
+            Parser::ReportUnknownLabel("Sprite");
         }
         loc_x = val1;
         loc_y = val2;
@@ -486,7 +486,7 @@ int Sprite::LBLParse(char* param_1)
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("Sprite");
+        Parser::ReportUnknownLabel("Sprite");
     }
     return 0;
 }

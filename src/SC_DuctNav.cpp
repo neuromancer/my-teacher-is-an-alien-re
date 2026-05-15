@@ -33,6 +33,14 @@ struct SaveFilePool {
     int* blocks;   // 0x10
     int growBy;    // 0x14
 
+    SaveFilePool() {
+        count = 0;
+        freeList = 0;
+        tail = 0;
+        head = 0;
+        blocks = 0;
+        growBy = 0x14;
+    }
     int* AllocNode(int prev, int next);
 };
 
@@ -117,7 +125,7 @@ int SC_DuctNav::LBLParse(char* line)
 
     sscanf(line, "%s", label);
 
-    if (strcmp(label, "FONT") == 0) {
+    if (strcmp(label, "PALE") == 0) {
         sscanf(line, "%s %s", label, name);
         if (fontPalette != 0) {
             delete fontPalette;
@@ -143,7 +151,7 @@ int SC_DuctNav::LBLParse(char* line)
         sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
         CREATE_BUTTON(loadBtn, name, params)
-    } else if (strcmp(label, "OVERWRITE") == 0) {
+    } else if (strcmp(label, "EDITBOX") == 0) {
         sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
         if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
         CREATE_BUTTON(overwriteBtn, name, params)
@@ -174,7 +182,7 @@ int SC_DuctNav::LBLParse(char* line)
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SC_DuctNav");
+        Parser::ReportUnknownLabel("SC_DuctNav");
     }
 
     return 0;
@@ -898,18 +906,7 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
         saveFileList = 0;
     }
 
-    pool = (int*)operator new(0x18);
-    if (pool != 0) {
-        pool[2] = 0;
-        pool[3] = 0;
-        pool[1] = 0;
-        pool[0] = 0;
-        pool[4] = 0;
-        pool[5] = 0x14;
-    } else {
-        pool = 0;
-    }
-
+    pool = (int*)new SaveFilePool();
     saveFileList = pool;
 
     handle = _findfirst(pattern, &findData);

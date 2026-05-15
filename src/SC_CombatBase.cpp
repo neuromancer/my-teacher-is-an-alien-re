@@ -334,7 +334,7 @@ int SC_CombatBase::LBLParse(char* line)
     } else if (strcmp(token, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("Engine");
+        Parser::ReportUnknownLabel("Engine");
     }
 
     return 0;

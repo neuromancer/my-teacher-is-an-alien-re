@@ -33,8 +33,8 @@ void __cdecl FreeArrayItems(void** array, int count) {
 /* Function start: 0x408F20 */
 void __cdecl CleanupSpriteHashArray(void** array, int count)
 {
-    while (count != 0) {
-        count--;
+    if (count-- == 0) return;
+    do {
         int* table = (int*)*array;
         if (table != 0) {
             int* node = (int*)*table;
@@ -57,7 +57,7 @@ void __cdecl CleanupSpriteHashArray(void** array, int count)
             *array = 0;
         }
         array++;
-    }
+    } while (count-- != 0);
 }
 
 /* Function start: 0x43E250 */
@@ -485,7 +485,7 @@ int CombatSprite::LBLParse(char* line) {
             ParseSpriteData(line);
         }
         else {
-            Parser::LBLParse("CombatSprite");
+            Parser::ReportUnknownLabel("CombatSprite");
         }
 
         return 0;

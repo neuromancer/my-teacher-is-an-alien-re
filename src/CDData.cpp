@@ -97,10 +97,11 @@ extern "C" void LogCacheEntries();
 
 /* Function start: 0x434030 */
 void __cdecl FileCacheEntryCleanup(void* entries, int count) {
-    if (count == 0) return;
+    int saved = count;
+    count--;
+    if (saved == 0) return;
     FileCacheEntry** slot = (FileCacheEntry**)entries;
     do {
-        count--;
         FileCacheEntry* entry = *slot;
         if (entry != 0) {
             if (DeleteFileAndDir(entry->name) == -1) {
@@ -112,13 +113,15 @@ void __cdecl FileCacheEntryCleanup(void* entries, int count) {
             *slot = 0;
         }
         slot++;
-    } while (count != 0);
+        saved = count;
+        count--;
+    } while (saved != 0);
 }
 
 /* Function start: 0x4344B0 */
 void __cdecl FileCacheCleanup() {
+    if (g_FileCache_0046b78c == 0) return;
     MemoryCache* cache = g_FileCache_0046b78c;
-    if (cache == 0) return;
 
     CacheNode* node = cache->head;
     while (node != 0) {
@@ -187,7 +190,7 @@ int __cdecl FileCacheLookup(char* name) {
     if (g_FileCache_0046b78c == 0) {
         return 0;
     }
-    CacheNode* current = g_FileCache_0046b78c->head;
+    CacheNode* volatile current = g_FileCache_0046b78c->head;
 
     while (current != 0) {
         CacheNode* node = current;
@@ -301,7 +304,23 @@ void __cdecl FileCacheRegister(char* name, int size) {
 
 /* Function start: 0x4332E0 */
 int CDData::LBLParse(char* line) {
-    TODO("CDData::LBLParse");
+    char token[24];
+    char arg1[16];
+    char path[128];
+
+    token[0] = 0;
+    path[0] = 0;
+
+    sscanf(line, "\"%s\"", token);
+    if (strcmp(token, "\"COPY_TO_HD\"") == 0) {
+        sscanf(line, "\"%s %s\"", arg1, path);
+        ResolvePath(path);
+        return 0;
+    }
+    if (strcmp(token, "\"GameDirectory\"") == 0) {
+        return 1;
+    }
+    ReportUnknownLabel("\"GameDirectory\"");
     return 0;
 }
 
@@ -378,22 +397,17 @@ char* __cdecl ResolveAssetPath(char* name, ...) {
     char* basePath = g_PathResolver_0046aa1c->cdPath + 0x8a;
     vsprintf(basePath, name, (char*)&name + 4);
 
-    if (FileCacheLookup(basePath) != 0) {
-        return basePath;
+    if (FileCacheLookup(basePath) == 0 && FileExists(basePath) == 0) {
+        char* resolved = (char*)FormatAssetPath(basePath);
+        int size = GetFileSize(resolved);
+        if (size == -1) {
+            resolved = (char*)FormatAssetPath(basePath);
+            WriteToLog("HDFile:: - Unable to find file '%s'", resolved);
+            return basePath;
+        }
+        FileCacheRegister(basePath, size);
+        g_PathResolver_0046aa1c->ResolvePath(basePath);
     }
-    if (FileExists(basePath) != 0) {
-        return basePath;
-    }
-
-    char* resolved = (char*)FormatAssetPath(basePath);
-    int size = GetFileSize(resolved);
-    if (size == -1) {
-        resolved = (char*)FormatAssetPath(basePath);
-        WriteToLog("HDFile:: - Unable to find file '%s'", resolved);
-        return basePath;
-    }
-    FileCacheRegister(basePath, size);
-    g_PathResolver_0046aa1c->ResolvePath(basePath);
     return basePath;
 }
 

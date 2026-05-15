@@ -321,7 +321,7 @@ int GameState::LBLParse(char* line)
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("GameState");
+        Parser::ReportUnknownLabel("GameState");
     }
 
     return 0;
@@ -338,7 +338,7 @@ char *GameState::GetState(int stateIndex)
     }
 
     int* hashTable = (int*)stateLabels;
-    int* cursor;
+    int* volatile cursor;
     int* node;
 
     // ADC pattern: cursor = (count < 1) ? 0 : -1
@@ -404,7 +404,7 @@ int GameState::FindState(char* stateName)
 /* Function start: 0x433AE0 */
 int GameState::FindLabel(char* name) {
     int* pool = (int*)stateLabels;
-    int h;
+    volatile int h;
 
     char* p = name;
     unsigned int hash = 0;

@@ -43,20 +43,18 @@ int Sample::Load(char *filename) {
   }
   ResolveAssetPath(filename);
   Sample::m_field8 = GetFileSize(filename);
-  if (Sample::m_field8 == 0) {
-    return 1;
+  if (Sample::m_field8 != 0) {
+    file = fsopen(filename, "rb");
+    if (file != 0) {
+      Sample::m_data = (char *)AIL_mem_alloc_lock(Sample::m_field8);
+      if (Sample::m_data != 0) {
+        fread(Sample::m_data, Sample::m_field8, 1, file);
+        fclose(file);
+        return 0;
+      }
+    }
   }
-  file = fsopen(filename, "rb");
-  if (file == 0) {
-    return 1;
-  }
-  Sample::m_data = (char *)AIL_mem_alloc_lock(Sample::m_field8);
-  if (Sample::m_data == 0) {
-    return 1;
-  }
-  fread(Sample::m_data, Sample::m_field8, 1, file);
-  fclose(file);
-  return 0;
+  return 1;
 }
 
 /* Function start: 0x424FA0 */ /* ~96% match */

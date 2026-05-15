@@ -116,7 +116,7 @@ int MouseControl::LBLParse(char* line)
         m_sprite2 = 0;
         return 1;
     } else {
-        Parser::LBLParse("MouseControl");
+        Parser::ReportUnknownLabel("MouseControl");
     }
 
     return 0;

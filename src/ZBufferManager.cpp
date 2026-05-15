@@ -94,7 +94,6 @@ struct CommandType3 : public SoundCommand {
 /* Function start: 0x403CD0 */
 void ZBufferManager::QueueAnimationCleanup(void* anim)
 {
-    void* wrapper;
     ZBQueue* queue;
 
     switch (m_state) {
@@ -114,15 +113,7 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
         return;
     }
 
-    // Create 12-byte wrapper: [prev=0, next=0, data=Animation*]
-    wrapper = ::operator new(0xc);
-    if (wrapper != 0) {
-        ((int*)wrapper)[0] = 0;
-        ((int*)wrapper)[1] = 0;
-        ((void**)wrapper)[2] = anim;
-    } else {
-        wrapper = 0;
-    }
+    ListNode* wrapper = new ListNode(anim);
 
     queue = m_queueA4;
     if (wrapper == 0) {
@@ -134,11 +125,43 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
         if (queue->head != 0) {
             do {
                 if (*(unsigned int*)queue->current->data < *(unsigned int*)wrapper) {
-                    queue->InsertNode(wrapper);
+                    if (wrapper == 0) ShowError("queue fault 0102");
+                    ListNode* newNode = new ListNode(wrapper);
+                    if (queue->current == 0) queue->current = queue->head;
+                    if (queue->head == 0) {
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
+                    } else {
+                        newNode->next = queue->current;
+                        newNode->prev = queue->current->prev;
+                        if (queue->current->prev != 0) {
+                            queue->current->prev->next = newNode;
+                            queue->current->prev = newNode;
+                        } else {
+                            queue->head = newNode;
+                            queue->current->prev = newNode;
+                        }
+                    }
                     return;
                 }
                 if (queue->tail == queue->current) {
-                    queue->PushNode(wrapper);
+                    if (wrapper == 0) ShowError("queue fault 0112");
+                    ListNode* newNode = new ListNode(wrapper);
+                    if (queue->current == 0) queue->current = queue->tail;
+                    if (queue->head == 0) {
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
+                    } else {
+                        if (queue->tail == 0 || queue->tail->next != 0) {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->next = 0;
+                        newNode->prev = queue->tail;
+                        queue->tail->next = newNode;
+                        queue->tail = newNode;
+                    }
                     return;
                 }
                 if (queue->current != 0) {
@@ -967,7 +990,25 @@ void ZBufferManager::UpdateScreen() {
 /* Function start: 0x404DA0 */
 void ZBQueue::InsertBeforeCurrent(void* data)
 {
-    LinkedList::InsertNode(data);
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+    ListNode* node = new ListNode(data);
+    if (current == 0) current = head;
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
+    } else {
+        node->next = current;
+        node->prev = current->prev;
+        if (current->prev == 0) {
+            head = node;
+        } else {
+            current->prev->next = node;
+        }
+        current->prev = node;
+    }
 }
 
 /* Function start: 0x431C30 */

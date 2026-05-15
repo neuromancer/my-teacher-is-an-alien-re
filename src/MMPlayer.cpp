@@ -109,12 +109,44 @@ void MMPlayer::AddSprite(Sprite* s)
     if (queue->type == 1 || queue->type == 2) {
         if (queue->head != 0) {
             do {
-                if (((Sprite*)queue->current->data)->handleValue < s->handleValue) {
-                    queue->InsertNode(s);
+                if ((unsigned int)((Sprite*)queue->current->data)->handleValue < (unsigned int)s->handleValue) {
+                    if (s == 0) ShowError("queue fault 0102");
+                    ListNode* newNode = new ListNode(s);
+                    if (queue->current == 0) queue->current = queue->head;
+                    if (queue->head == 0) {
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
+                    } else {
+                        newNode->next = queue->current;
+                        newNode->prev = queue->current->prev;
+                        if (queue->current->prev != 0) {
+                            queue->current->prev->next = newNode;
+                            queue->current->prev = newNode;
+                        } else {
+                            queue->head = newNode;
+                            queue->current->prev = newNode;
+                        }
+                    }
                     return;
                 }
                 if (queue->tail == queue->current) {
-                    queue->PushNode(s);
+                    if (s == 0) ShowError("queue fault 0112");
+                    ListNode* newNode = new ListNode(s);
+                    if (queue->current == 0) queue->current = queue->tail;
+                    if (queue->head == 0) {
+                        queue->head = newNode;
+                        queue->tail = newNode;
+                        queue->current = newNode;
+                    } else {
+                        if (queue->tail == 0 || queue->tail->next != 0) {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->next = 0;
+                        newNode->prev = queue->tail;
+                        queue->tail->next = newNode;
+                        queue->tail = newNode;
+                    }
                     return;
                 }
                 if (queue->current != 0) {
@@ -122,7 +154,24 @@ void MMPlayer::AddSprite(Sprite* s)
                 }
             } while (queue->current != 0);
         } else {
-            queue->InsertNode(s);
+            if (s == 0) ShowError("queue fault 0102");
+            ListNode* newNode = new ListNode(s);
+            if (queue->current == 0) queue->current = queue->head;
+            if (queue->head == 0) {
+                queue->head = newNode;
+                queue->tail = newNode;
+                queue->current = newNode;
+            } else {
+                newNode->next = queue->current;
+                newNode->prev = queue->current->prev;
+                if (queue->current->prev != 0) {
+                    queue->current->prev->next = newNode;
+                    queue->current->prev = newNode;
+                } else {
+                    queue->head = newNode;
+                    queue->current->prev = newNode;
+                }
+            }
         }
     } else {
         queue->InsertBeforeCurrent(s);
@@ -202,7 +251,7 @@ int MMPlayer::LBLParse(char* param_1)
     else if (strncmp(local_34, "SPR", 3) == 0)
     {
         if (sscanf(param_1, " %s %s ", local_34, local_b0) < 2) {
-            Parser::LBLParse("MMPlayer");
+            Parser::ReportUnknownLabel("MMPlayer");
         }
         sprite = new Sprite(local_b0);
         sprite->LBLParse(param_1);
@@ -214,7 +263,7 @@ int MMPlayer::LBLParse(char* param_1)
     }
     else
     {
-        Parser::LBLParse("MMPlayer");
+        Parser::ReportUnknownLabel("MMPlayer");
     }
     return 0;
 }

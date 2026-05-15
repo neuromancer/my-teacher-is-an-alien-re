@@ -10,7 +10,7 @@
 /* Function start: 0x412130 */
 __int64 FilePosCache::Lookup(char* fname, char* keyName) {
     int* pool = (int*)g_SoundPool_00469134;
-    int* node = (int*)pool[0];  // head
+    int* volatile node = (int*)pool[0];  // head
     g_CacheLRUNode_00469138 = (void*)node;
 
     if (node == 0) {

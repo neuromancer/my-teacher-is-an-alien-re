@@ -369,7 +369,7 @@ int SelectHotspot::LBLParse(char* line) {
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SC_SelectHotSpot");
+        Parser::ReportUnknownLabel("SC_SelectHotSpot");
     }
     return 0;
 }
@@ -811,7 +811,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         SC_SelectHotSpot::currentHotspot = 0;
         return 1;
     } else {
-        Parser::LBLParse("SC_Select");
+        Parser::ReportUnknownLabel("SC_Select");
     }
     return 0;
 }

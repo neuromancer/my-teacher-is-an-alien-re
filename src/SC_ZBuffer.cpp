@@ -49,8 +49,9 @@ void SC_ZBuffer::Update(int param1, int param2) {
 
 /* Function start: 0x414400 */
 int SC_ZBuffer::AddMessage(SC_MessageParser* msg) {
-    TODO("SC_ZBuffer::AddMessage");
-    return 0;
+    WriteMessageAddress(msg);
+    ShowError("\"SC_ZBuffer::AddMessage\"");
+    return 1;
 }
 
 /* Function start: 0x414420 */

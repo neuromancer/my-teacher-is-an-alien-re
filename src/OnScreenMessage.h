@@ -24,7 +24,8 @@ struct OnScreenMessage {
 // Vtable: 0x461A58 (1 entry: sdtor at 0x448120)
 // Methods: Update(0x448140), FadeVolume(0x448220)
 struct SoundEntry {
-    int activeFlags;               // 0x04 - flags (byte at +0x04 bit 0 used)
+    int field_0;                // 0x00 - vtable slot, zeroed by ctor memset
+    int activeFlags;            // 0x04 - flags (byte at +0x04 bit 0 used)
     int targetVolume;           // 0x08
     int volumeStep;             // 0x0C
     Timer timer;                // 0x10 - Timer object (size 0x14)

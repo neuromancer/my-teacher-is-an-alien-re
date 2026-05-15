@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Run checkValues analysis on all implemented functions.
+"""Run checkValues analysis on all implemented functions."""
 
-Usage: python3 bin/checkValuesAll.py [--demo] [--filter PATTERN]
-"""
-
+import argparse
 import os
 import re
+import subprocess
 import sys
 from compileAndCompare import get_similarity, read_assembly
 from checkValues import (
@@ -13,6 +12,7 @@ from checkValues import (
     extract_offset, extract_immediate, extract_string_name
 )
 from cppSourceParser import parse_source_functions
+from projectConfig import ConfigError, add_config_argument, config_or_arg, load_config, mode_paths
 
 
 def normalize_string_for_cmp(s):
@@ -158,29 +158,51 @@ def format_warning(w):
     return str(w)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run value checks for all implemented functions.")
+    add_config_argument(parser)
+    parser.add_argument("--demo", action="store_true", help="Use demo paths from config.")
+    parser.add_argument("--filter", dest="file_filter", help="Only include files whose names contain this text.")
+    parser.add_argument("--src-dir", help="Source directory override.")
+    parser.add_argument("--code-dir", help="Ghidra export/disassembly directory override.")
+    parser.add_argument("--out-dir", help="Compiled assembly output directory override.")
+    parser.add_argument("--map-skip", help="Directory subtree to skip while scanning sources.")
+    parser.add_argument("--strings", dest="strings_path", help="strings.txt path override.")
+    parser.add_argument("--clean-target", help="Make target used to clean before rebuilding.")
+    parser.add_argument("--build-target", help="Make target used to build assembly.")
+    parser.add_argument("--jobs", type=int, help="Parallel make jobs.")
+    parser.add_argument("--no-build", action="store_true", help="Skip clean/build and use existing output.")
+    return parser.parse_args()
+
+
 def main():
-    demo_mode = '--demo' in sys.argv
-    file_filter = None
-    if '--filter' in sys.argv:
-        idx = sys.argv.index('--filter')
-        if idx + 1 < len(sys.argv):
-            file_filter = sys.argv[idx + 1]
+    args = parse_args()
+    try:
+        config = load_config(args.config)
+        paths = mode_paths(config, demo=args.demo)
+        mode = "demo" if args.demo else "full"
+        src_dir = config_or_arg(args.src_dir, paths, "src_dir", f"paths.{mode}.src_dir")
+        code_dir = config_or_arg(args.code_dir, paths, "code_dir", f"paths.{mode}.code_dir")
+        out_dir = config_or_arg(args.out_dir, paths, "out_dir", f"paths.{mode}.out_dir")
+        clean_target = config_or_arg(args.clean_target, paths, "clean_target", f"paths.{mode}.clean_target")
+        build_target = config_or_arg(args.build_target, paths, "build_target", f"paths.{mode}.build_target")
+        map_skip = config_or_arg(args.map_skip, paths, "map_skip", f"paths.{mode}.map_skip")
+        strings_path = args.strings_path or os.path.join(code_dir, "strings.txt")
+        jobs = args.jobs if args.jobs is not None else int(config.get("build", {}).get("jobs", 1))
+    except ConfigError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        sys.exit(2)
 
-    if demo_mode:
-        src_dir, code_dir, out_dir = "src-demo", "code", "out-demo"
-        clean_target, build_target = "clean-demo", "demo"
-        map_skip, strings_path = "src-demo/map", "code/strings.txt"
-    else:
-        src_dir, code_dir, out_dir = "src", "code-full", "out"
-        clean_target, build_target = "clean", "all"
-        map_skip, strings_path = "src/map", "code-full/strings.txt"
-
-    print("Building...", file=sys.stderr)
-    os.system(f"make {clean_target} > /dev/null 2>&1")
-    ret = os.system(f"make {build_target} -j12")
-    if ret != 0:
-        print("Build failed!", file=sys.stderr)
-        sys.exit(1)
+    if not args.no_build:
+        print("Building...", file=sys.stderr)
+        subprocess.run(["make", clean_target], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+        build_command = ["make", build_target]
+        if jobs and jobs > 1:
+            build_command.append(f"-j{jobs}")
+        ret = subprocess.run(build_command, check=False)
+        if ret.returncode != 0:
+            print("Build failed!", file=sys.stderr)
+            sys.exit(1)
 
     strings_db = load_strings(strings_path)
 
@@ -194,7 +216,7 @@ def main():
         for file in sorted(files):
             if not file.endswith(".cpp"):
                 continue
-            if file_filter and file_filter not in file:
+            if args.file_filter and args.file_filter not in file:
                 continue
             filepath = os.path.join(root, file)
             for source_function in parse_source_functions(filepath):

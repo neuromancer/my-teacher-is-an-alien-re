@@ -160,7 +160,7 @@ void GameLoopHelper::PostProcess() {
 
     WriteToLog("REPORT of in use animations");
     idx = 1;
-    int* node = pool->head;
+    int* volatile node = pool->head;
     if (node != 0) {
         do {
             data = (char*)node[2];

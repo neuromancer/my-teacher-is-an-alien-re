@@ -100,6 +100,7 @@ void SC_Timer::Update(int param1, int param2) {
 /* Function start: 0x423040 */
 int SC_Timer::AddMessage(SC_MessageParser* msg) {
     WriteMessageAddress(msg);
+    ShowError("\"SC_Timer::AddMessage\"");
     return 1;
 }
 

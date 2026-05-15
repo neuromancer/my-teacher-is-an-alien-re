@@ -10,19 +10,19 @@ from dataclasses import dataclass
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from cppSourceParser import CPP_PARSER, node_text, parse_source_functions, sanitize_source, walk
+from projectConfig import (
+    ConfigError,
+    add_config_argument,
+    config_or_arg,
+    get_section,
+    load_config,
+    mode_paths,
+    parse_int,
+    parse_int_value_map,
+)
 
 
-DEFAULT_EXE = "data/full/TEACHER.ORI.EXE"
-DEFAULT_GLOBALS_SOURCE = "src/globals.cpp"
-DEFAULT_GLOBALS_H = "src/globals.h"
-DEFAULT_CODE_GLOBALS_H = "code-full/globals.h"
-
-EXPECTED_RUNTIME_SEEDED_GLOBALS = {}
-
-RUNTIME_SEEDED_GLOBALS = set(EXPECTED_RUNTIME_SEEDED_GLOBALS)
-
-
-BUILTIN_TYPE_SIZES = {
+BASE_TYPE_SIZES = {
     "char": 1,
     "signed char": 1,
     "unsigned char": 1,
@@ -55,21 +55,11 @@ BUILTIN_TYPE_SIZES = {
     "SIZE_T": 4,
     "float": 4,
     "double": 8,
-    "ArthurStateHandler": 4,
-    "ArthurElapsedTimer": 8,
-    "ArthurPackedArchiveSlot": 268,
-    "ArthurShapeSetSlot": 24,
-    "ArthurRandomResourceTable": 6,
-    "ArthurOptionVariantResourceTable": 18,
-    "ArthurMainScreenStateEntry": 6,
-    "ArthurDeferredMessage": 16,
-    "ArthurSoundChannelRuntime": 22,
-    "ArthurSoundChannelSlot": 34,
-    "struct ArthurWaveFormatLayout": 18,
-    "ArthurWaveFormatLayout": 18,
-    "struct ArthurDisplayRectBlock": 12,
-    "ArthurDisplayRectBlock": 12,
 }
+
+TYPE_SIZES = dict(BASE_TYPE_SIZES)
+STRUCT_FORMATS = {}
+SYMBOLIC_STRUCT_ARRAYS = {}
 
 
 @dataclass
@@ -586,14 +576,36 @@ def normalize_type(type_text: str) -> str:
     return type_text
 
 
+def configure_globals(globals_config: Dict) -> Dict[int, int]:
+    global TYPE_SIZES, STRUCT_FORMATS, SYMBOLIC_STRUCT_ARRAYS
+
+    TYPE_SIZES = dict(BASE_TYPE_SIZES)
+    for name, size in globals_config.get("type_sizes", {}).items():
+        TYPE_SIZES[name] = parse_int(size)
+
+    STRUCT_FORMATS = {}
+    for name, spec in globals_config.get("struct_formats", {}).items():
+        aliases = spec.get("aliases") or [name]
+        for alias in aliases:
+            STRUCT_FORMATS[normalize_type(alias)] = spec["format"]
+
+    SYMBOLIC_STRUCT_ARRAYS = {}
+    for name, spec in globals_config.get("symbolic_struct_arrays", {}).items():
+        aliases = spec.get("aliases") or [name]
+        for alias in aliases:
+            SYMBOLIC_STRUCT_ARRAYS[normalize_type(alias)] = spec.get("fields", [])
+
+    return parse_int_value_map(globals_config.get("runtime_seeded_globals", {}))
+
+
 def base_type_size(type_text: str) -> Optional[int]:
     normalized = normalize_type(type_text)
     if "*" in normalized:
         return 4
-    if normalized in BUILTIN_TYPE_SIZES:
-        return BUILTIN_TYPE_SIZES[normalized]
+    if normalized in TYPE_SIZES:
+        return TYPE_SIZES[normalized]
     if normalized.startswith("struct "):
-        return BUILTIN_TYPE_SIZES.get(normalized)
+        return TYPE_SIZES.get(normalized)
     return None
 
 
@@ -759,10 +771,20 @@ def numeric_array_bytes(decl: GlobalDecl, constants: Dict[str, int]) -> Tuple[Op
     return bytes(out), ""
 
 
+def pack_struct_format(fmt: str, values: List[int]) -> Optional[bytes]:
+    try:
+        return struct.pack(fmt, *values)
+    except struct.error:
+        return None
+
+
 def struct_bytes(decl: GlobalDecl, constants: Dict[str, int]) -> Tuple[Optional[bytes], str]:
     if decl.initializer is None:
         return None, ""
     typ = normalize_type(decl.type_text)
+    fmt = STRUCT_FORMATS.get(typ)
+    if fmt is None:
+        return None, "unsupported struct initializer"
     init = strip_comments(decl.initializer).strip()
     if not (init.startswith("{") and init.endswith("}")):
         return None, ""
@@ -774,14 +796,10 @@ def struct_bytes(decl: GlobalDecl, constants: Dict[str, int]) -> Tuple[Optional[
         values = [eval_int_expr(strip_outer_casts(x), constants) for x in fields]
     except Exception:
         return None, "unparsed struct initializer"
-    if typ in ("struct ArthurDisplayRectBlock", "ArthurDisplayRectBlock") and len(values) >= 4:
-        return struct.pack("<IIhh", values[0] & 0xFFFFFFFF, values[1] & 0xFFFFFFFF,
-                           values[2] & 0xFFFF, values[3] & 0xFFFF), ""
-    if typ in ("struct ArthurWaveFormatLayout", "ArthurWaveFormatLayout") and len(values) >= 7:
-        return struct.pack("<HHIIHHH", values[0] & 0xFFFF, values[1] & 0xFFFF,
-                           values[2] & 0xFFFFFFFF, values[3] & 0xFFFFFFFF,
-                           values[4] & 0xFFFF, values[5] & 0xFFFF, values[6] & 0xFFFF), ""
-    return None, "unsupported struct initializer"
+    packed = pack_struct_format(fmt, values)
+    if packed is None:
+        return None, "unparsed struct initializer"
+    return packed, ""
 
 
 def resolve_symbolic_pointer(expr: str,
@@ -831,9 +849,8 @@ def symbolic_struct_array_bytes(decl: GlobalDecl,
     if decl.initializer is None:
         return None, ""
     typ = normalize_type(decl.type_text)
-    if typ not in ("ArthurRandomResourceTable",
-                   "ArthurOptionVariantResourceTable",
-                   "ArthurMainScreenStateEntry"):
+    field_specs = SYMBOLIC_STRUCT_ARRAYS.get(typ)
+    if field_specs is None:
         return None, ""
     init = strip_comments(decl.initializer).strip()
     if not (init.startswith("{") and init.endswith("}")):
@@ -845,36 +862,24 @@ def symbolic_struct_array_bytes(decl: GlobalDecl,
         if not (row.startswith("{") and row.endswith("}")):
             return None, "unparsed symbolic struct initializer"
         fields = split_top_level_commas(row[1:-1])
+        if len(fields) != len(field_specs):
+            return None, f"unexpected {typ} field count"
         try:
-            if typ == "ArthurRandomResourceTable":
-                if len(fields) != 2:
-                    return None, "unexpected ArthurRandomResourceTable field count"
-                count = eval_int_expr(strip_outer_casts(fields[0]), constants)
-                ptr = resolve_symbolic_pointer(fields[1], constants, data_symbols, function_symbols)
-                if ptr is None:
-                    return None, "unresolved ArthurRandomResourceTable pointer"
-                out.extend(struct.pack("<HI", count & 0xFFFF, ptr & 0xFFFFFFFF))
-            elif typ == "ArthurOptionVariantResourceTable":
-                if len(fields) != 6:
-                    return None, "unexpected ArthurOptionVariantResourceTable field count"
-                values = []
-                for i in range(0, 6, 2):
-                    count = eval_int_expr(strip_outer_casts(fields[i]), constants)
-                    ptr = resolve_symbolic_pointer(fields[i + 1], constants, data_symbols, function_symbols)
+            for field, spec in zip(fields, field_specs):
+                kind = spec.get("kind")
+                if kind == "uint16":
+                    value = eval_int_expr(strip_outer_casts(field), constants)
+                    out.extend(struct.pack("<H", value & 0xFFFF))
+                elif kind == "uint32":
+                    value = eval_int_expr(strip_outer_casts(field), constants)
+                    out.extend(struct.pack("<I", value & 0xFFFFFFFF))
+                elif kind == "pointer":
+                    ptr = resolve_symbolic_pointer(field, constants, data_symbols, function_symbols)
                     if ptr is None:
-                        return None, "unresolved ArthurOptionVariantResourceTable pointer"
-                    values.extend([count & 0xFFFF, ptr & 0xFFFFFFFF])
-                out.extend(struct.pack("<HIHIHI", values[0], values[1],
-                                       values[2], values[3],
-                                       values[4], values[5]))
-            elif typ == "ArthurMainScreenStateEntry":
-                if len(fields) != 2:
-                    return None, "unexpected ArthurMainScreenStateEntry field count"
-                available = eval_int_expr(strip_outer_casts(fields[0]), constants)
-                ptr = resolve_symbolic_pointer(fields[1], constants, data_symbols, function_symbols)
-                if ptr is None:
-                    return None, "unresolved ArthurMainScreenStateEntry handler"
-                out.extend(struct.pack("<HI", available & 0xFFFF, ptr & 0xFFFFFFFF))
+                        return None, f"unresolved {typ} pointer"
+                    out.extend(struct.pack("<I", ptr & 0xFFFFFFFF))
+                else:
+                    return None, f"unsupported {typ} field kind: {kind}"
         except Exception:
             return None, "unparsed symbolic struct initializer"
     return bytes(out), ""
@@ -1032,6 +1037,7 @@ def build_issues(pe: PEImage,
                  code_globals: List[CodeGlobal],
                  function_symbols: Dict[str, int],
                  constants: Dict[str, int],
+                 runtime_seeded_globals: Dict[int, int],
                  min_address: int,
                  include_code_globals: bool,
                  include_symbolic: bool,
@@ -1079,8 +1085,8 @@ def build_issues(pe: PEImage,
         original = pe.read(decl.address, decl.size)
         if original is None:
             continue
-        if decl.address in EXPECTED_RUNTIME_SEEDED_GLOBALS:
-            expected = struct.pack("<I", EXPECTED_RUNTIME_SEEDED_GLOBALS[decl.address])
+        if decl.address in runtime_seeded_globals:
+            expected = struct.pack("<I", runtime_seeded_globals[decl.address])
             if decl.size != len(expected):
                 issues.append(Issue("RUNTIME_SEED_SIZE", decl.address, decl.name, decl.line,
                                     decl.size, original[:min(decl.size, 32)], decl.source_bytes,
@@ -1101,7 +1107,7 @@ def build_issues(pe: PEImage,
                                     decl.source_note or "cannot compare source initializer"))
             continue
         if original[:decl.size] != decl.source_bytes[:decl.size]:
-            if decl.address in RUNTIME_SEEDED_GLOBALS:
+            if decl.address in runtime_seeded_globals:
                 continue
             category = "NONZERO_NO_INIT" if not decl.has_initializer and any(original) else "INIT_MISMATCH"
             if category == "INIT_MISMATCH" or any(original):
@@ -1185,11 +1191,12 @@ def parse_int_auto(value: str) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit globals source initializers against original PE bytes.")
-    parser.add_argument("--exe", default=DEFAULT_EXE)
-    parser.add_argument("--globals-source", "--globals-c", dest="globals_source", default=DEFAULT_GLOBALS_SOURCE)
-    parser.add_argument("--globals-h", default=DEFAULT_GLOBALS_H)
-    parser.add_argument("--code-globals-h", default=DEFAULT_CODE_GLOBALS_H)
-    parser.add_argument("--min-address", type=parse_int_auto, default=0x00468000,
+    add_config_argument(parser)
+    parser.add_argument("--exe")
+    parser.add_argument("--globals-source", "--globals-c", dest="globals_source")
+    parser.add_argument("--globals-h")
+    parser.add_argument("--code-globals-h")
+    parser.add_argument("--min-address", type=parse_int_auto,
                         help="ignore lower addresses, useful for skipping import tables")
     parser.add_argument("--max-issues", type=int, default=200,
                         help="maximum issues to print; 0 prints all")
@@ -1207,6 +1214,26 @@ def main() -> int:
                         help="exit 1 when globals without address annotations are found")
     args = parser.parse_args()
 
+    try:
+        config = load_config(args.config)
+        path_config = mode_paths(config, demo=False)
+        globals_config = get_section(config, "globals")
+
+        args.exe = config_or_arg(args.exe, path_config, "exe", "paths.full.exe")
+        args.globals_source = config_or_arg(
+            args.globals_source, path_config, "globals_source", "paths.full.globals_source"
+        )
+        args.globals_h = config_or_arg(args.globals_h, path_config, "globals_header", "paths.full.globals_header")
+        args.code_globals_h = config_or_arg(
+            args.code_globals_h, path_config, "code_globals_header", "paths.full.code_globals_header"
+        )
+        if args.min_address is None:
+            args.min_address = parse_int(config_or_arg(None, globals_config, "min_address", "globals.min_address"))
+        runtime_seeded_globals = configure_globals(globals_config)
+    except ConfigError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+
     constants = parse_defines([args.globals_h])
     pe = PEImage(args.exe)
     address_warnings: List[AddressWarning] = []
@@ -1216,6 +1243,7 @@ def main() -> int:
     function_symbols = parse_function_symbols(os.path.dirname(args.globals_source) or ".")
     issues = build_issues(pe, decls, header_decls, code_globals, function_symbols,
                           constants,
+                          runtime_seeded_globals,
                           args.min_address, args.include_code_globals, args.include_symbolic,
                           not args.no_source_order, args.source_order_all)
     print_report(issues, address_warnings, len(decls), args)

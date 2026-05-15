@@ -12,7 +12,25 @@ extern "C" void WriteToLog(const char* format, ...);
 /* Function start: 0x404E70 */
 void Queue::Insert(void* data)
 {
-    LinkedList::InsertNode(data);
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+    ListNode* node = new ListNode(data);
+    if (current == 0) current = head;
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
+    } else {
+        node->next = current;
+        node->prev = current->prev;
+        if (current->prev == 0) {
+            head = node;
+        } else {
+            current->prev->next = node;
+        }
+        current->prev = node;
+    }
 }
 
 /* Function start: 0x406CC0 */
@@ -20,34 +38,116 @@ void Queue::Add(void* data)
 {
     if (data == 0) ShowError("queue fault 0101");
     current = head;
-    if (type == 1 || type == 2) {
-        if (head != 0) {
-            do {
-                ListNode* cur = current;
-                if (*(int*)(cur->data) < *(int*)data) {
-                    InsertNode(data);
-                    return;
+    if (type != 1 && type != 2) {
+        // Non-sorted path: InsertNode inline
+        if (data == 0) ShowError("queue fault 0102");
+        ListNode* node = new ListNode(data);
+        if (current == 0) current = head;
+        if (head == 0) {
+            head = node;
+            tail = node;
+            current = node;
+        } else {
+            node->next = current;
+            node->prev = current->prev;
+            if (current->prev == 0) {
+                head = node;
+            } else {
+                current->prev->next = node;
+            }
+            current->prev = node;
+        }
+        return;
+    }
+    if (head == 0) {
+        // Sorted but empty: InsertNode inline
+        if (data == 0) ShowError("queue fault 0102");
+        ListNode* node = new ListNode(data);
+        if (current == 0) current = head;
+        if (head == 0) {
+            head = node;
+            tail = node;
+            current = node;
+        } else {
+            node->next = current;
+            node->prev = current->prev;
+            if (current->prev == 0) {
+                head = node;
+            } else {
+                current->prev->next = node;
+            }
+            current->prev = node;
+        }
+        return;
+    }
+    do {
+        ListNode* cur = current;
+        if (*(int*)(cur->data) < *(int*)data) {
+            // InsertNode inline
+            if (data == 0) ShowError("queue fault 0102");
+            ListNode* node = new ListNode(data);
+            if (current == 0) current = head;
+            if (head == 0) {
+                head = node;
+                tail = node;
+                current = node;
+            } else {
+                node->next = current;
+                node->prev = current->prev;
+                if (current->prev == 0) {
+                    head = node;
+                } else {
+                    current->prev->next = node;
                 }
-                if (tail == cur) {
-                    PushNode(data);
-                    return;
-                }
-                if (cur != 0) {
-                    current = cur->next;
-                }
-            } while (current != 0);
+                current->prev = node;
+            }
             return;
         }
-        InsertNode(data);
-    } else {
-        InsertNode(data);
-    }
+        if (tail == cur) {
+            // PushNode inline
+            if (data == 0) ShowError("queue fault 0112");
+            ListNode* node = new ListNode(data);
+            if (current == 0) current = tail;
+            if (head == 0) {
+                head = node;
+                tail = node;
+                current = node;
+            } else {
+                if (tail == 0 || tail->next != 0) {
+                    ShowError("queue fault 0113");
+                }
+                node->next = 0;
+                node->prev = tail;
+                tail->next = node;
+                tail = node;
+            }
+            return;
+        }
+        if (cur != 0) {
+            current = cur->next;
+        }
+    } while (current != 0);
 }
 
 /* Function start: 0x4070A0 */
 void Queue::Push(void* data)
 {
-    LinkedList::PushNode(data);
+    if (data == 0) ShowError("queue fault 0112");
+    ListNode* node = new ListNode(data);
+    if (current == 0) current = tail;
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
+    } else {
+        if (tail == 0 || tail->next != 0) {
+            ShowError("queue fault 0113");
+        }
+        node->next = 0;
+        node->prev = tail;
+        tail->next = node;
+        tail = node;
+    }
 }
 
 /* Function start: 0x423550 */
@@ -60,7 +160,25 @@ void* Queue::Pop()
 /* Function start: 0x4185C0 */
 void Queue::InsertAtCurrent(void* data)
 {
-    InsertNode(data);
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+    ListNode* node = new ListNode(data);
+    if (current == 0) current = head;
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
+    } else {
+        node->next = current;
+        node->prev = current->prev;
+        if (current->prev == 0) {
+            head = node;
+        } else {
+            current->prev->next = node;
+        }
+        current->prev = node;
+    }
 }
 
 /* Function start: 0x42D2D0 */
@@ -237,5 +355,23 @@ SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
 /* Function start: 0x4406F0 */
 void PriorityQueue::AddAfterCurrent(void* data)
 {
-    LinkedList::InsertNode(data);
+    if (data == 0) {
+        ShowError("queue fault 0102");
+    }
+    ListNode* node = new ListNode(data);
+    if (current == 0) current = head;
+    if (head == 0) {
+        head = node;
+        tail = node;
+        current = node;
+    } else {
+        node->next = current;
+        node->prev = current->prev;
+        if (current->prev == 0) {
+            head = node;
+        } else {
+            current->prev->next = node;
+        }
+        current->prev = node;
+    }
 }

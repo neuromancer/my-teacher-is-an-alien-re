@@ -1114,7 +1114,7 @@ int SCI_Inventory::LBLParse(char* line) {
         return 1;
     }
     else {
-        Parser::LBLParse("SCI_Inventory");
+        Parser::ReportUnknownLabel("SCI_Inventory");
     }
 
     return 0;
@@ -1186,7 +1186,7 @@ void SCI_Inventory::ProcessInventory() {
 void* SCI_Inventory::FindItem(int itemID) { return 0; }
 /* Function start: 0x43F7F0 */
 int* SCI_Inventory::FindItemInList(int itemID) {
-    QueueNode* node = ((LinkedList*)itemPool)->head;
+    QueueNode* volatile node = ((LinkedList*)itemPool)->head;
     if (node != 0) {
         do {
             if (((T_Object*)node->data)->itemId == itemID) {

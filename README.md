@@ -14,15 +14,27 @@ This repository contains no game assets, executables, or other copyrighted mater
 
 Both the demo and full game binaries are being reconstructed. The full game (`src/`) is the primary target; the demo (`src-demo/`) serves as a secondary reference.
 
+### Full Game
+
+**Progress: 1404 / 1405 (99.93%)** -- 583 auto-complete functions marked
+
+Latest `make report` summary:
+
+| Metric | Count |
+|--------|-------|
+| Compared functions | 1125 |
+| Exact matches | 496 |
+| Similarity >= 90% | 873 |
+| Similarity < 90% | 252 |
+| Errors / NOT FOUND | 0 |
+| Missing Ghidra assembly | 0 |
+| Average similarity | 89.88% |
+
 ### Demo
 
 **Progress: 817 / 876 (93.26%)** -- 265 library functions excluded, 178 auto-complete
 
 <img width="640" height="479" alt="image" src="https://github.com/user-attachments/assets/e92594ef-183c-472e-8bd6-101ee6b517a4" />
-
-### Full Game
-
-**Progress: 1406 / 1406 (100.00%)** -- 583 auto-complete functions marked
 
 ## Methodology
 
@@ -42,8 +54,14 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 | `bin/compileAndCompare.py` | Compile a single function and diff its assembly against the original |
 | `bin/compileAndReport.py` | Build everything and produce a per-function similarity report |
 | `bin/showProgress.py` | Show overall function coverage |
+| `bin/checkGlobals.py` | Verify global declarations and initialized data against the original executable |
+| `bin/checkCallTargets.py` | Verify that reconstructed functions call the expected original targets |
+| `bin/verifyVtables.py` | Verify class inheritance, vtable slots, and slot implementations |
+| `bin/checkValuesAll.py` | Compare extracted constants and string references against original disassembly |
 | `bin/compareExe.py` | Compare rebuilt and original executables |
 | `bin/compareGlobalData.py` | Compare global/static data sections |
+
+The Makefile-facing report and verifier scripts read project-specific paths, address ranges, aliases, type sizes, and known allowances from `config/verification.json`. See `docs/verification-scripts.md` for the reusable script/config layout.
 
 ## Building
 
@@ -51,7 +69,7 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 
 - [wibo](https://github.com/decompals/wibo) -- Win32 PE loader for running MSVC on Linux/macOS (included as a submodule)
 - [MSVC 4.20](https://github.com/itsmattkc/MSVC420) -- the original compiler (included as a submodule)
-- Python 3.8+ and [python-Levenshtein](https://pypi.org/project/Levenshtein/) (for similarity reports only)
+- Python 3.8+ and the packages in `requirements.txt` (`levenshtein`, `tree-sitter`, `tree-sitter-cpp`)
 - [DREAMM](https://dreamm.aarongiles.com/) -- Windows 95/98 compatibility layer for running the rebuilt executable (for `make run-demo` only)
 
 ### Setup
@@ -59,6 +77,7 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 ```bash
 git clone --recursive <repo-url>
 cd my-teacher-is-an-alien-re
+python3 -m pip install -r requirements.txt
 make
 ```
 
@@ -76,6 +95,9 @@ make
 | Demo progress | `make progress-demo` | Show function coverage for the demo |
 | Full game report | `make report` | Per-function similarity report for the full game |
 | Demo report | `make report-demo` | Per-function similarity report for the demo |
+| Verify globals | `make verify-globals` | Check global declarations, addresses, types, and initialized values |
+| Verify call targets | `make verify-calls` | Check reconstructed call targets against original disassembly |
+| Verify vtables | `make verify-vtables` | Check inheritance, vtable slots, and slot implementations |
 | Compare executables | `make compare` | Byte-level comparison of original vs rebuilt demo |
 | Compare functions | `make compare-functions` | Function-level comparison of original vs rebuilt demo |
 | Compare globals | `make globals` | Compare global data sections |

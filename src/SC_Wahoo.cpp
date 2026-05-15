@@ -607,7 +607,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
             }
         }
         else {
-            Parser::LBLParse("SC_Wahoo");
+            Parser::ReportUnknownLabel("SC_Wahoo");
         }
     }
     else if (strcmp(local_38, "WEAPON") == 0) {
@@ -622,7 +622,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
         return 1;
     }
     else {
-        Parser::LBLParse("SC_Wahoo");
+        Parser::ReportUnknownLabel("SC_Wahoo");
     }
 
     return 0;

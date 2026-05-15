@@ -714,7 +714,7 @@ int SC_WordSearch::LBLParse(char* line) {
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SC_Wahoo");
+        Parser::ReportUnknownLabel("SC_Wahoo");
     }
     return 0;
 }

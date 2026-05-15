@@ -709,7 +709,7 @@ int SC_Detention::LBLParse(char* line) { // prologue at 0x40B240
     } else if (strcmp(token, "END") == 0) {
         return 1;
     } else {
-        Parser::LBLParse("SCI_SearchScreen");
+        Parser::ReportUnknownLabel("SCI_SearchScreen");
     }
 
     return 0;

@@ -13,6 +13,7 @@ MSVC_LIB = compilers\msvc420\lib;compilers\msvc420\mfc\lib
 CFLAGS = /nologo /c /Og /Oi /Ot /Oy /Ob1 /Gs /Gf /GX /I msvc420\\include /I 3rdparty\\miles\\include /I 3rdparty\\smack\\include
 DEMO_DATA_URL = https://downloads.scummvm.org/frs/demos/hypno/teacher-windows-demo-en.zip
 OUT_DIR = out
+VERIFY_CONFIG = config/verification.json
 
 # Platform detection
 UNAME_S := $(shell uname -s)
@@ -167,10 +168,10 @@ endif
 	@rm $(DREAMM_DIR)/$(DREAMM_ARCHIVE)
 
 TEACHER.EXE: $(OBJS)
-	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /MAP:TEACHER.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
+	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /SUBSYSTEM:WINDOWS /ENTRY:WinMainCRTStartup /MAP:TEACHER.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
 
 TEACHER-DEMO.EXE: $(OBJS_DEMO)
-	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /MAP:TEACHER-DEMO.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
+	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /SUBSYSTEM:WINDOWS /ENTRY:WinMainCRTStartup /MAP:TEACHER-DEMO.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
 
 $(OUT_DIR)/%.obj $(OUT_DIR)/%.asm: src/%.cpp | $(WIBO)
 	@mkdir -p $(OUT_DIR)
@@ -191,7 +192,7 @@ sort:
 	@python3 bin/sortByAddress.py
 
 report:
-	@python3 bin/compileAndReport.py $(if $(FILTER),--filter $(FILTER))
+	@python3 bin/compileAndReport.py --config $(VERIFY_CONFIG) $(if $(FILTER),--filter $(FILTER))
 
 progress:
 	@python3 bin/showProgress.py
@@ -200,7 +201,7 @@ progress-demo:
 	@python3 bin/showProgress.py --demo
 
 report-demo:
-	@python3 bin/compileAndReport.py --demo
+	@python3 bin/compileAndReport.py --config $(VERIFY_CONFIG) --demo
 
 globals:
 	@python3 bin/compareGlobalData.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE
@@ -218,13 +219,13 @@ compare-functions:
 	@python3 bin/compareExe.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE --functions
 
 verify-globals:
-	@python3 bin/checkGlobals.py --fail-on-issues --fail-on-warnings
+	@python3 bin/checkGlobals.py --config $(VERIFY_CONFIG) --fail-on-issues --fail-on-warnings
 
 verify-calls:
-	@python3 bin/checkCallTargets.py
+	@python3 bin/checkCallTargets.py --config $(VERIFY_CONFIG)
 
 verify-vtables:
-	@python3 bin/verifyVtables.py
+	@python3 bin/verifyVtables.py --config $(VERIFY_CONFIG)
 
 data/demo/CDDATA:
 	@echo "Downloading demo data..."

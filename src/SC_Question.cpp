@@ -343,7 +343,7 @@ int SC_Question::LBLParse(char* param_1)
         sscanf(param_1, " %s %d", keyword, &id);
         result = g_Strings_0046a6e0->GetString( id, label);
         if (result == 0) {
-            Parser::LBLParse("SC_Question");
+            Parser::ReportUnknownLabel("SC_Question");
         }
     }
     else if (strcmp(keyword, "ACTIVATEQ") == 0) {
@@ -571,7 +571,7 @@ int SC_Question::LBLParse(char* param_1)
             ((SpriteAction*)action)->extra1 = 1;
         }
         if (((SpriteAction*)action)->instruction == 0x11 && result < 4) {
-            Parser::LBLParse("SC_Question");
+            Parser::ReportUnknownLabel("SC_Question");
         }
         queue = (int*)messageQueue;
         if (action == 0) {
@@ -851,7 +851,7 @@ insertFirstSwitchRoomAction:
         return 1;
     }
     else {
-        Parser::LBLParse("SC_Question");
+        Parser::ReportUnknownLabel("SC_Question");
     }
 
     return 0;

@@ -86,7 +86,7 @@ int TargetList::LBLParse(char* line) {
     if (stricmp(type, "END") == 0) {
       return 1;
     }
-    Parser::LBLParse("TargetList");
+    Parser::ReportUnknownLabel("TargetList");
   }
 
   return 0;

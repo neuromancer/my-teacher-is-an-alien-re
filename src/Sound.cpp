@@ -14,10 +14,7 @@ PCMWAVEFORMAT g_pcm;
 
 /* Function start: 0x424C50 */
 Sound::Sound(int param_1, short param_2, int param_3) {
-  int *puVar4 = (int *)this;
-  for (int i = 0; i < 15; i++) {
-    *puVar4++ = 0;
-  }
+  memset(this, 0, 15 * sizeof(int));
 
   AIL_startup();
   if (g_GameConfig2_0046aa10->data.rawData[2] != '\x02') {

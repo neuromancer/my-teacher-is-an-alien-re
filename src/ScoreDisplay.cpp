@@ -1,10 +1,9 @@
 #include "ScoreDisplay.h"
+#include <string.h>
 
 /* Function start: 0x40C5E0 */
 ScoreDisplay::ScoreDisplay() {
-    for (int i = 9; i != 0; i--) {
-        ((int*)this)[i - 1] = 0;
-    }
+    memset(this, 0, 9 * sizeof(int));
 }
 
 /* Function start: 0x40C600 */

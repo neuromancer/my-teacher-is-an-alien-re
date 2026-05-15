@@ -621,7 +621,7 @@ int Target::LBLParse(char* line)
         return 1;
     }
     else {
-        Parser::LBLParse("Target");
+        Parser::ReportUnknownLabel("Target");
     }
 
     return 0;
