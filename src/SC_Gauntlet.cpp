@@ -47,8 +47,8 @@ void SC_Gauntlet::Init(SC_MessageParser* msg) {
     if (!FileExists("puz_roach")) {
         ShowLoadingScreen();
     }
-    strcpy((char*)(combatParams + 4), "mis\\pz_roach.mis");
-    ParseFile(this, (char*)(combatParams + 4), (char*)0);
+    strcpy((char*)(combatParams + 5), "mis\\pz_roach.mis");
+    ParseFile(this, (char*)(combatParams + 5), (char*)0);
 }
 
 /* Function start: 0x42E8F0 */
@@ -114,21 +114,21 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
         int* actionFlags = statusPtr + 5;
         if (*actionFlags != 0) {
             int row = 0;
-            GauntletEntry* ge = entries;
+            int* gep = &entries[0].fields[3];
             do {
                 int col = 0;
                 do {
-                    if (action->mousePos.x >= ge->fields[3] &&
-                        action->mousePos.x <= ge->fields[5] &&
-                        action->mousePos.y >= ge->fields[4] &&
-                        action->mousePos.y <= ge->fields[6] &&
-                        ge->fields[1] == 0) {
+                    if (action->mousePos.x >= gep[0] &&
+                        action->mousePos.x <= gep[2] &&
+                        action->mousePos.y >= gep[1] &&
+                        action->mousePos.y <= gep[3] &&
+                        gep[-2] == 0) {
                         Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
                         if (mouseSpr != 0 && mouseSpr->handle == 0xC) {
                             ProcessGrid(row, col);
                         }
                     }
-                    ge++;
+                    gep = (int*)((char*)gep + 0x1C);
                     col++;
                 } while (col < 6);
                 row++;

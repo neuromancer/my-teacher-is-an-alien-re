@@ -180,8 +180,8 @@ void SC_FakeRoom::OnProcessEnd() {}
 void SC_FakeRoom::Init(SC_MessageParser* msg) {
     memset(&stateFlags, 0, 6 * sizeof(int));
     SC_Combat::Init(msg);
-    strcpy((char*)(combatParams + 4), "mis\\CB_FakeRoom.mis");
-    ParseFile(this, (char*)(combatParams + 4), (char*)0);
+    strcpy((char*)(combatParams + 5), "mis\\CB_FakeRoom.mis");
+    ParseFile(this, (char*)(combatParams + 5), (char*)0);
 }
 
 /* Function start: 0x4443C0 */

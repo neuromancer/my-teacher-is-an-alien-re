@@ -365,7 +365,7 @@ int SC_CombatBase::ProcessEvents()
 
 /* Function start: 0x42C230 */
 void SC_CombatBase::ResetState() {}
-extern "C" int __cdecl SetDrawColors(unsigned char, unsigned char);
+extern "C" int __cdecl SetDrawColors(int, int);
 extern "C" int __cdecl SetDrawPosition(int, int);
 
 /* Function start: 0x42C960 */

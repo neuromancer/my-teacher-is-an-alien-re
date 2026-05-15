@@ -29,10 +29,10 @@ SC_Game::SC_Game() {
     upScroll.left = 0;
     upScroll.top = 0;
     upScroll.right = 0x27f;
-    downScroll.left = 0;
-    downScroll.right = 0x27f;
     upScroll.bottom = 0x14;
+    downScroll.left = 0;
     downScroll.top = 0x1cb;
+    downScroll.right = 0x27f;
     downScroll.bottom = 0x1df;
     textX = 10;
     textY = 0x1d;

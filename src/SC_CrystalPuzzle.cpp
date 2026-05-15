@@ -854,14 +854,14 @@ void SC_CrystalPuzzle::OnClick(int x, int y) {
 /* Function start: 0x450610 */
 void SC_CrystalPuzzle::OnButtonClick(int buttonIndex) {
     int prevState = buttonStates[buttonIndex];
-    int row = buttonIndex / 3;
+    int base = (buttonIndex / 3) * 3;
 
-    ResetPuzzle(row * 3 / 3 + 6, 1);
+    ResetPuzzle(base / 3 + 6, 1);
 
-    int base = row * 3;
-    buttonStates[base] = 0;
-    buttonStates[base + 1] = 0;
-    buttonStates[base + 2] = 0;
+    int* p = &buttonStates[base];
+    p[0] = 0;
+    p[1] = 0;
+    p[2] = 0;
 
     if (prevState == 0) {
         buttonStates[buttonIndex] = 1;

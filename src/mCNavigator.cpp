@@ -58,7 +58,7 @@ int FindCharIndex(char ch)
 /* Function start: 0x449B60 */
 char GetDirectionChar(int dir) {
     if (dir < 0 || dir > 5) {
-        ShowError("Invalid direction %d", dir);
+        ShowError("Bearing - Invalid bearing '%d'", dir);
     }
     return g_DirectionChars[dir];
 }

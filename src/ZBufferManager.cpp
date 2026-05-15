@@ -280,7 +280,7 @@ void CommandType3::Execute(GlyphRect* rect)
     if (0x1df < bottom) {
         bottom = 0x1df;
     }
-    if (field_18 == 1) {
+    if (field_18 == 2) {
         DrawRectOutline(left, right, top, bottom);
         return;
     }

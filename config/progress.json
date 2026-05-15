@@ -1,0 +1,16 @@
+{
+  "full": {
+    "map_dir": "src/map",
+    "src_dir": "src",
+    "code_dir": "code-full",
+    "auto_complete": "src/auto_complete.txt",
+    "library_ranges": [["0x454100", "0x460480"]]
+  },
+  "demo": {
+    "map_dir": "src-demo/map",
+    "src_dir": "src-demo",
+    "code_dir": "code",
+    "auto_complete": "src-demo/auto_complete.txt",
+    "library_ranges": [["0x424540", "0x4304E0"]]
+  }
+}

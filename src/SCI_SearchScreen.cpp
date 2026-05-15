@@ -200,7 +200,7 @@ void SCI_SearchScreen::ProcessAction(int action, int* data) {
 void SCI_SearchScreen::OnProcessStart() {
 }
 
-extern "C" void __fastcall InitCombatScreen(void* self);
+extern void __fastcall InitCombatScreen(void* self);
 
 /* Function start: 0x40BAC0 */
 void SCI_SearchScreen::OnProcessEnd() {

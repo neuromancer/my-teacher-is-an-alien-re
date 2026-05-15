@@ -696,13 +696,13 @@ void SC_Fan::OnProcessEnd()
     invSlots_100[1].top = 0x5A;
     invSlots_100[2].top = 0x1E;
     invSlots_100[2].right = 0xE7;
-    invSlots_100[2].bottom = 0xE3;
-    invSlots_100[3].left = 0x5E;
+    invSlots_100[3].left = 0xE3;
+    invSlots_100[3].bottom = 0x5E;
     invSlots_100[2].bottom = 0x22;
     invSlots_100[3].top = 0x5A;
     invSlots_100[3].right = 0xE6;
-    field_F0 = 0;
     field_F4 = 0;
+    field_F0 = 0;
     field_FC = 0;
     field_F8 = 0;
     field_140 = 0;

@@ -172,6 +172,8 @@ def parse_args():
     parser.add_argument("--build-target", help="Make target used to build assembly.")
     parser.add_argument("--jobs", type=int, help="Parallel make jobs.")
     parser.add_argument("--no-build", action="store_true", help="Skip clean/build and use existing output.")
+    parser.add_argument("--min-similarity", type=float, default=0.0,
+                        help="Only show functions whose similarity is at least this percentage (0-100). Default: 0.")
     return parser.parse_args()
 
 
@@ -209,6 +211,8 @@ def main():
     total = 0
     with_mismatches = 0
     total_warnings = 0
+    skipped_below_threshold = 0
+    threshold = args.min_similarity
 
     for root, _, files in os.walk(src_dir):
         if map_skip in root:
@@ -231,6 +235,9 @@ def main():
                 try:
                     similarity, warnings = check_values_for(func_name, disasm_file, out_dir, strings_db)
                     if warnings:
+                        if similarity is not None and similarity < threshold:
+                            skipped_below_threshold += 1
+                            continue
                         with_mismatches += 1
                         total_warnings += len(warnings)
                         sim_str = f"{similarity:.1f}%" if similarity is not None else "?"
@@ -244,6 +251,8 @@ def main():
     print(f"Functions checked: {total}")
     print(f"With value mismatches: {with_mismatches}")
     print(f"Total mismatches: {total_warnings}")
+    if threshold > 0:
+        print(f"Skipped (similarity < {threshold:.1f}%): {skipped_below_threshold}")
 
 
 if __name__ == "__main__":

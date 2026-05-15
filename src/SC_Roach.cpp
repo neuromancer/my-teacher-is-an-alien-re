@@ -494,12 +494,12 @@ int SC_Roach::PickFromSource(int* msg)
 {
     int idx = 0;
     int mouseX = msg[7];
+    int* p = &sources[0].pickupLeft;
 
     do {
         int hit;
-        CrystalSource* src = &sources[idx];
-        if (src->pickupLeft <= mouseX && src->pickupRight >= mouseX &&
-            src->pickupTop <= msg[8] && src->pickupBottom >= msg[8]) {
+        if (p[0] <= mouseX && p[2] >= mouseX &&
+            p[1] <= msg[8] && p[3] >= msg[8]) {
             hit = 1;
         } else {
             hit = 0;
@@ -507,6 +507,7 @@ int SC_Roach::PickFromSource(int* msg)
         if (hit != 0) {
             goto found;
         }
+        p = (int*)((char*)p + 0x2C);
         idx++;
     } while (idx < 8);
 
