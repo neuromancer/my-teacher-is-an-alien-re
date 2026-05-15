@@ -32,7 +32,7 @@ public:
     virtual int LBLParse(char* param_1);      // 0x438630 (+0x00)
 
     int ProcessClick(int param_1);              // 0x438F10 (+0x2C)
-    virtual int OnCombatResult();               // 0x438EF0 (+0x30)
+    virtual void OnCombatResult();              // 0x438EF0 (+0x30)
 
     void ProcessState();                      // 0x4382F0
     void OnProcessEnd();                      // 0x438470

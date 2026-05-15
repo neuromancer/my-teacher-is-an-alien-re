@@ -1,3 +1,4 @@
+import json
 import os
 import re
 
@@ -57,12 +58,7 @@ def load_auto_complete_functions(filepath):
     return addresses
 
 
-# Optional address ranges that should be treated as library functions even if
-# the decompiled files don't explicitly mark them. Add tuples as (start, end).
-LIBRARY_RANGES = [ (0x424540, 0x4304E0) ]  # CRT/library range: EH, FDIV workarounds, stdio, FP, locale, IAT thunks
-
-# Path to auto-complete functions file (relative to script location)
-AUTO_COMPLETE_FILE = os.path.join(os.path.dirname(__file__), '..', 'src-demo', 'auto_complete.txt')
+CONFIG_FILE = os.path.join(os.path.dirname(__file__), '..', 'config', 'progress.json')
 
 
 def get_library_functions(code_dir):
@@ -190,12 +186,16 @@ def run(map_directory, src_directory, code_directory, library_ranges, auto_compl
         print("\nNo functions found in the map directory.")
 
 
+def load_config(variant):
+    with open(CONFIG_FILE, 'r') as f:
+        cfg = json.load(f)
+    entry = cfg[variant]
+    ranges = [(int(start, 16), int(end, 16)) for start, end in entry.get('library_ranges', [])]
+    return entry['map_dir'], entry['src_dir'], entry['code_dir'], ranges, entry['auto_complete']
+
+
 if __name__ == "__main__":
     import sys
 
-    if '--demo' in sys.argv:
-        run("src-demo/map", "src-demo", "code", LIBRARY_RANGES, AUTO_COMPLETE_FILE)
-    else:
-        FULL_LIBRARY_RANGES = [(0x454100, 0x460480)]
-        auto_complete_full = os.path.join(os.path.dirname(__file__), '..', 'src', 'auto_complete.txt')
-        run("src/map", "src", "code-full", FULL_LIBRARY_RANGES, auto_complete_full)
+    variant = 'demo' if '--demo' in sys.argv else 'full'
+    run(*load_config(variant))

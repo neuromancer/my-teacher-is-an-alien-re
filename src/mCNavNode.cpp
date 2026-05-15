@@ -4,6 +4,7 @@
 #include "SC_CombatBase.h"
 #include "Sprite.h"
 #include "InputManager.h"
+#include "MouseControl.h"
 #include "globals.h"
 #include "string.h"
 #include "Animation.h"
@@ -176,8 +177,7 @@ int mCNavNode_TypeA::LBLParse(char* line) {
 
 /* Function start: 0x44AC30 */
 int mCNavNode_TypeA::virtual4() {
-    TODO("mCNavNode_TypeA::virtual4");
-    return 0;
+    return NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeD stubs
@@ -217,8 +217,7 @@ int mCNavNode_TypeD::LBLParse(char* line) {
 
 /* Function start: 0x44A6C0 */
 int mCNavNode_TypeD::virtual4() {
-    TODO("mCNavNode_TypeD::virtual4");
-    return 0;
+    return NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeLogic (DO_LOGICFNC)
@@ -333,30 +332,31 @@ int mCNavNode_TypeB::LBLParse(char* line) {
 
 /* Function start: 0x44A8F0 */
 int mCNavNode_TypeB::virtual4() {
-    TODO("mCNavNode_TypeB::virtual4");
-    return 0;
+    return NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeC stubs
 
 /* Function start: 0x44AC40 */
 int mCNavNode_TypeC::Activate() {
-    TODO("mCNavNode_TypeC::Activate");
-    return 0;
+    return 3;
 }
 
 /* Function start: 0x44AC50 */
 int mCNavNode_TypeC::virtual4() {
-    TODO("mCNavNode_TypeC::virtual4");
-    return 0;
+    return NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeE stubs
 
 /* Function start: 0x44AC60 */
 int mCNavNode_TypeE::Activate() {
-    TODO("mCNavNode_TypeE::Activate");
-    return 0;
+    int state = stateValue;
+    Sprite* spr = g_Mouse_0046aa18->m_sprite;
+    if (spr != 0) {
+        spr->ResetAnimation(state, 0);
+    }
+    return 1;
 }
 
 /* Function start: 0x44AC90 */
@@ -382,6 +382,5 @@ int mCNavNode_TypeE::LBLParse(char* line) {
 
 /* Function start: 0x44AD80 */
 int mCNavNode_TypeE::virtual4() {
-    TODO("mCNavNode_TypeE::virtual4");
-    return 0;
+    return NavSubNode::virtual4();
 }

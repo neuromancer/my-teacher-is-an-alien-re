@@ -6,6 +6,7 @@
 #include "Sprite.h"
 #include "globals.h"
 #include "SC_CombatBase.h"
+#include "InputManager.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,8 +79,39 @@ OnDir_SubNode::~OnDir_SubNode()
 
 /* Function start: 0x449DD0 */
 int OnDir_SubNode::Activate() {
-    TODO("OnDir_SubNode::Activate");
-    return 0;
+    int width = g_InputManager_0046aa08->bounds.right;
+    int height = g_InputManager_0046aa08->bounds.bottom;
+    InputState* mouse = g_InputManager_0046aa08->pMouse;
+    int xQuad;
+    int mouseX;
+    if (mouse != 0) {
+        xQuad = width / 3 + 1;
+        mouseX = mouse->x;
+    } else {
+        xQuad = width / 3 + 1;
+        mouseX = 0;
+    }
+    int region = mouseX / xQuad;
+    if (region == 1) {
+        int yQuad;
+        if (mouse != 0) {
+            yQuad = height / 3;
+            if (mouse->y >= yQuad) {
+                region = 3;
+            }
+        } else {
+            yQuad = height / 3;
+            if (yQuad <= 0) {
+                region = 3;
+            }
+        }
+    }
+    if (destNode[region] == -1) {
+        region = 4;
+    }
+    nodeHandle = destNode[region];
+    bearing = bearingForDir[region];
+    return 1;
 }
 
 /* Function start: 0x449E70 */
@@ -132,8 +164,7 @@ int OnDir_SubNode::LBLParse(char* param_1)
 
 /* Function start: 0x44A000 */
 int OnDir_SubNode::virtual4() {
-    TODO("OnDir_SubNode::virtual4");
-    return 0;
+    return NavSubNode::virtual4();
 }
 
 // =========================================================================
@@ -337,8 +368,7 @@ found2:
 
 /* Function start: 0x44A550 */
 int BG_SubNode::virtual4() {
-    TODO("BG_SubNode::virtual4");
-    return 0;
+    return NavSubNode::virtual4();
 }
 
 // =========================================================================

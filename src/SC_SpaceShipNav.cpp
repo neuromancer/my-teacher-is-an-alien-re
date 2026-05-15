@@ -134,7 +134,7 @@ int SC_SpaceShipNav::Exit(SC_MessageParser* msg) {
 
 /* Function start: 0x447940 */
 void SC_SpaceShipNav::ProcessLose() {
-    TODO("SC_SpaceShipNav::ProcessLose");
+    SC_Combat::ProcessLose();
 }
 
 // g_SpaceNavStates_0046c3f0 — defined in globals.cpp
@@ -185,12 +185,31 @@ void SC_SpaceShipNav::UpdateCursor() {
 
 /* Function start: 0x447AD0 */
 void SC_SpaceShipNav::ProcessAction(int action, int* data) {
-    TODO("SC_SpaceShipNav::ProcessAction");
+    switch (action) {
+    case 0:
+        ProcessLose();
+        break;
+    case 1:
+        ProcessLose();
+        break;
+    case 2:
+        ProcessLose();
+        break;
+    case 3:
+        *data = 0;
+        break;
+    case 4:
+        UpdateCursor();
+        break;
+    default:
+        ShowError("SC_SpaceShipNav::Process_Action - invalid Action=%d, value=%d", action, *data);
+        break;
+    }
 }
 
 /* Function start: 0x447B50 */
 void SC_SpaceShipNav::OnProcessEnd() {
-    TODO("SC_SpaceShipNav::OnProcessEnd");
+    SC_Combat::OnProcessEnd();
 }
 
 /* Function start: 0x447B60 */

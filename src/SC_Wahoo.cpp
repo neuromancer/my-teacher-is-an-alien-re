@@ -629,9 +629,11 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
 }
 
 /* Function start: 0x438EF0 */
-int SC_Wahoo::OnCombatResult() {
-    TODO("SC_Wahoo::OnCombatResult");
-    return 0;
+void SC_Wahoo::OnCombatResult() {
+    Sample* s = (Sample*)sound1;
+    if (s != 0) {
+        s->Play(100, 1);
+    }
 }
 
 /* Function start: 0x438F10 */

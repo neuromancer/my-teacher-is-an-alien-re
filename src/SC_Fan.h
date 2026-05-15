@@ -35,7 +35,7 @@ public:
     virtual int AddMessage(SC_MessageParser* msg);   // [5] 0x40F6C0
     virtual void Update(int param1, int param2); // [7] 0x40F660
     virtual int Exit(SC_MessageParser* msg);         // [8] 0x40F6F0
-    virtual void HandleInput();                // [11] 0x40FC50
+    virtual int HandleInput(Sprite* spr);      // [11] 0x40FC50
     virtual void ProcessHit();                 // [12] 0x40FC30
 
     void Cleanup(int flag);            // [6] 0x40F420 (vtable ShutDown slot)

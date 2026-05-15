@@ -2,6 +2,8 @@
 #include "SC_Question.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
+#include "AnimatedAsset.h"
+#include "RockThrower.h"
 #include "GameState.h"
 #include "Memory.h"
 #include "Viewport.h"
@@ -363,10 +365,44 @@ int SC_CombatBase::ProcessEvents()
 
 /* Function start: 0x42C230 */
 void SC_CombatBase::ResetState() {}
+extern "C" int __cdecl SetDrawColors(unsigned char, unsigned char);
+extern "C" int __cdecl SetDrawPosition(int, int);
+
 /* Function start: 0x42C960 */
-void SC_CombatBase::ProcessInput() {}
+void SC_CombatBase::ProcessInput() {
+    char buffer[128];
+    SetDrawColors(-1, -1);
+    SetDrawPosition(0, 0xc7);
+    sprintf(buffer, "frames: a=%d l=%d", frameCount, spriteFrameCount);
+    if (g_GlyphFont_0046aa28 != 0) {
+        g_GlyphFont_0046aa28->RenderText(buffer, -1);
+    }
+}
 /* Function start: 0x42C070 */
-void SC_CombatBase::BeginFrame() {}
+void SC_CombatBase::BeginFrame() {
+    InputState* mouse = g_InputManager_0046aa08->pMouse;
+    if (mouse != 0) {
+        g_CombatWeapon_0046ae60->m_crosshair.x = mouse->x;
+    } else {
+        g_CombatWeapon_0046ae60->m_crosshair.x = 0;
+    }
+    mouse = g_InputManager_0046aa08->pMouse;
+    if (mouse != 0) {
+        g_CombatWeapon_0046ae60->m_crosshair.y = mouse->y;
+    } else {
+        g_CombatWeapon_0046ae60->m_crosshair.y = 0;
+    }
+
+    mouse = g_InputManager_0046aa08->pMouse;
+    if (mouse != 0 && mouse->x > 0xAA) {
+        g_Viewport_0046ae54->SetCenterX(g_Viewport_0046ae54->center.a + 4);
+        return;
+    }
+    if (mouse != 0 && mouse->x >= 0x96) {
+        return;
+    }
+    g_Viewport_0046ae54->SetCenterX(g_Viewport_0046ae54->center.a - 4);
+}
 /* Function start: 0x40BC80 */
 int SC_CombatBase::PostRender() { return 0; }
 /* Function start: 0x42BD70 */

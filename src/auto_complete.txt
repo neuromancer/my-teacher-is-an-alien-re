@@ -471,6 +471,8 @@
 0x426720
 # Sound CRT atexit registration
 0x426740
+# Sound CRT atexit cleanup (calls Timer::~Timer on g_leftClickTimer/g_rightClickTimer)
+0x426750
 # Sound CRT cleanup
 0x426a70
 

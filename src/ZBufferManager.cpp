@@ -182,7 +182,6 @@ void CommandType1::Execute(GlyphRect* rect)
 {
     VBuffer* vbuf;
 
-    //ShowMessage("CommandType1::Execute mode=%d data=%x", mode, (int)data);
     switch(mode) {
     case 0:
         vbuf = (VBuffer*)data;
@@ -193,12 +192,19 @@ void CommandType1::Execute(GlyphRect* rect)
         g_BackBuffer_0046aa14->ClipAndPaste(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
         return;
     case 2:
-        DrawScaledSprite(x, y, data, scale);
+        vbuf = (VBuffer*)data;
+        g_BackBuffer_0046aa14->ClipAndBlitRegion(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
         return;
     case 3:
+        vbuf = (VBuffer*)data;
+        g_BackBuffer_0046aa14->ClipAndBlitReversed(vbuf->clip_x1, vbuf->clip_x2, vbuf->clip_y1, vbuf->clip_y2, x, y, (int)vbuf);
+        return;
+    case 4:
+        DrawScaledSprite(x, y, data, scale);
+        return;
+    case 5:
         g_BackBuffer_0046aa14->ScaleTCCopy(x, y, (VBuffer*)data, scale);
     }
-    return;
 }
 
 void BlitCommand::Execute(GlyphRect* rect)
