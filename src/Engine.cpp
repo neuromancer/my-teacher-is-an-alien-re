@@ -21,6 +21,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 #include "SlimeTable.h"
 
 // DrawEntry implementation (originally in same source file as Engine)
+/* Function start: 0x431BE0 */
 DrawEntry::~DrawEntry() {
     VBuffer* videoBuffer;
     void* childObject;

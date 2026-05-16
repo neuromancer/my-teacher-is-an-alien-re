@@ -1183,7 +1183,123 @@ void SCI_Inventory::ProcessInventory() {
         }
     }
 }
-void* SCI_Inventory::FindItem(int itemID) { return 0; }
+/* Function start: 0x43F490 */
+void* SCI_Inventory::FindItem(int itemID) {
+    LinkedList* list = (LinkedList*)g_MsgList_0046a6dc;
+    T_Object* item;
+
+    if (list == 0) {
+        return 0;
+    }
+
+    list->current = list->head;
+    while (list->current != 0) {
+        ListNode* node = list->current;
+        T_Object* currentItem = 0;
+        if (node != 0) {
+            currentItem = (T_Object*)node->data;
+        }
+        if (currentItem != 0 && currentItem->itemId == itemID) {
+            return currentItem;
+        }
+        if (list->tail == node) {
+            break;
+        }
+        if (node != 0) {
+            list->current = node->next;
+        }
+    }
+
+    item = new T_Object(itemID);
+    if (item == 0) {
+        ShowError("queue fault 0101");
+    }
+
+    list->current = list->head;
+    if (list->type == 1 || list->type == 2) {
+        if (list->head == 0) {
+            if (item == 0) {
+                ShowError("queue fault 0102");
+            }
+            ListNode* node = new ListNode(item);
+            if (list->current == 0) {
+                list->current = list->head;
+            }
+            if (list->head == 0) {
+                list->head = node;
+                list->tail = node;
+                list->current = node;
+            } else {
+                node->next = list->current;
+                node->prev = list->current->prev;
+                if (list->current->prev == 0) {
+                    list->head = node;
+                } else {
+                    list->current->prev->next = node;
+                }
+                list->current->prev = node;
+            }
+        } else {
+            do {
+                ListNode* node = list->current;
+                if (((T_Object*)node->data)->itemId < item->itemId) {
+                    if (item == 0) {
+                        ShowError("queue fault 0102");
+                    }
+                    ListNode* newNode = new ListNode(item);
+                    if (list->current == 0) {
+                        list->current = list->head;
+                    }
+                    if (list->head == 0) {
+                        list->head = newNode;
+                        list->tail = newNode;
+                        list->current = newNode;
+                    } else {
+                        newNode->next = list->current;
+                        newNode->prev = list->current->prev;
+                        if (list->current->prev == 0) {
+                            list->head = newNode;
+                        } else {
+                            list->current->prev->next = newNode;
+                        }
+                        list->current->prev = newNode;
+                    }
+                    break;
+                }
+                if (list->tail == node) {
+                    if (item == 0) {
+                        ShowError("queue fault 0112");
+                    }
+                    ListNode* newNode = new ListNode(item);
+                    if (list->current == 0) {
+                        list->current = list->tail;
+                    }
+                    if (list->head == 0) {
+                        list->head = newNode;
+                        list->tail = newNode;
+                        list->current = newNode;
+                    } else {
+                        if (list->tail == 0 || list->tail->next != 0) {
+                            ShowError("queue fault 0113");
+                        }
+                        newNode->next = 0;
+                        newNode->prev = list->tail;
+                        list->tail->next = newNode;
+                        list->tail = newNode;
+                    }
+                    break;
+                }
+                if (node != 0) {
+                    list->current = node->next;
+                }
+            } while (list->current != 0);
+        }
+    } else {
+        ((PriorityQueue*)list)->AddAfterCurrent(item);
+    }
+
+    return item;
+}
 /* Function start: 0x43F7F0 */
 int* SCI_Inventory::FindItemInList(int itemID) {
     QueueNode* volatile node = ((LinkedList*)itemPool)->head;

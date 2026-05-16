@@ -22,6 +22,7 @@ InputManager::InputManager(int param_1) {
     InitDevices(param_1);
 }
 
+/* Function start: 0x4267F0 */
 InputManager::~InputManager() {
 }
 

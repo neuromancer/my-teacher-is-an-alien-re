@@ -483,4 +483,7 @@ extern "C" void __cdecl DeleteMatchingFiles(char* pattern, ...) {
     }
 }
 
-CDData::~CDData() {}
+/* Function start: 0x432F60 */
+CDData::~CDData() {
+    chdir(baseDir);
+}

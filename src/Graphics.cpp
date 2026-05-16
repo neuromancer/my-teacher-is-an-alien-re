@@ -492,9 +492,122 @@ int InitStockFont(int param_1)
 }
 
 // DrawLine - Complex Bresenham line drawing algorithm with segment manipulation
-// Too complex to reimplement exactly due to inline assembly and segment registers
-extern "C" int __cdecl DrawLine(int param_1, int param_2) { return 0; }
+/* Function start: 0x45261A */
+extern "C" int __cdecl DrawLine(int param_1, int param_2) {
+    int x0 = g_DrawPosX_0046d0aa;
+    int y0 = g_DrawPosY_0046d0b6;
+    int x1 = param_1;
+    int y1 = param_2;
+    int finalX = param_1;
+    int finalY = param_2;
 
+    if ((signed char)g_CurrentVideoBuffer_0046db3c >= 0) {
+        for (;;) {
+            int code0 = 0;
+            int code1 = 0;
+
+            if (x0 < g_ClipLeft_0046d0c6) code0 |= 1;
+            if (x0 > g_ClipRight_0046d0ca) code0 |= 2;
+            if (y0 < g_ClipTop_0046d0ce) code0 |= 4;
+            if (y0 > g_ClipBottom_0046d0d2) code0 |= 8;
+
+            if (x1 < g_ClipLeft_0046d0c6) code1 |= 1;
+            if (x1 > g_ClipRight_0046d0ca) code1 |= 2;
+            if (y1 < g_ClipTop_0046d0ce) code1 |= 4;
+            if (y1 > g_ClipBottom_0046d0d2) code1 |= 8;
+
+            if ((code0 | code1) == 0) {
+                break;
+            }
+            if ((code0 & code1) != 0) {
+                goto done;
+            }
+
+            {
+                int outCode = code0 != 0 ? code0 : code1;
+                int x = 0;
+                int y = 0;
+                int dx = x1 - x0;
+                int dy = y1 - y0;
+
+                if ((outCode & 8) != 0) {
+                    y = g_ClipBottom_0046d0d2;
+                    if (dy == 0) goto done;
+                    x = x0 + dx * (y - y0) / dy;
+                } else if ((outCode & 4) != 0) {
+                    y = g_ClipTop_0046d0ce;
+                    if (dy == 0) goto done;
+                    x = x0 + dx * (y - y0) / dy;
+                } else if ((outCode & 2) != 0) {
+                    x = g_ClipRight_0046d0ca;
+                    if (dx == 0) goto done;
+                    y = y0 + dy * (x - x0) / dx;
+                } else {
+                    x = g_ClipLeft_0046d0c6;
+                    if (dx == 0) goto done;
+                    y = y0 + dy * (x - x0) / dx;
+                }
+
+                if (outCode == code0) {
+                    x0 = x;
+                    y0 = y;
+                } else {
+                    x1 = x;
+                    y1 = y;
+                }
+            }
+        }
+
+        {
+            unsigned char color = (unsigned char)g_TextColor_0046d078;
+            int dx = x1 - x0;
+            int dy = y1 - y0;
+            int sx = 1;
+            int sy = 1;
+            int err;
+
+            if (dx < 0) {
+                dx = -dx;
+                sx = -1;
+            }
+            if (dy < 0) {
+                dy = -dy;
+                sy = -1;
+            }
+
+            err = dx - dy;
+            for (;;) {
+                int row = g_VideoBufferHeightM1_0046d0b2 - y0;
+                unsigned char* pixel = (unsigned char*)(g_VideoBufferBase_0046db4e +
+                                                        row * g_VideoBufferStride_0046db46 + x0);
+                *pixel = color;
+
+                if (x0 == x1 && y0 == y1) {
+                    break;
+                }
+
+                {
+                    int e2 = err + err;
+                    if (e2 > -dy) {
+                        err -= dy;
+                        x0 += sx;
+                    }
+                    if (e2 < dx) {
+                        err += dx;
+                        y0 += sy;
+                    }
+                }
+            }
+        }
+    }
+
+done:
+    g_DrawPosX_0046d0aa = finalX;
+    g_DrawPosY_0046d0b6 = finalY;
+    return 0;
+}
+
+/* Function start: 0x454087 */
 static void DrawEllipseScanline(int y, int left_x, int right_x) {
     if (y < g_ClipTop_0046d0ce || y > g_ClipBottom_0046d0d2) return;
     if (right_x < g_ClipLeft_0046d0c6) return;

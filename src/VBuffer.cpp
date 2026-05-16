@@ -161,7 +161,7 @@ void VBuffer::LoadFromFile(char* filename, int param_2)
     anim.Open(filename, 0xFE000, -1);
 
     if (g_GameConfig2_0046aa10->data.rawData[2] == 2) {
-        SmackBufferClose((SmackBuf*)anim.vbuffer);
+        SmackSoundOnOff(anim.smk, 0);
     }
 
     int w = ((int*)anim.vbuffer)[1]; // vbuffer->width at +0x04
@@ -289,6 +289,7 @@ void* VBuffer::GetData()
     return data;
 }
 
+/* Function start: 0x411200 */
 void VBuffer::Lock()
 {
 }

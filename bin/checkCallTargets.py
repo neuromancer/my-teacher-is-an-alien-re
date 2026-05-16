@@ -31,13 +31,14 @@ from projectConfig import (
 KNOWN_CRT_BY_MODE = {}
 CANONICAL = {}
 CALL_COUNT_ALLOWANCES = {}
+FUNCTION_POINTER_TARGETS = {}
 ORDINAL_IMPORTS = {}
 SKIP_CALL_TOKENS = set()
 TRIVIAL_CALL_TOKENS = set()
 
 
 def configure_call_checker(config):
-    global KNOWN_CRT_BY_MODE, CANONICAL, CALL_COUNT_ALLOWANCES
+    global KNOWN_CRT_BY_MODE, CANONICAL, CALL_COUNT_ALLOWANCES, FUNCTION_POINTER_TARGETS
     global ORDINAL_IMPORTS, SKIP_CALL_TOKENS, TRIVIAL_CALL_TOKENS
 
     calls_config = config.get("calls", {})
@@ -50,6 +51,7 @@ def configure_call_checker(config):
         (item["function"], item["target"]): (int(item.get("missing", 0)), int(item.get("extra", 0)))
         for item in calls_config.get("call_count_allowances", [])
     }
+    FUNCTION_POINTER_TARGETS = parse_int_map(calls_config.get("function_pointer_globals", {}))
     ORDINAL_IMPORTS = {
         (item["dll"].upper(), int(item["ordinal"])): item["name"]
         for item in calls_config.get("ordinal_imports", [])
@@ -61,8 +63,6 @@ def configure_call_checker(config):
 def canonicalize(name):
     if name.startswith("FUN_"):
         name = name.upper()
-    if re.match(r'g_WinG\w+_[0-9A-Fa-f]+$', name):
-        return "__funcptr__"
     name = CANONICAL.get(name, name)
     return name
 
@@ -274,6 +274,7 @@ def parse_vtable_call(line):
     Original: CALL dword ptr [EAX + 0x4] -> vtable[0x4]
     Compiled: call DWORD PTR [eax+4] -> vtable[0x4]
     Absolute IAT: CALL dword ptr [0x00476370] -> name or __import__
+    Absolute known function pointer: CALL dword ptr [0x0046e01c] -> WinGBitBlt
     """
     # Absolute-address indirect call (IAT import): CALL dword ptr [0xADDR]
     m = re.match(r'CALL\s+dword\s+ptr\s*\[\s*(?:0x)?([0-9a-fA-F]+)\s*\]', line, re.IGNORECASE)
@@ -282,6 +283,8 @@ def parse_vtable_call(line):
             addr = int(m.group(1), 16)
             if is_iat_address(addr):
                 return IAT_ADDRESSES.get(addr, "__import__")
+            if addr in FUNCTION_POINTER_TARGETS:
+                return FUNCTION_POINTER_TARGETS[addr]
             if addr >= 0x400000:
                 return "__funcptr__"
         except ValueError:
@@ -355,7 +358,7 @@ def extract_calls_from_original(disasm_path):
                     continue
 
                 # Direct call to address
-                m = re.match(r'CALL\s+(?:0x)?0*([0-9a-fA-F]+)', line)
+                m = re.match(r'CALL\s+(?:0x)?0*([0-9a-fA-F]+)\s*$', line)
                 if m:
                     addr = int(m.group(1), 16)
                     if addr < 0x1000:
@@ -729,19 +732,15 @@ def main():
         orig_canon = [canonicalize(n) for n in orig_resolved]
         compiled_canon = [canonicalize(n) for n in compiled_resolved]
 
-        # Filter out non-comparable. TRACE_LOG_IMPL_fn is our own debug
-        # tracing wrapper; the wsprintfA/GetLastError/CreateFileA/WriteFile
-        # calls inside it leak out of every function that uses TRACE_LOG, so
-        # we ignore them on the compiled side.
+        # Filter out configured non-comparable compiler/runtime artifacts.
         orig_filtered = [n for n in orig_canon if n not in SKIP_CALL_TOKENS]
         compiled_filtered = [n for n in compiled_canon if n not in SKIP_CALL_TOKENS]
 
         # Normalize funcptr/vtable[0x0] equivalence on both sides:
         # the original sometimes calls through vtable[0x0] (a register loaded
         # with a function pointer) while the rebuild uses a vtable virtual
-        # destructor call — both register as vtable[0x0]. Treat them as the
-        # generic __funcptr__ token so either side's count drop into the
-        # "trivial" bucket below.
+        # destructor call. Treat both as a generic function-pointer target
+        # before comparing counts.
         orig_filtered = ["__funcptr__" if n == "vtable[0x0]" else n for n in orig_filtered]
         compiled_filtered = ["__funcptr__" if n == "vtable[0x0]" else n for n in compiled_filtered]
 
