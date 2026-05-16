@@ -530,7 +530,7 @@ def make_operand(insn, op):
 
 
 def disassemble(image, start, starts):
-    data, _ = function_bytes(image, start, starts)
+    data, end = function_bytes(image, start, starts)
     if not data:
         return []
 
@@ -550,10 +550,82 @@ def disassemble(image, start, starts):
             raw=f"{insn.mnemonic} {insn.op_str}".strip(),
         ))
 
+    data_ranges = switch_jump_table_ranges(image, instructions, start, end)
+    if data_ranges:
+        instructions = [
+            instr for instr in instructions
+            if not address_in_ranges(instr.address, data_ranges)
+        ]
+
     instructions = trim_seh_cleanup_funclets(instructions)
     while instructions and instructions[-1].mnemonic in image.policy.padding_mnemonics:
         instructions.pop()
     return instructions
+
+
+def address_in_ranges(address, ranges):
+    return any(start <= address < end for start, end in ranges)
+
+
+def switch_jump_table_ranges(image, instrs, func_start, func_end):
+    """Find MSVC switch tables embedded in a function body.
+
+    Function bounds come from MAP/Ghidra starts, so jump tables placed after the
+    final RET still belong to the function range. Linear disassembly decodes
+    those table bytes as bogus instructions unless we remove the data range.
+    """
+    ranges = []
+    for instr in instrs:
+        if instr.mnemonic != "jmp":
+            continue
+        if len(instr.operands) != 1:
+            continue
+
+        operand = instr.operands[0]
+        if operand.kind != "mem":
+            continue
+        if operand.base or not operand.index or operand.scale != 4:
+            continue
+
+        table_start = unsigned32(operand.disp)
+        if not (func_start <= table_start < func_end):
+            continue
+
+        table_end = switch_jump_table_end(image, table_start, func_start, func_end)
+        if table_end is not None:
+            ranges.append((table_start, table_end))
+
+    return merge_ranges(ranges)
+
+
+def switch_jump_table_end(image, table_start, func_start, func_end):
+    cursor = table_start
+    entries = 0
+    while cursor + 4 <= func_end:
+        raw = image.read(cursor, 4)
+        if raw is None or len(raw) != 4:
+            break
+        target = struct.unpack("<I", raw)[0]
+        if not (func_start <= target < func_end):
+            break
+        entries += 1
+        cursor += 4
+
+    if entries == 0:
+        return None
+    return cursor
+
+
+def merge_ranges(ranges):
+    if not ranges:
+        return []
+    merged = []
+    for start, end in sorted(ranges):
+        if not merged or start > merged[-1][1]:
+            merged.append([start, end])
+            continue
+        merged[-1][1] = max(merged[-1][1], end)
+    return tuple((start, end) for start, end in merged)
 
 
 def has_msvc_seh_frame(instrs):

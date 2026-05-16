@@ -518,7 +518,7 @@ void SC_Slime::ProcessAction(int action, int* data) {
                 spr->ResetAnimation(1, 0);
             } else if (state == 1) {
                 spr->ResetAnimation(0, 0);
-                int r = rand() & 1;
+                int r = rand() % 2;
                 if (r < 2 && gameResult[6] != 0) {
                     Sprite* arm = (r == 0) ? leftArmSprite : rightArmSprite;
                     if (arm != 0) {
@@ -682,24 +682,31 @@ void SC_Slime::ProcessHit() {
 
 /* Function start: 0x40DB20 */
 int SC_Slime::HandleInput(Sprite* spr) {
-    Projectile* projectile = (Projectile*)spr;
-    int x = projectile->nextPos.x;
-    int y = projectile->nextPos.y;
     int finalFrame = spr->ranges[spr->handle].dim.y - 1;
-    int projectileDone;
+    Projectile* projectile = (Projectile*)spr;
+    int* pos = &projectile->nextPos.x;
     int i;
 
-    if (spr->animation_data == 0) {
-        projectileDone = (finalFrame == 0);
-    } else {
-        projectileDone = (spr->animation_data->smk->FrameNum == finalFrame);
-    }
+    if (pos[1] <= 0x4f || armMaskSprite == 0) {
+        if (spr->animation_data == 0) {
+            if (finalFrame != 0) {
+                goto checkProjectileDone;
+            }
+        } else if (spr->animation_data->smk->FrameNum != finalFrame) {
+            goto checkProjectileDone;
+        }
 
-    if (y <= 0x4f || armMaskSprite == 0) {
-        if (projectileDone && bgSprite != 0) {
+        if (bgSprite != 0) {
             for (i = 0; i < 2; i++) {
                 Rect* slot = &invSlots[i];
-                if (slot->left <= x && x <= slot->right && slot->top <= y && y <= slot->bottom) {
+                int inSlot;
+                if (pos[0] < slot->left || slot->right < pos[0] ||
+                    pos[1] < slot->top || slot->bottom < pos[1]) {
+                    inSlot = 0;
+                } else {
+                    inSlot = 1;
+                }
+                if (inSlot != 0) {
                     int frame = 0;
                     if (bgSprite->animation_data != 0) {
                         frame = bgSprite->animation_data->smk->FrameNum;
@@ -712,16 +719,24 @@ int SC_Slime::HandleInput(Sprite* spr) {
                         return 1;
                     }
 
-                    Sprite* sw = (i == 0) ? leftSwitchSprite : rightSwitchSprite;
+                    Sprite* sw = (&leftSwitchSprite)[i];
                     if (sw != 0) {
                         int nextState = sw->handle;
                         switch (nextState) {
                         case 0:
                             closedShots[i].count++;
-                            if (closedShots[i].max != 0 && closedShots[i].count >= closedShots[i].max) {
-                                nextState = 2;
-                            } else {
-                                nextState++;
+                            {
+                                int done;
+                                if (closedShots[i].max != 0 && closedShots[i].count >= closedShots[i].max) {
+                                    done = 1;
+                                } else {
+                                    done = 0;
+                                }
+                                if (done != 0) {
+                                    nextState = 2;
+                                } else {
+                                    nextState++;
+                                }
                             }
                             sw->ResetAnimation(nextState, 0);
                             break;
@@ -734,14 +749,22 @@ int SC_Slime::HandleInput(Sprite* spr) {
 
                         case 2:
                             openedShots[i].count++;
-                            if (openedShots[i].max != 0 && openedShots[i].count >= openedShots[i].max) {
-                                sw->ResetAnimation(4, 0);
-                                Sprite* other = (i == 0) ? rightSwitchSprite : leftSwitchSprite;
-                                if (other->handle == 4) {
-                                    UpdateArmSprites();
+                            {
+                                int done;
+                                if (openedShots[i].max != 0 && openedShots[i].count >= openedShots[i].max) {
+                                    done = 1;
+                                } else {
+                                    done = 0;
                                 }
-                            } else {
-                                sw->ResetAnimation(sw->handle + 1, 0);
+                                if (done != 0) {
+                                    sw->ResetAnimation(4, 0);
+                                    Sprite* other = (&rightSwitchSprite)[-i];
+                                    if (other->handle == 4) {
+                                        UpdateArmSprites();
+                                    }
+                                } else {
+                                    sw->ResetAnimation(sw->handle + 1, 0);
+                                }
                             }
                             break;
 
@@ -761,11 +784,13 @@ int SC_Slime::HandleInput(Sprite* spr) {
         }
     } else {
         for (i = 1; i <= 2; i++) {
-            Sprite* arm = (i == 1) ? leftArmSprite : rightArmSprite;
+            Sprite* arm = (&leftArmSprite)[i - 1];
             if (arm->handle == 0 &&
-                armMaskSprite->animation_data->targetBuffer->CheckHit(x, y - 0x4f) == i) {
-                slimeRound++;
-                if (tentacleShotsNeeded != 0 && slimeRound >= tentacleShotsNeeded) {
+                armMaskSprite->animation_data->targetBuffer->CheckHit(pos[0], pos[1] - 0x4f) == i) {
+                int needed = tentacleShotsNeeded;
+                int round = slimeRound + 1;
+                slimeRound = round;
+                if (needed != 0 && round >= needed) {
                     int offset = arm->ranges[arm->handle].dim.y - arm->animation_data->smk->FrameNum;
                     arm->ResetAnimation(2, offset);
                     armMaskSprite->ResetAnimation(-1, 0);
@@ -778,18 +803,31 @@ int SC_Slime::HandleInput(Sprite* spr) {
         }
     }
 
-    if (!projectileDone) {
+checkProjectileDone:
+    if (spr->animation_data == 0) {
+        if (finalFrame != 0) {
+            return 0;
+        }
+    } else if (spr->animation_data->smk->FrameNum != finalFrame) {
         return 0;
     }
 
-    if (targetRect.left <= x && x <= targetRect.right &&
-        targetRect.top <= y && y <= targetRect.bottom) {
-        if (sound4 != 0) {
-            sound4->Play(100, 1);
-            return 1;
+    {
+        int hitTarget;
+        if (pos[0] < targetRect.left || targetRect.right < pos[0] ||
+            pos[1] < targetRect.top || targetRect.bottom < pos[1]) {
+            hitTarget = 0;
+        } else {
+            hitTarget = 1;
         }
-    } else if (sound2 != 0) {
-        sound2->Play(100, 1);
+        if (hitTarget != 0) {
+            if (sound4 != 0) {
+                sound4->Play(100, 1);
+                return 1;
+            }
+        } else if (sound2 != 0) {
+            sound2->Play(100, 1);
+        }
     }
     return 1;
 }

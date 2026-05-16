@@ -209,10 +209,6 @@ void CommandType1::Execute(GlyphRect* rect)
 /* Function start: 0x403720 */
 void BlitCommand::Execute(GlyphRect* rect)
 {
-    GlyphRect clipRect;
-    GlyphRect srcRect;
-    int destX;
-    int destY;
     VBuffer* vbuf;
 
     vbuf = (VBuffer*)g_BackBuffer_0046aa14;
@@ -227,20 +223,7 @@ void BlitCommand::Execute(GlyphRect* rect)
         vbuf->ClipAndBlitRegion(left, right, top, bottom, x, y, (int)data);
         return;
     case 3:
-        clipRect.left = vbuf->clip_x1;
-        clipRect.top = vbuf->clip_y1;
-        clipRect.right = vbuf->clip_x2;
-        clipRect.bottom = vbuf->clip_y2;
-        srcRect.left = left;
-        srcRect.top = top;
-        srcRect.right = right;
-        srcRect.bottom = bottom;
-        destX = x;
-        destY = y;
-        if (ClipRectBottomUp(&clipRect.left, &srcRect.left, &destX, &destY) != 0) {
-            vbuf->CallBlitter3(srcRect.left, srcRect.right, srcRect.top, srcRect.bottom,
-                               destX, destY, (VBuffer*)data, 0, 1);
-        }
+        vbuf->ClipAndBlitReversed(left, right, top, bottom, x, y, (int)data);
         return;
     case 4:
         DrawScaledSprite(x, y, data, scale);

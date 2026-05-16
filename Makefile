@@ -218,6 +218,11 @@ compare:
 compare-functions:
 	@python3 bin/compareExe.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE --functions
 
+verify:
+	@$(MAKE) verify-globals
+	@$(MAKE) verify-values-capstone
+	@$(MAKE) verify-vtables-capstone
+
 verify-globals:
 	@python3 bin/checkGlobals.py --config $(VERIFY_CONFIG) --fail-on-issues --fail-on-warnings
 
@@ -266,4 +271,4 @@ debug: TEACHER.EXE | $(DREAMM_BIN)
 
 
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify-globals verify-calls verify-values-capstone verify-vtables verify-vtables-capstone run-demo run-demo-original run
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals verify-calls verify-values-capstone verify-vtables verify-vtables-capstone run-demo run-demo-original run

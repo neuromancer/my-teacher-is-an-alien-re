@@ -793,70 +793,89 @@ void SC_WordSearch::Render() {
          +0x474..+0x483   Rect exitButton
        No union/substructure is used because the project forbids them; explicit
        casts preserve the memory reuse semantics of the original binary. */
-    Sprite* bgSpr = (Sprite*)*(int*)((char*)words + GS_BG_SPRITE_OFS);
+    Sprite* bgSpr = (Sprite*)*(int*)((char*)this + 0x108);
     bgSpr->Do(bgSpr->loc_x, bgSpr->loc_y, 1.0);
 
-    if (*(int*)((char*)words + GS_MODE_FLAG_OFS) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+    if (*(int*)((char*)this + 0x124) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
     }
-    UpdateWordSearchCursor((int*)((char*)words + GS_CURSOR_STATE_OFS));
-    if (*(int*)((char*)words + GS_MODE_FLAG_OFS) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+    UpdateWordSearchCursor((int*)((char*)this + 0x120));
+    if (*(int*)((char*)this + 0x124) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
     }
 
+    int local_4 = 0;
     int mouseY;
     int mouseX;
-    if (g_InputManager_0046aa08->pMouse != 0) {
-        mouseY = g_InputManager_0046aa08->pMouse->y;
-        mouseX = g_InputManager_0046aa08->pMouse->x;
+    int* mouse = (int*)g_InputManager_0046aa08->pMouse;
+    if (mouse != 0) {
+        mouseY = mouse[1];
     } else {
         mouseY = 0;
+    }
+    if (mouse != 0) {
+        mouseX = mouse[0];
+    } else {
         mouseX = 0;
     }
 
     // Check exit button hover (game-state exit-rect at +0x474)
-    if (*(int*)((char*)words + GS_EXIT_RECT_OFS + 0x0) <= mouseX && mouseX <= *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x8) &&
-        *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x4) <= mouseY && mouseY <= *(int*)((char*)words + GS_EXIT_RECT_OFS + 0xC) &&
+    if (*(int*)((char*)this + 0x548) <= mouseX && mouseX <= *(int*)((char*)this + 0x550) &&
+        *(int*)((char*)this + 0x54C) <= mouseY && mouseY <= *(int*)((char*)this + 0x554) &&
         g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0x13, 0);
     }
 
     int local_8 = 0x82;
-    int local_4 = 0;
-    int* gridCell = (int*)((char*)words + GS_CELLS_OFS);
-    Sprite** spriteSlot = (Sprite**)((char*)words + GS_CELL_SPRITES_OFS);
+    int* cell = (int*)((char*)this + 0x13C);
 
     do {
         int cellY = 0x2F;
-        int* cell = gridCell;
-        Sprite** slot = spriteSlot;
+        Sprite** slot = (Sprite**)((char*)this + 0x52C + local_4 * 4);
         do {
-            int mx = 0, my = 0;
-            if (g_InputManager_0046aa08->pMouse != 0) {
-                my = g_InputManager_0046aa08->pMouse->y;
-                mx = g_InputManager_0046aa08->pMouse->x;
+            int mx;
+            int my;
+            mouse = (int*)g_InputManager_0046aa08->pMouse;
+            if (mouse != 0) {
+                my = mouse[1];
+            } else {
+                my = 0;
+            }
+            if (mouse != 0) {
+                mx = mouse[0];
+            } else {
+                mx = 0;
             }
 
             if (cell[3] <= mx && mx <= cell[5] && cell[4] <= my && my <= cell[6]) {
                 Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
                 if (cell[1] == 0) {
-                    if (mouseSpr != 0) {
-                        int anim = (*(int*)((char*)words + GS_MODE_FLAG_OFS) == 0) ? 0 : 0xC;
-                        mouseSpr->ResetAnimation(anim, 0);
+                    if (*(int*)((char*)this + 0x124) == 0) {
+                        if (mouseSpr != 0) {
+                            mouseSpr->ResetAnimation(0, 0);
+                        }
+                    } else {
+                        if (mouseSpr != 0) {
+                            mouseSpr->ResetAnimation(0xC, 0);
+                        }
                     }
                 } else {
-                    if (mouseSpr != 0) {
-                        int anim = (*(int*)((char*)words + GS_MODE_FLAG_OFS) == 0) ? 0 : 0xD;
-                        mouseSpr->ResetAnimation(anim, 0);
+                    if (*(int*)((char*)this + 0x124) == 0) {
+                        if (mouseSpr != 0) {
+                            mouseSpr->ResetAnimation(0, 0);
+                        }
+                    } else {
+                        if (mouseSpr != 0) {
+                            mouseSpr->ResetAnimation(0xD, 0);
+                        }
                     }
                 }
             }
 
             if (*cell != 0) {
-                Sprite* spr = *slot;
+                (*slot)->ResetAnimation(*cell - 1, 0);
                 slot++;
-                spr->ResetAnimation(*cell - 1, 0);
-                spr->Do(local_8, cellY, 1.0);
+                (*(slot - 1))->Do(local_8, cellY, 1.0);
                 local_4++;
                 int* statusPtr = (int*)((int)palette + 4);
                 if (*statusPtr == 0 && cell[2] != 0 && *cell > 5) {
@@ -868,18 +887,18 @@ void SC_WordSearch::Render() {
             cellY += 0x33;
         } while (cellY < 0x161);
 
-        local_8 += 0x46;
+            local_8 += 0x46;
         if (local_8 > 0x225) {
             g_Mouse_0046aa18->DrawCursor();
 
-            if (*(int*)((char*)words + GS_CURSOR_STATE_OFS) < 1) {
-                int sndDone = ((SlimeTable*)*(void**)((char*)words + GS_SOUND_LIST_OFS))->IsSamplePlaying(1);
+            if (*(int*)((char*)this + 0x120) < 1) {
+                int sndDone = ((SlimeTable*)*(void**)((char*)this + 0x110))->IsSamplePlaying(1);
                 if (sndDone == 0) {
                     int* status = (int*)palette;
                     if (status[1] == 0) {
-                        int count = *(int*)((char*)words + GS_COUNTER_OFS) + 1;
-                        *(int*)((char*)words + GS_COUNTER_OFS) = count;
-                        if (*(int*)((char*)words + GS_TARGET_OFS) == count) {
+                        int count = *(int*)((char*)this + 0x118) + 1;
+                        *(int*)((char*)this + 0x118) = count;
+                        if (*(int*)((char*)this + 0x11C) == count) {
                             status[0] = 1;
                             return;
                         }
@@ -889,142 +908,209 @@ void SC_WordSearch::Render() {
             }
             return;
         }
-        gridCell += 0x2A;
-        spriteSlot += 6;
     } while (1);
 }
 
 /* Function start: 0x42F220 */
 void SC_WordSearch::PlaceWord(int param_1, int param_2) {
-    int minRow = param_1 - 2;
-    int maxRow = param_1 + 2;
-    int maxCol = param_2 + 2;
-    int minCol = param_2 - 2;
-    int total = 0;
+    struct WordSearchEntry {
+        int fields[7];
+    };
+#define WS_ENTRIES ((WordSearchEntry*)((char*)this + 0x13c))
+#define WS_SOUND (*(SlimeTable**)((char*)this + 0x110))
+#define WS_STATE ((int*)((char*)this + 0x120))
 
-    if (minRow < 0) minRow = 0;
-    if (minCol < 0) minCol = 0;
-    if (maxRow > 5) maxRow = 5;
-    if (maxCol > 5) maxCol = 5;
+    int colMin;
+    int rowMin;
+    int canDiagUL;
+    int canDiagDL;
+    int canDiagUR;
+    int canDiagDR;
+    int total;
+    int rowMax;
+    int colMax;
+    int index;
+    int* p;
 
-    int hasUpLeft = (param_1 - 1 >= 0);
-    int hasDownLeft = (param_2 - 1 >= 0);
-    int hasUpRight = (param_1 + 1 < 6);
-    int hasDownRight = (param_2 + 1 < 6);
+    rowMin = param_1 - 2;
+    rowMax = param_1 + 2;
+    colMax = param_2 + 2;
+    colMin = param_2 - 2;
+    total = 0;
+    canDiagUL = 1;
+    canDiagDL = 1;
+    canDiagUR = 1;
+    canDiagDR = 1;
 
-    // Scan right from current position
-    if (param_2 < maxCol) {
-        int* cell = (int*)((char*)words + (param_2 + param_1 * 6) * 0x1C + 0x6C);
-        int c = param_2;
-        do {
-            if (*cell != 0) maxCol = c;
-            cell += 7;
-            c++;
-        } while (c < maxCol);
+    if (rowMin < 0) {
+        rowMin = 0;
     }
-    // Scan left
-    if (minCol < param_2) {
-        int* cell = (int*)((char*)words + (param_2 + param_1 * 6) * 0x1C + 0x6C);
-        int c = param_2;
-        do {
-            if (*cell != 0) minCol = c;
-            cell -= 7;
-            c--;
-        } while (minCol < c);
+    if (colMin < 0) {
+        colMin = 0;
     }
-    // Scan down
-    if (param_1 < maxRow) {
-        int* cell = (int*)((char*)words + (param_2 + param_1 * 6) * 0x1C + 0x6C);
-        int r = param_1;
-        do {
-            if (*cell != 0) maxRow = r;
-            cell += 0x2A;
-            r++;
-        } while (r < maxRow);
+    if (rowMax > 5) {
+        rowMax = 5;
     }
-    // Scan up
-    if (minRow < param_1) {
-        int* cell = (int*)((char*)words + (param_2 + param_1 * 6) * 0x1C + 0x6C);
-        int r = param_1;
-        do {
-            if (*cell != 0) minRow = r;
-            cell -= 0x2A;
-            r--;
-        } while (minRow < r);
+    if (colMax > 5) {
+        colMax = 5;
     }
 
-    int idx = param_2 + param_1 * 6;
-    int diagUL = *(int*)((char*)words + idx * 0x1C - 0x58);
-    int diagDR = *(int*)((char*)words + idx * 0x1C + 0xF8);
-    int diagUR = *(int*)((char*)words + idx * 0x1C - 0x20);
-    int diagDL = *(int*)((char*)words + idx * 0x1C + 0x130);
+    if (param_1 - 1 < 0) {
+        canDiagUL = 0;
+        canDiagUR = 0;
+    }
+    if (param_2 - 1 < 0) {
+        canDiagUL = 0;
+        canDiagDL = 0;
+    }
+    if (param_1 + 1 > 5) {
+        canDiagDR = 0;
+        canDiagDL = 0;
+    }
+    if (param_2 + 1 > 5) {
+        canDiagUR = 0;
+        canDiagDR = 0;
+    }
 
-    // Clear horizontal span
-    if (minCol <= maxCol) {
-        int count = maxCol - minCol + 1;
-        int* cell = (int*)((char*)words + (param_1 * 6 + minCol) * 0x1C + 0x68);
+    {
+        int i = param_2;
+        if (i < colMax) {
+            p = &WS_ENTRIES[param_1 * 6 + i].fields[1];
+            do {
+                if (*p != 0) {
+                    colMax = i;
+                }
+                p += 7;
+                i++;
+            } while (i < colMax);
+        }
+    }
+
+    {
+        int i = param_2;
+        if (i > colMin) {
+            p = &WS_ENTRIES[param_1 * 6 + i].fields[1];
+            do {
+                if (*p != 0) {
+                    colMin = i;
+                }
+                p -= 7;
+                i--;
+            } while (i > colMin);
+        }
+    }
+
+    {
+        int i = param_1;
+        if (i < rowMax) {
+            p = &WS_ENTRIES[i * 6 + param_2].fields[1];
+            do {
+                if (*p != 0) {
+                    rowMax = i;
+                }
+                p += 42;
+                i++;
+            } while (i < rowMax);
+        }
+    }
+
+    {
+        int i = param_1;
+        if (i > rowMin) {
+            p = &WS_ENTRIES[i * 6 + param_2].fields[1];
+            do {
+                if (*p != 0) {
+                    rowMin = i;
+                }
+                p -= 42;
+                i--;
+            } while (i > rowMin);
+        }
+    }
+
+    index = param_1 * 6 + param_2;
+
+    if (WS_ENTRIES[index - 7].fields[1] != 0) {
+        canDiagUL = 0;
+    }
+    if (WS_ENTRIES[index + 5].fields[1] != 0) {
+        canDiagDL = 0;
+    }
+    if (WS_ENTRIES[index - 5].fields[1] != 0) {
+        canDiagUR = 0;
+    }
+    if (WS_ENTRIES[index + 7].fields[1] != 0) {
+        canDiagDR = 0;
+    }
+
+    if (colMax >= colMin) {
+        int count = colMax - colMin + 1;
+        p = &WS_ENTRIES[param_1 * 6 + colMin].fields[0];
         do {
-            total += *cell;
-            *cell = 0;
-            cell += 7;
+            total += *p;
+            p += 7;
+            *(p - 7) = 0;
             count--;
         } while (count != 0);
     }
-    // Clear vertical span
-    if (minRow <= maxRow) {
-        int count = maxRow - minRow + 1;
-        int* cell = (int*)((char*)words + (param_2 + minRow * 6) * 0x1C + 0x68);
+
+    if (rowMax >= rowMin) {
+        int count = rowMax - rowMin + 1;
+        p = &WS_ENTRIES[rowMin * 6 + param_2].fields[0];
         do {
-            total += *cell;
-            *cell = 0;
-            cell += 0x2A;
+            total += *p;
+            p += 42;
+            *(p - 42) = 0;
             count--;
         } while (count != 0);
     }
-    // Clear diagonals
-    if (diagUL == 0 && hasDownLeft && hasUpLeft) {
-        int val = *(int*)((char*)words + idx * 0x1C - 0x5C);
+
+    if (canDiagUL != 0) {
+        int val = WS_ENTRIES[index - 7].fields[0];
         if (val != 0) {
-            *(int*)((char*)words + idx * 0x1C - 0x5C) = 0;
+            WS_ENTRIES[index - 7].fields[0] = 0;
             total += val;
         }
     }
-    if (diagDR == 0 && hasUpRight && hasDownLeft) {
-        int val = *(int*)((char*)words + idx * 0x1C + 0xF4);
+    if (canDiagDL != 0) {
+        int val = WS_ENTRIES[index + 5].fields[0];
         if (val != 0) {
-            *(int*)((char*)words + idx * 0x1C + 0xF4) = 0;
+            WS_ENTRIES[index + 5].fields[0] = 0;
             total += val;
         }
     }
-    if (diagUR == 0 && hasDownRight && hasUpLeft) {
-        int val = *(int*)((char*)words + idx * 0x1C - 0x24);
+    if (canDiagUR != 0) {
+        int val = WS_ENTRIES[index - 5].fields[0];
         if (val != 0) {
-            *(int*)((char*)words + idx * 0x1C - 0x24) = 0;
+            WS_ENTRIES[index - 5].fields[0] = 0;
             total += val;
         }
     }
-    if (diagDL == 0 && hasDownRight && hasUpRight) {
-        int val = *(int*)((char*)words + idx * 0x1C + 0x12C);
+    if (canDiagDR != 0) {
+        int val = WS_ENTRIES[index + 7].fields[0];
         if (val != 0) {
-            *(int*)((char*)words + idx * 0x1C + 0x12C) = 0;
+            WS_ENTRIES[index + 7].fields[0] = 0;
             total += val;
         }
     }
 
-    int snd;
-    if (total == 0) {
-        snd = 0;
+    if (total != 0) {
+        WS_SOUND->Play(1);
+        int sndIdx = 4 - WS_STATE[0];
+        if (sndIdx >= 0 && sndIdx <= 2) {
+            WS_SOUND->Play(sndIdx + 5);
+        }
     } else {
-        ((SlimeTable*)*(int*)((char*)words + GS_SOUND_LIST_OFS))->Play(1);
-        snd = 4 - *(int*)((char*)words + GS_CURSOR_STATE_OFS);
-        if (snd < 0 || snd > 2) goto skip_sound;
-        snd = 9 - *(int*)((char*)words + GS_CURSOR_STATE_OFS);
+        WS_SOUND->Play(0);
     }
-    ((SlimeTable*)*(int*)((char*)words + GS_SOUND_LIST_OFS))->Play(snd);
-skip_sound:
-    *(int*)((char*)words + idx * 0x1C + 0x68) = total;
-    if (*(int*)((char*)words + GS_CURSOR_STATE_OFS) == 1) {
-        *(int*)((char*)words + GS_CURSOR_STATE_OFS) = 0;
+
+    WS_ENTRIES[index].fields[0] = total;
+    if (WS_STATE[0] == 1) {
+        WS_STATE[0] = 0;
     }
-    *(int*)((char*)words + GS_MODE_FLAG_OFS) = 0;
+    WS_STATE[1] = 0;
+
+#undef WS_ENTRIES
+#undef WS_SOUND
+#undef WS_STATE
 }
