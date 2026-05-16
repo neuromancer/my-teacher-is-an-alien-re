@@ -383,7 +383,7 @@ void Target::Init(char* line)
     char buffer[64];
 
     if (sscanf(line, "%s", buffer) == 1) {
-        if (stricmp(buffer, "INIT") != 0) {
+        if (stricmp(buffer, "NONE") != 0) {
             ResolveAssetPath(buffer);
 
             Target::animFilename = new char[strlen(g_PathResolver_0046aa1c->cdPath + 0x8a) + 1];

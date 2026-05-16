@@ -62,7 +62,7 @@ void GameConfig::CreateDefaultConfig() {
 
 /* Function start: 0x447F50 */
 void GameConfig::LoadConfig() {
-    if (Open("rb")) {
+    if (Open("wb")) {
         fwrite(&data, 80, 1, fp);
         Close();
     }
@@ -82,4 +82,3 @@ unsigned char GameConfig::CheckWindir() {
     data.rawData[6] = (result != 0) ? 1 : 0;
     return data.rawData[6];
 }
-

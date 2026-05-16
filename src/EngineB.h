@@ -79,7 +79,7 @@ public:
   virtual void OnProcessEnd();            // [2] 0x451230
   virtual void ProcessFrame();               // [10] 0x451180 - ProcessTargets
   virtual void RenderBackground();               // [11] 0x450DB0 - Draw
-  virtual int PostRender();                // [12] 0x450F70 - UpdateMeter
+  virtual void PostRender();               // [12] 0x450F70 - UpdateMeter
   virtual int HandleAction(int* param);  // [13] 0x4511C0
 };
 

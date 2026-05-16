@@ -110,7 +110,7 @@ void __stdcall ParseCommandLine(char *param_1) {
     piVar2 = piVar2 + 1;
   }
   for (piVar3 = local_50; iVar1 > 0; iVar1--) {
-    if (_strnicmp(*piVar3, "-mis", 4) == 0) {
+    if (_strnicmp(*piVar3, "/cd=", 4) == 0) {
       strcpy(g_GameWindow.baseDir, *piVar3 + 4);
     }
     else if (_strcmpi(*piVar3, "-w") == 0) {
@@ -137,7 +137,7 @@ void __stdcall ParseCommandLine(char *param_1) {
     else if (_strcmpi(*piVar3, "-ds") == 0) {
       *(char *)&g_CmdLineAudioMode_00472dd8 = 2;
     }
-    else if (_strcmpi(*piVar3, "-test") == 0) {
+    else if (_strcmpi(*piVar3, "/test") == 0) {
       g_DebugFlag_00472ddc = 1;
     }
     else if (_strcmpi(*piVar3, "-f") == 0) {

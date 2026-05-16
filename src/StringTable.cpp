@@ -194,7 +194,7 @@ void StringTable::Load() {
                 result = internal_ReadLine(buffer, 0xff, fp);
                 if (result == 0) break;
 
-                int scanResult = sscanf(buffer, "%u", &stringId);
+                int scanResult = sscanf(buffer, "%ld", &stringId);
                 unsigned int id = stringId;
                 if (scanResult == 1) {
                     HashTable* ht = hashTable;
@@ -284,7 +284,7 @@ read_loop:
                 goto done;
             }
         }
-        sscanf(buffer, "%u", &parsedId);
+        sscanf(buffer, "%ld", &parsedId);
         if (parsedId != id) goto read_loop;
 
         startQuote = strchr(buffer, '\"');

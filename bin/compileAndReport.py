@@ -4,8 +4,8 @@ import argparse
 import os
 import subprocess
 import sys
-from compileAndCompare import get_similarity
-from cppSourceParser import parse_source_functions
+from compileAndCompare import get_similarity_for_disassembly_files
+from cppSourceParser import parse_source_function_groups
 from projectConfig import ConfigError, add_config_argument, config_or_arg, load_config, mode_paths
 
 
@@ -23,6 +23,10 @@ def parse_args():
     parser.add_argument("--jobs", type=int, help="Parallel make jobs.")
     parser.add_argument("--no-build", action="store_true", help="Skip clean/build and use existing output.")
     return parser.parse_args()
+
+
+def format_addresses(addresses):
+    return "/".join(f"0x{address}" for address in addresses)
 
 
 def main():
@@ -76,47 +80,71 @@ def main():
             if args.file_filter and args.file_filter not in file:
                 continue
             filepath = os.path.join(root, file)
-            for source_function in parse_source_functions(filepath):
-                address = source_function.address
+            for source_function in parse_source_function_groups(filepath):
                 func_name = source_function.name
+                addresses = source_function.addresses
+                disassembled_files = []
+                missing_files = []
+                error = None
 
-                disassembled_file = f"{code_dir}/FUN_{address}.disassembled.txt"
-                if not os.path.exists(disassembled_file):
-                    pct = "MISSING ASM"
-                    totals["missing_asm"] += 1
-                    missing_asm.append((file, func_name, address, disassembled_file))
-                    report.append((file, func_name, address, pct))
-                    continue
+                for address in addresses:
+                    disassembled_file = f"{code_dir}/FUN_{address}.disassembled.txt"
+                    if not os.path.exists(disassembled_file):
+                        missing_files.append((address, disassembled_file))
+                        continue
+                    disassembled_files.append((address, disassembled_file))
 
                 try:
-                    similarity, _, _ = get_similarity(func_name, disassembled_file, clean_build=False, out_dir=out_dir)
-                    if similarity is not None:
-                        pct = f"{similarity:.2f}%"
-                        totals["count"] += 1
-                        totals["sum"] += similarity
-                        if similarity >= 99.99:
-                            totals["at100"] += 1
-                        if similarity >= 90.0:
-                            totals["above90"] += 1
-                        else:
-                            totals["below90"] += 1
+                    similarity, detail, _ = get_similarity_for_disassembly_files(
+                        func_name,
+                        [path for _, path in disassembled_files],
+                        clean_build=False,
+                        out_dir=out_dir,
+                    )
+                except Exception as exc:
+                    similarity = None
+                    detail = None
+                    error = exc
+
+                if similarity is not None:
+                    pct = f"{similarity:.2f}%"
+                    totals["count"] += 1
+                    totals["sum"] += similarity
+                    if similarity >= 99.99:
+                        totals["at100"] += 1
+                    if similarity >= 90.0:
+                        totals["above90"] += 1
                     else:
-                        pct = "NOT FOUND"
-                        totals["errors"] += 1
-                except Exception as e:
-                    pct = f"ERR: {e}"
+                        totals["below90"] += 1
+                elif detail == "Target disassembly has no instructions.":
+                    pct = "MISSING ASM"
+                    totals["missing_asm"] += 1
+                    for address, disassembled_file in disassembled_files:
+                        missing_asm.append((file, func_name, address, disassembled_file))
+                    for address, disassembled_file in missing_files:
+                        missing_asm.append((file, func_name, address, disassembled_file))
+                elif missing_files and len(missing_files) == len(addresses):
+                    pct = "MISSING ASM"
+                    totals["missing_asm"] += 1
+                    for address, disassembled_file in missing_files:
+                        missing_asm.append((file, func_name, address, disassembled_file))
+                elif error is not None:
+                    pct = f"ERR: {error}"
+                    totals["errors"] += 1
+                else:
+                    pct = "NOT FOUND"
                     totals["errors"] += 1
 
-                report.append((file, func_name, address, pct))
+                report.append((file, func_name, addresses, pct))
 
     # Print report
     print("\n--- Similarity Report ---")
     current_file = None
-    for file, func_name, address, similarity in report:
+    for file, func_name, addresses, similarity in report:
         if file != current_file:
             print(f"\n=== {file} ===")
             current_file = file
-        print(f"  {func_name:45s} 0x{address}  {similarity}")
+        print(f"  {func_name:45s} {format_addresses(addresses):18s}  {similarity}")
 
     # Summary
     n = totals["count"]

@@ -158,9 +158,7 @@ void EngineB::RenderBackground() {
 }
 
 /* Function start: 0x450F70 */ /* No assembly extracted */
-int EngineB::PostRender() {
-    return 0;
-}
+void EngineB::PostRender() {}
 
 /* Function start: 0x4511C0 */ /* No assembly extracted */
 int EngineB::HandleAction(int* param) {

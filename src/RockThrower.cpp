@@ -133,6 +133,7 @@ int RockThrower::CheckTargetHit(int param_1) {
 }
 
 /* Function start: 0x427B20 */
+/* Function start: 0x427B43 */
 int RockThrower::LBLParse(char* line) {
     char token[32];
     int count = 0;

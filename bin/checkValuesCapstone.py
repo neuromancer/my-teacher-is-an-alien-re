@@ -550,9 +550,34 @@ def disassemble(image, start, starts):
             raw=f"{insn.mnemonic} {insn.op_str}".strip(),
         ))
 
+    instructions = trim_seh_cleanup_funclets(instructions)
     while instructions and instructions[-1].mnemonic in image.policy.padding_mnemonics:
         instructions.pop()
     return instructions
+
+
+def has_msvc_seh_frame(instrs):
+    """MSVC places EH cleanup funclets after the main body RET."""
+    scan = instrs[:12]
+    saw_fs_read = any(instr.mnemonic == "mov" and "fs:" in instr.op_str.lower() for instr in scan)
+    saw_sentinel = any(
+        instr.mnemonic == "push"
+        and instr.operands
+        and instr.operands[0].kind == "imm"
+        and instr.operands[0].imm == -1
+        for instr in scan
+    )
+    saw_fs_write = any(instr.mnemonic == "mov" and "fs:" in instr.op_str.lower() for instr in instrs[:24])
+    return saw_fs_read and saw_sentinel and saw_fs_write
+
+
+def trim_seh_cleanup_funclets(instrs):
+    if not has_msvc_seh_frame(instrs):
+        return instrs
+    for idx, instr in enumerate(instrs):
+        if instr.mnemonic == "ret":
+            return instrs[:idx + 1]
+    return instrs
 
 
 def operand_signature(operand):
@@ -663,13 +688,174 @@ def nearby_memory_displacements(instrs, idx, policy, mnemonic=None):
     values = set()
     start = max(0, idx - policy.nearby_window)
     end = min(len(instrs), idx + policy.nearby_window + 1)
+    aliases = {}
     for j in range(start, end):
-        if mnemonic is not None and instrs[j].mnemonic != mnemonic:
-            continue
-        for _, operand in memory_operands(instrs[j]):
-            if member_displacement(operand.disp, policy):
-                values.add(operand.disp)
+        instr = instrs[j]
+        if mnemonic is None or instr.mnemonic == mnemonic:
+            for _, operand in memory_operands(instr):
+                if member_displacement(operand.disp, policy):
+                    values.add(operand.disp)
+                alias = aliases.get(operand.base)
+                if alias is not None and not operand.index:
+                    effective_disp = alias.disp + operand.disp
+                    if member_displacement(effective_disp, policy):
+                        values.add(effective_disp)
+
+        update_register_aliases(aliases, instr, policy)
+
     return values
+
+
+def writes_register(instr, reg):
+    if not instr.operands:
+        return False
+    operand = instr.operands[0]
+    return operand.kind == "reg" and operand.reg == reg
+
+
+def update_register_aliases(aliases, instr, policy):
+    if instr.mnemonic == "call":
+        for reg in ("eax", "ecx", "edx"):
+            aliases.pop(reg, None)
+        return
+
+    if instr.mnemonic == "lea" and len(instr.operands) >= 2:
+        dst = instr.operands[0]
+        src = instr.operands[1]
+        if dst.kind == "reg" and src.kind == "mem":
+            if src.base and src.base not in policy.stack_registers and member_displacement(src.disp, policy):
+                aliases[dst.reg] = src
+            else:
+                aliases.pop(dst.reg, None)
+        return
+
+    if instr.mnemonic in {"add", "sub"} and len(instr.operands) >= 2:
+        dst = instr.operands[0]
+        src = instr.operands[1]
+        if dst.kind == "reg" and src.kind == "imm" and member_displacement(src.imm, policy):
+            current = aliases.get(dst.reg, Operand("mem", "", base=dst.reg, scale=1))
+            delta = src.imm if instr.mnemonic == "add" else -src.imm
+            aliases[dst.reg] = Operand(
+                "mem",
+                "",
+                base=current.base,
+                index=current.index,
+                scale=current.scale,
+                disp=current.disp + delta,
+            )
+            return
+
+    register_write_mnemonics = {
+        "mov", "xor", "or", "and", "imul",
+        "shl", "shr", "sar", "inc", "dec",
+    }
+    if instr.mnemonic in register_write_mnemonics and instr.operands and instr.operands[0].kind == "reg":
+        aliases.pop(instr.operands[0].reg, None)
+
+
+def recent_pointer_alias(instrs, idx, reg, policy, max_window=8):
+    start = max(0, idx - max_window)
+    for j in range(idx - 1, start - 1, -1):
+        instr = instrs[j]
+        if instr.mnemonic == "call" or is_branch_or_call(instr.mnemonic):
+            return None
+        if not writes_register(instr, reg):
+            continue
+        if instr.mnemonic == "lea" and len(instr.operands) >= 2:
+            src = instr.operands[1]
+            if src.kind != "mem" or not src.base or src.base in policy.stack_registers:
+                return None
+            if not member_displacement(src.disp, policy):
+                return None
+            return src
+        if instr.mnemonic in {"add", "sub"} and len(instr.operands) >= 2:
+            src = instr.operands[1]
+            if src.kind != "imm" or not member_displacement(src.imm, policy):
+                return None
+            delta = src.imm if instr.mnemonic == "add" else -src.imm
+            return Operand("mem", "", base=reg, scale=1, disp=delta)
+        return None
+    return None
+
+
+def register_alias_at(instrs, idx, reg, policy):
+    aliases = {}
+    for j in range(0, idx):
+        update_register_aliases(aliases, instrs[j], policy)
+    return aliases.get(reg)
+
+
+def same_effective_lea_displacement(compiled_instrs, original_instrs, ci, oi, operand_idx, c_op, o_op, policy):
+    c_alias = recent_pointer_alias(compiled_instrs, ci, c_op.base, policy)
+    o_alias = recent_pointer_alias(original_instrs, oi, o_op.base, policy)
+    if c_alias is None:
+        c_alias = register_alias_at(compiled_instrs, ci, c_op.base, policy)
+    if o_alias is None:
+        o_alias = register_alias_at(original_instrs, oi, o_op.base, policy)
+    if c_alias is None and o_alias is None:
+        return False
+    if c_alias is not None and o_alias is not None:
+        if c_alias.base != o_alias.base or c_alias.index != o_alias.index or c_alias.scale != o_alias.scale:
+            return False
+        return c_alias.disp + c_op.disp == o_alias.disp + o_op.disp
+    if c_alias is not None:
+        return c_alias.disp + c_op.disp == o_op.disp
+    return c_op.disp == o_alias.disp + o_op.disp
+
+
+def shifted_memory_base_match_count(compiled_instrs, original_instrs, ci, oi, operand_idx, delta, policy):
+    """Count nearby same-shaped memory operands using one consistent base shift."""
+    if delta == 0:
+        return 0
+
+    count = 0
+    start = -policy.nearby_window
+    end = policy.nearby_window + 1
+    for rel in range(start, end):
+        c_idx = ci + rel
+        o_idx = oi + rel
+        if c_idx < 0 or o_idx < 0:
+            continue
+        if c_idx >= len(compiled_instrs) or o_idx >= len(original_instrs):
+            continue
+
+        compiled = compiled_instrs[c_idx]
+        original = original_instrs[o_idx]
+        if compiled.mnemonic != original.mnemonic:
+            continue
+        if operand_idx >= len(compiled.operands) or operand_idx >= len(original.operands):
+            continue
+
+        c_op = compiled.operands[operand_idx]
+        o_op = original.operands[operand_idx]
+        if c_op.kind != "mem" or o_op.kind != "mem":
+            continue
+        if not comparable_lhs(c_op, o_op, policy):
+            continue
+        if not member_displacement(c_op.disp, policy) or not member_displacement(o_op.disp, policy):
+            continue
+        if c_op.disp - o_op.disp != delta:
+            continue
+
+        count += 1
+
+    return count
+
+
+def equivalent_shifted_memory_base(compiled_instrs, original_instrs, ci, oi, operand_idx, c_op, o_op, policy):
+    # MSVC often keeps an interior pointer in a register and addresses all fields
+    # around it. Require several neighboring accesses before treating the
+    # displacement delta as a pointer-basis choice rather than a layout bug.
+    delta = c_op.disp - o_op.disp
+    return shifted_memory_base_match_count(
+        compiled_instrs,
+        original_instrs,
+        ci,
+        oi,
+        operand_idx,
+        delta,
+        policy,
+    ) >= 3
 
 
 def next_mnemonic(instrs, idx):
@@ -693,6 +879,38 @@ def equivalent_integer_threshold(c_imm, o_imm, compiled_instrs, original_instrs,
     if (c_next, o_next) in (("jng", "jnge"), ("jbe", "jc")):
         return o_imm == c_imm + 1
     return False
+
+
+def starts_boolean_mask_after_cmp(instrs, idx):
+    if idx + 2 >= len(instrs):
+        return False
+
+    mov_instr = instrs[idx + 1]
+    adc_instr = instrs[idx + 2]
+    if mov_instr.mnemonic != "mov" or adc_instr.mnemonic != "adc":
+        return False
+    if len(mov_instr.operands) < 2 or len(adc_instr.operands) < 2:
+        return False
+
+    mov_dst = mov_instr.operands[0]
+    mov_src = mov_instr.operands[1]
+    adc_dst = adc_instr.operands[0]
+    adc_src = adc_instr.operands[1]
+    return (
+        mov_dst.kind == "reg"
+        and mov_src.kind == "imm"
+        and mov_src.imm == 0
+        and adc_dst.kind == "reg"
+        and adc_dst.reg == mov_dst.reg
+        and adc_src.kind == "imm"
+        and adc_src.imm == -1
+    )
+
+
+def equivalent_boolean_zero_test(c_imm, o_imm, compiled_instrs, original_instrs, ci, oi):
+    if {c_imm, o_imm} != {0, 1}:
+        return False
+    return starts_boolean_mask_after_cmp(compiled_instrs, ci) or starts_boolean_mask_after_cmp(original_instrs, oi)
 
 
 def is_stack_adjustment(instr):
@@ -772,6 +990,9 @@ def compare_instruction_pair(compiled_instrs, original_instrs, compiled_image, o
         if compiled.mnemonic == "cmp" and equivalent_integer_threshold(
                 c_op.imm, o_op.imm, compiled_instrs, original_instrs, ci, oi):
             continue
+        if compiled.mnemonic == "cmp" and equivalent_boolean_zero_test(
+                c_op.imm, o_op.imm, compiled_instrs, original_instrs, ci, oi):
+            continue
         if (o_op.imm in nearby_immediate_values(compiled_instrs, compiled_image, ci, context.policy) and
                 c_op.imm in nearby_immediate_values(original_instrs, original_image, oi, context.policy)):
             continue
@@ -792,6 +1013,12 @@ def compare_instruction_pair(compiled_instrs, original_instrs, compiled_image, o
             c_near = nearby_memory_displacements(compiled_instrs, ci, context.policy, compiled.mnemonic)
             o_near = nearby_memory_displacements(original_instrs, oi, context.policy, original.mnemonic)
             if o_op.disp in c_near and c_op.disp in o_near:
+                continue
+            if same_effective_lea_displacement(
+                    compiled_instrs, original_instrs, ci, oi, idx, c_op, o_op, context.policy):
+                continue
+            if equivalent_shifted_memory_base(
+                    compiled_instrs, original_instrs, ci, oi, idx, c_op, o_op, context.policy):
                 continue
             if (c_op.disp == 0 or o_op.disp == 0) and (has_pointer_immediate(compiled) or has_pointer_immediate(original)):
                 continue

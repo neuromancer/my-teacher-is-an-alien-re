@@ -449,8 +449,8 @@
       {"class": "Handler", "slot": 5, "aliases": [["Handler", "WriteMessageAddress"]]},
       {"class": "Handler", "slot": 10, "aliases": [["Engine", "LogHandler"]]},
       {"class": "RenderCmd_DrawRect", "slot": 0, "aliases": [["CommandType3", "Execute"]]},
-      {"class": "RenderCmd_DrawText", "slot": 0, "aliases": [["CommandType2", "Execute"]]},
-      {"class": "RenderCmd_DrawVBuf", "slot": 0, "aliases": [["CommandType1", "Execute"]]}
+      {"class": "RenderCmd_DrawText", "slot": 0, "aliases": [["CommandType2", "Execute"], ["TextRenderEntry", "Execute"]]},
+      {"class": "RenderCmd_DrawVBuf", "slot": 0, "aliases": [["CommandType1", "Execute"], ["BlitCommand", "Execute"]]}
     ],
     "manual_classes": [
       {"name": "Parser", "vtable_addr": "0x00461298", "parent": null, "header": "Parser.h", "constructor": "0x004127C0"},

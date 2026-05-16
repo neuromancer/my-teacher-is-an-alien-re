@@ -38,7 +38,7 @@ int SC_MessageParser::LBLParse(char* param_1)
                 target->addressValue = idx;
             }
         } else {
-            sscanf(local_74, "%d", &target->addressValue);
+            sscanf(local_74, "%lu", &target->addressValue);
         }
     } else if (strcmp(local_30, "FROM") == 0) {
         sscanf(param_1, "%s %s %s", local_30, local_54, local_74);
@@ -56,7 +56,7 @@ int SC_MessageParser::LBLParse(char* param_1)
                 target->fromValue = idx;
             }
         } else {
-            sscanf(local_74, "%d", &target->fromValue);
+            sscanf(local_74, "%lu", &target->fromValue);
         }
     } else if (strcmp(local_30, "INSTRUCTION") == 0) {
         sscanf(param_1, "%s %s", local_30, local_54);

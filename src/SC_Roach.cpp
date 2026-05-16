@@ -93,7 +93,7 @@ GridCell::GridCell() { memset(this, 0, sizeof(GridCell)); }
 /* Function start: 0x418C20 */
 SC_Roach::SC_Roach()
 {
-    memset(&grid, 0, 0x186 * 4);
+    memset(sources, 0, 0x186 * 4);
     handlerId = 0x47;
 }
 
@@ -301,7 +301,7 @@ void SC_Roach::RenderBoard()
 
     // Draw crystals placed on grid
     int cellCount = 0x24;
-    int* cellPtr = &grid[0];
+    int* cellPtr = (int*)grid;
     do {
         int col = 4;
         int* cell = cellPtr;
@@ -333,7 +333,7 @@ void SC_Roach::RenderBoard()
 int SC_Roach::TryPlacePiece(int* msg)
 {
     int found = -1;
-    int* cellPtr = &grid[4];
+    int* cellPtr = (int*)grid + 4;
     int idx = 0;
     int mouseX = msg[7] + 10;
 
@@ -363,7 +363,7 @@ found_cell:
     do {
         int col = 0;
         int patternIdx = row % 4 + (row / 4) * 6 + found;
-        int* patternPtr = &grid[patternIdx * 8];
+        int* patternPtr = (int*)grid + patternIdx * 8;
         int* cp = (int*)checkOfs;
         do {
             if (*cp != 0 && *patternPtr != -2) {
@@ -381,7 +381,7 @@ found_cell:
     do {
         int patternIdx = row % 4 + (row / 4) * 6 + found;
         int count = 4;
-        int* dest = &grid[patternIdx * 8];
+        int* dest = (int*)grid + patternIdx * 8;
         int zero = 0;
         do {
             NavCrystal* crys = (NavCrystal*)currentPiece;
@@ -430,7 +430,7 @@ int SC_Roach::TryDropOnSource(int* msg)
 int SC_Roach::PickFromGrid(int* msg)
 {
     int idx = 0;
-    int* cellPtr = &grid[4];
+    int* cellPtr = (int*)grid + 4;
     int mouseX = msg[7];
 
     int hit;
@@ -452,8 +452,8 @@ int SC_Roach::PickFromGrid(int* msg)
 
 found:
     {
-        int xofs = mouseX - grid[idx * 8 + 4];
-        int yofs = msg[8] - grid[idx * 8 + 5];
+        int xofs = mouseX - ((int*)grid)[idx * 8 + 4];
+        int yofs = msg[8] - ((int*)grid)[idx * 8 + 5];
         int orient;
         if (yofs < xofs) {
             orient = 0;
@@ -461,7 +461,7 @@ found:
             orient = 3;
         }
 
-        int crystalId = grid[orient + idx * 8];
+        int crystalId = ((int*)grid)[orient + idx * 8];
         if (crystalId < 0) {
             return 0;
         }
@@ -469,7 +469,7 @@ found:
         currentPiece = crystals[crystalId];
     }
 
-    int* gridPtr = grid;
+    int* gridPtr = (int*)grid;
     int count = 0x24;
     do {
         int* cell = gridPtr;
@@ -530,7 +530,7 @@ void SC_Roach::OnProcessEnd()
     int cellW = 0x2a;
     int startX = 0xce;
     int startY = 0x40;
-    int* gridPtr = &grid[4];
+    int* gridPtr = (int*)grid + 4;
 
     do {
         int col = 0;
@@ -713,37 +713,37 @@ int SC_Roach::LBLParse(char* line)
         char p0[8], p1[8], p2[8], p3[8], p4[8], p5[8];
         sscanf(line, " %s %d %s %s %s %s %s %s", label, &idx, p0, p1, p2, p3, p4, p5);
 
-        int* dest = &grid[idx * 48];
+        int* dest = (int*)grid + idx * 48;
         if (p0[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p0[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p0[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p0[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = &grid[idx * 48 + 8];
+        dest = (int*)grid + idx * 48 + 8;
         if (p1[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p1[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p1[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p1[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = &grid[idx * 48 + 16];
+        dest = (int*)grid + idx * 48 + 16;
         if (p2[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p2[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p2[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p2[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = &grid[idx * 48 + 24];
+        dest = (int*)grid + idx * 48 + 24;
         if (p3[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p3[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p3[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p3[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = &grid[idx * 48 + 32];
+        dest = (int*)grid + idx * 48 + 32;
         if (p4[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p4[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p4[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p4[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = &grid[idx * 48 + 40];
+        dest = (int*)grid + idx * 48 + 40;
         if (p5[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p5[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p5[2] == '1') dest[2] = -1; else dest[2] = -2;

@@ -404,10 +404,22 @@ void SC_CombatBase::BeginFrame() {
     g_Viewport_0046ae54->SetCenterX(g_Viewport_0046ae54->center.a - 4);
 }
 /* Function start: 0x40BC80 */
-int SC_CombatBase::PostRender() { return 0; }
+void SC_CombatBase::PostRender() {}
 /* Function start: 0x42BD70 */
 int SC_CombatBase::HandleAction(int*) { return 0; }
 /* Function start: 0x42C920 */
-void SC_CombatBase::RenderState() {}
+void SC_CombatBase::RenderState() {
+    g_BgSprite_0046ae50 = 0;
+    g_CombatWeapon_0046ae60 = 0;
+    g_SoundList_0046ae68 = 0;
+    g_WeaponParser_0046ae4c = 0;
+    g_Navigator_0046ae70 = 0;
+    g_Palette_0046ae64 = 0;
+    g_CombatSprite_0046ae5c = 0;
+    g_TargetList_0046ae58 = 0;
+    g_ScoreDisplay_0046ae6c = 0;
+    g_Viewport_0046ae54 = 0;
+    g_HotspotPool_0046ae74 = 0;
+}
 /* Function start: 0x40BC90 */
-int SC_CombatBase::UpdateAndCheck() { return 0; }
+void SC_CombatBase::UpdateAndCheck() {}

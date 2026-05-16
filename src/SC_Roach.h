@@ -63,8 +63,7 @@ struct GridCell {
 //
 // Field layout:
 //   0x118-0x277: CrystalSource[8] — source slots (stride 0x2C)
-//   0x278-0x287: grid pattern base (not directly used as separate)
-//   0x288-0x707: GridCell[36] — 6x6 grid hitboxes (stride 0x20)
+//   0x278-0x6F7: GridCell[36] — 6x6 grid hitboxes (stride 0x20)
 //   0x6F8: int* currentPiece — currently held crystal
 //   0x6FC-0x71B: int* crystals[8] — crystal object pointers
 //   0x71C: void* progressObj — allocated progress tracker
@@ -74,10 +73,7 @@ struct GridCell {
 class SC_Roach : public SC_Combat {
 public:
     CrystalSource sources[8];    // 0x118-0x277 (8 * 0x2C = 0x160)
-    // Grid: 6x6=36 cells, each cell 0x20 bytes (8 ints):
-    //   +0x00..+0x0F: 4 pattern values (crystal IDs, -1=occupied, -2=empty)
-    //   +0x10..+0x1F: hitbox (left, top, right, bottom)
-    int grid[36 * 8];            // 0x278-0x6F7 (36 cells * 32 bytes = 0x480)
+    GridCell grid[36];           // 0x278-0x6F7 (36 cells * 32 bytes = 0x480)
     int* currentPiece;           // 0x6F8 — currently held NavCrystal*
     int* crystals[8];            // 0x6FC-0x71B — NavCrystal* array
     void* progressObj;           // 0x71C — Timer* progress tracker

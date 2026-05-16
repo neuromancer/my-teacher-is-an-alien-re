@@ -22,6 +22,82 @@ def extract_proc_block(assembly, symbol):
 
     return assembly[start_match.end():end_match.start()]
 
+
+def cleanup_assembly(assembly):
+    assembly = "\n".join(line for line in assembly.split("\n") if not line.strip().startswith(";"))
+    assembly = "\n".join(line for line in assembly.split("\n") if line.strip())
+
+    lines = assembly.split("\n")
+    for i, line in enumerate(lines[:5]):
+        if "PROC NEAR" in line:
+            assembly = "\n".join(lines[i + 1:])
+            if "ENDP" in assembly:
+                assembly = assembly.split("ENDP")[0]
+            break
+
+    lines = assembly.split("\n")
+    stripped_lines = [line.strip() for line in lines]
+    jump_table_targets = set()
+    for line in stripped_lines:
+        match = re.search(r'DD\s+OFFSET\s+FLAT:(\$L\d+)', line)
+        if match:
+            jump_table_targets.add(match.group(1))
+
+    ret_indices = []
+    for i, line in enumerate(stripped_lines):
+        line_no_comment = line.split(';')[0].strip()
+        if re.match(r'^ret(\s+\d+)?$', line_no_comment):
+            ret_indices.append(i)
+
+    cutoff_idx = len(lines)
+    for ret_idx in reversed(ret_indices):
+        remaining = stripped_lines[ret_idx + 1:]
+        is_seh_or_data_only = True
+        has_seh_signature = False
+        i = 0
+        while i < len(remaining):
+            line = remaining[i]
+            if not line:
+                i += 1
+                continue
+            label_match = re.match(r'(\$L\d+):', line)
+            if label_match:
+                if label_match.group(1) in jump_table_targets:
+                    is_seh_or_data_only = False
+                    break
+                i += 1
+                continue
+            if 'OFFSET FLAT:$L' in line or 'OFFSET FLAT:$T' in line or re.search(r'\$T\d+\[ebp\]', line):
+                has_seh_signature = True
+                i += 1
+                continue
+            if line.startswith('ret') or line == 'ret 0':
+                i += 1
+                continue
+            if 'jmp' in line.lower():
+                if 'CxxFrameHandler' in line or '??' in line or ('?' in line and '@@' in line):
+                    has_seh_signature = True
+                    i += 1
+                    continue
+                is_seh_or_data_only = False
+                break
+            if line.startswith(('mov', 'push', 'call', 'add', 'DD', 'DB', 'DW', 'npad')):
+                i += 1
+                continue
+            if line.startswith('?') and '@@' in line:
+                i += 1
+                continue
+            is_seh_or_data_only = False
+            break
+
+        if is_seh_or_data_only and has_seh_signature and remaining:
+            cutoff_idx = ret_idx + 1
+
+    assembly = "\n".join(lines[:cutoff_idx])
+    seh_code = "\n".join(lines[cutoff_idx:])
+    return _filter_seh_funclets(assembly, seh_code, jump_table_targets)
+
+
 def read_assembly(function_name, file_path):
     # Read the file with the assembly code
     with open(file_path, 'r') as file:
@@ -370,7 +446,84 @@ def side_by_side(str1, str2, tab_size=4):
         result.append(combined)
     return '\n'.join(result)
 
-def get_similarity(function_name, disassembled_code_path, clean_build=True, out_dir="out"):
+
+def proc_symbols_for_function(assembly, function_name):
+    symbols = []
+    seen = set()
+
+    def add(symbol):
+        if symbol not in seen:
+            symbols.append(symbol)
+            seen.add(symbol)
+
+    comment_pattern = re.compile(
+        rf'^(\S+)\s+PROC\s+NEAR\s+;\s*{re.escape(function_name)}$',
+        re.MULTILINE,
+    )
+    for match in comment_pattern.finditer(assembly):
+        add(match.group(1))
+
+    c_symbol = f"_{function_name}"
+    if re.search(rf'^{re.escape(c_symbol)}\s+PROC\s+NEAR\b', assembly, re.MULTILINE):
+        add(c_symbol)
+
+    stdcall_pattern = re.compile(rf'^(_{re.escape(function_name)}@[0-9]+)\s+PROC\s+NEAR\b', re.MULTILINE)
+    for match in stdcall_pattern.finditer(assembly):
+        add(match.group(1))
+
+    return symbols
+
+
+def read_assembly_candidates(function_name, file_path):
+    with open(file_path, 'r') as file:
+        assembly = file.read()
+
+    candidates = []
+    for symbol in proc_symbols_for_function(assembly, function_name):
+        proc_block = extract_proc_block(assembly, symbol)
+        if proc_block is None:
+            continue
+        candidates.append(cleanup_assembly(proc_block))
+
+    if candidates:
+        return candidates
+
+    result = read_assembly(function_name, file_path)
+    return [result] if result is not None else []
+
+
+def read_target_code(disassembled_code_path):
+    with open(disassembled_code_path, 'rb') as file:
+        target_code = file.read()
+        target_code = target_code.decode('utf-8', errors='ignore').lower()
+        return "\n".join(target_code.splitlines()[3:])
+
+
+def mnemonic_similarity(produced_code, target_code):
+    produced_mnemonics = parse_mnemonics(produced_code)
+    target_mnemonics = parse_mnemonics(target_code)
+    return mnemonic_similarity_from_mnemonics(produced_mnemonics, target_mnemonics)
+
+
+def mnemonic_similarity_from_mnemonics(produced_mnemonics, target_mnemonics):
+    distance = Levenshtein.distance(produced_mnemonics, target_mnemonics)
+    max_len = max(len(produced_mnemonics), len(target_mnemonics))
+    if max_len == 0:
+        return 100.0
+    return (1 - distance / max_len) * 100
+
+
+def split_original_fragments(disassembled_code_paths):
+    if len(disassembled_code_paths) <= 1:
+        return False
+    for path in disassembled_code_paths[:-1]:
+        mnemonics = parse_mnemonics(read_target_code(path))
+        if mnemonics and "ret" not in mnemonics:
+            return True
+    return False
+
+
+def get_similarity_against_target(function_name, target_code, clean_build=True, out_dir="out"):
     if clean_build:
         if out_dir == "out-demo":
             system("make clean-demo")
@@ -383,42 +536,69 @@ def get_similarity(function_name, disassembled_code_path, clean_build=True, out_
                 print("Make failed")
                 exit(1)
 
-    asm_file_path = None
-    produced_code = None
+    target_mnemonics = parse_mnemonics(target_code)
+    if not target_mnemonics:
+        return None, "Target disassembly has no instructions.", None
+
+    found_name = False
+    best = None
     for filename in os.listdir(out_dir):
         if filename.endswith(".asm"):
             filepath = os.path.join(out_dir, filename)
             with open(filepath, 'r') as f:
                 content = f.read()
-                if function_name in content:
-                    asm_file_path = filepath
-                    result = read_assembly(function_name, filepath)
-                    if result is not None:
-                        produced_code, seh_code = result
-                        break
+            if function_name not in content and f"_{function_name}" not in content:
+                continue
+            found_name = True
 
-    if asm_file_path is None:
+            for produced_code, seh_code in read_assembly_candidates(function_name, filepath):
+                produced_mnemonics = parse_mnemonics(produced_code)
+                similarity = mnemonic_similarity_from_mnemonics(produced_mnemonics, target_mnemonics)
+                if best is None or similarity > best[0]:
+                    best = (similarity, produced_code, seh_code)
+
+    if not found_name:
         return None, "Function not found in any .asm file.", None
 
-    if produced_code is None:
+    if best is None:
         return None, "Function found but could not extract assembly.", None
 
-    with open(disassembled_code_path, 'rb') as file:
-        target_code = file.read()
-        target_code = target_code.decode('utf-8', errors='ignore').lower()
-        target_code = "\n".join(target_code.splitlines()[3:])
-
-    produced_mnemonics = parse_mnemonics(produced_code)
-    target_mnemonics = parse_mnemonics(target_code)
-
-    distance = Levenshtein.distance(produced_mnemonics, target_mnemonics)
-    max_len = max(len(produced_mnemonics), len(target_mnemonics))
-    if max_len == 0:
-        similarity = 100.0
-    else:
-        similarity = (1 - distance / max_len) * 100
-
+    similarity, produced_code, seh_code = best
     return similarity, side_by_side(produced_code, target_code), seh_code
+
+
+def get_similarity_for_disassembly_files(function_name, disassembled_code_paths, clean_build=True, out_dir="out"):
+    if split_original_fragments(disassembled_code_paths):
+        target_code = "\n".join(read_target_code(path) for path in disassembled_code_paths)
+        return get_similarity_against_target(function_name, target_code, clean_build=clean_build, out_dir=out_dir)
+
+    best = None
+    for idx, path in enumerate(disassembled_code_paths):
+        similarity, comparison_text, seh_code = get_similarity(
+            function_name,
+            path,
+            clean_build=clean_build if idx == 0 else False,
+            out_dir=out_dir,
+        )
+        if similarity is None:
+            continue
+        if best is None or similarity > best[0]:
+            best = (similarity, comparison_text, seh_code)
+
+    if best is not None:
+        return best
+    if disassembled_code_paths:
+        return None, "Target disassembly has no instructions.", None
+    return None, "No target disassembly files.", None
+
+
+def get_similarity(function_name, disassembled_code_path, clean_build=True, out_dir="out"):
+    return get_similarity_against_target(
+        function_name,
+        read_target_code(disassembled_code_path),
+        clean_build=clean_build,
+        out_dir=out_dir,
+    )
 
 def main():
     parser = ArgumentParser(description="Recover high-level code from assembly code")

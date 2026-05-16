@@ -89,12 +89,12 @@ public:
     virtual int UpdateSprites();            // [9] 0x42C050
     virtual void ProcessFrame();            // [10] 0x42BFC0
     virtual void RenderBackground();        // [11] 0x42C120
-    virtual int PostRender();               // [12] 0x40BC80
+    virtual void PostRender();              // [12] 0x40BC80
     virtual int HandleAction(int* param);   // [13] 0x42BD70
     virtual int StopAndCleanup();           // [14] 0x42BF20
     virtual void SetupViewport();           // [15] 0x42C8A0
     virtual void RenderState();             // [16] 0x42C920
-    virtual int UpdateAndCheck();           // [17] 0x40BC90
+    virtual void UpdateAndCheck();          // [17] 0x40BC90
 
     int ProcessEvents();                    // 0x42C9D0
 };
