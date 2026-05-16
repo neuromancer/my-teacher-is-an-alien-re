@@ -448,7 +448,7 @@
       {"name": "HotspotAction", "vtable_addr": "0x00461378", "parent": "Parser", "header": "HotspotAction.h", "constructor": "0x0041B320"},
       {"name": "QuestionInit", "vtable_addr": "0x00461418", "parent": "Parser", "header": "QuestionInit.h", "constructor": "0x00422880"},
       {"name": "GameLoop", "vtable_addr": "0x00461458", "parent": "Parser", "header": "GameLoop.h", "constructor": null},
-      {"name": "GameState", "vtable_addr": "0x00461468", "parent": "Parser", "header": "GameState.h", "constructor": "0x004333D0"},
+      {"name": "GameState", "vtable_addr": "0x00461468", "parent": "Parser", "header": "GameState.h", "constructor": null},
       {"name": "MouseControl", "vtable_addr": "0x004616B0", "parent": "Parser", "header": "MouseControl.h", "constructor": "0x004327C0"},
       {"name": "CDData", "vtable_addr": "0x004616C8", "parent": "Parser", "header": "CDData.h", "constructor": "0x00432EC0"},
       {"name": "TargetList", "vtable_addr": "0x00461960", "parent": "Parser", "header": "Target.h", "constructor": "0x004432F0"},

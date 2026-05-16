@@ -282,10 +282,10 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
     {
         SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)scrollDownBtn;
-        if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.right >= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
-            ((T_MenuHotspot*)rect)->bounds.bottom >= pos.y) {
+        if (((T_MenuButton*)rect)->bounds.left <= pos.x &&
+            ((T_MenuButton*)rect)->bounds.right >= pos.x &&
+            ((T_MenuButton*)rect)->bounds.top <= pos.y &&
+            ((T_MenuButton*)rect)->bounds.bottom >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -300,10 +300,10 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
     {
         SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)scrollUpBtn;
-        if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.right >= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
-            ((T_MenuHotspot*)rect)->bounds.bottom >= pos.y) {
+        if (((T_MenuButton*)rect)->bounds.left <= pos.x &&
+            ((T_MenuButton*)rect)->bounds.right >= pos.x &&
+            ((T_MenuButton*)rect)->bounds.top <= pos.y &&
+            ((T_MenuButton*)rect)->bounds.bottom >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -318,10 +318,10 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
     {
         SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)useButton;
-        if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.right >= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
-            ((T_MenuHotspot*)rect)->bounds.bottom >= pos.y) {
+        if (((T_MenuButton*)rect)->bounds.left <= pos.x &&
+            ((T_MenuButton*)rect)->bounds.right >= pos.x &&
+            ((T_MenuButton*)rect)->bounds.top <= pos.y &&
+            ((T_MenuButton*)rect)->bounds.bottom >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -405,10 +405,10 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
     {
         SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
         rect = (int*)putBackButton;
-        if (((T_MenuHotspot*)rect)->bounds.left <= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.right >= pos.x &&
-            ((T_MenuHotspot*)rect)->bounds.top <= pos.y &&
-            ((T_MenuHotspot*)rect)->bounds.bottom >= pos.y) {
+        if (((T_MenuButton*)rect)->bounds.left <= pos.x &&
+            ((T_MenuButton*)rect)->bounds.right >= pos.x &&
+            ((T_MenuButton*)rect)->bounds.top <= pos.y &&
+            ((T_MenuButton*)rect)->bounds.bottom >= pos.y) {
             hitResult = 1;
         } else {
             hitResult = 0;

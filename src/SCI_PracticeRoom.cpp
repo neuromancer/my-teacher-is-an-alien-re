@@ -79,7 +79,7 @@ void SCI_PracticeRoom::Init(SC_MessageParser* msg) {
     do {
         T_MenuHotspot* spr = *pBC;
         if (spr != 0) {
-            spr->bounds.left = 0;
+            spr->state = 0;
             if (spr->cursor != 0) {
                 spr->cursor->ResetAnimation(0, 0);
             }
@@ -95,7 +95,7 @@ void SCI_PracticeRoom::Init(SC_MessageParser* msg) {
     int gsIdx = gs->stateValues[iGS];
     T_MenuHotspot* selSprite = periodSprites[gsIdx];
     if (selSprite != 0) {
-        selSprite->bounds.left = 1;
+        selSprite->state = 1;
         if (selSprite->cursor != 0) {
             selSprite->cursor->ResetAnimation(1, 0);
         }
@@ -244,10 +244,10 @@ int SCI_PracticeRoom::AddMessage(SC_MessageParser* msg) {
                 pt.y = pMouse->y;
                 T_MenuHotspot* hs = *local_28;
                 if (hs->sprite == 0 ||
-                    hs->bounds.right > pt.x ||
-                    hs->activeRight < pt.x ||
-                    hs->bounds.bottom > pt.y ||
-                    hs->activeBottom < pt.y) {
+                    hs->bounds.left > pt.x ||
+                    hs->bounds.right < pt.x ||
+                    hs->bounds.top > pt.y ||
+                    hs->bounds.bottom < pt.y) {
                     bHit = 0;
                 } else {
                     bHit = 1;
@@ -258,7 +258,7 @@ int SCI_PracticeRoom::AddMessage(SC_MessageParser* msg) {
                 int iCount = 3;
                 do {
                     T_MenuHotspot* spr = *resetPtr;
-                    spr->bounds.left = 0;
+                    spr->state = 0;
                     if (spr->cursor != 0) {
                         spr->cursor->ResetAnimation(0, 0);
                     }
@@ -266,7 +266,7 @@ int SCI_PracticeRoom::AddMessage(SC_MessageParser* msg) {
                     iCount--;
                 } while (iCount != 0);
                 T_MenuHotspot* sel = periodSprites[local_14];
-                sel->bounds.left = 1;
+                sel->state = 1;
                 if (sel->cursor != 0) {
                     sel->cursor->ResetAnimation(1, 0);
                 }

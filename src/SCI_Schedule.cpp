@@ -271,8 +271,8 @@ int SCI_Schedule::AddMessage(SC_MessageParser* msg)
 
         T_MenuHotspot* hs = mapHotspot;
         if (hs->sprite != 0 &&
-            hs->bounds.right <= mouseX && hs->activeRight >= mouseX &&
-            hs->bounds.bottom <= mouseY && hs->activeBottom >= mouseY) {
+            hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
+            hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
             action->addressType = savedCommand;
             action->instruction = 4;
             action->addressValue = savedMsgData;
@@ -329,14 +329,14 @@ void SCI_Schedule::Update(int param1, int param2)
 
     T_MenuHotspot* hs = mapHotspot;
     if (hs->sprite != 0) {
-        if (hs->bounds.right <= mouseX && hs->activeRight >= mouseX &&
-            hs->bounds.bottom <= mouseY && hs->activeBottom >= mouseY) {
-            hs->bounds.left = 1;
+        if (hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
+            hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
+            hs->state = 1;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(1, 0);
             }
         } else {
-            hs->bounds.left = 0;
+            hs->state = 0;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(0, 0);
             }

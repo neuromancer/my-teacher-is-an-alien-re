@@ -178,7 +178,7 @@ void SCI_SchoolMenu::Init(SC_MessageParser* msg) {
     do {
         T_MenuHotspot* chr = *charSprite;
         if (chr != 0) {
-            chr->bounds.left = 0;
+            chr->state = 0;
             Sprite* animCtrl = chr->cursor;
             if (animCtrl != 0) {
                 animCtrl->ResetAnimation(0, 0);
@@ -200,7 +200,7 @@ void SCI_SchoolMenu::Init(SC_MessageParser* msg) {
         gs->ValidateIndex(charIdx);
         stateVals = gs->stateValues;
         T_MenuHotspot* chrPtr = characters[stateVals[charIdx]];
-        chrPtr->bounds.left = 1;
+        chrPtr->state = 1;
         Sprite* animCtrl = chrPtr->cursor;
         if (animCtrl != 0) {
             animCtrl->ResetAnimation(1, 0);
@@ -516,14 +516,14 @@ void SCI_SchoolMenu::Update(int param1, int param2) {
 
     if (okayButton != 0 && selectedOption > -1 && IsCharacterActive() != 0) {
         T_MenuHotspot* ok = okayButton;
-        ok->bounds.left = 1;
+        ok->state = 1;
         Sprite* spr = ok->cursor;
         if (spr != 0) {
             spr->ResetAnimation(1, 0);
         }
     } else {
         T_MenuHotspot* ok = okayButton;
-        ok->bounds.left = 0;
+        ok->state = 0;
         Sprite* spr = ok->cursor;
         if (spr != 0) {
             spr->ResetAnimation(0, 0);
@@ -590,7 +590,7 @@ int SCI_SchoolMenu::IsCharacterActive() {
     do {
         T_MenuHotspot* chr = *p;
         if (chr != 0) {
-            int state = chr->bounds.left;
+            int state = chr->state;
             if (state == 1 || state == 2) {
                 return 1;
             }
@@ -628,7 +628,7 @@ void SCI_SchoolMenu::SetupOptions() {
         do {
             T_MenuHotspot* opt = *p;
             if (opt != 0) {
-                opt->bounds.left = 0;
+                opt->state = 0;
                 Sprite* animCtrl = opt->cursor;
                 if (animCtrl != 0) {
                     animCtrl->ResetAnimation(0, 0);
@@ -693,13 +693,13 @@ void SCI_SchoolMenu::SetupOptions() {
         stateVals = gs->stateValues;
 
         if (stateVals[stIdx] == 0) {
-            opt->bounds.left = -1;
+            opt->state = -1;
             Sprite* animCtrl = opt->cursor;
             if (animCtrl != 0) {
                 animCtrl->ResetAnimation(-1, 0);
             }
         } else {
-            opt->bounds.left = 0;
+            opt->state = 0;
             Sprite* animCtrl = opt->cursor;
             if (animCtrl != 0) {
                 animCtrl->ResetAnimation(0, 0);
@@ -783,10 +783,10 @@ char_loop:
         SlimeDim mouseCoords = *(SlimeDim*)msgMouse;
         T_MenuHotspot* chr = *charPtr;
         if (chr->sprite != 0) {
-            if (chr->bounds.right > mouseCoords.x ||
-                chr->activeRight < mouseCoords.x ||
-                chr->bounds.bottom > mouseCoords.y ||
-                chr->activeBottom < mouseCoords.y) {
+            if (chr->bounds.left > mouseCoords.x ||
+                chr->bounds.right < mouseCoords.x ||
+                chr->bounds.top > mouseCoords.y ||
+                chr->bounds.bottom < mouseCoords.y) {
                 hitChar = 0;
             } else {
                 hitChar = 1;
@@ -814,7 +814,7 @@ opt_loop:
         {
             SlimeDim optCoords = action->mousePos;
             if (opt->sprite == 0) goto opt_miss;
-            if (((GlyphRect*)&opt->bounds.right)->HitTest(optCoords.x, optCoords.y)) {
+            if (opt->bounds.HitTest(optCoords.x, optCoords.y)) {
                 hitOpt = 1;
                 goto opt_done;
             }
@@ -886,7 +886,7 @@ char_click:
             int count = 3;
             do {
                 T_MenuHotspot* chr = *basePtr;
-                chr->bounds.left = 0;
+                chr->state = 0;
                 Sprite* animCtrl = chr->cursor;
                 if (animCtrl != 0) {
                     animCtrl->ResetAnimation(0, 0);
@@ -899,7 +899,7 @@ char_click:
         selPtr = &characters[i];
         {
             T_MenuHotspot* selChr = *selPtr;
-            selChr->bounds.left = 1;
+            selChr->state = 1;
             Sprite* animCtrl = selChr->cursor;
             if (animCtrl != 0) {
                 animCtrl->ResetAnimation(1, 0);
@@ -962,7 +962,7 @@ opt_click:
         do {
             T_MenuHotspot* opt = *baseOpts;
             if (opt != 0) {
-                opt->bounds.left = 0;
+                opt->state = 0;
                 Sprite* animCtrl = opt->cursor;
                 if (animCtrl != 0) {
                     animCtrl->ResetAnimation(0, 0);
@@ -976,7 +976,7 @@ opt_click:
     selPtr = &options[i];
     {
         T_MenuHotspot* selOpt = *selPtr;
-        selOpt->bounds.left = 1;
+        selOpt->state = 1;
         Sprite* animCtrl = selOpt->cursor;
         if (animCtrl != 0) {
             animCtrl->ResetAnimation(1, 0);
@@ -1013,7 +1013,7 @@ check_go:
         goCoords.y = goMouse[1];
         T_MenuHotspot* goSpr = okayButton;
         if (goSpr->sprite != 0 &&
-            ((GlyphRect*)&goSpr->bounds.right)->HitTest(goCoords.x, goCoords.y) != 0) {
+            goSpr->bounds.HitTest(goCoords.x, goCoords.y) != 0) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -1134,7 +1134,7 @@ check_back:
         backCoords.y = ((SpriteAction*)msg)->mousePos.y;
         T_MenuHotspot* backSpr = cancelButton;
         if (backSpr->sprite != 0 &&
-            ((GlyphRect*)&backSpr->bounds.right)->HitTest(backCoords.x, backCoords.y) != 0) {
+            backSpr->bounds.HitTest(backCoords.x, backCoords.y) != 0) {
             hitResult = 1;
         } else {
             hitResult = 0;
@@ -1302,4 +1302,3 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     ReportUnknownLabel("SCI_SchoolMenu");
     return 0;
 }
-

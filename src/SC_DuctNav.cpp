@@ -588,15 +588,15 @@ void SC_DuctNav::Update(int p1, int p2) {
         }
 
         int slotIdx = 0;
-        GlyphRect* sr = slotRects;
+        int* slotBottom = &slotRects[0].bottom;
         do {
             if (node == 0) break;
             char* name = (char*)(node + 7);
-            int* nextNode = (int*)*node;
+            int y = *slotBottom;
+            node = (int*)*node;
             slotIdx++;
-            g_ZBufferManager_0046aa24->ShowText(name, sr->left, sr->bottom, 10000, -1);
-            sr++;
-            node = nextNode;
+            slotBottom += 4;
+            g_ZBufferManager_0046aa24->ShowText(name, slotBottom[-7], y, 10000, -1);
         } while (slotIdx <= 9);
     }
 

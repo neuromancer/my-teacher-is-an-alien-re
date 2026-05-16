@@ -621,6 +621,84 @@ def parse_class_info(src_dir, code_full_dir, rdata_min, rdata_max):
     return classes
 
 
+def find_constructor_parent_warnings(classes, code_full_dir, rdata_min, rdata_max, filter_class=None):
+    """
+    Check source-declared non-root parents against original constructor evidence.
+
+    This catches cases where vtable slots look valid but the source hierarchy
+    would force an intermediate base constructor/destructor that the original
+    constructor never used.
+    """
+    call_pat = re.compile(r'\bCALL\s+0x([0-9a-fA-F]+)', re.IGNORECASE)
+    mov_pat = re.compile(r'\bMOV\s+dword ptr \[[^\]]+\],0x([0-9a-fA-F]+)', re.IGNORECASE)
+    instruction_pat = re.compile(r'^\s*(MOV|CALL|PUSH|POP|SUB|ADD|LEA|XOR|RET|JMP|CMP|TEST)\b', re.IGNORECASE | re.MULTILINE)
+    warnings = []
+    stats = {
+        'checked': 0,
+        'missing_constructor': 0,
+        'missing_parent_evidence': 0,
+        'missing_disassembly': 0,
+        'empty_disassembly': 0,
+    }
+
+    for cls_name, info in sorted(classes.items()):
+        if filter_class and cls_name != filter_class:
+            continue
+
+        parent_name = info.get('parent')
+        ctor_addr = info.get('constructor')
+        if not parent_name:
+            continue
+        if not ctor_addr:
+            stats['missing_constructor'] += 1
+            continue
+
+        parent_info = classes.get(parent_name)
+        if not parent_info:
+            continue
+
+        parent_ctor = parent_info.get('constructor')
+        parent_vtable = parent_info.get('vtable_addr')
+        if not parent_ctor and not parent_vtable:
+            stats['missing_parent_evidence'] += 1
+            continue
+
+        ctor_file = os.path.join(code_full_dir, f"FUN_{ctor_addr:X}.disassembled.txt")
+        if not os.path.exists(ctor_file):
+            stats['missing_disassembly'] += 1
+            continue
+
+        with open(ctor_file, 'r') as fh:
+            text = fh.read()
+
+        if not instruction_pat.search(text):
+            stats['empty_disassembly'] += 1
+            continue
+
+        stats['checked'] += 1
+        calls = {int(match.group(1), 16) for match in call_pat.finditer(text)}
+        vtable_writes = {
+            int(match.group(1), 16)
+            for match in mov_pat.finditer(text)
+            if rdata_min <= int(match.group(1), 16) < rdata_max
+        }
+
+        if parent_ctor and parent_ctor in calls:
+            continue
+        if parent_vtable and parent_vtable in vtable_writes:
+            continue
+
+        warnings.append({
+            'class_name': cls_name,
+            'parent_name': parent_name,
+            'constructor': ctor_addr,
+            'parent_constructor': parent_ctor,
+            'parent_vtable': parent_vtable,
+        })
+
+    return warnings, stats
+
+
 def find_implemented_functions(src_dir):
     """
     Scan .cpp and .h files for /* Function start: 0xXXXXXX */ comments.
@@ -705,6 +783,9 @@ def main():
         for cls_name, info in classes.items()
         if info.get('parent') and info['parent'] not in classes
     )
+    constructor_parent_warnings, constructor_parent_stats = find_constructor_parent_warnings(
+        classes, code_dir, rdata_min, rdata_max, args.filter_class
+    )
     implementations = find_implemented_functions(src_dir)
     function_symbols = find_source_function_symbols(src_dir)
     _, _, class_methods, _ = parse_header_classes(src_dir)
@@ -718,6 +799,13 @@ def main():
     print(f"Vtables: {len(all_vtable_addrs)} unique addresses")
     print(f"Classes: {len(classes)} with vtable info")
     print(f"Parents: {len(invalid_parents)} invalid references")
+    print(f"Ctor hierarchy: {constructor_parent_stats['checked']} checked, {len(constructor_parent_warnings)} warnings")
+    skipped_ctor_checks = sum(
+        count for key, count in constructor_parent_stats.items()
+        if key != 'checked'
+    )
+    if skipped_ctor_checks:
+        print(f"Ctor hierarchy skipped: {skipped_ctor_checks} without constructor evidence")
     print(f"Impls:   {len(implementations)} Function start comments")
     print()
 
@@ -725,6 +813,18 @@ def main():
         print("Invalid parent references:")
         for cls_name, parent in invalid_parents:
             print(f"  {cls_name} -> {parent}")
+        print()
+
+    if constructor_parent_warnings:
+        print("Constructor hierarchy warnings:")
+        for item in constructor_parent_warnings:
+            parent_vtable = item['parent_vtable']
+            parent_vtable_str = f"0x{parent_vtable:08X}" if parent_vtable else "(none)"
+            print(
+                f"  {item['class_name']} declares parent {item['parent_name']}, "
+                f"but ctor 0x{item['constructor']:08X} neither calls parent ctor "
+                f"0x{item['parent_constructor']:08X} nor writes parent vtable {parent_vtable_str}"
+            )
         print()
 
     # Read vtables from binary
@@ -995,7 +1095,7 @@ def main():
         for addr in unmatched:
             print(f"  0x{addr:08X}")
 
-    if invalid_parents or total_missing_real or total_symbol_mismatch:
+    if invalid_parents or constructor_parent_warnings or total_missing_real or total_symbol_mismatch:
         sys.exit(1)
 
 

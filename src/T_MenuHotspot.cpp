@@ -83,17 +83,17 @@ void T_MenuButton::Update()
     }
 
     if (sprite != 0 &&
-        bounds.right <= mouseX && activeRight >= mouseX &&
-        bounds.bottom <= mouseY && hs->activeBottom >= mouseY) {
+        hs->bounds.left <= mouseX && hs->bounds.right >= mouseX &&
+        hs->bounds.top <= mouseY && hs->bounds.bottom >= mouseY) {
         // Inside bounds
-        int st = bounds.left;
+        int st = hs->state;
         if (st == 0 || st == 3) {
-            bounds.left = 3;
+            hs->state = 3;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(3, 0);
             }
         } else if (st == 1 || st == 2) {
-            bounds.left = 2;
+            hs->state = 2;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(2, 0);
             }
@@ -102,14 +102,14 @@ void T_MenuButton::Update()
         }
     } else {
         // Outside bounds
-        int st = bounds.left;
+        int st = hs->state;
         if (st == 0 || st == 3) {
-            bounds.left = 0;
+            hs->state = 0;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(0, 0);
             }
         } else if (st == 1 || st == 2) {
-            bounds.left = 1;
+            hs->state = 1;
             if (hs->cursor != 0) {
                 hs->cursor->ResetAnimation(1, 0);
             }
@@ -184,15 +184,15 @@ int T_MenuHotspot::LBLParse(char* line) {
         local_28 = 0;
         local_24 = 0;
         sscanf(line, " %s %d %d %d %d", local_50, &local_30, &local_2c, &local_28, &local_24);
-        bounds.right = local_30;
-        bounds.bottom = local_2c;
-        activeRight = local_28;
-        activeBottom = local_24;
+        bounds.left = local_30;
+        bounds.top = local_2c;
+        bounds.right = local_28;
+        bounds.bottom = local_24;
     } else if (strcmp(local_50, "SPRITE") == 0) {
         cursor = new Sprite((char*)0);
         Parser::ProcessFile(cursor, this, (char*)0);
     } else if (strcmp(local_50, "MOUSE") == 0) {
-        sscanf(line, "%s %d", local_50, &bounds.top);
+        sscanf(line, "%s %d", local_50, &mouseMode);
     } else if (strcmp(local_50, "HSOUND") == 0) {
         sscanf(line, "%s %d %d %d %d", local_50, &local_18, &local_1c, &local_24, &local_20);
         soundEntries[local_18 * 3 + 2] = local_1c;
