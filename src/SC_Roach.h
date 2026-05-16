@@ -42,7 +42,7 @@ struct CrystalSource {
     int pickupBottom; // +0x1C
     int sourceX;      // +0x20 — source display X position
     int sourceY;      // +0x24 — source display Y position
-    int crystalPtr;   // +0x28 — assigned crystal object (NavCrystal*)
+    NavCrystal* crystalPtr; // +0x28 — assigned crystal object
     CrystalSource();
     ~CrystalSource();
 };
@@ -64,8 +64,8 @@ struct GridCell {
 // Field layout:
 //   0x118-0x277: CrystalSource[8] — source slots (stride 0x2C)
 //   0x278-0x6F7: GridCell[36] — 6x6 grid hitboxes (stride 0x20)
-//   0x6F8: int* currentPiece — currently held crystal
-//   0x6FC-0x71B: int* crystals[8] — crystal object pointers
+//   0x6F8: NavCrystal* currentPiece — currently held crystal
+//   0x6FC-0x71B: NavCrystal* crystals[8] — crystal object pointers
 //   0x71C: void* progressObj — allocated progress tracker
 //   0x720: Sprite* circleSprite
 //   0x724: Sprite* barSprite
@@ -74,8 +74,8 @@ class SC_Roach : public SC_Combat {
 public:
     CrystalSource sources[8];    // 0x118-0x277 (8 * 0x2C = 0x160)
     GridCell grid[36];           // 0x278-0x6F7 (36 cells * 32 bytes = 0x480)
-    int* currentPiece;           // 0x6F8 — currently held NavCrystal*
-    int* crystals[8];            // 0x6FC-0x71B — NavCrystal* array
+    NavCrystal* currentPiece;    // 0x6F8 — currently held crystal
+    NavCrystal* crystals[8];     // 0x6FC-0x71B — NavCrystal* array
     void* progressObj;           // 0x71C — Timer* progress tracker
     Sprite* circleSprite;        // 0x720
     Sprite* barSprite;           // 0x724

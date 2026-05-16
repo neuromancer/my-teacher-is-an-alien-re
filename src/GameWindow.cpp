@@ -26,14 +26,15 @@ int ParseCommandLineArgs(char *, char **, int);
 
 /* Function start: 0x420110 */
 GameWindow::GameWindow() {
-    // Zero entire object (0xb dwords = 44 bytes = 0x2c)
-    int* p = (int*)this;
-    for (int i = 0xb; i != 0; i--) {
-        *p = 0;
-        p++;
-    }
-    startupParam = 0;
+    hInstance = 0;
+    displayMode = 0;
+    hWnd = 0;
+    hDC = 0;
+    hPalette = 0;
+    field_18 = 0;
+    field_1c = 0;
     initialized = 1;
+    startupParam = 0;
     fullscreenMode = 1;
     savedActiveWindow = GetActiveWindow();
 }

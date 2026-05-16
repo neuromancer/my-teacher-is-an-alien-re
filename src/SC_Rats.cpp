@@ -15,6 +15,7 @@
 #include "VBuffer.h"
 #include "SoundCommand.h"
 #include "RenderEntry.h"
+#include "Animation.h"
 #include "mss.h"
 #include "main.h"
 #include <string.h>
@@ -78,8 +79,7 @@ void SC_Rats::Init(SC_MessageParser* msg) {
             while (list1->head != 0) {
                 void* item = list1->Pop();
                 if (item != 0) {
-                    *(int*)item = 0x461030;
-                    FreeMemory(item);
+                    delete (SoundCommand*)item;
                 }
             }
         }
@@ -94,8 +94,7 @@ void SC_Rats::Init(SC_MessageParser* msg) {
                         item->m_videoBuffer = 0;
                     }
                     if (item->m_childObject != 0) {
-                        SoundCommand* sub = item->m_childObject;
-                        (*(void (__fastcall **)(void*, int, int))(*(int*)sub))(sub, 0, 1);
+                        delete (Animation*)item->m_childObject;
                         item->m_childObject = 0;
                     }
                     FreeMemory(item);

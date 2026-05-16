@@ -350,13 +350,11 @@ int SC_CombatBase::ProcessEvents()
     int result = 0;
 
     if (g_HotspotPool_0046ae74->m_count != 0) {
-        int handleAction = ((int*)(*(int*)this))[13];
-
         do {
             SpriteAction* popped = ((TimedEventPool*)g_HotspotPool_0046ae74)->PopSafe((SpriteAction*)tempBuf);
             localEvent.CopyFrom(popped);
             popped->~SpriteAction();
-            result |= ((int (__fastcall *)(SC_CombatBase*, int, SpriteAction*))handleAction)(this, 0, &localEvent);
+            result |= HandleAction((int*)&localEvent);
         } while (g_HotspotPool_0046ae74->m_count != 0);
     }
 

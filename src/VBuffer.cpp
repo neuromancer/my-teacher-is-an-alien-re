@@ -198,9 +198,7 @@ VBuffer::~VBuffer()
 /* Function start: 0x410FF0 */
 void VBuffer::InitFields()
 {
-    for (int i = 0; i < 0xc; i++) {
-        ((int*)this)[i] = 0;
-    }
+    memset(this, 0, sizeof(VBuffer));
     handle = 0xffffffff;
     saved_video_mode = 0xffffffff;
     InitVBufferHandleTable();

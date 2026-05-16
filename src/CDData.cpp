@@ -346,7 +346,7 @@ int CDData::ResolvePath(char* name) {
     } else {
         _chdir("..");
     }
-    CopyFileContent((char*)((int)this + 0x195), name);
+    CopyFileContent(cdPath + 5, name);
     return 1;
 }
 

@@ -370,12 +370,7 @@ extern "C" char* GetSoundFilename(int handle);
 /* Function start: 0x448120 */ /* SoundEntry sdtor (COMDAT, compiler-generated) */
 /* Function start: 0x447FF0 */
 SoundEntry::SoundEntry(int id) {
-    int i;
-    int* p = (int*)this;
-    for (i = 0xc; i != 0; i--) {
-        *p = 0;
-        p++;
-    }
+    memset(this, 0, sizeof(SoundEntry));
     soundId = id;
     timer.Reset();
     sample = new Sample();

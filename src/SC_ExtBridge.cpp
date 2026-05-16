@@ -10,6 +10,11 @@
 #include "Palette.h"
 #include "mCNavigator.h"
 #include "ZBufferManager.h"
+#include "DrawEntry.h"
+#include "VBuffer.h"
+#include "RenderEntry.h"
+#include "SoundCommand.h"
+#include "Animation.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -85,8 +90,7 @@ void SC_ExtBridge::Init(SC_MessageParser* msg) {
             while (list1->head != 0) {
                 void* obj = list1->Pop();
                 if (obj != 0) {
-                    *(int*)obj = 0x461030;
-                    FreeMemory(obj);
+                    delete (SoundCommand*)obj;
                 }
             }
         }
@@ -96,16 +100,15 @@ void SC_ExtBridge::Init(SC_MessageParser* msg) {
         if (list2->head != 0) {
             list2->current = list2->head;
             while (list2->head != 0) {
-                int* item = (int*)list2->Pop();
+                DrawEntry* item = (DrawEntry*)list2->Pop();
                 if (item != 0) {
-                    if (item[1] != 0) {
-                        delete (VBuffer*)item[1];
-                        item[1] = 0;
+                    if (item->m_videoBuffer != 0) {
+                        delete item->m_videoBuffer;
+                        item->m_videoBuffer = 0;
                     }
-                    if (item[2] != 0) {
-                        void* sub = (void*)item[2];
-                        (*(void (__fastcall **)(void*, int, int))(*(int*)sub))(sub, 0, 1);
-                        item[2] = 0;
+                    if (item->m_childObject != 0) {
+                        delete (Animation*)item->m_childObject;
+                        item->m_childObject = 0;
                     }
                     FreeMemory(item);
                 }
@@ -141,9 +144,7 @@ void SC_ExtBridge::Init(SC_MessageParser* msg) {
                     list3->current = list3->head;
                 }
                 if (data != 0) {
-                    *(int*)data = 0x46102c;
-                    ((Rect*)((int)data + 4))->~Rect();
-                    FreeMemory(data);
+                    delete (RenderEntry*)data;
                 }
             }
         }

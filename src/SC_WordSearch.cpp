@@ -30,21 +30,36 @@ extern "C" void WriteToLog(const char* format, ...);
 
 #include "MouseControl.h"
 
-/* Game-state offsets within the words[] buffer.
-   After InitWordList runs, the same memory is reinterpreted as puzzle state:
-   pointers, counters, per-cell data, sprite array, and the exit-button rect.
-   The reuse is intentional (memory-saving in the original) — we document
-   the layout here rather than add substructures/unions. */
-#define GS_BG_SPRITE_OFS     0x34   /* Sprite*   — background sprite ref   */
-#define GS_SOUND_LIST_OFS    0x3C   /* SoundList* — puzzle sound effects   */
-#define GS_MSG_VALUE_OFS     0x40   /* int       — SendGameMessage payload */
-#define GS_COUNTER_OFS       0x44   /* int       — completion counter      */
-#define GS_TARGET_OFS        0x48   /* int       — counter target          */
-#define GS_CURSOR_STATE_OFS  0x4C   /* int       — cursor/selection state  */
-#define GS_MODE_FLAG_OFS     0x50   /* int       — input mode flag         */
-#define GS_CELLS_OFS         0x68   /* Cell[36]  — 7 ints per cell         */
-#define GS_CELL_SPRITES_OFS  0x458  /* Sprite*[36]                         */
-#define GS_EXIT_RECT_OFS     0x474  /* Rect      — exit button bounds      */
+struct WordSearchCell {
+    int value;
+    int selected;
+    int markWin;
+    int left;
+    int top;
+    int right;
+    int bottom;
+};
+
+struct WordSearchRuntimeState {
+    char pad_00[0x34];
+    Sprite* bgSprite;
+    int pad_38;
+    SlimeTable* sound;
+    int messageValue;
+    int counter;
+    int target;
+    int cursorState;
+    int modeFlag;
+    int cursorLeft;
+    int cursorTop;
+    int cursorRight;
+    int cursorBottom;
+    Sprite* cursorSprite;
+    WordSearchCell cells[36];
+    Sprite* cellSprites[36];
+
+    Rect* exitRect() { return (Rect*)&cellSprites[7]; }
+};
 #include "VBuffer.h"
 
 /* Function start: 0x42E4B0 */
@@ -731,16 +746,17 @@ void __fastcall Handler_OnProcessEnd(int thisPtr) {
 void SC_WordSearch::OnProcessEnd() {
     int startX = 0x9B;
     Handler_OnProcessEnd((int)this);
-    int* ptr = (int*)((char*)words + 0x74);
+    WordSearchRuntimeState* state = (WordSearchRuntimeState*)words;
+    WordSearchCell* ptr = state->cells;
     do {
         int cellX = 0x48;
-        int* cell = ptr;
+        WordSearchCell* cell = ptr;
         do {
-            cell[0] = startX;
-            cell[1] = cellX;
-            cell[2] = startX + 0x45;
-            cell[3] = cellX + 0x32;
-            ptr = cell + 7;
+            cell->left = startX;
+            cell->top = cellX;
+            cell->right = startX + 0x45;
+            cell->bottom = cellX + 0x32;
+            ptr = cell + 1;
             cellX += 0x33;
             cell = ptr;
         } while (cellX < 0x17A);
@@ -748,30 +764,30 @@ void SC_WordSearch::OnProcessEnd() {
     } while (startX < 0x23F);
 
     // Set initial grid cell states
-    *(int*)((char*)words + 0xA4) = 1;
-    *(int*)((char*)words + 0x1D8) = 1;
-    *(int*)((char*)words + 0x280) = 1;
-    *(int*)((char*)words + 0x328) = 1;
-    *(int*)((char*)words + 0x360) = 1;
-    *(int*)((char*)words + 0x1F4) = 1;
-    *(int*)((char*)words + 0x210) = 1;
-    *(int*)((char*)words + 0x2F0) = 1;
+    state->cells[2].selected = 1;
+    state->cells[13].selected = 1;
+    state->cells[19].selected = 1;
+    state->cells[25].selected = 1;
+    state->cells[27].selected = 1;
+    state->cells[14].selected = 1;
+    state->cells[15].selected = 1;
+    state->cells[23].selected = 1;
 
     // Set game parameters
-    *(int*)((char*)words + 0x54) = 10;
-    *(int*)((char*)words + 0x58) = 0x14;
-    *(int*)((char*)words + 0x5C) = 0x5A;
-    *(int*)((char*)words + 0x60) = 0xDC;
-    *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x0) = 6;
-    *(int*)((char*)words + 0x428) = 1;
-    *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x4) = 0x197;
-    *(int*)((char*)words + GS_EXIT_RECT_OFS + 0x8) = 0x5F;
-    *(int*)((char*)words + GS_EXIT_RECT_OFS + 0xC) = 0x1D6;
+    state->cursorLeft = 10;
+    state->cursorTop = 0x14;
+    state->cursorRight = 0x5A;
+    state->cursorBottom = 0xDC;
+    state->exitRect()->left = 6;
+    state->cells[34].markWin = 1;
+    state->exitRect()->top = 0x197;
+    state->exitRect()->right = 0x5F;
+    state->exitRect()->bottom = 0x1D6;
 
     InitCombatGrid((int)this);
 
-    if (*(int*)((char*)words + GS_MSG_VALUE_OFS) != 0) {
-        SendGameMessage(5, *(int*)((char*)words + GS_MSG_VALUE_OFS), handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
+    if (state->messageValue != 0) {
+        SendGameMessage(5, state->messageValue, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
     }
 }
 
@@ -780,27 +796,15 @@ extern void __fastcall UpdateWordSearchCursor(int*);
 
 /* Function start: 0x42EFC0 */
 void SC_WordSearch::Render() {
-    /* After InitWordList runs, the words[] buffer is repurposed as game state.
-       Layout by offset within (char*)words:
-         +0x34  Sprite*    bgSprite (local ref)
-         +0x3C  SoundList* soundList
-         +0x44  int        counter
-         +0x48  int        target
-         +0x4C  int        cursorState
-         +0x50  int        modeFlag
-         +0x68..+0x457    36 cells × 7 ints each (value, flag, markWin, l, t, r, b)
-         +0x458..+0x4E7   36 Sprite* cellSprites
-         +0x474..+0x483   Rect exitButton
-       No union/substructure is used because the project forbids them; explicit
-       casts preserve the memory reuse semantics of the original binary. */
-    Sprite* bgSpr = (Sprite*)*(int*)((char*)this + 0x108);
+    WordSearchRuntimeState* state = (WordSearchRuntimeState*)words;
+    Sprite* bgSpr = state->bgSprite;
     bgSpr->Do(bgSpr->loc_x, bgSpr->loc_y, 1.0);
 
-    if (*(int*)((char*)this + 0x124) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+    if (state->modeFlag != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
     }
-    UpdateWordSearchCursor((int*)((char*)this + 0x120));
-    if (*(int*)((char*)this + 0x124) != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+    UpdateWordSearchCursor(&state->cursorState);
+    if (state->modeFlag != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
     }
 
@@ -820,18 +824,19 @@ void SC_WordSearch::Render() {
     }
 
     // Check exit button hover (game-state exit-rect at +0x474)
-    if (*(int*)((char*)this + 0x548) <= mouseX && mouseX <= *(int*)((char*)this + 0x550) &&
-        *(int*)((char*)this + 0x54C) <= mouseY && mouseY <= *(int*)((char*)this + 0x554) &&
+    Rect* exitButton = state->exitRect();
+    if (exitButton->left <= mouseX && mouseX <= exitButton->right &&
+        exitButton->top <= mouseY && mouseY <= exitButton->bottom &&
         g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0x13, 0);
     }
 
     int local_8 = 0x82;
-    int* cell = (int*)((char*)this + 0x13C);
+    WordSearchCell* cell = state->cells;
 
     do {
         int cellY = 0x2F;
-        Sprite** slot = (Sprite**)((char*)this + 0x52C + local_4 * 4);
+        Sprite** slot = &state->cellSprites[local_4];
         do {
             int mx;
             int my;
@@ -847,10 +852,10 @@ void SC_WordSearch::Render() {
                 mx = 0;
             }
 
-            if (cell[3] <= mx && mx <= cell[5] && cell[4] <= my && my <= cell[6]) {
+            if (cell->left <= mx && mx <= cell->right && cell->top <= my && my <= cell->bottom) {
                 Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
-                if (cell[1] == 0) {
-                    if (*(int*)((char*)this + 0x124) == 0) {
+                if (cell->selected == 0) {
+                    if (state->modeFlag == 0) {
                         if (mouseSpr != 0) {
                             mouseSpr->ResetAnimation(0, 0);
                         }
@@ -860,7 +865,7 @@ void SC_WordSearch::Render() {
                         }
                     }
                 } else {
-                    if (*(int*)((char*)this + 0x124) == 0) {
+                    if (state->modeFlag == 0) {
                         if (mouseSpr != 0) {
                             mouseSpr->ResetAnimation(0, 0);
                         }
@@ -872,18 +877,18 @@ void SC_WordSearch::Render() {
                 }
             }
 
-            if (*cell != 0) {
-                (*slot)->ResetAnimation(*cell - 1, 0);
+            if (cell->value != 0) {
+                (*slot)->ResetAnimation(cell->value - 1, 0);
                 slot++;
                 (*(slot - 1))->Do(local_8, cellY, 1.0);
                 local_4++;
                 int* statusPtr = (int*)((int)palette + 4);
-                if (*statusPtr == 0 && cell[2] != 0 && *cell > 5) {
+                if (*statusPtr == 0 && cell->markWin != 0 && cell->value > 5) {
                     *statusPtr = 1;
                 }
             }
 
-            cell += 7;
+            cell++;
             cellY += 0x33;
         } while (cellY < 0x161);
 
@@ -891,14 +896,14 @@ void SC_WordSearch::Render() {
         if (local_8 > 0x225) {
             g_Mouse_0046aa18->DrawCursor();
 
-            if (*(int*)((char*)this + 0x120) < 1) {
-                int sndDone = ((SlimeTable*)*(void**)((char*)this + 0x110))->IsSamplePlaying(1);
+            if (state->cursorState < 1) {
+                int sndDone = state->sound->IsSamplePlaying(1);
                 if (sndDone == 0) {
                     int* status = (int*)palette;
                     if (status[1] == 0) {
-                        int count = *(int*)((char*)this + 0x118) + 1;
-                        *(int*)((char*)this + 0x118) = count;
-                        if (*(int*)((char*)this + 0x11C) == count) {
+                        int count = state->counter + 1;
+                        state->counter = count;
+                        if (state->target == count) {
                             status[0] = 1;
                             return;
                         }
@@ -913,12 +918,8 @@ void SC_WordSearch::Render() {
 
 /* Function start: 0x42F220 */
 void SC_WordSearch::PlaceWord(int param_1, int param_2) {
-    struct WordSearchEntry {
-        int fields[7];
-    };
-#define WS_ENTRIES ((WordSearchEntry*)((char*)this + 0x13c))
-#define WS_SOUND (*(SlimeTable**)((char*)this + 0x110))
-#define WS_STATE ((int*)((char*)this + 0x120))
+    WordSearchRuntimeState* state = (WordSearchRuntimeState*)words;
+    WordSearchCell* entries = state->cells;
 
     int colMin;
     int rowMin;
@@ -975,7 +976,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     {
         int i = param_2;
         if (i < colMax) {
-            p = &WS_ENTRIES[param_1 * 6 + i].fields[1];
+            p = &entries[param_1 * 6 + i].selected;
             do {
                 if (*p != 0) {
                     colMax = i;
@@ -989,7 +990,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     {
         int i = param_2;
         if (i > colMin) {
-            p = &WS_ENTRIES[param_1 * 6 + i].fields[1];
+            p = &entries[param_1 * 6 + i].selected;
             do {
                 if (*p != 0) {
                     colMin = i;
@@ -1003,7 +1004,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     {
         int i = param_1;
         if (i < rowMax) {
-            p = &WS_ENTRIES[i * 6 + param_2].fields[1];
+            p = &entries[i * 6 + param_2].selected;
             do {
                 if (*p != 0) {
                     rowMax = i;
@@ -1017,7 +1018,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     {
         int i = param_1;
         if (i > rowMin) {
-            p = &WS_ENTRIES[i * 6 + param_2].fields[1];
+            p = &entries[i * 6 + param_2].selected;
             do {
                 if (*p != 0) {
                     rowMin = i;
@@ -1030,22 +1031,22 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
 
     index = param_1 * 6 + param_2;
 
-    if (WS_ENTRIES[index - 7].fields[1] != 0) {
+    if (entries[index - 7].selected != 0) {
         canDiagUL = 0;
     }
-    if (WS_ENTRIES[index + 5].fields[1] != 0) {
+    if (entries[index + 5].selected != 0) {
         canDiagDL = 0;
     }
-    if (WS_ENTRIES[index - 5].fields[1] != 0) {
+    if (entries[index - 5].selected != 0) {
         canDiagUR = 0;
     }
-    if (WS_ENTRIES[index + 7].fields[1] != 0) {
+    if (entries[index + 7].selected != 0) {
         canDiagDR = 0;
     }
 
     if (colMax >= colMin) {
         int count = colMax - colMin + 1;
-        p = &WS_ENTRIES[param_1 * 6 + colMin].fields[0];
+        p = &entries[param_1 * 6 + colMin].value;
         do {
             total += *p;
             p += 7;
@@ -1056,7 +1057,7 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
 
     if (rowMax >= rowMin) {
         int count = rowMax - rowMin + 1;
-        p = &WS_ENTRIES[rowMin * 6 + param_2].fields[0];
+        p = &entries[rowMin * 6 + param_2].value;
         do {
             total += *p;
             p += 42;
@@ -1066,51 +1067,47 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     }
 
     if (canDiagUL != 0) {
-        int val = WS_ENTRIES[index - 7].fields[0];
+        int val = entries[index - 7].value;
         if (val != 0) {
-            WS_ENTRIES[index - 7].fields[0] = 0;
+            entries[index - 7].value = 0;
             total += val;
         }
     }
     if (canDiagDL != 0) {
-        int val = WS_ENTRIES[index + 5].fields[0];
+        int val = entries[index + 5].value;
         if (val != 0) {
-            WS_ENTRIES[index + 5].fields[0] = 0;
+            entries[index + 5].value = 0;
             total += val;
         }
     }
     if (canDiagUR != 0) {
-        int val = WS_ENTRIES[index - 5].fields[0];
+        int val = entries[index - 5].value;
         if (val != 0) {
-            WS_ENTRIES[index - 5].fields[0] = 0;
+            entries[index - 5].value = 0;
             total += val;
         }
     }
     if (canDiagDR != 0) {
-        int val = WS_ENTRIES[index + 7].fields[0];
+        int val = entries[index + 7].value;
         if (val != 0) {
-            WS_ENTRIES[index + 7].fields[0] = 0;
+            entries[index + 7].value = 0;
             total += val;
         }
     }
 
     if (total != 0) {
-        WS_SOUND->Play(1);
-        int sndIdx = 4 - WS_STATE[0];
+        state->sound->Play(1);
+        int sndIdx = 4 - state->cursorState;
         if (sndIdx >= 0 && sndIdx <= 2) {
-            WS_SOUND->Play(sndIdx + 5);
+            state->sound->Play(sndIdx + 5);
         }
     } else {
-        WS_SOUND->Play(0);
+        state->sound->Play(0);
     }
 
-    WS_ENTRIES[index].fields[0] = total;
-    if (WS_STATE[0] == 1) {
-        WS_STATE[0] = 0;
+    ((WordSearchCell*)&words[3][8])[index].value = total;
+    if (state->cursorState == 1) {
+        state->cursorState = 0;
     }
-    WS_STATE[1] = 0;
-
-#undef WS_ENTRIES
-#undef WS_SOUND
-#undef WS_STATE
+    state->modeFlag = 0;
 }

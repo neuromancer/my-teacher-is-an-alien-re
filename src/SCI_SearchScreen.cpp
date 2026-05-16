@@ -7,9 +7,11 @@
 #include "Memory.h"
 #include "ZBufferManager.h"
 #include "RenderEntry.h"
+#include "DrawEntry.h"
 #include "SoundCommand.h"
 #include "LinkedList.h"
 #include "VBuffer.h"
+#include "Animation.h"
 #include <new.h>
 #include <string.h>
 #include <stdio.h>
@@ -55,8 +57,7 @@ void SCI_SearchScreen::Init(SC_MessageParser* msg) {
             while (q1->head != 0) {
                 SoundCommand* cmd = (SoundCommand*)q1->Pop();
                 if (cmd != 0) {
-                    *(int*)cmd = 0x461030;
-                    FreeMemory(cmd);
+                    delete cmd;
                 }
             }
         }
@@ -65,15 +66,15 @@ void SCI_SearchScreen::Init(SC_MessageParser* msg) {
         if (q2->head != 0) {
             q2->current = q2->head;
             while (q2->head != 0) {
-                int* entry = (int*)q2->Pop();
+                DrawEntry* entry = (DrawEntry*)q2->Pop();
                 if (entry != 0) {
-                    if (entry[1] != 0) {
-                        delete (void*)entry[1];
-                        entry[1] = 0;
+                    if (entry->m_videoBuffer != 0) {
+                        delete entry->m_videoBuffer;
+                        entry->m_videoBuffer = 0;
                     }
-                    if (entry[2] != 0) {
-                        (**(void(***)(int))entry[2])(1);
-                        entry[2] = 0;
+                    if (entry->m_childObject != 0) {
+                        delete (Animation*)entry->m_childObject;
+                        entry->m_childObject = 0;
                     }
                     FreeMemory(entry);
                 }
@@ -86,8 +87,7 @@ void SCI_SearchScreen::Init(SC_MessageParser* msg) {
             while (q3->head != 0) {
                 RenderEntry* entry = (RenderEntry*)q3->RemoveCurrent();
                 if (entry != 0) {
-                    *(int*)entry = 0x46102c;
-                    FreeMemory(entry);
+                    delete entry;
                 }
             }
         }

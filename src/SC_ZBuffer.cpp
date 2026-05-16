@@ -79,8 +79,7 @@ int SC_ZBuffer::Exit(SC_MessageParser* msg) {
                 while (q->head != 0) {
                     SoundCommand* obj = (SoundCommand*)q->Pop();
                     if (obj != 0) {
-                        *(int*)obj = 0x461030;
-                        FreeMemory(obj);
+                        delete obj;
                     }
                 }
             }
@@ -119,8 +118,7 @@ int SC_ZBuffer::Exit(SC_MessageParser* msg) {
                 while (q->head != 0) {
                     SoundCommand* obj = (SoundCommand*)q->Pop();
                     if (obj != 0) {
-                        *(int*)obj = 0x461030;
-                        FreeMemory(obj);
+                        delete obj;
                     }
                 }
             }

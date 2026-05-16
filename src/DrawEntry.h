@@ -3,7 +3,6 @@
 
 // Forward declarations
 class VBuffer;
-struct SoundCommand;
 
 // DrawEntry - represents an entry in the draw/render queue (m_queueA4)
 // Size: 0x0C (12 bytes)
@@ -14,9 +13,8 @@ class DrawEntry {
 public:
     int priority;                    // 0x00
     VBuffer* m_videoBuffer;          // 0x04 - pointer to video buffer data
-    SoundCommand* m_childObject;     // 0x08 - pointer to child render/sound command
+    void* m_childObject;             // 0x08 - queued child object with virtual deleting destructor
     ~DrawEntry();
 };
 
 #endif // DRAWENTRY_H
-

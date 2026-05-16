@@ -134,7 +134,7 @@ int SC_Roach::ShutDown(SC_MessageParser* msg) {
     }
 
     for (i = 0; i < 8; i++) {
-        crystal = (NavCrystal*)crystals[i];
+        crystal = crystals[i];
         if (crystal != 0) {
             crystal->~NavCrystal();
             FreeMemory(crystal);
@@ -179,7 +179,7 @@ int SC_Roach::AddMessage(SC_MessageParser* msg) {
         if (currentPiece != 0) {
             rotatePending = 1;
             bgSound->Play(8);
-            NavCrystal* crys = (NavCrystal*)currentPiece;
+            NavCrystal* crys = currentPiece;
             crys->rotation = crys->rotation + 1;
             if (crys->rotation >= 4) {
                 crys->rotation = 0;
@@ -192,13 +192,13 @@ int SC_Roach::AddMessage(SC_MessageParser* msg) {
     }
 
     int count = 0;
-    int* crystalPtr = &sources[0].crystalPtr;
+    CrystalSource* source = sources;
     int n = 8;
     do {
-        if (*crystalPtr != 0) {
+        if (source->crystalPtr != 0) {
             count++;
         }
-        crystalPtr = (int*)((char*)crystalPtr + sizeof(CrystalSource));
+        source++;
         n--;
     } while (n != 0);
 
@@ -254,7 +254,7 @@ void SC_Roach::RenderBoard()
     }
 
     // Draw held piece following cursor, or draw cursor if no piece held
-    NavCrystal* crys = (NavCrystal*)currentPiece;
+    NavCrystal* crys = currentPiece;
     if (crys != 0) {
         if (crys->sprite != 0) {
             InputState* pm = g_InputManager_0046aa08->pMouse;
@@ -290,12 +290,12 @@ void SC_Roach::RenderBoard()
             SlimeDim pos;
             pos.x = src->sourceX;
             pos.y = src->sourceY;
-            NavCrystal* crys = (NavCrystal*)src->crystalPtr;
+            NavCrystal* crys = src->crystalPtr;
             if (crys->sprite != 0) {
                 crys->sprite->Do(pos.x, pos.y, 1.0);
             }
         }
-        src = (CrystalSource*)((char*)src + 0x2c);
+        src++;
         i++;
     } while (i < 8);
 
@@ -309,7 +309,7 @@ void SC_Roach::RenderBoard()
             int id = *cell;
             if (id >= 0 && id < 8 && drawn[id] == 0) {
                 drawn[id] = 1;
-                NavCrystal* crys = (NavCrystal*)crystals[id];
+                NavCrystal* crys = crystals[id];
                 if (crys != 0 && crys->sprite != 0) {
                     crys->sprite->Do(
                         cellPtr[4] - crys->dimArray2[crys->rotation].x,
@@ -354,17 +354,15 @@ found_cell:
         return 0;
     }
 
-    int* crystal = (int*)currentPiece;
+    NavCrystal* crystal = currentPiece;
     int row = 0;
-    int stride = ((NavCrystal*)crystal)->rotation;
-    stride = stride << 8;
-    int checkOfs = (int)((NavCrystal*)crystal)->patternData + stride;
+    int* patternBase = crystal->patternData + crystal->rotation * 0x40;
 
     do {
         int col = 0;
         int patternIdx = row % 4 + (row / 4) * 6 + found;
         int* patternPtr = (int*)grid + patternIdx * 8;
-        int* cp = (int*)checkOfs;
+        int* cp = patternBase + row * 4;
         do {
             if (*cp != 0 && *patternPtr != -2) {
                 return 0;
@@ -373,10 +371,10 @@ found_cell:
             cp++;
             col++;
         } while (col < 4);
-        checkOfs += 16;
         row++;
     } while (row < 0x10);
 
+    int* pattern = patternBase;
     row = 0;
     do {
         int patternIdx = row % 4 + (row / 4) * 6 + found;
@@ -384,12 +382,12 @@ found_cell:
         int* dest = (int*)grid + patternIdx * 8;
         int zero = 0;
         do {
-            NavCrystal* crys = (NavCrystal*)currentPiece;
-            if (*(int*)((int)crys->patternData + stride) != zero) {
+            NavCrystal* crys = currentPiece;
+            if (*pattern != zero) {
                 *dest = crys->crystalId;
             }
             dest++;
-            stride += 4;
+            pattern++;
             count--;
         } while (count != 0);
         row++;
@@ -401,23 +399,23 @@ found_cell:
 /* Function start: 0x419A10 */
 int SC_Roach::TryDropOnSource(int* msg)
 {
-    NavCrystal* crystal = (NavCrystal*)currentPiece;
+    NavCrystal* crystal = currentPiece;
     int id = crystal->crystalId;
-    char* src = (char*)this + id * sizeof(CrystalSource);
+    CrystalSource* src = &sources[id];
     int mouseX = msg[7];
-    int hitTest = (*(int*)(src + 0x118) <= mouseX &&
-        *(int*)(src + 0x120) >= mouseX &&
-        *(int*)(src + 0x11c) <= msg[8] &&
-        *(int*)(src + 0x124) >= msg[8]);
+    int hitTest = (src->hitboxLeft <= mouseX &&
+        src->hitboxRight >= mouseX &&
+        src->hitboxTop <= msg[8] &&
+        src->hitboxBottom >= msg[8]);
     if (hitTest != 0) {
         crystal->rotation = 0;
         Sprite* spr = crystal->sprite;
         if (spr != 0) {
             spr->ResetAnimation(0, 0);
         }
-        int* crys2 = (int*)currentPiece;
-        int id2 = ((NavCrystal*)crys2)->crystalId;
-        *(int*)((char*)this + id2 * sizeof(CrystalSource) + 0x140) = (int)crys2;
+        NavCrystal* crys2 = currentPiece;
+        int id2 = crys2->crystalId;
+        sources[id2].crystalPtr = crys2;
         currentPiece = 0;
         bgSound->Play(7);
         return 1;
@@ -475,7 +473,7 @@ found:
         int* cell = gridPtr;
         int i = 4;
         do {
-            if (((NavCrystal*)currentPiece)->crystalId == *cell) {
+            if (currentPiece->crystalId == *cell) {
                 *cell = -2;
             }
             cell++;
@@ -494,12 +492,12 @@ int SC_Roach::PickFromSource(int* msg)
 {
     int idx = 0;
     int mouseX = msg[7];
-    int* p = &sources[0].pickupLeft;
+    CrystalSource* src = sources;
 
     do {
         int hit;
-        if (p[0] <= mouseX && p[2] >= mouseX &&
-            p[1] <= msg[8] && p[3] >= msg[8]) {
+        if (src->pickupLeft <= mouseX && src->pickupRight >= mouseX &&
+            src->pickupTop <= msg[8] && src->pickupBottom >= msg[8]) {
             hit = 1;
         } else {
             hit = 0;
@@ -507,14 +505,14 @@ int SC_Roach::PickFromSource(int* msg)
         if (hit != 0) {
             goto found;
         }
-        p = (int*)((char*)p + 0x2C);
+        src++;
         idx++;
     } while (idx < 8);
 
     return 0;
 
 found:
-    currentPiece = (int*)sources[idx].crystalPtr;
+    currentPiece = sources[idx].crystalPtr;
     sources[idx].crystalPtr = 0;
     bgSound->Play(6);
     return 1;
@@ -550,15 +548,15 @@ void SC_Roach::OnProcessEnd()
         row++;
     } while (row < 6);
 
-    sources[0].crystalPtr = (int)crystals[0];
-    sources[1].crystalPtr = (int)crystals[1];
-    sources[2].crystalPtr = (int)crystals[2];
-    sources[3].crystalPtr = (int)crystals[3];
-    sources[4].crystalPtr = (int)crystals[4];
-    sources[5].crystalPtr = (int)crystals[5];
+    sources[0].crystalPtr = crystals[0];
+    sources[1].crystalPtr = crystals[1];
+    sources[2].crystalPtr = crystals[2];
+    sources[3].crystalPtr = crystals[3];
+    sources[4].crystalPtr = crystals[4];
+    sources[5].crystalPtr = crystals[5];
     currentPiece = 0;
-    sources[6].crystalPtr = (int)crystals[6];
-    sources[7].crystalPtr = (int)crystals[7];
+    sources[6].crystalPtr = crystals[6];
+    sources[7].crystalPtr = crystals[7];
 
     progressObj = new Timer();
 
@@ -755,7 +753,7 @@ int SC_Roach::LBLParse(char* line)
     } else if (strcmp(label, "CRYSTAL") == 0) {
         int idx;
         sscanf(line, " %s %d", label, &idx);
-        NavCrystal* crystal = (NavCrystal*)crystals[idx];
+        NavCrystal* crystal = crystals[idx];
         if (crystal != 0) {
             crystal->~NavCrystal();
             FreeMemory(crystal);
@@ -766,7 +764,7 @@ int SC_Roach::LBLParse(char* line)
         if (mem != 0) {
             obj = new(mem) NavCrystal(idx);
         }
-        crystals[idx] = (int*)obj;
+        crystals[idx] = obj;
         Parser::ProcessFile((Parser*)obj, this, (char*)0);
     } else if (strcmp(label, "END") == 0) {
         return 1;

@@ -514,20 +514,17 @@ void SC_Fan::State2Handler() {
 
 /* Function start: 0x40FFC0 */
 void SC_Fan::State4Handler() {
-    void* ptr;
     Sample* sample;
     int i;
 
     if (exitPhase == 0) {
-        ptr = &samples[0];
-        i = 0xB;
+        i = 0;
         do {
-            if (*(Sample**)ptr != 0) {
-                (*(Sample**)ptr)->~Sample();
+            if (samples[i] != 0) {
+                samples[i]->~Sample();
             }
-            ptr = (char*)ptr + 4;
-            i--;
-        } while (i != 0);
+            i++;
+        } while (i < 0xB);
 
         sample = samples[10];
         if (sample != 0) {
