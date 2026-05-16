@@ -28,6 +28,7 @@ public:
     int hotspotBottom;              // 0xB0
     HotspotAction* items[7];        // 0xB4-0xCF
     HotspotAction* currentAction;   // 0xD0 - also accessible as items[7] via pointer math
+    int field_D4;                   // 0xD4
 
     int LBLParse(char* line);       // 0x445A30
     void StopAll();                 // 0x445970

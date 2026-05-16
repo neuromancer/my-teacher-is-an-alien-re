@@ -14,8 +14,7 @@ SoundList::SoundList(int count) {
   m_sounds = 0;
   m_count = 0;
   m_field8 = 0;
-  m_fieldc = 0;
-  m_pad = 0;
+  *(int*)&m_fieldc = 0;
   m_count = count;
   m_sounds = new char*[count];
   m_field8 = new Sample*[m_count];
@@ -56,31 +55,6 @@ SoundList::~SoundList() {
 
 #include "Sample.h"
 
-/* Function start: 0x425550 */
-int SoundList::Play(int index) {
-    int i;
-
-    if (index < 0 || m_count - 1 < index) {
-        return 0;
-    }
-    if (m_sounds[index] != 0) {
-        i = 0;
-        if (m_count > 0) {
-            do {
-                if (m_sounds[i] == m_sounds[index] && m_field8[i] != 0) {
-                    m_field8[i]->~Sample();
-                }
-                i++;
-            } while (m_count > i);
-        }
-    }
-    Sample* smp = m_field8[index];
-    if (smp != 0) {
-        smp->Play(100, 1);
-    }
-    return smp != 0;
-}
-
 /* Function start: 0x4252A0 */
 void SoundList::StopAll() {
   for (short i = 0; i < m_fieldc; i++) {
@@ -88,23 +62,6 @@ void SoundList::StopAll() {
       m_field8[i]->~Sample();
     }
   }
-}
-
-/* Function start: 0x4255D0 */
-void SoundList::StopPlaying() {
-    int i = 0;
-    if (m_count > 0) {
-        do {
-            Sample* smp = m_field8[i];
-            if (smp != 0 && smp->m_sample != 0 &&
-                smp->m_size == *(int*)((char*)smp->m_sample + 0xc)) {
-                if (AIL_sample_status(smp->m_sample) == 4) {
-                    smp->~Sample();
-                }
-            }
-            i++;
-        } while (i < m_count);
-    }
 }
 
 /* Function start: 0x4252F0 */ /* ~98% match */
@@ -149,65 +106,4 @@ void *SoundList::Register(char *filename) {
   }
 
   return 0;
-}
-
-/* Function start: 0x4256D0 */
-int SoundList::IsSamplePlaying(int index) {
-    Sample* entry;
-
-    if (index < 0 || m_count - 1 < index) goto bounds_fail;
-    entry = m_field8[index];
-    if (entry == 0) goto fail;
-    if (entry->m_sample == 0) goto fail;
-    if (entry->m_size != *(int*)((char*)entry->m_sample + 0xc)) goto fail;
-    if (AIL_sample_status(entry->m_sample) != 4) goto fail;
-    return 1;
-
-fail:
-    return 0;
-
-bounds_fail:
-    return 0;
-}
-
-/* Function start: 0x4254F0 */
-void SoundList::Cleanup() {
-    int i = 0;
-    if (m_count > 0) {
-        do {
-            Sample* entry = m_field8[i];
-            if (entry != 0) {
-                entry->Unload();
-                FreeMemory(entry);
-                m_field8[i] = 0;
-            }
-            i++;
-        } while (i < m_count);
-    }
-    if (m_field8 != 0) {
-        FreeMemory(m_field8);
-        m_field8 = 0;
-    }
-    m_count = 0;
-}
-
-/* Function start: 0x4254A0 */
-void SoundList::SetMaxSounds(int count) {
-    SoundList::Cleanup();
-    m_count = count;
-    m_field8 = (Sample**)AllocateMemory(m_count * sizeof(Sample*));
-    memset(m_field8, 0, m_count * sizeof(Sample*));
-    m_sounds = (char**)AllocateMemory(m_count * sizeof(char*));
-    memset(m_sounds, 0, m_count * sizeof(char*));
-}
-
-/* Function start: 0x425620 */
-void SoundList::AddSound(int index, char* name, int value) {
-    if (index < 0 || m_count - 1 < index) {
-        return;
-    }
-    Sample* sample = new Sample();
-    m_field8[index] = sample;
-    m_field8[index]->Load(MakeAudioName(name));
-    m_sounds[index] = (char*)value;
 }

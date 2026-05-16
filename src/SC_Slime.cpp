@@ -453,11 +453,11 @@ void SC_Slime::ProcessAction(int action, int* data) {
         gameResult[2] = 0;
         gameResult[3] = 0;
         if (*data == 1) {
-            ((SoundList*)slimeTable)->Play(8);
+            slimeTable->Play(8);
             (*data)++;
             gameResult[6] = 0;
         }
-        if (((SoundList*)slimeTable)->IsSamplePlaying(8) == 0) {
+        if (slimeTable->IsSamplePlaying(8) == 0) {
             SendResultMessage();
         }
         return;
@@ -466,13 +466,13 @@ void SC_Slime::ProcessAction(int action, int* data) {
         gameResult[2] = 0;
         gameResult[3] = 0;
         if (*data == 1) {
-            ((SoundList*)slimeTable)->Play(0xB);
-            ((SoundList*)slimeTable)->Play(7);
+            slimeTable->Play(0xB);
+            slimeTable->Play(7);
             (*data)++;
             gameResult[6] = 0;
             gameResult[5] = 0;
         }
-        if (*data == 2 && ((SoundList*)slimeTable)->IsSamplePlaying(7) == 0) {
+        if (*data == 2 && slimeTable->IsSamplePlaying(7) == 0) {
             (*data)++;
             gamePhase |= 1;
         }
@@ -491,22 +491,22 @@ void SC_Slime::ProcessAction(int action, int* data) {
     case 2:
         gameResult[3] = 0;
         if (*data == 1) {
-            ((SoundList*)slimeTable)->Play(9);
+            slimeTable->Play(9);
             (*data)++;
             gameResult[6] = 0;
             UpdateArmSprites();
         }
-        if (((SoundList*)slimeTable)->IsSamplePlaying(9) == 0) {
+        if (slimeTable->IsSamplePlaying(9) == 0) {
             SendResultMessage();
         }
         return;
 
     case 3:
         if (*data == 1) {
-            ((SoundList*)slimeTable)->Play(6);
+            slimeTable->Play(6);
             (*data)++;
         }
-        if (((SoundList*)slimeTable)->IsSamplePlaying(6) == 0) {
+        if (slimeTable->IsSamplePlaying(6) == 0) {
             *data = 0;
             gameResult[6] = 1;
         }
@@ -864,6 +864,24 @@ int SlimeTable::Play(int index)
     return smp != 0;
 }
 
+/* Function start: 0x4255D0 */
+void SlimeTable::StopPlaying()
+{
+    int i = 0;
+    if (fields[0] > 0) {
+        do {
+            Sample* smp = ((Sample**)fields[1])[i];
+            if (smp != 0 && smp->m_sample != 0 &&
+                smp->m_size == *(int*)((char*)smp->m_sample + 0xc)) {
+                if (AIL_sample_status(smp->m_sample) == 4) {
+                    smp->Stop();
+                }
+            }
+            i++;
+        } while (i < fields[0]);
+    }
+}
+
 /* Function start: 0x425620 */
 void SlimeTable::LoadEntry(int index, char* filename, int value)
 {
@@ -875,6 +893,26 @@ void SlimeTable::LoadEntry(int index, char* filename, int value)
     ((void**)fields[1])[index] = sample;
     sample->Load(MakeAudioName(filename));
     ((int*)fields[2])[index] = value;
+}
+
+/* Function start: 0x4256D0 */
+int SlimeTable::IsSamplePlaying(int index)
+{
+    Sample* entry;
+
+    if (index < 0 || fields[0] - 1 < index) goto bounds_fail;
+    entry = ((Sample**)fields[1])[index];
+    if (entry == 0) goto fail;
+    if (entry->m_sample == 0) goto fail;
+    if (entry->m_size != *(int*)((char*)entry->m_sample + 0xc)) goto fail;
+    if (AIL_sample_status(entry->m_sample) != 4) goto fail;
+    return 1;
+
+fail:
+    return 0;
+
+bounds_fail:
+    return 0;
 }
 
 /* Function start: 0x4254F0 */

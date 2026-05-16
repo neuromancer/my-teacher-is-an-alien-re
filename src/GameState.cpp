@@ -124,25 +124,6 @@ void GameState::SetFromAction(int* action) {
     }
 }
 
-/* Function start: 0x432E20 */
-int GameState::FindStateByName(char* name) {
-    int i;
-
-    i = 0;
-    while (i < maxStates) {
-        if (stateLabels != 0 && stateLabels[i] != 0) {
-            if (strstr((char*)stateLabels[i], name) != 0) {
-                if (strlen((char*)stateLabels[i]) == strlen(name)) {
-                    return i;
-                }
-            }
-        }
-        i++;
-    }
-    ShowError("%s not in instructionText", name);
-    return -1;
-}
-
 /* Function start: 0x4333D0 */
 GameState::~GameState()
 {

@@ -352,14 +352,15 @@ void SoundTracker::Init() {
 void SoundTracker::Cleanup() {
     char lineBuf[256];
     int* volatile node;
-    int* data;
+    FilePosEntry* data;
 
     FILE* fp = fsopen("cfg\\miscache.dat", "w");
     node = g_SoundPool_00469134->head;
     while (node != 0) {
         int* next = (int*)node[0];
-        data = node + 2;
-        sprintf(lineBuf, "%-32s %-32s %4lu %4d \n", data + 1, data + 9, data[0x12], data[0]);
+        data = (FilePosEntry*)node[2];
+        sprintf(lineBuf, "%-32s %-32s %4lu %4d \n",
+                data->filename, data->key, data->posLo, data->accessCount);
         EncryptAndWrite(lineBuf, fp);
         node = next;
     }

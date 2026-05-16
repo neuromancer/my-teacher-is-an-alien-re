@@ -796,8 +796,7 @@ int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
             ReportUnknownLabel("SC_Fan");
         }
         if (local_18 == 0) {
-            int sndId = atoi(local_b8);
-            SendGameMessage(5, sndId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
+            SendGameMessage(5, atoi(local_b8), handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
         }
         else if (local_18 == -1) {
             bgSoundId = atoi(local_b8);

@@ -322,7 +322,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     }
     else if (strcmp(label, "ROLLOVER") == 0) {
         sscanf(line, " %s %s", label, buf_C0);
-        local_14 = ((GameState*)g_Mouse_0046aa18)->FindStateByName(buf_C0);
+        local_14 = g_Mouse_0046aa18->FindStateByName(buf_C0);
         rolloverStateIdx = local_14;
         ExtractQuotedString(line, rolloverText, 0x40);
     }

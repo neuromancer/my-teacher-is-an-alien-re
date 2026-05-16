@@ -141,7 +141,7 @@ int T_Object::LBLParse(char* param_1)
         Parser::ProcessFile(sprite, this, (char*)0);
     }
     else if (strcmp(token, "DISCRIPTION") == 0) {
-        sscanf(param_1, " %s %d", value, &description);
+        sscanf(param_1, " %s %d", value, &descriptionSound);
     }
     else if (strcmp(token, "ILLEGAL") == 0) {
         sscanf(param_1, " %s %d", value, &soundHandle);

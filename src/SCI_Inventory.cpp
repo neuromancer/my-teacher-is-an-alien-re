@@ -649,7 +649,7 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
             {
                 Sample* newSample = new Sample();
                 clickSound = newSample;
-                char* soundFile = GetSoundFilename(((T_Object*)((QueueNode*)node)->data)->soundHandle);
+                char* soundFile = GetSoundFilename(((T_Object*)((QueueNode*)node)->data)->descriptionSound);
                 newSample->Load(soundFile);
                 (clickSound)->Play(0x64, 1);
             }

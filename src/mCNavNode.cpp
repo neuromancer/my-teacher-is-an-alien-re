@@ -257,7 +257,7 @@ int mCNavNode_TypeLogic::LBLParse(char* line)
         return 0;
     }
     if (stricmp(token, "THEN_GOTO") == 0) {
-        if (sscanf(line, " THEN_GOTO N%d BEARING %s ", &nodeHandle, bearingText) > 1) {
+        if (sscanf(line, " THEN_GOTO N%d BEARING %s ", &nodeHandle, bearingText) >= 2) {
             bearing = FindCharIndex(bearingText[0]);
         }
         return 0;
@@ -376,7 +376,7 @@ int mCNavNode_TypeE::LBLParse(char* line) {
         stateValue = 0;
         return 0;
     }
-    stateValue = g_GameState_0046aa30->FindStateByName(str1);
+    stateValue = g_Mouse_0046aa18->FindStateByName(str1);
     return 0;
 }
 

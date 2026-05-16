@@ -48,19 +48,19 @@ int SC_Combat::LBLParse(char* line) {
         field_0x10C = new Sprite((char*)0);
         Parser::ProcessFile(field_0x10C, this, (char*)0);
     } else if (strcmp(local_3c, "VIDEO_RES") == 0) {
-        sscanf(line, " %s %d %d", local_3c, &combatParams[4], &combatParams[5]);
-        SetVideoRes(combatParams[4], combatParams[5]);
+        sscanf(line, " %s %d %d", local_3c, &combatParams[3], &combatParams[4]);
+        SetVideoRes(combatParams[3], combatParams[4]);
     } else if (strcmp(local_3c, "BG_SOUND") == 0) {
         sscanf(line, " %s %d", local_3c, &field_0x114);
     } else if (strcmp(local_3c, "MAX_SOUNDS") == 0) {
         sscanf(line, " %s %d", local_3c, &local_14);
-        ((SlimeTable*)bgSound)->Allocate(local_14);
+        bgSound->Allocate(local_14);
     } else if (strcmp(local_3c, "SOUND") == 0) {
         sscanf(line, " %s %d %s %d ", local_3c, &local_14, local_bc, &local_1c);
-        if (local_14 < 0 || *(int*)bgSound - 1 < local_14) {
+        if (local_14 < 0 || bgSound->fields[0] - 1 < local_14) {
             ReportUnknownLabel("SC_Combat");
         } else {
-            ((SlimeTable*)bgSound)->LoadEntry(local_14, local_bc, local_1c);
+            bgSound->LoadEntry(local_14, local_bc, local_1c);
         }
     } else if (strcmp(local_3c, "MAX_ACTIONS") == 0) {
         sscanf(line, " %s %d", local_3c, &local_14);
@@ -112,7 +112,7 @@ void SC_Combat::Init(SC_MessageParser* msg) {
     SpriteAction* action;
 
     memset(&statusPtr, 0, 0x1C * 4);
-    bgSound = (SoundList*)new SlimeTable();
+    bgSound = new SlimeTable();
     action = (SpriteAction*)msg;
     if (action->childAction != 0) {
         pendingAction = action->childAction;

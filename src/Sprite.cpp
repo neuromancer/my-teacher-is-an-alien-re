@@ -419,10 +419,10 @@ int Sprite::LBLParse(char* param_1)
         }
         loc_x = val1;
         loc_y = val2;
-        if (4 < result) {
+        if (result >= 5) {
             priority = val5;
         }
-        if (6 < result) {
+        if (result >= 7) {
             SetSpriteLogic((char*)buf1, (char*)buf2, val4);
         }
     } else if (strcmp(keyword, "SPR_TRANS") == 0) {
@@ -434,10 +434,10 @@ int Sprite::LBLParse(char* param_1)
         loc_x = val1;
         loc_y = val2;
         flags |= 0x40;
-        if (4 < result) {
+        if (result >= 5) {
             priority = val5;
         }
-        if (6 < result) {
+        if (result >= 7) {
             SetSpriteLogic((char*)buf1, (char*)buf2, val4);
         }
     } else if (strcmp(keyword, "SPR_LOOP") == 0) {
@@ -449,10 +449,10 @@ int Sprite::LBLParse(char* param_1)
         loc_x = val1;
         loc_y = val2;
         flags |= 1;
-        if (4 < result) {
+        if (result >= 5) {
             priority = val5;
         }
-        if (6 < result) {
+        if (result >= 7) {
             SetSpriteLogic((char*)buf1, (char*)buf2, val4);
         }
     } else if (strcmp(keyword, "SPR_TRANS_LOOP") == 0) {
@@ -464,10 +464,10 @@ int Sprite::LBLParse(char* param_1)
         loc_x = val1;
         loc_y = val2;
         flags |= 0x41;
-        if (4 < result) {
+        if (result >= 5) {
             priority = val5;
         }
-        if (6 < result) {
+        if (result >= 7) {
             SetSpriteLogic((char*)buf1, (char*)buf2, val4);
         }
     } else if (strcmp(keyword, "SPR_TRANS_P20") == 0) {
@@ -480,7 +480,7 @@ int Sprite::LBLParse(char* param_1)
         loc_y = val2;
         flags |= 0x40;
         priority = 0x14;
-        if (5 < result) {
+        if (result >= 6) {
             SetSpriteLogic((char*)buf1, (char*)buf2, val4);
         }
     } else if (strcmp(keyword, "END") == 0) {

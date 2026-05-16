@@ -157,6 +157,25 @@ void MouseControl::DrawCursor()
     sprite->Do(final_x, final_y, 1.0);
 }
 
+/* Function start: 0x432E20 */
+int MouseControl::FindStateByName(char* name) {
+    int i;
+
+    i = 0;
+    while (i < m_maxMice) {
+        if (m_labels != 0 && m_labels[i] != 0) {
+            if (strstr(m_labels[i], name) != 0) {
+                if (strlen(m_labels[i]) == strlen(name)) {
+                    return i;
+                }
+            }
+        }
+        i++;
+    }
+    ShowError("%s not in instructionText", name);
+    return -1;
+}
+
 extern "C" int SetCursorVisible(unsigned int param_1);
 
 /* Function start: 0x453473 */

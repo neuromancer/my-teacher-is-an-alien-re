@@ -80,7 +80,7 @@ void SC_FireAlarm::Init(SC_MessageParser* msg) {
 
     moduleParam = pmsg[1];
 
-    soundList = (SoundList*)new SlimeTable();
+    soundList = new SlimeTable();
 
     ParseFile(this, "mis\\CB_FireAlarm.mis", (char*)0);
 
@@ -674,13 +674,11 @@ int SC_FireAlarm::LBLParse(char* line) {
     } else if (strcmp(label, "TEACHER_SPRITE") == 0) {
         teacherSprite = new Sprite((char*)0);
         Parser::ProcessFile(teacherSprite, this, (char*)0);
-        teacherHomePos.x = teacherSprite->loc_x;
-        teacherHomePos.y = teacherSprite->loc_y;
+        teacherHomePos = *(SlimeDim*)&teacherSprite->loc_x;
     } else if (strcmp(label, "PLANE_SPRITE") == 0) {
         planeSprite = new Sprite((char*)0);
         Parser::ProcessFile(planeSprite, this, (char*)0);
-        planeHomePos.x = planeSprite->loc_x;
-        planeHomePos.y = planeSprite->loc_y;
+        planeHomePos = *(SlimeDim*)&planeSprite->loc_x;
     } else if (strcmp(label, "HAND_SPRITE") == 0) {
         handSprite = new Sprite((char*)0);
         Parser::ProcessFile(handSprite, this, (char*)0);
@@ -695,13 +693,13 @@ int SC_FireAlarm::LBLParse(char* line) {
         sscanf(line, " %s %d ", label, &bgSoundId);
     } else if (strcmp(label, "MAX_SOUNDS") == 0) {
         sscanf(line, " %s %d ", label, &tempInt);
-        soundList->SetMaxSounds(tempInt);
+        soundList->Allocate(tempInt);
     } else if (strcmp(label, "SOUND") == 0) {
         sscanf(line, " %s %d %s %d ", label, &tempInt, buffer, &tempInt2);
-        if (tempInt < 0 || soundList->m_count - 1 < tempInt) {
+        if (tempInt < 0 || soundList->fields[0] - 1 < tempInt) {
             ReportUnknownLabel("SC_FireAlarm");
         } else {
-            soundList->AddSound(tempInt, buffer, tempInt2);
+            soundList->LoadEntry(tempInt, buffer, tempInt2);
         }
     } else if (strcmp(label, "WEAPON") == 0) {
         if (sscanf(line, " %s %s ", label, buffer) == 2) {

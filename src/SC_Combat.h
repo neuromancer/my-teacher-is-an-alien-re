@@ -2,11 +2,11 @@
 #define SC_COMBAT_H
 
 #include "Handler.h"
+#include "SlimeTable.h"
 
 class SpriteAction;
 class Sprite;
 class Palette;
-class SoundList;
 
 // SC_Combat - Base class for combat/mini-game handlers
 // Constructor: 0x449100
@@ -24,7 +24,7 @@ public:
     Palette* field_0x104;      // 0x104
     Sprite* bgSprite;          // 0x108 — background/animation sprite
     Sprite* field_0x10C;       // 0x10C
-    SoundList* bgSound;        // 0x110 — background sound list
+    SlimeTable* bgSound;       // 0x110 — indexed background sound table
     int field_0x114;           // 0x114
 
     SC_Combat();

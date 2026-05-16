@@ -147,7 +147,7 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
                 if (crystalState[0] > 0) {
                     crystalState[0]--;
                 }
-                ((SoundList*)bgSound)->Play(2);
+                bgSound->Play(2);
             } else if (action->mousePos.x >= exitBounds.left &&
                        action->mousePos.x <= exitBounds.right &&
                        action->mousePos.y >= exitBounds.top &&
@@ -644,7 +644,7 @@ void SC_Gauntlet::ProcessAction(int action, int* data) {
         g_Mouse_0046aa18->DrawCursor();
         break;
     default:
-        ShowError("SC_Gauntlet::Process_Action - invalid Action=%d, value=%d", action, data[0]);
+        ShowError("SC_Roach::Process_Action - invalid Action=%d, value=%d", action, data[0]);
         break;
     }
 }

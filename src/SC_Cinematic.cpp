@@ -125,7 +125,7 @@ extern "C" char* MakeSoundName_Cine(char* baseName)
     if (num == 0) {
         return baseName;
     }
-    if (num > 4999) {
+    if (num >= 5000) {
         int stateIdx = g_PeriodStateIdx_0046cb90;
         GameState* gs = g_GameState_0046aa30;
         if (stateIdx < 0 || gs->maxStates - 1 < stateIdx) {
@@ -407,7 +407,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         VBuffer* vp = g_BackBuffer_0046aa14;
-        vp->CallBlitter(vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_x2, (int)animation->targetBuffer);
+        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)animation->targetBuffer);
         (g_Mouse_0046aa18)->DrawCursor();
         return;
     }
@@ -523,7 +523,7 @@ void SC_Cinematic::Update(int param1, int param2) {
         }
 
         VBuffer* vp = g_BackBuffer_0046aa14;
-        vp->CallBlitter(vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_x2, (int)animation->targetBuffer);
+        vp->CallBlitter(vp->clip_x1, vp->clip_x2, vp->clip_y1, vp->clip_y2, vp->clip_x1, vp->clip_y2, (int)animation->targetBuffer);
     } else {
         Timer timer;
         timer.Wait(0x96);

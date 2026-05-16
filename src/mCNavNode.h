@@ -88,10 +88,7 @@ public:
 // Vtable: 0x461BA0, size 0xA0 (no extra fields used)
 class mCNavNode_TypeC : public NavSubNode {
 public:
-    int fieldA0;
-    int fieldA4;
-
-    mCNavNode_TypeC(char* line) { fieldA0 = 0; fieldA4 = 0; }
+    mCNavNode_TypeC(char* line) {}
     virtual int virtual4();
     virtual int Activate();
 };

@@ -427,7 +427,7 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
         ShowError("CopyFile::Error Reading CD ROM, searching for %s", src);
     }
 
-    hDest = open(dest, 0x8301, totalRead);
+    hDest = open(dest, 0x8301, 0x180);
     if (hDest < 0) {
         ShowError("CopyFile::Error writing temporary file. Please check disk space.%d", hDest);
     }

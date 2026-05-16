@@ -71,7 +71,7 @@ void PodsEngine::ProcessFrame() {
 
     flags = field_0x110;
     if ((flags & 4) != 0) {
-        if (((SoundList*)g_SlimeTable_0046bf28)->IsSamplePlaying((~flags) & 1) == 0) {
+        if (g_SlimeTable_0046bf28->IsSamplePlaying((~flags) & 1) == 0) {
             field_0x110 &= ~4;
             field_0x110 |= 2;
             if (g_Navigator_0046ae70->startingNode != 2) {
@@ -81,7 +81,7 @@ void PodsEngine::ProcessFrame() {
     } else {
         if ((flags & 8) != 0) {
             value = ((flags & 1) == 0) ? 3 : 2;
-            if (((SoundList*)g_SlimeTable_0046bf28)->IsSamplePlaying(value) == 0) {
+            if (g_SlimeTable_0046bf28->IsSamplePlaying(value) == 0) {
                 StartScheduleTimer();
             }
         }
@@ -107,7 +107,7 @@ void PodsEngine::ProcessFrame() {
                 if (g_Palette_0046ae64 != 0) {
                     g_Palette_0046ae64->SetPalette(
                         g_WeaponParser_0046ae4c->paletteStart.x,
-                        (g_WeaponParser_0046ae4c->paletteEnd.x - g_WeaponParser_0046ae4c->paletteStart.x) + 1);
+                        (g_WeaponParser_0046ae4c->paletteStart.y - g_WeaponParser_0046ae4c->paletteStart.x) + 1);
                 }
                 if (targetList != 0) {
                     delete targetList;
@@ -133,7 +133,7 @@ void PodsEngine::ProcessFrame() {
                 }
                 if (podState.y != 0 && podState.x >= podState.y) {
                     podsBgSprite->ResetAnimation(2, 0);
-                    ((SoundList*)g_SlimeTable_0046bf28)->Play(4);
+                    g_SlimeTable_0046bf28->Play(4);
                 } else {
                     podsBgSprite->ResetAnimation(0, 0);
                 }
@@ -143,7 +143,7 @@ void PodsEngine::ProcessFrame() {
                 } else {
                     value = 2;
                 }
-                ((SoundList*)g_SlimeTable_0046bf28)->Play(value);
+                g_SlimeTable_0046bf28->Play(value);
                 field_0x110 |= 8;
                 podsBgSprite->ResetAnimation(-1, 0);
             }

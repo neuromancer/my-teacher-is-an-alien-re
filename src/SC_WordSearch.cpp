@@ -5,6 +5,7 @@
 #include "Palette.h"
 #include "Sample.h"
 #include "SoundList.h"
+#include "SlimeTable.h"
 #include "Timer.h"
 #include "GameState.h"
 #include "InputManager.h"
@@ -591,7 +592,7 @@ int SC_WordSearch::AddMessage(SC_MessageParser* msg) {
             } else if (mouseX >= enterPlaceRect.left && mouseX <= enterPlaceRect.right &&
                        action->mousePos.y >= enterPlaceRect.top && action->mousePos.y <= enterPlaceRect.bottom) {
                 placementMode = 1;
-            } else if (selectedCount < 4) {
+            } else if (selectedCount < 3) {
                 Rect* bounds = &wordBounds[0];
                 char* word = &words[0][0];
                 int count = 0x20;
@@ -872,7 +873,7 @@ void SC_WordSearch::Render() {
             g_Mouse_0046aa18->DrawCursor();
 
             if (*(int*)((char*)words + GS_CURSOR_STATE_OFS) < 1) {
-                int sndDone = ((SoundList*)*(void**)((char*)words + GS_SOUND_LIST_OFS))->IsSamplePlaying(1);
+                int sndDone = ((SlimeTable*)*(void**)((char*)words + GS_SOUND_LIST_OFS))->IsSamplePlaying(1);
                 if (sndDone == 0) {
                     int* status = (int*)palette;
                     if (status[1] == 0) {
@@ -1014,12 +1015,12 @@ void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     if (total == 0) {
         snd = 0;
     } else {
-        ((SoundList*)*(int*)((char*)words + GS_SOUND_LIST_OFS))->Play(1);
+        ((SlimeTable*)*(int*)((char*)words + GS_SOUND_LIST_OFS))->Play(1);
         snd = 4 - *(int*)((char*)words + GS_CURSOR_STATE_OFS);
         if (snd < 0 || snd > 2) goto skip_sound;
         snd = 9 - *(int*)((char*)words + GS_CURSOR_STATE_OFS);
     }
-    ((SoundList*)*(int*)((char*)words + GS_SOUND_LIST_OFS))->Play(snd);
+    ((SlimeTable*)*(int*)((char*)words + GS_SOUND_LIST_OFS))->Play(snd);
 skip_sound:
     *(int*)((char*)words + idx * 0x1C + 0x68) = total;
     if (*(int*)((char*)words + GS_CURSOR_STATE_OFS) == 1) {

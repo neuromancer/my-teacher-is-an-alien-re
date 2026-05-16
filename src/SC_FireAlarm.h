@@ -7,7 +7,7 @@
 
 class Sprite;
 class Palette;
-class SoundList;
+class SlimeTable;
 
 // SC_FireAlarm - Fire alarm puzzle handler (case 64/0x40)
 // Constructor: 0x407290
@@ -59,7 +59,7 @@ public:
     SlimeDim timerCounter;            // 0x138-0x13F - timer counter/target
     int roundCount;                   // 0x140 - number of rounds completed
     int maxRounds;                    // 0x144 - max rounds (STUDENT_HITS_ALLOWED)
-    SoundList* soundList;              // 0x148 - SoundList* (was misidentified as SlimeTable/Palette)
+    SlimeTable* soundList;             // 0x148 - indexed sound table
     int bgSoundId;                    // 0x14C - BG_SOUND id
 };
 

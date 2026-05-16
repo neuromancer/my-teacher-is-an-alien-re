@@ -192,13 +192,13 @@ int SC_Roach::AddMessage(SC_MessageParser* msg) {
     }
 
     int count = 0;
-    CrystalSource* p = &sources[0];
+    int* crystalPtr = &sources[0].crystalPtr;
     int n = 8;
     do {
-        if (p->crystalPtr != 0) {
+        if (*crystalPtr != 0) {
             count++;
         }
-        p = (CrystalSource*)((char*)p + 0x2c);
+        crystalPtr = (int*)((char*)crystalPtr + sizeof(CrystalSource));
         n--;
     } while (n != 0);
 
@@ -403,12 +403,12 @@ int SC_Roach::TryDropOnSource(int* msg)
 {
     NavCrystal* crystal = (NavCrystal*)currentPiece;
     int id = crystal->crystalId;
-    CrystalSource* src = &sources[id];
+    char* src = (char*)this + id * sizeof(CrystalSource);
     int mouseX = msg[7];
-    int hitTest = (src->hitboxLeft <= mouseX &&
-        src->hitboxRight >= mouseX &&
-        src->hitboxTop <= msg[8] &&
-        src->hitboxBottom >= msg[8]);
+    int hitTest = (*(int*)(src + 0x118) <= mouseX &&
+        *(int*)(src + 0x120) >= mouseX &&
+        *(int*)(src + 0x11c) <= msg[8] &&
+        *(int*)(src + 0x124) >= msg[8]);
     if (hitTest != 0) {
         crystal->rotation = 0;
         Sprite* spr = crystal->sprite;
@@ -417,7 +417,7 @@ int SC_Roach::TryDropOnSource(int* msg)
         }
         int* crys2 = (int*)currentPiece;
         int id2 = ((NavCrystal*)crys2)->crystalId;
-        sources[id2].crystalPtr = (int)crys2;
+        *(int*)((char*)this + id2 * sizeof(CrystalSource) + 0x140) = (int)crys2;
         currentPiece = 0;
         bgSound->Play(7);
         return 1;

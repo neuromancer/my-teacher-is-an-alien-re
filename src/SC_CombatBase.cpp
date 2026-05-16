@@ -224,7 +224,7 @@ void SC_CombatBase::Initialize()
     targetList = new TargetList();
     scoreDisplay = new ScoreDisplay();
     viewport = new Viewport();
-    hotspotPool = new HotspotListData();
+    hotspotPool = new TimedEventPool(10);
 
     SetupViewport();
 }
@@ -349,7 +349,7 @@ int SC_CombatBase::ProcessEvents()
 
     int result = 0;
 
-    if (g_HotspotPool_0046ae74->count != 0) {
+    if (g_HotspotPool_0046ae74->m_count != 0) {
         int handleAction = ((int*)(*(int*)this))[13];
 
         do {
@@ -357,7 +357,7 @@ int SC_CombatBase::ProcessEvents()
             localEvent.CopyFrom(popped);
             popped->~SpriteAction();
             result |= ((int (__fastcall *)(SC_CombatBase*, int, SpriteAction*))handleAction)(this, 0, &localEvent);
-        } while (g_HotspotPool_0046ae74->count != 0);
+        } while (g_HotspotPool_0046ae74->m_count != 0);
     }
 
     return result;

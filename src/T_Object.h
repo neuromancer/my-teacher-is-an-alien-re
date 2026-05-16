@@ -26,8 +26,9 @@ public:
     // Fields (after Parser 0x90 base, 0x38 bytes = 14 dwords)
     int objectFlags;        // 0x90 — flags
     int itemId;             // 0x94 — object handle/ID
-    int soundHandle;        // 0x98 — sound handle ID
-    char description[32];   // 0x9C — description text (parsed from DISCRIPTION)
+    int soundHandle;        // 0x98 — illegal-action sound ID
+    int descriptionSound;   // 0x9C — description click sound ID
+    char description[28];   // 0xA0
     int field_BC;           // 0xBC
     Sprite* sprite;         // 0xC0 — inventory sprite (parsed from INVENTORYSPR)
     LinkedList* actionList; // 0xC4 — queue of SpriteActions (parsed from MESSAGE)

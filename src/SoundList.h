@@ -8,18 +8,12 @@ public:
   SoundList(int count);
   ~SoundList();
   void StopAll();
-  void StopPlaying();               // 0x4255D0
-  int Play(int index);              // 0x425550
-  int IsSamplePlaying(int index);  // 0x4256D0
   void *Register(char *filename);
-  void Cleanup();                   // 0x4254F0
-  void SetMaxSounds(int count);    // 0x4254A0
-  void AddSound(int index, char* name, int value);  // 0x425620
 
 public:
+  char **m_sounds;
   int m_count;
   Sample **m_field8;
-  char **m_sounds;
   short m_fieldc;
   short m_pad;
 };

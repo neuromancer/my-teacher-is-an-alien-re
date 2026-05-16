@@ -27,6 +27,7 @@ public:
     ~MouseControl();
     int LBLParse(char* line);
     void DrawCursor();
+    int FindStateByName(char* name);
 
     char** m_labels;           // 0x90
     Sprite* m_sprite;          // 0x94

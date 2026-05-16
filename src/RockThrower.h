@@ -26,12 +26,12 @@ public:
 
     Weapon() {
         memset(&m_posX, 0, 8 * 4);
-        m_height = 0;
-        m_sound = 0;
         m_posX = 0x64;
-        m_clicked = 0;
         m_posY = 0xdc;
         m_posZ = 0xc7;
+        m_height = 0;
+        m_sound = 0;
+        m_clicked = 0;
     }
     virtual ~Weapon();
     virtual void OnHit();              // vtable[4]

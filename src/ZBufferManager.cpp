@@ -49,7 +49,7 @@ struct BlitCommand : public SoundCommand {
     int mode;              // 0x24
     double scale;          // 0x28
 
-    BlitCommand() { memset(&priority, 0, 0x2c); }
+    BlitCommand() : priority(0) { memset(&data, 0, 0x28); }
 
     virtual void Execute(GlyphRect* rect);
 };
@@ -176,7 +176,6 @@ void ZBufferManager::QueueAnimationCleanup(void* anim)
     }
 }
 
-/* Function start: 0x403720 */
 /* Function start: 0x41B5D0 */ /* No assembly extracted */
 void CommandType1::Execute(GlyphRect* rect)
 {
@@ -207,6 +206,7 @@ void CommandType1::Execute(GlyphRect* rect)
     }
 }
 
+/* Function start: 0x403720 */
 void BlitCommand::Execute(GlyphRect* rect)
 {
     GlyphRect clipRect;
@@ -251,7 +251,6 @@ void BlitCommand::Execute(GlyphRect* rect)
     }
 }
 
-/* Function start: 0x403840 */
 /* Function start: 0x41B690 */ /* No assembly extracted */
 void CommandType2::Execute(GlyphRect* rect)
 {
@@ -597,11 +596,16 @@ struct TextRenderEntry : public SoundCommand {
     int posY;           // 0x5C
     int color;          // 0x60
 
-    virtual void Execute(GlyphRect* rect) {
-        SetFontPosition(posX, posY);
+    virtual void Execute(GlyphRect* rect);
+};
+
+/* Function start: 0x403840 */
+void TextRenderEntry::Execute(GlyphRect* rect) {
+    SetFontPosition(posX, posY);
+    if (g_GlyphFont_0046aa28 != 0) {
         g_GlyphFont_0046aa28->RenderText(text, color);
     }
-};
+}
 
 /* Function start: 0x404230 */
 void ZBufferManager::ShowText(char* text, int x, int y, int priority, int color) {

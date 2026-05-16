@@ -9,10 +9,11 @@
 Timer::Timer()
 {
     m_pauseDuration = 0;
-    m_unknown4 = 0;
-    m_startTime = 0;
-    m_currentTime = 0;
-    m_elapsedTime = 0;
+    Timer* timer = this;
+    timer->m_unknown4 = 0;
+    timer->m_startTime = 0;
+    timer->m_currentTime = 0;
+    timer->m_elapsedTime = 0;
     g_TimerCount_00436b94++;
     Reset();
 }
@@ -58,4 +59,3 @@ void __fastcall DestroyTimerField(int* obj)
         obj[2] = 0;
     }
 }
-

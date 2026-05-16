@@ -106,10 +106,10 @@ int SC_SpaceShipNav::AddMessage(SC_MessageParser* msg) {
     if (SC_Combat::AddMessage(msg) == 0) {
         SpriteAction* action = (SpriteAction*)msg;
         if (savedCommand == 0x2b) {
-            if (action->instruction == 0x1b) {
+            if (action->lastKey == 0x1b) {
                 statusPtr[2] = 1;
             }
-        } else if (action->instruction == 0x77) {
+        } else if (action->lastKey == 0x77) {
             mCNavigator* nav = (mCNavigator*)g_Navigator_0046ae70;
             {
                 SpriteAction temp(handlerId, moduleParam, handlerId, moduleParam,

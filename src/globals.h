@@ -6032,7 +6032,7 @@ extern int g_SlimeTableInit_0046ad6c;                                   // SC_Wa
     extern SoundList*        g_SoundList_0046ae68;
     extern ScoreDisplay*     g_ScoreDisplay_0046ae6c;
     extern mCNavigator*      g_Navigator_0046ae70;
-    extern HotspotListData*  g_HotspotPool_0046ae74;
+    extern TimedEventPool*   g_HotspotPool_0046ae74;
     extern SC_CombatBase* g_CombatEngine_0046ae78;         // SC_CombatBase* active combat engine
     extern int g_RatsState_00473e18;                                // 0x00473e18 - SC_Rats main state
     extern int g_State0Phase_00473e14;                              // 0x00473e14
