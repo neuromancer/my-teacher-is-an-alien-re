@@ -306,7 +306,7 @@ int SC_Question::LBLParse(char* param_1)
         }
         Parser::ProcessFile(mouseControl, this, (char*)0);
     }
-    else if (strncmp(keyword, "OVE", 3) == 0) {
+    else if (strncmp(keyword, "SPR", 3) == 0) {
         if (mouseControl == 0) {
             mouseControl = new MMPlayer();
         }

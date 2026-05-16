@@ -349,7 +349,7 @@ int Sprite::LBLParse(char* param_1)
 
     if (strcmp(keyword, "FNAME") == 0) {
         sscanf(param_1, "%s %s", buf3, sprite_filename);
-    } else if (strcmp(keyword, "FINDEX") == 0) {
+    } else if (strcmp(keyword, "HNAME") == 0) {
         val3 = sscanf(param_1, "%s %d", keyword, &val1);
         strcpy(sprite_filename, MakeAnimName(val1));
     } else if (strcmp(keyword, "MAKENAME") == 0) {
@@ -398,7 +398,7 @@ int Sprite::LBLParse(char* param_1)
         flags |= 0x100;
     } else if (strcmp(keyword, "NOGRAPHIC") == 0) {
         flags |= 0x80;
-    } else if (strcmp(keyword, "CDROMSP") == 0) {
+    } else if (strcmp(keyword, "ONCD") == 0) {
         flags |= 0x400;
     } else if (strcmp(keyword, "SET_DEFAULT_STATES") == 0) {
         int i = 0;

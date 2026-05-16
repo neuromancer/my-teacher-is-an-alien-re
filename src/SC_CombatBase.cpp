@@ -293,15 +293,15 @@ int SC_CombatBase::LBLParse(char* line)
 
     sscanf(line, "%s", token);
 
-    if (strcmp(token, "ENGINE_INFO") == 0) {
+    if (strcmp(token, "[ENGINE_INFO]") == 0) {
         Parser::ProcessFile((Parser*)g_WeaponParser_0046ae4c, this, (char*)0);
-    } else if (strcmp(token, "UPDATE_DIRS") == 0) {
+    } else if (strcmp(token, "[UPDATE_DIRS]") == 0) {
         Parser::ProcessFile((Parser*)g_PathResolver_0046aa1c, this, (char*)0);
-    } else if (strcmp(token, "TARGETS") == 0) {
+    } else if (strcmp(token, "[TARGETS]") == 0) {
         Parser::ProcessFile((Parser*)g_TargetList_0046ae58, this, (char*)0);
-    } else if (strcmp(token, "SPRITELIST") == 0) {
+    } else if (strcmp(token, "[SPRITELIST]") == 0) {
         Parser::ProcessFile((Parser*)g_CombatSprite_0046ae5c, this, (char*)0);
-    } else if (strcmp(token, "NAVIGATION") == 0) {
+    } else if (strcmp(token, "[NAVIGATION]") == 0) {
         Parser::ProcessFile((Parser*)g_Navigator_0046ae70, this, (char*)0);
     } else if (strcmp(token, "SET_GAMESTATE") == 0) {
         sscanf(line, " %s %s %d", token, arg, &value);

@@ -399,7 +399,7 @@ int SC_Rats::LBLParse(char* param) {
         Parser::ProcessFile((Parser*)obj, this, (char*)0);
         return 0;
     }
-    if (strcmp(buf, "CB") == 0) {
+    if (strcmp(buf, "END") == 0) {
         return 1;
     }
     ReportUnknownLabel("SC_Rats");

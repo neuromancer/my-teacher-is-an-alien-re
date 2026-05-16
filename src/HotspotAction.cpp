@@ -438,7 +438,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             ((Queue*)list)->InsertAtCurrent(sa);
         }
     }
-    else if (strcmp(label, "ACTIONS") == 0) {
+    else if (strcmp(label, "PREMSG") == 0) {
         if (actionsQueue == 0) {
             actionsQueue = new Queue();
         }

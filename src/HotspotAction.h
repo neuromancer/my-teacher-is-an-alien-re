@@ -32,7 +32,7 @@ public:
     char rolloverText[64];  // 0xB4 - ROLLOVER tooltip text
     MMPlayer* correctPlayer;      // 0xF4 - CORRECT multimedia player
     MMPlayer* incorrectPlayer;    // 0xF8 - INCORRECT multimedia player
-    Queue* actionsQueue;    // 0xFC - ACTIONS/INC_ACTIONS queue
+    Queue* actionsQueue;    // 0xFC - PREMSG/INC_ACTIONS queue
     Queue* messagesQueue;   // 0x100 - MESSAGE/SWITCHFOCUS/etc. queue
     Queue* incorrectQueue;  // 0x104 - INCORRECTMESSAGE queue
     Queue* conditionsQueue; // 0x108 - CHECKMSG/CHECKAVAILIABLE/CHECKGAMESTATE queue

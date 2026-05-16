@@ -812,7 +812,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
             sprintf(formatted, "PLAYSOUND %d", sound);
             hs->LBLParse(formatted);
         }
-    } else if (strcmp(label, "MESSAGE") == 0) {
+    } else if (strcmp(label, "PREMSG") == 0) {
         if (field_128 == 0) {
             field_128 = new Queue(4);
         }

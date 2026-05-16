@@ -46,7 +46,7 @@ int NavCrystal::LBLParse(char* line) {
         dimArray1[idx].y = y;
         return 0;
     }
-    if (strcmp(label, "DIM") == 0) {
+    if (strcmp(label, "PZLOC") == 0) {
         int idx, x, y;
         sscanf(line, " %s %d %d %d", label, &idx, &x, &y);
         dimArray2[idx].x = x;

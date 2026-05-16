@@ -311,16 +311,16 @@ int CDData::LBLParse(char* line) {
     token[0] = 0;
     path[0] = 0;
 
-    sscanf(line, "\"%s\"", token);
-    if (strcmp(token, "\"COPY_TO_HD\"") == 0) {
-        sscanf(line, "\"%s %s\"", arg1, path);
+    sscanf(line, " %s ", token);
+    if (strcmp(token, "COPY_TO_HD") == 0) {
+        sscanf(line, "%s %s", arg1, path);
         ResolvePath(path);
         return 0;
     }
-    if (strcmp(token, "\"GameDirectory\"") == 0) {
+    if (strcmp(token, "END") == 0) {
         return 1;
     }
-    ReportUnknownLabel("\"GameDirectory\"");
+    ReportUnknownLabel("GameDirectory");
     return 0;
 }
 

@@ -666,7 +666,7 @@ int SC_WordSearch::LBLParse(char* line) {
         Sprite* spr = new Sprite(0);
         puzzleSprite2 = spr;
         Parser::ProcessFile(spr, this, 0);
-    } else if (strcmp(keyword, "FONT") == 0) {
+    } else if (strcmp(keyword, "TEXT") == 0) {
         sscanf(line, "%s %s", keyword, buffer);
         if (g_GlyphFont_0046aa28 != 0) {
             g_GlyphFont_0046aa28->LoadFont(buffer);

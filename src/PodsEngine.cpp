@@ -335,7 +335,7 @@ int PodsEngine::LBLParse(char* line) {
             ReportUnknownLabel("EnginePodCombat");
         }
         g_SlimeTable_0046bf28->LoadEntry(key, buffer, value);
-    } else if (strcmp(token, "") == 0) {
+    } else if (strcmp(token, "ANIM") == 0) {
         int fields = sscanf(line, " %s %d %d", token, &key, &value);
         if (fields != 3 || (int)key < 0 || (int)key > 2) {
             ReportUnknownLabel("SC_Pods");

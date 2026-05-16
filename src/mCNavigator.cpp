@@ -214,7 +214,7 @@ int mCNavigator::LBLParse(char* param_1)
         int idx = FindCharIndex(value[0]);
         SetMode(idx);
     }
-    else if (_strcmpi(token, "BASENODE") == 0) {
+    else if (_strcmpi(token, "NODE") == 0) {
         if (navNodePool == 0) {
             navNodePool = new ObjectPool(0x11, 0xa);
         }
