@@ -2,6 +2,19 @@
   "build": {
     "jobs": 12
   },
+  "values_capstone": {
+    "config": "config/checkValuesCapstone.json",
+    "full": {
+      "recompiled_exe": "TEACHER.EXE",
+      "map": "TEACHER.map",
+      "build_target": "TEACHER.EXE"
+    },
+    "demo": {
+      "recompiled_exe": "TEACHER-DEMO.EXE",
+      "map": "TEACHER-DEMO.map",
+      "build_target": "TEACHER-DEMO.EXE"
+    }
+  },
   "paths": {
     "full": {
       "exe": "data/full/TEACHER.ORI.EXE",
@@ -490,5 +503,10 @@
         }
       }
     ]
+  },
+  "vtables_capstone": {
+    "max_function_bytes": "0x4000",
+    "stack_registers": ["esp", "ebp"],
+    "object_write_displacements": [0]
   }
 }

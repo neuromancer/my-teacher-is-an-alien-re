@@ -224,8 +224,14 @@ verify-globals:
 verify-calls:
 	@python3 bin/checkCallTargets.py --config $(VERIFY_CONFIG)
 
+verify-values-capstone:
+	@python3 bin/checkValuesCapstone.py --config $(VERIFY_CONFIG) --min-similarity 80
+
 verify-vtables:
 	@python3 bin/verifyVtables.py --config $(VERIFY_CONFIG)
+
+verify-vtables-capstone:
+	@python3 bin/verifyVtablesCapstone.py --config $(VERIFY_CONFIG)
 
 data/demo/CDDATA:
 	@echo "Downloading demo data..."
@@ -260,4 +266,4 @@ debug: TEACHER.EXE | $(DREAMM_BIN)
 
 
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify-globals verify-calls verify-vtables run-demo run-demo-original run
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify-globals verify-calls verify-values-capstone verify-vtables verify-vtables-capstone run-demo run-demo-original run
