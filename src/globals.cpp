@@ -415,7 +415,6 @@ int g_State2Phase_00473e20 = 0;                              // 0x00473e20
 int g_PodResults_004734a0[3] = {0, 0, 0};                    // 0x004734a0-0x004734a8
 
 // --- Misc (not address-mapped or shared) ---
-int (*g_OutOfMemoryCallback)(unsigned int) = NULL;
 short _param_3 = 0;                                          // no original address: Sound.obj shim
 MessageQueue* g_MessageQueue = 0;                            // no original address: Handler8 message queue
 void* g_GameStruct2 = 0;                                     // no original address: shared shim

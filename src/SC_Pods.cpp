@@ -22,6 +22,7 @@
 extern void ReportUnknownLabel(const char* name);
 
 extern "C" void ShowError(const char* format, ...);
+extern "C" void OgdenTrace(const char* format, ...);
 
 #include "SlimeTable.h"
 #include "globals.h"
@@ -29,6 +30,21 @@ extern "C" void ShowError(const char* format, ...);
 extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 void __fastcall InitCombatScreen(void* self);
+
+static int TraceQueueCount(LinkedList* list)
+{
+    int count = 0;
+    if (list == 0) {
+        return 0;
+    }
+    for (ListNode* node = list->head; node != 0; node = node->next) {
+        count++;
+        if (count > 10000) {
+            break;
+        }
+    }
+    return count;
+}
 
 
 // FUN_004061e0 = RenderEntry::~RenderEntry — callers updated
@@ -52,12 +68,26 @@ SC_Pods::~SC_Pods() {
 void SC_Pods::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
     moduleParam = ((SpriteAction*)msg)->addressValue;
+    OgdenTrace("[OGDEN] SC_Pods::Init begin this=%08lx msg=%08lx saved=%d:%d module=%d actionInstr=%d child=%08lx",
+        (unsigned long)this,
+        (unsigned long)msg,
+        savedCommand,
+        savedMsgData,
+        moduleParam,
+        ((SpriteAction*)msg)->instruction,
+        (unsigned long)((SpriteAction*)msg)->childAction);
 
     if (FileExists("CB_Pods") == 0) {
+        OgdenTrace("[OGDEN] SC_Pods::Init ShowLoadingScreen");
         ShowLoadingScreen();
     }
 
     ZBufferManager* zbm = g_ZBufferManager_0046aa24;
+    OgdenTrace("[OGDEN] SC_Pods::Init zbuffer state=%d qA0=%d qA4=%d q9c=%d",
+        zbm->m_state,
+        TraceQueueCount(zbm->m_queueA0),
+        TraceQueueCount(zbm->m_queueA4),
+        TraceQueueCount(zbm->m_queue9c));
     if (zbm->m_state != 1) {
         zbm->m_state = 1;
 
@@ -79,7 +109,7 @@ void SC_Pods::Init(SC_MessageParser* msg) {
                 void* item = list2->Pop();
                 if (item != 0) {
                     ((ZBuffer*)item)->CleanUpVBuffer();
-                    FreeMemory(item);
+                    operator delete(item);
                 }
             }
         }
@@ -91,16 +121,22 @@ void SC_Pods::Init(SC_MessageParser* msg) {
                 void* item = list3->Pop();
                 if (item != 0) {
                     ((RenderEntry*)item)->~RenderEntry();
-                    FreeMemory(item);
+                    operator delete(item);
                 }
             }
         }
 
         zbm->m_palette = 0;
     }
+    OgdenTrace("[OGDEN] SC_Pods::Init zbuffer ready state=%d qA0=%d qA4=%d q9c=%d",
+        zbm->m_state,
+        TraceQueueCount(zbm->m_queueA0),
+        TraceQueueCount(zbm->m_queueA4),
+        TraceQueueCount(zbm->m_queue9c));
 
     // Practice mode setup
     if (savedCommand == 0x2b) {
+        OgdenTrace("[OGDEN] SC_Pods::Init practice setup begin");
         int idx = g_GameState_0046aa30->FindState("OBJ011");
         if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
@@ -120,26 +156,42 @@ void SC_Pods::Init(SC_MessageParser* msg) {
             ShowError("Invalid gamestate %d", periodIdx);
         }
         g_GameState_0046aa30->stateValues[periodIdx] = periodVal;
+        OgdenTrace("[OGDEN] SC_Pods::Init practice setup end kid=%d period=%d", kidVal, periodVal);
     }
 
     // Create sound table
     SlimeTable* soundTable = new SlimeTable();
     g_SlimeTable_0046bf28 = soundTable;
     soundTable->Allocate(5);
+    OgdenTrace("[OGDEN] SC_Pods::Init sound table=%08lx allocated", (unsigned long)soundTable);
 
+    OgdenTrace("[OGDEN] SC_Pods::Init ParseFile cb_Pods begin");
     ParseFile(this, "mis\\cb_Pods.mis", (char*)0);
+    OgdenTrace("[OGDEN] SC_Pods::Init ParseFile cb_Pods end combatEngine=%08lx global=%08lx",
+        (unsigned long)combatEngine,
+        (unsigned long)g_CombatEngine_0046ae78);
+    OgdenTrace("[OGDEN] SC_Pods::Init InitCombatScreen begin");
     InitCombatScreen(g_CombatEngine_0046ae78);
+    OgdenTrace("[OGDEN] SC_Pods::Init InitCombatScreen end");
 
     // Create result action
     if (resultAction == 0) {
         SpriteAction* action = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
         resultAction = (int)action;
+        OgdenTrace("[OGDEN] SC_Pods::Init resultAction=%08lx", (unsigned long)resultAction);
     }
+    OgdenTrace("[OGDEN] SC_Pods::Init end");
 }
 
 /* Function start: 0x4419E0 */
 int SC_Pods::ShutDown(SC_MessageParser* msg) {
+    OgdenTrace("[OGDEN] SC_Pods::ShutDown begin this=%08lx msg=%08lx combat=%08lx result=%08lx slime=%08lx",
+        (unsigned long)this,
+        (unsigned long)msg,
+        (unsigned long)combatEngine,
+        (unsigned long)resultAction,
+        (unsigned long)g_SlimeTable_0046bf28);
     if (combatEngine != 0) {
         ((Engine*)combatEngine)->StopAndCleanup();
         if (combatEngine != 0) {
@@ -157,7 +209,7 @@ int SC_Pods::ShutDown(SC_MessageParser* msg) {
     if (g_SlimeTable_0046bf28 != 0) {
         SlimeTable* st = g_SlimeTable_0046bf28;
         st->~SlimeTable();
-        FreeMemory(st);
+        operator delete(st);
         g_SlimeTable_0046bf28 = 0;
     }
 
@@ -165,13 +217,16 @@ int SC_Pods::ShutDown(SC_MessageParser* msg) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
+    OgdenTrace("[OGDEN] SC_Pods::ShutDown end");
     return 0;
 }
 
 /* Function start: 0x441AA0 */
 void SC_Pods::Update(int p1, int p2) {
     if (handlerId == p2) {
+        OgdenTrace("[OGDEN] SC_Pods::Update active combat=%08lx flags=%d", (unsigned long)g_CombatEngine_0046ae78, g_CombatEngine_0046ae78->combatFlags);
         int result = g_CombatEngine_0046ae78->StopAndCleanup();
+        OgdenTrace("[OGDEN] SC_Pods::Update StopAndCleanup result=%d flags=%d", result, g_CombatEngine_0046ae78->combatFlags);
         if (result || g_CombatEngine_0046ae78->combatFlags) {
             HandleResult();
         }
@@ -211,6 +266,10 @@ int SC_Pods::Exit(SC_MessageParser* msg) {
 /* Function start: 0x441B60 */
 void SC_Pods::HandleResult() {
     int flags = g_CombatEngine_0046ae78->combatFlags;
+    OgdenTrace("[OGDEN] SC_Pods::HandleResult savedCommand=%d flags=%d resultAction=%08lx",
+        savedCommand,
+        flags,
+        (unsigned long)resultAction);
 
     if (savedCommand == 0x2b) {
         if (flags & 1) {
@@ -218,7 +277,7 @@ void SC_Pods::HandleResult() {
             SpriteAction* ra = (SpriteAction*)resultAction;
             if (ra != 0) {
                 ra->~SpriteAction();
-                FreeMemory(ra);
+                operator delete(ra);
                 resultAction = 0;
             }
 
@@ -235,7 +294,7 @@ void SC_Pods::HandleResult() {
             SpriteAction* ra = (SpriteAction*)resultAction;
             if (ra != 0) {
                 ra->~SpriteAction();
-                FreeMemory(ra);
+                operator delete(ra);
                 resultAction = 0;
             }
 
@@ -344,12 +403,13 @@ void SC_Pods::HandleResult() {
     }
 
     EnqueueSpriteAction((SpriteAction*)resultAction);
+    OgdenTrace("[OGDEN] SC_Pods::HandleResult enqueued resultAction=%08lx", (unsigned long)resultAction);
 
     {
         SpriteAction* ra = (SpriteAction*)resultAction;
         if (ra != 0) {
             ra->~SpriteAction();
-            FreeMemory(ra);
+            operator delete(ra);
             resultAction = 0;
         }
     }
@@ -365,12 +425,15 @@ int SC_Pods::LBLParse(char* line) {
     sscanf(line, " %s ", label);
 
     if (strcmp(label, "DERIVED_ENGINE_INFO") == 0) {
+        OgdenTrace("[OGDEN] SC_Pods::LBLParse DERIVED_ENGINE_INFO begin");
         PodsEngine* eng = new PodsEngine();
         combatEngine = (int)eng;
         g_CombatEngine_0046ae78 = (SC_CombatBase*)eng;
         Parser::ProcessFile((Parser*)eng, this, (char*)0);
+        OgdenTrace("[OGDEN] SC_Pods::LBLParse DERIVED_ENGINE_INFO end engine=%08lx", (unsigned long)eng);
     } else if (strcmp(label, "BGSOUND") == 0) {
         sscanf(line, " %s %d ", label, &soundId);
+        OgdenTrace("[OGDEN] SC_Pods::LBLParse BGSOUND %d", soundId);
         SendGameMessage(5, soundId, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
     } else if (strcmp(label, "END") == 0) {
         return 1;

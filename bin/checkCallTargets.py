@@ -35,6 +35,15 @@ FUNCTION_POINTER_TARGETS = {}
 ORDINAL_IMPORTS = {}
 SKIP_CALL_TOKENS = set()
 TRIVIAL_CALL_TOKENS = set()
+STRICT_MEMORY_TOKENS = {
+    "AllocateMemory",
+    "AllocateMemory_Wrapper",
+    "CrtMalloc",
+    "FreeFromGlobalHeap",
+    "FreeMemory",
+    "HeapAllocWrapper",
+    "OutOfMemoryHandler",
+}
 
 
 def configure_call_checker(config):
@@ -60,9 +69,11 @@ def configure_call_checker(config):
     TRIVIAL_CALL_TOKENS = set(calls_config.get("trivial_tokens", []))
 
 
-def canonicalize(name):
+def canonicalize(name, strict_memory=False):
     if name.startswith("FUN_"):
         name = name.upper()
+    if strict_memory and name in STRICT_MEMORY_TOKENS:
+        return name
     name = CANONICAL.get(name, name)
     return name
 
@@ -558,6 +569,10 @@ def parse_args():
     parser.add_argument("--build-target", default=None, help="Make target used to build assembly.")
     parser.add_argument("--jobs", type=int, default=None, help="Parallel make jobs.")
     parser.add_argument("--no-build", action="store_true", help="Skip rebuilding before verification.")
+    parser.add_argument("--include-trivial", action="store_true",
+                        help="Report configured trivial calls such as operator new/delete.")
+    parser.add_argument("--strict-memory", action="store_true",
+                        help="Do not canonicalize project memory wrappers to CRT new/delete.")
     return parser.parse_args()
 
 
@@ -729,8 +744,8 @@ def main():
                             for n in compiled_raw]
 
         # Canonicalize
-        orig_canon = [canonicalize(n) for n in orig_resolved]
-        compiled_canon = [canonicalize(n) for n in compiled_resolved]
+        orig_canon = [canonicalize(n, strict_memory=args.strict_memory) for n in orig_resolved]
+        compiled_canon = [canonicalize(n, strict_memory=args.strict_memory) for n in compiled_resolved]
 
         # Filter out configured non-comparable compiler/runtime artifacts.
         orig_filtered = [n for n in orig_canon if n not in SKIP_CALL_TOKENS]
@@ -755,9 +770,14 @@ def main():
         if not only_orig and not only_compiled:
             continue
 
-        # Filter trivial differences (new/delete counts from SEH)
-        real_orig = {k: v for k, v in only_orig.items() if k not in TRIVIAL_CALL_TOKENS}
-        real_compiled = {k: v for k, v in only_compiled.items() if k not in TRIVIAL_CALL_TOKENS}
+        # Filter trivial differences (new/delete counts from SEH), unless the
+        # caller is explicitly auditing allocator/deallocator behavior.
+        if args.include_trivial:
+            real_orig = dict(only_orig)
+            real_compiled = dict(only_compiled)
+        else:
+            real_orig = {k: v for k, v in only_orig.items() if k not in TRIVIAL_CALL_TOKENS}
+            real_compiled = {k: v for k, v in only_compiled.items() if k not in TRIVIAL_CALL_TOKENS}
 
         if not real_orig and not real_compiled:
             continue
@@ -786,6 +806,10 @@ def main():
         print(f"  (showing ALL mismatches including unresolved FUN_ entries)")
     else:
         print(f"  (showing only resolved-name mismatches; use --all for everything)")
+    if args.strict_memory:
+        print(f"  (strict memory mode: project wrappers are not aliased to CRT new/delete)")
+    if args.include_trivial:
+        print(f"  (including configured trivial calls)")
     print(f"{'='*70}")
     print(f"Functions selected: {len(functions)}")
     print(f"Functions checked: {total_checked}")

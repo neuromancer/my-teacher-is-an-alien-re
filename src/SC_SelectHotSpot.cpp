@@ -71,19 +71,19 @@ SelectHotspot::~SelectHotspot() {
     tmp = SelectHotspot::rollonSound;
     if (tmp != 0) {
         ((Sample*)tmp)->Unload();
-        FreeMemory(tmp);
+        operator delete(tmp);
         SelectHotspot::rollonSound = 0;
     }
     tmp = SelectHotspot::selectedSound;
     if (tmp != 0) {
         ((Sample*)tmp)->Unload();
-        FreeMemory(tmp);
+        operator delete(tmp);
         SelectHotspot::selectedSound = 0;
     }
     tmp = SelectHotspot::rolloffSound;
     if (tmp != 0) {
         ((Sample*)tmp)->Unload();
-        FreeMemory(tmp);
+        operator delete(tmp);
         SelectHotspot::rolloffSound = 0;
     }
     LinkedList* list = SelectHotspot::messageList;
@@ -97,7 +97,7 @@ SelectHotspot::~SelectHotspot() {
                 }
             }
         }
-        FreeMemory(list);
+        operator delete(list);
         SelectHotspot::messageList = 0;
     }
     SelectHotspot::parent = 0;
@@ -272,7 +272,7 @@ int SelectHotspot::LBLParse(char* line) {
         void* tmp = SelectHotspot::rollonSound;
         if (tmp != 0) {
             ((Sample*)tmp)->Unload();
-            FreeMemory(tmp);
+            operator delete(tmp);
             SelectHotspot::rollonSound = 0;
         }
         Sample* smp = new Sample();
@@ -285,7 +285,7 @@ int SelectHotspot::LBLParse(char* line) {
         void* tmp = SelectHotspot::rolloffSound;
         if (tmp != 0) {
             ((Sample*)tmp)->Unload();
-            FreeMemory(tmp);
+            operator delete(tmp);
             SelectHotspot::rolloffSound = 0;
         }
         Sample* smp = new Sample();
@@ -298,7 +298,7 @@ int SelectHotspot::LBLParse(char* line) {
         void* tmp = SelectHotspot::selectedSound;
         if (tmp != 0) {
             ((Sample*)tmp)->Unload();
-            FreeMemory(tmp);
+            operator delete(tmp);
             SelectHotspot::selectedSound = 0;
         }
         Sample* smp = new Sample();
@@ -309,7 +309,7 @@ int SelectHotspot::LBLParse(char* line) {
         SpriteAction* msgObj = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         ParseSpriteAction(msgObj, this);
         if (SelectHotspot::messageList == 0) {
-            LinkedList* newList = (LinkedList*)AllocateMemory(sizeof(LinkedList));
+            LinkedList* newList = (LinkedList*)operator new(sizeof(LinkedList));
             if (newList != 0) {
                 newList->type = 0;
                 newList->head = 0;
@@ -330,7 +330,7 @@ int SelectHotspot::LBLParse(char* line) {
             dst++;
         }
         if (SelectHotspot::messageList == 0) {
-            LinkedList* newList = (LinkedList*)AllocateMemory(sizeof(LinkedList));
+            LinkedList* newList = (LinkedList*)operator new(sizeof(LinkedList));
             if (newList != 0) {
                 newList->type = 0;
                 newList->head = 0;
@@ -422,11 +422,11 @@ SC_SelectHotSpot::~SC_SelectHotSpot() {
                 }
                 if (hs) {
                     hs->~SelectHotspot();
-                    FreeMemory(hs);
+                    operator delete(hs);
                 }
             }
         }
-        FreeMemory(list);
+        operator delete(list);
         SC_SelectHotSpot::hotspotList = 0;
     }
     if (SC_SelectHotSpot::palette) {
@@ -467,7 +467,7 @@ void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
                 void* obj = queue->Pop();
                 if (obj != 0) {
                     ((ZBuffer*)obj)->CleanUpVBuffer();
-                    FreeMemory(obj);
+                    operator delete(obj);
                 }
             }
         }
@@ -479,7 +479,7 @@ void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
                 void* obj = queue->Pop();
                 if (obj != 0) {
                     ((RenderEntry*)obj)->~RenderEntry();
-                    FreeMemory(obj);
+                    operator delete(obj);
                 }
             }
         }
@@ -506,7 +506,7 @@ void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
                     }
                 }
             }
-            FreeMemory(hsList);
+            operator delete(hsList);
             SC_SelectHotSpot::hotspotList = 0;
         }
 
@@ -703,11 +703,11 @@ void SC_SelectHotSpot::OnProcessStart() {
                 }
                 if (hs) {
                     hs->~SelectHotspot();
-                    FreeMemory(hs);
+                    operator delete(hs);
                 }
             }
         }
-        FreeMemory(list);
+        operator delete(list);
         SC_SelectHotSpot::hotspotList = 0;
     }
     if (SC_SelectHotSpot::palette != 0) {
@@ -736,7 +736,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
             delete (Palette*)SC_SelectHotSpot::palette;
             SC_SelectHotSpot::palette = 0;
         }
-        void* mem = AllocateMemory(8);
+        void* mem = operator new(8);
         void* pal = 0;
         if (mem != 0) {
             pal = InitPalette((Palette*)mem);
@@ -747,7 +747,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         int sortKey;
         sscanf(line, "%s %d ", keyword, &sortKey);
         if (SC_SelectHotSpot::hotspotList == 0) {
-            LinkedList* newList = (LinkedList*)AllocateMemory(sizeof(LinkedList));
+            LinkedList* newList = (LinkedList*)operator new(sizeof(LinkedList));
             if (newList != 0) {
                 newList->type = 0;
                 newList->head = 0;
@@ -793,7 +793,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         SC_SelectHotSpot::currentHotspot = 0;
     } else if (strcmp(keyword, "AMBIENT") == 0) {
         if (SC_SelectHotSpot::ambient == 0) {
-            void* mem = AllocateMemory(0xa0);
+            void* mem = operator new(0xa0);
             void* amb = 0;
             if (mem != 0) {
                 amb = new (mem) MMPlayer();

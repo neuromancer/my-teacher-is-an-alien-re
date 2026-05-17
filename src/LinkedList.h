@@ -132,10 +132,7 @@ struct LinkedList {
             }
             // Free node
             if (node != 0) {
-                node->data = 0;
-                node->prev = 0;
-                node->next = 0;
-                FreeMemory(node);
+                delete node;
                 current = 0;
             }
             current = head;

@@ -416,10 +416,11 @@ void ShutdownGameSystems(void) {
   }
 }
 
+char g_CdDataPath_00472de8[260];
+
 /* Function start: 0x424BB0 */
 void CreateGameObject_1() {
-  static char s_pathBuffer[260]; // DAT_00472de8
-  CDData* cd = new CDData(s_pathBuffer, "teacher.id", "Missing the Teacher CD ROM");
+  CDData* cd = new CDData(g_CdDataPath_00472de8, "teacher.id", "Missing the Teacher CD ROM");
   g_PathResolver_0046aa1c = cd;
   g_PathResolver_0046aa1c = cd;
 }

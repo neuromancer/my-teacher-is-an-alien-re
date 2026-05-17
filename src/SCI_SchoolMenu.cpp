@@ -392,7 +392,7 @@ int SCI_SchoolMenu::ShutDown(SC_MessageParser* msg) {
             item = queue->Pop();
             if (item != 0) {
                 ((ZBuffer*)item)->CleanUpVBuffer();
-                FreeMemory(item);
+                operator delete(item);
             }
         }
     }
@@ -404,7 +404,7 @@ int SCI_SchoolMenu::ShutDown(SC_MessageParser* msg) {
             item = queue->Pop();
             if (item != 0) {
                 ((RenderEntry*)item)->RenderEntry::~RenderEntry();
-                FreeMemory(item);
+                operator delete(item);
             }
         }
     }

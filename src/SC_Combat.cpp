@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 extern "C" void WriteToLog(const char*, ...);
+extern "C" void OgdenTrace(const char*, ...);
 
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
@@ -66,7 +67,7 @@ int SC_Combat::LBLParse(char* line) {
         sscanf(line, " %s %d", local_3c, &local_14);
         int count = local_14;
         if (statusPtr != 0) {
-            FreeMemory(statusPtr);
+            operator delete(statusPtr);
             statusPtr = 0;
         }
         combatParams[2] = count;
@@ -94,6 +95,11 @@ int SC_Combat::LBLParse(char* line) {
 /* Function start: 0x449520 */
 /* Function start: 0x449520 */
 void SC_Combat::OnProcessEnd() {
+    OgdenTrace("[OGDEN] SC_Combat::OnProcessEnd this=%08lx handler=%d pending=%08lx palette=%08lx",
+        (unsigned long)this,
+        handlerId,
+        (unsigned long)pendingAction,
+        (unsigned long)field_0x104);
     if (pendingAction == 0) {
         pendingAction = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
@@ -114,12 +120,27 @@ void SC_Combat::Init(SC_MessageParser* msg) {
     memset(&statusPtr, 0, 0x1C * 4);
     bgSound = new SlimeTable();
     action = (SpriteAction*)msg;
+    OgdenTrace("[OGDEN] SC_Combat::Init this=%08lx msg=%08lx action=%d:%d from=%d:%d instr=%d child=%08lx",
+        (unsigned long)this,
+        (unsigned long)msg,
+        action->addressType,
+        action->addressValue,
+        action->fromType,
+        action->fromValue,
+        action->instruction,
+        (unsigned long)action->childAction);
     if (action->childAction != 0) {
         pendingAction = action->childAction;
         action->childAction = 0;
     }
     CopyCommandData(msg);
     moduleParam = action->addressValue;
+    OgdenTrace("[OGDEN] SC_Combat::Init end saved=%d:%d module=%d bgSound=%08lx pending=%08lx",
+        savedCommand,
+        savedMsgData,
+        moduleParam,
+        (unsigned long)bgSound,
+        (unsigned long)pendingAction);
 }
 
 /* Function start: 0x449400 */
@@ -130,6 +151,15 @@ int SC_Combat::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x449320 */
 int SC_Combat::ShutDown(SC_MessageParser* msg) {
+    OgdenTrace("[OGDEN] SC_Combat::ShutDown begin this=%08lx msg=%08lx palette=%08lx bg=%08lx console=%08lx pending=%08lx sound=%08lx status=%08lx",
+        (unsigned long)this,
+        (unsigned long)msg,
+        (unsigned long)field_0x104,
+        (unsigned long)bgSprite,
+        (unsigned long)field_0x10C,
+        (unsigned long)pendingAction,
+        (unsigned long)bgSound,
+        (unsigned long)statusPtr);
     if (field_0x104 != 0) {
         delete field_0x104;
         field_0x104 = 0;
@@ -151,9 +181,10 @@ int SC_Combat::ShutDown(SC_MessageParser* msg) {
         bgSound = 0;
     }
     if (statusPtr != 0) {
-        FreeMemory(statusPtr);
+        operator delete(statusPtr);
         statusPtr = 0;
     }
+    OgdenTrace("[OGDEN] SC_Combat::ShutDown end this=%08lx", (unsigned long)this);
     return 0;
 }
 
@@ -166,7 +197,9 @@ void SC_Combat::Update(int p1, int p2) {
         int idx = combatParams[0];
         int* entry = &statusPtr[idx];
         if (*entry != 0) {
+            OgdenTrace("[OGDEN] SC_Combat::Update action=%d value=%d status=%08lx", idx, *entry, (unsigned long)statusPtr);
             ProcessAction(idx, entry);
+            OgdenTrace("[OGDEN] SC_Combat::Update action done=%d value=%d", idx, *entry);
         }
         combatParams[0]++;
     } while (combatParams[2] > combatParams[0]);
@@ -191,6 +224,7 @@ int SC_Combat::Exit(SC_MessageParser* msg) {
 }
 /* Function start: 0x4494E0 */
 void SC_Combat::ProcessLose() {
+    OgdenTrace("[OGDEN] SC_Combat::ProcessLose pending=%08lx", (unsigned long)pendingAction);
     EnqueueSpriteAction(pendingAction);
     if (pendingAction != 0) {
         delete pendingAction;

@@ -133,7 +133,7 @@ void IconBar::Init(SC_MessageParser* msg) {
                     void* item = q4->Pop();
                     if (item != 0) {
                         ((ZBuffer*)item)->CleanUpVBuffer();
-                        FreeMemory(item);
+                        operator delete(item);
                     }
                 }
             }
@@ -172,7 +172,7 @@ void IconBar::Init(SC_MessageParser* msg) {
                         }
                         if (data != 0) {
                             ((RenderEntry*)data)->RenderEntry::~RenderEntry();
-                            FreeMemory(data);
+                            operator delete(data);
                         }
                     }
                 }

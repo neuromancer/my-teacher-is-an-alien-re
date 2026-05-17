@@ -5,6 +5,7 @@
 #include "Memory.h"
 #include "Sprite.h"
 #include "Palette.h"
+#include "RenderEntry.h"
 #include "Sound.h"
 #include "ZBufferManager.h"
 #include "Handler.h"
@@ -28,8 +29,7 @@ DrawEntry::~DrawEntry() {
 
     videoBuffer = DrawEntry::m_videoBuffer;
     if (videoBuffer != 0) {
-        videoBuffer->~VBuffer();
-        FreeFromGlobalHeap(videoBuffer);
+        delete videoBuffer;
         DrawEntry::m_videoBuffer = 0;
     }
 

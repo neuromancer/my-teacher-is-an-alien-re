@@ -32,6 +32,7 @@ class MouseControl;
 // Engine/Misc
 extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
+extern "C" void OgdenTrace(const char* format, ...);
 extern void BlankScreen();
 #include "MouseControl.h"
 
@@ -201,7 +202,7 @@ void SC_Cinematic::Init(SC_MessageParser* msg) {
                     void* obj = q2->Pop();
                     if (obj != 0) {
                         ((ZBuffer*)obj)->CleanUpVBuffer();
-                        FreeMemory(obj);
+                        operator delete(obj);
                     }
                 }
             }
@@ -238,7 +239,7 @@ void SC_Cinematic::Init(SC_MessageParser* msg) {
                     }
                     if (data != 0) {
                         ((RenderEntry*)data)->RenderEntry::~RenderEntry();
-                        FreeMemory(data);
+                        operator delete(data);
                     }
                 }
             }
@@ -324,7 +325,7 @@ int SC_Cinematic::ShutDown(SC_MessageParser* msg) {
                         void* obj = q2->Pop();
                         if (obj != 0) {
                             ((ZBuffer*)obj)->CleanUpVBuffer();
-                            FreeMemory(obj);
+                            operator delete(obj);
                         }
                     }
                 }
@@ -336,7 +337,7 @@ int SC_Cinematic::ShutDown(SC_MessageParser* msg) {
                         RenderEntry* entry = (RenderEntry*)q3->Pop();
                         if (entry != 0) {
                             entry->RenderEntry::~RenderEntry();
-                            FreeMemory(entry);
+                            operator delete(entry);
                         }
                     }
                 }
@@ -559,13 +560,29 @@ int SC_Cinematic::Exit(SC_MessageParser* msg) {
 
 /* Function start: 0x430730 */
 void SC_Cinematic::EndCinematic() {
+    OgdenTrace("[OGDEN] SC_Cinematic::EndCinematic module=%d saved=%d:%d pending=%08lx",
+        moduleParam,
+        savedCommand,
+        savedMsgData,
+        (unsigned long)pendingAction);
     if (pendingAction != 0) {
+        OgdenTrace("[OGDEN] SC_Cinematic enqueue pending addr=%d:%d from=%d:%d instr=%d child=%08lx",
+            pendingAction->addressType,
+            pendingAction->addressValue,
+            pendingAction->fromType,
+            pendingAction->fromValue,
+            pendingAction->instruction,
+            (unsigned long)pendingAction->childAction);
         EnqueueSpriteAction(pendingAction);
         if (pendingAction != 0) {
             delete pendingAction;
             pendingAction = 0;
         }
     } else {
+        OgdenTrace("[OGDEN] SC_Cinematic send completion addr=%d:%d from=3:%d instr=4",
+            savedCommand,
+            savedMsgData,
+            moduleParam);
         SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }
 }
@@ -588,7 +605,7 @@ void __fastcall ClearActionList(LinkedList* list)
                     delete obj;
                     entry->m_childObject = 0;
                 }
-                FreeMemory(entry);
+                operator delete(entry);
             }
         } while (list->head != 0);
     }

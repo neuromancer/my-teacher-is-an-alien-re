@@ -41,7 +41,7 @@ ZBuffer::~ZBuffer()
         }
     }
     if (ZBuffer::items != 0) {
-        FreeMemory(ZBuffer::items);
+        operator delete(ZBuffer::items);
         ZBuffer::items = 0;
     }
 }
@@ -57,8 +57,7 @@ void ZBuffer::CleanUpVBuffer()
 {
     VBuffer* vb = m_vbuffer;
     if (vb != 0) {
-        vb->VBuffer::~VBuffer();
-        FreeFromGlobalHeap(vb);
+        delete vb;
         m_vbuffer = 0;
     }
     Animation* ptr = (Animation*)field_0x08;

@@ -110,7 +110,7 @@ void SC_ExtBridge::Init(SC_MessageParser* msg) {
                         delete (Animation*)item->m_childObject;
                         item->m_childObject = 0;
                     }
-                    FreeMemory(item);
+                    operator delete(item);
                 }
             }
         }

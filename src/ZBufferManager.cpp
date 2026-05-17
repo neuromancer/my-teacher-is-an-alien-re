@@ -18,6 +18,21 @@
 #include "AnimatedAsset.h"
 #include "InvSlotItem.h"
 
+static int TraceZBQueueCount(ZBQueue* queue)
+{
+    int count = 0;
+    if (queue == 0) {
+        return 0;
+    }
+    for (ListNode* node = queue->head; node != 0; node = node->next) {
+        count++;
+        if (count > 10000) {
+            break;
+        }
+    }
+    return count;
+}
+
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
 // g_BackBuffer_0046aa14 now in globals.h
@@ -337,8 +352,7 @@ void ZBufferManager::Cleanup() {
                 data = queue->Pop();
                 if (data != 0) {
                     SoundCommand* cmd = (SoundCommand*)data;
-                    cmd->SoundCommand::~SoundCommand();
-                    operator delete(cmd);
+                    delete cmd;
                 }
             }
         }
@@ -623,8 +637,7 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
     case 1:
         cmd->Execute(&rect);
         if (cmd != 0) {
-            
-            FreeMemory(cmd);
+            delete cmd;
         }
         break;
     case 2:
@@ -737,6 +750,15 @@ void ZBufferManager::ProcessRenderQueues()
     void* local_14;
 
     m_head = 0;
+    if ((m_queueA4 != 0 && m_queueA4->head != 0) ||
+        (m_queue9c != 0 && m_queue9c->head != 0)) {
+        OgdenTrace("[OGDEN] ZBufferManager::ProcessRenderQueues begin this=%08lx state=%d q9c=%d qA0=%d qA4=%d",
+            (unsigned long)this,
+            m_state,
+            TraceZBQueueCount(m_queue9c),
+            TraceZBQueueCount(m_queueA0),
+            TraceZBQueueCount(m_queueA4));
+    }
 
     if (m_state == 1) {
         if (m_palette != 0) {
@@ -773,8 +795,8 @@ void ZBufferManager::ProcessRenderQueues()
                     ((SoundCommand*)data)->Execute(&rect);
 
                     if (data != 0) {
-                        
-                        FreeMemory(data);
+                        SoundCommand* cmd = (SoundCommand*)data;
+                        delete cmd;
                     }
                 }
             }
@@ -786,8 +808,10 @@ void ZBufferManager::ProcessRenderQueues()
             while (queue->head != 0) {
                 data = queue->Pop();
                 if (data != 0) {
+                    OgdenTrace("[OGDEN] ZBuffer state2 cleanup qA4 data=%08lx", (unsigned long)data);
                     ((ZBuffer*)data)->CleanUpVBuffer();
-                    FreeMemory(data);
+                    OgdenTrace("[OGDEN] ZBuffer state2 delete qA4 data=%08lx", (unsigned long)data);
+                    operator delete(data);
                 }
             }
         }
@@ -872,8 +896,11 @@ void ZBufferManager::ProcessRenderQueues()
             }
 
             if (local_14 != 0) {
-                ((RenderEntry*)local_14)->~RenderEntry();
-                FreeMemory(local_14);
+                RenderEntry* entry = (RenderEntry*)local_14;
+                OgdenTrace("[OGDEN] ZBuffer state3 cleanup render entry=%08lx", (unsigned long)entry);
+                entry->RenderEntry::~RenderEntry();
+                OgdenTrace("[OGDEN] ZBuffer state3 delete render entry=%08lx", (unsigned long)entry);
+                operator delete(entry);
             }
         }
 
@@ -883,8 +910,10 @@ void ZBufferManager::ProcessRenderQueues()
             while (queue->head != 0) {
                 data = queue->Pop();
                 if (data != 0) {
+                    OgdenTrace("[OGDEN] ZBuffer state3 cleanup qA4 data=%08lx", (unsigned long)data);
                     ((ZBuffer*)data)->CleanUpVBuffer();
-                    FreeMemory(data);
+                    OgdenTrace("[OGDEN] ZBuffer state3 delete qA4 data=%08lx", (unsigned long)data);
+                    operator delete(data);
                 }
             }
         }
@@ -923,6 +952,7 @@ void ZBufferManager::UpdateScreen() {
         return;
     }
 
+    OgdenTrace("[OGDEN] ZBufferManager::UpdateScreen begin state=%d q9c=%d", m_state, TraceZBQueueCount(queue));
     do {
         local_10 = 0;
         queue = m_queue9c;
@@ -971,6 +1001,7 @@ void ZBufferManager::UpdateScreen() {
             }
 
             if (local_10 != 0) {
+                OgdenTrace("[OGDEN] ZBufferManager::UpdateScreen delete render entry=%08lx", (unsigned long)local_10);
                 local_10->RenderEntry::~RenderEntry();
                 delete (void*)local_10;
             }

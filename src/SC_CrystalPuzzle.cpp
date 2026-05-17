@@ -260,7 +260,7 @@ void SC_CrystalPuzzle::Init(SC_MessageParser* msg) {
                 void* obj = q2->Pop();
                 if (obj != 0) {
                     ((ZBuffer*)obj)->CleanUpVBuffer();
-                    FreeMemory(obj);
+                    operator delete(obj);
                 }
             }
         }
@@ -297,7 +297,7 @@ void SC_CrystalPuzzle::Init(SC_MessageParser* msg) {
                 }
                 if (data != 0) {
                     ((RenderEntry*)data)->RenderEntry::~RenderEntry();
-                    FreeMemory(data);
+                    operator delete(data);
                 }
             }
         }

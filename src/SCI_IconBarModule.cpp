@@ -87,7 +87,7 @@ SCI_IconBarModule::~SCI_IconBarModule() {
                     }
                 }
             }
-            FreeMemory(qlist);
+            operator delete(qlist);
             field_128 = 0;
         }
     }
@@ -217,13 +217,13 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
 
         if (field_E4 != 0) {
             field_E4->~Palette();
-            FreeMemory(field_E4);
+            operator delete(field_E4);
             field_E4 = 0;
         }
 
         if (mmPlayer != 0) {
             mmPlayer->~MMPlayer();
-            FreeMemory(mmPlayer);
+            operator delete(mmPlayer);
             mmPlayer = 0;
         }
 
@@ -232,7 +232,7 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
         do {
             if (*p != 0) {
                 (*p)->~T_Hotspot();
-                FreeMemory(*p);
+                operator delete(*p);
                 *p = 0;
             }
             p++;
@@ -246,11 +246,11 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
                     SpriteAction* data = (SpriteAction*)((Queue*)field_128)->Pop();
                     if (data != 0) {
                         data->~SpriteAction();
-                        FreeMemory(data);
+                        operator delete(data);
                     }
                 }
             }
-            FreeMemory(field_128);
+            operator delete(field_128);
             field_128 = 0;
         }
 
@@ -366,7 +366,7 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
                     void* item = queue->Pop();
                     if (item != 0) {
                         ((ZBuffer*)item)->CleanUpVBuffer();
-                        FreeMemory(item);
+                        operator delete(item);
                     }
                 }
             }
@@ -378,7 +378,7 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
                     void* item = queue->Pop();
                     if (item != 0) {
                         ((RenderEntry*)item)->RenderEntry::~RenderEntry();
-                        FreeMemory(item);
+                        operator delete(item);
                     }
                 }
             }
@@ -708,7 +708,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
         sscanf(line, "%s %s", label, formatted);
         if (field_E4 != 0) {
             field_E4->~Palette();
-            FreeMemory(field_E4);
+            operator delete(field_E4);
             field_E4 = 0;
         }
         field_E4 = new Palette(formatted);
@@ -739,7 +739,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
         T_Hotspot* hs = icons[hotspotIdx];
         if (hs != 0) {
             hs->~T_Hotspot();
-            FreeMemory(hs);
+            operator delete(hs);
             icons[hotspotIdx] = 0;
         }
     } else if (strcmp(label, "DLG_HOTSPOT") == 0) {

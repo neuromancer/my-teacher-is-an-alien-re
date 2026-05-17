@@ -649,6 +649,7 @@ extern int g_CmdLineAudioMode_00472dd8;   // Command line -A/-S audio mode (1=A,
 extern int g_DebugFlag_00472ddc;          // Debug/init flag checked in main
 extern char g_CmdLineInputMode_00472de0;  // Command line -J/-K input mode (1=J, 2=K)
 extern int g_DirectSoundFlag_0046a87c;    // DirectSound flag, cleared by /nods
+extern char g_CdDataPath_00472de8[260];   // Command line /cd= path passed to CDData
 extern char g_CmdLineDataPath_0043d568[]; // Command line data path [260 bytes]
 // 0x0043d5b0: Sprite index tracking array (not yet implemented, used in FUN_41A9D0/FUN_41A9E0)
 // 0x0043d5b4: Element [1] of DAT_0043d5b0 array
@@ -5974,7 +5975,6 @@ extern int g_CmdLineAudioMode_00472dd8; // Command line audio mode
 extern char g_CmdLineInputMode_00472de0; // Command line input mode
 
 // Globals moved from stubs.cpp (sorted by address)
-extern int (*g_OutOfMemoryCallback)(unsigned int);        // no original address: Memory callback shim
 extern short _param_3;                                     // no original address: Sound.obj shim
 extern int g_PaletteColorTable_00437608[256];                              // palette color table
 extern char g_QuestLevelKey_00468108[32];                              // SC_Question buffer

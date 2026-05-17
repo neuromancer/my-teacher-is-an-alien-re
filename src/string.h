@@ -17,6 +17,7 @@ extern "C" {
     char* MakeAudioName(char* baseName);
     void ClearMessageLog();
     void WriteToMessageLog(const char *msg,...);
+    void OgdenTrace(const char *msg,...);
     void AddToStringTable(char *param_1);
     void WriteToLog(const char *param_1, ...);
     void SetErrorCode(unsigned int);

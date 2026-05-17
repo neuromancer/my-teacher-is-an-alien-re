@@ -90,7 +90,7 @@ int SC_ZBuffer::Exit(SC_MessageParser* msg) {
                     ZBuffer* entry = (ZBuffer*)q2->Pop();
                     if (entry != 0) {
                         entry->CleanUpVBuffer();
-                        FreeMemory(entry);
+                        operator delete(entry);
                     }
                 }
             }
@@ -129,7 +129,7 @@ int SC_ZBuffer::Exit(SC_MessageParser* msg) {
                     ZBuffer* entry = (ZBuffer*)q2->Pop();
                     if (entry != 0) {
                         entry->CleanUpVBuffer();
-                        FreeMemory(entry);
+                        operator delete(entry);
                     }
                 }
             }

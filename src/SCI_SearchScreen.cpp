@@ -76,7 +76,7 @@ void SCI_SearchScreen::Init(SC_MessageParser* msg) {
                         delete (Animation*)entry->m_childObject;
                         entry->m_childObject = 0;
                     }
-                    FreeMemory(entry);
+                    operator delete(entry);
                 }
             }
         }
