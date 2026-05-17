@@ -569,6 +569,7 @@ int Sprite::Do(int x, int y, double scale) {
     int done;
     int skipAnim;
     Range* cur;
+    int rangeEnd;
 
     if (handle == -1) {
         return 1;
@@ -585,7 +586,8 @@ int Sprite::Do(int x, int y, double scale) {
 
     cur = &ranges[handle];
 
-    if (cur->dim.x == cur->dim.y) {
+    rangeEnd = *(volatile int*)&cur->dim.y;
+    if (cur->dim.x == rangeEnd) {
         if ((flags & 4) != 0) {
             skipAnim = 0;
             flags &= ~4;
