@@ -23,6 +23,56 @@ extern "C" void OgdenTrace(const char* format, ...);
 
 // HitBounds, BombData — defined in globals.h
 
+// Original FUN_00428110 fills DAT_00473278 from the CRT initializer table.
+static void __cdecl _dodge_orville_crt_init(void) {
+    g_BombData_00473278[0].data[0] = 0x23;
+    g_BombData_00473278[0].data[1] = 0x28;
+    g_BombData_00473278[0].data[2] = 0x00;
+    g_BombData_00473278[0].data[3] = 0x00;
+    g_BombData_00473278[0].data[4] = 0x27;
+    g_BombData_00473278[0].data[5] = 0x2c;
+
+    g_BombData_00473278[1].data[0] = 0x00;
+    g_BombData_00473278[1].data[1] = 0x00;
+    g_BombData_00473278[1].data[2] = 0x40;
+    g_BombData_00473278[1].data[3] = 0x45;
+    g_BombData_00473278[1].data[4] = 0x43;
+    g_BombData_00473278[1].data[5] = 0x48;
+
+    g_BombData_00473278[2].data[0] = 0x60;
+    g_BombData_00473278[2].data[1] = 0x65;
+    g_BombData_00473278[2].data[2] = 0x5c;
+    g_BombData_00473278[2].data[3] = 0x61;
+    g_BombData_00473278[2].data[4] = 0x00;
+    g_BombData_00473278[2].data[5] = 0x00;
+
+    g_BombData_00473278[3].data[0] = 0x79;
+    g_BombData_00473278[3].data[1] = 0x7e;
+    g_BombData_00473278[3].data[2] = 0x7f;
+    g_BombData_00473278[3].data[3] = 0x82;
+    g_BombData_00473278[3].data[4] = 0x00;
+    g_BombData_00473278[3].data[5] = 0x00;
+
+    g_BombData_00473278[4].data[0] = 0x96;
+    g_BombData_00473278[4].data[1] = 0x9b;
+    g_BombData_00473278[4].data[2] = 0x9a;
+    g_BombData_00473278[4].data[3] = 0x9f;
+    g_BombData_00473278[4].data[4] = 0x00;
+    g_BombData_00473278[4].data[5] = 0x00;
+
+    g_BombData_00473278[5].data[0] = 0xb8;
+    g_BombData_00473278[5].data[1] = 0xbd;
+    g_BombData_00473278[5].data[2] = 0x00;
+    g_BombData_00473278[5].data[3] = 0x00;
+    g_BombData_00473278[5].data[4] = 0xb3;
+    g_BombData_00473278[5].data[5] = 0xb8;
+}
+
+typedef void (__cdecl *_PVFV)(void);
+#pragma data_seg(".CRT$XCU")
+static _PVFV _init_dodge_orville = _dodge_orville_crt_init;
+#pragma data_seg()
+
 int CompareRange(int center, int pos, int range);
 int CheckCursorRange(int range);
 

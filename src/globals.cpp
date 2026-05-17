@@ -387,7 +387,7 @@ char g_LogEnabled_00472e28 = 0;                              // 0x00472e28
 int g_StartBlock_00472e2c = 0;                               // 0x00472e2c
 int g_ProjectileHits_0047325c = 0;                           // 0x0047325c
 HitBounds g_HitBounds_00473260[3] = {{0, 0}, {0, 0}, {0, 0}}; // 0x00473260
-BombData g_BombData_00473278[6];                             // 0x00473278 (BSS, initialized at runtime)
+BombData g_BombData_00473278[6];                             // 0x00473278 (BSS, initialized by CRT startup)
 POINT g_CursorPos_00473308;                                  // 0x00473308
 // IconBar globals
 int g_IconBarLeft_00473310 = 0;                              // 0x00473310

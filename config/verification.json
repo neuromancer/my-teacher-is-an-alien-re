@@ -24,6 +24,7 @@
       "map_skip": "src/map",
       "clean_target": "clean",
       "build_target": "all",
+      "auto_complete": "src/auto_complete.txt",
       "globals_source": "src/globals.cpp",
       "globals_header": "src/globals.h",
       "code_globals_header": "code-full/globals.h"
@@ -35,7 +36,37 @@
       "out_dir": "out-demo",
       "map_skip": "src-demo/map",
       "clean_target": "clean-demo",
-      "build_target": "demo"
+      "build_target": "demo",
+      "auto_complete": "src-demo/auto_complete.txt"
+    }
+  },
+  "auto_complete_global_effects": {
+    "reviewed": {
+      "full": {
+        "0x4205A0": "GameWindow CRT constructor thunk is covered by global g_GameWindow in main.cpp",
+        "0x4205C0": "GameWindow CRT destructor/atexit thunk is covered by global g_GameWindow in main.cpp",
+        "0x423640": "g_PendingAction_00472d58 SpriteAction destructor thunk is covered by the globals.cpp object",
+        "0x423690": "g_IconBarAction_00472d20 SpriteAction destructor thunk is covered by the globals.cpp object",
+        "0x4236E0": "g_HotspotAction_00472d90 SpriteAction destructor thunk is covered by the globals.cpp object",
+        "0x426720": "left/right click Timer CRT constructors are covered by global timers in InputManager.cpp",
+        "0x426750": "left/right click Timer CRT destructors are covered by global timers in InputManager.cpp",
+        "0x426A70": "InitClickTimers reset helper is implemented in InputManager.cpp",
+        "0x428110": "SC_DodgeOrville BombData CRT startup initializer is represented by _dodge_orville_crt_init",
+        "0x4286D0": "SC_DodgeOrville BombData vector destructor has no runtime state beyond empty element destructors",
+        "0x428760": "SC_DodgeOrville HitBounds vector constructor only zeroes storage; globals.cpp BSS/static-zero covers it",
+        "0x42882B": "SC_DodgeOrville HitBounds vector destructor has no runtime state beyond empty element destructors",
+        "0x42D380": "IconBarEntry CRT guard byte only protects compiler-generated cleanup registration",
+        "0x42D3B0": "IconBarEntry vector constructor is covered by global g_IconBarEntries_00473320",
+        "0x42D3E0": "IconBarEntry vector destructor/guard is covered by global g_IconBarEntries_00473320",
+        "0x433FF0": "DAT_00473448 Timer constructor thunk is covered by the global Timer in main.cpp",
+        "0x434010": "DAT_00473448 Timer destructor/guard thunk is covered by the global Timer in main.cpp",
+        "0x4420B3": "SC_Pods::LBLParse DERIVED_ENGINE_INFO path writes g_CombatEngine_0046ae78 as in the original",
+        "0x44EAA0": "Puzzle GlyphRect vector destructor/guard is covered by g_PuzzleButtonRects_00473d30",
+        "0x44EB70": "Door GlyphRect vector destructor/guard is covered by g_DoorRects_00473dc8",
+        "0x451170": "EngineB::PostRender now uses the original function-local static TimeOut; this is its compiler cleanup thunk",
+        "0x45261A": "DrawLine is implemented and intentionally updates g_DrawPosX_0046d0aa/g_DrawPosY_0046d0b6"
+      },
+      "demo": {}
     }
   },
   "globals": {

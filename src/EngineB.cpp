@@ -12,6 +12,7 @@
 #include "EngineSubsystems.h"
 #include "RockThrower.h"
 #include "ScoreDisplay.h"
+#include "TimeOut.h"
 #include "string.h"
 #include <string.h>
 #include <stdio.h>
@@ -21,6 +22,7 @@
 #include "string.h"
 extern void __stdcall EnqueueHotspotAction(SpriteAction*);
 static char* FormatSoundPath(char* path);
+void StartScheduleTimer2();
 
 #include "Target.h"
 #include "InputManager.h"
@@ -157,8 +159,63 @@ void EngineB::RenderBackground() {
     }
 }
 
-/* Function start: 0x450F70 */ /* No assembly extracted */
-void EngineB::PostRender() {}
+/* Function start: 0x450F70 */
+void EngineB::PostRender() {
+    if (m_meterBuffer == 0) {
+        return;
+    }
+
+    if (m_progress.end != 0 && m_progress.start >= m_progress.end) {
+        static TimeOut completionTimeout;
+
+        g_BackBuffer_0046aa14->CallBlitter2(
+            0,
+            m_meterFullRect.right,
+            m_meterFullRect.top,
+            m_meterFullRect.bottom,
+            m_meterPosition.x,
+            m_meterPosition.y,
+            m_meterBuffer);
+
+        if (completionTimeout.m_isActive == 1) {
+            if (completionTimeout.IsTimeOut() == 0) {
+                return;
+            }
+            StartScheduleTimer2();
+            return;
+        }
+
+        completionTimeout.Start(0x5dc);
+        return;
+    }
+
+    int fillRight = (m_progress.start * 0x36) / m_progress.end;
+    fillRight = (fillRight - (rand() % 3)) + 1;
+    if (fillRight < 0) {
+        fillRight = 0;
+    } else if (fillRight > 0x36) {
+        fillRight = 0x36;
+    }
+    fillRight = 0x12 + fillRight * 4;
+
+    g_BackBuffer_0046aa14->CallBlitter2(
+        0,
+        fillRight,
+        m_meterFullRect.top,
+        m_meterFullRect.bottom,
+        m_meterPosition.x,
+        m_meterPosition.y,
+        m_meterBuffer);
+
+    g_BackBuffer_0046aa14->CallBlitter2(
+        fillRight,
+        m_meterFullRect.right,
+        m_meterEmptyRect.top,
+        m_meterEmptyRect.bottom,
+        m_meterPosition.x + fillRight,
+        m_meterPosition.y,
+        m_meterBuffer);
+}
 
 /* Function start: 0x4511C0 */ /* No assembly extracted */
 int EngineB::HandleAction(int* param) {

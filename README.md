@@ -54,7 +54,7 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 | `bin/compileAndCompare.py` | Compile a single function and diff its assembly against the original |
 | `bin/compileAndReport.py` | Build everything and produce a per-function similarity report |
 | `bin/showProgress.py` | Show overall function coverage |
-| `bin/checkGlobals.py` | Verify global declarations and initialized data against the original executable |
+| `bin/checkGlobals.py` | Verify globals and audit auto-completed CRT/compiler functions that write global storage |
 | `bin/checkCallTargets.py` | Verify that reconstructed functions call the expected original targets |
 | `bin/verifyVtables.py` | Verify class inheritance, vtable slots, and slot implementations |
 | `bin/checkValuesAll.py` | Compare extracted constants and string references against original disassembly |

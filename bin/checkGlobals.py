@@ -6,8 +6,17 @@ import os
 import re
 import struct
 import sys
+from bisect import bisect_right
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
+
+try:
+    from capstone import Cs, CS_ARCH_X86, CS_MODE_32
+    from capstone.x86_const import X86_OP_IMM, X86_OP_MEM, X86_OP_REG
+except ImportError:
+    Cs = None
+    CS_ARCH_X86 = CS_MODE_32 = None
+    X86_OP_IMM = X86_OP_MEM = X86_OP_REG = None
 
 from cppSourceParser import CPP_PARSER, node_text, parse_source_functions, sanitize_source, walk
 from projectConfig import (
@@ -113,6 +122,29 @@ class AddressWarning:
     line: int
     name: str
     statement: str
+
+
+@dataclass
+class AutoEntry:
+    address: int
+    notes: Set[str]
+
+
+@dataclass
+class AutoGlobalRange:
+    start: int
+    end: int
+    name: str
+    line: int
+
+
+@dataclass
+class AutoGlobalFact:
+    category: str
+    instr_address: int
+    address: int
+    text: str
+    symbol: str
 
 
 class PEImage:
@@ -984,6 +1016,329 @@ def in_any_range(address: int, ranges: List[Tuple[int, int, GlobalDecl]]) -> boo
     return any(start <= address < end for start, end, _ in ranges)
 
 
+AUTO_WRITE_MNEMONICS = {
+    "adc",
+    "add",
+    "and",
+    "dec",
+    "inc",
+    "mov",
+    "neg",
+    "not",
+    "or",
+    "sbb",
+    "sub",
+    "xchg",
+    "xor",
+}
+
+
+def load_auto_complete(path: str) -> Dict[int, AutoEntry]:
+    entries: Dict[int, AutoEntry] = {}
+    active_note = ""
+    pending_comments: List[str] = []
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line:
+                pending_comments = []
+                continue
+            if line.startswith("#"):
+                comment = line[1:].strip()
+                if comment:
+                    pending_comments.append(comment)
+                continue
+            try:
+                address = int(line, 16)
+            except ValueError:
+                continue
+            if pending_comments:
+                active_note = " / ".join(pending_comments)
+                pending_comments = []
+            entry = entries.setdefault(address, AutoEntry(address, set()))
+            if active_note:
+                entry.notes.add(active_note)
+    return entries
+
+
+def parse_known_vector_helpers(config: Dict, mode: str) -> Set[int]:
+    helpers: Set[int] = set()
+    known_crt = get_section(get_section(config, "calls"), "known_crt").get(mode, {})
+    if isinstance(known_crt, dict):
+        for key, name in known_crt.items():
+            if not isinstance(name, str):
+                continue
+            lowered = name.lower()
+            if "vec" in lowered or "arrayunwind" in lowered:
+                helpers.add(parse_int(key))
+    return helpers
+
+
+def reviewed_auto_complete_map(config: Dict, mode: str) -> Dict[int, str]:
+    section = get_section(config, "auto_complete_global_effects")
+    reviewed = get_section(section, "reviewed")
+    mode_reviewed = reviewed.get(mode, {})
+    if not isinstance(mode_reviewed, dict):
+        return {}
+    return {parse_int(key): str(value) for key, value in mode_reviewed.items()}
+
+
+def section_ranges_by_name(pe: PEImage, names: Sequence[str]) -> List[Tuple[int, int]]:
+    selected = {name.lower() for name in names}
+    return [
+        (section.va_start, section.va_end)
+        for section in pe.sections
+        if section.name.lower() in selected
+    ]
+
+
+def address_in_ranges(address: int, ranges: Sequence[Tuple[int, int]]) -> bool:
+    return any(start <= address < end for start, end in ranges)
+
+
+def text_section_bounds(pe: PEImage) -> Tuple[int, int]:
+    for section in pe.sections:
+        if section.name.lower() == ".text":
+            return section.va_start, section.va_end
+    raise ConfigError("original executable has no .text section")
+
+
+def count_disassembly_instructions(path: str) -> int:
+    """Use Ghidra text only as an extent hint; operands are decoded with Capstone."""
+    count = 0
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
+        for raw in f:
+            line = raw.strip()
+            if (
+                not line
+                or line.startswith("Function:")
+                or line.startswith("Address:")
+                or line.endswith(":")
+                or line.startswith(";")
+            ):
+                continue
+            count += 1
+    return count
+
+
+def capstone_function_hints(code_dir: str, code_start: int, code_end: int) -> Tuple[List[int], Dict[int, int]]:
+    if not code_dir or not os.path.isdir(code_dir):
+        return [], {}
+    starts: Set[int] = set()
+    instruction_counts: Dict[int, int] = {}
+    for filename in os.listdir(code_dir):
+        match = re.match(r"FUN_([0-9A-Fa-f]+)\.disassembled\.txt$", filename)
+        if not match:
+            continue
+        address = int(match.group(1), 16)
+        if code_start <= address < code_end:
+            starts.add(address)
+            instruction_counts[address] = count_disassembly_instructions(os.path.join(code_dir, filename))
+    return sorted(starts), instruction_counts
+
+
+def next_auto_function_boundary(starts: Sequence[int], start: int, code_end: int) -> int:
+    index = bisect_right(starts, start)
+    if index < len(starts):
+        return starts[index]
+    return code_end
+
+
+def disassemble_auto_function(pe: PEImage,
+                              start: int,
+                              starts: Sequence[int],
+                              instruction_counts: Dict[int, int],
+                              code_end: int,
+                              max_bytes: int) -> List:
+    end = min(next_auto_function_boundary(starts, start, code_end), code_end, start + max_bytes)
+    if end <= start:
+        return []
+    data = pe.read(start, end - start)
+    if not data:
+        return []
+    md = Cs(CS_ARCH_X86, CS_MODE_32)
+    md.detail = True
+    instructions = []
+    expected_count = instruction_counts.get(start)
+    for insn in md.disasm(data, start):
+        instructions.append(insn)
+        if expected_count is not None and len(instructions) >= expected_count:
+            break
+    return instructions
+
+
+def instruction_text(insn) -> str:
+    return f"{insn.mnemonic.upper()} {insn.op_str}".strip()
+
+
+def operand_immediate(operand) -> Optional[int]:
+    if operand.type != X86_OP_IMM:
+        return None
+    return operand.imm & 0xFFFFFFFF
+
+
+def operand_absolute_memory(operand) -> Optional[int]:
+    if operand.type != X86_OP_MEM:
+        return None
+    if operand.mem.base or operand.mem.index:
+        return None
+    return operand.mem.disp & 0xFFFFFFFF
+
+
+def operand_register_name(insn, operand) -> str:
+    if operand.type != X86_OP_REG:
+        return ""
+    return insn.reg_name(operand.reg).lower()
+
+
+def next_branch_target(instructions: Sequence, index: int, max_lookahead: int = 8) -> Optional[int]:
+    stop = min(len(instructions), index + max_lookahead + 1)
+    for cursor in range(index + 1, stop):
+        insn = instructions[cursor]
+        mnemonic = insn.mnemonic.lower()
+        if mnemonic in ("call", "jmp"):
+            if insn.operands:
+                return operand_immediate(insn.operands[0])
+            return None
+        if mnemonic.startswith("j") or mnemonic.startswith("ret"):
+            return None
+    return None
+
+
+def auto_global_ranges(decls: Sequence[GlobalDecl]) -> List[AutoGlobalRange]:
+    ranges = []
+    for decl in decls:
+        if decl.size and decl.size > 0:
+            ranges.append(AutoGlobalRange(decl.address, decl.address + decl.size, decl.name, decl.line))
+    return sorted(ranges, key=lambda item: item.start)
+
+
+def symbol_for_auto_global(address: int,
+                           global_starts: Sequence[int],
+                           global_ranges: Sequence[AutoGlobalRange]) -> str:
+    index = bisect_right(global_starts, address) - 1
+    if index >= 0:
+        item = global_ranges[index]
+        if item.start <= address < item.end:
+            offset = address - item.start
+            return item.name if offset == 0 else f"{item.name}+0x{offset:x}"
+    return f"0x{address:08x}"
+
+
+def auto_complete_facts(instructions: Sequence,
+                        data_ranges: Sequence[Tuple[int, int]],
+                        global_ranges: Sequence[AutoGlobalRange],
+                        vector_helpers: Set[int],
+                        include_data_args: bool,
+                        include_this_calls: bool) -> List[AutoGlobalFact]:
+    global_starts = [item.start for item in global_ranges]
+    facts: List[AutoGlobalFact] = []
+    for index, insn in enumerate(instructions):
+        mnemonic = insn.mnemonic.lower()
+        if mnemonic in AUTO_WRITE_MNEMONICS and insn.operands:
+            address = operand_absolute_memory(insn.operands[0])
+            if address is not None and address_in_ranges(address, data_ranges):
+                facts.append(AutoGlobalFact(
+                    "DIRECT_WRITE",
+                    insn.address,
+                    address,
+                    instruction_text(insn),
+                    symbol_for_auto_global(address, global_starts, global_ranges),
+                ))
+
+        if mnemonic == "push" and insn.operands:
+            address = operand_immediate(insn.operands[0])
+            if address is not None and address_in_ranges(address, data_ranges):
+                target = next_branch_target(instructions, index)
+                if target in vector_helpers:
+                    category = "VECTOR_HELPER_ARG"
+                elif include_data_args:
+                    category = "DATA_ARG"
+                else:
+                    category = ""
+                if category:
+                    facts.append(AutoGlobalFact(
+                        category,
+                        insn.address,
+                        address,
+                        instruction_text(insn),
+                        symbol_for_auto_global(address, global_starts, global_ranges),
+                    ))
+
+        if include_this_calls and mnemonic == "mov" and len(insn.operands) >= 2:
+            dst, src = insn.operands[0], insn.operands[1]
+            address = operand_immediate(src)
+            if (
+                operand_register_name(insn, dst) == "ecx"
+                and address is not None
+                and address_in_ranges(address, data_ranges)
+                and next_branch_target(instructions, index, max_lookahead=3) is not None
+            ):
+                facts.append(AutoGlobalFact(
+                    "GLOBAL_THIS_CALL",
+                    insn.address,
+                    address,
+                    instruction_text(insn),
+                    symbol_for_auto_global(address, global_starts, global_ranges),
+                ))
+    return facts
+
+
+def build_auto_complete_global_effects(pe: PEImage,
+                                       decls: Sequence[GlobalDecl],
+                                       config: Dict,
+                                       mode: str,
+                                       args) -> List[Tuple[AutoEntry, List[AutoGlobalFact]]]:
+    if args.no_auto_complete_global_effects:
+        return []
+    if Cs is None:
+        raise ConfigError("capstone is required for auto-complete global-effect auditing")
+    if not args.auto_complete or not os.path.exists(args.auto_complete):
+        raise ConfigError(f"auto_complete file not found: {args.auto_complete}")
+
+    code_start, code_end = text_section_bounds(pe)
+    data_ranges = section_ranges_by_name(pe, args.data_sections or [".data"])
+    if not data_ranges:
+        raise ConfigError(f"no matching writable data sections found in {args.exe}")
+
+    entries = load_auto_complete(args.auto_complete)
+    hint_starts, instruction_counts = capstone_function_hints(args.code_dir, code_start, code_end)
+    starts = set(hint_starts)
+    starts.update(address for address in entries if code_start <= address < code_end)
+    sorted_starts = sorted(starts)
+    global_ranges = auto_global_ranges(decls)
+    vector_helpers = parse_known_vector_helpers(config, mode)
+
+    results: List[Tuple[AutoEntry, List[AutoGlobalFact]]] = []
+    for address in sorted(entries):
+        if not (code_start <= address < code_end):
+            continue
+        instructions = disassemble_auto_function(
+            pe,
+            address,
+            sorted_starts,
+            instruction_counts,
+            code_end,
+            args.auto_complete_max_function_bytes,
+        )
+        facts = auto_complete_facts(
+            instructions,
+            data_ranges,
+            global_ranges,
+            vector_helpers,
+            include_data_args=args.include_auto_complete_data_args,
+            include_this_calls=not args.no_auto_complete_this_calls,
+        )
+        if facts:
+            results.append((entries[address], facts))
+    return results
+
+
+def format_auto_notes(entry: AutoEntry) -> str:
+    notes = sorted(note for note in entry.notes if note)
+    return "; ".join(notes) if notes else "(no auto_complete note)"
+
+
 def decl_matches_original(pe: PEImage, decl: GlobalDecl) -> bool:
     if decl.size is None or decl.size <= 0 or decl.source_bytes is None:
         return False
@@ -1144,16 +1499,37 @@ def build_issues(pe: PEImage,
     return sorted(issues, key=lambda x: (x.address, x.category, x.name))
 
 
-def print_report(issues: List[Issue], address_warnings: List[AddressWarning], total_defs: int, args) -> None:
+def print_report(issues: List[Issue],
+                 address_warnings: List[AddressWarning],
+                 total_defs: int,
+                 auto_results: List[Tuple[AutoEntry, List[AutoGlobalFact]]],
+                 auto_reviewed: Dict[int, str],
+                 args) -> None:
+    auto_reviewed_count = sum(1 for entry, _facts in auto_results if entry.address in auto_reviewed)
+    auto_unreviewed = [
+        (entry, facts) for entry, facts in auto_results
+        if entry.address not in auto_reviewed
+    ]
+
     print("Global initialization/layout audit")
     print(f"  original exe: {args.exe}")
     print(f"  source:       {args.globals_source}")
     print(f"  definitions:  {total_defs}")
     print(f"  issues:       {len(issues)}")
     print(f"  warnings:     {len(address_warnings)}")
+    if not args.no_auto_complete_global_effects:
+        print(
+            "  auto-complete global side effects: "
+            f"{len(auto_results)} ({auto_reviewed_count} reviewed, {len(auto_unreviewed)} unreviewed)"
+        )
     print()
 
-    if not issues and not address_warnings:
+    if (
+        not issues
+        and not address_warnings
+        and not auto_unreviewed
+        and not args.show_auto_complete_reviewed
+    ):
         print("No suspicious global initializer/layout issues found.")
         return
 
@@ -1184,6 +1560,29 @@ def print_report(issues: List[Issue], address_warnings: List[AddressWarning], to
                 first_line = first_line[:97] + "..."
             print(f"  {warning.path}:{warning.line}: {warning.name}: {first_line}")
 
+    auto_to_show = auto_results if args.show_auto_complete_reviewed else auto_unreviewed
+    if auto_to_show:
+        if issues or address_warnings:
+            print()
+        heading = "Auto-complete global side effects"
+        if not args.show_auto_complete_reviewed:
+            heading += " (unreviewed)"
+        print(heading)
+        for entry, facts in auto_to_show:
+            status = "REVIEWED" if entry.address in auto_reviewed else "UNREVIEWED"
+            print(f"{status:10} 0x{entry.address:08x}")
+            print(f"  note: {format_auto_notes(entry)}")
+            if entry.address in auto_reviewed:
+                print(f"  review: {auto_reviewed[entry.address]}")
+            shown = facts if args.max_auto_facts == 0 else facts[:args.max_auto_facts]
+            for fact in shown:
+                print(
+                    f"  {fact.category:17} 0x{fact.instr_address:08x} "
+                    f"{fact.symbol:<36} {fact.text}"
+                )
+            if args.max_auto_facts and len(facts) > args.max_auto_facts:
+                print(f"  ... {len(facts) - args.max_auto_facts} more fact(s)")
+
 
 def parse_int_auto(value: str) -> int:
     return int(value, 0)
@@ -1196,14 +1595,32 @@ def main() -> int:
     parser.add_argument("--globals-source", "--globals-c", dest="globals_source")
     parser.add_argument("--globals-h")
     parser.add_argument("--code-globals-h")
+    parser.add_argument("--code-dir",
+                        help="Ghidra output directory used only for Capstone function-boundary hints")
+    parser.add_argument("--auto-complete",
+                        help="auto_complete.txt path for compiler/CRT global side-effect auditing")
+    parser.add_argument("--data-section", action="append", dest="data_sections",
+                        help="writable section to scan for auto-complete side effects; defaults to .data")
     parser.add_argument("--min-address", type=parse_int_auto,
                         help="ignore lower addresses, useful for skipping import tables")
     parser.add_argument("--max-issues", type=int, default=200,
                         help="maximum issues to print; 0 prints all")
+    parser.add_argument("--max-auto-facts", type=int, default=12,
+                        help="maximum auto-complete facts to print per function; 0 prints all")
+    parser.add_argument("--auto-complete-max-function-bytes", type=int, default=4096,
+                        help="maximum bytes to disassemble per auto-complete function")
     parser.add_argument("--include-code-globals", action="store_true",
                         help="also report nonzero code/globals.h entries not covered by globals source")
     parser.add_argument("--include-symbolic", action="store_true",
                         help="report nonzero globals whose source initializer contains symbols/pointers")
+    parser.add_argument("--include-auto-complete-data-args", action="store_true",
+                        help="also report generic PUSH data-address arguments in auto-complete functions")
+    parser.add_argument("--no-auto-complete-this-calls", action="store_true",
+                        help="do not report MOV ECX,global followed by CALL/JMP in auto-complete functions")
+    parser.add_argument("--no-auto-complete-global-effects", action="store_true",
+                        help="disable the auto-complete global side-effect audit")
+    parser.add_argument("--show-auto-complete-reviewed", action="store_true",
+                        help="print reviewed auto-complete global side-effect details as well as unreviewed ones")
     parser.add_argument("--no-source-order", action="store_true",
                         help="disable source-order decrease warnings for implicit-zero globals")
     parser.add_argument("--source-order-all", action="store_true",
@@ -1227,6 +1644,12 @@ def main() -> int:
         args.code_globals_h = config_or_arg(
             args.code_globals_h, path_config, "code_globals_header", "paths.full.code_globals_header"
         )
+        args.code_dir = args.code_dir or path_config.get("code_dir", "")
+        args.auto_complete = (
+            args.auto_complete
+            or path_config.get("auto_complete")
+            or os.path.join(path_config.get("src_dir", "src"), "auto_complete.txt")
+        )
         if args.min_address is None:
             args.min_address = parse_int(config_or_arg(None, globals_config, "min_address", "globals.min_address"))
         runtime_seeded_globals = configure_globals(globals_config)
@@ -1246,8 +1669,16 @@ def main() -> int:
                           runtime_seeded_globals,
                           args.min_address, args.include_code_globals, args.include_symbolic,
                           not args.no_source_order, args.source_order_all)
-    print_report(issues, address_warnings, len(decls), args)
-    if args.fail_on_issues and issues:
+    try:
+        auto_reviewed = reviewed_auto_complete_map(config, "full")
+        auto_results = build_auto_complete_global_effects(pe, decls, config, "full", args)
+    except ConfigError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+
+    print_report(issues, address_warnings, len(decls), auto_results, auto_reviewed, args)
+    auto_unreviewed = any(entry.address not in auto_reviewed for entry, _facts in auto_results)
+    if args.fail_on_issues and (issues or auto_unreviewed):
         return 1
     if args.fail_on_warnings and address_warnings:
         return 1
