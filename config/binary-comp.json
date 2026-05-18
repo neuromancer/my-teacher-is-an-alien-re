@@ -20,7 +20,7 @@
       },
       "build": {
         "clean": "make clean",
-        "build": "make all"
+        "build": "make TEACHER.EXE"
       }
     },
     "demo": {
@@ -37,7 +37,7 @@
       },
       "build": {
         "clean": "make clean-demo",
-        "build": "make demo"
+        "build": "make TEACHER-DEMO.EXE"
       }
     }
   },

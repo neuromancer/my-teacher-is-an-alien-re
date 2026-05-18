@@ -54,14 +54,14 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 | `bin/compileAndCompare.py` | Compile a single function and diff its assembly against the original |
 | `bin/compileAndReport.py` | Build everything and produce a per-function similarity report |
 | `bin/showProgress.py` | Show overall function coverage |
-| `bin/checkGlobals.py` | Verify globals and audit auto-completed CRT/compiler functions that write global storage |
-| `bin/checkCallTargets.py` | Verify that reconstructed functions call the expected original targets |
-| `bin/verifyVtables.py` | Verify class inheritance, vtable slots, and slot implementations |
-| `bin/checkValuesAll.py` | Compare extracted constants and string references against original disassembly |
+| `binary-comp globals` | Verify globals and audit auto-completed CRT/compiler functions that write global storage |
+| `binary-comp calls` | Verify that reconstructed functions call the expected original targets |
+| `binary-comp vtables` | Verify class inheritance, vtable slots, and slot implementations |
+| `binary-comp values` | Compare extracted constants and string references against original disassembly |
 | `bin/compareExe.py` | Compare rebuilt and original executables |
-| `bin/compareGlobalData.py` | Compare global/static data sections |
+| `binary-comp data` | Compare global/static data sections |
 
-The Makefile-facing report and verifier scripts read project-specific paths, address ranges, aliases, type sizes, and known allowances from `config/verification.json`. See `docs/verification-scripts.md` for the reusable script/config layout.
+The Makefile-facing report and verifier tools read project-specific paths, address ranges, aliases, type sizes, and known allowances from `config/binary-comp.json`. See `docs/verification-scripts.md` for the reusable tool/config layout.
 
 ## Building
 
