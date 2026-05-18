@@ -32,7 +32,6 @@ class MouseControl;
 // Engine/Misc
 extern "C" void SetVideoRes(int, int);
 extern "C" void WriteToLog(const char* format, ...);
-extern "C" void OgdenTrace(const char* format, ...);
 extern void BlankScreen();
 #include "MouseControl.h"
 
@@ -560,29 +559,13 @@ int SC_Cinematic::Exit(SC_MessageParser* msg) {
 
 /* Function start: 0x430730 */
 void SC_Cinematic::EndCinematic() {
-    OgdenTrace("[OGDEN] SC_Cinematic::EndCinematic module=%d saved=%d:%d pending=%08lx",
-        moduleParam,
-        savedCommand,
-        savedMsgData,
-        (unsigned long)pendingAction);
     if (pendingAction != 0) {
-        OgdenTrace("[OGDEN] SC_Cinematic enqueue pending addr=%d:%d from=%d:%d instr=%d child=%08lx",
-            pendingAction->addressType,
-            pendingAction->addressValue,
-            pendingAction->fromType,
-            pendingAction->fromValue,
-            pendingAction->instruction,
-            (unsigned long)pendingAction->childAction);
         EnqueueSpriteAction(pendingAction);
         if (pendingAction != 0) {
             delete pendingAction;
             pendingAction = 0;
         }
     } else {
-        OgdenTrace("[OGDEN] SC_Cinematic send completion addr=%d:%d from=3:%d instr=4",
-            savedCommand,
-            savedMsgData,
-            moduleParam);
         SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
     }
 }

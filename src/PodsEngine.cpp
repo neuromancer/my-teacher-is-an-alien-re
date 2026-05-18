@@ -33,17 +33,11 @@ PodsEngine::PodsEngine()
     memset(&podsBgSprite, 0, 10 * sizeof(int));
     podState.x = 0;
     podState.y = 3;
-    OgdenTrace("[OGDEN] PodsEngine::PodsEngine this=%08lx", (unsigned long)this);
 }
 
 /* Function start: 0x440950 */
 PodsEngine::~PodsEngine()
 {
-    OgdenTrace("[OGDEN] PodsEngine::~PodsEngine this=%08lx podsBg=%08lx hash=%08lx podsPal=%08lx",
-        (unsigned long)this,
-        (unsigned long)podsBgSprite,
-        (unsigned long)hashTable,
-        (unsigned long)g_PodsPalette_0046bf30);
     if (g_PodsPalette_0046bf30 != 0) {
         delete g_PodsPalette_0046bf30;
         g_PodsPalette_0046bf30 = 0;
@@ -239,10 +233,6 @@ void PodsEngine::OnProcessEnd() {
     if (g_InputManager_0046aa08 != 0) {
         g_InputManager_0046aa08->Refresh(1);
     }
-    OgdenTrace("[OGDEN] PodsEngine::OnProcessEnd begin this=%08lx flags=%d bg=%08lx",
-        (unsigned long)this,
-        field_0x110,
-        (unsigned long)g_BgSprite_0046ae50);
 
     if (g_BgSprite_0046ae50 != 0) {
         mouse = g_InputManager_0046aa08->pMouse;
@@ -273,7 +263,6 @@ void PodsEngine::OnProcessEnd() {
             if (g_SlimeTable_0046bf28->Play(0) != 0) {
                 field_0x110 |= 4;
             }
-            OgdenTrace("[OGDEN] PodsEngine::OnProcessEnd end practice flags=%d", field_0x110);
             return;
         }
     }
@@ -282,7 +271,6 @@ void PodsEngine::OnProcessEnd() {
     if (g_SlimeTable_0046bf28->Play(1) != 0) {
         field_0x110 |= 4;
     }
-    OgdenTrace("[OGDEN] PodsEngine::OnProcessEnd end flags=%d", field_0x110);
 }
 
 /* Function start: 0x441140 */
@@ -301,19 +289,14 @@ int PodsEngine::LBLParse(char* line) {
     sscanf(line, " %s ", token);
 
     if (strcmp(token, "STUDENT_SPRITE") == 0) {
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse STUDENT_SPRITE begin");
         podsBgSprite = new Sprite(0);
         Parser::ProcessFile(podsBgSprite, this, 0);
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse STUDENT_SPRITE end sprite=%08lx", (unsigned long)podsBgSprite);
     } else if (strcmp(token, "STUDENT_PALETTE") == 0) {
         sscanf(line, " %s %d %d", token, &reserved_0xFC, &reserved_0x100);
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse STUDENT_PALETTE %d %d", reserved_0xFC, reserved_0x100);
     } else if (strcmp(token, "STUDENT_HITS_ALLOWED") == 0) {
         sscanf(line, " %s %d", token, &podState.y);
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse STUDENT_HITS_ALLOWED %d", podState.y);
     } else if (strcmp(token, "CINEMATIC") == 0) {
         int fields = sscanf(line, " %s %d %s", token, &key, buffer);
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse CINEMATIC fields=%d key=%lu name=%s", fields, key, buffer);
         if (hashTable == 0) {
             hashTable = new HashTable(10);
         }
@@ -348,23 +331,19 @@ int PodsEngine::LBLParse(char* line) {
         }
     } else if (strcmp(token, "SOUND") == 0) {
         int fields = sscanf(line, " %s %d %s %d ", token, &key, buffer, &value);
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse SOUND fields=%d key=%lu name=%s value=%d", fields, key, buffer, value);
         if (fields != 4 || (int)key < 0 || (int)key > 4) {
             ReportUnknownLabel("EnginePodCombat");
         }
         g_SlimeTable_0046bf28->LoadEntry(key, buffer, value);
     } else if (strcmp(token, "ANIM") == 0) {
         int fields = sscanf(line, " %s %d %d", token, &key, &value);
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse ANIM fields=%d key=%lu value=%d", fields, key, value);
         if (fields != 3 || (int)key < 0 || (int)key > 2) {
             ReportUnknownLabel("SC_Pods");
         }
         g_PodResults_004734a0[key] = value;
     } else if (strcmp(token, "END_DERIVED_ENGINE_INFO") == 0) {
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse END_DERIVED_ENGINE_INFO");
         return 1;
     } else {
-        OgdenTrace("[OGDEN] PodsEngine::LBLParse base token=%s", token);
         SC_CombatBase::LBLParse(line);
     }
     return 0;

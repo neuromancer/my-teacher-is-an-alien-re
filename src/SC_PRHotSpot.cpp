@@ -11,33 +11,11 @@
 
 #include "InputManager.h"
 extern "C" void ShowError(const char* format, ...);
-extern "C" void OgdenTrace(const char* format, ...);
 extern "C" char* GetSoundFilename(int handle);
 extern void __fastcall PracticeRoomNotify(void*);
 extern void ParseSpriteAction(void* param_1, void* param_2);
 #include "globals.h"
 
-static void TracePracticeHotspotAction(const char* tag, int hotspotId, SpriteAction* action)
-{
-    if (action == 0) {
-        OgdenTrace("[OGDEN] SC_PRHotSpot %s hotspot=%d action=null", tag, hotspotId);
-        return;
-    }
-
-    OgdenTrace(
-        "[OGDEN] SC_PRHotSpot %s hotspot=%d action=%08lx addr=%d:%d from=%d:%d instr=%d extra=%d,%d child=%08lx",
-        tag,
-        hotspotId,
-        (unsigned long)action,
-        action->addressType,
-        action->addressValue,
-        action->fromType,
-        action->fromValue,
-        action->instruction,
-        action->extra1,
-        action->extra2,
-        (unsigned long)action->childAction);
-}
 
 /* Function start: 0x429B60 */
 SC_PRHotSpot::SC_PRHotSpot(int param_1, int param_2) : Parser()
@@ -330,7 +308,6 @@ void SC_PRHotSpot::Update()
                     if (actionList->current != 0) {
                         nodeData = actionList->current->data;
                     }
-                    TracePracticeHotspotAction("enqueue", hotspotId, (SpriteAction*)nodeData);
                     EnqueueSpriteAction(nodeData);
                     if (actionList->tail == actionList->current) break;
                     if (actionList->current != 0) {
@@ -364,17 +341,6 @@ int SC_PRHotSpot::CheckCollision(void* param_1)
         return 0;
     }
     if (msg[9] > 1) {
-        OgdenTrace("[OGDEN] SC_PRHotSpot click hotspot=%d state=%d bounds=%d,%d,%d,%d mouse=%d,%d button=%d actionList=%08lx",
-            hotspotId,
-            state,
-            boundsLeft,
-            boundsTop,
-            boundsRight,
-            boundsBottom,
-            msg[7],
-            msg[8],
-            msg[9],
-            (unsigned long)actionList);
         if ((unsigned int)hotspotId >= 0x14 && (unsigned int)hotspotId <= 0x16) {
             PracticeRoomNotify((void*)owner);
         }

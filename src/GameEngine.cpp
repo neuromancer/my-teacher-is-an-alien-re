@@ -23,49 +23,8 @@
 // External functions
 #include "GameLoopHelper.h"
 extern "C" void WriteToLog(const char* format, ...);
-extern "C" void OgdenTrace(const char* format, ...);
 
-static void TraceSpriteAction(const char* tag, const SpriteAction* action)
-{
-    if (action == 0) {
-        OgdenTrace("[OGDEN] %s action=null", tag);
-        return;
-    }
 
-    OgdenTrace(
-        "[OGDEN] %s action=%08lx addr=%d:%d from=%d:%d instr=%d extra=%d,%d child=%08lx mouse=%d,%d buttons=%d,%d key=%d time=%d",
-        tag,
-        (unsigned long)action,
-        action->addressType,
-        action->addressValue,
-        action->fromType,
-        action->fromValue,
-        action->instruction,
-        action->extra1,
-        action->extra2,
-        (unsigned long)action->childAction,
-        action->mousePos.x,
-        action->mousePos.y,
-        action->button1,
-        action->button2,
-        action->lastKey,
-        action->time);
-}
-
-static int TraceListCount(LinkedList* list)
-{
-    int count = 0;
-    if (list == 0) {
-        return 0;
-    }
-    for (ListNode* node = list->head; node != 0; node = node->next) {
-        count++;
-        if (count > 10000) {
-            break;
-        }
-    }
-    return count;
-}
 
 
 
@@ -282,7 +241,6 @@ void GameEngine::ProcessMessage(SC_MessageParser* msg) {
 
     handled = 0;
     action = (SpriteAction*)msg;
-    TraceSpriteAction("ProcessMessage begin", action);
 
     if (action->instruction == 4) {
         handled = 1;
@@ -334,11 +292,9 @@ void GameEngine::ProcessMessage(SC_MessageParser* msg) {
     }
 
     if (handled == 0) {
-        OgdenTrace("[OGDEN] ProcessMessage unhandled, creating/exiting handler %d", action->addressType);
         GetOrCreateHandler(action->addressType)->Exit(msg);
     }
 
-    OgdenTrace("[OGDEN] ProcessMessage end handled=%d", handled);
 }
 
 /* Function start: 0x431160 */
@@ -404,25 +360,16 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
     }
 
     action = (SpriteAction*)msg;
-    TraceSpriteAction("HandleSystemMessage begin", action);
     if (g_InputManager_0046aa08 != 0) {
         (g_InputManager_0046aa08)->ResetClickState();
     }
 
     handler = (Handler*)m_activeHandler;
-    OgdenTrace("[OGDEN] active before switch=%08lx", (unsigned long)handler);
     if (handler != 0) {
-        OgdenTrace("[OGDEN] shutting down active handler id=%d ptr=%08lx", handler->handlerId, (unsigned long)handler);
         handler->ShutDown(msg);
-        OgdenTrace("[OGDEN] active handler shutdown complete");
     }
 
     if (g_ZBufferManager_0046aa24 != 0) {
-        OgdenTrace("[OGDEN] zbuffer pre-switch state=%d q9c=%d qA0=%d qA4=%d",
-            g_ZBufferManager_0046aa24->m_state,
-            TraceListCount(g_ZBufferManager_0046aa24->m_queue9c),
-            TraceListCount(g_ZBufferManager_0046aa24->m_queueA0),
-            TraceListCount(g_ZBufferManager_0046aa24->m_queueA4));
 
         queue = g_ZBufferManager_0046aa24->m_queueA0;
         if (queue->head != 0) {
@@ -445,22 +392,18 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
 
                 data = queue->Pop();
                 if (data != 0) {
-                    OgdenTrace("[OGDEN] pre-switch delete qA4 DrawEntry data=%08lx", (unsigned long)data);
                     delete (DrawEntry*)data;
                 }
             }
         }
 
         if (g_ZBufferManager_0046aa24->m_queue9c->head != 0) {
-            OgdenTrace("[OGDEN] pre-switch clear q9c count=%d", TraceListCount(g_ZBufferManager_0046aa24->m_queue9c));
         }
         g_ZBufferManager_0046aa24->m_queue9c->ClearList();
         g_ZBufferManager_0046aa24->m_palette = 0;
-        OgdenTrace("[OGDEN] zbuffer pre-switch clear complete");
     }
 
     foundHandler = FindHandlerInList(action->addressType);
-    OgdenTrace("[OGDEN] target handler lookup id=%d found=%08lx", action->addressType, (unsigned long)foundHandler);
     if (foundHandler == 0) {
         handler = GetOrCreateHandler(action->addressType);
         m_activeHandler = handler;
@@ -535,9 +478,7 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
         return;
     }
 
-    OgdenTrace("[OGDEN] init handler id=%d ptr=%08lx", handler->handlerId, (unsigned long)handler);
     handler->Init(msg);
-    OgdenTrace("[OGDEN] init handler complete id=%d ptr=%08lx", handler->handlerId, (unsigned long)handler);
 }
 
 /* Function start: 0x431560 */
@@ -657,12 +598,10 @@ int GameEngine::RemoveHandler(int command) {
 Handler* GameEngine::GetOrCreateHandler(int command) {
     Handler* handler;
 
-    OgdenTrace("[OGDEN] GetOrCreateHandler command=%d", command);
     handler = CreateHandler(command);
     if (handler != 0) {
         AddHandler(handler);
     }
-    OgdenTrace("[OGDEN] GetOrCreateHandler command=%d result=%08lx", command, (unsigned long)handler);
     return handler;
 }
 
@@ -721,7 +660,6 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
     SpriteAction* saPtr;
     int i;
 
-    TraceSpriteAction("EnqueueAction", action);
     pool = (int*)m_eventPool;
     oldTail = pool[1];
     if (pool[3] == 0) {

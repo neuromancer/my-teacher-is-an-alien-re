@@ -171,28 +171,6 @@ void WriteToMessageLog(const char *msg,...)
     }
 }
 
-extern "C" void OgdenTrace(const char *msg,...)
-{
-    char buffer[512];
-    DWORD written;
-    DWORD len;
-    HANDLE file;
-    va_list argptr;
-
-    va_start(argptr, msg);
-    vsprintf(buffer, msg, argptr);
-    va_end(argptr);
-
-    len = strlen(buffer);
-    file = CreateFileA("cfg\\message.log", GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-        0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-    if (file != INVALID_HANDLE_VALUE) {
-        SetFilePointer(file, 0, 0, FILE_END);
-        WriteFile(file, buffer, len, &written, 0);
-        WriteFile(file, "\r\n", 2, &written, 0);
-        CloseHandle(file);
-    }
-}
 
 // g_StringTableCount_0046aa80 — defined in globals.cpp
 // g_StringTable_0043d158 — defined in globals.cpp

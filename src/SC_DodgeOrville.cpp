@@ -16,7 +16,6 @@ extern char* MakeAnimName(int);
 extern "C" char* FormatAssetPath(char*, ...);
 // FUN_00413e10 = ParseFile in Parser.h
 extern "C" void ShowError(const char* format, ...);
-extern "C" void OgdenTrace(const char* format, ...);
 #include "SoundList.h"
 #include "ZBufferManager.h"
 #include "globals.h"
@@ -97,42 +96,20 @@ SC_DodgeOrville::~SC_DodgeOrville() {
 /* Function start: 0x4289C0 */
 void SC_DodgeOrville::Init(SC_MessageParser* msg) {
     memset(&reticlePos, 0, 0x50);
-    OgdenTrace("[OGDEN] SC_DodgeOrville::Init begin this=%08lx msg=%08lx action=%d:%d from=%d:%d instr=%d",
-        (unsigned long)this,
-        (unsigned long)msg,
-        ((SpriteAction*)msg)->addressType,
-        ((SpriteAction*)msg)->addressValue,
-        ((SpriteAction*)msg)->fromType,
-        ((SpriteAction*)msg)->fromValue,
-        ((SpriteAction*)msg)->instruction);
 
     if (FileExists("CB_DGOrv") == 0) {
-        OgdenTrace("[OGDEN] SC_DodgeOrville::Init ShowLoadingScreen");
         ShowLoadingScreen();
     }
 
     SC_Combat::Init(msg);
     strcpy((char*)(combatParams + 5), "mis\\cb_DOrville.mis");
-    OgdenTrace("[OGDEN] SC_DodgeOrville::Init ParseFile begin");
     ParseFile(this, (char*)(combatParams + 5), (char*)0);
-    OgdenTrace("[OGDEN] SC_DodgeOrville::Init ParseFile end status=%08lx actions=%d bg=%08lx console=%08lx barBg=%08lx barFill=%08lx",
-        (unsigned long)statusPtr,
-        combatParams[2],
-        (unsigned long)bgSprite,
-        (unsigned long)field_0x10C,
-        (unsigned long)barBgSprite,
-        (unsigned long)barFillSprite);
 }
 
 /* Function start: 0x428A40 */
 int SC_DodgeOrville::ShutDown(SC_MessageParser* msg) {
     void* ptr;
 
-    OgdenTrace("[OGDEN] SC_DodgeOrville::ShutDown begin this=%08lx msg=%08lx barFill=%08lx barBg=%08lx",
-        (unsigned long)this,
-        (unsigned long)msg,
-        (unsigned long)barFillSprite,
-        (unsigned long)barBgSprite);
     ptr = (void*)barFillSprite;
     if (ptr != 0) {
         delete (Sprite*)ptr;
@@ -150,14 +127,12 @@ int SC_DodgeOrville::ShutDown(SC_MessageParser* msg) {
     if (msg != 0) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
-    OgdenTrace("[OGDEN] SC_DodgeOrville::ShutDown end");
     return 0;
 }
 
 /* Function start: 0x428AD0 */
 void SC_DodgeOrville::Update(int p1, int p2) {
     if (handlerId == p2) {
-        OgdenTrace("[OGDEN] SC_DodgeOrville::Update active actions=%d status=%08lx", combatParams[2], (unsigned long)statusPtr);
         SC_Combat::Update(p1, p2);
     }
 }
@@ -190,12 +165,6 @@ int SC_DodgeOrville::Exit(SC_MessageParser* msg) {
 void SC_DodgeOrville::ProcessLose() {
     void* ptr;
 
-    OgdenTrace("[OGDEN] SC_DodgeOrville::ProcessLose saved=%d:%d status0=%d status1=%d pending=%08lx",
-        savedCommand,
-        savedMsgData,
-        statusPtr == 0 ? 0 : statusPtr[0],
-        statusPtr == 0 ? 0 : statusPtr[1],
-        (unsigned long)pendingAction);
     if (savedCommand != 0x2B) {
         if (statusPtr[1] != 0) {
             ptr = (void*)pendingAction;
@@ -295,18 +264,8 @@ void SC_DodgeOrville::ProcessLose() {
 /* Function start: 0x429110 */
 void SC_DodgeOrville::UpdateGame()
 {
-    OgdenTrace("[OGDEN] SC_DodgeOrville::UpdateGame begin bg=%08lx console=%08lx barBg=%08lx barFill=%08lx throws=%d/%d hits=%d/%d",
-        (unsigned long)bgSprite,
-        (unsigned long)field_0x10C,
-        (unsigned long)barBgSprite,
-        (unsigned long)barFillSprite,
-        throwState.x,
-        throwState.y,
-        hitCount.x,
-        hitCount.y);
     if (bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0) != 0) {
         if (bgSprite->handle != 7) {
-            OgdenTrace("[OGDEN] SC_DodgeOrville::UpdateGame ThrowBomb handle=%d", bgSprite->handle);
             ThrowBomb();
         }
     }
@@ -320,7 +279,6 @@ void SC_DodgeOrville::UpdateGame()
 
     if (frameVal != 0 && state >= 0 && state <= 2) {
         if (g_HitBounds_00473260[state].minVal <= frameVal && g_HitBounds_00473260[state].maxVal >= frameVal) {
-            OgdenTrace("[OGDEN] SC_DodgeOrville::UpdateGame hit state=%d frame=%d", state, frameVal);
             g_HitBounds_00473260[state].minVal = 0;
             g_HitBounds_00473260[state].maxVal = 0;
             field_0x10C->ResetAnimation(state + 7, 0);
@@ -431,14 +389,8 @@ int CompareRange(int center, int pos, int range)
 /* Function start: 0x4294A0 */
 void SC_DodgeOrville::ThrowBomb()
 {
-    OgdenTrace("[OGDEN] SC_DodgeOrville::ThrowBomb begin throws=%d/%d hits=%d/%d",
-        throwState.x,
-        throwState.y,
-        hitCount.x,
-        hitCount.y);
     if (hitCount.y != 0 && hitCount.x >= hitCount.y) {
         statusPtr[0] = 1;
-        OgdenTrace("[OGDEN] SC_DodgeOrville::ThrowBomb hit limit reached");
         return;
     }
 
@@ -455,7 +407,6 @@ void SC_DodgeOrville::ThrowBomb()
 
     if (atLimit != 0) {
         statusPtr[1] = 1;
-        OgdenTrace("[OGDEN] SC_DodgeOrville::ThrowBomb throw limit reached");
         return;
     }
 
@@ -465,7 +416,6 @@ void SC_DodgeOrville::ThrowBomb()
     } while (dir == g_LastBombDir_0046ac44);
 
     g_LastBombDir_0046ac44 = dir;
-    OgdenTrace("[OGDEN] SC_DodgeOrville::ThrowBomb dir=%d", dir);
     bgSprite->ResetAnimation(dir + 1, 0); // 0x108
 
     // Copy bomb data to hit bounds (3 entries)
@@ -495,7 +445,6 @@ void SC_DodgeOrville::ThrowBomb()
 
 /* Function start: 0x4295C0 */
 void SC_DodgeOrville::ProcessAction(int action, int* data) {
-    OgdenTrace("[OGDEN] SC_DodgeOrville::ProcessAction action=%d value=%d", action, data == 0 ? 0 : *data);
     switch (action) {
     case 0:
         ProcessLose();
@@ -522,23 +471,18 @@ void SC_DodgeOrville::ProcessAction(int action, int* data) {
             if (cineIds[0] != 0) {
                 char* name = MakeAnimName(cineIds[0]);
                 char* path = FormatAssetPath(name);
-                OgdenTrace("[OGDEN] SC_DodgeOrville::ProcessAction intro anim=%d path=%s", cineIds[0], path);
                 if (FileExists(path) != 0) {
                     Animation anim;
                     anim.Play(path, 0);
                 }
             }
             bgSound->Play(0);
-            OgdenTrace("[OGDEN] SC_DodgeOrville::ProcessAction intro sound start bgSound=%08lx bgSoundId=%d",
-                (unsigned long)bgSound,
-                field_0x114);
             if (field_0x114 != 0) {
                 SendGameMessage(5, field_0x114, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
             }
             bgSprite->ResetAnimation(7, 0);
         }
         if (bgSound->IsSamplePlaying(0) == 0) {
-            OgdenTrace("[OGDEN] SC_DodgeOrville::ProcessAction intro done");
             *data = 0;
             bgSprite->ResetAnimation(0, 0);
         }
@@ -555,7 +499,6 @@ void SC_DodgeOrville::ProcessAction(int action, int* data) {
 /* Function start: 0x4297D0 */
 void SC_DodgeOrville::OnProcessStart()
 {
-    OgdenTrace("[OGDEN] SC_DodgeOrville::OnProcessStart");
     clipStart.x = 0;
     clipStart.y = 0;
     clipEnd.x = 0xb3;
@@ -570,19 +513,16 @@ void SC_DodgeOrville::OnProcessStart()
     }
     hitCount.x = 0;
     hitCount.y = gs->stateValues[idx];
-    OgdenTrace("[OGDEN] SC_DodgeOrville::OnProcessStart maxHits=%d", hitCount.y);
 }
 
 /* Function start: 0x429860 */
 void SC_DodgeOrville::OnProcessEnd()
 {
-    OgdenTrace("[OGDEN] SC_DodgeOrville::OnProcessEnd begin");
     SC_Combat::OnProcessEnd();
     CheckCursorRange(0);
     roundReset = 0; // 0x120
     reticlePos = 2; // 0x118
     cursorDir = 0; // 0x11c
-    OgdenTrace("[OGDEN] SC_DodgeOrville::OnProcessEnd end");
 }
 
 /* Function start: 0x4298A0 */
@@ -596,34 +536,25 @@ int SC_DodgeOrville::LBLParse(char* line) {
 
     if (strcmp(label, "NUMBER_OF_THROWS") == 0) {
         sscanf(line, " %s %d ", label, &throwState.y);
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse NUMBER_OF_THROWS %d", throwState.y);
     } else if (strcmp(label, "MAX_HITS_BY_STINK_BOMBS") == 0) {
         sscanf(line, " %s %d ", label, &hitCount.y);
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse MAX_HITS_BY_STINK_BOMBS %d", hitCount.y);
     } else if (strcmp(label, "STINK_METER_BASE_SPRITE") == 0) {
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse STINK_METER_BASE_SPRITE begin");
         Sprite* spr = new Sprite((char*)0);
         barBgSprite = spr;
         Parser::ProcessFile(spr, this, (char*)0);
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse STINK_METER_BASE_SPRITE end sprite=%08lx", (unsigned long)spr);
     } else if (strcmp(label, "STINK_METER_SPRITE") == 0) {
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse STINK_METER_SPRITE begin");
         Sprite* spr = new Sprite((char*)0);
         barFillSprite = spr;
         Parser::ProcessFile(spr, this, (char*)0);
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse STINK_METER_SPRITE end sprite=%08lx", (unsigned long)spr);
     } else if (strcmp(label, "ANIM") == 0) {
         int result = sscanf(line, " %s %d %d", label, &index, &value);
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse ANIM result=%d index=%d value=%d", result, index, value);
         if (result != 3 || index < 0 || index > 2) {
             ReportUnknownLabel("SC_DodgeOrville");
         }
         cineIds[index] = value;
     } else if (strcmp(label, "END") == 0) {
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse END");
         return 1;
     } else {
-        OgdenTrace("[OGDEN] SC_DodgeOrville::LBLParse base token=%s", label);
         SC_Combat::LBLParse(line);
     }
 
