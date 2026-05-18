@@ -231,7 +231,7 @@ audit-auto-complete-globals:
 	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --show-auto-complete-reviewed
 
 verify-calls:
-	@python3 bin/checkCallTargets.py --config $(VERIFY_CONFIG)
+	@$(BINARY_COMP) calls --config $(VERIFY_CONFIG) --target full
 
 verify-values:
 	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity 80

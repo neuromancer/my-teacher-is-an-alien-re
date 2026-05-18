@@ -9,6 +9,7 @@
       "map": "../TEACHER.map",
       "source_dirs": ["../src"],
       "code_export_dir": "../code-full",
+      "asm_dir": "../out",
       "map_skip": "src/map",
       "globals_source": "../src/globals.cpp",
       "globals_header": "../src/globals.h",
@@ -28,6 +29,7 @@
       "map": "../TEACHER-DEMO.map",
       "source_dirs": ["../src-demo"],
       "code_export_dir": "../code",
+      "asm_dir": "../out-demo",
       "map_skip": "src-demo/map",
       "auto_complete": "../src-demo/auto_complete.txt",
       "values": {
@@ -155,6 +157,11 @@
     }
   },
   "calls": {
+    "build_args": ["COMPARE=1"],
+    "signature_overloads": [
+      "TimedEventPool::Pop",
+      "TimedEventPool::PopSafe"
+    ],
     "known_crt": {
       "demo": {
         "0x00402700": "QueueNode_scalar_dtor",
@@ -335,6 +342,7 @@
       "CDData_ResolvePath": "CDData_FormatPath",
       "CleanupCinematic": "CleanupCinematic",
       "CombatSprite::~CombatSprite": "vtable[0xc]",
+      "DestroyTimerField": "TimeOut::~TimeOut",
       "Engine::AddMessage": "SC_Combat::AddMessage",
       "Engine::Engine": "SC_Combat::SC_Combat",
       "Engine::Exit": "SC_Combat::Exit",
@@ -367,6 +375,8 @@
       "Handler::InitFromMessage": "Handler::Init",
       "Handler_OnProcessEnd": "SC_Combat::OnProcessEnd",
       "HashTable::AllocEntry": "ObjectPool::Allocate",
+      "SCI_Dialog::FindDialogById": "Handler31::RemoveQuestion",
+      "SCI_Dialog::GetDialogByIndex": "Handler31::SelectQuestion",
       "HotspotListData::AllocateNode": "HashTable::AllocateNode",
       "HotspotListData::~HotspotListData": "TargetList::~TargetList",
       "IconBarEntry::Render": "UpdateWordSearchCursor",
@@ -389,6 +399,8 @@
       "ResolveAssetPath": "CDData_FormatPath",
       "RockThrower::ResetProjectiles": "ZBuffer::ResetItems",
       "SC_Gauntlet::ResetGrid": "InitCombatGrid",
+      "SC_WordSearch::PlaceWord": "SC_Gauntlet::ProcessGrid",
+      "SC_WordSearch::Render": "SC_Gauntlet::RenderGrid",
       "Sample::Stop": "Sample::~Sample",
       "Sample::Unload": "Sample::~Sample",
       "ScoreDisplay::ScoreDisplay": "CursorState::CursorState",
