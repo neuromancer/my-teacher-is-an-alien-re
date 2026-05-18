@@ -13,7 +13,8 @@ MSVC_LIB = compilers\msvc420\lib;compilers\msvc420\mfc\lib
 CFLAGS = /nologo /c /Og /Oi /Ot /Oy /Ob1 /Gs /Gf /GX /I msvc420\\include /I 3rdparty\\miles\\include /I 3rdparty\\smack\\include
 DEMO_DATA_URL = https://downloads.scummvm.org/frs/demos/hypno/teacher-windows-demo-en.zip
 OUT_DIR = out
-VERIFY_CONFIG = config/verification.json
+VERIFY_CONFIG = config/binary-comp.json
+BINARY_COMP ?= /Users/g/.local/bin/binary-comp
 
 # Platform detection
 UNAME_S := $(shell uname -s)
@@ -204,13 +205,13 @@ report-demo:
 	@python3 bin/compileAndReport.py --config $(VERIFY_CONFIG) --demo
 
 globals:
-	@python3 bin/compareGlobalData.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE
+	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full
 
 globals-verbose:
-	@python3 bin/compareGlobalData.py -v re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE
+	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full --verbose
 
 globals-missing:
-	@python3 bin/compareGlobalData.py --find-missing re/demo/CDDATA/TEACHER.ORI.EXE
+	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full --find-missing
 
 compare:
 	@python3 bin/compareExe.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE
@@ -220,26 +221,23 @@ compare-functions:
 
 verify:
 	@$(MAKE) verify-globals
-	@$(MAKE) verify-values-capstone
-	@$(MAKE) verify-vtables-capstone
+	@$(MAKE) verify-values
+	@$(MAKE) verify-vtables
 
 verify-globals:
-	@python3 bin/checkGlobals.py --config $(VERIFY_CONFIG) --fail-on-issues --fail-on-warnings
+	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --fail-on-issues --fail-on-warnings
 
 audit-auto-complete-globals:
-	@python3 bin/checkGlobals.py --config $(VERIFY_CONFIG) --show-auto-complete-reviewed
+	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --show-auto-complete-reviewed
 
 verify-calls:
 	@python3 bin/checkCallTargets.py --config $(VERIFY_CONFIG)
 
-verify-values-capstone:
-	@python3 bin/checkValuesCapstone.py --config $(VERIFY_CONFIG) --min-similarity 80
+verify-values:
+	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity 80
 
 verify-vtables:
-	@python3 bin/verifyVtables.py --config $(VERIFY_CONFIG)
-
-verify-vtables-capstone:
-	@python3 bin/verifyVtablesCapstone.py --config $(VERIFY_CONFIG)
+	@$(BINARY_COMP) vtables --config $(VERIFY_CONFIG) --target full
 
 data/demo/CDDATA:
 	@echo "Downloading demo data..."
@@ -274,4 +272,4 @@ debug: TEACHER.EXE | $(DREAMM_BIN)
 
 
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-values-capstone verify-vtables verify-vtables-capstone run-demo run-demo-original run
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-values verify-vtables run-demo run-demo-original run

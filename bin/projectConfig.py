@@ -5,7 +5,7 @@ import json
 import os
 
 
-DEFAULT_CONFIG_PATH = "config/verification.json"
+DEFAULT_CONFIG_PATH = "config/binary-comp.json"
 
 
 class ConfigError(RuntimeError):

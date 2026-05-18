@@ -2,6 +2,43 @@
   "build": {
     "jobs": 12
   },
+  "targets": {
+    "full": {
+      "original_exe": "../data/full/TEACHER.ORI.EXE",
+      "rebuilt_exe": "../TEACHER.EXE",
+      "map": "../TEACHER.map",
+      "source_dirs": ["../src"],
+      "code_export_dir": "../code-full",
+      "map_skip": "src/map",
+      "globals_source": "../src/globals.cpp",
+      "globals_header": "../src/globals.h",
+      "code_globals_header": "../code-full/globals.h",
+      "auto_complete": "../src/auto_complete.txt",
+      "values": {
+        "policy": "checkValuesCapstone.json"
+      },
+      "build": {
+        "clean": "make clean",
+        "build": "make all"
+      }
+    },
+    "demo": {
+      "original_exe": "../data/demo/CDDATA/TEACHER.ORIGINAL.EXE",
+      "rebuilt_exe": "../TEACHER-DEMO.EXE",
+      "map": "../TEACHER-DEMO.map",
+      "source_dirs": ["../src-demo"],
+      "code_export_dir": "../code",
+      "map_skip": "src-demo/map",
+      "auto_complete": "../src-demo/auto_complete.txt",
+      "values": {
+        "policy": "checkValuesCapstone.json"
+      },
+      "build": {
+        "clean": "make clean-demo",
+        "build": "make demo"
+      }
+    }
+  },
   "values_capstone": {
     "config": "config/checkValuesCapstone.json",
     "full": {
