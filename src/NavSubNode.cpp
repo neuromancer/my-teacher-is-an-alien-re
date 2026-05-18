@@ -18,7 +18,7 @@ extern "C" char* FindAfterSubstring(char* s1, char* s2);
 // Global: stick direction characters (5 directions)
 char* g_StickDirChars = "FBLRU";
 
-// g_NavSprite_004360a4_004360a4 — defined in globals.cpp
+// g_NavSprite_0046c514 — defined in globals.cpp
 
 // =========================================================================
 // Free functions
@@ -226,7 +226,7 @@ BG_SubNode::~BG_SubNode()
 void BG_SubNode::virtual7()
 {
     state = 0;
-    g_NavSprite_004360a4 = g_Navigator_0046ae70->sprite;
+    g_NavSprite_0046c514 = g_Navigator_0046ae70->sprite;
 }
 
 /* Function start: 0x44A1F0 */
@@ -234,7 +234,7 @@ int BG_SubNode::Activate()
 {
     volatile int local;
 
-    g_NavSprite_004360a4 = g_Navigator_0046ae70->sprite;
+    g_NavSprite_0046c514 = g_Navigator_0046ae70->sprite;
 
     if (state == 2) {
         state = 0;
@@ -246,7 +246,7 @@ int BG_SubNode::Activate()
     }
 
     state = 1;
-    g_NavSprite_004360a4->ResetAnimation(spriteHandle, 0);
+    g_NavSprite_0046c514->ResetAnimation(spriteHandle, 0);
     g_CombatEngine_0046ae78->spriteFrameCount = 1;
     frameCounter = 0;
 
@@ -281,7 +281,7 @@ found:
 
 do_sprite:
     ;
-    int done = g_NavSprite_004360a4->Do(g_NavSprite_004360a4->loc_x, g_NavSprite_004360a4->loc_y, 1.0);
+    int done = g_NavSprite_0046c514->Do(g_NavSprite_0046c514->loc_x, g_NavSprite_0046c514->loc_y, 1.0);
     if (done != 0) {
         int count = frameCounter + 1;
         int isDone;
@@ -296,10 +296,10 @@ do_sprite:
         }
     }
 
-    if (g_NavSprite_004360a4->animation_data == 0) {
+    if (g_NavSprite_0046c514->animation_data == 0) {
         g_CombatEngine_0046ae78->currentFrame = 0;
     } else {
-        int* smk = (int*)g_NavSprite_004360a4->animation_data->smk;
+        int* smk = (int*)g_NavSprite_0046c514->animation_data->smk;
         g_CombatEngine_0046ae78->currentFrame = *(int*)((char*)smk + 0x374);
     }
     return 0;

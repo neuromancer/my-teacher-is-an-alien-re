@@ -9,7 +9,7 @@ class Sprite;
 // Stick direction chars global (5 directions)
 extern char* g_StickDirChars;
 
-// g_NavSprite_004360a4 — declared in globals.h
+// g_NavSprite_0046c514 — declared in globals.h
 
 // Free functions
 int FindStickDirIndex(char ch);

@@ -11,8 +11,6 @@ extern "C" {
 
 int ProcessMessages(void);
 int InitGraphics(void);
-int GetFileAttributes_Wrapper(const char* filename, char param_2);
-void SetErrorCode(unsigned int errorCode);
 int FileExists(const char* filename);
 void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
 void CheckDebug(void);

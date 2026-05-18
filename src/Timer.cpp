@@ -3,7 +3,7 @@
 #include "Memory.h"
 #include "globals.h"
 
-// g_TimerCount_00436b94 — defined in globals.cpp
+// g_TimerCount_0046a5ac — defined in globals.cpp
 
 /* Function start: 0x421880 */
 Timer::Timer()
@@ -14,14 +14,14 @@ Timer::Timer()
     timer->m_startTime = 0;
     timer->m_currentTime = 0;
     timer->m_elapsedTime = 0;
-    g_TimerCount_00436b94++;
+    g_TimerCount_0046a5ac++;
     Reset();
 }
 
 /* Function start: 0x4218B0 */
 Timer::~Timer()
 {
-    g_TimerCount_00436b94--;
+    g_TimerCount_0046a5ac--;
 }
 
 

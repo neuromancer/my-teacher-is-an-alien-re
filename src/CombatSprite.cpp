@@ -496,7 +496,7 @@ int CombatSprite::LBLParse(char* line) {
 struct SpriteDataEntry {
     int index;      // 0x0 - frame index
     int spriteIdx;  // 0x4 - sprite array index
-    SpriteDataEntry(int idx, int spr) : index(idx), spriteIdx(spr) { g_SpriteEntryCount_00436344++; }
+    SpriteDataEntry(int idx, int spr) : index(idx), spriteIdx(spr) { g_SpriteEntryCount_004686f4++; }
     ~SpriteDataEntry();
 };
 

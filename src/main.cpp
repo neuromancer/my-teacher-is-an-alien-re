@@ -19,6 +19,7 @@
 #include "Message.h"
 #include "TimedEvent.h"
 #include "string.h"
+#include <io.h>
 #include <mbctype.h>
 #include <mbstring.h>
 #include <mss.h>
@@ -56,7 +57,6 @@ void InitGameSystems();
 void ShutdownGameSystems();
 void CreateGameObject_1();
 void InitGameConfig();
-int GetFileAttributes_Wrapper(const char *param_1, char param_2);
 int IsAppReady();
 
 // Full-game-only functions (not in demo)
@@ -167,8 +167,6 @@ void RunGame() {
         g_Strings_0046a6e0->TestStrings(g_GlyphFont_0046aa28, g_GameState_0046aa30->stateValues[testIdx2]);
     }
 
-    g_TimedEventPool1_00436984 = new TimedEventPool();
-
     // Original creates TWO objects (assembly lines 421-452 of FUN_4236F0):
     // 1. g_ZBufferManager_0046aa24 = new ZBufferManager (0xAC bytes, constructor 0x403910) — rendering
     // 2. [0x0046a6ec] = new GameEngine (0x28 bytes, constructor 0x430A00) — game loop
@@ -209,13 +207,6 @@ void RunGame() {
         (g_ZBufferManager_0046aa24)->Cleanup();
         operator delete(g_ZBufferManager_0046aa24);
         g_ZBufferManager_0046aa24 = 0;
-    }
-
-    if (g_TimedEventPool1_00436984 != 0) {
-        TimedEventPool* p = g_TimedEventPool1_00436984;
-        p->~TimedEventPool();
-        operator delete(p);
-        g_TimedEventPool1_00436984 = 0;
     }
 
     if (g_Strings_0046a6e0 != 0) {
@@ -336,9 +327,7 @@ extern "C" int ProcessMessages() {
 
 /* Function start: 0x425FA0 */
 extern "C" int FileExists(const char *filename) {
-  int iVar1;
-  iVar1 = GetFileAttributes_Wrapper(filename, 0);
-  return iVar1 == 0;
+  return _access(filename, 0) == 0;
 }
 
 
@@ -662,50 +651,4 @@ extern "C" void ParsePath(const char *fullPath, char *drive, char *dir, char *fn
       ext[len] = '\0';
     }
   }
-}
-
-// SetErrorCode is a CRT library function in the full game (0x45A860, in library range)
-void SetErrorCode(unsigned int errorCode) {
-  int iVar1;
-  unsigned int *puVar2;
-
-  g_ErrorCode_004719c4 = errorCode;
-  iVar1 = 0;
-  puVar2 = DAT_00471d38;
-  do {
-    if (*puVar2 == errorCode) {
-      g_CrtField_0043bdf0 = *(int *)(iVar1 * 8 + 0x43c764);
-      return;
-    }
-    puVar2 = puVar2 + 2;
-    iVar1 = iVar1 + 1;
-  } while ((unsigned int)puVar2 < 0x43c8c8);
-  if (errorCode >= 0x13 && errorCode <= 0x24) {
-    g_CrtField_0043bdf0 = 0xd;
-    return;
-  }
-  if (errorCode >= 0xbc && errorCode <= 0xca) {
-    g_CrtField_0043bdf0 = 8;
-    return;
-  }
-  g_CrtField_0043bdf0 = 0x16;
-  return;
-}
-
-// GetFileAttributes_Wrapper is a CRT library function in the full game (0x456440, in library range)
-int GetFileAttributes_Wrapper(const char *param_1, char param_2) {
-  int DVar1;
-
-  DVar1 = GetFileAttributesA(param_1);
-  if (DVar1 == -1) {
-    DVar1 = GetLastError();
-    SetErrorCode(DVar1);
-    return -1;
-  }
-  if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
-    g_CrtField_0043bdf0 = 0xd;
-    g_ErrorCode_004719c4 = 5;
-    return -1;
-  }
-  return 0;
 }

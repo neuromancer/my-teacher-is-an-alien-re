@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <errno.h>
 #include <direct.h>
 #include <io.h>
 #include <share.h>
@@ -107,7 +108,7 @@ void __cdecl FileCacheEntryCleanup(void* entries, int count) {
             if (DeleteFileAndDir(entry->name) == -1) {
                 LogCacheStats();
                 LogCacheEntries();
-                WriteToLog("HDCache::Unable to delete '%s' (errno=%d)", entry->name, g_FileDeleteError_004719c0);
+                WriteToLog("HDCache::Unable to delete '%s' (errno=%d)", entry->name, errno);
             }
             FreeMemory(entry);
             *slot = 0;

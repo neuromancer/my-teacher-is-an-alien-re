@@ -19,8 +19,6 @@ extern void ShowError(const char* message, ...);
 // Direction characters for navigation (6 directions: N, E, S, W, U, D)
 char* g_DirectionChars = "NESWUD";
 
-// g_NavCursorSprite_004360a0 — defined in globals.cpp
-
 #include "mCNavNode.h"
 
 /* Function start: 0x449AE0 */

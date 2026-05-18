@@ -26,7 +26,7 @@ int __cdecl ApplyVideoPalette(void)
 {
     if ((signed char)g_CurrentVideoBuffer_0046db3c >= 0) {
         if (g_WinGDC_0046e004 != (HDC)0) {
-            ((void (__cdecl *)(HDC, int, int, void*))g_WinGSetDIBColorTable_0046e014)(g_WinGDC_0046e004, 0, 0x100, &g_BgrPalette_00437b48[4]);
+            ((void (__cdecl *)(HDC, int, int, void*))g_WinGSetDIBColorTable_0046e014)(g_WinGDC_0046e004, 0, 0x100, g_BgrPaletteData_0046d734);
         } else {
             if (g_DibModeFlag_0046db38 != 0) {
                 short* dst = (short*)(g_VideoBufferBase_0046db4e - 0x200);
@@ -39,7 +39,7 @@ int __cdecl ApplyVideoPalette(void)
                     dst++;
                 } while (count != 0);
             } else {
-                memcpy((void*)(g_VideoBufferBase_0046db4e - 0x400), &g_BgrPalette_00437b48[4], 0x400);
+                memcpy((void*)(g_VideoBufferBase_0046db4e - 0x400), g_BgrPaletteData_0046d734, 0x400);
             }
         }
     }
@@ -87,7 +87,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
         }
 
         // Convert to RGBQUAD format (BGR order)
-        RGBQUAD* quad = (RGBQUAD*)&g_BgrPalette_00437b48[offset];
+        RGBQUAD* quad = (RGBQUAD*)&g_BgrPaletteData_0046d734[start * 4];
         for (i = 0; i < count; i++) {
             quad[i].rgbBlue = pe[i].peBlue;
             quad[i].rgbGreen = pe[i].peGreen;
@@ -99,7 +99,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
             if (g_DibModeFlag_0046db38 == 0) {
                 // Copy to video buffer
                 unsigned int* dst = (unsigned int*)(g_VideoBufferBase_0046db4e - 0x400);
-                unsigned int* srcQuad = (unsigned int*)&g_BgrPalette_00437b48[4];
+                unsigned int* srcQuad = (unsigned int*)g_BgrPaletteData_0046d734;
                 for (i = 0x100; i != 0; i--) {
                     *dst++ = *srcQuad++;
                 }
@@ -107,7 +107,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
         } else {
             // Use SetDIBColorTable via function pointer
             typedef void (__cdecl *SetDIBColorTableFunc)(HDC, unsigned int, unsigned int, RGBQUAD*);
-            ((SetDIBColorTableFunc)g_WinGSetDIBColorTable_0046e014)(g_WinGDC_0046e004, start, count, (RGBQUAD*)&g_BgrPalette_00437b48[offset]);
+            ((SetDIBColorTableFunc)g_WinGSetDIBColorTable_0046e014)(g_WinGDC_0046e004, start, count, (RGBQUAD*)&g_BgrPaletteData_0046d734[start * 4]);
         }
 
         AnimatePalette(g_Palette_0046d074, start, count, pe);

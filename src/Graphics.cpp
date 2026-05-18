@@ -219,11 +219,11 @@ int InitMouseSettings(void)
     int iVar2;
     
     hWnd = GetActiveWindow();
-    g_WindowWord_00437510 = GetWindowWord(hWnd, -6);
+    g_WindowWord_0046d0f8 = GetWindowWord(hWnd, -6);
     iVar2 = GetSystemMetrics(0x13);  // SM_SWAPBUTTON
     if (iVar2 != 0) {
-        g_DblClickCX_00437508 = GetSystemMetrics(0xd); // SM_CXDOUBLECLK
-        g_DblClickCY_0043750c = GetSystemMetrics(0xe); // SM_CYDOUBLECLK
+        g_DblClickCX_0046d0f0 = GetSystemMetrics(0xd); // SM_CXDOUBLECLK
+        g_DblClickCY_0046d0f4 = GetSystemMetrics(0xe); // SM_CYDOUBLECLK
         g_CursorVisible_0046d0ee = 1;
         g_CursorState_0046d0ef = 1;
         return 1;
@@ -284,25 +284,17 @@ int InitVideoSystem(void)
     g_BitmapHeaderSize_0046db34 = uVar9;
     
     g_TextColor_0046d078 = 0;
-    g_StateFlags_004374b2 = 0;
+    g_StateFlags_0046d09a = 0;
     g_FillColorDword_0046d079 = 0;
-    g_GfxField1_00437518 = 0;
-    g_GfxField2_0043751c = 0;
-    g_GfxField3_004383ec = 0;
-    g_GfxField4_004383f4 = 0;
-    g_GfxField5_00438404 = 0;
-    g_GfxField6_0043840c = 0;
     g_DrawPosX_0046d0aa = 0;
     g_DrawPosY_0046d0b6 = 0;
     g_LineWidthH_0046d0be = 1;
     g_LineWidthV_0046d0c2 = 1;
-    g_GfxInitFlag_00437514 = 1;
+    g_GfxInitFlag_0046d0fc = 1;
     g_TextAlignH_0046d0a8 = (char)0xff;
     g_TextAlignV_0046d0a9 = (char)0xff;
     g_CurrentVideoBuffer_0046db3c = (char)0xff;
     g_CurrentVideoBuffer_0046db3c = (char)0xff;
-    g_VBufField1_00437f56 = -1;
-    g_VBufField2_00437f5a = -1;
     g_WinGDC_0046e004 = 0;
     g_WinGDC_0046e004 = 0;
     g_WinGBitmap_0046e00c = 0;
@@ -451,7 +443,7 @@ HPALETTE CreateSystemPalette(void)
   
   // Second loop: Create BGR reordered copy at g_BgrPaletteData_0046d734
   pEntries = (unsigned char*)g_LogPalette_0046d308 + 4;
-  pBgrDest = (unsigned char*)g_BgrPalette_00437b48 + 4;
+  pBgrDest = (unsigned char*)g_BgrPaletteData_0046d734;
   count = 0x100;
   do {
     r = pEntries[0];
@@ -481,13 +473,13 @@ int InitStockFont(int param_1)
 {
     TEXTMETRICA *pTextMetric;
     
-    g_StockFont_00437496 = GetStockObject(param_1);
-    SelectObject(g_SecondaryDC_0046d09c, g_StockFont_00437496);
+    g_StockFont_0046d07e = GetStockObject(param_1);
+    SelectObject(g_SecondaryDC_0046d09c, g_StockFont_0046d07e);
     pTextMetric = (TEXTMETRICA *)g_TextMetric_0046f02e;
     GetTextMetricsA(g_SecondaryDC_0046d09c, pTextMetric);
     g_FontHeight_0046d082 = pTextMetric->tmHeight + pTextMetric->tmExternalLeading;
-    g_FontExtLeading_0043749e = pTextMetric->tmExternalLeading;
-    g_FontAvgWidth_004374a2 = pTextMetric->tmAveCharWidth;
+    g_FontExtLeading_0046d086 = pTextMetric->tmExternalLeading;
+    g_FontAvgWidth_0046d08a = pTextMetric->tmAveCharWidth;
     return 0;
 }
 
@@ -729,7 +721,7 @@ extern "C" void SetFontColor(int index) {
 
 /* Function start: 0x45329B */
 extern "C" int DrawFontText(char* text, int len) {
-    SetTextColor((HDC)g_Palette_0046d074, g_PaletteColorTable_00437608[(unsigned char)g_TextColor_0046d078 + 1] & 0xffffff);
+    SetTextColor((HDC)g_Palette_0046d074, *(unsigned int*)&g_LogPalette_0046d308[((unsigned char)g_TextColor_0046d078 + 1) * 4] & 0xffffff);
     SetBkMode((HDC)g_Palette_0046d074, 1);
     SetTextAlign((HDC)g_Palette_0046d074, 0);
 
@@ -739,7 +731,7 @@ extern "C" int DrawFontText(char* text, int len) {
         g_DrawPosX_0046d0aa -= (unsigned int)((g_TextAlignH_0046d0a8 + 1) * sz.cx) >> 1;
     }
     if (g_TextAlignV_0046d0a9 >= 0) {
-        g_DrawPosY_0046d0b6 += (unsigned int)((g_TextAlignV_0046d0a9 + 1) * (g_FontHeight_0046d082 - g_FontExtLeading_0043749e)) >> 1;
+        g_DrawPosY_0046d0b6 += (unsigned int)((g_TextAlignV_0046d0a9 + 1) * (g_FontHeight_0046d082 - g_FontExtLeading_0046d086)) >> 1;
     }
     g_DrawPosY_0046d0b6 -= g_FontHeight_0046d082;
 

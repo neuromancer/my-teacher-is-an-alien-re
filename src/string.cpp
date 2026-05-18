@@ -18,7 +18,6 @@ extern void* GetGameWindowHandle();
 }
 
 extern void ShutdownGameSystems();
-extern void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3);
 
 int DeleteFile_Wrapper(const char* filename);
 
@@ -125,7 +124,7 @@ void ShowError(const char* format, ...)
     SetCursorVisible(1);
     MessageBoxA((HWND)GetGameWindowHandle(), buffer, "Error", 0x10);
     ShutdownGameSystems();
-    exitWithError_(-1);
+    exit(-1);
 }
 
 /* Function start: 0x425CB0 */
@@ -173,7 +172,7 @@ void WriteToMessageLog(const char *msg,...)
 
 
 // g_StringTableCount_0046aa80 — defined in globals.cpp
-// g_StringTable_0043d158 — defined in globals.cpp
+// g_StringTable_00472e30 — defined in globals.cpp
 
 /* Function start: 0x425DC0 */
 extern "C" void AddToStringTable(char *param_1)
@@ -185,7 +184,7 @@ extern "C" void AddToStringTable(char *param_1)
     iVar2 = sscanf(param_1, " %s ", local_20);
     if (iVar2 == 1) {
         if (strlen(local_20) != 0) {
-            strcpy(&g_StringTable_0043d158[g_StringTableCount_0046aa80 * 0x20], local_20);
+            strcpy(&g_StringTable_00472e30[g_StringTableCount_0046aa80 * 0x20], local_20);
             g_StringTableCount_0046aa80++;
         }
     }
@@ -302,50 +301,10 @@ int ParseCommandLineArgs(char *param_1, char **param_2, int param_3)
     return iVar1;
 }
 
-void ExecuteFunctionArray(void** param_1, void** param_2)
-{
-    if (param_2 <= param_1) return;
-    do {
-        if (*param_1 != 0) {
-            ((void (*)(void)) *param_1)();
-        }
-        param_1 = param_1 + 1;
-    } while (param_2 > param_1);
-}
-
 /* Function start: 0x455110 */
 FILE* fsopen(const char* filename, const char* mode)
 {
     return _fsopen(filename, mode, _SH_DENYNO);
-}
-
-/* Function start 0x426030 */
-void exitWithError_(unsigned int param_1)
-{
-    exitWithErrorInternal(param_1, 0, 0);
-}
-
-/* 0x426070 */
-void exitWithErrorInternal(unsigned int param_1, int param_2, int param_3)
-{
-    g_ExitInProgress_0043be34 = 1;
-    g_ExitCode_0043be30 = (char)param_3;
-    if (param_2 == 0) {
-        if ((g_AtExitTableStart_00475088 != 0) && ((unsigned int)g_AtExitTableEnd_00475084 - 4 >= (unsigned int)g_AtExitTableStart_00475088)) {
-            void** puVar1 = (void**)((char*)g_AtExitTableEnd_00475084 - 4);
-            do {
-                if (*puVar1 != 0) {
-                    ((void (*)(void)) *puVar1)();
-                }
-                puVar1 = puVar1 - 1;
-            } while ((unsigned int)puVar1 >= (unsigned int)g_AtExitTableStart_00475088);
-        }
-        ExecuteFunctionArray((void**)&DAT_00435030, (void**)&DAT_00435038);
-    }
-    ExecuteFunctionArray((void**)&DAT_0043503c, (void**)&DAT_00435040);
-    if (param_3 == 0) {
-        ExitProcess(param_1);
-    }
 }
 
 static char g_AnimNameBuf[64];  // DAT_00473cf0

@@ -14,16 +14,16 @@ int __cdecl BlitBufferOpaque(int srcX1, int srcX2, int srcY1, int srcY2, int des
         return 0;
     }
     
-    int srcWidth = g_VBufWidths_0043836c[srcIdx];
-    int srcHeight = g_VBufHeights_004382ec[srcIdx];
+    int srcWidth = g_VBufWidths_0046df54[srcIdx];
+    int srcHeight = g_VBufHeights_0046ded4[srcIdx];
     
     int destData = g_VBufDataPtrs_0046de54[destIdx];
     if (destData == 0) {
         return 0;
     }
     
-    int destWidth = g_VBufWidths_0043836c[destIdx];
-    int destHeight = g_VBufHeights_004382ec[destIdx];
+    int destWidth = g_VBufWidths_0046df54[destIdx];
+    int destHeight = g_VBufHeights_0046ded4[destIdx];
     
     int flipY1 = (srcHeight - 1) - srcY2;
     int flipY2 = (srcHeight - 1) - srcY1;
@@ -62,16 +62,16 @@ int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, in
         return 0;
     }
     
-    int srcWidth = g_VBufWidths_0043836c[srcIdx];
-    int srcHeight = g_VBufHeights_004382ec[srcIdx];
+    int srcWidth = g_VBufWidths_0046df54[srcIdx];
+    int srcHeight = g_VBufHeights_0046ded4[srcIdx];
     
     int destData = g_VBufDataPtrs_0046de54[destIdx];
     if (destData == 0) {
         return 0;
     }
     
-    int destWidth = g_VBufWidths_0043836c[destIdx];
-    int destHeight = g_VBufHeights_004382ec[destIdx];
+    int destWidth = g_VBufWidths_0046df54[destIdx];
+    int destHeight = g_VBufHeights_0046ded4[destIdx];
     
     int flipY1 = (srcHeight - 1) - srcY2;
     int flipY2 = (srcHeight - 1) - srcY1;
@@ -103,4 +103,3 @@ int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, in
 }
 
 }
-

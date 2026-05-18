@@ -126,17 +126,6 @@ extern "C" int __cdecl CreateTable(int width, int height) {
     g_VBufClipLeft_0046dd54[i] = 0;
     g_VBufClipTop_0046ddd4[i] = 0;
 
-    // Also write to demo arrays for compatibility
-    g_VBufDibHandles_00437fec[i] = (int)hDib;
-    g_VBufMemHandles_00437f6c[i] = (int)hMem;
-    g_VBufDataPtrs_0046de54[i] = (int)((char*)bmi + data_offset);
-    g_VBufWidths_0043836c[i] = aligned_width;
-    g_VBufHeights_004382ec[i] = height;
-    g_VBufMaxX_0043806c[i] = aligned_width - 1;
-    g_VBufMaxY_004380ec[i] = height - 1;
-    g_VBufClipLeft_0043816c[i] = 0;
-    g_VBufClipTop_004381ec[i] = 0;
-
     return i;
 }
 
@@ -329,14 +318,6 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
             g_VBufClipLeft_0046dd54[idx] = 0;
             g_VBufClipTop_0046ddd4[idx] = 0;
 
-            // Also write to demo arrays for compatibility
-            g_VBufDataPtrs_0046de54[idx] = ptr[-1];
-            g_VBufWidths_0043836c[idx] = width;
-            g_VBufHeights_004382ec[idx] = height;
-            g_VBufMaxX_0043806c[idx] = width - 1;
-            g_VBufMaxY_004380ec[idx] = height - 1;
-            g_VBufClipLeft_0043816c[idx] = 0;
-            g_VBufClipTop_004381ec[idx] = 0;
             return idx;
         }
     }

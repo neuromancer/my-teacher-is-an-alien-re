@@ -16,8 +16,10 @@ OUT_DIR = out
 VERIFY_CONFIG = config/binary-comp.json
 BINARY_COMP ?= /Users/g/.local/bin/binary-comp
 GLOBALS_MISSING_MIN_ADDRESS = 0x00468000
-# End of the reimplemented game/WinG data range; later .data entries are compiler/CRT owned.
-GLOBALS_MISSING_MAX_ADDRESS = 0x0046f02d
+# Skip the MSVC CRT/library helper data in 0x0047185c..0x00472bd7.
+GLOBALS_MISSING_MAX_ADDRESS = 0x0047185b
+GLOBALS_MISSING_TAIL_MIN_ADDRESS = 0x00472bd8
+GLOBALS_MISSING_TAIL_MAX_ADDRESS = 0x0047508b
 
 # Platform detection
 UNAME_S := $(shell uname -s)
@@ -214,7 +216,8 @@ globals-verbose:
 	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full --verbose
 
 globals-missing:
-	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --include-code-globals --issue-kind CODE_GLOBAL_NOT_IN_SRC --min-address $(GLOBALS_MISSING_MIN_ADDRESS) --max-address $(GLOBALS_MISSING_MAX_ADDRESS)
+	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --include-code-globals --min-address $(GLOBALS_MISSING_MIN_ADDRESS) --max-address $(GLOBALS_MISSING_MAX_ADDRESS)
+	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --include-code-globals --min-address $(GLOBALS_MISSING_TAIL_MIN_ADDRESS) --max-address $(GLOBALS_MISSING_TAIL_MAX_ADDRESS)
 
 compare:
 	@python3 bin/compareExe.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE
