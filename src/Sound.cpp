@@ -10,8 +10,6 @@
 
 extern short _param_3;
 
-PCMWAVEFORMAT g_pcm;
-
 /* Function start: 0x424C50 */
 Sound::Sound(int param_1, short param_2, int param_3) {
   memset(this, 0, 15 * sizeof(int));
@@ -20,13 +18,14 @@ Sound::Sound(int param_1, short param_2, int param_3) {
   if (g_GameConfig2_0046aa10->data.rawData[2] != '\x02') {
     WriteToMessageLog("Sound():: Not Initialized (No Sound Requested)");
   } else {
-    AIL_set_preference(0xf, 0);
-    int iVar3 = Sound::OpenDigitalDriver(param_1, param_2, param_3 + 1);
-    Sound::digital_driver = (HDIGDRIVER)iVar3;
-    if (iVar3 == 0) {
-      AIL_set_preference(0xf, 1);
+    int iVar3;
+    if (g_DirectSoundFlag_0046a87c != 0) {
+      AIL_set_preference(0xf, 0);
+      iVar3 = Sound::OpenDigitalDriver(param_1, param_2, param_3 + 1);
+      Sound::digital_driver = (HDIGDRIVER)iVar3;
     }
     if (Sound::digital_driver == 0) {
+      AIL_set_preference(0xf, 1);
       iVar3 = Sound::OpenDigitalDriver(param_1, param_2, param_3 + 1);
       Sound::digital_driver = (HDIGDRIVER)iVar3;
     }
@@ -82,15 +81,15 @@ int Sound::OpenDigitalDriver(int rate, unsigned short bits,
                       unsigned short channels) {
   HDIGDRIVER driver;
 
-  g_pcm.wf.nChannels = channels;
-  g_pcm.wf.wFormatTag = 1;
-  g_pcm.wf.nBlockAlign = channels * (bits >> 3);
+  g_PcmWaveFormat_00472dc8.wf.nChannels = channels;
+  g_PcmWaveFormat_00472dc8.wf.wFormatTag = 1;
+  g_PcmWaveFormat_00472dc8.wf.nBlockAlign = channels * (bits >> 3);
   int avgBytesPerSec = (unsigned int)channels * (unsigned int)(unsigned short)(bits >> 3);
-  g_pcm.wBitsPerSample = bits;
-  g_pcm.wf.nSamplesPerSec = rate;
-  g_pcm.wf.nAvgBytesPerSec = avgBytesPerSec * rate;
+  g_PcmWaveFormat_00472dc8.wBitsPerSample = bits;
+  g_PcmWaveFormat_00472dc8.wf.nSamplesPerSec = rate;
+  g_PcmWaveFormat_00472dc8.wf.nAvgBytesPerSec = avgBytesPerSec * rate;
 
-  if (AIL_waveOutOpen(&driver, 0, -1, &g_pcm)) {
+  if (AIL_waveOutOpen(&driver, 0, -1, &g_PcmWaveFormat_00472dc8)) {
     return 0;
   }
   return (int)driver;

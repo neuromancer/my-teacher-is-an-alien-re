@@ -159,7 +159,7 @@ extern "C" int InvalidateVideoMode() {
     return 0;
 }
 
-/* Function start: 0x453CB2 */
+/* Function start: 0x452C9B */
 extern "C" int GetCurrentVideoMode() {
     return (signed char)g_CurrentVideoBuffer_0046db3c;
 }

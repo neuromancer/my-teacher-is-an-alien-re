@@ -171,8 +171,7 @@ void RunGame() {
     // 1. g_ZBufferManager_0046aa24 = new ZBufferManager (0xAC bytes, constructor 0x403910) — rendering
     // 2. [0x0046a6ec] = new GameEngine (0x28 bytes, constructor 0x430A00) — game loop
     g_ZBufferManager_0046aa24 = new ZBufferManager();
-    GameEngine* gameEngine = new GameEngine();
-    g_GameEngine_0046a6ec = gameEngine;
+    g_GameEngine_0046a6ec = new GameEngine();
 
     g_Mouse_0046aa18->DrawCursor();
     g_GlyphFont_0046aa28->LoadFont("elements\\\\text1.smk");
@@ -194,12 +193,14 @@ void RunGame() {
     }
 
     // Game loop — GameEngine::RunGameLoop (0x430CD0)
-    gameEngine->RunGameLoop();
+    g_GameEngine_0046a6ec->RunGameLoop();
 
     // Cleanup: GameEngine destructor + delete (assembly lines 509-514)
-    if (gameEngine != 0) {
-        gameEngine->~GameEngine();
-        operator delete(gameEngine);
+    if (g_GameEngine_0046a6ec != 0) {
+        GameEngine* p = g_GameEngine_0046a6ec;
+        g_GameEngine_0046a6ec->~GameEngine();
+        operator delete(p);
+        g_GameEngine_0046a6ec = 0;
     }
 
     // Cleanup: ZBufferManager Cleanup + delete (assembly lines 515-528)

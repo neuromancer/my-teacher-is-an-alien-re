@@ -595,7 +595,7 @@ void SC_FireAlarm::ProcessFrame() {
             consoleSprite->ResetAnimation(mouseVal / (screenSize.x / 5), 0);
         }
 
-        if (engine->m_clicked != 0) {
+        if (((Weapon*)g_FireAlarmEngine_004685ac)->m_clicked != 0) {
             int mouseVal2 = 0;
             if (g_InputManager_0046aa08->pMouse != 0) {
                 mouseVal2 = g_InputManager_0046aa08->pMouse->x;

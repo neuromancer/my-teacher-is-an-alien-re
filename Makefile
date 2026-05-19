@@ -239,6 +239,9 @@ audit-auto-complete-globals:
 verify-calls:
 	@$(BINARY_COMP) calls --config $(VERIFY_CONFIG) --target full
 
+verify-global-access:
+	@PYTHONPATH=binary-comp/src $(BINARY_COMP) global-access --config $(VERIFY_CONFIG) --target full $(GLOBAL_ACCESS_FLAGS) $(if $(FILTER),$(FILTER))
+
 verify-values:
 	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity 80
 
@@ -278,4 +281,4 @@ debug: TEACHER.EXE | $(DREAMM_BIN)
 
 
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-values verify-vtables run-demo run-demo-original run
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-global-access verify-values verify-vtables run-demo run-demo-original run

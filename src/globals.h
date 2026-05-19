@@ -590,6 +590,7 @@ extern int g_CmdLineAudioMode_00472dd8;   // Command line -A/-S audio mode (1=A,
 extern int g_DebugFlag_00472ddc;          // Debug/init flag checked in main
 extern char g_CmdLineInputMode_00472de0;  // Command line -J/-K input mode (1=J, 2=K)
 extern int g_DirectSoundFlag_0046a87c;    // DirectSound flag, cleared by /nods
+extern PCMWAVEFORMAT g_PcmWaveFormat_00472dc8;
 extern char g_CdDataPath_00472de8[260];   // Command line /cd= path passed to CDData
 // 0x0043d5b0: Sprite index tracking array (not yet implemented, used in FUN_41A9D0/FUN_41A9E0)
 // 0x0043d5b4: Element [1] of DAT_0043d5b0 array
@@ -6112,7 +6113,8 @@ extern int g_PodResults_004734a0[3];
 #define g_PodResult2_004734a8 (g_PodResults_004734a0[2])
 extern char g_QuestionBuffer_00469b28[];
 extern char g_LogEnabled_00472e28;
-extern char* g_DirectionChars;                             // no original address: defined in mCNavigator.cpp
+extern char* PTR_DAT_0046c50c;
+extern char* PTR_DAT_0046c510;
 
 // IconBar globals
 #include "IconBar.h"

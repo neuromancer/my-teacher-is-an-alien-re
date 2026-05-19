@@ -547,10 +547,9 @@ void SC_Slime::ProcessAction(int action, int* data) {
             g_Mouse_0046aa18->DrawCursor();
         }
         {
-            Weapon* weapon = g_SlimeField_00468bbc;
-            if (weapon != 0 && consoleSprite != 0) {
-                weapon->UpdateProjectiles();
-                if (weapon->m_clicked != 0) {
+            if (g_SlimeField_00468bbc != 0 && consoleSprite != 0) {
+                g_SlimeField_00468bbc->UpdateProjectiles();
+                if (g_SlimeField_00468bbc->m_clicked != 0) {
                     int val = 0;
                     if (g_InputManager_0046aa08->pMouse != 0) {
                         val = g_InputManager_0046aa08->pMouse->x;
@@ -707,12 +706,15 @@ int SC_Slime::HandleInput(Sprite* spr) {
                     inSlot = 1;
                 }
                 if (inSlot != 0) {
-                    int frame = 0;
+                    int hitValue;
                     if (bgSprite->animation_data != 0) {
-                        frame = bgSprite->animation_data->smk->FrameNum;
+                        int frame = bgSprite->animation_data->smk->FrameNum;
+                        hitValue = g_SlimeHitTable_00468bc0[frame + i * 0x3d];
+                    } else {
+                        hitValue = g_SlimeHitTable_00468bc0[i * 0x3d];
                     }
 
-                    if (g_SlimeHitTable_00468bc0[frame + i * 0x3d] != 0) {
+                    if (hitValue != 0) {
                         if (sound4 != 0) {
                             sound4->Play(100, 1);
                         }

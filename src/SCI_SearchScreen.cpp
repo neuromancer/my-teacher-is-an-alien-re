@@ -106,9 +106,6 @@ int SCI_SearchScreen::ShutDown(SC_MessageParser* msg) {
         delete g_CombatEngine_0046ae78;
         g_CombatEngine_0046ae78 = 0;
     }
-    if (g_ActiveCombat_00468a1c == this) {
-        g_ActiveCombat_00468a1c = 0;
-    }
     return SC_Combat::ShutDown(msg);
 }
 
@@ -232,65 +229,64 @@ extern "C" void ClearGameStateSave() {
     memset(&g_FanField1_00472be0, 0, 16);
 }
 
-static int g_SearchScreenRects[36];
-static int g_DefaultSearchCoords[12];
-
 /* Function start: 0x44E960 */
 void InitSearchScreenRects()
 {
-    g_SearchScreenRects[1] = 0x147;
-    g_SearchScreenRects[2] = 0x205;
-    g_SearchScreenRects[3] = 0x16D;
-    g_SearchScreenRects[4] = 0x209;
-    g_SearchScreenRects[5] = 0x147;
-    g_SearchScreenRects[7] = 0x16D;
-    g_SearchScreenRects[9] = 0x147;
-    g_SearchScreenRects[0] = 0x1DE;
-    g_SearchScreenRects[6] = 0x230;
-    g_SearchScreenRects[11] = 0x16D;
-    g_SearchScreenRects[13] = 0x11C;
-    g_SearchScreenRects[14] = 0x205;
-    g_SearchScreenRects[16] = 0x209;
-    g_SearchScreenRects[15] = 0x143;
-    g_SearchScreenRects[17] = 0x11C;
-    g_SearchScreenRects[8] = 0x234;
-    g_SearchScreenRects[10] = 0x25B;
-    g_SearchScreenRects[19] = 0x143;
-    g_SearchScreenRects[21] = 0x11C;
-    g_SearchScreenRects[12] = 0x1DE;
-    g_SearchScreenRects[18] = 0x230;
-    g_SearchScreenRects[23] = 0x143;
-    g_SearchScreenRects[25] = 0xF1;
-    g_SearchScreenRects[26] = 0x205;
-    g_SearchScreenRects[28] = 0x209;
-    g_SearchScreenRects[27] = 0x118;
-    g_SearchScreenRects[29] = 0xF1;
-    g_SearchScreenRects[20] = 0x234;
-    g_SearchScreenRects[22] = 0x25B;
-    g_SearchScreenRects[31] = 0x118;
-    g_SearchScreenRects[33] = 0xF1;
-    g_SearchScreenRects[24] = 0x1DE;
-    g_SearchScreenRects[35] = 0x118;
-    g_SearchScreenRects[30] = 0x230;
-    g_SearchScreenRects[32] = 0x234;
-    g_SearchScreenRects[34] = 0x25B;
+    int* rects = (int*)g_PuzzleButtonRects_00473d30;
+    rects[1] = 0x147;
+    rects[2] = 0x205;
+    rects[3] = 0x16D;
+    rects[4] = 0x209;
+    rects[5] = 0x147;
+    rects[7] = 0x16D;
+    rects[9] = 0x147;
+    rects[0] = 0x1DE;
+    rects[6] = 0x230;
+    rects[11] = 0x16D;
+    rects[13] = 0x11C;
+    rects[14] = 0x205;
+    rects[16] = 0x209;
+    rects[15] = 0x143;
+    rects[17] = 0x11C;
+    rects[8] = 0x234;
+    rects[10] = 0x25B;
+    rects[19] = 0x143;
+    rects[21] = 0x11C;
+    rects[12] = 0x1DE;
+    rects[18] = 0x230;
+    rects[23] = 0x143;
+    rects[25] = 0xF1;
+    rects[26] = 0x205;
+    rects[28] = 0x209;
+    rects[27] = 0x118;
+    rects[29] = 0xF1;
+    rects[20] = 0x234;
+    rects[22] = 0x25B;
+    rects[31] = 0x118;
+    rects[33] = 0xF1;
+    rects[24] = 0x1DE;
+    rects[35] = 0x118;
+    rects[30] = 0x230;
+    rects[32] = 0x234;
+    rects[34] = 0x25B;
 }
 
 /* Function start: 0x44EAE0 */
 void InitDefaultSearchCoords()
 {
-    g_DefaultSearchCoords[1] = 0xA1;
-    g_DefaultSearchCoords[3] = 0x137;
-    g_DefaultSearchCoords[0] = 0x14;
-    g_DefaultSearchCoords[2] = 0x46;
-    g_DefaultSearchCoords[4] = 0xB2;
-    g_DefaultSearchCoords[5] = 0xAC;
-    g_DefaultSearchCoords[6] = 0xEF;
-    g_DefaultSearchCoords[9] = 0xA1;
-    g_DefaultSearchCoords[11] = 0x137;
-    g_DefaultSearchCoords[7] = 0x118;
-    g_DefaultSearchCoords[8] = 0x15D;
-    g_DefaultSearchCoords[10] = 0x18F;
+    int* coords = (int*)g_DoorRects_00473dc8;
+    coords[1] = 0xA1;
+    coords[3] = 0x137;
+    coords[0] = 0x14;
+    coords[2] = 0x46;
+    coords[4] = 0xB2;
+    coords[5] = 0xAC;
+    coords[6] = 0xEF;
+    coords[9] = 0xA1;
+    coords[11] = 0x137;
+    coords[7] = 0x118;
+    coords[8] = 0x15D;
+    coords[10] = 0x18F;
 }
 
 static void AtExitHandler() {}

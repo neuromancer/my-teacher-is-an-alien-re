@@ -115,7 +115,7 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
     return 0;
 }
 
-/* Function start: 0x452C9B */
+/* Function start: 0x453CB2 */
 int __cdecl GetGlobalVertAlign()
 {
     return (int)(signed char)g_TextAlignV_0046d0a9;

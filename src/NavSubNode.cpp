@@ -15,9 +15,6 @@ extern void ShowError(const char* message, ...);
 extern int FindCharIndex(char ch);
 extern "C" char* FindAfterSubstring(char* s1, char* s2);
 
-// Global: stick direction characters (5 directions)
-char* g_StickDirChars = "FBLRU";
-
 // g_NavSprite_0046c514 — defined in globals.cpp
 
 // =========================================================================
@@ -29,7 +26,7 @@ int FindStickDirIndex(char ch)
 {
     int i = 0;
     do {
-        if (g_StickDirChars[i] == ch) {
+        if (PTR_DAT_0046c510[i] == ch) {
             break;
         }
         i++;

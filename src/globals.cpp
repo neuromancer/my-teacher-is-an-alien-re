@@ -724,6 +724,7 @@ int g_ActivateAppState_00472d14 = 0;                         // 0x00472d14 (set 
 SpriteAction g_IconBarAction_00472d20;                       // 0x00472d20
 SpriteAction g_PendingAction_00472d58;                       // 0x00472d58
 SpriteAction g_HotspotAction_00472d90;                       // 0x00472d90
+PCMWAVEFORMAT g_PcmWaveFormat_00472dc8;                      // 0x00472dc8
 int g_DevelopFlag_00472de4 = 0;                              // 0x00472de4
 char g_LogEnabled_00472e28 = 0;                              // 0x00472e28
 int g_StartBlock_00472e2c = 0;                               // 0x00472e2c

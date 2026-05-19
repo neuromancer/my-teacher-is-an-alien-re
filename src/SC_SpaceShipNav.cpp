@@ -65,7 +65,7 @@ void SC_SpaceShipNav::Init(SC_MessageParser* msg) {
     }
 
     g_CombatEngine_0046ae78 = (SC_CombatBase*)field_118[0];
-    ((SC_CombatBase*)field_118[0])->SetupViewport();
+    g_CombatEngine_0046ae78->SetupViewport();
 
     if (msg != 0) {
         SpriteAction* action = (SpriteAction*)msg;

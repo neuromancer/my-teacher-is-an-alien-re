@@ -16,9 +16,6 @@ extern "C" {
 
 extern void ShowError(const char* message, ...);
 
-// Direction characters for navigation (6 directions: N, E, S, W, U, D)
-char* g_DirectionChars = "NESWUD";
-
 #include "mCNavNode.h"
 
 /* Function start: 0x449AE0 */
@@ -42,7 +39,7 @@ int FindCharIndex(char ch)
 {
     int i = 0;
     while (i < 6) {
-        if (g_DirectionChars[i] == ch) {
+        if (PTR_DAT_0046c50c[i] == ch) {
             break;
         }
         i++;
@@ -58,7 +55,7 @@ char GetDirectionChar(int dir) {
     if (dir < 0 || dir > 5) {
         ShowError("Bearing - Invalid bearing '%d'", dir);
     }
-    return g_DirectionChars[dir];
+    return PTR_DAT_0046c50c[dir];
 }
 
 /* Function start: 0x44B8D0 */
