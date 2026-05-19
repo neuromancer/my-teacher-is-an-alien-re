@@ -6031,8 +6031,8 @@ extern HDC g_WinGDC_0046e004;
 extern HGDIOBJ g_WinGBitmap_0046e00c;
 extern void* g_WinGCreateDIB_0046e010;
 
-extern int g_FireAlarmField1_00472bd8;                                   // SC_FireAlarm / SC_Pods
-extern int g_FireAlarmField2_00472bdc;                                   // SC_FireAlarm / SC_Pods
+extern int g_FireAlarmField1_00472bd8;                                   // SC_FireAlarm teacher-hit scold timer increment
+extern int g_FireAlarmField2_00472bdc;                                   // SC_FireAlarm plane wall-hit scold timer increment
 extern int g_FanField1_00472be0;                                   // SC_DodgeOrville
 extern int g_FanField2_00472be4;                                   // SC_DodgeOrville
 extern int g_FanField3_00472be8;                                   // SC_DodgeOrville

@@ -707,8 +707,8 @@ int g_PuzzleSolutions_0046cc98[36] = {                        // 0x0046cc98
 // g_PuzzleResultIdx_0046cca4 = &g_PuzzleSolutions_0046cc98[3] (overlap, now a macro in globals.h)
 
 // --- 0x00471xxx - 0x00473xxx ---
-int g_FireAlarmField1_00472bd8 = 0;                          // 0x00472bd8
-int g_FireAlarmField2_00472bdc = 0;                          // 0x00472bdc
+int g_FireAlarmField1_00472bd8 = g_FireAlarmTimerTarget_0046859c; // 0x00472bd8 - teacher-hit scold timer increment
+int g_FireAlarmField2_00472bdc = g_FireAlarmTimerTarget_0046859c; // 0x00472bdc - plane wall-hit scold timer increment
 int g_FanField1_00472be0 = 0;                                // 0x00472be0
 int g_FanField2_00472be4 = 0;                                // 0x00472be4
 int g_FanField3_00472be8 = 0;                                // 0x00472be8

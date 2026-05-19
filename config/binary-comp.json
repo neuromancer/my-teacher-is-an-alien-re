@@ -82,6 +82,8 @@
   "auto_complete_global_effects": {
     "reviewed": {
       "full": {
+        "0x407250": "SC_FireAlarm plane wall-hit scold increment dynamic global initializer is represented in globals.cpp",
+        "0x407270": "SC_FireAlarm teacher-hit scold increment dynamic global initializer is represented in globals.cpp",
         "0x4205A0": "GameWindow CRT constructor thunk is covered by global g_GameWindow in main.cpp",
         "0x4205C0": "GameWindow CRT destructor/atexit thunk is covered by global g_GameWindow in main.cpp",
         "0x423640": "g_PendingAction_00472d58 SpriteAction destructor thunk is covered by the globals.cpp object",
@@ -97,8 +99,12 @@
         "0x42D380": "IconBarEntry CRT guard byte only protects compiler-generated cleanup registration",
         "0x42D3B0": "IconBarEntry vector constructor is covered by global g_IconBarEntries_00473320",
         "0x42D3E0": "IconBarEntry vector destructor/guard is covered by global g_IconBarEntries_00473320",
+        "0x433FC0": "Memory cache size globals are zero-seeded by this CRT initializer and represented in globals.cpp",
         "0x433FF0": "DAT_00473448 Timer constructor thunk is covered by the global Timer in main.cpp",
         "0x434010": "DAT_00473448 Timer destructor/guard thunk is covered by the global Timer in main.cpp",
+        "0x454CC0": "MSVC atexit table allocation updates g_AtExitTableStart_00475088/g_AtExitTableEnd_00475084 at startup",
+        "0x45C130": "MSVC unhandled-exception filter initializer updates CRT-managed filter storage",
+        "0x45C450": "MSVC stdio initializer updates CRT-managed file table storage",
         "0x4420B3": "SC_Pods::LBLParse DERIVED_ENGINE_INFO path writes g_CombatEngine_0046ae78 as in the original",
         "0x44EAA0": "Puzzle GlyphRect vector destructor/guard is covered by g_PuzzleButtonRects_00473d30",
         "0x44EB70": "Door GlyphRect vector destructor/guard is covered by g_DoorRects_00473dc8",
@@ -111,6 +117,10 @@
   "globals": {
     "min_address": "0x00468000",
     "runtime_seeded_globals": {},
+    "runtime_initializer_copies": {
+      "0x00472bd8": "0x0046859c",
+      "0x00472bdc": "0x0046859c"
+    },
     "type_sizes": {
       "ArthurDeferredMessage": 16,
       "ArthurDisplayRectBlock": 12,

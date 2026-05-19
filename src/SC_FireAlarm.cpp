@@ -320,25 +320,27 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     int soundId;
 
-    if (waterHitRange.x <= hitResult && waterHitRange.y >= hitResult) {
-        waterHitCounter.x++;
+    if (kidHitRange.x <= hitResult && kidHitRange.y >= hitResult) {
+        kidHitCounter.x++;
         timerCounter.x += g_FireAlarmTimer_004685a0;
         int done;
-        if (waterHitCounter.y != 0 && waterHitCounter.x >= waterHitCounter.y) {
+        if (kidHitCounter.y != 0 && kidHitCounter.x >= kidHitCounter.y) {
             done = 1;
         } else {
             done = 0;
         }
         if (done) {
             soundList->Play(0xF);
-            waterHitCounter.x = 0;
+            kidHitCounter.x = 0;
             goto returnOne;
         }
         soundId = 3;
         goto playSound;
     }
 
-    if (bellHitRange.x <= hitResult && bellHitRange.y >= hitResult) {
+    // Original FUN_407C20: palette C2-CF plays SOUND 10, labelled SMP_HitTeacher
+    // in CB_FIREALARM.MIS. DAT_00472bd8 is seeded from DAT_0046859c at startup.
+    if (teacherHitRange.x <= hitResult && teacherHitRange.y >= hitResult) {
         soundId = 0xA;
         timerCounter.x += g_FireAlarmField1_00472bd8;
         goto playSound;
@@ -612,26 +614,26 @@ void SC_FireAlarm::OnProcessEnd() {
         g_ZBufferManager_0046aa24->m_palette = (Palette*)paletteDummy;
     }
 
-    bellHitRange.x = 0xC2;
-    bellHitRange.y = 0xCF;
-    waterHitRange.x = 0xB4;
-    waterHitRange.y = 0xC1;
+    teacherHitRange.x = 0xC2;
+    teacherHitRange.y = 0xCF;
+    kidHitRange.x = 0xB4;
+    kidHitRange.y = 0xC1;
     planeClickRange.x = 0xD2;
     alarmSlotRect.top = 0x5B;
     alarmSlotRect.right = 0xEF;
     alarmSlotRect.bottom = 0x6E;
-    bellSlotRect.left = 0x7B;
-    bellSlotRect.top = 0x28;
-    bellSlotRect.right = 0xEE;
-    bellSlotRect.bottom = 0xAB;
+    teacherSlotRect.left = 0x7B;
+    teacherSlotRect.top = 0x28;
+    teacherSlotRect.right = 0xEE;
+    teacherSlotRect.bottom = 0xAB;
     planeClickRange.y = 0xDF;
     alarmSlotRect.left = 0xDF;
     timerCounter.y = g_FireAlarmTimerTarget_0046859c;
     timerCounter.x = 0;
     roundCount = 0;
-    waterHitCounter.x = 0;
+    kidHitCounter.x = 0;
     maxRounds = 7;
-    waterHitCounter.y = 2;
+    kidHitCounter.y = 2;
 
     if (g_InputManager_0046aa08 != 0) {
         g_InputManager_0046aa08->Refresh(1);
