@@ -916,7 +916,7 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
 
     do {
         _splitpath(findData.name, 0, 0, g_Buffer_0046aa00, 0);
-        strcpy((char*)&nodeData, g_Buffer_0046aa00);
+        strcpy(findData.name, g_Buffer_0046aa00);
 
         node = (int*)pool[0];
         while (node != 0) {
