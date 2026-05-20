@@ -242,8 +242,15 @@ verify-calls:
 verify-global-access:
 	@PYTHONPATH=binary-comp/src $(BINARY_COMP) global-access --config $(VERIFY_CONFIG) --target full $(GLOBAL_ACCESS_FLAGS) $(if $(FILTER),$(FILTER))
 
+VALUE_MIN_SIMILARITY ?= 80
+STACK_LOCAL_VALUE_MIN_SIMILARITY ?= 90
+VALUES_FLAGS ?=
+
 verify-values:
-	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity 80
+	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(VALUE_MIN_SIMILARITY) $(VALUES_FLAGS)
+
+verify-values-stack-locals:
+	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(STACK_LOCAL_VALUE_MIN_SIMILARITY) --include-stack-locals $(VALUES_FLAGS)
 
 verify-vtables:
 	@$(BINARY_COMP) vtables --config $(VERIFY_CONFIG) --target full
@@ -281,4 +288,4 @@ debug: TEACHER.EXE | $(DREAMM_BIN)
 
 
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-global-access verify-values verify-vtables run-demo run-demo-original run
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-global-access verify-values verify-values-stack-locals verify-vtables run-demo run-demo-original run

@@ -305,16 +305,15 @@ void __cdecl FileCacheRegister(char* name, int size) {
 
 /* Function start: 0x4332E0 */
 int CDData::LBLParse(char* line) {
-    char token[24];
-    char arg1[16];
+    char token[32];
     char path[128];
 
-    token[0] = 0;
     path[0] = 0;
+    token[0] = 0;
 
     sscanf(line, " %s ", token);
     if (strcmp(token, "COPY_TO_HD") == 0) {
-        sscanf(line, "%s %s", arg1, path);
+        sscanf(line, "%s %s", token, path);
         ResolvePath(path);
         return 0;
     }
@@ -343,7 +342,7 @@ int CDData::ResolvePath(char* name) {
 
     _splitpath(name, 0, pathBuf, drive, 0);
     if (_chdir(pathBuf) != 0) {
-        _mkdir(drive);
+        _mkdir(pathBuf);
     } else {
         _chdir("..");
     }
