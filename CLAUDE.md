@@ -70,7 +70,7 @@ IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is N
 
 After implementing code in a file (e.g. Class::Name):
 
-env PYTHONPATH=binary-comp/src python3 -m binary_comp.cli compare --config config/binary-comp.json --target full Class::Name code-full/FUN_418C70.disassembled.txt
+binary-comp compare --config config/binary-comp.json --target full Class::Name code-full/FUN_418C70.disassembled.txt
 
 This shows compiler errors or the generated instruction diff.
 
