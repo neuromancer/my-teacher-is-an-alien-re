@@ -1,20 +1,21 @@
 # Verification Tools
 
-Makefile-facing verification is handled by `binary-comp` plus the local report
-scripts that have not been migrated yet.
+Makefile-facing verification and comparison are handled by `binary-comp`, with
+the local progress script kept in this repository.
 
 Migrated verifiers:
 
 - `binary-comp globals`
 - `binary-comp calls`
+- `binary-comp compare`
+- `binary-comp report`
 - `binary-comp values`
 - `binary-comp vtables`
+- `binary-comp exe`
 - `binary-comp data`
 
-Local report scripts kept in this repository:
+Local scripts kept in this repository:
 
-- `bin/compileAndReport.py`
-- `bin/compileAndCompare.py`
 - `bin/showProgress.py`
 
 All migrated verifiers read project-specific paths, address ranges, aliases,
@@ -33,8 +34,11 @@ Direct CLI examples:
 ```sh
 binary-comp globals --config config/binary-comp.json --target full
 binary-comp calls --config config/binary-comp.json --target full
+binary-comp compare --config config/binary-comp.json --target full ClassName::MethodName code-full/FUN_XXXXXX.disassembled.txt
+binary-comp report --config config/binary-comp.json --target full
 binary-comp values --config config/binary-comp.json --target full --min-similarity 80
 binary-comp vtables --config config/binary-comp.json --target full
+binary-comp exe --config config/binary-comp.json --target demo --functions
 binary-comp data --config config/binary-comp.json --target full
 ```
 

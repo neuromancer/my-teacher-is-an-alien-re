@@ -14,7 +14,7 @@ CFLAGS = /nologo /c /Og /Oi /Ot /Oy /Ob1 /Gs /Gf /GX /I msvc420\\include /I 3rdp
 DEMO_DATA_URL = https://downloads.scummvm.org/frs/demos/hypno/teacher-windows-demo-en.zip
 OUT_DIR = out
 VERIFY_CONFIG = config/binary-comp.json
-BINARY_COMP ?= /Users/g/.local/bin/binary-comp
+BINARY_COMP ?= env PYTHONPATH=binary-comp/src python3 -m binary_comp.cli
 GLOBALS_MISSING_MIN_ADDRESS = 0x00468000
 # Skip the MSVC CRT/library helper data in 0x0047185c..0x00472bd7.
 GLOBALS_MISSING_MAX_ADDRESS = 0x0047185b
@@ -198,7 +198,7 @@ sort:
 	@python3 bin/sortByAddress.py
 
 report:
-	@python3 bin/compileAndReport.py --config $(VERIFY_CONFIG) $(if $(FILTER),--filter $(FILTER))
+	@$(BINARY_COMP) report --config $(VERIFY_CONFIG) --target full $(if $(FILTER),--filter $(FILTER))
 
 progress:
 	@python3 bin/showProgress.py
@@ -207,7 +207,7 @@ progress-demo:
 	@python3 bin/showProgress.py --demo
 
 report-demo:
-	@python3 bin/compileAndReport.py --config $(VERIFY_CONFIG) --demo
+	@$(BINARY_COMP) report --config $(VERIFY_CONFIG) --target demo
 
 globals:
 	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full
@@ -220,10 +220,10 @@ globals-missing:
 	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --include-code-globals --min-address $(GLOBALS_MISSING_TAIL_MIN_ADDRESS) --max-address $(GLOBALS_MISSING_TAIL_MAX_ADDRESS)
 
 compare:
-	@python3 bin/compareExe.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE
+	@$(BINARY_COMP) exe --config $(VERIFY_CONFIG) --target demo
 
 compare-functions:
-	@python3 bin/compareExe.py re/demo/CDDATA/TEACHER.ORI.EXE TEACHER-DEMO.EXE --functions
+	@$(BINARY_COMP) exe --config $(VERIFY_CONFIG) --target demo --functions
 
 verify:
 	@$(MAKE) verify-globals

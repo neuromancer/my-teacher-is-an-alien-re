@@ -64,15 +64,15 @@ grep -r -i 418C70 code-full
 
 Always use -i to ensure case-insensitive matches.
 
-IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use the python scripts to compare them. Same with the TEACHER.map file, this is *only* for the reimplemented code, not the original assembly.
+IMPORTANT: the assembly produced the compiler is saved `out/*.asm` but this is NOT the original implementation, but file produced by compiler directly from the C code. Use `binary-comp` commands to compare them. Same with the TEACHER.map file, this is *only* for the reimplemented code, not the original assembly.
 
 ### Compiling & Comparing Assembly
 
 After implementing code in a file (e.g. Class::Name):
 
-python3 bin/compileAndCompare.py Class::Name code-full/FUN_418C70.dissasembled.txt
+env PYTHONPATH=binary-comp/src python3 -m binary_comp.cli compare --config config/binary-comp.json --target full Class::Name code-full/FUN_418C70.disassembled.txt
 
-This shows compiler errors or the generated assembly diff.
+This shows compiler errors or the generated instruction diff.
 
 ## Required Files & Documentation
 

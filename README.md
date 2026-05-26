@@ -51,14 +51,14 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 
 | Tool | Purpose |
 |------|---------|
-| `bin/compileAndCompare.py` | Compile a single function and diff its assembly against the original |
-| `bin/compileAndReport.py` | Build everything and produce a per-function similarity report |
+| `binary-comp compare` | Compare a single rebuilt function against the original |
+| `binary-comp report` | Build everything and produce a per-function similarity report |
 | `bin/showProgress.py` | Show overall function coverage |
 | `binary-comp globals` | Verify globals and audit auto-completed CRT/compiler functions that write global storage |
 | `binary-comp calls` | Verify that reconstructed functions call the expected original targets |
 | `binary-comp vtables` | Verify class inheritance, vtable slots, and slot implementations |
 | `binary-comp values` | Compare extracted constants and string references against original disassembly |
-| `bin/compareExe.py` | Compare rebuilt and original executables |
+| `binary-comp exe` | Compare rebuilt and original executable layout and bytes |
 | `binary-comp data` | Compare global/static data sections |
 
 The Makefile-facing report and verifier tools read project-specific paths, address ranges, aliases, type sizes, and known allowances from `config/binary-comp.json`. See `docs/verification-scripts.md` for the reusable tool/config layout.
@@ -69,7 +69,7 @@ The Makefile-facing report and verifier tools read project-specific paths, addre
 
 - [wibo](https://github.com/decompals/wibo) -- Win32 PE loader for running MSVC on Linux/macOS (included as a submodule)
 - [MSVC 4.20](https://github.com/itsmattkc/MSVC420) -- the original compiler (included as a submodule)
-- Python 3.8+ and the packages in `requirements.txt` (`levenshtein`, `tree-sitter`, `tree-sitter-cpp`)
+- Python 3.10+ and the packages in `requirements.txt` (`capstone`, `tree-sitter`, `tree-sitter-cpp`)
 - [DREAMM](https://dreamm.aarongiles.com/) -- Windows 95/98 compatibility layer for running the rebuilt executable (for `make run-demo` only)
 
 ### Setup
@@ -107,10 +107,10 @@ make
 ### Comparing a single function
 
 ```bash
-python3 bin/compileAndCompare.py ClassName::MethodName code-full/FUN_XXXXXX.disassembled.txt
+env PYTHONPATH=binary-comp/src python3 -m binary_comp.cli compare --config config/binary-comp.json --target full ClassName::MethodName code-full/FUN_XXXXXX.disassembled.txt
 ```
 
-This compiles the project, extracts the named function's assembly from the `.asm` output, and shows a side-by-side diff against the original disassembly with a similarity percentage.
+This compiles the project and shows a side-by-side diff of rebuilt and original instructions with a similarity percentage.
 
 ## Target binary
 

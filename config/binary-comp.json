@@ -11,6 +11,7 @@
       "code_export_dir": "../code-full",
       "asm_dir": "../out",
       "map_skip": "src/map",
+      "library_ranges": [["0x454100", "0x460480"]],
       "globals_source": "../src/globals.cpp",
       "globals_header": "../src/globals.h",
       "code_globals_header": "../code-full/globals.h",
@@ -31,6 +32,7 @@
       "code_export_dir": "../code",
       "asm_dir": "../out-demo",
       "map_skip": "src-demo/map",
+      "library_ranges": [["0x424540", "0x4304E0"]],
       "auto_complete": "../src-demo/auto_complete.txt",
       "values": {
         "policy": "checkValuesCapstone.json"
