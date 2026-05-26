@@ -1,3 +1,4 @@
+-e ./binary-comp
 capstone
 tree-sitter
 tree-sitter-cpp

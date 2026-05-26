@@ -40,7 +40,7 @@ The project uses a combination of manual reverse engineering and LLM-assisted it
 
 1. **Disassembly**: Functions are extracted from the original binary using Ghidra, producing both disassembly and decompiled output.
 2. **Implementation**: Each function is reimplemented in C++ guided by the disassembly (the only source of truth -- decompiled output is treated as a hint, not authoritative).
-3. **Comparison**: The reimplemented code is compiled with the original MSVC 4.20 compiler, then `binary-comp` compares rebuilt instructions, calls, globals, data, values, and vtables against the original binary and Ghidra exports.
+3. **Comparison**: The reimplemented code is compiled with the original MSVC 4.20 compiler, then [`binary-comp`](https://github.com/neuromancer/binary-comp) compares rebuilt instructions, calls, globals, data, values, and vtables against the original binary and Ghidra exports.
 4. **Iteration**: The code is refined until similarity reaches >= 90%, often 100%.
 
 LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/index/codex/)) are used to accelerate step 2 and 4, making the process scalable to hundreds of functions. The workflow is described in the `CLAUDE.md` file.
@@ -59,6 +59,8 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 | `binary-comp exe` | Compare rebuilt and original executable layout and bytes |
 | `binary-comp data` | Compare global/static data sections |
 
+[`binary-comp`](https://github.com/neuromancer/binary-comp) is included in this repository under `binary-comp/` and is installed as an editable local package by `requirements.txt`.
+
 The Makefile-facing report and verifier tools read project-specific paths, address ranges, aliases, type sizes, and known allowances from `config/binary-comp.json`. See `docs/verification-scripts.md` for the reusable tool/config layout.
 
 ## Building
@@ -67,7 +69,7 @@ The Makefile-facing report and verifier tools read project-specific paths, addre
 
 - [wibo](https://github.com/decompals/wibo) -- Win32 PE loader for running MSVC on Linux/macOS (included as a submodule)
 - [MSVC 4.20](https://github.com/itsmattkc/MSVC420) -- the original compiler (included as a submodule)
-- Python 3.10+ and the packages in `requirements.txt` (`capstone`, `tree-sitter`, `tree-sitter-cpp`)
+- Python 3.10+ and the packages in `requirements.txt`, including the local `binary-comp` CLI and its analyzer dependencies
 - [DREAMM](https://dreamm.aarongiles.com/) -- Windows 95/98 compatibility layer for running the rebuilt executable with `make run` or `make run-demo`
 
 ### Setup
@@ -76,7 +78,6 @@ The Makefile-facing report and verifier tools read project-specific paths, addre
 git clone --recursive <repo-url>
 cd my-teacher-is-an-alien-re
 python3 -m pip install -r requirements.txt
-python3 -m pip install -e ./binary-comp
 make
 ```
 
