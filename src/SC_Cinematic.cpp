@@ -56,11 +56,6 @@ extern "C" void ShowSmackSummary(unsigned int handle)
 
     SmackSummary((void*)handle, summary);
 
-    unsigned int fps = (summary[3] * 100) / summary[0];
-    unsigned int ms100 = (summary[3] * 100) / summary[1];
-    unsigned int decompPct = (summary[8] * 100) / summary[0];
-    unsigned int blitPct = (summary[6] * 1000) / summary[0];
-
     sprintf(buffer,
         "total time = %lu \nMS*100 per frame (100000/MS100PerFrame=Frames/Sec) = %lu "
         "\nTime to open and prepare for decompression = %lu "
@@ -92,7 +87,10 @@ extern "C" void ShowSmackSummary(unsigned int handle)
         summary[12], summary[13], summary[14], summary[15],
         summary[16], summary[17], summary[18], summary[19],
         summary[20],
-        fps, decompPct, blitPct, ms100);
+        (summary[3] * 1000) / summary[0],
+        (summary[8] * 100) / summary[0],
+        (summary[6] * 100) / summary[0],
+        (summary[7] * 100) / summary[0]);
 
     MessageBoxA(0, buffer, "Summary", 0);
 }
