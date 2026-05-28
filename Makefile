@@ -285,6 +285,7 @@ data/full/DATA: data/full/teacher.iso
 	@bsdtar -xf data/full/teacher.iso -C data/full TEACHER.ID 2>/dev/null || true
 	@if [ -f data/full/TEACHER.ID ]; then mv data/full/TEACHER.ID data/full/teacher.id; fi
 	@mv data/full/TEACHER.EXE data/full/TEACHER.ORI.EXE
+	@touch data/full/DATA
 
 run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA $(DREAMM_BIN)
 	cp TEACHER-DEMO.EXE data/demo/CDDATA/TEACHER.EXE
