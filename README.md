@@ -94,6 +94,8 @@ Primary full-game targets:
 | Full game report | `binary-comp report --config config/binary-comp.json --target full` | Per-function similarity report for the full game |
 | Verify globals | `binary-comp globals --config config/binary-comp.json --target full --fail-on-issues --fail-on-warnings` | Check global declarations, addresses, types, and initialized values |
 | Verify call targets | `binary-comp calls --config config/binary-comp.json --target full` | Check reconstructed call targets against original disassembly |
+| Verify values | `binary-comp values --config config/binary-comp.json --target full --min-similarity 80` | Check constants and string references against original disassembly |
+| Verify stack-local values | `binary-comp values --config config/binary-comp.json --target full --min-similarity 90 --include-stack-locals --no-offsets` | Check stack-local constants and strings without stack-frame offset diagnostics |
 | Verify vtables | `binary-comp vtables --config config/binary-comp.json --target full` | Check inheritance, vtable slots, and slot implementations |
 | Compare globals | `binary-comp data --config config/binary-comp.json --target full` | Compare global data sections |
 | Clean full game | `make clean` | Remove full game build artifacts |

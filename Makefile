@@ -227,7 +227,10 @@ compare-functions:
 
 verify:
 	@$(MAKE) verify-globals
+	@$(MAKE) verify-calls
+	@$(MAKE) verify-global-access
 	@$(MAKE) verify-values
+	@$(MAKE) verify-values-stack-locals
 	@$(MAKE) verify-vtables
 
 verify-globals:
@@ -240,17 +243,18 @@ verify-calls:
 	@$(BINARY_COMP) calls --config $(VERIFY_CONFIG) --target full
 
 verify-global-access:
-	@PYTHONPATH=binary-comp/src $(BINARY_COMP) global-access --config $(VERIFY_CONFIG) --target full $(GLOBAL_ACCESS_FLAGS) $(if $(FILTER),$(FILTER))
+	@$(BINARY_COMP) global-access --config $(VERIFY_CONFIG) --target full $(GLOBAL_ACCESS_FLAGS) $(if $(FILTER),$(FILTER))
 
 VALUE_MIN_SIMILARITY ?= 80
 STACK_LOCAL_VALUE_MIN_SIMILARITY ?= 90
+STACK_LOCAL_VALUES_FLAGS ?= --no-offsets
 VALUES_FLAGS ?=
 
 verify-values:
 	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(VALUE_MIN_SIMILARITY) $(VALUES_FLAGS)
 
 verify-values-stack-locals:
-	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(STACK_LOCAL_VALUE_MIN_SIMILARITY) --include-stack-locals $(VALUES_FLAGS)
+	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(STACK_LOCAL_VALUE_MIN_SIMILARITY) --include-stack-locals $(STACK_LOCAL_VALUES_FLAGS) $(VALUES_FLAGS)
 
 verify-vtables:
 	@$(BINARY_COMP) vtables --config $(VERIFY_CONFIG) --target full
