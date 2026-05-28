@@ -288,7 +288,7 @@ data/full/DATA: data/full/teacher.iso
 	@touch data/full/DATA
 
 run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA $(DREAMM_BIN)
-	cp TEACHER-DEMO.EXE data/demo/CDDATA/TEACHER.EXE
+	cp -f TEACHER-DEMO.EXE data/demo/CDDATA/TEACHER.EXE
 	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.EXE
 
 run-demo-original: | data/demo/CDDATA $(DREAMM_BIN)
@@ -296,7 +296,7 @@ run-demo-original: | data/demo/CDDATA $(DREAMM_BIN)
 
 run: TEACHER.EXE | data/full/DATA $(DREAMM_BIN)
 	@mkdir -p data/full/hd
-	cp TEACHER.EXE data/full/TEACHER.EXE
+	cp -f TEACHER.EXE data/full/TEACHER.EXE
 	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.EXE
 
 run-original: | data/full/DATA $(DREAMM_BIN)
@@ -305,7 +305,7 @@ run-original: | data/full/DATA $(DREAMM_BIN)
 
 debug: TEACHER.EXE | data/full/DATA $(DREAMM_BIN)
 	@mkdir -p data/full/hd
-	cp TEACHER.EXE data/full/TEACHER.EXE
+	cp -f TEACHER.EXE data/full/TEACHER.EXE
 	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -debug -launch TEACHER.EXE
 
 
