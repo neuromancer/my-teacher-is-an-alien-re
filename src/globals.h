@@ -591,7 +591,7 @@ extern int g_DebugFlag_00472ddc;          // Debug/init flag checked in main
 extern char g_CmdLineInputMode_00472de0;  // Command line -J/-K input mode (1=J, 2=K)
 extern int g_DirectSoundFlag_0046a87c;    // DirectSound flag, cleared by /nods
 extern PCMWAVEFORMAT g_PcmWaveFormat_00472dc8;
-extern char g_CdDataPath_00472de8[260];   // Command line /cd= path passed to CDData
+extern char g_CdDataPath_00472de8[64];    // Command line /cd= path passed to CDData
 // 0x0043d5b0: Sprite index tracking array (not yet implemented, used in FUN_41A9D0/FUN_41A9E0)
 // 0x0043d5b4: Element [1] of DAT_0043d5b0 array
 // 0x0043d630: Defined above as g_SpriteFilenameTable_0043d630[0x4000]

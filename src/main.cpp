@@ -406,8 +406,6 @@ void ShutdownGameSystems(void) {
   }
 }
 
-char g_CdDataPath_00472de8[260];
-
 /* Function start: 0x424BB0 */
 void CreateGameObject_1() {
   CDData* cd = new CDData(g_CdDataPath_00472de8, "teacher.id", "Missing the Teacher CD ROM");

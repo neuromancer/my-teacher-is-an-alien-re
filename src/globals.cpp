@@ -109,10 +109,6 @@ char g_TextMetric_0046f02e[256] = {0};                       // 0x00439446
 
 // --- 0x0043dxxx ---
 char g_PuzzleState_0043d0f8 = 0;                             // 0x0043d0f8
-int g_DebugFlag_00472ddc = 0;                                // 0x0043d55c
-int g_CmdLineAudioMode_00472dd8 = 0;                        // 0x0043d558
-char g_CmdLineInputMode_00472de0 = 0;                       // 0x0043d560
-int g_DirectSoundFlag_0046a87c = 1;                          // 0x0046a87c
 char g_SpriteFilenameTable_0043d630[0x4000] = {0};           // 0x0043d630
 HWND g_GameHWnd_0043de7c = 0;                                // 0x0043de7c
 
@@ -394,6 +390,7 @@ char s_TEST_STRINGS_0046a704[13] = "TEST_STRINGS";          // 0x0046a704
 char s_CACHE_SIZE_0046a7dc[11] = "CACHE_SIZE";              // 0x0046a7dc
 char s_MessagePoster_0046a830[14] = "MessagePoster";        // 0x0046a830
 char s_Missing_the_Teacher_CD_ROM_0046a860[27] = "Missing the Teacher CD ROM"; // 0x0046a860
+int g_DirectSoundFlag_0046a87c = 1;                          // 0x0046a87c
 char s_workbuff_must_be_first_vb_create_0046aa58[39] = "workbuff must be first vb created '%d'"; // 0x0046aa58
 char s_dest_string_too_small_0046aa84[22] = "dest string too small"; // 0x0046aa84
 char s_missing_string_0046aab8[15] = "missing string";       // 0x0046aab8
@@ -725,7 +722,11 @@ SpriteAction g_IconBarAction_00472d20;                       // 0x00472d20
 SpriteAction g_PendingAction_00472d58;                       // 0x00472d58
 SpriteAction g_HotspotAction_00472d90;                       // 0x00472d90
 PCMWAVEFORMAT g_PcmWaveFormat_00472dc8;                      // 0x00472dc8
+int g_CmdLineAudioMode_00472dd8 = 0;                         // 0x00472dd8
+int g_DebugFlag_00472ddc = 0;                                // 0x00472ddc
+char g_CmdLineInputMode_00472de0 = 0;                        // 0x00472de0
 int g_DevelopFlag_00472de4 = 0;                              // 0x00472de4
+char g_CdDataPath_00472de8[64] = {0};                        // 0x00472de8
 char g_LogEnabled_00472e28 = 0;                              // 0x00472e28
 int g_StartBlock_00472e2c = 0;                               // 0x00472e2c
 char g_StringTable_00472e30[640] = {0};                      // 0x00472e30 — 20 command-line string slots
