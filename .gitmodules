@@ -3,4 +3,4 @@
 	url = https://github.com/itsmattkc/MSVC420
 [submodule "wibo-src"]
 	path = wibo-src
-	url = https://github.com/decompals/wibo
+	url = https://github.com/neuromancer/wibo

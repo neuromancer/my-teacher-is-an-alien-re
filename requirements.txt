@@ -1,4 +1,4 @@
--e ./binary-comp
+binary-comp @ https://github.com/neuromancer/binary-comp/archive/refs/heads/main.zip
 capstone
 tree-sitter
 tree-sitter-cpp

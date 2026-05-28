@@ -59,7 +59,7 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 | `binary-comp exe` | Compare rebuilt and original executable layout and bytes |
 | `binary-comp data` | Compare global/static data sections |
 
-[`binary-comp`](https://github.com/neuromancer/binary-comp) is included in this repository under `binary-comp/` and is installed as an editable local package by `requirements.txt`.
+[`binary-comp`](https://github.com/neuromancer/binary-comp) is a separate project; `requirements.txt` installs it directly from the GitHub `main` branch zip. Pin to a tag or commit in that line if you need a reproducible build.
 
 The Makefile-facing report and verifier tools read project-specific paths, address ranges, aliases, type sizes, and known allowances from `config/binary-comp.json`. See `docs/verification-scripts.md` for the reusable tool/config layout.
 

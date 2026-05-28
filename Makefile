@@ -159,6 +159,13 @@ $(WIBO):
 	cd wibo-src && cmake --preset $(WIBO_PRESET) && cmake --build --preset $(WIBO_PRESET)
 	ln -sf $(WIBO_BIN) $@
 
+# The MSVC420 submodule ships an msvcrt40.dll that doesn't work with wibo;
+# overwrite it with the vendored copy in 3rdparty/ before invoking CL/LINK.
+MSVCRT_DLL = compilers/msvc420/bin/msvcrt40.dll
+
+$(MSVCRT_DLL): 3rdparty/msvcrt40.dll
+	cp -f $< $@
+
 $(DREAMM_BIN):
 	@mkdir -p $(DREAMM_DIR)
 	@echo "Downloading DREAMM $(DREAMM_VERSION)..."
@@ -173,18 +180,18 @@ else
 endif
 	@rm $(DREAMM_DIR)/$(DREAMM_ARCHIVE)
 
-TEACHER.EXE: $(OBJS)
+TEACHER.EXE: $(OBJS) | $(MSVCRT_DLL)
 	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /SUBSYSTEM:WINDOWS /ENTRY:WinMainCRTStartup /MAP:TEACHER.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
 
-TEACHER-DEMO.EXE: $(OBJS_DEMO)
+TEACHER-DEMO.EXE: $(OBJS_DEMO) | $(MSVCRT_DLL)
 	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /SUBSYSTEM:WINDOWS /ENTRY:WinMainCRTStartup /MAP:TEACHER-DEMO.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
 
-$(OUT_DIR)/%.obj $(OUT_DIR)/%.asm: src/%.cpp | $(WIBO)
+$(OUT_DIR)/%.obj $(OUT_DIR)/%.asm: src/%.cpp | $(WIBO) $(MSVCRT_DLL)
 	@mkdir -p $(OUT_DIR)
 	@env INCLUDE='$(MSVC_INC)' $(CC) $(CFLAGS) $< /Fo$(OUT_DIR)/$*.obj /Fa$(OUT_DIR)/$*.asm > $(OUT_DIR)/$*.stdout
 
 # Demo build rule
-$(OUT_DIR_DEMO)/%.obj $(OUT_DIR_DEMO)/%.asm: src-demo/%.cpp | $(WIBO)
+$(OUT_DIR_DEMO)/%.obj $(OUT_DIR_DEMO)/%.asm: src-demo/%.cpp | $(WIBO) $(MSVCRT_DLL)
 	@mkdir -p $(OUT_DIR_DEMO)
 	@env INCLUDE='$(MSVC_INC)' $(CC) $(CFLAGS) $< /Fo$(OUT_DIR_DEMO)/$*.obj /Fa$(OUT_DIR_DEMO)/$*.asm > $(OUT_DIR_DEMO)/$*.stdout
 
