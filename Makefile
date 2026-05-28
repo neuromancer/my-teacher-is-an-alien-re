@@ -266,6 +266,19 @@ data/demo/CDDATA:
 	@rm -f data/teacher-demo.zip
 	@mv data/demo/CDDATA/TEACHER.EXE data/demo/CDDATA/TEACHER.ORIGINAL.EXE
 
+data/full/teacher.iso:
+	@echo "Error: data/full/teacher.iso not found. Place the retail CD-ROM image there first." >&2
+	@exit 1
+
+data/full/DATA: data/full/teacher.iso
+	@command -v bsdtar >/dev/null 2>&1 || \
+		(echo "Error: bsdtar required for ISO extraction (install libarchive)" >&2 && exit 1)
+	@echo "Extracting game files from teacher.iso..."
+	@bsdtar -xf data/full/teacher.iso -C data/full --strip-components=1 CDDATA
+	@bsdtar -xf data/full/teacher.iso -C data/full TEACHER.ID 2>/dev/null || true
+	@if [ -f data/full/TEACHER.ID ]; then mv data/full/TEACHER.ID data/full/teacher.id; fi
+	@mv data/full/TEACHER.EXE data/full/TEACHER.ORI.EXE
+
 run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA $(DREAMM_BIN)
 	cp TEACHER-DEMO.EXE data/demo/CDDATA/TEACHER.EXE
 	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.EXE
@@ -273,23 +286,20 @@ run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA $(DREAMM_BIN)
 run-demo-original: | data/demo/CDDATA $(DREAMM_BIN)
 	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.ORIGINAL.EXE
 
-run: TEACHER.EXE | $(DREAMM_BIN)
-	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
+run: TEACHER.EXE | data/full/DATA $(DREAMM_BIN)
 	@mkdir -p data/full/hd
 	cp TEACHER.EXE data/full/TEACHER.EXE
 	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.EXE
 
-run-original: | data/full/CDDATA $(DREAMM_BIN)
-	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
+run-original: | data/full/DATA $(DREAMM_BIN)
 	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.ORI.EXE
 
 
-debug: TEACHER.EXE | $(DREAMM_BIN)
-	@test -f data/full/teacher.iso || (echo "Error: data/full/teacher.iso not found. Place the game ISO there first." && exit 1)
+debug: TEACHER.EXE | data/full/DATA $(DREAMM_BIN)
 	@mkdir -p data/full/hd
 	cp TEACHER.EXE data/full/TEACHER.EXE
 	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -debug -launch TEACHER.EXE
 
 
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-global-access verify-values verify-values-stack-locals verify-vtables run-demo run-demo-original run
+.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-global-access verify-values verify-values-stack-locals verify-vtables run-demo run-demo-original run run-original debug

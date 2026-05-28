@@ -70,7 +70,7 @@ The Makefile-facing report and verifier tools read project-specific paths, addre
 - [wibo](https://github.com/decompals/wibo) -- Win32 PE loader for running MSVC on Linux/macOS (included as a submodule)
 - [MSVC 4.20](https://github.com/itsmattkc/MSVC420) -- the original compiler (included as a submodule)
 - Python 3.10+ and the packages in `requirements.txt`, including the local `binary-comp` CLI and its analyzer dependencies
-- [DREAMM](https://dreamm.aarongiles.com/) -- Windows 95/98 compatibility layer for running the rebuilt executable with `make run` or `make run-demo`
+- [DREAMM](https://dreamm.aarongiles.com/) -- Windows 95/98 compatibility layer used by `make run` and `make run-demo` (auto-downloaded into `.dreamm/` on first run)
 
 ### Setup
 
@@ -81,6 +81,50 @@ python3 -m pip install -r requirements.txt
 make
 ```
 
+### Data layout
+
+The repository ships no game assets. The `data/` directory has one subtree per build target, and what you need to provide differs between them:
+
+```
+data/
+├── demo/                          # Managed automatically by `make run-demo`
+│   └── CDDATA/                    # Downloaded from scummvm.org on first run
+│       ├── TEACHER.EXE            # Overwritten with the rebuilt TEACHER-DEMO.EXE
+│       ├── TEACHER.ORIGINAL.EXE   # Original demo binary (renamed at download)
+│       ├── DATA/                  # Game assets (MIS, CINE, AUDIO, ELEMENTS, ...)
+│       ├── MSS16.DLL, MSS32.DLL   # Miles Sound System
+│       └── SMACKW32.DLL           # Smacker video codec
+│
+└── full/                          # User-provided
+    ├── teacher.iso                # REQUIRED -- retail CD-ROM image (see Target Binaries for SHA256)
+    ├── TEACHER.ORI.EXE            # Original CDDATA/TEACHER.EXE, renamed
+    ├── TEACHER.EXE                # Auto-copied from the project root before launch
+    ├── teacher.id                 # From TEACHER.ID at the ISO root (HASP/CD-key stub)
+    ├── MSS16.DLL                  # From CDDATA/  -- Miles Sound System
+    ├── MSS32.DLL                  # From CDDATA/
+    ├── MSSB16.TSK                 # From CDDATA/
+    ├── SMACKW32.DLL               # From CDDATA/  -- Smacker video codec
+    ├── DATA/                      # From CDDATA/DATA/ -- game assets (~455 MB)
+    └── hd/                        # Auto-created on first `make run` -- DREAMM's writable C: drive
+```
+
+For the **demo**, you don't need to provide anything: `make run-demo` downloads the demo bundle from ScummVM's mirror, renames the original `TEACHER.EXE` to `TEACHER.ORIGINAL.EXE`, and drops the rebuilt executable in its place.
+
+For the **full game**, you must supply a copy of the retail CD-ROM and place its image at `data/full/teacher.iso`. The ISO alone is not enough -- the game expects its DLLs and `DATA/` tree next to the executable -- so the contents of `CDDATA/` on the ISO need to be extracted into `data/full/`. The on-disc layout is:
+
+```
+teacher.iso (ISO root)
+├── AUTORUN.INF, HINTS.TXT, README.TXT, SETUP.EXE
+├── TEACHER.ID                     # -> data/full/teacher.id
+├── ALIEN_WEBLINK/, REDIST/        # not needed
+└── CDDATA/                        # contents flatten into data/full/
+    ├── TEACHER.EXE                # rename to TEACHER.ORI.EXE
+    ├── MSS16.DLL, MSS32.DLL, MSSB16.TSK, SMACKW32.DLL
+    └── DATA/                      # the bulk of the game assets
+```
+
+You can extract it with any ISO 9660 reader (`bsdtar -xf teacher.iso`, 7-Zip, `hdiutil` on macOS, or a loop-mount on Linux). At runtime DREAMM still mounts `teacher.iso` as `D:` (for the in-game CD check) while reading the actual game files from the local `data/full/` directory.
+
 ### Build targets
 
 Primary full-game targets:
@@ -90,6 +134,8 @@ Primary full-game targets:
 | Full game (default) | `make` | Compile full game sources (`src/` -> `out/`) |
 | Link full game | `make TEACHER.EXE` | Link the full game executable |
 | Run full game | `make run` | Build and run the full game in DREAMM (requires `data/full/teacher.iso`) |
+| Run original full game | `make run-original` | Run the original `TEACHER.ORI.EXE` in DREAMM (requires `data/full/teacher.iso`) |
+| Debug full game | `make debug` | Build and launch the full game with DREAMM's debugger attached |
 | Full game progress | `make progress` | Show function coverage for the full game |
 | Full game report | `binary-comp report --config config/binary-comp.json --target full` | Per-function similarity report for the full game |
 | Verify globals | `binary-comp globals --config config/binary-comp.json --target full --fail-on-issues --fail-on-warnings` | Check global declarations, addresses, types, and initialized values |
@@ -107,11 +153,25 @@ Secondary demo/reference targets:
 | Demo | `make demo` | Compile demo sources (`src-demo/` -> `out-demo/`) |
 | Link demo | `make TEACHER-DEMO.EXE` | Link the demo executable |
 | Run demo | `make run-demo` | Build, download data if needed, and run the demo in DREAMM |
+| Run original demo | `make run-demo-original` | Run the original demo `TEACHER.ORIGINAL.EXE` in DREAMM |
 | Demo progress | `make progress-demo` | Show function coverage for the demo |
 | Demo report | `binary-comp report --config config/binary-comp.json --target demo` | Per-function similarity report for the demo |
 | Compare demo executable | `binary-comp exe --config config/binary-comp.json --target demo` | Byte-level comparison of original vs rebuilt demo |
 | Compare demo functions | `binary-comp exe --config config/binary-comp.json --target demo --functions` | Function-level comparison of original vs rebuilt demo |
 | Clean demo | `make clean-demo` | Remove demo build artifacts |
+
+### Debugging in DREAMM
+
+`make debug` boots the full game under DREAMM's integrated kernel debugger (WDEB386). It halts at the initial breakpoint before the game starts; the debugger console takes commands directly.
+
+Recommended starting sequence:
+
+```
+bpex *    # break on every exception (access violations, divide-by-zero, etc.)
+g         # go -- resume execution until a breakpoint or exception fires
+```
+
+`bpex *` is essential: the reconstructed binary will diverge from the original at the first faulting instruction, and without an exception breakpoint Windows 95 will swallow the fault and the game will appear to hang or silently exit. When the debugger breaks in, use `r` to inspect registers and `u eip` to disassemble around the fault.
 
 ### Comparing a single function
 
