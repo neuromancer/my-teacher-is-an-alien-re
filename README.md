@@ -83,47 +83,18 @@ make
 
 ### Data layout
 
-The repository ships no game assets. The `data/` directory has one subtree per build target, and what you need to provide differs between them:
+The repository ships no game assets, so `data/` starts empty. Each target manages its own subtree:
 
-```
-data/
-├── demo/                          # Managed automatically by `make run-demo`
-│   └── CDDATA/                    # Downloaded from scummvm.org on first run
-│       ├── TEACHER.EXE            # Overwritten with the rebuilt TEACHER-DEMO.EXE
-│       ├── TEACHER.ORIGINAL.EXE   # Original demo binary (renamed at download)
-│       ├── DATA/                  # Game assets (MIS, CINE, AUDIO, ELEMENTS, ...)
-│       ├── MSS16.DLL, MSS32.DLL   # Miles Sound System
-│       └── SMACKW32.DLL           # Smacker video codec
-│
-└── full/                          # User-provided
-    ├── teacher.iso                # REQUIRED -- retail CD-ROM image (see Target Binaries for SHA256)
-    ├── TEACHER.ORI.EXE            # Original CDDATA/TEACHER.EXE, renamed
-    ├── TEACHER.EXE                # Auto-copied from the project root before launch
-    ├── teacher.id                 # From TEACHER.ID at the ISO root (HASP/CD-key stub)
-    ├── MSS16.DLL                  # From CDDATA/  -- Miles Sound System
-    ├── MSS32.DLL                  # From CDDATA/
-    ├── MSSB16.TSK                 # From CDDATA/
-    ├── SMACKW32.DLL               # From CDDATA/  -- Smacker video codec
-    ├── DATA/                      # From CDDATA/DATA/ -- game assets (~455 MB)
-    └── hd/                        # Auto-created on first `make run` -- DREAMM's writable C: drive
-```
+- **Demo** -- nothing to do. `make run-demo` downloads the bundle from ScummVM's mirror into `data/demo/CDDATA/`, swaps in the rebuilt `TEACHER-DEMO.EXE`, and launches DREAMM.
 
-For the **demo**, you don't need to provide anything: `make run-demo` downloads the demo bundle from ScummVM's mirror, renames the original `TEACHER.EXE` to `TEACHER.ORIGINAL.EXE`, and drops the rebuilt executable in its place.
+- **Full game** -- supply the retail CD-ROM image once:
 
-For the **full game**, you must supply a copy of the retail CD-ROM and place its image at `data/full/teacher.iso`. The ISO alone is not enough -- the game expects its DLLs and `DATA/` tree next to the executable -- so the contents of `CDDATA/` on the ISO need to be extracted into `data/full/`. The on-disc layout is:
+  ```bash
+  mkdir -p data/full
+  cp /path/to/teacher.iso data/full/
+  ```
 
-```
-teacher.iso (ISO root)
-├── AUTORUN.INF, HINTS.TXT, README.TXT, SETUP.EXE
-├── TEACHER.ID                     # -> data/full/teacher.id
-├── ALIEN_WEBLINK/, REDIST/        # not needed
-└── CDDATA/                        # contents flatten into data/full/
-    ├── TEACHER.EXE                # rename to TEACHER.ORI.EXE
-    ├── MSS16.DLL, MSS32.DLL, MSSB16.TSK, SMACKW32.DLL
-    └── DATA/                      # the bulk of the game assets
-```
-
-You can extract it with any ISO 9660 reader (`bsdtar -xf teacher.iso`, 7-Zip, `hdiutil` on macOS, or a loop-mount on Linux). At runtime DREAMM still mounts `teacher.iso` as `D:` (for the in-game CD check) while reading the actual game files from the local `data/full/` directory.
+  Then `make run`. The Makefile extracts `CDDATA/` from the ISO into `data/full/` (TEACHER.EXE renamed to TEACHER.ORI.EXE, plus MSS/Smacker DLLs and the `DATA/` tree), creates `data/full/hd/` as DREAMM's writable `C:` drive, copies the rebuilt `TEACHER.EXE` into place, and mounts the ISO as `D:` for the in-game CD check. Extraction requires `bsdtar` (libarchive); it runs once and is a no-op on later invocations.
 
 ### Build targets
 
