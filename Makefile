@@ -12,6 +12,7 @@ MSVC_LIB = compilers\msvc420\lib;compilers\msvc420\mfc\lib
 
 CFLAGS = /nologo /c /Og /Oi /Ot /Oy /Ob1 /Gs /Gf /GX /I msvc420\\include /I 3rdparty\\miles\\include /I 3rdparty\\smack\\include
 DEMO_DATA_URL = https://downloads.scummvm.org/frs/demos/hypno/teacher-windows-demo-en.zip
+CODE_FULL_URL = https://github.com/neuromancer/my-teacher-is-an-alien-re/releases/download/0.0.0/code-full.tar.gz
 OUT_DIR = out
 VERIFY_CONFIG = config/binary-comp.json
 BINARY_COMP ?= env PYTHONPATH=binary-comp/src python3 -m binary_comp.cli
@@ -204,7 +205,7 @@ clean-demo:
 sort:
 	@python3 bin/sortByAddress.py
 
-report:
+report: | code-full
 	@$(BINARY_COMP) report --config $(VERIFY_CONFIG) --target full $(if $(FILTER),--filter $(FILTER))
 
 progress:
@@ -216,13 +217,13 @@ progress-demo:
 report-demo:
 	@$(BINARY_COMP) report --config $(VERIFY_CONFIG) --target demo
 
-globals:
+globals: | code-full
 	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full
 
-globals-verbose:
+globals-verbose: | code-full
 	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full --verbose
 
-globals-missing:
+globals-missing: | code-full
 	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --include-code-globals --min-address $(GLOBALS_MISSING_MIN_ADDRESS) --max-address $(GLOBALS_MISSING_MAX_ADDRESS)
 	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --include-code-globals --min-address $(GLOBALS_MISSING_TAIL_MIN_ADDRESS) --max-address $(GLOBALS_MISSING_TAIL_MAX_ADDRESS)
 
@@ -240,16 +241,16 @@ verify:
 	@$(MAKE) verify-values-stack-locals
 	@$(MAKE) verify-vtables
 
-verify-globals:
+verify-globals: | code-full
 	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --fail-on-issues --fail-on-warnings
 
-audit-auto-complete-globals:
+audit-auto-complete-globals: | code-full
 	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --show-auto-complete-reviewed
 
-verify-calls:
+verify-calls: | code-full
 	@$(BINARY_COMP) calls --config $(VERIFY_CONFIG) --target full
 
-verify-global-access:
+verify-global-access: | code-full
 	@$(BINARY_COMP) global-access --config $(VERIFY_CONFIG) --target full $(GLOBAL_ACCESS_FLAGS) $(if $(FILTER),$(FILTER))
 
 VALUE_MIN_SIMILARITY ?= 80
@@ -257,13 +258,13 @@ STACK_LOCAL_VALUE_MIN_SIMILARITY ?= 90
 STACK_LOCAL_VALUES_FLAGS ?= --no-offsets
 VALUES_FLAGS ?=
 
-verify-values:
+verify-values: | code-full
 	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(VALUE_MIN_SIMILARITY) $(VALUES_FLAGS)
 
-verify-values-stack-locals:
+verify-values-stack-locals: | code-full
 	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(STACK_LOCAL_VALUE_MIN_SIMILARITY) --include-stack-locals $(STACK_LOCAL_VALUES_FLAGS) $(VALUES_FLAGS)
 
-verify-vtables:
+verify-vtables: | code-full
 	@$(BINARY_COMP) vtables --config $(VERIFY_CONFIG) --target full
 
 data/demo/CDDATA:
@@ -272,6 +273,16 @@ data/demo/CDDATA:
 	@unzip -o data/teacher-demo.zip -d data/demo
 	@rm -f data/teacher-demo.zip
 	@mv data/demo/CDDATA/TEACHER.EXE data/demo/CDDATA/TEACHER.ORIGINAL.EXE
+
+# code-full/ holds the Ghidra-exported disassembly used by binary-comp.
+# Never overwrite an existing tree (users may have updated exports locally).
+code-full:
+	@test ! -d code-full || \
+		(echo "code-full/ already present; refusing to overwrite. Remove it manually to re-download." >&2 && exit 1)
+	@echo "Downloading code-full from $(CODE_FULL_URL)..."
+	@curl -L -o code-full.tar.gz $(CODE_FULL_URL)
+	@tar xzf code-full.tar.gz
+	@rm -f code-full.tar.gz
 
 data/full/teacher.iso:
 	@echo "Error: data/full/teacher.iso not found. Place the retail CD-ROM image there first." >&2
