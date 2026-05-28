@@ -12,7 +12,16 @@ This repository contains no game assets, executables, or other copyrighted mater
 
 ## Status
 
-The full retail game (`src/`) is the primary reconstruction target. The demo (`src-demo/`) is kept as a secondary reference because it shares many systems and is useful for cross-checking behavior.
+Both the full game and demo are fully playable. Some screenshots running in DREAMM:
+
+<img width="378" height="304" alt="Screenshot 2026-05-28 at 16 38 32" src="https://github.com/user-attachments/assets/a0ac2b7e-36ea-4e8a-b6ad-d5e4988e2a83" />
+
+<img width="378" height="304" alt="Screenshot 2026-05-28 at 16 38 49" src="https://github.com/user-attachments/assets/48145419-1bd6-4d46-8938-dbad3834d920" />
+
+<img width="378" height="304" alt="Screenshot 2026-05-28 at 16 39 23" src="https://github.com/user-attachments/assets/92aa397b-e4b0-47cb-8451-0114167025bc" />
+
+<img width="378" height="304" alt="Screenshot 2026-05-28 at 16 46 11" src="https://github.com/user-attachments/assets/8d31a2f7-9517-44fa-acb8-ca78bae252d0" />
+
 
 ### Full Game Target
 
