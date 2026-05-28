@@ -25,19 +25,19 @@ Both the full game and demo are fully playable. Some screenshots running in DREA
 
 ### Full Game Target
 
-**Progress: 1404 / 1405 (99.93%)** -- 583 auto-complete functions marked
+**Progress: 1405 / 1405 (100.00%)** -- 584 auto-complete functions marked
 
 Latest `binary-comp report --config config/binary-comp.json --target full` summary:
 
 | Metric | Count |
 |--------|-------|
-| Compared functions | 1125 |
-| Exact matches | 496 |
-| Similarity >= 90% | 873 |
-| Similarity < 90% | 252 |
+| Compared functions | 1129 |
+| Exact matches | 542 |
+| Similarity >= 90% | 950 |
+| Similarity < 90% | 179 |
 | Errors / NOT FOUND | 0 |
-| Missing Ghidra assembly | 0 |
-| Average similarity | 89.88% |
+| Missing Ghidra assembly | 1 |
+| Average similarity | 92.99% |
 
 ### Demo Reference
 
