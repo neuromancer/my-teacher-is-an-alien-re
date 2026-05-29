@@ -1,51 +1,115 @@
-# Makefile for My Teacher is an Alien
+# My Teacher is an Alien source reconstruction Makefile.
+#
+# This build intentionally uses the original Microsoft Visual C++ 4.20
+# toolchain under wibo.  Matching that compiler, its flags, and the linker
+# input order is part of the recovery process: binary-comp checks the rebuilt
+# executable against the original at the instruction and data-layout level.
+#
+# Common entry points:
+#   make TEACHER.EXE        # full-game executable
+#   make TEACHER-DEMO.EXE   # demo executable
+#   make run                # build and launch the full game in DREAMM
+#   make run-demo           # build and launch the demo in DREAMM
+#   make verify             # run the primary recovery verification checklist
 
-# Compiler and flags
+# ---------------------------------------------------------------------------
+# Original toolchain
+# ---------------------------------------------------------------------------
+
 WIBO = ./wibo
 CC = $(WIBO) compilers/msvc420/bin/CL.EXE
 LINK = $(WIBO) compilers/msvc420/bin/LINK.EXE
 
-# Environment variables for MSVC
-# Note: Paths are relative to project root, formatted for Windows
+# MSVC expects Windows-style include/library search paths.  The recipes pass
+# these through the host shell to wibo, so command-line /I paths use doubled
+# backslashes while env vars keep normal Windows separators.
 MSVC_INC = compilers\msvc420\include;compilers\msvc420\mfc\include
 MSVC_LIB = compilers\msvc420\lib;compilers\msvc420\mfc\lib
 
-CFLAGS = /nologo /c /Og /Oi /Ot /Oy /Ob1 /Gs /Gf /GX /I msvc420\\include /I 3rdparty\\miles\\include /I 3rdparty\\smack\\include
+# Keep these flags synchronized with the recovered binary.  Changing optimizer
+# or codegen flags will usually invalidate binary-comp comparisons.
+CFLAGS = \
+	/nologo \
+	/c \
+	/Og /Oi /Ot /Oy /Ob1 \
+	/Gs /Gf /GX \
+	/I msvc420\\include \
+	/I 3rdparty\\miles\\include \
+	/I 3rdparty\\smack\\include
+
+LINKFLAGS = /nologo /SUBSYSTEM:WINDOWS /ENTRY:WinMainCRTStartup
+GAME_LIBPATH = $(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32
+GAME_LIBS = \
+	mss32.lib \
+	smackw32.lib \
+	kernel32.lib \
+	user32.lib \
+	gdi32.lib \
+	winmm.lib \
+	advapi32.lib
+
+# ---------------------------------------------------------------------------
+# Project inputs and generated outputs
+# ---------------------------------------------------------------------------
+
 DEMO_DATA_URL = https://downloads.scummvm.org/frs/demos/hypno/teacher-windows-demo-en.zip
 CODE_FULL_URL = https://github.com/neuromancer/my-teacher-is-an-alien-re/releases/download/0.0.0/code-full.tar.gz
+
 OUT_DIR = out
+OUT_DIR_DEMO = out-demo
+
+# binary-comp is vendored during development.  Allow command-line overrides so
+# contributors can point at an installed copy without editing this file.
 VERIFY_CONFIG = config/binary-comp.json
 BINARY_COMP ?= env PYTHONPATH=binary-comp/src python3 -m binary_comp.cli
+
+VALUE_MIN_SIMILARITY ?= 80
+STACK_LOCAL_VALUE_MIN_SIMILARITY ?= 90
+STACK_LOCAL_VALUES_FLAGS ?= --no-offsets
+VALUES_FLAGS ?=
+
+# Address windows used by the globals audit helper.  The middle range is
+# skipped because it belongs to MSVC CRT/library helper data, not game globals.
 GLOBALS_MISSING_MIN_ADDRESS = 0x00468000
-# Skip the MSVC CRT/library helper data in 0x0047185c..0x00472bd7.
 GLOBALS_MISSING_MAX_ADDRESS = 0x0047185b
 GLOBALS_MISSING_TAIL_MIN_ADDRESS = 0x00472bd8
 GLOBALS_MISSING_TAIL_MAX_ADDRESS = 0x0047508b
 
-# Platform detection
+# ---------------------------------------------------------------------------
+# Host platform and DREAMM runtime
+# ---------------------------------------------------------------------------
+
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
 
-# DREAMM setup - auto-downloaded to .dreamm/
+# DREAMM is downloaded on demand into .dreamm/ so the repository does not need
+# to vendor platform-specific runtime binaries.
 DREAMM_DIR = .dreamm
 DREAMM_VERSION = 4.0
 DREAMM_BASE_URL = https://dreamm.aarongiles.com/releases
+DREAMM_PROPS = -prop winres=640x480x16
 
 ifeq ($(UNAME_S),Darwin)
-    DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-macos.dmg
-    DREAMM_BIN = $(DREAMM_DIR)/DREAMM.app/Contents/MacOS/dreamm
+DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-macos.dmg
+DREAMM_BIN = $(DREAMM_DIR)/DREAMM.app/Contents/MacOS/dreamm
 else
-    ifeq ($(UNAME_M),aarch64)
-        DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-linux-arm64.tgz
-    else
-        DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-linux-x64.tgz
-    endif
-    DREAMM_BIN = $(DREAMM_DIR)/dreamm
+ifeq ($(UNAME_M),aarch64)
+DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-linux-arm64.tgz
+else
+DREAMM_ARCHIVE = dreamm-$(DREAMM_VERSION)-linux-x64.tgz
+endif
+DREAMM_BIN = $(DREAMM_DIR)/dreamm
 endif
 DREAMM = $(CURDIR)/$(DREAMM_BIN)
 
-# Full game build (primary)
-# SRCS_ORDERED derived from demo order, remapped to src/
+# ---------------------------------------------------------------------------
+# Source order
+# ---------------------------------------------------------------------------
+#
+# The object link order affects addresses and therefore binary comparison.
+# SRCS_ORDERED_DEMO records the recovered demo order.  The full build maps that
+# order from src-demo/ to src/ where filenames overlap, then appends any extra
+# full-game sources so new files are still picked up automatically.
 SRCS_ORDERED_DEMO = \
 	src-demo/ZBuffer.cpp \
 	src-demo/TimedEvent.cpp \
@@ -138,22 +202,30 @@ SRCS = $(SRCS_ORDERED) $(filter-out $(SRCS_ORDERED_ALL), $(wildcard src/*.cpp))
 OBJS = $(patsubst src/%.cpp,$(OUT_DIR)/%.obj,$(SRCS))
 ASMS = $(patsubst src/%.cpp,$(OUT_DIR)/%.asm,$(SRCS))
 
-# Demo build
-OUT_DIR_DEMO = out-demo
+# The demo build keeps the known demo order exactly, then appends any local
+# demo-only sources that are not in that list.
 SRCS_DEMO = $(SRCS_ORDERED_DEMO) $(filter-out $(SRCS_ORDERED_DEMO), $(wildcard src-demo/*.cpp))
 OBJS_DEMO = $(patsubst src-demo/%.cpp,$(OUT_DIR_DEMO)/%.obj,$(SRCS_DEMO))
 ASMS_DEMO = $(patsubst src-demo/%.cpp,$(OUT_DIR_DEMO)/%.asm,$(SRCS_DEMO))
+
+# ---------------------------------------------------------------------------
+# Build targets and tool bootstrap
+# ---------------------------------------------------------------------------
 
 all: $(WIBO) $(OBJS) $(ASMS)
 
 demo: $(WIBO) $(OBJS_DEMO) $(ASMS_DEMO)
 
+build-full: TEACHER.EXE
+
+build-demo: TEACHER-DEMO.EXE
+
 ifeq ($(UNAME_S),Linux)
-    WIBO_PRESET = release64-clang
-    WIBO_BIN = wibo-src/build/release64-clang/wibo
+WIBO_PRESET = release64-clang
+WIBO_BIN = wibo-src/build/release64-clang/wibo
 else
-    WIBO_PRESET = release-macos
-    WIBO_BIN = wibo-src/build/release/wibo
+WIBO_PRESET = release-macos
+WIBO_BIN = wibo-src/build/release/wibo
 endif
 
 $(WIBO):
@@ -182,31 +254,51 @@ endif
 	@rm $(DREAMM_DIR)/$(DREAMM_ARCHIVE)
 
 TEACHER.EXE: $(OBJS) | $(MSVCRT_DLL)
-	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /SUBSYSTEM:WINDOWS /ENTRY:WinMainCRTStartup /MAP:TEACHER.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
+	env LIB='$(GAME_LIBPATH)' $(LINK) $(LINKFLAGS) /MAP:TEACHER.map $^ $(GAME_LIBS) /OUT:$@
 
 TEACHER-DEMO.EXE: $(OBJS_DEMO) | $(MSVCRT_DLL)
-	env LIB='$(MSVC_LIB);3rdparty\miles\lib\win32;3rdparty\smack\lib\win32' $(LINK) /nologo /SUBSYSTEM:WINDOWS /ENTRY:WinMainCRTStartup /MAP:TEACHER-DEMO.map $^ mss32.lib smackw32.lib kernel32.lib user32.lib gdi32.lib winmm.lib advapi32.lib /OUT:$@
+	env LIB='$(GAME_LIBPATH)' $(LINK) $(LINKFLAGS) /MAP:TEACHER-DEMO.map $^ $(GAME_LIBS) /OUT:$@
 
 $(OUT_DIR)/%.obj $(OUT_DIR)/%.asm: src/%.cpp | $(WIBO) $(MSVCRT_DLL)
 	@mkdir -p $(OUT_DIR)
-	@env INCLUDE='$(MSVC_INC)' $(CC) $(CFLAGS) $< /Fo$(OUT_DIR)/$*.obj /Fa$(OUT_DIR)/$*.asm > $(OUT_DIR)/$*.stdout
+	@env INCLUDE='$(MSVC_INC)' $(CC) $(CFLAGS) $< \
+		/Fo$(OUT_DIR)/$*.obj \
+		/Fa$(OUT_DIR)/$*.asm \
+		> $(OUT_DIR)/$*.stdout
 
-# Demo build rule
 $(OUT_DIR_DEMO)/%.obj $(OUT_DIR_DEMO)/%.asm: src-demo/%.cpp | $(WIBO) $(MSVCRT_DLL)
 	@mkdir -p $(OUT_DIR_DEMO)
-	@env INCLUDE='$(MSVC_INC)' $(CC) $(CFLAGS) $< /Fo$(OUT_DIR_DEMO)/$*.obj /Fa$(OUT_DIR_DEMO)/$*.asm > $(OUT_DIR_DEMO)/$*.stdout
+	@env INCLUDE='$(MSVC_INC)' $(CC) $(CFLAGS) $< \
+		/Fo$(OUT_DIR_DEMO)/$*.obj \
+		/Fa$(OUT_DIR_DEMO)/$*.asm \
+		> $(OUT_DIR_DEMO)/$*.stdout
 
-clean:
-	rm -f $(OUT_DIR)/*.obj $(OUT_DIR)/*.asm $(OUT_DIR)/*.map $(OUT_DIR)/*.stdout TEACHER.EXE TEACHER.map
+# ---------------------------------------------------------------------------
+# Recovery reports and broad binary-comp audits
+# ---------------------------------------------------------------------------
+#
+# binary-comp command coverage:
+#   calls         -> verify-calls
+#   compare       -> manual per-function use; see HINTS.md examples
+#   data          -> globals-data, globals-data-verbose, missing-data
+#   exe           -> compare-full, compare-full-functions, compare-demo
+#   global-access -> verify-global-access
+#   globals       -> verify-globals, verify-globals-code, globals-missing
+#   report        -> report, report-demo
+#   values        -> verify-values, verify-values-stack-locals
+#   vtables       -> verify-vtables
 
-clean-demo:
-	rm -f $(OUT_DIR_DEMO)/*.obj $(OUT_DIR_DEMO)/*.asm $(OUT_DIR_DEMO)/*.stdout TEACHER-DEMO.EXE TEACHER-DEMO.map
+BC_FULL = --config $(VERIFY_CONFIG) --target full
+BC_DEMO = --config $(VERIFY_CONFIG) --target demo
+
+# Extra flags are intentionally overrideable from the command line:
+#   make verify-calls CALLS_FLAGS=--all
+#   make verify-global-access GLOBAL_ACCESS_FLAGS="--all --include-address-immediates"
+CALLS_FLAGS ?=
+GLOBAL_ACCESS_FLAGS ?=
 
 sort:
 	@python3 bin/sortByAddress.py
-
-report: | code-full
-	@$(BINARY_COMP) report --config $(VERIFY_CONFIG) --target full $(if $(FILTER),--filter $(FILTER))
 
 progress:
 	@python3 bin/showProgress.py
@@ -214,58 +306,128 @@ progress:
 progress-demo:
 	@python3 bin/showProgress.py --demo
 
-report-demo:
-	@$(BINARY_COMP) report --config $(VERIFY_CONFIG) --target demo
+report: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) report $(BC_FULL) $(if $(FILTER),--filter $(FILTER))
 
-globals: | code-full
-	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full
+report-demo: TEACHER-DEMO.EXE | data/demo/CDDATA
+	@$(BINARY_COMP) report $(BC_DEMO) $(if $(FILTER),--filter $(FILTER))
 
-globals-verbose: | code-full
-	@$(BINARY_COMP) data --config $(VERIFY_CONFIG) --target full --verbose
+# Data comparison is a detailed global-by-global byte report.  It is kept
+# separate from `verify` because this reconstruction still has known data/map
+# deltas that are useful to inspect but not currently expected to be zero.
+globals-data: TEACHER.EXE | data/full/DATA
+	@$(BINARY_COMP) data $(BC_FULL)
 
-globals-missing: | code-full
-	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --include-code-globals --min-address $(GLOBALS_MISSING_MIN_ADDRESS) --max-address $(GLOBALS_MISSING_MAX_ADDRESS)
-	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --include-code-globals --min-address $(GLOBALS_MISSING_TAIL_MIN_ADDRESS) --max-address $(GLOBALS_MISSING_TAIL_MAX_ADDRESS)
+globals-data-verbose: TEACHER.EXE | data/full/DATA
+	@$(BINARY_COMP) data $(BC_FULL) --verbose
 
-compare:
-	@$(BINARY_COMP) exe --config $(VERIFY_CONFIG) --target demo
+# Compatibility aliases used by older notes/scripts.
+globals: globals-data
 
-compare-functions:
-	@$(BINARY_COMP) exe --config $(VERIFY_CONFIG) --target demo --functions
+globals-verbose: globals-data-verbose
+
+# Broad untracked-dword scan.  This intentionally reports many packed strings
+# and tables today, so the actionable missing-global gate is `verify-globals-code`.
+missing-data: | data/full/DATA
+	@$(BINARY_COMP) data $(BC_FULL) \
+		--find-missing \
+		--min-address $(GLOBALS_MISSING_MIN_ADDRESS) \
+		--max-address $(GLOBALS_MISSING_MAX_ADDRESS)
+	@$(BINARY_COMP) data $(BC_FULL) \
+		--find-missing \
+		--min-address $(GLOBALS_MISSING_TAIL_MIN_ADDRESS) \
+		--max-address $(GLOBALS_MISSING_TAIL_MAX_ADDRESS)
+
+compare-full: TEACHER.EXE | data/full/DATA
+	@$(BINARY_COMP) exe $(BC_FULL)
+
+compare-full-functions: TEACHER.EXE | data/full/DATA
+	@$(BINARY_COMP) exe $(BC_FULL) --functions
+
+compare-demo: TEACHER-DEMO.EXE | data/demo/CDDATA
+	@$(BINARY_COMP) exe $(BC_DEMO)
+
+compare-demo-functions: TEACHER-DEMO.EXE | data/demo/CDDATA
+	@$(BINARY_COMP) exe $(BC_DEMO) --functions
+
+# Compatibility aliases: the original project workflow used demo comparison by
+# default because the demo was the first target reconstructed.
+compare: compare-demo
+
+compare-functions: compare-demo-functions
+
+# ---------------------------------------------------------------------------
+# Verification
+# ---------------------------------------------------------------------------
+#
+# `verify` runs the expected-zero gates first, then the diagnostic analyzers
+# used during recovery.  The diagnostic analyzers stay in this sequence because
+# their output is still part of the review checklist, even when the tool itself
+# reports known non-zero findings without failing.
 
 verify:
 	@$(MAKE) verify-globals
+	@$(MAKE) verify-globals-code
 	@$(MAKE) verify-calls
 	@$(MAKE) verify-global-access
 	@$(MAKE) verify-values
 	@$(MAKE) verify-values-stack-locals
 	@$(MAKE) verify-vtables
 
-verify-globals: | code-full
-	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --fail-on-issues --fail-on-warnings
+verify-globals: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) globals $(BC_FULL) \
+		--fail-on-issues \
+		--fail-on-warnings
 
-audit-auto-complete-globals: | code-full
-	@$(BINARY_COMP) globals --config $(VERIFY_CONFIG) --target full --show-auto-complete-reviewed
+# Check nonzero globals exported by Ghidra but not covered by src/globals.cpp.
+# The CRT/library helper range is intentionally excluded; it is compiler data,
+# not recovered game state.
+verify-globals-code: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) globals $(BC_FULL) \
+		--include-code-globals \
+		--fail-on-issues \
+		--fail-on-warnings \
+		--min-address $(GLOBALS_MISSING_MIN_ADDRESS) \
+		--max-address $(GLOBALS_MISSING_MAX_ADDRESS)
+	@$(BINARY_COMP) globals $(BC_FULL) \
+		--include-code-globals \
+		--fail-on-issues \
+		--fail-on-warnings \
+		--min-address $(GLOBALS_MISSING_TAIL_MIN_ADDRESS) \
+		--max-address $(GLOBALS_MISSING_TAIL_MAX_ADDRESS)
 
-verify-calls: | code-full
-	@$(BINARY_COMP) calls --config $(VERIFY_CONFIG) --target full
+globals-missing: verify-globals-code
 
-verify-global-access: | code-full
-	@$(BINARY_COMP) global-access --config $(VERIFY_CONFIG) --target full $(GLOBAL_ACCESS_FLAGS) $(if $(FILTER),$(FILTER))
+audit-auto-complete-globals: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) globals $(BC_FULL) --show-auto-complete-reviewed
 
-VALUE_MIN_SIMILARITY ?= 80
-STACK_LOCAL_VALUE_MIN_SIMILARITY ?= 90
-STACK_LOCAL_VALUES_FLAGS ?= --no-offsets
-VALUES_FLAGS ?=
+audit-rebuilt-global-layout: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) globals $(BC_FULL) --check-rebuilt-layout
 
-verify-values: | code-full
-	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(VALUE_MIN_SIMILARITY) $(VALUES_FLAGS)
+verify-calls: | code-full data/full/DATA
+	@$(BINARY_COMP) calls $(BC_FULL) $(CALLS_FLAGS) $(if $(FILTER),$(FILTER))
 
-verify-values-stack-locals: | code-full
-	@$(BINARY_COMP) values --config $(VERIFY_CONFIG) --target full --min-similarity $(STACK_LOCAL_VALUE_MIN_SIMILARITY) --include-stack-locals $(STACK_LOCAL_VALUES_FLAGS) $(VALUES_FLAGS)
+verify-global-access: | code-full data/full/DATA
+	@$(BINARY_COMP) global-access $(BC_FULL) $(GLOBAL_ACCESS_FLAGS) $(if $(FILTER),$(FILTER))
 
-verify-vtables: | code-full
-	@$(BINARY_COMP) vtables --config $(VERIFY_CONFIG) --target full
+verify-values: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) values $(BC_FULL) \
+		--min-similarity $(VALUE_MIN_SIMILARITY) \
+		$(VALUES_FLAGS)
+
+verify-values-stack-locals: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) values $(BC_FULL) \
+		--min-similarity $(STACK_LOCAL_VALUE_MIN_SIMILARITY) \
+		--include-stack-locals \
+		$(STACK_LOCAL_VALUES_FLAGS) \
+		$(VALUES_FLAGS)
+
+verify-vtables: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) vtables $(BC_FULL)
+
+# ---------------------------------------------------------------------------
+# Game data and Ghidra export downloads
+# ---------------------------------------------------------------------------
 
 data/demo/CDDATA:
 	@echo "Downloading demo data..."
@@ -298,27 +460,76 @@ data/full/DATA: data/full/teacher.iso
 	@mv data/full/TEACHER.EXE data/full/TEACHER.ORI.EXE
 	@touch data/full/DATA
 
+# ---------------------------------------------------------------------------
+# DREAMM launch targets
+# ---------------------------------------------------------------------------
+
 run-demo: TEACHER-DEMO.EXE | data/demo/CDDATA $(DREAMM_BIN)
 	cp -f TEACHER-DEMO.EXE data/demo/CDDATA/TEACHER.EXE
-	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.EXE
+	cd data/demo/CDDATA && $(DREAMM) $(DREAMM_PROPS) -launch TEACHER.EXE
 
 run-demo-original: | data/demo/CDDATA $(DREAMM_BIN)
-	cd data/demo/CDDATA && $(DREAMM) -prop winres=640x480x16 -launch TEACHER.ORIGINAL.EXE
+	cd data/demo/CDDATA && $(DREAMM) $(DREAMM_PROPS) -launch TEACHER.ORIGINAL.EXE
 
 run: TEACHER.EXE | data/full/DATA $(DREAMM_BIN)
 	@mkdir -p data/full/hd
 	cp -f TEACHER.EXE data/full/TEACHER.EXE
-	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.EXE
+	cd data/full && $(DREAMM) -mount rw:C=hd $(DREAMM_PROPS) -mount d=teacher.iso -launch TEACHER.EXE
 
 run-original: | data/full/DATA $(DREAMM_BIN)
-	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -launch TEACHER.ORI.EXE
-
+	cd data/full && $(DREAMM) -mount rw:C=hd $(DREAMM_PROPS) -mount d=teacher.iso -launch TEACHER.ORI.EXE
 
 debug: TEACHER.EXE | data/full/DATA $(DREAMM_BIN)
 	@mkdir -p data/full/hd
 	cp -f TEACHER.EXE data/full/TEACHER.EXE
-	cd data/full && $(DREAMM) -mount rw:C=hd -prop winres=640x480x16 -mount d=teacher.iso -debug -launch TEACHER.EXE
+	cd data/full && $(DREAMM) -mount rw:C=hd $(DREAMM_PROPS) -mount d=teacher.iso -debug -launch TEACHER.EXE
 
+# ---------------------------------------------------------------------------
+# Cleanup and phony declarations
+# ---------------------------------------------------------------------------
 
+clean:
+	rm -f $(OUT_DIR)/*.obj $(OUT_DIR)/*.asm $(OUT_DIR)/*.stdout TEACHER.EXE TEACHER.map
 
-.PHONY: all demo clean clean-demo globals globals-verbose globals-missing progress progress-demo report report-demo compare compare-functions verify verify-globals audit-auto-complete-globals verify-calls verify-global-access verify-values verify-values-stack-locals verify-vtables run-demo run-demo-original run run-original debug
+clean-demo:
+	rm -f $(OUT_DIR_DEMO)/*.obj $(OUT_DIR_DEMO)/*.asm $(OUT_DIR_DEMO)/*.stdout TEACHER-DEMO.EXE TEACHER-DEMO.map
+
+.PHONY: \
+	all \
+	audit-auto-complete-globals \
+	audit-rebuilt-global-layout \
+	build-demo \
+	build-full \
+	clean \
+	clean-demo \
+	compare \
+	compare-demo \
+	compare-demo-functions \
+	compare-full \
+	compare-full-functions \
+	compare-functions \
+	debug \
+	demo \
+	globals \
+	globals-data \
+	globals-data-verbose \
+	globals-missing \
+	globals-verbose \
+	missing-data \
+	progress \
+	progress-demo \
+	report \
+	report-demo \
+	run \
+	run-demo \
+	run-demo-original \
+	run-original \
+	sort \
+	verify \
+	verify-calls \
+	verify-global-access \
+	verify-globals \
+	verify-globals-code \
+	verify-values \
+	verify-values-stack-locals \
+	verify-vtables
