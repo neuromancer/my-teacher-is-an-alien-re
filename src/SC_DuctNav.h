@@ -46,7 +46,7 @@ public:
     virtual void OnProcessStart();                 // [1] 0x43D250
     virtual void Init(SC_MessageParser* msg);            // [4] 0x43B0F0
     virtual int AddMessage(SC_MessageParser* msg);       // [5] 0x43BB10
-    virtual int ShutDown(SC_MessageParser* msg);         // [6] 0x43B2C0
+    virtual void ShutDown(SC_MessageParser* msg);         // [6] 0x43B2C0
     virtual void Update(int p1, int p2);           // [7] 0x43B7E0
     virtual int Exit(SC_MessageParser* msg);             // [8] 0x43C100
 

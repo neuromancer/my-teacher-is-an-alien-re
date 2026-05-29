@@ -23,7 +23,7 @@ public:
     ~SCI_IconBarModule();
 
     void Init(SC_MessageParser* msg);            // 0x4013E0
-    int ShutDown(SC_MessageParser* msg);         // 0x401CF0
+    void ShutDown(SC_MessageParser* msg);         // 0x401CF0
     void Update(int param1, int param2);   // 0x401D80
     int Exit(SC_MessageParser* msg);             // 0x401FF0
     int AddMessage(SC_MessageParser* msg);       // 0x401E40

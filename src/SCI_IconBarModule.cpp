@@ -405,7 +405,7 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
 
 
 /* Function start: 0x401CF0 */
-int SCI_IconBarModule::ShutDown(SC_MessageParser* msg) {
+void SCI_IconBarModule::ShutDown(SC_MessageParser* msg) {
     T_Hotspot** pIcon;
     int i;
 
@@ -443,7 +443,7 @@ skip_cursor:
         IconBar::ShutDown(msg);
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x401D80 */

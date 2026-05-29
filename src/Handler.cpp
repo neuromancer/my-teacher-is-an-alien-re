@@ -49,8 +49,8 @@ int Handler::AddMessage(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x405D40 */
-int Handler::ShutDown(SC_MessageParser* msg) {
-    return 0;  // reached via path that doesn't set EAX explicitly in original
+void Handler::ShutDown(SC_MessageParser* msg) {
+    return;  // reached via path that doesn't set EAX explicitly in original
 }
 
 /* Function start: 0x454950 */

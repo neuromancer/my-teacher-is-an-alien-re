@@ -19,7 +19,7 @@ public:
     void Init(SC_MessageParser* msg);             // 0x439470
     void Update(int p1, int p2);               // 0x4394A0
     int AddMessage(SC_MessageParser* msg);     // 0x439520
-    int ShutDown(SC_MessageParser* msg);       // 0x439490
+    void ShutDown(SC_MessageParser* msg);       // 0x439490
     int Exit(SC_MessageParser* msg);                // 0x439540
     void OnProcessEnd();                      // 0x439690
     void AddMessage(int soundHandle);         // 0x439740

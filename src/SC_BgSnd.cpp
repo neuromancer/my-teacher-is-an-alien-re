@@ -41,9 +41,9 @@ void SC_BgSnd::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x439490 */
-int SC_BgSnd::ShutDown(SC_MessageParser* msg) {
+void SC_BgSnd::ShutDown(SC_MessageParser* msg) {
     (void)msg;
-    return 0;
+    return;
 }
 
 /* Function start: 0x4394A0 */

@@ -196,7 +196,7 @@ void SCI_Inventory::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x43E990 */
-int SCI_Inventory::ShutDown(SC_MessageParser* msg) {
+void SCI_Inventory::ShutDown(SC_MessageParser* msg) {
     Sprite* spr;
     void* obj;
 
@@ -245,7 +245,7 @@ int SCI_Inventory::ShutDown(SC_MessageParser* msg) {
             clickSound = 0;
         }
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x43EA60 */

@@ -309,7 +309,7 @@ SC_DuctNav::~SC_DuctNav()
 }
 
 /* Function start: 0x43B2C0 */
-int SC_DuctNav::ShutDown(SC_MessageParser* msg)
+void SC_DuctNav::ShutDown(SC_MessageParser* msg)
 {
     {
         void* list = saveFileList;
@@ -349,7 +349,7 @@ int SC_DuctNav::ShutDown(SC_MessageParser* msg)
     if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
     if (scrollUpBtn != 0) { scrollUpBtn->~T_MenuButton(); FreeMemory(scrollUpBtn); scrollUpBtn = 0; }
     if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
-    return 0;
+    return;
 }
 
 /* Function start: 0x43B0F0 */

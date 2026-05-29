@@ -118,38 +118,45 @@ void PodsEngine::ProcessFrame() {
         }
 
         if (podsBgSprite->Do(podsBgSprite->loc_x, podsBgSprite->loc_y, 1.0) != 0) {
-            if (state == 1) {
-                int start = reserved_0xFC;
-                int count = (reserved_0x100 - start) + 1;
+            switch (state) {
+            case 1: {
+                unsigned int* p = (unsigned int*)&reserved_0xFC;
+                int count = (reserved_0x100 - *p) + 1;
                 if (g_PodsPalette_0046bf30 == 0) {
                     g_PodsPalette_0046bf30 = new Palette();
                     g_PodsPalette_0046bf30->CopyEntries(0, 0x100);
                 }
                 {
                     Palette temp;
-                    temp.CopyRGBData((int)g_PodsPalette_0046bf30->m_data, start, count);
-                    temp.FadeTo(0xff, 0xff, 0, (float)podState.x * 0.1f, start, count);
-                    temp.SetPalette(start, count);
+                    temp.CopyRGBData((int)g_PodsPalette_0046bf30->m_data, *p, count);
+                    temp.FadeTo(0xff, 0xff, 0, (float)podState.x * 0.1f, *p, count);
+                    temp.SetPalette(*p, count);
                 }
                 if (podState.y != 0 && podState.x >= podState.y) {
                     podsBgSprite->ResetAnimation(2, 0);
                     g_SlimeTable_0046bf28->Play(4);
-                } else {
-                    podsBgSprite->ResetAnimation(0, 0);
+                    goto skip;
                 }
-            } else if (state == 2) {
-                if ((field_0x110 & 1) == 0) {
-                    value = 3;
-                } else {
-                    value = 2;
-                }
-                g_SlimeTable_0046bf28->Play(value);
-                field_0x110 |= 8;
-                podsBgSprite->ResetAnimation(-1, 0);
+                value = 0;
+                break;
             }
+            case 2:
+                if ((field_0x110 & 1) != 0) {
+                    g_SlimeTable_0046bf28->Play(2);
+                } else {
+                    g_SlimeTable_0046bf28->Play(3);
+                }
+                value = -1;
+                field_0x110 |= 8;
+                break;
+            default:
+                goto skip;
+            }
+            podsBgSprite->ResetAnimation(value, 0);
         }
     }
 
+skip:
     if ((field_0x110 & 0x70) == 0) {
         if (g_TargetList_0046ae58 != 0 && g_CombatSprite_0046ae5c != 0) {
             g_CombatSprite_0046ae5c->ProcessFrame(spriteFrameCount);

@@ -26,14 +26,14 @@ SC_FakeRoom::SC_FakeRoom()
 }
 
 /* Function start: 0x444380 */
-int SC_FakeRoom::ShutDown(SC_MessageParser* msg)
+void SC_FakeRoom::ShutDown(SC_MessageParser* msg)
 {
     SC_Combat::ShutDown(msg);
     if (msg != 0) {
         SendGameMessage(1, handlerId, handlerId,
                        moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x4443E0 */

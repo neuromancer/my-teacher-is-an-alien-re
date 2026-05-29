@@ -51,7 +51,7 @@ void SC_DemoScreen::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x44E830 */
-int SC_DemoScreen::ShutDown(SC_MessageParser* msg) {
+void SC_DemoScreen::ShutDown(SC_MessageParser* msg) {
     if (demoSprite != 0) {
         delete (Sprite*)demoSprite;
         demoSprite = 0;
@@ -61,7 +61,7 @@ int SC_DemoScreen::ShutDown(SC_MessageParser* msg) {
         field_A8 = 0;
     }
     SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
-    return 0;
+    return;
 }
 
 /* Function start: 0x44E8B0 */

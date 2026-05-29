@@ -353,7 +353,7 @@ int SC_OnScreenMessage::AddMessage(SC_MessageParser* msg) {
     return 1;
 }
 /* Function start: 0x448600 */
-int SC_OnScreenMessage::ShutDown(SC_MessageParser* msg) { return 0; }
+void SC_OnScreenMessage::ShutDown(SC_MessageParser* msg) { return; }
 
 /* Function start: 0x448C50 */
 void* MessageList::GetCurrentData() {

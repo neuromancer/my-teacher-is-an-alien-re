@@ -107,7 +107,7 @@ void SC_DodgeOrville::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x428A40 */
-int SC_DodgeOrville::ShutDown(SC_MessageParser* msg) {
+void SC_DodgeOrville::ShutDown(SC_MessageParser* msg) {
     void* ptr;
 
     ptr = (void*)barFillSprite;
@@ -127,7 +127,7 @@ int SC_DodgeOrville::ShutDown(SC_MessageParser* msg) {
     if (msg != 0) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x428AD0 */

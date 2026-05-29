@@ -179,7 +179,7 @@ int Parser::GetTokenType(char* line) {
     if (strcmp(local_40, "_V_") == 0) return 0xD;
     if (strncmp(local_40, "**", 2) == 0) return 1;
 
-    ShowError("Parser::GetTokenType - Invaild TOKEN \n'%s'", local_40);
+    ShowError("Parser::GetTokenType - Invaild TOKEN \n'%s'", line);
     return 1;
 }
 

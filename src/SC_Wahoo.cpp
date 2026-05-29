@@ -41,6 +41,7 @@ extern char* __cdecl ResolveAssetPath(char* name, ...);
 
 // FUN_00410fb0 = VBuffer ctor — callers updated to use new
 #include "RockThrower.h"
+#include "CombatWeapon.h"
 #include "SC_CombatBase.h"
 
 
@@ -143,7 +144,7 @@ void SC_Wahoo::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x437C60 */
-int SC_Wahoo::ShutDown(SC_MessageParser* msg) {
+void SC_Wahoo::ShutDown(SC_MessageParser* msg) {
     void* ptr;
     int i;
 
@@ -238,7 +239,7 @@ int SC_Wahoo::ShutDown(SC_MessageParser* msg) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x4381E0 */
@@ -614,7 +615,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
         int ret = sscanf(param_1, " %s %s ", local_38, local_b8);
         if (ret == 2) {
             if (strcmp(local_b8, "ROCKTHROWER2") == 0) {
-                g_WahooEngine_0046bbfc = (SC_CombatBase*)new RockThrower(this);
+                g_WahooEngine_0046bbfc = (SC_CombatBase*)new CombatWeapon(this);
             }
         }
     }

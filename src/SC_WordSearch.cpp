@@ -175,7 +175,7 @@ void SC_WordSearch::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x435D40 */
-int SC_WordSearch::ShutDown(SC_MessageParser* msg) {
+void SC_WordSearch::ShutDown(SC_MessageParser* msg) {
     if (bgSprite != 0) {
         delete bgSprite;
         bgSprite = 0;
@@ -227,7 +227,7 @@ int SC_WordSearch::ShutDown(SC_MessageParser* msg) {
     if ((int)msg != 0) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x435F10 */
@@ -334,11 +334,13 @@ void SC_WordSearch::Update(int param1, int param2) {
             goto sprite_section;
         }
         {
-        unsigned int uVar7 = 0;
-        if (puVar2 != 0) {
+        unsigned int uVar7;
+        if (puVar2 == 0) {
+            uVar7 = 0;
+        } else {
             uVar7 = puVar2[1];
         }
-        unsigned int uVar6 = ((int)(puVar2 == 0) - 1) & uVar4;
+        unsigned int uVar6 = ((puVar2 == 0) - 1) & uVar4;
 
         if (submitRect.left > (int)uVar6 ||
             submitRect.right < (int)uVar6 ||
@@ -349,7 +351,7 @@ void SC_WordSearch::Update(int param1, int param2) {
             if (puVar2 != 0) {
                 uVar7 = puVar2[1];
             }
-            uVar6 = ((int)(puVar2 == 0) - 1) & uVar4;
+            uVar6 = ((puVar2 == 0) - 1) & uVar4;
 
             if (resetRect.left > (int)uVar6 ||
                 resetRect.right < (int)uVar6 ||
@@ -360,7 +362,7 @@ void SC_WordSearch::Update(int param1, int param2) {
                 if (puVar2 != 0) {
                     uVar7 = puVar2[1];
                 }
-                uVar4 = ((int)(puVar2 == 0) - 1) & uVar4;
+                uVar4 = ((puVar2 == 0) - 1) & uVar4;
 
                 if (enterPlaceRect.left > (int)uVar4 ||
                     enterPlaceRect.right < (int)uVar4 ||

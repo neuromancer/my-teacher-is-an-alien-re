@@ -92,7 +92,7 @@ SC_SaveLoad::~SC_SaveLoad()
 }
 
 /* Function start: 0x422280 */
-int SC_SaveLoad::ShutDown(SC_MessageParser* msg) {
+void SC_SaveLoad::ShutDown(SC_MessageParser* msg) {
     (void)msg;
     if (sprite != 0) {
         sprite->StopAnimationSound();
@@ -106,7 +106,7 @@ int SC_SaveLoad::ShutDown(SC_MessageParser* msg) {
     if (btnCancel != 0 && btnCancel->sprite != 0) {
         btnCancel->sprite->StopAnimationSound();
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x4221A0 */

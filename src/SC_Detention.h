@@ -20,7 +20,7 @@ public:
     virtual int LBLParse(char* line);          // 0x40B240 (shared with SCI_SearchScreen)
     virtual void Init(SC_MessageParser* msg);       // 0x409AD0
     virtual int AddMessage(SC_MessageParser* msg);  // 0x409F50
-    virtual int ShutDown(SC_MessageParser* msg);    // 0x409C40
+    virtual void ShutDown(SC_MessageParser* msg);    // 0x409C40
     virtual void Update(int p1, int p2);           // 0x409C50
     virtual int Exit(SC_MessageParser* msg);        // 0x409F70
     virtual void Serialize(void* param);            // 0x40B0D0

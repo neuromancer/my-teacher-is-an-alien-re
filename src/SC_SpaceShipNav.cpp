@@ -80,7 +80,7 @@ void SC_SpaceShipNav::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x447790 */
-int SC_SpaceShipNav::ShutDown(SC_MessageParser* msg) {
+void SC_SpaceShipNav::ShutDown(SC_MessageParser* msg) {
     if (g_CombatEngine_0046ae78 != 0) {
         if (g_Navigator_0046ae70 != 0) {
             Sprite* spr = ((mCNavigator*)g_Navigator_0046ae70)->sprite;
@@ -91,7 +91,7 @@ int SC_SpaceShipNav::ShutDown(SC_MessageParser* msg) {
         g_CombatEngine_0046ae78->RenderState();
         g_CombatEngine_0046ae78 = 0;
     }
-    return SC_Combat::ShutDown(msg);
+    SC_Combat::ShutDown(msg);
 }
 
 /* Function start: 0x4477F0 */

@@ -534,7 +534,7 @@ void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x406240 */
-int SC_SelectHotSpot::ShutDown(SC_MessageParser* msg) {
+void SC_SelectHotSpot::ShutDown(SC_MessageParser* msg) {
     if (SC_SelectHotSpot::ambient != 0) {
         ((MMPlayer*)SC_SelectHotSpot::ambient)->StopAll();
     }
@@ -560,7 +560,7 @@ int SC_SelectHotSpot::ShutDown(SC_MessageParser* msg) {
             }
         }
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x4062C0 */

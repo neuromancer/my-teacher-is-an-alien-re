@@ -29,7 +29,7 @@ public:
     // Virtual overrides
     virtual void Init(SC_MessageParser* msg);         // 0x44F710
     virtual int AddMessage(SC_MessageParser* msg);    // 0x44FAE0
-    virtual int ShutDown(SC_MessageParser* msg);      // 0x44FA20
+    virtual void ShutDown(SC_MessageParser* msg);      // 0x44FA20
     virtual void Update(int p1, int p2);        // 0x44FE40
     virtual int Exit(SC_MessageParser* msg);          // 0x44FE20
     int FinalizeExit(SC_MessageParser* msg);          // 0x450110

@@ -25,7 +25,7 @@ public:
     void OnProcessStart() {}                 // 0x42B3A0 (empty override)
     void Init(SC_MessageParser* msg);              // 0x42A9F0
     int AddMessage(SC_MessageParser* msg);         // 0x42AE80
-    int ShutDown(SC_MessageParser* msg);           // 0x42AC20
+    void ShutDown(SC_MessageParser* msg);           // 0x42AC20
     void Update(int param1, int param2);     // 0x42AD80
     int Exit(SC_MessageParser* msg);               // 0x42B030
     int LBLParse(char* param_1);             // 0x42B3B0

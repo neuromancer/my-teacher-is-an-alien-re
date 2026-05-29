@@ -140,7 +140,7 @@ void SC_Pods::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x4419E0 */
-int SC_Pods::ShutDown(SC_MessageParser* msg) {
+void SC_Pods::ShutDown(SC_MessageParser* msg) {
     if (combatEngine != 0) {
         ((Engine*)combatEngine)->StopAndCleanup();
         if (combatEngine != 0) {
@@ -166,7 +166,7 @@ int SC_Pods::ShutDown(SC_MessageParser* msg) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x441AA0 */

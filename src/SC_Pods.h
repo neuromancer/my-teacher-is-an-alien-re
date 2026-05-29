@@ -19,7 +19,7 @@ public:
     virtual int LBLParse(char* line);       // 0x4420B3
     virtual void Init(SC_MessageParser* msg);     // 0x441700
     virtual int AddMessage(SC_MessageParser* msg); // 0x441AE0
-    virtual int ShutDown(SC_MessageParser* msg);  // 0x4419E0
+    virtual void ShutDown(SC_MessageParser* msg);  // 0x4419E0
     virtual void Update(int p1, int p2);          // 0x441AA0
     virtual int Exit(SC_MessageParser* msg);      // 0x441B20
 

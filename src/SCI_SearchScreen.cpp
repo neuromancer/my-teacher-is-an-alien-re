@@ -101,12 +101,12 @@ void SCI_SearchScreen::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x40B780 */
-int SCI_SearchScreen::ShutDown(SC_MessageParser* msg) {
+void SCI_SearchScreen::ShutDown(SC_MessageParser* msg) {
     if (g_CombatEngine_0046ae78 != 0) {
         delete g_CombatEngine_0046ae78;
         g_CombatEngine_0046ae78 = 0;
     }
-    return SC_Combat::ShutDown(msg);
+    SC_Combat::ShutDown(msg);
 }
 
 /* Function start: 0x40B7C0 */

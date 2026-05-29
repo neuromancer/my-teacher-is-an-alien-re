@@ -173,7 +173,7 @@ void SC_ExtBridge::Init(SC_MessageParser* msg) {
 
 #include "GameEngine.h"
 /* Function start: 0x439F30 */
-int SC_ExtBridge::ShutDown(SC_MessageParser* msg)
+void SC_ExtBridge::ShutDown(SC_MessageParser* msg)
 {
     SpriteAction* action = new SpriteAction(5, 0x458, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
     g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
@@ -189,7 +189,7 @@ int SC_ExtBridge::ShutDown(SC_MessageParser* msg)
         ((void (__fastcall*)(int*, int))vtbl[16])((int*)g_CombatEngine_0046ae78, 0);
         g_CombatEngine_0046ae78 = 0;
     }
-    return 0;
+    return;
 }
 
 #include "mCNavigator.h"

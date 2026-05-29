@@ -40,7 +40,7 @@ public:
     virtual int LBLParse(char* param);             // 0x42E010
     virtual void Init(SC_MessageParser* msg);            // 0x42D6E0
     virtual int AddMessage(SC_MessageParser* msg);       // 0x42D9A0
-    virtual int ShutDown(SC_MessageParser* msg);         // 0x42D920
+    virtual void ShutDown(SC_MessageParser* msg);         // 0x42D920
     virtual void Update(int param1, int param2);   // 0x42DD40
     virtual int Exit(SC_MessageParser* msg);             // 0x42DD30
 

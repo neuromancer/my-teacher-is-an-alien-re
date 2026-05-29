@@ -297,7 +297,7 @@ void SC_Cinematic::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x4300D0 */
-int SC_Cinematic::ShutDown(SC_MessageParser* msg) {
+void SC_Cinematic::ShutDown(SC_MessageParser* msg) {
     if (msg != 0) {
         if (g_ZBufferManager_0046aa24 != 0) {
             ZBufferManager* zbm = g_ZBufferManager_0046aa24;
@@ -380,7 +380,7 @@ int SC_Cinematic::ShutDown(SC_MessageParser* msg) {
         pendingAction = 0;
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x430350 */

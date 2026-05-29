@@ -129,7 +129,7 @@ int SC_Combat::AddMessage(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x449320 */
-int SC_Combat::ShutDown(SC_MessageParser* msg) {
+void SC_Combat::ShutDown(SC_MessageParser* msg) {
     if (field_0x104 != 0) {
         delete field_0x104;
         field_0x104 = 0;
@@ -154,7 +154,7 @@ int SC_Combat::ShutDown(SC_MessageParser* msg) {
         operator delete(statusPtr);
         statusPtr = 0;
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x449480 */

@@ -107,7 +107,7 @@ void SC_Slime::Init(SC_MessageParser* msg)
 }
 
 /* Function start: 0x40D430 */
-int SC_Slime::ShutDown(SC_MessageParser* msg)
+void SC_Slime::ShutDown(SC_MessageParser* msg)
 {
     if (palette != 0) {
         delete palette;
@@ -185,7 +185,7 @@ int SC_Slime::ShutDown(SC_MessageParser* msg)
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x40DF30 */
@@ -442,11 +442,6 @@ void SC_Slime::ProcessAction(int action, int* data) {
     Sprite* spr = bgSprite;
     int state = spr->handle;
 
-    if ((unsigned int)action > 6) {
-        ShowError("SC_Slime::Process_Action - invalid Action=%d, value=%d", action, *data);
-        return;
-    }
-
     switch (action) {
     case 0:
         gameResult[1] = 0;
@@ -514,23 +509,29 @@ void SC_Slime::ProcessAction(int action, int* data) {
 
     case 4:
         if (spr->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
-            if (state == 0) {
+            switch (state) {
+            case 0:
                 spr->ResetAnimation(1, 0);
-            } else if (state == 1) {
-                spr->ResetAnimation(0, 0);
-                int r = rand() % 2;
-                if (r < 2 && gameResult[6] != 0) {
-                    Sprite* arm = (r == 0) ? leftArmSprite : rightArmSprite;
-                    if (arm != 0) {
-                        arm->ResetAnimation(0, 0);
-                        if (armMaskSprite != 0) {
-                            armMaskSprite->ResetAnimation(r, 0);
+                break;
+            case 1:
+                {
+                    spr->ResetAnimation(0, 0);
+                    int r = rand() % 2;
+                    if (r < 2 && gameResult[6] != 0) {
+                        Sprite* arm = ((Sprite**)&leftArmSprite)[r];
+                        if (arm != 0) {
+                            arm->ResetAnimation(0, 0);
+                            if (armMaskSprite != 0) {
+                                armMaskSprite->ResetAnimation(r, 0);
+                            }
                         }
                     }
                 }
-            } else if (state == 2) {
+                break;
+            case 2:
                 gamePhase |= 2;
                 spr->ResetAnimation(3, 0);
+                break;
             }
         }
         return;

@@ -103,7 +103,7 @@ SC_Roach::~SC_Roach() {
 }
 
 /* Function start: 0x419010 */
-int SC_Roach::ShutDown(SC_MessageParser* msg) {
+void SC_Roach::ShutDown(SC_MessageParser* msg) {
     int i;
     Sprite* spr;
     NavCrystal* crystal;
@@ -148,7 +148,7 @@ int SC_Roach::ShutDown(SC_MessageParser* msg) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x419220 */
@@ -759,11 +759,7 @@ int SC_Roach::LBLParse(char* line)
             FreeMemory(crystal);
             crystals[idx] = 0;
         }
-        void* mem = operator new(0x4E0);
-        NavCrystal* obj = 0;
-        if (mem != 0) {
-            obj = new(mem) NavCrystal(idx);
-        }
+        NavCrystal* obj = new NavCrystal(idx);
         crystals[idx] = obj;
         Parser::ProcessFile((Parser*)obj, this, (char*)0);
     } else if (strcmp(label, "END") == 0) {

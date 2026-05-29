@@ -27,7 +27,7 @@ public:
     virtual void OnProcessEnd();                   // [2]  0x429860 - overrides Parser::OnProcessEnd
     virtual void Init(SC_MessageParser* msg);            // [4]  0x4289C0
     int AddMessage(SC_MessageParser* msg);   // [5]  0x428AF0
-    int ShutDown(SC_MessageParser* msg);     // [6]  0x428A40 - overrides Handler::ShutDown
+    void ShutDown(SC_MessageParser* msg);     // [6]  0x428A40 - overrides Handler::ShutDown
     virtual void Update(int p1, int p2);           // [7]  0x428AD0
     virtual int Exit(SC_MessageParser* msg);             // [8]  0x428B30
     virtual void ProcessLose();        // [11] 0x428B60 - overrides SC_Combat::ProcessLose

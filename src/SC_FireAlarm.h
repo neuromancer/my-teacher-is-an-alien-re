@@ -23,7 +23,7 @@ public:
     virtual void OnProcessEnd();                   // [2]  0x408530
     void Init(SC_MessageParser* msg);
     int AddMessage(SC_MessageParser* msg);
-    int ShutDown(SC_MessageParser* msg);
+    void ShutDown(SC_MessageParser* msg);
     virtual void Update(int p1, int p2);           // [7]  0x4078A0
     int Exit(SC_MessageParser* msg);
     virtual int HandleClick(int* param);           // [11] 0x407C20

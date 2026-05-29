@@ -215,7 +215,7 @@ void SCI_Schedule::Init(SC_MessageParser* msg)
 }
 
 /* Function start: 0x4353E0 */
-int SCI_Schedule::ShutDown(SC_MessageParser* msg)
+void SCI_Schedule::ShutDown(SC_MessageParser* msg)
 {
     int i = 6;
     Sprite** ptr = &selBox1;
@@ -238,7 +238,7 @@ int SCI_Schedule::ShutDown(SC_MessageParser* msg)
         mapHotspot->StopCursorSound();
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x435440 */

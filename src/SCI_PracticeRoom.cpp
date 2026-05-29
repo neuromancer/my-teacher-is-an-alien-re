@@ -122,7 +122,7 @@ void SCI_PracticeRoom::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x42AC20 */
-int SCI_PracticeRoom::ShutDown(SC_MessageParser* msg) {
+void SCI_PracticeRoom::ShutDown(SC_MessageParser* msg) {
     if (ambient != 0) {
         delete ambient;
         ambient = 0;
@@ -176,7 +176,7 @@ int SCI_PracticeRoom::ShutDown(SC_MessageParser* msg) {
             SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         }
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x42AD80 */

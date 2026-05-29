@@ -361,7 +361,7 @@ void SCI_SchoolMenu::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x41E950 */
-int SCI_SchoolMenu::ShutDown(SC_MessageParser* msg) {
+void SCI_SchoolMenu::ShutDown(SC_MessageParser* msg) {
     ZBufferManager* zbm;
     ZBQueue* queue;
     void* item;
@@ -489,7 +489,7 @@ int SCI_SchoolMenu::ShutDown(SC_MessageParser* msg) {
     IconBar::CleanupIconBar(msg);
 
 done:
-    return 0;
+    return;
 }
 
 /* Function start: 0x41EBD0 */

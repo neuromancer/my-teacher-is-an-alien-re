@@ -239,7 +239,7 @@ Handler31::~Handler31() {
 }
 
 /* Function start: 0x4173D0 */
-int Handler31::ShutDown(SC_MessageParser* msg) {
+void Handler31::ShutDown(SC_MessageParser* msg) {
     SC_Question* question;
 
     if (optionSprite != 0) {
@@ -300,7 +300,7 @@ int Handler31::ShutDown(SC_MessageParser* msg) {
 
     IconBar::ShutDown(msg);
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x417500 */

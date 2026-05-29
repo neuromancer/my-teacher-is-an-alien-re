@@ -89,7 +89,7 @@ public:
     virtual void OnProcessEnd();                   // [2]  0x419D70
     virtual void Init(SC_MessageParser* msg);            // [4]  0x418FB0
     virtual int AddMessage(SC_MessageParser* msg);       // [5]  0x419220
-    virtual int ShutDown(SC_MessageParser* msg);         // [6]  0x419010
+    virtual void ShutDown(SC_MessageParser* msg);         // [6]  0x419010
     virtual void Update(int p1, int p2);           // [7]  0x419200
     virtual int Exit(SC_MessageParser* msg);             // [8]  0x419350
     virtual void ProcessLose();                    // [11] 0x419380

@@ -113,8 +113,8 @@ void SC_Detention::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x409C40 */
-int SC_Detention::ShutDown(SC_MessageParser* msg) {
-    return 0;
+void SC_Detention::ShutDown(SC_MessageParser* msg) {
+    return;
 }
 
 /* Function start: 0x409C50 */

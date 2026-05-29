@@ -92,7 +92,7 @@ void SC_FireAlarm::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x4076E0 */
-int SC_FireAlarm::ShutDown(SC_MessageParser* msg) {
+void SC_FireAlarm::ShutDown(SC_MessageParser* msg) {
     void* p;
 
     p = (void*)paletteDummy;
@@ -166,7 +166,7 @@ int SC_FireAlarm::ShutDown(SC_MessageParser* msg) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x407930 */
@@ -454,10 +454,10 @@ void SC_FireAlarm::ProcessFrame() {
     if ((stateFlags & 0xF) == 0) {
         Animation* animData = teacherSprite->animation_data;
         int frameCount;
-        if (animData != 0) {
-            frameCount = *(int*)((char*)animData->smk + 0x374);
-        } else {
+        if (animData == 0) {
             frameCount = 0;
+        } else {
+            frameCount = *(int*)((char*)animData->smk + 0x374);
         }
 
         if (frameCount == 0x28) {

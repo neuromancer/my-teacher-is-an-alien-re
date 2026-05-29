@@ -29,9 +29,9 @@ void SC_ZBuffer::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x414390 */
-int SC_ZBuffer::ShutDown(SC_MessageParser* msg) {
+void SC_ZBuffer::ShutDown(SC_MessageParser* msg) {
     (void)msg;
-    return 0;
+    return;
 }
 
 /* Function start: 0x4143A0 */

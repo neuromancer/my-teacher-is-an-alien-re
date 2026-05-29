@@ -198,7 +198,7 @@ void IconBar::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x42D920 */
-int IconBar::ShutDown(SC_MessageParser* msg) {
+void IconBar::ShutDown(SC_MessageParser* msg) {
     if (msg != 0) {
         if ((unsigned int)(*(int*)msg - 0x1e) > 9) {
             IconBarEntry* entry = g_IconBarEntries_00473320;
@@ -213,7 +213,7 @@ int IconBar::ShutDown(SC_MessageParser* msg) {
             }
         }
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x42D9A0 */

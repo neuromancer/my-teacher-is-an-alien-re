@@ -35,7 +35,7 @@ public:
     virtual void OnProcessEnd();                   // [2]  0x40E0D0
     virtual void Init(SC_MessageParser* msg);
     virtual int AddMessage(SC_MessageParser* msg);
-    virtual int ShutDown(SC_MessageParser* msg);
+    virtual void ShutDown(SC_MessageParser* msg);
     virtual void Update(int param1, int param2);   // [7]  0x40D6C0
     virtual int Exit(SC_MessageParser* msg);
     virtual int HandleInput(Sprite* spr);          // [11] 0x40DB20

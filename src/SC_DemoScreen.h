@@ -18,7 +18,7 @@ public:
 
     void Init(SC_MessageParser* msg);
     int AddMessage(SC_MessageParser* msg);
-    int ShutDown(SC_MessageParser* msg);
+    void ShutDown(SC_MessageParser* msg);
     void Update(int param1, int param2);
     int Exit(SC_MessageParser* msg);
 

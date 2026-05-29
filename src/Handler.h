@@ -36,7 +36,7 @@ public:
     // Override in derived classes to implement handler behavior
     virtual void Init(SC_MessageParser* msg);
     virtual int AddMessage(SC_MessageParser* msg);
-    virtual int ShutDown(SC_MessageParser* msg);
+    virtual void ShutDown(SC_MessageParser* msg);
     virtual void Update(int param1, int param2);
     virtual int Exit(SC_MessageParser* msg);
     virtual void Serialize(void* param);

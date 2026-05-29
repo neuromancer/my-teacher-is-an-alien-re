@@ -34,7 +34,7 @@ public:
     virtual void OnProcessEnd();               // [2]  0x449520
     virtual void Init(SC_MessageParser* msg);        // [4]  0x449260
     virtual int AddMessage(SC_MessageParser* msg);   // [5]  0x449400
-    virtual int ShutDown(SC_MessageParser* msg);     // [6]  0x449320
+    virtual void ShutDown(SC_MessageParser* msg);     // [6]  0x449320
     virtual void Update(int p1, int p2);       // [7]  0x449480
     virtual int Exit(SC_MessageParser* msg);         // [8]  0x449410
     virtual void ProcessLose();                // [11] 0x4494E0

@@ -126,7 +126,7 @@ void SC_Rats::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x451B30 */
-int SC_Rats::ShutDown(SC_MessageParser* msg) {
+void SC_Rats::ShutDown(SC_MessageParser* msg) {
     if (combatEngine != 0) {
         ((Engine*)combatEngine)->StopAndCleanup();
         if (combatEngine != 0) {
@@ -142,7 +142,7 @@ int SC_Rats::ShutDown(SC_MessageParser* msg) {
     if (msg != 0) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x451BC0 */

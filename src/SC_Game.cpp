@@ -61,11 +61,11 @@ void SC_Game::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x432020 */
-int SC_Game::ShutDown(SC_MessageParser* msg) {
+void SC_Game::ShutDown(SC_MessageParser* msg) {
     if (sprite != 0) {
         sprite->StopAnimationSound();
     }
-    return 0;
+    return;
 }
 
 /* Function start: 0x432040 */

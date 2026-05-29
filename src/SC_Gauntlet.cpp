@@ -52,7 +52,7 @@ void SC_Gauntlet::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x42E8F0 */
-int SC_Gauntlet::ShutDown(SC_MessageParser* msg) {
+void SC_Gauntlet::ShutDown(SC_MessageParser* msg) {
     Sprite* spr;
     int i;
 
@@ -88,7 +88,7 @@ int SC_Gauntlet::ShutDown(SC_MessageParser* msg) {
     }
 
     SC_Combat::ShutDown(msg);
-    return 0;
+    return;
 }
 
 /* Function start: 0x42E9B0 */

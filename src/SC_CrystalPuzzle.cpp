@@ -334,7 +334,7 @@ void SC_CrystalPuzzle::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x44FA20 */
-int SC_CrystalPuzzle::ShutDown(SC_MessageParser* msg) {
+void SC_CrystalPuzzle::ShutDown(SC_MessageParser* msg) {
     if (puzztest != 0) {
         puzztest->StopAnimationSound();
     }
@@ -371,7 +371,7 @@ int SC_CrystalPuzzle::ShutDown(SC_MessageParser* msg) {
         field_A8 = 0;
     }
 
-    return 0;
+    return;
 }
 
 /* Function start: 0x44FAE0 */
