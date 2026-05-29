@@ -27,7 +27,7 @@ SC_Detention::SC_Detention() {
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState("PERIOD");
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
 
@@ -35,7 +35,7 @@ SC_Detention::SC_Detention() {
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState(g_Buffer_0046aa00);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
 
@@ -70,7 +70,7 @@ void SC_Detention::Init(SC_MessageParser* msg) {
         if (detentionActive == 0) {
             gs = g_GameState_0046aa30;
             idx = gs->FindState("WENT_TO_CLASS");
-            if (idx < 0 || idx >= gs->maxStates - 1) {
+            if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
             if (gs->stateValues[idx] == 0) {
@@ -97,7 +97,7 @@ void SC_Detention::Init(SC_MessageParser* msg) {
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState("PERIOD");
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
 
@@ -105,7 +105,7 @@ void SC_Detention::Init(SC_MessageParser* msg) {
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState(g_Buffer_0046aa00);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
 
@@ -126,19 +126,19 @@ void SC_Detention::Update(int p1, int p2) {
     if (p2 == 0x20) {
         idx = announcementStateIdx;
         gs = g_GameState_0046aa30;
-        if (idx < 0 || idx >= gs->maxStates - 1) {
+        if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
         if (gs->stateValues[idx] == 0) {
             idx = numActionsStateIdx;
             gs = g_GameState_0046aa30;
-            if (idx < 0 || idx >= gs->maxStates - 1) {
+            if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
             if (gs->stateValues[idx] >= 2) {
                 idx = combatPodStateIdx;
                 gs = g_GameState_0046aa30;
-                if (idx < 0 || idx >= gs->maxStates - 1) {
+                if (idx < 0 || gs->maxStates - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 if (gs->stateValues[idx] != 0) {
@@ -150,7 +150,7 @@ void SC_Detention::Update(int p1, int p2) {
 
                     idx = announcementStateIdx;
                     gs = g_GameState_0046aa30;
-                    if (idx < 0 || idx >= gs->maxStates - 1) {
+                    if (idx < 0 || gs->maxStates - 1 < idx) {
                         ShowError("Invalid gamestate %d", idx);
                     }
                     gs->stateValues[idx] = 1;
@@ -186,13 +186,13 @@ void SC_Detention::Update(int p1, int p2) {
 
     idx = practiceRoomStateIdx;
     gs = g_GameState_0046aa30;
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] == 0) {
         idx = numActionsStateIdx;
         gs = g_GameState_0046aa30;
-        if (idx < 0 || idx >= gs->maxStates - 1) {
+        if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
         if (gs->stateValues[idx] >= actionsCount) {
@@ -230,7 +230,7 @@ int SC_Detention::Exit(SC_MessageParser* msg) {
         if (detentionActive == 0) {
             gs = g_GameState_0046aa30;
             idx = gs->FindState("WENT_TO_CLASS");
-            if (idx < 0 || idx >= gs->maxStates - 1) {
+            if (idx < 0 || gs->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
             if (gs->stateValues[idx] == 0) {
@@ -281,7 +281,7 @@ void SC_Detention::GoToClass() {
     if (detentionSaved == 0) {
         gs = g_GameState_0046aa30;
         idx = gs->FindState("PERIOD");
-        if (idx < 0 || idx >= gs->maxStates - 1) {
+        if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
         SendGameMessage(3, field_F0[gs->stateValues[idx]], 0x25, 1, 4, 0, 0, 0, 0, 0);
@@ -296,14 +296,14 @@ void SC_Detention::HandleInput3C() {
     SetupDetentionState();
     gs = g_GameState_0046aa30;
     idx = gs->FindState(lateCutLabel);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     gs->stateValues[idx]++;
     detentionActive = 1;
     gs = g_GameState_0046aa30;
     idx = gs->FindState(lateCutLabel);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] % 3 == 0) {
@@ -319,14 +319,14 @@ void SC_Detention::ProcessDetention() {
     SetupDetentionState();
     gs = g_GameState_0046aa30;
     idx = gs->FindState(lateCutLabel);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     gs->stateValues[idx] += 3;
     detentionActive = 1;
     gs = g_GameState_0046aa30;
     idx = gs->FindState(lateCutLabel);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] % 9 == 0) {
@@ -344,19 +344,19 @@ void SC_Detention::HandleInput3F() {
     SetupDetentionState();
     gs = g_GameState_0046aa30;
     idx = gs->FindState(field_184);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     gs->stateValues[idx]++;
     gs = g_GameState_0046aa30;
     idx = gs->FindState(field_184);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] >= 3) {
         gs = g_GameState_0046aa30;
         idx = gs->FindState(field_164);
-        if (idx < 0 || idx >= gs->maxStates - 1) {
+        if (idx < 0 || gs->maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
         gs->stateValues[idx] = 3;
@@ -373,13 +373,13 @@ void SC_Detention::InitDetention() {
     detentionActive = 1;
     gs = g_GameState_0046aa30;
     idx = gs->FindState(field_164);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     gs->stateValues[idx]++;
     gs = g_GameState_0046aa30;
     idx = gs->FindState(field_164);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] >= 3) {
@@ -388,7 +388,7 @@ void SC_Detention::InitDetention() {
     }
     gs = g_GameState_0046aa30;
     idx = gs->FindState(field_164);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] == 1) {
@@ -397,7 +397,7 @@ void SC_Detention::InitDetention() {
     }
     gs = g_GameState_0046aa30;
     idx = gs->FindState(field_164);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] == 2) {
@@ -406,7 +406,7 @@ void SC_Detention::InitDetention() {
     }
     gs = g_GameState_0046aa30;
     idx = gs->FindState(field_164);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     ShowError("SC_Detention::Error %s %d", field_164, gs->stateValues[idx]);
@@ -420,7 +420,7 @@ void SC_Detention::HandleInput40() {
     SetupDetentionState();
     gs = g_GameState_0046aa30;
     idx = gs->FindState(field_164);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     gs->stateValues[idx] = 3;
@@ -541,28 +541,28 @@ void SC_Detention::ResetAnimations() {
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState(g_Buffer_0046aa00);
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     actionsCount = gs->stateValues[idx];
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState("P_IN_DETENTION");
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] == 0) return;
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState("S_IN_DETENTION");
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] == 0) return;
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState("D_IN_DETENTION");
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     if (gs->stateValues[idx] == 0) return;
@@ -585,7 +585,7 @@ void SC_Detention::SendPeriodAction(int param) {
 
     gs = g_GameState_0046aa30;
     idx = gs->FindState("MUST_SAVEGAME");
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     gs->stateValues[idx] = 0;
@@ -677,7 +677,7 @@ void SC_Detention::SetupDetentionState() {
 
     idx = g_PeriodStateIdx_0046cb90;
     gs = g_GameState_0046aa30;
-    if (idx < 0 || idx >= gs->maxStates - 1) {
+    if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     periodChar = (signed char)g_PeriodCharTable_0046cb94[gs->stateValues[idx]];

@@ -164,8 +164,8 @@ void VBuffer::LoadFromFile(char* filename, int param_2)
         SmackSoundOnOff(anim.smk, 0);
     }
 
-    int w = ((int*)anim.vbuffer)[1]; // vbuffer->width at +0x04
-    int h = ((int*)anim.vbuffer)[2]; // vbuffer->height at +0x08
+    int w = anim.smk->Width;  // smk->Width at +0x04
+    int h = anim.smk->Height; // smk->Height at +0x08
     InitWithSize(w, h);
     anim.ToBufferVB(this);
 

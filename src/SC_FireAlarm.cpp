@@ -291,15 +291,16 @@ void SC_FireAlarm::ProcessClick() {
 /* Function start: 0x407C20 */
 int SC_FireAlarm::HandleClick(int* param) {
     Projectile* p = (Projectile*)param;
+    int* nextX = &p->nextPos.x;
     int animIdx = p->handle;
     int frameCount = p->ranges[animIdx].dim.y;
     frameCount--;
 
-    int hitResult = g_BackBuffer_0046aa14->CheckHit(p->nextPos.x, p->nextPos.y);
+    int hitResult = g_BackBuffer_0046aa14->CheckHit(*nextX, nextX[1]);
 
     if (planeClickRange.x <= hitResult && planeClickRange.y >= hitResult) {
-        int y = p->nextPos.y - 0x4B;
-        int x = p->nextPos.x - 0xA1;
+        int y = nextX[1] - 0x4B;
+        int x = *nextX - 0xA1;
         planeSprite->loc_x = x;
         planeSprite->loc_y = y;
         planeSprite->ResetAnimation(2, 0);
@@ -348,7 +349,7 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     {
         int inSlot;
-        if (alarmSlotRect.left > p->nextPos.x || alarmSlotRect.right < p->nextPos.x ||
+        if (alarmSlotRect.left > *nextX || alarmSlotRect.right < *nextX ||
             alarmSlotRect.top > p->nextPos.y || alarmSlotRect.bottom < p->nextPos.y) {
             inSlot = 0;
         } else {

@@ -648,7 +648,6 @@ int SC_Wahoo::ProcessClick(int param_1) {
     int uVar10;
     int local_c[3];
     Projectile* proj = (Projectile*)param_1;
-    SlimeDim* nextPos = &proj->nextPos;
 
     iVar7 = proj->ranges[proj->handle].dim.y - 1;
     if (proj->animation_data == 0) {
@@ -660,10 +659,10 @@ int SC_Wahoo::ProcessClick(int param_1) {
         return 0;
     }
 
-    iVar7 = nextPos->x;
+    iVar7 = proj->nextPos.x;
     int bVar1;
     if (iVar7 < switchHitbox.left || switchHitbox.right < iVar7 ||
-        nextPos->y < switchHitbox.top || switchHitbox.bottom < nextPos->y) {
+        proj->nextPos.y < switchHitbox.top || switchHitbox.bottom < proj->nextPos.y) {
         bVar1 = 0;
     } else {
         bVar1 = 1;
@@ -671,7 +670,7 @@ int SC_Wahoo::ProcessClick(int param_1) {
 
     if (!bVar1) {
         if (iVar7 < playAreaHitbox.left || playAreaHitbox.right < iVar7 ||
-            nextPos->y < playAreaHitbox.top || playAreaHitbox.bottom < nextPos->y) {
+            proj->nextPos.y < playAreaHitbox.top || playAreaHitbox.bottom < proj->nextPos.y) {
             bVar1 = 0;
         } else {
             bVar1 = 1;
@@ -681,7 +680,7 @@ int SC_Wahoo::ProcessClick(int param_1) {
         {
         unsigned int uVar2 = detectionMask->CheckHit(
             iVar7 - playAreaHitbox.left,
-            nextPos->y - playAreaHitbox.top);
+            proj->nextPos.y - playAreaHitbox.top);
 
         if ((int)uVar2 < 1 || 3 < (int)uVar2 ||
             (pvVar6 = (&resetSwitchSprite)[uVar2],

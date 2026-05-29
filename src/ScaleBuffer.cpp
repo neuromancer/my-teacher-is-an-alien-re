@@ -103,14 +103,13 @@ extern "C" void __cdecl ScaleBuffer(void* srcData, void* destData, unsigned int 
     yBitMask = 0x80;
     
     if (scaleFlags == 0) {
-        /* Case 0: srcWidth > destWidth AND srcHeight > destHeight */
-        /* Skip rows & copy to dest with row duplication from previous */
+        /* Case 0: srcWidth > destWidth AND srcHeight > destHeight (shrink both) */
+        /* Drop rows/pixels from source; dest advances only by destWidth per kept row */
         yCount = maxHeight;
         do {
             if ((yBitMask & yByte) == 0) {
-                /* Skip source row - copy previous dest row */
-                memcpy(dest, dest - maxWidth, maxWidth);
-                dest += maxWidth;
+                /* Skip source row - advance source only, no dest output */
+                src = src + srcWidth;
             } else {
                 xTablePtr = xTable;
                 xBitMask = 0x80;
@@ -118,12 +117,14 @@ extern "C" void __cdecl ScaleBuffer(void* srcData, void* destData, unsigned int 
                 xCount = maxWidth;
                 do {
                     if ((xBitMask & xByte) == 0) {
-                        src--;
+                        /* Skip source pixel - no dest write */
+                        src++;
+                    } else {
+                        *dest = *src;
+                        dest++;
+                        src++;
                     }
-                    *dest = *src;
-                    dest++;
-                    src++;
-                    
+
                     if (xBitMask & 1) {
                         xTablePtr++;
                         xByte = *xTablePtr;
@@ -132,7 +133,7 @@ extern "C" void __cdecl ScaleBuffer(void* srcData, void* destData, unsigned int 
                     xCount--;
                 } while (xCount != 0);
             }
-            
+
             if (yBitMask & 1) {
                 yTablePtr++;
                 yByte = *yTablePtr;
@@ -229,11 +230,10 @@ extern "C" void __cdecl ScaleBuffer(void* srcData, void* destData, unsigned int 
                 xByte = *xTablePtr;
                 xCount = maxWidth;
                 do {
-                    unsigned char* pixelSrc = src;
                     if ((xBitMask & xByte) == 0) {
-                        pixelSrc = src - 1;
+                        src--;
                     }
-                    *dest = *pixelSrc;
+                    *dest = *src;
                     dest++;
                     src++;
                     
