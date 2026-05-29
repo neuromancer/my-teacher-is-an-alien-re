@@ -6,6 +6,7 @@
 # executable against the original at the instruction and data-layout level.
 #
 # Common entry points:
+#   make                    # full-game executable
 #   make TEACHER.EXE        # full-game executable
 #   make TEACHER-DEMO.EXE   # demo executable
 #   make run                # build and launch the full game in DREAMM
@@ -212,7 +213,7 @@ ASMS_DEMO = $(patsubst src-demo/%.cpp,$(OUT_DIR_DEMO)/%.asm,$(SRCS_DEMO))
 # Build targets and tool bootstrap
 # ---------------------------------------------------------------------------
 
-all: $(WIBO) $(OBJS) $(ASMS)
+all: TEACHER.EXE
 
 demo: $(WIBO) $(OBJS_DEMO) $(ASMS_DEMO)
 
