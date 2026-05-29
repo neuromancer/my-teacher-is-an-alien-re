@@ -11,6 +11,7 @@
 #   make TEACHER-DEMO.EXE   # demo executable
 #   make run                # build and launch the full game in DREAMM
 #   make run-demo           # build and launch the demo in DREAMM
+#   make run-wine           # build and launch the full game in Wine
 #   make verify             # run the primary recovery verification checklist
 
 # ---------------------------------------------------------------------------
@@ -77,7 +78,7 @@ GLOBALS_MISSING_TAIL_MIN_ADDRESS = 0x00472bd8
 GLOBALS_MISSING_TAIL_MAX_ADDRESS = 0x0047508b
 
 # ---------------------------------------------------------------------------
-# Host platform and DREAMM runtime
+# Host platform, DREAMM runtime, and Wine runtime
 # ---------------------------------------------------------------------------
 
 UNAME_S := $(shell uname -s)
@@ -102,6 +103,13 @@ endif
 DREAMM_BIN = $(DREAMM_DIR)/dreamm
 endif
 DREAMM = $(CURDIR)/$(DREAMM_BIN)
+
+# Wine runs from the installed full-game data directory.  The CD-ROM image
+# should already be mounted by the desktop environment; Wine will expose it as
+# a CD drive, and the game will perform its normal CD check.
+WINE ?= wine
+WINEPREFIX ?= $(CURDIR)/.wine-teacher
+WINE_RUN_DIR = data/full
 
 # ---------------------------------------------------------------------------
 # Source order
@@ -486,6 +494,27 @@ debug: TEACHER.EXE | data/full/DATA $(DREAMM_BIN)
 	cd data/full && $(DREAMM) -mount rw:C=hd $(DREAMM_PROPS) -mount d=teacher.iso -debug -launch TEACHER.EXE
 
 # ---------------------------------------------------------------------------
+# Wine launch targets
+# ---------------------------------------------------------------------------
+
+wine-check:
+	@command -v $(WINE) >/dev/null 2>&1 || \
+		(echo "Error: wine not found. Install Wine or set WINE=/path/to/wine." >&2 && exit 1)
+	@test -d "$(WINE_RUN_DIR)/DATA" || \
+		(echo "Error: expected installed game data at $(WINE_RUN_DIR)/DATA." >&2 && exit 1)
+
+wine-stage: TEACHER.EXE wine-check
+	cp -f TEACHER.EXE "$(WINE_RUN_DIR)/TEACHER.EXE"
+
+run-wine: wine-stage
+	cd "$(WINE_RUN_DIR)" && WINEPREFIX="$(WINEPREFIX)" $(WINE) TEACHER.EXE
+
+run-wine-original: wine-check
+	@test -f "$(WINE_RUN_DIR)/TEACHER.ORI.EXE" || \
+		(echo "Error: expected original executable at $(WINE_RUN_DIR)/TEACHER.ORI.EXE." >&2 && exit 1)
+	cd "$(WINE_RUN_DIR)" && WINEPREFIX="$(WINEPREFIX)" $(WINE) TEACHER.ORI.EXE
+
+# ---------------------------------------------------------------------------
 # Cleanup and phony declarations
 # ---------------------------------------------------------------------------
 
@@ -495,6 +524,9 @@ clean:
 clean-demo:
 	rm -f $(OUT_DIR_DEMO)/*.obj $(OUT_DIR_DEMO)/*.asm $(OUT_DIR_DEMO)/*.stdout TEACHER-DEMO.EXE TEACHER-DEMO.map
 
+clean-wine:
+	rm -f "$(WINE_RUN_DIR)/TEACHER.EXE"
+
 .PHONY: \
 	all \
 	audit-auto-complete-globals \
@@ -503,6 +535,7 @@ clean-demo:
 	build-full \
 	clean \
 	clean-demo \
+	clean-wine \
 	compare \
 	compare-demo \
 	compare-demo-functions \
@@ -525,6 +558,8 @@ clean-demo:
 	run-demo \
 	run-demo-original \
 	run-original \
+	run-wine \
+	run-wine-original \
 	sort \
 	verify \
 	verify-calls \
@@ -533,4 +568,6 @@ clean-demo:
 	verify-globals-code \
 	verify-values \
 	verify-values-stack-locals \
-	verify-vtables
+	verify-vtables \
+	wine-check \
+	wine-stage
