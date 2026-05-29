@@ -161,20 +161,24 @@ int SC_SaveLoad::AddMessage(SC_MessageParser* msg) {
     WriteMessageAddress(msg);
     timer.Reset();
     if (action->lastKey != 0) {
-        if (action->lastKey == 0xD || action->lastKey == 0x59 || action->lastKey == 0x79) {
+        switch (action->lastKey) {
+        case 0xD:
+        case 0x59:
+        case 0x79:
             action->instruction = 2;
             action->extra1 = 1;
-            return 1;
-        }
-        if (action->lastKey == 0x4E || action->lastKey == 0x6E) {
+            break;
+        case 0x1B:
+        case 0x43:
+        case 0x63:
             action->instruction = 2;
             action->extra1 = 0;
-            return 1;
-        }
-        if (action->lastKey == 0x1B) {
+            break;
+        case 0x4E:
+        case 0x6E:
             action->instruction = 2;
             action->extra1 = 2;
-            return 1;
+            break;
         }
     } else {
         if (action->button1 <= 1) return 1;

@@ -47,7 +47,6 @@ extern "C" void WriteToMessageLog(const char* msg, ...);
 class FireAlarmRockThrower : public RockThrower {
 public:
     FireAlarmRockThrower(Parser* parent) : RockThrower(parent) {}
-    ~FireAlarmRockThrower();
     void OnHit();
     int CheckTargetHit(int param);
 };
@@ -291,16 +290,16 @@ void SC_FireAlarm::ProcessClick() {
 /* Function start: 0x407C20 */
 int SC_FireAlarm::HandleClick(int* param) {
     Projectile* p = (Projectile*)param;
-    int* nextX = &p->nextPos.x;
+    SlimeDim* nextPos = &p->nextPos;
     int animIdx = p->handle;
     int frameCount = p->ranges[animIdx].dim.y;
     frameCount--;
 
-    int hitResult = g_BackBuffer_0046aa14->CheckHit(*nextX, nextX[1]);
+    int hitResult = g_BackBuffer_0046aa14->CheckHit(nextPos->x, nextPos->y);
 
     if (planeClickRange.x <= hitResult && planeClickRange.y >= hitResult) {
-        int y = nextX[1] - 0x4B;
-        int x = *nextX - 0xA1;
+        int y = nextPos->y - 0x4B;
+        int x = nextPos->x - 0xA1;
         planeSprite->loc_x = x;
         planeSprite->loc_y = y;
         planeSprite->ResetAnimation(2, 0);
@@ -349,8 +348,8 @@ int SC_FireAlarm::HandleClick(int* param) {
 
     {
         int inSlot;
-        if (alarmSlotRect.left > *nextX || alarmSlotRect.right < *nextX ||
-            alarmSlotRect.top > p->nextPos.y || alarmSlotRect.bottom < p->nextPos.y) {
+        if (alarmSlotRect.left > nextPos->x || alarmSlotRect.right < nextPos->x ||
+            alarmSlotRect.top > nextPos->y || alarmSlotRect.bottom < nextPos->y) {
             inSlot = 0;
         } else {
             inSlot = 1;
@@ -735,6 +734,3 @@ void FireAlarmRockThrower::OnHit() {
     ((SC_FireAlarm*)g_GameEngine_0046a6ec->m_activeHandler)->ProcessClick();
 }
 
-/* Function start: 0x408E70 */
-FireAlarmRockThrower::~FireAlarmRockThrower() {
-}
