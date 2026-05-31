@@ -9,10 +9,28 @@ Migrated verifiers:
 - `binary-comp calls`
 - `binary-comp compare`
 - `binary-comp report`
+- `binary-comp seh`
 - `binary-comp values`
 - `binary-comp vtables`
 - `binary-comp exe`
 - `binary-comp data`
+
+`binary-comp seh` compares C++ exception-handling structure (the MSVC `FuncInfo`
+unwind map) between original and rebuilt, which mnemonic similarity cannot see.
+For one function it lists each unwind state (what object is destroyed —
+`this+0xNN` member, `stack@`, `ptr@`, or `arg@` — and the destructor target) and
+warns on differences; with `--report` it scans the whole project and prints only
+functions whose EH structure differs. Typical findings: `rebuilt destructs EXTRA
+member object at this+0xNN` (a member wrongly typed with a destructor, e.g.
+`SlimeDim`/`Rect` where the original used a dtor-less type), `rebuilt has NO C++
+EH frame` (a small member destructor must be inline in a header, or a guard
+object/try is missing), and `MISSING a member destructor`.
+
+```sh
+binary-comp seh --config config/binary-comp.json --target full ClassName::Method code-full/FUN_XXXXXX.disassembled.txt
+binary-comp seh --config config/binary-comp.json --target full --report
+binary-comp seh --config config/binary-comp.json --target full --report --filter SC_FireAlarm
+```
 
 Local scripts kept in this repository:
 

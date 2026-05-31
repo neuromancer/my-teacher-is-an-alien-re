@@ -28,11 +28,9 @@ extern char* MakeSoundName(char*);
 /* Function start: 0x440860 */
 PodsEngine::PodsEngine()
 {
-    reserved_0xFC = 0;
-    reserved_0x100 = 0;
     memset(&podsBgSprite, 0, 10 * sizeof(int));
-    podState.x = 0;
-    podState.y = 3;
+    counter.x = 0;
+    counter.y = 3;
 }
 
 /* Function start: 0x440950 */
@@ -92,12 +90,12 @@ void PodsEngine::ProcessFrame() {
         if (reserved_0x104 != g_ScoreDisplay_0046ae6c->hitCount && state != 2) {
             reserved_0x104 = g_ScoreDisplay_0046ae6c->hitCount;
             podsBgSprite->ResetAnimation(1, 0);
-            podState.x++;
-            if (podState.y == 0) {
+            counter.x++;
+            if (counter.y == 0) {
                 ready = 0;
             } else {
                 ready = 1;
-                if (podState.x >= podState.y) {
+                if (counter.x >= counter.y) {
                 } else {
                     ready = 0;
                 }
@@ -120,8 +118,8 @@ void PodsEngine::ProcessFrame() {
         if (podsBgSprite->Do(podsBgSprite->loc_x, podsBgSprite->loc_y, 1.0) != 0) {
             switch (state) {
             case 1: {
-                unsigned int* p = (unsigned int*)&reserved_0xFC;
-                int count = (reserved_0x100 - *p) + 1;
+                unsigned int* p = (unsigned int*)&podRange.x;
+                int count = (podRange.y - *p) + 1;
                 if (g_PodsPalette_0046bf30 == 0) {
                     g_PodsPalette_0046bf30 = new Palette();
                     g_PodsPalette_0046bf30->CopyEntries(0, 0x100);
@@ -129,10 +127,10 @@ void PodsEngine::ProcessFrame() {
                 {
                     Palette temp;
                     temp.CopyRGBData((int)g_PodsPalette_0046bf30->m_data, *p, count);
-                    temp.FadeTo(0xff, 0xff, 0, (float)podState.x * 0.1f, *p, count);
+                    temp.FadeTo(0xff, 0xff, 0, (float)counter.x * 0.1f, *p, count);
                     temp.SetPalette(*p, count);
                 }
-                if (podState.y != 0 && podState.x >= podState.y) {
+                if (counter.y != 0 && counter.x >= counter.y) {
                     podsBgSprite->ResetAnimation(2, 0);
                     g_SlimeTable_0046bf28->Play(4);
                     goto skip;
@@ -299,9 +297,9 @@ int PodsEngine::LBLParse(char* line) {
         podsBgSprite = new Sprite(0);
         Parser::ProcessFile(podsBgSprite, this, 0);
     } else if (strcmp(token, "STUDENT_PALETTE") == 0) {
-        sscanf(line, " %s %d %d", token, &reserved_0xFC, &reserved_0x100);
+        sscanf(line, " %s %d %d", token, &podRange.x, &podRange.y);
     } else if (strcmp(token, "STUDENT_HITS_ALLOWED") == 0) {
-        sscanf(line, " %s %d", token, &podState.y);
+        sscanf(line, " %s %d", token, &counter.y);
     } else if (strcmp(token, "CINEMATIC") == 0) {
         int fields = sscanf(line, " %s %d %s", token, &key, buffer);
         if (hashTable == 0) {

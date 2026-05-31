@@ -17,10 +17,6 @@
 /* Function start: 0x4441E0 */
 SC_FakeRoom::SC_FakeRoom()
 {
-    hitboxLeft = 0;
-    hitboxTop = 0;
-    hitboxRight = 0;
-    hitboxBottom = 0;
     memset(&stateFlags, 0, 6 * 4);
     handlerId = 0x49;
 }
@@ -57,8 +53,8 @@ int SC_FakeRoom::AddMessage(SC_MessageParser* msg)
                 bgSprite->ResetAnimation(1, 0);
                 return 1;
             }
-        } else if (hitboxLeft <= mouseX && hitboxRight >= mouseX &&
-                   hitboxTop <= action->mousePos.y && hitboxBottom >= action->mousePos.y) {
+        } else if (hitbox.left <= mouseX && hitbox.right >= mouseX &&
+                   hitbox.top <= action->mousePos.y && hitbox.bottom >= action->mousePos.y) {
             statusPtr[1] = 1;  // [1] = hitbox clicked
         }
     }
@@ -125,8 +121,8 @@ void SC_FakeRoom::RenderFrame()
         mouseX = 0;
     }
 
-    if (hitboxLeft <= mouseX && mouseX <= hitboxRight &&
-        hitboxTop <= mouseY && mouseY <= hitboxBottom) {
+    if (hitbox.left <= mouseX && mouseX <= hitbox.right &&
+        hitbox.top <= mouseY && mouseY <= hitbox.bottom) {
         Sprite* cursor = g_Mouse_0046aa18->m_sprite;
         if (cursor != 0) {
             cursor->ResetAnimation(0x14, 0);

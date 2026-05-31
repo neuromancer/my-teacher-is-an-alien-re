@@ -2,6 +2,7 @@
 #define SC_SELECTHOTSPOT_H
 
 #include "Handler.h"
+#include "InvSlotItem.h"
 #include <string.h>
 
 class SC_SelectHotSpot;
@@ -22,10 +23,7 @@ public:
     int LBLParse(char* line);           // 0x405530
 
     int state;              // 0x90 - 0=idle, 1=normal, 2=hover, 3=selected
-    int x1;                 // 0x94
-    int y1;                 // 0x98
-    int x2;                 // 0x9C
-    int y2;                 // 0xA0
+    Rect bounds;            // 0x94-0xA3 - clickable rect (has dtor; unwound at state 1)
     int keyCode;            // 0xA4
     int sortKey;            // 0xA8
     void* sprite;           // 0xAC - Sprite*

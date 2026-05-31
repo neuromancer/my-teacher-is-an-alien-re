@@ -93,14 +93,7 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
     }
 
     // Allocate new entry
-    FilePosEntry* newEntry = (FilePosEntry*)AllocateMemory(0x50);
-    if (newEntry != 0) {
-        strcpy(newEntry->filename, fname);
-        strcpy(newEntry->key, keyName);
-        newEntry->posLo = posLo;
-        newEntry->posHi = posHi;
-        newEntry->accessCount = 0;
-    }
+    FilePosEntry* newEntry = new FilePosEntry(fname, keyName, posLo, posHi);
 
     // Push to pool
     int* pool2 = (int*)g_SoundPool_00469134;

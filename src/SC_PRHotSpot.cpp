@@ -20,10 +20,6 @@ extern void ParseSpriteAction(void* param_1, void* param_2);
 /* Function start: 0x429B60 */
 SC_PRHotSpot::SC_PRHotSpot(int param_1, int param_2) : Parser()
 {
-    boundsLeft = 0;
-    boundsTop = 0;
-    boundsRight = 0;
-    boundsBottom = 0;
     memset(&state, 0, 0x30);
     state = 1;
     hotspotId = param_1;
@@ -100,7 +96,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
         sprite = newSprite;
         Parser::ProcessFile(sprite, this, 0);
     } else if (strcmp(local_3c, "LOC") == 0) {
-        sscanf(param_1, " %s %d %d %d %d", local_3c, &boundsLeft, &boundsTop, &boundsRight, &boundsBottom);
+        sscanf(param_1, " %s %d %d %d %d", local_3c, &bounds.left, &bounds.top, &bounds.right, &bounds.bottom);
     } else if (strcmp(local_3c, "ROLLON") == 0) {
         sscanf(param_1, "%s %d", local_3c, &local_18);
         char* filename = GetSoundFilename(local_18);
@@ -254,8 +250,8 @@ void SC_PRHotSpot::Update()
         } else {
             mouseX = 0;
         }
-        if (boundsLeft <= mouseX && boundsRight >= mouseX &&
-            boundsTop <= mouseY && boundsBottom >= mouseY) {
+        if (bounds.left <= mouseX && bounds.right >= mouseX &&
+            bounds.top <= mouseY && bounds.bottom >= mouseY) {
             state = 2;
             if (sprite != 0) {
                 sprite->ResetAnimation(2, 0);
@@ -279,8 +275,8 @@ void SC_PRHotSpot::Update()
         } else {
             mouseX = 0;
         }
-        if (boundsLeft > mouseX || boundsRight < mouseX ||
-            boundsTop > mouseY || boundsBottom < mouseY) {
+        if (bounds.left > mouseX || bounds.right < mouseX ||
+            bounds.top > mouseY || bounds.bottom < mouseY) {
             state = 1;
             if (sprite != 0) {
                 sprite->ResetAnimation(1, 0);
@@ -335,8 +331,8 @@ int SC_PRHotSpot::CheckCollision(void* param_1)
     int* msg = (int*)param_1;
     int mx = msg[7];
 
-    int inBounds = (boundsLeft <= mx && boundsRight >= mx &&
-                    boundsTop <= msg[8] && boundsBottom >= msg[8]);
+    int inBounds = (bounds.left <= mx && bounds.right >= mx &&
+                    bounds.top <= msg[8] && bounds.bottom >= msg[8]);
     if (inBounds == 0 || state == 0) {
         return 0;
     }

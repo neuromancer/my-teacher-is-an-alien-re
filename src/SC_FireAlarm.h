@@ -9,6 +9,12 @@ class Sprite;
 class Palette;
 class SlimeTable;
 
+// Destructor-less coordinate/rect pairs: the original SC_FireAlarm uses these
+// (NOT SlimeDim/Rect) for counters and the unused teacher slot — proven by the
+// destructor only unwinding 6 members (screenSize, alarmSlotRect, kidHitRange,
+// planeClickRange, planeHomePos, teacherHitRange), not these.
+struct FA_Dim { int x; int y; FA_Dim() { x = 0; y = 0; } };
+
 // SC_FireAlarm - Fire alarm puzzle handler (case 64/0x40)
 // Constructor: 0x407290
 // Size: 0x150
@@ -44,9 +50,9 @@ public:
     Sprite* alarmSprite;              // 0xC8 - ALARM_SPRITE
     Rect alarmSlotRect;               // 0xCC-0xDB - alarm pull area rectangle
     Sprite* handSprite;               // 0xDC - HAND_SPRITE
-    SlimeDim handIdleDelay;           // 0xE0-0xE7 - hand idle counter/target
+    FA_Dim handIdleDelay;             // 0xE0-0xE7 - hand idle counter/target (plain, no dtor)
     SlimeDim kidHitRange;             // 0xE8-0xEF - SMP_HitKid color range (B4-C1)
-    SlimeDim kidHitCounter;           // 0xF0-0xF7 - kid hit count/max
+    FA_Dim kidHitCounter;             // 0xF0-0xF7 - kid hit count/max (plain, no dtor)
     Sprite* planeSprite;              // 0xF8 - PLANE_SPRITE
     SlimeDim planeClickRange;         // 0xFC-0x103 - plane click color range
     SlimeDim planeHomePos;            // 0x104-0x10B - plane home position (initial loc_x/loc_y)
@@ -56,7 +62,7 @@ public:
     Rect teacherSlotRect;             // 0x11C-0x12B - original initializes this but HandleClick does not use it
     SlimeDim teacherHomePos;          // 0x12C-0x133 - teacher home position (initial loc_x/loc_y)
     int animDistance;                 // 0x134 - animation frame distance
-    SlimeDim timerCounter;            // 0x138-0x13F - timer counter/target
+    FA_Dim timerCounter;              // 0x138-0x13F - timer counter/target (plain, no dtor)
     int roundCount;                   // 0x140 - number of rounds completed
     int maxRounds;                    // 0x144 - max rounds (STUDENT_HITS_ALLOWED)
     SlimeTable* soundList;             // 0x148 - indexed sound table

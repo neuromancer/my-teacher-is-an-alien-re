@@ -257,13 +257,7 @@ void __cdecl FileCacheRegister(char* name, int size) {
     }
 
     // Allocate new entry
-    FileCacheEntry* entry = (FileCacheEntry*)operator new(sizeof(FileCacheEntry));
-    if (entry != 0) {
-        strcpy(entry->name, name);
-        entry->size = size;
-        entry->hitCount = 0;
-        entry->tickTime = timeGetTime();
-    }
+    FileCacheEntry* entry = new FileCacheEntry(name, size);
 
     // Get a free node from the pool
     cache = g_FileCache_0046b78c;

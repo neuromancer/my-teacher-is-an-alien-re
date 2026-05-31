@@ -1,6 +1,10 @@
 #ifndef MEMORYCACHE_H
 #define MEMORYCACHE_H
 
+#include <string.h>
+
+extern "C" unsigned long __stdcall timeGetTime(void);
+
 // FileCacheEntry — 0x2C bytes. Allocated via operator new in FileCacheRegister.
 // Points to from CacheNode::entry.
 struct FileCacheEntry {
@@ -8,6 +12,13 @@ struct FileCacheEntry {
     int size;               // 0x20 — reported file size in bytes
     int hitCount;           // 0x24 — incremented on each FileCacheLookup hit
     unsigned int tickTime;  // 0x28 — timeGetTime() at registration / last access
+
+    FileCacheEntry(char* name, int size) {
+        strcpy(FileCacheEntry::name, name);
+        FileCacheEntry::size = size;
+        hitCount = 0;
+        tickTime = timeGetTime();
+    }
 };
 
 // CacheNode — 12-byte linked-list node used by MemoryCache. Pool-allocated

@@ -47,7 +47,8 @@ public:
     int val;
     TargetMember() : val(0) {}
     TargetMember(int v) : val(v) {}
-    ~TargetMember() {}
+    // No destructor: the original never unwinds combatBonus2/missBonus, so this
+    // type must be trivially destructible (proven by binary-comp seh).
 };
 
 // Target - Full game layout (extends Sprite at 0xF8)
@@ -76,8 +77,8 @@ public:
     Sample* progressSound; // 0x154 - sound played on progress
     Sample* hitSound;     // 0x158 - sound played on hit
     Sample* sound3;       // 0x15C - extra sound
-    IntPair animParam;    // 0x160-0x167 - from 'A' label
-    IntPair hitOffset;    // 0x168-0x16F - hit offset from 'O' label
+    SlimeDim animParam;   // 0x160-0x167 - from 'A' label
+    SlimeDim hitOffset;   // 0x168-0x16F - hit offset from 'O' label
     int pendingAction;    // 0x170 - pending action (0=none, 1=miss, 3=hit)
     int field_174;        // 0x174
 

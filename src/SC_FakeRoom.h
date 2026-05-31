@@ -2,6 +2,7 @@
 #define SC_FAKEROOM_H
 
 #include "SC_Combat.h"
+#include "InvSlotItem.h"
 
 // SC_FakeRoom - Fake room handler (case 73/0x49)
 // Constructor: 0x4441E0
@@ -12,10 +13,7 @@
 class SC_FakeRoom : public SC_Combat {
 public:
     int stateFlags;     // 0x118 — flags (bit 0: dragging)
-    int hitboxLeft;     // 0x11C
-    int hitboxTop;      // 0x120
-    int hitboxRight;    // 0x124
-    int hitboxBottom;   // 0x128
+    Rect hitbox;        // 0x11C-0x12B — drag hitbox (has dtor; unwound at state 1)
     int field_0x12C;    // 0x12C
 
     SC_FakeRoom();                                 // 0x4441E0

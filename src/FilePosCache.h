@@ -1,6 +1,8 @@
 #ifndef FILPOSCACHE_H
 #define FILPOSCACHE_H
 
+#include <string.h>
+
 // FilePosCache — file position cache for Parser::FindKey optimization
 // Pool stored at g_SoundPool_00469134 (SoundPool*)
 // Entries are 0x50 bytes each
@@ -11,6 +13,14 @@ struct FilePosEntry {
     char key[36];       // +0x24
     int posLo;          // +0x48
     int posHi;          // +0x4C
+
+    FilePosEntry(char* fname, char* keyName, int posLo, int posHi) {
+        strcpy(filename, fname);
+        strcpy(key, keyName);
+        FilePosEntry::posLo = posLo;
+        FilePosEntry::posHi = posHi;
+        accessCount = 0;
+    }
 };
 
 class FilePosCache {

@@ -7,6 +7,14 @@
 class Sprite;
 class HashTable;
 
+// Counter/limit pair at 0xF4 — dtor-less (the original never unwinds it; only the
+// SlimeDim range at 0xFC has a destructor). Zeroing ctor matches the x=0;y=0 stores.
+struct PodsCounter {
+    int x;
+    int y;
+    PodsCounter() { x = 0; y = 0; }
+};
+
 // PodsEngine - Combat engine for SC_Pods (pod race mini-game)
 // Constructor: 0x440860, Destructor: 0x440950
 // Vtable: 0x4618C0
@@ -25,9 +33,8 @@ public:
 
     // Fields from 0xF0 to 0x117 (10 ints)
     Sprite* podsBgSprite; // 0xF0 — background sprite (deleted in dtor)
-    SlimeDim podState;    // 0xF4-0xFB — state pair (x=0, y=3 initially)
-    int reserved_0xFC;       // 0xFC
-    int reserved_0x100;      // 0x100
+    PodsCounter counter;  // 0xF4-0xFB — progress counter (x) / limit (y=3), dtor-less
+    SlimeDim podRange;    // 0xFC-0x103 — range pair (has dtor; unwound at state 1)
     int reserved_0x104;      // 0x104
     HashTable* hashTable; // 0x108 — HashTable* (deleted in dtor)
     int field_0x10C;      // 0x10C

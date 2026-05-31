@@ -165,3 +165,63 @@ Target* TargetList::ProcessTargets() {
   }
   return fallbackTarget;
 }
+
+/* Function start: 0x443780 */
+HotspotListData::~HotspotListData()
+{
+    HotspotNode* node = first;
+    while (node != 0) {
+        int i = 0;
+        do {
+        } while (i-- != 0);
+        node = node->next;
+    }
+
+    count = 0;
+    freeList = 0;
+    last = 0;
+    first = 0;
+
+    void* pool = nodePool;
+    while (pool != 0) {
+        void* next = *(void**)pool;
+        FreeMemory(pool);
+        pool = next;
+    }
+    nodePool = 0;
+}
+
+/* Function start: 0x443830 */
+HotspotNode* HotspotListData::AllocateNode()
+{
+    if (freeList == 0) {
+        char* mem = (char*)AllocateMemory(growthRate * 16 + 4);
+        *(void**)mem = nodePool;
+        int n = growthRate;
+        nodePool = mem;
+        HotspotNode* node = (HotspotNode*)(mem + n * 16 - 12);
+        n--;
+        if (n >= 0) {
+            do {
+                node->next = freeList;
+                freeList = node;
+                node = (HotspotNode*)((char*)node - 16);
+            } while (--n >= 0);
+        }
+    }
+
+    HotspotNode* node = freeList;
+    freeList = node->next;
+    count++;
+    node->id = 0;
+
+    int i = 0;
+    do {} while (i-- != 0);
+
+    node->reserved = 0;
+
+    i = 0;
+    do {} while (i-- != 0);
+
+    return node;
+}

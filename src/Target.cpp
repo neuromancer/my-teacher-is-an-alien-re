@@ -20,67 +20,7 @@ extern char* __cdecl ResolveAssetPath(char*, ...);
 // Target implementation
 // ============================================================================
 
-/* Function start: 0x443780 */
-HotspotListData::~HotspotListData()
-{
-    HotspotNode* node = first;
-    while (node != 0) {
-        int i = 0;
-        do {
-        } while (i-- != 0);
-        node = node->next;
-    }
-
-    count = 0;
-    freeList = 0;
-    last = 0;
-    first = 0;
-
-    void* pool = nodePool;
-    while (pool != 0) {
-        void* next = *(void**)pool;
-        FreeMemory(pool);
-        pool = next;
-    }
-    nodePool = 0;
-}
-
-/* Function start: 0x443830 */
-HotspotNode* HotspotListData::AllocateNode()
-{
-    if (freeList == 0) {
-        char* mem = (char*)AllocateMemory(growthRate * 16 + 4);
-        *(void**)mem = nodePool;
-        int n = growthRate;
-        nodePool = mem;
-        HotspotNode* node = (HotspotNode*)(mem + n * 16 - 12);
-        n--;
-        if (n >= 0) {
-            do {
-                node->next = freeList;
-                freeList = node;
-                node = (HotspotNode*)((char*)node - 16);
-            } while (--n >= 0);
-        }
-    }
-
-    HotspotNode* node = freeList;
-    freeList = node->next;
-    count++;
-    node->id = 0;
-
-    int i = 0;
-    do {} while (i-- != 0);
-
-    node->reserved = 0;
-
-    i = 0;
-    do {} while (i-- != 0);
-
-    return node;
-}
-
-/* Function start: 0x442350 */ /* ~80% match */
+/* Function start: 0x442350 */ /* ~83% match */
 Target::Target() : Sprite(0)
 {
     memset(&active, 0, 0x80);
@@ -176,7 +116,7 @@ void Target::Activate()
         Sprite::ResetAnimation(Target::animRange.x, 0);
 
         {
-            SlimeDim temp = *(SlimeDim*)&animParam;
+            SlimeDim temp = Target::animParam;
             Target::loc_x = temp.x;
             Target::loc_y = temp.y;
         }
@@ -350,8 +290,8 @@ case_hit:
         } else {
             mouseX = 0;
         }
-        loc_x = mouseX - hitOffset.start;
-        loc_y = mouseY - hitOffset.end;
+        loc_x = mouseX - hitOffset.x;
+        loc_y = mouseY - hitOffset.y;
     }
     if (stopSound != 0) {
         stopSound->Stop();
@@ -519,7 +459,7 @@ int Target::LBLParse(char* line)
     sscanf(label, "%c", &firstChar);
 
     if (firstChar == 'A') {
-        sscanf(line + 3, "%d %d", &animParam.start, &animParam.end);
+        sscanf(line + 3, "%d %d", &animParam.x, &animParam.y);
     }
     else if (firstChar == 'B') {
         int result = sscanf(line + 3, "%d %d", &value1, &value2);
@@ -602,7 +542,7 @@ int Target::LBLParse(char* line)
         }
     }
     else if (firstChar == 'O') {
-        sscanf(line + 3, "%d %d", &Target::hitOffset.start, &Target::hitOffset.end);
+        sscanf(line + 3, "%d %d", &Target::hitOffset.x, &Target::hitOffset.y);
         targetFlags |= 1;
     }
     else if (firstChar == 'P') {

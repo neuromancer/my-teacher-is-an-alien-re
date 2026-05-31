@@ -51,10 +51,6 @@ extern "C" void WriteToLog(const char* format, ...);
 
 /* Function start: 0x404FB0 */
 SelectHotspot::SelectHotspot(int key) {
-    SelectHotspot::x1 = 0;
-    SelectHotspot::y1 = 0;
-    SelectHotspot::x2 = 0;
-    SelectHotspot::y2 = 0;
     memset(&state, 0, 14 * 4);
     SelectHotspot::state = 1;
     SelectHotspot::sortKey = key;
@@ -130,8 +126,8 @@ void SelectHotspot::Update() {
         } else {
             mouseX = 0;
         }
-        if (SelectHotspot::x1 <= mouseX && mouseX <= SelectHotspot::x2 &&
-            SelectHotspot::y1 <= mouseY && mouseY <= SelectHotspot::y2) {
+        if (SelectHotspot::bounds.left <= mouseX && mouseX <= SelectHotspot::bounds.right &&
+            SelectHotspot::bounds.top <= mouseY && mouseY <= SelectHotspot::bounds.bottom) {
             SelectHotspot::state = 2;
             if (SelectHotspot::sprite != 0) {
                 ((Sprite*)SelectHotspot::sprite)->ResetAnimation(2, 0);
@@ -157,8 +153,8 @@ void SelectHotspot::Update() {
         } else {
             mouseX = 0;
         }
-        if (mouseX < SelectHotspot::x1 || SelectHotspot::x2 < mouseX ||
-            mouseY < SelectHotspot::y1 || SelectHotspot::y2 < mouseY) {
+        if (mouseX < SelectHotspot::bounds.left || SelectHotspot::bounds.right < mouseX ||
+            mouseY < SelectHotspot::bounds.top || SelectHotspot::bounds.bottom < mouseY) {
             SelectHotspot::state = 1;
             if (SelectHotspot::sprite != 0) {
                 ((Sprite*)SelectHotspot::sprite)->ResetAnimation(1, 0);
@@ -220,8 +216,8 @@ int SelectHotspot::OnClick(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
     int hit;
 
-    if (pmsg[7] < SelectHotspot::x1 || SelectHotspot::x2 < pmsg[7] ||
-        pmsg[8] < SelectHotspot::y1 || SelectHotspot::y2 < pmsg[8]) {
+    if (pmsg[7] < SelectHotspot::bounds.left || SelectHotspot::bounds.right < pmsg[7] ||
+        pmsg[8] < SelectHotspot::bounds.top || SelectHotspot::bounds.bottom < pmsg[8]) {
         hit = 0;
     } else {
         hit = 1;
@@ -263,7 +259,7 @@ int SelectHotspot::LBLParse(char* line) {
         Parser::ProcessFile((Parser*)spr, this, 0);
         ((Sprite*)SelectHotspot::sprite)->ResetAnimation(SelectHotspot::state, 0);
     } else if (strcmp(keyword, "LOC") == 0) {
-        sscanf(line, " %s %d %d %d %d", keyword, &x1, &y1, &x2, &y2);
+        sscanf(line, " %s %d %d %d %d", keyword, &bounds.left, &bounds.top, &bounds.right, &bounds.bottom);
     } else if (strcmp(keyword, "KEY") == 0) {
         sscanf(line, "%s %d", keyword, &keyCode);
     } else if (strcmp(keyword, "ROLLON") == 0) {

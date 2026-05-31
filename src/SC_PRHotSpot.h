@@ -2,6 +2,7 @@
 #define SC_PRHOTSPOT_H
 
 #include "Parser.h"
+#include "InvSlotItem.h"
 
 class Sprite;
 class Sample;
@@ -22,10 +23,7 @@ public:
     int CheckCollision(void* msg);          // 0x42A010
 
     int state;            // 0x90 - 0=disabled, 1=idle, 2=hover, 3=clicked
-    int boundsLeft;       // 0x94 - left X bound
-    int boundsTop;        // 0x98 - top Y bound
-    int boundsRight;      // 0x9c - right X bound
-    int boundsBottom;     // 0xa0 - bottom Y bound
+    Rect bounds;          // 0x94-0xA3 - clickable rect (has dtor; unwound at state 1)
     int hotspotId;        // 0xa4 - hotspot identifier
     Sprite* sprite;       // 0xa8 - display sprite
     Sample* hoverSound;   // 0xac - sound played on hover enter
