@@ -294,6 +294,7 @@ $(OUT_DIR_DEMO)/%.obj $(OUT_DIR_DEMO)/%.asm: src-demo/%.cpp | $(WIBO) $(MSVCRT_D
 #   global-access -> verify-global-access
 #   globals       -> verify-globals, verify-globals-code, globals-missing
 #   report        -> report, report-demo
+#   seh           -> seh, seh-demo
 #   values        -> verify-values, verify-values-stack-locals
 #   vtables       -> verify-vtables
 
@@ -320,6 +321,19 @@ report: TEACHER.EXE | code-full data/full/DATA
 
 report-demo: TEACHER-DEMO.EXE | data/demo/CDDATA
 	@$(BINARY_COMP) report $(BC_DEMO) $(if $(FILTER),--filter $(FILTER))
+
+# C++ exception-handling (FuncInfo unwind) structure report.  Lists functions
+# whose SEH structure differs from the original (wrong member dtor type, missing
+# EH frame, member-count mismatches) that mnemonic similarity cannot see.
+#   make seh                     -> scan all functions
+#   make seh FILTER=SC_Gauntlet  -> restrict to matching names
+# `seh --report` exits non-zero when differences exist (it doubles as a gate);
+# `|| true` keeps `make seh` informational like `make report`.
+seh: TEACHER.EXE | code-full data/full/DATA
+	@$(BINARY_COMP) seh $(BC_FULL) --report $(if $(FILTER),--filter $(FILTER)) || true
+
+seh-demo: TEACHER-DEMO.EXE | data/demo/CDDATA
+	@$(BINARY_COMP) seh $(BC_DEMO) --report $(if $(FILTER),--filter $(FILTER)) || true
 
 # Data comparison is a detailed global-by-global byte report.  It is kept
 # separate from `verify` because this reconstruction still has known data/map
@@ -560,6 +574,8 @@ clean-wine:
 	run-original \
 	run-wine \
 	run-wine-original \
+	seh \
+	seh-demo \
 	sort \
 	verify \
 	verify-calls \

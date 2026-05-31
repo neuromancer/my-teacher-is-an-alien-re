@@ -244,7 +244,7 @@ void SC_Gauntlet::RenderGrid() {
     int sprIdx;
     int cellY;
 
-    bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
+    bgSprite->Do(bgSprite->loc.x, bgSprite->loc.y, 1.0);
 
     if (board.crystalState[1] != 0) {
         if (g_Mouse_0046aa18->m_sprite != 0) {
@@ -647,7 +647,7 @@ void SC_Gauntlet::ProcessAction(int action, int* data) {
             }
             statusPtr[5] = 0;
         }
-        exitSprite->Do(exitSprite->loc_x, exitSprite->loc_y, 1.0);
+        exitSprite->Do(exitSprite->loc.x, exitSprite->loc.y, 1.0);
         g_Mouse_0046aa18->DrawCursor();
         break;
     default:

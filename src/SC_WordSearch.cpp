@@ -67,7 +67,7 @@ void __fastcall UpdateWordSearchCursor(int* self) {
     int state = self[0];
     if (state > 1) {
         ((Sprite*)self[6])->ResetAnimation(state - 2, 0);
-        ((Sprite*)self[6])->Do(((Sprite*)self[6])->loc_x, ((Sprite*)self[6])->loc_y, 1.0);
+        ((Sprite*)self[6])->Do(((Sprite*)self[6])->loc.x, ((Sprite*)self[6])->loc.y, 1.0);
     }
 
     int mouseY;
@@ -253,9 +253,9 @@ void SC_WordSearch::Update(int param1, int param2) {
 
     if (placementMode != 0) {
         pvVar10 = timerSprite;
-        ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0);
+        ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc.x, ((Sprite*)pvVar10)->loc.y, 1.0);
         pvVar10 = scoreSprite;
-        ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0);
+        ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc.x, ((Sprite*)pvVar10)->loc.y, 1.0);
         (g_Mouse_0046aa18)->DrawCursor();
         piVar1 = (int*)g_InputManager_0046aa08->pMouse;
         iVar9 = 0;
@@ -284,7 +284,7 @@ void SC_WordSearch::Update(int param1, int param2) {
 
     pvVar10 = bgSprite;
     if (pvVar10 != 0) {
-        ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0);
+        ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc.x, ((Sprite*)pvVar10)->loc.y, 1.0);
     } else {
         ((VBuffer*)g_BackBuffer_0046aa14)->ClearScreen(0);
     }
@@ -428,7 +428,7 @@ void SC_WordSearch::Update(int param1, int param2) {
 
     sprite_section:
     pvVar10 = puzzleSprite1;
-    if (((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0) != 0) {
+    if (((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc.x, ((Sprite*)pvVar10)->loc.y, 1.0) != 0) {
         if (puzzleSprite1->handle == 0) {
             puzzleSprite1->ResetAnimation(-1, 0);
             gameFlags = gameFlags | 1;
@@ -436,7 +436,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         }
     }
     pvVar10 = puzzleSprite2;
-    if (((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0) != 0) {
+    if (((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc.x, ((Sprite*)pvVar10)->loc.y, 1.0) != 0) {
         if (puzzleSprite2->handle == 0) {
             SC_WordSearch::InitWordList();
             puzzleSprite2->ResetAnimation(-1, 0);
@@ -445,7 +445,7 @@ void SC_WordSearch::Update(int param1, int param2) {
     g_ZBufferManager_0046aa24->ShowText((char*)(wordBuffer), 0x49, 0xdc, 10000, 0);
     (g_Mouse_0046aa18)->DrawCursor();
     pvVar10 = scoreSprite;
-    ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc_x, ((Sprite*)pvVar10)->loc_y, 1.0);
+    ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc.x, ((Sprite*)pvVar10)->loc.y, 1.0);
 }
 
 /* Function start: 0x436790 */
@@ -654,7 +654,7 @@ int SC_WordSearch::LBLParse(char* line) {
         gs->stateValues[idx] = val;
     } else if (strcmp(keyword, "PALETTE") == 0) {
         sscanf(line, "%s %s", keyword, buffer);
-        Palette* pal = InitPalette((Palette*)AllocateMemory(8));
+        Palette* pal = new Palette();
         palette = pal;
         pal->Load(buffer);
         if (palette != 0) {
@@ -800,7 +800,7 @@ extern void __fastcall UpdateWordSearchCursor(int*);
 void SC_WordSearch::Render() {
     WordSearchRuntimeState* state = (WordSearchRuntimeState*)words;
     Sprite* bgSpr = state->bgSprite;
-    bgSpr->Do(bgSpr->loc_x, bgSpr->loc_y, 1.0);
+    bgSpr->Do(bgSpr->loc.x, bgSpr->loc.y, 1.0);
 
     if (state->modeFlag != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);

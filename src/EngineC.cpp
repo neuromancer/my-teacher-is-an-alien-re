@@ -85,7 +85,7 @@ void EngineC::RenderBackground() {
     }
 
     if (g_CombatEngine_0046ae78->currentFrame >= 0x68b) {
-        sprite118->Do(sprite118->loc_x, sprite118->loc_y, 1.0);
+        sprite118->Do(sprite118->loc.x, sprite118->loc.y, 1.0);
 
         if (g_CombatWeapon_0046ae60->m_clicked != 0) {
             mouse = g_InputManager_0046aa08->pMouse;
@@ -125,21 +125,21 @@ void EngineC::RenderBackground() {
                     mouseY = mouse->y;
                     mouseX = mouse->x;
                 }
-                sprite114->loc_x = mouseX - 0x48;
-                sprite114->loc_y = mouseY - 0x41;
+                sprite114->loc.x = mouseX - 0x48;
+                sprite114->loc.y = mouseY - 0x41;
                 sprite114->ResetAnimation(0, 0);
                 g_ActiveCombat_00468a1c->bgSound->Play(0);
             }
         }
 
 draw_engine_sprites:
-        if (sprite114->Do(sprite114->loc_x, sprite114->loc_y, 1.0) != 0) {
+        if (sprite114->Do(sprite114->loc.x, sprite114->loc.y, 1.0) != 0) {
             sprite114->ResetAnimation(-1, 0);
         }
-        sprite110->Do(sprite110->loc_x, sprite110->loc_y, 1.0);
+        sprite110->Do(sprite110->loc.x, sprite110->loc.y, 1.0);
     }
 
-    sprite104->Do(sprite104->loc_x, sprite104->loc_y, 1.0);
+    sprite104->Do(sprite104->loc.x, sprite104->loc.y, 1.0);
 
     if (g_CombatWeapon_0046ae60->m_clicked != 0) {
         mouse = g_InputManager_0046aa08->pMouse;
@@ -148,7 +148,7 @@ draw_engine_sprites:
             mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5) + 5, 0);
     }
 
-    if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc_x, g_BgSprite_0046ae50->loc_y, 1.0) != 0) {
+    if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc.x, g_BgSprite_0046ae50->loc.y, 1.0) != 0) {
         mouse = g_InputManager_0046aa08->pMouse;
         mouseX = (mouse == 0) ? 0 : mouse->x;
         g_BgSprite_0046ae50->ResetAnimation(

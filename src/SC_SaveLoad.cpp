@@ -18,8 +18,6 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 /* Function start: 0x421C40 */
 SC_SaveLoad::SC_SaveLoad()
 {
-    int rect[4];
-
     memset(&timer, 0, 0xC * 4);
     handlerId = 0x2F;
     timer.Reset();
@@ -29,23 +27,20 @@ SC_SaveLoad::SC_SaveLoad()
 
     palette = new Palette("mainmenu\\menu.col");
 
-    rect[0] = 0x9B;
-    rect[1] = 0xFB;
-    rect[2] = 0xEA;
-    rect[3] = 0x11A;
-    btnYes = new T_MenuButton("mainmenu\\ansr_y.smk", rect);
+    {
+        GlyphRect rect(0x9B, 0xFB, 0xEA, 0x11A);
+        btnYes = new T_MenuButton("mainmenu\\ansr_y.smk", (int*)&rect);
+    }
 
-    rect[0] = 0x11D;
-    rect[1] = 0xFD;
-    rect[2] = 0x16C;
-    rect[3] = 0x11B;
-    btnNo = new T_MenuButton("mainmenu\\ansr_n.smk", rect);
+    {
+        GlyphRect rect(0x11D, 0xFD, 0x16C, 0x11B);
+        btnNo = new T_MenuButton("mainmenu\\ansr_n.smk", (int*)&rect);
+    }
 
-    rect[0] = 0x19C;
-    rect[1] = 0xFC;
-    rect[2] = 0x1EB;
-    rect[3] = 0x11B;
-    btnCancel = new T_MenuButton("mainmenu\\ansr_c.smk", rect);
+    {
+        GlyphRect rect(0x19C, 0xFC, 0x1EB, 0x11B);
+        btnCancel = new T_MenuButton("mainmenu\\ansr_c.smk", (int*)&rect);
+    }
 }
 
 /* Function start: 0x421F80 */
@@ -60,33 +55,15 @@ SC_SaveLoad::~SC_SaveLoad()
         }
     }
     if (btnYes != 0) {
-        Sprite* spr = btnYes->sprite;
-        if (spr != 0) {
-            spr->~Sprite();
-            FreeMemory(spr);
-            btnYes->sprite = 0;
-        }
-        FreeMemory(btnYes);
+        delete btnYes;
         btnYes = 0;
     }
     if (btnNo != 0) {
-        Sprite* spr = btnNo->sprite;
-        if (spr != 0) {
-            spr->~Sprite();
-            FreeMemory(spr);
-            btnNo->sprite = 0;
-        }
-        FreeMemory(btnNo);
+        delete btnNo;
         btnNo = 0;
     }
     if (btnCancel != 0) {
-        Sprite* spr = btnCancel->sprite;
-        if (spr != 0) {
-            spr->~Sprite();
-            FreeMemory(spr);
-            btnCancel->sprite = 0;
-        }
-        FreeMemory(btnCancel);
+        delete btnCancel;
         btnCancel = 0;
     }
 }
@@ -147,7 +124,7 @@ void SC_SaveLoad::Update(int param1, int param2) {
     if (handlerId != param2) return;
     timer.Reset();
     if (sprite != 0) {
-        sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        sprite->Do(sprite->loc.x, sprite->loc.y, 1.0);
     }
     btnYes->SimpleUpdate();
     btnNo->SimpleUpdate();

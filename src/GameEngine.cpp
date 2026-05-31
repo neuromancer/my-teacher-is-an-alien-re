@@ -223,7 +223,7 @@ int GameEngine::ProcessEvents() {
 
     count = 0;
     while (m_eventPool->m_count != 0) {
-        SpriteAction action;
+        SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         ProcessMessage((SC_MessageParser*)m_eventPool->PopSafe(&action));
         count = count + 1;

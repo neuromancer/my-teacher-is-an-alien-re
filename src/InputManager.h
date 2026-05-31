@@ -13,14 +13,12 @@ struct MousePoint {
     ~MousePoint();
 };
 
-struct InputState {
-    int x;          // 0x0
-    int y;          // 0x4
+struct InputState : public MousePoint {
     int buttons;    // 0x8
     int prevButtons;// 0xC
     int ext1;       // 0x10
     int ext2;       // 0x14
-    InputState() : x(0), y(0), buttons(0), prevButtons(0), ext1(0), ext2(0) {}
+    InputState() : MousePoint(), buttons(0), prevButtons(0), ext1(0), ext2(0) {}
     ~InputState() {}
 };
 

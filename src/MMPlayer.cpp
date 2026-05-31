@@ -194,7 +194,7 @@ int MMPlayer::Draw()
             if (m_queue->current != 0) {
                 sprite = (Sprite*)m_queue->current->data;
             }
-            if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0) != 0) {
+            if (sprite->Do(sprite->loc.x, sprite->loc.y, 1.0) != 0) {
                 m_drawResult = 0;
             }
 

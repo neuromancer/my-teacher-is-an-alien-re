@@ -124,7 +124,7 @@ void SC_CombatBase::RenderBackground()
 {
     if (g_BgSprite_0046ae50 != 0) {
         Sprite* spr = g_BgSprite_0046ae50;
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
     }
 }
 
@@ -345,15 +345,14 @@ int SC_CombatBase::LBLParse(char* line)
 int SC_CombatBase::ProcessEvents()
 {
     SpriteAction localEvent(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    int tempBuf[14];
 
     int result = 0;
 
     if (g_HotspotPool_0046ae74->m_count != 0) {
         do {
-            SpriteAction* popped = ((TimedEventPool*)g_HotspotPool_0046ae74)->PopSafe((SpriteAction*)tempBuf);
+            SpriteAction tempBuf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            SpriteAction* popped = ((TimedEventPool*)g_HotspotPool_0046ae74)->PopSafe(&tempBuf);
             localEvent.CopyFrom(popped);
-            popped->~SpriteAction();
             result |= HandleAction((int*)&localEvent);
         } while (g_HotspotPool_0046ae74->m_count != 0);
     }

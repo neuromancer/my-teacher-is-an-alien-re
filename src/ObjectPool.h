@@ -2,6 +2,7 @@
 #define OBJECTPOOL_H
 
 #include <string.h>
+#include "Memory.h"
 
 class ObjectPool
 {
@@ -20,6 +21,17 @@ public:
         freeList = 0;
         memoryBlock = 0;
         objectSize = objSz;
+        if (objSz != 10) {
+            if (memory != 0) {
+                FreeMemory(memory);
+                memory = 0;
+            }
+            int numBuckets = objSz + (int)((double)objSz * 0.3);
+            int* buckets = (int*)AllocateMemory(numBuckets * 4);
+            memset(buckets, 0, numBuckets * 4);
+            memory = buckets;
+            size = numBuckets;
+        }
     }
 
     ~ObjectPool();

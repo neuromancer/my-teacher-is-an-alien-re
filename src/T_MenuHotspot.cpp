@@ -25,8 +25,8 @@ T_MenuButton::T_MenuButton(char* name, int* rect)
     if (name != 0) {
         sprite = new Sprite(name);
         sprite->priority = 2;
-        sprite->loc_x = rect[0];
-        sprite->loc_y = rect[1];
+        sprite->loc.x = rect[0];
+        sprite->loc.y = rect[1];
         sprite->ConfigStates(2);
         sprite->flags |= 0x40;
         sprite->ConfigRange(0, 1, 1, 1);
@@ -119,7 +119,7 @@ void T_MenuButton::Update()
     }
 
     if (hs->cursor != 0) {
-        hs->cursor->Do(hs->cursor->loc_x, hs->cursor->loc_y, 1.0);
+        hs->cursor->Do(hs->cursor->loc.x, hs->cursor->loc.y, 1.0);
     }
 }
 
@@ -150,7 +150,7 @@ void T_MenuButton::SimpleUpdate()
         sprite->ResetAnimation(0, 0);
     }
 
-    sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+    sprite->Do(sprite->loc.x, sprite->loc.y, 1.0);
 }
 
 extern "C" void ShowError(const char* format, ...);

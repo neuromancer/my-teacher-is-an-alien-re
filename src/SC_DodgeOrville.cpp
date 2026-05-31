@@ -264,7 +264,7 @@ void SC_DodgeOrville::ProcessLose() {
 /* Function start: 0x429110 */
 void SC_DodgeOrville::UpdateGame()
 {
-    if (bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0) != 0) {
+    if (bgSprite->Do(bgSprite->loc.x, bgSprite->loc.y, 1.0) != 0) {
         if (bgSprite->handle != 7) {
             ThrowBomb();
         }
@@ -293,8 +293,8 @@ void SC_DodgeOrville::UpdateGame()
 
     UpdateReticle();
 
-    barBgSprite->Do(barBgSprite->loc_x, barBgSprite->loc_y, 1.0);
-    barFillSprite->Do(barFillSprite->loc_x, barFillSprite->loc_y, 1.0);
+    barBgSprite->Do(barBgSprite->loc.x, barBgSprite->loc.y, 1.0);
+    barFillSprite->Do(barFillSprite->loc.x, barFillSprite->loc.y, 1.0);
 
     VBuffer* vb = 0;
     if (barBgSprite->animation_data != 0) {
@@ -331,7 +331,7 @@ void SC_DodgeOrville::UpdateGame()
 /* Function start: 0x429380 */
 void SC_DodgeOrville::UpdateReticle()
 {
-    if (field_0x10C->Do(field_0x10C->loc_x, field_0x10C->loc_y, 1.0) == 0) {
+    if (field_0x10C->Do(field_0x10C->loc.x, field_0x10C->loc.y, 1.0) == 0) {
         return;
     }
 

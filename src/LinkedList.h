@@ -49,12 +49,7 @@ struct LinkedList {
 
     inline void InsertNode(void* data) {
         if (data == 0) ShowError("queue fault 0102");
-        ListNode* node = (ListNode*)::operator new(sizeof(ListNode));
-        if (node != 0) {
-            node->data = data;
-            node->prev = 0;
-            node->next = 0;
-        }
+        ListNode* node = new ListNode(data);
         if (current == 0) current = head;
         if (head == 0) {
             head = node;
@@ -76,12 +71,7 @@ struct LinkedList {
 
     inline void PushNode(void* data) {
         if (data == 0) ShowError("queue fault 0112");
-        ListNode* node = (ListNode*)::operator new(sizeof(ListNode));
-        if (node != 0) {
-            node->data = data;
-            node->prev = 0;
-            node->next = 0;
-        }
+        ListNode* node = new ListNode(data);
         if (current == 0) current = tail;
         if (head == 0) {
             head = node;

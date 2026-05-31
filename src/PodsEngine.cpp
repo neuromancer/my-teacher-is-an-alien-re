@@ -115,7 +115,7 @@ void PodsEngine::ProcessFrame() {
             }
         }
 
-        if (podsBgSprite->Do(podsBgSprite->loc_x, podsBgSprite->loc_y, 1.0) != 0) {
+        if (podsBgSprite->Do(podsBgSprite->loc.x, podsBgSprite->loc.y, 1.0) != 0) {
             switch (state) {
             case 1: {
                 unsigned int* p = (unsigned int*)&podRange.x;
@@ -192,7 +192,7 @@ skip:
                 g_BgSprite_0046ae50->ResetAnimation(
                     mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5) + 5, 0);
             }
-            if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc_x, g_BgSprite_0046ae50->loc_y, 1.0) != 0) {
+            if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc.x, g_BgSprite_0046ae50->loc.y, 1.0) != 0) {
                 mouse = g_InputManager_0046aa08->pMouse;
                 mouseX = (mouse == 0) ? 0 : mouse->x;
                 g_BgSprite_0046ae50->ResetAnimation(

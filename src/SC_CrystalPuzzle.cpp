@@ -60,28 +60,28 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     palette->Load("puz_ForceField\\\\Puzztest.col");
 
     buttons1 = new Sprite("puz_ForceField\\\\buttons1.smk");
-    buttons1->loc_x = 0x1dc;
-    buttons1->loc_y = 0x147;
+    buttons1->loc.x = 0x1dc;
+    buttons1->loc.y = 0x147;
 
     buttons2 = new Sprite("puz_ForceField\\\\buttons2.smk");
-    buttons2->loc_x = 0x1dc;
-    buttons2->loc_y = 0x11c;
+    buttons2->loc.x = 0x1dc;
+    buttons2->loc.y = 0x11c;
 
     buttons3 = new Sprite("puz_ForceField\\\\buttons3.smk");
-    buttons3->loc_x = 0x1dc;
-    buttons3->loc_y = 0xf1;
+    buttons3->loc.x = 0x1dc;
+    buttons3->loc.y = 0xf1;
 
     paths1 = new Sprite("puz_ForceField\\\\paths1.smk");
-    paths1->loc_x = 0x1ee;
-    paths1->loc_y = 0x8d;
+    paths1->loc.x = 0x1ee;
+    paths1->loc.y = 0x8d;
 
     paths2 = new Sprite("puz_ForceField\\\\paths2.smk");
-    paths2->loc_x = 0x1ee;
-    paths2->loc_y = 0x70;
+    paths2->loc.x = 0x1ee;
+    paths2->loc.y = 0x70;
 
     paths3 = new Sprite("puz_ForceField\\\\paths3.smk");
-    paths3->loc_x = 0x1ee;
-    paths3->loc_y = 0x53;
+    paths3->loc.x = 0x1ee;
+    paths3->loc.y = 0x53;
 
     {
         for (int count = 3; count != 0; count--) {
@@ -104,8 +104,8 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     puzztest = new Sprite("puz_ForceField\\\\puzztest.smk");
     puzztest->flags &= ~2;
     puzztest->priority = 5;
-    puzztest->loc_x = 0;
-    puzztest->loc_y = 0;
+    puzztest->loc.x = 0;
+    puzztest->loc.y = 0;
 
     litdoors = new Sprite("puz_ForceField\\\\litdoors.smk");
     litdoors->flags &= ~2;
@@ -117,16 +117,16 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     litdoors->ConfigRange(2, 3, 3, 1);
 
     lowfloor = new Sprite("puz_ForceField\\\\lowfloor.smk");
-    lowfloor->loc_x = 0x1d;
-    lowfloor->loc_y = 0x150;
+    lowfloor->loc.x = 0x1d;
+    lowfloor->loc.y = 0x150;
 
     midfloor = new Sprite("puz_ForceField\\\\midfloor.smk");
-    midfloor->loc_x = 0x2c;
-    midfloor->loc_y = 0x130;
+    midfloor->loc.x = 0x2c;
+    midfloor->loc.y = 0x130;
 
     topfloor = new Sprite("puz_ForceField\\\\topfloor.smk");
-    topfloor->loc_x = 0x5a;
-    topfloor->loc_y = 0x11c;
+    topfloor->loc.x = 0x5a;
+    topfloor->loc.y = 0x11c;
 
     {
         for (int count = 3; count != 0; count--) {
@@ -145,8 +145,8 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     mapSprite->flags &= ~2;
     mapSprite->priority = 10;
     mapSprite->flags |= 0x40;
-    mapSprite->loc_x = 0x1b;
-    mapSprite->loc_y = 0x1b3;
+    mapSprite->loc.x = 0x1b;
+    mapSprite->loc.y = 0x1b3;
     mapSprite->ConfigStates(3);
     {
         int i = 0;
@@ -547,7 +547,7 @@ void SC_CrystalPuzzle::Update(int p1, int p2) {
 
 sound_done:
     if (puzztest != 0) {
-        puzztest->Do(puzztest->loc_x, puzztest->loc_y, 1.0);
+        puzztest->Do(puzztest->loc.x, puzztest->loc.y, 1.0);
     }
 
     if (&buttons1 != 0) {
@@ -565,7 +565,7 @@ sound_done:
         DisplayThisFloorRow();
     }
 
-    mapSprite->Do(mapSprite->loc_x, mapSprite->loc_y, 1.0);
+    mapSprite->Do(mapSprite->loc.x, mapSprite->loc.y, 1.0);
 
     int mouseY;
     int mouseX;
@@ -991,7 +991,7 @@ void SC_CrystalPuzzle::DisplayButtons() {
     for (i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
             (&buttons1)[i / 3]->ResetAnimation(i % 3, 0);
-            (&buttons1)[i / 3]->Do((&buttons1)[i / 3]->loc_x, (&buttons1)[i / 3]->loc_y, 1.0);
+            (&buttons1)[i / 3]->Do((&buttons1)[i / 3]->loc.x, (&buttons1)[i / 3]->loc.y, 1.0);
         }
     }
 }
@@ -1007,7 +1007,7 @@ void SC_CrystalPuzzle::DisplayMap() {
     for (i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
             (&paths1)[i / 3]->ResetAnimation(i % 3, 0);
-            (&paths1)[i / 3]->Do((&paths1)[i / 3]->loc_x, (&paths1)[i / 3]->loc_y, 1.0);
+            (&paths1)[i / 3]->Do((&paths1)[i / 3]->loc.x, (&paths1)[i / 3]->loc.y, 1.0);
         }
     }
 }
@@ -1089,7 +1089,7 @@ void SC_CrystalPuzzle::DisplayThisFloorRow() {
 
     for (i = 3; i != 0; i--) {
         Sprite* spr = (&lowfloor)[3 - i];
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
     }
 }
 

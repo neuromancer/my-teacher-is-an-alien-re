@@ -117,8 +117,8 @@ void Target::Activate()
 
         {
             SlimeDim temp = Target::animParam;
-            Target::loc_x = temp.x;
-            Target::loc_y = temp.y;
+            loc.x = temp.x;
+            loc.y = temp.y;
         }
 
         Target::pendingAction = 0;
@@ -290,8 +290,8 @@ case_hit:
         } else {
             mouseX = 0;
         }
-        loc_x = mouseX - hitOffset.x;
-        loc_y = mouseY - hitOffset.y;
+        loc.x = mouseX - hitOffset.x;
+        loc.y = mouseY - hitOffset.y;
     }
     if (stopSound != 0) {
         stopSound->Stop();
@@ -307,7 +307,7 @@ case_hit:
 
 done_action:
     pendingAction = 0;
-    if (Sprite::Do(loc_x, loc_y, 1.0) != 0) {
+    if (Sprite::Do(loc.x, loc.y, 1.0) != 0) {
         if (active == 3) {
             Target::Deactivate();
             return 0;

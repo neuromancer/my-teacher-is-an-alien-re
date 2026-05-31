@@ -107,7 +107,8 @@ void SC_Rats::Init(SC_MessageParser* msg) {
             while (list3->head != 0) {
                 void* data = list3->RemoveCurrent();
                 if (data != 0) {
-                    delete (RenderEntry*)data;
+                    ((RenderEntry*)data)->RenderEntry::~RenderEntry();
+                    operator delete(data);
                 }
             }
         }

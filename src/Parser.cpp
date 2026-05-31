@@ -628,15 +628,7 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 9:
         if (field_0x3c == 0) {
-            ObjectPool* pool = (ObjectPool*)operator new(0x18);
-            if (pool != 0) {
-                pool->allocatedCount = 0;
-                pool->freeList = 0;
-                pool->size = 0;
-                pool->memory = 0;
-                pool->memoryBlock = 0;
-                pool->objectSize = 10;
-            }
+            TimedEventPool* pool = new TimedEventPool(10);
             field_0x3c = (char*)pool;
         }
         {

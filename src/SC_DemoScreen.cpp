@@ -21,8 +21,8 @@ SC_DemoScreen::SC_DemoScreen() {
     demoSprite = new Sprite("elements\\\\Demoscrn.smk");
     demoSprite->flags &= ~2;
     demoSprite->priority = 0;
-    demoSprite->loc_x = 0;
-    demoSprite->loc_y = 0;
+    demoSprite->loc.x = 0;
+    demoSprite->loc.y = 0;
 }
 
 /* Function start: 0x44E740 */
@@ -88,7 +88,7 @@ int SC_DemoScreen::Exit(SC_MessageParser* msg) {
 void SC_DemoScreen::Update(int param1, int param2) {
     if (handlerId == param2) {
         Sprite* spr = (Sprite*)demoSprite;
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
         (g_Mouse_0046aa18)->DrawCursor();
     }
 }

@@ -3,6 +3,7 @@
 
 #include "VBuffer.h"
 #include "GlyphRect.h"
+#include "SpriteAction.h"  // for SlimeDim
 
 // Embedded subobject at offset 0x8 with constructor/destructor for SEH
 struct TextPos {
@@ -44,7 +45,7 @@ public:
     void LoadFont(char* param_1);       // 0x43A830
     void InitGlyphTable();              // 0x43AA20
     int IsValidChar(int ch);            // 0x43ABA0
-    int DrawChar(int, int, int);        // 0x43ABD0
+    int DrawChar(SlimeDim, int);        // 0x43ABD0
     int GetTextWidth(char* text);       // 0x43AD50
     void PrepareText(char* text);       // 0x43AE30
     void RenderText(char* text, int param_2); // 0x43AEB0

@@ -29,8 +29,6 @@ extern "C" char* GetVideoBufferNameSlot(int handle)
 Sprite::Sprite(char* filename)
 {
     // BaseObject::BaseObject_Init((undefined4 *)this);
-    loc_x = 0;
-    loc_y = 0;
     memset(&ranges, 0, 0x1A * 4);
     flags |= 0x20;
     if (filename != 0) {
@@ -359,8 +357,8 @@ int Sprite::LBLParse(char* param_1)
         sscanf(param_1, "%s %d", keyword, &handleValue);
     } else if (strcmp(keyword, "LOC") == 0) {
         sscanf(param_1, " %s %d %d", keyword, &val1, &val2);
-        loc_x = val1;
-        loc_y = val2;
+        loc.x = val1;
+        loc.y = val2;
     } else if (strcmp(keyword, "MAXLOGIC") == 0) {
         sscanf(param_1, "%s %d", keyword, &val1);
         InitLogic(val1);
@@ -417,8 +415,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::ReportUnknownLabel("Sprite");
         }
-        loc_x = val1;
-        loc_y = val2;
+        loc.x = val1;
+        loc.y = val2;
         if (result >= 5) {
             priority = val5;
         }
@@ -431,8 +429,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::ReportUnknownLabel("Sprite");
         }
-        loc_x = val1;
-        loc_y = val2;
+        loc.x = val1;
+        loc.y = val2;
         flags |= 0x40;
         if (result >= 5) {
             priority = val5;
@@ -446,8 +444,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::ReportUnknownLabel("Sprite");
         }
-        loc_x = val1;
-        loc_y = val2;
+        loc.x = val1;
+        loc.y = val2;
         flags |= 1;
         if (result >= 5) {
             priority = val5;
@@ -461,8 +459,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::ReportUnknownLabel("Sprite");
         }
-        loc_x = val1;
-        loc_y = val2;
+        loc.x = val1;
+        loc.y = val2;
         flags |= 0x41;
         if (result >= 5) {
             priority = val5;
@@ -476,8 +474,8 @@ int Sprite::LBLParse(char* param_1)
         if (result < 4) {
             Parser::ReportUnknownLabel("Sprite");
         }
-        loc_x = val1;
-        loc_y = val2;
+        loc.x = val1;
+        loc.y = val2;
         flags |= 0x40;
         priority = 0x14;
         if (result >= 6) {

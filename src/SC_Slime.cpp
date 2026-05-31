@@ -201,7 +201,7 @@ void SC_Slime::ProcessSprite(Sprite* spr) {
         goto render_timer;
     }
 
-    if (spr->Do(spr->loc_x, spr->loc_y, 1.0) == 0) {
+    if (spr->Do(spr->loc.x, spr->loc.y, 1.0) == 0) {
         goto render_timer;
     }
 
@@ -250,7 +250,7 @@ render_timer:
     if (armMaskSprite == 0) {
         return;
     }
-    if (armMaskSprite->Do(armMaskSprite->loc_x, armMaskSprite->loc_y, 1.0) == 0) {
+    if (armMaskSprite->Do(armMaskSprite->loc.x, armMaskSprite->loc.y, 1.0) == 0) {
         return;
     }
     armMaskSprite->ResetAnimation(-1, 0);
@@ -508,7 +508,7 @@ void SC_Slime::ProcessAction(int action, int* data) {
         return;
 
     case 4:
-        if (spr->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
+        if (spr->Do(spr->loc.x, spr->loc.y, 1.0) != 0) {
             switch (state) {
             case 0:
                 spr->ResetAnimation(1, 0);
@@ -557,7 +557,7 @@ void SC_Slime::ProcessAction(int action, int* data) {
                     }
                     consoleSprite->ResetAnimation(val / (screenSize.x / 3) + 5, 0);
                 }
-                if (consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0) != 0) {
+                if (consoleSprite->Do(consoleSprite->loc.x, consoleSprite->loc.y, 1.0) != 0) {
                     int val = 0;
                     if (g_InputManager_0046aa08->pMouse != 0) {
                         val = g_InputManager_0046aa08->pMouse->x;
@@ -566,7 +566,7 @@ void SC_Slime::ProcessAction(int action, int* data) {
                 }
             }
         }
-        slimeMeterSprite->Do(slimeMeterSprite->loc_x, slimeMeterSprite->loc_y, 1.0);
+        slimeMeterSprite->Do(slimeMeterSprite->loc.x, slimeMeterSprite->loc.y, 1.0);
         return;
     }
 }
@@ -842,7 +842,7 @@ void SC_Slime::CheckTimerExpired(Sprite* spr)
         return;
     }
 
-    if (spr->Do(spr->loc_x, spr->loc_y, 1.0) == 0) {
+    if (spr->Do(spr->loc.x, spr->loc.y, 1.0) == 0) {
         return;
     }
 

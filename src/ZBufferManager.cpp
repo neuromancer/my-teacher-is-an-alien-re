@@ -78,14 +78,11 @@ extern "C" int __cdecl VideoFillRect(int left, int right, int top, int bottom);
 
 struct CommandType3 : public SoundCommand {
     unsigned int priority;  // 0x04
-    int left;               // 0x08
-    int top;                // 0x0c
-    int right;              // 0x10
-    int bottom;             // 0x14
+    GlyphRect rect;         // 0x08
     int field_18;           // 0x18
     int field_1c;           // 0x1c - color
 
-    CommandType3() : priority(0), left(0), top(0), right(0), bottom(0), field_18(0), field_1c(0) {}
+    CommandType3() : priority(0), field_18(0), field_1c(0) {}
 
     virtual void Execute(GlyphRect* rect);
 };
@@ -251,23 +248,23 @@ void CommandType3::Execute(GlyphRect* rect)
 {
     SetFillColor((unsigned char)field_1c);
     g_BackBuffer_0046aa14->SetVideoMode();
-    if (left < 0) {
-        left = 0;
+    if (this->rect.left < 0) {
+        this->rect.left = 0;
     }
-    if (top < 0) {
-        top = 0;
+    if (this->rect.top < 0) {
+        this->rect.top = 0;
     }
-    if (0x27f < right) {
-        right = 0x27f;
+    if (0x27f < this->rect.right) {
+        this->rect.right = 0x27f;
     }
-    if (0x1df < bottom) {
-        bottom = 0x1df;
+    if (0x1df < this->rect.bottom) {
+        this->rect.bottom = 0x1df;
     }
     if (field_18 == 2) {
-        DrawRectOutline(left, right, top, bottom);
+        DrawRectOutline(this->rect.left, this->rect.right, this->rect.top, this->rect.bottom);
         return;
     }
-    VideoFillRect(left, right, top, bottom);
+    VideoFillRect(this->rect.left, this->rect.right, this->rect.top, this->rect.bottom);
     return;
 }
 
@@ -526,22 +523,22 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
             cmd->priority = p5;
             cmd->field_1c = p6;
             cmd->field_18 = p7;
-            cmd->left = p1;
-            cmd->top = p2;
-            cmd->right = p3;
-            cmd->bottom = p4;
+            cmd->rect.left = p1;
+            cmd->rect.top = p2;
+            cmd->rect.right = p3;
+            cmd->rect.bottom = p4;
 
-            int rig = cmd->right;
-            int lef = cmd->left;
+            int rig = cmd->rect.right;
+            int lef = cmd->rect.left;
             if (lef > rig) {
-                cmd->left = rig;
-                cmd->right = lef;
+                cmd->rect.left = rig;
+                cmd->rect.right = lef;
             }
-            int bot = cmd->bottom;
-            int tp = cmd->top;
+            int bot = cmd->rect.bottom;
+            int tp = cmd->rect.top;
             if (bot < tp) {
-                cmd->top = bot;
-                cmd->bottom = tp;
+                cmd->rect.top = bot;
+                cmd->rect.bottom = tp;
             }
 
             QueueCommand(cmd);

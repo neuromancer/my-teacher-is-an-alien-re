@@ -52,6 +52,19 @@ make verify-vtables VERIFY_CONFIG=config/other-game.json
 `make verify` runs the full non-audit suite: globals, calls, global access,
 values, stack-local values, and vtables.
 
+`make seh` prints the C++ exception-handling structure report (`binary-comp seh
+--report`) — the functions whose `FuncInfo` unwind structure differs from the
+original. It is informational (always exits zero) like `make report`. Restrict
+it with `FILTER`. Use the direct CLI with `--strict` when you need exact unwind
+state, `toState`, and guard comparisons instead of the default low-noise
+member/kind comparison:
+
+```sh
+make seh
+make seh FILTER=SC_Gauntlet
+binary-comp seh --config config/binary-comp.json --target full --report --strict
+```
+
 `verify-values-stack-locals` uses `--no-offsets` by default so the result stays
 focused on stack-local constants and strings instead of compiler-dependent stack
 frame layout. Set `STACK_LOCAL_VALUES_FLAGS=` to include stack displacement

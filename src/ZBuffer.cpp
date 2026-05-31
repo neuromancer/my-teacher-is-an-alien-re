@@ -35,7 +35,7 @@ ZBuffer::~ZBuffer()
         ZBuffer::itemCount = idx;
         Projectile* item = ZBuffer::items[idx];
         if (item != 0) {
-            delete (Sprite*)item;
+            delete item;
 
             ZBuffer::items[ZBuffer::itemCount] = 0;
         }

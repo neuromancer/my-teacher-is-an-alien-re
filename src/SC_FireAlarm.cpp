@@ -300,8 +300,8 @@ int SC_FireAlarm::HandleClick(int* param) {
     if (planeClickRange.x <= hitResult && planeClickRange.y >= hitResult) {
         int y = nextPos->y - 0x4B;
         int x = nextPos->x - 0xA1;
-        planeSprite->loc_x = x;
-        planeSprite->loc_y = y;
+        planeSprite->loc.x = x;
+        planeSprite->loc.y = y;
         planeSprite->ResetAnimation(2, 0);
         soundList->Play(2);
         return 1;
@@ -392,9 +392,9 @@ returnOne:
 
 /* Function start: 0x407E50 */
 void SC_FireAlarm::Render() {
-    bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
-    teacherSprite->Do(teacherSprite->loc_x, teacherSprite->loc_y, 1.0);
-    handSprite->Do(handSprite->loc_x, handSprite->loc_y, 1.0);
+    bgSprite->Do(bgSprite->loc.x, bgSprite->loc.y, 1.0);
+    teacherSprite->Do(teacherSprite->loc.x, teacherSprite->loc.y, 1.0);
+    handSprite->Do(handSprite->loc.x, handSprite->loc.y, 1.0);
     if (soundList->IsSamplePlaying(9) == 0) {
         gamePhase = 1;
         stateFlags &= ~8;
@@ -416,13 +416,13 @@ void SC_FireAlarm::ProcessFrame() {
         if (distance >= 0x3D && distance <= 0x55) {
             int y = teacherHomePos.y;
             int x = teacherHomePos.x - 0x19;
-            spr110->loc_x = x;
-            spr110->loc_y = y;
+            spr110->loc.x = x;
+            spr110->loc.y = y;
         } else if (distance >= 0x15 && distance <= 0x32) {
             int y = teacherHomePos.y;
             int x = teacherHomePos.x + 0x19;
-            spr110->loc_x = x;
-            spr110->loc_y = y;
+            spr110->loc.x = x;
+            spr110->loc.y = y;
         }
 
         handSprite->ResetAnimation(0, 0);
@@ -447,9 +447,9 @@ void SC_FireAlarm::ProcessFrame() {
         stateFlags |= 1;
     }
 
-    bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
+    bgSprite->Do(bgSprite->loc.x, bgSprite->loc.y, 1.0);
 
-    int renderResult = teacherSprite->Do(teacherSprite->loc_x, teacherSprite->loc_y, 1.0);
+    int renderResult = teacherSprite->Do(teacherSprite->loc.x, teacherSprite->loc.y, 1.0);
 
     if ((stateFlags & 0xF) == 0) {
         Animation* animData = teacherSprite->animation_data;
@@ -507,7 +507,7 @@ void SC_FireAlarm::ProcessFrame() {
     }
 
     {
-        int dcRender = handSprite->Do(handSprite->loc_x, handSprite->loc_y, 1.0);
+        int dcRender = handSprite->Do(handSprite->loc.x, handSprite->loc.y, 1.0);
         if (dcRender != 0) {
             int dcFrame = handSprite->handle;
             switch (dcFrame) {
@@ -540,7 +540,7 @@ void SC_FireAlarm::ProcessFrame() {
     }
 
     {
-        int f8Render = planeSprite->Do(planeSprite->loc_x, planeSprite->loc_y, 1.0);
+        int f8Render = planeSprite->Do(planeSprite->loc.x, planeSprite->loc.y, 1.0);
         if (f8Render != 0) {
             int f8Frame = planeSprite->handle;
             switch (f8Frame) {
@@ -555,8 +555,8 @@ void SC_FireAlarm::ProcessFrame() {
             case 2:
                 {
                     SlimeDim temp2(planeHomePos);
-                    planeSprite->loc_x = temp2.x;
-                    planeSprite->loc_y = temp2.y;
+                    planeSprite->loc.x = temp2.x;
+                    planeSprite->loc.y = temp2.y;
                 }
                 planeSprite->ResetAnimation(-1, 0);
                 break;
@@ -565,7 +565,7 @@ void SC_FireAlarm::ProcessFrame() {
     }
 
     {
-        int c8Render = alarmSprite->Do(alarmSprite->loc_x, alarmSprite->loc_y, 1.0);
+        int c8Render = alarmSprite->Do(alarmSprite->loc.x, alarmSprite->loc.y, 1.0);
         if (c8Render != 0) {
             int c8Frame = alarmSprite->handle;
             switch (c8Frame) {
@@ -579,14 +579,14 @@ void SC_FireAlarm::ProcessFrame() {
         }
     }
 
-    caughtsSprite->Do(caughtsSprite->loc_x, caughtsSprite->loc_y, 1.0);
+    caughtsSprite->Do(caughtsSprite->loc.x, caughtsSprite->loc.y, 1.0);
 
     if ((stateFlags & 0xF) == 0) {
         (g_Mouse_0046aa18)->DrawCursor();
         Weapon* engine = (Weapon*)g_FireAlarmEngine_004685ac;
         engine->UpdateProjectiles();
 
-        int bcRender = consoleSprite->Do(consoleSprite->loc_x, consoleSprite->loc_y, 1.0);
+        int bcRender = consoleSprite->Do(consoleSprite->loc.x, consoleSprite->loc.y, 1.0);
         if (bcRender != 0) {
             int mouseVal = 0;
             if (g_InputManager_0046aa08->pMouse != 0) {
@@ -676,11 +676,11 @@ int SC_FireAlarm::LBLParse(char* line) {
     } else if (strcmp(label, "TEACHER_SPRITE") == 0) {
         teacherSprite = new Sprite((char*)0);
         Parser::ProcessFile(teacherSprite, this, (char*)0);
-        teacherHomePos = *(SlimeDim*)&teacherSprite->loc_x;
+        teacherHomePos = teacherSprite->loc;
     } else if (strcmp(label, "PLANE_SPRITE") == 0) {
         planeSprite = new Sprite((char*)0);
         Parser::ProcessFile(planeSprite, this, (char*)0);
-        planeHomePos = *(SlimeDim*)&planeSprite->loc_x;
+        planeHomePos = planeSprite->loc;
     } else if (strcmp(label, "HAND_SPRITE") == 0) {
         handSprite = new Sprite((char*)0);
         Parser::ProcessFile(handSprite, this, (char*)0);
@@ -733,4 +733,3 @@ int FireAlarmRockThrower::CheckTargetHit(int param) {
 void FireAlarmRockThrower::OnHit() {
     ((SC_FireAlarm*)g_GameEngine_0046a6ec->m_activeHandler)->ProcessClick();
 }
-

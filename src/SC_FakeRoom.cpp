@@ -80,7 +80,7 @@ int SC_FakeRoom::LBLParse(char* line)
 /* Function start: 0x444680 */
 void SC_FakeRoom::RenderFrame()
 {
-    int done = bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
+    int done = bgSprite->Do(bgSprite->loc.x, bgSprite->loc.y, 1.0);
     if (done != 0) {
         statusPtr[0] = 1;  // [0] = bgAnim done
     }

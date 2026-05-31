@@ -353,8 +353,8 @@ void IconBar::Update(int param1, int param2) {
     }
 
     g_SchoolMenuSprite_0046af08->Do(
-        g_SchoolMenuSprite_0046af08->loc_x,
-        g_SchoolMenuSprite_0046af08->loc_y, 1.0);
+        g_SchoolMenuSprite_0046af08->loc.x,
+        g_SchoolMenuSprite_0046af08->loc.y, 1.0);
 
     entry = g_IconBarEntries_00473320;
     do {
@@ -391,8 +391,8 @@ void IconBar::Update(int param1, int param2) {
                     }
                     if (gs->stateValues[0x3c] != 1) {
                         entry->sprite->Do(
-                            entry->sprite->loc_x,
-                            entry->sprite->loc_y, 1.0);
+                            entry->sprite->loc.x,
+                            entry->sprite->loc.y, 1.0);
                     }
                 }
             } else {
@@ -415,8 +415,8 @@ void IconBar::Update(int param1, int param2) {
 
                 if (entry->field_14 != 0) {
                     entry->sprite->Do(
-                        entry->sprite->loc_x,
-                        entry->sprite->loc_y, 1.0);
+                        entry->sprite->loc.x,
+                        entry->sprite->loc.y, 1.0);
                 }
             }
         }

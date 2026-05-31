@@ -323,8 +323,8 @@ int SC_Question::LBLParse(char* param_1)
         sprintf(buf1, "questions\\idi%4.4d.smk", questionId);
         sprite = new Sprite((char*)buf1);
         sprite->flags |= 0x400;
-        sprite->loc_x = id;
-        sprite->loc_y = val;
+        sprite->loc.x = id;
+        sprite->loc.y = val;
         sprite->flags |= 0x40;
         sprite->priority = 0x14;
         if ((field_94 & 8) != 0) {

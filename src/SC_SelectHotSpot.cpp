@@ -138,7 +138,7 @@ void SelectHotspot::Update() {
         }
         if (SelectHotspot::sprite != 0) {
             Sprite* spr = (Sprite*)SelectHotspot::sprite;
-            spr->Do(spr->loc_x, spr->loc_y, 1.0);
+            spr->Do(spr->loc.x, spr->loc.y, 1.0);
             return;
         }
         break;
@@ -165,7 +165,7 @@ void SelectHotspot::Update() {
         }
         if (SelectHotspot::sprite != 0) {
             Sprite* spr = (Sprite*)SelectHotspot::sprite;
-            spr->Do(spr->loc_x, spr->loc_y, 1.0);
+            spr->Do(spr->loc.x, spr->loc.y, 1.0);
             return;
         }
         break;
@@ -201,7 +201,7 @@ void SelectHotspot::Update() {
         }
         if (SelectHotspot::sprite != 0) {
             Sprite* spr = (Sprite*)SelectHotspot::sprite;
-            spr->Do(spr->loc_x, spr->loc_y, 1.0);
+            spr->Do(spr->loc.x, spr->loc.y, 1.0);
         }
         break;
     }
@@ -305,14 +305,7 @@ int SelectHotspot::LBLParse(char* line) {
         SpriteAction* msgObj = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         ParseSpriteAction(msgObj, this);
         if (SelectHotspot::messageList == 0) {
-            LinkedList* newList = (LinkedList*)operator new(sizeof(LinkedList));
-            if (newList != 0) {
-                newList->type = 0;
-                newList->head = 0;
-                newList->tail = 0;
-                newList->current = newList->head;
-            }
-            SelectHotspot::messageList = newList;
+            SelectHotspot::messageList = new LinkedList();
         }
         ((Queue*)SelectHotspot::messageList)->Add(msgObj);
     } else if (strcmp(keyword, "RETURNMESSAGE") == 0) {
@@ -326,14 +319,7 @@ int SelectHotspot::LBLParse(char* line) {
             dst++;
         }
         if (SelectHotspot::messageList == 0) {
-            LinkedList* newList = (LinkedList*)operator new(sizeof(LinkedList));
-            if (newList != 0) {
-                newList->type = 0;
-                newList->head = 0;
-                newList->tail = 0;
-                newList->current = newList->head;
-            }
-            SelectHotspot::messageList = newList;
+            SelectHotspot::messageList = new LinkedList();
         }
         LinkedList* list = SelectHotspot::messageList;
         if (msgObj == 0) {
@@ -568,7 +554,7 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
         void* intro = SC_SelectHotSpot::introSprite;
         if (intro != 0) {
             Sprite* spr = (Sprite*)intro;
-            int result = spr->Do(spr->loc_x, spr->loc_y, 1.0);
+            int result = spr->Do(spr->loc.x, spr->loc.y, 1.0);
             SC_SelectHotSpot::introPlayed = result;
             if (result == 0) {
                 return;
@@ -732,25 +718,13 @@ int SC_SelectHotSpot::LBLParse(char* line) {
             delete (Palette*)SC_SelectHotSpot::palette;
             SC_SelectHotSpot::palette = 0;
         }
-        void* mem = operator new(8);
-        void* pal = 0;
-        if (mem != 0) {
-            pal = InitPalette((Palette*)mem);
-        }
-        SC_SelectHotSpot::palette = pal;
+        SC_SelectHotSpot::palette = new Palette();
         ((Palette*)SC_SelectHotSpot::palette)->Load(nameBuf);
     } else if (strcmp(keyword, "HOTSPOT") == 0) {
         int sortKey;
         sscanf(line, "%s %d ", keyword, &sortKey);
         if (SC_SelectHotSpot::hotspotList == 0) {
-            LinkedList* newList = (LinkedList*)operator new(sizeof(LinkedList));
-            if (newList != 0) {
-                newList->type = 0;
-                newList->head = 0;
-                newList->tail = 0;
-                newList->current = newList->head;
-            }
-            SC_SelectHotSpot::hotspotList = newList;
+            SC_SelectHotSpot::hotspotList = new LinkedList();
         }
         SelectHotspot* hs = new SelectHotspot(sortKey);
         SC_SelectHotSpot::currentHotspot = hs;
@@ -789,12 +763,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         SC_SelectHotSpot::currentHotspot = 0;
     } else if (strcmp(keyword, "AMBIENT") == 0) {
         if (SC_SelectHotSpot::ambient == 0) {
-            void* mem = operator new(0xa0);
-            void* amb = 0;
-            if (mem != 0) {
-                amb = new (mem) MMPlayer();
-            }
-            SC_SelectHotSpot::ambient = amb;
+            SC_SelectHotSpot::ambient = new MMPlayer();
         }
         Parser::ProcessFile((Parser*)SC_SelectHotSpot::ambient, this, 0);
     } else if (strcmp(keyword, "INTRO") == 0) {

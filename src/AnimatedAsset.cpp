@@ -155,7 +155,7 @@ int AnimatedAsset::IsValidChar(int ch)
 }
 
 /* Function start: 0x43ABD0 */
-int AnimatedAsset::DrawChar(int x, int y, int ch)
+int AnimatedAsset::DrawChar(SlimeDim pos, int ch)
 {
     int width;
 
@@ -180,18 +180,18 @@ int AnimatedAsset::DrawChar(int x, int y, int ch)
 
         if (useBuffer != 0) {
             if (useAttr != 0) {
-                buffer->BlitTransparent(local.left, local.right, local.top, local.bottom, x, y, color, attr);
+                buffer->BlitTransparent(local.left, local.right, local.top, local.bottom, pos.x, pos.y, color, attr);
             }
             else {
-                buffer->TPaste(local.left, local.right, local.top, local.bottom, x, y);
+                buffer->TPaste(local.left, local.right, local.top, local.bottom, pos.x, pos.y);
             }
         }
         else {
             if (useAttr != 0) {
-                g_BackBuffer_0046aa14->CallBlitter3(local.left, local.right, local.top, local.bottom, x, y, buffer, color, attr);
+                g_BackBuffer_0046aa14->CallBlitter3(local.left, local.right, local.top, local.bottom, pos.x, pos.y, buffer, color, attr);
             }
             else {
-                g_BackBuffer_0046aa14->CallBlitter2(local.left, local.right, local.top, local.bottom, x, y, buffer);
+                g_BackBuffer_0046aa14->CallBlitter2(local.left, local.right, local.top, local.bottom, pos.x, pos.y, buffer);
             }
         }
         width = local.right - local.left;
@@ -268,7 +268,7 @@ void AnimatedAsset::RenderText(char* text, int color_param)
         if (*text != '\0') {
             int* p_x = &text_pos.x;
             do {
-                int width = DrawChar(*p_x, p_x[1], (int)(char)*text++);
+                int width = DrawChar(*(SlimeDim*)p_x, (int)(char)*text++);
                 *p_x += char_adv.advance + width;
             } while (*text != '\0');
         }

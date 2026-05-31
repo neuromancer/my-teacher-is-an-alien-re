@@ -390,43 +390,43 @@ void SC_Wahoo::Update(int param1, int param2) {
 
     spr = bgSprite;
     if ((*(char*)((int)&gameFlags) & 1) != 0) {
-        if (spr->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
+        if (spr->Do(spr->loc.x, spr->loc.y, 1.0) != 0) {
             timer->Start(2000);
         }
         spr = innerSprite;
         if (spr != 0) {
-            spr->Do(spr->loc_x, spr->loc_y, 1.0);
+            spr->Do(spr->loc.x, spr->loc.y, 1.0);
         }
         spr = middleSprite;
         if (spr != 0) {
-            spr->Do(spr->loc_x, spr->loc_y, 1.0);
+            spr->Do(spr->loc.x, spr->loc.y, 1.0);
         }
         spr = (Sprite*)outerSprite;
         if (spr == 0) {
             return;
         }
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
         return;
     }
 
     if (spr != 0) {
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
     }
     spr = (Sprite*)resetSwitchSprite;
     if (spr != 0) {
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
     }
     spr = (Sprite*)innerSprite;
     if (spr != 0) {
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
     }
     spr = (Sprite*)middleSprite;
     if (spr != 0) {
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
     }
     spr = (Sprite*)outerSprite;
     if (spr != 0) {
-        spr->Do(spr->loc_x, spr->loc_y, 1.0);
+        spr->Do(spr->loc.x, spr->loc.y, 1.0);
     }
 
     cursorY = 0;
@@ -470,7 +470,7 @@ label_done:
     }
 
     spr = (Sprite*)consoleSprite;
-    if (spr->Do(spr->loc_x, spr->loc_y, 1.0) != 0) {
+    if (spr->Do(spr->loc.x, spr->loc.y, 1.0) != 0) {
         cursorX = 0;
         if (g_InputManager_0046aa08->pMouse != 0) {
             cursorX = g_InputManager_0046aa08->pMouse->x;

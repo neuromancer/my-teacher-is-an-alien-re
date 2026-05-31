@@ -258,7 +258,7 @@ void SC_Fan::ProcessRound() {
             }
             {
                 mainAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                Parser temp;
+                SC_MessageParser temp((int)mainAction);
                 ParseFile(&temp, "mis\\cb_fan.mis", "[WIN_LBL_PR]");
             }
         } else if (state == 3) {
@@ -269,7 +269,7 @@ void SC_Fan::ProcessRound() {
             }
             {
                 mainAction = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                Parser temp;
+                SC_MessageParser temp((int)mainAction);
                 ParseFile(&temp, "mis\\cb_fan.mis", "[LOSE_LBL_PR]");
             }
         }
@@ -491,7 +491,7 @@ void SC_Fan::State2Handler() {
     Sample* sample;
 
     sprite = bgSprite;
-    if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
+    if (sprite->Do(sprite->loc.x, sprite->loc.y, 1.0)) {
         bgSprite->ResetAnimation(5, 0);
     }
 
@@ -569,7 +569,7 @@ void SC_Fan::RenderFan() {
 
     if (state == 3) {
         if (stopSwitchSprite != 0) {
-            if (stopSwitchSprite->Do(stopSwitchSprite->loc_x, stopSwitchSprite->loc_y, 1.0)) {
+            if (stopSwitchSprite->Do(stopSwitchSprite->loc.x, stopSwitchSprite->loc.y, 1.0)) {
                 DisplaySprites(0);
                 SendGameMessage(4, bgSoundId, handlerId, moduleParam, 0x13, 0x32, 0x3E8, 0, 0, 0);
             }
@@ -581,7 +581,7 @@ void SC_Fan::RenderFan() {
         i = 4;
         do {
             if (*sp != 0) {
-                (*sp)->Do((*sp)->loc_x, (*sp)->loc_y, 1.0);
+                (*sp)->Do((*sp)->loc.x, (*sp)->loc.y, 1.0);
             }
             sp++;
             i--;
@@ -589,7 +589,7 @@ void SC_Fan::RenderFan() {
     }
 
     sprite = bgSprite;
-    if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
+    if (sprite->Do(sprite->loc.x, sprite->loc.y, 1.0)) {
         if (state == 0) {
             DisplaySprites(1);
         } else if (state == 2) {
@@ -657,7 +657,7 @@ void SC_Fan::RenderFan() {
         }
 
         sprite = consoleSprite;
-        if (sprite->Do(sprite->loc_x, sprite->loc_y, 1.0)) {
+        if (sprite->Do(sprite->loc.x, sprite->loc.y, 1.0)) {
             frames = 0;
             p = g_InputManager_0046aa08->pMouse;
             if (p != 0) {

@@ -35,22 +35,10 @@ extern "C" char* GetSoundFilename(int handle);
 
 /* Function start: 0x43E360 */
 SCI_Inventory::SCI_Inventory() {
-    int* listObj;
-
     memset(&slots, 0, 0xF0);
     handlerId = 0x1E;
 
-    // Inline TimedEventPool(10) construction — inlined in original binary
-    listObj = (int*)AllocateMemory(0x18);
-    if (listObj != 0) {
-        listObj[2] = 0;    // m_count
-        listObj[3] = 0;    // m_free_list
-        listObj[1] = 0;    // list.tail
-        listObj[0] = 0;    // list.head
-        listObj[4] = 0;    // m_pool
-        listObj[5] = 10;   // m_pool_size
-    }
-    itemPool = (void*)listObj;
+    itemPool = new TimedEventPool(10);
 
     LinkedList* invList = g_InventoryList;
     if (invList->head != 0) {
@@ -992,12 +980,13 @@ Rect::~Rect() {}
 
 /* Function start: 0x43FDD0 */
 int SCI_Inventory::LBLParse(char* line) {
-    int params[4];
+    Rect paramsRect;
+    int* params = (int*)&paramsRect;
     int index;
     char name[32];
     char token[32];
 
-    memset(params, 0, sizeof(params));
+    memset(&paramsRect, 0, sizeof(paramsRect));
     index = 0;
     name[0] = 0;
     token[0] = 0;
@@ -1034,15 +1023,8 @@ int SCI_Inventory::LBLParse(char* line) {
                         if (obj == 0) {
                             ShowError("queue fault 0112");
                         }
-                        mem = malloc(0xc);
-                        if (mem == 0) {
-                            obj = 0;
-                        } else {
-                            ((int*)mem)[2] = (int)obj;
-                            ((int*)mem)[0] = 0;
-                            ((int*)mem)[1] = 0;
-                            obj = mem;
-                        }
+                        mem = new ListNode(obj);
+                        obj = mem;
                         if (queue[2] == 0) {
                             queue[2] = queue[1];
                         }

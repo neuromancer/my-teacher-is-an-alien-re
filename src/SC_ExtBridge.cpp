@@ -144,7 +144,8 @@ void SC_ExtBridge::Init(SC_MessageParser* msg) {
                     list3->current = list3->head;
                 }
                 if (data != 0) {
-                    delete (RenderEntry*)data;
+                    ((RenderEntry*)data)->RenderEntry::~RenderEntry();
+                    operator delete(data);
                 }
             }
         }

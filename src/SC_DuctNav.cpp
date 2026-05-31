@@ -117,11 +117,7 @@ int SC_DuctNav::LBLParse(char* line)
     char label[32];
     char name[128];
     int slotIdx = 0;
-    int params[4];
-    params[0] = 0;
-    params[1] = 0;
-    params[2] = 0;
-    params[3] = 0;
+    GlyphRect params;
 
     sscanf(line, "%s", label);
 
@@ -140,33 +136,33 @@ int SC_DuctNav::LBLParse(char* line)
         menuSprite = new Sprite((char*)0);
         Parser::ProcessFile(menuSprite, this, (char*)0);
     } else if (strcmp(label, "CANCEL") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
         if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
-        CREATE_BUTTON(cancelBtn, name, params)
+        CREATE_BUTTON(cancelBtn, name, (int*)&params)
     } else if (strcmp(label, "SAVE") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
         if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
-        CREATE_BUTTON(saveBtn, name, params)
+        CREATE_BUTTON(saveBtn, name, (int*)&params)
     } else if (strcmp(label, "LOAD") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
         if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
-        CREATE_BUTTON(loadBtn, name, params)
+        CREATE_BUTTON(loadBtn, name, (int*)&params)
     } else if (strcmp(label, "EDITBOX") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
         if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
-        CREATE_BUTTON(overwriteBtn, name, params)
+        CREATE_BUTTON(overwriteBtn, name, (int*)&params)
     } else if (strcmp(label, "DELETE") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
         if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
-        CREATE_BUTTON(deleteBtn, name, params)
+        CREATE_BUTTON(deleteBtn, name, (int*)&params)
     } else if (strcmp(label, "SCROLLUP") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
         if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
-        CREATE_BUTTON(scrollUpBtn, name, params)
+        CREATE_BUTTON(scrollUpBtn, name, (int*)&params)
     } else if (strcmp(label, "SCROLLDOWN") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params[0], &params[1], &params[2], &params[3]);
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
         if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
-        CREATE_BUTTON(scrollDownBtn, name, params)
+        CREATE_BUTTON(scrollDownBtn, name, (int*)&params)
     } else if (strcmp(label, "EDIT_FOCUS_SPRITE") == 0) {
         editFocusSprite = new Sprite((char*)0);
         Parser::ProcessFile(editFocusSprite, this, (char*)0);
@@ -174,11 +170,11 @@ int SC_DuctNav::LBLParse(char* line)
         choiceFocusSprite = new Sprite((char*)0);
         Parser::ProcessFile(choiceFocusSprite, this, (char*)0);
     } else if (strcmp(label, "SLOT") == 0) {
-        sscanf(line, "%s %d %d %d %d %d", label, &slotIdx, &params[0], &params[1], &params[2], &params[3]);
-        slotRects[slotIdx].left = params[0];
-        slotRects[slotIdx].top = params[1];
-        slotRects[slotIdx].right = params[2];
-        slotRects[slotIdx].bottom = params[3];
+        sscanf(line, "%s %d %d %d %d %d", label, &slotIdx, &params.left, &params.top, &params.right, &params.bottom);
+        slotRects[slotIdx].left = params.left;
+        slotRects[slotIdx].top = params.top;
+        slotRects[slotIdx].right = params.right;
+        slotRects[slotIdx].bottom = params.bottom;
     } else if (strcmp(label, "END") == 0) {
         return 1;
     } else {
@@ -345,9 +341,9 @@ void SC_DuctNav::ShutDown(SC_MessageParser* msg)
     if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
     if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
     if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
-    if (overwriteBtn != 0) { overwriteBtn->~T_MenuButton(); FreeMemory(overwriteBtn); overwriteBtn = 0; }
+    if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
     if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
-    if (scrollUpBtn != 0) { scrollUpBtn->~T_MenuButton(); FreeMemory(scrollUpBtn); scrollUpBtn = 0; }
+    if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
     if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
     return;
 }
@@ -556,7 +552,7 @@ void SC_DuctNav::Update(int p1, int p2) {
     timer.Reset();
 
     if (menuSprite != 0) {
-        menuSprite->Do(menuSprite->loc_x, menuSprite->loc_y, 1.0);
+        menuSprite->Do(menuSprite->loc.x, menuSprite->loc.y, 1.0);
     }
 
     int* list = (int*)saveFileList;
@@ -607,14 +603,14 @@ void SC_DuctNav::Update(int p1, int p2) {
 
     if (field_0x24C != 0) {
         if (moduleParam == 0 && editFocusSprite != 0) {
-            editFocusSprite->Do(editFocusSprite->loc_x, editFocusSprite->loc_y, 1.0);
+            editFocusSprite->Do(editFocusSprite->loc.x, editFocusSprite->loc.y, 1.0);
         }
     } else {
         if (selectedRow != -1 && choiceFocusSprite != 0) {
             int row = selectedRow;
-            choiceFocusSprite->loc_x = slotRects[row].left - 7;
-            choiceFocusSprite->loc_y = slotRects[row].top - 6;
-            choiceFocusSprite->Do(choiceFocusSprite->loc_x, choiceFocusSprite->loc_y, 1.0);
+            choiceFocusSprite->loc.x = slotRects[row].left - 7;
+            choiceFocusSprite->loc.y = slotRects[row].top - 6;
+            choiceFocusSprite->Do(choiceFocusSprite->loc.x, choiceFocusSprite->loc.y, 1.0);
         }
     }
 

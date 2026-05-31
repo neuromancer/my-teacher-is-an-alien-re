@@ -50,18 +50,18 @@ SCI_Schedule::SCI_Schedule()
     Sprite* spr4 = new Sprite("schedual\\\\tardies.smk");
     Sprite** ebx = &tardiesSprite;
     *ebx = spr4;
-    (*ebx)->loc_x = 0x54;
-    (*ebx)->loc_y = 0x190;
+    (*ebx)->loc.x = 0x54;
+    (*ebx)->loc.y = 0x190;
 
     Sprite* spr5 = new Sprite("schedual\\\\cuts.smk");
     cutsSprite = spr5;
-    cutsSprite->loc_x = 0x105;
-    cutsSprite->loc_y = 0x190;
+    cutsSprite->loc.x = 0x105;
+    cutsSprite->loc.y = 0x190;
 
     Sprite* spr6 = new Sprite("schedual\\\\detents.smk");
     scheduleSprite = spr6;
-    scheduleSprite->loc_x = 0x1BB;
-    scheduleSprite->loc_y = 0x190;
+    scheduleSprite->loc.x = 0x1BB;
+    scheduleSprite->loc.y = 0x190;
 
     // Configure tardies/cuts/schedule sprites (loop 3 times)
     int count = 3;
@@ -296,7 +296,7 @@ void SCI_Schedule::Update(int param1, int param2)
 
     IconBar::Update(param1, param2);
 
-    bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
+    bgSprite->Do(bgSprite->loc.x, bgSprite->loc.y, 1.0);
 
     if (selectionState == 1) {
         selBox2->Do(renderX, renderY, 1.0);
@@ -309,7 +309,7 @@ void SCI_Schedule::Update(int param1, int param2)
     do {
         Sprite* s = *sprPtr;
         if (s != 0) {
-            s->Do(s->loc_x, s->loc_y, 1.0);
+            s->Do(s->loc.x, s->loc.y, 1.0);
         }
         sprPtr++;
         count--;

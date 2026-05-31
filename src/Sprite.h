@@ -4,6 +4,7 @@
 #include "Parser.h"
 #include "Animation.h"
 #include "Range.h"
+#include "SpriteAction.h"  // for SlimeDim
 
 struct LogicCondition {
     int state_index;  // 0x00
@@ -25,8 +26,7 @@ public:
     LogicCondition* logic_conditions; // 0xa0
     int rightBound; // 0xa4
     int num_logic_conditions;   // 0xa8
-    int loc_x; // 0xac — position X (set by LOC keyword, ProcessSprite reads this)
-    int loc_y; // 0xb0 — position Y (set by LOC keyword, ProcessSprite reads this)
+    SlimeDim loc; // 0xac — position (set by LOC keyword, ProcessSprite reads this)
     int num_states; // 0xb4 — range count (set by ConfigStates)
     int handleValue; // 0xb8 — HANDLE value (set by full game LBLParse HANDLE keyword)
     char sprite_filename[28]; // 0xbc-0xd7

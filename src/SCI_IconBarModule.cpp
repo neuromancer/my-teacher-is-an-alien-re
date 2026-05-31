@@ -902,8 +902,8 @@ int SCI_IconBarModule::LBLParse(char* line) {
         boundRect.right = 0x267;
         boundRect.bottom = 0x34;
         boundRect.top = 10;
-        spr->loc_x = 0x12;
-        spr->loc_y = 10;
+        spr->loc.x = 0x12;
+        spr->loc.y = 10;
         spr->flags |= 0x40;
         spr->priority = 1000;
         if (mmPlayer == 0) {

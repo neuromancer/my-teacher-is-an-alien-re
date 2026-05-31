@@ -250,7 +250,7 @@ void SC_Roach::RenderBoard()
 {
     // Draw background sprite
     if (bgSprite != 0) {
-        bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
+        bgSprite->Do(bgSprite->loc.x, bgSprite->loc.y, 1.0);
     }
 
     // Draw held piece following cursor, or draw cursor if no piece held
@@ -325,8 +325,8 @@ void SC_Roach::RenderBoard()
     } while (cellCount != 0);
 
     // Draw progress sprites
-    circleSprite->Do(circleSprite->loc_x, circleSprite->loc_y, 1.0);
-    barSprite->Do(barSprite->loc_x, barSprite->loc_y, 1.0);
+    circleSprite->Do(circleSprite->loc.x, circleSprite->loc.y, 1.0);
+    barSprite->Do(barSprite->loc.x, barSprite->loc.y, 1.0);
 }
 
 /* Function start: 0x4198B0 */
@@ -524,10 +524,12 @@ void SC_Roach::OnProcessEnd()
     SC_Combat::OnProcessEnd();
 
     int row = 0;
-    int cellH = 0x2a;
-    int cellW = 0x2a;
-    int startX = 0xce;
-    int startY = 0x40;
+    SlimeDim cellSize;
+    cellSize.x = 0x2a;
+    cellSize.y = 0x2a;
+    SlimeDim start;
+    start.x = 0xce;
+    start.y = 0x40;
     int* gridPtr = (int*)grid + 4;
 
     do {
@@ -535,12 +537,12 @@ void SC_Roach::OnProcessEnd()
         int* cell = gridPtr;
         do {
             SlimeDim sd;
-            sd.x = col * cellW + startX;
-            sd.y = row * cellH + startY;
+            sd.x = col * cellSize.x + start.x;
+            sd.y = row * cellSize.y + start.y;
             cell[0] = sd.x;
             cell[1] = sd.y;
-            cell[2] = cellW + sd.x;
-            cell[3] = cellH + sd.y;
+            cell[2] = cellSize.x + sd.x;
+            cell[3] = cellSize.y + sd.y;
             cell += 8;
             col++;
         } while (col < 6);

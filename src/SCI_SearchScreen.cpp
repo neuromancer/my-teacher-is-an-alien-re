@@ -87,7 +87,8 @@ void SCI_SearchScreen::Init(SC_MessageParser* msg) {
             while (q3->head != 0) {
                 RenderEntry* entry = (RenderEntry*)q3->RemoveCurrent();
                 if (entry != 0) {
-                    delete entry;
+                    entry->RenderEntry::~RenderEntry();
+                    operator delete(entry);
                 }
             }
         }

@@ -133,8 +133,7 @@ GameState::~GameState()
     }
 
     if (stateLabels != 0) {
-        ((ObjectPool*)stateLabels)->~ObjectPool();
-        FreeMemory(stateLabels);
+        delete (ObjectPool*)stateLabels;
         stateLabels = 0;
     }
 }
@@ -186,19 +185,6 @@ void GameState::SetMaxStates(int count)
     ClearStates();
 
     ObjectPool* pool = new ObjectPool(0x11, count);
-
-    if (count != 0xa) {
-        if (pool->memory != 0) {
-            FreeMemory(pool->memory);
-            pool->memory = 0;
-        }
-        int numBuckets = count + (int)((double)count * 0.3);
-        int* buckets = (int*)AllocateMemory(numBuckets * 4);
-        memset(buckets, 0, numBuckets * 4);
-        pool->memory = buckets;
-        pool->size = numBuckets;
-    }
-
     stateLabels = (char**)pool;
 }
 

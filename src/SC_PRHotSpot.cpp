@@ -261,7 +261,7 @@ void SC_PRHotSpot::Update()
             }
         }
         if (sprite != 0) {
-            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+            sprite->Do(sprite->loc.x, sprite->loc.y, 1.0);
         }
         return;
     case 2:
@@ -286,7 +286,7 @@ void SC_PRHotSpot::Update()
             }
         }
         if (sprite != 0) {
-            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+            sprite->Do(sprite->loc.x, sprite->loc.y, 1.0);
         }
         return;
     case 3: {
@@ -315,7 +315,7 @@ void SC_PRHotSpot::Update()
         state = 1;
     do_sprite:
         if (sprite != 0) {
-            sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+            sprite->Do(sprite->loc.x, sprite->loc.y, 1.0);
         }
         return;
     }

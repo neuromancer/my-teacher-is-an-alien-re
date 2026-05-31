@@ -278,7 +278,7 @@ found:
 
 do_sprite:
     ;
-    int done = g_NavSprite_0046c514->Do(g_NavSprite_0046c514->loc_x, g_NavSprite_0046c514->loc_y, 1.0);
+    int done = g_NavSprite_0046c514->Do(g_NavSprite_0046c514->loc.x, g_NavSprite_0046c514->loc.y, 1.0);
     if (done != 0) {
         int count = frameCounter + 1;
         int isDone;

@@ -84,7 +84,7 @@ void SC_Game::Update(int param1, int param2) {
     timer.Reset();
 
     if (sprite != 0) {
-        sprite->Do(sprite->loc_x, sprite->loc_y, 1.0);
+        sprite->Do(sprite->loc.x, sprite->loc.y, 1.0);
     }
 
     int row = scrollOffset;

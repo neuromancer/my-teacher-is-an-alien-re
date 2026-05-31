@@ -149,7 +149,7 @@ void EngineB::RenderBackground() {
         g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor + 5, 0);
     }
 
-    if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc_x, g_BgSprite_0046ae50->loc_y, 1.0)) {
+    if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc.x, g_BgSprite_0046ae50->loc.y, 1.0)) {
         mouseX = 0;
         if (g_InputManager_0046aa08->pMouse != 0) {
             mouseX = g_InputManager_0046aa08->pMouse->x;
@@ -234,13 +234,8 @@ void EngineB::OnProcessEnd() {
     SoundList* sList;
     Animation* anim;
 
-    config = (int*)operator new(8);
+    config = (int*)new IntPair();
     if (config != 0) {
-        char* p = (char*)config + 1;
-        *(int*)p = 0;
-        *(short*)(p + 4) = 0;
-        p[6] = 0;
-
         gs = g_GameState_0046aa30;
         if (g_PeriodStateIdx_0046cb90 < 0 || gs->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
             ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);

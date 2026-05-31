@@ -186,7 +186,7 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
     }
     if (introPlayed == 0) {
         if (introSprite != 0) {
-            introPlayed = introSprite->Do(introSprite->loc_x, introSprite->loc_y, 1.0);
+            introPlayed = introSprite->Do(introSprite->loc.x, introSprite->loc.y, 1.0);
             if (introPlayed == 0) {
                 return;
             }
@@ -407,11 +407,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
             delete palette;
             palette = 0;
         }
-        void* mem = operator new(8);
-        Palette* newPal = 0;
-        if (mem != 0) {
-            newPal = InitPalette((Palette*)mem);
-        }
+        Palette* newPal = new Palette();
         palette = newPal;
         newPal->Load(local_bc);
     } else if (strcmp(local_3c, "HOTSPOT") == 0) {
