@@ -3,12 +3,27 @@
 
 #include "SC_Combat.h"
 #include "InvSlotItem.h"  // for Rect
+#include <string.h>
+
+class Sprite;
 
 // GauntletEntry — 0x1C byte element with ctor/dtor (ctor 0x42E660, dtor 0x42E6D0)
 struct GauntletEntry {
     int fields[7]; // 0x00-0x1B
     GauntletEntry();
     ~GauntletEntry();
+};
+
+// GauntletBoard — 0x1C byte object at SC_Gauntlet+0x120. Its destructor (0x42E720)
+// deletes fgSprite; boardBounds (Rect) auto-destructs. INLINE ctor so the Rect
+// sub-member surfaces as ctor-state 1 with the board itself at state 2; NON-inline
+// dtor (0x42E720) so the board is one state in the SC_Gauntlet destructor.
+struct GauntletBoard {
+    int crystalState[2];  // 0x00 (0x120)
+    Rect boardBounds;     // 0x08 (0x128)
+    Sprite* fgSprite;     // 0x18 (0x138)
+    GauntletBoard() { memset(this, 0, sizeof(GauntletBoard)); }
+    ~GauntletBoard();
 };
 
 // SC_Gauntlet - Android gauntlet mini-game (case 80/0x50)
@@ -37,9 +52,7 @@ public:
     void RenderGrid();                              // 0x42EFC0
 
     int moveState[2];              // 0x118-0x11F
-    int crystalState[2];              // 0x120-0x127
-    Rect boardBounds;              // 0x128-0x137 (boardLeft,Top,Right,Bottom)
-    Sprite* fgSprite;              // 0x138
+    GauntletBoard board;           // 0x120-0x13B (crystalState, boardBounds, fgSprite)
     GauntletEntry entries[36];     // 0x13C-0x52B (36 * 0x1C = 0x3F0)
     Sprite* cellSprites[7];        // 0x52C-0x547
     Rect exitBounds;               // 0x548-0x557 (exitLeft,Top,Right,Bottom)

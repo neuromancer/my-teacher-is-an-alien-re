@@ -3,6 +3,7 @@
 
 #include "Handler.h"
 #include "SlimeTable.h"
+#include "SpriteAction.h"  // for SlimeDim
 
 class SpriteAction;
 class Sprite;
@@ -19,7 +20,9 @@ class Palette;
 class SC_Combat : public Handler {
 public:
     int* statusPtr;            // 0xA8 — pointer to game status flags
-    int combatParams[21];        // 0xAC-0xFF
+    int combatParams[3];       // 0xAC-0xB7 — header params (idx 0..2)
+    SlimeDim combatDim;        // 0xB8-0xBF — resolution pair (has dtor; unwound at state 2)
+    char missionPath[64];      // 0xC0-0xFF — .mis path buffer (was combatParams+5)
     SpriteAction* pendingAction; // 0x100 — pending action message
     Palette* field_0x104;      // 0x104
     Sprite* bgSprite;          // 0x108 — background/animation sprite

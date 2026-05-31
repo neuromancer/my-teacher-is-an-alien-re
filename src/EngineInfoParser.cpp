@@ -151,8 +151,8 @@ void __fastcall InitCombatGrid(int param_1) {
     gaunt->entries[8].fields[0] = 1;
     gaunt->entries[20].fields[0] = 1;
     gaunt->entries[26].fields[0] = 1;
-    gaunt->crystalState[0] = 5;
+    gaunt->board.crystalState[0] = 5;
     gaunt->entries[31].fields[0] = 1;
-    gaunt->crystalState[1] = 0;
+    gaunt->board.crystalState[1] = 0;
     gaunt->cellSprites[6] = 0;
 }

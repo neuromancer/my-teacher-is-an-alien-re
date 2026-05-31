@@ -60,8 +60,8 @@ void SC_SpaceShipNav::Init(SC_MessageParser* msg) {
         field_118[0] = (int)engine;
         g_CombatEngine_0046ae78 = (SC_CombatBase*)engine;
 
-        strcpy((char*)(combatParams + 5), "mis\\cb_SpaceNav.mis");
-        ParseFile((Parser*)this, (char*)(combatParams + 5), 0);
+        strcpy(missionPath, "mis\\cb_SpaceNav.mis");
+        ParseFile((Parser*)this, missionPath, 0);
     }
 
     g_CombatEngine_0046ae78 = (SC_CombatBase*)field_118[0];
@@ -150,7 +150,7 @@ void SC_SpaceShipNav::UpdateCursor() {
         } else {
             mouseX = 0;
         }
-        iVar1 = mouseX / combatParams[3];
+        iVar1 = mouseX / combatDim.x;
         if (iVar1 >= 0) {
             if (iVar1 > 2) iVar1 = 2;
         } else {

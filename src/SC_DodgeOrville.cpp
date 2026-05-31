@@ -102,8 +102,8 @@ void SC_DodgeOrville::Init(SC_MessageParser* msg) {
     }
 
     SC_Combat::Init(msg);
-    strcpy((char*)(combatParams + 5), "mis\\cb_DOrville.mis");
-    ParseFile(this, (char*)(combatParams + 5), (char*)0);
+    strcpy(missionPath, "mis\\cb_DOrville.mis");
+    ParseFile(this, missionPath, (char*)0);
 }
 
 /* Function start: 0x428A40 */

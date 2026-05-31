@@ -30,9 +30,16 @@ GauntletEntry::GauntletEntry() {
 
 /* Function start: 0x42E540 */
 SC_Gauntlet::SC_Gauntlet() {
-    memset(crystalState, 0, 7 * sizeof(int));
     memset(moveState, 0, 0x112 * sizeof(int));
     handlerId = 0x50;
+}
+
+/* Function start: 0x42E720 */
+GauntletBoard::~GauntletBoard() {
+    if (fgSprite != 0) {
+        delete fgSprite;
+        fgSprite = 0;
+    }
 }
 
 /* Function start: 0x42E7C0 */
@@ -47,8 +54,8 @@ void SC_Gauntlet::Init(SC_MessageParser* msg) {
     if (!FileExists("puz_roach")) {
         ShowLoadingScreen();
     }
-    strcpy((char*)(combatParams + 5), "mis\\pz_roach.mis");
-    ParseFile(this, (char*)(combatParams + 5), (char*)0);
+    strcpy(missionPath, "mis\\pz_roach.mis");
+    ParseFile(this, missionPath, (char*)0);
 }
 
 /* Function start: 0x42E8F0 */
@@ -63,11 +70,11 @@ void SC_Gauntlet::ShutDown(SC_MessageParser* msg) {
         exitSprite = 0;
     }
 
-    spr = fgSprite;
+    spr = board.fgSprite;
     if (spr != 0) {
         spr->~Sprite();
         FreeMemory(spr);
-        fgSprite = 0;
+        board.fgSprite = 0;
     }
 
     i = 6;
@@ -134,18 +141,18 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
                 row++;
             } while (row < 6);
 
-            if (action->mousePos.x >= boardBounds.left &&
-                action->mousePos.x <= boardBounds.right &&
-                action->mousePos.y >= boardBounds.top &&
-                action->mousePos.y <= boardBounds.bottom &&
-                crystalState[1] == 0) {
+            if (action->mousePos.x >= board.boardBounds.left &&
+                action->mousePos.x <= board.boardBounds.right &&
+                action->mousePos.y >= board.boardBounds.top &&
+                action->mousePos.y <= board.boardBounds.bottom &&
+                board.crystalState[1] == 0) {
                 Sprite* mouseSpr2 = g_Mouse_0046aa18->m_sprite;
                 if (mouseSpr2 != 0) {
                     mouseSpr2->ResetAnimation(0xC, 0);
                 }
-                crystalState[1] = 1;
-                if (crystalState[0] > 0) {
-                    crystalState[0]--;
+                board.crystalState[1] = 1;
+                if (board.crystalState[0] > 0) {
+                    board.crystalState[0]--;
                 }
                 bgSound->Play(2);
             } else if (action->mousePos.x >= exitBounds.left &&
@@ -183,7 +190,7 @@ void SC_Gauntlet::ProcessLose() {
                 pendingAction = newAction;
                 SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
-                ParseFile(&temp, (char*)(combatParams + 5), "[WIN_LBL]");
+                ParseFile(&temp, missionPath, "[WIN_LBL]");
             }
         } else {
             ptr = pendingAction;
@@ -196,7 +203,7 @@ void SC_Gauntlet::ProcessLose() {
                 pendingAction = newAction;
                 SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
-                ParseFile(&temp, (char*)(combatParams + 5), "[LOSE_LBL]");
+                ParseFile(&temp, missionPath, "[LOSE_LBL]");
             }
         }
     } else {
@@ -211,7 +218,7 @@ void SC_Gauntlet::ProcessLose() {
                 pendingAction = newAction;
                 SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
-                ParseFile(&temp, (char*)(combatParams + 5), "[WIN_LBL_PR]");
+                ParseFile(&temp, missionPath, "[WIN_LBL_PR]");
             }
         } else if (statusPtr[0] != 0) {
             ptr = pendingAction;
@@ -224,7 +231,7 @@ void SC_Gauntlet::ProcessLose() {
                 pendingAction = newAction;
                 SC_MessageParser temp;
                 temp.targetAddress = (int)newAction;
-                ParseFile(&temp, (char*)(combatParams + 5), "[LOSE_LBL_PR]");
+                ParseFile(&temp, missionPath, "[LOSE_LBL_PR]");
             }
         }
     }
@@ -239,15 +246,15 @@ void SC_Gauntlet::RenderGrid() {
 
     bgSprite->Do(bgSprite->loc_x, bgSprite->loc_y, 1.0);
 
-    if (crystalState[1] != 0) {
+    if (board.crystalState[1] != 0) {
         if (g_Mouse_0046aa18->m_sprite != 0) {
             g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
         }
     }
 
-    UpdateWordSearchCursor(crystalState);
+    UpdateWordSearchCursor(board.crystalState);
 
-    if (crystalState[1] != 0) {
+    if (board.crystalState[1] != 0) {
         if (g_Mouse_0046aa18->m_sprite != 0) {
             g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
         }
@@ -299,7 +306,7 @@ void SC_Gauntlet::RenderGrid() {
                 ge->fields[4] <= mouseY && ge->fields[6] >= mouseY) {
                 if (ge->fields[1] == 0) {
                     Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
-                    if (crystalState[1] == 0) {
+                    if (board.crystalState[1] == 0) {
                         if (mouseSpr != 0) {
                             mouseSpr->ResetAnimation(0, 0);
                         }
@@ -310,7 +317,7 @@ void SC_Gauntlet::RenderGrid() {
                     }
                 } else {
                     Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
-                    if (crystalState[1] == 0) {
+                    if (board.crystalState[1] == 0) {
                         if (mouseSpr != 0) {
                             mouseSpr->ResetAnimation(0, 0);
                         }
@@ -340,7 +347,7 @@ void SC_Gauntlet::RenderGrid() {
 
     g_Mouse_0046aa18->DrawCursor();
 
-    if (crystalState[0] < 1) {
+    if (board.crystalState[0] < 1) {
         if (bgSound->IsSamplePlaying(1) == 0) {
             if (statusPtr[1] == 0) {
                 int val = moveState[0] + 1;
@@ -544,7 +551,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     /* Play sounds based on result */
     if (total != 0) {
         bgSound->Play(1);
-        int sndIdx = 4 - crystalState[0];
+        int sndIdx = 4 - board.crystalState[0];
         if (sndIdx >= 0 && sndIdx <= 2) {
             bgSound->Play(sndIdx + 5);
         }
@@ -554,10 +561,10 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
 
     /* Store result and update state */
     entries[index].fields[0] = total;
-    if (crystalState[0] == 1) {
-        crystalState[0] = 0;
+    if (board.crystalState[0] == 1) {
+        board.crystalState[0] = 0;
     }
-    crystalState[1] = 0;
+    board.crystalState[1] = 0;
 }
 
 /* Function start: 0x42F570 */
@@ -583,8 +590,8 @@ void SC_Gauntlet::ResetGrid() {
     entries[20].fields[0] = 1;
     entries[26].fields[0] = 1;
     entries[31].fields[0] = 1;
-    crystalState[0] = 5;
-    crystalState[1] = 0;
+    board.crystalState[0] = 5;
+    board.crystalState[1] = 0;
     cellSprites[6] = 0;
 }
 
@@ -680,10 +687,10 @@ void SC_Gauntlet::OnProcessEnd() {
     entries[15].fields[1] = 1;
     entries[23].fields[1] = 1;
 
-    boardBounds.left = 0xA;
-    boardBounds.top = 0x14;
-    boardBounds.right = 0x5A;
-    boardBounds.bottom = 0xDC;
+    board.boardBounds.left = 0xA;
+    board.boardBounds.top = 0x14;
+    board.boardBounds.right = 0x5A;
+    board.boardBounds.bottom = 0xDC;
     exitBounds.left = 6;
     entries[34].fields[2] = 1;
     exitBounds.top = 0x197;
@@ -705,7 +712,7 @@ int SC_Gauntlet::LBLParse(char* line) {
 
     if (strcmp(label, "TREATS_SPRITE") == 0) {
         Sprite* spr = new Sprite((char*)0);
-        fgSprite = spr;
+        board.fgSprite = spr;
         Parser::ProcessFile(spr, this, (char*)0);
     } else if (strcmp(label, "RULES_SPRITE") == 0) {
         Sprite* spr = new Sprite((char*)0);

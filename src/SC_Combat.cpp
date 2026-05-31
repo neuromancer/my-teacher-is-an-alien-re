@@ -48,8 +48,8 @@ int SC_Combat::LBLParse(char* line) {
         field_0x10C = new Sprite((char*)0);
         Parser::ProcessFile(field_0x10C, this, (char*)0);
     } else if (strcmp(local_3c, "VIDEO_RES") == 0) {
-        sscanf(line, " %s %d %d", local_3c, &combatParams[3], &combatParams[4]);
-        SetVideoRes(combatParams[3], combatParams[4]);
+        sscanf(line, " %s %d %d", local_3c, &combatDim.x, &combatDim.y);
+        SetVideoRes(combatDim.x, combatDim.y);
     } else if (strcmp(local_3c, "BG_SOUND") == 0) {
         sscanf(line, " %s %d", local_3c, &field_0x114);
     } else if (strcmp(local_3c, "MAX_SOUNDS") == 0) {

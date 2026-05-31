@@ -569,8 +569,8 @@ void SC_Roach::OnProcessEnd()
 void SC_Roach::Init(SC_MessageParser* msg) {
     memset(&sources, 0, 0x186 * sizeof(int));
     SC_Combat::Init(msg);
-    strcpy((char*)(combatParams + 5), "mis\\pz_crystal.mis");
-    ParseFile(this, (char*)(combatParams + 5), (char*)0);
+    strcpy(missionPath, "mis\\pz_crystal.mis");
+    ParseFile(this, missionPath, (char*)0);
 }
 
 /* Function start: 0x419200 */

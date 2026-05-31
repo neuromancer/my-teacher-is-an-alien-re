@@ -380,6 +380,8 @@ void ZBufferManager::Cleanup() {
         operator delete(queue);
         m_queue9c = 0;
     }
+
+    timer.~Timer();
 }
 
 ZBufferManager::~ZBufferManager()

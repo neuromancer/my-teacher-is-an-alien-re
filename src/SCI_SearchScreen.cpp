@@ -95,8 +95,8 @@ void SCI_SearchScreen::Init(SC_MessageParser* msg) {
         zb->m_palette = 0;
     }
 
-    strcpy((char*)(combatParams + 5), "mis\\cb_Gauntlet.mis");
-    ParseFile(this, (char*)(combatParams + 5), (char*)0);
+    strcpy(missionPath, "mis\\cb_Gauntlet.mis");
+    ParseFile(this, missionPath, (char*)0);
     g_ActiveCombat_00468a1c = this;
 }
 
