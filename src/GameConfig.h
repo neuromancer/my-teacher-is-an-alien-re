@@ -10,7 +10,9 @@ public:
     SlimeDim range;               // 0x34 (8 bytes) — zeroed by SlimeDim ctor, SEH via ~SlimeDim
     unsigned char padding[0x14];  // 0x3C-0x4F (20 bytes)
 
-    ~ConfigData();
+    // 0x4128A0 — inline (header-defined) so each TU that destroys a ConfigData
+    // emits its own COMDAT copy; the SlimeDim member dtor forces the SEH frame.
+    ~ConfigData() {}
 };
 
 class GameConfig {

@@ -23,10 +23,8 @@ GameConfig::GameConfig() {
     CheckWindir();
 }
 
-/* Function start: 0x4128A0 */
-ConfigData::~ConfigData() {
-    // Empty destructor
-}
+/* ConfigData::~ConfigData (0x4128A0) is now inline in GameConfig.h so each
+   translation unit emits its own COMDAT copy (matching the original layout). */
 
 /* Function start: 0x447E80 */
 GameConfig::~GameConfig() {
