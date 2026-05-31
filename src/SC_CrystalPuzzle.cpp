@@ -550,8 +550,12 @@ sound_done:
         puzztest->Do(puzztest->loc_x, puzztest->loc_y, 1.0);
     }
 
-    DisplayButtons();
-    DisplayMap();
+    if (&buttons1 != 0) {
+        DisplayButtons();
+    }
+    if (&paths1 != 0) {
+        DisplayMap();
+    }
 
     if (litdoors != 0) {
         DisplayLitDoors();
@@ -579,6 +583,17 @@ sound_done:
     if (rect6.left <= mouseX && mouseX <= rect6.right &&
         rect6.top <= mouseY && mouseY <= rect6.bottom) {
         goto set_cursor_10;
+    }
+
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
+    } else {
+        mouseY = 0;
+    }
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseX = g_InputManager_0046aa08->pMouse->x;
+    } else {
+        mouseX = 0;
     }
 
     if (rect7.left <= mouseX && mouseX <= rect7.right &&
@@ -910,13 +925,13 @@ int SC_CrystalPuzzle::CheckSolution() {
         }
     }
 
-    if (solutionIdx < 2) {
-        floorIdx = 0;
-    } else {
+    if (solutionIdx >= 2) {
         floorIdx = 2;
         if (solutionIdx < 5) {
             floorIdx = 1;
         }
+    } else {
+        floorIdx = 0;
     }
 
     floorStates[floorIdx] = 1;
@@ -975,10 +990,8 @@ void SC_CrystalPuzzle::DisplayButtons() {
 
     for (i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
-            int sprIdx = i / 3;
-            int state = i % 3;
-            (&buttons1)[sprIdx]->ResetAnimation(state, 0);
-            (&buttons1)[sprIdx]->Do((&buttons1)[sprIdx]->loc_x, (&buttons1)[sprIdx]->loc_y, 1.0);
+            (&buttons1)[i / 3]->ResetAnimation(i % 3, 0);
+            (&buttons1)[i / 3]->Do((&buttons1)[i / 3]->loc_x, (&buttons1)[i / 3]->loc_y, 1.0);
         }
     }
 }
@@ -993,10 +1006,8 @@ void SC_CrystalPuzzle::DisplayMap() {
 
     for (i = 0; i < 9; i++) {
         if (buttonStates[i] != 0) {
-            int sprIdx = i / 3;
-            int state = i % 3;
-            (&paths1)[sprIdx]->ResetAnimation(state, 0);
-            (&paths1)[sprIdx]->Do((&paths1)[sprIdx]->loc_x, (&paths1)[sprIdx]->loc_y, 1.0);
+            (&paths1)[i / 3]->ResetAnimation(i % 3, 0);
+            (&paths1)[i / 3]->Do((&paths1)[i / 3]->loc_x, (&paths1)[i / 3]->loc_y, 1.0);
         }
     }
 }

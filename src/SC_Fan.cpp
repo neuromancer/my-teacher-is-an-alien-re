@@ -372,33 +372,21 @@ int SC_Fan::HandleInput(Sprite* spr) {
 
     dim_168.x++;
 
-    int nx = p->nextPos.x;
-    int ny = p->nextPos.y;
-
     int inSlot;
-    if (invSlot_D0.left <= nx && invSlot_D0.right >= nx &&
-        invSlot_D0.top <= ny && invSlot_D0.bottom >= ny) {
+    if (invSlot_D0.left <= p->nextPos.x && invSlot_D0.right >= p->nextPos.x &&
+        invSlot_D0.top <= p->nextPos.y && invSlot_D0.bottom >= p->nextPos.y) {
         inSlot = 1;
     } else {
         inSlot = 0;
     }
 
-    if (inSlot) {
-        if (bgSprite->handle != 1) goto end_processing;
-        DisplaySprites(2);
-        if (samples[4] != 0) {
-            samples[4]->Play(100, 1);
-        }
-        SendGameMessage(4, bgSoundId, handlerId, moduleParam, 0x13, 1, 0x3e8, 0, 0, 0);
-        return 1;
-    }
-
+    if (!inSlot) {
     if (bgSprite->handle != 3) goto end_processing;
 
     {
         int inGlobalRect;
-        if (g_FanField1_00472be0 <= nx && g_FanField3_00472be8 >= nx &&
-            g_FanField2_00472be4 <= ny && g_FanField4_00472bec >= ny) {
+        if (g_FanField1_00472be0 <= p->nextPos.x && g_FanField3_00472be8 >= p->nextPos.x &&
+            g_FanField2_00472be4 <= p->nextPos.y && g_FanField4_00472bec >= p->nextPos.y) {
             inGlobalRect = 1;
         } else {
             inGlobalRect = 0;
@@ -412,8 +400,8 @@ int SC_Fan::HandleInput(Sprite* spr) {
         int* flagPtr = &field_F0;
         for (i = 0; i < 4; i++) {
             int hit;
-            if (slotRect->left <= nx && slotRect->right >= nx &&
-                slotRect->top <= ny && slotRect->bottom >= ny) {
+            if (slotRect->left <= p->nextPos.x && slotRect->right >= p->nextPos.x &&
+                slotRect->top <= p->nextPos.y && slotRect->bottom >= p->nextPos.y) {
                 hit = 1;
             } else {
                 hit = 0;
@@ -445,6 +433,15 @@ int SC_Fan::HandleInput(Sprite* spr) {
             slotRect++;
             flagPtr++;
         }
+    }
+    } else {
+        if (bgSprite->handle != 1) goto end_processing;
+        DisplaySprites(2);
+        if (samples[4] != 0) {
+            samples[4]->Play(100, 1);
+        }
+        SendGameMessage(4, bgSoundId, handlerId, moduleParam, 0x13, 1, 0x3e8, 0, 0, 0);
+        return 1;
     }
 
 end_processing:

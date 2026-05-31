@@ -446,10 +446,8 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     if (action->button1 <= 1) return 1;
 
     if (moduleParam == 0) {
-        int mx = action->mousePos.x;
-        int my = action->mousePos.y;
-        SlimeDim coords;
-        if (HOTSPOT_HIT(overwriteBtn, mx, my)) {
+        SlimeDim coords = action->mousePos;
+        if (HOTSPOT_HIT(overwriteBtn, coords.x, coords.y)) {
             selectedRow = -1;
             action->instruction = 0;
             if (field_0x24C == 0) {
@@ -460,10 +458,8 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     }
 
     {
-        int mx = action->mousePos.x;
-        int my = action->mousePos.y;
-        SlimeDim coords;
-        if (HOTSPOT_HIT(cancelBtn, mx, my)) {
+        SlimeDim coords = action->mousePos;
+        if (HOTSPOT_HIT(cancelBtn, coords.x, coords.y)) {
             action->instruction = 2;
             action->lastKey = 0x1b;
             goto set_clear_return;
@@ -471,10 +467,8 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     }
 
     if (moduleParam == 0) {
-        int mx = action->mousePos.x;
-        int my = action->mousePos.y;
-        SlimeDim coords;
-        if (HOTSPOT_HIT(saveBtn, mx, my)) {
+        SlimeDim coords = action->mousePos;
+        if (HOTSPOT_HIT(saveBtn, coords.x, coords.y)) {
             action->instruction = 2;
             action->lastKey = 0xd;
             goto set_clear_return;
@@ -482,10 +476,8 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     }
 
     if (moduleParam == 1) {
-        int mx = action->mousePos.x;
-        int my = action->mousePos.y;
-        SlimeDim coords;
-        if (HOTSPOT_HIT(loadBtn, mx, my)) {
+        SlimeDim coords = action->mousePos;
+        if (HOTSPOT_HIT(loadBtn, coords.x, coords.y)) {
             action->instruction = 2;
             action->lastKey = 0xd;
             goto set_clear_return;
@@ -493,10 +485,8 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     }
 
     {
-        int mx = action->mousePos.x;
-        int my = action->mousePos.y;
-        SlimeDim coords;
-        if (HOTSPOT_HIT(deleteBtn, mx, my)) {
+        SlimeDim coords = action->mousePos;
+        if (HOTSPOT_HIT(deleteBtn, coords.x, coords.y)) {
             action->instruction = 2;
             action->lastKey = 0x2e;
             goto set_clear_return;
@@ -504,10 +494,8 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     }
 
     {
-        int mx = action->mousePos.x;
-        int my = action->mousePos.y;
-        SlimeDim coords;
-        if (HOTSPOT_HIT(scrollUpBtn, mx, my)) {
+        SlimeDim coords = action->mousePos;
+        if (HOTSPOT_HIT(scrollUpBtn, coords.x, coords.y)) {
             action->instruction = 2;
             action->lastKey = 0x26;
             goto set_clear_return;
@@ -515,10 +503,8 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     }
 
     {
-        int mx = action->mousePos.x;
-        int my = action->mousePos.y;
-        SlimeDim coords;
-        if (HOTSPOT_HIT(scrollDownBtn, mx, my)) {
+        SlimeDim coords = action->mousePos;
+        if (HOTSPOT_HIT(scrollDownBtn, coords.x, coords.y)) {
             action->instruction = 2;
             action->lastKey = 0x28;
             goto set_clear_return;
@@ -678,26 +664,17 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
     int* node;
 
     action = (SpriteAction*)msg;
-    if (action->addressType != handlerId) {
+    if (handlerId != action->addressType) {
         return 0;
     }
 
     timer.Reset();
 
-    if (action->instruction == 1) {
+    switch (action->instruction) {
+    case 1:
         SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
         return 1;
-    } else if (action->instruction == 2) {
-        goto case_2;
-    } else if (action->instruction == 7) {
-        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
-        return 1;
-    } else {
-        return 1;
-    }
-
-    case_2:
-
+    case 2:
     {
         int numFiles;
         int maxScroll;
@@ -709,6 +686,8 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
         if (maxScroll < 0) {
             maxScroll = 0;
         }
+
+        SendGameMessage(4, 0x498, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
 
         switch (action->lastKey) {
         case 0xd:
@@ -860,6 +839,12 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
         default:
             return 1;
         }
+    }
+    case 7:
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+        return 1;
+    default:
+        return 1;
     }
 }
 
