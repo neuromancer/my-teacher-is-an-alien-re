@@ -40,11 +40,8 @@ extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
 {
     HGLOBAL hMem;
     int* puVar2;
-    int iVar1;
 
     if (param_1 < 0x20 && (char)param_1 != g_CurrentVideoBuffer_0046db3c) {
-        iVar1 = param_1 * 4;
-        g_VBufDataPtrs_0046de54[param_1] = 0;
         g_VBufDataPtrs_0046de54[param_1] = 0;
         puVar2 = g_VBufDibHandles_0046dbd4;
         if (g_WinGDC_0046e004 != 0) {
@@ -276,7 +273,6 @@ extern "C" void __cdecl ReleaseBufferEntry(unsigned int param_1)
         return;
     }
     g_VBufDataPtrs_0046de54[idx] = 0;
-    g_VBufDataPtrs_0046de54[idx] = 0;
 }
 
 // Forward declaration
@@ -300,7 +296,6 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
         if (val == 0) {
             int idx = 0x1f - counter;
             ptr[-1] = buffer + g_BitmapHeaderSize_0046db34;
-            int offset = idx * 4;
             int* dest = (int*)buffer;
             for (int j = 10; j != 0; j--) {
                 *dest = 0;

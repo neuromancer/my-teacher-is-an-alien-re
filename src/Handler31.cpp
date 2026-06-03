@@ -372,6 +372,7 @@ void Handler31::Update(int param1, int param2) {
                     if (node != 0) {
                         nodeData = (SC_Question*)node->data;
                     }
+                    // Original bug at 0x417500: null current question calls Update with ECX=0.
                     nodeData->Update(0x12, yPos);
 
                     if (count == buttonIdx) {

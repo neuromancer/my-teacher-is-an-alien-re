@@ -20,6 +20,7 @@ T_MenuHotspot::T_MenuHotspot(int param)
 /* Function start: 0x421A50 */
 T_MenuButton::T_MenuButton(char* name, int* rect)
 {
+    // Original bug at 0x421A50: REP STOSD wipes this after setting the vptr.
     memset(this, 0, 0x2a * 4);
 
     if (name != 0) {
@@ -231,6 +232,7 @@ int T_MenuHotspot::LBLParse(char* line) {
             }
         }
     } else if (strcmp(local_50, "SWITCHFOCUS") == 0) {
+        // Original bug at 0x421560: extra output arg is ignored, leaving local_1c at its initialized value.
         int result = sscanf(line, " %s %s %d %s", local_50, local_70, &local_18, local_90, &local_1c);
         if (result != 4) {
             ShowError("Error in ThotsMen.cpp: %s - in parse file is missing parameters", line);

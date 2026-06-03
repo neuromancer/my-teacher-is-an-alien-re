@@ -227,7 +227,10 @@ int SCI_SearchScreen::LBLParse(char* line) {
 
 /* Function start: 0x40EFB0 */
 extern "C" void ClearGameStateSave() {
-    memset(&g_FanField1_00472be0, 0, 16);
+    g_FanField1_00472be0 = 0;
+    g_FanField2_00472be4 = 0;
+    g_FanField3_00472be8 = 0;
+    g_FanField4_00472bec = 0;
 }
 
 /* Function start: 0x44E960 */

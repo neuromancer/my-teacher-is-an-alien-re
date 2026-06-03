@@ -133,6 +133,7 @@ Target* TargetList::ProcessTargets() {
           } while (bucketIdx < (unsigned int)ht->numBuckets);
         }
       }
+      // Original bug at 0x4436C4: the bucket scan result is dereferenced without rechecking the sentinel/null case.
       nextEntry = entry->next;
       if (nextEntry == 0) {
         bucketIdx = entry->bucketIndex + 1;

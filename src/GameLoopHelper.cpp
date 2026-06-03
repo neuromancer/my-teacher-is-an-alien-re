@@ -138,6 +138,7 @@ void GameLoopHelper::RemoveAnimation(int handle) {
 found:
     p = pool;
     if (p->head == node) {
+        // Original bug at 0x41A919: missing handles leave node null before removal.
         p->head = (int*)node[0];
     } else {
         *(int*)node[1] = node[0];

@@ -618,6 +618,7 @@ void SC_Fan::RenderFan() {
         } else {
             int offset;
             int rnd;
+            // Original bug at 0x410060: zero dim_168.y falls through to this divide.
             offset = dim_168.x * 0x36 / dimVal;
             rnd = rand();
             offset = offset - rnd % 3 + 1;

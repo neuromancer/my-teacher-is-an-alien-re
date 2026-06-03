@@ -629,6 +629,7 @@ Handler* GameEngine::FindHandlerInList(int command) {
                 goto found;
             }
         } else {
+            // Original bug at 0x4318F8: null current handler compares against fixed address 0x90.
             if (command == *(int*)0x90) {
 found:
                 list = m_handlerList;

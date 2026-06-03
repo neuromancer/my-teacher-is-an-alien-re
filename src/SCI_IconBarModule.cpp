@@ -723,6 +723,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
             ShowError("Error in SCIsrcSc.cpp - LBLParse: Too many hotspots");
         }
         if (icons[hotspotIdx] != 0) {
+            // Original bug at 0x4022B0: missing hotspot argument for "%d".
             ShowError("repeat use of hotspot %d");
         }
         T_Hotspot* hs = new T_Hotspot(0);
@@ -747,7 +748,10 @@ int SCI_IconBarModule::LBLParse(char* line) {
         if (ret < 6) {
             ReportUnknownLabel("SCI_SearchScreen --> DLG_HOTSPOT");
         }
+        // Original bug at 0x4022B0: this branch checks/formats the previous
+        // hotspot stack slot, not the room value parsed above.
         if (icons[hotspotIdx] != 0) {
+            // Original bug at 0x4022B0: missing hotspot argument for "%d".
             ShowError("repeat use of hotspot %d");
         }
         T_Hotspot* hs = new T_Hotspot(0);
@@ -770,6 +774,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
             ReportUnknownLabel("SCI_SearchScreen --> AVAILABLE_HOTSPOT");
         }
         if (icons[hotspotIdx] != 0) {
+            // Original bug at 0x4022B0: missing hotspot argument for "%d".
             ShowError("repeat use of hotspot %d");
         }
         T_Hotspot* hs = new T_Hotspot(0);
@@ -824,6 +829,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
     } else if (strcmp(label, "INTRO_HOTSPOT") == 0) {
         sscanf(line, "%s %d", label, &hotspotIdx);
         if (icons[hotspotIdx] != 0) {
+            // Original bug at 0x4022B0: missing hotspot argument for "%d".
             ShowError("repeat use of hotspot %d");
         }
         T_Hotspot* hs = new T_Hotspot(0);
@@ -861,6 +867,7 @@ int SCI_IconBarModule::LBLParse(char* line) {
             }
             if (gs2->stateValues[actIdx] > 10) {
                 if (icons[hotspotIdx] != 0) {
+                    // Original bug at 0x4022B0: missing hotspot argument for "%d".
                     ShowError("repeat use of hotspot %d");
                 }
                 T_Hotspot* hs = new T_Hotspot(0);

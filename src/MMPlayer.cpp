@@ -55,6 +55,7 @@ void MMPlayer::StopAll()
             if (m_queue->current != 0) {
                 sprite = (Sprite*)m_queue->current->data;
             }
+            // Original bug at 0x443AB0: null current calls StopAnimationSound with ECX=0.
             sprite->StopAnimationSound();
 
             if (m_queue->tail == m_queue->current) {
@@ -80,6 +81,7 @@ void MMPlayer::Init()
             if (m_queue->current != 0) {
                 sprite = (Sprite*)m_queue->current->data;
             }
+            // Original bug at 0x443B20: null current calls InitAnimation with ECX=0.
             sprite->InitAnimation();
 
             if (m_queue->tail == m_queue->current) {
@@ -194,6 +196,7 @@ int MMPlayer::Draw()
             if (m_queue->current != 0) {
                 sprite = (Sprite*)m_queue->current->data;
             }
+            // Original bug at 0x443E76: null current sprite is dereferenced before Do.
             if (sprite->Do(sprite->loc.x, sprite->loc.y, 1.0) != 0) {
                 m_drawResult = 0;
             }
@@ -221,6 +224,7 @@ void MMPlayer::ResetAnimations(int param_1)
             if (m_queue->current != 0) {
                 sprite = (Sprite*)m_queue->current->data;
             }
+            // Original bug at 0x443ED0: null current calls ResetAnimation with ECX=0.
             sprite->ResetAnimation(param_1, 0);
 
             if (m_queue->tail == m_queue->current) {

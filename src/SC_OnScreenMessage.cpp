@@ -118,6 +118,7 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
                     entry = (SoundEntry*)node->data;
                 }
 
+                // Original quirk at 0x448610: a null current node calls SoundUpdate with ECX=0.
                 if (entry->SoundUpdate() != 0) {
                     pList = m_messageList;
                     // Inline RemoveCurrent
@@ -159,6 +160,8 @@ void SC_OnScreenMessage::Update(int param1, int param2) {
                     }
                 }
 
+                // Original quirk at 0x448610: after deleting current data, current
+                // is reset to head and then advanced by this shared tail block.
                 // Advance to next
                 {
                     MessageList* lst = m_messageList;
@@ -271,6 +274,7 @@ int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
                     pList = m_messageList;
                     nd = (MessageNode*)pList->current;
                     if (nd == 0) {
+                        // Original quirk at 0x448830: null current reads the fixed address 0x24.
                         ent = (SoundEntry*)*(int*)0x24;
                         if (action->addressValue != (int)ent) goto no_match;
                     } else {
@@ -313,6 +317,7 @@ int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
                 }
 
             no_match:
+                // Original quirk at 0x448830: delete/reset shares this advance path.
                 // Advance
                 {
                     MessageList* lst = m_messageList;
@@ -507,6 +512,7 @@ SoundEntry* SC_OnScreenMessage::FindOrCreateSoundEntry(int soundId) {
             if (node != 0) {
                 entrySoundId = ((SoundEntry*)node->data)->soundId;
             } else {
+                // Original bug at 0x448C60: null current reads fixed address 0x24.
                 entrySoundId = *(int*)0x24;
             }
             if (soundId == entrySoundId) {
@@ -518,6 +524,7 @@ SoundEntry* SC_OnScreenMessage::FindOrCreateSoundEntry(int soundId) {
                 MessageNode* curNode = (MessageNode*)m_messageList->current;
                 int entryGS;
                 if (curNode == 0) {
+                    // Original bug at 0x448C60: null current reads fixed address 0x2c.
                     entryGS = *(int*)0x2C;
                 } else {
                     entryGS = ((SoundEntry*)curNode->data)->gameStateVal;

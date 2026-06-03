@@ -641,6 +641,7 @@ void SC_FireAlarm::OnProcessEnd() {
 
     if (consoleSprite != 0) {
         int mouseX = 0;
+        // Original bug at 0x408530: DAT_0046aa08 is dereferenced after only the earlier Refresh guard.
         if (g_InputManager_0046aa08->pMouse != 0) {
             mouseX = g_InputManager_0046aa08->pMouse->x;
         }

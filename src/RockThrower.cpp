@@ -103,6 +103,7 @@ int RockThrower::CheckTargetHit(int param_1) {
                 }
             }
 
+            // Original bug at 0x427AA0: the bucket scan result is dereferenced without rechecking the sentinel/null case.
             int* nextEntry = (int*)edx[0];
             if (nextEntry == 0) {
                 unsigned int idx = edx[1] + 1;

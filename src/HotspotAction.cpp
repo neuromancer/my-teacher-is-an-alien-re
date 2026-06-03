@@ -209,6 +209,7 @@ int HotspotAction::CheckConditions() {
             } else {
                 data = 0;
             }
+            // Original bug at 0x41B7DB: null current condition data is dereferenced here.
             if (data->addressType != 2) goto notType2;
             result = (g_GameState_0046aa30)->CheckCondition((int*)data);
             goto afterCheck;

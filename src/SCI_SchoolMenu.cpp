@@ -523,6 +523,7 @@ void SCI_SchoolMenu::Update(int param1, int param2) {
         }
     } else {
         T_MenuHotspot* ok = okayButton;
+        // Original bug at 0x41EC58: okayButton can be null on this else path.
         ok->state = 0;
         Sprite* spr = ok->cursor;
         if (spr != 0) {

@@ -266,6 +266,7 @@ void EngineB::OnProcessEnd() {
 
     if (g_BgSprite_0046ae50 != 0) {
         mouseX = 0;
+        // Original bug at 0x451230: DAT_0046aa08 is dereferenced after only the earlier Refresh guard.
         if (g_InputManager_0046aa08->pMouse != 0) {
             mouseX = g_InputManager_0046aa08->pMouse->x;
         }

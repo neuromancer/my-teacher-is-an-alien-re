@@ -67,6 +67,7 @@ void EngineC::RenderBackground() {
         if (field_0x100 != 0 && field_0xFC >= field_0x100) {
             g_ActiveCombat_00468a1c->statusPtr[0] = 1;
         } else {
+            // Original bug at 0x40BDC0: zero field_0x100 falls through to this divide.
             value = (field_0xFC * 6) / field_0x100;
             if (value < 0) {
                 frame = 0;
@@ -105,6 +106,7 @@ void EngineC::RenderBackground() {
                 if (field_0x10C != 0 && field_0x108 >= field_0x10C) {
                     g_ActiveCombat_00468a1c->statusPtr[1] = 1;
                 } else {
+                    // Original bug at 0x40BDC0: zero field_0x10C falls through to this divide.
                     value = (field_0x108 * 6) / field_0x10C;
                     if (value < 0) {
                         frame = 0;
@@ -223,6 +225,7 @@ void EngineC::OnProcessEnd() {
     }
 
     if (g_BgSprite_0046ae50 != 0) {
+        // Original bug at 0x40C200: DAT_0046aa08 is dereferenced after only the earlier Refresh guard.
         mouse = g_InputManager_0046aa08->pMouse;
         mouseX = (mouse == 0) ? 0 : mouse->x;
         g_BgSprite_0046ae50->ResetAnimation(

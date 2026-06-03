@@ -75,6 +75,7 @@ void SC_Timer::Update(int param1, int param2) {
         if (node != 0) {
             timedEvent = (TimedEvent*)node->data;
         }
+        // Original bug at 0x422EE0: null current event calls Update with ECX=0.
         iVar4 = timedEvent->Update();
         if (iVar4 != 0) {
             pvVar6 = list->Pop();

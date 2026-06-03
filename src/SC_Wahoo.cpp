@@ -348,6 +348,7 @@ void SC_Wahoo::OnProcessEnd() {
 
     if (consoleSprite != 0) {
         iVar1 = 0;
+        // Original bug at 0x438470: DAT_0046aa08 is dereferenced after only the earlier Refresh guard.
         if (g_InputManager_0046aa08->pMouse != 0) {
             iVar1 = g_InputManager_0046aa08->pMouse->x;
         }
@@ -561,6 +562,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
         void* gs = g_GameState_0046aa30;
         unsigned int idx = ((GameState*)gs)->FindLabel(local_b8);
         if ((int)idx < 0 || ((GameState*)gs)->maxStates - 1 < (int)idx) {
+            // Original bug at 0x438660: missing gamestate index argument for "%d".
             ShowError("Invalid gamestate %d");
         }
         ((GameState*)gs)->stateValues[idx] = val;

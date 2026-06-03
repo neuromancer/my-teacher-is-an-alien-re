@@ -90,9 +90,9 @@ void SC_Game::Update(int param1, int param2) {
     int row = scrollOffset;
     if (row < scrollOffset + 0xe) {
         do {
-            int stateName = (int)gameState->GetState(row);
+            char* stateName = gameState->GetState(row);
             if (stateName != 0) {
-                stateName = (int)gameState->GetState(row);
+                stateName = gameState->GetState(row);
                 sprintf(g_Buffer_0046aa00, "%s", stateName);
                 (g_ZBufferManager_0046aa24)->ShowSubtitle(
                     g_Buffer_0046aa00, textX,

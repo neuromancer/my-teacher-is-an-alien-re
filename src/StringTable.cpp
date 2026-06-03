@@ -331,6 +331,7 @@ void StringTable::TestStrings(void* textMgr, int maxWidth)
             }
         }
 
+        // Original bug at 0x44C4D2: the bucket scan result is dereferenced without rechecking the sentinel/null case.
         HashNode* nextIter = iter->next;
         if (nextIter == 0) {
             unsigned int idx = iter->bucketIndex + 1;

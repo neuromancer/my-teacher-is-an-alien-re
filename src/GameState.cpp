@@ -238,7 +238,7 @@ int GameState::LBLParse(char* line)
                 int* buckets = (int*)AllocateMemory(numBuckets * 4);
                 int cnt = numBuckets * 4;
                 cnt >>= 2;
-                memset(buckets, 0, numBuckets * 4);
+                memset(buckets, 0, cnt * 4);
                 pool[0] = (int)buckets;
                 pool[1] = numBuckets;
             }
@@ -336,6 +336,7 @@ found_node:
     {
         int bIdx;
         int numBuckets;
+        // Original bug at 0x433A89: the bucket scan result is dereferenced without rechecking the sentinel/null case.
         int* next = (int*)node[0];
         if (next != 0) goto advance;
         bIdx = node[1];

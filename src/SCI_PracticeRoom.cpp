@@ -207,6 +207,7 @@ void SCI_PracticeRoom::Update(int param1, int param2) {
                 if (node != 0) {
                     hs = (SC_PRHotSpot*)node->data;
                 }
+                // Original bug at 0x42AD80: null current hotspot calls Update with ECX=0.
                 hs->Update();
                 if (hotspotList->tail == hotspotList->current) break;
                 if (hotspotList->current != 0) {
@@ -308,6 +309,7 @@ int SCI_PracticeRoom::Exit(SC_MessageParser* msg) {
             if (node != 0) {
                 hs = (SC_PRHotSpot*)node->data;
             }
+            // Original bug at 0x42B030: null current hotspot calls CheckCollision with ECX=0.
             if (hs->CheckCollision(msg) != 0) {
                 break;
             }

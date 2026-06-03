@@ -343,6 +343,7 @@ void SCI_Schedule::Update(int param1, int param2)
         }
     }
 
+    // Original bug at 0x435520: these schedule sprites are called unconditionally.
     tardiesSprite->Do(0x55, 0x190, 1.0);
     cutsSprite->Do(0x105, 0x190, 1.0);
     scheduleSprite->Do(0x1BB, 0x190, 1.0);

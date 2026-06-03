@@ -44,8 +44,6 @@ public:
         m_pool_size = ps;
     }
     ~TimedEventPool();
-    SC_MessageParser* Pop(SC_MessageParser* buffer);
-    SC_MessageParser* PopSafe(SC_MessageParser* buffer);
     SpriteAction* Pop(SpriteAction* buffer);
     SpriteAction* PopSafe(SpriteAction* buffer);
 };
@@ -67,30 +65,28 @@ public:
     Timer m_timer;           // 0x14 (20 bytes)
 };
 
-// PooledEvent: 200 bytes (0xC8)
-// Used in TimedEventPool - contains embedded SC_MessageParser at offset 8
+// PooledEvent: active event nodes are 0x40 bytes in the original pool and
+// contain an embedded SpriteAction at offset 8.
 // Layout:
 //   0x00: next pointer (for free list)
 //   0x04: prev/callback pointer
-//   0x08: embedded SC_MessageParser data (192 bytes)
+//   0x08: embedded SpriteAction data (0x38 bytes)
 class PooledEvent {
 public:
     // Get pointer to embedded event data at offset 0x08
     PooledEvent* GetEmbeddedEvent() { return (PooledEvent*)&field_0x8; }
 
-    // Get pointer to embedded SC_MessageParser at offset 0x08 (for constructor/destructor calls)
-    SC_MessageParser* GetEmbeddedSCMessage() { return (SC_MessageParser*)&field_0x8; }
-
     PooledEvent* next;        // 0x00 - next pointer for free list
     PooledEvent* prev;        // 0x04 - prev/callback pointer
-    // Embedded SC_MessageParser fields starting at 0x08
-    int field_0x8;           // 0x08 (m_subObject)
-    int m_duration;          // 0x0c (isProcessingKey)
-    char data_0x10[0x20];    // 0x10-0x2F (includes currentKey at 0x18)
-    int field_0x30;          // 0x30
-    int field_0x34;          // 0x34
-    int field_0x38;          // 0x38 (lineNumber)
-    int field_0x3c;          // 0x3c
+    // Embedded SpriteAction fields starting at 0x08
+    int field_0x8;           // 0x08 (SpriteAction::addressType)
+    int m_duration;          // 0x0c (SpriteAction::addressValue)
+    char data_0x10[0x20];    // 0x10-0x2F (SpriteAction::fromType through button1)
+    int field_0x30;          // 0x30 (SpriteAction::button2)
+    int field_0x34;          // 0x34 (SpriteAction::lastKey)
+    int field_0x38;          // 0x38 (SpriteAction::time)
+    int field_0x3c;          // 0x3c (SpriteAction::childAction)
+    // Fields below are not part of the active-event pool node copied by 0x42D1A0.
     char m_data_0x40[64];    // 0x40-0x7F (includes savedFilePos, filename)
     int field_0x80;          // 0x80
     int field_0x84;          // 0x84

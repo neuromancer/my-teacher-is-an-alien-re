@@ -154,6 +154,7 @@ void MouseControl::DrawCursor()
         final_y -= m_hotspots[sprite->handle].y;
     }
 
+    // Original bug at 0x432DA0: null current sprite still calls Do with ECX=0.
     sprite->Do(final_x, final_y, 1.0);
 }
 

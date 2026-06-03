@@ -78,6 +78,7 @@ int Parser::LBLParse(char *param_1) {
 
 /* Function start: 0x412A50 */
 void Parser::ReportUnknownLabel(char* name) {
+  // Original bug at 0x412A50: lineNumber is passed to a "%s" slot.
   ShowError("%s::LBLParse - Uknown Label\n'%s'\nfound in file %s",
             name, lineNumber, filename);
 }
@@ -583,34 +584,38 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
 
     case 6:
-        pcVar7 = FindAfterSubstring(line, "SET_GAMESTATE_");
-        pcVar6 = local_14;
-        if (pcVar7 != 0) {
-            pcVar6 = (char*)sscanf(pcVar7, " %s %s %d ", local_38, local_90, &local_14);
-        }
-        if (pcVar6 != (char*)3) {
-            ShowError("Parser::HandleToken - Invalid SET_GAMESTATE statement '%s'", line);
-        }
         {
+            int value = 0;
+            int scanResult = 0;
+            pcVar7 = FindAfterSubstring(line, "SET_GAMESTATE_");
+            if (pcVar7 != 0) {
+                scanResult = sscanf(pcVar7, " %s %s %d ", local_38, local_90, &value);
+            }
+            if (scanResult != 3) {
+                ShowError("Parser::HandleToken - Invalid SET_GAMESTATE statement '%s'", line);
+            }
             SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             action.addressValue = g_GameState_0046aa30->FindState(local_38);
             action.instruction = g_StringState_0046aa38->FindState(local_90);
-            action.extra1 = (int)local_14;
+            action.extra1 = value;
             g_GameState_0046aa30->SetFromAction((int*)&action);
         }
         break;
 
     case 7:
-        pcVar7 = FindAfterSubstring(line, "SET_MOUSE_");
-        pcVar6 = local_14;
-        if (pcVar7 != 0) {
-            pcVar6 = (char*)sscanf(pcVar7, " %d", &local_14);
-        }
-        if (pcVar6 != (char*)1) {
-            ShowError("Parser::HandleToken - Invalid SET_MOUSE statement '%s'", line);
-        }
-        if (g_Mouse_0046aa18 != 0 && g_Mouse_0046aa18->m_sprite != 0) {
-            g_Mouse_0046aa18->m_sprite->ResetAnimation((int)local_14, 0);
+        {
+            int mouseState = 0;
+            int scanResult = 0;
+            pcVar7 = FindAfterSubstring(line, "SET_MOUSE_");
+            if (pcVar7 != 0) {
+                scanResult = sscanf(pcVar7, " %d", &mouseState);
+            }
+            if (scanResult != 1) {
+                ShowError("Parser::HandleToken - Invalid SET_MOUSE statement '%s'", line);
+            }
+            if (g_Mouse_0046aa18 != 0 && g_Mouse_0046aa18->m_sprite != 0) {
+                g_Mouse_0046aa18->m_sprite->ResetAnimation(mouseState, 0);
+            }
         }
         break;
 
@@ -724,8 +729,6 @@ void Parser::HandleToken(int tokenType, char* line) {
             *node = pool[3];
             pool[3] = (int)node;
             pool[2]--;
-            local_18 = savedPos;
-            local_14 = local_74;
             {
                 fpos_t restorePos;
                 ((int*)&restorePos)[0] = savedPos;
@@ -747,6 +750,7 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 0xD:
         iVar12 = 0;
+        local_1c = 0;
         local_14 = FindAfterSubstring(line, "V_>>");
         if (local_14 == 0) {
             pcVar6 = 0;
@@ -766,22 +770,23 @@ void Parser::HandleToken(int tokenType, char* line) {
         if (iVar12 != 2) {
             ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'", line);
         }
+        int stateValue;
         if (strcmp((char*)local_110, "GS") == 0) {
-            local_74 = (char*)g_GameState_0046aa30;
-            int idx = g_GameState_0046aa30->FindState((char*)local_58);
-            if (idx < 0 || g_GameState_0046aa30->maxStates - 1 < idx) {
+            GameState* gameState = g_GameState_0046aa30;
+            int idx = gameState->FindState((char*)local_58);
+            if (idx < 0 || gameState->maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
-            pcVar7 = (char*)g_GameState_0046aa30->stateValues[idx];
+            stateValue = gameState->stateValues[idx];
         } else {
             ShowError("Parser::HandleToken - Invalid VARIABLE statement '%s'", line);
-            pcVar7 = local_14;
+            stateValue = 0;
         }
         iVar12 = (int)pcVar6 - (int)local_14;
         strncpy(local_190, local_14, iVar12);
         pcVar6 = local_1c;
         local_190[iVar12] = 0;
-        sprintf(local_210, "%s %d %s", local_190, pcVar7, pcVar6);
+        sprintf(local_210, "%s %d %s", local_190, stateValue, pcVar6);
         strcpy(line, local_210);
         break;
     }
@@ -836,5 +841,6 @@ void Parser::SubstituteVars(char* src, char* dst) {
             src = digit + 1;
         }
     }
+    // Original bug at 0x4140F0: pos is null here, so the count is derived from -src.
     strncat(dst, src, pos - src);
 }

@@ -325,7 +325,6 @@ int InitVideoSystem(void)
             g_WinGModule_0046e008 = pHVar4;
             // Get WinG function pointers using ordinals
             g_WinGCreateDIB_0046e010 = (void*)GetProcAddress(pHVar4, (LPCSTR)2);
-            g_WinGCreateDIB_0046e010 = g_WinGCreateDIB_0046e010;
             if (g_WinGCreateDIB_0046e010 == 0) return 0;
             g_WinGSetDIBColorTable_0046e014 = (void*)GetProcAddress(pHVar4, (LPCSTR)6);
             if (g_WinGSetDIBColorTable_0046e014 == 0) return 0;
@@ -338,7 +337,6 @@ int InitVideoSystem(void)
             // Call WinGRecommendDIBFormat (ordinal 3)
             typedef int (__stdcall *WinGRecommendDIBFormat_t)();
             g_WinGDC_0046e004 = (HDC)((WinGRecommendDIBFormat_t)g_WinGRecommendDIBFormat_0046e018)();
-            g_WinGDC_0046e004 = g_WinGDC_0046e004;
         }
     }
     return 0;

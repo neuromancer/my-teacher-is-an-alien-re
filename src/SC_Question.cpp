@@ -349,6 +349,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "ACTIVATEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
+            // Original bug at 0x414DA0: missing parsed token argument for "%s".
             ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x17, 0, 0, 0, 0, 0);
@@ -387,6 +388,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "ENABLEACTIVATEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
+            // Original bug at 0x414DA0: missing parsed token argument for "%s".
             ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x13, 0, 0, 0, 0, 0);
@@ -425,6 +427,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "DEACTIVATEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
+            // Original bug at 0x414DA0: missing parsed token argument for "%s".
             ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x18, 0, 0, 0, 0, 0);
@@ -463,6 +466,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "ENABLEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
+            // Original bug at 0x414DA0: missing parsed token argument for "%s".
             ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x0f, 0, 0, 0, 0, 0);
@@ -501,6 +505,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "DISABLEQ") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
+            // Original bug at 0x414DA0: missing parsed token argument for "%s".
             ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x10, 0, 0, 0, 0, 0);
@@ -539,6 +544,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "DISABLESPRITE") == 0) {
         result = sscanf(param_1, "%s %d", keyword, &id);
         if (result != 2) {
+            // Original bug at 0x414DA0: missing parsed token argument for "%s".
             ShowError("Error in SCIdilog.cpp: %s in parse file is incorrect");
         }
         result = 0;
@@ -709,6 +715,7 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "SWITCHROOM") == 0) {
         result = sscanf(param_1, " %s %d %d", keyword, &id, &val);
         if (result != 3) {
+            // Original bug at 0x414DA0: missing parsed token argument for "%s".
             ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete");
         }
         if (messageQueue == 0) {

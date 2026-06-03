@@ -308,10 +308,12 @@ void SC_DodgeOrville::UpdateGame()
         if (barFillSprite->animation_data != 0) {
             vb2 = barFillSprite->animation_data->targetBuffer;
         }
+        // Original bug at 0x4292CD: null fill VBuffer is dereferenced for clip fields.
         g_ZBufferManager_0046aa24->DrawVBufferRegion(vb2, 0x7532, barPos.x, barPos.y, 2, 1.0, 0, 0, vb2->clip_x2, vb2->clip_y2);
     } else {
         int hits = hitCount.x;
         int maxHits = hitCount.y;
+        // Original bug at 0x429110: zero maxHits falls through to this divide.
         int fillHeight = (hits * 0x7c) / maxHits + 0x1e;
         if (fillHeight >= clipEnd.x) {
             fillHeight = clipEnd.x;
@@ -433,6 +435,7 @@ void SC_DodgeOrville::ThrowBomb()
 
     int r = rand();
     int maxTh = throwState.y;
+    // Original bug at 0x4294A0: zero throwState.y falls through to this modulo.
     int rem = r % maxTh;
     if (maxTh / 0x14 > rem) {
         bgSound->Play(8);

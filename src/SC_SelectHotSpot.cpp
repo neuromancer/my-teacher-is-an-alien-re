@@ -531,6 +531,7 @@ void SC_SelectHotSpot::ShutDown(SC_MessageParser* msg) {
                 if (node != 0) {
                     hs = (SelectHotspot*)node->data;
                 }
+                // Original bug at 0x406240: null current hotspot calls Draw with ECX=0.
                 hs->Draw();
                 LinkedList* l2 = SC_SelectHotSpot::hotspotList;
                 ListNode* cur = l2->current;
@@ -577,6 +578,7 @@ void SC_SelectHotSpot::Update(int param1, int param2) {
                 if (node != 0) {
                     hs = (SelectHotspot*)node->data;
                 }
+                // Original bug at 0x4062C0: null current hotspot calls Update with ECX=0.
                 hs->Update();
                 LinkedList* l2 = SC_SelectHotSpot::hotspotList;
                 ListNode* cur = l2->current;
@@ -622,6 +624,7 @@ int SC_SelectHotSpot::Exit(SC_MessageParser* msg) {
                     if (node != 0) {
                         hs = (SelectHotspot*)node->data;
                     }
+                    // Original bug at 0x4063E0: null current hotspot calls OnClick with ECX=0.
                     int result = hs->OnClick(msg);
                     if (result != 0) break;
                     LinkedList* l2 = SC_SelectHotSpot::hotspotList;
@@ -711,7 +714,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
     WriteToLog("SC_SelectHotSpot::LBLParse keyword='%s' line='%.80s'", keyword, line);
 
     if (strcmp(keyword, "HANDLE") == 0) {
-        sscanf(line, "%s %d", keyword, &SC_SelectHotSpot::moduleParam);
+        sscanf(line, "%s %d", keyword, &moduleParam);
     } else if (strcmp(keyword, "PALETTE") == 0) {
         sscanf(line, "%s %s", keyword, nameBuf);
         if (SC_SelectHotSpot::palette != 0) {

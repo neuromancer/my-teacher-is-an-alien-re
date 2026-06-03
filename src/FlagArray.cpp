@@ -110,7 +110,7 @@ void FlagArray::Close() {
 /* Function start: 0x420990 */
 void FlagArray::Seek(int index) {
     if (fp == 0) {
-        WriteToMessageLog("FlagArray::Seek");
+        ShowError("FlagArray::Seek");
     }
     
     int offset = entrySize * index + headerSize;

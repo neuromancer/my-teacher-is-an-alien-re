@@ -104,10 +104,8 @@ void RunGame() {
     g_GameState2_0046aa3c = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 2);
 
     g_StringTable_0046aa34 = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 3);
-    g_StringTable_0046aa34 = g_StringTable_0046aa34;
 
     g_StringState_0046aa38 = new GameState("mis\\\\gamestat.mis", "[GAMESTATE%4.4d]", 4);
-    g_StringState_0046aa38 = g_StringState_0046aa38;
 
     // Check CACHE_SIZE from gamestate
     int cacheIdx = g_GameState_0046aa30->FindState("CACHE_SIZE");
@@ -459,6 +457,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PlayIntroCinematic();
   }
   g_GameWindow.Shutdown();
+  // Original bug at 0x420620: normal exit returns an unwritten stack local.
   return uStack_14;
 }
 

@@ -850,6 +850,7 @@ void ZBufferManager::ProcessRenderQueues()
             queue->current = queue->head;
 
             if (m_queueA0->head != 0) {
+                // Original bug at 0x4047C0: local_14 can be null before this +1.
                 GlyphRect* iterPtr = (GlyphRect*)((int*)local_14 + 1);
                 do {
                     SoundCommand* cmd;
@@ -859,6 +860,7 @@ void ZBufferManager::ProcessRenderQueues()
                     } else {
                         cmd = 0;
                     }
+                    // Original bug at 0x4047C0: null current command calls Execute with ECX=0.
                     cmd->Execute(iterPtr);
 
                     queue = m_queueA0;
@@ -967,6 +969,7 @@ void ZBufferManager::UpdateScreen() {
         }
 
         {
+            // Original bug at 0x404B90: local_10 is dereferenced before the null check.
             GlyphRect local_rect = local_10->rect;
             if (g_BackBuffer_0046aa14 != 0) {
                 g_BackBuffer_0046aa14->CallBlitter4(local_rect.left, local_rect.right, local_rect.top, local_rect.bottom, local_rect.left, local_rect.right);

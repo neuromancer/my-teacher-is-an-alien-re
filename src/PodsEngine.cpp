@@ -159,6 +159,7 @@ skip:
         if (g_TargetList_0046ae58 != 0 && g_CombatSprite_0046ae5c != 0) {
             g_CombatSprite_0046ae5c->ProcessFrame(spriteFrameCount);
         }
+        // Original bug at 0x440A50: target list can be null before this call.
         target = g_TargetList_0046ae58->ProcessTargets();
         if ((field_0x110 & 2) != 0 && (field_0x110 & 1) != 0) {
             g_CombatWeapon_0046ae60->DrawCrosshairs();
@@ -240,6 +241,7 @@ void PodsEngine::OnProcessEnd() {
     }
 
     if (g_BgSprite_0046ae50 != 0) {
+        // Original bug at 0x441000: DAT_0046aa08 is dereferenced after only the earlier Refresh guard.
         mouse = g_InputManager_0046aa08->pMouse;
         mouseX = (mouse == 0) ? 0 : mouse->x;
         g_BgSprite_0046ae50->ResetAnimation(

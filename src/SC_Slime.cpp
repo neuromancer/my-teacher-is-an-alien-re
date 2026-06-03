@@ -228,6 +228,7 @@ void SC_Slime::ProcessSprite(Sprite* spr) {
 
     update_progress:
         {
+            // Original bug at 0x40DF30: zero maxHits falls through to this divide.
             int progress = (hitCount * 8) / maxHits;
             if (progress >= 7) {
                 progress = 7;
@@ -267,6 +268,7 @@ void SC_Slime::UpdateArmSprites()
         height -= spr->animation_data->smk->FrameNum;
         spr->ResetAnimation(2, height);
     }
+    // Original bug at 0x40E070: arm mask sprite is called unconditionally.
     armMaskSprite->ResetAnimation(-1, 0);
 }
 
@@ -330,6 +332,7 @@ void SC_Slime::OnProcessEnd()
     if (consoleSprite != 0) {
         extern InputManager* g_InputManager_0046aa08;
         int mouseX = 0;
+        // Original bug at 0x40E0D0: DAT_0046aa08 is dereferenced after only the earlier Refresh guard.
         if (g_InputManager_0046aa08->pMouse != 0) {
             mouseX = g_InputManager_0046aa08->pMouse->x;
         }
