@@ -977,7 +977,7 @@ void ZBufferManager::UpdateScreen() {
 
             if (local_10 != 0) {
                 local_10->RenderEntry::~RenderEntry();
-                delete (void*)local_10;
+                operator delete(local_10);
             }
         }
 

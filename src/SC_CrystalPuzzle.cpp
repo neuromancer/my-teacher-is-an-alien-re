@@ -550,9 +550,11 @@ sound_done:
         puzztest->Do(puzztest->loc.x, puzztest->loc.y, 1.0);
     }
 
+    // Original bug at 0x44FE40: checks the address of the member, not the Sprite* value.
     if (&buttons1 != 0) {
         DisplayButtons();
     }
+    // Original bug at 0x44FE40: same address-of-member check for paths1.
     if (&paths1 != 0) {
         DisplayMap();
     }

@@ -55,11 +55,11 @@ ObjectPool::~ObjectPool()
 /* Function start: 0x44C580 */
 void ObjectPool::AllocateBuckets(unsigned int newSize, int flag) {
     if (memory != 0) {
-        delete memory;
+        operator delete(memory);
         memory = 0;
     }
     if (flag != 0) {
-        memory = new int[newSize];
+        memory = operator new(newSize * 4);
         memset(memory, 0, newSize * 4);
     }
     size = newSize;

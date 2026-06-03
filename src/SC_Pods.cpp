@@ -9,6 +9,7 @@
 #include "Palette.h"
 #include "SC_CombatBase.h"
 #include "SC_Question.h"
+#include "SoundCommand.h"
 #include "Sprite.h"
 #include "Animation.h"
 #include "Sample.h"

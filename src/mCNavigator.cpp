@@ -220,7 +220,7 @@ int mCNavigator::LBLParse(char* param_1)
 
         if (FindNodeInPool(parser->nodeHandle) != 0) {
             ShowError("Navigator::LoadNodes() - %s has a dublicate node handle (%d)",
-                      &parser->nodeName, parser->nodeHandle);
+                      parser->nodeName, parser->nodeHandle);
         }
 
         {

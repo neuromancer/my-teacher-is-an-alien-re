@@ -16,8 +16,8 @@ SoundList::SoundList(int count) {
   m_field8 = 0;
   *(int*)&m_fieldc = 0;
   m_count = count;
-  m_sounds = new char*[count];
-  m_field8 = new Sample*[m_count];
+  m_sounds = (char**)operator new(count * 4);
+  m_field8 = (Sample**)operator new(m_count * 4);
   if (m_field8 == 0 || m_sounds == 0) {
     ShowError("SoundList::SoundList() - Memory allocation error");
   }
@@ -34,21 +34,21 @@ SoundList::~SoundList() {
     Sample *sound = m_field8[m_fieldc];
     if (sound != 0) {
       sound->Unload();
-      delete (void *)sound;
+      operator delete(sound);
       m_field8[m_fieldc] = 0;
     }
     char *sound2 = m_sounds[m_fieldc];
     if (sound2 != 0) {
-      delete (void *)sound2;
+      operator delete(sound2);
       m_sounds[m_fieldc] = 0;
     }
   }
   if (m_field8 != 0) {
-    delete[] m_field8;
+    operator delete(m_field8);
     m_field8 = 0;
   }
   if (m_sounds != 0) {
-    delete[] m_sounds;
+    operator delete(m_sounds);
     m_sounds = 0;
   }
 }
@@ -86,7 +86,7 @@ void *SoundList::Register(char *filename) {
                     m_fieldc);
         }
 
-        m_sounds[m_fieldc] = new char[strlen(local_54) + 1];
+        m_sounds[m_fieldc] = (char*)operator new(strlen(local_54) + 1);
         strcpy(m_sounds[m_fieldc], local_54);
 
         Sample *sound = new Sample();

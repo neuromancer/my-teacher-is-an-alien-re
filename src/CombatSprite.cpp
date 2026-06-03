@@ -98,12 +98,12 @@ void SpriteHashTable::AllocateBuckets(int size, int flag) {
     int count;
 
     if (buckets != 0) {
-        delete buckets;
+        operator delete(buckets);
         buckets = 0;
     }
 
     if (flag != 0) {
-        newBuckets = (int*)new char[size * 4];
+        newBuckets = (int*)operator new(size * 4);
         count = (size * 4) >> 2;
         buckets = (void**)newBuckets;
         for (; count != 0; count--) {
@@ -186,12 +186,12 @@ void SpriteHashTable::Resize(int size, int flag) {
     int count;
 
     if (buckets != 0) {
-        delete buckets;
+        operator delete(buckets);
         buckets = 0;
     }
 
     if (flag != 0) {
-        newBuckets = (int*)new char[size * 4];
+        newBuckets = (int*)operator new(size * 4);
         count = (size * 4) >> 2;
         buckets = (void**)newBuckets;
         for (; count != 0; count--) {
@@ -258,7 +258,7 @@ void FreePointerArray(void** arr, int count) {
     }
     do {
         if (*arr != 0) {
-            delete *arr;
+            operator delete(*arr);
             *arr = 0;
         }
         arr = arr + 1;

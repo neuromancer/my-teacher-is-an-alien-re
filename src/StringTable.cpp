@@ -178,7 +178,7 @@ void StringTable::Load() {
                 }
                 ht->nodePool = 0;
 
-                delete (void*)ht;
+                operator delete(ht);
                 hashTable = 0;
             }
 
