@@ -307,6 +307,11 @@ BC_DEMO = --config $(VERIFY_CONFIG) --target demo
 CALLS_FLAGS ?=
 GLOBAL_ACCESS_FLAGS ?=
 
+# Clang analysis defaults to the whole reconstructed full-game source tree.
+# Override for focused triage:
+#   make analyze-clang ANALYZE_FILES="src/Parser.cpp src/SoundList.cpp"
+ANALYZE_FILES ?= all
+
 sort:
 	@python3 bin/sortByAddress.py
 
@@ -449,6 +454,20 @@ verify-vtables: TEACHER.EXE | code-full data/full/DATA
 	@$(BINARY_COMP) vtables $(BC_FULL)
 
 # ---------------------------------------------------------------------------
+# Analysis-only Clang diagnostics
+# ---------------------------------------------------------------------------
+
+analyze:
+	@$(MAKE) analyze-clang ANALYZE_FILES="$(ANALYZE_FILES)"
+	@$(MAKE) analyze-static ANALYZE_FILES="$(ANALYZE_FILES)"
+
+analyze-clang:
+	@tools/analyze_clang.sh $(ANALYZE_FILES)
+
+analyze-static:
+	@tools/analyze_static.sh $(ANALYZE_FILES)
+
+# ---------------------------------------------------------------------------
 # Game data and Ghidra export downloads
 # ---------------------------------------------------------------------------
 
@@ -543,6 +562,9 @@ clean-wine:
 
 .PHONY: \
 	all \
+	analyze \
+	analyze-clang \
+	analyze-static \
 	audit-auto-complete-globals \
 	audit-rebuilt-global-layout \
 	build-demo \

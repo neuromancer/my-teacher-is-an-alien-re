@@ -48,6 +48,10 @@ The project uses a combination of manual reverse engineering and LLM-assisted it
 3. **Comparison**: The reimplemented code is compiled with the original MSVC 4.20 compiler, then [`binary-comp`](https://github.com/neuromancer/binary-comp) compares rebuilt instructions, calls, globals, data, values, and vtables against the original binary and Ghidra exports.
 4. **Iteration**: The code is refined until similarity reaches >= 90%, often 100%.
 
+Modern Clang is also used as an analysis-only pass to find undefined behavior,
+64-bit portability hazards, and possible reconstruction mistakes without
+changing the MSVC preservation target. See [docs/clang-analysis.md](docs/clang-analysis.md).
+
 LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/index/codex/)) are used to accelerate step 2 and 4, making the process scalable to hundreds of functions. The workflow is described in the `CLAUDE.md` file.
 
 ## Building
@@ -67,6 +71,7 @@ LLMs ([Claude](https://www.anthropic.com/claude) and [Codex](https://openai.com/
 **For the verification/comparison tools** (optional, used during development):
 
 - Python 3.10+ and the packages in `requirements.txt`, which installs [`binary-comp`](https://github.com/neuromancer/binary-comp) from GitHub
+- Clang, if you want to run the analysis-only warning/static-analyzer scripts
 
 ### Setup
 
@@ -109,6 +114,7 @@ Full game:
 | `make debug` | Same as `make run`, with DREAMM's debugger attached |
 | `make progress` | Function coverage |
 | `make report` | Per-function similarity report |
+| `make analyze` | Run Clang warning and static-analysis passes |
 | `make clean` | Remove build artifacts |
 
 Demo:

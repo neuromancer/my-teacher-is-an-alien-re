@@ -189,12 +189,15 @@ void EngineB::PostRender() {
         return;
     }
 
+    // Original bug at 0x450F70: zero m_progress.end reaches this divide.
     int fillRight = (m_progress.start * 0x36) / m_progress.end;
     fillRight = (fillRight - (rand() % 3)) + 1;
-    if (fillRight < 0) {
+    if (fillRight >= 0) {
+        if (fillRight > 0x36) {
+            fillRight = 0x36;
+        }
+    } else {
         fillRight = 0;
-    } else if (fillRight > 0x36) {
-        fillRight = 0x36;
     }
     fillRight = 0x12 + fillRight * 4;
 
