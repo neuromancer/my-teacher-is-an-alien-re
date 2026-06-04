@@ -2,7 +2,6 @@
 #include "stubs.h"
 #include "SpriteAction.h"
 #include "Memory.h"
-#include "Engine.h"
 #include "LinkedList.h"
 #include "GameState.h"
 #include "Viewport.h"
@@ -143,9 +142,9 @@ void SC_Pods::Init(SC_MessageParser* msg) {
 /* Function start: 0x4419E0 */
 void SC_Pods::ShutDown(SC_MessageParser* msg) {
     if (combatEngine != 0) {
-        ((Engine*)combatEngine)->StopAndCleanup();
+        combatEngine->StopSoundsAndReset();
         if (combatEngine != 0) {
-            delete (Engine*)combatEngine;
+            delete combatEngine;
             combatEngine = 0;
         }
         g_CombatEngine_0046ae78 = 0;
@@ -368,8 +367,8 @@ int SC_Pods::LBLParse(char* line) {
 
     if (strcmp(label, "DERIVED_ENGINE_INFO") == 0) {
         PodsEngine* eng = new PodsEngine();
-        combatEngine = (int)eng;
-        g_CombatEngine_0046ae78 = (SC_CombatBase*)eng;
+        combatEngine = eng;
+        g_CombatEngine_0046ae78 = eng;
         Parser::ProcessFile((Parser*)eng, this, (char*)0);
     } else if (strcmp(label, "BGSOUND") == 0) {
         sscanf(line, " %s %d ", label, &soundId);

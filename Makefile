@@ -87,8 +87,8 @@ UNAME_M := $(shell uname -m)
 # DREAMM is downloaded on demand into .dreamm/ so the repository does not need
 # to vendor platform-specific runtime binaries.
 DREAMM_DIR = .dreamm
-DREAMM_VERSION = 4.0
-DREAMM_BASE_URL = https://dreamm.aarongiles.com/releases
+DREAMM_VERSION = 4.0x21
+DREAMM_BASE_URL = https://dreamm.aarongiles.com/releases/4.0x
 DREAMM_PROPS = -prop winres=640x480x16
 
 ifeq ($(UNAME_S),Darwin)
@@ -103,6 +103,7 @@ endif
 DREAMM_BIN = $(DREAMM_DIR)/dreamm
 endif
 DREAMM = $(CURDIR)/$(DREAMM_BIN)
+DREAMM_STAMP = $(DREAMM_DIR)/.$(DREAMM_ARCHIVE).stamp
 
 # Wine runs from the installed full-game data directory.  The CD-ROM image
 # should already be mounted by the desktop environment; Wine will expose it as
@@ -248,19 +249,27 @@ MSVCRT_DLL = compilers/msvc420/bin/msvcrt40.dll
 $(MSVCRT_DLL): 3rdparty/msvcrt40.dll
 	cp -f $< $@
 
-$(DREAMM_BIN):
+$(DREAMM_BIN): force-dreamm
+	@if [ ! -x "$(DREAMM_BIN)" ] || [ ! -f "$(DREAMM_STAMP)" ]; then $(MAKE) --no-print-directory -B "$(DREAMM_STAMP)"; fi
+
+$(DREAMM_STAMP):
 	@mkdir -p $(DREAMM_DIR)
 	@echo "Downloading DREAMM $(DREAMM_VERSION)..."
 	@curl -L -o $(DREAMM_DIR)/$(DREAMM_ARCHIVE) $(DREAMM_BASE_URL)/$(DREAMM_ARCHIVE)
 ifeq ($(UNAME_S),Darwin)
+	@rm -rf $(DREAMM_DIR)/mnt
 	@hdiutil attach $(DREAMM_DIR)/$(DREAMM_ARCHIVE) -mountpoint $(DREAMM_DIR)/mnt -nobrowse -quiet
+	@rm -rf $(DREAMM_DIR)/DREAMM.app
 	@cp -R $(DREAMM_DIR)/mnt/DREAMM.app $(DREAMM_DIR)/
 	@hdiutil detach $(DREAMM_DIR)/mnt -quiet
 	@xattr -dr com.apple.quarantine $(DREAMM_DIR)/DREAMM.app
 else
+	@rm -rf $(DREAMM_DIR)/dreamm
 	@tar xzf $(DREAMM_DIR)/$(DREAMM_ARCHIVE) -C $(DREAMM_DIR) --strip-components=1
 endif
 	@rm $(DREAMM_DIR)/$(DREAMM_ARCHIVE)
+	@rm -f $(DREAMM_DIR)/.dreamm-*.stamp
+	@touch "$(DREAMM_STAMP)"
 
 TEACHER.EXE: $(OBJS) | $(MSVCRT_DLL)
 	env LIB='$(GAME_LIBPATH)' $(LINK) $(LINKFLAGS) /MAP:TEACHER.map $^ $(GAME_LIBS) /OUT:$@
@@ -524,7 +533,7 @@ run-original: | data/full/DATA $(DREAMM_BIN)
 debug: TEACHER.EXE | data/full/DATA $(DREAMM_BIN)
 	@mkdir -p data/full/hd
 	cp -f TEACHER.EXE data/full/TEACHER.EXE
-	cd data/full && $(DREAMM) -mount rw:C=hd $(DREAMM_PROPS) -mount d=teacher.iso -debug -launch TEACHER.EXE
+	cd data/full && $(DREAMM) -mount rw:C=hd $(DREAMM_PROPS) -mount d=teacher.iso -debug -launch TEACHER.EXE > debug.log
 
 # ---------------------------------------------------------------------------
 # Wine launch targets
@@ -580,6 +589,7 @@ clean-wine:
 	compare-functions \
 	debug \
 	demo \
+	force-dreamm \
 	globals \
 	globals-data \
 	globals-data-verbose \

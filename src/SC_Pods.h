@@ -4,7 +4,7 @@
 #include "Handler.h"
 
 class SpriteAction;
-class Engine;
+class SC_CombatBase;
 
 // SC_Pods - Pods scene handler (case 68/0x44)
 // Constructor: 0x4415E0
@@ -25,8 +25,8 @@ public:
 
     void HandleResult();                    // 0x441B60
 
-    int resultAction;   // 0xA8 — SpriteAction* for scene result
-    int combatEngine;   // 0xAC — Engine*/SC_CombatBase* for combat logic
+    int resultAction;              // 0xA8 — SpriteAction* for scene result
+    SC_CombatBase* combatEngine;   // 0xAC — PodsEngine* for combat logic
 };
 
 #endif // SC_PODS_H

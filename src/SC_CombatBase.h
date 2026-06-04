@@ -96,6 +96,7 @@ public:
     virtual void RenderState();             // [16] 0x42C920
     virtual void UpdateAndCheck();          // [17] 0x40BC90
 
+    void StopSoundsAndReset();              // 0x42BF00
     int ProcessEvents();                    // 0x42C9D0
 };
 

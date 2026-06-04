@@ -9,6 +9,7 @@
 #include "Viewport.h"
 #include "Target.h"
 #include "SoundList.h"
+#include "Sound.h"
 #include "EngineSubsystems.h"
 #include "mCNavigator.h"
 #include "Palette.h"
@@ -50,6 +51,13 @@ SC_CombatBase::SC_CombatBase()
 SC_CombatBase::~SC_CombatBase()
 {
     CleanupAll();
+}
+
+/* Function start: 0x42BF00 */
+void SC_CombatBase::StopSoundsAndReset()
+{
+    g_EngineSound_0046aa0c->StopAllSamples();
+    ResetState();
 }
 
 /* Function start: 0x42BF20 */

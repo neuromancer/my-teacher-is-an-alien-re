@@ -71,7 +71,6 @@ public:
   virtual void ProcessTargets();                    // [11] 0x4494E0
   virtual void ProcessAction(int index, int* action); // [12] 0x4491B0
 
-  void StopAndCleanup();                            // 0x42BF00
 };
 
 #endif // ENGINE_H

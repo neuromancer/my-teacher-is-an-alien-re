@@ -9,7 +9,6 @@
 #include "Sample.h"
 #include "SoundList.h"
 #include "GameState.h"
-#include "Engine.h"
 #include "LinkedList.h"
 #include "DrawEntry.h"
 #include "VBuffer.h"
@@ -129,7 +128,7 @@ void SC_Rats::Init(SC_MessageParser* msg) {
 /* Function start: 0x451B30 */
 void SC_Rats::ShutDown(SC_MessageParser* msg) {
     if (combatEngine != 0) {
-        ((Engine*)combatEngine)->StopAndCleanup();
+        combatEngine->StopSoundsAndReset();
         if (combatEngine != 0) {
             delete combatEngine;
             combatEngine = 0;

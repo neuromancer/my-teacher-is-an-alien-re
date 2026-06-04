@@ -77,12 +77,6 @@ void Engine::ProcessTargets() {
     if (pendingAction != 0) { delete pendingAction; pendingAction = 0; }
 }
 
-/* Function start: 0x42BF00 */
-void Engine::StopAndCleanup() {
-    g_EngineSound_0046aa0c->StopAllSamples();
-    ShutDown(0);
-}
-
 /* Function start: 0x401160 */
 void Engine::LogHandler(int param) {
     WriteToLog("hIam %d", handlerId);
