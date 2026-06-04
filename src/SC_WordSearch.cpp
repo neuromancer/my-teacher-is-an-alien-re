@@ -738,10 +738,10 @@ int SC_WordSearch::LBLParse(char* line) {
 }
 
 extern void __fastcall InitCombatGrid(int);
-// Engine::OnProcessEnd wrapper for cross-hierarchy __fastcall calls
-#include "Engine.h"
+// SC_Combat::OnProcessEnd wrapper for cross-hierarchy __fastcall calls
+#include "SC_Combat.h"
 void __fastcall Handler_OnProcessEnd(int thisPtr) {
-    ((Engine*)thisPtr)->OnProcessEnd();
+    ((SC_Combat*)thisPtr)->OnProcessEnd();
 }
 
 /* Function start: 0x42F800 */
@@ -796,7 +796,7 @@ void SC_WordSearch::OnProcessEnd() {
 extern void __fastcall UpdateWordSearchCursor(int*);
 #include "SoundList.h"
 
-/* Function start: 0x42EFC0 */
+// Dead duplicate of SC_Gauntlet::RenderGrid.
 void SC_WordSearch::Render() {
     WordSearchRuntimeState* state = (WordSearchRuntimeState*)words;
     Sprite* bgSpr = state->bgSprite;
@@ -918,7 +918,7 @@ void SC_WordSearch::Render() {
     } while (1);
 }
 
-/* Function start: 0x42F220 */
+// Dead duplicate of SC_Gauntlet::ProcessGrid.
 void SC_WordSearch::PlaceWord(int param_1, int param_2) {
     WordSearchRuntimeState* state = (WordSearchRuntimeState*)words;
     WordSearchCell* entries = state->cells;

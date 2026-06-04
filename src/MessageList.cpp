@@ -27,7 +27,7 @@ void MessageList::InsertBeforeCurrent(void* data)
     }
 }
 
-/* Function start: 0x431B60 */
+/* Function start: 0x449050 */
 void* MessageList::PopCurrent()
 {
     MessageNode* node;

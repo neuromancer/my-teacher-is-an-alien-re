@@ -10,7 +10,6 @@
 #include "SoundList.h"
 #include "SpriteAction.h"
 #include "SpaceShipEngine.h"
-#include "Engine.h"
 #include "Parser.h"
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);

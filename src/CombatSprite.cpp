@@ -92,7 +92,7 @@ void SpriteHashTable::Clear() {
     count = 0;
 }
 
-/* Function start: 0x44C580 */
+// Dead duplicate of ObjectPool::AllocateBuckets.
 void SpriteHashTable::AllocateBuckets(int size, int flag) {
     int* newBuckets;
     int count;
@@ -248,7 +248,7 @@ void* SpriteHashTable::AllocEntry() {
     return node;
 }
 
-/* Function start: 0x41A6F0 */
+// Dead duplicate of GameLoopHelper::FreeNodeData.
 void FreePointerArray(void** arr, int count) {
     int temp;
     temp = count;

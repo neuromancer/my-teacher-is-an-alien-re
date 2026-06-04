@@ -31,8 +31,8 @@ typedef SC_Question DialogQuestion;
 class SCI_Dialog : public IconBar {
 public:
     // Full game methods
-    DialogQuestion* GetDialogByIndex(int index);  // 0x417C80
-    DialogQuestion* FindDialogById(int id);       // 0x417E60
+    DialogQuestion* GetDialogByIndex(int index);
+    DialogQuestion* FindDialogById(int id);
 
     // Fields (matching Handler31 layout)
     int field_A8;                   // 0xA8

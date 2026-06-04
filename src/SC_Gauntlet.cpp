@@ -567,7 +567,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     board.crystalState[1] = 0;
 }
 
-/* Function start: 0x42F570 */
+// Duplicate body; original calls are canonicalized to InitCombatGrid.
 void SC_Gauntlet::ResetGrid() {
     int i;
     GauntletEntry* ge;

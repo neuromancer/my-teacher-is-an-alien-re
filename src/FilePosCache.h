@@ -25,8 +25,8 @@ struct FilePosEntry {
 
 class FilePosCache {
 public:
-    __int64 Lookup(char* filename, char* key);   // 0x412130
-    void Store(char* filename, char* key, int posLo, int posHi);  // 0x412210
+    __int64 Lookup(char* filename, char* key);
+    void Store(char* filename, char* key, int posLo, int posHi);
 };
 
 // Lookup and Store are SoundTracker methods (0x412130, 0x412210)

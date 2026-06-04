@@ -34,7 +34,7 @@ public:
 
     // Methods
     void Clear();                              // 0x43E250
-    void AllocateBuckets(int size, int flag);  // 0x44C580
+    void AllocateBuckets(int size, int flag);
     void* AllocateNode();                      // 0x4422E0
     void* Lookup(volatile int index, int* outSlot);  // 0x4097B0
     void Resize(int size, int flag);           // 0x4097F0
@@ -69,6 +69,6 @@ public:
 
 // Helper functions for hash table cleanup
 void __cdecl CleanupSpriteHashArray(void** array, int count);  // 0x408F20
-void FreePointerArray(void** arr, int count);                  // 0x41A6F0
+void FreePointerArray(void** arr, int count);
 
 #endif // COMBATSPRITE_H

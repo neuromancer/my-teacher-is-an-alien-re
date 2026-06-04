@@ -31,8 +31,8 @@ public:
     virtual int LBLParse(char* param_1);      // 0x4370F0 (+0x00)
     virtual void OnProcessEnd();             // 0x42F800
 
-    void Render();                           // 0x42EFC0
-    void PlaceWord(int row, int col);        // 0x42F220
+    void Render();
+    void PlaceWord(int row, int col);
     void DispatchResult();                   // 0x436790
     void InitWordList();                     // 0x4368F0
 

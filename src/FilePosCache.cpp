@@ -7,7 +7,7 @@
 
 // g_FilePosCache_0046928c — defined in globals.cpp
 
-/* Function start: 0x412130 */
+// Dead duplicate of SoundTracker::Lookup; SoundTracker owns the original address.
 __int64 FilePosCache::Lookup(char* fname, char* keyName) {
     int* pool = (int*)g_SoundPool_00469134;
     int* volatile node = (int*)pool[0];  // head
@@ -43,7 +43,7 @@ not_found:
     return -1;
 }
 
-/* Function start: 0x412210 */
+// Dead duplicate of SoundTracker::Store; SoundTracker owns the original address.
 void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
     int* pool = (int*)g_SoundPool_00469134;
 

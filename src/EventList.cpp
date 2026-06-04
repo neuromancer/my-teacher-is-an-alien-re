@@ -30,5 +30,41 @@ void EventList::InsertNode(void* data) {
 /* Function start: 0x431B60 */
 void* EventList::RemoveCurrent()
 {
-    return LinkedList::RemoveCurrent();
+    ListNode* node;
+    void* result;
+
+    node = current;
+    if (node == 0) {
+        return 0;
+    }
+
+    if (head == node) {
+        head = node->next;
+    }
+
+    if (tail == node) {
+        tail = node->prev;
+    }
+
+    if (node->prev != 0) {
+        node->prev->next = node->next;
+    }
+
+    if (current->next != 0) {
+        current->next->prev = current->prev;
+    }
+
+    node = current;
+    result = 0;
+    if (node != 0) {
+        result = node->data;
+    }
+
+    if (node != 0) {
+        delete node;
+        current = 0;
+    }
+
+    current = head;
+    return result;
 }

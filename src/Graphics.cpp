@@ -698,7 +698,7 @@ extern "C" int __cdecl DrawEllipse(int param_1, int param_2) {
 // g_PreviousPalette_0046d096 = g_PreviousPalette_0046d096 in globals.h (same address 0x4374ae)
 // g_Palette_0046d074 = g_Palette_0046d074 in globals.h (same address 0x43748c)
 
-/* Function start: 0x4524C2 */
+// Dead duplicate of SetDrawPosition.
 extern "C" void SetFontPosition(int x, int y) {
     g_DrawPosX_0046d0aa = x;
     g_DrawPosY_0046d0b6 = y;
@@ -706,7 +706,7 @@ extern "C" void SetFontPosition(int x, int y) {
 
 extern "C" int __cdecl SetFillColor(unsigned char);
 
-/* Function start: 0x4525EC */
+// Dead duplicate of SetFillColor.
 extern "C" void SetFontColor(int index) {
     unsigned char color = (unsigned char)index;
     unsigned char mapped = (unsigned char)g_PaletteMap_0046d108[color];

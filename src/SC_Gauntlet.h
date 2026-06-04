@@ -48,7 +48,7 @@ public:
     virtual void ProcessAction(int action, int* data);  // [12] 0x42F5E0
 
     void ProcessGrid(int row, int col);             // 0x42F220
-    void ResetGrid();                               // 0x42F570
+    void ResetGrid();
     void RenderGrid();                              // 0x42EFC0
 
     int moveState[2];              // 0x118-0x11F

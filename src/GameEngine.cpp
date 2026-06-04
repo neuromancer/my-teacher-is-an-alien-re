@@ -392,7 +392,7 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
 
                 data = queue->Pop();
                 if (data != 0) {
-                    delete (DrawEntry*)data;
+                    ((DrawEntry*)data)->Destroy(1);
                 }
             }
         }

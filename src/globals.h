@@ -18,7 +18,6 @@ class StringTable;
 class ZBufferManager;
 class FlagArray;
 class TimedEventPool;
-class Engine;
 class GameEngine;
 class SC_CombatBase;
 class SC_Combat;

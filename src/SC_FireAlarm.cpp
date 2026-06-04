@@ -3,7 +3,6 @@
 #include "InputManager.h"
 #include "SpriteAction.h"
 #include "Memory.h"
-#include "Engine.h"
 #include "Animation.h"
 #include "Sprite.h"
 #include "Palette.h"
@@ -23,7 +22,7 @@
 // FUN_00413e10 = ParseFile in Parser.h
 extern "C" int FileExists(const char*);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" char* GetCinematicFilename(int);
+extern char* MakeAnimName(int);
 extern "C" char* FormatAssetPath(char*, ...);
 
 
@@ -494,7 +493,7 @@ void SC_FireAlarm::ProcessFrame() {
                 if (done) {
                     gamePhase = 3;
                 } else {
-                    char* name = GetCinematicFilename(0x13A6);
+                    char* name = MakeAnimName(0x13A6);
                     char* path = FormatAssetPath(name);
                     if (FileExists(path) != 0) {
                         Animation anim;

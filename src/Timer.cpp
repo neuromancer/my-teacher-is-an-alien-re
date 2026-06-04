@@ -49,7 +49,7 @@ void Timer::Wait(unsigned int delay)
     } while (m_elapsedTime < delay);
 }
 
-/* Function start: 0x421930 */
+// Dead duplicate of TimeOut::~TimeOut.
 void __fastcall DestroyTimerField(int* obj)
 {
     Timer* t = (Timer*)obj[2];  // offset 8 from obj

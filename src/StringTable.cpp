@@ -105,7 +105,7 @@ void StringTable::Close() {
     }
 }
 
-/* Function start: 0x4456F0 */
+// Dead duplicate of TextInput::~TextInput; not an original StringTable method.
 void StringTable::Unload() {
     if (fp) {
         FreeMemory(fp);

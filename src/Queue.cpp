@@ -212,7 +212,7 @@ TimedEventPool::~TimedEventPool()
     m_pool = 0;
 }
 
-/* Function start: 0x448C50 */
+// Dead duplicate of MessageList::GetCurrentData.
 void* Queue::GetCurrentData()
 {
     return LinkedList::GetCurrentData();

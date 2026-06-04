@@ -92,7 +92,6 @@ int SC_Combat::LBLParse(char* line) {
     return 0;
 }
 /* Function start: 0x449520 */
-/* Function start: 0x449520 */
 void SC_Combat::OnProcessEnd() {
     if (pendingAction == 0) {
         pendingAction = new SpriteAction(

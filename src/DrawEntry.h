@@ -14,6 +14,7 @@ public:
     int priority;                    // 0x00
     VBuffer* m_videoBuffer;          // 0x04 - pointer to video buffer data
     void* m_childObject;             // 0x08 - queued child object with virtual deleting destructor
+    void* Destroy(unsigned int flags);
     ~DrawEntry();
 };
 

@@ -18,7 +18,7 @@
 #include <smack.h>
 
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" char* GetCinematicFilename(int id);
+extern char* MakeAnimName(int id);
 
 #define g_GameState_0046aa30 (g_GameState_0046aa30)
 #include "ZBufferManager.h"
@@ -112,7 +112,7 @@ static char g_CinematicPath_00473cb0[256];
 
 static char g_AnimNameBuf_00473cf0[64];
 
-/* Function start: 0x44E320 */
+// Dead duplicate of MakeSoundName.
 extern "C" char* MakeSoundName_Cine(char* baseName)
 {
     int len = strlen(baseName);
@@ -137,7 +137,7 @@ extern "C" char* MakeSoundName_Cine(char* baseName)
     return g_AnimNameBuf_00473cf0;
 }
 
-/* Function start: 0x44E3E0 */
+// Dead duplicate of MakeAnimName.
 extern "C" char* GetCinematicFilename(int param_1)
 {
     if (param_1 >= 5000) {
@@ -253,7 +253,7 @@ void SC_Cinematic::Init(SC_MessageParser* msg) {
         action->childAction = 0;
     }
 
-    char* movieName = GetCinematicFilename(moduleParam);
+    char* movieName = MakeAnimName(moduleParam);
     char* moviePath = FormatAssetPath(movieName);
 
     if (FileExists(moviePath) != 0) {

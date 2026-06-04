@@ -15,7 +15,7 @@
 #include <string.h>
 #include <stdio.h>
 
-/* Function start: 0x417C80 */
+// Layout-alias duplicate of Handler31::SelectQuestion.
 DialogQuestion* SCI_Dialog::GetDialogByIndex(int index) {
     int counter;
     void* data;
@@ -45,7 +45,7 @@ LAB_ret_zero:
     return 0;
 }
 
-/* Function start: 0x417E60 */
+// Layout-alias duplicate of Handler31::RemoveQuestion.
 DialogQuestion* SCI_Dialog::FindDialogById(int id) {
     DialogQuestion* searchQuestion;
     Queue* queue;
