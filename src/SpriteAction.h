@@ -21,7 +21,7 @@
 struct SlimeDim {
     int x;
     int y;
-    SlimeDim() { x = 0; y = 0; }
+    SlimeDim() { int* p = &x; p[0] = 0; p[1] = 0; }
     ~SlimeDim();
 };
 
@@ -47,7 +47,8 @@ public:
     int time;                  // 0x30
     SpriteAction* childAction; // 0x34 - owned nested SpriteAction*
 
-    SpriteAction() { mousePos.x = 0; mousePos.y = 0; memset(this, 0, sizeof(SpriteAction)); }
+    SpriteAction() { memset(this, 0, sizeof(SpriteAction)); }
+    SpriteAction(SpriteAction& src) { memset(this, 0, sizeof(SpriteAction)); CopyFrom(&src); }
     SpriteAction(int, int, int, int, int, int, int, int, int, int);
     ~SpriteAction();
     SpriteAction* CopyFrom(SpriteAction*);  // 0x444920

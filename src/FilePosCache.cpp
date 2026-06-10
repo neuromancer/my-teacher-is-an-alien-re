@@ -105,7 +105,7 @@ void FilePosCache::Store(char* fname, char* keyName, int posLo, int posHi) {
         int* growPtr = &pool2[5];
         int growBy = *growPtr;
         int allocSize = growBy * 12 + 4;
-        int* block = (int*)AllocateMemory(allocSize);
+        int* block = (int*)operator new(allocSize);
         block[0] = pool2[4];
         pool2[4] = (int)block;
         int i = *growPtr;

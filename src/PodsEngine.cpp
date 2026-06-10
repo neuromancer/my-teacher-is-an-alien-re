@@ -325,7 +325,7 @@ int PodsEngine::LBLParse(char* line) {
             }
             if (node == 0) {
                 if (table->buckets == 0) {
-                    table->buckets = (HashNode**)AllocateMemory(table->numBuckets * sizeof(HashNode*));
+                    table->buckets = (HashNode**)operator new(table->numBuckets * sizeof(HashNode*));
                     memset(table->buckets, 0, table->numBuckets * sizeof(int));
                 }
                 node = table->AllocateNode();

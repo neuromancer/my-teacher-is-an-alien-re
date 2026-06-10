@@ -6071,7 +6071,7 @@ extern char g_StringTable_00472e30[640];                   // command-line strin
 
 // Graphics system (from Graphics.cpp)
 extern HDC g_MainDC_0046d070;
-extern HDC g_SecondaryDC_0046d09c;
+extern HDC volatile g_SecondaryDC_0046d09c;
 extern int g_DblClickCX_0046d0f0;
 extern int g_DblClickCY_0046d0f4;
 extern int g_WindowWord_0046d0f8;
@@ -6083,6 +6083,7 @@ extern char g_TextMetric_0046f02e[256];
 extern int g_GfxInitFlag_0046d0fc;
 extern char g_PaletteMap_0046d108[256];
 extern char* g_SysDirPtr_0046e024;
+extern char* g_SetupCfgPath_0046c4ac; // -> "cfg\\Setup.cfg" (0x46C49C)
 extern short g_SegmentReg_0046e028;
 extern int g_WinGBufSize_0046e02a;
 extern char DAT_00437afc[];

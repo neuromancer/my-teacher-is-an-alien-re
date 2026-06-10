@@ -71,10 +71,10 @@ void __fastcall UpdateWordSearchCursor(int* self) {
     }
 
     int mouseY;
-    if (g_InputManager_0046aa08->pMouse != 0) {
-        mouseY = g_InputManager_0046aa08->pMouse->y;
-    } else {
+    if (g_InputManager_0046aa08->pMouse == 0) {
         mouseY = 0;
+    } else {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
     }
     int mouseX;
     if (g_InputManager_0046aa08->pMouse != 0) {
@@ -335,10 +335,10 @@ void SC_WordSearch::Update(int param1, int param2) {
         }
         {
         unsigned int uVar7;
-        if (puVar2 == 0) {
-            uVar7 = 0;
-        } else {
+        if (puVar2 != 0) {
             uVar7 = puVar2[1];
+        } else {
+            uVar7 = 0;
         }
         unsigned int uVar6 = ((puVar2 == 0) - 1) & uVar4;
 

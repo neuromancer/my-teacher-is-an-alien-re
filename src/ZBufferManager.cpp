@@ -207,27 +207,24 @@ void CommandType1::Execute(GlyphRect* rect)
 /* Function start: 0x403720 */
 void BlitCommand::Execute(GlyphRect* rect)
 {
-    VBuffer* vbuf;
-
-    vbuf = (VBuffer*)g_BackBuffer_0046aa14;
     switch (mode) {
     case 0:
-        vbuf->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
+        ((VBuffer*)g_BackBuffer_0046aa14)->ClipAndBlit(left, right, top, bottom, x, y, (int)data);
         return;
     case 1:
-        vbuf->ClipAndPaste(left, right, top, bottom, x, y, (int)data);
+        ((VBuffer*)g_BackBuffer_0046aa14)->ClipAndPaste(left, right, top, bottom, x, y, (int)data);
         return;
     case 2:
-        vbuf->ClipAndBlitRegion(left, right, top, bottom, x, y, (int)data);
+        ((VBuffer*)g_BackBuffer_0046aa14)->ClipAndBlitRegion(left, right, top, bottom, x, y, (int)data);
         return;
     case 3:
-        vbuf->ClipAndBlitReversed(left, right, top, bottom, x, y, (int)data);
+        ((VBuffer*)g_BackBuffer_0046aa14)->ClipAndBlitReversed(left, right, top, bottom, x, y, (int)data);
         return;
     case 4:
         DrawScaledSprite(x, y, data, scale);
         return;
     case 5:
-        vbuf->ScaleTCCopy(x, y, (VBuffer*)data, scale);
+        ((VBuffer*)g_BackBuffer_0046aa14)->ScaleTCCopy(x, y, (VBuffer*)data, scale);
         return;
     }
 }
@@ -578,6 +575,7 @@ struct TextRenderEntry : public SoundCommand {
     int posY;           // 0x5C
     int color;          // 0x60
 
+    TextRenderEntry() { priority = 0; memset(text, 0, 0x5c); }
     virtual void Execute(GlyphRect* rect);
 };
 
@@ -591,21 +589,20 @@ void TextRenderEntry::Execute(GlyphRect* rect) {
 
 /* Function start: 0x404230 */
 void ZBufferManager::ShowText(char* text, int x, int y, int priority, int color) {
-    if (m_state == 0) return;
-
-    if (m_state == 1) {
-        SetFontPosition(x, y);
-        g_GlyphFont_0046aa28->RenderText(text, color);
-        return;
+    if (m_state != 0) {
+        if (m_state != 1) {
+            TextRenderEntry* entry = new TextRenderEntry();
+            strcpy(entry->text, text);
+            entry->priority = priority;
+            entry->posX = x;
+            entry->posY = y;
+            entry->color = color;
+            QueueCommand((SoundCommand*)entry);
+        } else {
+            SetFontPosition(x, y);
+            g_GlyphFont_0046aa28->RenderText(text, color);
+        }
     }
-
-    TextRenderEntry* entry = new TextRenderEntry();
-    strcpy(entry->text, text);
-    entry->priority = priority;
-    entry->posX = x;
-    entry->posY = y;
-    entry->color = color;
-    QueueCommand((SoundCommand*)entry);
 }
 
 /* Function start: 0x4044E0 */

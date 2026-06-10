@@ -196,7 +196,7 @@ HotspotListData::~HotspotListData()
 HotspotNode* HotspotListData::AllocateNode()
 {
     if (freeList == 0) {
-        char* mem = (char*)AllocateMemory(growthRate * 16 + 4);
+        char* mem = (char*)operator new(growthRate * 16 + 4);
         *(void**)mem = nodePool;
         int n = growthRate;
         nodePool = mem;

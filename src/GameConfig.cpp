@@ -6,6 +6,7 @@
 extern "C" {
     int FileExists(const char* filename);
 }
+extern char* g_SetupCfgPath_0046c4ac;
 
 #include <stdio.h>
 
@@ -16,7 +17,7 @@ GameConfig::GameConfig() {
     // Zero data section again (0x14 dwords = 80 bytes at offset 0x44)
     memset(&data, 0, 80);
     
-    if (FileExists("Setup.cfg") == 0) {
+    if (FileExists(g_SetupCfgPath_0046c4ac) == 0) {
         CreateDefaultConfig();
     }
     ReloadConfig();
@@ -33,7 +34,7 @@ GameConfig::~GameConfig() {
 
 /* Function start: 0x447EE0 */
 FILE* GameConfig::Open(char* mode) {
-    fp = fopen("Setup.cfg", mode);
+    fp = fopen(g_SetupCfgPath_0046c4ac, mode);
     return fp;
 }
 

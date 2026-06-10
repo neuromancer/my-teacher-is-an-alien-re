@@ -466,9 +466,7 @@ void SoundEntry::FadeVolume(int volume, unsigned int duration) {
     if (AIL_sample_status(sample->m_sample) != 4) return;
     if (activeFlags & 1) return;
 
-    if (duration == 0) goto simple_fade;
-
-    {
+    if (duration != 0) {
     int currentVolume = AIL_sample_volume(sample->m_sample);
     targetVolume = volume;
 
@@ -498,7 +496,6 @@ void SoundEntry::FadeVolume(int volume, unsigned int duration) {
     return;
     }
 
-simple_fade:
     sample->Fade(volume, 0);
 }
 

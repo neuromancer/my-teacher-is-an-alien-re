@@ -212,7 +212,7 @@ void* SpriteHashTable::AllocEntry() {
     int delayCounter;
 
     if (tail == 0) {
-        newPool = (int*)AllocateMemory(growSize * 16 + 4);
+        newPool = (int*)operator new(growSize * 16 + 4);
         *newPool = count;
         i = growSize;
         count = (int)newPool;

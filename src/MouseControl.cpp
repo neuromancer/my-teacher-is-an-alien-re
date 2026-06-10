@@ -142,10 +142,10 @@ void MouseControl::DrawCursor()
     }
 
     int final_y;
-    if (pMouse == 0) {
-        final_y = 0;
-    } else {
+    if (pMouse != 0) {
         final_y = pMouse->y;
+    } else {
+        final_y = 0;
     }
 
     if (sprite == 0) {
@@ -178,6 +178,8 @@ int MouseControl::FindStateByName(char* name) {
 }
 
 extern "C" int SetCursorVisible(unsigned int param_1);
+
+#pragma optimize("y", off)
 
 /* Function start: 0x453473 */
 int SetCursorVisible(unsigned int param_1)

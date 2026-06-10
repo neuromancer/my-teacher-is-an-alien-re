@@ -47,7 +47,7 @@ struct SaveFilePool {
 /* Function start: 0x43E2A0 */
 int* SaveFilePool::AllocNode(int prev, int next) {
     if (freeList == 0) {
-        int* block = (int*)AllocateMemory(growBy * 0x120 + 4);
+        int* block = (int*)operator new(growBy * 0x120 + 4);
         *block = (int)blocks;
         blocks = block;
         int cnt = growBy;
@@ -816,9 +816,8 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
                     list = (int*)saveFileList;
                     if (list[2] > nodeIdx) {
                         node = (int*)list[0];
-                        while (nodeIdx != 0) {
+                        while (nodeIdx-- != 0) {
                             node = (int*)node[0];
-                            nodeIdx--;
                         }
                     } else {
                         node = 0;

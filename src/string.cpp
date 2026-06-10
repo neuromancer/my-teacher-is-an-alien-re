@@ -55,13 +55,14 @@ char* MakeAudioName(char* baseName)
         return baseName;
     }
 
-    if (suffixValue > 4999) {
+    if (suffixValue >= 5000) {
+        int idx = g_PeriodStateIdx_0046cb90;
         gameState = g_GameState_0046aa30;
-        if (g_PeriodStateIdx_0046cb90 < 0 || gameState->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
-            ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+        if (idx < 0 || gameState->maxStates - 1 < idx) {
+            ShowError("Invalid gamestate %d", idx);
         }
         sprintf(g_audioNameBuffer, "%s%c.wav", baseName,
-                g_PeriodCharTable_0046cb94[gameState->stateValues[g_PeriodStateIdx_0046cb90]]);
+                g_PeriodCharTable_0046cb94[gameState->stateValues[idx]]);
         return g_audioNameBuffer;
     }
 

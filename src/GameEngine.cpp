@@ -223,9 +223,9 @@ int GameEngine::ProcessEvents() {
 
     count = 0;
     while (m_eventPool->m_count != 0) {
-        SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        SpriteAction action = m_eventPool->PopSafe();
 
-        ProcessMessage((SC_MessageParser*)m_eventPool->PopSafe(&action));
+        ProcessMessage((SC_MessageParser*)&action);
         count = count + 1;
     }
 
@@ -518,7 +518,15 @@ int GameEngine::AddHandler(Handler* handler) {
     }
     ListNode* head = list->head;
     list->current = head;
-    if ((list->type == 1 || list->type == 2) && head != 0) {
+    if (list->type != 1 && list->type != 2) {
+        ((EventList*)list)->InsertNode(handler);
+        return 1;
+    }
+    if (head == 0) {
+        ((EventList*)list)->InsertNode(handler);
+        return 1;
+    }
+    {
         do {
                 Handler* currentHandler;
 
@@ -567,8 +575,6 @@ int GameEngine::AddHandler(Handler* handler) {
                     list->current = list->current->next;
                 }
             } while (list->current != 0);
-    } else {
-        ((EventList*)list)->InsertNode(handler);
     }
 
     return 1;

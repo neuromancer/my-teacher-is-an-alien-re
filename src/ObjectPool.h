@@ -27,7 +27,7 @@ public:
                 memory = 0;
             }
             int numBuckets = objSz + (int)((double)objSz * 0.3);
-            int* buckets = (int*)AllocateMemory(numBuckets * 4);
+            int* buckets = new int[numBuckets];
             memset(buckets, 0, numBuckets * 4);
             memory = buckets;
             size = numBuckets;

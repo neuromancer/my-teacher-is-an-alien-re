@@ -219,24 +219,17 @@ void* Queue::GetCurrentData()
 }
 
 /* Function start: 0x42CAB0 */
-SpriteAction* TimedEventPool::PopSafe(SpriteAction* buffer)
+SpriteAction TimedEventPool::PopSafe()
 {
-    volatile int completed;
-
-    completed = 0;
-    Pop(buffer);
-    completed |= 1;
-    return buffer;
+    return Pop();
 }
 
 /* Function start: 0x42D1A0 */
-SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
+SpriteAction TimedEventPool::Pop()
 {
-    volatile int completed;
     PooledEvent* headNode;
     SpriteAction localAction;
 
-    completed = 0;
     headNode = list.head;
     localAction.CopyFrom((SpriteAction*)((int*)headNode + 2));
 
@@ -263,13 +256,7 @@ SpriteAction* TimedEventPool::Pop(SpriteAction* buffer)
     m_free_list = headNode;
     m_count--;
 
-    buffer->mousePos.x = 0;
-    buffer->mousePos.y = 0;
-    memset(buffer, 0, sizeof(SpriteAction));
-    buffer->CopyFrom(&localAction);
-    completed |= 1;
-
-    return buffer;
+    return localAction;
 }
 
 /* Function start: 0x4406F0 */

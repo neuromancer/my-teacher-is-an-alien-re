@@ -157,13 +157,11 @@ int AnimatedAsset::IsValidChar(int ch)
 /* Function start: 0x43ABD0 */
 int AnimatedAsset::DrawChar(SlimeDim pos, int ch)
 {
-    int width;
-
     if (ch == 0x20) {
-        width = spaceWidth;
+        return spaceWidth;
     }
     else if (ch == 0x9) {
-        width = tabWidth;
+        return tabWidth;
     }
     else {
         GlyphRect local;
@@ -194,9 +192,8 @@ int AnimatedAsset::DrawChar(SlimeDim pos, int ch)
                 g_BackBuffer_0046aa14->CallBlitter2(local.left, local.right, local.top, local.bottom, pos.x, pos.y, buffer);
             }
         }
-        width = local.right - local.left;
+        return local.right - local.left;
     }
-    return width;
 }
 
 /* Function start: 0x43AD50 */

@@ -461,6 +461,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   return uStack_14;
 }
 
+#pragma optimize("y", off)
+
 /* Function start: 0x453BFF */
 int __cdecl CalculateBufferSize(int width, unsigned int height) {
   return (((width + 3) & ~3U) * height) + g_BitmapHeaderSize_0046db34;
@@ -480,6 +482,8 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...) {
     }
     return g_PathResolver_0046aa1c->cdPath + 5;
 }
+
+#pragma optimize("y", on)
 
 /* Function start: 0x4265A0 */
 extern "C" void ShowLoadingScreen(void) {
@@ -508,18 +512,18 @@ int __cdecl GetFreeDiskSpaceMB(int param_1) {
     DWORD local_10;
     DWORD local_c;
     char local_8[8];
-    const char* path;
     int result;
 
     result = -1;
     if (param_1 != 0) {
         sprintf(local_8, "%c:\\", param_1 + 0x40);
-        path = local_8;
+        if (GetDiskFreeSpaceA(local_8, &local_10, &local_14, &local_18, &local_c) != 0) {
+            result = local_18 * local_14 * local_10;
+        }
     } else {
-        path = 0;
-    }
-    if (GetDiskFreeSpaceA(path, &local_10, &local_14, &local_18, &local_c) != 0) {
-        result = local_18 * local_14 * local_10;
+        if (GetDiskFreeSpaceA(0, &local_10, &local_14, &local_18, &local_c) != 0) {
+            result = local_18 * local_14 * local_10;
+        }
     }
     return result;
 }

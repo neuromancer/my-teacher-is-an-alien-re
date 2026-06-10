@@ -237,10 +237,10 @@ void HotspotAction::ProcessQueue100() {
     if (messagesQueue != 0) {
         messagesQueue->current = messagesQueue->head;
         while (*(int*)messagesQueue != 0) {
-            if (messagesQueue->current == 0) {
-                data = 0;
-            } else {
+            if (messagesQueue->current != 0) {
                 data = messagesQueue->current->data;
+            } else {
+                data = 0;
             }
             EnqueueSpriteAction(data);
             if (messagesQueue->tail == messagesQueue->current) {
@@ -260,10 +260,10 @@ void HotspotAction::ProcessQueue104() {
     if (incorrectQueue != 0) {
         incorrectQueue->current = incorrectQueue->head;
         while (*(int*)incorrectQueue != 0) {
-            if (incorrectQueue->current == 0) {
-                data = 0;
-            } else {
+            if (incorrectQueue->current != 0) {
                 data = incorrectQueue->current->data;
+            } else {
+                data = 0;
             }
             EnqueueSpriteAction(data);
             if (incorrectQueue->tail == incorrectQueue->current) {
@@ -283,10 +283,10 @@ void HotspotAction::ProcessQueueFC() {
     if (actionsQueue != 0) {
         actionsQueue->current = actionsQueue->head;
         while (*(int*)actionsQueue != 0) {
-            if (actionsQueue->current == 0) {
-                data = 0;
-            } else {
+            if (actionsQueue->current != 0) {
                 data = actionsQueue->current->data;
+            } else {
+                data = 0;
             }
             EnqueueSpriteAction(data);
             if (actionsQueue->tail == actionsQueue->current) {

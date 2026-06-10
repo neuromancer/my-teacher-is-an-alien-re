@@ -4,6 +4,8 @@
 
 extern "C" {
 
+#pragma optimize("y", off)
+
 /* Function start: 0x4525EC */
 int __cdecl SetFillColor(unsigned char param_1)
 {
@@ -21,12 +23,14 @@ int __cdecl SetFillColor(unsigned char param_1)
     return 0;
 }
 
+#pragma optimize("y", on)
+
 /* Function start: 0x452964 */
 int __cdecl ApplyVideoPalette(void)
 {
     if ((signed char)g_CurrentVideoBuffer_0046db3c >= 0) {
         if (g_WinGDC_0046e004 != (HDC)0) {
-            ((void (__cdecl *)(HDC, int, int, void*))g_WinGSetDIBColorTable_0046e014)(g_WinGDC_0046e004, 0, 0x100, g_BgrPaletteData_0046d734);
+            ((void (__stdcall *)(HDC, int, int, void*))g_WinGSetDIBColorTable_0046e014)(g_WinGDC_0046e004, 0, 0x100, g_BgrPaletteData_0046d734);
         } else {
             if (g_DibModeFlag_0046db38 != 0) {
                 short* dst = (short*)(g_VideoBufferBase_0046db4e - 0x200);
@@ -49,6 +53,8 @@ int __cdecl ApplyVideoPalette(void)
 }
 
 extern "C" {
+
+#pragma optimize("y", off)
 
 /* Function start: 0x453384 */
 int __cdecl CopyPaletteData(int index, int count, unsigned char* dest)
@@ -114,6 +120,8 @@ int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned 
     }
     return 0;
 }
+
+#pragma optimize("y", on)
 
 /* Function start: 0x453CB2 */
 int __cdecl GetGlobalVertAlign()

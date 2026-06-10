@@ -5,6 +5,8 @@
 
 // g_PaletteData_0046d208 and g_StateFlags_0046d09a are declared in globals.h and defined in globals.cpp
 
+#pragma optimize("y", off)
+
 /* Function start: 0x453BBE */
 int __cdecl SetStateFlag(BYTE param_1, int param_2)
 {

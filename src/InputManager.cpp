@@ -183,13 +183,13 @@ int InputManager::PollJoystick(InputState* state) {
 int MapJoystickValue(int value, int min, int max, int range)
 {
     int result = (range * (value - min)) / (max - min);
-    if (result < 0) {
-        result = 0;
-    }
-    else if (range < result) {
+    if (result >= 0) {
+        if (range >= result) {
+            return result;
+        }
         return range;
     }
-    return result;
+    return 0;
 }
 
 /* Function start: 0x426570 */

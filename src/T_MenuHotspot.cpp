@@ -293,10 +293,10 @@ void T_MenuHotspot::ProcessSpriteActions() {
     do {
         ListNode* cur = ((LinkedList*)messageQueue)->current;
         SpriteAction* data;
-        if (cur == 0) {
-            data = 0;
-        } else {
+        if (cur != 0) {
             data = (SpriteAction*)cur->data;
+        } else {
+            data = 0;
         }
         EnqueueSpriteAction(data);
         ListNode* curNode = ((LinkedList*)messageQueue)->current;

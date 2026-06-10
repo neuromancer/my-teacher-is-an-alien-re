@@ -154,7 +154,7 @@ void __stdcall EnqueueHotspotAction(SpriteAction* param)
     if (*freePtr == 0) {
         int* sizePtr = pool + 5;
         int sz = *sizePtr;
-        int* block = (int*)AllocateMemory(sz * 0x40 + 4);
+        int* block = (int*)operator new(sz * 0x40 + 4);
         block[0] = pool[4];
         pool[4] = (int)block;
         {
@@ -358,9 +358,8 @@ int SC_CombatBase::ProcessEvents()
 
     if (g_HotspotPool_0046ae74->m_count != 0) {
         do {
-            SpriteAction tempBuf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            SpriteAction* popped = ((TimedEventPool*)g_HotspotPool_0046ae74)->PopSafe(&tempBuf);
-            localEvent.CopyFrom(popped);
+            SpriteAction tempBuf = ((TimedEventPool*)g_HotspotPool_0046ae74)->PopSafe();
+            localEvent.CopyFrom(&tempBuf);
             result |= HandleAction((int*)&localEvent);
         } while (g_HotspotPool_0046ae74->m_count != 0);
     }

@@ -362,6 +362,7 @@ void SC_Fan::ProcessHit() {
 /* Function start: 0x40FC50 */
 int SC_Fan::HandleInput(Sprite* spr) {
     Projectile* p = (Projectile*)spr;
+    SlimeDim* pos = &p->nextPos;
     int finalFrame = p->ranges[p->handle].dim.y - 1;
     Animation* anim = p->animation_data;
     if (anim == 0) {
@@ -373,8 +374,8 @@ int SC_Fan::HandleInput(Sprite* spr) {
     dim_168.x++;
 
     int inSlot;
-    if (invSlot_D0.left <= p->nextPos.x && invSlot_D0.right >= p->nextPos.x &&
-        invSlot_D0.top <= p->nextPos.y && invSlot_D0.bottom >= p->nextPos.y) {
+    if (invSlot_D0.left <= pos->x && invSlot_D0.right >= pos->x &&
+        invSlot_D0.top <= pos->y && invSlot_D0.bottom >= pos->y) {
         inSlot = 1;
     } else {
         inSlot = 0;
@@ -385,8 +386,8 @@ int SC_Fan::HandleInput(Sprite* spr) {
 
     {
         int inGlobalRect;
-        if (g_FanField1_00472be0 <= p->nextPos.x && g_FanField3_00472be8 >= p->nextPos.x &&
-            g_FanField2_00472be4 <= p->nextPos.y && g_FanField4_00472bec >= p->nextPos.y) {
+        if (g_FanField1_00472be0 <= pos->x && g_FanField3_00472be8 >= pos->x &&
+            g_FanField2_00472be4 <= pos->y && g_FanField4_00472bec >= pos->y) {
             inGlobalRect = 1;
         } else {
             inGlobalRect = 0;
@@ -400,8 +401,8 @@ int SC_Fan::HandleInput(Sprite* spr) {
         int* flagPtr = &field_F0;
         for (i = 0; i < 4; i++) {
             int hit;
-            if (slotRect->left <= p->nextPos.x && slotRect->right >= p->nextPos.x &&
-                slotRect->top <= p->nextPos.y && slotRect->bottom >= p->nextPos.y) {
+            if (slotRect->left <= pos->x && slotRect->right >= pos->x &&
+                slotRect->top <= pos->y && slotRect->bottom >= pos->y) {
                 hit = 1;
             } else {
                 hit = 0;

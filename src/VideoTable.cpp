@@ -5,6 +5,8 @@
 extern "C" void ShowMessage(char *param_1, ...);
 extern "C" void WriteToMessageLog(const char *msg, ...);
 
+#pragma optimize("y", off)
+
 /* Function start: 0x4524C2 */
 extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
 {
@@ -24,15 +26,18 @@ extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_
 /* Function start: 0x453CCE */
 extern "C" int __cdecl GetPixelAt(int x, int y)
 {
-    if (*(signed char*)&g_CurrentVideoBuffer_0046db3c < 0) {
-        return -1;
+    short result;
+
+    result = -1;
+    if (*(signed char*)&g_CurrentVideoBuffer_0046db3c >= 0) {
+        if (x >= g_ClipLeft_0046d0c6 && x <= g_ClipRight_0046d0ca &&
+            y >= g_ClipTop_0046d0ce && y <= g_ClipBottom_0046d0d2) {
+            result = *(unsigned char*)(x + (unsigned int)(g_VideoBufferHeightM1_0046d0b2 - y) * (unsigned int)g_VideoBufferStride_0046db46 + g_VideoBufferBase_0046db4e);
+        } else {
+            result = -1;
+        }
     }
-    if (x < g_ClipLeft_0046d0c6 || x > g_ClipRight_0046d0ca ||
-        y < g_ClipTop_0046d0ce || y > g_ClipBottom_0046d0d2) {
-        return -1;
-    }
-    unsigned int rowOffset = (unsigned int)(g_VideoBufferHeightM1_0046d0b2 - y) * (unsigned int)g_VideoBufferStride_0046db46;
-    return *(unsigned char*)(x + rowOffset + g_VideoBufferBase_0046db4e);
+    return result;
 }
 
 /* Function start: 0x4528EF */
@@ -58,10 +63,14 @@ extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
 /* Function start: 0x452946 */
 extern "C" int __cdecl GetVideoBufferData(unsigned int handle)
 {
-    if (handle > 0x1f) {
-        return 0;
+    int result;
+
+    result = 0;
+    if (handle <= 0x1f) {
+        handle <<= 2;
+        result = *(int*)((char*)g_VBufDataPtrs_0046de54 + handle);
     }
-    return g_VBufDataPtrs_0046de54[handle];
+    return result;
 }
 
 /* Function start: 0x4529D5 */
@@ -126,19 +135,26 @@ extern "C" int __cdecl CreateTable(int width, int height) {
     return i;
 }
 
+#pragma optimize("y", on)
+
 /* Function start: 0x452B6E */
 extern "C" int ClearVideoBuffer(void) {
     if (g_CurrentVideoBuffer_0046db3c >= 0) {
-        memset((char*)g_VideoBufferBase_0046db4e, g_FillColorDword_0046d079, g_VideoBufferSize_0046db4a);
+        memset((char*)g_VideoBufferBase_0046db4e, (char)g_FillColorDword_0046d079, g_VideoBufferSize_0046db4a);
     }
     return 0;
 }
 
 // Video table globals (defined in globals.cpp, declared in globals.h)
 
+#pragma optimize("y", off)
+
 /* Function start: 0x452BAE */
-extern "C" int __cdecl SelectVideoBuffer(int param_1) {
-    if (param_1 < 0x20) {
+extern "C" int __cdecl SelectVideoBuffer(unsigned int param_1) {
+    int width;
+    int height;
+
+    if (param_1 <= 0x1f) {
         if (g_VBufDataPtrs_0046de54[param_1] == 0) {
             return 0xfffffffe;
         } else {
@@ -149,13 +165,13 @@ extern "C" int __cdecl SelectVideoBuffer(int param_1) {
             g_CurrentVideoBuffer_0046db3c = (char)param_1;
             *(char*)&g_CurrentVideoBuffer_0046db3c = (char)param_1;
 
-            int width = g_VBufWidths_0046df54[param_1];
+            width = g_VBufWidths_0046df54[param_1];
             g_VideoBufferStride_0046db46 = width;
             g_VideoBufferWidth_0046d0ae = width;
             g_VideoBufferWidth_0046d0ae = width;
             g_VideoBufferStride_0046db46 = width;
 
-            int height = g_VBufHeights_0046ded4[param_1];
+            height = g_VBufHeights_0046ded4[param_1];
             g_VideoBufferHeight_0046d0ba = height;
             g_VideoBufferHeight_0046d0ba = height;
             g_VideoBufferHeightM1_0046d0b2 = height - 1;
@@ -173,10 +189,8 @@ extern "C" int __cdecl SelectVideoBuffer(int param_1) {
             g_VideoBufferBase_0046db4e = g_VBufDataPtrs_0046de54[param_1];
             g_VideoBufferBase_0046db4e = g_VBufDataPtrs_0046de54[param_1];
 
-            // Calculate size
-            unsigned int size = (unsigned int)g_VideoBufferWidth_0046d0ae * (unsigned int)g_VideoBufferHeight_0046d0ba;
-            g_VideoBufferSize_0046db4a = (int)size;
-            g_VideoBufferSize_0046db4a = (int)size;
+            g_VideoBufferSize_0046db4a = (int)((unsigned int)g_VideoBufferWidth_0046d0ae * (unsigned int)g_VideoBufferHeight_0046d0ba);
+            g_VideoBufferSize_0046db4a = (int)((unsigned int)g_VideoBufferWidth_0046d0ae * (unsigned int)g_VideoBufferHeight_0046d0ba);
 
             return 0;
         }
@@ -193,29 +207,33 @@ extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int p
     int iVar1;
     int w;
     int h;
+    int wingDC;
 
     if (*(char*)&g_CurrentVideoBuffer_0046db3c >= 0) {
-        if (g_WinGDC_0046e004 == 0) {
+        wingDC = (int)g_WinGDC_0046e004;
+        if (wingDC != 0) {
+            h = param_4;
+        } else {
             // Non-WinG path: flip Y coordinates
             iVar1 = g_VideoBufferHeightM1_0046d0b2 - param_3;
             param_3 = g_VideoBufferHeightM1_0046d0b2 - param_4;
-            param_4 = iVar1;
+            h = iVar1;
         }
-        
-        iVar1 = (param_6 + param_3) - param_4;
+
+        iVar1 = (param_6 + param_3) - h;
         w = (param_2 - param_1) + 1;
-        h = (param_4 - param_3) + 1;
-        
-        if (g_WinGDC_0046e004 == 0) {
+        h = (h - param_3) + 1;
+
+        if (wingDC != 0) {
+            // Use WinG BitBlt via function pointer
+            ((WinGBitBltFunc)g_WinGBitBlt_0046e01c)(g_MainDC_0046d070, param_5, iVar1, w, h, (HDC)wingDC, param_1, param_3);
+        } else {
             // Use SetDIBitsToDevice
             int bitmapInfo = g_VideoBufferBase_0046db4e - g_BitmapHeaderSize_0046db34;
             SetDIBitsToDevice(g_MainDC_0046d070, param_5, iVar1, w, h, param_1, param_3, 0, g_VideoBufferHeight_0046d0ba,
                               (void*)(bitmapInfo + g_BitmapHeaderSize_0046db34),
                               (BITMAPINFO*)bitmapInfo,
                               g_DibModeFlag_0046db38);
-        } else {
-            // Use WinG BitBlt via function pointer
-            ((WinGBitBltFunc)g_WinGBitBlt_0046e01c)(g_MainDC_0046d070, param_5, iVar1, w, h, g_WinGDC_0046e004, param_1, param_3);
         }
     }
     return 0;
@@ -261,18 +279,15 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
 }
 
 /* Function start: 0x452FAA */
-extern "C" void __cdecl ReleaseBufferEntry(unsigned int param_1)
+extern "C" int __cdecl ReleaseBufferEntry(unsigned int param_1)
 {
-    unsigned int idx;
+    int result;
 
-    idx = param_1;
-    if (idx > 0x1f) {
-        return;
+    result = 0;
+    if (param_1 <= 0x1f && (char)param_1 != g_CurrentVideoBuffer_0046db3c) {
+        g_VBufDataPtrs_0046de54[param_1] = result;
     }
-    if ((char)idx == g_CurrentVideoBuffer_0046db3c) {
-        return;
-    }
-    g_VBufDataPtrs_0046de54[idx] = 0;
+    return result;
 }
 
 // Forward declaration
@@ -336,25 +351,8 @@ extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int 
         puVar1 = (unsigned char*)(param_1 + iVar1 * g_VideoBufferStride_0046db46 + g_VideoBufferBase_0046db4e);
 
         do {
-            int remaining = rowWidth;
-            // Fill by dwords first
-            while (remaining >= 4) {
-                *(unsigned int*)puVar1 = g_FillColorDword_0046d079;
-                puVar1 += 4;
-                remaining -= 4;
-            }
-            // Fill remaining word
-            if (remaining >= 2) {
-                *(unsigned short*)puVar1 = (unsigned short)g_FillColorDword_0046d079;
-                puVar1 += 2;
-                remaining -= 2;
-            }
-            // Fill remaining byte
-            if (remaining >= 1) {
-                *puVar1 = (unsigned char)g_FillColorDword_0046d079;
-                puVar1 += 1;
-            }
-            puVar1 += stride;
+            memset(puVar1, (char)g_FillColorDword_0046d079, rowWidth);
+            puVar1 += rowWidth + stride;
             count--;
         } while (count != 0);
     }

@@ -164,6 +164,8 @@ extern "C" int GetCurrentVideoMode() {
     return (signed char)g_CurrentVideoBuffer_0046db3c;
 }
 
+#pragma optimize("y", off)
+
 /* Function start: 0x453DFE */
 extern "C" int ScaleClientToBufferX(int x)
 {
@@ -211,6 +213,8 @@ fail:
     x = y;
     goto done;
 }
+
+#pragma optimize("y", on)
 
 /* Function start: 0x45349C */
 int InitMouseSettings(void)
@@ -384,6 +388,8 @@ extern "C" int CleanupVideoSystem() {
     return 0;
 }
 
+#pragma optimize("y", off)
+
 /* Function start: 0x4537A3 */
 int SelectAndRealizePalette(HPALETTE param_1)
 {
@@ -397,6 +403,8 @@ int SelectAndRealizePalette(HPALETTE param_1)
     }
     return 0;
 }
+
+#pragma optimize("y", on)
 
 /* Function start: 0x4537DE */
 HPALETTE CreateSystemPalette(void)
@@ -457,6 +465,8 @@ HPALETTE CreateSystemPalette(void)
   
   return CreatePalette((LOGPALETTE *)g_LogPalette_0046d308);
 }
+
+#pragma optimize("y", off)
 
 /* Function start: 0x453BAA */
 int SetDeviceContext(HDC param_1)
@@ -597,6 +607,8 @@ done:
     return 0;
 }
 
+#pragma optimize("y", on)
+
 /* Function start: 0x454087 */
 static void DrawEllipseScanline(int y, int left_x, int right_x) {
     if (y < g_ClipTop_0046d0ce || y > g_ClipBottom_0046d0d2) return;
@@ -618,6 +630,8 @@ static void DrawEllipseScanline(int y, int left_x, int right_x) {
         base[right_x] = color;
     }
 }
+
+#pragma optimize("y", off)
 
 /* Function start: 0x453E4C */
 extern "C" int __cdecl DrawEllipse(int param_1, int param_2) {
@@ -719,13 +733,13 @@ extern "C" void SetFontColor(int index) {
 
 /* Function start: 0x45329B */
 extern "C" int DrawFontText(char* text, int len) {
-    SetTextColor((HDC)g_Palette_0046d074, *(unsigned int*)&g_LogPalette_0046d308[((unsigned char)g_TextColor_0046d078 + 1) * 4] & 0xffffff);
-    SetBkMode((HDC)g_Palette_0046d074, 1);
-    SetTextAlign((HDC)g_Palette_0046d074, 0);
+    SetTextColor(g_SecondaryDC_0046d09c, *(unsigned int*)&g_LogPalette_0046d308[((unsigned char)g_TextColor_0046d078 + 1) * 4] & 0xffffff);
+    SetBkMode(g_SecondaryDC_0046d09c, 1);
+    SetTextAlign(g_SecondaryDC_0046d09c, 0);
 
     if (g_TextAlignH_0046d0a8 >= 0) {
         SIZE sz;
-        GetTextExtentPointA((HDC)g_Palette_0046d074, text, len, &sz);
+        GetTextExtentPointA(g_SecondaryDC_0046d09c, text, len, &sz);
         g_DrawPosX_0046d0aa -= (unsigned int)((g_TextAlignH_0046d0a8 + 1) * sz.cx) >> 1;
     }
     if (g_TextAlignV_0046d0a9 >= 0) {
@@ -733,10 +747,9 @@ extern "C" int DrawFontText(char* text, int len) {
     }
     g_DrawPosY_0046d0b6 -= g_FontHeight_0046d082;
 
-    int advance = TextOutA((HDC)g_Palette_0046d074, g_DrawPosX_0046d0aa, g_DrawPosY_0046d0b6, text, len);
-    g_DrawPosX_0046d0aa += advance;
-    if ((unsigned int)g_PreviousPalette_0046d096 < (unsigned int)g_DrawPosX_0046d0aa) {
-        g_DrawPosX_0046d0aa = (int)g_PreviousPalette_0046d096;
+    g_DrawPosX_0046d0aa += TextOutA(g_SecondaryDC_0046d09c, g_DrawPosX_0046d0aa, g_DrawPosY_0046d0b6, text, len);
+    if ((unsigned int)g_VideoBufferWidth_0046d0ae < (unsigned int)g_DrawPosX_0046d0aa) {
+        g_DrawPosX_0046d0aa = g_VideoBufferWidth_0046d0ae;
     }
     return 0;
 }

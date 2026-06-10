@@ -8,6 +8,8 @@
  * ECX = count (max of src/dest), EDX = src size, EBX = dest size, EDI = output buffer
  * We inline this functionality since we can't match the register calling convention.
  */
+#pragma optimize("y", off)
+
 /* Function start: 0x4531AC */
 static void BuildScaleTable(unsigned char* output, unsigned int count, unsigned int srcSize, unsigned int destSize)
 {

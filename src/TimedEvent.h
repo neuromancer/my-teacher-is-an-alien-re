@@ -44,8 +44,8 @@ public:
         m_pool_size = ps;
     }
     ~TimedEventPool();
-    SpriteAction* Pop(SpriteAction* buffer);
-    SpriteAction* PopSafe(SpriteAction* buffer);
+    SpriteAction Pop();
+    SpriteAction PopSafe();
 };
 
 // TimedEvent: 40 bytes (0x28)

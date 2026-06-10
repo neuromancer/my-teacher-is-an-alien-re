@@ -340,7 +340,7 @@ void Target::ParseSound(char* line)
     char buffer[128];
 
     sscanf(line + 3, "%s", buffer);
-    char type = line[1];
+    int type = line[1];
     char* resolved = MakeAudioName(buffer);
     Sample* sound = (Sample*)g_SoundList_0046ae68->Register(resolved);
 

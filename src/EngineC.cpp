@@ -64,18 +64,19 @@ void EngineC::RenderBackground() {
 
     if (g_ScoreDisplay_0046ae6c->hitCount != field_0xFC) {
         field_0xFC++;
-        if (field_0x100 != 0 && field_0xFC >= field_0x100) {
+        int atLimit = (field_0x100 != 0 && field_0xFC >= field_0x100);
+        if (atLimit) {
             g_ActiveCombat_00468a1c->statusPtr[0] = 1;
         } else {
             // Original bug at 0x40BDC0: zero field_0x100 falls through to this divide.
             value = (field_0xFC * 6) / field_0x100;
-            if (value < 0) {
-                frame = 0;
-            } else {
+            if (value >= 0) {
                 frame = 5;
                 if (value <= 5) {
                     frame = value;
                 }
+            } else {
+                frame = 0;
             }
             sprite104->ResetAnimation(frame, 0);
         }
@@ -90,43 +91,34 @@ void EngineC::RenderBackground() {
 
         if (g_CombatWeapon_0046ae60->m_clicked != 0) {
             mouse = g_InputManager_0046aa08->pMouse;
-            if (mouse == 0) {
-                mouseY = 0;
-                mouseX = 0;
-            } else {
-                if (mouse->y > 0x77) {
-                    goto draw_engine_sprites;
-                }
-                mouseY = mouse->y;
-                mouseX = mouse->x;
+            if (mouse != 0 && mouse->y >= 0x78) {
+                goto draw_engine_sprites;
             }
+            mouseY = (mouse == 0) ? 0 : mouse->y;
+            mouseX = (mouse == 0) ? 0 : mouse->x;
 
             if (sprite118->animation_data->targetBuffer->CheckHit(mouseX, mouseY) == 0xfa) {
                 field_0x108++;
-                if (field_0x10C != 0 && field_0x108 >= field_0x10C) {
+                int atLimit2 = (field_0x10C != 0 && field_0x108 >= field_0x10C);
+                if (atLimit2) {
                     g_ActiveCombat_00468a1c->statusPtr[1] = 1;
                 } else {
                     // Original bug at 0x40BDC0: zero field_0x10C falls through to this divide.
                     value = (field_0x108 * 6) / field_0x10C;
-                    if (value < 0) {
-                        frame = 0;
-                    } else {
+                    if (value >= 0) {
                         frame = 5;
                         if (value <= 5) {
                             frame = value;
                         }
+                    } else {
+                        frame = 0;
                     }
                     sprite110->ResetAnimation(frame, 0);
                 }
 
                 mouse = g_InputManager_0046aa08->pMouse;
-                if (mouse == 0) {
-                    mouseY = 0;
-                    mouseX = 0;
-                } else {
-                    mouseY = mouse->y;
-                    mouseX = mouse->x;
-                }
+                mouseY = (mouse == 0) ? 0 : mouse->y;
+                mouseX = (mouse == 0) ? 0 : mouse->x;
                 sprite114->loc.x = mouseX - 0x48;
                 sprite114->loc.y = mouseY - 0x41;
                 sprite114->ResetAnimation(0, 0);

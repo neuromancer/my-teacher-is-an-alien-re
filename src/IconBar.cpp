@@ -200,7 +200,19 @@ void IconBar::Init(SC_MessageParser* msg) {
 /* Function start: 0x42D920 */
 void IconBar::ShutDown(SC_MessageParser* msg) {
     if (msg != 0) {
-        if ((unsigned int)(*(int*)msg - 0x1e) > 9) {
+        switch (*(int*)msg) {
+        case 0x1e:
+        case 0x1f:
+        case 0x20:
+            return;
+        case 0x25:
+            return;
+        case 0x27:
+            return;
+        default:
+            break;
+        }
+        {
             IconBarEntry* entry = g_IconBarEntries_00473320;
             do {
                 if (entry->sprite != 0) {

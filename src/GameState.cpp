@@ -209,7 +209,7 @@ int GameState::LBLParse(char* line)
 
         // Get pool and allocate+copy label string
         int* pool = (int*)stateLabels;
-        char* newLabel = (char*)AllocateMemory(strlen(labelName) + 1);
+        char* newLabel = new char[strlen(labelName) + 1];
         strcpy(newLabel, labelName);
 
         // Inline hash computation (MOVSX pattern)
@@ -235,7 +235,7 @@ int GameState::LBLParse(char* line)
             // Not found - allocate bucket array if needed
             if ((int*)pool[0] == 0) {
                 int numBuckets = pool[1];
-                int* buckets = (int*)AllocateMemory(numBuckets * 4);
+                int* buckets = new int[numBuckets];
                 int cnt = numBuckets * 4;
                 cnt >>= 2;
                 memset(buckets, 0, cnt * 4);
@@ -246,7 +246,7 @@ int GameState::LBLParse(char* line)
             // Allocate from free list, grow if needed
             if (pool[3] == 0) {
                 int growBy = pool[5];
-                int* block = (int*)AllocateMemory(growBy * 16 + 4);
+                int* block = new int[growBy * 4 + 1];
                 block[0] = pool[4];
                 pool[4] = (int)block;
                 int cnt = growBy;

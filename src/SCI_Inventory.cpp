@@ -109,42 +109,22 @@ SCI_Inventory::~SCI_Inventory() {
     }
 
     if (putBackButton != 0) {
-        if (putBackButton->sprite != 0) {
-            delete putBackButton->sprite;
-            putBackButton->sprite = 0;
-        }
-        putBackButton->~T_MenuButton();
-        FreeMemory(putBackButton);
+        delete putBackButton;
         putBackButton = 0;
     }
 
     if (useButton != 0) {
-        if (useButton->sprite != 0) {
-            delete useButton->sprite;
-            useButton->sprite = 0;
-        }
-        useButton->~T_MenuButton();
-        FreeMemory(useButton);
+        delete useButton;
         useButton = 0;
     }
 
     if (scrollDownBtn != 0) {
-        if (scrollDownBtn->sprite != 0) {
-            delete scrollDownBtn->sprite;
-            scrollDownBtn->sprite = 0;
-        }
-        scrollDownBtn->~T_MenuButton();
-        FreeMemory(scrollDownBtn);
+        delete scrollDownBtn;
         scrollDownBtn = 0;
     }
 
     if (scrollUpBtn != 0) {
-        if (scrollUpBtn->sprite != 0) {
-            delete scrollUpBtn->sprite;
-            scrollUpBtn->sprite = 0;
-        }
-        scrollUpBtn->~T_MenuButton();
-        FreeMemory(scrollUpBtn);
+        delete scrollUpBtn;
         scrollUpBtn = 0;
     }
 
@@ -700,7 +680,7 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
         head = (int*)ebx[0];
 
         if (ebx[3] == 0) {
-            int* block = (int*)AllocateMemory(ebx[5] * 12 + 4);
+            int* block = (int*)operator new(ebx[5] * 12 + 4);
             block[0] = ebx[4];
             ebx[4] = (int)block;
 
@@ -923,7 +903,7 @@ void SCI_Inventory::Serialize(void* param) {
             int* tail = (int*)listPtr[1];
 
             if (listPtr[3] == 0) {
-                int* block = (int*)AllocateMemory(listPtr[5] * 12 + 4);
+                int* block = (int*)operator new(listPtr[5] * 12 + 4);
                 block[0] = listPtr[4];
                 listPtr[4] = (int)block;
 
@@ -964,12 +944,14 @@ void SCI_Inventory::Serialize(void* param) {
         }
     }
 
-    /* Read held item */
-    fread(&handle, 4, 1, (FILE*)fp);
-    if (handle == 999) return;
+    /* Read held item(s) — original loops until the 999 terminator */
+    for (;;) {
+        fread(&handle, 4, 1, (FILE*)fp);
+        if (handle == 999) break;
 
-    g_SelectedItem_0046a6e4 = (T_Object*)((SCI_Inventory*)self)->FindItem(handle);
-    fread((char*)&g_SelectedItem_0046a6e4->objectFlags, 4, 1, (FILE*)fp);
+        g_SelectedItem_0046a6e4 = (T_Object*)((SCI_Inventory*)self)->FindItem(handle);
+        fread((char*)&g_SelectedItem_0046a6e4->objectFlags, 4, 1, (FILE*)fp);
+    }
 }
 
 // Stubs (moved from stubs.cpp)

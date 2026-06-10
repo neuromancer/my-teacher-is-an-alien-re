@@ -34,6 +34,7 @@ CFLAGS = \
 	/nologo \
 	/c \
 	/Og /Oi /Ot /Oy /Ob1 \
+	/QIfdiv \
 	/Gs /Gf /GX \
 	/I msvc420\\include \
 	/I 3rdparty\\miles\\include \

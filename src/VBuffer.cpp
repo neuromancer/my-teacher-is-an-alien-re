@@ -707,5 +707,5 @@ void CopyRowTransparent(char* dest, char* src, int count, char transparentColor,
 /* Function start: 0x411530 */
 void VBuffer::BlitTransparentRegion(int p1, int p2, int p3, int p4, int p5, int p6, int p7)
 {
-    BlitTransparentRows(p1, p2, p3, p4, p5, p6, (VBuffer*)p7, this, 0, 0);
+    BlitRowsReversed(p1, p2, p3, p4, p5, p6, (VBuffer*)p7, this, 0);
 }
