@@ -227,7 +227,7 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
     return 0;
 }
 
-extern int __stdcall AIL_sample_status(void*);
+extern __declspec(dllimport) int __stdcall AIL_sample_status(void*);
 
 /* Function start: 0x429DF0 */
 void SC_PRHotSpot::Update()

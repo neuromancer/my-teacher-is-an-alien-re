@@ -456,7 +456,7 @@ int SoundEntry::SoundUpdate() {
     return 1;
 }
 
-extern "C" int __stdcall AIL_sample_volume(void*);
+extern "C" __declspec(dllimport) int __stdcall AIL_sample_volume(void*);
 
 /* Function start: 0x448220 */
 void SoundEntry::FadeVolume(int volume, unsigned int duration) {

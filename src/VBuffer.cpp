@@ -240,7 +240,8 @@ void* VBuffer::InitWithSize(int param_1, int param_2)
     int iVar1 = CreateTable(param_1, param_2);
     handle = iVar1;
     if (iVar1 == -1) {
-        ShowError("VBuffer::Init - Unable To create vb. Table Full");
+        DumpVBufferHandles();
+        ShowError("VBuffer::Init - Unable To create vb. Table Full. Check Message.log");
         return data;
     }
     if (iVar1 == -2) {

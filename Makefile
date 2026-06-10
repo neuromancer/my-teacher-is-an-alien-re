@@ -73,8 +73,11 @@ VALUES_FLAGS ?=
 
 # Address windows used by the globals audit helper.  The middle range is
 # skipped because it belongs to MSVC CRT/library helper data, not game globals.
-GLOBALS_MISSING_MIN_ADDRESS = 0x00468000
-GLOBALS_MISSING_MAX_ADDRESS = 0x0047185b
+# 0x468004-0x468044 are CRT-generated initializer-table slots and 0x471850-
+# 0x471858 is the CRT __fpmath pointer block; our build emits its own copies,
+# so the audit windows skip them (see globals.cpp coverage note).
+GLOBALS_MISSING_MIN_ADDRESS = 0x00468048
+GLOBALS_MISSING_MAX_ADDRESS = 0x0047184f
 GLOBALS_MISSING_TAIL_MIN_ADDRESS = 0x00472bd8
 GLOBALS_MISSING_TAIL_MAX_ADDRESS = 0x0047508b
 

@@ -17,7 +17,7 @@ extern "C" {
 void ParsePath(const char *, char *, char *, char *, char *);
 int __cdecl FileExists(const char* path);           // 0x4195A0
 int __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
-unsigned long __stdcall timeGetTime(void);
+__declspec(dllimport) unsigned long __stdcall timeGetTime(void);
 }
 void ShowError(const char* format, ...);
 

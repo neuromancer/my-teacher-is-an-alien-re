@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-extern "C" unsigned long __stdcall timeGetTime(void);
+extern "C" __declspec(dllimport) unsigned long __stdcall timeGetTime(void);
 
 // FileCacheEntry — 0x2C bytes. Allocated via operator new in FileCacheRegister.
 // Points to from CacheNode::entry.

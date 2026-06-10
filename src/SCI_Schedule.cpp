@@ -23,13 +23,13 @@ SCI_Schedule::SCI_Schedule()
     memset(&palette, 0, 0xC * 4);
 
     handlerId = 0x27;
-    ParseFile(this, "mis\\\\schedule.mis", (char*)0);
+    ParseFile(this, "mis\\schedule.mis", (char*)0);
 
     Palette* pal = new Palette();
     palette = pal;
-    pal->Load("schedual\\\\schedule.col");
+    pal->Load("schedual\\schedule.col");
 
-    Sprite* spr = new Sprite("schedual\\\\schedule.smk");
+    Sprite* spr = new Sprite("schedual\\schedule.smk");
     bgSprite = spr;
     spr->ConfigStates(3);
     spr->ConfigRange(0, 1, 1, 1);
@@ -37,28 +37,28 @@ SCI_Schedule::SCI_Schedule()
     spr->ConfigRange(2, 3, 3, 1);
     bgSprite->priority = 0;
 
-    Sprite* spr2 = new Sprite("schedual\\\\shedbox1.smk");
+    Sprite* spr2 = new Sprite("schedual\\shedbox1.smk");
     selBox1 = spr2;
     selBox1->priority = 5;
     selBox1->flags |= 0x40;
 
-    Sprite* spr3 = new Sprite("schedual\\\\shedbox2.smk");
+    Sprite* spr3 = new Sprite("schedual\\shedbox2.smk");
     selBox2 = spr3;
     selBox2->priority = 5;
     selBox2->flags |= 0x40;
 
-    Sprite* spr4 = new Sprite("schedual\\\\tardies.smk");
+    Sprite* spr4 = new Sprite("schedual\\tardies.smk");
     Sprite** ebx = &tardiesSprite;
     *ebx = spr4;
     (*ebx)->loc.x = 0x54;
     (*ebx)->loc.y = 0x190;
 
-    Sprite* spr5 = new Sprite("schedual\\\\cuts.smk");
+    Sprite* spr5 = new Sprite("schedual\\cuts.smk");
     cutsSprite = spr5;
     cutsSprite->loc.x = 0x105;
     cutsSprite->loc.y = 0x190;
 
-    Sprite* spr6 = new Sprite("schedual\\\\detents.smk");
+    Sprite* spr6 = new Sprite("schedual\\detents.smk");
     scheduleSprite = spr6;
     scheduleSprite->loc.x = 0x1BB;
     scheduleSprite->loc.y = 0x190;

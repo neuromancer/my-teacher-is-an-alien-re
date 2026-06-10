@@ -142,8 +142,8 @@ void __stdcall ParseCommandLine(char *param_1) {
   }
 }
 
-static char* s_optPerformanceMsg =
-    "For Optimum performance, Set your display to 256 Colors.\nWould you like to exit now to set your display?";
+extern char* PTR_s_For_Optimum_performance__Set_you_0046a324;  // -> message text (globals.cpp)
+#define s_optPerformanceMsg PTR_s_For_Optimum_performance__Set_you_0046a324
 
 /* Function start: 0x4204F0 */
 int GameWindow::InitGraphics(void) {

@@ -67,7 +67,9 @@ int Handler::Exit(SC_MessageParser* msg) {
 void Handler::Serialize(void* param) {
 }
 
+/* Function start: 0x401160 */
 void Handler::OnInput(void* param) {
+    WriteToMessageLog("hIam %d", handlerId);
 }
 
 void Handler::InitFromMessage(SC_MessageParser*) {}

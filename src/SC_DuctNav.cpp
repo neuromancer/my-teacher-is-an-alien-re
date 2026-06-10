@@ -945,17 +945,6 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
                     pool[1] = (int)entry;
                 }
             }
-        } else if (node == 0) {
-            /* This branch never happens, but keep for structure */
-            int* newNode = ((SaveFilePool*)pool)->AllocNode(0, pool[0]);
-            memcpy((char*)(newNode) + 8, &findData, 0x118);
-            if (pool[0] == 0) {
-                pool[1] = (int)newNode;
-                pool[0] = (int)newNode;
-            } else {
-                *(int*)(pool[0] + 4) = (int)newNode;
-                pool[0] = (int)newNode;
-            }
         } else {
             int* newNode = ((SaveFilePool*)pool)->AllocNode(node[1], (int)node);
             memcpy((char*)(newNode) + 8, &findData, 0x118);

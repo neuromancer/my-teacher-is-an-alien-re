@@ -17,9 +17,6 @@ int SC_MessageParser::LBLParse(char* param_1)
     int idx;
     SpriteAction* target = (SpriteAction*)targetAddress;
 
-    local_54[0] = '\0';
-    local_74[0] = '\0';
-    local_30[0] = '\0';
     sscanf(param_1, "%s", local_30);
 
     if (strcmp(local_30, "ADDRESS") == 0) {

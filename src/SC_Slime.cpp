@@ -446,6 +446,9 @@ void SC_Slime::ProcessAction(int action, int* data) {
     int state = spr->handle;
 
     switch (action) {
+    default:
+        ShowError("SC_Slime::Process_Action - invalid Action=%d, value=%d", action, *data);
+        return;
     case 0:
         gameResult[1] = 0;
         gameResult[2] = 0;

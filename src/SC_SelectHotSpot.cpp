@@ -17,7 +17,7 @@
 extern "C" void ShowError(const char* format, ...);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 extern "C" char* GetSoundFilename(int handle);
-extern "C" int __stdcall AIL_sample_status(void*);
+extern "C" __declspec(dllimport) int __stdcall AIL_sample_status(void*);
 
 #include "globals.h"
 #include "InputManager.h"

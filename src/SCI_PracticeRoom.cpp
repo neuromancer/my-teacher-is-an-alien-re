@@ -22,7 +22,8 @@ extern "C" void SetVideoRes(int, int);
 // FUN_00429c10 = SC_PRHotSpot::~SC_PRHotSpot — callers updated
 // FUN_0042bc50 = LinkedList::RemoveCurrent COMDAT — callers updated to use RemoveCurrent()
 
-static char* g_PracticeSavePath = "cfg\\practice.sav";
+extern char* PTR_s_cfg_practice_sav_0046ad68;  // -> "cfg\\practice.sav" (globals.cpp)
+#define g_PracticeSavePath PTR_s_cfg_practice_sav_0046ad68
 extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode); // 0x426050
 void SavePracticeState();   // 0x42B100
 void LoadPracticeState();   // 0x42B270

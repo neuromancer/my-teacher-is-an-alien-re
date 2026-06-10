@@ -124,7 +124,7 @@ void FlagArray::Seek(int index) {
     // offset > dataSize - entrySize + 1 ??
     // iVar1 is offset.
     if ((dataSize - entrySize) + 1 < offset) {
-        ShowError("Error in flagaray.cpp - Seek: Attempt to read past end of file");
+        WriteToMessageLog("Error in flagaray.cpp - Seek: Attempt to read past end of file");
     }
     
     fseek(fp, offset, 0); // SEEK_SET
