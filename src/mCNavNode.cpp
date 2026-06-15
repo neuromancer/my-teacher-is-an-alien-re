@@ -139,7 +139,7 @@ int mCNavNode::LBLParse(char* param_1)
             if (pos != 0) {
                 // Original quirk: 0x44AF40 direct-calls mCNavNode_TypeE::LBLParse
                 // (0x44AC90) on every node type; subtype parsers run via ProcessFile.
-                ((mCNavNode_TypeE*)node)->mCNavNode_TypeE::LBLParse(pos + strlen(token3));
+                node->LBLParse(pos + strlen(token3));
             }
         }
     }
