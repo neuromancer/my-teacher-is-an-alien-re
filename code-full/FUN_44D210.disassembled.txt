@@ -1,0 +1,53 @@
+Function: FUN_0044d210
+Address: 0x44D210
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+MOV EDI,dword ptr [ESP + 0x10]
+PUSH EBP
+CMP dword ptr [ESI + 0xb4],EDI
+JG       LAB_0044d237
+PUSH EDI
+LEA EAX,[ESI + 0xbc]
+PUSH EAX
+PUSH 0x46ca00
+CALL 0x00425c50
+ADD ESP,0xc
+
+LAB_0044d237:
+MOV EBX,dword ptr [ESP + 0x18]
+MOV EBP,dword ptr [ESP + 0x1c]
+CMP EBX,0x1
+JL       LAB_0044d249
+CMP EBP,0x1
+JGE      LAB_0044d260
+
+LAB_0044d249:
+PUSH EBP
+LEA EAX,[ESI + 0xbc]
+PUSH EBX
+PUSH EDI
+PUSH EAX
+PUSH 0x46c9d8
+CALL 0x00425c50
+ADD ESP,0x14
+
+LAB_0044d260:
+SHL EDI,0x4
+MOV EAX,dword ptr [ESI + 0x90]
+ADD EAX,EDI
+MOV EDX,dword ptr [ESP + 0x20]
+MOV dword ptr [EAX],EBX
+MOV dword ptr [EAX + 0x4],EBP
+POP EBP
+MOV ECX,dword ptr [ESI + 0x90]
+MOV dword ptr [ECX + EDI*0x1 + 0xc],EDX
+LEA EAX,[ECX + EDI*0x1 + 0x8]
+POP EDI
+MOV dword ptr [EAX],0x0
+OR dword ptr [ESI + 0x94],0x20
+POP ESI
+POP EBX
+RET 0x10

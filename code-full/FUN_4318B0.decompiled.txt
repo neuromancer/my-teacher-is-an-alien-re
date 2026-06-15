@@ -1,0 +1,46 @@
+Function: FUN_004318b0
+Address: 0x4318B0
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+undefined4 __thiscall FUN_004318b0(void *this,int param_1)
+
+{
+  undefined4 *puVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  
+  puVar1 = *(undefined4 **)((int)this + 0x10);
+  if (puVar1 == (undefined4 *)0x0) {
+    return 0;
+  }
+  puVar1[2] = *puVar1;
+  iVar2 = **(int **)((int)this + 0x10);
+  while( true ) {
+    if (iVar2 == 0) {
+      return 0;
+    }
+    iVar2 = *(int *)((int)this + 0x10);
+    iVar3 = *(int *)(iVar2 + 8);
+    iVar4 = _DAT_00000090;
+    if (iVar3 != 0) {
+      iVar4 = *(int *)(*(int *)(iVar3 + 8) + 0x90);
+    }
+    if (param_1 == iVar4) break;
+    if (*(int *)(iVar2 + 4) == iVar3) {
+      return 0;
+    }
+    if (iVar3 != 0) {
+      *(undefined4 *)(iVar2 + 8) = *(undefined4 *)(iVar3 + 4);
+    }
+    iVar2 = **(int **)((int)this + 0x10);
+  }
+  iVar2 = *(int *)(*(int *)((int)this + 0x10) + 8);
+  if (iVar2 != 0) {
+    return *(undefined4 *)(iVar2 + 8);
+  }
+  return 0;
+}
+

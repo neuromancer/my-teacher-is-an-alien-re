@@ -1,0 +1,5 @@
+Function: FUN_004205a0
+Address: 0x4205A0
+
+MOV ECX,0x472cf0
+JMP 0x00420110

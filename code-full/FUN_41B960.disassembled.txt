@@ -1,0 +1,17 @@
+Function: FUN_0041b960
+Address: 0x41B960
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x41db63
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+XOR EAX,EAX
+SUB ESP,0x134
+MOV byte ptr [EBP + 0xffffff40],AL
+MOV byte ptr [EBP + 0xfffffec0],AL
+MOV byte ptr [EBP + -0x34],AL
+PUSH EBX
+LEA EAX,[EBP + -0x34]

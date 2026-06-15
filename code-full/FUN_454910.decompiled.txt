@@ -1,0 +1,11 @@
+Function: FUN_00454910
+Address: 0x454910
+
+
+void __cdecl FUN_00454910(undefined4 param_1)
+
+{
+  DAT_0047185c = param_1;
+  return;
+}
+

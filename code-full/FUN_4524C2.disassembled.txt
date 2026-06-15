@@ -1,0 +1,12 @@
+Function: FUN_004524c2
+Address: 0x4524C2
+
+PUSH EBP
+MOV EBP,ESP
+MOV EAX,dword ptr [EBP + 0x8]
+MOV [0x0046d0aa],EAX
+MOV EAX,dword ptr [EBP + 0xc]
+MOV [0x0046d0b6],EAX
+XOR EAX,EAX
+POP EBP
+RET

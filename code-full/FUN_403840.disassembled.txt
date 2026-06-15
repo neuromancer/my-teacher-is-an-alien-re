@@ -1,0 +1,23 @@
+Function: FUN_00403840
+Address: 0x403840
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x5c]
+MOV ESI,ECX
+PUSH EAX
+MOV ECX,dword ptr [ESI + 0x58]
+PUSH ECX
+CALL 0x004524c2
+ADD ESP,0x8
+CMP dword ptr [0x0046aa28],0x0
+JZ       LAB_0040386f
+MOV EAX,dword ptr [ESI + 0x60]
+ADD ESI,0x8
+PUSH EAX
+MOV ECX,dword ptr [0x0046aa28]
+PUSH ESI
+CALL 0x0043aeb0
+
+LAB_0040386f:
+POP ESI
+RET 0x4

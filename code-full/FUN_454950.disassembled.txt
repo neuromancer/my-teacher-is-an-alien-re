@@ -1,0 +1,7 @@
+Function: FUN_00454950
+Address: 0x454950
+
+PUSH 0x19
+CALL     LAB_00456ce0
+ADD ESP,0x4
+RET

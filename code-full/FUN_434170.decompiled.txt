@@ -1,0 +1,35 @@
+Function: FUN_00434170
+Address: 0x434170
+
+
+void FUN_00434170(void)
+
+{
+  undefined4 *puVar1;
+  undefined4 *puVar2;
+  undefined4 *puVar3;
+  
+  FUN_004344b0();
+  puVar3 = DAT_0046b78c;
+  if (DAT_0046b78c != (undefined4 *)0x0) {
+    for (puVar1 = (undefined4 *)*DAT_0046b78c; puVar1 != (undefined4 *)0x0;
+        puVar1 = (undefined4 *)*puVar1) {
+      FUN_00434030(puVar1 + 2,1);
+    }
+    puVar3[2] = 0;
+    puVar3[3] = 0;
+    puVar3[1] = 0;
+    *puVar3 = 0;
+    puVar1 = (undefined4 *)puVar3[4];
+    while (puVar1 != (undefined4 *)0x0) {
+      puVar2 = (undefined4 *)*puVar1;
+      FUN_00454400(puVar1);
+      puVar1 = puVar2;
+    }
+    puVar3[4] = 0;
+    FUN_00454400(puVar3);
+    DAT_0046b78c = (undefined4 *)0x0;
+  }
+  return;
+}
+

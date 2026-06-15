@@ -1,0 +1,13 @@
+Function: FUN_00440a24
+Address: 0x440A24
+
+
+void FUN_00440a24(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_00442230(*(int **)(unaff_EBP + -0x14));
+  return;
+}
+

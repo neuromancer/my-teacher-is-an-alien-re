@@ -1,0 +1,12 @@
+Function: FUN_00448810
+Address: 0x448810
+
+
+undefined4 __thiscall FUN_00448810(void *this,undefined4 *param_1)
+
+{
+  FUN_004309c0(this,param_1);
+  FUN_00425c50(s_SC_Sound__AddMessage_0046c4cc);
+  return 1;
+}
+

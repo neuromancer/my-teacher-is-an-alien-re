@@ -1,0 +1,158 @@
+Function: FUN_00412210
+Address: 0x412210
+
+
+void FUN_00412210(char *param_1,char *param_2,undefined4 param_3,undefined4 param_4)
+
+{
+  int *piVar1;
+  int *piVar2;
+  char cVar3;
+  int iVar4;
+  undefined4 *puVar5;
+  undefined4 *puVar6;
+  undefined4 *puVar7;
+  int *piVar8;
+  int iVar9;
+  uint uVar10;
+  uint uVar11;
+  undefined4 *puVar12;
+  char *pcVar13;
+  char *pcVar14;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar15;
+  char *local_18;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_004123dd;
+  *unaff_FS_OFFSET = &local_10;
+  if (DAT_00469134[2] == DAT_00469128) {
+    FUN_00425c50(s_FilePosCache__Set___Error_More_t_00469290);
+    puVar7 = DAT_00469138;
+    puVar5 = DAT_00469134;
+    if ((undefined4 *)*DAT_00469134 == DAT_00469138) {
+      *DAT_00469134 = *DAT_00469138;
+    }
+    else {
+      *(undefined4 *)DAT_00469138[1] = *DAT_00469138;
+    }
+    puVar6 = puVar5;
+    if ((undefined4 *)puVar5[1] != puVar7) {
+      puVar6 = (undefined4 *)*puVar7;
+    }
+    puVar12 = puVar7 + 2;
+    puVar6[1] = puVar7[1];
+    iVar9 = 0;
+    do {
+      if ((LPVOID)*puVar12 != (LPVOID)0x0) {
+        FUN_00454400((LPVOID)*puVar12);
+        *puVar12 = 0;
+      }
+      puVar12 = puVar12 + 1;
+      bVar15 = iVar9 != 0;
+      iVar9 = iVar9 + -1;
+    } while (bVar15);
+    *puVar7 = puVar5[3];
+    puVar5[3] = puVar7;
+    puVar5[2] = puVar5[2] + -1;
+  }
+  local_18 = (char *)FUN_00454500(0x50);
+  if (local_18 == (char *)0x0) {
+    local_18 = (char *)0x0;
+  }
+  else {
+    uVar10 = 0xffffffff;
+    do {
+      pcVar14 = param_1;
+      if (uVar10 == 0) break;
+      uVar10 = uVar10 - 1;
+      pcVar14 = param_1 + 1;
+      cVar3 = *param_1;
+      param_1 = pcVar14;
+    } while (cVar3 != '\0');
+    uVar10 = ~uVar10;
+    pcVar13 = pcVar14 + -uVar10;
+    pcVar14 = local_18;
+    for (uVar11 = uVar10 >> 2; pcVar14 = pcVar14 + 4, uVar11 != 0; uVar11 = uVar11 - 1) {
+      *(undefined4 *)pcVar14 = *(undefined4 *)pcVar13;
+      pcVar13 = pcVar13 + 4;
+    }
+    for (uVar10 = uVar10 & 3; uVar10 != 0; uVar10 = uVar10 - 1) {
+      *pcVar14 = *pcVar13;
+      pcVar13 = pcVar13 + 1;
+      pcVar14 = pcVar14 + 1;
+    }
+    uVar10 = 0xffffffff;
+    do {
+      pcVar14 = param_2;
+      if (uVar10 == 0) break;
+      uVar10 = uVar10 - 1;
+      pcVar14 = param_2 + 1;
+      cVar3 = *param_2;
+      param_2 = pcVar14;
+    } while (cVar3 != '\0');
+    uVar10 = ~uVar10;
+    pcVar14 = pcVar14 + -uVar10;
+    pcVar13 = local_18 + 0x24;
+    for (uVar11 = uVar10 >> 2; uVar11 != 0; uVar11 = uVar11 - 1) {
+      *(undefined4 *)pcVar13 = *(undefined4 *)pcVar14;
+      pcVar14 = pcVar14 + 4;
+      pcVar13 = pcVar13 + 4;
+    }
+    for (uVar10 = uVar10 & 3; uVar10 != 0; uVar10 = uVar10 - 1) {
+      *pcVar13 = *pcVar14;
+      pcVar14 = pcVar14 + 1;
+      pcVar13 = pcVar13 + 1;
+    }
+    *(undefined4 *)(local_18 + 0x48) = param_3;
+    *(undefined4 *)(local_18 + 0x4c) = param_4;
+    local_18[0] = '\0';
+    local_18[1] = '\0';
+    local_18[2] = '\0';
+    local_18[3] = '\0';
+  }
+  puVar5 = DAT_00469134;
+  local_8 = 0xffffffff;
+  piVar1 = DAT_00469134 + 1;
+  piVar2 = DAT_00469134 + 3;
+  iVar9 = *piVar1;
+  if (*piVar2 == 0) {
+    piVar8 = DAT_00469134 + 5;
+    puVar7 = (undefined4 *)FUN_00454500(*piVar8 * 0xc + 4);
+    *puVar7 = puVar5[4];
+    puVar5[4] = puVar7;
+    iVar4 = *piVar8;
+    piVar8 = puVar7 + iVar4 * 3 + -2;
+    while (iVar4 = iVar4 + -1, -1 < iVar4) {
+      *piVar8 = *piVar2;
+      *piVar2 = (int)piVar8;
+      piVar8 = piVar8 + -3;
+    }
+  }
+  piVar8 = (int *)*piVar2;
+  *piVar2 = *piVar8;
+  piVar8[1] = iVar9;
+  *piVar8 = 0;
+  puVar5[2] = puVar5[2] + 1;
+  piVar8[2] = 0;
+  iVar9 = 0;
+  do {
+    bVar15 = iVar9 != 0;
+    iVar9 = iVar9 + -1;
+  } while (bVar15);
+  piVar8[2] = (int)local_18;
+  if ((undefined4 *)*piVar1 == (undefined4 *)0x0) {
+    *puVar5 = piVar8;
+  }
+  else {
+    *(undefined4 *)*piVar1 = piVar8;
+  }
+  *piVar1 = (int)piVar8;
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

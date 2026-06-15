@@ -1,0 +1,13 @@
+Function: FUN_004525ec
+Address: 0x4525EC
+
+
+undefined4 __cdecl FUN_004525ec(byte param_1)
+
+{
+  DAT_0046d07d = param_1;
+  DAT_0046d078 = (&DAT_0046d108)[param_1];
+  DAT_0046d079 = CONCAT22(CONCAT11(DAT_0046d078,DAT_0046d078),CONCAT11(DAT_0046d078,DAT_0046d078));
+  return 0;
+}
+

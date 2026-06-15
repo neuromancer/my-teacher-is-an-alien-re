@@ -1,0 +1,19 @@
+Function: __IsZeroMan
+Address: 0x45CDB0
+
+XOR EAX,EAX
+MOV ECX,dword ptr [ESP + 0x4]
+
+LAB_0045cdb6:
+CMP dword ptr [ECX],0x0
+JNZ      LAB_0045cdca
+ADD ECX,0x4
+INC EAX
+CMP EAX,0x3
+JL       LAB_0045cdb6
+MOV EAX,0x1
+RET
+
+LAB_0045cdca:
+XOR EAX,EAX
+RET

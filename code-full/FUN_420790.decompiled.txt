@@ -1,0 +1,98 @@
+Function: FUN_00420790
+Address: 0x420790
+
+
+void * __thiscall FUN_00420790(void *this,char *param_1,int param_2)
+
+{
+  byte *pbVar1;
+  char cVar2;
+  FILE *pFVar3;
+  int iVar4;
+  uint uVar5;
+  uint uVar6;
+  byte *pbVar7;
+  undefined4 *puVar8;
+  char *pcVar9;
+  byte *pbVar10;
+  char local_4 [4];
+  
+  puVar8 = this;
+  for (iVar4 = 0x33; iVar4 != 0; iVar4 = iVar4 + -1) {
+    *puVar8 = 0;
+    puVar8 = puVar8 + 1;
+  }
+  uVar5 = 0xffffffff;
+  local_4[0] = '\0';
+  local_4[1] = '\0';
+  local_4[2] = '\0';
+  local_4[3] = '\0';
+  pcVar9 = param_1;
+  do {
+    if (uVar5 == 0) break;
+    uVar5 = uVar5 - 1;
+    cVar2 = *pcVar9;
+    pcVar9 = pcVar9 + 1;
+  } while (cVar2 != '\0');
+  if (0x32 < ~uVar5 - 1) {
+    FUN_00425c50(s_Error_in_flagaray_cpp___SetFileN_0046a3ac);
+  }
+  pbVar1 = (byte *)((int)this + 4);
+  uVar5 = 0xffffffff;
+  do {
+    pcVar9 = param_1;
+    if (uVar5 == 0) break;
+    uVar5 = uVar5 - 1;
+    pcVar9 = param_1 + 1;
+    cVar2 = *param_1;
+    param_1 = pcVar9;
+  } while (cVar2 != '\0');
+  uVar5 = ~uVar5;
+  pbVar7 = (byte *)(pcVar9 + -uVar5);
+  pbVar10 = pbVar1;
+  for (uVar6 = uVar5 >> 2; uVar6 != 0; uVar6 = uVar6 - 1) {
+    *(undefined4 *)pbVar10 = *(undefined4 *)pbVar7;
+    pbVar7 = pbVar7 + 4;
+    pbVar10 = pbVar10 + 4;
+  }
+  for (uVar5 = uVar5 & 3; uVar5 != 0; uVar5 = uVar5 - 1) {
+    *pbVar10 = *pbVar7;
+    pbVar7 = pbVar7 + 1;
+    pbVar10 = pbVar10 + 1;
+  }
+  pFVar3 = (FILE *)FUN_00455110((char *)pbVar1,&DAT_0046a3a8);
+  *(FILE **)this = pFVar3;
+  if (((pFVar3 != (FILE *)0x0) &&
+      (__fread_lk((char *)((int)this + 0x38),0x94,1,pFVar3), *(int *)((int)this + 0x40) != param_2))
+     && (*(FILE **)this != (FILE *)0x0)) {
+    _fclose(*(FILE **)this);
+    *(undefined4 *)this = 0;
+  }
+  if (*(int *)this == 0) {
+    pFVar3 = (FILE *)FUN_00426050(pbVar1,&DAT_0046a3a4);
+    *(FILE **)this = pFVar3;
+    if (pFVar3 == (FILE *)0x0) {
+      FUN_00425c50(s_Error_in_flagaray_cpp___Create__C_0046a370);
+    }
+    else {
+      *(int *)((int)this + 0x40) = param_2;
+      *(int *)((int)this + 0x38) = param_2 * 4 + 0x94;
+      iVar4 = 0;
+      *(undefined4 *)((int)this + 0x3c) = 0x94;
+      *(undefined4 *)((int)this + 0x44) = 4;
+      FUN_004546d0((char *)((int)this + 0x38),0x94,1,pFVar3);
+      if (0 < *(int *)((int)this + 0x40)) {
+        do {
+          iVar4 = iVar4 + 1;
+          FUN_004546d0(local_4,4,1,*(FILE **)this);
+        } while (iVar4 < *(int *)((int)this + 0x40));
+      }
+    }
+  }
+  if (*(FILE **)this != (FILE *)0x0) {
+    _fclose(*(FILE **)this);
+    *(undefined4 *)this = 0;
+  }
+  return this;
+}
+

@@ -1,0 +1,11 @@
+Function: FUN_00457940
+Address: 0x457940
+
+
+void __cdecl FUN_00457940(SIZE_T param_1)
+
+{
+  HeapAlloc(DAT_00474f70,0,param_1);
+  return;
+}
+

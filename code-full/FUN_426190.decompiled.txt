@@ -1,0 +1,33 @@
+Function: FUN_00426190
+Address: 0x426190
+
+
+byte * __cdecl FUN_00426190(char *param_1)
+
+{
+  bool bVar1;
+  int iVar2;
+  undefined3 extraout_var;
+  byte *pbVar3;
+  byte *_Dest;
+  
+  _Dest = (byte *)((int)DAT_0046aa1c + 0x21a);
+  _vsprintf((char *)_Dest,param_1,&stack0x00000008);
+  iVar2 = FUN_004341f0(_Dest);
+  if (iVar2 == 0) {
+    bVar1 = FUN_00425fa0((LPCSTR)_Dest);
+    if (CONCAT31(extraout_var,bVar1) == 0) {
+      pbVar3 = (byte *)FUN_004260f0((char *)_Dest);
+      iVar2 = FUN_00425fc0(pbVar3);
+      if (iVar2 == -1) {
+        FUN_004260f0((char *)_Dest);
+        FUN_00425d70((wchar_t *)s_HDFile_____Unable_to_find_file___0046aaf8);
+        return _Dest;
+      }
+      FUN_004342d0((char *)_Dest,iVar2);
+      FUN_00433230(DAT_0046aa1c,_Dest);
+    }
+  }
+  return _Dest;
+}
+

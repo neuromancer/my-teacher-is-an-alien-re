@@ -1,0 +1,16 @@
+Function: FUN_004544e6
+Address: 0x4544E6
+
+
+void FUN_004544e6(void)
+
+{
+  undefined4 in_EAX;
+  int unaff_EBP;
+  
+  DAT_00471838 = *(undefined4 *)(unaff_EBP + 8);
+  DAT_00471834 = in_EAX;
+  DAT_0047183c = unaff_EBP;
+  return;
+}
+

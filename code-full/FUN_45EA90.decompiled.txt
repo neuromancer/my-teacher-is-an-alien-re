@@ -1,0 +1,98 @@
+Function: _raise
+Address: 0x45EA90
+
+
+/* Library Function - Single Match
+    _raise
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl _raise(int _SigNum)
+
+{
+  undefined4 uVar1;
+  undefined4 uVar2;
+  uint uVar3;
+  int iVar4;
+  undefined4 uVar5;
+  undefined4 *puVar6;
+  code *pcVar7;
+  undefined4 local_4;
+  
+  switch(_SigNum) {
+  case 2:
+    puVar6 = &DAT_004728ac;
+    pcVar7 = DAT_004728ac;
+    break;
+  default:
+    return -1;
+  case 4:
+  case 8:
+  case 0xb:
+    uVar3 = siglookup(_SigNum);
+    puVar6 = (undefined4 *)(uVar3 + 8);
+    pcVar7 = (code *)*puVar6;
+    break;
+  case 0xf:
+    puVar6 = &DAT_004728b8;
+    pcVar7 = DAT_004728b8;
+    break;
+  case 0x15:
+    puVar6 = &DAT_004728b0;
+    pcVar7 = DAT_004728b0;
+    break;
+  case 0x16:
+    puVar6 = &DAT_004728b4;
+    pcVar7 = DAT_004728b4;
+  }
+  uVar2 = DAT_00472158;
+  uVar1 = DAT_00472154;
+  if (pcVar7 == (code *)0x1) {
+    return 0;
+  }
+  if (pcVar7 == (code *)0x0) {
+// WARNING: Subroutine does not return
+    __exit(3);
+  }
+  if (((_SigNum == 8) || (_SigNum == 0xb)) || (uVar5 = local_4, _SigNum == 4)) {
+    DAT_00472158 = 0;
+    uVar5 = uVar2;
+    if (_SigNum == 8) {
+      DAT_00472154 = 0x8c;
+      local_4 = uVar1;
+      goto LAB_0045eb5c;
+    }
+  }
+  else {
+LAB_0045eb5c:
+    if (_SigNum == 8) {
+      if (DAT_00472148 < DAT_0047214c + DAT_00472148) {
+        puVar6 = (undefined4 *)(DAT_00472148 * 0xc + 0x4720d8);
+        iVar4 = DAT_0047214c;
+        do {
+          *puVar6 = 0;
+          puVar6 = puVar6 + 3;
+          iVar4 = iVar4 + -1;
+        } while (iVar4 != 0);
+      }
+      goto LAB_0045eb9d;
+    }
+  }
+  *puVar6 = 0;
+LAB_0045eb9d:
+  if (_SigNum == 8) {
+    (*pcVar7)(8,DAT_00472154);
+  }
+  else {
+    (*pcVar7)(_SigNum);
+    if ((_SigNum != 0xb) && (_SigNum != 4)) {
+      return 0;
+    }
+  }
+  if (_SigNum == 8) {
+    DAT_00472154 = local_4;
+  }
+  DAT_00472158 = uVar5;
+  return 0;
+}
+

@@ -1,0 +1,4 @@
+Function: SelectObject
+Address: 0x4601AC
+
+JMP dword ptr [0x00476310]

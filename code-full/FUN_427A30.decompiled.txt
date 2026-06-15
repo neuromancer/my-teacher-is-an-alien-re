@@ -1,0 +1,61 @@
+Function: FUN_00427a30
+Address: 0x427A30
+
+
+undefined4 FUN_00427a30(int param_1)
+
+{
+  int *piVar1;
+  void *this;
+  uint uVar2;
+  int *piVar3;
+  undefined4 *puVar4;
+  undefined8 uVar5;
+  int *local_8;
+  
+  if (DAT_0046ae58 != 0) {
+    piVar1 = *(int **)(DAT_0046ae58 + 0x1b8);
+    if (piVar1 == (int *)0x0) {
+      return 0;
+    }
+    local_8 = (int *)((piVar1[2] == 0) - 1);
+    while (local_8 != (int *)0x0) {
+      if (local_8 == (int *)0xffffffff) {
+        uVar2 = 0;
+        if (piVar1[1] != 0) {
+          piVar3 = (int *)*piVar1;
+          do {
+            local_8 = (int *)*piVar3;
+            if (local_8 != (int *)0x0) break;
+            piVar3 = piVar3 + 1;
+            uVar2 = uVar2 + 1;
+          } while (uVar2 < (uint)piVar1[1]);
+        }
+      }
+      piVar3 = (int *)*local_8;
+      if (piVar3 == (int *)0x0) {
+        uVar2 = local_8[1] + 1;
+        if (uVar2 < (uint)piVar1[1]) {
+          puVar4 = (undefined4 *)(uVar2 * 4 + *piVar1);
+          do {
+            piVar3 = (int *)*puVar4;
+            if (piVar3 != (int *)0x0) break;
+            puVar4 = puVar4 + 1;
+            uVar2 = uVar2 + 1;
+          } while (uVar2 < (uint)piVar1[1]);
+        }
+      }
+      this = (void *)local_8[3];
+      local_8 = piVar3;
+      if (this != (void *)0x0) {
+        uVar5 = FUN_004428a0(this,(undefined4 *)(param_1 + 0x120));
+        if ((int)uVar5 != 0) {
+          FUN_00442940(this,1);
+          return 1;
+        }
+      }
+    }
+  }
+  return 0;
+}
+

@@ -1,0 +1,51 @@
+Function: FUN_004195d0
+Address: 0x4195D0
+
+
+undefined4 * __fastcall FUN_004195d0(int param_1)
+
+{
+  bool bVar1;
+  uint uVar2;
+  uint uVar3;
+  undefined4 *puVar4;
+  undefined3 extraout_var;
+  int iVar5;
+  
+  uVar2 = FUN_004218e0(*(int **)(param_1 + 0x71c));
+  uVar3 = (uint)(((ulonglong)uVar2 / 1000) / 0x18);
+  uVar2 = (uint)((ulonglong)uVar2 / 1000) / 2;
+  puVar4 = (undefined4 *)(uVar2 / 0x18);
+  uVar2 = uVar2 % 0x18;
+  if (*(uint *)(param_1 + 0x72c) != uVar3) {
+    if ((uVar3 == 1) && (*(int *)(param_1 + 0x728) == 0)) {
+      iVar5 = 10;
+    }
+    else if (uVar3 == 3) {
+      iVar5 = 3;
+    }
+    else if (uVar3 == 5) {
+      iVar5 = 4;
+    }
+    else {
+      if (uVar3 != 8) goto LAB_00419645;
+      iVar5 = 5;
+    }
+    bVar1 = FUN_00425550(*(void **)(param_1 + 0x110),iVar5);
+    puVar4 = (undefined4 *)CONCAT31(extraout_var,bVar1);
+  }
+LAB_00419645:
+  *(uint *)(param_1 + 0x72c) = uVar3;
+  if (uVar3 == 10) {
+    FUN_0044cb40(*(void **)(param_1 + 0x720),uVar2,0);
+    puVar4 = *(undefined4 **)(param_1 + 0xa8);
+    *puVar4 = 1;
+    return puVar4;
+  }
+  if (uVar3 < 10) {
+    FUN_0044cb40(*(void **)(param_1 + 0x724),uVar3,0);
+    puVar4 = (undefined4 *)FUN_0044cb40(*(void **)(param_1 + 0x720),uVar2,0);
+  }
+  return puVar4;
+}
+

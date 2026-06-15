@@ -1,0 +1,33 @@
+Function: FUN_00414b70
+Address: 0x414B70
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH ESI
+MOV ESI,dword ptr [EAX + 0x2c]
+CMP ESI,0x1b
+JZ       LAB_00414ba6
+CMP ESI,0x20
+JZ       LAB_00414ba6
+CMP ESI,0x77
+JZ       LAB_00414ba6
+CMP dword ptr [EAX + 0x28],0x2
+JZ       LAB_00414ba6
+MOV EDX,dword ptr [ECX + 0x94]
+AND EDX,0x8
+JZ       LAB_00414b9c
+TEST ESI,ESI
+JNZ      LAB_00414ba6
+
+LAB_00414b9c:
+TEST EDX,EDX
+JZ       LAB_00414bab
+CMP dword ptr [EAX + 0x24],0x2
+JNZ      LAB_00414bab
+
+LAB_00414ba6:
+CALL     LAB_00414c60
+
+LAB_00414bab:
+MOV EAX,0x1
+POP ESI
+RET 0x4

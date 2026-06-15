@@ -1,0 +1,43 @@
+Function: FUN_004524d9
+Address: 0x4524D9
+
+
+undefined4 __cdecl FUN_004524d9(int param_1,int param_2,int param_3,int param_4)
+
+{
+  undefined4 uVar1;
+  uint uVar2;
+  uint uVar3;
+  int iVar4;
+  int iVar5;
+  undefined4 *puVar6;
+  bool bVar7;
+  
+  uVar1 = DAT_0046d079;
+  bVar7 = false;
+  if (-1 < DAT_0046db3c) {
+    puVar6 = (undefined4 *)(param_1 + (DAT_0046d0b2 - param_4) * DAT_0046db46 + DAT_0046db4e);
+    iVar5 = (1 - (DAT_0046d0b2 - param_4)) + (DAT_0046d0b2 - param_3);
+    uVar3 = (param_2 + 1) - param_1;
+    iVar4 = DAT_0046db46 - uVar3;
+    do {
+      for (uVar2 = uVar3 >> 2; uVar2 != 0; uVar2 = uVar2 - 1) {
+        *puVar6 = uVar1;
+        puVar6 = puVar6 + (uint)bVar7 * -2 + 1;
+      }
+      for (uVar2 = (uint)((uVar3 >> 1 & 1) != 0); uVar2 != 0; uVar2 = uVar2 - 1) {
+        *(short *)puVar6 = (short)uVar1;
+        puVar6 = (undefined4 *)((int)puVar6 + (uint)bVar7 * -4 + 2);
+      }
+      bVar7 = bVar7 != false;
+      for (uVar2 = (uint)((uVar3 & 1) != 0); uVar2 != 0; uVar2 = uVar2 - 1) {
+        *(char *)puVar6 = (char)uVar1;
+        puVar6 = (undefined4 *)((int)puVar6 + (uint)bVar7 * -2 + 1);
+      }
+      puVar6 = (undefined4 *)((int)puVar6 + iVar4);
+      iVar5 = iVar5 + -1;
+    } while (iVar5 != 0);
+  }
+  return 0;
+}
+

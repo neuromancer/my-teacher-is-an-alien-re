@@ -1,0 +1,35 @@
+Function: FUN_0044a900
+Address: 0x44A900
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x44a96d
+MOV dword ptr [ECX],0x461b30
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+MOV dword ptr [EBP + -0x4],0x0
+PUSH ESI
+MOV dword ptr [EBP + -0x10],ECX
+MOV ESI,dword ptr [ECX + 0xa0]
+TEST ESI,ESI
+JZ       LAB_0044a953
+MOV ECX,ESI
+CALL 0x00444af0
+PUSH ESI
+CALL 0x00454400
+ADD ESP,0x4
+MOV EAX,dword ptr [EBP + -0x10]
+MOV dword ptr [EAX + 0xa0],0x0
+
+LAB_0044a953:
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL     LAB_0044a977
+MOV EAX,dword ptr [EBP + -0xc]
+POP ESI
+MOV FS:[0x0],EAX
+MOV ESP,EBP
+POP EBP
+RET

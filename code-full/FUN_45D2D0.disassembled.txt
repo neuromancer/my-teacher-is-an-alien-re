@@ -1,0 +1,11 @@
+Function: FUN_0045d2d0
+Address: 0x45D2D0
+
+MOV EAX,[0x0047278c]
+TEST EAX,EAX
+JNZ      LAB_0045d2e4
+CALL     LAB_0045d2f0
+INC dword ptr [0x0047278c]
+
+LAB_0045d2e4:
+RET

@@ -1,0 +1,14 @@
+Function: FUN_0040c840
+Address: 0x40C840
+
+
+void __thiscall FUN_0040c840(void *this,int param_1,int param_2,int param_3)
+
+{
+  if (((-1 < param_2) && (-1 < param_1)) && (*(void **)((int)this + 0xc0) != (void *)0x0)) {
+    FUN_0044cb40(*(void **)((int)this + 0xc0),(uint)(param_3 != 0),0);
+    FUN_0044ccf0(*(void **)((int)this + 0xc0),param_1,param_2,0,0x3ff00000);
+  }
+  return;
+}
+

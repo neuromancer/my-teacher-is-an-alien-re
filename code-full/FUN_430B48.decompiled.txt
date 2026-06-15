@@ -1,0 +1,13 @@
+Function: FUN_00430b48
+Address: 0x430B48
+
+
+void FUN_00430b48(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_00454400(*(LPVOID *)(unaff_EBP + -0x10));
+  return;
+}
+

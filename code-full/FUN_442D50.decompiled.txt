@@ -1,0 +1,76 @@
+Function: FUN_00442d50
+Address: 0x442D50
+
+
+void __fastcall FUN_00442d50(int param_1)
+
+{
+  undefined4 uVar1;
+  undefined4 *puVar2;
+  undefined4 *puVar3;
+  int iVar4;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar5;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00442e75;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_0044d6e0(param_1);
+  if ((*(int *)(param_1 + 0x14c) == 0) && (DAT_0046bff0 != 0)) {
+    puVar2 = (undefined4 *)FUN_00454500(0x20);
+    if (puVar2 == (undefined4 *)0x0) {
+      puVar2 = (undefined4 *)0x0;
+    }
+    else {
+      puVar2[2] = 0;
+      puVar2[3] = 0;
+      puVar2[1] = 0;
+      *puVar2 = 0;
+      puVar2[4] = 0;
+      puVar2[5] = 10;
+      puVar2[6] = 0;
+      puVar2[7] = 0xffffffff;
+    }
+    local_8 = 0xffffffff;
+    *(undefined4 **)(param_1 + 0x14c) = puVar2;
+    uVar1 = puVar2[1];
+    if (puVar2[3] == 0) {
+      puVar3 = (undefined4 *)FUN_00454500(puVar2[5] * 0xc + 4);
+      *puVar3 = puVar2[4];
+      puVar2[4] = puVar3;
+      iVar4 = puVar2[5];
+      puVar3 = puVar3 + iVar4 * 3 + -2;
+      while (iVar4 = iVar4 + -1, -1 < iVar4) {
+        *puVar3 = puVar2[3];
+        puVar2[3] = puVar3;
+        puVar3 = puVar3 + -3;
+      }
+    }
+    puVar3 = (undefined4 *)puVar2[3];
+    puVar2[3] = *puVar3;
+    puVar3[1] = uVar1;
+    *puVar3 = 0;
+    puVar2[2] = puVar2[2] + 1;
+    puVar3[2] = 0;
+    iVar4 = 0;
+    do {
+      bVar5 = iVar4 != 0;
+      iVar4 = iVar4 + -1;
+    } while (bVar5);
+    puVar3[2] = DAT_0046bff0;
+    if ((undefined4 *)puVar2[1] == (undefined4 *)0x0) {
+      *puVar2 = puVar3;
+    }
+    else {
+      *(undefined4 *)puVar2[1] = puVar3;
+    }
+    puVar2[1] = puVar3;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

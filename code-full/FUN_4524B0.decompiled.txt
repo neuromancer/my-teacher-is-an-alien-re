@@ -1,0 +1,15 @@
+Function: GetDC
+Address: 0x4524B0
+
+
+HDC GetDC(HWND hWnd)
+
+{
+  HDC pHVar1;
+  
+// WARNING: Could not recover jumptable at 0x004524b0. Too many branches
+// WARNING: Treating indirect jump as call
+  pHVar1 = GetDC(hWnd);
+  return pHVar1;
+}
+

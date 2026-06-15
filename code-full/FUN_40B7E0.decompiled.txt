@@ -1,0 +1,19 @@
+Function: FUN_0040b7e0
+Address: 0x40B7E0
+
+
+undefined4 __thiscall FUN_0040b7e0(void *this,undefined4 *param_1)
+
+{
+  int iVar1;
+  
+  iVar1 = FUN_00449400(this,param_1);
+  if (iVar1 != 0) {
+    return 1;
+  }
+  if ((param_1[0xb] == 0x1b) && (*(int *)((int)this + 0x98) == 0x2b)) {
+    *(undefined4 *)(*(int *)((int)this + 0xa8) + 8) = 1;
+  }
+  return 1;
+}
+

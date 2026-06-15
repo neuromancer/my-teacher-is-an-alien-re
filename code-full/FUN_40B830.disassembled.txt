@@ -1,0 +1,15 @@
+Function: FUN_0040b830
+Address: 0x40B830
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV EDX,dword ptr [EAX]
+CMP dword ptr [ECX + 0x90],EDX
+JZ       LAB_0040b843
+XOR EAX,EAX
+RET 0x4
+
+LAB_0040b843:
+PUSH EAX
+CALL 0x00449410
+MOV EAX,0x1
+RET 0x4

@@ -1,0 +1,15 @@
+Function: FUN_004218e0
+Address: 0x4218E0
+
+
+void __fastcall FUN_004218e0(int *param_1)
+
+{
+  DWORD DVar1;
+  
+  DVar1 = timeGetTime();
+  param_1[3] = DVar1;
+  param_1[4] = (DVar1 - param_1[2]) - *param_1;
+  return;
+}
+

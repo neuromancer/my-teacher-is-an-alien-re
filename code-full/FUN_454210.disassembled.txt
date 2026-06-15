@@ -1,0 +1,29 @@
+Function: _CallCatchBlock2
+Address: 0x454210
+
+MOV EAX,dword ptr [ESP + 0x8]
+MOV ECX,dword ptr [ESP + 0x4]
+SUB ESP,0x14
+MOV dword ptr [ESP + 0x8],EAX
+MOV dword ptr [ESP + 0xc],ECX
+MOV dword ptr [ESP],0x0
+MOV dword ptr [ESP + 0x4],0x454280
+MOV EAX,dword ptr [ESP + 0x24]
+INC EAX
+MOV dword ptr [ESP + 0x10],EAX
+MOV EAX,FS:[0x0]
+MOV dword ptr [ESP],EAX
+LEA EAX,[ESP]
+MOV FS:[0x0],EAX
+MOV EAX,dword ptr [ESP + 0x28]
+PUSH EAX
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x28]
+PUSH ECX
+CALL 0x00457770
+MOV ECX,EAX
+MOV EAX,dword ptr [ESP]
+MOV FS:[0x0],EAX
+MOV EAX,ECX
+ADD ESP,0x14
+RET

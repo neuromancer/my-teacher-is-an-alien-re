@@ -1,0 +1,17 @@
+Function: FUN_0043edeb
+Address: 0x43EDEB
+
+MOV EDX,dword ptr [EBP + -0x10]
+MOV ECX,dword ptr [EBP + 0x8]
+MOV EAX,dword ptr [EDX + 0x98]
+MOV dword ptr [ECX],EAX
+MOV EAX,dword ptr [EDX + 0x9c]
+MOV dword ptr [ECX + 0x10],0x4
+MOV dword ptr [ECX + 0x4],EAX
+MOV EAX,0x1
+MOV ECX,dword ptr [EBP + -0xc]
+MOV dword ptr FS:[0x0],ECX
+POP ESI
+MOV ESP,EBP
+POP EBP
+RET 0x4

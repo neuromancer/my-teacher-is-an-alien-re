@@ -1,0 +1,76 @@
+Function: FUN_0044a380
+Address: 0x44A380
+
+
+void __thiscall FUN_0044a380(void *this,uint param_1)
+
+{
+  int *piVar1;
+  uint uVar2;
+  uint uVar3;
+  int iVar4;
+  undefined4 *puVar5;
+  uint uVar6;
+  uint uVar7;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0044a437;
+  *unaff_FS_OFFSET = &local_10;
+  if ((DAT_0046ae5c == (void *)0x0) || (iVar4 = FUN_00409120(DAT_0046ae5c,param_1), iVar4 == 0)) {
+    FUN_00425c50(s_BG_SubNode__AddSpriteList_____Un_0046c600);
+  }
+  if (*(int *)((int)this + 0xb0) == 0) {
+    puVar5 = (undefined4 *)FUN_00454500(0x18);
+    if (puVar5 == (undefined4 *)0x0) {
+      puVar5 = (undefined4 *)0x0;
+    }
+    else {
+      *puVar5 = 0;
+      puVar5[1] = 0x11;
+      puVar5[2] = 0;
+      puVar5[3] = 0;
+      puVar5[4] = 0;
+      puVar5[5] = 10;
+    }
+    local_8 = 0xffffffff;
+    *(undefined4 **)((int)this + 0xb0) = puVar5;
+  }
+  piVar1 = *(int **)((int)this + 0xb0);
+  uVar2 = piVar1[2];
+  uVar3 = piVar1[1];
+  uVar7 = (uVar2 >> 4) % uVar3;
+  iVar4 = *piVar1;
+  if (iVar4 != 0) {
+    for (puVar5 = *(undefined4 **)(iVar4 + uVar7 * 4); puVar5 != (undefined4 *)0x0;
+        puVar5 = (undefined4 *)*puVar5) {
+      if (puVar5[2] == uVar2) goto LAB_0044a463;
+    }
+  }
+  puVar5 = (undefined4 *)0x0;
+LAB_0044a463:
+  if (puVar5 == (undefined4 *)0x0) {
+    if (iVar4 == 0) {
+      puVar5 = (undefined4 *)FUN_00454500(uVar3 << 2);
+      *piVar1 = (int)puVar5;
+      for (uVar6 = uVar3 & 0x3fffffff; uVar6 != 0; uVar6 = uVar6 - 1) {
+        *puVar5 = 0;
+        puVar5 = puVar5 + 1;
+      }
+      piVar1[1] = uVar3;
+    }
+    puVar5 = (undefined4 *)FUN_0044bec0((int)piVar1);
+    puVar5[1] = uVar7;
+    puVar5[2] = uVar2;
+    *puVar5 = *(undefined4 *)(*piVar1 + uVar7 * 4);
+    *(undefined4 **)(*piVar1 + uVar7 * 4) = puVar5;
+  }
+  puVar5[3] = param_1;
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

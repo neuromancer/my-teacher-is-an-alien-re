@@ -1,0 +1,88 @@
+Function: FUN_0041b060
+Address: 0x41B060
+
+
+void __thiscall FUN_0041b060(void *this,char *param_1,uint param_2)
+
+{
+  char cVar1;
+  int iVar2;
+  undefined4 *puVar3;
+  uint uVar4;
+  uint uVar5;
+  undefined4 *this_00;
+  char *pcVar6;
+  char *pcVar7;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0041b1a4;
+  *unaff_FS_OFFSET = &local_10;
+  *(uint *)((int)this + 0x1c) = param_2;
+  this_00 = (undefined4 *)0x0;
+  *(undefined4 *)((int)this + 0x20) = 0;
+  if ((param_2 & 1) == 0) {
+    puVar3 = (undefined4 *)FUN_00454500(8);
+    local_8 = 0;
+    this_00 = (undefined4 *)0x0;
+    if (puVar3 != (undefined4 *)0x0) {
+      this_00 = FUN_0041dbe0(puVar3);
+    }
+    local_8 = 0xffffffff;
+    FUN_0041de00(this_00,0,0x100);
+  }
+  if ((*(byte *)((int)this + 0x1c) & 2) == 0) {
+    FUN_00425f10();
+  }
+  iVar2 = DAT_0046aa30;
+  if (DAT_0046aa30 != 0) {
+    if (*(int *)(DAT_0046aa30 + 0x98) + -1 < 4) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    if (*(int *)(*(int *)(iVar2 + 0x90) + 0x10) != 0) {
+      *(uint *)((int)this + 0x1c) = *(uint *)((int)this + 0x1c) | 0x100;
+      uVar4 = 0xffffffff;
+      pcVar6 = param_1;
+      do {
+        pcVar7 = pcVar6;
+        if (uVar4 == 0) break;
+        uVar4 = uVar4 - 1;
+        pcVar7 = pcVar6 + 1;
+        cVar1 = *pcVar6;
+        pcVar6 = pcVar7;
+      } while (cVar1 != '\0');
+      uVar4 = ~uVar4;
+      pcVar6 = pcVar7 + -uVar4;
+      pcVar7 = &DAT_00472cb0;
+      for (uVar5 = uVar4 >> 2; uVar5 != 0; uVar5 = uVar5 - 1) {
+        *(undefined4 *)pcVar7 = *(undefined4 *)pcVar6;
+        pcVar6 = pcVar6 + 4;
+        pcVar7 = pcVar7 + 4;
+      }
+      for (uVar4 = uVar4 & 3; uVar4 != 0; uVar4 = uVar4 - 1) {
+        *pcVar7 = *pcVar6;
+        pcVar6 = pcVar6 + 1;
+        pcVar7 = pcVar7 + 1;
+      }
+    }
+  }
+  FUN_0041ae10(this,param_1,0xfe000,0xffffffff);
+  FUN_0041afa0((int)this);
+  FUN_0041b1c0(this);
+  FUN_0041ab60((int)this);
+  if (this_00 != (undefined4 *)0x0) {
+    FUN_00425f10();
+    FUN_0041de20(this_00,0,0x100);
+    if (this_00 != (undefined4 *)0x0) {
+      FUN_0041dc10(this_00);
+      FUN_00454400(this_00);
+    }
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

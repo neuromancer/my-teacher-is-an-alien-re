@@ -1,0 +1,27 @@
+Function: FUN_0042bfc0
+Address: 0x42BFC0
+
+
+void __fastcall FUN_0042bfc0(int *param_1)
+
+{
+  int iVar1;
+  void *this;
+  
+  this = FUN_00443660(DAT_0046ae58);
+  (**(code **)(*DAT_0046ae60 + 0x14))();
+  if (*(int *)(DAT_0046aa08 + 0x1a0) == 0) {
+    DAT_0046ae60[0x2a] = 0;
+  }
+  else {
+    DAT_0046ae60[0x2a] = (uint)(1 < *(int *)(*(int *)(DAT_0046aa08 + 0x1a0) + 0x10));
+  }
+  if ((DAT_0046ae60[0x2a] != 0) && ((**(code **)(*DAT_0046ae60 + 0x10))(), this != (void *)0x0)) {
+    FUN_00442940(this,1);
+  }
+  iVar1 = *param_1;
+  (**(code **)(iVar1 + 0x2c))();
+  (**(code **)(iVar1 + 0x30))();
+  return;
+}
+

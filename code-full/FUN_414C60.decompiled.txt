@@ -1,0 +1,78 @@
+Function: FUN_00414c60
+Address: 0x414C60
+
+
+void __fastcall FUN_00414c60(int param_1)
+
+{
+  int *piVar1;
+  undefined4 *puVar2;
+  uint uVar3;
+  int iVar4;
+  undefined4 *puVar5;
+  
+  uVar3 = FUN_00420a00(DAT_0046a6e8,*(int *)(param_1 + 0x130),4);
+  if (uVar3 == 0) {
+    FUN_00420a50(DAT_0046a6e8,*(int *)(param_1 + 0x130),2);
+  }
+  *(undefined4 *)(param_1 + 0x98) = 2;
+  *(undefined4 *)(*(int *)(param_1 + 0x120) + 0xcc) = 1;
+  if (*(int **)(param_1 + 0x90) != (int *)0x0) {
+    iVar4 = **(int **)(param_1 + 0x90);
+    while (iVar4 != 0) {
+      piVar1 = *(int **)(param_1 + 0x90);
+      puVar5 = (undefined4 *)0x0;
+      iVar4 = piVar1[3];
+      if ((iVar4 == 1) || (iVar4 == 4)) {
+        iVar4 = *piVar1;
+LAB_00414cfa:
+        piVar1[2] = iVar4;
+      }
+      else {
+        if ((iVar4 == 2) || (iVar4 == 0)) {
+          iVar4 = piVar1[1];
+          goto LAB_00414cfa;
+        }
+        FUN_00425c50(s_bad_queue_type__lu_00468464);
+      }
+      iVar4 = piVar1[2];
+      if (iVar4 != 0) {
+        if (*piVar1 == iVar4) {
+          *piVar1 = *(int *)(iVar4 + 4);
+        }
+        if ((int *)piVar1[1] == (int *)piVar1[2]) {
+          piVar1[1] = *(int *)piVar1[2];
+        }
+        iVar4 = *(int *)piVar1[2];
+        if (iVar4 != 0) {
+          *(int *)(iVar4 + 4) = ((int *)piVar1[2])[1];
+        }
+        puVar5 = (undefined4 *)((undefined4 *)piVar1[2])[1];
+        if (puVar5 != (undefined4 *)0x0) {
+          *puVar5 = *(undefined4 *)piVar1[2];
+        }
+        puVar2 = (undefined4 *)piVar1[2];
+        if (puVar2 == (undefined4 *)0x0) {
+          puVar5 = (undefined4 *)0x0;
+        }
+        else {
+          puVar5 = (undefined4 *)puVar2[2];
+          puVar2[2] = 0;
+          *puVar2 = 0;
+          puVar2[1] = 0;
+          FUN_00454400(puVar2);
+          piVar1[2] = 0;
+        }
+        piVar1[2] = *piVar1;
+      }
+      FUN_00444e40(puVar5);
+      if (puVar5 != (undefined4 *)0x0) {
+        FUN_00444af0((int)puVar5);
+        FUN_00454400(puVar5);
+      }
+      iVar4 = **(int **)(param_1 + 0x90);
+    }
+  }
+  return;
+}
+

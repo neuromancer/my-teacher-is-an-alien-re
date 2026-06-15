@@ -1,0 +1,92 @@
+Function: FUN_0042b100
+Address: 0x42B100
+
+
+void FUN_0042b100(void)
+
+{
+  char cVar1;
+  void *pvVar2;
+  int *piVar3;
+  int iVar4;
+  uint uVar5;
+  uint uVar6;
+  int *piVar7;
+  char *pcVar8;
+  char *pcVar9;
+  int *piVar10;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0042b255;
+  *unaff_FS_OFFSET = &local_10;
+  piVar3 = (int *)FUN_00454500(0x48);
+  pcVar8 = PTR_s_cfg_practice_sav_0046ad68;
+  if (piVar3 == (int *)0x0) {
+    piVar3 = (int *)0x0;
+  }
+  else {
+    piVar10 = piVar3;
+    for (iVar4 = 0x12; iVar4 != 0; iVar4 = iVar4 + -1) {
+      *piVar10 = 0;
+      piVar10 = piVar10 + 1;
+    }
+    uVar5 = 0xffffffff;
+    do {
+      pcVar9 = pcVar8;
+      if (uVar5 == 0) break;
+      uVar5 = uVar5 - 1;
+      pcVar9 = pcVar8 + 1;
+      cVar1 = *pcVar8;
+      pcVar8 = pcVar9;
+    } while (cVar1 != '\0');
+    uVar5 = ~uVar5;
+    piVar7 = (int *)(pcVar9 + -uVar5);
+    piVar10 = piVar3;
+    for (uVar6 = uVar5 >> 2; piVar10 = piVar10 + 1, uVar6 != 0; uVar6 = uVar6 - 1) {
+      *piVar10 = *piVar7;
+      piVar7 = piVar7 + 1;
+    }
+    for (uVar5 = uVar5 & 3; uVar5 != 0; uVar5 = uVar5 - 1) {
+      *(char *)piVar10 = (char)*piVar7;
+      piVar7 = (int *)((int)piVar7 + 1);
+      piVar10 = (int *)((int)piVar10 + 1);
+    }
+  }
+  local_8 = 0xffffffff;
+  if ((FILE *)piVar3[0x11] != (FILE *)0x0) {
+    _fclose((FILE *)piVar3[0x11]);
+    piVar3[0x11] = 0;
+  }
+  iVar4 = FUN_00426050((byte *)(piVar3 + 1),&DAT_0046a3a4);
+  piVar3[0x11] = iVar4;
+  if (iVar4 == 0) {
+    FUN_00425c50(s_FileArchive__Open_____Unable_to_o_0046adf8);
+  }
+  *piVar3 = 1;
+  FUN_00433480(DAT_0046aa30,piVar3);
+  if ((FILE *)piVar3[0x11] != (FILE *)0x0) {
+    _fclose((FILE *)piVar3[0x11]);
+    piVar3[0x11] = 0;
+  }
+  if (piVar3 != (int *)0x0) {
+    if ((FILE *)piVar3[0x11] != (FILE *)0x0) {
+      _fclose((FILE *)piVar3[0x11]);
+      piVar3[0x11] = 0;
+    }
+    FUN_00454400(piVar3);
+  }
+  pvVar2 = DAT_0046aa30;
+  uVar5 = FUN_00433ae0(DAT_0046aa30,(byte *)s_IN_PRACTICEROOM_00468794);
+  if (((int)uVar5 < 0) || (*(int *)((int)pvVar2 + 0x98) + -1 < (int)uVar5)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  *(undefined4 *)(*(int *)((int)pvVar2 + 0x90) + uVar5 * 4) = 1;
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

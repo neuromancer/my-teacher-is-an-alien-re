@@ -1,0 +1,70 @@
+Function: __stbuf
+Address: 0x45AF50
+
+PUSH ESI
+PUSH EDI
+MOV ESI,dword ptr [ESP + 0xc]
+MOV EAX,dword ptr [ESI + 0x10]
+PUSH EAX
+CALL 0x0045c420
+ADD ESP,0x4
+TEST EAX,EAX
+JNZ      LAB_0045af6b
+XOR EAX,EAX
+POP EDI
+POP ESI
+RET
+
+LAB_0045af6b:
+CMP ESI,0x4724f0
+JNZ      LAB_0045af77
+XOR EAX,EAX
+JMP      LAB_0045af84
+
+LAB_0045af77:
+CMP ESI,0x472510
+JNZ      LAB_0045afdd
+MOV EAX,0x1
+
+LAB_0045af84:
+INC dword ptr [0x00472750]
+TEST dword ptr [ESI + 0xc],0x10c
+JZ       LAB_0045af98
+XOR EAX,EAX
+POP EDI
+POP ESI
+RET
+
+LAB_0045af98:
+LEA EDI,[EAX*0x4 + 0x4720b8]
+CMP dword ptr [EDI],0x0
+JNZ      LAB_0045afbc
+PUSH 0x1000
+CALL 0x004578e0
+ADD ESP,0x4
+MOV dword ptr [EDI],EAX
+TEST EAX,EAX
+JNZ      LAB_0045afbc
+XOR EAX,EAX
+POP EDI
+POP ESI
+RET
+
+LAB_0045afbc:
+MOV EAX,dword ptr [EDI]
+MOV dword ptr [ESI + 0x8],EAX
+POP EDI
+MOV dword ptr [ESI],EAX
+MOV EAX,0x1000
+MOV dword ptr [ESI + 0x18],EAX
+MOV dword ptr [ESI + 0x4],EAX
+MOV EAX,0x1
+OR dword ptr [ESI + 0xc],0x1102
+POP ESI
+RET
+
+LAB_0045afdd:
+XOR EAX,EAX
+POP EDI
+POP ESI
+RET

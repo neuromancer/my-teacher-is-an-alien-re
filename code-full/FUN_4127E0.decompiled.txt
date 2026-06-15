@@ -1,0 +1,40 @@
+Function: FUN_004127e0
+Address: 0x4127E0
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+void __fastcall FUN_004127e0(undefined4 *param_1)
+
+{
+  LPVOID pvVar1;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00412888;
+  *param_1 = &PTR_FUN_00461298;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00412a20((int)param_1);
+  pvVar1 = (LPVOID)param_1[0xf];
+  if (pvVar1 != (LPVOID)0x0) {
+    local_8 = 0xffffffff;
+    FUN_00412880();
+    FUN_00454400(pvVar1);
+    param_1[0xf] = 0;
+  }
+  pvVar1 = DAT_00469144;
+  _DAT_00469288 = _DAT_00469288 + -1;
+  if ((_DAT_00469288 == 0) && (DAT_00469144 != (LPVOID)0x0)) {
+    local_8 = 0xffffffff;
+    FUN_00412892();
+    FUN_00454400(pvVar1);
+    DAT_00469144 = (LPVOID)0x0;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

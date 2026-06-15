@@ -1,0 +1,4 @@
+Function: DeleteObject
+Address: 0x4524BC
+
+JMP dword ptr [0x0047630c]

@@ -1,0 +1,77 @@
+Function: GetRangeOfTrysToCheck
+Address: 0x457150
+
+MOV EAX,dword ptr [ESP + 0x4]
+SUB ESP,0xc
+PUSH EBX
+MOV ECX,dword ptr [EAX + 0x10]
+MOV dword ptr [ESP + 0xc],ECX
+PUSH ESI
+PUSH EDI
+MOV ESI,dword ptr [EAX + 0xc]
+MOV EDI,dword ptr [ESP + 0x20]
+PUSH EBP
+MOV dword ptr [ESP + 0x10],ESI
+MOV dword ptr [ESP + 0x14],ESI
+TEST EDI,EDI
+JL       LAB_004571b8
+LEA ECX,[ESI*0x4 + 0x0]
+MOV EAX,dword ptr [ESP + 0x18]
+MOV EBP,dword ptr [ESP + 0x28]
+LEA EDX,[ECX + ECX*0x4]
+LEA EBX,[EDX + EAX*0x1 + 0x4]
+
+LAB_0045718b:
+CMP ESI,-0x1
+JNZ      LAB_00457195
+CALL 0x00457840
+
+LAB_00457195:
+SUB EBX,0x14
+DEC ESI
+CMP dword ptr [EBX],EBP
+JGE      LAB_004571a2
+CMP dword ptr [EBX + 0x4],EBP
+JGE      LAB_004571a7
+
+LAB_004571a2:
+CMP ESI,-0x1
+JNZ      LAB_004571b4
+
+LAB_004571a7:
+DEC EDI
+MOV ECX,dword ptr [ESP + 0x14]
+MOV dword ptr [ESP + 0x10],ECX
+MOV dword ptr [ESP + 0x14],ESI
+
+LAB_004571b4:
+TEST EDI,EDI
+JGE      LAB_0045718b
+
+LAB_004571b8:
+INC ESI
+MOV EAX,dword ptr [ESP + 0x2c]
+MOV EDX,dword ptr [ESP + 0x30]
+MOV ECX,dword ptr [ESP + 0x10]
+MOV dword ptr [EAX],ESI
+MOV EAX,dword ptr [ESP + 0x20]
+MOV dword ptr [EDX],ECX
+CMP dword ptr [EAX + 0xc],ECX
+JC       LAB_004571d6
+CMP ECX,ESI
+JNC      LAB_004571db
+
+LAB_004571d6:
+CALL 0x00457840
+
+LAB_004571db:
+SHL ESI,0x2
+MOV EAX,dword ptr [ESP + 0x18]
+POP EBP
+POP EDI
+LEA ECX,[ESI + ESI*0x4]
+POP ESI
+ADD EAX,ECX
+POP EBX
+ADD ESP,0xc
+RET

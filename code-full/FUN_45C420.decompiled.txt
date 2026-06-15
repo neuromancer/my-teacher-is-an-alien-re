@@ -1,0 +1,14 @@
+Function: FUN_0045c420
+Address: 0x45C420
+
+
+byte __cdecl FUN_0045c420(uint param_1)
+
+{
+  if (DAT_00474f74 <= param_1) {
+    return 0;
+  }
+  return *(byte *)(*(int *)((int)&DAT_00474f80 + ((int)(param_1 & 0xffffffe7) >> 3)) + 4 +
+                  (param_1 & 0x1f) * 8) & 0x40;
+}
+

@@ -1,0 +1,63 @@
+Function: FUN_0041de60
+Address: 0x41DE60
+
+MOV EAX,dword ptr [ESP + 0x14]
+SUB ESP,0x4
+PUSH EBX
+LEA EDX,[EAX + EAX*0x2]
+MOV EBX,dword ptr [ESP + 0x20]
+PUSH ESI
+PUSH EDI
+PUSH EBP
+MOV EDI,dword ptr [ECX + 0x4]
+ADD EDI,EDX
+TEST EBX,EBX
+JLE      LAB_0041def9
+MOV ESI,dword ptr [ESP + 0x18]
+MOV EBP,dword ptr [ESP + 0x1c]
+
+LAB_0041de83:
+XOR EAX,EAX
+MOV ECX,ESI
+MOV AL,byte ptr [EDI]
+ADD EDI,0x3
+SUB ECX,EAX
+MOV dword ptr [ESP + 0x10],ECX
+FILD dword ptr [ESP + 0x10]
+MOV dword ptr [ESP + 0x10],EAX
+FMUL float ptr [ESP + 0x24]
+FIADD dword ptr [ESP + 0x10]
+CALL 0x00454cf8
+MOV ECX,EBP
+MOV byte ptr [EDI + -0x3],AL
+XOR EAX,EAX
+MOV AL,byte ptr [EDI + -0x2]
+SUB ECX,EAX
+MOV dword ptr [ESP + 0x10],ECX
+FILD dword ptr [ESP + 0x10]
+MOV dword ptr [ESP + 0x10],EAX
+FMUL float ptr [ESP + 0x24]
+FIADD dword ptr [ESP + 0x10]
+CALL 0x00454cf8
+MOV ECX,dword ptr [ESP + 0x20]
+MOV byte ptr [EDI + -0x2],AL
+XOR EAX,EAX
+MOV AL,byte ptr [EDI + -0x1]
+SUB ECX,EAX
+MOV dword ptr [ESP + 0x10],ECX
+FILD dword ptr [ESP + 0x10]
+MOV dword ptr [ESP + 0x10],EAX
+FMUL float ptr [ESP + 0x24]
+FIADD dword ptr [ESP + 0x10]
+CALL 0x00454cf8
+DEC EBX
+MOV byte ptr [EDI + -0x1],AL
+JNZ      LAB_0041de83
+
+LAB_0041def9:
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0x4
+RET 0x18

@@ -1,0 +1,63 @@
+Function: FUN_0040df30
+Address: 0x40DF30
+
+
+void __thiscall FUN_0040df30(void *this,void *param_1)
+
+{
+  void *this_00;
+  bool bVar1;
+  byte bVar2;
+  undefined3 extraout_var;
+  undefined3 extraout_var_00;
+  int iVar3;
+  
+  if (param_1 == (void *)0x0) {
+    return;
+  }
+  if (*(int *)((int)param_1 + 0x98) == -1) {
+    return;
+  }
+  if ((param_1 != (void *)0x0) &&
+     (bVar2 = FUN_0044ccf0(param_1,*(int *)((int)param_1 + 0xac),*(int *)((int)param_1 + 0xb0),0,
+                           0x3ff00000), CONCAT31(extraout_var,bVar2) != 0)) {
+    iVar3 = *(int *)((int)param_1 + 0x98);
+    if (iVar3 == 0) {
+      iVar3 = *(int *)((int)this + 0x130) + 1;
+      *(int *)((int)this + 0x130) = iVar3;
+      if ((*(int *)((int)this + 0x134) == 0) || (bVar1 = true, iVar3 < *(int *)((int)this + 0x134)))
+      {
+        bVar1 = false;
+      }
+      if (bVar1) {
+        **(undefined4 **)((int)this + 0x170) = 1;
+      }
+      else {
+        if (*(void **)((int)this + 0x168) != (void *)0x0) {
+          FUN_00425100(*(void **)((int)this + 0x168),100,1);
+        }
+        FUN_0044cb40(*(void **)((int)this + 0xbc),8,0);
+      }
+      iVar3 = (*(int *)((int)this + 0x130) << 3) / *(int *)((int)this + 0x134);
+      if (6 < iVar3) {
+        iVar3 = 7;
+      }
+      FUN_0044cb40(*(void **)((int)this + 300),iVar3,0);
+      iVar3 = 1;
+    }
+    else {
+      if ((iVar3 != 1) && (iVar3 != 2)) goto LAB_0040e029;
+      iVar3 = -1;
+    }
+    FUN_0044cb40(param_1,iVar3,0);
+  }
+LAB_0040e029:
+  this_00 = *(void **)((int)this + 0x128);
+  if ((this_00 != (void *)0x0) &&
+     (bVar2 = FUN_0044ccf0(this_00,*(int *)((int)this_00 + 0xac),*(int *)((int)this_00 + 0xb0),0,
+                           0x3ff00000), CONCAT31(extraout_var_00,bVar2) != 0)) {
+    FUN_0044cb40(*(void **)((int)this + 0x128),-1,0);
+  }
+  return;
+}
+

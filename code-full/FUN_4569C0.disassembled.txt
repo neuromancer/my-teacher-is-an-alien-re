@@ -1,0 +1,60 @@
+Function: __isctype
+Address: 0x4569C0
+
+MOV ECX,dword ptr [ESP + 0x4]
+SUB ESP,0x8
+PUSH EBX
+LEA EAX,[ECX + 0x1]
+CMP EAX,0x100
+JA       LAB_004569e7
+MOV EDX,dword ptr [0x00471a30]
+XOR EAX,EAX
+MOV AX,word ptr [EDX + ECX*0x2]
+AND EAX,dword ptr [ESP + 0x14]
+POP EBX
+ADD ESP,0x8
+RET
+
+LAB_004569e7:
+MOV DL,CH
+XOR EBX,EBX
+MOV BL,DL
+MOV EAX,[0x00471a30]
+TEST byte ptr [EAX + EBX*0x2 + 0x1],0x80
+JZ       LAB_00456a0d
+MOV EAX,0x2
+MOV byte ptr [ESP + 0x8],DL
+MOV byte ptr [ESP + 0xa],0x0
+MOV byte ptr [ESP + 0x9],CL
+JMP      LAB_00456a1b
+
+LAB_00456a0d:
+MOV EAX,0x1
+MOV byte ptr [ESP + 0x8],CL
+MOV byte ptr [ESP + 0x9],0x0
+
+LAB_00456a1b:
+LEA ECX,[ESP + 0x6]
+PUSH 0x0
+PUSH 0x0
+PUSH ECX
+PUSH EAX
+LEA EAX,[ESP + 0x18]
+PUSH EAX
+PUSH 0x1
+CALL 0x0045b410
+ADD ESP,0x18
+TEST EAX,EAX
+JNZ      LAB_00456a3f
+XOR EAX,EAX
+POP EBX
+ADD ESP,0x8
+RET
+
+LAB_00456a3f:
+MOV EAX,dword ptr [ESP + 0x6]
+AND EAX,0xffff
+AND EAX,dword ptr [ESP + 0x14]
+POP EBX
+ADD ESP,0x8
+RET

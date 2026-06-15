@@ -1,0 +1,51 @@
+Function: findenv
+Address: 0x45E910
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV EDI,dword ptr [0x004719e8]
+CMP dword ptr [EDI],0x0
+JZ       LAB_0045e94c
+MOV EBX,dword ptr [ESP + 0x14]
+MOV ESI,dword ptr [ESP + 0x10]
+
+LAB_0045e926:
+PUSH EBX
+MOV EAX,dword ptr [EDI]
+PUSH EAX
+PUSH ESI
+CALL 0x0045b540
+ADD ESP,0xc
+TEST EAX,EAX
+JNZ      LAB_0045e944
+MOV EAX,dword ptr [EDI]
+MOV AL,byte ptr [EAX + EBX*0x1]
+CMP AL,0x3d
+JZ       LAB_0045e95d
+TEST AL,AL
+JZ       LAB_0045e95d
+
+LAB_0045e944:
+ADD EDI,0x4
+CMP dword ptr [EDI],0x0
+JNZ      LAB_0045e926
+
+LAB_0045e94c:
+MOV EAX,EDI
+POP EDI
+SUB EAX,dword ptr [0x004719e8]
+POP ESI
+SAR EAX,0x2
+POP EBX
+NEG EAX
+RET
+
+LAB_0045e95d:
+SUB EDI,dword ptr [0x004719e8]
+SAR EDI,0x2
+MOV EAX,EDI
+POP EDI
+POP ESI
+POP EBX
+RET

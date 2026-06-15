@@ -1,0 +1,69 @@
+Function: FUN_00450670
+Address: 0x450670
+
+
+undefined4 __fastcall FUN_00450670(void *param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  int *piVar3;
+  int *piVar4;
+  int *piVar5;
+  int iVar6;
+  int local_24 [9];
+  
+  iVar6 = 0;
+  piVar5 = &DAT_0046cc98;
+  *(undefined4 *)((int)param_1 + 0x110) = 0;
+  *(undefined4 *)((int)param_1 + 0x114) = 0;
+  *(undefined4 *)((int)param_1 + 0x118) = 0;
+  while( true ) {
+    piVar3 = local_24;
+    for (iVar2 = 9; iVar2 != 0; iVar2 = iVar2 + -1) {
+      *piVar3 = 0;
+      piVar3 = piVar3 + 1;
+    }
+    iVar2 = 3;
+    piVar3 = piVar5;
+    do {
+      iVar1 = *piVar3;
+      piVar3 = piVar3 + 1;
+      iVar2 = iVar2 + -1;
+      local_24[iVar1] = 1;
+    } while (iVar2 != 0);
+    piVar4 = local_24;
+    piVar3 = (int *)((int)param_1 + 0x11c);
+    *(undefined4 *)((int)param_1 + 0x140) = 1;
+    do {
+      if (*piVar3 != *piVar4) {
+        *(undefined4 *)((int)param_1 + 0x140) = 0;
+      }
+      piVar4 = piVar4 + 1;
+      piVar3 = piVar3 + 1;
+    } while (piVar4 < &stack0x00000000);
+    if (*(int *)((int)param_1 + 0x140) != 0) break;
+    piVar5 = piVar5 + 4;
+    iVar6 = iVar6 + 1;
+    if ((int *)0x46cd27 < piVar5) {
+      return 0xffffffff;
+    }
+  }
+  if (iVar6 < 2) {
+    iVar2 = 0;
+  }
+  else {
+    iVar2 = 2;
+    if (iVar6 < 5) {
+      iVar2 = 1;
+    }
+  }
+  *(undefined4 *)((int)param_1 + iVar2 * 4 + 0x110) = 1;
+  iVar2 = 2;
+  if (iVar6 < 2) {
+    iVar2 = 5;
+  }
+  FUN_00450760(param_1,iVar2,1);
+  return (&DAT_0046cca4)[iVar6 * 4];
+}
+

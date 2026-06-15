@@ -1,0 +1,57 @@
+Function: __chdir
+Address: 0x4603D0
+
+MOV EAX,dword ptr [ESP + 0x4]
+SUB ESP,0x10c
+PUSH EAX
+CALL dword ptr [0x00476374]
+TEST EAX,EAX
+JZ       LAB_00460459
+LEA EAX,[ESP + 0x4]
+PUSH EAX
+PUSH 0x105
+CALL dword ptr [0x00476400]
+TEST EAX,EAX
+JZ       LAB_00460459
+CMP byte ptr [ESP + 0x4],0x5c
+JZ       LAB_00460407
+CMP byte ptr [ESP + 0x4],0x2f
+JNZ      LAB_0046041a
+
+LAB_00460407:
+MOV AL,byte ptr [ESP + 0x5]
+CMP byte ptr [ESP + 0x4],AL
+JNZ      LAB_0046041a
+XOR EAX,EAX
+ADD ESP,0x10c
+RET
+
+LAB_0046041a:
+MOV byte ptr [ESP],0x3d
+XOR EAX,EAX
+MOV AL,byte ptr [ESP + 0x4]
+PUSH EAX
+CALL     LAB_00460480
+LEA ECX,[ESP + 0x8]
+MOV byte ptr [ESP + 0x5],AL
+MOV byte ptr [ESP + 0x6],0x3a
+MOV byte ptr [ESP + 0x7],0x0
+LEA EDX,[ESP + 0x4]
+ADD ESP,0x4
+PUSH ECX
+PUSH EDX
+CALL dword ptr [0x00476394]
+TEST EAX,EAX
+JZ       LAB_00460459
+XOR EAX,EAX
+ADD ESP,0x10c
+RET
+
+LAB_00460459:
+CALL dword ptr [0x0047644c]
+PUSH EAX
+CALL 0x0045a860
+ADD ESP,0x4
+MOV EAX,0xffffffff
+ADD ESP,0x10c
+RET

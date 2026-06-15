@@ -1,0 +1,30 @@
+Function: FUN_004229d0
+Address: 0x4229D0
+
+
+undefined4 * __fastcall FUN_004229d0(undefined4 *param_1)
+
+{
+  int iVar1;
+  undefined4 *puVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00422a30;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00421880(param_1 + 5);
+  local_8 = 0;
+  puVar2 = param_1;
+  for (iVar1 = 10; iVar1 != 0; iVar1 = iVar1 + -1) {
+    *puVar2 = 0;
+    puVar2 = puVar2 + 1;
+  }
+  FUN_004218c0(param_1 + 5);
+  *unaff_FS_OFFSET = local_10;
+  return param_1;
+}
+

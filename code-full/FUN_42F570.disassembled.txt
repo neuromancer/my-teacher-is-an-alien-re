@@ -1,0 +1,30 @@
+Function: FUN_0042f570
+Address: 0x42F570
+
+PUSH ESI
+MOV EAX,0x6
+LEA ESI,[ECX + 0x13c]
+
+LAB_0042f57c:
+MOV EDX,0x6
+
+LAB_0042f581:
+MOV dword ptr [ESI],0x0
+ADD ESI,0x1c
+DEC EDX
+JNZ      LAB_0042f581
+DEC EAX
+JNZ      LAB_0042f57c
+MOV EAX,0x1
+MOV dword ptr [ECX + 0x1c8],EAX
+MOV dword ptr [ECX + 0x254],EAX
+MOV dword ptr [ECX + 0x21c],EAX
+MOV dword ptr [ECX + 0x36c],EAX
+POP ESI
+MOV dword ptr [ECX + 0x414],EAX
+MOV dword ptr [ECX + 0x120],0x5
+MOV dword ptr [ECX + 0x4a0],EAX
+XOR EAX,EAX
+MOV dword ptr [ECX + 0x124],EAX
+MOV dword ptr [ECX + 0x544],EAX
+RET

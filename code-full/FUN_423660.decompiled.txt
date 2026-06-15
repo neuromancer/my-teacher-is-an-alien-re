@@ -1,0 +1,11 @@
+Function: FUN_00423660
+Address: 0x423660
+
+
+void FUN_00423660(void)
+
+{
+  FUN_00444a40(&DAT_00472d20,0,0,0,0,0,0,0,0,0,0);
+  return;
+}
+

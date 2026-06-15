@@ -1,0 +1,9 @@
+Function: FUN_00426a90
+Address: 0x426A90
+
+MOV EAX,dword ptr [ECX + 0x1a0]
+MOV dword ptr [EAX + 0x14],0x0
+MOV EAX,dword ptr [ECX + 0x1a0]
+MOV ECX,dword ptr [EAX + 0x14]
+MOV dword ptr [EAX + 0x10],ECX
+RET

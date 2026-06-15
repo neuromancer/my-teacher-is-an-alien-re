@@ -1,0 +1,71 @@
+Function: FUN_004533b0
+Address: 0x4533B0
+
+
+undefined4 __cdecl FUN_004533b0(UINT param_1,UINT param_2,undefined2 *param_3)
+
+{
+  BYTE BVar1;
+  BYTE BVar2;
+  undefined2 *puVar3;
+  undefined2 *puVar4;
+  BYTE *pBVar5;
+  undefined4 uVar6;
+  UINT UVar7;
+  int iVar8;
+  PALETTEENTRY *ppe;
+  PALETTEENTRY *pPVar9;
+  undefined4 *puVar10;
+  undefined2 *puVar11;
+  BYTE *pBVar12;
+  undefined4 *puVar13;
+  
+  if ((-1 < DAT_0046db3c) && (param_2 != 0)) {
+    iVar8 = (param_1 + 1) * 4;
+    puVar11 = (undefined2 *)(&DAT_0046d308 + iVar8);
+    uVar6 = 0x100;
+    UVar7 = param_2;
+    do {
+      puVar4 = puVar11 + 1;
+      puVar3 = param_3 + 1;
+      *puVar11 = *param_3;
+      param_3 = (undefined2 *)((int)param_3 + 3);
+      uVar6 = CONCAT31((int3)((uint)uVar6 >> 8),*(undefined1 *)puVar3);
+      puVar11 = puVar11 + 2;
+      *puVar4 = (short)uVar6;
+      UVar7 = UVar7 - 1;
+    } while (UVar7 != 0);
+    ppe = (PALETTEENTRY *)(&DAT_0046d308 + iVar8);
+    UVar7 = param_2;
+    pPVar9 = ppe;
+    pBVar12 = &DAT_0046d730 + iVar8;
+    do {
+      BVar1 = pPVar9->peRed;
+      BVar2 = pPVar9->peGreen;
+      *pBVar12 = pPVar9->peBlue;
+      pBVar5 = pBVar12 + 3;
+      *(ushort *)(pBVar12 + 1) = CONCAT11(BVar1,BVar2);
+      pBVar12 = pBVar12 + 4;
+      *pBVar5 = '\0';
+      pPVar9 = pPVar9 + 1;
+      UVar7 = UVar7 - 1;
+    } while (UVar7 != 0);
+    if (DAT_0046e004 == 0) {
+      if (DAT_0046db38 == 0) {
+        puVar10 = &DAT_0046d734;
+        puVar13 = (undefined4 *)(DAT_0046db4e + -0x400);
+        for (iVar8 = 0x100; iVar8 != 0; iVar8 = iVar8 + -1) {
+          *puVar13 = *puVar10;
+          puVar10 = puVar10 + 1;
+          puVar13 = puVar13 + 1;
+        }
+      }
+    }
+    else {
+      (*DAT_0046e014)(DAT_0046e004,param_1,param_2,&DAT_0046d730 + iVar8);
+    }
+    AnimatePalette(DAT_0046d074,param_1,param_2,ppe);
+  }
+  return 0;
+}
+

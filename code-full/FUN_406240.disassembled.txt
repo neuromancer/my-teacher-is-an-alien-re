@@ -1,0 +1,48 @@
+Function: FUN_00406240
+Address: 0x406240
+
+PUSH ESI
+MOV ESI,ECX
+MOV ECX,dword ptr [ECX + 0xac]
+TEST ECX,ECX
+JZ       LAB_00406252
+CALL 0x00443ab0
+
+LAB_00406252:
+MOV dword ptr [ESI + 0xa8],0x0
+MOV EAX,dword ptr [ESI + 0xbc]
+TEST EAX,EAX
+JZ       LAB_004062b3
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [EAX + 0x8],ECX
+MOV EDX,dword ptr [ESI + 0xbc]
+CMP dword ptr [EDX],0x0
+JZ       LAB_004062b3
+
+LAB_00406276:
+MOV EAX,dword ptr [ESI + 0xbc]
+MOV ECX,0x0
+MOV EAX,dword ptr [EAX + 0x8]
+TEST EAX,EAX
+JZ       LAB_0040628b
+MOV ECX,dword ptr [EAX + 0x8]
+
+LAB_0040628b:
+CALL 0x00405250
+MOV ECX,dword ptr [ESI + 0xbc]
+MOV EAX,dword ptr [ECX + 0x8]
+CMP dword ptr [ECX + 0x4],EAX
+JZ       LAB_004062b3
+TEST EAX,EAX
+JZ       LAB_004062a8
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x8],EAX
+
+LAB_004062a8:
+MOV EAX,dword ptr [ESI + 0xbc]
+CMP dword ptr [EAX],0x0
+JNZ      LAB_00406276
+
+LAB_004062b3:
+POP ESI
+RET 0x4

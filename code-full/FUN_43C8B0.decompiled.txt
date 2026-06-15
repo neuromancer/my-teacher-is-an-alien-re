@@ -1,0 +1,100 @@
+Function: FUN_0043c8b0
+Address: 0x43C8B0
+
+
+void __fastcall FUN_0043c8b0(int param_1)
+
+{
+  char cVar1;
+  FILE *_File;
+  LPVOID pvVar2;
+  char *pcVar3;
+  char *pcVar4;
+  int iVar5;
+  uint uVar6;
+  uint uVar7;
+  char *pcVar8;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0043ca34;
+  *unaff_FS_OFFSET = &local_10;
+  pcVar3 = (char *)FUN_00454500(0x48);
+  local_8 = 0;
+  if (pcVar3 == (char *)0x0) {
+    pcVar3 = (char *)0x0;
+  }
+  else {
+    pcVar4 = FUN_0043c5b0(param_1 + 0x144);
+    pcVar8 = pcVar3;
+    for (iVar5 = 0x12; iVar5 != 0; iVar5 = iVar5 + -1) {
+      pcVar8[0] = '\0';
+      pcVar8[1] = '\0';
+      pcVar8[2] = '\0';
+      pcVar8[3] = '\0';
+      pcVar8 = pcVar8 + 4;
+    }
+    uVar6 = 0xffffffff;
+    do {
+      pcVar8 = pcVar4;
+      if (uVar6 == 0) break;
+      uVar6 = uVar6 - 1;
+      pcVar8 = pcVar4 + 1;
+      cVar1 = *pcVar4;
+      pcVar4 = pcVar8;
+    } while (cVar1 != '\0');
+    uVar6 = ~uVar6;
+    pcVar8 = pcVar8 + -uVar6;
+    pcVar4 = pcVar3;
+    for (uVar7 = uVar6 >> 2; pcVar4 = pcVar4 + 4, uVar7 != 0; uVar7 = uVar7 - 1) {
+      *(undefined4 *)pcVar4 = *(undefined4 *)pcVar8;
+      pcVar8 = pcVar8 + 4;
+    }
+    for (uVar6 = uVar6 & 3; uVar6 != 0; uVar6 = uVar6 - 1) {
+      *pcVar4 = *pcVar8;
+      pcVar8 = pcVar8 + 1;
+      pcVar4 = pcVar4 + 1;
+    }
+  }
+  local_8 = 0xffffffff;
+  *(char **)(param_1 + 0x250) = pcVar3;
+  if (*(FILE **)(pcVar3 + 0x44) != (FILE *)0x0) {
+    _fclose(*(FILE **)(pcVar3 + 0x44));
+    pcVar3[0x44] = '\0';
+    pcVar3[0x45] = '\0';
+    pcVar3[0x46] = '\0';
+    pcVar3[0x47] = '\0';
+  }
+  iVar5 = FUN_00426050((byte *)(pcVar3 + 4),&DAT_0046a3a4);
+  *(int *)(pcVar3 + 0x44) = iVar5;
+  if (iVar5 == 0) {
+    FUN_00425c50(s_FileArchive__Open_____Unable_to_o_0046adf8);
+  }
+  **(undefined4 **)(param_1 + 0x250) = 1;
+  FUN_00433480(DAT_0046aa30,*(int **)(param_1 + 0x250));
+  FUN_00420b80(DAT_0046a6e8,*(int **)(param_1 + 0x250));
+  FUN_00431930(DAT_0046a6ec,*(int **)(param_1 + 0x250));
+  FUN_00444cd0(&DAT_00472d58,*(int **)(param_1 + 0x250));
+  iVar5 = *(int *)(param_1 + 0x250);
+  _File = *(FILE **)(iVar5 + 0x44);
+  if (_File != (FILE *)0x0) {
+    _fclose(_File);
+    *(undefined4 *)(iVar5 + 0x44) = 0;
+  }
+  pvVar2 = *(LPVOID *)(param_1 + 0x250);
+  if (pvVar2 != (LPVOID)0x0) {
+    if (*(FILE **)((int)pvVar2 + 0x44) != (FILE *)0x0) {
+      _fclose(*(FILE **)((int)pvVar2 + 0x44));
+      *(undefined4 *)((int)pvVar2 + 0x44) = 0;
+    }
+    FUN_00454400(pvVar2);
+    *(undefined4 *)(param_1 + 0x250) = 0;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

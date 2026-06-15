@@ -1,0 +1,66 @@
+Function: FUN_0040b860
+Address: 0x40B860
+
+
+void __fastcall FUN_0040b860(int param_1)
+
+{
+  LPVOID pvVar1;
+  void *pvVar2;
+  undefined4 *unaff_FS_OFFSET;
+  char *pcVar3;
+  undefined **local_b0 [36];
+  void *local_20;
+  void *local_18;
+  int local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0040b9bf;
+  *unaff_FS_OFFSET = &local_10;
+  local_14 = param_1;
+  if (*(int *)(*(int *)(param_1 + 0xa8) + 8) != 0) goto LAB_0040b992;
+  pvVar1 = *(LPVOID *)(param_1 + 0x100);
+  if (pvVar1 != (LPVOID)0x0) {
+    FUN_00444af0((int)pvVar1);
+    FUN_00454400(pvVar1);
+    *(undefined4 *)(local_14 + 0x100) = 0;
+  }
+  local_18 = (void *)FUN_00454500(0x38);
+  pvVar2 = (void *)0x0;
+  local_8 = 0;
+  if (local_18 != (void *)0x0) {
+    pvVar2 = FUN_00444a40(local_18,0,0,0,0,0,0,0,0,0,0);
+  }
+  local_8 = 0xffffffff;
+  *(void **)(local_14 + 0x100) = pvVar2;
+  FUN_004127c0(local_b0);
+  local_b0[0] = &PTR_FUN_00461100;
+  local_8 = 2;
+  local_20 = pvVar2;
+  if ((*(int **)(local_14 + 0xa8))[1] == 0) {
+    if (**(int **)(local_14 + 0xa8) != 0) {
+      pcVar3 = s__LOSE_MESSAGE__004685e4;
+      goto LAB_0040b94c;
+    }
+  }
+  else {
+    pcVar3 = s__WIN_MESSAGE__004685f4;
+LAB_0040b94c:
+    FUN_00413e10((int *)local_b0,s_mis_cb_Gauntlet_mis_00468a20,pcVar3);
+  }
+  if (*(int *)(local_14 + 0x98) == 0x2b) {
+    *(undefined4 *)(*(int *)(local_14 + 0x100) + 8) = 0x2b;
+    *(undefined4 *)(*(int *)(local_14 + 0x100) + 0xc) = *(undefined4 *)(local_14 + 0x9c);
+  }
+  local_8 = 0xffffffff;
+  FUN_0040b9b4();
+LAB_0040b992:
+  FUN_004494e0(local_14);
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

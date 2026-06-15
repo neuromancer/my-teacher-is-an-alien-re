@@ -1,0 +1,31 @@
+Function: FUN_0043f7f0
+Address: 0x43F7F0
+
+SUB ESP,0x4
+MOV EAX,dword ptr [ECX + 0x184]
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [ESP],ECX
+TEST ECX,ECX
+JZ       LAB_0043f826
+MOV ECX,dword ptr [ESP + 0x8]
+XOR EDX,EDX
+
+LAB_0043f809:
+MOV EAX,dword ptr [ESP]
+MOV EAX,dword ptr [EAX + 0x8]
+CMP dword ptr [EAX + 0x94],ECX
+MOV EAX,dword ptr [ESP]
+JZ       LAB_0043f82e
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [ESP],EAX
+CMP EAX,EDX
+JNZ      LAB_0043f809
+
+LAB_0043f826:
+XOR EAX,EAX
+ADD ESP,0x4
+RET 0x4
+
+LAB_0043f82e:
+ADD ESP,0x4
+RET 0x4

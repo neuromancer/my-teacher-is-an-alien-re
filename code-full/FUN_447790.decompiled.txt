@@ -1,0 +1,18 @@
+Function: FUN_00447790
+Address: 0x447790
+
+
+void __fastcall FUN_00447790(int param_1)
+
+{
+  if (DAT_0046ae78 != (int *)0x0) {
+    if ((DAT_0046ae70 != 0) && (*(int *)(DAT_0046ae70 + 0xa0) != 0)) {
+      FUN_0044c9d0(*(int *)(DAT_0046ae70 + 0xa0));
+    }
+    (**(code **)(*DAT_0046ae78 + 0x40))();
+    DAT_0046ae78 = (int *)0x0;
+  }
+  FUN_00449320(param_1);
+  return;
+}
+

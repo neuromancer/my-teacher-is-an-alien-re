@@ -1,0 +1,112 @@
+Function: FUN_00405260
+Address: 0x405260
+
+
+void __fastcall FUN_00405260(int param_1)
+
+{
+  int *piVar1;
+  void *pvVar2;
+  int iVar3;
+  int iVar4;
+  undefined4 *puVar5;
+  
+  switch(*(undefined4 *)(param_1 + 0x90)) {
+  case 0:
+    break;
+  case 1:
+    iVar4 = 0;
+    piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+    if (piVar1 == (int *)0x0) {
+      iVar3 = 0;
+    }
+    else {
+      iVar4 = piVar1[1];
+      iVar3 = *piVar1;
+    }
+    if (((*(int *)(param_1 + 0x94) <= iVar3) && (iVar3 <= *(int *)(param_1 + 0x9c))) &&
+       ((*(int *)(param_1 + 0x98) <= iVar4 && (iVar4 <= *(int *)(param_1 + 0xa0))))) {
+      *(undefined4 *)(param_1 + 0x90) = 2;
+      if (*(void **)(param_1 + 0xac) != (void *)0x0) {
+        FUN_0044cb40(*(void **)(param_1 + 0xac),2,0);
+      }
+      if (*(void **)(param_1 + 0xb0) != (void *)0x0) {
+        FUN_00425100(*(void **)(param_1 + 0xb0),100,1);
+      }
+    }
+    pvVar2 = *(void **)(param_1 + 0xac);
+    if (pvVar2 != (void *)0x0) {
+      FUN_0044ccf0(pvVar2,*(int *)((int)pvVar2 + 0xac),*(int *)((int)pvVar2 + 0xb0),0,0x3ff00000);
+      return;
+    }
+    break;
+  case 2:
+    iVar4 = 0;
+    piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+    if (piVar1 == (int *)0x0) {
+      iVar3 = 0;
+    }
+    else {
+      iVar4 = piVar1[1];
+      iVar3 = *piVar1;
+    }
+    if (((iVar3 < *(int *)(param_1 + 0x94)) || (*(int *)(param_1 + 0x9c) < iVar3)) ||
+       ((iVar4 < *(int *)(param_1 + 0x98) || (*(int *)(param_1 + 0xa0) < iVar4)))) {
+      *(undefined4 *)(param_1 + 0x90) = 1;
+      if (*(void **)(param_1 + 0xac) != (void *)0x0) {
+        FUN_0044cb40(*(void **)(param_1 + 0xac),1,0);
+      }
+      if (*(void **)(param_1 + 0xb8) != (void *)0x0) {
+        FUN_00425100(*(void **)(param_1 + 0xb8),100,1);
+      }
+    }
+    pvVar2 = *(void **)(param_1 + 0xac);
+    if (pvVar2 != (void *)0x0) {
+      FUN_0044ccf0(pvVar2,*(int *)((int)pvVar2 + 0xac),*(int *)((int)pvVar2 + 0xb0),0,0x3ff00000);
+      return;
+    }
+    break;
+  case 3:
+    iVar4 = *(int *)(param_1 + 0xb4);
+    if ((((iVar4 == 0) || (iVar3 = *(int *)(iVar4 + 0xc), iVar3 == 0)) ||
+        (*(int *)(iVar4 + 4) != *(int *)(iVar3 + 0xc))) ||
+       (iVar4 = _AIL_sample_status_4(iVar3), iVar4 != 4)) {
+      puVar5 = *(undefined4 **)(param_1 + 0xbc);
+      if (puVar5 != (undefined4 *)0x0) {
+        puVar5[2] = *puVar5;
+        iVar4 = **(int **)(param_1 + 0xbc);
+        while (iVar4 != 0) {
+          iVar4 = *(int *)(*(int *)(param_1 + 0xbc) + 8);
+          if (iVar4 == 0) {
+            puVar5 = (undefined4 *)0x0;
+          }
+          else {
+            puVar5 = *(undefined4 **)(iVar4 + 8);
+          }
+          FUN_00444e40(puVar5);
+          iVar4 = *(int *)(param_1 + 0xbc);
+          iVar3 = *(int *)(iVar4 + 8);
+          if (*(int *)(iVar4 + 4) == iVar3) break;
+          if (iVar3 != 0) {
+            *(undefined4 *)(iVar4 + 8) = *(undefined4 *)(iVar3 + 4);
+          }
+          iVar4 = **(int **)(param_1 + 0xbc);
+        }
+      }
+      *(undefined4 *)(param_1 + 0x90) = 1;
+      if (*(void **)(param_1 + 0xac) != (void *)0x0) {
+        FUN_0044cb40(*(void **)(param_1 + 0xac),1,0);
+      }
+    }
+    pvVar2 = *(void **)(param_1 + 0xac);
+    if (pvVar2 != (void *)0x0) {
+      FUN_0044ccf0(pvVar2,*(int *)((int)pvVar2 + 0xac),*(int *)((int)pvVar2 + 0xb0),0,0x3ff00000);
+    }
+    break;
+  default:
+    FUN_00425c50(s_SC_SelectHotSpot__Update___004684a0);
+    return;
+  }
+  return;
+}
+

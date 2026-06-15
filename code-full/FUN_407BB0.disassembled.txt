@@ -1,0 +1,33 @@
+Function: FUN_00407bb0
+Address: 0x407BB0
+
+PUSH ESI
+MOV ESI,ECX
+MOV dword ptr [ECX + 0xb0],0x0
+MOV dword ptr [ESI + 0xac],0x0
+MOV ECX,dword ptr [ESI + 0x10c]
+TEST ECX,ECX
+JZ       LAB_00407bda
+PUSH 0x0
+PUSH -0x1
+CALL 0x0044cb40
+
+LAB_00407bda:
+MOV ECX,dword ptr [ESI + 0xc8]
+TEST ECX,ECX
+JZ       LAB_00407bed
+PUSH 0x0
+PUSH -0x1
+CALL 0x0044cb40
+
+LAB_00407bed:
+CMP dword ptr [ESI + 0x140],0x0
+JNZ      LAB_00407c03
+PUSH 0x9
+MOV ECX,dword ptr [ESI + 0x148]
+CALL 0x00425550
+
+LAB_00407c03:
+OR dword ptr [ESI + 0xac],0x8
+POP ESI
+RET

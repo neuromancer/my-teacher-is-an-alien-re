@@ -1,0 +1,152 @@
+Function: FUN_0042f220
+Address: 0x42F220
+
+
+void __thiscall FUN_0042f220(void *this,int param_1,int param_2)
+
+{
+  int iVar1;
+  int iVar2;
+  int iVar3;
+  bool bVar4;
+  bool bVar5;
+  int *piVar6;
+  int iVar7;
+  int iVar8;
+  int iVar9;
+  int iVar10;
+  int iVar11;
+  bool bVar12;
+  bool bVar13;
+  int local_18;
+  int local_14;
+  
+  local_14 = param_1 + -2;
+  iVar7 = param_1 + 2;
+  iVar8 = param_2 + 2;
+  local_18 = param_2 + -2;
+  iVar10 = 0;
+  if (local_14 < 0) {
+    local_14 = 0;
+  }
+  if (local_18 < 0) {
+    local_18 = 0;
+  }
+  if (5 < iVar7) {
+    iVar7 = 5;
+  }
+  if (5 < iVar8) {
+    iVar8 = 5;
+  }
+  bVar12 = -1 < param_1 + -1;
+  bVar13 = -1 < param_2 + -1;
+  bVar4 = param_1 + 1 < 6;
+  bVar5 = param_2 + 1 < 6;
+  if (param_2 < iVar8) {
+    piVar6 = (int *)((int)this + (param_2 + param_1 * 6) * 0x1c + 0x140);
+    iVar9 = param_2;
+    do {
+      if (*piVar6 != 0) {
+        iVar8 = iVar9;
+      }
+      piVar6 = piVar6 + 7;
+      iVar9 = iVar9 + 1;
+    } while (iVar9 < iVar8);
+  }
+  if (local_18 < param_2) {
+    piVar6 = (int *)((int)this + (param_2 + param_1 * 6) * 0x1c + 0x140);
+    iVar9 = param_2;
+    do {
+      if (*piVar6 != 0) {
+        local_18 = iVar9;
+      }
+      piVar6 = piVar6 + -7;
+      iVar9 = iVar9 + -1;
+    } while (local_18 < iVar9);
+  }
+  if (param_1 < iVar7) {
+    piVar6 = (int *)((int)this + (param_2 + param_1 * 6) * 0x1c + 0x140);
+    iVar9 = param_1;
+    do {
+      if (*piVar6 != 0) {
+        iVar7 = iVar9;
+      }
+      piVar6 = piVar6 + 0x2a;
+      iVar9 = iVar9 + 1;
+    } while (iVar9 < iVar7);
+  }
+  if (local_14 < param_1) {
+    piVar6 = (int *)((int)this + (param_2 + param_1 * 6) * 0x1c + 0x140);
+    iVar9 = param_1;
+    do {
+      if (*piVar6 != 0) {
+        local_14 = iVar9;
+      }
+      piVar6 = piVar6 + -0x2a;
+      iVar9 = iVar9 + -1;
+    } while (local_14 < iVar9);
+  }
+  iVar11 = param_2 + param_1 * 6;
+  iVar9 = *(int *)((int)this + iVar11 * 0x1c + 0x7c);
+  iVar1 = *(int *)((int)this + iVar11 * 0x1c + 0x1cc);
+  iVar2 = *(int *)((int)this + iVar11 * 0x1c + 0xb4);
+  iVar3 = *(int *)((int)this + iVar11 * 0x1c + 0x204);
+  if (local_18 <= iVar8) {
+    iVar8 = (iVar8 - local_18) + 1;
+    piVar6 = (int *)((int)this + (param_1 * 6 + local_18) * 0x1c + 0x13c);
+    do {
+      iVar10 = iVar10 + *piVar6;
+      iVar8 = iVar8 + -1;
+      *piVar6 = 0;
+      piVar6 = piVar6 + 7;
+    } while (iVar8 != 0);
+  }
+  if (local_14 <= iVar7) {
+    iVar7 = (iVar7 - local_14) + 1;
+    piVar6 = (int *)((int)this + (param_2 + local_14 * 6) * 0x1c + 0x13c);
+    do {
+      iVar10 = iVar10 + *piVar6;
+      iVar7 = iVar7 + -1;
+      *piVar6 = 0;
+      piVar6 = piVar6 + 0x2a;
+    } while (iVar7 != 0);
+  }
+  if ((iVar9 == 0 && (bVar13 && bVar12)) &&
+     (iVar7 = *(int *)((int)this + iVar11 * 0x1c + 0x78), iVar7 != 0)) {
+    *(undefined4 *)((int)this + iVar11 * 0x1c + 0x78) = 0;
+    iVar10 = iVar10 + iVar7;
+  }
+  if ((iVar1 == 0 && (bVar4 && bVar13)) &&
+     (iVar7 = *(int *)((int)this + iVar11 * 0x1c + 0x1c8), iVar7 != 0)) {
+    *(undefined4 *)((int)this + iVar11 * 0x1c + 0x1c8) = 0;
+    iVar10 = iVar10 + iVar7;
+  }
+  if ((iVar2 == 0 && (bVar5 && bVar12)) &&
+     (iVar7 = *(int *)((int)this + iVar11 * 0x1c + 0xb0), iVar7 != 0)) {
+    *(undefined4 *)((int)this + iVar11 * 0x1c + 0xb0) = 0;
+    iVar10 = iVar10 + iVar7;
+  }
+  if ((iVar3 == 0 && (bVar5 && bVar4)) &&
+     (iVar7 = *(int *)((int)this + iVar11 * 0x1c + 0x200), iVar7 != 0)) {
+    *(undefined4 *)((int)this + iVar11 * 0x1c + 0x200) = 0;
+    iVar10 = iVar10 + iVar7;
+  }
+  if (iVar10 == 0) {
+    iVar7 = 0;
+  }
+  else {
+    FUN_00425550(*(void **)((int)this + 0x110),1);
+    iVar7 = -*(int *)((int)this + 0x120) + 4;
+    if ((iVar7 < 0) || (2 < iVar7)) goto LAB_0042f531;
+    iVar7 = -*(int *)((int)this + 0x120) + 9;
+  }
+  FUN_00425550(*(void **)((int)this + 0x110),iVar7);
+LAB_0042f531:
+  *(int *)((int)this + iVar11 * 0x1c + 0x13c) = iVar10;
+  if (*(int *)((int)this + 0x120) == 1) {
+    *(undefined4 *)((int)this + 0x120) = 0;
+  }
+  *(undefined4 *)((int)this + 0x124) = 0;
+  return;
+}
+

@@ -1,0 +1,13 @@
+Function: FUN_00448c50
+Address: 0x448C50
+
+
+undefined4 __fastcall FUN_00448c50(int param_1)
+
+{
+  if (*(int *)(param_1 + 8) != 0) {
+    return *(undefined4 *)(*(int *)(param_1 + 8) + 8);
+  }
+  return 0;
+}
+

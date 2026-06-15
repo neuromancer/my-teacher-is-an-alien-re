@@ -1,0 +1,51 @@
+Function: FUN_004265a0
+Address: 0x4265A0
+
+
+void FUN_004265a0(void)
+
+{
+  int iVar1;
+  int iVar2;
+  bool bVar3;
+  LPCSTR pCVar4;
+  undefined3 extraout_var;
+  void *pvVar5;
+  int *piVar6;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00426671;
+  *unaff_FS_OFFSET = &local_10;
+  pCVar4 = (LPCSTR)FUN_004260f0(s_elements_loading_smk_0046abe0);
+  bVar3 = FUN_00425fa0(pCVar4);
+  if (CONCAT31(extraout_var,bVar3) != 0) {
+    pvVar5 = (void *)FUN_00454500(0x30);
+    local_8 = 0;
+    if (pvVar5 == (void *)0x0) {
+      pvVar5 = (void *)0x0;
+    }
+    else {
+      pvVar5 = FUN_00410fb0(pvVar5,pCVar4,0);
+    }
+    local_8 = 0xffffffff;
+    piVar6 = (int *)FUN_004205e0();
+    iVar1 = *piVar6;
+    iVar2 = *(int *)((int)pvVar5 + 0x14);
+    piVar6 = (int *)FUN_004205f0();
+    FUN_00411380(pvVar5,*(int *)((int)pvVar5 + 0x28),*(int *)((int)pvVar5 + 0x2c),
+                 *(int *)((int)pvVar5 + 0x20),*(int *)((int)pvVar5 + 0x24),(iVar1 - iVar2) / 2,
+                 (*piVar6 - *(int *)((int)pvVar5 + 0x18)) / 2 + *(int *)((int)pvVar5 + 0x18));
+    if (pvVar5 != (void *)0x0) {
+      FUN_00410fd0((int)pvVar5);
+      FUN_00454400(pvVar5);
+    }
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

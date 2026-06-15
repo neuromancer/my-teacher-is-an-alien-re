@@ -1,0 +1,67 @@
+Function: FUN_00420150
+Address: 0x420150
+
+
+void __thiscall FUN_00420150(void *this,HINSTANCE param_1,int param_2,char *param_3,int param_4)
+
+{
+  HWND pHVar1;
+  DWORD dwExStyle;
+  int iVar2;
+  int iVar3;
+  WNDCLASSEXA local_30;
+  
+  *(HINSTANCE *)((int)this + 4) = param_1;
+  *(int *)((int)this + 8) = param_2;
+  FUN_00420300(param_3);
+  if (*(int *)((int)this + 0x20) == 0) {
+    if (param_2 == 0) {
+      local_30.cbClsExtra = 0;
+      local_30.cbWndExtra = 0;
+      local_30.hInstance = param_1;
+      local_30.cbSize = 0x30;
+      local_30.style = 0xb;
+      local_30.lpfnWndProc = FUN_00420690;
+      local_30.hIcon = LoadIconA(param_1,s_IDI_ICON1_0046a328);
+      local_30.hCursor = LoadCursorA((HINSTANCE)0x0,&DAT_00007f00);
+      local_30.hbrBackground = (HBRUSH)0x0;
+      local_30.lpszMenuName = (LPCSTR)0x0;
+      local_30.lpszClassName = s_Teacher_v_0_950__0046a6c8;
+      local_30.hIconSm = local_30.hIcon;
+      RegisterClassExA(&local_30);
+    }
+    iVar2 = GetSystemMetrics(0);
+    iVar2 = (iVar2 + -0x280) / 2;
+    iVar3 = GetSystemMetrics(1);
+    iVar3 = (iVar3 + -0x1e0) / 2;
+    dwExStyle = 0;
+  }
+  else {
+    if (*(int *)((int)this + 8) == 0) {
+      local_30.cbClsExtra = 0;
+      local_30.cbWndExtra = 0;
+      local_30.hInstance = *(HINSTANCE *)((int)this + 4);
+      local_30.cbSize = 0x30;
+      local_30.style = 0xb;
+      local_30.lpfnWndProc = FUN_00420690;
+      local_30.hIcon = LoadIconA(param_1,s_IDI_ICON1_0046a328);
+      local_30.hCursor = LoadCursorA((HINSTANCE)0x0,&DAT_00007f00);
+      local_30.hbrBackground = (HBRUSH)0x0;
+      local_30.lpszMenuName = (LPCSTR)0x0;
+      local_30.lpszClassName = s_Teacher_v_0_950__0046a6c8;
+      local_30.hIconSm = local_30.hIcon;
+      RegisterClassExA(&local_30);
+    }
+    Ordinal_9(2);
+    iVar3 = 0;
+    iVar2 = 0;
+    dwExStyle = 8;
+  }
+  pHVar1 = CreateWindowExA(dwExStyle,s_Teacher_v_0_950__0046a6c8,s_Teacher_v_0_950__0046a6c8,
+                           0x80000000,iVar2,iVar3,0x280,0x1e0,(HWND)0x0,(HMENU)0x0,param_1,
+                           (LPVOID)0x0);
+  *(undefined4 *)((int)this + 0xc) = pHVar1;
+  ShowWindow(*(HWND *)((int)this + 0xc),param_4);
+  return;
+}
+

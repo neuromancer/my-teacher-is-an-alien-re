@@ -1,0 +1,51 @@
+Function: FUN_00412000
+Address: 0x412000
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x412087
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+MOV EAX,dword ptr [EBP + 0x8]
+PUSH EBX
+PUSH ESI
+XOR EBX,EBX
+PUSH EDI
+PUSH 0x18
+MOV byte ptr [ECX],BL
+MOV EDI,ECX
+MOV [0x00469128],EAX
+CALL 0x00454500
+MOV dword ptr [EBP + -0x10],EAX
+ADD ESP,0x4
+MOV ESI,EAX
+MOV dword ptr [EBP + -0x4],EBX
+MOV EAX,0x0
+TEST ESI,ESI
+JZ       LAB_0041205f
+MOV EAX,[0x00469128]
+MOV dword ptr [ESI + 0x8],EBX
+MOV dword ptr [ESI + 0xc],EBX
+MOV dword ptr [ESI + 0x4],EBX
+MOV dword ptr [ESI],EBX
+MOV dword ptr [ESI + 0x10],EBX
+MOV dword ptr [ESI + 0x14],EAX
+MOV EAX,ESI
+
+LAB_0041205f:
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,EDI
+MOV [0x00469134],EAX
+CALL     LAB_00412480
+MOV EAX,EDI
+MOV ECX,dword ptr [EBP + -0xc]
+MOV dword ptr FS:[0x0],ECX
+POP EDI
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET 0x4

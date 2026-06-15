@@ -1,0 +1,61 @@
+Function: FUN_00433ae0
+Address: 0x433AE0
+
+
+uint __thiscall FUN_00433ae0(void *this,byte *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  byte *pbVar4;
+  undefined4 *puVar5;
+  bool bVar6;
+  uint local_4;
+  
+  local_4 = 0;
+  bVar1 = *param_1;
+  pbVar2 = param_1;
+  while (bVar1 != 0) {
+    local_4 = (int)(char)*pbVar2 + local_4 * 0x21;
+    bVar1 = pbVar2[1];
+    pbVar2 = pbVar2 + 1;
+  }
+  local_4 = local_4 % (uint)(*(int **)((int)this + 0x94))[1];
+  iVar3 = **(int **)((int)this + 0x94);
+  if (iVar3 != 0) {
+    for (puVar5 = *(undefined4 **)(iVar3 + local_4 * 4); puVar5 != (undefined4 *)0x0;
+        puVar5 = (undefined4 *)*puVar5) {
+      pbVar2 = (byte *)puVar5[2];
+      pbVar4 = param_1;
+      do {
+        bVar1 = *pbVar2;
+        bVar6 = bVar1 < *pbVar4;
+        if (bVar1 != *pbVar4) {
+LAB_00433b4b:
+          iVar3 = (1 - (uint)bVar6) - (uint)(bVar6 != 0);
+          goto LAB_00433b50;
+        }
+        if (bVar1 == 0) break;
+        bVar1 = pbVar2[1];
+        bVar6 = bVar1 < pbVar4[1];
+        if (bVar1 != pbVar4[1]) goto LAB_00433b4b;
+        pbVar2 = pbVar2 + 2;
+        pbVar4 = pbVar4 + 2;
+      } while (bVar1 != 0);
+      iVar3 = 0;
+LAB_00433b50:
+      if (iVar3 == 0) goto LAB_00433b5a;
+    }
+  }
+  puVar5 = (undefined4 *)0x0;
+LAB_00433b5a:
+  if (puVar5 == (undefined4 *)0x0) {
+    FUN_00425c50(s_GameState__StateIndex___Invalid_g_0046b6dc);
+  }
+  else {
+    local_4 = puVar5[3];
+  }
+  return local_4;
+}
+

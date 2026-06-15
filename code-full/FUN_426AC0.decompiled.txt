@@ -1,0 +1,14 @@
+Function: FUN_00426ac0
+Address: 0x426AC0
+
+
+void FUN_00426ac0(void)
+
+{
+  while (DAT_0046ac04 == 0) {
+    FUN_00425e90();
+  }
+  DAT_0046ac04 = 0;
+  return;
+}
+

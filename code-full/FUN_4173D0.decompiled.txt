@@ -1,0 +1,68 @@
+Function: FUN_004173d0
+Address: 0x4173D0
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+void __thiscall FUN_004173d0(void *this,undefined4 *param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  undefined4 *puVar3;
+  
+  if (*(int *)((int)this + 0xb8) != 0) {
+    FUN_0044c9d0(*(int *)((int)this + 0xb8));
+  }
+  if (*(int *)((int)this + 0xbc) != 0) {
+    FUN_0044c9d0(*(int *)((int)this + 0xbc));
+  }
+  if (*(int *)((int)this + 0xc0) != 0) {
+    FUN_00414c60(*(int *)((int)this + 0xc0));
+    puVar3 = *(undefined4 **)((int)this + 0xc0);
+    if (puVar3 != (undefined4 *)0x0) {
+      FUN_004148f0(puVar3);
+      FUN_00454400(puVar3);
+      *(undefined4 *)((int)this + 0xc0) = 0;
+    }
+  }
+  piVar1 = *(int **)((int)this + 200);
+  if (piVar1 != (int *)0x0) {
+    if (*piVar1 != 0) {
+      piVar1[2] = *piVar1;
+      iVar2 = *piVar1;
+      while (iVar2 != 0) {
+        puVar3 = (undefined4 *)FUN_00418540(piVar1);
+        if (puVar3 != (undefined4 *)0x0) {
+          FUN_004148f0(puVar3);
+          FUN_00454400(puVar3);
+        }
+        iVar2 = *piVar1;
+      }
+    }
+    FUN_00454400(piVar1);
+    *(undefined4 *)((int)this + 200) = 0;
+  }
+  puVar3 = *(undefined4 **)((int)this + 0xc4);
+  if (puVar3 != (undefined4 *)0x0) {
+    FUN_004148f0(puVar3);
+    FUN_00454400(puVar3);
+    *(undefined4 *)((int)this + 0xc4) = 0;
+  }
+  puVar3 = *(undefined4 **)((int)this + 0xb4);
+  if (puVar3 != (undefined4 *)0x0) {
+    FUN_0041dc10(puVar3);
+    FUN_00454400(puVar3);
+    *(undefined4 *)((int)this + 0xb4) = 0;
+  }
+  FUN_00417fe0();
+  puVar3 = &DAT_00473334;
+  do {
+    *puVar3 = 1;
+    puVar3 = puVar3 + 9;
+  } while (puVar3 < &DAT_004733e8);
+  _DAT_004733e8 = 1;
+  FUN_0042d920(param_1);
+  return;
+}
+

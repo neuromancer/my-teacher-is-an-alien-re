@@ -1,0 +1,23 @@
+Function: FUN_00411240
+Address: 0x411240
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x4]
+MOV ESI,ECX
+TEST EAX,EAX
+JZ       LAB_0041126b
+DEC EAX
+MOV dword ptr [ESI + 0x4],EAX
+JNZ      LAB_0041126b
+CALL 0x00452c91
+MOV EAX,dword ptr [ESI]
+CMP EAX,-0x1
+JZ       LAB_0041126b
+PUSH EAX
+CALL 0x00452bae
+ADD ESP,0x4
+MOV dword ptr [ESI],0xffffffff
+
+LAB_0041126b:
+POP ESI
+RET

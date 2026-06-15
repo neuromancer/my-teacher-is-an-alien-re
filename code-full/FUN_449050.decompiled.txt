@@ -1,0 +1,42 @@
+Function: FUN_00449050
+Address: 0x449050
+
+
+undefined4 __fastcall FUN_00449050(int *param_1)
+
+{
+  int *piVar1;
+  undefined4 *puVar2;
+  undefined4 uVar3;
+  
+  piVar1 = (int *)param_1[2];
+  if (piVar1 != (int *)0x0) {
+    if ((int *)*param_1 == piVar1) {
+      *param_1 = piVar1[1];
+    }
+    if ((int *)param_1[1] == piVar1) {
+      param_1[1] = *piVar1;
+    }
+    if (*piVar1 != 0) {
+      *(int *)(*piVar1 + 4) = piVar1[1];
+    }
+    puVar2 = (undefined4 *)((undefined4 *)param_1[2])[1];
+    if (puVar2 != (undefined4 *)0x0) {
+      *puVar2 = *(undefined4 *)param_1[2];
+    }
+    puVar2 = (undefined4 *)param_1[2];
+    uVar3 = 0;
+    if (puVar2 != (undefined4 *)0x0) {
+      uVar3 = puVar2[2];
+      puVar2[2] = 0;
+      *puVar2 = 0;
+      puVar2[1] = 0;
+      FUN_00454400(puVar2);
+      param_1[2] = 0;
+    }
+    param_1[2] = *param_1;
+    return uVar3;
+  }
+  return 0;
+}
+

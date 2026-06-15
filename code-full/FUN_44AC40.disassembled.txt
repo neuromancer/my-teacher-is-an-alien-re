@@ -1,0 +1,5 @@
+Function: FUN_0044ac40
+Address: 0x44AC40
+
+MOV EAX,0x3
+RET

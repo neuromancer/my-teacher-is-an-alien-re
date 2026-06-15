@@ -1,0 +1,125 @@
+Function: FUN_00413bd0
+Address: 0x413BD0
+
+
+bool __thiscall FUN_00413bd0(void *this,char *param_1)
+
+{
+  char cVar1;
+  bool bVar2;
+  int iVar3;
+  undefined3 extraout_var;
+  uint uVar4;
+  uint uVar5;
+  char *pcVar6;
+  char *pcVar7;
+  char local_100 [256];
+  
+  if ((DAT_00469160 != 0) && (*(int *)((int)this + 8) == 0)) {
+    uVar4 = 0xffffffff;
+    pcVar6 = param_1;
+    do {
+      pcVar7 = pcVar6;
+      if (uVar4 == 0) break;
+      uVar4 = uVar4 - 1;
+      pcVar7 = pcVar6 + 1;
+      cVar1 = *pcVar6;
+      pcVar6 = pcVar7;
+    } while (cVar1 != '\0');
+    uVar4 = ~uVar4;
+    pcVar6 = pcVar7 + -uVar4;
+    pcVar7 = local_100;
+    for (uVar5 = uVar4 >> 2; uVar5 != 0; uVar5 = uVar5 - 1) {
+      *(undefined4 *)pcVar7 = *(undefined4 *)pcVar6;
+      pcVar6 = pcVar6 + 4;
+      pcVar7 = pcVar7 + 4;
+    }
+    for (uVar4 = uVar4 & 3; uVar4 != 0; uVar4 = uVar4 - 1) {
+      *pcVar7 = *pcVar6;
+      pcVar6 = pcVar6 + 1;
+      pcVar7 = pcVar7 + 1;
+    }
+    FUN_004140f0(local_100,param_1);
+  }
+  iVar3 = FUN_00413810(param_1);
+  if (iVar3 != 0) {
+    if (*(int *)((int)this + 0xc) == 0) {
+      switch(iVar3) {
+      case 1:
+        FUN_00413120(this,1,param_1);
+        return true;
+      case 2:
+        FUN_00412d00(this,param_1,0);
+        return true;
+      case 3:
+        FUN_00413120(this,3,param_1);
+        return true;
+      case 4:
+        FUN_00413120(this,4,param_1);
+        return true;
+      case 5:
+        FUN_00412fe0((int)this);
+        return true;
+      case 6:
+        if (*(int *)((int)this + 8) == 0) {
+          FUN_00413120(this,6,param_1);
+          return true;
+        }
+        break;
+      case 7:
+        if (*(int *)((int)this + 8) == 0) {
+          FUN_00413120(this,7,param_1);
+          return true;
+        }
+        break;
+      case 8:
+        if (*(int *)((int)this + 8) == 0) {
+          FUN_00413120(this,8,param_1);
+          return true;
+        }
+        break;
+      case 9:
+        if (*(int *)((int)this + 8) == 0) {
+          FUN_00413120(this,9,param_1);
+          return true;
+        }
+        break;
+      case 10:
+        if (*(int *)((int)this + 8) == 0) {
+          FUN_00413120(this,10,param_1);
+          return true;
+        }
+        break;
+      case 0xb:
+        if (*(int *)((int)this + 8) == 0) {
+          FUN_00413120(this,0xb,param_1);
+          return true;
+        }
+        break;
+      case 0xc:
+        if (*(int *)((int)this + 8) == 0) {
+          return true;
+        }
+        break;
+      case 0xd:
+        if (*(int *)((int)this + 8) == 0) {
+          FUN_00413120(this,0xd,param_1);
+          goto LAB_00413dbd;
+        }
+        break;
+      default:
+        FUN_00425c50(s_Parser__DoPreProcessor_____Inval_00469878);
+        return true;
+      }
+    }
+    else if ((iVar3 == 1) && (bVar2 = FUN_00412c60(this,param_1), CONCAT31(extraout_var,bVar2) != 0)
+            ) {
+      FUN_00412fe0((int)this);
+      *(undefined4 *)((int)this + 0xc) = 0;
+    }
+    return true;
+  }
+LAB_00413dbd:
+  return (bool)('\x01' - (*(int *)((int)this + 8) == 0));
+}
+

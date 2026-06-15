@@ -1,0 +1,14 @@
+Function: FUN_00432000
+Address: 0x432000
+
+
+void __thiscall FUN_00432000(void *this,int param_1)
+
+{
+  FUN_004309a0(this,param_1);
+  if (param_1 != 0) {
+    *(undefined4 *)((int)this + 0x94) = *(undefined4 *)(param_1 + 4);
+  }
+  return;
+}
+

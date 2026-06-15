@@ -1,0 +1,25 @@
+Function: FUN_00425d00
+Address: 0x425D00
+
+
+int __cdecl FUN_00425d00(char *param_1)
+
+{
+  HWND hWnd;
+  int iVar1;
+  char *lpText;
+  char *lpCaption;
+  UINT uType;
+  char local_100 [256];
+  
+  _vsprintf(local_100,param_1,&stack0x00000008);
+  FUN_00453473(1);
+  lpText = local_100;
+  uType = 4;
+  lpCaption = s_Message_0046aad0;
+  hWnd = (HWND)FUN_004205d0();
+  iVar1 = MessageBoxA(hWnd,lpText,lpCaption,uType);
+  FUN_00453473(0);
+  return iVar1;
+}
+

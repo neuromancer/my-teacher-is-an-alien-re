@@ -1,0 +1,13 @@
+Function: FUN_00453bff
+Address: 0x453BFF
+
+
+undefined8 __cdecl FUN_00453bff(int param_1,uint param_2)
+
+{
+  longlong lVar1;
+  
+  lVar1 = (ulonglong)(param_1 + 3U & 0xfffffffc) * (ulonglong)param_2;
+  return CONCAT44((int)((ulonglong)lVar1 >> 0x20),(int)lVar1 + DAT_0046db34);
+}
+

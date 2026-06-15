@@ -1,0 +1,49 @@
+Function: FUN_00411bf0
+Address: 0x411BF0
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV EDI,dword ptr [ESP + 0x18]
+TEST EDI,EDI
+JZ       LAB_00411c33
+MOV EAX,dword ptr [ESP + 0x10]
+MOV ESI,dword ptr [ESP + 0x14]
+MOV CL,byte ptr [ESP + 0x1c]
+MOV DL,byte ptr [ESP + 0x20]
+
+LAB_00411c0b:
+CMP byte ptr [ESI],0x0
+JNZ      LAB_00411c19
+INC EAX
+INC ESI
+DEC EDI
+JNZ      LAB_00411c0b
+POP EDI
+POP ESI
+POP EBX
+RET
+
+LAB_00411c19:
+TEST EDI,EDI
+JZ       LAB_00411c33
+MOV BL,byte ptr [ESI]
+CMP CL,BL
+MOV byte ptr [EAX],DL
+JZ       LAB_00411c27
+MOV byte ptr [EAX],BL
+
+LAB_00411c27:
+INC EAX
+INC ESI
+DEC EDI
+CMP byte ptr [ESI],0x0
+JNZ      LAB_00411c19
+TEST EDI,EDI
+JNZ      LAB_00411c0b
+
+LAB_00411c33:
+POP EDI
+POP ESI
+POP EBX
+RET

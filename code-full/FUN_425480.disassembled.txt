@@ -1,0 +1,9 @@
+Function: FUN_00425480
+Address: 0x425480
+
+XOR EAX,EAX
+MOV dword ptr [ECX],EAX
+MOV dword ptr [ECX + 0x4],EAX
+MOV dword ptr [ECX + 0x8],EAX
+MOV EAX,ECX
+RET

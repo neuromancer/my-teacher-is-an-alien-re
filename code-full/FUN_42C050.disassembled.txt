@@ -1,0 +1,13 @@
+Function: FUN_0042c050
+Address: 0x42C050
+
+CMP dword ptr [0x0046ae5c],0x0
+JZ       LAB_0042c06b
+MOV EAX,dword ptr [ECX + 0xe8]
+MOV ECX,dword ptr [0x0046ae5c]
+PUSH EAX
+CALL 0x00409730
+
+LAB_0042c06b:
+XOR EAX,EAX
+RET

@@ -1,0 +1,38 @@
+Function: FUN_004252a0
+Address: 0x4252A0
+
+PUSH EBX
+PUSH ESI
+XOR BX,BX
+PUSH EDI
+CMP word ptr [ECX + 0xc],BX
+PUSH EBP
+MOV EDI,ECX
+JLE      LAB_004252e3
+MOV ESI,dword ptr [0x0047652c]
+
+LAB_004252b5:
+MOVSX EAX,BX
+MOV ECX,dword ptr [EDI + 0x8]
+LEA EBP,[EAX*0x4 + 0x0]
+MOV EAX,dword ptr [ECX + EBP*0x1]
+MOV EDX,dword ptr [EAX + 0xc]
+PUSH EDX
+CALL ESI
+CMP EAX,0x4
+JNZ      LAB_004252db
+MOV EAX,dword ptr [EDI + 0x8]
+MOV ECX,dword ptr [EAX + EBP*0x1]
+CALL 0x004250e0
+
+LAB_004252db:
+INC BX
+CMP word ptr [EDI + 0xc],BX
+JG       LAB_004252b5
+
+LAB_004252e3:
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET

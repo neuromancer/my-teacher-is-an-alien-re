@@ -1,0 +1,33 @@
+Function: FUN_004020a0
+Address: 0x4020A0
+
+
+int __thiscall FUN_004020a0(void *this,int param_1,int param_2)
+
+{
+  int iVar1;
+  bool bVar2;
+  int iVar3;
+  int *piVar4;
+  
+  iVar3 = 0;
+  piVar4 = (int *)((int)this + 0xec);
+  do {
+    iVar1 = *piVar4;
+    if (iVar1 != 0) {
+      if ((((param_1 < *(int *)(iVar1 + 0xa4)) || (*(int *)(iVar1 + 0xac) < param_1)) ||
+          (param_2 < *(int *)(iVar1 + 0xa8))) || (bVar2 = true, *(int *)(iVar1 + 0xb0) < param_2)) {
+        bVar2 = false;
+      }
+      if (bVar2) {
+        return iVar3;
+      }
+    }
+    piVar4 = piVar4 + 1;
+    iVar3 = iVar3 + 1;
+    if (0xe < iVar3) {
+      return -1;
+    }
+  } while( true );
+}
+

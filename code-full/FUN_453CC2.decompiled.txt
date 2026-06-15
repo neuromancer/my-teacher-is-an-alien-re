@@ -1,0 +1,10 @@
+Function: FUN_00453cc2
+Address: 0x453CC2
+
+
+undefined4 FUN_00453cc2(void)
+
+{
+  return DAT_0046d0b6;
+}
+

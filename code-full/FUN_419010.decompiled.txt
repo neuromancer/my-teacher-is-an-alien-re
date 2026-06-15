@@ -1,0 +1,82 @@
+Function: FUN_00419010
+Address: 0x419010
+
+
+void __thiscall FUN_00419010(void *this,int param_1)
+
+{
+  LPVOID pvVar1;
+  undefined4 *puVar2;
+  int iVar3;
+  undefined4 *puVar4;
+  undefined4 *unaff_FS_OFFSET;
+  int local_24;
+  undefined4 *local_20;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  int local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_004191e1;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00449320((int)this);
+  pvVar1 = *(LPVOID *)((int)this + 0x71c);
+  if (pvVar1 != (LPVOID)0x0) {
+    FUN_004218b0();
+    FUN_00454400(pvVar1);
+    *(undefined4 *)((int)this + 0x71c) = 0;
+  }
+  puVar4 = *(undefined4 **)((int)this + 0x720);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0x720) = 0;
+  }
+  puVar4 = *(undefined4 **)((int)this + 0x724);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0x724) = 0;
+  }
+  iVar3 = 8;
+  puVar4 = (undefined4 *)((int)this + 0x140);
+  do {
+    *puVar4 = 0;
+    puVar4 = puVar4 + 0xb;
+    iVar3 = iVar3 + -1;
+  } while (iVar3 != 0);
+  local_24 = 0;
+  local_20 = (undefined4 *)((int)this + 0x6fc);
+  do {
+    puVar4 = (undefined4 *)*local_20;
+    if (puVar4 != (undefined4 *)0x0) {
+      local_8 = 2;
+      *puVar4 = &PTR_FUN_00461320;
+      puVar2 = (undefined4 *)puVar4[0x136];
+      if (puVar2 != (undefined4 *)0x0) {
+        FUN_0044c740(puVar2);
+        FUN_00454400(puVar2);
+        puVar4[0x136] = 0;
+      }
+      local_8._0_1_ = 1;
+      FUN_004191b1();
+      local_8 = (uint)local_8._1_3_ << 8;
+      FUN_004191c9();
+      local_8 = 0xffffffff;
+      FUN_004191eb();
+      FUN_00454400(puVar4);
+      *local_20 = 0;
+    }
+    local_20 = local_20 + 1;
+    local_24 = local_24 + 1;
+  } while (local_24 < 8);
+  *(undefined4 *)((int)this + 0x6f8) = 0;
+  if (param_1 != 0) {
+    FUN_00444d90(1,*(undefined4 *)((int)this + 0x90),*(undefined4 *)((int)this + 0x90),
+                 *(undefined4 *)((int)this + 0x94),0x18,0,0,0,0,0);
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

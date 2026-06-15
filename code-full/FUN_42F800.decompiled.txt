@@ -1,0 +1,56 @@
+Function: FUN_0042f800
+Address: 0x42F800
+
+
+void __fastcall FUN_0042f800(int param_1)
+
+{
+  int iVar1;
+  int *piVar2;
+  int *piVar3;
+  int iVar4;
+  int iVar5;
+  
+  iVar5 = 0x9b;
+  FUN_00449520(param_1);
+  piVar2 = (int *)(param_1 + 0x148);
+  do {
+    iVar4 = 0x48;
+    piVar3 = piVar2;
+    do {
+      *piVar3 = iVar5;
+      iVar1 = iVar4 + 0x32;
+      piVar3[1] = iVar4;
+      piVar2 = piVar3 + 7;
+      iVar4 = iVar4 + 0x33;
+      piVar3[2] = iVar5 + 0x45;
+      piVar3[3] = iVar1;
+      piVar3 = piVar2;
+    } while (iVar4 < 0x17a);
+    iVar5 = iVar5 + 0x46;
+  } while (iVar5 < 0x23f);
+  *(undefined4 *)(param_1 + 0x178) = 1;
+  *(undefined4 *)(param_1 + 0x2ac) = 1;
+  *(undefined4 *)(param_1 + 0x354) = 1;
+  *(undefined4 *)(param_1 + 0x3fc) = 1;
+  *(undefined4 *)(param_1 + 0x434) = 1;
+  *(undefined4 *)(param_1 + 0x2c8) = 1;
+  *(undefined4 *)(param_1 + 0x2e4) = 1;
+  *(undefined4 *)(param_1 + 0x3c4) = 1;
+  *(undefined4 *)(param_1 + 0x128) = 10;
+  *(undefined4 *)(param_1 + 300) = 0x14;
+  *(undefined4 *)(param_1 + 0x130) = 0x5a;
+  *(undefined4 *)(param_1 + 0x134) = 0xdc;
+  *(undefined4 *)(param_1 + 0x548) = 6;
+  *(undefined4 *)(param_1 + 0x4fc) = 1;
+  *(undefined4 *)(param_1 + 0x54c) = 0x197;
+  *(undefined4 *)(param_1 + 0x550) = 0x5f;
+  *(undefined4 *)(param_1 + 0x554) = 0x1d6;
+  FUN_0042f570(param_1);
+  if (*(int *)(param_1 + 0x114) != 0) {
+    FUN_00444d90(5,*(int *)(param_1 + 0x114),*(undefined4 *)(param_1 + 0x90),
+                 *(undefined4 *)(param_1 + 0x94),0x1b,0,0,0,0,0);
+  }
+  return;
+}
+

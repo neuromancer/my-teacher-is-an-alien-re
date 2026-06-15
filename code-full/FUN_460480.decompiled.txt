@@ -1,0 +1,38 @@
+Function: __mbctoupper
+Address: 0x460480
+
+
+/* Library Function - Single Match
+    __mbctoupper
+   
+   Library: Visual Studio 1998 Release */
+
+uint __cdecl __mbctoupper(uint _Ch)
+
+{
+  int iVar1;
+  byte bVar2;
+  int unaff_EBX;
+  undefined2 in_stack_fffffff8;
+  byte local_4;
+  byte local_3;
+  
+  if (_Ch < 0x100) {
+    if ((0x60 < (int)_Ch) && ((int)_Ch < 0x7b)) {
+      return _Ch - 0x20;
+    }
+    return _Ch;
+  }
+  bVar2 = (byte)(_Ch >> 8);
+  if ((*(byte *)((int)&DAT_00471ea0 + bVar2 + 1) & 4) == 0) {
+    return _Ch;
+  }
+  iVar1 = ___crtLCMapStringA(DAT_00471fa8,(LPCWSTR)&DAT_00000200,(DWORD)&stack0xfffffffa,(LPCSTR)0x2
+                             ,(int)&local_4,(LPSTR)0x2,DAT_00471fa4,unaff_EBX,
+                             CONCAT13((char)_Ch,CONCAT12(bVar2,in_stack_fffffff8)));
+  if (iVar1 == 0) {
+    return _Ch;
+  }
+  return (uint)local_4 * 0x100 + (uint)local_3;
+}
+

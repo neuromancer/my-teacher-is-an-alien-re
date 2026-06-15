@@ -1,0 +1,65 @@
+Function: FUN_00455d0c
+Address: 0x455D0C
+
+PUSH EDX
+SUB ESP,0x30
+FSTP extended double ptr [ESP + 0x18]
+FSTP extended double ptr [ESP]
+XOR EDX,EDX
+MOV EAX,dword ptr [ESP + 0x6]
+TEST EAX,0x7fff0000
+JZ       LAB_00455d2e
+CALL 0x00455b06
+ADD ESP,0x30
+POP EDX
+RET
+
+LAB_00455d2e:
+FLD extended double ptr [ESP]
+FLD extended double ptr [ESP + 0x18]
+MOV EAX,dword ptr [ESP]
+OR EAX,dword ptr [ESP + 0x4]
+JZ       LAB_00455db7
+FXCH
+FSTP extended double ptr [ESP + 0xc]
+FLD extended double ptr [ESP]
+FXCH
+OR EDX,0x2
+FNSTCW word ptr [ESP + 0x24]
+MOV EAX,dword ptr [ESP + 0x24]
+OR EAX,0x33f
+MOV dword ptr [ESP + 0x28],EAX
+FLDCW word ptr [ESP + 0x28]
+MOV EAX,dword ptr [ESP + 0x20]
+AND EAX,0x7fff
+CMP EAX,0x7fbe
+JA       LAB_00455d89
+OR EDX,0x1
+FMUL double ptr [0x00471894]
+FSTP extended double ptr [ESP + 0x18]
+FMUL double ptr [0x00471894]
+FSTP extended double ptr [ESP]
+JMP      LAB_00455da9
+
+LAB_00455d89:
+FNSTCW word ptr [ESP + 0x24]
+MOV EAX,dword ptr [ESP + 0x24]
+OR EAX,0x300
+MOV dword ptr [ESP + 0x28],EAX
+FLDCW word ptr [ESP + 0x28]
+FSTP ST0
+FMUL double ptr [0x00471894]
+FSTP extended double ptr [ESP]
+
+LAB_00455da9:
+FLDCW word ptr [ESP + 0x24]
+CALL 0x00455b06
+ADD ESP,0x30
+POP EDX
+RET
+
+LAB_00455db7:
+FPREM
+ADD ESP,0x30
+POP EDX
+RET

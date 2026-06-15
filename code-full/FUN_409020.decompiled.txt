@@ -1,0 +1,62 @@
+Function: FUN_00409020
+Address: 0x409020
+
+
+void __fastcall FUN_00409020(undefined4 *param_1)
+
+{
+  int *piVar1;
+  undefined4 *puVar2;
+  undefined4 *puVar3;
+  int iVar4;
+  int iVar5;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar6;
+  uint local_18;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_00409100;
+  *unaff_FS_OFFSET = &local_10;
+  *param_1 = &PTR_FUN_00461138;
+  iVar5 = 0;
+  local_8 = 0;
+  piVar1 = (int *)param_1[0x24];
+  if (piVar1 != (int *)0x0) {
+    if ((*piVar1 != 0) && (local_18 = 0, piVar1[1] != 0)) {
+      do {
+        for (puVar2 = *(undefined4 **)(*piVar1 + iVar5); puVar2 != (undefined4 *)0x0;
+            puVar2 = (undefined4 *)*puVar2) {
+          FUN_00408f20(puVar2 + 3,1);
+          iVar4 = 0;
+          do {
+            bVar6 = iVar4 != 0;
+            iVar4 = iVar4 + -1;
+          } while (bVar6);
+        }
+        iVar5 = iVar5 + 4;
+        local_18 = local_18 + 1;
+      } while (local_18 < (uint)piVar1[1]);
+    }
+    FUN_00454400((LPVOID)*piVar1);
+    *piVar1 = 0;
+    piVar1[2] = 0;
+    piVar1[3] = 0;
+    puVar2 = (undefined4 *)piVar1[4];
+    while (puVar2 != (undefined4 *)0x0) {
+      puVar3 = (undefined4 *)*puVar2;
+      FUN_00454400(puVar2);
+      puVar2 = puVar3;
+    }
+    piVar1[4] = 0;
+    FUN_00454400(piVar1);
+    param_1[0x24] = 0;
+  }
+  local_8 = 0xffffffff;
+  FUN_0040910a();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

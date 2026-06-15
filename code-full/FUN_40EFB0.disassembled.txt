@@ -1,0 +1,10 @@
+Function: FUN_0040efb0
+Address: 0x40EFB0
+
+MOV ECX,0x472be0
+XOR EAX,EAX
+MOV dword ptr [ECX],EAX
+MOV dword ptr [ECX + 0x4],EAX
+MOV dword ptr [ECX + 0x8],EAX
+MOV dword ptr [ECX + 0xc],EAX
+RET

@@ -1,0 +1,4 @@
+Function: CreatePalette
+Address: 0x4601FA
+
+JMP dword ptr [0x00476328]

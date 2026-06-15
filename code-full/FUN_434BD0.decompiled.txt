@@ -1,0 +1,14 @@
+Function: FUN_00434bd0
+Address: 0x434BD0
+
+
+void FUN_00434bd0(char *param_1)
+
+{
+  char local_80 [128];
+  
+  _sscanf(param_1,&DAT_00468760,local_80);
+  FUN_0041dcc0(local_80);
+  return;
+}
+

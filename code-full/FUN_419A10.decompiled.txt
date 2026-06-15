@@ -1,0 +1,34 @@
+Function: FUN_00419a10
+Address: 0x419A10
+
+
+undefined4 __thiscall FUN_00419a10(void *this,int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  bool bVar3;
+  
+  iVar1 = *(int *)((int)this + 0x6f8);
+  iVar2 = *(int *)(iVar1 + 0x90);
+  if ((((*(int *)(param_1 + 0x1c) < *(int *)((int)this + iVar2 * 0x2c + 0x118)) ||
+       (*(int *)((int)this + iVar2 * 0x2c + 0x120) < *(int *)(param_1 + 0x1c))) ||
+      (*(int *)(param_1 + 0x20) < *(int *)((int)this + iVar2 * 0x2c + 0x11c))) ||
+     (bVar3 = true, *(int *)((int)this + iVar2 * 0x2c + 0x124) < *(int *)(param_1 + 0x20))) {
+    bVar3 = false;
+  }
+  if (bVar3) {
+    *(undefined4 *)(iVar1 + 0x94) = 0;
+    if (*(void **)(iVar1 + 0x4d8) != (void *)0x0) {
+      FUN_0044cb40(*(void **)(iVar1 + 0x4d8),0,0);
+    }
+    *(int *)(*(int *)(*(int *)((int)this + 0x6f8) + 0x90) * 0x2c + 0x140 + (int)this) =
+         *(int *)((int)this + 0x6f8);
+    *(undefined4 *)((int)this + 0x6f8) = 0;
+    FUN_00425550(*(void **)((int)this + 0x110),7);
+    return 1;
+  }
+  FUN_00425550(*(void **)((int)this + 0x110),9);
+  return 0;
+}
+

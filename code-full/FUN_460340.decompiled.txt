@@ -1,0 +1,33 @@
+Function: __filelength
+Address: 0x460340
+
+
+/* Library Function - Single Match
+    __filelength
+   
+   Library: Visual Studio 1998 Release */
+
+long __cdecl __filelength(int _FileHandle)
+
+{
+  DWORD DVar1;
+  DWORD DVar2;
+  
+  if (((uint)_FileHandle < DAT_00474f74) &&
+     ((*(byte *)(*(int *)((int)&DAT_00474f80 + ((int)(_FileHandle & 0xffffffe7U) >> 3)) + 4 +
+                (_FileHandle & 0x1fU) * 8) & 1) != 0)) {
+    DVar1 = FUN_0045a980(_FileHandle,0,1);
+    if (DVar1 == 0xffffffff) {
+      return -1;
+    }
+    DVar2 = FUN_0045a980(_FileHandle,0,2);
+    if (DVar1 != DVar2) {
+      FUN_0045a980(_FileHandle,DVar1,0);
+    }
+    return DVar2;
+  }
+  DAT_004719c0 = 9;
+  DAT_004719c4 = 0;
+  return -1;
+}
+

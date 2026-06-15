@@ -1,0 +1,24 @@
+Function: __strdup
+Address: 0x45FBE0
+
+
+/* Library Function - Single Match
+    __strdup
+   
+   Library: Visual Studio 1998 Release */
+
+char * __cdecl __strdup(char *_Src)
+
+{
+  char *pcVar1;
+  char *_Dest;
+  
+  pcVar1 = FUN_0045fff0((uint *)_Src);
+  _Dest = (char *)FUN_004578e0((SIZE_T)(pcVar1 + 1));
+  pcVar1 = (char *)0x0;
+  if (_Dest != (char *)0x0) {
+    pcVar1 = FID_conflict___mbscpy(_Dest,_Src);
+  }
+  return pcVar1;
+}
+

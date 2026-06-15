@@ -1,0 +1,34 @@
+Function: FUN_0040d6c0
+Address: 0x40D6C0
+
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH ESI
+CMP dword ptr [ECX + 0x90],EAX
+MOV ESI,ECX
+JNZ      LAB_0040d718
+MOV dword ptr [ESI + 0x174],0x0
+CMP dword ptr [ESI + 0x17c],0x0
+JLE      LAB_0040d718
+
+LAB_0040d6e2:
+MOV ECX,dword ptr [ESI + 0x174]
+LEA EAX,[ECX*0x4 + 0x0]
+ADD EAX,dword ptr [ESI + 0x170]
+CMP dword ptr [EAX],0x0
+JZ       LAB_0040d703
+PUSH EAX
+PUSH ECX
+MOV EAX,dword ptr [ESI]
+MOV ECX,ESI
+CALL dword ptr [EAX + 0x34]
+
+LAB_0040d703:
+MOV EAX,dword ptr [ESI + 0x174]
+INC EAX
+MOV dword ptr [ESI + 0x174],EAX
+CMP dword ptr [ESI + 0x17c],EAX
+JG       LAB_0040d6e2
+
+LAB_0040d718:
+POP ESI
+RET 0x8

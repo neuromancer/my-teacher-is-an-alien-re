@@ -1,0 +1,4 @@
+Function: GetSystemPaletteEntries
+Address: 0x460200
+
+JMP dword ptr [0x00476324]

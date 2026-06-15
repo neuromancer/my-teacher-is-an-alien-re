@@ -1,0 +1,86 @@
+Function: FUN_0045aa40
+Address: 0x45AA40
+
+
+DWORD __cdecl FUN_0045aa40(undefined4 *param_1)
+
+{
+  uint uVar1;
+  byte bVar2;
+  DWORD DVar3;
+  DWORD DVar4;
+  int *piVar5;
+  int iVar6;
+  char *pcVar7;
+  char *pcVar8;
+  DWORD DVar9;
+  uint uVar10;
+  
+  uVar1 = param_1[4];
+  if ((int)param_1[1] < 0) {
+    param_1[1] = 0;
+  }
+  DVar3 = FUN_0045a980(uVar1,0,1);
+  if ((int)DVar3 < 0) {
+    return 0xffffffff;
+  }
+  uVar10 = param_1[3];
+  if ((uVar10 & 0x108) == 0) {
+    return DVar3 - param_1[1];
+  }
+  pcVar8 = (char *)param_1[2];
+  DVar4 = (int)*param_1 - (int)pcVar8;
+  DVar9 = DVar4;
+  if ((uVar10 & 3) == 0) {
+    if ((uVar10 & 0x80) == 0) {
+      DAT_004719c0 = 0x16;
+      return 0xffffffff;
+    }
+  }
+  else if ((*(byte *)(*(int *)((int)&DAT_00474f80 + ((int)(uVar1 & 0xffffffe7) >> 3)) + 4 +
+                     (uVar1 & 0x1f) * 8) & 0x80) != 0) {
+    for (; pcVar8 < (char *)*param_1; pcVar8 = pcVar8 + 1) {
+      if (*pcVar8 == '\n') {
+        DVar9 = DVar9 + 1;
+      }
+    }
+  }
+  if (DVar3 != 0) {
+    if ((uVar10 & 1) != 0) {
+      if (param_1[1] == 0) {
+        return DVar3;
+      }
+      uVar10 = DVar4 + param_1[1];
+      piVar5 = (int *)((int)&DAT_00474f80 + ((int)(uVar1 & 0xffffffe7) >> 3));
+      iVar6 = (uVar1 & 0x1f) * 8;
+      if ((*(byte *)(*piVar5 + 4 + iVar6) & 0x80) != 0) {
+        DVar4 = FUN_0045a980(uVar1,0,2);
+        if (DVar4 == DVar3) {
+          pcVar7 = (char *)param_1[2];
+          pcVar8 = pcVar7 + uVar10;
+          for (; pcVar7 < pcVar8; pcVar7 = pcVar7 + 1) {
+            if (*pcVar7 == '\n') {
+              uVar10 = uVar10 + 1;
+            }
+          }
+          bVar2 = *(byte *)((int)param_1 + 0xd) & 0x20;
+        }
+        else {
+          FUN_0045a980(uVar1,DVar3,0);
+          if (((0x200 < uVar10) || ((param_1[3] & 8) == 0)) ||
+             (uVar10 = 0x200, (param_1[3] & 0x400) != 0)) {
+            uVar10 = param_1[6];
+          }
+          bVar2 = *(byte *)(*piVar5 + 4 + iVar6) & 4;
+        }
+        if (bVar2 != 0) {
+          uVar10 = uVar10 + 1;
+        }
+      }
+      DVar3 = DVar3 - uVar10;
+    }
+    return DVar9 + DVar3;
+  }
+  return DVar9;
+}
+

@@ -1,0 +1,14 @@
+Function: FUN_004208e0
+Address: 0x4208E0
+
+
+void __fastcall FUN_004208e0(undefined4 *param_1)
+
+{
+  if ((FILE *)*param_1 != (FILE *)0x0) {
+    _fclose((FILE *)*param_1);
+    *param_1 = 0;
+  }
+  return;
+}
+

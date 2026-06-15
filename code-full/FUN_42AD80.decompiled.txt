@@ -1,0 +1,67 @@
+Function: FUN_0042ad80
+Address: 0x42AD80
+
+
+void __thiscall FUN_0042ad80(void *this,undefined4 param_1,int param_2)
+
+{
+  void *this_00;
+  undefined4 *puVar1;
+  byte bVar2;
+  undefined3 extraout_var;
+  int iVar3;
+  int *piVar4;
+  int iVar5;
+  
+  if (*(int *)((int)this + 0x90) == param_2) {
+    if (*(int *)((int)this + 0xa8) == 0) {
+      this_00 = *(void **)((int)this + 0xb0);
+      if (this_00 != (void *)0x0) {
+        bVar2 = FUN_0044ccf0(this_00,*(int *)((int)this_00 + 0xac),*(int *)((int)this_00 + 0xb0),0,
+                             0x3ff00000);
+        *(int *)((int)this + 0xa8) = CONCAT31(extraout_var,bVar2);
+        if (CONCAT31(extraout_var,bVar2) == 0) {
+          return;
+        }
+        FUN_0044c9d0(*(int *)((int)this + 0xb0));
+        return;
+      }
+      *(undefined4 *)((int)this + 0xa8) = 1;
+    }
+    if (*(int *)((int)this + 0xac) != 0) {
+      FUN_00443e30(*(int *)((int)this + 0xac));
+    }
+    puVar1 = *(undefined4 **)((int)this + 0xb8);
+    if (puVar1 != (undefined4 *)0x0) {
+      puVar1[2] = *puVar1;
+      iVar5 = **(int **)((int)this + 0xb8);
+      while (iVar5 != 0) {
+        iVar3 = 0;
+        iVar5 = *(int *)(*(int *)((int)this + 0xb8) + 8);
+        if (iVar5 != 0) {
+          iVar3 = *(int *)(iVar5 + 8);
+        }
+        FUN_00429df0(iVar3);
+        iVar5 = *(int *)((int)this + 0xb8);
+        iVar3 = *(int *)(iVar5 + 8);
+        if (*(int *)(iVar5 + 4) == iVar3) break;
+        if (iVar3 != 0) {
+          *(undefined4 *)(iVar5 + 8) = *(undefined4 *)(iVar3 + 4);
+        }
+        iVar5 = **(int **)((int)this + 0xb8);
+      }
+    }
+    piVar4 = (int *)((int)this + 0xbc);
+    iVar5 = 3;
+    do {
+      if (*piVar4 != 0) {
+        FUN_00420f00(*piVar4);
+      }
+      piVar4 = piVar4 + 1;
+      iVar5 = iVar5 + -1;
+    } while (iVar5 != 0);
+    FUN_00432da0(DAT_0046aa18);
+  }
+  return;
+}
+

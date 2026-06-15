@@ -1,0 +1,31 @@
+Function: write_multi_char
+Address: 0x4584E0
+
+PUSH EBX
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0xc]
+PUSH EDI
+MOV EDI,dword ptr [ESP + 0x14]
+PUSH EBP
+MOV EBX,dword ptr [ESP + 0x1c]
+MOV EBP,dword ptr [ESP + 0x20]
+
+LAB_004584f4:
+MOV EAX,EDI
+DEC EDI
+TEST EAX,EAX
+JLE      LAB_0045850c
+PUSH EBP
+PUSH EBX
+PUSH ESI
+CALL 0x00458490
+ADD ESP,0xc
+CMP dword ptr [EBP],-0x1
+JNZ      LAB_004584f4
+
+LAB_0045850c:
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET

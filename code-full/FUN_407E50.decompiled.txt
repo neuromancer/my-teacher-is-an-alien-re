@@ -1,0 +1,24 @@
+Function: FUN_00407e50
+Address: 0x407E50
+
+
+void __fastcall FUN_00407e50(int param_1)
+
+{
+  void *pvVar1;
+  int iVar2;
+  
+  pvVar1 = *(void **)(param_1 + 0xc4);
+  FUN_0044ccf0(pvVar1,*(int *)((int)pvVar1 + 0xac),*(int *)((int)pvVar1 + 0xb0),0,0x3ff00000);
+  pvVar1 = *(void **)(param_1 + 0x110);
+  FUN_0044ccf0(pvVar1,*(int *)((int)pvVar1 + 0xac),*(int *)((int)pvVar1 + 0xb0),0,0x3ff00000);
+  pvVar1 = *(void **)(param_1 + 0xdc);
+  FUN_0044ccf0(pvVar1,*(int *)((int)pvVar1 + 0xac),*(int *)((int)pvVar1 + 0xb0),0,0x3ff00000);
+  iVar2 = FUN_004256d0(*(void **)(param_1 + 0x148),9);
+  if (iVar2 == 0) {
+    *(undefined4 *)(param_1 + 0xb0) = 1;
+    *(uint *)(param_1 + 0xac) = *(uint *)(param_1 + 0xac) & 0xfffffff7;
+  }
+  return;
+}
+

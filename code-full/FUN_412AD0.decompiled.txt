@@ -1,0 +1,59 @@
+Function: FUN_00412ad0
+Address: 0x412AD0
+
+
+void __thiscall FUN_00412ad0(void *this,byte *param_1)
+
+{
+  byte bVar1;
+  char *pcVar2;
+  byte *pbVar3;
+  int iVar4;
+  byte *pbVar5;
+  bool bVar6;
+  undefined8 local_108;
+  char local_100 [256];
+  
+  if (param_1 != (byte *)0x0) {
+    if ((*(byte *)((int)this + 0x38) & 1) != 0) {
+      local_108 = FUN_00412130((byte *)((int)this + 0x48),param_1);
+      if (((int)((ulonglong)local_108 >> 0x20) != -1) || ((int)local_108 != -1)) {
+        _fsetpos(*(FILE **)((int)this + 0x88),&local_108);
+        return;
+      }
+    }
+    FUN_00455180(*(FILE **)((int)this + 0x88),0,0);
+    do {
+      pcVar2 = FUN_00426400(local_100,0xff,*(FILE **)((int)this + 0x88));
+      if (pcVar2 == (char *)0x0) {
+        FUN_00425c50(s_Parser__FindKey___Unable_to_find_00469490);
+      }
+      _sscanf(local_100,&DAT_00468448,DAT_0046aa00);
+      pbVar3 = DAT_0046aa00;
+      pbVar5 = param_1;
+      do {
+        bVar1 = *pbVar3;
+        bVar6 = bVar1 < *pbVar5;
+        if (bVar1 != *pbVar5) {
+LAB_00412bb3:
+          iVar4 = (1 - (uint)bVar6) - (uint)(bVar6 != 0);
+          goto LAB_00412bb8;
+        }
+        if (bVar1 == 0) break;
+        bVar1 = pbVar3[1];
+        bVar6 = bVar1 < pbVar5[1];
+        if (bVar1 != pbVar5[1]) goto LAB_00412bb3;
+        pbVar3 = pbVar3 + 2;
+        pbVar5 = pbVar5 + 2;
+      } while (bVar1 != 0);
+      iVar4 = 0;
+LAB_00412bb8:
+    } while (iVar4 != 0);
+    if ((*(byte *)((int)this + 0x38) & 1) != 0) {
+      _fgetpos(*(FILE **)((int)this + 0x88),&local_108);
+      FUN_00412210((char *)((int)this + 0x48),(char *)param_1,(int)local_108,local_108._4_4_);
+    }
+  }
+  return;
+}
+

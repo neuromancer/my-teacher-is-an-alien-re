@@ -1,0 +1,51 @@
+Function: FUN_0045ff40
+Address: 0x45FF40
+
+MOV ECX,dword ptr [ESP + 0x4]
+PUSH EBX
+CMP ECX,dword ptr [0x00474f74]
+JNC      LAB_0045ffaf
+MOV EAX,ECX
+AND ECX,0x1f
+AND EAX,0xffffffe7
+SAR EAX,0x3
+MOV EDX,dword ptr [EAX + 0x474f80]
+LEA ECX,[EDX + ECX*0x8 + 0x4]
+MOV BL,byte ptr [ECX]
+TEST BL,0x1
+JZ       LAB_0045ffaf
+MOV AL,BL
+XOR EDX,EDX
+AND AL,0x80
+MOV DL,AL
+MOV EAX,dword ptr [ESP + 0xc]
+CMP EAX,0x8000
+JNZ      LAB_0045ff81
+AND BL,0x7f
+JMP      LAB_0045ff8b
+
+LAB_0045ff81:
+CMP EAX,0x4000
+JNZ      LAB_0045ff9e
+OR BL,0x80
+
+LAB_0045ff8b:
+MOV byte ptr [ECX],BL
+CMP EDX,0x1
+SBB EAX,EAX
+POP EBX
+AND EAX,0x4000
+ADD EAX,0x4000
+RET
+
+LAB_0045ff9e:
+MOV EAX,0xffffffff
+POP EBX
+MOV dword ptr [0x004719c0],0x16
+RET
+
+LAB_0045ffaf:
+MOV EAX,0xffffffff
+POP EBX
+MOV dword ptr [0x004719c0],0x9
+RET

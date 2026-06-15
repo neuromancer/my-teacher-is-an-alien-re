@@ -1,0 +1,18 @@
+Function: FUN_004537a3
+Address: 0x4537A3
+
+
+undefined4 __cdecl FUN_004537a3(HPALETTE param_1)
+
+{
+  HPALETTE pHVar1;
+  
+  DAT_0046d074 = param_1;
+  pHVar1 = SelectPalette(DAT_0046d070,param_1,0);
+  RealizePalette(DAT_0046d070);
+  if (DAT_0046d096 == (HPALETTE)0x0) {
+    DAT_0046d096 = pHVar1;
+  }
+  return 0;
+}
+

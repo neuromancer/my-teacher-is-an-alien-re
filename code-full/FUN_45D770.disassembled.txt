@@ -1,0 +1,63 @@
+Function: FUN_0045d770
+Address: 0x45D770
+
+MOV ECX,dword ptr [ESP + 0x4]
+PUSH ESI
+PUSH EDI
+CMP dword ptr [0x00474f74],ECX
+JBE      LAB_0045d7e4
+MOV EAX,ECX
+AND EAX,0xffffffe7
+SAR EAX,0x3
+LEA EDI,[EAX + 0x474f80]
+MOV EAX,ECX
+AND EAX,0x1f
+LEA ESI,[EAX*0x8 + 0x0]
+MOV EAX,dword ptr [EDI]
+ADD EAX,ESI
+TEST byte ptr [EAX + 0x4],0x1
+JZ       LAB_0045d7e4
+CMP dword ptr [EAX],-0x1
+JZ       LAB_0045d7e4
+CMP dword ptr [0x00471c58],0x1
+JNZ      LAB_0045d7d6
+TEST ECX,ECX
+JZ       LAB_0045d7c0
+CMP ECX,0x1
+JZ       LAB_0045d7c6
+CMP ECX,0x2
+JZ       LAB_0045d7cc
+JMP      LAB_0045d7d6
+
+LAB_0045d7c0:
+PUSH 0x0
+PUSH -0xa
+JMP      LAB_0045d7d0
+
+LAB_0045d7c6:
+PUSH 0x0
+PUSH -0xb
+JMP      LAB_0045d7d0
+
+LAB_0045d7cc:
+PUSH 0x0
+PUSH -0xc
+
+LAB_0045d7d0:
+CALL dword ptr [0x004763a8]
+
+LAB_0045d7d6:
+MOV EAX,dword ptr [EDI]
+POP EDI
+MOV dword ptr [EAX + ESI*0x1],0xffffffff
+XOR EAX,EAX
+POP ESI
+RET
+
+LAB_0045d7e4:
+MOV EAX,0xffffffff
+POP EDI
+MOV dword ptr [0x004719c0],0x9
+MOV dword ptr [0x004719c4],0x0
+POP ESI
+RET

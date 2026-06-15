@@ -1,0 +1,27 @@
+Function: FUN_00453daf
+Address: 0x453DAF
+
+PUSH EBP
+MOV EBP,ESP
+PUSH ESI
+PUSH dword ptr [EBP + 0x8]
+CALL 0x00460206
+MOV [0x0046d07e],EAX
+PUSH EAX
+PUSH dword ptr [0x0046d09c]
+CALL 0x004601ac
+LEA ESI,[0x46f02e]
+PUSH ESI
+PUSH dword ptr [0x0046d09c]
+CALL 0x0046020c
+MOV EAX,dword ptr [ESI]
+MOV ECX,dword ptr [ESI + 0x10]
+MOV EDX,dword ptr [ESI + 0x14]
+ADD EAX,ECX
+MOV [0x0046d082],EAX
+MOV dword ptr [0x0046d086],ECX
+MOV dword ptr [0x0046d08a],EDX
+XOR EAX,EAX
+POP ESI
+POP EBP
+RET

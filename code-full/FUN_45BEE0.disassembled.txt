@@ -1,0 +1,9 @@
+Function: FUN_0045bee0
+Address: 0x45BEE0
+
+PUSH 0x0
+PUSH 0x1000
+PUSH 0x1
+CALL dword ptr [0x004763c4]
+MOV [0x00474f70],EAX
+RET

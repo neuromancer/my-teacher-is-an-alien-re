@@ -1,0 +1,4 @@
+Function: GetVersion
+Address: 0x460182
+
+JMP dword ptr [0x00476364]

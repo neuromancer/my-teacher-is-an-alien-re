@@ -1,0 +1,4 @@
+Function: GlobalLock
+Address: 0x460164
+
+JMP dword ptr [0x0047642c]

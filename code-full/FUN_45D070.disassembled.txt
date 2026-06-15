@@ -1,0 +1,11 @@
+Function: FID_conflict:__ld12tod
+Address: 0x45D070
+
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH 0x472770
+MOV ECX,dword ptr [ESP + 0x8]
+PUSH EAX
+PUSH ECX
+CALL 0x0045ce80
+ADD ESP,0xc
+RET

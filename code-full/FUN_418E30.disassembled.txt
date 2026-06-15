@@ -1,0 +1,34 @@
+Function: FUN_00418e30
+Address: 0x418E30
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x418e87
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+XOR EAX,EAX
+PUSH ESI
+LEA EDX,[ECX + 0x10]
+MOV dword ptr [EBP + -0x10],ECX
+PUSH EDI
+MOV ESI,ECX
+MOV EDI,ESI
+MOV ECX,0x8
+MOV dword ptr [EDX],EAX
+MOV dword ptr [EBP + -0x4],EAX
+MOV dword ptr [EDX + 0x4],EAX
+MOV dword ptr [EDX + 0x8],EAX
+MOV dword ptr [EDX + 0xc],EAX
+STOSD.REP ES:EDI
+MOV EAX,ESI
+POP EDI
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+POP ESI
+MOV dword ptr FS:[0x0],ECX
+MOV ESP,EBP
+POP EBP
+RET

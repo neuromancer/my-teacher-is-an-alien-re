@@ -1,0 +1,36 @@
+Function: FUN_00431f30
+Address: 0x431F30
+
+
+void __fastcall FUN_00431f30(undefined4 *param_1)
+
+{
+  undefined4 *puVar1;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  int local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_00431fe2;
+  *param_1 = &PTR_FUN_00461678;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 3;
+  puVar1 = (undefined4 *)param_1[0x2f];
+  if (puVar1 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar1);
+    FUN_00454400(puVar1);
+    param_1[0x2f] = 0;
+  }
+  local_8._0_1_ = 2;
+  FUN_00431fb8();
+  local_8._0_1_ = 1;
+  FUN_00431fc6();
+  local_8 = (uint)local_8._1_3_ << 8;
+  FUN_00431fd4();
+  local_8 = 0xffffffff;
+  FUN_00431fec();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

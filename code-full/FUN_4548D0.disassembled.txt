@@ -1,0 +1,11 @@
+Function: FUN_004548d0
+Address: 0x4548D0
+
+MOV dword ptr [0x00471d0c],0x459bd0
+MOV dword ptr [0x00471d10],0x459c50
+MOV dword ptr [0x00471d14],0x459b60
+MOV dword ptr [0x00471d18],0x459c30
+MOV EAX,0x459ff0
+MOV [0x00471d08],EAX
+MOV [0x00471d1c],EAX
+RET

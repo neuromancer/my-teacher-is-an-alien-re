@@ -1,0 +1,149 @@
+Function: FUN_00457960
+Address: 0x457960
+
+PUSH EBX
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0x10]
+PUSH EDI
+PUSH EBP
+MOV EDI,dword ptr [ESI + 0x10]
+MOV EAX,dword ptr [ESI + 0xc]
+TEST AL,0x82
+JZ       LAB_00457a98
+TEST AL,0x40
+JNZ      LAB_00457a98
+TEST AL,0x1
+JZ       LAB_0045799d
+MOV dword ptr [ESI + 0x4],0x0
+MOV EAX,dword ptr [ESI + 0xc]
+TEST AL,0x10
+JZ       LAB_00457a14
+MOV EAX,dword ptr [ESI + 0x8]
+MOV dword ptr [ESI],EAX
+AND dword ptr [ESI + 0xc],0xfffffffe
+
+LAB_0045799d:
+MOV EAX,dword ptr [ESI + 0xc]
+XOR EBP,EBP
+OR EAX,0x2
+MOV dword ptr [ESI + 0xc],EAX
+AND EAX,0xffffffef
+MOV dword ptr [ESI + 0xc],EAX
+MOV dword ptr [ESI + 0x4],0x0
+TEST dword ptr [ESI + 0xc],0x10c
+JNZ      LAB_004579e4
+CMP ESI,0x4724f0
+JZ       LAB_004579ce
+CMP ESI,0x472510
+JNZ      LAB_004579db
+
+LAB_004579ce:
+PUSH EDI
+CALL 0x0045c420
+ADD ESP,0x4
+TEST EAX,EAX
+JNZ      LAB_004579e4
+
+LAB_004579db:
+PUSH ESI
+CALL 0x0045c3d0
+ADD ESP,0x4
+
+LAB_004579e4:
+TEST dword ptr [ESI + 0xc],0x108
+JZ       LAB_00457a62
+MOV EAX,dword ptr [ESI + 0x8]
+MOV EBX,dword ptr [ESI]
+SUB EBX,EAX
+INC EAX
+MOV dword ptr [ESI],EAX
+MOV EAX,dword ptr [ESI + 0x18]
+DEC EAX
+TEST EBX,EBX
+MOV dword ptr [ESI + 0x4],EAX
+JLE      LAB_00457a24
+PUSH EBX
+MOV EAX,dword ptr [ESI + 0x8]
+PUSH EAX
+PUSH EDI
+CALL 0x00458900
+ADD ESP,0xc
+MOV EBP,EAX
+JMP      LAB_00457a57
+
+LAB_00457a14:
+OR EAX,0x20
+POP EBP
+POP EDI
+MOV dword ptr [ESI + 0xc],EAX
+MOV EAX,0xffffffff
+POP ESI
+POP EBX
+RET
+
+LAB_00457a24:
+MOV EAX,0x472168
+CMP EDI,-0x1
+JZ       LAB_00457a44
+MOV EAX,EDI
+MOV ECX,EDI
+AND EAX,0xffffffe7
+AND ECX,0x1f
+SAR EAX,0x3
+MOV EDX,dword ptr [EAX + 0x474f80]
+LEA EAX,[EDX + ECX*0x8]
+
+LAB_00457a44:
+TEST byte ptr [EAX + 0x4],0x20
+JZ       LAB_00457a57
+PUSH 0x2
+PUSH 0x0
+PUSH EDI
+CALL 0x0045a980
+ADD ESP,0xc
+
+LAB_00457a57:
+MOV AL,byte ptr [ESP + 0x14]
+MOV ECX,dword ptr [ESI + 0x8]
+MOV byte ptr [ECX],AL
+JMP      LAB_00457a78
+
+LAB_00457a62:
+MOV EBX,0x1
+LEA EAX,[ESP + 0x14]
+PUSH EBX
+PUSH EAX
+PUSH EDI
+CALL 0x00458900
+ADD ESP,0xc
+MOV EBP,EAX
+
+LAB_00457a78:
+CMP EBX,EBP
+JZ       LAB_00457a8a
+MOV EAX,0xffffffff
+POP EBP
+OR dword ptr [ESI + 0xc],0x20
+POP EDI
+POP ESI
+POP EBX
+RET
+
+LAB_00457a8a:
+MOV EAX,dword ptr [ESP + 0x14]
+POP EBP
+AND EAX,0xff
+POP EDI
+POP ESI
+POP EBX
+RET
+
+LAB_00457a98:
+OR EAX,0x20
+POP EBP
+POP EDI
+MOV dword ptr [ESI + 0xc],EAX
+MOV EAX,0xffffffff
+POP ESI
+POP EBX
+RET

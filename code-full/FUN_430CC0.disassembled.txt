@@ -1,0 +1,12 @@
+Function: FUN_00430cc0
+Address: 0x430CC0
+
+MOV ECX,dword ptr [ECX + 0x18]
+TEST ECX,ECX
+JZ       LAB_00430cce
+PUSH 0x0
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX + 0x18]
+
+LAB_00430cce:
+RET

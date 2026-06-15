@@ -1,0 +1,44 @@
+Function: FUN_0041f900
+Address: 0x41F900
+
+
+void FUN_0041f900(void)
+
+{
+  void *pvVar1;
+  int iVar2;
+  char cVar3;
+  uint uVar4;
+  int iVar5;
+  int iVar6;
+  byte local_10 [16];
+  
+  iVar5 = 0;
+  do {
+    iVar6 = 1;
+    do {
+      iVar2 = DAT_0046cb90;
+      pvVar1 = DAT_0046aa30;
+      if (iVar5 == -1) {
+        if ((DAT_0046cb90 < 0) || (*(int *)((int)DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+          FUN_00425c50(s_Invalid_gamestate__d_00468150);
+        }
+        cVar3 = PTR_DAT_0046cb94[*(int *)(*(int *)((int)pvVar1 + 0x90) + iVar2 * 4)];
+      }
+      else {
+        cVar3 = PTR_DAT_0046cb94[iVar5];
+      }
+      _sprintf((char *)local_10,s__cRM_d_004682e8,(int)cVar3,iVar6);
+      pvVar1 = DAT_0046aa30;
+      uVar4 = FUN_00433ae0(DAT_0046aa30,local_10);
+      if (((int)uVar4 < 0) || (*(int *)((int)pvVar1 + 0x98) + -1 < (int)uVar4)) {
+        FUN_00425c50(s_Invalid_gamestate__d_00468150);
+      }
+      iVar6 = iVar6 + 1;
+      *(undefined4 *)(*(int *)((int)pvVar1 + 0x90) + uVar4 * 4) = 1;
+    } while (iVar6 < 0x13);
+    iVar5 = iVar5 + 1;
+  } while (iVar5 < 3);
+  return;
+}
+

@@ -1,0 +1,21 @@
+Function: _isspace
+Address: 0x45C890
+
+
+/* Library Function - Single Match
+    _isspace
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl _isspace(int _C)
+
+{
+  int iVar1;
+  
+  if (1 < DAT_00471c3c) {
+    iVar1 = __isctype(_C,8);
+    return iVar1;
+  }
+  return *(ushort *)(PTR_DAT_00471a30 + _C * 2) & 8;
+}
+

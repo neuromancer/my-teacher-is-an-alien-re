@@ -1,0 +1,11 @@
+Function: FUN_004290df
+Address: 0x4290DF
+
+
+void FUN_004290df(void)
+
+{
+  FUN_00407b60();
+  return;
+}
+

@@ -1,0 +1,77 @@
+Function: FUN_00432040
+Address: 0x432040
+
+
+void __thiscall FUN_00432040(void *this,undefined4 param_1,int param_2)
+
+{
+  void *this_00;
+  uint uVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_004322b1;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 0;
+  uVar1 = FUN_004218e0((int *)((int)this + 0xa8));
+  if (30000 < uVar1) {
+    FUN_00444d90(1,*(undefined4 *)((int)this + 0x90),*(undefined4 *)((int)this + 0x90),
+                 *(undefined4 *)((int)this + 0x94),0x18,0,0,0,0,0);
+  }
+  if (*(int *)((int)this + 0x90) == param_2) {
+    FUN_004218c0((int *)((int)this + 0xa8));
+    this_00 = *(void **)((int)this + 0xbc);
+    if (this_00 != (void *)0x0) {
+      FUN_0044ccf0(this_00,*(int *)((int)this_00 + 0xac),*(int *)((int)this_00 + 0xb0),0,0x3ff00000)
+      ;
+    }
+    iVar4 = *(int *)((int)this + 0xc0);
+    if (iVar4 < iVar4 + 0xe) {
+      do {
+        iVar2 = FUN_00433a20(*(void **)((int)this + 0xf4),iVar4);
+        if (iVar2 == 0) {
+          _sprintf(DAT_0046aa00,s___NOLABEL___0046b4c4);
+          iVar2 = *(int *)((int)this + 0xe8);
+          iVar3 = ((iVar4 - *(int *)((int)this + 0xc0)) + 1) * *(int *)((int)this + 0xf0) +
+                  *(int *)((int)this + 0xec);
+        }
+        else {
+          iVar2 = FUN_00433a20(*(void **)((int)this + 0xf4),iVar4);
+          _sprintf(DAT_0046aa00,&DAT_00468760,iVar2);
+          FUN_00404230(DAT_0046aa24,DAT_0046aa00,*(undefined4 *)((int)this + 0xe8),
+                       ((iVar4 - *(int *)((int)this + 0xc0)) + 1) * *(int *)((int)this + 0xf0) +
+                       *(int *)((int)this + 0xec),10000,-1);
+          iVar2 = *(int *)((int)this + 0xf4);
+          if ((iVar4 < 0) || (*(int *)(iVar2 + 0x98) + -1 < iVar4)) {
+            FUN_00425c50(s_Invalid_gamestate__d_00468150);
+          }
+          _sprintf(DAT_0046aa00,&DAT_004690e4,*(undefined4 *)(*(int *)(iVar2 + 0x90) + iVar4 * 4));
+          iVar3 = ((iVar4 - *(int *)((int)this + 0xc0)) + 1) * *(int *)((int)this + 0xf0) +
+                  *(int *)((int)this + 0xec);
+          iVar2 = *(int *)((int)this + 0xe8) + 0x15e;
+        }
+        FUN_00404230(DAT_0046aa24,DAT_0046aa00,iVar2,iVar3,10000,-1);
+        iVar2 = iVar4 - *(int *)((int)this + 0xc0);
+        if (*(int *)((int)this + 0xc4) == iVar4) {
+          FUN_00404350(DAT_0046aa24,0,
+                       iVar2 * *(int *)((int)this + 0xf0) + *(int *)((int)this + 0xec),0x27f,
+                       (iVar2 + 1) * *(int *)((int)this + 0xf0) + *(int *)((int)this + 0xec),0x28,
+                       0xfb,2);
+        }
+        iVar4 = iVar4 + 1;
+      } while (iVar4 < *(int *)((int)this + 0xc0) + 0xe);
+    }
+    FUN_00432da0(DAT_0046aa18);
+  }
+  local_8 = 0xffffffff;
+  FUN_004322bb();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

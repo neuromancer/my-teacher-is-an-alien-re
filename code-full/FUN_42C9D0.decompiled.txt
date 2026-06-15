@@ -1,0 +1,44 @@
+Function: FUN_0042c9d0
+Address: 0x42C9D0
+
+
+uint FUN_0042c9d0(void)
+
+{
+  undefined4 *puVar1;
+  uint uVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_8c [14];
+  undefined1 local_54 [56];
+  code *local_1c;
+  int *local_18;
+  uint local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  int local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0042ca96;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00444a40(local_54,0,0,0,0,0,0,0,0,0,0);
+  local_8 = 0;
+  local_14 = 0;
+  if (*(int *)((int)DAT_0046ae74 + 8) != 0) {
+    local_1c = *(code **)(*local_18 + 0x34);
+    do {
+      puVar1 = FUN_0042cab0(DAT_0046ae74,local_8c);
+      local_8._0_1_ = 1;
+      FUN_00444920(local_54,puVar1);
+      local_8 = (uint)local_8._1_3_ << 8;
+      FUN_0042ca8b();
+      uVar2 = (*local_1c)(local_54);
+      local_14 = local_14 | uVar2;
+    } while (*(int *)((int)DAT_0046ae74 + 8) != 0);
+  }
+  local_8 = 0xffffffff;
+  FUN_0042caa0();
+  *unaff_FS_OFFSET = local_10;
+  return local_14;
+}
+

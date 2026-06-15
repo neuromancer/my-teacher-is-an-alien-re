@@ -1,0 +1,17 @@
+Function: FUN_00420960
+Address: 0x420960
+
+
+void __fastcall FUN_00420960(int *param_1)
+
+{
+  if (*param_1 == 0) {
+    FUN_00425c50(s_FlagArray__Close_____attempt_to_c_0046a424);
+  }
+  if ((FILE *)*param_1 != (FILE *)0x0) {
+    _fclose((FILE *)*param_1);
+    *param_1 = 0;
+  }
+  return;
+}
+

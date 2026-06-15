@@ -1,0 +1,75 @@
+Function: FUN_00457960
+Address: 0x457960
+
+
+uint __cdecl FUN_00457960(uint param_1,FILE *param_2)
+
+{
+  uint uVar1;
+  FILE *_File;
+  byte bVar2;
+  undefined3 extraout_var;
+  undefined *puVar3;
+  uint uVar4;
+  uint uVar5;
+  
+  _File = param_2;
+  uVar1 = param_2->_file;
+  uVar4 = param_2->_flag;
+  if (((uVar4 & 0x82) == 0) || ((uVar4 & 0x40) != 0)) {
+    param_2->_flag = uVar4 | 0x20;
+    return 0xffffffff;
+  }
+  if ((uVar4 & 1) != 0) {
+    param_2->_cnt = 0;
+    if ((param_2->_flag & 0x10U) == 0) {
+      param_2->_flag = param_2->_flag | 0x20;
+      return 0xffffffff;
+    }
+    param_2->_ptr = param_2->_base;
+    param_2->_flag = param_2->_flag & 0xfffffffe;
+  }
+  uVar4 = param_2->_flag;
+  uVar5 = 0;
+  param_2->_flag = uVar4 | 2;
+  param_2->_flag = uVar4 & 0xffffffef | 2;
+  param_2->_cnt = 0;
+  if ((param_2->_flag & 0x10cU) == 0) {
+    if ((param_2 == (FILE *)&DAT_004724f0) || (param_2 == (FILE *)&DAT_00472510)) {
+      bVar2 = FUN_0045c420(uVar1);
+      if (CONCAT31(extraout_var,bVar2) != 0) goto LAB_004579e4;
+    }
+    __getbuf(_File);
+  }
+LAB_004579e4:
+  if ((_File->_flag & 0x108U) == 0) {
+    uVar4 = 1;
+    uVar5 = FUN_00458900(uVar1,(char *)&param_1,1);
+  }
+  else {
+    uVar4 = (int)_File->_ptr - (int)_File->_base;
+    _File->_ptr = _File->_base + 1;
+    _File->_cnt = _File->_bufsiz + -1;
+    if ((int)uVar4 < 1) {
+      puVar3 = &DAT_00472168;
+      if (uVar1 != 0xffffffff) {
+        puVar3 = (undefined *)
+                 (*(int *)((int)&DAT_00474f80 + ((int)(uVar1 & 0xffffffe7) >> 3)) +
+                 (uVar1 & 0x1f) * 8);
+      }
+      if ((puVar3[4] & 0x20) != 0) {
+        FUN_0045a980(uVar1,0,2);
+      }
+    }
+    else {
+      uVar5 = FUN_00458900(uVar1,_File->_base,uVar4);
+    }
+    *_File->_base = (char)param_1;
+  }
+  if (uVar4 != uVar5) {
+    _File->_flag = _File->_flag | 0x20;
+    return 0xffffffff;
+  }
+  return param_1 & 0xff;
+}
+

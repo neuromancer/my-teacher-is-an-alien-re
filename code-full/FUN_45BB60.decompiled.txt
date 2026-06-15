@@ -1,0 +1,102 @@
+Function: FUN_0045bb60
+Address: 0x45BB60
+
+
+LPSTR FUN_0045bb60(void)
+
+{
+  char cVar1;
+  WCHAR WVar2;
+  LPWCH pWVar3;
+  SIZE_T cbMultiByte;
+  LPSTR pCVar4;
+  uint uVar5;
+  LPWCH pWVar6;
+  char *pcVar7;
+  WCHAR *pWVar8;
+  int iVar10;
+  LPSTR pCVar11;
+  LPWCH local_4;
+  WCHAR *pWVar9;
+  
+  pWVar3 = local_4;
+  if (DAT_00472160 == 0) {
+    pWVar3 = GetEnvironmentStringsW();
+    if (pWVar3 == (LPWCH)0x0) {
+      local_4 = (LPWCH)GetEnvironmentStrings();
+      if (local_4 == (LPWCH)0x0) {
+        return (LPSTR)0x0;
+      }
+      DAT_00472160 = 2;
+    }
+    else {
+      DAT_00472160 = 1;
+    }
+  }
+  if (DAT_00472160 != 1) {
+    if (DAT_00472160 != 2) {
+      return (LPSTR)0x0;
+    }
+    if ((local_4 == (LPWCH)0x0) && (local_4 = (LPWCH)GetEnvironmentStrings(), local_4 == (LPWCH)0x0)
+       ) {
+      return (LPSTR)0x0;
+    }
+    cVar1 = (char)*local_4;
+    pWVar3 = local_4;
+    while (cVar1 != '\0') {
+      do {
+        pWVar6 = pWVar3;
+        pWVar3 = (LPWCH)((int)pWVar6 + 1);
+      } while (*(char *)pWVar3 != '\0');
+      pWVar3 = pWVar6 + 1;
+      cVar1 = (char)*pWVar3;
+    }
+    pcVar7 = (char *)((int)pWVar3 + (1 - (int)local_4));
+    pCVar4 = (LPSTR)FUN_004578e0((SIZE_T)pcVar7);
+    if (pCVar4 == (LPSTR)0x0) {
+      FreeEnvironmentStringsA((LPCH)local_4);
+      return (LPSTR)0x0;
+    }
+    pWVar3 = local_4;
+    pCVar11 = pCVar4;
+    for (uVar5 = (uint)pcVar7 >> 2; uVar5 != 0; uVar5 = uVar5 - 1) {
+      *(undefined4 *)pCVar11 = *(undefined4 *)pWVar3;
+      pWVar3 = pWVar3 + 2;
+      pCVar11 = pCVar11 + 4;
+    }
+    for (uVar5 = (uint)pcVar7 & 3; uVar5 != 0; uVar5 = uVar5 - 1) {
+      *pCVar11 = (CHAR)*pWVar3;
+      pWVar3 = (LPWCH)((int)pWVar3 + 1);
+      pCVar11 = pCVar11 + 1;
+    }
+    FreeEnvironmentStringsA((LPCH)local_4);
+    return pCVar4;
+  }
+  if ((pWVar3 == (LPWCH)0x0) && (pWVar3 = GetEnvironmentStringsW(), pWVar3 == (LPWCH)0x0)) {
+    return (LPSTR)0x0;
+  }
+  WVar2 = *pWVar3;
+  pWVar8 = pWVar3;
+  while (WVar2 != L'\0') {
+    do {
+      pWVar9 = pWVar8;
+      pWVar8 = pWVar9 + 1;
+    } while (*pWVar8 != L'\0');
+    pWVar8 = pWVar9 + 2;
+    WVar2 = *pWVar8;
+  }
+  iVar10 = ((int)pWVar8 - (int)pWVar3 >> 1) + 1;
+  cbMultiByte = WideCharToMultiByte(0,0,pWVar3,iVar10,(LPSTR)0x0,0,(LPCSTR)0x0,(LPBOOL)0x0);
+  if ((cbMultiByte != 0) && (pCVar4 = (LPSTR)FUN_004578e0(cbMultiByte), pCVar4 != (LPSTR)0x0)) {
+    iVar10 = WideCharToMultiByte(0,0,pWVar3,iVar10,pCVar4,cbMultiByte,(LPCSTR)0x0,(LPBOOL)0x0);
+    if (iVar10 == 0) {
+      FUN_004578c0(pCVar4);
+      pCVar4 = (LPSTR)0x0;
+    }
+    FreeEnvironmentStringsW(pWVar3);
+    return pCVar4;
+  }
+  FreeEnvironmentStringsW(pWVar3);
+  return (LPSTR)0x0;
+}
+

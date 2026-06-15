@@ -1,0 +1,74 @@
+Function: FUN_00442350
+Address: 0x442350
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x442488
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+MOV dword ptr [EBP + -0x10],ECX
+PUSH EDI
+MOV ESI,ECX
+XOR EBX,EBX
+PUSH EBX
+CALL 0x0044c660
+LEA EAX,[ESI + 0x10c]
+LEA EDX,[ESI + 0x114]
+MOV dword ptr [EBP + -0x4],EBX
+LEA ECX,[ESI + 0x11c]
+MOV byte ptr [EBP + -0x4],0x1
+MOV byte ptr [EBP + -0x4],0x2
+MOV byte ptr [EBP + -0x4],0x3
+MOV dword ptr [EAX],EBX
+MOV dword ptr [EAX + 0x4],EBX
+LEA EAX,[ESI + 0x124]
+MOV dword ptr [EDX],EBX
+MOV dword ptr [EDX + 0x4],EBX
+MOV dword ptr [ECX],EBX
+MOV dword ptr [ECX + 0x4],EBX
+MOV dword ptr [EAX],EBX
+MOV dword ptr [EAX + 0x4],EBX
+LEA EAX,[ESI + 0x12c]
+MOV dword ptr [EAX],EBX
+MOV dword ptr [EAX + 0x4],EBX
+LEA EAX,[ESI + 0x134]
+MOV dword ptr [EAX],EBX
+MOV dword ptr [EAX + 0x4],EBX
+LEA EAX,[ESI + 0x13c]
+MOV dword ptr [EAX],EBX
+MOV dword ptr [EAX + 0x4],EBX
+LEA EAX,[ESI + 0x144]
+MOV byte ptr [EBP + -0x4],0x4
+LEA EDX,[ESI + 0x168]
+MOV dword ptr [EAX],EBX
+MOV byte ptr [EBP + -0x4],0x5
+MOV dword ptr [EAX + 0x4],EBX
+LEA EAX,[ESI + 0x160]
+LEA EDI,[ESI + 0xf8]
+MOV ECX,0x20
+MOV dword ptr [EAX],EBX
+MOV dword ptr [EAX + 0x4],EBX
+XOR EAX,EAX
+MOV dword ptr [EDX],EBX
+MOV dword ptr [EDX + 0x4],EBX
+MOV dword ptr [ESI],0x461948
+STOSD.REP ES:EDI
+MOV EAX,0xffffffff
+MOV dword ptr [ESI + 0xf8],EBX
+MOV dword ptr [ESI + 0x108],EAX
+POP EDI
+MOV dword ptr [ESI + 0x170],EBX
+MOV dword ptr [EBP + -0x4],EAX
+MOV EAX,ESI
+MOV ECX,dword ptr [EBP + -0xc]
+POP ESI
+MOV dword ptr FS:[0x0],ECX
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET

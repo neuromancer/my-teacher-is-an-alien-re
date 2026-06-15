@@ -1,0 +1,13 @@
+Function: FUN_00438ef0
+Address: 0x438EF0
+
+
+void __fastcall FUN_00438ef0(int param_1)
+
+{
+  if (*(void **)(param_1 + 0x11c) != (void *)0x0) {
+    FUN_00425100(*(void **)(param_1 + 0x11c),100,1);
+  }
+  return;
+}
+

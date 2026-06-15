@@ -1,0 +1,11 @@
+Function: FUN_004562e0
+Address: 0x4562E0
+
+
+void __cdecl FUN_004562e0(UINT param_1)
+
+{
+  FUN_00456320(param_1,0,0);
+  return;
+}
+

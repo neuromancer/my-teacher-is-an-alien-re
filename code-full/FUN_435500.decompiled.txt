@@ -1,0 +1,10 @@
+Function: FUN_00435500
+Address: 0x435500
+
+
+bool __thiscall FUN_00435500(void *this,int *param_1)
+
+{
+  return *(int *)((int)this + 0x90) == *param_1;
+}
+

@@ -1,0 +1,21 @@
+Function: FUN_0044cb10
+Address: 0x44CB10
+
+MOV EAX,dword ptr [ECX + 0xf0]
+TEST EAX,EAX
+JZ       LAB_0044cb3e
+MOV EAX,dword ptr [EAX + 0x18]
+TEST EAX,EAX
+JZ       LAB_0044cb3e
+MOV EAX,dword ptr [EAX + 0x1c]
+CMP EAX,-0x1
+JZ       LAB_0044cb33
+SHL EAX,0x6
+MOV byte ptr [EAX + 0x4734b0],0x0
+
+LAB_0044cb33:
+MOV ECX,dword ptr [ECX + 0xf0]
+JMP 0x0041af50
+
+LAB_0044cb3e:
+RET

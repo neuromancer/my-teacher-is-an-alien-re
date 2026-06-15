@@ -1,0 +1,39 @@
+Function: FUN_00403720
+Address: 0x403720
+
+
+void __fastcall FUN_00403720(int param_1)
+
+{
+  switch(*(undefined4 *)(param_1 + 0x24)) {
+  case 0:
+    FUN_00411630(DAT_0046aa14,*(int *)(param_1 + 0x14),*(int *)(param_1 + 0x1c),
+                 *(int *)(param_1 + 0x18),*(int *)(param_1 + 0x20),*(int *)(param_1 + 0xc),
+                 *(int *)(param_1 + 0x10),*(int *)(param_1 + 8));
+    return;
+  case 1:
+    FUN_00411710(DAT_0046aa14,*(int *)(param_1 + 0x14),*(int *)(param_1 + 0x1c),
+                 *(int *)(param_1 + 0x18),*(int *)(param_1 + 0x20),*(int *)(param_1 + 0xc),
+                 *(int *)(param_1 + 0x10),*(int *)(param_1 + 8));
+    return;
+  case 2:
+    FUN_004117f0(DAT_0046aa14,*(int *)(param_1 + 0x14),*(int *)(param_1 + 0x1c),
+                 *(int *)(param_1 + 0x18),*(int *)(param_1 + 0x20),*(int *)(param_1 + 0xc),
+                 *(int *)(param_1 + 0x10),*(int *)(param_1 + 8));
+    return;
+  case 3:
+    FUN_004118e0(DAT_0046aa14,*(int *)(param_1 + 0x14),*(int *)(param_1 + 0x1c),
+                 *(int *)(param_1 + 0x18),*(int *)(param_1 + 0x20),*(int *)(param_1 + 0xc),
+                 *(int *)(param_1 + 0x10),*(int *)(param_1 + 8));
+    return;
+  case 4:
+    FUN_004119d0(*(undefined4 *)(param_1 + 0xc),*(undefined4 *)(param_1 + 0x10),
+                 *(int *)(param_1 + 8));
+    return;
+  case 5:
+    FUN_00411a40(DAT_0046aa14,*(int *)(param_1 + 0xc),*(int *)(param_1 + 0x10),*(int *)(param_1 + 8)
+                );
+  }
+  return;
+}
+

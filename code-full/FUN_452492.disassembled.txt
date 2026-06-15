@@ -1,0 +1,4 @@
+Function: CloseHandle
+Address: 0x452492
+
+JMP dword ptr [0x00476440]

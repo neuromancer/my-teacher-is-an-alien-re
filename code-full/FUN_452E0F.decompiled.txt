@@ -1,0 +1,40 @@
+Function: FUN_00452e0f
+Address: 0x452E0F
+
+
+undefined4 __cdecl
+FUN_00452e0f(int param_1,int param_2,int param_3,int param_4,int param_5,int param_6,int param_7,
+            int param_8)
+
+{
+  int iVar1;
+  int DestWidth;
+  int SrcHeight;
+  int DestHeight;
+  
+  if (-1 < DAT_0046db3c) {
+    if (DAT_0046e004 == 0) {
+      iVar1 = DAT_0046d0b2 - param_3;
+      param_3 = DAT_0046d0b2 - param_4;
+      param_4 = iVar1;
+    }
+    DestWidth = (param_6 - param_5) + 1;
+    DestHeight = (param_8 - param_7) + 1;
+    iVar1 = (param_2 - param_1) + 1;
+    SrcHeight = (param_4 - param_3) + 1;
+    if (DAT_0046e004 == 0) {
+      StretchDIBits(DAT_0046d070,param_5,param_7,DestWidth,DestHeight,param_1,param_3,iVar1,
+                    SrcHeight,
+                    (void *)((int)&(((BITMAPINFO *)
+                                    (((BITMAPINFO *)(DAT_0046db4e - DAT_0046db34))->bmiColors + -10)
+                                    )->bmiHeader).biSize + DAT_0046db34),
+                    (BITMAPINFO *)(DAT_0046db4e - DAT_0046db34),DAT_0046db38,0xcc0020);
+    }
+    else {
+      (*DAT_0046e020)(DAT_0046d070,param_5,param_7,DestWidth,DestHeight,DAT_0046e004,param_1,param_3
+                      ,iVar1,SrcHeight);
+    }
+  }
+  return 0;
+}
+

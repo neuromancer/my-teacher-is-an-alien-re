@@ -1,0 +1,25 @@
+Function: FUN_00425e90
+Address: 0x425E90
+
+
+undefined4 FUN_00425e90(void)
+
+{
+  int iVar1;
+  tagMSG local_1c;
+  
+  do {
+    iVar1 = PeekMessageA(&local_1c,(HWND)0x0,0,0,1);
+    while (iVar1 != 0) {
+      TranslateMessage(&local_1c);
+      if ((local_1c.message == 0x100) && (DAT_0046ac04 = local_1c.wParam, 0x7f < local_1c.wParam)) {
+        DAT_0046ac04 = local_1c.wParam & 0x2f;
+      }
+      DispatchMessageA(&local_1c);
+      iVar1 = PeekMessageA(&local_1c,(HWND)0x0,0,0,1);
+    }
+    iVar1 = FUN_00420610();
+  } while (iVar1 == 0);
+  return 0;
+}
+

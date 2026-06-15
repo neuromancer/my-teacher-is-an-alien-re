@@ -1,0 +1,15 @@
+Function: SetBkMode
+Address: 0x4601D6
+
+
+int SetBkMode(HDC hdc,int mode)
+
+{
+  int iVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601d6. Too many branches
+// WARNING: Treating indirect jump as call
+  iVar1 = SetBkMode(hdc,mode);
+  return iVar1;
+}
+

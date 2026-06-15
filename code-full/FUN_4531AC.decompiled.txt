@@ -1,0 +1,56 @@
+Function: FUN_004531ac
+Address: 0x4531AC
+
+
+void __fastcall FUN_004531ac(int param_1,uint param_2)
+
+{
+  byte *pbVar1;
+  byte bVar2;
+  byte bVar3;
+  int iVar4;
+  uint unaff_EBX;
+  uint uVar5;
+  uint uVar6;
+  uint uVar7;
+  byte *unaff_EDI;
+  bool bVar8;
+  
+  bVar2 = 0x80;
+  bVar3 = 0x40;
+  iVar4 = param_1 + -1;
+  if (iVar4 != 0) {
+    uVar6 = unaff_EBX;
+    uVar7 = param_2;
+    uVar5 = unaff_EBX;
+    if (param_2 < unaff_EBX) {
+      uVar6 = param_2;
+      uVar7 = unaff_EBX;
+      uVar5 = param_2;
+      param_2 = unaff_EBX;
+    }
+    do {
+      while( true ) {
+        uVar6 = uVar6 + uVar5;
+        if (uVar7 < uVar6) {
+          uVar7 = uVar7 + param_2;
+          bVar2 = bVar2 | bVar3;
+        }
+        bVar8 = (bool)(bVar3 & 1);
+        bVar3 = bVar3 >> 1 | bVar8 << 7;
+        if (bVar8) break;
+        iVar4 = iVar4 + -1;
+        if (iVar4 == 0) goto LAB_004531d5;
+      }
+      pbVar1 = unaff_EDI + 1;
+      *unaff_EDI = bVar2;
+      bVar2 = 0;
+      iVar4 = iVar4 + -1;
+      unaff_EDI = pbVar1;
+    } while (iVar4 != 0);
+  }
+LAB_004531d5:
+  *unaff_EDI = bVar2;
+  return;
+}
+

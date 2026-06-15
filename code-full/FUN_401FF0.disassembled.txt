@@ -1,0 +1,43 @@
+Function: FUN_00401ff0
+Address: 0x401FF0
+
+MOV EDX,dword ptr [ESP + 0x4]
+PUSH EBX
+MOV EAX,dword ptr [EDX]
+CMP dword ptr [ECX + 0x90],EAX
+JZ       LAB_00402005
+XOR EAX,EAX
+POP EBX
+RET 0x4
+
+LAB_00402005:
+MOV EAX,dword ptr [EDX + 0x10]
+CMP EAX,0x37
+JA       LAB_0040201c
+XOR EBX,EBX
+MOV BL,byte ptr [EAX + 0x402068]
+JMP      LAB_0040201c
+
+LAB_0040201c:
+XOR EAX,EAX
+POP EBX
+RET 0x4
+
+LAB_00402022:
+PUSH EDX
+MOV EAX,dword ptr [EDX + 0x14]
+MOV dword ptr [EDX],0x24
+MOV ECX,dword ptr [ECX + EAX*0x4 + 0xec]
+CALL 0x00446ce0
+MOV EAX,0x1
+POP EBX
+RET 0x4
+
+LAB_00402041:
+MOV EAX,dword ptr [EDX + 0x14]
+MOV dword ptr [ECX + 0xb0],EAX
+
+LAB_0040204a:
+MOV EAX,0x1
+POP EBX
+RET 0x4

@@ -1,0 +1,71 @@
+Function: FUN_00420f00
+Address: 0x420F00
+
+
+void __fastcall FUN_00420f00(int param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  void *pvVar3;
+  int iVar4;
+  
+  if (*(int *)(param_1 + 0x90) == 0) {
+    return;
+  }
+  iVar4 = 0;
+  piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+  if (piVar1 == (int *)0x0) {
+    iVar2 = 0;
+  }
+  else {
+    iVar4 = piVar1[1];
+    iVar2 = *piVar1;
+  }
+  if ((((*(int *)(param_1 + 0x90) == 0) || (iVar2 < *(int *)(param_1 + 0x9c))) ||
+      (*(int *)(param_1 + 0xa4) < iVar2)) ||
+     ((iVar4 < *(int *)(param_1 + 0xa0) || (*(int *)(param_1 + 0xa8) < iVar4)))) {
+    iVar4 = *(int *)(param_1 + 0x94);
+    if ((iVar4 == 0) || (iVar4 == 3)) {
+      *(undefined4 *)(param_1 + 0x94) = 0;
+      pvVar3 = *(void **)(param_1 + 0x19c);
+      if (pvVar3 == (void *)0x0) goto LAB_00420ffd;
+      iVar4 = 0;
+    }
+    else {
+      if ((iVar4 != 1) && (iVar4 != 2)) {
+        return;
+      }
+      *(undefined4 *)(param_1 + 0x94) = 1;
+      pvVar3 = *(void **)(param_1 + 0x19c);
+      if (pvVar3 == (void *)0x0) goto LAB_00420ffd;
+      iVar4 = 1;
+    }
+  }
+  else {
+    iVar4 = *(int *)(param_1 + 0x94);
+    if ((iVar4 == 0) || (iVar4 == 3)) {
+      *(undefined4 *)(param_1 + 0x94) = 3;
+      pvVar3 = *(void **)(param_1 + 0x19c);
+      if (pvVar3 == (void *)0x0) goto LAB_00420ffd;
+      iVar4 = 3;
+    }
+    else {
+      if ((iVar4 != 1) && (iVar4 != 2)) {
+        return;
+      }
+      *(undefined4 *)(param_1 + 0x94) = 2;
+      pvVar3 = *(void **)(param_1 + 0x19c);
+      if (pvVar3 == (void *)0x0) goto LAB_00420ffd;
+      iVar4 = 2;
+    }
+  }
+  FUN_0044cb40(pvVar3,iVar4,0);
+LAB_00420ffd:
+  pvVar3 = *(void **)(param_1 + 0x19c);
+  if (pvVar3 != (void *)0x0) {
+    FUN_0044ccf0(pvVar3,*(int *)((int)pvVar3 + 0xac),*(int *)((int)pvVar3 + 0xb0),0,0x3ff00000);
+  }
+  return;
+}
+

@@ -1,0 +1,24 @@
+Function: FUN_0042fc90
+Address: 0x42FC90
+
+
+void __fastcall FUN_0042fc90(undefined4 *param_1)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_0042fcdb;
+  *param_1 = &PTR_FUN_00461648;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 0;
+  FUN_004300d0(param_1,0);
+  local_8 = 0xffffffff;
+  FUN_0042fce5();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

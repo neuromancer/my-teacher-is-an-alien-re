@@ -1,0 +1,83 @@
+Function: ___InternalCxxFrameHandler
+Address: 0x456D10
+
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0x18]
+CMP dword ptr [ESI],0x19930520
+JZ       LAB_00456d22
+CALL 0x00457840
+
+LAB_00456d22:
+MOV ECX,dword ptr [ESP + 0x8]
+TEST byte ptr [ECX + 0x4],0x66
+JZ       LAB_00456d55
+CMP dword ptr [ESI + 0x4],0x0
+JZ       LAB_00456d4e
+CMP dword ptr [ESP + 0x1c],0x0
+JNZ      LAB_00456d4e
+MOV EAX,dword ptr [ESP + 0x14]
+PUSH -0x1
+MOV ECX,dword ptr [ESP + 0x10]
+PUSH ESI
+PUSH EAX
+PUSH ECX
+CALL     LAB_004571f0
+ADD ESP,0x10
+
+LAB_00456d4e:
+MOV EAX,0x1
+POP ESI
+RET
+
+LAB_00456d55:
+CMP dword ptr [ESI + 0xc],0x0
+JZ       LAB_00456dc5
+CMP dword ptr [ECX],0xe06d7363
+JNZ      LAB_00456d9d
+CMP dword ptr [ECX + 0x14],0x19930520
+JBE      LAB_00456d9d
+MOV EAX,dword ptr [ECX + 0x1c]
+MOV EDX,dword ptr [EAX + 0x8]
+TEST EDX,EDX
+JZ       LAB_00456d9d
+MOV EAX,dword ptr [ESP + 0x24]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x24]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x24]
+PUSH EAX
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0x24]
+MOV EAX,dword ptr [ESP + 0x20]
+PUSH ESI
+PUSH EAX
+MOV ESI,dword ptr [ESP + 0x24]
+PUSH ESI
+PUSH ECX
+CALL EDX
+ADD ESP,0x20
+POP ESI
+RET
+
+LAB_00456d9d:
+MOV EAX,dword ptr [ESP + 0x20]
+MOV EDX,dword ptr [ESP + 0x1c]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ESP + 0x2c]
+MOV EDX,dword ptr [ESP + 0x18]
+PUSH EAX
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0x24]
+MOV EAX,dword ptr [ESP + 0x1c]
+PUSH ESI
+PUSH EDX
+PUSH EAX
+PUSH ECX
+CALL     LAB_00456dd0
+ADD ESP,0x20
+
+LAB_00456dc5:
+MOV EAX,0x1
+POP ESI
+RET

@@ -1,0 +1,13 @@
+Function: FUN_00454ab0
+Address: 0x454AB0
+
+
+undefined4 __cdecl FUN_00454ab0(undefined4 *param_1)
+
+{
+  if (*(int *)*param_1 == -0x1f928c9d) {
+    FUN_004577c0();
+  }
+  return 0;
+}
+

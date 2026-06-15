@@ -1,0 +1,19 @@
+Function: FUN_0042e450
+Address: 0x42E450
+
+XOR EDX,EDX
+LEA EAX,[ECX + 0x1c]
+
+LAB_0042e455:
+CMP dword ptr [EAX],0x0
+JZ       LAB_0042e466
+ADD EAX,0x4
+INC EDX
+CMP EDX,0x2
+JL       LAB_0042e455
+RET 0x4
+
+LAB_0042e466:
+MOV EAX,dword ptr [ESP + 0x4]
+MOV dword ptr [ECX + EDX*0x4 + 0x1c],EAX
+RET 0x4

@@ -1,0 +1,13 @@
+Function: FUN_0044ac60
+Address: 0x44AC60
+
+
+undefined4 __fastcall FUN_0044ac60(int param_1)
+
+{
+  if (*(void **)(DAT_0046aa18 + 0x94) != (void *)0x0) {
+    FUN_0044cb40(*(void **)(DAT_0046aa18 + 0x94),*(int *)(param_1 + 0xa0),0);
+  }
+  return 1;
+}
+

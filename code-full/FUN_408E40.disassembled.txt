@@ -1,0 +1,10 @@
+Function: FUN_00408e40
+Address: 0x408E40
+
+MOV EAX,[0x0046a6ec]
+MOV EDX,dword ptr [ESP + 0x4]
+PUSH EDX
+MOV ECX,dword ptr [EAX + 0x18]
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX + 0x2c]
+RET 0x4

@@ -1,0 +1,61 @@
+Function: FUN_0044c480
+Address: 0x44C480
+
+
+void __thiscall FUN_0044c480(void *this,void *param_1,int param_2)
+
+{
+  int *piVar1;
+  bool bVar2;
+  undefined4 *puVar3;
+  int iVar4;
+  int *piVar5;
+  int *piVar6;
+  uint uVar7;
+  char local_100 [256];
+  
+  bVar2 = false;
+  piVar6 = (int *)((*(int *)(*(int *)((int)this + 8) + 8) == 0) - 1);
+  do {
+    if (piVar6 == (int *)0x0) {
+      if (bVar2) {
+        FUN_00425cb0(s_One_or_more_strings_in__s_is_too_0046c898);
+      }
+      return;
+    }
+    piVar1 = *(int **)((int)this + 8);
+    if (piVar6 == (int *)0xffffffff) {
+      uVar7 = 0;
+      if (piVar1[1] != 0) {
+        piVar5 = (int *)*piVar1;
+        do {
+          piVar6 = (int *)*piVar5;
+          if (piVar6 != (int *)0x0) break;
+          piVar5 = piVar5 + 1;
+          uVar7 = uVar7 + 1;
+        } while (uVar7 < (uint)piVar1[1]);
+      }
+    }
+    piVar5 = (int *)*piVar6;
+    if (piVar5 == (int *)0x0) {
+      uVar7 = piVar6[1] + 1;
+      if (uVar7 < (uint)piVar1[1]) {
+        puVar3 = (undefined4 *)(uVar7 * 4 + *piVar1);
+        do {
+          piVar5 = (int *)*puVar3;
+          if (piVar5 != (int *)0x0) break;
+          puVar3 = puVar3 + 1;
+          uVar7 = uVar7 + 1;
+        } while (uVar7 < (uint)piVar1[1]);
+      }
+    }
+    FUN_0044c350(this,piVar6[2],local_100);
+    iVar4 = FUN_0043ad50(param_1,local_100);
+    piVar6 = piVar5;
+    if (param_2 < iVar4) {
+      bVar2 = true;
+      FUN_00425d70((wchar_t *)s_mCStrLookUp__Validate_____String_0046c8d4);
+    }
+  } while( true );
+}
+

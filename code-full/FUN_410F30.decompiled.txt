@@ -1,0 +1,11 @@
+Function: FUN_00410f30
+Address: 0x410F30
+
+
+void __cdecl FUN_00410f30(int param_1)
+
+{
+  (&DAT_00472bf0)[param_1] = 0xffffffff;
+  return;
+}
+

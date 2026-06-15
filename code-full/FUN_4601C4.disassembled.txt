@@ -1,0 +1,4 @@
+Function: GetTextExtentPointA
+Address: 0x4601C4
+
+JMP dword ptr [0x00476330]

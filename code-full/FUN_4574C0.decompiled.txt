@@ -1,0 +1,102 @@
+Function: BuildCatchObject
+Address: 0x4574C0
+
+
+/* Library Function - Single Match
+    void __cdecl BuildCatchObject(struct EHExceptionRecord *,struct EHRegistrationNode *,struct
+   _s_HandlerType const *,struct _s_CatchableType const *)
+   
+   Library: Visual Studio 1998 Release */
+
+void __cdecl
+BuildCatchObject(EHExceptionRecord *param_1,EHRegistrationNode *param_2,_s_HandlerType *param_3,
+                _s_CatchableType *param_4)
+
+{
+  EHRegistrationNode *_Dst;
+  bool bVar1;
+  undefined3 extraout_var;
+  undefined3 extraout_var_00;
+  void *pvVar2;
+  undefined3 extraout_var_01;
+  undefined3 extraout_var_02;
+  undefined3 extraout_var_03;
+  undefined3 extraout_var_04;
+  undefined3 extraout_var_05;
+  undefined3 extraout_var_06;
+  int iVar3;
+  undefined4 *unaff_FS_OFFSET;
+  size_t _Size;
+  undefined4 local_14;
+  undefined1 *puStack_10;
+  undefined *puStack_c;
+  undefined4 local_8;
+  
+  local_14 = *unaff_FS_OFFSET;
+  puStack_c = &DAT_00461d78;
+  puStack_10 = &LAB_0045a094;
+  *unaff_FS_OFFSET = &local_14;
+  if (((*(int *)(param_3 + 4) != 0) && (*(char *)(*(int *)(param_3 + 4) + 8) != '\0')) &&
+     (*(int *)(param_3 + 8) != 0)) {
+    _Dst = param_2 + *(int *)(param_3 + 8) + 0xc;
+    local_8 = 0;
+    if (((byte)*param_3 & 8) == 0) {
+      if (((byte)*param_4 & 1) == 0) {
+        if (*(int *)(param_4 + 0x18) == 0) {
+          bVar1 = FID_conflict__ValidateRead(*(void **)(param_1 + 0x18),1);
+          if ((CONCAT31(extraout_var_03,bVar1) != 0) &&
+             (bVar1 = FID_conflict__ValidateRead(_Dst,1), CONCAT31(extraout_var_04,bVar1) != 0)) {
+            _Size = *(size_t *)(param_4 + 0x14);
+            pvVar2 = AdjustPointer(*(void **)(param_1 + 0x18),(PMD *)(param_4 + 8));
+            FID_conflict__memcpy(_Dst,pvVar2,_Size);
+            goto LAB_004576ae;
+          }
+        }
+        else {
+          bVar1 = FID_conflict__ValidateRead(*(void **)(param_1 + 0x18),1);
+          if (((CONCAT31(extraout_var_05,bVar1) != 0) &&
+              (bVar1 = FID_conflict__ValidateRead(_Dst,1), CONCAT31(extraout_var_06,bVar1) != 0)) &&
+             (iVar3 = _ValidateExecute(*(_func_int **)(param_4 + 0x18)), iVar3 != 0)) {
+            if (((byte)*param_4 & 4) == 0) {
+              AdjustPointer(*(void **)(param_1 + 0x18),(PMD *)(param_4 + 8));
+              FID_conflict__CallMemberFunction1(_Dst,*(undefined **)(param_4 + 0x18));
+            }
+            else {
+              AdjustPointer(*(void **)(param_1 + 0x18),(PMD *)(param_4 + 8));
+              FID_conflict__CallMemberFunction1(_Dst,*(undefined **)(param_4 + 0x18));
+            }
+            goto LAB_004576ae;
+          }
+        }
+      }
+      else {
+        bVar1 = FID_conflict__ValidateRead(*(void **)(param_1 + 0x18),1);
+        if ((CONCAT31(extraout_var_01,bVar1) != 0) &&
+           (bVar1 = FID_conflict__ValidateRead(_Dst,1), CONCAT31(extraout_var_02,bVar1) != 0)) {
+          FID_conflict__memcpy(_Dst,*(void **)(param_1 + 0x18),*(size_t *)(param_4 + 0x14));
+          if ((*(int *)(param_4 + 0x14) == 4) && (*(void **)_Dst != (void *)0x0)) {
+            pvVar2 = AdjustPointer(*(void **)_Dst,(PMD *)(param_4 + 8));
+            *(void **)_Dst = pvVar2;
+          }
+          goto LAB_004576ae;
+        }
+      }
+    }
+    else {
+      bVar1 = FID_conflict__ValidateRead(*(void **)(param_1 + 0x18),1);
+      if ((CONCAT31(extraout_var,bVar1) != 0) &&
+         (bVar1 = FID_conflict__ValidateRead(_Dst,1), CONCAT31(extraout_var_00,bVar1) != 0)) {
+        pvVar2 = *(void **)(param_1 + 0x18);
+        *(void **)_Dst = pvVar2;
+        pvVar2 = AdjustPointer(pvVar2,(PMD *)(param_4 + 8));
+        *(void **)_Dst = pvVar2;
+        goto LAB_004576ae;
+      }
+    }
+    FUN_00457840();
+  }
+LAB_004576ae:
+  *unaff_FS_OFFSET = local_14;
+  return;
+}
+

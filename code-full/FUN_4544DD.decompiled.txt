@@ -1,0 +1,16 @@
+Function: FUN_004544dd
+Address: 0x4544DD
+
+
+void __fastcall FUN_004544dd(undefined4 param_1)
+
+{
+  undefined4 in_EAX;
+  undefined4 unaff_EBP;
+  
+  DAT_00471838 = param_1;
+  DAT_00471834 = in_EAX;
+  DAT_0047183c = unaff_EBP;
+  return;
+}
+

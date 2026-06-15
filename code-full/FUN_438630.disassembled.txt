@@ -1,0 +1,17 @@
+Function: FUN_00438630
+Address: 0x438630
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x438e71
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+XOR EAX,EAX
+SUB ESP,0xa8
+MOV dword ptr [EBP + -0x14],EAX
+MOV byte ptr [EBP + 0xffffff4c],AL
+MOV byte ptr [EBP + -0x34],AL
+PUSH EBX
+LEA EAX,[EBP + -0x34]

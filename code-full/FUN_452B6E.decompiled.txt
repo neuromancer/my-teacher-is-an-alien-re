@@ -1,0 +1,35 @@
+Function: FUN_00452b6e
+Address: 0x452B6E
+
+
+longlong __fastcall FUN_00452b6e(undefined4 param_1,uint param_2)
+
+{
+  undefined4 uVar1;
+  uint uVar2;
+  uint uVar3;
+  uint uVar4;
+  undefined4 *puVar5;
+  
+  uVar1 = DAT_0046d079;
+  if (-1 < DAT_0046db3c) {
+    param_2 = 0;
+    uVar4 = DAT_0046db4a & 1;
+    uVar2 = DAT_0046db4a >> 1;
+    puVar5 = DAT_0046db4e;
+    for (uVar3 = DAT_0046db4a >> 2; uVar3 != 0; uVar3 = uVar3 - 1) {
+      *puVar5 = uVar1;
+      puVar5 = puVar5 + 1;
+    }
+    for (uVar2 = (uint)((uVar2 & 1) != 0); uVar2 != 0; uVar2 = uVar2 - 1) {
+      *(short *)puVar5 = (short)uVar1;
+      puVar5 = (undefined4 *)((int)puVar5 + 2);
+    }
+    for (uVar4 = (uint)(uVar4 != 0); uVar4 != 0; uVar4 = uVar4 - 1) {
+      *(char *)puVar5 = (char)uVar1;
+      puVar5 = (undefined4 *)((int)puVar5 + 1);
+    }
+  }
+  return (ulonglong)param_2 << 0x20;
+}
+

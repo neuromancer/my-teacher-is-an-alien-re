@@ -1,0 +1,53 @@
+Function: FUN_00409730
+Address: 0x409730
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV EBX,0xffffffff
+MOV EAX,dword ptr [ECX + 0x94]
+PUSH EBP
+MOV EDI,ECX
+XOR EBP,EBP
+TEST EAX,EAX
+JZ       LAB_004097a7
+XOR EBX,EBX
+MOV ESI,dword ptr [ESP + 0x14]
+CMP dword ptr [EAX],ESI
+JG       LAB_004097a7
+
+LAB_00409751:
+MOV EAX,dword ptr [EDI + 0x94]
+MOV ECX,dword ptr [0x0046ae58]
+MOV EDX,dword ptr [EAX + 0x4]
+MOV ECX,dword ptr [ECX + EDX*0x4 + 0x94]
+CMP dword ptr [ECX + 0xf8],EBP
+JNZ      LAB_004097a7
+INC EBX
+CALL 0x004425f0
+MOV EAX,dword ptr [EDI + 0x98]
+TEST EAX,EAX
+JZ       LAB_0040979d
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [EDI + 0x98],ECX
+MOV EAX,dword ptr [EAX + 0x8]
+MOV dword ptr [EDI + 0x94],EAX
+CMP dword ptr [EAX],ESI
+JLE      LAB_00409751
+MOV EAX,EBX
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET 0x4
+
+LAB_0040979d:
+MOV dword ptr [EDI + 0x94],0x0
+
+LAB_004097a7:
+MOV EAX,EBX
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET 0x4

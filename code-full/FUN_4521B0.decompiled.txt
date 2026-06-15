@@ -1,0 +1,13 @@
+Function: FUN_004521b0
+Address: 0x4521B0
+
+
+void FUN_004521b0(void)
+
+{
+// WARNING: Could not recover jumptable at 0x004521bd. Too many branches
+// WARNING: Treating indirect jump as call
+  (**(code **)(*DAT_0046ae78 + 0x38))();
+  return;
+}
+

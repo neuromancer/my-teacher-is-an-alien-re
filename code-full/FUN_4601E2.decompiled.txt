@@ -1,0 +1,15 @@
+Function: GetDeviceCaps
+Address: 0x4601E2
+
+
+int GetDeviceCaps(HDC hdc,int index)
+
+{
+  int iVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601e2. Too many branches
+// WARNING: Treating indirect jump as call
+  iVar1 = GetDeviceCaps(hdc,index);
+  return iVar1;
+}
+

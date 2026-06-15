@@ -1,0 +1,13 @@
+Function: FUN_00428ad0
+Address: 0x428AD0
+
+
+void __thiscall FUN_00428ad0(void *this,undefined4 param_1,int param_2)
+
+{
+  if (*(int *)((int)this + 0x90) == param_2) {
+    FUN_00449480(this,param_1,param_2);
+  }
+  return;
+}
+

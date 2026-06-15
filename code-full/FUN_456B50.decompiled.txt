@@ -1,0 +1,90 @@
+Function: entry
+Address: 0x456B50
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+void entry(void)
+
+{
+  byte bVar1;
+  DWORD DVar2;
+  uint uVar3;
+  HMODULE pHVar4;
+  UINT UVar5;
+  byte *pbVar6;
+  undefined4 *unaff_FS_OFFSET;
+  int iVar7;
+  _STARTUPINFOA local_74;
+  undefined1 *local_1c;
+  undefined4 local_14;
+  undefined1 *puStack_10;
+  undefined *puStack_c;
+  undefined4 local_8;
+  
+  local_14 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &DAT_00461d40;
+  puStack_10 = &LAB_0045a094;
+  *unaff_FS_OFFSET = &local_14;
+  local_1c = &stack0xffffff80;
+  DVar2 = GetVersion();
+  _DAT_004719d8 = DVar2 >> 8 & 0xff;
+  DAT_004719cc = DVar2 >> 0x10;
+  _DAT_004719d4 = DVar2 & 0xff;
+  _DAT_004719d0 = _DAT_004719d4 * 0x100 + _DAT_004719d8;
+  FUN_0045bee0();
+  local_8 = 0;
+  FUN_0045bd00();
+  FUN_0045af40();
+  DAT_00475080 = (byte *)GetCommandLineA();
+  DAT_00471c48 = FUN_0045bb60();
+  if ((DAT_00471c48 == (LPSTR)0x0) || (DAT_00475080 == (byte *)0x0)) {
+    FUN_004562e0(0xffffffff);
+  }
+  __setargv();
+  FUN_0045b800();
+  FUN_004562b0();
+  bVar1 = *DAT_00475080;
+  pbVar6 = DAT_00475080;
+  if (bVar1 == 0x22) {
+    pbVar6 = DAT_00475080 + 1;
+    if (*pbVar6 != 0x22) {
+      do {
+        if (*pbVar6 == 0) break;
+        iVar7 = __ismbblead((uint)*pbVar6);
+        if (iVar7 != 0) {
+          pbVar6 = pbVar6 + 1;
+        }
+        pbVar6 = pbVar6 + 1;
+      } while (*pbVar6 != 0x22);
+      if (*pbVar6 != 0x22) goto LAB_00456c47;
+    }
+    pbVar6 = pbVar6 + 1;
+  }
+  else {
+    while (0x20 < bVar1) {
+      bVar1 = pbVar6[1];
+      pbVar6 = pbVar6 + 1;
+    }
+  }
+LAB_00456c47:
+  bVar1 = *pbVar6;
+  while ((bVar1 != 0 && (*pbVar6 < 0x21))) {
+    pbVar6 = pbVar6 + 1;
+    bVar1 = *pbVar6;
+  }
+  local_74.dwFlags = 0;
+  GetStartupInfoA(&local_74);
+  uVar3 = 10;
+  if ((local_74.dwFlags & 1) != 0) {
+    uVar3 = local_74._48_4_ & 0xffff;
+  }
+  iVar7 = 0;
+  pHVar4 = GetModuleHandleA((LPCSTR)0x0);
+  UVar5 = FUN_00420620(pHVar4,iVar7,(char *)pbVar6,uVar3);
+  FUN_004562e0(UVar5);
+  *unaff_FS_OFFSET = local_14;
+  return;
+}
+

@@ -1,0 +1,4 @@
+Function: SetBkMode
+Address: 0x4601D6
+
+JMP dword ptr [0x00476340]

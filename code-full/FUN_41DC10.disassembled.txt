@@ -1,0 +1,17 @@
+Function: FUN_0041dc10
+Address: 0x41DC10
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x4]
+MOV ESI,ECX
+TEST EAX,EAX
+JZ       LAB_0041dc2a
+PUSH EAX
+CALL 0x00454400
+MOV dword ptr [ESI + 0x4],0x0
+ADD ESP,0x4
+
+LAB_0041dc2a:
+MOV dword ptr [ESI],0x0
+POP ESI
+RET

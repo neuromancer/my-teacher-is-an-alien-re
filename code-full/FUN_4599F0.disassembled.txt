@@ -1,0 +1,24 @@
+Function: __ms_p5_test_fdiv
+Address: 0x4599F0
+
+SUB ESP,0x18
+MOV dword ptr [ESP + 0x8],0x80000000
+MOV dword ptr [ESP + 0xc],0x4147ffff
+MOV dword ptr [ESP],0xc0000000
+MOV dword ptr [ESP + 0x4],0x4150017e
+FLD double ptr [ESP]
+FDIV double ptr [ESP + 0x8]
+FMUL double ptr [ESP + 0x8]
+FSUBR double ptr [ESP]
+FSTP double ptr [ESP + 0x10]
+FLD1
+FCOMP double ptr [ESP + 0x10]
+FNSTSW AX
+TEST AH,0x1
+MOV EAX,0x1
+JNZ      LAB_00459a3b
+XOR EAX,EAX
+
+LAB_00459a3b:
+ADD ESP,0x18
+RET

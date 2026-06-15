@@ -1,0 +1,4 @@
+Function: TextOutA
+Address: 0x4601BE
+
+JMP dword ptr [0x00476334]

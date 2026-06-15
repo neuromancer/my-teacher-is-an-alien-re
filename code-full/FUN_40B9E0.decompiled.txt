@@ -1,0 +1,19 @@
+Function: FUN_0040b9e0
+Address: 0x40B9E0
+
+
+void FUN_0040b9e0(void)
+
+{
+  int iVar1;
+  
+  if (DAT_00468a18 != 0) {
+    iVar1 = FUN_00426ac0();
+    DAT_00468a18 = (uint)(iVar1 != 0x54);
+  }
+// WARNING: Could not recover jumptable at 0x0040ba09. Too many branches
+// WARNING: Treating indirect jump as call
+  (**(code **)(*DAT_0046ae78 + 0x38))();
+  return;
+}
+

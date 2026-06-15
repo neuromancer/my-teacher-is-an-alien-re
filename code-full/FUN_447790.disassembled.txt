@@ -1,0 +1,29 @@
+Function: FUN_00447790
+Address: 0x447790
+
+CMP dword ptr [0x0046ae78],0x0
+PUSH ESI
+MOV ESI,ECX
+JZ       LAB_004477d3
+CMP dword ptr [0x0046ae70],0x0
+JZ       LAB_004477b9
+MOV EAX,[0x0046ae70]
+MOV ECX,dword ptr [EAX + 0xa0]
+TEST ECX,ECX
+JZ       LAB_004477b9
+CALL 0x0044c9d0
+
+LAB_004477b9:
+MOV EAX,[0x0046ae78]
+MOV ECX,dword ptr [0x0046ae78]
+MOV EAX,dword ptr [EAX]
+CALL dword ptr [EAX + 0x40]
+MOV dword ptr [0x0046ae78],0x0
+
+LAB_004477d3:
+MOV EAX,dword ptr [ESP + 0x8]
+MOV ECX,ESI
+PUSH EAX
+CALL 0x00449320
+POP ESI
+RET 0x4

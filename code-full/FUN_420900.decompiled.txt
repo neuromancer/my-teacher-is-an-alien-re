@@ -1,0 +1,21 @@
+Function: FUN_00420900
+Address: 0x420900
+
+
+void __fastcall FUN_00420900(int *param_1)
+
+{
+  int iVar1;
+  
+  if (*param_1 != 0) {
+    FUN_00425c50(s_double_FlagArray__Open___0046a408);
+  }
+  iVar1 = FUN_00455110((char *)(param_1 + 1),&DAT_0046a3a8);
+  *param_1 = iVar1;
+  if (iVar1 == 0) {
+    FUN_00425c50(s_Error_opening_file_in_flagarray__0046a3e4);
+  }
+  __fread_lk((char *)(param_1 + 0xe),0x94,1,(FILE *)*param_1);
+  return;
+}
+

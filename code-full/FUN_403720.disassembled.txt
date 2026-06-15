@@ -1,0 +1,115 @@
+Function: FUN_00403720
+Address: 0x403720
+
+MOV EAX,dword ptr [ECX + 0x24]
+CMP EAX,0x5
+JA       LAB_0040381c
+JMP      LAB_0040375d
+
+LAB_00403733:
+MOV EAX,dword ptr [ECX + 0x8]
+MOV EDX,dword ptr [ECX + 0x10]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0xc]
+MOV EDX,dword ptr [ECX + 0x20]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0x18]
+MOV EDX,dword ptr [ECX + 0x1c]
+PUSH EAX
+MOV ECX,dword ptr [ECX + 0x14]
+PUSH EDX
+PUSH ECX
+MOV ECX,dword ptr [0x0046aa14]
+CALL 0x00411630
+RET 0x4
+
+LAB_0040375d:
+MOV EAX,dword ptr [ECX + 0x8]
+MOV EDX,dword ptr [ECX + 0x10]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0xc]
+MOV EDX,dword ptr [ECX + 0x20]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0x18]
+MOV EDX,dword ptr [ECX + 0x1c]
+PUSH EAX
+MOV ECX,dword ptr [ECX + 0x14]
+PUSH EDX
+PUSH ECX
+MOV ECX,dword ptr [0x0046aa14]
+CALL 0x00411710
+RET 0x4
+
+LAB_00403787:
+MOV EAX,dword ptr [ECX + 0x8]
+MOV EDX,dword ptr [ECX + 0x10]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0xc]
+MOV EDX,dword ptr [ECX + 0x20]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0x18]
+MOV EDX,dword ptr [ECX + 0x1c]
+PUSH EAX
+MOV ECX,dword ptr [ECX + 0x14]
+PUSH EDX
+PUSH ECX
+MOV ECX,dword ptr [0x0046aa14]
+CALL 0x004117f0
+RET 0x4
+
+LAB_004037b1:
+MOV EAX,dword ptr [ECX + 0x8]
+MOV EDX,dword ptr [ECX + 0x10]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0xc]
+MOV EDX,dword ptr [ECX + 0x20]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0x18]
+MOV EDX,dword ptr [ECX + 0x1c]
+PUSH EAX
+MOV ECX,dword ptr [ECX + 0x14]
+PUSH EDX
+PUSH ECX
+MOV ECX,dword ptr [0x0046aa14]
+CALL 0x004118e0
+RET 0x4
+
+LAB_004037db:
+MOV EAX,dword ptr [ECX + 0x2c]
+MOV EDX,dword ptr [ECX + 0x28]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0x8]
+MOV EDX,dword ptr [ECX + 0x10]
+PUSH EAX
+MOV ECX,dword ptr [ECX + 0xc]
+PUSH EDX
+PUSH ECX
+MOV ECX,dword ptr [0x0046aa14]
+CALL 0x004119d0
+RET 0x4
+
+LAB_004037fd:
+MOV EAX,dword ptr [ECX + 0x2c]
+MOV EDX,dword ptr [ECX + 0x28]
+PUSH EAX
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0x8]
+MOV EDX,dword ptr [ECX + 0x10]
+PUSH EAX
+MOV ECX,dword ptr [ECX + 0xc]
+PUSH EDX
+PUSH ECX
+MOV ECX,dword ptr [0x0046aa14]
+CALL 0x00411a40
+
+LAB_0040381c:
+RET 0x4

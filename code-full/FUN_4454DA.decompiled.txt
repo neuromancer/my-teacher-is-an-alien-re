@@ -1,0 +1,11 @@
+Function: FUN_004454da
+Address: 0x4454DA
+
+
+void FUN_004454da(void)
+
+{
+  FUN_00407b60();
+  return;
+}
+

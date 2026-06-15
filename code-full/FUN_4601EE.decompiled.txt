@@ -1,0 +1,15 @@
+Function: DeleteDC
+Address: 0x4601EE
+
+
+BOOL DeleteDC(HDC hdc)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601ee. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = DeleteDC(hdc);
+  return BVar1;
+}
+

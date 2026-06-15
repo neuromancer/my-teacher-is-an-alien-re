@@ -1,0 +1,11 @@
+Function: FUN_004578e0
+Address: 0x4578E0
+
+
+void __cdecl FUN_004578e0(SIZE_T param_1)
+
+{
+  FUN_00457900(param_1,DAT_004724c8);
+  return;
+}
+

@@ -1,0 +1,39 @@
+Function: FUN_00452250
+Address: 0x452250
+
+
+void __fastcall FUN_00452250(int param_1)
+
+{
+  void *this;
+  int iVar1;
+  
+  this = *(void **)(DAT_0046ae78 + 0x10c);
+  if (DAT_00473e1c == 0) {
+    DAT_00473e1c = 1;
+    if (*(int *)(DAT_0046ae78 + 0x100) != 0) {
+      FUN_004252a0(*(int *)(DAT_0046ae78 + 0x100));
+    }
+    if (this != (void *)0x0) {
+      FUN_00425100(this,100,1);
+      goto LAB_004522bc;
+    }
+  }
+  else {
+    if (DAT_00473e1c != 1) goto LAB_004522bc;
+    if (((this != (void *)0x0) && (iVar1 = *(int *)((int)this + 0xc), iVar1 != 0)) &&
+       (*(int *)((int)this + 4) == *(int *)(iVar1 + 0xc))) {
+      iVar1 = _AIL_sample_status_4(iVar1);
+      if (iVar1 == 4) goto LAB_004522bc;
+    }
+  }
+  DAT_00473e1c = DAT_00473e1c + 1;
+LAB_004522bc:
+  if (DAT_00473e1c == 2) {
+    DAT_00473e1c = 3;
+    FUN_00451ca0(param_1);
+  }
+  FUN_004521b0();
+  return;
+}
+

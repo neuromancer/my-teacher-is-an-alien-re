@@ -1,0 +1,19 @@
+Function: _fsetpos
+Address: 0x455160
+
+
+/* Library Function - Single Match
+    _fsetpos
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl _fsetpos(FILE *_File,fpos_t *_Pos)
+
+{
+  int iVar1;
+  int unaff_retaddr;
+  
+  iVar1 = __fseeki64(_File,(ulonglong)*(uint *)((int)_Pos + 4),unaff_retaddr);
+  return iVar1;
+}
+

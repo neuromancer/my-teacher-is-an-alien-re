@@ -1,0 +1,24 @@
+Function: FUN_0045ffc0
+Address: 0x45FFC0
+
+PUSH ECX
+CMP EAX,0x1000
+LEA ECX,[ESP + 0x8]
+JC       LAB_0045ffe0
+
+LAB_0045ffcc:
+SUB ECX,0x1000
+SUB EAX,0x1000
+TEST dword ptr [ECX],EAX
+CMP EAX,0x1000
+JNC      LAB_0045ffcc
+
+LAB_0045ffe0:
+SUB ECX,EAX
+MOV EAX,ESP
+TEST dword ptr [ECX],EAX
+MOV ESP,ECX
+MOV ECX,dword ptr [EAX]
+MOV EAX,dword ptr [EAX + 0x4]
+PUSH EAX
+RET

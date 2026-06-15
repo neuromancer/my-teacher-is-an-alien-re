@@ -1,0 +1,4 @@
+Function: SetTextColor
+Address: 0x4601CA
+
+JMP dword ptr [0x00476348]

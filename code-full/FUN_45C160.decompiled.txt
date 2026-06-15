@@ -1,0 +1,31 @@
+Function: __CxxUnhandledExceptionFilter
+Address: 0x45C160
+
+
+/* Library Function - Single Match
+    long __stdcall __CxxUnhandledExceptionFilter(struct _EXCEPTION_POINTERS *)
+   
+   Library: Visual Studio 1998 Release */
+
+long __CxxUnhandledExceptionFilter(_EXCEPTION_POINTERS *param_1)
+
+{
+  PEXCEPTION_RECORD pEVar1;
+  int iVar2;
+  
+  pEVar1 = param_1->ExceptionRecord;
+  if (((pEVar1->ExceptionCode == 0xe06d7363) && (pEVar1->NumberParameters == 3)) &&
+     (pEVar1->ExceptionInformation[0] == 0x19930520)) {
+    FUN_004577c0();
+    return 1;
+  }
+  if (DAT_00473f2c != (_func_int *)0x0) {
+    iVar2 = _ValidateExecute(DAT_00473f2c);
+    if (iVar2 != 0) {
+      iVar2 = (*DAT_00473f2c)(param_1);
+      return iVar2;
+    }
+  }
+  return 0;
+}
+

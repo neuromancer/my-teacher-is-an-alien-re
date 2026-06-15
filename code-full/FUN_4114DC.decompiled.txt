@@ -1,0 +1,13 @@
+Function: FUN_004114dc
+Address: 0x4114DC
+
+
+void FUN_004114dc(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_00410fd0(unaff_EBP + -0x3c);
+  return;
+}
+

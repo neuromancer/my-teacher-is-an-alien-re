@@ -1,0 +1,317 @@
+Function: FUN_00455417
+Address: 0x455417
+
+
+float10 FUN_00455417(void)
+
+{
+  code *pcVar1;
+  uint in_EAX;
+  float10 in_ST0;
+  float10 extraout_ST0;
+  float10 extraout_ST0_00;
+  float10 extraout_ST0_01;
+  float10 extraout_ST0_02;
+  float10 extraout_ST0_03;
+  float10 extraout_ST0_04;
+  float10 extraout_ST0_05;
+  float10 extraout_ST0_06;
+  float10 extraout_ST0_07;
+  float10 extraout_ST0_08;
+  float10 extraout_ST0_09;
+  float10 extraout_ST0_10;
+  float10 extraout_ST0_11;
+  float10 extraout_ST0_12;
+  float10 extraout_ST0_13;
+  float10 extraout_ST0_14;
+  float10 in_ST1;
+  float10 extraout_ST1;
+  float10 extraout_ST1_00;
+  float10 extraout_ST1_01;
+  float10 extraout_ST1_02;
+  unkbyte10 in_ST2;
+  unkbyte10 in_ST3;
+  float10 in_ST4;
+  float10 in_ST5;
+  float10 in_ST6;
+  float10 in_ST7;
+  int iVar2;
+  uint uVar9;
+  ushort uVar16;
+  int iVar23;
+  uint uVar24;
+  ushort uVar25;
+  undefined2 in_stack_ffffffea;
+  int iVar3;
+  int iVar4;
+  int iVar5;
+  int iVar6;
+  int iVar7;
+  int iVar8;
+  uint uVar10;
+  uint uVar11;
+  uint uVar12;
+  uint uVar13;
+  uint uVar14;
+  uint uVar15;
+  ushort uVar17;
+  ushort uVar18;
+  ushort uVar19;
+  ushort uVar20;
+  ushort uVar21;
+  ushort uVar22;
+  
+  uVar25 = (ushort)((unkuint10)in_ST0 >> 0x40);
+  iVar23 = SUB104(in_ST0,0);
+  uVar24 = (uint)((unkuint10)in_ST0 >> 0x20);
+  uVar16 = (ushort)((unkuint10)in_ST1 >> 0x40);
+  iVar2 = SUB104(in_ST1,0);
+  uVar9 = (uint)((unkuint10)in_ST1 >> 0x20);
+  uVar17 = (ushort)((unkuint10)in_ST2 >> 0x40);
+  iVar3 = (int)in_ST2;
+  uVar10 = (uint)((unkuint10)in_ST2 >> 0x20);
+  uVar18 = (ushort)((unkuint10)in_ST3 >> 0x40);
+  iVar4 = (int)in_ST3;
+  uVar11 = (uint)((unkuint10)in_ST3 >> 0x20);
+  uVar19 = (ushort)((unkuint10)in_ST4 >> 0x40);
+  iVar5 = SUB104(in_ST4,0);
+  uVar12 = (uint)((unkuint10)in_ST4 >> 0x20);
+  uVar20 = (ushort)((unkuint10)in_ST5 >> 0x40);
+  iVar6 = SUB104(in_ST5,0);
+  uVar13 = (uint)((unkuint10)in_ST5 >> 0x20);
+  uVar21 = (ushort)((unkuint10)in_ST6 >> 0x40);
+  iVar7 = SUB104(in_ST6,0);
+  uVar14 = (uint)((unkuint10)in_ST6 >> 0x20);
+  uVar22 = (ushort)((unkuint10)in_ST7 >> 0x40);
+  iVar8 = SUB104(in_ST7,0);
+  uVar15 = (uint)((unkuint10)in_ST7 >> 0x20);
+  switch(in_EAX & 0x3f) {
+  case 0:
+    return in_ST0 / in_ST0;
+  case 1:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 2:
+    return in_ST0 / in_ST0;
+  case 3:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 4:
+    return in_ST0 / in_ST0;
+  case 5:
+    return in_ST1;
+  case 6:
+    return in_ST0 / in_ST0;
+  case 7:
+    return in_ST1;
+  case 8:
+    FUN_00455300(iVar2,uVar9,uVar16,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST0;
+  case 9:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+    in_ST1 = extraout_ST1;
+  case 10:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST1,0),
+                 (uint)((unkuint10)in_ST1 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST1 >> 0x40)));
+    return extraout_ST0_00;
+  case 0xb:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+    in_ST1 = extraout_ST1_00;
+  case 0xc:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST1,0),
+                 (uint)((unkuint10)in_ST1 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST1 >> 0x40)));
+    return in_ST0;
+  case 0xd:
+    FUN_00455300(iVar23,uVar24,uVar25,iVar2,uVar9,CONCAT22(in_stack_ffffffea,uVar16));
+    return extraout_ST0_01;
+  case 0xe:
+    FUN_00455300(iVar2,uVar9,uVar16,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return (float10)CONCAT28(uVar25,CONCAT44(uVar24,iVar23));
+  case 0xf:
+    FUN_00455300(iVar2,uVar9,uVar16,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST0_02;
+  case 0x10:
+    FUN_00455300(iVar3,uVar10,uVar17,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST0_03;
+  case 0x11:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x12:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),(int)in_ST2,(uint)((unkuint10)in_ST2 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST2 >> 0x40)));
+    return extraout_ST0_04;
+  case 0x13:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x14:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),(int)in_ST2,(uint)((unkuint10)in_ST2 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST2 >> 0x40)));
+    return in_ST0;
+  case 0x15:
+    FUN_00455300(iVar23,uVar24,uVar25,iVar3,uVar10,CONCAT22(in_stack_ffffffea,uVar17));
+    return extraout_ST1_01;
+  case 0x16:
+    FUN_00455300(iVar3,uVar10,uVar17,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return (float10)CONCAT28(uVar25,CONCAT44(uVar24,iVar23));
+  case 0x17:
+    FUN_00455300(iVar3,uVar10,uVar17,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST1_02;
+  case 0x18:
+    FUN_00455300(iVar4,uVar11,uVar18,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST0_05;
+  case 0x19:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x1a:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),(int)in_ST3,(uint)((unkuint10)in_ST3 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST3 >> 0x40)));
+    return extraout_ST0_06;
+  case 0x1b:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x1c:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),(int)in_ST3,(uint)((unkuint10)in_ST3 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST3 >> 0x40)));
+    return in_ST0;
+  case 0x1d:
+    FUN_00455300(iVar23,uVar24,uVar25,iVar4,uVar11,CONCAT22(in_stack_ffffffea,uVar18));
+    return in_ST4;
+  case 0x1e:
+    FUN_00455300(iVar4,uVar11,uVar18,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return (float10)CONCAT28(uVar25,CONCAT44(uVar24,iVar23));
+  case 0x1f:
+    FUN_00455300(iVar4,uVar11,uVar18,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return in_ST4;
+  case 0x20:
+    FUN_00455300(iVar5,uVar12,uVar19,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST0_07;
+  case 0x21:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x22:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST4,0),
+                 (uint)((unkuint10)in_ST4 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST4 >> 0x40)));
+    return extraout_ST0_08;
+  case 0x23:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x24:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST4,0),
+                 (uint)((unkuint10)in_ST4 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST4 >> 0x40)));
+    return in_ST0;
+  case 0x25:
+    FUN_00455300(iVar23,uVar24,uVar25,iVar5,uVar12,CONCAT22(in_stack_ffffffea,uVar19));
+    return in_ST5;
+  case 0x26:
+    FUN_00455300(iVar5,uVar12,uVar19,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return (float10)CONCAT28(uVar25,CONCAT44(uVar24,iVar23));
+  case 0x27:
+    FUN_00455300(iVar5,uVar12,uVar19,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return in_ST5;
+  case 0x28:
+    FUN_00455300(iVar6,uVar13,uVar20,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST0_09;
+  case 0x29:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x2a:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST5,0),
+                 (uint)((unkuint10)in_ST5 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST5 >> 0x40)));
+    return extraout_ST0_10;
+  case 0x2b:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x2c:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST5,0),
+                 (uint)((unkuint10)in_ST5 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST5 >> 0x40)));
+    return in_ST0;
+  case 0x2d:
+    FUN_00455300(iVar23,uVar24,uVar25,iVar6,uVar13,CONCAT22(in_stack_ffffffea,uVar20));
+    return in_ST6;
+  case 0x2e:
+    FUN_00455300(iVar6,uVar13,uVar20,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return (float10)CONCAT28(uVar25,CONCAT44(uVar24,iVar23));
+  case 0x2f:
+    FUN_00455300(iVar6,uVar13,uVar20,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return in_ST6;
+  case 0x30:
+    FUN_00455300(iVar7,uVar14,uVar21,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST0_11;
+  case 0x31:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x32:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST6,0),
+                 (uint)((unkuint10)in_ST6 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST6 >> 0x40)));
+    return extraout_ST0_12;
+  case 0x33:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x34:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST6,0),
+                 (uint)((unkuint10)in_ST6 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST6 >> 0x40)));
+    return in_ST0;
+  case 0x35:
+    FUN_00455300(iVar23,uVar24,uVar25,iVar7,uVar14,CONCAT22(in_stack_ffffffea,uVar21));
+    return in_ST7;
+  case 0x36:
+    FUN_00455300(iVar7,uVar14,uVar21,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return (float10)CONCAT28(uVar25,CONCAT44(uVar24,iVar23));
+  case 0x37:
+    FUN_00455300(iVar7,uVar14,uVar21,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return in_ST7;
+  case 0x38:
+    FUN_00455300(iVar8,uVar15,uVar22,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return extraout_ST0_13;
+  case 0x39:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x3a:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST7,0),
+                 (uint)((unkuint10)in_ST7 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST7 >> 0x40)));
+    return extraout_ST0_14;
+  case 0x3b:
+    pcVar1 = (code *)swi(6);
+    in_ST0 = (float10)(*pcVar1)();
+  case 0x3c:
+    FUN_00455300(SUB104(in_ST0,0),(uint)((unkuint10)in_ST0 >> 0x20),
+                 (ushort)((unkuint10)in_ST0 >> 0x40),SUB104(in_ST7,0),
+                 (uint)((unkuint10)in_ST7 >> 0x20),
+                 CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST7 >> 0x40)));
+    return in_ST0;
+  case 0x3d:
+    FUN_00455300(iVar23,uVar24,uVar25,iVar8,uVar15,CONCAT22(in_stack_ffffffea,uVar22));
+    return in_ST7;
+  case 0x3e:
+    FUN_00455300(iVar8,uVar15,uVar22,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return (float10)CONCAT28(uVar25,CONCAT44(uVar24,iVar23));
+  case 0x3f:
+    FUN_00455300(iVar8,uVar15,uVar22,iVar23,uVar24,CONCAT22(in_stack_ffffffea,uVar25));
+    return in_ST7;
+  }
+}
+

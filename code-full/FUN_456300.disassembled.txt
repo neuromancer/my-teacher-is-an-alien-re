@@ -1,0 +1,10 @@
+Function: __exit
+Address: 0x456300
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH 0x0
+PUSH 0x1
+PUSH EAX
+CALL     LAB_00456320
+ADD ESP,0xc
+RET

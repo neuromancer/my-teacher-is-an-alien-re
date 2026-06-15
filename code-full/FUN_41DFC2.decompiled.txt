@@ -1,0 +1,13 @@
+Function: FUN_0041dfc2
+Address: 0x41DFC2
+
+
+void FUN_0041dfc2(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_0041dc10((undefined4 *)(unaff_EBP + -0x14));
+  return;
+}
+

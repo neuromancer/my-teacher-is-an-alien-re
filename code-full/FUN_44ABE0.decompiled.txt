@@ -1,0 +1,19 @@
+Function: FUN_0044abe0
+Address: 0x44ABE0
+
+
+undefined4 __thiscall FUN_0044abe0(void *this,char *param_1)
+
+{
+  int iVar1;
+  char local_20 [32];
+  
+  iVar1 = _sscanf(param_1,s__d_THEN_GOTO_N_d_BEARING__s_0046c708,(int)this + 0xa0,(int)this + 0x98,
+                  local_20);
+  if (2 < iVar1) {
+    iVar1 = FUN_00449b20(local_20[0]);
+    *(int *)((int)this + 0x9c) = iVar1;
+  }
+  return 0;
+}
+

@@ -1,0 +1,14 @@
+Function: FUN_0042d3e0
+Address: 0x42D3E0
+
+
+void FUN_0042d3e0(void)
+
+{
+  if ((DAT_004733f8 & 2) == 0) {
+    DAT_004733f8 = DAT_004733f8 | 2;
+    FUN_004549a0(0x473320,0x24,6,FUN_0042d410);
+  }
+  return;
+}
+

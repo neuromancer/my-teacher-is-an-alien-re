@@ -1,0 +1,21 @@
+Function: FUN_0042c920
+Address: 0x42C920
+
+
+void FUN_0042c920(void)
+
+{
+  DAT_0046ae50 = 0;
+  DAT_0046ae60 = 0;
+  DAT_0046ae68 = 0;
+  DAT_0046ae4c = 0;
+  DAT_0046ae70 = 0;
+  DAT_0046ae64 = 0;
+  DAT_0046ae5c = 0;
+  DAT_0046ae58 = 0;
+  DAT_0046ae6c = 0;
+  DAT_0046ae54 = 0;
+  DAT_0046ae74 = 0;
+  return;
+}
+

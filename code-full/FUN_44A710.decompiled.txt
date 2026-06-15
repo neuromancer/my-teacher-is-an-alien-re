@@ -1,0 +1,86 @@
+Function: FUN_0044a710
+Address: 0x44A710
+
+
+undefined4 __thiscall FUN_0044a710(void *this,char *param_1)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  void *pvVar3;
+  int iVar4;
+  undefined4 *unaff_FS_OFFSET;
+  char local_74 [32];
+  char local_54 [32];
+  char local_34 [32];
+  void *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0044a7eb;
+  *unaff_FS_OFFSET = &local_10;
+  iVar4 = 0;
+  local_34[0] = '\0';
+  _sscanf(param_1,&DAT_00468448,local_34);
+  iVar1 = __strcmpi(local_34,s_PARSE__0046c674);
+  if (iVar1 == 0) {
+    FUN_00413e70(this,*(int *)((int)this + 0x90),(char *)0x0);
+    uVar2 = 1;
+  }
+  else {
+    iVar1 = __strcmpi(local_34,s_MESSAGE_00468524);
+    if (iVar1 == 0) {
+      local_14 = (void *)FUN_00454500(0x38);
+      local_8 = 0;
+      pvVar3 = (void *)0x0;
+      if (local_14 != (void *)0x0) {
+        pvVar3 = FUN_00444a40(local_14,0,0,0,0,0,0,0,0,0,0);
+      }
+      local_8 = 0xffffffff;
+      *(void **)((int)this + 0xa0) = pvVar3;
+      FUN_00445450(pvVar3,*(undefined4 *)((int)this + 0x90));
+    }
+    else {
+      iVar1 = __strcmpi(local_34,&DAT_0046c6c8);
+      if (iVar1 == 0) {
+        iVar1 = _sscanf(param_1,s_ON__s_THEN_GOTO_N_d_BEARING__s_0046c6a4,local_54,&local_14,
+                        local_74);
+        if (iVar1 < 3) {
+          FUN_00412a50();
+        }
+        iVar1 = __strcmpi(local_54,s_FALSE_0046c684);
+        if (iVar1 == 0) {
+          iVar4 = 0;
+        }
+        else {
+          iVar1 = __strcmpi(local_54,&DAT_0046c67c);
+          if (iVar1 == 0) {
+            iVar4 = 1;
+          }
+          else {
+            FUN_00412a50();
+          }
+        }
+        *(void **)((int)this + iVar4 * 4 + 0xa4) = local_14;
+        iVar1 = FUN_00449b20(local_74[0]);
+        *(int *)((int)this + iVar4 * 4 + 0xac) = iVar1;
+      }
+      else {
+        iVar1 = __strcmpi(local_34,&DAT_00468444);
+        if (iVar1 == 0) {
+          uVar2 = 1;
+          goto LAB_0044a8d1;
+        }
+        FUN_00412a50();
+      }
+    }
+    uVar2 = 0;
+  }
+LAB_0044a8d1:
+  *unaff_FS_OFFSET = local_10;
+  return uVar2;
+}
+

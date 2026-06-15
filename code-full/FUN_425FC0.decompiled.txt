@@ -1,0 +1,18 @@
+Function: FUN_00425fc0
+Address: 0x425FC0
+
+
+undefined4 __cdecl FUN_00425fc0(byte *param_1)
+
+{
+  int iVar1;
+  int local_24 [5];
+  undefined4 local_10;
+  
+  iVar1 = FUN_00456570(param_1,local_24);
+  if (iVar1 == 0) {
+    return local_10;
+  }
+  return 0xffffffff;
+}
+

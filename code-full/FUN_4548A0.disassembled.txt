@@ -1,0 +1,9 @@
+Function: __fpmath
+Address: 0x4548A0
+
+CALL     LAB_004548d0
+CALL 0x00459a40
+MOV [0x0047184c],EAX
+CALL 0x004599d0
+FNCLEX
+RET

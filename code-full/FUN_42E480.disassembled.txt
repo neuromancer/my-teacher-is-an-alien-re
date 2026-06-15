@@ -1,0 +1,25 @@
+Function: FUN_0042e480
+Address: 0x42E480
+
+PUSH ESI
+ADD ECX,0x1c
+MOV EDX,dword ptr [ESP + 0x8]
+PUSH EDI
+MOV EDI,0x2
+MOV ESI,dword ptr [ESP + 0x10]
+
+LAB_0042e492:
+MOV EAX,dword ptr [ECX]
+TEST EAX,EAX
+JZ       LAB_0042e4a0
+MOV dword ptr [EAX + 0x8],EDX
+MOV EAX,dword ptr [ECX]
+MOV dword ptr [EAX + 0xc],ESI
+
+LAB_0042e4a0:
+ADD ECX,0x4
+DEC EDI
+JNZ      LAB_0042e492
+POP EDI
+POP ESI
+RET 0x8

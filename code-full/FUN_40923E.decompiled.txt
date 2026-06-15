@@ -1,0 +1,130 @@
+Function: FUN_0040923e
+Address: 0x40923E
+
+
+undefined4 __fastcall FUN_0040923e(int param_1)
+
+{
+  int *piVar1;
+  uint uVar2;
+  undefined4 *puVar3;
+  int iVar4;
+  undefined4 *puVar5;
+  undefined4 uVar6;
+  int unaff_EBP;
+  undefined4 *unaff_FS_OFFSET;
+  
+  _sscanf(*(char **)(unaff_EBP + 8),&DAT_00468448);
+  if (*(char *)(unaff_EBP + -0x34) == 'S') {
+    if (*(int *)(param_1 + 0x90) == 0) {
+      puVar3 = (undefined4 *)FUN_00454500(0x18);
+      *(undefined4 **)(unaff_EBP + -0x10) = puVar3;
+      *(undefined4 *)(unaff_EBP + -4) = 0;
+      if (puVar3 == (undefined4 *)0x0) {
+        puVar3 = (undefined4 *)0x0;
+      }
+      else {
+        *puVar3 = 0;
+        puVar3[1] = 0x11;
+        puVar3[2] = 0;
+        puVar3[3] = 0;
+        puVar3[4] = 0;
+        puVar3[5] = 10;
+      }
+      *(undefined4 *)(unaff_EBP + -4) = 0xffffffff;
+      *(undefined4 **)(param_1 + 0x90) = puVar3;
+    }
+    uVar2 = DAT_004686fc;
+    if (DAT_004686f8 != (undefined4 *)0x0) {
+      piVar1 = *(int **)(param_1 + 0x90);
+      *(undefined4 **)(unaff_EBP + -0x14) = DAT_004686f8;
+      puVar3 = FUN_004097b0(piVar1,uVar2,(uint *)(unaff_EBP + -0x10));
+      if (puVar3 == (undefined4 *)0x0) {
+        if (*piVar1 == 0) {
+          FUN_004097f0(piVar1,piVar1[1],1);
+        }
+        puVar3 = (undefined4 *)FUN_00409850((int)piVar1);
+        puVar3[1] = *(undefined4 *)(unaff_EBP + -0x10);
+        puVar3[2] = uVar2;
+        *puVar3 = *(undefined4 *)(*piVar1 + *(int *)(unaff_EBP + -0x10) * 4);
+        *(undefined4 **)(*piVar1 + *(int *)(unaff_EBP + -0x10) * 4) = puVar3;
+      }
+      puVar3[3] = *(undefined4 *)(unaff_EBP + -0x14);
+      DAT_004686f8 = (undefined4 *)0x0;
+    }
+    DAT_004686f8 = (undefined4 *)FUN_00454500(0x18);
+    *(undefined4 **)(unaff_EBP + -0x10) = DAT_004686f8;
+    *(undefined4 *)(unaff_EBP + -4) = 1;
+    if (DAT_004686f8 == (undefined4 *)0x0) {
+      DAT_004686f8 = (undefined4 *)0x0;
+    }
+    else {
+      DAT_004686f8[2] = 0;
+      DAT_004686f8[3] = 0;
+      DAT_004686f8[1] = 0;
+      *DAT_004686f8 = 0;
+      DAT_004686f8[4] = 0;
+      DAT_004686f8[5] = 10;
+    }
+    *(undefined4 *)(unaff_EBP + -4) = 0xffffffff;
+    _sscanf(*(char **)(unaff_EBP + 8),s__s__d_00468658,unaff_EBP + -0x34,&DAT_004686fc);
+    FUN_00409500((char *)(*(int *)(unaff_EBP + 8) + 3));
+  }
+  else {
+    iVar4 = __strcmpi((char *)(unaff_EBP + -0x34),&DAT_00468444);
+    uVar2 = DAT_004686fc;
+    puVar3 = DAT_004686f8;
+    if (iVar4 == 0) {
+      if (DAT_004686f8 != (undefined4 *)0x0) {
+        piVar1 = *(int **)(param_1 + 0x90);
+        puVar5 = FUN_004097b0(piVar1,DAT_004686fc,(uint *)(unaff_EBP + -0x10));
+        if (puVar5 == (undefined4 *)0x0) {
+          if (*piVar1 == 0) {
+            FUN_004097f0(piVar1,piVar1[1],1);
+          }
+          puVar5 = (undefined4 *)FUN_00409850((int)piVar1);
+          puVar5[1] = *(undefined4 *)(unaff_EBP + -0x10);
+          puVar5[2] = uVar2;
+          *puVar5 = *(undefined4 *)(*piVar1 + *(int *)(unaff_EBP + -0x10) * 4);
+          *(undefined4 **)(*piVar1 + *(int *)(unaff_EBP + -0x10) * 4) = puVar5;
+        }
+        puVar5[3] = puVar3;
+        DAT_004686f8 = (undefined4 *)0x0;
+      }
+      uVar6 = 1;
+      goto LAB_004094e5;
+    }
+    iVar4 = __strcmpi((char *)(unaff_EBP + -0x34),&DAT_00468710);
+    uVar2 = DAT_004686fc;
+    puVar3 = DAT_004686f8;
+    if (iVar4 == 0) {
+      if (DAT_004686f8 != (undefined4 *)0x0) {
+        piVar1 = *(int **)(param_1 + 0x90);
+        puVar5 = FUN_004097b0(piVar1,DAT_004686fc,(uint *)(unaff_EBP + -0x10));
+        if (puVar5 == (undefined4 *)0x0) {
+          if (*piVar1 == 0) {
+            FUN_004097f0(piVar1,piVar1[1],1);
+          }
+          puVar5 = (undefined4 *)FUN_00409850((int)piVar1);
+          puVar5[1] = *(undefined4 *)(unaff_EBP + -0x10);
+          puVar5[2] = uVar2;
+          *puVar5 = *(undefined4 *)(*piVar1 + *(int *)(unaff_EBP + -0x10) * 4);
+          *(undefined4 **)(*piVar1 + *(int *)(unaff_EBP + -0x10) * 4) = puVar5;
+        }
+        puVar5[3] = puVar3;
+        DAT_004686f8 = (undefined4 *)0x0;
+      }
+    }
+    else if (DAT_004686f8 == (undefined4 *)0x0) {
+      FUN_00412a50();
+    }
+    else {
+      FUN_00409500(*(char **)(unaff_EBP + 8));
+    }
+  }
+  uVar6 = 0;
+LAB_004094e5:
+  *unaff_FS_OFFSET = *(undefined4 *)(unaff_EBP + -0xc);
+  return uVar6;
+}
+

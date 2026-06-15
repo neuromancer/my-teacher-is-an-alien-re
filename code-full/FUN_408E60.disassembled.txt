@@ -1,0 +1,7 @@
+Function: FUN_00408e60
+Address: 0x408E60
+
+MOV EAX,[0x0046a6ec]
+MOV ECX,dword ptr [EAX + 0x18]
+MOV EAX,dword ptr [ECX]
+JMP dword ptr [EAX + 0x30]

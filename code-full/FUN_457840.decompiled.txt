@@ -1,0 +1,26 @@
+Function: FUN_00457840
+Address: 0x457840
+
+
+void FUN_00457840(void)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 uStack_14;
+  undefined1 *puStack_10;
+  undefined *puStack_c;
+  undefined4 local_8;
+  
+  uStack_14 = *unaff_FS_OFFSET;
+  puStack_c = &DAT_00461db0;
+  puStack_10 = &LAB_0045a094;
+  *unaff_FS_OFFSET = &uStack_14;
+  if (PTR_FUN_00471c74 != (undefined *)0x0) {
+    local_8 = 1;
+    (*(code *)PTR_FUN_00471c74)();
+  }
+  local_8 = 0xffffffff;
+  FUN_004577c0();
+  return;
+}
+

@@ -1,0 +1,25 @@
+Function: FUN_0041acf0
+Address: 0x41ACF0
+
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+MOV ECX,dword ptr [ECX + 0x18]
+MOV EAX,dword ptr [ECX + 0x1c]
+PUSH EAX
+CALL 0x00411210
+MOV EDI,dword ptr [ESP + 0x10]
+MOV ECX,dword ptr [ESP + 0xc]
+PUSH EDI
+MOV EAX,dword ptr [ESI + 0xc]
+PUSH ECX
+ADD EAX,0x6c
+PUSH EAX
+CALL     LAB_0041de40
+ADD ESP,0xc
+MOV ECX,dword ptr [ESI + 0x18]
+CALL 0x00411240
+MOV EAX,EDI
+POP EDI
+POP ESI
+RET 0x8

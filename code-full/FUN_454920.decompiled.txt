@@ -1,0 +1,16 @@
+Function: _rand
+Address: 0x454920
+
+
+/* Library Function - Single Match
+    _rand
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl _rand(void)
+
+{
+  DAT_0047185c = DAT_0047185c * 0x343fd + 0x269ec3;
+  return (DAT_0047185c & 0x7fff0000) >> 0x10;
+}
+

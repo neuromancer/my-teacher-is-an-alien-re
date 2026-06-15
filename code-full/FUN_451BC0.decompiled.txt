@@ -1,0 +1,28 @@
+Function: FUN_00451bc0
+Address: 0x451BC0
+
+
+void __thiscall FUN_00451bc0(void *this,undefined4 param_1,int param_2)
+
+{
+  if (*(int *)((int)this + 0x90) == param_2) {
+    switch(DAT_00473e18) {
+    case 0:
+      FUN_004520e0((int)this);
+      return;
+    case 1:
+      FUN_004521b0();
+      return;
+    case 2:
+      FUN_004521c0((int)this);
+      return;
+    case 3:
+      FUN_00452250((int)this);
+      return;
+    case 4:
+      FUN_004522e0((int)this);
+    }
+  }
+  return;
+}
+

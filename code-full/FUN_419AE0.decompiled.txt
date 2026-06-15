@@ -1,0 +1,58 @@
+Function: FUN_00419ae0
+Address: 0x419AE0
+
+
+undefined4 __thiscall FUN_00419ae0(void *this,int param_1)
+
+{
+  bool bVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  int *piVar5;
+  int *piVar6;
+  
+  iVar4 = 0;
+  piVar5 = (int *)((int)this + 0x288);
+  iVar3 = *(int *)(param_1 + 0x1c);
+  while( true ) {
+    if ((((iVar3 < *piVar5) || (piVar5[2] < iVar3)) || (*(int *)(param_1 + 0x20) < piVar5[1])) ||
+       (bVar1 = true, piVar5[3] < *(int *)(param_1 + 0x20))) {
+      bVar1 = false;
+    }
+    if (bVar1) break;
+    piVar5 = piVar5 + 8;
+    iVar4 = iVar4 + 1;
+    if (0x23 < iVar4) {
+      return 0;
+    }
+  }
+  iVar2 = 0;
+  if (iVar3 - *(int *)(iVar4 * 0x20 + 0x288 + (int)this) <=
+      *(int *)(param_1 + 0x20) - *(int *)((int)this + iVar4 * 0x20 + 0x28c)) {
+    iVar2 = 3;
+  }
+  iVar3 = *(int *)((int)this + (iVar2 + iVar4 * 8) * 4 + 0x278);
+  if (iVar3 < 0) {
+    return 0;
+  }
+  piVar5 = (int *)((int)this + 0x278);
+  *(undefined4 *)((int)this + 0x6f8) = *(undefined4 *)((int)this + iVar3 * 4 + 0x6fc);
+  iVar3 = 0x24;
+  do {
+    iVar4 = 4;
+    piVar6 = piVar5;
+    do {
+      if (*(int *)(*(int *)((int)this + 0x6f8) + 0x90) == *piVar6) {
+        *piVar6 = -2;
+      }
+      piVar6 = piVar6 + 1;
+      iVar4 = iVar4 + -1;
+    } while (iVar4 != 0);
+    piVar5 = piVar5 + 8;
+    iVar3 = iVar3 + -1;
+  } while (iVar3 != 0);
+  FUN_00425550(*(void **)((int)this + 0x110),6);
+  return 1;
+}
+

@@ -1,0 +1,43 @@
+Function: FUN_00449ee0
+Address: 0x449EE0
+
+
+undefined4 __thiscall FUN_00449ee0(void *this,char *param_1)
+
+{
+  int iVar1;
+  char *pcVar2;
+  char local_20 [32];
+  
+  local_20[0] = '\0';
+  _sscanf(param_1,&DAT_00468448,local_20);
+  iVar1 = __strcmpi(local_20,s_NO_WAIT__0046c5bc);
+  if (iVar1 == 0) {
+    FUN_00413e70(this,*(int *)((int)this + 0x90),(char *)0x0);
+    return 1;
+  }
+  iVar1 = __strcmpi(local_20,s_WAIT__0046c5b4);
+  if (iVar1 == 0) {
+    *(undefined4 *)((int)this + 0xa0) = 1;
+    FUN_00413e70(this,*(int *)((int)this + 0x90),(char *)0x0);
+    return 1;
+  }
+  iVar1 = __strcmpi(local_20,s_AND_ON_0046c5ac);
+  if (iVar1 == 0) {
+    pcVar2 = FUN_00426570(param_1,s_AND_ON_0046c5ac);
+    iVar1 = FUN_00449e70(this,pcVar2);
+    if (iVar1 != 0) {
+      FUN_00412a50();
+      return 0;
+    }
+  }
+  else {
+    iVar1 = __strcmpi(local_20,&DAT_00468444);
+    if (iVar1 == 0) {
+      return 1;
+    }
+    FUN_00412a50();
+  }
+  return 0;
+}
+

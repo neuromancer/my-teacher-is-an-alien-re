@@ -1,0 +1,13 @@
+Function: FUN_0040b2fc
+Address: 0x40B2FC
+
+
+void FUN_0040b2fc(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_00444af0(unaff_EBP + -0x6c);
+  return;
+}
+

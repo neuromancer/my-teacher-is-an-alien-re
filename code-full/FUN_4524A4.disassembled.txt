@@ -1,0 +1,4 @@
+Function: GetSystemMetrics
+Address: 0x4524A4
+
+JMP dword ptr [0x004764a8]

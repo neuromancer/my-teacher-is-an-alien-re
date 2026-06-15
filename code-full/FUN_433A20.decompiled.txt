@@ -1,0 +1,58 @@
+Function: FUN_00433a20
+Address: 0x433A20
+
+
+int __thiscall FUN_00433a20(void *this,int param_1)
+
+{
+  int *piVar1;
+  int *piVar2;
+  int *piVar3;
+  uint uVar4;
+  int *piVar5;
+  undefined4 *puVar6;
+  int *local_8;
+  
+  if ((param_1 < 0) || (*(int *)((int)this + 0x98) + -1 < param_1)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  piVar3 = *(int **)((int)this + 0x94);
+  local_8 = (int *)((piVar3[2] == 0) - 1);
+  do {
+    if (local_8 == (int *)0x0) {
+      return 0;
+    }
+    if (local_8 == (int *)0xffffffff) {
+      uVar4 = 0;
+      if (piVar3[1] != 0) {
+        piVar5 = (int *)*piVar3;
+        do {
+          local_8 = (int *)*piVar5;
+          if (local_8 != (int *)0x0) break;
+          piVar5 = piVar5 + 1;
+          uVar4 = uVar4 + 1;
+        } while (uVar4 < (uint)piVar3[1]);
+      }
+    }
+    piVar5 = (int *)*local_8;
+    if (piVar5 == (int *)0x0) {
+      uVar4 = local_8[1] + 1;
+      if (uVar4 < (uint)piVar3[1]) {
+        puVar6 = (undefined4 *)(uVar4 * 4 + *piVar3);
+        do {
+          piVar5 = (int *)*puVar6;
+          if (piVar5 != (int *)0x0) break;
+          puVar6 = puVar6 + 1;
+          uVar4 = uVar4 + 1;
+        } while (uVar4 < (uint)piVar3[1]);
+      }
+    }
+    piVar1 = local_8 + 2;
+    piVar2 = local_8 + 3;
+    local_8 = piVar5;
+    if (*piVar2 == param_1) {
+      return *piVar1;
+    }
+  } while( true );
+}
+

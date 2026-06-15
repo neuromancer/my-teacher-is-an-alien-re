@@ -1,0 +1,44 @@
+Function: FUN_00439f30
+Address: 0x439F30
+
+
+void __fastcall FUN_00439f30(int param_1)
+
+{
+  void *this;
+  int *piVar1;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0043a00b;
+  *unaff_FS_OFFSET = &local_10;
+  this = (void *)FUN_00454500(0x38);
+  local_8 = 0;
+  if (this == (void *)0x0) {
+    piVar1 = (int *)0x0;
+  }
+  else {
+    piVar1 = FUN_00444a40(this,5,0x458,*(undefined4 *)(param_1 + 0x90),
+                          *(undefined4 *)(param_1 + 0x94),0x1b,0,0,0,0,0);
+  }
+  local_8 = 0xffffffff;
+  FUN_00431030(DAT_0046a6ec,piVar1);
+  if (piVar1 != (int *)0x0) {
+    FUN_00444af0((int)piVar1);
+    FUN_00454400(piVar1);
+  }
+  if (DAT_0046ae78 != (int *)0x0) {
+    if ((DAT_0046ae70 != 0) && (*(int *)(DAT_0046ae70 + 0xa0) != 0)) {
+      FUN_0044c9d0(*(int *)(DAT_0046ae70 + 0xa0));
+    }
+    (**(code **)(*DAT_0046ae78 + 0x40))();
+    DAT_0046ae78 = (int *)0x0;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

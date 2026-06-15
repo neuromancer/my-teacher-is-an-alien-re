@@ -1,0 +1,29 @@
+Function: FUN_00453c17
+Address: 0x453C17
+
+
+undefined4 __cdecl FUN_00453c17(int *param_1,int *param_2)
+
+{
+  HWND hWnd;
+  int iVar1;
+  int iVar2;
+  tagPOINT local_c;
+  
+  if (DAT_0046d0ee != '\0') {
+    GetCursorPos(&local_c);
+    hWnd = GetActiveWindow();
+    ScreenToClient(hWnd,&local_c);
+    iVar1 = FUN_00453dfe(local_c.x);
+    iVar2 = FUN_00453e25(local_c.y);
+    if ((((-1 < iVar1) && (iVar1 < DAT_0046d0ae)) && (-1 < iVar2)) && (iVar2 < DAT_0046d0ba))
+    goto LAB_00453c6f;
+  }
+  iVar2 = -1;
+  iVar1 = iVar2;
+LAB_00453c6f:
+  *param_1 = iVar1;
+  *param_2 = iVar2;
+  return 0;
+}
+

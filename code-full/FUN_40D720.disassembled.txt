@@ -1,0 +1,19 @@
+Function: FUN_0040d720
+Address: 0x40D720
+
+PUSH ESI
+PUSH EDI
+MOV EDI,ECX
+MOV ESI,dword ptr [ESP + 0xc]
+PUSH ESI
+CALL 0x004309c0
+CMP dword ptr [ESI + 0x2c],0x1b
+JNZ      LAB_0040d741
+MOV EAX,dword ptr [EDI + 0x170]
+MOV dword ptr [EAX + 0x8],0x1
+
+LAB_0040d741:
+MOV EAX,0x1
+POP EDI
+POP ESI
+RET 0x4

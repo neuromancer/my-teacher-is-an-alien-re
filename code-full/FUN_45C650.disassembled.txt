@@ -1,0 +1,57 @@
+Function: __aullrem
+Address: 0x45C650
+
+PUSH EBX
+MOV EAX,dword ptr [ESP + 0x14]
+OR EAX,EAX
+JNZ      LAB_0045c671
+MOV ECX,dword ptr [ESP + 0x10]
+MOV EAX,dword ptr [ESP + 0xc]
+XOR EDX,EDX
+DIV ECX
+MOV EAX,dword ptr [ESP + 0x8]
+DIV ECX
+MOV EAX,EDX
+XOR EDX,EDX
+JMP      LAB_0045c6c1
+
+LAB_0045c671:
+MOV ECX,EAX
+MOV EBX,dword ptr [ESP + 0x10]
+MOV EDX,dword ptr [ESP + 0xc]
+MOV EAX,dword ptr [ESP + 0x8]
+
+LAB_0045c67f:
+SHR ECX,0x1
+RCR EBX,0x1
+SHR EDX,0x1
+RCR EAX,0x1
+OR ECX,ECX
+JNZ      LAB_0045c67f
+DIV EBX
+MOV ECX,EAX
+MUL dword ptr [ESP + 0x14]
+XCHG EAX,ECX
+MUL dword ptr [ESP + 0x10]
+ADD EDX,ECX
+JC       LAB_0045c6aa
+CMP EDX,dword ptr [ESP + 0xc]
+JA       LAB_0045c6aa
+JC       LAB_0045c6b2
+CMP EAX,dword ptr [ESP + 0x8]
+JBE      LAB_0045c6b2
+
+LAB_0045c6aa:
+SUB EAX,dword ptr [ESP + 0x10]
+SBB EDX,dword ptr [ESP + 0x14]
+
+LAB_0045c6b2:
+SUB EAX,dword ptr [ESP + 0x8]
+SBB EDX,dword ptr [ESP + 0xc]
+NEG EDX
+NEG EAX
+SBB EDX,0x0
+
+LAB_0045c6c1:
+POP EBX
+RET 0x10

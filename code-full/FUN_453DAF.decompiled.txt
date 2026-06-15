@@ -1,0 +1,18 @@
+Function: FUN_00453daf
+Address: 0x453DAF
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+undefined4 __cdecl FUN_00453daf(int param_1)
+
+{
+  _DAT_0046d07e = GetStockObject(param_1);
+  SelectObject(DAT_0046d09c,_DAT_0046d07e);
+  GetTextMetricsA(DAT_0046d09c,(LPTEXTMETRICA)&DAT_0046f02e);
+  DAT_0046d082 = DAT_0046f02e + DAT_0046f03e;
+  _DAT_0046d086 = DAT_0046f03e;
+  _DAT_0046d08a = DAT_0046f042;
+  return 0;
+}
+

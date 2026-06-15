@@ -1,0 +1,23 @@
+Function: FUN_0040b030
+Address: 0x40B030
+
+
+void __fastcall FUN_0040b030(int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  
+  iVar1 = DAT_0046cb90;
+  iVar2 = DAT_0046aa30;
+  if ((DAT_0046cb90 < 0) || (*(int *)(DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  iVar2 = (int)(char)PTR_DAT_0046cb94[*(int *)(*(int *)(iVar2 + 0x90) + iVar1 * 4)];
+  _sprintf((char *)(param_1 + 0x164),s__c_DETENTION_SUSPENSION_004689b8,iVar2);
+  _sprintf((char *)(param_1 + 0x184),s__c_TATTLES_004689ac,iVar2);
+  _sprintf((char *)(param_1 + 0x1a4),s__c_LATE_CUT_004689a0,iVar2);
+  _sprintf((char *)(param_1 + 0x1c4),s__c_IN_DETENTION_00468990,iVar2);
+  return;
+}
+

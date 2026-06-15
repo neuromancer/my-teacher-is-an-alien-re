@@ -1,0 +1,59 @@
+Function: FUN_0042c070
+Address: 0x42C070
+
+MOV EAX,[0x0046aa08]
+MOV EAX,dword ptr [EAX + 0x1a0]
+TEST EAX,EAX
+JZ       LAB_0042c08f
+MOV EAX,dword ptr [EAX]
+MOV ECX,dword ptr [0x0046ae60]
+MOV dword ptr [ECX + 0xa0],EAX
+JMP      LAB_0042c09e
+
+LAB_0042c08f:
+MOV EAX,[0x0046ae60]
+MOV dword ptr [EAX + 0xa0],0x0
+
+LAB_0042c09e:
+MOV EAX,[0x0046aa08]
+MOV EAX,dword ptr [EAX + 0x1a0]
+TEST EAX,EAX
+JZ       LAB_0042c0be
+MOV EAX,dword ptr [EAX + 0x4]
+MOV ECX,dword ptr [0x0046ae60]
+MOV dword ptr [ECX + 0xa4],EAX
+JMP      LAB_0042c0cd
+
+LAB_0042c0be:
+MOV EAX,[0x0046ae60]
+MOV dword ptr [EAX + 0xa4],0x0
+
+LAB_0042c0cd:
+MOV EAX,[0x0046aa08]
+MOV EAX,dword ptr [EAX + 0x1a0]
+TEST EAX,EAX
+JZ       LAB_0042c103
+CMP dword ptr [EAX],0xaa
+JLE      LAB_0042c0f7
+MOV ECX,dword ptr [0x0046ae54]
+MOV EAX,dword ptr [ECX + 0x18]
+ADD EAX,0x4
+PUSH EAX
+CALL 0x00445640
+RET
+
+LAB_0042c0f7:
+TEST EAX,EAX
+JZ       LAB_0042c103
+CMP dword ptr [EAX],0x96
+JGE      LAB_0042c115
+
+LAB_0042c103:
+MOV ECX,dword ptr [0x0046ae54]
+MOV EAX,dword ptr [ECX + 0x18]
+SUB EAX,0x4
+PUSH EAX
+CALL 0x00445640
+
+LAB_0042c115:
+RET

@@ -1,0 +1,66 @@
+Function: FUN_00419220
+Address: 0x419220
+
+
+undefined4 __thiscall FUN_00419220(void *this,undefined4 *param_1)
+
+{
+  int iVar1;
+  int *piVar2;
+  int iVar3;
+  
+  iVar1 = FUN_00449400(this,param_1);
+  if (iVar1 != 0) {
+    return 1;
+  }
+  if (param_1[0xb] == 0x1b) {
+    if (*(int *)((int)this + 0x98) == 0x2b) {
+      *(undefined4 *)(*(int *)((int)this + 0xa8) + 8) = 1;
+    }
+  }
+  else if ((int)param_1[9] < 2) {
+    if ((1 < (int)param_1[10]) && (*(int *)((int)this + 0x6f8) != 0)) {
+      *(undefined4 *)((int)this + 0x728) = 1;
+      FUN_00425550(*(void **)((int)this + 0x110),8);
+      iVar1 = *(int *)((int)this + 0x6f8);
+      iVar3 = *(int *)(iVar1 + 0x94) + 1;
+      *(int *)(iVar1 + 0x94) = iVar3;
+      if (3 < iVar3) {
+        *(undefined4 *)(iVar1 + 0x94) = 0;
+      }
+      if (*(void **)(iVar1 + 0x4d8) != (void *)0x0) {
+        FUN_0044cb40(*(void **)(iVar1 + 0x4d8),*(int *)(iVar1 + 0x94),0);
+      }
+    }
+  }
+  else if (*(int *)((int)this + 0x6f8) == 0) {
+    iVar1 = FUN_00419ae0(this,(int)param_1);
+    if (iVar1 == 0) {
+      FUN_00419bc0(this,(int)param_1);
+    }
+  }
+  else {
+    iVar1 = FUN_004198b0(this,(int)param_1);
+    if (iVar1 == 0) {
+      FUN_00419a10(this,(int)param_1);
+    }
+    else {
+      FUN_00425550(*(void **)((int)this + 0x110),7);
+    }
+  }
+  iVar3 = 0;
+  piVar2 = (int *)((int)this + 0x140);
+  iVar1 = 8;
+  do {
+    if (*piVar2 != 0) {
+      iVar3 = iVar3 + 1;
+    }
+    piVar2 = piVar2 + 0xb;
+    iVar1 = iVar1 + -1;
+  } while (iVar1 != 0);
+  if ((*(int *)((int)this + 0x6f8) == 0) && (iVar3 == 0)) {
+    *(undefined4 *)(*(int *)((int)this + 0xa8) + 4) = 1;
+  }
+  return 1;
+}
+

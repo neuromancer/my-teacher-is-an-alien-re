@@ -1,0 +1,4 @@
+Function: GetStockObject
+Address: 0x460206
+
+JMP dword ptr [0x00476320]

@@ -1,0 +1,53 @@
+Function: __stbuf
+Address: 0x45AF50
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+/* Library Function - Single Match
+    __stbuf
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl __stbuf(FILE *_File)
+
+{
+  int *piVar1;
+  char *pcVar2;
+  byte bVar3;
+  undefined3 extraout_var;
+  int iVar4;
+  
+  bVar3 = FUN_0045c420(_File->_file);
+  if (CONCAT31(extraout_var,bVar3) == 0) {
+    return 0;
+  }
+  if (_File == (FILE *)&DAT_004724f0) {
+    iVar4 = 0;
+  }
+  else {
+    if (_File != (FILE *)&DAT_00472510) {
+      return 0;
+    }
+    iVar4 = 1;
+  }
+  _DAT_00472750 = _DAT_00472750 + 1;
+  if ((_File->_flag & 0x10cU) != 0) {
+    return 0;
+  }
+  piVar1 = &DAT_004720b8 + iVar4;
+  if (*piVar1 == 0) {
+    iVar4 = FUN_004578e0(0x1000);
+    *piVar1 = iVar4;
+    if (iVar4 == 0) {
+      return 0;
+    }
+  }
+  pcVar2 = (char *)*piVar1;
+  _File->_base = pcVar2;
+  _File->_ptr = pcVar2;
+  _File->_bufsiz = 0x1000;
+  _File->_cnt = 0x1000;
+  _File->_flag = _File->_flag | 0x1102;
+  return 1;
+}
+

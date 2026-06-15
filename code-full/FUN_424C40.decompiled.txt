@@ -1,0 +1,12 @@
+Function: FUN_00424c40
+Address: 0x424C40
+
+
+void FUN_00424c40(void)
+
+{
+  FUN_00425720();
+  FUN_004258c0();
+  return;
+}
+

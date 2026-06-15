@@ -1,0 +1,36 @@
+Function: FUN_0045a170
+Address: 0x45A170
+
+
+LPVOID __cdecl FUN_0045a170(LPVOID param_1,uint param_2)
+
+{
+  LPVOID pvVar1;
+  int iVar2;
+  
+  if (param_1 == (LPVOID)0x0) {
+    pvVar1 = (LPVOID)FUN_004578e0(param_2);
+    return pvVar1;
+  }
+  if (param_2 != 0) {
+    do {
+      if (param_2 < 0xffffffe1) {
+        pvVar1 = HeapReAlloc(DAT_00474f70,0,param_1,param_2);
+      }
+      else {
+        pvVar1 = (LPVOID)0x0;
+      }
+      if (pvVar1 != (LPVOID)0x0) {
+        return pvVar1;
+      }
+      if (DAT_004724c8 == 0) {
+        return (LPVOID)0x0;
+      }
+      iVar2 = FUN_0045c3a0(param_2);
+    } while (iVar2 != 0);
+    return (LPVOID)0x0;
+  }
+  FUN_004578c0(param_1);
+  return (LPVOID)0x0;
+}
+

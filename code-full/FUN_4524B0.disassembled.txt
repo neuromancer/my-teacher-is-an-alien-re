@@ -1,0 +1,4 @@
+Function: GetDC
+Address: 0x4524B0
+
+JMP dword ptr [0x004764cc]

@@ -1,0 +1,10 @@
+Function: FUN_00421eca
+Address: 0x421ECA
+
+TEST byte ptr [EBP + -0x1c],0x4
+JZ       LAB_00421ed8
+LEA ECX,[EBP + -0x2c]
+JMP 0x00401130
+
+LAB_00421ed8:
+RET

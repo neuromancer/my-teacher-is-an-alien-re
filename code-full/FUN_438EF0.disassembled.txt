@@ -1,0 +1,12 @@
+Function: FUN_00438ef0
+Address: 0x438EF0
+
+MOV ECX,dword ptr [ECX + 0x11c]
+TEST ECX,ECX
+JZ       LAB_00438f03
+PUSH 0x1
+PUSH 0x64
+CALL 0x00425100
+
+LAB_00438f03:
+RET

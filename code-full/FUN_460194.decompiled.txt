@@ -1,0 +1,15 @@
+Function: ShowCursor
+Address: 0x460194
+
+
+int ShowCursor(BOOL bShow)
+
+{
+  int iVar1;
+  
+// WARNING: Could not recover jumptable at 0x00460194. Too many branches
+// WARNING: Treating indirect jump as call
+  iVar1 = ShowCursor(bShow);
+  return iVar1;
+}
+

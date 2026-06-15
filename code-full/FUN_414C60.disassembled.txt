@@ -1,0 +1,140 @@
+Function: FUN_00414c60
+Address: 0x414C60
+
+PUSH EBX
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x130]
+PUSH EDI
+PUSH EBP
+MOV ESI,ECX
+PUSH 0x4
+MOV ECX,dword ptr [0x0046a6e8]
+PUSH EAX
+CALL 0x00420a00
+TEST EAX,EAX
+JNZ      LAB_00414c92
+PUSH 0x2
+MOV EAX,dword ptr [ESI + 0x130]
+PUSH EAX
+MOV ECX,dword ptr [0x0046a6e8]
+CALL 0x00420a50
+
+LAB_00414c92:
+MOV EAX,dword ptr [ESI + 0x120]
+MOV dword ptr [ESI + 0x98],0x2
+MOV dword ptr [EAX + 0xcc],0x1
+MOV EAX,dword ptr [ESI + 0x90]
+TEST EAX,EAX
+JZ       LAB_00414d8d
+CMP dword ptr [EAX],0x0
+JZ       LAB_00414d8d
+XOR EDI,EDI
+
+LAB_00414cc5:
+MOV EBX,dword ptr [ESI + 0x90]
+XOR EBP,EBP
+MOV EAX,dword ptr [EBX + 0xc]
+CMP EAX,0x1
+JZ       LAB_00414cf8
+CMP EAX,0x4
+JZ       LAB_00414cf8
+CMP EAX,0x2
+JZ       LAB_00414cf3
+TEST EAX,EAX
+JZ       LAB_00414cf3
+PUSH EAX
+PUSH 0x468464
+CALL 0x00425c50
+ADD ESP,0x8
+JMP      LAB_00414cfd
+
+LAB_00414cf3:
+MOV EAX,dword ptr [EBX + 0x4]
+JMP      LAB_00414cfa
+
+LAB_00414cf8:
+MOV EAX,dword ptr [EBX]
+
+LAB_00414cfa:
+MOV dword ptr [EBX + 0x8],EAX
+
+LAB_00414cfd:
+MOV EAX,dword ptr [EBX + 0x8]
+TEST EAX,EAX
+JZ       LAB_00414d62
+CMP dword ptr [EBX],EAX
+JNZ      LAB_00414d0d
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [EBX],EAX
+
+LAB_00414d0d:
+MOV EAX,dword ptr [EBX + 0x8]
+CMP dword ptr [EBX + 0x4],EAX
+JNZ      LAB_00414d1a
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [EBX + 0x4],EAX
+
+LAB_00414d1a:
+MOV EAX,dword ptr [EBX + 0x8]
+MOV ECX,dword ptr [EAX]
+TEST ECX,ECX
+JZ       LAB_00414d29
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x4],EAX
+
+LAB_00414d29:
+MOV EAX,dword ptr [EBX + 0x8]
+MOV ECX,dword ptr [EAX + 0x4]
+TEST ECX,ECX
+JZ       LAB_00414d37
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [ECX],EAX
+
+LAB_00414d37:
+MOV EAX,dword ptr [EBX + 0x8]
+TEST EAX,EAX
+JZ       LAB_00414d43
+MOV EBP,dword ptr [EAX + 0x8]
+JMP      LAB_00414d45
+
+LAB_00414d43:
+XOR EBP,EBP
+
+LAB_00414d45:
+TEST EAX,EAX
+JZ       LAB_00414d5d
+PUSH EAX
+MOV dword ptr [EAX + 0x8],EDI
+MOV dword ptr [EAX],EDI
+MOV dword ptr [EAX + 0x4],EDI
+CALL 0x00454400
+ADD ESP,0x4
+MOV dword ptr [EBX + 0x8],EDI
+
+LAB_00414d5d:
+MOV EAX,dword ptr [EBX]
+MOV dword ptr [EBX + 0x8],EAX
+
+LAB_00414d62:
+PUSH EBP
+CALL 0x00444e40
+ADD ESP,0x4
+TEST EBP,EBP
+JZ       LAB_00414d7f
+MOV ECX,EBP
+CALL 0x00444af0
+PUSH EBP
+CALL 0x00454400
+ADD ESP,0x4
+
+LAB_00414d7f:
+MOV EAX,dword ptr [ESI + 0x90]
+CMP dword ptr [EAX],EDI
+JNZ      LAB_00414cc5
+
+LAB_00414d8d:
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET

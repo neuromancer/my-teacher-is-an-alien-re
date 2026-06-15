@@ -1,0 +1,19 @@
+Function: AdjustPointer
+Address: 0x457740
+
+MOV EDX,dword ptr [ESP + 0x8]
+PUSH ESI
+MOV ECX,dword ptr [ESP + 0x8]
+MOV EAX,dword ptr [EDX]
+ADD EAX,ECX
+MOV ESI,dword ptr [EDX + 0x4]
+TEST ESI,ESI
+JL       LAB_0045775f
+MOV ECX,dword ptr [ESI + ECX*0x1]
+MOV EDX,dword ptr [EDX + 0x8]
+ADD EAX,dword ptr [ECX + EDX*0x1]
+ADD EAX,ESI
+
+LAB_0045775f:
+POP ESI
+RET

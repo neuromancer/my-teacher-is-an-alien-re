@@ -1,0 +1,32 @@
+Function: __onexit
+Address: 0x454C20
+
+
+/* Library Function - Single Match
+    __onexit
+   
+   Library: Visual Studio 1998 Release */
+
+_onexit_t __cdecl __onexit(_onexit_t _Func)
+
+{
+  uint uVar1;
+  int iVar2;
+  LPVOID pvVar3;
+  
+  uVar1 = FUN_0045a1e0(DAT_00475088);
+  if (uVar1 < (uint)((int)DAT_00475084 + (4 - (int)DAT_00475088))) {
+    iVar2 = FUN_0045a1e0(DAT_00475088);
+    pvVar3 = FUN_0045a170(DAT_00475088,iVar2 + 0x10);
+    if (pvVar3 == (LPVOID)0x0) {
+      return (_onexit_t)0x0;
+    }
+    DAT_00475084 = (undefined4 *)
+                   (((int)DAT_00475084 - (int)DAT_00475088 & 0xfffffffcU) + (int)pvVar3);
+    DAT_00475088 = pvVar3;
+  }
+  *DAT_00475084 = _Func;
+  DAT_00475084 = DAT_00475084 + 1;
+  return _Func;
+}
+

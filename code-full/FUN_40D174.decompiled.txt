@@ -1,0 +1,13 @@
+Function: FUN_0040d174
+Address: 0x40D174
+
+
+void FUN_0040d174(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_004549a0(*(int *)(unaff_EBP + -0x10) + 0xd8,0x10,2,(_func_void_void_ptr *)0x401130);
+  return;
+}
+

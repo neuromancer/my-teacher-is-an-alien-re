@@ -1,0 +1,24 @@
+Function: FUN_0044e3e0
+Address: 0x44E3E0
+
+
+undefined * __cdecl FUN_0044e3e0(int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  
+  iVar2 = DAT_0046cb90;
+  iVar1 = DAT_0046aa30;
+  if (4999 < param_1) {
+    if ((DAT_0046cb90 < 0) || (*(int *)(DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    _sprintf(&DAT_00473cb0,s_cine_cin_4_4d_c_smk_0046cbe8,param_1,
+             (int)(char)PTR_DAT_0046cb94[*(int *)(*(int *)(iVar1 + 0x90) + iVar2 * 4)]);
+    return &DAT_00473cb0;
+  }
+  _sprintf(&DAT_00473cb0,s_cine_cin_4_4d_smk_0046cbd4,param_1);
+  return &DAT_00473cb0;
+}
+

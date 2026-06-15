@@ -1,0 +1,24 @@
+Function: FUN_00420110
+Address: 0x420110
+
+
+undefined4 * __fastcall FUN_00420110(undefined4 *param_1)
+
+{
+  HWND pHVar1;
+  int iVar2;
+  undefined4 *puVar3;
+  
+  puVar3 = param_1;
+  for (iVar2 = 0xb; iVar2 != 0; iVar2 = iVar2 + -1) {
+    *puVar3 = 0;
+    puVar3 = puVar3 + 1;
+  }
+  param_1[9] = 0;
+  param_1[10] = 1;
+  param_1[8] = 1;
+  pHVar1 = GetActiveWindow();
+  *param_1 = pHVar1;
+  return param_1;
+}
+

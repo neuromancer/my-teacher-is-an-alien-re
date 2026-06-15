@@ -1,0 +1,28 @@
+Function: FUN_0041de60
+Address: 0x41DE60
+
+
+void __thiscall FUN_0041de60(void *this)
+
+{
+  undefined1 *puVar1;
+  longlong lVar2;
+  int in_stack_00000014;
+  int in_stack_00000018;
+  
+  puVar1 = (undefined1 *)(*(int *)((int)this + 4) + in_stack_00000014 * 3);
+  if (0 < in_stack_00000018) {
+    do {
+      lVar2 = __ftol();
+      *puVar1 = (char)lVar2;
+      lVar2 = __ftol();
+      puVar1[1] = (char)lVar2;
+      lVar2 = __ftol();
+      in_stack_00000018 = in_stack_00000018 + -1;
+      puVar1[2] = (char)lVar2;
+      puVar1 = puVar1 + 3;
+    } while (in_stack_00000018 != 0);
+  }
+  return;
+}
+

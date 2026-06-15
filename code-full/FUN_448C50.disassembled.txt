@@ -1,0 +1,12 @@
+Function: FUN_00448c50
+Address: 0x448C50
+
+MOV EAX,dword ptr [ECX + 0x8]
+TEST EAX,EAX
+JZ       LAB_00448c5b
+MOV EAX,dword ptr [EAX + 0x8]
+RET
+
+LAB_00448c5b:
+XOR EAX,EAX
+RET

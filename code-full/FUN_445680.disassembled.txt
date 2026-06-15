@@ -1,0 +1,45 @@
+Function: FUN_00445680
+Address: 0x445680
+
+PUSH EBX
+XOR EAX,EAX
+MOV dword ptr [ECX],EAX
+PUSH ESI
+MOV dword ptr [ECX + 0x4],EAX
+PUSH EDI
+MOV dword ptr [ECX + 0x8],EAX
+MOV EBX,ECX
+MOV ECX,dword ptr [ESP + 0x10]
+MOV dword ptr [EBX + 0xc],EAX
+MOV dword ptr [EBX + 0x10],EAX
+MOV EAX,dword ptr [ESP + 0x14]
+MOV dword ptr [EBX + 0x4],ECX
+MOV dword ptr [EBX + 0x8],EAX
+INC EAX
+PUSH EAX
+CALL 0x00454500
+ADD ESP,0x4
+MOV EDI,dword ptr [EBX + 0x4]
+MOV ECX,0xffffffff
+MOV dword ptr [EBX],EAX
+SUB EAX,EAX
+SCASB.REPNE ES:EDI
+NOT ECX
+SUB EDI,ECX
+MOV EDX,ECX
+SHR ECX,0x2
+MOV ESI,EDI
+MOV EDI,dword ptr [EBX]
+MOVSD.REP ES:EDI,ESI
+MOV ECX,EDX
+AND ECX,0x3
+MOVSB.REP ES:EDI,ESI
+MOV EAX,dword ptr [ESP + 0x18]
+MOV ECX,dword ptr [ESP + 0x1c]
+POP EDI
+MOV dword ptr [EBX + 0xc],EAX
+MOV EAX,EBX
+POP ESI
+MOV dword ptr [EBX + 0x10],ECX
+POP EBX
+RET 0x10

@@ -1,0 +1,19 @@
+Function: FUN_00421880
+Address: 0x421880
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+undefined4 * __fastcall FUN_00421880(undefined4 *param_1)
+
+{
+  *param_1 = 0;
+  param_1[1] = 0;
+  param_1[2] = 0;
+  param_1[3] = 0;
+  param_1[4] = 0;
+  _DAT_0046a5ac = _DAT_0046a5ac + 1;
+  FUN_004218c0(param_1);
+  return param_1;
+}
+

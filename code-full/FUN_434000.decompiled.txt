@@ -1,0 +1,11 @@
+Function: FUN_00434000
+Address: 0x434000
+
+
+void FUN_00434000(void)
+
+{
+  _atexit(FUN_00434010);
+  return;
+}
+

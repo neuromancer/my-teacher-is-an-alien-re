@@ -1,0 +1,11 @@
+Function: FUN_004485a7
+Address: 0x4485A7
+
+
+void FUN_004485a7(void)
+
+{
+  FUN_004218b0();
+  return;
+}
+

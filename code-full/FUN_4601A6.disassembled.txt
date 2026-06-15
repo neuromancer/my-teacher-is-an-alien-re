@@ -1,0 +1,4 @@
+Function: GetClientRect
+Address: 0x4601A6
+
+JMP dword ptr [0x0047648c]

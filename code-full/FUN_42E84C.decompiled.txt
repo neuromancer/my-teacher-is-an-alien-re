@@ -1,0 +1,13 @@
+Function: FUN_0042e84c
+Address: 0x42E84C
+
+
+void FUN_0042e84c(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_0042e720(*(int *)(unaff_EBP + -0x10) + 0x120);
+  return;
+}
+

@@ -1,0 +1,29 @@
+Function: FUN_00447ad0
+Address: 0x447AD0
+
+
+void __thiscall FUN_00447ad0(void *this,undefined4 param_1,undefined4 *param_2)
+
+{
+  switch(param_1) {
+  case 0:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 1:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 2:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 3:
+    *param_2 = 0;
+    return;
+  case 4:
+    FUN_00447950((int)this);
+    return;
+  default:
+    FUN_00425c50(s_SC_SpaceShipNav__Process_Action___0046c41c);
+    return;
+  }
+}
+

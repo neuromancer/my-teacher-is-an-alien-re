@@ -1,0 +1,37 @@
+Function: FUN_00411ce0
+Address: 0x411CE0
+
+MOV EDX,dword ptr [ESP + 0xc]
+PUSH EBX
+MOV EAX,dword ptr [ESP + 0x8]
+TEST EDX,EDX
+LEA EAX,[EDX + EAX*0x1 + -0x1]
+JZ       LAB_00411d16
+MOV ECX,dword ptr [ESP + 0xc]
+
+LAB_00411cf5:
+CMP byte ptr [ECX],0x0
+JNZ      LAB_00411d01
+DEC EAX
+INC ECX
+DEC EDX
+JNZ      LAB_00411cf5
+POP EBX
+RET
+
+LAB_00411d01:
+TEST EDX,EDX
+JZ       LAB_00411d16
+MOV BL,byte ptr [ECX]
+DEC EAX
+INC ECX
+DEC EDX
+MOV byte ptr [EAX + 0x1],BL
+CMP byte ptr [ECX],0x0
+JNZ      LAB_00411d01
+TEST EDX,EDX
+JNZ      LAB_00411cf5
+
+LAB_00411d16:
+POP EBX
+RET

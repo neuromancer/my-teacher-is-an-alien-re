@@ -1,0 +1,15 @@
+Function: FUN_00453e25
+Address: 0x453E25
+
+
+undefined4 __cdecl FUN_00453e25(int param_1)
+
+{
+  HWND hWnd;
+  tagRECT local_14;
+  
+  hWnd = GetActiveWindow();
+  GetClientRect(hWnd,&local_14);
+  return (int)(((longlong)param_1 * (longlong)DAT_0046d0ba) / (longlong)local_14.bottom);
+}
+

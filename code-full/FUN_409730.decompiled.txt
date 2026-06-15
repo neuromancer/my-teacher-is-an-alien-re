@@ -1,0 +1,35 @@
+Function: FUN_00409730
+Address: 0x409730
+
+
+int __thiscall FUN_00409730(void *this,int param_1)
+
+{
+  void *pvVar1;
+  undefined4 *puVar2;
+  int *piVar3;
+  int iVar4;
+  
+  iVar4 = -1;
+  if ((*(int **)((int)this + 0x94) != (int *)0x0) &&
+     (iVar4 = 0, **(int **)((int)this + 0x94) <= param_1)) {
+    while (pvVar1 = *(void **)(DAT_0046ae58 + 0x94 + *(int *)(*(int *)((int)this + 0x94) + 4) * 4),
+          *(int *)((int)pvVar1 + 0xf8) == 0) {
+      iVar4 = iVar4 + 1;
+      FUN_004425f0(pvVar1);
+      puVar2 = *(undefined4 **)((int)this + 0x98);
+      if (puVar2 == (undefined4 *)0x0) {
+        *(undefined4 *)((int)this + 0x94) = 0;
+        return iVar4;
+      }
+      *(undefined4 *)((int)this + 0x98) = *puVar2;
+      piVar3 = (int *)puVar2[2];
+      *(int **)((int)this + 0x94) = piVar3;
+      if (param_1 < *piVar3) {
+        return iVar4;
+      }
+    }
+  }
+  return iVar4;
+}
+

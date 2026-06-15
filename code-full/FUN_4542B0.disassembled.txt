@@ -1,0 +1,66 @@
+Function: _CallSETranslator
+Address: 0x4542B0
+
+PUSH EBP
+MOV EBP,ESP
+SUB ESP,0x34
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV dword ptr [EBP + -0x34],0x0
+MOV dword ptr [EBP + -0x30],0x454390
+MOV EAX,dword ptr [EBP + 0x18]
+MOV dword ptr [EBP + -0x2c],EAX
+MOV EAX,dword ptr [EBP + 0xc]
+MOV dword ptr [EBP + -0x28],EAX
+MOV EAX,dword ptr [EBP + 0x1c]
+MOV dword ptr [EBP + -0x24],EAX
+MOV EAX,dword ptr [EBP + 0x20]
+MOV dword ptr [EBP + -0x20],EAX
+MOV dword ptr [EBP + -0x1c],0x0
+MOV dword ptr [EBP + -0x18],0x0
+MOV dword ptr [EBP + -0x14],0x0
+MOV dword ptr [EBP + -0x10],0x0
+MOV dword ptr [EBP + -0x1c],0x454347
+MOV dword ptr [EBP + -0x18],ESP
+MOV dword ptr [EBP + -0x14],EBP
+MOV EAX,FS:[0x0]
+MOV dword ptr [EBP + -0x34],EAX
+LEA EAX,[EBP + -0x34]
+MOV FS:[0x0],EAX
+MOV dword ptr [EBP + -0x4],0x1
+MOV EAX,dword ptr [EBP + 0x8]
+MOV dword ptr [EBP + -0xc],EAX
+MOV EAX,dword ptr [EBP + 0x10]
+MOV dword ptr [EBP + -0x8],EAX
+LEA EAX,[EBP + -0xc]
+PUSH EAX
+MOV EAX,dword ptr [EBP + 0x8]
+MOV EAX,dword ptr [EAX]
+PUSH EAX
+CALL dword ptr [0x00471c68]
+ADD ESP,0x8
+MOV dword ptr [EBP + -0x4],0x0
+CMP dword ptr [EBP + -0x10],0x0
+JZ       LAB_0045436b
+MOV EBX,dword ptr FS:[0x0]
+MOV EAX,dword ptr [EBX]
+MOV EBX,dword ptr [EBP + -0x34]
+MOV dword ptr [EBX],EAX
+MOV dword ptr FS:[0x0],EBX
+JMP      LAB_00454374
+
+LAB_0045436b:
+MOV EAX,dword ptr [EBP + -0x34]
+MOV FS:[0x0],EAX
+
+LAB_00454374:
+MOV EAX,dword ptr [EBP + -0x4]
+JMP      LAB_0045437c
+
+LAB_0045437c:
+POP EDI
+POP ESI
+POP EBX
+LEAVE
+RET

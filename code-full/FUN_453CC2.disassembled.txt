@@ -1,0 +1,5 @@
+Function: FUN_00453cc2
+Address: 0x453CC2
+
+MOV EAX,[0x0046d0b6]
+RET

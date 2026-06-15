@@ -1,0 +1,19 @@
+Function: FUN_00441ae0
+Address: 0x441AE0
+
+
+undefined4 __thiscall FUN_00441ae0(void *this,int param_1)
+
+{
+  undefined4 uVar1;
+  
+  *(undefined4 *)(param_1 + 8) = *(undefined4 *)((int)this + 0x90);
+  uVar1 = *(undefined4 *)((int)this + 0x94);
+  *(undefined4 *)(param_1 + 0x10) = 0;
+  *(undefined4 *)(param_1 + 0xc) = uVar1;
+  if ((*(int *)(param_1 + 0x2c) == 0x1b) && (*(int *)((int)this + 0x98) == 0x2b)) {
+    *(uint *)(DAT_0046ae78 + 0xdc) = *(uint *)(DAT_0046ae78 + 0xdc) | 4;
+  }
+  return 1;
+}
+

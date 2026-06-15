@@ -1,0 +1,14 @@
+Function: FUN_0041abf0
+Address: 0x41ABF0
+
+
+void __fastcall FUN_0041abf0(int param_1)
+
+{
+  if (*(int *)(param_1 + 0x24) != 0) {
+    Ordinal_6(*(int *)(param_1 + 0x24));
+    *(undefined4 *)(param_1 + 0x24) = 0;
+  }
+  return;
+}
+

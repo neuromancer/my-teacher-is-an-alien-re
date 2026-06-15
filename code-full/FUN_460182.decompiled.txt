@@ -1,0 +1,15 @@
+Function: GetVersion
+Address: 0x460182
+
+
+DWORD GetVersion(void)
+
+{
+  DWORD DVar1;
+  
+// WARNING: Could not recover jumptable at 0x00460182. Too many branches
+// WARNING: Treating indirect jump as call
+  DVar1 = GetVersion();
+  return DVar1;
+}
+

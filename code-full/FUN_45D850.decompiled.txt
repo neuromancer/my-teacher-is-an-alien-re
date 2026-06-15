@@ -1,0 +1,43 @@
+Function: FUN_0045d850
+Address: 0x45D850
+
+
+undefined8 __cdecl FUN_0045d850(uint param_1,LONG param_2,LONG param_3,DWORD param_4)
+
+{
+  int *piVar1;
+  int iVar2;
+  byte *pbVar3;
+  HANDLE hFile;
+  DWORD DVar4;
+  DWORD DVar5;
+  LONG local_4;
+  
+  if (param_1 < DAT_00474f74) {
+    piVar1 = (int *)((int)&DAT_00474f80 + ((int)(param_1 & 0xffffffe7) >> 3));
+    iVar2 = (param_1 & 0x1f) * 8;
+    if ((*(byte *)(*piVar1 + 4 + iVar2) & 1) != 0) {
+      local_4 = param_3;
+      hFile = (HANDLE)FUN_0045d800(param_1);
+      if (hFile == (HANDLE)0xffffffff) {
+        DAT_004719c0 = 9;
+        return 0xffffffffffffffff;
+      }
+      DVar4 = SetFilePointer(hFile,param_2,&local_4,param_4);
+      if (DVar4 == 0xffffffff) {
+        DVar5 = GetLastError();
+        if (DVar5 != 0) {
+          FUN_0045a860(DVar5);
+          return 0xffffffffffffffff;
+        }
+      }
+      pbVar3 = (byte *)(*piVar1 + 4 + iVar2);
+      *pbVar3 = *pbVar3 & 0xfd;
+      return CONCAT44(local_4,DVar4);
+    }
+  }
+  DAT_004719c0 = 9;
+  DAT_004719c4 = 0;
+  return 0xffffffffffffffff;
+}
+

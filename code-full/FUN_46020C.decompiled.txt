@@ -1,0 +1,15 @@
+Function: GetTextMetricsA
+Address: 0x46020C
+
+
+BOOL GetTextMetricsA(HDC hdc,LPTEXTMETRICA lptm)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x0046020c. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = GetTextMetricsA(hdc,lptm);
+  return BVar1;
+}
+

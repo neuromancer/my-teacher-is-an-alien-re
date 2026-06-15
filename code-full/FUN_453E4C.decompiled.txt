@@ -1,0 +1,88 @@
+Function: FUN_00453e4c
+Address: 0x453E4C
+
+
+undefined4 __cdecl FUN_00453e4c(uint param_1,uint param_2)
+
+{
+  uint uVar1;
+  short sVar2;
+  int iVar3;
+  ushort uVar4;
+  ushort uVar5;
+  int iVar6;
+  int iVar7;
+  ushort uVar8;
+  ushort uVar9;
+  int iVar10;
+  bool bVar11;
+  undefined8 uVar12;
+  ushort local_22;
+  short local_20;
+  ushort local_1e;
+  short local_1c;
+  
+  if (((-1 < DAT_0046db3c) && (0 < (int)param_1)) && (0 < (int)param_2)) {
+    uVar1 = (param_1 & 0xffff) * (param_1 & 0xffff);
+    sVar2 = (short)(uVar1 >> 0x10);
+    uVar4 = (ushort)uVar1;
+    uVar8 = sVar2 << 1 | (ushort)((short)uVar4 < 0);
+    iVar7 = (param_2 & 0xffff) * (param_2 & 0xffff);
+    uVar5 = (short)iVar7 * 2;
+    uVar9 = (short)((uint)iVar7 >> 0x10) << 1 | (ushort)((short)iVar7 < 0);
+    local_1e = 0;
+    local_1c = 0;
+    uVar12 = FUN_00454076((ushort)param_2,uVar8);
+    local_22 = (ushort)uVar12;
+    local_20 = (short)((ulonglong)uVar12 >> 0x20);
+    uVar12 = FUN_00454076((ushort)param_2,sVar2);
+    iVar3 = (iVar7 + CONCAT22(sVar2 >> 2,
+                              (ushort)(uVar4 >> 1 | (ushort)((uVar1 & 0x10000) != 0) << 0xf) >> 1 |
+                              (ushort)((sVar2 >> 1 & 1U) != 0) << 0xf)) -
+            CONCAT22((short)((ulonglong)uVar12 >> 0x20),(short)uVar12);
+    iVar10 = 0;
+    while( true ) {
+      if (-1 < (short)((local_1c - local_20) - (ushort)(local_1e < local_22))) break;
+      iVar6 = DAT_0046d0aa + iVar10;
+      FUN_00454087(iVar6);
+      FUN_00454087(iVar6);
+      if (-1 < iVar3) {
+        param_2 = param_2 - 1;
+        bVar11 = local_22 < (ushort)(uVar4 * 2);
+        local_22 = local_22 + uVar4 * -2;
+        local_20 = (local_20 - uVar8) - (ushort)bVar11;
+        iVar3 = iVar3 - CONCAT22(local_20,local_22);
+      }
+      iVar10 = iVar10 + 1;
+      bVar11 = CARRY2(local_1e,uVar5);
+      local_1e = local_1e + uVar5;
+      local_1c = local_1c + uVar9 + (ushort)bVar11;
+      iVar3 = iVar7 + CONCAT22(local_1c,local_1e) + iVar3;
+    }
+    uVar1 = uVar1 - iVar7;
+    uVar1 = ((uVar1 + CONCAT22((short)((int)uVar1 >> 0x11),
+                               (ushort)uVar1 >> 1 | (ushort)((uVar1 & 0x10000) != 0) << 0xf)) -
+            CONCAT22(local_1c,local_1e)) - CONCAT22(local_20,local_22);
+    iVar3 = iVar3 + CONCAT22((short)((int)uVar1 >> 0x11),
+                             (ushort)uVar1 >> 1 | (ushort)((uVar1 & 0x10000) != 0) << 0xf);
+    do {
+      iVar7 = DAT_0046d0aa + iVar10;
+      FUN_00454087(iVar7);
+      FUN_00454087(iVar7);
+      if (iVar3 < 0) {
+        iVar10 = iVar10 + 1;
+        bVar11 = CARRY2(local_1e,uVar5);
+        local_1e = local_1e + uVar5;
+        local_1c = local_1c + uVar9 + (ushort)bVar11;
+        iVar3 = iVar3 + CONCAT22(local_1c,local_1e);
+      }
+      param_2 = param_2 - 1;
+      bVar11 = local_22 < (ushort)(uVar4 * 2);
+      local_22 = local_22 + uVar4 * -2;
+      local_20 = (local_20 - uVar8) - (ushort)bVar11;
+      iVar3 = iVar3 - CONCAT22((local_20 - sVar2) - (ushort)(local_22 < uVar4),local_22 - uVar4);
+    } while (-1 < (int)param_2);
+  }
+  return 0;
+}
+

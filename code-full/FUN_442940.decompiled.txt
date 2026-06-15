@@ -1,0 +1,27 @@
+Function: FUN_00442940
+Address: 0x442940
+
+
+void __thiscall FUN_00442940(void *this,int param_1)
+
+{
+  bool bVar1;
+  int iVar2;
+  
+  if (*(int *)((int)this + 0xf8) == 1) {
+    iVar2 = *(int *)((int)this + 0x124) + param_1;
+    *(int *)((int)this + 0x124) = iVar2;
+    if ((*(int *)((int)this + 0x128) == 0) || (bVar1 = true, iVar2 < *(int *)((int)this + 0x128))) {
+      bVar1 = false;
+    }
+    if (bVar1) {
+      *(undefined4 *)((int)this + 0x170) = 3;
+      return;
+    }
+    if (*(void **)((int)this + 0x154) != (void *)0x0) {
+      FUN_00425100(*(void **)((int)this + 0x154),100,1);
+    }
+  }
+  return;
+}
+

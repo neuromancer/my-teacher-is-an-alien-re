@@ -1,0 +1,30 @@
+Function: FUN_00411330
+Address: 0x411330
+
+MOV EDX,dword ptr [ESP + 0x8]
+PUSH ESI
+MOV ESI,dword ptr [ECX + 0x18]
+MOV EAX,dword ptr [ESP + 0x8]
+SUB ESI,EDX
+DEC ESI
+IMUL ESI,dword ptr [ECX + 0x14]
+ADD ESI,EAX
+CMP dword ptr [ECX + 0x28],EAX
+JG       LAB_00411369
+CMP dword ptr [ECX + 0x2c],EAX
+JL       LAB_00411369
+CMP dword ptr [ECX + 0x20],EDX
+JG       LAB_00411369
+CMP dword ptr [ECX + 0x24],EDX
+JL       LAB_00411369
+CALL 0x004111f0
+XOR ECX,ECX
+MOV CL,byte ptr [ESI + EAX*0x1]
+POP ESI
+MOV EAX,ECX
+RET 0x8
+
+LAB_00411369:
+MOV EAX,0xffffffff
+POP ESI
+RET 0x8

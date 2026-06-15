@@ -1,0 +1,18 @@
+Function: FUN_00425d70
+Address: 0x425D70
+
+
+void __cdecl FUN_00425d70(wchar_t *param_1)
+
+{
+  FILE *_File;
+  
+  _File = (FILE *)FUN_00455110(s_cfg_message_log_0046aad8,&DAT_0046aaec);
+  if (_File != (FILE *)0x0) {
+    FID_conflict__vfwprintf(_File,param_1,&stack0x00000008);
+    FID_conflict__fwprintf(_File,(wchar_t *)&DAT_0046aae8);
+    _fclose(_File);
+  }
+  return;
+}
+

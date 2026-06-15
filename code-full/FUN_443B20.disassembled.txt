@@ -1,0 +1,41 @@
+Function: FUN_00443b20
+Address: 0x443B20
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x9c]
+MOV ESI,ECX
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [EAX + 0x8],ECX
+MOV EAX,dword ptr [ESI + 0x9c]
+CMP dword ptr [EAX],0x0
+JZ       LAB_00443b76
+
+LAB_00443b39:
+MOV EAX,dword ptr [ESI + 0x9c]
+MOV ECX,0x0
+MOV EAX,dword ptr [EAX + 0x8]
+TEST EAX,EAX
+JZ       LAB_00443b4e
+MOV ECX,dword ptr [EAX + 0x8]
+
+LAB_00443b4e:
+CALL 0x0044c880
+MOV ECX,dword ptr [ESI + 0x9c]
+MOV EAX,dword ptr [ECX + 0x8]
+CMP dword ptr [ECX + 0x4],EAX
+JZ       LAB_00443b76
+TEST EAX,EAX
+JZ       LAB_00443b6b
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x8],EAX
+
+LAB_00443b6b:
+MOV EAX,dword ptr [ESI + 0x9c]
+CMP dword ptr [EAX],0x0
+JNZ      LAB_00443b39
+
+LAB_00443b76:
+MOV dword ptr [ESI + 0x98],0x1
+OR dword ptr [ESI + 0x94],0x2000
+POP ESI
+RET

@@ -1,0 +1,41 @@
+Function: FUN_0043f420
+Address: 0x43F420
+
+CMP dword ptr [0x0046a6dc],0x0
+JZ       LAB_0043f484
+MOV EAX,[0x0046a6dc]
+MOV EAX,dword ptr [EAX]
+TEST EAX,EAX
+JZ       LAB_0043f484
+MOV ECX,dword ptr [0x0046a6dc]
+MOV dword ptr [ECX + 0x8],EAX
+
+LAB_0043f43d:
+MOV EAX,[0x0046a6dc]
+MOV EAX,dword ptr [EAX + 0x8]
+TEST EAX,EAX
+JZ       LAB_0043f462
+MOV EDX,dword ptr [EAX + 0x8]
+TEST EDX,EDX
+JZ       LAB_0043f462
+MOV ECX,0x0
+CMP EAX,0x1
+ADC ECX,-0x1
+AND ECX,EDX
+CALL 0x0040c830
+
+LAB_0043f462:
+MOV EDX,dword ptr [0x0046a6dc]
+MOV ECX,dword ptr [0x0046a6dc]
+MOV EAX,dword ptr [EDX + 0x8]
+ADD EDX,0x8
+CMP dword ptr [ECX + 0x4],EAX
+JZ       LAB_0043f484
+TEST EAX,EAX
+JZ       LAB_0043f43d
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [EDX],EAX
+JMP      LAB_0043f43d
+
+LAB_0043f484:
+RET

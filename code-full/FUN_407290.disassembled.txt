@@ -1,0 +1,89 @@
+Function: FUN_00407290
+Address: 0x407290
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x40743a
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+MOV dword ptr [EBP + -0x10],ECX
+PUSH EDI
+LEA EDI,[ECX + 0x90]
+MOV ESI,ECX
+CALL 0x004127c0
+XOR EDX,EDX
+XOR EAX,EAX
+MOV ECX,0x6
+MOV dword ptr [EBP + -0x4],EDX
+MOV dword ptr [ESI],0x461098
+STOSD.REP ES:EDI
+MOV dword ptr [EBP + -0x4],0x1
+LEA EAX,[ESI + 0xb4]
+LEA EDI,[ESI + 0xcc]
+MOV byte ptr [EBP + -0x4],0x2
+MOV byte ptr [EBP + -0x4],0x3
+MOV dword ptr [EAX],EDX
+MOV dword ptr [EAX + 0x4],EDX
+LEA EAX,[ESI + 0xe0]
+LEA ECX,[ESI + 0xe8]
+MOV dword ptr [EDI],EDX
+MOV dword ptr [EDI + 0x4],EDX
+MOV byte ptr [EBP + -0x4],0x4
+MOV dword ptr [EDI + 0x8],EDX
+MOV dword ptr [EDI + 0xc],EDX
+MOV dword ptr [EAX],EDX
+MOV dword ptr [EAX + 0x4],EDX
+LEA EAX,[ESI + 0xf0]
+MOV dword ptr [ECX],EDX
+MOV byte ptr [EBP + -0x4],0x5
+MOV dword ptr [ECX + 0x4],EDX
+LEA ECX,[ESI + 0x104]
+MOV dword ptr [EAX],EDX
+MOV dword ptr [EAX + 0x4],EDX
+LEA EAX,[ESI + 0xfc]
+MOV byte ptr [EBP + -0x4],0x6
+MOV dword ptr [EAX],EDX
+MOV byte ptr [EBP + -0x4],0x7
+MOV dword ptr [EAX + 0x4],EDX
+LEA EAX,[ESI + 0x114]
+MOV dword ptr [ECX],EDX
+MOV dword ptr [ECX + 0x4],EDX
+LEA ECX,[ESI + 0x11c]
+MOV dword ptr [EAX],EDX
+MOV dword ptr [EAX + 0x4],EDX
+MOV dword ptr [ECX],EDX
+MOV dword ptr [ECX + 0x4],EDX
+MOV dword ptr [ECX + 0x8],EDX
+MOV dword ptr [ECX + 0xc],EDX
+MOV byte ptr [EBP + -0x4],0x8
+LEA EBX,[ESI + 0x12c]
+LEA EAX,[ESI + 0x138]
+MOV dword ptr [EBX],EDX
+MOV dword ptr [EBX + 0x4],EDX
+LEA EDI,[ESI + 0xa8]
+MOV dword ptr [EAX],EDX
+MOV ECX,0x2a
+MOV dword ptr [EAX + 0x4],EDX
+LEA EAX,[ESI + 0x140]
+MOV byte ptr [EBP + -0x4],0x9
+MOV dword ptr [EAX],EDX
+MOV dword ptr [EAX + 0x4],EDX
+XOR EAX,EAX
+MOV dword ptr [ESI],0x4610c8
+STOSD.REP ES:EDI
+MOV EAX,ESI
+POP EDI
+MOV dword ptr [ESI + 0x90],0x40
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+POP ESI
+MOV dword ptr FS:[0x0],ECX
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET

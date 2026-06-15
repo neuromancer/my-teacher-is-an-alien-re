@@ -1,0 +1,22 @@
+Function: __fdivrp_sti_st
+Address: 0x4558C9
+
+
+/* Library Function - Single Match
+    __fdivrp_sti_st
+   
+   Library: Visual Studio */
+
+void __fdivrp_sti_st(void)
+
+{
+  unkbyte10 in_ST0;
+  unkbyte10 in_ST1;
+  undefined2 in_stack_ffffffea;
+  
+  FUN_00455300((int)in_ST1,(uint)((unkuint10)in_ST1 >> 0x20),(ushort)((unkuint10)in_ST1 >> 0x40),
+               (int)in_ST0,(uint)((unkuint10)in_ST0 >> 0x20),
+               CONCAT22(in_stack_ffffffea,(short)((unkuint10)in_ST0 >> 0x40)));
+  return;
+}
+

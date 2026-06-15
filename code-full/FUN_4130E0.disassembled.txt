@@ -1,0 +1,28 @@
+Function: FUN_004130e0
+Address: 0x4130E0
+
+MOV dword ptr [ECX + 0x8],0x0
+SUB ESP,0x4
+MOV EAX,[0x00469144]
+PUSH ESI
+MOV EDX,dword ptr [EAX]
+PUSH EDI
+XOR ESI,ESI
+MOV EDI,0x1
+MOV dword ptr [ESP + 0x8],EDX
+
+LAB_004130fe:
+CMP dword ptr [ESP + 0x8],ESI
+JZ       LAB_0041311a
+MOV EDX,dword ptr [ESP + 0x8]
+TEST dword ptr [EDX + 0x8],EDI
+MOV EAX,dword ptr [EDX]
+MOV dword ptr [ESP + 0x8],EAX
+JNZ      LAB_004130fe
+MOV dword ptr [ECX + 0x8],0x1
+
+LAB_0041311a:
+POP EDI
+POP ESI
+ADD ESP,0x4
+RET

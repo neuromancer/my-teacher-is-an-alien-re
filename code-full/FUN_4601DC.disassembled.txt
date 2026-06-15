@@ -1,0 +1,4 @@
+Function: AnimatePalette
+Address: 0x4601DC
+
+JMP dword ptr [0x0047633c]

@@ -1,0 +1,13 @@
+Function: FUN_0042d380
+Address: 0x42D380
+
+
+void FUN_0042d380(void)
+
+{
+  if ((DAT_004733f8 & 1) == 0) {
+    DAT_004733f8 = DAT_004733f8 | 1;
+  }
+  return;
+}
+

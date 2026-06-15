@@ -1,0 +1,11 @@
+Function: FUN_0042882b
+Address: 0x42882B
+
+
+void FUN_0042882b(void)
+
+{
+  FUN_004549a0(0x473260,8,3,(_func_void_void_ptr *)0x401120);
+  return;
+}
+

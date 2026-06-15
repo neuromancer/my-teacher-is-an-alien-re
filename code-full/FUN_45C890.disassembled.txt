@@ -1,0 +1,19 @@
+Function: _isspace
+Address: 0x45C890
+
+CMP dword ptr [0x00471c3c],0x1
+JLE      LAB_0045c8a9
+MOV ECX,dword ptr [ESP + 0x4]
+PUSH 0x8
+PUSH ECX
+CALL 0x004569c0
+ADD ESP,0x8
+RET
+
+LAB_0045c8a9:
+MOV EDX,dword ptr [0x00471a30]
+XOR EAX,EAX
+MOV ECX,dword ptr [ESP + 0x4]
+MOV AX,word ptr [EDX + ECX*0x2]
+AND EAX,0x8
+RET

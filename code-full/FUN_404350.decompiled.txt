@@ -1,0 +1,89 @@
+Function: FUN_00404350
+Address: 0x404350
+
+
+void __thiscall
+FUN_00404350(void *this,int param_1,int param_2,int param_3,int param_4,undefined4 param_5,
+            undefined4 param_6,undefined4 param_7)
+
+{
+  undefined4 *puVar1;
+  int iVar2;
+  undefined4 extraout_EDX;
+  undefined4 *puVar3;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00404442;
+  *unaff_FS_OFFSET = &local_10;
+  if (*(int *)((int)this + 0x98) != 0) {
+    if (*(int *)((int)this + 0x98) == 1) {
+      FUN_004525ec((byte)param_6);
+      FUN_004111b0(DAT_0046aa14,extraout_EDX);
+      if (param_1 < 0) {
+        param_1 = 0;
+      }
+      if (param_2 < 0) {
+        param_2 = 0;
+      }
+      if (0x27f < param_3) {
+        param_3 = 0x27f;
+      }
+      if (0x1df < param_4) {
+        param_4 = 0x1df;
+      }
+      if (*(int *)((int)this + 0x98) == 2) {
+        FUN_00452556(param_1,param_3,param_2,param_4);
+      }
+      else {
+        FUN_004524d9(param_1,param_3,param_2,param_4);
+      }
+    }
+    else {
+      puVar1 = (undefined4 *)FUN_00454500(0x20);
+      if (puVar1 == (undefined4 *)0x0) {
+        puVar1 = (undefined4 *)0x0;
+      }
+      else {
+        *puVar1 = 0;
+        puVar1[1] = 0;
+        puVar1[2] = 0;
+        puVar1[3] = 0;
+        puVar1[4] = 0;
+        puVar1[5] = 0;
+        *puVar1 = &PTR_FUN_00461048;
+        puVar3 = puVar1 + 2;
+        for (iVar2 = 6; iVar2 != 0; iVar2 = iVar2 + -1) {
+          *puVar3 = 0;
+          puVar3 = puVar3 + 1;
+        }
+      }
+      local_8 = 0xffffffff;
+      puVar1[1] = param_5;
+      puVar1[7] = param_6;
+      puVar1[6] = param_7;
+      puVar1[2] = param_1;
+      puVar1[3] = param_2;
+      puVar1[4] = param_3;
+      puVar1[5] = param_4;
+      iVar2 = puVar1[2];
+      if ((int)puVar1[4] < iVar2) {
+        puVar1[2] = puVar1[4];
+        puVar1[4] = iVar2;
+      }
+      iVar2 = puVar1[3];
+      if ((int)puVar1[5] < iVar2) {
+        puVar1[3] = puVar1[5];
+        puVar1[5] = iVar2;
+      }
+      FUN_004044e0(this,puVar1);
+    }
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

@@ -1,0 +1,4 @@
+Function: GlobalAlloc
+Address: 0x46016A
+
+JMP dword ptr [0x00476430]

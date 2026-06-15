@@ -1,0 +1,16 @@
+Function: FUN_00421880
+Address: 0x421880
+
+PUSH ESI
+XOR EAX,EAX
+MOV dword ptr [ECX],EAX
+MOV ESI,ECX
+MOV dword ptr [ECX + 0x4],EAX
+MOV dword ptr [ESI + 0x8],EAX
+MOV dword ptr [ESI + 0xc],EAX
+MOV dword ptr [ESI + 0x10],EAX
+INC dword ptr [0x0046a5ac]
+CALL     LAB_004218c0
+MOV EAX,ESI
+POP ESI
+RET

@@ -1,0 +1,11 @@
+Function: FUN_0040dad6
+Address: 0x40DAD6
+
+
+void FUN_0040dad6(void)
+
+{
+  FUN_00407b60();
+  return;
+}
+

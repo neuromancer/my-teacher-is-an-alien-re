@@ -1,0 +1,56 @@
+Function: FUN_00435be0
+Address: 0x435BE0
+
+
+void __thiscall FUN_00435be0(void *this,int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  void *this_00;
+  void *pvVar3;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00435d1f;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_004309a0(this,param_1);
+  if (param_1 != 0) {
+    *(undefined4 *)((int)this + 0x94) = *(undefined4 *)(param_1 + 4);
+    FUN_004368f0((int)this);
+  }
+  FUN_00413e10(this,PTR_s_mis_pz_Wahoo_mis_0046bacc,(char *)0x0);
+  if (*(int *)((int)this + 0x830) == 0) {
+    this_00 = (void *)FUN_00454500(0x38);
+    local_8 = 0;
+    pvVar3 = (void *)0x0;
+    if (this_00 != (void *)0x0) {
+      pvVar3 = FUN_00444a40(this_00,*(undefined4 *)((int)this + 0x98),
+                            *(undefined4 *)((int)this + 0x9c),*(undefined4 *)((int)this + 0x90),
+                            *(undefined4 *)((int)this + 0x94),4,0,0,0,0,0);
+    }
+    local_8 = 0xffffffff;
+    *(void **)((int)this + 0x830) = pvVar3;
+  }
+  *(undefined4 *)((int)this + 0x81c) = 0;
+  iVar2 = DAT_0046cb90;
+  iVar1 = DAT_0046aa30;
+  if ((DAT_0046cb90 < 0) || (*(int *)(DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  FUN_0044cb40(*(void **)((int)this + 0x82c),*(int *)(*(int *)(iVar1 + 0x90) + iVar2 * 4),0);
+  FUN_004218c0((undefined4 *)((int)this + 0xc0));
+  if (*(void **)((int)this + 0xb8) != (void *)0x0) {
+    FUN_00425100(*(void **)((int)this + 0xb8),100,1);
+  }
+  if (*(void **)((int)this + 0xbc) != (void *)0x0) {
+    FUN_00425100(*(void **)((int)this + 0xbc),100,1);
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

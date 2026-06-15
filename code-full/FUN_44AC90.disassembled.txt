@@ -1,0 +1,105 @@
+Function: FUN_0044ac90
+Address: 0x44AC90
+
+SUB ESP,0x40
+LEA EAX,[ESP + 0x20]
+PUSH ESI
+MOV ESI,ECX
+PUSH EAX
+LEA EDX,[ESP + 0x8]
+MOV EAX,dword ptr [ESP + 0x4c]
+LEA ECX,[ESI + 0x98]
+PUSH ECX
+PUSH EDX
+PUSH 0x46c57c
+PUSH EAX
+CALL 0x00454850
+ADD ESP,0x14
+CMP EAX,0x3
+JL       LAB_0044acd1
+MOV EAX,dword ptr [ESP + 0x24]
+PUSH EAX
+CALL 0x00449b20
+ADD ESP,0x4
+MOV dword ptr [ESI + 0x9c],EAX
+
+LAB_0044acd1:
+LEA EAX,[ESP + 0x4]
+MOV ECX,0x46c734
+
+LAB_0044acda:
+MOV DL,byte ptr [EAX]
+CMP DL,byte ptr [ECX]
+JNZ      LAB_0044acfa
+OR DL,DL
+JZ       LAB_0044acf6
+MOV DL,byte ptr [EAX + 0x1]
+CMP DL,byte ptr [ECX + 0x1]
+JNZ      LAB_0044acfa
+ADD EAX,0x2
+ADD ECX,0x2
+OR DL,DL
+JNZ      LAB_0044acda
+
+LAB_0044acf6:
+XOR EAX,EAX
+JMP      LAB_0044acff
+
+LAB_0044acfa:
+SBB EAX,EAX
+SBB EAX,-0x1
+
+LAB_0044acff:
+TEST EAX,EAX
+JNZ      LAB_0044ad16
+MOV dword ptr [ESI + 0xa0],0xffffffff
+XOR EAX,EAX
+POP ESI
+ADD ESP,0x40
+RET 0x4
+
+LAB_0044ad16:
+LEA EAX,[ESP + 0x4]
+MOV ECX,0x46c728
+
+LAB_0044ad1f:
+MOV DL,byte ptr [EAX]
+CMP DL,byte ptr [ECX]
+JNZ      LAB_0044ad3f
+OR DL,DL
+JZ       LAB_0044ad3b
+MOV DL,byte ptr [EAX + 0x1]
+CMP DL,byte ptr [ECX + 0x1]
+JNZ      LAB_0044ad3f
+ADD EAX,0x2
+ADD ECX,0x2
+OR DL,DL
+JNZ      LAB_0044ad1f
+
+LAB_0044ad3b:
+XOR EAX,EAX
+JMP      LAB_0044ad44
+
+LAB_0044ad3f:
+SBB EAX,EAX
+SBB EAX,-0x1
+
+LAB_0044ad44:
+TEST EAX,EAX
+JNZ      LAB_0044ad5b
+MOV dword ptr [ESI + 0xa0],0x0
+XOR EAX,EAX
+POP ESI
+ADD ESP,0x40
+RET 0x4
+
+LAB_0044ad5b:
+LEA EAX,[ESP + 0x4]
+MOV ECX,dword ptr [0x0046aa18]
+PUSH EAX
+CALL 0x00432e20
+MOV dword ptr [ESI + 0xa0],EAX
+XOR EAX,EAX
+POP ESI
+ADD ESP,0x40
+RET 0x4

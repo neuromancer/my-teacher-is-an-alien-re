@@ -1,0 +1,42 @@
+Function: FUN_00454087
+Address: 0x454087
+
+
+void __fastcall FUN_00454087(int param_1)
+
+{
+  byte bVar1;
+  undefined1 uVar2;
+  int iVar3;
+  int iVar4;
+  int unaff_EBX;
+  int unaff_EBP;
+  int unaff_EDI;
+  undefined1 *puVar5;
+  
+  iVar4 = DAT_0046d0ca;
+  iVar3 = DAT_0046d0c6;
+  if ((((DAT_0046d0ce <= unaff_EDI) && (unaff_EDI <= DAT_0046d0d2)) && (DAT_0046d0c6 <= param_1)) &&
+     (unaff_EBX <= DAT_0046d0ca)) {
+    *(undefined1 *)(unaff_EBP + -10) = 0;
+    if (unaff_EBX < iVar3) {
+      *(undefined1 *)(unaff_EBP + -10) = 2;
+    }
+    if (iVar4 < param_1) {
+      *(byte *)(unaff_EBP + -10) = *(byte *)(unaff_EBP + -10) | 1;
+    }
+    uVar2 = DAT_0046d078;
+    puVar5 = (undefined1 *)(DAT_0046db46 * (DAT_0046d0b2 - unaff_EDI) + DAT_0046db4e);
+    bVar1 = *(byte *)(unaff_EBP + -10);
+    if ((bVar1 & 2) == 0) {
+      puVar5 = puVar5 + unaff_EBX;
+      *puVar5 = DAT_0046d078;
+      param_1 = param_1 - unaff_EBX;
+    }
+    if ((bVar1 & 1) == 0) {
+      puVar5[param_1] = uVar2;
+    }
+  }
+  return;
+}
+

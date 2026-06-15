@@ -1,0 +1,15 @@
+Function: GetSystemPaletteEntries
+Address: 0x460200
+
+
+UINT GetSystemPaletteEntries(HDC hdc,UINT iStart,UINT cEntries,LPPALETTEENTRY pPalEntries)
+
+{
+  UINT UVar1;
+  
+// WARNING: Could not recover jumptable at 0x00460200. Too many branches
+// WARNING: Treating indirect jump as call
+  UVar1 = GetSystemPaletteEntries(hdc,iStart,cEntries,pPalEntries);
+  return UVar1;
+}
+

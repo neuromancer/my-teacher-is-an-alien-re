@@ -1,0 +1,82 @@
+Function: __mbsnbcpy
+Address: 0x45ABF0
+
+MOV EDX,dword ptr [ESP + 0x4]
+PUSH EBX
+PUSH ESI
+MOV EAX,EDX
+CMP dword ptr [0x00471fa4],0x0
+PUSH EDI
+JNZ      LAB_0045ac19
+MOV ESI,dword ptr [ESP + 0x18]
+MOV EDI,dword ptr [ESP + 0x14]
+PUSH ESI
+PUSH EDI
+PUSH EDX
+CALL 0x00455220
+ADD ESP,0xc
+POP EDI
+POP ESI
+POP EBX
+RET
+
+LAB_0045ac19:
+MOV EDI,dword ptr [ESP + 0x14]
+MOV ESI,dword ptr [ESP + 0x18]
+
+LAB_0045ac21:
+TEST ESI,ESI
+JZ       LAB_0045ac4e
+DEC ESI
+MOV CL,byte ptr [EDI]
+XOR EBX,EBX
+MOV BL,CL
+TEST byte ptr [EBX + 0x471ea1],0x4
+JZ       LAB_0045ac64
+MOV byte ptr [EDX],CL
+INC EDI
+INC EDX
+TEST ESI,ESI
+JZ       LAB_0045ac70
+MOV CL,byte ptr [EDI]
+DEC ESI
+MOV byte ptr [EDX],CL
+MOV EBX,EDX
+INC EDX
+INC EDI
+TEST CL,CL
+JNZ      LAB_0045ac21
+MOV byte ptr [EDX + -0x2],0x0
+
+LAB_0045ac4e:
+MOV ECX,ESI
+DEC ESI
+TEST ECX,ECX
+JZ       LAB_0045ac60
+
+LAB_0045ac55:
+MOV byte ptr [EDX],0x0
+INC EDX
+MOV ECX,ESI
+DEC ESI
+TEST ECX,ECX
+JNZ      LAB_0045ac55
+
+LAB_0045ac60:
+POP EDI
+POP ESI
+POP EBX
+RET
+
+LAB_0045ac64:
+MOV byte ptr [EDX],CL
+MOV EBX,EDX
+INC EDX
+INC EDI
+TEST CL,CL
+JNZ      LAB_0045ac21
+JMP      LAB_0045ac4e
+
+LAB_0045ac70:
+MOV byte ptr [EDX + -0x1],0x0
+JMP      LAB_0045ac4e

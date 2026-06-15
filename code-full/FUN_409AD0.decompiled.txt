@@ -1,0 +1,58 @@
+Function: FUN_00409ad0
+Address: 0x409AD0
+
+
+void __thiscall FUN_00409ad0(void *this,int param_1)
+
+{
+  void *pvVar1;
+  uint uVar2;
+  
+  FUN_004309a0(this,param_1);
+  pvVar1 = DAT_0046aa30;
+  switch(*(undefined4 *)(param_1 + 4)) {
+  case 0:
+    FUN_0040a9b0(this);
+    break;
+  case 1:
+    if (*(int *)((int)this + 0x160) == 0) {
+      uVar2 = FUN_00433ae0(DAT_0046aa30,(byte *)s_WENT_TO_CLASS_00468078);
+      if (((int)uVar2 < 0) || (*(int *)((int)pvVar1 + 0x98) + -1 < (int)uVar2)) {
+        FUN_00425c50(s_Invalid_gamestate__d_00468150);
+      }
+      if (*(int *)(*(int *)((int)pvVar1 + 0x90) + uVar2 * 4) == 0) {
+        FUN_0040b030((int)this);
+        FUN_0040a820(this);
+        break;
+      }
+    }
+    FUN_0040a700(this);
+    break;
+  case 2:
+    FUN_0040ad50((int)this);
+    break;
+  default:
+    FUN_00425c50(s_SC_Detention__Init_invalid_SCmsg_004687e0);
+    break;
+  case 4:
+    FUN_0040ab90();
+    break;
+  case 5:
+    FUN_0040ac70();
+  }
+  pvVar1 = DAT_0046aa30;
+  uVar2 = FUN_00433ae0(DAT_0046aa30,(byte *)s_PERIOD_00468138);
+  if (((int)uVar2 < 0) || (*(int *)((int)pvVar1 + 0x98) + -1 < (int)uVar2)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  _sprintf((char *)DAT_0046aa00,s_ACTIONSPERIOD_2_2d_004687cc,
+           *(undefined4 *)(*(int *)((int)pvVar1 + 0x90) + uVar2 * 4));
+  pvVar1 = DAT_0046aa30;
+  uVar2 = FUN_00433ae0(DAT_0046aa30,DAT_0046aa00);
+  if (((int)uVar2 < 0) || (*(int *)((int)pvVar1 + 0x98) + -1 < (int)uVar2)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  *(undefined4 *)((int)this + 0x148) = *(undefined4 *)(*(int *)((int)pvVar1 + 0x90) + uVar2 * 4);
+  return;
+}
+

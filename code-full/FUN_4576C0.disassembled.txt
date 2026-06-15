@@ -1,0 +1,42 @@
+Function: DestructExceptionObject
+Address: 0x4576C0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x461d88
+PUSH 0x45a094
+PUSH EAX
+MOV ECX,dword ptr [EBP + 0x8]
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x8
+TEST ECX,ECX
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV dword ptr [EBP + -0x18],ESP
+JZ       LAB_00457721
+MOV EAX,dword ptr [ECX + 0x1c]
+MOV EAX,dword ptr [EAX + 0x4]
+TEST EAX,EAX
+JZ       LAB_00457721
+MOV dword ptr [EBP + -0x4],0x0
+PUSH EAX
+MOV EAX,dword ptr [ECX + 0x18]
+PUSH EAX
+CALL 0x00454140
+JMP      LAB_0045771a
+
+LAB_0045771a:
+MOV dword ptr [EBP + -0x4],0xffffffff
+
+LAB_00457721:
+MOV EAX,dword ptr [EBP + -0x10]
+POP EDI
+MOV FS:[0x0],EAX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET

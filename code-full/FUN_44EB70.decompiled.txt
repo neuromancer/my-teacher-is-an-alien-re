@@ -1,0 +1,14 @@
+Function: FUN_0044eb70
+Address: 0x44EB70
+
+
+void FUN_0044eb70(void)
+
+{
+  if ((DAT_00473dc0 & 2) == 0) {
+    DAT_00473dc0 = DAT_00473dc0 | 2;
+    FUN_004549a0(0x473dc8,0x10,3,(_func_void_void_ptr *)0x401130);
+  }
+  return;
+}
+

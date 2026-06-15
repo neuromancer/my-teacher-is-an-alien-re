@@ -1,0 +1,19 @@
+Function: FUN_0041f610
+Address: 0x41F610
+
+MOV EAX,dword ptr [ESP + 0x4]
+CMP dword ptr [ECX],EAX
+JG       LAB_0041f633
+CMP dword ptr [ECX + 0x8],EAX
+JL       LAB_0041f633
+MOV EAX,dword ptr [ESP + 0x8]
+CMP dword ptr [ECX + 0x4],EAX
+JG       LAB_0041f633
+CMP dword ptr [ECX + 0xc],EAX
+JL       LAB_0041f633
+MOV EAX,0x1
+RET 0x8
+
+LAB_0041f633:
+XOR EAX,EAX
+RET 0x8

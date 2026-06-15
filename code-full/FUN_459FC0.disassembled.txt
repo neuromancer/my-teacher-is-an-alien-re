@@ -1,0 +1,14 @@
+Function: __cftof_g
+Address: 0x459FC0
+
+MOV EAX,dword ptr [ESP + 0xc]
+MOV ECX,dword ptr [ESP + 0x8]
+MOV EDX,dword ptr [ESP + 0x4]
+PUSH EAX
+MOV byte ptr [0x00471d20],0x1
+PUSH ECX
+PUSH EDX
+CALL 0x00459de0
+MOV byte ptr [0x00471d20],0x0
+ADD ESP,0xc
+RET

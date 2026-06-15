@@ -1,0 +1,35 @@
+Function: FUN_0045c6d0
+Address: 0x45C6D0
+
+
+undefined4 __cdecl FUN_0045c6d0(uint param_1)
+
+{
+  HANDLE hFile;
+  BOOL BVar1;
+  DWORD DVar2;
+  undefined4 uVar3;
+  
+  if ((param_1 < DAT_00474f74) &&
+     ((*(byte *)(*(int *)((int)&DAT_00474f80 + ((int)(param_1 & 0xffffffe7) >> 3)) + 4 +
+                (param_1 & 0x1f) * 8) & 1) != 0)) {
+    hFile = (HANDLE)FUN_0045d800(param_1);
+    BVar1 = FlushFileBuffers(hFile);
+    DVar2 = 0;
+    if (BVar1 == 0) {
+      DVar2 = GetLastError();
+    }
+    uVar3 = 0;
+    if (DVar2 != 0) {
+      DAT_004719c0 = 9;
+      DAT_004719c4 = DVar2;
+      return 0xffffffff;
+    }
+  }
+  else {
+    DAT_004719c0 = 9;
+    uVar3 = 0xffffffff;
+  }
+  return uVar3;
+}
+

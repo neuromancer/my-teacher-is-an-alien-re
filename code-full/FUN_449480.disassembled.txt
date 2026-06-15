@@ -1,0 +1,34 @@
+Function: FUN_00449480
+Address: 0x449480
+
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH ESI
+CMP dword ptr [ECX + 0x90],EAX
+MOV ESI,ECX
+JNZ      LAB_004494d8
+MOV dword ptr [ESI + 0xac],0x0
+CMP dword ptr [ESI + 0xb4],0x0
+JLE      LAB_004494d8
+
+LAB_004494a2:
+MOV ECX,dword ptr [ESI + 0xac]
+LEA EAX,[ECX*0x4 + 0x0]
+ADD EAX,dword ptr [ESI + 0xa8]
+CMP dword ptr [EAX],0x0
+JZ       LAB_004494c3
+PUSH EAX
+PUSH ECX
+MOV EAX,dword ptr [ESI]
+MOV ECX,ESI
+CALL dword ptr [EAX + 0x30]
+
+LAB_004494c3:
+MOV EAX,dword ptr [ESI + 0xac]
+INC EAX
+MOV dword ptr [ESI + 0xac],EAX
+CMP dword ptr [ESI + 0xb4],EAX
+JG       LAB_004494a2
+
+LAB_004494d8:
+POP ESI
+RET 0x8

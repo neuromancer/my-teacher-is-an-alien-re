@@ -1,0 +1,24 @@
+Function: FUN_0040d6c0
+Address: 0x40D6C0
+
+
+void __thiscall FUN_0040d6c0(void *this,undefined4 param_1,int param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  
+  if ((*(int *)((int)this + 0x90) == param_2) &&
+     (*(undefined4 *)((int)this + 0x174) = 0, 0 < *(int *)((int)this + 0x17c))) {
+    do {
+      piVar1 = (int *)(*(int *)((int)this + 0x174) * 4 + *(int *)((int)this + 0x170));
+      if (*piVar1 != 0) {
+        (**(code **)(*(int *)this + 0x34))(*(int *)((int)this + 0x174),piVar1);
+      }
+      iVar2 = *(int *)((int)this + 0x174) + 1;
+      *(int *)((int)this + 0x174) = iVar2;
+    } while (iVar2 < *(int *)((int)this + 0x17c));
+  }
+  return;
+}
+

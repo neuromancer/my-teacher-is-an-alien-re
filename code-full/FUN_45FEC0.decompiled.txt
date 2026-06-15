@@ -1,0 +1,50 @@
+Function: FUN_0045fec0
+Address: 0x45FEC0
+
+
+void __cdecl FUN_0045fec0(int *param_1,uint param_2,int param_3)
+
+{
+  ushort *puVar1;
+  uint uVar2;
+  ushort *puVar3;
+  uint uVar4;
+  undefined4 *puVar5;
+  ushort local_c;
+  undefined4 uStack_a;
+  undefined2 uStack_6;
+  undefined4 local_4;
+  
+  puVar5 = &DAT_004728b8;
+  if (param_2 != 0) {
+    if ((int)param_2 < 0) {
+      param_2 = -param_2;
+      puVar5 = (undefined4 *)&DAT_00472a18;
+    }
+    if (param_3 == 0) {
+      *(undefined2 *)param_1 = 0;
+    }
+    while (param_2 != 0) {
+      puVar5 = puVar5 + 0x15;
+      uVar4 = (int)param_2 >> 3;
+      uVar2 = param_2 & 7;
+      param_2 = uVar4;
+      if (uVar2 != 0) {
+        puVar1 = (ushort *)(puVar5 + uVar2 * 3);
+        puVar3 = puVar1;
+        if (0x7fff < *puVar1) {
+          puVar3 = &local_c;
+          local_c = (ushort)*(undefined4 *)puVar1;
+          uStack_a._0_2_ = (undefined2)((uint)*(undefined4 *)puVar1 >> 0x10);
+          uStack_a._2_2_ = (undefined2)*(undefined4 *)(puVar1 + 2);
+          uStack_6 = (undefined2)((uint)*(undefined4 *)(puVar1 + 2) >> 0x10);
+          local_4 = *(undefined4 *)(puVar1 + 4);
+          uStack_a = CONCAT22(uStack_a._2_2_,(undefined2)uStack_a) + -1;
+        }
+        FUN_0045fc10(param_1,(int *)puVar3);
+      }
+    }
+  }
+  return;
+}
+

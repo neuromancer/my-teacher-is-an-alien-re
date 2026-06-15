@@ -1,0 +1,21 @@
+Function: FUN_00452faa
+Address: 0x452FAA
+
+PUSH EBP
+MOV EBP,ESP
+PUSH EDI
+PUSH EBX
+XOR EAX,EAX
+MOV EBX,dword ptr [EBP + 0x8]
+CMP EBX,0x1f
+JA       LAB_00452fca
+CMP BL,byte ptr [0x0046db3c]
+JZ       LAB_00452fca
+LEA EDI,[0x46de54]
+MOV dword ptr [EDI + EBX*0x4],EAX
+
+LAB_00452fca:
+POP EBX
+POP EDI
+POP EBP
+RET

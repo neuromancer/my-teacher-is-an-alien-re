@@ -1,0 +1,38 @@
+Function: FUN_00408f20
+Address: 0x408F20
+
+
+void __cdecl FUN_00408f20(undefined4 *param_1,int param_2)
+
+{
+  undefined4 *puVar1;
+  undefined4 *puVar2;
+  undefined4 *puVar3;
+  
+  while (param_2 != 0) {
+    param_2 = param_2 + -1;
+    puVar1 = (undefined4 *)*param_1;
+    if (puVar1 != (undefined4 *)0x0) {
+      for (puVar2 = (undefined4 *)*puVar1; puVar2 != (undefined4 *)0x0;
+          puVar2 = (undefined4 *)*puVar2) {
+        FUN_00408ee0(puVar2 + 2,1);
+      }
+      puVar1[2] = 0;
+      puVar1[3] = 0;
+      puVar1[1] = 0;
+      *puVar1 = 0;
+      puVar2 = (undefined4 *)puVar1[4];
+      while (puVar2 != (undefined4 *)0x0) {
+        puVar3 = (undefined4 *)*puVar2;
+        FUN_00454400(puVar2);
+        puVar2 = puVar3;
+      }
+      puVar1[4] = 0;
+      FUN_00454400(puVar1);
+      *param_1 = 0;
+    }
+    param_1 = param_1 + 1;
+  }
+  return;
+}
+

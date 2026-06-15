@@ -1,0 +1,4 @@
+Function: CreateFileA
+Address: 0x452498
+
+JMP dword ptr [0x0047635c]

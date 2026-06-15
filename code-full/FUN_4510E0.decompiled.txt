@@ -1,0 +1,30 @@
+Function: FUN_004510e0
+Address: 0x4510E0
+
+
+void FUN_004510e0(void)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_48 [4];
+  undefined4 local_38;
+  undefined4 local_34;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0045115c;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00444a40(local_48,0,0,0,0,0,0,0,0,0,0);
+  local_8 = 0;
+  local_38 = 0x37;
+  local_34 = 1;
+  FUN_0042c150(local_48);
+  local_8 = 0xffffffff;
+  FUN_00451154();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

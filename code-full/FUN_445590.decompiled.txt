@@ -1,0 +1,14 @@
+Function: FUN_00445590
+Address: 0x445590
+
+
+void __thiscall FUN_00445590(void *this,int param_1,int param_2)
+
+{
+  if ((-1 < param_1) && (-1 < param_2)) {
+    *(int *)this = param_1;
+    *(int *)((int)this + 4) = param_2;
+  }
+  return;
+}
+

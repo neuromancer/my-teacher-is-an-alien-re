@@ -1,0 +1,12 @@
+Function: FUN_0040bac0
+Address: 0x40BAC0
+
+
+void __fastcall FUN_0040bac0(int param_1)
+
+{
+  FUN_00449520(param_1);
+  FUN_0042be00(DAT_0046ae78);
+  return;
+}
+

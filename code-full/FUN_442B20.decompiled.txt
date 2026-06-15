@@ -1,0 +1,59 @@
+Function: FUN_00442b20
+Address: 0x442B20
+
+
+void __thiscall FUN_00442b20(void *this,char *param_1)
+
+{
+  char cVar1;
+  int iVar2;
+  undefined4 uVar3;
+  uint uVar4;
+  uint uVar5;
+  char *pcVar6;
+  char *pcVar7;
+  char local_40 [64];
+  
+  iVar2 = _sscanf(param_1,&DAT_00468760,local_40);
+  if (iVar2 == 1) {
+    iVar2 = __strcmpi(local_40,&DAT_0046aea0);
+    if (iVar2 != 0) {
+      FUN_00426190(local_40);
+      uVar4 = 0xffffffff;
+      pcVar6 = (char *)(DAT_0046aa1c + 0x21a);
+      do {
+        if (uVar4 == 0) break;
+        uVar4 = uVar4 - 1;
+        cVar1 = *pcVar6;
+        pcVar6 = pcVar6 + 1;
+      } while (cVar1 != '\0');
+      uVar3 = FUN_00454500(~uVar4);
+      uVar4 = 0xffffffff;
+      *(undefined4 *)((int)this + 0x100) = uVar3;
+      pcVar6 = (char *)(DAT_0046aa1c + 0x21a);
+      do {
+        pcVar7 = pcVar6;
+        if (uVar4 == 0) break;
+        uVar4 = uVar4 - 1;
+        pcVar7 = pcVar6 + 1;
+        cVar1 = *pcVar6;
+        pcVar6 = pcVar7;
+      } while (cVar1 != '\0');
+      uVar4 = ~uVar4;
+      pcVar6 = pcVar7 + -uVar4;
+      pcVar7 = *(char **)((int)this + 0x100);
+      for (uVar5 = uVar4 >> 2; uVar5 != 0; uVar5 = uVar5 - 1) {
+        *(undefined4 *)pcVar7 = *(undefined4 *)pcVar6;
+        pcVar6 = pcVar6 + 4;
+        pcVar7 = pcVar7 + 4;
+      }
+      for (uVar4 = uVar4 & 3; uVar4 != 0; uVar4 = uVar4 - 1) {
+        *pcVar7 = *pcVar6;
+        pcVar6 = pcVar6 + 1;
+        pcVar7 = pcVar7 + 1;
+      }
+    }
+  }
+  return;
+}
+

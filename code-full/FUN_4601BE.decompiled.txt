@@ -1,0 +1,15 @@
+Function: TextOutA
+Address: 0x4601BE
+
+
+BOOL TextOutA(HDC hdc,int x,int y,LPCSTR lpString,int c)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601be. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = TextOutA(hdc,x,y,lpString,c);
+  return BVar1;
+}
+

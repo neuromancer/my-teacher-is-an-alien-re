@@ -1,0 +1,20 @@
+Function: FUN_00420110
+Address: 0x420110
+
+PUSH ESI
+XOR EAX,EAX
+PUSH EDI
+MOV ESI,ECX
+MOV EDI,ESI
+MOV ECX,0xb
+STOSD.REP ES:EDI
+MOV dword ptr [ESI + 0x24],EAX
+MOV EAX,0x1
+MOV dword ptr [ESI + 0x28],EAX
+MOV dword ptr [ESI + 0x20],EAX
+CALL dword ptr [0x0047649c]
+POP EDI
+MOV dword ptr [ESI],EAX
+MOV EAX,ESI
+POP ESI
+RET

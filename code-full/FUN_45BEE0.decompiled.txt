@@ -1,0 +1,11 @@
+Function: FUN_0045bee0
+Address: 0x45BEE0
+
+
+void FUN_0045bee0(void)
+
+{
+  DAT_00474f70 = HeapCreate(1,0x1000,0);
+  return;
+}
+

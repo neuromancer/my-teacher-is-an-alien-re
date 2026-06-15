@@ -1,0 +1,51 @@
+Function: FUN_0044d5c0
+Address: 0x44D5C0
+
+
+void __thiscall FUN_0044d5c0(void *this,int param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  int *piVar4;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0044d6ad;
+  *unaff_FS_OFFSET = &local_10;
+  iVar3 = *(int *)((int)this + 0xa0);
+  if (iVar3 != 0) {
+    FUN_004549a0(iVar3,0xc,*(int *)(iVar3 + -4),FUN_0044c820);
+    FUN_00454400((int *)(iVar3 + -4));
+    *(undefined4 *)((int)this + 0xa0) = 0;
+  }
+  *(int *)((int)this + 0xa8) = param_1;
+  piVar4 = (int *)0x0;
+  piVar1 = (int *)FUN_00454500(param_1 * 0xc + 4);
+  local_8 = 0;
+  if (piVar1 != (int *)0x0) {
+    piVar4 = piVar1 + 1;
+    *piVar1 = param_1;
+    FUN_00454ad0(piVar4,0xc,param_1,&LAB_0044d6d0,FUN_0044c820);
+  }
+  iVar3 = 0;
+  *(int **)((int)this + 0xa0) = piVar4;
+  if (0 < *(int *)((int)this + 0xa8)) {
+    iVar2 = 0;
+    do {
+      iVar2 = iVar2 + 0xc;
+      iVar3 = iVar3 + 1;
+      *(undefined4 *)(*(int *)((int)this + 0xa0) + -0xc + iVar2) = 0;
+      *(undefined4 *)(*(int *)((int)this + 0xa0) + -8 + iVar2) = 0;
+      *(undefined4 *)(*(int *)((int)this + 0xa0) + -4 + iVar2) = 0;
+    } while (iVar3 < *(int *)((int)this + 0xa8));
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

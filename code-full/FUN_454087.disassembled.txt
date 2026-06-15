@@ -1,0 +1,47 @@
+Function: FUN_00454087
+Address: 0x454087
+
+CMP EDI,dword ptr [0x0046d0ce]
+JL       LAB_004540f8
+CMP EDI,dword ptr [0x0046d0d2]
+JG       LAB_004540f8
+MOV EAX,[0x0046d0c6]
+CMP ECX,EAX
+JL       LAB_004540f8
+MOV EDX,dword ptr [0x0046d0ca]
+CMP EBX,EDX
+JG       LAB_004540f8
+MOV byte ptr [EBP + -0xa],0x0
+CMP EBX,EAX
+JGE      LAB_004540b6
+MOV byte ptr [EBP + -0xa],0x2
+
+LAB_004540b6:
+CMP ECX,EDX
+JLE      LAB_004540be
+OR byte ptr [EBP + -0xa],0x1
+
+LAB_004540be:
+NEG EDI
+ADD EDI,dword ptr [0x0046d0b2]
+MOV EAX,[0x0046db46]
+MUL EDI
+MOV EDI,EAX
+MOV ES,word ptr [0x0046db52]
+ADD EDI,dword ptr [0x0046db4e]
+MOV AL,[0x0046d078]
+MOV AH,byte ptr [EBP + -0xa]
+TEST AH,0x2
+JNZ      LAB_004540f0
+ADD EDI,EBX
+MOV byte ptr ES:[EDI],AL
+SUB ECX,EBX
+
+LAB_004540f0:
+TEST AH,0x1
+JNZ      LAB_004540f8
+ADD EDI,ECX
+STOSB ES:EDI
+
+LAB_004540f8:
+RET

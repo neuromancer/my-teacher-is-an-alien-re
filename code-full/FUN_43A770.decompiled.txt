@@ -1,0 +1,39 @@
+Function: FUN_0043a770
+Address: 0x43A770
+
+
+void __fastcall FUN_0043a770(undefined4 *param_1)
+
+{
+  LPVOID pvVar1;
+  int iVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  uint local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_0043a81a;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 1;
+  pvVar1 = (LPVOID)*param_1;
+  if (pvVar1 != (LPVOID)0x0) {
+    FUN_00410fd0((int)pvVar1);
+    FUN_00454400(pvVar1);
+    *param_1 = 0;
+  }
+  iVar2 = param_1[5];
+  if (iVar2 != 0) {
+    FUN_004549a0(iVar2,0x10,*(int *)(iVar2 + -4),(_func_void_void_ptr *)0x401130);
+    FUN_00454400((int *)(iVar2 + -4));
+    param_1[5] = 0;
+  }
+  local_8 = local_8 & 0xffffff00;
+  *(undefined1 *)(param_1 + 0xe) = 0;
+  FUN_0043a80f();
+  local_8 = 0xffffffff;
+  FUN_0043a824();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

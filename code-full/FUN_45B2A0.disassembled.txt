@@ -1,0 +1,88 @@
+Function: __mbspbrk
+Address: 0x45B2A0
+
+CMP dword ptr [0x00471fa4],0x0
+PUSH EBX
+PUSH ESI
+PUSH EDI
+PUSH EBP
+JNZ      LAB_0045b2c4
+MOV EBP,dword ptr [ESP + 0x18]
+MOV ESI,dword ptr [ESP + 0x14]
+PUSH EBP
+PUSH ESI
+CALL 0x0045dfb0
+ADD ESP,0x8
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET
+
+LAB_0045b2c4:
+MOV ESI,dword ptr [ESP + 0x14]
+CMP byte ptr [ESI],0x0
+JZ       LAB_0045b32c
+MOV EBP,dword ptr [ESP + 0x18]
+MOV EDX,0x4
+MOV CL,byte ptr [EBP]
+
+LAB_0045b2d9:
+MOV EDI,EBP
+TEST CL,CL
+JZ       LAB_0045b30f
+
+LAB_0045b2df:
+MOV AL,byte ptr [EDI]
+XOR EBX,EBX
+MOV BL,AL
+TEST byte ptr [EBX + 0x471ea1],DL
+JZ       LAB_0045b305
+CMP byte ptr [ESI],AL
+JNZ      LAB_0045b2f9
+MOV AL,byte ptr [EDI + 0x1]
+CMP byte ptr [ESI + 0x1],AL
+JZ       LAB_0045b30f
+
+LAB_0045b2f9:
+LEA EAX,[EDI + 0x1]
+CMP byte ptr [EAX],0x0
+JZ       LAB_0045b30f
+MOV EDI,EAX
+JMP      LAB_0045b309
+
+LAB_0045b305:
+CMP byte ptr [ESI],AL
+JZ       LAB_0045b30f
+
+LAB_0045b309:
+INC EDI
+CMP byte ptr [EDI],0x0
+JNZ      LAB_0045b2df
+
+LAB_0045b30f:
+CMP byte ptr [EDI],0x0
+JNZ      LAB_0045b32c
+XOR EAX,EAX
+MOV AL,byte ptr [ESI]
+TEST byte ptr [EAX + 0x471ea1],DL
+JZ       LAB_0045b326
+INC ESI
+CMP byte ptr [ESI],0x0
+JZ       LAB_0045b32c
+
+LAB_0045b326:
+INC ESI
+CMP byte ptr [ESI],0x0
+JNZ      LAB_0045b2d9
+
+LAB_0045b32c:
+MOV EAX,0x0
+POP EBP
+POP EDI
+CMP byte ptr [ESI],0x1
+ADC EAX,-0x1
+AND EAX,ESI
+POP ESI
+POP EBX
+RET

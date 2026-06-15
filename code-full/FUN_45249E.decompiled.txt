@@ -1,0 +1,15 @@
+Function: GetActiveWindow
+Address: 0x45249E
+
+
+HWND GetActiveWindow(void)
+
+{
+  HWND pHVar1;
+  
+// WARNING: Could not recover jumptable at 0x0045249e. Too many branches
+// WARNING: Treating indirect jump as call
+  pHVar1 = GetActiveWindow();
+  return pHVar1;
+}
+

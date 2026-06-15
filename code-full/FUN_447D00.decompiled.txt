@@ -1,0 +1,20 @@
+Function: FUN_00447d00
+Address: 0x447D00
+
+
+bool FUN_00447d00(int param_1)
+
+{
+  bool bVar1;
+  
+  if (*(int *)(param_1 + 0x10) != 0x37) {
+    FUN_00425c50(s_EngineSpaceShipNav__OnLogicMessa_0046c45c);
+  }
+  bVar1 = *(int *)(param_1 + 0x14) == 2;
+  if (bVar1) {
+    FUN_00444d90(1,*(undefined4 *)(param_1 + 0x1c),0x41,1,4,0,0,0,0,0);
+    FUN_00444d90(0x20,*(undefined4 *)(param_1 + 0x20),0x41,1,4,0,0,0,0,0);
+  }
+  return bVar1;
+}
+

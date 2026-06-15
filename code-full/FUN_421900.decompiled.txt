@@ -1,0 +1,16 @@
+Function: FUN_00421900
+Address: 0x421900
+
+
+void __thiscall FUN_00421900(void *this,uint param_1)
+
+{
+  uint uVar1;
+  
+  FUN_004218c0(this);
+  do {
+    uVar1 = FUN_004218e0(this);
+  } while (uVar1 < param_1);
+  return;
+}
+

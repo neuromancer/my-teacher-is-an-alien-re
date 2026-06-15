@@ -1,0 +1,28 @@
+Function: FUN_00454fb0
+Address: 0x454FB0
+
+
+int __cdecl FUN_00454fb0(FILETIME *param_1)
+
+{
+  BOOL BVar1;
+  int iVar2;
+  _SYSTEMTIME local_18;
+  _FILETIME local_8;
+  
+  if ((param_1->dwLowDateTime == 0) && (param_1->dwHighDateTime == 0)) {
+    return -1;
+  }
+  BVar1 = FileTimeToLocalFileTime(param_1,&local_8);
+  if (BVar1 != 0) {
+    BVar1 = FileTimeToSystemTime(&local_8,&local_18);
+    if (BVar1 != 0) {
+      iVar2 = FUN_0045a200(local_18._0_4_ & 0xffff,(uint)local_18._0_4_ >> 0x10,(uint)local_18.wDay,
+                           local_18._8_4_ & 0xffff,(uint)local_18._8_4_ >> 0x10,
+                           local_18._12_4_ & 0xffff);
+      return iVar2;
+    }
+  }
+  return -1;
+}
+

@@ -1,0 +1,21 @@
+Function: FUN_0040e070
+Address: 0x40E070
+
+
+void __fastcall FUN_0040e070(int param_1)
+
+{
+  void *this;
+  
+  this = *(void **)(param_1 + 0x120);
+  if (*(int *)((int)this + 0x98) != 0) {
+    this = *(void **)(param_1 + 0x124);
+    if (*(int *)((int)this + 0x98) != 0) goto LAB_0040e0b7;
+  }
+  FUN_0044cb40(this,2,*(int *)(*(int *)((int)this + 0x90) + 4) -
+                      *(int *)(*(int *)(*(int *)((int)this + 0xf0) + 0xc) + 0x374));
+LAB_0040e0b7:
+  FUN_0044cb40(*(void **)(param_1 + 0x128),-1,0);
+  return;
+}
+

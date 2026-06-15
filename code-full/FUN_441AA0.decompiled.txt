@@ -1,0 +1,18 @@
+Function: FUN_00441aa0
+Address: 0x441AA0
+
+
+void __thiscall FUN_00441aa0(void *this,undefined4 param_1,int param_2)
+
+{
+  int iVar1;
+  
+  if (*(int *)((int)this + 0x90) == param_2) {
+    iVar1 = (**(code **)(*DAT_0046ae78 + 0x38))();
+    if ((iVar1 != 0) || (DAT_0046ae78[0x37] != 0)) {
+      FUN_00441b60((int)this);
+    }
+  }
+  return;
+}
+

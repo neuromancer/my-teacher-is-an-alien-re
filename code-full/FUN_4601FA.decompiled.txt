@@ -1,0 +1,15 @@
+Function: CreatePalette
+Address: 0x4601FA
+
+
+HPALETTE CreatePalette(LOGPALETTE *plpal)
+
+{
+  HPALETTE pHVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601fa. Too many branches
+// WARNING: Treating indirect jump as call
+  pHVar1 = CreatePalette(plpal);
+  return pHVar1;
+}
+

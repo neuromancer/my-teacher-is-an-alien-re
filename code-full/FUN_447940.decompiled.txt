@@ -1,0 +1,11 @@
+Function: thunk_FUN_004494e0
+Address: 0x447940
+
+
+void __fastcall thunk_FUN_004494e0(int param_1)
+
+{
+  FUN_004494e0(param_1);
+  return;
+}
+

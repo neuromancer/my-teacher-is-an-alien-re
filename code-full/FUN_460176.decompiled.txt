@@ -1,0 +1,15 @@
+Function: GetProcAddress
+Address: 0x460176
+
+
+FARPROC GetProcAddress(HMODULE hModule,LPCSTR lpProcName)
+
+{
+  FARPROC pFVar1;
+  
+// WARNING: Could not recover jumptable at 0x00460176. Too many branches
+// WARNING: Treating indirect jump as call
+  pFVar1 = GetProcAddress(hModule,lpProcName);
+  return pFVar1;
+}
+

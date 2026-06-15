@@ -1,0 +1,5 @@
+Function: FUN_004219e0
+Address: 0x4219E0
+
+MOV dword ptr [ECX],0x0
+RET

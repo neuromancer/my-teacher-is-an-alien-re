@@ -1,0 +1,14 @@
+Function: FUN_00410ff0
+Address: 0x410FF0
+
+PUSH EDI
+MOV EDX,ECX
+MOV EDI,EDX
+XOR EAX,EAX
+MOV ECX,0xc
+STOSD.REP ES:EDI
+MOV dword ptr [EDX + 0x1c],0xffffffff
+MOV dword ptr [EDX],0xffffffff
+CALL 0x00410ea0
+POP EDI
+RET

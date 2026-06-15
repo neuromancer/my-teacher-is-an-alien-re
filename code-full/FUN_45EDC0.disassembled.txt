@@ -1,0 +1,26 @@
+Function: ___shr_12
+Address: 0x45EDC0
+
+PUSH ESI
+PUSH EDI
+MOV ESI,dword ptr [ESP + 0xc]
+MOV ECX,dword ptr [ESI + 0x8]
+MOV EAX,dword ptr [ESI + 0x4]
+MOV EDX,ECX
+MOV EDI,EAX
+SHR ECX,0x1
+AND EDX,0x1
+SHL EDX,0x1f
+AND EDI,0x1
+SHL EDI,0x1f
+MOV dword ptr [ESI + 0x8],ECX
+SHR EAX,0x1
+OR EAX,EDX
+MOV dword ptr [ESI + 0x4],EAX
+MOV EAX,dword ptr [ESI]
+SHR EAX,0x1
+OR EAX,EDI
+POP EDI
+MOV dword ptr [ESI],EAX
+POP ESI
+RET

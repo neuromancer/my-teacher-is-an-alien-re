@@ -1,0 +1,29 @@
+Function: FUN_0040b7e0
+Address: 0x40B7E0
+
+PUSH ESI
+PUSH EDI
+MOV EDI,ECX
+MOV ESI,dword ptr [ESP + 0xc]
+PUSH ESI
+CALL 0x00449400
+TEST EAX,EAX
+JZ       LAB_0040b7fc
+MOV EAX,0x1
+POP EDI
+POP ESI
+RET 0x4
+
+LAB_0040b7fc:
+CMP dword ptr [ESI + 0x2c],0x1b
+JNZ      LAB_0040b818
+CMP dword ptr [EDI + 0x98],0x2b
+JNZ      LAB_0040b818
+MOV EAX,dword ptr [EDI + 0xa8]
+MOV dword ptr [EAX + 0x8],0x1
+
+LAB_0040b818:
+MOV EAX,0x1
+POP EDI
+POP ESI
+RET 0x4

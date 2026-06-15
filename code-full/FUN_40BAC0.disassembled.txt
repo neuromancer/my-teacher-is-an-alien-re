@@ -1,0 +1,6 @@
+Function: FUN_0040bac0
+Address: 0x40BAC0
+
+CALL 0x00449520
+MOV ECX,dword ptr [0x0046ae78]
+JMP 0x0042be00

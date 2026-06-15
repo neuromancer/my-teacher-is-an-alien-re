@@ -1,0 +1,16 @@
+Function: __cftoe_g
+Address: 0x459F90
+
+MOV EAX,dword ptr [ESP + 0x10]
+MOV ECX,dword ptr [ESP + 0xc]
+MOV EDX,dword ptr [ESP + 0x8]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH ECX
+MOV byte ptr [0x00471d20],0x1
+PUSH EDX
+PUSH EAX
+CALL 0x00459ca0
+MOV byte ptr [0x00471d20],0x0
+ADD ESP,0x10
+RET

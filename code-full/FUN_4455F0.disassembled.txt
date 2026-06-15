@@ -1,0 +1,14 @@
+Function: FUN_004455f0
+Address: 0x4455F0
+
+MOV EAX,dword ptr [ESP + 0x4]
+TEST EAX,EAX
+JL       LAB_00445606
+MOV EDX,dword ptr [ESP + 0x8]
+TEST EDX,EDX
+JL       LAB_00445606
+MOV dword ptr [ECX + 0x10],EAX
+MOV dword ptr [ECX + 0x14],EDX
+
+LAB_00445606:
+RET 0x8

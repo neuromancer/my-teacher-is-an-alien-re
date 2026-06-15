@@ -1,0 +1,11 @@
+Function: FUN_00411e80
+Address: 0x411E80
+
+MOV EAX,dword ptr [ESP + 0x8]
+MOV ECX,dword ptr [ESP + 0x4]
+ADD dword ptr [ECX],EAX
+ADD dword ptr [ECX + 0x8],EAX
+MOV EAX,dword ptr [ESP + 0xc]
+ADD dword ptr [ECX + 0x4],EAX
+ADD dword ptr [ECX + 0xc],EAX
+RET

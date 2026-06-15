@@ -1,0 +1,49 @@
+Function: _mbtowc
+Address: 0x45C780
+
+
+/* Library Function - Single Match
+    _mbtowc
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl _mbtowc(wchar_t *_DstCh,char *_SrcCh,size_t _SrcSizeInBytes)
+
+{
+  byte bVar1;
+  int iVar2;
+  
+  if ((_SrcCh == (char *)0x0) || (_SrcSizeInBytes == 0)) {
+    return 0;
+  }
+  bVar1 = *_SrcCh;
+  if (bVar1 == 0) {
+    if (_DstCh != (wchar_t *)0x0) {
+      *_DstCh = L'\0';
+    }
+    return 0;
+  }
+  if (DAT_00472840 != 0) {
+    if ((PTR_DAT_00471a30[(uint)bVar1 * 2 + 1] & 0x80) == 0) {
+      iVar2 = MultiByteToWideChar(DAT_00472850,9,_SrcCh,1,_DstCh,(uint)(_DstCh != (wchar_t *)0x0));
+      if (iVar2 != 0) {
+        return 1;
+      }
+      DAT_004719c0 = 0x2a;
+      return -1;
+    }
+    if (((((int)DAT_00471c3c < 2) || ((int)_SrcSizeInBytes < (int)DAT_00471c3c)) ||
+        (iVar2 = MultiByteToWideChar(DAT_00472850,9,_SrcCh,DAT_00471c3c,_DstCh,
+                                     (uint)(_DstCh != (wchar_t *)0x0)), iVar2 == 0)) &&
+       ((_SrcSizeInBytes < DAT_00471c3c || (_SrcCh[1] == '\0')))) {
+      DAT_004719c0 = 0x2a;
+      return -1;
+    }
+    return DAT_00471c3c;
+  }
+  if (_DstCh != (wchar_t *)0x0) {
+    *_DstCh = (ushort)bVar1;
+  }
+  return 1;
+}
+

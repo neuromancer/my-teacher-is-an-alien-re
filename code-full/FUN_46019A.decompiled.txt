@@ -1,0 +1,15 @@
+Function: GetWindowWord
+Address: 0x46019A
+
+
+WORD GetWindowWord(HWND hWnd,int nIndex)
+
+{
+  WORD WVar1;
+  
+// WARNING: Could not recover jumptable at 0x0046019a. Too many branches
+// WARNING: Treating indirect jump as call
+  WVar1 = GetWindowWord(hWnd,nIndex);
+  return WVar1;
+}
+

@@ -1,0 +1,20 @@
+Function: FUN_0044e8b0
+Address: 0x44E8B0
+
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0x8]
+PUSH ESI
+CALL 0x004309c0
+CMP dword ptr [ESI + 0x24],0x2
+JL       LAB_0044e8e0
+MOV EAX,0x1
+MOV dword ptr [ESI],0x25
+MOV dword ptr [ESI + 0x4],EAX
+MOV dword ptr [ESI + 0xc],EAX
+MOV dword ptr [ESI + 0x8],0x29
+MOV dword ptr [ESI + 0x10],0x4
+
+LAB_0044e8e0:
+MOV EAX,0x1
+POP ESI
+RET 0x4

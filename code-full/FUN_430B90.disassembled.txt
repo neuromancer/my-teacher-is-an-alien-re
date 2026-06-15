@@ -1,0 +1,124 @@
+Function: FUN_00430b90
+Address: 0x430B90
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+PUSH EBP
+MOV ESI,dword ptr [ECX + 0x8]
+MOV EDI,ECX
+TEST ESI,ESI
+JZ       LAB_00430bb4
+MOV ECX,ESI
+CALL 0x004218b0
+PUSH ESI
+CALL 0x00454400
+MOV dword ptr [EDI + 0x8],0x0
+ADD ESP,0x4
+
+LAB_00430bb4:
+MOV ESI,dword ptr [EDI + 0xc]
+TEST ESI,ESI
+JZ       LAB_00430bd2
+MOV ECX,ESI
+CALL 0x004218b0
+PUSH ESI
+CALL 0x00454400
+MOV dword ptr [EDI + 0xc],0x0
+ADD ESP,0x4
+
+LAB_00430bd2:
+MOV ESI,dword ptr [EDI + 0x10]
+TEST ESI,ESI
+JZ       LAB_00430c7c
+MOV EAX,dword ptr [ESI]
+TEST EAX,EAX
+JZ       LAB_00430c6c
+MOV dword ptr [ESI + 0x8],EAX
+CMP dword ptr [ESI],0x0
+JZ       LAB_00430c6c
+XOR EBX,EBX
+
+LAB_00430bf1:
+MOV EAX,dword ptr [ESI + 0x8]
+TEST EAX,EAX
+JNZ      LAB_00430bfc
+XOR ECX,ECX
+JMP      LAB_00430c5d
+
+LAB_00430bfc:
+CMP dword ptr [ESI],EAX
+JNZ      LAB_00430c05
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ESI],EAX
+
+LAB_00430c05:
+MOV EAX,dword ptr [ESI + 0x8]
+CMP dword ptr [ESI + 0x4],EAX
+JNZ      LAB_00430c12
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [ESI + 0x4],EAX
+
+LAB_00430c12:
+MOV EAX,dword ptr [ESI + 0x8]
+MOV ECX,dword ptr [EAX]
+TEST ECX,ECX
+JZ       LAB_00430c21
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x4],EAX
+
+LAB_00430c21:
+MOV EAX,dword ptr [ESI + 0x8]
+MOV ECX,dword ptr [EAX + 0x4]
+TEST ECX,ECX
+JZ       LAB_00430c2f
+MOV EAX,dword ptr [EAX]
+MOV dword ptr [ECX],EAX
+
+LAB_00430c2f:
+MOV EAX,dword ptr [ESI + 0x8]
+MOV EBP,0x0
+TEST EAX,EAX
+JZ       LAB_00430c3e
+MOV EBP,dword ptr [EAX + 0x8]
+
+LAB_00430c3e:
+TEST EAX,EAX
+JZ       LAB_00430c56
+PUSH EAX
+MOV dword ptr [EAX + 0x8],EBX
+MOV dword ptr [EAX],EBX
+MOV dword ptr [EAX + 0x4],EBX
+CALL 0x00454400
+ADD ESP,0x4
+MOV dword ptr [ESI + 0x8],EBX
+
+LAB_00430c56:
+MOV EAX,dword ptr [ESI]
+MOV ECX,EBP
+MOV dword ptr [ESI + 0x8],EAX
+
+LAB_00430c5d:
+TEST ECX,ECX
+JZ       LAB_00430c68
+PUSH 0x1
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX + 0xc]
+
+LAB_00430c68:
+CMP dword ptr [ESI],EBX
+JNZ      LAB_00430bf1
+
+LAB_00430c6c:
+PUSH ESI
+CALL 0x00454400
+MOV dword ptr [EDI + 0x10],0x0
+ADD ESP,0x4
+
+LAB_00430c7c:
+MOV dword ptr [EDI + 0x18],0x0
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+RET

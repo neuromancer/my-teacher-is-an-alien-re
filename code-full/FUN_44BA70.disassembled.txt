@@ -1,0 +1,6 @@
+Function: FUN_0044ba70
+Address: 0x44BA70
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV dword ptr [ECX + 0x90],EAX
+RET 0x4

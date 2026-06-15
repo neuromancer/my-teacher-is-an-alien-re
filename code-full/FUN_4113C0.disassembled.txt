@@ -1,0 +1,30 @@
+Function: FUN_004113c0
+Address: 0x4113C0
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x1c]
+MOV ESI,ECX
+PUSH EAX
+CALL 0x00411210
+MOV EAX,dword ptr [ESP + 0x24]
+MOV ECX,dword ptr [ESP + 0x20]
+MOV EDX,dword ptr [ESP + 0x1c]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x1c]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x1c]
+PUSH EDX
+MOV EDX,dword ptr [ESP + 0x1c]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x1c]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x1c]
+PUSH EDX
+PUSH EAX
+PUSH ECX
+CALL 0x00452e0f
+ADD ESP,0x20
+MOV ECX,ESI
+CALL 0x00411240
+POP ESI
+RET 0x20

@@ -1,0 +1,45 @@
+Function: FUN_00452bae
+Address: 0x452BAE
+
+
+undefined8 __fastcall FUN_00452bae(undefined4 param_1,undefined4 param_2,uint param_3)
+
+{
+  longlong lVar1;
+  undefined4 uVar2;
+  int iVar3;
+  undefined2 in_DS;
+  
+  lVar1 = CONCAT44(param_2,DAT_0046db4a);
+  if (param_3 < 0x20) {
+    iVar3 = param_3 * 4;
+    if ((&DAT_0046de54)[param_3] == 0) {
+      uVar2 = 0xfffffffe;
+      lVar1 = CONCAT44(param_3,DAT_0046db4a);
+    }
+    else {
+      if (DAT_0046e004 != (HDC)0x0) {
+        SelectObject(DAT_0046e004,*(HGDIOBJ *)(&DAT_0046dbd4 + iVar3));
+      }
+      DAT_0046db3c = (undefined1)param_3;
+      DAT_0046d0ae = *(uint *)(&DAT_0046df54 + iVar3);
+      DAT_0046d0ba = *(uint *)(&DAT_0046ded4 + iVar3);
+      DAT_0046d0b2 = DAT_0046d0ba - 1;
+      DAT_0046d0c6 = *(undefined4 *)(&DAT_0046dd54 + iVar3);
+      DAT_0046d0ca = *(undefined4 *)(&DAT_0046dc54 + iVar3);
+      DAT_0046d0ce = *(undefined4 *)(&DAT_0046ddd4 + iVar3);
+      DAT_0046d0d2 = *(undefined4 *)(&DAT_0046dcd4 + iVar3);
+      DAT_0046db4e = (&DAT_0046de54)[param_3];
+      lVar1 = (ulonglong)DAT_0046d0ae * (ulonglong)DAT_0046d0ba;
+      uVar2 = 0;
+      DAT_0046db46 = DAT_0046d0ae;
+      DAT_0046db52 = in_DS;
+    }
+  }
+  else {
+    uVar2 = 0xffffffff;
+  }
+  DAT_0046db4a = (undefined4)lVar1;
+  return CONCAT44((int)((ulonglong)lVar1 >> 0x20),uVar2);
+}
+

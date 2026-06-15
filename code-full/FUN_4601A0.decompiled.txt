@@ -1,0 +1,15 @@
+Function: ScreenToClient
+Address: 0x4601A0
+
+
+BOOL ScreenToClient(HWND hWnd,LPPOINT lpPoint)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601a0. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = ScreenToClient(hWnd,lpPoint);
+  return BVar1;
+}
+

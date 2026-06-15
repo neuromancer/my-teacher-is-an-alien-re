@@ -1,0 +1,48 @@
+Function: FUN_00442c70
+Address: 0x442C70
+
+MOV dword ptr [0x0046bff0],0x0
+SUB ESP,0x80
+MOV dword ptr [0x0046bff4],0x0
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x100]
+MOV ESI,ECX
+PUSH EAX
+LEA ECX,[ESP + 0x8]
+PUSH 0x46c030
+PUSH ECX
+CALL 0x00454510
+LEA ECX,[ESP + 0x10]
+ADD ESP,0xc
+PUSH ECX
+MOV ECX,ESI
+CALL 0x0044d700
+PUSH 0x28
+MOV ECX,ESI
+CALL 0x0044d2a0
+MOV EAX,dword ptr [ESI + 0x94]
+MOV ECX,ESI
+OR EAX,0x40
+MOV dword ptr [ESI + 0x94],EAX
+AND EAX,0xfffffffd
+MOV dword ptr [ESI + 0x94],EAX
+OR EAX,0x100
+MOV dword ptr [ESI + 0x94],EAX
+CALL 0x0044ca50
+MOV ECX,dword ptr [0x0046ae58]
+MOV EDX,dword ptr [ECX + 0x1bc]
+MOV dword ptr [ESI + 0x150],EDX
+MOV ECX,dword ptr [0x0046ae58]
+MOV EAX,dword ptr [ECX + 0x1c0]
+MOV dword ptr [ESI + 0x154],EAX
+MOV ECX,dword ptr [0x0046ae58]
+MOV EDX,dword ptr [ECX + 0x1c4]
+MOV dword ptr [ESI + 0x158],EDX
+MOV ECX,dword ptr [0x0046ae58]
+MOV EAX,dword ptr [ECX + 0x1c8]
+MOV dword ptr [ESI + 0x128],0x1
+MOV dword ptr [ESI + 0x124],0x0
+MOV dword ptr [ESI + 0x15c],EAX
+POP ESI
+ADD ESP,0x80
+RET

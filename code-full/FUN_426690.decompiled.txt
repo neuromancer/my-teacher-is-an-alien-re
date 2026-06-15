@@ -1,0 +1,31 @@
+Function: FUN_00426690
+Address: 0x426690
+
+
+int __cdecl FUN_00426690(int param_1)
+
+{
+  BOOL BVar1;
+  int iVar2;
+  char *lpRootPathName;
+  DWORD local_18;
+  DWORD local_14;
+  DWORD local_10;
+  DWORD local_c;
+  char local_8 [8];
+  
+  iVar2 = -1;
+  if (param_1 == 0) {
+    lpRootPathName = (LPCSTR)0x0;
+  }
+  else {
+    _sprintf(local_8,&DAT_0046abf8,param_1 + 0x40);
+    lpRootPathName = local_8;
+  }
+  BVar1 = GetDiskFreeSpaceA(lpRootPathName,&local_10,&local_14,&local_18,&local_c);
+  if (BVar1 != 0) {
+    iVar2 = local_18 * local_14 * local_10;
+  }
+  return iVar2;
+}
+

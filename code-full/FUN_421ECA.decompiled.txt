@@ -1,0 +1,15 @@
+Function: FUN_00421eca
+Address: 0x421ECA
+
+
+void FUN_00421eca(void)
+
+{
+  int unaff_EBP;
+  
+  if ((*(byte *)(unaff_EBP + -0x1c) & 4) != 0) {
+    return;
+  }
+  return;
+}
+

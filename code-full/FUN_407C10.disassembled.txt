@@ -1,0 +1,7 @@
+Function: FUN_00407c10
+Address: 0x407C10
+
+PUSH 0x1
+MOV ECX,dword ptr [ECX + 0x148]
+CALL 0x00425550
+RET

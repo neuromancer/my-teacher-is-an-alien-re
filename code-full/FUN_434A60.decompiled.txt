@@ -1,0 +1,11 @@
+Function: FUN_00434a60
+Address: 0x434A60
+
+
+void __thiscall FUN_00434a60(void *this,char *param_1)
+
+{
+  _sscanf(param_1,s__d__d_0046b904,(int)this + 0x90,(int)this + 0x94);
+  return;
+}
+

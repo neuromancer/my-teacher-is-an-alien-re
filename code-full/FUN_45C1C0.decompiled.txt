@@ -1,0 +1,11 @@
+Function: FUN_0045c1c0
+Address: 0x45C1C0
+
+
+void FUN_0045c1c0(void)
+
+{
+  SetUnhandledExceptionFilter(DAT_00473f2c);
+  return;
+}
+

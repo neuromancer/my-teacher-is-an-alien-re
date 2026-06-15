@@ -1,0 +1,44 @@
+Function: FUN_004381e0
+Address: 0x4381E0
+
+MOV EAX,dword ptr [ECX + 0x90]
+MOV EDX,dword ptr [ESP + 0x4]
+CMP dword ptr [EDX + 0x2c],0x1b
+MOV dword ptr [EDX + 0x8],EAX
+MOV EAX,dword ptr [ECX + 0x94]
+MOV dword ptr [EDX + 0x10],0x0
+MOV dword ptr [EDX + 0xc],EAX
+JNZ      LAB_00438210
+CALL     LAB_004382f0
+MOV EAX,0x1
+RET 0x4
+
+LAB_00438210:
+CMP dword ptr [EDX + 0x24],0x1
+JL       LAB_0043826e
+MOV EAX,dword ptr [EDX + 0x1c]
+CMP dword ptr [ECX + 0xcc],EAX
+JG       LAB_00438262
+CMP dword ptr [ECX + 0xd4],EAX
+JL       LAB_00438262
+MOV EAX,dword ptr [EDX + 0x20]
+CMP dword ptr [ECX + 0xd0],EAX
+JG       LAB_00438262
+CMP dword ptr [ECX + 0xd8],EAX
+JL       LAB_00438262
+MOV EAX,[0x0046bbfc]
+OR dword ptr [EAX + 0xb8],0x1
+CMP dword ptr [EDX + 0x24],0x1
+JLE      LAB_0043826e
+OR dword ptr [ECX + 0x164],0x2
+CALL     LAB_004382f0
+MOV EAX,0x1
+RET 0x4
+
+LAB_00438262:
+MOV EAX,[0x0046bbfc]
+AND dword ptr [EAX + 0xb8],0xfffffffe
+
+LAB_0043826e:
+MOV EAX,0x1
+RET 0x4

@@ -1,0 +1,20 @@
+Function: __inc
+Address: 0x459950
+
+MOV EDX,dword ptr [ESP + 0x4]
+MOV EAX,dword ptr [EDX + 0x4]
+DEC EAX
+MOV dword ptr [EDX + 0x4],EAX
+JS       LAB_00459969
+MOV ECX,dword ptr [EDX]
+LEA EAX,[ECX + 0x1]
+MOV dword ptr [EDX],EAX
+XOR EAX,EAX
+MOV AL,byte ptr [ECX]
+RET
+
+LAB_00459969:
+PUSH EDX
+CALL 0x004585a0
+ADD ESP,0x4
+RET

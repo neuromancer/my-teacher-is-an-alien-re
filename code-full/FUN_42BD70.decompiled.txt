@@ -1,0 +1,10 @@
+Function: FUN_0042bd70
+Address: 0x42BD70
+
+
+undefined4 FUN_0042bd70(void)
+
+{
+  return 0;
+}
+

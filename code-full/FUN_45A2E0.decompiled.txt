@@ -1,0 +1,57 @@
+Function: __close
+Address: 0x45A2E0
+
+
+/* Library Function - Single Match
+    __close
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl __close(int _FileHandle)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  HANDLE hObject;
+  BOOL BVar5;
+  DWORD DVar6;
+  
+  if (DAT_00474f74 <= (uint)_FileHandle) {
+    DAT_004719c0 = 9;
+    DAT_004719c4 = 0;
+    return -1;
+  }
+  piVar1 = (int *)((int)&DAT_00474f80 + ((int)(_FileHandle & 0xffffffe7U) >> 3));
+  iVar2 = (_FileHandle & 0x1fU) * 8;
+  if ((*(byte *)(*piVar1 + 4 + iVar2) & 1) == 0) {
+    DAT_004719c0 = 9;
+    DAT_004719c4 = 0;
+    return -1;
+  }
+  if ((_FileHandle == 1) || (_FileHandle == 2)) {
+    iVar3 = FUN_0045d800(1);
+    iVar4 = FUN_0045d800(2);
+    if (iVar3 != iVar4) goto LAB_0045a33b;
+  }
+  else {
+LAB_0045a33b:
+    hObject = (HANDLE)FUN_0045d800(_FileHandle);
+    BVar5 = CloseHandle(hObject);
+    if (BVar5 == 0) {
+      DVar6 = GetLastError();
+      goto LAB_0045a35b;
+    }
+  }
+  DVar6 = 0;
+LAB_0045a35b:
+  FUN_0045d770(_FileHandle);
+  if (DVar6 == 0) {
+    *(undefined1 *)(*piVar1 + 4 + iVar2) = 0;
+    return 0;
+  }
+  FUN_0045a860(DVar6);
+  return -1;
+}
+

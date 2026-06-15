@@ -1,0 +1,42 @@
+Function: FUN_00430fa0
+Address: 0x430FA0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x431019
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+MOV EAX,dword ptr [ECX + 0x14]
+SUB ESP,0x40
+MOV dword ptr [EBP + -0x10],ECX
+MOV dword ptr [EBP + -0x14],0x0
+CMP dword ptr [EAX + 0x8],0x0
+JZ       LAB_00431008
+
+LAB_00430fce:
+LEA EAX,[EBP + -0x4c]
+MOV EDX,dword ptr [EBP + -0x10]
+PUSH EAX
+MOV ECX,dword ptr [EDX + 0x14]
+CALL 0x0042cab0
+PUSH EAX
+MOV ECX,dword ptr [EBP + -0x10]
+MOV dword ptr [EBP + -0x4],0x0
+CALL     LAB_00431030
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL     LAB_00431023
+MOV ECX,dword ptr [EBP + -0x10]
+INC dword ptr [EBP + -0x14]
+MOV EDX,dword ptr [ECX + 0x14]
+CMP dword ptr [EDX + 0x8],0x0
+JNZ      LAB_00430fce
+
+LAB_00431008:
+MOV EAX,dword ptr [EBP + -0x14]
+MOV ECX,dword ptr [EBP + -0xc]
+MOV dword ptr FS:[0x0],ECX
+MOV ESP,EBP
+POP EBP
+RET

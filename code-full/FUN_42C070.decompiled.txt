@@ -1,0 +1,35 @@
+Function: FUN_0042c070
+Address: 0x42C070
+
+
+void FUN_0042c070(void)
+
+{
+  int *piVar1;
+  
+  if (*(undefined4 **)(DAT_0046aa08 + 0x1a0) == (undefined4 *)0x0) {
+    *(undefined4 *)(DAT_0046ae60 + 0xa0) = 0;
+  }
+  else {
+    *(undefined4 *)(DAT_0046ae60 + 0xa0) = **(undefined4 **)(DAT_0046aa08 + 0x1a0);
+  }
+  if (*(int *)(DAT_0046aa08 + 0x1a0) == 0) {
+    *(undefined4 *)(DAT_0046ae60 + 0xa4) = 0;
+  }
+  else {
+    *(undefined4 *)(DAT_0046ae60 + 0xa4) = *(undefined4 *)(*(int *)(DAT_0046aa08 + 0x1a0) + 4);
+  }
+  piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+  if (piVar1 != (int *)0x0) {
+    if (0xaa < *piVar1) {
+      FUN_00445640(DAT_0046ae54,*(int *)((int)DAT_0046ae54 + 0x18) + 4);
+      return;
+    }
+    if ((piVar1 != (int *)0x0) && (0x95 < *piVar1)) {
+      return;
+    }
+  }
+  FUN_00445640(DAT_0046ae54,*(int *)((int)DAT_0046ae54 + 0x18) + -4);
+  return;
+}
+

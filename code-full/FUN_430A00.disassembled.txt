@@ -1,0 +1,112 @@
+Function: FUN_00430a00
+Address: 0x430A00
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x430b6f
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0xc
+XOR EAX,EAX
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV EDI,ECX
+MOV ESI,ECX
+MOV ECX,0xa
+PUSH 0x14
+STOSD.REP ES:EDI
+CALL 0x00454500
+MOV dword ptr [EBP + -0x10],EAX
+ADD ESP,0x4
+MOV dword ptr [EBP + -0x4],0x0
+MOV EBX,EAX
+MOV EAX,0x0
+TEST EBX,EBX
+JZ       LAB_00430a51
+MOV ECX,EBX
+CALL 0x00421880
+
+LAB_00430a51:
+MOV dword ptr [EBP + -0x4],0xffffffff
+PUSH 0x14
+MOV dword ptr [ESI + 0x8],EAX
+CALL 0x00454500
+MOV dword ptr [EBP + -0x14],EAX
+ADD ESP,0x4
+MOV dword ptr [EBP + -0x4],0x1
+MOV EDI,EAX
+MOV EAX,0x0
+TEST EDI,EDI
+JZ       LAB_00430a81
+MOV ECX,EDI
+CALL 0x00421880
+
+LAB_00430a81:
+MOV dword ptr [EBP + -0x4],0xffffffff
+PUSH 0x10
+MOV dword ptr [ESI + 0xc],EAX
+CALL 0x00454500
+MOV dword ptr [EBP + -0x18],EAX
+ADD ESP,0x4
+MOV dword ptr [EBP + -0x4],0x2
+MOV EBX,EAX
+XOR EAX,EAX
+TEST EBX,EBX
+JZ       LAB_00430ab8
+MOV dword ptr [EBX + 0xc],EAX
+MOV dword ptr [EBX],EAX
+MOV dword ptr [EBX + 0x4],EAX
+MOV EAX,dword ptr [EBX]
+MOV dword ptr [EBX + 0x8],EAX
+MOV EAX,EBX
+JMP      LAB_00430aba
+
+LAB_00430ab8:
+XOR EAX,EAX
+
+LAB_00430aba:
+MOV dword ptr [EBP + -0x4],0xffffffff
+PUSH 0x18
+MOV dword ptr [ESI + 0x10],EAX
+MOV dword ptr [ESI + 0x18],0x0
+CALL 0x00454500
+MOV dword ptr [EBP + -0x10],EAX
+ADD ESP,0x4
+MOV EDI,EAX
+MOV EAX,0x3
+MOV dword ptr [EBP + -0x4],EAX
+TEST EDI,EDI
+JZ       LAB_00430b1e
+MOV dword ptr [EDI + 0x8],0x0
+MOV dword ptr [EDI + 0xc],0x0
+MOV dword ptr [EDI + 0x4],0x0
+MOV dword ptr [EDI],0x0
+MOV byte ptr [EBP + -0x4],AL
+MOV dword ptr [EDI + 0x10],0x0
+MOV dword ptr [EDI + 0x14],0xa
+MOV EAX,EDI
+JMP      LAB_00430b20
+MOV ECX,dword ptr [EBP + -0x10]
+JMP 0x0042d2d0
+
+LAB_00430b1e:
+XOR EAX,EAX
+
+LAB_00430b20:
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+MOV dword ptr [ESI + 0x14],EAX
+MOV dword ptr FS:[0x0],ECX
+MOV EAX,0x54
+POP EDI
+MOV dword ptr [ESI + 0x1c],EAX
+MOV dword ptr [ESI + 0x20],EAX
+MOV EAX,ESI
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET

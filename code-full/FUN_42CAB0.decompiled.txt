@@ -1,0 +1,21 @@
+Function: FUN_0042cab0
+Address: 0x42CAB0
+
+
+undefined4 * __thiscall FUN_0042cab0(void *this,undefined4 *param_1)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 uStack_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  uStack_8 = 0xffffffff;
+  puStack_c = &LAB_0042cb02;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_0042d1a0(this,param_1);
+  *unaff_FS_OFFSET = local_10;
+  return param_1;
+}
+

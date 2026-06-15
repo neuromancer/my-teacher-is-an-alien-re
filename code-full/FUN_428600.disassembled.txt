@@ -1,0 +1,10 @@
+Function: FUN_00428600
+Address: 0x428600
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV EDX,dword ptr [EAX]
+MOV dword ptr [ECX],EDX
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x4],EAX
+MOV EAX,ECX
+RET 0x4

@@ -1,0 +1,10 @@
+Function: FUN_0042dd30
+Address: 0x42DD30
+
+
+undefined4 FUN_0042dd30(void)
+
+{
+  return 0;
+}
+

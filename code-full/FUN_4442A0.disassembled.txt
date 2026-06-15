@@ -1,0 +1,25 @@
+Function: FUN_004442a0
+Address: 0x4442A0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x444302
+MOV dword ptr [ECX],0x461988
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+MOV dword ptr [EBP + -0x4],0x1
+PUSH 0x0
+MOV dword ptr [EBP + -0x10],ECX
+CALL     LAB_00444380
+MOV byte ptr [EBP + -0x4],0x0
+CALL     LAB_004442f4
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL     LAB_0044430c
+MOV EAX,dword ptr [EBP + -0xc]
+MOV ESP,EBP
+MOV FS:[0x0],EAX
+POP EBP
+RET

@@ -1,0 +1,17 @@
+Function: FUN_00453712
+Address: 0x453712
+
+
+void FUN_00453712(void)
+
+{
+  LPCSTR in_EAX;
+  FARPROC pFVar1;
+  HMODULE unaff_ESI;
+  undefined4 *unaff_EDI;
+  
+  pFVar1 = GetProcAddress(unaff_ESI,in_EAX);
+  *unaff_EDI = pFVar1;
+  return;
+}
+

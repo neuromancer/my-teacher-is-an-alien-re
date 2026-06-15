@@ -1,0 +1,11 @@
+Function: FUN_004205c0
+Address: 0x4205C0
+
+
+void FUN_004205c0(void)
+
+{
+  thunk_FUN_00420530((undefined4 *)&DAT_00472cf0);
+  return;
+}
+

@@ -1,0 +1,37 @@
+Function: FUN_004510e0
+Address: 0x4510E0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x45115c
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x38
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+LEA ECX,[EBP + -0x44]
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+CALL 0x00444a40
+MOV dword ptr [EBP + -0x4],0x0
+LEA EAX,[EBP + -0x44]
+MOV ECX,dword ptr [0x0046ae78]
+MOV dword ptr [EBP + -0x34],0x37
+MOV dword ptr [EBP + -0x30],0x1
+PUSH EAX
+CALL 0x0042c150
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL     LAB_00451154
+MOV EAX,dword ptr [EBP + -0xc]
+MOV ESP,EBP
+MOV FS:[0x0],EAX
+POP EBP
+RET

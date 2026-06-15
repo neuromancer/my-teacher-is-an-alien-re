@@ -1,0 +1,4 @@
+Function: DeleteDC
+Address: 0x4601EE
+
+JMP dword ptr [0x00476304]

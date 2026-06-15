@@ -1,0 +1,25 @@
+Function: FUN_0043a4c0
+Address: 0x43A4C0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x43a50b
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH ESI
+MOV dword ptr [EBP + -0x10],ECX
+MOV ESI,ECX
+CALL 0x0042bcd0
+MOV dword ptr [EBP + -0x4],0x0
+MOV EAX,ESI
+MOV dword ptr [ESI],0x461808
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+POP ESI
+MOV dword ptr FS:[0x0],ECX
+MOV ESP,EBP
+POP EBP
+RET

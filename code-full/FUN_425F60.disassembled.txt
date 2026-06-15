@@ -1,0 +1,31 @@
+Function: FUN_00425f60
+Address: 0x425F60
+
+CMP dword ptr [0x0046aa14],0x0
+PUSH ESI
+JZ       LAB_00425f9d
+MOV ESI,dword ptr [0x0046aa14]
+CALL 0x004205f0
+MOV EAX,dword ptr [EAX]
+DEC EAX
+PUSH EAX
+PUSH 0x0
+CALL 0x004205e0
+MOV EAX,dword ptr [EAX]
+MOV ECX,dword ptr [ESI + 0x24]
+DEC EAX
+MOV EDX,dword ptr [ESI + 0x20]
+PUSH EAX
+PUSH 0x0
+PUSH ECX
+MOV EAX,dword ptr [ESI + 0x2c]
+PUSH EDX
+MOV ECX,dword ptr [ESI + 0x28]
+PUSH EAX
+PUSH ECX
+MOV ECX,ESI
+CALL 0x004113c0
+
+LAB_00425f9d:
+POP ESI
+RET

@@ -1,0 +1,15 @@
+Function: FUN_0041afa0
+Address: 0x41AFA0
+
+
+void __fastcall FUN_0041afa0(int param_1)
+
+{
+  if (*(int *)(param_1 + 0xc) == 0) {
+    FUN_00425c50(s_Animation__ToBuffer_____No_smk_d_00469f40);
+  }
+  FUN_0041aeb0(param_1);
+  FUN_0041afd0(param_1);
+  return;
+}
+

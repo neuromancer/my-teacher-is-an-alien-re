@@ -1,0 +1,13 @@
+Function: FUN_0041acf0
+Address: 0x41ACF0
+
+
+UINT __thiscall FUN_0041acf0(void *this,UINT param_1,UINT param_2)
+
+{
+  FUN_00411210(*(void **)((int)this + 0x18),*(int *)((int)*(void **)((int)this + 0x18) + 0x1c));
+  FUN_0041de40(*(int *)((int)this + 0xc) + 0x6c,param_1,param_2);
+  FUN_00411240(*(uint **)((int)this + 0x18));
+  return param_2;
+}
+

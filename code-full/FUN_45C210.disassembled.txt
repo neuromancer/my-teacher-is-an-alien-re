@@ -1,0 +1,16 @@
+Function: _ValidateExecute
+Address: 0x45C210
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH ESI
+MOV ESI,0x1
+PUSH EAX
+CALL dword ptr [0x004763b4]
+TEST EAX,EAX
+JZ       LAB_0045c227
+XOR ESI,ESI
+
+LAB_0045c227:
+MOV EAX,ESI
+POP ESI
+RET

@@ -1,0 +1,11 @@
+Function: FUN_00454950
+Address: 0x454950
+
+
+void FUN_00454950(void)
+
+{
+  __amsg_exit(0x19);
+  return;
+}
+

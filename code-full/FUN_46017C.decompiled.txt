@@ -1,0 +1,15 @@
+Function: LoadLibraryA
+Address: 0x46017C
+
+
+HMODULE LoadLibraryA(LPCSTR lpLibFileName)
+
+{
+  HMODULE pHVar1;
+  
+// WARNING: Could not recover jumptable at 0x0046017c. Too many branches
+// WARNING: Treating indirect jump as call
+  pHVar1 = LoadLibraryA(lpLibFileName);
+  return pHVar1;
+}
+

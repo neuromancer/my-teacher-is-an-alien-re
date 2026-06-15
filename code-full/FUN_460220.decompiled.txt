@@ -1,0 +1,86 @@
+Function: __strnicmp
+Address: 0x460220
+
+
+/* Library Function - Single Match
+    __strnicmp
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl __strnicmp(char *_Str1,char *_Str2,size_t _MaxCount)
+
+{
+  char cVar1;
+  byte bVar2;
+  ushort uVar3;
+  uint _C;
+  int iVar4;
+  uint uVar5;
+  bool bVar6;
+  
+  iVar4 = 0;
+  if (_MaxCount != 0) {
+    if (DAT_00472840 == 0) {
+      do {
+        bVar2 = *_Str1;
+        cVar1 = *_Str2;
+        uVar3 = CONCAT11(bVar2,cVar1);
+        if (bVar2 == 0) break;
+        uVar3 = CONCAT11(bVar2,cVar1);
+        uVar5 = (uint)uVar3;
+        if (cVar1 == '\0') break;
+        _Str1 = _Str1 + 1;
+        _Str2 = _Str2 + 1;
+        if ((0x40 < bVar2) && (bVar2 < 0x5b)) {
+          uVar5 = (uint)CONCAT11(bVar2 + 0x20,cVar1);
+        }
+        uVar3 = (ushort)uVar5;
+        bVar2 = (byte)uVar5;
+        if ((0x40 < bVar2) && (bVar2 < 0x5b)) {
+          uVar3 = (ushort)CONCAT31((int3)(uVar5 >> 8),bVar2 + 0x20);
+        }
+        bVar2 = (byte)(uVar3 >> 8);
+        bVar6 = bVar2 < (byte)uVar3;
+        if (bVar2 != (byte)uVar3) goto LAB_0046027b;
+        _MaxCount = _MaxCount - 1;
+      } while (_MaxCount != 0);
+      iVar4 = 0;
+      bVar2 = (byte)(uVar3 >> 8);
+      bVar6 = bVar2 < (byte)uVar3;
+      if (bVar2 != (byte)uVar3) {
+LAB_0046027b:
+        iVar4 = -1;
+        if (!bVar6) {
+          iVar4 = 1;
+        }
+      }
+    }
+    else {
+      uVar5 = 0;
+      _C = 0;
+      do {
+        _C = CONCAT31((int3)(_C >> 8),*_Str1);
+        uVar5 = CONCAT31((int3)(uVar5 >> 8),*_Str2);
+        if ((_C == 0) || (uVar5 == 0)) break;
+        _Str1 = _Str1 + 1;
+        _Str2 = _Str2 + 1;
+        uVar5 = _tolower(uVar5);
+        _C = _tolower(_C);
+        bVar6 = _C < uVar5;
+        if (_C != uVar5) goto LAB_004602bd;
+        _MaxCount = _MaxCount - 1;
+      } while (_MaxCount != 0);
+      iVar4 = 0;
+      bVar6 = _C < uVar5;
+      if (_C != uVar5) {
+LAB_004602bd:
+        iVar4 = 1;
+        if (!bVar6) {
+          iVar4 = -1;
+        }
+      }
+    }
+  }
+  return iVar4;
+}
+

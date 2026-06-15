@@ -1,0 +1,24 @@
+Function: FUN_0044e530
+Address: 0x44E530
+
+
+undefined * __cdecl FUN_0044e530(int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  
+  iVar2 = DAT_0046cb90;
+  iVar1 = DAT_0046aa30;
+  if (4999 < param_1) {
+    if ((DAT_0046cb90 < 0) || (*(int *)(DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    _sprintf(&DAT_00473d10,s_audio_snd_4_4d_c_wav_0046cc50,param_1,
+             (int)(char)PTR_DAT_0046cb94[*(int *)(*(int *)(iVar1 + 0x90) + iVar2 * 4)]);
+    return &DAT_00473d10;
+  }
+  _sprintf(&DAT_00473d10,s_audio_snd_4_4d_wav_0046cc3c,param_1);
+  return &DAT_00473d10;
+}
+

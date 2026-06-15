@@ -1,0 +1,23 @@
+Function: FUN_004204f0
+Address: 0x4204F0
+
+
+undefined4 FUN_004204f0(void)
+
+{
+  int iVar1;
+  longlong lVar2;
+  
+  lVar2 = FUN_00453721();
+  if ((int)lVar2 != 8) {
+    iVar1 = FUN_00425d00(PTR_s_For_Optimum_performance__Set_you_0046a324);
+    if (iVar1 == 6) {
+      return 0;
+    }
+  }
+  FUN_004534f4();
+  FUN_0045349c();
+  FUN_00453473(0);
+  return 1;
+}
+

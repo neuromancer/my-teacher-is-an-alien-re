@@ -1,0 +1,12 @@
+Function: FUN_0044d6e0
+Address: 0x44D6E0
+
+TEST byte ptr [ECX + 0x95],0x4
+JNZ      LAB_0044d6f8
+ADD ECX,0xbc
+PUSH ECX
+CALL 0x00426190
+ADD ESP,0x4
+
+LAB_0044d6f8:
+RET

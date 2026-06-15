@@ -1,0 +1,24 @@
+Function: FUN_00425f60
+Address: 0x425F60
+
+
+void FUN_00425f60(void)
+
+{
+  void *this;
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  
+  this = DAT_0046aa14;
+  if (DAT_0046aa14 != (void *)0x0) {
+    piVar1 = (int *)FUN_004205f0();
+    iVar2 = *piVar1 + -1;
+    iVar3 = 0;
+    piVar1 = (int *)FUN_004205e0();
+    FUN_004113c0(this,*(int *)((int)this + 0x28),*(int *)((int)this + 0x2c),
+                 *(int *)((int)this + 0x20),*(int *)((int)this + 0x24),0,*piVar1 + -1,iVar3,iVar2);
+  }
+  return;
+}
+

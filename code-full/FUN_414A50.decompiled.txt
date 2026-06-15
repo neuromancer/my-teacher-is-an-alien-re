@@ -1,0 +1,49 @@
+Function: FUN_00414a50
+Address: 0x414A50
+
+
+void __thiscall FUN_00414a50(void *this,int param_1,int param_2)
+
+{
+  int iVar1;
+  
+  iVar1 = DAT_0046aa30;
+  if (*(int *)(DAT_0046aa30 + 0x98) + -1 < 4) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  if (*(int *)(*(int *)(iVar1 + 0x90) + 0x10) == 1) {
+    _sprintf(DAT_0046aa00,&DAT_004690e4,*(undefined4 *)((int)this + 0x130));
+    FUN_00404230(DAT_0046aa24,DAT_0046aa00,0x22b,param_2 + 0x17,10000,-1);
+  }
+  iVar1 = *(int *)((int)this + 0x98);
+  if (iVar1 == 0) {
+    FUN_00404230(DAT_0046aa24,(char *)((int)this + 0x9c),param_1 + 10,param_2 + 0x17,10000,-1);
+    return;
+  }
+  if (iVar1 == 1) {
+    iVar1 = *(int *)((int)this + 0x11c);
+    if (iVar1 == 0) {
+      FUN_00414c60((int)this);
+    }
+    else if ((*(byte *)((int)this + 0x94) & 8) == 0) {
+      iVar1 = FUN_00443e30(iVar1);
+      if (iVar1 == 0) {
+        FUN_00414c60((int)this);
+        return;
+      }
+    }
+    else {
+      iVar1 = FUN_00443e30(iVar1);
+      if (iVar1 == 0) {
+        FUN_00443ed0(*(void **)((int)this + 0x11c),1);
+        return;
+      }
+    }
+  }
+  else if (iVar1 != 2) {
+    FUN_00425c50(s_illegal_state_00469a60);
+    return;
+  }
+  return;
+}
+

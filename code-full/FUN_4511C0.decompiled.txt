@@ -1,0 +1,28 @@
+Function: FUN_004511c0
+Address: 0x4511C0
+
+
+undefined4 __thiscall FUN_004511c0(void *this,int param_1)
+
+{
+  int iVar1;
+  
+  iVar1 = *(int *)(param_1 + 0x14);
+  if (iVar1 == 1) {
+    *(uint *)((int)this + 0xdc) = *(uint *)((int)this + 0xdc) | 2;
+    DAT_00473e18 = 3;
+    return 1;
+  }
+  if (iVar1 != 2) {
+    if (iVar1 != 3) {
+      return 0;
+    }
+    *(uint *)((int)this + 0xdc) = *(uint *)((int)this + 0xdc) | 4;
+    DAT_00473e18 = 4;
+    return 1;
+  }
+  *(uint *)((int)this + 0xdc) = *(uint *)((int)this + 0xdc) | 1;
+  DAT_00473e18 = 2;
+  return 1;
+}
+

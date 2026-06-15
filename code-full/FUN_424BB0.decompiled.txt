@@ -1,0 +1,30 @@
+Function: FUN_00424bb0
+Address: 0x424BB0
+
+
+void FUN_00424bb0(void)
+
+{
+  void *this;
+  void *pvVar1;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00424c1e;
+  *unaff_FS_OFFSET = &local_10;
+  this = (void *)FUN_00454500(0x2a0);
+  local_8 = 0;
+  pvVar1 = (void *)0x0;
+  if (this != (void *)0x0) {
+    pvVar1 = FUN_00432ec0(this,(char *)&DAT_00472de8,s_teacher_id_0046a854,
+                          s_Missing_the_Teacher_CD_ROM_0046a860);
+  }
+  DAT_0046aa1c = pvVar1;
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

@@ -1,0 +1,45 @@
+Function: FUN_00429b60
+Address: 0x429B60
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x429bf9
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+MOV dword ptr [EBP + -0x10],ECX
+PUSH EDI
+MOV ESI,ECX
+CALL 0x004127c0
+XOR EAX,EAX
+LEA EDX,[ESI + 0x94]
+MOV dword ptr [EBP + -0x4],EAX
+LEA EBX,[ESI + 0x90]
+MOV EDI,EBX
+MOV dword ptr [EDX],EAX
+MOV ECX,0xc
+MOV dword ptr [EDX + 0x4],EAX
+MOV byte ptr [EBP + -0x4],0x1
+MOV dword ptr [EDX + 0x8],EAX
+MOV dword ptr [EDX + 0xc],EAX
+MOV dword ptr [ESI],0x461508
+STOSD.REP ES:EDI
+MOV EAX,dword ptr [EBP + 0x8]
+MOV ECX,dword ptr [EBP + 0xc]
+MOV dword ptr [EBX],0x1
+MOV dword ptr [ESI + 0xa4],EAX
+MOV EAX,ESI
+POP EDI
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV dword ptr [ESI + 0xb8],ECX
+MOV ECX,dword ptr [EBP + -0xc]
+MOV dword ptr FS:[0x0],ECX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET 0x8

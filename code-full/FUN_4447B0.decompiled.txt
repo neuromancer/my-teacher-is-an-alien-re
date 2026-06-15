@@ -1,0 +1,31 @@
+Function: FUN_004447b0
+Address: 0x4447B0
+
+
+void __thiscall FUN_004447b0(void *this,undefined4 param_1,undefined4 *param_2)
+
+{
+  switch(param_1) {
+  case 0:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 1:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 2:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 3:
+    *param_2 = 0;
+    FUN_00425550(*(void **)((int)this + 0x110),0);
+    *(uint *)((int)this + 0x118) = *(uint *)((int)this + 0x118) | 1;
+    return;
+  case 4:
+    FUN_00444680((int)this);
+    return;
+  default:
+    FUN_00425c50(s_SC_FakeRoom__Process_Action___in_0046c07c);
+    return;
+  }
+}
+

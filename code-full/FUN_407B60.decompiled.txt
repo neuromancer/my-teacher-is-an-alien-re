@@ -1,0 +1,21 @@
+Function: FUN_00407b60
+Address: 0x407B60
+
+
+void FUN_00407b60(void)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_00407b97;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 0xffffffff;
+  FUN_00407ba1();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

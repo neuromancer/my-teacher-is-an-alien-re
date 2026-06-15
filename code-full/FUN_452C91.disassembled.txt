@@ -1,0 +1,6 @@
+Function: FUN_00452c91
+Address: 0x452C91
+
+MOV byte ptr [0x0046db3c],0xff
+XOR EAX,EAX
+RET

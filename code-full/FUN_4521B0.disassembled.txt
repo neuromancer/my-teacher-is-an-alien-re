@@ -1,0 +1,7 @@
+Function: FUN_004521b0
+Address: 0x4521B0
+
+MOV EAX,[0x0046ae78]
+MOV ECX,dword ptr [0x0046ae78]
+MOV EAX,dword ptr [EAX]
+JMP dword ptr [EAX + 0x38]

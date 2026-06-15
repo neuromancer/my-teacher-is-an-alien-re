@@ -1,0 +1,7 @@
+Function: _CallMemberFunction0
+Address: 0x454140
+
+POP EAX
+POP ECX
+XCHG dword ptr [ESP],EAX
+JMP EAX

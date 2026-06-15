@@ -1,0 +1,4 @@
+Function: LoadLibraryA
+Address: 0x46017C
+
+JMP dword ptr [0x0047643c]

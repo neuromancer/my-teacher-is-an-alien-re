@@ -1,0 +1,13 @@
+Function: FUN_00453bff
+Address: 0x453BFF
+
+PUSH EBP
+MOV EBP,ESP
+MOV EAX,dword ptr [EBP + 0x8]
+ADD EAX,0x3
+AND AL,0xfc
+MOV EDX,dword ptr [EBP + 0xc]
+MUL EDX
+ADD EAX,dword ptr [0x0046db34]
+POP EBP
+RET

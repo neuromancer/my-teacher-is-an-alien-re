@@ -1,0 +1,15 @@
+Function: FUN_0044ac60
+Address: 0x44AC60
+
+MOV EDX,dword ptr [ECX + 0xa0]
+MOV EAX,[0x0046aa18]
+MOV ECX,dword ptr [EAX + 0x94]
+TEST ECX,ECX
+JZ       LAB_0044ac7d
+PUSH 0x0
+PUSH EDX
+CALL     LAB_0044cb40
+
+LAB_0044ac7d:
+MOV EAX,0x1
+RET

@@ -1,0 +1,4 @@
+Function: SetTextAlign
+Address: 0x4601D0
+
+JMP dword ptr [0x00476344]

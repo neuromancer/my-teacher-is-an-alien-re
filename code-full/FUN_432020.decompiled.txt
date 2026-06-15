@@ -1,0 +1,13 @@
+Function: FUN_00432020
+Address: 0x432020
+
+
+void __fastcall FUN_00432020(int param_1)
+
+{
+  if (*(int *)(param_1 + 0xbc) != 0) {
+    FUN_0044c9d0(*(int *)(param_1 + 0xbc));
+  }
+  return;
+}
+

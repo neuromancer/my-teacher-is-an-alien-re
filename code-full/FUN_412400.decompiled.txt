@@ -1,0 +1,47 @@
+Function: FUN_00412400
+Address: 0x412400
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+void FUN_00412400(void)
+
+{
+  undefined4 *puVar1;
+  undefined4 *puVar2;
+  undefined4 *puVar3;
+  int iVar4;
+  bool bVar5;
+  
+  puVar2 = DAT_00469134;
+  for (puVar1 = (undefined4 *)*DAT_00469134; puVar1 != (undefined4 *)0x0;
+      puVar1 = (undefined4 *)*puVar1) {
+    puVar3 = puVar1 + 2;
+    iVar4 = 0;
+    do {
+      if ((LPVOID)*puVar3 != (LPVOID)0x0) {
+        FUN_00454400((LPVOID)*puVar3);
+        *puVar3 = 0;
+      }
+      puVar3 = puVar3 + 1;
+      bVar5 = iVar4 != 0;
+      iVar4 = iVar4 + -1;
+    } while (bVar5);
+  }
+  puVar2[2] = 0;
+  puVar2[3] = 0;
+  puVar2[1] = 0;
+  *puVar2 = 0;
+  puVar1 = (undefined4 *)puVar2[4];
+  while (puVar1 != (undefined4 *)0x0) {
+    puVar3 = (undefined4 *)*puVar1;
+    FUN_00454400(puVar1);
+    puVar1 = puVar3;
+  }
+  puVar2[4] = 0;
+  _DAT_00469130 = 0;
+  _DAT_0046912c = 0;
+  DAT_00469138 = 0;
+  return;
+}
+

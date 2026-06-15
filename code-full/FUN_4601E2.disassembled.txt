@@ -1,0 +1,4 @@
+Function: GetDeviceCaps
+Address: 0x4601E2
+
+JMP dword ptr [0x00476338]

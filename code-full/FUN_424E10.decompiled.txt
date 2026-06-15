@@ -1,0 +1,21 @@
+Function: FUN_00424e10
+Address: 0x424E10
+
+
+void __fastcall FUN_00424e10(short *param_1)
+
+{
+  int iVar1;
+  short sVar2;
+  
+  sVar2 = 0;
+  if (0 < *param_1) {
+    do {
+      iVar1 = (int)sVar2;
+      sVar2 = sVar2 + 1;
+      _AIL_end_sample_4(*(undefined4 *)(param_1 + iVar1 * 2 + 2));
+    } while (sVar2 < *param_1);
+  }
+  return;
+}
+

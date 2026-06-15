@@ -1,0 +1,36 @@
+Function: FUN_00457070
+Address: 0x457070
+
+
+void __cdecl
+FUN_00457070(EHExceptionRecord *param_1,EHRegistrationNode *param_2,_CONTEXT *param_3,void *param_4,
+            _s_FuncInfo *param_5,int param_6,int param_7,EHRegistrationNode *param_8)
+
+{
+  int iVar1;
+  _s_TryBlockMapEntry *p_Var2;
+  int iVar3;
+  uint local_8;
+  uint local_4;
+  
+  if (((DAT_00471c68 == 0) ||
+      (iVar1 = _CallSETranslator(param_1,param_2,param_3,param_4,param_5,param_7,param_8),
+      iVar1 == 0)) &&
+     (p_Var2 = GetRangeOfTrysToCheck(param_5,param_7,param_6,&local_8,&local_4), local_8 < local_4))
+  {
+    do {
+      if ((*(int *)p_Var2 <= param_6) && (param_6 <= *(int *)(p_Var2 + 4))) {
+        iVar3 = *(int *)(p_Var2 + 0xc) * 0x10 + *(int *)(p_Var2 + 0x10);
+        iVar1 = *(int *)(iVar3 + -0xc);
+        if ((iVar1 == 0) || (*(char *)(iVar1 + 8) == '\0')) {
+          CatchIt(param_1,param_2,param_3,param_4,param_5,(_s_HandlerType *)(iVar3 + -0x10),
+                  (_s_CatchableType *)0x0,p_Var2,param_7,param_8);
+        }
+      }
+      p_Var2 = p_Var2 + 0x14;
+      local_8 = local_8 + 1;
+    } while (local_8 < local_4);
+  }
+  return;
+}
+

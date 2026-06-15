@@ -1,0 +1,54 @@
+Function: FUN_0042e870
+Address: 0x42E870
+
+
+void __thiscall FUN_0042e870(void *this,int param_1)
+
+{
+  char cVar1;
+  bool bVar2;
+  undefined3 extraout_var;
+  int iVar3;
+  uint uVar4;
+  uint uVar5;
+  char *pcVar6;
+  undefined4 *puVar7;
+  char *pcVar8;
+  
+  puVar7 = (undefined4 *)((int)this + 0x118);
+  for (iVar3 = 0x112; iVar3 != 0; iVar3 = iVar3 + -1) {
+    *puVar7 = 0;
+    puVar7 = puVar7 + 1;
+  }
+  FUN_00449260(this,param_1);
+  bVar2 = FUN_00425fa0(s_puz_roach_0046afd4);
+  if (CONCAT31(extraout_var,bVar2) == 0) {
+    FUN_004265a0();
+  }
+  uVar4 = 0xffffffff;
+  pcVar6 = s_mis_pz_roach_mis_0046afc0;
+  do {
+    pcVar8 = pcVar6;
+    if (uVar4 == 0) break;
+    uVar4 = uVar4 - 1;
+    pcVar8 = pcVar6 + 1;
+    cVar1 = *pcVar6;
+    pcVar6 = pcVar8;
+  } while (cVar1 != '\0');
+  uVar4 = ~uVar4;
+  pcVar6 = pcVar8 + -uVar4;
+  pcVar8 = (char *)((int)this + 0xc0);
+  for (uVar5 = uVar4 >> 2; uVar5 != 0; uVar5 = uVar5 - 1) {
+    *(undefined4 *)pcVar8 = *(undefined4 *)pcVar6;
+    pcVar6 = pcVar6 + 4;
+    pcVar8 = pcVar8 + 4;
+  }
+  for (uVar4 = uVar4 & 3; uVar4 != 0; uVar4 = uVar4 - 1) {
+    *pcVar8 = *pcVar6;
+    pcVar6 = pcVar6 + 1;
+    pcVar8 = pcVar8 + 1;
+  }
+  FUN_00413e10(this,(char *)((int)this + 0xc0),(char *)0x0);
+  return;
+}
+

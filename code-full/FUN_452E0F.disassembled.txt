@@ -1,0 +1,78 @@
+Function: FUN_00452e0f
+Address: 0x452E0F
+
+PUSH EBP
+MOV EBP,ESP
+PUSH EDI
+PUSH ESI
+PUSH EBX
+CMP byte ptr [0x0046db3c],0x0
+JGE      LAB_00452e23
+JMP      LAB_00452eb6
+
+LAB_00452e23:
+MOV ECX,dword ptr [0x0046e004]
+JECXZ    LAB_00452e30
+MOV EBX,dword ptr [EBP + 0x14]
+JMP      LAB_00452e42
+
+LAB_00452e30:
+MOV EAX,[0x0046d0b2]
+MOV EDX,EAX
+SUB EDX,dword ptr [EBP + 0x10]
+SUB EAX,dword ptr [EBP + 0x14]
+MOV dword ptr [EBP + 0x10],EAX
+MOV EBX,EDX
+
+LAB_00452e42:
+MOV EAX,dword ptr [EBP + 0xc]
+MOV EDX,dword ptr [EBP + 0x1c]
+SUB EDX,dword ptr [EBP + 0x18]
+INC EDX
+MOV EDI,dword ptr [EBP + 0x24]
+SUB EDI,dword ptr [EBP + 0x20]
+INC EDI
+SUB EAX,dword ptr [EBP + 0x8]
+INC EAX
+SUB EBX,dword ptr [EBP + 0x10]
+INC EBX
+JECXZ    LAB_00452e7c
+PUSH EBX
+PUSH EAX
+PUSH dword ptr [EBP + 0x10]
+PUSH dword ptr [EBP + 0x8]
+PUSH ECX
+PUSH EDI
+PUSH EDX
+PUSH dword ptr [EBP + 0x20]
+PUSH dword ptr [EBP + 0x18]
+PUSH dword ptr [0x0046d070]
+CALL dword ptr [0x0046e020]
+JMP      LAB_00452eb6
+
+LAB_00452e7c:
+MOV ESI,dword ptr [0x0046db4e]
+PUSH 0xcc0020
+PUSH dword ptr [0x0046db38]
+SUB ESI,dword ptr [0x0046db34]
+PUSH ESI
+ADD ESI,dword ptr [0x0046db34]
+PUSH ESI
+PUSH EBX
+PUSH EAX
+PUSH dword ptr [EBP + 0x10]
+PUSH dword ptr [EBP + 0x8]
+PUSH EDI
+PUSH EDX
+PUSH dword ptr [EBP + 0x20]
+PUSH dword ptr [EBP + 0x18]
+PUSH dword ptr [0x0046d070]
+CALL 0x004601b8
+
+LAB_00452eb6:
+XOR EAX,EAX
+POP EBX
+POP ESI
+POP EDI
+POP EBP
+RET

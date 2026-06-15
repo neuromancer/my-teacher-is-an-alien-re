@@ -1,0 +1,33 @@
+Function: FUN_00433230
+Address: 0x433230
+
+
+undefined4 __thiscall FUN_00433230(void *this,byte *param_1)
+
+{
+  bool bVar1;
+  undefined3 extraout_var;
+  int iVar2;
+  uchar local_204 [260];
+  uchar local_100 [256];
+  
+  FUN_004260f0((char *)param_1);
+  if (*(char *)((int)this + 400) == '\0') {
+    return 0;
+  }
+  bVar1 = FUN_00425fa0((LPCSTR)param_1);
+  if (CONCAT31(extraout_var,bVar1) != 0) {
+    return 0;
+  }
+  FUN_004560f0(param_1,(uchar *)0x0,local_204,local_100,(uchar *)0x0);
+  iVar2 = __chdir((char *)local_204);
+  if (iVar2 == 0) {
+    __chdir(&DAT_0046b5fc);
+  }
+  else {
+    FUN_004602d0((LPCSTR)local_204);
+  }
+  FUN_00426220((LPCSTR)((int)this + 0x195),(LPCSTR)param_1);
+  return 1;
+}
+

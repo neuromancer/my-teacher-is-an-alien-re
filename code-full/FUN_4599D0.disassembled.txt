@@ -1,0 +1,8 @@
+Function: __setdefaultprecision
+Address: 0x4599D0
+
+PUSH 0x30000
+PUSH 0x10000
+CALL 0x0045c990
+ADD ESP,0x8
+RET

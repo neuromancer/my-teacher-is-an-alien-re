@@ -1,0 +1,24 @@
+Function: FUN_00453384
+Address: 0x453384
+
+
+undefined4 __cdecl FUN_00453384(int param_1,int param_2,undefined2 *param_3)
+
+{
+  undefined2 *puVar1;
+  undefined2 *puVar2;
+  
+  if (param_2 != 0) {
+    puVar2 = (undefined2 *)(&DAT_0046d308 + (param_1 + 1) * 4);
+    do {
+      puVar1 = param_3 + 1;
+      *param_3 = *puVar2;
+      param_3 = (undefined2 *)((int)param_3 + 3);
+      *(undefined1 *)puVar1 = *(undefined1 *)(puVar2 + 1);
+      puVar2 = puVar2 + 2;
+      param_2 = param_2 + -1;
+    } while (param_2 != 0);
+  }
+  return 0;
+}
+

@@ -1,0 +1,43 @@
+Function: FUN_0044d420
+Address: 0x44D420
+
+
+void __thiscall FUN_0044d420(void *this,byte *param_1,char *param_2,undefined4 param_3)
+
+{
+  uint uVar1;
+  char *pcVar2;
+  
+  uVar1 = FUN_00433ae0(DAT_0046aa30,param_1);
+  if (((int)uVar1 < 0) || (*(int *)((int)DAT_0046aa30 + 0x98) + -1 < (int)uVar1)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  pcVar2 = FUN_00454960(param_2,s_FALSE_0046c684);
+  if (pcVar2 != (char *)0x0) {
+    FUN_0044d530(this,uVar1,9,0);
+    return;
+  }
+  pcVar2 = FUN_00454960(param_2,&DAT_0046c67c);
+  if (pcVar2 != (char *)0x0) {
+    FUN_0044d530(this,uVar1,8,0);
+    return;
+  }
+  pcVar2 = FUN_00454960(param_2,s_FOLLOW_0046ca2c);
+  if (pcVar2 != (char *)0x0) {
+    FUN_0044d530(this,uVar1,0x1c,0);
+    return;
+  }
+  pcVar2 = FUN_00454960(param_2,s_NEQUAL_0046ca24);
+  if (pcVar2 != (char *)0x0) {
+    FUN_0044d530(this,uVar1,0xd,param_3);
+    return;
+  }
+  pcVar2 = FUN_00454960(param_2,s_EQUAL_0046ca1c);
+  if (pcVar2 != (char *)0x0) {
+    FUN_0044d530(this,uVar1,0xc,param_3);
+    return;
+  }
+  FUN_00425c50(s_illegal__s_00468b9c);
+  return;
+}
+

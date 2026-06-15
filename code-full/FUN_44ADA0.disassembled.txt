@@ -1,0 +1,16 @@
+Function: FUN_0044ada0
+Address: 0x44ADA0
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x9c]
+MOV ESI,ECX
+CMP EAX,-0x1
+JZ       LAB_0044adba
+PUSH EAX
+MOV ECX,dword ptr [0x0046ae70]
+CALL     LAB_0044ba70
+
+LAB_0044adba:
+MOV EAX,dword ptr [ESI + 0x98]
+POP ESI
+RET

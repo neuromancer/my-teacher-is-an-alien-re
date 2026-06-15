@@ -1,0 +1,35 @@
+Function: __CxxUnhandledExceptionFilter
+Address: 0x45C160
+
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0x8]
+MOV EAX,dword ptr [ESI]
+CMP dword ptr [EAX],0xe06d7363
+JNZ      LAB_0045c18c
+CMP dword ptr [EAX + 0x10],0x3
+JNZ      LAB_0045c18c
+CMP dword ptr [EAX + 0x14],0x19930520
+JNZ      LAB_0045c18c
+CALL 0x004577c0
+MOV EAX,0x1
+POP ESI
+RET 0x4
+
+LAB_0045c18c:
+CMP dword ptr [0x00473f2c],0x0
+JZ       LAB_0045c1b2
+MOV EAX,[0x00473f2c]
+PUSH EAX
+CALL     LAB_0045c210
+ADD ESP,0x4
+TEST EAX,EAX
+JZ       LAB_0045c1b2
+PUSH ESI
+CALL dword ptr [0x00473f2c]
+POP ESI
+RET 0x4
+
+LAB_0045c1b2:
+XOR EAX,EAX
+POP ESI
+RET 0x4

@@ -1,0 +1,85 @@
+Function: FUN_00413e70
+Address: 0x413E70
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+int __cdecl FUN_00413e70(int *param_1,int param_2,char *param_3)
+
+{
+  undefined4 *puVar1;
+  bool bVar2;
+  int iVar3;
+  char *pcVar4;
+  undefined3 extraout_var;
+  undefined4 *unaff_FS_OFFSET;
+  char local_178 [256];
+  byte local_78 [60];
+  int local_3c;
+  int local_38 [5];
+  int local_24 [5];
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  uint local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00414025;
+  *unaff_FS_OFFSET = &local_10;
+  if (DAT_0046928c != 0) {
+    param_1[0xe] = param_1[0xe] | 1;
+  }
+  _DAT_00469148 = _DAT_00469148 + 1;
+  FUN_004129b0(param_1,param_2);
+  FUN_00421880(local_38);
+  local_8 = 0;
+  FUN_00421880(local_24);
+  local_8 = CONCAT31(local_8._1_3_,1);
+  if ((param_3 != (char *)0x0) && (*param_3 != '\0')) {
+    _vsprintf((char *)local_78,param_3,&stack0x00000010);
+    FUN_00412ad0(param_1,local_78);
+    iVar3 = FUN_004218e0(local_24);
+    _DAT_00469158 = _DAT_00469158 + iVar3;
+  }
+  puVar1 = (undefined4 *)*param_1;
+  (*(code *)puVar1[1])();
+  do {
+    do {
+      if ((param_1[0x22] == 0) || (*(int *)(param_1[0x22] + 0xc) == 0)) {
+        FUN_00425c50(s_Parser__Parser___premature_EOF_i_00469940);
+      }
+      FUN_004218c0(local_24);
+      pcVar4 = FUN_00426400(local_178,0xff,(FILE *)param_1[0x22]);
+      if (pcVar4 == (char *)0x0) {
+        if ((param_1[3] == 0) && (param_1[2] == 0)) {
+          pcVar4 = s_Parser__Parser___premature_EOF_i_004698a4;
+        }
+        else {
+          pcVar4 = s_Parser__Parser___premature_EOF_i_004698e8;
+        }
+        FUN_00425c50(pcVar4);
+      }
+      iVar3 = FUN_004218e0(local_24);
+      _DAT_00469154 = _DAT_00469154 + iVar3;
+      bVar2 = FUN_00413bd0(param_1,local_178);
+      local_3c = CONCAT31(extraout_var,bVar2);
+    } while (local_3c == 1);
+    if (local_3c == 2) break;
+    FUN_004218c0(local_24);
+    param_1[0x11] = (int)local_178;
+    local_3c = (*(code *)*puVar1)(local_178);
+    iVar3 = FUN_004218e0(local_24);
+    _DAT_00469150 = _DAT_00469150 + iVar3;
+    _DAT_0046914c = _DAT_0046914c + 1;
+  } while (local_3c == 0);
+  iVar3 = FUN_004218e0(local_38);
+  _DAT_0046915c = _DAT_0046915c + iVar3;
+  (*(code *)puVar1[2])();
+  local_8 = local_8 & 0xffffff00;
+  FUN_0041401d();
+  local_8 = 0xffffffff;
+  FUN_0041402f();
+  *unaff_FS_OFFSET = local_10;
+  return local_3c;
+}
+

@@ -1,0 +1,67 @@
+Function: FUN_0044a9c0
+Address: 0x44A9C0
+
+
+undefined4 __thiscall FUN_0044a9c0(void *this,char *param_1)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  void *pvVar3;
+  undefined4 *unaff_FS_OFFSET;
+  char local_50 [28];
+  void *local_34;
+  char local_30 [32];
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0044aa9a;
+  *unaff_FS_OFFSET = &local_10;
+  local_30[0] = '\0';
+  _sscanf(param_1,&DAT_00468448,local_30);
+  iVar1 = __strcmpi(local_30,s_PARSE__0046c674);
+  if (iVar1 == 0) {
+    FUN_00413e70(this,*(int *)((int)this + 0x90),(char *)0x0);
+    uVar2 = 1;
+  }
+  else {
+    iVar1 = __strcmpi(local_30,s_MESSAGE_00468524);
+    if (iVar1 == 0) {
+      local_34 = (void *)FUN_00454500(0x38);
+      local_8 = 0;
+      pvVar3 = (void *)0x0;
+      if (local_34 != (void *)0x0) {
+        pvVar3 = FUN_00444a40(local_34,0,0,0,0,0,0,0,0,0,0);
+      }
+      local_8 = 0xffffffff;
+      *(void **)((int)this + 0xa0) = pvVar3;
+      FUN_00445450(pvVar3,*(undefined4 *)((int)this + 0x90));
+    }
+    else {
+      iVar1 = __strcmpi(local_30,s_THEN_GOTO_0046c6fc);
+      if (iVar1 == 0) {
+        iVar1 = _sscanf(param_1,s_THEN_GOTO_N_d_BEARING__s_0046c6e0,(int)this + 0x98,local_50);
+        if (1 < iVar1) {
+          iVar1 = FUN_00449b20(local_50[0]);
+          *(int *)((int)this + 0x9c) = iVar1;
+        }
+      }
+      else {
+        iVar1 = __strcmpi(local_30,&DAT_00468444);
+        if (iVar1 == 0) {
+          uVar2 = 1;
+          goto LAB_0044ab22;
+        }
+        FUN_00412a50();
+      }
+    }
+    uVar2 = 0;
+  }
+LAB_0044ab22:
+  *unaff_FS_OFFSET = local_10;
+  return uVar2;
+}
+

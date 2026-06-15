@@ -1,0 +1,15 @@
+Function: FUN_00428b30
+Address: 0x428B30
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV EDX,dword ptr [EAX]
+CMP dword ptr [ECX + 0x90],EDX
+JZ       LAB_00428b43
+XOR EAX,EAX
+RET 0x4
+
+LAB_00428b43:
+PUSH EAX
+CALL 0x00449410
+MOV EAX,0x1
+RET 0x4

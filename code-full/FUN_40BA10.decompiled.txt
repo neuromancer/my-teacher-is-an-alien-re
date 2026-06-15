@@ -1,0 +1,31 @@
+Function: FUN_0040ba10
+Address: 0x40BA10
+
+
+void __thiscall FUN_0040ba10(void *this,undefined4 param_1,undefined4 *param_2)
+
+{
+  switch(param_1) {
+  case 0:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 1:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 2:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 3:
+    *param_2 = 0;
+    FUN_00444d90(5,*(undefined4 *)((int)this + 0x114),*(undefined4 *)((int)this + 0x90),
+                 *(undefined4 *)((int)this + 0x94),0x1b,0,0,0,0,0);
+    return;
+  case 4:
+    FUN_0040b9e0();
+    return;
+  default:
+    FUN_00425c50(s_SC_Gauntlet__Process_Action___in_00468a40);
+    return;
+  }
+}
+

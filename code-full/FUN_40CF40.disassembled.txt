@@ -1,0 +1,9 @@
+Function: FUN_0040cf40
+Address: 0x40CF40
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV dword ptr [ECX],0x0
+MOV dword ptr [ECX + 0x4],0x0
+MOV dword ptr [ECX + 0x8],EAX
+MOV EAX,ECX
+RET 0x4

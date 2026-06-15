@@ -1,0 +1,12 @@
+Function: FUN_00453baa
+Address: 0x453BAA
+
+
+undefined4 __cdecl FUN_00453baa(undefined4 param_1)
+
+{
+  DAT_0046d070 = param_1;
+  DAT_0046d09c = param_1;
+  return 0;
+}
+

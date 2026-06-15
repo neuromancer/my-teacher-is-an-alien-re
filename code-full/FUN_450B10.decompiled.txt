@@ -1,0 +1,41 @@
+Function: FUN_00450b10
+Address: 0x450B10
+
+
+int * __fastcall FUN_00450b10(int *param_1)
+
+{
+  int iVar1;
+  int *piVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00450bd8;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_0042bcd0(param_1);
+  param_1[0x51] = 0;
+  param_1[0x52] = 0;
+  param_1[0x53] = 0;
+  param_1[0x54] = 0;
+  param_1[0x55] = 0;
+  param_1[0x56] = 0;
+  param_1[0x57] = 0;
+  param_1[0x58] = 0;
+  param_1[0x59] = 0;
+  param_1[0x5a] = 0;
+  param_1[0x5b] = 0;
+  param_1[0x5c] = 0;
+  *param_1 = (int)&PTR_FUN_00461c90;
+  piVar2 = param_1 + 0x3c;
+  for (iVar1 = 0x22; iVar1 != 0; iVar1 = iVar1 + -1) {
+    *piVar2 = 0;
+    piVar2 = piVar2 + 1;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return param_1;
+}
+

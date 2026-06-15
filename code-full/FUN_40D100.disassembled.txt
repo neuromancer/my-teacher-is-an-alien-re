@@ -1,0 +1,29 @@
+Function: FUN_0040d100
+Address: 0x40D100
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x40d19a
+MOV dword ptr [ECX],0x461218
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+MOV dword ptr [EBP + -0x4],0x3
+PUSH 0x0
+MOV dword ptr [EBP + -0x10],ECX
+CALL     LAB_0040d430
+MOV byte ptr [EBP + -0x4],0x2
+CALL     LAB_0040d166
+MOV byte ptr [EBP + -0x4],0x1
+CALL     LAB_0040d174
+MOV byte ptr [EBP + -0x4],0x0
+CALL     LAB_0040d18c
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL     LAB_0040d1a4
+MOV EAX,dword ptr [EBP + -0xc]
+MOV ESP,EBP
+MOV FS:[0x0],EAX
+POP EBP
+RET

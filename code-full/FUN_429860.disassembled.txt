@@ -1,0 +1,14 @@
+Function: FUN_00429860
+Address: 0x429860
+
+PUSH ESI
+MOV ESI,ECX
+CALL 0x00449520
+PUSH 0x0
+CALL 0x00429430
+MOV dword ptr [ESI + 0x120],0x0
+MOV dword ptr [ESI + 0x118],0x2
+ADD ESP,0x4
+MOV dword ptr [ESI + 0x11c],0x0
+POP ESI
+RET

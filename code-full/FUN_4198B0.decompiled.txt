@@ -1,0 +1,78 @@
+Function: FUN_004198b0
+Address: 0x4198B0
+
+
+undefined4 __thiscall FUN_004198b0(void *this,int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  int *piVar3;
+  uint uVar4;
+  int *piVar5;
+  int iVar6;
+  undefined4 *puVar7;
+  int iVar8;
+  uint uVar9;
+  int local_8;
+  int *local_4;
+  
+  piVar5 = (int *)((int)this + 0x288);
+  local_8 = -1;
+  iVar8 = 0;
+  iVar2 = *(int *)(param_1 + 0x1c) + 10;
+  do {
+    if ((((*piVar5 <= iVar2) && (iVar2 <= piVar5[2])) &&
+        (iVar6 = *(int *)(param_1 + 0x20) + 10, piVar5[1] <= iVar6)) &&
+       (iVar1 = iVar8, iVar6 <= piVar5[3])) break;
+    piVar5 = piVar5 + 8;
+    iVar8 = iVar8 + 1;
+    iVar1 = local_8;
+  } while (iVar8 < 0x24);
+  local_8 = iVar1;
+  if (local_8 == -1) {
+    return 0;
+  }
+  uVar9 = 0;
+  iVar2 = *(int *)(*(int *)((int)this + 0x6f8) + 0x94) * 0x100;
+  local_4 = (int *)(iVar2 + 0x98 + *(int *)((int)this + 0x6f8));
+  do {
+    iVar8 = 0;
+    uVar4 = (int)uVar9 >> 0x1f;
+    piVar5 = (int *)(((((uVar9 ^ uVar4) - uVar4 & 3 ^ uVar4) - uVar4) +
+                      ((int)(uVar9 + (uVar4 & 3)) >> 2) * 6 + local_8) * 0x20 + 0x278 + (int)this);
+    piVar3 = local_4;
+    do {
+      if ((*piVar3 != 0) && (*piVar5 != -2)) {
+        return 0;
+      }
+      piVar5 = piVar5 + 1;
+      piVar3 = piVar3 + 1;
+      iVar8 = iVar8 + 1;
+    } while (iVar8 < 4);
+    local_4 = local_4 + 4;
+    uVar9 = uVar9 + 1;
+    if (0xf < (int)uVar9) {
+      uVar9 = 0;
+      do {
+        uVar4 = (int)uVar9 >> 0x1f;
+        iVar8 = 4;
+        puVar7 = (undefined4 *)
+                 (((((uVar9 ^ uVar4) - uVar4 & 3 ^ uVar4) - uVar4) +
+                   ((int)(uVar9 + (uVar4 & 3)) >> 2) * 6 + local_8) * 0x20 + 0x278 + (int)this);
+        do {
+          if (*(int *)(*(int *)((int)this + 0x6f8) + 0x98 + iVar2) != 0) {
+            *puVar7 = *(undefined4 *)(*(int *)((int)this + 0x6f8) + 0x90);
+          }
+          puVar7 = puVar7 + 1;
+          iVar2 = iVar2 + 4;
+          iVar8 = iVar8 + -1;
+        } while (iVar8 != 0);
+        uVar9 = uVar9 + 1;
+      } while ((int)uVar9 < 0x10);
+      *(undefined4 *)((int)this + 0x6f8) = 0;
+      return 1;
+    }
+  } while( true );
+}
+

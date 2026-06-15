@@ -1,0 +1,19 @@
+Function: FUN_00404f40
+Address: 0x404F40
+
+PUSH ESI
+XOR EAX,EAX
+MOV dword ptr [ECX + 0x8],EAX
+MOV dword ptr [ECX],EAX
+MOV dword ptr [ECX + 0x4],EAX
+MOV ESI,ECX
+TEST byte ptr [ESP + 0x8],0x1
+JZ       LAB_00404f5d
+PUSH ESI
+CALL 0x00454400
+ADD ESP,0x4
+
+LAB_00404f5d:
+MOV EAX,ESI
+POP ESI
+RET 0x4

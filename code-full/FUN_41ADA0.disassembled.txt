@@ -1,0 +1,11 @@
+Function: FUN_0041ada0
+Address: 0x41ADA0
+
+MOV EAX,dword ptr [ECX + 0xc]
+TEST EAX,EAX
+JZ       LAB_0041adae
+PUSH EAX
+CALL dword ptr [0x00476544]
+
+LAB_0041adae:
+RET

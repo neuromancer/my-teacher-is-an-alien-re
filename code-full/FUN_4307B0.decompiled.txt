@@ -1,0 +1,41 @@
+Function: FUN_004307b0
+Address: 0x4307B0
+
+
+void __cdecl FUN_004307b0(uint param_1)
+
+{
+  undefined4 *puVar1;
+  undefined4 local_458;
+  int iStack_454;
+  undefined4 uStack_450;
+  undefined4 uStack_44c;
+  int iStack_448;
+  int iStack_444;
+  int iStack_440;
+  undefined4 uStack_43c;
+  undefined4 uStack_438;
+  undefined4 uStack_434;
+  undefined4 uStack_430;
+  undefined4 uStack_42c;
+  undefined4 uStack_428;
+  undefined4 uStack_424;
+  undefined4 uStack_420;
+  undefined4 uStack_41c;
+  undefined4 uStack_418;
+  undefined4 uStack_414;
+  undefined4 uStack_410;
+  char acStack_40c [1036];
+  
+  puVar1 = &local_458;
+  Ordinal_20(param_1,&local_458);
+  _sprintf(acStack_40c,s_total_time____lu_MS_100_per_fram_0046b09c,param_1,puVar1,local_458,
+           iStack_454,uStack_450,uStack_44c,iStack_448,iStack_444,iStack_440,uStack_43c,uStack_438,
+           uStack_434,uStack_430,uStack_42c,uStack_428,uStack_424,uStack_420,uStack_41c,uStack_418,
+           uStack_414,uStack_410,(uint)(iStack_454 * 1000) / param_1,
+           (uint)(iStack_440 * 100) / param_1,(uint)(iStack_448 * 100) / param_1,
+           (uint)(iStack_444 * 100) / param_1);
+  MessageBoxA((HWND)0x0,acStack_40c,s_Summary_0046b094,0);
+  return;
+}
+

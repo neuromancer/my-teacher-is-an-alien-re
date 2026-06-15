@@ -1,0 +1,22 @@
+Function: FUN_00411d20
+Address: 0x411D20
+
+MOV EDX,dword ptr [ESP + 0xc]
+PUSH EBX
+MOV EAX,dword ptr [ESP + 0x8]
+TEST EDX,EDX
+LEA EAX,[EDX + EAX*0x1 + -0x1]
+JZ       LAB_00411d3e
+MOV ECX,dword ptr [ESP + 0xc]
+
+LAB_00411d35:
+MOV BL,byte ptr [ECX]
+INC ECX
+MOV byte ptr [EAX],BL
+DEC EAX
+DEC EDX
+JNZ      LAB_00411d35
+
+LAB_00411d3e:
+POP EBX
+RET

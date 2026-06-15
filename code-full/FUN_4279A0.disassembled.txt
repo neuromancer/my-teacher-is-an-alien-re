@@ -1,0 +1,24 @@
+Function: FUN_004279a0
+Address: 0x4279A0
+
+PUSH ESI
+XOR EDX,EDX
+PUSH EDI
+XOR EDI,EDI
+CMP dword ptr [ECX + 0xb0],EDI
+JLE      LAB_004279cc
+XOR ESI,ESI
+
+LAB_004279b0:
+MOV EAX,dword ptr [ECX + 0xb4]
+ADD ESI,0x4
+INC EDX
+MOV EAX,dword ptr [EAX + ESI*0x1 + -0x4]
+MOV dword ptr [EAX + 0x11c],EDI
+CMP dword ptr [ECX + 0xb0],EDX
+JG       LAB_004279b0
+
+LAB_004279cc:
+POP EDI
+POP ESI
+RET

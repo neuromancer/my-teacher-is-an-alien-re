@@ -1,0 +1,5 @@
+Function: FUN_00405d50
+Address: 0x405D50
+
+XOR EAX,EAX
+RET 0x4

@@ -1,0 +1,11 @@
+Function: FUN_0045caf0
+Address: 0x45CAF0
+
+
+void FUN_0045caf0(void)
+
+{
+  __amsg_exit(2);
+  return;
+}
+

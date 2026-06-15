@@ -1,0 +1,15 @@
+Function: joyGetNumDevs
+Address: 0x426AB0
+
+
+UINT joyGetNumDevs(void)
+
+{
+  UINT UVar1;
+  
+// WARNING: Could not recover jumptable at 0x00426ab0. Too many branches
+// WARNING: Treating indirect jump as call
+  UVar1 = joyGetNumDevs();
+  return UVar1;
+}
+

@@ -1,0 +1,21 @@
+Function: FUN_004260a0
+Address: 0x4260A0
+
+
+int __cdecl FUN_004260a0(byte *param_1)
+
+{
+  int iVar1;
+  uchar local_40 [64];
+  
+  iVar1 = FUN_00455130((LPCSTR)param_1);
+  if (iVar1 == 0) {
+    local_40[0] = '\0';
+    FUN_004560f0(param_1,(uchar *)0x0,local_40,(uchar *)0x0,(uchar *)0x0);
+    if (local_40[0] != '\0') {
+      FUN_00460310((LPCSTR)local_40);
+    }
+  }
+  return iVar1;
+}
+

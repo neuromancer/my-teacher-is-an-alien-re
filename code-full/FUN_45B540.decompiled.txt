@@ -1,0 +1,24 @@
+Function: __mbsnbicoll
+Address: 0x45B540
+
+
+/* Library Function - Single Match
+    __mbsnbicoll
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl __mbsnbicoll(uchar *_Str1,uchar *_Str2,size_t _MaxCount)
+
+{
+  size_t sVar1;
+  
+  if (_MaxCount == 0) {
+    return 0;
+  }
+  sVar1 = FUN_0045e3a0(DAT_00471fa8,1,_Str1,_MaxCount,_Str2,_MaxCount,DAT_00471fa4);
+  if (sVar1 == 0) {
+    return 0x7fffffff;
+  }
+  return sVar1 - 2;
+}
+

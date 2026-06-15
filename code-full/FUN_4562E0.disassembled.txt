@@ -1,0 +1,10 @@
+Function: FUN_004562e0
+Address: 0x4562E0
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH 0x0
+PUSH 0x0
+PUSH EAX
+CALL     LAB_00456320
+ADD ESP,0xc
+RET

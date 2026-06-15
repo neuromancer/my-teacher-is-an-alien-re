@@ -1,0 +1,66 @@
+Function: FUN_00447b60
+Address: 0x447B60
+
+
+undefined4 __thiscall FUN_00447b60(void *this,char *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  char *pcVar4;
+  byte *pbVar5;
+  bool bVar6;
+  byte local_20 [32];
+  
+  local_20[0] = 0;
+  _sscanf(param_1,&DAT_00468448,local_20);
+  pbVar2 = local_20;
+  pcVar4 = s_NAVIGATION_0046bd18;
+  do {
+    bVar1 = *pbVar2;
+    bVar6 = bVar1 < (byte)*pcVar4;
+    if (bVar1 != *pcVar4) {
+LAB_00447bac:
+      iVar3 = (1 - (uint)bVar6) - (uint)(bVar6 != 0);
+      goto LAB_00447bb1;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar6 = bVar1 < (byte)pcVar4[1];
+    if (bVar1 != pcVar4[1]) goto LAB_00447bac;
+    pbVar2 = pbVar2 + 2;
+    pcVar4 = pcVar4 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_00447bb1:
+  if (iVar3 == 0) {
+    FUN_00413e70(DAT_0046ae70,(int)this,(char *)0x0);
+    return 0;
+  }
+  pbVar2 = local_20;
+  pbVar5 = &DAT_00468444;
+  do {
+    bVar1 = *pbVar2;
+    bVar6 = bVar1 < *pbVar5;
+    if (bVar1 != *pbVar5) {
+LAB_00447bf9:
+      iVar3 = (1 - (uint)bVar6) - (uint)(bVar6 != 0);
+      goto LAB_00447bfe;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar6 = bVar1 < pbVar5[1];
+    if (bVar1 != pbVar5[1]) goto LAB_00447bf9;
+    pbVar2 = pbVar2 + 2;
+    pbVar5 = pbVar5 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_00447bfe:
+  if (iVar3 == 0) {
+    return 1;
+  }
+  FUN_00449600(this,param_1);
+  return 0;
+}
+

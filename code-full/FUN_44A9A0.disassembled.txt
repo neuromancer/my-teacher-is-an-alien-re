@@ -1,0 +1,12 @@
+Function: FUN_0044a9a0
+Address: 0x44A9A0
+
+MOV EAX,dword ptr [ECX + 0xa0]
+MOV ECX,dword ptr [0x0046ae78]
+PUSH EAX
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX + 0x34]
+CMP EAX,0x1
+SBB EAX,EAX
+ADD EAX,0x2
+RET

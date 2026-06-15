@@ -1,0 +1,15 @@
+Function: GetStockObject
+Address: 0x460206
+
+
+HGDIOBJ GetStockObject(int i)
+
+{
+  HGDIOBJ pvVar1;
+  
+// WARNING: Could not recover jumptable at 0x00460206. Too many branches
+// WARNING: Treating indirect jump as call
+  pvVar1 = GetStockObject(i);
+  return pvVar1;
+}
+

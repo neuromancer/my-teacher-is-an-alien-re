@@ -1,0 +1,95 @@
+Function: FUN_0045ee00
+Address: 0x45EE00
+
+SUB ESP,0xc
+PUSH EBX
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0x20]
+PUSH EDI
+MOV DI,0x404e
+PUSH EBP
+MOV EBP,dword ptr [ESP + 0x24]
+MOV dword ptr [ESI],0x0
+MOV dword ptr [ESI + 0x4],0x0
+MOV dword ptr [ESI + 0x8],0x0
+TEST EBP,EBP
+JZ       LAB_0045ee98
+MOV EBX,dword ptr [ESP + 0x20]
+
+LAB_0045ee2f:
+LEA ECX,[ESP + 0x10]
+MOV EAX,dword ptr [ESI]
+MOV EDX,dword ptr [ESI + 0x4]
+PUSH ESI
+MOV dword ptr [ECX],EAX
+MOV EAX,dword ptr [ESI + 0x8]
+MOV dword ptr [ECX + 0x4],EDX
+MOV dword ptr [ECX + 0x8],EAX
+CALL 0x0045ed80
+ADD ESP,0x4
+DEC EBP
+INC EBX
+PUSH ESI
+CALL 0x0045ed80
+LEA ECX,[ESP + 0x14]
+ADD ESP,0x4
+PUSH ECX
+PUSH ESI
+CALL 0x0045ed10
+ADD ESP,0x8
+PUSH ESI
+CALL 0x0045ed80
+MOVSX ECX,byte ptr [EBX + -0x1]
+MOV dword ptr [ESP + 0x18],0x0
+MOV dword ptr [ESP + 0x1c],0x0
+MOV dword ptr [ESP + 0x14],ECX
+LEA ECX,[ESP + 0x14]
+ADD ESP,0x4
+PUSH ECX
+PUSH ESI
+CALL 0x0045ed10
+ADD ESP,0x8
+TEST EBP,EBP
+JNZ      LAB_0045ee2f
+
+LAB_0045ee98:
+CMP dword ptr [ESI + 0x8],0x0
+JNZ      LAB_0045eec5
+
+LAB_0045ee9e:
+SUB DI,0x10
+MOV EDX,dword ptr [ESI + 0x4]
+MOV ECX,EDX
+MOV EAX,dword ptr [ESI]
+SHR ECX,0x10
+MOV EBX,EAX
+SHL EDX,0x10
+MOV dword ptr [ESI + 0x8],ECX
+SHR EBX,0x10
+SHL EAX,0x10
+OR EDX,EBX
+MOV dword ptr [ESI + 0x4],EDX
+MOV dword ptr [ESI],EAX
+TEST ECX,ECX
+JZ       LAB_0045ee9e
+
+LAB_0045eec5:
+TEST byte ptr [ESI + 0x9],0x80
+JNZ      LAB_0045eedc
+
+LAB_0045eecb:
+DEC DI
+PUSH ESI
+CALL 0x0045ed80
+ADD ESP,0x4
+TEST byte ptr [ESI + 0x9],0x80
+JZ       LAB_0045eecb
+
+LAB_0045eedc:
+MOV word ptr [ESI + 0xa],DI
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0xc
+RET

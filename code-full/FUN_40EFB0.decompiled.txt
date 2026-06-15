@@ -1,0 +1,14 @@
+Function: FUN_0040efb0
+Address: 0x40EFB0
+
+
+void FUN_0040efb0(void)
+
+{
+  DAT_00472be0 = 0;
+  DAT_00472be4 = 0;
+  DAT_00472be8 = 0;
+  DAT_00472bec = 0;
+  return;
+}
+

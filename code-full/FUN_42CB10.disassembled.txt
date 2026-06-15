@@ -1,0 +1,12 @@
+Function: FUN_0042cb10
+Address: 0x42CB10
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x42d0b2
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x48
+LEA EAX,[EBP + -0x34]

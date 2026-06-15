@@ -1,0 +1,81 @@
+Function: FUN_0042ae80
+Address: 0x42AE80
+
+
+undefined4 __thiscall FUN_0042ae80(void *this,undefined4 *param_1)
+
+{
+  undefined4 uVar1;
+  int iVar2;
+  void *pvVar3;
+  bool bVar4;
+  int iVar5;
+  int *piVar6;
+  undefined4 *unaff_FS_OFFSET;
+  int *local_28;
+  int local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_0042b00f;
+  *unaff_FS_OFFSET = &local_10;
+  if (1 < (int)param_1[9]) {
+    local_14 = 0;
+    piVar6 = (int *)((int)this + 0xbc);
+    local_28 = piVar6;
+    do {
+      iVar5 = *local_28;
+      if ((((*(int *)(iVar5 + 0x90) == 0) || ((int)param_1[7] < *(int *)(iVar5 + 0x9c))) ||
+          (*(int *)(iVar5 + 0xa4) < (int)param_1[7])) ||
+         (((int)param_1[8] < *(int *)(iVar5 + 0xa0) || (*(int *)(iVar5 + 0xa8) < (int)param_1[8]))))
+      {
+        bVar4 = false;
+      }
+      else {
+        bVar4 = true;
+      }
+      local_8 = 0xffffffff;
+      FUN_0042b019();
+      if (bVar4) {
+        iVar5 = 3;
+        do {
+          iVar2 = *piVar6;
+          *(undefined4 *)(iVar2 + 0x94) = 0;
+          pvVar3 = *(void **)(iVar2 + 0x19c);
+          if (pvVar3 != (void *)0x0) {
+            FUN_0044cb40(pvVar3,0,0);
+          }
+          piVar6 = piVar6 + 1;
+          iVar5 = iVar5 + -1;
+        } while (iVar5 != 0);
+        iVar5 = *(int *)((int)this + local_14 * 4 + 0xbc);
+        *(undefined4 *)(iVar5 + 0x94) = 1;
+        pvVar3 = *(void **)(iVar5 + 0x19c);
+        if (pvVar3 != (void *)0x0) {
+          FUN_0044cb40(pvVar3,1,0);
+        }
+        iVar2 = DAT_0046cb90;
+        iVar5 = DAT_0046aa30;
+        if ((DAT_0046cb90 < 0) || (*(int *)(DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+          FUN_00425c50(s_Invalid_gamestate__d_00468150);
+        }
+        *(int *)(*(int *)(iVar5 + 0x90) + iVar2 * 4) = local_14;
+        param_1[4] = 0;
+        goto LAB_0042af60;
+      }
+      local_28 = local_28 + 1;
+      local_14 = local_14 + 1;
+    } while (local_14 < 3);
+  }
+  if (param_1[9] == 2) {
+    uVar1 = *(undefined4 *)((int)this + 0x90);
+    param_1[4] = 2;
+    *param_1 = uVar1;
+  }
+LAB_0042af60:
+  *unaff_FS_OFFSET = local_10;
+  return 1;
+}
+

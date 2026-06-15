@@ -1,0 +1,19 @@
+Function: FUN_00421a30
+Address: 0x421A30
+
+PUSH ESI
+CMP dword ptr [ECX],0x1
+MOV ESI,ECX
+JNZ      LAB_00421a4c
+MOV ECX,dword ptr [ESI + 0x8]
+CALL 0x004218e0
+CMP EAX,dword ptr [ESI + 0x4]
+JC       LAB_00421a4c
+MOV EAX,0x1
+POP ESI
+RET
+
+LAB_00421a4c:
+XOR EAX,EAX
+POP ESI
+RET

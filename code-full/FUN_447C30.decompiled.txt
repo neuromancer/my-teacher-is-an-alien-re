@@ -1,0 +1,22 @@
+Function: FUN_00447c30
+Address: 0x447C30
+
+
+undefined4 * __fastcall FUN_00447c30(undefined4 *param_1)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 uStack_10;
+  undefined4 uStack_c;
+  undefined4 uStack_8;
+  
+  uStack_10 = *unaff_FS_OFFSET;
+  uStack_8 = 0xffffffff;
+  uStack_c = 0x447c7b;
+  *unaff_FS_OFFSET = &uStack_10;
+  FUN_0042bcd0(param_1);
+  *param_1 = &PTR_FUN_00461a10;
+  *unaff_FS_OFFSET = uStack_10;
+  return param_1;
+}
+

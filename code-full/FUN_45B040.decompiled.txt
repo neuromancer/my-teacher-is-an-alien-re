@@ -1,0 +1,82 @@
+Function: FUN_0045b040
+Address: 0x45B040
+
+
+int __cdecl FUN_0045b040(byte *param_1,byte *param_2)
+
+{
+  byte bVar1;
+  byte bVar2;
+  int iVar3;
+  byte *pbVar4;
+  ushort uVar5;
+  ushort uVar6;
+  byte *pbVar7;
+  
+  if (DAT_00471fa4 == 0) {
+    iVar3 = __strcmpi((char *)param_1,(char *)param_2);
+    return iVar3;
+  }
+  while( true ) {
+    pbVar4 = param_1 + 1;
+    bVar1 = *param_1;
+    uVar6 = (ushort)bVar1;
+    if ((*(byte *)((int)&DAT_00471ea0 + bVar1 + 1) & 4) == 0) {
+      if ((0x40 < uVar6) && (uVar6 < 0x5b)) {
+        uVar6 = uVar6 + 0x20;
+      }
+    }
+    else {
+      bVar2 = *pbVar4;
+      if (bVar2 == 0) {
+        uVar6 = 0;
+      }
+      else {
+        pbVar4 = param_1 + 2;
+        uVar6 = CONCAT11(bVar1,bVar2);
+        if ((uVar6 < (ushort)DAT_00471fb0) || (DAT_00471fb0._2_2_ < uVar6)) {
+          if ((DAT_00471fb4._2_2_ <= uVar6) && (uVar6 <= (ushort)DAT_00471fb8)) {
+            uVar6 = uVar6 + DAT_00471fb8._2_2_;
+          }
+        }
+        else {
+          uVar6 = uVar6 + (short)DAT_00471fb4;
+        }
+      }
+    }
+    pbVar7 = param_2 + 1;
+    bVar1 = *param_2;
+    uVar5 = (ushort)bVar1;
+    if ((*(byte *)((int)&DAT_00471ea0 + bVar1 + 1) & 4) == 0) {
+      if ((0x40 < uVar5) && (uVar5 < 0x5b)) {
+        uVar5 = uVar5 + 0x20;
+      }
+    }
+    else {
+      bVar2 = *pbVar7;
+      if (bVar2 == 0) {
+        uVar5 = 0;
+      }
+      else {
+        pbVar7 = param_2 + 2;
+        uVar5 = CONCAT11(bVar1,bVar2);
+        if ((uVar5 < (ushort)DAT_00471fb0) || (DAT_00471fb0._2_2_ < uVar5)) {
+          if ((DAT_00471fb4._2_2_ <= uVar5) && (uVar5 <= (ushort)DAT_00471fb8)) {
+            uVar5 = uVar5 + DAT_00471fb8._2_2_;
+          }
+        }
+        else {
+          uVar5 = uVar5 + (short)DAT_00471fb4;
+        }
+      }
+    }
+    if (uVar5 != uVar6) break;
+    param_1 = pbVar4;
+    param_2 = pbVar7;
+    if (uVar6 == 0) {
+      return 0;
+    }
+  }
+  return (-(uint)(uVar5 < uVar6) & 2) - 1;
+}
+

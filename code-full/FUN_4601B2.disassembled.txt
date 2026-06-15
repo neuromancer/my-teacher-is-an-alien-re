@@ -1,0 +1,4 @@
+Function: SetDIBitsToDevice
+Address: 0x4601B2
+
+JMP dword ptr [0x00476314]

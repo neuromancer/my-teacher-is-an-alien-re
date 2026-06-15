@@ -1,0 +1,18 @@
+Function: FID_conflict:_ValidateRead
+Address: 0x45C1D0
+
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH ESI
+MOV ESI,0x1
+PUSH EAX
+MOV ECX,dword ptr [ESP + 0xc]
+PUSH ECX
+CALL dword ptr [0x004763bc]
+TEST EAX,EAX
+JZ       LAB_0045c1ec
+XOR ESI,ESI
+
+LAB_0045c1ec:
+MOV EAX,ESI
+POP ESI
+RET

@@ -1,0 +1,107 @@
+Function: FUN_00437c60
+Address: 0x437C60
+
+
+void __thiscall FUN_00437c60(void *this,int param_1)
+
+{
+  LPVOID pvVar1;
+  int *piVar2;
+  int iVar3;
+  undefined4 *puVar4;
+  
+  puVar4 = *(undefined4 **)((int)this + 0xac);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0041dc10(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0xac) = 0;
+  }
+  puVar4 = *(undefined4 **)((int)this + 0xb0);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0xb0) = 0;
+  }
+  puVar4 = *(undefined4 **)((int)this + 0xb4);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0xb4) = 0;
+  }
+  pvVar1 = *(LPVOID *)((int)this + 0xc4);
+  if (pvVar1 != (LPVOID)0x0) {
+    FUN_00410fd0((int)pvVar1);
+    FUN_00454400(pvVar1);
+    *(undefined4 *)((int)this + 0xc4) = 0;
+  }
+  puVar4 = *(undefined4 **)((int)this + 0xb8);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0xb8) = 0;
+  }
+  puVar4 = *(undefined4 **)((int)this + 0xbc);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0xbc) = 0;
+  }
+  puVar4 = *(undefined4 **)((int)this + 0xc0);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0xc0) = 0;
+  }
+  if (DAT_0046bbfc != (int *)0x0) {
+    (**(code **)(*DAT_0046bbfc + 0xc))(1);
+    DAT_0046bbfc = (int *)0x0;
+  }
+  puVar4 = *(undefined4 **)((int)this + 0x13c);
+  if (puVar4 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar4);
+    FUN_00454400(puVar4);
+    *(undefined4 *)((int)this + 0x13c) = 0;
+  }
+  pvVar1 = *(LPVOID *)((int)this + 200);
+  if (pvVar1 != (LPVOID)0x0) {
+    FUN_00421930((int)pvVar1);
+    FUN_00454400(pvVar1);
+    *(undefined4 *)((int)this + 200) = 0;
+  }
+  pvVar1 = *(LPVOID *)((int)this + 0xa8);
+  if (pvVar1 != (LPVOID)0x0) {
+    FUN_00444af0((int)pvVar1);
+    FUN_00454400(pvVar1);
+    *(undefined4 *)((int)this + 0xa8) = 0;
+  }
+  piVar2 = *(int **)((int)this + 0x114);
+  if (piVar2 != (int *)0x0) {
+    FUN_00425200(piVar2);
+    FUN_00454400(piVar2);
+    *(undefined4 *)((int)this + 0x114) = 0;
+  }
+  *(undefined4 *)((int)this + 0x130) = 0;
+  *(undefined4 *)((int)this + 300) = 0;
+  puVar4 = (undefined4 *)((int)this + 0xdc);
+  *(undefined4 *)((int)this + 0x128) = 0;
+  iVar3 = 0xe;
+  *(undefined4 *)((int)this + 0x124) = 0;
+  *(undefined4 *)((int)this + 0x120) = 0;
+  *(undefined4 *)((int)this + 0x11c) = 0;
+  do {
+    piVar2 = (int *)*puVar4;
+    if (piVar2 != (int *)0x0) {
+      FUN_00424ee0(piVar2);
+      FUN_00454400(piVar2);
+      *puVar4 = 0;
+    }
+    puVar4 = puVar4 + 1;
+    iVar3 = iVar3 + -1;
+  } while (iVar3 != 0);
+  if (param_1 != 0) {
+    FUN_00444d90(1,*(undefined4 *)((int)this + 0x90),*(undefined4 *)((int)this + 0x90),
+                 *(undefined4 *)((int)this + 0x94),0x18,0,0,0,0,0);
+  }
+  return;
+}
+

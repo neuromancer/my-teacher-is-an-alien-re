@@ -1,0 +1,40 @@
+Function: FUN_00407e50
+Address: 0x407E50
+
+PUSH ESI
+PUSH 0x3ff00000
+MOV ESI,ECX
+PUSH 0x0
+MOV ECX,dword ptr [ESI + 0xc4]
+MOV EAX,dword ptr [ECX + 0xb0]
+MOV EDX,dword ptr [ECX + 0xac]
+PUSH EAX
+PUSH EDX
+CALL 0x0044ccf0
+MOV ECX,dword ptr [ESI + 0x110]
+PUSH 0x3ff00000
+PUSH 0x0
+MOV EDX,dword ptr [ECX + 0xb0]
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0xac]
+PUSH EAX
+CALL 0x0044ccf0
+MOV ECX,dword ptr [ESI + 0xdc]
+PUSH 0x3ff00000
+PUSH 0x0
+MOV EDX,dword ptr [ECX + 0xb0]
+PUSH EDX
+MOV EAX,dword ptr [ECX + 0xac]
+PUSH EAX
+CALL 0x0044ccf0
+PUSH 0x9
+MOV ECX,dword ptr [ESI + 0x148]
+CALL 0x004256d0
+TEST EAX,EAX
+JNZ      LAB_00407ed5
+MOV dword ptr [ESI + 0xb0],0x1
+AND dword ptr [ESI + 0xac],0xfffffff7
+
+LAB_00407ed5:
+POP ESI
+RET

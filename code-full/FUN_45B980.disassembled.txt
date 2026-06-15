@@ -1,0 +1,274 @@
+Function: parse_cmdline
+Address: 0x45B980
+
+MOV ECX,dword ptr [ESP + 0x14]
+PUSH EBX
+MOV EDX,dword ptr [ESP + 0x14]
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0xc]
+PUSH EDI
+MOV EAX,dword ptr [ESP + 0x18]
+PUSH EBP
+CMP dword ptr [ESP + 0x18],0x0
+MOV dword ptr [ECX],0x0
+MOV dword ptr [EDX],0x1
+JZ       LAB_0045b9b2
+MOV EDX,dword ptr [ESP + 0x18]
+ADD dword ptr [ESP + 0x18],0x4
+MOV dword ptr [EDX],EAX
+
+LAB_0045b9b2:
+CMP byte ptr [ESI],0x22
+JZ       LAB_0045b9fd
+
+LAB_0045b9b7:
+INC dword ptr [ECX]
+TEST EAX,EAX
+JZ       LAB_0045b9c2
+MOV DL,byte ptr [ESI]
+MOV byte ptr [EAX],DL
+INC EAX
+
+LAB_0045b9c2:
+MOV DL,byte ptr [ESI]
+INC ESI
+XOR EBX,EBX
+MOV BL,DL
+TEST byte ptr [EBX + 0x471ea1],0x4
+JZ       LAB_0045b9de
+INC dword ptr [ECX]
+TEST EAX,EAX
+JZ       LAB_0045b9dd
+MOV BL,byte ptr [ESI]
+MOV byte ptr [EAX],BL
+INC EAX
+
+LAB_0045b9dd:
+INC ESI
+
+LAB_0045b9de:
+CMP DL,0x20
+JZ       LAB_0045b9ec
+TEST DL,DL
+JZ       LAB_0045b9f0
+CMP DL,0x9
+JNZ      LAB_0045b9b7
+
+LAB_0045b9ec:
+TEST DL,DL
+JNZ      LAB_0045b9f3
+
+LAB_0045b9f0:
+DEC ESI
+JMP      LAB_0045ba43
+
+LAB_0045b9f3:
+TEST EAX,EAX
+JZ       LAB_0045ba43
+MOV byte ptr [EAX + -0x1],0x0
+JMP      LAB_0045ba43
+
+LAB_0045b9fd:
+INC ESI
+CMP byte ptr [ESI],0x22
+JZ       LAB_0045ba33
+
+LAB_0045ba03:
+MOV BL,byte ptr [ESI]
+TEST BL,BL
+JZ       LAB_0045ba33
+XOR EDX,EDX
+MOV DL,BL
+TEST byte ptr [EDX + 0x471ea1],0x4
+JZ       LAB_0045ba22
+INC dword ptr [ECX]
+TEST EAX,EAX
+JZ       LAB_0045ba22
+MOV DL,byte ptr [ESI]
+INC ESI
+MOV byte ptr [EAX],DL
+INC EAX
+
+LAB_0045ba22:
+INC dword ptr [ECX]
+TEST EAX,EAX
+JZ       LAB_0045ba2d
+MOV DL,byte ptr [ESI]
+MOV byte ptr [EAX],DL
+INC EAX
+
+LAB_0045ba2d:
+INC ESI
+CMP byte ptr [ESI],0x22
+JNZ      LAB_0045ba03
+
+LAB_0045ba33:
+INC dword ptr [ECX]
+TEST EAX,EAX
+JZ       LAB_0045ba3d
+MOV byte ptr [EAX],0x0
+INC EAX
+
+LAB_0045ba3d:
+CMP byte ptr [ESI],0x22
+JNZ      LAB_0045ba43
+INC ESI
+
+LAB_0045ba43:
+XOR EDI,EDI
+
+LAB_0045ba45:
+CMP byte ptr [ESI],0x0
+JZ       LAB_0045bb36
+
+LAB_0045ba4e:
+MOV DL,byte ptr [ESI]
+CMP DL,0x20
+JZ       LAB_0045ba5a
+CMP DL,0x9
+JNZ      LAB_0045ba5d
+
+LAB_0045ba5a:
+INC ESI
+JMP      LAB_0045ba4e
+
+LAB_0045ba5d:
+CMP byte ptr [ESI],0x0
+JZ       LAB_0045bb36
+CMP dword ptr [ESP + 0x18],0x0
+JZ       LAB_0045ba78
+MOV EDX,dword ptr [ESP + 0x18]
+ADD dword ptr [ESP + 0x18],0x4
+MOV dword ptr [EDX],EAX
+
+LAB_0045ba78:
+MOV EDX,dword ptr [ESP + 0x20]
+INC dword ptr [EDX]
+
+LAB_0045ba7e:
+MOV EBX,0x1
+XOR EBP,EBP
+CMP byte ptr [ESI],0x5c
+JNZ      LAB_0045ba91
+
+LAB_0045ba8a:
+INC ESI
+INC EBP
+CMP byte ptr [ESI],0x5c
+JZ       LAB_0045ba8a
+
+LAB_0045ba91:
+CMP byte ptr [ESI],0x22
+JNZ      LAB_0045baba
+TEST EBP,0x1
+JNZ      LAB_0045bab7
+TEST EDI,EDI
+JZ       LAB_0045baae
+LEA EDX,[ESI + 0x1]
+CMP byte ptr [EDX],0x22
+JNZ      LAB_0045baae
+MOV ESI,EDX
+JMP      LAB_0045bab0
+
+LAB_0045baae:
+XOR EBX,EBX
+
+LAB_0045bab0:
+CMP EDI,0x1
+SBB EDI,EDI
+NEG EDI
+
+LAB_0045bab7:
+SHR EBP,0x1
+
+LAB_0045baba:
+MOV EDX,EBP
+DEC EBP
+TEST EDX,EDX
+JZ       LAB_0045bad2
+
+LAB_0045bac1:
+TEST EAX,EAX
+JZ       LAB_0045bac9
+MOV byte ptr [EAX],0x5c
+INC EAX
+
+LAB_0045bac9:
+MOV EDX,EBP
+INC dword ptr [ECX]
+DEC EBP
+TEST EDX,EDX
+JNZ      LAB_0045bac1
+
+LAB_0045bad2:
+MOV DL,byte ptr [ESI]
+TEST DL,DL
+JZ       LAB_0045bb27
+TEST EDI,EDI
+JNZ      LAB_0045bae6
+CMP DL,0x20
+JZ       LAB_0045bb27
+CMP DL,0x9
+JZ       LAB_0045bb27
+
+LAB_0045bae6:
+TEST EBX,EBX
+JZ       LAB_0045bb21
+TEST EAX,EAX
+JZ       LAB_0045bb0f
+XOR EBX,EBX
+MOV BL,DL
+TEST byte ptr [EBX + 0x471ea1],0x4
+JZ       LAB_0045bb01
+MOV byte ptr [EAX],DL
+INC ESI
+INC EAX
+INC dword ptr [ECX]
+
+LAB_0045bb01:
+MOV DL,byte ptr [ESI]
+INC EAX
+INC ESI
+MOV byte ptr [EAX + -0x1],DL
+INC dword ptr [ECX]
+JMP      LAB_0045ba7e
+
+LAB_0045bb0f:
+XOR EBX,EBX
+MOV BL,DL
+TEST byte ptr [EBX + 0x471ea1],0x4
+JZ       LAB_0045bb1f
+INC ESI
+INC dword ptr [ECX]
+
+LAB_0045bb1f:
+INC dword ptr [ECX]
+
+LAB_0045bb21:
+INC ESI
+JMP      LAB_0045ba7e
+
+LAB_0045bb27:
+TEST EAX,EAX
+JZ       LAB_0045bb2f
+MOV byte ptr [EAX],0x0
+INC EAX
+
+LAB_0045bb2f:
+INC dword ptr [ECX]
+JMP      LAB_0045ba45
+
+LAB_0045bb36:
+CMP dword ptr [ESP + 0x18],0x0
+JZ       LAB_0045bb47
+MOV EDX,dword ptr [ESP + 0x18]
+MOV dword ptr [EDX],0x0
+
+LAB_0045bb47:
+MOV EDX,dword ptr [ESP + 0x20]
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+INC dword ptr [EDX]
+RET

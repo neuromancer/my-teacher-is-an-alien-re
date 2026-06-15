@@ -1,0 +1,13 @@
+Function: FUN_0042dcac
+Address: 0x42DCAC
+
+
+void FUN_0042dcac(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_00444af0(unaff_EBP + -0x80);
+  return;
+}
+

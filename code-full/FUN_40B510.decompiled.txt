@@ -1,0 +1,146 @@
+Function: FUN_0040b510
+Address: 0x40B510
+
+
+void __thiscall FUN_0040b510(void *this,int param_1)
+
+{
+  char cVar1;
+  int *piVar2;
+  int iVar3;
+  void *this_00;
+  int iVar4;
+  bool bVar5;
+  undefined3 extraout_var;
+  undefined4 *puVar6;
+  LPVOID pvVar7;
+  uint uVar8;
+  uint uVar9;
+  char *pcVar10;
+  char *pcVar11;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 *local_18;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0040b747;
+  *unaff_FS_OFFSET = &local_10;
+  bVar5 = FUN_00425fa0(s_CB_Gauntlet_00468a34);
+  if (CONCAT31(extraout_var,bVar5) == 0) {
+    FUN_004265a0();
+  }
+  FUN_00449260(this,param_1);
+  iVar4 = DAT_0046aa24;
+  if (*(int *)(DAT_0046aa24 + 0x98) != 1) {
+    *(int *)(DAT_0046aa24 + 0x98) = 1;
+    piVar2 = *(int **)(iVar4 + 0xa0);
+    if (*piVar2 != 0) {
+      piVar2[2] = *piVar2;
+      iVar3 = *piVar2;
+      while (iVar3 != 0) {
+        puVar6 = (undefined4 *)FUN_00403520(piVar2);
+        if (puVar6 != (undefined4 *)0x0) {
+          *puVar6 = &PTR_LAB_00461030;
+          FUN_00454400(puVar6);
+        }
+        iVar3 = *piVar2;
+      }
+    }
+    piVar2 = *(int **)(iVar4 + 0xa4);
+    if (*piVar2 != 0) {
+      piVar2[2] = *piVar2;
+      iVar3 = *piVar2;
+      while (iVar3 != 0) {
+        pvVar7 = (LPVOID)FUN_004035a0(piVar2);
+        if (pvVar7 != (LPVOID)0x0) {
+          if (*(void **)((int)pvVar7 + 4) != (void *)0x0) {
+            FUN_0040b760(*(void **)((int)pvVar7 + 4),1);
+            *(undefined4 *)((int)pvVar7 + 4) = 0;
+          }
+          if (*(undefined4 **)((int)pvVar7 + 8) != (undefined4 *)0x0) {
+            (**(code **)**(undefined4 **)((int)pvVar7 + 8))(1);
+            *(undefined4 *)((int)pvVar7 + 8) = 0;
+          }
+          FUN_00454400(pvVar7);
+        }
+        iVar3 = *piVar2;
+      }
+    }
+    piVar2 = *(int **)(iVar4 + 0x9c);
+    if (*piVar2 != 0) {
+      piVar2[2] = *piVar2;
+      iVar3 = *piVar2;
+      while (iVar3 != 0) {
+        iVar3 = piVar2[2];
+        if (iVar3 == 0) {
+          local_18 = (undefined4 *)0x0;
+        }
+        else {
+          if (*piVar2 == iVar3) {
+            *piVar2 = *(int *)(iVar3 + 4);
+          }
+          if ((int *)piVar2[1] == (int *)piVar2[2]) {
+            piVar2[1] = *(int *)piVar2[2];
+          }
+          iVar3 = *(int *)piVar2[2];
+          if (iVar3 != 0) {
+            *(int *)(iVar3 + 4) = ((int *)piVar2[2])[1];
+          }
+          puVar6 = (undefined4 *)((undefined4 *)piVar2[2])[1];
+          if (puVar6 != (undefined4 *)0x0) {
+            *puVar6 = *(undefined4 *)piVar2[2];
+          }
+          this_00 = (void *)piVar2[2];
+          if (this_00 == (void *)0x0) {
+            local_18 = (undefined4 *)0x0;
+          }
+          else {
+            local_18 = *(undefined4 **)((int)this_00 + 8);
+            FUN_00404d70(this_00,1);
+            piVar2[2] = 0;
+          }
+          piVar2[2] = *piVar2;
+        }
+        if (local_18 != (undefined4 *)0x0) {
+          local_8 = 0xffffffff;
+          *local_18 = &PTR_LAB_0046102c;
+          FUN_0040b751();
+          FUN_00454400(local_18);
+        }
+        iVar3 = *piVar2;
+      }
+    }
+    *(undefined4 *)(iVar4 + 0xa8) = 0;
+  }
+  uVar8 = 0xffffffff;
+  pcVar10 = s_mis_cb_Gauntlet_mis_00468a20;
+  do {
+    pcVar11 = pcVar10;
+    if (uVar8 == 0) break;
+    uVar8 = uVar8 - 1;
+    pcVar11 = pcVar10 + 1;
+    cVar1 = *pcVar10;
+    pcVar10 = pcVar11;
+  } while (cVar1 != '\0');
+  uVar8 = ~uVar8;
+  pcVar10 = pcVar11 + -uVar8;
+  pcVar11 = (char *)((int)this + 0xc0);
+  for (uVar9 = uVar8 >> 2; uVar9 != 0; uVar9 = uVar9 - 1) {
+    *(undefined4 *)pcVar11 = *(undefined4 *)pcVar10;
+    pcVar10 = pcVar10 + 4;
+    pcVar11 = pcVar11 + 4;
+  }
+  for (uVar8 = uVar8 & 3; uVar8 != 0; uVar8 = uVar8 - 1) {
+    *pcVar11 = *pcVar10;
+    pcVar10 = pcVar10 + 1;
+    pcVar11 = pcVar11 + 1;
+  }
+  FUN_00413e10(this,(char *)((int)this + 0xc0),(char *)0x0);
+  DAT_00468a1c = this;
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

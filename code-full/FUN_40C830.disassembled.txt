@@ -1,0 +1,10 @@
+Function: FUN_0040c830
+Address: 0x40C830
+
+MOV ECX,dword ptr [ECX + 0xc0]
+TEST ECX,ECX
+JZ       LAB_0040c83f
+JMP 0x0044c9d0
+
+LAB_0040c83f:
+RET

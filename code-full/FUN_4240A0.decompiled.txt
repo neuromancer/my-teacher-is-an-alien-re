@@ -1,0 +1,94 @@
+Function: FUN_004240a0
+Address: 0x4240A0
+
+
+undefined4 __thiscall FUN_004240a0(void *this,char *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  undefined4 uVar4;
+  char *pcVar5;
+  byte *pbVar6;
+  undefined4 *puVar7;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar8;
+  byte local_34 [32];
+  void *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0042417a;
+  *unaff_FS_OFFSET = &local_10;
+  local_34[0] = 0;
+  _sscanf(param_1,&DAT_00468448,local_34);
+  pbVar2 = local_34;
+  pcVar5 = s_MESSAGE_00468524;
+  do {
+    bVar1 = *pbVar2;
+    bVar8 = bVar1 < (byte)*pcVar5;
+    if (bVar1 != *pcVar5) {
+LAB_00424101:
+      iVar3 = (1 - (uint)bVar8) - (uint)(bVar8 != 0);
+      goto LAB_00424106;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar8 = bVar1 < (byte)pcVar5[1];
+    if (bVar1 != pcVar5[1]) goto LAB_00424101;
+    pbVar2 = pbVar2 + 2;
+    pcVar5 = pcVar5 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_00424106:
+  if (iVar3 == 0) {
+    local_14 = (void *)FUN_00454500(0x38);
+    puVar7 = (undefined4 *)0x0;
+    local_8 = 0;
+    if (local_14 != (void *)0x0) {
+      puVar7 = FUN_00444a40(local_14,0,0,0,0,0,0,0,0,0,0);
+    }
+    local_8 = 0xffffffff;
+    FUN_00445450(puVar7,this);
+    FUN_00444e20(puVar7);
+    if (puVar7 != (undefined4 *)0x0) {
+      FUN_00444af0((int)puVar7);
+      FUN_00454400(puVar7);
+    }
+  }
+  else {
+    pbVar2 = local_34;
+    pbVar6 = &DAT_00468444;
+    do {
+      bVar1 = *pbVar2;
+      bVar8 = bVar1 < *pbVar6;
+      if (bVar1 != *pbVar6) {
+LAB_004241b9:
+        iVar3 = (1 - (uint)bVar8) - (uint)(bVar8 != 0);
+        goto LAB_004241be;
+      }
+      if (bVar1 == 0) break;
+      bVar1 = pbVar2[1];
+      bVar8 = bVar1 < pbVar6[1];
+      if (bVar1 != pbVar6[1]) goto LAB_004241b9;
+      pbVar2 = pbVar2 + 2;
+      pbVar6 = pbVar6 + 2;
+    } while (bVar1 != 0);
+    iVar3 = 0;
+LAB_004241be:
+    if (iVar3 == 0) {
+      uVar4 = 1;
+      goto LAB_004241d7;
+    }
+    FUN_00412a50();
+  }
+  uVar4 = 0;
+LAB_004241d7:
+  *unaff_FS_OFFSET = local_10;
+  return uVar4;
+}
+

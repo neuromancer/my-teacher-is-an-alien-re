@@ -1,0 +1,43 @@
+Function: FUN_0045b170
+Address: 0x45B170
+
+
+void __cdecl FUN_0045b170(byte *param_1,uint param_2)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  byte *pbVar3;
+  
+  pbVar2 = (byte *)0x0;
+  if (DAT_00471fa4 == 0) {
+    _strrchr((char *)param_1,param_2);
+    return;
+  }
+  do {
+    bVar1 = *param_1;
+    if ((*(byte *)((int)&DAT_00471ea0 + bVar1 + 1) & 4) == 0) {
+      pbVar3 = param_1;
+      if (bVar1 == param_2) {
+LAB_0045b1d0:
+        pbVar2 = param_1;
+        pbVar3 = pbVar2;
+      }
+    }
+    else {
+      pbVar3 = param_1 + 1;
+      if (param_1[1] == 0) {
+        param_1 = pbVar3;
+        if (pbVar2 == (byte *)0x0) goto LAB_0045b1d0;
+      }
+      else if (CONCAT11(bVar1,param_1[1]) == param_2) {
+        pbVar2 = param_1;
+      }
+    }
+    param_1 = pbVar3 + 1;
+    if (*pbVar3 == 0) {
+      return;
+    }
+  } while( true );
+}
+

@@ -1,0 +1,4 @@
+Function: GlobalUnlock
+Address: 0x46015E
+
+JMP dword ptr [0x00476428]

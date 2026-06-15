@@ -1,0 +1,25 @@
+Function: __fltout
+Address: 0x45D1A0
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+/* Library Function - Single Match
+    __fltout
+   
+   Library: Visual Studio 1998 Release */
+
+undefined * __fltout(void)
+
+{
+  uint local_c;
+  uint local_8;
+  ushort local_4;
+  
+  FUN_0045d210(&local_c,(uint *)&stack0x00000004);
+  _DAT_00473f60 = FUN_0045f640(local_c,local_8,local_4,0x11,0,&DAT_00473f38);
+  _DAT_00473f64 = &DAT_00473f3c;
+  _DAT_00473f58 = (int)DAT_00473f3a;
+  _DAT_00473f5c = (int)DAT_00473f38;
+  return &DAT_00473f58;
+}
+

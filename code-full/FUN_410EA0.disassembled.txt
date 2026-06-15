@@ -1,0 +1,15 @@
+Function: FUN_00410ea0
+Address: 0x410EA0
+
+CMP dword ptr [0x00468fdc],0x0
+PUSH EDI
+JNZ      LAB_00410ec5
+MOV EDI,0x472bf0
+MOV EAX,0xffffffff
+MOV ECX,0x20
+STOSD.REP ES:EDI
+MOV dword ptr [0x00468fdc],0x1
+
+LAB_00410ec5:
+POP EDI
+RET

@@ -1,0 +1,13 @@
+Function: FUN_0042e9b0
+Address: 0x42E9B0
+
+MOV EAX,dword ptr [ESP + 0x8]
+CMP dword ptr [ECX + 0x90],EAX
+JNZ      LAB_0042e9c7
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH EAX
+CALL 0x00449480
+
+LAB_0042e9c7:
+RET 0x8

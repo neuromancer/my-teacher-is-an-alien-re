@@ -1,0 +1,91 @@
+Function: FUN_00433ae0
+Address: 0x433AE0
+
+SUB ESP,0x4
+XOR EAX,EAX
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV EBX,dword ptr [ECX + 0x94]
+MOV ESI,dword ptr [ESP + 0x14]
+MOV ECX,ESI
+CMP byte ptr [ESI],AL
+JZ       LAB_00433b0c
+
+LAB_00433af8:
+MOV EDI,EAX
+INC ECX
+SHL EDI,0x5
+ADD EDI,EAX
+CMP byte ptr [ECX],0x0
+MOVSX EDX,byte ptr [ECX + -0x1]
+LEA EAX,[EDX + EDI*0x1]
+JNZ      LAB_00433af8
+
+LAB_00433b0c:
+SUB EDX,EDX
+DIV dword ptr [EBX + 0x4]
+MOV EAX,dword ptr [EBX]
+MOV dword ptr [ESP + 0xc],EDX
+TEST EAX,EAX
+JZ       LAB_00433b58
+MOV ECX,dword ptr [ESP + 0xc]
+MOV EDI,dword ptr [EAX + ECX*0x4]
+
+LAB_00433b22:
+TEST EDI,EDI
+JZ       LAB_00433b58
+MOV EAX,dword ptr [EDI + 0x8]
+MOV ECX,ESI
+
+LAB_00433b2b:
+MOV DL,byte ptr [EAX]
+CMP DL,byte ptr [ECX]
+JNZ      LAB_00433b4b
+OR DL,DL
+JZ       LAB_00433b47
+MOV DL,byte ptr [EAX + 0x1]
+CMP DL,byte ptr [ECX + 0x1]
+JNZ      LAB_00433b4b
+ADD EAX,0x2
+ADD ECX,0x2
+OR DL,DL
+JNZ      LAB_00433b2b
+
+LAB_00433b47:
+XOR EAX,EAX
+JMP      LAB_00433b50
+
+LAB_00433b4b:
+SBB EAX,EAX
+SBB EAX,-0x1
+
+LAB_00433b50:
+TEST EAX,EAX
+JZ       LAB_00433b5a
+MOV EDI,dword ptr [EDI]
+JMP      LAB_00433b22
+
+LAB_00433b58:
+XOR EDI,EDI
+
+LAB_00433b5a:
+TEST EDI,EDI
+JNZ      LAB_00433b6e
+PUSH ESI
+PUSH 0x46b6dc
+CALL 0x00425c50
+ADD ESP,0x8
+JMP      LAB_00433b75
+
+LAB_00433b6e:
+MOV EAX,dword ptr [EDI + 0xc]
+MOV dword ptr [ESP + 0xc],EAX
+
+LAB_00433b75:
+MOV EAX,dword ptr [ESP + 0xc]
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0x4
+RET 0x4

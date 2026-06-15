@@ -1,0 +1,39 @@
+Function: FUN_0041adb0
+Address: 0x41ADB0
+
+PUSH ESI
+PUSH EDI
+MOV EAX,dword ptr [ECX + 0xc]
+MOV EDI,ECX
+TEST EAX,EAX
+JZ       LAB_0041adfd
+MOV ECX,dword ptr [0x0046aa10]
+CMP byte ptr [ECX + 0x46],0x2
+JNZ      LAB_0041add4
+PUSH 0x0
+MOV ESI,dword ptr [0x00476570]
+PUSH EAX
+CALL ESI
+JMP      LAB_0041adda
+
+LAB_0041add4:
+MOV ESI,dword ptr [0x00476570]
+
+LAB_0041adda:
+MOV EAX,dword ptr [ESP + 0xc]
+MOV ECX,dword ptr [EDI + 0xc]
+PUSH EAX
+PUSH ECX
+CALL dword ptr [0x00476548]
+MOV ECX,dword ptr [0x0046aa10]
+CMP byte ptr [ECX + 0x46],0x2
+JNZ      LAB_0041adfd
+PUSH 0x1
+MOV EAX,dword ptr [EDI + 0xc]
+PUSH EAX
+CALL ESI
+
+LAB_0041adfd:
+POP EDI
+POP ESI
+RET 0x4

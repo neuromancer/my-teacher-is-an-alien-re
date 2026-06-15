@@ -1,0 +1,22 @@
+Function: FID_conflict:__atodbl
+Address: 0x45D0D0
+
+
+/* Library Function - Multiple Matches With Different Base Names
+    __atodbl
+    __atoflt
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl FID_conflict___atodbl(_CRT_FLOAT *_Result,char *_Str)
+
+{
+  INTRNCVT_STATUS IVar1;
+  int local_10;
+  _LDBL12 local_c;
+  
+  FUN_0045eef0((ushort *)&local_c,&local_10,(byte *)_Str,0,0,0,0);
+  IVar1 = FID_conflict___ld12tod(&local_c,(_CRT_DOUBLE *)_Result);
+  return IVar1;
+}
+

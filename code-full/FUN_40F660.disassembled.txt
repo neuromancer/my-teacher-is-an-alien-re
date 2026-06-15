@@ -1,0 +1,32 @@
+Function: FUN_0040f660
+Address: 0x40F660
+
+MOV EAX,dword ptr [ESP + 0x8]
+CMP dword ptr [ECX + 0x90],EAX
+JNZ      LAB_0040f6a3
+MOV EAX,dword ptr [ECX + 0x17c]
+CMP EAX,0x4
+JA       LAB_0040f6a3
+JMP      LAB_0040f67e
+
+LAB_0040f67e:
+CALL     LAB_0040fea0
+RET 0x8
+
+LAB_0040f686:
+CALL     LAB_00410060
+RET 0x8
+
+LAB_0040f68e:
+CALL     LAB_0040ff40
+RET 0x8
+
+LAB_0040f696:
+CALL     LAB_0040ffb0
+RET 0x8
+
+LAB_0040f69e:
+CALL     LAB_0040ffc0
+
+LAB_0040f6a3:
+RET 0x8

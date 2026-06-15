@@ -1,0 +1,11 @@
+Function: FUN_00412a50
+Address: 0x412A50
+
+
+void FUN_00412a50(void)
+
+{
+  FUN_00425c50(s__s__LBLParse___Uknown_Label___s__004693d4);
+  return;
+}
+

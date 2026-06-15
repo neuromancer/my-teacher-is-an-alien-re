@@ -1,0 +1,31 @@
+Function: FUN_00444d90
+Address: 0x444D90
+
+
+void __cdecl
+FUN_00444d90(undefined4 param_1,undefined4 param_2,undefined4 param_3,undefined4 param_4,
+            undefined4 param_5,undefined4 param_6,undefined4 param_7,undefined4 param_8,
+            undefined4 param_9,undefined4 param_10)
+
+{
+  undefined4 *puVar1;
+  undefined4 *unaff_FS_OFFSET;
+  undefined1 local_48 [56];
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00444e0c;
+  *unaff_FS_OFFSET = &local_10;
+  puVar1 = FUN_00444a40(local_48,param_1,param_2,param_3,param_4,param_5,param_6,param_7,param_8,
+                        param_9,param_10);
+  local_8 = 0;
+  FUN_00444e20(puVar1);
+  local_8 = 0xffffffff;
+  FUN_00444e04();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

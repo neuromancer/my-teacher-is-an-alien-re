@@ -1,0 +1,11 @@
+Function: FUN_00452c91
+Address: 0x452C91
+
+
+undefined4 FUN_00452c91(void)
+
+{
+  DAT_0046db3c = 0xff;
+  return 0;
+}
+

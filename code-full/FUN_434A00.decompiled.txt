@@ -1,0 +1,15 @@
+Function: FUN_00434a00
+Address: 0x434A00
+
+
+void FUN_00434a00(char *param_1,char param_2)
+
+{
+  if (param_2 == '1') {
+    _sscanf(param_1,s__d__d_0046b904,DAT_0046ae78 + 0xd0,DAT_0046ae78 + 0xd8);
+    return;
+  }
+  _sscanf(param_1,s__d__d_0046b904,DAT_0046ae78 + 0xc0,DAT_0046ae78 + 200);
+  return;
+}
+

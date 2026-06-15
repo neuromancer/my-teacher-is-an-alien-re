@@ -1,0 +1,37 @@
+Function: FUN_0043d170
+Address: 0x43D170
+
+
+// WARNING: Removing unreachable block (ram,0x0043d1ef)
+
+int FUN_0043d170(void)
+
+{
+  FILE *pFVar1;
+  int iVar2;
+  int iVar3;
+  int local_8;
+  
+  local_8 = 0;
+  pFVar1 = (FILE *)FUN_00426050((byte *)s_cfg_031568_dat_0046bdd0,&DAT_00469300);
+  if (pFVar1 != (FILE *)0x0) {
+    FUN_00456a60(pFVar1,(byte *)s__d__d_0046b904);
+    _fclose(pFVar1);
+  }
+  iVar2 = _rand();
+  iVar2 = iVar2 % 10 + 1;
+  if (0 < iVar2) {
+    do {
+      iVar3 = _rand();
+      local_8 = iVar3 % 3 + 1;
+      iVar2 = iVar2 + -1;
+    } while (iVar2 != 0);
+  }
+  pFVar1 = (FILE *)FUN_00426050((byte *)s_cfg_031568_dat_0046bdd0,&DAT_0046a3a4);
+  if (pFVar1 != (FILE *)0x0) {
+    FID_conflict__fwprintf(pFVar1,(wchar_t *)s__d__d_0046b904,local_8,1);
+    _fclose(pFVar1);
+  }
+  return local_8;
+}
+

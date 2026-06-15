@@ -1,0 +1,84 @@
+Function: FUN_00421f80
+Address: 0x421F80
+
+
+void __fastcall FUN_00421f80(undefined4 *param_1)
+
+{
+  undefined4 *puVar1;
+  undefined4 *puVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  uint local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_0042218a;
+  *param_1 = &PTR_FUN_004613e8;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 1;
+  puVar1 = (undefined4 *)param_1[0x32];
+  if (puVar1 != (undefined4 *)0x0) {
+    FUN_0044c740(puVar1);
+    FUN_00454400(puVar1);
+    param_1[0x32] = 0;
+  }
+  puVar1 = (undefined4 *)param_1[0x33];
+  if (puVar1 != (undefined4 *)0x0) {
+    *puVar1 = &PTR_FUN_004613d0;
+    local_8._0_1_ = 3;
+    puVar2 = (undefined4 *)puVar1[0x24];
+    if (puVar2 != (undefined4 *)0x0) {
+      FUN_0044c740(puVar2);
+      FUN_00454400(puVar2);
+      puVar1[0x24] = 0;
+    }
+    local_8._0_1_ = 2;
+    FUN_0042213a();
+    local_8 = CONCAT31(local_8._1_3_,1);
+    FUN_00422148();
+    FUN_00454400(puVar1);
+    param_1[0x33] = 0;
+  }
+  puVar1 = (undefined4 *)param_1[0x34];
+  if (puVar1 != (undefined4 *)0x0) {
+    *puVar1 = &PTR_FUN_004613d0;
+    local_8._0_1_ = 5;
+    puVar2 = (undefined4 *)puVar1[0x24];
+    if (puVar2 != (undefined4 *)0x0) {
+      FUN_0044c740(puVar2);
+      FUN_00454400(puVar2);
+      puVar1[0x24] = 0;
+    }
+    local_8._0_1_ = 4;
+    FUN_00422150();
+    local_8 = CONCAT31(local_8._1_3_,1);
+    FUN_0042215e();
+    FUN_00454400(puVar1);
+    param_1[0x34] = 0;
+  }
+  puVar1 = (undefined4 *)param_1[0x35];
+  if (puVar1 != (undefined4 *)0x0) {
+    *puVar1 = &PTR_FUN_004613d0;
+    local_8._0_1_ = 7;
+    puVar2 = (undefined4 *)puVar1[0x24];
+    if (puVar2 != (undefined4 *)0x0) {
+      FUN_0044c740(puVar2);
+      FUN_00454400(puVar2);
+      puVar1[0x24] = 0;
+    }
+    local_8._0_1_ = 6;
+    FUN_00422166();
+    local_8 = CONCAT31(local_8._1_3_,1);
+    FUN_00422174();
+    FUN_00454400(puVar1);
+    param_1[0x35] = 0;
+  }
+  local_8 = local_8 & 0xffffff00;
+  FUN_0042217c();
+  local_8 = 0xffffffff;
+  FUN_00422194();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

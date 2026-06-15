@@ -1,0 +1,84 @@
+Function: FUN_00431930
+Address: 0x431930
+
+
+void __thiscall FUN_00431930(void *this,int *param_1)
+
+{
+  char cVar1;
+  byte bVar2;
+  FILE *pFVar3;
+  int iVar4;
+  int iVar5;
+  int *piVar6;
+  uint uVar7;
+  byte *pbVar8;
+  char *pcVar9;
+  bool bVar10;
+  int local_4;
+  
+  uVar7 = 0xffffffff;
+  pcVar9 = s_GAME_INFO_0046b4a0;
+  do {
+    if (uVar7 == 0) break;
+    uVar7 = uVar7 - 1;
+    cVar1 = *pcVar9;
+    pcVar9 = pcVar9 + 1;
+  } while (cVar1 != '\0');
+  pFVar3 = (FILE *)param_1[0x11];
+  if (*param_1 == 0) {
+    *DAT_0046aa00 = 0;
+    __fread_lk((char *)DAT_0046aa00,~uVar7,1,pFVar3);
+    pcVar9 = s_GAME_INFO_0046b4a0;
+    pbVar8 = DAT_0046aa00;
+    do {
+      bVar2 = *pbVar8;
+      bVar10 = bVar2 < (byte)*pcVar9;
+      if (bVar2 != *pcVar9) {
+LAB_00431a23:
+        iVar5 = (1 - (uint)bVar10) - (uint)(bVar10 != 0);
+        goto LAB_00431a28;
+      }
+      if (bVar2 == 0) break;
+      bVar2 = pbVar8[1];
+      bVar10 = bVar2 < (byte)pcVar9[1];
+      if (bVar2 != pcVar9[1]) goto LAB_00431a23;
+      pbVar8 = pbVar8 + 2;
+      pcVar9 = pcVar9 + 2;
+    } while (bVar2 != 0);
+    iVar5 = 0;
+LAB_00431a28:
+    if (iVar5 != 0) {
+      FUN_00425c50(s_SC_Game__Serialize_____Error_Loa_0046b468);
+    }
+    while (__fread_lk((char *)&local_4,4,1,pFVar3), local_4 != 9999) {
+      piVar6 = (int *)FUN_004318b0(this,local_4);
+      if (piVar6 == (int *)0x0) {
+        piVar6 = FUN_00431880(this,local_4);
+      }
+      (**(code **)(*piVar6 + 0x24))(param_1);
+    }
+  }
+  else {
+    FUN_004546d0(s_GAME_INFO_0046b4a0,~uVar7,1,pFVar3);
+    (*(undefined4 **)((int)this + 0x10))[2] = **(undefined4 **)((int)this + 0x10);
+    iVar5 = *(int *)(*(int *)((int)this + 0x10) + 8);
+    while (iVar5 != 0) {
+      iVar5 = *(int *)(*(int *)((int)this + 0x10) + 8);
+      uVar7 = *(uint *)(iVar5 + 8);
+      if (uVar7 == 0) break;
+      (**(code **)(*(int *)((iVar5 == 0) - 1 & uVar7) + 0x24))(param_1);
+      iVar5 = *(int *)((int)this + 0x10);
+      iVar4 = *(int *)(iVar5 + 8);
+      if (*(int *)(iVar5 + 4) == iVar4) break;
+      if (iVar4 != 0) {
+        *(undefined4 *)(iVar5 + 8) = *(undefined4 *)(iVar4 + 4);
+      }
+      iVar5 = *(int *)(*(int *)((int)this + 0x10) + 8);
+    }
+    local_4 = 9999;
+    FUN_004546d0((char *)&local_4,4,1,pFVar3);
+  }
+  return;
+}
+

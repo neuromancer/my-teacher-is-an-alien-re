@@ -1,0 +1,16 @@
+Function: FUN_0044bac0
+Address: 0x44BAC0
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH ESI
+MOV ESI,ECX
+PUSH EAX
+CALL 0x0044ba80
+MOV EAX,dword ptr [ESP + 0xc]
+MOV ECX,ESI
+PUSH EAX
+CALL 0x0044ba70
+MOV ECX,dword ptr [ESI + 0x98]
+CALL 0x0044b7e0
+POP ESI
+RET 0x8

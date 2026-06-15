@@ -1,0 +1,104 @@
+Function: FUN_004252f0
+Address: 0x4252F0
+
+
+undefined4 __thiscall FUN_004252f0(void *this,byte *param_1)
+
+{
+  uchar uVar1;
+  int iVar2;
+  undefined4 uVar3;
+  undefined4 *puVar4;
+  uint uVar5;
+  uint uVar6;
+  uchar *puVar7;
+  short sVar8;
+  uchar *puVar9;
+  undefined4 *unaff_FS_OFFSET;
+  uchar local_54 [64];
+  undefined4 *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00425449;
+  *unaff_FS_OFFSET = &local_10;
+  if (*(int *)(DAT_0046aa0c + 0x38) != 0) {
+    local_54[0] = '\0';
+    FUN_004560f0(param_1,(uchar *)0x0,(uchar *)0x0,local_54,(uchar *)0x0);
+    if (local_54[0] != '\0') {
+      sVar8 = 0;
+      if (0 < *(short *)((int)this + 0xc)) {
+        do {
+          iVar2 = __strcmpi(*(char **)(*(int *)this + sVar8 * 4),(char *)local_54);
+          if (iVar2 == 0) break;
+          sVar8 = sVar8 + 1;
+        } while (sVar8 < *(short *)((int)this + 0xc));
+      }
+      if (sVar8 == *(short *)((int)this + 0xc)) {
+        if (*(int *)((int)this + 4) == (int)*(short *)((int)this + 0xc)) {
+          FUN_00425c50(s_SoundList__Register_____Error__C_0046a9b8);
+        }
+        uVar5 = 0xffffffff;
+        puVar7 = local_54;
+        do {
+          if (uVar5 == 0) break;
+          uVar5 = uVar5 - 1;
+          uVar1 = *puVar7;
+          puVar7 = puVar7 + 1;
+        } while (uVar1 != '\0');
+        uVar3 = FUN_00454500(~uVar5);
+        *(undefined4 *)(*(int *)this + *(short *)((int)this + 0xc) * 4) = uVar3;
+        uVar5 = 0xffffffff;
+        puVar7 = local_54;
+        do {
+          puVar9 = puVar7;
+          if (uVar5 == 0) break;
+          uVar5 = uVar5 - 1;
+          puVar9 = puVar7 + 1;
+          uVar1 = *puVar7;
+          puVar7 = puVar9;
+        } while (uVar1 != '\0');
+        uVar5 = ~uVar5;
+        puVar7 = puVar9 + -uVar5;
+        puVar9 = *(uchar **)(*(int *)this + *(short *)((int)this + 0xc) * 4);
+        for (uVar6 = uVar5 >> 2; uVar6 != 0; uVar6 = uVar6 - 1) {
+          *(undefined4 *)puVar9 = *(undefined4 *)puVar7;
+          puVar7 = puVar7 + 4;
+          puVar9 = puVar9 + 4;
+        }
+        for (uVar5 = uVar5 & 3; uVar5 != 0; uVar5 = uVar5 - 1) {
+          *puVar9 = *puVar7;
+          puVar7 = puVar7 + 1;
+          puVar9 = puVar9 + 1;
+        }
+        local_14 = (undefined4 *)FUN_00454500(0x10);
+        local_8 = 0;
+        puVar4 = (undefined4 *)0x0;
+        if (local_14 != (undefined4 *)0x0) {
+          puVar4 = FUN_00424ed0(local_14);
+        }
+        sVar8 = -1;
+        local_8 = 0xffffffff;
+        *(undefined4 **)(*(int *)((int)this + 8) + *(short *)((int)this + 0xc) * 4) = puVar4;
+        iVar2 = FUN_00424f00(*(void **)(*(int *)((int)this + 8) + *(short *)((int)this + 0xc) * 4),
+                             param_1);
+        if (iVar2 == 0) {
+          sVar8 = *(short *)((int)this + 0xc);
+          *(short *)((int)this + 0xc) = sVar8 + 1;
+        }
+      }
+      if ((-1 < sVar8) && (sVar8 < *(short *)((int)this + 0xc))) {
+        uVar3 = *(undefined4 *)(*(int *)((int)this + 8) + sVar8 * 4);
+        goto LAB_00425462;
+      }
+    }
+  }
+  uVar3 = 0;
+LAB_00425462:
+  *unaff_FS_OFFSET = local_10;
+  return uVar3;
+}
+

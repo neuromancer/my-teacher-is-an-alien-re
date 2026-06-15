@@ -1,0 +1,14 @@
+Function: FUN_00427b20
+Address: 0x427B20
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x427c18
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x28
+MOV byte ptr [EBP + -0x34],0x0
+PUSH EBX
+LEA EAX,[EBP + -0x34]

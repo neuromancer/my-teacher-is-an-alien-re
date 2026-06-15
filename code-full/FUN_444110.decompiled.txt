@@ -1,0 +1,53 @@
+Function: FUN_00444110
+Address: 0x444110
+
+
+void __thiscall FUN_00444110(void *this,int param_1)
+
+{
+  undefined4 *puVar1;
+  undefined4 *puVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_004441c5;
+  *unaff_FS_OFFSET = &local_10;
+  if (param_1 == 0) {
+    FUN_00425c50(s_queue_fault_0102_00468478);
+  }
+  puVar1 = (undefined4 *)FUN_00454500(0xc);
+  puVar2 = (undefined4 *)0x0;
+  if (puVar1 != (undefined4 *)0x0) {
+    puVar1[2] = param_1;
+    *puVar1 = 0;
+    puVar1[1] = 0;
+    puVar2 = puVar1;
+  }
+  if (*(int *)((int)this + 8) == 0) {
+    *(undefined4 *)((int)this + 8) = *(undefined4 *)this;
+  }
+  if (*(int *)this == 0) {
+    *(undefined4 **)this = puVar2;
+    *(undefined4 **)((int)this + 4) = puVar2;
+    *(undefined4 **)((int)this + 8) = puVar2;
+  }
+  else {
+    puVar2[1] = *(undefined4 *)((int)this + 8);
+    *puVar2 = **(undefined4 **)((int)this + 8);
+    if (**(int **)((int)this + 8) == 0) {
+      *(undefined4 **)this = puVar2;
+      **(undefined4 **)((int)this + 8) = puVar2;
+    }
+    else {
+      *(undefined4 **)(**(int **)((int)this + 8) + 4) = puVar2;
+      **(undefined4 **)((int)this + 8) = puVar2;
+    }
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

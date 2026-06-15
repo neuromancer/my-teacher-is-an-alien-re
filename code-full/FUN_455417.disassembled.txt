@@ -1,0 +1,543 @@
+Function: FUN_00455417
+Address: 0x455417
+
+SUB ESP,0x2c
+AND EAX,0x3f
+JMP      LAB_0045575a
+
+LAB_00455424:
+FDIV ST0,ST0
+ADD ESP,0x2c
+RET
+
+LAB_0045542a:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_0045542f:
+FDIVR ST0,ST0
+ADD ESP,0x2c
+RET
+
+LAB_00455435:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_0045543a:
+FDIV ST0,ST0
+ADD ESP,0x2c
+RET
+
+LAB_00455440:
+FDIVP ST0,ST0
+ADD ESP,0x2c
+RET
+
+LAB_00455446:
+FDIVR ST0,ST0
+ADD ESP,0x2c
+RET
+
+LAB_0045544c:
+FDIVRP ST0,ST0
+ADD ESP,0x2c
+RET
+
+LAB_00455452:
+FSTP extended double ptr [ESP + 0xc]
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FLD extended double ptr [ESP + 0x20]
+FXCH
+ADD ESP,0x2c
+RET
+
+LAB_0045546e:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_00455473:
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FLD extended double ptr [ESP + 0xc]
+FXCH
+ADD ESP,0x2c
+RET
+
+LAB_00455489:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_0045548e:
+FXCH
+FSTP extended double ptr [ESP + 0xc]
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FLD extended double ptr [ESP + 0x20]
+ADD ESP,0x2c
+RET
+
+LAB_004554aa:
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+ADD ESP,0x2c
+RET
+
+LAB_004554ba:
+FSTP extended double ptr [ESP + 0xc]
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FLD extended double ptr [ESP + 0xc]
+ADD ESP,0x2c
+RET
+
+LAB_004554ce:
+FSTP extended double ptr [ESP + 0xc]
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+ADD ESP,0x2c
+RET
+
+LAB_004554de:
+FSTP extended double ptr [ESP + 0xc]
+FXCH
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH
+FLD extended double ptr [ESP + 0x20]
+FXCH ST2
+ADD ESP,0x2c
+RET
+
+LAB_004554fe:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_00455503:
+FSTP extended double ptr [ESP]
+FXCH
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH
+FLD extended double ptr [ESP + 0xc]
+FXCH ST2
+ADD ESP,0x2c
+RET
+
+LAB_0045551d:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_00455522:
+FXCH ST2
+FSTP extended double ptr [ESP + 0xc]
+FXCH
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH
+FLD extended double ptr [ESP + 0x20]
+ADD ESP,0x2c
+RET
+
+LAB_00455542:
+FSTP extended double ptr [ESP]
+FXCH
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH
+ADD ESP,0x2c
+RET
+
+LAB_00455556:
+FSTP extended double ptr [ESP + 0xc]
+FXCH
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH
+FLD extended double ptr [ESP + 0xc]
+ADD ESP,0x2c
+RET
+
+LAB_0045556e:
+FSTP extended double ptr [ESP + 0xc]
+FXCH
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH
+ADD ESP,0x2c
+RET
+
+LAB_00455582:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST2
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST2
+FLD extended double ptr [ESP + 0x20]
+FXCH ST3
+ADD ESP,0x2c
+RET
+
+LAB_004555a2:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_004555a7:
+FSTP extended double ptr [ESP]
+FXCH ST2
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST2
+FLD extended double ptr [ESP + 0xc]
+FXCH ST3
+ADD ESP,0x2c
+RET
+
+LAB_004555c1:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_004555c6:
+FXCH ST3
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST2
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST2
+FLD extended double ptr [ESP + 0x20]
+ADD ESP,0x2c
+RET
+
+LAB_004555e6:
+FSTP extended double ptr [ESP]
+FXCH ST2
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST2
+ADD ESP,0x2c
+RET
+
+LAB_004555fa:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST2
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST2
+FLD extended double ptr [ESP + 0xc]
+ADD ESP,0x2c
+RET
+
+LAB_00455612:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST2
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST2
+ADD ESP,0x2c
+RET
+
+LAB_00455626:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST3
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST3
+FLD extended double ptr [ESP + 0x20]
+FXCH ST4
+ADD ESP,0x2c
+RET
+
+LAB_00455646:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_0045564b:
+FSTP extended double ptr [ESP]
+FXCH ST3
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST3
+FLD extended double ptr [ESP + 0xc]
+FXCH ST4
+ADD ESP,0x2c
+RET
+
+LAB_00455665:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_0045566a:
+FXCH ST4
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST3
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST3
+FLD extended double ptr [ESP + 0x20]
+ADD ESP,0x2c
+RET
+
+LAB_0045568a:
+FSTP extended double ptr [ESP]
+FXCH ST3
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST3
+ADD ESP,0x2c
+RET
+
+LAB_0045569e:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST3
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST3
+FLD extended double ptr [ESP + 0xc]
+ADD ESP,0x2c
+RET
+
+LAB_004556b6:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST3
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST3
+ADD ESP,0x2c
+RET
+
+LAB_004556ca:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST4
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST4
+FLD extended double ptr [ESP + 0x20]
+FXCH ST5
+ADD ESP,0x2c
+RET
+
+LAB_004556ea:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_004556ef:
+FSTP extended double ptr [ESP]
+FXCH ST4
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST4
+FLD extended double ptr [ESP + 0xc]
+FXCH ST5
+ADD ESP,0x2c
+RET
+
+LAB_00455709:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_0045570e:
+FXCH ST5
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST4
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST4
+FLD extended double ptr [ESP + 0x20]
+ADD ESP,0x2c
+RET
+
+LAB_0045572e:
+FSTP extended double ptr [ESP]
+FXCH ST4
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST4
+ADD ESP,0x2c
+RET
+
+LAB_00455742:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST4
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST4
+FLD extended double ptr [ESP + 0xc]
+ADD ESP,0x2c
+RET
+
+LAB_0045575a:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST4
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST4
+ADD ESP,0x2c
+RET
+
+LAB_0045576e:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST5
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST5
+FLD extended double ptr [ESP + 0x20]
+FXCH ST6
+ADD ESP,0x2c
+RET
+
+LAB_0045578e:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_00455793:
+FSTP extended double ptr [ESP]
+FXCH ST5
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST5
+FLD extended double ptr [ESP + 0xc]
+FXCH ST6
+ADD ESP,0x2c
+RET
+
+LAB_004557ad:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_004557b2:
+FXCH ST6
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST5
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST5
+FLD extended double ptr [ESP + 0x20]
+ADD ESP,0x2c
+RET
+
+LAB_004557d2:
+FSTP extended double ptr [ESP]
+FXCH ST5
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST5
+ADD ESP,0x2c
+RET
+
+LAB_004557e6:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST5
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST5
+FLD extended double ptr [ESP + 0xc]
+ADD ESP,0x2c
+RET
+
+LAB_004557fe:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST5
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST5
+ADD ESP,0x2c
+RET
+
+LAB_00455812:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST6
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST6
+FLD extended double ptr [ESP + 0x20]
+FXCH ST7
+ADD ESP,0x2c
+RET
+
+LAB_00455832:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_00455837:
+FSTP extended double ptr [ESP]
+FXCH ST6
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST6
+FLD extended double ptr [ESP + 0xc]
+FXCH ST7
+ADD ESP,0x2c
+RET
+
+LAB_00455851:
+ADD ESP,0x2c
+INT 0x6
+
+LAB_00455856:
+FXCH ST7
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST6
+FLD ST0
+FSTP extended double ptr [ESP]
+FSTP extended double ptr [ESP + 0x20]
+CALL 0x00455300
+FXCH ST6
+FLD extended double ptr [ESP + 0x20]
+ADD ESP,0x2c
+RET
+
+LAB_00455876:
+FSTP extended double ptr [ESP]
+FXCH ST6
+FSTP extended double ptr [ESP + 0xc]
+CALL 0x00455300
+FXCH ST6
+ADD ESP,0x2c
+RET
+
+LAB_0045588a:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST6
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST6
+FLD extended double ptr [ESP + 0xc]
+ADD ESP,0x2c
+RET
+
+LAB_004558a2:
+FSTP extended double ptr [ESP + 0xc]
+FXCH ST6
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+FXCH ST6
+ADD ESP,0x2c
+RET

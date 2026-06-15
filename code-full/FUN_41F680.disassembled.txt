@@ -1,0 +1,10 @@
+Function: FUN_0041f680
+Address: 0x41F680
+
+MOV ECX,dword ptr [ECX + 0x90]
+MOV EAX,dword ptr [ESP + 0x4]
+SUB ECX,dword ptr [EAX]
+CMP ECX,0x1
+SBB EAX,EAX
+NEG EAX
+RET 0x4

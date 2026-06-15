@@ -1,0 +1,11 @@
+Function: FUN_00405cd0
+Address: 0x405CD0
+
+
+undefined4 FUN_00405cd0(void)
+
+{
+  FUN_00425c50(s_Parser___Must_define_an_LBLParse_0046852c);
+  return 0;
+}
+

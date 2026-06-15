@@ -1,0 +1,70 @@
+Function: __set_osfhnd
+Address: 0x45D6C0
+
+MOV ECX,dword ptr [ESP + 0x4]
+PUSH EBX
+PUSH ESI
+CMP ECX,dword ptr [0x00474f74]
+PUSH EDI
+JNC      LAB_0045d746
+MOV EAX,ECX
+AND EAX,0xffffffe7
+SAR EAX,0x3
+LEA EDI,[EAX + 0x474f80]
+MOV EAX,ECX
+AND EAX,0x1f
+MOV EDX,dword ptr [EDI]
+LEA ESI,[EAX*0x8 + 0x0]
+CMP dword ptr [EDX + ESI*0x1],-0x1
+JNZ      LAB_0045d746
+CMP dword ptr [0x00471c58],0x1
+JNZ      LAB_0045d737
+TEST ECX,ECX
+JZ       LAB_0045d70a
+CMP ECX,0x1
+JZ       LAB_0045d719
+CMP ECX,0x2
+JZ       LAB_0045d728
+JMP      LAB_0045d737
+
+LAB_0045d70a:
+MOV EBX,dword ptr [ESP + 0x14]
+PUSH EBX
+PUSH -0xa
+CALL dword ptr [0x004763a8]
+JMP      LAB_0045d73b
+
+LAB_0045d719:
+MOV EBX,dword ptr [ESP + 0x14]
+PUSH EBX
+PUSH -0xb
+CALL dword ptr [0x004763a8]
+JMP      LAB_0045d73b
+
+LAB_0045d728:
+MOV EBX,dword ptr [ESP + 0x14]
+PUSH EBX
+PUSH -0xc
+CALL dword ptr [0x004763a8]
+JMP      LAB_0045d73b
+
+LAB_0045d737:
+MOV EBX,dword ptr [ESP + 0x14]
+
+LAB_0045d73b:
+MOV EAX,dword ptr [EDI]
+POP EDI
+MOV dword ptr [EAX + ESI*0x1],EBX
+XOR EAX,EAX
+POP ESI
+POP EBX
+RET
+
+LAB_0045d746:
+MOV EAX,0xffffffff
+POP EDI
+MOV dword ptr [0x004719c0],0x9
+MOV dword ptr [0x004719c4],0x0
+POP ESI
+POP EBX
+RET

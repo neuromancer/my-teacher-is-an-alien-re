@@ -1,0 +1,70 @@
+Function: FUN_00419d70
+Address: 0x419D70
+
+
+void __fastcall FUN_00419d70(int param_1)
+
+{
+  undefined4 *puVar1;
+  undefined4 *unaff_FS_OFFSET;
+  int *local_34;
+  int local_20;
+  int local_1c;
+  int *local_18;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  int local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00419f38;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00449520(param_1);
+  local_1c = 0;
+  local_8._1_3_ = 0;
+  local_34 = (int *)(param_1 + 0x288);
+  do {
+    local_20 = 0;
+    local_18 = local_34;
+    do {
+      local_8._0_1_ = 1;
+      *local_18 = local_20 * 0x2a + 0xce;
+      local_18[1] = local_1c * 0x2a + 0x40;
+      local_18[2] = local_20 * 0x2a + 0xf8;
+      local_18[3] = local_1c * 0x2a + 0x6a;
+      FUN_00419ebf();
+      local_18 = local_18 + 8;
+      local_20 = local_20 + 1;
+    } while (local_20 < 6);
+    local_34 = local_34 + 0x30;
+    local_1c = local_1c + 1;
+  } while (local_1c < 6);
+  *(undefined4 *)(param_1 + 0x140) = *(undefined4 *)(param_1 + 0x6fc);
+  *(undefined4 *)(param_1 + 0x16c) = *(undefined4 *)(param_1 + 0x700);
+  *(undefined4 *)(param_1 + 0x198) = *(undefined4 *)(param_1 + 0x704);
+  *(undefined4 *)(param_1 + 0x1c4) = *(undefined4 *)(param_1 + 0x708);
+  *(undefined4 *)(param_1 + 0x1f0) = *(undefined4 *)(param_1 + 0x70c);
+  *(undefined4 *)(param_1 + 0x21c) = *(undefined4 *)(param_1 + 0x710);
+  *(undefined4 *)(param_1 + 0x6f8) = 0;
+  *(undefined4 *)(param_1 + 0x248) = *(undefined4 *)(param_1 + 0x714);
+  *(undefined4 *)(param_1 + 0x274) = *(undefined4 *)(param_1 + 0x718);
+  puVar1 = (undefined4 *)FUN_00454500(0x14);
+  local_8._0_1_ = 3;
+  if (puVar1 == (undefined4 *)0x0) {
+    puVar1 = (undefined4 *)0x0;
+  }
+  else {
+    puVar1 = FUN_00421880(puVar1);
+  }
+  local_8._0_1_ = 1;
+  *(undefined4 **)(param_1 + 0x71c) = puVar1;
+  FUN_00444d90(5,*(undefined4 *)(param_1 + 0x114),*(undefined4 *)(param_1 + 0x90),
+               *(undefined4 *)(param_1 + 0x94),0x1b,0,0,0,0,0);
+  local_8 = (uint)local_8._1_3_ << 8;
+  FUN_00419f30();
+  local_8 = 0xffffffff;
+  FUN_00419f42();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

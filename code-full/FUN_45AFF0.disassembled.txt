@@ -1,0 +1,29 @@
+Function: __ftbuf
+Address: 0x45AFF0
+
+CMP dword ptr [ESP + 0x4],0x0
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0xc]
+JZ       LAB_0045b028
+TEST byte ptr [ESI + 0xd],0x10
+JZ       LAB_0045b037
+PUSH ESI
+CALL 0x00458b80
+AND dword ptr [ESI + 0xc],0xffffeeff
+MOV dword ptr [ESI + 0x18],0x0
+ADD ESP,0x4
+MOV dword ptr [ESI],0x0
+MOV dword ptr [ESI + 0x8],0x0
+POP ESI
+RET
+
+LAB_0045b028:
+TEST byte ptr [ESI + 0xd],0x10
+JZ       LAB_0045b037
+PUSH ESI
+CALL 0x00458b80
+ADD ESP,0x4
+
+LAB_0045b037:
+POP ESI
+RET

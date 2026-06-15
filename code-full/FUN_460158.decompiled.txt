@@ -1,0 +1,15 @@
+Function: GlobalFree
+Address: 0x460158
+
+
+HGLOBAL GlobalFree(HGLOBAL hMem)
+
+{
+  HGLOBAL pvVar1;
+  
+// WARNING: Could not recover jumptable at 0x00460158. Too many branches
+// WARNING: Treating indirect jump as call
+  pvVar1 = GlobalFree(hMem);
+  return pvVar1;
+}
+

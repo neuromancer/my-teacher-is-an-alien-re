@@ -1,0 +1,44 @@
+Function: FUN_00428620
+Address: 0x428620
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x42869f
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH ESI
+PUSH 0x401120
+MOV dword ptr [EBP + -0x10],ECX
+MOV ESI,ECX
+PUSH 0x418840
+PUSH 0x3
+PUSH 0x8
+PUSH ESI
+CALL 0x00454ad0
+MOV EAX,dword ptr [EBP + 0x8]
+MOV dword ptr [EBP + -0x4],0x0
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [ESI],ECX
+MOV EDX,dword ptr [EAX + 0x4]
+MOV EAX,dword ptr [EBP + 0xc]
+MOV dword ptr [ESI + 0x4],EDX
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [ESI + 0x8],ECX
+MOV EDX,dword ptr [EAX + 0x4]
+MOV EAX,dword ptr [EBP + 0x10]
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV dword ptr [ESI + 0xc],EDX
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [ESI + 0x10],ECX
+MOV ECX,dword ptr [EBP + -0xc]
+MOV dword ptr FS:[0x0],ECX
+MOV EDX,dword ptr [EAX + 0x4]
+MOV EAX,ESI
+MOV dword ptr [ESI + 0x14],EDX
+POP ESI
+MOV ESP,EBP
+POP EBP
+RET 0xc

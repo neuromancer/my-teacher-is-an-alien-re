@@ -1,0 +1,18 @@
+Function: FUN_004485e0
+Address: 0x4485E0
+
+PUSH ESI
+PUSH EDI
+MOV EDI,ECX
+MOV ESI,dword ptr [ESP + 0xc]
+PUSH ESI
+CALL 0x004309a0
+TEST ESI,ESI
+JZ       LAB_004485fb
+MOV EAX,dword ptr [ESI + 0x4]
+MOV dword ptr [EDI + 0x94],EAX
+
+LAB_004485fb:
+POP EDI
+POP ESI
+RET 0x4

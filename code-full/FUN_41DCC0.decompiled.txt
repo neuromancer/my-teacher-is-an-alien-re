@@ -1,0 +1,70 @@
+Function: FUN_0041dcc0
+Address: 0x41DCC0
+
+
+void FUN_0041dcc0(char *param_1)
+
+{
+  char cVar1;
+  bool bVar2;
+  byte *pbVar3;
+  undefined3 extraout_var;
+  int iVar4;
+  FILE *_File;
+  uint uVar5;
+  char *pcVar6;
+  undefined4 *unaff_FS_OFFSET;
+  LONG LVar7;
+  undefined4 local_40 [3];
+  int local_34;
+  uint *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0041dd6c;
+  *unaff_FS_OFFSET = &local_10;
+  pbVar3 = FUN_00426190(param_1);
+  bVar2 = FUN_00425fa0((LPCSTR)pbVar3);
+  if (CONCAT31(extraout_var,bVar2) == 0) {
+    FUN_00425c50(s_Palette__Load___Can_t_find_palet_0046a160);
+  }
+  uVar5 = 0xffffffff;
+  pcVar6 = param_1;
+  do {
+    if (uVar5 == 0) break;
+    uVar5 = uVar5 - 1;
+    cVar1 = *pcVar6;
+    pcVar6 = pcVar6 + 1;
+  } while (cVar1 != '\0');
+  iVar4 = __strnicmp(param_1 + (~uVar5 - 5),&DAT_0046a158,4);
+  if (iVar4 == 0) {
+    FUN_0041a9d0(local_40);
+    local_8 = 0;
+    FUN_0041ae10(local_40,param_1,0xfe000,0xffffffff);
+    FUN_0041dca0(local_14,(undefined1 *)(local_34 + 0x6c));
+    local_8 = 0xffffffff;
+    FUN_0041dd76();
+  }
+  else {
+    _File = (FILE *)FUN_00455110(param_1,&DAT_00469300);
+    if (_File == (FILE *)0x0) {
+      FUN_00425c50(s_Palette__Load___Could_not_open_p_0046a124);
+    }
+    iVar4 = __strnicmp(param_1 + (~uVar5 - 5),&DAT_0046a11c,4);
+    if (iVar4 == 0) {
+      LVar7 = 8;
+    }
+    else {
+      LVar7 = 0xd;
+    }
+    FUN_00455180(_File,LVar7,0);
+    __fread_lk((char *)local_14[1],*local_14,1,_File);
+    _fclose(_File);
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

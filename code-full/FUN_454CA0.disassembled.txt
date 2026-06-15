@@ -1,0 +1,10 @@
+Function: _atexit
+Address: 0x454CA0
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH EAX
+CALL 0x00454c20
+ADD ESP,0x4
+CMP EAX,0x1
+SBB EAX,EAX
+RET

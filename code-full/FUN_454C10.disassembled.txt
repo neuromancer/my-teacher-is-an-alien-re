@@ -1,0 +1,8 @@
+Function: _atoi
+Address: 0x454C10
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH EAX
+CALL 0x00454b60
+ADD ESP,0x4
+RET

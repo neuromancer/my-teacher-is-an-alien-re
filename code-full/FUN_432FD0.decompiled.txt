@@ -1,0 +1,121 @@
+Function: FUN_00432fd0
+Address: 0x432FD0
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+void __thiscall FUN_00432fd0(void *this,char *param_1,char *param_2,char *param_3)
+
+{
+  uchar *puVar1;
+  char cVar2;
+  bool bVar3;
+  undefined3 extraout_var;
+  undefined3 extraout_var_00;
+  int iVar4;
+  undefined3 extraout_var_01;
+  int iVar5;
+  uint uVar6;
+  uint uVar7;
+  char *pcVar8;
+  char *pcVar9;
+  byte local_80 [128];
+  
+  uVar6 = 0xffffffff;
+  do {
+    pcVar8 = param_1;
+    if (uVar6 == 0) break;
+    uVar6 = uVar6 - 1;
+    pcVar8 = param_1 + 1;
+    cVar2 = *param_1;
+    param_1 = pcVar8;
+  } while (cVar2 != '\0');
+  uVar6 = ~uVar6;
+  pcVar8 = pcVar8 + -uVar6;
+  pcVar9 = (char *)((int)this + 0x110);
+  for (uVar7 = uVar6 >> 2; uVar7 != 0; uVar7 = uVar7 - 1) {
+    *(undefined4 *)pcVar9 = *(undefined4 *)pcVar8;
+    pcVar8 = pcVar8 + 4;
+    pcVar9 = pcVar9 + 4;
+  }
+  for (uVar6 = uVar6 & 3; uVar6 != 0; uVar6 = uVar6 - 1) {
+    *pcVar9 = *pcVar8;
+    pcVar8 = pcVar8 + 1;
+    pcVar9 = pcVar9 + 1;
+  }
+  uVar6 = 0xffffffff;
+  pcVar8 = param_2;
+  do {
+    pcVar9 = pcVar8;
+    if (uVar6 == 0) break;
+    uVar6 = uVar6 - 1;
+    pcVar9 = pcVar8 + 1;
+    cVar2 = *pcVar8;
+    pcVar8 = pcVar9;
+  } while (cVar2 != '\0');
+  uVar6 = ~uVar6;
+  pcVar8 = pcVar9 + -uVar6;
+  pcVar9 = (char *)((int)this + 0x150);
+  for (uVar7 = uVar6 >> 2; uVar7 != 0; uVar7 = uVar7 - 1) {
+    *(undefined4 *)pcVar9 = *(undefined4 *)pcVar8;
+    pcVar8 = pcVar8 + 4;
+    pcVar9 = pcVar9 + 4;
+  }
+  for (uVar6 = uVar6 & 3; uVar6 != 0; uVar6 = uVar6 - 1) {
+    *pcVar9 = *pcVar8;
+    pcVar8 = pcVar8 + 1;
+    pcVar9 = pcVar9 + 1;
+  }
+  bVar3 = FUN_00425fa0(s_Develop_____0046b5f0);
+  if (CONCAT31(extraout_var,bVar3) != 0) {
+    _DAT_00472de4 = 1;
+  }
+  if (*(char *)((int)this + 0x110) == '\0') {
+    iVar4 = 3;
+    do {
+      _sprintf((char *)local_80,s__c___s_0046b564,iVar4 + 0x40,(char *)((int)this + 0x150));
+      bVar3 = FUN_00425fa0((LPCSTR)local_80);
+      if (CONCAT31(extraout_var_01,bVar3) != 0) {
+        puVar1 = (uchar *)((int)this + 400);
+        FUN_004560f0(local_80,puVar1,(uchar *)0x0,(uchar *)0x0,(uchar *)0x0);
+        if (*puVar1 == *(uchar *)((int)this + 0x90)) {
+          FUN_00425c50(s_Please_run_Setup_exe_0046b54c);
+        }
+        _sprintf((char *)local_80,s__s_CDDATA_DATA_0046b5a8,puVar1);
+        iVar5 = __chdir((char *)local_80);
+        if (iVar5 != 0) {
+          FUN_00425c50(s__s_Invalid_CD_in_Drive___s__Can__0046b518);
+        }
+        _sprintf((char *)local_80,s__s_DATA_0046b5a0,(uchar *)((int)this + 0x90));
+        iVar5 = __chdir((char *)local_80);
+        if (iVar5 != 0) {
+          FUN_00425c50(s_Game_Not_Properly_Installed_Miss_0046b56c);
+        }
+        break;
+      }
+      iVar4 = iVar4 + 1;
+    } while (iVar4 < 0x1a);
+    if (iVar4 < 0x19) {
+      return;
+    }
+  }
+  else {
+    _sprintf((char *)local_80,s__s__s_0046b5e8,(int)this + 0x110,param_2);
+    bVar3 = FUN_00425fa0((LPCSTR)local_80);
+    if (CONCAT31(extraout_var_00,bVar3) == 0) {
+      FUN_00425c50(s__s_Invalid_cmdLine___s__Can_t_fi_0046b5b8);
+    }
+    _sprintf((char *)local_80,s__s_CDDATA_DATA_0046b5a8,(int)this + 0x110);
+    __chdir((char *)local_80);
+    FUN_004560f0(local_80,(uchar *)((int)this + 400),(uchar *)0x0,(uchar *)0x0,(uchar *)0x0);
+    _sprintf((char *)local_80,s__s_DATA_0046b5a0,(int)this + 0x90);
+    iVar4 = __chdir((char *)local_80);
+    if (iVar4 == 0) {
+      return;
+    }
+    param_3 = s_Game_Not_Properly_Installed_Miss_0046b56c;
+  }
+  FUN_00425c50(param_3);
+  return;
+}
+

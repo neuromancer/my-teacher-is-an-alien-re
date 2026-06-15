@@ -1,0 +1,33 @@
+Function: FUN_0045e340
+Address: 0x45E340
+
+
+LPVOID __cdecl FUN_0045e340(int param_1,int param_2)
+
+{
+  LPVOID pvVar1;
+  int iVar2;
+  uint dwBytes;
+  
+  dwBytes = param_1 * param_2;
+  if (dwBytes == 0) {
+    dwBytes = 1;
+  }
+  do {
+    if (dwBytes < 0xffffffe1) {
+      pvVar1 = HeapAlloc(DAT_00474f70,8,dwBytes);
+    }
+    else {
+      pvVar1 = (LPVOID)0x0;
+    }
+    if (pvVar1 != (LPVOID)0x0) {
+      return pvVar1;
+    }
+    if (DAT_004724c8 == 0) {
+      return (LPVOID)0x0;
+    }
+    iVar2 = FUN_0045c3a0(dwBytes);
+  } while (iVar2 != 0);
+  return (LPVOID)0x0;
+}
+

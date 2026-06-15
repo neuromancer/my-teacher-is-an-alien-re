@@ -1,0 +1,23 @@
+Function: FUN_00429470
+Address: 0x429470
+
+MOV ECX,dword ptr [ESP + 0x8]
+SUB ECX,dword ptr [ESP + 0x4]
+TEST ECX,ECX
+JLE      LAB_00429488
+CMP ECX,dword ptr [ESP + 0xc]
+JLE      LAB_00429498
+MOV EAX,0x1
+RET
+
+LAB_00429488:
+JGE      LAB_00429498
+NEG ECX
+CMP ECX,dword ptr [ESP + 0xc]
+JLE      LAB_00429498
+MOV EAX,0xffffffff
+RET
+
+LAB_00429498:
+XOR EAX,EAX
+RET

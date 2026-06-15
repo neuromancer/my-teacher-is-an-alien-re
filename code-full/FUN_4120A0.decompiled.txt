@@ -1,0 +1,47 @@
+Function: FUN_004120a0
+Address: 0x4120A0
+
+
+void FUN_004120a0(void)
+
+{
+  undefined4 *puVar1;
+  undefined4 *puVar2;
+  int iVar3;
+  undefined4 *puVar4;
+  bool bVar5;
+  
+  FUN_00412730();
+  puVar2 = DAT_00469134;
+  if (DAT_00469134 != (undefined4 *)0x0) {
+    for (puVar1 = (undefined4 *)*DAT_00469134; puVar1 != (undefined4 *)0x0;
+        puVar1 = (undefined4 *)*puVar1) {
+      puVar4 = puVar1 + 2;
+      iVar3 = 0;
+      do {
+        if ((LPVOID)*puVar4 != (LPVOID)0x0) {
+          FUN_00454400((LPVOID)*puVar4);
+          *puVar4 = 0;
+        }
+        puVar4 = puVar4 + 1;
+        bVar5 = iVar3 != 0;
+        iVar3 = iVar3 + -1;
+      } while (bVar5);
+    }
+    puVar2[2] = 0;
+    puVar2[3] = 0;
+    puVar2[1] = 0;
+    *puVar2 = 0;
+    puVar1 = (undefined4 *)puVar2[4];
+    while (puVar1 != (undefined4 *)0x0) {
+      puVar4 = (undefined4 *)*puVar1;
+      FUN_00454400(puVar1);
+      puVar1 = puVar4;
+    }
+    puVar2[4] = 0;
+    FUN_00454400(puVar2);
+    DAT_00469134 = (undefined4 *)0x0;
+  }
+  return;
+}
+

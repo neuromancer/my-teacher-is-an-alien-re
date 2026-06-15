@@ -1,0 +1,53 @@
+Function: FUN_00426220
+Address: 0x426220
+
+
+undefined4 __cdecl FUN_00426220(LPCSTR param_1,LPCSTR param_2)
+
+{
+  char *pcVar1;
+  uint _FileHandle;
+  uint _FileHandle_00;
+  uint uVar2;
+  DWORD DVar3;
+  uint uVar4;
+  uint uVar5;
+  uint uVar6;
+  
+  uVar6 = 0;
+  _FileHandle = FUN_0045d940(param_1,0x8000,0);
+  if ((int)_FileHandle < 0) {
+    FUN_00425c50(s_CopyFile__Error_Reading_CD_ROM__s_0046abac);
+  }
+  _FileHandle_00 = FUN_0045d940(param_2,0x8301,0x180);
+  if ((int)_FileHandle_00 < 0) {
+    FUN_00425c50(s_CopyFile__Error_writing_temporar_0046ab68);
+  }
+  uVar2 = __filelength(_FileHandle);
+  pcVar1 = DAT_0046aa04;
+  uVar4 = uVar2;
+  if (0x1fff < uVar2) {
+    uVar4 = 0x2000;
+  }
+  if (uVar2 != 0) {
+    do {
+      uVar5 = uVar2 - uVar6;
+      if (uVar4 <= uVar2 - uVar6) {
+        uVar5 = uVar4;
+      }
+      DVar3 = FUN_00458690(_FileHandle,pcVar1,uVar5);
+      if (DVar3 != uVar5) {
+        FUN_00425c50(s_Error_Reading_CD_0046ab54);
+      }
+      DVar3 = FUN_00458900(_FileHandle_00,pcVar1,uVar5);
+      if (DVar3 != uVar5) {
+        FUN_00425c50(s_Error_writing_temporary_file__Pl_0046ab1c);
+      }
+      uVar6 = uVar6 + uVar5;
+    } while (uVar6 < uVar2);
+  }
+  __close(_FileHandle_00);
+  __close(_FileHandle);
+  return 0;
+}
+

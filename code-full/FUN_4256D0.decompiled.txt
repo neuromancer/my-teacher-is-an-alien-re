@@ -1,0 +1,24 @@
+Function: FUN_004256d0
+Address: 0x4256D0
+
+
+undefined4 __thiscall FUN_004256d0(void *this,int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  
+  if ((-1 < param_1) && (param_1 <= *(int *)this + -1)) {
+    iVar2 = *(int *)(*(int *)((int)this + 4) + param_1 * 4);
+    if (((iVar2 != 0) && (iVar1 = *(int *)(iVar2 + 0xc), iVar1 != 0)) &&
+       (*(int *)(iVar2 + 4) == *(int *)(iVar1 + 0xc))) {
+      iVar2 = _AIL_sample_status_4(iVar1);
+      if (iVar2 == 4) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+  return 0;
+}
+

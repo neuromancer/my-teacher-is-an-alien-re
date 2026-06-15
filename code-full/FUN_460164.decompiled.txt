@@ -1,0 +1,15 @@
+Function: GlobalLock
+Address: 0x460164
+
+
+LPVOID GlobalLock(HGLOBAL hMem)
+
+{
+  LPVOID pvVar1;
+  
+// WARNING: Could not recover jumptable at 0x00460164. Too many branches
+// WARNING: Treating indirect jump as call
+  pvVar1 = GlobalLock(hMem);
+  return pvVar1;
+}
+

@@ -1,0 +1,13 @@
+Function: FUN_0041de40
+Address: 0x41DE40
+
+MOV EDX,dword ptr [ESP + 0x8]
+MOV EAX,dword ptr [ESP + 0xc]
+LEA ECX,[EDX + EDX*0x2]
+ADD ECX,dword ptr [ESP + 0x4]
+PUSH ECX
+PUSH EAX
+PUSH EDX
+CALL 0x004533b0
+ADD ESP,0xc
+RET

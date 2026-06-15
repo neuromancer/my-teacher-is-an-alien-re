@@ -1,0 +1,50 @@
+Function: FUN_00453d37
+Address: 0x453D37
+
+PUSH EBP
+MOV EBP,ESP
+PUSH EBX
+MOV EAX,dword ptr [EBP + 0x8]
+CMP EAX,dword ptr [0x0046d0ca]
+JG       LAB_00453daa
+CMP EAX,dword ptr [0x0046d0c6]
+JGE      LAB_00453d53
+MOV EAX,[0x0046d0c6]
+
+LAB_00453d53:
+MOV EBX,dword ptr [EBP + 0xc]
+CMP EBX,dword ptr [0x0046d0c6]
+JL       LAB_00453daa
+CMP EBX,dword ptr [0x0046d0ca]
+JLE      LAB_00453d6c
+MOV EBX,dword ptr [0x0046d0ca]
+
+LAB_00453d6c:
+MOV ECX,dword ptr [EBP + 0x10]
+CMP ECX,dword ptr [0x0046d0d2]
+JG       LAB_00453daa
+CMP ECX,dword ptr [0x0046d0ce]
+JGE      LAB_00453d85
+MOV ECX,dword ptr [0x0046d0ce]
+
+LAB_00453d85:
+MOV EDX,dword ptr [EBP + 0x14]
+CMP EDX,dword ptr [0x0046d0ce]
+JL       LAB_00453daa
+CMP EDX,dword ptr [0x0046d0d2]
+JLE      LAB_00453d9e
+MOV EDX,dword ptr [0x0046d0d2]
+
+LAB_00453d9e:
+PUSH EDX
+PUSH ECX
+PUSH EBX
+PUSH EAX
+CALL 0x004524d9
+ADD ESP,0x10
+
+LAB_00453daa:
+XOR EAX,EAX
+POP EBX
+POP EBP
+RET

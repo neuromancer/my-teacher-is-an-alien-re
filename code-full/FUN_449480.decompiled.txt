@@ -1,0 +1,24 @@
+Function: FUN_00449480
+Address: 0x449480
+
+
+void __thiscall FUN_00449480(void *this,undefined4 param_1,int param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  
+  if ((*(int *)((int)this + 0x90) == param_2) &&
+     (*(undefined4 *)((int)this + 0xac) = 0, 0 < *(int *)((int)this + 0xb4))) {
+    do {
+      piVar1 = (int *)(*(int *)((int)this + 0xac) * 4 + *(int *)((int)this + 0xa8));
+      if (*piVar1 != 0) {
+        (**(code **)(*(int *)this + 0x30))(*(int *)((int)this + 0xac),piVar1);
+      }
+      iVar2 = *(int *)((int)this + 0xac) + 1;
+      *(int *)((int)this + 0xac) = iVar2;
+    } while (iVar2 < *(int *)((int)this + 0xb4));
+  }
+  return;
+}
+

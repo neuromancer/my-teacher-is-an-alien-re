@@ -1,0 +1,38 @@
+Function: FUN_00412000
+Address: 0x412000
+
+
+void * __thiscall FUN_00412000(void *this,undefined4 param_1)
+
+{
+  undefined4 uVar1;
+  undefined4 *puVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00412087;
+  *unaff_FS_OFFSET = &local_10;
+  *(undefined1 *)this = 0;
+  DAT_00469128 = param_1;
+  puVar2 = (undefined4 *)FUN_00454500(0x18);
+  uVar1 = DAT_00469128;
+  DAT_00469134 = (undefined4 *)0x0;
+  if (puVar2 != (undefined4 *)0x0) {
+    puVar2[2] = 0;
+    puVar2[3] = 0;
+    puVar2[1] = 0;
+    *puVar2 = 0;
+    puVar2[4] = 0;
+    puVar2[5] = uVar1;
+    DAT_00469134 = puVar2;
+  }
+  local_8 = 0xffffffff;
+  FUN_00412480();
+  *unaff_FS_OFFSET = local_10;
+  return this;
+}
+

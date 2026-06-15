@@ -1,0 +1,24 @@
+Function: FUN_0041dca0
+Address: 0x41DCA0
+
+PUSH EBX
+MOV EAX,dword ptr [ECX + 0x4]
+MOV EDX,dword ptr [ESP + 0x8]
+PUSH ESI
+XOR ESI,ESI
+CMP dword ptr [ECX],ESI
+JLE      LAB_0041dcba
+
+LAB_0041dcaf:
+MOV BL,byte ptr [EDX]
+INC EDX
+MOV byte ptr [EAX],BL
+INC EAX
+INC ESI
+CMP dword ptr [ECX],ESI
+JG       LAB_0041dcaf
+
+LAB_0041dcba:
+POP ESI
+POP EBX
+RET 0x4

@@ -1,0 +1,5 @@
+Function: FUN_0042dd30
+Address: 0x42DD30
+
+XOR EAX,EAX
+RET 0x4

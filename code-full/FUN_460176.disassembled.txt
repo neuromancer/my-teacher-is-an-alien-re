@@ -1,0 +1,4 @@
+Function: GetProcAddress
+Address: 0x460176
+
+JMP dword ptr [0x00476438]

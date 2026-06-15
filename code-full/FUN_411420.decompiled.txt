@@ -1,0 +1,33 @@
+Function: FUN_00411420
+Address: 0x411420
+
+
+void __thiscall
+FUN_00411420(void *this,int param_1,int param_2,int param_3,int param_4,undefined4 param_5,
+            undefined4 param_6,char param_7,char param_8)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined1 local_40 [36];
+  int local_1c;
+  int local_18;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_004114d2;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00410f90(local_40,(param_2 - param_1) + 1,(param_4 - param_3) + 1);
+  local_8 = 0;
+  FUN_00411180(local_40,0);
+  FUN_00411c40(param_1,param_2,param_3,param_4,local_18,local_1c,(int)this,(int)local_40,param_7,
+               param_8);
+  FUN_00411410();
+  local_8 = 0xffffffff;
+  FUN_004114dc();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

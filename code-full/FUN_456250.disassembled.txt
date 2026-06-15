@@ -1,0 +1,35 @@
+Function: FUN_00456250
+Address: 0x456250
+
+SUB ESP,0x10
+LEA EAX,[ESP]
+PUSH EAX
+CALL dword ptr [0x00476468]
+MOV EAX,dword ptr [ESP + 0xc]
+AND EAX,0xffff
+PUSH EAX
+XOR EAX,EAX
+MOV AX,word ptr [ESP + 0xe]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x10]
+AND EAX,0xffff
+PUSH EAX
+XOR EAX,EAX
+MOV AX,word ptr [ESP + 0x12]
+PUSH EAX
+XOR EAX,EAX
+MOV AX,word ptr [ESP + 0x12]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x14]
+AND EAX,0xffff
+PUSH EAX
+CALL 0x0045a200
+MOV ECX,dword ptr [ESP + 0x2c]
+ADD ESP,0x18
+TEST ECX,ECX
+JZ       LAB_004562a6
+MOV dword ptr [ECX],EAX
+
+LAB_004562a6:
+ADD ESP,0x10
+RET

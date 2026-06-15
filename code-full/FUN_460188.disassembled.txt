@@ -1,0 +1,4 @@
+Function: FreeLibrary
+Address: 0x460188
+
+JMP dword ptr [0x00476444]

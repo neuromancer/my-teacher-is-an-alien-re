@@ -1,0 +1,24 @@
+Function: FUN_004306a0
+Address: 0x4306A0
+
+PUSH ESI
+PUSH EDI
+MOV EDI,ECX
+MOV ESI,dword ptr [ESP + 0xc]
+PUSH ESI
+CALL     LAB_004309c0
+CMP dword ptr [ESI + 0x2c],0x1b
+JZ       LAB_004306ba
+CMP dword ptr [ESI + 0x28],0x1
+JLE      LAB_004306c8
+
+LAB_004306ba:
+MOV dword ptr [ESI + 0x10],0x0
+MOV ECX,EDI
+CALL     LAB_00430730
+
+LAB_004306c8:
+MOV EAX,0x1
+POP EDI
+POP ESI
+RET 0x4

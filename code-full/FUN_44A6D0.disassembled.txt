@@ -1,0 +1,17 @@
+Function: FUN_0044a6d0
+Address: 0x44A6D0
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0xa0]
+MOV ESI,ECX
+PUSH EAX
+MOV ECX,dword ptr [0x0046aa30]
+CALL 0x00433bb0
+MOV ECX,dword ptr [ESI + EAX*0x4 + 0xa4]
+LEA EAX,[ESI + EAX*0x4]
+MOV dword ptr [ESI + 0x98],ECX
+MOV EDX,dword ptr [EAX + 0xac]
+MOV EAX,0x1
+MOV dword ptr [ESI + 0x9c],EDX
+POP ESI
+RET

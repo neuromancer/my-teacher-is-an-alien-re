@@ -1,0 +1,4 @@
+Function: StretchDIBits
+Address: 0x4601B8
+
+JMP dword ptr [0x00476318]

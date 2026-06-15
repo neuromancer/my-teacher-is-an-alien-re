@@ -1,0 +1,33 @@
+Function: FUN_0042d920
+Address: 0x42D920
+
+
+void FUN_0042d920(undefined4 *param_1)
+
+{
+  int *piVar1;
+  
+  if (param_1 != (undefined4 *)0x0) {
+    switch(*param_1) {
+    case 0x1e:
+    case 0x1f:
+    case 0x20:
+    case 0x25:
+    case 0x27:
+      break;
+    default:
+      piVar1 = &DAT_00473320;
+      do {
+        if (*piVar1 != 0) {
+          FUN_0044c9d0(*piVar1);
+        }
+        piVar1 = piVar1 + 9;
+      } while (piVar1 < &DAT_004733f8);
+      if (DAT_0046af08 != 0) {
+        FUN_0044c9d0(DAT_0046af08);
+      }
+    }
+  }
+  return;
+}
+

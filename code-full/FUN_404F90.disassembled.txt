@@ -1,0 +1,9 @@
+Function: FUN_00404f90
+Address: 0x404F90
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV dword ptr [ECX],0x0
+MOV dword ptr [ECX + 0x4],0x0
+MOV dword ptr [ECX + 0x8],EAX
+MOV EAX,ECX
+RET 0x4

@@ -1,0 +1,14 @@
+Function: __amsg_exit
+Address: 0x456CE0
+
+CMP dword ptr [0x00471c54],0x1
+JNZ      LAB_00456cee
+CALL 0x0045bf00
+
+LAB_00456cee:
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH EAX
+CALL 0x0045bf40
+ADD ESP,0x4
+PUSH 0xff
+CALL dword ptr [0x00471c50]

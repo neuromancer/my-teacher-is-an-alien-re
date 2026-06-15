@@ -1,0 +1,17 @@
+Function: FUN_004287f0
+Address: 0x4287F0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x428821
+PUSH EAX
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV dword ptr FS:[0x0],ESP
+CALL     LAB_0042882b
+MOV EAX,dword ptr [EBP + -0xc]
+MOV ESP,EBP
+MOV FS:[0x0],EAX
+POP EBP
+RET

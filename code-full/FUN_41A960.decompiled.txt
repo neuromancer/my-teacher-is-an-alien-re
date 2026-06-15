@@ -1,0 +1,19 @@
+Function: FUN_0041a960
+Address: 0x41A960
+
+
+void __fastcall FUN_0041a960(undefined4 *param_1)
+
+{
+  undefined4 *puVar1;
+  
+  FUN_00425d70((wchar_t *)s_REPORT_of_in_use_animations_00469e94);
+  puVar1 = *(undefined4 **)*param_1;
+  while (puVar1 != (undefined4 *)0x0) {
+    puVar1 = (undefined4 *)*puVar1;
+    FUN_00425d70((wchar_t *)s__2_2d__Name___32s__smk_addr__lu_00469e70);
+  }
+  FUN_00425d70((wchar_t *)s_________END_REPORT__________00469e54);
+  return;
+}
+

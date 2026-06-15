@@ -1,0 +1,37 @@
+Function: FUN_0040a620
+Address: 0x40A620
+
+
+void __thiscall FUN_0040a620(void *this,undefined4 param_1)
+
+{
+  void *pvVar1;
+  undefined4 *puVar2;
+  uint uVar3;
+  undefined4 *unaff_FS_OFFSET;
+  undefined1 local_48 [56];
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0040a6ee;
+  *unaff_FS_OFFSET = &local_10;
+  *(undefined4 *)((int)this + 0x150) = 1;
+  FUN_00444d90(3,param_1,0x2d,1,4,0,0,0,0,0);
+  puVar2 = FUN_00444a40(local_48,0,0,0,0,0,0,0,0,0,0);
+  local_8 = 0;
+  FUN_00444920(&DAT_00472d58,puVar2);
+  local_8 = 0xffffffff;
+  FUN_0040a6f8();
+  pvVar1 = DAT_0046aa30;
+  uVar3 = FUN_00433ae0(DAT_0046aa30,(byte *)s_MUST_SAVEGAME_00468964);
+  if (((int)uVar3 < 0) || (*(int *)((int)pvVar1 + 0x98) + -1 < (int)uVar3)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  *(undefined4 *)(*(int *)((int)pvVar1 + 0x90) + uVar3 * 4) = 0;
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

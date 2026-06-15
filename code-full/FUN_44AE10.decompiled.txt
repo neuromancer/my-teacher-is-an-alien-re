@@ -1,0 +1,35 @@
+Function: FUN_0044ae10
+Address: 0x44AE10
+
+
+void * __thiscall FUN_0044ae10(void *this,char *param_1)
+
+{
+  int iVar1;
+  undefined4 *puVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined1 local_34 [32];
+  void *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0044ae9f;
+  *unaff_FS_OFFSET = &local_10;
+  local_14 = this;
+  FUN_004127c0(this);
+  local_8 = 0;
+  *(undefined ***)this = &PTR_FUN_00461b50;
+  puVar2 = (undefined4 *)((int)this + 0x90);
+  for (iVar1 = 0x10; iVar1 != 0; iVar1 = iVar1 + -1) {
+    *puVar2 = 0;
+    puVar2 = puVar2 + 1;
+  }
+  _sscanf(param_1,s__s__s_00468614,local_34,(char *)((int)this + 0xac));
+  _sscanf((char *)((int)this + 0xac),&DAT_0046c748,(int)this + 0xa8);
+  *unaff_FS_OFFSET = local_10;
+  return this;
+}
+

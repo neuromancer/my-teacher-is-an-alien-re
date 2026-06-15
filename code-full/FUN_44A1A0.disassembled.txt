@@ -1,0 +1,11 @@
+Function: FUN_0044a1a0
+Address: 0x44A1A0
+
+MOV EAX,dword ptr [EBP + -0xc]
+POP EDI
+MOV FS:[0x0],EAX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET

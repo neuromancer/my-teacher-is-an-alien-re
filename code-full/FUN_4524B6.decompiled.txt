@@ -1,0 +1,15 @@
+Function: GetCursorPos
+Address: 0x4524B6
+
+
+BOOL GetCursorPos(LPPOINT lpPoint)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x004524b6. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = GetCursorPos(lpPoint);
+  return BVar1;
+}
+

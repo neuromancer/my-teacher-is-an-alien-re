@@ -1,0 +1,53 @@
+Function: FUN_00418690
+Address: 0x418690
+
+
+void * __thiscall FUN_00418690(void *this,int param_1)
+
+{
+  void *this_00;
+  void *pvVar1;
+  int iVar2;
+  int *piVar3;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0041882a;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_004127c0(this);
+  local_8 = 0;
+  FUN_00454ad0((void *)((int)this + 0x498),8,4,&LAB_00418840,(_func_void_void_ptr *)0x401120);
+  local_8._0_1_ = 1;
+  FUN_00454ad0((void *)((int)this + 0x4b8),8,4,&LAB_00418840,(_func_void_void_ptr *)0x401120);
+  local_8._0_1_ = 2;
+  *(undefined ***)this = &PTR_FUN_00461320;
+  piVar3 = (int *)((int)this + 0x90);
+  for (iVar2 = 0x114; iVar2 != 0; iVar2 = iVar2 + -1) {
+    *piVar3 = 0;
+    piVar3 = piVar3 + 1;
+  }
+  *(int *)((int)this + 0x90) = param_1;
+  _sprintf(DAT_0046aa00,s_puz_navcrystal_crytls_d_smk_00469d14,param_1 + 1);
+  this_00 = (void *)FUN_00454500(0xf8);
+  local_8._0_1_ = 3;
+  pvVar1 = (void *)0x0;
+  if (this_00 != (void *)0x0) {
+    pvVar1 = FUN_0044c660(this_00,DAT_0046aa00);
+  }
+  *(void **)((int)this + 0x4d8) = pvVar1;
+  *(uint *)((int)pvVar1 + 0x94) = *(uint *)((int)pvVar1 + 0x94) | 0x40;
+  local_8 = CONCAT31(local_8._1_3_,2);
+  *(undefined4 *)(*(int *)((int)this + 0x4d8) + 0x9c) = 1;
+  FUN_0044d2a0(*(void **)((int)this + 0x4d8),4);
+  FUN_0044d210(*(void **)((int)this + 0x4d8),0,1,1,1);
+  FUN_0044d210(*(void **)((int)this + 0x4d8),1,0xb,0xb,1);
+  FUN_0044d210(*(void **)((int)this + 0x4d8),2,0x15,0x15,1);
+  FUN_0044d210(*(void **)((int)this + 0x4d8),3,0x1f,0x1f,1);
+  *unaff_FS_OFFSET = local_10;
+  return this;
+}
+

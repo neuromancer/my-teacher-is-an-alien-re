@@ -1,0 +1,15 @@
+Function: GlobalUnlock
+Address: 0x46015E
+
+
+BOOL GlobalUnlock(HGLOBAL hMem)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x0046015e. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = GlobalUnlock(hMem);
+  return BVar1;
+}
+

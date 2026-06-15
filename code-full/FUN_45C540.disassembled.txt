@@ -1,0 +1,55 @@
+Function: _wctomb
+Address: 0x45C540
+
+MOV ECX,dword ptr [ESP + 0x4]
+SUB ESP,0x4
+TEST ECX,ECX
+JNZ      LAB_0045c551
+XOR EAX,EAX
+ADD ESP,0x4
+RET
+
+LAB_0045c551:
+CMP dword ptr [0x00472840],0x0
+JNZ      LAB_0045c585
+CMP word ptr [ESP + 0xc],0xff
+JBE      LAB_0045c576
+MOV EAX,0xffffffff
+ADD ESP,0x4
+MOV dword ptr [0x004719c0],0x2a
+RET
+
+LAB_0045c576:
+MOV AL,byte ptr [ESP + 0xc]
+MOV byte ptr [ECX],AL
+MOV EAX,0x1
+ADD ESP,0x4
+RET
+
+LAB_0045c585:
+LEA EAX,[ESP]
+MOV EDX,dword ptr [0x00471c3c]
+MOV dword ptr [ESP],0x0
+PUSH EAX
+PUSH 0x0
+PUSH EDX
+MOV EAX,[0x00472850]
+PUSH ECX
+PUSH 0x1
+LEA ECX,[ESP + 0x20]
+PUSH ECX
+PUSH 0x220
+PUSH EAX
+CALL dword ptr [0x00476384]
+TEST EAX,EAX
+JZ       LAB_0045c5bf
+CMP dword ptr [ESP],0x0
+JZ       LAB_0045c5ce
+
+LAB_0045c5bf:
+MOV dword ptr [0x004719c0],0x2a
+MOV EAX,0xffffffff
+
+LAB_0045c5ce:
+ADD ESP,0x4
+RET

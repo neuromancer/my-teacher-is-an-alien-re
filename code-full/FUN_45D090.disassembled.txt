@@ -1,0 +1,23 @@
+Function: FID_conflict:__atodbl
+Address: 0x45D090
+
+MOV EAX,dword ptr [ESP + 0x8]
+SUB ESP,0x10
+LEA ECX,[ESP]
+PUSH 0x0
+LEA EDX,[ESP + 0x8]
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH EAX
+PUSH ECX
+PUSH EDX
+CALL     LAB_0045eef0
+MOV ECX,dword ptr [ESP + 0x30]
+LEA EDX,[ESP + 0x20]
+ADD ESP,0x1c
+PUSH ECX
+PUSH EDX
+CALL 0x0045d050
+ADD ESP,0x18
+RET

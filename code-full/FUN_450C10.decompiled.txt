@@ -1,0 +1,59 @@
+Function: FUN_00450c10
+Address: 0x450C10
+
+
+void __fastcall FUN_00450c10(undefined4 *param_1)
+
+{
+  int *piVar1;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  int local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_00450d9e;
+  *param_1 = &PTR_FUN_00461c90;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 3;
+  if ((undefined4 *)param_1[0x4f] != (undefined4 *)0x0) {
+    (*(code *)**(undefined4 **)param_1[0x4f])(1);
+    param_1[0x4f] = 0;
+  }
+  piVar1 = (int *)param_1[0x40];
+  if (piVar1 != (int *)0x0) {
+    FUN_00425200(piVar1);
+    FUN_00454400(piVar1);
+    param_1[0x40] = 0;
+  }
+  if ((LPVOID)param_1[0x3c] != (LPVOID)0x0) {
+    FUN_00454400((LPVOID)param_1[0x3c]);
+    param_1[0x3c] = 0;
+  }
+  param_1[0x50] = 0;
+  param_1[0x41] = 0;
+  param_1[0x42] = 0;
+  param_1[0x43] = 0;
+  param_1[0x44] = 0;
+  param_1[0x45] = 0;
+  param_1[0x48] = 0;
+  param_1[0x47] = 0;
+  param_1[0x46] = 0;
+  param_1[0x4b] = 0;
+  param_1[0x4a] = 0;
+  param_1[0x49] = 0;
+  param_1[0x4d] = 0;
+  param_1[0x4c] = 0;
+  param_1[0x4e] = 0;
+  local_8._0_1_ = 2;
+  FUN_00450d74();
+  local_8._0_1_ = 1;
+  FUN_00450d82();
+  local_8 = (uint)local_8._1_3_ << 8;
+  FUN_00450d90();
+  local_8 = 0xffffffff;
+  FUN_00450da8();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

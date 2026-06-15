@@ -1,0 +1,10 @@
+Function: __ismbblead
+Address: 0x45B7A0
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH 0x4
+PUSH 0x0
+PUSH EAX
+CALL     LAB_0045b7c0
+ADD ESP,0xc
+RET

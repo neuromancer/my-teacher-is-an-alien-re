@@ -1,0 +1,32 @@
+Function: FUN_00426330
+Address: 0x426330
+
+
+void __cdecl FUN_00426330(char *param_1)
+
+{
+  LPCSTR pCVar1;
+  HANDLE pvVar2;
+  int iVar3;
+  DWORD *pDVar4;
+  uchar local_29c [64];
+  char local_25c [64];
+  byte local_21c [260];
+  DWORD local_118 [5];
+  undefined1 local_104 [260];
+  
+  _vsprintf((char *)local_21c,param_1,&stack0x00000008);
+  pDVar4 = local_118;
+  pCVar1 = (LPCSTR)FUN_004260f0((char *)local_21c);
+  pvVar2 = __findfirst(pCVar1,pDVar4);
+  if (pvVar2 != (HANDLE)0xffffffff) {
+    FUN_004560f0(local_21c,(uchar *)0x0,local_29c,(uchar *)0x0,(uchar *)0x0);
+    do {
+      _sprintf(local_25c,&DAT_0046aaf0,local_29c,local_104);
+      FUN_00426190(local_25c);
+      iVar3 = __findnext(pvVar2,local_118);
+    } while (iVar3 == 0);
+  }
+  return;
+}
+

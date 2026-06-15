@@ -1,0 +1,4 @@
+Function: thunk_FUN_004254f0
+Address: 0x425490
+
+JMP      LAB_004254f0

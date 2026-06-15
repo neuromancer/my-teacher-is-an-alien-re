@@ -1,0 +1,38 @@
+Function: FUN_0044cf50
+Address: 0x44CF50
+
+
+void __fastcall FUN_0044cf50(int param_1)
+
+{
+  int iVar1;
+  int *piVar2;
+  int iVar3;
+  int iVar4;
+  
+  if (*(int *)(param_1 + 0xf0) == 0) {
+    FUN_00425c50(s_error_Sprite__CheckRanges0_0046c9bc);
+  }
+  if (*(int *)(param_1 + 0x90) == 0) {
+    FUN_00425c50(s_error_Sprite__CheckRanges1_0046c9a0);
+  }
+  iVar3 = 0;
+  if (0 < *(int *)(param_1 + 0xb4)) {
+    iVar4 = 0;
+    do {
+      piVar2 = (int *)(*(int *)(param_1 + 0x90) + 4 + iVar4);
+      iVar1 = *(int *)(*(int *)(*(int *)(param_1 + 0xf0) + 0xc) + 0xc);
+      if (iVar1 < *piVar2) {
+        *piVar2 = iVar1;
+      }
+      piVar2 = (int *)(*(int *)(param_1 + 0x90) + iVar4);
+      if (piVar2[1] < *piVar2) {
+        FUN_00425c50(s_bad_range__d__start____d_in__s_0046c980);
+      }
+      iVar4 = iVar4 + 0x10;
+      iVar3 = iVar3 + 1;
+    } while (iVar3 < *(int *)(param_1 + 0xb4));
+  }
+  return;
+}
+

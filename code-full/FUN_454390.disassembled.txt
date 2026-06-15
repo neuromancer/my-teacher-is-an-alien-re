@@ -1,0 +1,48 @@
+Function: TranslatorGuardHandler
+Address: 0x454390
+
+PUSH EBP
+MOV EBP,ESP
+PUSH EBX
+PUSH ESI
+CLD
+MOV ESI,dword ptr [EBP + 0x8]
+TEST byte ptr [ESI + 0x4],0x66
+JZ       LAB_004543b2
+MOV EAX,dword ptr [EBP + 0xc]
+POP ESI
+POP EBX
+POP EBP
+MOV dword ptr [EAX + 0x24],0x1
+MOV EAX,0x1
+RET
+
+LAB_004543b2:
+PUSH 0x1
+MOV EAX,dword ptr [EBP + 0xc]
+MOV ECX,dword ptr [EAX + 0x14]
+MOV EDX,dword ptr [EAX + 0x10]
+PUSH ECX
+PUSH EDX
+MOV ECX,dword ptr [EAX + 0x8]
+MOV EDX,dword ptr [EBP + 0x10]
+PUSH ECX
+PUSH 0x0
+PUSH EDX
+MOV ECX,dword ptr [EAX + 0xc]
+PUSH ECX
+PUSH ESI
+CALL     LAB_00456d10
+ADD ESP,0x20
+MOV ECX,dword ptr [EBP + 0xc]
+CMP dword ptr [ECX + 0x24],0x0
+JNZ      LAB_004543e6
+PUSH ESI
+PUSH ECX
+CALL 0x00454170
+
+LAB_004543e6:
+MOV EBX,dword ptr [EBP + 0xc]
+MOV ESP,dword ptr [EBX + 0x1c]
+MOV EBP,dword ptr [EBX + 0x20]
+JMP dword ptr [EBX + 0x18]

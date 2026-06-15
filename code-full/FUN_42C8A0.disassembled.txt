@@ -1,0 +1,26 @@
+Function: FUN_0042c8a0
+Address: 0x42C8A0
+
+MOV EAX,dword ptr [ECX + 0x98]
+MOV [0x0046ae50],EAX
+MOV EDX,dword ptr [ECX + 0xa4]
+MOV dword ptr [0x0046ae60],EDX
+MOV EAX,dword ptr [ECX + 0xac]
+MOV [0x0046ae68],EAX
+MOV EDX,dword ptr [ECX + 0x94]
+MOV dword ptr [0x0046ae4c],EDX
+MOV EAX,dword ptr [ECX + 0xb4]
+MOV [0x0046ae70],EAX
+MOV EDX,dword ptr [ECX + 0xa8]
+MOV dword ptr [0x0046ae64],EDX
+MOV EAX,dword ptr [ECX + 0xa0]
+MOV [0x0046ae5c],EAX
+MOV EDX,dword ptr [ECX + 0x90]
+MOV dword ptr [0x0046ae58],EDX
+MOV EAX,dword ptr [ECX + 0xb0]
+MOV [0x0046ae6c],EAX
+MOV EDX,dword ptr [ECX + 0x9c]
+MOV dword ptr [0x0046ae54],EDX
+MOV ECX,dword ptr [ECX + 0xb8]
+MOV dword ptr [0x0046ae74],ECX
+RET

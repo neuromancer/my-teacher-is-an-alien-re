@@ -1,0 +1,37 @@
+Function: FUN_0043ae30
+Address: 0x43AE30
+
+
+void __thiscall FUN_0043ae30(void *this,char *param_1)
+
+{
+  undefined4 uVar1;
+  int iVar2;
+  
+  uVar1 = FUN_00453cc8();
+  *(undefined4 *)((int)this + 8) = uVar1;
+  uVar1 = FUN_00453cc2();
+  *(undefined4 *)((int)this + 0xc) = uVar1;
+  iVar2 = FUN_00453cba();
+  if (iVar2 == 0) {
+    iVar2 = FUN_0043ad50(this,param_1);
+    iVar2 = iVar2 / 2;
+  }
+  else {
+    if (iVar2 != 1) goto LAB_0043ae76;
+    iVar2 = FUN_0043ad50(this,param_1);
+  }
+  *(int *)((int)this + 8) = *(int *)((int)this + 8) - iVar2;
+LAB_0043ae76:
+  iVar2 = FUN_00453cb2();
+  if (iVar2 == 0) {
+    *(int *)((int)this + 0xc) = *(int *)((int)this + 0xc) + *(int *)((int)this + 0x2c) / 2;
+    return;
+  }
+  if (iVar2 == 1) {
+    *(int *)((int)this + 0xc) = *(int *)((int)this + 0xc) + *(int *)((int)this + 0x2c);
+    return;
+  }
+  return;
+}
+

@@ -1,0 +1,35 @@
+Function: _wctomb
+Address: 0x45C540
+
+
+/* Library Function - Single Match
+    _wctomb
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl _wctomb(char *_MbCh,wchar_t _WCh)
+
+{
+  int iVar1;
+  BOOL local_4;
+  
+  if (_MbCh == (char *)0x0) {
+    return 0;
+  }
+  if (DAT_00472840 == 0) {
+    if (0xff < (ushort)_WCh) {
+      DAT_004719c0 = 0x2a;
+      return -1;
+    }
+    *_MbCh = (char)_WCh;
+    return 1;
+  }
+  local_4 = 0;
+  iVar1 = WideCharToMultiByte(DAT_00472850,0x220,&_WCh,1,_MbCh,DAT_00471c3c,(LPCSTR)0x0,&local_4);
+  if ((iVar1 == 0) || (local_4 != 0)) {
+    DAT_004719c0 = 0x2a;
+    iVar1 = -1;
+  }
+  return iVar1;
+}
+

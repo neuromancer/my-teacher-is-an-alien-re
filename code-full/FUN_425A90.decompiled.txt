@@ -1,0 +1,58 @@
+Function: FUN_00425a90
+Address: 0x425A90
+
+
+void __cdecl FUN_00425a90(uint param_1,uint param_2)
+
+{
+  int iVar1;
+  undefined4 *puVar2;
+  undefined4 extraout_EDX;
+  undefined4 extraout_EDX_00;
+  undefined4 uVar3;
+  undefined4 *unaff_FS_OFFSET;
+  undefined8 uVar4;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00425ba4;
+  *unaff_FS_OFFSET = &local_10;
+  puVar2 = DAT_0046aa14;
+  if (((DAT_0046aa14 == (undefined4 *)0x0) || (DAT_0046aa14[5] != param_1)) ||
+     (DAT_0046aa14[6] != param_2)) {
+    if (DAT_0046aa14 != (undefined4 *)0x0) {
+      FUN_00410fd0((int)DAT_0046aa14);
+      FUN_00454400(puVar2);
+      DAT_0046aa14 = (undefined4 *)0x0;
+    }
+    uVar4 = FUN_00454500(0x30);
+    uVar3 = (undefined4)((ulonglong)uVar4 >> 0x20);
+    local_8 = 0;
+    puVar2 = (undefined4 *)0x0;
+    if ((void *)uVar4 != (void *)0x0) {
+      puVar2 = FUN_00410f90((void *)uVar4,param_1,param_2);
+      uVar3 = extraout_EDX;
+    }
+    local_8 = 0xffffffff;
+    DAT_0046aa14 = puVar2;
+    if (puVar2[7] != 0) {
+      FUN_00425c50(s_workbuff_must_be_first_vb_create_0046aa58);
+      uVar3 = extraout_EDX_00;
+    }
+    FUN_004111b0(DAT_0046aa14,uVar3);
+    FUN_00411180(DAT_0046aa14,0);
+    iVar1 = DAT_0046aa08;
+    if (DAT_0046aa08 != 0) {
+      *(undefined4 *)(DAT_0046aa08 + 0x1a4) = 0;
+      *(undefined4 *)(iVar1 + 0x1a8) = 0;
+      *(uint *)(iVar1 + 0x1ac) = param_1 - 1;
+      *(uint *)(iVar1 + 0x1b0) = param_2 - 1;
+    }
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

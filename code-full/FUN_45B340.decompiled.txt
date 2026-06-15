@@ -1,0 +1,26 @@
+Function: __getdrive
+Address: 0x45B340
+
+
+/* Library Function - Single Match
+    __getdrive
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl __getdrive(void)
+
+{
+  DWORD DVar1;
+  int iVar2;
+  byte local_104;
+  char local_103;
+  
+  iVar2 = 0;
+  DVar1 = GetCurrentDirectoryA(0x104,(LPSTR)&local_104);
+  if ((DVar1 != 0) && (local_103 == ':')) {
+    iVar2 = _toupper((uint)local_104);
+    iVar2 = iVar2 + -0x40;
+  }
+  return iVar2;
+}
+

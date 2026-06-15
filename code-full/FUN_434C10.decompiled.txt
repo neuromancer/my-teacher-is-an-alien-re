@@ -1,0 +1,120 @@
+Function: FUN_00434c10
+Address: 0x434C10
+
+
+int * __fastcall FUN_00434c10(int *param_1)
+
+{
+  undefined4 *puVar1;
+  undefined4 *puVar2;
+  void *pvVar3;
+  void *pvVar4;
+  int iVar5;
+  int *piVar6;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  int local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00434f70;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_0042d460(param_1);
+  local_8 = 0;
+  *param_1 = (int)&PTR_FUN_004616f8;
+  piVar6 = param_1 + 0x2a;
+  for (iVar5 = 0xc; iVar5 != 0; iVar5 = iVar5 + -1) {
+    *piVar6 = 0;
+    piVar6 = piVar6 + 1;
+  }
+  param_1[0x24] = 0x27;
+  FUN_00413e10(param_1,s_mis_schedule_mis_0046ba8c,(char *)0x0);
+  puVar1 = (undefined4 *)FUN_00454500(8);
+  local_8._0_1_ = 1;
+  puVar2 = (undefined4 *)0x0;
+  if (puVar1 != (undefined4 *)0x0) {
+    puVar2 = FUN_0041dbe0(puVar1);
+  }
+  local_8._0_1_ = 0;
+  param_1[0x2a] = (int)puVar2;
+  FUN_0041dcc0(s_schedual_schedule_col_0046ba74);
+  pvVar3 = (void *)FUN_00454500(0xf8);
+  local_8._0_1_ = 2;
+  pvVar4 = (void *)0x0;
+  if (pvVar3 != (void *)0x0) {
+    pvVar4 = FUN_0044c660(pvVar3,s_schedual_schedule_smk_0046ba5c);
+  }
+  local_8._0_1_ = 0;
+  param_1[0x2b] = (int)pvVar4;
+  FUN_0044d2a0(pvVar4,3);
+  FUN_0044d210((void *)param_1[0x2b],0,1,1,1);
+  FUN_0044d210((void *)param_1[0x2b],1,2,2,1);
+  FUN_0044d210((void *)param_1[0x2b],2,3,3,1);
+  *(undefined4 *)(param_1[0x2b] + 0x9c) = 0;
+  pvVar3 = (void *)FUN_00454500(0xf8);
+  local_8._0_1_ = 3;
+  pvVar4 = (void *)0x0;
+  if (pvVar3 != (void *)0x0) {
+    pvVar4 = FUN_0044c660(pvVar3,s_schedual_shedbox1_smk_0046ba44);
+  }
+  param_1[0x2c] = (int)pvVar4;
+  *(undefined4 *)((int)pvVar4 + 0x9c) = 5;
+  local_8._0_1_ = 0;
+  *(uint *)(param_1[0x2c] + 0x94) = *(uint *)(param_1[0x2c] + 0x94) | 0x40;
+  pvVar3 = (void *)FUN_00454500(0xf8);
+  local_8._0_1_ = 4;
+  pvVar4 = (void *)0x0;
+  if (pvVar3 != (void *)0x0) {
+    pvVar4 = FUN_0044c660(pvVar3,s_schedual_shedbox2_smk_0046ba2c);
+  }
+  param_1[0x2d] = (int)pvVar4;
+  *(undefined4 *)((int)pvVar4 + 0x9c) = 5;
+  local_8._0_1_ = 0;
+  *(uint *)(param_1[0x2d] + 0x94) = *(uint *)(param_1[0x2d] + 0x94) | 0x40;
+  pvVar3 = (void *)FUN_00454500(0xf8);
+  local_8._0_1_ = 5;
+  pvVar4 = (void *)0x0;
+  if (pvVar3 != (void *)0x0) {
+    pvVar4 = FUN_0044c660(pvVar3,s_schedual_tardies_smk_0046ba14);
+  }
+  local_8._0_1_ = 0;
+  param_1[0x2e] = (int)pvVar4;
+  *(undefined4 *)((int)pvVar4 + 0xac) = 0x54;
+  *(undefined4 *)((int)pvVar4 + 0xb0) = 400;
+  pvVar3 = (void *)FUN_00454500(0xf8);
+  local_8._0_1_ = 6;
+  pvVar4 = (void *)0x0;
+  if (pvVar3 != (void *)0x0) {
+    pvVar4 = FUN_0044c660(pvVar3,s_schedual_cuts_smk_0046ba00);
+  }
+  local_8._0_1_ = 0;
+  param_1[0x2f] = (int)pvVar4;
+  *(undefined4 *)((int)pvVar4 + 0xac) = 0x105;
+  *(undefined4 *)((int)pvVar4 + 0xb0) = 400;
+  pvVar3 = (void *)FUN_00454500(0xf8);
+  local_8._0_1_ = 7;
+  pvVar4 = (void *)0x0;
+  if (pvVar3 != (void *)0x0) {
+    pvVar4 = FUN_0044c660(pvVar3,s_schedual_detents_smk_0046b9e8);
+  }
+  local_8 = (uint)local_8._1_3_ << 8;
+  iVar5 = 3;
+  param_1[0x30] = (int)pvVar4;
+  *(undefined4 *)((int)pvVar4 + 0xac) = 0x1bb;
+  *(undefined4 *)((int)pvVar4 + 0xb0) = 400;
+  piVar6 = param_1 + 0x2e;
+  do {
+    FUN_0044d2a0((void *)*piVar6,3);
+    FUN_0044d210((void *)*piVar6,0,1,1,1);
+    FUN_0044d210((void *)*piVar6,1,2,2,1);
+    FUN_0044d210((void *)*piVar6,2,3,3,1);
+    *(undefined4 *)(*piVar6 + 0x9c) = 5;
+    *(uint *)(*piVar6 + 0x94) = *(uint *)(*piVar6 + 0x94) | 0x40;
+    iVar5 = iVar5 + -1;
+    piVar6 = piVar6 + 1;
+  } while (iVar5 != 0);
+  *unaff_FS_OFFSET = local_10;
+  return param_1;
+}
+

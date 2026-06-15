@@ -1,0 +1,95 @@
+Function: FUN_00431a90
+Address: 0x431A90
+
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,dword ptr [ECX + 0x14]
+PUSH EBP
+MOV EDI,dword ptr [ESI + 0x4]
+CMP dword ptr [ESI + 0xc],0x0
+JNZ      LAB_00431ad9
+MOV EAX,dword ptr [ESI + 0x14]
+SHL EAX,0x6
+ADD EAX,0x4
+PUSH EAX
+CALL 0x00454500
+ADD ESP,0x4
+MOV ECX,dword ptr [ESI + 0x10]
+MOV dword ptr [EAX],ECX
+MOV dword ptr [ESI + 0x10],EAX
+MOV EDX,dword ptr [ESI + 0x14]
+MOV ECX,EDX
+SHL ECX,0x6
+DEC EDX
+LEA EAX,[ECX + EAX*0x1 + -0x3c]
+JS       LAB_00431ad9
+
+LAB_00431ac9:
+MOV ECX,dword ptr [ESI + 0xc]
+DEC EDX
+MOV dword ptr [EAX],ECX
+MOV dword ptr [ESI + 0xc],EAX
+SUB EAX,0x40
+TEST EDX,EDX
+JGE      LAB_00431ac9
+
+LAB_00431ad9:
+MOV EBX,dword ptr [ESI + 0xc]
+MOV EAX,dword ptr [EBX]
+LEA EBP,[EBX + 0x8]
+MOV ECX,0xe
+MOV dword ptr [ESI + 0xc],EAX
+XOR EAX,EAX
+MOV dword ptr [EBX + 0x4],EDI
+LEA EDI,[EBX + 0x8]
+MOV dword ptr [EBX],0x0
+INC dword ptr [ESI + 0x8]
+STOSD.REP ES:EDI
+XOR EDI,EDI
+
+LAB_00431afe:
+TEST EBP,EBP
+JZ       LAB_00431b1d
+PUSH 0x0
+MOV ECX,EBP
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+CALL 0x00444a40
+
+LAB_00431b1d:
+ADD EBP,0x38
+MOV EAX,EDI
+DEC EDI
+TEST EAX,EAX
+JNZ      LAB_00431afe
+MOV EAX,dword ptr [ESP + 0x14]
+LEA ECX,[EBX + 0x8]
+PUSH EAX
+CALL 0x00444920
+MOV EAX,dword ptr [ESI + 0x4]
+TEST EAX,EAX
+JZ       LAB_00431b47
+POP EBP
+MOV dword ptr [EAX],EBX
+POP EDI
+MOV dword ptr [ESI + 0x4],EBX
+POP ESI
+POP EBX
+RET 0x4
+
+LAB_00431b47:
+POP EBP
+MOV dword ptr [ESI],EBX
+POP EDI
+MOV dword ptr [ESI + 0x4],EBX
+POP ESI
+POP EBX
+RET 0x4

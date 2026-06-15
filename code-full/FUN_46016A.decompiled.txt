@@ -1,0 +1,15 @@
+Function: GlobalAlloc
+Address: 0x46016A
+
+
+HGLOBAL GlobalAlloc(UINT uFlags,SIZE_T dwBytes)
+
+{
+  HGLOBAL pvVar1;
+  
+// WARNING: Could not recover jumptable at 0x0046016a. Too many branches
+// WARNING: Treating indirect jump as call
+  pvVar1 = GlobalAlloc(uFlags,dwBytes);
+  return pvVar1;
+}
+

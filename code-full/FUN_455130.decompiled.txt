@@ -1,0 +1,22 @@
+Function: FUN_00455130
+Address: 0x455130
+
+
+undefined4 __cdecl FUN_00455130(LPCSTR param_1)
+
+{
+  BOOL BVar1;
+  uint uVar2;
+  
+  BVar1 = DeleteFileA(param_1);
+  uVar2 = 0;
+  if (BVar1 == 0) {
+    uVar2 = GetLastError();
+  }
+  if (uVar2 != 0) {
+    FUN_0045a860(uVar2);
+    return 0xffffffff;
+  }
+  return 0;
+}
+

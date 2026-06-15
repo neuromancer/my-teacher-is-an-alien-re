@@ -1,0 +1,11 @@
+Function: FUN_0045de10
+Address: 0x45DE10
+
+MOV EAX,dword ptr [ESP + 0x8]
+MOV ECX,dword ptr [ESP + 0x4]
+PUSH EAX
+PUSH ECX
+PUSH 0x0
+CALL     LAB_0045de30
+ADD ESP,0xc
+RET

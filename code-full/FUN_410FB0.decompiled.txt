@@ -1,0 +1,12 @@
+Function: FUN_00410fb0
+Address: 0x410FB0
+
+
+void * __thiscall FUN_00410fb0(void *this,char *param_1,int param_2)
+
+{
+  FUN_00410ff0(this);
+  FUN_00411270(this,param_1,param_2);
+  return this;
+}
+

@@ -1,0 +1,15 @@
+Function: FUN_0041abf0
+Address: 0x41ABF0
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x24]
+MOV ESI,ECX
+TEST EAX,EAX
+JZ       LAB_0041ac08
+PUSH EAX
+CALL dword ptr [0x0047653c]
+MOV dword ptr [ESI + 0x24],0x0
+
+LAB_0041ac08:
+POP ESI
+RET

@@ -1,0 +1,44 @@
+Function: FUN_00418d00
+Address: 0x418D00
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x418d8a
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH ESI
+PUSH EDI
+MOV dword ptr [EBP + -0x10],ECX
+MOV ESI,ECX
+XOR ECX,ECX
+LEA EAX,[ESI + 0x10]
+MOV dword ptr [ESI],ECX
+MOV dword ptr [EBP + -0x4],ECX
+MOV dword ptr [ESI + 0x4],ECX
+MOV byte ptr [EBP + -0x4],0x1
+LEA EDX,[ESI + 0x20]
+MOV dword ptr [ESI + 0x8],ECX
+MOV dword ptr [ESI + 0xc],ECX
+MOV byte ptr [EBP + -0x4],0x2
+MOV EDI,ESI
+MOV dword ptr [EAX],ECX
+MOV dword ptr [EAX + 0x4],ECX
+MOV dword ptr [EAX + 0x8],ECX
+MOV dword ptr [EAX + 0xc],ECX
+XOR EAX,EAX
+MOV dword ptr [EDX],ECX
+MOV dword ptr [EDX + 0x4],ECX
+MOV ECX,0xb
+STOSD.REP ES:EDI
+MOV EAX,ESI
+POP EDI
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+POP ESI
+MOV dword ptr FS:[0x0],ECX
+MOV ESP,EBP
+POP EBP
+RET

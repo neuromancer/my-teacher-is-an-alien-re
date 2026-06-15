@@ -1,0 +1,36 @@
+Function: FUN_0045b1e0
+Address: 0x45B1E0
+
+
+LPSTR __cdecl FUN_0045b1e0(LPSTR param_1,LPCSTR param_2,uint param_3)
+
+{
+  DWORD DVar1;
+  LPSTR pCVar2;
+  LPSTR local_4;
+  
+  if ((param_2 == (LPCSTR)0x0) || (*param_2 == '\0')) {
+    pCVar2 = (LPSTR)FUN_0045de10(param_1,param_3);
+    return pCVar2;
+  }
+  if (param_1 == (LPSTR)0x0) {
+    param_1 = (LPSTR)FUN_004578e0(0x104);
+    if (param_1 == (LPSTR)0x0) {
+      DAT_004719c0 = 0xc;
+      return (LPSTR)0x0;
+    }
+    param_3 = 0x104;
+  }
+  DVar1 = GetFullPathNameA(param_2,param_3,param_1,&local_4);
+  if (DVar1 < param_3) {
+    if (DVar1 != 0) {
+      return param_1;
+    }
+    DVar1 = GetLastError();
+    FUN_0045a860(DVar1);
+    return (LPSTR)0x0;
+  }
+  DAT_004719c0 = 0x22;
+  return (LPSTR)0x0;
+}
+

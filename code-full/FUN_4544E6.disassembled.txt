@@ -1,0 +1,13 @@
+Function: FUN_004544e6
+Address: 0x4544E6
+
+PUSH EBX
+PUSH ECX
+MOV EBX,0x471830
+MOV ECX,dword ptr [EBP + 0x8]
+MOV dword ptr [EBX + 0x8],ECX
+MOV dword ptr [EBX + 0x4],EAX
+MOV dword ptr [EBX + 0xc],EBP
+POP ECX
+POP EBX
+RET 0x4

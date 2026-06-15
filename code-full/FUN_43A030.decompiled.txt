@@ -1,0 +1,36 @@
+Function: FUN_0043a030
+Address: 0x43A030
+
+
+void __thiscall FUN_0043a030(void *this,undefined4 param_1,int param_2)
+
+{
+  void *this_00;
+  int iVar1;
+  
+  if (*(int *)((int)this + 0x90) == param_2) {
+    iVar1 = FUN_0044be70(DAT_0046ae70);
+    if (((iVar1 == 0) && (this_00 = *(void **)(DAT_0046aa18 + 0x94), this_00 != (void *)0x0)) &&
+       (*(int *)((int)this_00 + 0x98) != -1)) {
+      if (*(int **)(DAT_0046aa08 + 0x1a0) == (int *)0x0) {
+        iVar1 = 0;
+      }
+      else {
+        iVar1 = **(int **)(DAT_0046aa08 + 0x1a0) * 3;
+      }
+      iVar1 = iVar1 / *(int *)((int)this + 0xb4);
+      if (iVar1 < 0) {
+        iVar1 = 0;
+      }
+      else if (2 < iVar1) {
+        iVar1 = 2;
+      }
+      if (this_00 != (void *)0x0) {
+        FUN_0044cb40(this_00,(&DAT_0046bcd0)[iVar1],0);
+      }
+      FUN_00432da0(DAT_0046aa18);
+    }
+  }
+  return;
+}
+

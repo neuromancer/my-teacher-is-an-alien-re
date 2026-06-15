@@ -1,0 +1,62 @@
+Function: FUN_00425720
+Address: 0x425720
+
+
+void FUN_00425720(void)
+
+{
+  undefined4 uVar1;
+  void *pvVar2;
+  void *pvVar3;
+  undefined4 *puVar4;
+  undefined4 *this;
+  undefined4 *unaff_FS_OFFSET;
+  undefined8 uVar5;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0042589c;
+  *unaff_FS_OFFSET = &local_10;
+  uVar1 = FUN_00456250((int *)0x0);
+  FUN_00454910(uVar1);
+  DAT_0046aa00 = FUN_00454500(0x100);
+  uVar5 = FUN_00453bff(0x280,0x1e0);
+  DAT_0046aa04 = FUN_00454500((SIZE_T)uVar5);
+  FUN_00424bb0();
+  FUN_00425d60();
+  FUN_004259e0();
+  FUN_00425a90(0x280,0x1e0);
+  pvVar2 = (void *)FUN_00454500(0x1b8);
+  local_8 = 0;
+  pvVar3 = (void *)0x0;
+  if (pvVar2 != (void *)0x0) {
+    pvVar3 = FUN_00426770(pvVar2,(uint)*(byte *)(DAT_0046aa10 + 0x44));
+  }
+  local_8 = 0xffffffff;
+  DAT_0046aa08 = pvVar3;
+  pvVar2 = (void *)FUN_00454500(0x3c);
+  local_8 = 1;
+  pvVar3 = (void *)0x0;
+  if (pvVar2 != (void *)0x0) {
+    pvVar3 = FUN_00424c50(pvVar2,0x5622,8,1);
+  }
+  local_8 = 0xffffffff;
+  DAT_0046aa0c = pvVar3;
+  puVar4 = (undefined4 *)FUN_00454500(0x78);
+  this = (undefined4 *)0x0;
+  local_8 = 2;
+  if (puVar4 != (undefined4 *)0x0) {
+    this = FUN_0043a6e0(puVar4);
+  }
+  local_8 = 0xffffffff;
+  DAT_0046aa28 = this;
+  FUN_0043a830(this,s_elements_barrel06_smk_0046aa40);
+  FUN_00453bbe(0,1);
+  FUN_00453473(0);
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

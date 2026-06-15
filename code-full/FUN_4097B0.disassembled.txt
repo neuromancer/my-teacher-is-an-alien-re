@@ -1,0 +1,32 @@
+Function: FUN_004097b0
+Address: 0x4097B0
+
+MOV EAX,dword ptr [ESP + 0x4]
+SUB EDX,EDX
+SHR EAX,0x4
+DIV dword ptr [ECX + 0x4]
+MOV EAX,dword ptr [ESP + 0x8]
+MOV dword ptr [EAX],EDX
+MOV EAX,dword ptr [ECX]
+TEST EAX,EAX
+JNZ      LAB_004097cd
+XOR EAX,EAX
+RET 0x8
+
+LAB_004097cd:
+MOV EAX,dword ptr [EAX + EDX*0x4]
+
+LAB_004097d0:
+TEST EAX,EAX
+JZ       LAB_004097e1
+MOV ECX,dword ptr [ESP + 0x4]
+CMP dword ptr [EAX + 0x8],ECX
+JZ       LAB_004097e3
+MOV EAX,dword ptr [EAX]
+JMP      LAB_004097d0
+
+LAB_004097e1:
+XOR EAX,EAX
+
+LAB_004097e3:
+RET 0x8

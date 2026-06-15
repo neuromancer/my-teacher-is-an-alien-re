@@ -1,0 +1,32 @@
+Function: FUN_00442c70
+Address: 0x442C70
+
+
+void __fastcall FUN_00442c70(void *param_1)
+
+{
+  uint uVar1;
+  undefined4 uVar2;
+  char local_80 [128];
+  
+  DAT_0046bff0 = 0;
+  DAT_0046bff4 = 0;
+  _sprintf(local_80,s_FNAME__s_0046c030,*(undefined4 *)((int)param_1 + 0x100));
+  FUN_0044d700(param_1,local_80);
+  FUN_0044d2a0(param_1,0x28);
+  uVar1 = *(uint *)((int)param_1 + 0x94);
+  *(uint *)((int)param_1 + 0x94) = uVar1 | 0x40;
+  uVar1 = uVar1 & 0xfffffffd;
+  *(uint *)((int)param_1 + 0x94) = uVar1 | 0x40;
+  *(uint *)((int)param_1 + 0x94) = uVar1 | 0x140;
+  FUN_0044ca50((int)param_1);
+  *(undefined4 *)((int)param_1 + 0x150) = *(undefined4 *)(DAT_0046ae58 + 0x1bc);
+  *(undefined4 *)((int)param_1 + 0x154) = *(undefined4 *)(DAT_0046ae58 + 0x1c0);
+  *(undefined4 *)((int)param_1 + 0x158) = *(undefined4 *)(DAT_0046ae58 + 0x1c4);
+  uVar2 = *(undefined4 *)(DAT_0046ae58 + 0x1c8);
+  *(undefined4 *)((int)param_1 + 0x128) = 1;
+  *(undefined4 *)((int)param_1 + 0x124) = 0;
+  *(undefined4 *)((int)param_1 + 0x15c) = uVar2;
+  return;
+}
+

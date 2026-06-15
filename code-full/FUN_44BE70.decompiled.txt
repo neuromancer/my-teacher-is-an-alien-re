@@ -1,0 +1,21 @@
+Function: FUN_0044be70
+Address: 0x44BE70
+
+
+int __fastcall FUN_0044be70(void *param_1)
+
+{
+  int iVar1;
+  uint uVar2;
+  
+  if (*(int *)((int)param_1 + 0x98) != 0) {
+    while (iVar1 = FUN_0044b830(*(int *)((int)param_1 + 0x98)), iVar1 == 1) {
+      uVar2 = FUN_0044b880(*(int *)((int)param_1 + 0x98));
+      FUN_0044ba80(param_1,uVar2);
+      FUN_0044b7e0(*(int *)((int)param_1 + 0x98));
+    }
+    return iVar1;
+  }
+  return 0;
+}
+

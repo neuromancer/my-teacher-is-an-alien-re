@@ -1,0 +1,20 @@
+Function: FUN_00456250
+Address: 0x456250
+
+
+void __cdecl FUN_00456250(int *param_1)
+
+{
+  int iVar1;
+  _SYSTEMTIME local_10;
+  
+  GetLocalTime(&local_10);
+  iVar1 = FUN_0045a200(local_10._0_4_ & 0xffff,(uint)local_10._0_4_ >> 0x10,(uint)local_10.wDay,
+                       local_10._8_4_ & 0xffff,(uint)local_10._8_4_ >> 0x10,local_10._12_4_ & 0xffff
+                      );
+  if (param_1 != (int *)0x0) {
+    *param_1 = iVar1;
+  }
+  return;
+}
+

@@ -1,0 +1,33 @@
+Function: FUN_00425bc0
+Address: 0x425BC0
+
+
+void __cdecl FUN_00425bc0(char *param_1,char *param_2,int param_3)
+
+{
+  char *pcVar1;
+  char *pcVar2;
+  int iVar3;
+  
+  if ((param_1 == (char *)0x0) || (param_2 == (char *)0x0)) {
+    FUN_00425c50(s_missing_string_0046aab8);
+  }
+  pcVar1 = FUN_00456090(param_1,'\"');
+  if (pcVar1 == (char *)0x0) {
+    *param_2 = '\0';
+    return;
+  }
+  pcVar1 = pcVar1 + 1;
+  pcVar2 = FUN_00456090(pcVar1,'\"');
+  if (pcVar2 == (char *)0x0) {
+    FUN_00425c50(s_open_quote_found_in___s__0046aa9c);
+  }
+  iVar3 = (int)pcVar2 - (int)pcVar1;
+  if (param_3 < iVar3 + 1) {
+    FUN_00425c50(s_dest_string_too_small_0046aa84);
+  }
+  FUN_00455220(param_2,pcVar1,iVar3);
+  param_2[iVar3] = '\0';
+  return;
+}
+

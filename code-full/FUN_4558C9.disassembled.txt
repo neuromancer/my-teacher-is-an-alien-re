@@ -1,0 +1,9 @@
+Function: __fdivrp_sti_st
+Address: 0x4558C9
+
+SUB ESP,0x2c
+FSTP extended double ptr [ESP + 0xc]
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+ADD ESP,0x2c
+RET

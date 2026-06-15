@@ -1,0 +1,4 @@
+Function: SelectPalette
+Address: 0x4601E8
+
+JMP dword ptr [0x00476308]

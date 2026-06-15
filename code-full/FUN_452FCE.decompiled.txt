@@ -1,0 +1,299 @@
+Function: FUN_00452fce
+Address: 0x452FCE
+
+
+undefined4 __cdecl
+FUN_00452fce(undefined1 *param_1,undefined4 *param_2,uint param_3,uint param_4,uint param_5,
+            uint param_6)
+
+{
+  int iVar1;
+  uint uVar2;
+  byte bVar3;
+  int iVar4;
+  undefined3 uVar5;
+  undefined1 *puVar6;
+  byte *pbVar7;
+  undefined1 *puVar8;
+  undefined4 *puVar9;
+  bool bVar10;
+  bool bVar11;
+  byte local_112 [130];
+  undefined1 local_90;
+  undefined1 local_8f [129];
+  uint local_e;
+  uint local_a;
+  byte local_6;
+  
+  bVar11 = false;
+  local_a = param_3;
+  if ((int)param_3 <= (int)param_5) {
+    local_a = param_5;
+  }
+  local_6 = (int)param_3 <= (int)param_5;
+  local_e = param_4;
+  if ((int)param_4 <= (int)param_6) {
+    local_6 = local_6 | 2;
+    local_e = param_6;
+  }
+  FUN_004531ac(local_a,param_3);
+  FUN_004531ac(local_e,param_4);
+  pbVar7 = local_112;
+  iVar1 = (uint)local_112[0] << 8;
+  iVar4 = 0x8000;
+  if (local_6 == 0) {
+    do {
+      if ((byte)((byte)((uint)iVar4 >> 8) & (byte)((uint)iVar1 >> 8)) == 0) {
+        param_1 = param_1 + param_3;
+      }
+      else {
+        puVar6 = &local_90;
+        iVar4 = CONCAT31((int3)((uint)iVar4 >> 8),0x80);
+        iVar1 = CONCAT31((int3)((uint)iVar1 >> 8),local_90);
+        uVar2 = local_a;
+        puVar8 = param_1;
+        puVar9 = param_2;
+        do {
+          while( true ) {
+            bVar3 = (byte)iVar4;
+            uVar5 = (undefined3)((uint)iVar4 >> 8);
+            if ((bVar3 & (byte)iVar1) != 0) break;
+            iVar4 = CONCAT31(uVar5,bVar3 >> 1 | (bVar3 & 1) << 7);
+            param_2 = puVar9;
+            if ((bool)(bVar3 & 1)) {
+LAB_0045318c:
+              puVar6 = puVar6 + 1;
+              iVar1 = CONCAT31((int3)((uint)iVar1 >> 8),*puVar6);
+            }
+            param_1 = puVar8 + 1;
+            uVar2 = uVar2 - 1;
+            puVar8 = param_1;
+            puVar9 = param_2;
+            if (uVar2 == 0) goto LAB_00453180;
+          }
+          param_2 = (undefined4 *)((int)puVar9 + 1);
+          param_1 = puVar8 + 1;
+          *(undefined1 *)puVar9 = *puVar8;
+          iVar4 = CONCAT31(uVar5,bVar3 >> 1 | (bVar3 & 1) << 7);
+          if ((bool)(bVar3 & 1)) goto LAB_0045318c;
+          uVar2 = uVar2 - 1;
+          puVar8 = param_1;
+          puVar9 = param_2;
+        } while (uVar2 != 0);
+      }
+LAB_00453180:
+      bVar3 = (byte)((uint)iVar4 >> 8);
+      bVar11 = (bool)(bVar3 & 1);
+      iVar4 = (uint)(byte)(bVar3 >> 1 | bVar11 << 7) << 8;
+      if (bVar11) {
+        pbVar7 = pbVar7 + 1;
+        iVar1 = (uint)*pbVar7 << 8;
+        local_e = local_e - 1;
+        if (local_e == 0) {
+          return 0;
+        }
+      }
+      else {
+        local_e = local_e - 1;
+        if (local_e == 0) {
+          return 0;
+        }
+      }
+    } while( true );
+  }
+  if (local_6 == 2) {
+    do {
+      if ((byte)((byte)((uint)iVar4 >> 8) & (byte)((uint)iVar1 >> 8)) == 0) {
+        puVar9 = (undefined4 *)((int)param_2 - local_a);
+        for (uVar2 = local_a >> 2; uVar2 != 0; uVar2 = uVar2 - 1) {
+          *param_2 = *puVar9;
+          puVar9 = puVar9 + (uint)bVar11 * -2 + 1;
+          param_2 = param_2 + (uint)bVar11 * -2 + 1;
+        }
+        for (uVar2 = (uint)((local_a >> 1 & 1) != 0); uVar2 != 0; uVar2 = uVar2 - 1) {
+          *(undefined2 *)param_2 = *(undefined2 *)puVar9;
+          puVar9 = (undefined4 *)((int)puVar9 + (uint)bVar11 * -4 + 2);
+          param_2 = (undefined4 *)((int)param_2 + (uint)bVar11 * -4 + 2);
+        }
+        bVar11 = bVar11 != false;
+        for (uVar2 = (uint)((local_a & 1) != 0); uVar2 != 0; uVar2 = uVar2 - 1) {
+          *(undefined1 *)param_2 = *(undefined1 *)puVar9;
+          puVar9 = (undefined4 *)((int)puVar9 + (uint)bVar11 * -2 + 1);
+          param_2 = (undefined4 *)((int)param_2 + (uint)bVar11 * -2 + 1);
+        }
+      }
+      else {
+        puVar6 = &local_90;
+        iVar4 = CONCAT31((int3)((uint)iVar4 >> 8),0x80);
+        iVar1 = CONCAT31((int3)((uint)iVar1 >> 8),local_90);
+        uVar2 = local_a;
+        puVar8 = param_1;
+        puVar9 = param_2;
+        do {
+          while( true ) {
+            bVar3 = (byte)iVar4;
+            uVar5 = (undefined3)((uint)iVar4 >> 8);
+            if ((bVar3 & (byte)iVar1) != 0) break;
+            param_1 = puVar8 + 1;
+            iVar4 = CONCAT31(uVar5,bVar3 >> 1 | (bVar3 & 1) << 7);
+            param_2 = puVar9;
+            if ((bool)(bVar3 & 1)) {
+LAB_0045312e:
+              puVar6 = puVar6 + 1;
+              iVar1 = CONCAT31((int3)((uint)iVar1 >> 8),*puVar6);
+            }
+            uVar2 = uVar2 - 1;
+            puVar8 = param_1;
+            puVar9 = param_2;
+            if (uVar2 == 0) goto LAB_00453122;
+          }
+          param_2 = (undefined4 *)((int)puVar9 + (uint)bVar11 * -2 + 1);
+          param_1 = puVar8 + (uint)bVar11 * -2 + 1;
+          *(undefined1 *)puVar9 = *puVar8;
+          iVar4 = CONCAT31(uVar5,bVar3 >> 1 | (bVar3 & 1) << 7);
+          if ((bool)(bVar3 & 1)) goto LAB_0045312e;
+          uVar2 = uVar2 - 1;
+          puVar8 = param_1;
+          puVar9 = param_2;
+        } while (uVar2 != 0);
+      }
+LAB_00453122:
+      bVar3 = (byte)((uint)iVar4 >> 8);
+      bVar10 = (bool)(bVar3 & 1);
+      iVar4 = (uint)(byte)(bVar3 >> 1 | bVar10 << 7) << 8;
+      if (bVar10) {
+        pbVar7 = pbVar7 + 1;
+        iVar1 = (uint)*pbVar7 << 8;
+        local_e = local_e - 1;
+        if (local_e == 0) {
+          return 0;
+        }
+      }
+      else {
+        local_e = local_e - 1;
+        if (local_e == 0) {
+          return 0;
+        }
+      }
+    } while( true );
+  }
+  if (local_6 == 1) {
+    do {
+      if ((byte)((byte)((uint)iVar4 >> 8) & (byte)((uint)iVar1 >> 8)) == 0) {
+        param_1 = param_1 + param_3;
+      }
+      else {
+        puVar6 = &local_90;
+        iVar4 = CONCAT31((int3)((uint)iVar4 >> 8),0x80);
+        iVar1 = CONCAT31((int3)((uint)iVar1 >> 8),local_90);
+        uVar2 = local_a;
+        puVar9 = param_2;
+        do {
+          while( true ) {
+            bVar3 = (byte)iVar4;
+            puVar8 = param_1;
+            if ((bVar3 & (byte)iVar1) == 0) {
+              puVar8 = param_1 + -1;
+            }
+            param_2 = (undefined4 *)((int)puVar9 + 1);
+            param_1 = puVar8 + 1;
+            *(undefined1 *)puVar9 = *puVar8;
+            iVar4 = CONCAT31((int3)((uint)iVar4 >> 8),bVar3 >> 1 | (bVar3 & 1) << 7);
+            puVar9 = param_2;
+            if ((bool)(bVar3 & 1)) break;
+            uVar2 = uVar2 - 1;
+            if (uVar2 == 0) goto LAB_004530d4;
+          }
+          puVar6 = puVar6 + 1;
+          iVar1 = CONCAT31((int3)((uint)iVar1 >> 8),*puVar6);
+          uVar2 = uVar2 - 1;
+        } while (uVar2 != 0);
+      }
+LAB_004530d4:
+      bVar3 = (byte)((uint)iVar4 >> 8);
+      bVar11 = (bool)(bVar3 & 1);
+      iVar4 = (uint)(byte)(bVar3 >> 1 | bVar11 << 7) << 8;
+      if (bVar11) {
+        pbVar7 = pbVar7 + 1;
+        iVar1 = (uint)*pbVar7 << 8;
+        local_e = local_e - 1;
+        if (local_e == 0) {
+          return 0;
+        }
+      }
+      else {
+        local_e = local_e - 1;
+        if (local_e == 0) {
+          return 0;
+        }
+      }
+    } while( true );
+  }
+  do {
+    if ((byte)((byte)((uint)iVar4 >> 8) & (byte)((uint)iVar1 >> 8)) == 0) {
+      puVar9 = (undefined4 *)((int)param_2 - local_a);
+      for (uVar2 = local_a >> 2; uVar2 != 0; uVar2 = uVar2 - 1) {
+        *param_2 = *puVar9;
+        puVar9 = puVar9 + (uint)bVar11 * -2 + 1;
+        param_2 = param_2 + (uint)bVar11 * -2 + 1;
+      }
+      for (uVar2 = (uint)((local_a >> 1 & 1) != 0); uVar2 != 0; uVar2 = uVar2 - 1) {
+        *(undefined2 *)param_2 = *(undefined2 *)puVar9;
+        puVar9 = (undefined4 *)((int)puVar9 + (uint)bVar11 * -4 + 2);
+        param_2 = (undefined4 *)((int)param_2 + (uint)bVar11 * -4 + 2);
+      }
+      bVar11 = bVar11 != false;
+      for (uVar2 = (uint)((local_a & 1) != 0); uVar2 != 0; uVar2 = uVar2 - 1) {
+        *(undefined1 *)param_2 = *(undefined1 *)puVar9;
+        puVar9 = (undefined4 *)((int)puVar9 + (uint)bVar11 * -2 + 1);
+        param_2 = (undefined4 *)((int)param_2 + (uint)bVar11 * -2 + 1);
+      }
+    }
+    else {
+      puVar6 = &local_90;
+      iVar4 = CONCAT31((int3)((uint)iVar4 >> 8),0x80);
+      iVar1 = CONCAT31((int3)((uint)iVar1 >> 8),local_90);
+      uVar2 = local_a;
+      puVar9 = param_2;
+      do {
+        while( true ) {
+          bVar3 = (byte)iVar4;
+          puVar8 = param_1;
+          if ((bVar3 & (byte)iVar1) == 0) {
+            puVar8 = param_1 + -1;
+          }
+          param_2 = (undefined4 *)((int)puVar9 + (uint)bVar11 * -2 + 1);
+          param_1 = puVar8 + (uint)bVar11 * -2 + 1;
+          *(undefined1 *)puVar9 = *puVar8;
+          iVar4 = CONCAT31((int3)((uint)iVar4 >> 8),bVar3 >> 1 | (bVar3 & 1) << 7);
+          puVar9 = param_2;
+          if ((bool)(bVar3 & 1)) break;
+          uVar2 = uVar2 - 1;
+          if (uVar2 == 0) goto LAB_00453078;
+        }
+        puVar6 = puVar6 + 1;
+        iVar1 = CONCAT31((int3)((uint)iVar1 >> 8),*puVar6);
+        uVar2 = uVar2 - 1;
+      } while (uVar2 != 0);
+    }
+LAB_00453078:
+    bVar3 = (byte)((uint)iVar4 >> 8);
+    bVar10 = (bool)(bVar3 & 1);
+    iVar4 = (uint)(byte)(bVar3 >> 1 | bVar10 << 7) << 8;
+    if (bVar10) {
+      pbVar7 = pbVar7 + 1;
+      iVar1 = (uint)*pbVar7 << 8;
+      local_e = local_e - 1;
+      if (local_e == 0) {
+        return 0;
+      }
+    }
+    else {
+      local_e = local_e - 1;
+      if (local_e == 0) {
+        return 0;
+      }
+    }
+  } while( true );
+}
+

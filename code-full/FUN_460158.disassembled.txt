@@ -1,0 +1,4 @@
+Function: GlobalFree
+Address: 0x460158
+
+JMP dword ptr [0x00476424]

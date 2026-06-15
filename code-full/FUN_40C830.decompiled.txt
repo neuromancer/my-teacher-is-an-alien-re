@@ -1,0 +1,14 @@
+Function: FUN_0040c830
+Address: 0x40C830
+
+
+void __fastcall FUN_0040c830(int param_1)
+
+{
+  if (*(int *)(param_1 + 0xc0) != 0) {
+    FUN_0044c9d0(*(int *)(param_1 + 0xc0));
+    return;
+  }
+  return;
+}
+

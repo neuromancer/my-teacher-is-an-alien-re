@@ -1,0 +1,51 @@
+Function: FUN_00432e20
+Address: 0x432E20
+
+
+int __thiscall FUN_00432e20(void *this,char *param_1)
+
+{
+  char cVar1;
+  char *pcVar2;
+  uint uVar3;
+  uint uVar4;
+  int iVar5;
+  int iVar6;
+  
+  iVar6 = 0;
+  iVar5 = 0;
+  if (0 < *(int *)((int)this + 0xa0)) {
+    do {
+      if ((*(int *)((int)this + 0x90) != 0) &&
+         (pcVar2 = *(char **)(iVar6 + *(int *)((int)this + 0x90)), pcVar2 != (char *)0x0)) {
+        pcVar2 = FUN_00454960(pcVar2,param_1);
+        if (pcVar2 != (char *)0x0) {
+          uVar3 = 0xffffffff;
+          pcVar2 = *(char **)(*(int *)((int)this + 0x90) + iVar6);
+          do {
+            if (uVar3 == 0) break;
+            uVar3 = uVar3 - 1;
+            cVar1 = *pcVar2;
+            pcVar2 = pcVar2 + 1;
+          } while (cVar1 != '\0');
+          uVar4 = 0xffffffff;
+          pcVar2 = param_1;
+          do {
+            if (uVar4 == 0) break;
+            uVar4 = uVar4 - 1;
+            cVar1 = *pcVar2;
+            pcVar2 = pcVar2 + 1;
+          } while (cVar1 != '\0');
+          if (~uVar3 - 1 == ~uVar4 - 1) {
+            return iVar5;
+          }
+        }
+      }
+      iVar6 = iVar6 + 4;
+      iVar5 = iVar5 + 1;
+    } while (iVar5 < *(int *)((int)this + 0xa0));
+  }
+  FUN_00425c50(s__s_not_in_instructionText_0046b4fc);
+  return -1;
+}
+

@@ -1,0 +1,22 @@
+Function: FUN_00451180
+Address: 0x451180
+
+PUSH ESI
+PUSH EDI
+MOV EDI,ECX
+MOV ECX,dword ptr [0x0046ae58]
+CALL 0x00443660
+CMP dword ptr [0x00473e18],0x1
+JNZ      LAB_004511af
+MOV ECX,dword ptr [EDI + 0x174]
+CALL 0x00427880
+MOV ESI,dword ptr [EDI]
+MOV ECX,EDI
+CALL dword ptr [ESI + 0x2c]
+MOV ECX,EDI
+CALL dword ptr [ESI + 0x30]
+
+LAB_004511af:
+POP EDI
+POP ESI
+RET

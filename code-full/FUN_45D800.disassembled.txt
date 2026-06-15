@@ -1,0 +1,22 @@
+Function: FUN_0045d800
+Address: 0x45D800
+
+MOV ECX,dword ptr [ESP + 0x4]
+CMP dword ptr [0x00474f74],ECX
+JBE      LAB_0045d829
+MOV EAX,ECX
+AND ECX,0x1f
+AND EAX,0xffffffe7
+SAR EAX,0x3
+MOV EDX,dword ptr [EAX + 0x474f80]
+LEA EAX,[EDX + ECX*0x8]
+TEST byte ptr [EAX + 0x4],0x1
+JZ       LAB_0045d829
+MOV EAX,dword ptr [EAX]
+RET
+
+LAB_0045d829:
+MOV dword ptr [0x004719c0],0x9
+MOV dword ptr [0x004719c4],0x0
+MOV EAX,0xffffffff
+RET

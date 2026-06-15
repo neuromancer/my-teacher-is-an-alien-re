@@ -1,0 +1,34 @@
+Function: FUN_0045ff40
+Address: 0x45FF40
+
+
+int __cdecl FUN_0045ff40(uint param_1,int param_2)
+
+{
+  byte *pbVar1;
+  byte bVar2;
+  byte bVar3;
+  
+  if (param_1 < DAT_00474f74) {
+    pbVar1 = (byte *)(*(int *)((int)&DAT_00474f80 + ((int)(param_1 & 0xffffffe7) >> 3)) + 4 +
+                     (param_1 & 0x1f) * 8);
+    bVar2 = *pbVar1;
+    if ((bVar2 & 1) != 0) {
+      if (param_2 == 0x8000) {
+        bVar3 = bVar2 & 0x7f;
+      }
+      else {
+        if (param_2 != 0x4000) {
+          DAT_004719c0 = 0x16;
+          return -1;
+        }
+        bVar3 = bVar2 | 0x80;
+      }
+      *pbVar1 = bVar3;
+      return (-(uint)((bVar2 & 0x80) == 0) & 0x4000) + 0x4000;
+    }
+  }
+  DAT_004719c0 = 9;
+  return -1;
+}
+

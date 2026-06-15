@@ -1,0 +1,228 @@
+Function: FUN_00433710
+Address: 0x433710
+
+
+undefined4 FUN_00433710(char *param_1)
+
+{
+  char cVar1;
+  byte bVar2;
+  int *piVar3;
+  byte *pbVar4;
+  int iVar5;
+  undefined4 *puVar6;
+  int *piVar7;
+  char *pcVar8;
+  uint uVar9;
+  uint uVar10;
+  byte *pbVar11;
+  byte *pbVar12;
+  char *pcVar13;
+  bool bVar14;
+  int local_58;
+  void *local_54;
+  uint local_50;
+  int local_4c;
+  int local_48;
+  undefined4 local_44;
+  byte local_40 [32];
+  char local_20 [32];
+  
+  local_20[0] = '\0';
+  local_40[0] = 0;
+  _sscanf(param_1,&DAT_00468448,local_40);
+  pbVar4 = local_40;
+  pcVar8 = s_MAXSTATES_0046b6d0;
+  do {
+    bVar2 = *pbVar4;
+    bVar14 = bVar2 < (byte)*pcVar8;
+    if (bVar2 != *pcVar8) {
+LAB_00433765:
+      iVar5 = (1 - (uint)bVar14) - (uint)(bVar14 != 0);
+      goto LAB_0043376a;
+    }
+    if (bVar2 == 0) break;
+    bVar2 = pbVar4[1];
+    bVar14 = bVar2 < (byte)pcVar8[1];
+    if (bVar2 != pcVar8[1]) goto LAB_00433765;
+    pbVar4 = pbVar4 + 2;
+    pcVar8 = pcVar8 + 2;
+  } while (bVar2 != 0);
+  iVar5 = 0;
+LAB_0043376a:
+  if (iVar5 == 0) {
+    _sscanf(param_1,s__s__d__s_004695d0,local_40,&local_58,local_20);
+    FUN_004335d0(local_54,local_58);
+  }
+  else {
+    pbVar4 = local_40;
+    pcVar8 = s_LABEL_00469374;
+    do {
+      bVar2 = *pbVar4;
+      bVar14 = bVar2 < (byte)*pcVar8;
+      if (bVar2 != *pcVar8) {
+LAB_004337c7:
+        iVar5 = (1 - (uint)bVar14) - (uint)(bVar14 != 0);
+        goto LAB_004337cc;
+      }
+      if (bVar2 == 0) break;
+      bVar2 = pbVar4[1];
+      bVar14 = bVar2 < (byte)pcVar8[1];
+      if (bVar2 != pcVar8[1]) goto LAB_004337c7;
+      pbVar4 = pbVar4 + 2;
+      pcVar8 = pcVar8 + 2;
+    } while (bVar2 != 0);
+    iVar5 = 0;
+LAB_004337cc:
+    if (iVar5 == 0) {
+      local_48 = _sscanf(param_1,s__s__d__s__d_0046b6c4,local_40,&local_58,local_20,&local_44);
+      local_4c = local_58;
+      piVar3 = *(int **)((int)local_54 + 0x94);
+      uVar9 = 0xffffffff;
+      pcVar8 = local_20;
+      do {
+        if (uVar9 == 0) break;
+        uVar9 = uVar9 - 1;
+        cVar1 = *pcVar8;
+        pcVar8 = pcVar8 + 1;
+      } while (cVar1 != '\0');
+      pbVar4 = (byte *)FUN_00454500(~uVar9);
+      uVar9 = 0xffffffff;
+      pcVar8 = local_20;
+      do {
+        pcVar13 = pcVar8;
+        if (uVar9 == 0) break;
+        uVar9 = uVar9 - 1;
+        pcVar13 = pcVar8 + 1;
+        cVar1 = *pcVar8;
+        pcVar8 = pcVar13;
+      } while (cVar1 != '\0');
+      uVar9 = ~uVar9;
+      pbVar11 = (byte *)(pcVar13 + -uVar9);
+      pbVar12 = pbVar4;
+      for (uVar10 = uVar9 >> 2; uVar10 != 0; uVar10 = uVar10 - 1) {
+        *(undefined4 *)pbVar12 = *(undefined4 *)pbVar11;
+        pbVar11 = pbVar11 + 4;
+        pbVar12 = pbVar12 + 4;
+      }
+      for (uVar9 = uVar9 & 3; uVar9 != 0; uVar9 = uVar9 - 1) {
+        *pbVar12 = *pbVar11;
+        pbVar11 = pbVar11 + 1;
+        pbVar12 = pbVar12 + 1;
+      }
+      local_50 = 0;
+      bVar2 = *pbVar4;
+      pbVar11 = pbVar4;
+      while (bVar2 != 0) {
+        local_50 = (int)(char)*pbVar11 + local_50 * 0x21;
+        bVar2 = pbVar11[1];
+        pbVar11 = pbVar11 + 1;
+      }
+      local_50 = local_50 % (uint)piVar3[1];
+      if (*piVar3 != 0) {
+        for (piVar7 = *(int **)(*piVar3 + local_50 * 4); piVar7 != (int *)0x0;
+            piVar7 = (int *)*piVar7) {
+          pbVar11 = (byte *)piVar7[2];
+          pbVar12 = pbVar4;
+          do {
+            bVar2 = *pbVar11;
+            bVar14 = bVar2 < *pbVar12;
+            if (bVar2 != *pbVar12) {
+LAB_004338a5:
+              iVar5 = (1 - (uint)bVar14) - (uint)(bVar14 != 0);
+              goto LAB_004338aa;
+            }
+            if (bVar2 == 0) break;
+            bVar2 = pbVar11[1];
+            bVar14 = bVar2 < pbVar12[1];
+            if (bVar2 != pbVar12[1]) goto LAB_004338a5;
+            pbVar11 = pbVar11 + 2;
+            pbVar12 = pbVar12 + 2;
+          } while (bVar2 != 0);
+          iVar5 = 0;
+LAB_004338aa:
+          if (iVar5 == 0) goto LAB_004338b4;
+        }
+      }
+      piVar7 = (int *)0x0;
+LAB_004338b4:
+      if (piVar7 == (int *)0x0) {
+        if (*piVar3 == 0) {
+          uVar9 = piVar3[1];
+          puVar6 = (undefined4 *)FUN_00454500(uVar9 * 4);
+          *piVar3 = (int)puVar6;
+          for (uVar10 = uVar9 & 0x3fffffff; uVar10 != 0; uVar10 = uVar10 - 1) {
+            *puVar6 = 0;
+            puVar6 = puVar6 + 1;
+          }
+          piVar3[1] = uVar9;
+        }
+        if (piVar3[3] == 0) {
+          piVar7 = (int *)FUN_00454500(piVar3[5] * 0x10 + 4);
+          *piVar7 = piVar3[4];
+          piVar3[4] = (int)piVar7;
+          iVar5 = piVar3[5];
+          piVar7 = piVar7 + iVar5 * 4 + -3;
+          while (iVar5 = iVar5 + -1, -1 < iVar5) {
+            *piVar7 = piVar3[3];
+            piVar3[3] = (int)piVar7;
+            piVar7 = piVar7 + -4;
+          }
+        }
+        piVar7 = (int *)piVar3[3];
+        piVar3[3] = *piVar7;
+        piVar3[2] = piVar3[2] + 1;
+        piVar7[2] = 0;
+        iVar5 = 0;
+        do {
+          bVar14 = iVar5 != 0;
+          iVar5 = iVar5 + -1;
+        } while (bVar14);
+        piVar7[3] = 0;
+        iVar5 = 0;
+        do {
+          bVar14 = iVar5 != 0;
+          iVar5 = iVar5 + -1;
+        } while (bVar14);
+        piVar7[1] = local_50;
+        piVar7[2] = (int)pbVar4;
+        *piVar7 = *(int *)(*piVar3 + local_50 * 4);
+        *(int **)(*piVar3 + local_50 * 4) = piVar7;
+      }
+      piVar7[3] = local_4c;
+      if (3 < local_48) {
+        if ((local_58 < 0) || (*(int *)((int)local_54 + 0x98) + -1 < local_58)) {
+          FUN_00425c50(s_Invalid_gamestate__d_00468150);
+        }
+        *(undefined4 *)(*(int *)((int)local_54 + 0x90) + local_58 * 4) = local_44;
+      }
+    }
+    else {
+      pbVar4 = local_40;
+      pbVar11 = &DAT_00468444;
+      do {
+        bVar2 = *pbVar4;
+        bVar14 = bVar2 < *pbVar11;
+        if (bVar2 != *pbVar11) {
+LAB_004339e2:
+          iVar5 = (1 - (uint)bVar14) - (uint)(bVar14 != 0);
+          goto LAB_004339e7;
+        }
+        if (bVar2 == 0) break;
+        bVar2 = pbVar4[1];
+        bVar14 = bVar2 < pbVar11[1];
+        if (bVar2 != pbVar11[1]) goto LAB_004339e2;
+        pbVar4 = pbVar4 + 2;
+        pbVar11 = pbVar11 + 2;
+      } while (bVar2 != 0);
+      iVar5 = 0;
+LAB_004339e7:
+      if (iVar5 == 0) {
+        return 1;
+      }
+      FUN_00412a50();
+    }
+  }
+  return 0;
+}
+

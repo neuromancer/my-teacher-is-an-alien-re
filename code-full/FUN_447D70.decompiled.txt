@@ -1,0 +1,42 @@
+Function: FUN_00447d70
+Address: 0x447D70
+
+
+undefined4 * __fastcall FUN_00447d70(undefined4 *param_1)
+
+{
+  bool bVar1;
+  undefined3 extraout_var;
+  int iVar2;
+  undefined4 *puVar3;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_00447e0c;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 1;
+  param_1[0x1e] = 0;
+  param_1[0x1f] = 0;
+  puVar3 = param_1;
+  for (iVar2 = 0x25; iVar2 != 0; iVar2 = iVar2 + -1) {
+    *puVar3 = 0;
+    puVar3 = puVar3 + 1;
+  }
+  puVar3 = param_1 + 0x11;
+  for (iVar2 = 0x14; iVar2 != 0; iVar2 = iVar2 + -1) {
+    *puVar3 = 0;
+    puVar3 = puVar3 + 1;
+  }
+  bVar1 = FUN_00425fa0(PTR_s_cfg_Setup_cfg_0046c4ac);
+  if (CONCAT31(extraout_var,bVar1) == 0) {
+    FUN_00447f20(param_1);
+  }
+  FUN_00447f80(param_1);
+  FUN_00447fc0((int)param_1);
+  *unaff_FS_OFFSET = local_10;
+  return param_1;
+}
+

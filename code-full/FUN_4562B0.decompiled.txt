@@ -1,0 +1,15 @@
+Function: FUN_004562b0
+Address: 0x4562B0
+
+
+void FUN_004562b0(void)
+
+{
+  if (PTR___fpmath_00471850 != (undefined *)0x0) {
+    (*(code *)PTR___fpmath_00471850)();
+  }
+  FUN_004563a0((undefined4 *)&DAT_0046804c,(undefined4 *)&DAT_00468058);
+  FUN_004563a0((undefined4 *)&DAT_00468000,(undefined4 *)&DAT_00468048);
+  return;
+}
+

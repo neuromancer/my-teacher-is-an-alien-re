@@ -1,0 +1,12 @@
+Function: FUN_00414400
+Address: 0x414400
+
+
+undefined4 __thiscall FUN_00414400(void *this,undefined4 *param_1)
+
+{
+  FUN_004309c0(this,param_1);
+  FUN_00425c50(s_SC_ZBuffer__AddMessage_004699e4);
+  return 1;
+}
+

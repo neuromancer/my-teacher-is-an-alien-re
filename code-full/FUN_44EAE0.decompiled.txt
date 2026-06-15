@@ -1,0 +1,22 @@
+Function: FUN_0044eae0
+Address: 0x44EAE0
+
+
+void FUN_0044eae0(void)
+
+{
+  DAT_00473dcc = 0xa1;
+  DAT_00473dd4 = 0x137;
+  DAT_00473dc8 = 0x14;
+  DAT_00473dd0 = 0x46;
+  DAT_00473dd8 = 0xb2;
+  DAT_00473ddc = 0xac;
+  DAT_00473de0 = 0xef;
+  DAT_00473dec = 0xa1;
+  DAT_00473df4 = 0x137;
+  DAT_00473de4 = 0x118;
+  DAT_00473de8 = 0x15d;
+  DAT_00473df0 = 399;
+  return;
+}
+

@@ -1,0 +1,7 @@
+Function: FUN_0045c1c0
+Address: 0x45C1C0
+
+MOV EAX,[0x00473f2c]
+PUSH EAX
+CALL dword ptr [0x004763c0]
+RET

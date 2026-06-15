@@ -1,0 +1,23 @@
+Function: FUN_00420990
+Address: 0x420990
+
+
+void __thiscall FUN_00420990(void *this,int param_1)
+
+{
+  int iVar1;
+  
+  if (*(int *)this == 0) {
+    FUN_00425c50(s_FlagArray__Seek_0046a4cc);
+  }
+  iVar1 = *(int *)((int)this + 0x44) * param_1 + *(int *)((int)this + 0x3c);
+  if ((param_1 < 0) || (*(int *)((int)this + 0x40) <= param_1)) {
+    FUN_00425c50(s_Error_in_flagaray_cpp___Seek__In_0046a494);
+  }
+  if ((*(int *)((int)this + 0x38) - *(int *)((int)this + 0x44)) + 1 < iVar1) {
+    FUN_00425d70((wchar_t *)s_Error_in_flagaray_cpp___Seek__At_0046a454);
+  }
+  FUN_00455180(*(FILE **)this,iVar1,0);
+  return;
+}
+

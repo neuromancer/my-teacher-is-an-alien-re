@@ -1,0 +1,15 @@
+Function: GetClientRect
+Address: 0x4601A6
+
+
+BOOL GetClientRect(HWND hWnd,LPRECT lpRect)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601a6. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = GetClientRect(hWnd,lpRect);
+  return BVar1;
+}
+

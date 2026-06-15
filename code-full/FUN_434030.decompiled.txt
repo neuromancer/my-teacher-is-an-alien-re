@@ -1,0 +1,26 @@
+Function: FUN_00434030
+Address: 0x434030
+
+
+void __cdecl FUN_00434030(undefined4 *param_1,int param_2)
+
+{
+  int iVar1;
+  
+  while (param_2 != 0) {
+    param_2 = param_2 + -1;
+    if ((byte *)*param_1 != (byte *)0x0) {
+      iVar1 = FUN_004260a0((byte *)*param_1);
+      if (iVar1 == -1) {
+        FUN_00434520();
+        FUN_004345b0();
+        FUN_00425d70((wchar_t *)s_HDCache__Unable_to_delete___s____0046b798);
+      }
+      FUN_00454400((LPVOID)*param_1);
+      *param_1 = 0;
+    }
+    param_1 = param_1 + 1;
+  }
+  return;
+}
+

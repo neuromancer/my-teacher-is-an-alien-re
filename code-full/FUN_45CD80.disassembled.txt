@@ -1,0 +1,17 @@
+Function: __CopyMan
+Address: 0x45CD80
+
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH ESI
+MOV ECX,dword ptr [ESP + 0x8]
+MOV EDX,0x3
+
+LAB_0045cd8e:
+MOV ESI,dword ptr [EAX]
+ADD EAX,0x4
+MOV dword ptr [ECX],ESI
+ADD ECX,0x4
+DEC EDX
+JNZ      LAB_0045cd8e
+POP ESI
+RET

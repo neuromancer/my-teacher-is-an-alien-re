@@ -1,0 +1,28 @@
+Function: FUN_004455b0
+Address: 0x4455B0
+
+PUSH ESI
+PUSH EDI
+MOV EDI,dword ptr [ESP + 0x10]
+MOV EDX,EDI
+SUB EDX,dword ptr [ECX + 0x4]
+INC EDX
+JS       LAB_004455e8
+MOV ESI,dword ptr [ESP + 0xc]
+TEST ESI,ESI
+JL       LAB_004455e8
+MOV EAX,[0x0046ae4c]
+CMP dword ptr [EAX + 0x98],ESI
+JLE      LAB_004455e8
+TEST EDI,EDI
+JL       LAB_004455e8
+CMP dword ptr [EAX + 0x9c],EDI
+JLE      LAB_004455e8
+MOV dword ptr [ECX + 0x8],ESI
+MOV dword ptr [ECX + 0xc],EDI
+MOV dword ptr [ECX + 0x28],EDX
+
+LAB_004455e8:
+POP EDI
+POP ESI
+RET 0x8

@@ -1,0 +1,12 @@
+Function: FUN_004524c2
+Address: 0x4524C2
+
+
+undefined4 __cdecl FUN_004524c2(undefined4 param_1,undefined4 param_2)
+
+{
+  DAT_0046d0aa = param_1;
+  DAT_0046d0b6 = param_2;
+  return 0;
+}
+

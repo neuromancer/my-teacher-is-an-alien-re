@@ -1,0 +1,123 @@
+Function: FUN_00409500
+Address: 0x409500
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+void FUN_00409500(char *param_1)
+
+{
+  int *piVar1;
+  char cVar2;
+  undefined4 *puVar3;
+  int iVar4;
+  int iVar5;
+  undefined4 *puVar6;
+  int *piVar7;
+  uint uVar8;
+  char *pcVar9;
+  int iVar10;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar11;
+  char local_7c [64];
+  char local_3c [20];
+  int local_28;
+  int *local_24;
+  int *local_20;
+  int *local_1c;
+  int local_18;
+  char *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00409702;
+  *unaff_FS_OFFSET = &local_10;
+  local_14 = param_1;
+  while( true ) {
+    local_18 = 0;
+    local_3c[0] = '\0';
+    iVar4 = _sscanf(local_14,&DAT_00468760,local_7c);
+    if (((iVar4 == 0) || (iVar4 = _sscanf(local_7c,s__d__s_00468758,&local_18,local_3c), iVar4 != 2)
+        ) || (local_18 == 0)) break;
+    local_14 = FUN_00454960(local_14,local_7c);
+    if (local_14 == (char *)0x0) break;
+    uVar8 = 0xffffffff;
+    pcVar9 = local_7c;
+    do {
+      if (uVar8 == 0) break;
+      uVar8 = uVar8 - 1;
+      cVar2 = *pcVar9;
+      pcVar9 = pcVar9 + 1;
+    } while (cVar2 != '\0');
+    iVar4 = 0;
+    iVar10 = 0;
+    local_14 = local_14 + (~uVar8 - 1);
+    while( true ) {
+      if (*(int *)(DAT_0046ae58 + 0x90) == iVar4) {
+        FUN_00425c50(s_Error__Uknown_sprite_id_>__s_00468738);
+      }
+      iVar5 = __strcmpi(*(char **)(*(int *)(DAT_0046ae58 + 0x94 + iVar10) + 0x104),local_3c);
+      if (iVar5 == 0) break;
+      iVar10 = iVar10 + 4;
+      iVar4 = iVar4 + 1;
+    }
+    if (((DAT_004686f8 != (undefined4 *)0x0) && (DAT_004686f8[2] != 0)) &&
+       (local_18 < **(int **)(DAT_004686f8[1] + 8))) {
+      FUN_00425c50(s_Error__sprite_out_of_sequence__s_00468714);
+    }
+    local_24 = (int *)FUN_00454500(8);
+    if (local_24 == (int *)0x0) {
+      local_20 = (int *)0x0;
+    }
+    else {
+      *local_24 = local_18;
+      local_24[1] = iVar4;
+      _DAT_004686f4 = _DAT_004686f4 + 1;
+      local_20 = local_24;
+    }
+    puVar3 = DAT_004686f8;
+    local_8 = 0xffffffff;
+    local_1c = DAT_004686f8 + 1;
+    piVar1 = DAT_004686f8 + 3;
+    local_28 = *local_1c;
+    if (*piVar1 == 0) {
+      piVar7 = DAT_004686f8 + 5;
+      puVar6 = (undefined4 *)FUN_00454500(*piVar7 * 0xc + 4);
+      *puVar6 = puVar3[4];
+      puVar3[4] = puVar6;
+      iVar4 = *piVar7;
+      piVar7 = puVar6 + iVar4 * 3 + -2;
+      while (iVar4 = iVar4 + -1, -1 < iVar4) {
+        *piVar7 = *piVar1;
+        *piVar1 = (int)piVar7;
+        piVar7 = piVar7 + -3;
+      }
+    }
+    piVar7 = (int *)*piVar1;
+    *piVar1 = *piVar7;
+    piVar7[1] = local_28;
+    *piVar7 = 0;
+    puVar3[2] = puVar3[2] + 1;
+    piVar7[2] = 0;
+    iVar4 = 0;
+    do {
+      bVar11 = iVar4 != 0;
+      iVar4 = iVar4 + -1;
+    } while (bVar11);
+    piVar7[2] = (int)local_20;
+    if ((undefined4 *)*local_1c == (undefined4 *)0x0) {
+      *puVar3 = piVar7;
+      *local_1c = (int)piVar7;
+    }
+    else {
+      *(undefined4 *)*local_1c = piVar7;
+      *local_1c = (int)piVar7;
+    }
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

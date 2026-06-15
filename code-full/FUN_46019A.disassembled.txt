@@ -1,0 +1,4 @@
+Function: GetWindowWord
+Address: 0x46019A
+
+JMP dword ptr [0x004764d8]

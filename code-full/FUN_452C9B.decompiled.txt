@@ -1,0 +1,10 @@
+Function: FUN_00452c9b
+Address: 0x452C9B
+
+
+int FUN_00452c9b(void)
+
+{
+  return (int)DAT_0046db3c;
+}
+

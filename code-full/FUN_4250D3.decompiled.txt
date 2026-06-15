@@ -1,0 +1,11 @@
+Function: FUN_004250d3
+Address: 0x4250D3
+
+
+void FUN_004250d3(void)
+
+{
+  FUN_004218b0();
+  return;
+}
+

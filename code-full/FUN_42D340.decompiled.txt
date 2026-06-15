@@ -1,0 +1,14 @@
+Function: FUN_0042d340
+Address: 0x42D340
+
+
+void FUN_0042d340(void)
+
+{
+  DAT_00473310 = 0;
+  DAT_00473314 = 0x1ab;
+  DAT_00473318 = 0x27f;
+  DAT_0047331c = 0x1e0;
+  return;
+}
+

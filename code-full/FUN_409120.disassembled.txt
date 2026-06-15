@@ -1,0 +1,46 @@
+Function: FUN_00409120
+Address: 0x409120
+
+SUB ESP,0x8
+MOV ECX,dword ptr [ECX + 0x90]
+PUSH ESI
+PUSH EDI
+XOR EDI,EDI
+TEST ECX,ECX
+MOV dword ptr [ESP + 0x8],EDI
+JZ       LAB_0040916e
+MOV ESI,dword ptr [ESP + 0x14]
+SUB EDX,EDX
+MOV EAX,ESI
+SHR EAX,0x4
+DIV dword ptr [ECX + 0x4]
+MOV EAX,dword ptr [ECX]
+MOV dword ptr [ESP + 0xc],EDX
+CMP EAX,EDI
+JZ       LAB_00409163
+MOV ECX,dword ptr [ESP + 0xc]
+MOV EDI,dword ptr [EAX + ECX*0x4]
+
+LAB_00409154:
+TEST EDI,EDI
+JZ       LAB_00409161
+CMP dword ptr [EDI + 0x8],ESI
+JZ       LAB_00409163
+MOV EDI,dword ptr [EDI]
+JMP      LAB_00409154
+
+LAB_00409161:
+XOR EDI,EDI
+
+LAB_00409163:
+TEST EDI,EDI
+JZ       LAB_0040916e
+MOV EAX,dword ptr [EDI + 0xc]
+MOV dword ptr [ESP + 0x8],EAX
+
+LAB_0040916e:
+MOV EAX,dword ptr [ESP + 0x8]
+POP EDI
+POP ESI
+ADD ESP,0x8
+RET 0x4

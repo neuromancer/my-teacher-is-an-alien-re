@@ -1,0 +1,10 @@
+Function: FUN_00434800
+Address: 0x434800
+
+MOV EAX,dword ptr [ECX + 0x9c]
+MOV EDX,dword ptr [ECX + 0x98]
+PUSH EAX
+PUSH EDX
+CALL 0x00425a90
+ADD ESP,0x8
+RET

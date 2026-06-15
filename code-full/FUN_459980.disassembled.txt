@@ -1,0 +1,14 @@
+Function: __un_inc
+Address: 0x459980
+
+MOV EAX,dword ptr [ESP + 0x4]
+CMP EAX,-0x1
+JZ       LAB_00459997
+MOV ECX,dword ptr [ESP + 0x8]
+PUSH ECX
+PUSH EAX
+CALL 0x0045c8c0
+ADD ESP,0x8
+
+LAB_00459997:
+RET

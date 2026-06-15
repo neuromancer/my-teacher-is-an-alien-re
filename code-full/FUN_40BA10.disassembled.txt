@@ -1,0 +1,56 @@
+Function: FUN_0040ba10
+Address: 0x40BA10
+
+MOV EDX,dword ptr [ESP + 0x4]
+CMP EDX,0x4
+JA       LAB_0040ba20
+JMP      LAB_0040ba38
+
+LAB_0040ba20:
+MOV EAX,dword ptr [ESP + 0x8]
+MOV ECX,dword ptr [EAX]
+PUSH ECX
+PUSH EDX
+PUSH 0x468a40
+CALL 0x00425c50
+ADD ESP,0xc
+RET 0x8
+
+LAB_0040ba38:
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX + 0x2c]
+RET 0x8
+
+LAB_0040ba40:
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX + 0x2c]
+RET 0x8
+
+LAB_0040ba48:
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX + 0x2c]
+RET 0x8
+
+LAB_0040ba50:
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+PUSH 0x0
+MOV dword ptr [EAX],0x0
+PUSH 0x0
+MOV EDX,dword ptr [ECX + 0x94]
+PUSH 0x1b
+MOV EAX,dword ptr [ECX + 0x90]
+PUSH EDX
+MOV ECX,dword ptr [ECX + 0x114]
+PUSH EAX
+PUSH ECX
+PUSH 0x5
+CALL 0x00444d90
+ADD ESP,0x28
+RET 0x8
+
+LAB_0040ba88:
+CALL 0x0040b9e0
+RET 0x8

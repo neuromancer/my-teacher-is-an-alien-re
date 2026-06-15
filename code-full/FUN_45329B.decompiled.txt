@@ -1,0 +1,34 @@
+Function: FUN_0045329b
+Address: 0x45329B
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+undefined4 __cdecl FUN_0045329b(LPCSTR param_1,int param_2)
+
+{
+  BOOL BVar1;
+  char cVar2;
+  tagSIZE local_c;
+  
+  SetTextColor(DAT_0046d09c,*(uint *)(&DAT_0046d308 + (DAT_0046d078 + 1) * 4) & 0xffffff);
+  SetBkMode(DAT_0046d09c,1);
+  SetTextAlign(DAT_0046d09c,0);
+  if (-1 < DAT_0046d0a8) {
+    cVar2 = DAT_0046d0a8;
+    GetTextExtentPointA(DAT_0046d09c,param_1,param_2,&local_c);
+    DAT_0046d0aa = DAT_0046d0aa - ((uint)((cVar2 + 1) * local_c.cx) >> 1);
+  }
+  if (-1 < DAT_0046d0a9) {
+    DAT_0046d0b6 = DAT_0046d0b6 + ((uint)((DAT_0046d0a9 + 1) * (DAT_0046d082 - _DAT_0046d086)) >> 1)
+    ;
+  }
+  DAT_0046d0b6 = DAT_0046d0b6 - DAT_0046d082;
+  BVar1 = TextOutA(DAT_0046d09c,DAT_0046d0aa,DAT_0046d0b6,param_1,param_2);
+  DAT_0046d0aa = DAT_0046d0aa + BVar1;
+  if (DAT_0046d0ae < DAT_0046d0aa) {
+    DAT_0046d0aa = DAT_0046d0ae;
+  }
+  return 0;
+}
+

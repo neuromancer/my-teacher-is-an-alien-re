@@ -1,0 +1,37 @@
+Function: FUN_004419e0
+Address: 0x4419E0
+
+
+void __thiscall FUN_004419e0(void *this,int param_1)
+
+{
+  LPVOID pvVar1;
+  int *piVar2;
+  
+  if (*(int **)((int)this + 0xac) != (int *)0x0) {
+    FUN_0042bf00(*(int **)((int)this + 0xac));
+    if (*(int **)((int)this + 0xac) != (int *)0x0) {
+      (**(code **)(**(int **)((int)this + 0xac) + 0xc))(1);
+      *(undefined4 *)((int)this + 0xac) = 0;
+    }
+    DAT_0046ae78 = 0;
+  }
+  pvVar1 = *(LPVOID *)((int)this + 0xa8);
+  if (pvVar1 != (LPVOID)0x0) {
+    FUN_00444af0((int)pvVar1);
+    FUN_00454400(pvVar1);
+    *(undefined4 *)((int)this + 0xa8) = 0;
+  }
+  piVar2 = DAT_0046bf28;
+  if (DAT_0046bf28 != (int *)0x0) {
+    thunk_FUN_004254f0(DAT_0046bf28);
+    FUN_00454400(piVar2);
+    DAT_0046bf28 = (int *)0x0;
+  }
+  if (param_1 != 0) {
+    FUN_00444d90(1,*(undefined4 *)((int)this + 0x90),*(undefined4 *)((int)this + 0x90),
+                 *(undefined4 *)((int)this + 0x94),0x18,0,0,0,0,0);
+  }
+  return;
+}
+

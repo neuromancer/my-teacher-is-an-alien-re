@@ -1,0 +1,88 @@
+Function: FUN_004356e0
+Address: 0x4356E0
+
+
+undefined4 __thiscall FUN_004356e0(void *this,char *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  int *piVar4;
+  undefined4 uVar5;
+  byte *pbVar6;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar7;
+  byte local_34 [32];
+  void *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0043578b;
+  *unaff_FS_OFFSET = &local_10;
+  _sscanf(param_1,&DAT_00468760,local_34);
+  pbVar2 = local_34;
+  pbVar6 = &DAT_0046bab0;
+  do {
+    bVar1 = *pbVar2;
+    bVar7 = bVar1 < *pbVar6;
+    if (bVar1 != *pbVar6) {
+LAB_0043573c:
+      iVar3 = (1 - (uint)bVar7) - (uint)(bVar7 != 0);
+      goto LAB_00435741;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar7 = bVar1 < pbVar6[1];
+    if (bVar1 != pbVar6[1]) goto LAB_0043573c;
+    pbVar2 = pbVar2 + 2;
+    pbVar6 = pbVar6 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_00435741:
+  if (iVar3 == 0) {
+    local_14 = (void *)FUN_00454500(0x1a8);
+    local_8 = 0;
+    piVar4 = (int *)0x0;
+    if (local_14 != (void *)0x0) {
+      piVar4 = FUN_00420ce0(local_14,0);
+    }
+    local_8 = 0xffffffff;
+    *(int **)((int)this + 0xd4) = piVar4;
+    FUN_00413e70(piVar4,(int)this,(char *)0x0);
+  }
+  else {
+    pbVar2 = local_34;
+    pbVar6 = &DAT_00468444;
+    do {
+      bVar1 = *pbVar2;
+      bVar7 = bVar1 < *pbVar6;
+      if (bVar1 != *pbVar6) {
+LAB_004357ca:
+        iVar3 = (1 - (uint)bVar7) - (uint)(bVar7 != 0);
+        goto LAB_004357cf;
+      }
+      if (bVar1 == 0) break;
+      bVar1 = pbVar2[1];
+      bVar7 = bVar1 < pbVar6[1];
+      if (bVar1 != pbVar6[1]) goto LAB_004357ca;
+      pbVar2 = pbVar2 + 2;
+      pbVar6 = pbVar6 + 2;
+    } while (bVar1 != 0);
+    iVar3 = 0;
+LAB_004357cf:
+    if (iVar3 == 0) {
+      uVar5 = 1;
+      goto LAB_004357e8;
+    }
+    FUN_00412a50();
+  }
+  uVar5 = 0;
+LAB_004357e8:
+  *unaff_FS_OFFSET = local_10;
+  return uVar5;
+}
+

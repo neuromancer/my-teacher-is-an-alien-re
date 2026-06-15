@@ -1,0 +1,10 @@
+Function: FUN_004205f0
+Address: 0x4205F0
+
+
+undefined * FUN_004205f0(void)
+
+{
+  return &DAT_00472d0c;
+}
+

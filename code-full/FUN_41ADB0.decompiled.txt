@@ -1,0 +1,19 @@
+Function: FUN_0041adb0
+Address: 0x41ADB0
+
+
+void __thiscall FUN_0041adb0(void *this,undefined4 param_1)
+
+{
+  if (*(int *)((int)this + 0xc) != 0) {
+    if (*(char *)(DAT_0046aa10 + 0x46) == '\x02') {
+      Ordinal_17(*(int *)((int)this + 0xc),0);
+    }
+    Ordinal_27(*(undefined4 *)((int)this + 0xc),param_1);
+    if (*(char *)(DAT_0046aa10 + 0x46) == '\x02') {
+      Ordinal_17(*(undefined4 *)((int)this + 0xc),1);
+    }
+  }
+  return;
+}
+

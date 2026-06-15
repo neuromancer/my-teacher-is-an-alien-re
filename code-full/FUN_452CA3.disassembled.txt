@@ -1,0 +1,95 @@
+Function: FUN_00452ca3
+Address: 0x452CA3
+
+PUSH EBP
+MOV EBP,ESP
+SUB ESP,0xa
+PUSH EDI
+PUSH ESI
+PUSH EBX
+PUSH ES
+CLD
+MOV EBX,dword ptr [EBP + 0x20]
+AND EBX,0x1f
+SHL EBX,0x2
+LEA EDI,[0x46ded4]
+MOV EAX,dword ptr [EBX + EDI*0x1]
+DEC EAX
+MOV EDX,EAX
+SUB EDX,dword ptr [EBP + 0x10]
+SUB EAX,dword ptr [EBP + 0x14]
+MOV dword ptr [EBP + 0x10],EAX
+MOV dword ptr [EBP + 0x14],EDX
+LEA EDI,[0x46df54]
+MOV ECX,dword ptr [EBX + EDI*0x1]
+LEA ESI,[0x46de54]
+MOV ESI,dword ptr [EBX + ESI*0x1]
+OR ESI,ESI
+JNZ      LAB_00452ce7
+JMP      LAB_00452d5f
+
+LAB_00452ce7:
+MOV EBX,dword ptr [EBP + 0x24]
+AND EBX,0x1f
+SHL EBX,0x2
+MOV EDX,dword ptr [EBX + EDI*0x1]
+LEA EDI,[0x46ded4]
+MOV EAX,dword ptr [EBX + EDI*0x1]
+DEC EAX
+MOV dword ptr [EBP + -0x4],EAX
+LEA EDI,[0x46de54]
+MOV EDI,dword ptr [EBX + EDI*0x1]
+OR EDI,EDI
+JZ       LAB_00452d5f
+MOV EBX,EDX
+MOV EAX,dword ptr [EBP + 0x10]
+MUL ECX
+ADD EAX,dword ptr [EBP + 0x8]
+ADD ESI,EAX
+MOV EAX,dword ptr [EBP + 0x1c]
+NEG EAX
+ADD EAX,dword ptr [EBP + -0x4]
+MUL EBX
+ADD EAX,dword ptr [EBP + 0x18]
+PUSH DS
+POP ES
+ADD EDI,EAX
+MOV EAX,dword ptr [EBP + 0x14]
+INC EAX
+SUB EAX,dword ptr [EBP + 0x10]
+MOV dword ptr [EBP + -0x8],EAX
+MOV EAX,dword ptr [EBP + 0xc]
+INC EAX
+SUB EAX,dword ptr [EBP + 0x8]
+MOV EDX,ECX
+SUB EDX,EAX
+SUB EBX,EAX
+
+LAB_00452d41:
+MOV ECX,EAX
+SHR ECX,0x1
+PUSHF
+SHR ECX,0x1
+MOVSD.REP ES:EDI,ESI
+ADC ECX,ECX
+MOVSW.REP ES:EDI,ESI
+POPF
+ADC ECX,ECX
+MOVSB.REP ES:EDI,ESI
+ADD ESI,EDX
+ADD EDI,EBX
+DEC dword ptr [EBP + -0x8]
+JNZ      LAB_00452d41
+
+LAB_00452d5f:
+JMP      LAB_00452d61
+
+LAB_00452d61:
+XOR EAX,EAX
+POP ES
+POP EBX
+POP ESI
+POP EDI
+MOV ESP,EBP
+POP EBP
+RET

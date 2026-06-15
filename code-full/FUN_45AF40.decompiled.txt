@@ -1,0 +1,11 @@
+Function: FUN_0045af40
+Address: 0x45AF40
+
+
+void FUN_0045af40(void)
+
+{
+  FUN_0045ac80(-3);
+  return;
+}
+

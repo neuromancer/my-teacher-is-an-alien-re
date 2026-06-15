@@ -1,0 +1,12 @@
+Function: FUN_00426a70
+Address: 0x426A70
+
+
+void FUN_00426a70(void)
+
+{
+  FUN_004218c0((undefined4 *)&DAT_00473230);
+  FUN_004218c0((undefined4 *)&DAT_00473248);
+  return;
+}
+

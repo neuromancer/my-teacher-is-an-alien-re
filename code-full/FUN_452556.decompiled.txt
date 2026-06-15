@@ -1,0 +1,36 @@
+Function: FUN_00452556
+Address: 0x452556
+
+
+uint __cdecl FUN_00452556(int param_1,int param_2,int param_3,int param_4)
+
+{
+  int iVar1;
+  int iVar2;
+  uint uVar3;
+  
+  iVar2 = DAT_0046d0c2;
+  iVar1 = param_3 + DAT_0046d0c2 + -1;
+  if (param_4 < iVar1) {
+    iVar1 = param_4;
+  }
+  FUN_00453d37(param_1,param_2,param_3,iVar1);
+  iVar2 = (param_4 - iVar2) + 1;
+  if (iVar2 < param_3) {
+    iVar2 = param_3;
+  }
+  FUN_00453d37(param_1,param_2,iVar2,param_4);
+  iVar2 = DAT_0046d0be;
+  iVar1 = param_1 + DAT_0046d0be + -1;
+  if (param_2 < iVar1) {
+    iVar1 = param_2;
+  }
+  FUN_00453d37(param_1,iVar1,param_3,param_4);
+  iVar2 = (param_2 - iVar2) + 1;
+  if (iVar2 < param_1) {
+    iVar2 = param_1;
+  }
+  uVar3 = FUN_00453d37(iVar2,param_2,param_3,param_4);
+  return uVar3 & 0xffff0000;
+}
+

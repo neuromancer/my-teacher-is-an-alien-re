@@ -1,0 +1,193 @@
+Function: FUN_0045d960
+Address: 0x45D960
+
+
+uint __cdecl FUN_0045d960(LPCSTR param_1,uint param_2,undefined4 param_3,uint param_4)
+
+{
+  int *piVar1;
+  byte *pbVar2;
+  uint uVar3;
+  HANDLE hFile;
+  int iVar4;
+  byte bVar5;
+  DWORD DVar6;
+  char local_19;
+  DWORD local_18;
+  uint local_14;
+  DWORD local_10;
+  _SECURITY_ATTRIBUTES local_c;
+  
+  local_c.lpSecurityDescriptor = (LPVOID)0x0;
+  local_c.nLength = 0xc;
+  local_c.bInheritHandle = (BOOL)((param_2 & 0x80) == 0);
+  if ((param_2 & 0x8000) == 0) {
+    bVar5 = 0x80;
+    if ((param_2 & 0x4000) == 0) {
+      bVar5 = (DAT_00472914 == 0x8000) - 1U & 0x80;
+    }
+  }
+  else {
+    bVar5 = 0;
+  }
+  uVar3 = param_2 & 3;
+  if (uVar3 == 0) {
+    local_14 = 0x80000000;
+  }
+  else if (uVar3 == 1) {
+    local_14 = 0x40000000;
+  }
+  else {
+    if (uVar3 != 2) {
+      DAT_004719c0 = 0x16;
+      DAT_004719c4 = 0;
+      return 0xffffffff;
+    }
+    local_14 = 0xc0000000;
+  }
+  switch(param_3) {
+  case 0x10:
+    local_18 = 0;
+    break;
+  default:
+    DAT_004719c0 = 0x16;
+    DAT_004719c4 = 0;
+    return 0xffffffff;
+  case 0x20:
+    local_18 = 1;
+    break;
+  case 0x30:
+    local_18 = 2;
+    break;
+  case 0x40:
+    local_18 = 3;
+  }
+  uVar3 = param_2 & 0x700;
+  if (uVar3 < 0x101) {
+    if (uVar3 == 0x100) {
+      local_10 = 4;
+      goto LAB_0045db01;
+    }
+    if (uVar3 != 0) {
+      DAT_004719c0 = 0x16;
+      DAT_004719c4 = 0;
+      return 0xffffffff;
+    }
+LAB_0045dad1:
+    local_10 = 3;
+    goto LAB_0045db01;
+  }
+  if (uVar3 < 0x301) {
+    if (uVar3 == 0x300) {
+      local_10 = 2;
+      goto LAB_0045db01;
+    }
+    if (uVar3 != 0x200) {
+      DAT_004719c0 = 0x16;
+      DAT_004719c4 = 0;
+      return 0xffffffff;
+    }
+LAB_0045dae5:
+    local_10 = 5;
+  }
+  else {
+    if (uVar3 < 0x501) {
+      if (uVar3 != 0x500) {
+        if (uVar3 != 0x400) {
+          DAT_004719c0 = 0x16;
+          DAT_004719c4 = 0;
+          return 0xffffffff;
+        }
+        goto LAB_0045dad1;
+      }
+    }
+    else {
+      if (uVar3 == 0x600) goto LAB_0045dae5;
+      if (uVar3 != 0x700) {
+        DAT_004719c0 = 0x16;
+        DAT_004719c4 = 0;
+        return 0xffffffff;
+      }
+    }
+    local_10 = 1;
+  }
+LAB_0045db01:
+  DVar6 = 0x80;
+  if (((param_2 & 0x100) != 0) && ((~DAT_004719c8 & param_4 & 0x80) == 0)) {
+    DVar6 = 1;
+  }
+  if ((param_2 & 0x40) != 0) {
+    local_14 = local_14 | 0x10000;
+    DVar6 = DVar6 | 0x4000000;
+  }
+  if ((param_2 & 0x1000) != 0) {
+    DVar6 = DVar6 | 0x100;
+  }
+  if ((param_2 & 0x20) == 0) {
+    if ((param_2 & 0x10) != 0) {
+      DVar6 = DVar6 | 0x10000000;
+    }
+  }
+  else {
+    DVar6 = DVar6 | 0x8000000;
+  }
+  uVar3 = FUN_0045d600();
+  if (uVar3 == 0xffffffff) {
+    DAT_004719c0 = 0x18;
+    DAT_004719c4 = 0;
+    return 0xffffffff;
+  }
+  hFile = CreateFileA(param_1,local_14,local_18,&local_c,local_10,DVar6,(HANDLE)0x0);
+  if (hFile == (HANDLE)0xffffffff) {
+    DVar6 = GetLastError();
+    FUN_0045a860(DVar6);
+    return 0xffffffff;
+  }
+  DVar6 = GetFileType(hFile);
+  if (DVar6 != 0) {
+    if (DVar6 == 2) {
+      bVar5 = bVar5 | 0x40;
+    }
+    else if (DVar6 == 3) {
+      bVar5 = bVar5 | 8;
+    }
+    __set_osfhnd(uVar3,(intptr_t)hFile);
+    piVar1 = (int *)((int)&DAT_00474f80 + ((int)(uVar3 & 0xffffffe7) >> 3));
+    local_14 = (uVar3 & 0x1f) * 8;
+    *(byte *)(*piVar1 + 4 + local_14) = bVar5 | 1;
+    local_18 = CONCAT31(local_18._1_3_,bVar5) & 0xffffff48;
+    if ((((bVar5 & 0x48) == 0) && ((bVar5 & 0x80) != 0)) && ((param_2 & 2) != 0)) {
+      DVar6 = FUN_0045a980(uVar3,-1,2);
+      if (DVar6 == 0xffffffff) {
+        if (DAT_004719c4 != 0x83) {
+          __close(uVar3);
+          return 0xffffffff;
+        }
+      }
+      else {
+        local_19 = '\0';
+        iVar4 = FUN_00458690(uVar3,&local_19,1);
+        if (((iVar4 == 0) && (local_19 == '\x1a')) && (iVar4 = __chsize(uVar3,DVar6), iVar4 == -1))
+        {
+          __close(uVar3);
+          return 0xffffffff;
+        }
+        DVar6 = FUN_0045a980(uVar3,0,0);
+        if (DVar6 == 0xffffffff) {
+          __close(uVar3);
+          return 0xffffffff;
+        }
+      }
+    }
+    if (((char)local_18 == '\0') && ((param_2 & 8) != 0)) {
+      pbVar2 = (byte *)(*piVar1 + 4 + local_14);
+      *pbVar2 = *pbVar2 | 0x20;
+    }
+    return uVar3;
+  }
+  CloseHandle(hFile);
+  DVar6 = GetLastError();
+  FUN_0045a860(DVar6);
+  return 0xffffffff;
+}
+

@@ -1,0 +1,81 @@
+Function: FUN_00434820
+Address: 0x434820
+
+
+undefined4 __thiscall FUN_00434820(void *this,char *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  byte *pbVar4;
+  bool bVar5;
+  char local_22;
+  char cStack_21;
+  byte abStack_20 [32];
+  
+  _local_22 = CONCAT11(0x3b,local_22);
+  _sscanf(param_1,&DAT_00468760,abStack_20);
+  _sscanf((char *)abStack_20,&DAT_0046b90c,&cStack_21,&local_22);
+  pbVar2 = abStack_20;
+  pbVar4 = &DAT_00468444;
+  do {
+    bVar1 = *pbVar2;
+    bVar5 = bVar1 < *pbVar4;
+    if (bVar1 != *pbVar4) {
+LAB_00434888:
+      iVar3 = (1 - (uint)bVar5) - (uint)(bVar5 != 0);
+      goto LAB_0043488d;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar5 = bVar1 < pbVar4[1];
+    if (bVar1 != pbVar4[1]) goto LAB_00434888;
+    pbVar2 = pbVar2 + 2;
+    pbVar4 = pbVar4 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_0043488d:
+  if (iVar3 == 0) {
+    return 1;
+  }
+  if (cStack_21 == 'A') {
+    FUN_00434a60(this,param_1 + 3);
+    return 0;
+  }
+  if (cStack_21 == 'C') {
+    _sscanf(param_1 + 3,&DAT_004690e4,(int)this + 0xb0);
+    return 0;
+  }
+  if (cStack_21 == 'D') {
+    _sscanf(param_1 + 3,&DAT_004690e4,(int)this + 0xb4);
+    return 0;
+  }
+  if (cStack_21 == 'O') {
+    FUN_00434a00(param_1 + 3,local_22);
+    return 0;
+  }
+  if (cStack_21 == 'P') {
+    _sscanf(param_1 + 3,s__d__d_0046b904,(int)this + 0xa0,(int)this + 0xa4);
+    return 0;
+  }
+  if (cStack_21 == 'Q') {
+    _sscanf(param_1 + 3,s__d__d_0046b904,(int)this + 0xa8,(int)this + 0xac);
+    return 0;
+  }
+  if (cStack_21 == 'R') {
+    FUN_00434bd0(param_1 + 3);
+    return 0;
+  }
+  if (cStack_21 == 'S') {
+    FUN_00434ac0(param_1 + 3,local_22 + -0x30);
+    return 0;
+  }
+  if (cStack_21 == 'V') {
+    FUN_00434a90(this,param_1 + 3);
+    return 0;
+  }
+  FUN_00412a50();
+  return 0;
+}
+

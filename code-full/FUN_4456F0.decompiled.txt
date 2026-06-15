@@ -1,0 +1,14 @@
+Function: FUN_004456f0
+Address: 0x4456F0
+
+
+void __fastcall FUN_004456f0(undefined4 *param_1)
+
+{
+  if ((LPVOID)*param_1 != (LPVOID)0x0) {
+    FUN_00454400((LPVOID)*param_1);
+    *param_1 = 0;
+  }
+  return;
+}
+

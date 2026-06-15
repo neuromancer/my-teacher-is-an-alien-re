@@ -1,0 +1,34 @@
+Function: FUN_0044b8d0
+Address: 0x44B8D0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x44b93a
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH ESI
+PUSH EDI
+MOV dword ptr [EBP + -0x10],ECX
+MOV ESI,ECX
+CALL 0x004127c0
+LEA EDX,[ESI + 0x90]
+XOR EAX,EAX
+MOV EDI,EDX
+MOV ECX,0x6
+MOV dword ptr [EBP + -0x4],0x0
+MOV dword ptr [ESI],0x461c00
+STOSD.REP ES:EDI
+POP EDI
+MOV dword ptr [EDX],EAX
+MOV dword ptr [ESI + 0x94],0x1
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV EAX,ESI
+MOV ECX,dword ptr [EBP + -0xc]
+MOV dword ptr FS:[0x0],ECX
+POP ESI
+MOV ESP,EBP
+POP EBP
+RET

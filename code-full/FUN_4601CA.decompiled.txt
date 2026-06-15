@@ -1,0 +1,15 @@
+Function: SetTextColor
+Address: 0x4601CA
+
+
+COLORREF SetTextColor(HDC hdc,COLORREF color)
+
+{
+  COLORREF CVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601ca. Too many branches
+// WARNING: Treating indirect jump as call
+  CVar1 = SetTextColor(hdc,color);
+  return CVar1;
+}
+

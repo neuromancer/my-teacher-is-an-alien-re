@@ -1,0 +1,28 @@
+Function: FUN_0044d210
+Address: 0x44D210
+
+
+void __thiscall FUN_0044d210(void *this,int param_1,int param_2,int param_3,undefined4 param_4)
+
+{
+  int iVar1;
+  int *piVar2;
+  int iVar3;
+  
+  if (*(int *)((int)this + 0xb4) <= param_1) {
+    FUN_00425c50(s_Sprite__SetRange_1__s__d_0046ca00);
+  }
+  if ((param_2 < 1) || (param_3 < 1)) {
+    FUN_00425c50(s_Sprite__SetRange_2__s__d_range___0046c9d8);
+  }
+  iVar3 = param_1 * 0x10;
+  piVar2 = (int *)(*(int *)((int)this + 0x90) + iVar3);
+  *piVar2 = param_2;
+  piVar2[1] = param_3;
+  iVar1 = *(int *)((int)this + 0x90);
+  *(undefined4 *)(iVar1 + 0xc + iVar3) = param_4;
+  *(undefined4 *)(iVar1 + 8 + iVar3) = 0;
+  *(uint *)((int)this + 0x94) = *(uint *)((int)this + 0x94) | 0x20;
+  return;
+}
+

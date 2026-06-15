@@ -1,0 +1,15 @@
+Function: FUN_00453721
+Address: 0x453721
+
+
+longlong FUN_00453721(void)
+
+{
+  uint uVar1;
+  uint uVar2;
+  
+  uVar1 = GetDeviceCaps(DAT_0046d070,0xc);
+  uVar2 = GetDeviceCaps(DAT_0046d070,0xe);
+  return (ulonglong)uVar2 * (ulonglong)uVar1;
+}
+

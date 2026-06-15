@@ -1,0 +1,45 @@
+Function: __chdir
+Address: 0x4603D0
+
+
+/* Library Function - Single Match
+    __chdir
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl __chdir(char *_Path)
+
+{
+  BOOL BVar1;
+  DWORD DVar2;
+  uint uVar3;
+  CHAR local_10c;
+  undefined1 local_10b;
+  undefined1 local_10a;
+  undefined1 local_109;
+  byte local_108;
+  byte local_107;
+  
+  BVar1 = SetCurrentDirectoryA(_Path);
+  if (BVar1 != 0) {
+    DVar2 = GetCurrentDirectoryA(0x105,(LPSTR)&local_108);
+    if (DVar2 != 0) {
+      if (((local_108 == 0x5c) || (local_108 == 0x2f)) && (local_108 == local_107)) {
+        return 0;
+      }
+      local_10c = '=';
+      uVar3 = __mbctoupper((uint)local_108);
+      local_10b = (undefined1)uVar3;
+      local_10a = 0x3a;
+      local_109 = 0;
+      BVar1 = SetEnvironmentVariableA(&local_10c,(LPCSTR)&local_108);
+      if (BVar1 != 0) {
+        return 0;
+      }
+    }
+  }
+  DVar2 = GetLastError();
+  FUN_0045a860(DVar2);
+  return -1;
+}
+

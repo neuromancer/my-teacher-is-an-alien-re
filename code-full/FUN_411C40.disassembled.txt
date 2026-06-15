@@ -1,0 +1,64 @@
+Function: FUN_00411c40
+Address: 0x411C40
+
+MOV EAX,dword ptr [ESP + 0x8]
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+MOV ESI,dword ptr [ESP + 0x10]
+PUSH EDI
+PUSH EBP
+SUB EAX,ESI
+INC EAX
+MOV ECX,dword ptr [ESP + 0x24]
+MOV EBX,ECX
+MOV dword ptr [ESP + 0x10],EAX
+SUB EBX,dword ptr [ESP + 0x20]
+MOV EAX,dword ptr [ESP + 0x30]
+INC EBX
+MOV EDI,dword ptr [EAX + 0x24]
+SUB EDI,ECX
+MOV ECX,EAX
+IMUL EDI,dword ptr [EAX + 0x14]
+CALL 0x004111f0
+ADD EDI,EAX
+ADD EDI,ESI
+MOV ESI,dword ptr [ESP + 0x34]
+MOV ECX,ESI
+MOV EBP,dword ptr [ESI + 0x24]
+SUB EBP,dword ptr [ESP + 0x2c]
+IMUL EBP,dword ptr [ESI + 0x14]
+CALL 0x004111f0
+ADD EBP,EAX
+ADD EBP,dword ptr [ESP + 0x28]
+TEST EBX,EBX
+JLE      LAB_00411cbf
+
+LAB_00411c99:
+MOV EAX,dword ptr [ESP + 0x3c]
+MOV ECX,dword ptr [ESP + 0x38]
+MOV EDX,dword ptr [ESP + 0x10]
+PUSH EAX
+PUSH ECX
+PUSH EDX
+PUSH EDI
+PUSH EBP
+CALL 0x00411bf0
+MOV ECX,dword ptr [ESP + 0x44]
+ADD ESP,0x14
+ADD EBP,dword ptr [ESI + 0x14]
+ADD EDI,dword ptr [ECX + 0x14]
+DEC EBX
+JNZ      LAB_00411c99
+
+LAB_00411cbf:
+MOV ECX,ESI
+CALL 0x00411200
+MOV ECX,dword ptr [ESP + 0x30]
+CALL 0x00411200
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0x4
+RET

@@ -1,0 +1,26 @@
+Function: FUN_00453bbe
+Address: 0x453BBE
+
+PUSH EBP
+MOV EBP,ESP
+PUSH EBX
+MOV EBX,dword ptr [EBP + 0x8]
+AND EBX,0xff
+MOV EAX,dword ptr [EBP + 0xc]
+OR AL,AH
+MOV byte ptr [EBX + 0x46d208],AL
+XOR AH,AH
+SUB AH,AL
+RCL EAX,0x1
+AND EAX,0x1
+MOV CL,BL
+SHL EAX,CL
+MOV EBX,0x1
+SHL EBX,CL
+NOT EBX
+AND word ptr [0x0046d09a],BX
+OR word ptr [0x0046d09a],AX
+XOR EAX,EAX
+POP EBX
+POP EBP
+RET

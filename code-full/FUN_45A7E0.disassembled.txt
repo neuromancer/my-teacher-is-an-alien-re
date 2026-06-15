@@ -1,0 +1,57 @@
+Function: __getstream
+Address: 0x45A7E0
+
+PUSH ESI
+PUSH EDI
+XOR ESI,ESI
+XOR EDI,EDI
+CMP dword ptr [0x00473f68],ESI
+JLE      LAB_0045a83e
+MOV ECX,dword ptr [0x00473f6c]
+MOV EDX,0x83
+
+LAB_0045a7f9:
+MOV EAX,dword ptr [ECX]
+TEST EAX,EAX
+JZ       LAB_0045a81c
+TEST dword ptr [EAX + 0xc],EDX
+JZ       LAB_0045a812
+ADD ECX,0x4
+INC EDI
+CMP dword ptr [0x00473f68],EDI
+JG       LAB_0045a7f9
+JMP      LAB_0045a83e
+
+LAB_0045a812:
+MOV EAX,[0x00473f6c]
+MOV ESI,dword ptr [EAX + EDI*0x4]
+JMP      LAB_0045a83e
+
+LAB_0045a81c:
+PUSH 0x20
+CALL 0x004578e0
+ADD ESP,0x4
+MOV ECX,dword ptr [0x00473f6c]
+MOV dword ptr [ECX + EDI*0x4],EAX
+MOV ECX,dword ptr [0x00473f6c]
+MOV EAX,dword ptr [ECX + EDI*0x4]
+TEST EAX,EAX
+JZ       LAB_0045a83e
+MOV ESI,EAX
+
+LAB_0045a83e:
+XOR EAX,EAX
+TEST ESI,ESI
+JZ       LAB_0045a859
+MOV dword ptr [ESI + 0x4],EAX
+MOV dword ptr [ESI + 0xc],EAX
+MOV dword ptr [ESI + 0x8],EAX
+MOV dword ptr [ESI],EAX
+MOV dword ptr [ESI + 0x1c],EAX
+MOV dword ptr [ESI + 0x10],0xffffffff
+
+LAB_0045a859:
+MOV EAX,ESI
+POP EDI
+POP ESI
+RET

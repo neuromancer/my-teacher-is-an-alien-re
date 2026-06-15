@@ -1,0 +1,10 @@
+Function: FUN_0044c650
+Address: 0x44C650
+
+
+undefined1 * __cdecl FUN_0044c650(int param_1)
+
+{
+  return &DAT_004734b0 + param_1 * 0x40;
+}
+

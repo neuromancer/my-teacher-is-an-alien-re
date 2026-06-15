@@ -1,0 +1,41 @@
+Function: FUN_00434ac0
+Address: 0x434AC0
+
+
+void FUN_00434ac0(char *param_1,undefined4 param_2)
+
+{
+  char *pcVar1;
+  byte *pbVar2;
+  undefined4 uVar3;
+  char local_80 [128];
+  
+  _sscanf(param_1,&DAT_00468760,local_80);
+  pcVar1 = FUN_0044e470(local_80);
+  pbVar2 = FUN_00426190(pcVar1);
+  uVar3 = FUN_004252f0(DAT_0046ae68,pbVar2);
+  switch(param_2) {
+  case 0:
+    *(undefined4 *)(DAT_0046ae78 + 0xec) = uVar3;
+    return;
+  case 1:
+    *(undefined4 *)(DAT_0046ae60 + 0xac) = uVar3;
+    return;
+  case 2:
+    *(undefined4 *)(DAT_0046ae58 + 0x1bc) = uVar3;
+    return;
+  case 3:
+    *(undefined4 *)(DAT_0046ae58 + 0x1c0) = uVar3;
+    return;
+  case 4:
+    *(undefined4 *)(DAT_0046ae58 + 0x1c4) = uVar3;
+    return;
+  case 5:
+    *(undefined4 *)(DAT_0046ae58 + 0x1c8) = uVar3;
+    return;
+  default:
+    FUN_00425c50(s_MapScene__ParseSound_____Undefin_0046b914);
+    return;
+  }
+}
+

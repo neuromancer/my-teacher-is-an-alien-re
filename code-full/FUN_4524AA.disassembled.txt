@@ -1,0 +1,4 @@
+Function: ReleaseDC
+Address: 0x4524AA
+
+JMP dword ptr [0x00476490]

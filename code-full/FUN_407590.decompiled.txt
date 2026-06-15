@@ -1,0 +1,55 @@
+Function: FUN_00407590
+Address: 0x407590
+
+
+void __thiscall FUN_00407590(void *this,int param_1)
+
+{
+  bool bVar1;
+  undefined3 extraout_var;
+  undefined4 *puVar2;
+  undefined4 *puVar3;
+  void *this_00;
+  void *pvVar4;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_004076c2;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_004309a0(this,param_1);
+  bVar1 = FUN_00425fa0(s_CB_FireAlarm_004685c8);
+  if (CONCAT31(extraout_var,bVar1) == 0) {
+    FUN_004265a0();
+  }
+  *(undefined4 *)((int)this + 0xb4) = 0x140;
+  *(undefined4 *)((int)this + 0xb8) = 0xf0;
+  FUN_00425a90(0x140,0xf0);
+  *(undefined4 *)((int)this + 0x94) = *(undefined4 *)(param_1 + 4);
+  puVar2 = (undefined4 *)FUN_00454500(0xc);
+  local_8 = 0;
+  puVar3 = (undefined4 *)0x0;
+  if (puVar2 != (undefined4 *)0x0) {
+    puVar3 = FUN_00425480(puVar2);
+  }
+  local_8 = 0xffffffff;
+  *(undefined4 **)((int)this + 0x148) = puVar3;
+  FUN_00413e10(this,s_mis_CB_FireAlarm_mis_004685b0,(char *)0x0);
+  if (*(int *)((int)this + 0xa8) == 0) {
+    this_00 = (void *)FUN_00454500(0x38);
+    local_8 = 1;
+    pvVar4 = (void *)0x0;
+    if (this_00 != (void *)0x0) {
+      pvVar4 = FUN_00444a40(this_00,*(undefined4 *)((int)this + 0x98),
+                            *(undefined4 *)((int)this + 0x9c),*(undefined4 *)((int)this + 0x90),
+                            *(undefined4 *)((int)this + 0x94),4,0,0,0,0,0);
+    }
+    *(void **)((int)this + 0xa8) = pvVar4;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

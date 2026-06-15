@@ -1,0 +1,65 @@
+Function: FUN_0042c150
+Address: 0x42C150
+
+
+void FUN_0042c150(undefined4 *param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  int *piVar3;
+  undefined4 *puVar4;
+  undefined4 *puVar5;
+  int iVar6;
+  int *piVar7;
+  int *piVar8;
+  bool bVar9;
+  
+  puVar4 = DAT_0046ae74;
+  piVar1 = DAT_0046ae74 + 1;
+  piVar8 = DAT_0046ae74 + 3;
+  iVar6 = *piVar1;
+  if (*piVar8 == 0) {
+    piVar7 = DAT_0046ae74 + 5;
+    puVar5 = (undefined4 *)FUN_00454500(*piVar7 * 0x40 + 4);
+    *puVar5 = puVar4[4];
+    puVar4[4] = puVar5;
+    iVar2 = *piVar7;
+    piVar7 = puVar5 + iVar2 * 0x10 + -0xf;
+    while (iVar2 = iVar2 + -1, -1 < iVar2) {
+      *piVar7 = *piVar8;
+      *piVar8 = (int)piVar7;
+      piVar7 = piVar7 + -0x10;
+    }
+  }
+  piVar3 = (int *)*piVar8;
+  piVar7 = piVar3 + 2;
+  *piVar8 = *piVar3;
+  piVar3[1] = iVar6;
+  *piVar3 = 0;
+  puVar4[2] = puVar4[2] + 1;
+  piVar8 = piVar3 + 2;
+  for (iVar6 = 0xe; iVar6 != 0; iVar6 = iVar6 + -1) {
+    *piVar8 = 0;
+    piVar8 = piVar8 + 1;
+  }
+  iVar6 = 0;
+  do {
+    if (piVar7 != (int *)0x0) {
+      FUN_00444a40(piVar7,0,0,0,0,0,0,0,0,0,0);
+    }
+    piVar7 = piVar7 + 0xe;
+    bVar9 = iVar6 != 0;
+    iVar6 = iVar6 + -1;
+  } while (bVar9);
+  FUN_00444920(piVar3 + 2,param_1);
+  if ((undefined4 *)*piVar1 == (undefined4 *)0x0) {
+    *puVar4 = piVar3;
+  }
+  else {
+    *(undefined4 *)*piVar1 = piVar3;
+  }
+  *piVar1 = (int)piVar3;
+  return;
+}
+

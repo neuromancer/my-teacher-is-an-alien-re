@@ -1,0 +1,4 @@
+Function: GetActiveWindow
+Address: 0x45249E
+
+JMP dword ptr [0x0047649c]

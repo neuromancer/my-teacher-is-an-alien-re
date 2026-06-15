@@ -1,0 +1,52 @@
+Function: ___add_12
+Address: 0x45ED10
+
+PUSH ESI
+PUSH EDI
+MOV ESI,dword ptr [ESP + 0xc]
+MOV EDI,dword ptr [ESP + 0x10]
+PUSH ESI
+MOV EAX,dword ptr [EDI]
+PUSH EAX
+MOV ECX,dword ptr [ESI]
+PUSH ECX
+CALL 0x0045ece0
+ADD ESP,0xc
+TEST EAX,EAX
+JZ       LAB_0045ed45
+LEA EAX,[ESI + 0x4]
+PUSH EAX
+PUSH 0x1
+MOV ECX,dword ptr [EAX]
+PUSH ECX
+CALL 0x0045ece0
+ADD ESP,0xc
+TEST EAX,EAX
+JZ       LAB_0045ed45
+INC dword ptr [ESI + 0x8]
+
+LAB_0045ed45:
+LEA EAX,[ESI + 0x4]
+MOV ECX,dword ptr [EDI + 0x4]
+PUSH EAX
+PUSH ECX
+MOV EDX,dword ptr [EAX]
+PUSH EDX
+CALL 0x0045ece0
+ADD ESP,0xc
+TEST EAX,EAX
+JZ       LAB_0045ed5f
+INC dword ptr [ESI + 0x8]
+
+LAB_0045ed5f:
+MOV ECX,dword ptr [ESI + 0x8]
+ADD ESI,0x8
+PUSH ESI
+MOV EAX,dword ptr [EDI + 0x8]
+PUSH EAX
+PUSH ECX
+CALL 0x0045ece0
+ADD ESP,0xc
+POP EDI
+POP ESI
+RET

@@ -1,0 +1,11 @@
+Function: FUN_0041de20
+Address: 0x41DE20
+
+
+void __thiscall FUN_0041de20(void *this,UINT param_1,UINT param_2)
+
+{
+  FUN_004533b0(param_1,param_2,(undefined2 *)(*(int *)((int)this + 4) + param_1 * 3));
+  return;
+}
+

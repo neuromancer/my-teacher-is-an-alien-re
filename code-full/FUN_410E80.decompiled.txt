@@ -1,0 +1,21 @@
+Function: FUN_00410e80
+Address: 0x410E80
+
+
+int FUN_00410e80(void)
+
+{
+  int iVar1;
+  int *piVar2;
+  
+  iVar1 = 0;
+  piVar2 = &DAT_00472bf0;
+  do {
+    if (*piVar2 != -1) {
+      iVar1 = iVar1 + 1;
+    }
+    piVar2 = piVar2 + 1;
+  } while (piVar2 < &DAT_00472c70);
+  return iVar1;
+}
+

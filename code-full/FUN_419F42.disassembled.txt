@@ -1,0 +1,5 @@
+Function: FUN_00419f42
+Address: 0x419F42
+
+LEA ECX,[EBP + -0x38]
+JMP 0x00401120

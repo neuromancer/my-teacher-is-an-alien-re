@@ -1,0 +1,49 @@
+Function: FUN_004127e0
+Address: 0x4127E0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x412888
+MOV dword ptr [ECX],0x461298
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x8
+MOV dword ptr [EBP + -0x10],ECX
+CALL     LAB_00412a20
+MOV EAX,dword ptr [EBP + -0x10]
+MOV EAX,dword ptr [EAX + 0x3c]
+TEST EAX,EAX
+JZ       LAB_00412838
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV dword ptr [EBP + -0x14],EAX
+CALL     LAB_00412880
+MOV EAX,dword ptr [EBP + -0x14]
+PUSH EAX
+CALL 0x00454400
+ADD ESP,0x4
+MOV EAX,dword ptr [EBP + -0x10]
+MOV dword ptr [EAX + 0x3c],0x0
+
+LAB_00412838:
+DEC dword ptr [0x00469288]
+JNZ      LAB_00412873
+CMP dword ptr [0x00469144],0x0
+JZ       LAB_00412873
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV EAX,[0x00469144]
+MOV dword ptr [EBP + -0x10],EAX
+CALL     LAB_00412892
+MOV EAX,dword ptr [EBP + -0x10]
+PUSH EAX
+CALL 0x00454400
+MOV dword ptr [0x00469144],0x0
+ADD ESP,0x4
+
+LAB_00412873:
+MOV EAX,dword ptr [EBP + -0xc]
+MOV ESP,EBP
+MOV FS:[0x0],EAX
+POP EBP
+RET

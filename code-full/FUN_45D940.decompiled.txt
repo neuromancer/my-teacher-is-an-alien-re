@@ -1,0 +1,11 @@
+Function: FUN_0045d940
+Address: 0x45D940
+
+
+void __cdecl FUN_0045d940(LPCSTR param_1,uint param_2,uint param_3)
+
+{
+  FUN_0045d960(param_1,param_2,0x40,param_3);
+  return;
+}
+

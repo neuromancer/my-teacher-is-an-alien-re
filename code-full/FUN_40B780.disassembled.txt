@@ -1,0 +1,20 @@
+Function: FUN_0040b780
+Address: 0x40B780
+
+CMP dword ptr [0x0046ae78],0x0
+PUSH ESI
+MOV ESI,ECX
+JZ       LAB_0040b7a3
+MOV ECX,dword ptr [0x0046ae78]
+PUSH 0x1
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX + 0xc]
+MOV dword ptr [0x0046ae78],0x0
+
+LAB_0040b7a3:
+MOV EAX,dword ptr [ESP + 0x8]
+MOV ECX,ESI
+PUSH EAX
+CALL 0x00449320
+POP ESI
+RET 0x4

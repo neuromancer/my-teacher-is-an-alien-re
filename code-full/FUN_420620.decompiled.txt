@@ -1,0 +1,26 @@
+Function: FUN_00420620
+Address: 0x420620
+
+
+undefined4 FUN_00420620(HINSTANCE param_1,int param_2,char *param_3,int param_4)
+
+{
+  int iVar1;
+  undefined4 local_14;
+  
+  FUN_00420150(&DAT_00472cf0,param_1,param_2,param_3,param_4);
+  iVar1 = FUN_004204f0();
+  if (iVar1 == 0) {
+    return 0;
+  }
+  UpdateWindow(DAT_00472cfc);
+  if (DAT_00472ddc == 0) {
+    FUN_004236f0();
+  }
+  else {
+    FUN_00424c40();
+  }
+  FUN_00420530((undefined4 *)&DAT_00472cf0);
+  return local_14;
+}
+

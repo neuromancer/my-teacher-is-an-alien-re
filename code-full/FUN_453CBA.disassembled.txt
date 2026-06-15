@@ -1,0 +1,5 @@
+Function: FUN_00453cba
+Address: 0x453CBA
+
+MOVSX EAX,byte ptr [0x0046d0a8]
+RET

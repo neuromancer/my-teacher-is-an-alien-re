@@ -1,0 +1,28 @@
+Function: FUN_004297d0
+Address: 0x4297D0
+
+
+void __fastcall FUN_004297d0(int param_1)
+
+{
+  undefined4 uVar1;
+  void *pvVar2;
+  uint uVar3;
+  
+  *(undefined4 *)(param_1 + 0x134) = 0;
+  *(undefined4 *)(param_1 + 0x138) = 0;
+  *(undefined4 *)(param_1 + 0x13c) = 0xb3;
+  *(undefined4 *)(param_1 + 0x140) = 0x13;
+  *(undefined4 *)(param_1 + 0x14c) = 0x46;
+  *(undefined4 *)(param_1 + 0x150) = 0x1e;
+  pvVar2 = DAT_0046aa30;
+  uVar3 = FUN_00433ae0(DAT_0046aa30,(byte *)s_MAX_HITS_BY_STINK_BOMBS_0046ace4);
+  if (((int)uVar3 < 0) || (*(int *)((int)pvVar2 + 0x98) + -1 < (int)uVar3)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  uVar1 = *(undefined4 *)(*(int *)((int)pvVar2 + 0x90) + uVar3 * 4);
+  *(undefined4 *)(param_1 + 0x144) = 0;
+  *(undefined4 *)(param_1 + 0x148) = uVar1;
+  return;
+}
+

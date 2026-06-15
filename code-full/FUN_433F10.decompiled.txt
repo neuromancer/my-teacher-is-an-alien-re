@@ -1,0 +1,54 @@
+Function: FUN_00433f10
+Address: 0x433F10
+
+
+void __fastcall FUN_00433f10(int *param_1)
+
+{
+  undefined4 *puVar1;
+  int iVar2;
+  undefined4 *puVar3;
+  bool bVar4;
+  int local_8;
+  uint local_4;
+  
+  if ((*param_1 != 0) && (local_4 = 0, param_1[1] != 0)) {
+    local_8 = 0;
+    do {
+      for (puVar1 = *(undefined4 **)(*param_1 + local_8); puVar1 != (undefined4 *)0x0;
+          puVar1 = (undefined4 *)*puVar1) {
+        iVar2 = 0;
+        do {
+          bVar4 = iVar2 != 0;
+          iVar2 = iVar2 + -1;
+        } while (bVar4);
+        puVar3 = puVar1 + 2;
+        iVar2 = 0;
+        do {
+          if ((LPVOID)*puVar3 != (LPVOID)0x0) {
+            FUN_00454400((LPVOID)*puVar3);
+            *puVar3 = 0;
+          }
+          puVar3 = puVar3 + 1;
+          bVar4 = iVar2 != 0;
+          iVar2 = iVar2 + -1;
+        } while (bVar4);
+      }
+      local_8 = local_8 + 4;
+      local_4 = local_4 + 1;
+    } while (local_4 < (uint)param_1[1]);
+  }
+  FUN_00454400((LPVOID)*param_1);
+  *param_1 = 0;
+  param_1[2] = 0;
+  param_1[3] = 0;
+  puVar1 = (undefined4 *)param_1[4];
+  while (puVar1 != (undefined4 *)0x0) {
+    puVar3 = (undefined4 *)*puVar1;
+    FUN_00454400(puVar1);
+    puVar1 = puVar3;
+  }
+  param_1[4] = 0;
+  return;
+}
+

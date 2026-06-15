@@ -1,0 +1,32 @@
+Function: __adj_fdiv_m64
+Address: 0x455928
+
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0xc]
+AND EAX,0x7ff00000
+CMP EAX,0x7ff00000
+JZ       LAB_0045596c
+FNSTSW AX
+AND EAX,0x3800
+JZ       LAB_0045594f
+FLD double ptr [ESP + 0x8]
+CALL 0x004558b6
+POP EAX
+RET 0x8
+
+LAB_0045594f:
+FXCH
+SUB ESP,0xc
+FSTP extended double ptr [ESP]
+FLD double ptr [ESP + 0x14]
+CALL 0x004558b6
+FLD extended double ptr [ESP]
+FXCH
+ADD ESP,0xc
+POP EAX
+RET 0x8
+
+LAB_0045596c:
+FDIV double ptr [ESP + 0x8]
+POP EAX
+RET 0x8

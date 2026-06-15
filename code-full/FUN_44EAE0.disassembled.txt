@@ -1,0 +1,18 @@
+Function: FUN_0044eae0
+Address: 0x44EAE0
+
+MOV EAX,0xa1
+MOV ECX,0x137
+MOV [0x00473dcc],EAX
+MOV dword ptr [0x00473dd4],ECX
+MOV dword ptr [0x00473dc8],0x14
+MOV dword ptr [0x00473dd0],0x46
+MOV dword ptr [0x00473dd8],0xb2
+MOV dword ptr [0x00473ddc],0xac
+MOV dword ptr [0x00473de0],0xef
+MOV [0x00473dec],EAX
+MOV dword ptr [0x00473df4],ECX
+MOV dword ptr [0x00473de4],0x118
+MOV dword ptr [0x00473de8],0x15d
+MOV dword ptr [0x00473df0],0x18f
+RET

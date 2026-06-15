@@ -1,0 +1,18 @@
+Function: __fpmath
+Address: 0x4548A0
+
+
+/* Library Function - Single Match
+    __fpmath
+   
+   Library: Visual Studio 1998 Release */
+
+void __cdecl __fpmath(int param_1)
+
+{
+  FUN_004548d0();
+  DAT_0047184c = FUN_00459a40();
+  __setdefaultprecision();
+  return;
+}
+

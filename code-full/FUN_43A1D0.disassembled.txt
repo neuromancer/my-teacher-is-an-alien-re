@@ -1,0 +1,27 @@
+Function: FUN_0043a1d0
+Address: 0x43A1D0
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV EDX,dword ptr [EAX]
+CMP dword ptr [ECX + 0x90],EDX
+JZ       LAB_0043a1e3
+XOR EAX,EAX
+RET 0x4
+
+LAB_0043a1e3:
+MOV EAX,dword ptr [EAX + 0x10]
+TEST EAX,EAX
+JZ       LAB_0043a201
+CMP EAX,0x17
+JZ       LAB_0043a1f4
+XOR EAX,EAX
+RET 0x4
+
+LAB_0043a1f4:
+PUSH 0x4685d8
+CALL 0x00425c50
+ADD ESP,0x4
+
+LAB_0043a201:
+MOV EAX,0x1
+RET 0x4

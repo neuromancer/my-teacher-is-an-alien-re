@@ -1,0 +1,157 @@
+Function: __fread_lk
+Address: 0x454580
+
+MOV ECX,dword ptr [ESP + 0x4]
+SUB ESP,0xc
+MOV EAX,dword ptr [ESP + 0x14]
+PUSH EBX
+MOV dword ptr [ESP + 0x4],ECX
+PUSH ESI
+IMUL EAX,dword ptr [ESP + 0x20]
+MOV dword ptr [ESP + 0xc],EAX
+PUSH EDI
+PUSH EBP
+TEST EAX,EAX
+MOV EBP,EAX
+JNZ      LAB_004545ac
+XOR EAX,EAX
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0xc
+RET
+
+LAB_004545ac:
+MOV EBX,dword ptr [ESP + 0x2c]
+TEST dword ptr [EBX + 0xc],0x10c
+JZ       LAB_004545c2
+MOV EAX,dword ptr [EBX + 0x18]
+MOV dword ptr [ESP + 0x18],EAX
+JMP      LAB_004545ca
+
+LAB_004545c2:
+MOV dword ptr [ESP + 0x18],0x1000
+
+LAB_004545ca:
+CMP dword ptr [ESP + 0x14],0x0
+JZ       LAB_00454676
+
+LAB_004545d5:
+TEST dword ptr [EBX + 0xc],0x10c
+JZ       LAB_00454610
+MOV EAX,dword ptr [EBX + 0x4]
+TEST EAX,EAX
+JZ       LAB_00454610
+CMP EBP,EAX
+MOV EDX,EBP
+JC       LAB_004545ed
+MOV EDX,EAX
+
+LAB_004545ed:
+MOV ECX,EDX
+MOV EAX,EDX
+SHR ECX,0x2
+MOV EDI,dword ptr [ESP + 0x10]
+MOV ESI,dword ptr [EBX]
+SUB EBP,EDX
+MOVSD.REP ES:EDI,ESI
+MOV ECX,EAX
+AND ECX,0x3
+MOVSB.REP ES:EDI,ESI
+SUB dword ptr [EBX + 0x4],EDX
+ADD dword ptr [EBX],EDX
+ADD dword ptr [ESP + 0x10],EDX
+JMP      LAB_0045466e
+
+LAB_00454610:
+CMP dword ptr [ESP + 0x18],EBP
+JA       LAB_0045464e
+CMP dword ptr [ESP + 0x18],0x0
+MOV ECX,EBP
+JZ       LAB_0045462b
+MOV ECX,EBP
+MOV EAX,EBP
+SUB EDX,EDX
+DIV dword ptr [ESP + 0x18]
+SUB ECX,EDX
+
+LAB_0045462b:
+PUSH ECX
+MOV EAX,dword ptr [EBX + 0x10]
+MOV ECX,dword ptr [ESP + 0x14]
+PUSH ECX
+PUSH EAX
+CALL 0x00458690
+ADD ESP,0xc
+TEST EAX,EAX
+JZ       LAB_00454682
+CMP EAX,-0x1
+JZ       LAB_0045469a
+SUB EBP,EAX
+ADD dword ptr [ESP + 0x10],EAX
+JMP      LAB_0045466e
+
+LAB_0045464e:
+PUSH EBX
+CALL 0x004585a0
+ADD ESP,0x4
+CMP EAX,-0x1
+JZ       LAB_004546b2
+MOV ECX,dword ptr [ESP + 0x10]
+DEC EBP
+INC dword ptr [ESP + 0x10]
+MOV byte ptr [ECX],AL
+MOV EAX,dword ptr [EBX + 0x18]
+MOV dword ptr [ESP + 0x18],EAX
+
+LAB_0045466e:
+TEST EBP,EBP
+JNZ      LAB_004545d5
+
+LAB_00454676:
+MOV EAX,dword ptr [ESP + 0x28]
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0xc
+RET
+
+LAB_00454682:
+MOV EAX,dword ptr [ESP + 0x14]
+SUB EDX,EDX
+OR dword ptr [EBX + 0xc],0x10
+SUB EAX,EBP
+DIV dword ptr [ESP + 0x24]
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0xc
+RET
+
+LAB_0045469a:
+MOV EAX,dword ptr [ESP + 0x14]
+SUB EDX,EDX
+OR dword ptr [EBX + 0xc],0x20
+SUB EAX,EBP
+DIV dword ptr [ESP + 0x24]
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0xc
+RET
+
+LAB_004546b2:
+MOV EAX,dword ptr [ESP + 0x14]
+SUB EDX,EDX
+SUB EAX,EBP
+DIV dword ptr [ESP + 0x24]
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0xc
+RET

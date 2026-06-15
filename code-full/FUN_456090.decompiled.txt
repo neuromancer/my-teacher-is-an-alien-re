@@ -1,0 +1,17 @@
+Function: FUN_00456090
+Address: 0x456090
+
+
+char * __cdecl FUN_00456090(char *param_1,char param_2)
+
+{
+  while( true ) {
+    if (param_2 == *param_1) {
+      return param_1;
+    }
+    if (*param_1 == '\0') break;
+    param_1 = param_1 + 1;
+  }
+  return (char *)0x0;
+}
+

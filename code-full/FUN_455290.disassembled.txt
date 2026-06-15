@@ -1,0 +1,39 @@
+Function: _vsprintf
+Address: 0x455290
+
+MOV EAX,dword ptr [ESP + 0x4]
+SUB ESP,0x20
+MOV ECX,dword ptr [ESP + 0x2c]
+PUSH ESI
+MOV EDX,dword ptr [ESP + 0x2c]
+PUSH ECX
+MOV dword ptr [ESP + 0x14],0x42
+MOV dword ptr [ESP + 0x10],EAX
+PUSH EDX
+MOV dword ptr [ESP + 0xc],EAX
+LEA EAX,[ESP + 0xc]
+MOV dword ptr [ESP + 0x10],0x7fffffff
+PUSH EAX
+CALL 0x00457ab0
+ADD ESP,0xc
+MOV ESI,EAX
+DEC dword ptr [ESP + 0x8]
+JS       LAB_004552e1
+MOV EAX,dword ptr [ESP + 0x4]
+MOV byte ptr [EAX],0x0
+MOV EAX,ESI
+INC dword ptr [ESP + 0x4]
+POP ESI
+ADD ESP,0x20
+RET
+
+LAB_004552e1:
+LEA EAX,[ESP + 0x4]
+PUSH EAX
+PUSH 0x0
+CALL 0x00457960
+ADD ESP,0x8
+MOV EAX,ESI
+POP ESI
+ADD ESP,0x20
+RET

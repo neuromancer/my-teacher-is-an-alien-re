@@ -1,0 +1,20 @@
+Function: FUN_00430c90
+Address: 0x430C90
+
+PUSH ESI
+MOV dword ptr [ECX],0x0
+MOV ESI,ECX
+MOV ECX,dword ptr [ECX + 0xc]
+TEST ECX,ECX
+JZ       LAB_00430ca5
+CALL 0x004218c0
+
+LAB_00430ca5:
+MOV ECX,dword ptr [ESI + 0x8]
+TEST ECX,ECX
+JZ       LAB_00430cb1
+CALL 0x004218c0
+
+LAB_00430cb1:
+POP ESI
+RET

@@ -1,0 +1,90 @@
+Function: FUN_0040bad0
+Address: 0x40BAD0
+
+
+undefined4 __thiscall FUN_0040bad0(void *this,char *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  int *piVar4;
+  undefined4 uVar5;
+  char *pcVar6;
+  byte *pbVar7;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar8;
+  byte local_34 [32];
+  int *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0040bb7c;
+  *unaff_FS_OFFSET = &local_10;
+  local_34[0] = 0;
+  _sscanf(param_1,&DAT_00468448,local_34);
+  pbVar2 = local_34;
+  pcVar6 = s_DERIVED_ENGINE_INFO_00468a7c;
+  do {
+    bVar1 = *pbVar2;
+    bVar8 = bVar1 < (byte)*pcVar6;
+    if (bVar1 != *pcVar6) {
+LAB_0040bb30:
+      iVar3 = (1 - (uint)bVar8) - (uint)(bVar8 != 0);
+      goto LAB_0040bb35;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar8 = bVar1 < (byte)pcVar6[1];
+    if (bVar1 != pcVar6[1]) goto LAB_0040bb30;
+    pbVar2 = pbVar2 + 2;
+    pcVar6 = pcVar6 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_0040bb35:
+  if (iVar3 == 0) {
+    local_14 = (int *)FUN_00454500(0x120);
+    local_8 = 0;
+    piVar4 = (int *)0x0;
+    if (local_14 != (int *)0x0) {
+      piVar4 = FUN_0040bbf0(local_14);
+    }
+    local_8 = 0xffffffff;
+    DAT_0046ae78 = piVar4;
+    FUN_00413e70(piVar4,(int)this,(char *)0x0);
+  }
+  else {
+    pbVar2 = local_34;
+    pbVar7 = &DAT_00468444;
+    do {
+      bVar1 = *pbVar2;
+      bVar8 = bVar1 < *pbVar7;
+      if (bVar1 != *pbVar7) {
+LAB_0040bbbb:
+        iVar3 = (1 - (uint)bVar8) - (uint)(bVar8 != 0);
+        goto LAB_0040bbc0;
+      }
+      if (bVar1 == 0) break;
+      bVar1 = pbVar2[1];
+      bVar8 = bVar1 < pbVar7[1];
+      if (bVar1 != pbVar7[1]) goto LAB_0040bbbb;
+      pbVar2 = pbVar2 + 2;
+      pbVar7 = pbVar7 + 2;
+    } while (bVar1 != 0);
+    iVar3 = 0;
+LAB_0040bbc0:
+    if (iVar3 == 0) {
+      uVar5 = 1;
+      goto LAB_0040bbd5;
+    }
+    FUN_00449600(this,param_1);
+  }
+  uVar5 = 0;
+LAB_0040bbd5:
+  *unaff_FS_OFFSET = local_10;
+  return uVar5;
+}
+

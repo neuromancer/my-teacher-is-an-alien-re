@@ -1,0 +1,15 @@
+Function: __abnormal_termination
+Address: 0x4544BA
+
+XOR EAX,EAX
+MOV ECX,dword ptr FS:[0x0]
+CMP dword ptr [ECX + 0x4],0x454430
+JNZ      LAB_004544dc
+MOV EDX,dword ptr [ECX + 0xc]
+MOV EDX,dword ptr [EDX + 0xc]
+CMP dword ptr [ECX + 0x8],EDX
+JNZ      LAB_004544dc
+MOV EAX,0x1
+
+LAB_004544dc:
+RET

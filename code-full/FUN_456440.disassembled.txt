@@ -1,0 +1,28 @@
+Function: FUN_00456440
+Address: 0x456440
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH EAX
+CALL dword ptr [0x004763f4]
+CMP EAX,-0x1
+JNZ      LAB_00456465
+CALL dword ptr [0x0047644c]
+PUSH EAX
+CALL 0x0045a860
+ADD ESP,0x4
+MOV EAX,0xffffffff
+RET
+
+LAB_00456465:
+TEST AL,0x1
+JZ       LAB_0045648a
+TEST byte ptr [ESP + 0x8],0x2
+JZ       LAB_0045648a
+MOV dword ptr [0x004719c0],0xd
+MOV dword ptr [0x004719c4],0x5
+MOV EAX,0xffffffff
+RET
+
+LAB_0045648a:
+XOR EAX,EAX
+RET

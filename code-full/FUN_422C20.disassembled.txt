@@ -1,0 +1,62 @@
+Function: FUN_00422c20
+Address: 0x422C20
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x422d2c
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x8
+PUSH ESI
+PUSH EDI
+LEA EDI,[ECX + 0x90]
+MOV dword ptr [EBP + -0x10],ECX
+MOV ESI,ECX
+CALL 0x004127c0
+XOR EAX,EAX
+MOV ECX,0x6
+MOV dword ptr [EBP + -0x4],0x0
+MOV dword ptr [ESI],0x461098
+STOSD.REP ES:EDI
+MOV dword ptr [EBP + -0x4],0x1
+LEA EDI,[ESI + 0xa8]
+MOV ECX,EDI
+CALL 0x00421880
+MOV byte ptr [EBP + -0x4],0x2
+LEA ECX,[ESI + 0xbc]
+CALL 0x00421880
+MOV byte ptr [EBP + -0x4],0x3
+MOV ECX,EDI
+MOV dword ptr [ESI],0x461428
+MOV dword ptr [ESI + 0x90],0x6
+CALL 0x004218c0
+PUSH 0x10
+CALL 0x00454500
+MOV dword ptr [EBP + -0x14],EAX
+ADD ESP,0x4
+MOV byte ptr [EBP + -0x4],0x4
+MOV EDI,EAX
+MOV EAX,0x0
+TEST EDI,EDI
+JZ       LAB_00422cd8
+MOV dword ptr [EDI + 0xc],0x0
+MOV dword ptr [EDI],0x0
+MOV dword ptr [EDI + 0x4],0x0
+MOV EAX,dword ptr [EDI]
+MOV dword ptr [EDI + 0x8],EAX
+MOV EAX,EDI
+
+LAB_00422cd8:
+MOV byte ptr [EBP + -0x4],0x3
+POP EDI
+MOV dword ptr [ESI + 0xd0],EAX
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV EAX,ESI
+MOV ECX,dword ptr [EBP + -0xc]
+MOV dword ptr FS:[0x0],ECX
+POP ESI
+MOV ESP,EBP
+POP EBP
+RET

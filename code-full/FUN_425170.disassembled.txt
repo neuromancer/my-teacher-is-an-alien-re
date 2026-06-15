@@ -1,0 +1,56 @@
+Function: FUN_00425170
+Address: 0x425170
+
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+XOR EDI,EDI
+MOV EAX,dword ptr [ESP + 0xc]
+MOV dword ptr [ESI],EDI
+MOV dword ptr [ESI + 0x4],EDI
+MOV dword ptr [ESI + 0x8],EDI
+MOV dword ptr [ESI + 0xc],EDI
+MOV dword ptr [ESI + 0x4],EAX
+SHL EAX,0x2
+PUSH EAX
+CALL 0x00454500
+ADD ESP,0x4
+MOV dword ptr [ESI],EAX
+MOV EAX,dword ptr [ESI + 0x4]
+SHL EAX,0x2
+PUSH EAX
+CALL 0x00454500
+ADD ESP,0x4
+MOV dword ptr [ESI + 0x8],EAX
+CMP EAX,EDI
+JZ       LAB_004251b0
+CMP dword ptr [ESI],EDI
+JNZ      LAB_004251bd
+
+LAB_004251b0:
+PUSH 0x46a984
+CALL     LAB_00425c50
+ADD ESP,0x4
+
+LAB_004251bd:
+XOR DX,DX
+CMP dword ptr [ESI + 0x4],0x0
+JLE      LAB_004251ed
+
+LAB_004251c6:
+MOVSX EAX,DX
+LEA ECX,[EAX*0x4 + 0x0]
+INC DX
+MOV EDI,dword ptr [ESI]
+MOV dword ptr [EDI + ECX*0x1],0x0
+MOV EAX,dword ptr [ESI + 0x8]
+MOV dword ptr [EAX + ECX*0x1],0x0
+MOVSX ECX,DX
+CMP ECX,dword ptr [ESI + 0x4]
+JL       LAB_004251c6
+
+LAB_004251ed:
+MOV EAX,ESI
+POP EDI
+POP ESI
+RET 0x4

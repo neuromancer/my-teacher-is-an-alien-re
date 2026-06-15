@@ -1,0 +1,14 @@
+Function: FUN_00422d40
+Address: 0x422D40
+
+
+void * __thiscall FUN_00422d40(void *this,byte param_1)
+
+{
+  FUN_00422d60(this);
+  if ((param_1 & 1) != 0) {
+    FUN_00454400(this);
+  }
+  return this;
+}
+

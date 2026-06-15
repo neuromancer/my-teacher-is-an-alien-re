@@ -1,0 +1,36 @@
+Function: FUN_00409180
+Address: 0x409180
+
+
+undefined4 __thiscall FUN_00409180(void *this,uint param_1)
+
+{
+  int *piVar1;
+  undefined4 *puVar2;
+  
+  *(undefined4 *)((int)this + 0x94) = 0;
+  piVar1 = *(int **)((int)this + 0x90);
+  if (piVar1 != (int *)0x0) {
+    if (*piVar1 != 0) {
+      for (puVar2 = *(undefined4 **)(*piVar1 + ((param_1 >> 4) % (uint)piVar1[1]) * 4);
+          puVar2 != (undefined4 *)0x0; puVar2 = (undefined4 *)*puVar2) {
+        if (puVar2[2] == param_1) goto LAB_004091c7;
+      }
+    }
+    puVar2 = (undefined4 *)0x0;
+LAB_004091c7:
+    if (puVar2 != (undefined4 *)0x0) {
+      piVar1 = (int *)puVar2[3];
+      *(int **)((int)this + 0x9c) = piVar1;
+      puVar2 = (undefined4 *)*piVar1;
+      *(undefined4 **)((int)this + 0x98) = puVar2;
+      if (puVar2 != (undefined4 *)0x0) {
+        *(undefined4 *)((int)this + 0x98) = *puVar2;
+        *(undefined4 *)((int)this + 0x94) = puVar2[2];
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+

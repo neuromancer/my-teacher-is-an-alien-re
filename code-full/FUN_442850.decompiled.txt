@@ -1,0 +1,34 @@
+Function: FUN_00442850
+Address: 0x442850
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+undefined8 __fastcall FUN_00442850(int param_1,undefined4 param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  uint uVar4;
+  undefined8 uVar5;
+  
+  piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+  iVar3 = 0;
+  if (piVar1 == (int *)0x0) {
+    iVar2 = 0;
+  }
+  else {
+    iVar3 = piVar1[1];
+    iVar2 = *piVar1;
+  }
+  uVar5 = FUN_00453cce(iVar3,param_2,iVar2,iVar3);
+  uVar4 = (uint)((ulonglong)uVar5 >> 0x20);
+  _DAT_0046bf2c = (int)uVar5;
+  if ((*(int *)(param_1 + 0x11c) <= _DAT_0046bf2c) && (_DAT_0046bf2c <= *(int *)(param_1 + 0x120)))
+  {
+    return CONCAT44(uVar4,1);
+  }
+  return (ulonglong)uVar4 << 0x20;
+}
+

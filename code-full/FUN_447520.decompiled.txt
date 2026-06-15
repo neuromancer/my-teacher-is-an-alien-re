@@ -1,0 +1,25 @@
+Function: FUN_00447520
+Address: 0x447520
+
+
+undefined4 * __fastcall FUN_00447520(undefined4 *param_1)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0044757e;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00449100(param_1);
+  *param_1 = &PTR_FUN_004619d8;
+  param_1[0x46] = 0;
+  param_1[0x47] = 0;
+  param_1[0x24] = 0x46;
+  *unaff_FS_OFFSET = local_10;
+  return param_1;
+}
+

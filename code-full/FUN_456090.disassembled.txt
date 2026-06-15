@@ -1,0 +1,20 @@
+Function: FUN_00456090
+Address: 0x456090
+
+MOV EAX,dword ptr [ESP + 0x4]
+MOV CL,byte ptr [ESP + 0x8]
+
+LAB_00456098:
+MOV DL,byte ptr [EAX]
+CMP CL,DL
+JZ       LAB_004560a7
+OR DL,DL
+JZ       LAB_004560a5
+INC EAX
+JMP      LAB_00456098
+
+LAB_004560a5:
+XOR EAX,EAX
+
+LAB_004560a7:
+RET

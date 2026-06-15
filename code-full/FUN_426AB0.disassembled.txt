@@ -1,0 +1,4 @@
+Function: joyGetNumDevs
+Address: 0x426AB0
+
+JMP dword ptr [0x004764ec]

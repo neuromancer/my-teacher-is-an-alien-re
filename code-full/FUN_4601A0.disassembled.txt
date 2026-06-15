@@ -1,0 +1,4 @@
+Function: ScreenToClient
+Address: 0x4601A0
+
+JMP dword ptr [0x004764d0]

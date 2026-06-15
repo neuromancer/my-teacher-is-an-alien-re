@@ -1,0 +1,32 @@
+Function: __validdrive
+Address: 0x45DF60
+
+MOV EAX,dword ptr [ESP + 0x4]
+SUB ESP,0x4
+TEST EAX,EAX
+JNZ      LAB_0045df74
+MOV EAX,0x1
+ADD ESP,0x4
+RET
+
+LAB_0045df74:
+MOV byte ptr [ESP + 0x1],0x3a
+MOV byte ptr [ESP + 0x2],0x5c
+MOV byte ptr [ESP + 0x3],0x0
+ADD AL,0x40
+MOV byte ptr [ESP],AL
+LEA EAX,[ESP]
+PUSH EAX
+CALL dword ptr [0x00476368]
+TEST EAX,EAX
+JZ       LAB_0045dfa6
+CMP EAX,0x1
+JZ       LAB_0045dfa6
+MOV EAX,0x1
+ADD ESP,0x4
+RET
+
+LAB_0045dfa6:
+XOR EAX,EAX
+ADD ESP,0x4
+RET

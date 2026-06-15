@@ -1,0 +1,13 @@
+Function: FUN_0040a6f8
+Address: 0x40A6F8
+
+
+void FUN_0040a6f8(void)
+
+{
+  int unaff_EBP;
+  
+  FUN_00444af0(unaff_EBP + -0x44);
+  return;
+}
+

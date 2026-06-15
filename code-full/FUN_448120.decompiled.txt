@@ -1,0 +1,11 @@
+Function: FUN_00448120
+Address: 0x448120
+
+
+void FUN_00448120(void)
+
+{
+  FUN_00425d70((wchar_t *)s_hIam__d_00468070);
+  return;
+}
+

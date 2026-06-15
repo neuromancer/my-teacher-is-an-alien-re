@@ -1,0 +1,11 @@
+Function: FUN_0043c5b0
+Address: 0x43C5B0
+
+
+undefined * __cdecl FUN_0043c5b0(undefined4 param_1)
+
+{
+  _sprintf(&DAT_00473460,s_SaveGame__s_sav_0046bdc0,param_1);
+  return &DAT_00473460;
+}
+

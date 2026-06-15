@@ -1,0 +1,18 @@
+Function: FUN_0044ba80
+Address: 0x44BA80
+
+
+void __thiscall FUN_0044ba80(void *this,uint param_1)
+
+{
+  int iVar1;
+  
+  *(uint *)((int)this + 0x94) = param_1;
+  iVar1 = FUN_0044baf0(this,param_1);
+  *(int *)((int)this + 0x98) = iVar1;
+  if (iVar1 == 0) {
+    FUN_00425c50(s_Navigator__SetNode_____invalid_n_0046c7f8);
+  }
+  return;
+}
+

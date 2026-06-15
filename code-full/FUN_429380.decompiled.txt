@@ -1,0 +1,37 @@
+Function: FUN_00429380
+Address: 0x429380
+
+
+void __fastcall FUN_00429380(int param_1)
+
+{
+  void *this;
+  byte bVar1;
+  undefined3 extraout_var;
+  undefined4 uVar2;
+  int iVar3;
+  
+  this = *(void **)(param_1 + 0x10c);
+  bVar1 = FUN_0044ccf0(this,*(int *)((int)this + 0xac),*(int *)((int)this + 0xb0),0,0x3ff00000);
+  if (CONCAT31(extraout_var,bVar1) != 0) {
+    if ((*(int *)(param_1 + 0x118) != 1) && (*(int *)(param_1 + 0x118) != 3)) {
+      uVar2 = FUN_00429430(0x32);
+      *(undefined4 *)(param_1 + 0x11c) = uVar2;
+    }
+    iVar3 = *(int *)(param_1 + 0x118) + *(int *)(param_1 + 0x11c);
+    *(int *)(param_1 + 0x118) = iVar3;
+    if (iVar3 < 0) {
+      *(undefined4 *)(param_1 + 0x118) = 0;
+    }
+    else if (4 < iVar3) {
+      *(undefined4 *)(param_1 + 0x118) = 4;
+    }
+    iVar3 = *(int *)(&DAT_0046ac30 + *(int *)(param_1 + 0x118) * 4);
+    if ((*(int *)(param_1 + 0x11c) < 0) && ((iVar3 == 3 || (iVar3 == 5)))) {
+      iVar3 = iVar3 + 1;
+    }
+    FUN_0044cb40(*(void **)(param_1 + 0x10c),iVar3,0);
+  }
+  return;
+}
+

@@ -1,0 +1,42 @@
+Function: FUN_0043a6e0
+Address: 0x43A6E0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x43a757
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+LEA EAX,[ECX + 0x8]
+MOV dword ptr [EBP + -0x10],ECX
+LEA EBX,[ECX + 0x30]
+PUSH EDI
+MOV ESI,ECX
+XOR ECX,ECX
+MOV EDX,0x1
+MOV dword ptr [EAX],ECX
+MOV EDI,ESI
+MOV dword ptr [EAX + 0x4],ECX
+XOR EAX,EAX
+MOV dword ptr [EBP + -0x4],ECX
+MOV dword ptr [EBX],ECX
+MOV byte ptr [EBP + -0x4],DL
+MOV dword ptr [EBX + 0x4],ECX
+MOV ECX,0x1e
+STOSD.REP ES:EDI
+MOV EAX,ESI
+POP EDI
+MOV byte ptr [ESI + 0x10],0x2
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+MOV byte ptr [ESI + 0x12],DL
+MOV dword ptr FS:[0x0],ECX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET

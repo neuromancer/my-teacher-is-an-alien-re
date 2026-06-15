@@ -1,0 +1,15 @@
+Function: GetSystemDirectoryA
+Address: 0x460170
+
+
+UINT GetSystemDirectoryA(LPSTR lpBuffer,UINT uSize)
+
+{
+  UINT UVar1;
+  
+// WARNING: Could not recover jumptable at 0x00460170. Too many branches
+// WARNING: Treating indirect jump as call
+  UVar1 = GetSystemDirectoryA(lpBuffer,uSize);
+  return UVar1;
+}
+

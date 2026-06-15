@@ -1,0 +1,19 @@
+Function: FUN_00441ae0
+Address: 0x441AE0
+
+MOV EAX,dword ptr [ECX + 0x90]
+MOV EDX,dword ptr [ESP + 0x4]
+CMP dword ptr [EDX + 0x2c],0x1b
+MOV dword ptr [EDX + 0x8],EAX
+MOV EAX,dword ptr [ECX + 0x94]
+MOV dword ptr [EDX + 0x10],0x0
+MOV dword ptr [EDX + 0xc],EAX
+JNZ      LAB_00441b18
+CMP dword ptr [ECX + 0x98],0x2b
+JNZ      LAB_00441b18
+MOV EAX,[0x0046ae78]
+OR dword ptr [EAX + 0xdc],0x4
+
+LAB_00441b18:
+MOV EAX,0x1
+RET 0x4

@@ -1,0 +1,25 @@
+Function: FUN_00453cce
+Address: 0x453CCE
+
+
+undefined8 __fastcall FUN_00453cce(undefined4 param_1,undefined4 param_2,int param_3,int param_4)
+
+{
+  longlong lVar1;
+  ushort uVar2;
+  
+  uVar2 = 0xffff;
+  if (-1 < DAT_0046db3c) {
+    if ((((param_3 < DAT_0046d0c6) || (DAT_0046d0ca < param_3)) || (param_4 < DAT_0046d0ce)) ||
+       (DAT_0046d0d2 < param_4)) {
+      uVar2 = 0xffff;
+    }
+    else {
+      lVar1 = (ulonglong)(uint)(DAT_0046d0b2 - param_4) * (ulonglong)DAT_0046db46;
+      param_2 = (undefined4)((ulonglong)lVar1 >> 0x20);
+      uVar2 = (ushort)*(byte *)(param_3 + (int)lVar1 + DAT_0046db4e);
+    }
+  }
+  return CONCAT44(param_2,(int)(short)uVar2);
+}
+

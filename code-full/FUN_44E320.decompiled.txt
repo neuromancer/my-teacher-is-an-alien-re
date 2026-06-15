@@ -1,0 +1,43 @@
+Function: FUN_0044e320
+Address: 0x44E320
+
+
+char * __cdecl FUN_0044e320(char *param_1)
+
+{
+  char cVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  uint uVar5;
+  char *pcVar6;
+  
+  uVar5 = 0xffffffff;
+  pcVar6 = param_1;
+  do {
+    if (uVar5 == 0) break;
+    uVar5 = uVar5 - 1;
+    cVar1 = *pcVar6;
+    pcVar6 = pcVar6 + 1;
+  } while (cVar1 != '\0');
+  if ((int)(~uVar5 - 1) < 4) {
+    FUN_00425c50(s_MakeAnimName___invalid_base_name_0046cbac);
+  }
+  iVar4 = _atoi(param_1 + (~uVar5 - 5));
+  iVar3 = DAT_0046cb90;
+  iVar2 = DAT_0046aa30;
+  if (iVar4 == 0) {
+    return param_1;
+  }
+  if (4999 < iVar4) {
+    if ((DAT_0046cb90 < 0) || (*(int *)(DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    _sprintf(&DAT_00473cf0,s__s_c_smk_0046cba0,param_1,
+             (int)(char)PTR_DAT_0046cb94[*(int *)(*(int *)(iVar2 + 0x90) + iVar3 * 4)]);
+    return &DAT_00473cf0;
+  }
+  _sprintf(&DAT_00473cf0,s__s_smk_0046cb98,param_1);
+  return &DAT_00473cf0;
+}
+

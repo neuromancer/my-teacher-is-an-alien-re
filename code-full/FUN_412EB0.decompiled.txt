@@ -1,0 +1,78 @@
+Function: FUN_00412eb0
+Address: 0x412EB0
+
+
+void __thiscall FUN_00412eb0(void *this,int param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  int *piVar3;
+  int *piVar4;
+  int *piVar5;
+  int iVar6;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar7;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00412fa3;
+  *unaff_FS_OFFSET = &local_10;
+  if (DAT_00469144 == (int *)0x0) {
+    DAT_00469144 = (int *)FUN_00454500(0x18);
+    if (DAT_00469144 == (int *)0x0) {
+      DAT_00469144 = (int *)0x0;
+    }
+    else {
+      DAT_00469144[2] = 0;
+      DAT_00469144[3] = 0;
+      DAT_00469144[1] = 0;
+      *DAT_00469144 = 0;
+      DAT_00469144[4] = 0;
+      DAT_00469144[5] = 10;
+    }
+  }
+  piVar4 = DAT_00469144;
+  local_8 = 0xffffffff;
+  iVar6 = *DAT_00469144;
+  piVar1 = DAT_00469144 + 3;
+  if (*piVar1 == 0) {
+    piVar3 = DAT_00469144 + 5;
+    piVar5 = (int *)FUN_00454500(*piVar3 * 0xc + 4);
+    *piVar5 = piVar4[4];
+    piVar4[4] = (int)piVar5;
+    iVar2 = *piVar3;
+    piVar5 = piVar5 + iVar2 * 3 + -2;
+    while (iVar2 = iVar2 + -1, -1 < iVar2) {
+      *piVar5 = *piVar1;
+      *piVar1 = (int)piVar5;
+      piVar5 = piVar5 + -3;
+    }
+  }
+  piVar3 = (int *)*piVar1;
+  *piVar1 = *piVar3;
+  piVar3[1] = 0;
+  *piVar3 = iVar6;
+  piVar4[2] = piVar4[2] + 1;
+  piVar3[2] = 0;
+  iVar6 = 0;
+  do {
+    bVar7 = iVar6 != 0;
+    iVar6 = iVar6 + -1;
+  } while (bVar7);
+  piVar3[2] = param_1;
+  if (*piVar4 == 0) {
+    piVar4[1] = (int)piVar3;
+  }
+  else {
+    *(int **)(*piVar4 + 4) = piVar3;
+  }
+  *piVar4 = (int)piVar3;
+  FUN_004130e0((int)this);
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

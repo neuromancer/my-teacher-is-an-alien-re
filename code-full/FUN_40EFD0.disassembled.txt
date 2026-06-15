@@ -1,0 +1,7 @@
+Function: FUN_0040efd0
+Address: 0x40EFD0
+
+PUSH 0x40efe0
+CALL 0x00454ca0
+ADD ESP,0x4
+RET

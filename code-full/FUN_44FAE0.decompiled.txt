@@ -1,0 +1,129 @@
+Function: FUN_0044fae0
+Address: 0x44FAE0
+
+
+undefined4 __thiscall FUN_0044fae0(void *this,undefined4 *param_1)
+
+{
+  int *piVar1;
+  void *pvVar2;
+  int iVar3;
+  uint uVar4;
+  int iVar5;
+  
+  iVar3 = FUN_004309c0(this,param_1);
+  if (iVar3 != 0) {
+    return 1;
+  }
+  if (param_1[0xb] != 0x1b) {
+    if (1 < (int)param_1[9]) {
+      iVar3 = 0;
+      piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+      if (piVar1 == (int *)0x0) {
+        iVar5 = 0;
+      }
+      else {
+        iVar3 = piVar1[1];
+        iVar5 = *piVar1;
+      }
+      FUN_00450400(this,iVar5,iVar3);
+      pvVar2 = DAT_0046aa30;
+      iVar3 = param_1[7];
+      if (((((*(int *)((int)this + 0x19c) <= iVar3) && (iVar3 <= *(int *)((int)this + 0x1a4))) &&
+           (*(int *)((int)this + 0x1a0) <= (int)param_1[8])) &&
+          ((int)param_1[8] <= *(int *)((int)this + 0x1a8))) ||
+         (((*(int *)((int)this + 0x1ac) <= iVar3 && (iVar3 <= *(int *)((int)this + 0x1b4))) &&
+          ((*(int *)((int)this + 0x1b0) <= (int)param_1[8] &&
+           ((int)param_1[8] <= *(int *)((int)this + 0x1b8))))))) {
+        *(uint *)((int)this + 0x1bc) = *(uint *)((int)this + 0x1bc) | 1;
+        FUN_00450110((int)this);
+        return 1;
+      }
+      if (*(int *)((int)this + 0x110) != 0) {
+        iVar3 = 0;
+        piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+        if (piVar1 == (int *)0x0) {
+          iVar5 = 0;
+        }
+        else {
+          iVar3 = piVar1[1];
+          iVar5 = *piVar1;
+        }
+        if (((DAT_00473dc8 <= iVar5) && (iVar5 <= DAT_00473dd0)) &&
+           ((DAT_00473dcc <= iVar3 && (iVar3 <= DAT_00473dd4)))) {
+          uVar4 = FUN_00433ae0(DAT_0046aa30,(byte *)s_LINSEY_ALIEN_004688c0);
+          if (((int)uVar4 < 0) || (*(int *)((int)pvVar2 + 0x98) + -1 < (int)uVar4)) {
+            FUN_00425c50(s_Invalid_gamestate__d_00468150);
+          }
+          if (*(int *)(*(int *)((int)pvVar2 + 0x90) + uVar4 * 4) == 0) {
+            *(uint *)((int)this + 0x1bc) = *(uint *)((int)this + 0x1bc) | 2;
+          }
+          else {
+            *(undefined4 *)((int)this + 0xe8) = 0x21fc;
+          }
+          pvVar2 = DAT_0046aa30;
+          uVar4 = FUN_00433ae0(DAT_0046aa30,(byte *)s_LINSEY_ALIEN_004688c0);
+          if (((int)uVar4 < 0) || (*(int *)((int)pvVar2 + 0x98) + -1 < (int)uVar4)) {
+            FUN_00425c50(s_Invalid_gamestate__d_00468150);
+          }
+          *(undefined4 *)(*(int *)((int)pvVar2 + 0x90) + uVar4 * 4) = 0;
+          FUN_00450110((int)this);
+          return 1;
+        }
+      }
+      if (*(int *)((int)this + 0x114) != 0) {
+        iVar3 = 0;
+        piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+        if (piVar1 == (int *)0x0) {
+          iVar5 = 0;
+        }
+        else {
+          iVar3 = piVar1[1];
+          iVar5 = *piVar1;
+        }
+        if ((((DAT_00473dd8 <= iVar5) && (iVar5 <= DAT_00473de0)) && (DAT_00473ddc <= iVar3)) &&
+           (iVar3 <= DAT_00473de4)) {
+          uVar4 = FUN_00433ae0(DAT_0046aa30,(byte *)s_STACY_ALIEN_00468890);
+          if (((int)uVar4 < 0) || (*(int *)((int)pvVar2 + 0x98) + -1 < (int)uVar4)) {
+            FUN_00425c50(s_Invalid_gamestate__d_00468150);
+          }
+          if (*(int *)(*(int *)((int)pvVar2 + 0x90) + uVar4 * 4) == 0) {
+            *(uint *)((int)this + 0x1bc) = *(uint *)((int)this + 0x1bc) | 2;
+          }
+          else {
+            *(undefined4 *)((int)this + 0xe8) = 0x2200;
+          }
+          pvVar2 = DAT_0046aa30;
+          uVar4 = FUN_00433ae0(DAT_0046aa30,(byte *)s_STACY_ALIEN_00468890);
+          if (((int)uVar4 < 0) || (*(int *)((int)pvVar2 + 0x98) + -1 < (int)uVar4)) {
+            FUN_00425c50(s_Invalid_gamestate__d_00468150);
+          }
+          *(undefined4 *)(*(int *)((int)pvVar2 + 0x90) + uVar4 * 4) = 0;
+          FUN_00450110((int)this);
+          return 1;
+        }
+      }
+      if (*(int *)((int)this + 0x118) != 0) {
+        iVar3 = 0;
+        piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+        if (piVar1 == (int *)0x0) {
+          iVar5 = 0;
+        }
+        else {
+          iVar3 = piVar1[1];
+          iVar5 = *piVar1;
+        }
+        if ((((DAT_00473de8 <= iVar5) && (iVar5 <= DAT_00473df0)) && (DAT_00473dec <= iVar3)) &&
+           (iVar3 <= DAT_00473df4)) {
+          *(uint *)((int)this + 0x1bc) = *(uint *)((int)this + 0x1bc) | 2;
+          FUN_00450110((int)this);
+        }
+      }
+    }
+    return 1;
+  }
+  *(uint *)((int)this + 0x1bc) = *(uint *)((int)this + 0x1bc) | 1;
+  FUN_00450110((int)this);
+  return 1;
+}
+

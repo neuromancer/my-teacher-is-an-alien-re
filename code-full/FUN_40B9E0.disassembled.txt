@@ -1,0 +1,17 @@
+Function: FUN_0040b9e0
+Address: 0x40B9E0
+
+CMP dword ptr [0x00468a18],0x0
+JZ       LAB_0040b9fc
+CALL 0x00426ac0
+SUB EAX,0x54
+CMP EAX,0x1
+SBB EAX,EAX
+INC EAX
+MOV [0x00468a18],EAX
+
+LAB_0040b9fc:
+MOV EAX,[0x0046ae78]
+MOV ECX,dword ptr [0x0046ae78]
+MOV EAX,dword ptr [EAX]
+JMP dword ptr [EAX + 0x38]

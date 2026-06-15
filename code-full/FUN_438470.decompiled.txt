@@ -1,0 +1,62 @@
+Function: FUN_00438470
+Address: 0x438470
+
+
+void __fastcall FUN_00438470(int param_1)
+
+{
+  int iVar1;
+  
+  *(undefined4 *)(param_1 + 0xcc) = 0;
+  *(undefined4 *)(param_1 + 0xd0) = 200;
+  *(undefined4 *)(param_1 + 0xd4) = 0x140;
+  *(undefined4 *)(param_1 + 0xd8) = 0xf0;
+  if (*(void **)(param_1 + 0xb4) != (void *)0x0) {
+    FUN_0044cb40(*(void **)(param_1 + 0xb4),0,0);
+  }
+  FUN_0044cb40(*(void **)(param_1 + 0xb8),0,0);
+  FUN_0044cb40(*(void **)(param_1 + 0xc0),4,0);
+  if (*(void **)(param_1 + 0xb4) != (void *)0x0) {
+    FUN_0044cb40(*(void **)(param_1 + 0xb4),1,0);
+  }
+  FUN_0044cb40(*(void **)(param_1 + 0xb8),3,0);
+  FUN_0044cb40(*(void **)(param_1 + 0xbc),4,0);
+  FUN_0044cb40(*(void **)(param_1 + 0xc0),1,0);
+  if (*(int *)(param_1 + 0x140) == 0) {
+    *(undefined4 *)(param_1 + 0x144) = 0x1f;
+    *(undefined4 *)(param_1 + 0x148) = 0x40;
+    *(undefined4 *)(param_1 + 0x14c) = 0x2a;
+    *(undefined4 *)(param_1 + 0x150) = 0x4b;
+    *(undefined4 *)(param_1 + 0x154) = 0xbb;
+    *(undefined4 *)(param_1 + 0x158) = 0x15;
+    *(undefined4 *)(param_1 + 0x15c) = 0x12f;
+  }
+  else {
+    *(undefined4 *)(param_1 + 0x144) = 0x116;
+    *(undefined4 *)(param_1 + 0x148) = 0x40;
+    *(undefined4 *)(param_1 + 0x14c) = 0x121;
+    *(undefined4 *)(param_1 + 0x150) = 0x4b;
+    *(undefined4 *)(param_1 + 0x154) = 0x11;
+    *(undefined4 *)(param_1 + 0x158) = 0x15;
+    *(undefined4 *)(param_1 + 0x15c) = 0x79;
+  }
+  *(undefined4 *)(param_1 + 0x160) = 0x91;
+  if (DAT_0046aa08 != (void *)0x0) {
+    FUN_00426ce0(DAT_0046aa08);
+  }
+  if (*(void **)(param_1 + 0x13c) != (void *)0x0) {
+    iVar1 = 0;
+    if (*(int **)((int)DAT_0046aa08 + 0x1a0) != (int *)0x0) {
+      iVar1 = **(int **)((int)DAT_0046aa08 + 0x1a0);
+    }
+    FUN_0044cb40(*(void **)(param_1 + 0x13c),iVar1 / (*(int *)(param_1 + 0x134) / 5),0);
+  }
+  if (*(void **)(param_1 + 0x128) != (void *)0x0) {
+    FUN_00425100(*(void **)(param_1 + 0x128),100,0);
+  }
+  if (*(void **)(param_1 + 0x100) != (void *)0x0) {
+    FUN_00425100(*(void **)(param_1 + 0x100),100,1);
+  }
+  return;
+}
+

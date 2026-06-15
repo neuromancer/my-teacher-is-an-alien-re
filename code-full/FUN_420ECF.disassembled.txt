@@ -1,0 +1,6 @@
+Function: FUN_00420ecf
+Address: 0x420ECF
+
+MOV ECX,dword ptr [EBP + -0x10]
+ADD ECX,0x9c
+JMP 0x00401130

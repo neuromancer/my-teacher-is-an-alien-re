@@ -1,0 +1,33 @@
+Function: _strncnt
+Address: 0x45E690
+
+MOV EAX,dword ptr [ESP + 0x8]
+PUSH ESI
+PUSH EDI
+TEST EAX,EAX
+MOV EDI,dword ptr [ESP + 0xc]
+LEA ECX,[EAX + -0x1]
+MOV EDX,EDI
+JZ       LAB_0045e6b0
+
+LAB_0045e6a3:
+CMP byte ptr [EDX],0x0
+JZ       LAB_0045e6b5
+INC EDX
+MOV ESI,ECX
+DEC ECX
+TEST ESI,ESI
+JNZ      LAB_0045e6a3
+
+LAB_0045e6b0:
+CMP byte ptr [EDX],0x0
+JNZ      LAB_0045e6b9
+
+LAB_0045e6b5:
+SUB EDX,EDI
+MOV EAX,EDX
+
+LAB_0045e6b9:
+POP EDI
+POP ESI
+RET

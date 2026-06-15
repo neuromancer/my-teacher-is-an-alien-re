@@ -1,0 +1,21 @@
+Function: FUN_0041ad30
+Address: 0x41AD30
+
+
+UINT __thiscall FUN_0041ad30(void *this,UINT param_1,UINT param_2)
+
+{
+  int iVar1;
+  
+  if (*(int *)(*(int *)((int)this + 0xc) + 0x68) != 0) {
+    Ordinal_5(*(undefined4 *)((int)this + 0x24),*(int *)((int)this + 0xc) + 0x6c,0);
+    iVar1 = *(int *)((int)this + 0x24);
+    if (*(uint *)(iVar1 + 0x30) < 0x100) {
+      Ordinal_25(*(undefined4 *)((int)this + 0xc),iVar1 + 0x3c,*(undefined4 *)(iVar1 + 0x2c),
+                 *(undefined4 *)(iVar1 + 0x43c));
+    }
+  }
+  FUN_0041acf0(this,param_1,param_2);
+  return param_2;
+}
+

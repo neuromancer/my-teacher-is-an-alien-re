@@ -1,0 +1,23 @@
+Function: FUN_00456440
+Address: 0x456440
+
+
+undefined4 __cdecl FUN_00456440(LPCSTR param_1,byte param_2)
+
+{
+  DWORD DVar1;
+  
+  DVar1 = GetFileAttributesA(param_1);
+  if (DVar1 == 0xffffffff) {
+    DVar1 = GetLastError();
+    FUN_0045a860(DVar1);
+    return 0xffffffff;
+  }
+  if (((DVar1 & 1) != 0) && ((param_2 & 2) != 0)) {
+    DAT_004719c0 = 0xd;
+    DAT_004719c4 = 5;
+    return 0xffffffff;
+  }
+  return 0;
+}
+

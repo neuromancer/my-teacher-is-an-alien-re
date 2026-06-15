@@ -1,0 +1,13 @@
+Function: FUN_0041a6d0
+Address: 0x41A6D0
+
+MOV EAX,dword ptr [ESP + 0x8]
+MOV EDX,dword ptr [EAX]
+MOV EAX,dword ptr [ESP + 0x4]
+MOV ECX,dword ptr [EDX + 0x40]
+MOV EDX,dword ptr [EAX]
+SUB ECX,dword ptr [EDX + 0x40]
+CMP ECX,0x1
+SBB EAX,EAX
+NEG EAX
+RET

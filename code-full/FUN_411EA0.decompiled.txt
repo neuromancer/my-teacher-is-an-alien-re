@@ -1,0 +1,70 @@
+Function: FUN_00411ea0
+Address: 0x411EA0
+
+
+undefined4 __cdecl FUN_00411ea0(int *param_1,int *param_2,int *param_3,int *param_4)
+
+{
+  int iVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  undefined4 uVar5;
+  undefined4 *unaff_FS_OFFSET;
+  int local_20;
+  int local_1c;
+  int local_18;
+  int local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_00411fac;
+  *unaff_FS_OFFSET = &local_10;
+  local_20 = 0;
+  local_1c = 0;
+  local_18 = 0;
+  local_14 = 0;
+  local_8 = 0;
+  iVar4 = *param_4;
+  iVar1 = param_2[1];
+  iVar2 = *param_3;
+  iVar3 = *param_2;
+  FUN_00411e80(param_2,iVar2 - iVar3,iVar4 - iVar1);
+  FUN_00411e00(param_1,param_2,&local_20);
+  FUN_00411e80(&local_20,-(iVar2 - iVar3),-(iVar4 - iVar1));
+  iVar4 = *param_3;
+  if (*param_3 <= *param_1) {
+    iVar4 = *param_1;
+  }
+  *param_3 = iVar4;
+  iVar4 = param_1[1];
+  if (param_1[1] <= *param_4) {
+    iVar4 = *param_4;
+  }
+  *param_4 = iVar4;
+  if ((local_18 == local_20) || (local_14 == local_1c)) {
+    *param_2 = 0;
+    param_2[1] = 0;
+    param_2[2] = 0;
+    local_8 = 0xffffffff;
+    param_2[3] = 0;
+    *param_3 = 0;
+    *param_4 = 0;
+    FUN_00411fb6();
+    uVar5 = 0;
+  }
+  else {
+    *param_2 = local_20;
+    param_2[1] = local_1c;
+    param_2[2] = local_18;
+    param_2[3] = local_14;
+    local_8 = 0xffffffff;
+    FUN_00411fb6();
+    uVar5 = 1;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return uVar5;
+}
+

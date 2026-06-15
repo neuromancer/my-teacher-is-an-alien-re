@@ -1,0 +1,51 @@
+Function: FUN_00450b10
+Address: 0x450B10
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x450bd8
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH ESI
+PUSH EDI
+MOV dword ptr [EBP + -0x10],ECX
+MOV ESI,ECX
+XOR EDI,EDI
+CALL 0x0042bcd0
+LEA EAX,[ESI + 0x144]
+MOV dword ptr [EBP + -0x4],EDI
+MOV byte ptr [EBP + -0x4],0x1
+LEA ECX,[ESI + 0x154]
+MOV dword ptr [EAX],EDI
+MOV dword ptr [EAX + 0x4],EDI
+MOV byte ptr [EBP + -0x4],0x2
+MOV dword ptr [EAX + 0x8],EDI
+MOV dword ptr [EAX + 0xc],EDI
+LEA EAX,[ESI + 0x164]
+LEA EDX,[ESI + 0x16c]
+MOV dword ptr [ECX],EDI
+MOV dword ptr [ECX + 0x4],EDI
+MOV byte ptr [EBP + -0x4],0x3
+MOV dword ptr [ECX + 0x8],EDI
+MOV dword ptr [ECX + 0xc],EDI
+MOV dword ptr [EAX],EDI
+MOV ECX,0x22
+MOV dword ptr [EAX + 0x4],EDI
+XOR EAX,EAX
+MOV dword ptr [EDX],EDI
+MOV dword ptr [EDX + 0x4],EDI
+LEA EDI,[ESI + 0xf0]
+MOV dword ptr [ESI],0x461c90
+STOSD.REP ES:EDI
+MOV EAX,ESI
+POP EDI
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV ECX,dword ptr [EBP + -0xc]
+POP ESI
+MOV dword ptr FS:[0x0],ECX
+MOV ESP,EBP
+POP EBP
+RET

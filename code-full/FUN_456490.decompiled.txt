@@ -1,0 +1,55 @@
+Function: ___dtoxmode
+Address: 0x456490
+
+
+/* Library Function - Single Match
+    ___dtoxmode
+   
+   Library: Visual Studio 1998 Release */
+
+undefined4 __cdecl ___dtoxmode(uint param_1,byte *param_2)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  int iVar4;
+  uint uVar5;
+  ushort uVar6;
+  
+  pbVar2 = param_2;
+  if (param_2[1] == 0x3a) {
+    pbVar2 = param_2 + 2;
+  }
+  bVar1 = *pbVar2;
+  if ((((bVar1 == 0x5c) || (bVar1 == 0x2f)) && (pbVar2[1] == 0)) ||
+     (((param_1 & 0x10) != 0 || (uVar6 = 0x8000, bVar1 == 0)))) {
+    uVar6 = 0x4040;
+  }
+  uVar6 = uVar6 | (-(ushort)((param_1 & 1) == 0) & 0x80) + 0x100;
+  pbVar2 = (byte *)FUN_0045b170(param_2,0x2e);
+  iVar4 = 0;
+  if (pbVar2 != (byte *)0x0) {
+    iVar3 = FUN_0045b040(pbVar2,&DAT_00471a20);
+    iVar4 = 0;
+    if (iVar3 != 0) {
+      iVar3 = FUN_0045b040(pbVar2,&DAT_00471a18);
+      iVar4 = 0;
+      if (iVar3 != 0) {
+        iVar3 = FUN_0045b040(pbVar2,&DAT_00471a10);
+        iVar4 = 0;
+        if (iVar3 != 0) {
+          iVar4 = FUN_0045b040(pbVar2,&DAT_00471a08);
+          if (iVar4 != 0) goto LAB_00456541;
+        }
+      }
+    }
+    uVar6 = uVar6 | 0x40;
+  }
+LAB_00456541:
+  uVar5 = CONCAT22((short)((uint)iVar4 >> 0x10),uVar6) & 0xffff01c0;
+  uVar6 = uVar6 | (ushort)uVar5 >> 3;
+  uVar5 = CONCAT22((short)(uVar5 >> 0x10),uVar6) & 0xffff01c0;
+  return CONCAT22((short)(uVar5 >> 0x10),uVar6 | (ushort)uVar5 >> 6);
+}
+

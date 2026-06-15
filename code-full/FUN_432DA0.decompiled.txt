@@ -1,0 +1,42 @@
+Function: FUN_00432da0
+Address: 0x432DA0
+
+
+void __fastcall FUN_00432da0(int param_1)
+
+{
+  int *piVar1;
+  void *this;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  int iVar5;
+  
+  piVar1 = *(int **)(DAT_0046aa08 + 0x1a0);
+  iVar5 = 0;
+  if (piVar1 != (int *)0x0) {
+    iVar5 = *piVar1;
+  }
+  this = *(void **)(param_1 + 0x94);
+  if (this == (void *)0x0) {
+    iVar2 = *(int *)(*(int *)(param_1 + 0x9c) + -8);
+  }
+  else {
+    iVar2 = *(int *)(*(int *)(param_1 + 0x9c) + *(int *)((int)this + 0x98) * 8);
+  }
+  if (piVar1 == (int *)0x0) {
+    iVar4 = 0;
+  }
+  else {
+    iVar4 = piVar1[1];
+  }
+  if (this == (void *)0x0) {
+    iVar3 = *(int *)(*(int *)(param_1 + 0x9c) + -4);
+  }
+  else {
+    iVar3 = *(int *)(*(int *)(param_1 + 0x9c) + 4 + *(int *)((int)this + 0x98) * 8);
+  }
+  FUN_0044ccf0(this,iVar5 - iVar2,iVar4 - iVar3,0,0x3ff00000);
+  return;
+}
+

@@ -1,0 +1,17 @@
+Function: FUN_00411180
+Address: 0x411180
+
+
+void __thiscall FUN_00411180(void *this,byte param_1)
+
+{
+  undefined4 extraout_ECX;
+  uint extraout_EDX;
+  
+  FUN_00411210(this,*(int *)((int)this + 0x1c));
+  FUN_004525ec(param_1);
+  FUN_00452b6e(extraout_ECX,extraout_EDX);
+  FUN_00411240(this);
+  return;
+}
+

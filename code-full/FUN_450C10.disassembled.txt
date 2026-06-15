@@ -1,0 +1,79 @@
+Function: FUN_00450c10
+Address: 0x450C10
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x450d9e
+MOV dword ptr [ECX],0x461c90
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+MOV dword ptr [EBP + -0x4],0x3
+PUSH ESI
+MOV dword ptr [EBP + -0x10],ECX
+MOV ECX,dword ptr [ECX + 0x13c]
+TEST ECX,ECX
+JZ       LAB_00450c59
+PUSH 0x1
+MOV EAX,dword ptr [ECX]
+CALL dword ptr [EAX]
+MOV EAX,dword ptr [EBP + -0x10]
+MOV dword ptr [EAX + 0x13c],0x0
+
+LAB_00450c59:
+MOV EAX,dword ptr [EBP + -0x10]
+MOV ESI,dword ptr [EAX + 0x100]
+TEST ESI,ESI
+JZ       LAB_00450c83
+MOV ECX,ESI
+CALL 0x00425200
+PUSH ESI
+CALL 0x00454400
+ADD ESP,0x4
+MOV EAX,dword ptr [EBP + -0x10]
+MOV dword ptr [EAX + 0x100],0x0
+
+LAB_00450c83:
+MOV EAX,dword ptr [EBP + -0x10]
+MOV EAX,dword ptr [EAX + 0xf0]
+TEST EAX,EAX
+JZ       LAB_00450ca6
+PUSH EAX
+CALL 0x00454400
+ADD ESP,0x4
+MOV EAX,dword ptr [EBP + -0x10]
+MOV dword ptr [EAX + 0xf0],0x0
+
+LAB_00450ca6:
+MOV EAX,dword ptr [EBP + -0x10]
+MOV dword ptr [EAX + 0x140],0x0
+MOV dword ptr [EAX + 0x104],0x0
+MOV dword ptr [EAX + 0x108],0x0
+MOV dword ptr [EAX + 0x10c],0x0
+MOV dword ptr [EAX + 0x110],0x0
+MOV dword ptr [EAX + 0x114],0x0
+MOV dword ptr [EAX + 0x120],0x0
+MOV dword ptr [EAX + 0x11c],0x0
+MOV dword ptr [EAX + 0x118],0x0
+MOV dword ptr [EAX + 0x12c],0x0
+MOV dword ptr [EAX + 0x128],0x0
+MOV dword ptr [EAX + 0x124],0x0
+MOV dword ptr [EAX + 0x134],0x0
+MOV dword ptr [EAX + 0x130],0x0
+MOV dword ptr [EAX + 0x138],0x0
+MOV byte ptr [EBP + -0x4],0x2
+CALL     LAB_00450d74
+MOV byte ptr [EBP + -0x4],0x1
+CALL     LAB_00450d82
+MOV byte ptr [EBP + -0x4],0x0
+CALL     LAB_00450d90
+MOV dword ptr [EBP + -0x4],0xffffffff
+CALL     LAB_00450da8
+MOV EAX,dword ptr [EBP + -0xc]
+POP ESI
+MOV FS:[0x0],EAX
+MOV ESP,EBP
+POP EBP
+RET

@@ -1,0 +1,15 @@
+Function: FUN_00421f02
+Address: 0x421F02
+
+
+void FUN_00421f02(void)
+
+{
+  int unaff_EBP;
+  
+  if ((*(byte *)(unaff_EBP + -0x1c) & 1) != 0) {
+    return;
+  }
+  return;
+}
+

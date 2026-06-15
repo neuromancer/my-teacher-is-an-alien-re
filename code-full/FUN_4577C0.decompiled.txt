@@ -1,0 +1,26 @@
+Function: FUN_004577c0
+Address: 0x4577C0
+
+
+void FUN_004577c0(void)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 uStack_14;
+  undefined1 *puStack_10;
+  undefined *puStack_c;
+  undefined4 local_8;
+  
+  uStack_14 = *unaff_FS_OFFSET;
+  puStack_c = &DAT_00461d98;
+  puStack_10 = &LAB_0045a094;
+  *unaff_FS_OFFSET = &uStack_14;
+  if (DAT_00471c6c != (code *)0x0) {
+    local_8 = 1;
+    (*DAT_00471c6c)();
+  }
+  local_8 = 0xffffffff;
+// WARNING: Subroutine does not return
+  _abort();
+}
+

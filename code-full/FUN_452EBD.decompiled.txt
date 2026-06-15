@@ -1,0 +1,71 @@
+Function: FUN_00452ebd
+Address: 0x452EBD
+
+
+undefined4 __cdecl
+FUN_00452ebd(int param_1,int param_2,int param_3,int param_4,int param_5,int param_6,uint param_7,
+            uint param_8)
+
+{
+  undefined1 *puVar1;
+  undefined1 uVar2;
+  int iVar3;
+  int iVar4;
+  int iVar5;
+  int iVar6;
+  undefined4 *puVar7;
+  undefined1 *puVar8;
+  char *pcVar9;
+  undefined1 *puVar10;
+  char local_11e [256];
+  int local_1e;
+  int local_18;
+  int local_14;
+  int local_10;
+  
+  puVar7 = &DAT_0046d208;
+  pcVar9 = local_11e;
+  for (iVar3 = 0x40; iVar3 != 0; iVar3 = iVar3 + -1) {
+    *(undefined4 *)pcVar9 = *puVar7;
+    puVar7 = puVar7 + 1;
+    pcVar9 = pcVar9 + 4;
+  }
+  iVar5 = (param_7 & 0x1f) * 4;
+  iVar3 = (*(int *)(&DAT_0046ded4 + iVar5) + -1) - param_4;
+  if ((&DAT_0046de54)[param_7 & 0x1f] != 0) {
+    iVar6 = (param_8 & 0x1f) * 4;
+    local_10 = *(int *)(&DAT_0046ded4 + iVar6) + -1;
+    if ((&DAT_0046de54)[param_8 & 0x1f] != 0) {
+      puVar8 = (undefined1 *)
+               ((&DAT_0046de54)[param_7 & 0x1f] + iVar3 * *(int *)(&DAT_0046df54 + iVar5) + param_1)
+      ;
+      puVar10 = (undefined1 *)
+                ((&DAT_0046de54)[param_8 & 0x1f] +
+                ((*(int *)(&DAT_0046ded4 + iVar6) + -1) - param_6) * *(int *)(&DAT_0046df54 + iVar6)
+                + param_5);
+      local_18 = (((*(int *)(&DAT_0046ded4 + iVar5) + -1) - param_3) + 1) - iVar3;
+      iVar4 = (param_2 + 1) - param_1;
+      local_1e = *(int *)(&DAT_0046df54 + iVar5) - iVar4;
+      local_14 = *(int *)(&DAT_0046df54 + iVar6) - iVar4;
+      iVar3 = iVar4;
+      do {
+        do {
+          puVar1 = puVar8 + 1;
+          uVar2 = *puVar8;
+          if (local_11e[CONCAT11(uVar2,uVar2) & 0xff] == '\0') {
+            *puVar10 = uVar2;
+          }
+          puVar10 = puVar10 + 1;
+          iVar3 = iVar3 + -1;
+          puVar8 = puVar1;
+        } while (iVar3 != 0);
+        puVar8 = puVar1 + local_1e;
+        puVar10 = puVar10 + local_14;
+        local_18 = local_18 + -1;
+        iVar3 = iVar4;
+      } while (local_18 != 0);
+    }
+  }
+  return 0;
+}
+

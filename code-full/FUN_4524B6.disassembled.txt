@@ -1,0 +1,4 @@
+Function: GetCursorPos
+Address: 0x4524B6
+
+JMP dword ptr [0x0047647c]

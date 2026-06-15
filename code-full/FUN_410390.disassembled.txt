@@ -1,0 +1,41 @@
+Function: FUN_00410390
+Address: 0x410390
+
+MOV dword ptr [ECX + 0xd0],0xdb
+MOV dword ptr [ECX + 0xd4],0xba
+MOV dword ptr [ECX + 0xd8],0xec
+MOV dword ptr [ECX + 0xdc],0xc7
+MOV dword ptr [0x00472be0],0x90
+MOV EAX,0x99
+MOV EDX,0x9c
+MOV dword ptr [0x00472be4],0x18
+MOV dword ptr [0x00472be8],0xf0
+MOV dword ptr [0x00472bec],0x64
+MOV dword ptr [ECX + 0x100],EAX
+MOV dword ptr [ECX + 0x108],EDX
+MOV dword ptr [ECX + 0x110],EAX
+MOV dword ptr [ECX + 0x118],EDX
+MOV EAX,0x5e
+MOV EDX,0xe3
+MOV dword ptr [ECX + 0x11c],EAX
+MOV dword ptr [ECX + 0x120],EDX
+MOV dword ptr [ECX + 0x104],0x1e
+MOV dword ptr [ECX + 0x10c],0x21
+MOV dword ptr [ECX + 0x114],0x5a
+MOV dword ptr [ECX + 0x124],0x1e
+MOV dword ptr [ECX + 0x128],0xe7
+MOV dword ptr [ECX + 0x130],EDX
+MOV dword ptr [ECX + 0x13c],EAX
+MOV dword ptr [ECX + 0x12c],0x22
+MOV dword ptr [ECX + 0x134],0x5a
+MOV dword ptr [ECX + 0x138],0xe6
+XOR EAX,EAX
+MOV dword ptr [ECX + 0xf4],EAX
+MOV dword ptr [ECX + 0xf0],EAX
+MOV dword ptr [ECX + 0xfc],EAX
+MOV dword ptr [ECX + 0xf8],EAX
+MOV dword ptr [ECX + 0x140],EAX
+MOV dword ptr [ECX + 0x168],EAX
+MOV dword ptr [ECX + 0x178],EAX
+MOV dword ptr [ECX + 0x17c],EAX
+RET

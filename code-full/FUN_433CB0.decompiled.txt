@@ -1,0 +1,89 @@
+Function: FUN_00433cb0
+Address: 0x433CB0
+
+
+void __thiscall FUN_00433cb0(void *this,int param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  undefined4 uVar4;
+  uint uVar5;
+  uint uVar6;
+  
+  iVar2 = *(int *)(param_1 + 4);
+  if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  switch(*(undefined4 *)(param_1 + 0x10)) {
+  case 0:
+    return;
+  default:
+    FUN_00425c50(s_GameState__SetState_____invalid_i_0046b74c);
+    return;
+  case 0xe:
+    break;
+  case 0xf:
+    if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    *(undefined4 *)(*(int *)((int)this + 0x90) + iVar2 * 4) = 1;
+    return;
+  case 0x10:
+    if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    *(undefined4 *)(*(int *)((int)this + 0x90) + iVar2 * 4) = 0;
+    return;
+  case 0x11:
+    iVar3 = *(int *)(param_1 + 0x14);
+    if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    piVar1 = (int *)(*(int *)((int)this + 0x90) + iVar2 * 4);
+    *piVar1 = *piVar1 + iVar3;
+    return;
+  case 0x12:
+    iVar3 = *(int *)(param_1 + 0x14);
+    if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    piVar1 = (int *)(*(int *)((int)this + 0x90) + iVar2 * 4);
+    *piVar1 = *piVar1 - iVar3;
+    return;
+  case 0x13:
+    uVar4 = *(undefined4 *)(param_1 + 0x14);
+    if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    *(undefined4 *)(*(int *)((int)this + 0x90) + iVar2 * 4) = uVar4;
+    return;
+  case 0x14:
+    if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    uVar5 = *(uint *)(*(int *)((int)this + 0x90) + iVar2 * 4);
+    uVar6 = *(uint *)(param_1 + 0x14);
+    if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+      FUN_00425c50(s_Invalid_gamestate__d_00468150);
+    }
+    *(uint *)(*(int *)((int)this + 0x90) + iVar2 * 4) = uVar5 | uVar6;
+    return;
+  }
+  if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  if ((iVar2 < 0) || (*(int *)((int)this + 0x98) + -1 < iVar2)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  if (*(int *)(*(int *)((int)this + 0x90) + iVar2 * 4) == 0) {
+    FUN_00409f20(this,iVar2);
+    *(undefined4 *)(*(int *)((int)this + 0x90) + iVar2 * 4) = 1;
+    return;
+  }
+  FUN_00409f20(this,iVar2);
+  *(undefined4 *)(*(int *)((int)this + 0x90) + iVar2 * 4) = 0;
+  return;
+}
+

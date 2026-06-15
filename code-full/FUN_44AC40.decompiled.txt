@@ -1,0 +1,10 @@
+Function: FUN_0044ac40
+Address: 0x44AC40
+
+
+undefined4 FUN_0044ac40(void)
+
+{
+  return 3;
+}
+

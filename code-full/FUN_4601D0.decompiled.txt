@@ -1,0 +1,15 @@
+Function: SetTextAlign
+Address: 0x4601D0
+
+
+UINT SetTextAlign(HDC hdc,UINT align)
+
+{
+  UINT UVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601d0. Too many branches
+// WARNING: Treating indirect jump as call
+  UVar1 = SetTextAlign(hdc,align);
+  return UVar1;
+}
+

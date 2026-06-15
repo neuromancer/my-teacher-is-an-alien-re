@@ -1,0 +1,27 @@
+Function: FUN_004345b0
+Address: 0x4345B0
+
+
+void FUN_004345b0(void)
+
+{
+  int *local_4;
+  
+  if (DAT_0046b78c != (int *)0x0) {
+    local_4 = (int *)*DAT_0046b78c;
+    if (local_4 == (int *)0x0) {
+      FUN_00425d70((wchar_t *)s_HDCache__LogCache_____No_items_i_0046b86c);
+    }
+    else {
+      FUN_00425d70((wchar_t *)s___20_20s__6_6s__10_10s__4_4s_0046b894);
+      do {
+        local_4 = (int *)*local_4;
+        FUN_00425d70((wchar_t *)s__4d___20_20s__6_6lu__10lu__4_4d_0046b84c);
+      } while (local_4 != (int *)0x0);
+    }
+    return;
+  }
+  FUN_00425d70((wchar_t *)s_HDCache__LogCache_____HDCache_no_0046b8c8);
+  return;
+}
+

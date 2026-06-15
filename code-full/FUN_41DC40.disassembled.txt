@@ -1,0 +1,14 @@
+Function: FUN_0041dc40
+Address: 0x41DC40
+
+PUSH ESI
+PUSH 0x300
+MOV dword ptr [ECX],0x0
+MOV ESI,ECX
+MOV dword ptr [ECX + 0x4],0x0
+MOV dword ptr [ESI],0x300
+CALL 0x00454500
+ADD ESP,0x4
+MOV dword ptr [ESI + 0x4],EAX
+POP ESI
+RET

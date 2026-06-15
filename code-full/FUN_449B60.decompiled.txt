@@ -1,0 +1,13 @@
+Function: FUN_00449b60
+Address: 0x449B60
+
+
+undefined1 __cdecl FUN_00449b60(int param_1)
+
+{
+  if ((param_1 < 0) || (5 < param_1)) {
+    FUN_00425c50(s_Bearing___Invalid_bearing___d__0046c538);
+  }
+  return PTR_DAT_0046c50c[param_1];
+}
+

@@ -1,0 +1,80 @@
+Function: ___FrameUnwindToState
+Address: 0x4571F0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x461d50
+PUSH 0x45a094
+PUSH EAX
+MOV EAX,dword ptr [EBP + 0x8]
+MOV dword ptr FS:[0x0],ESP
+ADD EAX,0x8
+SUB ESP,0x14
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [EBP + -0x20],EAX
+MOV dword ptr [EBP + -0x1c],ECX
+PUSH EBX
+CMP ECX,dword ptr [EBP + 0x14]
+PUSH ESI
+PUSH EDI
+MOV dword ptr [EBP + -0x18],ESP
+JZ       LAB_00457299
+
+LAB_00457229:
+CMP dword ptr [EBP + -0x1c],-0x1
+JLE      LAB_0045723a
+MOV EAX,dword ptr [EBP + 0x10]
+MOV ECX,dword ptr [EBP + -0x1c]
+CMP dword ptr [EAX + 0x4],ECX
+JG       LAB_0045723f
+
+LAB_0045723a:
+CALL 0x00457840
+
+LAB_0045723f:
+MOV dword ptr [EBP + -0x4],0x0
+MOV EAX,dword ptr [EBP + 0x10]
+MOV EAX,dword ptr [EAX + 0x8]
+MOV ECX,dword ptr [EBP + -0x1c]
+MOV EAX,dword ptr [EAX + ECX*0x8 + 0x4]
+MOV dword ptr [EBP + -0x24],EAX
+TEST EAX,EAX
+JZ       LAB_0045727e
+PUSH 0x103
+MOV EAX,dword ptr [EBP + 0x8]
+PUSH EAX
+MOV EAX,dword ptr [EBP + -0x24]
+PUSH EAX
+CALL 0x00457770
+JMP      LAB_0045727e
+
+LAB_0045727e:
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV EAX,dword ptr [EBP + 0x10]
+MOV ECX,dword ptr [EBP + -0x1c]
+MOV EDX,dword ptr [EAX + 0x8]
+MOV EAX,dword ptr [EDX + ECX*0x8]
+MOV dword ptr [EBP + -0x1c],EAX
+CMP EAX,dword ptr [EBP + 0x14]
+JNZ      LAB_00457229
+
+LAB_00457299:
+MOV EAX,dword ptr [EBP + 0x14]
+CMP dword ptr [EBP + -0x1c],EAX
+JZ       LAB_004572a6
+CALL 0x00457840
+
+LAB_004572a6:
+MOV EAX,dword ptr [EBP + -0x1c]
+MOV ECX,dword ptr [EBP + -0x20]
+POP EDI
+POP ESI
+POP EBX
+MOV dword ptr [ECX],EAX
+MOV EAX,dword ptr [EBP + -0x10]
+MOV ESP,EBP
+MOV FS:[0x0],EAX
+POP EBP
+RET

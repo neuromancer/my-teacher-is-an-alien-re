@@ -1,0 +1,15 @@
+Function: GetSystemMetrics
+Address: 0x4524A4
+
+
+int GetSystemMetrics(int nIndex)
+
+{
+  int iVar1;
+  
+// WARNING: Could not recover jumptable at 0x004524a4. Too many branches
+// WARNING: Treating indirect jump as call
+  iVar1 = GetSystemMetrics(nIndex);
+  return iVar1;
+}
+

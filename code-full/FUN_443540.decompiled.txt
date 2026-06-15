@@ -1,0 +1,59 @@
+Function: FUN_00443540
+Address: 0x443540
+
+
+undefined4 __thiscall FUN_00443540(void *this,char *param_1)
+
+{
+  int *this_00;
+  undefined4 *puVar1;
+  int iVar2;
+  undefined4 uVar3;
+  undefined4 *unaff_FS_OFFSET;
+  char local_38;
+  char local_37 [31];
+  undefined4 local_18;
+  undefined4 *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00443604;
+  *unaff_FS_OFFSET = &local_10;
+  local_18 = 0;
+  local_38 = '\0';
+  _sscanf(param_1,&DAT_00468448,&local_38);
+  if (local_38 == 'F') {
+    _sscanf(local_37,&DAT_0046c054,&local_18);
+    local_14 = (undefined4 *)FUN_00454500(0x178);
+    local_8 = 0;
+    if (local_14 == (undefined4 *)0x0) {
+      puVar1 = (undefined4 *)0x0;
+    }
+    else {
+      puVar1 = FUN_00442350(local_14);
+    }
+    *(undefined4 **)((int)this + *(int *)((int)this + 0x90) * 4 + 0x94) = puVar1;
+    local_8 = 0xffffffff;
+    this_00 = *(int **)((int)this + *(int *)((int)this + 0x90) * 4 + 0x94);
+    this_00[0x42] = *(int *)((int)this + 0x90);
+    *(int *)((int)this + 0x90) = *(int *)((int)this + 0x90) + 1;
+    FUN_00442b20(this_00,param_1 + 2);
+    FUN_00413e70(this_00,(int)this,(char *)0x0);
+  }
+  else {
+    iVar2 = __strcmpi(&local_38,&DAT_00468444);
+    if (iVar2 == 0) {
+      uVar3 = 1;
+      goto LAB_00443645;
+    }
+    FUN_00412a50();
+  }
+  uVar3 = 0;
+LAB_00443645:
+  *unaff_FS_OFFSET = local_10;
+  return uVar3;
+}
+

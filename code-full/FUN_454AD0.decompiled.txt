@@ -1,0 +1,32 @@
+Function: FUN_00454ad0
+Address: 0x454AD0
+
+
+// WARNING: Removing unreachable block (ram,0x00454b34)
+
+void __cdecl
+FUN_00454ad0(void *param_1,uint param_2,int param_3,undefined *param_4,_func_void_void_ptr *param_5)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  int local_20;
+  undefined4 uStack_14;
+  undefined1 *puStack_10;
+  undefined *puStack_c;
+  undefined4 local_8;
+  
+  uStack_14 = *unaff_FS_OFFSET;
+  puStack_c = &DAT_00461d30;
+  puStack_10 = &LAB_0045a094;
+  *unaff_FS_OFFSET = &uStack_14;
+  local_8 = 0;
+  local_20 = 0;
+  if (0 < param_3) {
+    do {
+      (*(code *)param_4)();
+      local_20 = local_20 + 1;
+    } while (local_20 < param_3);
+  }
+  return;
+}
+

@@ -1,0 +1,93 @@
+Function: FUN_004307b0
+Address: 0x4307B0
+
+MOV ECX,dword ptr [ESP + 0x4]
+SUB ESP,0x458
+LEA EAX,[ESP]
+PUSH EAX
+PUSH ECX
+CALL dword ptr [0x00476568]
+MOV EAX,dword ptr [ESP + 0x1c]
+SUB EDX,EDX
+SHL EAX,0x2
+LEA ECX,[EAX + EAX*0x4]
+LEA EAX,[ECX + ECX*0x4]
+DIV dword ptr [ESP]
+PUSH EAX
+SUB EDX,EDX
+MOV EAX,dword ptr [ESP + 0x1c]
+SHL EAX,0x2
+LEA ECX,[EAX + EAX*0x4]
+LEA EAX,[ECX + ECX*0x4]
+DIV dword ptr [ESP + 0x4]
+PUSH EAX
+SUB EDX,EDX
+MOV EAX,dword ptr [ESP + 0x28]
+SHL EAX,0x2
+LEA ECX,[EAX + EAX*0x4]
+LEA EAX,[ECX + ECX*0x4]
+DIV dword ptr [ESP + 0x8]
+MOV EDX,dword ptr [ESP + 0x14]
+PUSH EAX
+LEA EAX,[EDX + EDX*0x4]
+SUB EDX,EDX
+LEA ECX,[EAX + EAX*0x4]
+LEA EAX,[ECX + ECX*0x4]
+MOV ECX,dword ptr [ESP + 0x58]
+SHL EAX,0x3
+DIV dword ptr [ESP + 0xc]
+MOV EDX,dword ptr [ESP + 0x5c]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x58]
+PUSH EDX
+MOV EDX,dword ptr [ESP + 0x58]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x58]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x58]
+PUSH EDX
+MOV EDX,dword ptr [ESP + 0x58]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x58]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x58]
+PUSH EDX
+MOV EDX,dword ptr [ESP + 0x58]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x58]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x58]
+PUSH EDX
+MOV EDX,dword ptr [ESP + 0x58]
+PUSH ECX
+PUSH EAX
+PUSH EDX
+MOV ECX,dword ptr [ESP + 0x60]
+MOV EAX,dword ptr [ESP + 0x5c]
+MOV EDX,dword ptr [ESP + 0x58]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x58]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x58]
+PUSH EDX
+MOV EDX,dword ptr [ESP + 0x58]
+PUSH ECX
+MOV ECX,dword ptr [ESP + 0x58]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x58]
+PUSH EDX
+LEA EDX,[ESP + 0xb0]
+PUSH ECX
+PUSH EAX
+PUSH 0x46b09c
+PUSH EDX
+CALL 0x00454510
+LEA ECX,[ESP + 0xc0]
+ADD ESP,0x6c
+PUSH 0x0
+PUSH 0x46b094
+PUSH ECX
+PUSH 0x0
+CALL dword ptr [0x004764c0]
+ADD ESP,0x458
+RET

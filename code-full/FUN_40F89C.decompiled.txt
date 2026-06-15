@@ -1,0 +1,11 @@
+Function: FUN_0040f89c
+Address: 0x40F89C
+
+
+void FUN_0040f89c(void)
+
+{
+  FUN_00407b60();
+  return;
+}
+

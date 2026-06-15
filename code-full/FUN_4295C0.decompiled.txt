@@ -1,0 +1,84 @@
+Function: FUN_004295c0
+Address: 0x4295C0
+
+
+void __thiscall FUN_004295c0(void *this,undefined4 param_1,int *param_2)
+
+{
+  bool bVar1;
+  char *pcVar2;
+  LPCSTR pCVar3;
+  undefined3 extraout_var;
+  int iVar4;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_40 [11];
+  int *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0042978c;
+  *unaff_FS_OFFSET = &local_10;
+  local_14 = this;
+  switch(param_1) {
+  case 0:
+    (**(code **)(*(int *)this + 0x2c))();
+    break;
+  case 1:
+    (**(code **)(*(int *)this + 0x2c))();
+    break;
+  case 2:
+    if (*param_2 == 1) {
+      *param_2 = 2;
+      FUN_004255d0(*(int **)((int)this + 0x110));
+      FUN_00425550((void *)local_14[0x44],1);
+      FUN_0044cb40((void *)local_14[0x42],7,0);
+      *(undefined4 *)(local_14[0x2a] + 0xc) = 0;
+    }
+    iVar4 = FUN_004256d0((void *)local_14[0x44],1);
+    if (iVar4 == 0) {
+      iVar4 = *local_14;
+      *param_2 = 0;
+      (**(code **)(iVar4 + 0x2c))();
+    }
+    break;
+  case 3:
+    if (*param_2 == 1) {
+      *param_2 = 2;
+      if (*(int *)((int)this + 0x158) != 0) {
+        pcVar2 = FUN_0044e3e0(*(int *)((int)this + 0x158));
+        pCVar3 = (LPCSTR)FUN_004260f0(pcVar2);
+        bVar1 = FUN_00425fa0(pCVar3);
+        if (CONCAT31(extraout_var,bVar1) != 0) {
+          FUN_0041a9d0(local_40);
+          local_8 = 0;
+          FUN_0041b060(local_40,pCVar3,0);
+          local_8 = 0xffffffff;
+          FUN_00429796();
+        }
+      }
+      FUN_00425550(*(void **)((int)local_14 + 0x110),0);
+      if (*(int *)((int)local_14 + 0x114) != 0) {
+        FUN_00444d90(5,*(int *)((int)local_14 + 0x114),*(undefined4 *)((int)local_14 + 0x90),
+                     *(undefined4 *)((int)local_14 + 0x94),0x1b,0,0,0,0,0);
+      }
+      FUN_0044cb40(*(void **)((int)local_14 + 0x108),7,0);
+    }
+    iVar4 = FUN_004256d0(*(void **)((int)local_14 + 0x110),0);
+    if (iVar4 == 0) {
+      *param_2 = 0;
+      FUN_0044cb40(*(void **)((int)local_14 + 0x108),0,0);
+    }
+    break;
+  case 4:
+    FUN_00429110((int)this);
+    break;
+  default:
+    FUN_00425c50(s_SC_DodgeOrville__Process_Action___0046aca4);
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

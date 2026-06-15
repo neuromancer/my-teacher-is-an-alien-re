@@ -1,0 +1,27 @@
+Function: FUN_0042dfa0
+Address: 0x42DFA0
+
+
+void __fastcall FUN_0042dfa0(int param_1)
+
+{
+  void *pvVar1;
+  uint uVar2;
+  undefined4 *this;
+  undefined4 *puVar3;
+  
+  this = &DAT_00473320;
+  do {
+    puVar3 = this + 9;
+    FUN_0042e480(this,*(undefined4 *)(param_1 + 0x90),*(undefined4 *)(param_1 + 0x94));
+    pvVar1 = DAT_0046aa30;
+    this = puVar3;
+  } while (puVar3 < &DAT_004733f8);
+  uVar2 = FUN_00433ae0(DAT_0046aa30,(byte *)s_PERIOD_00468138);
+  if (((int)uVar2 < 0) || (*(int *)((int)pvVar1 + 0x98) + -1 < (int)uVar2)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  *DAT_0047333c = 0x25;
+  return;
+}
+

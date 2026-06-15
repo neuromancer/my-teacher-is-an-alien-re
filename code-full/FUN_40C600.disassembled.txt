@@ -1,0 +1,17 @@
+Function: FUN_0040c600
+Address: 0x40C600
+
+MOV EAX,dword ptr [ESP + 0x4]
+ADD EAX,dword ptr [ECX + 0x4]
+MOV dword ptr [ECX + 0x4],EAX
+JNS      LAB_0040c616
+MOV dword ptr [ECX + 0x4],0x0
+RET 0x4
+
+LAB_0040c616:
+CMP EAX,0xc8
+JLE      LAB_0040c624
+MOV dword ptr [ECX + 0x4],0xc8
+
+LAB_0040c624:
+RET 0x4

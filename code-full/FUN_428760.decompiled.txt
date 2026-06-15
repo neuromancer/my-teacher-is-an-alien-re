@@ -1,0 +1,28 @@
+Function: FUN_00428760
+Address: 0x428760
+
+
+void FUN_00428760(void)
+
+{
+  int iVar1;
+  undefined4 *puVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_004287bb;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_00454ad0(&DAT_00473260,8,3,&LAB_00418840,(_func_void_void_ptr *)0x401120);
+  puVar2 = &DAT_00473260;
+  for (iVar1 = 6; iVar1 != 0; iVar1 = iVar1 + -1) {
+    *puVar2 = 0;
+    puVar2 = puVar2 + 1;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

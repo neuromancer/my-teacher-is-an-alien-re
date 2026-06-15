@@ -1,0 +1,11 @@
+Function: FUN_0042ecc6
+Address: 0x42ECC6
+
+
+void FUN_0042ecc6(void)
+
+{
+  FUN_00407b60();
+  return;
+}
+

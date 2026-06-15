@@ -1,0 +1,19 @@
+Function: FUN_00420ac0
+Address: 0x420AC0
+
+
+void __thiscall FUN_00420ac0(void *this,int param_1,uint param_2)
+
+{
+  uint local_4;
+  
+  FUN_00420900(this);
+  FUN_00420990(this,param_1);
+  __fread_lk((char *)&local_4,*(uint *)((int)this + 0x44),1,*(FILE **)this);
+  local_4 = local_4 & ~param_2;
+  FUN_00420990(this,param_1);
+  FUN_004546d0((char *)&local_4,*(uint *)((int)this + 0x44),1,*(FILE **)this);
+  FUN_00420960(this);
+  return;
+}
+

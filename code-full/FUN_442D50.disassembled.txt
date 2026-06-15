@@ -1,0 +1,116 @@
+Function: FUN_00442d50
+Address: 0x442D50
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x442e75
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+PUSH EBX
+PUSH ESI
+PUSH EDI
+MOV ESI,ECX
+XOR EBX,EBX
+CALL 0x0044d6e0
+CMP dword ptr [ESI + 0x14c],EBX
+JNZ      LAB_00442e61
+CMP dword ptr [0x0046bff0],EBX
+JZ       LAB_00442e61
+PUSH 0x20
+CALL 0x00454500
+MOV dword ptr [EBP + -0x10],EAX
+ADD ESP,0x4
+MOV EDI,EAX
+MOV dword ptr [EBP + -0x4],EBX
+TEST EDI,EDI
+JZ       LAB_00442dd7
+MOV byte ptr [EBP + -0x4],0x1
+MOV dword ptr [EDI + 0x8],EBX
+MOV dword ptr [EDI + 0xc],EBX
+MOV byte ptr [EBP + -0x4],BL
+MOV dword ptr [EDI + 0x4],EBX
+MOV dword ptr [EDI],EBX
+MOV dword ptr [EDI + 0x10],EBX
+MOV dword ptr [EDI + 0x14],0xa
+MOV dword ptr [EDI + 0x18],EBX
+MOV EBX,EDI
+MOV dword ptr [EDI + 0x1c],0xffffffff
+JMP      LAB_00442dd9
+MOV ECX,dword ptr [EBP + -0x10]
+JMP      LAB_00443780
+
+LAB_00442dd7:
+XOR EBX,EBX
+
+LAB_00442dd9:
+MOV dword ptr [EBP + -0x4],0xffffffff
+MOV dword ptr [ESI + 0x14c],EBX
+MOV ESI,dword ptr [EBX + 0x4]
+CMP dword ptr [EBX + 0xc],0x0
+JNZ      LAB_00442e29
+MOV EAX,dword ptr [EBX + 0x14]
+LEA EAX,[EAX + EAX*0x2]
+SHL EAX,0x2
+ADD EAX,0x4
+PUSH EAX
+CALL 0x00454500
+ADD ESP,0x4
+MOV ECX,dword ptr [EBX + 0x10]
+MOV dword ptr [EAX],ECX
+MOV dword ptr [EBX + 0x10],EAX
+MOV EDX,dword ptr [EBX + 0x14]
+LEA EDI,[EDX + EDX*0x2]
+DEC EDX
+LEA EAX,[EAX + EDI*0x4 + -0x8]
+JS       LAB_00442e29
+
+LAB_00442e19:
+MOV ECX,dword ptr [EBX + 0xc]
+DEC EDX
+MOV dword ptr [EAX],ECX
+MOV dword ptr [EBX + 0xc],EAX
+SUB EAX,0xc
+TEST EDX,EDX
+JGE      LAB_00442e19
+
+LAB_00442e29:
+MOV ECX,dword ptr [EBX + 0xc]
+XOR EDX,EDX
+MOV EAX,dword ptr [ECX]
+MOV dword ptr [EBX + 0xc],EAX
+MOV dword ptr [ECX + 0x4],ESI
+MOV dword ptr [ECX],0x0
+INC dword ptr [EBX + 0x8]
+MOV dword ptr [ECX + 0x8],0x0
+
+LAB_00442e46:
+MOV EAX,EDX
+DEC EDX
+TEST EAX,EAX
+JNZ      LAB_00442e46
+MOV EAX,[0x0046bff0]
+MOV dword ptr [ECX + 0x8],EAX
+MOV EAX,dword ptr [EBX + 0x4]
+TEST EAX,EAX
+JZ       LAB_00442e71
+MOV dword ptr [EAX],ECX
+
+LAB_00442e5e:
+MOV dword ptr [EBX + 0x4],ECX
+
+LAB_00442e61:
+MOV EAX,dword ptr [EBP + -0xc]
+POP EDI
+MOV FS:[0x0],EAX
+POP ESI
+POP EBX
+MOV ESP,EBP
+POP EBP
+RET
+
+LAB_00442e71:
+MOV dword ptr [EBX],ECX
+JMP      LAB_00442e5e

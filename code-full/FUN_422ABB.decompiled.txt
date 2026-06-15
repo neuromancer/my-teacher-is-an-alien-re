@@ -1,0 +1,11 @@
+Function: FUN_00422abb
+Address: 0x422ABB
+
+
+void FUN_00422abb(void)
+
+{
+  FUN_004218b0();
+  return;
+}
+

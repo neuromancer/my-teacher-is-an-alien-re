@@ -1,0 +1,13 @@
+Function: FUN_00404f90
+Address: 0x404F90
+
+
+void * __thiscall FUN_00404f90(void *this,undefined4 param_1)
+
+{
+  *(undefined4 *)this = 0;
+  *(undefined4 *)((int)this + 4) = 0;
+  *(undefined4 *)((int)this + 8) = param_1;
+  return this;
+}
+

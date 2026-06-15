@@ -1,0 +1,39 @@
+Function: FUN_00459ee0
+Address: 0x459EE0
+
+
+void __cdecl FUN_00459ee0(double *param_1,char *param_2,size_t param_3,int param_4)
+
+{
+  int iVar1;
+  char *pcVar2;
+  int iVar3;
+  char *pcVar4;
+  STRFLT unaff_EBP;
+  bool bVar5;
+  
+  DAT_00473e24 = (int *)__fltout();
+  DAT_00471d24 = DAT_00473e24[1] + -1;
+  iVar1 = *DAT_00473e24;
+  __fptostr(param_2 + (iVar1 == 0x2d),param_3,(int)DAT_00473e24,unaff_EBP);
+  DAT_00471d28 = DAT_00471d24 < DAT_00473e24[1] + -1;
+  iVar3 = DAT_00473e24[1] + -1;
+  if ((-5 < iVar3) && (iVar3 < (int)param_3)) {
+    bVar5 = DAT_00471d24 < DAT_00473e24[1] + -1;
+    pcVar2 = param_2 + (iVar1 == 0x2d);
+    DAT_00471d24 = iVar3;
+    if (bVar5) {
+      do {
+        pcVar4 = pcVar2;
+        pcVar2 = pcVar4 + 1;
+      } while (*pcVar4 != '\0');
+      pcVar4[-1] = '\0';
+    }
+    __cftof_g(param_1,param_2,param_3);
+    return;
+  }
+  DAT_00471d24 = iVar3;
+  __cftoe_g(param_1,param_2,param_3,param_4);
+  return;
+}
+

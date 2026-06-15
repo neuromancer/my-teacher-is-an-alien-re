@@ -1,0 +1,19 @@
+Function: FUN_0045c420
+Address: 0x45C420
+
+MOV EDX,dword ptr [ESP + 0x4]
+CMP dword ptr [0x00474f74],EDX
+JA       LAB_0045c42f
+XOR EAX,EAX
+RET
+
+LAB_0045c42f:
+MOV EAX,EDX
+AND EDX,0x1f
+AND EAX,0xffffffe7
+SAR EAX,0x3
+MOV ECX,dword ptr [EAX + 0x474f80]
+XOR EAX,EAX
+MOV AL,byte ptr [ECX + EDX*0x8 + 0x4]
+AND EAX,0x40
+RET

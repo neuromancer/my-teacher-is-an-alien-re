@@ -1,0 +1,24 @@
+Function: FUN_0042cab0
+Address: 0x42CAB0
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x42cb02
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x4
+MOV dword ptr [EBP + -0x10],0x0
+PUSH ESI
+MOV ESI,dword ptr [EBP + 0x8]
+PUSH ESI
+CALL     LAB_0042d1a0
+MOV EAX,ESI
+MOV ECX,dword ptr [EBP + -0xc]
+OR dword ptr [EBP + -0x10],0x1
+MOV dword ptr FS:[0x0],ECX
+POP ESI
+MOV ESP,EBP
+POP EBP
+RET 0x4

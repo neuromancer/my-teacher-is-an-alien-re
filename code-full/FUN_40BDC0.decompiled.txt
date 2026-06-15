@@ -1,0 +1,136 @@
+Function: FUN_0040bdc0
+Address: 0x40BDC0
+
+
+void __fastcall FUN_0040bdc0(int param_1)
+
+{
+  void *pvVar1;
+  int *piVar2;
+  int iVar3;
+  bool bVar4;
+  byte bVar5;
+  uint uVar6;
+  undefined3 extraout_var;
+  undefined3 extraout_var_00;
+  int iVar7;
+  int iVar8;
+  
+  if (*(int *)(DAT_0046ae6c + 0x14) != *(int *)(param_1 + 0xfc)) {
+    iVar7 = *(int *)(param_1 + 0xfc) + 1;
+    iVar8 = *(int *)(param_1 + 0x100);
+    *(int *)(param_1 + 0xfc) = iVar7;
+    if ((iVar8 == 0) || (bVar4 = true, iVar7 < iVar8)) {
+      bVar4 = false;
+    }
+    if (bVar4) {
+      **(undefined4 **)(DAT_00468a1c + 0xa8) = 1;
+    }
+    else {
+      iVar8 = (iVar7 * 6) / iVar8;
+      if (iVar8 < 0) {
+        iVar7 = 0;
+      }
+      else {
+        iVar7 = 5;
+        if (iVar8 < 6) {
+          iVar7 = iVar8;
+        }
+      }
+      FUN_0044cb40(*(void **)(param_1 + 0x104),iVar7,0);
+    }
+  }
+  if (*(int *)(param_1 + 0xf4) != *(int *)(DAT_0046ae6c + 0xc)) {
+    *(int *)(param_1 + 0xf4) = *(int *)(DAT_0046ae6c + 0xc);
+  }
+  if (*(int *)(DAT_0046ae78 + 0xe4) < 0x68b) goto LAB_0040bff1;
+  pvVar1 = *(void **)(param_1 + 0x118);
+  FUN_0044ccf0(pvVar1,*(int *)((int)pvVar1 + 0xac),*(int *)((int)pvVar1 + 0xb0),0,0x3ff00000);
+  if (*(int *)(DAT_0046ae60 + 0xa8) != 0) {
+    piVar2 = *(int **)(DAT_0046aa08 + 0x1a0);
+    if (piVar2 == (int *)0x0) {
+LAB_0040beb1:
+      iVar8 = 0;
+    }
+    else {
+      if (0x77 < piVar2[1]) goto LAB_0040bf9e;
+      if (piVar2 == (int *)0x0) goto LAB_0040beb1;
+      iVar8 = piVar2[1];
+    }
+    if (piVar2 == (int *)0x0) {
+      iVar7 = 0;
+    }
+    else {
+      iVar7 = *piVar2;
+    }
+    uVar6 = FUN_00411330(*(void **)(*(int *)(*(int *)(param_1 + 0x118) + 0xf0) + 0x18),iVar7,iVar8);
+    if (uVar6 == 0xfa) {
+      iVar8 = *(int *)(param_1 + 0x10c);
+      iVar7 = *(int *)(param_1 + 0x108) + 1;
+      *(int *)(param_1 + 0x108) = iVar7;
+      if ((iVar8 == 0) || (bVar4 = true, iVar7 < iVar8)) {
+        bVar4 = false;
+      }
+      if (bVar4) {
+        *(undefined4 *)(*(int *)(DAT_00468a1c + 0xa8) + 4) = 1;
+      }
+      else {
+        iVar8 = (iVar7 * 6) / iVar8;
+        if (iVar8 < 0) {
+          iVar7 = 0;
+        }
+        else {
+          iVar7 = 5;
+          if (iVar8 < 6) {
+            iVar7 = iVar8;
+          }
+        }
+        FUN_0044cb40(*(void **)(param_1 + 0x110),iVar7,0);
+      }
+      iVar8 = 0;
+      piVar2 = *(int **)(DAT_0046aa08 + 0x1a0);
+      if (piVar2 != (int *)0x0) {
+        iVar8 = piVar2[1];
+      }
+      iVar7 = 0;
+      if (piVar2 != (int *)0x0) {
+        iVar7 = *piVar2;
+      }
+      iVar3 = *(int *)(param_1 + 0x114);
+      *(int *)(iVar3 + 0xac) = iVar7 + -0x48;
+      *(int *)(iVar3 + 0xb0) = iVar8 + -0x41;
+      FUN_0044cb40(*(void **)(param_1 + 0x114),0,0);
+      FUN_00425550(*(void **)(DAT_00468a1c + 0x110),0);
+    }
+  }
+LAB_0040bf9e:
+  pvVar1 = *(void **)(param_1 + 0x114);
+  bVar5 = FUN_0044ccf0(pvVar1,*(int *)((int)pvVar1 + 0xac),*(int *)((int)pvVar1 + 0xb0),0,0x3ff00000
+                      );
+  if (CONCAT31(extraout_var,bVar5) != 0) {
+    FUN_0044cb40(*(void **)(param_1 + 0x114),-1,0);
+  }
+  pvVar1 = *(void **)(param_1 + 0x110);
+  FUN_0044ccf0(pvVar1,*(int *)((int)pvVar1 + 0xac),*(int *)((int)pvVar1 + 0xb0),0,0x3ff00000);
+LAB_0040bff1:
+  pvVar1 = *(void **)(param_1 + 0x104);
+  FUN_0044ccf0(pvVar1,*(int *)((int)pvVar1 + 0xac),*(int *)((int)pvVar1 + 0xb0),0,0x3ff00000);
+  if (*(int *)(DAT_0046ae60 + 0xa8) != 0) {
+    iVar8 = 0;
+    if (*(int **)(DAT_0046aa08 + 0x1a0) != (int *)0x0) {
+      iVar8 = **(int **)(DAT_0046aa08 + 0x1a0);
+    }
+    FUN_0044cb40(DAT_0046ae50,iVar8 / (*(int *)(DAT_0046ae4c + 0x98) / 5) + 5,0);
+  }
+  bVar5 = FUN_0044ccf0(DAT_0046ae50,*(int *)((int)DAT_0046ae50 + 0xac),
+                       *(int *)((int)DAT_0046ae50 + 0xb0),0,0x3ff00000);
+  if (CONCAT31(extraout_var_00,bVar5) != 0) {
+    iVar8 = 0;
+    if (*(int **)(DAT_0046aa08 + 0x1a0) != (int *)0x0) {
+      iVar8 = **(int **)(DAT_0046aa08 + 0x1a0);
+    }
+    FUN_0044cb40(DAT_0046ae50,iVar8 / (*(int *)(DAT_0046ae4c + 0x98) / 5),0);
+  }
+  return;
+}
+

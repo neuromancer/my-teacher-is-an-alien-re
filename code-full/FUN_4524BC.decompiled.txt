@@ -1,0 +1,15 @@
+Function: DeleteObject
+Address: 0x4524BC
+
+
+BOOL DeleteObject(HGDIOBJ ho)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x004524bc. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = DeleteObject(ho);
+  return BVar1;
+}
+

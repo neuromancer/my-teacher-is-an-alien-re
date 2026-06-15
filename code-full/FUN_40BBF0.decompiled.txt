@@ -1,0 +1,35 @@
+Function: FUN_0040bbf0
+Address: 0x40BBF0
+
+
+int * __fastcall FUN_0040bbf0(int *param_1)
+
+{
+  int iVar1;
+  int *piVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0040bc6b;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_0042bcd0(param_1);
+  param_1[0x3d] = 0;
+  param_1[0x3e] = 0;
+  param_1[0x3f] = 0;
+  param_1[0x40] = 0;
+  param_1[0x42] = 0;
+  param_1[0x43] = 0;
+  *param_1 = (int)&PTR_FUN_004611b0;
+  piVar2 = param_1 + 0x3c;
+  for (iVar1 = 0xc; iVar1 != 0; iVar1 = iVar1 + -1) {
+    *piVar2 = 0;
+    piVar2 = piVar2 + 1;
+  }
+  *unaff_FS_OFFSET = local_10;
+  return param_1;
+}
+

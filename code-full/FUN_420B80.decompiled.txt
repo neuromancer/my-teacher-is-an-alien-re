@@ -1,0 +1,77 @@
+Function: FUN_00420b80
+Address: 0x420B80
+
+
+void __thiscall FUN_00420b80(void *this,int *param_1)
+
+{
+  char cVar1;
+  byte bVar2;
+  byte *pbVar3;
+  uint uVar4;
+  char *pcVar5;
+  int iVar6;
+  bool bVar7;
+  char local_4 [4];
+  
+  FUN_00420900(this);
+  FUN_00420990(this,0);
+  uVar4 = 0xffffffff;
+  pcVar5 = s_FLAGARRAY_INFO_0046a514;
+  do {
+    if (uVar4 == 0) break;
+    uVar4 = uVar4 - 1;
+    cVar1 = *pcVar5;
+    pcVar5 = pcVar5 + 1;
+  } while (cVar1 != '\0');
+  if (*param_1 == 0) {
+    *DAT_0046aa00 = 0;
+    __fread_lk((char *)DAT_0046aa00,~uVar4,1,(FILE *)param_1[0x11]);
+    pcVar5 = s_FLAGARRAY_INFO_0046a514;
+    pbVar3 = DAT_0046aa00;
+    do {
+      bVar2 = *pbVar3;
+      bVar7 = bVar2 < (byte)*pcVar5;
+      if (bVar2 != *pcVar5) {
+LAB_00420c60:
+        iVar6 = (1 - (uint)bVar7) - (uint)(bVar7 != 0);
+        goto LAB_00420c65;
+      }
+      if (bVar2 == 0) break;
+      bVar2 = pbVar3[1];
+      bVar7 = bVar2 < (byte)pcVar5[1];
+      if (bVar2 != pcVar5[1]) goto LAB_00420c60;
+      pbVar3 = pbVar3 + 2;
+      pcVar5 = pcVar5 + 2;
+    } while (bVar2 != 0);
+    iVar6 = 0;
+LAB_00420c65:
+    if (iVar6 != 0) {
+      FUN_00425c50(s_FlagArray__Serialize_____Error_L_0046a4dc);
+    }
+    iVar6 = 0;
+    __fread_lk((char *)((int)this + 0x38),0x94,1,(FILE *)param_1[0x11]);
+    if (0 < *(int *)((int)this + 0x40)) {
+      do {
+        iVar6 = iVar6 + 1;
+        __fread_lk(local_4,4,1,(FILE *)param_1[0x11]);
+        FUN_004546d0(local_4,4,1,*(FILE **)this);
+      } while (iVar6 < *(int *)((int)this + 0x40));
+    }
+  }
+  else {
+    FUN_004546d0(s_FLAGARRAY_INFO_0046a514,~uVar4,1,(FILE *)param_1[0x11]);
+    iVar6 = 0;
+    FUN_004546d0((char *)((int)this + 0x38),0x94,1,(FILE *)param_1[0x11]);
+    if (0 < *(int *)((int)this + 0x40)) {
+      do {
+        iVar6 = iVar6 + 1;
+        __fread_lk(local_4,4,1,*(FILE **)this);
+        FUN_004546d0(local_4,4,1,(FILE *)param_1[0x11]);
+      } while (iVar6 < *(int *)((int)this + 0x40));
+    }
+  }
+  FUN_00420960(this);
+  return;
+}
+

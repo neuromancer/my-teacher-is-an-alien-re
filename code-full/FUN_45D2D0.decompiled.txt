@@ -1,0 +1,14 @@
+Function: FUN_0045d2d0
+Address: 0x45D2D0
+
+
+void FUN_0045d2d0(void)
+
+{
+  if (DAT_0047278c == 0) {
+    FUN_0045d2f0();
+    DAT_0047278c = DAT_0047278c + 1;
+  }
+  return;
+}
+

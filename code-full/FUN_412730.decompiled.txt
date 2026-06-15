@@ -1,0 +1,25 @@
+Function: FUN_00412730
+Address: 0x412730
+
+
+void FUN_00412730(void)
+
+{
+  undefined4 *puVar1;
+  undefined4 *puVar2;
+  FILE *_File;
+  char local_100 [256];
+  
+  _File = (FILE *)FUN_00455110(s_cfg_miscache_dat_00469310,&DAT_0046933c);
+  puVar2 = (undefined4 *)*DAT_00469134;
+  while (puVar2 != (undefined4 *)0x0) {
+    puVar1 = (undefined4 *)*puVar2;
+    puVar2 = (undefined4 *)puVar2[2];
+    _sprintf(local_100,s___32s___32s__4lu__4d_00469324,puVar2 + 1,puVar2 + 9,puVar2[0x12],*puVar2);
+    FUN_00426490(local_100,_File);
+    puVar2 = puVar1;
+  }
+  _fclose(_File);
+  return;
+}
+

@@ -1,0 +1,29 @@
+Function: FUN_00455220
+Address: 0x455220
+
+
+char * __cdecl FUN_00455220(char *param_1,char *param_2,int param_3)
+
+{
+  char *pcVar1;
+  char *pcVar2;
+  
+  pcVar1 = param_1;
+  if (param_3 != 0) {
+    do {
+      pcVar2 = pcVar1;
+      if (*param_2 == '\0') break;
+      pcVar2 = pcVar1 + 1;
+      *pcVar1 = *param_2;
+      param_3 = param_3 + -1;
+      param_2 = param_2 + 1;
+      pcVar1 = pcVar2;
+    } while (param_3 != 0);
+    for (; param_3 != 0; param_3 = param_3 + -1) {
+      *pcVar2 = '\0';
+      pcVar2 = pcVar2 + 1;
+    }
+  }
+  return param_1;
+}
+

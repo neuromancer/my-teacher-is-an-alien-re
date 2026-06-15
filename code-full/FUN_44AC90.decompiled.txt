@@ -1,0 +1,72 @@
+Function: FUN_0044ac90
+Address: 0x44AC90
+
+
+undefined4 __thiscall FUN_0044ac90(void *this,char *param_1)
+
+{
+  byte bVar1;
+  int iVar2;
+  byte *pbVar3;
+  char *pcVar4;
+  bool bVar5;
+  byte local_40 [32];
+  char local_20 [32];
+  
+  iVar2 = _sscanf(param_1,s__s_THEN_GOTO_N_d_BEARING__s_0046c57c,local_40,(int)this + 0x98,local_20)
+  ;
+  if (2 < iVar2) {
+    iVar2 = FUN_00449b20(local_20[0]);
+    *(int *)((int)this + 0x9c) = iVar2;
+  }
+  pbVar3 = local_40;
+  pcVar4 = s_NO_MOUSE_0046c734;
+  do {
+    bVar1 = *pbVar3;
+    bVar5 = bVar1 < (byte)*pcVar4;
+    if (bVar1 != *pcVar4) {
+LAB_0044acfa:
+      iVar2 = (1 - (uint)bVar5) - (uint)(bVar5 != 0);
+      goto LAB_0044acff;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar3[1];
+    bVar5 = bVar1 < (byte)pcVar4[1];
+    if (bVar1 != pcVar4[1]) goto LAB_0044acfa;
+    pbVar3 = pbVar3 + 2;
+    pcVar4 = pcVar4 + 2;
+  } while (bVar1 != 0);
+  iVar2 = 0;
+LAB_0044acff:
+  if (iVar2 == 0) {
+    *(undefined4 *)((int)this + 0xa0) = 0xffffffff;
+    return 0;
+  }
+  pbVar3 = local_40;
+  pcVar4 = s_AUTO_MOUSE_0046c728;
+  do {
+    bVar1 = *pbVar3;
+    bVar5 = bVar1 < (byte)*pcVar4;
+    if (bVar1 != *pcVar4) {
+LAB_0044ad3f:
+      iVar2 = (1 - (uint)bVar5) - (uint)(bVar5 != 0);
+      goto LAB_0044ad44;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar3[1];
+    bVar5 = bVar1 < (byte)pcVar4[1];
+    if (bVar1 != pcVar4[1]) goto LAB_0044ad3f;
+    pbVar3 = pbVar3 + 2;
+    pcVar4 = pcVar4 + 2;
+  } while (bVar1 != 0);
+  iVar2 = 0;
+LAB_0044ad44:
+  if (iVar2 == 0) {
+    *(undefined4 *)((int)this + 0xa0) = 0;
+    return 0;
+  }
+  iVar2 = FUN_00432e20(DAT_0046aa18,(char *)local_40);
+  *(int *)((int)this + 0xa0) = iVar2;
+  return 0;
+}
+

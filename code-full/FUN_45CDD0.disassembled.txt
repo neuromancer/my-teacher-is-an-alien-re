@@ -1,0 +1,80 @@
+Function: FUN_0045cdd0
+Address: 0x45CDD0
+
+MOV ECX,dword ptr [ESP + 0x8]
+SUB ESP,0x10
+MOV EAX,ECX
+PUSH EBX
+CDQ
+PUSH ESI
+AND EDX,0x1f
+PUSH EDI
+ADD EAX,EDX
+PUSH EBP
+SAR EAX,0x5
+MOV dword ptr [ESP + 0x10],EAX
+MOV EAX,ECX
+CDQ
+XOR EAX,EDX
+SUB EAX,EDX
+AND EAX,0x1f
+XOR EAX,EDX
+XOR EBX,EBX
+SUB EAX,EDX
+MOV ESI,dword ptr [ESP + 0x24]
+MOV EDX,0xffffffff
+MOV CL,AL
+SHL EDX,CL
+MOV CL,0x20
+MOV EBP,0x3
+NOT EDX
+SUB CL,AL
+MOV dword ptr [ESP + 0x14],EDX
+MOV EDX,ESI
+MOV byte ptr [ESP + 0x1c],CL
+
+LAB_0045ce1c:
+MOV EDI,dword ptr [EDX]
+MOV ECX,dword ptr [ESP + 0x14]
+AND ECX,EDI
+ADD EDX,0x4
+MOV dword ptr [ESP + 0x18],ECX
+MOV CL,AL
+SHR EDI,CL
+OR EBX,EDI
+MOV CL,byte ptr [ESP + 0x1c]
+MOV dword ptr [EDX + -0x4],EDI
+MOV dword ptr [EDX + -0x4],EBX
+MOV EBX,dword ptr [ESP + 0x18]
+SHL EBX,CL
+DEC EBP
+JNZ      LAB_0045ce1c
+MOV EDX,0x2
+MOV ECX,ESI
+MOV EAX,dword ptr [ESP + 0x10]
+ADD ESI,0x8
+SHL EAX,0x2
+SUB ECX,EAX
+ADD ECX,0x8
+
+LAB_0045ce5a:
+CMP dword ptr [ESP + 0x10],EDX
+JG       LAB_0045ce66
+MOV EAX,dword ptr [ECX]
+MOV dword ptr [ESI],EAX
+JMP      LAB_0045ce6c
+
+LAB_0045ce66:
+MOV dword ptr [ESI],0x0
+
+LAB_0045ce6c:
+SUB ECX,0x4
+SUB ESI,0x4
+DEC EDX
+JNS      LAB_0045ce5a
+POP EBP
+POP EDI
+POP ESI
+POP EBX
+ADD ESP,0x10
+RET

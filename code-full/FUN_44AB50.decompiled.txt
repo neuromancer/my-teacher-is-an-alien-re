@@ -1,0 +1,35 @@
+Function: FUN_0044ab50
+Address: 0x44AB50
+
+
+undefined4 __fastcall FUN_0044ab50(int param_1)
+
+{
+  bool bVar1;
+  char *pcVar2;
+  LPCSTR pCVar3;
+  undefined3 extraout_var;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_3c [11];
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_0044abcd;
+  *unaff_FS_OFFSET = &local_10;
+  pcVar2 = FUN_0044e3e0(*(int *)(param_1 + 0xa0));
+  pCVar3 = (LPCSTR)FUN_004260f0(pcVar2);
+  bVar1 = FUN_00425fa0(pCVar3);
+  if (CONCAT31(extraout_var,bVar1) != 0) {
+    FUN_0041a9d0(local_3c);
+    local_8 = 0;
+    FUN_0041b060(local_3c,pCVar3,0);
+    local_8 = 0xffffffff;
+    FUN_0044abd7();
+  }
+  *unaff_FS_OFFSET = local_10;
+  return 1;
+}
+

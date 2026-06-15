@@ -1,0 +1,106 @@
+Function: FUN_004534f4
+Address: 0x4534F4
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+undefined4 FUN_004534f4(void)
+
+{
+  char cVar1;
+  DWORD DVar2;
+  UINT UVar3;
+  HMODULE pHVar4;
+  int iVar5;
+  char *pcVar6;
+  undefined4 *puVar7;
+  char *pcVar8;
+  undefined4 uVar9;
+  undefined2 in_DS;
+  bool bVar10;
+  longlong lVar11;
+  
+  PTR_DAT_0046e024 = &DAT_0046e02e;
+  _DAT_0046e02a = 0x1000;
+  DAT_0046e028 = in_DS;
+  FUN_00453daf(10);
+  cVar1 = '\0';
+  puVar7 = &DAT_0046de54;
+  for (iVar5 = 0x20; iVar5 != 0; iVar5 = iVar5 + -1) {
+    *puVar7 = 0;
+    puVar7 = puVar7 + 1;
+  }
+  puVar7 = &DAT_0046d208;
+  for (iVar5 = 0x40; iVar5 != 0; iVar5 = iVar5 + -1) {
+    *puVar7 = 0;
+    puVar7 = puVar7 + 1;
+  }
+  iVar5 = 0x100;
+  pcVar8 = &DAT_0046d108;
+  do {
+    *pcVar8 = cVar1;
+    cVar1 = cVar1 + '\x01';
+    iVar5 = iVar5 + -1;
+    pcVar8 = pcVar8 + 1;
+  } while (iVar5 != 0);
+  uVar9 = 0x428;
+  lVar11 = FUN_00453721();
+  bVar10 = (uint)lVar11 < 9;
+  if (bVar10) {
+    uVar9 = 0x228;
+  }
+  DAT_0046db38 = (uint)bVar10;
+  DAT_0046d078 = 0;
+  _DAT_0046d09a = 0;
+  DAT_0046d079 = 0;
+  _DAT_0046d100 = 0;
+  _DAT_0046d104 = 0;
+  _DAT_0046dfd4 = 0;
+  _DAT_0046dfdc = 0;
+  _DAT_0046dfec = 0;
+  _DAT_0046dff4 = 0;
+  DAT_0046d0aa = 0;
+  DAT_0046d0b6 = 0;
+  DAT_0046d0be = 1;
+  DAT_0046d0c2 = 1;
+  _DAT_0046d0fc = 1;
+  DAT_0046d0a8 = 0xff;
+  DAT_0046d0a9 = 0xff;
+  DAT_0046db3c = 0xff;
+  _DAT_0046db3e = 0xffffffff;
+  _DAT_0046db42 = 0xffffffff;
+  DAT_0046e004 = 0;
+  DAT_0046e00c = 0;
+  DAT_0046db34 = uVar9;
+  DVar2 = GetVersion();
+  if (((ushort)DVar2 & 0xaff) == 0xa03) {
+    DAT_0046d0d6 = CreateFileA(s_WING32_DLL_0046d048,0x80000000,1,(LPSECURITY_ATTRIBUTES)0x0,3,0,
+                               (HANDLE)0x0);
+    if (DAT_0046d0d6 == (HANDLE)0xffffffff) {
+      UVar3 = GetSystemDirectoryA(&DAT_0046e02e,0x100);
+      (&DAT_0046e02e)[UVar3] = 0x5c;
+      pcVar6 = s_WING32_DLL_0046d048;
+      pcVar8 = &DAT_0046e02f + UVar3;
+      for (iVar5 = 0xb; iVar5 != 0; iVar5 = iVar5 + -1) {
+        *pcVar8 = *pcVar6;
+        pcVar6 = pcVar6 + 1;
+        pcVar8 = pcVar8 + 1;
+      }
+      DAT_0046d0d6 = CreateFileA(&DAT_0046e02e,0x80000000,1,(LPSECURITY_ATTRIBUTES)0x0,3,0,
+                                 (HANDLE)0x0);
+      if (DAT_0046d0d6 == (HANDLE)0xffffffff) {
+        return 0;
+      }
+    }
+    CloseHandle(DAT_0046d0d6);
+    pHVar4 = LoadLibraryA(s_WING32_DLL_0046d048);
+    bVar10 = false;
+    if ((((pHVar4 != (HMODULE)0x0) && (DAT_0046e008 = pHVar4, FUN_00453712(), !bVar10)) &&
+        (FUN_00453712(), !bVar10)) &&
+       (((FUN_00453712(), !bVar10 && (FUN_00453712(), !bVar10)) && (FUN_00453712(), !bVar10)))) {
+      DAT_0046e004 = (*DAT_0046e018)();
+    }
+  }
+  return 0;
+}
+

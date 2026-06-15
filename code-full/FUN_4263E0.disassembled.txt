@@ -1,0 +1,16 @@
+Function: FUN_004263e0
+Address: 0x4263E0
+
+XOR ECX,ECX
+MOV EAX,dword ptr [ESP + 0x4]
+CMP byte ptr [EAX],0xa
+JZ       LAB_004263f6
+
+LAB_004263eb:
+XOR byte ptr [EAX + ECX*0x1],0xfe
+INC ECX
+CMP byte ptr [EAX + ECX*0x1],0xa
+JNZ      LAB_004263eb
+
+LAB_004263f6:
+RET

@@ -1,0 +1,15 @@
+Function: AnimatePalette
+Address: 0x4601DC
+
+
+BOOL AnimatePalette(HPALETTE hPal,UINT iStartIndex,UINT cEntries,PALETTEENTRY *ppe)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601dc. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = AnimatePalette(hPal,iStartIndex,cEntries,ppe);
+  return BVar1;
+}
+

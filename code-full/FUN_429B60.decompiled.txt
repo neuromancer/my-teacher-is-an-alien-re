@@ -1,0 +1,36 @@
+Function: FUN_00429b60
+Address: 0x429B60
+
+
+void * __thiscall FUN_00429b60(void *this,undefined4 param_1,undefined4 param_2)
+
+{
+  int iVar1;
+  undefined4 *puVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00429bf9;
+  *unaff_FS_OFFSET = &local_10;
+  FUN_004127c0(this);
+  *(undefined4 *)((int)this + 0x94) = 0;
+  *(undefined4 *)((int)this + 0x98) = 0;
+  *(undefined4 *)((int)this + 0x9c) = 0;
+  *(undefined4 *)((int)this + 0xa0) = 0;
+  *(undefined ***)this = &PTR_FUN_00461508;
+  puVar2 = (undefined4 *)((int)this + 0x90);
+  for (iVar1 = 0xc; iVar1 != 0; iVar1 = iVar1 + -1) {
+    *puVar2 = 0;
+    puVar2 = puVar2 + 1;
+  }
+  *(undefined4 *)((int)this + 0x90) = 1;
+  *(undefined4 *)((int)this + 0xa4) = param_1;
+  *(undefined4 *)((int)this + 0xb8) = param_2;
+  *unaff_FS_OFFSET = local_10;
+  return this;
+}
+

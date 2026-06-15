@@ -1,0 +1,24 @@
+Function: FUN_004252a0
+Address: 0x4252A0
+
+
+void __fastcall FUN_004252a0(int param_1)
+
+{
+  int iVar1;
+  short sVar2;
+  
+  sVar2 = 0;
+  if (0 < *(short *)(param_1 + 0xc)) {
+    do {
+      iVar1 = _AIL_sample_status_4
+                        (*(undefined4 *)(*(int *)(*(int *)(param_1 + 8) + sVar2 * 4) + 0xc));
+      if (iVar1 == 4) {
+        FUN_004250e0(*(int *)(*(int *)(param_1 + 8) + sVar2 * 4));
+      }
+      sVar2 = sVar2 + 1;
+    } while (sVar2 < *(short *)(param_1 + 0xc));
+  }
+  return;
+}
+

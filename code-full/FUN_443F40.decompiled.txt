@@ -1,0 +1,109 @@
+Function: FUN_00443f40
+Address: 0x443F40
+
+
+undefined4 __thiscall FUN_00443f40(void *this,char *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  undefined4 uVar4;
+  byte *pbVar5;
+  char *pcVar6;
+  int *piVar7;
+  undefined4 *puVar8;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar9;
+  char local_b4 [128];
+  byte local_34 [32];
+  void *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00444091;
+  *unaff_FS_OFFSET = &local_10;
+  _sscanf(param_1,&DAT_00468448,local_34);
+  pbVar2 = local_34;
+  pcVar6 = s_SPRITE_0046851c;
+  do {
+    bVar1 = *pbVar2;
+    bVar9 = bVar1 < (byte)*pcVar6;
+    if (bVar1 != *pcVar6) {
+LAB_00443fa0:
+      iVar3 = (1 - (uint)bVar9) - (uint)(bVar9 != 0);
+      goto LAB_00443fa5;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar9 = bVar1 < (byte)pcVar6[1];
+    if (bVar1 != pcVar6[1]) goto LAB_00443fa0;
+    pbVar2 = pbVar2 + 2;
+    pcVar6 = pcVar6 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_00443fa5:
+  if (iVar3 == 0) {
+    local_14 = (void *)FUN_00454500(0xf8);
+    piVar7 = (int *)0x0;
+    local_8 = 0;
+    if (local_14 != (void *)0x0) {
+      piVar7 = FUN_0044c660(local_14,(char *)0x0);
+    }
+    local_8 = 0xffffffff;
+    FUN_00413e70(piVar7,(int)this,(char *)0x0);
+    FUN_00443b90(this,(int)piVar7);
+  }
+  else {
+    iVar3 = _strncmp((char *)local_34,&DAT_00469c40,3);
+    if (iVar3 == 0) {
+      iVar3 = _sscanf(param_1,s__s__s_00468614,local_34,local_b4);
+      if (iVar3 < 2) {
+        FUN_00412a50();
+      }
+      puVar8 = (undefined4 *)0x0;
+      local_14 = (void *)FUN_00454500(0xf8);
+      local_8 = 1;
+      if (local_14 != (void *)0x0) {
+        puVar8 = FUN_0044c660(local_14,local_b4);
+      }
+      local_8 = 0xffffffff;
+      (**(code **)*puVar8)(param_1);
+      FUN_00443b90(this,(int)puVar8);
+    }
+    else {
+      pbVar2 = local_34;
+      pbVar5 = &DAT_00468444;
+      do {
+        bVar1 = *pbVar2;
+        bVar9 = bVar1 < *pbVar5;
+        if (bVar1 != *pbVar5) {
+LAB_004440d0:
+          iVar3 = (1 - (uint)bVar9) - (uint)(bVar9 != 0);
+          goto LAB_004440d5;
+        }
+        if (bVar1 == 0) break;
+        bVar1 = pbVar2[1];
+        bVar9 = bVar1 < pbVar5[1];
+        if (bVar1 != pbVar5[1]) goto LAB_004440d0;
+        pbVar2 = pbVar2 + 2;
+        pbVar5 = pbVar5 + 2;
+      } while (bVar1 != 0);
+      iVar3 = 0;
+LAB_004440d5:
+      if (iVar3 == 0) {
+        uVar4 = 1;
+        goto LAB_004440ee;
+      }
+      FUN_00412a50();
+    }
+  }
+  uVar4 = 0;
+LAB_004440ee:
+  *unaff_FS_OFFSET = local_10;
+  return uVar4;
+}
+

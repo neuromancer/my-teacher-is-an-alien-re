@@ -1,0 +1,119 @@
+Function: FUN_00442090
+Address: 0x442090
+
+
+undefined4 __thiscall FUN_00442090(void *this,char *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  int *piVar4;
+  undefined4 uVar5;
+  byte *pbVar6;
+  char *pcVar7;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar8;
+  byte local_38 [32];
+  int *piStack_18;
+  undefined4 local_14;
+  undefined4 uStack_10;
+  undefined1 *puStack_c;
+  undefined4 uStack_8;
+  
+  uStack_10 = *unaff_FS_OFFSET;
+  uStack_8 = 0xffffffff;
+  puStack_c = &LAB_00442149;
+  *unaff_FS_OFFSET = &uStack_10;
+  local_14 = 0;
+  local_38[0] = 0;
+  _sscanf(param_1,&DAT_00468448,local_38);
+  pbVar2 = local_38;
+  pcVar7 = s_DERIVED_ENGINE_INFO_00468a7c;
+  do {
+    bVar1 = *pbVar2;
+    bVar8 = bVar1 < (byte)*pcVar7;
+    if (bVar1 != *pcVar7) {
+LAB_004420f4:
+      iVar3 = (1 - (uint)bVar8) - (uint)(bVar8 != 0);
+      goto LAB_004420f9;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar8 = bVar1 < (byte)pcVar7[1];
+    if (bVar1 != pcVar7[1]) goto LAB_004420f4;
+    pbVar2 = pbVar2 + 2;
+    pcVar7 = pcVar7 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_004420f9:
+  if (iVar3 == 0) {
+    piStack_18 = (int *)FUN_00454500(0x118);
+    uStack_8 = 0;
+    piVar4 = (int *)0x0;
+    if (piStack_18 != (int *)0x0) {
+      piVar4 = FUN_00440860(piStack_18);
+    }
+    uStack_8 = 0xffffffff;
+    *(int **)((int)this + 0xac) = piVar4;
+    DAT_0046ae78 = piVar4;
+    FUN_00413e70(piVar4,(int)this,(char *)0x0);
+  }
+  else {
+    pbVar2 = local_38;
+    pcVar7 = s_BGSOUND_0046bfe8;
+    do {
+      bVar1 = *pbVar2;
+      bVar8 = bVar1 < (byte)*pcVar7;
+      if (bVar1 != *pcVar7) {
+LAB_00442188:
+        iVar3 = (1 - (uint)bVar8) - (uint)(bVar8 != 0);
+        goto LAB_0044218d;
+      }
+      if (bVar1 == 0) break;
+      bVar1 = pbVar2[1];
+      bVar8 = bVar1 < (byte)pcVar7[1];
+      if (bVar1 != pcVar7[1]) goto LAB_00442188;
+      pbVar2 = pbVar2 + 2;
+      pcVar7 = pcVar7 + 2;
+    } while (bVar1 != 0);
+    iVar3 = 0;
+LAB_0044218d:
+    if (iVar3 == 0) {
+      _sscanf(param_1,s__s__d_00468658,local_38,&local_14);
+      FUN_00444d90(5,local_14,*(undefined4 *)((int)this + 0x90),*(undefined4 *)((int)this + 0x94),
+                   0x1b,0,0,0,0,0);
+    }
+    else {
+      pbVar2 = local_38;
+      pbVar6 = &DAT_00468444;
+      do {
+        bVar1 = *pbVar2;
+        bVar8 = bVar1 < *pbVar6;
+        if (bVar1 != *pbVar6) {
+LAB_004421f9:
+          iVar3 = (1 - (uint)bVar8) - (uint)(bVar8 != 0);
+          goto LAB_004421fe;
+        }
+        if (bVar1 == 0) break;
+        bVar1 = pbVar2[1];
+        bVar8 = bVar1 < pbVar6[1];
+        if (bVar1 != pbVar6[1]) goto LAB_004421f9;
+        pbVar2 = pbVar2 + 2;
+        pbVar6 = pbVar6 + 2;
+      } while (bVar1 != 0);
+      iVar3 = 0;
+LAB_004421fe:
+      if (iVar3 == 0) {
+        uVar5 = 1;
+        goto LAB_00442217;
+      }
+      FUN_00412a50();
+    }
+  }
+  uVar5 = 0;
+LAB_00442217:
+  *unaff_FS_OFFSET = uStack_10;
+  return uVar5;
+}
+

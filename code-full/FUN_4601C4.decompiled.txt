@@ -1,0 +1,15 @@
+Function: GetTextExtentPointA
+Address: 0x4601C4
+
+
+BOOL GetTextExtentPointA(HDC hdc,LPCSTR lpString,int c,LPSIZE lpsz)
+
+{
+  BOOL BVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601c4. Too many branches
+// WARNING: Treating indirect jump as call
+  BVar1 = GetTextExtentPointA(hdc,lpString,c,lpsz);
+  return BVar1;
+}
+

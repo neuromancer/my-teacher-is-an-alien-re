@@ -1,0 +1,20 @@
+Function: __fsopen
+Address: 0x4550E0
+
+CALL 0x0045a7e0
+TEST EAX,EAX
+JNZ      LAB_004550ec
+XOR EAX,EAX
+RET
+
+LAB_004550ec:
+MOV ECX,dword ptr [ESP + 0x8]
+PUSH EAX
+MOV EAX,dword ptr [ESP + 0x10]
+MOV EDX,dword ptr [ESP + 0x8]
+PUSH EAX
+PUSH ECX
+PUSH EDX
+CALL 0x0045a5d0
+ADD ESP,0x10
+RET

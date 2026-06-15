@@ -1,0 +1,11 @@
+Function: FUN_00456a60
+Address: 0x456A60
+
+
+void __cdecl FUN_00456a60(FILE *param_1,byte *param_2)
+
+{
+  FUN_00458c70(param_1,param_2,(undefined4 *)&stack0x0000000c);
+  return;
+}
+

@@ -1,0 +1,4 @@
+Function: GetTextMetricsA
+Address: 0x46020C
+
+JMP dword ptr [0x0047631c]

@@ -1,0 +1,12 @@
+Function: FUN_00456a60
+Address: 0x456A60
+
+LEA EAX,[ESP + 0xc]
+MOV ECX,dword ptr [ESP + 0x8]
+MOV EDX,dword ptr [ESP + 0x4]
+PUSH EAX
+PUSH ECX
+PUSH EDX
+CALL 0x00458c70
+ADD ESP,0xc
+RET

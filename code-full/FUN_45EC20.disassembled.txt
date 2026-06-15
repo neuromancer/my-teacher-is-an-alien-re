@@ -1,0 +1,23 @@
+Function: siglookup
+Address: 0x45EC20
+
+MOV EDX,0x4720d0
+MOV ECX,dword ptr [ESP + 0x4]
+
+LAB_0045ec29:
+CMP dword ptr [EDX + 0x4],ECX
+JZ       LAB_0045ec44
+ADD EDX,0xc
+MOV EAX,[0x00472150]
+LEA EAX,[EAX + EAX*0x2]
+LEA EAX,[EAX*0x4 + 0x4720d0]
+CMP EAX,EDX
+JA       LAB_0045ec29
+
+LAB_0045ec44:
+MOV EAX,dword ptr [EDX + 0x4]
+SUB EAX,ECX
+CMP EAX,0x1
+SBB EAX,EAX
+AND EAX,EDX
+RET

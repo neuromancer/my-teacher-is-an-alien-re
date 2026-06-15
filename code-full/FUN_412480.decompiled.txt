@@ -1,0 +1,102 @@
+Function: FUN_00412480
+Address: 0x412480
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+void FUN_00412480(void)
+
+{
+  bool bVar1;
+  undefined3 extraout_var;
+  HANDLE pvVar2;
+  int iVar3;
+  undefined3 extraout_var_00;
+  FILE *pFVar4;
+  char *pcVar5;
+  int iVar6;
+  undefined4 *unaff_FS_OFFSET;
+  char local_2cc [256];
+  DWORD local_1cc [3];
+  int local_1c0;
+  undefined1 local_1b8 [260];
+  char local_b4 [64];
+  char local_74 [64];
+  int local_34 [5];
+  undefined1 local_20 [4];
+  undefined4 local_1c;
+  undefined4 local_18;
+  undefined4 local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00412717;
+  *unaff_FS_OFFSET = &local_10;
+  iVar6 = 0;
+  FUN_00421880(local_34);
+  local_8 = 0;
+  _DAT_00469140 = 0;
+  FUN_00412400();
+  FUN_004218c0(local_34);
+  FUN_00455130(s_cfg_miscache_dat_00469310);
+  bVar1 = FUN_00425fa0(s_cfg_miscache_dat_00469310);
+  if (CONCAT31(extraout_var,bVar1) != 0) {
+    pvVar2 = __findfirst(s_mis___mis_00469304,local_1cc);
+    if (pvVar2 != (HANDLE)0xffffffff) {
+      do {
+        if (iVar6 <= local_1c0) {
+          iVar6 = local_1c0;
+        }
+        iVar3 = __findnext(pvVar2,local_1cc);
+      } while (iVar3 == 0);
+    }
+    __findfirst(s_cfg_miscache_dat_00469310,local_1cc);
+    if (local_1c0 < iVar6) {
+      FUN_00455130(s_cfg_miscache_dat_00469310);
+    }
+  }
+  bVar1 = FUN_00425fa0(s_cfg_miscache_dat_00469310);
+  if (CONCAT31(extraout_var_00,bVar1) == 0) {
+    pvVar2 = __findfirst(s_mis___mis_00469304,local_1cc);
+    if (pvVar2 != (HANDLE)0xffffffff) {
+      do {
+        _sprintf(local_74,s_mis__s_004692e8,local_1b8);
+        pFVar4 = (FILE *)FUN_00455110(local_74,&DAT_00469300);
+        pcVar5 = FUN_00426400(local_2cc,0xff,pFVar4);
+        while (pcVar5 != (char *)0x0) {
+          _sscanf(local_2cc,&DAT_00468448,local_b4);
+          if (local_b4[0] == '[') {
+            _fgetpos(pFVar4,(fpos_t *)&local_18);
+            FUN_00412210(local_74,local_b4,local_18,local_14);
+          }
+          _DAT_00469140 = _DAT_00469140 + 1;
+          pcVar5 = FUN_00426400(local_2cc,0xff,pFVar4);
+        }
+        _fclose(pFVar4);
+        iVar6 = __findnext(pvVar2,local_1cc);
+      } while (iVar6 == 0);
+      FUN_00412730();
+    }
+  }
+  else {
+    pFVar4 = (FILE *)FUN_00455110(s_cfg_miscache_dat_00469310,&DAT_00469300);
+    pcVar5 = FUN_00426400(local_2cc,0xff,pFVar4);
+    while (pcVar5 != (char *)0x0) {
+      _sscanf(local_2cc,s__s__s__lu__d_004692f0,local_74,local_b4,&local_1c,local_20);
+      local_18 = local_1c;
+      local_14 = 0;
+      FUN_00412210(local_74,local_b4,local_1c,0);
+      pcVar5 = FUN_00426400(local_2cc,0xff,pFVar4);
+    }
+    _fclose(pFVar4);
+  }
+  _DAT_0046913c = FUN_004218e0(local_34);
+  local_8 = 0xffffffff;
+  FUN_00412721();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

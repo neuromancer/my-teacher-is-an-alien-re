@@ -1,0 +1,44 @@
+Function: FUN_00424c50
+Address: 0x424C50
+
+
+void * __thiscall FUN_00424c50(void *this,int param_1,ushort param_2,short param_3)
+
+{
+  undefined *puVar1;
+  int iVar2;
+  undefined4 *puVar3;
+  
+  puVar3 = this;
+  for (iVar2 = 0xf; iVar2 != 0; iVar2 = iVar2 + -1) {
+    *puVar3 = 0;
+    puVar3 = puVar3 + 1;
+  }
+  _AIL_startup_0();
+  if (*(char *)(DAT_0046aa10 + 0x46) == '\x02') {
+    if (DAT_0046a87c != 0) {
+      _AIL_set_preference_8(0xf);
+      puVar1 = FUN_00424e40(param_1,param_2,param_3 + 1);
+      *(undefined **)((int)this + 0x38) = puVar1;
+    }
+    if (*(int *)((int)this + 0x38) == 0) {
+      _AIL_set_preference_8(0xf);
+      puVar1 = FUN_00424e40(param_1,param_2,param_3 + 1);
+      *(undefined **)((int)this + 0x38) = puVar1;
+    }
+    if (*(int *)((int)this + 0x38) == 0) {
+      FUN_00425d70((wchar_t *)s_Sound_____Cannot_initialize_soun_0046a8c8);
+    }
+    else {
+      Ordinal_33();
+      FUN_00424d90(this);
+      _AIL_digital_configuration_16(*(undefined4 *)((int)this + 0x38),0,0,&stack0xffffff7c);
+      FUN_00425d70((wchar_t *)s_Sound_____Initialized_at_bits__d_0046a880);
+    }
+  }
+  else {
+    FUN_00425d70((wchar_t *)s_Sound_____Not_Initialized__No_So_0046a91c);
+  }
+  return this;
+}
+

@@ -1,0 +1,11 @@
+Function: FUN_00455af1
+Address: 0x455AF1
+
+PUSH EAX
+SUB ESP,0x2c
+FSTP extended double ptr [ESP + 0xc]
+FSTP extended double ptr [ESP]
+CALL 0x00455300
+ADD ESP,0x2c
+POP EAX
+RET

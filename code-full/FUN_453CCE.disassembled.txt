@@ -1,0 +1,43 @@
+Function: FUN_00453cce
+Address: 0x453CCE
+
+PUSH EBP
+MOV EBP,ESP
+PUSH EBX
+PUSH ES
+MOV AX,0xffff
+CMP byte ptr [0x0046db3c],0x0
+JGE      LAB_00453ce2
+JMP      LAB_00453d2c
+
+LAB_00453ce2:
+MOV EAX,dword ptr [EBP + 0x8]
+CMP EAX,dword ptr [0x0046d0c6]
+JL       LAB_00453d31
+CMP EAX,dword ptr [0x0046d0ca]
+JG       LAB_00453d31
+MOV EBX,EAX
+MOV EAX,dword ptr [EBP + 0xc]
+CMP EAX,dword ptr [0x0046d0ce]
+JL       LAB_00453d31
+CMP EAX,dword ptr [0x0046d0d2]
+JG       LAB_00453d31
+NEG EAX
+ADD EAX,dword ptr [0x0046d0b2]
+MUL dword ptr [0x0046db46]
+ADD EBX,EAX
+MOV ES,word ptr [0x0046db52]
+ADD EBX,dword ptr [0x0046db4e]
+MOV AL,byte ptr ES:[EBX]
+XOR AH,AH
+
+LAB_00453d2c:
+CWDE
+POP ES
+POP EBX
+POP EBP
+RET
+
+LAB_00453d31:
+MOV AX,0xffff
+JMP      LAB_00453d2c

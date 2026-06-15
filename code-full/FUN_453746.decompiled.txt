@@ -1,0 +1,33 @@
+Function: FUN_00453746
+Address: 0x453746
+
+
+undefined4 FUN_00453746(void)
+
+{
+  int iVar1;
+  int iVar2;
+  int *piVar3;
+  
+  iVar2 = 0x20;
+  piVar3 = &DAT_0046de54;
+  do {
+    iVar1 = *piVar3;
+    iVar2 = iVar2 + -1;
+    piVar3 = piVar3 + 1;
+  } while (iVar2 != 0 && iVar1 != 0);
+  if (iVar1 == 0) {
+    DAT_0046db3c = 0xff;
+    if (DAT_0046d096 != (HPALETTE)0x0) {
+      SelectPalette(DAT_0046d070,DAT_0046d096,0);
+    }
+    if (DAT_0046e004 != (HDC)0x0) {
+      DeleteDC(DAT_0046e004);
+      DAT_0046e004 = (HDC)0x0;
+      DAT_0046e00c = 0;
+      FreeLibrary(DAT_0046e008);
+    }
+  }
+  return 0;
+}
+

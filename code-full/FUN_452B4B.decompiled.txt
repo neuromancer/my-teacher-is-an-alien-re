@@ -1,0 +1,29 @@
+Function: FUN_00452b4b
+Address: 0x452B4B
+
+
+void FUN_00452b4b(void)
+
+{
+  uint uVar1;
+  uint uVar2;
+  int unaff_EBP;
+  undefined4 *puVar3;
+  
+  uVar2 = *(int *)(unaff_EBP + 8) * *(int *)(unaff_EBP + 0xc);
+  puVar3 = *(undefined4 **)(unaff_EBP + -0xe);
+  for (uVar1 = uVar2 >> 2; uVar1 != 0; uVar1 = uVar1 - 1) {
+    *puVar3 = 0;
+    puVar3 = puVar3 + 1;
+  }
+  for (uVar1 = (uint)((uVar2 >> 1 & 1) != 0); uVar1 != 0; uVar1 = uVar1 - 1) {
+    *(undefined2 *)puVar3 = 0;
+    puVar3 = (undefined4 *)((int)puVar3 + 2);
+  }
+  for (uVar2 = (uint)((uVar2 & 1) != 0); uVar2 != 0; uVar2 = uVar2 - 1) {
+    *(undefined1 *)puVar3 = 0;
+    puVar3 = (undefined4 *)((int)puVar3 + 1);
+  }
+  return;
+}
+

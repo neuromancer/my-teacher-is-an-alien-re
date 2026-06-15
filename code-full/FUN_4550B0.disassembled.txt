@@ -1,0 +1,22 @@
+Function: _fgetpos
+Address: 0x4550B0
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH EAX
+CALL 0x0045a3f0
+MOV ECX,dword ptr [ESP + 0xc]
+ADD ESP,0x4
+CMP EDX,-0x1
+MOV dword ptr [ECX],EAX
+MOV dword ptr [ECX + 0x4],EDX
+JNZ      LAB_004550d0
+CMP dword ptr [ECX],-0x1
+JZ       LAB_004550d3
+
+LAB_004550d0:
+XOR EAX,EAX
+RET
+
+LAB_004550d3:
+MOV EAX,0xffffffff
+RET

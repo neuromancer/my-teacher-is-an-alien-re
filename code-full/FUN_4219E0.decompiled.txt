@@ -1,0 +1,11 @@
+Function: FUN_004219e0
+Address: 0x4219E0
+
+
+void __fastcall FUN_004219e0(undefined4 *param_1)
+
+{
+  *param_1 = 0;
+  return;
+}
+

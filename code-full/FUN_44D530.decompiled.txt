@@ -1,0 +1,32 @@
+Function: FUN_0044d530
+Address: 0x44D530
+
+
+void __thiscall FUN_0044d530(void *this,undefined4 param_1,undefined4 param_2,undefined4 param_3)
+
+{
+  int iVar1;
+  int *piVar2;
+  
+  if (*(int *)((int)this + 0xa0) == 0) {
+    FUN_0044d5c0(this,1);
+  }
+  iVar1 = 0;
+  if (0 < *(int *)((int)this + 0xa8)) {
+    piVar2 = (int *)(*(int *)((int)this + 0xa0) + 4);
+    do {
+      if (*piVar2 == 0) {
+        iVar1 = iVar1 * 0xc;
+        *(undefined4 *)(iVar1 + *(int *)((int)this + 0xa0)) = param_1;
+        *(undefined4 *)(*(int *)((int)this + 0xa0) + 4 + iVar1) = param_2;
+        *(undefined4 *)(*(int *)((int)this + 0xa0) + 8 + iVar1) = param_3;
+        return;
+      }
+      piVar2 = piVar2 + 3;
+      iVar1 = iVar1 + 1;
+    } while (iVar1 < *(int *)((int)this + 0xa8));
+  }
+  FUN_00425c50(s_Sprite__SetLogic__s_0046ca34);
+  return;
+}
+

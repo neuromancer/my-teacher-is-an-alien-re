@@ -1,0 +1,15 @@
+Function: SelectObject
+Address: 0x4601AC
+
+
+HGDIOBJ SelectObject(HDC hdc,HGDIOBJ h)
+
+{
+  HGDIOBJ pvVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601ac. Too many branches
+// WARNING: Treating indirect jump as call
+  pvVar1 = SelectObject(hdc,h);
+  return pvVar1;
+}
+

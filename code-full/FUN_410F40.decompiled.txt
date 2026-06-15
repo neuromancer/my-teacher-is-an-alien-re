@@ -1,0 +1,22 @@
+Function: FUN_00410f40
+Address: 0x410F40
+
+
+void FUN_00410f40(void)
+
+{
+  int iVar1;
+  
+  iVar1 = 0;
+  FUN_00410e80();
+  FUN_00425d70((wchar_t *)s__d_Virtual_Buffers_in_use_00469000);
+  do {
+    if ((&DAT_00472bf0)[iVar1] != -1) {
+      FUN_0044c650(iVar1);
+      FUN_00425d70((wchar_t *)s_VB_handle__d_addr__d_name__s_00468fe0);
+    }
+    iVar1 = iVar1 + 1;
+  } while (iVar1 < 0x20);
+  return;
+}
+

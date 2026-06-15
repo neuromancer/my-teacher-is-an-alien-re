@@ -1,0 +1,118 @@
+Function: FUN_0045b040
+Address: 0x45B040
+
+CMP dword ptr [0x00471fa4],0x0
+PUSH EBX
+PUSH ESI
+JNZ      LAB_0045b060
+MOV ESI,dword ptr [ESP + 0x10]
+MOV EAX,dword ptr [ESP + 0xc]
+PUSH ESI
+PUSH EAX
+CALL 0x0045dd80
+ADD ESP,0x8
+POP ESI
+POP EBX
+RET
+
+LAB_0045b060:
+MOV EAX,dword ptr [ESP + 0xc]
+MOV ESI,dword ptr [ESP + 0x10]
+
+LAB_0045b068:
+INC EAX
+XOR ECX,ECX
+MOVZX DX,byte ptr [EAX + -0x1]
+MOV CL,DL
+TEST byte ptr [ECX + 0x471ea1],0x4
+JZ       LAB_0045b0c8
+MOV CL,byte ptr [EAX]
+TEST CL,CL
+JNZ      LAB_0045b086
+XOR DX,DX
+JMP      LAB_0045b0d8
+
+LAB_0045b086:
+SHL DX,0x8
+INC EAX
+MOVZX CX,CL
+OR DX,CX
+CMP word ptr [0x00471fb0],DX
+JA       LAB_0045b0ad
+CMP word ptr [0x00471fb2],DX
+JC       LAB_0045b0ad
+ADD DX,word ptr [0x00471fb4]
+JMP      LAB_0045b0d8
+
+LAB_0045b0ad:
+CMP word ptr [0x00471fb6],DX
+JA       LAB_0045b0d8
+CMP word ptr [0x00471fb8],DX
+JC       LAB_0045b0d8
+ADD DX,word ptr [0x00471fba]
+JMP      LAB_0045b0d8
+
+LAB_0045b0c8:
+CMP DX,0x41
+JC       LAB_0045b0d8
+CMP DX,0x5a
+JA       LAB_0045b0d8
+ADD DX,0x20
+
+LAB_0045b0d8:
+INC ESI
+XOR EBX,EBX
+MOVZX CX,byte ptr [ESI + -0x1]
+MOV BL,CL
+TEST byte ptr [EBX + 0x471ea1],0x4
+JZ       LAB_0045b138
+MOV BL,byte ptr [ESI]
+TEST BL,BL
+JNZ      LAB_0045b0f6
+XOR CX,CX
+JMP      LAB_0045b148
+
+LAB_0045b0f6:
+SHL CX,0x8
+INC ESI
+MOVZX BX,BL
+OR CX,BX
+CMP word ptr [0x00471fb0],CX
+JA       LAB_0045b11d
+CMP word ptr [0x00471fb2],CX
+JC       LAB_0045b11d
+ADD CX,word ptr [0x00471fb4]
+JMP      LAB_0045b148
+
+LAB_0045b11d:
+CMP word ptr [0x00471fb6],CX
+JA       LAB_0045b148
+CMP word ptr [0x00471fb8],CX
+JC       LAB_0045b148
+ADD CX,word ptr [0x00471fba]
+JMP      LAB_0045b148
+
+LAB_0045b138:
+CMP CX,0x41
+JC       LAB_0045b148
+CMP CX,0x5a
+JA       LAB_0045b148
+ADD CX,0x20
+
+LAB_0045b148:
+CMP CX,DX
+JNZ      LAB_0045b15b
+TEST DX,DX
+JNZ      LAB_0045b068
+XOR EAX,EAX
+POP ESI
+POP EBX
+RET
+
+LAB_0045b15b:
+SBB EAX,EAX
+POP ESI
+AND EAX,0x2
+POP EBX
+DEC EAX
+RET

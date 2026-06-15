@@ -1,0 +1,56 @@
+Function: FUN_00419c40
+Address: 0x419C40
+
+
+void __thiscall FUN_00419c40(void *this,undefined4 param_1,int *param_2)
+
+{
+  int iVar1;
+  
+  switch(param_1) {
+  case 0:
+    if (*param_2 == 1) {
+      FUN_00425550(*(void **)((int)this + 0x110),2);
+      *param_2 = *param_2 + 1;
+      *(undefined4 *)(*(int *)((int)this + 0xa8) + 0x10) = 0;
+    }
+    iVar1 = FUN_004256d0(*(void **)((int)this + 0x110),2);
+    if (iVar1 == 0) {
+      (**(code **)(*(int *)this + 0x2c))();
+      return;
+    }
+    break;
+  case 1:
+    if (*param_2 == 1) {
+      FUN_00425550(*(void **)((int)this + 0x110),1);
+      *param_2 = *param_2 + 1;
+      *(undefined4 *)(*(int *)((int)this + 0xa8) + 0x10) = 0;
+      FUN_0044cb40(*(void **)((int)this + 0x108),1,0);
+    }
+    iVar1 = FUN_004256d0(*(void **)((int)this + 0x110),1);
+    if (iVar1 == 0) {
+      (**(code **)(*(int *)this + 0x2c))();
+      return;
+    }
+    break;
+  case 2:
+    (**(code **)(*(int *)this + 0x2c))();
+    return;
+  case 3:
+    *param_2 = 0;
+    FUN_004218c0(*(undefined4 **)((int)this + 0x71c));
+    FUN_00425550(*(void **)((int)this + 0x110),0);
+    return;
+  case 4:
+    FUN_004195d0((int)this);
+    return;
+  case 5:
+    FUN_00419690((int)this);
+    break;
+  default:
+    FUN_00425c50(s_SC_CrystalPuzzle__Process_Action_00469d8c);
+    return;
+  }
+  return;
+}
+

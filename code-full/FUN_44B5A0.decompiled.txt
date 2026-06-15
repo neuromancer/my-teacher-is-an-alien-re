@@ -1,0 +1,10 @@
+Function: FUN_0044b5a0
+Address: 0x44B5A0
+
+
+undefined4 FUN_0044b5a0(void)
+
+{
+  return 0;
+}
+

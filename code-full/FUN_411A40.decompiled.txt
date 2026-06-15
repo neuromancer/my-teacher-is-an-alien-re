@@ -1,0 +1,66 @@
+Function: FUN_00411a40
+Address: 0x411A40
+
+
+void __thiscall FUN_00411a40(void *this,int param_1,int param_2,int param_3)
+
+{
+  uint uVar1;
+  uint uVar2;
+  undefined4 *puVar3;
+  int iVar4;
+  undefined4 *unaff_FS_OFFSET;
+  longlong lVar5;
+  int local_34;
+  undefined4 local_30;
+  undefined4 local_2c;
+  undefined4 local_28;
+  int local_24;
+  int local_20;
+  int local_1c;
+  int local_18;
+  uint local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  uint local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00411bd2;
+  *unaff_FS_OFFSET = &local_10;
+  lVar5 = __ftol();
+  uVar1 = (uint)lVar5;
+  lVar5 = __ftol();
+  uVar2 = (uint)lVar5;
+  if ((0 < (int)uVar1) && (0 < (int)uVar2)) {
+    local_14 = FUN_004531d8(DAT_0046aa04,uVar1,uVar2);
+    if ((int)local_14 < 0) {
+      FUN_00425c50(s_VBuffer__ScaleTCCopy_0046910c);
+    }
+    puVar3 = (undefined4 *)FUN_00452946(local_14);
+    FUN_00452fce(*(undefined1 **)(param_3 + 0x10),puVar3,*(uint *)(param_3 + 0x14),
+                 *(uint *)(param_3 + 0x18),uVar1,uVar2);
+    local_8 = 1;
+    local_30 = *(undefined4 *)((int)this + 0x20);
+    local_2c = *(undefined4 *)((int)this + 0x2c);
+    local_34 = *(int *)((int)this + 0x28);
+    local_1c = uVar1 - 1;
+    local_18 = uVar2 - 1;
+    local_28 = *(undefined4 *)((int)this + 0x24);
+    local_24 = 0;
+    local_20 = 0;
+    iVar4 = FUN_00411fc0(&local_34,&local_24,&param_1,&param_2);
+    if (iVar4 != 0) {
+      FUN_00452ebd(local_24,local_1c,local_20,local_18,param_1,param_2,local_14,
+                   *(uint *)((int)this + 0x1c));
+      FUN_00452faa(local_14);
+    }
+    local_8 = local_8 & 0xffffff00;
+    FUN_00411bca();
+    local_8 = 0xffffffff;
+    FUN_00411bdc();
+  }
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

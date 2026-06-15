@@ -1,0 +1,22 @@
+Function: FID_conflict:_fwprintf
+Address: 0x4563C0
+
+
+/* Library Function - Multiple Matches With Different Base Names
+    _fprintf
+    _fwprintf
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl FID_conflict__fwprintf(FILE *_File,wchar_t *_Format,...)
+
+{
+  int _Flag;
+  int iVar1;
+  
+  _Flag = __stbuf(_File);
+  iVar1 = FUN_00457ab0(_File,(byte *)_Format,(undefined4 *)&stack0x0000000c);
+  __ftbuf(_Flag,_File);
+  return iVar1;
+}
+

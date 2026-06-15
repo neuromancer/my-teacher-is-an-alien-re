@@ -1,0 +1,19 @@
+Function: FUN_00434520
+Address: 0x434520
+
+
+void FUN_00434520(void)
+
+{
+  if (DAT_0046b78c == 0) {
+    FUN_00425d70((wchar_t *)s_HDCache__LogStats_____HDCache_no_0046b81c);
+    return;
+  }
+  FUN_00425d70((wchar_t *)s_________________________00469354);
+  FUN_00425d70((wchar_t *)s_HD_File_Cache_0046b80c);
+  FUN_00425d70((wchar_t *)s_PreLoading_Cache____d_ms_0046b7f0);
+  FUN_00425d70((wchar_t *)s_Cache_Entries____d_of__d___d_of___0046b7c4);
+  FUN_00425d70((wchar_t *)s_Hits__d_Misses____d_00469340);
+  return;
+}
+

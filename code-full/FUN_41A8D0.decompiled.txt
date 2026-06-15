@@ -1,0 +1,50 @@
+Function: FUN_0041a8d0
+Address: 0x41A8D0
+
+
+void __thiscall FUN_0041a8d0(void *this,undefined4 param_1)
+
+{
+  int *piVar1;
+  bool bVar2;
+  undefined3 extraout_var;
+  int iVar3;
+  undefined4 *puVar4;
+  int *piVar5;
+  undefined4 *local_48;
+  undefined4 local_44 [16];
+  undefined4 local_4;
+  
+  puVar4 = local_44;
+  for (iVar3 = 0x11; iVar3 != 0; iVar3 = iVar3 + -1) {
+    *puVar4 = 0;
+    puVar4 = puVar4 + 1;
+  }
+  local_48 = local_44;
+  local_4 = param_1;
+  for (piVar5 = (int *)**(undefined4 **)this; piVar5 != (int *)0x0; piVar5 = (int *)*piVar5) {
+    bVar2 = FUN_0041a6d0(piVar5 + 2,(int *)&local_48);
+    if (CONCAT31(extraout_var,bVar2) != 0) goto LAB_0041a919;
+  }
+  piVar5 = (int *)0x0;
+LAB_0041a919:
+  piVar1 = *(int **)this;
+  if ((int *)*piVar1 == piVar5) {
+    *piVar1 = *piVar5;
+  }
+  else {
+    *(int *)piVar5[1] = *piVar5;
+  }
+  if ((int *)piVar1[1] == piVar5) {
+    piVar1[1] = piVar5[1];
+  }
+  else {
+    *(int *)(*piVar5 + 4) = piVar5[1];
+  }
+  FUN_0041a6f0(piVar5 + 2,1);
+  *piVar5 = piVar1[3];
+  piVar1[3] = (int)piVar5;
+  piVar1[2] = piVar1[2] + -1;
+  return;
+}
+

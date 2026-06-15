@@ -1,0 +1,51 @@
+Function: FUN_00403880
+Address: 0x403880
+
+PUSH ESI
+MOV EAX,dword ptr [ECX + 0x1c]
+MOV ESI,ECX
+PUSH EAX
+CALL 0x004525ec
+ADD ESP,0x4
+MOV ECX,dword ptr [0x0046aa14]
+CALL 0x004111b0
+CMP dword ptr [ESI + 0x8],0x0
+JGE      LAB_004038a7
+MOV dword ptr [ESI + 0x8],0x0
+
+LAB_004038a7:
+CMP dword ptr [ESI + 0xc],0x0
+JGE      LAB_004038b4
+MOV dword ptr [ESI + 0xc],0x0
+
+LAB_004038b4:
+CMP dword ptr [ESI + 0x10],0x27f
+JLE      LAB_004038c4
+MOV dword ptr [ESI + 0x10],0x27f
+
+LAB_004038c4:
+CMP dword ptr [ESI + 0x14],0x1df
+JLE      LAB_004038d4
+MOV dword ptr [ESI + 0x14],0x1df
+
+LAB_004038d4:
+MOV EAX,dword ptr [ESI + 0x14]
+MOV ECX,dword ptr [ESI + 0xc]
+PUSH EAX
+MOV EDX,dword ptr [ESI + 0x10]
+PUSH ECX
+MOV EAX,dword ptr [ESI + 0x8]
+CMP dword ptr [ESI + 0x18],0x2
+PUSH EDX
+PUSH EAX
+JNZ      LAB_004038f6
+CALL 0x00452556
+ADD ESP,0x10
+POP ESI
+RET 0x4
+
+LAB_004038f6:
+CALL 0x004524d9
+ADD ESP,0x10
+POP ESI
+RET 0x4

@@ -1,0 +1,7 @@
+Function: FID_conflict:_CallMemberFunction1
+Address: 0x454150
+
+POP EAX
+POP ECX
+XCHG dword ptr [ESP],EAX
+JMP EAX

@@ -1,0 +1,15 @@
+Function: RealizePalette
+Address: 0x4601F4
+
+
+UINT RealizePalette(HDC hdc)
+
+{
+  UINT UVar1;
+  
+// WARNING: Could not recover jumptable at 0x004601f4. Too many branches
+// WARNING: Treating indirect jump as call
+  UVar1 = RealizePalette(hdc);
+  return UVar1;
+}
+

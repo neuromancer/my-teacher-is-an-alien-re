@@ -1,0 +1,4 @@
+Function: thunk_FUN_004079e0
+Address: 0x407E40
+
+JMP 0x004079e0

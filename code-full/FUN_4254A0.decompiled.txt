@@ -1,0 +1,27 @@
+Function: FUN_004254a0
+Address: 0x4254A0
+
+
+void __thiscall FUN_004254a0(void *this,int param_1)
+
+{
+  undefined4 *puVar1;
+  uint uVar2;
+  
+  FUN_004254f0(this);
+  *(int *)this = param_1;
+  puVar1 = (undefined4 *)FUN_00454500(param_1 << 2);
+  *(undefined4 **)((int)this + 4) = puVar1;
+  for (uVar2 = *(uint *)this & 0x3fffffff; uVar2 != 0; uVar2 = uVar2 - 1) {
+    *puVar1 = 0;
+    puVar1 = puVar1 + 1;
+  }
+  puVar1 = (undefined4 *)FUN_00454500(*(int *)this << 2);
+  *(undefined4 **)((int)this + 8) = puVar1;
+  for (uVar2 = *(uint *)this & 0x3fffffff; uVar2 != 0; uVar2 = uVar2 - 1) {
+    *puVar1 = 0;
+    puVar1 = puVar1 + 1;
+  }
+  return;
+}
+

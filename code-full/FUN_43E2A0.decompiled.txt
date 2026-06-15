@@ -1,0 +1,42 @@
+Function: FUN_0043e2a0
+Address: 0x43E2A0
+
+
+undefined4 * __thiscall FUN_0043e2a0(void *this,undefined4 param_1,undefined4 param_2)
+
+{
+  undefined4 *puVar1;
+  int iVar2;
+  undefined4 *puVar3;
+  bool bVar4;
+  
+  if (*(int *)((int)this + 0xc) == 0) {
+    puVar1 = (undefined4 *)FUN_00454500(*(int *)((int)this + 0x14) * 0x120 + 4);
+    *puVar1 = *(undefined4 *)((int)this + 0x10);
+    iVar2 = *(int *)((int)this + 0x14);
+    *(undefined4 **)((int)this + 0x10) = puVar1;
+    puVar1 = puVar1 + iVar2 * 0x48 + -0x47;
+    while (iVar2 = iVar2 + -1, -1 < iVar2) {
+      *puVar1 = *(undefined4 *)((int)this + 0xc);
+      *(undefined4 **)((int)this + 0xc) = puVar1;
+      puVar1 = puVar1 + -0x48;
+    }
+  }
+  puVar1 = *(undefined4 **)((int)this + 0xc);
+  *(undefined4 *)((int)this + 0xc) = *puVar1;
+  puVar1[1] = param_1;
+  *puVar1 = param_2;
+  *(int *)((int)this + 8) = *(int *)((int)this + 8) + 1;
+  puVar3 = puVar1 + 2;
+  for (iVar2 = 0x46; iVar2 != 0; iVar2 = iVar2 + -1) {
+    *puVar3 = 0;
+    puVar3 = puVar3 + 1;
+  }
+  iVar2 = 0;
+  do {
+    bVar4 = iVar2 != 0;
+    iVar2 = iVar2 + -1;
+  } while (bVar4);
+  return puVar1;
+}
+

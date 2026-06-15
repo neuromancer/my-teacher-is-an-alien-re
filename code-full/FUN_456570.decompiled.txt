@@ -1,0 +1,141 @@
+Function: FUN_00456570
+Address: 0x456570
+
+
+undefined4 __cdecl FUN_00456570(byte *param_1,int *param_2)
+
+{
+  char cVar1;
+  uchar *puVar2;
+  uint uVar3;
+  int iVar4;
+  HANDLE hFindFile;
+  LPSTR lpRootPathName;
+  UINT UVar5;
+  BOOL BVar6;
+  undefined4 uVar7;
+  DWORD DVar8;
+  int iVar9;
+  LPSTR pCVar10;
+  _SYSTEMTIME local_25c;
+  _FILETIME local_24c;
+  _WIN32_FIND_DATAA local_244;
+  CHAR local_104 [260];
+  
+  puVar2 = __mbspbrk(param_1,&DAT_00471a2c);
+  if (puVar2 != (uchar *)0x0) {
+    DAT_004719c0 = 2;
+    DAT_004719c4 = 2;
+    return 0xffffffff;
+  }
+  if (param_1[1] == 0x3a) {
+    if ((*param_1 != 0) && (param_1[2] == 0)) {
+      DAT_004719c0 = 2;
+      DAT_004719c4 = 2;
+      return 0xffffffff;
+    }
+    uVar3 = __mbctolower((int)(char)*param_1);
+    iVar4 = uVar3 - 0x60;
+  }
+  else {
+    iVar4 = __getdrive();
+  }
+  hFindFile = FindFirstFileA((LPCSTR)param_1,&local_244);
+  if (hFindFile == (HANDLE)0xffffffff) {
+    puVar2 = __mbspbrk(param_1,&DAT_00471a28);
+    if (puVar2 != (uchar *)0x0) {
+      lpRootPathName = FUN_0045b1e0(local_104,(LPCSTR)param_1,0x104);
+      if (lpRootPathName != (LPSTR)0x0) {
+        iVar9 = -1;
+        pCVar10 = lpRootPathName;
+        do {
+          if (iVar9 == 0) break;
+          iVar9 = iVar9 + -1;
+          cVar1 = *pCVar10;
+          pCVar10 = pCVar10 + 1;
+        } while (cVar1 != '\0');
+        if (iVar9 == -5) {
+          UVar5 = GetDriveTypeA(lpRootPathName);
+          if (1 < UVar5) {
+            local_244.nFileSizeHigh = 0;
+            local_244.nFileSizeLow = 0;
+            local_244.cFileName[0] = '\0';
+            local_244.dwFileAttributes = 0x10;
+            iVar9 = FUN_0045a200(0x7bc,1,1,0,0,0);
+            param_2[7] = iVar9;
+            param_2[6] = iVar9;
+            param_2[8] = iVar9;
+            goto LAB_0045683f;
+          }
+        }
+      }
+    }
+    DAT_004719c0 = 2;
+    DAT_004719c4 = 2;
+    return 0xffffffff;
+  }
+  BVar6 = FileTimeToLocalFileTime(&local_244.ftLastWriteTime,&local_24c);
+  if (BVar6 != 0) {
+    BVar6 = FileTimeToSystemTime(&local_24c,&local_25c);
+    if (BVar6 != 0) {
+      iVar9 = FUN_0045a200(local_25c._0_4_ & 0xffff,(uint)local_25c._0_4_ >> 0x10,
+                           (uint)local_25c.wDay,local_25c._8_4_ & 0xffff,
+                           (uint)local_25c._8_4_ >> 0x10,local_25c._12_4_ & 0xffff);
+      param_2[7] = iVar9;
+      if ((local_244.ftLastAccessTime.dwLowDateTime != 0) ||
+         (local_244.ftLastAccessTime.dwHighDateTime != 0)) {
+        BVar6 = FileTimeToLocalFileTime(&local_244.ftLastAccessTime,&local_24c);
+        if (BVar6 == 0) {
+LAB_004568a3:
+          DVar8 = GetLastError();
+          FUN_0045a860(DVar8);
+          FindClose(hFindFile);
+          return 0xffffffff;
+        }
+        BVar6 = FileTimeToSystemTime(&local_24c,&local_25c);
+        if (BVar6 == 0) goto LAB_004568a3;
+        iVar9 = FUN_0045a200(local_25c._0_4_ & 0xffff,(uint)local_25c._0_4_ >> 0x10,
+                             (uint)local_25c.wDay,local_25c._8_4_ & 0xffff,
+                             (uint)local_25c._8_4_ >> 0x10,local_25c._12_4_ & 0xffff);
+      }
+      param_2[6] = iVar9;
+      if ((local_244.ftCreationTime.dwLowDateTime == 0) &&
+         (local_244.ftCreationTime.dwHighDateTime == 0)) {
+        iVar9 = param_2[7];
+      }
+      else {
+        BVar6 = FileTimeToLocalFileTime(&local_244.ftCreationTime,&local_24c);
+        if (BVar6 == 0) {
+LAB_0045687d:
+          DVar8 = GetLastError();
+          FUN_0045a860(DVar8);
+          FindClose(hFindFile);
+          return 0xffffffff;
+        }
+        BVar6 = FileTimeToSystemTime(&local_24c,&local_25c);
+        if (BVar6 == 0) goto LAB_0045687d;
+        iVar9 = FUN_0045a200(local_25c._0_4_ & 0xffff,(uint)local_25c._0_4_ >> 0x10,
+                             (uint)local_25c.wDay,local_25c._8_4_ & 0xffff,
+                             (uint)local_25c._8_4_ >> 0x10,local_25c._12_4_ & 0xffff);
+      }
+      param_2[8] = iVar9;
+      FindClose(hFindFile);
+LAB_0045683f:
+      uVar7 = ___dtoxmode(local_244.dwFileAttributes,param_1);
+      *(short *)((int)param_2 + 6) = (short)uVar7;
+      *(undefined2 *)(param_2 + 2) = 1;
+      param_2[5] = local_244.nFileSizeLow;
+      *param_2 = iVar4 + -1;
+      param_2[4] = iVar4 + -1;
+      *(undefined2 *)(param_2 + 1) = 0;
+      *(undefined2 *)(param_2 + 3) = 0;
+      *(undefined2 *)((int)param_2 + 10) = 0;
+      return 0;
+    }
+  }
+  DVar8 = GetLastError();
+  FUN_0045a860(DVar8);
+  FindClose(hFindFile);
+  return 0xffffffff;
+}
+

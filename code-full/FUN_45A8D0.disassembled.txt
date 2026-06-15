@@ -1,0 +1,80 @@
+Function: __fseeki64
+Address: 0x45A8D0
+
+PUSH ESI
+PUSH EDI
+MOV ESI,dword ptr [ESP + 0xc]
+MOV EAX,dword ptr [ESI + 0xc]
+TEST AL,0x83
+JZ       LAB_0045a96b
+MOV EDI,dword ptr [ESP + 0x18]
+TEST EDI,EDI
+JZ       LAB_0045a8f3
+CMP EDI,0x1
+JZ       LAB_0045a8f3
+CMP EDI,0x2
+JNZ      LAB_0045a96b
+
+LAB_0045a8f3:
+AND EAX,0xffffffef
+CMP EDI,0x1
+MOV dword ptr [ESI + 0xc],EAX
+JNZ      LAB_0045a911
+PUSH ESI
+CALL 0x0045a3f0
+ADD ESP,0x4
+ADD dword ptr [ESP + 0x10],EAX
+ADC dword ptr [ESP + 0x14],EDX
+XOR EDI,EDI
+
+LAB_0045a911:
+PUSH ESI
+CALL 0x00458b80
+ADD ESP,0x4
+MOV EAX,dword ptr [ESI + 0xc]
+TEST AL,0x80
+JZ       LAB_0045a929
+AND EAX,0xfffffffc
+MOV dword ptr [ESI + 0xc],EAX
+JMP      LAB_0045a93d
+
+LAB_0045a929:
+TEST AL,0x1
+JZ       LAB_0045a93d
+TEST AL,0x8
+JZ       LAB_0045a93d
+TEST AH,0x4
+JNZ      LAB_0045a93d
+MOV dword ptr [ESI + 0x18],0x200
+
+LAB_0045a93d:
+MOV EAX,dword ptr [ESP + 0x10]
+PUSH EDI
+MOV ECX,dword ptr [ESP + 0x18]
+MOV EDX,dword ptr [ESI + 0x10]
+PUSH ECX
+PUSH EAX
+PUSH EDX
+CALL 0x0045d850
+ADD ESP,0x10
+CMP EDX,-0x1
+JNZ      LAB_0045a966
+CMP EAX,-0x1
+JNZ      LAB_0045a966
+MOV EAX,0xffffffff
+POP EDI
+POP ESI
+RET
+
+LAB_0045a966:
+XOR EAX,EAX
+POP EDI
+POP ESI
+RET
+
+LAB_0045a96b:
+MOV EAX,0xffffffff
+POP EDI
+MOV dword ptr [0x004719c0],0x16
+POP ESI
+RET

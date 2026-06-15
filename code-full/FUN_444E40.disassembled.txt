@@ -1,0 +1,11 @@
+Function: FUN_00444e40
+Address: 0x444E40
+
+PUSH ESI
+MOV ECX,dword ptr [0x0046a6ec]
+MOV ESI,dword ptr [ESP + 0x8]
+PUSH ESI
+CALL 0x00431a90
+MOV dword ptr [ESI + 0x34],0x0
+POP ESI
+RET

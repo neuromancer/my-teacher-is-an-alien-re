@@ -1,0 +1,30 @@
+Function: _CPtoLCID
+Address: 0x45AEB0
+
+MOV EAX,dword ptr [ESP + 0x4]
+SUB EAX,0x3a4
+CMP EAX,0x12
+JA       LAB_0045aecd
+XOR ECX,ECX
+MOV CL,byte ptr [EAX + 0x45aefc]
+JMP      LAB_0045aedc
+
+LAB_0045aecd:
+XOR EAX,EAX
+RET
+
+LAB_0045aed0:
+MOV EAX,0x411
+RET
+
+LAB_0045aed6:
+MOV EAX,0x804
+RET
+
+LAB_0045aedc:
+MOV EAX,0x412
+RET
+
+LAB_0045aee2:
+MOV EAX,0x404
+RET

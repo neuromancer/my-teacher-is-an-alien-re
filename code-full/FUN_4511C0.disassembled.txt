@@ -1,0 +1,31 @@
+Function: FUN_004511c0
+Address: 0x4511C0
+
+XOR EAX,EAX
+MOV EDX,dword ptr [ESP + 0x4]
+MOV EDX,dword ptr [EDX + 0x14]
+CMP EDX,0x1
+JZ       LAB_004511db
+CMP EDX,0x2
+JZ       LAB_004511f4
+CMP EDX,0x3
+JZ       LAB_0045120d
+RET 0x4
+
+LAB_004511db:
+OR dword ptr [ECX + 0xdc],0x2
+MOV dword ptr [0x00473e18],0x3
+MOV EAX,0x1
+RET 0x4
+
+LAB_004511f4:
+OR dword ptr [ECX + 0xdc],0x1
+MOV dword ptr [0x00473e18],0x2
+MOV EAX,0x1
+RET 0x4
+
+LAB_0045120d:
+OR dword ptr [ECX + 0xdc],0x4
+MOV dword ptr [0x00473e18],0x4
+MOV EAX,0x1
+RET 0x4

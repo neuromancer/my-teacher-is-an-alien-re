@@ -1,0 +1,43 @@
+Function: FUN_00448220
+Address: 0x448220
+
+
+void __thiscall FUN_00448220(void *this,int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  undefined4 uVar3;
+  uint uVar4;
+  int unaff_EBX;
+  uint unaff_retaddr;
+  
+  iVar1 = *(int *)((int)this + 0x28);
+  if (((iVar1 != 0) && (iVar2 = *(int *)(iVar1 + 0xc), iVar2 != 0)) &&
+     (*(int *)(iVar1 + 4) == *(int *)(iVar2 + 0xc))) {
+    iVar1 = _AIL_sample_status_4(iVar2);
+    if ((iVar1 == 4) && ((*(byte *)((int)this + 4) & 1) == 0)) {
+      if (param_1 != 0) {
+        iVar1 = _AIL_sample_volume_4(*(undefined4 *)(*(int *)((int)this + 0x28) + 0xc));
+        *(int *)((int)this + 8) = unaff_EBX;
+        if ((DAT_0046a6ec == 0) || (uVar4 = *(uint *)(DAT_0046a6ec + 0x1c), uVar4 == 0)) {
+          uVar4 = 0x54;
+        }
+        iVar2 = (unaff_EBX - iVar1) / (int)(unaff_retaddr / uVar4);
+        *(int *)((int)this + 0xc) = iVar2;
+        if (iVar2 == 0) {
+          uVar3 = 1;
+          if (unaff_EBX < iVar1) {
+            uVar3 = 0xffffffff;
+          }
+          *(undefined4 *)((int)this + 0xc) = uVar3;
+        }
+        *(uint *)((int)this + 4) = *(uint *)((int)this + 4) | 1;
+        return;
+      }
+      FUN_00424ff0(*(void **)((int)this + 0x28),unaff_retaddr,0);
+    }
+  }
+  return;
+}
+

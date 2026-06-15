@@ -1,0 +1,61 @@
+Function: FUN_0044c350
+Address: 0x44C350
+
+
+undefined4 __thiscall FUN_0044c350(void *this,uint param_1,char *param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  char *pcVar3;
+  char *pcVar4;
+  undefined4 *puVar5;
+  undefined4 local_13c;
+  undefined4 local_138;
+  undefined4 local_134;
+  uint local_130;
+  uint local_12c [75];
+  
+  piVar1 = *(int **)((int)this + 8);
+  puVar5 = (undefined4 *)0x0;
+  local_13c = 0;
+  local_138 = 0;
+  local_134 = 0;
+  if (piVar1 != (int *)0x0) {
+    local_12c[0] = (param_1 >> 4) % (uint)piVar1[1];
+    if (*piVar1 != 0) {
+      for (puVar5 = *(undefined4 **)(*piVar1 + local_12c[0] * 4); puVar5 != (undefined4 *)0x0;
+          puVar5 = (undefined4 *)*puVar5) {
+        if (puVar5[2] == param_1) goto LAB_0044c3a2;
+      }
+      puVar5 = (undefined4 *)0x0;
+    }
+LAB_0044c3a2:
+    if (puVar5 != (undefined4 *)0x0) {
+      local_138 = puVar5[4];
+      local_134 = puVar5[5];
+    }
+  }
+  iVar2 = FUN_0044c0c0(this);
+  if (iVar2 != 0) {
+    _fsetpos(*(FILE **)this,(fpos_t *)&local_138);
+    do {
+      do {
+        pcVar3 = FUN_00426400((char *)local_12c,0xff,*(FILE **)this);
+        if (pcVar3 == (char *)0x0) goto LAB_0044c45c;
+        _sscanf((char *)local_12c,&DAT_0046c894,&local_130);
+      } while (local_130 != param_1);
+      pcVar3 = FUN_00456090((char *)local_12c,'\"');
+      pcVar3 = pcVar3 + 1;
+      pcVar4 = _strrchr((char *)local_12c,0x22);
+      iVar2 = (int)pcVar4 - (int)pcVar3;
+    } while (((pcVar3 == (char *)0x0) || (pcVar4 == (char *)0x0)) || (iVar2 < 1));
+    FUN_00455220(param_2,pcVar3,iVar2);
+    local_13c = 1;
+    param_2[iVar2] = '\0';
+LAB_0044c45c:
+    FUN_0044c0e0(this);
+  }
+  return local_13c;
+}
+

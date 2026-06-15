@@ -1,0 +1,21 @@
+Function: FUN_0045ece0
+Address: 0x45ECE0
+
+PUSH ESI
+XOR EAX,EAX
+MOV ECX,dword ptr [ESP + 0xc]
+MOV EDX,dword ptr [ESP + 0x8]
+LEA ESI,[EDX + ECX*0x1]
+CMP ESI,EDX
+JC       LAB_0045ecf6
+CMP ESI,ECX
+JNC      LAB_0045ecfb
+
+LAB_0045ecf6:
+MOV EAX,0x1
+
+LAB_0045ecfb:
+MOV ECX,dword ptr [ESP + 0x10]
+MOV dword ptr [ECX],ESI
+POP ESI
+RET

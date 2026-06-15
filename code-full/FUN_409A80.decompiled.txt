@@ -1,0 +1,22 @@
+Function: FUN_00409a80
+Address: 0x409A80
+
+
+void __fastcall FUN_00409a80(undefined4 *param_1)
+
+{
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  puStack_c = &LAB_00409abd;
+  *param_1 = &PTR_FUN_00461148;
+  *unaff_FS_OFFSET = &local_10;
+  local_8 = 0xffffffff;
+  FUN_00409ac7();
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

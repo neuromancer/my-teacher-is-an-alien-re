@@ -1,0 +1,4 @@
+Function: RealizePalette
+Address: 0x4601F4
+
+JMP dword ptr [0x0047632c]

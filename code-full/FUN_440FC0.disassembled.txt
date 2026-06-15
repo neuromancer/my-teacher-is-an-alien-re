@@ -1,0 +1,23 @@
+Function: FUN_00440fc0
+Address: 0x440FC0
+
+XOR EAX,EAX
+MOV ECX,dword ptr [ESP + 0x4]
+MOV ECX,dword ptr [ECX + 0x14]
+CMP ECX,0x1
+JZ       LAB_00440fd6
+CMP ECX,0x2
+JZ       LAB_00440fea
+RET 0x4
+
+LAB_00440fd6:
+MOV EAX,[0x0046ae78]
+OR dword ptr [EAX + 0xdc],0x2
+MOV EAX,0x1
+RET 0x4
+
+LAB_00440fea:
+MOV EAX,[0x0046ae78]
+OR dword ptr [EAX + 0xdc],0x1
+MOV EAX,0x1
+RET 0x4

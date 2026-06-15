@@ -1,0 +1,24 @@
+Function: __adj_fdivr_m16i
+Address: 0x455A74
+
+
+/* Library Function - Single Match
+    __adj_fdivr_m16i
+   
+   Libraries: Visual Studio 1998 Debug, Visual Studio 1998 Release, Visual Studio 2003 Debug, Visual
+   Studio 2003 Release */
+
+undefined4 __adj_fdivr_m16i(void)
+
+{
+  undefined4 in_EAX;
+  ushort in_FPUStatusWord;
+  
+  if ((in_FPUStatusWord & 0x3800) != 0) {
+    __fdivrp_sti_st();
+    return in_EAX;
+  }
+  __fdivrp_sti_st();
+  return in_EAX;
+}
+

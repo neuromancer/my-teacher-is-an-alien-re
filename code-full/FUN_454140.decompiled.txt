@@ -1,0 +1,20 @@
+Function: _CallMemberFunction0
+Address: 0x454140
+
+
+/* Library Function - Single Match
+    void __stdcall _CallMemberFunction0(void *,void *)
+   
+   Library: Visual Studio 1998 Release */
+
+void _CallMemberFunction0(void *param_1,void *param_2)
+
+{
+  LOCK();
+  UNLOCK();
+// WARNING: Could not recover jumptable at 0x00454145. Too many branches
+// WARNING: Treating indirect jump as call
+  (*param_2)();
+  return;
+}
+

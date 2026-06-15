@@ -1,0 +1,35 @@
+Function: write_char
+Address: 0x458490
+
+MOV EDX,dword ptr [ESP + 0x8]
+MOV EAX,dword ptr [EDX + 0x4]
+DEC EAX
+MOV dword ptr [EDX + 0x4],EAX
+JS       LAB_004584b0
+MOV EAX,dword ptr [EDX]
+MOV CL,byte ptr [ESP + 0x4]
+MOV byte ptr [EAX],CL
+MOV ECX,dword ptr [EDX]
+XOR EAX,EAX
+MOV AL,byte ptr [ECX]
+INC ECX
+MOV dword ptr [EDX],ECX
+JMP      LAB_004584be
+
+LAB_004584b0:
+MOV ECX,dword ptr [ESP + 0x4]
+PUSH EDX
+PUSH ECX
+CALL 0x00457960
+ADD ESP,0x8
+
+LAB_004584be:
+CMP EAX,-0x1
+MOV EAX,dword ptr [ESP + 0xc]
+JNZ      LAB_004584ce
+MOV dword ptr [EAX],0xffffffff
+RET
+
+LAB_004584ce:
+INC dword ptr [EAX]
+RET

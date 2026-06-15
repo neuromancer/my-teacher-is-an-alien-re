@@ -1,0 +1,154 @@
+Function: FUN_00427b20
+Address: 0x427B20
+
+
+undefined4 __thiscall FUN_00427b20(void *this,char *param_1)
+
+{
+  byte bVar1;
+  byte *pbVar2;
+  int iVar3;
+  undefined4 uVar4;
+  void *pvVar5;
+  uint uVar6;
+  byte *pbVar7;
+  char *pcVar8;
+  int iVar9;
+  undefined4 *unaff_FS_OFFSET;
+  bool bVar10;
+  byte local_38 [32];
+  int iStack_18;
+  void *pvStack_14;
+  undefined4 uStack_10;
+  undefined1 *puStack_c;
+  undefined4 uStack_8;
+  
+  uStack_10 = *unaff_FS_OFFSET;
+  uStack_8 = 0xffffffff;
+  puStack_c = &LAB_00427c18;
+  *unaff_FS_OFFSET = &uStack_10;
+  local_38[0] = 0;
+  _sscanf(param_1,&DAT_00468448,local_38);
+  pbVar2 = local_38;
+  pcVar8 = s_MAXROCKS_0046ac24;
+  do {
+    bVar1 = *pbVar2;
+    bVar10 = bVar1 < (byte)*pcVar8;
+    if (bVar1 != *pcVar8) {
+LAB_00427b81:
+      iVar3 = (1 - (uint)bVar10) - (uint)(bVar10 != 0);
+      goto LAB_00427b86;
+    }
+    if (bVar1 == 0) break;
+    bVar1 = pbVar2[1];
+    bVar10 = bVar1 < (byte)pcVar8[1];
+    if (bVar1 != pcVar8[1]) goto LAB_00427b81;
+    pbVar2 = pbVar2 + 2;
+    pcVar8 = pcVar8 + 2;
+  } while (bVar1 != 0);
+  iVar3 = 0;
+LAB_00427b86:
+  if (iVar3 == 0) {
+    _sscanf(param_1,s__s__d_0046841c,local_38,(int)this + 0xb0);
+    iVar3 = 0;
+    uVar4 = FUN_00454500(*(int *)((int)this + 0xb0) << 2);
+    *(undefined4 *)((int)this + 0xb4) = uVar4;
+    if (0 < *(int *)((int)this + 0xb0)) {
+      iVar9 = 0;
+      do {
+        pvStack_14 = (void *)FUN_00454500(0x128);
+        uStack_8 = 0;
+        if (pvStack_14 == (void *)0x0) {
+          pvVar5 = (void *)0x0;
+        }
+        else {
+          pvVar5 = FUN_00427150(pvStack_14,this);
+        }
+        iVar9 = iVar9 + 4;
+        iVar3 = iVar3 + 1;
+        uStack_8 = 0xffffffff;
+        *(void **)(*(int *)((int)this + 0xb4) + -4 + iVar9) = pvVar5;
+      } while (iVar3 < *(int *)((int)this + 0xb0));
+    }
+  }
+  else {
+    pbVar2 = local_38;
+    pcVar8 = s_SPRITE_0046851c;
+    do {
+      bVar1 = *pbVar2;
+      bVar10 = bVar1 < (byte)*pcVar8;
+      if (bVar1 != *pcVar8) {
+LAB_00427c57:
+        iVar3 = (1 - (uint)bVar10) - (uint)(bVar10 != 0);
+        goto LAB_00427c5c;
+      }
+      if (bVar1 == 0) break;
+      bVar1 = pbVar2[1];
+      bVar10 = bVar1 < (byte)pcVar8[1];
+      if (bVar1 != pcVar8[1]) goto LAB_00427c57;
+      pbVar2 = pbVar2 + 2;
+      pcVar8 = pcVar8 + 2;
+    } while (bVar1 != 0);
+    iVar3 = 0;
+LAB_00427c5c:
+    if (iVar3 == 0) {
+      FUN_00412a70((int)this);
+      iStack_18 = 0;
+      if (0 < *(int *)((int)this + 0xb0)) {
+        iVar3 = 0;
+        do {
+          FUN_00412aa0((int)this);
+          FUN_00413e70(*(int **)(*(int *)((int)this + 0xb4) + iVar3),(int)this,(char *)0x0);
+          iVar9 = DAT_0046cb90;
+          pvStack_14 = DAT_0046aa30;
+          if ((DAT_0046cb90 < 0) || (*(int *)((int)DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+            FUN_00425c50(s_Invalid_gamestate__d_00468150);
+          }
+          _sprintf((char *)local_38,s_AMMO_SPEED__c_0046ac14,
+                   (int)(char)PTR_DAT_0046cb94
+                              [*(int *)(*(int *)((int)pvStack_14 + 0x90) + iVar9 * 4)]);
+          pvStack_14 = DAT_0046aa30;
+          uVar6 = FUN_00433ae0(DAT_0046aa30,local_38);
+          if (((int)uVar6 < 0) || (*(int *)((int)pvStack_14 + 0x98) + -1 < (int)uVar6)) {
+            FUN_00425c50(s_Invalid_gamestate__d_00468150);
+          }
+          iVar3 = iVar3 + 4;
+          FUN_0044d210(*(void **)(*(int *)((int)this + 0xb4) + -4 + iVar3),0,1,
+                       *(int *)(*(int *)((int)pvStack_14 + 0x90) + uVar6 * 4),1);
+          iStack_18 = iStack_18 + 1;
+        } while (iStack_18 < *(int *)((int)this + 0xb0));
+      }
+    }
+    else {
+      pbVar2 = local_38;
+      pbVar7 = &DAT_00468444;
+      do {
+        bVar1 = *pbVar2;
+        bVar10 = bVar1 < *pbVar7;
+        if (bVar1 != *pbVar7) {
+LAB_00427d85:
+          iVar3 = (1 - (uint)bVar10) - (uint)(bVar10 != 0);
+          goto LAB_00427d8a;
+        }
+        if (bVar1 == 0) break;
+        bVar1 = pbVar2[1];
+        bVar10 = bVar1 < pbVar7[1];
+        if (bVar1 != pbVar7[1]) goto LAB_00427d85;
+        pbVar2 = pbVar2 + 2;
+        pbVar7 = pbVar7 + 2;
+      } while (bVar1 != 0);
+      iVar3 = 0;
+LAB_00427d8a:
+      if (iVar3 == 0) {
+        uVar4 = 1;
+        goto LAB_00427da3;
+      }
+      FUN_00412a50();
+    }
+  }
+  uVar4 = 0;
+LAB_00427da3:
+  *unaff_FS_OFFSET = uStack_10;
+  return uVar4;
+}
+

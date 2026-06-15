@@ -1,0 +1,57 @@
+Function: FUN_00443e30
+Address: 0x443E30
+
+PUSH ESI
+MOV ESI,ECX
+MOV dword ptr [ECX + 0x98],0x1
+TEST byte ptr [ESI + 0x95],0x20
+JNZ      LAB_00443e4b
+CALL 0x00443b20
+
+LAB_00443e4b:
+MOV EAX,dword ptr [ESI + 0x9c]
+MOV ECX,dword ptr [EAX]
+MOV dword ptr [EAX + 0x8],ECX
+MOV EAX,dword ptr [ESI + 0x9c]
+CMP dword ptr [EAX],0x0
+JZ       LAB_00443ec1
+
+LAB_00443e61:
+MOV EAX,dword ptr [ESI + 0x9c]
+MOV ECX,0x0
+MOV EAX,dword ptr [EAX + 0x8]
+TEST EAX,EAX
+JZ       LAB_00443e76
+MOV ECX,dword ptr [EAX + 0x8]
+
+LAB_00443e76:
+PUSH 0x3ff00000
+MOV EAX,dword ptr [ECX + 0xb0]
+PUSH 0x0
+MOV EDX,dword ptr [ECX + 0xac]
+PUSH EAX
+PUSH EDX
+CALL 0x0044ccf0
+TEST EAX,EAX
+JZ       LAB_00443e9e
+MOV dword ptr [ESI + 0x98],0x0
+
+LAB_00443e9e:
+MOV ECX,dword ptr [ESI + 0x9c]
+MOV EAX,dword ptr [ECX + 0x8]
+CMP dword ptr [ECX + 0x4],EAX
+JZ       LAB_00443ec1
+TEST EAX,EAX
+JZ       LAB_00443eb6
+MOV EAX,dword ptr [EAX + 0x4]
+MOV dword ptr [ECX + 0x8],EAX
+
+LAB_00443eb6:
+MOV EAX,dword ptr [ESI + 0x9c]
+CMP dword ptr [EAX],0x0
+JNZ      LAB_00443e61
+
+LAB_00443ec1:
+MOV EAX,dword ptr [ESI + 0x98]
+POP ESI
+RET

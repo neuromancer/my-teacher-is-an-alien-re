@@ -1,0 +1,4 @@
+Function: GetSystemDirectoryA
+Address: 0x460170
+
+JMP dword ptr [0x00476434]

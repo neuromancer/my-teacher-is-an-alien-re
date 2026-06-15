@@ -1,0 +1,106 @@
+Function: FUN_00417120
+Address: 0x417120
+
+
+// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+
+void __thiscall FUN_00417120(void *this,int param_1)
+
+{
+  int iVar1;
+  void *pvVar2;
+  void *pvVar3;
+  undefined4 *puVar4;
+  uint uVar5;
+  int *piVar6;
+  undefined4 *unaff_FS_OFFSET;
+  char local_38 [32];
+  undefined4 *local_18;
+  int *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_004173af;
+  *unaff_FS_OFFSET = &local_10;
+  local_14 = this;
+  FUN_0042d6e0(this,param_1);
+  puVar4 = &DAT_00473334;
+  do {
+    *puVar4 = 0;
+    pvVar2 = DAT_0046aa30;
+    puVar4 = puVar4 + 9;
+  } while (puVar4 < &DAT_004733e8);
+  _DAT_004733e8 = 0;
+  uVar5 = FUN_00433ae0(DAT_0046aa30,&DAT_00468108);
+  if (((int)uVar5 < 0) || (*(int *)((int)pvVar2 + 0x98) + -1 < (int)uVar5)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  _sprintf(local_38,s_mis_dialog_2_2d_mis_00469cb4,
+           *(undefined4 *)(*(int *)((int)pvVar2 + 0x90) + uVar5 * 4));
+  piVar6 = (int *)local_14[0x32];
+  if (piVar6 != (int *)0x0) {
+    if (*piVar6 != 0) {
+      piVar6[2] = *piVar6;
+      iVar1 = *piVar6;
+      while (iVar1 != 0) {
+        puVar4 = (undefined4 *)FUN_00418540(piVar6);
+        if (puVar4 != (undefined4 *)0x0) {
+          FUN_004148f0(puVar4);
+          FUN_00454400(puVar4);
+        }
+        iVar1 = *piVar6;
+      }
+    }
+    FUN_00454400(piVar6);
+    local_14[0x32] = 0;
+  }
+  local_18 = (undefined4 *)FUN_00454500(0x10);
+  if (local_18 == (undefined4 *)0x0) {
+    puVar4 = (undefined4 *)0x0;
+  }
+  else {
+    local_18[3] = 4;
+    *local_18 = 0;
+    local_18[1] = 0;
+    local_18[2] = *local_18;
+    puVar4 = local_18;
+  }
+  local_8 = 0xffffffff;
+  local_14[0x32] = (int)puVar4;
+  pvVar2 = DAT_0046aa30;
+  uVar5 = FUN_00433ae0(DAT_0046aa30,(byte *)s_PERIOD_00468138);
+  if (((int)uVar5 < 0) || (*(int *)((int)pvVar2 + 0x98) + -1 < (int)uVar5)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  pvVar3 = DAT_0046aa30;
+  local_18 = *(undefined4 **)(*(int *)((int)pvVar2 + 0x90) + uVar5 * 4);
+  uVar5 = FUN_00433ae0(DAT_0046aa30,(byte *)s_ROOMINSTANCE_004680cc);
+  if (((int)uVar5 < 0) || (*(int *)((int)pvVar3 + 0x98) + -1 < (int)uVar5)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  iVar1 = DAT_0046cb90;
+  pvVar2 = DAT_0046aa30;
+  if ((DAT_0046cb90 < 0) || (*(int *)((int)DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  if ((*(int *)(*(int *)((int)pvVar2 + 0x90) + iVar1 * 4) == -1) &&
+     ((DAT_0046cb90 < 0 || (*(int *)((int)DAT_0046aa30 + 0x98) + -1 < DAT_0046cb90)))) {
+    FUN_00425c50(s_Invalid_gamestate__d_00468150);
+  }
+  FUN_00413e10(local_14,local_38,s__PERIOD_2_2d_SS_d_DIALOG_d__c__00469c94);
+  iVar1 = local_14[0x2d];
+  if (iVar1 != 0) {
+    piVar6 = (int *)(DAT_0046aa24 + 0xa8);
+    if (*piVar6 != 0) {
+      FUN_00425d70((wchar_t *)s_ddouble_palette_00468140);
+    }
+    *piVar6 = iVar1;
+  }
+  FUN_0043a830(DAT_0046aa28,s_elements_text1_smk_00469c80);
+  *unaff_FS_OFFSET = local_10;
+  return;
+}
+

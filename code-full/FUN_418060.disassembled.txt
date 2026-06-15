@@ -1,0 +1,14 @@
+Function: FUN_00418060
+Address: 0x418060
+
+MOV EAX,FS:[0x0]
+PUSH EBP
+MOV EBP,ESP
+PUSH -0x1
+PUSH 0x4184b4
+PUSH EAX
+MOV dword ptr FS:[0x0],ESP
+SUB ESP,0x48
+MOV dword ptr [EBP + -0x10],0x0
+PUSH EBX
+LEA EAX,[EBP + -0x34]

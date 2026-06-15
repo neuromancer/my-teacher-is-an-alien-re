@@ -1,0 +1,24 @@
+Function: FUN_0043aba0
+Address: 0x43ABA0
+
+MOV EDX,dword ptr [ESP + 0x4]
+CMP EDX,0x20
+JZ       LAB_0043abc8
+CMP EDX,0x9
+JZ       LAB_0043abc8
+SUB EDX,dword ptr [ECX + 0x4]
+JS       LAB_0043abc3
+MOV EAX,dword ptr [ECX + 0x20]
+DEC EAX
+CMP EAX,EDX
+JL       LAB_0043abc3
+MOV EAX,0x1
+RET 0x4
+
+LAB_0043abc3:
+XOR EAX,EAX
+RET 0x4
+
+LAB_0043abc8:
+MOV EAX,0x1
+RET 0x4

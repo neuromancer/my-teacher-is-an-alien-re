@@ -1,0 +1,17 @@
+Function: FUN_0045b770
+Address: 0x45B770
+
+
+uint __cdecl FUN_0045b770(int param_1)
+
+{
+  int *piVar1;
+  
+  piVar1 = &DAT_004720d0;
+  do {
+    if (*piVar1 == param_1) break;
+    piVar1 = piVar1 + 3;
+  } while (piVar1 < &DAT_004720d0 + DAT_00472150 * 3);
+  return -(uint)(*piVar1 == param_1) & (uint)piVar1;
+}
+

@@ -1,0 +1,11 @@
+Function: FUN_00434800
+Address: 0x434800
+
+
+void __fastcall FUN_00434800(int param_1)
+
+{
+  FUN_00425a90(*(uint *)(param_1 + 0x98),*(uint *)(param_1 + 0x9c));
+  return;
+}
+

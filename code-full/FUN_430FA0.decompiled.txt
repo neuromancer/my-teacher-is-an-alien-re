@@ -1,0 +1,37 @@
+Function: FUN_00430fa0
+Address: 0x430FA0
+
+
+int __fastcall FUN_00430fa0(void *param_1)
+
+{
+  int iVar1;
+  int *piVar2;
+  undefined4 *unaff_FS_OFFSET;
+  undefined4 local_50 [14];
+  int local_18;
+  void *local_14;
+  undefined4 local_10;
+  undefined1 *puStack_c;
+  undefined4 local_8;
+  
+  local_10 = *unaff_FS_OFFSET;
+  local_8 = 0xffffffff;
+  puStack_c = &LAB_00431019;
+  *unaff_FS_OFFSET = &local_10;
+  local_18 = 0;
+  iVar1 = *(int *)(*(int *)((int)param_1 + 0x14) + 8);
+  local_14 = param_1;
+  while (iVar1 != 0) {
+    piVar2 = FUN_0042cab0(*(void **)((int)local_14 + 0x14),local_50);
+    local_8 = 0;
+    FUN_00431030(local_14,piVar2);
+    local_8 = 0xffffffff;
+    FUN_00431023();
+    local_18 = local_18 + 1;
+    iVar1 = *(int *)(*(int *)((int)local_14 + 0x14) + 8);
+  }
+  *unaff_FS_OFFSET = local_10;
+  return local_18;
+}
+

@@ -1,0 +1,48 @@
+Function: __fseeki64
+Address: 0x45A8D0
+
+
+/* Library Function - Single Match
+    __fseeki64
+   
+   Library: Visual Studio 1998 Release */
+
+int __cdecl __fseeki64(FILE *_File,longlong _Offset,int _Origin)
+
+{
+  uint uVar1;
+  longlong lVar2;
+  LONG in_stack_00000008;
+  
+  if (((_File->_flag & 0x83U) == 0) ||
+     (((_Offset._4_4_ != 0 && (_Offset._4_4_ != 1)) && (_Offset._4_4_ != 2)))) {
+    DAT_004719c0 = 0x16;
+    return -1;
+  }
+  _File->_flag = _File->_flag & 0xffffffef;
+  lVar2 = _Offset;
+  if (_Offset._4_4_ == 1) {
+    lVar2 = __ftelli64(_File);
+    lVar2 = lVar2 + CONCAT44((LONG)_Offset,in_stack_00000008);
+    in_stack_00000008 = (LONG)lVar2;
+    lVar2 = CONCAT44(1,(int)((ulonglong)lVar2 >> 0x20));
+    _Offset._4_4_ = 0;
+  }
+  __flush(_File);
+  _Offset._0_4_ = (LONG)lVar2;
+  uVar1 = _File->_flag;
+  if ((uVar1 & 0x80) == 0) {
+    if ((((uVar1 & 1) != 0) && ((uVar1 & 8) != 0)) && ((uVar1 & 0x400) == 0)) {
+      _File->_bufsiz = 0x200;
+    }
+  }
+  else {
+    _File->_flag = uVar1 & 0xfffffffc;
+  }
+  lVar2 = FUN_0045d850(_File->_file,in_stack_00000008,(LONG)_Offset,_Offset._4_4_);
+  if (lVar2 != -1) {
+    return 0;
+  }
+  return -1;
+}
+

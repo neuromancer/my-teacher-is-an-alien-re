@@ -1,0 +1,18 @@
+Function: FUN_0045c3a0
+Address: 0x45C3A0
+
+MOV ECX,dword ptr [0x00473f30]
+TEST ECX,ECX
+JZ       LAB_0045c3be
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH EAX
+CALL ECX
+ADD ESP,0x4
+TEST EAX,EAX
+JZ       LAB_0045c3be
+MOV EAX,0x1
+RET
+
+LAB_0045c3be:
+XOR EAX,EAX
+RET

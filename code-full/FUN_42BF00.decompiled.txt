@@ -1,0 +1,12 @@
+Function: FUN_0042bf00
+Address: 0x42BF00
+
+
+void __fastcall FUN_0042bf00(int *param_1)
+
+{
+  FUN_00424e10(DAT_0046aa0c);
+  (**(code **)(*param_1 + 0x18))();
+  return;
+}
+

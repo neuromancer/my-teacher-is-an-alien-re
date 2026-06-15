@@ -1,0 +1,8 @@
+Function: FUN_00409f50
+Address: 0x409F50
+
+MOV EAX,dword ptr [ESP + 0x4]
+PUSH EAX
+CALL 0x004309c0
+MOV EAX,0x1
+RET 0x4

@@ -1,0 +1,10 @@
+Function: FUN_004047ac
+Address: 0x4047AC
+
+
+void FUN_004047ac(void)
+
+{
+  return;
+}
+
