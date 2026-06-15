@@ -378,6 +378,10 @@ int mCNavNode_TypeE::LBLParse(char* line) {
         stateValue = 0;
         return 0;
     }
+    if (str1[0] >= '0' && str1[0] <= '9') {
+        stateValue = atoi(str1);
+        return 0;
+    }
     stateValue = g_Mouse_0046aa18->FindStateByName(str1);
     return 0;
 }
