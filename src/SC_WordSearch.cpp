@@ -737,62 +737,6 @@ int SC_WordSearch::LBLParse(char* line) {
     return 0;
 }
 
-extern void __fastcall InitCombatGrid(int);
-// SC_Combat::OnProcessEnd wrapper for cross-hierarchy __fastcall calls
-#include "SC_Combat.h"
-void __fastcall Handler_OnProcessEnd(int thisPtr) {
-    ((SC_Combat*)thisPtr)->OnProcessEnd();
-}
-
-/* Function start: 0x42F800 */
-void SC_WordSearch::OnProcessEnd() {
-    int startX = 0x9B;
-    Handler_OnProcessEnd((int)this);
-    WordSearchRuntimeState* state = (WordSearchRuntimeState*)words;
-    WordSearchCell* ptr = state->cells;
-    do {
-        int cellX = 0x48;
-        WordSearchCell* cell = ptr;
-        do {
-            cell->left = startX;
-            cell->top = cellX;
-            cell->right = startX + 0x45;
-            cell->bottom = cellX + 0x32;
-            ptr = cell + 1;
-            cellX += 0x33;
-            cell = ptr;
-        } while (cellX < 0x17A);
-        startX += 0x46;
-    } while (startX < 0x23F);
-
-    // Set initial grid cell states
-    state->cells[2].selected = 1;
-    state->cells[13].selected = 1;
-    state->cells[19].selected = 1;
-    state->cells[25].selected = 1;
-    state->cells[27].selected = 1;
-    state->cells[14].selected = 1;
-    state->cells[15].selected = 1;
-    state->cells[23].selected = 1;
-
-    // Set game parameters
-    state->cursorLeft = 10;
-    state->cursorTop = 0x14;
-    state->cursorRight = 0x5A;
-    state->cursorBottom = 0xDC;
-    state->exitRect()->left = 6;
-    state->cells[34].markWin = 1;
-    state->exitRect()->top = 0x197;
-    state->exitRect()->right = 0x5F;
-    state->exitRect()->bottom = 0x1D6;
-
-    InitCombatGrid((int)this);
-
-    if (state->messageValue != 0) {
-        SendGameMessage(5, state->messageValue, handlerId, moduleParam, 0x1B, 0, 0, 0, 0, 0);
-    }
-}
-
 extern void __fastcall UpdateWordSearchCursor(int*);
 #include "SoundList.h"
 

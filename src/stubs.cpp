@@ -29,7 +29,6 @@ extern "C" void __stdcall SmackSummary(void*, unsigned int* summary)
 // ClearSaveEntries (0x43E320) — in SC_DuctNav.cpp
 // FreePoolBlocks (0x43E900) — in SCI_Inventory.cpp
 // GetDirectionChar (0x449B60) — in mCNavigator.cpp
-// Handler_OnProcessEnd — in SC_WordSearch.cpp
 // SmackSummary — in SC_Cinematic.cpp
 // TextInput::TextInput (0x445680) — in TextInput.cpp
 // TextInput::~TextInput (0x4456F0) — in TextInput.cpp
